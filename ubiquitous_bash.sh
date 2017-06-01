@@ -146,6 +146,16 @@ _safeRMR() {
 	fi
 }
 
+_discoverResource() {
+	local testDir
+	local scriptAbsoluteFolder
+	scriptAbsoluteFolder=$(_getScriptAbsoluteFolder)
+	testDir="$scriptAbsoluteFolder" ; [[ -e "$testDir"/"$1" ]] && echo "$testDir"/"$1" && return
+	testDir="$scriptAbsoluteFolder"/.. ; [[ -e "$testDir"/"$1" ]] && echo "$testDir"/"$1" && return
+	testDir="$scriptAbsoluteFolder"/../.. ; [[ -e "$testDir"/"$1" ]] && echo "$testDir"/"$1" && return
+	testDir="$scriptAbsoluteFolder"/../../.. ; [[ -e "$testDir"/"$1" ]] && echo "$testDir"/"$1" && return
+}
+
 #http://stackoverflow.com/questions/687948/timeout-a-command-in-bash-without-unnecessary-delay
 _timeout() { ( set +b; sleep "$1" & "${@:2}" & wait -n; r=$?; kill -9 `jobs -p`; exit $r; ) } 
 
@@ -307,4 +317,191 @@ _getUUID() {
 	cat /proc/sys/kernel/random/uuid
 }
 alias getUUID=_getUUID
+
+#####Basic Variable Management
+
+#####Global variables.
+
+export sessionid=$(_uid)
+export scriptAbsoluteLocation=$(_getScriptAbsoluteLocation)
+export scriptAbsoluteFolder=$(_getScriptAbsoluteFolder)
+
+#Temporary directories.
+export safeTmp="$scriptAbsoluteFolder"/w_"$sessionid"
+export logTmp="$safeTmp"/log
+export shortTmp=/tmp/w_"$sessionid"	#Solely for misbehaved applications called upon.
+
+#Monolithic shared files.
+
+#Resource directories.
+#export guidanceDir="$scriptAbsoluteFolder"/guidance
+
+#Current directory for preservation.
+export outerPWD=$(_getAbsoluteLocation "$PWD")
+
+#Object Dir
+export objectDir="$scriptAbsoluteFolder"
+
+#Object Name
+export objectName=$(basename "$objectDir")
+
+#####Local Environment Management
+
+_prepare() {
+	
+	mkdir -p "$safeTmp"
+	
+	mkdir -p "$shortTmp"
+	
+	mkdir -p "$logTmp"
+}
+
+_start() {
+	
+	_prepare
+	
+	
+}
+
+_stop() {
+	
+	_safeRMR "$safeTmp"
+	_safeRMR "$shortTmp"
+	
+	#Broken.
+	if [[ "$1" != "" ]]
+	then
+		exit "$1"
+	else
+		exit 0
+	fi
+}
+
+_preserveLog() {
+	cp "$logTmp"/* ./  >/dev/null 2>&1
+}
+
+#Traps
+trap 'excode=$?; _stop; trap - EXIT; echo $excode' EXIT HUP INT QUIT PIPE TERM		# reset
+trap 'excode=$?; trap "" EXIT; _stop; echo $excode' EXIT HUP INT QUIT PIPE TERM		# ignore
+
+#####Installation
+
+_test() {
+	_start
+	
+	echo -e -n '\E[1;32;46m Dependency checking...	\E[0m'
+	
+	# Check dependencies
+	_checkDep wget
+	_checkDep grep
+	_checkDep fgrep
+	_checkDep sed
+	_checkDep awk
+	_checkDep cut
+	_checkDep head
+	_checkDep tail
+	
+	
+	_checkDep realpath
+	_checkDep readlink
+	_checkDep dirname
+	
+	_checkDep sleep
+	_checkDep wait
+	_checkDep kill
+	_checkDep jobs
+	_checkDep exit
+	
+	_checkDep env
+	_checkDep bash
+	_checkDep echo
+	_checkDep cat
+	_checkDep type
+	_checkDep mkdir
+	_checkDep trap
+	_checkDep return
+	_checkDep set
+	
+	_checkDep rm
+	
+	
+	[[ -e /dev/urandom ]] || echo /dev/urandom missing _stop
+	
+	echo "PASS"
+	
+	_stop
+	
+}
+
+_setup() {
+	_start
+	
+	"$scriptAbsoluteLocation" _test
+	
+	"$scriptAbsoluteLocation" _build "$@"
+	
+	
+	
+	_stop
+}
+
+#####Program
+
+build() {
+	false
+}
+
+_launch() {
+	false
+}
+
+_main() {
+	_start
+	
+	_stop
+}
+
+#####Overrides
+
+#Override functions with external definitions from a separate file if available.
+#if [[ -e "./ops" ]]
+#then
+#	. ./ops
+#fi
+
+#Override functions with external definitions from a separate file if available.
+if [[ -e "$objectDir"/ops ]]
+then
+	. "$objectDir"/ops
+fi
+
+
+#Launch internal functions as commands.
+#if [[ "$1" != "" ]] && [[ "$1" != "-"* ]] && [[ ! -e "$1" ]]
+if [[ "$1" == '_'* ]]
+then
+	"$@"
+	exit "$?"
+	#_stop "$?"
+fi
+
+#Stop if script is imported into an existing shell.
+if [[ "${BASH_SOURCE[0]}" != "${0}" ]] && [[ "$1" != "--bypass" ]]
+then
+	return
+fi
+
+if ! [[ "$1" != "--bypass" ]]
+then
+	shift
+fi
+
+#####Entry
+
+#"$scriptAbsoluteLocation" _setup
+
+
+_main "$@"
+
 

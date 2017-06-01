@@ -82,6 +82,9 @@ echo >> ./ubiquitous_bash.sh
 cat ./_lib/ubiquitous/generic/filesystem/safedelete.sh >> ./ubiquitous_bash.sh
 echo >> ./ubiquitous_bash.sh
 
+cat ./_lib/ubiquitous/generic/filesystem/discoverresource.sh >> ./ubiquitous_bash.sh
+echo >> ./ubiquitous_bash.sh
+
 cat ./_lib/ubiquitous/generic/process/timeout.sh >> ./ubiquitous_bash.sh
 echo >> ./ubiquitous_bash.sh
 
@@ -105,3 +108,51 @@ echo >> ./ubiquitous_bash.sh
 
 cat ./_lib/ubiquitous/special/uuid.sh >> ./ubiquitous_bash.sh
 echo >> ./ubiquitous_bash.sh
+
+echo "#####Basic Variable Management" >> ./ubiquitous_bash.sh
+echo >> ./ubiquitous_bash.sh
+
+cat ./_lib/ubiquitous/structure/globalvars.sh >> ./ubiquitous_bash.sh
+echo >> ./ubiquitous_bash.sh
+
+cat ./_lib/ubiquitous/structure/localenv.sh >> ./ubiquitous_bash.sh
+echo >> ./ubiquitous_bash.sh
+
+cat ./_lib/ubiquitous/structure/installation.sh >> ./ubiquitous_bash.sh
+echo >> ./ubiquitous_bash.sh
+
+cat ./_lib/ubiquitous/structure/program.sh >> ./ubiquitous_bash.sh
+echo >> ./ubiquitous_bash.sh
+
+cat ./_lib/ubiquitous/structure/overrides.sh >> ./ubiquitous_bash.sh
+echo >> ./ubiquitous_bash.sh
+
+cat ./_lib/ubiquitous/structure/entry.sh >> ./ubiquitous_bash.sh
+echo >> ./ubiquitous_bash.sh
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
