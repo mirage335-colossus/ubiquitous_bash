@@ -5,9 +5,9 @@
 #Usage:
 # . ubiquitous_bash.sh
 #Version:
-# 1.4
+# 1.5
 
-# Copyright (c) 2012 mirage335
+# Copyright (c) 2012,2017 mirage335
 
 # Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
@@ -20,41 +20,53 @@
 #Suitable for allowing scripts to find other scripts they depend on. May look like an ugly hack, but it has proven reliable over the years.
 getScriptAbsoluteLocation() {
 	local absoluteLocation
-	if [[ (-e $PWD\/$0) && ($0 != "") ]]
+	if [[ (-e $PWD\/$0) && ($0 != "") ]] && [[ "$1" != "/"* ]]
 			then
 	absoluteLocation="$PWD"\/"$0"
-	absoluteLocation=$(realpath -s "$absoluteLocation")
+	absoluteLocation=$(realpath -L -s "$absoluteLocation")
 			else
-	absoluteLocation="$0"
+	absoluteLocation=$(realpath -L "$0")
 	fi
 
 	if [[ -h "$absoluteLocation" ]]
 			then
 	absoluteLocation=$(readlink -f "$absoluteLocation")
+	absoluteLocation=$(realpath -L "$absoluteLocation")
 	fi
-
+	
 	echo $absoluteLocation
 }
+alias _getScriptAbsoluteLocation=getScriptAbsoluteLocation
 
 #Retrieves absolute path of current script, while maintaining symlinks, even when "./" would translate with "readlink -f" into something disregarding symlinked components in $PWD.
 #Suitable for allowing scripts to find other scripts they depend on.
 getScriptAbsoluteFolder() {
 	dirname "$(getScriptAbsoluteLocation)"
 }
+alias _getScriptAbsoluteFolder=getScriptAbsoluteFolder
 
 #Retrieves absolute path of parameter, while maintaining symlinks, even when "./" would translate with "readlink -f" into something disregarding symlinked components in $PWD.
 #Suitable for finding absolute paths, when it is desirable not to interfere with symlink specified folder structure.
 getAbsoluteLocation() {
 	local absoluteLocation
-	if [[ (-e $PWD\/$1) && ($1 != "") ]]
+	if [[ (-e $PWD\/$1) && ($1 != "") ]] && [[ "$1" != "/"* ]]
 			then
 	absoluteLocation="$PWD"\/"$1"
-	absoluteLocation=$(realpath -s "$absoluteLocation")
+	absoluteLocation=$(realpath -L -s "$absoluteLocation")
 			else
-	absoluteLocation="$1"
+	absoluteLocation=$(realpath -L "$1")
 	fi
 	echo $absoluteLocation
 }
+alias _getAbsoluteLocation=getAbsoluteLocation
+
+#Retrieves absolute path of parameter, while maintaining symlinks, even when "./" would translate with "readlink -f" into something disregarding symlinked components in $PWD.
+#Suitable for finding absolute paths, when it is desirable not to interfere with symlink specified folder structure.
+getAbsoluteFolder() {
+	local absoluteLocation=$(_getAbsoluteLocation "$1")
+	dirname "$absoluteLocation"
+}
+alias _getAbsoluteLocation=getAbsoluteLocation
 
 #Returns a UUID in the form of xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
 getUUID() {
