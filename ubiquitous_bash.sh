@@ -1,24 +1,16 @@
-#!/bin/bash
-#Script by mirage335.
-#Purpose:
-# Provides low level functions useful in many bash scripts.
-#Usage:
-# . ubiquitous_bash.sh
-#Version:
-# 1.5
+#!/usr/bin/env bash
 
-# Copyright (c) 2012,2017 mirage335
+#Ubiquitous Bash v2.0
 
-# Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+#http://creativecommons.org/publicdomain/zero/1.0/
+#To the extent possible under law, mirage335 has waived all copyright and related or neighboring rights to ubiquitous_bash.sh. This work is published from: United States.
 
-# The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+#####Utilities
 
 #Retrieves absolute path of current script, while maintaining symlinks, even when "./" would translate with "readlink -f" into something disregarding symlinked components in $PWD.
 #However, will dereference symlinks IF the script location itself is a symlink. This is to allow symlinking to scripts to function normally.
 #Suitable for allowing scripts to find other scripts they depend on. May look like an ugly hack, but it has proven reliable over the years.
-getScriptAbsoluteLocation() {
+_getScriptAbsoluteLocation() {
 	local absoluteLocation
 	if [[ (-e $PWD\/$0) && ($0 != "") ]] && [[ "$1" != "/"* ]]
 			then
@@ -33,21 +25,26 @@ getScriptAbsoluteLocation() {
 	absoluteLocation=$(readlink -f "$absoluteLocation")
 	absoluteLocation=$(realpath -L "$absoluteLocation")
 	fi
-	
 	echo $absoluteLocation
 }
-alias _getScriptAbsoluteLocation=getScriptAbsoluteLocation
+alias getScriptAbsoluteLocation=_getScriptAbsoluteLocation
 
 #Retrieves absolute path of current script, while maintaining symlinks, even when "./" would translate with "readlink -f" into something disregarding symlinked components in $PWD.
 #Suitable for allowing scripts to find other scripts they depend on.
-getScriptAbsoluteFolder() {
-	dirname "$(getScriptAbsoluteLocation)"
+_getScriptAbsoluteFolder() {
+	dirname "$(_getScriptAbsoluteLocation)"
 }
-alias _getScriptAbsoluteFolder=getScriptAbsoluteFolder
+alias getScriptAbsoluteFolder=_getScriptAbsoluteFolder
 
 #Retrieves absolute path of parameter, while maintaining symlinks, even when "./" would translate with "readlink -f" into something disregarding symlinked components in $PWD.
 #Suitable for finding absolute paths, when it is desirable not to interfere with symlink specified folder structure.
-getAbsoluteLocation() {
+_getAbsoluteLocation() {
+	if [[ "$1" == "" ]]
+	then
+		echo
+		return
+	fi
+	
 	local absoluteLocation
 	if [[ (-e $PWD\/$1) && ($1 != "") ]] && [[ "$1" != "/"* ]]
 			then
@@ -58,65 +55,256 @@ getAbsoluteLocation() {
 	fi
 	echo $absoluteLocation
 }
-alias _getAbsoluteLocation=getAbsoluteLocation
+alias getAbsoluteLocation=_getAbsoluteLocation
 
 #Retrieves absolute path of parameter, while maintaining symlinks, even when "./" would translate with "readlink -f" into something disregarding symlinked components in $PWD.
 #Suitable for finding absolute paths, when it is desirable not to interfere with symlink specified folder structure.
-getAbsoluteFolder() {
+_getAbsoluteFolder() {
 	local absoluteLocation=$(_getAbsoluteLocation "$1")
 	dirname "$absoluteLocation"
 }
-alias _getAbsoluteLocation=getAbsoluteLocation
+alias getAbsoluteLocation=_getAbsoluteLocation
 
-#Returns a UUID in the form of xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
-getUUID() {
-	cat /proc/sys/kernel/random/uuid
+#Reports either the directory provided, or the directory of the file provided.
+_findDir() {
+	local dirIn=$(_getAbsoluteLocation "$1")
+	dirInLogical=$(realpath -L -s "$dirIn")
+	
+	if [[ -d "$dirInLogical" ]]
+	then
+		echo "$dirInLogical"
+		return
+	fi
+	
+	echo $(_getAbsoluteFolder "$dirInLogical")
+	return
+	
 }
 
-#Executes config file specified by second parameter, and outputs the value of the variable specified by the first parameter.
-getConfig() {
-	(					#start subshell
-		. "$2"				#execute config file
-		eval echo \$$1		#output value
-	)
+_checkDep() {
+	type "$1" >/dev/null 2>&1 || ( echo "$1" missing && _stop 1 )
 }
 
-#Sets variable specified by second parameter to value specified in first parameter in config file specified by third parameter.
-writeConfig() {
-	echo -e "\n$1=$2		#Automatic Entry" >> "$3"
+#Portable sanity checked "rm -r" command.
+#"$1" == directory to remove
+_safeRMR() {
+	
+	#if [[ ! -e "$0" ]]
+	#then
+	#	return 1
+	#fi
+	
+	if [[ "$1" == "" ]]
+	then
+		return 1
+	fi
+	
+	if [[ "$1" == "/" ]]
+	then
+		return 1
+	fi
+	
+	#Blacklist.
+	[[ "$1" == "/home" ]] && return 1
+	[[ "$1" == "/home/" ]] && return 1
+	[[ "$1" == "/home/$USER" ]] && return 1
+	[[ "$1" == "/home/$USER/" ]] && return 1
+	[[ "$1" == "/$USER" ]] && return 1
+	[[ "$1" == "/$USER/" ]] && return 1
+	
+	[[ "$1" == "/tmp" ]] && return 1
+	[[ "$1" == "/tmp/" ]] && return 1
+	
+	#Whitelist.
+	local safeToRM=false
+	
+	local safeScriptAbsoluteFolder="$_getScriptAbsoluteFolder"
+	
+	[[ "$1" == "./"* ]] && [[ "$PWD" == "$safeScriptAbsoluteFolder"* ]] && safeToRM="true"
+	
+	[[ "$1" == "$safeScriptAbsoluteFolder"* ]] && safeToRM="true"
+	
+	#[[ "$1" == "/home/$USER"* ]] && safeToRM="true"
+	[[ "$1" == "/tmp/"* ]] && safeToRM="true"
+	
+	[[ "$safeToRM" == "false" ]] && return 1
+	
+	#Safeguards/
+	[[ -d "$1" ]] && find "$1" | grep -i '\.git$' >/dev/null 2>&1 && return 1
+	
+	#Validate necessary tools were available for path building and checks.
+	_checkDep realpath
+	_checkDep readlink
+	_checkDep dirname
+	_checkDep basename
+	
+	if [[ -e "$1" ]]
+	then
+		#sleep 0
+		#echo "$1"
+		rm -rf "$1"
+	fi
 }
 
-#Creates low-enthropy random password, suitable for environments in which mass-guessing is infeasible and user-friendliness is unnecessary. First parameter specifies character count.
-lowQualityPassword() {
-	cat /dev/urandom | tr -dc A-Za-z0-9 | head -c $1
-}
-
-#Retrieves user password, and places result in $userConfirmedPassword
-promptPassword() {
-	local passwordAttemptOne="a"
-	local passwordAttemptTwo="b"
-	while [[ $passwordAttemptOne != $passwordAttemptTwo ]]
-	do
-		read -s -p "Enter or retry password:
-" passwordAttemptOne
-		read -s -p "Confirm password:
-" passwordAttemptTwo
-	done
-	userConfirmedPassword=$passwordAttemptOne
-}
-
-#Determines if user is root. If yes, then continue. If not, exits after printing error message.
-mustBeRoot() {
-if [[ $(id -u) != 0 ]]; then 
-	echo "This must be run as root!"
-	exit
-fi
-}
+#http://stackoverflow.com/questions/687948/timeout-a-command-in-bash-without-unnecessary-delay
+_timeout() { ( set +b; sleep "$1" & "${@:2}" & wait -n; r=$?; kill -9 `jobs -p`; exit $r; ) } 
 
 #Waits for the process PID specified by first parameter to end. Useful in conjunction with $! to provide process control and/or PID files.
-waitForProcess() {
+_waitForProcess() {
 	while ps --no-headers -p $1 &> /dev/null
 	do
 		sleep 0.1
 	done
 }
+alias waitForProcess=_waitForProcess
+
+#http://unix.stackexchange.com/questions/55913/whats-the-easiest-way-to-find-an-unused-local-port
+_findPort() {
+	#read lower_port upper_port < /proc/sys/net/ipv4/ip_local_port_range
+	lower_port=54000
+	upper_port=55000
+	
+	while true
+	do
+		for (( port = lower_port ; port <= upper_port ; port++ )); do
+			if ! ss -lpn | grep ":$port " > /dev/null 2>&1
+			then
+				sleep 0.1
+				if ! ss -lpn | grep ":$port " > /dev/null 2>&1
+				then
+					break 2
+				fi
+			fi
+		done
+	done
+	echo $port
+}
+#Generates random alphanumeric characters, default length 18.
+_uid() {
+	local uidLength
+	[[ -z "$1" ]] && uidLength=18 || uidLength="$1"
+	
+	cat /dev/urandom | base64 | tr -dc 'a-zA-Z0-9' | head -c "$uidLength"
+}
+
+#Validates non-empty request.
+_validateRequest() {
+	echo -e -n '\E[1;32;46m Validating request '"$1"'...	\E[0m'
+	[[ "$1" == "" ]] && echo -e '\E[1;33;41m BLANK \E[0m' && return 1
+	echo "PASS"
+	return
+}
+
+#Checks if file/directory exists on remote system. Overload this function with implementation specific to the container/virtualization solution in use (ie. docker run).
+_checkBaseDirRemote() {
+	false
+}
+
+#Reports the highest-level directory containing all files in given parameter set.
+#"$@" == parameters to search
+_searchBaseDir() {
+	local baseDir
+	local newDir
+	
+	baseDir=""
+	
+	local processedArgs
+	local currentArg
+	local currentResult
+	
+	for currentArg in "$@"
+	do
+		if _checkBaseDirRemote "$currentArg"
+		then
+			continue
+		fi
+		
+		currentResult="$currentArg"
+		processedArgs+=("$currentResult")
+	done
+	
+	for currentArg in "${processedArgs[@]}"
+	do	
+		
+		if [[ ! -e "$currentArg" ]]
+		then
+			continue
+		fi
+		
+		if [[ "$baseDir" == "" ]]
+		then
+			baseDir=$(_findDir "$currentArg")
+		fi
+		
+		for subArg in "${processedArgs[@]}"
+		do
+			if [[ ! -e "$subArg" ]]
+			then
+				continue
+			fi
+			
+			newDir=$(_findDir "$subArg")
+			
+			while [[ "$newDir" != "$baseDir"* ]]
+			do
+				baseDir=$(_findDir "$baseDir"/..)
+				
+				if [[ "$baseDir" == "/" ]]
+				then
+					break
+				fi
+			done
+			
+		done
+		
+		
+		
+		
+	done
+	
+	echo "$baseDir"
+}
+
+#Converts to relative path, if provided a file parameter.
+#"$1" == parameter to search
+#"$2" == sharedProjectDir
+#"$3" == sharedGuestProjectDir (optional)
+_localDir() {
+	if _checkBaseDirRemote "$1"
+	then
+		echo "$1"
+		return
+	fi
+	
+	if [[ ! -e "$2" ]]
+	then
+		echo "$1"
+		return
+	fi
+	
+	if [[ ! -e "$1" ]]
+	then
+		echo "$1"
+		return
+	fi
+	
+	[[ "$3" != "" ]] && echo -n "$3"/
+	realpath -L -s --relative-to="$2" "$1"
+	
+}
+
+#Determines if user is root. If yes, then continue. If not, exits after printing error message.
+_mustBeRoot() {
+if [[ $(id -u) != 0 ]]; then 
+	echo "This must be run as root!"
+	exit
+fi
+}
+alias mustBeRoot=_mustBeRoot
+
+#Returns a UUID in the form of xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+_getUUID() {
+	cat /proc/sys/kernel/random/uuid
+}
+alias getUUID=_getUUID
+
