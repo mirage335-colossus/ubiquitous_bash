@@ -448,13 +448,13 @@ _idle() {
 		
 		idleTime=$("$scriptBin"/getIdle)
 		
-		if [[ "$idleTime" -lt "3300" ]] && ps -e | grep "$daemonPID" >/dev/null 2>&1
+		if [[ "$idleTime" -lt "3300000" ]] && ps -e | grep "$daemonPID" >/dev/null 2>&1
 		then
 			_killDaemon
 		fi
 		
 		
-		if [[ "$idleTime" -gt "3600" ]] && ! ps -e | grep "$daemonPID" >/dev/null 2>&1
+		if [[ "$idleTime" -gt "3600000" ]] && ! ps -e | grep "$daemonPID" >/dev/null 2>&1
 		then
 			_execDaemon
 		fi
@@ -556,12 +556,6 @@ _launch() {
 
 _main() {
 	_start
-	
-	while true
-	do
-		sleep 1
-		echo test >> test
-	done
 	
 	_stop
 }
