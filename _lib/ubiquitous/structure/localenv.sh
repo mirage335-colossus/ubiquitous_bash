@@ -21,6 +21,8 @@ _stop() {
 	_safeRMR "$safeTmp"
 	_safeRMR "$shortTmp"
 	
+	_tryExec _killDaemon
+	
 	#Broken.
 	if [[ "$1" != "" ]]
 	then

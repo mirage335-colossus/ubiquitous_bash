@@ -82,7 +82,15 @@ _findDir() {
 }
 
 _checkDep() {
-	type "$1" >/dev/null 2>&1 || ( echo "$1" missing && _stop 1 )
+	if ! type "$1" >/dev/null 2>&1
+	then
+		echo "$1" missing
+		_stop 1
+	fi
+}
+
+_tryExec() {
+	type "$1" >/dev/null 2>&1 && "$1"
 }
 
 #Portable sanity checked "rm -r" command.
@@ -167,6 +175,30 @@ _waitForProcess() {
 	done
 }
 alias waitForProcess=_waitForProcess
+
+_waitForDaemon() {
+	ps -e | grep "$daemonPID" >/dev/null 2>&1 && sleep 0.1
+	ps -e | grep "$daemonPID" >/dev/null 2>&1 && sleep 0.3
+	ps -e | grep "$daemonPID" >/dev/null 2>&1 && sleep 1
+	ps -e | grep "$daemonPID" >/dev/null 2>&1 && sleep 2
+}
+
+_killDaemon() {
+	ps -e | grep "$daemonPID" >/dev/null 2>&1 && kill -TERM "$daemonPID" >/dev/null 2>&1
+	
+	_waitForDaemon
+	
+	ps -e | grep "$daemonPID" >/dev/null 2>&1 && kill -KILL "$daemonPID" >/dev/null 2>&1
+	
+	_waitForDaemon
+	
+	rm "$pidFile" >/dev/null 2>&1
+}
+
+_execDaemon() {
+	"$scriptAbsoluteLocation" &
+	echo "$!" > "$pidFile"
+}
 
 #http://unix.stackexchange.com/questions/55913/whats-the-easiest-way-to-find-an-unused-local-port
 _findPort() {
@@ -330,6 +362,11 @@ export scriptAbsoluteFolder=$(_getScriptAbsoluteFolder)
 export safeTmp="$scriptAbsoluteFolder"/w_"$sessionid"
 export logTmp="$safeTmp"/log
 export shortTmp=/tmp/w_"$sessionid"	#Solely for misbehaved applications called upon.
+export scriptBin="$scriptAbsoluteFolder"/_bin
+
+#Process control.
+export pidFile="$safeTmp"/.bgpid
+export daemonPID="cwrxuk6wqzbzV6p8kPS8J4APYGX"	#Invalid do-not-match default.
 
 #Monolithic shared files.
 
@@ -344,6 +381,10 @@ export objectDir="$scriptAbsoluteFolder"
 
 #Object Name
 export objectName=$(basename "$objectDir")
+
+#Modify PATH to include own directories.
+export PATH="$PATH":"$scriptAbsoluteFolder"
+[[ -d "$scriptBin" ]] && export PATH="$PATH":"$scriptBin"
 
 #####Local Environment Management
 
@@ -368,6 +409,8 @@ _stop() {
 	_safeRMR "$safeTmp"
 	_safeRMR "$shortTmp"
 	
+	_tryExec _killDaemon
+	
 	#Broken.
 	if [[ "$1" != "" ]]
 	then
@@ -384,6 +427,59 @@ _preserveLog() {
 #Traps
 trap 'excode=$?; _stop; trap - EXIT; echo $excode' EXIT HUP INT QUIT PIPE TERM		# reset
 trap 'excode=$?; trap "" EXIT; _stop; echo $excode' EXIT HUP INT QUIT PIPE TERM		# ignore
+
+#####Idle
+
+_idle() {
+	_start
+	
+	_checkDep getIdle
+	
+	_killDaemon
+	
+	while true
+	do
+		sleep 5
+		
+		if [[ -e "$pidFile" ]]
+		then
+			daemonPID=$(cat "$pidFile")
+		fi
+		
+		idleTime=$("$scriptBin"/getIdle)
+		
+		if [[ "$idleTime" -lt "3300" ]] && ps -e | grep "$daemonPID" >/dev/null 2>&1
+		then
+			_killDaemon
+		fi
+		
+		
+		if [[ "$idleTime" -gt "3600" ]] && ! ps -e | grep "$daemonPID" >/dev/null 2>&1
+		then
+			_execDaemon
+		fi
+		
+		
+		
+	done
+	
+	_stop
+}
+
+_idleTest() {
+	
+	true
+	
+}
+
+_idleBuild() {
+	
+	idleSourceCode=$(find "$scriptAbsoluteFolder" -type f -name "getIdle.c" | head -n 1)
+	
+	mkdir -p "$scriptBin"
+	gcc -o "$scriptBin"/getIdle "$idleSourceCode" -lXss -lX11
+	
+}
 
 #####Installation
 
@@ -425,6 +521,7 @@ _test() {
 	
 	_checkDep rm
 	
+	_tryExec "_idleTest"
 	
 	[[ -e /dev/urandom ]] || echo /dev/urandom missing _stop
 	
@@ -448,7 +545,8 @@ _setup() {
 
 #####Program
 
-build() {
+_build() {
+	_tryExec _idleBuild
 	false
 }
 
@@ -458,6 +556,12 @@ _launch() {
 
 _main() {
 	_start
+	
+	while true
+	do
+		sleep 1
+		echo test >> test
+	done
 	
 	_stop
 }

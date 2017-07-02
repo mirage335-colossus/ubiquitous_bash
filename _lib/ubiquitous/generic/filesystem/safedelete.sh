@@ -1,5 +1,13 @@
 _checkDep() {
-	type "$1" >/dev/null 2>&1 || ( echo "$1" missing && _stop 1 )
+	if ! type "$1" >/dev/null 2>&1
+	then
+		echo "$1" missing
+		_stop 1
+	fi
+}
+
+_tryExec() {
+	type "$1" >/dev/null 2>&1 && "$1"
 }
 
 #Portable sanity checked "rm -r" command.

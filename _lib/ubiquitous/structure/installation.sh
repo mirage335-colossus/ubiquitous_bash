@@ -38,6 +38,7 @@ _test() {
 	
 	_checkDep rm
 	
+	_tryExec "_idleTest"
 	
 	[[ -e /dev/urandom ]] || echo /dev/urandom missing _stop
 	

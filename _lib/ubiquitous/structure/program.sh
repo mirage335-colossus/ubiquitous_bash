@@ -1,6 +1,7 @@
 #####Program
 
-build() {
+_build() {
+	_tryExec _idleBuild
 	false
 }
 

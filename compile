@@ -91,6 +91,9 @@ echo >> ./ubiquitous_bash.sh
 cat ./_lib/ubiquitous/generic/process/waitforprocess.sh >> ./ubiquitous_bash.sh
 echo >> ./ubiquitous_bash.sh
 
+cat ./_lib/ubiquitous/generic/process/daemon.sh >> ./ubiquitous_bash.sh
+echo >> ./ubiquitous_bash.sh
+
 cat ./_lib/ubiquitous/generic/net/findport.sh >> ./ubiquitous_bash.sh
 echo >> ./ubiquitous_bash.sh
 
@@ -116,6 +119,9 @@ cat ./_lib/ubiquitous/structure/globalvars.sh >> ./ubiquitous_bash.sh
 echo >> ./ubiquitous_bash.sh
 
 cat ./_lib/ubiquitous/structure/localenv.sh >> ./ubiquitous_bash.sh
+echo >> ./ubiquitous_bash.sh
+
+cat ./_lib/ubiquitous/generic/process/idle.sh >> ./ubiquitous_bash.sh
 echo >> ./ubiquitous_bash.sh
 
 cat ./_lib/ubiquitous/structure/installation.sh >> ./ubiquitous_bash.sh
