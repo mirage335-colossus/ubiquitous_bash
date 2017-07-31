@@ -20,7 +20,8 @@ _idle() {
 		
 		if [[ "$idleTime" -lt "3300000" ]] && ps -e | grep "$daemonPID" >/dev/null 2>&1
 		then
-			_killDaemon
+			true
+			_killDaemon	#Comment out if unnecessary.
 		fi
 		
 		
@@ -38,7 +39,15 @@ _idle() {
 
 _idleTest() {
 	
-	true
+	_checkDep getIdle
+	
+	idleTime=$("$scriptBin"/getIdle)
+	
+	if ! echo "$idleTime" | grep '^[0-9]*$' >/dev/null 2>&1
+	then
+		echo getIdle invalid response
+		_stop 1
+	fi
 	
 }
 
