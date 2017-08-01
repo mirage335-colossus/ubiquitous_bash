@@ -60,93 +60,102 @@ alias getAbsoluteLocation=_getAbsoluteLocation
 
 cd "$_getScriptAbsoluteFolder"
 
-ubiquitiousLibDir="./"
+#export ubiquitiousLibDir="./_lib/ubiquitous_bash"
+export ubiquitiousLibDir="."
+export progDir="./_prog"
+export progScript="./ubiquitous_bash.sh"
 
-cat "$ubiquitiousLibDir"/generic/minimalheader.sh > ./ubiquitous_bash.sh
-echo >> ./ubiquitous_bash.sh
+#"$1" == file path
+_includeFile() {
+	
+	if [[ -e  "$1" ]]
+	then
+		cat "$1" >> "$progScript"
+		echo >> "$progScript"
+		return 0
+	fi
+	
+	return 1
+}
 
-echo '#Ubiquitous Bash v2.0' >> ./ubiquitous_bash.sh
-echo >> ./ubiquitous_bash.sh
+#"$1" == filename
+#"$2" == subdirectory
+_includeScript() {
+	
+	_includeFile "$progDir"/"$2"/"$1" && return 0
+	
+	_includeFile "$progDir"/"$1" && return 0
+	
+	_includeFile "$ubiquitiousLibDir"/"$2"/"$1" && return 0
+	
+	_includeFile "$ubiquitiousLibDir"/"$1" && return 0
+	
+}
 
-echo '#http://creativecommons.org/publicdomain/zero/1.0/' >> ./ubiquitous_bash.sh
-echo '#To the extent possible under law, mirage335 has waived all copyright and related or neighboring rights to ubiquitous_bash.sh. This work is published from: United States.' >> ./ubiquitous_bash.sh
-echo >> ./ubiquitous_bash.sh
+rm "$progScript"
 
-echo "#####Utilities" >> ./ubiquitous_bash.sh
-echo >> ./ubiquitous_bash.sh
+_includeScript minimalheader.sh "generic"
 
-cat "$ubiquitiousLibDir"/generic/showCommand.sh >> ./ubiquitous_bash.sh
-echo >> ./ubiquitous_bash.sh
+echo '#Ubiquitous Bash v2.0' >> "$progScript"
+echo >> "$progScript"
 
-cat "$ubiquitiousLibDir"/generic/filesystem/absolutepaths.sh >> ./ubiquitous_bash.sh
-echo >> ./ubiquitous_bash.sh
+echo '#http://creativecommons.org/publicdomain/zero/1.0/' >> "$progScript"
+echo '#To the extent possible under law, mirage335 has waived all copyright and related or neighboring rights to ubiquitous_bash.sh. This work is published from: United States.' >> "$progScript"
+echo >> "$progScript"
 
-cat "$ubiquitiousLibDir"/generic/filesystem/finddir.sh >> ./ubiquitous_bash.sh
-echo >> ./ubiquitous_bash.sh
+echo "#####Utilities" >> "$progScript"
+echo >> "$progScript"
 
-cat "$ubiquitiousLibDir"/generic/filesystem/safedelete.sh >> ./ubiquitous_bash.sh
-echo >> ./ubiquitous_bash.sh
+_includeScript showCommand.sh "generic"
 
-cat "$ubiquitiousLibDir"/generic/filesystem/discoverresource.sh >> ./ubiquitous_bash.sh
-echo >> ./ubiquitous_bash.sh
+_includeScript absolutepaths.sh "generic/filesystem"
 
-cat "$ubiquitiousLibDir"/generic/process/timeout.sh >> ./ubiquitous_bash.sh
-echo >> ./ubiquitous_bash.sh
+_includeScript finddir.sh "generic/filesystem"
 
-cat "$ubiquitiousLibDir"/generic/process/waitforprocess.sh >> ./ubiquitous_bash.sh
-echo >> ./ubiquitous_bash.sh
+_includeScript safedelete.sh "generic/filesystem"
 
-cat "$ubiquitiousLibDir"/generic/process/daemon.sh >> ./ubiquitous_bash.sh
-echo >> ./ubiquitous_bash.sh
+_includeScript discoverresource.sh "generic/filesystem"
 
-cat "$ubiquitiousLibDir"/generic/net/findport.sh >> ./ubiquitous_bash.sh
-echo >> ./ubiquitous_bash.sh
+_includeScript timeout.sh "generic/process"
 
-cat "$ubiquitiousLibDir"/generic/uid.sh >> ./ubiquitous_bash.sh
-echo >> ./ubiquitous_bash.sh
+_includeScript waitforprocess.sh "generic/process"
 
-cat "$ubiquitiousLibDir"/generic/validaterequest.sh >> ./ubiquitous_bash.sh
-echo >> ./ubiquitous_bash.sh
+_includeScript daemon.sh "generic/process"
 
-cat "$ubiquitiousLibDir"/generic/preserveLog.sh >> ./ubiquitous_bash.sh
-echo >> ./ubiquitous_bash.sh
+_includeScript findport.sh "generic/net"
 
-cat "$ubiquitiousLibDir"/virtualization/localPathTranslation.sh >> ./ubiquitous_bash.sh
-echo >> ./ubiquitous_bash.sh
+_includeScript uid.sh "generic"
 
-cat "$ubiquitiousLibDir"/special/mustberoot.sh >> ./ubiquitous_bash.sh
-echo >> ./ubiquitous_bash.sh
+_includeScript validaterequest.sh "generic"
 
-cat "$ubiquitiousLibDir"/special/uuid.sh >> ./ubiquitous_bash.sh
-echo >> ./ubiquitous_bash.sh
+_includeScript preserveLog.sh "generic"
 
-echo "#####Basic Variable Management" >> ./ubiquitous_bash.sh
-echo >> ./ubiquitous_bash.sh
+_includeScript localPathTranslation.sh "virtualization"
 
-cat "$ubiquitiousLibDir"/structure/globalvars.sh >> ./ubiquitous_bash.sh
-echo >> ./ubiquitous_bash.sh
+_includeScript mustberoot.sh "special"
 
-cat "$ubiquitiousLibDir"/structure/localfs.sh >> ./ubiquitous_bash.sh
-echo >> ./ubiquitous_bash.sh
+_includeScript uuid.sh "special"
 
-cat "$ubiquitiousLibDir"/structure/localenv.sh >> ./ubiquitous_bash.sh
-echo >> ./ubiquitous_bash.sh
+echo "#####Basic Variable Management" >> "$progScript"
+echo >> "$progScript"
 
-cat "$ubiquitiousLibDir"/generic/process/idle.sh >> ./ubiquitous_bash.sh
-echo >> ./ubiquitous_bash.sh
+_includeScript globalvars.sh "structure"
 
-cat "$ubiquitiousLibDir"/structure/installation.sh >> ./ubiquitous_bash.sh
-echo >> ./ubiquitous_bash.sh
+_includeScript localfs.sh "structure"
 
-cat "$ubiquitiousLibDir"/structure/program.sh >> ./ubiquitous_bash.sh
-echo >> ./ubiquitous_bash.sh
+_includeScript localenv.sh "structure"
 
-cat "$ubiquitiousLibDir"/structure/overrides.sh >> ./ubiquitous_bash.sh
-echo >> ./ubiquitous_bash.sh
+_includeScript idle.sh "generic/process"
 
-cat "$ubiquitiousLibDir"/structure/entry.sh >> ./ubiquitous_bash.sh
-echo >> ./ubiquitous_bash.sh
+_includeScript installation.sh "structure"
 
+_includeScript program.sh "structure"
+
+_includeScript overrides.sh "structure"
+
+_includeScript entry.sh "structure"
+
+chmod u+x "$progScript"
 
 
 
