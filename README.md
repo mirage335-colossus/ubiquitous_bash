@@ -12,7 +12,15 @@ Take the time to sort your requirements into fundamental operators.
 
 Recursive calling of the script itself is supported. Absolute path to script, and the directory it resides in, are available for calling related scripts. All temporary files use strongly unique session IDs. Direct command-line access to any internal function is supported for rapid unit testing - "./ubiquitous_bash.sh _setup" .
 
-Intended to be included in other projects as a "git submodule", then compiled into a monolithic script with end-developer definitions for program functions, specifically _main(). Default script execution typically starts near the end of the file, with a call to _main().
+Intended to be included in other projects as a "git submodule", then compiled into a monolithic script with end-developer definitions for program functions, specifically _main(). Default script execution typically starts near the end of the file, with a call to _main(). Proper use of compiler scripts will result in a completely
 
+
+
+# WARNING
+
+* Obviously, safeRMR is not foolproof. Use this function to guard against systematic errors, not carelessness.
+* Test any modifications to safeRMR in a safe place.
+* A few commands and internal functions, eg. "type" and "_timeout", are used to ensure consistent behavior across platforms.
+* Interdependencies between functions within the ubiquitous_bash library may not be documented. Test lean configurations in a safe place.
 
 

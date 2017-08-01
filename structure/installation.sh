@@ -1,5 +1,49 @@
 #####Installation
 
+#Verifies the timeout and sleep commands work properly, with subsecond specifications.
+_timetest() {
+	
+	iterations=0
+	while [[ "$iterations" -lt 10 ]]
+	do
+		dateA=$(date +%s)
+		
+		sleep 0.1
+		sleep 0.1
+		sleep 0.1
+		sleep 0.1
+		sleep 0.1
+		sleep 0.1
+		
+		_timeout 0.1 sleep 10
+		_timeout 0.1 sleep 10
+		_timeout 0.1 sleep 10
+		_timeout 0.1 sleep 10
+		_timeout 0.1 sleep 10
+		_timeout 0.1 sleep 10
+		
+		dateB=$(date +%s)
+		
+		dateDelta=$(bc <<< "$dateB - $dateA")
+		
+		if [[ "$dateDelta" -lt "1" ]]
+		then
+			echo "FAIL"
+			_stop 1
+		fi
+		
+		if [[ "$dateDelta" -lt "5" ]]
+		then
+			echo "PASS"
+			return 0
+		fi
+		
+		let iterations="$iterations + 1"
+	done
+	echo "FAIL"
+	_stop 1
+}
+
 _test() {
 	_start
 	
@@ -43,6 +87,9 @@ _test() {
 	[[ -e /dev/urandom ]] || echo /dev/urandom missing _stop
 	
 	echo "PASS"
+	
+	echo -n -e '\E[1;32;46m Timing...		\E[0m'
+	_timetest
 	
 	_stop
 	
