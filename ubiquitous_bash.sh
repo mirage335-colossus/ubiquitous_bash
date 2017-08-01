@@ -415,7 +415,7 @@ export objectName=$(basename "$objectDir")
 export PATH="$PATH":"$scriptAbsoluteFolder"
 [[ -d "$scriptBin" ]] && export PATH="$PATH":"$scriptBin"
 
-#####Local Environment Management
+#####Local Environment Management (Resources)
 
 _extra() {
 	true
@@ -432,6 +432,8 @@ _prepare() {
 	
 	_extra
 }
+
+#####Local Environment Management (Instancing)
 
 _start() {
 	

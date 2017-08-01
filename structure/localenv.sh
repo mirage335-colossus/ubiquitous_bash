@@ -1,20 +1,4 @@
-#####Local Environment Management
-
-_extra() {
-	true
-}
-
-
-_prepare() {
-	
-	mkdir -p "$safeTmp"
-	
-	mkdir -p "$shortTmp"
-	
-	mkdir -p "$logTmp"
-	
-	_extra
-}
+#####Local Environment Management (Instancing)
 
 _start() {
 	

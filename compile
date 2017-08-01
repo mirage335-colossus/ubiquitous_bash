@@ -126,6 +126,9 @@ echo >> ./ubiquitous_bash.sh
 cat "$ubiquitiousLibDir"/structure/globalvars.sh >> ./ubiquitous_bash.sh
 echo >> ./ubiquitous_bash.sh
 
+cat "$ubiquitiousLibDir"/structure/localfs.sh >> ./ubiquitous_bash.sh
+echo >> ./ubiquitous_bash.sh
+
 cat "$ubiquitiousLibDir"/structure/localenv.sh >> ./ubiquitous_bash.sh
 echo >> ./ubiquitous_bash.sh
 
