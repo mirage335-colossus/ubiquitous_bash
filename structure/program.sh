@@ -12,7 +12,7 @@ _launch() {
 
 #Typically gathers command/variable scripts from other (ie. yaml) file types (ie. AppImage recipes).
 _collect() {
-	
+	false
 }
 
 #Typical program entry point, absent any instancing support.
