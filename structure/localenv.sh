@@ -20,7 +20,15 @@ _start() {
 	
 	_prepare
 	
+	#touch "$varStore"
+	#. "$varStore"
 	
+	
+}
+
+_saveVar() {
+	true
+	#declare -p varName > "$varStore"
 }
 
 _stop() {

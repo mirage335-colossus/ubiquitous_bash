@@ -10,6 +10,8 @@ export logTmp="$safeTmp"/log
 export shortTmp=/tmp/w_"$sessionid"	#Solely for misbehaved applications called upon.
 export scriptBin="$scriptAbsoluteFolder"/_bin
 
+#export varStore="$scriptAbsoluteFolder"/var
+
 #Process control.
 export pidFile="$safeTmp"/.bgpid
 export daemonPID="cwrxuk6wqzbzV6p8kPS8J4APYGX"	#Invalid do-not-match default.
