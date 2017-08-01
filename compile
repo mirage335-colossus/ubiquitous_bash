@@ -75,6 +75,9 @@ echo >> ./ubiquitous_bash.sh
 echo "#####Utilities" >> ./ubiquitous_bash.sh
 echo >> ./ubiquitous_bash.sh
 
+cat "$ubiquitiousLibDir"/generic/showCommand.sh >> ./ubiquitous_bash.sh
+echo >> ./ubiquitous_bash.sh
+
 cat "$ubiquitiousLibDir"/generic/filesystem/absolutepaths.sh >> ./ubiquitous_bash.sh
 echo >> ./ubiquitous_bash.sh
 
@@ -103,6 +106,9 @@ cat "$ubiquitiousLibDir"/generic/uid.sh >> ./ubiquitous_bash.sh
 echo >> ./ubiquitous_bash.sh
 
 cat "$ubiquitiousLibDir"/generic/validaterequest.sh >> ./ubiquitous_bash.sh
+echo >> ./ubiquitous_bash.sh
+
+cat "$ubiquitiousLibDir"/generic/preserveLog.sh >> ./ubiquitous_bash.sh
 echo >> ./ubiquitous_bash.sh
 
 cat "$ubiquitiousLibDir"/virtualization/localPathTranslation.sh >> ./ubiquitous_bash.sh

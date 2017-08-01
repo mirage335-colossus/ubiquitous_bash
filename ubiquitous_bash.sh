@@ -7,6 +7,12 @@
 
 #####Utilities
 
+#Run command and output to terminal with colorful formatting. Controlled variant of "bash -v".
+_showCommand() {
+	echo -e '\E[1;32;46m $ '"$1"' \E[0m'
+	"$@"
+}
+
 #Retrieves absolute path of current script, while maintaining symlinks, even when "./" would translate with "readlink -f" into something disregarding symlinked components in $PWD.
 #However, will dereference symlinks IF the script location itself is a symlink. This is to allow symlinking to scripts to function normally.
 #Suitable for allowing scripts to find other scripts they depend on. May look like an ugly hack, but it has proven reliable over the years.
@@ -239,6 +245,16 @@ _validateRequest() {
 	[[ "$1" == "" ]] && echo -e '\E[1;33;41m BLANK \E[0m' && return 1
 	echo "PASS"
 	return
+}
+
+#Copy log files to "$permaLog" or current directory (default) for analysis.
+_preserveLog() {
+	if [[ ! -d "$permaLog" ]]
+	then
+		permaLog="$PWD"
+	fi
+	
+	cp "$logTmp"/* "$permaLog"/
 }
 
 #Checks if file/directory exists on remote system. Overload this function with implementation specific to the container/virtualization solution in use (ie. docker run).
