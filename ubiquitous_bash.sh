@@ -631,6 +631,30 @@ _test() {
 	
 }
 
+#Creates symlink in ~/bin, to the executable at "$1", named according to its residing directory and file name.
+_setupCommand() {
+	local clientScriptLocation
+	clientScriptLocation=$(_getAbsoluteLocation "$1")
+	
+	local clientScriptFolder
+	clientScriptFolder=$(_getAbsoluteFolder "$1")
+	
+	local commandName
+	commandName=$(basename "$1")
+	
+	local clientName
+	clientName=$(basename "$clientScriptFolder")
+	
+	ln -s -r "$clientScriptLocation" ~/bin/"$commandName""-""$clientName"
+	
+	
+}
+
+_setupCommands() {
+	#find . -name '_command' -exec "$scriptAbsoluteLocation" _setupClient {} \;
+	true
+}
+
 _setup() {
 	_start
 	
@@ -638,7 +662,7 @@ _setup() {
 	
 	"$scriptAbsoluteLocation" _build "$@"
 	
-	
+	_setupCommands
 	
 	_stop
 }
