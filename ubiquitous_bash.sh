@@ -168,33 +168,37 @@ _discoverResource() {
 _timeout() { ( set +b; sleep "$1" & "${@:2}" & wait -n; r=$?; kill -9 `jobs -p`; exit $r; ) } 
 
 #Waits for the process PID specified by first parameter to end. Useful in conjunction with $! to provide process control and/or PID files.
-_waitForProcess() {
+_pauseForProcess() {
 	while ps --no-headers -p $1 &> /dev/null
 	do
 		sleep 0.1
 	done
 }
-alias waitForProcess=_waitForProcess
+alias _waitForProcess=_pauseForProcess
+alias waitForProcess=_pauseForProcess
 
-_waitForDaemon() {
+_waitForTermination() {
 	ps -e | grep "$daemonPID" >/dev/null 2>&1 && sleep 0.1
 	ps -e | grep "$daemonPID" >/dev/null 2>&1 && sleep 0.3
 	ps -e | grep "$daemonPID" >/dev/null 2>&1 && sleep 1
 	ps -e | grep "$daemonPID" >/dev/null 2>&1 && sleep 2
 }
+alias _waitForDaemon=_waitForTermination
 
+#Kills background process using PID file.
 _killDaemon() {
 	ps -e | grep "$daemonPID" >/dev/null 2>&1 && kill -TERM "$daemonPID" >/dev/null 2>&1
 	
-	_waitForDaemon
+	_waitForTermination
 	
 	ps -e | grep "$daemonPID" >/dev/null 2>&1 && kill -KILL "$daemonPID" >/dev/null 2>&1
 	
-	_waitForDaemon
+	_waitForTermination
 	
 	rm "$pidFile" >/dev/null 2>&1
 }
 
+#Executes self in background (ie. as daemon).
 _execDaemon() {
 	"$scriptAbsoluteLocation" &
 	echo "$!" > "$pidFile"
@@ -388,6 +392,10 @@ export PATH="$PATH":"$scriptAbsoluteFolder"
 
 #####Local Environment Management
 
+_extra() {
+	true
+}
+
 _prepare() {
 	
 	mkdir -p "$safeTmp"
@@ -395,6 +403,8 @@ _prepare() {
 	mkdir -p "$shortTmp"
 	
 	mkdir -p "$logTmp"
+	
+	_extra
 }
 
 _start() {
@@ -563,8 +573,20 @@ _launch() {
 	false
 }
 
+_collect() {
+	false
+}
+
+_enter() {
+	_launch
+}
+
 _main() {
 	_start
+	
+	_collect
+	
+	_enter
 	
 	_stop
 }

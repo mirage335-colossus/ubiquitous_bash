@@ -1,5 +1,10 @@
 #####Local Environment Management
 
+extra() {
+	true
+}
+
+
 _prepare() {
 	
 	mkdir -p "$safeTmp"
@@ -7,6 +12,8 @@ _prepare() {
 	mkdir -p "$shortTmp"
 	
 	mkdir -p "$logTmp"
+	
+	_extra
 }
 
 _start() {
