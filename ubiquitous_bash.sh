@@ -87,6 +87,8 @@ _findDir() {
 	
 }
 
+#Checks whether command or function is available.
+# WARNING Needed by safeRMR .
 _checkDep() {
 	if ! type "$1" >/dev/null 2>&1
 	then
@@ -100,6 +102,7 @@ _tryExec() {
 }
 
 #Portable sanity checked "rm -r" command.
+# WARNING Not foolproof. Use to guard against systematic errors, not carelessness.
 #"$1" == directory to remove
 _safeRMR() {
 	
@@ -129,6 +132,9 @@ _safeRMR() {
 	[[ "$1" == "/tmp" ]] && return 1
 	[[ "$1" == "/tmp/" ]] && return 1
 	
+	[[ "$1" == "$HOME" ]] && return 1
+	[[ "$1" == "$HOME/" ]] && return 1
+	
 	#Whitelist.
 	local safeToRM=false
 	
@@ -156,6 +162,7 @@ _safeRMR() {
 	then
 		#sleep 0
 		#echo "$1"
+		# WARNING Recommend against adding any non-portable flags.
 		rm -rf "$1"
 	fi
 }
