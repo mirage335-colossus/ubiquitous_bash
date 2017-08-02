@@ -68,6 +68,7 @@ _test() {
 	_checkDep wait
 	_checkDep kill
 	_checkDep jobs
+	_checkDep ps
 	_checkDep exit
 	
 	_checkDep env
