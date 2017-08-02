@@ -92,7 +92,7 @@ _includeScript() {
 	
 }
 
-rm "$progScript"
+rm "$progScript" >/dev/null 2>&1
 
 _includeScript minimalheader.sh "generic"
 
