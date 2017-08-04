@@ -11,21 +11,16 @@ _idle() {
 	do
 		sleep 5
 		
-		if [[ -e "$pidFile" ]]
-		then
-			daemonPID=$(cat "$pidFile")
-		fi
-		
 		idleTime=$("$scriptBin"/getIdle)
 		
-		if [[ "$idleTime" -lt "3300000" ]] && ps -e | grep "$daemonPID" >/dev/null 2>&1
+		if [[ "$idleTime" -lt "3300000" ]] && _daemonStatus
 		then
 			true
 			_killDaemon	#Comment out if unnecessary.
 		fi
 		
 		
-		if [[ "$idleTime" -gt "3600000" ]] && ! ps -e | grep "$daemonPID" >/dev/null 2>&1
+		if [[ "$idleTime" -gt "3600000" ]] && ! _daemonStatus
 		then
 			_execDaemon
 		fi

@@ -1,6 +1,11 @@
 #True if daemon is running.
 _daemonStatus() {
-	ps -e | cut -f2 -d \  | grep "$daemonPID" >/dev/null 2>&1 && return 0
+	if [[ -e "$pidFile" ]]
+	then
+		daemonPID=$(cat "$pidFile")
+	fi
+	
+	ps -p "$daemonPID" >/dev/null 2>&1 && return 0
 	return 1
 }
 
