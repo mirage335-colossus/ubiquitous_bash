@@ -2,7 +2,7 @@
 _daemonStatus() {
 	if [[ -e "$pidFile" ]]
 	then
-		daemonPID=$(cat "$pidFile")
+		export daemonPID=$(cat "$pidFile")
 	fi
 	
 	ps -p "$daemonPID" >/dev/null 2>&1 && return 0
