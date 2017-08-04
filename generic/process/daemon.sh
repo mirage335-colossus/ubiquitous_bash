@@ -1,9 +1,8 @@
 #True if daemon is running.
 _daemonStatus() {
-	ps -e | grep "$daemonPID" >/dev/null 2>&1 && return 0
+	ps -e | cut -f2 -d \  | grep "$daemonPID" >/dev/null 2>&1 && return 0
 	return 1
 }
-
 
 _waitForTermination() {
 	_daemonStatus && sleep 0.1
