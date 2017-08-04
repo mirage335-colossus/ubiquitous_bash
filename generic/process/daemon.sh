@@ -27,6 +27,6 @@ _killDaemon() {
 
 #Executes self in background (ie. as daemon).
 _execDaemon() {
-	"$scriptAbsoluteLocation" > "$logTmp"/daemon 2>&1 &
+	"$scriptAbsoluteLocation" >/dev/null 2>&1 &
 	echo "$!" > "$pidFile"
 }
