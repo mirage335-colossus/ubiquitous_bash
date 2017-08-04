@@ -116,7 +116,7 @@ _setupCommand() {
 }
 
 _setupCommands() {
-	#find . -name '_command' -exec "$scriptAbsoluteLocation" _setupClient {} \;
+	#find . -name '_command' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
 	true
 }
 
