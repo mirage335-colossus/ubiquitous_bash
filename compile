@@ -58,7 +58,7 @@ _getAbsoluteFolder() {
 }
 alias getAbsoluteLocation=_getAbsoluteLocation
 
-cd "$_getScriptAbsoluteFolder"
+cd "$(_getScriptAbsoluteFolder)"
 
 #export ubiquitiousLibDir="./_lib/ubiquitous_bash"
 export ubiquitiousLibDir="."
