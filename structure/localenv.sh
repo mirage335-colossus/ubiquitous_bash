@@ -22,7 +22,6 @@ _stop() {
 	
 	_tryExec _killDaemon
 	
-	#Broken.
 	if [[ "$1" != "" ]]
 	then
 		exit "$1"
@@ -36,5 +35,5 @@ _preserveLog() {
 }
 
 #Traps
-trap 'excode=$?; _stop; trap - EXIT; echo $excode' EXIT HUP INT QUIT PIPE TERM		# reset
-trap 'excode=$?; trap "" EXIT; _stop; echo $excode' EXIT HUP INT QUIT PIPE TERM		# ignore
+trap 'excode=$?; _stop $excode; trap - EXIT; echo $excode' EXIT HUP INT QUIT PIPE TERM		# reset
+trap 'excode=$?; trap "" EXIT; _stop $excode; echo $excode' EXIT HUP INT QUIT PIPE TERM		# ignore
