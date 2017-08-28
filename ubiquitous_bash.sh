@@ -180,31 +180,42 @@ _discoverResource() {
 #http://stackoverflow.com/questions/687948/timeout-a-command-in-bash-without-unnecessary-delay
 _timeout() { ( set +b; sleep "$1" & "${@:2}" & wait -n; r=$?; kill -9 `jobs -p`; exit $r; ) } 
 
-#Waits for the process PID specified by first parameter to end. Useful in conjunction with $! to provide process control and/or PID files.
+#Waits for the process PID specified by first parameter to end. Useful in conjunction with $! to provide process control and/or PID files. Unlike wait command, does not require PID to be a child of the current shell.
 _pauseForProcess() {
 	while ps --no-headers -p $1 &> /dev/null
 	do
-		sleep 0.1
+		sleep 0.3
 	done
 }
 alias _waitForProcess=_pauseForProcess
 alias waitForProcess=_pauseForProcess
 
+#True if daemon is running.
+_daemonStatus() {
+	if [[ -e "$pidFile" ]]
+	then
+		export daemonPID=$(cat "$pidFile")
+	fi
+	
+	ps -p "$daemonPID" >/dev/null 2>&1 && return 0
+	return 1
+}
+
 _waitForTermination() {
-	ps -e | grep "$daemonPID" >/dev/null 2>&1 && sleep 0.1
-	ps -e | grep "$daemonPID" >/dev/null 2>&1 && sleep 0.3
-	ps -e | grep "$daemonPID" >/dev/null 2>&1 && sleep 1
-	ps -e | grep "$daemonPID" >/dev/null 2>&1 && sleep 2
+	_daemonStatus && sleep 0.1
+	_daemonStatus && sleep 0.3
+	_daemonStatus && sleep 1
+	_daemonStatus && sleep 2
 }
 alias _waitForDaemon=_waitForTermination
 
 #Kills background process using PID file.
 _killDaemon() {
-	ps -e | grep "$daemonPID" >/dev/null 2>&1 && kill -TERM "$daemonPID" >/dev/null 2>&1
+	_daemonStatus && kill -TERM "$daemonPID" >/dev/null 2>&1
 	
 	_waitForTermination
 	
-	ps -e | grep "$daemonPID" >/dev/null 2>&1 && kill -KILL "$daemonPID" >/dev/null 2>&1
+	_daemonStatus && kill -KILL "$daemonPID" >/dev/null 2>&1
 	
 	_waitForTermination
 	
@@ -213,15 +224,24 @@ _killDaemon() {
 
 #Executes self in background (ie. as daemon).
 _execDaemon() {
-	"$scriptAbsoluteLocation" &
+	"$scriptAbsoluteLocation" >/dev/null 2>&1 &
 	echo "$!" > "$pidFile"
 }
 
 #http://unix.stackexchange.com/questions/55913/whats-the-easiest-way-to-find-an-unused-local-port
 _findPort() {
+	lower_port="$1"
+	upper_port="$2"
+	
 	#read lower_port upper_port < /proc/sys/net/ipv4/ip_local_port_range
-	lower_port=54000
-	upper_port=55000
+	[[ "$lower_port" == "" ]] && lower_port=54000
+	[[ "$upper_port" == "" ]] && upper_port=55000
+	
+	local portRangeOffset
+	portRangeOffset=$RANDOM
+	let "portRangeOffset %= 150"
+	
+	let "lower_port += portRangeOffset"
 	
 	while true
 	do
@@ -238,6 +258,7 @@ _findPort() {
 	done
 	echo $port
 }
+
 #Generates random alphanumeric characters, default length 18.
 _uid() {
 	local uidLength
@@ -394,7 +415,7 @@ export scriptBin="$scriptAbsoluteFolder"/_bin
 #export varStore="$scriptAbsoluteFolder"/var
 
 #Process control.
-export pidFile="$safeTmp"/.bgpid
+[[ "$pidFile" == "" ]] && export pidFile="$safeTmp"/.bgpid
 export daemonPID="cwrxuk6wqzbzV6p8kPS8J4APYGX"	#Invalid do-not-match default.
 
 #Monolithic shared files.
@@ -457,7 +478,6 @@ _stop() {
 	
 	_tryExec _killDaemon
 	
-	#Broken.
 	if [[ "$1" != "" ]]
 	then
 		exit "$1"
@@ -471,8 +491,8 @@ _preserveLog() {
 }
 
 #Traps
-trap 'excode=$?; _stop; trap - EXIT; echo $excode' EXIT HUP INT QUIT PIPE TERM		# reset
-trap 'excode=$?; trap "" EXIT; _stop; echo $excode' EXIT HUP INT QUIT PIPE TERM		# ignore
+trap 'excode=$?; _stop $excode; trap - EXIT; echo $excode' EXIT HUP INT QUIT PIPE TERM		# reset
+trap 'excode=$?; trap "" EXIT; _stop $excode; echo $excode' EXIT HUP INT QUIT PIPE TERM		# ignore
 
 #####Idle
 
@@ -487,21 +507,16 @@ _idle() {
 	do
 		sleep 5
 		
-		if [[ -e "$pidFile" ]]
-		then
-			daemonPID=$(cat "$pidFile")
-		fi
-		
 		idleTime=$("$scriptBin"/getIdle)
 		
-		if [[ "$idleTime" -lt "3300000" ]] && ps -e | grep "$daemonPID" >/dev/null 2>&1
+		if [[ "$idleTime" -lt "3300000" ]] && _daemonStatus
 		then
 			true
 			_killDaemon	#Comment out if unnecessary.
 		fi
 		
 		
-		if [[ "$idleTime" -gt "3600000" ]] && ! ps -e | grep "$daemonPID" >/dev/null 2>&1
+		if [[ "$idleTime" -gt "3600000" ]] && ! _daemonStatus
 		then
 			_execDaemon
 		fi
@@ -606,6 +621,7 @@ _test() {
 	_checkDep wait
 	_checkDep kill
 	_checkDep jobs
+	_checkDep ps
 	_checkDep exit
 	
 	_checkDep env
@@ -653,7 +669,7 @@ _setupCommand() {
 }
 
 _setupCommands() {
-	#find . -name '_command' -exec "$scriptAbsoluteLocation" _setupClient {} \;
+	#find . -name '_command' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
 	true
 }
 
