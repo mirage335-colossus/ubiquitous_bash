@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+
+#Creates derivative project importing ubiquitous_bash as a static library.
+
+devName=newDeveloperName
+projectName=newProjectName
+
+#All content in this folder not owned by other authors is intended to be public domain. Other copyright notices may be provided as templates. See license.txt for details.
+
+mkdir "$projectName"
+cd ./"$projectName"
+
+mkdir ./_lib
+mkdir ./_prog
+
+git init
+
+git submodule add git@github.com:mirage335/ubiquitous_bash.git ./_lib/ubiquitous_bash
+
+git add -A .
+git commit -a -m "first commit"
+
+cp ./_lib/ubiquitous_bash/compile ./
+cp ./_lib/ubiquitous_bash/license.txt.gpl ./license.txt
+cp ./_lib/ubiquitous_bash/README.md.template ./README.md
+
+find . -maxdepth 1 -type f -exec sed -i s/Project/"$projectName"/g {} \;
+find . -maxdepth 1 -type f -exec sed -i s/DeveloperName/"$devName"/g {} \;
+find . -maxdepth 1 -type f -exec sed -i s/YEAR/$(date +%Y)/g {} \;
+
+
+
+

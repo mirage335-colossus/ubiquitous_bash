@@ -22,4 +22,5 @@ Intended to be included in other projects as a "git submodule", then compiled in
 * A few commands and internal functions, eg. "type" and "_timeout", are used to ensure consistent behavior across platforms.
 * Interdependencies between functions within the ubiquitous_bash library may not be documented. Test lean configurations in a safe place.
 
-
+# Copyright
+All content in this folder not owned by other authors is intended to be public domain. Other copyright notices may be provided as templates. See license.txt for details.
