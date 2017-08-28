@@ -13,7 +13,8 @@ Recursive calling of the script itself is supported. Absolute path to script, an
 
 Intended to be included in other projects as a "git submodule", then compiled into a monolithic script with end-developer definitions for program functions, specifically _main(). Default script execution typically starts near the end of the file, with a call to _main(). Proper use of compiler scripts will result in a completely 'statically linked' executable script file.
 
-
+# Version
+v2.1
 
 # WARNING
 

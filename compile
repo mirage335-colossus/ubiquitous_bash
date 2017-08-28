@@ -96,7 +96,7 @@ rm "$progScript" >/dev/null 2>&1
 
 _includeScript minimalheader.sh "generic"
 
-echo '#Ubiquitous Bash v2.0' >> "$progScript"
+echo '#Ubiquitous Bash v2.1' >> "$progScript"
 echo >> "$progScript"
 
 echo '#http://creativecommons.org/publicdomain/zero/1.0/' >> "$progScript"
