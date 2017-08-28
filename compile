@@ -60,8 +60,8 @@ alias getAbsoluteLocation=_getAbsoluteLocation
 
 cd "$(_getScriptAbsoluteFolder)"
 
-#export ubiquitiousLibDir="./_lib/ubiquitous_bash"
 export ubiquitiousLibDir="."
+[[ -e "./_lib/ubiquitous_bash" ]] && export ubiquitiousLibDir="./_lib/ubiquitous_bash"
 export progDir="./_prog"
 export progScript="./ubiquitous_bash.sh"
 
@@ -141,6 +141,8 @@ echo >> "$progScript"
 
 _includeScript globalvars.sh "structure"
 
+_includeScript specglobalvars.sh "structure"
+
 _includeScript localfs.sh "structure"
 
 _includeScript localenv.sh "structure"
@@ -148,6 +150,8 @@ _includeScript localenv.sh "structure"
 _includeScript idle.sh "generic/process"
 
 _includeScript installation.sh "structure"
+
+_includeScript core.sh
 
 _includeScript program.sh "structure"
 
