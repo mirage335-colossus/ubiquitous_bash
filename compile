@@ -147,7 +147,7 @@ _includeScript localfs.sh "structure"
 
 _includeScript localenv.sh "structure"
 
-_includeScript idle.sh "generic/process"
+#_includeScript idle.sh "generic/process"
 
 _includeScript installation.sh "structure"
 
