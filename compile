@@ -63,7 +63,7 @@ cd "$(_getScriptAbsoluteFolder)"
 export ubiquitiousLibDir="."
 [[ -e "./_lib/ubiquitous_bash" ]] && export ubiquitiousLibDir="./_lib/ubiquitous_bash"
 export progDir="./_prog"
-export progScript="./ubiquitous_bash.sh"
+export progScript="./ubiquitous_bash"
 
 #"$1" == file path
 _includeFile() {
@@ -95,13 +95,6 @@ _includeScript() {
 rm "$progScript" >/dev/null 2>&1
 
 _includeScript minimalheader.sh "generic"
-
-echo '#Ubiquitous Bash v2.1' >> "$progScript"
-echo >> "$progScript"
-
-echo '#http://creativecommons.org/publicdomain/zero/1.0/' >> "$progScript"
-echo '#To the extent possible under law, mirage335 has waived all copyright and related or neighboring rights to ubiquitous_bash.sh. This work is published from: United States.' >> "$progScript"
-echo >> "$progScript"
 
 echo "#####Utilities" >> "$progScript"
 echo >> "$progScript"
