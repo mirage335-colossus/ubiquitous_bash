@@ -1,10 +1,5 @@
 #!/usr/bin/env bash
 
-#Ubiquitous Bash v2.0
-
-#http://creativecommons.org/publicdomain/zero/1.0/
-#To the extent possible under law, mirage335 has waived all copyright and related or neighboring rights to ubiquitous_bash.sh. This work is published from: United States.
-
 #####Utilities
 
 #Run command and output to terminal with colorful formatting. Controlled variant of "bash -v".
@@ -490,67 +485,6 @@ _preserveLog() {
 	cp "$logTmp"/* ./  >/dev/null 2>&1
 }
 
-#Traps
-trap 'excode=$?; _stop $excode; trap - EXIT; echo $excode' EXIT HUP INT QUIT PIPE TERM		# reset
-trap 'excode=$?; trap "" EXIT; _stop $excode; echo $excode' EXIT HUP INT QUIT PIPE TERM		# ignore
-
-#####Idle
-
-_idle() {
-	_start
-	
-	_checkDep getIdle
-	
-	_killDaemon
-	
-	while true
-	do
-		sleep 5
-		
-		idleTime=$("$scriptBin"/getIdle)
-		
-		if [[ "$idleTime" -lt "3300000" ]] && _daemonStatus
-		then
-			true
-			_killDaemon	#Comment out if unnecessary.
-		fi
-		
-		
-		if [[ "$idleTime" -gt "3600000" ]] && ! _daemonStatus
-		then
-			_execDaemon
-		fi
-		
-		
-		
-	done
-	
-	_stop
-}
-
-_idleTest() {
-	
-	_checkDep getIdle
-	
-	idleTime=$("$scriptBin"/getIdle)
-	
-	if ! echo "$idleTime" | grep '^[0-9]*$' >/dev/null 2>&1
-	then
-		echo getIdle invalid response
-		_stop 1
-	fi
-	
-}
-
-_idleBuild() {
-	
-	idleSourceCode=$(find "$scriptAbsoluteFolder" -type f -name "getIdle.c" | head -n 1)
-	
-	mkdir -p "$scriptBin"
-	gcc -o "$scriptBin"/getIdle "$idleSourceCode" -lXss -lX11
-	
-}
-
 #####Installation
 
 #Verifies the timeout and sleep commands work properly, with subsecond specifications.
@@ -754,6 +688,11 @@ then
 fi
 
 #####Entry
+
+#Traps
+trap 'excode=$?; _stop $excode; trap - EXIT; echo $excode' EXIT HUP INT QUIT PIPE TERM		# reset
+trap 'excode=$?; trap "" EXIT; _stop $excode; echo $excode' EXIT HUP INT QUIT PIPE TERM		# ignore 
+
 
 #"$scriptAbsoluteLocation" _setup
 

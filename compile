@@ -63,7 +63,7 @@ cd "$(_getScriptAbsoluteFolder)"
 export ubiquitiousLibDir="."
 [[ -e "./_lib/ubiquitous_bash" ]] && export ubiquitiousLibDir="./_lib/ubiquitous_bash"
 export progDir="./_prog"
-export progScript="./ubiquitous_bash"
+export progScript="./ubiquitous_bash.sh"
 
 #"$1" == file path
 _includeFile() {
