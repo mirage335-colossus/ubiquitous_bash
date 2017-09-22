@@ -897,7 +897,7 @@ _main() {
 
 #####Overrides
 
-#Traps, if script is not imported into existing shell.
+#Traps, if script is not imported into existing shell, or bypass requested.
 if ! [[ "${BASH_SOURCE[0]}" != "${0}" ]] || ! [[ "$1" != "--bypass" ]]
 then
 trap 'excode=$?; _stop $excode; trap - EXIT; echo $excode' EXIT HUP INT QUIT PIPE TERM		# reset
@@ -922,7 +922,7 @@ fi
 if [[ "$1" == '_'* ]]
 then
 	"$@"
-	#Exit if not imported into existing shell, else fall through to subsequent return.
+	#Exit if not imported into existing shell, or bypass requested, else fall through to subsequent return.
 	if ! [[ "${BASH_SOURCE[0]}" != "${0}" ]] || ! [[ "$1" != "--bypass" ]]
 	then
 		exit "$?"
@@ -930,7 +930,7 @@ then
 	#_stop "$?"
 fi
 
-#Stop if script is imported into an existing shell.
+#Stop if script is imported into an existing shell and bypass not requested.
 if [[ "${BASH_SOURCE[0]}" != "${0}" ]] && [[ "$1" != "--bypass" ]]
 then
 	return
