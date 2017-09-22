@@ -387,6 +387,18 @@ fi
 }
 alias mustBeRoot=_mustBeRoot
 
+#Determines if sudo is usable by scripts.
+_mustGetSudo() {
+	local rootAvailable
+	rootAvailable=false
+	
+	rootAvailable=$(sudo -n echo true)
+	
+	#[[ $(id -u) == 0 ]] && rootAvailable=true
+	
+	! [[ "$rootAvailable" == "true" ]] && exit 1
+}
+
 #Returns a UUID in the form of xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
 _getUUID() {
 	cat /proc/sys/kernel/random/uuid
