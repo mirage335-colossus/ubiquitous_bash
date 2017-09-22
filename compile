@@ -129,6 +129,12 @@ _includeScript mustberoot.sh "special"
 
 _includeScript uuid.sh "special"
 
+echo "#####Shortcuts" >> "$progScript"
+echo >> "$progScript"
+
+_includeScript git.sh "shortcuts/git.sh"
+_includeScript git.sh "shortcuts/gitBare.sh"
+
 echo "#####Basic Variable Management" >> "$progScript"
 echo >> "$progScript"
 
@@ -136,11 +142,13 @@ _includeScript globalvars.sh "structure"
 
 _includeScript specglobalvars.sh "structure"
 
+_includeScript gitVars.sh "shortcuts/gitVars"
+
 _includeScript localfs.sh "structure"
 
 _includeScript localenv.sh "structure"
 
-#_includeScript idle.sh "generic/process"
+_includeScript idle.sh "generic/process"
 
 _includeScript installation.sh "structure"
 

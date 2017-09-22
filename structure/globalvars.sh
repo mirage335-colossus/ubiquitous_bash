@@ -4,6 +4,9 @@ export sessionid=$(_uid)
 export scriptAbsoluteLocation=$(_getScriptAbsoluteLocation)
 export scriptAbsoluteFolder=$(_getScriptAbsoluteFolder)
 
+export initPWD="$PWD"
+intInitPWD="$PWD"
+
 #Temporary directories.
 export safeTmp="$scriptAbsoluteFolder"/w_"$sessionid"
 export logTmp="$safeTmp"/log
