@@ -393,6 +393,93 @@ _getUUID() {
 }
 alias getUUID=_getUUID
 
+#####Shortcuts
+
+_gitNew() {
+	git init
+	git add .
+	git commit -a -m "first commit"
+}
+
+_gitCheck() {
+	find . -name .git -type d -exec bash -c 'echo ----- $(basename $(dirname $(realpath {}))) ; cd $(dirname $(realpath {})) ; git status' \;
+}
+
+_gitImport() {
+	cd "$scriptFolder"
+	
+	mkdir -p "$1"
+	cd "$1"
+	shift
+	git clone "$@"
+	
+	cd "$scriptFolder"
+}
+
+# DANGER
+#Removes all but the .git folder from the working directory.
+#_gitFresh() {
+#	find . -not -path '\.\/\.git*' -delete
+#}
+
+
+#####Program
+
+_createBareGitRepo() {
+	mkdir -p "$bareRepoDir"
+	cd $bareRepoDir
+	
+	git --bare init
+	
+	echo "-----"
+}
+
+
+_setBareGitRepo() {
+	cd "$initPWD"
+	
+	git remote rm origin
+	git remote add origin "$bareRepoDir"
+	git push --set-upstream origin master
+	
+	echo "-----"
+}
+
+_showGitRepoURI() {
+	echo git clone --recursive ssh://"$USER"@"$repoHostname""$repoPort""$bareRepoAbsoluteDir" "$repoName"
+	
+	
+	if [[ "$repoHostname" != "" ]]
+	then
+		clear
+		echo ssh://"$USER"@"$repoHostname""$repoPort""$bareRepoAbsoluteDir"
+		sleep 15
+	fi
+}
+
+_gitBare() {
+	
+	if [[ -e "$bareRepoDir" ]]
+	then
+		_showGitRepoURI
+		return 2
+	fi
+	
+	if ! [[ -e "$initPWD"/.git ]]
+	then
+		return 1
+	fi
+	
+	_createBareGitRepo
+	
+	_setBareGitRepo
+	
+	_showGitRepoURI
+	
+}
+
+
+
 #####Basic Variable Management
 
 #####Global variables.
@@ -400,6 +487,9 @@ alias getUUID=_getUUID
 export sessionid=$(_uid)
 export scriptAbsoluteLocation=$(_getScriptAbsoluteLocation)
 export scriptAbsoluteFolder=$(_getScriptAbsoluteFolder)
+
+export initPWD="$PWD"
+intInitPWD="$PWD"
 
 #Temporary directories.
 export safeTmp="$scriptAbsoluteFolder"/w_"$sessionid"
@@ -483,6 +573,63 @@ _stop() {
 
 _preserveLog() {
 	cp "$logTmp"/* ./  >/dev/null 2>&1
+}
+
+#####Idle
+
+_idle() {
+	_start
+	
+	_checkDep getIdle
+	
+	_killDaemon
+	
+	while true
+	do
+		sleep 5
+		
+		idleTime=$("$scriptBin"/getIdle)
+		
+		if [[ "$idleTime" -lt "3300000" ]] && _daemonStatus
+		then
+			true
+			_killDaemon	#Comment out if unnecessary.
+		fi
+		
+		
+		if [[ "$idleTime" -gt "3600000" ]] && ! _daemonStatus
+		then
+			_execDaemon
+		fi
+		
+		
+		
+	done
+	
+	_stop
+}
+
+_idleTest() {
+	
+	_checkDep getIdle
+	
+	idleTime=$("$scriptBin"/getIdle)
+	
+	if ! echo "$idleTime" | grep '^[0-9]*$' >/dev/null 2>&1
+	then
+		echo getIdle invalid response
+		_stop 1
+	fi
+	
+}
+
+_idleBuild() {
+	
+	idleSourceCode=$(find "$scriptAbsoluteFolder" -type f -name "getIdle.c" | head -n 1)
+	
+	mkdir -p "$scriptBin"
+	gcc -o "$scriptBin"/getIdle "$idleSourceCode" -lXss -lX11
+	
 }
 
 #####Installation

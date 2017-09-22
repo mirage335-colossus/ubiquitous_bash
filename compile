@@ -132,8 +132,8 @@ _includeScript uuid.sh "special"
 echo "#####Shortcuts" >> "$progScript"
 echo >> "$progScript"
 
-_includeScript git.sh "shortcuts/git.sh"
-_includeScript git.sh "shortcuts/gitBare.sh"
+_includeScript git.sh "shortcuts/git"
+_includeScript gitBare.sh "shortcuts/git"
 
 echo "#####Basic Variable Management" >> "$progScript"
 echo >> "$progScript"
