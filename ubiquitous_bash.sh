@@ -845,6 +845,7 @@ fi
 if [[ "$1" == '_'* ]]
 then
 	"$@"
+	#Exit if not imported into existing shell, else fall through to subsequent return.
 	if ! [[ "${BASH_SOURCE[0]}" != "${0}" ]] && ! [[ "$1" != "--bypass" ]]
 	then
 		exit "$?"
