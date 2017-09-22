@@ -506,6 +506,20 @@ _visualPrompt() {
 export PS1='\[\033[01;40m\]\[\033[01;36m\]+\[\033[01;34m\]-|\[\033[01;31m\]${?}:${debian_chroot:+($debian_chroot)}\[\033[01;33m\]\u\[\033[01;32m\]@\h\[\033[01;36m\]\[\033[01;34m\])-\[\033[01;36m\]----------\[\033[01;34m\]-(\[\033[01;35m\]$(date +%H:%M:%S\ %b\ %d,\ %y)\[\033[01;34m\])-\[\033[01;36m\]--- - - - |\[\033[00m\]\n\[\033[01;40m\]\[\033[01;36m\]+\[\033[01;34m\]-|\[\033[37m\][\w]\[\033[00m\]\n\[\033[01;36m\]+\[\033[01;34m\]-|\#) \[\033[36m\]>\[\033[00m\] '
 } 
 
+_importShortcuts() {
+	_visualPrompt
+}
+
+_setupUbiquitous() {
+	
+	mkdir -p "$HOME"/bin/
+	
+	ln -s "$scriptAbsoluteLocation" "$HOME"/bin/ubiquitous_bash.sh
+	
+	echo '. '"$scriptAbsoluteLocation"' _importShortcuts' >> "$HOME"/.bashrc
+	
+} 
+
 #####Basic Variable Management
 
 #####Global variables.
