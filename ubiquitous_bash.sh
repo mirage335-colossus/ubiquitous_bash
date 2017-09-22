@@ -197,7 +197,7 @@ _checkForMounts() {
 	#https://unix.stackexchange.com/questions/248472/finding-mount-points-with-the-find-command
 	
 	find "$1" -type d -exec mountpoint {} 2>/dev/null \; | grep 'is a mountpoint' >/dev/null 2>&1 && echo -n true > "$mountCheckFile"
-	
+	sleep 90
 	#find "$1" -type d -exec "$scriptAbsoluteLocation" {} "$mountCheckFile" \;
 	
 	local includesMount
@@ -900,8 +900,8 @@ _main() {
 #Traps, if script is not imported into existing shell, or bypass requested.
 if ! [[ "${BASH_SOURCE[0]}" != "${0}" ]] || ! [[ "$1" != "--bypass" ]]
 then
-trap 'excode=$?; _stop $excode; trap - EXIT; echo $excode' EXIT HUP INT QUIT PIPE TERM		# reset
-trap 'excode=$?; trap "" EXIT; _stop $excode; echo $excode' EXIT HUP INT QUIT PIPE TERM		# ignore
+	trap 'excode=$?; _stop $excode; trap - EXIT; echo $excode' EXIT HUP INT QUIT PIPE TERM		# reset
+	trap 'excode=$?; trap "" EXIT; _stop $excode; echo $excode' EXIT HUP INT QUIT PIPE TERM		# ignore
 fi
 
 #Override functions with external definitions from a separate file if available.
