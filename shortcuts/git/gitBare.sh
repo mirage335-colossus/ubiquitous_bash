@@ -32,7 +32,8 @@ _showGitRepoURI() {
 	fi
 }
 
-_gitBare() {
+_gitBareSequence() {
+	_gitInfo
 	
 	if [[ -e "$bareRepoDir" ]]
 	then
@@ -50,6 +51,12 @@ _gitBare() {
 	_setBareGitRepo
 	
 	_showGitRepoURI
+	
+}
+
+_gitBare() {
+	
+	_gitBareSequence
 	
 }
 

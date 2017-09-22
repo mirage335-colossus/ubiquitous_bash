@@ -142,7 +142,7 @@ _includeScript globalvars.sh "structure"
 
 _includeScript specglobalvars.sh "structure"
 
-_includeScript gitVars.sh "shortcuts/gitVars"
+#_includeScript gitVars.sh "shortcuts/git"
 
 _includeScript localfs.sh "structure"
 
