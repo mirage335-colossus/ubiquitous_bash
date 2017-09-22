@@ -135,6 +135,8 @@ echo >> "$progScript"
 _includeScript git.sh "shortcuts/git"
 _includeScript gitBare.sh "shortcuts/git"
 
+_includeScript visualPrompt.sh "shortcuts/prompt"
+
 echo "#####Basic Variable Management" >> "$progScript"
 echo >> "$progScript"
 

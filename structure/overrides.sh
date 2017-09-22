@@ -18,7 +18,11 @@ fi
 if [[ "$1" == '_'* ]]
 then
 	"$@"
-	exit "$?"
+	#Exit if not imported into existing shell, else fall through to subsequent return.
+	if ! [[ "${BASH_SOURCE[0]}" != "${0}" ]] && ! [[ "$1" != "--bypass" ]]
+	then
+		exit "$?"
+	fi
 	#_stop "$?"
 fi
 
