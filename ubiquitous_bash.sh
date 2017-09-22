@@ -197,7 +197,6 @@ _checkForMounts() {
 	#https://unix.stackexchange.com/questions/248472/finding-mount-points-with-the-find-command
 	
 	find "$1" -type d -exec mountpoint {} 2>/dev/null \; | grep 'is a mountpoint' >/dev/null 2>&1 && echo -n true > "$mountCheckFile"
-	sleep 90
 	
 	#find "$1" -type d -exec "$scriptAbsoluteLocation" {} "$mountCheckFile" \;
 	
@@ -898,6 +897,13 @@ _main() {
 
 #####Overrides
 
+#Traps, if script is not imported into existing shell.
+if ! [[ "${BASH_SOURCE[0]}" != "${0}" ]] || ! [[ "$1" != "--bypass" ]]
+then
+trap 'excode=$?; _stop $excode; trap - EXIT; echo $excode' EXIT HUP INT QUIT PIPE TERM		# reset
+trap 'excode=$?; trap "" EXIT; _stop $excode; echo $excode' EXIT HUP INT QUIT PIPE TERM		# ignore
+fi
+
 #Override functions with external definitions from a separate file if available.
 #if [[ -e "./ops" ]]
 #then
@@ -917,7 +923,7 @@ if [[ "$1" == '_'* ]]
 then
 	"$@"
 	#Exit if not imported into existing shell, else fall through to subsequent return.
-	if ! [[ "${BASH_SOURCE[0]}" != "${0}" ]] && ! [[ "$1" != "--bypass" ]]
+	if ! [[ "${BASH_SOURCE[0]}" != "${0}" ]] || ! [[ "$1" != "--bypass" ]]
 	then
 		exit "$?"
 	fi
@@ -936,11 +942,6 @@ then
 fi
 
 #####Entry
-
-#Traps
-trap 'excode=$?; _stop $excode; trap - EXIT; echo $excode' EXIT HUP INT QUIT PIPE TERM		# reset
-trap 'excode=$?; trap "" EXIT; _stop $excode; echo $excode' EXIT HUP INT QUIT PIPE TERM		# ignore 
-
 
 #"$scriptAbsoluteLocation" _setup
 

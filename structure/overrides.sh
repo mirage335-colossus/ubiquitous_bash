@@ -1,5 +1,12 @@
 #####Overrides
 
+#Traps, if script is not imported into existing shell.
+if ! [[ "${BASH_SOURCE[0]}" != "${0}" ]] || ! [[ "$1" != "--bypass" ]]
+then
+trap 'excode=$?; _stop $excode; trap - EXIT; echo $excode' EXIT HUP INT QUIT PIPE TERM		# reset
+trap 'excode=$?; trap "" EXIT; _stop $excode; echo $excode' EXIT HUP INT QUIT PIPE TERM		# ignore
+fi
+
 #Override functions with external definitions from a separate file if available.
 #if [[ -e "./ops" ]]
 #then
@@ -19,7 +26,7 @@ if [[ "$1" == '_'* ]]
 then
 	"$@"
 	#Exit if not imported into existing shell, else fall through to subsequent return.
-	if ! [[ "${BASH_SOURCE[0]}" != "${0}" ]] && ! [[ "$1" != "--bypass" ]]
+	if ! [[ "${BASH_SOURCE[0]}" != "${0}" ]] || ! [[ "$1" != "--bypass" ]]
 	then
 		exit "$?"
 	fi
