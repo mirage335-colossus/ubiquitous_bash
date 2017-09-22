@@ -197,7 +197,7 @@ _checkForMounts() {
 	#https://unix.stackexchange.com/questions/248472/finding-mount-points-with-the-find-command
 	
 	find "$1" -type d -exec mountpoint {} 2>/dev/null \; | grep 'is a mountpoint' >/dev/null 2>&1 && echo -n true > "$mountCheckFile"
-	sleep 90
+	
 	#find "$1" -type d -exec "$scriptAbsoluteLocation" {} "$mountCheckFile" \;
 	
 	local includesMount
