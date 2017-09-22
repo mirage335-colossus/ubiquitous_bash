@@ -83,6 +83,12 @@ _test() {
 	
 	_checkDep rm
 	
+	_checkDep find
+	_checkDep ln
+	_checkDep ls
+	
+	_checkDep mountpoint
+	
 	_tryExec "_idleTest"
 	
 	[[ -e /dev/urandom ]] || echo /dev/urandom missing _stop
