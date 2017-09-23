@@ -676,6 +676,8 @@ _testDistro() {
 _fetchDebianLiteISO() {
 	_start
 	
+	export functionEntryPWD="$PWD"
+	
 	if ! ls /usr/share/keyrings/debian-role-keys.gpg > /dev/null 2>&1
 	then
 		echo 'Debian Keyring missing.'
@@ -708,6 +710,7 @@ _fetchDebianLiteISO() {
 	
 	mkdir -p "$storageLocation"
 	
+	cd "$functionEntryPWD"
 	mv "$safeTmp"/debian-9.1.0-amd64-netinst.iso "$storageLocation"
 	
 	_stop

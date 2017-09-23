@@ -4,6 +4,12 @@ export sessionid=$(_uid)
 export scriptAbsoluteLocation=$(_getScriptAbsoluteLocation)
 export scriptAbsoluteFolder=$(_getScriptAbsoluteFolder)
 
+if [[ "$scriptAbsoluteLocation" == "/usr/bin/bash" ]] && [[ "$profileScriptLocation" != "" ]] && [[ "$profileScriptFolder" != "" ]]
+then
+	export scriptAbsoluteLocation="$profileScriptLocation"
+	export scriptAbsoluteFolder="$profileScriptFolder"
+fi
+
 export initPWD="$PWD"
 intInitPWD="$PWD"
 
