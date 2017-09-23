@@ -149,7 +149,8 @@ _includeScript git.sh "shortcuts/git"
 _includeScript gitBare.sh "shortcuts/git"
 
 _includeScript distro.sh "shortcuts/distro"
-_includeScript createDebian.sh "shortcuts/distro"
+
+_includeScript createDebian.sh "shortcuts/distro/debian"
 
 _includeScript visualPrompt.sh "shortcuts/prompt"
 
