@@ -295,6 +295,19 @@ _execDaemon() {
 	echo "$!" > "$pidFile"
 }
 
+#"$@" == URL
+_fetch() {
+	if type axel > /dev/null 2>&1
+	then
+		axel "$@"
+		return 0
+	fi
+	
+	wget "$@"
+	
+	return 0
+}
+
 #http://unix.stackexchange.com/questions/55913/whats-the-easiest-way-to-find-an-unused-local-port
 _findPort() {
 	lower_port="$1"
@@ -355,7 +368,7 @@ _preserveLog() {
 _createRawImage_sequence() {
 	_start
 	
-	export vmImageFile="$scriptAbsoluteLocation"/vm.img
+	export vmImageFile="$scriptAbsoluteFolder"/vm.img
 	
 	[[ "$1" != "" ]] && export vmImageFile="$1"
 	
@@ -720,13 +733,13 @@ _fetch_x64_debianLiteISO_sequence() {
 	if ! cat SHA512SUMS | grep debian-9.1.0-amd64-netinst.iso | sha512sum -c - > /dev/null 2>&1
 	then
 		echo 'invalid'
-		stop 1
+		_stop 1
 	fi
 	
 	if ! gpgv --keyring /usr/share/keyrings/debian-role-keys.gpg ./SHA512SUMS.sign ./SHA512SUMS
 	then
 		echo 'invalid'
-		stop 1
+		_stop 1
 	fi
 	
 	mkdir -p "$storageLocation"
@@ -737,9 +750,9 @@ _fetch_x64_debianLiteISO_sequence() {
 	_stop
 }
 
-_fetchDebianLiteISO() {
+_fetch_x86_DebianLiteISO() {
 	
-	"$scriptAbsoluteLocation" _fetchDebianLiteISOsequence "$@"
+	"$scriptAbsoluteLocation" _fetch_x64_debianLiteISO_sequence "$@"
 	
 }
 
@@ -747,7 +760,7 @@ _fetchDebianLiteISO() {
 _create_x64_debianLiteVM_sequence() {
 	_start
 	
-	_fetchDebianLiteISO || _stop 1
+	_fetch_x86_DebianLiteISO || _stop 1
 	
 	_createRawImage || _stop 1
 	

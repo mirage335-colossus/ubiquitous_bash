@@ -119,6 +119,8 @@ _includeScript waitforprocess.sh "generic/process"
 
 _includeScript daemon.sh "generic/process"
 
+_includeScript fetch.sh "generic/net"
+
 _includeScript findport.sh "generic/net"
 
 _includeScript uid.sh "generic"

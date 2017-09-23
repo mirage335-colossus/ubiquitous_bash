@@ -16,7 +16,7 @@ _fetch_x64_debianLiteISO_sequence() {
 	cd "$safeTmp"
 	
 	[[ -e "$storageLocation"/debian-9.1.0-amd64-netinst.iso ]] && cp "$storageLocation"/debian-9.1.0-amd64-netinst.iso ./debian-9.1.0-amd64-netinst.iso > /dev/null 2>&1
-	[[ -e ./debian-9.1.0-amd64-netinst.iso ]] || axel 'https://cdimage.debian.org/debian-cd/9.1.0/amd64/iso-cd/debian-9.1.0-amd64-netinst.iso'
+	[[ -e ./debian-9.1.0-amd64-netinst.iso ]] || _fetch 'https://cdimage.debian.org/debian-cd/9.1.0/amd64/iso-cd/debian-9.1.0-amd64-netinst.iso'
 	
 	wget 'https://cdimage.debian.org/debian-cd/9.1.0/amd64/iso-cd/SHA512SUMS'
 	
@@ -25,13 +25,13 @@ _fetch_x64_debianLiteISO_sequence() {
 	if ! cat SHA512SUMS | grep debian-9.1.0-amd64-netinst.iso | sha512sum -c - > /dev/null 2>&1
 	then
 		echo 'invalid'
-		stop 1
+		_stop 1
 	fi
 	
 	if ! gpgv --keyring /usr/share/keyrings/debian-role-keys.gpg ./SHA512SUMS.sign ./SHA512SUMS
 	then
 		echo 'invalid'
-		stop 1
+		_stop 1
 	fi
 	
 	mkdir -p "$storageLocation"
