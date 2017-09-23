@@ -730,6 +730,9 @@ _setupUbiquitous() {
 	
 	ln -s "$scriptAbsoluteLocation" "$HOME"/bin/ubiquitous_bash.sh
 	
+	echo 'export profileScriptLocation='"$scriptAbsoluteLocation" >> "$HOME"/.bashrc
+	echo 'export profileScriptFolder='"$scriptAbsoluteFolder" >> "$HOME"/.bashrc
+	
 	echo '. '"$scriptAbsoluteLocation"' _importShortcuts' >> "$HOME"/.bashrc
 	
 } 
@@ -741,6 +744,15 @@ _setupUbiquitous() {
 export sessionid=$(_uid)
 export scriptAbsoluteLocation=$(_getScriptAbsoluteLocation)
 export scriptAbsoluteFolder=$(_getScriptAbsoluteFolder)
+
+if ( [[ "$scriptAbsoluteLocation" == "/bin/bash" ]] || [[ "$scriptAbsoluteLocation" == "/usr/bin/bash" ]] )  && [[ "${BASH_SOURCE[0]}" != "${0}" ]] && [[ "$profileScriptLocation" != "" ]] && [[ "$profileScriptFolder" != "" ]]
+then
+	export scriptAbsoluteLocation="$profileScriptLocation"
+	export scriptAbsoluteFolder="$profileScriptFolder"
+fi
+
+[[ ! -e "$scriptAbsoluteLocation" ]] && exit 1
+[[ ! -e "$scriptAbsoluteFolder" ]] && exit 1
 
 export initPWD="$PWD"
 intInitPWD="$PWD"
