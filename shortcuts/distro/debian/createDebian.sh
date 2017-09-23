@@ -44,7 +44,7 @@ _fetch_x64_debianLiteISO_sequence() {
 
 _fetch_x86_DebianLiteISO() {
 	
-	"$scriptAbsoluteLocation" _fetchDebianLiteISOsequence "$@"
+	"$scriptAbsoluteLocation" _fetch_x64_debianLiteISO_sequence "$@"
 	
 }
 
