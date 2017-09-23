@@ -109,6 +109,8 @@ _includeScript safedelete.sh "generic/filesystem"
 
 _includeScript discoverresource.sh "generic/filesystem"
 
+_includeScript bindmountmanager.sh "generic/filesystem/mounts"
+
 _includeScript mountchecks.sh "generic/filesystem/mounts"
 
 _includeScript timeout.sh "generic/process"
