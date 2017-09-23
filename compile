@@ -157,6 +157,7 @@ _includeScript gitBare.sh "shortcuts/git"
 _includeScript distro.sh "shortcuts/distro"
 
 _includeScript createDebian.sh "shortcuts/distro/debian"
+_includeScript createRaspbian.sh "shortcuts/distro/raspbian"
 
 _includeScript visualPrompt.sh "shortcuts/prompt"
 

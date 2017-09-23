@@ -702,6 +702,7 @@ _gitBare() {
 
 
 _testDistro() {
+	_checkDep sha256sum
 	_checkDep sha512sum
 	_checkDep axel
 }
@@ -724,7 +725,7 @@ _fetch_x64_debianLiteISO_sequence() {
 	cd "$safeTmp"
 	
 	[[ -e "$storageLocation"/debian-9.1.0-amd64-netinst.iso ]] && cp "$storageLocation"/debian-9.1.0-amd64-netinst.iso ./debian-9.1.0-amd64-netinst.iso > /dev/null 2>&1
-	[[ -e ./debian-9.1.0-amd64-netinst.iso ]] || axel 'https://cdimage.debian.org/debian-cd/9.1.0/amd64/iso-cd/debian-9.1.0-amd64-netinst.iso'
+	[[ -e ./debian-9.1.0-amd64-netinst.iso ]] || _fetch 'https://cdimage.debian.org/debian-cd/9.1.0/amd64/iso-cd/debian-9.1.0-amd64-netinst.iso'
 	
 	wget 'https://cdimage.debian.org/debian-cd/9.1.0/amd64/iso-cd/SHA512SUMS'
 	
@@ -750,7 +751,7 @@ _fetch_x64_debianLiteISO_sequence() {
 	_stop
 }
 
-_fetch_x86_DebianLiteISO() {
+_fetch_x64_DebianLiteISO() {
 	
 	"$scriptAbsoluteLocation" _fetch_x64_debianLiteISO_sequence "$@"
 	
@@ -760,11 +761,13 @@ _fetch_x86_DebianLiteISO() {
 _create_x64_debianLiteVM_sequence() {
 	_start
 	
-	_fetch_x86_DebianLiteISO || _stop 1
+	_fetch_x64_DebianLiteISO || _stop 1
 	
-	_createRawImage || _stop 1
+	_createRawImage
 	
-	qemu-system-x86_64 -hda "$scriptAbsoluteLocation"/vm.img -cdrom "$scriptAbsoluteFolder"/_lib/os/debian-9.1.0-amd64-netinst.iso -boot d -m 1512
+	_checkDep qemu-system-x86_64
+	
+	qemu-system-x86_64 -machine accel=kvm -drive format=raw,file="$scriptAbsoluteFolder"/vm.img -cdrom "$scriptAbsoluteFolder"/_lib/os/debian-9.1.0-amd64-netinst.iso -boot d -m 1512
 	
 	_stop
 }
@@ -782,6 +785,50 @@ _create_arm_debianLiteVM() {
 
 
 #####
+
+_fetch_raspbian_sequence() {
+	_start
+	
+	export functionEntryPWD="$PWD"
+	
+	export storageLocation="$scriptAbsoluteFolder"/_lib/os/
+	[[ "$1" != "" ]] && export storageLocation=$(_getAbsoluteLocation "$1")
+	
+	cd "$safeTmp"
+	
+	[[ -e "$storageLocation"/2017-09-07-raspbian-stretch.zip ]] && cp "$storageLocation"/2017-09-07-raspbian-stretch.zip ./2017-09-07-raspbian-stretch.zip > /dev/null 2>&1
+	[[ -e ./2017-09-07-raspbian-stretch.zip ]] || _fetch 'https://downloads.raspberrypi.org/raspbian/images/raspbian-2017-09-08/2017-09-07-raspbian-stretch.zip'
+	
+	wget https://downloads.raspberrypi.org/raspbian/images/raspbian-2017-09-08/2017-09-07-raspbian-stretch.zip.sha256
+	
+	if ! cat raspbian-2017-09-08/2017-09-07-raspbian-stretch.zip.sha256 | grep 2017-09-07-raspbian-stretch.zip | sha256sum -c - > /dev/null 2>&1
+	then
+		echo 'invalid'
+		_stop 1
+	fi
+	
+	#Raspbian signature is difficult to authenticate. Including hash here allows some trust to be established from a Git/SSH server, as well HTTPS generally.
+	if [[ "$(cat raspbian-2017-09-08/2017-09-07-raspbian-stretch.zip.sha256 | cut -f1 -d\  )" != "a64d742bc525b548f0435581fac5876b50a4e9ba1d1cd6433358b4ab6c7a770b" ]]
+	then
+		echo 'invalid'
+		_stop 1
+	fi
+	
+	mkdir -p "$storageLocation"
+	
+	cd "$functionEntryPWD"
+	mv "$safeTmp"/raspbian-2017-09-08/2017-09-07-raspbian-stretch.zip "$storageLocation"
+	
+	
+	
+	_stop
+}
+
+_fetch_raspbian() {
+	
+	"$scriptAbsoluteLocation" _fetch_raspbian_sequence "$@"
+	
+}
 
 _visualPrompt() {
 export PS1='\[\033[01;40m\]\[\033[01;36m\]+\[\033[01;34m\]-|\[\033[01;31m\]${?}:${debian_chroot:+($debian_chroot)}\[\033[01;33m\]\u\[\033[01;32m\]@\h\[\033[01;36m\]\[\033[01;34m\])-\[\033[01;36m\]----------\[\033[01;34m\]-(\[\033[01;35m\]$(date +%H:%M:%S\ %b\ %d,\ %y)\[\033[01;34m\])-\[\033[01;36m\]--- - - - |\[\033[00m\]\n\[\033[01;40m\]\[\033[01;36m\]+\[\033[01;34m\]-|\[\033[37m\][\w]\[\033[00m\]\n\[\033[01;36m\]+\[\033[01;34m\]-|\#) \[\033[36m\]>\[\033[00m\] '
