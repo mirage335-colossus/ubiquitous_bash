@@ -146,6 +146,9 @@ echo >> "$progScript"
 _includeScript git.sh "shortcuts/git"
 _includeScript gitBare.sh "shortcuts/git"
 
+_includeScript distro.sh "shortcuts/distro"
+_includeScript pullDebian.sh "shortcuts/distro"
+
 _includeScript visualPrompt.sh "shortcuts/prompt"
 
 _includeScript setupUbiquitous.sh "shortcuts"
