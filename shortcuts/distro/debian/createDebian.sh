@@ -42,7 +42,7 @@ _fetch_x64_debianLiteISO_sequence() {
 	_stop
 }
 
-_fetchDebianLiteISO() {
+_fetch_x86_DebianLiteISO() {
 	
 	"$scriptAbsoluteLocation" _fetchDebianLiteISOsequence "$@"
 	
@@ -52,7 +52,7 @@ _fetchDebianLiteISO() {
 _create_x64_debianLiteVM_sequence() {
 	_start
 	
-	_fetchDebianLiteISO || _stop 1
+	_fetch_x86_DebianLiteISO || _stop 1
 	
 	_createRawImage || _stop 1
 	
