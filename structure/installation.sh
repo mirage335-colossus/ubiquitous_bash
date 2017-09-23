@@ -146,7 +146,11 @@ _setupCommands() {
 _setup() {
 	_start
 	
-	"$scriptAbsoluteLocation" _test && "$scriptAbsoluteLocation" _build "$@" && "$scriptAbsoluteLocation" _testBuilt
+	"$scriptAbsoluteLocation" _test || _stop 1
+	
+	"$scriptAbsoluteLocation" _build "$@" || _stop 1
+	
+	"$scriptAbsoluteLocation" _testBuilt || _stop 1
 	
 	_setupCommands
 	

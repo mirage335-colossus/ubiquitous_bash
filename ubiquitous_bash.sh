@@ -963,7 +963,11 @@ _setupCommands() {
 _setup() {
 	_start
 	
-	"$scriptAbsoluteLocation" _test && "$scriptAbsoluteLocation" _build "$@" && "$scriptAbsoluteLocation" _testBuilt
+	"$scriptAbsoluteLocation" _test || _stop 1
+	
+	"$scriptAbsoluteLocation" _build "$@" || _stop 1
+	
+	"$scriptAbsoluteLocation" _testBuilt || _stop 1
 	
 	_setupCommands
 	
@@ -975,7 +979,7 @@ _setup() {
 _build() {
 	_start
 	
-	echo -e -n '\E[1;32;46m Binary compiling...	\E[0m'
+	echo -e '\E[1;32;46m Binary compiling...	\E[0m'
 	
 	_tryExec _buildIdle
 	_tryExec _buildChRoot
@@ -983,7 +987,7 @@ _build() {
 	
 	_tryExec _buildExtra
 	
-	echo "PASS"
+	echo "     ...DONE"
 	
 	_stop
 }

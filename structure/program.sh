@@ -3,7 +3,7 @@
 _build() {
 	_start
 	
-	echo -e -n '\E[1;32;46m Binary compiling...	\E[0m'
+	echo -e '\E[1;32;46m Binary compiling...	\E[0m'
 	
 	_tryExec _buildIdle
 	_tryExec _buildChRoot
@@ -11,7 +11,7 @@ _build() {
 	
 	_tryExec _buildExtra
 	
-	echo "PASS"
+	echo "     ...DONE"
 	
 	_stop
 }
