@@ -172,6 +172,24 @@ _discoverResource() {
 	testDir="$scriptAbsoluteFolder"/../../.. ; [[ -e "$testDir"/"$1" ]] && echo "$testDir"/"$1" && return
 }
 
+_testBindMountManager() {
+	_checkDep mount
+	
+	if ! mount --help | grep '\-\-bind' >/dev/null 2>&1
+	then
+		echo "mount missing bind feature"
+		_stop 1
+	fi
+	
+	if ! mount --help | grep '\-\-rbind' >/dev/null 2>&1
+	then
+		echo "mount missing rbind feature"
+		_stop 1
+	fi
+	
+}
+
+
 # WARNING: Requries prior check with _mustGetSudo .
 #"$1" == Source
 #"$2" == Destination
@@ -183,6 +201,10 @@ _bindMountManager() {
 	
 	sudo -n mount --bind "$1" "$2"
 } 
+
+_testMountChecks() {
+	_checkDep mountpoint
+}
 
 #"$1" == test directory
 #"$2" == flag file
@@ -905,7 +927,7 @@ _test() {
 	_checkDep ls
 	
 	_tryExec "_testMountChecks"
-	_tryExec "_testBindMount"
+	_tryExec "_testBindMountManager"
 	
 	_tryExec "_testExtra"
 	

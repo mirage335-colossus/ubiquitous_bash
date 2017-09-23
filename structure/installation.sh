@@ -88,7 +88,7 @@ _test() {
 	_checkDep ls
 	
 	_tryExec "_testMountChecks"
-	_tryExec "_testBindMount"
+	_tryExec "_testBindMountManager"
 	
 	_tryExec "_testExtra"
 	

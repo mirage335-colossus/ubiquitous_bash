@@ -1,3 +1,7 @@
+_testMountChecks() {
+	_checkDep mountpoint
+}
+
 #"$1" == test directory
 #"$2" == flag file
 _flagMount() {
