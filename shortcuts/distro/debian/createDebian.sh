@@ -1,5 +1,5 @@
 #"$1" == storageLocation (optional)
-_fetchDebianLiteISOsequence() {
+_fetch_x64_debianLiteISO_sequence() {
 	_start
 	
 	export functionEntryPWD="$PWD"
@@ -47,3 +47,30 @@ _fetchDebianLiteISO() {
 	"$scriptAbsoluteLocation" _fetchDebianLiteISOsequence "$@"
 	
 }
+
+#Installs to a raw disk image using QEMU. Subsequently may be run under a variety of real and virtual platforms.
+_create_x64_debianLiteVM_sequence() {
+	_start
+	
+	_fetchDebianLiteISO || _stop 1
+	
+	_createRawImage || _stop 1
+	
+	qemu-system-x86_64 -hda "$scriptAbsoluteLocation"/vm.img -cdrom "$scriptAbsoluteFolder"/_lib/os/debian-9.1.0-amd64-netinst.iso -boot d -m 1512
+	
+	_stop
+}
+
+_create_x64_debianLiteVM() {
+
+}
+
+_create_arm_debianLiteVM() {
+	
+	
+	
+}
+
+
+
+#####

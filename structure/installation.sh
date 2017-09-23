@@ -81,6 +81,8 @@ _test() {
 	_checkDep return
 	_checkDep set
 	
+	_checkDep dd
+	
 	_checkDep rm
 	
 	_checkDep find
@@ -90,6 +92,12 @@ _test() {
 	_tryExec "_testMountChecks"
 	_tryExec "_testBindMountManager"
 	_tryExec "_testDistro"
+	
+	_tryExec "_testChRoot"
+	_tryExec "_testQEMU"
+	_tryExec "_testQEMU_x64-x64"
+	_tryExec "_testQEMU_x64-raspi"
+	_tryExec "_testQEMU_raspi-raspi"
 	
 	_tryExec "_testExtra"
 	

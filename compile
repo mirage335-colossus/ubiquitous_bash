@@ -127,6 +127,8 @@ _includeScript validaterequest.sh "generic"
 
 _includeScript preserveLog.sh "generic"
 
+_includeScript createImage.sh "virtualization/image"
+
 _includeScript localPathTranslation.sh "virtualization"
 
 _includeScript procchroot.sh "virtualization/chroot"
@@ -147,7 +149,7 @@ _includeScript git.sh "shortcuts/git"
 _includeScript gitBare.sh "shortcuts/git"
 
 _includeScript distro.sh "shortcuts/distro"
-_includeScript pullDebian.sh "shortcuts/distro"
+_includeScript createDebian.sh "shortcuts/distro"
 
 _includeScript visualPrompt.sh "shortcuts/prompt"
 
