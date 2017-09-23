@@ -42,7 +42,7 @@ _fetch_x64_debianLiteISO_sequence() {
 	_stop
 }
 
-_fetch_x86_DebianLiteISO() {
+_fetch_x64_DebianLiteISO() {
 	
 	"$scriptAbsoluteLocation" _fetch_x64_debianLiteISO_sequence "$@"
 	
@@ -52,11 +52,13 @@ _fetch_x86_DebianLiteISO() {
 _create_x64_debianLiteVM_sequence() {
 	_start
 	
-	_fetch_x86_DebianLiteISO || _stop 1
+	_fetch_x64_DebianLiteISO || _stop 1
 	
 	_createRawImage || _stop 1
 	
-	qemu-system-x86_64 -hda "$scriptAbsoluteLocation"/vm.img -cdrom "$scriptAbsoluteFolder"/_lib/os/debian-9.1.0-amd64-netinst.iso -boot d -m 1512
+	_checkDep _qemu-system
+	
+	_qemu-system -hda "$scriptAbsoluteLocation"/vm.img -cdrom "$scriptAbsoluteFolder"/_lib/os/debian-9.1.0-amd64-netinst.iso -boot d -m 1512
 	
 	_stop
 }
