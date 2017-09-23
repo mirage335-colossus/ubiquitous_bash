@@ -616,7 +616,7 @@ _createBareGitRepo() {
 
 
 _setBareGitRepo() {
-	cd "$initPWD"
+	cd "$repoDir"
 	
 	git remote rm origin
 	git remote add origin "$bareRepoDir"
@@ -646,7 +646,7 @@ _gitBareSequence() {
 		return 2
 	fi
 	
-	if ! [[ -e "$initPWD"/.git ]]
+	if ! [[ -e "$repoDir"/.git ]]
 	then
 		return 1
 	fi
@@ -661,7 +661,7 @@ _gitBareSequence() {
 
 _gitBare() {
 	
-	_gitBareSequence
+	"$scriptAbsoluteLocation" _gitBareSequence
 	
 }
 
@@ -673,7 +673,7 @@ _testDistro() {
 }
 
 #"$1" == storageLocation (optional)
-_fetchDebianLiteISO() {
+_fetchDebianLiteISOsequence() {
 	_start
 	
 	export functionEntryPWD="$PWD"
@@ -714,6 +714,12 @@ _fetchDebianLiteISO() {
 	mv "$safeTmp"/debian-9.1.0-amd64-netinst.iso "$storageLocation"
 	
 	_stop
+}
+
+_fetchDebianLiteISO() {
+	
+	"$scriptAbsoluteLocation" _fetchDebianLiteISOsequence
+	
 }
 
 _visualPrompt() {

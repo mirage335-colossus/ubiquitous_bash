@@ -1,5 +1,5 @@
 #"$1" == storageLocation (optional)
-_fetchDebianLiteISO() {
+_fetchDebianLiteISOsequence() {
 	_start
 	
 	export functionEntryPWD="$PWD"
@@ -40,4 +40,10 @@ _fetchDebianLiteISO() {
 	mv "$safeTmp"/debian-9.1.0-amd64-netinst.iso "$storageLocation"
 	
 	_stop
+}
+
+_fetchDebianLiteISO() {
+	
+	"$scriptAbsoluteLocation" _fetchDebianLiteISOsequence
+	
 }
