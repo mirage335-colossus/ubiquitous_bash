@@ -678,6 +678,9 @@ _fetchDebianLiteISOsequence() {
 	
 	export functionEntryPWD="$PWD"
 	
+	export storageLocation="$scriptAbsoluteFolder"/_lib/os/
+	[[ "$1" != "" ]] && export storageLocation=$(_getAbsoluteLocation "$1")
+	
 	if ! ls /usr/share/keyrings/debian-role-keys.gpg > /dev/null 2>&1
 	then
 		echo 'Debian Keyring missing.'
@@ -686,8 +689,8 @@ _fetchDebianLiteISOsequence() {
 	
 	cd "$safeTmp"
 	
-	
-	axel 'https://cdimage.debian.org/debian-cd/9.1.0/amd64/iso-cd/debian-9.1.0-amd64-netinst.iso'
+	[[ -e "$storageLocation"/debian-9.1.0-amd64-netinst.iso ]] && cp "$storageLocation"/debian-9.1.0-amd64-netinst.iso ./debian-9.1.0-amd64-netinst.iso > /dev/null 2>&1
+	[[ -e ./debian-9.1.0-amd64-netinst.iso ]] || axel 'https://cdimage.debian.org/debian-cd/9.1.0/amd64/iso-cd/debian-9.1.0-amd64-netinst.iso'
 	
 	wget 'https://cdimage.debian.org/debian-cd/9.1.0/amd64/iso-cd/SHA512SUMS'
 	
@@ -705,9 +708,6 @@ _fetchDebianLiteISOsequence() {
 		stop 1
 	fi
 	
-	storageLocation="$scriptAbsoluteFolder"/_lib/os/
-	[[ "$1" != "" ]] && storageLocation="$1"
-	
 	mkdir -p "$storageLocation"
 	
 	cd "$functionEntryPWD"
@@ -718,7 +718,7 @@ _fetchDebianLiteISOsequence() {
 
 _fetchDebianLiteISO() {
 	
-	"$scriptAbsoluteLocation" _fetchDebianLiteISOsequence
+	"$scriptAbsoluteLocation" _fetchDebianLiteISOsequence "$@"
 	
 }
 
