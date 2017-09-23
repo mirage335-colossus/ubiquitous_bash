@@ -54,11 +54,11 @@ _create_x64_debianLiteVM_sequence() {
 	
 	_fetch_x64_DebianLiteISO || _stop 1
 	
-	_createRawImage || _stop 1
+	_createRawImage
 	
 	_checkDep qemu-system-x86_64
 	
-	qemu-system-x86_64 -hda "$scriptAbsoluteLocation"/vm.img -cdrom "$scriptAbsoluteFolder"/_lib/os/debian-9.1.0-amd64-netinst.iso -boot d -m 1512
+	qemu-system-x86_64 -hda "$scriptAbsoluteFolder"/vm.img -cdrom "$scriptAbsoluteFolder"/_lib/os/debian-9.1.0-amd64-netinst.iso -boot d -m 1512
 	
 	_stop
 }
