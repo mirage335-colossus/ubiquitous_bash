@@ -1,12 +1,19 @@
 #####Program
 
 _build() {
+	_start
+	
+	echo -e -n '\E[1;32;46m Binary compiling...	\E[0m'
+	
 	_tryExec _buildIdle
 	_tryExec _buildChRoot
 	_tryExec _buildQEMU
 	
 	_tryExec _buildExtra
-	false
+	
+	echo "PASS"
+	
+	_stop
 }
 
 #Typically launches an application - ie. through virtualized container.

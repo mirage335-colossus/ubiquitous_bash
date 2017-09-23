@@ -32,7 +32,7 @@ _idle() {
 	_stop
 }
 
-_testIdle() {
+_testBuiltIdle() {
 	
 	_checkDep getIdle
 	

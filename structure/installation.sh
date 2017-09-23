@@ -87,11 +87,8 @@ _test() {
 	_checkDep ln
 	_checkDep ls
 	
-	_checkDep mountpoint
-	
-	_tryExec "_testIdle"
-	_tryExec "_testChRoot"
-	_tryExec "_testQEMU"
+	_tryExec "_testMountChecks"
+	_tryExec "_testBindMount"
 	
 	_tryExec "_testExtra"
 	
@@ -104,6 +101,22 @@ _test() {
 	
 	_stop
 	
+}
+
+_testBuilt() {
+	_start
+	
+	echo -e -n '\E[1;32;46m Binary checking...	\E[0m'
+	
+	_tryExec "_testBuiltIdle"
+	_tryExec "_testBuiltChRoot"
+	_tryExec "_testBuiltQEMU"
+	
+	_tryExec "_testBuiltExtra"
+	
+	echo "PASS"
+	
+	_stop
 }
 
 #Creates symlink in ~/bin, to the executable at "$1", named according to its residing directory and file name.
@@ -133,9 +146,7 @@ _setupCommands() {
 _setup() {
 	_start
 	
-	"$scriptAbsoluteLocation" _test
-	
-	"$scriptAbsoluteLocation" _build "$@"
+	"$scriptAbsoluteLocation" _test && "$scriptAbsoluteLocation" _build "$@" && "$scriptAbsoluteLocation" _testBuilt
 	
 	_setupCommands
 	
