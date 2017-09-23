@@ -669,9 +669,12 @@ _gitBare() {
 
 _testDistro() {
 	_checkDep sha512sum
+	_checkDep axel
 }
 
+#"$1" == storageLocation (optional)
 _fetchDebianLiteISO() {
+	_start
 	
 	if ! ls /usr/share/keyrings/debian-role-keys.gpg > /dev/null 2>&1
 	then
@@ -682,7 +685,7 @@ _fetchDebianLiteISO() {
 	cd "$safeTmp"
 	
 	
-	wget 'https://cdimage.debian.org/debian-cd/9.1.0/amd64/iso-cd/debian-9.1.0-amd64-netinst.iso'
+	axel 'https://cdimage.debian.org/debian-cd/9.1.0/amd64/iso-cd/debian-9.1.0-amd64-netinst.iso'
 	
 	wget 'https://cdimage.debian.org/debian-cd/9.1.0/amd64/iso-cd/SHA512SUMS'
 	
@@ -700,14 +703,14 @@ _fetchDebianLiteISO() {
 		stop 1
 	fi
 	
+	storageLocation="$scriptAbsoluteFolder"/_lib/os/
+	[[ "$1" != "" ]] && storageLocation="$1"
 	
+	mkdir -p "$storageLocation"
 	
+	mv "$safeTmp"/debian-9.1.0-amd64-netinst.iso "$storageLocation"
 	
-	
-	mv "$safeTmp"/debian-9.1.0-amd64-netinst.iso "$scriptAbsoluteFolder"/
-	
-	
-	
+	_stop
 }
 
 _visualPrompt() {
