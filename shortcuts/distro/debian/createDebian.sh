@@ -62,13 +62,13 @@ _create_x64_debianLiteVM_sequence() {
 }
 
 _create_x64_debianLiteVM() {
-
+	
+	"$scriptAbsoluteLocation" _create_x64_debianLiteVM_sequence "$@"
+	
 }
 
 _create_arm_debianLiteVM() {
-	
-	
-	
+	true
 }
 
 
