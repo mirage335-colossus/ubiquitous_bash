@@ -32,7 +32,7 @@ _idle() {
 	_stop
 }
 
-_idleTest() {
+_testIdle() {
 	
 	_checkDep getIdle
 	
@@ -46,7 +46,7 @@ _idleTest() {
 	
 }
 
-_idleBuild() {
+_buildIdle() {
 	
 	idleSourceCode=$(find "$scriptAbsoluteFolder" -type f -name "getIdle.c" | head -n 1)
 	

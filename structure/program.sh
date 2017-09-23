@@ -1,7 +1,11 @@
 #####Program
 
 _build() {
-	_tryExec _idleBuild
+	_tryExec _buildIdle
+	_tryExec _buildChRoot
+	_tryExec _buildQEMU
+	
+	_tryExec _buildExtra
 	false
 }
 

@@ -89,7 +89,11 @@ _test() {
 	
 	_checkDep mountpoint
 	
-	_tryExec "_idleTest"
+	_tryExec "_testIdle"
+	_tryExec "_testChRoot"
+	_tryExec "_testQEMU"
+	
+	_tryExec "_testExtra"
 	
 	[[ -e /dev/urandom ]] || echo /dev/urandom missing _stop
 	

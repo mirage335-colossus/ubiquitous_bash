@@ -792,7 +792,7 @@ _idle() {
 	_stop
 }
 
-_idleTest() {
+_testIdle() {
 	
 	_checkDep getIdle
 	
@@ -806,7 +806,7 @@ _idleTest() {
 	
 }
 
-_idleBuild() {
+_buildIdle() {
 	
 	idleSourceCode=$(find "$scriptAbsoluteFolder" -type f -name "getIdle.c" | head -n 1)
 	
@@ -906,7 +906,11 @@ _test() {
 	
 	_checkDep mountpoint
 	
-	_tryExec "_idleTest"
+	_tryExec "_testIdle"
+	_tryExec "_testChRoot"
+	_tryExec "_testQEMU"
+	
+	_tryExec "_testExtra"
 	
 	[[ -e /dev/urandom ]] || echo /dev/urandom missing _stop
 	
@@ -958,7 +962,11 @@ _setup() {
 #####Program
 
 _build() {
-	_tryExec _idleBuild
+	_tryExec _buildIdle
+	_tryExec _buildChRoot
+	_tryExec _buildQEMU
+	
+	_tryExec _buildExtra
 	false
 }
 
