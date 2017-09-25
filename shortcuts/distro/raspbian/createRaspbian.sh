@@ -43,7 +43,13 @@ _fetch_raspbian() {
 }
 
 _create_raspbian_sequence() {
-	true
+	_fetch_raspbian || _stop 1
+	
+	_mustGetSudo
+	
+	
+	
+	
 }
 
 _create_raspbian() {

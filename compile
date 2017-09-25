@@ -139,9 +139,9 @@ _includeScript enterchroot.sh "virtualization/chroot"
 _includeScript userchroot.sh "virtualization/chroot"
 _includeScript dropchroot.sh "virtualization/chroot"
 
-#_includeScript qemu-raspi-raspi.sh "virtualization/qemu"
-#_includeScript qemu-x64-raspi.sh "virtualization/qemu"
-#_includeScript qemu-x64-x64.sh "virtualization/qemu"
+_includeScript qemu-raspi-raspi.sh "virtualization/qemu"
+_includeScript qemu-x64-raspi.sh "virtualization/qemu"
+_includeScript qemu-x64-x64.sh "virtualization/qemu"
 
 _includeScript mustberoot.sh "special"
 _includeScript mustgetsudo.sh "special"

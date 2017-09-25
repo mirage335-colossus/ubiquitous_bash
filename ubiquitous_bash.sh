@@ -565,6 +565,69 @@ _umountChRoot() {
 
  
 
+
+#Ensures dependencies are met for raspi-on-raspi virtualization.
+_testQEMU_raspi-raspi() {
+	true
+}
+
+_testQEMU_hostArch_x64-raspi() {
+	local hostArch
+	hostArch=$(uname -m)
+	
+	if [[ "$hostArch" != "x86_64" ]]
+	then
+		return 1
+	fi
+	
+	return 0
+}
+
+_testQEMU_x64-raspi() {
+	_testQEMU_hostArch_x64-raspi || _stop 1
+	
+	_testQEMU_x64-x64
+	_checkDep qemu-arm-static
+	_checkDep qemu-armeb-static
+	
+	_mustGetSudo
+	
+	if ! sudo -n /usr/sbin/update-binfmts --display | grep qemu > /dev/null 2>&1
+	then
+		echo 'binfmts does not mention qemu-arm'
+		_stop 1
+	fi
+	
+	if ! sudo -n /usr/sbin/update-binfmts --display | grep qemu-armeb-static > /dev/null 2>&1
+	then
+		echo 'binfmts does not mention qemu-armeb'
+		_stop 1
+	fi
+}
+
+_testQEMU_hostArch_x64-x64() {
+	local hostArch
+	hostArch=$(uname -m)
+	
+	if [[ "$hostArch" != "x86_64" ]]
+	then
+		return 1
+	fi
+	
+	return 0
+}
+
+_testQEMU_x64-x64() {
+	_testQEMU_hostArch_x64-x64 || _stop 1
+	
+	_checkDep qemu-system-x86_64
+	_checkDep qemu-img
+}
+
+_qemu-system() {
+	qemu-system-x86_64 "$@"
+}
+
 #Determines if user is root. If yes, then continue. If not, exits after printing error message.
 _mustBeRoot() {
 if [[ $(id -u) != 0 ]]; then 
@@ -831,7 +894,13 @@ _fetch_raspbian() {
 }
 
 _create_raspbian_sequence() {
-	true
+	_fetch_raspbian || _stop 1
+	
+	_mustGetSudo
+	
+	
+	
+	
 }
 
 _create_raspbian() {
