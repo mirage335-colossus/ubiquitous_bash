@@ -41,3 +41,13 @@ _fetch_raspbian() {
 	"$scriptAbsoluteLocation" _fetch_raspbian_sequence "$@"
 	
 }
+
+_create_raspbian_sequence() {
+	true
+}
+
+_create_raspbian() {
+	
+	"$scriptAbsoluteLocation" _create_raspbian_sequence "$@"
+	
+}
