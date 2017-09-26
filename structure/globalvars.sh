@@ -27,6 +27,8 @@ export scriptBin="$scriptAbsoluteFolder"/_bin
 
 export scriptLocal="$scriptAbsoluteFolder"/_local
 
+export chrootDir="$scriptLocal"/chroot
+
 #export varStore="$scriptAbsoluteFolder"/var
 
 #Process control.

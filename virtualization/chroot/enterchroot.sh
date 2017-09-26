@@ -1,50 +1,129 @@
 
+_waitChRoot_opening() {
+	_readyChRoot "$chrootDir" && return 0
+	sleep 1
+	_readyChRoot "$chrootDir" && return 0
+	sleep 3
+	_readyChRoot "$chrootDir" && return 0
+	sleep 9
+	_readyChRoot "$chrootDir" && return 0
+	sleep 27
+	_readyChRoot "$chrootDir" && return 0
+	sleep 81
+	_readyChRoot "$chrootDir" && return 0
+	
+	return 1
+}
+
+_closeChRoot() {
+	[[ -e "$scriptLocal"/_closing ]] || return 1
+	
+	_start
+	
+	_mustGetSudo
+	
+	echo > "$scriptLocal"/_closing
+	
+	_stopChRoot "$chrootDir"
+	_umountChRoot "$chrootDir"
+	mountpoint "$chrootDir" > /dev/null 2>&1 && sudo -n umount "$chrootDir"
+	
+	"$scriptAbsoluteLocation" _checkForMounts "$chrootDir" && _stop 1
+	
+	rm "$scriptLocal"/_closing
+	
+	rm "$scriptLocal"/WARNING
+	
+	_stop
+}
+
+imageLoop_raspbian() {
+	_mustGetSudo
+	mkdir -p "$chrootDir"
+	
+	# TODO mount, identity, and mount filesystem, using loop device
+	
+	
+	mountpoint "$chrootDir" > /dev/null 2>&1 || return 1
+	
+	_mountChRoot "$chrootDir"
+	
+	_readyChRoot "$chrootDir" || return 1
+	
+	return 0
+}
+
+_imageLoop_Native() {
+	_mustGetSudo
+	mkdir -p "$chrootDir"
+	
+	
+}
+
+_imageLoop_platforms() {
+	_mustGetSudo
+	mkdir -p "$chrootDir"
+	
+	if [[ -e "$scriptLocal"/vm-raspbian.img ]]
+	then
+		imageLoop_raspbian
+		return "$?"
+	fi
+	
+	if [[ -e "$scriptLocal"/vm.img ]]
+	then
+		_imageLoop_Native
+		return "$?"
+	fi
+}
+
+_imageChRoot() {
+	_mustGetSudo
+	mkdir -p "$chrootDir"
+	
+	[[ -e "$scriptLocal"/_closing ]] || return 1
+	
+	if [[ -e "$scriptLocal"/_opening ]] || "$scriptAbsoluteLocation" _checkForMounts "$chrootDir"
+	then
+		_waitChRoot_opening || return 1
+		_readyChRoot || return 1
+	fi
+	
+	echo > "$scriptLocal"/_opening
+	
+	
+	if ! _imageLoop_platforms
+	then
+		"$scriptAbsoluteLocation" _closeChRoot
+		
+		rm "$scriptLocal"/_opening
+		
+		return 1
+	fi
+	
+	
+	rm "$scriptLocal"/_opening
+}
+
+
 _openChRoot() {
 	_start
 	
 	_mustGetSudo
 	
+	echo "OPEN CHROOT" > "$scriptLocal"/WARNING
 	
+	mkdir -p "$chrootDir"
 	
-	
-	echo "OPEN CHROOT" > "$scriptAbsoluteLocation"/WARNING
-	
-	
-	
-	
-	
+	_imageChRoot || _stop 1
 	
 	_stop
 }
 
-
-_closeChRoot() {
-	_start
-	
-	_mustGetSudo
-	
-	echo > "$scriptAbsoluteLocation"/_closing
-	
-	
-	
-	
-	
-	
-	
-	
-	rm "$scriptAbsoluteLocation"/_closing
-	
-	# TODO Might be wise to first sanity check all directories unmounted, all processes terminated, etc.
-	rm "$scriptAbsoluteLocation"/WARNING
-	
-	_stop
-}
 
 
 _chrootRasPi() {
-	#mount image with losetup
 	
-	#mount correct partition root/boot filesystems
 	
 	#effectively disable /etc/ld.so.preload
 	

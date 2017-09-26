@@ -368,7 +368,7 @@ _preserveLog() {
 _createRawImage_sequence() {
 	_start
 	
-	export vmImageFile="$scriptAbsoluteFolder"/vm.img
+	export vmImageFile="$scriptLocal"/vm.img
 	
 	[[ "$1" != "" ]] && export vmImageFile="$1"
 	
@@ -558,6 +558,49 @@ _umountChRoot() {
 	sudo -n umount "$ChRootDir" >/dev/null 2>&1
 	
 }
+
+
+_openChRoot() {
+	_start
+	
+	_mustGetSudo
+	
+	
+	
+	
+	echo "OPEN CHROOT" > "$scriptAbsoluteLocation"/WARNING
+	
+	
+	
+	
+	
+	
+	_stop
+}
+
+
+_closeChRoot() {
+	_start
+	
+	_mustGetSudo
+	
+	echo > "$scriptAbsoluteLocation"/_closing
+	
+	
+	
+	
+	
+	
+	
+	
+	rm "$scriptAbsoluteLocation"/_closing
+	
+	# TODO Might be wise to first sanity check all directories unmounted, all processes terminated, etc.
+	rm "$scriptAbsoluteLocation"/WARNING
+	
+	_stop
+}
+
 
 _chrootRasPi() {
 	#mount image with losetup
@@ -844,7 +887,7 @@ _create_x64_debianLiteVM_sequence() {
 	
 	_checkDep qemu-system-x86_64
 	
-	qemu-system-x86_64 -machine accel=kvm -drive format=raw,file="$scriptAbsoluteFolder"/vm.img -cdrom "$scriptAbsoluteFolder"/_lib/os/debian-9.1.0-amd64-netinst.iso -boot d -m 1512
+	qemu-system-x86_64 -machine accel=kvm -drive format=raw,file="$scriptLocal"/vm.img -cdrom "$scriptAbsoluteFolder"/_lib/os/debian-9.1.0-amd64-netinst.iso -boot d -m 1512
 	
 	_stop
 }
@@ -920,7 +963,9 @@ _create_raspbian_sequence() {
 	
 	unzip "$scriptAbsoluteFolder"/_lib/os/2017-09-07-raspbian-stretch.zip
 	
-	[[ ! -e "$scriptAbsoluteFolder"/vm-raspbian.img ]] && mv "$scriptAbsoluteFolder"/_lib/os/2017-09-07-raspbian-stretch.img "$scriptAbsoluteFolder"/vm-raspbian.img
+	export raspbianImageFile="$scriptLocal"/vm-raspbian.img
+	
+	[[ ! -e "$raspbianImageFile" ]] && mv "$scriptAbsoluteFolder"/_lib/os/2017-09-07-raspbian-stretch.img "$raspbianImageFile"
 	
 	cd "$functionEntryPWD"
 	
@@ -971,6 +1016,9 @@ fi
 [[ ! -e "$scriptAbsoluteLocation" ]] && exit 1
 [[ ! -e "$scriptAbsoluteFolder" ]] && exit 1
 
+#Current directory for preservation.
+export outerPWD=$(_getAbsoluteLocation "$PWD")
+
 export initPWD="$PWD"
 intInitPWD="$PWD"
 
@@ -979,6 +1027,8 @@ export safeTmp="$scriptAbsoluteFolder"/w_"$sessionid"
 export logTmp="$safeTmp"/log
 export shortTmp=/tmp/w_"$sessionid"	#Solely for misbehaved applications called upon.
 export scriptBin="$scriptAbsoluteFolder"/_bin
+
+export scriptLocal="$scriptAbsoluteFolder"/_local
 
 #export varStore="$scriptAbsoluteFolder"/var
 
@@ -990,9 +1040,6 @@ export daemonPID="cwrxuk6wqzbzV6p8kPS8J4APYGX"	#Invalid do-not-match default.
 
 #Resource directories.
 #export guidanceDir="$scriptAbsoluteFolder"/guidance
-
-#Current directory for preservation.
-export outerPWD=$(_getAbsoluteLocation "$PWD")
 
 #Object Dir
 export objectDir="$scriptAbsoluteFolder"
@@ -1018,6 +1065,8 @@ _prepare() {
 	mkdir -p "$shortTmp"
 	
 	mkdir -p "$logTmp"
+	
+	mkdir -p "$scriptLocal"
 	
 	_extra
 }

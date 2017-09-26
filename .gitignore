@@ -2,3 +2,4 @@ _lib/os
 vm.img
 vm*.img
 WARNING
+_local

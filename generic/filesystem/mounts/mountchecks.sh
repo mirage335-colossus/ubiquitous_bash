@@ -11,10 +11,13 @@ _flagMount() {
 	mountpoint "$1" >/dev/null 2>&1 && echo -n true > "$2"
 }
 
-#End user function, typically used to ensure no mounted filesystems are present before deleting a directory.
+#Searches directory for mounted filesystems.
 #"$1" == test directory
 _checkForMounts() {
 	_start
+	
+	#If test directory itself is a directory, further testing is not necessary.
+	mountpoint "$1" > /dev/null 2>&1 && _stop 0
 	
 	local mountCheckFile="$safeTmp"/mc-$(_uid)
 	
@@ -37,5 +40,6 @@ _checkForMounts() {
 	[[ "$includesMount" != "false" ]] && _stop 0
 	[[ "$includesMount" == "true" ]] && _stop 0
 	[[ "$includesMount" == "false" ]] && _stop 1
+	
 	_stop 0
 }
