@@ -13,6 +13,9 @@ fi
 [[ ! -e "$scriptAbsoluteLocation" ]] && exit 1
 [[ ! -e "$scriptAbsoluteFolder" ]] && exit 1
 
+#Current directory for preservation.
+export outerPWD=$(_getAbsoluteLocation "$PWD")
+
 export initPWD="$PWD"
 intInitPWD="$PWD"
 
@@ -21,6 +24,8 @@ export safeTmp="$scriptAbsoluteFolder"/w_"$sessionid"
 export logTmp="$safeTmp"/log
 export shortTmp=/tmp/w_"$sessionid"	#Solely for misbehaved applications called upon.
 export scriptBin="$scriptAbsoluteFolder"/_bin
+
+export scriptLocal="$scriptAbsoluteFolder"/_local
 
 #export varStore="$scriptAbsoluteFolder"/var
 
@@ -32,9 +37,6 @@ export daemonPID="cwrxuk6wqzbzV6p8kPS8J4APYGX"	#Invalid do-not-match default.
 
 #Resource directories.
 #export guidanceDir="$scriptAbsoluteFolder"/guidance
-
-#Current directory for preservation.
-export outerPWD=$(_getAbsoluteLocation "$PWD")
 
 #Object Dir
 export objectDir="$scriptAbsoluteFolder"

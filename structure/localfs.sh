@@ -13,5 +13,7 @@ _prepare() {
 	
 	mkdir -p "$logTmp"
 	
+	mkdir -p "$scriptLocal"
+	
 	_extra
 }

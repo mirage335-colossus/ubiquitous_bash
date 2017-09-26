@@ -1,7 +1,7 @@
 _createRawImage_sequence() {
 	_start
 	
-	export vmImageFile="$scriptAbsoluteFolder"/vm.img
+	export vmImageFile="$scriptLocal"/vm.img
 	
 	[[ "$1" != "" ]] && export vmImageFile="$1"
 	

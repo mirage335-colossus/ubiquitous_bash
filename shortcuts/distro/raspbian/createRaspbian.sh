@@ -55,7 +55,9 @@ _create_raspbian_sequence() {
 	
 	unzip "$scriptAbsoluteFolder"/_lib/os/2017-09-07-raspbian-stretch.zip
 	
-	[[ ! -e "$scriptAbsoluteFolder"/vm-raspbian.img ]] && mv "$scriptAbsoluteFolder"/_lib/os/2017-09-07-raspbian-stretch.img "$scriptAbsoluteFolder"/vm-raspbian.img
+	export raspbianImageFile="$scriptLocal"/vm-raspbian.img
+	
+	[[ ! -e "$raspbianImageFile" ]] && mv "$scriptAbsoluteFolder"/_lib/os/2017-09-07-raspbian-stretch.img "$raspbianImageFile"
 	
 	cd "$functionEntryPWD"
 	
