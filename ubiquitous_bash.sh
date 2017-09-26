@@ -559,7 +559,19 @@ _umountChRoot() {
 	
 }
 
- 
+_chrootRasPi() {
+	#mount image with losetup
+	
+	#mount correct partition root/boot filesystems
+	
+	#effectively disable /etc/ld.so.preload
+	
+	
+	true
+	#chroot
+	
+	#enable default /etc/ld.so.preload
+} 
 
  
 
@@ -604,6 +616,8 @@ _testQEMU_x64-raspi() {
 		_stop 1
 	fi
 }
+
+
 
 _testQEMU_hostArch_x64-x64() {
 	local hostArch
@@ -894,13 +908,23 @@ _fetch_raspbian() {
 }
 
 _create_raspbian_sequence() {
+	_start
+	
+	export functionEntryPWD="$PWD"
+	
 	_fetch_raspbian || _stop 1
 	
-	_mustGetSudo
+	export storageLocation="$scriptAbsoluteFolder"/_lib/os/
 	
+	cd "$storageLocation"
 	
+	unzip "$scriptAbsoluteFolder"/_lib/os/2017-09-07-raspbian-stretch.zip
 	
+	[[ ! -e "$scriptAbsoluteFolder"/vm-raspbian.img ]] && mv "$scriptAbsoluteFolder"/_lib/os/2017-09-07-raspbian-stretch.img "$scriptAbsoluteFolder"/vm-raspbian.img
 	
+	cd "$functionEntryPWD"
+	
+	_stop
 }
 
 _create_raspbian() {

@@ -43,13 +43,23 @@ _fetch_raspbian() {
 }
 
 _create_raspbian_sequence() {
+	_start
+	
+	export functionEntryPWD="$PWD"
+	
 	_fetch_raspbian || _stop 1
 	
-	_mustGetSudo
+	export storageLocation="$scriptAbsoluteFolder"/_lib/os/
 	
+	cd "$storageLocation"
 	
+	unzip "$scriptAbsoluteFolder"/_lib/os/2017-09-07-raspbian-stretch.zip
 	
+	[[ ! -e "$scriptAbsoluteFolder"/vm-raspbian.img ]] && mv "$scriptAbsoluteFolder"/_lib/os/2017-09-07-raspbian-stretch.img "$scriptAbsoluteFolder"/vm-raspbian.img
 	
+	cd "$functionEntryPWD"
+	
+	_stop
 }
 
 _create_raspbian() {
