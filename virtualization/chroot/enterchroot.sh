@@ -39,18 +39,41 @@ _closeChRoot() {
 
 imageLoop_raspbian() {
 	_mustGetSudo
+	
+	_start
+	
 	mkdir -p "$chrootDir"
 	
-	# TODO mount, identity, and mount filesystem, using loop device
+	if sudo -n losetup -f -P --show "$scriptLocal"/vm-raspbian.img > "$safeTmp"/imagedev 2> /dev/null
+	then
+		local imagedev
+		imagedev="$safeTmp"/imagedev
+		
+		local imagepart
+		imagepart="$imagedev"p2
+		
+		local loopdevfs
+		loopdevfs=$(eval $(sudo -n blkid "$imagepart" | awk ' { print $3 } '); echo $TYPE)
+		
+		if [[ "$loopdevfs" == "ext4" ]]
+		then
+			
+			mount "$imagepart" "$chrootDir"
+			
+		fi
+		
+		
+		
+	fi
 	
 	
-	mountpoint "$chrootDir" > /dev/null 2>&1 || return 1
+	mountpoint "$chrootDir" > /dev/null 2>&1 || _stop 1
 	
 	_mountChRoot "$chrootDir"
 	
-	_readyChRoot "$chrootDir" || return 1
+	_readyChRoot "$chrootDir" || _stop 1
 	
-	return 0
+	_stop 0
 }
 
 _imageLoop_Native() {

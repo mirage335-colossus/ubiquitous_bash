@@ -215,10 +215,13 @@ _flagMount() {
 	mountpoint "$1" >/dev/null 2>&1 && echo -n true > "$2"
 }
 
-#End user function, typically used to ensure no mounted filesystems are present before deleting a directory.
+#Searches directory for mounted filesystems.
 #"$1" == test directory
 _checkForMounts() {
 	_start
+	
+	#If test directory itself is a directory, further testing is not necessary.
+	mountpoint "$1" > /dev/null 2>&1 && _stop 0
 	
 	local mountCheckFile="$safeTmp"/mc-$(_uid)
 	
@@ -241,6 +244,7 @@ _checkForMounts() {
 	[[ "$includesMount" != "false" ]] && _stop 0
 	[[ "$includesMount" == "true" ]] && _stop 0
 	[[ "$includesMount" == "false" ]] && _stop 1
+	
 	_stop 0
 }
 
@@ -488,10 +492,11 @@ _localDir() {
 #Techniques originally released by other authors at http://forums.grsecurity.net/viewtopic.php?f=3&t=1632 .
 #"$1" == ChRoot Dir
 _listprocChRoot() {
-	CHROOT=$(_getAbsoluteLocation "$1")
+	local absolute1
+	absolute1=$(_getAbsoluteLocation "$1")
 	PROCS=""
 	for p in `ps -o pid -A`; do
-		if [ "`readlink /proc/$p/root`" = "$CHROOT" ]; then
+		if [ "`readlink /proc/$p/root`" = "$absolute1" ]; then
 			PROCS="$PROCS $p"
 		fi
 	done
@@ -501,19 +506,20 @@ _listprocChRoot() {
 #End user and diagnostic function, shuts down all processes in a chroot.
 _stopChRoot() {
 	
-	ChRootDir=$(_getAbsoluteLocation "$1")
+	local absolute1
+	absolute1=$(_getAbsoluteLocation "$1")
 	
 	echo "TERMinating all chrooted processes."
 	sleep 5
-	kill -TERM $(_listprocChRoot "$ChRootDir") >/dev/null 2>&1
+	kill -TERM $(_listprocChRoot "$absolute1") >/dev/null 2>&1
 	sleep 15
 	
 	echo "KILLing all chrooted processes."
-	kill -KILL $(_listprocChRoot "$ChRootDir") >/dev/null 2>&1
+	kill -KILL $(_listprocChRoot "$absolute1") >/dev/null 2>&1
 	sleep 1
 	
 	echo "Remaining chrooted processes."
-	_listprocChRoot "$ChRootDir"
+	_listprocChRoot "$absolute1"
 	
 	echo '-----'
 	
@@ -525,18 +531,19 @@ _mountChRoot() {
 	
 	[[ ! -e "$1" ]] && return 1
 	
-	ChRootDir=$(_getAbsoluteLocation "$1")
+	local absolute1
+	absolute1=$(_getAbsoluteLocation "$1")
 	
-	_bindMountManager "/dev" "$ChRootDir"/dev
-	_bindMountManager "/dev" "$ChRootDir"/proc
-	_bindMountManager "/dev" "$ChRootDir"/sys
+	_bindMountManager "/dev" "$absolute1"/dev
+	_bindMountManager "/dev" "$absolute1"/proc
+	_bindMountManager "/dev" "$absolute1"/sys
 	
-	_bindMountManager "/dev" "$ChRootDir"/dev/pts
+	_bindMountManager "/dev" "$absolute1"/dev/pts
 	
-	_bindMountManager "/dev" "$ChRootDir"/tmp
+	_bindMountManager "/dev" "$absolute1"/tmp
 	
 	#Provide an shm filesystem at /dev/shm.
-	sudo -n mount -t tmpfs -o size=4G tmpfs "$ChRootDir"/dev/shm
+	sudo -n mount -t tmpfs -o size=4G tmpfs "$absolute1"/dev/shm
 	
 }
 
@@ -546,17 +553,169 @@ _umountChRoot() {
 	
 	[[ ! -e "$1" ]] && return 1
 	
-	ChRootDir=$(_getAbsoluteLocation "$1")
+	local absolute1
+	absolute1=$(_getAbsoluteLocation "$1")
 	
-	sudo -n umount "$ChRootDir"/proc
-	sudo -n umount "$ChRootDir"/sys
-	sudo -n umount "$ChRootDir"/dev/pts
-	sudo -n umount "$ChRootDir"/tmp
-	sudo -n umount "$ChRootDir"/dev/shm
-	sudo -n umount "$ChRootDir"/dev
+	sudo -n umount "$absolute1"/proc
+	sudo -n umount "$absolute1"/sys
+	sudo -n umount "$absolute1"/dev/pts
+	sudo -n umount "$absolute1"/tmp
+	sudo -n umount "$absolute1"/dev/shm
+	sudo -n umount "$absolute1"/dev
 	
-	sudo -n umount "$ChRootDir" >/dev/null 2>&1
+	sudo -n umount "$absolute1" >/dev/null 2>&1
 	
+}
+
+_readyChRoot() {
+	
+	local absolute1
+	absolute1=$(_getAbsoluteLocation "$1")
+	
+	#mountpoint "$absolute1" > /dev/null 2>&1 || return 1
+	
+	mountpoint "$absolute1"/dev > /dev/null 2>&1 || return 1
+	mountpoint "$absolute1"/proc > /dev/null 2>&1 || return 1
+	mountpoint "$absolute1"/sys > /dev/null 2>&1 || return 1
+	
+	mountpoint "$absolute1"/dev/pts > /dev/null 2>&1 || return 1
+	
+	mountpoint "$absolute1"/tmp > /dev/null 2>&1 || return 1
+	
+	mountpoint "$absolute1"/dev/shm > /dev/null 2>&1 || return 1
+	
+	return 0
+	
+}
+
+
+_waitChRoot_opening() {
+	_readyChRoot "$chrootDir" && return 0
+	sleep 1
+	_readyChRoot "$chrootDir" && return 0
+	sleep 3
+	_readyChRoot "$chrootDir" && return 0
+	sleep 9
+	_readyChRoot "$chrootDir" && return 0
+	sleep 27
+	_readyChRoot "$chrootDir" && return 0
+	sleep 81
+	_readyChRoot "$chrootDir" && return 0
+	
+	return 1
+}
+
+_closeChRoot() {
+	[[ -e "$scriptLocal"/_closing ]] || return 1
+	
+	_start
+	
+	_mustGetSudo
+	
+	echo > "$scriptLocal"/_closing
+	
+	_stopChRoot "$chrootDir"
+	_umountChRoot "$chrootDir"
+	mountpoint "$chrootDir" > /dev/null 2>&1 && sudo -n umount "$chrootDir"
+	
+	"$scriptAbsoluteLocation" _checkForMounts "$chrootDir" && _stop 1
+	
+	rm "$scriptLocal"/_closing
+	
+	rm "$scriptLocal"/WARNING
+	
+	_stop
+}
+
+imageLoop_raspbian() {
+	_mustGetSudo
+	
+	_start
+	
+	mkdir -p "$chrootDir"
+	
+	if sudo -n losetup -f -P --show "$scriptLocal"/vm-raspbian.img > "$safeTmp"/imagedev 2> /dev/null
+	then
+		local imagedev
+		imagedev="$safeTmp"/imagedev
+		
+		local imagepart
+		imagepart="$imagedev"p2
+		
+		local loopdevfs
+		loopdevfs=$(eval $(sudo -n blkid "$imagepart" | awk ' { print $3 } '); echo $TYPE)
+		
+		if [[ "$loopdevfs" == "ext4" ]]
+		then
+			
+			mount "$imagepart" "$chrootDir"
+			
+		fi
+		
+		
+		
+	fi
+	
+	
+	mountpoint "$chrootDir" > /dev/null 2>&1 || _stop 1
+	
+	_mountChRoot "$chrootDir"
+	
+	_readyChRoot "$chrootDir" || _stop 1
+	
+	_stop 0
+}
+
+_imageLoop_Native() {
+	_mustGetSudo
+	mkdir -p "$chrootDir"
+	
+	
+}
+
+_imageLoop_platforms() {
+	_mustGetSudo
+	mkdir -p "$chrootDir"
+	
+	if [[ -e "$scriptLocal"/vm-raspbian.img ]]
+	then
+		imageLoop_raspbian
+		return "$?"
+	fi
+	
+	if [[ -e "$scriptLocal"/vm.img ]]
+	then
+		_imageLoop_Native
+		return "$?"
+	fi
+}
+
+_imageChRoot() {
+	_mustGetSudo
+	mkdir -p "$chrootDir"
+	
+	[[ -e "$scriptLocal"/_closing ]] || return 1
+	
+	if [[ -e "$scriptLocal"/_opening ]] || "$scriptAbsoluteLocation" _checkForMounts "$chrootDir"
+	then
+		_waitChRoot_opening || return 1
+		_readyChRoot || return 1
+	fi
+	
+	echo > "$scriptLocal"/_opening
+	
+	
+	if ! _imageLoop_platforms
+	then
+		"$scriptAbsoluteLocation" _closeChRoot
+		
+		rm "$scriptLocal"/_opening
+		
+		return 1
+	fi
+	
+	
+	rm "$scriptLocal"/_opening
 }
 
 
@@ -565,47 +724,19 @@ _openChRoot() {
 	
 	_mustGetSudo
 	
+	echo "OPEN CHROOT" > "$scriptLocal"/WARNING
 	
+	mkdir -p "$chrootDir"
 	
-	
-	echo "OPEN CHROOT" > "$scriptAbsoluteLocation"/WARNING
-	
-	
-	
-	
-	
+	_imageChRoot || _stop 1
 	
 	_stop
 }
 
-
-_closeChRoot() {
-	_start
-	
-	_mustGetSudo
-	
-	echo > "$scriptAbsoluteLocation"/_closing
-	
-	
-	
-	
-	
-	
-	
-	
-	rm "$scriptAbsoluteLocation"/_closing
-	
-	# TODO Might be wise to first sanity check all directories unmounted, all processes terminated, etc.
-	rm "$scriptAbsoluteLocation"/WARNING
-	
-	_stop
-}
 
 
 _chrootRasPi() {
-	#mount image with losetup
 	
-	#mount correct partition root/boot filesystems
 	
 	#effectively disable /etc/ld.so.preload
 	
@@ -1029,6 +1160,8 @@ export shortTmp=/tmp/w_"$sessionid"	#Solely for misbehaved applications called u
 export scriptBin="$scriptAbsoluteFolder"/_bin
 
 export scriptLocal="$scriptAbsoluteFolder"/_local
+
+export chrootDir="$scriptLocal"/chroot
 
 #export varStore="$scriptAbsoluteFolder"/var
 
