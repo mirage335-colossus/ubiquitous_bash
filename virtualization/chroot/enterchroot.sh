@@ -16,7 +16,7 @@ _waitChRoot_opening() {
 }
 
 _closeChRoot() {
-	[[ -e "$scriptLocal"/_closing ]] || return 1
+	[[ -e "$scriptLocal"/_closing ]] && return 1
 	
 	_start
 	
@@ -32,22 +32,28 @@ _closeChRoot() {
 	
 	rm "$scriptLocal"/_closing
 	
+	rm "$scriptLocal"/_open
+	
 	rm "$scriptLocal"/WARNING
 	
 	_stop
 }
 
-imageLoop_raspbian() {
+_imageLoop_raspbian() {
 	_mustGetSudo
 	
 	_start
 	
 	mkdir -p "$chrootDir"
 	
+	"$scriptAbsoluteLocation" _checkForMounts "$chrootDir" && _stop 1
+	
 	if sudo -n losetup -f -P --show "$scriptLocal"/vm-raspbian.img > "$safeTmp"/imagedev 2> /dev/null
 	then
+		cp "$safeTmp"/imagedev "$scriptLocal"/imagedev
+		
 		local imagedev
-		imagedev="$safeTmp"/imagedev
+		imagedev=$(cat "$safeTmp"/imagedev)
 		
 		local imagepart
 		imagepart="$imagedev"p2
@@ -58,20 +64,20 @@ imageLoop_raspbian() {
 		if [[ "$loopdevfs" == "ext4" ]]
 		then
 			
-			mount "$imagepart" "$chrootDir"
+			sudo -n mount "$imagepart" "$chrootDir" || _stop 1
+			
+			echo > "$scriptLocal"/_open
+			
+			mountpoint "$chrootDir" > /dev/null 2>&1 || _stop 1
+			
+			_mountChRoot "$chrootDir"
+			
+			_readyChRoot "$chrootDir" || _stop 1
+			
 			
 		fi
 		
-		
-		
 	fi
-	
-	
-	mountpoint "$chrootDir" > /dev/null 2>&1 || _stop 1
-	
-	_mountChRoot "$chrootDir"
-	
-	_readyChRoot "$chrootDir" || _stop 1
 	
 	_stop 0
 }
@@ -89,7 +95,7 @@ _imageLoop_platforms() {
 	
 	if [[ -e "$scriptLocal"/vm-raspbian.img ]]
 	then
-		imageLoop_raspbian
+		_imageLoop_raspbian
 		return "$?"
 	fi
 	
@@ -104,12 +110,15 @@ _imageChRoot() {
 	_mustGetSudo
 	mkdir -p "$chrootDir"
 	
-	[[ -e "$scriptLocal"/_closing ]] || return 1
+	[[ -e "$scriptLocal"/_open ]] && return 0
 	
-	if [[ -e "$scriptLocal"/_opening ]] || "$scriptAbsoluteLocation" _checkForMounts "$chrootDir"
+	[[ -e "$scriptLocal"/_closing ]] && return 1
+	
+	if [[ -e "$scriptLocal"/_opening ]] && "$scriptAbsoluteLocation" _checkForMounts "$chrootDir"
 	then
 		_waitChRoot_opening || return 1
 		_readyChRoot || return 1
+		return 0
 	fi
 	
 	echo > "$scriptLocal"/_opening
@@ -126,6 +135,8 @@ _imageChRoot() {
 	
 	
 	rm "$scriptLocal"/_opening
+	
+	echo > "$scriptLocal"/_open
 }
 
 
