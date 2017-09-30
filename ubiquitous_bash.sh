@@ -627,7 +627,7 @@ _mountChRoot_image_raspbian() {
 		chrootimagedev=$(cat "$safeTmp"/imagedev)
 		
 		local chrootimagepart
-		chrootimagepart="$imagedev"p2
+		chrootimagepart="$chrootimagedev"p2
 		
 		local chrootloopdevfs
 		chrootloopdevfs=$(eval $(sudo -n blkid "$chrootimagepart" | awk ' { print $3 } '); echo $TYPE)
@@ -713,6 +713,10 @@ _openChRoot() {
 
 
 _closeChRoot() {
+	if [[ "$1" == "--force" ]]
+	then
+		_close --force _waitChRoot_closing _umountChRoot_image
+	fi
 	_close _waitChRoot_closing _umountChRoot_image
 }
 
@@ -818,7 +822,7 @@ _mustGetSudo() {
 	
 	! [[ "$rootAvailable" == "true" ]] && exit 1
 	
-	#return 0
+	return 0
 }
 
 #Returns a UUID in the form of xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
@@ -1295,15 +1299,21 @@ _open() {
 #"$1" == waitClose function && shift
 #"$@" == wrapped function and parameters
 _close() {
+	local closeForceEnable
+	closeForceEnable=false
+	
 	if [[ "$1" == "--force" ]]
 	then
+		closeForceEnable=true
 		shift
-	elif ! [[ -e "$scriptLocal"/_open ]]
+	fi
+	
+	if ! [[ -e "$scriptLocal"/_open ]] && [[ "$closeForceEnable" != "true" ]]
 	then
 		return 0
 	fi
 	
-	if [[ -e "$scriptLocal"/_closing ]]
+	if [[ -e "$scriptLocal"/_closing ]] && [[ "$closeForceEnable" != "true" ]]
 	then
 		if _waitFileCommands "$scriptLocal"/_closing "$1"
 		then

@@ -36,7 +36,7 @@ _mountChRoot_image_raspbian() {
 		chrootimagedev=$(cat "$safeTmp"/imagedev)
 		
 		local chrootimagepart
-		chrootimagepart="$imagedev"p2
+		chrootimagepart="$chrootimagedev"p2
 		
 		local chrootloopdevfs
 		chrootloopdevfs=$(eval $(sudo -n blkid "$chrootimagepart" | awk ' { print $3 } '); echo $TYPE)
@@ -122,6 +122,10 @@ _openChRoot() {
 
 
 _closeChRoot() {
+	if [[ "$1" == "--force" ]]
+	then
+		_close --force _waitChRoot_closing _umountChRoot_image
+	fi
 	_close _waitChRoot_closing _umountChRoot_image
 }
 

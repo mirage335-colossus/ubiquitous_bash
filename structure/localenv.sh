@@ -105,15 +105,21 @@ _open() {
 #"$1" == waitClose function && shift
 #"$@" == wrapped function and parameters
 _close() {
+	local closeForceEnable
+	closeForceEnable=false
+	
 	if [[ "$1" == "--force" ]]
 	then
+		closeForceEnable=true
 		shift
-	elif ! [[ -e "$scriptLocal"/_open ]]
+	fi
+	
+	if ! [[ -e "$scriptLocal"/_open ]] && [[ "$closeForceEnable" != "true" ]]
 	then
 		return 0
 	fi
 	
-	if [[ -e "$scriptLocal"/_closing ]]
+	if [[ -e "$scriptLocal"/_closing ]] && [[ "$closeForceEnable" != "true" ]]
 	then
 		if _waitFileCommands "$scriptLocal"/_closing "$1"
 		then
