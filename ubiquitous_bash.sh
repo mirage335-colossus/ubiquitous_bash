@@ -739,7 +739,6 @@ _closeChRoot() {
 	_close _waitChRoot_closing _umountChRoot_image
 }
 
-
 _chroot_RasPi() {
 	
 	

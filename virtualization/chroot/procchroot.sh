@@ -13,6 +13,44 @@ _listprocChRoot() {
 	echo "$PROCS"
 }
 
+_killprocChRoot() {
+	local chrootKillSignal
+	chrootKillSignal="$1"
+	
+	local chrootKillDir
+	chrootKillDir="$2"
+	
+	chrootprocs=$(_listprocChRoot "$chrootKillDir")
+	[[ "$chrootprocs" == "" ]] && return 0
+	sudo -n kill -"$chrootKillSignal" "$chrootprocs" >/dev/null 2>&1
+	sleep 0.1
+	
+	chrootprocs=$(_listprocChRoot "$chrootKillDir")
+	[[ "$chrootprocs" == "" ]] && return 0
+	sudo -n kill -"$chrootKillSignal" "$chrootprocs" >/dev/null 2>&1
+	sleep 0.3
+	
+	chrootprocs=$(_listprocChRoot "$chrootKillDir")
+	[[ "$chrootprocs" == "" ]] && return 0
+	sudo -n kill -"$chrootKillSignal" "$chrootprocs" >/dev/null 2>&1
+	sleep 1
+	
+	chrootprocs=$(_listprocChRoot "$chrootKillDir")
+	[[ "$chrootprocs" == "" ]] && return 0
+	sudo -n kill -"$chrootKillSignal" "$chrootprocs" >/dev/null 2>&1
+	sleep 3
+	
+	chrootprocs=$(_listprocChRoot "$chrootKillDir")
+	[[ "$chrootprocs" == "" ]] && return 0
+	sudo -n kill -"$chrootKillSignal" "$chrootprocs" >/dev/null 2>&1
+	sleep 9
+	
+	chrootprocs=$(_listprocChRoot "$chrootKillDir")
+	[[ "$chrootprocs" == "" ]] && return 0
+	sudo -n kill -"$chrootKillSignal" "$chrootprocs" >/dev/null 2>&1
+	sleep 18
+}
+
 #End user and diagnostic function, shuts down all processes in a chroot.
 _stopChRoot() {
 	_mustGetSudo
@@ -21,13 +59,12 @@ _stopChRoot() {
 	absolute1=$(_getAbsoluteLocation "$1")
 	
 	echo "TERMinating all chrooted processes."
-	sleep 5
-	sudo -n kill -TERM $(_listprocChRoot "$absolute1") >/dev/null 2>&1
-	sleep 15
+	
+	_killprocChRoot "TERM" "$absolute1"
 	
 	echo "KILLing all chrooted processes."
-	sudo -n kill -KILL $(_listprocChRoot "$absolute1") >/dev/null 2>&1
-	sleep 1
+	
+	_killprocChRoot "KILL" "$absolute1"
 	
 	echo "Remaining chrooted processes."
 	_listprocChRoot "$absolute1"
