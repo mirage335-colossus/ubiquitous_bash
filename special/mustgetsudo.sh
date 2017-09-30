@@ -8,4 +8,6 @@ _mustGetSudo() {
 	#[[ $(id -u) == 0 ]] && rootAvailable=true
 	
 	! [[ "$rootAvailable" == "true" ]] && exit 1
+	
+	return 0
 }

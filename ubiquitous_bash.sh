@@ -666,13 +666,13 @@ _mountChRoot_image() {
 }
 
 _umountChRoot_image() {
-	_mustGetSudo || _return 1
+	_mustGetSudo || return 1
 	
 	_stopChRoot "$chrootDir"
 	_umountChRoot "$chrootDir"
 	mountpoint "$chrootDir" > /dev/null 2>&1 && sudo -n umount "$chrootDir"
 	
-	"$scriptAbsoluteLocation" _checkForMounts "$chrootDir" && _return 1
+	"$scriptAbsoluteLocation" _checkForMounts "$chrootDir" && return 1
 }
 
 _waitChRoot_opening() {
@@ -707,7 +707,7 @@ _waitChRoot_closing() {
 	return 1
 }
 
-_open_ChRoot_image() {
+_openChRoot() {
 	_open _waitChRoot_opening _mountChRoot_image
 }
 
@@ -817,6 +817,8 @@ _mustGetSudo() {
 	#[[ $(id -u) == 0 ]] && rootAvailable=true
 	
 	! [[ "$rootAvailable" == "true" ]] && exit 1
+	
+	#return 0
 }
 
 #Returns a UUID in the form of xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
