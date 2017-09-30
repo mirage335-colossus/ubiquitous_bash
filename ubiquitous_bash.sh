@@ -1251,6 +1251,95 @@ _preserveLog() {
 	cp "$logTmp"/* ./  >/dev/null 2>&1
 }
 
+#Wrapper. If lock file is present, waits for unlocking operation to complete successfully, then reports status.
+#"$1" == checkFile
+#"$@" == wait command and parameters
+_waitFileCommands() {
+	if [[ -e "$1" ]]
+	then
+		"$@"
+		if [[ "$?" != "0" ]]
+		then
+			return 1
+		fi
+		
+		[[ -e "$1" ]] && return 1
+		
+		echo > "$1"
+		return 0
+	fi
+}
+
+#Wrapper. Operates lock file for mounting shared resources (eg. persistent virtual machine image). Avoid if possible.
+#"$1" == waitOpen function && shift
+#"$@" == wrapped function and parameters
+_open() {
+	[[ -e "$scriptLocal"/_open ]] && return 0
+	
+	[[ -e "$scriptLocal"/_closing ]] && return 1
+	
+	_waitFileCommands "$scriptLocal"/_opening "$1" || return 1
+	shift
+	
+	echo "LOCKED" > "$scriptLocal"/WARNING
+	
+	"$@"
+	
+	
+	if [[ "$?" == "0" ]]
+	then
+		echo > "$scriptLocal"/_open
+		rm "$scriptLocal"/_opening
+		return 0
+	fi
+	
+	return 1
+}
+
+#Wrapper. Operates lock file for shared resources (eg. persistent virtual machine image). Avoid if possible.
+#"$1" == <"--force"> && shift
+#"$1" == waitClose function && shift
+#"$@" == wrapped function and parameters
+_close() {
+	if [[ "$1" == "--force" ]]
+	then
+		shift
+	elif [[ -e "$scriptLocal"/_open ]]
+	then
+		return 0
+	fi
+	
+	_waitFileCommands "$scriptLocal"/_closing "$1" || return 1
+	shift
+	
+	"$@"
+	
+	if [[ "$?" == "0" ]]
+	then
+		rm "$scriptLocal"/_open
+		rm "$scriptLocal"/_closing
+		rm "$scriptLocal"/WARNING
+		return 0
+	fi
+	
+	return 1
+	
+	
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 #####Idle
 
 _idle() {
