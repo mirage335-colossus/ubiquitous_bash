@@ -23,5 +23,7 @@ v2.1
 * A few commands and internal functions, eg. "type" and "_timeout", are used to ensure consistent behavior across platforms.
 * Interdependencies between functions within the ubiquitous_bash library may not be documented. Test lean configurations in a safe place.
 
+* RasPi image must be closed properly (if opened by chroot) before flashing. Doing so will re-enable platform specific "/etc/ld.so.preload" configuration.
+
 # Copyright
 All content in this folder not owned by other authors is intended to be public domain. Other copyright notices may be provided as templates. See license.txt for details.

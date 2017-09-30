@@ -688,12 +688,18 @@ _mountChRoot_image_raspbian() {
 			
 			_readyChRoot "$chrootDir" || _stop 1
 			
+			sudo -n cp /usr/bin/qemu-arm-static "$chrootDir"/usr/bin
+			sudo -n cp /usr/bin/qemu-armeb-static "$chrootDir"/usr/bin
 			
+			sudo -n cp -n "$chrootDir"/etc/ld.so.preload "$chrootDir"/etc/ld.so.preload.orig
+			echo | sudo -n tee "$chrootDir"/etc/ld.so.preload > /dev/null 2>&1
+			
+			_stop 0
 		fi
 		
 	fi
 	
-	_stop 0
+	_stop 1
 }
 
 _mountChRoot_image() {
@@ -776,17 +782,32 @@ _closeChRoot() {
 	_close _waitChRoot_closing _umountChRoot_image
 }
 
-_chroot_RasPi() {
+_chroot_raspi() {
+	[[ ! -e "$chrootDir"/bin/bash ]] && return 1
 	
+	_mustGetSudo
 	
-	#effectively disable /etc/ld.so.preload
+	#cd "$chrootDir"
 	
-	
-	true
-	#chroot
-	
-	#enable default /etc/ld.so.preload
+	sudo -n env -i HOME="/root" TERM="${TERM}" SHELL="/bin/bash" PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" DISPLAY="$DISPLAY" $(sudo -n which chroot) "$chrootDir"
 } 
+
+
+_chroot() {
+	if [[ -e "$scriptLocal"/vm-raspbian.img ]]
+	then
+		"$scriptAbsoluteLocation" _chroot_raspi
+		return "$?"
+	fi
+	
+	if [[ -e "$scriptLocal"/vm-x64.img ]]
+	then
+		"$scriptAbsoluteLocation" _chroot_x64
+		return "$?"
+	fi
+	
+	
+}
 
  
 
