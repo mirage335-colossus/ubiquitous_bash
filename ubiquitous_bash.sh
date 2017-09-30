@@ -1257,17 +1257,22 @@ _preserveLog() {
 _waitFileCommands() {
 	if [[ -e "$1" ]]
 	then
+		local waitFileCommandStatus
+		
 		"$@"
-		if [[ "$?" != "0" ]]
+		
+		waitFileCommandStatus="$?"
+		
+		if [[ "$waitFileCommandStatus" != "0" ]]
 		then
-			return 1
+			return "$waitFileCommandStatus"
 		fi
 		
 		[[ -e "$1" ]] && return 1
 		
-		echo > "$1"
-		return 0
 	fi
+	
+	return 0
 }
 
 #Wrapper. Operates lock file for mounting shared resources (eg. persistent virtual machine image). Avoid if possible.
@@ -1278,7 +1283,17 @@ _open() {
 	
 	[[ -e "$scriptLocal"/_closing ]] && return 1
 	
-	_waitFileCommands "$scriptLocal"/_opening "$1" || return 1
+	if [[ -e "$scriptLocal"/_opening ]]
+	then
+		if _waitFileCommands "$scriptLocal"/_opening "$1"
+		then
+			[[ -e "$scriptLocal"/_open ]] || return 1
+			return 0
+		else
+			return 1
+		fi
+	fi
+	echo > "$scriptLocal"/_opening
 	shift
 	
 	echo "LOCKED" > "$scriptLocal"/WARNING
@@ -1304,12 +1319,21 @@ _close() {
 	if [[ "$1" == "--force" ]]
 	then
 		shift
-	elif [[ -e "$scriptLocal"/_open ]]
+	elif ! [[ -e "$scriptLocal"/_open ]]
 	then
 		return 0
 	fi
 	
-	_waitFileCommands "$scriptLocal"/_closing "$1" || return 1
+	if [[ -e "$scriptLocal"/_closing ]]
+	then
+		if _waitFileCommands "$scriptLocal"/_closing "$1"
+		then
+			return 0
+		else
+			return 1
+		fi
+	fi
+	echo > "$scriptLocal"/_closing
 	shift
 	
 	"$@"
@@ -1326,19 +1350,6 @@ _close() {
 	
 	
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 #####Idle
 
