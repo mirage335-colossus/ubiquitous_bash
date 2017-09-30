@@ -22,13 +22,14 @@ fi
 
 #Launch internal functions as commands.
 #if [[ "$1" != "" ]] && [[ "$1" != "-"* ]] && [[ ! -e "$1" ]]
-if [[ "$1" == '_'* ]]
+if [[ "$1" == '_'* ]] || [[ "$1" == "true" ]] || [[ "$1" == "false" ]]
 then
 	"$@"
+	internalFunctionExitStatus="$?"
 	#Exit if not imported into existing shell, or bypass requested, else fall through to subsequent return.
 	if ! [[ "${BASH_SOURCE[0]}" != "${0}" ]] || ! [[ "$1" != "--bypass" ]]
 	then
-		exit "$?"
+		exit "$internalFunctionExitStatus"
 	fi
 	#_stop "$?"
 fi

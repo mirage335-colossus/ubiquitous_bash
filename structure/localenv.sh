@@ -38,7 +38,11 @@ _preserveLog() {
 #"$1" == checkFile
 #"$@" == wait command and parameters
 _waitFileCommands() {
-	if [[ -e "$1" ]]
+	local waitCheckFile
+	waitCheckFile="$1"
+	shift
+	
+	if [[ -e "$waitCheckFile" ]]
 	then
 		local waitFileCommandStatus
 		
@@ -51,7 +55,7 @@ _waitFileCommands() {
 			return "$waitFileCommandStatus"
 		fi
 		
-		[[ -e "$1" ]] && return 1
+		[[ -e "$waitCheckFile" ]] && return 1
 		
 	fi
 	
@@ -78,14 +82,13 @@ _open() {
 	fi
 	
 	echo > "$scriptLocal"/quicktmp
-	mv -n "$scriptLocal"/quicktmp "$scriptLocal"/_opening || return 1
+	mv -n "$scriptLocal"/quicktmp "$scriptLocal"/_opening > /dev/null 2>&1 || return 1
 	
 	shift
 	
 	echo "LOCKED" > "$scriptLocal"/WARNING
 	
 	"$@"
-	
 	
 	if [[ "$?" == "0" ]]
 	then

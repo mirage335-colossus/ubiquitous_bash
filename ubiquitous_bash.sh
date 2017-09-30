@@ -1255,7 +1255,11 @@ _preserveLog() {
 #"$1" == checkFile
 #"$@" == wait command and parameters
 _waitFileCommands() {
-	if [[ -e "$1" ]]
+	local waitCheckFile
+	waitCheckFile="$1"
+	shift
+	
+	if [[ -e "$waitCheckFile" ]]
 	then
 		local waitFileCommandStatus
 		
@@ -1268,7 +1272,7 @@ _waitFileCommands() {
 			return "$waitFileCommandStatus"
 		fi
 		
-		[[ -e "$1" ]] && return 1
+		[[ -e "$waitCheckFile" ]] && return 1
 		
 	fi
 	
@@ -1295,7 +1299,7 @@ _open() {
 	fi
 	
 	echo > "$scriptLocal"/quicktmp
-	mv -n "$scriptLocal"/quicktmp "$scriptLocal"/_opening || return 1
+	mv -n "$scriptLocal"/quicktmp "$scriptLocal"/_opening > /dev/null 2>&1 || return 1
 	
 	shift
 	
@@ -1303,10 +1307,9 @@ _open() {
 	
 	"$@"
 	
-	
 	if [[ "$?" == "0" ]]
 	then
-		echo > "$scriptLocal"/_open
+		echo > "$scriptLocal"/_open || return 1
 		rm "$scriptLocal"/_opening
 		return 0
 	fi
@@ -1346,7 +1349,7 @@ _close() {
 	
 	if [[ "$?" == "0" ]]
 	then
-		rm "$scriptLocal"/_open
+		rm "$scriptLocal"/_open || return 1
 		rm "$scriptLocal"/_closing
 		rm "$scriptLocal"/WARNING
 		return 0
@@ -1650,13 +1653,14 @@ fi
 
 #Launch internal functions as commands.
 #if [[ "$1" != "" ]] && [[ "$1" != "-"* ]] && [[ ! -e "$1" ]]
-if [[ "$1" == '_'* ]]
+if [[ "$1" == '_'* ]] || [[ "$1" == "true" ]] || [[ "$1" == "false" ]]
 then
 	"$@"
+	internalFunctionExitStatus="$?"
 	#Exit if not imported into existing shell, or bypass requested, else fall through to subsequent return.
 	if ! [[ "${BASH_SOURCE[0]}" != "${0}" ]] || ! [[ "$1" != "--bypass" ]]
 	then
-		exit "$?"
+		exit "$internalFunctionExitStatus"
 	fi
 	#_stop "$?"
 fi
