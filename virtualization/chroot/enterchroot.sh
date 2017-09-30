@@ -15,31 +15,8 @@ _waitChRoot_opening() {
 	return 1
 }
 
-_closeChRoot() {
-	[[ -e "$scriptLocal"/_closing ]] && return 1
-	
-	_start
-	
-	_mustGetSudo
-	
-	echo > "$scriptLocal"/_closing
-	
-	_stopChRoot "$chrootDir"
-	_umountChRoot "$chrootDir"
-	mountpoint "$chrootDir" > /dev/null 2>&1 && sudo -n umount "$chrootDir"
-	
-	"$scriptAbsoluteLocation" _checkForMounts "$chrootDir" && _stop 1
-	
-	rm "$scriptLocal"/_closing
-	
-	rm "$scriptLocal"/_open
-	
-	rm "$scriptLocal"/WARNING
-	
-	_stop
-}
 
-_imageLoop_raspbian() {
+_mountChRoot_image_raspbian() {
 	_mustGetSudo
 	
 	_start
@@ -50,23 +27,24 @@ _imageLoop_raspbian() {
 	
 	if sudo -n losetup -f -P --show "$scriptLocal"/vm-raspbian.img > "$safeTmp"/imagedev 2> /dev/null
 	then
-		cp "$safeTmp"/imagedev "$scriptLocal"/imagedev
+		#Preemptively declare device open to prevent potentially dangerous multiple mount attempts.
+		echo > "$scriptLocal"/_open || _stop 1
 		
-		local imagedev
-		imagedev=$(cat "$safeTmp"/imagedev)
+		cp -n "$safeTmp"/imagedev "$scriptLocal"/imagedev > /dev/null 2>&1 || _stop 1
 		
-		local imagepart
-		imagepart="$imagedev"p2
+		local chrootimagedev
+		chrootimagedev=$(cat "$safeTmp"/imagedev)
 		
-		local loopdevfs
-		loopdevfs=$(eval $(sudo -n blkid "$imagepart" | awk ' { print $3 } '); echo $TYPE)
+		local chrootimagepart
+		chrootimagepart="$imagedev"p2
 		
-		if [[ "$loopdevfs" == "ext4" ]]
+		local chrootloopdevfs
+		chrootloopdevfs=$(eval $(sudo -n blkid "$chrootimagepart" | awk ' { print $3 } '); echo $TYPE)
+		
+		if [[ "$chrootloopdevfs" == "ext4" ]]
 		then
 			
-			sudo -n mount "$imagepart" "$chrootDir" || _stop 1
-			
-			echo > "$scriptLocal"/_open
+			sudo -n mount "$chrootimagepart" "$chrootDir" || _stop 1
 			
 			mountpoint "$chrootDir" > /dev/null 2>&1 || _stop 1
 			
@@ -82,81 +60,73 @@ _imageLoop_raspbian() {
 	_stop 0
 }
 
-_imageLoop_Native() {
-	_mustGetSudo
-	mkdir -p "$chrootDir"
-	
-	
-}
-
-_imageLoop_platforms() {
-	_mustGetSudo
-	mkdir -p "$chrootDir"
-	
+_mountChRoot_image() {
 	if [[ -e "$scriptLocal"/vm-raspbian.img ]]
 	then
-		_imageLoop_raspbian
+		"$scriptAbsoluteLocation" _mountChRoot_image_raspbian
 		return "$?"
 	fi
 	
-	if [[ -e "$scriptLocal"/vm.img ]]
+	if [[ -e "$scriptLocal"/vm-x64.img ]]
 	then
-		_imageLoop_Native
+		"$scriptAbsoluteLocation" _mountChRoot_image_x64
 		return "$?"
 	fi
 }
 
-_imageChRoot() {
-	_mustGetSudo
-	mkdir -p "$chrootDir"
+_umountChRoot_image() {
+	_mustGetSudo || _return 1
 	
-	[[ -e "$scriptLocal"/_open ]] && return 0
+	_stopChRoot "$chrootDir"
+	_umountChRoot "$chrootDir"
+	mountpoint "$chrootDir" > /dev/null 2>&1 && sudo -n umount "$chrootDir"
 	
-	[[ -e "$scriptLocal"/_closing ]] && return 1
+	"$scriptAbsoluteLocation" _checkForMounts "$chrootDir" && _return 1
+}
+
+_waitChRoot_opening() {
+	_readyChRoot "$chrootDir" && return 0
+	sleep 1
+	_readyChRoot "$chrootDir" && return 0
+	sleep 3
+	_readyChRoot "$chrootDir" && return 0
+	sleep 9
+	_readyChRoot "$chrootDir" && return 0
+	sleep 27
+	_readyChRoot "$chrootDir" && return 0
+	sleep 81
+	_readyChRoot "$chrootDir" && return 0
 	
-	if [[ -e "$scriptLocal"/_opening ]] && "$scriptAbsoluteLocation" _checkForMounts "$chrootDir"
-	then
-		_waitChRoot_opening || return 1
-		_readyChRoot || return 1
-		return 0
-	fi
+	return 1
+}
+
+_waitChRoot_closing() {
+	_readyChRoot "$chrootDir" || return 0
+	sleep 1
+	_readyChRoot "$chrootDir" || return 0
+	sleep 3
+	_readyChRoot "$chrootDir" || return 0
+	sleep 9
+	_readyChRoot "$chrootDir" || return 0
+	sleep 27
+	_readyChRoot "$chrootDir" || return 0
+	sleep 81
+	_readyChRoot "$chrootDir" || return 0
 	
-	echo > "$scriptLocal"/_opening
-	
-	
-	if ! _imageLoop_platforms
-	then
-		"$scriptAbsoluteLocation" _closeChRoot
-		
-		rm "$scriptLocal"/_opening
-		
-		return 1
-	fi
-	
-	
-	rm "$scriptLocal"/_opening
-	
-	echo > "$scriptLocal"/_open
+	return 1
+}
+
+_open_ChRoot_image() {
+	_open _waitChRoot_opening _mountChRoot_image
 }
 
 
-_openChRoot() {
-	_start
-	
-	_mustGetSudo
-	
-	echo "OPEN CHROOT" > "$scriptLocal"/WARNING
-	
-	mkdir -p "$chrootDir"
-	
-	_imageChRoot || _stop 1
-	
-	_stop
+_closeChRoot() {
+	_close _waitChRoot_closing _umountChRoot_image
 }
 
 
-
-_chrootRasPi() {
+_chroot_RasPi() {
 	
 	
 	#effectively disable /etc/ld.so.preload

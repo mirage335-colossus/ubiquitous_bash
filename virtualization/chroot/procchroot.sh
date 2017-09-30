@@ -15,17 +15,18 @@ _listprocChRoot() {
 
 #End user and diagnostic function, shuts down all processes in a chroot.
 _stopChRoot() {
+	_mustGetSudo
 	
 	local absolute1
 	absolute1=$(_getAbsoluteLocation "$1")
 	
 	echo "TERMinating all chrooted processes."
 	sleep 5
-	kill -TERM $(_listprocChRoot "$absolute1") >/dev/null 2>&1
+	sudo -n kill -TERM $(_listprocChRoot "$absolute1") >/dev/null 2>&1
 	sleep 15
 	
 	echo "KILLing all chrooted processes."
-	kill -KILL $(_listprocChRoot "$absolute1") >/dev/null 2>&1
+	sudo -n kill -KILL $(_listprocChRoot "$absolute1") >/dev/null 2>&1
 	sleep 1
 	
 	echo "Remaining chrooted processes."
