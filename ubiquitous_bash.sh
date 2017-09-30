@@ -202,6 +202,29 @@ _bindMountManager() {
 	sudo -n mount --bind "$1" "$2"
 } 
 
+_wait_umount() {
+	sudo -n umount "$1"
+	mountpoint "$1" > /dev/null 2>&1 || return 0
+	sleep 0.1
+	
+	sudo -n umount "$1"
+	mountpoint "$1" > /dev/null 2>&1 || return 0
+	sleep 0.3
+	
+	sudo -n umount "$1"
+	mountpoint "$1" > /dev/null 2>&1 || return 0
+	sleep 1
+	
+	sudo -n umount "$1"
+	mountpoint "$1" > /dev/null 2>&1 || return 0
+	sleep 3
+	
+	sudo -n umount "$1"
+	mountpoint "$1" > /dev/null 2>&1 || return 0
+	sleep 9
+	
+} 
+
 _testMountChecks() {
 	_checkDep mountpoint
 }
@@ -548,29 +571,6 @@ _mountChRoot() {
 	
 }
 
-_wait_umount() {
-	sudo -n umount "$1"
-	mountpoint "$1" > /dev/null 2>&1 || return 0
-	sleep 0.1
-	
-	sudo -n umount "$1"
-	mountpoint "$1" > /dev/null 2>&1 || return 0
-	sleep 0.3
-	
-	sudo -n umount "$1"
-	mountpoint "$1" > /dev/null 2>&1 || return 0
-	sleep 1
-	
-	sudo -n umount "$1"
-	mountpoint "$1" > /dev/null 2>&1 || return 0
-	sleep 3
-	
-	sudo -n umount "$1"
-	mountpoint "$1" > /dev/null 2>&1 || return 0
-	sleep 9
-	
-}
-
 #"$1" == ChRoot Dir
 _umountChRoot() {
 	_mustGetSudo
@@ -614,24 +614,6 @@ _readyChRoot() {
 	return 0
 	
 }
-
-
-_waitChRoot_opening() {
-	_readyChRoot "$chrootDir" && return 0
-	sleep 1
-	_readyChRoot "$chrootDir" && return 0
-	sleep 3
-	_readyChRoot "$chrootDir" && return 0
-	sleep 9
-	_readyChRoot "$chrootDir" && return 0
-	sleep 27
-	_readyChRoot "$chrootDir" && return 0
-	sleep 81
-	_readyChRoot "$chrootDir" && return 0
-	
-	return 1
-}
-
 
 _mountChRoot_image_raspbian() {
 	_mustGetSudo

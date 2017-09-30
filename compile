@@ -113,7 +113,7 @@ _includeScript bindmountmanager.sh "generic/filesystem/mounts"
 
 _includeScript waitumount.sh "generic/filesystem/mounts"
 
-_includeScript bindmountmanager.sh "generic/filesystem/mounts"
+_includeScript mountchecks.sh "generic/filesystem/mounts"
 
 _includeScript timeout.sh "generic/process"
 
