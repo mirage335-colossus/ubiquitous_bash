@@ -29,14 +29,17 @@ _umountChRoot() {
 	local absolute1
 	absolute1=$(_getAbsoluteLocation "$1")
 	
-	sudo -n umount "$absolute1"/proc
-	sudo -n umount "$absolute1"/sys
-	sudo -n umount "$absolute1"/dev/pts
-	sudo -n umount "$absolute1"/tmp
-	sudo -n umount "$absolute1"/dev/shm
-	sudo -n umount "$absolute1"/dev
+	_wait_umount "$absolute1"/dev/shm
+	_wait_umount "$absolute1"/dev/pts
 	
-	sudo -n umount "$absolute1" >/dev/null 2>&1
+	_wait_umount "$absolute1"/proc
+	_wait_umount "$absolute1"/sys
+	
+	_wait_umount "$absolute1"/tmp
+	
+	_wait_umount "$absolute1"/dev
+	
+	_wait_umount "$absolute1" >/dev/null 2>&1
 	
 }
 

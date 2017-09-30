@@ -548,6 +548,29 @@ _mountChRoot() {
 	
 }
 
+_wait_umount() {
+	sudo -n umount "$1"
+	mountpoint "$1" > /dev/null 2>&1 || return 0
+	sleep 0.1
+	
+	sudo -n umount "$1"
+	mountpoint "$1" > /dev/null 2>&1 || return 0
+	sleep 0.3
+	
+	sudo -n umount "$1"
+	mountpoint "$1" > /dev/null 2>&1 || return 0
+	sleep 1
+	
+	sudo -n umount "$1"
+	mountpoint "$1" > /dev/null 2>&1 || return 0
+	sleep 3
+	
+	sudo -n umount "$1"
+	mountpoint "$1" > /dev/null 2>&1 || return 0
+	sleep 9
+	
+}
+
 #"$1" == ChRoot Dir
 _umountChRoot() {
 	_mustGetSudo
@@ -557,14 +580,17 @@ _umountChRoot() {
 	local absolute1
 	absolute1=$(_getAbsoluteLocation "$1")
 	
-	sudo -n umount "$absolute1"/proc
-	sudo -n umount "$absolute1"/sys
-	sudo -n umount "$absolute1"/dev/pts
-	sudo -n umount "$absolute1"/tmp
-	sudo -n umount "$absolute1"/dev/shm
-	sudo -n umount "$absolute1"/dev
+	_wait_umount "$absolute1"/dev/shm
+	_wait_umount "$absolute1"/dev/pts
 	
-	sudo -n umount "$absolute1" >/dev/null 2>&1
+	_wait_umount "$absolute1"/proc
+	_wait_umount "$absolute1"/sys
+	
+	_wait_umount "$absolute1"/tmp
+	
+	_wait_umount "$absolute1"/dev
+	
+	_wait_umount "$absolute1" >/dev/null 2>&1
 	
 }
 
@@ -673,6 +699,17 @@ _umountChRoot_image() {
 	mountpoint "$chrootDir" > /dev/null 2>&1 && sudo -n umount "$chrootDir"
 	
 	"$scriptAbsoluteLocation" _checkForMounts "$chrootDir" && return 1
+	
+	local chrootimagedev
+	chrootimagedev=$(cat "$scriptLocal"/imagedev)
+	
+	sudo -n losetup -d "$chrootimagedev" > /dev/null 2>&1 || return 1
+	
+	rm "$scriptLocal"/imagedev || return 1
+	
+	rm "$scriptLocal"/quicktmp > /dev/null 2>&1
+	
+	return 0
 }
 
 _waitChRoot_opening() {
@@ -1323,8 +1360,12 @@ _close() {
 		fi
 	fi
 	
-	echo > "$scriptLocal"/quicktmp
-	mv -n "$scriptLocal"/quicktmp "$scriptLocal"/_closing || return 1
+	if [[ "$closeForceEnable" != "true" ]]
+	then
+		echo > "$scriptLocal"/quicktmp
+		mv -n "$scriptLocal"/quicktmp "$scriptLocal"/_closing || return 1
+	fi
+	! [[ -e "$scriptLocal"/_closing ]] && echo > "$scriptLocal"/_closing
 	
 	shift
 	

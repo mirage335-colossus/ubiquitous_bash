@@ -129,8 +129,12 @@ _close() {
 		fi
 	fi
 	
-	echo > "$scriptLocal"/quicktmp
-	mv -n "$scriptLocal"/quicktmp "$scriptLocal"/_closing || return 1
+	if [[ "$closeForceEnable" != "true" ]]
+	then
+		echo > "$scriptLocal"/quicktmp
+		mv -n "$scriptLocal"/quicktmp "$scriptLocal"/_closing || return 1
+	fi
+	! [[ -e "$scriptLocal"/_closing ]] && echo > "$scriptLocal"/_closing
 	
 	shift
 	

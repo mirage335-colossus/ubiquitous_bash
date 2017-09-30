@@ -1,21 +1,3 @@
-
-_waitChRoot_opening() {
-	_readyChRoot "$chrootDir" && return 0
-	sleep 1
-	_readyChRoot "$chrootDir" && return 0
-	sleep 3
-	_readyChRoot "$chrootDir" && return 0
-	sleep 9
-	_readyChRoot "$chrootDir" && return 0
-	sleep 27
-	_readyChRoot "$chrootDir" && return 0
-	sleep 81
-	_readyChRoot "$chrootDir" && return 0
-	
-	return 1
-}
-
-
 _mountChRoot_image_raspbian() {
 	_mustGetSudo
 	
@@ -82,6 +64,17 @@ _umountChRoot_image() {
 	mountpoint "$chrootDir" > /dev/null 2>&1 && sudo -n umount "$chrootDir"
 	
 	"$scriptAbsoluteLocation" _checkForMounts "$chrootDir" && return 1
+	
+	local chrootimagedev
+	chrootimagedev=$(cat "$scriptLocal"/imagedev)
+	
+	sudo -n losetup -d "$chrootimagedev" > /dev/null 2>&1 || return 1
+	
+	rm "$scriptLocal"/imagedev || return 1
+	
+	rm "$scriptLocal"/quicktmp > /dev/null 2>&1
+	
+	return 0
 }
 
 _waitChRoot_opening() {
