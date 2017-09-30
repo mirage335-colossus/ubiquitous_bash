@@ -1293,7 +1293,10 @@ _open() {
 			return 1
 		fi
 	fi
-	echo > "$scriptLocal"/_opening
+	
+	echo > "$scriptLocal"/quicktmp
+	mv -n "$scriptLocal"/quicktmp "$scriptLocal"/_opening || return 1
+	
 	shift
 	
 	echo "LOCKED" > "$scriptLocal"/WARNING
@@ -1333,7 +1336,10 @@ _close() {
 			return 1
 		fi
 	fi
-	echo > "$scriptLocal"/_closing
+	
+	echo > "$scriptLocal"/quicktmp
+	mv -n "$scriptLocal"/quicktmp "$scriptLocal"/_closing || return 1
+	
 	shift
 	
 	"$@"

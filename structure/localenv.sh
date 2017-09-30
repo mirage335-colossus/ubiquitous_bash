@@ -76,7 +76,10 @@ _open() {
 			return 1
 		fi
 	fi
-	echo > "$scriptLocal"/_opening
+	
+	echo > "$scriptLocal"/quicktmp
+	mv -n "$scriptLocal"/quicktmp "$scriptLocal"/_opening || return 1
+	
 	shift
 	
 	echo "LOCKED" > "$scriptLocal"/WARNING
@@ -86,7 +89,7 @@ _open() {
 	
 	if [[ "$?" == "0" ]]
 	then
-		echo > "$scriptLocal"/_open
+		echo > "$scriptLocal"/_open || return 1
 		rm "$scriptLocal"/_opening
 		return 0
 	fi
@@ -116,14 +119,17 @@ _close() {
 			return 1
 		fi
 	fi
-	echo > "$scriptLocal"/_closing
+	
+	echo > "$scriptLocal"/quicktmp
+	mv -n "$scriptLocal"/quicktmp "$scriptLocal"/_closing || return 1
+	
 	shift
 	
 	"$@"
 	
 	if [[ "$?" == "0" ]]
 	then
-		rm "$scriptLocal"/_open
+		rm "$scriptLocal"/_open || return 1
 		rm "$scriptLocal"/_closing
 		rm "$scriptLocal"/WARNING
 		return 0
