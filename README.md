@@ -23,6 +23,7 @@ v2.1
 * A few commands and internal functions, eg. "type" and "_timeout", are used to ensure consistent behavior across platforms.
 * Interdependencies between functions within the ubiquitous_bash library may not be documented. Test lean configurations in a safe place.
 
+* ChRoot based virtualization by itself does not provide any security guarantees, especially under Linux hosts. Destruction of host filesystem is possible, especially for any guest filesystem that has been bind mounted.
 * RasPi image must be closed properly (if opened by chroot) before flashing. Doing so will re-enable platform specific "/etc/ld.so.preload" configuration.
 
 # Copyright
