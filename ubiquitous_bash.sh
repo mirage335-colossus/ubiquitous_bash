@@ -688,8 +688,10 @@ _mountChRoot_image_raspbian() {
 			
 			_readyChRoot "$chrootDir" || _stop 1
 			
-			sudo -n cp /usr/bin/qemu-arm-static "$chrootDir"/usr/bin
-			sudo -n cp /usr/bin/qemu-armeb-static "$chrootDir"/usr/bin
+			sudo -n cp "$scriptAbsoluteLocation" "$chrootDir"/usr/bin/
+			
+			sudo -n cp /usr/bin/qemu-arm-static "$chrootDir"/usr/bin/
+			sudo -n cp /usr/bin/qemu-armeb-static "$chrootDir"/usr/bin/
 			
 			sudo -n cp -n "$chrootDir"/etc/ld.so.preload "$chrootDir"/etc/ld.so.preload.orig
 			echo | sudo -n tee "$chrootDir"/etc/ld.so.preload > /dev/null 2>&1
@@ -782,6 +784,46 @@ _closeChRoot() {
 	_close _waitChRoot_closing _umountChRoot_image
 }
 
+
+
+_userChRoot_raspi() {
+	[[ ! -e "$chrootDir"/bin/bash ]] && return 1
+	
+	_mustGetSudo
+	
+	#cd "$chrootDir"
+	
+	local chrootExitStatus
+	
+	sudo -n env -i HOME="/root" TERM="${TERM}" SHELL="/bin/bash" PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" DISPLAY="$DISPLAY" $(sudo -n which chroot) "$chrootDir" "$@"
+	
+	chrootExitStatus="$?"
+	
+	
+	
+	
+	return "$chrootExitStatus"
+}
+
+
+
+_userChRoot() {
+	
+	if [[ -e "$scriptLocal"/vm-raspbian.img ]]
+	then
+		"$scriptAbsoluteLocation" _userChRoot_raspi
+		return "$?"
+	fi
+	
+	if [[ -e "$scriptLocal"/vm-x64.img ]]
+	then
+		"$scriptAbsoluteLocation" _userChRoot_x64
+		return "$?"
+	fi
+	
+}
+
+
 _chroot_raspi() {
 	[[ ! -e "$chrootDir"/bin/bash ]] && return 1
 	
@@ -789,23 +831,32 @@ _chroot_raspi() {
 	
 	#cd "$chrootDir"
 	
-	sudo -n env -i HOME="/root" TERM="${TERM}" SHELL="/bin/bash" PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" DISPLAY="$DISPLAY" $(sudo -n which chroot) "$chrootDir"
-} 
+	local chrootExitStatus
+	
+	sudo -n env -i HOME="/root" TERM="${TERM}" SHELL="/bin/bash" PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" DISPLAY="$DISPLAY" $(sudo -n which chroot) "$chrootDir" "$@"
+	
+	chrootExitStatus="$?"
+	
+	
+	
+	
+	return "$chrootExitStatus"
+}
 
 
 _chroot() {
+
 	if [[ -e "$scriptLocal"/vm-raspbian.img ]]
 	then
-		"$scriptAbsoluteLocation" _chroot_raspi
+		"$scriptAbsoluteLocation" _chroot_raspi "$@"
 		return "$?"
 	fi
 	
 	if [[ -e "$scriptLocal"/vm-x64.img ]]
 	then
-		"$scriptAbsoluteLocation" _chroot_x64
+		"$scriptAbsoluteLocation" _chroot_x64 "$@"
 		return "$?"
 	fi
-	
 	
 }
 

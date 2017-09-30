@@ -100,8 +100,10 @@ _mountChRoot_image_raspbian() {
 			
 			_readyChRoot "$chrootDir" || _stop 1
 			
-			sudo -n cp /usr/bin/qemu-arm-static "$chrootDir"/usr/bin
-			sudo -n cp /usr/bin/qemu-armeb-static "$chrootDir"/usr/bin
+			sudo -n cp "$scriptAbsoluteLocation" "$chrootDir"/usr/bin/
+			
+			sudo -n cp /usr/bin/qemu-arm-static "$chrootDir"/usr/bin/
+			sudo -n cp /usr/bin/qemu-armeb-static "$chrootDir"/usr/bin/
 			
 			sudo -n cp -n "$chrootDir"/etc/ld.so.preload "$chrootDir"/etc/ld.so.preload.orig
 			echo | sudo -n tee "$chrootDir"/etc/ld.so.preload > /dev/null 2>&1
