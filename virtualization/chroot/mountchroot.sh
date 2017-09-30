@@ -8,12 +8,12 @@ _mountChRoot() {
 	absolute1=$(_getAbsoluteLocation "$1")
 	
 	_bindMountManager "/dev" "$absolute1"/dev
-	_bindMountManager "/dev" "$absolute1"/proc
-	_bindMountManager "/dev" "$absolute1"/sys
+	_bindMountManager "/proc" "$absolute1"/proc
+	_bindMountManager "/sys" "$absolute1"/sys
 	
-	_bindMountManager "/dev" "$absolute1"/dev/pts
+	_bindMountManager "/dev/pts" "$absolute1"/dev/pts
 	
-	_bindMountManager "/dev" "$absolute1"/tmp
+	_bindMountManager "/tmp" "$absolute1"/tmp
 	
 	#Provide an shm filesystem at /dev/shm.
 	sudo -n mount -t tmpfs -o size=4G tmpfs "$absolute1"/dev/shm
