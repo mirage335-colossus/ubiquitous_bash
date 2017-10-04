@@ -26,6 +26,8 @@ _chroot() {
 # TODO Check if ubvrtusr uid actually needs to be changed/recreated.
 _userChRoot() {
 	
+	_openChRoot
+	
 	# DANGER Do NOT use typical safeTmp dir, as any recursive cleanup may be catastrophic.
 	export globalChRootDir="$chrootDir"
 	export instancedChrootDir="$scriptAbsoluteFolder"/c_"$sessionid"

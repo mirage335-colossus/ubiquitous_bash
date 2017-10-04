@@ -586,49 +586,6 @@ _stopChRoot() {
 	
 }
 
-# TODO TODO Mount project directory if isolation configuration variable is set. Set directory permissions correctly. Use either root or ubvrtusr home directory as appropriate.
-_mountChRoot_project() {
-	
-	true
-	
-}
-
-
-_mountChRoot_user() {
-	
-	_bindMountManager "$globalChRootDir" "$instancedChrootDir" || return 1
-	_mountChRoot "$instancedChrootDir" || return 1
-	
-	return 0
-	
-}
-
-_umountChRoot_user() {
-	
-	mountpoint "$chrootDir" > /dev/null 2>&1 || return 1
-	_umountChRoot "$instancedChrootDir"
-	
-}
-
-
-
-_mountChRoot_user_home() {
-	
-	sudo -n mount -t tmpfs -o size=4G tmpfs "$instancedChrootDir"/home/ubvrtusr || return 1
-	
-	return 0
-	
-}
-
-_umountChRoot_user_home() {
-	
-	_wait_umount "$instancedChrootDir"/home/ubvrtusr || return 1
-	mountpoint "$instancedChrootDir"/home/ubvrtusr > /dev/null 2>&1 && return 1
-	
-	return 0
-	
-}
-
 #"$1" == ChRoot Dir
 _mountChRoot() {
 	_mustGetSudo
@@ -828,7 +785,48 @@ _closeChRoot() {
 	_close _waitChRoot_closing _umountChRoot_image
 }
 
- 
+# TODO TODO Mount project directory if isolation configuration variable is set. Set directory permissions correctly. Use either root or ubvrtusr home directory as appropriate.
+_mountChRoot_project() {
+	
+	true
+	
+}
+
+
+_mountChRoot_user() {
+	
+	_bindMountManager "$globalChRootDir" "$instancedChrootDir" || return 1
+	_mountChRoot "$instancedChrootDir" || return 1
+	
+	return 0
+	
+}
+
+_umountChRoot_user() {
+	
+	mountpoint "$chrootDir" > /dev/null 2>&1 || return 1
+	_umountChRoot "$instancedChrootDir"
+	
+}
+
+
+
+_mountChRoot_user_home() {
+	
+	sudo -n mount -t tmpfs -o size=4G tmpfs "$instancedChrootDir"/home/ubvrtusr || return 1
+	
+	return 0
+	
+}
+
+_umountChRoot_user_home() {
+	
+	_wait_umount "$instancedChrootDir"/home/ubvrtusr || return 1
+	mountpoint "$instancedChrootDir"/home/ubvrtusr > /dev/null 2>&1 && return 1
+	
+	return 0
+	
+} 
 
 
 
@@ -855,7 +853,10 @@ _chroot() {
 	
 }
 
+# TODO Check if ubvrtusr uid actually needs to be changed/recreated.
 _userChRoot() {
+	
+	_openChRoot
 	
 	# DANGER Do NOT use typical safeTmp dir, as any recursive cleanup may be catastrophic.
 	export globalChRootDir="$chrootDir"
@@ -872,6 +873,16 @@ _userChRoot() {
 	
 	_mountChRoot_user || return 1
 	
+	## Wait for lock file. Not done with _waitFileCommands because there is nither an obvious means, nor an obviously catastrophically critical requirement, to independently check for completion of related useradd/mod/del operations.
+	while [[ -e "$scriptLocal"/_instancing ]]
+	do
+		sleep 1
+	done
+	
+	## Lock file.
+	echo > "$scriptLocal"/quicktmp
+	mv -n "$scriptLocal"/quicktmp "$scriptLocal"/_instancing > /dev/null 2>&1 || return 1
+	
 	_chroot userdel -r ubvrtusr > /dev/null 2>&1
 	
 	sudo -n mkdir -p "$instancedChrootDir"/home/ubvrtusr || return 1
@@ -879,6 +890,10 @@ _userChRoot() {
 	
 	_chroot useradd --shell /bin/bash -u "$HOST_USER_ID" -o -c "" -m ubvrtusr > /dev/null 2>&1 || return 1
 	_chroot usermod -a -G video ubvrtusr || return 1
+	
+	
+	## Lock file.
+	rm "$scriptLocal"/_instancing > /dev/null 2>&1 || return 1
 	
 	
 	_mountChRoot_project || return 1

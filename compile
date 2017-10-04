@@ -137,7 +137,7 @@ _includeScript localPathTranslation.sh "virtualization"
 
 _includeScript procchroot.sh "virtualization/chroot"
 _includeScript mountchroot.sh "virtualization/chroot"
-_includeScript mountuser.sh "virtualization/chroot"
+_includeScript mountchrootuser.sh "virtualization/chroot"
 _includeScript enterchroot.sh "virtualization/chroot"
 _includeScript dropchroot.sh "virtualization/chroot"
 
