@@ -1,3 +1,45 @@
+# TODO TODO Mount project directory if isolation configuration variable is set. Set directory permissions correctly. Use either root or ubvrtusr home directory as appropriate.
+_mountChRoot_project() {
+	
+	true
+	
+}
+
+
+_mountChRoot_user() {
+	
+	_bindMountManager "$globalChRootDir" "$instancedChrootDir" || return 1
+	_mountChRoot "$instancedChrootDir" || return 1
+	
+	return 0
+	
+}
+
+_umountChRoot_user() {
+	
+	_umountChRoot "$instancedChrootDir"
+	
+}
+
+
+
+_mountChRoot_user_home() {
+	
+	sudo -n mount -t tmpfs -o size=4G tmpfs "$instancedChrootDir"/home/ubvrtusr || return 1
+	
+	return 0
+	
+}
+
+_umountChRoot_user_home() {
+	
+	_wait_umount "$instancedChrootDir"/home/ubvrtusr || return 1
+	mountpoint "$instancedChrootDir"/home/ubvrtusr > /dev/null 2>&1 && return 1
+	
+	return 0
+	
+}
+
 #"$1" == ChRoot Dir
 _mountChRoot() {
 	_mustGetSudo
@@ -17,6 +59,9 @@ _mountChRoot() {
 	
 	#Provide an shm filesystem at /dev/shm.
 	sudo -n mount -t tmpfs -o size=4G tmpfs "$absolute1"/dev/shm
+	
+	#Install ubiquitous_bash itself to chroot.
+	sudo -n cp "$scriptAbsoluteLocation" "$chrootDir"/usr/bin/ubiquitous_bash.sh
 	
 }
 
@@ -99,8 +144,6 @@ _mountChRoot_image_raspbian() {
 			_mountChRoot "$chrootDir"
 			
 			_readyChRoot "$chrootDir" || _stop 1
-			
-			sudo -n cp "$scriptAbsoluteLocation" "$chrootDir"/usr/bin/
 			
 			sudo -n cp /usr/bin/qemu-arm-static "$chrootDir"/usr/bin/
 			sudo -n cp /usr/bin/qemu-armeb-static "$chrootDir"/usr/bin/
