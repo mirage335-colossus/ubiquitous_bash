@@ -23,6 +23,7 @@ _chroot() {
 	
 }
 
+# TODO Check if ubvrtusr uid actually needs to be changed/recreated.
 _userChRoot() {
 	
 	# DANGER Do NOT use typical safeTmp dir, as any recursive cleanup may be catastrophic.
@@ -40,6 +41,16 @@ _userChRoot() {
 	
 	_mountChRoot_user || return 1
 	
+	## Wait for lock file. Not done with _waitFileCommands because there is nither an obvious means, nor an obviously catastrophically critical requirement, to independently check for completion of related useradd/mod/del operations.
+	while [[ -e "$scriptLocal"/_instancing ]]
+	do
+		sleep 1
+	done
+	
+	## Lock file.
+	echo > "$scriptLocal"/quicktmp
+	mv -n "$scriptLocal"/quicktmp "$scriptLocal"/_instancing > /dev/null 2>&1 || return 1
+	
 	_chroot userdel -r ubvrtusr > /dev/null 2>&1
 	
 	sudo -n mkdir -p "$instancedChrootDir"/home/ubvrtusr || return 1
@@ -47,6 +58,10 @@ _userChRoot() {
 	
 	_chroot useradd --shell /bin/bash -u "$HOST_USER_ID" -o -c "" -m ubvrtusr > /dev/null 2>&1 || return 1
 	_chroot usermod -a -G video ubvrtusr || return 1
+	
+	
+	## Lock file.
+	rm "$scriptLocal"/_instancing > /dev/null 2>&1 || return 1
 	
 	
 	_mountChRoot_project || return 1
