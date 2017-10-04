@@ -17,6 +17,7 @@ _mountChRoot_user() {
 
 _umountChRoot_user() {
 	
+	mountpoint "$chrootDir" > /dev/null 2>&1 || return 1
 	_umountChRoot "$instancedChrootDir"
 	
 }

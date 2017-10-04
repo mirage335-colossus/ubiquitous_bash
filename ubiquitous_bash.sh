@@ -605,6 +605,7 @@ _mountChRoot_user() {
 
 _umountChRoot_user() {
 	
+	mountpoint "$chrootDir" > /dev/null 2>&1 || return 1
 	_umountChRoot "$instancedChrootDir"
 	
 }
@@ -858,7 +859,7 @@ _userChRoot() {
 	
 	# DANGER Do NOT use typical safeTmp dir, as any recursive cleanup may be catastrophic.
 	export globalChRootDir="$chrootDir"
-	export instancedChrootDir="$scriptAbsoluteFolder"/v_"$sessionid"/chroot
+	export instancedChrootDir="$scriptAbsoluteFolder"/c_"$sessionid"
 	export chrootDir="$instancedChrootDir"
 	export HOST_USER_ID=$(id -u "$USER")
 	
@@ -890,19 +891,14 @@ _userChRoot() {
 	
 	
 	_stopChRoot "$chrootDir"
-		
+	
 	_umountChRoot_user_home || return 1
 	_umountChRoot_user || return 1
 	
-	mountpoint "$chrootDir" > /dev/null 2>&1 || return 1
-	sudo -n umount "$chrootDir" || return 1
-	
-	
 	"$scriptAbsoluteLocation" _checkForMounts "$chrootDir" && return 1
 	
-	sudo -n rmdir "$instancedChrootDir"/chroot/home/ubvrtusr
-	sudo -n rmdir "$instancedChrootDir"/chroot/home
-	sudo -n rmdir "$instancedChrootDir"/chroot
+	sudo -n rmdir "$instancedChrootDir"/home/ubvrtusr
+	sudo -n rmdir "$instancedChrootDir"/home
 	sudo -n rmdir "$instancedChrootDir"
 	
 	return "$userChRootExitStatus"
