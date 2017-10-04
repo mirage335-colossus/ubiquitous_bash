@@ -1,4 +1,4 @@
-dropChRoot() {
+_dropChRoot() {
 	
 	# TODO Change to localPWD or home.
 	

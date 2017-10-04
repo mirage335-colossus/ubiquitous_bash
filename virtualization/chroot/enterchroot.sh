@@ -31,8 +31,8 @@ _userChRoot() {
 	export chrootDir="$instancedChrootDir"
 	export HOST_USER_ID=$(id -u "$USER")
 	
-	mkdir -p "$instancedChrootDir" || return 1
-	mkdir -p "$instancedChrootDir"/home/ubvrtusr || return 1
+	sudo -n mkdir -p "$instancedChrootDir" || return 1
+	sudo -n mkdir -p "$instancedChrootDir"/home/ubvrtusr || return 1
 	
 	_checkDep mountpoint || return 1
 	mountpoint "$instancedChrootDir"/home/ubvrtusr > /dev/null 2>&1 && return 1
@@ -42,7 +42,7 @@ _userChRoot() {
 	
 	_chroot userdel -r ubvrtusr > /dev/null 2>&1
 	
-	mkdir -p "$instancedChrootDir"/home/ubvrtusr || return 1
+	sudo -n mkdir -p "$instancedChrootDir"/home/ubvrtusr || return 1
 	_mountChRoot_user_home || return 1
 	
 	_chroot useradd --shell /bin/bash -u "$HOST_USER_ID" -o -c "" -m ubvrtusr > /dev/null 2>&1 || return 1
@@ -68,6 +68,10 @@ _userChRoot() {
 	
 	
 	"$scriptAbsoluteLocation" _checkForMounts "$chrootDir" && return 1
+	
+	sudo -n rmdir "$instancedChrootDir"/home/ubvrtusr
+	sudo -n rmdir "$instancedChrootDir"/home
+	sudo -n rmdir "$instancedChrootDir"
 	
 	return "$userChRootExitStatus"
 	

@@ -586,6 +586,48 @@ _stopChRoot() {
 	
 }
 
+# TODO TODO Mount project directory if isolation configuration variable is set. Set directory permissions correctly. Use either root or ubvrtusr home directory as appropriate.
+_mountChRoot_project() {
+	
+	true
+	
+}
+
+
+_mountChRoot_user() {
+	
+	_bindMountManager "$globalChRootDir" "$instancedChrootDir" || return 1
+	_mountChRoot "$instancedChrootDir" || return 1
+	
+	return 0
+	
+}
+
+_umountChRoot_user() {
+	
+	_umountChRoot "$instancedChrootDir"
+	
+}
+
+
+
+_mountChRoot_user_home() {
+	
+	sudo -n mount -t tmpfs -o size=4G tmpfs "$instancedChrootDir"/home/ubvrtusr || return 1
+	
+	return 0
+	
+}
+
+_umountChRoot_user_home() {
+	
+	_wait_umount "$instancedChrootDir"/home/ubvrtusr || return 1
+	mountpoint "$instancedChrootDir"/home/ubvrtusr > /dev/null 2>&1 && return 1
+	
+	return 0
+	
+}
+
 #"$1" == ChRoot Dir
 _mountChRoot() {
 	_mustGetSudo
@@ -596,15 +638,18 @@ _mountChRoot() {
 	absolute1=$(_getAbsoluteLocation "$1")
 	
 	_bindMountManager "/dev" "$absolute1"/dev
-	_bindMountManager "/dev" "$absolute1"/proc
-	_bindMountManager "/dev" "$absolute1"/sys
+	_bindMountManager "/proc" "$absolute1"/proc
+	_bindMountManager "/sys" "$absolute1"/sys
 	
-	_bindMountManager "/dev" "$absolute1"/dev/pts
+	_bindMountManager "/dev/pts" "$absolute1"/dev/pts
 	
-	_bindMountManager "/dev" "$absolute1"/tmp
+	_bindMountManager "/tmp" "$absolute1"/tmp
 	
 	#Provide an shm filesystem at /dev/shm.
 	sudo -n mount -t tmpfs -o size=4G tmpfs "$absolute1"/dev/shm
+	
+	#Install ubiquitous_bash itself to chroot.
+	sudo -n cp "$scriptAbsoluteLocation" "$chrootDir"/usr/bin/ubiquitous_bash.sh
 	
 }
 
@@ -687,8 +732,6 @@ _mountChRoot_image_raspbian() {
 			_mountChRoot "$chrootDir"
 			
 			_readyChRoot "$chrootDir" || _stop 1
-			
-			sudo -n cp "$scriptAbsoluteLocation" "$chrootDir"/usr/bin/
 			
 			sudo -n cp /usr/bin/qemu-arm-static "$chrootDir"/usr/bin/
 			sudo -n cp /usr/bin/qemu-armeb-static "$chrootDir"/usr/bin/
@@ -784,30 +827,9 @@ _closeChRoot() {
 	_close _waitChRoot_closing _umountChRoot_image
 }
 
-
-# TODO Drop root permissions to in-guest user.
-# TODO Bind mount in-host user home into chroot.
-# TODO Bind mount in-host root into chroot.
+ 
 
 
-_userChRoot() {
-	[[ ! -e "$chrootDir"/bin/bash ]] && return 1
-	
-	_mustGetSudo
-	
-	#cd "$chrootDir"
-	
-	local chrootExitStatus
-	
-	sudo -n env -i HOME="/root" TERM="${TERM}" SHELL="/bin/bash" PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" DISPLAY="$DISPLAY" $(sudo -n which chroot) "$chrootDir" "$@"
-	
-	chrootExitStatus="$?"
-	
-	
-	
-	
-	return "$chrootExitStatus"
-}
 
 
 
@@ -832,9 +854,70 @@ _chroot() {
 	
 }
 
- 
+_userChRoot() {
+	
+	# DANGER Do NOT use typical safeTmp dir, as any recursive cleanup may be catastrophic.
+	export globalChRootDir="$chrootDir"
+	export instancedChrootDir="$scriptAbsoluteFolder"/v_"$sessionid"/chroot
+	export chrootDir="$instancedChrootDir"
+	export HOST_USER_ID=$(id -u "$USER")
+	
+	sudo -n mkdir -p "$instancedChrootDir" || return 1
+	sudo -n mkdir -p "$instancedChrootDir"/home/ubvrtusr || return 1
+	
+	_checkDep mountpoint || return 1
+	mountpoint "$instancedChrootDir"/home/ubvrtusr > /dev/null 2>&1 && return 1
+	# TODO Check if home folder contents are not empty.
+	
+	_mountChRoot_user || return 1
+	
+	_chroot userdel -r ubvrtusr > /dev/null 2>&1
+	
+	sudo -n mkdir -p "$instancedChrootDir"/home/ubvrtusr || return 1
+	_mountChRoot_user_home || return 1
+	
+	_chroot useradd --shell /bin/bash -u "$HOST_USER_ID" -o -c "" -m ubvrtusr > /dev/null 2>&1 || return 1
+	_chroot usermod -a -G video ubvrtusr || return 1
+	
+	
+	_mountChRoot_project || return 1
+	
+	_chroot /usr/bin/ubiquitous_bash.sh _dropChRoot "$@"
+	local userChRootExitStatus="$?"
+	
+	
+	
+	
+	
+	_stopChRoot "$chrootDir"
+		
+	_umountChRoot_user_home || return 1
+	_umountChRoot_user || return 1
+	
+	mountpoint "$chrootDir" > /dev/null 2>&1 || return 1
+	sudo -n umount "$chrootDir" || return 1
+	
+	
+	"$scriptAbsoluteLocation" _checkForMounts "$chrootDir" && return 1
+	
+	sudo -n rmdir "$instancedChrootDir"/home/ubvrtusr
+	sudo -n rmdir "$instancedChrootDir"/home
+	sudo -n rmdir "$instancedChrootDir"
+	
+	return "$userChRootExitStatus"
+	
+}
 
- 
+_dropChRoot() {
+	
+	# TODO Change to localPWD or home.
+	
+	# TODO Drop to user ubvrtusr or remain root, using gosu.
+	
+	#Temporary, for testing only.
+	"$@"
+	
+}
 
 
 #Ensures dependencies are met for raspi-on-raspi virtualization.
