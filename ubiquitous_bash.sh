@@ -900,8 +900,9 @@ _userChRoot() {
 	
 	"$scriptAbsoluteLocation" _checkForMounts "$chrootDir" && return 1
 	
-	sudo -n rmdir "$instancedChrootDir"/home/ubvrtusr
-	sudo -n rmdir "$instancedChrootDir"/home
+	sudo -n rmdir "$instancedChrootDir"/chroot/home/ubvrtusr
+	sudo -n rmdir "$instancedChrootDir"/chroot/home
+	sudo -n rmdir "$instancedChrootDir"/chroot
 	sudo -n rmdir "$instancedChrootDir"
 	
 	return "$userChRootExitStatus"
