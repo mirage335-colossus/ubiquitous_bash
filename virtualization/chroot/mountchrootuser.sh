@@ -5,6 +5,13 @@ _mountChRoot_project() {
 	
 }
 
+umountChRoot_project() {
+	
+	_wait_umount "$chrootDir"/home/ubvrtusr/project
+	_wait_umount "$chrootDir"/root/project
+	
+}
+
 
 _mountChRoot_user() {
 	
