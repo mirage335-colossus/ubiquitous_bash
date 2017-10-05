@@ -14,8 +14,8 @@ _umountChRoot_project() {
 
 _mountChRoot_user() {
 	
-	_bindMountManager "$globalChRootDir" "$instancedChrootDir" || return 1
-	_mountChRoot "$instancedChrootDir" || return 1
+	_bindMountManager "$globalChRootDir" "$instancedVirtDir" || return 1
+	_mountChRoot "$instancedVirtDir" || return 1
 	
 	return 0
 	
@@ -24,7 +24,7 @@ _mountChRoot_user() {
 _umountChRoot_user() {
 	
 	mountpoint "$chrootDir" > /dev/null 2>&1 || return 1
-	_umountChRoot "$instancedChrootDir"
+	_umountChRoot "$instancedVirtDir"
 	
 }
 
@@ -32,7 +32,8 @@ _umountChRoot_user() {
 
 _mountChRoot_user_home() {
 	
-	sudo -n mount -t tmpfs -o size=4G tmpfs "$instancedChrootDir"/home/ubvrtusr || return 1
+	sudo -n mkdir -p "$instancedVirtHome" || return 1
+	sudo -n mount -t tmpfs -o size=4G tmpfs "$instancedVirtHome" || return 1
 	
 	return 0
 	
@@ -40,8 +41,8 @@ _mountChRoot_user_home() {
 
 _umountChRoot_user_home() {
 	
-	_wait_umount "$instancedChrootDir"/home/ubvrtusr || return 1
-	mountpoint "$instancedChrootDir"/home/ubvrtusr > /dev/null 2>&1 && return 1
+	_wait_umount "$instancedVirtHome" || return 1
+	mountpoint "$instancedVirtHome" > /dev/null 2>&1 && return 1
 	
 	return 0
 	

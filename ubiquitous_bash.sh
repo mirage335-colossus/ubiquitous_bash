@@ -488,7 +488,7 @@ _searchBaseDir() {
 
 #Converts to relative path, if provided a file parameter.
 #"$1" == parameter to search
-#"$2" == sharedProjectDir
+#"$2" == sharedHostProjectDir
 #"$3" == sharedGuestProjectDir (optional)
 _localDir() {
 	if _checkBaseDirRemote "$1"
@@ -512,6 +512,47 @@ _localDir() {
 	[[ "$3" != "" ]] && echo -n "$3"/
 	realpath -L -s --relative-to="$2" "$1"
 	
+}
+
+
+#Takes a list of parameters, idenfities file parameters, finds a common path, and translates all parameters to that path. Essentially provides shared folder and file parameter translation for application virtualization solutions.
+#"$@" == input parameters
+# export sharedHostProjectDir == common directory to bind mount
+# export processedArgs == translated arguments to be used in place of "$@"
+# WARNING Consider specified syntax for portability.
+# _runExec "${processedArgs[@]}"
+_virtUser() {
+	if [[ -e /tmp/.X11-unix ]] && [[ "$DISPLAY" != "" ]] && type xauth > /dev/null 2>&1
+	then
+		export XSOCK=/tmp/.X11-unix
+		export XAUTH=/tmp/.docker.xauth."$sessionid"
+		touch $XAUTH
+		xauth nlist $DISPLAY | sed -e 's/^..../ffff/' | xauth -f $XAUTH nmerge -
+	fi
+	
+	sharedHostProjectDir=$(_searchBaseDir "$@" "$outerPWD")
+	
+	if [[ "$sharedHostProjectDir" == "" ]]
+	then
+		sharedHostProjectDir="$safeTmp"/shared
+		mkdir -p "$sharedHostProjectDir"
+	fi
+	
+	export localPWD=$(_localDir "$outerPWD" "$sharedHostProjectDir" "$sharedGuestProjectDir")
+	
+	#http://stackoverflow.com/questions/15420790/create-array-in-loop-from-number-of-arguments
+	#local processedArgs
+	local currentArg
+	local currentResult
+	processedArgs=()
+	for currentArg in "$@"
+	do
+		currentResult=$(_localDir "$currentArg" "$sharedHostProjectDir" "$sharedGuestProjectDir")
+		processedArgs+=("$currentResult")
+	done
+	
+	export sharedHostProjectDir
+	export processedArgs
 }
 
 #Lists all chrooted processes. First parameter is chroot directory. Script might need to run as root.
@@ -791,22 +832,21 @@ _closeChRoot() {
 # TODO TODO Mount project directory if isolation configuration variable is set. Set directory permissions correctly. Use either root or ubvrtusr home directory as appropriate.
 _mountChRoot_project() {
 	
-	true
+	_bindMountManager "$sharedHostProjectDir" "$sharedGuestProjectDir" || return 1
 	
 }
 
-umountChRoot_project() {
+_umountChRoot_project() {
 	
-	_wait_umount "$chrootDir"/home/ubvrtusr/project
-	_wait_umount "$chrootDir"/root/project
+	_wait_umount "$chrootDir""$sharedGuestProjectDir"
 	
 }
 
 
 _mountChRoot_user() {
 	
-	_bindMountManager "$globalChRootDir" "$instancedChrootDir" || return 1
-	_mountChRoot "$instancedChrootDir" || return 1
+	_bindMountManager "$globalChRootDir" "$instancedVirtDir" || return 1
+	_mountChRoot "$instancedVirtDir" || return 1
 	
 	return 0
 	
@@ -815,7 +855,7 @@ _mountChRoot_user() {
 _umountChRoot_user() {
 	
 	mountpoint "$chrootDir" > /dev/null 2>&1 || return 1
-	_umountChRoot "$instancedChrootDir"
+	_umountChRoot "$instancedVirtDir"
 	
 }
 
@@ -823,7 +863,8 @@ _umountChRoot_user() {
 
 _mountChRoot_user_home() {
 	
-	sudo -n mount -t tmpfs -o size=4G tmpfs "$instancedChrootDir"/home/ubvrtusr || return 1
+	sudo -n mkdir -p "$instancedVirtHome" || return 1
+	sudo -n mount -t tmpfs -o size=4G tmpfs "$instancedVirtHome" || return 1
 	
 	return 0
 	
@@ -831,8 +872,8 @@ _mountChRoot_user_home() {
 
 _umountChRoot_user_home() {
 	
-	_wait_umount "$instancedChrootDir"/home/ubvrtusr || return 1
-	mountpoint "$instancedChrootDir"/home/ubvrtusr > /dev/null 2>&1 && return 1
+	_wait_umount "$instancedVirtHome" || return 1
+	mountpoint "$instancedVirtHome" > /dev/null 2>&1 && return 1
 	
 	return 0
 	
@@ -865,23 +906,22 @@ _chroot() {
 
 # TODO Check if ubvrtusr uid actually needs to be changed/recreated.
 _userChRoot() {
+	_start
 	
-	_openChRoot
+	_openChRoot || _stop 1
 	
 	# DANGER Do NOT use typical safeTmp dir, as any recursive cleanup may be catastrophic.
-	export globalChRootDir="$chrootDir"
-	export instancedChrootDir="$scriptAbsoluteFolder"/c_"$sessionid"
-	export chrootDir="$instancedChrootDir"
+	export chrootDir="$instancedVirtDir"
 	export HOST_USER_ID=$(id -u "$USER")
 	
-	sudo -n mkdir -p "$instancedChrootDir" || return 1
-	sudo -n mkdir -p "$instancedChrootDir"/home/ubvrtusr || return 1
+	sudo -n mkdir -p "$instancedVirtDir" || _stop 1
+	sudo -n mkdir -p "$instancedVirtDir"/home/"$virtGuestUser" || _stop 1
 	
-	_checkDep mountpoint || return 1
-	mountpoint "$instancedChrootDir"/home/ubvrtusr > /dev/null 2>&1 && return 1
+	_checkDep mountpoint || _stop 1
+	mountpoint "$instancedVirtDir"/home/"$virtGuestUser" > /dev/null 2>&1 && _stop 1
 	# TODO Check if home folder contents are not empty.
 	
-	_mountChRoot_user || return 1
+	_mountChRoot_user || _stop 1
 	
 	## Wait for lock file. Not done with _waitFileCommands because there is nither an obvious means, nor an obviously catastrophically critical requirement, to independently check for completion of related useradd/mod/del operations.
 	while [[ -e "$scriptLocal"/_instancing ]]
@@ -891,24 +931,25 @@ _userChRoot() {
 	
 	## Lock file.
 	echo > "$scriptLocal"/quicktmp
-	mv -n "$scriptLocal"/quicktmp "$scriptLocal"/_instancing > /dev/null 2>&1 || return 1
+	mv -n "$scriptLocal"/quicktmp "$scriptLocal"/_instancing > /dev/null 2>&1 || _stop 1
 	
-	_chroot userdel -r ubvrtusr > /dev/null 2>&1
+	_chroot userdel -r "$virtGuestUser" > /dev/null 2>&1
 	
-	sudo -n mkdir -p "$instancedChrootDir"/home/ubvrtusr || return 1
-	_mountChRoot_user_home || return 1
+	_mountChRoot_user_home || _stop 1
 	
-	_chroot useradd --shell /bin/bash -u "$HOST_USER_ID" -o -c "" -m ubvrtusr > /dev/null 2>&1 || return 1
-	_chroot usermod -a -G video ubvrtusr || return 1
+	_chroot useradd --shell /bin/bash -u "$HOST_USER_ID" -o -c "" -m "$virtGuestUser" > /dev/null 2>&1 || _stop 1
+	_chroot usermod -a -G video "$virtGuestUser" || _stop 1
 	
 	
 	## Lock file.
-	rm "$scriptLocal"/_instancing > /dev/null 2>&1 || return 1
+	rm "$scriptLocal"/_instancing > /dev/null 2>&1 || _stop 1
 	
 	
-	_mountChRoot_project || return 1
+	_virtUser "$@"
 	
-	_chroot /usr/bin/ubiquitous_bash.sh _dropChRoot "$@"
+	_mountChRoot_project || _stop 1
+	
+	_chroot /usr/bin/ubiquitous_bash.sh _dropChRoot "${processedArgs[@]}"
 	local userChRootExitStatus="$?"
 	
 	
@@ -917,16 +958,17 @@ _userChRoot() {
 	
 	_stopChRoot "$chrootDir"
 	
-	_umountChRoot_user_home || return 1
-	_umountChRoot_user || return 1
+	_umountChRoot_project
+	_umountChRoot_user_home || _stop 1
+	_umountChRoot_user || _stop 1
 	
-	"$scriptAbsoluteLocation" _checkForMounts "$chrootDir" && return 1
+	"$scriptAbsoluteLocation" _checkForMounts "$chrootDir" && _stop 1
 	
-	sudo -n rmdir "$instancedChrootDir"/home/ubvrtusr
-	sudo -n rmdir "$instancedChrootDir"/home
-	sudo -n rmdir "$instancedChrootDir"
+	sudo -n rmdir "$instancedVirtDir"/home/"$virtGuestUser"
+	sudo -n rmdir "$instancedVirtDir"/home
+	sudo -n rmdir "$instancedVirtDir"
 	
-	return "$userChRootExitStatus"
+	_stop "$userChRootExitStatus"
 	
 }
 
@@ -1355,11 +1397,13 @@ export scriptLocal="$scriptAbsoluteFolder"/_local
 
 export virtGuestUser="ubvrtusr"
 
-export sharedGuestProjectDir=/home/"$virtGuestUser"/project
+export sharedGuestProjectDir="/home/"$virtGuestUser"/project"
+[[ $(id -u) == 0 ]] && export sharedGuestProjectDir="/root/project"
 
 export export instancedVirtDir="$scriptAbsoluteFolder"/v_"$sessionid"
-export export instancedVirtHomeUser="$instancedVirtDir"/home/"$virtGuestUser"
-export export instancedVirtHomeRoot="$instancedVirtDir"/root
+
+export export instancedVirtHome="$instancedVirtDir"/home/"$virtGuestUser"
+[[ $(id -u) == 0 ]] && export instancedVirtHome="$instancedVirtDir"/root
 
 export chrootDir="$scriptLocal"/chroot
 export globalChRootDir="$chrootDir"
@@ -1707,6 +1751,8 @@ _test() {
 	_checkDep find
 	_checkDep ln
 	_checkDep ls
+	
+	_checkDep id
 	
 	_tryExec "_testMountChecks"
 	_tryExec "_testBindMountManager"

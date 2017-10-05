@@ -30,11 +30,12 @@ export scriptLocal="$scriptAbsoluteFolder"/_local
 export virtGuestUser="ubvrtusr"
 
 export sharedGuestProjectDir="/home/"$virtGuestUser"/project"
-[[ $(id -u) != 0 ]] && export sharedGuestProjectDir="/root/project"
+[[ $(id -u) == 0 ]] && export sharedGuestProjectDir="/root/project"
 
-export export instancedVirtDir="$scriptAbsoluteFolder"/v_"$sessionid"
-export export instancedVirtHomeUser="$instancedVirtDir"/home/"$virtGuestUser"
-export export instancedVirtHomeRoot="$instancedVirtDir"/root
+export instancedVirtDir="$scriptAbsoluteFolder"/v_"$sessionid"
+
+export instancedVirtHome="$instancedVirtDir"/home/"$virtGuestUser"
+[[ $(id -u) == 0 ]] && export instancedVirtHome="$instancedVirtDir"/root
 
 export chrootDir="$scriptLocal"/chroot
 export globalChRootDir="$chrootDir"

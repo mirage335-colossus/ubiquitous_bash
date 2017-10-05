@@ -27,7 +27,7 @@ _chroot() {
 _userChRoot() {
 	_start
 	
-	_openChRoot
+	_openChRoot || _stop 1
 	
 	# DANGER Do NOT use typical safeTmp dir, as any recursive cleanup may be catastrophic.
 	export chrootDir="$instancedVirtDir"
@@ -54,7 +54,6 @@ _userChRoot() {
 	
 	_chroot userdel -r "$virtGuestUser" > /dev/null 2>&1
 	
-	sudo -n mkdir -p "$instancedVirtDir"/home/"$virtGuestUser" || _stop 1
 	_mountChRoot_user_home || _stop 1
 	
 	_chroot useradd --shell /bin/bash -u "$HOST_USER_ID" -o -c "" -m "$virtGuestUser" > /dev/null 2>&1 || _stop 1
