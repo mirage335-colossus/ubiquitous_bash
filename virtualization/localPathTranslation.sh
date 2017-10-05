@@ -70,7 +70,7 @@ _searchBaseDir() {
 
 #Converts to relative path, if provided a file parameter.
 #"$1" == parameter to search
-#"$2" == sharedProjectDir
+#"$2" == sharedHostProjectDir
 #"$3" == sharedGuestProjectDir (optional)
 _localDir() {
 	if _checkBaseDirRemote "$1"
@@ -94,4 +94,45 @@ _localDir() {
 	[[ "$3" != "" ]] && echo -n "$3"/
 	realpath -L -s --relative-to="$2" "$1"
 	
+}
+
+
+#Takes a list of parameters, idenfities file parameters, finds a common path, and translates all parameters to that path. Essentially provides shared folder and file parameter translation for application virtualization solutions.
+#"$@" == input parameters
+# export sharedHostProjectDir == common directory to bind mount
+# export processedArgs == translated arguments to be used in place of "$@"
+# WARNING Consider specified syntax for portability.
+# _runExec "${processedArgs[@]}"
+_virtUser() {
+	if [[ -e /tmp/.X11-unix ]] && [[ "$DISPLAY" != "" ]] && type xauth > /dev/null 2>&1
+	then
+		export XSOCK=/tmp/.X11-unix
+		export XAUTH=/tmp/.docker.xauth."$sessionid"
+		touch $XAUTH
+		xauth nlist $DISPLAY | sed -e 's/^..../ffff/' | xauth -f $XAUTH nmerge -
+	fi
+	
+	sharedHostProjectDir=$(_searchBaseDir "$@" "$outerPWD")
+	
+	if [[ "$sharedHostProjectDir" == "" ]]
+	then
+		sharedHostProjectDir="$safeTmp"/shared
+		mkdir -p "$sharedHostProjectDir"
+	fi
+	
+	export localPWD=$(_localDir "$outerPWD" "$sharedHostProjectDir" "$sharedGuestProjectDir")
+	
+	#http://stackoverflow.com/questions/15420790/create-array-in-loop-from-number-of-arguments
+	#local processedArgs
+	local currentArg
+	local currentResult
+	processedArgs=()
+	for currentArg in "$@"
+	do
+		currentResult=$(_localDir "$currentArg" "$sharedHostProjectDir" "$sharedGuestProjectDir")
+		processedArgs+=("$currentResult")
+	done
+	
+	export sharedHostProjectDir
+	export processedArgs
 }

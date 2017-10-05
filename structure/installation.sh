@@ -89,6 +89,8 @@ _test() {
 	_checkDep ln
 	_checkDep ls
 	
+	_checkDep id
+	
 	_tryExec "_testMountChecks"
 	_tryExec "_testBindMountManager"
 	_tryExec "_testDistro"
