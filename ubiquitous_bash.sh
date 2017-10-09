@@ -763,14 +763,18 @@ _mountChRoot_image() {
 	fi
 }
 
+_umountChRoot_directory() {
+	_stopChRoot "$1"
+	_umountChRoot "$1"
+	mountpoint "$1" > /dev/null 2>&1 && sudo -n umount "$1"
+	
+	"$scriptAbsoluteLocation" _checkForMounts "$1" && return 1
+}
+
 _umountChRoot_image() {
 	_mustGetSudo || return 1
 	
-	_stopChRoot "$chrootDir"
-	_umountChRoot "$chrootDir"
-	mountpoint "$chrootDir" > /dev/null 2>&1 && sudo -n umount "$chrootDir"
-	
-	"$scriptAbsoluteLocation" _checkForMounts "$chrootDir" && return 1
+	_umountChRoot_directory "$chrootDir" && return 1
 	
 	local chrootimagedev
 	chrootimagedev=$(cat "$scriptLocal"/imagedev)
@@ -829,6 +833,30 @@ _closeChRoot() {
 	_close _waitChRoot_closing _umountChRoot_image
 }
 
+#Debugging function.
+_removeChRoot() {
+	
+
+	find . -maxdepth 1 -type d -name 'v_*' -exec "$scriptAbsoluteLocation" _umountChRoot_directory {} \;
+	
+	"$scriptAbsoluteLocation" _closeChRoot --force
+	
+	
+	
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
 # TODO TODO Mount project directory if isolation configuration variable is set. Set directory permissions correctly. Use either root or ubvrtusr home directory as appropriate.
 _mountChRoot_project() {
 	
@@ -884,7 +912,7 @@ _umountChRoot_user_home() {
 
 
 _chroot() {
-
+	
 	[[ ! -e "$chrootDir"/bin/bash ]] && return 1
 	
 	_mustGetSudo
@@ -1400,9 +1428,9 @@ export virtGuestUser="ubvrtusr"
 export sharedGuestProjectDir="/home/"$virtGuestUser"/project"
 [[ $(id -u) == 0 ]] && export sharedGuestProjectDir="/root/project"
 
-export export instancedVirtDir="$scriptAbsoluteFolder"/v_"$sessionid"
+export instancedVirtDir="$scriptAbsoluteFolder"/v_"$sessionid"
 
-export export instancedVirtHome="$instancedVirtDir"/home/"$virtGuestUser"
+export instancedVirtHome="$instancedVirtDir"/home/"$virtGuestUser"
 [[ $(id -u) == 0 ]] && export instancedVirtHome="$instancedVirtDir"/root
 
 export chrootDir="$scriptLocal"/chroot

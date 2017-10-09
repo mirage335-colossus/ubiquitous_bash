@@ -3,7 +3,7 @@
 
 
 _chroot() {
-
+	
 	[[ ! -e "$chrootDir"/bin/bash ]] && return 1
 	
 	_mustGetSudo

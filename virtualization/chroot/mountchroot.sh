@@ -131,14 +131,18 @@ _mountChRoot_image() {
 	fi
 }
 
+_umountChRoot_directory() {
+	_stopChRoot "$1"
+	_umountChRoot "$1"
+	mountpoint "$1" > /dev/null 2>&1 && sudo -n umount "$1"
+	
+	"$scriptAbsoluteLocation" _checkForMounts "$1" && return 1
+}
+
 _umountChRoot_image() {
 	_mustGetSudo || return 1
 	
-	_stopChRoot "$chrootDir"
-	_umountChRoot "$chrootDir"
-	mountpoint "$chrootDir" > /dev/null 2>&1 && sudo -n umount "$chrootDir"
-	
-	"$scriptAbsoluteLocation" _checkForMounts "$chrootDir" && return 1
+	_umountChRoot_directory "$chrootDir" && return 1
 	
 	local chrootimagedev
 	chrootimagedev=$(cat "$scriptLocal"/imagedev)
@@ -196,3 +200,27 @@ _closeChRoot() {
 	fi
 	_close _waitChRoot_closing _umountChRoot_image
 }
+
+#Debugging function.
+_removeChRoot() {
+	
+
+	find . -maxdepth 1 -type d -name 'v_*' -exec "$scriptAbsoluteLocation" _umountChRoot_directory {} \;
+	
+	"$scriptAbsoluteLocation" _closeChRoot --force
+	
+	
+	
+}
+
+
+
+
+
+
+
+
+
+
+
+
