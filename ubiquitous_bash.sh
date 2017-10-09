@@ -664,6 +664,9 @@ _umountChRoot() {
 	local absolute1
 	absolute1=$(_getAbsoluteLocation "$1")
 	
+	_wait_umount "$absolute1"/home/"$virtGuestUser" >/dev/null 2>&1
+	_wait_umount "$absolute1"/root >/dev/null 2>&1
+	
 	_wait_umount "$absolute1"/dev/shm
 	_wait_umount "$absolute1"/dev/pts
 	
@@ -841,7 +844,11 @@ _removeChRoot() {
 	
 	"$scriptAbsoluteLocation" _closeChRoot --force
 	
+	rm "$scriptLocal"/_closing
 	
+	sudo rmdir ./v_*/home/ubvrtusr
+	sudo rmdir ./v_*/home
+	sudo rmdir ./v_*
 	
 }
 
