@@ -20,6 +20,9 @@ _mountChRoot() {
 	
 	#Install ubiquitous_bash itself to chroot.
 	sudo -n cp "$scriptAbsoluteLocation" "$chrootDir"/usr/bin/ubiquitous_bash.sh
+	sudo -n cp "$scriptBin"/gosu-armel "$chrootDir"/usr/bin/gosu-armel
+	sudo -n cp "$scriptBin"/gosu-amd64 "$chrootDir"/usr/bin/gosu-amd64
+	sudo -n cp "$scriptBin"/gosu-i386 "$chrootDir"/usr/bin/gosu-i386
 	
 }
 
@@ -215,9 +218,10 @@ _removeChRoot() {
 	rm "$scriptLocal"/_closing
 	rm "$scriptLocal"/_opening
 	
-	sudo rmdir ./v_*/home/ubvrtusr
-	sudo rmdir ./v_*/home
-	sudo rmdir ./v_*
+	sudo -n rmdir ./v_*/home/ubvrtusr
+	sudo -n rmdir ./v_*/home/ubvrtusr.ref
+	sudo -n rmdir ./v_*/home
+	sudo -n rmdir ./v_*
 	
 }
 

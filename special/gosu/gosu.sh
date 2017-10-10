@@ -1,12 +1,16 @@
 #####Idle
 
 _gosuBinary() {
-	uname -m | grep x86 > /dev/null 2>&1 && export gosuBinary="gosu-i386"
-	uname -m | grep x86_64 > /dev/null 2>&1 && export gosuBinary="gosu-amd64"
-	uname -m | grep arm > /dev/null 2>&1 && export gosuBinary="gosu-armel"
+	echo "$hostArch" | grep x86_64 > /dev/null 2>&1 && export gosuBinary="gosu-amd64" && return
+	echo "$hostArch" | grep x86 > /dev/null 2>&1 && export gosuBinary="gosu-i386" && return
+	echo "$hostArch" | grep arm > /dev/null 2>&1 && export gosuBinary="gosu-armel" && return
+	
+	uname -m | grep x86_64 > /dev/null 2>&1 && export gosuBinary="gosu-amd64" && return
+	uname -m | grep x86 > /dev/null 2>&1 && export gosuBinary="gosu-i386" && return
+	uname -m | grep arm > /dev/null 2>&1 && export gosuBinary="gosu-armel" && return
 }
 
-_gosuExec() {
+_gosuExecVirt() {
 	_gosuBinary
 	
 	if [[ "$1" == "" ]]

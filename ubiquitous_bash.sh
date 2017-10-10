@@ -668,6 +668,9 @@ _mountChRoot() {
 	
 	#Install ubiquitous_bash itself to chroot.
 	sudo -n cp "$scriptAbsoluteLocation" "$chrootDir"/usr/bin/ubiquitous_bash.sh
+	sudo -n cp "$scriptBin"/gosu-armel "$chrootDir"/usr/bin/gosu-armel
+	sudo -n cp "$scriptBin"/gosu-amd64 "$chrootDir"/usr/bin/gosu-amd64
+	sudo -n cp "$scriptBin"/gosu-i386 "$chrootDir"/usr/bin/gosu-i386
 	
 }
 
@@ -863,9 +866,10 @@ _removeChRoot() {
 	rm "$scriptLocal"/_closing
 	rm "$scriptLocal"/_opening
 	
-	sudo rmdir ./v_*/home/ubvrtusr
-	sudo rmdir ./v_*/home
-	sudo rmdir ./v_*
+	sudo -n rmdir ./v_*/home/ubvrtusr
+	sudo -n rmdir ./v_*/home/ubvrtusr.ref
+	sudo -n rmdir ./v_*/home
+	sudo -n rmdir ./v_*
 	
 }
 
@@ -977,7 +981,7 @@ _umountChRoot_user() {
 _mountChRoot_user_home() {
 	
 	sudo -n mkdir -p "$instancedVirtHome" || return 1
-	sudo -n mount -t tmpfs -o size=4G tmpfs "$instancedVirtHome" || return 1
+	#sudo -n mount -t tmpfs -o size=4G,uid=$(id -u $USER),gid=$(id -g $GROUP) tmpfs "$instancedVirtHome" || return 1
 	
 	return 0
 	
@@ -1006,7 +1010,7 @@ _chroot() {
 	
 	local chrootExitStatus
 	
-	sudo -n env -i HOME="/root" TERM="${TERM}" SHELL="/bin/bash" PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" DISPLAY="$DISPLAY" $(sudo -n which chroot) "$chrootDir" "$@"
+	sudo -n env -i HOME="/root" TERM="${TERM}" SHELL="/bin/bash" PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" DISPLAY="$DISPLAY" localPWD="$localPWD" hostArch=$(uname -m) $(sudo -n which chroot) "$chrootDir" "$@"
 	
 	chrootExitStatus="$?"
 	
@@ -1025,9 +1029,11 @@ _userChRoot() {
 	# DANGER Do NOT use typical safeTmp dir, as any recursive cleanup may be catastrophic.
 	export chrootDir="$instancedVirtDir"
 	export HOST_USER_ID=$(id -u "$USER")
+	export HOST_GROUP_ID=$(id -g)
 	
 	sudo -n mkdir -p "$instancedVirtDir" > "$logTmp"/userchroot 2>&1 || _stop 1
 	sudo -n mkdir -p "$instancedVirtDir"/home/"$virtGuestUser" > "$logTmp"/userchroot 2>&1 || _stop 1
+	sudo -n mkdir -p "$instancedVirtDir"/home/"$virtGuestUser".ref > "$logTmp"/userchroot 2>&1 || _stop 1
 	
 	_checkDep mountpoint > "$logTmp"/userchroot 2>&1 || _stop 1
 	mountpoint "$instancedVirtDir"/home/"$virtGuestUser" > /dev/null 2>&1 && _stop 1
@@ -1045,17 +1051,27 @@ _userChRoot() {
 	echo > "$scriptLocal"/quicktmp
 	mv -n "$scriptLocal"/quicktmp "$scriptLocal"/_instancing > /dev/null 2>&1 || _stop 1
 	
-	#If guest/host user id does not match, recreate guest user. Do nothing for root user.
-	if [[ $(id -u) != 0 ]] && [[ $(_chroot id -u "$virtGuestUser") != $(id -u "$USER") ]]
+	#If guest/host user/group id does not match, recreate guest user. Do nothing for root user.
+	if [[ $(id -u) != 0 ]] && [[ $(_chroot id -u "$virtGuestUser" 2> /dev/null) != $(id -u "$USER") ]] || [[ $(_chroot id -g "$virtGuestUser" 2> /dev/null) != $(id -g) ]]
 	then
 		_chroot userdel -r "$virtGuestUser" > /dev/null 2>&1
-	
+		rmdir /home/"$virtGuestUser"/project > /dev/null 2>&1
+		rmdir /home/"$virtGuestUser" > /dev/null 2>&1
+		rmdir /home/"$virtGuestUser".ref/project > /dev/null 2>&1
+		rmdir /home/"$virtGuestUser".ref > /dev/null 2>&1
+		
 		_mountChRoot_user_home > "$logTmp"/userchroot 2>&1 || _stop 1
-	
-		_chroot useradd --shell /bin/bash -u "$HOST_USER_ID" -o -c "" -m "$virtGuestUser" > /dev/null 2>&1 || _stop 1
+		
+		_chroot groupadd -g "$HOST_GROUP_ID" -o "$virtGuestUser" > /dev/null 2>&1
+		_chroot useradd --shell /bin/bash -u "$HOST_USER_ID" -g "$HOST_GROUP_ID" -o -c "" -m "$virtGuestUser" > /dev/null 2>&1 || _stop 1
+		
 		_chroot usermod -a -G video "$virtGuestUser" > "$logTmp"/userchroot 2>&1 || _stop 1
+		
+		_chroot chown "$virtGuestUser":"$virtGuestUser" /home/"$virtGuestUser"
+		
+		sudo -n cp -a "$instancedVirtDir"/home/"$virtGuestUser" "$instancedVirtDir"/home/"$virtGuestUser".ref
 	fi
-	if [[ $(id -u) != 0 ]] && [[ $(_chroot id -u "$virtGuestUser") == $(id -u "$USER") ]]
+	if [[ $(id -u) != 0 ]] && [[ $(_chroot id -u "$virtGuestUser" 2> /dev/null) == $(id -u "$USER") ]] || [[ $(_chroot id -g "$virtGuestUser" 2> /dev/null) != $(id -g) ]]
 	then
 		_chroot /bin/bash /usr/bin/ubiquitous_bash.sh _prepareChRootUser
 	fi
@@ -1082,6 +1098,7 @@ _userChRoot() {
 	"$scriptAbsoluteLocation" _checkForMounts "$chrootDir" > "$logTmp"/userchroot 2>&1 && _stop 1
 	
 	sudo -n rmdir "$instancedVirtDir"/home/"$virtGuestUser" > "$logTmp"/userchroot 2>&1
+	sudo -n rmdir "$instancedVirtDir"/home/"$virtGuestUser".ref > "$logTmp"/userchroot 2>&1
 	sudo -n rmdir "$instancedVirtDir"/home > "$logTmp"/userchroot 2>&1
 	sudo -n rmdir "$instancedVirtDir" > "$logTmp"/userchroot 2>&1
 	
@@ -1097,11 +1114,16 @@ _dropChRoot() {
 	cd "$localPWD"
 	
 	# Drop to user ubvrtusr or remain root, using gosu.
-	_gosuExec "$@"
+	_gosuExecVirt "$@"
 }
 
 _prepareChRootUser() {
-	_gosuExec cp -r /etc/skel/. /home/
+	
+	#_gosuExecVirt cp -r /etc/skel/. /home/
+	
+	cp -a /home/"$virtGuestUser".ref/. /home/"$virtGuestUser"/
+	
+	
 }
 
 
@@ -1195,12 +1217,16 @@ _mustGetSudo() {
 #####Idle
 
 _gosuBinary() {
-	uname -m | grep x86 > /dev/null 2>&1 && export gosuBinary="gosu-i386"
-	uname -m | grep x86_64 > /dev/null 2>&1 && export gosuBinary="gosu-amd64"
-	uname -m | grep arm > /dev/null 2>&1 && export gosuBinary="gosu-armel"
+	echo "$hostArch" | grep x86_64 > /dev/null 2>&1 && export gosuBinary="gosu-amd64" && return
+	echo "$hostArch" | grep x86 > /dev/null 2>&1 && export gosuBinary="gosu-i386" && return
+	echo "$hostArch" | grep arm > /dev/null 2>&1 && export gosuBinary="gosu-armel" && return
+	
+	uname -m | grep x86_64 > /dev/null 2>&1 && export gosuBinary="gosu-amd64" && return
+	uname -m | grep x86 > /dev/null 2>&1 && export gosuBinary="gosu-i386" && return
+	uname -m | grep arm > /dev/null 2>&1 && export gosuBinary="gosu-armel" && return
 }
 
-_gosuExec() {
+_gosuExecVirt() {
 	_gosuBinary
 	
 	if [[ "$1" == "" ]]
@@ -1222,7 +1248,7 @@ _testBuiltGosu() {
 	
 	_checkDep "$gosuBinary"
 	
-	#Beware, this test requires either root or sudo to succeed.
+	#Beware, this test requires either root or sudo to actually verify functionality.
 	if ! "$scriptBin"/"$gosuBinary" "$USER" true >/dev/null 2>&1 && ! sudo -n "$scriptBin"/"$gosuBinary" "$USER" true >/dev/null 2>&1
 	then
 		echo gosu invalid response
@@ -1982,6 +2008,8 @@ _testBuilt() {
 	echo -e -n '\E[1;32;46m Binary checking...	\E[0m'
 	
 	_tryExec "_testBuiltIdle"
+	#_tryExec "_testBuiltGosu"
+	
 	_tryExec "_testBuiltChRoot"
 	_tryExec "_testBuiltQEMU"
 	
@@ -2038,6 +2066,8 @@ _build() {
 	echo -e '\E[1;32;46m Binary compiling...	\E[0m'
 	
 	_tryExec _buildIdle
+	_tryExec _buildGosu
+	
 	_tryExec _buildChRoot
 	_tryExec _buildQEMU
 	
