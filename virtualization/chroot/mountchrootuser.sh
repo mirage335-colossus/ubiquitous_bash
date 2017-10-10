@@ -1,7 +1,5 @@
 # TODO TODO Mount project directory if isolation configuration variable is set. Set directory permissions correctly. Use either root or ubvrtusr home directory as appropriate.
 _mountChRoot_project() {
-	
-	
 	#if [[ ! -e "$0" ]]
 	#then
 	#	return 1
@@ -55,7 +53,7 @@ _mountChRoot_project() {
 	_checkDep basename
 	
 	
-	_bindMountManager "$sharedHostProjectDir" "$sharedGuestProjectDir" || return 1
+	_bindMountManager "$sharedHostProjectDir" "$chrootDir""$sharedGuestProjectDir" || return 1
 	
 }
 
