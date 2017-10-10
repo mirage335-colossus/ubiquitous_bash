@@ -194,6 +194,16 @@ _testBindMountManager() {
 #"$1" == Source
 #"$2" == Destination
 _bindMountManager() {
+	if [[ "$1" == "" ]]
+	then
+		return 1
+	fi
+	
+	if [[ "$1" == "/" ]]
+	then
+		return 1
+	fi
+	
 	[[ ! -e "$1" ]] && return 1
 	
 	sudo -n mkdir -p "$2"
@@ -522,6 +532,9 @@ _localDir() {
 # WARNING Consider specified syntax for portability.
 # _runExec "${processedArgs[@]}"
 _virtUser() {
+	export sharedHostProjectDir
+	export processedArgs
+	
 	if [[ -e /tmp/.X11-unix ]] && [[ "$DISPLAY" != "" ]] && type xauth > /dev/null 2>&1
 	then
 		export XSOCK=/tmp/.X11-unix
@@ -550,9 +563,6 @@ _virtUser() {
 		currentResult=$(_localDir "$currentArg" "$sharedHostProjectDir" "$sharedGuestProjectDir")
 		processedArgs+=("$currentResult")
 	done
-	
-	export sharedHostProjectDir
-	export processedArgs
 }
 
 #Lists all chrooted processes. First parameter is chroot directory. Script might need to run as root.
@@ -845,6 +855,7 @@ _removeChRoot() {
 	"$scriptAbsoluteLocation" _closeChRoot --force
 	
 	rm "$scriptLocal"/_closing
+	rm "$scriptLocal"/_opening
 	
 	sudo rmdir ./v_*/home/ubvrtusr
 	sudo rmdir ./v_*/home
@@ -1033,7 +1044,6 @@ _userChRoot() {
 	## Lock file.
 	rm "$scriptLocal"/_instancing > /dev/null 2>&1 || _stop 1
 	
-echo "$sharedHostProjectDir" > /dev/tty
 	_virtUser "$@"
 	
 	_mountChRoot_project || _stop 1

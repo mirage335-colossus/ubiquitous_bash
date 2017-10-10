@@ -213,6 +213,7 @@ _removeChRoot() {
 	"$scriptAbsoluteLocation" _closeChRoot --force
 	
 	rm "$scriptLocal"/_closing
+	rm "$scriptLocal"/_opening
 	
 	sudo rmdir ./v_*/home/ubvrtusr
 	sudo rmdir ./v_*/home

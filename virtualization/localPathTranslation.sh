@@ -104,6 +104,9 @@ _localDir() {
 # WARNING Consider specified syntax for portability.
 # _runExec "${processedArgs[@]}"
 _virtUser() {
+	export sharedHostProjectDir
+	export processedArgs
+	
 	if [[ -e /tmp/.X11-unix ]] && [[ "$DISPLAY" != "" ]] && type xauth > /dev/null 2>&1
 	then
 		export XSOCK=/tmp/.X11-unix
@@ -132,7 +135,4 @@ _virtUser() {
 		currentResult=$(_localDir "$currentArg" "$sharedHostProjectDir" "$sharedGuestProjectDir")
 		processedArgs+=("$currentResult")
 	done
-	
-	export sharedHostProjectDir
-	export processedArgs
 }

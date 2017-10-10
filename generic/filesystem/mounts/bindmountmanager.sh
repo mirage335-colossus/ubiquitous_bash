@@ -20,12 +20,12 @@ _testBindMountManager() {
 #"$1" == Source
 #"$2" == Destination
 _bindMountManager() {
-	if [[ "$sharedHostProjectDir" == "" ]]
+	if [[ "$1" == "" ]]
 	then
 		return 1
 	fi
 	
-	if [[ "$sharedHostProjectDir" == "/" ]]
+	if [[ "$1" == "/" ]]
 	then
 		return 1
 	fi
