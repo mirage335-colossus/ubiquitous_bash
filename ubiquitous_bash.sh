@@ -889,7 +889,6 @@ _checkBaseDirRemote_chroot() {
 }
 
 
-# TODO TODO Mount project directory if isolation configuration variable is set. Set directory permissions correctly. Use either root or ubvrtusr home directory as appropriate.
 _mountChRoot_project() {
 	#if [[ ! -e "$0" ]]
 	#then
@@ -1018,7 +1017,6 @@ _chroot() {
 	
 }
 
-# TODO Check if ubvrtusr uid actually needs to be changed/recreated.
 _userChRoot() {
 	_start
 	
@@ -1033,7 +1031,6 @@ _userChRoot() {
 	
 	_checkDep mountpoint > "$logTmp"/userchroot 2>&1 || _stop 1
 	mountpoint "$instancedVirtDir"/home/"$virtGuestUser" > /dev/null 2>&1 && _stop 1
-	# TODO Check if home folder contents are not empty.
 	
 	_mountChRoot_user > "$logTmp"/userchroot 2>&1 || _stop 1
 	
@@ -1048,13 +1045,20 @@ _userChRoot() {
 	echo > "$scriptLocal"/quicktmp
 	mv -n "$scriptLocal"/quicktmp "$scriptLocal"/_instancing > /dev/null 2>&1 || _stop 1
 	
-	_chroot userdel -r "$virtGuestUser" > /dev/null 2>&1
+	#If guest/host user id does not match, recreate guest user. Do nothing for root user.
+	if [[ $(id -u) != 0 ]] && [[ $(_chroot id -u "$virtGuestUser") != $(id -u "$USER") ]]
+	then
+		_chroot userdel -r "$virtGuestUser" > /dev/null 2>&1
 	
-	_mountChRoot_user_home > "$logTmp"/userchroot 2>&1 || _stop 1
+		_mountChRoot_user_home > "$logTmp"/userchroot 2>&1 || _stop 1
 	
-	_chroot useradd --shell /bin/bash -u "$HOST_USER_ID" -o -c "" -m "$virtGuestUser" > /dev/null 2>&1 || _stop 1
-	_chroot usermod -a -G video "$virtGuestUser" > "$logTmp"/userchroot 2>&1 || _stop 1
-	
+		_chroot useradd --shell /bin/bash -u "$HOST_USER_ID" -o -c "" -m "$virtGuestUser" > /dev/null 2>&1 || _stop 1
+		_chroot usermod -a -G video "$virtGuestUser" > "$logTmp"/userchroot 2>&1 || _stop 1
+	fi
+	if [[ $(id -u) != 0 ]] && [[ $(_chroot id -u "$virtGuestUser") == $(id -u "$USER") ]]
+	then
+		_chroot /bin/bash /usr/bin/ubiquitous_bash.sh _prepareChRootUser
+	fi
 	
 	## Lock file.
 	rm "$scriptLocal"/_instancing > /dev/null 2>&1 || _stop 1
@@ -1080,7 +1084,9 @@ _userChRoot() {
 	sudo -n rmdir "$instancedVirtDir"/home/"$virtGuestUser" > "$logTmp"/userchroot 2>&1
 	sudo -n rmdir "$instancedVirtDir"/home > "$logTmp"/userchroot 2>&1
 	sudo -n rmdir "$instancedVirtDir" > "$logTmp"/userchroot 2>&1
-	cat "$logTmp"/userchroot
+	
+	#cat "$logTmp"/userchroot
+	
 	_stop "$userChRootExitStatus"
 	
 }
@@ -1094,6 +1100,12 @@ _dropChRoot() {
 	#Temporary, for testing only.
 	"$@"
 	
+}
+
+_prepareChRootUser() {
+	#drop permissions
+	#cp -r /etc/skel/. /home/
+	true
 }
 
 

@@ -8,3 +8,9 @@ _dropChRoot() {
 	"$@"
 	
 }
+
+_prepareChRootUser() {
+	#drop permissions
+	#cp -r /etc/skel/. /home/
+	true
+}
