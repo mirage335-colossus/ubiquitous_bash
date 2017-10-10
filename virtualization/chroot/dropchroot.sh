@@ -1,16 +1,12 @@
 _dropChRoot() {
 	
-	# TODO Change to localPWD or home.
+	# Change to localPWD or home.
+	cd "$localPWD"
 	
-	# TODO Drop to user ubvrtusr or remain root, using gosu.
-	
-	#Temporary, for testing only.
-	"$@"
-	
+	# Drop to user ubvrtusr or remain root, using gosu.
+	_gosuExec "$@"
 }
 
 _prepareChRootUser() {
-	#drop permissions
-	#cp -r /etc/skel/. /home/
-	true
+	_gosuExec cp -r /etc/skel/. /home/
 }
