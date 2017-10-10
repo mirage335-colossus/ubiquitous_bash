@@ -123,6 +123,8 @@ _testBuilt() {
 	echo -e -n '\E[1;32;46m Binary checking...	\E[0m'
 	
 	_tryExec "_testBuiltIdle"
+	#_tryExec "_testBuiltGosu"
+	
 	_tryExec "_testBuiltChRoot"
 	_tryExec "_testBuiltQEMU"
 	

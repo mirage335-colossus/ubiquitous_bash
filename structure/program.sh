@@ -6,6 +6,8 @@ _build() {
 	echo -e '\E[1;32;46m Binary compiling...	\E[0m'
 	
 	_tryExec _buildIdle
+	_tryExec _buildGosu
+	
 	_tryExec _buildChRoot
 	_tryExec _buildQEMU
 	

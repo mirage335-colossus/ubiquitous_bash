@@ -148,6 +148,8 @@ _includeScript qemu-x64-x64.sh "virtualization/qemu"
 _includeScript mustberoot.sh "special"
 _includeScript mustgetsudo.sh "special"
 
+_includeScript gosu.sh "special/gosu"
+
 _includeScript uuid.sh "special"
 
 echo "#####Shortcuts" >> "$progScript"
