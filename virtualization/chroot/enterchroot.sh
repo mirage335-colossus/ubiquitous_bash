@@ -54,6 +54,41 @@ _userChRoot() {
 	
 	_openChRoot > "$logTmp"/userchroot 2>&1 || _stop 1
 	
+	_stop_virt_instance
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	# DANGER Do NOT use typical safeTmp dir, as any recursive cleanup may be catastrophic.
 	export chrootDir="$instancedVirtDir"
 	export HOST_USER_ID=$(id -u)

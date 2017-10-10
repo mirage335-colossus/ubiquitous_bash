@@ -28,19 +28,6 @@ export scriptBin="$scriptAbsoluteFolder"/_bin
 
 export scriptLocal="$scriptAbsoluteFolder"/_local
 
-export virtGuestUser="ubvrtusr"
-
-export sharedGuestProjectDir="/home/"$virtGuestUser"/project"
-[[ $(id -u) == 0 ]] && export sharedGuestProjectDir="/root/project"
-
-export instancedVirtDir="$scriptAbsoluteFolder"/v_"$sessionid"
-
-export instancedVirtHome="$instancedVirtDir"/home/"$virtGuestUser"
-[[ $(id -u) == 0 ]] && export instancedVirtHome="$instancedVirtDir"/root
-
-export chrootDir="$scriptLocal"/chroot
-export globalChRootDir="$chrootDir"
-
 #export varStore="$scriptAbsoluteFolder"/var
 
 #Process control.
@@ -61,3 +48,28 @@ export objectName=$(basename "$objectDir")
 #Modify PATH to include own directories.
 export PATH="$PATH":"$scriptAbsoluteFolder"
 [[ -d "$scriptBin" ]] && export PATH="$PATH":"$scriptBin"
+
+export permaLog="$scriptLocal"/log
+
+export HOST_USER_ID=$(id -u)
+export HOST_GROUP_ID=$(id -g)
+export virtGuestUser="ubvrtusr"
+[[ $(id -u) == 0 ]] && export virtGuestUser="root"
+
+export globalVirtDir="$scriptLocal"/v
+export globalVirtFS="$globalVirtDir"/fs
+export globalVirtTmp="$globalVirtDir"/tmp
+
+export instancedVirtDir="$scriptAbsoluteFolder"/v_"$sessionid"
+export instancedVirtFS="$instancedVirtDir"/fs
+export instancedVirtTmp="$instancedVirtDir"/tmp
+
+export instancedVirtHome="$instancedVirtFS"/home/"$virtGuestUser"
+export instancedVirtHomeRef="$instancedVirtFS"/home/"$virtGuestUser".ref
+[[ $(id -u) == 0 ]] && export instancedVirtHome="$instancedVirtFS"/root
+
+export sharedHostProjectDir="$outerPWD"	#Default value.
+export sharedGuestProjectDir="$instancedVirtHome"/project
+
+export chrootDir="$globalVirtFS"
+

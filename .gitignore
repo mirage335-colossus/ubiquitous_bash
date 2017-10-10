@@ -4,4 +4,5 @@ vm*.img
 WARNING
 _local
 devtask*
+devtask/
 *swp

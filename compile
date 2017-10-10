@@ -131,9 +131,11 @@ _includeScript validaterequest.sh "generic"
 
 _includeScript preserveLog.sh "generic"
 
-_includeScript createImage.sh "virtualization/image"
+_includeScript virtenv.sh "virtualization"
 
 _includeScript localPathTranslation.sh "virtualization"
+
+_includeScript createImage.sh "virtualization/image"
 
 _includeScript procchroot.sh "virtualization/chroot"
 _includeScript mountchroot.sh "virtualization/chroot"
