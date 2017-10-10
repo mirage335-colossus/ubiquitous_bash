@@ -20,9 +20,19 @@ _testBindMountManager() {
 #"$1" == Source
 #"$2" == Destination
 _bindMountManager() {
+	if [[ "$sharedHostProjectDir" == "" ]]
+	then
+		return 1
+	fi
+	
+	if [[ "$sharedHostProjectDir" == "/" ]]
+	then
+		return 1
+	fi
+	
 	[[ ! -e "$1" ]] && return 1
 	
-	mkdir -p "$2"
+	sudo -n mkdir -p "$2"
 	[[ ! -e "$2" ]] && return 1
 	
 	sudo -n mount --bind "$1" "$2"
