@@ -865,6 +865,7 @@ _removeChRoot() {
 	
 	rm "$scriptLocal"/_closing
 	rm "$scriptLocal"/_opening
+	rm "$scriptLocal"/_instancing
 	
 	sudo -n rmdir ./v_*/home/ubvrtusr
 	sudo -n rmdir ./v_*/home/ubvrtusr.ref
@@ -981,7 +982,15 @@ _umountChRoot_user() {
 _mountChRoot_user_home() {
 	
 	sudo -n mkdir -p "$instancedVirtHome" || return 1
-	#sudo -n mount -t tmpfs -o size=4G,uid=$(id -u $USER),gid=$(id -g $GROUP) tmpfs "$instancedVirtHome" || return 1
+	
+	#sudo -n mount -t tmpfs -o size=4G,uid="$HOST_USER_ID",gid="$HOST_GROUP_ID" tmpfs "$instancedVirtHome" || return 1
+	
+	[[ ! -e "$safeTmp" ]] && return 1
+	mkdir -p "$safeTmp"/"$virtGuestUser"
+	
+	#sudo -n mount -t tmpfs -o size=4G,uid="$HOST_USER_ID",gid="$HOST_GROUP_ID" tmpfs "$safeTmp"/"$virtGuestUser" || return 1
+	
+	_bindMountManager "$safeTmp"/"$virtGuestUser" "$instancedVirtHome" || return 1
 	
 	return 0
 	
@@ -1021,6 +1030,32 @@ _chroot() {
 	
 }
 
+_ubvrtusrChRoot() {
+	#If root, discontinue.
+	[[ $(id -u) == 0 ]] && return 0
+	
+	#If user correctly setup, discontinue.
+	[[ -e "$instancedVirtDir"/home/"$virtGuestUser".ref ]] && _chroot id -u "$virtGuestUser" > /dev/null 2>&1 && [[ $(_chroot id -u "$virtGuestUser") == $(id -u) ]] && return 0
+	
+	_chroot userdel -r "$virtGuestUser" > /dev/null 2>&1
+	rmdir "$chrootDir"/home/"$virtGuestUser"/project > /dev/null 2>&1
+	rmdir "$chrootDir"/home/"$virtGuestUser" > /dev/null 2>&1
+	rmdir "$chrootDir"/home/"$virtGuestUser".ref/project > /dev/null 2>&1
+	rmdir "$chrootDir"/home/"$virtGuestUser".ref > /dev/null 2>&1
+	
+	_chroot groupadd -g "$HOST_GROUP_ID" -o "$virtGuestUser" > /dev/null 2>&1
+	_chroot useradd --shell /bin/bash -u "$HOST_USER_ID" -g "$HOST_GROUP_ID" -o -c "" -m "$virtGuestUser" > /dev/null 2>&1 || return 1
+	
+	_chroot usermod -a -G video "$virtGuestUser" > "$logTmp"/userchroot 2>&1 || return 1
+	
+	_chroot chown "$virtGuestUser":"$virtGuestUser" /home/"$virtGuestUser"
+	
+	sudo -n cp -a "$instancedVirtDir"/home/"$virtGuestUser" "$instancedVirtDir"/home/"$virtGuestUser".ref
+	
+	
+	return 0
+}
+
 _userChRoot() {
 	_start
 	
@@ -1052,29 +1087,10 @@ _userChRoot() {
 	mv -n "$scriptLocal"/quicktmp "$scriptLocal"/_instancing > /dev/null 2>&1 || _stop 1
 	
 	#If guest/host user/group id does not match, recreate guest user. Do nothing for root user.
-	if [[ $(id -u) != 0 ]] && [[ $(_chroot id -u "$virtGuestUser" 2> /dev/null) != $(id -u "$USER") ]] || [[ $(_chroot id -g "$virtGuestUser" 2> /dev/null) != $(id -g) ]]
-	then
-		_chroot userdel -r "$virtGuestUser" > /dev/null 2>&1
-		rmdir /home/"$virtGuestUser"/project > /dev/null 2>&1
-		rmdir /home/"$virtGuestUser" > /dev/null 2>&1
-		rmdir /home/"$virtGuestUser".ref/project > /dev/null 2>&1
-		rmdir /home/"$virtGuestUser".ref > /dev/null 2>&1
-		
-		_mountChRoot_user_home > "$logTmp"/userchroot 2>&1 || _stop 1
-		
-		_chroot groupadd -g "$HOST_GROUP_ID" -o "$virtGuestUser" > /dev/null 2>&1
-		_chroot useradd --shell /bin/bash -u "$HOST_USER_ID" -g "$HOST_GROUP_ID" -o -c "" -m "$virtGuestUser" > /dev/null 2>&1 || _stop 1
-		
-		_chroot usermod -a -G video "$virtGuestUser" > "$logTmp"/userchroot 2>&1 || _stop 1
-		
-		_chroot chown "$virtGuestUser":"$virtGuestUser" /home/"$virtGuestUser"
-		
-		sudo -n cp -a "$instancedVirtDir"/home/"$virtGuestUser" "$instancedVirtDir"/home/"$virtGuestUser".ref
-	fi
-	if [[ $(id -u) != 0 ]] && [[ $(_chroot id -u "$virtGuestUser" 2> /dev/null) == $(id -u "$USER") ]] || [[ $(_chroot id -g "$virtGuestUser" 2> /dev/null) != $(id -g) ]]
-	then
-		_chroot /bin/bash /usr/bin/ubiquitous_bash.sh _prepareChRootUser
-	fi
+	_ubvrtusrChRoot > "$logTmp"/userchroot 2>&1 || _stop 1
+	
+	_mountChRoot_user_home > "$logTmp"/userchroot 2>&1 || _stop 1
+	_chroot /bin/bash /usr/bin/ubiquitous_bash.sh _prepareChRootUser
 	
 	## Lock file.
 	rm "$scriptLocal"/_instancing > /dev/null 2>&1 || _stop 1
@@ -1108,6 +1124,24 @@ _userChRoot() {
 	
 }
 
+
+_removeUserChRoot() {
+	_openChRoot
+	
+	_chroot userdel -r "$virtGuestUser" > /dev/null 2>&1
+	rmdir "$chrootDir"/home/"$virtGuestUser"/project > /dev/null 2>&1
+	rmdir "$chrootDir"/home/"$virtGuestUser" > /dev/null 2>&1
+	rmdir "$chrootDir"/home/"$virtGuestUser".ref/project > /dev/null 2>&1
+	rmdir "$chrootDir"/home/"$virtGuestUser".ref > /dev/null 2>&1
+	
+	_removeChRoot
+}
+
+
+
+
+
+
 _dropChRoot() {
 	
 	# Change to localPWD or home.
@@ -1122,6 +1156,7 @@ _prepareChRootUser() {
 	#_gosuExecVirt cp -r /etc/skel/. /home/
 	
 	cp -a /home/"$virtGuestUser".ref/. /home/"$virtGuestUser"/
+	#chown "$virtGuestUser":"$virtGuestUser" /home/"$virtGuestUser"
 	
 	
 }

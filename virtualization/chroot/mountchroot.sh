@@ -217,6 +217,7 @@ _removeChRoot() {
 	
 	rm "$scriptLocal"/_closing
 	rm "$scriptLocal"/_opening
+	rm "$scriptLocal"/_instancing
 	
 	sudo -n rmdir ./v_*/home/ubvrtusr
 	sudo -n rmdir ./v_*/home/ubvrtusr.ref

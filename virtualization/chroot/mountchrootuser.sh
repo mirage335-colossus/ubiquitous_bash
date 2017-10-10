@@ -94,7 +94,15 @@ _umountChRoot_user() {
 _mountChRoot_user_home() {
 	
 	sudo -n mkdir -p "$instancedVirtHome" || return 1
-	#sudo -n mount -t tmpfs -o size=4G,uid=$(id -u $USER),gid=$(id -g $GROUP) tmpfs "$instancedVirtHome" || return 1
+	
+	#sudo -n mount -t tmpfs -o size=4G,uid="$HOST_USER_ID",gid="$HOST_GROUP_ID" tmpfs "$instancedVirtHome" || return 1
+	
+	[[ ! -e "$safeTmp" ]] && return 1
+	mkdir -p "$safeTmp"/"$virtGuestUser"
+	
+	#sudo -n mount -t tmpfs -o size=4G,uid="$HOST_USER_ID",gid="$HOST_GROUP_ID" tmpfs "$safeTmp"/"$virtGuestUser" || return 1
+	
+	_bindMountManager "$safeTmp"/"$virtGuestUser" "$instancedVirtHome" || return 1
 	
 	return 0
 	
