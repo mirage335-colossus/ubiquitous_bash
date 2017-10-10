@@ -1,3 +1,11 @@
+_checkBaseDirRemote_chroot() {
+	
+	[[ -e "$instancedVirtDir"/"$1" ]] || return 1
+	return 0
+	
+}
+
+
 # TODO TODO Mount project directory if isolation configuration variable is set. Set directory permissions correctly. Use either root or ubvrtusr home directory as appropriate.
 _mountChRoot_project() {
 	#if [[ ! -e "$0" ]]

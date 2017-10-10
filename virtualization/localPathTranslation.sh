@@ -1,10 +1,13 @@
 #Checks if file/directory exists on remote system. Overload this function with implementation specific to the container/virtualization solution in use (ie. docker run).
 _checkBaseDirRemote() {
-	false
+	[[ "$checkBaseDirRemote" == "" ]] && checkBaseDirRemote="false"
+	"$checkBaseDirRemote" || return 1
+	return 0
 }
 
 #Reports the highest-level directory containing all files in given parameter set.
 #"$@" == parameters to search
+#$checkBaseDirRemote == function to check if file/directory exists on remote system
 _searchBaseDir() {
 	local baseDir
 	local newDir

@@ -91,6 +91,9 @@ _test() {
 	
 	_checkDep id
 	
+	_checkDep true
+	_checkDep false
+	
 	_tryExec "_testMountChecks"
 	_tryExec "_testBindMountManager"
 	_tryExec "_testDistro"

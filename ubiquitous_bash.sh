@@ -431,11 +431,14 @@ _createRawImage() {
 
 #Checks if file/directory exists on remote system. Overload this function with implementation specific to the container/virtualization solution in use (ie. docker run).
 _checkBaseDirRemote() {
-	false
+	[[ "$checkBaseDirRemote" == "" ]] && checkBaseDirRemote="false"
+	"$checkBaseDirRemote" || return 1
+	return 0
 }
 
 #Reports the highest-level directory containing all files in given parameter set.
 #"$@" == parameters to search
+#$checkBaseDirRemote == function to check if file/directory exists on remote system
 _searchBaseDir() {
 	local baseDir
 	local newDir
@@ -878,6 +881,14 @@ _removeChRoot() {
 
 
 
+_checkBaseDirRemote_chroot() {
+	
+	[[ -e "$instancedVirtDir"/"$1" ]] || return 1
+	return 0
+	
+}
+
+
 # TODO TODO Mount project directory if isolation configuration variable is set. Set directory permissions correctly. Use either root or ubvrtusr home directory as appropriate.
 _mountChRoot_project() {
 	#if [[ ! -e "$0" ]]
@@ -1011,26 +1022,27 @@ _chroot() {
 _userChRoot() {
 	_start
 	
-	_openChRoot || _stop 1
+	_openChRoot > "$logTmp"/userchroot 2>&1 || _stop 1
 	
 	# DANGER Do NOT use typical safeTmp dir, as any recursive cleanup may be catastrophic.
 	export chrootDir="$instancedVirtDir"
 	export HOST_USER_ID=$(id -u "$USER")
 	
-	sudo -n mkdir -p "$instancedVirtDir" || _stop 1
-	sudo -n mkdir -p "$instancedVirtDir"/home/"$virtGuestUser" || _stop 1
+	sudo -n mkdir -p "$instancedVirtDir" > "$logTmp"/userchroot 2>&1 || _stop 1
+	sudo -n mkdir -p "$instancedVirtDir"/home/"$virtGuestUser" > "$logTmp"/userchroot 2>&1 || _stop 1
 	
-	_checkDep mountpoint || _stop 1
+	_checkDep mountpoint > "$logTmp"/userchroot 2>&1 || _stop 1
 	mountpoint "$instancedVirtDir"/home/"$virtGuestUser" > /dev/null 2>&1 && _stop 1
 	# TODO Check if home folder contents are not empty.
 	
-	_mountChRoot_user || _stop 1
+	_mountChRoot_user > "$logTmp"/userchroot 2>&1 || _stop 1
 	
 	## Wait for lock file. Not done with _waitFileCommands because there is nither an obvious means, nor an obviously catastrophically critical requirement, to independently check for completion of related useradd/mod/del operations.
-	while [[ -e "$scriptLocal"/_instancing ]]
-	do
-		sleep 1
-	done
+	[[ -e "$scriptLocal"/_instancing ]] && sleep 1
+	[[ -e "$scriptLocal"/_instancing ]] && sleep 9
+	[[ -e "$scriptLocal"/_instancing ]] && sleep 27
+	[[ -e "$scriptLocal"/_instancing ]] && sleep 81
+	[[ -e "$scriptLocal"/_instancing ]] && _stop 1
 	
 	## Lock file.
 	echo > "$scriptLocal"/quicktmp
@@ -1038,35 +1050,36 @@ _userChRoot() {
 	
 	_chroot userdel -r "$virtGuestUser" > /dev/null 2>&1
 	
-	_mountChRoot_user_home || _stop 1
+	_mountChRoot_user_home > "$logTmp"/userchroot 2>&1 || _stop 1
 	
 	_chroot useradd --shell /bin/bash -u "$HOST_USER_ID" -o -c "" -m "$virtGuestUser" > /dev/null 2>&1 || _stop 1
-	_chroot usermod -a -G video "$virtGuestUser" || _stop 1
+	_chroot usermod -a -G video "$virtGuestUser" > "$logTmp"/userchroot 2>&1 || _stop 1
 	
 	
 	## Lock file.
 	rm "$scriptLocal"/_instancing > /dev/null 2>&1 || _stop 1
 	
-	_virtUser "$@"
+	export checkBaseDirRemote=_checkBaseDirRemote_chroot
+	_virtUser "$@" > "$logTmp"/userchroot 2>&1
 	
-	_mountChRoot_project || _stop 1
+	_mountChRoot_project > "$logTmp"/userchroot 2>&1 || _stop 1
 	
-	_chroot chown "$virtGuestUser":"$virtGuestUser" "$sharedGuestProjectDir"
+	_chroot chown "$virtGuestUser":"$virtGuestUser" "$sharedGuestProjectDir" > "$logTmp"/userchroot 2>&1
 	
 	_chroot /bin/bash /usr/bin/ubiquitous_bash.sh _dropChRoot "${processedArgs[@]}"
 	local userChRootExitStatus="$?"	
 	
-	_stopChRoot "$chrootDir"
+	_stopChRoot "$chrootDir" > "$logTmp"/userchroot 2>&1
 	
-	_umountChRoot_project
-	_umountChRoot_user_home || _stop 1
-	_umountChRoot_user || _stop 1
+	_umountChRoot_project > "$logTmp"/userchroot 2>&1
+	_umountChRoot_user_home > "$logTmp"/userchroot 2>&1 || _stop 1
+	_umountChRoot_user > "$logTmp"/userchroot 2>&1 || _stop 1
 	
-	"$scriptAbsoluteLocation" _checkForMounts "$chrootDir" && _stop 1
+	"$scriptAbsoluteLocation" _checkForMounts "$chrootDir" > "$logTmp"/userchroot 2>&1 && _stop 1
 	
-	sudo -n rmdir "$instancedVirtDir"/home/"$virtGuestUser"
-	sudo -n rmdir "$instancedVirtDir"/home
-	sudo -n rmdir "$instancedVirtDir"
+	sudo -n rmdir "$instancedVirtDir"/home/"$virtGuestUser" > "$logTmp"/userchroot 2>&1
+	sudo -n rmdir "$instancedVirtDir"/home > "$logTmp"/userchroot 2>&1
+	sudo -n rmdir "$instancedVirtDir" > "$logTmp"/userchroot 2>&1
 	
 	_stop "$userChRootExitStatus"
 	
@@ -1853,6 +1866,9 @@ _test() {
 	_checkDep ls
 	
 	_checkDep id
+	
+	_checkDep true
+	_checkDep false
 	
 	_tryExec "_testMountChecks"
 	_tryExec "_testBindMountManager"
