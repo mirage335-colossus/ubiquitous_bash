@@ -64,16 +64,13 @@ _userChRoot() {
 	rm "$scriptLocal"/_instancing > /dev/null 2>&1 || _stop 1
 	
 	_virtUser "$@"
+	
 	_mountChRoot_project || _stop 1
-	echo test > /dev/tty
+	
 	_chroot chown "$virtGuestUser":"$virtGuestUser" "$sharedGuestProjectDir"
 	
-	_chroot /usr/bin/ubiquitous_bash.sh _dropChRoot "${processedArgs[@]}"
-	local userChRootExitStatus="$?"
-	
-	
-	
-	
+	_chroot /bin/bash /usr/bin/ubiquitous_bash.sh _dropChRoot "${processedArgs[@]}"
+	local userChRootExitStatus="$?"	
 	
 	_stopChRoot "$chrootDir"
 	

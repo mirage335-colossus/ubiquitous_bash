@@ -900,28 +900,30 @@ _mountChRoot_project() {
 	[[ "$sharedHostProjectDir" == "/home/" ]] && return 1
 	[[ "$sharedHostProjectDir" == "/home/$USER" ]] && return 1
 	[[ "$sharedHostProjectDir" == "/home/$USER/" ]] && return 1
-	[[ "$sharedHostProjectDir" == "/$USER" ]] && return 1
-	[[ "$sharedHostProjectDir" == "/$USER/" ]] && return 1
+	[[ $(id -u) != 0 ]] && [[ "$sharedHostProjectDir" == "/$USER" ]] && return 1
+	[[ $(id -u) != 0 ]] && [[ "$sharedHostProjectDir" == "/$USER/" ]] && return 1
 	
 	[[ "$sharedHostProjectDir" == "/tmp" ]] && return 1
 	[[ "$sharedHostProjectDir" == "/tmp/" ]] && return 1
 	
-	[[ "$sharedHostProjectDir" == "$HOME" ]] && return 1
-	[[ "$sharedHostProjectDir" == "$HOME/" ]] && return 1
+	[[ $(id -u) != 0 ]] && [[ "$sharedHostProjectDir" == "$HOME" ]] && return 1
+	[[ $(id -u) != 0 ]] && [[ "$sharedHostProjectDir" == "$HOME/" ]] && return 1
 	
 	#Whitelist.
-	local safeToRM=false
+	local safeToMount=false
 	
 	local safeScriptAbsoluteFolder="$_getScriptAbsoluteFolder"
 	
-	[[ "$sharedHostProjectDir" == "./"* ]] && [[ "$PWD" == "$safeScriptAbsoluteFolder"* ]] && safeToRM="true"
+	[[ "$sharedHostProjectDir" == "./"* ]] && [[ "$PWD" == "$safeScriptAbsoluteFolder"* ]] && safeToMount="true"
 	
-	[[ "$sharedHostProjectDir" == "$safeScriptAbsoluteFolder"* ]] && safeToRM="true"
+	[[ "$sharedHostProjectDir" == "$safeScriptAbsoluteFolder"* ]] && safeToMount="true"
 	
-	#[[ "$sharedHostProjectDir" == "/home/$USER"* ]] && safeToRM="true"
-	[[ "$sharedHostProjectDir" == "/tmp/"* ]] && safeToRM="true"
+	[[ "$sharedHostProjectDir" == "/home/$USER"* ]] && safeToMount="true"
+	[[ "$sharedHostProjectDir" == "/root"* ]] && safeToMount="true"
 	
-	[[ "$safeToRM" == "false" ]] && return 1
+	[[ "$sharedHostProjectDir" == "/tmp/"* ]] && safeToMount="true"
+	
+	[[ "$safeToMount" == "false" ]] && return 1
 	
 	#Safeguards/
 	#[[ -d "$sharedHostProjectDir" ]] && find "$sharedHostProjectDir" | grep -i '\.git$' >/dev/null 2>&1 && return 1
@@ -1046,16 +1048,13 @@ _userChRoot() {
 	rm "$scriptLocal"/_instancing > /dev/null 2>&1 || _stop 1
 	
 	_virtUser "$@"
-	echo test > /dev/tty
+	
 	_mountChRoot_project || _stop 1
+	
 	_chroot chown "$virtGuestUser":"$virtGuestUser" "$sharedGuestProjectDir"
 	
-	_chroot /usr/bin/ubiquitous_bash.sh _dropChRoot "${processedArgs[@]}"
-	local userChRootExitStatus="$?"
-	
-	
-	
-	
+	_chroot /bin/bash /usr/bin/ubiquitous_bash.sh _dropChRoot "${processedArgs[@]}"
+	local userChRootExitStatus="$?"	
 	
 	_stopChRoot "$chrootDir"
 	
@@ -1080,8 +1079,7 @@ _dropChRoot() {
 	# TODO Drop to user ubvrtusr or remain root, using gosu.
 	
 	#Temporary, for testing only.
-	#"$@"
-	/bin/bash
+	"$@"
 	
 }
 

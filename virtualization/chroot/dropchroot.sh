@@ -5,7 +5,6 @@ _dropChRoot() {
 	# TODO Drop to user ubvrtusr or remain root, using gosu.
 	
 	#Temporary, for testing only.
-	#"$@"
-	/bin/bash
+	"$@"
 	
 }
