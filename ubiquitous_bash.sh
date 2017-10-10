@@ -174,6 +174,7 @@ _discoverResource() {
 
 _testBindMountManager() {
 	_checkDep mount
+	_checkDep mountpoint
 	
 	if ! mount --help | grep '\-\-bind' >/dev/null 2>&1
 	then
@@ -194,6 +195,8 @@ _testBindMountManager() {
 #"$1" == Source
 #"$2" == Destination
 _bindMountManager() {
+	mountpoint "$2" > /dev/null 2>&1 && return 1
+	
 	if [[ "$1" == "" ]]
 	then
 		return 1

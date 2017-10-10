@@ -21,7 +21,7 @@ _testBindMountManager() {
 #"$1" == Source
 #"$2" == Destination
 _bindMountManager() {
-	mountpoint "$1" > /dev/null 2>&1 && return 1
+	mountpoint "$2" > /dev/null 2>&1 && return 1
 	
 	if [[ "$1" == "" ]]
 	then
