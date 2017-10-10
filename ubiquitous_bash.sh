@@ -1046,7 +1046,7 @@ _userChRoot() {
 	rm "$scriptLocal"/_instancing > /dev/null 2>&1 || _stop 1
 	
 	_virtUser "$@"
-	
+	echo test > /dev/tty
 	_mountChRoot_project || _stop 1
 	_chroot chown "$virtGuestUser":"$virtGuestUser" "$sharedGuestProjectDir"
 	
@@ -1080,7 +1080,8 @@ _dropChRoot() {
 	# TODO Drop to user ubvrtusr or remain root, using gosu.
 	
 	#Temporary, for testing only.
-	"$@"
+	#"$@"
+	/bin/bash
 	
 }
 
