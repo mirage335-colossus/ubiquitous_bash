@@ -86,6 +86,8 @@ _userChRoot() {
 	sudo -n rmdir "$instancedVirtDir"/home > "$logTmp"/userchroot 2>&1
 	sudo -n rmdir "$instancedVirtDir" > "$logTmp"/userchroot 2>&1
 	
+	#cat "$logTmp"/userchroot
+	
 	_stop "$userChRootExitStatus"
 	
 }

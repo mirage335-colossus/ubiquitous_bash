@@ -432,7 +432,7 @@ _createRawImage() {
 #Checks if file/directory exists on remote system. Overload this function with implementation specific to the container/virtualization solution in use (ie. docker run).
 _checkBaseDirRemote() {
 	[[ "$checkBaseDirRemote" == "" ]] && checkBaseDirRemote="false"
-	"$checkBaseDirRemote" || return 1
+	"$checkBaseDirRemote" "$1" || return 1
 	return 0
 }
 
@@ -883,7 +883,7 @@ _removeChRoot() {
 
 _checkBaseDirRemote_chroot() {
 	
-	[[ -e "$instancedVirtDir"/"$1" ]] || return 1
+	[[ -e "$chrootDir"/"$1" ]] || return 1
 	return 0
 	
 }
@@ -960,7 +960,7 @@ _umountChRoot_project() {
 _mountChRoot_user() {
 	
 	_bindMountManager "$globalChRootDir" "$instancedVirtDir" || return 1
-	_mountChRoot "$instancedVirtDir" || return 1
+	#_mountChRoot "$instancedVirtDir" || return 1
 	
 	return 0
 	
@@ -1080,7 +1080,7 @@ _userChRoot() {
 	sudo -n rmdir "$instancedVirtDir"/home/"$virtGuestUser" > "$logTmp"/userchroot 2>&1
 	sudo -n rmdir "$instancedVirtDir"/home > "$logTmp"/userchroot 2>&1
 	sudo -n rmdir "$instancedVirtDir" > "$logTmp"/userchroot 2>&1
-	
+	cat "$logTmp"/userchroot
 	_stop "$userChRootExitStatus"
 	
 }

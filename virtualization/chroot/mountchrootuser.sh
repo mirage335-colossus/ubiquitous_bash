@@ -1,6 +1,6 @@
 _checkBaseDirRemote_chroot() {
 	
-	[[ -e "$instancedVirtDir"/"$1" ]] || return 1
+	[[ -e "$chrootDir"/"$1" ]] || return 1
 	return 0
 	
 }
@@ -77,7 +77,7 @@ _umountChRoot_project() {
 _mountChRoot_user() {
 	
 	_bindMountManager "$globalChRootDir" "$instancedVirtDir" || return 1
-	_mountChRoot "$instancedVirtDir" || return 1
+	#_mountChRoot "$instancedVirtDir" || return 1
 	
 	return 0
 	

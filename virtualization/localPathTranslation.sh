@@ -1,7 +1,7 @@
 #Checks if file/directory exists on remote system. Overload this function with implementation specific to the container/virtualization solution in use (ie. docker run).
 _checkBaseDirRemote() {
 	[[ "$checkBaseDirRemote" == "" ]] && checkBaseDirRemote="false"
-	"$checkBaseDirRemote" || return 1
+	"$checkBaseDirRemote" "$1" || return 1
 	return 0
 }
 
