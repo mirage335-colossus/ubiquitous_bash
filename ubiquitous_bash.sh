@@ -953,6 +953,22 @@ _removeChRoot() {
 
 
 
+_mountChRoot_userAndHome() {
+	
+	_bindMountManager "$globalVirtFS" "$instancedVirtFS" || return 1
+	
+	sudo -n mount -t tmpfs -o size=4G,uid="$HOST_USER_ID",gid="$HOST_GROUP_ID" tmpfs "$instancedVirtTmp"
+	_bindMountManager "$instancedVirtTmp" "$instancedVirtHome" || return 1
+	
+	
+	
+	
+	
+	
+	return 0
+}
+
+
 
 _mountChRoot_user() {
 	
@@ -1155,8 +1171,9 @@ _userChRoot() {
 	_ubvrtusrChRoot  >> "$logTmp"/usrchrt.log 2>&1 || _stop 1
 	
 	
-	_mountChRoot_user >> "$logTmp"/usrchrt.log 2>&1 || _stop 1
-	###_mountChRoot_user_home >> "$logTmp"/usrchrt.log 2>&1 || _stop 1
+	#_mountChRoot_user >> "$logTmp"/usrchrt.log 2>&1 || _stop 1
+	#_mountChRoot_user_home >> "$logTmp"/usrchrt.log 2>&1 || _stop 1
+	_mountChRoot_userAndHome >> "$logTmp"/usrchrt.log 2>&1 || _stop 1
 	[[ $(id -u) != 0 ]] && cp -a "$instancedVirtHomeRef"/. "$instancedVirtHome"/ >> "$logTmp"/usrchrt.log 2>&1
 	export chrootDir="$instancedVirtFS"
 	

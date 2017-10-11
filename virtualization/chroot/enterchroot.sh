@@ -81,8 +81,7 @@ _userChRoot() {
 	_ubvrtusrChRoot  >> "$logTmp"/usrchrt.log 2>&1 || _stop 1
 	
 	
-	_mountChRoot_user >> "$logTmp"/usrchrt.log 2>&1 || _stop 1
-	###_mountChRoot_user_home >> "$logTmp"/usrchrt.log 2>&1 || _stop 1
+	_mountChRoot_userAndHome >> "$logTmp"/usrchrt.log 2>&1 || _stop 1
 	[[ $(id -u) != 0 ]] && cp -a "$instancedVirtHomeRef"/. "$instancedVirtHome"/ >> "$logTmp"/usrchrt.log 2>&1
 	export chrootDir="$instancedVirtFS"
 	
