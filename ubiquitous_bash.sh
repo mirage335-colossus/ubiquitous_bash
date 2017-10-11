@@ -408,26 +408,62 @@ _preserveLog() {
 	cp "$logTmp"/* "$permaLog"/
 }
 
-_createRawImage_sequence() {
-	_start
+
+_start_virt_instance() {
 	
-	export vmImageFile="$scriptLocal"/vm.img
+	mkdir -p "$instancedVirtDir" || return 1
+	mkdir -p "$instancedVirtFS" || return 1
+	mkdir -p "$instancedVirtTmp" || return 1
 	
-	[[ "$1" != "" ]] && export vmImageFile="$1"
+	mkdir -p "$instancedVirtHome" || return 1
+	mkdir -p "$instancedVirtHomeRef" || return 1
 	
-	[[ "$vmImageFile" == "" ]] && _stop 1
-	[[ -e "$vmImageFile" ]] && _stop 1
+	mkdir -p "$sharedHostProjectDir" || return 1
+	mkdir -p "$sharedGuestProjectDir" || return 1
 	
-	dd if=/dev/zero of="$vmImageFile" bs=1G count=6
-	
-	_stop
 }
 
-_createRawImage() {
+
+
+_start_virt_all() {
 	
-	"$scriptAbsoluteLocation" _createRawImage_sequence "$@"
+	_start_virt_instance
+	
+	mkdir -p "$globalVirtDir" || return 1
+	mkdir -p "$globalVirtFS" || return 1
+	mkdir -p "$globalVirtTmp" || return 1
+	
+	
+	return 0
+}
+
+_stop_virt_instance() {
+	
+	_wait_umount "$sharedGuestProjectDir" || return 1
+	
+	_wait_umount "$instancedVirtHome" || return 1
+	_wait_umount "$instancedVirtHomeRef" || return 1
+	
+	_wait_umount "$instancedVirtFS" || return 1
+	_wait_umount "$instancedVirtTmp" || return 1
+	_wait_umount "$instancedVirtDir" || return 1
+	
+	return 0
 	
 }
+
+_stop_virt_all() {
+	
+	_stop_virt_instance || return 1
+	
+	_wait_umount "$globalVirtFS" || return 1
+	_wait_umount "$globalVirtTmp" || return 1
+	_wait_umount "$globalVirtDir" || return 1
+	
+	
+	
+}
+
 
 #Checks if file/directory exists on remote system. Overload this function with implementation specific to the container/virtualization solution in use (ie. docker run).
 _checkBaseDirRemote() {
@@ -569,6 +605,27 @@ _virtUser() {
 		currentResult=$(_localDir "$currentArg" "$sharedHostProjectDir" "$sharedGuestProjectDir")
 		processedArgs+=("$currentResult")
 	done
+}
+
+_createRawImage_sequence() {
+	_start
+	
+	export vmImageFile="$scriptLocal"/vm.img
+	
+	[[ "$1" != "" ]] && export vmImageFile="$1"
+	
+	[[ "$vmImageFile" == "" ]] && _stop 1
+	[[ -e "$vmImageFile" ]] && _stop 1
+	
+	dd if=/dev/zero of="$vmImageFile" bs=1G count=6
+	
+	_stop
+}
+
+_createRawImage() {
+	
+	"$scriptAbsoluteLocation" _createRawImage_sequence "$@"
+	
 }
 
 #Lists all chrooted processes. First parameter is chroot directory. Script might need to run as root.
@@ -1060,6 +1117,41 @@ _userChRoot() {
 	_start
 	
 	_openChRoot > "$logTmp"/userchroot 2>&1 || _stop 1
+	
+	_stop_virt_instance
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	# DANGER Do NOT use typical safeTmp dir, as any recursive cleanup may be catastrophic.
 	export chrootDir="$instancedVirtDir"
@@ -1652,19 +1744,6 @@ export scriptBin="$scriptAbsoluteFolder"/_bin
 
 export scriptLocal="$scriptAbsoluteFolder"/_local
 
-export virtGuestUser="ubvrtusr"
-
-export sharedGuestProjectDir="/home/"$virtGuestUser"/project"
-[[ $(id -u) == 0 ]] && export sharedGuestProjectDir="/root/project"
-
-export instancedVirtDir="$scriptAbsoluteFolder"/v_"$sessionid"
-
-export instancedVirtHome="$instancedVirtDir"/home/"$virtGuestUser"
-[[ $(id -u) == 0 ]] && export instancedVirtHome="$instancedVirtDir"/root
-
-export chrootDir="$scriptLocal"/chroot
-export globalChRootDir="$chrootDir"
-
 #export varStore="$scriptAbsoluteFolder"/var
 
 #Process control.
@@ -1685,6 +1764,31 @@ export objectName=$(basename "$objectDir")
 #Modify PATH to include own directories.
 export PATH="$PATH":"$scriptAbsoluteFolder"
 [[ -d "$scriptBin" ]] && export PATH="$PATH":"$scriptBin"
+
+export permaLog="$scriptLocal"/log
+
+export HOST_USER_ID=$(id -u)
+export HOST_GROUP_ID=$(id -g)
+export virtGuestUser="ubvrtusr"
+[[ $(id -u) == 0 ]] && export virtGuestUser="root"
+
+export globalVirtDir="$scriptLocal"/v
+export globalVirtFS="$globalVirtDir"/fs
+export globalVirtTmp="$globalVirtDir"/tmp
+
+export instancedVirtDir="$scriptAbsoluteFolder"/v_"$sessionid"
+export instancedVirtFS="$instancedVirtDir"/fs
+export instancedVirtTmp="$instancedVirtDir"/tmp
+
+export instancedVirtHome="$instancedVirtFS"/home/"$virtGuestUser"
+export instancedVirtHomeRef="$instancedVirtFS"/home/"$virtGuestUser".ref
+[[ $(id -u) == 0 ]] && export instancedVirtHome="$instancedVirtFS"/root
+
+export sharedHostProjectDir="$outerPWD"	#Default value.
+export sharedGuestProjectDir="$instancedVirtHome"/project
+
+export chrootDir="$globalVirtFS"
+
 
 #####Local Environment Management (Resources)
 

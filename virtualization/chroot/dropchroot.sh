@@ -11,8 +11,9 @@ _prepareChRootUser() {
 	
 	#_gosuExecVirt cp -r /etc/skel/. /home/
 	
-	cp -a /home/"$virtGuestUser".ref/. /home/"$virtGuestUser"/
+	#cp -a /home/"$virtGuestUser".ref/. /home/"$virtGuestUser"/
 	#chown "$virtGuestUser":"$virtGuestUser" /home/"$virtGuestUser"
 	
+	true
 	
 }

@@ -13,8 +13,6 @@ _start_virt_instance() {
 	
 }
 
-
-
 _start_virt_all() {
 	
 	_start_virt_instance

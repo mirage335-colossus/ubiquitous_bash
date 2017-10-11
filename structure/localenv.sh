@@ -34,6 +34,17 @@ _preserveLog() {
 	cp "$logTmp"/* ./  >/dev/null 2>&1
 }
 
+_waitFile() {
+	
+	[[ -e "$1" ]] && sleep 1
+	[[ -e "$1" ]] && sleep 9
+	[[ -e "$1" ]] && sleep 27
+	[[ -e "$1" ]] && sleep 81
+	[[ -e "$1" ]] && _return 1
+	
+	return 0
+}
+
 #Wrapper. If lock file is present, waits for unlocking operation to complete successfully, then reports status.
 #"$1" == checkFile
 #"$@" == wait command and parameters
