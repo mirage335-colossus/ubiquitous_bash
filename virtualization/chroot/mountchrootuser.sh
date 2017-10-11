@@ -1,6 +1,27 @@
-_checkBaseDirRemote_chroot() {
+
+
+_mountChRoot_user() {
 	
-	[[ -e "$chrootDir"/"$1" ]] || return 1
+	_bindMountManager "$globalVirtFS" "$instancedVirtFS" || return 1
+	#_mountChRoot "$instancedVirtDir" || return 1
+	
+	return 0
+	
+}
+
+_mountChRoot_user_home() {
+	
+	sudo -n mkdir -p "$instancedVirtHome" || return 1
+	
+	#sudo -n mount -t tmpfs -o size=4G,uid="$HOST_USER_ID",gid="$HOST_GROUP_ID" tmpfs "$instancedVirtHome" || return 1
+	
+	[[ ! -e "$safeTmp" ]] && return 1
+	mkdir -p "$safeTmp"/"$virtGuestUser"
+	
+	#sudo -n mount -t tmpfs -o size=4G,uid="$HOST_USER_ID",gid="$HOST_GROUP_ID" tmpfs "$safeTmp"/"$virtGuestUser" || return 1
+	
+	_bindMountManager "$safeTmp"/"$virtGuestUser" "$instancedVirtHome" || return 1
+	
 	return 0
 	
 }
@@ -62,49 +83,21 @@ _mountChRoot_project() {
 	_checkDep basename
 	
 	
-	_bindMountManager "$sharedHostProjectDir" "$chrootDir""$sharedGuestProjectDir" || return 1
+	_bindMountManager "$sharedHostProjectDir" "$instancedVirtFS""$sharedGuestProjectDir" || return 1
 	
 }
 
 _umountChRoot_project() {
 	
-	_wait_umount "$chrootDir""$sharedGuestProjectDir"
+	_wait_umount "$instancedVirtFS""$sharedGuestProjectDir"
 	
 }
 
-
-_mountChRoot_user() {
-	
-	_bindMountManager "$globalChRootDir" "$instancedVirtDir" || return 1
-	#_mountChRoot "$instancedVirtDir" || return 1
-	
-	return 0
-	
-}
 
 _umountChRoot_user() {
 	
-	mountpoint "$chrootDir" > /dev/null 2>&1 || return 1
+	mountpoint "$instancedVirtFS" > /dev/null 2>&1 || return 1
 	_umountChRoot "$instancedVirtDir"
-	
-}
-
-
-
-_mountChRoot_user_home() {
-	
-	sudo -n mkdir -p "$instancedVirtHome" || return 1
-	
-	#sudo -n mount -t tmpfs -o size=4G,uid="$HOST_USER_ID",gid="$HOST_GROUP_ID" tmpfs "$instancedVirtHome" || return 1
-	
-	[[ ! -e "$safeTmp" ]] && return 1
-	mkdir -p "$safeTmp"/"$virtGuestUser"
-	
-	#sudo -n mount -t tmpfs -o size=4G,uid="$HOST_USER_ID",gid="$HOST_GROUP_ID" tmpfs "$safeTmp"/"$virtGuestUser" || return 1
-	
-	_bindMountManager "$safeTmp"/"$virtGuestUser" "$instancedVirtHome" || return 1
-	
-	return 0
 	
 }
 
@@ -115,4 +108,13 @@ _umountChRoot_user_home() {
 	
 	return 0
 	
-} 
+}
+
+_checkBaseDirRemote_chroot() {
+	
+	[[ -e "$chrootDir"/"$1" ]] || return 1
+	return 0
+	
+}
+
+

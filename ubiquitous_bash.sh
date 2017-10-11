@@ -405,7 +405,7 @@ _preserveLog() {
 		permaLog="$PWD"
 	fi
 	
-	cp "$logTmp"/* "$permaLog"/
+	cp "$logTmp"/* "$permaLog"/ > /dev/null 2>&1
 }
 
 
@@ -422,8 +422,6 @@ _start_virt_instance() {
 	mkdir -p "$sharedGuestProjectDir" || return 1
 	
 }
-
-
 
 _start_virt_all() {
 	
@@ -740,7 +738,9 @@ _umountChRoot() {
 	local absolute1
 	absolute1=$(_getAbsoluteLocation "$1")
 	
+	_wait_umount "$absolute1"/home/"$virtGuestUser"/project >/dev/null 2>&1
 	_wait_umount "$absolute1"/home/"$virtGuestUser" >/dev/null 2>&1
+	_wait_umount "$absolute1"/root/project >/dev/null 2>&1
 	_wait_umount "$absolute1"/root >/dev/null 2>&1
 	
 	_wait_umount "$absolute1"/dev/shm
@@ -915,8 +915,10 @@ _closeChRoot() {
 #Debugging function.
 _removeChRoot() {
 	
-
-	find . -maxdepth 1 -type d -name 'v_*' -exec "$scriptAbsoluteLocation" _umountChRoot_directory {} \;
+	
+	find "$scriptAbsoluteFolder"/v_*/fs -maxdepth 1 -type d -exec "$scriptAbsoluteLocation" _umountChRoot_directory {} \;
+	find "$scriptAbsoluteFolder"/v_*/tmp -maxdepth 1 -type d -exec "$scriptAbsoluteLocation" umount {} \;
+	find "$scriptAbsoluteFolder"/v_*/ -maxdepth 5 -type d | head -n 12 | tac | xargs rmdir
 	
 	"$scriptAbsoluteLocation" _closeChRoot --force
 	
@@ -924,10 +926,8 @@ _removeChRoot() {
 	rm "$scriptLocal"/_opening
 	rm "$scriptLocal"/_instancing
 	
-	sudo -n rmdir ./v_*/home/ubvrtusr
-	sudo -n rmdir ./v_*/home/ubvrtusr.ref
-	sudo -n rmdir ./v_*/home
-	sudo -n rmdir ./v_*
+	rm "$globalVirtDir"/_ubvrtusr
+	
 	
 }
 
@@ -1007,20 +1007,20 @@ _mountChRoot_project() {
 	_checkDep basename
 	
 	
-	_bindMountManager "$sharedHostProjectDir" "$chrootDir""$sharedGuestProjectDir" || return 1
+	_bindMountManager "$sharedHostProjectDir" "$instancedVirtFS""$sharedGuestProjectDir" || return 1
 	
 }
 
 _umountChRoot_project() {
 	
-	_wait_umount "$chrootDir""$sharedGuestProjectDir"
+	_wait_umount "$instancedVirtFS""$sharedGuestProjectDir"
 	
 }
 
 
 _mountChRoot_user() {
 	
-	_bindMountManager "$globalChRootDir" "$instancedVirtDir" || return 1
+	_bindMountManager "$globalVirtFS" "$instancedVirtFS" || return 1
 	#_mountChRoot "$instancedVirtDir" || return 1
 	
 	return 0
@@ -1029,7 +1029,7 @@ _mountChRoot_user() {
 
 _umountChRoot_user() {
 	
-	mountpoint "$chrootDir" > /dev/null 2>&1 || return 1
+	mountpoint "$instancedVirtFS" > /dev/null 2>&1 || return 1
 	_umountChRoot "$instancedVirtDir"
 	
 }
@@ -1080,10 +1080,20 @@ _chroot() {
 	
 	chrootExitStatus="$?"
 	
-	
-	
-	
 	return "$chrootExitStatus"
+	
+}
+
+_rm_ubvrtusrChRoot() {
+	
+	sudo -n rmdir "$sharedGuestProjectDir" > /dev/null 2>&1
+	sudo -n rmdir "$instancedVirtHome"/"$virtGuestUser"/project > /dev/null 2>&1
+	sudo -n rmdir "$instancedVirtHome"/"$virtGuestUser" > /dev/null 2>&1
+	sudo -n rmdir "$instancedVirtHome" > /dev/null 2>&1
+	sudo -n rmdir "$instancedVirtHomeRef"/project > /dev/null 2>&1
+	sudo -n rmdir "$instancedVirtHomeRef"/"$virtGuestUser"/project > /dev/null 2>&1
+	sudo -n rmdir "$instancedVirtHomeRef"/"$virtGuestUser" > /dev/null 2>&1
+	sudo -n rmdir "$instancedVirtHomeRef" > /dev/null 2>&1
 	
 }
 
@@ -1092,110 +1102,70 @@ _ubvrtusrChRoot() {
 	[[ $(id -u) == 0 ]] && return 0
 	
 	#If user correctly setup, discontinue.
-	[[ -e "$instancedVirtDir"/home/"$virtGuestUser".ref ]] && _chroot id -u "$virtGuestUser" > /dev/null 2>&1 && [[ $(_chroot id -u "$virtGuestUser") == $(id -u) ]] && return 0
+	[[ -e "$instancedVirtHomeRef" ]] && _chroot id -u "$virtGuestUser" > /dev/null 2>&1 && [[ $(_chroot id -u "$virtGuestUser") == "$HOST_USER_ID" ]] && [[ $(_chroot id -g "$virtGuestUser") == "$HOST_GROUP_ID" ]] && return 0
+	
+	## Lock file. Not done with _waitFileCommands because there is nither an obvious means, nor an obviously catastrophically critical requirement, to independently check for completion of related useradd/mod/del operations.
+	_waitFile "$globalVirtDir"/_ubvrtusr || return 1
+	echo > "$globalVirtDir"/quicktmp
+	mv -n "$globalVirtDir"/quicktmp "$globalVirtDir"/_ubvrtusr > /dev/null 2>&1 || return 1
 	
 	_chroot userdel -r "$virtGuestUser" > /dev/null 2>&1
-	rmdir "$chrootDir"/home/"$virtGuestUser"/project > /dev/null 2>&1
-	rmdir "$chrootDir"/home/"$virtGuestUser" > /dev/null 2>&1
-	rmdir "$chrootDir"/home/"$virtGuestUser".ref/project > /dev/null 2>&1
-	rmdir "$chrootDir"/home/"$virtGuestUser".ref > /dev/null 2>&1
+	_rm_ubvrtusrChRoot
 	
 	_chroot groupadd -g "$HOST_GROUP_ID" -o "$virtGuestUser" > /dev/null 2>&1
 	_chroot useradd --shell /bin/bash -u "$HOST_USER_ID" -g "$HOST_GROUP_ID" -o -c "" -m "$virtGuestUser" > /dev/null 2>&1 || return 1
 	
-	_chroot usermod -a -G video "$virtGuestUser" > "$logTmp"/userchroot 2>&1 || return 1
+	_chroot usermod -a -G video "$virtGuestUser"  > /dev/null 2>&1 || return 1
 	
-	_chroot chown "$virtGuestUser":"$virtGuestUser" /home/"$virtGuestUser"
+	_chroot chown "$virtGuestUser":"$virtGuestUser" "$instancedVirtHome" > /dev/null 2>&1
 	
-	sudo -n cp -a "$instancedVirtDir"/home/"$virtGuestUser" "$instancedVirtDir"/home/"$virtGuestUser".ref
+	sudo -n cp -a "$instancedVirtHome" "$instancedVirtHomeRef" > /dev/null 2>&1
 	
+	_chroot chown "$virtGuestUser":"$virtGuestUser" "$instancedVirtHomeRef" > /dev/null 2>&1
+	
+	rm "$globalVirtDir"/_ubvrtusr > /dev/null 2>&1 || _stop 1
 	
 	return 0
 }
 
 _userChRoot() {
 	_start
+	_start_virt_all
+	export chrootDir="$globalVirtFS"
+	
+	_mustGetSudo || _stop 1
+	
+	
+	_checkDep mountpoint > "$logTmp"/userchroot 2>&1 || _stop 1
+	mountpoint "$instancedVirtDir" > /dev/null 2>&1 && _stop 1
+	mountpoint "$instancedVirtFS" > /dev/null 2>&1 && _stop 1
+	mountpoint "$instancedVirtTmp" > /dev/null 2>&1 && _stop 1
+	mountpoint "$instancedVirtHome" > /dev/null 2>&1 && _stop 1
 	
 	_openChRoot > "$logTmp"/userchroot 2>&1 || _stop 1
 	
-	_stop_virt_instance
 	
+	_ubvrtusrChRoot  > "$logTmp"/userchroot 2>&1 || _stop 1
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	# DANGER Do NOT use typical safeTmp dir, as any recursive cleanup may be catastrophic.
-	export chrootDir="$instancedVirtDir"
-	export HOST_USER_ID=$(id -u)
-	export HOST_GROUP_ID=$(id -g)
-	
-	sudo -n mkdir -p "$instancedVirtDir" > "$logTmp"/userchroot 2>&1 || _stop 1
-	sudo -n mkdir -p "$instancedVirtDir"/home/"$virtGuestUser" > "$logTmp"/userchroot 2>&1 || _stop 1
-	sudo -n mkdir -p "$instancedVirtDir"/home/"$virtGuestUser".ref > "$logTmp"/userchroot 2>&1 || _stop 1
-	
-	_checkDep mountpoint > "$logTmp"/userchroot 2>&1 || _stop 1
-	mountpoint "$instancedVirtDir"/home/"$virtGuestUser" > /dev/null 2>&1 && _stop 1
 	
 	_mountChRoot_user > "$logTmp"/userchroot 2>&1 || _stop 1
-	
-	## Wait for lock file. Not done with _waitFileCommands because there is nither an obvious means, nor an obviously catastrophically critical requirement, to independently check for completion of related useradd/mod/del operations.
-	[[ -e "$scriptLocal"/_instancing ]] && sleep 1
-	[[ -e "$scriptLocal"/_instancing ]] && sleep 9
-	[[ -e "$scriptLocal"/_instancing ]] && sleep 27
-	[[ -e "$scriptLocal"/_instancing ]] && sleep 81
-	[[ -e "$scriptLocal"/_instancing ]] && _stop 1
-	
-	## Lock file.
-	echo > "$scriptLocal"/quicktmp
-	mv -n "$scriptLocal"/quicktmp "$scriptLocal"/_instancing > /dev/null 2>&1 || _stop 1
-	
-	#If guest/host user/group id does not match, recreate guest user. Do nothing for root user.
-	_ubvrtusrChRoot > "$logTmp"/userchroot 2>&1 || _stop 1
-	
 	_mountChRoot_user_home > "$logTmp"/userchroot 2>&1 || _stop 1
-	_chroot /bin/bash /usr/bin/ubiquitous_bash.sh _prepareChRootUser
+	[[ $(id -u) == 0 ]] && cp -a "$instancedVirtHomeRef"/. "$instancedVirtHome"/ > "$logTmp"/userchroot 2>&1
+	export chrootDir="$instancedVirtFS"
 	
-	## Lock file.
-	rm "$scriptLocal"/_instancing > /dev/null 2>&1 || _stop 1
 	
 	export checkBaseDirRemote=_checkBaseDirRemote_chroot
 	_virtUser "$@" > "$logTmp"/userchroot 2>&1
 	
 	_mountChRoot_project > "$logTmp"/userchroot 2>&1 || _stop 1
-	
 	_chroot chown "$virtGuestUser":"$virtGuestUser" "$sharedGuestProjectDir" > "$logTmp"/userchroot 2>&1
+	
+	
 	
 	_chroot /bin/bash /usr/bin/ubiquitous_bash.sh _dropChRoot "${processedArgs[@]}"
 	local userChRootExitStatus="$?"	
+	
+	
 	
 	_stopChRoot "$chrootDir" > "$logTmp"/userchroot 2>&1
 	
@@ -1203,17 +1173,13 @@ _userChRoot() {
 	_umountChRoot_user_home > "$logTmp"/userchroot 2>&1 || _stop 1
 	_umountChRoot_user > "$logTmp"/userchroot 2>&1 || _stop 1
 	
+	_rm_ubvrtusrChRoot
+	
 	"$scriptAbsoluteLocation" _checkForMounts "$chrootDir" > "$logTmp"/userchroot 2>&1 && _stop 1
 	
-	sudo -n rmdir "$instancedVirtDir"/home/"$virtGuestUser" > "$logTmp"/userchroot 2>&1
-	sudo -n rmdir "$instancedVirtDir"/home/"$virtGuestUser".ref > "$logTmp"/userchroot 2>&1
-	sudo -n rmdir "$instancedVirtDir"/home > "$logTmp"/userchroot 2>&1
-	sudo -n rmdir "$instancedVirtDir" > "$logTmp"/userchroot 2>&1
 	
-	#cat "$logTmp"/userchroot
-	
+	_stop_virt_instance
 	_stop "$userChRootExitStatus"
-	
 }
 
 
@@ -1221,10 +1187,7 @@ _removeUserChRoot() {
 	_openChRoot
 	
 	_chroot userdel -r "$virtGuestUser" > /dev/null 2>&1
-	rmdir "$chrootDir"/home/"$virtGuestUser"/project > /dev/null 2>&1
-	rmdir "$chrootDir"/home/"$virtGuestUser" > /dev/null 2>&1
-	rmdir "$chrootDir"/home/"$virtGuestUser".ref/project > /dev/null 2>&1
-	rmdir "$chrootDir"/home/"$virtGuestUser".ref > /dev/null 2>&1
+	_rm_ubvrtusrChRoot
 	
 	_removeChRoot
 }
@@ -1247,9 +1210,10 @@ _prepareChRootUser() {
 	
 	#_gosuExecVirt cp -r /etc/skel/. /home/
 	
-	cp -a /home/"$virtGuestUser".ref/. /home/"$virtGuestUser"/
+	#cp -a /home/"$virtGuestUser".ref/. /home/"$virtGuestUser"/
 	#chown "$virtGuestUser":"$virtGuestUser" /home/"$virtGuestUser"
 	
+	true
 	
 }
 
@@ -1828,6 +1792,7 @@ _saveVar() {
 }
 
 _stop() {
+	_preserveLog
 	
 	_safeRMR "$safeTmp"
 	_safeRMR "$shortTmp"
@@ -1842,8 +1807,15 @@ _stop() {
 	fi
 }
 
-_preserveLog() {
-	cp "$logTmp"/* ./  >/dev/null 2>&1
+_waitFile() {
+	
+	[[ -e "$1" ]] && sleep 1
+	[[ -e "$1" ]] && sleep 9
+	[[ -e "$1" ]] && sleep 27
+	[[ -e "$1" ]] && sleep 81
+	[[ -e "$1" ]] && _return 1
+	
+	return 0
 }
 
 #Wrapper. If lock file is present, waits for unlocking operation to complete successfully, then reports status.

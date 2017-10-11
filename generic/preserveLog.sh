@@ -5,5 +5,5 @@ _preserveLog() {
 		permaLog="$PWD"
 	fi
 	
-	cp "$logTmp"/* "$permaLog"/
+	cp "$logTmp"/* "$permaLog"/ > /dev/null 2>&1
 }

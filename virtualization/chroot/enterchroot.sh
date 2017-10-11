@@ -34,17 +34,16 @@ _rm_ubvrtusrChRoot() {
 }
 
 _ubvrtusrChRoot() {
-	## Lock file. Not done with _waitFileCommands because there is nither an obvious means, nor an obviously catastrophically critical requirement, to independently check for completion of related useradd/mod/del operations.
-	_waitFile "$globalVirtDir"/_ubvrtusr || return 1
-	echo > "$globalVirtDir"/quicktmp
-	mv -n "$globalVirtDir"/quicktmp "$globalVirtDir"/_ubvrtusr > /dev/null 2>&1 || return 1
-	
-	
 	#If root, discontinue.
 	[[ $(id -u) == 0 ]] && return 0
 	
 	#If user correctly setup, discontinue.
 	[[ -e "$instancedVirtHomeRef" ]] && _chroot id -u "$virtGuestUser" > /dev/null 2>&1 && [[ $(_chroot id -u "$virtGuestUser") == "$HOST_USER_ID" ]] && [[ $(_chroot id -g "$virtGuestUser") == "$HOST_GROUP_ID" ]] && return 0
+	
+	## Lock file. Not done with _waitFileCommands because there is nither an obvious means, nor an obviously catastrophically critical requirement, to independently check for completion of related useradd/mod/del operations.
+	_waitFile "$globalVirtDir"/_ubvrtusr || return 1
+	echo > "$globalVirtDir"/quicktmp
+	mv -n "$globalVirtDir"/quicktmp "$globalVirtDir"/_ubvrtusr > /dev/null 2>&1 || return 1
 	
 	_chroot userdel -r "$virtGuestUser" > /dev/null 2>&1
 	_rm_ubvrtusrChRoot
@@ -71,6 +70,7 @@ _userChRoot() {
 	export chrootDir="$globalVirtFS"
 	
 	_mustGetSudo || _stop 1
+	
 	
 	_checkDep mountpoint > "$logTmp"/userchroot 2>&1 || _stop 1
 	mountpoint "$instancedVirtDir" > /dev/null 2>&1 && _stop 1
@@ -115,9 +115,7 @@ _userChRoot() {
 	
 	
 	_stop_virt_instance
-	_preserveLog
 	_stop "$userChRootExitStatus"
-	
 }
 
 

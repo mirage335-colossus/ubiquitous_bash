@@ -35,7 +35,9 @@ _umountChRoot() {
 	local absolute1
 	absolute1=$(_getAbsoluteLocation "$1")
 	
+	_wait_umount "$absolute1"/home/"$virtGuestUser"/project >/dev/null 2>&1
 	_wait_umount "$absolute1"/home/"$virtGuestUser" >/dev/null 2>&1
+	_wait_umount "$absolute1"/root/project >/dev/null 2>&1
 	_wait_umount "$absolute1"/root >/dev/null 2>&1
 	
 	_wait_umount "$absolute1"/dev/shm
@@ -210,8 +212,10 @@ _closeChRoot() {
 #Debugging function.
 _removeChRoot() {
 	
-
-	find . -maxdepth 1 -type d -name 'v_*' -exec "$scriptAbsoluteLocation" _umountChRoot_directory {} \;
+	
+	find "$scriptAbsoluteFolder"/v_*/fs -maxdepth 1 -type d -exec "$scriptAbsoluteLocation" _umountChRoot_directory {} \;
+	find "$scriptAbsoluteFolder"/v_*/tmp -maxdepth 1 -type d -exec "$scriptAbsoluteLocation" umount {} \;
+	find "$scriptAbsoluteFolder"/v_*/ -maxdepth 5 -type d | head -n 12 | tac | xargs rmdir
 	
 	"$scriptAbsoluteLocation" _closeChRoot --force
 	
@@ -219,10 +223,8 @@ _removeChRoot() {
 	rm "$scriptLocal"/_opening
 	rm "$scriptLocal"/_instancing
 	
-	sudo -n rmdir ./v_*/home/ubvrtusr
-	sudo -n rmdir ./v_*/home/ubvrtusr.ref
-	sudo -n rmdir ./v_*/home
-	sudo -n rmdir ./v_*
+	rm "$globalVirtDir"/_ubvrtusr
+	
 	
 }
 

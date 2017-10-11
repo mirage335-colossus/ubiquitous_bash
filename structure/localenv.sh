@@ -16,6 +16,7 @@ _saveVar() {
 }
 
 _stop() {
+	_preserveLog
 	
 	_safeRMR "$safeTmp"
 	_safeRMR "$shortTmp"
@@ -28,10 +29,6 @@ _stop() {
 	else
 		exit 0
 	fi
-}
-
-_preserveLog() {
-	cp "$logTmp"/* ./  >/dev/null 2>&1
 }
 
 _waitFile() {
