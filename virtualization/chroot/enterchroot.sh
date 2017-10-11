@@ -93,8 +93,8 @@ _userChRoot() {
 	export checkBaseDirRemote=_checkBaseDirRemote_chroot
 	_virtUser "$@" > "$logTmp"/usrchrt.log 2>&1
 	
-	#_mountChRoot_project > "$logTmp"/usrchrt.log 2>&1 || _stop 1
-	#_chroot chown "$virtGuestUser":"$virtGuestUser" "$sharedGuestProjectDir" > "$logTmp"/usrchrt.log 2>&1
+	_mountChRoot_project > "$logTmp"/usrchrt.log 2>&1 || _stop 1
+	_chroot chown "$virtGuestUser":"$virtGuestUser" "$sharedGuestProjectDir" > "$logTmp"/usrchrt.log 2>&1
 	
 	
 	

@@ -81,13 +81,13 @@ _mountChRoot_project() {
 	_checkDep basename
 	
 	
-	_bindMountManager "$sharedHostProjectDir" "$instancedVirtFS""$instancedProjectDir" || return 1
+	_bindMountManager "$sharedHostProjectDir" "$instancedProjectDir" || return 1
 	
 }
 
 _umountChRoot_project() {
 	
-	_wait_umount "$instancedVirtFS""$instancedProjectDir"
+	_wait_umount "$instancedProjectDir"
 	
 }
 

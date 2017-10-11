@@ -73,7 +73,7 @@ export instancedVirtHomeRef="$instancedVirtHome".ref
 export sharedHostProjectDir="$outerPWD"	#Default value.
 export sharedGuestProjectDir="$virtGuestHome"/project
 
-export instancedProjectDir="$instancedVirtHome""$sharedGuestProjectDir"
+export instancedProjectDir="$instancedVirtHome"/project
 
 export chrootDir="$globalVirtFS"
 

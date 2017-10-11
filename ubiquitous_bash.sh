@@ -1026,13 +1026,13 @@ _mountChRoot_project() {
 	_checkDep basename
 	
 	
-	_bindMountManager "$sharedHostProjectDir" "$instancedVirtFS""$instancedProjectDir" || return 1
+	_bindMountManager "$sharedHostProjectDir" "$instancedProjectDir" || return 1
 	
 }
 
 _umountChRoot_project() {
 	
-	_wait_umount "$instancedVirtFS""$instancedProjectDir"
+	_wait_umount "$instancedProjectDir"
 	
 }
 
@@ -1157,8 +1157,8 @@ _userChRoot() {
 	export checkBaseDirRemote=_checkBaseDirRemote_chroot
 	_virtUser "$@" > "$logTmp"/usrchrt.log 2>&1
 	
-	#_mountChRoot_project > "$logTmp"/usrchrt.log 2>&1 || _stop 1
-	#_chroot chown "$virtGuestUser":"$virtGuestUser" "$sharedGuestProjectDir" > "$logTmp"/usrchrt.log 2>&1
+	_mountChRoot_project > "$logTmp"/usrchrt.log 2>&1 || _stop 1
+	_chroot chown "$virtGuestUser":"$virtGuestUser" "$sharedGuestProjectDir" > "$logTmp"/usrchrt.log 2>&1
 	
 	
 	
@@ -1753,7 +1753,7 @@ export instancedVirtHomeRef="$instancedVirtHome".ref
 export sharedHostProjectDir="$outerPWD"	#Default value.
 export sharedGuestProjectDir="$virtGuestHome"/project
 
-export instancedProjectDir="$instancedVirtHome""$sharedGuestProjectDir"
+export instancedProjectDir="$instancedVirtHome"/project
 
 export chrootDir="$globalVirtFS"
 
