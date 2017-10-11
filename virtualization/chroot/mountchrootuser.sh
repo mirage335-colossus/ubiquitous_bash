@@ -3,7 +3,7 @@
 _mountChRoot_user() {
 	
 	_bindMountManager "$globalVirtFS" "$instancedVirtFS" || return 1
-	#_mountChRoot "$instancedVirtDir" || return 1
+	#_mountChRoot "$instancedVirtFS" || return 1
 	
 	return 0
 	
@@ -95,7 +95,8 @@ _umountChRoot_project() {
 _umountChRoot_user() {
 	
 	mountpoint "$instancedVirtFS" > /dev/null 2>&1 || return 1
-	_umountChRoot "$instancedVirtDir"
+	#_umountChRoot "$instancedVirtFS"
+	_wait_umount "$instancedVirtFS"
 	
 }
 

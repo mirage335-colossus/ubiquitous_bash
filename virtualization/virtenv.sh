@@ -27,14 +27,23 @@ _start_virt_all() {
 
 _stop_virt_instance() {
 	
-	_wait_umount "$instancedProjectDir" || return 1
+	_wait_umount "$instancedProjectDir"
+	sudo -n rmdir "$instancedProjectDir"
 	
-	_wait_umount "$instancedVirtHome" || return 1
-	_wait_umount "$instancedVirtHomeRef" || return 1
+	_wait_umount "$instancedVirtHome"
+	sudo -n rmdir "$instancedVirtHome"
+	_wait_umount "$instancedVirtHomeRef"
+	sudo -n rmdir "$instancedVirtHomeRef"
+	sudo -n rmdir "$instancedVirtFS"/home
 	
-	_wait_umount "$instancedVirtFS" || return 1
-	_wait_umount "$instancedVirtTmp" || return 1
-	_wait_umount "$instancedVirtDir" || return 1
+	_wait_umount "$instancedVirtFS"
+	sudo -n rmdir "$instancedVirtFS"
+	_wait_umount "$instancedVirtTmp"
+	sudo -n rmdir "$instancedVirtTmp"
+	_wait_umount "$instancedVirtDir"
+	sudo -n rmdir "$instancedVirtDir"
+	
+	
 	
 	return 0
 	

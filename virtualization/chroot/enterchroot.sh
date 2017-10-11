@@ -1,7 +1,4 @@
 
-
-
-
 _chroot() {
 	
 	[[ ! -e "$chrootDir"/bin/bash ]] && return 1
@@ -72,29 +69,29 @@ _userChRoot() {
 	_mustGetSudo || _stop 1
 	
 	
-	_checkDep mountpoint > "$logTmp"/usrchrt.log 2>&1 || _stop 1
+	_checkDep mountpoint >> "$logTmp"/usrchrt.log 2>&1 || _stop 1
 	mountpoint "$instancedVirtDir" > /dev/null 2>&1 && _stop 1
 	mountpoint "$instancedVirtFS" > /dev/null 2>&1 && _stop 1
 	mountpoint "$instancedVirtTmp" > /dev/null 2>&1 && _stop 1
 	mountpoint "$instancedVirtHome" > /dev/null 2>&1 && _stop 1
 	
-	_openChRoot > "$logTmp"/usrchrt.log 2>&1 || _stop 1
+	_openChRoot >> "$logTmp"/usrchrt.log 2>&1 || _stop 1
 	
 	
-	_ubvrtusrChRoot  > "$logTmp"/usrchrt.log 2>&1 || _stop 1
+	_ubvrtusrChRoot  >> "$logTmp"/usrchrt.log 2>&1 || _stop 1
 	
 	
-	_mountChRoot_user > "$logTmp"/usrchrt.log 2>&1 || _stop 1
-	###_mountChRoot_user_home > "$logTmp"/usrchrt.log 2>&1 || _stop 1
-	[[ $(id -u) != 0 ]] && cp -a "$instancedVirtHomeRef"/. "$instancedVirtHome"/ > "$logTmp"/usrchrt.log 2>&1
+	_mountChRoot_user >> "$logTmp"/usrchrt.log 2>&1 || _stop 1
+	###_mountChRoot_user_home >> "$logTmp"/usrchrt.log 2>&1 || _stop 1
+	[[ $(id -u) != 0 ]] && cp -a "$instancedVirtHomeRef"/. "$instancedVirtHome"/ >> "$logTmp"/usrchrt.log 2>&1
 	export chrootDir="$instancedVirtFS"
 	
 	
 	export checkBaseDirRemote=_checkBaseDirRemote_chroot
-	_virtUser "$@" > "$logTmp"/usrchrt.log 2>&1
+	_virtUser "$@" >> "$logTmp"/usrchrt.log 2>&1
 	
-	_mountChRoot_project > "$logTmp"/usrchrt.log 2>&1 || _stop 1
-	_chroot chown "$virtGuestUser":"$virtGuestUser" "$sharedGuestProjectDir" > "$logTmp"/usrchrt.log 2>&1
+	_mountChRoot_project >> "$logTmp"/usrchrt.log 2>&1 || _stop 1
+	_chroot chown "$virtGuestUser":"$virtGuestUser" "$sharedGuestProjectDir" >> "$logTmp"/usrchrt.log 2>&1
 	
 	
 	
@@ -103,21 +100,19 @@ _userChRoot() {
 	
 	
 	
-	_stopChRoot "$instancedVirtFS" > "$logTmp"/usrchrt.log 2>&1
+	_stopChRoot "$instancedVirtFS" >> "$logTmp"/usrchrt.log 2>&1
 	
-	_umountChRoot_project > "$logTmp"/usrchrt.log 2>&1
-	_umountChRoot_user_home > "$logTmp"/usrchrt.log 2>&1 || _stop 1
-	_umountChRoot_user > "$logTmp"/usrchrt.log 2>&1 || _stop 1
+	_umountChRoot_project >> "$logTmp"/usrchrt.log 2>&1
+	_umountChRoot_user_home >> "$logTmp"/usrchrt.log 2>&1 || _stop 1
+	_umountChRoot_user >> "$logTmp"/usrchrt.log 2>&1 || _stop 1
 	
 	_rm_ubvrtusrChRoot
 	
-	"$scriptAbsoluteLocation" _checkForMounts "$instancedVirtFS" > "$logTmp"/usrchrt.log 2>&1 && _stop 1
+	"$scriptAbsoluteLocation" _checkForMounts "$instancedVirtFS" >> "$logTmp"/usrchrt.log 2>&1 && _stop 1
 	
-	
-	_stop_virt_instance
+	_stop_virt_instance >> "$logTmp"/usrchrt.log 2>&1
 	_stop "$userChRootExitStatus"
 }
-
 
 _removeUserChRoot() {
 	_openChRoot
