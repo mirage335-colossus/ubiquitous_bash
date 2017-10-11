@@ -1,10 +1,16 @@
 
 _mountChRoot_userAndHome() {
 	
-	_bindMountManager "$globalVirtFS" "$instancedVirtFS" || return 1
-	
 	sudo -n mount -t tmpfs -o size=4G,uid="$HOST_USER_ID",gid="$HOST_GROUP_ID" tmpfs "$instancedVirtTmp"
-	_bindMountManager "$instancedVirtTmp" "$instancedVirtHome" || return 1
+	
+	#_bindMountManager "$globalVirtFS" "$instancedVirtFS" || return 1
+	
+	#_bindMountManager "$instancedVirtTmp" "$instancedVirtHome" || return 1
+	
+	
+	
+	
+	sudo /bin/mount -t unionfs -o dirs="$instancedVirtTmp":"$globalVirtFS"=ro unionfs "$instancedVirtFS"
 	
 	return 0
 }
