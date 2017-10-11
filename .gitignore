@@ -3,6 +3,7 @@ vm.img
 vm*.img
 WARNING
 _local
+*.log
 devtask*
 devtask/
 *swp

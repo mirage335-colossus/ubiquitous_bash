@@ -15,11 +15,11 @@ _gosuExecVirt() {
 	
 	if [[ "$1" == "" ]]
 	then
-		exec "$scriptBin"/"$gosuBinary" "$virtGuestUser" /bin/bash "$@"
+		exec "$scriptBin"/"$gosuBinary" "$virtSharedUser" /bin/bash "$@"
 		return
 	fi
 	
-	exec "$scriptBin"/"$gosuBinary" "$virtGuestUser" "$@"
+	exec "$scriptBin"/"$gosuBinary" "$virtSharedUser" "$@"
 }
 
 _testBuiltGosu() {

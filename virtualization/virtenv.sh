@@ -9,7 +9,7 @@ _start_virt_instance() {
 	mkdir -p "$instancedVirtHomeRef" || return 1
 	
 	mkdir -p "$sharedHostProjectDir" || return 1
-	mkdir -p "$sharedGuestProjectDir" || return 1
+	mkdir -p "$instancedProjectDir" || return 1
 	
 }
 
@@ -27,7 +27,7 @@ _start_virt_all() {
 
 _stop_virt_instance() {
 	
-	_wait_umount "$sharedGuestProjectDir" || return 1
+	_wait_umount "$instancedProjectDir" || return 1
 	
 	_wait_umount "$instancedVirtHome" || return 1
 	_wait_umount "$instancedVirtHomeRef" || return 1

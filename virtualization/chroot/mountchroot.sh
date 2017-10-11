@@ -215,7 +215,7 @@ _removeChRoot() {
 	
 	find "$scriptAbsoluteFolder"/v_*/fs -maxdepth 1 -type d -exec "$scriptAbsoluteLocation" _umountChRoot_directory {} \;
 	find "$scriptAbsoluteFolder"/v_*/tmp -maxdepth 1 -type d -exec "$scriptAbsoluteLocation" umount {} \;
-	find "$scriptAbsoluteFolder"/v_*/ -maxdepth 5 -type d | head -n 12 | tac | xargs rmdir
+	find "$scriptAbsoluteFolder"/v_*/ -maxdepth 12 -type d | head -n 48 | tac | xargs rmdir
 	
 	"$scriptAbsoluteLocation" _closeChRoot --force
 	

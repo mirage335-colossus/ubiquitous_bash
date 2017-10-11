@@ -49,7 +49,7 @@ export objectName=$(basename "$objectDir")
 export PATH="$PATH":"$scriptAbsoluteFolder"
 [[ -d "$scriptBin" ]] && export PATH="$PATH":"$scriptBin"
 
-export permaLog="$scriptLocal"/log
+export permaLog="$scriptLocal"
 
 export HOST_USER_ID=$(id -u)
 export HOST_GROUP_ID=$(id -g)
@@ -64,12 +64,16 @@ export instancedVirtDir="$scriptAbsoluteFolder"/v_"$sessionid"
 export instancedVirtFS="$instancedVirtDir"/fs
 export instancedVirtTmp="$instancedVirtDir"/tmp
 
-export instancedVirtHome="$instancedVirtFS"/home/"$virtGuestUser"
-export instancedVirtHomeRef="$instancedVirtFS"/home/"$virtGuestUser".ref
-[[ $(id -u) == 0 ]] && export instancedVirtHome="$instancedVirtFS"/root
+export virtGuestHome=/home/"$virtGuestUser"
+[[ $(id -u) == 0 ]] && export virtGuestHome=/root
+
+export instancedVirtHome="$instancedVirtFS""$virtGuestHome"
+export instancedVirtHomeRef="$instancedVirtHome".ref
 
 export sharedHostProjectDir="$outerPWD"	#Default value.
-export sharedGuestProjectDir="$instancedVirtHome"/project
+export sharedGuestProjectDir="$virtGuestHome"/project
+
+export instancedProjectDir="$instancedVirtHome""$sharedGuestProjectDir"
 
 export chrootDir="$globalVirtFS"
 

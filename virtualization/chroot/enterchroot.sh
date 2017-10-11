@@ -12,7 +12,7 @@ _chroot() {
 	
 	local chrootExitStatus
 	
-	sudo -n env -i HOME="/root" TERM="${TERM}" SHELL="/bin/bash" PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" DISPLAY="$DISPLAY" localPWD="$localPWD" hostArch=$(uname -m) $(sudo -n which chroot) "$chrootDir" "$@"
+	sudo -n env -i HOME="/root" TERM="${TERM}" SHELL="/bin/bash" PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" DISPLAY="$DISPLAY" localPWD="$localPWD" hostArch=$(uname -m) virtSharedUser="$virtGuestUser" $(sudo -n which chroot) "$chrootDir" "$@"
 	
 	chrootExitStatus="$?"
 	
@@ -72,29 +72,29 @@ _userChRoot() {
 	_mustGetSudo || _stop 1
 	
 	
-	_checkDep mountpoint > "$logTmp"/userchroot 2>&1 || _stop 1
+	_checkDep mountpoint > "$logTmp"/usrchrt.log 2>&1 || _stop 1
 	mountpoint "$instancedVirtDir" > /dev/null 2>&1 && _stop 1
 	mountpoint "$instancedVirtFS" > /dev/null 2>&1 && _stop 1
 	mountpoint "$instancedVirtTmp" > /dev/null 2>&1 && _stop 1
 	mountpoint "$instancedVirtHome" > /dev/null 2>&1 && _stop 1
 	
-	_openChRoot > "$logTmp"/userchroot 2>&1 || _stop 1
+	_openChRoot > "$logTmp"/usrchrt.log 2>&1 || _stop 1
 	
 	
-	_ubvrtusrChRoot  > "$logTmp"/userchroot 2>&1 || _stop 1
+	_ubvrtusrChRoot  > "$logTmp"/usrchrt.log 2>&1 || _stop 1
 	
 	
-	_mountChRoot_user > "$logTmp"/userchroot 2>&1 || _stop 1
-	_mountChRoot_user_home > "$logTmp"/userchroot 2>&1 || _stop 1
-	[[ $(id -u) == 0 ]] && cp -a "$instancedVirtHomeRef"/. "$instancedVirtHome"/ > "$logTmp"/userchroot 2>&1
+	_mountChRoot_user > "$logTmp"/usrchrt.log 2>&1 || _stop 1
+	###_mountChRoot_user_home > "$logTmp"/usrchrt.log 2>&1 || _stop 1
+	[[ $(id -u) != 0 ]] && cp -a "$instancedVirtHomeRef"/. "$instancedVirtHome"/ > "$logTmp"/usrchrt.log 2>&1
 	export chrootDir="$instancedVirtFS"
 	
 	
 	export checkBaseDirRemote=_checkBaseDirRemote_chroot
-	_virtUser "$@" > "$logTmp"/userchroot 2>&1
+	_virtUser "$@" > "$logTmp"/usrchrt.log 2>&1
 	
-	_mountChRoot_project > "$logTmp"/userchroot 2>&1 || _stop 1
-	_chroot chown "$virtGuestUser":"$virtGuestUser" "$sharedGuestProjectDir" > "$logTmp"/userchroot 2>&1
+	#_mountChRoot_project > "$logTmp"/usrchrt.log 2>&1 || _stop 1
+	#_chroot chown "$virtGuestUser":"$virtGuestUser" "$sharedGuestProjectDir" > "$logTmp"/usrchrt.log 2>&1
 	
 	
 	
@@ -103,15 +103,15 @@ _userChRoot() {
 	
 	
 	
-	_stopChRoot "$chrootDir" > "$logTmp"/userchroot 2>&1
+	_stopChRoot "$instancedVirtFS" > "$logTmp"/usrchrt.log 2>&1
 	
-	_umountChRoot_project > "$logTmp"/userchroot 2>&1
-	_umountChRoot_user_home > "$logTmp"/userchroot 2>&1 || _stop 1
-	_umountChRoot_user > "$logTmp"/userchroot 2>&1 || _stop 1
+	_umountChRoot_project > "$logTmp"/usrchrt.log 2>&1
+	_umountChRoot_user_home > "$logTmp"/usrchrt.log 2>&1 || _stop 1
+	_umountChRoot_user > "$logTmp"/usrchrt.log 2>&1 || _stop 1
 	
 	_rm_ubvrtusrChRoot
 	
-	"$scriptAbsoluteLocation" _checkForMounts "$chrootDir" > "$logTmp"/userchroot 2>&1 && _stop 1
+	"$scriptAbsoluteLocation" _checkForMounts "$instancedVirtFS" > "$logTmp"/usrchrt.log 2>&1 && _stop 1
 	
 	
 	_stop_virt_instance

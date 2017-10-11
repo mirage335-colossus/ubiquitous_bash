@@ -11,8 +11,6 @@ _mountChRoot_user() {
 
 _mountChRoot_user_home() {
 	
-	sudo -n mkdir -p "$instancedVirtHome" || return 1
-	
 	#sudo -n mount -t tmpfs -o size=4G,uid="$HOST_USER_ID",gid="$HOST_GROUP_ID" tmpfs "$instancedVirtHome" || return 1
 	
 	[[ ! -e "$safeTmp" ]] && return 1
@@ -83,13 +81,13 @@ _mountChRoot_project() {
 	_checkDep basename
 	
 	
-	_bindMountManager "$sharedHostProjectDir" "$instancedVirtFS""$sharedGuestProjectDir" || return 1
+	_bindMountManager "$sharedHostProjectDir" "$instancedVirtFS""$instancedProjectDir" || return 1
 	
 }
 
 _umountChRoot_project() {
 	
-	_wait_umount "$instancedVirtFS""$sharedGuestProjectDir"
+	_wait_umount "$instancedVirtFS""$instancedProjectDir"
 	
 }
 

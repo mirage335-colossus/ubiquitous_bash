@@ -419,7 +419,7 @@ _start_virt_instance() {
 	mkdir -p "$instancedVirtHomeRef" || return 1
 	
 	mkdir -p "$sharedHostProjectDir" || return 1
-	mkdir -p "$sharedGuestProjectDir" || return 1
+	mkdir -p "$instancedProjectDir" || return 1
 	
 }
 
@@ -437,7 +437,7 @@ _start_virt_all() {
 
 _stop_virt_instance() {
 	
-	_wait_umount "$sharedGuestProjectDir" || return 1
+	_wait_umount "$instancedProjectDir" || return 1
 	
 	_wait_umount "$instancedVirtHome" || return 1
 	_wait_umount "$instancedVirtHomeRef" || return 1
@@ -918,7 +918,7 @@ _removeChRoot() {
 	
 	find "$scriptAbsoluteFolder"/v_*/fs -maxdepth 1 -type d -exec "$scriptAbsoluteLocation" _umountChRoot_directory {} \;
 	find "$scriptAbsoluteFolder"/v_*/tmp -maxdepth 1 -type d -exec "$scriptAbsoluteLocation" umount {} \;
-	find "$scriptAbsoluteFolder"/v_*/ -maxdepth 5 -type d | head -n 12 | tac | xargs rmdir
+	find "$scriptAbsoluteFolder"/v_*/ -maxdepth 12 -type d | head -n 48 | tac | xargs rmdir
 	
 	"$scriptAbsoluteLocation" _closeChRoot --force
 	
@@ -943,9 +943,28 @@ _removeChRoot() {
 
 
 
-_checkBaseDirRemote_chroot() {
+
+
+_mountChRoot_user() {
 	
-	[[ -e "$chrootDir"/"$1" ]] || return 1
+	_bindMountManager "$globalVirtFS" "$instancedVirtFS" || return 1
+	#_mountChRoot "$instancedVirtDir" || return 1
+	
+	return 0
+	
+}
+
+_mountChRoot_user_home() {
+	
+	#sudo -n mount -t tmpfs -o size=4G,uid="$HOST_USER_ID",gid="$HOST_GROUP_ID" tmpfs "$instancedVirtHome" || return 1
+	
+	[[ ! -e "$safeTmp" ]] && return 1
+	mkdir -p "$safeTmp"/"$virtGuestUser"
+	
+	#sudo -n mount -t tmpfs -o size=4G,uid="$HOST_USER_ID",gid="$HOST_GROUP_ID" tmpfs "$safeTmp"/"$virtGuestUser" || return 1
+	
+	_bindMountManager "$safeTmp"/"$virtGuestUser" "$instancedVirtHome" || return 1
+	
 	return 0
 	
 }
@@ -1007,49 +1026,21 @@ _mountChRoot_project() {
 	_checkDep basename
 	
 	
-	_bindMountManager "$sharedHostProjectDir" "$instancedVirtFS""$sharedGuestProjectDir" || return 1
+	_bindMountManager "$sharedHostProjectDir" "$instancedVirtFS""$instancedProjectDir" || return 1
 	
 }
 
 _umountChRoot_project() {
 	
-	_wait_umount "$instancedVirtFS""$sharedGuestProjectDir"
+	_wait_umount "$instancedVirtFS""$instancedProjectDir"
 	
 }
 
-
-_mountChRoot_user() {
-	
-	_bindMountManager "$globalVirtFS" "$instancedVirtFS" || return 1
-	#_mountChRoot "$instancedVirtDir" || return 1
-	
-	return 0
-	
-}
 
 _umountChRoot_user() {
 	
 	mountpoint "$instancedVirtFS" > /dev/null 2>&1 || return 1
 	_umountChRoot "$instancedVirtDir"
-	
-}
-
-
-
-_mountChRoot_user_home() {
-	
-	sudo -n mkdir -p "$instancedVirtHome" || return 1
-	
-	#sudo -n mount -t tmpfs -o size=4G,uid="$HOST_USER_ID",gid="$HOST_GROUP_ID" tmpfs "$instancedVirtHome" || return 1
-	
-	[[ ! -e "$safeTmp" ]] && return 1
-	mkdir -p "$safeTmp"/"$virtGuestUser"
-	
-	#sudo -n mount -t tmpfs -o size=4G,uid="$HOST_USER_ID",gid="$HOST_GROUP_ID" tmpfs "$safeTmp"/"$virtGuestUser" || return 1
-	
-	_bindMountManager "$safeTmp"/"$virtGuestUser" "$instancedVirtHome" || return 1
-	
-	return 0
 	
 }
 
@@ -1060,7 +1051,16 @@ _umountChRoot_user_home() {
 	
 	return 0
 	
-} 
+}
+
+_checkBaseDirRemote_chroot() {
+	
+	[[ -e "$chrootDir"/"$1" ]] || return 1
+	return 0
+	
+}
+
+
 
 
 
@@ -1076,7 +1076,7 @@ _chroot() {
 	
 	local chrootExitStatus
 	
-	sudo -n env -i HOME="/root" TERM="${TERM}" SHELL="/bin/bash" PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" DISPLAY="$DISPLAY" localPWD="$localPWD" hostArch=$(uname -m) $(sudo -n which chroot) "$chrootDir" "$@"
+	sudo -n env -i HOME="/root" TERM="${TERM}" SHELL="/bin/bash" PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" DISPLAY="$DISPLAY" localPWD="$localPWD" hostArch=$(uname -m) virtSharedUser="$virtGuestUser" $(sudo -n which chroot) "$chrootDir" "$@"
 	
 	chrootExitStatus="$?"
 	
@@ -1136,29 +1136,29 @@ _userChRoot() {
 	_mustGetSudo || _stop 1
 	
 	
-	_checkDep mountpoint > "$logTmp"/userchroot 2>&1 || _stop 1
+	_checkDep mountpoint > "$logTmp"/usrchrt.log 2>&1 || _stop 1
 	mountpoint "$instancedVirtDir" > /dev/null 2>&1 && _stop 1
 	mountpoint "$instancedVirtFS" > /dev/null 2>&1 && _stop 1
 	mountpoint "$instancedVirtTmp" > /dev/null 2>&1 && _stop 1
 	mountpoint "$instancedVirtHome" > /dev/null 2>&1 && _stop 1
 	
-	_openChRoot > "$logTmp"/userchroot 2>&1 || _stop 1
+	_openChRoot > "$logTmp"/usrchrt.log 2>&1 || _stop 1
 	
 	
-	_ubvrtusrChRoot  > "$logTmp"/userchroot 2>&1 || _stop 1
+	_ubvrtusrChRoot  > "$logTmp"/usrchrt.log 2>&1 || _stop 1
 	
 	
-	_mountChRoot_user > "$logTmp"/userchroot 2>&1 || _stop 1
-	_mountChRoot_user_home > "$logTmp"/userchroot 2>&1 || _stop 1
-	[[ $(id -u) == 0 ]] && cp -a "$instancedVirtHomeRef"/. "$instancedVirtHome"/ > "$logTmp"/userchroot 2>&1
+	_mountChRoot_user > "$logTmp"/usrchrt.log 2>&1 || _stop 1
+	###_mountChRoot_user_home > "$logTmp"/usrchrt.log 2>&1 || _stop 1
+	[[ $(id -u) != 0 ]] && cp -a "$instancedVirtHomeRef"/. "$instancedVirtHome"/ > "$logTmp"/usrchrt.log 2>&1
 	export chrootDir="$instancedVirtFS"
 	
 	
 	export checkBaseDirRemote=_checkBaseDirRemote_chroot
-	_virtUser "$@" > "$logTmp"/userchroot 2>&1
+	_virtUser "$@" > "$logTmp"/usrchrt.log 2>&1
 	
-	_mountChRoot_project > "$logTmp"/userchroot 2>&1 || _stop 1
-	_chroot chown "$virtGuestUser":"$virtGuestUser" "$sharedGuestProjectDir" > "$logTmp"/userchroot 2>&1
+	#_mountChRoot_project > "$logTmp"/usrchrt.log 2>&1 || _stop 1
+	#_chroot chown "$virtGuestUser":"$virtGuestUser" "$sharedGuestProjectDir" > "$logTmp"/usrchrt.log 2>&1
 	
 	
 	
@@ -1167,15 +1167,15 @@ _userChRoot() {
 	
 	
 	
-	_stopChRoot "$chrootDir" > "$logTmp"/userchroot 2>&1
+	_stopChRoot "$instancedVirtFS" > "$logTmp"/usrchrt.log 2>&1
 	
-	_umountChRoot_project > "$logTmp"/userchroot 2>&1
-	_umountChRoot_user_home > "$logTmp"/userchroot 2>&1 || _stop 1
-	_umountChRoot_user > "$logTmp"/userchroot 2>&1 || _stop 1
+	_umountChRoot_project > "$logTmp"/usrchrt.log 2>&1
+	_umountChRoot_user_home > "$logTmp"/usrchrt.log 2>&1 || _stop 1
+	_umountChRoot_user > "$logTmp"/usrchrt.log 2>&1 || _stop 1
 	
 	_rm_ubvrtusrChRoot
 	
-	"$scriptAbsoluteLocation" _checkForMounts "$chrootDir" > "$logTmp"/userchroot 2>&1 && _stop 1
+	"$scriptAbsoluteLocation" _checkForMounts "$instancedVirtFS" > "$logTmp"/usrchrt.log 2>&1 && _stop 1
 	
 	
 	_stop_virt_instance
@@ -1322,11 +1322,11 @@ _gosuExecVirt() {
 	
 	if [[ "$1" == "" ]]
 	then
-		exec "$scriptBin"/"$gosuBinary" "$virtGuestUser" /bin/bash "$@"
+		exec "$scriptBin"/"$gosuBinary" "$virtSharedUser" /bin/bash "$@"
 		return
 	fi
 	
-	exec "$scriptBin"/"$gosuBinary" "$virtGuestUser" "$@"
+	exec "$scriptBin"/"$gosuBinary" "$virtSharedUser" "$@"
 }
 
 _testBuiltGosu() {
@@ -1729,7 +1729,7 @@ export objectName=$(basename "$objectDir")
 export PATH="$PATH":"$scriptAbsoluteFolder"
 [[ -d "$scriptBin" ]] && export PATH="$PATH":"$scriptBin"
 
-export permaLog="$scriptLocal"/log
+export permaLog="$scriptLocal"
 
 export HOST_USER_ID=$(id -u)
 export HOST_GROUP_ID=$(id -g)
@@ -1744,12 +1744,16 @@ export instancedVirtDir="$scriptAbsoluteFolder"/v_"$sessionid"
 export instancedVirtFS="$instancedVirtDir"/fs
 export instancedVirtTmp="$instancedVirtDir"/tmp
 
-export instancedVirtHome="$instancedVirtFS"/home/"$virtGuestUser"
-export instancedVirtHomeRef="$instancedVirtFS"/home/"$virtGuestUser".ref
-[[ $(id -u) == 0 ]] && export instancedVirtHome="$instancedVirtFS"/root
+export virtGuestHome=/home/"$virtGuestUser"
+[[ $(id -u) == 0 ]] && export virtGuestHome=/root
+
+export instancedVirtHome="$instancedVirtFS""$virtGuestHome"
+export instancedVirtHomeRef="$instancedVirtHome".ref
 
 export sharedHostProjectDir="$outerPWD"	#Default value.
-export sharedGuestProjectDir="$instancedVirtHome"/project
+export sharedGuestProjectDir="$virtGuestHome"/project
+
+export instancedProjectDir="$instancedVirtHome""$sharedGuestProjectDir"
 
 export chrootDir="$globalVirtFS"
 
