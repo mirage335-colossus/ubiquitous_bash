@@ -9,7 +9,8 @@ _mountChRoot_userAndHome() {
 	
 	
 	
-	
+	# TODO TODO Use unionfs-fuse, add a test for unionfs-fuse.
+	# TODO Develop a function to automatically select whatever unionfs equivalent may be supported by the host.
 	sudo /bin/mount -t unionfs -o dirs="$instancedVirtTmp":"$globalVirtFS"=ro unionfs "$instancedVirtFS"
 	
 	return 0

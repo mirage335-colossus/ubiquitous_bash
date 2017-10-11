@@ -926,7 +926,7 @@ _removeChRoot() {
 	
 	
 	find "$scriptAbsoluteFolder"/v_*/fs -maxdepth 1 -type d -exec "$scriptAbsoluteLocation" _umountChRoot_directory {} \;
-	find "$scriptAbsoluteFolder"/v_*/tmp -maxdepth 1 -type d -exec "$scriptAbsoluteLocation" umount {} \;
+	find "$scriptAbsoluteFolder"/v_*/tmp -maxdepth 1 -type d -exec sudo -n umount {} \;
 	find "$scriptAbsoluteFolder"/v_*/ -maxdepth 12 -type d | head -n 48 | tac | xargs rmdir
 	
 	"$scriptAbsoluteLocation" _closeChRoot --force
@@ -957,9 +957,9 @@ _mountChRoot_userAndHome() {
 	
 	sudo -n mount -t tmpfs -o size=4G,uid="$HOST_USER_ID",gid="$HOST_GROUP_ID" tmpfs "$instancedVirtTmp"
 	
-	_bindMountManager "$globalVirtFS" "$instancedVirtFS" || return 1
+	#_bindMountManager "$globalVirtFS" "$instancedVirtFS" || return 1
 	
-	_bindMountManager "$instancedVirtTmp" "$instancedVirtHome" || return 1
+	#_bindMountManager "$instancedVirtTmp" "$instancedVirtHome" || return 1
 	
 	
 	
