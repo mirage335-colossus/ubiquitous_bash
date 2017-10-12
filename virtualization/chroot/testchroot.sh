@@ -3,4 +3,6 @@ _testChRoot() {
 	
 	_checkDep id
 	
+	_checkDep unionfs-fuse
+	
 }

@@ -962,9 +962,25 @@ _mountChRoot_userAndHome() {
 	#_bindMountManager "$instancedVirtTmp" "$instancedVirtHome" || return 1
 	
 	
+	#Remove directories that interfere with union mounting.
+	rmdir "$instancedProjectDir"
+	rmdir "$instancedVirtHome"
+	rmdir "$instancedVirtHomeRef"
+	rmdir "$instancedVirtFS"/home
+	rmdir "$instancedVirtFS"/root > /dev/null 2>&1
 	
 	
-	sudo /bin/mount -t unionfs -o dirs="$instancedVirtTmp":"$globalVirtFS"=ro unionfs "$instancedVirtFS"
+	# TODO Develop a function to automatically select whatever unionfs equivalent may be supported by the host.
+	#sudo /bin/mount -t unionfs -o dirs="$instancedVirtTmp":"$globalVirtFS"=ro unionfs "$instancedVirtFS"
+	sudo -n unionfs-fuse -o cow,allow_other,use_ino,suid,dev "$instancedVirtTmp"=RW:"$globalVirtFS"=RO "$instancedVirtFS"
+	#sudo unionfs -o dirs="$instancedVirtTmp":"$globalVirtFS"=ro "$instancedVirtFS"
+	sudo -n chown "$USER":"$USER" "$instancedVirtFS"
+	
+	#unionfs-fuse -o cow,max_files=32768 -o allow_other,use_ino,suid,dev,nonempty /u/host/etc=RW:/u/group/etc=RO:/u/common/etc=RO /u/union/etc
+	
+	mkdir -p "$instancedProjectDir"
+	mkdir -p "$instancedVirtHome"
+	mkdir -p "$instancedVirtHomeRef"
 	
 	return 0
 }
