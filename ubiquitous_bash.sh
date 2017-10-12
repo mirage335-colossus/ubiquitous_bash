@@ -917,6 +917,7 @@ _openChRoot() {
 }
 
 
+#Fast dismount of all ChRoot filesystems/instances and cleanup of lock files. Specifically intended to act on SIGTERM caught during system shutdown, when time and disk I/O may be limited.
 # TODO Use a tmpfs mount to track reboots (with appropriate BSD/Linux/Solaris checking) in the first place.
 _closeChRoot_emergency() {
 	
@@ -951,7 +952,7 @@ _closeChRoot_emergency() {
 	
 	_stopChRoot "$globalVirtFS"
 	_umountChRoot "$globalVirtFS"
-	sudo -n umount "$globalVirtFS"
+	sudo -n umount "$globalVirtFS" > /dev/null 2>&1
 	
 	local chrootimagedev
 	chrootimagedev=$(cat "$scriptLocal"/imagedev)
