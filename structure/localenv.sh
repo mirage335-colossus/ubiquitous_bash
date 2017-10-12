@@ -33,6 +33,7 @@ _stop() {
 
 #Called upon SIGTERM or similar signal.
 _stop_emergency() {
+	[[ "$noEmergency" == true ]] && _stop "$1"
 	
 	export EMERGENCYSHUTDOWN=true
 	

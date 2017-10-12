@@ -949,9 +949,9 @@ _closeChRoot_emergency() {
 	
 	
 	
-	_stopChRoot "$globalVirtDir"
-	_umountChRoot "$globalVirtDir"
-	sudo -n umount "$globalVirtDir"
+	_stopChRoot "$globalVirtFS"
+	_umountChRoot "$globalVirtFS"
+	sudo -n umount "$globalVirtFS"
 	
 	local chrootimagedev
 	chrootimagedev=$(cat "$scriptLocal"/imagedev)
@@ -1881,6 +1881,7 @@ _stop() {
 
 #Called upon SIGTERM or similar signal.
 _stop_emergency() {
+	[[ "$noEmergency" == true ]] && _stop "$1"
 	
 	export EMERGENCYSHUTDOWN=true
 	
@@ -2303,8 +2304,11 @@ _main() {
 #Traps, if script is not imported into existing shell, or bypass requested.
 if ! [[ "${BASH_SOURCE[0]}" != "${0}" ]] || ! [[ "$1" != "--bypass" ]]
 then
-	trap 'excode=$?; _stop_emergency $excode; trap - EXIT; echo $excode' EXIT HUP INT QUIT PIPE TERM		# reset
-	trap 'excode=$?; trap "" EXIT; _stop_emergency $excode; echo $excode' EXIT HUP INT QUIT PIPE TERM		# ignore
+	trap 'excode=$?; _stop $excode; trap - EXIT; echo $excode' EXIT HUP QUIT PIPE 	# reset
+	trap 'excode=$?; trap "" EXIT; _stop $excode; echo $excode' EXIT HUP QUIT PIPE 	# ignore
+	
+	trap 'excode=$?; _stop_emergency $excode; trap - EXIT; echo $excode' INT TERM	# reset
+	trap 'excode=$?; trap "" EXIT; _stop_emergency $excode; echo $excode' INT TERM	# ignore
 fi
 
 #Override functions with external definitions from a separate file if available.
@@ -2329,6 +2333,7 @@ then
 	#Exit if not imported into existing shell, or bypass requested, else fall through to subsequent return.
 	if ! [[ "${BASH_SOURCE[0]}" != "${0}" ]] || ! [[ "$1" != "--bypass" ]]
 	then
+		#export noEmergency=true
 		exit "$internalFunctionExitStatus"
 	fi
 	#_stop "$?"
