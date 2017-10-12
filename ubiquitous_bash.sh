@@ -224,6 +224,8 @@ _wait_umount() {
 	mountpoint "$1" > /dev/null 2>&1 || return 0
 	sleep 0.3
 	
+	[[ "$EMERGENCYSHUTDOWN" == "true" ]] && return 1
+	
 	sudo -n umount "$1"
 	mountpoint "$1" > /dev/null 2>&1 || return 0
 	sleep 1
@@ -666,6 +668,8 @@ _killprocChRoot() {
 	[[ "$chrootprocs" == "" ]] && return 0
 	sudo -n kill -"$chrootKillSignal" "$chrootprocs" >/dev/null 2>&1
 	sleep 0.3
+	
+	[[ "$EMERGENCYSHUTDOWN" == "true" ]] && return 1
 	
 	chrootprocs=$(_listprocChRoot "$chrootKillDir")
 	[[ "$chrootprocs" == "" ]] && return 0
@@ -1111,7 +1115,6 @@ _rm_ubvrtusrChRoot() {
 	
 }
 
-# TODO Bugfix.
 _ubvrtusrChRoot() {
 	
 	#If root, discontinue.
@@ -1144,7 +1147,6 @@ _ubvrtusrChRoot() {
 	return 0
 }
 
-# TODO Break into start/stop functions to trap for SIGTERM/shutdown.
 _userChRoot() {
 	_start
 	_start_virt_all
@@ -1821,6 +1823,28 @@ _stop() {
 	fi
 }
 
+#Called upon SIGTERM or similar signal.
+_stop_emergency() {
+	
+	export EMERGENCYSHUTDOWN=true
+	
+	
+	if [[ -e "$instancedVirtFS" ]]
+	then
+		_stopChRoot "$instancedVirtFS" >> "$logTmp"/usrchrt.log 2>&1
+		_umountChRoot_project >> "$logTmp"/usrchrt.log 2>&1
+		_umountChRoot_user_home >> "$logTmp"/usrchrt.log 2>&1
+		_umountChRoot_user >> "$logTmp"/usrchrt.log 2>&1
+		
+		_rm_ubvrtusrChRoot
+		
+		_stop_virt_instance >> "$logTmp"/usrchrt.log 2>&1
+	fi
+	
+	_stop "$@"
+	
+}
+
 _waitFile() {
 	
 	[[ -e "$1" ]] && sleep 1
@@ -2234,8 +2258,8 @@ _main() {
 #Traps, if script is not imported into existing shell, or bypass requested.
 if ! [[ "${BASH_SOURCE[0]}" != "${0}" ]] || ! [[ "$1" != "--bypass" ]]
 then
-	trap 'excode=$?; _stop $excode; trap - EXIT; echo $excode' EXIT HUP INT QUIT PIPE TERM		# reset
-	trap 'excode=$?; trap "" EXIT; _stop $excode; echo $excode' EXIT HUP INT QUIT PIPE TERM		# ignore
+	trap 'excode=$?; _stop_emergency $excode; trap - EXIT; echo $excode' EXIT HUP INT QUIT PIPE TERM		# reset
+	trap 'excode=$?; trap "" EXIT; _stop_emergency $excode; echo $excode' EXIT HUP INT QUIT PIPE TERM		# ignore
 fi
 
 #Override functions with external definitions from a separate file if available.

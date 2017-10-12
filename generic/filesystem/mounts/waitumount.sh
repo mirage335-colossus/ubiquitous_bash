@@ -7,6 +7,8 @@ _wait_umount() {
 	mountpoint "$1" > /dev/null 2>&1 || return 0
 	sleep 0.3
 	
+	[[ "$EMERGENCYSHUTDOWN" == "true" ]] && return 1
+	
 	sudo -n umount "$1"
 	mountpoint "$1" > /dev/null 2>&1 || return 0
 	sleep 1

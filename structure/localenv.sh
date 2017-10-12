@@ -31,6 +31,32 @@ _stop() {
 	fi
 }
 
+#Called upon SIGTERM or similar signal.
+_stop_emergency() {
+	
+	export EMERGENCYSHUTDOWN=true
+	
+	if [[ -e "$instancedVirtFS" ]]
+	then
+		_stopChRoot "$instancedVirtFS" >> "$logTmp"/usrchrt.log 2>&1
+		_umountChRoot_project >> "$logTmp"/usrchrt.log 2>&1
+		_umountChRoot_user_home >> "$logTmp"/usrchrt.log 2>&1
+		_umountChRoot_user >> "$logTmp"/usrchrt.log 2>&1
+		
+		_rm_ubvrtusrChRoot
+		
+		_stop_virt_instance >> "$logTmp"/usrchrt.log 2>&1
+	fi
+	
+	if ! find "$scriptAbsoluteFolder"/v_* -maxdepth 1 -type d > /dev/null 2>&1 || sleep 0.1 ; ! find "$scriptAbsoluteFolder"/v_* -maxdepth 1 -type d > /dev/null 2>&1
+	then
+		"$scriptAbsoluteLocation" _closeChRoot
+	fi
+	
+	_stop "$@"
+	
+}
+
 _waitFile() {
 	
 	[[ -e "$1" ]] && sleep 1

@@ -30,6 +30,8 @@ _killprocChRoot() {
 	sudo -n kill -"$chrootKillSignal" "$chrootprocs" >/dev/null 2>&1
 	sleep 0.3
 	
+	[[ "$EMERGENCYSHUTDOWN" == "true" ]] && return 1
+	
 	chrootprocs=$(_listprocChRoot "$chrootKillDir")
 	[[ "$chrootprocs" == "" ]] && return 0
 	sudo -n kill -"$chrootKillSignal" "$chrootprocs" >/dev/null 2>&1

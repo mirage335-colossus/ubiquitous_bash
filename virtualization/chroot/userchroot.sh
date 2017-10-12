@@ -43,7 +43,6 @@ _ubvrtusrChRoot() {
 	return 0
 }
 
-# TODO Break into start/stop functions to trap for SIGTERM/shutdown.
 _userChRoot() {
 	_start
 	_start_virt_all
