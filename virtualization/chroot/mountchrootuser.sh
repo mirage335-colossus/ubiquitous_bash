@@ -15,7 +15,7 @@ _mountChRoot_userAndHome() {
 	rmdir "$instancedVirtFS"/home
 	rmdir "$instancedVirtFS"/root > /dev/null 2>&1
 	
-	
+	# TODO Device Mapper snapshot ChRoot instancing alternative. Disadvantage of not allowing the root filesystem to be simultaneously mounted read-write.
 	# TODO Develop a function to automatically select whatever unionfs equivalent may be supported by the host.
 	#sudo /bin/mount -t unionfs -o dirs="$instancedVirtTmp":"$globalVirtFS"=ro unionfs "$instancedVirtFS"
 	sudo -n unionfs-fuse -o cow,allow_other,use_ino,suid,dev "$instancedVirtTmp"=RW:"$globalVirtFS"=RO "$instancedVirtFS"
@@ -86,8 +86,10 @@ _mountChRoot_project() {
 	_checkDep dirname
 	_checkDep basename
 	
+	sudo -n unionfs-fuse -o allow_other,use_ino,suid,dev "$sharedHostProjectDir"=RW "$instancedProjectDir"
+	sudo -n chown "$USER":"$USER" "$instancedProjectDir"
 	
-	_bindMountManager "$sharedHostProjectDir" "$instancedProjectDir" || return 1
+	#_bindMountManager "$sharedHostProjectDir" "$instancedProjectDir" || return 1
 	
 }
 

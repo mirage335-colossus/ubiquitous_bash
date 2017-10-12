@@ -139,8 +139,10 @@ _includeScript createImage.sh "virtualization/image"
 
 _includeScript procchroot.sh "virtualization/chroot"
 _includeScript mountchroot.sh "virtualization/chroot"
-_includeScript mountchrootuser.sh "virtualization/chroot"
 _includeScript enterchroot.sh "virtualization/chroot"
+
+_includeScript mountchrootuser.sh "virtualization/chroot"
+_includeScript userchroot.sh "virtualization/chroot"
 _includeScript dropchroot.sh "virtualization/chroot"
 
 _includeScript qemu-raspi-raspi.sh "virtualization/qemu"

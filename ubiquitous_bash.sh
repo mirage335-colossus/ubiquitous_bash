@@ -952,6 +952,24 @@ _removeChRoot() {
 
 
 
+_chroot() {
+	
+	[[ ! -e "$chrootDir"/bin/bash ]] && return 1
+	
+	_mustGetSudo
+	
+	#cd "$chrootDir"
+	
+	local chrootExitStatus
+	
+	sudo -n env -i HOME="/root" TERM="${TERM}" SHELL="/bin/bash" PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" DISPLAY="$DISPLAY" localPWD="$localPWD" hostArch=$(uname -m) virtSharedUser="$virtGuestUser" $(sudo -n which chroot) "$chrootDir" "$@"
+	
+	chrootExitStatus="$?"
+	
+	return "$chrootExitStatus"
+	
+}
+
 
 _mountChRoot_userAndHome() {
 	
@@ -969,7 +987,7 @@ _mountChRoot_userAndHome() {
 	rmdir "$instancedVirtFS"/home
 	rmdir "$instancedVirtFS"/root > /dev/null 2>&1
 	
-	
+	# TODO Device Mapper snapshot ChRoot instancing alternative. Disadvantage of not allowing the root filesystem to be simultaneously mounted read-write.
 	# TODO Develop a function to automatically select whatever unionfs equivalent may be supported by the host.
 	#sudo /bin/mount -t unionfs -o dirs="$instancedVirtTmp":"$globalVirtFS"=ro unionfs "$instancedVirtFS"
 	sudo -n unionfs-fuse -o cow,allow_other,use_ino,suid,dev "$instancedVirtTmp"=RW:"$globalVirtFS"=RO "$instancedVirtFS"
@@ -1040,8 +1058,10 @@ _mountChRoot_project() {
 	_checkDep dirname
 	_checkDep basename
 	
+	sudo -n unionfs-fuse -o allow_other,use_ino,suid,dev "$sharedHostProjectDir"=RW "$instancedProjectDir"
+	sudo -n chown "$USER":"$USER" "$instancedProjectDir"
 	
-	_bindMountManager "$sharedHostProjectDir" "$instancedProjectDir" || return 1
+	#_bindMountManager "$sharedHostProjectDir" "$instancedProjectDir" || return 1
 	
 }
 
@@ -1077,25 +1097,6 @@ _checkBaseDirRemote_chroot() {
 }
 
 
-
-
-_chroot() {
-	
-	[[ ! -e "$chrootDir"/bin/bash ]] && return 1
-	
-	_mustGetSudo
-	
-	#cd "$chrootDir"
-	
-	local chrootExitStatus
-	
-	sudo -n env -i HOME="/root" TERM="${TERM}" SHELL="/bin/bash" PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" DISPLAY="$DISPLAY" localPWD="$localPWD" hostArch=$(uname -m) virtSharedUser="$virtGuestUser" $(sudo -n which chroot) "$chrootDir" "$@"
-	
-	chrootExitStatus="$?"
-	
-	return "$chrootExitStatus"
-	
-}
 
 _rm_ubvrtusrChRoot() {
 	
@@ -1200,12 +1201,7 @@ _removeUserChRoot() {
 	_rm_ubvrtusrChRoot
 	
 	_removeChRoot
-}
-
-
-
-
-
+} 
 
 _dropChRoot() {
 	
