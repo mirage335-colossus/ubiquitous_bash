@@ -36,24 +36,9 @@ _stop_emergency() {
 	
 	export EMERGENCYSHUTDOWN=true
 	
-	if [[ -e "$instancedVirtFS" ]]
-	then
-		_stopChRoot "$instancedVirtFS" >> "$logTmp"/usrchrt.log 2>&1
-		_umountChRoot_project >> "$logTmp"/usrchrt.log 2>&1
-		_umountChRoot_user_home >> "$logTmp"/usrchrt.log 2>&1
-		_umountChRoot_user >> "$logTmp"/usrchrt.log 2>&1
-		
-		_rm_ubvrtusrChRoot
-		
-		_stop_virt_instance >> "$logTmp"/usrchrt.log 2>&1
-	fi
+	_closeChRoot_emergency
 	
-	if ! find "$scriptAbsoluteFolder"/v_* -maxdepth 1 -type d > /dev/null 2>&1 || sleep 0.1 ; ! find "$scriptAbsoluteFolder"/v_* -maxdepth 1 -type d > /dev/null 2>&1
-	then
-		"$scriptAbsoluteLocation" _closeChRoot
-	fi
-	
-	_stop "$@"
+	_stop "$1"
 	
 }
 

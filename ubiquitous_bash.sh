@@ -917,13 +917,69 @@ _openChRoot() {
 }
 
 
+# TODO Use a tmpfs mount to track reboots (with appropriate BSD/Linux/Solaris checking) in the first place.
+_closeChRoot_emergency() {
+	
+	export EMERGENCYSHUTDOWN=true
+	
+	
+	if [[ -e "$instancedVirtFS" ]]
+	then
+		_stopChRoot "$instancedVirtFS" >> "$logTmp"/usrchrt.log 2>&1
+		_umountChRoot_project >> "$logTmp"/usrchrt.log 2>&1
+		_umountChRoot_user_home >> "$logTmp"/usrchrt.log 2>&1
+		_umountChRoot_user >> "$logTmp"/usrchrt.log 2>&1
+		
+		_rm_ubvrtusrChRoot
+		
+		_stop_virt_instance >> "$logTmp"/usrchrt.log 2>&1
+	fi
+	
+	
+	
+	
+	
+	[[ -e "$scriptLocal"/_closing ]] && return
+	! [[ -e "$scriptLocal"/_open ]] && return
+	
+	find "$scriptAbsoluteFolder"/v_* -maxdepth 1 -type d > /dev/null 2>&1 && return
+	
+	echo > "$scriptLocal"/quicktmp
+	mv -n "$scriptLocal"/quicktmp "$scriptLocal"/_closing || return 1
+	
+	
+	
+	_stopChRoot "$globalVirtDir"
+	_umountChRoot "$globalVirtDir"
+	sudo -n umount "$globalVirtDir"
+	
+	local chrootimagedev
+	chrootimagedev=$(cat "$scriptLocal"/imagedev)
+	
+	sudo -n losetup -d "$chrootimagedev" > /dev/null 2>&1
+	
+	rm "$scriptLocal"/imagedev
+	
+	rm "$scriptLocal"/quicktmp > /dev/null 2>&1
+	
+	
+	rm "$scriptLocal"/_open
+	rm "$scriptLocal"/_closing
+	rm "$scriptLocal"/WARNING
+	
+}
+
 _closeChRoot() {
 	if [[ "$1" == "--force" ]]
 	then
 		_close --force _waitChRoot_closing _umountChRoot_image
+		return
 	fi
+	
 	_close _waitChRoot_closing _umountChRoot_image
 }
+
+
 
 #Debugging function.
 _removeChRoot() {
@@ -1828,20 +1884,9 @@ _stop_emergency() {
 	
 	export EMERGENCYSHUTDOWN=true
 	
+	_closeChRoot_emergency
 	
-	if [[ -e "$instancedVirtFS" ]]
-	then
-		_stopChRoot "$instancedVirtFS" >> "$logTmp"/usrchrt.log 2>&1
-		_umountChRoot_project >> "$logTmp"/usrchrt.log 2>&1
-		_umountChRoot_user_home >> "$logTmp"/usrchrt.log 2>&1
-		_umountChRoot_user >> "$logTmp"/usrchrt.log 2>&1
-		
-		_rm_ubvrtusrChRoot
-		
-		_stop_virt_instance >> "$logTmp"/usrchrt.log 2>&1
-	fi
-	
-	_stop "$@"
+	_stop "$1"
 	
 }
 
