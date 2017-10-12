@@ -66,6 +66,7 @@ export instancedVirtTmp="$instancedVirtDir"/tmp
 
 export virtGuestHome=/home/"$virtGuestUser"
 [[ $(id -u) == 0 ]] && export virtGuestHome=/root
+export virtGuestHomeRef="$virtGuestHome".ref
 
 export instancedVirtHome="$instancedVirtFS""$virtGuestHome"
 export instancedVirtHomeRef="$instancedVirtHome".ref

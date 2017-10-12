@@ -1111,37 +1111,40 @@ _rm_ubvrtusrChRoot() {
 	
 }
 
+# TODO Bugfix.
 _ubvrtusrChRoot() {
+	
 	#If root, discontinue.
 	[[ $(id -u) == 0 ]] && return 0
 	
 	#If user correctly setup, discontinue.
-	[[ -e "$instancedVirtHomeRef" ]] && _chroot id -u "$virtGuestUser" > /dev/null 2>&1 && [[ $(_chroot id -u "$virtGuestUser") == "$HOST_USER_ID" ]] && [[ $(_chroot id -g "$virtGuestUser") == "$HOST_GROUP_ID" ]] && return 0
+	[[ -e "$virtGuestHomeRef" ]] && _chroot id -u "$virtGuestUser" > /dev/null 2>&1 && [[ $(_chroot id -u "$virtGuestUser") == "$HOST_USER_ID" ]] && [[ $(_chroot id -g "$virtGuestUser") == "$HOST_GROUP_ID" ]] && return 0
 	
 	## Lock file. Not done with _waitFileCommands because there is nither an obvious means, nor an obviously catastrophically critical requirement, to independently check for completion of related useradd/mod/del operations.
 	_waitFile "$globalVirtDir"/_ubvrtusr || return 1
 	echo > "$globalVirtDir"/quicktmp
 	mv -n "$globalVirtDir"/quicktmp "$globalVirtDir"/_ubvrtusr > /dev/null 2>&1 || return 1
 	
-	_chroot userdel -r "$virtGuestUser" > /dev/null 2>&1
+	_chroot userdel -r "$virtGuestUser"
 	_rm_ubvrtusrChRoot
 	
-	_chroot groupadd -g "$HOST_GROUP_ID" -o "$virtGuestUser" > /dev/null 2>&1
-	_chroot useradd --shell /bin/bash -u "$HOST_USER_ID" -g "$HOST_GROUP_ID" -o -c "" -m "$virtGuestUser" > /dev/null 2>&1 || return 1
+	_chroot groupadd -g "$HOST_GROUP_ID" -o "$virtGuestUser"
+	_chroot useradd --shell /bin/bash -u "$HOST_USER_ID" -g "$HOST_GROUP_ID" -o -c "" -m "$virtGuestUser" || return 1
 	
 	_chroot usermod -a -G video "$virtGuestUser"  > /dev/null 2>&1 || return 1
 	
-	_chroot chown "$virtGuestUser":"$virtGuestUser" "$instancedVirtHome" > /dev/null 2>&1
+	_chroot chown "$virtGuestUser":"$virtGuestUser" "$virtGuestHome" > /dev/null 2>&1
 	
-	sudo -n cp -a "$instancedVirtHome" "$instancedVirtHomeRef" > /dev/null 2>&1
-	
-	_chroot chown "$virtGuestUser":"$virtGuestUser" "$instancedVirtHomeRef" > /dev/null 2>&1
+	sudo -n cp -a "$globalVirtFS""$virtGuestHome" "$globalVirtFS""$virtGuestHomeRef"
+	echo sudo -n cp -a "$globalVirtFS""$virtGuestHome" "$globalVirtFS""$virtGuestHomeRef"
+	_chroot chown "$virtGuestUser":"$virtGuestUser" "$virtGuestHomeRef" > /dev/null 2>&1
 	
 	rm "$globalVirtDir"/_ubvrtusr > /dev/null 2>&1 || _stop 1
 	
 	return 0
 }
 
+# TODO Break into start/stop functions to trap for SIGTERM/shutdown.
 _userChRoot() {
 	_start
 	_start_virt_all
@@ -1752,6 +1755,7 @@ export instancedVirtTmp="$instancedVirtDir"/tmp
 
 export virtGuestHome=/home/"$virtGuestUser"
 [[ $(id -u) == 0 ]] && export virtGuestHome=/root
+export virtGuestHomeRef="$virtGuestHome".ref
 
 export instancedVirtHome="$instancedVirtFS""$virtGuestHome"
 export instancedVirtHomeRef="$instancedVirtHome".ref
