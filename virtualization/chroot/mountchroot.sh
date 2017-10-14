@@ -87,7 +87,7 @@ _mountChRoot_image_raspbian() {
 	if sudo -n losetup -f -P --show "$scriptLocal"/vm-raspbian.img > "$safeTmp"/imagedev 2> /dev/null
 	then
 		#Preemptively declare device open to prevent potentially dangerous multiple mount attempts.
-		echo > "$scriptLocal"/_open || _stop 1
+		echo > "$lock_open" || _stop 1
 		
 		cp -n "$safeTmp"/imagedev "$scriptLocal"/imagedev > /dev/null 2>&1 || _stop 1
 		
@@ -159,7 +159,7 @@ _umountChRoot_image() {
 	
 	rm "$scriptLocal"/imagedev || return 1
 	
-	rm "$scriptLocal"/quicktmp > /dev/null 2>&1
+	rm "$lock_quicktmp" > /dev/null 2>&1
 	
 	return 0
 }
@@ -224,14 +224,12 @@ _closeChRoot_emergency() {
 	
 	
 	
-	[[ -e "$scriptLocal"/_closing ]] && return
-	! [[ -e "$scriptLocal"/_open ]] && return
+	_readLocked "$lock_closing" && return
+	! _readLocked "$lock_open" && return
 	
 	find "$scriptAbsoluteFolder"/v_* -maxdepth 1 -type d > /dev/null 2>&1 && return
 	
-	echo > "$scriptLocal"/quicktmp
-	mv -n "$scriptLocal"/quicktmp "$scriptLocal"/_closing || return 1
-	
+	_createLocked "$lock_closing" || return 1
 	
 	
 	_stopChRoot "$globalVirtFS"
@@ -245,11 +243,11 @@ _closeChRoot_emergency() {
 	
 	rm "$scriptLocal"/imagedev
 	
-	rm "$scriptLocal"/quicktmp > /dev/null 2>&1
+	rm "$lock_quicktmp" > /dev/null 2>&1
 	
 	
-	rm "$scriptLocal"/_open
-	rm "$scriptLocal"/_closing
+	rm "$lock_open"
+	rm "$lock_closing"
 	rm "$scriptLocal"/WARNING
 	
 }
@@ -276,9 +274,9 @@ _removeChRoot() {
 	
 	"$scriptAbsoluteLocation" _closeChRoot --force
 	
-	rm "$scriptLocal"/_closing
-	rm "$scriptLocal"/_opening
-	rm "$scriptLocal"/_instancing
+	rm "$lock_closing"
+	rm "$lock_opening"
+	rm "$lock_instancing"
 	
 	rm "$globalVirtDir"/_ubvrtusr
 	

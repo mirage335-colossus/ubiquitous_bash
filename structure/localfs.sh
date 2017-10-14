@@ -15,5 +15,7 @@ _prepare() {
 	
 	mkdir -p "$scriptLocal"
 	
+	mkdir -p "$bootTmp"
+	
 	_extra
 }

@@ -82,27 +82,78 @@ _waitFileCommands() {
 	return 0
 }
 
+_readLocked() {
+	mkdir -p "$bootTmp"
+	
+	! [[ -e "$1" ]] && return 1
+	##Lock file exists.
+	
+	if [[ -d "$bootTmp" ]]
+	then
+		local rebootToken
+		rebootToken=$(cat "$1")
+		
+		if ! [[ -e "$bootTmp"/"$rebootToken" ]]
+		then
+			##Lock file obsolete.
+			
+			#Remove old lock.
+			rm "$1" > /dev/null 2>&1
+			return 1
+		fi
+		
+		##Lock file and token exists.
+		return 0
+	fi
+	
+	##Lock file exists, token cannot be found.
+	return 0
+	
+	
+	
+}
+
+_createLocked() {
+	mkdir -p "$bootTmp"
+	
+	! [[ -e "$bootTmp"/"$sessionid" ]] && echo > "$bootTmp"/"$sessionid"
+	
+	echo "$sessionid" > "$lock_quicktmp"
+	mv -n "$lock_quicktmp" "$1" > /dev/null 2>&1 || return 1
+	
+}
+
+_resetLocks() {
+	
+	_readLocked "$lock_open"
+	_readLocked "$lock_opening"
+	_readLocked "$lock_closed"
+	_readLocked "$lock_closing"
+	_readLocked "$lock_instance"
+	_readLocked "$lock_instancing"
+	
+}
+
 #Wrapper. Operates lock file for mounting shared resources (eg. persistent virtual machine image). Avoid if possible.
 #"$1" == waitOpen function && shift
 #"$@" == wrapped function and parameters
 _open() {
-	[[ -e "$scriptLocal"/_open ]] && return 0
+	_readLocked "$lock_open" && return 0
 	
-	[[ -e "$scriptLocal"/_closing ]] && return 1
+	_readLocked "$lock_closing" && return 1
 	
-	if [[ -e "$scriptLocal"/_opening ]]
+	if _readLocked "$lock_opening"
 	then
-		if _waitFileCommands "$scriptLocal"/_opening "$1"
+		if _waitFileCommands "$lock_opening" "$1"
 		then
-			[[ -e "$scriptLocal"/_open ]] || return 1
+			_readLocked "$lock_open" || return 1
 			return 0
 		else
 			return 1
 		fi
 	fi
 	
-	echo > "$scriptLocal"/quicktmp
-	mv -n "$scriptLocal"/quicktmp "$scriptLocal"/_opening > /dev/null 2>&1 || return 1
+	_createLocked "$lock_opening" || return 1
 	
 	shift
 	
@@ -112,8 +163,8 @@ _open() {
 	
 	if [[ "$?" == "0" ]]
 	then
-		echo > "$scriptLocal"/_open || return 1
-		rm "$scriptLocal"/_opening
+		_createLocked "$lock_open" || return 1
+		rm "$lock_opening"
 		return 0
 	fi
 	
@@ -134,14 +185,14 @@ _close() {
 		shift
 	fi
 	
-	if ! [[ -e "$scriptLocal"/_open ]] && [[ "$closeForceEnable" != "true" ]]
+	if ! _readLocked "$lock_open" && [[ "$closeForceEnable" != "true" ]]
 	then
 		return 0
 	fi
 	
-	if [[ -e "$scriptLocal"/_closing ]] && [[ "$closeForceEnable" != "true" ]]
+	if _readLocked "$lock_closing" && [[ "$closeForceEnable" != "true" ]]
 	then
-		if _waitFileCommands "$scriptLocal"/_closing "$1"
+		if _waitFileCommands "$lock_closing" "$1"
 		then
 			return 0
 		else
@@ -151,10 +202,9 @@ _close() {
 	
 	if [[ "$closeForceEnable" != "true" ]]
 	then
-		echo > "$scriptLocal"/quicktmp
-		mv -n "$scriptLocal"/quicktmp "$scriptLocal"/_closing || return 1
+		_createLocked "$lock_closing" || return 1
 	fi
-	! [[ -e "$scriptLocal"/_closing ]] && echo > "$scriptLocal"/_closing
+	! _readLocked "$lock_closing" && _createLocked "$lock_closing"
 	
 	shift
 	
@@ -162,8 +212,8 @@ _close() {
 	
 	if [[ "$?" == "0" ]]
 	then
-		rm "$scriptLocal"/_open || return 1
-		rm "$scriptLocal"/_closing
+		rm "$lock_open" || return 1
+		rm "$lock_closing"
 		rm "$scriptLocal"/WARNING
 		return 0
 	fi

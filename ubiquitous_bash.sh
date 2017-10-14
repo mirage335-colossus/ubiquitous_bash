@@ -803,7 +803,7 @@ _mountChRoot_image_raspbian() {
 	if sudo -n losetup -f -P --show "$scriptLocal"/vm-raspbian.img > "$safeTmp"/imagedev 2> /dev/null
 	then
 		#Preemptively declare device open to prevent potentially dangerous multiple mount attempts.
-		echo > "$scriptLocal"/_open || _stop 1
+		echo > "$lock_open" || _stop 1
 		
 		cp -n "$safeTmp"/imagedev "$scriptLocal"/imagedev > /dev/null 2>&1 || _stop 1
 		
@@ -875,7 +875,7 @@ _umountChRoot_image() {
 	
 	rm "$scriptLocal"/imagedev || return 1
 	
-	rm "$scriptLocal"/quicktmp > /dev/null 2>&1
+	rm "$lock_quicktmp" > /dev/null 2>&1
 	
 	return 0
 }
@@ -940,14 +940,12 @@ _closeChRoot_emergency() {
 	
 	
 	
-	[[ -e "$scriptLocal"/_closing ]] && return
-	! [[ -e "$scriptLocal"/_open ]] && return
+	_readLocked "$lock_closing" && return
+	! _readLocked "$lock_open" && return
 	
 	find "$scriptAbsoluteFolder"/v_* -maxdepth 1 -type d > /dev/null 2>&1 && return
 	
-	echo > "$scriptLocal"/quicktmp
-	mv -n "$scriptLocal"/quicktmp "$scriptLocal"/_closing || return 1
-	
+	_createLocked "$lock_closing" || return 1
 	
 	
 	_stopChRoot "$globalVirtFS"
@@ -961,11 +959,11 @@ _closeChRoot_emergency() {
 	
 	rm "$scriptLocal"/imagedev
 	
-	rm "$scriptLocal"/quicktmp > /dev/null 2>&1
+	rm "$lock_quicktmp" > /dev/null 2>&1
 	
 	
-	rm "$scriptLocal"/_open
-	rm "$scriptLocal"/_closing
+	rm "$lock_open"
+	rm "$lock_closing"
 	rm "$scriptLocal"/WARNING
 	
 }
@@ -992,9 +990,9 @@ _removeChRoot() {
 	
 	"$scriptAbsoluteLocation" _closeChRoot --force
 	
-	rm "$scriptLocal"/_closing
-	rm "$scriptLocal"/_opening
-	rm "$scriptLocal"/_instancing
+	rm "$lock_closing"
+	rm "$lock_opening"
+	rm "$lock_instancing"
 	
 	rm "$globalVirtDir"/_ubvrtusr
 	
@@ -1776,13 +1774,26 @@ export scriptBin="$scriptAbsoluteFolder"/_bin
 
 export scriptLocal="$scriptAbsoluteFolder"/_local
 
-#export varStore="$scriptAbsoluteFolder"/var
+#Reboot Detection Token Storage
+# WARNING WIP. Not tested on all platforms. Requires a directory to be tmp/ram fs mounted. Worst case result is to preserve tokens across reboots.
+export bootTmp="$scriptLocal"			#Fail-Safe
+[[ -d /tmp ]] && export bootTmp=/tmp		#Typical BSD
+[[ -d /dev/shm ]] && export bootTmp=/dev/shm	#Typical Linux
 
 #Process control.
 [[ "$pidFile" == "" ]] && export pidFile="$safeTmp"/.bgpid
 export daemonPID="cwrxuk6wqzbzV6p8kPS8J4APYGX"	#Invalid do-not-match default.
 
+#export varStore="$scriptAbsoluteFolder"/var
+
 #Monolithic shared files.
+export lock_quicktmp="$scriptLocal"/quicktmp	#Used to make locking operations atomic as possible.
+export lock_open="$scriptLocal"/_open
+export lock_opening="$scriptLocal"/_opening
+export lock_closed="$scriptLocal"/_closed
+export lock_closing="$scriptLocal"/_closing
+export lock_instance="$scriptLocal"/_instance
+export lock_instancing="$scriptLocal"/_instancing
 
 #Resource directories.
 #export guidanceDir="$scriptAbsoluteFolder"/guidance
@@ -1843,6 +1854,8 @@ _prepare() {
 	mkdir -p "$logTmp"
 	
 	mkdir -p "$scriptLocal"
+	
+	mkdir -p "$bootTmp"
 	
 	_extra
 }
@@ -1931,27 +1944,78 @@ _waitFileCommands() {
 	return 0
 }
 
+_readLocked() {
+	mkdir -p "$bootTmp"
+	
+	! [[ -e "$1" ]] && return 1
+	##Lock file exists.
+	
+	if [[ -d "$bootTmp" ]]
+	then
+		local rebootToken
+		rebootToken=$(cat "$1")
+		
+		if ! [[ -e "$bootTmp"/"$rebootToken" ]]
+		then
+			##Lock file obsolete.
+			
+			#Remove old lock.
+			rm "$1" > /dev/null 2>&1
+			return 1
+		fi
+		
+		##Lock file and token exists.
+		return 0
+	fi
+	
+	##Lock file exists, token cannot be found.
+	return 0
+	
+	
+	
+}
+
+_createLocked() {
+	mkdir -p "$bootTmp"
+	
+	! [[ -e "$bootTmp"/"$sessionid" ]] && echo > "$bootTmp"/"$sessionid"
+	
+	echo "$sessionid" > "$lock_quicktmp"
+	mv -n "$lock_quicktmp" "$1" > /dev/null 2>&1 || return 1
+	
+}
+
+_resetLocks() {
+	
+	_readLocked "$lock_open"
+	_readLocked "$lock_opening"
+	_readLocked "$lock_closed"
+	_readLocked "$lock_closing"
+	_readLocked "$lock_instance"
+	_readLocked "$lock_instancing"
+	
+}
+
 #Wrapper. Operates lock file for mounting shared resources (eg. persistent virtual machine image). Avoid if possible.
 #"$1" == waitOpen function && shift
 #"$@" == wrapped function and parameters
 _open() {
-	[[ -e "$scriptLocal"/_open ]] && return 0
+	_readLocked "$lock_open" && return 0
 	
-	[[ -e "$scriptLocal"/_closing ]] && return 1
+	_readLocked "$lock_closing" && return 1
 	
-	if [[ -e "$scriptLocal"/_opening ]]
+	if _readLocked "$lock_opening"
 	then
-		if _waitFileCommands "$scriptLocal"/_opening "$1"
+		if _waitFileCommands "$lock_opening" "$1"
 		then
-			[[ -e "$scriptLocal"/_open ]] || return 1
+			_readLocked "$lock_open" || return 1
 			return 0
 		else
 			return 1
 		fi
 	fi
 	
-	echo > "$scriptLocal"/quicktmp
-	mv -n "$scriptLocal"/quicktmp "$scriptLocal"/_opening > /dev/null 2>&1 || return 1
+	_createLocked "$lock_opening" || return 1
 	
 	shift
 	
@@ -1961,8 +2025,8 @@ _open() {
 	
 	if [[ "$?" == "0" ]]
 	then
-		echo > "$scriptLocal"/_open || return 1
-		rm "$scriptLocal"/_opening
+		_createLocked "$lock_open" || return 1
+		rm "$lock_opening"
 		return 0
 	fi
 	
@@ -1983,14 +2047,14 @@ _close() {
 		shift
 	fi
 	
-	if ! [[ -e "$scriptLocal"/_open ]] && [[ "$closeForceEnable" != "true" ]]
+	if ! _readLocked "$lock_open" && [[ "$closeForceEnable" != "true" ]]
 	then
 		return 0
 	fi
 	
-	if [[ -e "$scriptLocal"/_closing ]] && [[ "$closeForceEnable" != "true" ]]
+	if _readLocked "$lock_closing" && [[ "$closeForceEnable" != "true" ]]
 	then
-		if _waitFileCommands "$scriptLocal"/_closing "$1"
+		if _waitFileCommands "$lock_closing" "$1"
 		then
 			return 0
 		else
@@ -2000,10 +2064,9 @@ _close() {
 	
 	if [[ "$closeForceEnable" != "true" ]]
 	then
-		echo > "$scriptLocal"/quicktmp
-		mv -n "$scriptLocal"/quicktmp "$scriptLocal"/_closing || return 1
+		_createLocked "$lock_closing" || return 1
 	fi
-	! [[ -e "$scriptLocal"/_closing ]] && echo > "$scriptLocal"/_closing
+	! _readLocked "$lock_closing" && _createLocked "$lock_closing"
 	
 	shift
 	
@@ -2011,8 +2074,8 @@ _close() {
 	
 	if [[ "$?" == "0" ]]
 	then
-		rm "$scriptLocal"/_open || return 1
-		rm "$scriptLocal"/_closing
+		rm "$lock_open" || return 1
+		rm "$lock_closing"
 		rm "$scriptLocal"/WARNING
 		return 0
 	fi

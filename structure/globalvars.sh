@@ -28,13 +28,26 @@ export scriptBin="$scriptAbsoluteFolder"/_bin
 
 export scriptLocal="$scriptAbsoluteFolder"/_local
 
-#export varStore="$scriptAbsoluteFolder"/var
+#Reboot Detection Token Storage
+# WARNING WIP. Not tested on all platforms. Requires a directory to be tmp/ram fs mounted. Worst case result is to preserve tokens across reboots.
+export bootTmp="$scriptLocal"			#Fail-Safe
+[[ -d /tmp ]] && export bootTmp=/tmp		#Typical BSD
+[[ -d /dev/shm ]] && export bootTmp=/dev/shm	#Typical Linux
 
 #Process control.
 [[ "$pidFile" == "" ]] && export pidFile="$safeTmp"/.bgpid
 export daemonPID="cwrxuk6wqzbzV6p8kPS8J4APYGX"	#Invalid do-not-match default.
 
+#export varStore="$scriptAbsoluteFolder"/var
+
 #Monolithic shared files.
+export lock_quicktmp="$scriptLocal"/quicktmp	#Used to make locking operations atomic as possible.
+export lock_open="$scriptLocal"/_open
+export lock_opening="$scriptLocal"/_opening
+export lock_closed="$scriptLocal"/_closed
+export lock_closing="$scriptLocal"/_closing
+export lock_instance="$scriptLocal"/_instance
+export lock_instancing="$scriptLocal"/_instancing
 
 #Resource directories.
 #export guidanceDir="$scriptAbsoluteFolder"/guidance
