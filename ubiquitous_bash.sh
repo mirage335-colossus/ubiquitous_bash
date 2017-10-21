@@ -803,7 +803,7 @@ _mountChRoot_image_raspbian() {
 	if sudo -n losetup -f -P --show "$scriptLocal"/vm-raspbian.img > "$safeTmp"/imagedev 2> /dev/null
 	then
 		#Preemptively declare device open to prevent potentially dangerous multiple mount attempts.
-		echo > "$lock_open" || _stop 1
+		_createLocked "$lock_open" || _stop 1
 		
 		cp -n "$safeTmp"/imagedev "$scriptLocal"/imagedev > /dev/null 2>&1 || _stop 1
 		
@@ -1947,14 +1947,22 @@ _waitFileCommands() {
 _readLocked() {
 	mkdir -p "$bootTmp"
 	
+	local rebootToken
+	rebootToken=$(cat "$1" 2> /dev/null)
+	
+	#Remove miscellaneous files if appropriate.
+	if [[ -d "$bootTmp" ]] && ! [[ -e "$bootTmp"/"$rebootToken" ]]
+	then
+		rm "$scriptLocal"/*.log && rm "$scriptLocal"/imagedev && rm "$scriptLocal"/WARNING
+		
+		[[ -e "$lock_quicktmp" ]] && sleep 0.1 && [[ -e "$lock_quicktmp" ]] && rm "$lock_quicktmp"
+	fi
+	
 	! [[ -e "$1" ]] && return 1
 	##Lock file exists.
 	
 	if [[ -d "$bootTmp" ]]
 	then
-		local rebootToken
-		rebootToken=$(cat "$1")
-		
 		if ! [[ -e "$bootTmp"/"$rebootToken" ]]
 		then
 			##Lock file obsolete.

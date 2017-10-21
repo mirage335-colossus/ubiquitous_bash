@@ -87,7 +87,7 @@ _mountChRoot_image_raspbian() {
 	if sudo -n losetup -f -P --show "$scriptLocal"/vm-raspbian.img > "$safeTmp"/imagedev 2> /dev/null
 	then
 		#Preemptively declare device open to prevent potentially dangerous multiple mount attempts.
-		echo > "$lock_open" || _stop 1
+		_createLocked "$lock_open" || _stop 1
 		
 		cp -n "$safeTmp"/imagedev "$scriptLocal"/imagedev > /dev/null 2>&1 || _stop 1
 		
@@ -125,6 +125,16 @@ _mountChRoot_image_raspbian() {
 	_stop 1
 }
 
+_umountChRoot_directory_raspbian() {
+	
+	_mustGetSudo
+	
+	mkdir -p "$chrootDir"
+	
+	sudo -n cp "$chrootDir"/etc/ld.so.preload.orig "$chrootDir"/etc/ld.so.preload
+	
+}
+
 _mountChRoot_image() {
 	if [[ -e "$scriptLocal"/vm-raspbian.img ]]
 	then
@@ -140,6 +150,11 @@ _mountChRoot_image() {
 }
 
 _umountChRoot_directory() {
+	if [[ -e "$scriptLocal"/vm-raspbian.img ]]
+	then
+		"$scriptAbsoluteLocation" _umountChRoot_directory_raspbian || return "$?"
+	fi
+	
 	_stopChRoot "$1"
 	_umountChRoot "$1"
 	mountpoint "$1" > /dev/null 2>&1 && sudo -n umount "$1"

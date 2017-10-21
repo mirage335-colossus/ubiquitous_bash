@@ -85,14 +85,22 @@ _waitFileCommands() {
 _readLocked() {
 	mkdir -p "$bootTmp"
 	
+	local rebootToken
+	rebootToken=$(cat "$1" 2> /dev/null)
+	
+	#Remove miscellaneous files if appropriate.
+	if [[ -d "$bootTmp" ]] && ! [[ -e "$bootTmp"/"$rebootToken" ]]
+	then
+		rm "$scriptLocal"/*.log && rm "$scriptLocal"/imagedev && rm "$scriptLocal"/WARNING
+		
+		[[ -e "$lock_quicktmp" ]] && sleep 0.1 && [[ -e "$lock_quicktmp" ]] && rm "$lock_quicktmp"
+	fi
+	
 	! [[ -e "$1" ]] && return 1
 	##Lock file exists.
 	
 	if [[ -d "$bootTmp" ]]
 	then
-		local rebootToken
-		rebootToken=$(cat "$1")
-		
 		if ! [[ -e "$bootTmp"/"$rebootToken" ]]
 		then
 			##Lock file obsolete.
