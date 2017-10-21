@@ -1,3 +1,14 @@
+
+Multiplatform structured programming and virtualization framework. For new applications and shell feature extension, provides directory containment, network resource allocation, script self-function access/recursion/overloading/instancing. For existing applications, provides application virtualization features, including fileparameter translation, through multiple virtualization platforms.
+
+# Support
+
+Immediate attention will be given to any support request. Please do not hesitate to contact maintainer mirage335 by any means.
+
+Bug reports, feature requests, forks, and especially pull requests, are highly welcome. Ubiquitous Bash GitHub repository is monitored in real time.
+
+# Method
+
 As shell glue for massive scale projects, or as a framework for single-purpose scripts, ubiquitous_bash is the quickest path to a robust solution, every time.
 
 Comprehensive multi-threading, instancing, portability, extensibility, and recursion can be achieved with a smaller percentage of 'extra' developer cycles than required to properly test a barely working string of hardcoded dependencies supporting none of these properties. Do not be tempted, take a moment to sort your requirements into fundamental operators.
@@ -26,7 +37,7 @@ v2.1
 * ChRoot based virtualization by itself does not provide any security guarantees, especially under Linux hosts. Destruction of host filesystem is possible, especially for any guest filesystem that has been bind mounted.
 * RasPi image must be closed properly (if opened by chroot) before flashing. Doing so will re-enable platform specific "/etc/ld.so.preload" configuration.
 
-* Launching ChRoot as root user has not yet been extensively tested.
+* Launching "user" ChRoot as root user has not yet been extensively tested.
 
 # Copyright
 All content in this folder not owned by other authors is intended to be public domain. Other copyright notices may be provided as templates. See license.txt for details.

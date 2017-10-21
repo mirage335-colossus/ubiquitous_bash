@@ -841,6 +841,16 @@ _mountChRoot_image_raspbian() {
 	_stop 1
 }
 
+_umountChRoot_directory_raspbian() {
+	
+	_mustGetSudo
+	
+	mkdir -p "$chrootDir"
+	
+	sudo -n cp "$chrootDir"/etc/ld.so.preload.orig "$chrootDir"/etc/ld.so.preload
+	
+}
+
 _mountChRoot_image() {
 	if [[ -e "$scriptLocal"/vm-raspbian.img ]]
 	then
@@ -856,6 +866,11 @@ _mountChRoot_image() {
 }
 
 _umountChRoot_directory() {
+	if [[ -e "$scriptLocal"/vm-raspbian.img ]]
+	then
+		"$scriptAbsoluteLocation" _umountChRoot_directory_raspbian || return "$?"
+	fi
+	
 	_stopChRoot "$1"
 	_umountChRoot "$1"
 	mountpoint "$1" > /dev/null 2>&1 && sudo -n umount "$1"
