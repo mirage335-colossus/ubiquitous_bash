@@ -121,6 +121,8 @@ _includeScript waitforprocess.sh "generic/process"
 
 _includeScript daemon.sh "generic/process"
 
+_includeScript remotesig.sh "generic/process"
+
 _includeScript fetch.sh "generic/net"
 
 _includeScript findport.sh "generic/net"
@@ -130,6 +132,9 @@ _includeScript uid.sh "generic"
 _includeScript validaterequest.sh "generic"
 
 _includeScript preserveLog.sh "generic"
+
+_includeScript here_systemd.sh "os/unix/systemd"
+_includeScript hook_systemd.sh "os/unix/systemd"
 
 _includeScript virtenv.sh "virtualization"
 

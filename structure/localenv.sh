@@ -18,10 +18,15 @@ _saveVar() {
 _stop() {
 	_preserveLog
 	
+	rm "$pidFile" > /dev/null 2>&1	#Redundant, as this usually resides in "$safeTmp".
 	_safeRMR "$safeTmp"
 	_safeRMR "$shortTmp"
 	
+	#Daemon uses a separate instance, and will not be affected by previous actions.
 	_tryExec _killDaemon
+	
+	#Optionally always try to remove any systemd shutdown hook.
+	#_unhook_systemd_shutdown
 	
 	if [[ "$1" != "" ]]
 	then

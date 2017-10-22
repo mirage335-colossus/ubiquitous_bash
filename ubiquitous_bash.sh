@@ -304,9 +304,9 @@ alias waitForProcess=_pauseForProcess
 
 #True if daemon is running.
 _daemonStatus() {
-	if [[ -e "$pidFile" ]]
+	if [[ -e "$daemonPidFile" ]]
 	then
-		export daemonPID=$(cat "$pidFile")
+		export daemonPID=$(cat "$daemonPidFile")
 	fi
 	
 	ps -p "$daemonPID" >/dev/null 2>&1 && return 0
@@ -331,13 +331,30 @@ _killDaemon() {
 	
 	_waitForTermination
 	
-	rm "$pidFile" >/dev/null 2>&1
+	rm "$daemonPidFile" >/dev/null 2>&1
 }
 
 #Executes self in background (ie. as daemon).
 _execDaemon() {
 	"$scriptAbsoluteLocation" >/dev/null 2>&1 &
-	echo "$!" > "$pidFile"
+	echo "$!" > "$daemonPidFile"
+}
+
+#Remote TERM signal wrapper. Verifies script is actually running at the specified PID before passing along signal to trigger an emergency stop.
+#"$1" == pidFile
+#"$2" == sessionid (optional for cleaning up stale systemd files)
+_remoteSigTERM() {
+	[[ ! -e "$1" ]] && [[ "$2" != "" ]] && _unhook_systemd_shutdown "$2"
+	
+	
+	
+	[[ ! -e "$1" ]] && return 0
+	
+	pidToTERM=$(cat "$1")
+	
+	kill -TERM "$pidToTERM"
+	
+	_pauseForProcess "$pidToTERM"
 }
 
 #"$@" == URL
@@ -408,6 +425,47 @@ _preserveLog() {
 	fi
 	
 	cp "$logTmp"/* "$permaLog"/ > /dev/null 2>&1
+}
+
+_here_systemd_shutdown() {
+
+cat << 'CZXWXcRMTo8EmM8i4d'
+[Unit]
+Description=...
+
+[Service]
+Type=oneshot
+RemainAfterExit=true
+CZXWXcRMTo8EmM8i4d
+
+echo ExecStop="$scriptAbsoluteLocation" _sigEmergencyStop "$safeTmp"/.pid "$sessionid"
+
+cat << 'CZXWXcRMTo8EmM8i4d'
+
+[Install]
+WantedBy=multi-user.target
+CZXWXcRMTo8EmM8i4d
+
+}
+
+_hook_systemd_shutdown() {
+	! _wantSudo && return 1
+	
+	[[ -e /etc/systemd/system/"$sessionid".service ]] && return 0
+	
+	_here_systemd_shutdown | sudo -n tee > /etc/systemd/system/"$sessionid".service
+	sudo -n systemctl enable "$sessionid".service
+	
+}
+
+#"$1" == sessionid (optional override for cleaning up stale systemd files)
+_unhook_systemd_shutdown() {
+	! _wantSudo && return 1
+	
+	[[ ! -e /etc/systemd/system/"$sessionid".service ]] && return 0
+	
+	sudo -n systemctl disable "$sessionid".service
+	_wantSudo && sudo -n rm /etc/systemd/system/"$sessionid".service
 }
 
 
@@ -852,6 +910,8 @@ _umountChRoot_directory_raspbian() {
 }
 
 _mountChRoot_image() {
+	_tryExec _hook_systemd_shutdown
+	
 	if [[ -e "$scriptLocal"/vm-raspbian.img ]]
 	then
 		"$scriptAbsoluteLocation" _mountChRoot_image_raspbian
@@ -954,7 +1014,7 @@ _closeChRoot_emergency() {
 	
 	
 	
-	
+	_readLocked "$lock_opening" && return
 	_readLocked "$lock_closing" && return
 	! _readLocked "$lock_open" && return
 	
@@ -980,6 +1040,8 @@ _closeChRoot_emergency() {
 	rm "$lock_open"
 	rm "$lock_closing"
 	rm "$scriptLocal"/WARNING
+	
+	_tryExec _unhook_systemd_shutdown
 	
 }
 
@@ -1233,6 +1295,8 @@ _userChRoot() {
 	
 	_openChRoot >> "$logTmp"/usrchrt.log 2>&1 || _stop 1
 	
+	_tryExec _hook_systemd_shutdown
+	
 	
 	_ubvrtusrChRoot  >> "$logTmp"/usrchrt.log 2>&1 || _stop 1
 	
@@ -1382,6 +1446,20 @@ _mustGetSudo() {
 	#[[ $(id -u) == 0 ]] && rootAvailable=true
 	
 	! [[ "$rootAvailable" == "true" ]] && exit 1
+	
+	return 0
+}
+
+#Determines if sudo is usable by scripts. Does not exit on failure.
+_wantSudo() {
+	local rootAvailable
+	rootAvailable=false
+	
+	rootAvailable=$(sudo -n echo true)
+	
+	#[[ $(id -u) == 0 ]] && rootAvailable=true
+	
+	! [[ "$rootAvailable" == "true" ]] && return 1
 	
 	return 0
 }
@@ -1796,7 +1874,10 @@ export bootTmp="$scriptLocal"			#Fail-Safe
 [[ -d /dev/shm ]] && export bootTmp=/dev/shm	#Typical Linux
 
 #Process control.
-[[ "$pidFile" == "" ]] && export pidFile="$safeTmp"/.bgpid
+[[ "$pidFile" == "" ]] && export pidFile="$safeTmp"/.pid
+export PID="cwrxuk6wqzbzV6p8kPS8J4APYGX"	#Invalid do-not-match default.
+
+[[ "$daemonPidFile" == "" ]] && export daemonPidFile="$scriptLocal"/.bgpid
 export daemonPID="cwrxuk6wqzbzV6p8kPS8J4APYGX"	#Invalid do-not-match default.
 
 #export varStore="$scriptAbsoluteFolder"/var
@@ -1895,10 +1976,15 @@ _saveVar() {
 _stop() {
 	_preserveLog
 	
+	rm "$pidFile" > /dev/null 2>&1	#Redundant, as this usually resides in "$safeTmp".
 	_safeRMR "$safeTmp"
 	_safeRMR "$shortTmp"
 	
+	#Daemon uses a separate instance, and will not be affected by previous actions.
 	_tryExec _killDaemon
+	
+	#Optionally always try to remove any systemd shutdown hook.
+	#_unhook_systemd_shutdown
 	
 	if [[ "$1" != "" ]]
 	then

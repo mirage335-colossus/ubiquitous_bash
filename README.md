@@ -1,5 +1,7 @@
 
-Multiplatform structured programming and virtualization framework. For new applications and shell feature extension, provides directory containment, network resource allocation, script self-function access/recursion/overloading/instancing. For existing applications, provides application virtualization features, including fileparameter translation, through multiple virtualization platforms.
+Multiplatform structured programming and application virtualization middleware. Architecturally, a dedicated monolithic kernel for (meta)applications.
+
+For new applications and shell feature extension, provides directory containment, network resource allocation, script self-function access/recursion/overloading/instancing, interprocess communication, unit testing, dependency checking, and build/compile automation. For existing applications, provides application virtualization features, including fileparameter translation, through multiple virtualization platforms. 
 
 # Support
 
@@ -41,3 +43,8 @@ v2.1
 
 # Copyright
 All content in this folder not owned by other authors is intended to be public domain. Other copyright notices may be provided as templates. See license.txt for details.
+
+# Reference
+[1] https://developer.apple.com/library/content/documentation/Darwin/Conceptual/index.html
+https://en.wikipedia.org/wiki/Software_architecture
+https://en.wikipedia.org/wiki/Middleware

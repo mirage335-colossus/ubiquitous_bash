@@ -35,7 +35,10 @@ export bootTmp="$scriptLocal"			#Fail-Safe
 [[ -d /dev/shm ]] && export bootTmp=/dev/shm	#Typical Linux
 
 #Process control.
-[[ "$pidFile" == "" ]] && export pidFile="$safeTmp"/.bgpid
+[[ "$pidFile" == "" ]] && export pidFile="$safeTmp"/.pid
+export uPID="cwrxuk6wqzbzV6p8kPS8J4APYGX"	#Invalid do-not-match default.
+
+[[ "$daemonPidFile" == "" ]] && export daemonPidFile="$scriptLocal"/.bgpid
 export daemonPID="cwrxuk6wqzbzV6p8kPS8J4APYGX"	#Invalid do-not-match default.
 
 #export varStore="$scriptAbsoluteFolder"/var

@@ -1,8 +1,8 @@
 #True if daemon is running.
 _daemonStatus() {
-	if [[ -e "$pidFile" ]]
+	if [[ -e "$daemonPidFile" ]]
 	then
-		export daemonPID=$(cat "$pidFile")
+		export daemonPID=$(cat "$daemonPidFile")
 	fi
 	
 	ps -p "$daemonPID" >/dev/null 2>&1 && return 0
@@ -27,11 +27,11 @@ _killDaemon() {
 	
 	_waitForTermination
 	
-	rm "$pidFile" >/dev/null 2>&1
+	rm "$daemonPidFile" >/dev/null 2>&1
 }
 
 #Executes self in background (ie. as daemon).
 _execDaemon() {
 	"$scriptAbsoluteLocation" >/dev/null 2>&1 &
-	echo "$!" > "$pidFile"
+	echo "$!" > "$daemonPidFile"
 }

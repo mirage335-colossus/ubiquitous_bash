@@ -11,3 +11,17 @@ _mustGetSudo() {
 	
 	return 0
 }
+
+#Determines if sudo is usable by scripts. Does not exit on failure.
+_wantSudo() {
+	local rootAvailable
+	rootAvailable=false
+	
+	rootAvailable=$(sudo -n echo true)
+	
+	#[[ $(id -u) == 0 ]] && rootAvailable=true
+	
+	! [[ "$rootAvailable" == "true" ]] && return 1
+	
+	return 0
+}

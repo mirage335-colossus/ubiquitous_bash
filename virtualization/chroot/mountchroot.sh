@@ -136,6 +136,8 @@ _umountChRoot_directory_raspbian() {
 }
 
 _mountChRoot_image() {
+	_tryExec _hook_systemd_shutdown
+	
 	if [[ -e "$scriptLocal"/vm-raspbian.img ]]
 	then
 		"$scriptAbsoluteLocation" _mountChRoot_image_raspbian
@@ -238,7 +240,7 @@ _closeChRoot_emergency() {
 	
 	
 	
-	
+	_readLocked "$lock_opening" && return
 	_readLocked "$lock_closing" && return
 	! _readLocked "$lock_open" && return
 	
@@ -264,6 +266,8 @@ _closeChRoot_emergency() {
 	rm "$lock_open"
 	rm "$lock_closing"
 	rm "$scriptLocal"/WARNING
+	
+	_tryExec _unhook_systemd_shutdown
 	
 }
 
