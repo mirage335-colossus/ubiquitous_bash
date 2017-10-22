@@ -427,6 +427,27 @@ _preserveLog() {
 	cp "$logTmp"/* "$permaLog"/ > /dev/null 2>&1
 }
 
+_here_systemd_shutdown_action() {
+
+cat << 'CZXWXcRMTo8EmM8i4d'
+[Unit]
+Description=...
+
+[Service]
+Type=oneshot
+RemainAfterExit=true
+CZXWXcRMTo8EmM8i4d
+
+echo ExecStop="$scriptAbsoluteLocation" "$@"
+
+cat << 'CZXWXcRMTo8EmM8i4d'
+
+[Install]
+WantedBy=multi-user.target
+CZXWXcRMTo8EmM8i4d
+
+}
+
 _here_systemd_shutdown() {
 
 cat << 'CZXWXcRMTo8EmM8i4d'
@@ -449,23 +470,37 @@ CZXWXcRMTo8EmM8i4d
 }
 
 _hook_systemd_shutdown() {
-	! _wantSudo && return 1
-	
 	[[ -e /etc/systemd/system/"$sessionid".service ]] && return 0
+	
+	! _wantSudo && return 1
 	
 	_here_systemd_shutdown | sudo -n tee /etc/systemd/system/"$sessionid".service > /dev/null
 	sudo -n systemctl enable "$sessionid".service
 	
 }
 
-#"$1" == sessionid (optional override for cleaning up stale systemd files)
-_unhook_systemd_shutdown() {
+_hook_systemd_shutdown_action() {
+	[[ -e /etc/systemd/system/"$sessionid".service ]] && return 0
+	
 	! _wantSudo && return 1
 	
-	[[ ! -e /etc/systemd/system/"$sessionid".service ]] && return 0
+	_here_systemd_shutdown_action "$@" | sudo -n tee /etc/systemd/system/"$sessionid".service > /dev/null
+	sudo -n systemctl enable "$sessionid".service
 	
-	sudo -n systemctl disable "$sessionid".service
-	_wantSudo && sudo -n rm /etc/systemd/system/"$sessionid".service
+}
+
+#"$1" == sessionid (optional override for cleaning up stale systemd files)
+_unhook_systemd_shutdown() {
+	local hookSessionid
+	hookSessionid="$sessionid"
+	[[ "$1" != "" ]] && hookSessionid="$1"
+	
+	[[ ! -e /etc/systemd/system/"$hookSessionid".service ]] && return 0
+	
+	! _wantSudo && return 1
+	
+	sudo -n systemctl disable "$hookSessionid".service
+	_wantSudo && sudo -n rm /etc/systemd/system/"$hookSessionid".service
 }
 
 
@@ -910,7 +945,7 @@ _umountChRoot_directory_raspbian() {
 }
 
 _mountChRoot_image() {
-	_tryExec _hook_systemd_shutdown
+	_tryExec _hook_systemd_shutdown_action "_closeChRoot_emergency" "$sessionid" >>  "$permaLog"/gchrt.log 2>&1
 	
 	if [[ -e "$scriptLocal"/vm-raspbian.img ]]
 	then
@@ -951,6 +986,8 @@ _umountChRoot_image() {
 	rm "$scriptLocal"/imagedev || return 1
 	
 	rm "$lock_quicktmp" > /dev/null 2>&1
+	
+	rm "$permaLog"/gchrt.log > /dev/null 2>&1
 	
 	return 0
 }
@@ -994,6 +1031,7 @@ _openChRoot() {
 
 #Fast dismount of all ChRoot filesystems/instances and cleanup of lock files. Specifically intended to act on SIGTERM caught during system shutdown, when time and disk I/O may be limited.
 # TODO Use a tmpfs mount to track reboots (with appropriate BSD/Linux/Solaris checking) in the first place.
+#"$1" == sessionid (optional override for cleaning up stale systemd files)
 _closeChRoot_emergency() {
 	
 	export EMERGENCYSHUTDOWN=true
@@ -1041,7 +1079,10 @@ _closeChRoot_emergency() {
 	rm "$lock_closing"
 	rm "$scriptLocal"/WARNING
 	
-	_tryExec _unhook_systemd_shutdown
+	local hookSessionid
+	hookSessionid="$sessionid"
+	[[ "$1" != "" ]] && hookSessionid="$1"
+	_tryExec _unhook_systemd_shutdown "$hookSessionid" >> "$permaLog"/gchrt.log 2>&1
 	
 }
 
@@ -1295,7 +1336,7 @@ _userChRoot() {
 	
 	_openChRoot >> "$logTmp"/usrchrt.log 2>&1 || _stop 1
 	
-	_tryExec _hook_systemd_shutdown
+	_tryExec _hook_systemd_shutdown >> "$logTmp"/usrchrt.log 2>&1
 	
 	
 	_ubvrtusrChRoot  >> "$logTmp"/usrchrt.log 2>&1 || _stop 1
