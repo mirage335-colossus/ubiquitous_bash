@@ -136,7 +136,7 @@ _umountChRoot_directory_raspbian() {
 }
 
 _mountChRoot_image() {
-	_tryExec _hook_systemd_shutdown
+	_tryExec _hook_systemd_shutdown_action "_closeChRoot_emergency" "$sessionid"
 	
 	if [[ -e "$scriptLocal"/vm-raspbian.img ]]
 	then
@@ -220,6 +220,7 @@ _openChRoot() {
 
 #Fast dismount of all ChRoot filesystems/instances and cleanup of lock files. Specifically intended to act on SIGTERM caught during system shutdown, when time and disk I/O may be limited.
 # TODO Use a tmpfs mount to track reboots (with appropriate BSD/Linux/Solaris checking) in the first place.
+#"$1" == sessionid (optional override for cleaning up stale systemd files)
 _closeChRoot_emergency() {
 	
 	export EMERGENCYSHUTDOWN=true
@@ -267,7 +268,10 @@ _closeChRoot_emergency() {
 	rm "$lock_closing"
 	rm "$scriptLocal"/WARNING
 	
-	_tryExec _unhook_systemd_shutdown
+	local hookSessionid
+	hookSessionid="$sessionid"
+	[[ "$1" != "" ]] && hookSessionid="$1"
+	_tryExec _unhook_systemd_shutdown "$hookSessionid"
 	
 }
 

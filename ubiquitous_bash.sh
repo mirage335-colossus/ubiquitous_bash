@@ -453,7 +453,7 @@ _hook_systemd_shutdown() {
 	
 	[[ -e /etc/systemd/system/"$sessionid".service ]] && return 0
 	
-	_here_systemd_shutdown | sudo -n tee > /etc/systemd/system/"$sessionid".service
+	_here_systemd_shutdown | sudo -n tee /etc/systemd/system/"$sessionid".service > /dev/null
 	sudo -n systemctl enable "$sessionid".service
 	
 }
@@ -1875,7 +1875,7 @@ export bootTmp="$scriptLocal"			#Fail-Safe
 
 #Process control.
 [[ "$pidFile" == "" ]] && export pidFile="$safeTmp"/.pid
-export PID="cwrxuk6wqzbzV6p8kPS8J4APYGX"	#Invalid do-not-match default.
+export uPID="cwrxuk6wqzbzV6p8kPS8J4APYGX"	#Invalid do-not-match default.
 
 [[ "$daemonPidFile" == "" ]] && export daemonPidFile="$scriptLocal"/.bgpid
 export daemonPID="cwrxuk6wqzbzV6p8kPS8J4APYGX"	#Invalid do-not-match default.
