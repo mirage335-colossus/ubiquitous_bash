@@ -1034,64 +1034,6 @@ _openChRoot() {
 	_open _waitChRoot_opening _mountChRoot_image
 }
 
-
-#Fast dismount of all ChRoot filesystems/instances and cleanup of lock files. Specifically intended to act on SIGTERM caught during system shutdown, when time and disk I/O may be limited.
-# TODO Use a tmpfs mount to track reboots (with appropriate BSD/Linux/Solaris checking) in the first place.
-#"$1" == sessionid (optional override for cleaning up stale systemd files)
-_closeChRoot_emergency() {
-	
-	export EMERGENCYSHUTDOWN=true
-	
-	
-	if [[ -e "$instancedVirtFS" ]]
-	then
-		_stopChRoot "$instancedVirtFS" >> "$logTmp"/usrchrt.log 2>&1
-		_umountChRoot_project >> "$logTmp"/usrchrt.log 2>&1
-		_umountChRoot_user_home >> "$logTmp"/usrchrt.log 2>&1
-		_umountChRoot_user >> "$logTmp"/usrchrt.log 2>&1
-		
-		_rm_ubvrtusrChRoot
-		
-		_stop_virt_instance >> "$logTmp"/usrchrt.log 2>&1
-	fi
-	
-	
-	
-	
-	_readLocked "$lock_opening" && return
-	_readLocked "$lock_closing" && return
-	! _readLocked "$lock_open" && return
-	
-	find "$scriptAbsoluteFolder"/v_* -maxdepth 1 -type d > /dev/null 2>&1 && return
-	
-	_createLocked "$lock_closing" || return 1
-	
-	
-	_stopChRoot "$globalVirtFS"
-	_umountChRoot "$globalVirtFS"
-	sudo -n umount "$globalVirtFS" > /dev/null 2>&1
-	
-	local chrootimagedev
-	chrootimagedev=$(cat "$scriptLocal"/imagedev)
-	
-	sudo -n losetup -d "$chrootimagedev" > /dev/null 2>&1
-	
-	rm "$scriptLocal"/imagedev
-	
-	rm "$lock_quicktmp" > /dev/null 2>&1
-	
-	
-	rm "$lock_open"
-	rm "$lock_closing"
-	rm "$scriptLocal"/WARNING
-	
-	local hookSessionid
-	hookSessionid="$sessionid"
-	[[ "$1" != "" ]] && hookSessionid="$1"
-	_tryExecFull _unhook_systemd_shutdown "$hookSessionid" >> "$permaLog"/gchrts.log 2>&1
-	
-}
-
 _closeChRoot() {
 	if [[ "$1" == "--force" ]]
 	then
@@ -1102,17 +1044,41 @@ _closeChRoot() {
 	_close _waitChRoot_closing _umountChRoot_image
 }
 
-
-
-#Debugging function.
-_removeChRoot() {
-	
-	
+_haltAllChRoot() {
 	find "$scriptAbsoluteFolder"/v_*/fs -maxdepth 1 -type d -exec "$scriptAbsoluteLocation" _umountChRoot_directory {} \;
 	find "$scriptAbsoluteFolder"/v_*/tmp -maxdepth 1 -type d -exec sudo -n umount {} \;
 	find "$scriptAbsoluteFolder"/v_*/ -maxdepth 12 -type d | head -n 48 | tac | xargs rmdir
 	
 	"$scriptAbsoluteLocation" _closeChRoot --force
+}
+
+#Fast dismount of all ChRoot filesystems/instances and cleanup of lock files. Specifically intended to act on SIGTERM or during system shutdown, when time and disk I/O may be limited.
+# TODO Use a tmpfs mount to track reboots (with appropriate BSD/Linux/Solaris checking) in the first place.
+#"$1" == sessionid (optional override for cleaning up stale systemd files)
+_closeChRoot_emergency() {
+	
+	! _readLocked "$lock_open" && return 0
+	_readLocked "$lock_closing" && return 1
+	_readLocked "$lock_opening" && return 1
+	
+	_readLocked "$lock_emergency" && return 0
+	_createLocked "$lock_emergency"
+	
+	_haltAllChRoot
+	
+	rm "$lock_emergency" || return 1
+	
+	
+	local hookSessionid
+	hookSessionid="$sessionid"
+	[[ "$1" != "" ]] && hookSessionid="$1"
+	_tryExecFull _unhook_systemd_shutdown "$hookSessionid" >> "$permaLog"/gchrts.log 2>&1
+	
+}
+
+#Debugging function.
+_removeChRoot() {
+	_haltAllChRoot
 	
 	rm "$lock_closing"
 	rm "$lock_opening"
@@ -1931,6 +1897,7 @@ export daemonPID="cwrxuk6wqzbzV6p8kPS8J4APYGX"	#Invalid do-not-match default.
 
 #Monolithic shared files.
 export lock_quicktmp="$scriptLocal"/quicktmp	#Used to make locking operations atomic as possible.
+export lock_emergency="$scriptLocal"/_emergncy
 export lock_open="$scriptLocal"/_open
 export lock_opening="$scriptLocal"/_opening
 export lock_closed="$scriptLocal"/_closed

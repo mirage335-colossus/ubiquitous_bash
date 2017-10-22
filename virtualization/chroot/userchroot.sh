@@ -59,7 +59,7 @@ _userChRoot() {
 	
 	"$scriptAbsoluteLocation" _openChRoot >> "$logTmp"/usrchrt.log 2>&1 || _stop 1
 	
-	_tryExecFull _hook_systemd_shutdown >> "$permaLog"/gchrts.log 2>&1
+	_tryExecFull _hook_systemd_shutdown_action "_closeChRoot_emergency" "$sessionid" >> "$permaLog"/gchrts.log 2>&1
 	
 	
 	_ubvrtusrChRoot  >> "$logTmp"/usrchrt.log 2>&1 || _stop 1

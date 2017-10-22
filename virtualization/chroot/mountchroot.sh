@@ -219,14 +219,28 @@ _openChRoot() {
 	_open _waitChRoot_opening _mountChRoot_image
 }
 
+_closeChRoot() {
+	if [[ "$1" == "--force" ]]
+	then
+		_close --force _waitChRoot_closing _umountChRoot_image
+		return
+	fi
+	
+	_close _waitChRoot_closing _umountChRoot_image
+}
 
-#Fast dismount of all ChRoot filesystems/instances and cleanup of lock files. Specifically intended to act on SIGTERM caught during system shutdown, when time and disk I/O may be limited.
+_haltAllChRoot() {
+	find "$scriptAbsoluteFolder"/v_*/fs -maxdepth 1 -type d -exec "$scriptAbsoluteLocation" _umountChRoot_directory {} \;
+	find "$scriptAbsoluteFolder"/v_*/tmp -maxdepth 1 -type d -exec sudo -n umount {} \;
+	find "$scriptAbsoluteFolder"/v_*/ -maxdepth 12 -type d | head -n 48 | tac | xargs rmdir
+	
+	"$scriptAbsoluteLocation" _closeChRoot --force
+}
+
+#Fast dismount of all ChRoot filesystems/instances and cleanup of lock files. Specifically intended to act on SIGTERM or during system(d) shutdown, when time and disk I/O may be limited.
 # TODO Use a tmpfs mount to track reboots (with appropriate BSD/Linux/Solaris checking) in the first place.
 #"$1" == sessionid (optional override for cleaning up stale systemd files)
 _closeChRoot_emergency() {
-	
-	export EMERGENCYSHUTDOWN=true
-	
 	
 	if [[ -e "$instancedVirtFS" ]]
 	then
@@ -240,35 +254,23 @@ _closeChRoot_emergency() {
 		_stop_virt_instance >> "$logTmp"/usrchrt.log 2>&1
 	fi
 	
+	#Not called by systemd, AND instanced directories still mounted, do not globally halt all. (optional)
+	#[[ "$1" == "" ]] && find "$scriptAbsoluteFolder"/v_* -maxdepth 1 -type d > /dev/null && return 0
 	
+	#Not called by systemd, do not globally halt all.
+	[[ "$1" == "" ]] && return 0
 	
+	! _readLocked "$lock_open" && return 0
+	_readLocked "$lock_closing" && return 1
+	_readLocked "$lock_opening" && return 1
 	
-	_readLocked "$lock_opening" && return
-	_readLocked "$lock_closing" && return
-	! _readLocked "$lock_open" && return
+	_readLocked "$lock_emergency" && return 0
+	_createLocked "$lock_emergency"
 	
-	find "$scriptAbsoluteFolder"/v_* -maxdepth 1 -type d > /dev/null 2>&1 && return
+	_haltAllChRoot
 	
-	_createLocked "$lock_closing" || return 1
+	rm "$lock_emergency" || return 1
 	
-	
-	_stopChRoot "$globalVirtFS"
-	_umountChRoot "$globalVirtFS"
-	sudo -n umount "$globalVirtFS" > /dev/null 2>&1
-	
-	local chrootimagedev
-	chrootimagedev=$(cat "$scriptLocal"/imagedev)
-	
-	sudo -n losetup -d "$chrootimagedev" > /dev/null 2>&1
-	
-	rm "$scriptLocal"/imagedev
-	
-	rm "$lock_quicktmp" > /dev/null 2>&1
-	
-	
-	rm "$lock_open"
-	rm "$lock_closing"
-	rm "$scriptLocal"/WARNING
 	
 	local hookSessionid
 	hookSessionid="$sessionid"
@@ -277,27 +279,9 @@ _closeChRoot_emergency() {
 	
 }
 
-_closeChRoot() {
-	if [[ "$1" == "--force" ]]
-	then
-		_close --force _waitChRoot_closing _umountChRoot_image
-		return
-	fi
-	
-	_close _waitChRoot_closing _umountChRoot_image
-}
-
-
-
 #Debugging function.
 _removeChRoot() {
-	
-	
-	find "$scriptAbsoluteFolder"/v_*/fs -maxdepth 1 -type d -exec "$scriptAbsoluteLocation" _umountChRoot_directory {} \;
-	find "$scriptAbsoluteFolder"/v_*/tmp -maxdepth 1 -type d -exec sudo -n umount {} \;
-	find "$scriptAbsoluteFolder"/v_*/ -maxdepth 12 -type d | head -n 48 | tac | xargs rmdir
-	
-	"$scriptAbsoluteLocation" _closeChRoot --force
+	_haltAllChRoot
 	
 	rm "$lock_closing"
 	rm "$lock_opening"
