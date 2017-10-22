@@ -96,6 +96,10 @@ _tryExec() {
 	type "$1" >/dev/null 2>&1 && "$1"
 }
 
+_tryExecFull() {
+	type "$1" >/dev/null 2>&1 && "$@"
+}
+
 #Portable sanity checked "rm -r" command.
 # WARNING Not foolproof. Use to guard against systematic errors, not carelessness.
 #"$1" == directory to remove
@@ -427,6 +431,9 @@ _preserveLog() {
 	cp "$logTmp"/* "$permaLog"/ > /dev/null 2>&1
 }
 
+#https://unix.stackexchange.com/questions/39226/how-to-run-a-script-with-systemd-right-before-shutdown
+
+
 _here_systemd_shutdown_action() {
 
 cat << 'CZXWXcRMTo8EmM8i4d'
@@ -436,6 +443,7 @@ Description=...
 [Service]
 Type=oneshot
 RemainAfterExit=true
+ExecStart=/bin/true
 CZXWXcRMTo8EmM8i4d
 
 echo ExecStop="$scriptAbsoluteLocation" "$@"
@@ -1336,7 +1344,7 @@ _userChRoot() {
 	
 	_openChRoot >> "$logTmp"/usrchrt.log 2>&1 || _stop 1
 	
-	_tryExec _hook_systemd_shutdown >> "$logTmp"/usrchrt.log 2>&1
+	_tryExecFull _hook_systemd_shutdown >> "$logTmp"/usrchrt.log 2>&1
 	
 	
 	_ubvrtusrChRoot  >> "$logTmp"/usrchrt.log 2>&1 || _stop 1
@@ -2025,7 +2033,7 @@ _stop() {
 	_tryExec _killDaemon
 	
 	#Optionally always try to remove any systemd shutdown hook.
-	#_unhook_systemd_shutdown
+	#_tryExec _unhook_systemd_shutdown
 	
 	if [[ "$1" != "" ]]
 	then

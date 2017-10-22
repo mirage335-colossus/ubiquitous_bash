@@ -59,7 +59,7 @@ _userChRoot() {
 	
 	_openChRoot >> "$logTmp"/usrchrt.log 2>&1 || _stop 1
 	
-	_tryExec _hook_systemd_shutdown >> "$logTmp"/usrchrt.log 2>&1
+	_tryExecFull _hook_systemd_shutdown >> "$logTmp"/usrchrt.log 2>&1
 	
 	
 	_ubvrtusrChRoot  >> "$logTmp"/usrchrt.log 2>&1 || _stop 1
