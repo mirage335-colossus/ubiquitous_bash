@@ -57,7 +57,7 @@ _userChRoot() {
 	mountpoint "$instancedVirtTmp" > /dev/null 2>&1 && _stop 1
 	mountpoint "$instancedVirtHome" > /dev/null 2>&1 && _stop 1
 	
-	_openChRoot >> "$logTmp"/usrchrt.log 2>&1 || _stop 1
+	"$scriptAbsoluteLocation" _openChRoot >> "$logTmp"/usrchrt.log 2>&1 || _stop 1
 	
 	_tryExecFull _hook_systemd_shutdown >> "$permaLog"/gchrts.log 2>&1
 	

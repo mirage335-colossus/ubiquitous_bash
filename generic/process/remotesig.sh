@@ -4,8 +4,6 @@
 _remoteSigTERM() {
 	[[ ! -e "$1" ]] && [[ "$2" != "" ]] && _unhook_systemd_shutdown "$2"
 	
-	
-	
 	[[ ! -e "$1" ]] && return 0
 	
 	pidToTERM=$(cat "$1")

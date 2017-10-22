@@ -350,8 +350,6 @@ _execDaemon() {
 _remoteSigTERM() {
 	[[ ! -e "$1" ]] && [[ "$2" != "" ]] && _unhook_systemd_shutdown "$2"
 	
-	
-	
 	[[ ! -e "$1" ]] && return 0
 	
 	pidToTERM=$(cat "$1")
@@ -1342,7 +1340,7 @@ _userChRoot() {
 	mountpoint "$instancedVirtTmp" > /dev/null 2>&1 && _stop 1
 	mountpoint "$instancedVirtHome" > /dev/null 2>&1 && _stop 1
 	
-	_openChRoot >> "$logTmp"/usrchrt.log 2>&1 || _stop 1
+	"$scriptAbsoluteLocation" _openChRoot >> "$logTmp"/usrchrt.log 2>&1 || _stop 1
 	
 	_tryExecFull _hook_systemd_shutdown >> "$permaLog"/gchrts.log 2>&1
 	
