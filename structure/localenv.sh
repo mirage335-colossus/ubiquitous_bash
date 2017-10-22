@@ -26,7 +26,7 @@ _stop() {
 	_tryExec _killDaemon
 	
 	#Optionally always try to remove any systemd shutdown hook.
-	#_unhook_systemd_shutdown
+	#_tryExec _unhook_systemd_shutdown
 	
 	if [[ "$1" != "" ]]
 	then

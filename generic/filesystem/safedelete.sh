@@ -12,6 +12,10 @@ _tryExec() {
 	type "$1" >/dev/null 2>&1 && "$1"
 }
 
+_tryExecFull() {
+	type "$1" >/dev/null 2>&1 && "$@"
+}
+
 #Portable sanity checked "rm -r" command.
 # WARNING Not foolproof. Use to guard against systematic errors, not carelessness.
 #"$1" == directory to remove

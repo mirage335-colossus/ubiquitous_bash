@@ -1,3 +1,6 @@
+#https://unix.stackexchange.com/questions/39226/how-to-run-a-script-with-systemd-right-before-shutdown
+
+
 _here_systemd_shutdown_action() {
 
 cat << 'CZXWXcRMTo8EmM8i4d'
@@ -7,6 +10,7 @@ Description=...
 [Service]
 Type=oneshot
 RemainAfterExit=true
+ExecStart=/bin/true
 CZXWXcRMTo8EmM8i4d
 
 echo ExecStop="$scriptAbsoluteLocation" "$@"
