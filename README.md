@@ -1,7 +1,7 @@
 
 Multiplatform structured programming and application virtualization middleware. Architecturally, a dedicated monolithic kernel for (meta)applications.
 
-For new applications and shell feature extension, provides directory containment, network resource allocation, script self-function access/recursion/overloading/instancing, interprocess communication, unit testing, dependency checking, and build/compile automation. For existing applications, provides application virtualization features, including fileparameter translation, through multiple virtualization platforms. 
+For new applications and shell feature extension, provides directory containment, network resource allocation, script self-function access/recursion/overloading/instancing, interprocess communication, process/pid/daemon management, unit testing, dependency checking, and build/compile automation. For existing applications, provides application virtualization features, including fileparameter translation, through multiple virtualization platforms. 
 
 # Support
 

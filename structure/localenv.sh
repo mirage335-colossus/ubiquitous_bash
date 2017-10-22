@@ -7,6 +7,7 @@ _start() {
 	#touch "$varStore"
 	#. "$varStore"
 	
+	echo $$ > "$safeTmp"/.pid
 	
 }
 
