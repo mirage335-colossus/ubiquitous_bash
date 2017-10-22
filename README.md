@@ -29,6 +29,11 @@ Intended to be included in other projects as a "git submodule", then compiled in
 # Version
 v2.1
 
+# Future Work
+* Merge IQEmu, Wine Bottle, Portable DoxBox, HostedXen, VirtualBox, and other related virtualization methods into ubiquitous bash.
+* Support shutdown hooks through init daemons other than systemd.
+
+
 # WARNING
 
 * Obviously, safeRMR is not foolproof. Use this function to guard against systematic errors, not carelessness.

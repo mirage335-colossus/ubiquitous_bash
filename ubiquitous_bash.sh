@@ -1052,10 +1052,28 @@ _haltAllChRoot() {
 	"$scriptAbsoluteLocation" _closeChRoot --force
 }
 
-#Fast dismount of all ChRoot filesystems/instances and cleanup of lock files. Specifically intended to act on SIGTERM or during system shutdown, when time and disk I/O may be limited.
+#Fast dismount of all ChRoot filesystems/instances and cleanup of lock files. Specifically intended to act on SIGTERM or during system(d) shutdown, when time and disk I/O may be limited.
 # TODO Use a tmpfs mount to track reboots (with appropriate BSD/Linux/Solaris checking) in the first place.
 #"$1" == sessionid (optional override for cleaning up stale systemd files)
 _closeChRoot_emergency() {
+	
+	if [[ -e "$instancedVirtFS" ]]
+	then
+		_stopChRoot "$instancedVirtFS" >> "$logTmp"/usrchrt.log 2>&1
+		_umountChRoot_project >> "$logTmp"/usrchrt.log 2>&1
+		_umountChRoot_user_home >> "$logTmp"/usrchrt.log 2>&1
+		_umountChRoot_user >> "$logTmp"/usrchrt.log 2>&1
+		
+		_rm_ubvrtusrChRoot
+		
+		_stop_virt_instance >> "$logTmp"/usrchrt.log 2>&1
+	fi
+	
+	#Not called by systemd, AND instanced directories still mounted, do not globally halt all. (optional)
+	#[[ "$1" == "" ]] && find "$scriptAbsoluteFolder"/v_* -maxdepth 1 -type d > /dev/null && return 0
+	
+	#Not called by systemd, do not globally halt all.
+	[[ "$1" == "" ]] && return 0
 	
 	! _readLocked "$lock_open" && return 0
 	_readLocked "$lock_closing" && return 1
@@ -1308,7 +1326,7 @@ _userChRoot() {
 	
 	"$scriptAbsoluteLocation" _openChRoot >> "$logTmp"/usrchrt.log 2>&1 || _stop 1
 	
-	_tryExecFull _hook_systemd_shutdown >> "$permaLog"/gchrts.log 2>&1
+	_tryExecFull _hook_systemd_shutdown_action "_closeChRoot_emergency" "$sessionid" >> "$permaLog"/gchrts.log 2>&1
 	
 	
 	_ubvrtusrChRoot  >> "$logTmp"/usrchrt.log 2>&1 || _stop 1
