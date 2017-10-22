@@ -34,7 +34,7 @@ Type=oneshot
 RemainAfterExit=true
 CZXWXcRMTo8EmM8i4d
 
-echo ExecStop="$scriptAbsoluteLocation" _sigEmergencyStop "$safeTmp"/.pid "$sessionid"
+echo ExecStop="$scriptAbsoluteLocation" _remoteSigTERM "$safeTmp"/.pid "$sessionid"
 
 cat << 'CZXWXcRMTo8EmM8i4d'
 

@@ -136,7 +136,7 @@ _umountChRoot_directory_raspbian() {
 }
 
 _mountChRoot_image() {
-	_tryExecFull _hook_systemd_shutdown_action "_closeChRoot_emergency" "$sessionid" >>  "$permaLog"/gchrt.log 2>&1
+	_tryExecFull _hook_systemd_shutdown_action "_closeChRoot_emergency" "$sessionid" >> "$permaLog"/gchrts.log 2>&1
 	
 	if [[ -e "$scriptLocal"/vm-raspbian.img ]]
 	then
@@ -178,7 +178,7 @@ _umountChRoot_image() {
 	
 	rm "$lock_quicktmp" > /dev/null 2>&1
 	
-	rm "$permaLog"/gchrt.log > /dev/null 2>&1
+	rm "$permaLog"/gchrts.log > /dev/null 2>&1
 	
 	return 0
 }
@@ -273,7 +273,7 @@ _closeChRoot_emergency() {
 	local hookSessionid
 	hookSessionid="$sessionid"
 	[[ "$1" != "" ]] && hookSessionid="$1"
-	_tryExecFull _unhook_systemd_shutdown "$hookSessionid" >> "$permaLog"/gchrt.log 2>&1
+	_tryExecFull _unhook_systemd_shutdown "$hookSessionid" >> "$permaLog"/gchrts.log 2>&1
 	
 }
 
