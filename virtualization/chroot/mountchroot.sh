@@ -87,7 +87,8 @@ _mountChRoot_image_raspbian() {
 	if sudo -n losetup -f -P --show "$scriptLocal"/vm-raspbian.img > "$safeTmp"/imagedev 2> /dev/null
 	then
 		#Preemptively declare device open to prevent potentially dangerous multiple mount attempts.
-		_createLocked "$lock_open" || _stop 1
+		#Should now be redundant with use of lock_opening .
+		#_createLocked "$lock_open" || _stop 1
 		
 		cp -n "$safeTmp"/imagedev "$scriptLocal"/imagedev > /dev/null 2>&1 || _stop 1
 		
@@ -235,6 +236,9 @@ _haltAllChRoot() {
 	find "$scriptAbsoluteFolder"/v_*/ -maxdepth 12 -type d | head -n 48 | tac | xargs rmdir
 	
 	"$scriptAbsoluteLocation" _closeChRoot --force
+	
+	#Closing file may remain if chroot was not open to begin with. Since haltAllChRoot is usually called for forced/emergency shutdown purposes, clearing the resultant lock file is usually safe.
+	rm "$lock_closing"
 }
 
 #Fast dismount of all ChRoot filesystems/instances and cleanup of lock files. Specifically intended to act on SIGTERM or during system(d) shutdown, when time and disk I/O may be limited.
@@ -260,7 +264,7 @@ _closeChRoot_emergency() {
 	#Not called by systemd, do not globally halt all.
 	[[ "$1" == "" ]] && return 0
 	
-	! _readLocked "$lock_open" && return 0
+	! _readLocked "$lock_open" && ! find "$scriptAbsoluteFolder"/v_*/fs -maxdepth 1 -type d && return 0
 	_readLocked "$lock_closing" && return 1
 	_readLocked "$lock_opening" && return 1
 	

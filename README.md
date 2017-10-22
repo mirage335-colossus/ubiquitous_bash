@@ -32,6 +32,7 @@ v2.1
 # Future Work
 * Merge IQEmu, Wine Bottle, Portable DoxBox, HostedXen, VirtualBox, and other related virtualization methods into ubiquitous bash.
 * Support shutdown hooks through init daemons other than systemd.
+* Service/cron installation hooks.
 
 
 # WARNING

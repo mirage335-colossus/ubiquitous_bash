@@ -128,13 +128,22 @@ _readLocked() {
 }
 
 _createLocked() {
+	[[ "$uDEBUG" == true ]] && caller 0 >> "$scriptLocal"/lock.log
+	[[ "$uDEBUG" == true ]] && echo -e '\t'"$sessionid"'\t'"$1" >> "$scriptLocal"/lock.log
+	
 	mkdir -p "$bootTmp"
 	
 	! [[ -e "$bootTmp"/"$sessionid" ]] && echo > "$bootTmp"/"$sessionid"
 	
 	echo "$sessionid" > "$lock_quicktmp"
-	mv -n "$lock_quicktmp" "$1" > /dev/null 2>&1 || return 1
 	
+	mv -n "$lock_quicktmp" "$1" > /dev/null 2>&1
+	
+	if [[ -e "$lock_quicktmp" ]]
+	then
+		[[ "$uDEBUG" == true ]] && echo -e '\t'FAIL >> "$scriptLocal"/lock.log
+		return 1
+	fi
 }
 
 _resetLocks() {
