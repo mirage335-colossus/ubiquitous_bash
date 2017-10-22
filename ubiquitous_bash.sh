@@ -481,8 +481,8 @@ _hook_systemd_shutdown() {
 	! _wantSudo && return 1
 	
 	_here_systemd_shutdown | sudo -n tee /etc/systemd/system/"$sessionid".service > /dev/null
-	sudo -n systemctl enable "$sessionid".service | sudo tee -a "$permaLog"/gchrts.log > /dev/null 2>&1
-	sudo -n systemctl start "$sessionid".service | sudo tee -a "$permaLog"/gchrts.log > /dev/null 2>&1
+	sudo -n systemctl enable "$sessionid".service 2>&1 | sudo tee -a "$permaLog"/gchrts.log > /dev/null 2>&1
+	sudo -n systemctl start "$sessionid".service 2>&1 | sudo tee -a "$permaLog"/gchrts.log > /dev/null 2>&1
 }
 
 _hook_systemd_shutdown_action() {
@@ -491,8 +491,8 @@ _hook_systemd_shutdown_action() {
 	! _wantSudo && return 1
 	
 	_here_systemd_shutdown_action "$@" | sudo -n tee /etc/systemd/system/"$sessionid".service > /dev/null
-	sudo -n systemctl enable "$sessionid".service | sudo tee -a "$permaLog"/gchrts.log > /dev/null 2>&1
-	sudo -n systemctl start "$sessionid".service | sudo tee -a "$permaLog"/gchrts.log > /dev/null 2>&1
+	sudo -n systemctl enable "$sessionid".service 2>&1 | sudo tee -a "$permaLog"/gchrts.log > /dev/null 2>&1
+	sudo -n systemctl start "$sessionid".service 2>&1 | sudo tee -a "$permaLog"/gchrts.log > /dev/null 2>&1
 	
 }
 
@@ -509,8 +509,8 @@ _unhook_systemd_shutdown() {
 	[[ "$SYSTEMCTLDISABLE" == "true" ]] && echo SYSTEMCTLDISABLE | sudo tee -a "$permaLog"/gchrts.log > /dev/null 2>&1 && return 0
 	export SYSTEMCTLDISABLE=true
 	
-	sudo -n systemctl disable "$hookSessionid".service | sudo tee -a "$permaLog"/gchrts.log > /dev/null 2>&1
-	sudo -n rm /etc/systemd/system/"$hookSessionid".service | sudo tee -a "$permaLog"/gchrts.log > /dev/null 2>&1
+	sudo -n systemctl disable "$hookSessionid".service 2>&1 | sudo tee -a "$permaLog"/gchrts.log > /dev/null 2>&1
+	sudo -n rm /etc/systemd/system/"$hookSessionid".service 2>&1 | sudo tee -a "$permaLog"/gchrts.log > /dev/null 2>&1
 }
 
 
@@ -956,7 +956,7 @@ _umountChRoot_directory_raspbian() {
 }
 
 _mountChRoot_image() {
-	_tryExecFull _hook_systemd_shutdown_action "_closeChRoot_emergency" "$sessionid" >> "$permaLog"/gchrts.log 2>&1
+	_tryExecFull _hook_systemd_shutdown_action "_closeChRoot_emergency" "$sessionid"
 	
 	if [[ -e "$scriptLocal"/vm-raspbian.img ]]
 	then
@@ -1098,7 +1098,7 @@ _closeChRoot_emergency() {
 	local hookSessionid
 	hookSessionid="$sessionid"
 	[[ "$1" != "" ]] && hookSessionid="$1"
-	_tryExecFull _unhook_systemd_shutdown "$hookSessionid" >> "$permaLog"/gchrts.log 2>&1
+	_tryExecFull _unhook_systemd_shutdown "$hookSessionid"
 	
 }
 
@@ -1334,7 +1334,7 @@ _userChRoot() {
 	
 	"$scriptAbsoluteLocation" _openChRoot >> "$logTmp"/usrchrt.log 2>&1 || _stop 1
 	
-	_tryExecFull _hook_systemd_shutdown_action "_closeChRoot_emergency" "$sessionid" >> "$permaLog"/gchrts.log 2>&1
+	_tryExecFull _hook_systemd_shutdown_action "_closeChRoot_emergency" "$sessionid"
 	
 	
 	_ubvrtusrChRoot  >> "$logTmp"/usrchrt.log 2>&1 || _stop 1
