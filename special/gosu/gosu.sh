@@ -46,17 +46,24 @@ _testBuiltGosu() {
 _buildGosu() {
 	_start
 	
+	local haveGosuBin
+	haveGosuBin=false
+	#[[ -e "$scriptBin"/gosu-armel ]] && [[ -e "$scriptBin"/gosu-armel.asc ]] && [[ -e "$scriptBin"/gosu-amd64 ]] && [[ -e "$scriptBin"/gosu-amd64.asc ]] && [[ -e "$scriptBin"/gosu-i386 ]] && [[ -e "$scriptBin"/gosu-i386.asc ]] && haveGosuBin=true #&& return 0
+	
 	local GOSU_VERSION
 	GOSU_VERSION=1.10
 	
-	wget -O "$safeTmp"/gosu-armel https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-armel
-	wget -O "$safeTmp"/gosu-armel.asc https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-armel.asc
-	
-	wget -O "$safeTmp"/gosu-amd64 https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-amd64
-	wget -O "$safeTmp"/gosu-amd64.asc https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-amd64.asc
-	
-	wget -O "$safeTmp"/gosu-i386 https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-i386
-	wget -O "$safeTmp"/gosu-i386.asc https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-i386.asc
+	if [[ "$haveGosuBin" != "true" ]]
+	then
+		wget -O "$safeTmp"/gosu-armel https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-armel
+		wget -O "$safeTmp"/gosu-armel.asc https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-armel.asc
+		
+		wget -O "$safeTmp"/gosu-amd64 https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-amd64
+		wget -O "$safeTmp"/gosu-amd64.asc https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-amd64.asc
+		
+		wget -O "$safeTmp"/gosu-i386 https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-i386
+		wget -O "$safeTmp"/gosu-i386.asc https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-i386.asc
+	fi
 	
 	# verify the signature
 	export GNUPGHOME="$shortTmp"/vgosu
@@ -66,12 +73,16 @@ _buildGosu() {
 	# TODO Add further verification steps.
 	gpg --keyserver ha.pool.sks-keyservers.net --recv-keys B42F6819007F00F88E364FD4036A9C25BF357DD4
 	
-	gpg --batch --verify "$safeTmp"/gosu-armel.asc "$safeTmp"/gosu-armel || _stop 1
-	gpg --batch --verify "$safeTmp"/gosu-amd64.asc "$safeTmp"/gosu-amd64 || _stop 1
-	gpg --batch --verify "$safeTmp"/gosu-i386.asc "$safeTmp"/gosu-i386 || _stop 1
+	local gpgTestDir
+	gpgTestDir="$safeTmp"
+	[[ "$haveGosuBin" == "true" ]] && gpgTestDir="$scriptBin"
 	
-	mv "$safeTmp"/gosu-* "$scriptBin"/
-	chmod ugoa+rx "$scriptBin"/gosu-*
+	gpg --batch --verify "$gpgTestDir"/gosu-armel.asc "$gpgTestDir"/gosu-armel || _stop 1
+	gpg --batch --verify "$gpgTestDir"/gosu-amd64.asc "$gpgTestDir"/gosu-amd64 || _stop 1
+	gpg --batch --verify "$gpgTestDir"/gosu-i386.asc "$gpgTestDir"/gosu-i386 || _stop 1
+	
+	[[ "$haveGosuBin" != "true" ]] && mv "$safeTmp"/gosu-* "$scriptBin"/
+	[[ "$haveGosuBin" != "true" ]] && chmod ugoa+rx "$scriptBin"/gosu-*
 	
 	_stop
 }

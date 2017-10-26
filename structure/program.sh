@@ -1,6 +1,6 @@
 #####Program
 
-_build() {
+_buildSequence() {
 	_start
 	
 	echo -e '\E[1;32;46m Binary compiling...	\E[0m'
@@ -16,6 +16,10 @@ _build() {
 	echo "     ...DONE"
 	
 	_stop
+}
+
+_build() {
+	"$scriptAbsoluteLocation" _buildSequence
 }
 
 #Typically launches an application - ie. through virtualized container.

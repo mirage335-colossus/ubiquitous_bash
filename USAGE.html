@@ -44,7 +44,7 @@ DAMAGE.
 <!--}}}-->
 
 <!--PRE-HEAD-END-->
-<title> My TiddlyWiki - a reusable non-linear personal web notebook </title>
+<title> Ubiquitous Bash - USAGE </title>
 <style id="styleArea" type="text/css">
 #saveTest {display:none;}
 #messageArea {display:none;}
@@ -507,6 +507,58 @@ Also see [[AdvancedOptions]]</pre>
 </div>
 <!--POST-SHADOWAREA-->
 <div id="storeArea">
+<div title="API" creator="mirage335" modifier="mirage335" created="201710262147" modified="201710262151" changecount="5">
+<pre>!Stability
+API stability is prioritized as highly as reliability and safety during development. Functions not considered stable are explicitly documented as [[Experimental]] and [[NoTest]] .
+
+As noted in README.
+&lt;&lt;&lt;
+Semantic versioning is applied. Major version numbers (v2.x) indicate a compatible API. Minor numbers indicate the current feature set has been tested for usability. Any git commits not tagged with a version number may be technically considered unstable development code. New functions present in git commits may be experimental.
+
+In most user environments, the latest git repository code will provide the strongest reliability guarantees. Extra safety checks are occasionally added as possible edge cases are discovered.
+&lt;&lt;&lt;
+
+
+</pre>
+</div>
+<div title="Command" creator="mirage335" modifier="mirage335" created="201710261745" modified="201710262137" changecount="19">
+<pre>Internal functions and variables can be directly accessed from outside Ubiquitous Bash. All implementation code provided by &quot;structure/overrides.sh&quot;.
+
+!Function Access
+If first parameter starts with &quot;_&quot;, script will internally execute all given parameters, literally as &quot;$@&quot;. Thus, all internal functions can be unit tested on the fly, or directly used as part of other applications.
+//{{{
+./ubiquitous_bash.sh _false		#Returns 1.
+//}}}
+Exit status is preserved.
+
+!Import
+Program code will not be reached if importing into the current shell - no action will be taken.
+//{{{
+&quot;. ./ubiquitous_bash.sh&quot;
+//}}}
+A &lt;nowiki&gt;&quot;--bypass&quot;&lt;/nowiki&gt; directive overrides this behavior, importing into the current shell, then executing program code.
+//{{{
+. ./ubiquitous_bash.sh --bypass
+//}}}
+
+!Bash Profile
+An import directive for Ubiquitous Bash functions and global variables can be automatically installed to a user's &quot;.bashrc&quot; file.
+//{{{
+./ubiquitous_bash.sh _setupUbiquitous
+//}}}
+
+Certain functions will be automatically executed, for example, to provide a more informative and separative bash prompt. All are documented as commands in the &quot;_importShortcuts&quot; function.
+//{{{
+./ubiquitous_bash.sh _importShortcuts
+//}}}
+
+!Dependency Checking
+All dependencies of all automatically functionality can be checked by one command. Any dependencies not declared or hooked by the _test function, are documented [[Experimental]] and [[NoTest]].
+//{{{
+./ubiquitous_bash.sh _test
+//}}}
+</pre>
+</div>
 <div title="DcTableOfContentsPlugin" modifier="YourName" created="200711141727" modified="201202151646" tags="plugins macros systemConfig excludeLists excludeSearch" changecount="4">
 <pre>/***
 Slight modification by mirage335 to change toggle button text.
@@ -763,9 +815,70 @@ window.scrollToHeading = function(title, anchorName, evt) {
 };
 //}}}</pre>
 </div>
-<div title="MainMenu" creator="YourName" modifier="YourName" created="201202151614" modified="201202151646" tags="excludeLists excludeSearch" changecount="2">
-<pre>[[GettingStarted]]
+<div title="Debian" creator="mirage335" modifier="mirage335" created="201710262100" modified="201710262135" changecount="11">
+<pre>!&lt;nowiki&gt;_fetch_x64_DebianLiteISO ./&lt;/nowiki&gt;
+Fetches and verifies x64 Debian installation ISO, saves to current directory (ie. &quot;./&quot; ). Requires Debian Keyring to be installed (not part of standard _test).
+
+!_create_x64_debianLiteVM
+Creates custom bootable x64 Debian image. Requires [[fetch|Debian]] dependencies, QEMU, and manual guidance through the setup process.</pre>
+</div>
+<div title="DefaultTiddlers" creator="mirage335" modifier="mirage335" created="201710261744" modified="201710261745" changecount="2">
+<pre></pre>
+</div>
+<div title="Experimental" creator="mirage335" modifier="mirage335" created="201710262146" changecount="1">
+<pre>Few functions are not strictly deterministically bound only to internally controlled dependencies. None of these impact fully automatic operations.
+
+Currently, only the creation of fresh virtual machine images imparts unique dependencies, specifically downloading installation media from offsite web sites.
+
+[[Debian]]</pre>
+</div>
+<div title="Git" creator="mirage335" modifier="mirage335" created="201710262134" modified="201710262202" changecount="4">
+<pre>!_gitNew
+Creates new Git repository.
+//{{{
+git init
+git add .
+git commit -a -m &quot;first commit&quot;
+//}}}
+
+!_gitCheck
+Recursively reports status of multiple git repositories.
+//{{{
+find . -name .git -type d -exec bash -c 'echo ----- $(basename $(dirname $(realpath {}))) ; cd $(dirname $(realpath {})) ; git status' \;
+//}}}
+
+!_gitInfo
+Reports git URI if sufficient information and bare repository can be found. See &quot;shotcuts/git/git.sh&quot;.</pre>
+</div>
+<div title="MainMenu" creator="YourName" modifier="mirage335" created="201202151614" modified="201710262147" tags="excludeLists excludeSearch" changecount="6">
+<pre>[[Command]]
+[[Shortcuts]]
+
+[[Structure]]
+[[Virtualization]]
+[[Method]]
+
+[[API]]
 &lt;html&gt;&lt;hr&gt;&lt;/html&gt;</pre>
+</div>
+<div title="Method" creator="mirage335" modifier="mirage335" created="201710261744" changecount="1">
+<pre>As shell glue for massive scale projects, or as a framework for single-purpose scripts, ubiquitous_bash is the quickest path to a robust solution, every time.
+
+Comprehensive multi-threading, instancing, portability, extensibility, and recursion can be achieved with a smaller percentage of 'extra' developer cycles than required to properly test a barely working string of hardcoded dependencies supporting none of these properties. Do not be tempted, take a moment to sort your requirements into fundamental operators.
+
+* Session - start/stop, unique id, create/delete temporary resources.
+* Extension - find executable's own location, find neighboring executables, import.
+* Arithmetic - add, subtract, multiply, divide.
+* Filtering - band-pass, band-stop, low-pass, high-pass, gain, feedback, multi-order.
+* Data - Create/Read/Update/Delete (CRUD).
+* Processing - Turing Completeness</pre>
+</div>
+<div title="NoTest" creator="mirage335" modifier="mirage335" created="201710262119" modified="201710262122" changecount="3">
+<pre>Few functions have dependencies not declared or hooked by _test . None of these impact fully automatic operations.
+
+Currently, only the creation of fresh virtual machine images imparts unique dependencies, specifically requiring crypto keys to verify installation media.
+
+[[Debian]]</pre>
 </div>
 <div title="PageTemplate" modifier="YourName" created="200701130013" modified="201202151614" tags="excludeLists excludeSearch DevFireTheme" changecount="24">
 <pre>&lt;div class='header' macro='gradient vert #390108 #900'&gt;
@@ -793,6 +906,41 @@ window.scrollToHeading = function(title, anchorName, evt) {
 &lt;div id='messageArea'&gt;&lt;/div&gt;
 &lt;div id='tiddlerDisplay'&gt;&lt;/div&gt;
 &lt;/div&gt;</pre>
+</div>
+<div title="Raspbian" creator="mirage335" modifier="mirage335" created="201710262129" changecount="1">
+<pre>!Fetch
+Fetches and verifies Raspbian image. Partly relies on &quot;raspberrypi.org&quot; (HTTPS) and git repository (HTTPS/SSH) for chain of trust.
+//{{{
+_fetch_raspbian ./
+//}}}</pre>
+</div>
+<div title="Shortcuts" creator="mirage335" modifier="mirage335" created="201710261859" modified="201710262133" changecount="9">
+<pre>Many Ubiquitous Bash functions are relevant to typical desktop usage.
+
+!Git
+[[Git]]
+
+!Visual Prompt
+[[vistualPrompt]]
+
+!Distro
+[[Debian]]
+[[Raspbian]]
+</pre>
+</div>
+<div title="SiteSubtitle" creator="mirage335" modifier="mirage335" created="201710261741" changecount="1">
+<pre>USAGE</pre>
+</div>
+<div title="SiteTitle" creator="mirage335" modifier="mirage335" created="201710261740" changecount="1">
+<pre>Ubiquitous Bash</pre>
+</div>
+<div title="Structure" creator="mirage335" modifier="mirage335" created="201710261758" modified="201710261900" changecount="2">
+<pre>!Recursion
+Due to complete thread safety, the script may always call itself, providing separate temporary resources. Built-in &quot;$0&quot; is expanded to &quot;$scriptAbsoluteLocation&quot;, then used as the executable name.
+//{{{
+&quot;$scriptAbsoluteLocation&quot; _setup
+//}}}
+Functions using &quot;_start&quot; / &quot;_stop&quot; should be recursively called from within the script in this manner to prevent interference in the parent's processes.</pre>
 </div>
 <div title="StyleSheet" modifier="YourName" created="200701130013" modified="201202151610" tags="excludeLists excludeSearch DevFireTheme" changecount="26">
 <pre>/***

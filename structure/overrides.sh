@@ -24,8 +24,15 @@ fi
 
 
 #Launch internal functions as commands.
+_true() {
+	true
+}
+_false() {
+	false
+}
 #if [[ "$1" != "" ]] && [[ "$1" != "-"* ]] && [[ ! -e "$1" ]]
-if [[ "$1" == '_'* ]] || [[ "$1" == "true" ]] || [[ "$1" == "false" ]]
+#if [[ "$1" == '_'* ]] || [[ "$1" == "true" ]] || [[ "$1" == "false" ]]
+if [[ "$1" == '_'* ]]
 then
 	"$@"
 	internalFunctionExitStatus="$?"

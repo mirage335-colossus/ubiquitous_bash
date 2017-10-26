@@ -15,14 +15,19 @@ _fetch_x64_debianLiteISO_sequence() {
 	
 	cd "$safeTmp"
 	
-	[[ -e "$storageLocation"/debian-9.1.0-amd64-netinst.iso ]] && cp "$storageLocation"/debian-9.1.0-amd64-netinst.iso ./debian-9.1.0-amd64-netinst.iso > /dev/null 2>&1
-	[[ -e ./debian-9.1.0-amd64-netinst.iso ]] || _fetch 'https://cdimage.debian.org/debian-cd/9.1.0/amd64/iso-cd/debian-9.1.0-amd64-netinst.iso'
+	local debAvailableVersion
+	#debAvailableVersion="current"	#Does not work, incorrect image name.
+	#debAvailableVersion="9.1.0"
+	debAvailableVersion="9.2.1"
 	
-	wget 'https://cdimage.debian.org/debian-cd/9.1.0/amd64/iso-cd/SHA512SUMS'
+	[[ -e "$storageLocation"/debian-"$debAvailableVersion"-amd64-netinst.iso ]] && cp "$storageLocation"/debian-"$debAvailableVersion"-amd64-netinst.iso ./debian-"$debAvailableVersion"-amd64-netinst.iso > /dev/null 2>&1
+	[[ -e ./debian-"$debAvailableVersion"-amd64-netinst.iso ]] || _fetch 'https://cdimage.debian.org/debian-cd/'"$debAvailableVersion"'/amd64/iso-cd/debian-'"$debAvailableVersion"'-amd64-netinst.iso'
 	
-	wget 'https://cdimage.debian.org/debian-cd/9.1.0/amd64/iso-cd/SHA512SUMS.sign'
+	wget 'https://cdimage.debian.org/debian-cd/'"$debAvailableVersion"'/amd64/iso-cd/SHA512SUMS'
 	
-	if ! cat SHA512SUMS | grep debian-9.1.0-amd64-netinst.iso | sha512sum -c - > /dev/null 2>&1
+	wget 'https://cdimage.debian.org/debian-cd/'"$debAvailableVersion"'/amd64/iso-cd/SHA512SUMS.sign'
+	
+	if ! cat SHA512SUMS | grep debian-"$debAvailableVersion"-amd64-netinst.iso | sha512sum -c - > /dev/null 2>&1
 	then
 		echo 'invalid'
 		_stop 1
@@ -37,7 +42,7 @@ _fetch_x64_debianLiteISO_sequence() {
 	mkdir -p "$storageLocation"
 	
 	cd "$functionEntryPWD"
-	mv "$safeTmp"/debian-9.1.0-amd64-netinst.iso "$storageLocation"
+	mv "$safeTmp"/debian-"$debAvailableVersion"-amd64-netinst.iso "$storageLocation"
 	
 	_stop
 }
@@ -58,7 +63,12 @@ _create_x64_debianLiteVM_sequence() {
 	
 	_checkDep qemu-system-x86_64
 	
-	qemu-system-x86_64 -machine accel=kvm -drive format=raw,file="$scriptLocal"/vm.img -cdrom "$scriptAbsoluteFolder"/_lib/os/debian-9.1.0-amd64-netinst.iso -boot d -m 1512
+	local debAvailableVersion
+	#debAvailableVersion="current"	#Does not work, incorrect image name.
+	#debAvailableVersion="9.1.0"
+	debAvailableVersion="9.2.1"
+	
+	qemu-system-x86_64 -machine accel=kvm -drive format=raw,file="$scriptLocal"/vm.img -cdrom "$scriptAbsoluteFolder"/_lib/os/debian-"$debAvailableVersion"-amd64-netinst.iso -boot d -m 1512
 	
 	_stop
 }
