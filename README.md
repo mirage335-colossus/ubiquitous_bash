@@ -5,6 +5,8 @@ For new applications and shell feature extension, provides directory containment
 
 # USAGE
 
+https://rawgit.com/mirage335/ubiquitous_bash/master/USAGE.html
+
 Please see "USAGE.html" TiddlyWiki file for extensive command, API, and hiearchial documenatation.
 
 Projects incorporating the ubiquitous bash middleware should, as a best practice, import as a git submodule, then overload functions as required. Consider using the "fork" script to automatically create new projects, or see "USAGE.html" for details.
