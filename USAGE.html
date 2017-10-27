@@ -507,8 +507,9 @@ Also see [[AdvancedOptions]]</pre>
 </div>
 <!--POST-SHADOWAREA-->
 <div id="storeArea">
-<div title="Command" creator="mirage335" modifier="mirage335" created="201710261745" modified="201710270045" changecount="24">
-<pre>Internal functions and variables can be directly accessed from outside Ubiquitous Bash. All implementation code provided by &quot;structure/overrides.sh&quot;.
+<div title="Command" creator="mirage335" modifier="mirage335" created="201710261745" modified="201710270408" changecount="30">
+<pre>Internal functions and variables can be directly accessed externally. All implementation code provided by &quot;structure/overrides.sh&quot;.
+
 
 &lt;&lt;showtoc&gt;&gt;
 !Function Access
@@ -519,13 +520,9 @@ If first parameter starts with &quot;_&quot;, script will internally execute all
 Exit status is preserved.
 
 !Import
-Program code will not be reached if importing into the current shell - no action will be taken.
+Program code will not be reached if importing into the current shell - no action will be taken without &lt;nowiki&gt;&quot;--bypass&quot;&lt;/nowiki&gt; directive.
 //{{{
-&quot;. ./ubiquitous_bash.sh&quot;
-//}}}
-A &lt;nowiki&gt;&quot;--bypass&quot;&lt;/nowiki&gt; directive overrides this behavior, importing into the current shell, then executing program code.
-//{{{
-. ./ubiquitous_bash.sh --bypass
+. ./ubiquitous_bash.sh
 //}}}
 
 !Bash Profile
@@ -819,6 +816,17 @@ Currently, only the creation of fresh virtual machine images imparts unique depe
 
 [[Debian]]</pre>
 </div>
+<div title="Features" creator="mirage335" modifier="mirage335" created="201710270341" modified="201710270409" changecount="6">
+<pre>Some functions provide new ways of doing things portably.
+
+
+&lt;&lt;showtoc&gt;&gt;
+!&lt;nowiki&gt;SystemD&lt;/nowiki&gt;
+* _hook_systemd_shutdown
+* _hook_systemd_shutdown_action
+* _unhook_systemd_shutdown
+A self-removing systemd service can be temporarily installed to perform a specific action on system shutdown, launch an internal script function, or send SIGTERM to the hooking script process, upon system shutdown. Especially useful to clean up mounted filesystems that might otherwise prevent the host's root filesystem from cleanly unmounting, even if that is unlikely to begin with.</pre>
+</div>
 <div title="Generic" creator="mirage335" modifier="mirage335" created="201710262313" modified="201710262326" changecount="6">
 <pre>!_getAbsoluteLocation [./]
 Retrieves absolute path of parameter, while maintaining symlinks, even when &quot;./&quot; would translate with &quot;readlink -f&quot; into something disregarding symlinked components in $PWD.
@@ -878,16 +886,26 @@ Creates a &quot;bare&quot; git repository, from an existing repository, on a ser
 
 </pre>
 </div>
-<div title="MainMenu" creator="YourName" modifier="mirage335" created="201202151614" modified="201710270201" tags="excludeLists excludeSearch" changecount="12">
+<div title="MainMenu" creator="YourName" modifier="mirage335" created="201202151614" modified="201710270337" tags="excludeLists excludeSearch" changecount="20">
 <pre>[[Command]]
 [[Shortcuts]]
+[[Features]]
 
 [[Structure]]
 [[Resources]]
+[[Technique]]
 
 [[Virtualization]]
 
 [[Stability]]
+
+&lt;html&gt;&lt;hr&gt;&lt;/html&gt;
+''Projects Using''
+''Ubiquitous Bash''
+[[CoreAutoSSH|https://rawgit.com/mirage335/CoreAutoSSH/master/README.html]]
+[[audioManager|https://github.com/mirage335/audioManager]]
+
+&lt;html&gt;&lt;hr&gt;&lt;/html&gt;
 </pre>
 </div>
 <div title="NoTest" creator="mirage335" modifier="mirage335" created="201710262119" modified="201710262122" changecount="3">
@@ -931,7 +949,7 @@ Fetches and verifies Raspbian image. Partly relies on &quot;raspberrypi.org&quot
 !_create_raspbian
 Extracts Raspbian image.</pre>
 </div>
-<div title="Resources" creator="mirage335" modifier="mirage335" created="201710270111" modified="201710270202" changecount="3">
+<div title="Resources" creator="mirage335" modifier="mirage335" created="201710270111" modified="201710270343" changecount="4">
 <pre>As &quot;a dedicated monolithic kernel for (meta)applications&quot;, use of global variables is encouraged, subject to four conditions.
 # Global variables must be set on every run, none may transfer to a new instance. If script is imported from within itself, all global variables must be re-set (even if to blank values) by the new instance.
 # Indefinite recursion may not reuse an existing session, may not import script from within itself. Thus, global variables which extend existing global variables (eg. &quot;$PATH&quot;:&quot;$scriptBin&quot; ), may not expand indefinitely.
@@ -943,39 +961,39 @@ Variables pointing to essential resources used by most applications are enumerat
 
 &lt;&lt;showtoc&gt;&gt;
 !Session ID
-&quot;$sessionid&quot;
+* &quot;$sessionid&quot;
 A 18 character alphanumeric random string generated once each time the script is run. All functions called from within the script will see the same session identifier value.
 
 !Script Location
-&quot;$scriptAbsoluteLocation&quot;
+* &quot;$scriptAbsoluteLocation&quot;
 Expanded path for the script's location, evading many pitfalls, especially regarding symbolic links, which might otherwise compromise the use of &quot;$0&quot;.
 
-&quot;$scriptAbsoluteFolder&quot;
+* &quot;$scriptAbsoluteFolder&quot;
 Folder in which script resides, ultimately derived from &quot;$0&quot;. Used to locate neighboring resources and safe places for temporary files.
 
 !PWD
-&quot;$outerPWD&quot;
+* &quot;$outerPWD&quot;
 Records the current directory, so a function can perform 'cd &quot;$outerPWD&quot; ' before returning control elsewhere.
 
 !Persistent Directories
-&quot;$scriptLocal&quot;
+* &quot;$scriptLocal&quot;
 Data specific to this host. Typically server configuration files, virtual machine images, daemon PID files, and log file backups.
 
-&quot;$permaLog&quot;
+* &quot;$permaLog&quot;
 Set to match &quot;$scriptLocal&quot;.
 
-&quot;$scriptBin&quot;
+* &quot;$scriptBin&quot;
 Directory for executable files needed (and often compiled) by script. Reference &quot;$scriptBin&quot; directly to ensure the correct executable is used. Nevertheless appended to system &quot;PATH&quot; variable.
 
 !Temporary Directories
-&quot;$safeTmp&quot;
+* &quot;$safeTmp&quot;
 All purpose temporary directory, in same folder as script, starting with &quot;w_&quot; and ending with unique session id. While the script is running, the contents of this folder, including log files, may be useful to show its current state. If this folder somehow persists after script is no longer running, it is almost certainly obsolete, and its contents may show the cause for such an unusual failure.
 
-&quot;$logTmp&quot;
+* &quot;$logTmp&quot;
 Log directory under &quot;$safeTmp&quot;. Log files written here do not need unique names, but can be backed up to a permanent location if _preserveLog is called by _stop function .
 
 !Special
-&quot;$objectName&quot;
+* &quot;$objectName&quot;
 Basename of the directory containing script. Typically used to cause the script to call a function based on the name of the folder it resides in. As an example, used by CoreAutoSSH project to automatically launch VNC clients, through SSH tunnels, with a script placed under a folder named, according to the for the target machine host/domain name.
 
 
@@ -989,8 +1007,8 @@ Basename of the directory containing script. Typically used to cause the script 
 
 </pre>
 </div>
-<div title="Shortcuts" creator="mirage335" modifier="mirage335" created="201710261859" modified="201710270045" changecount="12">
-<pre>Many Ubiquitous Bash functions are relevant to typical desktop usage.
+<div title="Shortcuts" creator="mirage335" modifier="mirage335" created="201710261859" modified="201710270408" changecount="16">
+<pre>Many functions are relevant to, or intended to simplify, typical desktop usage. Generally sorted into &quot;generic&quot; or &quot;shortcuts&quot; subdirectories.
 
 
 &lt;&lt;showtoc&gt;&gt;
@@ -1027,8 +1045,8 @@ In most user environments, the latest git repository code will provide the stron
 
 </pre>
 </div>
-<div title="Structure" creator="mirage335" modifier="mirage335" created="201710261758" modified="201710270159" changecount="15">
-<pre>As shell glue for massive scale projects, or as a framework for single-purpose scripts, ubiquitous_bash is the quickest path to a robust solution, every time.
+<div title="Structure" creator="mirage335" modifier="mirage335" created="201710261758" modified="201710270409" changecount="17">
+<pre>As shell glue for massive scale projects, or as a framework for single-purpose scripts, Ubiquitous Bash is the quickest path to a robust solution, every time.
 
 Comprehensive multi-threading, instancing, portability, extensibility, and recursion can be achieved with a smaller percentage of 'extra' developer cycles than required to properly test a barely working string of hardcoded dependencies supporting none of these properties. Do not be tempted, take a moment to sort your requirements into fundamental operators.
 
@@ -1038,6 +1056,7 @@ Comprehensive multi-threading, instancing, portability, extensibility, and recur
 * Filtering - band-pass, band-stop, low-pass, high-pass, gain, feedback, multi-order.
 * Data - Create/Read/Update/Delete (CRUD).
 * Processing - Turing Completeness
+
 
 &lt;&lt;showtoc&gt;&gt;
 !Recursion
@@ -1573,11 +1592,65 @@ table.listView th, table.listView td, table.listView tr {padding:0 3px 0 3px;}
 /*}}}*/
 </pre>
 </div>
-<div title="Virtualization" creator="mirage335" modifier="mirage335" created="201710270206" modified="201710270228" changecount="4">
-<pre>!Images
-Any bootable raw image may be used by ChRoot, QEMU, or VirtualBox. See [[Debian]] or [[Raspbian]] for built-in creation procedures.
+<div title="Technique" creator="mirage335" modifier="mirage335" created="201710270318" modified="201710270410" changecount="7">
+<pre>All about the quickest and most robust way to do things, both immediately, and scaling up.
 
-!~ChRoot
+
+&lt;&lt;showtoc&gt;&gt;
+!Compiling
+Ubiquitous Bash is a &quot;statically linked&quot; executable script, compiled by the &quot;compile&quot; script, entirely from submodule text files, containing only closely related functions.
+//{{{
+./compile
+//}}}
+
+!Hiearchy
+During compilation, submodule text files are searched for, starting with the directory &quot;_prog&quot;. Thus, to compile a script which executes program specific code by default, first the text file &quot;structure/entry.sh&quot; would be copied to a new directory as &quot;_prog/entry.sh&quot;. Changes to this file would then be placed at the end of &quot;ubiquitous_bash.sh&quot;, instead of the original code. In this way, entirely new applications can be constructed, while easy to update with upstream improvements to the Ubiquitous Bash middleware.
+
+!Overloading
+After all functions and variables are defined, but before any actions are performed, an &quot;ops&quot; file in script's parent directory will be imported if present. Any function declarations, variable definitions, or code in this file will execute within the context of the parent script (ie. &quot;ubiquitous_bash.sh&quot;). Thus, this is a dynamic method to override precisely just what is needed, at run time. In simple cases, this may simplify software maintenance, or provide infinitely flexible end-user configuration. Automatic generation by graphical programs also managed with an Ubiquitous Bash middleware layer is another possibility.
+
+!Forking
+When not developing Ubiquitous Bash itself, it is strongly recommended to import the middleware as a git submodule in a new project. This will allow a quick &quot;git pull&quot; to incorporate any changes, which occasionally include additional safety checks.
+//{{{
+mkdir project
+cd project
+
+mkdir ./_lib
+
+git init
+git submodule add git@github.com:mirage335/ubiquitous_bash.git ./_lib/ubiquitous_bash
+git add -A .
+git commit -a -m &quot;first commit&quot;
+
+cp ./_lib/ubiquitous_bash/compile ./
+//}}}
+
+Forking can be done automatically with the &quot;fork&quot; script, which will also copy some of the most commonly modified text submodules to a &quot;_prog&quot; subdirectory for editing. This approach is strongly recommended.
+//{{{
+#Download fork script anywhere.
+#Edit devName and projectName variables.
+./fork
+//}}}
+
+!Best Practices
+!!Anchor
+Specialized uses for an application may call for specific variables to be set, or specific internal commands to be run. A small anchor script can be used to accomplish this, sometimes using information which would not be available to the target, such as the location that script is placed in. Additionally, this may offer the only defense against some rare problems with multilayer symlinks.
+
+Examples have not yet been integrated with Ubiquitous Bash itself, but are part of the [[CoreAutoSSH|https://github.com/mirage335/CoreAutoSSH/blob/master/_index/_alpha/_ssh]] and [[DockerApp|https://github.com/mirage335/DockerApp/blob/master/dockerfiles/app/libreoffice]] projects.
+
+!!Specialized Dependencies
+A &quot;_tryExec&quot; function is generally used to call a function which checks for dependencies used only by specific submodules. If the relevant test function has not been declared, because its submodule has not been included, because the relevant functionality is not needed in the current project, then the dependency check will be skipped automatically.
+</pre>
+</div>
+<div title="Virtualization" creator="mirage335" modifier="mirage335" created="201710270206" modified="201710270411" changecount="10">
+<pre>Ubiquitous Bash middleware has the capacity to provide true application virtualization, with automatic fileparameter translation, across a wide variety of platforms (x86/64, ARM), and operating systems (MSW, Unix), by using any available underlying tool (~ChRoot, QEMU, Xen, ~VirtualBox, Docker, Wine, Cygwin, DosBox), on a common disk format (raw image). Automatic selection of native application by platform is also well supported.
+
+
+&lt;&lt;showtoc&gt;&gt;
+!Images
+Any bootable raw image may be used by ~ChRoot, QEMU, or ~VirtualBox. See [[Debian]] or [[Raspbian]] for built-in creation procedures.
+
+!&lt;nowiki&gt;ChRoot&lt;/nowiki&gt;
 !!Root
 //{{{
 ./ubiquitous_bash.sh _openChRoot
@@ -1587,6 +1660,11 @@ Any bootable raw image may be used by ChRoot, QEMU, or VirtualBox. See [[Debian]
 !!Application
 //{{{
 ./ubiquitous_bash.sh _userChRoot ls ./
+//}}}
+!!Force Cleanup
+//{{{
+#An aggressive cleanup function that should not ever be needed in normal operation.
+_removeChRoot
 //}}}
 
 </pre>
