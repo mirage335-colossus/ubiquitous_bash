@@ -117,13 +117,20 @@ _localDir() {
 
 
 #Takes a list of parameters, idenfities file parameters, finds a common path, and translates all parameters to that path. Essentially provides shared folder and file parameter translation for application virtualization solutions.
+#Keep in mind this function has a relatively complex set of inputs and outputs, serving a critically wide variety of edgy use cases across platforms.
 #"$@" == input parameters
+
+#"$sharedHostProjectDir" == if already set, overrides the directory that will be shared, rarely used to share entire root
+#"$sharedGuestProjectDir" == script default is /home/ubvrtusr/project, can be overridden, "X:" typical for MSW guests
+#Setting sharedGuestProjectDir to a drive letter designation will also enable UNIX/MSW parameter translation mechanisms.
+
 # export sharedHostProjectDir == common directory to bind mount
 # export processedArgs == translated arguments to be used in place of "$@"
+
 # WARNING Consider specified syntax for portability.
 # _runExec "${processedArgs[@]}"
 _virtUser() {
-	export sharedHostProjectDir
+	export sharedHostProjectDir="$sharedHostProjectDir"
 	export processedArgs
 	
 	if [[ -e /tmp/.X11-unix ]] && [[ "$DISPLAY" != "" ]] && type xauth > /dev/null 2>&1
@@ -134,7 +141,7 @@ _virtUser() {
 		xauth nlist $DISPLAY | sed -e 's/^..../ffff/' | xauth -f $XAUTH nmerge -
 	fi
 	
-	sharedHostProjectDir=$(_searchBaseDir "$@" "$outerPWD")
+	[[ "$sharedHostProjectDir" == "" ]] && sharedHostProjectDir=$(_searchBaseDir "$@" "$outerPWD")
 	
 	if [[ "$sharedHostProjectDir" == "" ]]
 	then
@@ -144,6 +151,11 @@ _virtUser() {
 	
 	export localPWD=$(_localDir "$outerPWD" "$sharedHostProjectDir" "$sharedGuestProjectDir")
 	
+	#If $sharedGuestProjectDir matches MSW drive letter format, enable translation of other non-UNIX file parameter differences.
+	local enableMSWtranslation
+	enableMSWtranslation=false
+	echo "$sharedGuestProjectDir" | grep '^[[:alpha:]]\:\|^[[:alnum:]][[:alnum:]]\:\|^[[:alnum:]][[:alnum:]][[:alnum:]]\:' > /dev/null 2>&1 && enableMSWtranslation=true
+	
 	#http://stackoverflow.com/questions/15420790/create-array-in-loop-from-number-of-arguments
 	#local processedArgs
 	local currentArg
@@ -152,6 +164,7 @@ _virtUser() {
 	for currentArg in "$@"
 	do
 		currentResult=$(_localDir "$currentArg" "$sharedHostProjectDir" "$sharedGuestProjectDir")
+		[[ "$enableMSWtranslation" == "true" ]] && currentResult=$(_slashBackToForward "$currentResult")
 		processedArgs+=("$currentResult")
 	done
 }
