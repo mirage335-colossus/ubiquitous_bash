@@ -948,6 +948,16 @@ Currently, only the creation of fresh virtual machine images imparts unique depe
 &lt;div id='tiddlerDisplay'&gt;&lt;/div&gt;
 &lt;/div&gt;</pre>
 </div>
+<div title="Parameter" creator="mirage335" modifier="mirage335" created="201710271826" changecount="1">
+<pre>!_searchBaseDir [.] [..] [random]
+Reports the highest-level directory containing all files in given parameter set.
+
+!_localDir [/home/host/test] [/home/host] [/home/guest/project]
+/home/guest/project/test
+
+Converts first parameter [/home/host/test] (typically on host filesystem), to a path relative to second parameter [/home/host] (typically a project directory on host filesystem), and prepends (optional) third parameter [/home/guest/project] to result.
+</pre>
+</div>
 <div title="Raspbian" creator="mirage335" modifier="mirage335" created="201710262129" modified="201710270227" changecount="3">
 <pre>!_fetch_raspbian [./]
 Fetches and verifies Raspbian image. Partly relies on &quot;raspberrypi.org&quot; (HTTPS) and git repository (HTTPS/SSH) for chain of trust.
@@ -1013,13 +1023,14 @@ Basename of the directory containing script. Typically used to cause the script 
 
 </pre>
 </div>
-<div title="Shortcuts" creator="mirage335" modifier="mirage335" created="201710261859" modified="201710271745" changecount="17">
+<div title="Shortcuts" creator="mirage335" modifier="mirage335" created="201710261859" modified="201710271816" changecount="18">
 <pre>Many functions are relevant to, or intended to simplify, typical desktop usage. Generally sorted into &quot;generic&quot; or &quot;shortcuts&quot; subdirectories.
 
 
 &lt;&lt;showtoc&gt;&gt;
 !Generic
 [[Generic]]
+[[Parameter]]
 [[GUI]]
 
 !Git
