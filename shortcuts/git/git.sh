@@ -1,3 +1,7 @@
+testGit() {
+	checkDep git
+}
+
 _gitInfo() {
 	#Git Repository Information
 	export repoDir="$PWD"

@@ -830,6 +830,10 @@ Currently, only the creation of fresh virtual machine images imparts unique depe
 * _unhook_systemd_shutdown
 A self-removing systemd service can be temporarily installed to perform a specific action on system shutdown, launch an internal script function, or send SIGTERM to the hooking script process, upon system shutdown. Especially useful to clean up mounted filesystems that might otherwise prevent the host's root filesystem from cleanly unmounting, even if that is unlikely to begin with.</pre>
 </div>
+<div title="GUI" creator="mirage335" modifier="mirage335" created="201710271747" changecount="1">
+<pre>!_clipImageHTML
+Reads clipboard image, outputs as png base64 data URI encoded HTML image tag. Often used to paste images into TiddlyWiki documents like this USAGE guide.</pre>
+</div>
 <div title="Generic" creator="mirage335" modifier="mirage335" created="201710262313" modified="201710262326" changecount="6">
 <pre>!_getAbsoluteLocation [./]
 Retrieves absolute path of parameter, while maintaining symlinks, even when &quot;./&quot; would translate with &quot;readlink -f&quot; into something disregarding symlinked components in $PWD.
@@ -1009,13 +1013,14 @@ Basename of the directory containing script. Typically used to cause the script 
 
 </pre>
 </div>
-<div title="Shortcuts" creator="mirage335" modifier="mirage335" created="201710261859" modified="201710270408" changecount="16">
+<div title="Shortcuts" creator="mirage335" modifier="mirage335" created="201710261859" modified="201710271745" changecount="17">
 <pre>Many functions are relevant to, or intended to simplify, typical desktop usage. Generally sorted into &quot;generic&quot; or &quot;shortcuts&quot; subdirectories.
 
 
 &lt;&lt;showtoc&gt;&gt;
 !Generic
 [[Generic]]
+[[GUI]]
 
 !Git
 [[Git]]

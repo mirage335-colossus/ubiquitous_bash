@@ -1650,6 +1650,10 @@ alias getUUID=_getUUID
 
 #####Shortcuts
 
+testGit() {
+	checkDep git
+}
+
 _gitInfo() {
 	#Git Repository Information
 	export repoDir="$PWD"
@@ -1927,6 +1931,38 @@ _create_raspbian() {
 _visualPrompt() {
 export PS1='\[\033[01;40m\]\[\033[01;36m\]+\[\033[01;34m\]-|\[\033[01;31m\]${?}:${debian_chroot:+($debian_chroot)}\[\033[01;33m\]\u\[\033[01;32m\]@\h\[\033[01;36m\]\[\033[01;34m\])-\[\033[01;36m\]----------\[\033[01;34m\]-(\[\033[01;35m\]$(date +%H:%M:%S\ %b\ %d,\ %y)\[\033[01;34m\])-\[\033[01;36m\]--- - - - |\[\033[00m\]\n\[\033[01;40m\]\[\033[01;36m\]+\[\033[01;34m\]-|\[\033[37m\][\w]\[\033[00m\]\n\[\033[01;36m\]+\[\033[01;34m\]-|\#) \[\033[36m\]>\[\033[00m\] '
 } 
+
+_testX11() {
+	
+	_checkDep xclip
+	
+}
+
+_x11_clipboard_sendText() {
+	xclip -selection clipboard
+	#xclip -selection primary
+	#xclip -selection secondary
+}
+
+_x11_clipboard_getImage() {
+	xclip -selection clipboard -t image/png -o -
+}
+
+_x11_clipboard_getImage_base64() {
+	_x11_clipboard_getImage | base64 -w0
+}
+
+_x11_clipboard_getImage_HTML() {
+	echo -e -n '<img src="data:image/png;base64,'
+	_x11_clipboard_getImage_base64
+	echo -e -n '" />'
+}
+
+_x11_clipboard_imageToHTML() {
+	_x11_clipboard_getImage_HTML | _x11_clipboard_sendText
+}
+
+[[ "$DISPLAY" != "" ]] && alias clipImageHTML=_x11_clipboard_imageToHTML
 
 _importShortcuts() {
 	_visualPrompt
@@ -2479,6 +2515,9 @@ _test() {
 	_tryExec "_testQEMU_raspi-raspi"
 	
 	_tryExec "_testExtra"
+	
+	_tryExec "_testGit"
+	_tryExec "_testX11"
 	
 	[[ -e /dev/urandom ]] || echo /dev/urandom missing _stop
 	

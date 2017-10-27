@@ -106,6 +106,9 @@ _test() {
 	
 	_tryExec "_testExtra"
 	
+	_tryExec "_testGit"
+	_tryExec "_testX11"
+	
 	[[ -e /dev/urandom ]] || echo /dev/urandom missing _stop
 	
 	echo "PASS"
