@@ -25,6 +25,8 @@ Semantic versioning is applied. Major version numbers (v2.x) indicate a compatib
 In most user environments, the latest git repository code will provide the strongest reliability guarantees. Extra safety checks are occasionally added as possible edge cases are discovered.
 
 # Future Work
+* Self-contained SAMBA server is expected to be the next, if not final, 'hard problem' for Ubiquitous Bash. Help wanted.
+
 * Merge IQEmu, Wine Bottle, Portable DoxBox, HostedXen, VirtualBox, and other related virtualization methods into ubiquitous bash.
 * Support shutdown hooks through init daemons other than systemd.
 * Service/cron installation hooks.
