@@ -507,23 +507,10 @@ Also see [[AdvancedOptions]]</pre>
 </div>
 <!--POST-SHADOWAREA-->
 <div id="storeArea">
-<div title="API" creator="mirage335" modifier="mirage335" created="201710262147" modified="201710262151" changecount="5">
-<pre>!Stability
-API stability is prioritized as highly as reliability and safety during development. Functions not considered stable are explicitly documented as [[Experimental]] and [[NoTest]] .
-
-As noted in README.
-&lt;&lt;&lt;
-Semantic versioning is applied. Major version numbers (v2.x) indicate a compatible API. Minor numbers indicate the current feature set has been tested for usability. Any git commits not tagged with a version number may be technically considered unstable development code. New functions present in git commits may be experimental.
-
-In most user environments, the latest git repository code will provide the strongest reliability guarantees. Extra safety checks are occasionally added as possible edge cases are discovered.
-&lt;&lt;&lt;
-
-
-</pre>
-</div>
-<div title="Command" creator="mirage335" modifier="mirage335" created="201710261745" modified="201710262137" changecount="19">
+<div title="Command" creator="mirage335" modifier="mirage335" created="201710261745" modified="201710270045" changecount="24">
 <pre>Internal functions and variables can be directly accessed from outside Ubiquitous Bash. All implementation code provided by &quot;structure/overrides.sh&quot;.
 
+&lt;&lt;showtoc&gt;&gt;
 !Function Access
 If first parameter starts with &quot;_&quot;, script will internally execute all given parameters, literally as &quot;$@&quot;. Thus, all internal functions can be unit tested on the fly, or directly used as part of other applications.
 //{{{
@@ -815,8 +802,8 @@ window.scrollToHeading = function(title, anchorName, evt) {
 };
 //}}}</pre>
 </div>
-<div title="Debian" creator="mirage335" modifier="mirage335" created="201710262100" modified="201710262135" changecount="11">
-<pre>!&lt;nowiki&gt;_fetch_x64_DebianLiteISO ./&lt;/nowiki&gt;
+<div title="Debian" creator="mirage335" modifier="mirage335" created="201710262100" modified="201710262314" changecount="12">
+<pre>!&lt;nowiki&gt;_fetch_x64_DebianLiteISO [./]&lt;/nowiki&gt;
 Fetches and verifies x64 Debian installation ISO, saves to current directory (ie. &quot;./&quot; ). Requires Debian Keyring to be installed (not part of standard _test).
 
 !_create_x64_debianLiteVM
@@ -832,7 +819,43 @@ Currently, only the creation of fresh virtual machine images imparts unique depe
 
 [[Debian]]</pre>
 </div>
-<div title="Git" creator="mirage335" modifier="mirage335" created="201710262134" modified="201710262202" changecount="4">
+<div title="Generic" creator="mirage335" modifier="mirage335" created="201710262313" modified="201710262326" changecount="6">
+<pre>!_getAbsoluteLocation [./]
+Retrieves absolute path of parameter, while maintaining symlinks, even when &quot;./&quot; would translate with &quot;readlink -f&quot; into something disregarding symlinked components in $PWD.
+Suitable for finding absolute paths, when it is desirable not to interfere with symlink specified folder structure.
+
+!_getAbsoluteFolder [./]
+Retrieves absolute path of folder containing parameter.
+
+!_findPort
+Finds unused network port on localhost.
+
+!_uid
+Generates random alphanumeric characters, default length 18.
+
+!_findDir [./]
+Reports either the directory provided, or the directory of the file provided.
+
+!_timeout [1] [true]
+Portable shell script implementation of timeout command. Runs command [true], kills process if not exited, after specified number of seconds [1].
+
+!_listprocChRoot [./]
+Lists all processes in specified chroot.
+
+!_killprocChRoot [./]
+Kills all processes in specified chroot.
+
+!_wait_umount [./]
+Repeatedly attempts to unmount filesystem or device. Requires sudo .
+
+!_checkForMounts [./]
+Searches directory for mounted filesystems. Requires sudo .
+
+
+
+</pre>
+</div>
+<div title="Git" creator="mirage335" modifier="mirage335" created="201710262134" modified="201710262313" changecount="7">
 <pre>!_gitNew
 Creates new Git repository.
 //{{{
@@ -847,31 +870,25 @@ Recursively reports status of multiple git repositories.
 find . -name .git -type d -exec bash -c 'echo ----- $(basename $(dirname $(realpath {}))) ; cd $(dirname $(realpath {})) ; git status' \;
 //}}}
 
-!_gitInfo
-Reports git URI if sufficient information and bare repository can be found. See &quot;shotcuts/git/git.sh&quot;.</pre>
+!_gitBare
+Creates a &quot;bare&quot; git repository, from an existing repository, on a server accessible by SSH. If bare repo already exists at default location, exits after displaying URI. Code at &quot;shortcuts/git/gitBare.sh&quot;.
+
+
+
+
+</pre>
 </div>
-<div title="MainMenu" creator="YourName" modifier="mirage335" created="201202151614" modified="201710262147" tags="excludeLists excludeSearch" changecount="6">
+<div title="MainMenu" creator="YourName" modifier="mirage335" created="201202151614" modified="201710270201" tags="excludeLists excludeSearch" changecount="12">
 <pre>[[Command]]
 [[Shortcuts]]
 
 [[Structure]]
+[[Resources]]
+
 [[Virtualization]]
-[[Method]]
 
-[[API]]
-&lt;html&gt;&lt;hr&gt;&lt;/html&gt;</pre>
-</div>
-<div title="Method" creator="mirage335" modifier="mirage335" created="201710261744" changecount="1">
-<pre>As shell glue for massive scale projects, or as a framework for single-purpose scripts, ubiquitous_bash is the quickest path to a robust solution, every time.
-
-Comprehensive multi-threading, instancing, portability, extensibility, and recursion can be achieved with a smaller percentage of 'extra' developer cycles than required to properly test a barely working string of hardcoded dependencies supporting none of these properties. Do not be tempted, take a moment to sort your requirements into fundamental operators.
-
-* Session - start/stop, unique id, create/delete temporary resources.
-* Extension - find executable's own location, find neighboring executables, import.
-* Arithmetic - add, subtract, multiply, divide.
-* Filtering - band-pass, band-stop, low-pass, high-pass, gain, feedback, multi-order.
-* Data - Create/Read/Update/Delete (CRUD).
-* Processing - Turing Completeness</pre>
+[[Stability]]
+</pre>
 </div>
 <div title="NoTest" creator="mirage335" modifier="mirage335" created="201710262119" modified="201710262122" changecount="3">
 <pre>Few functions have dependencies not declared or hooked by _test . None of these impact fully automatic operations.
@@ -907,21 +924,84 @@ Currently, only the creation of fresh virtual machine images imparts unique depe
 &lt;div id='tiddlerDisplay'&gt;&lt;/div&gt;
 &lt;/div&gt;</pre>
 </div>
-<div title="Raspbian" creator="mirage335" modifier="mirage335" created="201710262129" changecount="1">
-<pre>!Fetch
+<div title="Raspbian" creator="mirage335" modifier="mirage335" created="201710262129" modified="201710270227" changecount="3">
+<pre>!_fetch_raspbian [./]
 Fetches and verifies Raspbian image. Partly relies on &quot;raspberrypi.org&quot; (HTTPS) and git repository (HTTPS/SSH) for chain of trust.
-//{{{
-_fetch_raspbian ./
-//}}}</pre>
+
+!_create_raspbian
+Extracts Raspbian image.</pre>
 </div>
-<div title="Shortcuts" creator="mirage335" modifier="mirage335" created="201710261859" modified="201710262133" changecount="9">
+<div title="Resources" creator="mirage335" modifier="mirage335" created="201710270111" modified="201710270202" changecount="3">
+<pre>As &quot;a dedicated monolithic kernel for (meta)applications&quot;, use of global variables is encouraged, subject to four conditions.
+# Global variables must be set on every run, none may transfer to a new instance. If script is imported from within itself, all global variables must be re-set (even if to blank values) by the new instance.
+# Indefinite recursion may not reuse an existing session, may not import script from within itself. Thus, global variables which extend existing global variables (eg. &quot;$PATH&quot;:&quot;$scriptBin&quot; ), may not expand indefinitely.
+# Session ID, set to random value on every run, must be included in path to all resources (eg. safeTmp=&quot;$scriptAbsoluteFolder&quot;/w_&quot;$sessionid&quot; ) which need not be more than temporary.
+# Fundamental operators (eg. open, close) are to be identified prior to implementation and grouped together. Recognition of fundamental operators should guide a rigorous separation of concerns, and names should reflect these origins.
+
+Variables pointing to essential resources used by most applications are enumerated here. A succinct list of all global variables and their exact definitions is provided at &quot;structure/globalvars.sh&quot;.
+
+
+&lt;&lt;showtoc&gt;&gt;
+!Session ID
+&quot;$sessionid&quot;
+A 18 character alphanumeric random string generated once each time the script is run. All functions called from within the script will see the same session identifier value.
+
+!Script Location
+&quot;$scriptAbsoluteLocation&quot;
+Expanded path for the script's location, evading many pitfalls, especially regarding symbolic links, which might otherwise compromise the use of &quot;$0&quot;.
+
+&quot;$scriptAbsoluteFolder&quot;
+Folder in which script resides, ultimately derived from &quot;$0&quot;. Used to locate neighboring resources and safe places for temporary files.
+
+!PWD
+&quot;$outerPWD&quot;
+Records the current directory, so a function can perform 'cd &quot;$outerPWD&quot; ' before returning control elsewhere.
+
+!Persistent Directories
+&quot;$scriptLocal&quot;
+Data specific to this host. Typically server configuration files, virtual machine images, daemon PID files, and log file backups.
+
+&quot;$permaLog&quot;
+Set to match &quot;$scriptLocal&quot;.
+
+&quot;$scriptBin&quot;
+Directory for executable files needed (and often compiled) by script. Reference &quot;$scriptBin&quot; directly to ensure the correct executable is used. Nevertheless appended to system &quot;PATH&quot; variable.
+
+!Temporary Directories
+&quot;$safeTmp&quot;
+All purpose temporary directory, in same folder as script, starting with &quot;w_&quot; and ending with unique session id. While the script is running, the contents of this folder, including log files, may be useful to show its current state. If this folder somehow persists after script is no longer running, it is almost certainly obsolete, and its contents may show the cause for such an unusual failure.
+
+&quot;$logTmp&quot;
+Log directory under &quot;$safeTmp&quot;. Log files written here do not need unique names, but can be backed up to a permanent location if _preserveLog is called by _stop function .
+
+!Special
+&quot;$objectName&quot;
+Basename of the directory containing script. Typically used to cause the script to call a function based on the name of the folder it resides in. As an example, used by CoreAutoSSH project to automatically launch VNC clients, through SSH tunnels, with a script placed under a folder named, according to the for the target machine host/domain name.
+
+
+
+
+
+
+
+
+
+
+</pre>
+</div>
+<div title="Shortcuts" creator="mirage335" modifier="mirage335" created="201710261859" modified="201710270045" changecount="12">
 <pre>Many Ubiquitous Bash functions are relevant to typical desktop usage.
+
+
+&lt;&lt;showtoc&gt;&gt;
+!Generic
+[[Generic]]
 
 !Git
 [[Git]]
 
 !Visual Prompt
-[[vistualPrompt]]
+[[visualPrompt]]
 
 !Distro
 [[Debian]]
@@ -934,13 +1014,86 @@ _fetch_raspbian ./
 <div title="SiteTitle" creator="mirage335" modifier="mirage335" created="201710261740" changecount="1">
 <pre>Ubiquitous Bash</pre>
 </div>
-<div title="Structure" creator="mirage335" modifier="mirage335" created="201710261758" modified="201710261900" changecount="2">
-<pre>!Recursion
+<div title="Stability" creator="mirage335" modifier="mirage335" created="201710262147" modified="201710270201" changecount="6">
+<pre>API stability is prioritized as highly as reliability and safety during development. Functions not considered stable are explicitly documented as [[Experimental]] and [[NoTest]] .
+
+As noted in README.
+&lt;&lt;&lt;
+Semantic versioning is applied. Major version numbers (v2.x) indicate a compatible API. Minor numbers indicate the current feature set has been tested for usability. Any git commits not tagged with a version number may be technically considered unstable development code. New functions present in git commits may be experimental.
+
+In most user environments, the latest git repository code will provide the strongest reliability guarantees. Extra safety checks are occasionally added as possible edge cases are discovered.
+&lt;&lt;&lt;
+
+
+</pre>
+</div>
+<div title="Structure" creator="mirage335" modifier="mirage335" created="201710261758" modified="201710270159" changecount="15">
+<pre>As shell glue for massive scale projects, or as a framework for single-purpose scripts, ubiquitous_bash is the quickest path to a robust solution, every time.
+
+Comprehensive multi-threading, instancing, portability, extensibility, and recursion can be achieved with a smaller percentage of 'extra' developer cycles than required to properly test a barely working string of hardcoded dependencies supporting none of these properties. Do not be tempted, take a moment to sort your requirements into fundamental operators.
+
+* Session - start/stop, unique id, create/delete temporary resources.
+* Extension - find executable's own location, find neighboring executables, import.
+* Arithmetic - add, subtract, multiply, divide.
+* Filtering - band-pass, band-stop, low-pass, high-pass, gain, feedback, multi-order.
+* Data - Create/Read/Update/Delete (CRUD).
+* Processing - Turing Completeness
+
+&lt;&lt;showtoc&gt;&gt;
+!Recursion
 Due to complete thread safety, the script may always call itself, providing separate temporary resources. Built-in &quot;$0&quot; is expanded to &quot;$scriptAbsoluteLocation&quot;, then used as the executable name.
 //{{{
-&quot;$scriptAbsoluteLocation&quot; _setup
+&quot;$scriptAbsoluteLocation&quot; _buildSequence
 //}}}
-Functions using &quot;_start&quot; / &quot;_stop&quot; should be recursively called from within the script in this manner to prevent interference in the parent's processes.</pre>
+Functions using &quot;_start&quot; / &quot;_stop&quot; should be recursively called from within the script in this manner to prevent interference in the parent's processes.
+
+!Instancing
+Temporary files/directories, cleanup, crash handling, and configuration file reading/writing, are handled by functions under &quot;structure/localenv.sh&quot;.
+
+!!Example
+//{{{
+_start
+
+/bin/true || _stop 1
+
+_stop
+//}}}
+
+!!_start
+Creates temporary directories, reads configuration file, writes out temporary pid file.
+
+!!_stop [1]
+Copies diagnostic log files, removes temporary files/directories, kills dameonized process (if running). Optionally may save chosen variables to configuration file. Reports 0 or parameter [1] as exit status.
+
+!!_stop_emergency
+Accelerated shutdown procedure intended to free up the host filesystem if at all possible. Unmounts shared resources (ie. disk images) as fast as possible before handing off to normal _stop with error status. Typically called upon SIGINT, SIGTERM, or during system shutdown.
+
+!!_collect
+Gathers command/variable scripts from other (ie. yaml) file types (ie. ~AppImage recipes). Rarely implemented.
+
+!Locking
+Multiple processes cannot update the same data in shared files, or severe corruption results. Generic locking handlers are provided to prevent these situations, and include support for atomicity as well as reboot detection. Implementation code is at &quot;structure/localenv.sh&quot;.
+
+Instanced resources should always be used instead of locking shared resources if at all possible. One unique exception is the direct involvement of scarce cognition (eg. human resources), where the prevalence of too many versions may lead to confusion.
+
+Keep in mind modern applications and operating systems impose rarely encountered, but dangerous pitfalls, so documentation of this framework may involve some oversimplifications. Deliberately exploring the actual code with careful thought experiments is recommended throughout the development process.
+
+!_readLocked [&quot;$scriptLocal&quot;/lockFile]
+Checks whether a lock file exists, and has not been rendered obsolete by reboot. If obsolete, old lock file is removed.
+
+!_createLocked [&quot;$scriptLocal&quot;/lockFile]
+Writes lock file, using a move and check existence operation, to catch events which did not occur atomically.
+
+!_resetLocks
+Removes obsolete standard lock files, using _readLocked .
+
+!!_open [_waitOpen] [_writeData]
+Checks standard lock files, including &quot;$lock_open&quot;, and &quot;$lock_opening&quot;. If open, returns true (ie. 0). If already opening, waits for first parameter [_waitOpen] to return true, indicating any required mounting operations are finished, then returns true. If not already open, and not already opening, sets &quot;$lock_opening&quot;, then executes all remaining parameters [&quot;$@&quot;]. If successful, removes &quot;$lock_opening&quot;, and finally sets &quot;$lock_open&quot;.
+
+!!_close [_waitClose] [_syncData]
+Inverse of open operation. Checks standard lock files, including &quot;$lock_open&quot;, and &quot;$lock_closing&quot;. If not open (ie. already closed), return true. If already closing, waits for first parameter [_waitClose] to return true, indicating any required dismounting operations are finished, then returns true. If not already closed, and not already closing, sets &quot;$lock_closing&quot;, then executes all remaining parameters [&quot;$@&quot;]. If successful, removes &quot;$lock_closing&quot;, and finally removes &quot;$lock_open&quot;.
+
+</pre>
 </div>
 <div title="StyleSheet" modifier="YourName" created="200701130013" modified="201202151610" tags="excludeLists excludeSearch DevFireTheme" changecount="26">
 <pre>/***
@@ -1420,6 +1573,24 @@ table.listView th, table.listView td, table.listView tr {padding:0 3px 0 3px;}
 /*}}}*/
 </pre>
 </div>
+<div title="Virtualization" creator="mirage335" modifier="mirage335" created="201710270206" modified="201710270228" changecount="4">
+<pre>!Images
+Any bootable raw image may be used by ChRoot, QEMU, or VirtualBox. See [[Debian]] or [[Raspbian]] for built-in creation procedures.
+
+!~ChRoot
+!!Root
+//{{{
+./ubiquitous_bash.sh _openChRoot
+./ubiquitous_bash.sh _chroot
+./ubiquitous_bash.sh _closeChRoot
+//}}}
+!!Application
+//{{{
+./ubiquitous_bash.sh _userChRoot ls ./
+//}}}
+
+</pre>
+</div>
 <div title="defaults" creator="YourName" modifier="mirage335" created="201502280426" modified="201710261734" tags="systemConfig" changecount="9">
 <pre>// also save TiddlyWiki when a tiddler is saved
 config.options.chkAutoSave = true;
@@ -1429,6 +1600,12 @@ config.options.chkSaveBackups = false;
 
 // max # of rows in edit boxes
 config.options.txtMaxEditRows = &quot;125&quot;;</pre>
+</div>
+<div title="visualPrompt" creator="mirage335" modifier="mirage335" created="201710262301" modified="201710262303" changecount="5">
+<pre>Sets bash prompt variable. Code at &quot;shortcuts/prompt/visualPrompt.sh&quot;.
+
+&lt;html&gt;&lt;img src=&quot;data:image/png;base64,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&quot; /&gt;&lt;/html&gt;
+</pre>
 </div>
 </div>
 <!--POST-STOREAREA-->

@@ -21,4 +21,5 @@ _wait_umount() {
 	mountpoint "$1" > /dev/null 2>&1 || return 0
 	sleep 9
 	
+	return 1
 } 

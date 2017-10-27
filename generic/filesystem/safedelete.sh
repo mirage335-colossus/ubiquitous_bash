@@ -18,6 +18,7 @@ _tryExecFull() {
 
 #Portable sanity checked "rm -r" command.
 # WARNING Not foolproof. Use to guard against systematic errors, not carelessness.
+# WARNING Do NOT rely upon outside of internal programmatic usage inside script!
 #"$1" == directory to remove
 _safeRMR() {
 	
