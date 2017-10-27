@@ -579,6 +579,20 @@ _stop_virt_all() {
 }
 
 
+#Determines whether test parameter is in the path of base parameter.
+#"$1" == testParameter
+#"$2" == baseParameter
+_pathPartOf() {
+	local testParameter
+	local baseParameter
+	
+	testParameter=$(_getAbsoluteLocation "$1")
+	baseParameter=$(_getAbsoluteLocation "$2")
+	
+	[[ "$testParameter" != "$baseParameter"* ]] && return 1
+	return 0
+}
+
 #Checks if file/directory exists on remote system. Overload this function with implementation specific to the container/virtualization solution in use (ie. docker run).
 _checkBaseDirRemote() {
 	[[ "$checkBaseDirRemote" == "" ]] && checkBaseDirRemote="false"
@@ -599,6 +613,8 @@ _searchBaseDir() {
 	local currentArg
 	local currentResult
 	
+	#Do not translate if exists on remote filesystem. Dummy check by default unless overloaded, by $checkBaseDirRemote value.
+	#Intended to prevent "/bin/true" and similar from being translated, so execution of remote programs can be requested.
 	for currentArg in "$@"
 	do
 		if _checkBaseDirRemote "$currentArg"
@@ -611,7 +627,7 @@ _searchBaseDir() {
 	done
 	
 	for currentArg in "${processedArgs[@]}"
-	do	
+	do
 		
 		if [[ ! -e "$currentArg" ]]
 		then
@@ -669,7 +685,7 @@ _localDir() {
 		return
 	fi
 	
-	if [[ ! -e "$1" ]]
+	if [[ ! -e "$1" ]] && ! _pathPartOf "$1" "$2"
 	then
 		echo "$1"
 		return
@@ -694,7 +710,7 @@ _virtUser() {
 	if [[ -e /tmp/.X11-unix ]] && [[ "$DISPLAY" != "" ]] && type xauth > /dev/null 2>&1
 	then
 		export XSOCK=/tmp/.X11-unix
-		export XAUTH=/tmp/.docker.xauth."$sessionid"
+		export XAUTH=/tmp/.virtuser.xauth."$sessionid"
 		touch $XAUTH
 		xauth nlist $DISPLAY | sed -e 's/^..../ffff/' | xauth -f $XAUTH nmerge -
 	fi
@@ -1962,7 +1978,7 @@ _x11_clipboard_imageToHTML() {
 	_x11_clipboard_getImage_HTML | _x11_clipboard_sendText
 }
 
-[[ "$DISPLAY" != "" ]] && alias clipImageHTML=_x11_clipboard_imageToHTML
+[[ "$DISPLAY" != "" ]] && alias _clipImageHTML=_x11_clipboard_imageToHTML
 
 _importShortcuts() {
 	_visualPrompt

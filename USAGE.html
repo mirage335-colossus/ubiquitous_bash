@@ -948,8 +948,11 @@ Currently, only the creation of fresh virtual machine images imparts unique depe
 &lt;div id='tiddlerDisplay'&gt;&lt;/div&gt;
 &lt;/div&gt;</pre>
 </div>
-<div title="Parameter" creator="mirage335" modifier="mirage335" created="201710271826" changecount="1">
-<pre>!_searchBaseDir [.] [..] [random]
+<div title="Parameter" creator="mirage335" modifier="mirage335" created="201710271826" modified="201710271958" changecount="2">
+<pre>!_partOf [./test/xyz] [./test]
+Returns true if absolute path of test parameter [./test/xyz] is the first part of base parameter [./test] .
+
+!_searchBaseDir [.] [..] [random]
 Reports the highest-level directory containing all files in given parameter set.
 
 !_localDir [/home/host/test] [/home/host] [/home/guest/project]
