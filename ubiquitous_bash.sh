@@ -102,6 +102,7 @@ _tryExecFull() {
 
 #Portable sanity checked "rm -r" command.
 # WARNING Not foolproof. Use to guard against systematic errors, not carelessness.
+# WARNING Do NOT rely upon outside of internal programmatic usage inside script!
 #"$1" == directory to remove
 _safeRMR() {
 	
@@ -242,6 +243,7 @@ _wait_umount() {
 	mountpoint "$1" > /dev/null 2>&1 || return 0
 	sleep 9
 	
+	return 1
 } 
 
 _testMountChecks() {
