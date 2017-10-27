@@ -598,9 +598,14 @@ _slashBackToForward() {
 
 _nixToMSW() {
 	echo -e -n 'Z:'
+	
 	local localAbsoluteFirstParam
 	localAbsoluteFirstParam=$(_getAbsoluteLocation "$1")
-	_slashBackToForward "$localAbsoluteFirstParam"
+	
+	local intermediateStepOne
+	intermediateStepOne=_removeFilePrefix "$localAbsoluteFirstParam"
+	
+	_slashBackToForward "$intermediateStepOne"
 }
 
 #Determines whether test parameter is in the path of base parameter.

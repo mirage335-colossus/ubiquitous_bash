@@ -948,8 +948,14 @@ Currently, only the creation of fresh virtual machine images imparts unique depe
 &lt;div id='tiddlerDisplay'&gt;&lt;/div&gt;
 &lt;/div&gt;</pre>
 </div>
-<div title="Parameter" creator="mirage335" modifier="mirage335" created="201710271826" modified="201710271958" changecount="2">
-<pre>!_partOf [./test/xyz] [./test]
+<div title="Parameter" creator="mirage335" modifier="mirage335" created="201710271826" modified="201710272139" changecount="8">
+<pre>!_nixToMSW [./test]
+Strips any &lt;nowiki&gt;'file://'&lt;/nowiki&gt; designation, converts input file parameter to absolute path, with forward slashes, relative to 'Z:'. Matches the format used by WINE, so can be to copy files from a UNIX desktop, to a WINE application. Also matches a format sometimes used by MSW or IQEMU Virtual Machines.
+
+!_removeFilePrefix [&lt;nowiki&gt;file:///test&lt;/nowiki&gt;]
+Strips any &lt;nowiki&gt;'file://'&lt;/nowiki&gt; designation, often used by browsers.
+
+!_partOf [./test/xyz] [./test]
 Returns true if absolute path of test parameter [./test/xyz] is the first part of base parameter [./test] .
 
 !_searchBaseDir [.] [..] [random]
@@ -959,6 +965,14 @@ Reports the highest-level directory containing all files in given parameter set.
 /home/guest/project/test
 
 Converts first parameter [/home/host/test] (typically on host filesystem), to a path relative to second parameter [/home/host] (typically a project directory on host filesystem), and prepends (optional) third parameter [/home/guest/project] to result.
+
+!_virtUser [./test/test] [./test] [random]
+Performs _localDir and related operations on input parameters, outputs a set of translated parameters. Provides the complex, yet critical intelligence for application virtualization.
+//{{{
+#As an example, 
+./compile ; . ./ubiquitous_bash.sh ; export sharedHostProjectDir=./ ;  export sharedGuestProjectDir='X:' ; _virtUser ./os/xyz ./os ; echo &quot;${processedArgs[@]}&quot;
+#X:\os\xyz X:\os
+//}}}
 </pre>
 </div>
 <div title="Raspbian" creator="mirage335" modifier="mirage335" created="201710262129" modified="201710270227" changecount="3">
