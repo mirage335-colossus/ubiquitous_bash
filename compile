@@ -155,6 +155,9 @@ _includeScript qemu-raspi-raspi.sh "virtualization/qemu"
 _includeScript qemu-x64-raspi.sh "virtualization/qemu"
 _includeScript qemu-x64-x64.sh "virtualization/qemu"
 
+_includeScript vboxtest.sh "virtualization/vbox"
+_includeScript vboxlab.sh "virtualization/vbox"
+
 _includeScript mustberoot.sh "special"
 _includeScript mustgetsudo.sh "special"
 
@@ -186,6 +189,8 @@ echo >> "$progScript"
 _includeScript globalvars.sh "structure"
 
 _includeScript specglobalvars.sh "structure"
+
+_includeScript vboxvars.sh "virtualization/vbox"
 
 #_includeScript gitVars.sh "shortcuts/git"
 

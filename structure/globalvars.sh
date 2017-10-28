@@ -94,4 +94,3 @@ export sharedGuestProjectDir="$virtGuestHome"/project
 export instancedProjectDir="$instancedVirtHome"/project
 
 export chrootDir="$globalVirtFS"
-

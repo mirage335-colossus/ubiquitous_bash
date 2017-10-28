@@ -103,6 +103,7 @@ _test() {
 	_tryExec "_testQEMU_x64-x64"
 	_tryExec "_testQEMU_x64-raspi"
 	_tryExec "_testQEMU_raspi-raspi"
+	_tryExec "_testVBox"
 	
 	_tryExec "_testExtra"
 	
