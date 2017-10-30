@@ -12,8 +12,13 @@ _showCommand() {
 #However, will dereference symlinks IF the script location itself is a symlink. This is to allow symlinking to scripts to function normally.
 #Suitable for allowing scripts to find other scripts they depend on. May look like an ugly hack, but it has proven reliable over the years.
 _getScriptAbsoluteLocation() {
+	if [[ "$0" == "-"* ]]
+	then
+		return 1
+	fi
+	
 	local absoluteLocation
-	if [[ (-e $PWD\/$0) && ($0 != "") ]] && [[ "$1" != "/"* ]]
+	if [[ (-e $PWD\/$0) && ($0 != "") ]] && [[ "$0" != "/"* ]]
 			then
 	absoluteLocation="$PWD"\/"$0"
 	absoluteLocation=$(realpath -L -s "$absoluteLocation")
@@ -33,6 +38,11 @@ alias getScriptAbsoluteLocation=_getScriptAbsoluteLocation
 #Retrieves absolute path of current script, while maintaining symlinks, even when "./" would translate with "readlink -f" into something disregarding symlinked components in $PWD.
 #Suitable for allowing scripts to find other scripts they depend on.
 _getScriptAbsoluteFolder() {
+	if [[ "$0" == "-"* ]]
+	then
+		return 1
+	fi
+	
 	dirname "$(_getScriptAbsoluteLocation)"
 }
 alias getScriptAbsoluteFolder=_getScriptAbsoluteFolder
@@ -40,6 +50,11 @@ alias getScriptAbsoluteFolder=_getScriptAbsoluteFolder
 #Retrieves absolute path of parameter, while maintaining symlinks, even when "./" would translate with "readlink -f" into something disregarding symlinked components in $PWD.
 #Suitable for finding absolute paths, when it is desirable not to interfere with symlink specified folder structure.
 _getAbsoluteLocation() {
+	if [[ "$1" == "-"* ]]
+	then
+		return 1
+	fi
+	
 	if [[ "$1" == "" ]]
 	then
 		echo
@@ -61,6 +76,11 @@ alias getAbsoluteLocation=_getAbsoluteLocation
 #Retrieves absolute path of parameter, while maintaining symlinks, even when "./" would translate with "readlink -f" into something disregarding symlinked components in $PWD.
 #Suitable for finding absolute paths, when it is desirable not to interfere with symlink specified folder structure.
 _getAbsoluteFolder() {
+	if [[ "$1" == "-"* ]]
+	then
+		return 1
+	fi
+	
 	local absoluteLocation=$(_getAbsoluteLocation "$1")
 	dirname "$absoluteLocation"
 }
@@ -100,11 +120,22 @@ _tryExecFull() {
 	type "$1" >/dev/null 2>&1 && "$@"
 }
 
+#Fails if critical global variables point to nonexistant locations. Code may be duplicated elsewhere for extra safety.
+_failExec() {
+	[[ ! -e "$scriptAbsoluteLocation" ]] && return 1
+	[[ ! -e "$scriptAbsoluteFolder" ]] && return 1
+	return 0
+}
+
 #Portable sanity checked "rm -r" command.
 # WARNING Not foolproof. Use to guard against systematic errors, not carelessness.
 # WARNING Do NOT rely upon outside of internal programmatic usage inside script!
 #"$1" == directory to remove
 _safeRMR() {
+	
+	[[ ! -e "$scriptAbsoluteLocation" ]] && return 1
+	[[ ! -e "$scriptAbsoluteFolder" ]] && return 1
+	_failExec || return 1
 	
 	#if [[ ! -e "$0" ]]
 	#then
@@ -117,6 +148,11 @@ _safeRMR() {
 	fi
 	
 	if [[ "$1" == "/" ]]
+	then
+		return 1
+	fi
+	
+	if [[ "$1" == "-"* ]]
 	then
 		return 1
 	fi
@@ -2114,9 +2150,6 @@ then
 	export scriptAbsoluteFolder="$profileScriptFolder"
 fi
 
-[[ ! -e "$scriptAbsoluteLocation" ]] && exit 1
-[[ ! -e "$scriptAbsoluteFolder" ]] && exit 1
-
 #Current directory for preservation.
 export outerPWD=$(_getAbsoluteLocation "$PWD")
 
@@ -2827,6 +2860,9 @@ _true() {
 _false() {
 	false
 }
+_echo() {
+	echo "$@"
+}
 #if [[ "$1" != "" ]] && [[ "$1" != "-"* ]] && [[ ! -e "$1" ]]
 #if [[ "$1" == '_'* ]] || [[ "$1" == "true" ]] || [[ "$1" == "false" ]]
 if [[ "$1" == '_'* ]]
@@ -2852,6 +2888,11 @@ if ! [[ "$1" != "--bypass" ]]
 then
 	shift
 fi
+
+#Do not continue script execution through program code if critical global variables are not sane.
+[[ ! -e "$scriptAbsoluteLocation" ]] && exit 1
+[[ ! -e "$scriptAbsoluteFolder" ]] && exit 1
+_failExec || exit 1
 
 #####Entry
 

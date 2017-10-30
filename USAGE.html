@@ -507,7 +507,7 @@ Also see [[AdvancedOptions]]</pre>
 </div>
 <!--POST-SHADOWAREA-->
 <div id="storeArea">
-<div title="Command" creator="mirage335" modifier="mirage335" created="201710261745" modified="201710270408" changecount="30">
+<div title="Command" creator="mirage335" modifier="mirage335" created="201710261745" modified="201710300118" changecount="36">
 <pre>Internal functions and variables can be directly accessed externally. All implementation code provided by &quot;structure/overrides.sh&quot;.
 
 
@@ -535,6 +535,9 @@ Certain functions will be automatically executed, for example, to provide a more
 //{{{
 ./ubiquitous_bash.sh _importShortcuts
 //}}}
+
+WARNING
+Functions not documented as shortcuts or end-user (eg. virtualization) commands, could create a mess if run directly without their prerequisite _start/_stop/_open/_close/_failExec . Eventually, all such functions will be verified to have completely independent environment sanity checks. In the meantime, this is a developer feature.
 
 !Dependency Checking
 All dependencies of all automatically functionality can be checked by one command. Any dependencies not declared or hooked by the _test function, are documented [[Experimental]] and [[NoTest]].

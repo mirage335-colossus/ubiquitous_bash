@@ -10,9 +10,6 @@ then
 	export scriptAbsoluteFolder="$profileScriptFolder"
 fi
 
-[[ ! -e "$scriptAbsoluteLocation" ]] && exit 1
-[[ ! -e "$scriptAbsoluteFolder" ]] && exit 1
-
 #Current directory for preservation.
 export outerPWD=$(_getAbsoluteLocation "$PWD")
 

@@ -30,6 +30,9 @@ _true() {
 _false() {
 	false
 }
+_echo() {
+	echo "$@"
+}
 #if [[ "$1" != "" ]] && [[ "$1" != "-"* ]] && [[ ! -e "$1" ]]
 #if [[ "$1" == '_'* ]] || [[ "$1" == "true" ]] || [[ "$1" == "false" ]]
 if [[ "$1" == '_'* ]]
@@ -55,3 +58,8 @@ if ! [[ "$1" != "--bypass" ]]
 then
 	shift
 fi
+
+#Do not continue script execution through program code if critical global variables are not sane.
+[[ ! -e "$scriptAbsoluteLocation" ]] && exit 1
+[[ ! -e "$scriptAbsoluteFolder" ]] && exit 1
+_failExec || exit 1

@@ -16,11 +16,22 @@ _tryExecFull() {
 	type "$1" >/dev/null 2>&1 && "$@"
 }
 
+#Fails if critical global variables point to nonexistant locations. Code may be duplicated elsewhere for extra safety.
+_failExec() {
+	[[ ! -e "$scriptAbsoluteLocation" ]] && return 1
+	[[ ! -e "$scriptAbsoluteFolder" ]] && return 1
+	return 0
+}
+
 #Portable sanity checked "rm -r" command.
 # WARNING Not foolproof. Use to guard against systematic errors, not carelessness.
 # WARNING Do NOT rely upon outside of internal programmatic usage inside script!
 #"$1" == directory to remove
 _safeRMR() {
+	
+	[[ ! -e "$scriptAbsoluteLocation" ]] && return 1
+	[[ ! -e "$scriptAbsoluteFolder" ]] && return 1
+	_failExec || return 1
 	
 	#if [[ ! -e "$0" ]]
 	#then
@@ -33,6 +44,11 @@ _safeRMR() {
 	fi
 	
 	if [[ "$1" == "/" ]]
+	then
+		return 1
+	fi
+	
+	if [[ "$1" == "-"* ]]
 	then
 		return 1
 	fi

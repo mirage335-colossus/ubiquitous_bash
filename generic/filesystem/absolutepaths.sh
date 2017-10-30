@@ -2,8 +2,13 @@
 #However, will dereference symlinks IF the script location itself is a symlink. This is to allow symlinking to scripts to function normally.
 #Suitable for allowing scripts to find other scripts they depend on. May look like an ugly hack, but it has proven reliable over the years.
 _getScriptAbsoluteLocation() {
+	if [[ "$0" == "-"* ]]
+	then
+		return 1
+	fi
+	
 	local absoluteLocation
-	if [[ (-e $PWD\/$0) && ($0 != "") ]] && [[ "$1" != "/"* ]]
+	if [[ (-e $PWD\/$0) && ($0 != "") ]] && [[ "$0" != "/"* ]]
 			then
 	absoluteLocation="$PWD"\/"$0"
 	absoluteLocation=$(realpath -L -s "$absoluteLocation")
@@ -23,6 +28,11 @@ alias getScriptAbsoluteLocation=_getScriptAbsoluteLocation
 #Retrieves absolute path of current script, while maintaining symlinks, even when "./" would translate with "readlink -f" into something disregarding symlinked components in $PWD.
 #Suitable for allowing scripts to find other scripts they depend on.
 _getScriptAbsoluteFolder() {
+	if [[ "$0" == "-"* ]]
+	then
+		return 1
+	fi
+	
 	dirname "$(_getScriptAbsoluteLocation)"
 }
 alias getScriptAbsoluteFolder=_getScriptAbsoluteFolder
@@ -30,6 +40,11 @@ alias getScriptAbsoluteFolder=_getScriptAbsoluteFolder
 #Retrieves absolute path of parameter, while maintaining symlinks, even when "./" would translate with "readlink -f" into something disregarding symlinked components in $PWD.
 #Suitable for finding absolute paths, when it is desirable not to interfere with symlink specified folder structure.
 _getAbsoluteLocation() {
+	if [[ "$1" == "-"* ]]
+	then
+		return 1
+	fi
+	
 	if [[ "$1" == "" ]]
 	then
 		echo
@@ -51,6 +66,11 @@ alias getAbsoluteLocation=_getAbsoluteLocation
 #Retrieves absolute path of parameter, while maintaining symlinks, even when "./" would translate with "readlink -f" into something disregarding symlinked components in $PWD.
 #Suitable for finding absolute paths, when it is desirable not to interfere with symlink specified folder structure.
 _getAbsoluteFolder() {
+	if [[ "$1" == "-"* ]]
+	then
+		return 1
+	fi
+	
 	local absoluteLocation=$(_getAbsoluteLocation "$1")
 	dirname "$absoluteLocation"
 }
