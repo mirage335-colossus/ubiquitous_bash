@@ -1627,7 +1627,7 @@ _wait_lab_vbox() {
 	#echo -e '\E[1;32;46mWaiting for VBoxXPCOMIPCD to finish... \E[0m'
 	while kill -0 "$VBoxXPCOMIPCD_PID" > /dev/null 2>&1
 	do
-		sleep 1
+		sleep 0.2
 	done
 }
 
@@ -1669,6 +1669,67 @@ _labVBox() {
 
 _vboxlabSSH() {
 	ssh -q -F "$scriptLocal"/vblssh -i "$scriptLocal"/id_rsa "$1"
+}
+
+##VBox Boxing
+_prepare_instance_vbox() {
+	_prepare_vbox "$instancedVirtDir"
+}
+
+_wait_instance_vbox() {
+	_prepare_instance_vbox || return 1
+	
+	VBoxXPCOMIPCD_PID=$(cat "$VBoxXPCOMIPCD_PIDfile" 2> /dev/null)
+	#echo -e '\E[1;32;46mWaiting for VBoxXPCOMIPCD to finish... \E[0m'
+	while kill -0 "$VBoxXPCOMIPCD_PID" > /dev/null 2>&1
+	do
+		sleep 0.2
+	done
+}
+
+_rm_instance_vbox() {
+	_prepare_instance_vbox || return 1
+	
+	_safeRMR "$instancedVirtDir" || return 1
+	
+	return 0
+}
+
+#Not routine.
+_remove_instance_vbox() {
+	_prepare_instance_vbox || return 1
+}
+
+_edit_instance_vbox_sequence() {
+	_start
+	
+	_prepare_instance_vbox || return 1
+	
+	_readLocked "$vBox_vdi" && return 1
+	
+	_createLocked "$vBox_vdi" || return 1
+	
+	env HOME="$VBOX_USER_HOME_short" VirtualBox "$@"
+	
+	_wait_instance_vbox
+	
+	rm "$vBox_vdi" > /dev/null 2>&1
+	
+	_rm_instance_vbox
+	
+	_stop
+}
+
+_edit_instance_vbox() {	
+	"$scriptAbsoluteLocation" _edit_instance_vbox_sequence "$@"
+}
+
+_editVBox() {
+	_edit_instance_vbox "$@"
+}
+
+_userVBox() {
+	true "$@"
 }
 
 #Determines if user is root. If yes, then continue. If not, exits after printing error message.
@@ -2232,21 +2293,50 @@ export instancedProjectDir="$instancedVirtHome"/project
 
 export chrootDir="$globalVirtFS"
 
-_prepare_lab_vbox() {
+##### VBoxVars
+#Only include variables and functions here that might need to be used globally.
+_unset_vbox() {
+	export vBox_vdi=""
+	
+	export vBoxInstanceDir=""
+	
+	export VBOX_ID_FILE=""
+	
+	export VBOX_USER_HOME=""
+	export VBOX_USER_HOME_local=""
+	export VBOX_USER_HOME_short=""
+	
+	export VBOX_IPC_SOCKETID=""
+	export VBoxXPCOMIPCD_PIDfile=""
+}
+
+
+#"$1" == virtualbox instance directory (optional)
+_prepare_vbox() {
+	_unset_vbox
+	
+	export vBox_vdi="$scriptLocal/_vboxvdi"
+	
+	export vBoxInstanceDir="$scriptLocal"
+	[[ "$1" != "" ]] && export vBoxInstanceDir="$1"
+	
+	mkdir -p "$vBoxInstanceDir" > /dev/null 2>&1 || return 1
 	mkdir -p "$scriptLocal" > /dev/null 2>&1 || return 1
 	mkdir -p "$globalVirtDir" > /dev/null 2>&1 || return 1
 	mkdir -p "$globalVirtFS" > /dev/null 2>&1 || return 1
 	mkdir -p "$globalVirtTmp" > /dev/null 2>&1 || return 1
 	
-	export VBOX_ID_FILE="$scriptLocal"/vbox.id
+	export VBOX_ID_FILE="$vBoxInstanceDir"/vbox.id
 	
-	[[ ! -e "$VBOX_ID_FILE" ]] && sleep 1 && [[ ! -e "$VBOX_ID_FILE" ]] && echo -e -n "$sessionid" > "$VBOX_ID_FILE" 2> /dev/null
+	[[ ! -e "$VBOX_ID_FILE" ]] && sleep 0.1 && [[ ! -e "$VBOX_ID_FILE" ]] && echo -e -n "$sessionid" > "$VBOX_ID_FILE" 2> /dev/null
 	[[ -e "$VBOX_ID_FILE" ]] && export VBOXID=$(cat "$VBOX_ID_FILE" 2> /dev/null)
 	
 	
-	export VBOX_USER_HOME="$scriptLocal"/vBoxCfg
-	export VBOX_USER_HOME_local="$scriptLocal"/vBoxHome
-	export VBOX_USER_HOME_short="$HOME"/.vbl"$VBOXID"
+	export VBOX_USER_HOME="$vBoxInstanceDir"/vBoxCfg
+	export VBOX_USER_HOME_local="$vBoxInstanceDir"/vBoxHome
+	#export VBOX_USER_HOME_short="$HOME"/.vbl"$VBOXID"
+	#export VBOX_USER_HOME_short=/tmp/.vbl"$VBOXID"
+	export VBOX_USER_HOME_short="$bootTmp"/.vbl"$VBOXID"
 	
 	export VBOX_IPC_SOCKETID="$VBOXID"
 	export VBoxXPCOMIPCD_PIDfile="/tmp/.vbox-""$VBOX_IPC_SOCKETID""-ipc/lock"
@@ -2270,7 +2360,12 @@ _prepare_lab_vbox() {
 	
 	return 0
 }
+
+_prepare_lab_vbox() {
+	_prepare_vbox "$scriptLocal"
+}
 #_prepare_lab_vbox
+
 
 #####Local Environment Management (Resources)
 

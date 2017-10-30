@@ -1,6 +1,8 @@
 ##### VBoxVars
 #Only include variables and functions here that might need to be used globally.
 _unset_vbox() {
+	export vBox_vdi=""
+	
 	export vBoxInstanceDir=""
 	
 	export VBOX_ID_FILE=""
@@ -17,6 +19,8 @@ _unset_vbox() {
 #"$1" == virtualbox instance directory (optional)
 _prepare_vbox() {
 	_unset_vbox
+	
+	export vBox_vdi="$scriptLocal/_vboxvdi"
 	
 	export vBoxInstanceDir="$scriptLocal"
 	[[ "$1" != "" ]] && export vBoxInstanceDir="$1"
