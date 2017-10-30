@@ -68,7 +68,7 @@ _create_x64_debianLiteVM_sequence() {
 	#debAvailableVersion="9.1.0"
 	debAvailableVersion="9.2.1"
 	
-	qemu-system-x86_64 -machine accel=kvm -drive format=raw,file="$scriptLocal"/vm.img -cdrom "$scriptAbsoluteFolder"/_lib/os/debian-"$debAvailableVersion"-amd64-netinst.iso -boot d -m 1512
+	qemu-system-x86_64 -machine accel=kvm -drive format=raw,file="$scriptLocal"/vm.img -cdrom "$scriptAbsoluteFolder"/_lib/os/debian-"$debAvailableVersion"-amd64-netinst.iso -boot d -m 1536
 	
 	_stop
 }

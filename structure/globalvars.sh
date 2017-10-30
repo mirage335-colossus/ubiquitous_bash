@@ -90,4 +90,8 @@ export sharedGuestProjectDir="$virtGuestHome"/project
 
 export instancedProjectDir="$instancedVirtHome"/project
 
+export hostToGuestDir="$instancedVirtDir"/htg
+export hostToGuestFiles="$hostToGuestDir"/files
+export hostToGuestISO="$instancedVirtDir"/htg/htg.iso
+
 export chrootDir="$globalVirtFS"

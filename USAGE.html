@@ -1687,7 +1687,7 @@ A &quot;_tryExec&quot; function is generally used to call a function which check
 <pre>|~ViewToolbar|closeTiddler closeOthers editTiddler &gt; fields syncing permalink references jump|
 |~EditToolbar|+saveTiddler -cancelTiddler deleteTiddler|</pre>
 </div>
-<div title="Virtualization" creator="mirage335" modifier="mirage335" created="201710270206" modified="201710301932" changecount="17">
+<div title="Virtualization" creator="mirage335" modifier="mirage335" created="201710270206" modified="201710302230" changecount="19">
 <pre>Ubiquitous Bash middleware has the capacity to provide true application virtualization, with automatic fileparameter translation, across a wide variety of platforms (x86/64, ARM), and operating systems (MSW, Unix), by using any available underlying tool (~ChRoot, QEMU, Xen, ~VirtualBox, Docker, Wine, Cygwin, &lt;nowiki&gt;DosBox&lt;/nowiki&gt;), on a common disk format (raw image). Realizing most of this capability will involve simply merging existing code from [[IQEmu|https://github.com/mirage335/IQEMU]], [[DockerApp|https://github.com/mirage335/DockerApp/blob/master/example.png]], [[HostedXen|https://github.com/mirage335/HostedXen]], [[HostedOpenVZ|https://github.com/mirage335/hostedOpenVZ]], [[VBoxLab|https://github.com/mirage335/VBoxLab]], [[netLab|https://github.com/mirage335/netLab]], [[PortableWine|https://github.com/mirage335/PortableWine]], and [[PortableDosBox|https://github.com/mirage335/PortableDosBox]]. Automatic selection of native application by platform is also well supported.
 
 Fully self-contained SAMBA server operation may also be integrated, based on the now available _userChRoot and _findPort resources, as well as older work done towards supporting QEMU as a backend for [[IQEmu|https://github.com/mirage335/IQEMU]].
@@ -1714,12 +1714,18 @@ Any bootable raw image may be used by ~ChRoot, QEMU, or ~VirtualBox. See [[Debia
 _removeChRoot
 //}}}
 
+!&lt;nowiki&gt;QEMU&lt;/nowiki&gt;
+!!Root
+//{{{
+_qemu
+//}}}
+
 !&lt;nowiki&gt;VirtualBox&lt;/nowiki&gt;
 !!Root (Lab)
 Contains ~VirtualBox operations to a single folder, making any virtual machines created immediately portable. Ideal for high-fidelity network architecture experiments.
 //{{{
 _labVBox		#Complete VirtualBox installation, permanently contained to &quot;./local&quot;.
-_editVBox		#Opens VirtualBox GUI on preconfigured virtual machine disk config image at &quot;./local/v/vboxuse.vdi&quot; .
+_editVBox		#Opens VirtualBox GUI on preconfigured virtual machine disk config image at &quot;./local/v/vm.vdi&quot; .
 //}}}
 
 
