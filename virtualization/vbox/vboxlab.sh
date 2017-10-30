@@ -6,7 +6,7 @@ _wait_lab_vbox() {
 	#echo -e '\E[1;32;46mWaiting for VBoxXPCOMIPCD to finish... \E[0m'
 	while kill -0 "$VBoxXPCOMIPCD_PID" > /dev/null 2>&1
 	do
-		sleep 1
+		sleep 0.2
 	done
 }
 
