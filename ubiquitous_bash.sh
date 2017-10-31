@@ -855,7 +855,7 @@ CZXWXcRMTo8EmM8i4d
 
 _here_bootdisc_loaderXbat() {
 cat << 'CZXWXcRMTo8EmM8i4d'
-net use x: \\VBOXSVR\root
+net use x: \\VBOXSVR\appFolder
 
 :checkMount
 ping -n 2 127.0.0.1 > nul
@@ -897,23 +897,26 @@ _writeBootdisc() {
 _setShareMSW_app() {
 	export flagShareApp="true"
 	
+	export sharedHostProjectDir="$sharedHostProjectDirDefault"
+	export sharedGuestProjectDir="$sharedGuestProjectDirDefault"
+	
 	export sharedGuestProjectDir="X:"
 }
 
 _setShareMSW_root() {
 	export flagShareRoot="true"
 	
-	export sharedGuestProjectDir="Z:"
+	export sharedHostProjectDir="$sharedHostProjectDirDefault"
+	export sharedGuestProjectDir="$sharedGuestProjectDirDefault"
 	
 	export sharedHostProjectDir=/
+	export sharedGuestProjectDir="Z:"
 }
 
 _setShareMSW() {
-	export flagShareApp="false"
-	export flagShareRoot="false"
-	
-	#_setShareMSW_root
-	_setShareMSW_app
+	[[ "$flagShareApp" ]] && _setShareMSW_app && return
+	[[ "$flagShareApp" ]] && _setShareMSW_root && return
+	return 1
 }
 
 _createHTG_MSW() {
@@ -935,15 +938,56 @@ _createHTG_MSW() {
 	[[ "$flagShareRoot" == "true" ]] && _here_bootdisc_loaderZbat >> "$hostToGuestFiles"/loader.bat
 	
 	_here_bootdisc_shellbat > "$hostToGuestFiles"/shell.bat
+	
+	#https://www.cyberciti.biz/faq/howto-unix-linux-convert-dos-newlines-cr-lf-unix-text-format/
+	sed -i 's/$'"/`echo \\\r`/" "$hostToGuestFiles"/application.bat
+	sed -i 's/$'"/`echo \\\r`/" "$hostToGuestFiles"/loader.bat
+	sed -i 's/$'"/`echo \\\r`/" "$hostToGuestFiles"/shell.bat
+}
+
+_setShareUNIX_app() {
+	export flagShareApp="true"
+	
+	export sharedHostProjectDir="$sharedHostProjectDirDefault"
+	export sharedGuestProjectDir="$sharedGuestProjectDirDefault"
+}
+
+_setShareUNIX_root() {
+	export flagShareRoot="true"
+	
+	export sharedHostProjectDir="$sharedHostProjectDirDefault"
+	export sharedGuestProjectDir="$sharedGuestProjectDirDefault"
+	
+	export sharedHostProjectDir=/
+}
+
+_setShareUNIX() {
+	[[ "$flagShareApp" ]] && _setShareUNIX_app && return
+	[[ "$flagShareApp" ]] && _setShareUNIX_root && return
+	return 1
+}
+
+_createHTG_UNIX() {
+	_setShareUNIX
+	_virtUser "$@"
+	#"$sharedHostProjectDir"
+	#"${processedArgs[@]}"
+	
+	echo "${processedArgs[@]}" > "$hostToGuestFiles"/cmd.sh
 }
 
 _commandBootdisc() {
-	# TODO Optional/overloadable UNIX processor.
+	export flagShareRoot="false"
 	
+	#Rigiorously ensure flags will be set properly.
+	[[ "$flagShareRoot" != "true" ]] && export flagShareRoot="false"
+	[[ "$flagShareRoot" != "true" ]] && export flagShareApp="true"
 	
 	#Process for MSW.
 	_createHTG_MSW "$@"
 	
+	#Process for UNIX.
+	_createHTG_UNIX "$@"
 	
 	_writeBootdisc || return 1
 }
@@ -1819,7 +1863,8 @@ _wait_instance_vbox() {
 _rm_instance_vbox() {
 	_prepare_instance_vbox || return 1
 	
-	VBoxManage unregistervm "$sessionid" --delete > /dev/null 2>&1
+	#Usually unnecessary, possibly destructive, may delete VM images.
+	#VBoxManage unregistervm "$sessionid" --delete > /dev/null 2>&1
 	
 	_safeRMR "$instancedVirtDir" || return 1
 	
@@ -1844,8 +1889,9 @@ _vboxGUI() {
 
 
 _set_instance_vbox_type() {
-	#[[ "$vboxOStype" ]] && export vboxOStype=Gentoo
-	[[ "$vboxOStype" ]] && export vboxOStype=Windows2003
+	#[[ "$vboxOStype" == "" ]] && export vboxOStype=Gentoo
+	#[[ "$vboxOStype" == "" ]] && export vboxOStype=Windows2003
+	[[ "$vboxOStype" == "" ]] && export vboxOStype=WindowsXP
 	VBoxManage createvm --name "$sessionid" --ostype "$vboxOStype" --register --basefolder "$VBOX_USER_HOME_short"
 }
 
@@ -1874,7 +1920,10 @@ _create_instance_vbox() {
 	_set_instance_vbox_share
 	
 	VBoxManage storagectl "$sessionid" --name "IDE Controller" --add ide --controller PIIX4
-	VBoxManage storageattach "$sessionid" --storagectl "IDE Controller" --port 0 --device 0 --type hdd --medium "$scriptLocal"/vm.vdi --mtype multiattach
+	
+	#export vboxDiskMtype="normal"
+	[[ "$vboxDiskMtype" == "" ]] && export vboxDiskMtype="multiattach"
+	VBoxManage storageattach "$sessionid" --storagectl "IDE Controller" --port 0 --device 0 --type hdd --medium "$scriptLocal"/vm.vdi --mtype "$vboxDiskMtype"
 	
 	[[ -e "$hostToGuestISO" ]] && VBoxManage storageattach "$sessionid" --storagectl "IDE Controller" --port 1 --device 0 --type dvddrive --medium "$hostToGuestISO"
 	
@@ -1920,11 +1969,16 @@ _edit_instance_vbox_sequence() {
 	
 	_createLocked "$vBox_vdi" || return 1
 	
+	#VBoxManage modifymedium "$scriptLocal"/vm.vdi --type normal
+	
+	export vboxDiskMtype="normal"
 	_create_instance_vbox "$@"
 	
 	env HOME="$VBOX_USER_HOME_short" VirtualBox
 	
 	_wait_instance_vbox
+	
+	#VBoxManage modifymedium "$scriptLocal"/vm.vdi --type multiattach
 	
 	rm "$vBox_vdi" > /dev/null 2>&1
 	
@@ -2496,8 +2550,11 @@ export virtGuestHomeRef="$virtGuestHome".ref
 export instancedVirtHome="$instancedVirtFS""$virtGuestHome"
 export instancedVirtHomeRef="$instancedVirtHome".ref
 
-export sharedHostProjectDir="$outerPWD"	#Default value.
-export sharedGuestProjectDir="$virtGuestHome"/project
+export sharedHostProjectDirDefault=""
+export sharedGuestProjectDirDefault="$virtGuestHome"/project
+
+export sharedHostProjectDir="$sharedHostProjectDirDefault"
+export sharedGuestProjectDir="$sharedGuestProjectDirDefault"
 
 export instancedProjectDir="$instancedVirtHome"/project
 

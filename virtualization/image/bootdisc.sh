@@ -32,23 +32,26 @@ _writeBootdisc() {
 _setShareMSW_app() {
 	export flagShareApp="true"
 	
+	export sharedHostProjectDir="$sharedHostProjectDirDefault"
+	export sharedGuestProjectDir="$sharedGuestProjectDirDefault"
+	
 	export sharedGuestProjectDir="X:"
 }
 
 _setShareMSW_root() {
 	export flagShareRoot="true"
 	
-	export sharedGuestProjectDir="Z:"
+	export sharedHostProjectDir="$sharedHostProjectDirDefault"
+	export sharedGuestProjectDir="$sharedGuestProjectDirDefault"
 	
 	export sharedHostProjectDir=/
+	export sharedGuestProjectDir="Z:"
 }
 
 _setShareMSW() {
-	export flagShareApp="false"
-	export flagShareRoot="false"
-	
-	#_setShareMSW_root
-	_setShareMSW_app
+	[[ "$flagShareApp" ]] && _setShareMSW_app && return
+	[[ "$flagShareApp" ]] && _setShareMSW_root && return
+	return 1
 }
 
 _createHTG_MSW() {
@@ -70,15 +73,56 @@ _createHTG_MSW() {
 	[[ "$flagShareRoot" == "true" ]] && _here_bootdisc_loaderZbat >> "$hostToGuestFiles"/loader.bat
 	
 	_here_bootdisc_shellbat > "$hostToGuestFiles"/shell.bat
+	
+	#https://www.cyberciti.biz/faq/howto-unix-linux-convert-dos-newlines-cr-lf-unix-text-format/
+	sed -i 's/$'"/`echo \\\r`/" "$hostToGuestFiles"/application.bat
+	sed -i 's/$'"/`echo \\\r`/" "$hostToGuestFiles"/loader.bat
+	sed -i 's/$'"/`echo \\\r`/" "$hostToGuestFiles"/shell.bat
+}
+
+_setShareUNIX_app() {
+	export flagShareApp="true"
+	
+	export sharedHostProjectDir="$sharedHostProjectDirDefault"
+	export sharedGuestProjectDir="$sharedGuestProjectDirDefault"
+}
+
+_setShareUNIX_root() {
+	export flagShareRoot="true"
+	
+	export sharedHostProjectDir="$sharedHostProjectDirDefault"
+	export sharedGuestProjectDir="$sharedGuestProjectDirDefault"
+	
+	export sharedHostProjectDir=/
+}
+
+_setShareUNIX() {
+	[[ "$flagShareApp" ]] && _setShareUNIX_app && return
+	[[ "$flagShareApp" ]] && _setShareUNIX_root && return
+	return 1
+}
+
+_createHTG_UNIX() {
+	_setShareUNIX
+	_virtUser "$@"
+	#"$sharedHostProjectDir"
+	#"${processedArgs[@]}"
+	
+	echo "${processedArgs[@]}" > "$hostToGuestFiles"/cmd.sh
 }
 
 _commandBootdisc() {
-	# TODO Optional/overloadable UNIX processor.
+	export flagShareRoot="false"
 	
+	#Rigiorously ensure flags will be set properly.
+	[[ "$flagShareRoot" != "true" ]] && export flagShareRoot="false"
+	[[ "$flagShareRoot" != "true" ]] && export flagShareApp="true"
 	
 	#Process for MSW.
 	_createHTG_MSW "$@"
 	
+	#Process for UNIX.
+	_createHTG_UNIX "$@"
 	
 	_writeBootdisc || return 1
 }

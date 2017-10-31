@@ -17,7 +17,7 @@ CZXWXcRMTo8EmM8i4d
 
 _here_bootdisc_loaderXbat() {
 cat << 'CZXWXcRMTo8EmM8i4d'
-net use x: \\VBOXSVR\root
+net use x: \\VBOXSVR\appFolder
 
 :checkMount
 ping -n 2 127.0.0.1 > nul

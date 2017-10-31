@@ -16,7 +16,8 @@ _wait_instance_vbox() {
 _rm_instance_vbox() {
 	_prepare_instance_vbox || return 1
 	
-	VBoxManage unregistervm "$sessionid" --delete > /dev/null 2>&1
+	#Usually unnecessary, possibly destructive, may delete VM images.
+	#VBoxManage unregistervm "$sessionid" --delete > /dev/null 2>&1
 	
 	_safeRMR "$instancedVirtDir" || return 1
 	
@@ -41,8 +42,9 @@ _vboxGUI() {
 
 
 _set_instance_vbox_type() {
-	#[[ "$vboxOStype" ]] && export vboxOStype=Gentoo
-	[[ "$vboxOStype" ]] && export vboxOStype=Windows2003
+	#[[ "$vboxOStype" == "" ]] && export vboxOStype=Gentoo
+	#[[ "$vboxOStype" == "" ]] && export vboxOStype=Windows2003
+	[[ "$vboxOStype" == "" ]] && export vboxOStype=WindowsXP
 	VBoxManage createvm --name "$sessionid" --ostype "$vboxOStype" --register --basefolder "$VBOX_USER_HOME_short"
 }
 
@@ -71,7 +73,10 @@ _create_instance_vbox() {
 	_set_instance_vbox_share
 	
 	VBoxManage storagectl "$sessionid" --name "IDE Controller" --add ide --controller PIIX4
-	VBoxManage storageattach "$sessionid" --storagectl "IDE Controller" --port 0 --device 0 --type hdd --medium "$scriptLocal"/vm.vdi --mtype multiattach
+	
+	#export vboxDiskMtype="normal"
+	[[ "$vboxDiskMtype" == "" ]] && export vboxDiskMtype="multiattach"
+	VBoxManage storageattach "$sessionid" --storagectl "IDE Controller" --port 0 --device 0 --type hdd --medium "$scriptLocal"/vm.vdi --mtype "$vboxDiskMtype"
 	
 	[[ -e "$hostToGuestISO" ]] && VBoxManage storageattach "$sessionid" --storagectl "IDE Controller" --port 1 --device 0 --type dvddrive --medium "$hostToGuestISO"
 	
@@ -117,11 +122,16 @@ _edit_instance_vbox_sequence() {
 	
 	_createLocked "$vBox_vdi" || return 1
 	
+	#VBoxManage modifymedium "$scriptLocal"/vm.vdi --type normal
+	
+	export vboxDiskMtype="normal"
 	_create_instance_vbox "$@"
 	
 	env HOME="$VBOX_USER_HOME_short" VirtualBox
 	
 	_wait_instance_vbox
+	
+	#VBoxManage modifymedium "$scriptLocal"/vm.vdi --type multiattach
 	
 	rm "$vBox_vdi" > /dev/null 2>&1
 	
