@@ -3,10 +3,12 @@
 #"$2" == baseParameter
 _pathPartOf() {
 	local testParameter
+	testParameter="IAUjqyPF2s3gqjC0t1"
 	local baseParameter
+	baseParameter="JQRBqIoOVoDJuzc7k9"
 	
-	testParameter=$(_getAbsoluteLocation "$1")
-	baseParameter=$(_getAbsoluteLocation "$2")
+	[[ -e "$1" ]] && testParameter=$(_getAbsoluteLocation "$1")
+	[[ -e "$2" ]] && baseParameter=$(_getAbsoluteLocation "$2")
 	
 	[[ "$testParameter" != "$baseParameter"* ]] && return 1
 	return 0
@@ -141,11 +143,10 @@ _virtUser() {
 		xauth nlist $DISPLAY | sed -e 's/^..../ffff/' | xauth -f $XAUTH nmerge -
 	fi
 	
-	[[ "$sharedHostProjectDir" == "" ]] && sharedHostProjectDir=$(_searchBaseDir "$@" "$outerPWD")
-	
 	if [[ "$sharedHostProjectDir" == "" ]]
 	then
-		sharedHostProjectDir="$safeTmp"/shared
+		sharedHostProjectDir=$(_searchBaseDir "$@" "$outerPWD")
+		#sharedHostProjectDir="$safeTmp"/shared
 		mkdir -p "$sharedHostProjectDir"
 	fi
 	

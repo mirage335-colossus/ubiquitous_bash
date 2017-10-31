@@ -49,7 +49,7 @@ _set_instance_vbox_type() {
 }
 
 _set_instance_vbox_features() {
-	VBoxManage modifyvm "$sessionid" --boot1 disk --biosbootmenu disabled --bioslogofadein off --bioslogofadeout off --bioslogodisplaytime 5 --vram 128 --memory 1536 --nic1 nat --nictype1 "82543GC" --vrde off --ioapic on --acpi on --pae on --chipset ich9 --audio null --usb on --cpus 2 --accelerate3d off --accelerate2dvideo off --clipboard bidirectional
+	VBoxManage modifyvm "$sessionid" --boot1 disk --biosbootmenu disabled --bioslogofadein off --bioslogofadeout off --bioslogodisplaytime 5 --vram 128 --memory 512 --nic1 nat --nictype1 "82543GC" --vrde off --ioapic off --acpi on --pae off --chipset piix3 --audio pulse --usb on --cpus 1 --accelerate3d off --accelerate2dvideo off --clipboard bidirectional
 }
 
 _set_instance_vbox_share() {

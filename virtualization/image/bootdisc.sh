@@ -30,8 +30,6 @@ _writeBootdisc() {
 }
 
 _setShareMSW_app() {
-	export flagShareApp="true"
-	
 	export sharedHostProjectDir="$sharedHostProjectDirDefault"
 	export sharedGuestProjectDir="$sharedGuestProjectDirDefault"
 	
@@ -39,8 +37,6 @@ _setShareMSW_app() {
 }
 
 _setShareMSW_root() {
-	export flagShareRoot="true"
-	
 	export sharedHostProjectDir="$sharedHostProjectDirDefault"
 	export sharedGuestProjectDir="$sharedGuestProjectDirDefault"
 	
@@ -54,6 +50,11 @@ _setShareMSW() {
 	return 1
 }
 
+#Consider using explorer.exe to use file associations within the guest. Overload with ops to force a more specific 'preCommand'.
+_preCommand_MSW() {
+	echo -e -n 'start /MAX "explorer.exe" '
+}
+
 _createHTG_MSW() {
 	_setShareMSW
 	_virtUser "$@"
@@ -61,8 +62,8 @@ _createHTG_MSW() {
 	#"${processedArgs[@]}"
 	
 	
-	#Consider using explorer.exe to use file associations within the guest. Overload with ops to force a more specific 'preCommand'.
-	echo -e -n 'start ' > "$hostToGuestFiles"/application.bat
+	
+	_preCommand_MSW > "$hostToGuestFiles"/application.bat
 	
 	echo "${processedArgs[@]}" >> "$hostToGuestFiles"/application.bat
 	 
@@ -81,15 +82,11 @@ _createHTG_MSW() {
 }
 
 _setShareUNIX_app() {
-	export flagShareApp="true"
-	
 	export sharedHostProjectDir="$sharedHostProjectDirDefault"
 	export sharedGuestProjectDir="$sharedGuestProjectDirDefault"
 }
 
 _setShareUNIX_root() {
-	export flagShareRoot="true"
-	
 	export sharedHostProjectDir="$sharedHostProjectDirDefault"
 	export sharedGuestProjectDir="$sharedGuestProjectDirDefault"
 	

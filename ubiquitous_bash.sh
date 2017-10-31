@@ -649,10 +649,12 @@ _nixToMSW() {
 #"$2" == baseParameter
 _pathPartOf() {
 	local testParameter
+	testParameter="IAUjqyPF2s3gqjC0t1"
 	local baseParameter
+	baseParameter="JQRBqIoOVoDJuzc7k9"
 	
-	testParameter=$(_getAbsoluteLocation "$1")
-	baseParameter=$(_getAbsoluteLocation "$2")
+	[[ -e "$1" ]] && testParameter=$(_getAbsoluteLocation "$1")
+	[[ -e "$2" ]] && baseParameter=$(_getAbsoluteLocation "$2")
 	
 	[[ "$testParameter" != "$baseParameter"* ]] && return 1
 	return 0
@@ -787,11 +789,10 @@ _virtUser() {
 		xauth nlist $DISPLAY | sed -e 's/^..../ffff/' | xauth -f $XAUTH nmerge -
 	fi
 	
-	[[ "$sharedHostProjectDir" == "" ]] && sharedHostProjectDir=$(_searchBaseDir "$@" "$outerPWD")
-	
 	if [[ "$sharedHostProjectDir" == "" ]]
 	then
-		sharedHostProjectDir="$safeTmp"/shared
+		sharedHostProjectDir=$(_searchBaseDir "$@" "$outerPWD")
+		#sharedHostProjectDir="$safeTmp"/shared
 		mkdir -p "$sharedHostProjectDir"
 	fi
 	
@@ -895,8 +896,6 @@ _writeBootdisc() {
 }
 
 _setShareMSW_app() {
-	export flagShareApp="true"
-	
 	export sharedHostProjectDir="$sharedHostProjectDirDefault"
 	export sharedGuestProjectDir="$sharedGuestProjectDirDefault"
 	
@@ -904,8 +903,6 @@ _setShareMSW_app() {
 }
 
 _setShareMSW_root() {
-	export flagShareRoot="true"
-	
 	export sharedHostProjectDir="$sharedHostProjectDirDefault"
 	export sharedGuestProjectDir="$sharedGuestProjectDirDefault"
 	
@@ -919,6 +916,11 @@ _setShareMSW() {
 	return 1
 }
 
+#Consider using explorer.exe to use file associations within the guest. Overload with ops to force a more specific 'preCommand'.
+_preCommand_MSW() {
+	echo -e -n 'start /MAX "explorer.exe" '
+}
+
 _createHTG_MSW() {
 	_setShareMSW
 	_virtUser "$@"
@@ -926,8 +928,8 @@ _createHTG_MSW() {
 	#"${processedArgs[@]}"
 	
 	
-	#Consider using explorer.exe to use file associations within the guest. Overload with ops to force a more specific 'preCommand'.
-	echo -e -n 'start ' > "$hostToGuestFiles"/application.bat
+	
+	_preCommand_MSW > "$hostToGuestFiles"/application.bat
 	
 	echo "${processedArgs[@]}" >> "$hostToGuestFiles"/application.bat
 	 
@@ -946,15 +948,11 @@ _createHTG_MSW() {
 }
 
 _setShareUNIX_app() {
-	export flagShareApp="true"
-	
 	export sharedHostProjectDir="$sharedHostProjectDirDefault"
 	export sharedGuestProjectDir="$sharedGuestProjectDirDefault"
 }
 
 _setShareUNIX_root() {
-	export flagShareRoot="true"
-	
 	export sharedHostProjectDir="$sharedHostProjectDirDefault"
 	export sharedGuestProjectDir="$sharedGuestProjectDirDefault"
 	
@@ -1896,7 +1894,7 @@ _set_instance_vbox_type() {
 }
 
 _set_instance_vbox_features() {
-	VBoxManage modifyvm "$sessionid" --boot1 disk --biosbootmenu disabled --bioslogofadein off --bioslogofadeout off --bioslogodisplaytime 5 --vram 128 --memory 1536 --nic1 nat --nictype1 "82543GC" --vrde off --ioapic on --acpi on --pae on --chipset ich9 --audio null --usb on --cpus 2 --accelerate3d off --accelerate2dvideo off --clipboard bidirectional
+	VBoxManage modifyvm "$sessionid" --boot1 disk --biosbootmenu disabled --bioslogofadein off --bioslogofadeout off --bioslogodisplaytime 5 --vram 128 --memory 512 --nic1 nat --nictype1 "82543GC" --vrde off --ioapic off --acpi on --pae off --chipset piix3 --audio pulse --usb on --cpus 1 --accelerate3d off --accelerate2dvideo off --clipboard bidirectional
 }
 
 _set_instance_vbox_share() {
