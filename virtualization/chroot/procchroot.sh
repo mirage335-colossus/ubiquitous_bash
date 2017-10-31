@@ -5,9 +5,10 @@ _listprocChRoot() {
 	local absolute1
 	absolute1=$(_getAbsoluteLocation "$1")
 	PROCS=""
-	for p in `ps -o pid -A`; do
-		if [ "`readlink /proc/$p/root`" = "$absolute1" ]; then
-			PROCS="$PROCS $p"
+	local currentProcess
+	for currentProcess in `ps -o pid -A`; do
+		if [ "`readlink /proc/$currentProcess/root`" = "$absolute1" ]; then
+			PROCS="$PROCS" "$currentProcess"
 		fi
 	done
 	echo "$PROCS"

@@ -34,6 +34,11 @@ _remove_instance_vbox() {
 	_prepare_instance_vbox || return 1
 }
 
+_vboxGUI() {
+	#VirtualBox "$@"
+	VBoxSDL "$@"
+}
+
 
 _set_instance_vbox_type() {
 	#[[ "$vboxOStype" ]] && export vboxOStype=Gentoo
@@ -46,40 +51,62 @@ _set_instance_vbox_features() {
 }
 
 _set_instance_vbox_share() {
-	#VBoxManage sharedfolder add "$sessionid" --name "root" --hostpath "/" --automount
-	[[ "$1" != "" ]] && VBoxManage sharedfolder add "$sessionid" --name "appFolder" --hostpath "$1" --automount
+	#VBoxManage sharedfolder add "$sessionid" --name "root" --hostpath "/"
+	[[ "$sharedHostProjectDir" != "" ]] && VBoxManage sharedfolder add "$sessionid" --name "appFolder" --hostpath "$sharedHostProjectDir"
 }
 
 _set_instance_vbox_command() {
 	_prepareBootdisc || return 1
 	
-	_mkisofs -R -uid 0 -gid 0 -dir-mode 0555 -file-mode 0555 -new-dir-mode 0555 -J -hfs -o "$hostToGuestISO" "$hostToGuestFiles" || return 1
+	_commandBootdisc "$@" || return 1
 }
 
-_user_instance_vbox() {
-	#Create temporary VM around persistent disk image.
-	
+_create_instance_vbox() {
 	_set_instance_vbox_type
 	
 	_set_instance_vbox_features
 	
-	_set_instance_vbox_share
+	_set_instance_vbox_command "$@"
 	
-	_set_instance_vbox_command
+	_set_instance_vbox_share
 	
 	VBoxManage storagectl "$sessionid" --name "IDE Controller" --add ide --controller PIIX4
 	VBoxManage storageattach "$sessionid" --storagectl "IDE Controller" --port 0 --device 0 --type hdd --medium "$scriptLocal"/vm.vdi --mtype multiattach
 	
-	[[ -e "$hostToGuestISO" ]] && VBoxManage storageattach "$VM_Name" --storagectl "IDE Controller" --port 1 --device 0 --type dvddrive --medium "$hostToGuestISO"
+	[[ -e "$hostToGuestISO" ]] && VBoxManage storageattach "$sessionid" --storagectl "IDE Controller" --port 1 --device 0 --type dvddrive --medium "$hostToGuestISO"
 	
 	#VBoxManage showhdinfo "$scriptLocal"/vm.vdi
 
 	#Suppress annoying warnings.
 	VBoxManage setextradata global GUI/SuppressMessages "remindAboutAutoCapture,remindAboutMouseIntegrationOn,showRuntimeError.warning.HostAudioNotResponding,remindAboutGoingSeamless,remindAboutInputCapture,remindAboutGoingFullscreen,remindAboutMouseIntegrationOff,confirmGoingSeamless,confirmInputCapture,remindAboutPausedVMInput,confirmVMReset,confirmGoingFullscreen,remindAboutWrongColorDepth"
-
+	
+	return 0
 }
 
+#Create and launch temporary VM around persistent disk image.
+_user_instance_vbox_sequence() {
+	_start
+	
+	_prepare_instance_vbox || return 1
+	
+	_readLocked "$vBox_vdi" && return 1
+	
+	_create_instance_vbox "$@"
+	
+	 _vboxGUI --startvm "$sessionid"
+	
+	_rm_instance_vbox
+	
+	_stop
+}
 
+_user_instance_vbox() {
+	"$scriptAbsoluteLocation" _user_instance_vbox_sequence "$@"
+}
+
+_userVBox() {
+	_user_instance_vbox "$@"
+}
 
 _edit_instance_vbox_sequence() {
 	_start
@@ -90,7 +117,9 @@ _edit_instance_vbox_sequence() {
 	
 	_createLocked "$vBox_vdi" || return 1
 	
-	env HOME="$VBOX_USER_HOME_short" VirtualBox "$@"
+	_create_instance_vbox "$@"
+	
+	env HOME="$VBOX_USER_HOME_short" VirtualBox
 	
 	_wait_instance_vbox
 	
@@ -109,6 +138,3 @@ _editVBox() {
 	_edit_instance_vbox "$@"
 }
 
-_userVBox() {
-	true "$@"
-}

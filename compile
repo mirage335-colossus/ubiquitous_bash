@@ -142,6 +142,7 @@ _includeScript osTranslation.sh "virtualization"
 _includeScript localPathTranslation.sh "virtualization"
 
 _includeScript createImage.sh "virtualization/image"
+_includeScript here_bootdisc.sh "virtualization/image"
 _includeScript bootdisc.sh "virtualization/image"
 
 _includeScript procchroot.sh "virtualization/chroot"

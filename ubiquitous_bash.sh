@@ -836,6 +836,33 @@ _createRawImage() {
 	
 }
 
+_here_bootdisc_shellbat() {
+cat << 'CZXWXcRMTo8EmM8i4d'
+CALL Y:\loader.bat
+CALL Y:\application.bat
+CZXWXcRMTo8EmM8i4d
+}
+
+_here_bootdisc_loaderZbat() {
+cat << 'CZXWXcRMTo8EmM8i4d'
+net use z: \\VBOXSVR\root
+
+:checkMount
+ping -n 2 127.0.0.1 > nul
+IF NOT EXIST "Z:\" GOTO checkMount
+CZXWXcRMTo8EmM8i4d
+}
+
+_here_bootdisc_loaderXbat() {
+cat << 'CZXWXcRMTo8EmM8i4d'
+net use x: \\VBOXSVR\root
+
+:checkMount
+ping -n 2 127.0.0.1 > nul
+IF NOT EXIST "X:\" GOTO checkMount
+CZXWXcRMTo8EmM8i4d
+}
+
 _testVirtBootdisc() {
 	if ! type mkisofs > /dev/null 2>&1 && ! type genisoimage > /dev/null 2>&1
 	then
@@ -861,7 +888,65 @@ _mkisofs() {
 		genisoimage "$@"
 		return $?
 	fi
-} 
+}
+
+_writeBootdisc() {
+	_mkisofs -R -uid 0 -gid 0 -dir-mode 0555 -file-mode 0555 -new-dir-mode 0555 -J -hfs -o "$hostToGuestISO" "$hostToGuestFiles"
+}
+
+_setShareMSW_app() {
+	export flagShareApp="true"
+	
+	export sharedGuestProjectDir="X:"
+}
+
+_setShareMSW_root() {
+	export flagShareRoot="true"
+	
+	export sharedGuestProjectDir="Z:"
+	
+	export sharedHostProjectDir=/
+}
+
+_setShareMSW() {
+	export flagShareApp="false"
+	export flagShareRoot="false"
+	
+	#_setShareMSW_root
+	_setShareMSW_app
+}
+
+_createHTG_MSW() {
+	_setShareMSW
+	_virtUser "$@"
+	#"$sharedHostProjectDir"
+	#"${processedArgs[@]}"
+	
+	
+	#Consider using explorer.exe to use file associations within the guest. Overload with ops to force a more specific 'preCommand'.
+	echo -e -n 'start ' > "$hostToGuestFiles"/application.bat
+	
+	echo "${processedArgs[@]}" >> "$hostToGuestFiles"/application.bat
+	 
+	echo ""  >> "$hostToGuestFiles"/application.bat
+	
+	echo -e -n > "$hostToGuestFiles"/loader.bat
+	[[ "$flagShareApp" == "true" ]] && _here_bootdisc_loaderXbat >> "$hostToGuestFiles"/loader.bat
+	[[ "$flagShareRoot" == "true" ]] && _here_bootdisc_loaderZbat >> "$hostToGuestFiles"/loader.bat
+	
+	_here_bootdisc_shellbat > "$hostToGuestFiles"/shell.bat
+}
+
+_commandBootdisc() {
+	# TODO Optional/overloadable UNIX processor.
+	
+	
+	#Process for MSW.
+	_createHTG_MSW "$@"
+	
+	
+	_writeBootdisc || return 1
+}
 
 #Lists all chrooted processes. First parameter is chroot directory. Script might need to run as root.
 #Techniques originally released by other authors at http://forums.grsecurity.net/viewtopic.php?f=3&t=1632 .
@@ -870,9 +955,10 @@ _listprocChRoot() {
 	local absolute1
 	absolute1=$(_getAbsoluteLocation "$1")
 	PROCS=""
-	for p in `ps -o pid -A`; do
-		if [ "`readlink /proc/$p/root`" = "$absolute1" ]; then
-			PROCS="$PROCS $p"
+	local currentProcess
+	for currentProcess in `ps -o pid -A`; do
+		if [ "`readlink /proc/$currentProcess/root`" = "$absolute1" ]; then
+			PROCS="$PROCS" "$currentProcess"
 		fi
 	done
 	echo "$PROCS"
@@ -1751,6 +1837,11 @@ _remove_instance_vbox() {
 	_prepare_instance_vbox || return 1
 }
 
+_vboxGUI() {
+	#VirtualBox "$@"
+	VBoxSDL "$@"
+}
+
 
 _set_instance_vbox_type() {
 	#[[ "$vboxOStype" ]] && export vboxOStype=Gentoo
@@ -1763,40 +1854,62 @@ _set_instance_vbox_features() {
 }
 
 _set_instance_vbox_share() {
-	#VBoxManage sharedfolder add "$sessionid" --name "root" --hostpath "/" --automount
-	[[ "$1" != "" ]] && VBoxManage sharedfolder add "$sessionid" --name "appFolder" --hostpath "$1" --automount
+	#VBoxManage sharedfolder add "$sessionid" --name "root" --hostpath "/"
+	[[ "$sharedHostProjectDir" != "" ]] && VBoxManage sharedfolder add "$sessionid" --name "appFolder" --hostpath "$sharedHostProjectDir"
 }
 
 _set_instance_vbox_command() {
 	_prepareBootdisc || return 1
 	
-	_mkisofs -R -uid 0 -gid 0 -dir-mode 0555 -file-mode 0555 -new-dir-mode 0555 -J -hfs -o "$hostToGuestISO" "$hostToGuestFiles" || return 1
+	_commandBootdisc "$@" || return 1
 }
 
-_user_instance_vbox() {
-	#Create temporary VM around persistent disk image.
-	
+_create_instance_vbox() {
 	_set_instance_vbox_type
 	
 	_set_instance_vbox_features
 	
-	_set_instance_vbox_share
+	_set_instance_vbox_command "$@"
 	
-	_set_instance_vbox_command
+	_set_instance_vbox_share
 	
 	VBoxManage storagectl "$sessionid" --name "IDE Controller" --add ide --controller PIIX4
 	VBoxManage storageattach "$sessionid" --storagectl "IDE Controller" --port 0 --device 0 --type hdd --medium "$scriptLocal"/vm.vdi --mtype multiattach
 	
-	[[ -e "$hostToGuestISO" ]] && VBoxManage storageattach "$VM_Name" --storagectl "IDE Controller" --port 1 --device 0 --type dvddrive --medium "$hostToGuestISO"
+	[[ -e "$hostToGuestISO" ]] && VBoxManage storageattach "$sessionid" --storagectl "IDE Controller" --port 1 --device 0 --type dvddrive --medium "$hostToGuestISO"
 	
 	#VBoxManage showhdinfo "$scriptLocal"/vm.vdi
 
 	#Suppress annoying warnings.
 	VBoxManage setextradata global GUI/SuppressMessages "remindAboutAutoCapture,remindAboutMouseIntegrationOn,showRuntimeError.warning.HostAudioNotResponding,remindAboutGoingSeamless,remindAboutInputCapture,remindAboutGoingFullscreen,remindAboutMouseIntegrationOff,confirmGoingSeamless,confirmInputCapture,remindAboutPausedVMInput,confirmVMReset,confirmGoingFullscreen,remindAboutWrongColorDepth"
-
+	
+	return 0
 }
 
+#Create and launch temporary VM around persistent disk image.
+_user_instance_vbox_sequence() {
+	_start
+	
+	_prepare_instance_vbox || return 1
+	
+	_readLocked "$vBox_vdi" && return 1
+	
+	_create_instance_vbox "$@"
+	
+	 _vboxGUI --startvm "$sessionid"
+	
+	_rm_instance_vbox
+	
+	_stop
+}
 
+_user_instance_vbox() {
+	"$scriptAbsoluteLocation" _user_instance_vbox_sequence "$@"
+}
+
+_userVBox() {
+	_user_instance_vbox "$@"
+}
 
 _edit_instance_vbox_sequence() {
 	_start
@@ -1807,7 +1920,9 @@ _edit_instance_vbox_sequence() {
 	
 	_createLocked "$vBox_vdi" || return 1
 	
-	env HOME="$VBOX_USER_HOME_short" VirtualBox "$@"
+	_create_instance_vbox "$@"
+	
+	env HOME="$VBOX_USER_HOME_short" VirtualBox
 	
 	_wait_instance_vbox
 	
@@ -1826,9 +1941,6 @@ _editVBox() {
 	_edit_instance_vbox "$@"
 }
 
-_userVBox() {
-	true "$@"
-}
 
 #Determines if user is root. If yes, then continue. If not, exits after printing error message.
 _mustBeRoot() {
