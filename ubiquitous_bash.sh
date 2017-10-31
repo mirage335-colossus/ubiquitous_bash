@@ -373,7 +373,7 @@ _killDaemon() {
 	
 	_waitForTermination
 	
-	rm "$daemonPidFile" >/dev/null 2>&1
+	rm -f "$daemonPidFile" >/dev/null 2>&1
 }
 
 #Executes self in background (ie. as daemon).
@@ -561,7 +561,7 @@ _start_virt_instance() {
 	mkdir -p "$instancedVirtHome" || return 1
 	mkdir -p "$instancedVirtHomeRef" || return 1
 	
-	mkdir -p "$sharedHostProjectDir" || return 1
+	mkdir -p "$sharedHostProjectDir" > /dev/null 2>&1
 	mkdir -p "$instancedProjectDir" || return 1
 	
 }
@@ -1002,7 +1002,7 @@ _listprocChRoot() {
 	local currentProcess
 	for currentProcess in `ps -o pid -A`; do
 		if [ "`readlink /proc/$currentProcess/root`" = "$absolute1" ]; then
-			PROCS="$PROCS" "$currentProcess"
+			PROCS="$PROCS"" ""$currentProcess"
 		fi
 	done
 	echo "$PROCS"
@@ -1042,10 +1042,10 @@ _killprocChRoot() {
 	sudo -n kill -"$chrootKillSignal" "$chrootprocs" >/dev/null 2>&1
 	sleep 9
 	
-	chrootprocs=$(_listprocChRoot "$chrootKillDir")
-	[[ "$chrootprocs" == "" ]] && return 0
-	sudo -n kill -"$chrootKillSignal" "$chrootprocs" >/dev/null 2>&1
-	sleep 18
+	#chrootprocs=$(_listprocChRoot "$chrootKillDir")
+	#[[ "$chrootprocs" == "" ]] && return 0
+	#sudo -n kill -"$chrootKillSignal" "$chrootprocs" >/dev/null 2>&1
+	#sleep 18
 }
 
 #End user and diagnostic function, shuts down all processes in a chroot.
@@ -1247,11 +1247,11 @@ _umountChRoot_image() {
 	
 	sudo -n losetup -d "$chrootimagedev" > /dev/null 2>&1 || return 1
 	
-	rm "$scriptLocal"/imagedev || return 1
+	rm -f "$scriptLocal"/imagedev || return 1
 	
-	rm "$lock_quicktmp" > /dev/null 2>&1
+	rm -f "$lock_quicktmp" > /dev/null 2>&1
 	
-	rm "$permaLog"/gchrts.log > /dev/null 2>&1
+	rm -f "$permaLog"/gchrts.log > /dev/null 2>&1
 	
 	return 0
 }
@@ -1310,7 +1310,7 @@ _haltAllChRoot() {
 	"$scriptAbsoluteLocation" _closeChRoot --force
 	
 	#Closing file may remain if chroot was not open to begin with. Since haltAllChRoot is usually called for forced/emergency shutdown purposes, clearing the resultant lock file is usually safe.
-	rm "$lock_closing"
+	rm -f "$lock_closing"
 }
 
 #Fast dismount of all ChRoot filesystems/instances and cleanup of lock files. Specifically intended to act on SIGTERM or during system(d) shutdown, when time and disk I/O may be limited.
@@ -1345,7 +1345,7 @@ _closeChRoot_emergency() {
 	
 	_haltAllChRoot
 	
-	rm "$lock_emergency" || return 1
+	rm -f "$lock_emergency" || return 1
 	
 	
 	local hookSessionid
@@ -1359,11 +1359,11 @@ _closeChRoot_emergency() {
 _removeChRoot() {
 	_haltAllChRoot
 	
-	rm "$lock_closing"
-	rm "$lock_opening"
-	rm "$lock_instancing"
+	rm -f "$lock_closing"
+	rm -f "$lock_opening"
+	rm -f "$lock_instancing"
 	
-	rm "$globalVirtDir"/_ubvrtusr
+	rm -f "$globalVirtDir"/_ubvrtusr
 	
 	
 }
@@ -1614,7 +1614,7 @@ _ubvrtusrChRoot() {
 	echo sudo -n cp -a "$globalVirtFS""$virtGuestHome" "$globalVirtFS""$virtGuestHomeRef"
 	_chroot chown "$virtGuestUser":"$virtGuestUser" "$virtGuestHomeRef" > /dev/null 2>&1
 	
-	rm "$globalVirtDir"/_ubvrtusr > /dev/null 2>&1 || _stop 1
+	rm -f "$globalVirtDir"/_ubvrtusr > /dev/null 2>&1 || _stop 1
 	
 	return 0
 }
@@ -1813,11 +1813,11 @@ _remove_lab_vbox() {
 	
 	#echo -e '\E[1;32;46mRemoving IPC folder and vBoxHome directory symlink from filesystem.\E[0m'
 	
-	rm -v /tmp/\.vbox-"$VBOX_IPC_SOCKETID"-ipc/ipcd > /dev/null 2>&1
-	rm -v /tmp/\.vbox-"$VBOX_IPC_SOCKETID"-ipc/lock > /dev/null 2>&1
-	rmdir -v /tmp/\.vbox-"$VBOX_IPC_SOCKETID"-ipc > /dev/null 2>&1
+	rm -f /tmp/\.vbox-"$VBOX_IPC_SOCKETID"-ipc/ipcd > /dev/null 2>&1
+	rm -f /tmp/\.vbox-"$VBOX_IPC_SOCKETID"-ipc/lock > /dev/null 2>&1
+	rmdir /tmp/\.vbox-"$VBOX_IPC_SOCKETID"-ipc > /dev/null 2>&1
 	
-	rm -v "$VBOX_USER_HOME_short" > /dev/null 2>&1
+	rm -f "$VBOX_USER_HOME_short" > /dev/null 2>&1
 }
 
 
@@ -1868,11 +1868,11 @@ _rm_instance_vbox() {
 	
 	_safeRMR "$instancedVirtDir" || return 1
 	
-	rm -v /tmp/\.vbox-"$VBOX_IPC_SOCKETID"-ipc/ipcd > /dev/null 2>&1
-	rm -v /tmp/\.vbox-"$VBOX_IPC_SOCKETID"-ipc/lock > /dev/null 2>&1
-	rmdir -v /tmp/\.vbox-"$VBOX_IPC_SOCKETID"-ipc > /dev/null 2>&1
+	rm -f /tmp/\.vbox-"$VBOX_IPC_SOCKETID"-ipc/ipcd > /dev/null 2>&1
+	rm -f /tmp/\.vbox-"$VBOX_IPC_SOCKETID"-ipc/lock > /dev/null 2>&1
+	rmdir /tmp/\.vbox-"$VBOX_IPC_SOCKETID"-ipc > /dev/null 2>&1
 	
-	rm -v "$VBOX_USER_HOME_short" > /dev/null 2>&1
+	rm -f "$VBOX_USER_HOME_short" > /dev/null 2>&1
 	
 	return 0
 }
@@ -1980,7 +1980,7 @@ _edit_instance_vbox_sequence() {
 	
 	#VBoxManage modifymedium "$scriptLocal"/vm.vdi --type multiattach
 	
-	rm "$vBox_vdi" > /dev/null 2>&1
+	rm -f "$vBox_vdi" > /dev/null 2>&1
 	
 	_rm_instance_vbox
 	
@@ -2681,7 +2681,7 @@ _saveVar() {
 _stop() {
 	_preserveLog
 	
-	rm "$pidFile" > /dev/null 2>&1	#Redundant, as this usually resides in "$safeTmp".
+	rm -f "$pidFile" > /dev/null 2>&1	#Redundant, as this usually resides in "$safeTmp".
 	_safeRMR "$safeTmp"
 	_safeRMR "$shortTmp"
 	
@@ -2759,9 +2759,9 @@ _readLocked() {
 	#Remove miscellaneous files if appropriate.
 	if [[ -d "$bootTmp" ]] && ! [[ -e "$bootTmp"/"$rebootToken" ]]
 	then
-		rm "$scriptLocal"/*.log && rm "$scriptLocal"/imagedev && rm "$scriptLocal"/WARNING
+		rm -f "$scriptLocal"/*.log && rm -f "$scriptLocal"/imagedev && rm -f "$scriptLocal"/WARNING
 		
-		[[ -e "$lock_quicktmp" ]] && sleep 0.1 && [[ -e "$lock_quicktmp" ]] && rm "$lock_quicktmp"
+		[[ -e "$lock_quicktmp" ]] && sleep 0.1 && [[ -e "$lock_quicktmp" ]] && rm -f "$lock_quicktmp"
 	fi
 	
 	! [[ -e "$1" ]] && return 1
@@ -2774,7 +2774,7 @@ _readLocked() {
 			##Lock file obsolete.
 			
 			#Remove old lock.
-			rm "$1" > /dev/null 2>&1
+			rm -f "$1" > /dev/null 2>&1
 			return 1
 		fi
 		
@@ -2849,7 +2849,7 @@ _open() {
 	if [[ "$?" == "0" ]]
 	then
 		_createLocked "$lock_open" || return 1
-		rm "$lock_opening"
+		rm -f "$lock_opening"
 		return 0
 	fi
 	
@@ -2897,9 +2897,9 @@ _close() {
 	
 	if [[ "$?" == "0" ]]
 	then
-		rm "$lock_open" || return 1
-		rm "$lock_closing"
-		rm "$scriptLocal"/WARNING
+		rm -f "$lock_open" || return 1
+		rm -f "$lock_closing"
+		rm -f "$scriptLocal"/WARNING
 		return 0
 	fi
 	

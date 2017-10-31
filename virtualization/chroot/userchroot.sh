@@ -86,7 +86,7 @@ _ubvrtusrChRoot() {
 	echo sudo -n cp -a "$globalVirtFS""$virtGuestHome" "$globalVirtFS""$virtGuestHomeRef"
 	_chroot chown "$virtGuestUser":"$virtGuestUser" "$virtGuestHomeRef" > /dev/null 2>&1
 	
-	rm "$globalVirtDir"/_ubvrtusr > /dev/null 2>&1 || _stop 1
+	rm -f "$globalVirtDir"/_ubvrtusr > /dev/null 2>&1 || _stop 1
 	
 	return 0
 }

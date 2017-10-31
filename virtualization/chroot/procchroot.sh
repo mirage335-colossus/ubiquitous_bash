@@ -8,7 +8,7 @@ _listprocChRoot() {
 	local currentProcess
 	for currentProcess in `ps -o pid -A`; do
 		if [ "`readlink /proc/$currentProcess/root`" = "$absolute1" ]; then
-			PROCS="$PROCS" "$currentProcess"
+			PROCS="$PROCS"" ""$currentProcess"
 		fi
 	done
 	echo "$PROCS"
@@ -48,10 +48,10 @@ _killprocChRoot() {
 	sudo -n kill -"$chrootKillSignal" "$chrootprocs" >/dev/null 2>&1
 	sleep 9
 	
-	chrootprocs=$(_listprocChRoot "$chrootKillDir")
-	[[ "$chrootprocs" == "" ]] && return 0
-	sudo -n kill -"$chrootKillSignal" "$chrootprocs" >/dev/null 2>&1
-	sleep 18
+	#chrootprocs=$(_listprocChRoot "$chrootKillDir")
+	#[[ "$chrootprocs" == "" ]] && return 0
+	#sudo -n kill -"$chrootKillSignal" "$chrootprocs" >/dev/null 2>&1
+	#sleep 18
 }
 
 #End user and diagnostic function, shuts down all processes in a chroot.

@@ -19,7 +19,7 @@ _saveVar() {
 _stop() {
 	_preserveLog
 	
-	rm "$pidFile" > /dev/null 2>&1	#Redundant, as this usually resides in "$safeTmp".
+	rm -f "$pidFile" > /dev/null 2>&1	#Redundant, as this usually resides in "$safeTmp".
 	_safeRMR "$safeTmp"
 	_safeRMR "$shortTmp"
 	
@@ -97,9 +97,9 @@ _readLocked() {
 	#Remove miscellaneous files if appropriate.
 	if [[ -d "$bootTmp" ]] && ! [[ -e "$bootTmp"/"$rebootToken" ]]
 	then
-		rm "$scriptLocal"/*.log && rm "$scriptLocal"/imagedev && rm "$scriptLocal"/WARNING
+		rm -f "$scriptLocal"/*.log && rm -f "$scriptLocal"/imagedev && rm -f "$scriptLocal"/WARNING
 		
-		[[ -e "$lock_quicktmp" ]] && sleep 0.1 && [[ -e "$lock_quicktmp" ]] && rm "$lock_quicktmp"
+		[[ -e "$lock_quicktmp" ]] && sleep 0.1 && [[ -e "$lock_quicktmp" ]] && rm -f "$lock_quicktmp"
 	fi
 	
 	! [[ -e "$1" ]] && return 1
@@ -112,7 +112,7 @@ _readLocked() {
 			##Lock file obsolete.
 			
 			#Remove old lock.
-			rm "$1" > /dev/null 2>&1
+			rm -f "$1" > /dev/null 2>&1
 			return 1
 		fi
 		
@@ -187,7 +187,7 @@ _open() {
 	if [[ "$?" == "0" ]]
 	then
 		_createLocked "$lock_open" || return 1
-		rm "$lock_opening"
+		rm -f "$lock_opening"
 		return 0
 	fi
 	
@@ -235,9 +235,9 @@ _close() {
 	
 	if [[ "$?" == "0" ]]
 	then
-		rm "$lock_open" || return 1
-		rm "$lock_closing"
-		rm "$scriptLocal"/WARNING
+		rm -f "$lock_open" || return 1
+		rm -f "$lock_closing"
+		rm -f "$scriptLocal"/WARNING
 		return 0
 	fi
 	

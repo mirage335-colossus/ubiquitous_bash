@@ -27,7 +27,7 @@ _killDaemon() {
 	
 	_waitForTermination
 	
-	rm "$daemonPidFile" >/dev/null 2>&1
+	rm -f "$daemonPidFile" >/dev/null 2>&1
 }
 
 #Executes self in background (ie. as daemon).

@@ -8,7 +8,7 @@ _start_virt_instance() {
 	mkdir -p "$instancedVirtHome" || return 1
 	mkdir -p "$instancedVirtHomeRef" || return 1
 	
-	mkdir -p "$sharedHostProjectDir" || return 1
+	mkdir -p "$sharedHostProjectDir" > /dev/null 2>&1
 	mkdir -p "$instancedProjectDir" || return 1
 	
 }

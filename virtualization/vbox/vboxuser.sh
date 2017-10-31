@@ -21,11 +21,11 @@ _rm_instance_vbox() {
 	
 	_safeRMR "$instancedVirtDir" || return 1
 	
-	rm -v /tmp/\.vbox-"$VBOX_IPC_SOCKETID"-ipc/ipcd > /dev/null 2>&1
-	rm -v /tmp/\.vbox-"$VBOX_IPC_SOCKETID"-ipc/lock > /dev/null 2>&1
-	rmdir -v /tmp/\.vbox-"$VBOX_IPC_SOCKETID"-ipc > /dev/null 2>&1
+	rm -f /tmp/\.vbox-"$VBOX_IPC_SOCKETID"-ipc/ipcd > /dev/null 2>&1
+	rm -f /tmp/\.vbox-"$VBOX_IPC_SOCKETID"-ipc/lock > /dev/null 2>&1
+	rmdir /tmp/\.vbox-"$VBOX_IPC_SOCKETID"-ipc > /dev/null 2>&1
 	
-	rm -v "$VBOX_USER_HOME_short" > /dev/null 2>&1
+	rm -f "$VBOX_USER_HOME_short" > /dev/null 2>&1
 	
 	return 0
 }
@@ -133,7 +133,7 @@ _edit_instance_vbox_sequence() {
 	
 	#VBoxManage modifymedium "$scriptLocal"/vm.vdi --type multiattach
 	
-	rm "$vBox_vdi" > /dev/null 2>&1
+	rm -f "$vBox_vdi" > /dev/null 2>&1
 	
 	_rm_instance_vbox
 	

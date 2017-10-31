@@ -175,11 +175,11 @@ _umountChRoot_image() {
 	
 	sudo -n losetup -d "$chrootimagedev" > /dev/null 2>&1 || return 1
 	
-	rm "$scriptLocal"/imagedev || return 1
+	rm -f "$scriptLocal"/imagedev || return 1
 	
-	rm "$lock_quicktmp" > /dev/null 2>&1
+	rm -f "$lock_quicktmp" > /dev/null 2>&1
 	
-	rm "$permaLog"/gchrts.log > /dev/null 2>&1
+	rm -f "$permaLog"/gchrts.log > /dev/null 2>&1
 	
 	return 0
 }
@@ -238,7 +238,7 @@ _haltAllChRoot() {
 	"$scriptAbsoluteLocation" _closeChRoot --force
 	
 	#Closing file may remain if chroot was not open to begin with. Since haltAllChRoot is usually called for forced/emergency shutdown purposes, clearing the resultant lock file is usually safe.
-	rm "$lock_closing"
+	rm -f "$lock_closing"
 }
 
 #Fast dismount of all ChRoot filesystems/instances and cleanup of lock files. Specifically intended to act on SIGTERM or during system(d) shutdown, when time and disk I/O may be limited.
@@ -273,7 +273,7 @@ _closeChRoot_emergency() {
 	
 	_haltAllChRoot
 	
-	rm "$lock_emergency" || return 1
+	rm -f "$lock_emergency" || return 1
 	
 	
 	local hookSessionid
@@ -287,11 +287,11 @@ _closeChRoot_emergency() {
 _removeChRoot() {
 	_haltAllChRoot
 	
-	rm "$lock_closing"
-	rm "$lock_opening"
-	rm "$lock_instancing"
+	rm -f "$lock_closing"
+	rm -f "$lock_opening"
+	rm -f "$lock_instancing"
 	
-	rm "$globalVirtDir"/_ubvrtusr
+	rm -f "$globalVirtDir"/_ubvrtusr
 	
 	
 }
