@@ -106,9 +106,13 @@ _createHTG_UNIX() {
 	#"${processedArgs[@]}"
 	
 	echo "${processedArgs[@]}" > "$hostToGuestFiles"/cmd.sh
+	
+	cp "$scriptAbsoluteLocation" "$hostToGuestFiles"/
 }
 
 _commandBootdisc() {
+	_prepareBootdisc || return 1
+	
 	export flagShareRoot="false"
 	
 	#Rigiorously ensure flags will be set properly.

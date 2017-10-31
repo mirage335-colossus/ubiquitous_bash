@@ -61,8 +61,6 @@ _set_instance_vbox_share() {
 }
 
 _set_instance_vbox_command() {
-	_prepareBootdisc || return 1
-	
 	_commandBootdisc "$@" || return 1
 }
 
