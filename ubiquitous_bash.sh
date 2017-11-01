@@ -1785,13 +1785,9 @@ _testVBox() {
 
 
 _checkVBox_raw() {
-	_prepare_instance_vbox
-	
 	#Use existing VDI image if available.
 	[[ -e "$scriptLocal"/vm.vdi ]] && return 1
 	[[ ! -e "$scriptLocal"/vm.img ]] && return 1
-	
-	_wantSudo || return 1
 	
 	return 0
 }
@@ -1809,10 +1805,13 @@ _mountVBox_raw_sequence() {
 	
 	_checkVBox_raw || _stop 1
 	
+	_wantSudo || return 1
+	
+	_prepare_instance_vbox
+	
 	rm -f "$vboxRaw" > /dev/null 2>&1
 	
 	sudo -n losetup -f -P --show "$scriptLocal"/vm.img > "$safeTmp"/vboxloop 2> /dev/null || _stop 1
-	
 	
 	cp -n "$safeTmp"/vboxloop "$scriptLocal"/vboxloop > /dev/null 2>&1 || _stop 1
 	
@@ -1821,7 +1820,7 @@ _mountVBox_raw_sequence() {
 	sudo chown "$USER" "$vboximagedev" || _stop 1
 	_create_vbox_raw "$vboximagedev"
 	
-	
+	_safeRMR "$instancedVirtDir" || _stop 1
 	_stop 0
 }
 
@@ -1831,7 +1830,11 @@ _mountVBox_raw() {
 }
 
 _waitVBox_opening() {
-	true
+	! [[ -e "$vboxRaw" ]] && return 1
+	! [[ -e "$scriptLocal"/vboxloop ]] && return 1
+	
+	local vboximagedev=$(cat "$safeTmp"/vboxloop)
+	! [[ -e "$vboximagedev" ]] && return 1
 }
 
 _umountVBox_raw() {
@@ -1840,7 +1843,9 @@ _umountVBox_raw() {
 	
 	sudo -n losetup -d "$vboximagedev" > /dev/null 2>&1 || return 1
 	
-	rm "$scriptLocal"/vboxloop > /dev/null 2>&1
+	rm -f "$scriptLocal"/vboxloop > /dev/null 2>&1
+	rm -f "$vboxRaw" > /dev/null 2>&1
+	rm -f "$vboxRaw".log > /dev/null 2>&1
 	
 	return 0
 }
@@ -1851,7 +1856,7 @@ _waitVBox_closing() {
 
 
 _openVBoxRaw() {
-	_checkVBox_raw || return 1
+	_checkVBox_raw || _stop 1
 	
 	_open _waitVBox_opening _mountVBox_raw
 }
