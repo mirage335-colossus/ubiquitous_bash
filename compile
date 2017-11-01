@@ -159,6 +159,7 @@ _includeScript qemu-x64-x64.sh "virtualization/qemu"
 _includeScript qemu.sh "virtualization/qemu"
 
 _includeScript vboxtest.sh "virtualization/vbox"
+_includeScript vboxmount.sh "virtualization/vbox"
 _includeScript vboxlab.sh "virtualization/vbox"
 _includeScript vboxuser.sh "virtualization/vbox"
 
