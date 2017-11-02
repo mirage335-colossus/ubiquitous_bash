@@ -44,6 +44,8 @@ In most user environments, the latest git repository code will provide the stron
 
 * Launching "user" ChRoot as root user has not yet been extensively tested.
 
+* Shared resource locking (eg. disk images for ChRoot, QEMU, VBox) is handled globally. Do NOT attempt to launch a virtual machine with one backend while still open in another. Likewise, separate virtual machines should be handled as separate projects.
+
 * Do NOT add empty functions anywhere, as this will cause the script to crash before doing anything. At least include a do-nothing command (ie. /bin/true).
 
 # Copyright

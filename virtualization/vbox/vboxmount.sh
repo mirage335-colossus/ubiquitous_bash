@@ -30,7 +30,10 @@ _mountVBox_raw_sequence() {
 	
 	cp -n "$safeTmp"/vboxloop "$scriptLocal"/vboxloop > /dev/null 2>&1 || _stop 1
 	
-	local vboximagedev=$(cat "$safeTmp"/vboxloop)
+	local vboximagedev
+	vboximagedev=$(cat "$safeTmp"/vboxloop)
+	
+	_tryExecFull _hook_systemd_shutdown_action "_closeVBoxRaw" "$sessionid"
 	
 	sudo chown "$USER" "$vboximagedev" || _stop 1
 	_create_vbox_raw "$vboximagedev"
@@ -69,7 +72,6 @@ _waitVBox_closing() {
 	true
 }
 
-
 _openVBoxRaw() {
 	_checkVBox_raw || _stop 1
 	
@@ -80,8 +82,10 @@ _closeVBoxRaw() {
 	if [[ "$1" == "--force" ]]
 	then
 		_close --force _waitVBox_closing _umountVBox_raw
+		[[ "$1" != "" ]] && _tryExecFull _unhook_systemd_shutdown "$1"
 		return
 	fi
 	
 	_close _waitVBox_closing _umountVBox_raw
+	[[ "$1" != "" ]] && _tryExecFull _unhook_systemd_shutdown "$1"
 }

@@ -42,16 +42,21 @@ _vboxGUI() {
 
 
 _set_instance_vbox_type() {
+	#[[ "$vboxOStype" == "" ]] && export vboxOStype=Debian_64
 	#[[ "$vboxOStype" == "" ]] && export vboxOStype=Gentoo
 	#[[ "$vboxOStype" == "" ]] && export vboxOStype=Windows2003
+	#[[ "$vboxOStype" == "" ]] && export vboxOStype=WindowsXP
+	
+	[[ "$vboxOStype" == "" ]] && _readLocked "$lock_open" && export vboxOStype=Debian_64
 	[[ "$vboxOStype" == "" ]] && export vboxOStype=WindowsXP
+	
 	VBoxManage createvm --name "$sessionid" --ostype "$vboxOStype" --register --basefolder "$VBOX_USER_HOME_short"
 }
 
 _set_instance_vbox_features() {
-	VBoxManage modifyvm "$sessionid" --boot1 disk --biosbootmenu disabled --bioslogofadein off --bioslogofadeout off --bioslogodisplaytime 5 --vram 128 --memory 512 --nic1 nat --nictype1 "82543GC" --clipboard bidirectional --accelerate3d off --accelerate2dvideo off --vrde off --audio pulse --usb on --cpus 1 --ioapic off --acpi on --pae off --chipset piix3
+	#VBoxManage modifyvm "$sessionid" --boot1 disk --biosbootmenu disabled --bioslogofadein off --bioslogofadeout off --bioslogodisplaytime 5 --vram 128 --memory 512 --nic1 nat --nictype1 "82543GC" --clipboard bidirectional --accelerate3d off --accelerate2dvideo off --vrde off --audio pulse --usb on --cpus 1 --ioapic off --acpi on --pae off --chipset piix3
 	
-	#VBoxManage modifyvm "$sessionid" --boot1 disk --biosbootmenu disabled --bioslogofadein off --bioslogofadeout off --bioslogodisplaytime 5 --vram 128 --memory 512 --nic1 nat --nictype1 "82543GC" --clipboard bidirectional --accelerate3d off --accelerate2dvideo off --vrde off --audio pulse --usb on --cpus 4 --ioapic on --acpi on --pae on --chipset ich9
+	VBoxManage modifyvm "$sessionid" --boot1 disk --biosbootmenu disabled --bioslogofadein off --bioslogofadeout off --bioslogodisplaytime 5 --vram 128 --memory 512 --nic1 nat --nictype1 "82543GC" --clipboard bidirectional --accelerate3d off --accelerate2dvideo off --vrde off --audio pulse --usb on --cpus 4 --ioapic on --acpi on --pae on --chipset ich9
 	
 }
 
@@ -65,6 +70,12 @@ _set_instance_vbox_command() {
 }
 
 _create_instance_vbox() {
+	_openVBoxRaw
+	
+	export vboxInstanceDiskImage="$scriptLocal"/vm.vdi
+	_readLocked "$lock_open" && vboxInstanceDiskImage="$vboxRaw"
+	! [[ -e "$vboxInstanceDiskImage" ]] && return 1
+	
 	_set_instance_vbox_type
 	
 	_set_instance_vbox_features
@@ -77,7 +88,7 @@ _create_instance_vbox() {
 	
 	#export vboxDiskMtype="normal"
 	[[ "$vboxDiskMtype" == "" ]] && export vboxDiskMtype="multiattach"
-	VBoxManage storageattach "$sessionid" --storagectl "IDE Controller" --port 0 --device 0 --type hdd --medium "$scriptLocal"/vm.vdi --mtype "$vboxDiskMtype"
+	VBoxManage storageattach "$sessionid" --storagectl "IDE Controller" --port 0 --device 0 --type hdd --medium "$vboxInstanceDiskImage" --mtype "$vboxDiskMtype"
 	
 	[[ -e "$hostToGuestISO" ]] && VBoxManage storageattach "$sessionid" --storagectl "IDE Controller" --port 1 --device 0 --type dvddrive --medium "$hostToGuestISO"
 	

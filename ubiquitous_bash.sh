@@ -519,8 +519,8 @@ _hook_systemd_shutdown() {
 	! _wantSudo && return 1
 	
 	_here_systemd_shutdown | sudo -n tee /etc/systemd/system/"$sessionid".service > /dev/null
-	sudo -n systemctl enable "$sessionid".service 2>&1 | sudo tee -a "$permaLog"/gchrts.log > /dev/null 2>&1
-	sudo -n systemctl start "$sessionid".service 2>&1 | sudo tee -a "$permaLog"/gchrts.log > /dev/null 2>&1
+	sudo -n systemctl enable "$sessionid".service 2>&1 | sudo tee -a "$permaLog"/gsysd.log > /dev/null 2>&1
+	sudo -n systemctl start "$sessionid".service 2>&1 | sudo tee -a "$permaLog"/gsysd.log > /dev/null 2>&1
 }
 
 _hook_systemd_shutdown_action() {
@@ -529,8 +529,8 @@ _hook_systemd_shutdown_action() {
 	! _wantSudo && return 1
 	
 	_here_systemd_shutdown_action "$@" | sudo -n tee /etc/systemd/system/"$sessionid".service > /dev/null
-	sudo -n systemctl enable "$sessionid".service 2>&1 | sudo tee -a "$permaLog"/gchrts.log > /dev/null 2>&1
-	sudo -n systemctl start "$sessionid".service 2>&1 | sudo tee -a "$permaLog"/gchrts.log > /dev/null 2>&1
+	sudo -n systemctl enable "$sessionid".service 2>&1 | sudo tee -a "$permaLog"/gsysd.log > /dev/null 2>&1
+	sudo -n systemctl start "$sessionid".service 2>&1 | sudo tee -a "$permaLog"/gsysd.log > /dev/null 2>&1
 	
 }
 
@@ -544,11 +544,11 @@ _unhook_systemd_shutdown() {
 	
 	! _wantSudo && return 1
 	
-	[[ "$SYSTEMCTLDISABLE" == "true" ]] && echo SYSTEMCTLDISABLE | sudo tee -a "$permaLog"/gchrts.log > /dev/null 2>&1 && return 0
+	[[ "$SYSTEMCTLDISABLE" == "true" ]] && echo SYSTEMCTLDISABLE | sudo tee -a "$permaLog"/gsysd.log > /dev/null 2>&1 && return 0
 	export SYSTEMCTLDISABLE=true
 	
-	sudo -n systemctl disable "$hookSessionid".service 2>&1 | sudo tee -a "$permaLog"/gchrts.log > /dev/null 2>&1
-	sudo -n rm /etc/systemd/system/"$hookSessionid".service 2>&1 | sudo tee -a "$permaLog"/gchrts.log > /dev/null 2>&1
+	sudo -n systemctl disable "$hookSessionid".service 2>&1 | sudo tee -a "$permaLog"/gsysd.log > /dev/null 2>&1
+	sudo -n rm -f /etc/systemd/system/"$hookSessionid".service 2>&1 | sudo tee -a "$permaLog"/gsysd.log > /dev/null 2>&1
 }
 
 
@@ -1253,7 +1253,7 @@ _umountChRoot_image() {
 	
 	rm -f "$lock_quicktmp" > /dev/null 2>&1
 	
-	rm -f "$permaLog"/gchrts.log > /dev/null 2>&1
+	rm -f "$permaLog"/gsysd.log > /dev/null 2>&1
 	
 	return 0
 }
@@ -1763,15 +1763,36 @@ _qemu() {
 	
 	if [[ "$hostArch" == "x86_64" ]]
 	then
-		qemu-system-x86_64 -machine accel=kvm -drive format=raw,file="$scriptLocal"/vm.img -boot c -m 1536
+		mkdir -p "$scriptLocal"
+		_createLocked "$scriptLocal"/_qemu || return 1
+		
+		qemu-system-x86_64 -machine accel=kvm -drive format=raw,file="$scriptLocal"/vm.img -boot c -m 768
+		
+		rm -f "$scriptLocal"/_qemu
 		return 0
 	fi
 	
 	return 1
 }
 
+_userQemu_sequence() {
+	_start
+	
+	mkdir -p "$instancedVirtDir" || _stop 1
+	
+	_readLocked "$scriptLocal"/_qemu && _stop 1
+	
+	_commandBootdisc "$@" || _stop 1
+	
+	qemu-system-x86_64 -snapshot -machine accel=kvm -drive format=raw,file="$scriptLocal"/vm.img -drive file="$hostToGuestISO",media=cdrom -boot c -m 768
+	
+	_safeRMR "$instancedVirtDir" || _stop 1
+	
+	_stop
+}
+
 _userQemu() {
-	true
+	"$scriptAbsoluteLocation" _userQemu_sequence "$@"
 }
 
 _testVBox() {
@@ -1815,7 +1836,10 @@ _mountVBox_raw_sequence() {
 	
 	cp -n "$safeTmp"/vboxloop "$scriptLocal"/vboxloop > /dev/null 2>&1 || _stop 1
 	
-	local vboximagedev=$(cat "$safeTmp"/vboxloop)
+	local vboximagedev
+	vboximagedev=$(cat "$safeTmp"/vboxloop)
+	
+	_tryExecFull _hook_systemd_shutdown_action "_closeVBoxRaw" "$sessionid"
 	
 	sudo chown "$USER" "$vboximagedev" || _stop 1
 	_create_vbox_raw "$vboximagedev"
@@ -1854,7 +1878,6 @@ _waitVBox_closing() {
 	true
 }
 
-
 _openVBoxRaw() {
 	_checkVBox_raw || _stop 1
 	
@@ -1865,10 +1888,12 @@ _closeVBoxRaw() {
 	if [[ "$1" == "--force" ]]
 	then
 		_close --force _waitVBox_closing _umountVBox_raw
+		[[ "$1" != "" ]] && _tryExecFull _unhook_systemd_shutdown "$1"
 		return
 	fi
 	
 	_close _waitVBox_closing _umountVBox_raw
+	[[ "$1" != "" ]] && _tryExecFull _unhook_systemd_shutdown "$1"
 }
 
 ##VBox Boxing
@@ -1903,6 +1928,10 @@ _launch_lab_vbox_sequence() {
 	_start
 	
 	_prepare_lab_vbox || return 1
+	
+	#Directly opening raw images in the VBoxLab environment is not recommended, due to changing VMDK disk identifiers.
+	#Better practice may be to instead programmatically construct the raw image virtual machines before opening VBoxLab environment.
+	#_openVBoxRaw
 	
 	env HOME="$VBOX_USER_HOME_short" VirtualBox "$@"
 	
@@ -1967,16 +1996,21 @@ _vboxGUI() {
 
 
 _set_instance_vbox_type() {
+	#[[ "$vboxOStype" == "" ]] && export vboxOStype=Debian_64
 	#[[ "$vboxOStype" == "" ]] && export vboxOStype=Gentoo
 	#[[ "$vboxOStype" == "" ]] && export vboxOStype=Windows2003
+	#[[ "$vboxOStype" == "" ]] && export vboxOStype=WindowsXP
+	
+	[[ "$vboxOStype" == "" ]] && _readLocked "$lock_open" && export vboxOStype=Debian_64
 	[[ "$vboxOStype" == "" ]] && export vboxOStype=WindowsXP
+	
 	VBoxManage createvm --name "$sessionid" --ostype "$vboxOStype" --register --basefolder "$VBOX_USER_HOME_short"
 }
 
 _set_instance_vbox_features() {
-	VBoxManage modifyvm "$sessionid" --boot1 disk --biosbootmenu disabled --bioslogofadein off --bioslogofadeout off --bioslogodisplaytime 5 --vram 128 --memory 512 --nic1 nat --nictype1 "82543GC" --clipboard bidirectional --accelerate3d off --accelerate2dvideo off --vrde off --audio pulse --usb on --cpus 1 --ioapic off --acpi on --pae off --chipset piix3
+	#VBoxManage modifyvm "$sessionid" --boot1 disk --biosbootmenu disabled --bioslogofadein off --bioslogofadeout off --bioslogodisplaytime 5 --vram 128 --memory 512 --nic1 nat --nictype1 "82543GC" --clipboard bidirectional --accelerate3d off --accelerate2dvideo off --vrde off --audio pulse --usb on --cpus 1 --ioapic off --acpi on --pae off --chipset piix3
 	
-	#VBoxManage modifyvm "$sessionid" --boot1 disk --biosbootmenu disabled --bioslogofadein off --bioslogofadeout off --bioslogodisplaytime 5 --vram 128 --memory 512 --nic1 nat --nictype1 "82543GC" --clipboard bidirectional --accelerate3d off --accelerate2dvideo off --vrde off --audio pulse --usb on --cpus 4 --ioapic on --acpi on --pae on --chipset ich9
+	VBoxManage modifyvm "$sessionid" --boot1 disk --biosbootmenu disabled --bioslogofadein off --bioslogofadeout off --bioslogodisplaytime 5 --vram 128 --memory 512 --nic1 nat --nictype1 "82543GC" --clipboard bidirectional --accelerate3d off --accelerate2dvideo off --vrde off --audio pulse --usb on --cpus 4 --ioapic on --acpi on --pae on --chipset ich9
 	
 }
 
@@ -1990,6 +2024,12 @@ _set_instance_vbox_command() {
 }
 
 _create_instance_vbox() {
+	_openVBoxRaw
+	
+	export vboxInstanceDiskImage="$scriptLocal"/vm.vdi
+	_readLocked "$lock_open" && vboxInstanceDiskImage="$vboxRaw"
+	! [[ -e "$vboxInstanceDiskImage" ]] && return 1
+	
 	_set_instance_vbox_type
 	
 	_set_instance_vbox_features
@@ -2002,7 +2042,7 @@ _create_instance_vbox() {
 	
 	#export vboxDiskMtype="normal"
 	[[ "$vboxDiskMtype" == "" ]] && export vboxDiskMtype="multiattach"
-	VBoxManage storageattach "$sessionid" --storagectl "IDE Controller" --port 0 --device 0 --type hdd --medium "$scriptLocal"/vm.vdi --mtype "$vboxDiskMtype"
+	VBoxManage storageattach "$sessionid" --storagectl "IDE Controller" --port 0 --device 0 --type hdd --medium "$vboxInstanceDiskImage" --mtype "$vboxDiskMtype"
 	
 	[[ -e "$hostToGuestISO" ]] && VBoxManage storageattach "$sessionid" --storagectl "IDE Controller" --port 1 --device 0 --type dvddrive --medium "$hostToGuestISO"
 	

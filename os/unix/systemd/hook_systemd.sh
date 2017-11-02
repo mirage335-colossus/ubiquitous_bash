@@ -4,8 +4,8 @@ _hook_systemd_shutdown() {
 	! _wantSudo && return 1
 	
 	_here_systemd_shutdown | sudo -n tee /etc/systemd/system/"$sessionid".service > /dev/null
-	sudo -n systemctl enable "$sessionid".service 2>&1 | sudo tee -a "$permaLog"/gchrts.log > /dev/null 2>&1
-	sudo -n systemctl start "$sessionid".service 2>&1 | sudo tee -a "$permaLog"/gchrts.log > /dev/null 2>&1
+	sudo -n systemctl enable "$sessionid".service 2>&1 | sudo tee -a "$permaLog"/gsysd.log > /dev/null 2>&1
+	sudo -n systemctl start "$sessionid".service 2>&1 | sudo tee -a "$permaLog"/gsysd.log > /dev/null 2>&1
 }
 
 _hook_systemd_shutdown_action() {
@@ -14,8 +14,8 @@ _hook_systemd_shutdown_action() {
 	! _wantSudo && return 1
 	
 	_here_systemd_shutdown_action "$@" | sudo -n tee /etc/systemd/system/"$sessionid".service > /dev/null
-	sudo -n systemctl enable "$sessionid".service 2>&1 | sudo tee -a "$permaLog"/gchrts.log > /dev/null 2>&1
-	sudo -n systemctl start "$sessionid".service 2>&1 | sudo tee -a "$permaLog"/gchrts.log > /dev/null 2>&1
+	sudo -n systemctl enable "$sessionid".service 2>&1 | sudo tee -a "$permaLog"/gsysd.log > /dev/null 2>&1
+	sudo -n systemctl start "$sessionid".service 2>&1 | sudo tee -a "$permaLog"/gsysd.log > /dev/null 2>&1
 	
 }
 
@@ -29,9 +29,9 @@ _unhook_systemd_shutdown() {
 	
 	! _wantSudo && return 1
 	
-	[[ "$SYSTEMCTLDISABLE" == "true" ]] && echo SYSTEMCTLDISABLE | sudo tee -a "$permaLog"/gchrts.log > /dev/null 2>&1 && return 0
+	[[ "$SYSTEMCTLDISABLE" == "true" ]] && echo SYSTEMCTLDISABLE | sudo tee -a "$permaLog"/gsysd.log > /dev/null 2>&1 && return 0
 	export SYSTEMCTLDISABLE=true
 	
-	sudo -n systemctl disable "$hookSessionid".service 2>&1 | sudo tee -a "$permaLog"/gchrts.log > /dev/null 2>&1
-	sudo -n rm /etc/systemd/system/"$hookSessionid".service 2>&1 | sudo tee -a "$permaLog"/gchrts.log > /dev/null 2>&1
+	sudo -n systemctl disable "$hookSessionid".service 2>&1 | sudo tee -a "$permaLog"/gsysd.log > /dev/null 2>&1
+	sudo -n rm -f /etc/systemd/system/"$hookSessionid".service 2>&1 | sudo tee -a "$permaLog"/gsysd.log > /dev/null 2>&1
 }

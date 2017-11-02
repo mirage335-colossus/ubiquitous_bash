@@ -179,7 +179,7 @@ _umountChRoot_image() {
 	
 	rm -f "$lock_quicktmp" > /dev/null 2>&1
 	
-	rm -f "$permaLog"/gchrts.log > /dev/null 2>&1
+	rm -f "$permaLog"/gsysd.log > /dev/null 2>&1
 	
 	return 0
 }

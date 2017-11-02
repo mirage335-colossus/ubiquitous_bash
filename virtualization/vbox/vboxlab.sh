@@ -31,6 +31,10 @@ _launch_lab_vbox_sequence() {
 	
 	_prepare_lab_vbox || return 1
 	
+	#Directly opening raw images in the VBoxLab environment is not recommended, due to changing VMDK disk identifiers.
+	#Better practice may be to instead programmatically construct the raw image virtual machines before opening VBoxLab environment.
+	#_openVBoxRaw
+	
 	env HOME="$VBOX_USER_HOME_short" VirtualBox "$@"
 	
 	_wait_lab_vbox
