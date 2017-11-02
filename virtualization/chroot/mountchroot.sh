@@ -136,6 +136,52 @@ _umountChRoot_directory_raspbian() {
 	
 }
 
+mountChRoot_image_x64() {
+	_mustGetSudo
+	
+	_start
+	
+	mkdir -p "$chrootDir"
+	
+	"$scriptAbsoluteLocation" _checkForMounts "$chrootDir" && _stop 1
+	
+	local chrootvmimage
+	[[ -e "$scriptLocal"/vm-x64.img ]] && chrootvmimage="$scriptLocal"/vm-x64.img
+	[[ -e "$scriptLocal"/vm.img ]] && chrootvmimage="$scriptLocal"/vm.img
+	
+	sudo -n losetup -f -P --show "$chrootvmimage" > "$safeTmp"/imagedev 2> /dev/null || _stop 1
+	
+	cp -n "$safeTmp"/imagedev "$scriptLocal"/imagedev > /dev/null 2>&1 || _stop 1
+	
+	local chrootimagedev
+	chrootimagedev=$(cat "$safeTmp"/imagedev)
+	
+	local chrootimagepart
+	#chrootimagepart="$chrootimagedev"p2
+	chrootimagepart="$chrootimagedev"
+	
+	local chrootloopdevfs
+	chrootloopdevfs=$(eval $(sudo -n blkid "$chrootimagepart" | awk ' { print $3 } '); echo $TYPE)
+	
+	! [[ "$chrootloopdevfs" == "ext4" ]] && return 1
+	
+	sudo -n mount "$chrootimagepart" "$chrootDir" || _stop 1
+	
+	mountpoint "$chrootDir" > /dev/null 2>&1 || _stop 1
+	
+	_mountChRoot "$chrootDir"
+	
+	_readyChRoot "$chrootDir" || _stop 1
+	
+	_stop 0
+}
+
+_umountChRoot_directory_x64() {
+	_mustGetSudo
+	
+	mkdir -p "$chrootDir"
+}
+
 _mountChRoot_image() {
 	_tryExecFull _hook_systemd_shutdown_action "_closeChRoot_emergency" "$sessionid"
 	
@@ -150,6 +196,10 @@ _mountChRoot_image() {
 		"$scriptAbsoluteLocation" _mountChRoot_image_x64
 		return "$?"
 	fi
+	
+	#Default "vm.img" will be operated on as x64 image.
+	"$scriptAbsoluteLocation" _mountChRoot_image_x64
+	return "$?"
 }
 
 _umountChRoot_directory() {
@@ -157,6 +207,14 @@ _umountChRoot_directory() {
 	then
 		"$scriptAbsoluteLocation" _umountChRoot_directory_raspbian || return "$?"
 	fi
+	
+	if [[ -e "$scriptLocal"/vm-x64.img ]]
+	then
+		"$scriptAbsoluteLocation" _umountChRoot_directory_x64 || return "$?"
+	fi
+	
+	#Default "vm.img" will be operated on as x64 image.
+	"$scriptAbsoluteLocation" _umountChRoot_directory_x64 || return "$?"
 	
 	_stopChRoot "$1"
 	_umountChRoot "$1"
