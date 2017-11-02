@@ -136,7 +136,7 @@ _umountChRoot_directory_raspbian() {
 	
 }
 
-mountChRoot_image_x64() {
+_mountChRoot_image_x64() {
 	_mustGetSudo
 	
 	_start
@@ -158,7 +158,7 @@ mountChRoot_image_x64() {
 	
 	local chrootimagepart
 	#chrootimagepart="$chrootimagedev"p2
-	chrootimagepart="$chrootimagedev"
+	chrootimagepart="$chrootimagedev"p1
 	
 	local chrootloopdevfs
 	chrootloopdevfs=$(eval $(sudo -n blkid "$chrootimagepart" | awk ' { print $3 } '); echo $TYPE)
