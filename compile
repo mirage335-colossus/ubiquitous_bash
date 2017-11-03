@@ -103,6 +103,8 @@ _includeScript showCommand.sh "generic"
 
 _includeScript absolutepaths.sh "generic/filesystem"
 
+_includeScript getext.sh "generic/filesystem"
+
 _includeScript finddir.sh "generic/filesystem"
 
 _includeScript safedelete.sh "generic/filesystem"
@@ -168,6 +170,8 @@ _includeScript dosbox.sh "virtualization/dosbox"
 
 _includeScript wine.sh "virtualization/wine"
 
+_includeScript dockertest.sh "virtualization/docker"
+
 _includeScript mustberoot.sh "special"
 _includeScript mustgetsudo.sh "special"
 
@@ -222,7 +226,12 @@ _includeScript entry.sh "structure"
 
 chmod u+x "$progScript"
 
-
+if "$progScript" _test > ./compile.log 2>&1
+then
+	rm compile.log
+else
+	exit 1
+fi
 
 
 

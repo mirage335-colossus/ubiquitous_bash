@@ -12,7 +12,7 @@ _mustGetSudo() {
 	return 0
 }
 
-#Determines if sudo is usable by scripts. Does not exit on failure.
+#Determines if sudo is usable by scripts. Will not exit on failure.
 _wantSudo() {
 	local rootAvailable
 	rootAvailable=false

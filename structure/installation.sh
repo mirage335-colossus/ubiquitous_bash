@@ -109,6 +109,8 @@ _test() {
 	
 	_tryExec "_testWINE"
 	
+	_tryExec "_test_docker"
+	
 	_tryExec "_testVirtBootdisc"
 	
 	_tryExec "_testExtra"
