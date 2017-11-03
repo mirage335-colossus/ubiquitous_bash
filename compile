@@ -210,6 +210,7 @@ _includeScript globalvars.sh "structure"
 _includeScript specglobalvars.sh "structure"
 
 _includeScript vboxvars.sh "virtualization/vbox"
+_includeScript dockervars.sh "virtualization/docker"
 
 #_includeScript gitVars.sh "shortcuts/git"
 
