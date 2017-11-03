@@ -2435,7 +2435,7 @@ _test_dosbox() {
 }
 
 _prepare_dosbox() {
-	mkdir "$scriptLocal"/_dosbox
+	mkdir -p "$scriptLocal"/_dosbox
 	
 	mkdir -p "$instancedVirtDir"
 	mkdir -p "$instancedVirtFS"
@@ -2452,16 +2452,23 @@ _dosbox_sequence() {
 	
 	echo -e -n 'mount c ' >> "$instancedVirtDir"/dosbox.conf
 	echo "$scriptLocal"/_dosbox >> "$instancedVirtDir"/dosbox.conf
+	echo 'c:' >> "$instancedVirtDir"/dosbox.conf
 	
+	export sharedGuestProjectDir='X:'
 	_virtUser "$@"
 	
 	if [[ "$sharedHostProjectDir" != "" ]]
 	then
 		echo -e -n 'mount x ' >> "$instancedVirtDir"/dosbox.conf
 		echo "$sharedHostProjectDir" >> "$instancedVirtDir"/dosbox.conf
+		echo 'x:' >> "$instancedVirtDir"/dosbox.conf
 	fi
 	
-	dosbox -conf "$instancedVirtDir"/dosbox.conf -c "${processedArgs[@]}"
+	#Alternatively, "-c" could be used with dosbox, but this seems not to work well with multiple parameters.
+	#Note "DOS" will not like paths not conforming to 8.3 .
+	echo "${processedArgs[@]}" >> "$instancedVirtDir"/dosbox.conf
+	
+	dosbox -conf "$instancedVirtDir"/dosbox.conf
 	
 	_safeRMR "$instancedVirtDir" || _stop 1
 	
@@ -2469,7 +2476,7 @@ _dosbox_sequence() {
 }
 
 _dosbox() {
-	"$scriptAbsoluteLocation" _dosbox "$@"
+	"$scriptAbsoluteLocation" _dosbox_sequence "$@"
 }
 
 _testWINE() {
