@@ -1,15 +1,4 @@
-_dockerImages() {
-	_permitDocker docker images "$@"
-}
-
-_dockerContainers() {
-	_permitDocker docker ps -a "$@"
-}
-
-_dockerRunning() {
-	_permitDocker docker ps "$@"
-}
-
+# WARNING Deletes specified docker IMAGE.
 _dockerDeleteImage() {
 	_permitDocker docker rmi "$1"
 }
@@ -28,3 +17,4 @@ _dockerDeleteImagesAll() {
 _dockerPrune() {
 	_permitDocker docker system prune
 }
+ 

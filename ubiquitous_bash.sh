@@ -3084,6 +3084,7 @@ _dockerRunning() {
 	_permitDocker docker ps "$@"
 }
 
+# WARNING Deletes specified docker IMAGE.
 _dockerDeleteImage() {
 	_permitDocker docker rmi "$1"
 }
@@ -3102,6 +3103,9 @@ _dockerDeleteImagesAll() {
 _dockerPrune() {
 	_permitDocker docker system prune
 }
+ 
+
+ 
 
 _importShortcuts() {
 	_visualPrompt
