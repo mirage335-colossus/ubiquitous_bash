@@ -105,6 +105,8 @@ _test() {
 	_tryExec "_testQEMU_raspi-raspi"
 	_tryExec "_testVBox"
 	
+	_tryExec "_testWINE"
+	
 	_tryExec "_testVirtBootdisc"
 	
 	_tryExec "_testExtra"

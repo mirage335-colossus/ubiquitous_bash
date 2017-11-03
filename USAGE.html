@@ -1687,11 +1687,8 @@ A &quot;_tryExec&quot; function is generally used to call a function which check
 <pre>|~ViewToolbar|closeTiddler closeOthers editTiddler &gt; fields syncing permalink references jump|
 |~EditToolbar|+saveTiddler -cancelTiddler deleteTiddler|</pre>
 </div>
-<div title="Virtualization" creator="mirage335" modifier="mirage335" created="201710270206" modified="201711020003" changecount="32">
-<pre>Ubiquitous Bash middleware has the capacity to provide true application virtualization, with automatic fileparameter translation, across a wide variety of platforms (x86/64, ARM), and operating systems (MSW, Unix), by using any available underlying tool (~ChRoot, QEMU, Xen, ~VirtualBox, Docker, Wine, Cygwin, &lt;nowiki&gt;DosBox&lt;/nowiki&gt;), on a common disk format (raw image). Realizing most of this capability will involve simply merging existing code from [[DockerApp|https://github.com/mirage335/DockerApp/blob/master/example.png]], [[HostedXen|https://github.com/mirage335/HostedXen]], [[HostedOpenVZ|https://github.com/mirage335/hostedOpenVZ]], [[PortableWine|https://github.com/mirage335/PortableWine]], and [[PortableDosBox|https://github.com/mirage335/PortableDosBox]]. Automatic selection of native application by platform is also well supported.
-
-Fully self-contained SAMBA server operation may also be integrated, based on the now available _userChRoot and _findPort resources, as well as older work done towards supporting QEMU as a backend for [[IQEmu|https://github.com/mirage335/IQEMU]].
-
+<div title="Virtualization" creator="mirage335" modifier="mirage335" created="201710270206" modified="201711030349" changecount="37">
+<pre>Ubiquitous Bash middleware has the capacity to provide true application virtualization, with automatic fileparameter translation, across a wide variety of platforms (x86/64, ARM), and operating systems (MSW, Unix), by using any available underlying tool (~ChRoot, QEMU, Xen, ~VirtualBox, Docker, Wine, Cygwin, &lt;nowiki&gt;DosBox&lt;/nowiki&gt;), on a common disk format (raw image). Most of this capability has been realized, most of the remainder will involve simply merging existing code from [[DockerApp|https://github.com/mirage335/DockerApp/blob/master/example.png]], [[HostedXen|https://github.com/mirage335/HostedXen]], [[HostedOpenVZ|https://github.com/mirage335/hostedOpenVZ]], and [[PortableDosBox|https://github.com/mirage335/PortableDosBox]]. Automatic selection of native application by platform is also well supported.
 
 &lt;&lt;showtoc&gt;&gt;
 !Images
@@ -1709,6 +1706,7 @@ Both MSW and UNIX guests are supported through different bootdisc directives fil
 ./ubiquitous_bash.sh _closeChRoot
 //}}}
 !!Application
+Nonpersistent. Provides file parameter translation and host directory sharing.
 //{{{
 ./ubiquitous_bash.sh _userChRoot ls ./
 //}}}
@@ -1724,7 +1722,7 @@ _removeChRoot
 _qemu
 //}}}
 !!User
-Nonpersistent. Supports bootdisc.
+Nonpersistent. Supports bootdisc, file parameter translation and host directory sharing.
 //{{{
 _userQemu
 //}}}
@@ -1737,11 +1735,27 @@ _labVBox		#Complete VirtualBox installation, permanently contained to &quot;./lo
 _editVBox		#Opens VirtualBox GUI on preconfigured virtual machine disk image at &quot;./local/vm.vdi&quot; .
 //}}}
 !!User
-Nonpersistent ~VirtualBox instance preconfigured to open image ./local/vm.vdi&quot; or &quot;./local/vm.img&quot; . Set OS and other parameters through ~VBoxManage by overloading with &quot;ops&quot; . Supports bootdisc.
+Nonpersistent ~VirtualBox instance preconfigured to open image ./local/vm.vdi&quot; or &quot;./local/vm.img&quot; . Set OS and other parameters through ~VBoxManage by overloading with &quot;ops&quot; . Supports bootdisc, file parameter translation and host directory sharing.
 //{{{
 ./ubiquitous_bash.sh _userVBox notepad.exe ./CC0_license.txt
 ./ubiquitous_bash.sh _userVBox ls ./
 //}}}
+
+!WINE
+!!Root
+Use wineprefix &quot;./local/_wbottle&quot; or &quot;./local/_wine32&quot; .
+//{{{
+_wine
+_winecfg
+//}}}
+!!Unassociated
+Uses wineprefix subdirectory &quot;_wbottle&quot; or &quot;_wine32&quot; in directory of executable named in first parameter, or current directory.
+//{{{
+_winehere
+_winecfghere
+//}}}
+
+
 
 
 

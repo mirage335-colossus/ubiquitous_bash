@@ -1,3 +1,13 @@
+_testWINE() {
+	_checkDep wine
+	
+	if wine 2>&1 | grep 'wine32 is missing' > /dev/null 2>&1
+	then
+		echo 'wine32 may be missing'
+		_stop 1
+	fi
+}
+
 _setBottleDir() {
 	export wineExeDir
 	export wineBottle
@@ -24,13 +34,17 @@ _setBottleDir() {
 		#Optional support for older naming convention.
 		#oldWineAppDir=${wineExeDir/\/wineBottle*}
 		#[[ -e "$oldWineAppDir"/wineBottle ]] && wineBottle="$oldWineAppDir"/wineBottle
+		
+		[[ "$wineBottleHere" != "true" ]] && wineBottle="$scriptLocal"/_wbottle
 	else
 		wineAppDir=${wineExeDir/\/_wine32*}
 		wineBottle="$wineAppDir"/_wine32
+		
+		[[ "$wineBottleHere" != "true" ]] && wineBottle="$scriptLocal"/_wine32
+		
 		export WINEARCH
 		WINEARCH=win32
 	fi
-	
 	
 	mkdir -p "$wineBottle"
 	
@@ -41,6 +55,31 @@ _setBottleDir() {
 	
 	_virtUser "$@"
 	
+}
+
+_setBottleHere() {
+	export wineBottleHere
+	wineBottleHere="true"
+}
+
+_winecfghere() {
+	_setBottleHere
+	_setBottleDir "$@"
+	
+	winecfg
+}
+
+_winehere() {
+	_setBottleHere
+	_setBottleDir "$@"
+	
+	wine "${processedArgs[@]}"
+}
+
+_winecfg() {
+	_setBottleDir "$@"
+	
+	winecfg
 }
 
 _wine() {
