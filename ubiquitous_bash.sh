@@ -1602,7 +1602,7 @@ _ubvrtusrChRoot_report_failure() {
 	shift
 	echo "$@"
 	
-	return 1
+	return 0
 	
 }
 
@@ -1613,17 +1613,17 @@ _ubvrtusrChRoot_check() {
 	local internalFailure
 	internalFailure=false
 	
-	[[ -e "$globalVirtFS"/"$virtGuestHomeRef" ]] || _ubvrtusrChRoot_report_failure "nohome" "$virtGuestHomeRef" '[[ -e "$virtGuestHomeRef" ]]' || internalFailure=true
+	! [[ -e "$globalVirtFS"/"$virtGuestHomeRef" ]] && _ubvrtusrChRoot_report_failure "nohome" "$virtGuestHomeRef" '[[ -e "$virtGuestHomeRef" ]]' && internalFailure=true
 	
-	_chroot id -u "$virtGuestUser" > /dev/null 2>&1 || _ubvrtusrChRoot_report_failure "no guest user" "$virtGuestUser" '_chroot id -u "$virtGuestUser"' || internalFailure=true
+	! _chroot id -u "$virtGuestUser" > /dev/null 2>&1 && _ubvrtusrChRoot_report_failure "no guest user" "$virtGuestUser" '_chroot id -u "$virtGuestUser"' && internalFailure=true
 	
-	[[ $(_chroot id -u "$virtGuestUser") == "$HOST_USER_ID" ]] || _ubvrtusrChRoot_report_failure "bad uid" $(_chroot id -u "$virtGuestUser") '[[ $(_chroot id -u "$virtGuestUser") == "$HOST_USER_ID" ]]' || internalFailure=true
+	! [[ $(_chroot id -u "$virtGuestUser") == "$HOST_USER_ID" ]] && _ubvrtusrChRoot_report_failure "bad uid" $(_chroot id -u "$virtGuestUser") '[[ $(_chroot id -u "$virtGuestUser") == "$HOST_USER_ID" ]]' && internalFailure=true
 	
-	[[ $(_chroot id -g "$virtGuestUser") == "$HOST_GROUP_ID" ]] || _ubvrtusrChRoot_report_failure "bad gid" $(_chroot id -g "$virtGuestUser") '[[ $(_chroot id -g "$virtGuestUser") == "$HOST_GROUP_ID" ]]' || internalFailure=true
+	! [[ $(_chroot id -g "$virtGuestUser") == "$HOST_GROUP_ID" ]] && _ubvrtusrChRoot_report_failure "bad gid" $(_chroot id -g "$virtGuestUser") '[[ $(_chroot id -g "$virtGuestUser") == "$HOST_GROUP_ID" ]]' && internalFailure=true
 	
 	echo '#####ubvrtusr     checks'
 	
-	 [[ internalFailure == "true" ]] && return 1
+	 [[ "$internalFailure" == "true" ]] && return 1
 	 return 0
 }
 
@@ -1842,7 +1842,15 @@ _userQemu_sequence() {
 	
 	_commandBootdisc "$@" || _stop 1
 	
-	qemu-system-x86_64 -snapshot -machine accel=kvm -drive format=raw,file="$scriptLocal"/vm.img -drive file="$hostToGuestISO",media=cdrom -boot c -m 768
+	#qemu-system-x86_64 -snapshot -machine accel=kvm -drive format=raw,file="$scriptLocal"/vm.img -drive file="$hostToGuestISO",media=cdrom -boot c -m 768
+	
+	#https://wiki.qemu.org/Documentation/9psetup#Mounting_the_shared_path
+	#qemu-system-x86_64 -snapshot -machine accel=kvm -drive format=raw,file="$scriptLocal"/vm.img -drive file="$hostToGuestISO",media=cdrom -boot c -m 768 -fsdev local,id=appFolder,path="$sharedHostProjectDir",security_model=mapped,writeout=writeout
+	
+	#https://askubuntu.com/questions/614098/unable-to-get-execute-bit-on-samba-share-working-with-windows-7-client
+	#https://unix.stackexchange.com/questions/165554/shared-folder-between-qemu-windows-guest-and-linux-host
+	#https://linux.die.net/man/1/qemu-kvm
+	qemu-system-x86_64 -snapshot -machine accel=kvm -drive format=raw,file="$scriptLocal"/vm.img -drive file="$hostToGuestISO",media=cdrom -boot c -m 768 -net nic -net user,smb="$sharedHostProjectDir"
 	
 	_safeRMR "$instancedVirtDir" || _stop 1
 	

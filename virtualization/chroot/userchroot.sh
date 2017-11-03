@@ -26,7 +26,7 @@ _ubvrtusrChRoot_report_failure() {
 	shift
 	echo "$@"
 	
-	return 1
+	return 0
 	
 }
 
@@ -37,17 +37,17 @@ _ubvrtusrChRoot_check() {
 	local internalFailure
 	internalFailure=false
 	
-	[[ -e "$globalVirtFS"/"$virtGuestHomeRef" ]] || _ubvrtusrChRoot_report_failure "nohome" "$virtGuestHomeRef" '[[ -e "$virtGuestHomeRef" ]]' || internalFailure=true
+	! [[ -e "$globalVirtFS"/"$virtGuestHomeRef" ]] && _ubvrtusrChRoot_report_failure "nohome" "$virtGuestHomeRef" '[[ -e "$virtGuestHomeRef" ]]' && internalFailure=true
 	
-	_chroot id -u "$virtGuestUser" > /dev/null 2>&1 || _ubvrtusrChRoot_report_failure "no guest user" "$virtGuestUser" '_chroot id -u "$virtGuestUser"' || internalFailure=true
+	! _chroot id -u "$virtGuestUser" > /dev/null 2>&1 && _ubvrtusrChRoot_report_failure "no guest user" "$virtGuestUser" '_chroot id -u "$virtGuestUser"' && internalFailure=true
 	
-	[[ $(_chroot id -u "$virtGuestUser") == "$HOST_USER_ID" ]] || _ubvrtusrChRoot_report_failure "bad uid" $(_chroot id -u "$virtGuestUser") '[[ $(_chroot id -u "$virtGuestUser") == "$HOST_USER_ID" ]]' || internalFailure=true
+	! [[ $(_chroot id -u "$virtGuestUser") == "$HOST_USER_ID" ]] && _ubvrtusrChRoot_report_failure "bad uid" $(_chroot id -u "$virtGuestUser") '[[ $(_chroot id -u "$virtGuestUser") == "$HOST_USER_ID" ]]' && internalFailure=true
 	
-	[[ $(_chroot id -g "$virtGuestUser") == "$HOST_GROUP_ID" ]] || _ubvrtusrChRoot_report_failure "bad gid" $(_chroot id -g "$virtGuestUser") '[[ $(_chroot id -g "$virtGuestUser") == "$HOST_GROUP_ID" ]]' || internalFailure=true
+	! [[ $(_chroot id -g "$virtGuestUser") == "$HOST_GROUP_ID" ]] && _ubvrtusrChRoot_report_failure "bad gid" $(_chroot id -g "$virtGuestUser") '[[ $(_chroot id -g "$virtGuestUser") == "$HOST_GROUP_ID" ]]' && internalFailure=true
 	
 	echo '#####ubvrtusr     checks'
 	
-	 [[ internalFailure == "true" ]] && return 1
+	 [[ "$internalFailure" == "true" ]] && return 1
 	 return 0
 }
 
