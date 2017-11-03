@@ -195,6 +195,8 @@ _includeScript visualPrompt.sh "shortcuts/prompt"
 _includeScript testx11.sh "shortcuts/x11"
 _includeScript x11ClipboardImage.sh "shortcuts/x11/clipboard"
 
+_includeScript docker.sh "shortcuts/docker"
+
 _includeScript setupUbiquitous.sh "shortcuts"
 
 echo "#####Basic Variable Management" >> "$progScript"
