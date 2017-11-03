@@ -163,6 +163,9 @@ _includeScript vboxmount.sh "virtualization/vbox"
 _includeScript vboxlab.sh "virtualization/vbox"
 _includeScript vboxuser.sh "virtualization/vbox"
 
+_includeScript here_dosbox.sh "virtualization/dosbox"
+_includeScript dosbox.sh "virtualization/dosbox"
+
 _includeScript wine.sh "virtualization/wine"
 
 _includeScript mustberoot.sh "special"

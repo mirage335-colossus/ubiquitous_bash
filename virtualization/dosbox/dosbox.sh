@@ -1,3 +1,7 @@
+_test_dosbox() {
+	_checkDep dosbox
+}
+
 _prepare_dosbox() {
 	mkdir "$scriptLocal"/_dosbox
 	
