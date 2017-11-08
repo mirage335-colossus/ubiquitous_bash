@@ -41,6 +41,7 @@ export daemonPID="cwrxuk6wqzbzV6p8kPS8J4APYGX"	#Invalid do-not-match default.
 #export varStore="$scriptAbsoluteFolder"/var
 
 #Monolithic shared files.
+export lock_pathlock="$scriptLocal"/_pathlck
 export lock_quicktmp="$scriptLocal"/quicktmp	#Used to make locking operations atomic as possible.
 export lock_emergency="$scriptLocal"/_emergncy
 export lock_open="$scriptLocal"/_open

@@ -3169,6 +3169,7 @@ export daemonPID="cwrxuk6wqzbzV6p8kPS8J4APYGX"	#Invalid do-not-match default.
 #export varStore="$scriptAbsoluteFolder"/var
 
 #Monolithic shared files.
+export lock_pathlock="$scriptLocal"/_pathlck
 export lock_quicktmp="$scriptLocal"/quicktmp	#Used to make locking operations atomic as possible.
 export lock_emergency="$scriptLocal"/_emergncy
 export lock_open="$scriptLocal"/_open
@@ -3245,6 +3246,15 @@ _unset_vbox() {
 	export VBoxXPCOMIPCD_PIDfile=""
 }
 
+_reset_vboxLabID() {
+	[[ "$VBOX_ID_FILE" == "" ]] && return 1
+	
+	 rm -f "$VBOX_ID_FILE" > /dev/null 2>&1
+	 
+	 [[ -e "$VBOX_ID_FILE" ]] && return 1
+	 
+	 return 0
+}
 
 #"$1" == virtualbox instance directory (optional)
 _prepare_vbox() {
@@ -3261,7 +3271,10 @@ _prepare_vbox() {
 	mkdir -p "$globalVirtFS" > /dev/null 2>&1 || return 1
 	mkdir -p "$globalVirtTmp" > /dev/null 2>&1 || return 1
 	
-	export VBOX_ID_FILE="$vBoxInstanceDir"/vbox.id
+	export VBOX_ID_FILE
+	VBOX_ID_FILE="$vBoxInstanceDir"/vbox.id
+	
+	_pathLocked _reset_vboxLabID || return 1
 	
 	[[ ! -e "$VBOX_ID_FILE" ]] && sleep 0.1 && [[ ! -e "$VBOX_ID_FILE" ]] && echo -e -n "$sessionid" > "$VBOX_ID_FILE" 2> /dev/null
 	[[ -e "$VBOX_ID_FILE" ]] && export VBOXID=$(cat "$VBOX_ID_FILE" 2> /dev/null)
@@ -3301,6 +3314,12 @@ _prepare_lab_vbox() {
 }
 #_prepare_lab_vbox
 
+
+_prepare_docker() {
+	
+	true
+	
+}
 
 #####Local Environment Management (Resources)
 
@@ -3408,6 +3427,33 @@ _waitFileCommands() {
 		fi
 		
 		[[ -e "$waitCheckFile" ]] && return 1
+		
+	fi
+	
+	return 0
+}
+
+#$1 == command to execute if scriptLocal path has changed, typically remove another lock file
+_pathLocked() {
+	[[ ! -e "$lock_pathlock" ]] && echo "k3riC28hQRLnjgkwjI" > "$lock_pathlock"
+	[[ ! -e "$lock_pathlock" ]] && return 1
+	
+	local lockedPath
+	lockedPath=$(cat "$lock_pathlock")
+	
+	if [[ "$lockedPath" != "$scriptLocal" ]]
+	then
+		rm -f "$lock_pathlock" > /dev/null 2>&1
+		[[ -e "$lock_pathlock" ]] && return 1
+		
+		echo "$scriptLocal" > "$lock_pathlock"
+		[[ ! -e "$lock_pathlock" ]] && return 1
+		
+		if [[ "$1" != "" ]]
+		then
+			"$@"
+			[[ "$?" != "0" ]] && return 1
+		fi
 		
 	fi
 	

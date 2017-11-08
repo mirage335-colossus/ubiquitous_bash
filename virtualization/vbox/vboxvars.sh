@@ -15,6 +15,15 @@ _unset_vbox() {
 	export VBoxXPCOMIPCD_PIDfile=""
 }
 
+_reset_vboxLabID() {
+	[[ "$VBOX_ID_FILE" == "" ]] && return 1
+	
+	 rm -f "$VBOX_ID_FILE" > /dev/null 2>&1
+	 
+	 [[ -e "$VBOX_ID_FILE" ]] && return 1
+	 
+	 return 0
+}
 
 #"$1" == virtualbox instance directory (optional)
 _prepare_vbox() {
@@ -31,7 +40,10 @@ _prepare_vbox() {
 	mkdir -p "$globalVirtFS" > /dev/null 2>&1 || return 1
 	mkdir -p "$globalVirtTmp" > /dev/null 2>&1 || return 1
 	
-	export VBOX_ID_FILE="$vBoxInstanceDir"/vbox.id
+	export VBOX_ID_FILE
+	VBOX_ID_FILE="$vBoxInstanceDir"/vbox.id
+	
+	_pathLocked _reset_vboxLabID || return 1
 	
 	[[ ! -e "$VBOX_ID_FILE" ]] && sleep 0.1 && [[ ! -e "$VBOX_ID_FILE" ]] && echo -e -n "$sessionid" > "$VBOX_ID_FILE" 2> /dev/null
 	[[ -e "$VBOX_ID_FILE" ]] && export VBOXID=$(cat "$VBOX_ID_FILE" 2> /dev/null)

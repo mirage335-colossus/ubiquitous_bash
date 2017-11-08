@@ -88,6 +88,33 @@ _waitFileCommands() {
 	return 0
 }
 
+#$1 == command to execute if scriptLocal path has changed, typically remove another lock file
+_pathLocked() {
+	[[ ! -e "$lock_pathlock" ]] && echo "k3riC28hQRLnjgkwjI" > "$lock_pathlock"
+	[[ ! -e "$lock_pathlock" ]] && return 1
+	
+	local lockedPath
+	lockedPath=$(cat "$lock_pathlock")
+	
+	if [[ "$lockedPath" != "$scriptLocal" ]]
+	then
+		rm -f "$lock_pathlock" > /dev/null 2>&1
+		[[ -e "$lock_pathlock" ]] && return 1
+		
+		echo "$scriptLocal" > "$lock_pathlock"
+		[[ ! -e "$lock_pathlock" ]] && return 1
+		
+		if [[ "$1" != "" ]]
+		then
+			"$@"
+			[[ "$?" != "0" ]] && return 1
+		fi
+		
+	fi
+	
+	return 0
+}
+
 _readLocked() {
 	mkdir -p "$bootTmp"
 	
