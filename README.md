@@ -31,6 +31,8 @@ In most user environments, the latest git repository code will provide the stron
 * Support shutdown hooks through init daemons other than systemd.
 * Service/cron installation hooks.
 
+* Investigate HyperKit relevance - https://github.com/moby/hyperkit .
+
 
 # WARNING
 

@@ -6,8 +6,7 @@
 #"$1" == containerObjectName
 _dockerImport() {
 	
-	_permitDocker docker import "$1".dcf >importLog 2>&1
-	rm ./importLog >/dev/null 2>&1
+	_permitDocker docker import "$1".dcf > "$importLog" 2>&1
 	
 }
 

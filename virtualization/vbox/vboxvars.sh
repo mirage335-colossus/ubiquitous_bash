@@ -18,11 +18,11 @@ _unset_vbox() {
 _reset_vboxLabID() {
 	[[ "$VBOX_ID_FILE" == "" ]] && return 1
 	
-	 rm -f "$VBOX_ID_FILE" > /dev/null 2>&1
-	 
-	 [[ -e "$VBOX_ID_FILE" ]] && return 1
-	 
-	 return 0
+	rm -f "$VBOX_ID_FILE" > /dev/null 2>&1
+	
+	[[ -e "$VBOX_ID_FILE" ]] && return 1
+	
+	return 0
 }
 
 #"$1" == virtualbox instance directory (optional)

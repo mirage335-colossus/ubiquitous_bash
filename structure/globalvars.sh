@@ -51,6 +51,9 @@ export lock_closing="$scriptLocal"/_closing
 export lock_instance="$scriptLocal"/_instance
 export lock_instancing="$scriptLocal"/_instancing
 
+#Monolithic shared log files.
+export importLog="$scriptLocal"/import.log
+
 #Resource directories.
 #export guidanceDir="$scriptAbsoluteFolder"/guidance
 

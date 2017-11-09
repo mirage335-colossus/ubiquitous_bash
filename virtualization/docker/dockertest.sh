@@ -44,5 +44,12 @@ _test_docker() {
 		_stop 1
 	fi
 	
+	if ! _discoverResource docker/contrib/mkimage.sh > /dev/null 2>&1
+	#if true
+	then
+		echo
+		echo 'base images cannot be created without mkimage'
+		#_stop 1
+	fi
 }
 
