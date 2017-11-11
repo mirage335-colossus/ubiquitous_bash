@@ -272,3 +272,28 @@ _close() {
 	
 	
 }
+
+#"$1" == variable name to preserve
+#shift
+#"$1" == variable data to preserve
+#shift
+#"$@" == function to prepare other variables
+_preserveVar() {
+	local varNameToPreserve
+	varNameToPreserve="$1"
+	shift
+	
+	local varDataToPreserve
+	varDataToPreserve="$1"
+	shift
+	
+	"$@"
+	
+	[[ "$varNameToPreserve" == "" ]] && return
+	[[ "$varDataToPreserve" == "" ]] && return
+	
+	export "$varNameToPreserve"="$varDataToPreserve"
+	
+	return
+}
+

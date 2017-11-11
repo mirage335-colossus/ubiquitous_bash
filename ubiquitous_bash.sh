@@ -3189,28 +3189,60 @@ _dockerDeleteImagesAll() {
 
 # DANGER Deletes all docker assets not clearly in use!
 _dockerPrune() {
-	_permitDocker docker system prune
+	echo y | _permitDocker docker system prune
 }
  
 
-_create_docker_scratch_sequence() {
+_create_docker_mkimage_sequence() {
 	_start
-	
-	# TODO Verify prior dockerObjectName takes effect.
-	export dockerObjectName="ubvrt-ubvrt-scratch"
 	_prepare_docker
 	
-	_messageProcess "Searching"
+	_messageProcess "Searching ""$dockerBaseObjectName"
 	[[ "$dockerBaseObjectExists" == "true" ]] && _messageHAVE && _stop
 	_messageNEED
 	
+	_messageProcess "Locating mkimage"
+	cd "$dockerMkimageAbsoluteDirectory"
+	[[ ! -e "./mkimage.sh" ]] && _messageFAIL && _stop 1
+	_messagePASS
+	
+	_messageProcess "Checking sudo"
+	! _wantSudo && _messageFAIL && _stop 1
+	_messagePASS
+	
 	_messageProcess "Building ""$dockerBaseObjectName"
-	cd "$objectDir"
-	tar cv --files-from /dev/null | docker import - "$dockerBaseObjectName" 2> /dev/null > "$logTmp"/buildBase
+	
+	#Script "mkimage.sh" from "moby" repository is "not part of the core docker distribution". Frequent updates to code requesting operations from such a script may be expected.
+	#Commands here were tested with "mkimage.sh" scrip from "moby" git repository, URL "https://github.com/moby/moby.git", commit a4bdb304e29f21661e8ef398dbaeb8188aa0f46a .
+	
+	[[ $dockerMkimageDistro == "debian" ]] ; sudo -n ./mkimage.sh -t "$dockerBaseObjectName" debootstrap --variant=minbase --components=main --include=inetutils-ping,iproute "$dockerMkimageVersion" 2>> "$logTmp"/mkimageErr > "$logTmp"/mkimageOut
+	
 	cd "$scriptAbsoluteFolder"
 	
-	[[ "$(docker images -q "$dockerBaseObjectName" 2> /dev/null)" == "" ]] && _messageFAIL && _stop 1
 	
+	
+	[[ "$(_permitDocker docker images -q "$dockerBaseObjectName" 2> /dev/null)" == "" ]] && _messageFAIL && _preserveLog && _stop 1
+	_messagePASS
+	
+	_stop
+}
+
+_create_docker_scratch_sequence() {
+	_start
+	_prepare_docker
+	
+	_messageProcess "Searching ""$dockerBaseObjectName"
+	[[ "$dockerBaseObjectExists" == "true" ]] && _messageHAVE && _stop
+	_messageNEED
+	
+	cd "$dockerInstanceDir"
+	
+	_messageProcess "Building ""$dockerBaseObjectName"
+	tar cv --files-from /dev/null | _permitDocker docker import - "$dockerBaseObjectName" 2> /dev/null > "$logTmp"/buildBase
+	
+	cd "$scriptAbsoluteFolder"
+	
+	[[ "$(_permitDocker docker images -q "$dockerBaseObjectName" 2> /dev/null)" == "" ]] && _messageFAIL && _stop 1
 	_messagePASS
 	
 	_stop
@@ -3218,6 +3250,14 @@ _create_docker_scratch_sequence() {
 
 _create_docker_scratch() {
 	"$scriptAbsoluteLocation" _create_docker_scratch_sequence "$@"
+}
+
+_create_docker_debiansqueeze() {
+	"$scriptAbsoluteLocation" _create_docker_mkimage_sequence "$@"
+}
+
+_create_docker_debianjessie() {
+	"$scriptAbsoluteLocation" _create_docker_mkimage_sequence "$@"
 }
 
 
@@ -3230,10 +3270,11 @@ _create_docker_base() {
 	
 	[[ "$dockerBaseObjectName" == "scratch:latest" ]] && _messagePASS && _create_docker_scratch && return
 	
+	#[[ "$dockerBaseObjectName" == "local/debian:squeeze" ]] && _messagePASS && _create_docker_debiansqueeze && return
 	[[ "$dockerBaseObjectName" == "local/debian:jessie" ]] && _messagePASS && _create_docker_debianjessie && return
 	
 	
-	_messageWARN "No local build instructons found, will rely on upstream provider."
+	_messageWARN "No local build instructons operating, will rely on upstream provider."
 	return 1
 	
 }
@@ -3520,23 +3561,25 @@ _prepare_docker() {
 	export dockerImageFilename="$scriptLocal"/docker.dai
 	
 	##Sub-object Names
-	#Overload by setting either "$dockerObjectName", or all of "$dockerBaseObjectName", "$dockerImageObjectName", and "$dockerContainerObjectName" .
+	#Overload by setting either "$dockerObjectName", or any of "$dockerBaseObjectName", "$dockerImageObjectName", and "$dockerContainerObjectName" .
 	
 	#container-image-base
 	#Unique names NOT requires.
 	#Path locked ID from ubiquitous_bash will be prepended to image name.
-	#[[ "$dockerObjectName" == "" ]] && export dockerObjectName="unimportant-local/app:app-local/debian:jessie"
-	#[[ "$dockerObjectName" == "" ]] && export dockerObjectName="unimportant-hello-scratch"
-	#[[ "$dockerObjectName" == "" ]] && export dockerObjectName="ubvrt-ub-ubvrt/debian:jessie"
-	[[ "$dockerObjectName" == "" ]] && export dockerObjectName="ubvrt-ubvrt-scratch"
 	
-	
-	if [[ "$dockerBaseObjectName" == "" ]] || [[ "$dockerImageObjectName" == "" ]] || [[ "$dockerContainerObjectName" == "" ]]
+	#Default
+	if [[ "$dockerObjectName" == "" ]] && [[ "$dockerBaseObjectName" == "" ]] && [[ "$dockerImageObjectName" == "" ]] && [[ "$dockerContainerObjectName" == "" ]]
 	then
-		export dockerBaseObjectName=$(echo "$dockerObjectName" | cut -s -d\- -f3)
-		export dockerImageObjectName=$(echo "$dockerObjectName" | cut -s -d\- -f2)
-		export dockerContainerObjectName=$(echo "$dockerObjectName" | cut -d\- -f1)
+		#export dockerObjectName="unimportant-local/app:app-local/debian:jessie"
+		#export dockerObjectName="unimportant-hello-scratch"
+		#export dockerObjectName="ubvrt-ub-ubvrt/debian:jessie"
+		#export dockerObjectName="ubvrt-ubvrt-scratch"
+		export dockerObjectName="ubvrt-ubvrt-scratch"
 	fi
+	
+	[[ "$dockerBaseObjectName" == "" ]] && export dockerBaseObjectName=$(echo "$dockerObjectName" | cut -s -d\- -f3)
+	[[ "$dockerImageObjectName" == "" ]] && export dockerImageObjectName=$(echo "$dockerObjectName" | cut -s -d\- -f2)
+	[[ "$dockerContainerObjectName" == "" ]] && export dockerContainerObjectName=$(echo "$dockerObjectName" | cut -d\- -f1)
 	
 	if ! echo "$dockerBaseObjectName" | grep ':' >/dev/null 2>&1
 	then
@@ -3556,14 +3599,14 @@ _prepare_docker() {
 	
 	##Specialized.
 	export dockerBaseObjectExists="false"
-	[[ "$(docker images -q "$dockerBaseObjectName" 2> /dev/null)" != "" ]] && export dockerBaseObjectExists="true"
+	[[ "$(_permitDocker docker images -q "$dockerBaseObjectName" 2> /dev/null)" != "" ]] && export dockerBaseObjectExists="true"
 	
 	export dockerContainerObjectExists="false"
-	export dockerContainerID=$(docker ps -a -q --filter name='^/'"$containerObjectName"'$')
+	export dockerContainerID=$(_permitDocker docker ps -a -q --filter name='^/'"$containerObjectName"'$')
 	[[ "$dockerContainerID" != "" ]] && export dockerContainerObjectExists="true"
 	
 	export dockerImageObjectExists="false"
-	[[ "$(docker images -q "$dockerImageObjectName" 2> /dev/null)" != "" ]] && export dockerImageObjectExists="true"
+	[[ "$(_permitDocker docker images -q "$dockerImageObjectName" 2> /dev/null)" != "" ]] && export dockerImageObjectExists="true"
 	
 	
 	export dockerMkimageDistro=$(echo "$dockerBaseObjectName" | cut -d \/ -f 2 | cut -d \: -f 1)
@@ -3572,7 +3615,7 @@ _prepare_docker() {
 	##Binaries
 	[[ "$dockerMkimageAbsoluteLocaton" == "" ]] && export dockerMkimageAbsoluteLocaton=$(_discoverResource moby/contrib/mkimage.sh)
 	[[ "$dockerMkimageAbsoluteLocaton" == "" ]] && export dockerMkimageAbsoluteLocaton=$(_discoverResource docker/contrib/mkimage.sh)
-	[[ "$dockerMkimageAbsoluteLocaton" == "" ]] && export dockerMkimageAbsoluteDirectory=$(_getAbsoluteFolder "$dockerMkimageAbsoluteLocaton")
+	[[ "$dockerMkimageAbsoluteDirectory" == "" ]] && export dockerMkimageAbsoluteDirectory=$(_getAbsoluteFolder "$dockerMkimageAbsoluteLocaton")
 	
 	##Directives
 	export dockerdirectivefile
@@ -3881,6 +3924,31 @@ _close() {
 	
 	
 }
+
+#"$1" == variable name to preserve
+#shift
+#"$1" == variable data to preserve
+#shift
+#"$@" == function to prepare other variables
+_preserveVar() {
+	local varNameToPreserve
+	varNameToPreserve="$1"
+	shift
+	
+	local varDataToPreserve
+	varDataToPreserve="$1"
+	shift
+	
+	"$@"
+	
+	[[ "$varNameToPreserve" == "" ]] && return
+	[[ "$varDataToPreserve" == "" ]] && return
+	
+	export "$varNameToPreserve"="$varDataToPreserve"
+	
+	return
+}
+
 
 #####Idle
 

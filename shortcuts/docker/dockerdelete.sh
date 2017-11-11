@@ -15,6 +15,6 @@ _dockerDeleteImagesAll() {
 
 # DANGER Deletes all docker assets not clearly in use!
 _dockerPrune() {
-	_permitDocker docker system prune
+	echo y | _permitDocker docker system prune
 }
  
