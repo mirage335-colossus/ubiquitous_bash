@@ -131,6 +131,7 @@ _includeScript findport.sh "generic/net"
 
 _includeScript uid.sh "generic"
 
+_includeScript messaging.sh "generic"
 _includeScript validaterequest.sh "generic"
 
 _includeScript preserveLog.sh "generic"
@@ -170,7 +171,9 @@ _includeScript dosbox.sh "virtualization/dosbox"
 
 _includeScript wine.sh "virtualization/wine"
 
+_includeScript here_docker.sh "virtualization/docker"
 _includeScript dockertest.sh "virtualization/docker"
+_includeScript dockerchecks.sh "virtualization/docker"
 
 _includeScript mustberoot.sh "special"
 _includeScript mustgetsudo.sh "special"
@@ -197,7 +200,6 @@ _includeScript x11ClipboardImage.sh "shortcuts/x11/clipboard"
 
 _includeScript dockerassets.sh "shortcuts/docker"
 _includeScript dockerdelete.sh "shortcuts/docker"
-
 _includeScript dockercreate.sh "shortcuts/docker"
 
 _includeScript setupUbiquitous.sh "shortcuts"

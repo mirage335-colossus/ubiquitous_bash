@@ -8,11 +8,29 @@ _unset_docker() {
 	
 	export dockerubidfile=""
 	
+	export dockerImageFilename=""
+	
+	export DOCKERUBID=""
+	
 	export dockerObjectName=""
 	export dockerBaseObjectName=""
 	export dockerImageObjectName=""
 	export dockerContainerObjectName=""
 	export dockerImageObjectNameSane=""
+	
+	export dockerBaseObjectExists=""
+	export dockerContainerObjectExists=""
+	export dockerContainerID=""
+	export dockerImageObjectExists=""
+	
+	export dockerMkimageDistro=""
+	export dockerMkimageVersion=""
+	
+	export dockerMkimageAbsoluteLocaton=""
+	export dockerMkimageAbsoluteDirectory=""
+	
+	export dockerdirectivefile=""
+	export dockerentrypoint=""
 	
 	
 }
@@ -54,8 +72,12 @@ _prepare_docker() {
 	#Overload by setting either "$dockerObjectName", or all of "$dockerBaseObjectName", "$dockerImageObjectName", and "$dockerContainerObjectName" .
 	
 	#container-image-base
-	#[[ "$dockerObjectName" == "" ]] && export dockerObjectName="unimportant-""$DOCKERUBID"_"local/app:app-local/debian:jessie"
-	[[ "$dockerObjectName" == "" ]] && export dockerObjectName="unimportant-""$DOCKERUBID"_"hello-scratch"
+	#Unique names NOT requires.
+	#Path locked ID from ubiquitous_bash will be prepended to image name.
+	#[[ "$dockerObjectName" == "" ]] && export dockerObjectName="unimportant-local/app:app-local/debian:jessie"
+	#[[ "$dockerObjectName" == "" ]] && export dockerObjectName="unimportant-hello-scratch"
+	#[[ "$dockerObjectName" == "" ]] && export dockerObjectName="ubvrt-ub-ubvrt/debian:jessie"
+	[[ "$dockerObjectName" == "" ]] && export dockerObjectName="ubvrt-ubvrt-scratch"
 	
 	
 	if [[ "$dockerBaseObjectName" == "" ]] || [[ "$dockerImageObjectName" == "" ]] || [[ "$dockerContainerObjectName" == "" ]]
@@ -70,33 +92,36 @@ _prepare_docker() {
 		dockerBaseObjectName="$dockerBaseObjectName"":latest"
 	fi
 	
+	export dockerImageObjectName="$DOCKERUBID"_"$dockerImageObjectName"
+	
 	if ! echo "$dockerImageObjectName" | grep ':' >/dev/null 2>&1
 	then
 		dockerImageObjectName="$dockerImageObjectName"":latest"
 	fi
 	
-	dockerImageObjectNameSane=$(echo "$imageObjectName" | tr ':/' '__' | tr -dc 'a-zA-Z0-9_')
+	dockerImageObjectNameSane=$(echo "$dockerImageObjectName" | tr ':/' '__' | tr -dc 'a-zA-Z0-9_')
 	
 	dockerContainerObjectName="$dockerContainerObjectName""_""$dockerImageObjectNameSane"
 	
 	##Specialized.
-	export dockerBaseObjectExists=false
-	[[ "$(docker images -q "$baseObjectName" 2> /dev/null)" != "" ]] && export baseObjectExists=true
+	export dockerBaseObjectExists="false"
+	[[ "$(docker images -q "$dockerBaseObjectName" 2> /dev/null)" != "" ]] && export dockerBaseObjectExists="true"
 	
-	export dockerContainerObjectExists=false
+	export dockerContainerObjectExists="false"
 	export dockerContainerID=$(docker ps -a -q --filter name='^/'"$containerObjectName"'$')
-	[[ "$dockerContainerID" != "" ]] && export dockerContainerObjectExists=true
+	[[ "$dockerContainerID" != "" ]] && export dockerContainerObjectExists="true"
 	
-	export dockerImageObjectExists=false
-	[[ "$(docker images -q "$imageObjectName" 2> /dev/null)" != "" ]] && export dockerImageObjectExists=true
+	export dockerImageObjectExists="false"
+	[[ "$(docker images -q "$dockerImageObjectName" 2> /dev/null)" != "" ]] && export dockerImageObjectExists="true"
 	
 	
-	export mkimageDistro=$(echo "$baseObjectName" | cut -d \/ -f 2 | cut -d \: -f 1)
-	export mkimageVersion=$(echo "$baseObjectName" | cut -d \/ -f 2 | cut -d \: -f 2)
+	export dockerMkimageDistro=$(echo "$dockerBaseObjectName" | cut -d \/ -f 2 | cut -d \: -f 1)
+	export dockerMkimageVersion=$(echo "$dockerBaseObjectName" | cut -d \/ -f 2 | cut -d \: -f 2)
 	
 	##Binaries
-	export mkimageAbsoluteLocaton=$(_discoverResource docker/contrib/mkimage.sh)
-	export mkimageAbsoluteDirectory=$(_getAbsoluteFolder "$mkimageAbsoluteLocaton")
+	[[ "$dockerMkimageAbsoluteLocaton" == "" ]] && export dockerMkimageAbsoluteLocaton=$(_discoverResource moby/contrib/mkimage.sh)
+	[[ "$dockerMkimageAbsoluteLocaton" == "" ]] && export dockerMkimageAbsoluteLocaton=$(_discoverResource docker/contrib/mkimage.sh)
+	[[ "$dockerMkimageAbsoluteLocaton" == "" ]] && export dockerMkimageAbsoluteDirectory=$(_getAbsoluteFolder "$dockerMkimageAbsoluteLocaton")
 	
 	##Directives
 	export dockerdirectivefile

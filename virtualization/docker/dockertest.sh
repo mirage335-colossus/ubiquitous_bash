@@ -44,7 +44,7 @@ _test_docker() {
 		_stop 1
 	fi
 	
-	if ! _discoverResource docker/contrib/mkimage.sh > /dev/null 2>&1
+	if ! _discoverResource moby/contrib/mkimage.sh > /dev/null 2>&1 && ! _discoverResource docker/contrib/mkimage.sh
 	#if true
 	then
 		echo

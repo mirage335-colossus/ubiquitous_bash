@@ -815,6 +815,49 @@ Creates custom bootable x64 Debian image. Requires [[fetch|Debian]] dependencies
 [[Features]]
 [[Virtualization]]</pre>
 </div>
+<div title="DockerCreate" creator="mirage335" modifier="mirage335" created="201711111636" changecount="1">
+<pre>Docker image/container creation scripts. Code at &quot;shortcuts/docker/dockercreate.sh&quot; .
+
+!Base
+Base images contain operating systems, and are used to differentially build images dedicated to running specific commands in temporary containers.
+
+!!Scratch
+//{{{
+_create_docker_base &quot;scratch:latest&quot;
+//}}}</pre>
+</div>
+<div title="DockerOperations" creator="mirage335" modifier="mirage335" created="201711111629" modified="201711111636" changecount="2">
+<pre>!Assets
+Run basic queries on the local docker system repository. Code at &quot;shortcuts/docker/dockerassets.sh&quot; .
+
+//{{{
+#Show all images in repository.
+_dockerImages
+
+#Show all containers in repository.
+_dockerContainers
+
+#Show all running containers.
+_dockerRunning
+//}}}
+
+!Delete
+Delete images, and containers, from the local docker system repository. Code at &quot;shortcuts/docker/dockerdelete.sh&quot; .
+
+//{{{
+# WARNING Deletes specified docker IMAGE.
+_dockerDeleteImage
+
+# WARNING Deletes all docker containers.
+_dockerDeleteContainersAll
+
+# DANGER Deletes all docker images!
+_dockerDeleteImagesAll
+
+# DANGER Deletes all docker assets not clearly in use!
+_dockerPrune
+//}}}</pre>
+</div>
 <div title="Experimental" creator="mirage335" modifier="mirage335" created="201710262146" changecount="1">
 <pre>Few functions are not strictly deterministically bound only to internally controlled dependencies. None of these impact fully automatic operations.
 
@@ -1043,7 +1086,7 @@ Basename of the directory containing script. Typically used to cause the script 
 
 </pre>
 </div>
-<div title="Shortcuts" creator="mirage335" modifier="mirage335" created="201710261859" modified="201710271816" changecount="18">
+<div title="Shortcuts" creator="mirage335" modifier="mirage335" created="201710261859" modified="201711111621" changecount="20">
 <pre>Many functions are relevant to, or intended to simplify, typical desktop usage. Generally sorted into &quot;generic&quot; or &quot;shortcuts&quot; subdirectories.
 
 
@@ -1062,7 +1105,10 @@ Basename of the directory containing script. Typically used to cause the script 
 !Distro
 [[Debian]]
 [[Raspbian]]
-</pre>
+
+!Docker
+[[Operations|DockerOperations]]
+[[Create|DockerCreate]]</pre>
 </div>
 <div title="SiteSubtitle" creator="mirage335" modifier="mirage335" created="201710261741" changecount="1">
 <pre>USAGE</pre>
