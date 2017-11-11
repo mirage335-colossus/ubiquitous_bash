@@ -2652,6 +2652,8 @@ _wine() {
 
  
 
+ 
+
 #Runs command directly if member of "docker" group, or through sudo if not.
 #Docker inevitably requires effective root. 
 _permitDocker() {
@@ -3211,6 +3213,7 @@ _create_docker_mkimage_sequence() {
 	_messagePASS
 	
 	_messageProcess "Building ""$dockerBaseObjectName"
+	cd "$dockerMkimageAbsoluteDirectory"
 	
 	#Script "mkimage.sh" from "moby" repository is "not part of the core docker distribution". Frequent updates to code requesting operations from such a script may be expected.
 	#Commands here were tested with "mkimage.sh" scrip from "moby" git repository, URL "https://github.com/moby/moby.git", commit a4bdb304e29f21661e8ef398dbaeb8188aa0f46a .
@@ -3221,8 +3224,11 @@ _create_docker_mkimage_sequence() {
 	
 	
 	
-	[[ "$(_permitDocker docker images -q "$dockerBaseObjectName" 2> /dev/null)" == "" ]] && _messageFAIL && _preserveLog && _stop 1
+	[[ "$(_permitDocker docker images -q "$dockerBaseObjectName" 2> /dev/null)" == "" ]] && _messageFAIL && _stop 1
 	_messagePASS
+	
+	rm -f "$logTmp"/mkimageErr > /dev/null 2>&1
+	rm -f "$logTmp"/mkimageOut > /dev/null 2>&1
 	
 	_stop
 }
@@ -3235,15 +3241,18 @@ _create_docker_scratch_sequence() {
 	[[ "$dockerBaseObjectExists" == "true" ]] && _messageHAVE && _stop
 	_messageNEED
 	
-	cd "$dockerInstanceDir"
+	mkdir -p "$safeTmp"/dockerbase
+	cd "$safeTmp"/dockerbase
 	
 	_messageProcess "Building ""$dockerBaseObjectName"
-	tar cv --files-from /dev/null | _permitDocker docker import - "$dockerBaseObjectName" 2> /dev/null > "$logTmp"/buildBase
+	tar cv --files-from /dev/null | _permitDocker docker import - "$dockerBaseObjectName" 2> /dev/null > "$logTmp"/buildBase.log
 	
 	cd "$scriptAbsoluteFolder"
 	
 	[[ "$(_permitDocker docker images -q "$dockerBaseObjectName" 2> /dev/null)" == "" ]] && _messageFAIL && _stop 1
 	_messagePASS
+	
+	rm -f "$logTmp"/buildBase.log > /dev/null 2>&1
 	
 	_stop
 }
@@ -3262,6 +3271,8 @@ _create_docker_debianjessie() {
 
 
 _create_docker_base() {
+	_messageNormal "#####Base."
+	
 	[[ "$dockerBaseObjectName" == "" ]] && [[ "$1" != "" ]] && export dockerBaseObjectName="$1"
 	
 	_messageProcess "Evaluating ""$dockerBaseObjectName"
@@ -3276,7 +3287,78 @@ _create_docker_base() {
 	
 	_messageWARN "No local build instructons operating, will rely on upstream provider."
 	return 1
+}
+
+_create_docker_image_sequence() {
+	_start
+	_prepare_docker
 	
+	_create_docker_base
+	
+	_messageNormal "#####Image."
+	_messageProcess "Validating ""$dockerImageObjectName"
+	[[ "$dockerImageObjectName" == "" ]] && _messageError "BLANK" && _stop 1
+	_messagePASS
+	
+	_messageProcess "Searching ""$dockerImageObjectName"
+	[[ "$dockerImageObjectExists" == "true" ]]  && _messageHAVE && _stop
+	_messageNEED
+	
+	_messageProcess "Loading ""$dockerImageObjectName"
+	_docker_load && _messagePASS && _stop
+	_messageNEED
+	
+	_messageProcess "Checking context "
+	[[ ! -e "$dockerdirectivefile" ]] && _messageFAIL && _stop 1
+	[[ ! -e "$dockerentrypoint" ]] && _messageFAIL && _stop 1
+	_messagePASS
+	
+	mkdir -p "$safeTmp"/dockerimage
+	cd "$safeTmp"/dockerimage
+	
+	_messageProess "Building ""$dockerImageObjectName"
+	_permitDocker docker build --rm --tag "$dockerImageObjectName" . 2> /dev/null > "$logTmp"/buildImage
+	
+	cd "$scriptAbsoluteFolder"
+	
+	[[ "$(_permitDocker docker images -q "$dockerImageObjectName" 2> /dev/null)" == "" ]] && _messageFAIL && _stop 1
+	_messagePASS
+	
+	rm -f "$logTmp"/buildImage > /dev/null 2>&1
+	
+	_stop
+}
+
+_create_docker_image() {
+	[[ "$dockerBaseObjectName" == "" ]] && [[ "$1" != "" ]] && export dockerBaseObjectName="$1"
+	[[ "$dockerImageObjectName" == "" ]] && [[ "$2" != "" ]] && export dockerImageObjectName="$2"
+	
+	"$scriptAbsoluteLocation" _create_docker_image_sequence "$@"
+}
+
+
+
+
+
+
+
+
+
+
+_docker_img_to_dai() {
+	false
+}
+
+_docker_dai_to_img() {
+	false
+}
+
+_docker_load() {
+	false
+}
+
+_docker_save() {
+	false
 }
 
 _importShortcuts() {
@@ -3509,6 +3591,7 @@ _unset_docker() {
 	export dockerImageObjectName=""
 	export dockerContainerObjectName=""
 	export dockerImageObjectNameSane=""
+	export dockerContainerObjectNameInstanced=""
 	
 	export dockerBaseObjectExists=""
 	export dockerContainerObjectExists=""
@@ -3583,19 +3666,21 @@ _prepare_docker() {
 	
 	if ! echo "$dockerBaseObjectName" | grep ':' >/dev/null 2>&1
 	then
-		dockerBaseObjectName="$dockerBaseObjectName"":latest"
+		export dockerBaseObjectName="$dockerBaseObjectName"":latest"
 	fi
 	
 	export dockerImageObjectName="$DOCKERUBID"_"$dockerImageObjectName"
 	
 	if ! echo "$dockerImageObjectName" | grep ':' >/dev/null 2>&1
 	then
-		dockerImageObjectName="$dockerImageObjectName"":latest"
+		export dockerImageObjectName="$dockerImageObjectName"":latest"
 	fi
 	
-	dockerImageObjectNameSane=$(echo "$dockerImageObjectName" | tr ':/' '__' | tr -dc 'a-zA-Z0-9_')
+	export dockerImageObjectNameSane=$(echo "$dockerImageObjectName" | tr ':/' '__' | tr -dc 'a-zA-Z0-9_')
 	
-	dockerContainerObjectName="$dockerContainerObjectName""_""$dockerImageObjectNameSane"
+	export dockerContainerObjectName="$dockerContainerObjectName""_""$dockerImageObjectNameSane"
+	
+	export dockerContainerObjectNameInstanced="$sessionid"_"$dockerContainerObjectName"
 	
 	##Specialized.
 	export dockerBaseObjectExists="false"
@@ -3619,7 +3704,7 @@ _prepare_docker() {
 	
 	##Directives
 	export dockerdirectivefile
-	dockerdirectivefile="$safeTmp"/dockerfile
+	dockerdirectivefile="$safeTmp"/Dockerfile
 	export dockerentrypoint
 	dockerentrypoint="$safeTmp"/entrypoint.sh
 	#_prepare_docker_directives

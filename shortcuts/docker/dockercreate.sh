@@ -16,6 +16,7 @@ _create_docker_mkimage_sequence() {
 	_messagePASS
 	
 	_messageProcess "Building ""$dockerBaseObjectName"
+	cd "$dockerMkimageAbsoluteDirectory"
 	
 	#Script "mkimage.sh" from "moby" repository is "not part of the core docker distribution". Frequent updates to code requesting operations from such a script may be expected.
 	#Commands here were tested with "mkimage.sh" scrip from "moby" git repository, URL "https://github.com/moby/moby.git", commit a4bdb304e29f21661e8ef398dbaeb8188aa0f46a .
@@ -26,8 +27,11 @@ _create_docker_mkimage_sequence() {
 	
 	
 	
-	[[ "$(_permitDocker docker images -q "$dockerBaseObjectName" 2> /dev/null)" == "" ]] && _messageFAIL && _preserveLog && _stop 1
+	[[ "$(_permitDocker docker images -q "$dockerBaseObjectName" 2> /dev/null)" == "" ]] && _messageFAIL && _stop 1
 	_messagePASS
+	
+	rm -f "$logTmp"/mkimageErr > /dev/null 2>&1
+	rm -f "$logTmp"/mkimageOut > /dev/null 2>&1
 	
 	_stop
 }
@@ -40,15 +44,18 @@ _create_docker_scratch_sequence() {
 	[[ "$dockerBaseObjectExists" == "true" ]] && _messageHAVE && _stop
 	_messageNEED
 	
-	cd "$dockerInstanceDir"
+	mkdir -p "$safeTmp"/dockerbase
+	cd "$safeTmp"/dockerbase
 	
 	_messageProcess "Building ""$dockerBaseObjectName"
-	tar cv --files-from /dev/null | _permitDocker docker import - "$dockerBaseObjectName" 2> /dev/null > "$logTmp"/buildBase
+	tar cv --files-from /dev/null | _permitDocker docker import - "$dockerBaseObjectName" 2> /dev/null > "$logTmp"/buildBase.log
 	
 	cd "$scriptAbsoluteFolder"
 	
 	[[ "$(_permitDocker docker images -q "$dockerBaseObjectName" 2> /dev/null)" == "" ]] && _messageFAIL && _stop 1
 	_messagePASS
+	
+	rm -f "$logTmp"/buildBase.log > /dev/null 2>&1
 	
 	_stop
 }
@@ -67,6 +74,8 @@ _create_docker_debianjessie() {
 
 
 _create_docker_base() {
+	_messageNormal "#####Base."
+	
 	[[ "$dockerBaseObjectName" == "" ]] && [[ "$1" != "" ]] && export dockerBaseObjectName="$1"
 	
 	_messageProcess "Evaluating ""$dockerBaseObjectName"
@@ -81,5 +90,60 @@ _create_docker_base() {
 	
 	_messageWARN "No local build instructons operating, will rely on upstream provider."
 	return 1
-	
 }
+
+_create_docker_image_sequence() {
+	_start
+	_prepare_docker
+	
+	_create_docker_base
+	
+	_messageNormal "#####Image."
+	_messageProcess "Validating ""$dockerImageObjectName"
+	[[ "$dockerImageObjectName" == "" ]] && _messageError "BLANK" && _stop 1
+	_messagePASS
+	
+	_messageProcess "Searching ""$dockerImageObjectName"
+	[[ "$dockerImageObjectExists" == "true" ]]  && _messageHAVE && _stop
+	_messageNEED
+	
+	_messageProcess "Loading ""$dockerImageObjectName"
+	_docker_load && _messagePASS && _stop
+	_messageNEED
+	
+	_messageProcess "Checking context "
+	[[ ! -e "$dockerdirectivefile" ]] && _messageFAIL && _stop 1
+	[[ ! -e "$dockerentrypoint" ]] && _messageFAIL && _stop 1
+	_messagePASS
+	
+	mkdir -p "$safeTmp"/dockerimage
+	cd "$safeTmp"/dockerimage
+	
+	_messageProess "Building ""$dockerImageObjectName"
+	_permitDocker docker build --rm --tag "$dockerImageObjectName" . 2> /dev/null > "$logTmp"/buildImage
+	
+	cd "$scriptAbsoluteFolder"
+	
+	[[ "$(_permitDocker docker images -q "$dockerImageObjectName" 2> /dev/null)" == "" ]] && _messageFAIL && _stop 1
+	_messagePASS
+	
+	rm -f "$logTmp"/buildImage > /dev/null 2>&1
+	
+	_stop
+}
+
+_create_docker_image() {
+	[[ "$dockerBaseObjectName" == "" ]] && [[ "$1" != "" ]] && export dockerBaseObjectName="$1"
+	[[ "$dockerImageObjectName" == "" ]] && [[ "$2" != "" ]] && export dockerImageObjectName="$2"
+	
+	"$scriptAbsoluteLocation" _create_docker_image_sequence "$@"
+}
+
+
+
+
+
+
+
+
+

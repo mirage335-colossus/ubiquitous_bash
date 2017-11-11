@@ -17,6 +17,7 @@ _unset_docker() {
 	export dockerImageObjectName=""
 	export dockerContainerObjectName=""
 	export dockerImageObjectNameSane=""
+	export dockerContainerObjectNameInstanced=""
 	
 	export dockerBaseObjectExists=""
 	export dockerContainerObjectExists=""
@@ -91,19 +92,21 @@ _prepare_docker() {
 	
 	if ! echo "$dockerBaseObjectName" | grep ':' >/dev/null 2>&1
 	then
-		dockerBaseObjectName="$dockerBaseObjectName"":latest"
+		export dockerBaseObjectName="$dockerBaseObjectName"":latest"
 	fi
 	
 	export dockerImageObjectName="$DOCKERUBID"_"$dockerImageObjectName"
 	
 	if ! echo "$dockerImageObjectName" | grep ':' >/dev/null 2>&1
 	then
-		dockerImageObjectName="$dockerImageObjectName"":latest"
+		export dockerImageObjectName="$dockerImageObjectName"":latest"
 	fi
 	
-	dockerImageObjectNameSane=$(echo "$dockerImageObjectName" | tr ':/' '__' | tr -dc 'a-zA-Z0-9_')
+	export dockerImageObjectNameSane=$(echo "$dockerImageObjectName" | tr ':/' '__' | tr -dc 'a-zA-Z0-9_')
 	
-	dockerContainerObjectName="$dockerContainerObjectName""_""$dockerImageObjectNameSane"
+	export dockerContainerObjectName="$dockerContainerObjectName""_""$dockerImageObjectNameSane"
+	
+	export dockerContainerObjectNameInstanced="$sessionid"_"$dockerContainerObjectName"
 	
 	##Specialized.
 	export dockerBaseObjectExists="false"
@@ -127,7 +130,7 @@ _prepare_docker() {
 	
 	##Directives
 	export dockerdirectivefile
-	dockerdirectivefile="$safeTmp"/dockerfile
+	dockerdirectivefile="$safeTmp"/Dockerfile
 	export dockerentrypoint
 	dockerentrypoint="$safeTmp"/entrypoint.sh
 	#_prepare_docker_directives
