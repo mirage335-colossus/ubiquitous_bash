@@ -95,6 +95,7 @@ _create_docker_base() {
 _create_docker_image_sequence() {
 	_start
 	_prepare_docker
+	_prepare_docker_directives
 	
 	_create_docker_base
 	
@@ -119,15 +120,18 @@ _create_docker_image_sequence() {
 	mkdir -p "$safeTmp"/dockerimage
 	cd "$safeTmp"/dockerimage
 	
-	_messageProess "Building ""$dockerImageObjectName"
-	_permitDocker docker build --rm --tag "$dockerImageObjectName" . 2> /dev/null > "$logTmp"/buildImage
+	_messageProcess "Building ""$dockerImageObjectName"
+	
+	_pull_docker_guest
+	_permitDocker docker build --rm --tag "$dockerImageObjectName" . 2> "$logTmp"/buildImageErr.log > "$logTmp"/buildImageOut.log
 	
 	cd "$scriptAbsoluteFolder"
 	
 	[[ "$(_permitDocker docker images -q "$dockerImageObjectName" 2> /dev/null)" == "" ]] && _messageFAIL && _stop 1
 	_messagePASS
 	
-	rm -f "$logTmp"/buildImage > /dev/null 2>&1
+	rm -f "$logTmp"/buildImageErr.log > /dev/null 2>&1
+	rm -f "$logTmp"/buildImageOut.log > /dev/null 2>&1
 	
 	_stop
 }

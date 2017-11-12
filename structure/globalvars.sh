@@ -1,6 +1,7 @@
 #####Global variables.
 
 export sessionid=$(_uid)
+export lowsessionid=$(echo -n "$sessionid" | tr A-Z a-z )
 export scriptAbsoluteLocation=$(_getScriptAbsoluteLocation)
 export scriptAbsoluteFolder=$(_getScriptAbsoluteFolder)
 

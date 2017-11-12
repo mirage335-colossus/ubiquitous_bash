@@ -2650,9 +2650,67 @@ _wine() {
 	wine "${processedArgs[@]}"
 }
 
- 
+_here_dockerfile_lite_scratch() {
+	cat << 'CZXWXcRMTo8EmM8i4d'
+FROM scratch
+ADD hello /
+CMD ["/hello"]
+CZXWXcRMTo8EmM8i4d
+}
 
- 
+_here_dockerfile_lite_debianjessie() {
+	cat << 'CZXWXcRMTo8EmM8i4d'
+FROM local/debian:jessie
+CMD ["/bin/bash"]
+CZXWXcRMTo8EmM8i4d
+}
+
+
+_here_dockerfile_debianjessie() {
+	cat << 'CZXWXcRMTo8EmM8i4d'
+FROM local/debian:jessie
+
+RUN apt-get update && apt-get -y --no-install-recommends install \
+ca-certificates \
+curl \
+x11-apps \
+libgl1-mesa-glx libgl1-mesa-dri mesa-utils \
+wget \
+gnupg2 \
+file \
+build-essential \
+fuse \
+hicolor-icon-theme
+
+RUN apt-get -y install \
+default-jre
+
+COPY gosu-armel /usr/local/bin/gosu-armel
+COPY gosu-amd64 /usr/local/bin/gosu-amd64
+COPY gosu-i386 /usr/local/bin/gosu-i386
+
+RUN mkdir -p /etc/skel/Downloads
+
+RUN mkdir -p /opt/exec
+
+
+COPY entrypoint.sh /usr/local/bin/entrypoint.sh
+
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh" "_docker_drop"]
+CZXWXcRMTo8EmM8i4d
+}
+
+_here_dockerfile() {
+	_here_dockerfile_debianjessie "$@"
+}
+
+_drop_docker() {
+	# Change to localPWD or home.
+	cd "$localPWD"
+	
+	# Drop to user ubvrtusr or remain root, using gosu.
+	_gosuExecVirt "$@"
+}
 
 #Runs command directly if member of "docker" group, or through sudo if not.
 #Docker inevitably requires effective root. 
@@ -3292,6 +3350,7 @@ _create_docker_base() {
 _create_docker_image_sequence() {
 	_start
 	_prepare_docker
+	_prepare_docker_directives
 	
 	_create_docker_base
 	
@@ -3316,15 +3375,18 @@ _create_docker_image_sequence() {
 	mkdir -p "$safeTmp"/dockerimage
 	cd "$safeTmp"/dockerimage
 	
-	_messageProess "Building ""$dockerImageObjectName"
-	_permitDocker docker build --rm --tag "$dockerImageObjectName" . 2> /dev/null > "$logTmp"/buildImage
+	_messageProcess "Building ""$dockerImageObjectName"
+	
+	_pull_docker_guest
+	_permitDocker docker build --rm --tag "$dockerImageObjectName" . 2> "$logTmp"/buildImageErr.log > "$logTmp"/buildImageOut.log
 	
 	cd "$scriptAbsoluteFolder"
 	
 	[[ "$(_permitDocker docker images -q "$dockerImageObjectName" 2> /dev/null)" == "" ]] && _messageFAIL && _stop 1
 	_messagePASS
 	
-	rm -f "$logTmp"/buildImage > /dev/null 2>&1
+	rm -f "$logTmp"/buildImageErr.log > /dev/null 2>&1
+	rm -f "$logTmp"/buildImageOut.log > /dev/null 2>&1
 	
 	_stop
 }
@@ -3383,6 +3445,7 @@ _setupUbiquitous() {
 #####Global variables.
 
 export sessionid=$(_uid)
+export lowsessionid=$(echo -n "$sessionid" | tr A-Z a-z )
 export scriptAbsoluteLocation=$(_getScriptAbsoluteLocation)
 export scriptAbsoluteFolder=$(_getScriptAbsoluteFolder)
 
@@ -3621,9 +3684,17 @@ _reset_dockerID() {
 }
 
 _prepare_docker_directives() {
-	#Docker directives files should be generated from here documents and a copy of the script iself.
+	# https://denibertovic.com/posts/handling-permissions-with-docker-volumes/
+	_here_dockerfile > "$dockerdirectivefile"
 	
-	true
+	cp "$scriptAbsoluteLocation" "$dockerentrypoint" > /dev/null 2>&1
+}
+
+_pull_docker_guest() {
+	cp "$dockerdirectivefile" ./ > /dev/null 2>&1
+	cp "$dockerentrypoint" ./ > /dev/null 2>&1
+	
+	cp "$scriptBin"/gosu* ./ > /dev/null 2>&1
 }
 
 _prepare_docker() {
@@ -3638,7 +3709,7 @@ _prepare_docker() {
 	
 	_pathLocked _reset_dockerID || return 1
 	
-	[[ ! -e "$dockerubidfile" ]] && sleep 0.1 && [[ ! -e "$dockerubidfile" ]] && echo -e -n "$sessionid" > "$dockerubidfile" 2> /dev/null
+	[[ ! -e "$dockerubidfile" ]] && sleep 0.1 && [[ ! -e "$dockerubidfile" ]] && echo -e -n "$lowsessionid" > "$dockerubidfile" 2> /dev/null
 	[[ -e "$dockerubidfile" ]] && export DOCKERUBID=$(cat "$dockerubidfile" 2> /dev/null)
 	
 	export dockerImageFilename="$scriptLocal"/docker.dai
@@ -3680,7 +3751,7 @@ _prepare_docker() {
 	
 	export dockerContainerObjectName="$dockerContainerObjectName""_""$dockerImageObjectNameSane"
 	
-	export dockerContainerObjectNameInstanced="$sessionid"_"$dockerContainerObjectName"
+	export dockerContainerObjectNameInstanced="$lowsessionid"_"$dockerContainerObjectName"
 	
 	##Specialized.
 	export dockerBaseObjectExists="false"
