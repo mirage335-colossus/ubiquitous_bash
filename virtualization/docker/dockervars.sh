@@ -94,6 +94,9 @@ _prepare_docker() {
 		export dockerObjectName="ubvrt-ubvrt-scratch"
 	fi
 	
+	#Allow specification of just the base name.
+	[[ "$dockerObjectName" == "" ]] && [[ "$dockerBaseObjectName" != "" ]] && [[ "$dockerImageObjectName" == "" ]] && [[ "$dockerContainerObjectName" == "" ]] && export dockerObjectName="ubvrt-ubvrt-""$dockerBaseObjectName"
+	
 	[[ "$dockerBaseObjectName" == "" ]] && export dockerBaseObjectName=$(echo "$dockerObjectName" | cut -s -d\- -f3)
 	[[ "$dockerImageObjectName" == "" ]] && export dockerImageObjectName=$(echo "$dockerObjectName" | cut -s -d\- -f2)
 	[[ "$dockerContainerObjectName" == "" ]] && export dockerContainerObjectName=$(echo "$dockerObjectName" | cut -d\- -f1)

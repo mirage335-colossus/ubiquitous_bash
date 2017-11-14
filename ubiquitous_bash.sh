@@ -3234,24 +3234,55 @@ _dockerRunning() {
 
 # WARNING Deletes specified docker IMAGE.
 _dockerDeleteImage() {
-	_permitDocker docker rmi "$1"
+	_permitDocker docker rmi "$@"
+}
+
+_dockerDeleteContainer() {
+	_permitDocker docker rm "$@"
 }
 
 # WARNING Deletes all docker containers.
 _dockerDeleteContainersAll() {
-	_permitDocker docker rm $(_dockerContainers -q)
+	_dockerDeleteContainer $(_dockerContainers -q)
 }
 
 # DANGER Deletes all docker images!
 _dockerDeleteImagesAll() {
-	_permitDocker docker rmi --force $(_dockerImages -q)
+	_dockerDeleteImage --force $(_dockerImages -q)
 }
 
 # DANGER Deletes all docker assets not clearly in use!
 _dockerPrune() {
 	echo y | _permitDocker docker system prune
 }
- 
+
+_docker_deleteLocal_sequence() {
+	_start
+	_prepare_docker
+	
+	[[ "$dockerImageObjectName" != "" ]] && _dockerDeleteImage "$dockerImageObjectName"
+	[[ "$dockerContainerObjectName" != "" ]] && _dockerDeleteContainer "$dockerContainerObjectName"
+	
+	_stop
+}
+
+_docker_deleteLocal() {
+	"$scriptAbsoluteLocation" _docker_deleteLocal_sequence "$@"
+}
+
+_docker_deleteLocalBase_sequence() {
+	_start
+	_prepare_docker
+	
+	[[ "$dockerBaseObjectName" != "" ]] && _dockerDeleteImage "$dockerBaseObjectName"
+	
+	_stop
+}
+
+_docker_deleteLocalAll() {
+	"$scriptAbsoluteLocation" _docker_deleteLocal_sequence "$@"
+	"$scriptAbsoluteLocation" _docker_deleteLocalBase_sequence "$@"
+}
 
 _create_docker_mkimage_sequence() {
 	_start
@@ -3730,6 +3761,9 @@ _prepare_docker() {
 		#export dockerObjectName="ubvrt-ubvrt-scratch"
 		export dockerObjectName="ubvrt-ubvrt-scratch"
 	fi
+	
+	#Allow specification of just the base name.
+	[[ "$dockerObjectName" == "" ]] && [[ "$dockerBaseObjectName" != "" ]] && [[ "$dockerImageObjectName" == "" ]] && [[ "$dockerContainerObjectName" == "" ]] && export dockerObjectName="ubvrt-ubvrt-""$dockerBaseObjectName"
 	
 	[[ "$dockerBaseObjectName" == "" ]] && export dockerBaseObjectName=$(echo "$dockerObjectName" | cut -s -d\- -f3)
 	[[ "$dockerImageObjectName" == "" ]] && export dockerImageObjectName=$(echo "$dockerObjectName" | cut -s -d\- -f2)
