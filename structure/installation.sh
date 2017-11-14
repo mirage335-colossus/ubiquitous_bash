@@ -118,6 +118,8 @@ _test() {
 	_tryExec "_testGit"
 	_tryExec "_testX11"
 	
+	_tryExec "_test_virtLocal_X11"
+	
 	[[ -e /dev/urandom ]] || echo /dev/urandom missing _stop
 	
 	echo "PASS"

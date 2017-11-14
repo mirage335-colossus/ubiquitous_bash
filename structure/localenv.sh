@@ -26,6 +26,8 @@ _stop() {
 	#Daemon uses a separate instance, and will not be affected by previous actions.
 	_tryExec _killDaemon
 	
+	_tryExec _stop_virtLocal
+	
 	#Optionally always try to remove any systemd shutdown hook.
 	#_tryExec _unhook_systemd_shutdown
 	

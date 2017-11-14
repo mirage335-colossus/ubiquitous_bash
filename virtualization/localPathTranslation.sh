@@ -169,3 +169,14 @@ _virtUser() {
 		processedArgs+=("$currentResult")
 	done
 }
+
+_stop_virtLocal() {
+	[[ "$XAUTH" == "" ]] && return
+	[[ ! -e "$XAUTH" ]] && return
+	
+	rm -f "$XAUTH" > /dev/null 2>&1
+}
+
+_test_virtLocal_X11() {
+	_checkDep xauth
+}

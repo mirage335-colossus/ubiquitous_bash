@@ -897,6 +897,17 @@ _virtUser() {
 	done
 }
 
+_stop_virtLocal() {
+	[[ "$XAUTH" == "" ]] && return
+	[[ ! -e "$XAUTH" ]] && return
+	
+	rm -f "$XAUTH" > /dev/null 2>&1
+}
+
+_test_virtLocal_X11() {
+	_checkDep xauth
+}
+
 _createRawImage_sequence() {
 	_start
 	
@@ -3868,6 +3879,8 @@ _stop() {
 	#Daemon uses a separate instance, and will not be affected by previous actions.
 	_tryExec _killDaemon
 	
+	_tryExec _stop_virtLocal
+	
 	#Optionally always try to remove any systemd shutdown hook.
 	#_tryExec _unhook_systemd_shutdown
 	
@@ -4316,6 +4329,8 @@ _test() {
 	
 	_tryExec "_testGit"
 	_tryExec "_testX11"
+	
+	_tryExec "_test_virtLocal_X11"
 	
 	[[ -e /dev/urandom ]] || echo /dev/urandom missing _stop
 	
