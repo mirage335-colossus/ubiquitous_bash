@@ -15,15 +15,16 @@ _unset_docker() {
 	export dockerObjectName=""
 	export dockerBaseObjectName=""
 	export dockerImageObjectName=""
-	export dockerContainerObjectName=""
 	export dockerImageObjectNameSane=""
+	export dockerContainerObjectName=""
 	export dockerContainerObjectNameInstanced=""
 	
 	export dockerBaseObjectExists=""
 	export dockerImageObjectExists=""
 	export dockerContainerObjectExists=""
-	export dockerContainerID=""
 	export dockerContainerObjectNameInstancedExists=""
+	
+	export dockerContainerID=""
 	export dockerContainerInstancedID=""
 	
 	export dockerMkimageDistro=""
@@ -60,6 +61,7 @@ _pull_docker_guest() {
 	cp "$dockerentrypoint" ./ > /dev/null 2>&1
 	
 	cp "$scriptBin"/gosu* ./ > /dev/null 2>&1
+	cp "$scriptBin"/hello ./ > /dev/null 2>&1
 }
 
 _prepare_docker() {
@@ -91,9 +93,8 @@ _prepare_docker() {
 	then
 		#export dockerObjectName="unimportant-local/app:app-local/debian:jessie"
 		#export dockerObjectName="unimportant-hello-scratch"
-		#export dockerObjectName="ubvrt-ub-ubvrt/debian:jessie"
-		#export dockerObjectName="ubvrt-ubvrt-scratch"
 		export dockerObjectName="ubvrt-ubvrt-scratch"
+		#export dockerObjectName="ubvrt-ubvrt-ubvrt/debian:jessie"
 	fi
 	
 	#Allow specification of just the base name.

@@ -5,6 +5,8 @@ _buildSequence() {
 	
 	echo -e '\E[1;32;46m Binary compiling...	\E[0m'
 	
+	_tryExec _buildHello
+	
 	_tryExec _buildIdle
 	_tryExec _buildGosu
 	

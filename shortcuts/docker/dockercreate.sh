@@ -72,7 +72,6 @@ _create_docker_debianjessie() {
 	"$scriptAbsoluteLocation" _create_docker_mkimage_sequence "$@"
 }
 
-
 _create_docker_base() {
 	_messageNormal "#####Base."
 	
@@ -84,8 +83,8 @@ _create_docker_base() {
 	
 	[[ "$dockerBaseObjectName" == "scratch:latest" ]] && _messagePASS && _create_docker_scratch && return 0
 	
-	#[[ "$dockerBaseObjectName" == "local/debian:squeeze" ]] && _messagePASS && _create_docker_debiansqueeze && return
-	[[ "$dockerBaseObjectName" == "local/debian:jessie" ]] && _messagePASS && _create_docker_debianjessie && return 0
+	#[[ "$dockerBaseObjectName" == "ubvrt/debian:squeeze" ]] && _messagePASS && _create_docker_debiansqueeze && return
+	[[ "$dockerBaseObjectName" == "ubvrt/debian:jessie" ]] && _messagePASS && _create_docker_debianjessie && return 0
 	
 	if [[ "$dockerBaseObjectName" == *"ubvrt"* ]]
 	then
@@ -153,11 +152,9 @@ _create_docker_image() {
 	return 1
 }
 
-_create_container_sequence() {
+_create_docker_container_sequence() {
 	_start
 	_prepare_docker
-	
-	_create_docker_image || _stop 1
 	
 	_messageNormal "#####Container."
 	_messageProcess "Validating ""$dockerContainerObjectName"
@@ -173,24 +170,69 @@ _create_container_sequence() {
 	mkdir -p "$safeTmp"/dockercontainer
 	cd "$safeTmp"/dockercontainer
 	
-	_permitDocker docker create -t -i --name "$dockerContainerObjectName" "$dockerImageObjectName" 2> "$logTmp"/buildContainer > "$logTmp"/buildContainer
+	_permitDocker docker create -t -i --name "$dockerContainerObjectName" "$dockerImageObjectName" 2> "$logTmp"/buildContainer.log > "$logTmp"/buildContainer.log
 	
 	cd "$scriptAbsoluteFolder"
 	
 	export dockerContainerID=$(_permitDocker docker ps -a -q --filter name='^/'"$dockerContainerObjectName"'$')
 	[[ "$dockerContainerID" == "" ]]  && _messageFAIL && _stop 1
+	
 	_messagePASS
+	rm -f "$logTmp"/buildContainer.log > /dev/null 2>&1
 	
 	_stop
 }
 
-_create_container() {
-	if "$scriptAbsoluteLocation" _create_container_sequence "$@"
+_create_docker_container() {
+	"$scriptAbsoluteLocation" _create_docker_image "$@" || return 1
+	
+	if "$scriptAbsoluteLocation" _create_docker_container_sequence "$@"
 	then
 		return 0
 	fi
 	return 1
 }
+
+_create_docker_container_instanced_sequence() {
+	_start
+	_prepare_docker
+	
+	_messageNormal "#####Container."
+	_messageProcess "Validating ""$dockerContainerObjectNameInstanced"
+	[[ "$dockerContainerObjectNameInstanced" == "" ]] && _messageError "BLANK" && _stop 1
+	_messagePASS
+	
+	_messageProcess "Searching ""$dockerContainerObjectNameInstanced"
+	[[ "$dockerContainerObjectExists" == "true" ]]  && _messageHAVE && _stop
+	_messageNEED
+	
+	_messageProcess "Building ""$dockerContainerObjectNameInstanced"
+	
+	mkdir -p "$safeTmp"/dockercontainer
+	cd "$safeTmp"/dockercontainer
+	
+	_permitDocker docker create -t -i --name "$dockerContainerObjectNameInstanced" "$dockerImageObjectName" 2> "$logTmp"/buildContainer.log > "$logTmp"/buildContainer.log
+	rm -f "$logTmp"/buildContainer.log > /dev/null 2>&1
+	
+	cd "$scriptAbsoluteFolder"
+	
+	export dockerContainerInstancedID=$(_permitDocker docker ps -a -q --filter name='^/'"$dockerContainerObjectNameInstanced"'$')
+	[[ "$dockerContainerInstancedID" == "" ]]  && _messageFAIL && _stop 1
+	_messagePASS
+	
+	_stop
+}
+
+_create_docker_container_instanced() {
+	"$scriptAbsoluteLocation" _create_docker_image "$@" || return 1
+	
+	if "$scriptAbsoluteLocation" _create_docker_container_instanced_sequence "$@"
+	then
+		return 0
+	fi
+	return 1
+}
+
 
 
 

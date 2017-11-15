@@ -44,6 +44,8 @@ In most user environments, the latest git repository code will provide the stron
 
 * Document FireJail and AppImage examples.
 
+* Set up host architecture specific hello binary compilation and switching.
+
 
 # WARNING
 

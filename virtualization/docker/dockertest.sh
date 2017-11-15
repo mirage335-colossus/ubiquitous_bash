@@ -57,5 +57,11 @@ _test_docker() {
 		echo 'base images cannot be created without mkimage'
 		#_stop 1
 	fi
+	
+	if ! [[ -e "$scriptBin"/hello ]]
+	then
+		echo
+		echo 'some base images cannot be created without hello'
+	fi
 }
 

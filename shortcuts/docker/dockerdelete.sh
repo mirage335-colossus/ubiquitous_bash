@@ -22,6 +22,19 @@ _dockerPrune() {
 	echo y | _permitDocker docker system prune
 }
 
+_docker_deleteContainerInstance_sequence() {
+	_start
+	_prepare_docker
+	
+	[[ "$dockerContainerObjectNameInstanced" != "" ]] && _dockerDeleteContainer "$dockerContainerObjectNameInstanced"
+	
+	_stop
+}
+
+_docker_deleteContainerInstance() {
+	"$scriptAbsoluteLocation" _docker_deleteContainerInstance_sequence "$@"
+}
+
 _docker_deleteLocal_sequence() {
 	_start
 	_prepare_docker

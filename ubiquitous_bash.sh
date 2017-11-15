@@ -2662,25 +2662,39 @@ _wine() {
 	wine "${processedArgs[@]}"
 }
 
+_here_dockerfile_special() {
+	cat << 'CZXWXcRMTo8EmM8i4d'
+COPY gosu-armel /usr/local/bin/gosu-armel
+COPY gosu-amd64 /usr/local/bin/gosu-amd64
+COPY gosu-i386 /usr/local/bin/gosu-i386
+
+RUN mkdir -p /etc/skel/Downloads
+
+RUN mkdir -p /opt/exec
+
+COPY entrypoint.sh /usr/local/bin/entrypoint.sh
+
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh" "_docker_drop"]
+CZXWXcRMTo8EmM8i4d
+}
+
 _here_dockerfile_lite_scratch() {
 	cat << 'CZXWXcRMTo8EmM8i4d'
 FROM scratch
-ADD hello /
+COPY hello /
 CMD ["/hello"]
 CZXWXcRMTo8EmM8i4d
 }
 
 _here_dockerfile_lite_debianjessie() {
 	cat << 'CZXWXcRMTo8EmM8i4d'
-FROM local/debian:jessie
-CMD ["/bin/bash"]
+FROM ubvrt/debian:jessie
 CZXWXcRMTo8EmM8i4d
 }
 
-
 _here_dockerfile_debianjessie() {
 	cat << 'CZXWXcRMTo8EmM8i4d'
-FROM local/debian:jessie
+FROM ubvrt/debian:jessie
 
 RUN apt-get update && apt-get -y --no-install-recommends install \
 ca-certificates \
@@ -2696,24 +2710,19 @@ hicolor-icon-theme
 
 RUN apt-get -y install \
 default-jre
-
-COPY gosu-armel /usr/local/bin/gosu-armel
-COPY gosu-amd64 /usr/local/bin/gosu-amd64
-COPY gosu-i386 /usr/local/bin/gosu-i386
-
-RUN mkdir -p /etc/skel/Downloads
-
-RUN mkdir -p /opt/exec
-
-
-COPY entrypoint.sh /usr/local/bin/entrypoint.sh
-
-ENTRYPOINT ["/usr/local/bin/entrypoint.sh" "_docker_drop"]
 CZXWXcRMTo8EmM8i4d
+	
+	_here_dockerfile_special
 }
 
 _here_dockerfile() {
-	_here_dockerfile_debianjessie "$@"
+	[[ -e "$scriptLocal"/Dockerfile ]] && cat "$scriptLocal"/Dockerfile && _here_dockerfile_special && return 0
+	
+	[[ "$dockerBaseObjectName" == "ubvrt/debian:jessie" ]] && _here_dockerfile_debianjessie "$@" && return 0
+	
+	[[ "$dockerBaseObjectName" == "scratch:latest" ]] && _here_dockerfile_lite_scratch "$@" && return 0
+	
+	return 1
 }
 
 _drop_docker() {
@@ -2782,6 +2791,12 @@ _test_docker() {
 		echo
 		echo 'base images cannot be created without mkimage'
 		#_stop 1
+	fi
+	
+	if ! [[ -e "$scriptBin"/hello ]]
+	then
+		echo
+		echo 'some base images cannot be created without hello'
 	fi
 }
 
@@ -3345,6 +3360,19 @@ _dockerPrune() {
 	echo y | _permitDocker docker system prune
 }
 
+_docker_deleteContainerInstance_sequence() {
+	_start
+	_prepare_docker
+	
+	[[ "$dockerContainerObjectNameInstanced" != "" ]] && _dockerDeleteContainer "$dockerContainerObjectNameInstanced"
+	
+	_stop
+}
+
+_docker_deleteContainerInstance() {
+	"$scriptAbsoluteLocation" _docker_deleteContainerInstance_sequence "$@"
+}
+
 _docker_deleteLocal_sequence() {
 	_start
 	_prepare_docker
@@ -3447,7 +3475,6 @@ _create_docker_debianjessie() {
 	"$scriptAbsoluteLocation" _create_docker_mkimage_sequence "$@"
 }
 
-
 _create_docker_base() {
 	_messageNormal "#####Base."
 	
@@ -3459,8 +3486,8 @@ _create_docker_base() {
 	
 	[[ "$dockerBaseObjectName" == "scratch:latest" ]] && _messagePASS && _create_docker_scratch && return 0
 	
-	#[[ "$dockerBaseObjectName" == "local/debian:squeeze" ]] && _messagePASS && _create_docker_debiansqueeze && return
-	[[ "$dockerBaseObjectName" == "local/debian:jessie" ]] && _messagePASS && _create_docker_debianjessie && return 0
+	#[[ "$dockerBaseObjectName" == "ubvrt/debian:squeeze" ]] && _messagePASS && _create_docker_debiansqueeze && return
+	[[ "$dockerBaseObjectName" == "ubvrt/debian:jessie" ]] && _messagePASS && _create_docker_debianjessie && return 0
 	
 	if [[ "$dockerBaseObjectName" == *"ubvrt"* ]]
 	then
@@ -3528,11 +3555,9 @@ _create_docker_image() {
 	return 1
 }
 
-_create_container_sequence() {
+_create_docker_container_sequence() {
 	_start
 	_prepare_docker
-	
-	_create_docker_image || _stop 1
 	
 	_messageNormal "#####Container."
 	_messageProcess "Validating ""$dockerContainerObjectName"
@@ -3548,24 +3573,69 @@ _create_container_sequence() {
 	mkdir -p "$safeTmp"/dockercontainer
 	cd "$safeTmp"/dockercontainer
 	
-	_permitDocker docker create -t -i --name "$dockerContainerObjectName" "$dockerImageObjectName" 2> "$logTmp"/buildContainer > "$logTmp"/buildContainer
+	_permitDocker docker create -t -i --name "$dockerContainerObjectName" "$dockerImageObjectName" 2> "$logTmp"/buildContainer.log > "$logTmp"/buildContainer.log
 	
 	cd "$scriptAbsoluteFolder"
 	
 	export dockerContainerID=$(_permitDocker docker ps -a -q --filter name='^/'"$dockerContainerObjectName"'$')
 	[[ "$dockerContainerID" == "" ]]  && _messageFAIL && _stop 1
+	
 	_messagePASS
+	rm -f "$logTmp"/buildContainer.log > /dev/null 2>&1
 	
 	_stop
 }
 
-_create_container() {
-	if "$scriptAbsoluteLocation" _create_container_sequence "$@"
+_create_docker_container() {
+	"$scriptAbsoluteLocation" _create_docker_image "$@" || return 1
+	
+	if "$scriptAbsoluteLocation" _create_docker_container_sequence "$@"
 	then
 		return 0
 	fi
 	return 1
 }
+
+_create_docker_container_instanced_sequence() {
+	_start
+	_prepare_docker
+	
+	_messageNormal "#####Container."
+	_messageProcess "Validating ""$dockerContainerObjectNameInstanced"
+	[[ "$dockerContainerObjectNameInstanced" == "" ]] && _messageError "BLANK" && _stop 1
+	_messagePASS
+	
+	_messageProcess "Searching ""$dockerContainerObjectNameInstanced"
+	[[ "$dockerContainerObjectExists" == "true" ]]  && _messageHAVE && _stop
+	_messageNEED
+	
+	_messageProcess "Building ""$dockerContainerObjectNameInstanced"
+	
+	mkdir -p "$safeTmp"/dockercontainer
+	cd "$safeTmp"/dockercontainer
+	
+	_permitDocker docker create -t -i --name "$dockerContainerObjectNameInstanced" "$dockerImageObjectName" 2> "$logTmp"/buildContainer.log > "$logTmp"/buildContainer.log
+	rm -f "$logTmp"/buildContainer.log > /dev/null 2>&1
+	
+	cd "$scriptAbsoluteFolder"
+	
+	export dockerContainerInstancedID=$(_permitDocker docker ps -a -q --filter name='^/'"$dockerContainerObjectNameInstanced"'$')
+	[[ "$dockerContainerInstancedID" == "" ]]  && _messageFAIL && _stop 1
+	_messagePASS
+	
+	_stop
+}
+
+_create_docker_container_instanced() {
+	"$scriptAbsoluteLocation" _create_docker_image "$@" || return 1
+	
+	if "$scriptAbsoluteLocation" _create_docker_container_instanced_sequence "$@"
+	then
+		return 0
+	fi
+	return 1
+}
+
 
 
 
@@ -3882,15 +3952,16 @@ _unset_docker() {
 	export dockerObjectName=""
 	export dockerBaseObjectName=""
 	export dockerImageObjectName=""
-	export dockerContainerObjectName=""
 	export dockerImageObjectNameSane=""
+	export dockerContainerObjectName=""
 	export dockerContainerObjectNameInstanced=""
 	
 	export dockerBaseObjectExists=""
 	export dockerImageObjectExists=""
 	export dockerContainerObjectExists=""
-	export dockerContainerID=""
 	export dockerContainerObjectNameInstancedExists=""
+	
+	export dockerContainerID=""
 	export dockerContainerInstancedID=""
 	
 	export dockerMkimageDistro=""
@@ -3927,6 +3998,7 @@ _pull_docker_guest() {
 	cp "$dockerentrypoint" ./ > /dev/null 2>&1
 	
 	cp "$scriptBin"/gosu* ./ > /dev/null 2>&1
+	cp "$scriptBin"/hello ./ > /dev/null 2>&1
 }
 
 _prepare_docker() {
@@ -3958,9 +4030,8 @@ _prepare_docker() {
 	then
 		#export dockerObjectName="unimportant-local/app:app-local/debian:jessie"
 		#export dockerObjectName="unimportant-hello-scratch"
-		#export dockerObjectName="ubvrt-ub-ubvrt/debian:jessie"
-		#export dockerObjectName="ubvrt-ubvrt-scratch"
 		export dockerObjectName="ubvrt-ubvrt-scratch"
+		#export dockerObjectName="ubvrt-ubvrt-ubvrt/debian:jessie"
 	fi
 	
 	#Allow specification of just the base name.
@@ -4347,6 +4418,14 @@ _preserveVar() {
 }
 
 
+_buildHello() {
+	local helloSourceCode
+	helloSourceCode=$(find "$scriptAbsoluteFolder" -type f -name "hello.c" | head -n 1)
+	
+	mkdir -p "$scriptBin"
+	gcc -o "$scriptBin"/hello -static -nostartfiles "$helloSourceCode"
+}
+
 #####Idle
 
 _idle() {
@@ -4601,6 +4680,8 @@ _buildSequence() {
 	_start
 	
 	echo -e '\E[1;32;46m Binary compiling...	\E[0m'
+	
+	_tryExec _buildHello
 	
 	_tryExec _buildIdle
 	_tryExec _buildGosu
