@@ -20,9 +20,11 @@ _unset_docker() {
 	export dockerContainerObjectNameInstanced=""
 	
 	export dockerBaseObjectExists=""
+	export dockerImageObjectExists=""
 	export dockerContainerObjectExists=""
 	export dockerContainerID=""
-	export dockerImageObjectExists=""
+	export dockerContainerObjectNameInstancedExists=""
+	export dockerContainerInstancedID=""
 	
 	export dockerMkimageDistro=""
 	export dockerMkimageVersion=""
@@ -123,12 +125,16 @@ _prepare_docker() {
 	export dockerBaseObjectExists="false"
 	[[ "$(_permitDocker docker images -q "$dockerBaseObjectName" 2> /dev/null)" != "" ]] && export dockerBaseObjectExists="true"
 	
-	export dockerContainerObjectExists="false"
-	export dockerContainerID=$(_permitDocker docker ps -a -q --filter name='^/'"$containerObjectName"'$')
-	[[ "$dockerContainerID" != "" ]] && export dockerContainerObjectExists="true"
-	
 	export dockerImageObjectExists="false"
 	[[ "$(_permitDocker docker images -q "$dockerImageObjectName" 2> /dev/null)" != "" ]] && export dockerImageObjectExists="true"
+	
+	export dockerContainerObjectExists="false"
+	export dockerContainerID=$(_permitDocker docker ps -a -q --filter name='^/'"$dockerContainerObjectName"'$')
+	[[ "$dockerContainerID" != "" ]] && export dockerContainerObjectExists="true"
+	
+	export dockerContainerObjectNameInstancedExists="false"
+	export dockerContainerInstancedID=$(_permitDocker docker ps -a -q --filter name='^/'"$dockerContainerObjectNameInstanced"'$')
+	[[ "$dockerContainerID" != "" ]] && export dockerContainerObjectNameInstancedExists="true"
 	
 	
 	export dockerMkimageDistro=$(echo "$dockerBaseObjectName" | cut -d \/ -f 2 | cut -d \: -f 1)

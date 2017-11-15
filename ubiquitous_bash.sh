@@ -3455,12 +3455,12 @@ _create_docker_base() {
 	
 	_messageProcess "Evaluating ""$dockerBaseObjectName"
 	
-	[[ "$dockerBaseObjectName" == "" ]] && _messageError "BLANK" && return 1
+	[[ "$dockerBaseObjectName" == "" ]] && _messageError "BLANK" && return 0
 	
 	[[ "$dockerBaseObjectName" == "scratch:latest" ]] && _messagePASS && _create_docker_scratch && return 0
 	
 	#[[ "$dockerBaseObjectName" == "local/debian:squeeze" ]] && _messagePASS && _create_docker_debiansqueeze && return
-	[[ "$dockerBaseObjectName" == "local/debian:jessie" ]] && _messagePASS && _create_docker_debianjessie && return
+	[[ "$dockerBaseObjectName" == "local/debian:jessie" ]] && _messagePASS && _create_docker_debianjessie && return 0
 	
 	if [[ "$dockerBaseObjectName" == *"ubvrt"* ]]
 	then
@@ -3470,7 +3470,7 @@ _create_docker_base() {
 	fi
 	
 	_messageWARN "No local build instructons operating, will rely on upstream provider."
-	return 1
+	return 0
 }
 
 _create_docker_image_sequence() {
@@ -3478,7 +3478,7 @@ _create_docker_image_sequence() {
 	_prepare_docker
 	_prepare_docker_directives
 	
-	_create_docker_base
+	_create_docker_base || _stop 1
 	
 	_messageNormal "#####Image."
 	_messageProcess "Validating ""$dockerImageObjectName"
@@ -3521,7 +3521,50 @@ _create_docker_image() {
 	[[ "$dockerBaseObjectName" == "" ]] && [[ "$1" != "" ]] && export dockerBaseObjectName="$1"
 	[[ "$dockerImageObjectName" == "" ]] && [[ "$2" != "" ]] && export dockerImageObjectName="$2"
 	
-	"$scriptAbsoluteLocation" _create_docker_image_sequence "$@"
+	if "$scriptAbsoluteLocation" _create_docker_image_sequence "$@"
+	then
+		return 0
+	fi
+	return 1
+}
+
+_create_container_sequence() {
+	_start
+	_prepare_docker
+	
+	_create_docker_image || _stop 1
+	
+	_messageNormal "#####Container."
+	_messageProcess "Validating ""$dockerContainerObjectName"
+	[[ "$dockerContainerObjectName" == "" ]] && _messageError "BLANK" && _stop 1
+	_messagePASS
+	
+	_messageProcess "Searching ""$dockerContainerObjectName"
+	[[ "$dockerContainerObjectExists" == "true" ]]  && _messageHAVE && _stop
+	_messageNEED
+	
+	_messageProcess "Building ""$dockerContainerObjectName"
+	
+	mkdir -p "$safeTmp"/dockercontainer
+	cd "$safeTmp"/dockercontainer
+	
+	_permitDocker docker create -t -i --name "$dockerContainerObjectName" "$dockerImageObjectName" 2> "$logTmp"/buildContainer > "$logTmp"/buildContainer
+	
+	cd "$scriptAbsoluteFolder"
+	
+	export dockerContainerID=$(_permitDocker docker ps -a -q --filter name='^/'"$dockerContainerObjectName"'$')
+	[[ "$dockerContainerID" == "" ]]  && _messageFAIL && _stop 1
+	_messagePASS
+	
+	_stop
+}
+
+_create_container() {
+	if "$scriptAbsoluteLocation" _create_container_sequence "$@"
+	then
+		return 0
+	fi
+	return 1
 }
 
 
@@ -3549,7 +3592,7 @@ _docker_save_sequence() {
 	_start
 	_prepare_docker
 	
-	_permitDocker docker save "$dockerImageObjectName" > "$scriptLocal"/docker.tar
+	_permitDocker docker save "$dockerImageObjectName" > "$scriptLocal"/dockerImageAll.tar
 	
 	_stop
 }
@@ -3569,19 +3612,20 @@ _docker_save() {
 #"$1" == containerObjectName
 _dockerImport() {
 	
-	_permitDocker docker import "$1".dcf > "$importLog" 2>&1
+	_permitDocker docker import "$1" > "$safeTmp"/dockerimport.log 2>&1
+	rm -f "$safeTmp"/dockerimport.log > /dev/null 2>&1
 	
 }
 
 _dockerExportContainer_named() {
-	_permitDocker docker export $(_permitDocker docker ps -a -q --filter name='^/'"$1"'$') > "$1".dcf
+	 _permitDocker docker export $(_permitDocker docker ps -a -q --filter name='^/'"$1"'$') > "$2"
 }
 
 _dockerExportContainer_sequence() {
 	_start
 	_prepare_docker
 	
-	_dockerExportContainer_named "$dockerContainerObjectName"
+	_dockerExportContainer_named "$dockerContainerObjectName" "$dockerContainerFS".tar
 	
 	_stop
 }
@@ -3590,7 +3634,7 @@ _dockerExportImage_sequence() {
 	_start
 	_prepare_docker
 	
-	_dockerExportContainer_named "$dockerContainerObjectNameInstanced"
+	_dockerExportContainer_named "$dockerContainerObjectNameInstanced" "$dockerImageFS".tar
 	
 	_stop
 }
@@ -3843,9 +3887,11 @@ _unset_docker() {
 	export dockerContainerObjectNameInstanced=""
 	
 	export dockerBaseObjectExists=""
+	export dockerImageObjectExists=""
 	export dockerContainerObjectExists=""
 	export dockerContainerID=""
-	export dockerImageObjectExists=""
+	export dockerContainerObjectNameInstancedExists=""
+	export dockerContainerInstancedID=""
 	
 	export dockerMkimageDistro=""
 	export dockerMkimageVersion=""
@@ -3946,12 +3992,16 @@ _prepare_docker() {
 	export dockerBaseObjectExists="false"
 	[[ "$(_permitDocker docker images -q "$dockerBaseObjectName" 2> /dev/null)" != "" ]] && export dockerBaseObjectExists="true"
 	
-	export dockerContainerObjectExists="false"
-	export dockerContainerID=$(_permitDocker docker ps -a -q --filter name='^/'"$containerObjectName"'$')
-	[[ "$dockerContainerID" != "" ]] && export dockerContainerObjectExists="true"
-	
 	export dockerImageObjectExists="false"
 	[[ "$(_permitDocker docker images -q "$dockerImageObjectName" 2> /dev/null)" != "" ]] && export dockerImageObjectExists="true"
+	
+	export dockerContainerObjectExists="false"
+	export dockerContainerID=$(_permitDocker docker ps -a -q --filter name='^/'"$dockerContainerObjectName"'$')
+	[[ "$dockerContainerID" != "" ]] && export dockerContainerObjectExists="true"
+	
+	export dockerContainerObjectNameInstancedExists="false"
+	export dockerContainerInstancedID=$(_permitDocker docker ps -a -q --filter name='^/'"$dockerContainerObjectNameInstanced"'$')
+	[[ "$dockerContainerID" != "" ]] && export dockerContainerObjectNameInstancedExists="true"
 	
 	
 	export dockerMkimageDistro=$(echo "$dockerBaseObjectName" | cut -d \/ -f 2 | cut -d \: -f 1)

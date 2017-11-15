@@ -80,12 +80,12 @@ _create_docker_base() {
 	
 	_messageProcess "Evaluating ""$dockerBaseObjectName"
 	
-	[[ "$dockerBaseObjectName" == "" ]] && _messageError "BLANK" && return 1
+	[[ "$dockerBaseObjectName" == "" ]] && _messageError "BLANK" && return 0
 	
 	[[ "$dockerBaseObjectName" == "scratch:latest" ]] && _messagePASS && _create_docker_scratch && return 0
 	
 	#[[ "$dockerBaseObjectName" == "local/debian:squeeze" ]] && _messagePASS && _create_docker_debiansqueeze && return
-	[[ "$dockerBaseObjectName" == "local/debian:jessie" ]] && _messagePASS && _create_docker_debianjessie && return
+	[[ "$dockerBaseObjectName" == "local/debian:jessie" ]] && _messagePASS && _create_docker_debianjessie && return 0
 	
 	if [[ "$dockerBaseObjectName" == *"ubvrt"* ]]
 	then
@@ -95,7 +95,7 @@ _create_docker_base() {
 	fi
 	
 	_messageWARN "No local build instructons operating, will rely on upstream provider."
-	return 1
+	return 0
 }
 
 _create_docker_image_sequence() {
@@ -103,7 +103,7 @@ _create_docker_image_sequence() {
 	_prepare_docker
 	_prepare_docker_directives
 	
-	_create_docker_base
+	_create_docker_base || _stop 1
 	
 	_messageNormal "#####Image."
 	_messageProcess "Validating ""$dockerImageObjectName"
@@ -146,7 +146,50 @@ _create_docker_image() {
 	[[ "$dockerBaseObjectName" == "" ]] && [[ "$1" != "" ]] && export dockerBaseObjectName="$1"
 	[[ "$dockerImageObjectName" == "" ]] && [[ "$2" != "" ]] && export dockerImageObjectName="$2"
 	
-	"$scriptAbsoluteLocation" _create_docker_image_sequence "$@"
+	if "$scriptAbsoluteLocation" _create_docker_image_sequence "$@"
+	then
+		return 0
+	fi
+	return 1
+}
+
+_create_container_sequence() {
+	_start
+	_prepare_docker
+	
+	_create_docker_image || _stop 1
+	
+	_messageNormal "#####Container."
+	_messageProcess "Validating ""$dockerContainerObjectName"
+	[[ "$dockerContainerObjectName" == "" ]] && _messageError "BLANK" && _stop 1
+	_messagePASS
+	
+	_messageProcess "Searching ""$dockerContainerObjectName"
+	[[ "$dockerContainerObjectExists" == "true" ]]  && _messageHAVE && _stop
+	_messageNEED
+	
+	_messageProcess "Building ""$dockerContainerObjectName"
+	
+	mkdir -p "$safeTmp"/dockercontainer
+	cd "$safeTmp"/dockercontainer
+	
+	_permitDocker docker create -t -i --name "$dockerContainerObjectName" "$dockerImageObjectName" 2> "$logTmp"/buildContainer > "$logTmp"/buildContainer
+	
+	cd "$scriptAbsoluteFolder"
+	
+	export dockerContainerID=$(_permitDocker docker ps -a -q --filter name='^/'"$dockerContainerObjectName"'$')
+	[[ "$dockerContainerID" == "" ]]  && _messageFAIL && _stop 1
+	_messagePASS
+	
+	_stop
+}
+
+_create_container() {
+	if "$scriptAbsoluteLocation" _create_container_sequence "$@"
+	then
+		return 0
+	fi
+	return 1
 }
 
 
