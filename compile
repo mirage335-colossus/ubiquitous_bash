@@ -203,6 +203,7 @@ _includeScript dockerassets.sh "shortcuts/docker"
 _includeScript dockerdelete.sh "shortcuts/docker"
 _includeScript dockercreate.sh "shortcuts/docker"
 _includeScript dockerconvert.sh "shortcuts/docker"
+_includeScript dockerportation.sh "shortcuts/docker"
 
 _includeScript setupUbiquitous.sh "shortcuts"
 

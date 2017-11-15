@@ -26,6 +26,8 @@ _dockerLocal_sequence() {
 	echo "$dockerImageObjectName"
 	_messageNormal '$dockerContainerObjectName'
 	echo "$dockerContainerObjectName"
+	_messageNormal '$dockerContainerObjectNameInstanced'
+	echo "$dockerContainerObjectNameInstanced"
 	
 	_stop
 }
