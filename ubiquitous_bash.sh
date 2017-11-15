@@ -3243,6 +3243,28 @@ _dockerRunning() {
 	_permitDocker docker ps "$@"
 }
 
+_dockerLocal_sequence() {
+	_start
+	_prepare_docker
+	_prepare_docker_directives
+	
+	_messageNormal '$dockerObjectName'
+	echo "$dockerObjectName"
+	_messageNormal '$dockerBaseObjectName'
+	echo "$dockerBaseObjectName"
+	_messageNormal '$dockerImageObjectName'
+	echo "$dockerImageObjectName"
+	_messageNormal '$dockerContainerObjectName'
+	echo "$dockerContainerObjectName"
+	
+	_stop
+}
+
+#Show local docker container, image, and base name.
+_dockerLocal() {
+	"$scriptAbsoluteLocation" _dockerLocal_sequence "$@"
+}
+
 # WARNING Deletes specified docker IMAGE.
 _dockerDeleteImage() {
 	_permitDocker docker rmi "$@"
@@ -3379,11 +3401,17 @@ _create_docker_base() {
 	
 	[[ "$dockerBaseObjectName" == "" ]] && _messageError "BLANK" && return 1
 	
-	[[ "$dockerBaseObjectName" == "scratch:latest" ]] && _messagePASS && _create_docker_scratch && return
+	[[ "$dockerBaseObjectName" == "scratch:latest" ]] && _messagePASS && _create_docker_scratch && return 0
 	
 	#[[ "$dockerBaseObjectName" == "local/debian:squeeze" ]] && _messagePASS && _create_docker_debiansqueeze && return
 	[[ "$dockerBaseObjectName" == "local/debian:jessie" ]] && _messagePASS && _create_docker_debianjessie && return
 	
+	if [[ "$dockerBaseObjectName" == *"ubvrt"* ]]
+	then
+		[[ "$(_permitDocker docker images -q "$dockerBaseObjectName" 2> /dev/null)" == "" ]] && _messageFAIL && return 1
+		_messagePASS
+		return 0
+	fi
 	
 	_messageWARN "No local build instructons operating, will rely on upstream provider."
 	return 1
