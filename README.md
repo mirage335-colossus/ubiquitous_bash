@@ -34,7 +34,15 @@ In most user environments, the latest git repository code will provide the stron
 * Support shutdown hooks through init daemons other than systemd.
 * Service/cron installation hooks.
 
+* Support LXC as a virtualization backend.
+
+* Integrate AppImage build scripts.
+
 * Investigate HyperKit relevance - https://github.com/moby/hyperkit .
+* Investigate RancherVM relevance - https://github.com/rancher/vm .
+* Investigate LXD relevance - https://www.ubuntu.com/containers/lxd .
+
+* Document FireJail and AppImage examples.
 
 
 # WARNING
