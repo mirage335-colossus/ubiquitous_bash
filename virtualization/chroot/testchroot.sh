@@ -1,4 +1,8 @@
 _testChRoot() {
+	_checkDep gosu-armel
+	_checkDep gosu-amd64
+	_checkDep gosu-i386
+	
 	_mustGetSudo
 	
 	_checkDep id

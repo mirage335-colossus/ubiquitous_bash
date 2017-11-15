@@ -17,6 +17,10 @@ _permitDocker() {
 }
 
 _test_docker() {
+	_checkDep gosu-armel
+	_checkDep gosu-amd64
+	_checkDep gosu-i386
+	
 	#https://docs.docker.com/engine/installation/linux/docker-ce/debian/#install-using-the-repository
 	#https://wiki.archlinux.org/index.php/Docker#Installation
 	#sudo usermod -a -G docker "$USER"
