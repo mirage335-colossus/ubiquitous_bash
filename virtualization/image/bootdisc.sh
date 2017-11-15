@@ -2,6 +2,7 @@ _testVirtBootdisc() {
 	if ! type mkisofs > /dev/null 2>&1 && ! type genisoimage > /dev/null 2>&1
 	then
 		echo 'need mkisofs or genisoimage'
+		_stop 1
 	fi
 }
 

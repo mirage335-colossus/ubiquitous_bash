@@ -17,6 +17,8 @@ _permitDocker() {
 }
 
 _test_docker() {
+	_testGosu
+	
 	_checkDep gosu-armel
 	_checkDep gosu-amd64
 	_checkDep gosu-i386

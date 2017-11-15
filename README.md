@@ -24,10 +24,13 @@ Semantic versioning is applied. Major version numbers (v2.x) indicate a compatib
 
 In most user environments, the latest git repository code will provide the strongest reliability guarantees. Extra safety checks are occasionally added as possible edge cases are discovered.
 
-# Future Work
-* Self-contained SAMBA server is expected to be the next, if not final, 'hard problem' for Ubiquitous Bash. Help wanted.
+# Included Works
+* GoSu . See https://github.com/tianon/gosu . Binaries and signatures may be included in repository.  License, GPLv3 . License text at https://www.gnu.org/licenses/gpl-3.0.en.html .
 
-* Merge IQEmu, Wine Bottle, Portable DoxBox, HostedXen, VirtualBox, and other related virtualization methods into ubiquitous bash.
+# Future Work
+* Self-contained SAMBA server would provide useful virtualization compatibility guarantees if tightly integrated. QEMU seems to already include a solution using similar methods.
+
+* Merge HostedXen, and other related virtualization methods into ubiquitous bash.
 * Support shutdown hooks through init daemons other than systemd.
 * Service/cron installation hooks.
 
@@ -43,6 +46,7 @@ In most user environments, the latest git repository code will provide the stron
 
 * ChRoot based virtualization by itself does not provide any security guarantees, especially under Linux hosts. Destruction of host filesystem is possible, especially for any guest filesystem that has been bind mounted.
 * RasPi image must be closed properly (if opened by chroot) before flashing. Doing so will re-enable platform specific "/etc/ld.so.preload" configuration.
+* Images opened in docker must be closed properly to be bootable.
 
 * Launching "user" ChRoot as root user has not yet been extensively tested.
 

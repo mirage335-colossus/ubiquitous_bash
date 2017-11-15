@@ -4,7 +4,7 @@ _testQEMU_hostArch_x64-x64() {
 	
 	if [[ "$hostArch" != "x86_64" ]]
 	then
-		return 1
+		_stop 1
 	fi
 	
 	return 0

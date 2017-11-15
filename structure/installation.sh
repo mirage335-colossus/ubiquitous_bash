@@ -94,6 +94,8 @@ _test() {
 	_checkDep true
 	_checkDep false
 	
+	_tryExec "_testGosu"
+	
 	_tryExec "_testMountChecks"
 	_tryExec "_testBindMountManager"
 	_tryExec "_testDistro"
@@ -137,7 +139,7 @@ _testBuilt() {
 	echo -e -n '\E[1;32;46m Binary checking...	\E[0m'
 	
 	_tryExec "_testBuiltIdle"
-	#_tryExec "_testBuiltGosu"
+	_tryExec "_testBuiltGosu"	#Note, requires sudo, not necessary for docker .
 	
 	_tryExec "_testBuiltChRoot"
 	_tryExec "_testBuiltQEMU"

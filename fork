@@ -28,6 +28,9 @@ find . -maxdepth 1 -type f -exec sed -i s/Project/"$projectName"/g {} \;
 find . -maxdepth 1 -type f -exec sed -i s/DeveloperName/"$devName"/g {} \;
 find . -maxdepth 1 -type f -exec sed -i s/YEAR/$(date +%Y)/g {} \;
 
+##### Binary Executables
+cp -a ./_lib/ubiquitous_bash/_bin ./_bin
+
 ##### Commonly customized scripts.
 
 #cp ./_lib/ubiquitous_bash/generic/process/daemon.sh
@@ -44,6 +47,7 @@ echo '##### Core' >> ./_prog/core.sh
 echo '' >> ./_prog/core.sh
 
 cp ./_lib/ubiquitous_bash/structure/program.sh ./_prog/
+
 
 
 
