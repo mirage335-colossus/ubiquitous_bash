@@ -2662,6 +2662,12 @@ _wine() {
 	wine "${processedArgs[@]}"
 }
 
+_here_dockerfile_entrypoint() {
+	cat << 'CZXWXcRMTo8EmM8i4d'
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh" "_docker_drop"]
+CZXWXcRMTo8EmM8i4d
+}
+
 _here_dockerfile_special() {
 	cat << 'CZXWXcRMTo8EmM8i4d'
 COPY gosu-armel /usr/local/bin/gosu-armel
@@ -2673,9 +2679,9 @@ RUN mkdir -p /etc/skel/Downloads
 RUN mkdir -p /opt/exec
 
 COPY entrypoint.sh /usr/local/bin/entrypoint.sh
-
-ENTRYPOINT ["/usr/local/bin/entrypoint.sh" "_docker_drop"]
 CZXWXcRMTo8EmM8i4d
+
+_here_dockerfile_entrypoint
 }
 
 _here_dockerfile_lite_scratch() {
@@ -2725,6 +2731,7 @@ _here_dockerfile() {
 	return 1
 }
 
+# WARNING Stability of this function's API is important for compatibility with existing docker images.
 _drop_docker() {
 	# Change to localPWD or home.
 	cd "$localPWD"
@@ -3505,19 +3512,32 @@ _create_docker_image_sequence() {
 	_prepare_docker
 	_prepare_docker_directives
 	
-	_create_docker_base || _stop 1
-	
-	_messageNormal "#####Image."
+	_messageNormal "#####PreImage."
 	_messageProcess "Validating ""$dockerImageObjectName"
 	[[ "$dockerImageObjectName" == "" ]] && _messageError "BLANK" && _stop 1
 	_messagePASS
 	
 	_messageProcess "Searching ""$dockerImageObjectName"
+	[[ "$(_permitDocker docker images -q "$dockerImageObjectName" 2> /dev/null)" != "" ]] && export dockerImageObjectExists="true"
 	[[ "$dockerImageObjectExists" == "true" ]]  && _messageHAVE && _stop
 	_messageNEED
 	
 	_messageProcess "Loading ""$dockerImageObjectName"
-	_docker_load && _messagePASS && _stop
+	_dockerLoad
+	_messagePASS
+	
+	_messageProcess "Searching ""$dockerImageObjectName"
+	[[ "$(_permitDocker docker images -q "$dockerImageObjectName" 2> /dev/null)" != "" ]] && export dockerImageObjectExists="true"
+	[[ "$dockerImageObjectExists" == "true" ]]  && _messageHAVE && _stop
+	_messageNEED
+	
+	_messageProcess "Importing ""$dockerImageObjectName"
+	_dockerImport
+	_messagePASS
+	
+	_messageProcess "Searching ""$dockerImageObjectName"
+	[[ "$(_permitDocker docker images -q "$dockerImageObjectName" 2> /dev/null)" != "" ]] && export dockerImageObjectExists="true"
+	[[ "$dockerImageObjectExists" == "true" ]]  && _messageHAVE && _stop
 	_messageNEED
 	
 	_messageProcess "Checking context "
@@ -3525,6 +3545,9 @@ _create_docker_image_sequence() {
 	[[ ! -e "$dockerentrypoint" ]] && _messageFAIL && _stop 1
 	_messagePASS
 	
+	_create_docker_base || _stop 1
+	
+	_messageNormal "#####Image."
 	mkdir -p "$safeTmp"/dockerimage
 	cd "$safeTmp"/dockerimage
 	
@@ -3541,6 +3564,8 @@ _create_docker_image_sequence() {
 	rm -f "$logTmp"/buildImageErr.log > /dev/null 2>&1
 	rm -f "$logTmp"/buildImageOut.log > /dev/null 2>&1
 	
+	_dockerExport || _stop 1
+	
 	_stop
 }
 
@@ -3555,39 +3580,60 @@ _create_docker_image() {
 	return 1
 }
 
+_create_docker_container_sequence_partial() {
+	local dockerContainerToCreate
+	dockerContainerToCreate="$dockerContainerObjectName"
+	[[ "$1" != "" ]] && dockerContainerToCreate="$1"
+	
+	_messageNormal "#####Container."
+	_messageProcess "Validating ""$dockerContainerToCreate"
+	[[ "$dockerContainerToCreate" == "" ]] && _messageError "BLANK" && return 1
+	_messagePASS
+	
+	_messageProcess "Searching ""$dockerContainerToCreate"
+	
+	local dockerContainerToCreateExists
+	dockerContainerToCreateExists="false"
+	local dockerContainerToCreateID
+	dockerContainerToCreateID=$(_permitDocker docker ps -a -q --filter name='^/'"$dockerContainerToCreate"'$')
+	[[ "$dockerContainerToCreateID" != "" ]] && dockerContainerToCreateExists="$true"
+	
+	[[ "$dockerContainerToCreateExists" == "true" ]]  && _messageHAVE && return
+	_messageNEED
+	
+	_messageProcess "Building ""$dockerContainerToCreate"
+	
+	mkdir -p "$safeTmp"
+	cd "$safeTmp"
+	
+	#_prepare_docker_directives
+	
+	_permitDocker docker create -t -i --name "$dockerContainerToCreate" "$dockerImageObjectName" 2> "$logTmp"/buildContainer.log > "$logTmp"/buildContainer.log
+	
+	cd "$scriptAbsoluteFolder"
+	
+	local dockerIDcheck
+	dockerIDcheck=$(_permitDocker docker ps -a -q --filter name='^/'"$dockerContainerToCreate"'$')
+	[[ "$dockerIDcheck" == "" ]]  && _messageFAIL && return 1
+	
+	_messagePASS
+	rm -f "$logTmp"/buildContainer.log > /dev/null 2>&1
+}
+
 _create_docker_container_sequence() {
 	_start
 	_prepare_docker
 	
-	_messageNormal "#####Container."
-	_messageProcess "Validating ""$dockerContainerObjectName"
-	[[ "$dockerContainerObjectName" == "" ]] && _messageError "BLANK" && _stop 1
-	_messagePASS
-	
-	_messageProcess "Searching ""$dockerContainerObjectName"
-	[[ "$dockerContainerObjectExists" == "true" ]]  && _messageHAVE && _stop
-	_messageNEED
-	
-	_messageProcess "Building ""$dockerContainerObjectName"
-	
-	mkdir -p "$safeTmp"/dockercontainer
-	cd "$safeTmp"/dockercontainer
-	
-	_permitDocker docker create -t -i --name "$dockerContainerObjectName" "$dockerImageObjectName" 2> "$logTmp"/buildContainer.log > "$logTmp"/buildContainer.log
-	
-	cd "$scriptAbsoluteFolder"
-	
-	export dockerContainerID=$(_permitDocker docker ps -a -q --filter name='^/'"$dockerContainerObjectName"'$')
-	[[ "$dockerContainerID" == "" ]]  && _messageFAIL && _stop 1
-	
-	_messagePASS
-	rm -f "$logTmp"/buildContainer.log > /dev/null 2>&1
+	if ! _create_docker_container_sequence_partial "$@"
+	then
+		_stop 1
+	fi
 	
 	_stop
 }
 
 _create_docker_container() {
-	"$scriptAbsoluteLocation" _create_docker_image "$@" || return 1
+	_create_docker_image "$@" || return 1
 	
 	if "$scriptAbsoluteLocation" _create_docker_container_sequence "$@"
 	then
@@ -3596,57 +3642,35 @@ _create_docker_container() {
 	return 1
 }
 
-_create_docker_container_instanced_sequence() {
+# WARNING Serves as an example. Most use cases for instanced containers REQUIRE the container creation command to share session with other operations. See _dockerExport .
+_create_docker_container_sequence_instanced() {
 	_start
 	_prepare_docker
 	
-	_messageNormal "#####Container."
-	_messageProcess "Validating ""$dockerContainerObjectNameInstanced"
-	[[ "$dockerContainerObjectNameInstanced" == "" ]] && _messageError "BLANK" && _stop 1
-	_messagePASS
-	
-	_messageProcess "Searching ""$dockerContainerObjectNameInstanced"
-	[[ "$dockerContainerObjectExists" == "true" ]]  && _messageHAVE && _stop
-	_messageNEED
-	
-	_messageProcess "Building ""$dockerContainerObjectNameInstanced"
-	
-	mkdir -p "$safeTmp"/dockercontainer
-	cd "$safeTmp"/dockercontainer
-	
-	_permitDocker docker create -t -i --name "$dockerContainerObjectNameInstanced" "$dockerImageObjectName" 2> "$logTmp"/buildContainer.log > "$logTmp"/buildContainer.log
-	rm -f "$logTmp"/buildContainer.log > /dev/null 2>&1
-	
-	cd "$scriptAbsoluteFolder"
-	
-	export dockerContainerInstancedID=$(_permitDocker docker ps -a -q --filter name='^/'"$dockerContainerObjectNameInstanced"'$')
-	[[ "$dockerContainerInstancedID" == "" ]]  && _messageFAIL && _stop 1
-	_messagePASS
+	if ! _create_docker_container_sequence_partial "$dockerContainerObjectNameInstanced"
+	then
+		_stop 1
+	fi
 	
 	_stop
 }
 
+# WARNING Serves as an example. Most use cases for instanced containers REQUIRE the image creation command to run in a fresh instance. See _dockerExport .
 _create_docker_container_instanced() {
-	"$scriptAbsoluteLocation" _create_docker_image "$@" || return 1
+	_create_docker_image "$@" || return 1
 	
-	if "$scriptAbsoluteLocation" _create_docker_container_instanced_sequence "$@"
-	then
-		return 0
-	fi
-	return 1
+	_create_docker_container_sequence_instanced || return 1
+	
+	return 0
 }
 
-
-
-
-
-
-
-
-
-
-
 _docker_img_to_dai() {
+	_messageProcess "Searching conflicts"
+	[[ -e "$scriptLocal"/"dockerContainerFS".tar ]] && _messageFAIL && _stop 1
+	[[ -e "$scriptLocal"/"dockerImageFS".tar ]] && _messageFAIL && return 1
+	[[ -e "$scriptLocal"/"dockerImageAll".tar ]] && _messageFAIL && _stop 1
+	_messagePASS
+	
 	false
 }
 
@@ -3654,22 +3678,43 @@ _docker_dai_to_img() {
 	false
 }
 
+# WARNING In automated use, the load command may not result in an image name matching the path locked docker id.
 _docker_load() {
-	false
+	[[ -e "$scriptLocal"/"dockerImageAll".tar ]] && _permitDocker docker load < "$scriptLocal"/"dockerImageAll".tar
+}
+
+_dockerLoad() {
+	_docker_load "$@"
 }
 
 _docker_save_sequence() {
 	_start
 	_prepare_docker
 	
-	_permitDocker docker save "$dockerImageObjectName" > "$scriptLocal"/dockerImageAll.tar
+	_permitDocker docker save "$dockerImageObjectName" > "$scriptLocal"/"dockerImageAll".tar
 	
 	_stop
 }
 
 #https://stackoverflow.com/questions/23935141/how-to-copy-docker-images-from-one-host-to-another-without-via-repository
 _docker_save() {
+	_messageProcess "Searching conflicts"
+	[[ -e "$scriptLocal"/"dockerContainerFS".tar ]] && _messageFAIL && _stop 1
+	[[ -e "$scriptLocal"/"dockerImageFS".tar ]] && _messageFAIL && return 1
+	#[[ -e "$scriptLocal"/"dockerImageAll".tar ]] && _messageFAIL && _stop 1
+	_messagePASS
+	
+	_messageProcess "Saving ""$dockerImageObjectName"
+	
 	"$scriptAbsoluteLocation" _docker_save_sequence "$@"
+	
+	 ! [[ -s "$scriptLocal"/"dockerImageAll".tar ]] && _messageFAIL && return 1
+	 _messagePASS
+	 return 0
+}
+
+_dockerSave() {
+	_docker_save "$@"
 }
 
 #Docker Portation.
@@ -3680,44 +3725,91 @@ _docker_save() {
 
 #Import filesystem as Docker image.
 #"$1" == containerObjectName
+#Import filesystem as Docker image.
+#"$1" == containerObjectName
 _dockerImport() {
+	if [[ -e "$scriptLocal"/"dockerImageFS".tar ]]
+	then
+		_permitDocker docker import "$scriptLocal"/"dockerImageFS".tar "$dockerImageObjectName" --change 'ENTRYPOINT ["/usr/local/bin/entrypoint.sh" "_docker_drop"]' > /dev/null 2>&1
+	fi
 	
-	_permitDocker docker import "$1" > "$safeTmp"/dockerimport.log 2>&1
-	rm -f "$safeTmp"/dockerimport.log > /dev/null 2>&1
-	
+	# WARNING Untested. Not recommended.
+	[[ -e "$scriptLocal"/"dockerContainerFS".tar ]] && _permitDocker docker import "$scriptLocal"/"dockerImageFS".tar "$dockerImageObjectName" > /dev/null 2>&1
 }
 
 _dockerExportContainer_named() {
-	 _permitDocker docker export $(_permitDocker docker ps -a -q --filter name='^/'"$1"'$') > "$2"
+	local dockerNamedID
+	dockerNamedID=$(_permitDocker docker ps -a -q --filter name='^/'"$1"'$')
+	
+	 _permitDocker docker export "$dockerNamedID" > "$2"
 }
 
 _dockerExportContainer_sequence() {
 	_start
 	_prepare_docker
 	
-	_dockerExportContainer_named "$dockerContainerObjectName" "$dockerContainerFS".tar
+	_messageProcess "Exporting ""$dockerContainerObjectName"
 	
-	_stop
+	rm -f "$scriptLocal"/"dockerContainerFS".tar > /dev/null 2>&1
+	[[ -e "$scriptLocal"/"dockerContainerFS".tar ]] && _messageFAIL && _stop 1
+	
+	_dockerExportContainer_named "$dockerContainerObjectName" "$scriptLocal"/"dockerContainerFS".tar
+	
+	! [[ -s "$scriptLocal"/"dockerContainerFS".tar ]] && _messageFAIL && _stop 1
+	 _messagePASS
+	 _stop 0
 }
 
 _dockerExportImage_sequence() {
 	_start
 	_prepare_docker
 	
-	_dockerExportContainer_named "$dockerContainerObjectNameInstanced" "$dockerImageFS".tar
+	if ! _create_docker_container_sequence_partial "$dockerContainerObjectNameInstanced"
+	then
+		_stop 1
+	fi
 	
-	_stop
+	_messageProcess "Exporting ""$dockerContainerObjectNameInstanced"
+	
+	rm -f "$scriptLocal"/"dockerImageFS".tar > /dev/null 2>&1
+	[[ -e "$scriptLocal"/"dockerImageFS".tar ]] && _messageFAIL && _stop 1
+	
+	_dockerExportContainer_named "$dockerContainerObjectNameInstanced" "$scriptLocal"/"dockerImageFS".tar
+	
+	! [[ -s "$scriptLocal"/"dockerImageFS".tar ]] && _messageFAIL && _stop 1
+	 _messagePASS
+	 _stop 0
 }
 
+# WARNING Recommend preforming commit operations first, then either _dockerExport or preferably _docker_save .
 #Export Docker Container Filesystem. Will be restored as an image, NOT a container, resulting in operations equivalent to commit/import.
 _dockerExportContainer() {
+	_messageProcess "Searching conflicts"
+	#[[ -e "$scriptLocal"/"dockerContainerFS".tar ]] && _messageFAIL && return 1
+	[[ -e "$scriptLocal"/"dockerImageFS".tar ]] && _messageFAIL && return 1
+	[[ -e "$scriptLocal"/"dockerImageAll".tar ]] && _messageFAIL && return 1
+	_messagePASS
+	
+	_create_docker_container || return 1
+	
 	"$scriptAbsoluteLocation" _dockerExportContainer_sequence "$@"
 }
 
-# WARNING Recommend _docker_save instead for images built within docker.
+# WARNING Recommend _docker_save instead for images built within docker or not needed by other virtualization platforms.
 #Export Docker Image Filesystem (by exporting instanced container).
 #"$1" == containerObjectName
 _dockerExport() {
+	[[ "$recursionGuard" == "true" ]] && _stop 1
+	export recursionGuard="true"
+	
+	_messageProcess "Searching conflicts"
+	[[ -e "$scriptLocal"/"dockerContainerFS".tar ]] && _messageFAIL && return 1
+	#[[ -e "$scriptLocal"/"dockerImageFS".tar ]] && _messageFAIL && return 1
+	[[ -e "$scriptLocal"/"dockerImageAll".tar ]] && _messageFAIL && return 1
+	_messagePASS
+	
+	_create_docker_image "$@" || return 1
+	
 	"$scriptAbsoluteLocation" _dockerExportImage_sequence "$@"
 }
 
@@ -4030,8 +4122,8 @@ _prepare_docker() {
 	then
 		#export dockerObjectName="unimportant-local/app:app-local/debian:jessie"
 		#export dockerObjectName="unimportant-hello-scratch"
-		export dockerObjectName="ubvrt-ubvrt-scratch"
-		#export dockerObjectName="ubvrt-ubvrt-ubvrt/debian:jessie"
+		#export dockerObjectName="ubvrt-ubvrt-scratch"
+		export dockerObjectName="ubvrt-ubvrt-ubvrt/debian:jessie"
 	fi
 	
 	#Allow specification of just the base name.
@@ -4059,7 +4151,7 @@ _prepare_docker() {
 	
 	export dockerContainerObjectNameInstanced="$lowsessionid"_"$dockerContainerObjectName"
 	
-	##Specialized.
+	##Specialized, redundant in some cases.
 	export dockerBaseObjectExists="false"
 	[[ "$(_permitDocker docker images -q "$dockerBaseObjectName" 2> /dev/null)" != "" ]] && export dockerBaseObjectExists="true"
 	
@@ -4072,7 +4164,7 @@ _prepare_docker() {
 	
 	export dockerContainerObjectNameInstancedExists="false"
 	export dockerContainerInstancedID=$(_permitDocker docker ps -a -q --filter name='^/'"$dockerContainerObjectNameInstanced"'$')
-	[[ "$dockerContainerID" != "" ]] && export dockerContainerObjectNameInstancedExists="true"
+	[[ "$dockerContainerInstancedID" != "" ]] && export dockerContainerObjectNameInstancedExists="true"
 	
 	
 	export dockerMkimageDistro=$(echo "$dockerBaseObjectName" | cut -d \/ -f 2 | cut -d \: -f 1)

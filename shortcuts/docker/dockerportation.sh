@@ -6,44 +6,91 @@
 
 #Import filesystem as Docker image.
 #"$1" == containerObjectName
+#Import filesystem as Docker image.
+#"$1" == containerObjectName
 _dockerImport() {
+	if [[ -e "$scriptLocal"/"dockerImageFS".tar ]]
+	then
+		_permitDocker docker import "$scriptLocal"/"dockerImageFS".tar "$dockerImageObjectName" --change 'ENTRYPOINT ["/usr/local/bin/entrypoint.sh" "_docker_drop"]' > /dev/null 2>&1
+	fi
 	
-	_permitDocker docker import "$1" > "$safeTmp"/dockerimport.log 2>&1
-	rm -f "$safeTmp"/dockerimport.log > /dev/null 2>&1
-	
+	# WARNING Untested. Not recommended.
+	[[ -e "$scriptLocal"/"dockerContainerFS".tar ]] && _permitDocker docker import "$scriptLocal"/"dockerImageFS".tar "$dockerImageObjectName" > /dev/null 2>&1
 }
 
 _dockerExportContainer_named() {
-	 _permitDocker docker export $(_permitDocker docker ps -a -q --filter name='^/'"$1"'$') > "$2"
+	local dockerNamedID
+	dockerNamedID=$(_permitDocker docker ps -a -q --filter name='^/'"$1"'$')
+	
+	 _permitDocker docker export "$dockerNamedID" > "$2"
 }
 
 _dockerExportContainer_sequence() {
 	_start
 	_prepare_docker
 	
-	_dockerExportContainer_named "$dockerContainerObjectName" "$dockerContainerFS".tar
+	_messageProcess "Exporting ""$dockerContainerObjectName"
 	
-	_stop
+	rm -f "$scriptLocal"/"dockerContainerFS".tar > /dev/null 2>&1
+	[[ -e "$scriptLocal"/"dockerContainerFS".tar ]] && _messageFAIL && _stop 1
+	
+	_dockerExportContainer_named "$dockerContainerObjectName" "$scriptLocal"/"dockerContainerFS".tar
+	
+	! [[ -s "$scriptLocal"/"dockerContainerFS".tar ]] && _messageFAIL && _stop 1
+	 _messagePASS
+	 _stop 0
 }
 
 _dockerExportImage_sequence() {
 	_start
 	_prepare_docker
 	
-	_dockerExportContainer_named "$dockerContainerObjectNameInstanced" "$dockerImageFS".tar
+	if ! _create_docker_container_sequence_partial "$dockerContainerObjectNameInstanced"
+	then
+		_stop 1
+	fi
 	
-	_stop
+	_messageProcess "Exporting ""$dockerContainerObjectNameInstanced"
+	
+	rm -f "$scriptLocal"/"dockerImageFS".tar > /dev/null 2>&1
+	[[ -e "$scriptLocal"/"dockerImageFS".tar ]] && _messageFAIL && _stop 1
+	
+	_dockerExportContainer_named "$dockerContainerObjectNameInstanced" "$scriptLocal"/"dockerImageFS".tar
+	
+	! [[ -s "$scriptLocal"/"dockerImageFS".tar ]] && _messageFAIL && _stop 1
+	 _messagePASS
+	 _stop 0
 }
 
+# WARNING Recommend preforming commit operations first, then either _dockerExport or preferably _docker_save .
 #Export Docker Container Filesystem. Will be restored as an image, NOT a container, resulting in operations equivalent to commit/import.
 _dockerExportContainer() {
+	_messageProcess "Searching conflicts"
+	#[[ -e "$scriptLocal"/"dockerContainerFS".tar ]] && _messageFAIL && return 1
+	[[ -e "$scriptLocal"/"dockerImageFS".tar ]] && _messageFAIL && return 1
+	[[ -e "$scriptLocal"/"dockerImageAll".tar ]] && _messageFAIL && return 1
+	_messagePASS
+	
+	_create_docker_container || return 1
+	
 	"$scriptAbsoluteLocation" _dockerExportContainer_sequence "$@"
 }
 
-# WARNING Recommend _docker_save instead for images built within docker.
+# WARNING Recommend _docker_save instead for images built within docker, not needed by other virtualization platforms, and not subject to path locking.
 #Export Docker Image Filesystem (by exporting instanced container).
 #"$1" == containerObjectName
 _dockerExport() {
+	[[ "$recursionGuard" == "true" ]] && _stop 1
+	export recursionGuard="true"
+	
+	_messageProcess "Searching conflicts"
+	[[ -e "$scriptLocal"/"dockerContainerFS".tar ]] && _messageFAIL && return 1
+	#[[ -e "$scriptLocal"/"dockerImageFS".tar ]] && _messageFAIL && return 1
+	[[ -e "$scriptLocal"/"dockerImageAll".tar ]] && _messageFAIL && return 1
+	_messagePASS
+	
+	_create_docker_image "$@" || return 1
+	
 	"$scriptAbsoluteLocation" _dockerExportImage_sequence "$@"
 }
 

@@ -93,8 +93,8 @@ _prepare_docker() {
 	then
 		#export dockerObjectName="unimportant-local/app:app-local/debian:jessie"
 		#export dockerObjectName="unimportant-hello-scratch"
-		export dockerObjectName="ubvrt-ubvrt-scratch"
-		#export dockerObjectName="ubvrt-ubvrt-ubvrt/debian:jessie"
+		#export dockerObjectName="ubvrt-ubvrt-scratch"
+		export dockerObjectName="ubvrt-ubvrt-ubvrt/debian:jessie"
 	fi
 	
 	#Allow specification of just the base name.
@@ -122,7 +122,7 @@ _prepare_docker() {
 	
 	export dockerContainerObjectNameInstanced="$lowsessionid"_"$dockerContainerObjectName"
 	
-	##Specialized.
+	##Specialized, redundant in some cases.
 	export dockerBaseObjectExists="false"
 	[[ "$(_permitDocker docker images -q "$dockerBaseObjectName" 2> /dev/null)" != "" ]] && export dockerBaseObjectExists="true"
 	
@@ -135,7 +135,7 @@ _prepare_docker() {
 	
 	export dockerContainerObjectNameInstancedExists="false"
 	export dockerContainerInstancedID=$(_permitDocker docker ps -a -q --filter name='^/'"$dockerContainerObjectNameInstanced"'$')
-	[[ "$dockerContainerID" != "" ]] && export dockerContainerObjectNameInstancedExists="true"
+	[[ "$dockerContainerInstancedID" != "" ]] && export dockerContainerObjectNameInstancedExists="true"
 	
 	
 	export dockerMkimageDistro=$(echo "$dockerBaseObjectName" | cut -d \/ -f 2 | cut -d \: -f 1)

@@ -102,19 +102,32 @@ _create_docker_image_sequence() {
 	_prepare_docker
 	_prepare_docker_directives
 	
-	_create_docker_base || _stop 1
-	
-	_messageNormal "#####Image."
+	_messageNormal "#####PreImage."
 	_messageProcess "Validating ""$dockerImageObjectName"
 	[[ "$dockerImageObjectName" == "" ]] && _messageError "BLANK" && _stop 1
 	_messagePASS
 	
 	_messageProcess "Searching ""$dockerImageObjectName"
+	[[ "$(_permitDocker docker images -q "$dockerImageObjectName" 2> /dev/null)" != "" ]] && export dockerImageObjectExists="true"
 	[[ "$dockerImageObjectExists" == "true" ]]  && _messageHAVE && _stop
 	_messageNEED
 	
 	_messageProcess "Loading ""$dockerImageObjectName"
-	_docker_load && _messagePASS && _stop
+	_dockerLoad
+	_messagePASS
+	
+	_messageProcess "Searching ""$dockerImageObjectName"
+	[[ "$(_permitDocker docker images -q "$dockerImageObjectName" 2> /dev/null)" != "" ]] && export dockerImageObjectExists="true"
+	[[ "$dockerImageObjectExists" == "true" ]]  && _messageHAVE && _stop
+	_messageNEED
+	
+	_messageProcess "Importing ""$dockerImageObjectName"
+	_dockerImport
+	_messagePASS
+	
+	_messageProcess "Searching ""$dockerImageObjectName"
+	[[ "$(_permitDocker docker images -q "$dockerImageObjectName" 2> /dev/null)" != "" ]] && export dockerImageObjectExists="true"
+	[[ "$dockerImageObjectExists" == "true" ]]  && _messageHAVE && _stop
 	_messageNEED
 	
 	_messageProcess "Checking context "
@@ -122,6 +135,9 @@ _create_docker_image_sequence() {
 	[[ ! -e "$dockerentrypoint" ]] && _messageFAIL && _stop 1
 	_messagePASS
 	
+	_create_docker_base || _stop 1
+	
+	_messageNormal "#####Image."
 	mkdir -p "$safeTmp"/dockerimage
 	cd "$safeTmp"/dockerimage
 	
@@ -138,6 +154,8 @@ _create_docker_image_sequence() {
 	rm -f "$logTmp"/buildImageErr.log > /dev/null 2>&1
 	rm -f "$logTmp"/buildImageOut.log > /dev/null 2>&1
 	
+	_dockerExport || _stop 1
+	
 	_stop
 }
 
@@ -152,39 +170,60 @@ _create_docker_image() {
 	return 1
 }
 
+_create_docker_container_sequence_partial() {
+	local dockerContainerToCreate
+	dockerContainerToCreate="$dockerContainerObjectName"
+	[[ "$1" != "" ]] && dockerContainerToCreate="$1"
+	
+	_messageNormal "#####Container."
+	_messageProcess "Validating ""$dockerContainerToCreate"
+	[[ "$dockerContainerToCreate" == "" ]] && _messageError "BLANK" && return 1
+	_messagePASS
+	
+	_messageProcess "Searching ""$dockerContainerToCreate"
+	
+	local dockerContainerToCreateExists
+	dockerContainerToCreateExists="false"
+	local dockerContainerToCreateID
+	dockerContainerToCreateID=$(_permitDocker docker ps -a -q --filter name='^/'"$dockerContainerToCreate"'$')
+	[[ "$dockerContainerToCreateID" != "" ]] && dockerContainerToCreateExists="$true"
+	
+	[[ "$dockerContainerToCreateExists" == "true" ]]  && _messageHAVE && return
+	_messageNEED
+	
+	_messageProcess "Building ""$dockerContainerToCreate"
+	
+	mkdir -p "$safeTmp"
+	cd "$safeTmp"
+	
+	#_prepare_docker_directives
+	
+	_permitDocker docker create -t -i --name "$dockerContainerToCreate" "$dockerImageObjectName" 2> "$logTmp"/buildContainer.log > "$logTmp"/buildContainer.log
+	
+	cd "$scriptAbsoluteFolder"
+	
+	local dockerIDcheck
+	dockerIDcheck=$(_permitDocker docker ps -a -q --filter name='^/'"$dockerContainerToCreate"'$')
+	[[ "$dockerIDcheck" == "" ]]  && _messageFAIL && return 1
+	
+	_messagePASS
+	rm -f "$logTmp"/buildContainer.log > /dev/null 2>&1
+}
+
 _create_docker_container_sequence() {
 	_start
 	_prepare_docker
 	
-	_messageNormal "#####Container."
-	_messageProcess "Validating ""$dockerContainerObjectName"
-	[[ "$dockerContainerObjectName" == "" ]] && _messageError "BLANK" && _stop 1
-	_messagePASS
-	
-	_messageProcess "Searching ""$dockerContainerObjectName"
-	[[ "$dockerContainerObjectExists" == "true" ]]  && _messageHAVE && _stop
-	_messageNEED
-	
-	_messageProcess "Building ""$dockerContainerObjectName"
-	
-	mkdir -p "$safeTmp"/dockercontainer
-	cd "$safeTmp"/dockercontainer
-	
-	_permitDocker docker create -t -i --name "$dockerContainerObjectName" "$dockerImageObjectName" 2> "$logTmp"/buildContainer.log > "$logTmp"/buildContainer.log
-	
-	cd "$scriptAbsoluteFolder"
-	
-	export dockerContainerID=$(_permitDocker docker ps -a -q --filter name='^/'"$dockerContainerObjectName"'$')
-	[[ "$dockerContainerID" == "" ]]  && _messageFAIL && _stop 1
-	
-	_messagePASS
-	rm -f "$logTmp"/buildContainer.log > /dev/null 2>&1
+	if ! _create_docker_container_sequence_partial "$@"
+	then
+		_stop 1
+	fi
 	
 	_stop
 }
 
 _create_docker_container() {
-	"$scriptAbsoluteLocation" _create_docker_image "$@" || return 1
+	_create_docker_image "$@" || return 1
 	
 	if "$scriptAbsoluteLocation" _create_docker_container_sequence "$@"
 	then
@@ -193,52 +232,24 @@ _create_docker_container() {
 	return 1
 }
 
-_create_docker_container_instanced_sequence() {
+# WARNING Serves as an example. Most use cases for instanced containers REQUIRE the container creation command to share session with other operations. See _dockerExport .
+_create_docker_container_sequence_instanced() {
 	_start
 	_prepare_docker
 	
-	_messageNormal "#####Container."
-	_messageProcess "Validating ""$dockerContainerObjectNameInstanced"
-	[[ "$dockerContainerObjectNameInstanced" == "" ]] && _messageError "BLANK" && _stop 1
-	_messagePASS
-	
-	_messageProcess "Searching ""$dockerContainerObjectNameInstanced"
-	[[ "$dockerContainerObjectExists" == "true" ]]  && _messageHAVE && _stop
-	_messageNEED
-	
-	_messageProcess "Building ""$dockerContainerObjectNameInstanced"
-	
-	mkdir -p "$safeTmp"/dockercontainer
-	cd "$safeTmp"/dockercontainer
-	
-	_permitDocker docker create -t -i --name "$dockerContainerObjectNameInstanced" "$dockerImageObjectName" 2> "$logTmp"/buildContainer.log > "$logTmp"/buildContainer.log
-	rm -f "$logTmp"/buildContainer.log > /dev/null 2>&1
-	
-	cd "$scriptAbsoluteFolder"
-	
-	export dockerContainerInstancedID=$(_permitDocker docker ps -a -q --filter name='^/'"$dockerContainerObjectNameInstanced"'$')
-	[[ "$dockerContainerInstancedID" == "" ]]  && _messageFAIL && _stop 1
-	_messagePASS
+	if ! _create_docker_container_sequence_partial "$dockerContainerObjectNameInstanced"
+	then
+		_stop 1
+	fi
 	
 	_stop
 }
 
+# WARNING Serves as an example. Most use cases for instanced containers REQUIRE the image creation command to run in a fresh instance. See _dockerExport .
 _create_docker_container_instanced() {
-	"$scriptAbsoluteLocation" _create_docker_image "$@" || return 1
+	_create_docker_image "$@" || return 1
 	
-	if "$scriptAbsoluteLocation" _create_docker_container_instanced_sequence "$@"
-	then
-		return 0
-	fi
-	return 1
+	_create_docker_container_sequence_instanced || return 1
+	
+	return 0
 }
-
-
-
-
-
-
-
-
-
-

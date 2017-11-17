@@ -1,3 +1,9 @@
+_here_dockerfile_entrypoint() {
+	cat << 'CZXWXcRMTo8EmM8i4d'
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh" "_docker_drop"]
+CZXWXcRMTo8EmM8i4d
+}
+
 _here_dockerfile_special() {
 	cat << 'CZXWXcRMTo8EmM8i4d'
 COPY gosu-armel /usr/local/bin/gosu-armel
@@ -9,9 +15,9 @@ RUN mkdir -p /etc/skel/Downloads
 RUN mkdir -p /opt/exec
 
 COPY entrypoint.sh /usr/local/bin/entrypoint.sh
-
-ENTRYPOINT ["/usr/local/bin/entrypoint.sh" "_docker_drop"]
 CZXWXcRMTo8EmM8i4d
+
+_here_dockerfile_entrypoint
 }
 
 _here_dockerfile_lite_scratch() {
