@@ -2786,9 +2786,16 @@ _test_docker() {
 		_stop 1
 	fi
 	
-	if ! _permitDocker docker run hello-world 2>&1 | grep 'Hello from Docker' > /dev/null 2>&1
+	#if ! _permitDocker docker run hello-world 2>&1 | grep 'Hello from Docker' > /dev/null 2>&1
+	#then
+	#	echo 'failed docker hello world'
+	#	_stop 1
+	#fi
+	
+	_permitDocker docker import "$scriptBin"/"dockerHello".tar "ubdockerhello" --change 'CMD ["/hello"]' > /dev/null 2>&1
+	if ! _permitDocker docker run "ubdockerhello" 2>&1 | grep 'hello world' > /dev/null 2>&1
 	then
-		echo 'failed docker hello world'
+		echo 'failed ubdockerhello'
 		_stop 1
 	fi
 	
@@ -3507,10 +3514,9 @@ _create_docker_base() {
 	return 0
 }
 
-_create_docker_image_sequence() {
+_create_docker_image_needed_sequence() {
 	_start
 	_prepare_docker
-	_prepare_docker_directives
 	
 	_messageNormal "#####PreImage."
 	_messageProcess "Validating ""$dockerImageObjectName"
@@ -3519,31 +3525,33 @@ _create_docker_image_sequence() {
 	
 	_messageProcess "Searching ""$dockerImageObjectName"
 	[[ "$(_permitDocker docker images -q "$dockerImageObjectName" 2> /dev/null)" != "" ]] && export dockerImageObjectExists="true"
-	[[ "$dockerImageObjectExists" == "true" ]]  && _messageHAVE && _stop
+	[[ "$dockerImageObjectExists" == "true" ]]  && _messageHAVE && _stop 2
 	_messageNEED
 	
 	_messageProcess "Loading ""$dockerImageObjectName"
-	_dockerLoad
+	"$scriptAbsoluteLocation" _dockerLoad
 	_messagePASS
 	
 	_messageProcess "Searching ""$dockerImageObjectName"
 	[[ "$(_permitDocker docker images -q "$dockerImageObjectName" 2> /dev/null)" != "" ]] && export dockerImageObjectExists="true"
-	[[ "$dockerImageObjectExists" == "true" ]]  && _messageHAVE && _stop
+	[[ "$dockerImageObjectExists" == "true" ]]  && _messageHAVE && _stop 2
 	_messageNEED
 	
 	_messageProcess "Importing ""$dockerImageObjectName"
-	_dockerImport
+	"$scriptAbsoluteLocation" _dockerImport
 	_messagePASS
 	
 	_messageProcess "Searching ""$dockerImageObjectName"
 	[[ "$(_permitDocker docker images -q "$dockerImageObjectName" 2> /dev/null)" != "" ]] && export dockerImageObjectExists="true"
-	[[ "$dockerImageObjectExists" == "true" ]]  && _messageHAVE && _stop
+	[[ "$dockerImageObjectExists" == "true" ]]  && _messageHAVE && _stop 2
 	_messageNEED
 	
-	_messageProcess "Checking context "
-	[[ ! -e "$dockerdirectivefile" ]] && _messageFAIL && _stop 1
-	[[ ! -e "$dockerentrypoint" ]] && _messageFAIL && _stop 1
-	_messagePASS
+	_stop
+}
+
+_create_docker_image_sequence() {
+	_start
+	_prepare_docker
 	
 	_create_docker_base || _stop 1
 	
@@ -3551,9 +3559,16 @@ _create_docker_image_sequence() {
 	mkdir -p "$safeTmp"/dockerimage
 	cd "$safeTmp"/dockerimage
 	
+	_prepare_docker_directives
+	_pull_docker_guest
+	
+	_messageProcess "Checking context "
+	[[ ! -e "$dockerdirectivefile" ]] && _messageFAIL && _stop 1
+	[[ ! -e "$dockerentrypoint" ]] && _messageFAIL && _stop 1
+	_messagePASS
+	
 	_messageProcess "Building ""$dockerImageObjectName"
 	
-	_pull_docker_guest
 	_permitDocker docker build --rm --tag "$dockerImageObjectName" . 2> "$logTmp"/buildImageErr.log > "$logTmp"/buildImageOut.log
 	
 	cd "$scriptAbsoluteFolder"
@@ -3564,20 +3579,30 @@ _create_docker_image_sequence() {
 	rm -f "$logTmp"/buildImageErr.log > /dev/null 2>&1
 	rm -f "$logTmp"/buildImageOut.log > /dev/null 2>&1
 	
-	_dockerExport || _stop 1
-	
 	_stop
 }
 
 _create_docker_image() {
-	[[ "$dockerBaseObjectName" == "" ]] && [[ "$1" != "" ]] && export dockerBaseObjectName="$1"
-	[[ "$dockerImageObjectName" == "" ]] && [[ "$2" != "" ]] && export dockerImageObjectName="$2"
+	[[ "$dockerBaseObjectName" == "" ]] && [[ "$1" != "" ]] && dockerBaseObjectName="$1"
+	[[ "$dockerImageObjectName" == "" ]] && [[ "$2" != "" ]] && dockerImageObjectName="$2"
 	
-	if "$scriptAbsoluteLocation" _create_docker_image_sequence "$@"
+	local dockerImageNeeded
+	"$scriptAbsoluteLocation" _create_docker_image_needed_sequence
+	dockerImageNeeded="$?"
+	[[ "$dockerImageNeeded" == "2" ]] && return 0
+	[[ "$dockerImageNeeded" == "1" ]] && return 1
+	
+	if ! "$scriptAbsoluteLocation" _create_docker_image_sequence
 	then
-		return 0
+		return 1
 	fi
-	return 1
+	
+	if ! "$scriptAbsoluteLocation" _dockerExport
+	then
+		return 1
+	fi
+	
+	return 0
 }
 
 _create_docker_container_sequence_partial() {
@@ -3633,7 +3658,10 @@ _create_docker_container_sequence() {
 }
 
 _create_docker_container() {
-	_create_docker_image "$@" || return 1
+	if ! "$scriptAbsoluteLocation" _create_docker_image "$@"
+	then
+		return 1
+	fi
 	
 	if "$scriptAbsoluteLocation" _create_docker_container_sequence "$@"
 	then
@@ -3734,7 +3762,7 @@ _dockerImport() {
 	fi
 	
 	# WARNING Untested. Not recommended.
-	[[ -e "$scriptLocal"/"dockerContainerFS".tar ]] && _permitDocker docker import "$scriptLocal"/"dockerImageFS".tar "$dockerImageObjectName" > /dev/null 2>&1
+	[[ -e "$scriptLocal"/"dockerContainerFS".tar ]] && _permitDocker docker import "$scriptLocal"/"dockerContainerFS".tar "$dockerImageObjectName" > /dev/null 2>&1
 }
 
 _dockerExportContainer_named() {
@@ -3795,11 +3823,11 @@ _dockerExportContainer() {
 	"$scriptAbsoluteLocation" _dockerExportContainer_sequence "$@"
 }
 
-# WARNING Recommend _docker_save instead for images built within docker or not needed by other virtualization platforms.
+# WARNING Recommend _docker_save instead for images built within docker, not needed by other virtualization platforms, and not subject to path locking.
 #Export Docker Image Filesystem (by exporting instanced container).
 #"$1" == containerObjectName
 _dockerExport() {
-	[[ "$recursionGuard" == "true" ]] && _stop 1
+	[[ "$recursionGuard" == "true" ]] && return 0
 	export recursionGuard="true"
 	
 	_messageProcess "Searching conflicts"
@@ -3808,7 +3836,10 @@ _dockerExport() {
 	[[ -e "$scriptLocal"/"dockerImageAll".tar ]] && _messageFAIL && return 1
 	_messagePASS
 	
-	_create_docker_image "$@" || return 1
+	if ! _create_docker_image "$@"
+	then
+		return 1
+	fi
 	
 	"$scriptAbsoluteLocation" _dockerExportImage_sequence "$@"
 }
@@ -4093,6 +4124,34 @@ _pull_docker_guest() {
 	cp "$scriptBin"/hello ./ > /dev/null 2>&1
 }
 
+#Separated for diagnostic purposes.
+_prepare_docker_default() {
+	export dockerObjectName
+	export dockerBaseObjectName
+	export dockerImageObjectName
+	export dockerContainerObjectName
+	
+	[[ "$dockerBaseObjectName" == "" ]] && [[ "$1" != "" ]] && dockerBaseObjectName="$1"
+	[[ "$dockerImageObjectName" == "" ]] && [[ "$2" != "" ]] && dockerImageObjectName="$2"
+	
+	#Default
+	if [[ "$dockerObjectName" == "" ]] && [[ "$dockerBaseObjectName" == "" ]] && [[ "$dockerImageObjectName" == "" ]] && [[ "$dockerContainerObjectName" == "" ]]
+	then
+		#dockerObjectName="unimportant-local/app:app-local/debian:jessie"
+		#dockerObjectName="unimportant-hello-scratch"
+		#dockerObjectName="ubvrt-ubvrt-scratch"
+		dockerObjectName="ubvrt-ubvrt-ubvrt/debian:jessie"
+	fi
+	
+	#Allow specification of just the base name.
+	[[ "$dockerObjectName" == "" ]] && [[ "$dockerBaseObjectName" != "" ]] && [[ "$dockerImageObjectName" == "" ]] && [[ "$dockerContainerObjectName" == "" ]] && dockerObjectName="ubvrt-ubvrt-""$dockerBaseObjectName"
+	
+	export dockerObjectName
+	export dockerBaseObjectName
+	export dockerImageObjectName
+	export dockerContainerObjectName
+}
+
 _prepare_docker() {
 	
 	export dockerInstanceDir="$scriptLocal"
@@ -4116,18 +4175,7 @@ _prepare_docker() {
 	#container-image-base
 	#Unique names NOT requires.
 	#Path locked ID from ubiquitous_bash will be prepended to image name.
-	
-	#Default
-	if [[ "$dockerObjectName" == "" ]] && [[ "$dockerBaseObjectName" == "" ]] && [[ "$dockerImageObjectName" == "" ]] && [[ "$dockerContainerObjectName" == "" ]]
-	then
-		#export dockerObjectName="unimportant-local/app:app-local/debian:jessie"
-		#export dockerObjectName="unimportant-hello-scratch"
-		#export dockerObjectName="ubvrt-ubvrt-scratch"
-		export dockerObjectName="ubvrt-ubvrt-ubvrt/debian:jessie"
-	fi
-	
-	#Allow specification of just the base name.
-	[[ "$dockerObjectName" == "" ]] && [[ "$dockerBaseObjectName" != "" ]] && [[ "$dockerImageObjectName" == "" ]] && [[ "$dockerContainerObjectName" == "" ]] && export dockerObjectName="ubvrt-ubvrt-""$dockerBaseObjectName"
+	_prepare_docker_default
 	
 	[[ "$dockerBaseObjectName" == "" ]] && export dockerBaseObjectName=$(echo "$dockerObjectName" | cut -s -d\- -f3)
 	[[ "$dockerImageObjectName" == "" ]] && export dockerImageObjectName=$(echo "$dockerObjectName" | cut -s -d\- -f2)

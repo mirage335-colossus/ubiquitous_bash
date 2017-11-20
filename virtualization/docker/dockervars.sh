@@ -64,6 +64,34 @@ _pull_docker_guest() {
 	cp "$scriptBin"/hello ./ > /dev/null 2>&1
 }
 
+#Separated for diagnostic purposes.
+_prepare_docker_default() {
+	export dockerObjectName
+	export dockerBaseObjectName
+	export dockerImageObjectName
+	export dockerContainerObjectName
+	
+	[[ "$dockerBaseObjectName" == "" ]] && [[ "$1" != "" ]] && dockerBaseObjectName="$1"
+	[[ "$dockerImageObjectName" == "" ]] && [[ "$2" != "" ]] && dockerImageObjectName="$2"
+	
+	#Default
+	if [[ "$dockerObjectName" == "" ]] && [[ "$dockerBaseObjectName" == "" ]] && [[ "$dockerImageObjectName" == "" ]] && [[ "$dockerContainerObjectName" == "" ]]
+	then
+		#dockerObjectName="unimportant-local/app:app-local/debian:jessie"
+		#dockerObjectName="unimportant-hello-scratch"
+		#dockerObjectName="ubvrt-ubvrt-scratch"
+		dockerObjectName="ubvrt-ubvrt-ubvrt/debian:jessie"
+	fi
+	
+	#Allow specification of just the base name.
+	[[ "$dockerObjectName" == "" ]] && [[ "$dockerBaseObjectName" != "" ]] && [[ "$dockerImageObjectName" == "" ]] && [[ "$dockerContainerObjectName" == "" ]] && dockerObjectName="ubvrt-ubvrt-""$dockerBaseObjectName"
+	
+	export dockerObjectName
+	export dockerBaseObjectName
+	export dockerImageObjectName
+	export dockerContainerObjectName
+}
+
 _prepare_docker() {
 	
 	export dockerInstanceDir="$scriptLocal"
@@ -87,18 +115,7 @@ _prepare_docker() {
 	#container-image-base
 	#Unique names NOT requires.
 	#Path locked ID from ubiquitous_bash will be prepended to image name.
-	
-	#Default
-	if [[ "$dockerObjectName" == "" ]] && [[ "$dockerBaseObjectName" == "" ]] && [[ "$dockerImageObjectName" == "" ]] && [[ "$dockerContainerObjectName" == "" ]]
-	then
-		#export dockerObjectName="unimportant-local/app:app-local/debian:jessie"
-		#export dockerObjectName="unimportant-hello-scratch"
-		#export dockerObjectName="ubvrt-ubvrt-scratch"
-		export dockerObjectName="ubvrt-ubvrt-ubvrt/debian:jessie"
-	fi
-	
-	#Allow specification of just the base name.
-	[[ "$dockerObjectName" == "" ]] && [[ "$dockerBaseObjectName" != "" ]] && [[ "$dockerImageObjectName" == "" ]] && [[ "$dockerContainerObjectName" == "" ]] && export dockerObjectName="ubvrt-ubvrt-""$dockerBaseObjectName"
+	_prepare_docker_default
 	
 	[[ "$dockerBaseObjectName" == "" ]] && export dockerBaseObjectName=$(echo "$dockerObjectName" | cut -s -d\- -f3)
 	[[ "$dockerImageObjectName" == "" ]] && export dockerImageObjectName=$(echo "$dockerObjectName" | cut -s -d\- -f2)

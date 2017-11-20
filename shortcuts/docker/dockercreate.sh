@@ -97,10 +97,9 @@ _create_docker_base() {
 	return 0
 }
 
-_create_docker_image_sequence() {
+_create_docker_image_needed_sequence() {
 	_start
 	_prepare_docker
-	_prepare_docker_directives
 	
 	_messageNormal "#####PreImage."
 	_messageProcess "Validating ""$dockerImageObjectName"
@@ -109,31 +108,33 @@ _create_docker_image_sequence() {
 	
 	_messageProcess "Searching ""$dockerImageObjectName"
 	[[ "$(_permitDocker docker images -q "$dockerImageObjectName" 2> /dev/null)" != "" ]] && export dockerImageObjectExists="true"
-	[[ "$dockerImageObjectExists" == "true" ]]  && _messageHAVE && _stop
+	[[ "$dockerImageObjectExists" == "true" ]]  && _messageHAVE && _stop 2
 	_messageNEED
 	
 	_messageProcess "Loading ""$dockerImageObjectName"
-	_dockerLoad
+	"$scriptAbsoluteLocation" _dockerLoad
 	_messagePASS
 	
 	_messageProcess "Searching ""$dockerImageObjectName"
 	[[ "$(_permitDocker docker images -q "$dockerImageObjectName" 2> /dev/null)" != "" ]] && export dockerImageObjectExists="true"
-	[[ "$dockerImageObjectExists" == "true" ]]  && _messageHAVE && _stop
+	[[ "$dockerImageObjectExists" == "true" ]]  && _messageHAVE && _stop 2
 	_messageNEED
 	
 	_messageProcess "Importing ""$dockerImageObjectName"
-	_dockerImport
+	"$scriptAbsoluteLocation" _dockerImport
 	_messagePASS
 	
 	_messageProcess "Searching ""$dockerImageObjectName"
 	[[ "$(_permitDocker docker images -q "$dockerImageObjectName" 2> /dev/null)" != "" ]] && export dockerImageObjectExists="true"
-	[[ "$dockerImageObjectExists" == "true" ]]  && _messageHAVE && _stop
+	[[ "$dockerImageObjectExists" == "true" ]]  && _messageHAVE && _stop 2
 	_messageNEED
 	
-	_messageProcess "Checking context "
-	[[ ! -e "$dockerdirectivefile" ]] && _messageFAIL && _stop 1
-	[[ ! -e "$dockerentrypoint" ]] && _messageFAIL && _stop 1
-	_messagePASS
+	_stop
+}
+
+_create_docker_image_sequence() {
+	_start
+	_prepare_docker
 	
 	_create_docker_base || _stop 1
 	
@@ -141,9 +142,16 @@ _create_docker_image_sequence() {
 	mkdir -p "$safeTmp"/dockerimage
 	cd "$safeTmp"/dockerimage
 	
+	_prepare_docker_directives
+	_pull_docker_guest
+	
+	_messageProcess "Checking context "
+	[[ ! -e "$dockerdirectivefile" ]] && _messageFAIL && _stop 1
+	[[ ! -e "$dockerentrypoint" ]] && _messageFAIL && _stop 1
+	_messagePASS
+	
 	_messageProcess "Building ""$dockerImageObjectName"
 	
-	_pull_docker_guest
 	_permitDocker docker build --rm --tag "$dockerImageObjectName" . 2> "$logTmp"/buildImageErr.log > "$logTmp"/buildImageOut.log
 	
 	cd "$scriptAbsoluteFolder"
@@ -154,8 +162,6 @@ _create_docker_image_sequence() {
 	rm -f "$logTmp"/buildImageErr.log > /dev/null 2>&1
 	rm -f "$logTmp"/buildImageOut.log > /dev/null 2>&1
 	
-	_dockerExport || _stop 1
-	
 	_stop
 }
 
@@ -163,11 +169,23 @@ _create_docker_image() {
 	[[ "$dockerBaseObjectName" == "" ]] && [[ "$1" != "" ]] && export dockerBaseObjectName="$1"
 	[[ "$dockerImageObjectName" == "" ]] && [[ "$2" != "" ]] && export dockerImageObjectName="$2"
 	
-	if "$scriptAbsoluteLocation" _create_docker_image_sequence "$@"
+	local dockerImageNeeded
+	"$scriptAbsoluteLocation" _create_docker_image_needed_sequence
+	dockerImageNeeded="$?"
+	[[ "$dockerImageNeeded" == "2" ]] && return 0
+	[[ "$dockerImageNeeded" == "1" ]] && return 1
+	
+	if ! "$scriptAbsoluteLocation" _create_docker_image_sequence
 	then
-		return 0
+		return 1
 	fi
-	return 1
+	
+	if ! "$scriptAbsoluteLocation" _dockerExport
+	then
+		return 1
+	fi
+	
+	return 0
 }
 
 _create_docker_container_sequence_partial() {
@@ -223,7 +241,10 @@ _create_docker_container_sequence() {
 }
 
 _create_docker_container() {
-	_create_docker_image "$@" || return 1
+	if ! "$scriptAbsoluteLocation" _create_docker_image "$@"
+	then
+		return 1
+	fi
 	
 	if "$scriptAbsoluteLocation" _create_docker_container_sequence "$@"
 	then

@@ -44,9 +44,16 @@ _test_docker() {
 		_stop 1
 	fi
 	
-	if ! _permitDocker docker run hello-world 2>&1 | grep 'Hello from Docker' > /dev/null 2>&1
+	#if ! _permitDocker docker run hello-world 2>&1 | grep 'Hello from Docker' > /dev/null 2>&1
+	#then
+	#	echo 'failed docker hello world'
+	#	_stop 1
+	#fi
+	
+	_permitDocker docker import "$scriptBin"/"dockerHello".tar "ubdockerhello" --change 'CMD ["/hello"]' > /dev/null 2>&1
+	if ! _permitDocker docker run "ubdockerhello" 2>&1 | grep 'hello world' > /dev/null 2>&1
 	then
-		echo 'failed docker hello world'
+		echo 'failed ubdockerhello'
 		_stop 1
 	fi
 	

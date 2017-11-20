@@ -15,7 +15,7 @@ _dockerImport() {
 	fi
 	
 	# WARNING Untested. Not recommended.
-	[[ -e "$scriptLocal"/"dockerContainerFS".tar ]] && _permitDocker docker import "$scriptLocal"/"dockerImageFS".tar "$dockerImageObjectName" > /dev/null 2>&1
+	[[ -e "$scriptLocal"/"dockerContainerFS".tar ]] && _permitDocker docker import "$scriptLocal"/"dockerContainerFS".tar "$dockerImageObjectName" > /dev/null 2>&1
 }
 
 _dockerExportContainer_named() {
@@ -80,7 +80,7 @@ _dockerExportContainer() {
 #Export Docker Image Filesystem (by exporting instanced container).
 #"$1" == containerObjectName
 _dockerExport() {
-	[[ "$recursionGuard" == "true" ]] && _stop 1
+	[[ "$recursionGuard" == "true" ]] && return 0
 	export recursionGuard="true"
 	
 	_messageProcess "Searching conflicts"
@@ -89,7 +89,10 @@ _dockerExport() {
 	[[ -e "$scriptLocal"/"dockerImageAll".tar ]] && _messageFAIL && return 1
 	_messagePASS
 	
-	_create_docker_image "$@" || return 1
+	if ! _create_docker_image "$@"
+	then
+		return 1
+	fi
 	
 	"$scriptAbsoluteLocation" _dockerExportImage_sequence "$@"
 }
