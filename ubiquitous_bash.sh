@@ -2664,12 +2664,23 @@ _wine() {
 
 _here_dockerfile_entrypoint() {
 	cat << 'CZXWXcRMTo8EmM8i4d'
-ENTRYPOINT ["/usr/local/bin/entrypoint.sh" "_docker_drop"]
+ENTRYPOINT ["/usr/local/bin/ubiquitous_bash.sh", "_drop_docker"]
 CZXWXcRMTo8EmM8i4d
 }
 
 _here_dockerfile_special() {
 	cat << 'CZXWXcRMTo8EmM8i4d'
+RUN mkdir -p /usr/bin
+RUN mkdir -p /usr/local/bin
+RUN mkdir -p /usr/share
+RUN mkdir -p /usr/local/share
+
+RUN mkdir -p /usr/local/share/ubcore/bin
+
+COPY ubiquitous_bash.sh /usr/local/bin/ubiquitous_bash.sh
+
+COPY ubbin /usr/local/share/ubcore/bin
+
 COPY gosu-armel /usr/local/bin/gosu-armel
 COPY gosu-amd64 /usr/local/bin/gosu-amd64
 COPY gosu-i386 /usr/local/bin/gosu-i386
@@ -2677,8 +2688,6 @@ COPY gosu-i386 /usr/local/bin/gosu-i386
 RUN mkdir -p /etc/skel/Downloads
 
 RUN mkdir -p /opt/exec
-
-COPY entrypoint.sh /usr/local/bin/entrypoint.sh
 CZXWXcRMTo8EmM8i4d
 
 _here_dockerfile_entrypoint
@@ -2737,7 +2746,27 @@ _drop_docker() {
 	cd "$localPWD"
 	
 	# Drop to user ubvrtusr or remain root, using gosu.
+	
+	##Example alternative code for future reference.
+	#export INPUTRC='~/.inputrc'
+	#export profileScriptLocation=/usr/local/bin/entrypoint.sh
+	#export profileScriptFolder=/usr/local/bin/
+	
+	#bash -c ". ./etc/profile > /dev/null 2>&1 ; set -o allexport ; . ~/.bash_profile > /dev/null 2>&1 ; . ~/.bashrc > /dev/null 2>&1 ; . ./ubiquitous_bash.sh _importShortcuts > /dev/null 2>&1 ; set +o allexport ; bash --noprofile --norc -i ; . ~/.bash_logout > /dev/null 2>&1"
+
+	#bash --init-file <(echo ". ~/.bashrc ; . ./ubiquitous_bash.sh _importShortcuts")
+	
+	#_gosuExecVirt bash --init-file <(echo ". ~/.bashrc ; . /usr/local/bin/entrypoint.sh _importShortcuts" "$@")
+	
+	##Setup and launch.
+	
+	oldNoNet="$nonet"
+	export nonet="true"
+	"$scriptAbsoluteLocation" _setupUbiquitous
+	[[ "$oldNoNet" != "true" ]] && export nonet="$oldNoNet"
+	
 	_gosuExecVirt "$@"
+	
 }
 
 #Runs command directly if member of "docker" group, or through sudo if not.
@@ -3374,6 +3403,12 @@ _dockerPrune() {
 	echo y | _permitDocker docker system prune
 }
 
+_dockerDeleteAll() {
+	_dockerDeleteContainersAll
+	_dockerDeleteImagesAll
+	_dockerPrune
+}
+
 _docker_deleteContainerInstance_sequence() {
 	_start
 	_prepare_docker
@@ -3391,8 +3426,8 @@ _docker_deleteLocal_sequence() {
 	_start
 	_prepare_docker
 	
-	[[ "$dockerImageObjectName" != "" ]] && _dockerDeleteImage "$dockerImageObjectName"
 	[[ "$dockerContainerObjectName" != "" ]] && _dockerDeleteContainer "$dockerContainerObjectName"
+	[[ "$dockerImageObjectName" != "" ]] && _dockerDeleteImage "$dockerImageObjectName"
 	
 	_stop
 }
@@ -3414,6 +3449,7 @@ _docker_deleteLocalAll() {
 	"$scriptAbsoluteLocation" _docker_deleteLocal_sequence "$@"
 	"$scriptAbsoluteLocation" _docker_deleteLocalBase_sequence "$@"
 }
+
 
 _create_docker_mkimage_sequence() {
 	_start
@@ -3784,7 +3820,7 @@ _dockerSave() {
 _dockerImport() {
 	if [[ -e "$scriptLocal"/"dockerImageFS".tar ]]
 	then
-		_permitDocker docker import "$scriptLocal"/"dockerImageFS".tar "$dockerImageObjectName" --change 'ENTRYPOINT ["/usr/local/bin/entrypoint.sh" "_docker_drop"]' > /dev/null 2>&1
+		_permitDocker docker import "$scriptLocal"/"dockerImageFS".tar "$dockerImageObjectName" --change 'ENTRYPOINT ["/usr/local/bin/ubiquitous_bash.sh", "_drop_docker"]' > /dev/null 2>&1
 	fi
 	
 	# WARNING Untested. Not recommended.
@@ -3978,17 +4014,49 @@ _importShortcuts() {
 }
 
 _setupUbiquitous() {
+	local ubcoreDir
+	ubcoreDir="$HOME"/.ubcore
+	local ubcoreUBdir
+	ubcoreUBdir="$ubcoreDir"/ubiquitous_bash
+	local ubcoreFile
+	ubcoreFile="$ubcoreDir"/.ubcorerc
+	
+	if [[ -e "$ubcoreUBdir" ]]
+	then
+		cd "$ubcoreUBdir"
+		[[ "$nonet" != "true" ]] && type git > /dev/null 2>&1 && git pull
+		cd "$outerPWD"
+		return 0
+	fi
+	
+	mkdir -p "$ubcoreDir"
+	[[ ! -d "$ubcoreDir" ]] && return 1
+	cd "$ubcoreDir"
+	
+	[[ "$nonet" != "true" ]] && type git > /dev/null 2>&1 && git clone git@github.com:mirage335/ubiquitous_bash.git
+	mkdir -p "$ubcoreUBdir"
+	
+	if [[ ! -e "$ubcoreUBdir"/ubiquitous_bash.sh ]]
+	then
+		cp -a "$scriptBin" "$ubcoreUBdir"/
+		cp -a "$scriptAbsoluteLocation" "$ubcoreUBdir"/ubiquitous_bash.sh
+	fi
 	
 	mkdir -p "$HOME"/bin/
+	ln -sf "$ubcoreUBdir"/ubiquitous_bash.sh "$HOME"/bin/ubiquitous_bash.sh
 	
-	ln -s "$scriptAbsoluteLocation" "$HOME"/bin/ubiquitous_bash.sh
+	echo -e -n > "$ubcoreFile"
+	echo 'export profileScriptLocation='"$ubcoreUBdir"/ubiquitous_bash.sh >> "$ubcoreFile"
+	echo 'export profileScriptFolder='"$ubcoreUBdir" >> "$ubcoreFile"
+	echo '. '"$ubcoreUBdir"/ubiquitous_bash.sh' _importShortcuts' >> "$ubcoreFile"
 	
-	echo 'export profileScriptLocation='"$scriptAbsoluteLocation" >> "$HOME"/.bashrc
-	echo 'export profileScriptFolder='"$scriptAbsoluteFolder" >> "$HOME"/.bashrc
+	if ! grep ubcore ~/.bashrc > /dev/null 2>&1
+	then
+		echo ". ""$ubcoreFile" >> ~/.bashrc
+	fi
 	
-	echo '. '"$scriptAbsoluteLocation"' _importShortcuts' >> "$HOME"/.bashrc
-	
-} 
+	cd "$outerPWD"
+}
 
 #####Basic Variable Management
 
@@ -4016,7 +4084,11 @@ export safeTmp="$scriptAbsoluteFolder"/w_"$sessionid"
 export logTmp="$safeTmp"/log
 export shortTmp=/tmp/w_"$sessionid"	#Solely for misbehaved applications called upon.
 export scriptBin="$scriptAbsoluteFolder"/_bin
-[[ ! -e "$scriptBin" ]] && export scriptBin="$scriptAbsoluteFolder"	#For virtualized guests.
+#For virtualized guests (exclusively intended to support _setupUbiquitous hook).
+[[ ! -e "$scriptBin" ]] && export scriptBin="$scriptAbsoluteFolder"
+#For system installations (exclusively intended to support _setupUbiquitous hook).
+[[ "$scriptAbsoluteLocation" == "/usr/bin"* ]] && export scriptBin="/usr/share/ubcore/bin"
+[[ "$scriptAbsoluteLocation" == "/usr/local/bin"* ]] && export scriptBin="/usr/local/share/ubcore/bin"
 
 export scriptLocal="$scriptAbsoluteFolder"/_local
 
@@ -4249,6 +4321,9 @@ _pull_docker_guest() {
 	
 	cp "$scriptBin"/gosu* ./ > /dev/null 2>&1
 	cp "$scriptBin"/hello ./ > /dev/null 2>&1
+	
+	mkdir -p ./ubbin
+	cp -a "$scriptBin"/. ./ubbin/
 }
 
 #Separated for diagnostic purposes.
@@ -4354,7 +4429,7 @@ _prepare_docker() {
 	export dockerdirectivefile
 	dockerdirectivefile="$safeTmp"/Dockerfile
 	export dockerentrypoint
-	dockerentrypoint="$safeTmp"/entrypoint.sh
+	dockerentrypoint="$safeTmp"/ubiquitous_bash.sh
 	#_prepare_docker_directives
 	
 }

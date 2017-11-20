@@ -62,6 +62,9 @@ _pull_docker_guest() {
 	
 	cp "$scriptBin"/gosu* ./ > /dev/null 2>&1
 	cp "$scriptBin"/hello ./ > /dev/null 2>&1
+	
+	mkdir -p ./ubbin
+	cp -a "$scriptBin"/. ./ubbin/
 }
 
 #Separated for diagnostic purposes.
@@ -167,7 +170,7 @@ _prepare_docker() {
 	export dockerdirectivefile
 	dockerdirectivefile="$safeTmp"/Dockerfile
 	export dockerentrypoint
-	dockerentrypoint="$safeTmp"/entrypoint.sh
+	dockerentrypoint="$safeTmp"/ubiquitous_bash.sh
 	#_prepare_docker_directives
 	
 }

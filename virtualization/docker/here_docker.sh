@@ -1,11 +1,22 @@
 _here_dockerfile_entrypoint() {
 	cat << 'CZXWXcRMTo8EmM8i4d'
-ENTRYPOINT ["/usr/local/bin/entrypoint.sh" "_docker_drop"]
+ENTRYPOINT ["/usr/local/bin/ubiquitous_bash.sh", "_drop_docker"]
 CZXWXcRMTo8EmM8i4d
 }
 
 _here_dockerfile_special() {
 	cat << 'CZXWXcRMTo8EmM8i4d'
+RUN mkdir -p /usr/bin
+RUN mkdir -p /usr/local/bin
+RUN mkdir -p /usr/share
+RUN mkdir -p /usr/local/share
+
+RUN mkdir -p /usr/local/share/ubcore/bin
+
+COPY ubiquitous_bash.sh /usr/local/bin/ubiquitous_bash.sh
+
+COPY ubbin /usr/local/share/ubcore/bin
+
 COPY gosu-armel /usr/local/bin/gosu-armel
 COPY gosu-amd64 /usr/local/bin/gosu-amd64
 COPY gosu-i386 /usr/local/bin/gosu-i386
@@ -13,8 +24,6 @@ COPY gosu-i386 /usr/local/bin/gosu-i386
 RUN mkdir -p /etc/skel/Downloads
 
 RUN mkdir -p /opt/exec
-
-COPY entrypoint.sh /usr/local/bin/entrypoint.sh
 CZXWXcRMTo8EmM8i4d
 
 _here_dockerfile_entrypoint

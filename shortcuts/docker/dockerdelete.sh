@@ -22,6 +22,12 @@ _dockerPrune() {
 	echo y | _permitDocker docker system prune
 }
 
+_dockerDeleteAll() {
+	_dockerDeleteContainersAll
+	_dockerDeleteImagesAll
+	_dockerPrune
+}
+
 _docker_deleteContainerInstance_sequence() {
 	_start
 	_prepare_docker
@@ -39,8 +45,8 @@ _docker_deleteLocal_sequence() {
 	_start
 	_prepare_docker
 	
-	[[ "$dockerImageObjectName" != "" ]] && _dockerDeleteImage "$dockerImageObjectName"
 	[[ "$dockerContainerObjectName" != "" ]] && _dockerDeleteContainer "$dockerContainerObjectName"
+	[[ "$dockerImageObjectName" != "" ]] && _dockerDeleteImage "$dockerImageObjectName"
 	
 	_stop
 }
@@ -62,3 +68,4 @@ _docker_deleteLocalAll() {
 	"$scriptAbsoluteLocation" _docker_deleteLocal_sequence "$@"
 	"$scriptAbsoluteLocation" _docker_deleteLocalBase_sequence "$@"
 }
+

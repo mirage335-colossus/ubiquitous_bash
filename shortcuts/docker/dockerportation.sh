@@ -11,7 +11,7 @@
 _dockerImport() {
 	if [[ -e "$scriptLocal"/"dockerImageFS".tar ]]
 	then
-		_permitDocker docker import "$scriptLocal"/"dockerImageFS".tar "$dockerImageObjectName" --change 'ENTRYPOINT ["/usr/local/bin/entrypoint.sh" "_docker_drop"]' > /dev/null 2>&1
+		_permitDocker docker import "$scriptLocal"/"dockerImageFS".tar "$dockerImageObjectName" --change 'ENTRYPOINT ["/usr/local/bin/ubiquitous_bash.sh", "_drop_docker"]' > /dev/null 2>&1
 	fi
 	
 	# WARNING Untested. Not recommended.

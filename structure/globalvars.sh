@@ -22,7 +22,11 @@ export safeTmp="$scriptAbsoluteFolder"/w_"$sessionid"
 export logTmp="$safeTmp"/log
 export shortTmp=/tmp/w_"$sessionid"	#Solely for misbehaved applications called upon.
 export scriptBin="$scriptAbsoluteFolder"/_bin
-[[ ! -e "$scriptBin" ]] && export scriptBin="$scriptAbsoluteFolder"	#For virtualized guests.
+#For virtualized guests (exclusively intended to support _setupUbiquitous hook).
+[[ ! -e "$scriptBin" ]] && export scriptBin="$scriptAbsoluteFolder"
+#For system installations (exclusively intended to support _setupUbiquitous hook).
+[[ "$scriptAbsoluteLocation" == "/usr/bin"* ]] && export scriptBin="/usr/share/ubcore/bin"
+[[ "$scriptAbsoluteLocation" == "/usr/local/bin"* ]] && export scriptBin="/usr/local/share/ubcore/bin"
 
 export scriptLocal="$scriptAbsoluteFolder"/_local
 
