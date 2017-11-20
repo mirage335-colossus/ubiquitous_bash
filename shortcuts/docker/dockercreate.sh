@@ -253,6 +253,22 @@ _create_docker_container() {
 	return 1
 }
 
+#Will not attempt to create image/base from scratch.
+_create_docker_container_quick() {
+	local dockerImageNeeded
+	"$scriptAbsoluteLocation" _create_docker_image_needed_sequence
+	dockerImageNeeded="$?"
+	[[ "$dockerImageNeeded" == "0" ]] && return 1
+	[[ "$dockerImageNeeded" == "1" ]] && return 1
+	
+	
+	if "$scriptAbsoluteLocation" _create_docker_container_sequence "$@"
+	then
+		return 0
+	fi
+	return 1
+}
+
 # WARNING Serves as an example. Most use cases for instanced containers REQUIRE the container creation command to share session with other operations. See _dockerExport .
 _create_docker_container_sequence_instanced() {
 	_start
@@ -268,7 +284,17 @@ _create_docker_container_sequence_instanced() {
 
 # WARNING Serves as an example. Most use cases for instanced containers REQUIRE the image creation command to run in a fresh instance. See _dockerExport .
 _create_docker_container_instanced() {
-	_create_docker_image "$@" || return 1
+	if ! _create_docker_image "$@"
+	then
+		return 1
+	fi
+	
+	#Alternative, quicker, check for image, will not create image/base from scratch.
+	local dockerImageNeeded
+	"$scriptAbsoluteLocation" _create_docker_image_needed_sequence
+	dockerImageNeeded="$?"
+	[[ "$dockerImageNeeded" == "0" ]] && return 1
+	[[ "$dockerImageNeeded" == "1" ]] && return 1
 	
 	_create_docker_container_sequence_instanced || return 1
 	

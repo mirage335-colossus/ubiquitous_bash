@@ -3583,8 +3583,8 @@ _create_docker_image_sequence() {
 }
 
 _create_docker_image() {
-	[[ "$dockerBaseObjectName" == "" ]] && [[ "$1" != "" ]] && dockerBaseObjectName="$1"
-	[[ "$dockerImageObjectName" == "" ]] && [[ "$2" != "" ]] && dockerImageObjectName="$2"
+	[[ "$dockerBaseObjectName" == "" ]] && [[ "$1" != "" ]] && export dockerBaseObjectName="$1"
+	[[ "$dockerImageObjectName" == "" ]] && [[ "$2" != "" ]] && export dockerImageObjectName="$2"
 	
 	local dockerImageNeeded
 	"$scriptAbsoluteLocation" _create_docker_image_needed_sequence
@@ -3670,6 +3670,22 @@ _create_docker_container() {
 	return 1
 }
 
+#Will not attempt to create image/base from scratch.
+_create_docker_container_quick() {
+	local dockerImageNeeded
+	"$scriptAbsoluteLocation" _create_docker_image_needed_sequence
+	dockerImageNeeded="$?"
+	[[ "$dockerImageNeeded" == "0" ]] && return 1
+	[[ "$dockerImageNeeded" == "1" ]] && return 1
+	
+	
+	if "$scriptAbsoluteLocation" _create_docker_container_sequence "$@"
+	then
+		return 0
+	fi
+	return 1
+}
+
 # WARNING Serves as an example. Most use cases for instanced containers REQUIRE the container creation command to share session with other operations. See _dockerExport .
 _create_docker_container_sequence_instanced() {
 	_start
@@ -3685,7 +3701,17 @@ _create_docker_container_sequence_instanced() {
 
 # WARNING Serves as an example. Most use cases for instanced containers REQUIRE the image creation command to run in a fresh instance. See _dockerExport .
 _create_docker_container_instanced() {
-	_create_docker_image "$@" || return 1
+	if ! _create_docker_image "$@"
+	then
+		return 1
+	fi
+	
+	#Alternative, quicker, check for image, will not create image/base from scratch.
+	local dockerImageNeeded
+	"$scriptAbsoluteLocation" _create_docker_image_needed_sequence
+	dockerImageNeeded="$?"
+	[[ "$dockerImageNeeded" == "0" ]] && return 1
+	[[ "$dockerImageNeeded" == "1" ]] && return 1
 	
 	_create_docker_container_sequence_instanced || return 1
 	
@@ -3845,6 +3871,107 @@ _dockerExport() {
 }
 
 
+
+_dockerCommit_sequence() {
+	_start
+	_prepare_docker
+	
+	_permitDocker docker commit "$dockerContainerObjectName" "$dockerImageObjectName"
+	
+	_stop
+}
+
+_dockerCommit() {
+	if ! "$scriptAbsoluteLocation" _create_docker_container_quick > /dev/null 2>&1
+	then
+		return 1
+	fi
+	
+	"$scriptAbsoluteLocation" _dockerCommit_sequence "$@"
+	return "$?"
+}
+
+_dockerLaunch_sequence() {
+	_start
+	_prepare_docker
+	
+	#_permitDocker docker start -ia "$dockerContainerObjectName"
+	_permitDocker docker start -ia ubvrt_gkzpya8wsrzunppqvh_ubvrt_latest
+	
+	_stop
+}
+
+_dockerLaunch() {
+	if ! "$scriptAbsoluteLocation" _create_docker_container_quick > /dev/null 2>&1
+	then
+		return 1
+	fi
+	
+	"$scriptAbsoluteLocation" _dockerLaunch_sequence "$@"
+	return "$?"
+}
+
+_dockerAttach_sequence() {
+	_start
+	_prepare_docker
+	
+	_permitDocker docker attach "$dockerContainerObjectName"
+	
+	_stop
+}
+
+_dockerAttach() {
+	if ! "$scriptAbsoluteLocation" _create_docker_container_quick > /dev/null 2>&1
+	then
+		return 1
+	fi
+	
+	"$scriptAbsoluteLocation" _dockerAttach_sequence "$@"
+	return "$?"
+}
+
+_dockerOn_sequence() {
+	_start
+	_prepare_docker
+	
+	_permitDocker docker start "$dockerContainerObjectName"
+	
+	_stop
+}
+
+
+_dockerOn() {
+	if ! "$scriptAbsoluteLocation" _create_docker_container_quick > /dev/null 2>&1
+	then
+		return 1
+	fi
+	
+	"$scriptAbsoluteLocation" _dockerOn_sequence
+	return "$?"
+}
+
+_dockerOff_sequence() {
+	_start
+	_prepare_docker
+	
+	_permitDocker docker stop -t 10 "$dockerContainerObjectName"
+	
+	_stop
+}
+
+_dockerOff() {
+	if ! "$scriptAbsoluteLocation" _create_docker_container_quick > /dev/null 2>&1
+	then
+		return 1
+	fi
+	
+	"$scriptAbsoluteLocation" _dockerOff_sequence
+	return "$?"
+}
+
+_dockerEnter() {
+	_dockerLaunch "$@"
+}
 
 _importShortcuts() {
 	_visualPrompt
