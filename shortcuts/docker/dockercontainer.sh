@@ -98,3 +98,27 @@ _dockerOff() {
 _dockerEnter() {
 	_dockerLaunch "$@"
 }
+
+dockerRun_command() {
+	_permitDocker docker run -it --name "$dockerContainerObjectNameInstanced" --rm "$dockerImageObjectName" "$@"
+}
+
+_dockerRun_sequence() {
+	_start
+	_prepare_docker
+	
+	dockerRun_command "$@"
+	
+	_stop "$?"
+}
+
+_dockerRun() {
+	local dockerImageNeeded
+	"$scriptAbsoluteLocation" _create_docker_image_needed_sequence > /dev/null 2>&1
+	dockerImageNeeded="$?"
+	[[ "$dockerImageNeeded" == "0" ]] && return 1
+	[[ "$dockerImageNeeded" == "1" ]] && return 1
+	
+	"$scriptAbsoluteLocation" _dockerRun_sequence "$@"
+	return "$?"
+}

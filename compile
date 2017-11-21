@@ -175,6 +175,7 @@ _includeScript here_docker.sh "virtualization/docker"
 _includeScript dockerdrop.sh "virtualization/docker"
 _includeScript dockertest.sh "virtualization/docker"
 _includeScript dockerchecks.sh "virtualization/docker"
+_includeScript dockeruser.sh "virtualization/docker"
 
 _includeScript mustberoot.sh "special"
 _includeScript mustgetsudo.sh "special"

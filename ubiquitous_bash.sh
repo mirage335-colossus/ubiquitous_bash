@@ -741,6 +741,11 @@ _pathPartOf() {
 	return 0
 }
 
+#Checks if file/directory exists on local filesystem, and meets other criteria. Intended to be called within the virtualization platform, through _checkBaseDirRemote . Often maintained merely for the sake of example.
+_checkBaseDirLocal() {
+	/bin/bash -c '[[ -e "'"$1"'" ]] && ! [[ -d "'"$1"'" ]] && [[ "'"$1"'" != "." ]] && [[ "'"$1"'" != ".." ]] && [[ "'"$1"'" != "./" ]] && [[ "'"$1"'" != "../" ]]'
+}
+
 #Checks if file/directory exists on remote system. Overload this function with implementation specific to the container/virtualization solution in use (ie. docker run).
 _checkBaseDirRemote() {
 	[[ "$checkBaseDirRemote" == "" ]] && checkBaseDirRemote="false"
@@ -2775,13 +2780,13 @@ _permitDocker() {
 	if groups | grep docker > /dev/null 2>&1
 	then
 		"$@"
-		return 0
+		return "$?"
 	fi
 	
 	if _wantSudo > /dev/null 2>&1
 	then
 		sudo -n "$@"
-		return 0
+		return "$?"
 	fi
 	
 	return 1
@@ -2844,6 +2849,42 @@ _test_docker() {
 }
 
 
+_checkBaseDirRemote_docker() {
+	#-e LOCAL_USER_ID=`id -u $USER`
+	if ! _permitDocker docker run -it --name "$dockerContainerObjectNameInstanced"_cr --rm "$dockerImageObjectName" /bin/bash -c '[[ -e "'"$1"'" ]] && ! [[ -d "'"$1"'" ]] && [[ "'"$1"'" != "." ]] && [[ "'"$1"'" != ".." ]] && [[ "'"$1"'" != "./" ]] && [[ "'"$1"'" != "../" ]]'
+	then
+		return 1
+	fi
+	return 0
+}
+
+_userDocker_sequence() {
+	_start
+	_prepare_docker
+	
+	export checkBaseDirRemote=_checkBaseDirRemote_docker
+	_virtUser "$@" >> "$logTmp"/usrchrt.log 2>&1
+	
+	#"$sharedHostProjectDir"
+	#"${processedArgs[@]}"
+	
+	#_permitDocker docker run -it --name "$dockerContainerObjectNameInstanced" -e virtSharedUser="$virtGuestUser" --rm "$dockerImageObjectName" /bin/bash /usr/local/bin/ubiquitous_bash.sh _drop_docker "${processedArgs[@]}"
+	_permitDocker docker run -it --name "$dockerContainerObjectNameInstanced" --rm "$dockerImageObjectName" /bin/bash /usr/local/bin/ubiquitous_bash.sh _drop_docker "${processedArgs[@]}"
+	local userDockerExitStatus="$?"
+	
+	_stop "$userDockerExitStatus"
+}
+
+_userDocker() {
+	local dockerImageNeeded
+	"$scriptAbsoluteLocation" _create_docker_image_needed_sequence > /dev/null 2>&1
+	dockerImageNeeded="$?"
+	[[ "$dockerImageNeeded" == "0" ]] && return 1
+	[[ "$dockerImageNeeded" == "1" ]] && return 1
+	
+	"$scriptAbsoluteLocation" _userDocker_sequence "$@"
+	return "$?"
+}
 
 #Determines if user is root. If yes, then continue. If not, exits after printing error message.
 _mustBeRoot() {
@@ -4007,6 +4048,30 @@ _dockerOff() {
 
 _dockerEnter() {
 	_dockerLaunch "$@"
+}
+
+dockerRun_command() {
+	_permitDocker docker run -it --name "$dockerContainerObjectNameInstanced" --rm "$dockerImageObjectName" "$@"
+}
+
+_dockerRun_sequence() {
+	_start
+	_prepare_docker
+	
+	dockerRun_command "$@"
+	
+	_stop "$?"
+}
+
+_dockerRun() {
+	local dockerImageNeeded
+	"$scriptAbsoluteLocation" _create_docker_image_needed_sequence > /dev/null 2>&1
+	dockerImageNeeded="$?"
+	[[ "$dockerImageNeeded" == "0" ]] && return 1
+	[[ "$dockerImageNeeded" == "1" ]] && return 1
+	
+	"$scriptAbsoluteLocation" _dockerRun_sequence "$@"
+	return "$?"
 }
 
 _importShortcuts() {

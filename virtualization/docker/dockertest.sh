@@ -4,13 +4,13 @@ _permitDocker() {
 	if groups | grep docker > /dev/null 2>&1
 	then
 		"$@"
-		return 0
+		return "$?"
 	fi
 	
 	if _wantSudo > /dev/null 2>&1
 	then
 		sudo -n "$@"
-		return 0
+		return "$?"
 	fi
 	
 	return 1
