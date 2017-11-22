@@ -746,8 +746,48 @@ _checkBaseDirLocal() {
 	/bin/bash -c '[[ -e "'"$1"'" ]] && ! [[ -d "'"$1"'" ]] && [[ "'"$1"'" != "." ]] && [[ "'"$1"'" != ".." ]] && [[ "'"$1"'" != "./" ]] && [[ "'"$1"'" != "../" ]]'
 }
 
+_checkBaseDirRemote_app_localOnly() {
+	false
+}
+
+_checkBaseDirRemote_app_remoteOnly() {
+	[[ "$1" == "/bin/bash" ]] && return 0
+}
+
+_checkBaseDirRemote_common_localOnly() {
+	[[ "$1" == "." ]] && return 0
+	[[ "$1" == "./" ]] && return 0
+	[[ "$1" == ".." ]] && return 0
+	[[ "$1" == "../" ]] && return 0
+	[[ "$1" == "/" ]] && return 0
+	
+	return 1
+}
+
+_checkBaseDirRemote_common_remoteOnly() {
+	[[ "$1" == "/bin"* ]] && return 0
+	[[ "$1" == "/lib"* ]] && return 0
+	[[ "$1" == "/lib64"* ]] && return 0
+	[[ "$1" == "/opt"* ]] && return 0
+	[[ "$1" == "/usr"* ]] && return 0
+	
+	[[ "$1" == "/bin/bash" ]] && return 0
+	
+	#type "$1" > /dev/null 2>&1 && return 0
+	
+	#! [[ "$1" == "/"* ]] && return 0
+	
+	return 1
+}
+
 #Checks if file/directory exists on remote system. Overload this function with implementation specific to the container/virtualization solution in use (ie. docker run).
 _checkBaseDirRemote() {
+	_checkBaseDirRemote_common_localOnly "$1" && return 0
+	_checkBaseDirRemote_common_remoteOnly "$1" && return 1
+	
+	_checkBaseDirRemote_app_localOnly "$1" && return 0
+	_checkBaseDirRemote_app_remoteOnly "$1" && return 1
+	
 	[[ "$checkBaseDirRemote" == "" ]] && checkBaseDirRemote="false"
 	"$checkBaseDirRemote" "$1" || return 1
 	return 0
