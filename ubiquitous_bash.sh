@@ -2747,6 +2747,34 @@ _here_dockerfile() {
 
 # WARNING Stability of this function's API is important for compatibility with existing docker images.
 _drop_docker() {
+	# Add local user
+	# Either use the LOCAL_USER_ID if passed in at runtime or
+	# fallback
+	
+	USER_ID=${LOCAL_USER_ID:-9001}
+	
+	if [[ "$LOCAL_USER_ID" == "" ]] || [[ "$LOCAL_USER_ID" == "0" ]]
+	then
+		#Root access by default, typically used to make permanent changes to a container for commitment to image.
+		if [[ "$1" == "" ]]
+		then
+			/bin/bash "$@"
+			exit
+		fi
+		
+		"$@"
+		exit
+	fi
+	
+	#echo "Starting with UID : $USER_ID"
+	useradd --shell /bin/bash -u $USER_ID -o -c "" -m "$virtSharedUser" >/dev/null 2>&1
+	usermod -a -G video "$virtSharedUser"
+	export HOME=/home/"$virtSharedUser"
+	
+	chown "$virtSharedUser":"$virtSharedUser" "$HOME"
+	
+	cp -r /etc/skel/. "$HOME"
+	
 	# Change to localPWD or home.
 	cd "$localPWD"
 	
@@ -2758,7 +2786,7 @@ _drop_docker() {
 	#export profileScriptFolder=/usr/local/bin/
 	
 	#bash -c ". ./etc/profile > /dev/null 2>&1 ; set -o allexport ; . ~/.bash_profile > /dev/null 2>&1 ; . ~/.bashrc > /dev/null 2>&1 ; . ./ubiquitous_bash.sh _importShortcuts > /dev/null 2>&1 ; set +o allexport ; bash --noprofile --norc -i ; . ~/.bash_logout > /dev/null 2>&1"
-
+	
 	#bash --init-file <(echo ". ~/.bashrc ; . ./ubiquitous_bash.sh _importShortcuts")
 	
 	#_gosuExecVirt bash --init-file <(echo ". ~/.bashrc ; . /usr/local/bin/entrypoint.sh _importShortcuts" "$@")
@@ -2861,6 +2889,7 @@ _checkBaseDirRemote_docker() {
 _userDocker_sequence() {
 	_start
 	_prepare_docker
+	local userDockerExitStatus
 	
 	export checkBaseDirRemote=_checkBaseDirRemote_docker
 	_virtUser "$@" >> "$logTmp"/usrchrt.log 2>&1
@@ -2868,9 +2897,28 @@ _userDocker_sequence() {
 	#"$sharedHostProjectDir"
 	#"${processedArgs[@]}"
 	
-	#_permitDocker docker run -it --name "$dockerContainerObjectNameInstanced" -e virtSharedUser="$virtGuestUser" --rm "$dockerImageObjectName" /bin/bash /usr/local/bin/ubiquitous_bash.sh _drop_docker "${processedArgs[@]}"
-	_permitDocker docker run -it --name "$dockerContainerObjectNameInstanced" --rm "$dockerImageObjectName" /bin/bash /usr/local/bin/ubiquitous_bash.sh _drop_docker "${processedArgs[@]}"
-	local userDockerExitStatus="$?"
+	local dockerRunArgs
+	
+	#Translation only.
+	local LOCAL_USER_ID=$(id -u)
+	dockerRunArgs+=(-e virtSharedUser="$virtGuestUser" -e localPWD="$localPWD" -e LOCAL_USER_ID="$LOCAL_USER_ID")
+	
+	#Directory sharing.
+	dockerRunArgs+=(-v "$HOME"/Downloads:"$virtGuestHome"/Downloads:rw -v "$sharedHostProjectDir":"$sharedGuestProjectDir":rw)
+	
+	#Display
+	dockerRunArgs+=(-e DISPLAY=$DISPLAY -v $XSOCK:$XSOCK:rw -v $XAUTH:$XAUTH:rw -e "XAUTHORITY=${XAUTH}")
+	
+	#FUSE (AppImage)
+	dockerRunArgs+=(--cap-add SYS_ADMIN --device /dev/fuse --security-opt apparmor:unconfined)
+		
+	#OpenGL, Intel HD Graphics.
+	dockerRunArgs+=(--device=/dev/dri:/dev/dri)
+	
+	_permitDocker docker run -it --name "$dockerContainerObjectNameInstanced" --rm "${dockerRunArgs[@]}" "$dockerImageObjectName" "${processedArgs[@]}"
+	
+	
+	userDockerExitStatus="$?"
 	
 	_stop "$userDockerExitStatus"
 }
@@ -3972,8 +4020,9 @@ _dockerLaunch_sequence() {
 	_start
 	_prepare_docker
 	
-	#_permitDocker docker start -ia "$dockerContainerObjectName"
-	_permitDocker docker start -ia ubvrt_gkzpya8wsrzunppqvh_ubvrt_latest
+	
+	
+	_permitDocker docker start -ia "$dockerContainerObjectName"
 	
 	_stop
 }
@@ -4050,8 +4099,14 @@ _dockerEnter() {
 	_dockerLaunch "$@"
 }
 
+#No production use. Recommend _dockerUser instead.
 dockerRun_command() {
-	_permitDocker docker run -it --name "$dockerContainerObjectNameInstanced" --rm "$dockerImageObjectName" "$@"
+	local dockerRunArgs
+	
+	mkdir -p "$scriptLocal"/_ddata
+	dockerRunArgs+=(-v "$scriptLocal"/_ddata:/mnt/_ddata:rw)
+	
+	_permitDocker docker run -it --name "$dockerContainerObjectName"_rt --rm "${dockerRunArgs[@]}" "$dockerImageObjectName" "$@"
 }
 
 _dockerRun_sequence() {
@@ -4063,6 +4118,7 @@ _dockerRun_sequence() {
 	_stop "$?"
 }
 
+#No production use. Recommend _dockerUser instead.
 _dockerRun() {
 	local dockerImageNeeded
 	"$scriptAbsoluteLocation" _create_docker_image_needed_sequence > /dev/null 2>&1

@@ -21,8 +21,9 @@ _dockerLaunch_sequence() {
 	_start
 	_prepare_docker
 	
-	#_permitDocker docker start -ia "$dockerContainerObjectName"
-	_permitDocker docker start -ia ubvrt_gkzpya8wsrzunppqvh_ubvrt_latest
+	
+	
+	_permitDocker docker start -ia "$dockerContainerObjectName"
 	
 	_stop
 }
@@ -99,8 +100,14 @@ _dockerEnter() {
 	_dockerLaunch "$@"
 }
 
+#No production use. Recommend _dockerUser instead.
 dockerRun_command() {
-	_permitDocker docker run -it --name "$dockerContainerObjectNameInstanced" --rm "$dockerImageObjectName" "$@"
+	local dockerRunArgs
+	
+	mkdir -p "$scriptLocal"/_ddata
+	dockerRunArgs+=(-v "$scriptLocal"/_ddata:/mnt/_ddata:rw)
+	
+	_permitDocker docker run -it --name "$dockerContainerObjectName"_rt --rm "${dockerRunArgs[@]}" "$dockerImageObjectName" "$@"
 }
 
 _dockerRun_sequence() {
@@ -112,6 +119,7 @@ _dockerRun_sequence() {
 	_stop "$?"
 }
 
+#No production use. Recommend _dockerUser instead.
 _dockerRun() {
 	local dockerImageNeeded
 	"$scriptAbsoluteLocation" _create_docker_image_needed_sequence > /dev/null 2>&1

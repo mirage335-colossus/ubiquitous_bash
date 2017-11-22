@@ -1,6 +1,7 @@
 _userDocker_sequence() {
 	_start
 	_prepare_docker
+	local userDockerExitStatus
 	
 	export checkBaseDirRemote=_checkBaseDirRemote_docker
 	_virtUser "$@" >> "$logTmp"/usrchrt.log 2>&1
@@ -8,9 +9,28 @@ _userDocker_sequence() {
 	#"$sharedHostProjectDir"
 	#"${processedArgs[@]}"
 	
-	#_permitDocker docker run -it --name "$dockerContainerObjectNameInstanced" -e virtSharedUser="$virtGuestUser" --rm "$dockerImageObjectName" /bin/bash /usr/local/bin/ubiquitous_bash.sh _drop_docker "${processedArgs[@]}"
-	_permitDocker docker run -it --name "$dockerContainerObjectNameInstanced" --rm "$dockerImageObjectName" /bin/bash /usr/local/bin/ubiquitous_bash.sh _drop_docker "${processedArgs[@]}"
-	local userDockerExitStatus="$?"
+	local dockerRunArgs
+	
+	#Translation only.
+	local LOCAL_USER_ID=$(id -u)
+	dockerRunArgs+=(-e virtSharedUser="$virtGuestUser" -e localPWD="$localPWD" -e LOCAL_USER_ID="$LOCAL_USER_ID")
+	
+	#Directory sharing.
+	dockerRunArgs+=(-v "$HOME"/Downloads:"$virtGuestHome"/Downloads:rw -v "$sharedHostProjectDir":"$sharedGuestProjectDir":rw)
+	
+	#Display
+	dockerRunArgs+=(-e DISPLAY=$DISPLAY -v $XSOCK:$XSOCK:rw -v $XAUTH:$XAUTH:rw -e "XAUTHORITY=${XAUTH}")
+	
+	#FUSE (AppImage)
+	dockerRunArgs+=(--cap-add SYS_ADMIN --device /dev/fuse --security-opt apparmor:unconfined)
+		
+	#OpenGL, Intel HD Graphics.
+	dockerRunArgs+=(--device=/dev/dri:/dev/dri)
+	
+	_permitDocker docker run -it --name "$dockerContainerObjectNameInstanced" --rm "${dockerRunArgs[@]}" "$dockerImageObjectName" "${processedArgs[@]}"
+	
+	
+	userDockerExitStatus="$?"
 	
 	_stop "$userDockerExitStatus"
 }
