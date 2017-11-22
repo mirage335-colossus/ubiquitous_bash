@@ -78,15 +78,15 @@ _ubvrtusrChRoot() {
 	_chroot groupadd -g "$HOST_GROUP_ID" -o "$virtGuestUser"
 	_chroot useradd --shell /bin/bash -u "$HOST_USER_ID" -g "$HOST_GROUP_ID" -o -c "" -m "$virtGuestUser" || return 1
 	
-	_chroot usermod -a -G video "$virtGuestUser"  > /dev/null 2>&1 || return 1
+	_chroot usermod -a -G video "$virtGuestUser" > /dev/null 2>&1 || return 1
 	
 	_chroot chown "$virtGuestUser":"$virtGuestUser" "$virtGuestHome" > /dev/null 2>&1
+	
+	_chroot /bin/bash /usr/local/bin/ubiquitous_bash.sh _dropChRoot /bin/bash /usr/local/bin/ubiquitous_bash.sh _setupUbiquitous_nonet
 	
 	sudo -n cp -a "$globalVirtFS""$virtGuestHome" "$globalVirtFS""$virtGuestHomeRef"
 	echo sudo -n cp -a "$globalVirtFS""$virtGuestHome" "$globalVirtFS""$virtGuestHomeRef"
 	_chroot chown "$virtGuestUser":"$virtGuestUser" "$virtGuestHomeRef" > /dev/null 2>&1
-	
-	_chroot /bin/bash /usr/local/bin/ubiquitous_bash.sh _dropChRoot /bin/bash /usr/local/bin/ubiquitous_bash.sh _setupUbiquitous_nonet
 	
 	rm -f "$globalVirtDir"/_ubvrtusr > /dev/null 2>&1 || return 1
 	
