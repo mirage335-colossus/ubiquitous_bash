@@ -23,9 +23,13 @@ _mountChRoot() {
 	sudo -n mkdir -p "$chrootDir"/usr/local/share/ubcore/bin/
 	
 	sudo -n cp "$scriptAbsoluteLocation" "$chrootDir"/usr/local/bin/ubiquitous_bash.sh
+	sudo -n chmod 755 "$chrootDir"/usr/local/bin/ubiquitous_bash.sh
+	sudo -n chown root:root "$chrootDir"/usr/local/bin/ubiquitous_bash.sh
 	sudo -n cp "$scriptBin"/gosu-armel "$chrootDir"/usr/local/share/ubcore/bin/gosu-armel
 	sudo -n cp "$scriptBin"/gosu-amd64 "$chrootDir"/usr/local/share/ubcore/bin/gosu-amd64
 	sudo -n cp "$scriptBin"/gosu-i386 "$chrootDir"/usr/local/share/ubcore/bin/gosu-i386
+	sudo -n chmod 755 "$chrootDir"/usr/local/share/ubcore/bin/*
+	sudo -n chown root:root "$chrootDir"/usr/local/share/ubcore/bin/*
 	
 }
 

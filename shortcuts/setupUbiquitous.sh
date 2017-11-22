@@ -3,8 +3,12 @@ _importShortcuts() {
 }
 
 _setupUbiquitous() {
+	local ubHome
+	ubHome="$HOME"
+	[[ "$1" != "" ]] && ubHome="$1"
+	
 	local ubcoreDir
-	ubcoreDir="$HOME"/.ubcore
+	ubcoreDir="$ubHome"/.ubcore
 	local ubcoreUBdir
 	ubcoreUBdir="$ubcoreDir"/ubiquitous_bash
 	local ubcoreFile
@@ -31,18 +35,28 @@ _setupUbiquitous() {
 		cp -a "$scriptAbsoluteLocation" "$ubcoreUBdir"/ubiquitous_bash.sh
 	fi
 	
-	mkdir -p "$HOME"/bin/
-	ln -sf "$ubcoreUBdir"/ubiquitous_bash.sh "$HOME"/bin/ubiquitous_bash.sh
+	mkdir -p "$ubHome"/_bin/
+	ln -sf "$ubcoreUBdir"/ubiquitous_bash.sh "$ubHome"/_bin/ubiquitous_bash.sh
 	
 	echo -e -n > "$ubcoreFile"
 	echo 'export profileScriptLocation='"$ubcoreUBdir"/ubiquitous_bash.sh >> "$ubcoreFile"
 	echo 'export profileScriptFolder='"$ubcoreUBdir" >> "$ubcoreFile"
 	echo '. '"$ubcoreUBdir"/ubiquitous_bash.sh' _importShortcuts' >> "$ubcoreFile"
 	
-	if ! grep ubcore ~/.bashrc > /dev/null 2>&1
+	if ! grep ubcore "$ubHome"/.bashrc > /dev/null 2>&1
 	then
-		echo ". ""$ubcoreFile" >> ~/.bashrc
+		#echo "$ubHome"/.bashrc > /dev/tty
+		#ls -l "$ubHome"/.bashrc > /dev/tty
+		echo ". ""$ubcoreFile" >> "$ubHome"/.bashrc
 	fi
 	
 	cd "$outerPWD"
+}
+
+_setupUbiquitous_nonet() {
+	local oldNoNet
+	oldNoNet="$nonet"
+	export nonet="true"
+	_setupUbiquitous "$@"
+	[[ "$oldNoNet" != "true" ]] && export nonet="$oldNoNet"
 }

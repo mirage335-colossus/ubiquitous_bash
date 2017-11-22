@@ -1195,9 +1195,13 @@ _mountChRoot() {
 	sudo -n mkdir -p "$chrootDir"/usr/local/share/ubcore/bin/
 	
 	sudo -n cp "$scriptAbsoluteLocation" "$chrootDir"/usr/local/bin/ubiquitous_bash.sh
+	sudo -n chmod 755 "$chrootDir"/usr/local/bin/ubiquitous_bash.sh
+	sudo -n chown root:root "$chrootDir"/usr/local/bin/ubiquitous_bash.sh
 	sudo -n cp "$scriptBin"/gosu-armel "$chrootDir"/usr/local/share/ubcore/bin/gosu-armel
 	sudo -n cp "$scriptBin"/gosu-amd64 "$chrootDir"/usr/local/share/ubcore/bin/gosu-amd64
 	sudo -n cp "$scriptBin"/gosu-i386 "$chrootDir"/usr/local/share/ubcore/bin/gosu-i386
+	sudo -n chmod 755 "$chrootDir"/usr/local/share/ubcore/bin/*
+	sudo -n chown root:root "$chrootDir"/usr/local/share/ubcore/bin/*
 	
 }
 
@@ -1763,7 +1767,9 @@ _ubvrtusrChRoot() {
 	echo sudo -n cp -a "$globalVirtFS""$virtGuestHome" "$globalVirtFS""$virtGuestHomeRef"
 	_chroot chown "$virtGuestUser":"$virtGuestUser" "$virtGuestHomeRef" > /dev/null 2>&1
 	
-	rm -f "$globalVirtDir"/_ubvrtusr > /dev/null 2>&1 || _stop 1
+	_chroot /bin/bash /usr/local/bin/ubiquitous_bash.sh _dropChRoot /bin/bash /usr/local/bin/ubiquitous_bash.sh _setupUbiquitous_nonet
+	
+	rm -f "$globalVirtDir"/_ubvrtusr > /dev/null 2>&1 || return 1
 	
 	return 0
 }
@@ -1826,6 +1832,11 @@ _removeUserChRoot() {
 	_openChRoot
 	
 	_chroot userdel -r "$virtGuestUser" > /dev/null 2>&1
+	_safeRMR "$chrootDir""$virtGuestHomeRef"
+	
+	sudo -n rmdir "$chrootDir""$virtGuestHomeRef"/*
+	sudo -n rmdir "$chrootDir""$virtGuestHomeRef"
+	
 	_rm_ubvrtusrChRoot
 	
 	_removeChRoot
@@ -2056,11 +2067,13 @@ _closeVBoxRaw() {
 	then
 		_close --force _waitVBox_closing _umountVBox_raw
 		[[ "$1" != "" ]] && _tryExecFull _unhook_systemd_shutdown "$1"
-		return
+		return 0
 	fi
 	
 	_close _waitVBox_closing _umountVBox_raw
 	[[ "$1" != "" ]] && _tryExecFull _unhook_systemd_shutdown "$1"
+	
+	return 0
 }
 
 ##VBox Boxing
@@ -2147,6 +2160,8 @@ _rm_instance_vbox() {
 	rmdir /tmp/\.vbox-"$VBOX_IPC_SOCKETID"-ipc > /dev/null 2>&1
 	
 	rm -f "$VBOX_USER_HOME_short" > /dev/null 2>&1
+	
+	#_closeVBoxRaw || return 1
 	
 	return 0
 }
@@ -4139,8 +4154,12 @@ _importShortcuts() {
 }
 
 _setupUbiquitous() {
+	local ubHome
+	ubHome="$HOME"
+	[[ "$1" != "" ]] && ubHome="$1"
+	
 	local ubcoreDir
-	ubcoreDir="$HOME"/.ubcore
+	ubcoreDir="$ubHome"/.ubcore
 	local ubcoreUBdir
 	ubcoreUBdir="$ubcoreDir"/ubiquitous_bash
 	local ubcoreFile
@@ -4167,20 +4186,30 @@ _setupUbiquitous() {
 		cp -a "$scriptAbsoluteLocation" "$ubcoreUBdir"/ubiquitous_bash.sh
 	fi
 	
-	mkdir -p "$HOME"/bin/
-	ln -sf "$ubcoreUBdir"/ubiquitous_bash.sh "$HOME"/bin/ubiquitous_bash.sh
+	mkdir -p "$ubHome"/_bin/
+	ln -sf "$ubcoreUBdir"/ubiquitous_bash.sh "$ubHome"/_bin/ubiquitous_bash.sh
 	
 	echo -e -n > "$ubcoreFile"
 	echo 'export profileScriptLocation='"$ubcoreUBdir"/ubiquitous_bash.sh >> "$ubcoreFile"
 	echo 'export profileScriptFolder='"$ubcoreUBdir" >> "$ubcoreFile"
 	echo '. '"$ubcoreUBdir"/ubiquitous_bash.sh' _importShortcuts' >> "$ubcoreFile"
 	
-	if ! grep ubcore ~/.bashrc > /dev/null 2>&1
+	if ! grep ubcore "$ubHome"/.bashrc > /dev/null 2>&1
 	then
-		echo ". ""$ubcoreFile" >> ~/.bashrc
+		#echo "$ubHome"/.bashrc > /dev/tty
+		#ls -l "$ubHome"/.bashrc > /dev/tty
+		echo ". ""$ubcoreFile" >> "$ubHome"/.bashrc
 	fi
 	
 	cd "$outerPWD"
+}
+
+_setupUbiquitous_nonet() {
+	local oldNoNet
+	oldNoNet="$nonet"
+	export nonet="true"
+	_setupUbiquitous "$@"
+	[[ "$oldNoNet" != "true" ]] && export nonet="$oldNoNet"
 }
 
 #####Basic Variable Management

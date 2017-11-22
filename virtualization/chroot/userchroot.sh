@@ -86,7 +86,9 @@ _ubvrtusrChRoot() {
 	echo sudo -n cp -a "$globalVirtFS""$virtGuestHome" "$globalVirtFS""$virtGuestHomeRef"
 	_chroot chown "$virtGuestUser":"$virtGuestUser" "$virtGuestHomeRef" > /dev/null 2>&1
 	
-	rm -f "$globalVirtDir"/_ubvrtusr > /dev/null 2>&1 || _stop 1
+	_chroot /bin/bash /usr/local/bin/ubiquitous_bash.sh _dropChRoot /bin/bash /usr/local/bin/ubiquitous_bash.sh _setupUbiquitous_nonet
+	
+	rm -f "$globalVirtDir"/_ubvrtusr > /dev/null 2>&1 || return 1
 	
 	return 0
 }
@@ -149,6 +151,8 @@ _removeUserChRoot() {
 	_openChRoot
 	
 	_chroot userdel -r "$virtGuestUser" > /dev/null 2>&1
+	#sudo -n "$scriptAbsoluteLocation" _safeRMR "$chrootDir""$virtGuestHomeRef"
+	
 	_rm_ubvrtusrChRoot
 	
 	_removeChRoot

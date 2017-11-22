@@ -27,6 +27,8 @@ _rm_instance_vbox() {
 	
 	rm -f "$VBOX_USER_HOME_short" > /dev/null 2>&1
 	
+	#_closeVBoxRaw || return 1
+	
 	return 0
 }
 

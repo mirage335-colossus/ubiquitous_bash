@@ -83,9 +83,11 @@ _closeVBoxRaw() {
 	then
 		_close --force _waitVBox_closing _umountVBox_raw
 		[[ "$1" != "" ]] && _tryExecFull _unhook_systemd_shutdown "$1"
-		return
+		return 0
 	fi
 	
 	_close _waitVBox_closing _umountVBox_raw
 	[[ "$1" != "" ]] && _tryExecFull _unhook_systemd_shutdown "$1"
+	
+	return 0
 }
