@@ -126,7 +126,7 @@ _userChRoot() {
 	
 	
 	
-	_chroot /bin/bash /usr/bin/ubiquitous_bash.sh _dropChRoot "${processedArgs[@]}"
+	_chroot /bin/bash /usr/local/bin/ubiquitous_bash.sh _dropChRoot "${processedArgs[@]}"
 	local userChRootExitStatus="$?"	
 	
 	

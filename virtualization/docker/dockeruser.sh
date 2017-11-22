@@ -32,6 +32,7 @@ _userDocker_sequence() {
 	
 	userDockerExitStatus="$?"
 	
+	rm -f "$logTmp"/usrdock.log > /dev/null 2>&1
 	_stop "$userDockerExitStatus"
 }
 

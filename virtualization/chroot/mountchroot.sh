@@ -19,10 +19,13 @@ _mountChRoot() {
 	sudo -n mount -t tmpfs -o size=4G tmpfs "$absolute1"/dev/shm
 	
 	#Install ubiquitous_bash itself to chroot.
-	sudo -n cp "$scriptAbsoluteLocation" "$chrootDir"/usr/bin/ubiquitous_bash.sh
-	sudo -n cp "$scriptBin"/gosu-armel "$chrootDir"/usr/bin/gosu-armel
-	sudo -n cp "$scriptBin"/gosu-amd64 "$chrootDir"/usr/bin/gosu-amd64
-	sudo -n cp "$scriptBin"/gosu-i386 "$chrootDir"/usr/bin/gosu-i386
+	sudo -n mkdir -p "$chrootDir"/usr/local/bin/
+	sudo -n mkdir -p "$chrootDir"/usr/local/share/ubcore/bin/
+	
+	sudo -n cp "$scriptAbsoluteLocation" "$chrootDir"/usr/local/bin/ubiquitous_bash.sh
+	sudo -n cp "$scriptBin"/gosu-armel "$chrootDir"/usr/local/share/ubcore/bin/gosu-armel
+	sudo -n cp "$scriptBin"/gosu-amd64 "$chrootDir"/usr/local/share/ubcore/bin/gosu-amd64
+	sudo -n cp "$scriptBin"/gosu-i386 "$chrootDir"/usr/local/share/ubcore/bin/gosu-i386
 	
 }
 

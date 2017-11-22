@@ -1191,10 +1191,13 @@ _mountChRoot() {
 	sudo -n mount -t tmpfs -o size=4G tmpfs "$absolute1"/dev/shm
 	
 	#Install ubiquitous_bash itself to chroot.
-	sudo -n cp "$scriptAbsoluteLocation" "$chrootDir"/usr/bin/ubiquitous_bash.sh
-	sudo -n cp "$scriptBin"/gosu-armel "$chrootDir"/usr/bin/gosu-armel
-	sudo -n cp "$scriptBin"/gosu-amd64 "$chrootDir"/usr/bin/gosu-amd64
-	sudo -n cp "$scriptBin"/gosu-i386 "$chrootDir"/usr/bin/gosu-i386
+	sudo -n mkdir -p "$chrootDir"/usr/local/bin/
+	sudo -n mkdir -p "$chrootDir"/usr/local/share/ubcore/bin/
+	
+	sudo -n cp "$scriptAbsoluteLocation" "$chrootDir"/usr/local/bin/ubiquitous_bash.sh
+	sudo -n cp "$scriptBin"/gosu-armel "$chrootDir"/usr/local/share/ubcore/bin/gosu-armel
+	sudo -n cp "$scriptBin"/gosu-amd64 "$chrootDir"/usr/local/share/ubcore/bin/gosu-amd64
+	sudo -n cp "$scriptBin"/gosu-i386 "$chrootDir"/usr/local/share/ubcore/bin/gosu-i386
 	
 }
 
@@ -1800,7 +1803,7 @@ _userChRoot() {
 	
 	
 	
-	_chroot /bin/bash /usr/bin/ubiquitous_bash.sh _dropChRoot "${processedArgs[@]}"
+	_chroot /bin/bash /usr/local/bin/ubiquitous_bash.sh _dropChRoot "${processedArgs[@]}"
 	local userChRootExitStatus="$?"	
 	
 	
@@ -2920,6 +2923,7 @@ _userDocker_sequence() {
 	
 	userDockerExitStatus="$?"
 	
+	rm -f "$logTmp"/usrdock.log > /dev/null 2>&1
 	_stop "$userDockerExitStatus"
 }
 
@@ -3843,7 +3847,7 @@ _create_docker_container_instanced() {
 	return 0
 }
 
-_docker_img_to_dai() {
+_docker_img_to_tar() {
 	_messageProcess "Searching conflicts"
 	[[ -e "$scriptLocal"/"dockerContainerFS".tar ]] && _messageFAIL && _stop 1
 	[[ -e "$scriptLocal"/"dockerImageFS".tar ]] && _messageFAIL && return 1
@@ -3853,7 +3857,7 @@ _docker_img_to_dai() {
 	false
 }
 
-_docker_dai_to_img() {
+_docker_tar_to_img() {
 	false
 }
 

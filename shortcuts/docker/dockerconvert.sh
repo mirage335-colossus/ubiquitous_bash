@@ -1,4 +1,4 @@
-_docker_img_to_dai() {
+_docker_img_to_tar() {
 	_messageProcess "Searching conflicts"
 	[[ -e "$scriptLocal"/"dockerContainerFS".tar ]] && _messageFAIL && _stop 1
 	[[ -e "$scriptLocal"/"dockerImageFS".tar ]] && _messageFAIL && return 1
@@ -8,7 +8,7 @@ _docker_img_to_dai() {
 	false
 }
 
-_docker_dai_to_img() {
+_docker_tar_to_img() {
 	false
 }
 
