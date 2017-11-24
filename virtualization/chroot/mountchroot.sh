@@ -170,7 +170,7 @@ _mountChRoot_image_x64() {
 	local chrootloopdevfs
 	chrootloopdevfs=$(eval $(sudo -n blkid "$chrootimagepart" | awk ' { print $3 } '); echo $TYPE)
 	
-	! [[ "$chrootloopdevfs" == "ext4" ]] && return 1
+	! [[ "$chrootloopdevfs" == "ext4" ]] && _stop 1
 	
 	sudo -n mount "$chrootimagepart" "$chrootDir" || _stop 1
 	

@@ -28,7 +28,7 @@ Semantic versioning is applied. Major version numbers (v2.x) indicate a compatib
 In most user environments, the latest git repository code will provide the strongest reliability guarantees. Extra safety checks are occasionally added as possible edge cases are discovered.
 
 # Included Works
-* GoSu . See https://github.com/tianon/gosu . Binaries and signatures may be included in repository.  License, GPLv3 . License text at https://www.gnu.org/licenses/gpl-3.0.en.html .
+* GoSu . See https://github.com/tianon/gosu . Binaries and signatures may be included in repository. License, GPLv3 . License text at https://www.gnu.org/licenses/gpl-3.0.en.html .
 
 # Future Work
 * Self-contained SAMBA server would provide useful virtualization compatibility guarantees if tightly integrated. QEMU seems to already include a solution using similar methods.
@@ -41,6 +41,7 @@ In most user environments, the latest git repository code will provide the stron
 
 * Integrate AppImage build scripts.
 
+* Investigate Kubernetes integration - https://kubernetes.io .
 * Investigate HyperKit relevance - https://github.com/moby/hyperkit .
 * Investigate RancherVM relevance - https://github.com/rancher/vm .
 * Investigate LXD relevance - https://www.ubuntu.com/containers/lxd .
@@ -48,6 +49,15 @@ In most user environments, the latest git repository code will provide the stron
 * Document FireJail and AppImage examples.
 
 * Set up host architecture specific hello binary compilation and switching.
+
+* Add type check to open/close functions, preventing, among other things, colisions between virtualization platforms.
+
+* Self-hosted debugger and snippet manager.
+* Graphical DRAKON and/or Blockly/SigBlockly examples.
+
+# Known Issues
+
+* Some ChRoot mounting functions are in fact generic, and should be renamed as such after audit.
 
 
 # WARNING

@@ -953,6 +953,155 @@ _test_virtLocal_X11() {
 	_checkDep xauth
 }
 
+_loopImage_sequence() {
+	_mustGetSudo
+	
+	_start
+	
+	mkdir -p "$globalVirtFS"
+	
+	"$scriptAbsoluteLocation" _checkForMounts "$globalVirtFS" && _stop 1
+	
+	local imagefilename
+	#[[ -e "$scriptLocal"/vm-x64.img ]] && imagefilename="$scriptLocal"/vm-x64.img
+	[[ -e "$scriptLocal"/vm.img ]] && imagefilename="$scriptLocal"/vm.img
+	
+	sudo -n losetup -f -P --show "$imagefilename" > "$safeTmp"/imagedev 2> /dev/null || _stop 1
+	
+	cp -n "$safeTmp"/imagedev "$scriptLocal"/imagedev > /dev/null 2>&1 || _stop 1
+	
+	_stop 0
+}
+
+_loopImage() {
+	"$scriptAbsoluteLocation" _loopImage_sequence
+}
+
+_mountImageFS_sequence() {
+	_mustGetSudo
+	
+	_start
+	
+	mkdir -p "$globalVirtFS"
+	
+	"$scriptAbsoluteLocation" _checkForMounts "$globalVirtFS" && _stop 1
+	
+	local imagedev
+	imagedev=$(cat "$scriptLocal"/imagedev)
+	
+	local imagepart
+	#imagepart="$imagedev"p2
+	imagepart="$imagedev"p1
+	
+	local loopdevfs
+	loopdevfs=$(eval $(sudo -n blkid "$imagepart" | awk ' { print $3 } '); echo $TYPE)
+	
+	! [[ "$loopdevfs" == "ext4" ]] && _stop 1
+	
+	sudo -n mount "$imagepart" "$globalVirtFS" || _stop 1
+	
+	mountpoint "$globalVirtFS" > /dev/null 2>&1 || _stop 1
+	
+	_stop 0
+}
+
+_mountImageFS() {
+	"$scriptAbsoluteLocation" _mountImageFS_sequence
+}
+
+_mountImage() {
+	"$scriptAbsoluteLocation" _loopImage_sequence 
+	"$scriptAbsoluteLocation" _mountImageFS_sequence
+}
+
+_umountImage() {
+	_mustGetSudo || return 1
+	
+	sudo -n umount "$globalVirtFS" > /dev/null 2>&1
+	
+	#Uniquely, it is desirable to allow unmounting to proceed a little further if the filesystem was not mounted to begin with. Enables manual intervention.
+	_readyImage "$globalVirtFS" && return 1
+	
+	local imagedev
+	imagedev=$(cat "$scriptLocal"/imagedev)
+	
+	sudo -n losetup -d "$imagedev" > /dev/null 2>&1 || return 1
+	
+	rm -f "$scriptLocal"/imagedev || return 1
+	
+	rm -f "$lock_quicktmp" > /dev/null 2>&1
+	
+	return 0
+}
+
+_waitImage_opening() {
+	_readyImage "$globalVirtFS" && return 0
+	sleep 1
+	_readyImage "$globalVirtFS" && return 0
+	sleep 3
+	_readyImage "$globalVirtFS" && return 0
+	sleep 9
+	_readyImage "$globalVirtFS" && return 0
+	sleep 27
+	_readyImage "$globalVirtFS" && return 0
+	sleep 81
+	_readyImage "$globalVirtFS" && return 0
+	
+	return 1
+}
+
+_waitImage_closing() {
+	_readyImage "$globalVirtFS" || return 0
+	sleep 1
+	_readyImage "$globalVirtFS" || return 0
+	sleep 3
+	_readyImage "$globalVirtFS" || return 0
+	sleep 9
+	_readyImage "$globalVirtFS" || return 0
+	sleep 27
+	_readyImage "$globalVirtFS" || return 0
+	sleep 81
+	_readyImage "$globalVirtFS" || return 0
+	
+	return 1
+}
+
+_readyImage() {
+	local absolute1
+	absolute1=$(_getAbsoluteLocation "$1")
+	
+	mountpoint "$absolute1" > /dev/null 2>&1 || return 1
+	
+	return 0
+}
+
+_openImage() {
+	_open _waitImage_opening _mountImage
+}
+
+_closeImage() {
+	if [[ "$1" == "--force" ]]
+	then
+		_close --force _waitImage_closing _umountImage
+		return
+	fi
+	
+	_close _waitImage_closing _umountImage
+}
+
+_testCreateFS() {
+	_mustGetSudo
+	
+	sudo -n "$scriptAbsoluteLocation" _checkDep mkfs
+	sudo -n "$scriptAbsoluteLocation" _checkDep mkfs.ext4
+}
+
+_testCreatePartition() {
+	_mustGetSudo
+	
+	sudo -n "$scriptAbsoluteLocation" _checkDep parted
+}
+
 _createRawImage_sequence() {
 	_start
 	
@@ -963,7 +1112,7 @@ _createRawImage_sequence() {
 	[[ "$vmImageFile" == "" ]] && _stop 1
 	[[ -e "$vmImageFile" ]] && _stop 1
 	
-	dd if=/dev/zero of="$vmImageFile" bs=1G count=6
+	dd if=/dev/zero of="$vmImageFile" bs=1G count=6 > /dev/null 2>&1
 	
 	_stop
 }
@@ -973,6 +1122,58 @@ _createRawImage() {
 	"$scriptAbsoluteLocation" _createRawImage_sequence "$@"
 	
 }
+
+_createPartition() {
+	_mustGetSudo
+	
+	sudo -n parted --script "$scriptLocal"/vm.img mklabel msdos
+	sudo -n parted "$scriptLocal"/vm.img --script -- mkpart primary 0% 100%
+}
+
+
+_createFS_sequence() {
+	_mustGetSudo
+	
+	_start
+	
+	mkdir -p "$globalVirtFS"
+	
+	"$scriptAbsoluteLocation" _checkForMounts "$globalVirtFS" && _stop 1
+	
+	local imagedev
+	imagedev=$(cat "$scriptLocal"/imagedev)
+	
+	local imagepart
+	#imagepart="$imagedev"p2
+	imagepart="$imagedev"p1
+	
+	local loopdevfs
+	loopdevfs=$(eval $(sudo -n blkid "$imagepart" | awk ' { print $3 } '); echo $TYPE)
+	[[ "$loopdevfs" == "ext4" ]] && _stop 1
+	sudo -n mkfs.ext4 "$imagepart" > /dev/null 2>&1 || _stop 1
+	
+	_stop 0
+}
+
+_createFS_shell() {
+	"$scriptAbsoluteLocation" _loopImage_sequence || return 1
+	"$scriptAbsoluteLocation" _createFS_sequence || return 1
+	"$scriptAbsoluteLocation" _umountImage || return 1
+	return 0
+}
+
+_createFS() {
+	local returnCode
+	_open true _createFS_shell
+	returnCode="$?"
+	_close true true
+	
+	return "$returnCode"
+}
+
+
+
+
 
 _here_bootdisc_shellbat() {
 cat << 'CZXWXcRMTo8EmM8i4d'
@@ -1382,7 +1583,7 @@ _mountChRoot_image_x64() {
 	local chrootloopdevfs
 	chrootloopdevfs=$(eval $(sudo -n blkid "$chrootimagepart" | awk ' { print $3 } '); echo $TYPE)
 	
-	! [[ "$chrootloopdevfs" == "ext4" ]] && return 1
+	! [[ "$chrootloopdevfs" == "ext4" ]] && _stop 1
 	
 	sudo -n mount "$chrootimagepart" "$chrootDir" || _stop 1
 	
@@ -3901,16 +4102,92 @@ _create_docker_container_instanced() {
 
 _docker_img_to_tar() {
 	_messageProcess "Searching conflicts"
-	[[ -e "$scriptLocal"/"dockerContainerFS".tar ]] && _messageFAIL && _stop 1
+	[[ -e "$scriptLocal"/"dockerContainerFS".tar ]] && _messageFAIL && return 1
 	[[ -e "$scriptLocal"/"dockerImageFS".tar ]] && _messageFAIL && return 1
-	[[ -e "$scriptLocal"/"dockerImageAll".tar ]] && _messageFAIL && _stop 1
+	[[ -e "$scriptLocal"/"dockerImageAll".tar ]] && _messageFAIL && return 1
 	_messagePASS
+	
+	
 	
 	false
 }
 
+_docker_tar_to_img_sequence() {
+	_mustGetSudo
+	
+	_start
+	
+	export functionEntryPWD="$PWD"
+	
+	_openImage
+	
+	_messageProcess "Copying files"
+	cd "$globalVirtFS"
+	
+	#if ! sudo -n tar --selinux --acls --xattrs xpf "$scriptLocal"/"dockerImageFS".tar
+	if ! sudo -n tar xpf "$scriptLocal"/"dockerImageFS".tar
+	then
+		_messageFAIL
+		_stop 1
+	fi
+	
+	#[[ ! -e '/dev' ]] && _messageFAIL && _stop 1
+	
+	_messagePASS
+	cd "$functionEntryPWD"
+	
+	
+	
+	
+	
+	_closeImage
+	
+	cd "$functionEntryPWD"
+	
+	_stop
+}
+
+#http://mr.gy/blog/build-vm-image-with-docker.html
 _docker_tar_to_img() {
-	false
+	_messageProcess "Searching conflicts"
+	[[ -e "$scriptLocal"/vm.img ]] && _messageFAIL && return 1
+	[[ -e "$scriptLocal"/vm*.img ]] && _messageFAIL && return 1
+	_messagePASS
+	
+	_messageProcess "Creating raw"
+	_createRawImage
+	! [[ -e "$scriptLocal"/vm.img ]] && _messageFAIL && return 1
+	_messagePASS
+	
+	
+	_messageProcess "Creating partition"
+	if ! _createPartition
+	then
+		_messageFAIL
+		return 1
+	fi
+	_messagePASS
+	
+	_messageProcess "Creating FS"
+	if ! _createFS
+	then
+		_messageFAIL
+		return 1
+	fi
+	_messagePASS
+	
+	"$scriptAbsoluteLocation" _docker_tar_to_img_sequence
+	
+	
+	_messageProcess "Validating readiness"
+	_readLocked "$lock_open" && _messageFAIL && return 1
+	_readLocked "$lock_opening" && _messageFAIL && return 1
+	_readLocked "$lock_closing" && _messageFAIL && return 1
+	_readLocked "$lock_emergency" && _messageFAIL && return 1
+	_messagePASS
+	
+	
+	return 0
 }
 
 # WARNING In automated use, the load command may not result in an image name matching the path locked docker id.
@@ -3934,9 +4211,9 @@ _docker_save_sequence() {
 #https://stackoverflow.com/questions/23935141/how-to-copy-docker-images-from-one-host-to-another-without-via-repository
 _docker_save() {
 	_messageProcess "Searching conflicts"
-	[[ -e "$scriptLocal"/"dockerContainerFS".tar ]] && _messageFAIL && _stop 1
+	[[ -e "$scriptLocal"/"dockerContainerFS".tar ]] && _messageFAIL && return 1
 	[[ -e "$scriptLocal"/"dockerImageFS".tar ]] && _messageFAIL && return 1
-	#[[ -e "$scriptLocal"/"dockerImageAll".tar ]] && _messageFAIL && _stop 1
+	#[[ -e "$scriptLocal"/"dockerImageAll".tar ]] && _messageFAIL && return 1
 	_messagePASS
 	
 	_messageProcess "Saving ""$dockerImageObjectName"
@@ -5117,6 +5394,9 @@ _test() {
 	_tryExec "_testMountChecks"
 	_tryExec "_testBindMountManager"
 	_tryExec "_testDistro"
+	
+	_tryExec "_testCreatePartition"
+	_tryExec "_testCreateFS"
 	
 	_tryExec "_testChRoot"
 	_tryExec "_testQEMU"
