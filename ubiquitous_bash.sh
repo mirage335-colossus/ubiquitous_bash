@@ -1076,17 +1076,39 @@ _readyImage() {
 }
 
 _openImage() {
+	local returnStatus
+	
+	export specialLock="$lock_open_image"
+	
 	_open _waitImage_opening _mountImage
+	returnStatus="$?"
+	
+	export specialLock=""
+	
+	return "$returnStatus"
 }
 
 _closeImage() {
+	local returnStatus
+	
+	export specialLock="$lock_open_image"
+	
 	if [[ "$1" == "--force" ]]
 	then
 		_close --force _waitImage_closing _umountImage
-		return
+		returnStatus="$?"
+		
+		export specialLock=""
+		
+		return "$returnStatus"
 	fi
 	
 	_close _waitImage_closing _umountImage
+	returnStatus="$?"
+	
+	export specialLock=""
+	
+	return "$returnStatus"
 }
 
 _testCreateFS() {
@@ -1695,10 +1717,12 @@ _waitChRoot_closing() {
 }
 
 _openChRoot() {
+	export specialLock="$lock_open_chroot"
 	_open _waitChRoot_opening _mountChRoot_image
 }
 
 _closeChRoot() {
+	export specialLock="$lock_open_chroot"
 	if [[ "$1" == "--force" ]]
 	then
 		_close --force _waitChRoot_closing _umountChRoot_image
@@ -1723,6 +1747,7 @@ _haltAllChRoot() {
 # TODO Use a tmpfs mount to track reboots (with appropriate BSD/Linux/Solaris checking) in the first place.
 #"$1" == sessionid (optional override for cleaning up stale systemd files)
 _closeChRoot_emergency() {
+	_checkSpecialLocks "$lock_open_chroot"
 	
 	if [[ -e "$instancedVirtFS" ]]
 	then
@@ -2006,8 +2031,10 @@ _ubvrtusrChRoot() {
 	
 	_chroot /bin/bash /usr/local/bin/ubiquitous_bash.sh _dropChRoot /bin/bash /usr/local/bin/ubiquitous_bash.sh _setupUbiquitous_nonet
 	
-	sudo -n cp -a "$globalVirtFS""$virtGuestHome" "$globalVirtFS""$virtGuestHomeRef"
-	echo sudo -n cp -a "$globalVirtFS""$virtGuestHome" "$globalVirtFS""$virtGuestHomeRef"
+	sudo -n mkdir -p "$globalVirtFS""$virtGuestHome"
+	sudo -n mkdir -p "$globalVirtFS""$virtGuestHomeRef"
+	sudo -n cp -a "$globalVirtFS""$virtGuestHome"/. "$globalVirtFS""$virtGuestHomeRef"/
+	echo sudo -n cp -a "$globalVirtFS""$virtGuestHome"/. "$globalVirtFS""$virtGuestHomeRef"/
 	_chroot chown "$virtGuestUser":"$virtGuestUser" "$virtGuestHomeRef" > /dev/null 2>&1
 	
 	rm -f "$globalVirtDir"/_ubvrtusr > /dev/null 2>&1 || return 1
@@ -2070,14 +2097,22 @@ _userChRoot() {
 }
 
 _removeUserChRoot() {
-	_openChRoot
+	"$scriptAbsoluteLocation" _openChRoot || _stop 1
+	
+	## Lock file. Not done with _waitFileCommands because there is nither an obvious means, nor an obviously catastrophically critical requirement, to independently check for completion of related useradd/mod/del operations.
+	_waitFile "$globalVirtDir"/_ubvrtusr || return 1
+	echo > "$globalVirtDir"/quicktmp
+	mv -n "$globalVirtDir"/quicktmp "$globalVirtDir"/_ubvrtusr > /dev/null 2>&1 || return 1
+	
 	
 	_chroot userdel -r "$virtGuestUser" > /dev/null 2>&1
-	#sudo -n "$scriptAbsoluteLocation" _safeRMR "$chrootDir""$virtGuestHomeRef"
+	[[ -d "$chrootDir""$virtGuestHomeRef" ]] && sudo -n "$scriptAbsoluteLocation" _safeRMR "$chrootDir""$virtGuestHomeRef"
 	
 	_rm_ubvrtusrChRoot
 	
-	_removeChRoot
+	rm -f "$globalVirtDir"/_ubvrtusr > /dev/null 2>&1 || return 1
+	
+	"$scriptAbsoluteLocation" _closeChRoot || _stop 1
 } 
 
 _dropChRoot() {
@@ -3148,7 +3183,7 @@ _userDocker_sequence() {
 	local userDockerExitStatus
 	
 	export checkBaseDirRemote=_checkBaseDirRemote_docker
-	_virtUser "$@" >> "$logTmp"/usrchrt.log 2>&1
+	_virtUser "$@" >> "$logTmp"/usrdock.log 2>&1
 	
 	#"$sharedHostProjectDir"
 	#"${processedArgs[@]}"
@@ -4100,12 +4135,63 @@ _create_docker_container_instanced() {
 	return 0
 }
 
+
+_docker_img_enboot_sequence() {
+	_start
+	
+	_readLocked "$lock_open_image" && _stop 1
+	
+	local localFunctionEntryPWD
+	localFunctionEntryPWD="$PWD"
+	
+	cd "$scriptAbsoluteFolder"
+	_messageProcess "Enabling boot"
+	
+	
+	
+	_messagePASS
+	cd "$localFunctionEntryPWD"
+	_stop
+}
+
+#Only use to reverse docker specific boot impediments. Install bootloader as part of ChRoot functionality.
+#http://mr.gy/blog/build-vm-image-with-docker.html
+#http://www.olafdietsche.de/2016/03/24/debootstrap-bootable-image
+_docker_img_enboot() {
+	"$scriptAbsoluteLocation" _docker_img_enboot_sequence
+}
+
+_docker_img_endocker_sequence() {
+	_start
+	
+	_readLocked "$lock_open_image" && _stop 1
+	
+	local localFunctionEntryPWD
+	localFunctionEntryPWD="$PWD"
+	
+	cd "$scriptAbsoluteFolder"
+	_messageProcess "Enabling docker"
+	
+	_removeUserChRoot
+	
+	_messagePASS
+	cd "$localFunctionEntryPWD"
+	
+	_stop
+}
+
+#Reverse operations performed by _docker_img_enboot .
+_docker_img_endocker() {
+	"$scriptAbsoluteLocation" _docker_img_endocker_sequence
+}
+
 _docker_img_to_tar_sequence() {
 	_mustGetSudo
 	
 	_start
 	
-	export functionEntryPWD="$PWD"
+	local localFunctionEntryPWD
+	localFunctionEntryPWD="$PWD"
 	
 	_openImage
 	
@@ -4113,14 +4199,16 @@ _docker_img_to_tar_sequence() {
 	
 	cd "$globalVirtFS"
 	
-	sudo -n tar --selinux --acls --xattrs -cpf "$scriptLocal"/"dockerImageFS".tar ./
+	sudo -n tar --selinux --acls --xattrs -cpf "$scriptLocal"/"dockerImageFS".tar ./ --exclude '/lost+found'
 	
-	cd "$functionEntryPWD"
+	cd "$localFunctionEntryPWD"
 	
+	#
 	
-	
-	cd "$functionEntryPWD"
+	cd "$localFunctionEntryPWD"
 	_closeImage
+	
+	_docker_img_endocker
 	
 	_stop
 }
@@ -4132,11 +4220,11 @@ _docker_img_to_tar() {
 	[[ -e "$scriptLocal"/"dockerImageFS".tar ]] && _messageFAIL && return 1
 	[[ -e "$scriptLocal"/"dockerImageAll".tar ]] && _messageFAIL && return 1
 	! [[ -e "$scriptLocal"/vm.img ]] && _messageFAIL && return 1
-	
 	_messagePASS
 	
-	
+	_messageProcess "Copying files"
 	"$scriptAbsoluteLocation" _docker_img_to_tar_sequence
+	_messagePASS
 	
 	_messageProcess "Validating readiness"
 	_readLocked "$lock_open" && _messageFAIL && return 1
@@ -4154,7 +4242,8 @@ _docker_tar_to_img_sequence() {
 	
 	_start
 	
-	export functionEntryPWD="$PWD"
+	local localFunctionEntryPWD
+	localFunctionEntryPWD="$PWD"
 	
 	_openImage
 	
@@ -4171,13 +4260,14 @@ _docker_tar_to_img_sequence() {
 	#[[ ! -e '/dev' ]] && _messageFAIL && _stop 1
 	
 	_messagePASS
-	cd "$functionEntryPWD"
+	cd "$localFunctionEntryPWD"
 	
+	#
 	
-	
-	
-	cd "$functionEntryPWD"
+	cd "$localFunctionEntryPWD"
 	_closeImage
+	
+	_docker_img_enboot
 	
 	_stop
 }
@@ -4590,11 +4680,19 @@ export shortTmp=/tmp/w_"$sessionid"	#Solely for misbehaved applications called u
 export scriptBin="$scriptAbsoluteFolder"/_bin
 #For virtualized guests (exclusively intended to support _setupUbiquitous hook).
 [[ ! -e "$scriptBin" ]] && export scriptBin="$scriptAbsoluteFolder"
+
+export scriptLocal="$scriptAbsoluteFolder"/_local
+
 #For system installations (exclusively intended to support _setupUbiquitous hook).
 [[ "$scriptAbsoluteLocation" == "/usr/bin"* ]] && export scriptBin="/usr/share/ubcore/bin"
 [[ "$scriptAbsoluteLocation" == "/usr/local/bin"* ]] && export scriptBin="/usr/local/share/ubcore/bin"
-
-export scriptLocal="$scriptAbsoluteFolder"/_local
+if [[ "$scriptAbsoluteLocation" == "/usr/bin"* ]] || [[ "$scriptAbsoluteLocation" == "/usr/local/bin"* ]]
+then
+	if [[ -d "$HOME" ]]
+	then
+		export scriptLocal="$HOME"/".ubcore"/_sys
+	fi
+fi
 
 #Reboot Detection Token Storage
 # WARNING WIP. Not tested on all platforms. Requires a directory to be tmp/ram fs mounted. Worst case result is to preserve tokens across reboots.
@@ -4612,15 +4710,34 @@ export daemonPID="cwrxuk6wqzbzV6p8kPS8J4APYGX"	#Invalid do-not-match default.
 #export varStore="$scriptAbsoluteFolder"/var
 
 #Monolithic shared files.
-export lock_pathlock="$scriptLocal"/_pathlck
-export lock_quicktmp="$scriptLocal"/quicktmp	#Used to make locking operations atomic as possible.
-export lock_emergency="$scriptLocal"/_emergncy
-export lock_open="$scriptLocal"/_open
-export lock_opening="$scriptLocal"/_opening
-export lock_closed="$scriptLocal"/_closed
-export lock_closing="$scriptLocal"/_closing
-export lock_instance="$scriptLocal"/_instance
-export lock_instancing="$scriptLocal"/_instancing
+export lock_pathlock="$scriptLocal"/l_path
+export lock_quicktmp="$scriptLocal"/l_qtmp	#Used to make locking operations atomic as possible.
+export lock_emergency="$scriptLocal"/l_em
+export lock_open="$scriptLocal"/l_o
+export lock_opening="$scriptLocal"/l_opening
+export lock_closed="$scriptLocal"/l_closed
+export lock_closing="$scriptLocal"/l_closing
+export lock_instance="$scriptLocal"/l_instance
+export lock_instancing="$scriptLocal"/l_instancing
+
+#Specialized lock files. Recommend five character or less suffix. Not all of these may yet be implemented.
+export specialLocks
+specialLocks=""
+
+export lock_open_image="$lock_open"-img
+specialLocks+=("$lock_open_image")
+
+export lock_open_chroot="$lock_open"-chrt
+specialLocks+=("$lock_open_chroot")
+export lock_open_docker="$lock_open"-dock
+specialLocks+=("$lock_open_docker")
+export lock_open_vbox="$lock_open"-vbox
+specialLocks+=("$lock_open_vbox")
+export lock_open_qemu="$lock_open"-qemu
+specialLocks+=("$lock_open_qemu")
+
+export specialLock=""
+export specialLocks
 
 #Monolithic shared log files.
 export importLog="$scriptLocal"/import.log
@@ -5009,6 +5126,7 @@ _stop_emergency() {
 	
 	export EMERGENCYSHUTDOWN=true
 	
+	#Not yet using _tryExec since this function would typically result from user intervention, or system shutdown, both emergency situations in which an error message would be ignored if not useful. Higher priority is guaranteeing execution if needed and available.
 	_closeChRoot_emergency
 	
 	_stop "$1"
@@ -5150,11 +5268,33 @@ _resetLocks() {
 	
 }
 
+_checkSpecialLocks() {
+	local localSpecialLock
+	
+	localSpecialLock="$specialLock"
+	[[ "$1" != "" ]] && localSpecialLock="$1"
+	
+	local currentLock
+	
+	for currentLock in "${specialLocks[@]}"
+	do
+		[[ "$currentLock" == "$localSpecialLock" ]] && continue
+		_readLocked "$currentLock" && return 0
+	done
+	
+	return 1
+}
+
 #Wrapper. Operates lock file for mounting shared resources (eg. persistent virtual machine image). Avoid if possible.
 #"$1" == waitOpen function && shift
 #"$@" == wrapped function and parameters
-_open() {
-	_readLocked "$lock_open" && return 0
+#"$specialLock" == additional lockfile to write
+_open_sequence() {
+	if _readLocked "$lock_open"
+	then
+		_checkSpecialLocks && return 1
+		return 0
+	fi
 	
 	_readLocked "$lock_closing" && return 1
 	
@@ -5180,6 +5320,12 @@ _open() {
 	if [[ "$?" == "0" ]]
 	then
 		_createLocked "$lock_open" || return 1
+		
+		if [[ "$specialLock" != "" ]]
+		then
+			_createLocked "$specialLock" || return 1
+		fi
+		
 		rm -f "$lock_opening"
 		return 0
 	fi
@@ -5187,11 +5333,25 @@ _open() {
 	return 1
 }
 
+_open() {
+	local returnStatus
+	
+	_open_sequence "$@"
+	returnStatus="$?"
+	
+	export specialLock
+	specialLock=""
+	export specialLock
+	
+	return "$returnStatus"
+}
+
 #Wrapper. Operates lock file for shared resources (eg. persistent virtual machine image). Avoid if possible.
 #"$1" == <"--force"> && shift
 #"$1" == waitClose function && shift
 #"$@" == wrapped function and parameters
-_close() {
+#"$specialLock" == additional lockfile to remove
+_close_sequence() {
 	local closeForceEnable
 	closeForceEnable=false
 	
@@ -5205,6 +5365,13 @@ _close() {
 	then
 		return 0
 	fi
+	
+	if [[ "$specialLock" != "" ]] && [[ -e "$specialLock" ]] && ! _readLocked "$specialLock" && [[ "$closeForceEnable" != "true" ]]
+	then
+		return 1
+	fi
+	
+	_checkSpecialLocks && return 1
 	
 	if _readLocked "$lock_closing" && [[ "$closeForceEnable" != "true" ]]
 	then
@@ -5229,14 +5396,31 @@ _close() {
 	if [[ "$?" == "0" ]]
 	then
 		rm -f "$lock_open" || return 1
+		
+		if [[ "$specialLock" != "" ]] && [[ -e "$specialLock" ]]
+		then
+			rm -f "$specialLock" || return 1
+		fi
+		
 		rm -f "$lock_closing"
 		rm -f "$scriptLocal"/WARNING
 		return 0
 	fi
 	
 	return 1
+}
+
+_close() {
+	local returnStatus
 	
+	_close_sequence "$@"
+	returnStatus="$?"
 	
+	export specialLock
+	specialLock=""
+	export specialLock
+	
+	return "$returnStatus"
 }
 
 #"$1" == variable name to preserve

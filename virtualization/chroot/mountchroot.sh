@@ -282,10 +282,12 @@ _waitChRoot_closing() {
 }
 
 _openChRoot() {
+	export specialLock="$lock_open_chroot"
 	_open _waitChRoot_opening _mountChRoot_image
 }
 
 _closeChRoot() {
+	export specialLock="$lock_open_chroot"
 	if [[ "$1" == "--force" ]]
 	then
 		_close --force _waitChRoot_closing _umountChRoot_image
@@ -310,6 +312,7 @@ _haltAllChRoot() {
 # TODO Use a tmpfs mount to track reboots (with appropriate BSD/Linux/Solaris checking) in the first place.
 #"$1" == sessionid (optional override for cleaning up stale systemd files)
 _closeChRoot_emergency() {
+	_checkSpecialLocks "$lock_open_chroot"
 	
 	if [[ -e "$instancedVirtFS" ]]
 	then

@@ -4,7 +4,7 @@ _userDocker_sequence() {
 	local userDockerExitStatus
 	
 	export checkBaseDirRemote=_checkBaseDirRemote_docker
-	_virtUser "$@" >> "$logTmp"/usrchrt.log 2>&1
+	_virtUser "$@" >> "$logTmp"/usrdock.log 2>&1
 	
 	#"$sharedHostProjectDir"
 	#"${processedArgs[@]}"

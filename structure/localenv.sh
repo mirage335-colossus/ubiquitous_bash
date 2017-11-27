@@ -45,6 +45,7 @@ _stop_emergency() {
 	
 	export EMERGENCYSHUTDOWN=true
 	
+	#Not yet using _tryExec since this function would typically result from user intervention, or system shutdown, both emergency situations in which an error message would be ignored if not useful. Higher priority is guaranteeing execution if needed and available.
 	_closeChRoot_emergency
 	
 	_stop "$1"
@@ -186,11 +187,33 @@ _resetLocks() {
 	
 }
 
+_checkSpecialLocks() {
+	local localSpecialLock
+	
+	localSpecialLock="$specialLock"
+	[[ "$1" != "" ]] && localSpecialLock="$1"
+	
+	local currentLock
+	
+	for currentLock in "${specialLocks[@]}"
+	do
+		[[ "$currentLock" == "$localSpecialLock" ]] && continue
+		_readLocked "$currentLock" && return 0
+	done
+	
+	return 1
+}
+
 #Wrapper. Operates lock file for mounting shared resources (eg. persistent virtual machine image). Avoid if possible.
 #"$1" == waitOpen function && shift
 #"$@" == wrapped function and parameters
-_open() {
-	_readLocked "$lock_open" && return 0
+#"$specialLock" == additional lockfile to write
+_open_sequence() {
+	if _readLocked "$lock_open"
+	then
+		_checkSpecialLocks && return 1
+		return 0
+	fi
 	
 	_readLocked "$lock_closing" && return 1
 	
@@ -216,6 +239,12 @@ _open() {
 	if [[ "$?" == "0" ]]
 	then
 		_createLocked "$lock_open" || return 1
+		
+		if [[ "$specialLock" != "" ]]
+		then
+			_createLocked "$specialLock" || return 1
+		fi
+		
 		rm -f "$lock_opening"
 		return 0
 	fi
@@ -223,11 +252,25 @@ _open() {
 	return 1
 }
 
+_open() {
+	local returnStatus
+	
+	_open_sequence "$@"
+	returnStatus="$?"
+	
+	export specialLock
+	specialLock=""
+	export specialLock
+	
+	return "$returnStatus"
+}
+
 #Wrapper. Operates lock file for shared resources (eg. persistent virtual machine image). Avoid if possible.
 #"$1" == <"--force"> && shift
 #"$1" == waitClose function && shift
 #"$@" == wrapped function and parameters
-_close() {
+#"$specialLock" == additional lockfile to remove
+_close_sequence() {
 	local closeForceEnable
 	closeForceEnable=false
 	
@@ -241,6 +284,13 @@ _close() {
 	then
 		return 0
 	fi
+	
+	if [[ "$specialLock" != "" ]] && [[ -e "$specialLock" ]] && ! _readLocked "$specialLock" && [[ "$closeForceEnable" != "true" ]]
+	then
+		return 1
+	fi
+	
+	_checkSpecialLocks && return 1
 	
 	if _readLocked "$lock_closing" && [[ "$closeForceEnable" != "true" ]]
 	then
@@ -265,14 +315,31 @@ _close() {
 	if [[ "$?" == "0" ]]
 	then
 		rm -f "$lock_open" || return 1
+		
+		if [[ "$specialLock" != "" ]] && [[ -e "$specialLock" ]]
+		then
+			rm -f "$specialLock" || return 1
+		fi
+		
 		rm -f "$lock_closing"
 		rm -f "$scriptLocal"/WARNING
 		return 0
 	fi
 	
 	return 1
+}
+
+_close() {
+	local returnStatus
 	
+	_close_sequence "$@"
+	returnStatus="$?"
 	
+	export specialLock
+	specialLock=""
+	export specialLock
+	
+	return "$returnStatus"
 }
 
 #"$1" == variable name to preserve

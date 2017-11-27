@@ -84,8 +84,10 @@ _ubvrtusrChRoot() {
 	
 	_chroot /bin/bash /usr/local/bin/ubiquitous_bash.sh _dropChRoot /bin/bash /usr/local/bin/ubiquitous_bash.sh _setupUbiquitous_nonet
 	
-	sudo -n cp -a "$globalVirtFS""$virtGuestHome" "$globalVirtFS""$virtGuestHomeRef"
-	echo sudo -n cp -a "$globalVirtFS""$virtGuestHome" "$globalVirtFS""$virtGuestHomeRef"
+	sudo -n mkdir -p "$globalVirtFS""$virtGuestHome"
+	sudo -n mkdir -p "$globalVirtFS""$virtGuestHomeRef"
+	sudo -n cp -a "$globalVirtFS""$virtGuestHome"/. "$globalVirtFS""$virtGuestHomeRef"/
+	echo sudo -n cp -a "$globalVirtFS""$virtGuestHome"/. "$globalVirtFS""$virtGuestHomeRef"/
 	_chroot chown "$virtGuestUser":"$virtGuestUser" "$virtGuestHomeRef" > /dev/null 2>&1
 	
 	rm -f "$globalVirtDir"/_ubvrtusr > /dev/null 2>&1 || return 1
@@ -148,12 +150,20 @@ _userChRoot() {
 }
 
 _removeUserChRoot() {
-	_openChRoot
+	"$scriptAbsoluteLocation" _openChRoot || _stop 1
+	
+	## Lock file. Not done with _waitFileCommands because there is nither an obvious means, nor an obviously catastrophically critical requirement, to independently check for completion of related useradd/mod/del operations.
+	_waitFile "$globalVirtDir"/_ubvrtusr || return 1
+	echo > "$globalVirtDir"/quicktmp
+	mv -n "$globalVirtDir"/quicktmp "$globalVirtDir"/_ubvrtusr > /dev/null 2>&1 || return 1
+	
 	
 	_chroot userdel -r "$virtGuestUser" > /dev/null 2>&1
-	#sudo -n "$scriptAbsoluteLocation" _safeRMR "$chrootDir""$virtGuestHomeRef"
+	[[ -d "$chrootDir""$virtGuestHomeRef" ]] && sudo -n "$scriptAbsoluteLocation" _safeRMR "$chrootDir""$virtGuestHomeRef"
 	
 	_rm_ubvrtusrChRoot
 	
-	_removeChRoot
+	rm -f "$globalVirtDir"/_ubvrtusr > /dev/null 2>&1 || return 1
+	
+	"$scriptAbsoluteLocation" _closeChRoot || _stop 1
 } 

@@ -24,11 +24,19 @@ export shortTmp=/tmp/w_"$sessionid"	#Solely for misbehaved applications called u
 export scriptBin="$scriptAbsoluteFolder"/_bin
 #For virtualized guests (exclusively intended to support _setupUbiquitous hook).
 [[ ! -e "$scriptBin" ]] && export scriptBin="$scriptAbsoluteFolder"
+
+export scriptLocal="$scriptAbsoluteFolder"/_local
+
 #For system installations (exclusively intended to support _setupUbiquitous hook).
 [[ "$scriptAbsoluteLocation" == "/usr/bin"* ]] && export scriptBin="/usr/share/ubcore/bin"
 [[ "$scriptAbsoluteLocation" == "/usr/local/bin"* ]] && export scriptBin="/usr/local/share/ubcore/bin"
-
-export scriptLocal="$scriptAbsoluteFolder"/_local
+if [[ "$scriptAbsoluteLocation" == "/usr/bin"* ]] || [[ "$scriptAbsoluteLocation" == "/usr/local/bin"* ]]
+then
+	if [[ -d "$HOME" ]]
+	then
+		export scriptLocal="$HOME"/".ubcore"/_sys
+	fi
+fi
 
 #Reboot Detection Token Storage
 # WARNING WIP. Not tested on all platforms. Requires a directory to be tmp/ram fs mounted. Worst case result is to preserve tokens across reboots.
@@ -46,15 +54,34 @@ export daemonPID="cwrxuk6wqzbzV6p8kPS8J4APYGX"	#Invalid do-not-match default.
 #export varStore="$scriptAbsoluteFolder"/var
 
 #Monolithic shared files.
-export lock_pathlock="$scriptLocal"/_pathlck
-export lock_quicktmp="$scriptLocal"/quicktmp	#Used to make locking operations atomic as possible.
-export lock_emergency="$scriptLocal"/_emergncy
-export lock_open="$scriptLocal"/_open
-export lock_opening="$scriptLocal"/_opening
-export lock_closed="$scriptLocal"/_closed
-export lock_closing="$scriptLocal"/_closing
-export lock_instance="$scriptLocal"/_instance
-export lock_instancing="$scriptLocal"/_instancing
+export lock_pathlock="$scriptLocal"/l_path
+export lock_quicktmp="$scriptLocal"/l_qtmp	#Used to make locking operations atomic as possible.
+export lock_emergency="$scriptLocal"/l_em
+export lock_open="$scriptLocal"/l_o
+export lock_opening="$scriptLocal"/l_opening
+export lock_closed="$scriptLocal"/l_closed
+export lock_closing="$scriptLocal"/l_closing
+export lock_instance="$scriptLocal"/l_instance
+export lock_instancing="$scriptLocal"/l_instancing
+
+#Specialized lock files. Recommend five character or less suffix. Not all of these may yet be implemented.
+export specialLocks
+specialLocks=""
+
+export lock_open_image="$lock_open"-img
+specialLocks+=("$lock_open_image")
+
+export lock_open_chroot="$lock_open"-chrt
+specialLocks+=("$lock_open_chroot")
+export lock_open_docker="$lock_open"-dock
+specialLocks+=("$lock_open_docker")
+export lock_open_vbox="$lock_open"-vbox
+specialLocks+=("$lock_open_vbox")
+export lock_open_qemu="$lock_open"-qemu
+specialLocks+=("$lock_open_qemu")
+
+export specialLock=""
+export specialLocks
 
 #Monolithic shared log files.
 export importLog="$scriptLocal"/import.log

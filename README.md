@@ -58,6 +58,8 @@ In most user environments, the latest git repository code will provide the stron
 # Known Issues
 
 * Some ChRoot mounting functions are in fact generic, and should be renamed as such after audit.
+* Nested virtualization has not been specifically tested and documented.
+* ChRoot close function might have a path to exit true while mounts are still active.
 
 
 # WARNING

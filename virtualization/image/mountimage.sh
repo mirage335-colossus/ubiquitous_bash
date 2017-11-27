@@ -121,15 +121,37 @@ _readyImage() {
 }
 
 _openImage() {
+	local returnStatus
+	
+	export specialLock="$lock_open_image"
+	
 	_open _waitImage_opening _mountImage
+	returnStatus="$?"
+	
+	export specialLock=""
+	
+	return "$returnStatus"
 }
 
 _closeImage() {
+	local returnStatus
+	
+	export specialLock="$lock_open_image"
+	
 	if [[ "$1" == "--force" ]]
 	then
 		_close --force _waitImage_closing _umountImage
-		return
+		returnStatus="$?"
+		
+		export specialLock=""
+		
+		return "$returnStatus"
 	fi
 	
 	_close _waitImage_closing _umountImage
+	returnStatus="$?"
+	
+	export specialLock=""
+	
+	return "$returnStatus"
 }

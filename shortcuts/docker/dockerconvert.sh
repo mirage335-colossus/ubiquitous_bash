@@ -1,9 +1,60 @@
+
+_docker_img_enboot_sequence() {
+	_start
+	
+	_readLocked "$lock_open_image" && _stop 1
+	
+	local localFunctionEntryPWD
+	localFunctionEntryPWD="$PWD"
+	
+	cd "$scriptAbsoluteFolder"
+	_messageProcess "Enabling boot"
+	
+	
+	
+	_messagePASS
+	cd "$localFunctionEntryPWD"
+	_stop
+}
+
+#Only use to reverse docker specific boot impediments. Install bootloader as part of ChRoot functionality.
+#http://mr.gy/blog/build-vm-image-with-docker.html
+#http://www.olafdietsche.de/2016/03/24/debootstrap-bootable-image
+_docker_img_enboot() {
+	"$scriptAbsoluteLocation" _docker_img_enboot_sequence
+}
+
+_docker_img_endocker_sequence() {
+	_start
+	
+	_readLocked "$lock_open_image" && _stop 1
+	
+	local localFunctionEntryPWD
+	localFunctionEntryPWD="$PWD"
+	
+	cd "$scriptAbsoluteFolder"
+	_messageProcess "Enabling docker"
+	
+	_removeUserChRoot
+	
+	_messagePASS
+	cd "$localFunctionEntryPWD"
+	
+	_stop
+}
+
+#Reverse operations performed by _docker_img_enboot .
+_docker_img_endocker() {
+	"$scriptAbsoluteLocation" _docker_img_endocker_sequence
+}
+
 _docker_img_to_tar_sequence() {
 	_mustGetSudo
 	
 	_start
 	
-	export functionEntryPWD="$PWD"
+	local localFunctionEntryPWD
+	localFunctionEntryPWD="$PWD"
 	
 	_openImage
 	
@@ -11,14 +62,16 @@ _docker_img_to_tar_sequence() {
 	
 	cd "$globalVirtFS"
 	
-	sudo -n tar --selinux --acls --xattrs -cpf "$scriptLocal"/"dockerImageFS".tar ./
+	sudo -n tar --selinux --acls --xattrs -cpf "$scriptLocal"/"dockerImageFS".tar ./ --exclude '/lost+found'
 	
-	cd "$functionEntryPWD"
+	cd "$localFunctionEntryPWD"
 	
+	#
 	
-	
-	cd "$functionEntryPWD"
+	cd "$localFunctionEntryPWD"
 	_closeImage
+	
+	_docker_img_endocker
 	
 	_stop
 }
@@ -30,11 +83,11 @@ _docker_img_to_tar() {
 	[[ -e "$scriptLocal"/"dockerImageFS".tar ]] && _messageFAIL && return 1
 	[[ -e "$scriptLocal"/"dockerImageAll".tar ]] && _messageFAIL && return 1
 	! [[ -e "$scriptLocal"/vm.img ]] && _messageFAIL && return 1
-	
 	_messagePASS
 	
-	
+	_messageProcess "Copying files"
 	"$scriptAbsoluteLocation" _docker_img_to_tar_sequence
+	_messagePASS
 	
 	_messageProcess "Validating readiness"
 	_readLocked "$lock_open" && _messageFAIL && return 1
@@ -52,7 +105,8 @@ _docker_tar_to_img_sequence() {
 	
 	_start
 	
-	export functionEntryPWD="$PWD"
+	local localFunctionEntryPWD
+	localFunctionEntryPWD="$PWD"
 	
 	_openImage
 	
@@ -69,13 +123,14 @@ _docker_tar_to_img_sequence() {
 	#[[ ! -e '/dev' ]] && _messageFAIL && _stop 1
 	
 	_messagePASS
-	cd "$functionEntryPWD"
+	cd "$localFunctionEntryPWD"
 	
+	#
 	
-	
-	
-	cd "$functionEntryPWD"
+	cd "$localFunctionEntryPWD"
 	_closeImage
+	
+	_docker_img_enboot
 	
 	_stop
 }
