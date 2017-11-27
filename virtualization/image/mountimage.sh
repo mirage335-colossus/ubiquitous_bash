@@ -12,6 +12,7 @@ _loopImage_sequence() {
 	[[ -e "$scriptLocal"/vm.img ]] && imagefilename="$scriptLocal"/vm.img
 	
 	sudo -n losetup -f -P --show "$imagefilename" > "$safeTmp"/imagedev 2> /dev/null || _stop 1
+	sudo -n partprobe > /dev/null 2>&1
 	
 	cp -n "$safeTmp"/imagedev "$scriptLocal"/imagedev > /dev/null 2>&1 || _stop 1
 	
@@ -71,6 +72,7 @@ _umountImage() {
 	imagedev=$(cat "$scriptLocal"/imagedev)
 	
 	sudo -n losetup -d "$imagedev" > /dev/null 2>&1 || return 1
+	sudo -n partprobe > /dev/null 2>&1
 	
 	rm -f "$scriptLocal"/imagedev || return 1
 	

@@ -1,5 +1,5 @@
 
-Multiplatform structured programming and application virtualization middleware. Architecturally, a dedicated monolithic kernel for (meta)applications. Emphasis on mitigating lock-in.
+Multiplatform structured programming and application virtualization middleware. Architecturally, a suite of functions following a UNIX-like philosophy, compilable to a single dedicated monolithic kernel for completely portable (meta)applications. Emphasis on mitigating lock-in.
 
 For new applications and shell feature extension, provides directory containment, network resource allocation, script self-function access/recursion/overloading/instancing, interprocess communication, process/pid/daemon management, unit testing, dependency checking, and build/compile automation. For existing applications, provides application virtualization features, including fileparameter translation, through multiple virtualization platforms.
 

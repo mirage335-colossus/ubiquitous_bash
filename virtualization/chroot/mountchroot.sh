@@ -97,6 +97,8 @@ _mountChRoot_image_raspbian() {
 		#Should now be redundant with use of lock_opening .
 		#_createLocked "$lock_open" || _stop 1
 		
+		sudo -n partprobe > /dev/null 2>&1
+		
 		cp -n "$safeTmp"/imagedev "$scriptLocal"/imagedev > /dev/null 2>&1 || _stop 1
 		
 		local chrootimagedev
@@ -157,6 +159,7 @@ _mountChRoot_image_x64() {
 	[[ -e "$scriptLocal"/vm.img ]] && chrootvmimage="$scriptLocal"/vm.img
 	
 	sudo -n losetup -f -P --show "$chrootvmimage" > "$safeTmp"/imagedev 2> /dev/null || _stop 1
+	sudo -n partprobe > /dev/null 2>&1
 	
 	cp -n "$safeTmp"/imagedev "$scriptLocal"/imagedev > /dev/null 2>&1 || _stop 1
 	
@@ -239,6 +242,7 @@ _umountChRoot_image() {
 	chrootimagedev=$(cat "$scriptLocal"/imagedev)
 	
 	sudo -n losetup -d "$chrootimagedev" > /dev/null 2>&1 || return 1
+	sudo -n partprobe > /dev/null 2>&1
 	
 	rm -f "$scriptLocal"/imagedev || return 1
 	

@@ -9,6 +9,7 @@ _testCreatePartition() {
 	_mustGetSudo
 	
 	sudo -n "$scriptAbsoluteLocation" _checkDep parted
+	#sudo -n "$scriptAbsoluteLocation" _checkDep partprobe
 }
 
 _createRawImage_sequence() {
@@ -36,7 +37,9 @@ _createPartition() {
 	_mustGetSudo
 	
 	sudo -n parted --script "$scriptLocal"/vm.img mklabel msdos
+	sudo -n partprobe > /dev/null 2>&1
 	sudo -n parted "$scriptLocal"/vm.img --script -- mkpart primary 0% 100%
+	sudo -n partprobe > /dev/null 2>&1
 }
 
 

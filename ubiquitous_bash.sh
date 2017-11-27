@@ -967,6 +967,7 @@ _loopImage_sequence() {
 	[[ -e "$scriptLocal"/vm.img ]] && imagefilename="$scriptLocal"/vm.img
 	
 	sudo -n losetup -f -P --show "$imagefilename" > "$safeTmp"/imagedev 2> /dev/null || _stop 1
+	sudo -n partprobe > /dev/null 2>&1
 	
 	cp -n "$safeTmp"/imagedev "$scriptLocal"/imagedev > /dev/null 2>&1 || _stop 1
 	
@@ -1026,6 +1027,7 @@ _umountImage() {
 	imagedev=$(cat "$scriptLocal"/imagedev)
 	
 	sudo -n losetup -d "$imagedev" > /dev/null 2>&1 || return 1
+	sudo -n partprobe > /dev/null 2>&1
 	
 	rm -f "$scriptLocal"/imagedev || return 1
 	
@@ -1122,6 +1124,7 @@ _testCreatePartition() {
 	_mustGetSudo
 	
 	sudo -n "$scriptAbsoluteLocation" _checkDep parted
+	#sudo -n "$scriptAbsoluteLocation" _checkDep partprobe
 }
 
 _createRawImage_sequence() {
@@ -1149,7 +1152,9 @@ _createPartition() {
 	_mustGetSudo
 	
 	sudo -n parted --script "$scriptLocal"/vm.img mklabel msdos
+	sudo -n partprobe > /dev/null 2>&1
 	sudo -n parted "$scriptLocal"/vm.img --script -- mkpart primary 0% 100%
+	sudo -n partprobe > /dev/null 2>&1
 }
 
 
@@ -1532,6 +1537,8 @@ _mountChRoot_image_raspbian() {
 		#Should now be redundant with use of lock_opening .
 		#_createLocked "$lock_open" || _stop 1
 		
+		sudo -n partprobe > /dev/null 2>&1
+		
 		cp -n "$safeTmp"/imagedev "$scriptLocal"/imagedev > /dev/null 2>&1 || _stop 1
 		
 		local chrootimagedev
@@ -1592,6 +1599,7 @@ _mountChRoot_image_x64() {
 	[[ -e "$scriptLocal"/vm.img ]] && chrootvmimage="$scriptLocal"/vm.img
 	
 	sudo -n losetup -f -P --show "$chrootvmimage" > "$safeTmp"/imagedev 2> /dev/null || _stop 1
+	sudo -n partprobe > /dev/null 2>&1
 	
 	cp -n "$safeTmp"/imagedev "$scriptLocal"/imagedev > /dev/null 2>&1 || _stop 1
 	
@@ -1674,6 +1682,7 @@ _umountChRoot_image() {
 	chrootimagedev=$(cat "$scriptLocal"/imagedev)
 	
 	sudo -n losetup -d "$chrootimagedev" > /dev/null 2>&1 || return 1
+	sudo -n partprobe > /dev/null 2>&1
 	
 	rm -f "$scriptLocal"/imagedev || return 1
 	
