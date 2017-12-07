@@ -12,8 +12,11 @@ CZXWXcRMTo8EmM8i4d
 
 	local linuxImageName
 	linuxImageName=$(ls "$chrootDir"/boot | grep vmlinuz | tail -n 1)
+	local linuxInitRamFS
+	linuxInitRamFS=$(ls "$chrootDir"/boot | grep initrd | tail -n 1)
 	
-	echo "linux (hd0,msdos1)/""$linuxImageName"" root=/dev/sda1 rw console=tty0 console=ttyS0"
+	echo "linux (hd0,msdos1)/boot/""$linuxImageName"" root=/dev/sda1 rw console=tty0 console=ttyS0"
+	echo "initrd /boot/""$linuxInitRamFS"
 
 	cat << 'CZXWXcRMTo8EmM8i4d'
 }

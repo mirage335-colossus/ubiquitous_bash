@@ -3550,8 +3550,11 @@ CZXWXcRMTo8EmM8i4d
 
 	local linuxImageName
 	linuxImageName=$(ls "$chrootDir"/boot | grep vmlinuz | tail -n 1)
+	local linuxInitRamFS
+	linuxInitRamFS=$(ls "$chrootDir"/boot | grep initrd | tail -n 1)
 	
-	echo "linux (hd0,msdos1)/""$linuxImageName"" root=/dev/sda1 rw console=tty0 console=ttyS0"
+	echo "linux (hd0,msdos1)/boot/""$linuxImageName"" root=/dev/sda1 rw console=tty0 console=ttyS0"
+	echo "initrd /boot/""$linuxInitRamFS"
 
 	cat << 'CZXWXcRMTo8EmM8i4d'
 }
@@ -3562,6 +3565,8 @@ CZXWXcRMTo8EmM8i4d
 #http://nairobi-embedded.org/making_a_qemu_disk_image_bootable_with_grub.html
 _mkboot_sequence() {
 	_start
+	
+	_mustGetSudo
 	
 	_readLocked "$lock_open_image" && _stop 1
 	
@@ -3581,8 +3586,25 @@ _mkboot_sequence() {
 	fi
 	_messagePASS
 	
+	_messageProcess "Testing mkdev"
+	if ! sudo -n bash -c "type MAKEDEV" > /dev/null 2>&1
+	then
+		_messageFAIL
+		_stop 1
+	fi
+	if ! _chroot bash -c "type MAKEDEV" > /dev/null 2>&1
+	then
+		_messageFAIL
+		_stop 1
+	fi
+	_messagePASS
+	
 	_messageProcess "Testing grub-install"
-	#if ! sudo -n bash -c "type grub-install" > /dev/null 2>&1
+	if ! sudo -n bash -c "type grub-install" > /dev/null 2>&1
+	then
+		_messageFAIL
+		_stop 1
+	fi
 	if ! _chroot bash -c "type grub-install" > /dev/null 2>&1
 	then
 		_messageFAIL
@@ -3624,7 +3646,39 @@ _mkboot_sequence() {
 	#fi
 	
 	_messagePASS
-		
+	
+	_messageProcess "Constructing dev"
+	_stopChRoot "$chrootDir" > /dev/null 2>&1
+	_wait_umount "$chrootDir"/dev/shm
+	_wait_umount "$chrootDir"/dev/pts
+	_wait_umount "$chrootDir"/dev
+	
+	_chroot bash -c "cd /dev ; MAKEDEV generic"
+	
+	_messagePASS
+	
+	
+	
+	
+	#_messageProcess "Installing GRUB"
+	#
+	#_stopChRoot "$chrootDir" > /dev/null 2>&1
+	#_wait_umount "$chrootDir"/dev/shm
+	#_wait_umount "$chrootDir"/dev/pts
+	#_wait_umount "$chrootDir"/dev
+	#
+	#local imagedev
+	#imagedev=$(cat "$scriptLocal"/imagedev)
+	#
+	#if ! sudo -n grub-install --root-directory="$chrootDir" --boot-directory="$chrootDir"/boot --modules=part_msdos "$imagedev" >> "$logTmp"/grub.log 2>&1
+	#if ! _chroot grub-install --boot-directory=/boot --root-directory=/ --modules=part_msdos "$imagedev" >> "$logTmp"/grub.log 2>&1
+	#then
+	#	_messageFAIL
+	#	_stop 1
+	#fi
+	#
+	#_messagePASS
+	
 	_messageProcess "Closing"
 	if ! _closeChRoot > /dev/null 2>&1
 	then
@@ -3646,7 +3700,8 @@ _mkboot() {
 _test_mkboot() {
 	_mustGetSudo
 	
-	#sudo -n "$scriptAbsoluteLocation" _checkDep grub-install
+	sudo -n "$scriptAbsoluteLocation" _checkDep grub-install
+	sudo -n "$scriptAbsoluteLocation" _checkDep MAKEDEV
 }
 
 _testDistro() {
