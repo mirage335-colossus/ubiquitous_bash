@@ -971,6 +971,36 @@ Creates a &quot;bare&quot; git repository, from an existing repository, on a ser
 &lt;html&gt;&lt;hr&gt;&lt;/html&gt;
 </pre>
 </div>
+<div title="MkBoot" creator="mirage335" modifier="mirage335" created="201712072245" changecount="1">
+<pre>Prepare host and guest.
+//{{{
+#sudo apt-get install makedev -y
+
+#./ubiquitous_bash.sh _openChRoot
+
+#./ubiquitous_bash.sh _chroot apt-get update
+#./ubiquitous_bash.sh _chroot apt-get install grub2 -y
+#./ubiquitous_bash.sh _chroot apt-get install linux-image-amd64 -y
+#./ubiquitous_bash.sh _chroot apt-get install makedev -y
+
+#./ubiquitous_bash.sh _chroot passwd
+#./ubiquitous_bash.sh _userChRoot true
+#./ubiquitous_bash.sh _chroot passwd ubvrtusr
+
+#./ubiquitous_bash.sh _closeChRoot
+//}}}
+
+Install bootloader, device files, and configuration, to guest image.
+//{{{
+./ubiquitous_bash.sh _mkboot
+//}}}
+
+Image is now bootable.
+//{{{
+./ubiquitous_bash.sh _qemu
+//}}}
+</pre>
+</div>
 <div title="NoTest" creator="mirage335" modifier="mirage335" created="201710262119" modified="201710262122" changecount="3">
 <pre>Few functions have dependencies not declared or hooked by _test . None of these impact fully automatic operations.
 
@@ -1097,7 +1127,7 @@ Basename of the directory containing script. Typically used to cause the script 
 
 </pre>
 </div>
-<div title="Shortcuts" creator="mirage335" modifier="mirage335" created="201710261859" modified="201711111621" changecount="20">
+<div title="Shortcuts" creator="mirage335" modifier="mirage335" created="201710261859" modified="201712072241" changecount="21">
 <pre>Many functions are relevant to, or intended to simplify, typical desktop usage. Generally sorted into &quot;generic&quot; or &quot;shortcuts&quot; subdirectories.
 
 
@@ -1112,6 +1142,9 @@ Basename of the directory containing script. Typically used to cause the script 
 
 !Visual Prompt
 [[visualPrompt]]
+
+!Image
+[[MkBoot]]
 
 !Distro
 [[Debian]]
