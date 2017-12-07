@@ -103,6 +103,8 @@ _test() {
 	_tryExec "_testCreatePartition"
 	_tryExec "_testCreateFS"
 	
+	_tryExec "_test_mkboot"
+	
 	_tryExec "_testChRoot"
 	_tryExec "_testQEMU"
 	_tryExec "_testQEMU_x64-x64"

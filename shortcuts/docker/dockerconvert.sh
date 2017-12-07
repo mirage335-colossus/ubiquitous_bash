@@ -1,20 +1,6 @@
 
 _docker_img_enboot_sequence() {
-	_start
-	
-	_readLocked "$lock_open_image" && _stop 1
-	
-	local localFunctionEntryPWD
-	localFunctionEntryPWD="$PWD"
-	
-	cd "$scriptAbsoluteFolder"
-	_messageProcess "Enabling boot"
-	
-	
-	
-	_messagePASS
-	cd "$localFunctionEntryPWD"
-	_stop
+	true
 }
 
 #Only use to reverse docker specific boot impediments. Install bootloader as part of ChRoot functionality.
@@ -71,7 +57,7 @@ _docker_img_to_tar_sequence() {
 	cd "$localFunctionEntryPWD"
 	_closeImage
 	
-	_docker_img_endocker
+	_docker_img_endocker || _stop 1
 	
 	_stop
 }
@@ -130,7 +116,9 @@ _docker_tar_to_img_sequence() {
 	cd "$localFunctionEntryPWD"
 	_closeImage
 	
-	_docker_img_enboot
+	_mkboot || _stop 1
+	
+	_docker_img_enboot || _stop 1
 	
 	_stop
 }

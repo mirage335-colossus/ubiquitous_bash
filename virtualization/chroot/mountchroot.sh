@@ -31,6 +31,15 @@ _mountChRoot() {
 	sudo -n chmod 755 "$chrootDir"/usr/local/share/ubcore/bin/*
 	sudo -n chown root:root "$chrootDir"/usr/local/share/ubcore/bin/*
 	
+	if ! grep '8\.8\.8\.8' "$chrootDir"/etc/resolv.conf > /dev/null 2>&1
+	then
+		echo 'nameserver 8.8.8.8' >> "$chrootDir"/etc/resolv.conf
+	fi
+	
+	if ! grep '2001\:4860\:4860\:\:8888' "$chrootDir"/etc/resolv.conf > /dev/null 2>&1
+	then
+		echo 'nameserver 2001:4860:4860::8888' >> "$chrootDir"/etc/resolv.conf
+	fi
 }
 
 #"$1" == ChRoot Dir

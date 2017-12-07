@@ -1471,6 +1471,15 @@ _mountChRoot() {
 	sudo -n chmod 755 "$chrootDir"/usr/local/share/ubcore/bin/*
 	sudo -n chown root:root "$chrootDir"/usr/local/share/ubcore/bin/*
 	
+	if ! grep '8\.8\.8\.8' "$chrootDir"/etc/resolv.conf > /dev/null 2>&1
+	then
+		echo 'nameserver 8.8.8.8' >> "$chrootDir"/etc/resolv.conf
+	fi
+	
+	if ! grep '2001\:4860\:4860\:\:8888' "$chrootDir"/etc/resolv.conf > /dev/null 2>&1
+	then
+		echo 'nameserver 2001:4860:4860::8888' >> "$chrootDir"/etc/resolv.conf
+	fi
 }
 
 #"$1" == ChRoot Dir
@@ -3527,6 +3536,119 @@ _gitBare() {
 
 
 
+_here_mkboot_grubcfg() {
+	
+	cat << 'CZXWXcRMTo8EmM8i4d'
+set default="0"
+set timeout="3"
+
+menuentry "Buildroot" {
+    insmod gzio
+    insmod part_msdos
+    insmod ext2
+CZXWXcRMTo8EmM8i4d
+
+	local linuxImageName
+	linuxImageName=$(ls "$chrootDir"/boot | grep vmlinuz | tail -n 1)
+	
+	echo "linux (hd0,msdos1)/""$linuxImageName"" root=/dev/sda1 rw console=tty0 console=ttyS0"
+
+	cat << 'CZXWXcRMTo8EmM8i4d'
+}
+CZXWXcRMTo8EmM8i4d
+
+}
+
+#http://nairobi-embedded.org/making_a_qemu_disk_image_bootable_with_grub.html
+_mkboot_sequence() {
+	_start
+	
+	_readLocked "$lock_open_image" && _stop 1
+	
+	local localFunctionEntryPWD
+	localFunctionEntryPWD="$PWD"
+	
+	cd "$scriptAbsoluteFolder"
+	
+	_messageNormal "#####Enabling boot."
+	
+	
+	_messageProcess "Opening"
+	if ! _openChRoot > /dev/null 2>&1
+	then
+		_messageFAIL
+		_stop 1
+	fi
+	_messagePASS
+	
+	_messageProcess "Testing grub-install"
+	#if ! sudo -n bash -c "type grub-install" > /dev/null 2>&1
+	if ! _chroot bash -c "type grub-install" > /dev/null 2>&1
+	then
+		_messageFAIL
+		_stop 1
+	fi
+	_messagePASS
+	
+	_messageProcess "Testing grub-mkconfig"
+	if ! _chroot bash -c "type grub-mkconfig" > /dev/null 2>&1
+	then
+		_messageFAIL
+		_stop 1
+	fi
+	_messagePASS
+	
+	_messageProcess "Installing GRUB"
+	
+	local imagedev
+	imagedev=$(cat "$scriptLocal"/imagedev)
+	
+	#if ! sudo -n grub-install --root-directory="$chrootDir" --boot-directory="$chrootDir"/boot --modules=part_msdos "$imagedev" >> "$logTmp"/grub.log 2>&1
+	if ! _chroot grub-install --boot-directory=/boot --root-directory=/ --modules=part_msdos "$imagedev" >> "$logTmp"/grub.log 2>&1
+	then
+		_messageFAIL
+		_stop 1
+	fi
+	
+	_messagePASS
+	
+	
+	_messageProcess "Configuring GRUB"
+	
+	_here_mkboot_grubcfg | sudo -n tee "$chrootDir"/boot/grub/grub.cfg > /dev/null 2>&1
+	
+	#if ! _chroot grub-mkconfig -o /boot/grub/grub.cfg >> "$logTmp"/grub.log 2>&1
+	#then
+	#	_messageFAIL
+	#	_stop 1
+	#fi
+	
+	_messagePASS
+		
+	_messageProcess "Closing"
+	if ! _closeChRoot > /dev/null 2>&1
+	then
+		_messageFAIL
+		_stop 1
+	fi
+	_messagePASS
+	
+	#rm "$logTmp"/grub.log
+	cd "$localFunctionEntryPWD"
+	_stop
+}
+
+_mkboot() {
+	"$scriptAbsoluteLocation" _mkboot_sequence "$@"
+}
+
+
+_test_mkboot() {
+	_mustGetSudo
+	
+	#sudo -n "$scriptAbsoluteLocation" _checkDep grub-install
+}
+
 _testDistro() {
 	_checkDep sha256sum
 	_checkDep sha512sum
@@ -4146,21 +4268,7 @@ _create_docker_container_instanced() {
 
 
 _docker_img_enboot_sequence() {
-	_start
-	
-	_readLocked "$lock_open_image" && _stop 1
-	
-	local localFunctionEntryPWD
-	localFunctionEntryPWD="$PWD"
-	
-	cd "$scriptAbsoluteFolder"
-	_messageProcess "Enabling boot"
-	
-	
-	
-	_messagePASS
-	cd "$localFunctionEntryPWD"
-	_stop
+	true
 }
 
 #Only use to reverse docker specific boot impediments. Install bootloader as part of ChRoot functionality.
@@ -4217,7 +4325,7 @@ _docker_img_to_tar_sequence() {
 	cd "$localFunctionEntryPWD"
 	_closeImage
 	
-	_docker_img_endocker
+	_docker_img_endocker || _stop 1
 	
 	_stop
 }
@@ -4276,7 +4384,9 @@ _docker_tar_to_img_sequence() {
 	cd "$localFunctionEntryPWD"
 	_closeImage
 	
-	_docker_img_enboot
+	_mkboot || _stop 1
+	
+	_docker_img_enboot || _stop 1
 	
 	_stop
 }
@@ -5626,6 +5736,8 @@ _test() {
 	
 	_tryExec "_testCreatePartition"
 	_tryExec "_testCreateFS"
+	
+	_tryExec "_test_mkboot"
 	
 	_tryExec "_testChRoot"
 	_tryExec "_testQEMU"

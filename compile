@@ -191,6 +191,9 @@ echo >> "$progScript"
 _includeScript git.sh "shortcuts/git"
 _includeScript gitBare.sh "shortcuts/git"
 
+_includeScript here_mkboot.sh "shortcuts/mkboot"
+_includeScript mkboot.sh "shortcuts/mkboot"
+
 _includeScript distro.sh "shortcuts/distro"
 
 _includeScript createDebian.sh "shortcuts/distro/debian"
