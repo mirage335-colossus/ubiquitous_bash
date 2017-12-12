@@ -1,6 +1,29 @@
 
 _docker_img_enboot_sequence() {
+	_start
+	
+	_mustGetSudo
+	
+	_readLocked "$lock_open_image" && _stop 1
+	
+	local localFunctionEntryPWD
+	localFunctionEntryPWD="$PWD"
+	
+	cd "$scriptAbsoluteFolder"
+	
 	_messageNormal "#####Disabling docker."
+	
+	_messageProcess "Sanity"
+	[[ "$chrootDir" == "" ]] && _messageFAIL && _stop 1
+	_messagePASS
+	
+	_messageProcess "Opening"
+	if ! _openChRoot > /dev/null 2>&1
+	then
+		_messageFAIL
+		_stop 1
+	fi
+	_messagePASS
 	
 	#Debian image, created by mkimage, is bootable without further docker-specific and/or automation suitable modifications as of 11-12-2017 .
 	
@@ -11,6 +34,18 @@ _docker_img_enboot_sequence() {
 	_messageProcess "Enabling resolv"
 	[[ -e "$chrootDir"/etc/resolv.conf.dsv ]] && sudo -n mv "$chrootDir"/etc/resolv.conf.dsv "$chrootDir"/etc/resolv.conf
 	_messagePASS
+	
+	_messageProcess "Closing"
+	if ! _closeChRoot > /dev/null 2>&1
+	then
+		_messageFAIL
+		_stop 1
+	fi
+	_messagePASS
+	
+	#rm "$logTmp"/log.log
+	cd "$localFunctionEntryPWD"
+	_stop
 }
 
 #Only use to reverse docker specific boot impediments. Install bootloader as part of ChRoot functionality.
