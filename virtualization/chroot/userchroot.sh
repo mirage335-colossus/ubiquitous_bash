@@ -149,9 +149,7 @@ _userChRoot() {
 	_stop "$userChRootExitStatus"
 }
 
-_removeUserChRoot() {
-	"$scriptAbsoluteLocation" _openChRoot || _stop 1
-	
+_removeUserChRoot_sequence() {
 	## Lock file. Not done with _waitFileCommands because there is nither an obvious means, nor an obviously catastrophically critical requirement, to independently check for completion of related useradd/mod/del operations.
 	_waitFile "$globalVirtDir"/_ubvrtusr || return 1
 	echo > "$globalVirtDir"/quicktmp
@@ -164,6 +162,12 @@ _removeUserChRoot() {
 	_rm_ubvrtusrChRoot
 	
 	rm -f "$globalVirtDir"/_ubvrtusr > /dev/null 2>&1 || return 1
+}
+
+_removeUserChRoot() {
+	"$scriptAbsoluteLocation" _openChRoot || return 1
 	
-	"$scriptAbsoluteLocation" _closeChRoot || _stop 1
+	_removeUserChRoot_sequence
+	
+	"$scriptAbsoluteLocation" _closeChRoot || return 1
 } 

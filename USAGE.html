@@ -815,6 +815,30 @@ Creates custom bootable x64 Debian image. Requires [[fetch|Debian]] dependencies
 [[Features]]
 [[Virtualization]]</pre>
 </div>
+<div title="DockerConvert" creator="mirage335" modifier="mirage335" created="201712120347" modified="201712120426" changecount="5">
+<pre>!Exported Archive To Image
+//{{{
+./ubiquitous_bash.sh _docker_tar_to_img
+//}}}
+
+!Bootable Image
+Reverse Docker specific changes. Specifically, for example, enable the init system, and restore an fstab file from a previous conversion.
+//{{{
+./ubiquitous_bash.sh _docker_img_enboot
+//}}}
+Generic instructions to install a bootloader semi-automatically are documented at [[MkBoot]].
+
+!Docker Compatible Image
+//{{{
+./ubiquitous_bash.sh _docker_img_endocker
+//}}}
+
+!Importable Archive From Image
+//{{{
+./ubiquitous_bash.sh _docker_img_to_tar
+//}}}
+</pre>
+</div>
 <div title="DockerCreate" creator="mirage335" modifier="mirage335" created="201711111636" modified="201711221824" changecount="3">
 <pre>Docker image/container creation scripts. Code at &quot;shortcuts/docker/dockercreate.sh&quot; .
 
@@ -971,9 +995,11 @@ Creates a &quot;bare&quot; git repository, from an existing repository, on a ser
 &lt;html&gt;&lt;hr&gt;&lt;/html&gt;
 </pre>
 </div>
-<div title="MkBoot" creator="mirage335" modifier="mirage335" created="201712072245" changecount="1">
+<div title="MkBoot" creator="mirage335" modifier="mirage335" created="201712072245" modified="201712120604" changecount="2">
 <pre>Prepare host and guest.
 //{{{
+##Ensure /etc/fstab mounts /dev/sda1 as root.
+
 #sudo apt-get install makedev -y
 
 #./ubiquitous_bash.sh _openChRoot
@@ -1127,7 +1153,7 @@ Basename of the directory containing script. Typically used to cause the script 
 
 </pre>
 </div>
-<div title="Shortcuts" creator="mirage335" modifier="mirage335" created="201710261859" modified="201712072241" changecount="21">
+<div title="Shortcuts" creator="mirage335" modifier="mirage335" created="201710261859" modified="201712120337" changecount="22">
 <pre>Many functions are relevant to, or intended to simplify, typical desktop usage. Generally sorted into &quot;generic&quot; or &quot;shortcuts&quot; subdirectories.
 
 
@@ -1152,7 +1178,8 @@ Basename of the directory containing script. Typically used to cause the script 
 
 !Docker
 [[Operations|DockerOperations]]
-[[Create|DockerCreate]]</pre>
+[[Create|DockerCreate]]
+[[Convert|DockerConvert]]</pre>
 </div>
 <div title="SiteSubtitle" creator="mirage335" modifier="mirage335" created="201710261741" changecount="1">
 <pre>USAGE</pre>
@@ -1777,10 +1804,13 @@ A &quot;_tryExec&quot; function is generally used to call a function which check
 <pre>|~ViewToolbar|closeTiddler closeOthers editTiddler &gt; fields syncing permalink references jump|
 |~EditToolbar|+saveTiddler -cancelTiddler deleteTiddler|</pre>
 </div>
-<div title="Virtualization" creator="mirage335" modifier="mirage335" created="201710270206" modified="201711221933" changecount="48">
+<div title="Virtualization" creator="mirage335" modifier="mirage335" created="201710270206" modified="201712120433" changecount="50">
 <pre>Ubiquitous Bash middleware has the capacity to provide true application virtualization, with automatic fileparameter translation, across a wide variety of platforms (x86/64, ARM), and operating systems (MSW, Unix), by using any available underlying tool (~ChRoot, QEMU, Xen, ~VirtualBox, Docker, Wine, Cygwin, &lt;nowiki&gt;DosBox&lt;/nowiki&gt;), on a common disk format (raw image). Most of this capability has been realized, most of the remainder will involve simply merging existing code from [[HostedXen|https://github.com/mirage335/HostedXen]], [[HostedOpenVZ|https://github.com/mirage335/hostedOpenVZ]]. Automatic selection of native application by platform is also well supported.
 
 &lt;&lt;showtoc&gt;&gt;
+!Demo
+
+
 !Images
 Any bootable raw image may be used by ~ChRoot, QEMU, or ~VirtualBox. Raw images may be converted for use by Docker. See [[Debian]], [[Raspbian]], or [[Docker|DockerCreate]] for built-in creation procedures.
 
@@ -1867,12 +1897,6 @@ C drive at &quot;./local/_dosbox&quot;. File parameter translation and host dire
 //{{{
 _dosbox dir ./
 //}}}
-
-
-
-
-
-
 
 </pre>
 </div>

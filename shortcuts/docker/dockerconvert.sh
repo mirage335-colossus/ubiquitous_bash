@@ -1,6 +1,16 @@
 
 _docker_img_enboot_sequence() {
-	true
+	_messageNormal "#####Disabling docker."
+	
+	#Debian image, created by mkimage, is bootable without further docker-specific and/or automation suitable modifications as of 11-12-2017 .
+	
+	_messageProcess "Enabling fstab"
+	[[ -e "$chrootDir"/etc/fstab.dsv ]] && sudo -n mv "$chrootDir"/etc/fstab.dsv "$chrootDir"/etc/fstab
+	_messagePASS
+	
+	_messageProcess "Enabling resolv"
+	[[ -e "$chrootDir"/etc/resolv.conf.dsv ]] && sudo -n mv "$chrootDir"/etc/resolv.conf.dsv "$chrootDir"/etc/resolv.conf
+	_messagePASS
 }
 
 #Only use to reverse docker specific boot impediments. Install bootloader as part of ChRoot functionality.
@@ -13,19 +23,57 @@ _docker_img_enboot() {
 _docker_img_endocker_sequence() {
 	_start
 	
+	_mustGetSudo
+	
 	_readLocked "$lock_open_image" && _stop 1
 	
 	local localFunctionEntryPWD
 	localFunctionEntryPWD="$PWD"
 	
 	cd "$scriptAbsoluteFolder"
-	_messageProcess "Enabling docker"
 	
-	_removeUserChRoot
+	_messageNormal "#####Enabling docker."
 	
+	_messageProcess "Sanity"
+	[[ "$chrootDir" == "" ]] && _messageFAIL && _stop 1
 	_messagePASS
-	cd "$localFunctionEntryPWD"
 	
+	_messageProcess "Opening"
+	if ! _openChRoot > /dev/null 2>&1
+	then
+		_messageFAIL
+		_stop 1
+	fi
+	_messagePASS
+	
+	_messageProcess "Removing user"
+	if ! _removeUserChRoot_sequence
+	then
+		_messageFAIL
+		_stop 1
+	fi
+	_messagePASS
+	
+	_messageProcess "Disabling fstab"
+	[[ -s "$chrootDir"/etc/fstab ]] && sudo -n mv "$chrootDir"/etc/fstab "$chrootDir"/etc/fstab.dsv > /dev/null 2>&1
+	echo | sudo -n tee > /dev/null "$chrootDir"/etc/fstab
+	_messagePASS
+	
+	_messageProcess "Disabling resolv"
+	[[ -s "$chrootDir"/etc/resolv.conf ]] &&  sudo -n mv "$chrootDir"/etc/resolv.conf "$chrootDir"/etc/resolv.conf.dsv > /dev/null 2>&1
+	echo | sudo -n tee > /dev/null "$chrootDir"/etc/resolv.conf
+	_messagePASS
+	
+	_messageProcess "Closing"
+	if ! _closeChRoot > /dev/null 2>&1
+	then
+		_messageFAIL
+		_stop 1
+	fi
+	_messagePASS
+	
+	#rm "$logTmp"/log.log
+	cd "$localFunctionEntryPWD"
 	_stop
 }
 
@@ -56,8 +104,6 @@ _docker_img_to_tar_sequence() {
 	
 	cd "$localFunctionEntryPWD"
 	_closeImage
-	
-	_docker_img_endocker || _stop 1
 	
 	_stop
 }
@@ -115,10 +161,6 @@ _docker_tar_to_img_sequence() {
 	
 	cd "$localFunctionEntryPWD"
 	_closeImage
-	
-	_mkboot || _stop 1
-	
-	_docker_img_enboot || _stop 1
 	
 	_stop
 }
