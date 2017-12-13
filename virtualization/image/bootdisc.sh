@@ -87,12 +87,15 @@ _createHTG_MSW() {
 _setShareUNIX_app() {
 	export sharedHostProjectDir="$sharedHostProjectDirDefault"
 	export sharedGuestProjectDir="$sharedGuestProjectDirDefault"
+	
+	export sharedGuestProjectDir="/home/user/project"
 }
 
 _setShareUNIX_root() {
 	export sharedHostProjectDir="$sharedHostProjectDirDefault"
 	export sharedGuestProjectDir="$sharedGuestProjectDirDefault"
 	
+	export sharedGuestProjectDir="/home/user/project"
 	export sharedHostProjectDir=/
 }
 

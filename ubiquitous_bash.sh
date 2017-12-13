@@ -1336,12 +1336,15 @@ _createHTG_MSW() {
 _setShareUNIX_app() {
 	export sharedHostProjectDir="$sharedHostProjectDirDefault"
 	export sharedGuestProjectDir="$sharedGuestProjectDirDefault"
+	
+	export sharedGuestProjectDir="/home/user/project"
 }
 
 _setShareUNIX_root() {
 	export sharedHostProjectDir="$sharedHostProjectDirDefault"
 	export sharedGuestProjectDir="$sharedGuestProjectDirDefault"
 	
+	export sharedGuestProjectDir="/home/user/project"
 	export sharedHostProjectDir=/
 }
 
@@ -2325,7 +2328,7 @@ _userQemu_sequence() {
 	
 	_start
 	
-	_integratedQemu || _stop 1
+	_integratedQemu "$@" || _stop 1
 	
 	_stop
 }
@@ -2341,7 +2344,7 @@ _editQemu_sequence() {
 	
 	_start
 	
-	_integratedQemu || _stop 1
+	_integratedQemu "$@" || _stop 1
 	
 	_stop
 }

@@ -51,7 +51,7 @@ _userQemu_sequence() {
 	
 	_start
 	
-	_integratedQemu || _stop 1
+	_integratedQemu "$@" || _stop 1
 	
 	_stop
 }
@@ -67,7 +67,7 @@ _editQemu_sequence() {
 	
 	_start
 	
-	_integratedQemu || _stop 1
+	_integratedQemu "$@" || _stop 1
 	
 	_stop
 }
