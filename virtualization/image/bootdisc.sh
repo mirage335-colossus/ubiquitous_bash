@@ -27,7 +27,7 @@ _mkisofs() {
 }
 
 _writeBootdisc() {
-	_mkisofs -R -uid 0 -gid 0 -dir-mode 0555 -file-mode 0555 -new-dir-mode 0555 -J -hfs -o "$hostToGuestISO" "$hostToGuestFiles"
+	_mkisofs -V "$ubiquitiousBashID" -volset "$ubiquitiousBashID" -sysid "$ubiquitiousBashID" -R -uid 0 -gid 0 -dir-mode 0555 -file-mode 0555 -new-dir-mode 0555 -J -hfs -o "$hostToGuestISO" "$hostToGuestFiles"
 }
 
 _setShareMSW_app() {
@@ -58,23 +58,25 @@ _preCommand_MSW() {
 
 _createHTG_MSW() {
 	_setShareMSW
+	
+	export checkBaseDirRemote=""
 	_virtUser "$@"
 	#"$sharedHostProjectDir"
 	#"${processedArgs[@]}"
 	
+	echo 'CALL "Y:\shell.bat"' >> "$hostToGuestFiles"/startup.bat
 	
-	
-	_preCommand_MSW > "$hostToGuestFiles"/application.bat
+	_preCommand_MSW >> "$hostToGuestFiles"/application.bat
 	
 	echo "${processedArgs[@]}" >> "$hostToGuestFiles"/application.bat
 	 
 	echo ""  >> "$hostToGuestFiles"/application.bat
 	
-	echo -e -n > "$hostToGuestFiles"/loader.bat
+	echo -e -n >> "$hostToGuestFiles"/loader.bat
 	[[ "$flagShareApp" == "true" ]] && _here_bootdisc_loaderXbat >> "$hostToGuestFiles"/loader.bat
 	[[ "$flagShareRoot" == "true" ]] && _here_bootdisc_loaderZbat >> "$hostToGuestFiles"/loader.bat
 	
-	_here_bootdisc_shellbat > "$hostToGuestFiles"/shell.bat
+	_here_bootdisc_shellbat >> "$hostToGuestFiles"/shell.bat
 	
 	#https://www.cyberciti.biz/faq/howto-unix-linux-convert-dos-newlines-cr-lf-unix-text-format/
 	sed -i 's/$'"/`echo \\\r`/" "$hostToGuestFiles"/application.bat
@@ -102,13 +104,16 @@ _setShareUNIX() {
 
 _createHTG_UNIX() {
 	_setShareUNIX
+	
+	export checkBaseDirRemote=""
 	_virtUser "$@"
 	#"$sharedHostProjectDir"
 	#"${processedArgs[@]}"
 	
-	echo "${processedArgs[@]}" > "$hostToGuestFiles"/cmd.sh
+	_here_bootdisc_statup_xdg >> "$hostToGuestFiles"/startup.desktop
 	
-	cp "$scriptAbsoluteLocation" "$hostToGuestFiles"/
+	echo '#!/usr/bin/env bash' >> "$hostToGuestFiles"/cmd.sh
+	echo "/media/bootdisc/ubiquitious_bash.sh _dropBootdisc ${processedArgs[@]}" >> "$hostToGuestFiles"/cmd.sh
 }
 
 _commandBootdisc() {
@@ -120,11 +125,38 @@ _commandBootdisc() {
 	[[ "$flagShareRoot" != "true" ]] && export flagShareRoot="false"
 	[[ "$flagShareRoot" != "true" ]] && export flagShareApp="true"
 	
+	#Include ubiquitious_bash itself.
+	cp "$scriptAbsoluteLocation" "$hostToGuestFiles"/
+	cp -a "$scriptBin" "$hostToGuestFiles"/_bin
+	
 	#Process for MSW.
 	_createHTG_MSW "$@"
 	
 	#Process for UNIX.
 	_createHTG_UNIX "$@"
 	
+	#Ensure permissions are correctly set.
+	chmod 0755 "$hostToGuestFiles"/_bin/*
+	chmod 0755 "$hostToGuestFiles"/*.sh
+	chmod 0755 "$hostToGuestFiles"/*.desktop
+	chmod 0755 "$hostToGuestFiles"/*.bat
+	#chmod 0755 "$hostToGuestFiles"/*
+	
 	_writeBootdisc || return 1
 }
+
+_dropBootdisc() {
+	#Detect MSW/Cygwin architecture.
+		#Check for QEMU type shared directory, mount if present.
+		#Check for VBox type shared directory, mount if present.
+	
+	#Detect UNIX architecture.
+		#Check for QEMU type shared directory, mount if present.
+		#Check for VBox type shared directory, mount if present.
+	
+	"$@"
+}
+
+
+
+

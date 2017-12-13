@@ -54,6 +54,7 @@ _prepare_docker_directives() {
 	_here_dockerfile > "$dockerdirectivefile"
 	
 	cp "$scriptAbsoluteLocation" "$dockerentrypoint" > /dev/null 2>&1
+	chmod 0755 "$dockerentrypoint" > /dev/null 2>&1
 }
 
 _pull_docker_guest() {

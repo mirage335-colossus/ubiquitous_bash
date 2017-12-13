@@ -1,5 +1,8 @@
 #####Global variables.
 
+#Fixed unique identifier for ubiquitious bash created global resources, such as bootdisc images to be automaticaly mounted by guests. Should NOT be changed.
+export ubiquitiousBashID="uk4uPhB663kVcygT0q"
+
 export sessionid=$(_uid)
 export lowsessionid=$(echo -n "$sessionid" | tr A-Z a-z )
 export scriptAbsoluteLocation=$(_getScriptAbsoluteLocation)

@@ -1202,6 +1202,24 @@ _createFS() {
 
 
 
+_here_bootdisc_statup_xdg() {
+cat << 'CZXWXcRMTo8EmM8i4d'
+[Desktop Entry]
+Comment=
+Exec=/media/bootdisc/cmd.sh
+GenericName=
+Icon=exec
+MimeType=
+Name=
+Path=
+StartupNotify=false
+Terminal=false
+TerminalOptions=
+Type=Application
+CZXWXcRMTo8EmM8i4d
+}
+
+
 _here_bootdisc_shellbat() {
 cat << 'CZXWXcRMTo8EmM8i4d'
 CALL Y:\loader.bat
@@ -1258,7 +1276,7 @@ _mkisofs() {
 }
 
 _writeBootdisc() {
-	_mkisofs -R -uid 0 -gid 0 -dir-mode 0555 -file-mode 0555 -new-dir-mode 0555 -J -hfs -o "$hostToGuestISO" "$hostToGuestFiles"
+	_mkisofs -V "$ubiquitiousBashID" -volset "$ubiquitiousBashID" -sysid "$ubiquitiousBashID" -R -uid 0 -gid 0 -dir-mode 0555 -file-mode 0555 -new-dir-mode 0555 -J -hfs -o "$hostToGuestISO" "$hostToGuestFiles"
 }
 
 _setShareMSW_app() {
@@ -1289,23 +1307,25 @@ _preCommand_MSW() {
 
 _createHTG_MSW() {
 	_setShareMSW
+	
+	export checkBaseDirRemote=""
 	_virtUser "$@"
 	#"$sharedHostProjectDir"
 	#"${processedArgs[@]}"
 	
+	echo 'CALL "Y:\shell.bat"' >> "$hostToGuestFiles"/startup.bat
 	
-	
-	_preCommand_MSW > "$hostToGuestFiles"/application.bat
+	_preCommand_MSW >> "$hostToGuestFiles"/application.bat
 	
 	echo "${processedArgs[@]}" >> "$hostToGuestFiles"/application.bat
 	 
 	echo ""  >> "$hostToGuestFiles"/application.bat
 	
-	echo -e -n > "$hostToGuestFiles"/loader.bat
+	echo -e -n >> "$hostToGuestFiles"/loader.bat
 	[[ "$flagShareApp" == "true" ]] && _here_bootdisc_loaderXbat >> "$hostToGuestFiles"/loader.bat
 	[[ "$flagShareRoot" == "true" ]] && _here_bootdisc_loaderZbat >> "$hostToGuestFiles"/loader.bat
 	
-	_here_bootdisc_shellbat > "$hostToGuestFiles"/shell.bat
+	_here_bootdisc_shellbat >> "$hostToGuestFiles"/shell.bat
 	
 	#https://www.cyberciti.biz/faq/howto-unix-linux-convert-dos-newlines-cr-lf-unix-text-format/
 	sed -i 's/$'"/`echo \\\r`/" "$hostToGuestFiles"/application.bat
@@ -1333,13 +1353,16 @@ _setShareUNIX() {
 
 _createHTG_UNIX() {
 	_setShareUNIX
+	
+	export checkBaseDirRemote=""
 	_virtUser "$@"
 	#"$sharedHostProjectDir"
 	#"${processedArgs[@]}"
 	
-	echo "${processedArgs[@]}" > "$hostToGuestFiles"/cmd.sh
+	_here_bootdisc_statup_xdg >> "$hostToGuestFiles"/startup.desktop
 	
-	cp "$scriptAbsoluteLocation" "$hostToGuestFiles"/
+	echo '#!/usr/bin/env bash' >> "$hostToGuestFiles"/cmd.sh
+	echo "/media/bootdisc/ubiquitious_bash.sh _dropBootdisc ${processedArgs[@]}" >> "$hostToGuestFiles"/cmd.sh
 }
 
 _commandBootdisc() {
@@ -1351,14 +1374,41 @@ _commandBootdisc() {
 	[[ "$flagShareRoot" != "true" ]] && export flagShareRoot="false"
 	[[ "$flagShareRoot" != "true" ]] && export flagShareApp="true"
 	
+	#Include ubiquitious_bash itself.
+	cp "$scriptAbsoluteLocation" "$hostToGuestFiles"/
+	cp -a "$scriptBin" "$hostToGuestFiles"/_bin
+	
 	#Process for MSW.
 	_createHTG_MSW "$@"
 	
 	#Process for UNIX.
 	_createHTG_UNIX "$@"
 	
+	#Ensure permissions are correctly set.
+	chmod 0755 "$hostToGuestFiles"/_bin/*
+	chmod 0755 "$hostToGuestFiles"/*.sh
+	chmod 0755 "$hostToGuestFiles"/*.desktop
+	chmod 0755 "$hostToGuestFiles"/*.bat
+	#chmod 0755 "$hostToGuestFiles"/*
+	
 	_writeBootdisc || return 1
 }
+
+_dropBootdisc() {
+	#Detect MSW/Cygwin architecture.
+		#Check for QEMU type shared directory, mount if present.
+		#Check for VBox type shared directory, mount if present.
+	
+	#Detect UNIX architecture.
+		#Check for QEMU type shared directory, mount if present.
+		#Check for VBox type shared directory, mount if present.
+	
+	"$@"
+}
+
+
+
+
 
 #Lists all chrooted processes. First parameter is chroot directory. Script might need to run as root.
 #Techniques originally released by other authors at http://forums.grsecurity.net/viewtopic.php?f=3&t=1632 .
@@ -1463,12 +1513,12 @@ _mountChRoot() {
 	sudo -n mkdir -p "$chrootDir"/usr/local/share/ubcore/bin/
 	
 	sudo -n cp "$scriptAbsoluteLocation" "$chrootDir"/usr/local/bin/ubiquitous_bash.sh
-	sudo -n chmod 755 "$chrootDir"/usr/local/bin/ubiquitous_bash.sh
+	sudo -n chmod 0755 "$chrootDir"/usr/local/bin/ubiquitous_bash.sh
 	sudo -n chown root:root "$chrootDir"/usr/local/bin/ubiquitous_bash.sh
 	sudo -n cp "$scriptBin"/gosu-armel "$chrootDir"/usr/local/share/ubcore/bin/gosu-armel
 	sudo -n cp "$scriptBin"/gosu-amd64 "$chrootDir"/usr/local/share/ubcore/bin/gosu-amd64
 	sudo -n cp "$scriptBin"/gosu-i386 "$chrootDir"/usr/local/share/ubcore/bin/gosu-i386
-	sudo -n chmod 755 "$chrootDir"/usr/local/share/ubcore/bin/*
+	sudo -n chmod 0755 "$chrootDir"/usr/local/share/ubcore/bin/*
 	sudo -n chown root:root "$chrootDir"/usr/local/share/ubcore/bin/*
 	
 	if ! grep '8\.8\.8\.8' "$chrootDir"/etc/resolv.conf > /dev/null 2>&1
@@ -3734,7 +3784,8 @@ _fetch_x64_debianLiteISO_sequence() {
 	local debAvailableVersion
 	#debAvailableVersion="current"	#Does not work, incorrect image name.
 	#debAvailableVersion="9.1.0"
-	debAvailableVersion="9.2.1"
+	#debAvailableVersion="9.2.1"
+	debAvailableVersion="9.3.0"
 	
 	[[ -e "$storageLocation"/debian-"$debAvailableVersion"-amd64-netinst.iso ]] && cp "$storageLocation"/debian-"$debAvailableVersion"-amd64-netinst.iso ./debian-"$debAvailableVersion"-amd64-netinst.iso > /dev/null 2>&1
 	[[ -e ./debian-"$debAvailableVersion"-amd64-netinst.iso ]] || _fetch 'https://cdimage.debian.org/debian-cd/'"$debAvailableVersion"'/amd64/iso-cd/debian-'"$debAvailableVersion"'-amd64-netinst.iso'
@@ -3782,7 +3833,8 @@ _create_x64_debianLiteVM_sequence() {
 	local debAvailableVersion
 	#debAvailableVersion="current"	#Does not work, incorrect image name.
 	#debAvailableVersion="9.1.0"
-	debAvailableVersion="9.2.1"
+	#debAvailableVersion="9.2.1"
+	debAvailableVersion="9.3.0"
 	
 	qemu-system-x86_64 -machine accel=kvm -drive format=raw,file="$scriptLocal"/vm.img -cdrom "$scriptAbsoluteFolder"/_lib/os/debian-"$debAvailableVersion"-amd64-netinst.iso -boot d -m 1536
 	
@@ -4911,6 +4963,9 @@ _setupUbiquitous_nonet() {
 
 #####Global variables.
 
+#Fixed unique identifier for ubiquitious bash created global resources, such as bootdisc images to be automaticaly mounted by guests. Should NOT be changed.
+export ubiquitiousBashID="uk4uPhB663kVcygT0q"
+
 export sessionid=$(_uid)
 export lowsessionid=$(echo -n "$sessionid" | tr A-Z a-z )
 export scriptAbsoluteLocation=$(_getScriptAbsoluteLocation)
@@ -5189,6 +5244,7 @@ _prepare_docker_directives() {
 	_here_dockerfile > "$dockerdirectivefile"
 	
 	cp "$scriptAbsoluteLocation" "$dockerentrypoint" > /dev/null 2>&1
+	chmod 0755 "$dockerentrypoint" > /dev/null 2>&1
 }
 
 _pull_docker_guest() {

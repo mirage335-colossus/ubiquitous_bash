@@ -18,7 +18,8 @@ _fetch_x64_debianLiteISO_sequence() {
 	local debAvailableVersion
 	#debAvailableVersion="current"	#Does not work, incorrect image name.
 	#debAvailableVersion="9.1.0"
-	debAvailableVersion="9.2.1"
+	#debAvailableVersion="9.2.1"
+	debAvailableVersion="9.3.0"
 	
 	[[ -e "$storageLocation"/debian-"$debAvailableVersion"-amd64-netinst.iso ]] && cp "$storageLocation"/debian-"$debAvailableVersion"-amd64-netinst.iso ./debian-"$debAvailableVersion"-amd64-netinst.iso > /dev/null 2>&1
 	[[ -e ./debian-"$debAvailableVersion"-amd64-netinst.iso ]] || _fetch 'https://cdimage.debian.org/debian-cd/'"$debAvailableVersion"'/amd64/iso-cd/debian-'"$debAvailableVersion"'-amd64-netinst.iso'
@@ -66,7 +67,8 @@ _create_x64_debianLiteVM_sequence() {
 	local debAvailableVersion
 	#debAvailableVersion="current"	#Does not work, incorrect image name.
 	#debAvailableVersion="9.1.0"
-	debAvailableVersion="9.2.1"
+	#debAvailableVersion="9.2.1"
+	debAvailableVersion="9.3.0"
 	
 	qemu-system-x86_64 -machine accel=kvm -drive format=raw,file="$scriptLocal"/vm.img -cdrom "$scriptAbsoluteFolder"/_lib/os/debian-"$debAvailableVersion"-amd64-netinst.iso -boot d -m 1536
 	
