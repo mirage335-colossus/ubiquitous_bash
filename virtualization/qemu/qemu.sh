@@ -16,9 +16,7 @@ _qemu() {
 	return 1
 }
 
-_userQemu_sequence() {
-	_start
-	
+_integratedQemu() {
 	mkdir -p "$instancedVirtDir" || _stop 1
 	
 	_readLocked "$scriptLocal"/_qemu && _stop 1
@@ -33,13 +31,47 @@ _userQemu_sequence() {
 	#https://askubuntu.com/questions/614098/unable-to-get-execute-bit-on-samba-share-working-with-windows-7-client
 	#https://unix.stackexchange.com/questions/165554/shared-folder-between-qemu-windows-guest-and-linux-host
 	#https://linux.die.net/man/1/qemu-kvm
-	qemu-system-x86_64 -snapshot -machine accel=kvm -drive format=raw,file="$scriptLocal"/vm.img -drive file="$hostToGuestISO",media=cdrom -boot c -m 768 -net nic -net user,smb="$sharedHostProjectDir"
+	
+	qemuUserArgs+=(-machine accel=kvm -drive format=raw,file="$scriptLocal"/vm.img -drive file="$hostToGuestISO",media=cdrom -boot c -m 768 -net nic -net user,smb="$sharedHostProjectDir")
+	
+	qemuArgs+=("${qemuSpecialArgs[@]}" "${qemuUserArgs[@]}")
+	
+	qemu-system-x86_64 "${qemuArgs[@]}"
 	
 	_safeRMR "$instancedVirtDir" || _stop 1
+}
+
+#"${qemuSpecialArgs[@]}" == ["-snapshot "]
+_userQemu_sequence() {
+	unset qemuSpecialArgs
+	
+	qemuSpecialArgs+=("-snapshot")
+	
+	export qemuSpecialArgs
+	
+	_start
+	
+	_integratedQemu || _stop 1
 	
 	_stop
 }
 
 _userQemu() {
 	"$scriptAbsoluteLocation" _userQemu_sequence "$@"
+}
+
+_editQemu_sequence() {
+	unset qemuSpecialArgs
+	
+	export qemuSpecialArgs
+	
+	_start
+	
+	_integratedQemu || _stop 1
+	
+	_stop
+}
+
+_editQemu() {
+	"$scriptAbsoluteLocation" _editQemu_sequence "$@"
 }

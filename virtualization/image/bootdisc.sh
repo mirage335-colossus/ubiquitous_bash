@@ -113,7 +113,7 @@ _createHTG_UNIX() {
 	_here_bootdisc_statup_xdg >> "$hostToGuestFiles"/startup.desktop
 	
 	echo '#!/usr/bin/env bash' >> "$hostToGuestFiles"/cmd.sh
-	echo "/media/bootdisc/ubiquitious_bash.sh _dropBootdisc ${processedArgs[@]}" >> "$hostToGuestFiles"/cmd.sh
+	echo "/media/bootdisc/ubiquitous_bash.sh _dropBootdisc ${processedArgs[@]}" >> "$hostToGuestFiles"/cmd.sh
 }
 
 _commandBootdisc() {
