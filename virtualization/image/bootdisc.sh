@@ -116,6 +116,7 @@ _createHTG_UNIX() {
 	_here_bootdisc_statup_xdg >> "$hostToGuestFiles"/startup.desktop
 	
 	echo '#!/usr/bin/env bash' >> "$hostToGuestFiles"/cmd.sh
+	echo "export localPWD=""$localPWD" >> "$hostToGuestFiles"/cmd.sh
 	echo "/media/bootdisc/ubiquitous_bash.sh _dropBootdisc ${processedArgs[@]}" >> "$hostToGuestFiles"/cmd.sh
 }
 
@@ -156,6 +157,8 @@ _dropBootdisc() {
 	#Detect UNIX architecture.
 		#Check for QEMU type shared directory, mount if present.
 		#Check for VBox type shared directory, mount if present.
+	
+	cd "$localPWD"
 	
 	"$@"
 }
