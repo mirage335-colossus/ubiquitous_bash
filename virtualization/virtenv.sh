@@ -6,7 +6,7 @@ _start_virt_instance() {
 	mkdir -p "$instancedVirtTmp" || return 1
 	
 	mkdir -p "$instancedVirtHome" || return 1
-	mkdir -p "$instancedVirtHomeRef" || return 1
+	###mkdir -p "$instancedVirtHomeRef" || return 1
 	
 	mkdir -p "$sharedHostProjectDir" > /dev/null 2>&1
 	mkdir -p "$instancedProjectDir" || return 1
@@ -32,8 +32,8 @@ _stop_virt_instance() {
 	
 	_wait_umount "$instancedVirtHome"
 	sudo -n rmdir "$instancedVirtHome"
-	_wait_umount "$instancedVirtHomeRef"
-	sudo -n rmdir "$instancedVirtHomeRef"
+	###_wait_umount "$instancedVirtHomeRef"
+	###sudo -n rmdir "$instancedVirtHomeRef"
 	sudo -n rmdir "$instancedVirtFS"/home
 	
 	_wait_umount "$instancedVirtFS"

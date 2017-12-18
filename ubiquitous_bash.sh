@@ -1457,6 +1457,23 @@ _dropBootdisc() {
 
 
 
+_importHomeUser() {
+	true
+}
+
+_exportHomeUser() {
+	true
+}
+
+_bindHomeUser() {
+	true
+}
+
+_unbindHomeUser() {
+	true
+}
+
+
 #Lists all chrooted processes. First parameter is chroot directory. Script might need to run as root.
 #Techniques originally released by other authors at http://forums.grsecurity.net/viewtopic.php?f=3&t=1632 .
 #"$1" == ChRoot Dir
@@ -3551,6 +3568,16 @@ _getUUID() {
 alias getUUID=_getUUID
 
 #####Shortcuts
+
+#https://stackoverflow.com/questions/15432156/display-filename-before-matching-line-grep
+_grepFileLine() {
+	grep -n "$@" /dev/null
+}
+
+_findFunction() {
+	# -name '*.sh'
+	find . -type f -size -10000k -exec grep -n "$@" {} /dev/null \;
+}
 
 testGit() {
 	checkDep git

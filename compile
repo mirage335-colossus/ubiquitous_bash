@@ -148,6 +148,7 @@ _includeScript mountimage.sh "virtualization/image"
 _includeScript createImage.sh "virtualization/image"
 _includeScript here_bootdisc.sh "virtualization/image"
 _includeScript bootdisc.sh "virtualization/image"
+_includeScript userpersistenthome.sh "virtualization/image"
 
 _includeScript procchroot.sh "virtualization/chroot"
 _includeScript mountchroot.sh "virtualization/chroot"
@@ -187,6 +188,8 @@ _includeScript uuid.sh "special"
 
 echo "#####Shortcuts" >> "$progScript"
 echo >> "$progScript"
+
+_includeScript devsearch.sh "shortcuts/dev"
 
 _includeScript git.sh "shortcuts/git"
 _includeScript gitBare.sh "shortcuts/git"

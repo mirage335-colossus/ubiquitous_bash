@@ -11,7 +11,7 @@ _mountChRoot_userAndHome() {
 	#Remove directories that interfere with union mounting.
 	rmdir "$instancedProjectDir"
 	rmdir "$instancedVirtHome"
-	rmdir "$instancedVirtHomeRef"
+	###rmdir "$instancedVirtHomeRef"
 	rmdir "$instancedVirtFS"/home
 	rmdir "$instancedVirtFS"/root > /dev/null 2>&1
 	
@@ -26,7 +26,7 @@ _mountChRoot_userAndHome() {
 	
 	mkdir -p "$instancedProjectDir"
 	mkdir -p "$instancedVirtHome"
-	mkdir -p "$instancedVirtHomeRef"
+	###mkdir -p "$instancedVirtHomeRef"
 	
 	return 0
 }

@@ -4,10 +4,10 @@ _rm_ubvrtusrChRoot() {
 	sudo -n rmdir "$instancedVirtHome"/"$virtGuestUser"/project > /dev/null 2>&1
 	sudo -n rmdir "$instancedVirtHome"/"$virtGuestUser" > /dev/null 2>&1
 	sudo -n rmdir "$instancedVirtHome" > /dev/null 2>&1
-	sudo -n rmdir "$instancedVirtHomeRef"/project > /dev/null 2>&1
-	sudo -n rmdir "$instancedVirtHomeRef"/"$virtGuestUser"/project > /dev/null 2>&1
-	sudo -n rmdir "$instancedVirtHomeRef"/"$virtGuestUser" > /dev/null 2>&1
-	sudo -n rmdir "$instancedVirtHomeRef" > /dev/null 2>&1
+	###sudo -n rmdir "$instancedVirtHomeRef"/project > /dev/null 2>&1
+	###sudo -n rmdir "$instancedVirtHomeRef"/"$virtGuestUser"/project > /dev/null 2>&1
+	###sudo -n rmdir "$instancedVirtHomeRef"/"$virtGuestUser" > /dev/null 2>&1
+	###sudo -n rmdir "$instancedVirtHomeRef" > /dev/null 2>&1
 	
 }
 
@@ -37,7 +37,7 @@ _ubvrtusrChRoot_check() {
 	local internalFailure
 	internalFailure=false
 	
-	! [[ -e "$globalVirtFS"/"$virtGuestHomeRef" ]] && _ubvrtusrChRoot_report_failure "nohome" "$virtGuestHomeRef" '[[ -e "$virtGuestHomeRef" ]]' && internalFailure=true
+	###! [[ -e "$globalVirtFS"/"$virtGuestHomeRef" ]] && _ubvrtusrChRoot_report_failure "nohome" "$virtGuestHomeRef" '[[ -e "$virtGuestHomeRef" ]]' && internalFailure=true
 	
 	! _chroot id -u "$virtGuestUser" > /dev/null 2>&1 && _ubvrtusrChRoot_report_failure "no guest user" "$virtGuestUser" '_chroot id -u "$virtGuestUser"' && internalFailure=true
 	
@@ -83,10 +83,10 @@ _ubvrtusrChRoot() {
 	_chroot chown "$virtGuestUser":"$virtGuestUser" "$virtGuestHome" > /dev/null 2>&1
 	
 	sudo -n mkdir -p "$globalVirtFS""$virtGuestHome"
-	sudo -n mkdir -p "$globalVirtFS""$virtGuestHomeRef"
-	sudo -n cp -a "$globalVirtFS""$virtGuestHome"/. "$globalVirtFS""$virtGuestHomeRef"/
-	echo sudo -n cp -a "$globalVirtFS""$virtGuestHome"/. "$globalVirtFS""$virtGuestHomeRef"/
-	_chroot chown "$virtGuestUser":"$virtGuestUser" "$virtGuestHomeRef" > /dev/null 2>&1
+	###sudo -n mkdir -p "$globalVirtFS""$virtGuestHomeRef"
+	###sudo -n cp -a "$globalVirtFS""$virtGuestHome"/. "$globalVirtFS""$virtGuestHomeRef"/
+	###echo sudo -n cp -a "$globalVirtFS""$virtGuestHome"/. "$globalVirtFS""$virtGuestHomeRef"/
+	###_chroot chown "$virtGuestUser":"$virtGuestUser" "$virtGuestHomeRef" > /dev/null 2>&1
 	
 	rm -f "$globalVirtDir"/_ubvrtusr > /dev/null 2>&1 || return 1
 	
@@ -116,7 +116,7 @@ _userChRoot() {
 	
 	
 	_mountChRoot_userAndHome >> "$logTmp"/usrchrt.log 2>&1 || _stop 1
-	[[ $(id -u) != 0 ]] && cp -a "$instancedVirtHomeRef"/. "$instancedVirtHome"/ >> "$logTmp"/usrchrt.log 2>&1
+	###[[ $(id -u) != 0 ]] && cp -a "$instancedVirtHomeRef"/. "$instancedVirtHome"/ >> "$logTmp"/usrchrt.log 2>&1
 	export chrootDir="$instancedVirtFS"
 	
 	
@@ -155,7 +155,7 @@ _removeUserChRoot_sequence() {
 	
 	
 	_chroot userdel -r "$virtGuestUser" > /dev/null 2>&1
-	[[ -d "$chrootDir""$virtGuestHomeRef" ]] && sudo -n "$scriptAbsoluteLocation" _safeRMR "$chrootDir""$virtGuestHomeRef"
+	###[[ -d "$chrootDir""$virtGuestHomeRef" ]] && sudo -n "$scriptAbsoluteLocation" _safeRMR "$chrootDir""$virtGuestHomeRef"
 	
 	_rm_ubvrtusrChRoot
 	
