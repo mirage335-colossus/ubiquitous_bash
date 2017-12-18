@@ -46,10 +46,6 @@ _drop_docker() {
 	
 	##Setup and launch.
 	
-	oldNoNet="$nonet"
-	export nonet="true"
-	"$scriptAbsoluteLocation" _setupUbiquitous
-	[[ "$oldNoNet" != "true" ]] && export nonet="$oldNoNet"
 	
 	_gosuExecVirt "$@"
 	

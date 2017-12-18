@@ -82,8 +82,6 @@ _ubvrtusrChRoot() {
 	
 	_chroot chown "$virtGuestUser":"$virtGuestUser" "$virtGuestHome" > /dev/null 2>&1
 	
-	_chroot /bin/bash /usr/local/bin/ubiquitous_bash.sh _dropChRoot /bin/bash /usr/local/bin/ubiquitous_bash.sh _setupUbiquitous_nonet
-	
 	sudo -n mkdir -p "$globalVirtFS""$virtGuestHome"
 	sudo -n mkdir -p "$globalVirtFS""$virtGuestHomeRef"
 	sudo -n cp -a "$globalVirtFS""$virtGuestHome"/. "$globalVirtFS""$virtGuestHomeRef"/

@@ -640,7 +640,7 @@ _start_virt_instance() {
 	mkdir -p "$instancedVirtTmp" || return 1
 	
 	mkdir -p "$instancedVirtHome" || return 1
-	mkdir -p "$instancedVirtHomeRef" || return 1
+	###mkdir -p "$instancedVirtHomeRef" || return 1
 	
 	mkdir -p "$sharedHostProjectDir" > /dev/null 2>&1
 	mkdir -p "$instancedProjectDir" || return 1
@@ -666,8 +666,8 @@ _stop_virt_instance() {
 	
 	_wait_umount "$instancedVirtHome"
 	sudo -n rmdir "$instancedVirtHome"
-	_wait_umount "$instancedVirtHomeRef"
-	sudo -n rmdir "$instancedVirtHomeRef"
+	###_wait_umount "$instancedVirtHomeRef"
+	###sudo -n rmdir "$instancedVirtHomeRef"
 	sudo -n rmdir "$instancedVirtFS"/home
 	
 	_wait_umount "$instancedVirtFS"
@@ -1945,7 +1945,7 @@ _mountChRoot_userAndHome() {
 	#Remove directories that interfere with union mounting.
 	rmdir "$instancedProjectDir"
 	rmdir "$instancedVirtHome"
-	rmdir "$instancedVirtHomeRef"
+	###rmdir "$instancedVirtHomeRef"
 	rmdir "$instancedVirtFS"/home
 	rmdir "$instancedVirtFS"/root > /dev/null 2>&1
 	
@@ -1960,7 +1960,7 @@ _mountChRoot_userAndHome() {
 	
 	mkdir -p "$instancedProjectDir"
 	mkdir -p "$instancedVirtHome"
-	mkdir -p "$instancedVirtHomeRef"
+	###mkdir -p "$instancedVirtHomeRef"
 	
 	return 0
 }
@@ -2066,10 +2066,10 @@ _rm_ubvrtusrChRoot() {
 	sudo -n rmdir "$instancedVirtHome"/"$virtGuestUser"/project > /dev/null 2>&1
 	sudo -n rmdir "$instancedVirtHome"/"$virtGuestUser" > /dev/null 2>&1
 	sudo -n rmdir "$instancedVirtHome" > /dev/null 2>&1
-	sudo -n rmdir "$instancedVirtHomeRef"/project > /dev/null 2>&1
-	sudo -n rmdir "$instancedVirtHomeRef"/"$virtGuestUser"/project > /dev/null 2>&1
-	sudo -n rmdir "$instancedVirtHomeRef"/"$virtGuestUser" > /dev/null 2>&1
-	sudo -n rmdir "$instancedVirtHomeRef" > /dev/null 2>&1
+	###sudo -n rmdir "$instancedVirtHomeRef"/project > /dev/null 2>&1
+	###sudo -n rmdir "$instancedVirtHomeRef"/"$virtGuestUser"/project > /dev/null 2>&1
+	###sudo -n rmdir "$instancedVirtHomeRef"/"$virtGuestUser" > /dev/null 2>&1
+	###sudo -n rmdir "$instancedVirtHomeRef" > /dev/null 2>&1
 	
 }
 
@@ -2099,7 +2099,7 @@ _ubvrtusrChRoot_check() {
 	local internalFailure
 	internalFailure=false
 	
-	! [[ -e "$globalVirtFS"/"$virtGuestHomeRef" ]] && _ubvrtusrChRoot_report_failure "nohome" "$virtGuestHomeRef" '[[ -e "$virtGuestHomeRef" ]]' && internalFailure=true
+	###! [[ -e "$globalVirtFS"/"$virtGuestHomeRef" ]] && _ubvrtusrChRoot_report_failure "nohome" "$virtGuestHomeRef" '[[ -e "$virtGuestHomeRef" ]]' && internalFailure=true
 	
 	! _chroot id -u "$virtGuestUser" > /dev/null 2>&1 && _ubvrtusrChRoot_report_failure "no guest user" "$virtGuestUser" '_chroot id -u "$virtGuestUser"' && internalFailure=true
 	
@@ -2144,13 +2144,11 @@ _ubvrtusrChRoot() {
 	
 	_chroot chown "$virtGuestUser":"$virtGuestUser" "$virtGuestHome" > /dev/null 2>&1
 	
-	_chroot /bin/bash /usr/local/bin/ubiquitous_bash.sh _dropChRoot /bin/bash /usr/local/bin/ubiquitous_bash.sh _setupUbiquitous_nonet
-	
 	sudo -n mkdir -p "$globalVirtFS""$virtGuestHome"
-	sudo -n mkdir -p "$globalVirtFS""$virtGuestHomeRef"
-	sudo -n cp -a "$globalVirtFS""$virtGuestHome"/. "$globalVirtFS""$virtGuestHomeRef"/
-	echo sudo -n cp -a "$globalVirtFS""$virtGuestHome"/. "$globalVirtFS""$virtGuestHomeRef"/
-	_chroot chown "$virtGuestUser":"$virtGuestUser" "$virtGuestHomeRef" > /dev/null 2>&1
+	###sudo -n mkdir -p "$globalVirtFS""$virtGuestHomeRef"
+	###sudo -n cp -a "$globalVirtFS""$virtGuestHome"/. "$globalVirtFS""$virtGuestHomeRef"/
+	###echo sudo -n cp -a "$globalVirtFS""$virtGuestHome"/. "$globalVirtFS""$virtGuestHomeRef"/
+	###_chroot chown "$virtGuestUser":"$virtGuestUser" "$virtGuestHomeRef" > /dev/null 2>&1
 	
 	rm -f "$globalVirtDir"/_ubvrtusr > /dev/null 2>&1 || return 1
 	
@@ -2180,7 +2178,7 @@ _userChRoot() {
 	
 	
 	_mountChRoot_userAndHome >> "$logTmp"/usrchrt.log 2>&1 || _stop 1
-	[[ $(id -u) != 0 ]] && cp -a "$instancedVirtHomeRef"/. "$instancedVirtHome"/ >> "$logTmp"/usrchrt.log 2>&1
+	###[[ $(id -u) != 0 ]] && cp -a "$instancedVirtHomeRef"/. "$instancedVirtHome"/ >> "$logTmp"/usrchrt.log 2>&1
 	export chrootDir="$instancedVirtFS"
 	
 	
@@ -2219,7 +2217,7 @@ _removeUserChRoot_sequence() {
 	
 	
 	_chroot userdel -r "$virtGuestUser" > /dev/null 2>&1
-	[[ -d "$chrootDir""$virtGuestHomeRef" ]] && sudo -n "$scriptAbsoluteLocation" _safeRMR "$chrootDir""$virtGuestHomeRef"
+	###[[ -d "$chrootDir""$virtGuestHomeRef" ]] && sudo -n "$scriptAbsoluteLocation" _safeRMR "$chrootDir""$virtGuestHomeRef"
 	
 	_rm_ubvrtusrChRoot
 	
@@ -3235,10 +3233,6 @@ _drop_docker() {
 	
 	##Setup and launch.
 	
-	oldNoNet="$nonet"
-	export nonet="true"
-	"$scriptAbsoluteLocation" _setupUbiquitous
-	[[ "$oldNoNet" != "true" ]] && export nonet="$oldNoNet"
 	
 	_gosuExecVirt "$@"
 	
@@ -5161,10 +5155,10 @@ export instancedVirtTmp="$instancedVirtDir"/tmp
 
 export virtGuestHome=/home/"$virtGuestUser"
 [[ $(id -u) == 0 ]] && export virtGuestHome=/root
-export virtGuestHomeRef="$virtGuestHome".ref
+###export virtGuestHomeRef="$virtGuestHome".ref
 
 export instancedVirtHome="$instancedVirtFS""$virtGuestHome"
-export instancedVirtHomeRef="$instancedVirtHome".ref
+###export instancedVirtHomeRef="$instancedVirtHome".ref
 
 export sharedHostProjectDirDefault=""
 export sharedGuestProjectDirDefault="$virtGuestHome"/project
