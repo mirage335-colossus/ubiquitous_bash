@@ -7,7 +7,7 @@ _qemu() {
 		mkdir -p "$scriptLocal"
 		_createLocked "$scriptLocal"/_qemu || return 1
 		
-		qemu-system-x86_64 -machine accel=kvm -drive format=raw,file="$scriptLocal"/vm.img -boot c -m 768
+		qemu-system-x86_64 -machine accel=kvm -drive format=raw,file="$scriptLocal"/vm.img -boot c -m 1256
 		
 		rm -f "$scriptLocal"/_qemu
 		return 0
@@ -32,7 +32,7 @@ _integratedQemu() {
 	#https://unix.stackexchange.com/questions/165554/shared-folder-between-qemu-windows-guest-and-linux-host
 	#https://linux.die.net/man/1/qemu-kvm
 	
-	qemuUserArgs+=(-machine accel=kvm -drive format=raw,file="$scriptLocal"/vm.img -drive file="$hostToGuestISO",media=cdrom -boot c -m 768 -net nic -net user,smb="$sharedHostProjectDir")
+	qemuUserArgs+=(-machine accel=kvm -drive format=raw,file="$scriptLocal"/vm.img -drive file="$hostToGuestISO",media=cdrom -boot c -m 1256 -net nic -net user,smb="$sharedHostProjectDir")
 	
 	qemuArgs+=("${qemuSpecialArgs[@]}" "${qemuUserArgs[@]}")
 	

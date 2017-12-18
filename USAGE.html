@@ -1836,12 +1836,49 @@ A &quot;_tryExec&quot; function is generally used to call a function which check
 <pre>|~ViewToolbar|closeTiddler closeOthers editTiddler &gt; fields syncing permalink references jump|
 |~EditToolbar|+saveTiddler -cancelTiddler deleteTiddler|</pre>
 </div>
-<div title="Virtualization" creator="mirage335" modifier="mirage335" created="201710270206" modified="201712132315" changecount="74">
+<div title="VBoxGuestNIX" creator="mirage335" modifier="mirage335" created="201712181803" modified="201712181856" changecount="3">
+<pre>!Debian
+!!Host Supplied
+Build and runtime dependencies.
+//{{{
+apt-get install build-essential module-assistant linux-headers-$(uname -r)
+m-a prepare
+//}}}
+
+Set &quot;exec&quot; option in cdrom &quot;/etc/fstab&quot; entry.
+//{{{
+/dev/sr0	/media/cdrom0	udf,iso9660	user,exec,noauto	0	0
+//}}}
+
+Install Guest additions from cdrom. Instruct the &quot;_editVBox&quot; GUI to attach the guest additions image, then proceed.
+//{{{
+mount /media/cdrom
+/media/cdrom/VBoxLinuxAdditions.run
+usermod -G vboxsf -a user
+reboot
+//}}}
+
+!!Distribution Supplied
+Add backports and contrib to apt sources.
+//{{{
+mkdir -p /etc/apt/sources.list.d
+echo 'deb http://ftp.debian.org/debian stretch-backports main contrib' &gt;&gt; /etc/apt/sources.list.d/stretch-backports.list
+echo 'deb-src http://ftp.debian.org/debian stretch-backports main contrib' &gt;&gt; /etc/apt/sources.list.d/stretch-backports.list
+//}}}
+
+Install Guest Additions.
+//{{{
+apt-get update
+apt-get install virtualbox-guest-dkms virtualbox-guest-x11 linux-headers-$(uname -r)
+usermod -G vboxsf -a user
+//}}}</pre>
+</div>
+<div title="Virtualization" creator="mirage335" modifier="mirage335" created="201710270206" modified="201712182104" changecount="90">
 <pre>Ubiquitous Bash middleware has the capacity to provide true application virtualization, with automatic fileparameter translation, across a wide variety of platforms (x86/64, ARM), and operating systems (MSW, Unix), by using any available underlying tool (~ChRoot, QEMU, Xen, ~VirtualBox, Docker, Wine, Cygwin, &lt;nowiki&gt;DosBox&lt;/nowiki&gt;), on a common disk format (raw image). Most of this capability has been realized, most of the remainder will involve simply merging existing code from [[HostedXen|https://github.com/mirage335/HostedXen]], [[HostedOpenVZ|https://github.com/mirage335/hostedOpenVZ]]. Automatic selection of native application by platform is also well supported.
 
 &lt;&lt;showtoc&gt;&gt;
 !Images
-Any bootable raw image may be used by ~ChRoot, QEMU, or ~VirtualBox. Raw images may be converted for use by Docker. See [[Debian]], [[Raspbian]], or [[Docker|DockerCreate]] for built-in creation procedures.
+Any bootable raw image may be used by ~ChRoot, QEMU, or ~VirtualBox. Raw images may be converted for use by Docker and vice versa. See [[Debian]], [[Raspbian]], or [[Docker|DockerCreate]] for built-in creation procedures.
 
 !&lt;nowiki&gt;BootDisc&lt;/nowiki&gt;
 Application virtualization information will be provided as shared folder and iso image.Mount this iso image at a standard location in guest, and include either &quot;cmd.sh&quot; or &quot;shell.bat&quot; within guest startup.
@@ -1868,12 +1905,13 @@ mkdir -p /media/bootdisc
 
 Add &quot;/etc/fstab&quot; entry.
 //{{{
-LABEL=uk4uPhB663kVcygT0q	/media/bootdisc	iso9660	ro	0 0
+LABEL=uk4uPhB663kVcygT0q	/media/bootdisc	iso9660 ro,nofail	0 0
 //}}}
 
 * Create username &quot;user&quot; .
 //{{{
-useradd user
+useradd -m user
+usermod -G audio,video,plugdev,input,netdev,lpadmin,scanner -a user
 //}}}
 
 * Enable user autologin.
@@ -1895,12 +1933,13 @@ Create directory.
 mkdir -p /home/user/project
 //}}}
 
-Add &quot;/etc/fstab&quot; entries.
+Add root &quot;crontab&quot; entries, normally with &quot;crontab -e&quot;.
 //{{{
-//10.0.2.4/qemu		/home/user/project	cifs	guest,_netdev,uid=user,user	0 0
+@reboot	/media/bootdisc/rootnix.sh
 //}}}
 
 * Install &quot;nmap&quot;, &quot;smbclient&quot;, and &quot;cifs-utils&quot; (or similar) within guest as needed.
+* Setup environment for ~VirtualBox guest additions if desired. See [[VBoxGuestNIX]] .
 
 !&lt;nowiki&gt;ChRoot&lt;/nowiki&gt;
 !!Root
@@ -1937,6 +1976,7 @@ Contains ~VirtualBox operations to a single folder, making any virtual machines 
 //{{{
 _labVBox		#Complete VirtualBox installation, permanently contained to &quot;./local&quot;.
 _editVBox		#Opens VirtualBox GUI on preconfigured virtual machine disk image at &quot;./local/vm.vdi&quot; .
+_closeVBoxRaw		#Closes loopback device used to access raw image file as a disk device through VirtualBox.
 //}}}
 !!User
 Nonpersistent ~VirtualBox instance preconfigured to open image ./local/vm.vdi&quot; or &quot;./local/vm.img&quot; . Set OS and other parameters through ~VBoxManage by overloading with &quot;ops&quot; . Supports bootdisc, file parameter translation and host directory sharing.

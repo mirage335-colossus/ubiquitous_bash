@@ -42,6 +42,7 @@ _setShareMSW_root() {
 	export sharedGuestProjectDir="$sharedGuestProjectDirDefault"
 	
 	export sharedHostProjectDir=/
+	# TODO Consider simply changing this to "X:", in effect eliminating the alternative mountpoint requirement permanently.
 	export sharedGuestProjectDir="Z:"
 }
 
@@ -115,6 +116,8 @@ _createHTG_UNIX() {
 	
 	_here_bootdisc_statup_xdg >> "$hostToGuestFiles"/startup.desktop
 	
+	_here_bootdisc_rootnix >> "$hostToGuestFiles"/rootnix.sh
+	
 	echo '#!/usr/bin/env bash' >> "$hostToGuestFiles"/cmd.sh
 	echo "export localPWD=""$localPWD" >> "$hostToGuestFiles"/cmd.sh
 	echo "/media/bootdisc/ubiquitous_bash.sh _dropBootdisc ${processedArgs[@]}" >> "$hostToGuestFiles"/cmd.sh
@@ -155,8 +158,17 @@ _dropBootdisc() {
 		#Check for VBox type shared directory, mount if present.
 	
 	#Detect UNIX architecture.
-		#Check for QEMU type shared directory, mount if present.
-		#Check for VBox type shared directory, mount if present.
+	if ! uname -a | grep -i cygwin > /dev/null 2>&1
+	then
+		#Attempt to wait for QEMU or VBox type shared directory.
+		! mountpoint /home/user/project > /dev/null 2>&1 && sleep 0.3
+		! mountpoint /home/user/project > /dev/null 2>&1 && sleep 1
+		! mountpoint /home/user/project > /dev/null 2>&1 && sleep 3
+		! mountpoint /home/user/project > /dev/null 2>&1 && sleep 9
+		! mountpoint /home/user/project > /dev/null 2>&1 && sleep 18
+		! mountpoint /home/user/project > /dev/null 2>&1 && sleep 27
+		! mountpoint /home/user/project > /dev/null 2>&1 && sleep 36
+	fi
 	
 	cd "$localPWD"
 	

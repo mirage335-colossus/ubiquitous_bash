@@ -1219,6 +1219,35 @@ Type=Application
 CZXWXcRMTo8EmM8i4d
 }
 
+_here_bootdisc_rootnix() {
+cat << 'CZXWXcRMTo8EmM8i4d'
+#!/bin/bash
+
+#Equivalent "fstab" entries for reference. Not used doe to conflict for mountpoint, as well as lack of standard mounting options in vboxsf driver.
+#//10.0.2.4/qemu	/home/user/.pqm cifs	guest,_netdev,uid=user,user,nofail	0 0
+#appFolder		/home/user/.pvb	vboxsf	uid=user,_netdev			0 0
+
+_mountGuestShareNIX() {
+	! /bin/mountpoint /home/user/project > /dev/null 2>&1 && /bin/mount -t vboxsf -o uid=user,_netdev appFolder /home/user/project 2>&1
+	
+	! /bin/mountpoint /home/user/project > /dev/null 2>&1 && /bin/mount -t cifs -o guest,_netdev,uid=user,user,nofail '//10.0.2.4/qemu' /home/user/project > /dev/null 2>&1
+}
+
+#mkdir -p /home/user/.pqm
+#mkdir -p /home/user/.pvb
+mkdir -p /home/user/project
+! /bin/mountpoint /home/user/project && chown user:user /home/user/project
+
+! /bin/mountpoint /home/user/project > /dev/null 2>&1 && sleep 0.1 && _mountGuestShareNIX
+! /bin/mountpoint /home/user/project > /dev/null 2>&1 && sleep 0.3 && _mountGuestShareNIX
+! /bin/mountpoint /home/user/project > /dev/null 2>&1 && sleep 1 && _mountGuestShareNIX
+! /bin/mountpoint /home/user/project > /dev/null 2>&1 && sleep 3 && _mountGuestShareNIX
+! /bin/mountpoint /home/user/project > /dev/null 2>&1 && sleep 9 && _mountGuestShareNIX
+! /bin/mountpoint /home/user/project > /dev/null 2>&1 && sleep 18 && _mountGuestShareNIX
+! /bin/mountpoint /home/user/project > /dev/null 2>&1 && sleep 27 && _mountGuestShareNIX
+
+CZXWXcRMTo8EmM8i4d
+}
 
 _here_bootdisc_shellbat() {
 cat << 'CZXWXcRMTo8EmM8i4d'
@@ -1291,6 +1320,7 @@ _setShareMSW_root() {
 	export sharedGuestProjectDir="$sharedGuestProjectDirDefault"
 	
 	export sharedHostProjectDir=/
+	# TODO Consider simply changing this to "X:", in effect eliminating the alternative mountpoint requirement permanently.
 	export sharedGuestProjectDir="Z:"
 }
 
@@ -1364,6 +1394,8 @@ _createHTG_UNIX() {
 	
 	_here_bootdisc_statup_xdg >> "$hostToGuestFiles"/startup.desktop
 	
+	_here_bootdisc_rootnix >> "$hostToGuestFiles"/rootnix.sh
+	
 	echo '#!/usr/bin/env bash' >> "$hostToGuestFiles"/cmd.sh
 	echo "export localPWD=""$localPWD" >> "$hostToGuestFiles"/cmd.sh
 	echo "/media/bootdisc/ubiquitous_bash.sh _dropBootdisc ${processedArgs[@]}" >> "$hostToGuestFiles"/cmd.sh
@@ -1404,8 +1436,17 @@ _dropBootdisc() {
 		#Check for VBox type shared directory, mount if present.
 	
 	#Detect UNIX architecture.
-		#Check for QEMU type shared directory, mount if present.
-		#Check for VBox type shared directory, mount if present.
+	if ! uname -a | grep -i cygwin > /dev/null 2>&1
+	then
+		#Attempt to wait for QEMU or VBox type shared directory.
+		! mountpoint /home/user/project > /dev/null 2>&1 && sleep 0.3
+		! mountpoint /home/user/project > /dev/null 2>&1 && sleep 1
+		! mountpoint /home/user/project > /dev/null 2>&1 && sleep 3
+		! mountpoint /home/user/project > /dev/null 2>&1 && sleep 9
+		! mountpoint /home/user/project > /dev/null 2>&1 && sleep 18
+		! mountpoint /home/user/project > /dev/null 2>&1 && sleep 27
+		! mountpoint /home/user/project > /dev/null 2>&1 && sleep 36
+	fi
 	
 	cd "$localPWD"
 	
@@ -2573,9 +2614,9 @@ _set_instance_vbox_type() {
 }
 
 _set_instance_vbox_features() {
-	#VBoxManage modifyvm "$sessionid" --boot1 disk --biosbootmenu disabled --bioslogofadein off --bioslogofadeout off --bioslogodisplaytime 5 --vram 128 --memory 512 --nic1 nat --nictype1 "82543GC" --clipboard bidirectional --accelerate3d off --accelerate2dvideo off --vrde off --audio pulse --usb on --cpus 1 --ioapic off --acpi on --pae off --chipset piix3
+	#VBoxManage modifyvm "$sessionid" --boot1 disk --biosbootmenu disabled --bioslogofadein off --bioslogofadeout off --bioslogodisplaytime 5 --vram 128 --memory 1512 --nic1 nat --nictype1 "82543GC" --clipboard bidirectional --accelerate3d off --accelerate2dvideo off --vrde off --audio pulse --usb on --cpus 1 --ioapic off --acpi on --pae off --chipset piix3
 	
-	VBoxManage modifyvm "$sessionid" --boot1 disk --biosbootmenu disabled --bioslogofadein off --bioslogofadeout off --bioslogodisplaytime 5 --vram 128 --memory 512 --nic1 nat --nictype1 "82543GC" --clipboard bidirectional --accelerate3d off --accelerate2dvideo off --vrde off --audio pulse --usb on --cpus 4 --ioapic on --acpi on --pae on --chipset ich9
+	VBoxManage modifyvm "$sessionid" --boot1 disk --biosbootmenu disabled --bioslogofadein off --bioslogofadeout off --bioslogodisplaytime 5 --vram 128 --memory 1512 --nic1 nat --nictype1 "82543GC" --clipboard bidirectional --accelerate3d off --accelerate2dvideo off --vrde off --audio pulse --usb on --cpus 4 --ioapic on --acpi on --pae on --chipset ich9
 	
 }
 

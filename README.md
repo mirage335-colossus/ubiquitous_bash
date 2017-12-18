@@ -18,7 +18,7 @@ Projects incorporating the ubiquitous bash middleware should, as a best practice
 
 Immediate attention will be given to any support request. Please do not hesitate to contact maintainer mirage335 by any means.
 
-Bug reports, feature requests, forks, and especially pull requests, are highly welcome. Ubiquitous Bash GitHub repository is monitored in real time.
+Bug reports, feature requests, forks, and especially pull requests, are highly welcome. Please keep in mind "defense in depth" and explicit tests are preferred measures to ensure against regressions. Ubiquitous Bash GitHub repository is monitored in real time.
 
 # Version
 v2.1
