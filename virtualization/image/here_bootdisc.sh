@@ -25,8 +25,10 @@ cat << 'CZXWXcRMTo8EmM8i4d'
 
 _mountGuestShareNIX() {
 	! /bin/mountpoint /home/user/project > /dev/null 2>&1 && /bin/mount -t vboxsf -o uid=user,_netdev appFolder /home/user/project 2>&1
+	! /bin/mountpoint /home/user/Downloads > /dev/null 2>&1 && /bin/mount -t vboxsf -o uid=user,_netdev Downloads /home/user/Downloads 2>&1
 	
 	! /bin/mountpoint /home/user/project > /dev/null 2>&1 && /bin/mount -t cifs -o guest,_netdev,uid=user,user,nofail '//10.0.2.4/qemu' /home/user/project > /dev/null 2>&1
+	
 }
 
 #mkdir -p /home/user/.pqm

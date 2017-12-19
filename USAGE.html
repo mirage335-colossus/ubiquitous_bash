@@ -815,7 +815,7 @@ Creates custom bootable x64 Debian image. Requires [[fetch|Debian]] dependencies
 [[Features]]
 [[Virtualization]]</pre>
 </div>
-<div title="Demo" creator="mirage335" modifier="mirage335" created="201712122105" modified="201712190514" changecount="14">
+<div title="Demo" creator="mirage335" modifier="mirage335" created="201712122105" modified="201712190622" changecount="17">
 <pre>From a Linux host, passing the full &quot;./ubiquitous_bash.sh _test&quot; suite, running these commands demonstrates correct operation of some of the most unique and sophisticated components. Patches will likely be tested against this command set before acceptance.
 
 !Virtualization
@@ -824,16 +824,17 @@ Creates custom bootable x64 Debian image. Requires [[fetch|Debian]] dependencies
 
 Demonstrate ~ChRoot, QEMU, ~VirtualBox, and Docker support, from the same image.
 //{{{
-./ubiquitous_bash.sh _userChRoot ls ./
+./ubiquitous_bash.sh _userChRoot leafpad ./CC0_license.txt
 ./ubiquitous_bash.sh _closeChRoot
 //}}}
 
 //{{{
-./ubiquitous_bash.sh _userQemu kwrite ./CC0_license.txt
+./ubiquitous_bash.sh _userQemu leafpad ./CC0_license.txt
 //}}}
 
 //{{{
-./ubiquitous_bash.sh _userVBox kwrite ./CC0_license.txt
+./ubiquitous_bash.sh _userVBox leafpad ./CC0_license.txt
+./ubiquitous_bash.sh _closeVBoxRaw
 //}}}
 
 </pre>

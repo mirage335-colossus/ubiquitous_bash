@@ -65,6 +65,8 @@ _set_instance_vbox_features() {
 _set_instance_vbox_share() {
 	#VBoxManage sharedfolder add "$sessionid" --name "root" --hostpath "/"
 	[[ "$sharedHostProjectDir" != "" ]] && VBoxManage sharedfolder add "$sessionid" --name "appFolder" --hostpath "$sharedHostProjectDir"
+	
+	[[ -e "$HOME"/Downloads ]] && VBoxManage sharedfolder add "$sessionid" --name "Downloads" --hostpath "$HOME"/Downloads
 }
 
 _set_instance_vbox_command() {
