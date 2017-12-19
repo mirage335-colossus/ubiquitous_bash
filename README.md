@@ -63,7 +63,7 @@ In most user environments, the latest git repository code will provide the stron
 * Nested virtualization has not been specifically tested and documented.
 * ChRoot close function might have a path to exit true while mounts are still active.
 
-* KWrite under ChRoot may lock up the mounts, preventing _closeChRoot from working. Nevertheless, cleanup seems to take place through the systemd hook upon shutdown.
+* KWrite under ChRoot may lock up the mounts, preventing _closeChRoot from working. Error messages suggest PulseAudio is not working normally. Nevertheless, cleanup seems to take place through the systemd hook upon shutdown.
 * LeafPad sometimes fails to launch from Docker container, apparently due to X11 issues.
 
 
