@@ -815,7 +815,7 @@ Creates custom bootable x64 Debian image. Requires [[fetch|Debian]] dependencies
 [[Features]]
 [[Virtualization]]</pre>
 </div>
-<div title="Demo" creator="mirage335" modifier="mirage335" created="201712122105" modified="201712190622" changecount="17">
+<div title="Demo" creator="mirage335" modifier="mirage335" created="201712122105" modified="201712191953" changecount="27">
 <pre>From a Linux host, passing the full &quot;./ubiquitous_bash.sh _test&quot; suite, running these commands demonstrates correct operation of some of the most unique and sophisticated components. Patches will likely be tested against this command set before acceptance.
 
 !Virtualization
@@ -824,20 +824,36 @@ Creates custom bootable x64 Debian image. Requires [[fetch|Debian]] dependencies
 
 Demonstrate ~ChRoot, QEMU, ~VirtualBox, and Docker support, from the same image.
 //{{{
+#./ubiquitous_bash.sh _userChRoot kwrite ./CC0_license.txt
 ./ubiquitous_bash.sh _userChRoot leafpad ./CC0_license.txt
+./ubiquitous_bash.sh _userChRoot xmessage -file ./CC0_license.txt
+./ubiquitous_bash.sh _userChRoot xeyes
+
 ./ubiquitous_bash.sh _closeChRoot
 //}}}
 
 //{{{
+./ubiquitous_bash.sh _userQemu kwrite ./CC0_license.txt
 ./ubiquitous_bash.sh _userQemu leafpad ./CC0_license.txt
+./ubiquitous_bash.sh _userQemu xmessage -file ./CC0_license.txt
+./ubiquitous_bash.sh _userQemu xeyes
 //}}}
 
 //{{{
+./ubiquitous_bash.sh _userVBox kwrite ./CC0_license.txt
 ./ubiquitous_bash.sh _userVBox leafpad ./CC0_license.txt
+./ubiquitous_bash.sh _userVBox xmessage -file ./CC0_license.txt
+./ubiquitous_bash.sh _userVBox xeyes
+
 ./ubiquitous_bash.sh _closeVBoxRaw
 //}}}
 
-</pre>
+//{{{
+./ubiquitous_bash.sh _userDocker kwrite ./CC0_license.txt
+#./ubiquitous_bash.sh _userDocker leafpad ./CC0_license.txt
+./ubiquitous_bash.sh _userDocker xmessage -file ./CC0_license.txt
+./ubiquitous_bash.sh _userDocker xeyes
+//}}}</pre>
 </div>
 <div title="DemoEnvironmentCleanup" creator="mirage335" modifier="mirage335" created="201712190517" changecount="1">
 <pre>Ensure no existing resources on the host machine could cause a test to pass erroneously.
@@ -845,7 +861,7 @@ Demonstrate ~ChRoot, QEMU, ~VirtualBox, and Docker support, from the same image.
 _dockerDeleteAll
 //}}}</pre>
 </div>
-<div title="DemoVirtualizationSetupNIX" creator="mirage335" modifier="mirage335" created="201712190505" modified="201712190515" changecount="5">
+<div title="DemoVirtualizationSetupNIX" creator="mirage335" modifier="mirage335" created="201712190505" modified="201712191952" changecount="6">
 <pre>!Existing Image
 An existing Debian VM image with bootdisc support may be copied to &quot;_local/vm.img&quot;.
 
@@ -890,6 +906,12 @@ echo 'deb-src http://ftp.debian.org/debian stretch-backports main contrib' &gt;&
 apt-get update
 apt-get install virtualbox-guest-dkms virtualbox-guest-x11 linux-headers-$(uname -r)
 usermod -G vboxsf -a user
+//}}}
+
+Conversion to Docker Image.
+//{{{
+./ubiquitous_bash.sh _docker_img_to_tar
+./ubiquitous_bash.sh _create_docker_image
 //}}}
 </pre>
 </div>

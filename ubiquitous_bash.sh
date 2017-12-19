@@ -3586,7 +3586,9 @@ _userDocker_sequence() {
 	dockerRunArgs+=(-v "$HOME"/Downloads:"$virtGuestHome"/Downloads:rw -v "$sharedHostProjectDir":"$sharedGuestProjectDir":rw)
 	
 	#Display
-	dockerRunArgs+=(-e DISPLAY=$DISPLAY -v $XSOCK:$XSOCK:rw -v $XAUTH:$XAUTH:rw -e "XAUTHORITY=${XAUTH}")
+	dockerRunArgs+=(-e DISPLAY=$DISPLAY -e "XAUTHORITY=${XAUTH}")
+	dockerRunArgs+=(-v $XSOCK:$XSOCK:rw -v $XAUTH:$XAUTH:rw)
+	#dockerRunArgs+=(-v /tmp:/tmp:rw)
 	
 	#FUSE (AppImage)
 	dockerRunArgs+=(--cap-add SYS_ADMIN --device /dev/fuse --security-opt apparmor:unconfined)
