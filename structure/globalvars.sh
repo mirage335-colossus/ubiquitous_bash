@@ -141,6 +141,7 @@ export sharedHostProjectDir="$sharedHostProjectDirDefault"
 export sharedGuestProjectDir="$sharedGuestProjectDirDefault"
 
 export instancedProjectDir="$instancedVirtHome"/project
+export instancedDownloadsDir="$instancedVirtHome"/Downloads
 
 export hostToGuestDir="$instancedVirtDir"/htg
 export hostToGuestFiles="$hostToGuestDir"/files

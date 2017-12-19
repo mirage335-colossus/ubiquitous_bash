@@ -815,16 +815,81 @@ Creates custom bootable x64 Debian image. Requires [[fetch|Debian]] dependencies
 [[Features]]
 [[Virtualization]]</pre>
 </div>
-<div title="Demo" creator="mirage335" modifier="mirage335" created="201712122105" modified="201712122127" changecount="7">
-<pre>!Virtualization
+<div title="Demo" creator="mirage335" modifier="mirage335" created="201712122105" modified="201712190514" changecount="14">
+<pre>From a Linux host, passing the full &quot;./ubiquitous_bash.sh _test&quot; suite, running these commands demonstrates correct operation of some of the most unique and sophisticated components. Patches will likely be tested against this command set before acceptance.
 
+!Virtualization
+[[DemoEnvironmentCleanup]]
+[[DemoVirtualizationSetupNIX]]
+
+Demonstrate ~ChRoot, QEMU, ~VirtualBox, and Docker support, from the same image.
+//{{{
+./ubiquitous_bash.sh _userChRoot ls ./
+./ubiquitous_bash.sh _closeChRoot
+//}}}
+
+//{{{
+./ubiquitous_bash.sh _userQemu kwrite ./CC0_license.txt
+//}}}
+
+//{{{
+./ubiquitous_bash.sh _userVBox kwrite ./CC0_license.txt
+//}}}
+
+</pre>
+</div>
+<div title="DemoEnvironmentCleanup" creator="mirage335" modifier="mirage335" created="201712190517" changecount="1">
+<pre>Ensure no existing resources on the host machine could cause a test to pass erroneously.
+//{{{
+_dockerDeleteAll
+//}}}</pre>
+</div>
+<div title="DemoVirtualizationSetupNIX" creator="mirage335" modifier="mirage335" created="201712190505" modified="201712190515" changecount="5">
+<pre>!Existing Image
+An existing Debian VM image with bootdisc support may be copied to &quot;_local/vm.img&quot;.
+
+!&lt;nowiki&gt;NetInstall&lt;/nowiki&gt;
 Create Debian VM image. May require updated version information, see code at shortcuts/distro/debian . For compatibility with ~ChRoot, first partition must be the rootfs, of type ext4. Swap partitions are not recommended.
 //{{{
 ./ubiquitous_bash.sh _fetch_x64_DebianLiteISO
 ./ubiquitous_bash.sh _create_x64_debianLiteVM
 //}}}
 
+Setup bootdisc support for NIX guest (MSW guest equally supported).
 
+Launch VM image in persistent mode with bootdisc attached.
+//{{{
+./ubiquitous_bash.sh _editQemu
+//}}}
+
+Guest commands.
+//{{{
+mkdir -p /media/bootdisc
+
+echo 'LABEL=uk4uPhB663kVcygT0q     /media/bootdisc    iso9660    ro,nofail    0 0' &gt;&gt; /etc/fstab
+
+useradd -m user
+usermod -G audio,video,plugdev,input,netdev,lpadmin,scanner -a user
+
+#Or manage through KDE system settings (KDE/sddm).
+echo 'autologin-user=user' &gt;&gt; /etc/lightdm/lightdm.conf
+
+mkdir -p ~/.config/autostart
+cp /media/bootdisc/startup.desktop ~/.config/autostart/
+
+mkdir -p /home/user/project
+
+crontab -e
+#&gt;#@reboot	/media/bootdisc/rootnix.sh
+
+
+mkdir -p /etc/apt/sources.list.d
+echo 'deb http://ftp.debian.org/debian stretch-backports main contrib' &gt;&gt; /etc/apt/sources.list.d/stretch-backports.list
+echo 'deb-src http://ftp.debian.org/debian stretch-backports main contrib' &gt;&gt; /etc/apt/sources.list.d/stretch-backports.list
+apt-get update
+apt-get install virtualbox-guest-dkms virtualbox-guest-x11 linux-headers-$(uname -r)
+usermod -G vboxsf -a user
+//}}}
 </pre>
 </div>
 <div title="Deployment" creator="mirage335" modifier="mirage335" created="201712130532" modified="201712130533" changecount="2">

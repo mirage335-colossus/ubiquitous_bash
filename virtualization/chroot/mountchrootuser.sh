@@ -99,6 +99,20 @@ _umountChRoot_project() {
 	
 }
 
+_mountChRoot_userDirs() {
+	mkdir -p "$HOME"/Downloads
+	sudo -n mkdir -p "$instancedDownloadsDir"
+	sudo -n unionfs-fuse -o allow_other,use_ino,suid,dev "$HOME"/Downloads=RW "$instancedDownloadsDir"
+	sudo -n chown "$USER":"$USER" "$instancedDownloadsDir"
+	
+}
+
+_umountChRoot_userDirs() {
+	_wait_umount "$instancedDownloadsDir"
+	sudo -n rmdir "$instancedDownloadsDir"
+	
+}
+
 
 _umountChRoot_user() {
 	

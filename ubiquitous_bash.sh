@@ -2228,6 +2228,20 @@ _umountChRoot_project() {
 	
 }
 
+_mountChRoot_userDirs() {
+	mkdir -p "$HOME"/Downloads
+	sudo -n mkdir -p "$instancedDownloadsDir"
+	sudo -n unionfs-fuse -o allow_other,use_ino,suid,dev "$HOME"/Downloads=RW "$instancedDownloadsDir"
+	sudo -n chown "$USER":"$USER" "$instancedDownloadsDir"
+	
+}
+
+_umountChRoot_userDirs() {
+	_wait_umount "$instancedDownloadsDir"
+	sudo -n rmdir "$instancedDownloadsDir"
+	
+}
+
 
 _umountChRoot_user() {
 	
@@ -2382,14 +2396,21 @@ _userChRoot() {
 	_mountChRoot_project >> "$logTmp"/usrchrt.log 2>&1 || _stop 1
 	_chroot chown "$virtGuestUser":"$virtGuestUser" "$sharedGuestProjectDir" >> "$logTmp"/usrchrt.log 2>&1
 	
+	#####
+	_mountChRoot_userDirs
+	
 	
 	
 	_chroot /bin/bash /usr/local/bin/ubiquitous_bash.sh _dropChRoot "${processedArgs[@]}"
-	local userChRootExitStatus="$?"	
-	
-	
+	local userChRootExitStatus="$?"
 	
 	_stopChRoot "$instancedVirtFS" >> "$logTmp"/usrchrt.log 2>&1
+	
+	
+	
+	
+	_umountChRoot_userDirs
+	#####
 	
 	_umountChRoot_project >> "$logTmp"/usrchrt.log 2>&1
 	_umountChRoot_user_home >> "$logTmp"/usrchrt.log 2>&1 || _stop 1
@@ -5389,6 +5410,7 @@ export sharedHostProjectDir="$sharedHostProjectDirDefault"
 export sharedGuestProjectDir="$sharedGuestProjectDirDefault"
 
 export instancedProjectDir="$instancedVirtHome"/project
+export instancedDownloadsDir="$instancedVirtHome"/Downloads
 
 export hostToGuestDir="$instancedVirtDir"/htg
 export hostToGuestFiles="$hostToGuestDir"/files

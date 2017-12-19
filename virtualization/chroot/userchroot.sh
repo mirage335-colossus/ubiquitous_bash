@@ -125,14 +125,21 @@ _userChRoot() {
 	_mountChRoot_project >> "$logTmp"/usrchrt.log 2>&1 || _stop 1
 	_chroot chown "$virtGuestUser":"$virtGuestUser" "$sharedGuestProjectDir" >> "$logTmp"/usrchrt.log 2>&1
 	
+	#####
+	_mountChRoot_userDirs
+	
 	
 	
 	_chroot /bin/bash /usr/local/bin/ubiquitous_bash.sh _dropChRoot "${processedArgs[@]}"
-	local userChRootExitStatus="$?"	
-	
-	
+	local userChRootExitStatus="$?"
 	
 	_stopChRoot "$instancedVirtFS" >> "$logTmp"/usrchrt.log 2>&1
+	
+	
+	
+	
+	_umountChRoot_userDirs
+	#####
 	
 	_umountChRoot_project >> "$logTmp"/usrchrt.log 2>&1
 	_umountChRoot_user_home >> "$logTmp"/usrchrt.log 2>&1 || _stop 1
