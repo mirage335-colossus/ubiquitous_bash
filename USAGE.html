@@ -815,15 +815,35 @@ Creates custom bootable x64 Debian image. Requires [[fetch|Debian]] dependencies
 [[Features]]
 [[Virtualization]]</pre>
 </div>
-<div title="Demo" creator="mirage335" modifier="mirage335" created="201712122105" modified="201712191953" changecount="27">
+<div title="Demo" creator="mirage335" modifier="mirage335" created="201712122105" modified="201712192032" changecount="28">
 <pre>From a Linux host, passing the full &quot;./ubiquitous_bash.sh _test&quot; suite, running these commands demonstrates correct operation of some of the most unique and sophisticated components. Patches will likely be tested against this command set before acceptance.
 
 !Virtualization
+
+Create VM image, install desired applications, remove any existing external resources.
 [[DemoEnvironmentCleanup]]
 [[DemoVirtualizationSetupNIX]]
 
-Demonstrate ~ChRoot, QEMU, ~VirtualBox, and Docker support, from the same image.
+Explore and modify guest filesystem.
+
 //{{{
+mkdir -p ~/.arduino
+sudo ./ubiquitous_bash.sh _toImage ./.arduino /etc/skel
+
+./ubiquitous_bash.sh _userChRoot ls -la /home/ubvrtusr
+
+./ubiquitous_bash.sh _closeChRoot
+//}}}
+
+Demonstrate ~ChRoot, QEMU, ~VirtualBox, and Docker support, from the same image.
+
+//{{{
+./ubiquitous_bash.sh _openChRoot
+./ubiquitous_bash.sh _chroot touch /etc/skel/test
+
+./ubiquitous_bash.sh _userChRoot
+./ubiquitous_bash.sh _userChRoot ls -la /home/ubvrtusr
+
 #./ubiquitous_bash.sh _userChRoot kwrite ./CC0_license.txt
 ./ubiquitous_bash.sh _userChRoot leafpad ./CC0_license.txt
 ./ubiquitous_bash.sh _userChRoot xmessage -file ./CC0_license.txt
@@ -833,13 +853,19 @@ Demonstrate ~ChRoot, QEMU, ~VirtualBox, and Docker support, from the same image.
 //}}}
 
 //{{{
+./ubiquitous_bash.sh _editQemu
+
+./ubiquitous_bash.sh _userQemu
 ./ubiquitous_bash.sh _userQemu kwrite ./CC0_license.txt
 ./ubiquitous_bash.sh _userQemu leafpad ./CC0_license.txt
 ./ubiquitous_bash.sh _userQemu xmessage -file ./CC0_license.txt
 ./ubiquitous_bash.sh _userQemu xeyes
-//}}}
 
 //{{{
+./ubiquitous_bash.sh _editVBox
+
+
+./ubiquitous_bash.sh _userVBox
 ./ubiquitous_bash.sh _userVBox kwrite ./CC0_license.txt
 ./ubiquitous_bash.sh _userVBox leafpad ./CC0_license.txt
 ./ubiquitous_bash.sh _userVBox xmessage -file ./CC0_license.txt
@@ -849,6 +875,10 @@ Demonstrate ~ChRoot, QEMU, ~VirtualBox, and Docker support, from the same image.
 //}}}
 
 //{{{
+./ubiquitous_bash.sh _dockerLaunch
+./ubiquitous_bash.sh _dockerCommit
+
+./ubiquitous_bash.sh _userDocker
 ./ubiquitous_bash.sh _userDocker kwrite ./CC0_license.txt
 #./ubiquitous_bash.sh _userDocker leafpad ./CC0_license.txt
 ./ubiquitous_bash.sh _userDocker xmessage -file ./CC0_license.txt
@@ -1961,7 +1991,7 @@ apt-get install virtualbox-guest-dkms virtualbox-guest-x11 linux-headers-$(uname
 usermod -G vboxsf -a user
 //}}}</pre>
 </div>
-<div title="Virtualization" creator="mirage335" modifier="mirage335" created="201710270206" modified="201712190433" changecount="101">
+<div title="Virtualization" creator="mirage335" modifier="mirage335" created="201710270206" modified="201712192024" changecount="102">
 <pre>Ubiquitous Bash middleware has the capacity to provide true application virtualization, with automatic fileparameter translation, across a wide variety of platforms (x86/64, ARM), and operating systems (MSW, Unix), by using any available underlying tool (~ChRoot, QEMU, Xen, ~VirtualBox, Docker, Wine, Cygwin, &lt;nowiki&gt;DosBox&lt;/nowiki&gt;), on a common disk format (raw image). Most of this capability has been realized, most of the remainder will involve simply merging existing code from [[HostedXen|https://github.com/mirage335/HostedXen]], [[HostedOpenVZ|https://github.com/mirage335/hostedOpenVZ]]. Automatic selection of native application by platform is also well supported.
 
 &lt;&lt;showtoc&gt;&gt;
@@ -1970,8 +2000,6 @@ Any bootable raw image may be used by ~ChRoot, QEMU, or ~VirtualBox. Raw images 
 
 Images may be edited more easily with several shortcuts. Please be aware the _toImage/_fromImage commands are equivalent to &quot;cp -a&quot;, and will not overwrite or delete destination contents.
 //{{{
-./ubiquitous_bash.sh _openImage
-
 ./ubiquitous_bash.sh _toImage ./.arduino /etc/skel
 ./ubiquitous_bash.sh _toImage ./.arduino /home/user
 
@@ -1981,7 +2009,7 @@ Images may be edited more easily with several shortcuts. Please be aware the _to
 ./ubiquitous_bash.sh _toImage ./exim4 /etc/exim4
 ./ubiquitous_bash.sh _fromImage ./exim4 /etc/exim4
 
-./ubiquitous_bash.sh _closeImage
+./ubiquitous_bash.sh _closeChRoot
 //}}}
 
 Some directories have special significance within the ubiquitous_bash framework. In particular, the /etc/skel directory is used by both ~ChRoot and Docker components to build the home folder for the temporary &quot;ubvrtusr&quot;. Similarly, /home/user is directly used by QEMU and ~VirtualBox. For ~ChRoot, only the relevant &quot;_root*&quot; command can also make persistent changes. For QEMU, ~VirtualBox, and Docker, relevant &quot;_edit*&quot; commands may also make persistent changes.
