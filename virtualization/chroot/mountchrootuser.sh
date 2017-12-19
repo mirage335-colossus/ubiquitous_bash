@@ -113,6 +113,18 @@ _umountChRoot_userDirs() {
 	
 }
 
+#No production use. Already supported by bind mount of full "/tmp". Kept for reference only.
+_mountChRoot_X11() {
+	_bindMountManager "$XSOCK" "$instancedVirtFS"/"$XSOCK"
+	_bindMountManager "$XSOCK" "$instancedVirtFS"/"$XAUTH"
+}
+
+#No production use. Already supported by bind mount of full "/tmp". Kept for reference only.
+_umountChRoot_X11() {
+	_wait_umount "$instancedVirtFS"/"$XSOCK"
+	_wait_umount "$instancedVirtFS"/"$XAUTH"
+}
+
 
 _umountChRoot_user() {
 	

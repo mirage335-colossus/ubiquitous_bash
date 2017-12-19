@@ -2119,7 +2119,7 @@ _chroot() {
 	
 	local chrootExitStatus
 	
-	sudo -n env -i HOME="/root" TERM="${TERM}" SHELL="/bin/bash" PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" DISPLAY="$DISPLAY" localPWD="$localPWD" hostArch=$(uname -m) virtSharedUser="$virtGuestUser" $(sudo -n which chroot) "$chrootDir" "$@"
+	sudo -n env -i HOME="/root" TERM="${TERM}" SHELL="/bin/bash" PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" DISPLAY="$DISPLAY" XSOCK="$XSOCK" XAUTH="$XAUTH" localPWD="$localPWD" hostArch=$(uname -m) virtSharedUser="$virtGuestUser" $(sudo -n which chroot) "$chrootDir" "$@"
 	
 	chrootExitStatus="$?"
 	
@@ -2240,6 +2240,18 @@ _umountChRoot_userDirs() {
 	_wait_umount "$instancedDownloadsDir"
 	sudo -n rmdir "$instancedDownloadsDir"
 	
+}
+
+#No production use. Already supported by bind mount of full "/tmp". Kept for reference only.
+_mountChRoot_X11() {
+	_bindMountManager "$XSOCK" "$instancedVirtFS"/"$XSOCK"
+	_bindMountManager "$XSOCK" "$instancedVirtFS"/"$XAUTH"
+}
+
+#No production use. Already supported by bind mount of full "/tmp". Kept for reference only.
+_umountChRoot_X11() {
+	_wait_umount "$instancedVirtFS"/"$XSOCK"
+	_wait_umount "$instancedVirtFS"/"$XAUTH"
 }
 
 
@@ -2393,6 +2405,8 @@ _userChRoot() {
 	export checkBaseDirRemote=_checkBaseDirRemote_chroot
 	_virtUser "$@" >> "$logTmp"/usrchrt.log 2>&1
 	
+	#_mountChRoot_X11
+	
 	_mountChRoot_project >> "$logTmp"/usrchrt.log 2>&1 || _stop 1
 	_chroot chown "$virtGuestUser":"$virtGuestUser" "$sharedGuestProjectDir" >> "$logTmp"/usrchrt.log 2>&1
 	
@@ -2411,6 +2425,8 @@ _userChRoot() {
 	
 	_umountChRoot_userDirs
 	#####
+	
+	#_umountChRoot_X11
 	
 	_umountChRoot_project >> "$logTmp"/usrchrt.log 2>&1
 	_umountChRoot_user_home >> "$logTmp"/usrchrt.log 2>&1 || _stop 1
