@@ -26,7 +26,7 @@ _drop_docker() {
 	
 	chown "$virtSharedUser":"$virtSharedUser" "$HOME"
 	
-	cp -r /etc/skel/. "$HOME"
+	#cp -r /etc/skel/. "$HOME"
 	
 	# Change to localPWD or home.
 	cd "$localPWD"
@@ -45,8 +45,11 @@ _drop_docker() {
 	#_gosuExecVirt bash --init-file <(echo ". ~/.bashrc ; . /usr/local/bin/entrypoint.sh _importShortcuts" "$@")
 	
 	##Setup and launch.
+	"$scriptAbsoluteLocation" _gosuExecVirt cp -r /etc/skel/. "$virtGuestHomeDrop"
 	
+	"$scriptAbsoluteLocation" _gosuExecVirt "$scriptAbsoluteLocation" _setupUbiquitous_nonet
 	
+	# Drop to user ubvrtusr, using gosu.
 	_gosuExecVirt "$@"
 	
 }

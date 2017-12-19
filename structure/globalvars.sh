@@ -106,7 +106,8 @@ export permaLog="$scriptLocal"
 
 export HOST_USER_ID=$(id -u)
 export HOST_GROUP_ID=$(id -g)
-export virtGuestUser="ubvrtusr"
+export virtGuestUserDrop="ubvrtusr"
+export virtGuestUser="$virtGuestUserDrop"
 [[ $(id -u) == 0 ]] && export virtGuestUser="root"
 
 export globalVirtDir="$scriptLocal"/v
@@ -117,7 +118,8 @@ export instancedVirtDir="$scriptAbsoluteFolder"/v_"$sessionid"
 export instancedVirtFS="$instancedVirtDir"/fs
 export instancedVirtTmp="$instancedVirtDir"/tmp
 
-export virtGuestHome=/home/"$virtGuestUser"
+export virtGuestHomeDrop=/home/"$virtGuestUserDrop"
+export virtGuestHome="$virtGuestHomeDrop"
 [[ $(id -u) == 0 ]] && export virtGuestHome=/root
 ###export virtGuestHomeRef="$virtGuestHome".ref
 

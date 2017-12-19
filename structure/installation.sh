@@ -91,6 +91,8 @@ _test() {
 	
 	_checkDep id
 	
+	_checkDep test
+	
 	_checkDep true
 	_checkDep false
 	

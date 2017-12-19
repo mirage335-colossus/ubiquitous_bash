@@ -37,6 +37,8 @@ In most user environments, the latest git repository code will provide the stron
 * Support shutdown hooks through init daemons other than systemd.
 * Service/cron installation hooks.
 
+* ChRoot alternative to "/etc/skel" copying, involving bind or union mounts to /home/user .
+
 * Support LXC as a virtualization backend.
 
 * Integrate AppImage build scripts.

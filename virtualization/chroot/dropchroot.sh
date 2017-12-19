@@ -3,11 +3,16 @@ _dropChRoot() {
 	# Change to localPWD or home.
 	cd "$localPWD"
 	
-	# Drop to user ubvrtusr or remain root, using gosu.
+	"$scriptAbsoluteLocation" _gosuExecVirt cp -r /etc/skel/. "$virtGuestHomeDrop"
+	
+	"$scriptAbsoluteLocation" _gosuExecVirt "$scriptAbsoluteLocation" _setupUbiquitous_nonet
+	
+	# Drop to user ubvrtusr, using gosu.
 	_gosuExecVirt "$@"
 }
 
-_prepareChRootUser() {
+#No production use. Kept for reference only.
+###_prepareChRootUser() {
 	
 	#_gosuExecVirt cp -r /etc/skel/. /home/
 	
@@ -16,4 +21,4 @@ _prepareChRootUser() {
 	
 	true
 	
-}
+###}

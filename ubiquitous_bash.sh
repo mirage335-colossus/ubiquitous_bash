@@ -1573,26 +1573,33 @@ _mountChRoot() {
 	sudo -n mount -t tmpfs -o size=4G tmpfs "$absolute1"/dev/shm
 	
 	#Install ubiquitous_bash itself to chroot.
-	sudo -n mkdir -p "$chrootDir"/usr/local/bin/
-	sudo -n mkdir -p "$chrootDir"/usr/local/share/ubcore/bin/
+	sudo -n mkdir -p "$absolute1"/usr/local/bin/
+	sudo -n mkdir -p "$absolute1"/usr/local/share/ubcore/bin/
 	
-	sudo -n cp "$scriptAbsoluteLocation" "$chrootDir"/usr/local/bin/ubiquitous_bash.sh
-	sudo -n chmod 0755 "$chrootDir"/usr/local/bin/ubiquitous_bash.sh
-	sudo -n chown root:root "$chrootDir"/usr/local/bin/ubiquitous_bash.sh
-	sudo -n cp "$scriptBin"/gosu-armel "$chrootDir"/usr/local/share/ubcore/bin/gosu-armel
-	sudo -n cp "$scriptBin"/gosu-amd64 "$chrootDir"/usr/local/share/ubcore/bin/gosu-amd64
-	sudo -n cp "$scriptBin"/gosu-i386 "$chrootDir"/usr/local/share/ubcore/bin/gosu-i386
-	sudo -n chmod 0755 "$chrootDir"/usr/local/share/ubcore/bin/*
-	sudo -n chown root:root "$chrootDir"/usr/local/share/ubcore/bin/*
+	sudo -n cp "$scriptAbsoluteLocation" "$absolute1"/usr/local/bin/ubiquitous_bash.sh
+	sudo -n chmod 0755 "$absolute1"/usr/local/bin/ubiquitous_bash.sh
+	sudo -n chown root:root "$absolute1"/usr/local/bin/ubiquitous_bash.sh
+	sudo -n cp "$scriptBin"/gosu-armel "$absolute1"/usr/local/share/ubcore/bin/gosu-armel
+	sudo -n cp "$scriptBin"/gosu-amd64 "$absolute1"/usr/local/share/ubcore/bin/gosu-amd64
+	sudo -n cp "$scriptBin"/gosu-i386 "$absolute1"/usr/local/share/ubcore/bin/gosu-i386
+	sudo -n chmod 0755 "$absolute1"/usr/local/share/ubcore/bin/*
+	sudo -n chown root:root "$absolute1"/usr/local/share/ubcore/bin/*
 	
-	if ! grep '8\.8\.8\.8' "$chrootDir"/etc/resolv.conf > /dev/null 2>&1
+	#Workaround NetworkManager stealing /etc/resolv.conf with broken symlink.
+	if ! _chroot test -f /etc/resolv.conf
 	then
-		echo 'nameserver 8.8.8.8' >> "$chrootDir"/etc/resolv.conf
+		sudo -n mv "$absolute1"/etc/resolv.conf "$absolute1"/etc/resolv.conf.bak > /dev/null 2>&1
+		sudo -n rm -f "$absolute1"/etc/resolv.conf > /dev/null 2>&1
 	fi
 	
-	if ! grep '2001\:4860\:4860\:\:8888' "$chrootDir"/etc/resolv.conf > /dev/null 2>&1
+	if ! grep '8\.8\.8\.8' "$absolute1"/etc/resolv.conf > /dev/null 2>&1
 	then
-		echo 'nameserver 2001:4860:4860::8888' >> "$chrootDir"/etc/resolv.conf
+		echo 'nameserver 8.8.8.8' | sudo tee -a "$absolute1"/etc/resolv.conf > /dev/null 2>&1
+	fi
+	
+	if ! grep '2001\:4860\:4860\:\:8888' "$absolute1"/etc/resolv.conf > /dev/null 2>&1
+	then
+		echo 'nameserver 2001:4860:4860::8888' | sudo tee -a "$absolute1"/etc/resolv.conf > /dev/null 2>&1
 	fi
 }
 
@@ -2193,7 +2200,6 @@ _userChRoot() {
 	
 	_ubvrtusrChRoot  >> "$logTmp"/usrchrt.log 2>&1 || _stop 1
 	
-	
 	_mountChRoot_userAndHome >> "$logTmp"/usrchrt.log 2>&1 || _stop 1
 	###[[ $(id -u) != 0 ]] && cp -a "$instancedVirtHomeRef"/. "$instancedVirtHome"/ >> "$logTmp"/usrchrt.log 2>&1
 	export chrootDir="$instancedVirtFS"
@@ -2254,11 +2260,16 @@ _dropChRoot() {
 	# Change to localPWD or home.
 	cd "$localPWD"
 	
-	# Drop to user ubvrtusr or remain root, using gosu.
+	"$scriptAbsoluteLocation" _gosuExecVirt cp -r /etc/skel/. "$virtGuestHomeDrop"
+	
+	"$scriptAbsoluteLocation" _gosuExecVirt "$scriptAbsoluteLocation" _setupUbiquitous_nonet
+	
+	# Drop to user ubvrtusr, using gosu.
 	_gosuExecVirt "$@"
 }
 
-_prepareChRootUser() {
+#No production use. Kept for reference only.
+###_prepareChRootUser() {
 	
 	#_gosuExecVirt cp -r /etc/skel/. /home/
 	
@@ -2267,7 +2278,7 @@ _prepareChRootUser() {
 	
 	true
 	
-}
+###}
 
 
 #Ensures dependencies are met for raspi-on-raspi virtualization.
@@ -3230,7 +3241,7 @@ _drop_docker() {
 	
 	chown "$virtSharedUser":"$virtSharedUser" "$HOME"
 	
-	cp -r /etc/skel/. "$HOME"
+	#cp -r /etc/skel/. "$HOME"
 	
 	# Change to localPWD or home.
 	cd "$localPWD"
@@ -3249,8 +3260,11 @@ _drop_docker() {
 	#_gosuExecVirt bash --init-file <(echo ". ~/.bashrc ; . /usr/local/bin/entrypoint.sh _importShortcuts" "$@")
 	
 	##Setup and launch.
+	"$scriptAbsoluteLocation" _gosuExecVirt cp -r /etc/skel/. "$virtGuestHomeDrop"
 	
+	"$scriptAbsoluteLocation" _gosuExecVirt "$scriptAbsoluteLocation" _setupUbiquitous_nonet
 	
+	# Drop to user ubvrtusr, using gosu.
 	_gosuExecVirt "$@"
 	
 }
@@ -5169,7 +5183,8 @@ export permaLog="$scriptLocal"
 
 export HOST_USER_ID=$(id -u)
 export HOST_GROUP_ID=$(id -g)
-export virtGuestUser="ubvrtusr"
+export virtGuestUserDrop="ubvrtusr"
+export virtGuestUser="$virtGuestUserDrop"
 [[ $(id -u) == 0 ]] && export virtGuestUser="root"
 
 export globalVirtDir="$scriptLocal"/v
@@ -5180,7 +5195,8 @@ export instancedVirtDir="$scriptAbsoluteFolder"/v_"$sessionid"
 export instancedVirtFS="$instancedVirtDir"/fs
 export instancedVirtTmp="$instancedVirtDir"/tmp
 
-export virtGuestHome=/home/"$virtGuestUser"
+export virtGuestHomeDrop=/home/"$virtGuestUserDrop"
+export virtGuestHome="$virtGuestHomeDrop"
 [[ $(id -u) == 0 ]] && export virtGuestHome=/root
 ###export virtGuestHomeRef="$virtGuestHome".ref
 
@@ -6016,6 +6032,8 @@ _test() {
 	_checkDep ls
 	
 	_checkDep id
+	
+	_checkDep test
 	
 	_checkDep true
 	_checkDep false
