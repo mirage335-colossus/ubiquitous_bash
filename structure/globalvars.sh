@@ -110,6 +110,14 @@ export virtGuestUserDrop="ubvrtusr"
 export virtGuestUser="$virtGuestUserDrop"
 [[ $(id -u) == 0 ]] && export virtGuestUser="root"
 
+export globalArcDir="$scriptLocal"/a
+export globalArcFS="$globalArcDir"/fs
+export globalArcTmp="$globalArcDir"/tmp
+
+export globalBuildDir="$scriptLocal"/b
+export globalBuildFS="$globalBuildDir"/fs
+export globalBuildTmp="$globalBuildDir"/tmp
+
 export globalVirtDir="$scriptLocal"/v
 export globalVirtFS="$globalVirtDir"/fs
 export globalVirtTmp="$globalVirtDir"/tmp

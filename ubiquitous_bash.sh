@@ -136,6 +136,7 @@ _failExec() {
 #Portable sanity checked "rm -r" command.
 # WARNING Not foolproof. Use to guard against systematic errors, not carelessness.
 # WARNING Do NOT rely upon outside of internal programmatic usage inside script!
+# WARNING Consider using this function even if program control flow can be proven safe. Redundant checks just might catch catastrophic memory errors.
 #"$1" == directory to remove
 _safeRMR() {
 	
@@ -208,6 +209,83 @@ _safeRMR() {
 		rm -rf "$1"
 	fi
 }
+
+#Portable sanity checking for less, but, dangerous, commands.
+# WARNING Not foolproof. Use to guard against systematic errors, not carelessness.
+# WARNING Do NOT rely upon outside of internal programmatic usage inside script!
+#"$1" == file/directory path to sanity check
+_safePath() {
+	
+	[[ ! -e "$scriptAbsoluteLocation" ]] && return 1
+	[[ ! -e "$scriptAbsoluteFolder" ]] && return 1
+	_failExec || return 1
+	
+	#if [[ ! -e "$0" ]]
+	#then
+	#	return 1
+	#fi
+	
+	if [[ "$1" == "" ]]
+	then
+		return 1
+	fi
+	
+	if [[ "$1" == "/" ]]
+	then
+		return 1
+	fi
+	
+	if [[ "$1" == "-"* ]]
+	then
+		return 1
+	fi
+	
+	#Blacklist.
+	[[ "$1" == "/home" ]] && return 1
+	[[ "$1" == "/home/" ]] && return 1
+	[[ "$1" == "/home/$USER" ]] && return 1
+	[[ "$1" == "/home/$USER/" ]] && return 1
+	[[ "$1" == "/$USER" ]] && return 1
+	[[ "$1" == "/$USER/" ]] && return 1
+	
+	[[ "$1" == "/tmp" ]] && return 1
+	[[ "$1" == "/tmp/" ]] && return 1
+	
+	[[ "$1" == "$HOME" ]] && return 1
+	[[ "$1" == "$HOME/" ]] && return 1
+	
+	#Whitelist.
+	local safeToRM=false
+	
+	local safeScriptAbsoluteFolder="$_getScriptAbsoluteFolder"
+	
+	[[ "$1" == "./"* ]] && [[ "$PWD" == "$safeScriptAbsoluteFolder"* ]] && safeToRM="true"
+	
+	[[ "$1" == "$safeScriptAbsoluteFolder"* ]] && safeToRM="true"
+	
+	#[[ "$1" == "/home/$USER"* ]] && safeToRM="true"
+	[[ "$1" == "/tmp/"* ]] && safeToRM="true"
+	
+	[[ "$safeToRM" == "false" ]] && return 1
+	
+	#Safeguards/
+	[[ -d "$1" ]] && find "$1" | grep -i '\.git$' >/dev/null 2>&1 && return 1
+	
+	#Validate necessary tools were available for path building and checks.
+	_checkDep realpath
+	_checkDep readlink
+	_checkDep dirname
+	_checkDep basename
+	
+	if [[ -e "$1" ]]
+	then
+		#sleep 0
+		#echo "$1"
+		# WARNING Recommend against adding any non-portable flags.
+		return 0
+	fi
+}
+
 
 _discoverResource() {
 	local testDir
@@ -953,6 +1031,13 @@ _test_virtLocal_X11() {
 	_checkDep xauth
 }
 
+_test_image() {
+	_mustGetSudo
+	
+	sudo -n "$scriptAbsoluteLocation" _checkDep losetup
+	#_checkDep partprobe
+}
+
 _loopImage_sequence() {
 	_mustGetSudo
 	
@@ -1457,6 +1542,7 @@ _dropBootdisc() {
 
 
 
+# TODO Launch "_fromImage", transfering "/home/user" to archive, then transfering this archive to "/etc/skel" .
 _importHomeUser() {
 	true
 }
@@ -1465,12 +1551,97 @@ _exportHomeUser() {
 	true
 }
 
+# TODO To be used by "_userChRoot", binding "/home/user", as an alternative to copying "/etc/skel" .
 _bindHomeUser() {
 	true
 }
 
 _unbindHomeUser() {
 	true
+}
+
+
+_test_transferimage() {
+	_mustGetSudo
+	
+	_checkDep rsync
+}
+
+_toImage() {
+	#_openImage || return 1
+	_openChRoot || return 1
+	
+	#rsync -avx -A -X "$1" "$globalVirtFS"/"$2"
+	rsync -avx "$1" "$globalVirtFS"/"$2"
+}
+
+_toImageDir() {
+	mkdir -p "$globalVirtFS"/"$2"
+	_toImage "$1" "$2"
+}
+
+_fromImage() {
+	#_openImage || return 1
+	_openChRoot || return 1
+	
+	#rsync -avx -A -X "$globalVirtFS""$1" "$2"
+	rsync -avx "$globalVirtFS""$1" "$2"
+}
+
+_fromImageDir() {
+	mkdir -p "$2"
+	_fromImage "$1" "$2"
+}
+
+_imageToArc() {
+	[[ "$globalArcFS" == "" ]] && return 1
+	[[ "$globalArcFS" == "/" ]] && return 1
+	
+	mkdir -p "$globalArcFS" || return 1
+	
+	_fromImageDir /home/user/. "$globalArcFS"/home/user
+	_fromImageDir /etc/skel/. "$globalArcFS"/etc/skel
+}
+
+_imageFromArc() {
+	[[ "$globalArcFS" == "" ]] && return 1
+	[[ "$globalArcFS" == "/" ]] && return 1
+	
+	mkdir -p "$globalArcFS" || return 1
+	
+	_toImageDir "$globalArcFS"/home/user/. /home/user
+	_toImageDir "$globalArcFS"/etc/skel/. /etc/skel
+}
+
+#Example. Translates permissions and copies ".arduino" directory.
+_buildFromImage() {
+	_mustGetSudo
+	
+	[[ "$globalBuildDir" == "" ]] && return 1
+	[[ "$globalBuildDir" == "/" ]] && return 1
+	
+	mkdir -p "$globalBuildDir" || return 1
+	
+	sudo -n "$scriptAbsoluteLocation" _fromImageDir /home/user/.arduino/. "$globalBuildDir"/.arduino
+	#sudo -n "$scriptAbsoluteLocation" _fromImageDir /etc/skel/.arduino/. "$globalBuildDir"/.arduino
+	
+	_safePath "$globalBuildDir"/.arduino && sudo -n chown -R "$USER":"$GROUP" "$globalBuildDir"/.arduino
+}
+
+#Example. Translates permissions and copies ".arduino" directory.
+_buildToImage() {
+	_mustGetSudo
+	
+	[[ "$globalBuildDir" == "" ]] && return 1
+	[[ "$globalBuildDir" == "/" ]] && return 1
+	
+	mkdir -p "$globalBuildDir" || return 1
+	
+	sudo -n "$scriptAbsoluteLocation" _toImageDir "$globalBuildDir"/.arduino/. /home/user/.arduino
+	sudo -n "$scriptAbsoluteLocation" _toImageDir "$globalBuildDir"/.arduino/. /etc/skel/.arduino
+	
+	_chroot chown -R user:user /home/user/.arduino
+	_chroot chown -R root:root /etc/skel/.arduino
 }
 
 
@@ -5187,6 +5358,14 @@ export virtGuestUserDrop="ubvrtusr"
 export virtGuestUser="$virtGuestUserDrop"
 [[ $(id -u) == 0 ]] && export virtGuestUser="root"
 
+export globalArcDir="$scriptLocal"/a
+export globalArcFS="$globalArcDir"/fs
+export globalArcTmp="$globalArcDir"/tmp
+
+export globalBuildDir="$scriptLocal"/b
+export globalBuildFS="$globalBuildDir"/fs
+export globalBuildTmp="$globalBuildDir"/tmp
+
 export globalVirtDir="$scriptLocal"/v
 export globalVirtFS="$globalVirtDir"/fs
 export globalVirtTmp="$globalVirtDir"/tmp
@@ -6043,6 +6222,9 @@ _test() {
 	_tryExec "_testMountChecks"
 	_tryExec "_testBindMountManager"
 	_tryExec "_testDistro"
+	
+	_tryExec "_test_image"
+	_tryExec "_test_transferimage"
 	
 	_tryExec "_testCreatePartition"
 	_tryExec "_testCreateFS"

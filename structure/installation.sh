@@ -102,6 +102,9 @@ _test() {
 	_tryExec "_testBindMountManager"
 	_tryExec "_testDistro"
 	
+	_tryExec "_test_image"
+	_tryExec "_test_transferimage"
+	
 	_tryExec "_testCreatePartition"
 	_tryExec "_testCreateFS"
 	

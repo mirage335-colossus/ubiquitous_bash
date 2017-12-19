@@ -1873,20 +1873,44 @@ apt-get install virtualbox-guest-dkms virtualbox-guest-x11 linux-headers-$(uname
 usermod -G vboxsf -a user
 //}}}</pre>
 </div>
-<div title="Virtualization" creator="mirage335" modifier="mirage335" created="201710270206" modified="201712190256" changecount="96">
+<div title="Virtualization" creator="mirage335" modifier="mirage335" created="201710270206" modified="201712190433" changecount="101">
 <pre>Ubiquitous Bash middleware has the capacity to provide true application virtualization, with automatic fileparameter translation, across a wide variety of platforms (x86/64, ARM), and operating systems (MSW, Unix), by using any available underlying tool (~ChRoot, QEMU, Xen, ~VirtualBox, Docker, Wine, Cygwin, &lt;nowiki&gt;DosBox&lt;/nowiki&gt;), on a common disk format (raw image). Most of this capability has been realized, most of the remainder will involve simply merging existing code from [[HostedXen|https://github.com/mirage335/HostedXen]], [[HostedOpenVZ|https://github.com/mirage335/hostedOpenVZ]]. Automatic selection of native application by platform is also well supported.
 
 &lt;&lt;showtoc&gt;&gt;
 !Images
 Any bootable raw image may be used by ~ChRoot, QEMU, or ~VirtualBox. Raw images may be converted for use by Docker and vice versa. See [[Debian]], [[Raspbian]], or [[Docker|DockerCreate]] for built-in creation procedures.
 
-Images may be edited. In particular, the /etc/skel directory is used by both ~ChRoot and Docker components to build the home folder for the temporary &quot;ubvrtusr&quot;. Similarly, /home/user is directly used by QEMU and ~VirtualBox. For ~ChRoot, only the relevant &quot;_root*&quot; command can also make persistent changes. For QEMU, ~VirtualBox, and Docker, relevant &quot;_edit*&quot; commands may also make persistent changes.
+Images may be edited more easily with several shortcuts. Please be aware the _toImage/_fromImage commands are equivalent to &quot;cp -a&quot;, and will not overwrite or delete destination contents.
 //{{{
 ./ubiquitous_bash.sh _openImage
-#/etc/skel
-#/home/user
+
+./ubiquitous_bash.sh _toImage ./.arduino /etc/skel
+./ubiquitous_bash.sh _toImage ./.arduino /home/user
+
+./ubiquitous_bash.sh _fromImage /home/user/.arduino ./
+./ubiquitous_bash.sh _fromImage /etc/skel/.arduino ./
+
+./ubiquitous_bash.sh _toImage ./exim4 /etc/exim4
+./ubiquitous_bash.sh _fromImage ./exim4 /etc/exim4
+
 ./ubiquitous_bash.sh _closeImage
 //}}}
+
+Some directories have special significance within the ubiquitous_bash framework. In particular, the /etc/skel directory is used by both ~ChRoot and Docker components to build the home folder for the temporary &quot;ubvrtusr&quot;. Similarly, /home/user is directly used by QEMU and ~VirtualBox. For ~ChRoot, only the relevant &quot;_root*&quot; command can also make persistent changes. For QEMU, ~VirtualBox, and Docker, relevant &quot;_edit*&quot; commands may also make persistent changes.
+config
+Crucial directories may be automatically imported/exported with regard to the external filesystem.
+//{{{
+sudo ./ubiquitous_bash.sh _imageToArc
+sudo ./ubiquitous_bash.sh _ImageFromArc
+//}}}
+
+Some especially crucial build/configuration directories (eg. &quot;/etc/exim4&quot;, &quot;/etc/apache2&quot;, &quot;/etc/nginx&quot;, &quot;~/.arduino&quot;, may be desirable to keep on the host filesystem, perhaps tracked in an external repository, and uploaded as modifications are made. Overloading &quot;_buildToImage&quot; and &quot;_buildFromImage&quot; with &quot;./ops&quot; is recommended. See example code at &quot;virtualization/image/transferimage.sh&quot; .
+//{{{
+_buildToImage
+_buildFromImage
+//}}}
+
+Consider that other loopback devices, also managed through inclusions/installations of the ubiquitous_bash framework, or tar archives, may be used to store this build/configuration data. These are recommended approaches to addressing relatively complicated guest permissions issues.
 
 !&lt;nowiki&gt;BootDisc&lt;/nowiki&gt;
 Application virtualization information will be provided as shared folder and iso image.Mount this iso image at a standard location in guest, and include either &quot;cmd.sh&quot; or &quot;shell.bat&quot; within guest startup.
