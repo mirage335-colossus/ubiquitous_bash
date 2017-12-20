@@ -37,12 +37,14 @@ CMD ["/hello"]
 CZXWXcRMTo8EmM8i4d
 }
 
+#No production use. Dockerfiles now stored in "_lib". Kept for reference only.
 _here_dockerfile_lite_debianjessie() {
 	cat << 'CZXWXcRMTo8EmM8i4d'
 FROM ubvrt/debian:jessie
 CZXWXcRMTo8EmM8i4d
 }
 
+#No production use. Dockerfiles now stored in "_lib". Kept for reference only.
 _here_dockerfile_debianjessie() {
 	cat << 'CZXWXcRMTo8EmM8i4d'
 FROM ubvrt/debian:jessie
@@ -62,14 +64,15 @@ hicolor-icon-theme
 RUN apt-get -y install \
 default-jre
 CZXWXcRMTo8EmM8i4d
-	
-	_here_dockerfile_special
 }
 
 _here_dockerfile() {
 	[[ -e "$scriptLocal"/Dockerfile ]] && cat "$scriptLocal"/Dockerfile && _here_dockerfile_special && return 0
 	
-	[[ "$dockerBaseObjectName" == "ubvrt/debian:jessie" ]] && _here_dockerfile_debianjessie "$@" && return 0
+	#Reads out Dockerfile from _lib. Not recommended. Supported primarily for sake of example.
+	[[ "$dockerBaseObjectName" == "ubvrt/debian:jessie" ]] && [[ -e "$scriptAbsoluteFolder"/_lib/docker/debian/ubvrt/Dockerfile ]] && cat "$scriptAbsoluteFolder"/_lib/docker/debian/ubvrt/Dockerfile && _here_dockerfile_special && return 0
+	
+	#[[ "$dockerBaseObjectName" == "ubvrt/debian:jessie" ]] && _here_dockerfile_debianjessie "$@" && _here_dockerfile_debianjessie && return 0
 	
 	[[ "$dockerBaseObjectName" == "scratch:latest" ]] && _here_dockerfile_lite_scratch "$@" && return 0
 	

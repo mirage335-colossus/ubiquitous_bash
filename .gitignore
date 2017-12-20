@@ -1,6 +1,9 @@
 w_*/
 v_*/
-_lib/os
+*.tar
+*.zip
+*.iso
+vm.vdi
 vm.img
 vm*.img
 WARNING
@@ -11,3 +14,4 @@ devtask/
 *swp
 USAGE.*.html
 _buried
+ops

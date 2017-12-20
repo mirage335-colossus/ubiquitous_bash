@@ -84,7 +84,8 @@ _prepare_docker_default() {
 		#dockerObjectName="unimportant-local/app:app-local/debian:jessie"
 		#dockerObjectName="unimportant-hello-scratch"
 		#dockerObjectName="ubvrt-ubvrt-scratch"
-		dockerObjectName="ubvrt-ubvrt-ubvrt/debian:jessie"
+		#dockerObjectName="ubvrt-ubvrt-ubvrt/debian:jessie"
+		dockerObjectName="ubvrt-ubvrt-unknown/unknown:unknown"
 	fi
 	
 	#Allow specification of just the base name.

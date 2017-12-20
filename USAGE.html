@@ -815,14 +815,15 @@ Creates custom bootable x64 Debian image. Requires [[fetch|Debian]] dependencies
 [[Features]]
 [[Virtualization]]</pre>
 </div>
-<div title="Demo" creator="mirage335" modifier="mirage335" created="201712122105" modified="201712192039" changecount="29">
+<div title="Demo" creator="mirage335" modifier="mirage335" created="201712122105" modified="201712192349" changecount="33">
 <pre>From a Linux host, passing the full &quot;./ubiquitous_bash.sh _test&quot; suite, running these commands demonstrates correct operation of some of the most unique and sophisticated components. Patches will likely be tested against this command set before acceptance.
 
 !Virtualization
 
 Create VM image, install desired applications, remove any existing external resources.
 [[DemoEnvironmentCleanup]]
-[[DemoVirtualizationSetupNIX]]
+[[DemoImage]]
+[[DemoBootdiscNIX]]
 
 Explore and modify guest filesystem.
 
@@ -876,8 +877,12 @@ Demonstrate ~ChRoot, QEMU, ~VirtualBox, and Docker support, from the same image.
 //}}}
 
 //{{{
+./ubiquitous_bash.sh _docker_img_to_tar
+./ubiquitous_bash.sh _create_docker_image
 ./ubiquitous_bash.sh _dockerLaunch
 ./ubiquitous_bash.sh _dockerCommit
+./ubiquitous_bash.sh _dockerExport
+./ubiquitous_bash.sh _dockerImport
 
 ./ubiquitous_bash.sh _userDocker
 ./ubiquitous_bash.sh _userDocker kwrite ./CC0_license.txt
@@ -886,24 +891,8 @@ Demonstrate ~ChRoot, QEMU, ~VirtualBox, and Docker support, from the same image.
 ./ubiquitous_bash.sh _userDocker xeyes
 //}}}</pre>
 </div>
-<div title="DemoEnvironmentCleanup" creator="mirage335" modifier="mirage335" created="201712190517" changecount="1">
-<pre>Ensure no existing resources on the host machine could cause a test to pass erroneously.
-//{{{
-_dockerDeleteAll
-//}}}</pre>
-</div>
-<div title="DemoVirtualizationSetupNIX" creator="mirage335" modifier="mirage335" created="201712190505" modified="201712191952" changecount="6">
-<pre>!Existing Image
-An existing Debian VM image with bootdisc support may be copied to &quot;_local/vm.img&quot;.
-
-!&lt;nowiki&gt;NetInstall&lt;/nowiki&gt;
-Create Debian VM image. May require updated version information, see code at shortcuts/distro/debian . For compatibility with ~ChRoot, first partition must be the rootfs, of type ext4. Swap partitions are not recommended.
-//{{{
-./ubiquitous_bash.sh _fetch_x64_DebianLiteISO
-./ubiquitous_bash.sh _create_x64_debianLiteVM
-//}}}
-
-Setup bootdisc support for NIX guest (MSW guest equally supported).
+<div title="DemoBootdiscNIX" creator="mirage335" modifier="mirage335" created="201712192342" modified="201712192359" changecount="5">
+<pre>Setup bootdisc support for NIX guest (MSW guest equally supported).
 
 Launch VM image in persistent mode with bootdisc attached.
 //{{{
@@ -918,6 +907,9 @@ echo 'LABEL=uk4uPhB663kVcygT0q     /media/bootdisc    iso9660    ro,nofail    0 
 
 useradd -m user
 usermod -G audio,video,plugdev,input,netdev,lpadmin,scanner -a user
+
+#LightDM/startlxde recommended.
+update-alternatives --config x-session-manager
 
 #Or manage through KDE system settings (KDE/sddm).
 echo 'autologin-user=user' &gt;&gt; /etc/lightdm/lightdm.conf
@@ -943,7 +935,71 @@ Conversion to Docker Image.
 //{{{
 ./ubiquitous_bash.sh _docker_img_to_tar
 ./ubiquitous_bash.sh _create_docker_image
+//}}}</pre>
+</div>
+<div title="DemoEnvironmentCleanup" creator="mirage335" modifier="mirage335" created="201712190517" changecount="1">
+<pre>Ensure no existing resources on the host machine could cause a test to pass erroneously.
+//{{{
+_dockerDeleteAll
+//}}}</pre>
+</div>
+<div title="DemoImage" creator="mirage335" modifier="mirage335" created="201712190505" modified="201712200234" changecount="20">
+<pre>!Existing Image
+An existing Debian VM image with bootdisc support may be copied to &quot;_local/vm.img&quot;.
+
+!&lt;nowiki&gt;Debian&lt;/nowiki&gt;
+!!Docker
+Configure dockerBaseObjectName in &quot;./ops&quot; . Optional.
+//{{{
+./ubiquitous_bash.sh _configureOps 'export dockerBaseObjectName=&quot;ubvrt/debian:jessie&quot;'
 //}}}
+
+Configure Dockerfile.
+//{{{
+./ubiquitous_bash.sh _configureLocal _lib/docker/debian/ubvrt/Dockerfile
+//}}}
+
+Create VM Image
+//{{{
+./ubiquitous_bash.sh _create_docker_base &quot;ubvrt/debian:jessie&quot;
+./ubiquitous_bash.sh _create_docker_image
+//}}}
+
+Launch persistent Docker container.
+//{{{
+./ubiquitous_bash.sh ./ubiquitous_bash.sh _dockerLaunch
+//}}}
+
+Guest commands.
+//{{{
+#Set root login.
+passwd
+
+#Set user login.
+useradd -m user
+usermod -G audio,video,plugdev,input,netdev,lpadmin,scanner -a user
+passwd user
+//}}}
+
+Commit changes to Docker image.
+//{{{
+./ubiquitous_bash.sh _dockerCommit
+//}}}
+
+Convert to bootable image.
+//{{{
+./ubiquitous_bash.sh _dockerExport
+./ubiquitous_bash.sh _docker_tar_to_img
+./ubiquitous_bash.sh _docker_img_enboot
+//}}}
+
+!!&lt;nowiki&gt;NetInstall&lt;/nowiki&gt;
+Create Debian VM image. May require updated version information, see code at shortcuts/distro/debian . For compatibility with ~ChRoot, first partition must be the rootfs, of type ext4. Swap partitions are not recommended.
+//{{{
+./ubiquitous_bash.sh _fetch_x64_DebianLiteISO
+./ubiquitous_bash.sh _create_x64_debianLiteVM
+//}}}
+
 </pre>
 </div>
 <div title="Deployment" creator="mirage335" modifier="mirage335" created="201712130532" modified="201712130533" changecount="2">
@@ -958,8 +1014,14 @@ Add user to group sudo .
 usermod -a -G sudo user
 //}}}</pre>
 </div>
-<div title="DockerConvert" creator="mirage335" modifier="mirage335" created="201712120347" modified="201712120426" changecount="5">
-<pre>!Exported Archive To Image
+<div title="DockerConvert" creator="mirage335" modifier="mirage335" created="201712120347" modified="201712192150" changecount="6">
+<pre>!Export/Import To/From Archive
+//{{{
+./ubiquitous_bash.sh _dockerExport
+./ubiquitous_bash.sh _dockerImport
+//}}}
+
+!Exported Archive To Image
 //{{{
 ./ubiquitous_bash.sh _docker_tar_to_img
 //}}}

@@ -1,3 +1,19 @@
+_configureLocal() {
+	_configureFile "$1" "_local"
+}
+
+_configureFile() {
+	cp "$scriptAbsoluteFolder"/"$1" "$scriptAbsoluteFolder"/"$2"
+}
+
+_configureOps() {
+	echo "$@" >> "$scriptAbsoluteFolder"/ops
+}
+
+_resetOps() {
+	rm "$scriptAbsoluteFolder"/ops
+}
+
 _importShortcuts() {
 	_visualPrompt
 }
