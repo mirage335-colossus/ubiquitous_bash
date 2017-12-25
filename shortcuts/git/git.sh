@@ -1,4 +1,4 @@
-testGit() {
+_testGit() {
 	checkDep git
 }
 

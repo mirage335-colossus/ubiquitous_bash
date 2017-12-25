@@ -65,6 +65,16 @@ export ubiquitiousLibDir="."
 export progDir="./_prog"
 export progScript="./ubiquitous_bash.sh"
 
+#Checks whether command or function is available.
+# WARNING Needed by safeRMR .
+_checkDep() {
+	if ! type "$1" >/dev/null 2>&1
+	then
+		echo "$1" missing
+		_stop 1
+	fi
+}
+
 #"$1" == file path
 _includeFile() {
 	
@@ -78,182 +88,260 @@ _includeFile() {
 	return 1
 }
 
-#"$1" == filename
-#"$2" == subdirectory
+#Provide only approximate, realative paths. These will be disassembled and treated as a search query following stricti preferences
+#"generic/filesystem/absolutepaths.sh"
 _includeScript() {
+
+	local includeScriptFilename=$(basename "$1")
+	local includeScribtSubdirectory=$(dirname "$1")
 	
-	_includeFile "$progDir"/"$2"/"$1" && return 0
+	echo "$ubiquitiousLibDir"/"$includeScribtSubdirectory"/"$includeScriptFilename"
 	
-	_includeFile "$progDir"/"$1" && return 0
 	
-	_includeFile "$ubiquitiousLibDir"/"$2"/"$1" && return 0
+	_includeFile "$progDir"/"$includeScribtSubdirectory"/"$includeScriptFilename" && return 0
 	
-	_includeFile "$ubiquitiousLibDir"/"$1" && return 0
+	_includeFile "$progDir"/"$includeScriptFilename" && return 0
+	
+	_includeFile "$ubiquitiousLibDir"/"$includeScribtSubdirectory"/"$includeScriptFilename" && return 0
+	
+	_includeFile "$ubiquitiousLibDir"/"$includeScriptFilename" && return 0
 	
 }
 
+# "$1" == script list array
+_includeScripts() {
+	local currentIncludeScript
+	local historyIncludeScript
+	local historyIncludedScript
+	local duplicateIncludeScript
+	
+	for currentIncludeScript in "$@"
+	do	
+		duplicateIncludeScript="false"
+		for historyIncludedScript in "${historyIncludeScript[@]}"
+		do
+			if [[ "$historyIncludedScript" == "$currentIncludeScript" ]]
+			then
+				duplicateIncludeScript="true"
+			fi
+		done
+		historyIncludeScript+=("$currentIncludeScript")
+		
+		[[ "$duplicateIncludeScript" != "true" ]] && _includeScript "$currentIncludeScript"
+	done
+}
+
+_checkDep basename
+_checkDep dirname
+_checkDep readlink
+_checkDep realpath
+
+##### Dependency Tracking
+
+_deps_chroot() {
+	true
+}
+
+_deps_qemu() {
+	true
+}
+
+_deps_docker() {
+	true
+}
+
+_deps_docker() {
+	true
+}
+
+
+
+#####
+
+
+
+
+
+
+
 rm "$progScript" >/dev/null 2>&1
 
-_includeScript minimalheader.sh "generic"
+includeScriptList+=( "generic"/minimalheader.sh )
 
-echo "#####Utilities" >> "$progScript"
-echo >> "$progScript"
+#####Utilities
+includeScriptList+=( "labels"/utilitiesLabel.sh )
 
-_includeScript showCommand.sh "generic"
+includeScriptList+=( "generic"/showCommand.sh )
 
-_includeScript absolutepaths.sh "generic/filesystem"
+includeScriptList+=( "generic/filesystem"/absolutepaths.sh )
 
-_includeScript getext.sh "generic/filesystem"
+includeScriptList+=( "generic/filesystem"/getext.sh )
 
-_includeScript finddir.sh "generic/filesystem"
+includeScriptList+=( "generic/filesystem"/finddir.sh )
 
-_includeScript safedelete.sh "generic/filesystem"
+includeScriptList+=( "generic/filesystem"/safedelete.sh )
 
-_includeScript discoverresource.sh "generic/filesystem"
+includeScriptList+=( "generic/filesystem"/discoverresource.sh )
 
-_includeScript bindmountmanager.sh "generic/filesystem/mounts"
+includeScriptList+=( "generic/filesystem/mounts"/bindmountmanager.sh )
 
-_includeScript waitumount.sh "generic/filesystem/mounts"
+includeScriptList+=( "generic/filesystem/mounts"/waitumount.sh )
 
-_includeScript mountchecks.sh "generic/filesystem/mounts"
+includeScriptList+=( "generic/filesystem/mounts"/mountchecks.sh )
 
-_includeScript timeout.sh "generic/process"
+includeScriptList+=( "generic/process"/timeout.sh )
 
-_includeScript waitforprocess.sh "generic/process"
+includeScriptList+=( "generic/process"/waitforprocess.sh )
 
-_includeScript daemon.sh "generic/process"
+includeScriptList+=( "generic/process"/daemon.sh )
 
-_includeScript remotesig.sh "generic/process"
+includeScriptList+=( "generic/process"/remotesig.sh )
 
-_includeScript fetch.sh "generic/net"
+includeScriptList+=( "generic/net"/fetch.sh )
 
-_includeScript findport.sh "generic/net"
+includeScriptList+=( "generic/net"/findport.sh )
 
-_includeScript uid.sh "generic"
+includeScriptList+=( "generic"/uid.sh )
 
-_includeScript messaging.sh "generic"
-_includeScript validaterequest.sh "generic"
+includeScriptList+=( "generic"/messaging.sh )
+includeScriptList+=( "generic"/validaterequest.sh )
 
-_includeScript preserveLog.sh "generic"
+includeScriptList+=( "generic"/preserveLog.sh )
 
-_includeScript here_systemd.sh "os/unix/systemd"
-_includeScript hook_systemd.sh "os/unix/systemd"
+includeScriptList+=( "os"/getDep.sh )
+includeScriptList+=( "os/distro/debian"/getDep_debian.sh )
 
-_includeScript virtenv.sh "virtualization"
+includeScriptList+=( "os/unix/systemd"/here_systemd.sh )
+includeScriptList+=( "os/unix/systemd"/hook_systemd.sh )
 
-_includeScript osTranslation.sh "virtualization"
-_includeScript localPathTranslation.sh "virtualization"
+includeScriptList+=( "virtualization"/virtenv.sh )
 
-_includeScript mountimage.sh "virtualization/image"
-_includeScript createImage.sh "virtualization/image"
-_includeScript here_bootdisc.sh "virtualization/image"
-_includeScript bootdisc.sh "virtualization/image"
-_includeScript userpersistenthome.sh "virtualization/image"
-_includeScript transferimage.sh "virtualization/image"
+includeScriptList+=( "virtualization"/osTranslation.sh )
+includeScriptList+=( "virtualization"/localPathTranslation.sh )
 
-_includeScript procchroot.sh "virtualization/chroot"
-_includeScript mountchroot.sh "virtualization/chroot"
-_includeScript enterchroot.sh "virtualization/chroot"
+includeScriptList+=( "virtualization/image"/mountimage.sh )
+includeScriptList+=( "virtualization/image"/createImage.sh )
+includeScriptList+=( "virtualization/image"/here_bootdisc.sh )
+includeScriptList+=( "virtualization/image"/bootdisc.sh )
+includeScriptList+=( "virtualization/image"/userpersistenthome.sh )
+includeScriptList+=( "virtualization/image"/transferimage.sh )
 
-_includeScript mountchrootuser.sh "virtualization/chroot"
-_includeScript userchroot.sh "virtualization/chroot"
-_includeScript dropchroot.sh "virtualization/chroot"
+includeScriptList+=( "virtualization/chroot"/testchroot.sh )
 
-_includeScript qemu-raspi-raspi.sh "virtualization/qemu"
-_includeScript qemu-x64-raspi.sh "virtualization/qemu"
-_includeScript qemu-x64-x64.sh "virtualization/qemu"
-_includeScript qemu.sh "virtualization/qemu"
+includeScriptList+=( "virtualization/chroot"/procchroot.sh )
+includeScriptList+=( "virtualization/chroot"/mountchroot.sh )
+includeScriptList+=( "virtualization/chroot"/enterchroot.sh )
 
-_includeScript vboxtest.sh "virtualization/vbox"
-_includeScript vboxmount.sh "virtualization/vbox"
-_includeScript vboxlab.sh "virtualization/vbox"
-_includeScript vboxuser.sh "virtualization/vbox"
+includeScriptList+=( "virtualization/chroot"/mountchrootuser.sh )
+includeScriptList+=( "virtualization/chroot"/userchroot.sh )
+includeScriptList+=( "virtualization/chroot"/dropchroot.sh )
 
-_includeScript here_dosbox.sh "virtualization/dosbox"
-_includeScript dosbox.sh "virtualization/dosbox"
+includeScriptList+=( "virtualization/qemu"/qemu-raspi-raspi.sh )
+includeScriptList+=( "virtualization/qemu"/qemu-x64-raspi.sh )
+includeScriptList+=( "virtualization/qemu"/qemu-x64-x64.sh )
+includeScriptList+=( "virtualization/qemu"/qemu.sh )
 
-_includeScript wine.sh "virtualization/wine"
+includeScriptList+=( "virtualization/vbox"/vboxtest.sh )
+includeScriptList+=( "virtualization/vbox"/vboxmount.sh )
+includeScriptList+=( "virtualization/vbox"/vboxlab.sh )
+includeScriptList+=( "virtualization/vbox"/vboxuser.sh )
 
-_includeScript here_docker.sh "virtualization/docker"
-_includeScript dockerdrop.sh "virtualization/docker"
-_includeScript dockertest.sh "virtualization/docker"
-_includeScript dockerchecks.sh "virtualization/docker"
-_includeScript dockeruser.sh "virtualization/docker"
+includeScriptList+=( "virtualization/dosbox"/here_dosbox.sh )
+includeScriptList+=( "virtualization/dosbox"/dosbox.sh )
 
-_includeScript mustberoot.sh "special"
-_includeScript mustgetsudo.sh "special"
+includeScriptList+=( "virtualization/wine"/wine.sh )
 
-_includeScript gosu.sh "special/gosu"
+includeScriptList+=( "virtualization/docker"/here_docker.sh )
+includeScriptList+=( "virtualization/docker"/dockerdrop.sh )
+includeScriptList+=( "virtualization/docker"/dockertest.sh )
+includeScriptList+=( "virtualization/docker"/dockerchecks.sh )
+includeScriptList+=( "virtualization/docker"/dockeruser.sh )
 
-_includeScript uuid.sh "special"
+includeScriptList+=( "special"/mustberoot.sh )
+includeScriptList+=( "special"/mustgetsudo.sh )
 
-echo "#####Shortcuts" >> "$progScript"
-echo >> "$progScript"
+includeScriptList+=( "special/gosu"/gosu.sh )
 
-_includeScript devsearch.sh "shortcuts/dev"
+includeScriptList+=( "special"/uuid.sh )
 
-_includeScript git.sh "shortcuts/git"
-_includeScript gitBare.sh "shortcuts/git"
+#####Shortcuts
+includeScriptList+=( "labels"/shortcutsLabel.sh )
 
-_includeScript here_mkboot.sh "shortcuts/mkboot"
-_includeScript mkboot.sh "shortcuts/mkboot"
+includeScriptList+=( "shortcuts/dev"/devsearch.sh )
 
-_includeScript distro.sh "shortcuts/distro"
+includeScriptList+=( "shortcuts/git"/git.sh )
+includeScriptList+=( "shortcuts/git"/gitBare.sh )
 
-_includeScript createDebian.sh "shortcuts/distro/debian"
-_includeScript createRaspbian.sh "shortcuts/distro/raspbian"
+includeScriptList+=( "shortcuts/mkboot"/here_mkboot.sh )
+includeScriptList+=( "shortcuts/mkboot"/mkboot.sh )
 
-_includeScript visualPrompt.sh "shortcuts/prompt"
+includeScriptList+=( "shortcuts/distro"/distro.sh )
 
-_includeScript testx11.sh "shortcuts/x11"
-_includeScript x11ClipboardImage.sh "shortcuts/x11/clipboard"
+includeScriptList+=( "shortcuts/distro/debian"/createDebian.sh )
+includeScriptList+=( "shortcuts/distro/raspbian"/createRaspbian.sh )
 
-_includeScript dockerassets.sh "shortcuts/docker"
-_includeScript dockerdelete.sh "shortcuts/docker"
-_includeScript dockercreate.sh "shortcuts/docker"
-_includeScript dockerconvert.sh "shortcuts/docker"
-_includeScript dockerportation.sh "shortcuts/docker"
-_includeScript dockercontainer.sh "shortcuts/docker"
+includeScriptList+=( "shortcuts/prompt"/visualPrompt.sh )
 
-_includeScript setupUbiquitous.sh "shortcuts"
+includeScriptList+=( "shortcuts/x11"/testx11.sh )
+includeScriptList+=( "shortcuts/x11/clipboard"/x11ClipboardImage.sh )
 
-echo "#####Basic Variable Management" >> "$progScript"
-echo >> "$progScript"
+includeScriptList+=( "shortcuts/docker"/dockerassets.sh )
+includeScriptList+=( "shortcuts/docker"/dockerdelete.sh )
+includeScriptList+=( "shortcuts/docker"/dockercreate.sh )
+includeScriptList+=( "shortcuts/docker"/dockerconvert.sh )
+includeScriptList+=( "shortcuts/docker"/dockerportation.sh )
+includeScriptList+=( "shortcuts/docker"/dockercontainer.sh )
 
-_includeScript globalvars.sh "structure"
+includeScriptList+=( "shortcuts"/setupUbiquitous.sh )
 
-_includeScript specglobalvars.sh "structure"
+#####Basic Variable Management
+includeScriptList+=( "labels"/basicvarLabel.sh )
 
-_includeScript vboxvars.sh "virtualization/vbox"
-_includeScript dockervars.sh "virtualization/docker"
+#####Global variables.
+includeScriptList+=( "structure"/globalvars.sh )
 
-#_includeScript gitVars.sh "shortcuts/git"
+includeScriptList+=( "structure"/specglobalvars.sh )
 
-_includeScript localfs.sh "structure"
+includeScriptList+=( "virtualization/vbox"/vboxvars.sh )
+includeScriptList+=( "virtualization/docker"/dockervars.sh )
 
-_includeScript localenv.sh "structure"
+includeScriptList+=( "shortcuts/git"/gitVars.sh )
 
-_includeScript hello.sh "generic/hello"
-_includeScript idle.sh "generic/process"
+includeScriptList+=( "structure"/localfs.sh )
 
-_includeScript installation.sh "structure"
+includeScriptList+=( "structure"/localenv.sh )
 
-_includeScript core.sh
+includeScriptList+=( "generic/hello"/hello.sh )
+includeScriptList+=( "generic/process"/idle.sh )
 
-_includeScript program.sh "structure"
+includeScriptList+=( "structure"/installation.sh )
 
-_includeScript overrides.sh "structure"
+includeScriptList+=( core.sh )
 
-_includeScript entry.sh "structure"
+includeScriptList+=( "structure"/program.sh )
+
+includeScriptList+=( "structure"/overrides.sh )
+
+includeScriptList+=( "structure"/entry.sh )
+
+
+
+
+
+
+
+
+
+_includeScripts "${includeScriptList[@]}"
 
 chmod u+x "$progScript"
 
-if "$progScript" _test > ./compile.log 2>&1
-then
-	rm compile.log
-else
-	exit 1
-fi
+#if "$progScript" _test > ./compile.log 2>&1
+#then
+#	rm compile.log
+#else
+#	exit 1
+#fi
 
 
 

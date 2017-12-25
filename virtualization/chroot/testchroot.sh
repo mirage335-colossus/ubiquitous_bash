@@ -9,6 +9,10 @@ _testChRoot() {
 	
 	_checkDep id
 	
+	_checkDep mount
+	_checkDep umount
+	_checkDep mountpoint
+	
 	_checkDep unionfs-fuse
 	
 }

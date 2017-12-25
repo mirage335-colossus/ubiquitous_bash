@@ -546,6 +546,9 @@ All dependencies of all automatically functionality can be checked by one comman
 //}}}
 </pre>
 </div>
+<div title="CygwinPrereq" creator="YourName" modifier="mirage335" created="201712220314" modified="201712220314" changecount="2">
+<pre>WIP</pre>
+</div>
 <div title="DcTableOfContentsPlugin" modifier="YourName" created="200711141727" modified="201202151646" tags="plugins macros systemConfig excludeLists excludeSearch" changecount="4">
 <pre>/***
 Slight modification by mirage335 to change toggle button text.
@@ -808,6 +811,16 @@ Fetches and verifies x64 Debian installation ISO, saves to current directory (ie
 
 !_create_x64_debianLiteVM
 Creates custom bootable x64 Debian image. Requires [[fetch|Debian]] dependencies, QEMU, and manual guidance through the setup process.</pre>
+</div>
+<div title="DebianPrereq" creator="mirage335" modifier="mirage335" created="201712220319" modified="201712251601" changecount="5">
+<pre>!Devel
+apt-get install build-essential linux-headers-$(uname -r) yakuake
+
+!Generic
+apt-get install git axel sudo
+
+!&lt;nowiki&gt;CoreAutoSSH&lt;/nowiki&gt;
+apt-get install x11vnc xtightvncviewer nmap autossh</pre>
 </div>
 <div title="DefaultTiddlers" creator="mirage335" modifier="mirage335" created="201710261744" modified="201710270413" changecount="3">
 <pre>[[Command]]
@@ -1304,8 +1317,17 @@ Fetches and verifies Raspbian image. Partly relies on &quot;raspberrypi.org&quot
 !_create_raspbian
 Extracts Raspbian image.</pre>
 </div>
-<div title="Reference" creator="mirage335" modifier="mirage335" created="201712130531" modified="201712130531" changecount="2">
-<pre>[[Deployment]]
+<div title="Reference" creator="mirage335" modifier="mirage335" created="201712130531" modified="201712220314" changecount="5">
+<pre>!Prerequsites
+For any Ubiquitous Bash application, the &quot;_test&quot; function will check for presence of all host OS dependencies needed by the included components. Exhaustive prerequsite package installation instructions are provided for specific distributions.
+
+[[Cygwin|CygwinPrereq]]
+
+[[Debian|DebianPrereq]]
+
+
+!SysAdmin
+[[Deployment]]
 </pre>
 </div>
 <div title="Resources" creator="mirage335" modifier="mirage335" created="201710270111" modified="201710270343" changecount="4">
@@ -1366,11 +1388,22 @@ Basename of the directory containing script. Typically used to cause the script 
 
 </pre>
 </div>
-<div title="Shortcuts" creator="mirage335" modifier="mirage335" created="201710261859" modified="201712120337" changecount="22">
+<div title="SearchDevel" creator="mirage335" modifier="mirage335" created="201712251604" modified="201712251604" changecount="3">
+<pre>!Find Function
+Searches current directory for references to function name. Ignores large files.
+//{{{
+_findFunction _true
+//}}}
+</pre>
+</div>
+<div title="Shortcuts" creator="mirage335" modifier="mirage335" created="201710261859" modified="201712251603" changecount="23">
 <pre>Many functions are relevant to, or intended to simplify, typical desktop usage. Generally sorted into &quot;generic&quot; or &quot;shortcuts&quot; subdirectories.
 
 
 &lt;&lt;showtoc&gt;&gt;
+!Devel
+[[Search|SearchDevel]]
+
 !Generic
 [[Generic]]
 [[Parameter]]
@@ -1400,8 +1433,8 @@ Basename of the directory containing script. Typically used to cause the script 
 <div title="SiteTitle" creator="mirage335" modifier="mirage335" created="201710261740" changecount="1">
 <pre>Ubiquitous Bash</pre>
 </div>
-<div title="Stability" creator="mirage335" modifier="mirage335" created="201710262147" modified="201710270201" changecount="6">
-<pre>API stability is prioritized as highly as reliability and safety during development. Functions not considered stable are explicitly documented as [[Experimental]] and [[NoTest]] .
+<div title="Stability" creator="mirage335" modifier="YourName" created="201710262147" modified="201712220308" changecount="7">
+<pre>API stability is prioritized as highly as reliability and safety during development. Functions not considered stable are explicitly documented as [[Experimental]], [[NoTest]], and/or &quot;no production use&quot;.
 
 As noted in README.
 &lt;&lt;&lt;

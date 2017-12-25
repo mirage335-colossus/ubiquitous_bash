@@ -299,6 +299,7 @@ _discoverResource() {
 
 _testBindMountManager() {
 	_checkDep mount
+	_checkDep umount
 	_checkDep mountpoint
 	
 	if ! mount --help | grep '\-\-bind' >/dev/null 2>&1
@@ -677,6 +678,8 @@ _hook_systemd_shutdown() {
 	
 	! _wantSudo && return 1
 	
+	! [[ -e /etc/systemd/system ]] && return 0
+	
 	_here_systemd_shutdown | sudo -n tee /etc/systemd/system/"$sessionid".service > /dev/null
 	sudo -n systemctl enable "$sessionid".service 2>&1 | sudo tee -a "$permaLog"/gsysd.log > /dev/null 2>&1
 	sudo -n systemctl start "$sessionid".service 2>&1 | sudo tee -a "$permaLog"/gsysd.log > /dev/null 2>&1
@@ -686,6 +689,8 @@ _hook_systemd_shutdown_action() {
 	[[ -e /etc/systemd/system/"$sessionid".service ]] && return 0
 	
 	! _wantSudo && return 1
+	
+	! [[ -e /etc/systemd/system ]] && return 0
 	
 	_here_systemd_shutdown_action "$@" | sudo -n tee /etc/systemd/system/"$sessionid".service > /dev/null
 	sudo -n systemctl enable "$sessionid".service 2>&1 | sudo tee -a "$permaLog"/gsysd.log > /dev/null 2>&1
@@ -702,6 +707,8 @@ _unhook_systemd_shutdown() {
 	[[ ! -e /etc/systemd/system/"$hookSessionid".service ]] && return 0
 	
 	! _wantSudo && return 1
+	
+	! [[ -e /etc/systemd/system ]] && return 0
 	
 	[[ "$SYSTEMCTLDISABLE" == "true" ]] && echo SYSTEMCTLDISABLE | sudo tee -a "$permaLog"/gsysd.log > /dev/null 2>&1 && return 0
 	export SYSTEMCTLDISABLE=true
@@ -1646,6 +1653,25 @@ _buildToImage() {
 	_chroot chown -R root:root /etc/skel/.arduino
 }
 
+
+_testChRoot() {
+	_testGosu
+	
+	_checkDep gosu-armel
+	_checkDep gosu-amd64
+	_checkDep gosu-i386
+	
+	_mustGetSudo
+	
+	_checkDep id
+	
+	_checkDep mount
+	_checkDep umount
+	_checkDep mountpoint
+	
+	_checkDep unionfs-fuse
+	
+}
 
 #Lists all chrooted processes. First parameter is chroot directory. Script might need to run as root.
 #Techniques originally released by other authors at http://forums.grsecurity.net/viewtopic.php?f=3&t=1632 .
@@ -3810,7 +3836,7 @@ _findFunction() {
 	find . -type f -size -10000k -exec grep -n "$@" {} /dev/null \;
 }
 
-testGit() {
+_testGit() {
 	checkDep git
 }
 
@@ -5725,6 +5751,8 @@ _prepare_docker() {
 	
 }
 #_prepare_docker
+
+
 
 
 #####Local Environment Management (Resources)
