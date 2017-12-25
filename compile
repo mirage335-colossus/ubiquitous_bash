@@ -95,8 +95,6 @@ _includeScript() {
 	local includeScriptFilename=$(basename "$1")
 	local includeScribtSubdirectory=$(dirname "$1")
 	
-	echo "$ubiquitiousLibDir"/"$includeScribtSubdirectory"/"$includeScriptFilename"
-	
 	
 	_includeFile "$progDir"/"$includeScribtSubdirectory"/"$includeScriptFilename" && return 0
 	

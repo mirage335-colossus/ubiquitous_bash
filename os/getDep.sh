@@ -17,7 +17,7 @@ _mustGetDep() {
 _fetchDep_distro() {
 	if [[ -e /etc/issue ]] && cat /etc/issue | grep 'Debian' > /dev/null 2>&1
 	then
-		_getDep_debian "$@"
+		_fetchDep_debian "$@"
 		return
 	fi
 	return 1
