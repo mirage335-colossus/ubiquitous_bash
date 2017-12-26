@@ -17,7 +17,7 @@ _wantSudo() {
 	local rootAvailable
 	rootAvailable=false
 	
-	rootAvailable=$(sudo -n echo true)
+	rootAvailable=$(sudo -n echo true 2> /dev/null)
 	
 	#[[ $(id -u) == 0 ]] && rootAvailable=true
 	
