@@ -105,10 +105,11 @@ _fetchDep_debianStretch_special() {
 		return 0
 	fi
 	
-	#Unlikely scenario.
+	#Unlikely scenario for hosts.
 	if [[ "$1" == "grub-install" ]]
 	then
-		sudo -n apt-get install --install-recommends -y grub-install
+		sudo -n apt-get install --install-recommends -y grub2
+		#sudo -n apt-get install --install-recommends -y grub-legacy
 		return 0
 	fi
 	
@@ -169,6 +170,12 @@ _fetchDep_debianStretch_special() {
 		
 		sudo -n usermod -a -G docker "$USER"
 		
+		return 0
+	fi
+	
+	if [[ "$1" == "smbd" ]]
+	then
+		sudo -n apt-get install --install-recommends -y samba
 		return 0
 	fi
 	

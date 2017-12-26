@@ -2,7 +2,7 @@ _here_mkboot_grubcfg() {
 	
 	cat << 'CZXWXcRMTo8EmM8i4d'
 set default="0"
-set timeout="3"
+set timeout="1"
 
 menuentry "Buildroot" {
     insmod gzio

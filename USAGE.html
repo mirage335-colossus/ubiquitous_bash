@@ -834,7 +834,7 @@ git clone https://github.com/moby/moby.git
 <div title="DefaultTiddlers" creator="mirage335" modifier="mirage335" created="201710261744" modified="201712260421" changecount="6">
 <pre>[[Demo]]</pre>
 </div>
-<div title="Demo" creator="mirage335" modifier="mirage335" created="201712122105" modified="201712192349" changecount="33">
+<div title="Demo" creator="mirage335" modifier="mirage335" created="201712122105" modified="201712261649" changecount="34">
 <pre>From a Linux host, passing the full &quot;./ubiquitous_bash.sh _test&quot; suite, running these commands demonstrates correct operation of some of the most unique and sophisticated components. Patches will likely be tested against this command set before acceptance.
 
 !Virtualization
@@ -847,8 +847,8 @@ Create VM image, install desired applications, remove any existing external reso
 Explore and modify guest filesystem.
 
 //{{{
-mkdir -p ~/.arduino
-sudo ./ubiquitous_bash.sh _toImage ./.arduino /etc/skel
+mkdir -p ./_local/.arduino
+sudo ./ubiquitous_bash.sh _toImage ./_local/.arduino /etc/skel
 
 ./ubiquitous_bash.sh _userChRoot ls -la /home/ubvrtusr
 
@@ -910,7 +910,7 @@ Demonstrate ~ChRoot, QEMU, ~VirtualBox, and Docker support, from the same image.
 ./ubiquitous_bash.sh _userDocker xeyes
 //}}}</pre>
 </div>
-<div title="DemoBootdiscNIX" creator="mirage335" modifier="mirage335" created="201712192342" modified="201712260428" changecount="7">
+<div title="DemoBootdiscNIX" creator="mirage335" modifier="mirage335" created="201712192342" modified="201712261953" changecount="18">
 <pre>Setup bootdisc support for NIX guest (MSW guest equally supported).
 
 Launch VM image in persistent mode with bootdisc attached.
@@ -920,6 +920,8 @@ Launch VM image in persistent mode with bootdisc attached.
 
 Guest commands.
 //{{{
+apt-get -y install grub2 makedev linux-image-amd64
+apt-get -y install cifs-utils nmap smbclient
 apt-get -y install lxde-core lxde task-lxde-desktop
 apt-get -y install kde-plasma-desktop kde-standard kde-full task-kde-desktop
 
@@ -927,24 +929,35 @@ mkdir -p /media/bootdisc
 
 echo 'LABEL=uk4uPhB663kVcygT0q     /media/bootdisc    iso9660    ro,nofail    0 0' &gt;&gt; /etc/fstab
 
+mount /media/bootdisc
+
 useradd -m user
+usermod -s bash user
 usermod -G audio,video,plugdev,input,netdev,lpadmin,scanner -a user
 
 #LightDM/startlxde recommended.
+dpkg-reconfigure lightdm
 update-alternatives --config x-session-manager
 
 #Or manage through KDE system settings (KDE/sddm).
-echo 'autologin-user=user' &gt;&gt; /etc/lightdm/lightdm.conf
+vim /etc/lightdm/lightdm.conf
+#&gt;#echo 'autologin-user=user' 
 
-mkdir -p ~/.config/autostart
-cp /media/bootdisc/startup.desktop ~/.config/autostart/
+sudo -n -u user mkdir -p /home/user/.config/autostart
+sudo -n -u user cp /media/bootdisc/startup.desktop /home/user/.config/autostart/
 
-mkdir -p /home/user/project
+/media/bootdisc/ubiquitous_bash.sh _setupUbiquitous_nonet
+sudo -n -u user /media/bootdisc/ubiquitous_bash.sh _setupUbiquitous_nonet
 
+sudo -n -u user mkdir -p /home/user/project
+sudo -n -u user mkdir -p /home/user/Downloads
+
+mkdir -p /root/core/infrastructure
+cp /media/bootdisc/rootnix.sh /root/core/infrastructure/
 crontab -e
-#&gt;#@reboot	/media/bootdisc/rootnix.sh
+#&gt;#@reboot	/root/core/infrastructure/rootnix.sh
 
-
+#Install VirtualBox guest additions. Substitute &quot;stretch-backports&quot; for &quot;jessie-backports&quot; when dealing with Debian Jessie.
 mkdir -p /etc/apt/sources.list.d
 echo 'deb http://ftp.debian.org/debian stretch-backports main contrib' &gt;&gt; /etc/apt/sources.list.d/stretch-backports.list
 echo 'deb-src http://ftp.debian.org/debian stretch-backports main contrib' &gt;&gt; /etc/apt/sources.list.d/stretch-backports.list
@@ -965,7 +978,7 @@ Conversion to Docker Image.
 _dockerDeleteAll
 //}}}</pre>
 </div>
-<div title="DemoImage" creator="mirage335" modifier="mirage335" created="201712190505" modified="201712200234" changecount="20">
+<div title="DemoImage" creator="mirage335" modifier="mirage335" created="201712190505" modified="201712261714" changecount="21">
 <pre>!Existing Image
 An existing Debian VM image with bootdisc support may be copied to &quot;_local/vm.img&quot;.
 
@@ -1013,6 +1026,7 @@ Convert to bootable image.
 ./ubiquitous_bash.sh _dockerExport
 ./ubiquitous_bash.sh _docker_tar_to_img
 ./ubiquitous_bash.sh _docker_img_enboot
+./ubiquitous_bash.sh _mkboot
 //}}}
 
 !!&lt;nowiki&gt;NetInstall&lt;/nowiki&gt;
@@ -2059,7 +2073,7 @@ A &quot;_tryExec&quot; function is generally used to call a function which check
 <pre>|~ViewToolbar|closeTiddler closeOthers editTiddler &gt; fields syncing permalink references jump|
 |~EditToolbar|+saveTiddler -cancelTiddler deleteTiddler|</pre>
 </div>
-<div title="VBoxGuestNIX" creator="mirage335" modifier="mirage335" created="201712181803" modified="201712181856" changecount="3">
+<div title="VBoxGuestNIX" creator="mirage335" modifier="mirage335" created="201712181803" modified="201712261800" changecount="4">
 <pre>!Debian
 !!Host Supplied
 Build and runtime dependencies.
@@ -2082,7 +2096,7 @@ reboot
 //}}}
 
 !!Distribution Supplied
-Add backports and contrib to apt sources.
+Add backports and contrib to apt sources. Substitute &quot;stretch-backports&quot; for &quot;jessie-backports&quot; when dealing with Debian Jessie
 //{{{
 mkdir -p /etc/apt/sources.list.d
 echo 'deb http://ftp.debian.org/debian stretch-backports main contrib' &gt;&gt; /etc/apt/sources.list.d/stretch-backports.list
@@ -2096,7 +2110,7 @@ apt-get install virtualbox-guest-dkms virtualbox-guest-x11 linux-headers-$(uname
 usermod -G vboxsf -a user
 //}}}</pre>
 </div>
-<div title="Virtualization" creator="mirage335" modifier="mirage335" created="201710270206" modified="201712192024" changecount="102">
+<div title="Virtualization" creator="mirage335" modifier="mirage335" created="201710270206" modified="201712261953" changecount="107">
 <pre>Ubiquitous Bash middleware has the capacity to provide true application virtualization, with automatic fileparameter translation, across a wide variety of platforms (x86/64, ARM), and operating systems (MSW, Unix), by using any available underlying tool (~ChRoot, QEMU, Xen, ~VirtualBox, Docker, Wine, Cygwin, &lt;nowiki&gt;DosBox&lt;/nowiki&gt;), on a common disk format (raw image). Most of this capability has been realized, most of the remainder will involve simply merging existing code from [[HostedXen|https://github.com/mirage335/HostedXen]], [[HostedOpenVZ|https://github.com/mirage335/hostedOpenVZ]]. Automatic selection of native application by platform is also well supported.
 
 &lt;&lt;showtoc&gt;&gt;
@@ -2161,34 +2175,53 @@ Add &quot;/etc/fstab&quot; entry.
 LABEL=uk4uPhB663kVcygT0q	/media/bootdisc	iso9660 ro,nofail	0 0
 //}}}
 
+Mount.
+//{{{
+mount /media/bootdisc
+//}}}
+
 * Create username &quot;user&quot; .
 //{{{
 useradd -m user
+usermod -s bash user
 usermod -G audio,video,plugdev,input,netdev,lpadmin,scanner -a user
 //}}}
+
+* Setup ubiquitous bash resources for guest users (optional).
+/media/bootdisc/ubiquitous_bash.sh _setupUbiquitous_nonet
+sudo -n -u user /media/bootdisc/ubiquitous_bash.sh _setupUbiquitous_nonet
 
 * Enable user autologin.
 Configure &quot;/etc/lightdm/lightdm.conf&quot; (LXDE/~LightDM).
 //{{{
 autologin-user=user
 //}}}
-Or manage through KDE system settings (KDE/sddm).
+Or manage through KDE system settings (KDE/sddm). Choose display manager with dpkg-reconfigure.
+//{{{
+dpkg-reconfigure lightdm
+//}}}
 
 * Copy &quot;startup.desktop&quot; from the bootdisc ISO to ~/.config/autostart.
 //{{{
-mkdir -p ~/.config/autostart
-cp /media/bootdisc/startup.desktop ~/.config/autostart/
+sudo -n -u user mkdir -p /home/user/.config/autostart
+sudo -n -u user cp /media/bootdisc/startup.desktop /home/user/.config/autostart/
 //}}}
 
 * Mountpoints for internal/localhost network shares.
 Create directory.
 //{{{
-mkdir -p /home/user/project
+sudo -n -u user mkdir -p /home/user/project
+//}}}
+
+#Install rootnix mounting scripts.
+//{{{
+mkdir -p /root/core/infrastructure
+cp /media/bootdisc/rootnix.sh /root/core/infrastructure/
 //}}}
 
 Add root &quot;crontab&quot; entries, normally with &quot;crontab -e&quot;.
 //{{{
-@reboot	/media/bootdisc/rootnix.sh
+@reboot	/root/core/infrastructure/rootnix.sh
 //}}}
 
 * Install &quot;nmap&quot;, &quot;smbclient&quot;, and &quot;cifs-utils&quot; (or similar) within guest as needed.

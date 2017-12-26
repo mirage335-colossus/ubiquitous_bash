@@ -15,6 +15,8 @@ _testQEMU_x64-x64() {
 	
 	_getDep qemu-system-x86_64
 	_getDep qemu-img
+	
+	_getDep smbd
 }
 
 _qemu-system() {

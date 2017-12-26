@@ -164,11 +164,18 @@ _dropBootdisc() {
 		! mountpoint /home/user/project > /dev/null 2>&1 && sleep 0.3
 		! mountpoint /home/user/project > /dev/null 2>&1 && sleep 1
 		! mountpoint /home/user/project > /dev/null 2>&1 && sleep 3
+		
+		for iteration in `seq 1 15`;
+		do
+			! /bin/mountpoint /home/user/project > /dev/null 2>&1 && sleep 6
+		done
+		
 		! mountpoint /home/user/project > /dev/null 2>&1 && sleep 9
 		! mountpoint /home/user/project > /dev/null 2>&1 && sleep 18
 		! mountpoint /home/user/project > /dev/null 2>&1 && sleep 27
 		! mountpoint /home/user/project > /dev/null 2>&1 && sleep 36
 	fi
+	sleep 0.3
 	
 	cd "$localPWD"
 	

@@ -31,15 +31,41 @@ _mountGuestShareNIX() {
 	
 }
 
-#mkdir -p /home/user/.pqm
-#mkdir -p /home/user/.pvb
-mkdir -p /home/user/project
-! /bin/mountpoint /home/user/project && chown user:user /home/user/project
+#http://stackoverflow.com/questions/687948/timeout-a-command-in-bash-without-unnecessary-delay
+_timeout() { ( set +b; sleep "$1" & "${@:2}" & wait -n; r=$?; kill -9 `jobs -p`; exit $r; ) }
+
+_uid() {
+	local uidLength
+	[[ -z "$1" ]] && uidLength=18 || uidLength="$1"
+	
+	cat /dev/urandom | base64 | tr -dc 'a-zA-Z0-9' | head -c "$uidLength"
+}
+
+export sessionid=$(_uid)
+[[ -d /tmp ]] && export bootTmp=/tmp		#Typical BSD
+[[ -d /dev/shm ]] && export bootTmp=/dev/shm	#Typical Linux
+
+echo "rootnix" > "$bootTmp"/"$sessionid".rnx
+
+#/bin/mkdir -p /home/user/.pqm
+#/bin/mkdir -p /home/user/.pvb
+
+/bin/mkdir -p /home/user/Downloads
+! /bin/mountpoint /home/user/Downloads && /bin/chown user:user /home/user/Downloads
+
+/bin/mkdir -p /home/user/project
+! /bin/mountpoint /home/user/project && /bin/chown user:user /home/user/project
 
 ! /bin/mountpoint /home/user/project > /dev/null 2>&1 && sleep 0.1 && _mountGuestShareNIX
 ! /bin/mountpoint /home/user/project > /dev/null 2>&1 && sleep 0.3 && _mountGuestShareNIX
 ! /bin/mountpoint /home/user/project > /dev/null 2>&1 && sleep 1 && _mountGuestShareNIX
 ! /bin/mountpoint /home/user/project > /dev/null 2>&1 && sleep 3 && _mountGuestShareNIX
+
+for iteration in `seq 1 15`;
+do
+	! /bin/mountpoint /home/user/project > /dev/null 2>&1 && sleep 6 && _mountGuestShareNIX
+done
+
 ! /bin/mountpoint /home/user/project > /dev/null 2>&1 && sleep 9 && _mountGuestShareNIX
 ! /bin/mountpoint /home/user/project > /dev/null 2>&1 && sleep 18 && _mountGuestShareNIX
 ! /bin/mountpoint /home/user/project > /dev/null 2>&1 && sleep 27 && _mountGuestShareNIX

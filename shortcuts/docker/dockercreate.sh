@@ -1,3 +1,7 @@
+_test_docker_mkimage() {
+	_getDep "debootstrap"
+}
+
 _create_docker_mkimage_sequence() {
 	_start
 	_prepare_docker

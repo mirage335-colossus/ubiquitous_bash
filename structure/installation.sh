@@ -125,6 +125,8 @@ _test() {
 	
 	_tryExec "_test_docker"
 	
+	_tryExec "_test_docker_mkimage"
+	
 	_tryExec "_testVirtBootdisc"
 	
 	_tryExec "_testExtra"

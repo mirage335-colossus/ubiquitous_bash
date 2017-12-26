@@ -656,7 +656,7 @@ _mustGetDep() {
 _fetchDep_distro() {
 	if [[ -e /etc/issue ]] && cat /etc/issue | grep 'Debian' > /dev/null 2>&1
 	then
-		_tryExec _fetchDep_debian "$@"
+		_tryExecFull _fetchDep_debian "$@"
 		return
 	fi
 	return 1
@@ -787,10 +787,11 @@ _fetchDep_debianStretch_special() {
 		return 0
 	fi
 	
-	#Unlikely scenario.
+	#Unlikely scenario for hosts.
 	if [[ "$1" == "grub-install" ]]
 	then
-		sudo -n apt-get install --install-recommends -y grub-install
+		sudo -n apt-get install --install-recommends -y grub2
+		#sudo -n apt-get install --install-recommends -y grub-legacy
 		return 0
 	fi
 	
@@ -851,6 +852,12 @@ _fetchDep_debianStretch_special() {
 		
 		sudo -n usermod -a -G docker "$USER"
 		
+		return 0
+	fi
+	
+	if [[ "$1" == "smbd" ]]
+	then
+		sudo -n apt-get install --install-recommends -y samba
 		return 0
 	fi
 	
@@ -1615,8 +1622,28 @@ _mountGuestShareNIX() {
 	
 }
 
+#http://stackoverflow.com/questions/687948/timeout-a-command-in-bash-without-unnecessary-delay
+_timeout() { ( set +b; sleep "$1" & "${@:2}" & wait -n; r=$?; kill -9 `jobs -p`; exit $r; ) }
+
+_uid() {
+	local uidLength
+	[[ -z "$1" ]] && uidLength=18 || uidLength="$1"
+	
+	cat /dev/urandom | base64 | tr -dc 'a-zA-Z0-9' | head -c "$uidLength"
+}
+
+export sessionid=$(_uid)
+[[ -d /tmp ]] && export bootTmp=/tmp		#Typical BSD
+[[ -d /dev/shm ]] && export bootTmp=/dev/shm	#Typical Linux
+
+echo "rootnix" > "$bootTmp"/"$sessionid".rnx
+
 #mkdir -p /home/user/.pqm
 #mkdir -p /home/user/.pvb
+
+mkdir -p /home/user/Downloads
+! /bin/mountpoint /home/user/Downloads && chown user:user /home/user/Downloads
+
 mkdir -p /home/user/project
 ! /bin/mountpoint /home/user/project && chown user:user /home/user/project
 
@@ -1624,6 +1651,12 @@ mkdir -p /home/user/project
 ! /bin/mountpoint /home/user/project > /dev/null 2>&1 && sleep 0.3 && _mountGuestShareNIX
 ! /bin/mountpoint /home/user/project > /dev/null 2>&1 && sleep 1 && _mountGuestShareNIX
 ! /bin/mountpoint /home/user/project > /dev/null 2>&1 && sleep 3 && _mountGuestShareNIX
+
+for iteration in `seq 1 15`;
+do
+	! /bin/mountpoint /home/user/project > /dev/null 2>&1 && sleep 6 && _mountGuestShareNIX
+done
+
 ! /bin/mountpoint /home/user/project > /dev/null 2>&1 && sleep 9 && _mountGuestShareNIX
 ! /bin/mountpoint /home/user/project > /dev/null 2>&1 && sleep 18 && _mountGuestShareNIX
 ! /bin/mountpoint /home/user/project > /dev/null 2>&1 && sleep 27 && _mountGuestShareNIX
@@ -1824,11 +1857,18 @@ _dropBootdisc() {
 		! mountpoint /home/user/project > /dev/null 2>&1 && sleep 0.3
 		! mountpoint /home/user/project > /dev/null 2>&1 && sleep 1
 		! mountpoint /home/user/project > /dev/null 2>&1 && sleep 3
+		
+		for iteration in `seq 1 15`;
+		do
+			! /bin/mountpoint /home/user/project > /dev/null 2>&1 && sleep 6
+		done
+		
 		! mountpoint /home/user/project > /dev/null 2>&1 && sleep 9
 		! mountpoint /home/user/project > /dev/null 2>&1 && sleep 18
 		! mountpoint /home/user/project > /dev/null 2>&1 && sleep 27
 		! mountpoint /home/user/project > /dev/null 2>&1 && sleep 36
 	fi
+	sleep 0.3
 	
 	cd "$localPWD"
 	
@@ -2863,6 +2903,8 @@ _testQEMU_x64-x64() {
 	
 	_getDep qemu-system-x86_64
 	_getDep qemu-img
+	
+	_getDep smbd
 }
 
 _qemu-system() {
@@ -4239,7 +4281,7 @@ _here_mkboot_grubcfg() {
 	
 	cat << 'CZXWXcRMTo8EmM8i4d'
 set default="0"
-set timeout="3"
+set timeout="1"
 
 menuentry "Buildroot" {
     insmod gzio
@@ -4725,6 +4767,10 @@ _docker_deleteLocalAll() {
 	"$scriptAbsoluteLocation" _docker_deleteLocalBase_sequence "$@"
 }
 
+
+_test_docker_mkimage() {
+	_getDep "debootstrap"
+}
 
 _create_docker_mkimage_sequence() {
 	_start
@@ -6632,6 +6678,8 @@ _test() {
 	_tryExec "_testWINE"
 	
 	_tryExec "_test_docker"
+	
+	_tryExec "_test_docker_mkimage"
 	
 	_tryExec "_testVirtBootdisc"
 	
