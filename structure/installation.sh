@@ -102,6 +102,7 @@ _test() {
 	_tryExec "_testMountChecks"
 	_tryExec "_testBindMountManager"
 	_tryExec "_testDistro"
+	_tryExec "_test_fetchDebian"
 	
 	_tryExec "_test_image"
 	_tryExec "_test_transferimage"

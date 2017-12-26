@@ -831,11 +831,8 @@ In a parent directory, consider installing the mkimage script for local construc
 git clone https://github.com/moby/moby.git
 //}}}</pre>
 </div>
-<div title="DefaultTiddlers" creator="mirage335" modifier="mirage335" created="201710261744" modified="201710270413" changecount="3">
-<pre>[[Command]]
-[[Shortcuts]]
-[[Features]]
-[[Virtualization]]</pre>
+<div title="DefaultTiddlers" creator="mirage335" modifier="mirage335" created="201710261744" modified="201712260421" changecount="6">
+<pre>[[Demo]]</pre>
 </div>
 <div title="Demo" creator="mirage335" modifier="mirage335" created="201712122105" modified="201712192349" changecount="33">
 <pre>From a Linux host, passing the full &quot;./ubiquitous_bash.sh _test&quot; suite, running these commands demonstrates correct operation of some of the most unique and sophisticated components. Patches will likely be tested against this command set before acceptance.
@@ -913,7 +910,7 @@ Demonstrate ~ChRoot, QEMU, ~VirtualBox, and Docker support, from the same image.
 ./ubiquitous_bash.sh _userDocker xeyes
 //}}}</pre>
 </div>
-<div title="DemoBootdiscNIX" creator="mirage335" modifier="mirage335" created="201712192342" modified="201712192359" changecount="5">
+<div title="DemoBootdiscNIX" creator="mirage335" modifier="mirage335" created="201712192342" modified="201712260428" changecount="7">
 <pre>Setup bootdisc support for NIX guest (MSW guest equally supported).
 
 Launch VM image in persistent mode with bootdisc attached.
@@ -923,6 +920,9 @@ Launch VM image in persistent mode with bootdisc attached.
 
 Guest commands.
 //{{{
+apt-get -y install lxde-core lxde task-lxde-desktop
+apt-get -y install kde-plasma-desktop kde-standard kde-full task-kde-desktop
+
 mkdir -p /media/bootdisc
 
 echo 'LABEL=uk4uPhB663kVcygT0q     /media/bootdisc    iso9660    ro,nofail    0 0' &gt;&gt; /etc/fstab

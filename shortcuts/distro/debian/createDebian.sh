@@ -1,4 +1,15 @@
 #"$1" == storageLocation (optional)
+_test_fetchDebian() {
+	if ! ls /usr/share/keyrings/debian-role-keys.gpg > /dev/null 2>&1
+	then
+		echo 'Debian Keyring missing.'
+		echo 'apt-get install debian-keyring'
+		_mustGetSudo
+		sudo -n apt-get install -y debian-keyring
+		! ls /usr/share/keyrings/debian-role-keys.gpg && _stop 1
+	fi
+}
+
 _fetch_x64_debianLiteISO_sequence() {
 	_start
 	
@@ -7,11 +18,7 @@ _fetch_x64_debianLiteISO_sequence() {
 	export storageLocation="$scriptAbsoluteFolder"/_lib/os/
 	[[ "$1" != "" ]] && export storageLocation=$(_getAbsoluteLocation "$1")
 	
-	if ! ls /usr/share/keyrings/debian-role-keys.gpg > /dev/null 2>&1
-	then
-		echo 'Debian Keyring missing.'
-		echo 'apt-get install debian-keyring'
-	fi
+	_test_fetchDebian
 	
 	cd "$safeTmp"
 	
