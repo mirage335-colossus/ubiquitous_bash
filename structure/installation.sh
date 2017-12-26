@@ -50,51 +50,52 @@ _test() {
 	echo -e -n '\E[1;32;46m Dependency checking...	\E[0m'
 	
 	# Check dependencies
-	_checkDep wget
-	_checkDep grep
-	_checkDep fgrep
-	_checkDep sed
-	_checkDep awk
-	_checkDep cut
-	_checkDep head
-	_checkDep tail
+	_getDep wget
+	_getDep grep
+	_getDep fgrep
+	_getDep sed
+	_getDep awk
+	_getDep cut
+	_getDep head
+	_getDep tail
 	
 	
-	_checkDep realpath
-	_checkDep readlink
-	_checkDep dirname
+	_getDep realpath
+	_getDep readlink
+	_getDep dirname
+	_getDep basename
 	
-	_checkDep sleep
-	_checkDep wait
-	_checkDep kill
-	_checkDep jobs
-	_checkDep ps
-	_checkDep exit
+	_getDep sleep
+	_getDep wait
+	_getDep kill
+	_getDep jobs
+	_getDep ps
+	_getDep exit
 	
-	_checkDep env
-	_checkDep bash
-	_checkDep echo
-	_checkDep cat
-	_checkDep type
-	_checkDep mkdir
-	_checkDep trap
-	_checkDep return
-	_checkDep set
+	_getDep env
+	_getDep bash
+	_getDep echo
+	_getDep cat
+	_getDep type
+	_getDep mkdir
+	_getDep trap
+	_getDep return
+	_getDep set
 	
-	_checkDep dd
+	_getDep dd
 	
-	_checkDep rm
+	_getDep rm
 	
-	_checkDep find
-	_checkDep ln
-	_checkDep ls
+	_getDep find
+	_getDep ln
+	_getDep ls
 	
-	_checkDep id
+	_getDep id
 	
-	_checkDep test
+	_getDep test
 	
-	_checkDep true
-	_checkDep false
+	_getDep true
+	_getDep false
 	
 	_tryExec "_testGosu"
 	

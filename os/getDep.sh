@@ -10,7 +10,7 @@ _typeDep() {
 _wantDep() {
 	_typeDep "$1" && return 0
 	
-	_wantSudo && sudo -n "$scriptAbsoluteLocation" ! _typeDep "$1" && return 0
+	_wantSudo && sudo -n "$scriptAbsoluteLocation" _typeDep "$1" && return 0
 	
 	return 1
 }
@@ -18,7 +18,7 @@ _wantDep() {
 _mustGetDep() {
 	_typeDep "$1" && return 0
 	
-	_wantSudo && sudo -n "$scriptAbsoluteLocation" ! _typeDep "$1" && return 0
+	_wantSudo && sudo -n "$scriptAbsoluteLocation" _typeDep "$1" && return 0
 	
 	echo "$1" missing
 	_stop 1

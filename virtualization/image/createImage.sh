@@ -1,15 +1,15 @@
 _testCreateFS() {
 	_mustGetSudo
 	
-	sudo -n "$scriptAbsoluteLocation" _checkDep mkfs
-	sudo -n "$scriptAbsoluteLocation" _checkDep mkfs.ext4
+	_getDep mkfs
+	_getDep mkfs.ext4
 }
 
 _testCreatePartition() {
 	_mustGetSudo
 	
-	sudo -n "$scriptAbsoluteLocation" _checkDep parted
-	#sudo -n "$scriptAbsoluteLocation" _checkDep partprobe
+	_getDep parted
+	#_getDep partprobe
 }
 
 _createRawImage_sequence() {

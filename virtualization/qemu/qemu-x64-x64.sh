@@ -13,8 +13,8 @@ _testQEMU_hostArch_x64-x64() {
 _testQEMU_x64-x64() {
 	_testQEMU_hostArch_x64-x64 || _stop 1
 	
-	_checkDep qemu-system-x86_64
-	_checkDep qemu-img
+	_getDep qemu-system-x86_64
+	_getDep qemu-img
 }
 
 _qemu-system() {

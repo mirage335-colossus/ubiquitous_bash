@@ -1,7 +1,7 @@
 _testBindMountManager() {
-	_checkDep mount
-	_checkDep umount
-	_checkDep mountpoint
+	_getDep mount
+	_getDep umount
+	_getDep mountpoint
 	
 	if ! mount --help | grep '\-\-bind' >/dev/null 2>&1
 	then

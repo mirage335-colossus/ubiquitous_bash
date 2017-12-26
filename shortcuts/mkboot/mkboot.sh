@@ -136,6 +136,6 @@ _mkboot() {
 _test_mkboot() {
 	_mustGetSudo
 	
-	sudo -n "$scriptAbsoluteLocation" _checkDep grub-install
-	sudo -n "$scriptAbsoluteLocation" _checkDep MAKEDEV
+	_getDep grub-install
+	_getDep MAKEDEV
 }

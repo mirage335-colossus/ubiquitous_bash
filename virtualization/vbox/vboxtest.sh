@@ -1,8 +1,8 @@
 _testVBox() {
-	_checkDep VirtualBox
-	_checkDep VBoxSDL
-	_checkDep VBoxManage
-	_checkDep VBoxHeadless
+	_getDep VirtualBox
+	_getDep VBoxSDL
+	_getDep VBoxManage
+	_getDep VBoxHeadless
 	
 	#sudo -n checkDep dkms
 }

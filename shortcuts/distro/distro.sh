@@ -1,5 +1,5 @@
 _testDistro() {
-	_checkDep sha256sum
-	_checkDep sha512sum
-	_checkDep axel
+	_getDep sha256sum
+	_getDep sha512sum
+	_getDep axel
 }

@@ -14,8 +14,8 @@ _testQEMU_x64-raspi() {
 	_testQEMU_hostArch_x64-raspi || _stop 1
 	
 	_testQEMU_x64-x64
-	_checkDep qemu-arm-static
-	_checkDep qemu-armeb-static
+	_getDep qemu-arm-static
+	_getDep qemu-armeb-static
 	
 	_mustGetSudo
 	

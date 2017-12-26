@@ -298,9 +298,9 @@ _discoverResource() {
 }
 
 _testBindMountManager() {
-	_checkDep mount
-	_checkDep umount
-	_checkDep mountpoint
+	_getDep mount
+	_getDep umount
+	_getDep mountpoint
 	
 	if ! mount --help | grep '\-\-bind' >/dev/null 2>&1
 	then
@@ -368,7 +368,7 @@ _wait_umount() {
 } 
 
 _testMountChecks() {
-	_checkDep mountpoint
+	_getDep mountpoint
 }
 
 #"$1" == test directory
@@ -639,7 +639,7 @@ _typeDep() {
 _wantDep() {
 	_typeDep "$1" && return 0
 	
-	_wantSudo && sudo -n "$scriptAbsoluteLocation" ! _typeDep "$1" && return 0
+	_wantSudo && sudo -n "$scriptAbsoluteLocation" _typeDep "$1" && return 0
 	
 	return 1
 }
@@ -647,7 +647,7 @@ _wantDep() {
 _mustGetDep() {
 	_typeDep "$1" && return 0
 	
-	_wantSudo && sudo -n "$scriptAbsoluteLocation" ! _typeDep "$1" && return 0
+	_wantSudo && sudo -n "$scriptAbsoluteLocation" _typeDep "$1" && return 0
 	
 	echo "$1" missing
 	_stop 1
@@ -1309,14 +1309,14 @@ _stop_virtLocal() {
 }
 
 _test_virtLocal_X11() {
-	_checkDep xauth
+	_getDep xauth
 }
 
 _test_image() {
 	_mustGetSudo
 	
-	sudo -n "$scriptAbsoluteLocation" _checkDep losetup
-	#_checkDep partprobe
+	_getDep losetup
+	#_getDep partprobe
 }
 
 _loopImage_sequence() {
@@ -1482,15 +1482,15 @@ _closeImage() {
 _testCreateFS() {
 	_mustGetSudo
 	
-	sudo -n "$scriptAbsoluteLocation" _checkDep mkfs
-	sudo -n "$scriptAbsoluteLocation" _checkDep mkfs.ext4
+	_getDep mkfs
+	_getDep mkfs.ext4
 }
 
 _testCreatePartition() {
 	_mustGetSudo
 	
-	sudo -n "$scriptAbsoluteLocation" _checkDep parted
-	#sudo -n "$scriptAbsoluteLocation" _checkDep partprobe
+	_getDep parted
+	#_getDep partprobe
 }
 
 _createRawImage_sequence() {
@@ -1847,7 +1847,7 @@ _unbindHomeUser() {
 _test_transferimage() {
 	_mustGetSudo
 	
-	_checkDep rsync
+	_getDep rsync
 }
 
 _toImage() {
@@ -1931,19 +1931,19 @@ _buildToImage() {
 _testChRoot() {
 	_testGosu
 	
-	_checkDep gosu-armel
-	_checkDep gosu-amd64
-	_checkDep gosu-i386
+	_typeDep gosu-armel
+	_typeDep gosu-amd64
+	_typeDep gosu-i386
 	
 	_mustGetSudo
 	
-	_checkDep id
+	_getDep id
 	
-	_checkDep mount
-	_checkDep umount
-	_checkDep mountpoint
+	_getDep mount
+	_getDep umount
+	_getDep mountpoint
 	
-	_checkDep unionfs-fuse
+	_getDep unionfs-fuse
 	
 }
 
@@ -2812,8 +2812,8 @@ _testQEMU_x64-raspi() {
 	_testQEMU_hostArch_x64-raspi || _stop 1
 	
 	_testQEMU_x64-x64
-	_checkDep qemu-arm-static
-	_checkDep qemu-armeb-static
+	_getDep qemu-arm-static
+	_getDep qemu-armeb-static
 	
 	_mustGetSudo
 	
@@ -2847,8 +2847,8 @@ _testQEMU_hostArch_x64-x64() {
 _testQEMU_x64-x64() {
 	_testQEMU_hostArch_x64-x64 || _stop 1
 	
-	_checkDep qemu-system-x86_64
-	_checkDep qemu-img
+	_getDep qemu-system-x86_64
+	_getDep qemu-img
 }
 
 _qemu-system() {
@@ -2934,10 +2934,10 @@ _editQemu() {
 }
 
 _testVBox() {
-	_checkDep VirtualBox
-	_checkDep VBoxSDL
-	_checkDep VBoxManage
-	_checkDep VBoxHeadless
+	_getDep VirtualBox
+	_getDep VBoxSDL
+	_getDep VBoxManage
+	_getDep VBoxHeadless
 	
 	#sudo -n checkDep dkms
 }
@@ -3509,7 +3509,7 @@ CZXWXcRMTo8EmM8i4d
 }
 
 _test_dosbox() {
-	_checkDep dosbox
+	_getDep dosbox
 }
 
 _prepare_dosbox() {
@@ -3558,7 +3558,7 @@ _dosbox() {
 }
 
 _testWINE() {
-	_checkDep wine
+	_getDep wine
 	
 	if wine 2>&1 | grep 'wine32 is missing' > /dev/null 2>&1
 	then
@@ -3805,22 +3805,22 @@ _permitDocker() {
 _test_docker() {
 	_testGosu
 	
-	_checkDep gosu-armel
-	_checkDep gosu-amd64
-	_checkDep gosu-i386
+	_typeDep gosu-armel
+	_typeDep gosu-amd64
+	_typeDep gosu-i386
 	
 	#https://docs.docker.com/engine/installation/linux/docker-ce/debian/#install-using-the-repository
 	#https://wiki.archlinux.org/index.php/Docker#Installation
 	#sudo usermod -a -G docker "$USER"
 	
-	#_checkDep /sbin/losetup
+	_typeDep /sbin/losetup
 	if ! [[ -e "/dev/loop-control" ]] || ! [[ -e "/sbin/losetup" ]]
 	then
 		echo 'may be missing loopback interface'
 		_stop 1
 	fi
 	
-	_checkDep docker
+	_typeDep docker
 	
 	local dockerPermission
 	dockerPermission=$(_permitDocker echo true 2> /dev/null)
@@ -4385,14 +4385,14 @@ _mkboot() {
 _test_mkboot() {
 	_mustGetSudo
 	
-	sudo -n "$scriptAbsoluteLocation" _checkDep grub-install
-	sudo -n "$scriptAbsoluteLocation" _checkDep MAKEDEV
+	_getDep grub-install
+	_getDep MAKEDEV
 }
 
 _testDistro() {
-	_checkDep sha256sum
-	_checkDep sha512sum
-	_checkDep axel
+	_getDep sha256sum
+	_getDep sha512sum
+	_getDep axel
 }
 
 #"$1" == storageLocation (optional)
@@ -4564,7 +4564,7 @@ export PS1='\[\033[01;40m\]\[\033[01;36m\]+\[\033[01;34m\]-|\[\033[01;31m\]${?}:
 
 _testX11() {
 	
-	_checkDep xclip
+	_getDep xclip
 	
 }
 
@@ -6537,51 +6537,52 @@ _test() {
 	echo -e -n '\E[1;32;46m Dependency checking...	\E[0m'
 	
 	# Check dependencies
-	_checkDep wget
-	_checkDep grep
-	_checkDep fgrep
-	_checkDep sed
-	_checkDep awk
-	_checkDep cut
-	_checkDep head
-	_checkDep tail
+	_getDep wget
+	_getDep grep
+	_getDep fgrep
+	_getDep sed
+	_getDep awk
+	_getDep cut
+	_getDep head
+	_getDep tail
 	
 	
-	_checkDep realpath
-	_checkDep readlink
-	_checkDep dirname
+	_getDep realpath
+	_getDep readlink
+	_getDep dirname
+	_getDep basename
 	
-	_checkDep sleep
-	_checkDep wait
-	_checkDep kill
-	_checkDep jobs
-	_checkDep ps
-	_checkDep exit
+	_getDep sleep
+	_getDep wait
+	_getDep kill
+	_getDep jobs
+	_getDep ps
+	_getDep exit
 	
-	_checkDep env
-	_checkDep bash
-	_checkDep echo
-	_checkDep cat
-	_checkDep type
-	_checkDep mkdir
-	_checkDep trap
-	_checkDep return
-	_checkDep set
+	_getDep env
+	_getDep bash
+	_getDep echo
+	_getDep cat
+	_getDep type
+	_getDep mkdir
+	_getDep trap
+	_getDep return
+	_getDep set
 	
-	_checkDep dd
+	_getDep dd
 	
-	_checkDep rm
+	_getDep rm
 	
-	_checkDep find
-	_checkDep ln
-	_checkDep ls
+	_getDep find
+	_getDep ln
+	_getDep ls
 	
-	_checkDep id
+	_getDep id
 	
-	_checkDep test
+	_getDep test
 	
-	_checkDep true
-	_checkDep false
+	_getDep true
+	_getDep false
 	
 	_tryExec "_testGosu"
 	

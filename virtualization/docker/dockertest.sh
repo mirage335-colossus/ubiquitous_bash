@@ -19,22 +19,22 @@ _permitDocker() {
 _test_docker() {
 	_testGosu
 	
-	_checkDep gosu-armel
-	_checkDep gosu-amd64
-	_checkDep gosu-i386
+	_typeDep gosu-armel
+	_typeDep gosu-amd64
+	_typeDep gosu-i386
 	
 	#https://docs.docker.com/engine/installation/linux/docker-ce/debian/#install-using-the-repository
 	#https://wiki.archlinux.org/index.php/Docker#Installation
 	#sudo usermod -a -G docker "$USER"
 	
-	#_checkDep /sbin/losetup
+	_typeDep /sbin/losetup
 	if ! [[ -e "/dev/loop-control" ]] || ! [[ -e "/sbin/losetup" ]]
 	then
 		echo 'may be missing loopback interface'
 		_stop 1
 	fi
 	
-	_checkDep docker
+	_typeDep docker
 	
 	local dockerPermission
 	dockerPermission=$(_permitDocker echo true 2> /dev/null)

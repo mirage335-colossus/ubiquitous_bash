@@ -223,5 +223,5 @@ _stop_virtLocal() {
 }
 
 _test_virtLocal_X11() {
-	_checkDep xauth
+	_getDep xauth
 }

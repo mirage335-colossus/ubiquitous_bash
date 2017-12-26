@@ -1,8 +1,8 @@
 _test_image() {
 	_mustGetSudo
 	
-	sudo -n "$scriptAbsoluteLocation" _checkDep losetup
-	#_checkDep partprobe
+	_getDep losetup
+	#_getDep partprobe
 }
 
 _loopImage_sequence() {

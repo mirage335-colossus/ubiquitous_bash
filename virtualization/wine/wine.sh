@@ -1,5 +1,5 @@
 _testWINE() {
-	_checkDep wine
+	_getDep wine
 	
 	if wine 2>&1 | grep 'wine32 is missing' > /dev/null 2>&1
 	then

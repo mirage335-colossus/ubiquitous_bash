@@ -1,5 +1,5 @@
 _test_dosbox() {
-	_checkDep dosbox
+	_getDep dosbox
 }
 
 _prepare_dosbox() {

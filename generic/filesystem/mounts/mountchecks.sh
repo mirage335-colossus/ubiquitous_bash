@@ -1,5 +1,5 @@
 _testMountChecks() {
-	_checkDep mountpoint
+	_getDep mountpoint
 }
 
 #"$1" == test directory

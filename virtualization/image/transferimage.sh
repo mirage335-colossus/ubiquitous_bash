@@ -1,7 +1,7 @@
 _test_transferimage() {
 	_mustGetSudo
 	
-	_checkDep rsync
+	_getDep rsync
 }
 
 _toImage() {

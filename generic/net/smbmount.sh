@@ -2,8 +2,8 @@
 #These functions were developed before it was determined fstab would automatically handle the relevant use cases appropriately.
 
 _testSMBmount() {
-	_checkDep smbclient
-	_checkDep nmap
+	_getDep smbclient
+	_getDep nmap
 }
 
 _checkSMB_qemu_app() {

@@ -1,5 +1,5 @@
 _testX11() {
 	
-	_checkDep xclip
+	_getDep xclip
 	
 }
