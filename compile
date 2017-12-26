@@ -224,7 +224,7 @@ includeScriptList+=( "generic/filesystem"/safedelete.sh )
 
 includeScriptList+=( "generic/filesystem"/discoverresource.sh )
 
-includeScriptList+=( "generic/filesystem/mounts"/bindmountmanager.sh )
+[[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "generic/filesystem/mounts"/bindmountmanager.sh )
 
 includeScriptList+=( "generic/filesystem/mounts"/waitumount.sh )
 
@@ -301,7 +301,7 @@ includeScriptList+=( "os"/getDep.sh )
 includeScriptList+=( "special"/mustberoot.sh )
 includeScriptList+=( "special"/mustgetsudo.sh )
 
-includeScriptList+=( "special/gosu"/gosu.sh )
+[[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "special/gosu"/gosu.sh )
 
 includeScriptList+=( "special"/uuid.sh )
 
@@ -353,7 +353,7 @@ includeScriptList+=( "structure"/localfs.sh )
 includeScriptList+=( "structure"/localenv.sh )
 
 includeScriptList+=( "generic/hello"/hello.sh )
-includeScriptList+=( "generic/process"/idle.sh )
+[[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "generic/process"/idle.sh )
 
 includeScriptList+=( "structure"/installation.sh )
 
