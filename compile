@@ -334,12 +334,12 @@ _includeScripts "${includeScriptList[@]}"
 
 chmod u+x "$progScript"
 
-#if "$progScript" _test > ./compile.log 2>&1
-#then
-#	rm compile.log
-#else
-#	exit 1
-#fi
+if "$progScript" _test > ./compile.log 2>&1
+then
+	rm compile.log
+else
+	exit 1
+fi
 
 
 

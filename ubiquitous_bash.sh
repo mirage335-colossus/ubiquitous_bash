@@ -702,7 +702,7 @@ _apt-file_sequence() {
 }
 
 _apt-file() {
-	_timeout 450 "$scriptAbsoluteLocation" _apt-file_sequence "$@"
+	_timeout 750 "$scriptAbsoluteLocation" _apt-file_sequence "$@"
 }
 
 _fetchDep_debianStretch_special() {
@@ -766,14 +766,17 @@ _fetchDep_debianStretch_special() {
 	if [[ "$1" == "VirtualBox" ]] || [[ "$1" == "VBoxSDL" ]] || [[ "$1" == "VBoxManage" ]] || [[ "$1" == "VBoxHeadless" ]]
 	then
 		sudo -n mkdir -p /etc/apt/sources.list.d
-		echo 'deb http://download.virtualbox.org/virtualbox/debian stretch contrib' | sudo -n tee /etc/apt/sources.list.d/vbox > /dev/null 2>&1
+		echo 'deb http://download.virtualbox.org/virtualbox/debian stretch contrib' | sudo -n tee /etc/apt/sources.list.d/vbox.list > /dev/null 2>&1
+		
+		"$scriptAbsoluteLocation" _getDep wget
+		! _wantDep wget && return 1
 		
 		# TODO Check key fingerprints match "B9F8 D658 297A F3EF C18D  5CDF A2F6 83C5 2980 AECF" and "7B0F AB3A 13B9 0743 5925  D9C9 5442 2A4B 98AB 5139" respectively.
 		wget -q https://www.virtualbox.org/download/oracle_vbox_2016.asc -O- | sudo -n apt-key add -
 		wget -q https://www.virtualbox.org/download/oracle_vbox.asc -O- | sudo -n apt-key add -
 		
 		sudo -n apt-get update
-		sudo -n apt-get install --install-recommends -y dkms virtualbox
+		sudo -n apt-get install --install-recommends -y dkms virtualbox-5.2
 		
 		return 0
 	fi
@@ -829,15 +832,26 @@ _fetchDep_debianStretch_special() {
 	
 	if [[ "$1" == "docker" ]]
 	then
+		sudo apt-get install --install-recommends -y apt-transport-https ca-certificates curl gnupg2 software-properties-common
+		
+		"$scriptAbsoluteLocation" _getDep curl
+		! _wantDep curl && return 1
+		
 		curl -fsSL https://download.docker.com/linux/$(. /etc/os-release; echo "$ID")/gpg | sudo -n apt-key add -
-		! sudo -n apt-key fingerprint 0EBFCD88 2> /dev/null | grep 0EBFCD88 > /dev/null 2>&1 && return 1
+		local aptKeyFingerprint
+		aptKeyFingerprint=$(sudo -n apt-key fingerprint 0EBFCD88 2> /dev/null)
+		[[ "$aptKeyFingerprint" == "" ]] && return 1
 		
 		sudo -n add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/$(. /etc/os-release; echo "$ID") $(lsb_release -cs) stable"
 		
 		sudo -n apt-get update
-		sudo -n apt-get install docker-ce
+		
+		sudo -n apt-get remove -y docker docker-engine docker.io docker-ce docker
+		sudo -n apt-get install --install-recommends -y docker-ce
 		
 		sudo -n usermod -a -G docker "$USER"
+		
+		return 0
 	fi
 	
 	
@@ -849,7 +863,7 @@ _fetchDep_debianStretch_sequence() {
 	
 	_mustGetSudo
 	
-	_fetchDep_debianStretch_special "$@"
+	_fetchDep_debianStretch_special "$@" && _wantDep "$1" && _stop 0
 	
 	sudo -n apt-get install --install-recommends -y "$1" && _wantDep "$1" && _stop 0
 	
@@ -4111,7 +4125,7 @@ _findFunction() {
 }
 
 _testGit() {
-	checkDep git
+	_getDep git
 }
 
 _gitInfo() {
@@ -4726,7 +4740,7 @@ _create_docker_mkimage_sequence() {
 	cd "$dockerMkimageAbsoluteDirectory"
 	
 	#Script "mkimage.sh" from "moby" repository is "not part of the core docker distribution". Frequent updates to code requesting operations from such a script may be expected.
-	#Commands here were tested with "mkimage.sh" scrip from "moby" git repository, URL "https://github.com/moby/moby.git", commit a4bdb304e29f21661e8ef398dbaeb8188aa0f46a .
+	#Commands here were tested with "mkimage.sh" script from "moby" git repository, URL "https://github.com/moby/moby.git", commit a4bdb304e29f21661e8ef398dbaeb8188aa0f46a .
 	
 	[[ $dockerMkimageDistro == "debian" ]] ; sudo -n ./mkimage.sh -t "$dockerBaseObjectName" debootstrap --variant=minbase --components=main --include=inetutils-ping,iproute "$dockerMkimageVersion" 2>> "$logTmp"/mkimageErr > "$logTmp"/mkimageOut
 	
@@ -6515,26 +6529,26 @@ _timetest() {
 		
 		if [[ "$dateDelta" -lt "1" ]]
 		then
-			echo "FAIL"
+			_messageFAIL
 			_stop 1
 		fi
 		
 		if [[ "$dateDelta" -lt "5" ]]
 		then
-			echo "PASS"
+			_messagePASS
 			return 0
 		fi
 		
 		let iterations="$iterations + 1"
 	done
-	echo "FAIL"
+	_messageFAIL
 	_stop 1
 }
 
 _test() {
 	_start
 	
-	echo -e -n '\E[1;32;46m Dependency checking...	\E[0m'
+	_messageNormal "Dependency checking..."
 	
 	# Check dependencies
 	_getDep wget
@@ -6622,7 +6636,7 @@ _test() {
 	
 	[[ -e /dev/urandom ]] || echo /dev/urandom missing _stop
 	
-	echo "PASS"
+	_messagePASS
 	
 	echo -n -e '\E[1;32;46m Timing...		\E[0m'
 	_timetest
@@ -6634,7 +6648,7 @@ _test() {
 _testBuilt() {
 	_start
 	
-	echo -e -n '\E[1;32;46m Binary checking...	\E[0m'
+	_messageProcess "Binary checking"
 	
 	_tryExec "_testBuiltIdle"
 	_tryExec "_testBuiltGosu"	#Note, requires sudo, not necessary for docker .
@@ -6644,7 +6658,7 @@ _testBuilt() {
 	
 	_tryExec "_testBuiltExtra"
 	
-	echo "PASS"
+	_messagePASS
 	
 	_stop
 }

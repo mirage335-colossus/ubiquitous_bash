@@ -507,7 +507,7 @@ Also see [[AdvancedOptions]]</pre>
 </div>
 <!--POST-SHADOWAREA-->
 <div id="storeArea">
-<div title="Command" creator="mirage335" modifier="mirage335" created="201710261745" modified="201710300118" changecount="36">
+<div title="Command" creator="mirage335" modifier="mirage335" created="201710261745" modified="201712260306" changecount="37">
 <pre>Internal functions and variables can be directly accessed externally. All implementation code provided by &quot;structure/overrides.sh&quot;.
 
 
@@ -540,7 +540,7 @@ WARNING
 Functions not documented as shortcuts or end-user (eg. virtualization) commands, could create a mess if run directly without their prerequisite _start/_stop/_open/_close/_failExec . Eventually, all such functions will be verified to have completely independent environment sanity checks. In the meantime, this is a developer feature.
 
 !Dependency Checking
-All dependencies of all automatically functionality can be checked by one command. Any dependencies not declared or hooked by the _test function, are documented [[Experimental]] and [[NoTest]].
+All dependencies of all automatically functionality can be checked by one command. Any dependencies not declared or hooked by the _test function, are documented or marked, [[Experimental]], [[NoTest]], or &quot;no production use.&quot;
 //{{{
 ./ubiquitous_bash.sh _test
 //}}}
@@ -812,15 +812,24 @@ Fetches and verifies x64 Debian installation ISO, saves to current directory (ie
 !_create_x64_debianLiteVM
 Creates custom bootable x64 Debian image. Requires [[fetch|Debian]] dependencies, QEMU, and manual guidance through the setup process.</pre>
 </div>
-<div title="DebianPrereq" creator="mirage335" modifier="mirage335" created="201712220319" modified="201712251601" changecount="5">
-<pre>!Devel
+<div title="DebianPrereq" creator="mirage335" modifier="mirage335" created="201712220319" modified="201712260309" changecount="6">
+<pre>!Generic
+All crucial dependencies should be automatically installed through the built-in test procedure.
+//{{{
+./ubiquitous_bash _test
+//}}}
+
+!Devel
 apt-get install build-essential linux-headers-$(uname -r) yakuake
 
-!Generic
-apt-get install git axel sudo
-
 !&lt;nowiki&gt;CoreAutoSSH&lt;/nowiki&gt;
-apt-get install x11vnc xtightvncviewer nmap autossh</pre>
+apt-get install x11vnc xtightvncviewer nmap autossh
+
+!Special
+In a parent directory, consider installing the mkimage script for local construction of base images.
+//{{{
+git clone https://github.com/moby/moby.git
+//}}}</pre>
 </div>
 <div title="DefaultTiddlers" creator="mirage335" modifier="mirage335" created="201710261744" modified="201710270413" changecount="3">
 <pre>[[Command]]

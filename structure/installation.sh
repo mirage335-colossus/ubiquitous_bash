@@ -28,26 +28,26 @@ _timetest() {
 		
 		if [[ "$dateDelta" -lt "1" ]]
 		then
-			echo "FAIL"
+			_messageFAIL
 			_stop 1
 		fi
 		
 		if [[ "$dateDelta" -lt "5" ]]
 		then
-			echo "PASS"
+			_messagePASS
 			return 0
 		fi
 		
 		let iterations="$iterations + 1"
 	done
-	echo "FAIL"
+	_messageFAIL
 	_stop 1
 }
 
 _test() {
 	_start
 	
-	echo -e -n '\E[1;32;46m Dependency checking...	\E[0m'
+	_messageNormal "Dependency checking..."
 	
 	# Check dependencies
 	_getDep wget
@@ -135,7 +135,7 @@ _test() {
 	
 	[[ -e /dev/urandom ]] || echo /dev/urandom missing _stop
 	
-	echo "PASS"
+	_messagePASS
 	
 	echo -n -e '\E[1;32;46m Timing...		\E[0m'
 	_timetest
@@ -147,7 +147,7 @@ _test() {
 _testBuilt() {
 	_start
 	
-	echo -e -n '\E[1;32;46m Binary checking...	\E[0m'
+	_messageProcess "Binary checking"
 	
 	_tryExec "_testBuiltIdle"
 	_tryExec "_testBuiltGosu"	#Note, requires sudo, not necessary for docker .
@@ -157,7 +157,7 @@ _testBuilt() {
 	
 	_tryExec "_testBuiltExtra"
 	
-	echo "PASS"
+	_messagePASS
 	
 	_stop
 }

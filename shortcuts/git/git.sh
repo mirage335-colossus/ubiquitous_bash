@@ -1,5 +1,5 @@
 _testGit() {
-	checkDep git
+	_getDep git
 }
 
 _gitInfo() {

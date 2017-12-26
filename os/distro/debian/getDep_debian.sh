@@ -20,7 +20,7 @@ _apt-file_sequence() {
 }
 
 _apt-file() {
-	_timeout 450 "$scriptAbsoluteLocation" _apt-file_sequence "$@"
+	_timeout 750 "$scriptAbsoluteLocation" _apt-file_sequence "$@"
 }
 
 _fetchDep_debianStretch_special() {
@@ -84,14 +84,17 @@ _fetchDep_debianStretch_special() {
 	if [[ "$1" == "VirtualBox" ]] || [[ "$1" == "VBoxSDL" ]] || [[ "$1" == "VBoxManage" ]] || [[ "$1" == "VBoxHeadless" ]]
 	then
 		sudo -n mkdir -p /etc/apt/sources.list.d
-		echo 'deb http://download.virtualbox.org/virtualbox/debian stretch contrib' | sudo -n tee /etc/apt/sources.list.d/vbox > /dev/null 2>&1
+		echo 'deb http://download.virtualbox.org/virtualbox/debian stretch contrib' | sudo -n tee /etc/apt/sources.list.d/vbox.list > /dev/null 2>&1
+		
+		"$scriptAbsoluteLocation" _getDep wget
+		! _wantDep wget && return 1
 		
 		# TODO Check key fingerprints match "B9F8 D658 297A F3EF C18D  5CDF A2F6 83C5 2980 AECF" and "7B0F AB3A 13B9 0743 5925  D9C9 5442 2A4B 98AB 5139" respectively.
 		wget -q https://www.virtualbox.org/download/oracle_vbox_2016.asc -O- | sudo -n apt-key add -
 		wget -q https://www.virtualbox.org/download/oracle_vbox.asc -O- | sudo -n apt-key add -
 		
 		sudo -n apt-get update
-		sudo -n apt-get install --install-recommends -y dkms virtualbox
+		sudo -n apt-get install --install-recommends -y dkms virtualbox-5.2
 		
 		return 0
 	fi
@@ -147,15 +150,26 @@ _fetchDep_debianStretch_special() {
 	
 	if [[ "$1" == "docker" ]]
 	then
+		sudo apt-get install --install-recommends -y apt-transport-https ca-certificates curl gnupg2 software-properties-common
+		
+		"$scriptAbsoluteLocation" _getDep curl
+		! _wantDep curl && return 1
+		
 		curl -fsSL https://download.docker.com/linux/$(. /etc/os-release; echo "$ID")/gpg | sudo -n apt-key add -
-		! sudo -n apt-key fingerprint 0EBFCD88 2> /dev/null | grep 0EBFCD88 > /dev/null 2>&1 && return 1
+		local aptKeyFingerprint
+		aptKeyFingerprint=$(sudo -n apt-key fingerprint 0EBFCD88 2> /dev/null)
+		[[ "$aptKeyFingerprint" == "" ]] && return 1
 		
 		sudo -n add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/$(. /etc/os-release; echo "$ID") $(lsb_release -cs) stable"
 		
 		sudo -n apt-get update
-		sudo -n apt-get install docker-ce
+		
+		sudo -n apt-get remove -y docker docker-engine docker.io docker-ce docker
+		sudo -n apt-get install --install-recommends -y docker-ce
 		
 		sudo -n usermod -a -G docker "$USER"
+		
+		return 0
 	fi
 	
 	
@@ -167,7 +181,7 @@ _fetchDep_debianStretch_sequence() {
 	
 	_mustGetSudo
 	
-	_fetchDep_debianStretch_special "$@"
+	_fetchDep_debianStretch_special "$@" && _wantDep "$1" && _stop 0
 	
 	sudo -n apt-get install --install-recommends -y "$1" && _wantDep "$1" && _stop 0
 	
