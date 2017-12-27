@@ -46,7 +46,7 @@ _docker_deleteLocal_sequence() {
 	_prepare_docker
 	
 	[[ "$dockerContainerObjectName" != "" ]] && _dockerDeleteContainer "$dockerContainerObjectName"
-	[[ "$dockerImageObjectName" != "" ]] && _dockerDeleteImage "$dockerImageObjectName"
+	[[ "$dockerImageObjectName" != "" ]] && _dockerDeleteImage --force "$dockerImageObjectName"
 	
 	_stop
 }

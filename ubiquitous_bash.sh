@@ -1638,14 +1638,14 @@ export sessionid=$(_uid)
 
 echo "rootnix" > "$bootTmp"/"$sessionid".rnx
 
-#mkdir -p /home/user/.pqm
-#mkdir -p /home/user/.pvb
+#/bin/mkdir -p /home/user/.pqm
+#/bin/mkdir -p /home/user/.pvb
 
-mkdir -p /home/user/Downloads
-! /bin/mountpoint /home/user/Downloads && chown user:user /home/user/Downloads
+/bin/mkdir -p /home/user/Downloads
+! /bin/mountpoint /home/user/Downloads && /bin/chown user:user /home/user/Downloads
 
-mkdir -p /home/user/project
-! /bin/mountpoint /home/user/project && chown user:user /home/user/project
+/bin/mkdir -p /home/user/project
+! /bin/mountpoint /home/user/project && /bin/chown user:user /home/user/project
 
 ! /bin/mountpoint /home/user/project > /dev/null 2>&1 && sleep 0.1 && _mountGuestShareNIX
 ! /bin/mountpoint /home/user/project > /dev/null 2>&1 && sleep 0.3 && _mountGuestShareNIX
@@ -4744,7 +4744,7 @@ _docker_deleteLocal_sequence() {
 	_prepare_docker
 	
 	[[ "$dockerContainerObjectName" != "" ]] && _dockerDeleteContainer "$dockerContainerObjectName"
-	[[ "$dockerImageObjectName" != "" ]] && _dockerDeleteImage "$dockerImageObjectName"
+	[[ "$dockerImageObjectName" != "" ]] && _dockerDeleteImage --force "$dockerImageObjectName"
 	
 	_stop
 }
