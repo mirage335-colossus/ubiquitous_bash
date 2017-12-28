@@ -47,7 +47,7 @@ _set_instance_vbox_type() {
 	#[[ "$vboxOStype" == "" ]] && export vboxOStype=Debian_64
 	#[[ "$vboxOStype" == "" ]] && export vboxOStype=Gentoo
 	#[[ "$vboxOStype" == "" ]] && export vboxOStype=Windows2003
-	#[[ "$vboxOStype" == "" ]] && export vboxOStype=WindowsXPoff
+	#[[ "$vboxOStype" == "" ]] && export vboxOStype=WindowsXP
 	
 	[[ "$vboxOStype" == "" ]] && _readLocked "$lock_open" && export vboxOStype=Debian_64
 	[[ "$vboxOStype" == "" ]] && export vboxOStype=WindowsXP
