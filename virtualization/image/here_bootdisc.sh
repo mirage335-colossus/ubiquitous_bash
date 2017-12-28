@@ -19,7 +19,18 @@ _here_bootdisc_rootnix() {
 cat << 'CZXWXcRMTo8EmM8i4d'
 #!/bin/bash
 
-#Equivalent "fstab" entries for reference. Not used doe to conflict for mountpoint, as well as lack of standard mounting options in vboxsf driver.
+if [[ "$0" != "/media/bootdisc/rootnix.sh" ]] && [[ -e "/media/bootdisc" ]]
+then
+	for iteration in `seq 1 25`;
+	do
+		! /bin/mountpoint /media/bootdisc > /dev/null 2>&1 && ! [[ -e "/media/bootdisc/rootnix.sh" ]] && sleep 6
+	done
+	sleep 0.1
+	/media/bootdisc/rootnix.sh "$@"
+	exit
+fi
+
+#Equivalent "fstab" entries for reference. Not used due to conflict for mountpoint, as well as lack of standard mounting options in vboxsf driver.
 #//10.0.2.4/qemu	/home/user/.pqm cifs	guest,_netdev,uid=user,user,nofail	0 0
 #appFolder		/home/user/.pvb	vboxsf	uid=user,_netdev			0 0
 
@@ -73,6 +84,19 @@ done
 CZXWXcRMTo8EmM8i4d
 }
 
+_here_bootdisc_startupbat() {
+cat << 'CZXWXcRMTo8EmM8i4d'
+REM CALL A:\uk4uPhB6.bat
+REM CALL B:\uk4uPhB6.bat
+CALL D:\uk4uPhB6.bat
+CALL E:\uk4uPhB6.bat
+CALL F:\uk4uPhB6.bat
+CALL G:\uk4uPhB6.bat
+CALL H:\uk4uPhB6.bat
+CALL Y:\shell.bat
+CZXWXcRMTo8EmM8i4d
+}
+
 _here_bootdisc_shellbat() {
 cat << 'CZXWXcRMTo8EmM8i4d'
 CALL Y:\loader.bat
@@ -80,11 +104,15 @@ CALL Y:\application.bat
 CZXWXcRMTo8EmM8i4d
 }
 
+#No production use.
 _here_bootdisc_loaderZbat() {
 cat << 'CZXWXcRMTo8EmM8i4d'
-net use z: \\VBOXSVR\root
+net use z: /delete
 
 :checkMount
+
+net use /USER:guest z: \\VBOXSVR\root ""
+
 ping -n 2 127.0.0.1 > nul
 IF NOT EXIST "Z:\" GOTO checkMount
 CZXWXcRMTo8EmM8i4d
@@ -92,9 +120,13 @@ CZXWXcRMTo8EmM8i4d
 
 _here_bootdisc_loaderXbat() {
 cat << 'CZXWXcRMTo8EmM8i4d'
-net use x: \\VBOXSVR\appFolder
+net use x: /delete
 
 :checkMount
+
+net use /USER:guest x: \\VBOXSVR\appFolder ""
+net use /USER:guest x: \\10.0.2.4\qemu ""
+
 ping -n 2 127.0.0.1 > nul
 IF NOT EXIST "X:\" GOTO checkMount
 CZXWXcRMTo8EmM8i4d

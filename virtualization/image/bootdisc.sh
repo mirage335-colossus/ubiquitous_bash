@@ -37,12 +37,12 @@ _setShareMSW_app() {
 	export sharedGuestProjectDir="X:"
 }
 
+#No production use. Not recommended.
 _setShareMSW_root() {
 	export sharedHostProjectDir="$sharedHostProjectDirDefault"
 	export sharedGuestProjectDir="$sharedGuestProjectDirDefault"
 	
 	export sharedHostProjectDir=/
-	# TODO Consider simply changing this to "X:", in effect eliminating the alternative mountpoint requirement permanently.
 	export sharedGuestProjectDir="Z:"
 }
 
@@ -54,7 +54,7 @@ _setShareMSW() {
 
 #Consider using explorer.exe to use file associations within the guest. Overload with ops to force a more specific 'preCommand'.
 _preCommand_MSW() {
-	echo -e -n 'start /MAX "explorer.exe" '
+	echo -e -n 'start /MAX "" "explorer.exe" '
 }
 
 _createHTG_MSW() {
@@ -65,7 +65,7 @@ _createHTG_MSW() {
 	#"$sharedHostProjectDir"
 	#"${processedArgs[@]}"
 	
-	echo 'CALL "Y:\shell.bat"' >> "$hostToGuestFiles"/startup.bat
+	_here_bootdisc_startupbat >> "$hostToGuestFiles"/rootmsw.bat
 	
 	_preCommand_MSW >> "$hostToGuestFiles"/application.bat
 	
@@ -77,12 +77,17 @@ _createHTG_MSW() {
 	[[ "$flagShareApp" == "true" ]] && _here_bootdisc_loaderXbat >> "$hostToGuestFiles"/loader.bat
 	[[ "$flagShareRoot" == "true" ]] && _here_bootdisc_loaderZbat >> "$hostToGuestFiles"/loader.bat
 	
+	cat "$hostToGuestFiles"/loader.bat >> "$hostToGuestFiles"/uk4uPhB6.bat
+	cat "$hostToGuestFiles"/application.bat >> "$hostToGuestFiles"/uk4uPhB6.bat
+	
 	_here_bootdisc_shellbat >> "$hostToGuestFiles"/shell.bat
 	
 	#https://www.cyberciti.biz/faq/howto-unix-linux-convert-dos-newlines-cr-lf-unix-text-format/
+	sed -i 's/$'"/`echo \\\r`/" "$hostToGuestFiles"/rootmsw.bat
 	sed -i 's/$'"/`echo \\\r`/" "$hostToGuestFiles"/application.bat
 	sed -i 's/$'"/`echo \\\r`/" "$hostToGuestFiles"/loader.bat
 	sed -i 's/$'"/`echo \\\r`/" "$hostToGuestFiles"/shell.bat
+	sed -i 's/$'"/`echo \\\r`/" "$hostToGuestFiles"/uk4uPhB6.bat
 }
 
 _setShareUNIX_app() {

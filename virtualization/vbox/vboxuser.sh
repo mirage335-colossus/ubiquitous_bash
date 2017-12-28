@@ -47,7 +47,7 @@ _set_instance_vbox_type() {
 	#[[ "$vboxOStype" == "" ]] && export vboxOStype=Debian_64
 	#[[ "$vboxOStype" == "" ]] && export vboxOStype=Gentoo
 	#[[ "$vboxOStype" == "" ]] && export vboxOStype=Windows2003
-	#[[ "$vboxOStype" == "" ]] && export vboxOStype=WindowsXP
+	#[[ "$vboxOStype" == "" ]] && export vboxOStype=WindowsXPoff
 	
 	[[ "$vboxOStype" == "" ]] && _readLocked "$lock_open" && export vboxOStype=Debian_64
 	[[ "$vboxOStype" == "" ]] && export vboxOStype=WindowsXP
@@ -58,7 +58,11 @@ _set_instance_vbox_type() {
 _set_instance_vbox_features() {
 	#VBoxManage modifyvm "$sessionid" --boot1 disk --biosbootmenu disabled --bioslogofadein off --bioslogofadeout off --bioslogodisplaytime 5 --vram 128 --memory 1512 --nic1 nat --nictype1 "82543GC" --clipboard bidirectional --accelerate3d off --accelerate2dvideo off --vrde off --audio pulse --usb on --cpus 1 --ioapic off --acpi on --pae off --chipset piix3
 	
-	VBoxManage modifyvm "$sessionid" --boot1 disk --biosbootmenu disabled --bioslogofadein off --bioslogofadeout off --bioslogodisplaytime 5 --vram 128 --memory 1512 --nic1 nat --nictype1 "82543GC" --clipboard bidirectional --accelerate3d off --accelerate2dvideo off --vrde off --audio pulse --usb on --cpus 4 --ioapic on --acpi on --pae on --chipset ich9
+	local vboxChipset
+	vboxChipset="ich9"
+	#[[ "$vboxOStype" == "Win"*"XP" ]] && vboxChipset="piix3"
+	
+	VBoxManage modifyvm "$sessionid" --boot1 disk --biosbootmenu disabled --bioslogofadein off --bioslogofadeout off --bioslogodisplaytime 1 --vram 128 --memory 1512 --nic1 nat --nictype1 "82543GC" --clipboard bidirectional --accelerate3d off --accelerate2dvideo off --vrde off --audio pulse --usb on --cpus 4 --ioapic on --acpi on --pae on --chipset "$vboxChipset"
 	
 }
 
@@ -74,8 +78,8 @@ _set_instance_vbox_command() {
 }
 
 _create_instance_vbox() {
-	_openVBoxRaw
-	
+	#Use existing VDI image if available.
+	! [[ -e "$scriptLocal"/vm.vdi ]] && _openVBoxRaw
 	export vboxInstanceDiskImage="$scriptLocal"/vm.vdi
 	_readLocked "$lock_open" && vboxInstanceDiskImage="$vboxRaw"
 	! [[ -e "$vboxInstanceDiskImage" ]] && return 1

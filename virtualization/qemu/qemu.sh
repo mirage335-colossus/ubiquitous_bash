@@ -32,7 +32,13 @@ _integratedQemu() {
 	#https://unix.stackexchange.com/questions/165554/shared-folder-between-qemu-windows-guest-and-linux-host
 	#https://linux.die.net/man/1/qemu-kvm
 	
-	qemuUserArgs+=(-machine accel=kvm -drive format=raw,file="$scriptLocal"/vm.img -drive file="$hostToGuestISO",media=cdrom -boot c -m 1256 -net nic -net user,smb="$sharedHostProjectDir")
+	qemuUserArgs+=(-machine accel=kvm -drive format=raw,file="$scriptLocal"/vm.img -drive file="$hostToGuestISO",media=cdrom -boot c -m 1256 -net nic,model=pcnet -net user,smb="$sharedHostProjectDir")
+	
+	qemuArgs+=(-usbdevice tablet)
+	
+	qemuArgs+=(-vga std)
+	
+	qemuArgs+=(-show-cursor)
 	
 	qemuArgs+=("${qemuSpecialArgs[@]}" "${qemuUserArgs[@]}")
 	

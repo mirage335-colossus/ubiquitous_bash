@@ -2115,7 +2115,7 @@ apt-get install virtualbox-guest-dkms virtualbox-guest-x11 linux-headers-$(uname
 usermod -G vboxsf -a user
 //}}}</pre>
 </div>
-<div title="Virtualization" creator="mirage335" modifier="mirage335" created="201710270206" modified="201712270653" changecount="109">
+<div title="Virtualization" creator="mirage335" modifier="mirage335" created="201710270206" modified="201712280419" changecount="113">
 <pre>Ubiquitous Bash middleware has the capacity to provide true application virtualization, with automatic fileparameter translation, across a wide variety of platforms (x86/64, ARM), and operating systems (MSW, Unix), by using any available underlying tool (~ChRoot, QEMU, Xen, ~VirtualBox, Docker, Wine, Cygwin, &lt;nowiki&gt;DosBox&lt;/nowiki&gt;), on a common disk format (raw image). Most of this capability has been realized, most of the remainder will involve simply merging existing code from [[HostedXen|https://github.com/mirage335/HostedXen]], [[HostedOpenVZ|https://github.com/mirage335/hostedOpenVZ]]. Automatic selection of native application by platform is also well supported.
 
 &lt;&lt;showtoc&gt;&gt;
@@ -2164,9 +2164,13 @@ Launch a VM with bootdisc and host directory sharing for guest setup procedures.
 //}}}
 
 !!MSW
-* Permanently set virtual disc drive used by bootdisc image to use drive letter &quot;Y&quot;, path &quot;Y:\&quot; .
 * Enable user autologin.
-* Copy &quot;startup.bat&quot; to the &quot;Start Up&quot; folder in the MSW &quot;start&quot; menu.
+* Copy &quot;rootmsw.bat&quot; to the &quot;Start Up&quot; folder in the MSW &quot;start&quot; menu.
+* Edit image to enable support for both ~VBox and QEMU. Chiefly, set any disk controllers to generic drives under &quot;Device Manager&quot;.
+http://0x0badc0de.blogspot.com/2013/05/converting-windows-virtual-machine-from.html
+http://0x0badc0de.blogspot.com/2013/05/converting-windows-virtual-machine-from.html
+https://arstechnica.com/gadgets/2007/09/how-to-install-a-new-motherboard-without-reinstalling-windows/
+
 
 !!NIX
 * Permanently set bootdisc image, by label as available on any device, to be mounted to /media/bootdisc .

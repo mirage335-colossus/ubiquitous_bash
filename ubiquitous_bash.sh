@@ -1524,7 +1524,7 @@ _createRawImage_sequence() {
 	[[ "$vmImageFile" == "" ]] && _stop 1
 	[[ -e "$vmImageFile" ]] && _stop 1
 	
-	dd if=/dev/zero of="$vmImageFile" bs=1G count=6 > /dev/null 2>&1
+	dd if=/dev/zero of="$vmImageFile" bs=1M count=7636 > /dev/null 2>&1
 	
 	_stop
 }
@@ -1610,7 +1610,18 @@ _here_bootdisc_rootnix() {
 cat << 'CZXWXcRMTo8EmM8i4d'
 #!/bin/bash
 
-#Equivalent "fstab" entries for reference. Not used doe to conflict for mountpoint, as well as lack of standard mounting options in vboxsf driver.
+if [[ "$0" != "/media/bootdisc/rootnix.sh" ]] && [[ -e "/media/bootdisc" ]]
+then
+	for iteration in `seq 1 25`;
+	do
+		! /bin/mountpoint /media/bootdisc > /dev/null 2>&1 && ! [[ -e "/media/bootdisc/rootnix.sh" ]] && sleep 6
+	done
+	sleep 0.1
+	/media/bootdisc/rootnix.sh "$@"
+	exit
+fi
+
+#Equivalent "fstab" entries for reference. Not used due to conflict for mountpoint, as well as lack of standard mounting options in vboxsf driver.
 #//10.0.2.4/qemu	/home/user/.pqm cifs	guest,_netdev,uid=user,user,nofail	0 0
 #appFolder		/home/user/.pvb	vboxsf	uid=user,_netdev			0 0
 
@@ -1664,6 +1675,19 @@ done
 CZXWXcRMTo8EmM8i4d
 }
 
+_here_bootdisc_startupbat() {
+cat << 'CZXWXcRMTo8EmM8i4d'
+REM CALL A:\uk4uPhB6.bat
+REM CALL B:\uk4uPhB6.bat
+CALL D:\uk4uPhB6.bat
+CALL E:\uk4uPhB6.bat
+CALL F:\uk4uPhB6.bat
+CALL G:\uk4uPhB6.bat
+CALL H:\uk4uPhB6.bat
+CALL Y:\shell.bat
+CZXWXcRMTo8EmM8i4d
+}
+
 _here_bootdisc_shellbat() {
 cat << 'CZXWXcRMTo8EmM8i4d'
 CALL Y:\loader.bat
@@ -1671,11 +1695,15 @@ CALL Y:\application.bat
 CZXWXcRMTo8EmM8i4d
 }
 
+#No production use.
 _here_bootdisc_loaderZbat() {
 cat << 'CZXWXcRMTo8EmM8i4d'
-net use z: \\VBOXSVR\root
+net use z: /delete
 
 :checkMount
+
+net use /USER:guest z: \\VBOXSVR\root ""
+
 ping -n 2 127.0.0.1 > nul
 IF NOT EXIST "Z:\" GOTO checkMount
 CZXWXcRMTo8EmM8i4d
@@ -1683,9 +1711,13 @@ CZXWXcRMTo8EmM8i4d
 
 _here_bootdisc_loaderXbat() {
 cat << 'CZXWXcRMTo8EmM8i4d'
-net use x: \\VBOXSVR\appFolder
+net use x: /delete
 
 :checkMount
+
+net use /USER:guest x: \\VBOXSVR\appFolder ""
+net use /USER:guest x: \\10.0.2.4\qemu ""
+
 ping -n 2 127.0.0.1 > nul
 IF NOT EXIST "X:\" GOTO checkMount
 CZXWXcRMTo8EmM8i4d
@@ -1730,12 +1762,12 @@ _setShareMSW_app() {
 	export sharedGuestProjectDir="X:"
 }
 
+#No production use. Not recommended.
 _setShareMSW_root() {
 	export sharedHostProjectDir="$sharedHostProjectDirDefault"
 	export sharedGuestProjectDir="$sharedGuestProjectDirDefault"
 	
 	export sharedHostProjectDir=/
-	# TODO Consider simply changing this to "X:", in effect eliminating the alternative mountpoint requirement permanently.
 	export sharedGuestProjectDir="Z:"
 }
 
@@ -1747,7 +1779,7 @@ _setShareMSW() {
 
 #Consider using explorer.exe to use file associations within the guest. Overload with ops to force a more specific 'preCommand'.
 _preCommand_MSW() {
-	echo -e -n 'start /MAX "explorer.exe" '
+	echo -e -n 'start /MAX "" "explorer.exe" '
 }
 
 _createHTG_MSW() {
@@ -1758,7 +1790,7 @@ _createHTG_MSW() {
 	#"$sharedHostProjectDir"
 	#"${processedArgs[@]}"
 	
-	echo 'CALL "Y:\shell.bat"' >> "$hostToGuestFiles"/startup.bat
+	_here_bootdisc_startupbat >> "$hostToGuestFiles"/rootmsw.bat
 	
 	_preCommand_MSW >> "$hostToGuestFiles"/application.bat
 	
@@ -1770,12 +1802,17 @@ _createHTG_MSW() {
 	[[ "$flagShareApp" == "true" ]] && _here_bootdisc_loaderXbat >> "$hostToGuestFiles"/loader.bat
 	[[ "$flagShareRoot" == "true" ]] && _here_bootdisc_loaderZbat >> "$hostToGuestFiles"/loader.bat
 	
+	cat "$hostToGuestFiles"/loader.bat >> "$hostToGuestFiles"/uk4uPhB6.bat
+	cat "$hostToGuestFiles"/application.bat >> "$hostToGuestFiles"/uk4uPhB6.bat
+	
 	_here_bootdisc_shellbat >> "$hostToGuestFiles"/shell.bat
 	
 	#https://www.cyberciti.biz/faq/howto-unix-linux-convert-dos-newlines-cr-lf-unix-text-format/
+	sed -i 's/$'"/`echo \\\r`/" "$hostToGuestFiles"/rootmsw.bat
 	sed -i 's/$'"/`echo \\\r`/" "$hostToGuestFiles"/application.bat
 	sed -i 's/$'"/`echo \\\r`/" "$hostToGuestFiles"/loader.bat
 	sed -i 's/$'"/`echo \\\r`/" "$hostToGuestFiles"/shell.bat
+	sed -i 's/$'"/`echo \\\r`/" "$hostToGuestFiles"/uk4uPhB6.bat
 }
 
 _setShareUNIX_app() {
@@ -2945,7 +2982,13 @@ _integratedQemu() {
 	#https://unix.stackexchange.com/questions/165554/shared-folder-between-qemu-windows-guest-and-linux-host
 	#https://linux.die.net/man/1/qemu-kvm
 	
-	qemuUserArgs+=(-machine accel=kvm -drive format=raw,file="$scriptLocal"/vm.img -drive file="$hostToGuestISO",media=cdrom -boot c -m 1256 -net nic -net user,smb="$sharedHostProjectDir")
+	qemuUserArgs+=(-machine accel=kvm -drive format=raw,file="$scriptLocal"/vm.img -drive file="$hostToGuestISO",media=cdrom -boot c -m 1256 -net nic,model=pcnet -net user,smb="$sharedHostProjectDir")
+	
+	qemuArgs+=(-usbdevice tablet)
+	
+	qemuArgs+=(-vga std)
+	
+	qemuArgs+=(-show-cursor)
 	
 	qemuArgs+=("${qemuSpecialArgs[@]}" "${qemuUserArgs[@]}")
 	
@@ -3197,7 +3240,7 @@ _set_instance_vbox_type() {
 	#[[ "$vboxOStype" == "" ]] && export vboxOStype=Debian_64
 	#[[ "$vboxOStype" == "" ]] && export vboxOStype=Gentoo
 	#[[ "$vboxOStype" == "" ]] && export vboxOStype=Windows2003
-	#[[ "$vboxOStype" == "" ]] && export vboxOStype=WindowsXP
+	#[[ "$vboxOStype" == "" ]] && export vboxOStype=WindowsXPoff
 	
 	[[ "$vboxOStype" == "" ]] && _readLocked "$lock_open" && export vboxOStype=Debian_64
 	[[ "$vboxOStype" == "" ]] && export vboxOStype=WindowsXP
@@ -3208,7 +3251,11 @@ _set_instance_vbox_type() {
 _set_instance_vbox_features() {
 	#VBoxManage modifyvm "$sessionid" --boot1 disk --biosbootmenu disabled --bioslogofadein off --bioslogofadeout off --bioslogodisplaytime 5 --vram 128 --memory 1512 --nic1 nat --nictype1 "82543GC" --clipboard bidirectional --accelerate3d off --accelerate2dvideo off --vrde off --audio pulse --usb on --cpus 1 --ioapic off --acpi on --pae off --chipset piix3
 	
-	VBoxManage modifyvm "$sessionid" --boot1 disk --biosbootmenu disabled --bioslogofadein off --bioslogofadeout off --bioslogodisplaytime 5 --vram 128 --memory 1512 --nic1 nat --nictype1 "82543GC" --clipboard bidirectional --accelerate3d off --accelerate2dvideo off --vrde off --audio pulse --usb on --cpus 4 --ioapic on --acpi on --pae on --chipset ich9
+	local vboxChipset
+	vboxChipset="ich9"
+	#[[ "$vboxOStype" == "Win"*"XP" ]] && vboxChipset="piix3"
+	
+	VBoxManage modifyvm "$sessionid" --boot1 disk --biosbootmenu disabled --bioslogofadein off --bioslogofadeout off --bioslogodisplaytime 1 --vram 128 --memory 1512 --nic1 nat --nictype1 "82543GC" --clipboard bidirectional --accelerate3d off --accelerate2dvideo off --vrde off --audio pulse --usb on --cpus 4 --ioapic on --acpi on --pae on --chipset "$vboxChipset"
 	
 }
 
@@ -3224,8 +3271,8 @@ _set_instance_vbox_command() {
 }
 
 _create_instance_vbox() {
-	_openVBoxRaw
-	
+	#Use existing VDI image if available.
+	! [[ -e "$scriptLocal"/vm.vdi ]] && _openVBoxRaw
 	export vboxInstanceDiskImage="$scriptLocal"/vm.vdi
 	_readLocked "$lock_open" && vboxInstanceDiskImage="$vboxRaw"
 	! [[ -e "$vboxInstanceDiskImage" ]] && return 1
@@ -4656,6 +4703,67 @@ _x11_clipboard_imageToHTML() {
 }
 
 [[ "$DISPLAY" != "" ]] && alias _clipImageHTML=_x11_clipboard_imageToHTML
+
+_test_vboxconvert() {
+	_getDep VBoxManage
+}
+
+_vdi_to_img() {
+	VBoxManage clonehd "$scriptLocal"/vm.vdi "$scriptLocal"/vm.img --format RAW
+}
+
+#No production use. Not necessary. Not recommended.
+_img_to_vdi() {
+	VBoxManage convertdd "$scriptLocal"/vm.vdi "$scriptLocal"/vm.img --format VDI 
+}
+
+#No production use. Take care to ensure neither "vm.vdi" nor "/dev/nbd0" are not in use.
+_vdi_gparted() {
+	sudo -n modprobe nbd
+	sudo -n qemu-nbd -c /dev/nbd0 "$scriptLocal"/vm.vdi
+	
+	sudo -n partprobe
+	
+	kdesudo gparted /dev/nbd0
+	
+	sudo -n qemu-nbd -d /dev/nbd0
+}
+
+#No production use.
+_vdi_resize() {
+	mv "$scriptLocal"/vm.vdi "$scriptLocal"/vm-big.vdi
+	
+	#Accommodates 8024MiB.
+	VBoxManage createhd --filename "$scriptLocal"/vm-small.vdi --size 8512
+	
+	sudo -n modprobe nbd max_part=15
+	sudo -n qemu-nbd -c /dev/nbd0 "$scriptLocal"/vm-big.vdi
+	sudo -n qemu-nbd -c /dev/nbd1 "$scriptLocal"/vm-small.vdi
+	sudo -n partprobe
+	
+	#sudo -n dd if=/dev/nbd0 of=/dev/nbd1 bs=446 count=1
+	sudo -n dd if=/dev/nbd0 of=/dev/nbd1 bs=1M count=8512
+	sudo -n partprobe
+	
+	
+	
+	
+	
+	
+	
+	kdesudo gparted /dev/nbd0 /dev/nbd1
+	
+	sudo -n qemu-nbd -d /dev/nbd0
+	sudo -n qemu-nbd -d /dev/nbd1
+	
+	mv "$scriptLocal"/vm-small.vdi "$scriptLocal"/vm.vdi
+	
+	#qemu-img convert -f vdi -O qcow2 vm.vdi vm.qcow2
+	#qemu-img resize vm.qcow2 8512M
+	
+	#VBoxManage clonehd "$scriptLocal"/vm.vdi "$scriptLocal"/vm-small.vdi --existing
+	#VBoxManage modifyhd "$scriptLocal"/vm-small.vdi --resize 8512
+}
 
 #Show all images in repository.
 _dockerImages() {
@@ -6672,6 +6780,8 @@ _test() {
 	_tryExec "_testQEMU_x64-raspi"
 	_tryExec "_testQEMU_raspi-raspi"
 	_tryExec "_testVBox"
+	
+	_tryExec "_test_vboxconvert"
 	
 	_tryExec "_test_dosbox"
 	
