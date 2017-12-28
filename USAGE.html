@@ -1338,12 +1338,20 @@ Performs _localDir and related operations on input parameters, outputs a set of 
 //}}}
 </pre>
 </div>
-<div title="Raspbian" creator="mirage335" modifier="mirage335" created="201710262129" modified="201710270227" changecount="3">
+<div title="Raspbian" creator="mirage335" modifier="mirage335" created="201710262129" modified="201712281711" changecount="5">
 <pre>!_fetch_raspbian [./]
 Fetches and verifies Raspbian image. Partly relies on &quot;raspberrypi.org&quot; (HTTPS) and git repository (HTTPS/SSH) for chain of trust.
 
 !_create_raspbian
-Extracts Raspbian image.</pre>
+Extracts Raspbian image.
+
+!&lt;nowiki&gt;ChRoot&lt;/nowiki&gt;
+Once a raspbian image has been created, _userChRoot should work immediately. QEMU emulation will be used automatically if needed.
+//{{{
+_userChRoot
+_closeChRoot
+//}}}
+</pre>
 </div>
 <div title="Reference" creator="mirage335" modifier="mirage335" created="201712130531" modified="201712260332" changecount="6">
 <pre>!Prerequsites
