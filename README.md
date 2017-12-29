@@ -29,7 +29,9 @@ Semantic versioning is applied. Major version numbers (v2.x) indicate a compatib
 In most user environments, the latest git repository code will provide the strongest reliability guarantees. Extra safety checks are occasionally added as possible edge cases are discovered.
 
 # Included Works
+* MAKEDEV . Obtained from Debian Stretch. For all details, see _presentation/MAKEDEV .
 * GoSu . See https://github.com/tianon/gosu . Binaries and signatures may be included in repository. License, GPLv3 . License text at https://www.gnu.org/licenses/gpl-3.0.en.html .
+* Firefox .
 
 # Future Work
 * Self-contained SAMBA server would provide useful virtualization compatibility guarantees if tightly integrated. QEMU seems to already include a solution using similar methods.
