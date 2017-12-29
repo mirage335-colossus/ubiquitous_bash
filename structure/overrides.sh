@@ -22,6 +22,11 @@ then
 	. "$objectDir"/ops
 fi
 
+#Override functions with external definitions from a separate file if available.
+if [[ -e "$scriptLocal"/ops ]]
+then
+	. "$scriptLocal"/ops
+fi
 
 #Launch internal functions as commands.
 _true() {

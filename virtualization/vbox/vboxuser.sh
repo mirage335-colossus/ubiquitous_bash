@@ -60,9 +60,17 @@ _set_instance_vbox_features() {
 	
 	local vboxChipset
 	vboxChipset="ich9"
-	#[[ "$vboxOStype" == "Win"*"XP" ]] && vboxChipset="piix3"
+	#[[ "$vboxOStype" == *"Win"*"XP"* ]] && vboxChipset="piix3"
 	
-	VBoxManage modifyvm "$sessionid" --boot1 disk --biosbootmenu disabled --bioslogofadein off --bioslogofadeout off --bioslogodisplaytime 1 --vram 128 --memory 1512 --nic1 nat --nictype1 "82543GC" --clipboard bidirectional --accelerate3d off --accelerate2dvideo off --vrde off --audio pulse --usb on --cpus 4 --ioapic on --acpi on --pae on --chipset "$vboxChipset"
+	local vboxNictype
+	vboxNictype="82543GC"
+	[[ "$vboxOStype" == *"Win"*"10"* ]] && vboxNictype="82540EM"
+	
+	local vboxAudioController
+	vboxAudioController="ac97"
+	[[ "$vboxOStype" == *"Win"*"10"* ]] && vboxAudioController="hda"
+	
+	VBoxManage modifyvm "$sessionid" --boot1 disk --biosbootmenu disabled --bioslogofadein off --bioslogofadeout off --bioslogodisplaytime 1 --vram 128 --memory 1512 --nic1 nat --nictype1 "$vboxNictype" --clipboard bidirectional --accelerate3d off --accelerate2dvideo off --vrde off --audio pulse --usb on --cpus 4 --ioapic on --acpi on --pae on --chipset "$vboxChipset" --audiocontroller="$vboxAudioController"
 	
 }
 
@@ -103,7 +111,9 @@ _create_instance_vbox() {
 	#VBoxManage showhdinfo "$scriptLocal"/vm.vdi
 
 	#Suppress annoying warnings.
-	VBoxManage setextradata global GUI/SuppressMessages "remindAboutAutoCapture,remindAboutMouseIntegrationOn,showRuntimeError.warning.HostAudioNotResponding,remindAboutGoingSeamless,remindAboutInputCapture,remindAboutGoingFullscreen,remindAboutMouseIntegrationOff,confirmGoingSeamless,confirmInputCapture,remindAboutPausedVMInput,confirmVMReset,confirmGoingFullscreen,remindAboutWrongColorDepth"
+	VBoxManage setextradata global GUI/SuppressMessages "remindAboutAutoCapture,remindAboutMouseIntegration,remindAboutMouseIntegrationOn,showRuntimeError.warning.HostAudioNotResponding,remindAboutGoingSeamless,remindAboutInputCapture,remindAboutGoingFullscreen,remindAboutMouseIntegrationOff,confirmGoingSeamless,confirmInputCapture,remindAboutPausedVMInput,confirmVMReset,confirmGoingFullscreen,remindAboutWrongColorDepth"
+	
+	
 	
 	return 0
 }

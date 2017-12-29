@@ -834,21 +834,44 @@ git clone https://github.com/moby/moby.git
 <div title="DefaultTiddlers" creator="mirage335" modifier="mirage335" created="201710261744" modified="201712260421" changecount="6">
 <pre>[[Demo]]</pre>
 </div>
-<div title="Demo" creator="mirage335" modifier="mirage335" created="201712122105" modified="201712270717" changecount="35">
-<pre>From a Linux host, passing the full &quot;./ubiquitous_bash.sh _test&quot; suite, running these commands demonstrates correct operation of some of the most unique and sophisticated components. Patches will likely be tested against this command set before acceptance.
+<div title="Demo" creator="mirage335" modifier="mirage335" created="201712122105" modified="201712290319" changecount="51">
+<pre>&lt;&lt;showtoc&gt;&gt;
 
-!Virtualization
+!Pitch
+Have you ever wanted to ship out an application in a virtual machine, and have it just work with files on the host? Or maybe just wanted to have proper temporary folders based on a session id? Or perhaps correctly recurse through a shell script's functions, by executing that script with a function name, from that same script? Or even just access files in the same directory as a script?
+
+Ubiquitous Bash is the answer to these problems, and more. Written in Bash, the framework has been tested under Linux distributions, partially tested under Cygwin, and should work under BSD/Mac. Supporting multiple virtualization backends (eg. VirtualBox, Docker) targeting the same image, changes to the underlying technology will not let you down. With over 4000 lines of modular shell code, and 432 externally accessible functions, like '_getAbsoluteLocation', '_discoverResource', '_timeout', '_daemon', '_start', '_stop', and '_qemu', this is a huge package of functionality you can't miss!
+
+From a Linux host, passing the full &quot;./ubiquitous_bash.sh _test&quot; suite, running these commands demonstrates correct operation of some of the most unique and sophisticated components. Patches will likely be tested against this command set before acceptance.
+
+!MSW Virtualization
+Keep in mind MSW does not ship with comprehensive guarantees.
+
+[[DemoEnvironmentCleanup]]
+[[DemoImageMSW|MSW]]
+[[DemoBootdiscMSW]]
+
+Explore, modify guest filesystem, and demonstrate QEMU as well as ~VirtualBox support, from the same image.
+//{{{
+./ubiquitous_bash.sh _userVBox ./CC0_license.txt
+./ubiquitous_bash.sh _closeVBoxRaw ./CC0_license.txt
+
+./ubiquitous_bash.sh _userQemu ./CC0_license.txt
+//}}}
+
+
+!NIX Virtualization
 
 Create VM image, install desired applications, remove any existing external resources.
 [[DemoEnvironmentCleanup]]
-[[DemoImage]]
+[[DemoImageNIX]]
 [[DemoBootdiscNIX]]
 
 Explore and modify guest filesystem.
 
 //{{{
 mkdir -p ./_local/.arduino
-sudo ./ubiquitous_bash.sh _toImage ./_local/.arduino /etc/skel
+./ubiquitous_bash.sh _toImage ./_local/.arduino /etc/skel
 
 ./ubiquitous_bash.sh _userChRoot ls -la /home/ubvrtusr
 
@@ -910,6 +933,14 @@ Demonstrate ~ChRoot, QEMU, ~VirtualBox, and Docker support, from the same image.
 ./ubiquitous_bash.sh _userDocker xmessage -file ./CC0_license.txt
 ./ubiquitous_bash.sh _userDocker xeyes
 //}}}</pre>
+</div>
+<div title="DemoBootdiscMSW" creator="mirage335" modifier="mirage335" created="201712282243" modified="201712290139" changecount="3">
+<pre>* Enable user autologin.
+* Copy &quot;rootmsw.bat&quot; to the &quot;Start Up&quot; folder in the MSW &quot;start&quot; menu.
+//{{{
+%AppData%\Microsoft\Windows\Start Menu\Programs
+//}}}
+* Edit image to enable support for both ~VBox and QEMU. Chiefly, set any disk controllers to generic drives under &quot;Device Manager&quot;.</pre>
 </div>
 <div title="DemoBootdiscNIX" creator="mirage335" modifier="mirage335" created="201712192342" modified="201712270712" changecount="21">
 <pre>Setup bootdisc support for NIX guest (MSW guest equally supported).
@@ -982,7 +1013,7 @@ Conversion to Docker Image.
 _dockerDeleteAll
 //}}}</pre>
 </div>
-<div title="DemoImage" creator="mirage335" modifier="mirage335" created="201712190505" modified="201712270407" changecount="23">
+<div title="DemoImageNIX" creator="mirage335" modifier="mirage335" created="201712190505" modified="201712281735" changecount="24">
 <pre>!Existing Image
 An existing Debian VM image with bootdisc support may be copied to &quot;_local/vm.img&quot;.
 
@@ -1220,6 +1251,41 @@ Creates a &quot;bare&quot; git repository, from an existing repository, on a ser
 
 </pre>
 </div>
+<div title="MSW" creator="mirage335" modifier="mirage335" created="201712281756" modified="201712282307" changecount="18">
+<pre>!Create
+Ensure a MSW bootable install disc is available at _local/msw.iso&quot; . Then begin installation, using QEMU, ~VirtualBox, or the default.
+
+//{{{
+_create_msw
+_closeVBoxRaw
+
+_create_msw_qemu
+
+_create_msw_vbox
+_closeVBoxRaw
+//}}}
+
+Boot with both QEMU and ~VirtualBox. Resolve any issues, make any customizations, disable nagging prompts. In particular, setting any disk controllers, through &quot;Device Manager&quot;, to generic drivers, may avert ~BSODs.
+//{{{
+_editQemu
+
+_editVBox
+_closeVBoxRaw
+//}}}
+
+Beware severe performance issues may result if the guest OS is not correctly set for ~VirtualBox.
+//{{{
+#echo 'export vboxOStype=WindowsXP' &gt;&gt; ./_local/ops
+#echo 'export vboxOStype=Windows7_64' &gt;&gt; ./_local/ops
+#echo 'export vboxOStype=Windows10_64' &gt;&gt; ./_local/ops
+//}}}
+
+Explicitly setting VM size may also be necessary.
+//{{{
+#echo 'export vmSize=15064' &gt;&gt; ./_local/ops
+//}}}
+</pre>
+</div>
 <div title="MainMenu" creator="YourName" modifier="mirage335" created="201202151614" modified="201712130530" tags="excludeLists excludeSearch" changecount="25">
 <pre>[[Demo]]
 
@@ -1243,6 +1309,19 @@ Creates a &quot;bare&quot; git repository, from an existing repository, on a ser
 [[audioManager|https://github.com/mirage335/audioManager]]
 
 &lt;html&gt;&lt;hr&gt;&lt;/html&gt;
+</pre>
+</div>
+<div title="Migration" creator="mirage335" modifier="mirage335" created="201712282059" changecount="1">
+<pre>!MSW
+A variety of issues can emerge, including multiple BSODs, each with multiple causes, when migrating MSW systems to new machines, especially new hard disk controllers. Conversely, severe performance hits can result from using a generic driver.
+
+Typically, these issues may be resolved by going to &quot;Device Manager&quot;, selecting the hard disk controller, and selecting either the generic driver (for migration), or the machine-specific driver (after successful booting).
+
+Beyond that, a few sites have identified similar, but more extensive solutions.
+
+http://0x0badc0de.blogspot.com/2013/05/converting-windows-virtual-machine-from.html
+http://0x0badc0de.blogspot.com/2013/05/converting-windows-virtual-machine-from.html
+https://arstechnica.com/gadgets/2007/09/how-to-install-a-new-motherboard-without-reinstalling-windows/
 </pre>
 </div>
 <div title="MkBoot" creator="mirage335" modifier="mirage335" created="201712072245" modified="201712122016" changecount="3">
@@ -1353,7 +1432,7 @@ _closeChRoot
 //}}}
 </pre>
 </div>
-<div title="Reference" creator="mirage335" modifier="mirage335" created="201712130531" modified="201712260332" changecount="6">
+<div title="Reference" creator="mirage335" modifier="mirage335" created="201712130531" modified="201712282057" changecount="7">
 <pre>!Prerequsites
 For any Ubiquitous Bash application, the &quot;_test&quot; function will check for presence of all host OS dependencies needed by the included components. Exhaustive prerequsite package installation instructions are provided for specific distributions.
 
@@ -1364,6 +1443,7 @@ For any Ubiquitous Bash application, the &quot;_test&quot; function will check f
 
 !&lt;nowiki&gt;SysAdmin&lt;/nowiki&gt;
 [[Deployment]]
+[[Migration]]
 </pre>
 </div>
 <div title="Resources" creator="mirage335" modifier="mirage335" created="201710270111" modified="201710270343" changecount="4">
@@ -1432,7 +1512,7 @@ _findFunction _true
 //}}}
 </pre>
 </div>
-<div title="Shortcuts" creator="mirage335" modifier="mirage335" created="201710261859" modified="201712251603" changecount="23">
+<div title="Shortcuts" creator="mirage335" modifier="mirage335" created="201710261859" modified="201712281744" changecount="25">
 <pre>Many functions are relevant to, or intended to simplify, typical desktop usage. Generally sorted into &quot;generic&quot; or &quot;shortcuts&quot; subdirectories.
 
 
@@ -1457,6 +1537,9 @@ _findFunction _true
 !Distro
 [[Debian]]
 [[Raspbian]]
+
+!MSW
+[[MSW]]
 
 !Docker
 [[Operations|DockerOperations]]
@@ -2123,7 +2206,7 @@ apt-get install virtualbox-guest-dkms virtualbox-guest-x11 linux-headers-$(uname
 usermod -G vboxsf -a user
 //}}}</pre>
 </div>
-<div title="Virtualization" creator="mirage335" modifier="mirage335" created="201710270206" modified="201712280419" changecount="113">
+<div title="Virtualization" creator="mirage335" modifier="mirage335" created="201710270206" modified="201712282056" changecount="115">
 <pre>Ubiquitous Bash middleware has the capacity to provide true application virtualization, with automatic fileparameter translation, across a wide variety of platforms (x86/64, ARM), and operating systems (MSW, Unix), by using any available underlying tool (~ChRoot, QEMU, Xen, ~VirtualBox, Docker, Wine, Cygwin, &lt;nowiki&gt;DosBox&lt;/nowiki&gt;), on a common disk format (raw image). Most of this capability has been realized, most of the remainder will involve simply merging existing code from [[HostedXen|https://github.com/mirage335/HostedXen]], [[HostedOpenVZ|https://github.com/mirage335/hostedOpenVZ]]. Automatic selection of native application by platform is also well supported.
 
 &lt;&lt;showtoc&gt;&gt;
@@ -2175,12 +2258,16 @@ Launch a VM with bootdisc and host directory sharing for guest setup procedures.
 * Enable user autologin.
 * Copy &quot;rootmsw.bat&quot; to the &quot;Start Up&quot; folder in the MSW &quot;start&quot; menu.
 * Edit image to enable support for both ~VBox and QEMU. Chiefly, set any disk controllers to generic drives under &quot;Device Manager&quot;.
-http://0x0badc0de.blogspot.com/2013/05/converting-windows-virtual-machine-from.html
-http://0x0badc0de.blogspot.com/2013/05/converting-windows-virtual-machine-from.html
-https://arstechnica.com/gadgets/2007/09/how-to-install-a-new-motherboard-without-reinstalling-windows/
-
 
 !!NIX
+Install guest dependencies and user software.
+//{{{
+apt-get -y install grub2 makedev linux-image-amd64
+apt-get -y install cifs-utils nmap smbclient
+apt-get -y install lxde-core lxde task-lxde-desktop
+apt-get -y install kde-plasma-desktop kde-standard kde-full task-kde-desktop
+//}}}
+
 * Permanently set bootdisc image, by label as available on any device, to be mounted to /media/bootdisc .
 Create directory.
 //{{{

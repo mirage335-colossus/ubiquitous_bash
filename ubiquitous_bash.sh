@@ -1521,10 +1521,14 @@ _createRawImage_sequence() {
 	
 	[[ "$1" != "" ]] && export vmImageFile="$1"
 	
+	local createRawImageSize
+	createRawImageSize=7636
+	[[ "$vmSize" != "" ]] && createRawImageSize="$vmSize"
+	
 	[[ "$vmImageFile" == "" ]] && _stop 1
 	[[ -e "$vmImageFile" ]] && _stop 1
 	
-	dd if=/dev/zero of="$vmImageFile" bs=1M count=7636 > /dev/null 2>&1
+	dd if=/dev/zero of="$vmImageFile" bs=1M count="$vmSize" > /dev/null 2>&1
 	
 	_stop
 }
@@ -2982,11 +2986,13 @@ _integratedQemu() {
 	#https://unix.stackexchange.com/questions/165554/shared-folder-between-qemu-windows-guest-and-linux-host
 	#https://linux.die.net/man/1/qemu-kvm
 	
-	qemuUserArgs+=(-machine accel=kvm -drive format=raw,file="$scriptLocal"/vm.img -drive file="$hostToGuestISO",media=cdrom -boot c -m 1256 -net nic,model=pcnet -net user,smb="$sharedHostProjectDir")
+	qemuArgs+=(-smp 4)
+	
+	qemuUserArgs+=(-machine accel=kvm -drive format=raw,file="$scriptLocal"/vm.img -drive file="$hostToGuestISO",media=cdrom -boot c -m 1256 -net nic,model=rtl8139 -net user,smb="$sharedHostProjectDir")
 	
 	qemuArgs+=(-usbdevice tablet)
 	
-	qemuArgs+=(-vga std)
+	qemuArgs+=(-vga cirrus)
 	
 	qemuArgs+=(-show-cursor)
 	
@@ -3253,9 +3259,17 @@ _set_instance_vbox_features() {
 	
 	local vboxChipset
 	vboxChipset="ich9"
-	#[[ "$vboxOStype" == "Win"*"XP" ]] && vboxChipset="piix3"
+	#[[ "$vboxOStype" == *"Win"*"XP"* ]] && vboxChipset="piix3"
 	
-	VBoxManage modifyvm "$sessionid" --boot1 disk --biosbootmenu disabled --bioslogofadein off --bioslogofadeout off --bioslogodisplaytime 1 --vram 128 --memory 1512 --nic1 nat --nictype1 "82543GC" --clipboard bidirectional --accelerate3d off --accelerate2dvideo off --vrde off --audio pulse --usb on --cpus 4 --ioapic on --acpi on --pae on --chipset "$vboxChipset"
+	local vboxNictype
+	vboxNictype="82543GC"
+	[[ "$vboxOStype" == *"Win"*"10"* ]] && vboxNictype="82540EM"
+	
+	local vboxAudioController
+	vboxAudioController="ac97"
+	[[ "$vboxOStype" == *"Win"*"10"* ]] && vboxAudioController="hda"
+	
+	VBoxManage modifyvm "$sessionid" --boot1 disk --biosbootmenu disabled --bioslogofadein off --bioslogofadeout off --bioslogodisplaytime 1 --vram 128 --memory 1512 --nic1 nat --nictype1 "$vboxNictype" --clipboard bidirectional --accelerate3d off --accelerate2dvideo off --vrde off --audio pulse --usb on --cpus 4 --ioapic on --acpi on --pae on --chipset "$vboxChipset" --audiocontroller="$vboxAudioController"
 	
 }
 
@@ -3296,7 +3310,9 @@ _create_instance_vbox() {
 	#VBoxManage showhdinfo "$scriptLocal"/vm.vdi
 
 	#Suppress annoying warnings.
-	VBoxManage setextradata global GUI/SuppressMessages "remindAboutAutoCapture,remindAboutMouseIntegrationOn,showRuntimeError.warning.HostAudioNotResponding,remindAboutGoingSeamless,remindAboutInputCapture,remindAboutGoingFullscreen,remindAboutMouseIntegrationOff,confirmGoingSeamless,confirmInputCapture,remindAboutPausedVMInput,confirmVMReset,confirmGoingFullscreen,remindAboutWrongColorDepth"
+	VBoxManage setextradata global GUI/SuppressMessages "remindAboutAutoCapture,remindAboutMouseIntegration,remindAboutMouseIntegrationOn,showRuntimeError.warning.HostAudioNotResponding,remindAboutGoingSeamless,remindAboutInputCapture,remindAboutGoingFullscreen,remindAboutMouseIntegrationOff,confirmGoingSeamless,confirmInputCapture,remindAboutPausedVMInput,confirmVMReset,confirmGoingFullscreen,remindAboutWrongColorDepth"
+	
+	
 	
 	return 0
 }
@@ -4666,6 +4682,71 @@ _create_raspbian() {
 	
 	"$scriptAbsoluteLocation" _create_raspbian_sequence "$@"
 	
+}
+
+#Installs to a raw disk image using VirtualBox. Subsequently may be run under a variety of real and virtual platforms.
+_create_msw_vbox_sequence() {
+	_start
+	
+	[[ ! -e "$scriptLocal"/msw.iso ]] && _stop 1
+	
+	[[ ! -e "$scriptLocal"/vm.img ]] && [[ ! -e "$scriptLocal"/vm.vdi ]] && _createRawImage
+	
+	_checkDep VBoxManage
+	
+	_prepare_instance_vbox || return 1
+	
+	_readLocked "$vBox_vdi" && return 1
+	
+	_createLocked "$vBox_vdi" || return 1
+	
+	#VBoxManage modifymedium "$scriptLocal"/vm.vdi --type normal
+	
+	export vboxDiskMtype="normal"
+	_create_instance_vbox "$@"
+	
+	#####Actually mount MSW ISO.
+	VBoxManage storageattach "$sessionid" --storagectl "IDE Controller" --port 1 --device 0 --type dvddrive --medium "$scriptLocal"/msw.iso
+	
+	env HOME="$VBOX_USER_HOME_short" VirtualBox
+	
+	_wait_instance_vbox
+	
+	#VBoxManage modifymedium "$scriptLocal"/vm.vdi --type multiattach
+	
+	rm -f "$vBox_vdi" > /dev/null 2>&1
+	
+	_rm_instance_vbox
+	
+	_stop
+}
+
+_create_msw_vbox() {
+	"$scriptAbsoluteLocation" _create_msw_vbox_sequence "$@"
+}
+
+
+#Installs to a raw disk image using QEMU. Subsequently may be run under a variety of real and virtual platforms.
+_create_msw_qemu_sequence() {
+	_start
+	
+	[[ ! -e "$scriptLocal"/msw.iso ]] && _stop 1
+	
+	[[ ! -e "$scriptLocal"/vm.img ]] && _createRawImage
+	
+	_checkDep qemu-system-x86_64
+	
+	qemu-system-x86_64 -smp 4 -machine accel=kvm -drive format=raw,file="$scriptLocal"/vm.img -cdrom "$scriptLocal"/msw.iso -boot d -m 1536 -net nic,model=rtl8139 -net user -usbdevice tablet -vga cirrus -show-cursor
+	
+	_stop
+}
+
+_create_msw_qemu() {
+	"$scriptAbsoluteLocation" _create_msw_qemu_sequence "$@"
+}
+
+_create_msw() {
+	_create_msw_vbox "$@"
 }
 
 _visualPrompt() {
@@ -6943,6 +7024,11 @@ then
 	. "$objectDir"/ops
 fi
 
+#Override functions with external definitions from a separate file if available.
+if [[ -e "$scriptLocal"/ops ]]
+then
+	. "$scriptLocal"/ops
+fi
 
 #Launch internal functions as commands.
 _true() {

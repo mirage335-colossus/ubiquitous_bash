@@ -6,6 +6,7 @@ For new applications and shell feature extension, provides directory containment
 "While bind mounts are dependent on the directory structure of the host machine, volumes are completely managed by Docker."
 - https://docs.docker.com/engine/admin/volumes/volumes/
 
+
 # USAGE
 
 https://rawgit.com/mirage335/ubiquitous_bash/master/USAGE.html
@@ -21,7 +22,7 @@ Immediate attention will be given to any support request. Please do not hesitate
 Bug reports, feature requests, forks, and especially pull requests, are highly welcome. Please keep in mind "defense in depth" and explicit tests are preferred measures to ensure against regressions. Ubiquitous Bash GitHub repository is monitored in real time.
 
 # Version
-v2.1
+v2.2
 
 Semantic versioning is applied. Major version numbers (v2.x) indicate a compatible API. Minor numbers indicate the current feature set has been tested for usability. Any git commits not tagged with a version number may be technically considered unstable development code. New functions present in git commits may be experimental.
 
@@ -39,6 +40,7 @@ In most user environments, the latest git repository code will provide the stron
 
 * ChRoot alternative to "/etc/skel" copying, involving bind or union mounts to /home/user .
 
+* Support Xen (xl) as a virtualization backend.
 * Support LXC as a virtualization backend.
 
 * Integrate AppImage build scripts.

@@ -19,10 +19,14 @@ _createRawImage_sequence() {
 	
 	[[ "$1" != "" ]] && export vmImageFile="$1"
 	
+	local createRawImageSize
+	createRawImageSize=7636
+	[[ "$vmSize" != "" ]] && createRawImageSize="$vmSize"
+	
 	[[ "$vmImageFile" == "" ]] && _stop 1
 	[[ -e "$vmImageFile" ]] && _stop 1
 	
-	dd if=/dev/zero of="$vmImageFile" bs=1M count=7636 > /dev/null 2>&1
+	dd if=/dev/zero of="$vmImageFile" bs=1M count="$vmSize" > /dev/null 2>&1
 	
 	_stop
 }

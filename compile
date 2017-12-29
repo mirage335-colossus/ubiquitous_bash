@@ -187,6 +187,17 @@ _deps_dosbox() {
 	export enUb_DosBox="true"
 }
 
+_deps_msw() {
+	_deps_virt
+	_deps_qemu
+	_deps_vbox
+	_deps_wine
+	export enUb_msw="true"
+}
+
+
+# DANGER
+#Especially, be careful to explicitly check all prerequsites for _safeRMR are in place.
 
 #####
 
@@ -200,6 +211,7 @@ _deps_vbox
 _deps_docker
 _deps_wine
 _deps_dosbox
+_deps_msw
 
 #####
 
@@ -320,6 +332,9 @@ includeScriptList+=( "labels"/shortcutsLabel.sh )
 
 [[ "$enUb_QEMU" == "true" ]] && includeScriptList+=( "shortcuts/distro/debian"/createDebian.sh )
 [[ "$enUb_image" == "true" ]] && includeScriptList+=( "shortcuts/distro/raspbian"/createRaspbian.sh )
+
+[[ "$enUb_msw" == "true" ]] && includeScriptList+=( "shortcuts/msw"/msw.sh )
+
 
 [[ "$enUb_image" == "true" ]] && includeScriptList+=( "shortcuts/prompt"/visualPrompt.sh )
 
