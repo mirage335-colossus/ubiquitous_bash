@@ -8,6 +8,7 @@ vm.img
 vm*.img
 WARNING
 _local
+_index
 *.log
 devtask*
 devtask/

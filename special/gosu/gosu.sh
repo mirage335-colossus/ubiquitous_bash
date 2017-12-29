@@ -25,8 +25,8 @@ _gosuExecVirt() {
 _testBuiltGosu() {
 	#export PATH="$PATH":"$scriptBin"
 	
-	_checkDep gpg
-	_checkDep dirmngr
+	_getDep gpg
+	_getDep dirmngr
 	
 	_gosuBinary
 	

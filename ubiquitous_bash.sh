@@ -4102,8 +4102,8 @@ _gosuExecVirt() {
 _testBuiltGosu() {
 	#export PATH="$PATH":"$scriptBin"
 	
-	_checkDep gpg
-	_checkDep dirmngr
+	_getDep gpg
+	_getDep dirmngr
 	
 	_gosuBinary
 	
@@ -4793,7 +4793,7 @@ _vdi_to_img() {
 	VBoxManage clonehd "$scriptLocal"/vm.vdi "$scriptLocal"/vm.img --format RAW
 }
 
-#No production use. Not necessary. Not recommended.
+#No production use. Not recommended except to accommodate MSW hosts.
 _img_to_vdi() {
 	VBoxManage convertdd "$scriptLocal"/vm.vdi "$scriptLocal"/vm.img --format VDI 
 }
