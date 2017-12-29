@@ -834,7 +834,7 @@ git clone https://github.com/moby/moby.git
 <div title="DefaultTiddlers" creator="mirage335" modifier="mirage335" created="201710261744" modified="201712260421" changecount="6">
 <pre>[[Demo]]</pre>
 </div>
-<div title="Demo" creator="mirage335" modifier="mirage335" created="201712122105" modified="201712290421" changecount="52">
+<div title="Demo" creator="mirage335" modifier="mirage335" created="201712122105" modified="201712290450" changecount="54">
 <pre>&lt;&lt;showtoc&gt;&gt;
 
 !Pitch
@@ -932,7 +932,26 @@ Demonstrate ~ChRoot, QEMU, ~VirtualBox, and Docker support, from the same image.
 #./ubiquitous_bash.sh _userDocker leafpad ./CC0_license.txt
 ./ubiquitous_bash.sh _userDocker xmessage -file ./CC0_license.txt
 ./ubiquitous_bash.sh _userDocker xeyes
-//}}}</pre>
+//}}}
+
+!Raspbian
+
+Download and extract image.
+
+//{{{
+_fetch_raspbian
+_create_raspbian
+//}}}
+
+ChRoot as usual.
+
+//{{{
+./ubiquitous_bash.sh _userChRoot
+./ubiquitous_bash.sh _userChRoot ls -la /home/ubvrtusr
+
+./ubiquitous_bash.sh _closeChRoot
+//}}}
+</pre>
 </div>
 <div title="DemoBootdiscMSW" creator="mirage335" modifier="mirage335" created="201712282243" modified="201712290139" changecount="3">
 <pre>* Enable user autologin.
