@@ -1,5 +1,21 @@
 #!/usr/bin/env bash
 
+#Critical prerequsites.
+#Critical prerequsites.
+_getAbsolute_criticalDep() {
+	! type realpath > /dev/null 2>&1 && return 1
+	! type readlink > /dev/null 2>&1 && return 1
+	! type dirname > /dev/null 2>&1 && return 1
+	
+	#Known issue on Mac. See https://github.com/mirage335/ubiquitous_bash/issues/1 .
+	! realpath -L . > /dev/null 2>&1 && return 1
+	
+	return 0
+}
+! _getAbsolute_criticalDep && exit 1
+
+! type basename > /dev/null 2>&1 && exit 1
+
 #Retrieves absolute path of current script, while maintaining symlinks, even when "./" would translate with "readlink -f" into something disregarding symlinked components in $PWD.
 #However, will dereference symlinks IF the script location itself is a symlink. This is to allow symlinking to scripts to function normally.
 #Suitable for allowing scripts to find other scripts they depend on. May look like an ugly hack, but it has proven reliable over the years.
@@ -65,16 +81,6 @@ export ubiquitiousLibDir="."
 export progDir="./_prog"
 export progScript="./ubiquitous_bash.sh"
 
-#Checks whether command or function is available.
-# WARNING Needed by safeRMR .
-_checkDep() {
-	if ! type "$1" >/dev/null 2>&1
-	then
-		echo "$1" missing
-		_stop 1
-	fi
-}
-
 #"$1" == file path
 _includeFile() {
 	
@@ -129,10 +135,6 @@ _includeScripts() {
 	done
 }
 
-_checkDep basename
-_checkDep dirname
-_checkDep readlink
-_checkDep realpath
 
 ##### Dependency Tracking
 # WARNING
