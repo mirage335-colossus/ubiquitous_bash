@@ -1,5 +1,23 @@
 #####Program
 
+_test_build() {
+	_getDep gcc
+	_getDep g++
+	_getDep make
+	
+	_getDep cmake
+	
+	_getDep autoreconf
+	_getDep autoconf
+	_getDep automake
+	
+	_getDep libtool
+	
+	_getDep makeinfo
+	
+	_tryExec _test_bashdb
+}
+
 _buildSequence() {
 	_start
 	

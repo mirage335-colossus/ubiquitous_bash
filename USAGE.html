@@ -1249,6 +1249,29 @@ Searches directory for mounted filesystems. Requires sudo .
 
 </pre>
 </div>
+<div title="GenericPrereq" creator="mirage335" modifier="mirage335" created="201712300321" modified="201712300408" changecount="4">
+<pre>!&lt;nowiki&gt;Docker MKImage&lt;/nowiki&gt;
+
+From ubiquitous bash directory. Known working commit is &quot;a4bdb304e29f21661e8ef398dbaeb8188aa0f46a&quot; .
+//{{{
+cd ..
+git clone https://github.com/moby/moby.git
+//}}}
+
+!&lt;nowiki&gt;BashDB&lt;/nowiki&gt;
+
+From ubiquitous bash directory. Known working commit is &quot;984631ce56285e045375930490bb180a83da2e45&quot; .
+//{{{
+cd ..
+git clone git://git.code.sf.net/p/bashdb/code bashdb-code
+cd bashdb-code
+#./configure      # use --with-bash-src to speed up bash debugging
+./autogen.sh
+make &amp;&amp; make check
+sudo -n make install
+//}}}
+</pre>
+</div>
 <div title="Git" creator="mirage335" modifier="mirage335" created="201710262134" modified="201710262313" changecount="7">
 <pre>!_gitNew
 Creates new Git repository.
@@ -1453,9 +1476,11 @@ _closeChRoot
 //}}}
 </pre>
 </div>
-<div title="Reference" creator="mirage335" modifier="mirage335" created="201712130531" modified="201712282057" changecount="7">
+<div title="Reference" creator="mirage335" modifier="mirage335" created="201712130531" modified="201712300318" changecount="10">
 <pre>!Prerequsites
 For any Ubiquitous Bash application, the &quot;_test&quot; function will check for presence of all host OS dependencies needed by the included components. Exhaustive prerequsite package installation instructions are provided for specific distributions.
+
+[[Generic|GenericPrereq]]
 
 [[Cygwin|CygwinPrereq]]
 

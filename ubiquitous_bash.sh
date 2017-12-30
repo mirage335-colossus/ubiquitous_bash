@@ -297,6 +297,25 @@ _discoverResource() {
 	testDir="$scriptAbsoluteFolder"/../../.. ; [[ -e "$testDir"/"$1" ]] && echo "$testDir"/"$1" && return
 }
 
+_test_bashdb() {
+	_getDep ddd
+	
+	#if ! _discoverResource bashdb-code/bashdb.sh > /dev/null 2>&1
+	#then
+	#	echo
+	#	echo 'bashdb required for debugging'
+		#_stop 1
+	#fi
+	
+	if ! type bashdb > /dev/null 2>&1
+	then
+		echo
+		echo 'bashdb required for debugging'
+	#_stop 1
+	fi
+}
+
+
 _testBindMountManager() {
 	_getDep mount
 	_getDep umount
@@ -6840,6 +6859,8 @@ _test() {
 	_getDep true
 	_getDep false
 	
+	_tryExec _test_build
+	
 	_tryExec "_testGosu"
 	
 	_tryExec "_testMountChecks"
@@ -6949,6 +6970,24 @@ _setup() {
 }
 
 #####Program
+
+_test_build() {
+	_getDep gcc
+	_getDep g++
+	_getDep make
+	
+	_getDep cmake
+	
+	_getDep autoreconf
+	_getDep autoconf
+	_getDep automake
+	
+	_getDep libtool
+	
+	_getDep makeinfo
+	
+	_tryExec _test_bashdb
+}
 
 _buildSequence() {
 	_start

@@ -221,7 +221,7 @@ rm "$progScript" >/dev/null 2>&1
 
 includeScriptList+=( "generic"/minimalheader.sh )
 
-#####Utilities
+#####Essential Utilities
 includeScriptList+=( "labels"/utilitiesLabel.sh )
 
 [[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "generic"/showCommand.sh )
@@ -236,6 +236,9 @@ includeScriptList+=( "generic/filesystem"/safedelete.sh )
 
 includeScriptList+=( "generic/filesystem"/discoverresource.sh )
 
+[[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "instrumentation"/bashdb/bashdb.sh )
+
+#####Utilities
 [[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "generic/filesystem/mounts"/bindmountmanager.sh )
 
 includeScriptList+=( "generic/filesystem/mounts"/waitumount.sh )
@@ -394,12 +397,12 @@ _includeScripts "${includeScriptList[@]}"
 
 chmod u+x "$progScript"
 
-if "$progScript" _test > ./compile.log 2>&1
-then
-	rm compile.log
-else
-	exit 1
-fi
+#if "$progScript" _test > ./compile.log 2>&1
+#then
+#	rm compile.log
+#else
+#	exit 1
+#fi
 
 
 
