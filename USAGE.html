@@ -2250,7 +2250,7 @@ apt-get install virtualbox-guest-dkms virtualbox-guest-x11 linux-headers-$(uname
 usermod -G vboxsf -a user
 //}}}</pre>
 </div>
-<div title="Virtualization" creator="mirage335" modifier="mirage335" created="201710270206" modified="201712310535" changecount="121">
+<div title="Virtualization" creator="mirage335" modifier="mirage335" created="201710270206" modified="201712310553" changecount="122">
 <pre>Ubiquitous Bash middleware has the capacity to provide true application virtualization, with automatic fileparameter translation, across a wide variety of platforms (x86/64, ARM), and operating systems (MSW, Unix), by using any available underlying tool (~ChRoot, QEMU, Xen, ~VirtualBox, Docker, Wine, Cygwin, &lt;nowiki&gt;DosBox&lt;/nowiki&gt;), on a common disk format (raw image). Most of this capability has been realized, most of the remainder will involve simply merging existing code from [[HostedXen|https://github.com/mirage335/HostedXen]], [[HostedOpenVZ|https://github.com/mirage335/hostedOpenVZ]]. Automatic selection of native application by platform is also well supported.
 
 &lt;&lt;showtoc&gt;&gt;
@@ -2463,22 +2463,28 @@ _dosbox dir ./
 !&lt;nowiki&gt;FakeHome&lt;/nowiki&gt;
 Many programs inappropriately assume the user's &quot;home&quot; folder is the appropriate place for configurations which might actually need to be different for different use cases. Overriding the &quot;$HOME&quot; environment variable, more rarely other variables as well, can resolve the resulting conflicts. ~FakeHome is a feature of ubiquitous bash which goes a few steps further depending on which function is used, what environment variables are set, what overrides are present in &quot;ops&quot;, and whether setupUbiquitous has hooked the user's actual &quot;.bashrc&quot;. For example, it is possible to automatically drop the redirection when a later subshell is launched.
 
+!!Create
+Automatically adds typical shared directories, such as &quot;~/Downloads&quot; to ~FakeHome environment, by symlink.
+//{{{
+_createfakeHome
+//}}}
+
 !!Root
 Fake home directory is set to &quot;_local&quot;.
 //{{{
-_editFakeHome firefox
+_editFakeHome firefox --no-remote
 //}}}
 
 !!User
 Temporary fake home directory, based upon the contents of &quot;_local&quot;.
 //{{{
-_userFakeHome firefox
+_userFakeHome firefox --no-remote
 //}}}
 
 !!Mem
 Same as user, but on a ramdisk. Requires effective root.
 //{{{
-_memFakeHome firefox
+_memFakeHome firefox --no-remote
 //}}}
 
 !!Keep Fake Home
@@ -2486,6 +2492,7 @@ Causes the ~/.bashrc hook installed with _setupUbiquitous to or not to reset ~Fa
 //{{{
 #export keepFakeHome=&quot;true&quot;
 export keepFakeHome=&quot;false&quot;
+_userFakeHome emacs
 //}}}
 </pre>
 </div>
