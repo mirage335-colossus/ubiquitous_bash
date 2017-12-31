@@ -148,10 +148,12 @@ _deps_notLean() {
 }
 
 _deps_x11() {
+	_deps_notLean
 	export enUb_x11="true"
 }
 
 _deps_image() {
+	_deps_notLean
 	export enUb_image="true"
 }
 
@@ -182,10 +184,12 @@ _deps_docker() {
 }
 
 _deps_wine() {
+	_deps_notLean
 	export enUb_wine="true"
 }
 
 _deps_dosbox() {
+	_deps_notLean
 	export enUb_DosBox="true"
 }
 
@@ -195,6 +199,11 @@ _deps_msw() {
 	_deps_vbox
 	_deps_wine
 	export enUb_msw="true"
+}
+
+_deps_fakehome() {
+	_deps_notLean
+	export enUb_fakehome="true"
 }
 
 
@@ -214,6 +223,7 @@ _deps_docker
 _deps_wine
 _deps_dosbox
 _deps_msw
+_deps_fakehome
 
 #####
 
@@ -276,6 +286,8 @@ includeScriptList+=( "os"/getDep.sh )
 
 [[ "$enUb_virt" == "true" ]] && includeScriptList+=( "virtualization"/osTranslation.sh )
 [[ "$enUb_virt" == "true" ]] && includeScriptList+=( "virtualization"/localPathTranslation.sh )
+
+[[ "$enUb_fakehome" == "true" ]] && includeScriptList+=( "virtualization/fakehome"/fakehome.sh )
 
 [[ "$enUb_image" == "true" ]] && includeScriptList+=( "virtualization/image"/mountimage.sh )
 [[ "$enUb_image" == "true" ]] && includeScriptList+=( "virtualization/image"/createImage.sh )
@@ -365,6 +377,7 @@ includeScriptList+=( "structure"/globalvars.sh )
 
 includeScriptList+=( "structure"/specglobalvars.sh )
 
+[[ "$enUb_fakehome" == "true" ]] && includeScriptList+=( "virtualization/fakehome"/fakehomevars.sh )
 [[ "$enUb_vbox" == "true" ]] && includeScriptList+=( "virtualization/vbox"/vboxvars.sh )
 [[ "$enUb_docker" == "true" ]] && includeScriptList+=( "virtualization/docker"/dockervars.sh )
 

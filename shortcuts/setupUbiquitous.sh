@@ -15,6 +15,8 @@ _resetOps() {
 }
 
 _importShortcuts() {
+	_tryExec "_resetFakeHomeEnv"
+	
 	_visualPrompt
 }
 

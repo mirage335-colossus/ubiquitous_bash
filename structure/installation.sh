@@ -97,7 +97,7 @@ _test() {
 	_getDep true
 	_getDep false
 	
-	_tryExec _test_build
+	_tryExec "_test_build"
 	
 	_tryExec "_testGosu"
 	
@@ -114,6 +114,7 @@ _test() {
 	
 	_tryExec "_test_mkboot"
 	
+	_tryExec "_test_fakehome"
 	_tryExec "_testChRoot"
 	_tryExec "_testQEMU"
 	_tryExec "_testQEMU_x64-x64"
