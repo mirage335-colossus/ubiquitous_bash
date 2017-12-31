@@ -39,55 +39,48 @@ _setFakeHomeEnv() {
 	_setFakeHomeEnv_extra
 }
 
-
-_editFakeHome_sequence() {
-	_start
+_makeFakeHome_extra_layer0() {
+	_relink "$realHome"/.bashrc "$HOME"/.bashrc
+	_relink "$realHome"/.ubcore "$HOME"/.ubcore
 	
-	_resetFakeHomeEnv_nokeep
-	_prepareFakeHome
+	_relink "$realHome"/.Xauthority "$HOME"/.Xauthority
 	
-	_setFakeHomeEnv "$globalFakeHome"
+	_relink "$realHome"/.ssh "$HOME"/.ssh
+	_relink "$realHome"/.gitconfig "$HOME"/.gitconfig
 	
-	"$@"
-	
-	_resetFakeHomeEnv_nokeep
-	_stop
+	mkdir -p "$realHome"/.config
 }
 
-_editFakeHome() {
-	"$scriptAbsoluteLocation" _editFakeHome_sequence "$@"
-}
-
-_makeFakeHome_extra() {
+_makeFakeHome_extra_layer1() {
 	true
 }
 
 _makeFakeHome() {
-	ln -s "$realHome" "$HOME"/realHome
+	[[ "$HOME" == "" ]] && return 0
+	[[ "$HOME" == "/home/""$USER" ]] && return 0
 	
-	ln -s "$realHome"/.bashrc "$HOME"/
-	ln -s "$realHome"/.ubcore "$HOME"/
+	_relink "$realHome" "$HOME"/realHome
 	
-	ln -s "$realHome"/Downloads "$HOME"/
+	_relink "$realHome"/Downloads "$HOME"/Downloads
 	
-	ln -s "$realHome"/Desktop "$HOME"/
-	ln -s "$realHome"/Documents "$HOME"/
-	ln -s "$realHome"/Music "$HOME"/
-	ln -s "$realHome"/Pictures "$HOME"/
-	ln -s "$realHome"/Public "$HOME"/
-	ln -s "$realHome"/Templates "$HOME"/
-	ln -s "$realHome"/Videos "$HOME"/
+	_relink "$realHome"/Desktop "$HOME"/Desktop
+	_relink "$realHome"/Documents "$HOME"/Documents
+	_relink "$realHome"/Music "$HOME"/Music
+	_relink "$realHome"/Pictures "$HOME"/Pictures
+	_relink "$realHome"/Public "$HOME"/Public
+	_relink "$realHome"/Templates "$HOME"/Templates
+	_relink "$realHome"/Videos "$HOME"/Videos
 	
-	ln -s "$realHome"/bin "$HOME"/
+	_relink "$realHome"/bin "$HOME"/bin
 	
-	ln -s "$realHome"/core "$HOME"/
-	ln -s "$realHome"/project "$HOME"/
-	ln -s "$realHome"/projects "$HOME"/
+	_relink "$realHome"/core "$HOME"/core
+	_relink "$realHome"/project "$HOME"/project
+	_relink "$realHome"/projects "$HOME"/projects
 	
-	ln -s "$realHome"/.ssh "$HOME"/
-	ln -s "$realHome"/.gitconfig "$HOME"/
 	
-	_makeFakeHome_extra
+	
+	_makeFakeHome_extra_layer0
+	_makeFakeHome_extra_layer1
 }
 
 _createFakeHome_sequence() {
@@ -97,7 +90,6 @@ _createFakeHome_sequence() {
 	_prepareFakeHome
 	
 	_setFakeHomeEnv "$globalFakeHome"
-	
 	_makeFakeHome
 	
 	_resetFakeHomeEnv_nokeep
@@ -106,6 +98,25 @@ _createFakeHome_sequence() {
 
 _createFakeHome() {
 	"$scriptAbsoluteLocation" _createFakeHome_sequence "$@"
+}
+
+_editFakeHome_sequence() {
+	_start
+	
+	_resetFakeHomeEnv_nokeep
+	_prepareFakeHome
+	
+	_setFakeHomeEnv "$globalFakeHome"
+	_makeFakeHome > /dev/null 2>&1
+	
+	"$@"
+	
+	_resetFakeHomeEnv_nokeep
+	_stop
+}
+
+_editFakeHome() {
+	"$scriptAbsoluteLocation" _editFakeHome_sequence "$@"
 }
 
 _mountRAM_fakeHome_instance_sequence() {
@@ -147,6 +158,7 @@ _userFakeHome_sequence() {
 	_prepareFakeHome_instance
 	
 	_setFakeHomeEnv "$instancedFakeHome"
+	_makeFakeHome > /dev/null 2>&1
 	
 	"$@"
 	

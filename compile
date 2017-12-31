@@ -248,6 +248,8 @@ includeScriptList+=( "generic/filesystem"/safedelete.sh )
 
 includeScriptList+=( "generic/filesystem"/discoverresource.sh )
 
+includeScriptList+=( "generic/filesystem"/relink.sh )
+
 [[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "instrumentation"/bashdb/bashdb.sh )
 
 #####Utilities
