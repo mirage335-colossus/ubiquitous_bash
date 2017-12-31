@@ -58,6 +58,10 @@ _editFakeHome() {
 	"$scriptAbsoluteLocation" _editFakeHome_sequence "$@"
 }
 
+_makeFakeHome_extra() {
+	true
+}
+
 _makeFakeHome() {
 	ln -s "$realHome" "$HOME"/realHome
 	
@@ -79,6 +83,11 @@ _makeFakeHome() {
 	ln -s "$realHome"/core "$HOME"/
 	ln -s "$realHome"/project "$HOME"/
 	ln -s "$realHome"/projects "$HOME"/
+	
+	ln -s "$realHome"/.ssh "$HOME"/
+	ln -s "$realHome"/.gitconfig "$HOME"/
+	
+	_makeFakeHome_extra
 }
 
 _createFakeHome_sequence() {
