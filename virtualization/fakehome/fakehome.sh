@@ -178,3 +178,8 @@ _memFakeHome() {
 	export userFakeHome_enableMemMount="true"
 	"$scriptAbsoluteLocation" _userFakeHome_sequence "$@"
 }
+
+#For internal use.
+_selfFakeHome() {
+	"$scriptAbsoluteLocation" _userFakeHome "$scriptAbsoluteLocation" "$@"
+}

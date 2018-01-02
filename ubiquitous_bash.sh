@@ -1578,6 +1578,11 @@ _memFakeHome() {
 	"$scriptAbsoluteLocation" _userFakeHome_sequence "$@"
 }
 
+#For internal use.
+_selfFakeHome() {
+	"$scriptAbsoluteLocation" _userFakeHome "$scriptAbsoluteLocation" "$@"
+}
+
 _test_image() {
 	_mustGetSudo
 	
@@ -4483,22 +4488,50 @@ _test_devemacs() {
 
 _emacsDev_fakehome() {
 	cp -a "$scriptLib"/app/emacs/home/. "$HOME"
+}
+
+_emacsDev_sequence() {
+	_emacsDev_fakehome
 	
-	echo -n '(bashdb "bashdb \"' >> "$HOME"/.emacs
+	#echo -n "$@" >> "$HOME"/.emacs
 	
-	echo -n "$@" >> "$HOME"/.emacs
-	
-	echo -n '\"")' >> "$HOME"/.emacs
-	
-	emacs
+	emacs "$@"
 }
 
 _emacsDev() {
-	"$scriptAbsoluteLocation" _userFakeHome "$scriptAbsoluteLocation" _emacsDev_fakehome "$@"
+	_selfFakeHome _emacsDev_sequence "$@"
 }
 
 _emacs() {
 	_emacsDev "$@"
+}
+
+_bashdb_sequence() {
+	_emacsDev_fakehome
+	
+	echo -n '(bashdb "bash --debugger' >> "$HOME"/.emacs
+	
+	local currentArg
+	
+	for currentArg in "$@"
+	do
+		echo -n ' ' >> "$HOME"/.emacs
+		echo -n '\"' >> "$HOME"/.emacs
+		echo -n "$currentArg" >> "$HOME"/.emacs
+		echo -n '\"' >> "$HOME"/.emacs
+	done
+	
+	echo '")' >> "$HOME"/.emacs
+	
+	emacs
+}
+
+_bashdb() {
+	_selfFakeHome _bashdb_sequence "$@"
+}
+
+_uddb() {
+	_bashdb "$scriptAbsoluteLocation" "$@"
 }
 
 _testGit() {

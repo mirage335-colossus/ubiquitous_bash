@@ -70,6 +70,8 @@ In most user environments, the latest git repository code will provide the stron
 * KWrite under ChRoot may lock up the mounts, preventing _closeChRoot from working. Error messages suggest PulseAudio is not working normally. Nevertheless, cleanup seems to take place through the systemd hook upon shutdown.
 * LeafPad sometimes fails to launch from Docker container, apparently due to X11 issues.
 
+* BashDB must be given a "frame 0" command to show source code window in emacs "realgud". Self-hosted "_ubdb" self-debugger is affected by this inconvenient bug.
+
 
 # WARNING
 
