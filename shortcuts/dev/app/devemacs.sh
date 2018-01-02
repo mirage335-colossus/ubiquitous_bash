@@ -5,12 +5,12 @@ _test_devemacs() {
 	! [[ "$emacsDetectedVersion" -ge "24" ]] && echo emacs too old && _stop 1
 }
 
-_emacsDev_fakehome() {
+_prepare_emacsDev_fakeHome() {
 	cp -a "$scriptLib"/app/emacs/home/. "$HOME"
 }
 
 _emacsDev_sequence() {
-	_emacsDev_fakehome
+	_prepare_emacsDev_fakeHome
 	
 	#echo -n "$@" >> "$HOME"/.emacs
 	
@@ -25,8 +25,18 @@ _emacs() {
 	_emacsDev "$@"
 }
 
+_emacsDev_edit_sequence() {
+	export appGlobalFakeHome="$scriptLib"/app/emacs/home
+	
+	_editFakeHome emacs "$@"
+}
+
+_emacsDev_edit() {
+	"$scriptAbsoluteLocation" _emacsDev_edit_sequence "$@"
+}
+
 _bashdb_sequence() {
-	_emacsDev_fakehome
+	_prepare_emacsDev_fakeHome
 	
 	echo -n '(bashdb "bash --debugger' >> "$HOME"/.emacs
 	
@@ -49,6 +59,6 @@ _bashdb() {
 	_selfFakeHome _bashdb_sequence "$@"
 }
 
-_uddb() {
+_ubdb() {
 	_bashdb "$scriptAbsoluteLocation" "$@"
 }

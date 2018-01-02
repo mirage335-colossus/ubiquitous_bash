@@ -32,7 +32,9 @@ _setFakeHomeEnv() {
 	export setFakeHome="true"
 	
 	export realHome="$HOME"
-	export fakeHome=$(_findDir "$1")
+	
+	[[ "$appGlobalFakeHome" == "" ]] && export fakeHome=$(_findDir "$1")
+	[[ "$appGlobalFakeHome" != "" ]] && export fakeHome=$(_findDir "$appGlobalFakeHome")
 	
 	export HOME="$fakeHome"
 	
@@ -48,7 +50,7 @@ _makeFakeHome_extra_layer0() {
 	_relink "$realHome"/.ssh "$HOME"/.ssh
 	_relink "$realHome"/.gitconfig "$HOME"/.gitconfig
 	
-	mkdir -p "$realHome"/.config
+	mkdir -p "$HOME"/.config
 }
 
 _makeFakeHome_extra_layer1() {
@@ -83,6 +85,50 @@ _makeFakeHome() {
 	_makeFakeHome_extra_layer1
 }
 
+_unmakeFakeHome_extra_layer0() {
+	_rmlink "$HOME"/.bashrc
+	_rmlink "$HOME"/.ubcore
+	
+	_rmlink "$HOME"/.Xauthority
+	
+	_rmlink "$HOME"/.ssh
+	_rmlink "$HOME"/.gitconfig
+	
+	rmdir "$HOME"/.config
+}
+
+_unmakeFakeHome_extra_layer1() {
+	true
+}
+
+_unmakeFakeHome() {
+	[[ "$HOME" == "" ]] && return 0
+	[[ "$HOME" == "/home/""$USER" ]] && return 0
+	
+	_rmlink "$HOME"/realHome
+	
+	_rmlink "$HOME"/Downloads
+	
+	_rmlink "$HOME"/Desktop
+	_rmlink "$HOME"/Documents
+	_rmlink "$HOME"/Music
+	_rmlink "$HOME"/Pictures
+	_rmlink "$HOME"/Public
+	_rmlink "$HOME"/Templates
+	_rmlink "$HOME"/Videos
+	
+	_rmlink "$HOME"/bin
+	
+	_rmlink "$HOME"/core
+	_rmlink "$HOME"/project
+	_rmlink "$HOME"/projects
+	
+	
+	
+	_unmakeFakeHome_extra_layer0
+	_unmakeFakeHome_extra_layer1
+}
+
 _createFakeHome_sequence() {
 	_start
 	
@@ -110,6 +156,8 @@ _editFakeHome_sequence() {
 	_makeFakeHome > /dev/null 2>&1
 	
 	"$@"
+	
+	_unmakeFakeHome > /dev/null 2>&1
 	
 	_resetFakeHomeEnv_nokeep
 	_stop
