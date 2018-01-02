@@ -179,6 +179,18 @@ _fetchDep_debianStretch_special() {
 		return 0
 	fi
 	
+	if [[ "$1" == "atom" ]]
+	then
+		curl -L https://packagecloud.io/AtomEditor/atom/gpgkey | sudo -n apt-key add -
+		sudo -n sh -c 'echo "deb [arch=amd64] https://packagecloud.io/AtomEditor/atom/any/ any main" > /etc/apt/sources.list.d/atom.list'
+		
+		sudo -n apt-get update
+		
+		sudo -n apt-get install --install-recommends -y atom
+		
+		return 0
+	fi
+	
 	
 	return 1
 }
