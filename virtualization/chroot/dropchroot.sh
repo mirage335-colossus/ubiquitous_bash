@@ -19,6 +19,6 @@ _dropChRoot() {
 	#cp -a /home/"$virtGuestUser".ref/. /home/"$virtGuestUser"/
 	#chown "$virtGuestUser":"$virtGuestUser" /home/"$virtGuestUser"
 	
-	true
+	###true
 	
 ###}
