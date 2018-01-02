@@ -50,3 +50,21 @@
 ;; code to remove the whole menu panel
 ;; (global-unset-key [menu-bar BashDB])
 
+(defun bashdb-large (&optional opt-cmd-line no-reset)
+  (interactive)
+  (let ((cmd-buf
+	 (realgud:run-debugger "bashdb"
+			       'bashdb-query-cmdline
+			       'bashdb-parse-cmd-args
+			       'realgud:bashdb-minibuffer-history
+			       opt-cmd-line no-reset)
+	 ))
+    (if cmd-buf
+	(let ((process (get-buffer-process cmd-buf)))
+	  (if (and process (eq 'run (process-status process)))
+	      (with-current-buffer cmd-buf
+		(sleep-for 10)
+		(realgud-command "frame 0" nil nil nil)
+		)))
+      )
+    ))
