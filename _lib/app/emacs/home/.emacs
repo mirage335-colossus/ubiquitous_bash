@@ -1,5 +1,11 @@
 (global-linum-mode t)
 
+(define-minor-mode magnus-minor-mode
+  "Override the binding of the TAB key."
+  :keymap '(([?\t] . insert-char))
+  :global t)
+(magnus-minor-mode 1)
+
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
 
@@ -45,7 +51,7 @@
 (define-key
   global-map
   [menu-bar BashDB bashdb]
-  '("Launch" . realgud:bashdb))
+  '("Launch" . bashdb-large))
 
 ;; code to remove the whole menu panel
 ;; (global-unset-key [menu-bar BashDB])
@@ -66,7 +72,7 @@
 	(let ((process (get-buffer-process cmd-buf)))
 	  (if (and process (eq 'run (process-status process)))
 	      (with-current-buffer cmd-buf
-		(sleep-for 10)
+		(sleep-for 1)
 		(realgud-command "frame 0" nil nil nil)
 		)))
       )

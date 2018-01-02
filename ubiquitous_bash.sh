@@ -4567,7 +4567,8 @@ _emacsDev_edit() {
 _bashdb_sequence() {
 	_prepare_emacsDev_fakeHome
 	
-	echo -n '(bashdb "bash --debugger' >> "$HOME"/.emacs
+	#echo -n '(bashdb "bash --debugger' >> "$HOME"/.emacs
+	echo -n '(bashdb-large "bash --debugger' >> "$HOME"/.emacs
 	
 	local currentArg
 	
