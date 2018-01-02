@@ -50,6 +50,9 @@
 ;; code to remove the whole menu panel
 ;; (global-unset-key [menu-bar BashDB])
 
+
+;;Credit to "rocky".
+;;https://github.com/realgud/realgud/issues/205#issuecomment-354851601
 (defun bashdb-large (&optional opt-cmd-line no-reset)
   (interactive)
   (let ((cmd-buf
