@@ -1,10 +1,14 @@
 (global-linum-mode t)
 
-(define-minor-mode magnus-minor-mode
+;; TODO Consider how this will impact any emacs-specific uses of TAB key. Also consider binding BS to backward-delete-char instead of backward-delete-char-untabify.
+
+
+;; Credit to "bpalmer" at #emacs Freenode channel.
+(define-minor-mode realtabs-minor-mode
   "Override the binding of the TAB key."
-  :keymap '(([?\t] . insert-char))
+  :keymap '(([?\t] . self-insert-command))
   :global t)
-(magnus-minor-mode 1)
+(realtabs-minor-mode 1)
 
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
