@@ -17,3 +17,8 @@ devtask/
 USAGE.*.html
 _buried
 ops
+
+id_rsa
+pubring.kbx
+pubring.kbx*
+trustdb.gpg

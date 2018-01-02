@@ -339,7 +339,9 @@ includeScriptList+=( "special"/uuid.sh )
 #####Shortcuts
 includeScriptList+=( "labels"/shortcutsLabel.sh )
 
-[[ "$enUb_image" == "true" ]] && includeScriptList+=( "shortcuts/dev"/devsearch.sh )
+[[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "shortcuts/dev"/devsearch.sh )
+
+[[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "shortcuts/dev/app"/devemacs.sh )
 
 [[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "shortcuts/git"/git.sh )
 [[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "shortcuts/git"/gitBare.sh )

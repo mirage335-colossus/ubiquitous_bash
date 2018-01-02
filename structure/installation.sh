@@ -141,6 +141,8 @@ _test() {
 	
 	_tryExec "_test_virtLocal_X11"
 	
+	_tryExec "_test_devemacs"
+	
 	[[ -e /dev/urandom ]] || echo /dev/urandom missing _stop
 	
 	_messagePASS
