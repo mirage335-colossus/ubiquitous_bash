@@ -6297,6 +6297,9 @@ _build_geth() {
 	"$scriptAbsoluteLocation" _build_geth_sequence
 }
 
+_geth() {
+	geth "$@"
+}
 
 #####Basic Variable Management
 
