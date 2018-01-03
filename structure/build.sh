@@ -21,6 +21,10 @@ _test_build() {
 	
 	_tryExec _test_buildIdle
 	
+	_tryExec _test_bashdb
+	
+	_tryExec _test_ethereum_build
+	
 	_tryExec _test_build_prog
 }
 
@@ -34,12 +38,12 @@ _buildSequence() {
 	_tryExec _buildIdle
 	_tryExec _buildGosu
 	
+	_tryExec _build_geth
+	
 	_tryExec _buildChRoot
 	_tryExec _buildQEMU
 	
 	_tryExec _buildExtra
-	
-	_tryExec _test_bashdb
 	
 	echo "     ...DONE"
 	

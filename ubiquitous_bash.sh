@@ -331,7 +331,7 @@ _relink() {
 }
 
 _test_bashdb() {
-	_getDep ddd
+	#_getDep ddd
 	
 	#if ! _discoverResource bashdb-code/bashdb.sh > /dev/null 2>&1
 	#then
@@ -928,6 +928,20 @@ _fetchDep_debianStretch_special() {
 		sudo -n apt-get update
 		
 		sudo -n apt-get install --install-recommends -y atom
+		
+		return 0
+	fi
+	
+	if [[ "$1" == "GL/gl.h" ]] || [[ "$1" == "GL/glext.h" ]] || [[ "$1" == "GL/glx.h" ]] || [[ "$1" == "GL/glxext.h" ]] || [[ "$1" == "GL/dri_interface.h" ]] || [[ "$1" == "x86_64-linux-gnu/pkgconfig/dri.pc" ]]
+	then
+		sudo -n apt-get install --install-recommends -y mesa-common-dev
+		
+		return 0
+	fi
+	
+	if [[ "$1" == "go" ]]
+	then
+		sudo -n apt-get install --install-recommends -y golang-go
 		
 		return 0
 	fi
@@ -4477,7 +4491,7 @@ _testGosu() {
 
 #From https://github.com/tianon/gosu/blob/master/INSTALL.md .
 # TODO Build locally from git repo and verify.
-_buildGosu() {
+_buildGosu_sequence() {
 	_start
 	
 	local haveGosuBin
@@ -4519,6 +4533,10 @@ _buildGosu() {
 	[[ "$haveGosuBin" != "true" ]] && chmod ugoa+rx "$scriptBin"/gosu-*
 	
 	_stop
+}
+
+_buildGosu() {
+	"$scriptAbsoluteLocation" _buildGosu_sequence "$@"
 }
 
 #Returns a UUID in the form of xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
@@ -6240,6 +6258,46 @@ _setupUbiquitous_nonet() {
 	[[ "$oldNoNet" != "true" ]] && export nonet="$oldNoNet"
 }
 
+_test_ethereum() {
+	_getDep GL/gl.h
+	_getDep GL/glext.h
+	_getDep GL/glx.h
+	_getDep GL/glxext.h
+	_getDep GL/internal/dri_interface.h
+	_getDep x86_64-linux-gnu/pkgconfig/dri.pc
+	
+}
+
+_test_ethereum_built() {
+	_checkDep geth
+	
+	_checkDep ethminer
+}
+
+_test_ethereum_build() {
+	_getDep go
+}
+
+
+_build_geth_sequence() {
+	_start
+	
+	cd "$safeTmp"
+	
+	git clone https://github.com/ethereum/go-ethereum.git
+	cd go-ethereum
+	make geth
+	
+	cp build/bin/geth "$scriptBin"/
+	
+	_stop
+}
+
+_build_geth() {
+	"$scriptAbsoluteLocation" _build_geth_sequence
+}
+
+
 #####Basic Variable Management
 
 #####Global variables.
@@ -7327,6 +7385,8 @@ _test() {
 	
 	_tryExec "_test_devemacs"
 	
+	_tryExec "_test_ethereum"
+	
 	[[ -e /dev/urandom ]] || echo /dev/urandom missing _stop
 	
 	_messagePASS
@@ -7351,6 +7411,8 @@ _testBuilt() {
 	
 	_tryExec "_testBuiltIdle"
 	_tryExec "_testBuiltGosu"	#Note, requires sudo, not necessary for docker .
+	
+	_tryExec "_test_ethereum_built"
 	
 	_tryExec "_testBuiltChRoot"
 	_tryExec "_testBuiltQEMU"
@@ -7431,6 +7493,10 @@ _test_build() {
 	
 	_tryExec _test_buildIdle
 	
+	_tryExec _test_bashdb
+	
+	_tryExec _test_ethereum_build
+	
 	_tryExec _test_build_prog
 }
 
@@ -7444,12 +7510,12 @@ _buildSequence() {
 	_tryExec _buildIdle
 	_tryExec _buildGosu
 	
+	_tryExec _build_geth
+	
 	_tryExec _buildChRoot
 	_tryExec _buildQEMU
 	
 	_tryExec _buildExtra
-	
-	_tryExec _test_bashdb
 	
 	echo "     ...DONE"
 	

@@ -152,6 +152,12 @@ _deps_x11() {
 	export enUb_x11="true"
 }
 
+_deps_blockchain() {
+	_deps_notLean
+	_deps_x11
+	export enUb_blockchain="true"
+}
+
 _deps_image() {
 	_deps_notLean
 	export enUb_image="true"
@@ -224,6 +230,8 @@ _deps_wine
 _deps_dosbox
 _deps_msw
 _deps_fakehome
+
+_deps_blockchain
 
 #####
 
@@ -372,6 +380,8 @@ includeScriptList+=( "labels"/shortcutsLabel.sh )
 [[ "$enUb_docker" == "true" ]] && includeScriptList+=( "shortcuts/docker"/dockercontainer.sh )
 
 [[ "$enUb_image" == "true" ]] && includeScriptList+=( "shortcuts"/setupUbiquitous.sh )
+
+[[ "$enUb_blockchain" == "true" ]] && includeScriptList+=( "blockchain/ethereum"/ethereum.sh )
 
 #####Basic Variable Management
 includeScriptList+=( "labels"/basicvarLabel.sh )

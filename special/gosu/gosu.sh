@@ -95,7 +95,7 @@ _testGosu() {
 
 #From https://github.com/tianon/gosu/blob/master/INSTALL.md .
 # TODO Build locally from git repo and verify.
-_buildGosu() {
+_buildGosu_sequence() {
 	_start
 	
 	local haveGosuBin
@@ -137,4 +137,8 @@ _buildGosu() {
 	[[ "$haveGosuBin" != "true" ]] && chmod ugoa+rx "$scriptBin"/gosu-*
 	
 	_stop
+}
+
+_buildGosu() {
+	"$scriptAbsoluteLocation" _buildGosu_sequence "$@"
 }
