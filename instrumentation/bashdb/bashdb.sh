@@ -1,5 +1,5 @@
 _test_bashdb() {
-	_getDep ddd
+	#_getDep ddd
 	
 	#if ! _discoverResource bashdb-code/bashdb.sh > /dev/null 2>&1
 	#then
