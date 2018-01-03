@@ -1,0 +1,5 @@
+_bin/* linguist-vendored
+_diag/* linguist-vendored
+_lib/* linguist-vendored
+_presentation/* linguist-vendored
+USAGE.HTML linguist-vendored
