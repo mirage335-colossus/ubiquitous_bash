@@ -32,6 +32,10 @@ _idle() {
 	_stop
 }
 
+_test_buildIdle() {
+	_getDep "X11/extensions/scrnsaver.h"
+}
+
 _testBuiltIdle() {
 	
 	_checkDep getIdle

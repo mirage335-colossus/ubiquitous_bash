@@ -44,6 +44,10 @@ _timetest() {
 	_stop 1
 }
 
+_test_prog() {
+	true
+}
+
 _test() {
 	_start
 	
@@ -150,8 +154,14 @@ _test() {
 	echo -n -e '\E[1;32;46m Timing...		\E[0m'
 	_timetest
 	
+	_test_prog
+	
 	_stop
 	
+}
+
+_testBuilt_prog() {
+	true
 }
 
 _testBuilt() {
@@ -166,6 +176,8 @@ _testBuilt() {
 	_tryExec "_testBuiltQEMU"
 	
 	_tryExec "_testBuiltExtra"
+	
+	_testBuilt_prog
 	
 	_messagePASS
 	
@@ -196,6 +208,10 @@ _setupCommands() {
 	true
 }
 
+_setup_prog() {
+	true
+}
+
 _setup() {
 	_start
 	
@@ -206,6 +222,8 @@ _setup() {
 	"$scriptAbsoluteLocation" _testBuilt || _stop 1
 	
 	_setupCommands
+	
+	_setup_prog
 	
 	_stop
 }

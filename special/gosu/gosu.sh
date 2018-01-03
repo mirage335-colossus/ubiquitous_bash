@@ -22,6 +22,11 @@ _gosuExecVirt() {
 	exec "$scriptBin"/"$gosuBinary" "$virtSharedUser" "$@"
 }
 
+_test_buildGoSu() {
+	_getDep gpg
+	_getDep dirmngr
+}
+
 _testBuiltGosu() {
 	#export PATH="$PATH":"$scriptBin"
 	

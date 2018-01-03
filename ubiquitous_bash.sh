@@ -4404,6 +4404,11 @@ _gosuExecVirt() {
 	exec "$scriptBin"/"$gosuBinary" "$virtSharedUser" "$@"
 }
 
+_test_buildGoSu() {
+	_getDep gpg
+	_getDep dirmngr
+}
+
 _testBuiltGosu() {
 	#export PATH="$PATH":"$scriptBin"
 	
@@ -6686,6 +6691,10 @@ _prepare_docker() {
 
 #####Local Environment Management (Resources)
 
+_prepare_prog() {
+	true
+}
+
 _extra() {
 	true
 }
@@ -6704,9 +6713,14 @@ _prepare() {
 	mkdir -p "$bootTmp"
 	
 	_extra
+	_prepare_prog
 }
 
 #####Local Environment Management (Instancing)
+
+_start_prog() {
+	true
+}
 
 _start() {
 	
@@ -6717,11 +6731,22 @@ _start() {
 	
 	echo $$ > "$safeTmp"/.pid
 	
+	_start_prog
+}
+
+_saveVar_prog() {
+	true
 }
 
 _saveVar() {
 	true
 	#declare -p varName > "$varStore"
+	
+	_saveVar_prog
+}
+
+_stop_prog() {
+	true
 }
 
 _stop() {
@@ -6745,6 +6770,13 @@ _stop() {
 	else
 		exit 0
 	fi
+	
+	_stop_prog
+}
+
+#Do not overload this unless you know why you need it instead of _stop_prog.
+_stop_emergency_prog() {
+	true
 }
 
 #Called upon SIGTERM or similar signal.
@@ -6755,6 +6787,8 @@ _stop_emergency() {
 	
 	#Not yet using _tryExec since this function would typically result from user intervention, or system shutdown, both emergency situations in which an error message would be ignored if not useful. Higher priority is guaranteeing execution if needed and available.
 	_closeChRoot_emergency
+	
+	_stop_emergency_prog
 	
 	_stop "$1"
 	
@@ -7117,6 +7151,10 @@ _idle() {
 	_stop
 }
 
+_test_buildIdle() {
+	_getDep "X11/extensions/scrnsaver.h"
+}
+
 _testBuiltIdle() {
 	
 	_checkDep getIdle
@@ -7184,6 +7222,10 @@ _timetest() {
 	done
 	_messageFAIL
 	_stop 1
+}
+
+_test_prog() {
+	true
 }
 
 _test() {
@@ -7292,8 +7334,14 @@ _test() {
 	echo -n -e '\E[1;32;46m Timing...		\E[0m'
 	_timetest
 	
+	_test_prog
+	
 	_stop
 	
+}
+
+_testBuilt_prog() {
+	true
 }
 
 _testBuilt() {
@@ -7308,6 +7356,8 @@ _testBuilt() {
 	_tryExec "_testBuiltQEMU"
 	
 	_tryExec "_testBuiltExtra"
+	
+	_testBuilt_prog
 	
 	_messagePASS
 	
@@ -7338,6 +7388,10 @@ _setupCommands() {
 	true
 }
 
+_setup_prog() {
+	true
+}
+
 _setup() {
 	_start
 	
@@ -7349,10 +7403,14 @@ _setup() {
 	
 	_setupCommands
 	
+	_setup_prog
+	
 	_stop
 }
 
-#####Program
+_test_build_prog() {
+	true
+}
 
 _test_build() {
 	_getDep gcc
@@ -7369,12 +7427,11 @@ _test_build() {
 	
 	_getDep makeinfo
 	
-	_getDep gpg
-	_getDep dirmngr
+	_tryExec _test_buildGoSu
 	
-	_getDep "X11/extensions/scrnsaver.h"
+	_tryExec _test_buildIdle
 	
-	_tryExec _test_bashdb
+	_tryExec _test_build_prog
 }
 
 _buildSequence() {
@@ -7392,14 +7449,24 @@ _buildSequence() {
 	
 	_tryExec _buildExtra
 	
+	_tryExec _test_bashdb
+	
 	echo "     ...DONE"
 	
 	_stop
 }
 
+_build_prog() {
+	true
+}
+
 _build() {
 	"$scriptAbsoluteLocation" _buildSequence
+	
+	_build_prog
 }
+
+#####Program
 
 #Typically launches an application - ie. through virtualized container.
 _launch() {

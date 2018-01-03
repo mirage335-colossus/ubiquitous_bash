@@ -1,52 +1,5 @@
 #####Program
 
-_test_build() {
-	_getDep gcc
-	_getDep g++
-	_getDep make
-	
-	_getDep cmake
-	
-	_getDep autoreconf
-	_getDep autoconf
-	_getDep automake
-	
-	_getDep libtool
-	
-	_getDep makeinfo
-	
-	_getDep gpg
-	_getDep dirmngr
-	
-	_getDep "X11/extensions/scrnsaver.h"
-	
-	_tryExec _test_bashdb
-}
-
-_buildSequence() {
-	_start
-	
-	echo -e '\E[1;32;46m Binary compiling...	\E[0m'
-	
-	_tryExec _buildHello
-	
-	_tryExec _buildIdle
-	_tryExec _buildGosu
-	
-	_tryExec _buildChRoot
-	_tryExec _buildQEMU
-	
-	_tryExec _buildExtra
-	
-	echo "     ...DONE"
-	
-	_stop
-}
-
-_build() {
-	"$scriptAbsoluteLocation" _buildSequence
-}
-
 #Typically launches an application - ie. through virtualized container.
 _launch() {
 	false

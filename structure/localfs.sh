@@ -1,5 +1,9 @@
 #####Local Environment Management (Resources)
 
+_prepare_prog() {
+	true
+}
+
 _extra() {
 	true
 }
@@ -18,4 +22,5 @@ _prepare() {
 	mkdir -p "$bootTmp"
 	
 	_extra
+	_prepare_prog
 }

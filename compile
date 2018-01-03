@@ -398,6 +398,7 @@ includeScriptList+=( "structure"/installation.sh )
 
 includeScriptList+=( core.sh )
 
+includeScriptList+=( "structure"/build.sh )
 includeScriptList+=( "structure"/program.sh )
 
 includeScriptList+=( "structure"/overrides.sh )

@@ -1,5 +1,9 @@
 #####Local Environment Management (Instancing)
 
+_start_prog() {
+	true
+}
+
 _start() {
 	
 	_prepare
@@ -9,11 +13,22 @@ _start() {
 	
 	echo $$ > "$safeTmp"/.pid
 	
+	_start_prog
+}
+
+_saveVar_prog() {
+	true
 }
 
 _saveVar() {
 	true
 	#declare -p varName > "$varStore"
+	
+	_saveVar_prog
+}
+
+_stop_prog() {
+	true
 }
 
 _stop() {
@@ -37,6 +52,13 @@ _stop() {
 	else
 		exit 0
 	fi
+	
+	_stop_prog
+}
+
+#Do not overload this unless you know why you need it instead of _stop_prog.
+_stop_emergency_prog() {
+	true
 }
 
 #Called upon SIGTERM or similar signal.
@@ -47,6 +69,8 @@ _stop_emergency() {
 	
 	#Not yet using _tryExec since this function would typically result from user intervention, or system shutdown, both emergency situations in which an error message would be ignored if not useful. Higher priority is guaranteeing execution if needed and available.
 	_closeChRoot_emergency
+	
+	_stop_emergency_prog
 	
 	_stop "$1"
 	
