@@ -680,6 +680,13 @@ _preserveLog() {
 }
 
 _typeDep() {
+	[[ -e /lib/"$1" ]] && return 0
+	[[ -e /lib64/"$1" ]] && return 0
+	[[ -e /usr/lib/"$1" ]] && return 0
+	[[ -e /usr/local/lib/"$1" ]] && return 0
+	[[ -e /usr/include/"$1" ]] && return 0
+	[[ -e /usr/local/include/"$1" ]] && return 0
+	
 	if ! type "$1" >/dev/null 2>&1
 	then
 		return 1
@@ -7361,6 +7368,11 @@ _test_build() {
 	_getDep libtool
 	
 	_getDep makeinfo
+	
+	_getDep gpg
+	_getDep dirmngr
+	
+	_getDep "X11/extensions/scrnsaver.h"
 	
 	_tryExec _test_bashdb
 }

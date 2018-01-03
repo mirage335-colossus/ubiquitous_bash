@@ -15,6 +15,11 @@ _test_build() {
 	
 	_getDep makeinfo
 	
+	_getDep gpg
+	_getDep dirmngr
+	
+	_getDep "X11/extensions/scrnsaver.h"
+	
 	_tryExec _test_bashdb
 }
 
