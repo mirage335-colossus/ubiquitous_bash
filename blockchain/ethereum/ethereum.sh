@@ -93,6 +93,4 @@ _geth() {
 	mkdir -p "$scriptLocal"/blkchain/ethereum > /dev/null 2>&1
 	[[ ! -e "$scriptLocal"/blkchain/ethereum ]] && return 1
 	geth --datadir "$scriptLocal"/blkchain/ethereum "$@"
-	
-	_ethereum_home parity "$@"
 }

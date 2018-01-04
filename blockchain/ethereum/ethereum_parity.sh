@@ -42,3 +42,7 @@ _build_ethereum_parity() {
 _parity() {
 	_ethereum_home parity "$@"
 }
+
+_parity_attach() {
+	_ethereum_home _geth attach ~/.local/share/io.parity.ethereum/jsonrpc.ipc
+}
