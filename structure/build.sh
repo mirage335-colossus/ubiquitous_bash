@@ -17,6 +17,8 @@ _test_build() {
 	
 	_getDep makeinfo
 	
+	_getDep pkg-config
+	
 	_tryExec _test_buildGoSu
 	
 	_tryExec _test_buildIdle
@@ -24,6 +26,7 @@ _test_build() {
 	_tryExec _test_bashdb
 	
 	_tryExec _test_ethereum_build
+	_tryExec _test_ethereum_parity_build
 	
 	_tryExec _test_build_prog
 }
@@ -39,6 +42,7 @@ _buildSequence() {
 	_tryExec _buildGosu
 	
 	_tryExec _build_geth
+	_tryExec _build_ethereum_parity
 	
 	_tryExec _buildChRoot
 	_tryExec _buildQEMU

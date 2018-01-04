@@ -205,6 +205,16 @@ _fetchDep_debianStretch_special() {
 		return 0
 	fi
 	
+	if [[ "$1" == "cargo" ]] || [[ "$1" == "rustc" ]]
+	then
+		#Testing/Sid only as of Stretch release cycle.
+		#sudo -n apt-get install --install-recommends -y rustc cargo
+		
+		echo "Requires manual installation."
+		
+		_stop 1
+	fi
+	
 	
 	return 1
 }

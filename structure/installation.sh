@@ -148,6 +148,7 @@ _test() {
 	_tryExec "_test_devemacs"
 	
 	_tryExec "_test_ethereum"
+	_tryExec "_test_ethereum_parity"
 	
 	[[ -e /dev/urandom ]] || echo /dev/urandom missing _stop
 	
@@ -175,6 +176,7 @@ _testBuilt() {
 	_tryExec "_testBuiltGosu"	#Note, requires sudo, not necessary for docker .
 	
 	_tryExec "_test_ethereum_built"
+	_tryExec "_test_ethereum_parity_built"
 	
 	_tryExec "_testBuiltChRoot"
 	_tryExec "_testBuiltQEMU"

@@ -29,6 +29,11 @@ then
 fi
 
 #Launch internal functions as commands.
+#Wrapper function to launch arbitrary commands within the ubiquitous_bash environment, including its PATH with scriptBin.
+_bin() {
+	"$@"
+}
+
 _true() {
 	true
 }

@@ -1,8 +1,12 @@
 _typeDep() {
 	[[ -e /lib/"$1" ]] && return 0
+	[[ -e /lib/x86_64-linux-gnu/"$1" ]] && return 0
 	[[ -e /lib64/"$1" ]] && return 0
+	[[ -e /lib64/x86_64-linux-gnu/"$1" ]] && return 0
 	[[ -e /usr/lib/"$1" ]] && return 0
+	[[ -e /usr/lib/x86_64-linux-gnu/"$1" ]] && return 0
 	[[ -e /usr/local/lib/"$1" ]] && return 0
+	[[ -e /usr/local/lib/x86_64-linux-gnu/"$1" ]] && return 0
 	[[ -e /usr/include/"$1" ]] && return 0
 	[[ -e /usr/local/include/"$1" ]] && return 0
 	

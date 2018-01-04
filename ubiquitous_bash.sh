@@ -326,6 +326,12 @@ _rmlink() {
 
 #Like "ln -sf", but will not proceed if target is not link and exists (ie. will not erase files).
 _relink() {
+
+	#Do not update correct symlink.
+	local existingLinkTarget
+	existingLinkTarget=$(readlink "$2")
+	[[ "$existingLinkTarget" == "$1" ]] && return 0
+	
 	_rmlink "$2" && ln -s "$1" "$2" && return 0
 	return 1
 }
@@ -681,9 +687,13 @@ _preserveLog() {
 
 _typeDep() {
 	[[ -e /lib/"$1" ]] && return 0
+	[[ -e /lib/x86_64-linux-gnu/"$1" ]] && return 0
 	[[ -e /lib64/"$1" ]] && return 0
+	[[ -e /lib64/x86_64-linux-gnu/"$1" ]] && return 0
 	[[ -e /usr/lib/"$1" ]] && return 0
+	[[ -e /usr/lib/x86_64-linux-gnu/"$1" ]] && return 0
 	[[ -e /usr/local/lib/"$1" ]] && return 0
+	[[ -e /usr/local/lib/x86_64-linux-gnu/"$1" ]] && return 0
 	[[ -e /usr/include/"$1" ]] && return 0
 	[[ -e /usr/local/include/"$1" ]] && return 0
 	
@@ -944,6 +954,16 @@ _fetchDep_debianStretch_special() {
 		sudo -n apt-get install --install-recommends -y golang-go
 		
 		return 0
+	fi
+	
+	if [[ "$1" == "cargo" ]] || [[ "$1" == "rustc" ]]
+	then
+		#Testing/Sid only as of Stretch release cycle.
+		#sudo -n apt-get install --install-recommends -y rustc cargo
+		
+		echo "Requires manual installation."
+		
+		_stop 1
 	fi
 	
 	
@@ -4553,8 +4573,17 @@ _grepFileLine() {
 }
 
 _findFunction() {
-	# -name '*.sh'
-	find . -type f -size -10000k -exec grep -n "$@" {} /dev/null \;
+	#-name '*.sh'
+	#-not -path "./_local/*"
+	#find ./blockchain -name '*.sh' -type f -size -10000k -exec grep -n "$@" {} /dev/null \;
+	#find ./generic -name '*.sh' -type f -size -10000k -exec grep -n "$@" {} /dev/null \;
+	#find ./instrumentation -name '*.sh' -type f -size -10000k -exec grep -n "$@" {} /dev/null \;
+	#find ./labels -name '*.sh' -type f -size -10000k -exec grep -n "$@" {} /dev/null \;
+	#find ./os -name '*.sh' -type f -size -10000k -exec grep -n "$@" {} /dev/null \;
+	#find ./shortcuts -name '*.sh' -type f -size -10000k -exec grep -n "$@" {} /dev/null \;
+	#find . -name '*.sh' -type f -size -10000k -exec grep -n "$@" {} /dev/null \;
+	
+	find . -not -path "./_local/*" -name '*.sh' -type f -size -1000k -exec grep -n "$@" {} /dev/null \;
 }
 
 _test_devemacs() {
@@ -6259,6 +6288,8 @@ _setupUbiquitous_nonet() {
 }
 
 _test_ethereum() {
+	
+	#OpenGL/OpenCL runtime dependency for mining.
 	_getDep GL/gl.h
 	_getDep GL/glext.h
 	_getDep GL/glx.h
@@ -6290,15 +6321,119 @@ _build_geth_sequence() {
 	
 	cp build/bin/geth "$scriptBin"/
 	
+	cd "$safeTmp"/..
 	_stop
 }
 
 _build_geth() {
+	#Do not rebuild geth unnecessarily, as build is slow.
+	_typeDep geth && echo "already have geth" && return 0
+	
 	"$scriptAbsoluteLocation" _build_geth_sequence
 }
 
+_prepare_ethereum_data() {
+	mkdir -p "$scriptLocal"/blkchain/ethereum
+	mkdir -p "$scriptLocal"/blkchain/io.parity.ethereum
+}
+
+_prepare_ethereum_fakeHome() {
+	_prepare_ethereum_data
+	
+	export instancedFakeHome="$shortTmp"/h
+	mkdir -p "$instancedFakeHome"
+	#_relink "$scriptLocal"/blkchain/h "$instancedFakeHome"
+	
+	_relink "$scriptLocal"/blkchain/ethereum "$instancedFakeHome"/.ethereum
+	
+	mkdir -p "$instancedFakeHome"/.local/share
+	_relink "$scriptLocal"/blkchain/io.parity.ethereum "$instancedFakeHome"/.local/share/io.parity.ethereum
+}
+
+_ethereum_home_sequence() {
+	_prepare_ethereum_fakeHome
+	
+	_userFakeHome_sequence "$@"
+	
+	rmdir "$shortTmp"
+}
+
+_ethereum_home() {
+	"$scriptAbsoluteLocation" _ethereum_home_sequence "$@"
+}
+
+_edit_ethereum_home() {
+	_prepare_ethereum_data
+	
+	_relink ../ethereum "$scriptLocal"/blkchain/h/.ethereum
+	mkdir -p "$scriptLocal"/blkchain/h/.local/share
+	_relink "$scriptLocal"/blkchain/io.parity.ethereum "$scriptLocal"/blkchain/h/.local/share/io.parity.ethereum
+	
+	export appGlobalFakeHome="$scriptLocal"/blkchain/h
+	mkdir -p "$appGlobalFakeHome" > /dev/null 2>&1
+	[[ ! -e "$appGlobalFakeHome" ]] && return 1
+	
+	_editFakeHome "$@"
+	
+	#_rmlink "$appGlobalFakeHome"/.ethereum
+}
+
 _geth() {
-	geth "$@"
+	mkdir -p "$scriptLocal"/blkchain/ethereum > /dev/null 2>&1
+	[[ ! -e "$scriptLocal"/blkchain/ethereum ]] && return 1
+	geth --datadir "$scriptLocal"/blkchain/ethereum "$@"
+	
+	_ethereum_home parity "$@"
+}
+
+_ethereum_init() {
+	_geth account new
+	_geth --rpc --fast --cache=1024
+}
+
+_test_ethereum_parity() {
+	_getDep gcc
+	_getDep g++
+	
+	_getDep openssl/ssl.h
+	
+	_getDep libudev.h
+	_getDep libudev.so
+}
+
+_test_ethereum_parity_built() {
+	_checkDep parity
+}
+
+_test_ethereum_parity_build() {
+	_getDep rustc
+	_getDep cargo
+}
+
+_build_ethereum_parity_sequence() {
+	_start
+	
+	cd "$safeTmp"
+	
+	git clone https://github.com/paritytech/parity
+	cd parity
+	cargo build --release
+	
+	cp ./target/release/parity "$scriptBin"/
+	
+	cd "$safeTmp"/..
+	_stop
+}
+
+_build_ethereum_parity() {
+	#Do not rebuild geth unnecessarily, as build is slow.
+	_typeDep parity && echo "already have parity" && return 0
+	
+	"$scriptAbsoluteLocation" _build_ethereum_parity_sequence
+}
+
+_parity() {
+	_ethereum_home parity "$@"
 }
 
 #####Basic Variable Management
@@ -7389,6 +7524,7 @@ _test() {
 	_tryExec "_test_devemacs"
 	
 	_tryExec "_test_ethereum"
+	_tryExec "_test_ethereum_parity"
 	
 	[[ -e /dev/urandom ]] || echo /dev/urandom missing _stop
 	
@@ -7416,6 +7552,7 @@ _testBuilt() {
 	_tryExec "_testBuiltGosu"	#Note, requires sudo, not necessary for docker .
 	
 	_tryExec "_test_ethereum_built"
+	_tryExec "_test_ethereum_parity_built"
 	
 	_tryExec "_testBuiltChRoot"
 	_tryExec "_testBuiltQEMU"
@@ -7492,6 +7629,8 @@ _test_build() {
 	
 	_getDep makeinfo
 	
+	_getDep pkg-config
+	
 	_tryExec _test_buildGoSu
 	
 	_tryExec _test_buildIdle
@@ -7499,6 +7638,7 @@ _test_build() {
 	_tryExec _test_bashdb
 	
 	_tryExec _test_ethereum_build
+	_tryExec _test_ethereum_parity_build
 	
 	_tryExec _test_build_prog
 }
@@ -7514,6 +7654,7 @@ _buildSequence() {
 	_tryExec _buildGosu
 	
 	_tryExec _build_geth
+	_tryExec _build_ethereum_parity
 	
 	_tryExec _buildChRoot
 	_tryExec _buildQEMU
@@ -7594,6 +7735,11 @@ then
 fi
 
 #Launch internal functions as commands.
+#Wrapper function to launch arbitrary commands within the ubiquitous_bash environment, including its PATH with scriptBin.
+_bin() {
+	"$@"
+}
+
 _true() {
 	true
 }
