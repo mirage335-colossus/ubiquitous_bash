@@ -812,18 +812,32 @@ Fetches and verifies x64 Debian installation ISO, saves to current directory (ie
 !_create_x64_debianLiteVM
 Creates custom bootable x64 Debian image. Requires [[fetch|Debian]] dependencies, QEMU, and manual guidance through the setup process.</pre>
 </div>
-<div title="DebianPrereq" creator="mirage335" modifier="mirage335" created="201712220319" modified="201712260309" changecount="6">
+<div title="DebianPrereq" creator="mirage335" modifier="YourName" created="201712220319" modified="201801041720" changecount="9">
 <pre>!Generic
 All crucial dependencies should be automatically installed through the built-in test procedure.
 //{{{
-./ubiquitous_bash _test
+./ubiquitous_bash.sh _test
+//}}}
+
+More extensively, automatic build procedures can be run as well.
+//{{{
+./ubiquitous_bash.sh _setup
 //}}}
 
 !Devel
+//{{{
 apt-get install build-essential linux-headers-$(uname -r) yakuake
+//}}}
 
 !&lt;nowiki&gt;CoreAutoSSH&lt;/nowiki&gt;
+//{{{
 apt-get install x11vnc xtightvncviewer nmap autossh
+//}}}
+
+!Rust
+//{{{
+curl https://sh.rustup.rs -sSf | sh
+//}}}
 
 !Special
 In a parent directory, consider installing the mkimage script for local construction of base images.
