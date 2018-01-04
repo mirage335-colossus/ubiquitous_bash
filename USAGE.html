@@ -812,7 +812,7 @@ Fetches and verifies x64 Debian installation ISO, saves to current directory (ie
 !_create_x64_debianLiteVM
 Creates custom bootable x64 Debian image. Requires [[fetch|Debian]] dependencies, QEMU, and manual guidance through the setup process.</pre>
 </div>
-<div title="DebianPrereq" creator="mirage335" modifier="YourName" created="201712220319" modified="201801041720" changecount="9">
+<div title="DebianPrereq" creator="mirage335" modifier="mirage335" created="201712220319" modified="201801041728" changecount="11">
 <pre>!Generic
 All crucial dependencies should be automatically installed through the built-in test procedure.
 //{{{
@@ -835,8 +835,13 @@ apt-get install x11vnc xtightvncviewer nmap autossh
 //}}}
 
 !Rust
+Rust installs itself to the user's home folder. As such, remember to consider using &quot;_editFakeHome&quot;.
 //{{{
 curl https://sh.rustup.rs -sSf | sh
+//}}}
+Rust often relies upon the &quot;~/.profile&quot; file to add itself to a user's PATH. Instead, it may be necessary to add the PATH inclusion to &quot;~/.bashrc&quot; or similar.
+//{{{
+echo '[[ -e &quot;$HOME&quot;/.cargo/bin ]] &amp;&amp; export PATH=&quot;$HOME/.cargo/bin:$PATH&quot;' &gt;&gt; ~/.bashrc
 //}}}
 
 !Special
@@ -848,7 +853,7 @@ git clone https://github.com/moby/moby.git
 <div title="DefaultTiddlers" creator="mirage335" modifier="mirage335" created="201710261744" modified="201712260421" changecount="6">
 <pre>[[Demo]]</pre>
 </div>
-<div title="Demo" creator="mirage335" modifier="mirage335" created="201712122105" modified="201712302209" changecount="60">
+<div title="Demo" creator="mirage335" modifier="mirage335" created="201712122105" modified="201801041735" changecount="64">
 <pre>&lt;&lt;showtoc&gt;&gt;
 
 !Pitch
@@ -953,8 +958,8 @@ Demonstrate ~ChRoot, QEMU, ~VirtualBox, and Docker support, from the same image.
 Download and extract image.
 
 //{{{
-_fetch_raspbian
-_create_raspbian
+./ubiquitous_bash.sh _fetch_raspbian
+./ubiquitous_bash.sh _create_raspbian
 //}}}
 
 ~ChRoot as usual.
@@ -964,6 +969,18 @@ _create_raspbian
 ./ubiquitous_bash.sh _userChRoot ls -la /home/ubvrtusr
 
 ./ubiquitous_bash.sh _closeChRoot
+//}}}
+
+!&lt;nowiki&gt;FakeHome&lt;/nowiki&gt;
+UNIX programs often rely on hardcoded paths derived from a user's home folder, specified by &quot;$HOME&quot;, such as &quot;~/.arduino&quot;, &quot;~/.mozilla&quot;, &quot;~/.emacs&quot;, or &quot;~/.ethereum&quot;. Overriding this variable, installing appropriate symlinks, and optionally dropping the override upon the next shell executed, provides a lightweight alternative to full virtualization, with reduced performance and permissions requirements.
+
+//{{{
+./ubiquitous_bash.sh _editFakeHome konsole
+./ubiquitous_bash.sh _userFakeHome konsole
+./ubiquitous_bash.sh _memFakeHome konsole
+
+./ubiquitous_bash.sh _userFakeHome ./ubiquitous_bash.sh _test
+./ubiquitous_bash.sh _userFakeHome ./ubiquitous_bash.sh _setup
 //}}}
 </pre>
 </div>
