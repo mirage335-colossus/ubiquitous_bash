@@ -30,7 +30,8 @@ _integratedQemu() {
 	_testQEMU_hostArch_x64_nested && qemuArgs+=(-cpu host)
 	
 	local hostThreadCount=$(cat /proc/cpuinfo | grep MHz | wc -l)
-	[[ "$hostThreadCount" -ge "4" ]] && qemuArgs+=(-smp 4)
+	[[ "$hostThreadCount" -ge "4" ]] && [[ "$hostThreadCount" -lt "8" ]] && qemuArgs+=(-smp 4)
+	[[ "$hostThreadCount" -ge "8" ]] && qemuArgs+=(-smp 6)
 	
 	qemuUserArgs+=(-drive format=raw,file="$scriptLocal"/vm.img -drive file="$hostToGuestISO",media=cdrom -boot c -m 1256 -net nic,model=rtl8139 -net user,smb="$sharedHostProjectDir")
 	

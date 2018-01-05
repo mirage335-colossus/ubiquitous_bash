@@ -1013,7 +1013,7 @@ UNIX programs often rely on hardcoded paths derived from a user's home folder, s
 //}}}
 * Edit image to enable support for both ~VBox and QEMU. Chiefly, set any disk controllers to generic drives under &quot;Device Manager&quot;.</pre>
 </div>
-<div title="DemoBootdiscNIX" creator="mirage335" modifier="mirage335" created="201712192342" modified="201801050229" changecount="22">
+<div title="DemoBootdiscNIX" creator="mirage335" modifier="mirage335" created="201712192342" modified="201801052119" changecount="24">
 <pre>Setup bootdisc support for NIX guest (MSW guest equally supported).
 
 Launch VM image in persistent mode with bootdisc attached.
@@ -1044,7 +1044,7 @@ update-alternatives --config x-session-manager
 
 #Or manage through KDE system settings (KDE/sddm).
 vim /etc/lightdm/lightdm.conf
-#&gt;#echo 'autologin-user=user' 
+#&gt;#autologin-user=user
 
 sudo -n -u user mkdir -p /home/user/.config/autostart
 sudo -n -u user cp /media/bootdisc/startup.desktop /home/user/.config/autostart/
@@ -1062,6 +1062,10 @@ mkdir -p /root/core/infrastructure
 cp /media/bootdisc/rootnix.sh /root/core/infrastructure/
 crontab -e
 #&gt;#@reboot	/root/core/infrastructure/rootnix.sh
+
+#Reduce boot time.
+vim /etc/default/grub
+#&gt;#GRUB_TIMEOUT=1
 
 #Install VirtualBox guest additions. Substitute &quot;stretch-backports&quot; for &quot;jessie-backports&quot; when dealing with Debian Jessie.
 mkdir -p /etc/apt/sources.list.d
