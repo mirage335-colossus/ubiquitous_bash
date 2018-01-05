@@ -26,7 +26,7 @@ _createRawImage_sequence() {
 	[[ "$vmImageFile" == "" ]] && _stop 1
 	[[ -e "$vmImageFile" ]] && _stop 1
 	
-	dd if=/dev/zero of="$vmImageFile" bs=1M count="$vmSize" > /dev/null 2>&1
+	dd if=/dev/zero of="$vmImageFile" bs=1M count="$createRawImageSize" > /dev/null 2>&1
 	
 	_stop
 }

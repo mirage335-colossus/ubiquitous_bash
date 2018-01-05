@@ -563,6 +563,10 @@ All dependencies of all automatically functionality can be checked by one comman
 //}}}
 </pre>
 </div>
+<div title="CreateRawImage" creator="mirage335" modifier="mirage335" created="201801042218" modified="201801042244" changecount="4">
+<pre>!_createRawImage
+Creates raw image, just under 8GB by default. Override by setting &quot;$vmSize&quot; variable to a number of megabytes (1M). </pre>
+</div>
 <div title="CygwinPrereq" creator="YourName" modifier="mirage335" created="201712220314" modified="201712220314" changecount="2">
 <pre>WIP</pre>
 </div>
@@ -1009,7 +1013,7 @@ UNIX programs often rely on hardcoded paths derived from a user's home folder, s
 //}}}
 * Edit image to enable support for both ~VBox and QEMU. Chiefly, set any disk controllers to generic drives under &quot;Device Manager&quot;.</pre>
 </div>
-<div title="DemoBootdiscNIX" creator="mirage335" modifier="mirage335" created="201712192342" modified="201712270712" changecount="21">
+<div title="DemoBootdiscNIX" creator="mirage335" modifier="mirage335" created="201712192342" modified="201801050229" changecount="22">
 <pre>Setup bootdisc support for NIX guest (MSW guest equally supported).
 
 Launch VM image in persistent mode with bootdisc attached.
@@ -1045,6 +1049,7 @@ vim /etc/lightdm/lightdm.conf
 sudo -n -u user mkdir -p /home/user/.config/autostart
 sudo -n -u user cp /media/bootdisc/startup.desktop /home/user/.config/autostart/
 
+#Installing ubiquitous bash hooks also provides essential binaries to the guest, including MAKEDEV .
 /media/bootdisc/ubiquitous_bash.sh _setupUbiquitous_nonet
 cd /home/user
 sudo -n -u user /media/bootdisc/ubiquitous_bash.sh _setupUbiquitous_nonet
@@ -1080,7 +1085,7 @@ Conversion to Docker Image.
 _dockerDeleteAll
 //}}}</pre>
 </div>
-<div title="DemoImageNIX" creator="mirage335" modifier="mirage335" created="201712190505" modified="201712281735" changecount="24">
+<div title="DemoImageNIX" creator="mirage335" modifier="mirage335" created="201712190505" modified="201801042222" changecount="26">
 <pre>!Existing Image
 An existing Debian VM image with bootdisc support may be copied to &quot;_local/vm.img&quot;.
 
@@ -1606,7 +1611,7 @@ _findFunction _true
 //}}}
 </pre>
 </div>
-<div title="Shortcuts" creator="mirage335" modifier="mirage335" created="201710261859" modified="201712281744" changecount="25">
+<div title="Shortcuts" creator="mirage335" modifier="mirage335" created="201710261859" modified="201801042216" changecount="26">
 <pre>Many functions are relevant to, or intended to simplify, typical desktop usage. Generally sorted into &quot;generic&quot; or &quot;shortcuts&quot; subdirectories.
 
 
@@ -1626,6 +1631,7 @@ _findFunction _true
 [[visualPrompt]]
 
 !Image
+[[Create|CreateRawImage]]
 [[MkBoot]]
 
 !Distro

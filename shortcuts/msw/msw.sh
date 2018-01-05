@@ -4,6 +4,9 @@ _create_msw_vbox_sequence() {
 	
 	[[ ! -e "$scriptLocal"/msw.iso ]] && _stop 1
 	
+	#[[ "$vmSize" == "" ]] && export vmSize="15256"
+	[[ "$vmSize" == "" ]] && export vmSize="30256"
+	
 	[[ ! -e "$scriptLocal"/vm.img ]] && [[ ! -e "$scriptLocal"/vm.vdi ]] && _createRawImage
 	
 	_checkDep VBoxManage
@@ -45,6 +48,9 @@ _create_msw_qemu_sequence() {
 	_start
 	
 	[[ ! -e "$scriptLocal"/msw.iso ]] && _stop 1
+	
+	#[[ "$vmSize" == "" ]] && export vmSize="15256"
+	[[ "$vmSize" == "" ]] && export vmSize="30256"
 	
 	[[ ! -e "$scriptLocal"/vm.img ]] && _createRawImage
 	

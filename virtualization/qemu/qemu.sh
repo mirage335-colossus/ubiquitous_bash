@@ -34,13 +34,15 @@ _integratedQemu() {
 	
 	qemuArgs+=(-smp 4)
 	
-	qemuUserArgs+=(-machine accel=kvm -drive format=raw,file="$scriptLocal"/vm.img -drive file="$hostToGuestISO",media=cdrom -boot c -m 1256 -net nic,model=rtl8139 -net user,smb="$sharedHostProjectDir")
+	qemuUserArgs+=(-drive format=raw,file="$scriptLocal"/vm.img -drive file="$hostToGuestISO",media=cdrom -boot c -m 1256 -net nic,model=rtl8139 -net user,smb="$sharedHostProjectDir")
 	
 	qemuArgs+=(-usbdevice tablet)
 	
 	qemuArgs+=(-vga cirrus)
 	
 	qemuArgs+=(-show-cursor)
+	
+	qemuArgs+=(-machine accel=kvm)
 	
 	qemuArgs+=("${qemuSpecialArgs[@]}" "${qemuUserArgs[@]}")
 	

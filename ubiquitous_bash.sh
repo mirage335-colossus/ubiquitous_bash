@@ -1867,7 +1867,7 @@ _createRawImage_sequence() {
 	[[ "$vmImageFile" == "" ]] && _stop 1
 	[[ -e "$vmImageFile" ]] && _stop 1
 	
-	dd if=/dev/zero of="$vmImageFile" bs=1M count="$vmSize" > /dev/null 2>&1
+	dd if=/dev/zero of="$vmImageFile" bs=1M count="$createRawImageSize" > /dev/null 2>&1
 	
 	_stop
 }
@@ -3327,13 +3327,15 @@ _integratedQemu() {
 	
 	qemuArgs+=(-smp 4)
 	
-	qemuUserArgs+=(-machine accel=kvm -drive format=raw,file="$scriptLocal"/vm.img -drive file="$hostToGuestISO",media=cdrom -boot c -m 1256 -net nic,model=rtl8139 -net user,smb="$sharedHostProjectDir")
+	qemuUserArgs+=(-drive format=raw,file="$scriptLocal"/vm.img -drive file="$hostToGuestISO",media=cdrom -boot c -m 1256 -net nic,model=rtl8139 -net user,smb="$sharedHostProjectDir")
 	
 	qemuArgs+=(-usbdevice tablet)
 	
 	qemuArgs+=(-vga cirrus)
 	
 	qemuArgs+=(-show-cursor)
+	
+	qemuArgs+=(-machine accel=kvm)
 	
 	qemuArgs+=("${qemuSpecialArgs[@]}" "${qemuUserArgs[@]}")
 	
@@ -5113,6 +5115,9 @@ _create_msw_vbox_sequence() {
 	
 	[[ ! -e "$scriptLocal"/msw.iso ]] && _stop 1
 	
+	#[[ "$vmSize" == "" ]] && export vmSize="15256"
+	[[ "$vmSize" == "" ]] && export vmSize="30256"
+	
 	[[ ! -e "$scriptLocal"/vm.img ]] && [[ ! -e "$scriptLocal"/vm.vdi ]] && _createRawImage
 	
 	_checkDep VBoxManage
@@ -5154,6 +5159,9 @@ _create_msw_qemu_sequence() {
 	_start
 	
 	[[ ! -e "$scriptLocal"/msw.iso ]] && _stop 1
+	
+	#[[ "$vmSize" == "" ]] && export vmSize="15256"
+	[[ "$vmSize" == "" ]] && export vmSize="30256"
 	
 	[[ ! -e "$scriptLocal"/vm.img ]] && _createRawImage
 	
@@ -6382,8 +6390,6 @@ _geth() {
 	mkdir -p "$scriptLocal"/blkchain/ethereum > /dev/null 2>&1
 	[[ ! -e "$scriptLocal"/blkchain/ethereum ]] && return 1
 	geth --datadir "$scriptLocal"/blkchain/ethereum "$@"
-	
-	_ethereum_home parity "$@"
 }
 
 _ethereum_init() {
@@ -6434,6 +6440,10 @@ _build_ethereum_parity() {
 
 _parity() {
 	_ethereum_home parity "$@"
+}
+
+_parity_attach() {
+	_ethereum_home _geth attach ~/.local/share/io.parity.ethereum/jsonrpc.ipc
 }
 
 #####Basic Variable Management
