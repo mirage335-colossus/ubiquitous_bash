@@ -1,25 +1,20 @@
+#Overload this function, or the guestArch variable, to configure QEMU to  guest with a specif
 _qemu() {
-	local hostArch
-	hostArch=$(uname -m)
+	local qemuHostArch
+	qemuHostArch=$(uname -m)
+	[[ "$qemuHostArch" == "" ]] && qemuGuestArch="$qemuHostArch"
 	
-	if [[ "$hostArch" == "x86_64" ]]
-	then
-		mkdir -p "$scriptLocal"
-		_createLocked "$scriptLocal"/_qemu || return 1
-		
-		qemu-system-x86_64 -machine accel=kvm -drive format=raw,file="$scriptLocal"/vm.img -boot c -m 1256
-		
-		rm -f "$scriptLocal"/_qemu
-		return 0
-	fi
+	local qemuExitStatus
 	
-	return 1
+	[[ "$qemuHostArch" == "x86_64" ]] && qemu-system-x86_64 "$@"
+	qemuExitStatus="$?"
+	
+	
+	return "$qemuExitStatus"
 }
 
 _integratedQemu() {
 	mkdir -p "$instancedVirtDir" || _stop 1
-	
-	_readLocked "$scriptLocal"/_qemu && _stop 1
 	
 	_commandBootdisc "$@" || _stop 1
 	
@@ -32,7 +27,8 @@ _integratedQemu() {
 	#https://unix.stackexchange.com/questions/165554/shared-folder-between-qemu-windows-guest-and-linux-host
 	#https://linux.die.net/man/1/qemu-kvm
 	
-	qemuArgs+=(-smp 4)
+	local hostThreadCount=$(cat /proc/cpuinfo | grep MHz | wc -l)
+	[[ "$hostThreadCount" -ge "4" ]] && qemuArgs+=(-smp 4)
 	
 	qemuUserArgs+=(-drive format=raw,file="$scriptLocal"/vm.img -drive file="$hostToGuestISO",media=cdrom -boot c -m 1256 -net nic,model=rtl8139 -net user,smb="$sharedHostProjectDir")
 	
@@ -42,11 +38,11 @@ _integratedQemu() {
 	
 	qemuArgs+=(-show-cursor)
 	
-	qemuArgs+=(-machine accel=kvm)
+	[[ -e /dev/kvm ]] && (grep -i svm /proc/cpuinfo > /dev/null 2>&1 || grep -i kvm /proc/cpuinfo > /dev/null 2>&1) && qemuArgs+=(-machine accel=kvm)
 	
 	qemuArgs+=("${qemuSpecialArgs[@]}" "${qemuUserArgs[@]}")
 	
-	qemu-system-x86_64 "${qemuArgs[@]}"
+	_qemu "${qemuArgs[@]}"
 	
 	_safeRMR "$instancedVirtDir" || _stop 1
 }
@@ -77,7 +73,11 @@ _editQemu_sequence() {
 	
 	_start
 	
+	_createLocked "$scriptLocal"/_qemuEdit || _stop 1
+	
 	_integratedQemu "$@" || _stop 1
+	
+	rm -f "$scriptLocal"/_qemuEdit
 	
 	_stop
 }

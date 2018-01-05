@@ -4,20 +4,21 @@ _testQEMU_hostArch_x64-raspi() {
 	
 	if [[ "$hostArch" != "x86_64" ]]
 	then
-		_stop 1
+		return 1
 	fi
 	
 	return 0
 }
 
 _testQEMU_x64-raspi() {
-	_testQEMU_hostArch_x64-raspi || _stop 1
 	
 	_testQEMU_x64-x64
 	_getDep qemu-arm-static
 	_getDep qemu-armeb-static
 	
 	_mustGetSudo
+	
+	! _testQEMU_hostArch_x64-raspi && echo "warn: not checking x64 translation" && return 0
 	
 	if ! sudo -n /usr/sbin/update-binfmts --display | grep qemu > /dev/null 2>&1
 	then
