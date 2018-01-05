@@ -49,7 +49,7 @@ _setupUbiquitous() {
 	
 	if [[ ! -e "$ubcoreUBdir"/ubiquitous_bash.sh ]]
 	then
-		cp -a "$scriptBin" "$ubcoreUBdir"/
+		"$scriptBin"/.ubrgbin.sh _ubrgbin_cpA "$scriptBin" "$ubcoreUBdir"/
 		cp -a "$scriptAbsoluteLocation" "$ubcoreUBdir"/ubiquitous_bash.sh
 	fi
 	

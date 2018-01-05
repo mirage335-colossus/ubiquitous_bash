@@ -2207,7 +2207,7 @@ _commandBootdisc() {
 	
 	#Include ubiquitious_bash itself.
 	cp "$scriptAbsoluteLocation" "$hostToGuestFiles"/
-	cp -a "$scriptBin" "$hostToGuestFiles"/_bin
+	"$scriptBin"/.ubrgbin.sh _ubrgbin_cpA "$scriptBin" "$hostToGuestFiles"/_bin
 	
 	#Process for MSW.
 	_createHTG_MSW "$@"
@@ -3267,6 +3267,26 @@ _testQEMU_x64-raspi() {
 
 
 
+_testQEMU_hostArch_x64_hardwarevt() {
+	#[[ -e /dev/kvm ]] && (grep -i svm /proc/cpuinfo > /dev/null 2>&1 || grep -i vmx /proc/cpuinfo > /dev/null 2>&1)
+	
+	! [[ -e /dev/kvm ]] && return 1
+	
+	grep -i svm /proc/cpuinfo > /dev/null 2>&1 && return 0
+	grep -i vmx /proc/cpuinfo > /dev/null 2>&1 && return 0
+	
+	return 1
+}
+
+_testQEMU_hostArch_x64_nested() {
+	grep '1' /sys/module/kvm_amd/parameters/nested > /dev/null 2>&1 && return 0
+	grep 'Y' /sys/module/kvm_amd/parameters/nested > /dev/null 2>&1 && return 0
+	grep '1' /sys/module/kvm_intel/parameters/nested > /dev/null 2>&1 && return 0
+	grep 'Y' /sys/module/kvm_intel/parameters/nested > /dev/null 2>&1 && return 0
+	
+	return 1
+}
+
 _testQEMU_hostArch_x64-x64() {
 	local hostArch
 	hostArch=$(uname -m)
@@ -3280,7 +3300,9 @@ _testQEMU_hostArch_x64-x64() {
 }
 
 _testQEMU_x64-x64() {
-	_testQEMU_hostArch_x64-x64 || echo "warning: no native x64"
+	_testQEMU_hostArch_x64-x64 || echo "warn: no native x64"
+	_testQEMU_hostArch_x64_hardwarevt || echo "warn: no x64 vt"
+	_testQEMU_hostArch_x64_nested || echo "warn: no nested x64"
 	
 	_getDep qemu-system-x86_64
 	_getDep qemu-img
@@ -3321,6 +3343,8 @@ _integratedQemu() {
 	#https://unix.stackexchange.com/questions/165554/shared-folder-between-qemu-windows-guest-and-linux-host
 	#https://linux.die.net/man/1/qemu-kvm
 	
+	_testQEMU_hostArch_x64_nested && qemuArgs+=(-cpu host)
+	
 	local hostThreadCount=$(cat /proc/cpuinfo | grep MHz | wc -l)
 	[[ "$hostThreadCount" -ge "4" ]] && qemuArgs+=(-smp 4)
 	
@@ -3332,7 +3356,7 @@ _integratedQemu() {
 	
 	qemuArgs+=(-show-cursor)
 	
-	[[ -e /dev/kvm ]] && (grep -i svm /proc/cpuinfo > /dev/null 2>&1 || grep -i kvm /proc/cpuinfo > /dev/null 2>&1) && qemuArgs+=(-machine accel=kvm)
+	_testQEMU_hostArch_x64_hardwarevt && qemuArgs+=(-machine accel=kvm)
 	
 	qemuArgs+=("${qemuSpecialArgs[@]}" "${qemuUserArgs[@]}")
 	
@@ -6266,7 +6290,7 @@ _setupUbiquitous() {
 	
 	if [[ ! -e "$ubcoreUBdir"/ubiquitous_bash.sh ]]
 	then
-		cp -a "$scriptBin" "$ubcoreUBdir"/
+		"$scriptBin"/.ubrgbin.sh _ubrgbin_cpA "$scriptBin" "$ubcoreUBdir"/
 		cp -a "$scriptAbsoluteLocation" "$ubcoreUBdir"/ubiquitous_bash.sh
 	fi
 	
@@ -6780,7 +6804,7 @@ _pull_docker_guest() {
 	cp "$scriptBin"/hello ./ > /dev/null 2>&1
 	
 	mkdir -p ./ubbin
-	cp -a "$scriptBin"/. ./ubbin/
+	"$scriptBin"/.ubrgbin.sh _ubrgbin_cpA "$scriptBin"/. ./ubbin/
 }
 
 #Separated for diagnostic purposes.

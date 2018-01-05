@@ -65,7 +65,7 @@ _pull_docker_guest() {
 	cp "$scriptBin"/hello ./ > /dev/null 2>&1
 	
 	mkdir -p ./ubbin
-	cp -a "$scriptBin"/. ./ubbin/
+	"$scriptBin"/.ubrgbin.sh _ubrgbin_cpA "$scriptBin"/. ./ubbin/
 }
 
 #Separated for diagnostic purposes.

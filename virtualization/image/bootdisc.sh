@@ -139,7 +139,7 @@ _commandBootdisc() {
 	
 	#Include ubiquitious_bash itself.
 	cp "$scriptAbsoluteLocation" "$hostToGuestFiles"/
-	cp -a "$scriptBin" "$hostToGuestFiles"/_bin
+	"$scriptBin"/.ubrgbin.sh _ubrgbin_cpA "$scriptBin" "$hostToGuestFiles"/_bin
 	
 	#Process for MSW.
 	_createHTG_MSW "$@"

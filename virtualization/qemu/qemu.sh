@@ -27,6 +27,8 @@ _integratedQemu() {
 	#https://unix.stackexchange.com/questions/165554/shared-folder-between-qemu-windows-guest-and-linux-host
 	#https://linux.die.net/man/1/qemu-kvm
 	
+	_testQEMU_hostArch_x64_nested && qemuArgs+=(-cpu host)
+	
 	local hostThreadCount=$(cat /proc/cpuinfo | grep MHz | wc -l)
 	[[ "$hostThreadCount" -ge "4" ]] && qemuArgs+=(-smp 4)
 	
@@ -38,7 +40,7 @@ _integratedQemu() {
 	
 	qemuArgs+=(-show-cursor)
 	
-	[[ -e /dev/kvm ]] && (grep -i svm /proc/cpuinfo > /dev/null 2>&1 || grep -i kvm /proc/cpuinfo > /dev/null 2>&1) && qemuArgs+=(-machine accel=kvm)
+	_testQEMU_hostArch_x64_hardwarevt && qemuArgs+=(-machine accel=kvm)
 	
 	qemuArgs+=("${qemuSpecialArgs[@]}" "${qemuUserArgs[@]}")
 	
