@@ -40,12 +40,7 @@ _build_ethereum_parity() {
 }
 
 _parity() {
-	./ubiquitous_bash.sh _findPort >> "$scriptLocal"/parity_ui_port
-	
-	parity_ui_port=8180
-	[[ -e "$scriptLocal"/parity_ui_port ]] && parity_ui_port=$(cat "$scriptLocal"/parity_ui_port)
-	
-	_ethereum_home parity "$@"
+	_ethereum_home parity --ui-port="$parity_ui_port" --port="$parity_port" --jasonrpc-port="$parity_jasonrpc_port" --ws-port="$parity_ws_port" --ifs-api-port="$parity_ifs_api_port" --secretstore="$parity_secretstore_port" --secretstore-http-port="$parity_secretstore_http_port" --stratum-port="$parity_stratum_port" --dapps-port="$parity_dapps_port" "$@"
 }
 
 _parity_attach() {

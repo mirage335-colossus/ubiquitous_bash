@@ -385,6 +385,7 @@ includeScriptList+=( "labels"/shortcutsLabel.sh )
 
 [[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "shortcuts"/setupUbiquitous.sh )
 
+[[ "$enUb_blockchain" == "true" ]] && includeScriptList+=( "blockchain"/blockchain.sh )
 [[ "$enUb_blockchain" == "true" ]] && includeScriptList+=( "blockchain/ethereum"/ethereum.sh )
 [[ "$enUb_blockchain" == "true" ]] && includeScriptList+=( "shortcuts/blockchain/ethereum"/ethereum.sh )
 

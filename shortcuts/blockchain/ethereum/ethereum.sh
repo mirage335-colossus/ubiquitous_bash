@@ -16,9 +16,6 @@ _ethereum_mine() {
 
 # TODO Dynamically chosen port.
 _parity_browser() {
-	parity_ui_port=8180
-	[[ -e "$scriptLocal"/parity_ui_port ]] && parity_ui_port=$(cat "$scriptLocal"/parity_ui_port)
-	
 	xdg-open 'http://127.0.0.1:'"$parity_ui_port"'/#/'
 }
 

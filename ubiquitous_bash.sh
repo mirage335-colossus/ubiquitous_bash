@@ -6452,6 +6452,38 @@ _setupUbiquitous_nonet() {
 	[[ "$oldNoNet" != "true" ]] && export nonet="$oldNoNet"
 }
 
+_opsauto_blockchain() {
+	echo "" > "$scriptLocal"/opsauto
+	
+	echo -n 'export parity_ui_port=' >> "$scriptLocal"/opsauto
+	./ubiquitous_bash.sh _findPort >> "$scriptLocal"/opsauto
+	
+	echo -n 'export parity_port=' >> "$scriptLocal"/opsauto
+	./ubiquitous_bash.sh _findPort >> "$scriptLocal"/opsauto
+	
+	echo -n 'export parity_jasonrpc_port=' >> "$scriptLocal"/opsauto
+	./ubiquitous_bash.sh _findPort >> "$scriptLocal"/opsauto
+	
+	echo -n 'export parity_ws_port=' >> "$scriptLocal"/opsauto
+	./ubiquitous_bash.sh _findPort >> "$scriptLocal"/opsauto
+	
+	echo -n 'export parity_ifs_api_port=' >> "$scriptLocal"/opsauto
+	./ubiquitous_bash.sh _findPort >> "$scriptLocal"/opsauto
+	
+	echo -n 'export parity_secretsstore_port=' >> "$scriptLocal"/opsauto
+	./ubiquitous_bash.sh _findPort >> "$scriptLocal"/opsauto
+	
+	echo -n 'export parity_secretstore_http_port=' >> "$scriptLocal"/opsauto
+	./ubiquitous_bash.sh _findPort >> "$scriptLocal"/opsauto
+	
+	echo -n 'export parity_stratum_port=' >> "$scriptLocal"/opsauto
+	./ubiquitous_bash.sh _findPort >> "$scriptLocal"/opsauto
+	
+	echo -n 'export parity_dapps_port=' >> "$scriptLocal"/opsauto
+	./ubiquitous_bash.sh _findPort >> "$scriptLocal"/opsauto
+	
+} 
+
 _test_ethereum() {
 	
 	#OpenGL/OpenCL runtime dependency for mining.
@@ -6567,9 +6599,6 @@ _ethereum_mine() {
 
 # TODO Dynamically chosen port.
 _parity_browser() {
-	parity_ui_port=8180
-	[[ -e "$scriptLocal"/parity_ui_port ]] && parity_ui_port=$(cat "$scriptLocal"/parity_ui_port)
-	
 	xdg-open 'http://127.0.0.1:'"$parity_ui_port"'/#/'
 }
 
@@ -6619,12 +6648,7 @@ _build_ethereum_parity() {
 }
 
 _parity() {
-	./ubiquitous_bash.sh _findPort >> "$scriptLocal"/parity_ui_port
-	
-	parity_ui_port=8180
-	[[ -e "$scriptLocal"/parity_ui_port ]] && parity_ui_port=$(cat "$scriptLocal"/parity_ui_port)
-	
-	_ethereum_home parity "$@"
+	_ethereum_home parity --ui-port="$parity_ui_port" "$@"
 }
 
 _parity_attach() {
@@ -7954,11 +7978,20 @@ if [[ -e "$objectDir"/ops ]]
 then
 	. "$objectDir"/ops
 fi
-
-#Override functions with external definitions from a separate file if available.
 if [[ -e "$scriptLocal"/ops ]]
 then
 	. "$scriptLocal"/ops
+fi
+
+#WILL BE OVERWRITTEN FREQUENTLY.
+#Intended for automatically generated shell code identifying usable resources, such as unused network ports. Do NOT use for serialization of internal variables (use $varStore for that).
+if [[ -e "$objectDir"/opsauto ]]
+then
+	. "$objectDir"/opsauto
+fi
+if [[ -e "$scriptLocal"/opsauto ]]
+then
+	. "$scriptLocal"/opsauto
 fi
 
 #Launch internal functions as commands.
