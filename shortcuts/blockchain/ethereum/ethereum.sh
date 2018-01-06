@@ -16,7 +16,13 @@ _ethereum_mine() {
 
 # TODO Dynamically chosen port.
 _parity_browser() {
-	xdg-open 'http://127.0.0.1:'"$parity_ui_port"'/#/'
+	./ubiquitous_bash.sh _parity signer new-token
+	
+	#xdg-open 'http://127.0.0.1:'"$parity_ui_port"'/#/'
+	
+	parity_browser_url=$(grep 'http' | cut -f 2- -d\  )
+	
+	xdg-open "$parity_browser_url"
 }
 
 _parity_import() {
