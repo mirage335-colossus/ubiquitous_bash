@@ -5,3 +5,8 @@ _validateRequest() {
 	echo "PASS"
 	return
 }
+
+#http://www.commandlinefu.com/commands/view/3584/remove-color-codes-special-characters-with-sed
+_nocolor() {
+	sed -r "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[m|K]//g"
+}
