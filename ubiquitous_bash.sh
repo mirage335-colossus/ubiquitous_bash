@@ -555,35 +555,84 @@ _fetch() {
 	return 0
 }
 
+_validatePort() {
+	[[ "$1" -lt "1024" ]] && return 1
+	[[ "$1" -gt "65535" ]] && return 1
+	
+	return 0
+}
+
+_testFindPort() {
+	local machineLowerPort=$(cat /proc/sys/net/ipv4/ip_local_port_range | cut -f1)
+	local machineUpperPort=$(cat /proc/sys/net/ipv4/ip_local_port_range | cut -f2)
+	
+	[[ "$machineLowerPort" -lt "1024" ]] && echo "invalid lower_port" && _stop 1
+	[[ "$machineLowerPort" -lt "32768" ]] && echo "warn: low lower_port"
+	[[ "$machineLowerPort" -gt "32768" ]] && echo "warn: high lower_port"
+	
+	[[ "$machineUpperPort" -gt "65535" ]] && echo "invalid upper_port" && _stop 1
+	[[ "$machineUpperPort" -gt "60999" ]] && echo "warn: high upper_port"
+	[[ "$machineUpperPort" -lt "60999" ]] && echo "warn: low upper_port"
+	
+	_validatePort && echo "invalid port discovery" && _stop 1
+}
+
+
 #http://unix.stackexchange.com/questions/55913/whats-the-easiest-way-to-find-an-unused-local-port
 _findPort() {
+	local lower_port
+	local upper_port
+	
 	lower_port="$1"
 	upper_port="$2"
 	
+	#Non public ports are between 49152-65535 (215 + 214 to 216 − 1).
+	#Convention is to assign ports 55000-65499 and 50025-53999 to specialized servers.
 	#read lower_port upper_port < /proc/sys/net/ipv4/ip_local_port_range
 	[[ "$lower_port" == "" ]] && lower_port=54000
-	[[ "$upper_port" == "" ]] && upper_port=55000
+	[[ "$upper_port" == "" ]] && upper_port=54999
+	
+	local range_port
+	local rand_max
+	let range_port="upper_port - lower_port"
+	let rand_max="range_port / 2"
 	
 	local portRangeOffset
 	portRangeOffset=$RANDOM
-	let "portRangeOffset %= 150"
+	#let "portRangeOffset %= 150"
+	let "portRangeOffset %= rand_max"
 	
-	let "lower_port += portRangeOffset"
+	[[ "$opsautoGenerationMode" == "true" ]] && [[ "$lowestUsedPort" == "" ]] && export lowestUsedPort="$lower_port"
+	[[ "$opsautoGenerationMode" == "true" ]] && lower_port="$lowestUsedPort"
+	
+	! [[ "$opsautoGenerationMode" == "true" ]] && let "lower_port += portRangeOffset"
 	
 	while true
 	do
-		for (( port = lower_port ; port <= upper_port ; port++ )); do
-			if ! ss -lpn | grep ":$port " > /dev/null 2>&1
+		for (( currentPort = lower_port ; currentPort <= upper_port ; currentPort++ )); do
+			if ! ss -lpn | grep ":$currentPort " > /dev/null 2>&1
 			then
 				sleep 0.1
-				if ! ss -lpn | grep ":$port " > /dev/null 2>&1
+				if ! ss -lpn | grep ":$currentPort " > /dev/null 2>&1
 				then
 					break 2
 				fi
 			fi
 		done
 	done
-	echo $port
+	
+	if [[ "$opsautoGenerationMode" == "true" ]]
+	then
+		local nextUsablePort
+		
+		let "nextUsablePort = currentPort + 1"
+		export lowestUsedPort="$nextUsablePort"
+		
+	fi
+	
+	echo $currentPort
+	
+	_validatePort "$currentPort"
 }
 
 #Generates random alphanumeric characters, default length 18.
@@ -6452,36 +6501,48 @@ _setupUbiquitous_nonet() {
 	[[ "$oldNoNet" != "true" ]] && export nonet="$oldNoNet"
 }
 
-_opsauto_blockchain() {
+_findPort_opsauto_blockchain() {
+	if ! _findPort 63800 63850 "$@" >> "$scriptLocal"/opsauto
+	then
+		_stop 1
+	fi
+}
+
+_opsauto_blockchain_sequence() {
+	_start
+	
+	export opsautoGenerationMode="true"
+	
 	echo "" > "$scriptLocal"/opsauto
 	
 	echo -n 'export parity_ui_port=' >> "$scriptLocal"/opsauto
-	./ubiquitous_bash.sh _findPort >> "$scriptLocal"/opsauto
+	_findPort_opsauto_blockchain
 	
 	echo -n 'export parity_port=' >> "$scriptLocal"/opsauto
-	./ubiquitous_bash.sh _findPort >> "$scriptLocal"/opsauto
+	_findPort_opsauto_blockchain
 	
 	echo -n 'export parity_jasonrpc_port=' >> "$scriptLocal"/opsauto
-	./ubiquitous_bash.sh _findPort >> "$scriptLocal"/opsauto
+	_findPort_opsauto_blockchain
 	
 	echo -n 'export parity_ws_port=' >> "$scriptLocal"/opsauto
-	./ubiquitous_bash.sh _findPort >> "$scriptLocal"/opsauto
+	_findPort_opsauto_blockchain
 	
 	echo -n 'export parity_ifs_api_port=' >> "$scriptLocal"/opsauto
-	./ubiquitous_bash.sh _findPort >> "$scriptLocal"/opsauto
+	_findPort_opsauto_blockchain
 	
-	echo -n 'export parity_secretsstore_port=' >> "$scriptLocal"/opsauto
-	./ubiquitous_bash.sh _findPort >> "$scriptLocal"/opsauto
+	echo -n 'export parity_secretstore_port=' >> "$scriptLocal"/opsauto
+	_findPort_opsauto_blockchain
 	
 	echo -n 'export parity_secretstore_http_port=' >> "$scriptLocal"/opsauto
-	./ubiquitous_bash.sh _findPort >> "$scriptLocal"/opsauto
+	_findPort_opsauto_blockchain
 	
 	echo -n 'export parity_stratum_port=' >> "$scriptLocal"/opsauto
-	./ubiquitous_bash.sh _findPort >> "$scriptLocal"/opsauto
+	_findPort_opsauto_blockchain
 	
 	echo -n 'export parity_dapps_port=' >> "$scriptLocal"/opsauto
-	./ubiquitous_bash.sh _findPort >> "$scriptLocal"/opsauto
+	_findPort_opsauto_blockchain
 	
+	_stop 0
 } 
 
 _test_ethereum() {
@@ -6648,7 +6709,12 @@ _build_ethereum_parity() {
 }
 
 _parity() {
-	_ethereum_home parity --ui-port="$parity_ui_port" "$@"
+	if [[ "$parity_ui_port" != "" ]] && [[ "$parity_port" != "" ]] && [[ "$parity_jasonrpc_port" != "" ]] && [[ "$parity_ws_port" != "" ]] && [[ "$parity_ifs_api_port" != "" ]] && [[ "$parity_secretstore_port" != "" ]] && [[ "$parity_secretstore_http_port" != "" ]] && [[ "$parity_stratum_port" != "" ]] && [[ "$parity_dapps_port" != "" ]]
+	then
+		_ethereum_home parity --ui-port="$parity_ui_port" --port="$parity_port" --jasonrpc-port="$parity_jasonrpc_port" --ws-port="$parity_ws_port" --ifs-api-port="$parity_ifs_api_port" --secretstore="$parity_secretstore_port" --secretstore-http-port="$parity_secretstore_http_port" --stratum-port="$parity_stratum_port" --dapps-port="$parity_dapps_port" "$@"
+	else
+		_ethereum_home parity "$@"
+	fi
 }
 
 _parity_attach() {
@@ -7720,6 +7786,8 @@ _test() {
 	
 	_getDep true
 	_getDep false
+	
+	_tryExec "_testFindPort"
 	
 	#_tryExec "_test_build"
 	

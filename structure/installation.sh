@@ -101,6 +101,8 @@ _test() {
 	_getDep true
 	_getDep false
 	
+	_tryExec "_testFindPort"
+	
 	#_tryExec "_test_build"
 	
 	_tryExec "_testGosu"

@@ -33,6 +33,10 @@ Semantic versioning is applied. Major version numbers (v2.x) indicate a compatib
 
 In most user environments, the latest git repository code will provide the strongest reliability guarantees. Extra safety checks are occasionally added as possible edge cases are discovered.
 
+# Conventions
+* Assign ports in ranges 55000-65499 and 50025-53999 to specialized internal servers with opsauto procedures.
+* Strictly single use ports are by default assigned in range 54000-54999 .
+
 # Included Works
 * MAKEDEV . Obtained from Debian Stretch. For all details, see _presentation/MAKEDEV .
 * GoSu . See https://github.com/tianon/gosu . Binaries and signatures may be included in repository. License, GPLv3 . License text at https://www.gnu.org/licenses/gpl-3.0.en.html .
@@ -90,8 +94,6 @@ In most user environments, the latest git repository code will provide the stron
 * LeafPad sometimes fails to launch from Docker container, apparently due to X11 issues.
 
 * BashDB is given a "frame 0" command to show large file source code window in emacs "realgud".
-
-* FindPort does not maintain a checklist of ports used when, for example, generating a single opsauto configuration.
 
 
 # WARNING
