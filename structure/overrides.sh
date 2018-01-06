@@ -21,11 +21,20 @@ if [[ -e "$objectDir"/ops ]]
 then
 	. "$objectDir"/ops
 fi
-
-#Override functions with external definitions from a separate file if available.
 if [[ -e "$scriptLocal"/ops ]]
 then
 	. "$scriptLocal"/ops
+fi
+
+#WILL BE OVERWRITTEN FREQUENTLY.
+#Intended for automatically generated shell code identifying usable resources, such as unused network ports. Do NOT use for serialization of internal variables (use $varStore for that).
+if [[ -e "$objectDir"/opsauto ]]
+then
+	. "$objectDir"/opsauto
+fi
+if [[ -e "$scriptLocal"/opsauto ]]
+then
+	. "$scriptLocal"/opsauto
 fi
 
 #Launch internal functions as commands.
