@@ -70,7 +70,9 @@ _set_instance_vbox_features() {
 	vboxAudioController="ac97"
 	[[ "$vboxOStype" == *"Win"*"10"* ]] && vboxAudioController="hda"
 	
-	VBoxManage modifyvm "$sessionid" --boot1 disk --biosbootmenu disabled --bioslogofadein off --bioslogofadeout off --bioslogodisplaytime 1 --vram 128 --memory 1512 --nic1 nat --nictype1 "$vboxNictype" --clipboard bidirectional --accelerate3d off --accelerate2dvideo off --vrde off --audio pulse --usb on --cpus 4 --ioapic on --acpi on --pae on --chipset "$vboxChipset" --audiocontroller="$vboxAudioController"
+	[[ "$vmMemoryAllocation" == "" ]] && vmMemoryAllocation=vmMemoryAllocationDefault
+	
+	VBoxManage modifyvm "$sessionid" --boot1 disk --biosbootmenu disabled --bioslogofadein off --bioslogofadeout off --bioslogodisplaytime 1 --vram 64 --memory "$vmMemoryAllocation" --nic1 nat --nictype1 "$vboxNictype" --clipboard bidirectional --accelerate3d off --accelerate2dvideo off --vrde off --audio pulse --usb on --cpus 4 --ioapic on --acpi on --pae on --chipset "$vboxChipset" --audiocontroller="$vboxAudioController"
 	
 }
 

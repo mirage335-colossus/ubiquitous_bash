@@ -158,3 +158,24 @@ export vboxRaw="$scriptLocal"/vmvdiraw.vmdk
 
 export globalFakeHome="$scriptLocal"/h
 export instancedFakeHome="$scriptAbsoluteFolder"/h_"$sessionid"
+
+#Machine information.
+export hostMemoryTotal=$(cat /proc/meminfo | grep MemTotal | tr -cd '[[:digit:]]')
+export hostMemoryAvailable=$(cat /proc/meminfo | grep MemAvailable | tr -cd '[[:digit:]]')
+export hostMemoryQuantity="$hostMemoryTotal"
+
+
+#Machine allocation defaults.
+[[ "$hostMemoryQuantity" -gt "16000000" ]] && export vmMemoryAllocationDefault=1512
+[[ "$hostMemoryQuantity" -gt "12000000" ]] && export vmMemoryAllocationDefault=1512
+[[ "$hostMemoryQuantity" -gt "8000000" ]] && export vmMemoryAllocationDefault=1256
+
+[[ "$hostMemoryQuantity" -gt "6000000" ]] && export vmMemoryAllocationDefault=1024
+[[ "$hostMemoryQuantity" -gt "3000000" ]] && export vmMemoryAllocationDefault=896
+
+[[ "$hostMemoryQuantity" -gt "1500000" ]] && export vmMemoryAllocationDefault=896
+[[ "$hostMemoryQuantity" -gt "800000" ]] && export vmMemoryAllocationDefault=512
+[[ "$hostMemoryQuantity" -gt "500000" ]] && export vmMemoryAllocationDefault=256
+[[ "$vmMemoryAllocationDefault" == "" ]] && export vmMemoryAllocationDefault=96
+
+

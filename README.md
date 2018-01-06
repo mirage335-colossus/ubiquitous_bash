@@ -72,6 +72,10 @@ In most user environments, the latest git repository code will provide the stron
 * Self-hosted debugger and snippet manager.
 * Graphical DRAKON and/or Blockly/SigBlockly examples.
 
+* Nested userChRoot in userChRoot . Beware, this bizarre scenario might cause guest corruption, a mess of mounts, or worse.
+
+* Hard and soft cpu, memory, swap, I/O, and storage limits on all subprocesses independent of full virtualization.
+
 # Known Issues
 
 * Some ChRoot mounting functions are in fact generic, and should be renamed as such after audit.

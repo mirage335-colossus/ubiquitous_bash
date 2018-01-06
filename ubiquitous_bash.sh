@@ -3443,7 +3443,12 @@ _integratedQemu() {
 	[[ "$hostThreadCount" -ge "4" ]] && [[ "$hostThreadCount" -lt "8" ]] && qemuArgs+=(-smp 4)
 	[[ "$hostThreadCount" -ge "8" ]] && qemuArgs+=(-smp 6)
 	
-	qemuUserArgs+=(-drive format=raw,file="$scriptLocal"/vm.img -drive file="$hostToGuestISO",media=cdrom -boot c -m 768 -net nic,model=rtl8139 -net user,smb="$sharedHostProjectDir")
+	qemuUserArgs+=(-drive format=raw,file="$scriptLocal"/vm.img -drive file="$hostToGuestISO",media=cdrom -boot c)
+	
+	[[ "$vmMemoryAllocation" == "" ]] && vmMemoryAllocation=vmMemoryAllocationDefault
+	qemuUserArgs+=(-m "$vmMemoryAllocation")
+	
+	qemuUserArgs+=(-net nic,model=rtl8139 -net user,smb="$sharedHostProjectDir")
 	
 	qemuArgs+=(-usbdevice tablet)
 	
@@ -3730,7 +3735,9 @@ _set_instance_vbox_features() {
 	vboxAudioController="ac97"
 	[[ "$vboxOStype" == *"Win"*"10"* ]] && vboxAudioController="hda"
 	
-	VBoxManage modifyvm "$sessionid" --boot1 disk --biosbootmenu disabled --bioslogofadein off --bioslogofadeout off --bioslogodisplaytime 1 --vram 128 --memory 1512 --nic1 nat --nictype1 "$vboxNictype" --clipboard bidirectional --accelerate3d off --accelerate2dvideo off --vrde off --audio pulse --usb on --cpus 4 --ioapic on --acpi on --pae on --chipset "$vboxChipset" --audiocontroller="$vboxAudioController"
+	[[ "$vmMemoryAllocation" == "" ]] && vmMemoryAllocation=vmMemoryAllocationDefault
+	
+	VBoxManage modifyvm "$sessionid" --boot1 disk --biosbootmenu disabled --bioslogofadein off --bioslogofadeout off --bioslogodisplaytime 1 --vram 64 --memory "$vmMemoryAllocation" --nic1 nat --nictype1 "$vboxNictype" --clipboard bidirectional --accelerate3d off --accelerate2dvideo off --vrde off --audio pulse --usb on --cpus 4 --ioapic on --acpi on --pae on --chipset "$vboxChipset" --audiocontroller="$vboxAudioController"
 	
 }
 
@@ -6753,6 +6760,27 @@ export vboxRaw="$scriptLocal"/vmvdiraw.vmdk
 
 export globalFakeHome="$scriptLocal"/h
 export instancedFakeHome="$scriptAbsoluteFolder"/h_"$sessionid"
+
+#Machine information.
+export hostMemoryTotal=$(cat /proc/meminfo | grep MemTotal | tr -cd '[[:digit:]]')
+export hostMemoryAvailable=$(cat /proc/meminfo | grep MemAvailable | tr -cd '[[:digit:]]')
+export hostMemoryQuantity="$hostMemoryTotal"
+
+
+#Machine allocation defaults.
+[[ "$hostMemoryQuantity" -gt "16000000" ]] && export vmMemoryAllocationDefault=1512
+[[ "$hostMemoryQuantity" -gt "12000000" ]] && export vmMemoryAllocationDefault=1512
+[[ "$hostMemoryQuantity" -gt "8000000" ]] && export vmMemoryAllocationDefault=1256
+
+[[ "$hostMemoryQuantity" -gt "6000000" ]] && export vmMemoryAllocationDefault=1024
+[[ "$hostMemoryQuantity" -gt "3000000" ]] && export vmMemoryAllocationDefault=896
+
+[[ "$hostMemoryQuantity" -gt "1500000" ]] && export vmMemoryAllocationDefault=896
+[[ "$hostMemoryQuantity" -gt "800000" ]] && export vmMemoryAllocationDefault=512
+[[ "$hostMemoryQuantity" -gt "500000" ]] && export vmMemoryAllocationDefault=256
+[[ "$vmMemoryAllocationDefault" == "" ]] && export vmMemoryAllocationDefault=96
+
+
 
 _prepareFakeHome() {
 	mkdir -p "$globalFakeHome"
