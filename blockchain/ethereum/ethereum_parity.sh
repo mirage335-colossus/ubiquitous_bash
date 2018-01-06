@@ -40,9 +40,14 @@ _build_ethereum_parity() {
 }
 
 _parity() {
+	./ubiquitous_bash.sh _findPort >> "$scriptLocal"/parity_ui_port
+	
+	parity_ui_port=8180
+	[[ -e "$scriptLocal"/parity_ui_port ]] && parity_ui_port=$(cat "$scriptLocal"/parity_ui_port)
+	
 	_ethereum_home parity "$@"
 }
 
 _parity_attach() {
-	_ethereum_home _geth attach ~/.local/share/io.parity.ethereum/jsonrpc.ipc
+	_ethereum_home _geth attach ~/.local/share/io.parity.ethereum/jsonrpc.ipc "$@"
 }

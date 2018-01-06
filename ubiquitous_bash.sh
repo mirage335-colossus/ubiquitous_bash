@@ -6561,14 +6561,20 @@ _ethereum_status() {
 	echo 'eth.syncing' | _geth attach
 }
 
-#Untested.
 _ethereum_mine() {
-	"$scriptBin"/ethminer -G
+	_ethereum_home "$scriptBin"/ethminer -G --farm-recheck 200 -S eu1.ethermine.org:4444 -FS us1.ethermine.org:4444 -O "$ethaddr"."$rigname"
 }
 
 # TODO Dynamically chosen port.
 _parity_browser() {
-	xdg-open 'http://127.0.0.1:8180/#/'
+	parity_ui_port=8180
+	[[ -e "$scriptLocal"/parity_ui_port ]] && parity_ui_port=$(cat "$scriptLocal"/parity_ui_port)
+	
+	xdg-open 'http://127.0.0.1:'"$parity_ui_port"'/#/'
+}
+
+_parity_import() {
+	_parity --import-geth-keys
 }
 
 _test_ethereum_parity() {
@@ -6613,11 +6619,16 @@ _build_ethereum_parity() {
 }
 
 _parity() {
+	./ubiquitous_bash.sh _findPort >> "$scriptLocal"/parity_ui_port
+	
+	parity_ui_port=8180
+	[[ -e "$scriptLocal"/parity_ui_port ]] && parity_ui_port=$(cat "$scriptLocal"/parity_ui_port)
+	
 	_ethereum_home parity "$@"
 }
 
 _parity_attach() {
-	_ethereum_home _geth attach ~/.local/share/io.parity.ethereum/jsonrpc.ipc
+	_ethereum_home _geth attach ~/.local/share/io.parity.ethereum/jsonrpc.ipc "$@"
 }
 
 #####Basic Variable Management
