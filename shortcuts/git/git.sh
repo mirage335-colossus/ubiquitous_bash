@@ -2,6 +2,11 @@ _testGit() {
 	_getDep git
 }
 
+#Ignores file modes, suitable for use with possibly broken filesystems like NTFS.
+_gitCompatible() {
+	git -c core.fileMode=false "$@"
+}
+
 _gitInfo() {
 	#Git Repository Information
 	export repoDir="$PWD"
