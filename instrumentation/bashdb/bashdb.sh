@@ -11,8 +11,10 @@ _test_bashdb() {
 	if ! type bashdb > /dev/null 2>&1
 	then
 		echo
-		echo 'bashdb required for debugging'
+		echo 'warn: bashdb required for debugging'
 	#_stop 1
 	fi
+	
+	return 0
 }
 

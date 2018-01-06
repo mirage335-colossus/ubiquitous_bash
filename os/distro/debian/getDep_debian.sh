@@ -214,9 +214,11 @@ _fetchDep_debianStretch_special() {
 		#sudo -n apt-get install --install-recommends -y rustc cargo
 		
 		echo "Requires manual installation."
-		echo "curl https://sh.rustup.rs -sSf | sh"
+cat << 'CZXWXcRMTo8EmM8i4d'
+curl https://sh.rustup.rs -sSf | sh
+echo '[[ -e "$HOME"/.cargo/bin ]] && export PATH="$HOME/.cargo/bin:$PATH"' >> ~/.bashrc
+CZXWXcRMTo8EmM8i4d
 		echo "(typical)"
-		
 		_stop 1
 	fi
 	
@@ -228,6 +230,8 @@ _fetchDep_debianStretch_sequence() {
 	_start
 	
 	_mustGetSudo
+	
+	_wantDep "$1" && _stop 0
 	
 	_fetchDep_debianStretch_special "$@" && _wantDep "$1" && _stop 0
 	
@@ -268,6 +272,8 @@ _fetchDep_debianStretch_sequence() {
 }
 
 _fetchDep_debianStretch() {
+	#Run up to 2 times. On rare occasion, cache will become unusable again by apt-find before an installation can be completed. Overall, apt-find is the single weakest link in the system.
+	"$scriptAbsoluteLocation" _fetchDep_debianStretch_sequence "$@"
 	"$scriptAbsoluteLocation" _fetchDep_debianStretch_sequence "$@"
 }
 

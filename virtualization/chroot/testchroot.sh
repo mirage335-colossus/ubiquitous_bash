@@ -1,11 +1,11 @@
 _testChRoot() {
-	_testGosu
-	
-	_typeDep gosu-armel
-	_typeDep gosu-amd64
-	_typeDep gosu-i386
-	
 	_mustGetSudo
+	
+	_testGosu || _stop 1
+	
+	_checkDep gosu-armel
+	_checkDep gosu-amd64
+	_checkDep gosu-i386
 	
 	_getDep id
 	

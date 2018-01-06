@@ -833,7 +833,7 @@ Fetches and verifies x64 Debian installation ISO, saves to current directory (ie
 !_create_x64_debianLiteVM
 Creates custom bootable x64 Debian image. Requires [[fetch|Debian]] dependencies, QEMU, and manual guidance through the setup process.</pre>
 </div>
-<div title="DebianPrereq" creator="mirage335" modifier="mirage335" created="201712220319" modified="201801041728" changecount="11">
+<div title="DebianPrereq" creator="mirage335" modifier="mirage335" created="201712220319" modified="201801060143" changecount="13">
 <pre>!Generic
 All crucial dependencies should be automatically installed through the built-in test procedure.
 //{{{
@@ -854,27 +854,12 @@ apt-get install build-essential linux-headers-$(uname -r) yakuake
 //{{{
 apt-get install x11vnc xtightvncviewer nmap autossh
 //}}}
-
-!Rust
-Rust installs itself to the user's home folder. As such, remember to consider using &quot;_editFakeHome&quot;.
-//{{{
-curl https://sh.rustup.rs -sSf | sh
-//}}}
-Rust often relies upon the &quot;~/.profile&quot; file to add itself to a user's PATH. Instead, it may be necessary to add the PATH inclusion to &quot;~/.bashrc&quot; or similar.
-//{{{
-echo '[[ -e &quot;$HOME&quot;/.cargo/bin ]] &amp;&amp; export PATH=&quot;$HOME/.cargo/bin:$PATH&quot;' &gt;&gt; ~/.bashrc
-//}}}
-
-!Special
-In a parent directory, consider installing the mkimage script for local construction of base images.
-//{{{
-git clone https://github.com/moby/moby.git
-//}}}</pre>
+</pre>
 </div>
 <div title="DefaultTiddlers" creator="mirage335" modifier="mirage335" created="201710261744" modified="201712260421" changecount="6">
 <pre>[[Demo]]</pre>
 </div>
-<div title="Demo" creator="mirage335" modifier="mirage335" created="201712122105" modified="201801041735" changecount="64">
+<div title="Demo" creator="mirage335" modifier="mirage335" created="201712122105" modified="201801060635" changecount="65">
 <pre>&lt;&lt;showtoc&gt;&gt;
 
 !Pitch
@@ -972,6 +957,13 @@ Demonstrate ~ChRoot, QEMU, ~VirtualBox, and Docker support, from the same image.
 #./ubiquitous_bash.sh _userDocker leafpad ./CC0_license.txt
 ./ubiquitous_bash.sh _userDocker xmessage -file ./CC0_license.txt
 ./ubiquitous_bash.sh _userDocker xeyes
+//}}}
+
+Nesting presents an extreme challenge to the system - ubiquitous_bash itself will be running from the same folder, in a guest, within another guest also running ubiquitous_bash.
+//{{{
+./ubiquitous_bash.sh _userQemu ./ubiquitous_bash.sh _test
+
+./ubiquitous_bash.sh _userQemu ./ubiquitous_bash.sh _userQemu leafpad ./CC0_license.txt
 //}}}
 
 !Raspbian
@@ -1304,7 +1296,7 @@ Searches directory for mounted filesystems. Requires sudo .
 
 </pre>
 </div>
-<div title="GenericPrereq" creator="mirage335" modifier="mirage335" created="201712300321" modified="201712300408" changecount="4">
+<div title="GenericPrereq" creator="mirage335" modifier="mirage335" created="201712300321" modified="201801060633" changecount="6">
 <pre>!&lt;nowiki&gt;Docker MKImage&lt;/nowiki&gt;
 
 From ubiquitous bash directory. Known working commit is &quot;a4bdb304e29f21661e8ef398dbaeb8188aa0f46a&quot; .
@@ -1324,6 +1316,16 @@ cd bashdb-code
 ./autogen.sh
 make &amp;&amp; make check
 sudo -n make install
+//}}}
+
+!Rust
+Rust installs itself to the user's home folder. As such, remember to consider using &quot;_editFakeHome&quot;.
+//{{{
+curl https://sh.rustup.rs -sSf | sh
+//}}}
+Rust often relies upon the &quot;~/.profile&quot; file to add itself to a user's PATH. Instead, it may be necessary to add the PATH inclusion to &quot;~/.bashrc&quot; or similar.
+//{{{
+echo '[[ -e &quot;$HOME&quot;/.cargo/bin ]] &amp;&amp; export PATH=&quot;$HOME/.cargo/bin:$PATH&quot;' &gt;&gt; ~/.bashrc
 //}}}
 </pre>
 </div>

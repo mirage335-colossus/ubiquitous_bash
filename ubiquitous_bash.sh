@@ -349,9 +349,11 @@ _test_bashdb() {
 	if ! type bashdb > /dev/null 2>&1
 	then
 		echo
-		echo 'bashdb required for debugging'
+		echo 'warn: bashdb required for debugging'
 	#_stop 1
 	fi
+	
+	return 0
 }
 
 
@@ -965,9 +967,11 @@ _fetchDep_debianStretch_special() {
 		#sudo -n apt-get install --install-recommends -y rustc cargo
 		
 		echo "Requires manual installation."
-		echo "curl https://sh.rustup.rs -sSf | sh"
+cat << 'CZXWXcRMTo8EmM8i4d'
+curl https://sh.rustup.rs -sSf | sh
+echo '[[ -e "$HOME"/.cargo/bin ]] && export PATH="$HOME/.cargo/bin:$PATH"' >> ~/.bashrc
+CZXWXcRMTo8EmM8i4d
 		echo "(typical)"
-		
 		_stop 1
 	fi
 	
@@ -979,6 +983,8 @@ _fetchDep_debianStretch_sequence() {
 	_start
 	
 	_mustGetSudo
+	
+	_wantDep "$1" && _stop 0
 	
 	_fetchDep_debianStretch_special "$@" && _wantDep "$1" && _stop 0
 	
@@ -1019,6 +1025,8 @@ _fetchDep_debianStretch_sequence() {
 }
 
 _fetchDep_debianStretch() {
+	#Run up to 2 times. On rare occasion, cache will become unusable again by apt-find before an installation can be completed. Overall, apt-find is the single weakest link in the system.
+	"$scriptAbsoluteLocation" _fetchDep_debianStretch_sequence "$@"
 	"$scriptAbsoluteLocation" _fetchDep_debianStretch_sequence "$@"
 }
 
@@ -2449,13 +2457,13 @@ _buildToImage() {
 
 
 _testChRoot() {
-	_testGosu
-	
-	_typeDep gosu-armel
-	_typeDep gosu-amd64
-	_typeDep gosu-i386
-	
 	_mustGetSudo
+	
+	_testGosu || _stop 1
+	
+	_checkDep gosu-armel
+	_checkDep gosu-amd64
+	_checkDep gosu-i386
 	
 	_getDep id
 	
@@ -3435,7 +3443,7 @@ _integratedQemu() {
 	[[ "$hostThreadCount" -ge "4" ]] && [[ "$hostThreadCount" -lt "8" ]] && qemuArgs+=(-smp 4)
 	[[ "$hostThreadCount" -ge "8" ]] && qemuArgs+=(-smp 6)
 	
-	qemuUserArgs+=(-drive format=raw,file="$scriptLocal"/vm.img -drive file="$hostToGuestISO",media=cdrom -boot c -m 1256 -net nic,model=rtl8139 -net user,smb="$sharedHostProjectDir")
+	qemuUserArgs+=(-drive format=raw,file="$scriptLocal"/vm.img -drive file="$hostToGuestISO",media=cdrom -boot c -m 768 -net nic,model=rtl8139 -net user,smb="$sharedHostProjectDir")
 	
 	qemuArgs+=(-usbdevice tablet)
 	
@@ -4375,24 +4383,24 @@ _permitDocker() {
 }
 
 _test_docker() {
-	_testGosu
+	_testGosu || _stop 1
 	
-	_typeDep gosu-armel
-	_typeDep gosu-amd64
-	_typeDep gosu-i386
+	_checkDep gosu-armel
+	_checkDep gosu-amd64
+	_checkDep gosu-i386
 	
 	#https://docs.docker.com/engine/installation/linux/docker-ce/debian/#install-using-the-repository
 	#https://wiki.archlinux.org/index.php/Docker#Installation
 	#sudo usermod -a -G docker "$USER"
 	
-	_typeDep /sbin/losetup
+	_getDep /sbin/losetup
 	if ! [[ -e "/dev/loop-control" ]] || ! [[ -e "/sbin/losetup" ]]
 	then
 		echo 'may be missing loopback interface'
 		_stop 1
 	fi
 	
-	_typeDep docker
+	_getDep docker
 	
 	local dockerPermission
 	dockerPermission=$(_permitDocker echo true 2> /dev/null)
