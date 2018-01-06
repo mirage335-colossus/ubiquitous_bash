@@ -40,4 +40,8 @@ _opsauto_blockchain_sequence() {
 	_findPort_opsauto_blockchain
 	
 	_stop 0
-} 
+}
+
+_opsauto_blockchain() {
+	"$scriptAbsoluteLocation" _opsauto_blockchain_sequence
+}

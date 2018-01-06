@@ -507,19 +507,51 @@ Also see [[AdvancedOptions]]</pre>
 </div>
 <!--POST-SHADOWAREA-->
 <div id="storeArea">
-<div title="Blockchain" creator="mirage335" modifier="mirage335" created="201801042119" modified="201801042120" changecount="2">
+<div title="Blockchain" creator="mirage335" modifier="mirage335" created="201801042119" modified="201801062326" changecount="6">
 <pre>Blockchains are distributed, verifiable databases commonly used to implement cryptocurrency.
 
 !geth
 Installation of geth, contained to _local .
 //{{{
 ./ubiquitous_bash.sh _geth
+./ubiquitous_bash.sh _ethereum_new
+./ubiquitous_bash.sh _ethereum_sync
+./ubiquitous_bash.sh _ethereum_status
+./ubiquitous_bash.sh _ethereum_attach
 //}}}
 
 !parity
+Set alternative local network port usage.
+//{{{
+./ubiquitous_bash.sh _opsauto_blockchain
+//}}}
+Override this function to use a different port range for a specific setup.
+
 Installation of parity, contained to _local .
 //{{{
 ./ubiquitous_bash.sh _parity
+//}}}
+
+Import from geth is supported by a variety of means, including internal function.
+//{{{
+./ubiquitous_bash.sh _parity_import
+//}}}
+
+User interface for parity can be accessed through the browser launcher.
+//{{{
+./ubiquitous_bash.sh _parity_browser
+//}}}
+
+!ethminer
+Configure address by writing &quot;_local/ops&quot; file.
+//{{{
+export ethaddr=hexStringAddress
+export rigname=unknown
+//}}}
+
+Run ethminer.
+//{{{
+./ubiquitous_bash __ethereum_mine
 //}}}
 
 </pre>
