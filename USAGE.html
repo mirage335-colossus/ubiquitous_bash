@@ -1533,9 +1533,13 @@ _closeChRoot
 //}}}
 </pre>
 </div>
-<div title="Reference" creator="mirage335" modifier="mirage335" created="201712130531" modified="201712300318" changecount="10">
+<div title="Reference" creator="mirage335" modifier="mirage335" created="201712130531" modified="201801052303" changecount="12">
 <pre>!Prerequsites
-For any Ubiquitous Bash application, the &quot;_test&quot; function will check for presence of all host OS dependencies needed by the included components. Exhaustive prerequsite package installation instructions are provided for specific distributions.
+For any Ubiquitous Bash application, the &quot;_test&quot; function will check for presence of all host OS dependencies needed by the included components at runtime. Developers will benefit from also running the &quot;_test_build&quot; function, as this validates debugging support. Exhaustive prerequsite package installation instructions are provided for specific distributions.
+//{{{
+./ubiquitous_bash.sh _test
+./ubiquitous_bash.sh _test_build
+//}}}
 
 [[Generic|GenericPrereq]]
 

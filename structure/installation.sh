@@ -101,7 +101,7 @@ _test() {
 	_getDep true
 	_getDep false
 	
-	_tryExec "_test_build"
+	#_tryExec "_test_build"
 	
 	_tryExec "_testGosu"
 	
@@ -144,6 +144,8 @@ _test() {
 	_tryExec "_testX11"
 	
 	_tryExec "_test_virtLocal_X11"
+	
+	_tryExec "_test_gparted"
 	
 	_tryExec "_test_devemacs"
 	
@@ -223,9 +225,13 @@ _setup() {
 	
 	"$scriptAbsoluteLocation" _test || _stop 1
 	
-	"$scriptAbsoluteLocation" _build "$@" || _stop 1
+	"$scriptAbsoluteLocation" _test_build || _stop 1
 	
-	"$scriptAbsoluteLocation" _testBuilt || _stop 1
+	if ! "$scriptAbsoluteLocation" _testBuilt
+	then
+		"$scriptAbsoluteLocation" _build "$@" || _stop 1
+		"$scriptAbsoluteLocation" _testBuilt || _stop 1
+	fi
 	
 	_setupCommands
 	

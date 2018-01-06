@@ -4,6 +4,9 @@ _apt-file_sequence() {
 	_mustGetSudo
 	#_mustGetDep su
 	
+	! _wantDep apt-file && sudo -n apt-get install --install-recommends -y apt-file
+	_checkDep apt-file
+	
 	sudo -n apt-file "$@" > "$safeTmp"/pkgsOut 2> "$safeTmp"/pkgsErr
 	sudo -n apt-file search bash > "$safeTmp"/checkOut 2> "$safeTmp"/checkErr
 	
@@ -211,6 +214,8 @@ _fetchDep_debianStretch_special() {
 		#sudo -n apt-get install --install-recommends -y rustc cargo
 		
 		echo "Requires manual installation."
+		echo "curl https://sh.rustup.rs -sSf | sh"
+		echo "(typical)"
 		
 		_stop 1
 	fi

@@ -365,7 +365,7 @@ includeScriptList+=( "labels"/shortcutsLabel.sh )
 [[ "$enUb_msw" == "true" ]] && includeScriptList+=( "shortcuts/msw"/msw.sh )
 
 
-[[ "$enUb_image" == "true" ]] && includeScriptList+=( "shortcuts/prompt"/visualPrompt.sh )
+[[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "shortcuts/prompt"/visualPrompt.sh )
 
 [[ "$enUb_x11" == "true" ]] && includeScriptList+=( "shortcuts/x11"/testx11.sh )
 [[ "$enUb_x11" == "true" ]] && includeScriptList+=( "shortcuts/x11/clipboard"/x11ClipboardImage.sh )
@@ -379,7 +379,11 @@ includeScriptList+=( "labels"/shortcutsLabel.sh )
 [[ "$enUb_docker" == "true" ]] && includeScriptList+=( "shortcuts/docker"/dockerportation.sh )
 [[ "$enUb_docker" == "true" ]] && includeScriptList+=( "shortcuts/docker"/dockercontainer.sh )
 
-[[ "$enUb_image" == "true" ]] && includeScriptList+=( "shortcuts"/setupUbiquitous.sh )
+[[ "$enUb_docker" == "true" ]] && includeScriptList+=( "shortcuts/docker"/dockercontainer.sh )
+
+[[ "$enUb_image" == "true" ]] && includeScriptList+=( "shortcuts/image"/gparted.sh )
+
+[[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "shortcuts"/setupUbiquitous.sh )
 
 [[ "$enUb_blockchain" == "true" ]] && includeScriptList+=( "blockchain/ethereum"/ethereum.sh )
 [[ "$enUb_blockchain" == "true" ]] && includeScriptList+=( "shortcuts/blockchain/ethereum"/ethereum.sh )

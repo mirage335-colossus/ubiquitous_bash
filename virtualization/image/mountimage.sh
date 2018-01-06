@@ -12,7 +12,7 @@ _loopImage_sequence() {
 	
 	mkdir -p "$globalVirtFS"
 	
-	"$scriptAbsoluteLocation" _checkForMounts "$globalVirtFS" && _stop 1
+	[[ -e "$scriptLocal"/imagedev ]] && _stop 1
 	
 	local imagefilename
 	#[[ -e "$scriptLocal"/vm-x64.img ]] && imagefilename="$scriptLocal"/vm-x64.img
@@ -67,6 +67,23 @@ _mountImage() {
 	"$scriptAbsoluteLocation" _mountImageFS_sequence
 }
 
+_umountLoop() {
+	_mustGetSudo || return 1
+	
+	local imagedev
+	imagedev=$(cat "$scriptLocal"/imagedev)
+	
+	sudo -n losetup -d "$imagedev" > /dev/null 2>&1 || return 1
+	sudo -n partprobe > /dev/null 2>&1
+	
+	rm -f "$scriptLocal"/imagedev || return 1
+	
+	rm -f "$lock_quicktmp" > /dev/null 2>&1
+	
+	return 0
+}
+
+# TODO Duplicates some code from _umountLoop. Test, and remove.
 _umountImage() {
 	_mustGetSudo || return 1
 	
@@ -88,6 +105,20 @@ _umountImage() {
 	return 0
 }
 
+_waitLoop_opening() {
+	[[ -e "$scriptLocal"/imagedev ]] && return 0
+	sleep 0.1
+	[[ -e "$scriptLocal"/imagedev ]] && return 0
+	sleep 0.3
+	for iteration in `seq 1 45`;
+	do
+		[[ -e "$scriptLocal"/imagedev ]] && return 0
+		sleep 1
+	done
+	
+	return 1
+}
+
 _waitImage_opening() {
 	_readyImage "$globalVirtFS" && return 0
 	sleep 1
@@ -100,6 +131,20 @@ _waitImage_opening() {
 	_readyImage "$globalVirtFS" && return 0
 	sleep 81
 	_readyImage "$globalVirtFS" && return 0
+	
+	return 1
+}
+
+_waitLoop_closing() {
+	! [[ -e "$scriptLocal"/imagedev ]] && return 0
+	sleep 0.1
+	! [[ -e "$scriptLocal"/imagedev ]] && return 0
+	sleep 0.3
+	for iteration in `seq 1 45`;
+	do
+		! [[ -e "$scriptLocal"/imagedev ]] && return 0
+		sleep 1
+	done
 	
 	return 1
 }
@@ -158,6 +203,42 @@ _closeImage() {
 	fi
 	
 	_close _waitImage_closing _umountImage
+	returnStatus="$?"
+	
+	export specialLock=""
+	
+	return "$returnStatus"
+}
+
+_openLoop() {
+	local returnStatus
+	
+	export specialLock="$lock_loop_image"
+	
+	_open _waitLoop_opening _loopImage
+	returnStatus="$?"
+	
+	export specialLock=""
+	
+	return "$returnStatus"
+}
+
+_closeLoop() {
+	local returnStatus
+	
+	export specialLock="$lock_loop_image"
+	
+	if [[ "$1" == "--force" ]]
+	then
+		_close --force _waitLoop_closing _umountLoop
+		returnStatus="$?"
+		
+		export specialLock=""
+		
+		return "$returnStatus"
+	fi
+	
+	_close _waitLoop_closing _umountLoop
 	returnStatus="$?"
 	
 	export specialLock=""

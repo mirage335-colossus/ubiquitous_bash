@@ -30,6 +30,7 @@ _test_build() {
 	
 	_tryExec _test_build_prog
 }
+alias _testBuild=_test_build
 
 _buildSequence() {
 	_start

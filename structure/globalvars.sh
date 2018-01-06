@@ -77,6 +77,9 @@ specialLocks=""
 export lock_open_image="$lock_open"-img
 specialLocks+=("$lock_open_image")
 
+export lock_loop_image="$lock_open"-loop
+specialLocks+=("$lock_loop_image")
+
 export lock_open_chroot="$lock_open"-chrt
 specialLocks+=("$lock_open_chroot")
 export lock_open_docker="$lock_open"-dock

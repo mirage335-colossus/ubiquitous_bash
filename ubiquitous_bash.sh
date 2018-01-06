@@ -755,6 +755,9 @@ _apt-file_sequence() {
 	_mustGetSudo
 	#_mustGetDep su
 	
+	! _wantDep apt-file && sudo -n apt-get install --install-recommends -y apt-file
+	_checkDep apt-file
+	
 	sudo -n apt-file "$@" > "$safeTmp"/pkgsOut 2> "$safeTmp"/pkgsErr
 	sudo -n apt-file search bash > "$safeTmp"/checkOut 2> "$safeTmp"/checkErr
 	
@@ -962,6 +965,8 @@ _fetchDep_debianStretch_special() {
 		#sudo -n apt-get install --install-recommends -y rustc cargo
 		
 		echo "Requires manual installation."
+		echo "curl https://sh.rustup.rs -sSf | sh"
+		echo "(typical)"
 		
 		_stop 1
 	fi
@@ -1686,7 +1691,7 @@ _loopImage_sequence() {
 	
 	mkdir -p "$globalVirtFS"
 	
-	"$scriptAbsoluteLocation" _checkForMounts "$globalVirtFS" && _stop 1
+	[[ -e "$scriptLocal"/imagedev ]] && _stop 1
 	
 	local imagefilename
 	#[[ -e "$scriptLocal"/vm-x64.img ]] && imagefilename="$scriptLocal"/vm-x64.img
@@ -1741,6 +1746,23 @@ _mountImage() {
 	"$scriptAbsoluteLocation" _mountImageFS_sequence
 }
 
+_umountLoop() {
+	_mustGetSudo || return 1
+	
+	local imagedev
+	imagedev=$(cat "$scriptLocal"/imagedev)
+	
+	sudo -n losetup -d "$imagedev" > /dev/null 2>&1 || return 1
+	sudo -n partprobe > /dev/null 2>&1
+	
+	rm -f "$scriptLocal"/imagedev || return 1
+	
+	rm -f "$lock_quicktmp" > /dev/null 2>&1
+	
+	return 0
+}
+
+# TODO Duplicates some code from _umountLoop. Test, and remove.
 _umountImage() {
 	_mustGetSudo || return 1
 	
@@ -1762,6 +1784,20 @@ _umountImage() {
 	return 0
 }
 
+_waitLoop_opening() {
+	[[ -e "$scriptLocal"/imagedev ]] && return 0
+	sleep 0.1
+	[[ -e "$scriptLocal"/imagedev ]] && return 0
+	sleep 0.3
+	for iteration in `seq 1 45`;
+	do
+		[[ -e "$scriptLocal"/imagedev ]] && return 0
+		sleep 1
+	done
+	
+	return 1
+}
+
 _waitImage_opening() {
 	_readyImage "$globalVirtFS" && return 0
 	sleep 1
@@ -1774,6 +1810,20 @@ _waitImage_opening() {
 	_readyImage "$globalVirtFS" && return 0
 	sleep 81
 	_readyImage "$globalVirtFS" && return 0
+	
+	return 1
+}
+
+_waitLoop_closing() {
+	! [[ -e "$scriptLocal"/imagedev ]] && return 0
+	sleep 0.1
+	! [[ -e "$scriptLocal"/imagedev ]] && return 0
+	sleep 0.3
+	for iteration in `seq 1 45`;
+	do
+		! [[ -e "$scriptLocal"/imagedev ]] && return 0
+		sleep 1
+	done
 	
 	return 1
 }
@@ -1832,6 +1882,42 @@ _closeImage() {
 	fi
 	
 	_close _waitImage_closing _umountImage
+	returnStatus="$?"
+	
+	export specialLock=""
+	
+	return "$returnStatus"
+}
+
+_openLoop() {
+	local returnStatus
+	
+	export specialLock="$lock_loop_image"
+	
+	_open _waitLoop_opening _loopImage
+	returnStatus="$?"
+	
+	export specialLock=""
+	
+	return "$returnStatus"
+}
+
+_closeLoop() {
+	local returnStatus
+	
+	export specialLock="$lock_loop_image"
+	
+	if [[ "$1" == "--force" ]]
+	then
+		_close --force _waitLoop_closing _umountLoop
+		returnStatus="$?"
+		
+		export specialLock=""
+		
+		return "$returnStatus"
+	fi
+	
+	_close _waitLoop_closing _umountLoop
 	returnStatus="$?"
 	
 	export specialLock=""
@@ -1965,14 +2051,14 @@ then
 fi
 
 #Equivalent "fstab" entries for reference. Not used due to conflict for mountpoint, as well as lack of standard mounting options in vboxsf driver.
-#//10.0.2.4/qemu	/home/user/.pqm cifs	guest,_netdev,uid=user,user,nofail	0 0
-#appFolder		/home/user/.pvb	vboxsf	uid=user,_netdev			0 0
+#//10.0.2.4/qemu	/home/user/.pqm cifs	guest,_netdev,uid=user,user,nofail,exec		0 0
+#appFolder		/home/user/.pvb	vboxsf	uid=user,_netdev				0 0
 
 _mountGuestShareNIX() {
 	! /bin/mountpoint /home/user/project > /dev/null 2>&1 && /bin/mount -t vboxsf -o uid=user,_netdev appFolder /home/user/project 2>&1
 	! /bin/mountpoint /home/user/Downloads > /dev/null 2>&1 && /bin/mount -t vboxsf -o uid=user,_netdev Downloads /home/user/Downloads 2>&1
 	
-	! /bin/mountpoint /home/user/project > /dev/null 2>&1 && /bin/mount -t cifs -o guest,_netdev,uid=user,user,nofail '//10.0.2.4/qemu' /home/user/project > /dev/null 2>&1
+	! /bin/mountpoint /home/user/project > /dev/null 2>&1 && /bin/mount -t cifs -o guest,_netdev,uid=user,user,nofail,exec '//10.0.2.4/qemu' /home/user/project > /dev/null 2>&1
 	
 }
 
@@ -6240,6 +6326,31 @@ _dockerRun() {
 	return "$?"
 }
 
+_test_gparted() {
+	_getDep gparted
+}
+
+_gparted_sequence() {
+	_start
+	
+	_mustGetSudo
+	
+	_openLoop || _stop 1
+	
+	local imagedev
+	imagedev=$(cat "$scriptLocal"/imagedev)
+	
+	sudo -n gparted "$imagedev"
+	
+	_closeLoop || _stop 1
+	
+	_stop
+}
+
+_gparted() {
+	"$scriptAbsoluteLocation" _gparted_sequence
+}
+
 _configureLocal() {
 	_configureFile "$1" "_local"
 }
@@ -6552,6 +6663,9 @@ specialLocks=""
 
 export lock_open_image="$lock_open"-img
 specialLocks+=("$lock_open_image")
+
+export lock_loop_image="$lock_open"-loop
+specialLocks+=("$lock_loop_image")
 
 export lock_open_chroot="$lock_open"-chrt
 specialLocks+=("$lock_open_chroot")
@@ -7513,7 +7627,7 @@ _test() {
 	_getDep true
 	_getDep false
 	
-	_tryExec "_test_build"
+	#_tryExec "_test_build"
 	
 	_tryExec "_testGosu"
 	
@@ -7556,6 +7670,8 @@ _test() {
 	_tryExec "_testX11"
 	
 	_tryExec "_test_virtLocal_X11"
+	
+	_tryExec "_test_gparted"
 	
 	_tryExec "_test_devemacs"
 	
@@ -7635,9 +7751,13 @@ _setup() {
 	
 	"$scriptAbsoluteLocation" _test || _stop 1
 	
-	"$scriptAbsoluteLocation" _build "$@" || _stop 1
+	"$scriptAbsoluteLocation" _test_build || _stop 1
 	
-	"$scriptAbsoluteLocation" _testBuilt || _stop 1
+	if ! "$scriptAbsoluteLocation" _testBuilt
+	then
+		"$scriptAbsoluteLocation" _build "$@" || _stop 1
+		"$scriptAbsoluteLocation" _testBuilt || _stop 1
+	fi
 	
 	_setupCommands
 	
@@ -7678,6 +7798,7 @@ _test_build() {
 	
 	_tryExec _test_build_prog
 }
+alias _testBuild=_test_build
 
 _buildSequence() {
 	_start
