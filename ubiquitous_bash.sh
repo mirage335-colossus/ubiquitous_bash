@@ -4785,6 +4785,11 @@ _testGit() {
 	_getDep git
 }
 
+#Ignores file modes, suitable for use with possibly broken filesystems like NTFS.
+_gitCompatible() {
+	git -c core.fileMode=false "$@"
+}
+
 _gitInfo() {
 	#Git Repository Information
 	export repoDir="$PWD"
@@ -6544,9 +6549,26 @@ _geth() {
 	geth --datadir "$scriptLocal"/blkchain/ethereum "$@"
 }
 
-_ethereum_init() {
+_ethereum_new() {
 	_geth account new
-	_geth --rpc --fast --cache=1024
+}
+
+_ethereum_sync() {
+	_geth --rpc --fast --cache=4096
+}
+
+_ethereum_status() {
+	echo 'eth.syncing' | _geth attach
+}
+
+#Untested.
+_ethereum_mine() {
+	"$scriptBin"/ethminer -G
+}
+
+# TODO Dynamically chosen port.
+_parity_browser() {
+	xdg-open 'http://127.0.0.1:8180/#/'
 }
 
 _test_ethereum_parity() {
