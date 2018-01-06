@@ -24,7 +24,7 @@ _opsauto_blockchain_sequence() {
 	echo -n 'export parity_ws_port=' >> "$scriptLocal"/opsauto
 	_findPort_opsauto_blockchain
 	
-	echo -n 'export parity_ifs_api_port=' >> "$scriptLocal"/opsauto
+	echo -n 'export parity_ipfs_api_port=' >> "$scriptLocal"/opsauto
 	_findPort_opsauto_blockchain
 	
 	echo -n 'export parity_secretstore_port=' >> "$scriptLocal"/opsauto
@@ -36,8 +36,8 @@ _opsauto_blockchain_sequence() {
 	echo -n 'export parity_stratum_port=' >> "$scriptLocal"/opsauto
 	_findPort_opsauto_blockchain
 	
-	echo -n 'export parity_dapps_port=' >> "$scriptLocal"/opsauto
-	_findPort_opsauto_blockchain
+	#echo -n 'export parity_dapps_port=' >> "$scriptLocal"/opsauto
+	#_findPort_opsauto_blockchain
 	
 	_stop 0
 }

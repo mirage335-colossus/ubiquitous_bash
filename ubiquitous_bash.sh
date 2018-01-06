@@ -6532,7 +6532,7 @@ _opsauto_blockchain_sequence() {
 	echo -n 'export parity_ws_port=' >> "$scriptLocal"/opsauto
 	_findPort_opsauto_blockchain
 	
-	echo -n 'export parity_ifs_api_port=' >> "$scriptLocal"/opsauto
+	echo -n 'export parity_ipfs_api_port=' >> "$scriptLocal"/opsauto
 	_findPort_opsauto_blockchain
 	
 	echo -n 'export parity_secretstore_port=' >> "$scriptLocal"/opsauto
@@ -6544,11 +6544,15 @@ _opsauto_blockchain_sequence() {
 	echo -n 'export parity_stratum_port=' >> "$scriptLocal"/opsauto
 	_findPort_opsauto_blockchain
 	
-	echo -n 'export parity_dapps_port=' >> "$scriptLocal"/opsauto
-	_findPort_opsauto_blockchain
+	#echo -n 'export parity_dapps_port=' >> "$scriptLocal"/opsauto
+	#_findPort_opsauto_blockchain
 	
 	_stop 0
-} 
+}
+
+_opsauto_blockchain() {
+	"$scriptAbsoluteLocation" _opsauto_blockchain_sequence
+}
 
 _test_ethereum() {
 	
@@ -6719,9 +6723,9 @@ _build_ethereum_parity() {
 }
 
 _parity() {
-	if [[ "$parity_ui_port" != "" ]] && [[ "$parity_port" != "" ]] && [[ "$parity_jasonrpc_port" != "" ]] && [[ "$parity_ws_port" != "" ]] && [[ "$parity_ifs_api_port" != "" ]] && [[ "$parity_secretstore_port" != "" ]] && [[ "$parity_secretstore_http_port" != "" ]] && [[ "$parity_stratum_port" != "" ]] && [[ "$parity_dapps_port" != "" ]]
+	if [[ "$parity_ui_port" != "" ]] && [[ "$parity_port" != "" ]] && [[ "$parity_jasonrpc_port" != "" ]] && [[ "$parity_ws_port" != "" ]] && [[ "$parity_ipfs_api_port" != "" ]] && [[ "$parity_secretstore_port" != "" ]] && [[ "$parity_secretstore_http_port" != "" ]] && [[ "$parity_stratum_port" != "" ]]
 	then
-		_ethereum_home parity --ui-port="$parity_ui_port" --port="$parity_port" --jasonrpc-port="$parity_jasonrpc_port" --ws-port="$parity_ws_port" --ifs-api-port="$parity_ifs_api_port" --secretstore="$parity_secretstore_port" --secretstore-http-port="$parity_secretstore_http_port" --stratum-port="$parity_stratum_port" --dapps-port="$parity_dapps_port" "$@"
+		_ethereum_home parity --ui-port="$parity_ui_port" --port="$parity_port" --jsonrpc-port="$parity_jasonrpc_port" --ws-port="$parity_ws_port" --ipfs-api-port="$parity_ipfs_api_port" --secretstore-port="$parity_secretstore_port" --secretstore-http-port="$parity_secretstore_http_port" --stratum-port="$parity_stratum_port" "$@"
 	else
 		_ethereum_home parity "$@"
 	fi
