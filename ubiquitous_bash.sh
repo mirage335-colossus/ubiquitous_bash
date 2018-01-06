@@ -726,6 +726,11 @@ _validateRequest() {
 	return
 }
 
+#http://www.commandlinefu.com/commands/view/3584/remove-color-codes-special-characters-with-sed
+_nocolor() {
+	sed -r "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[m|K]//g"
+}
+
 #Copy log files to "$permaLog" or current directory (default) for analysis.
 _preserveLog() {
 	if [[ ! -d "$permaLog" ]]
@@ -6660,11 +6665,10 @@ _ethereum_mine() {
 
 # TODO Dynamically chosen port.
 _parity_browser() {
-	./ubiquitous_bash.sh _parity signer new-token
-	
 	#xdg-open 'http://127.0.0.1:'"$parity_ui_port"'/#/'
 	
-	parity_browser_url=$(grep 'http' | cut -f 2- -d\  )
+	#egrep -o 'https?://[^ ]+'
+	parity_browser_url=$(_parity signer new-token | grep 'http' | cut -f 2- -d\  | _nocolor)
 	
 	xdg-open "$parity_browser_url"
 }
