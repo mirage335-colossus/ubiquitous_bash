@@ -38,13 +38,16 @@ In most user environments, the latest git repository code will provide the stron
 * GoSu . See https://github.com/tianon/gosu . Binaries and signatures may be included in repository. License, GPLv3 . License text at https://www.gnu.org/licenses/gpl-3.0.en.html .
 * Firefox .
 
-* Geth
-* Ethminer
+* geth
+* parity
+* ethminer
 
 # Credit
 * Thanks to "rocky" for workaround to bashdb/emacs issue - https://github.com/realgud/realgud/issues/205#issuecomment-354851601 .
 
 # Future Work
+* Portable Cygwin installation for MSW hosts.
+
 * Self-contained SAMBA server would provide useful virtualization compatibility guarantees if tightly integrated. QEMU seems to already include a solution using similar methods.
 
 * Merge HostedXen, and other related virtualization methods into ubiquitous bash.
@@ -75,6 +78,7 @@ In most user environments, the latest git repository code will provide the stron
 * Nested userChRoot in userChRoot . Beware, this bizarre scenario might cause guest corruption, a mess of mounts, or worse.
 
 * Hard and soft cpu, memory, swap, I/O, and storage limits on all subprocesses independent of full virtualization.
+* Automatically adjust limits and priorities based on system latency impacts correlated to program operation.
 
 # Known Issues
 
@@ -85,7 +89,7 @@ In most user environments, the latest git repository code will provide the stron
 * KWrite under ChRoot may lock up the mounts, preventing _closeChRoot from working. Error messages suggest PulseAudio is not working normally. Nevertheless, cleanup seems to take place through the systemd hook upon shutdown.
 * LeafPad sometimes fails to launch from Docker container, apparently due to X11 issues.
 
-* BashDB must be given a "frame 0" command to show source code window in emacs "realgud". Self-hosted "_ubdb" self-debugger is affected by this inconvenient bug.
+* BashDB is given a "frame 0" command to show large file source code window in emacs "realgud".
 
 
 # WARNING

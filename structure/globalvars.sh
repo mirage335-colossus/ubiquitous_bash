@@ -166,16 +166,17 @@ export hostMemoryQuantity="$hostMemoryTotal"
 
 
 #Machine allocation defaults.
-[[ "$hostMemoryQuantity" -gt "16000000" ]] && export vmMemoryAllocationDefault=1512
-[[ "$hostMemoryQuantity" -gt "12000000" ]] && export vmMemoryAllocationDefault=1512
-[[ "$hostMemoryQuantity" -gt "8000000" ]] && export vmMemoryAllocationDefault=1256
-
-[[ "$hostMemoryQuantity" -gt "6000000" ]] && export vmMemoryAllocationDefault=1024
-[[ "$hostMemoryQuantity" -gt "3000000" ]] && export vmMemoryAllocationDefault=896
-
-[[ "$hostMemoryQuantity" -gt "1500000" ]] && export vmMemoryAllocationDefault=896
-[[ "$hostMemoryQuantity" -gt "800000" ]] && export vmMemoryAllocationDefault=512
 [[ "$hostMemoryQuantity" -gt "500000" ]] && export vmMemoryAllocationDefault=256
+[[ "$hostMemoryQuantity" -gt "800000" ]] && export vmMemoryAllocationDefault=512
+[[ "$hostMemoryQuantity" -gt "1500000" ]] && export vmMemoryAllocationDefault=896
+
+[[ "$hostMemoryQuantity" -gt "3000000" ]] && export vmMemoryAllocationDefault=896
+[[ "$hostMemoryQuantity" -gt "6000000" ]] && export vmMemoryAllocationDefault=1024
+
+[[ "$hostMemoryQuantity" -gt "8000000" ]] && export vmMemoryAllocationDefault=1256
+[[ "$hostMemoryQuantity" -gt "12000000" ]] && export vmMemoryAllocationDefault=1512
+[[ "$hostMemoryQuantity" -gt "16000000" ]] && export vmMemoryAllocationDefault=1512
+
 [[ "$vmMemoryAllocationDefault" == "" ]] && export vmMemoryAllocationDefault=96
 
 
