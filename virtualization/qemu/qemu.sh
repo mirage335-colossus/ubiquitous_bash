@@ -35,7 +35,7 @@ _integratedQemu() {
 	
 	qemuUserArgs+=(-drive format=raw,file="$scriptLocal"/vm.img -drive file="$hostToGuestISO",media=cdrom -boot c)
 	
-	[[ "$vmMemoryAllocation" == "" ]] && vmMemoryAllocation=vmMemoryAllocationDefault
+	[[ "$vmMemoryAllocation" == "" ]] && vmMemoryAllocation="$vmMemoryAllocationDefault"
 	qemuUserArgs+=(-m "$vmMemoryAllocation")
 	
 	qemuUserArgs+=(-net nic,model=rtl8139 -net user,smb="$sharedHostProjectDir")
