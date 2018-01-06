@@ -40,7 +40,12 @@ _build_ethereum_parity() {
 }
 
 _parity() {
-	_ethereum_home parity --ui-port="$parity_ui_port" --port="$parity_port" --jasonrpc-port="$parity_jasonrpc_port" --ws-port="$parity_ws_port" --ifs-api-port="$parity_ifs_api_port" --secretstore="$parity_secretstore_port" --secretstore-http-port="$parity_secretstore_http_port" --stratum-port="$parity_stratum_port" --dapps-port="$parity_dapps_port" "$@"
+	if [[ "$parity_ui_port" != "" ]] && [[ "$parity_port" != "" ]] && [[ "$parity_jasonrpc_port" != "" ]] && [[ "$parity_ws_port" != "" ]] && [[ "$parity_ifs_api_port" != "" ]] && [[ "$parity_secretstore_port" != "" ]] && [[ "$parity_secretstore_http_port" != "" ]] && [[ "$parity_stratum_port" != "" ]] && [[ "$parity_dapps_port" != "" ]]
+	then
+		_ethereum_home parity --ui-port="$parity_ui_port" --port="$parity_port" --jasonrpc-port="$parity_jasonrpc_port" --ws-port="$parity_ws_port" --ifs-api-port="$parity_ifs_api_port" --secretstore="$parity_secretstore_port" --secretstore-http-port="$parity_secretstore_http_port" --stratum-port="$parity_stratum_port" --dapps-port="$parity_dapps_port" "$@"
+	else
+		_ethereum_home parity "$@"
+	fi
 }
 
 _parity_attach() {

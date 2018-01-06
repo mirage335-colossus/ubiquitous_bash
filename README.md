@@ -91,6 +91,8 @@ In most user environments, the latest git repository code will provide the stron
 
 * BashDB is given a "frame 0" command to show large file source code window in emacs "realgud".
 
+* FindPort does not maintain a checklist of ports used when, for example, generating a single opsauto configuration.
+
 
 # WARNING
 
