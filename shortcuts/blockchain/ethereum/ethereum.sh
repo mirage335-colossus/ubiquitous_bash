@@ -15,7 +15,7 @@ _ethereum_mine() {
 }
 
 _ethereum_mine_status() {
-	https://ethermine.org/miners/"$ethaddr"
+	xdg-open "https://ethermine.org/miners/""$ethaddr"
 }
 
 # TODO Dynamically chosen port.
