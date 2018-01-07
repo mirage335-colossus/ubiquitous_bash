@@ -507,7 +507,7 @@ Also see [[AdvancedOptions]]</pre>
 </div>
 <!--POST-SHADOWAREA-->
 <div id="storeArea">
-<div title="Blockchain" creator="mirage335" modifier="mirage335" created="201801042119" modified="201801070258" changecount="10">
+<div title="Blockchain" creator="mirage335" modifier="mirage335" created="201801042119" modified="201801070622" changecount="11">
 <pre>Blockchains are distributed, verifiable databases commonly used to implement cryptocurrency.
 
 !geth
@@ -545,8 +545,11 @@ User interface for parity can be accessed through the browser launcher.
 !ethminer
 Configure address and daemon by writing &quot;_local/ops&quot; file.
 //{{{
-export ethaddr=hexStringAddress
-export rigname=unknown
+export ethaddr=f6d18ee9639e201afcc7eed5f8231f7fa6dbf860
+export rigname=generic
+
+export idleMax=1200000
+export idleMin=1080000
 
 _main() {
 	_ethereum_mine
@@ -556,6 +559,11 @@ _main() {
 Run ethminer.
 //{{{
 ./ubiquitous_bash.sh _ethereum_mine
+//}}}
+
+Launch ethminer whenever machine is idle.
+//{{{
+./ubiquitous_bash.sh _idle
 //}}}
 
 See status of miner in browser.

@@ -1,6 +1,6 @@
 #####Overrides
 
-[[ "$isDaemon" == "true" ]] && echo "$$" >> "$daemonPidFile"
+[[ "$isDaemon" == "true" ]] && echo "$$" | _prependDaemonPID
 
 #Traps, if script is not imported into existing shell, or bypass requested.
 if ! [[ "${BASH_SOURCE[0]}" != "${0}" ]] || ! [[ "$1" != "--bypass" ]]

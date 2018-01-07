@@ -7,20 +7,24 @@ _idle() {
 	
 	_killDaemon
 	
+	#Default 20 minutes.
+	[[ "$idleMax" == "" ]] && export idleMax=1200000
+	[[ "$idleMin" == "" ]] && export idleMin=1080000
+	
 	while true
 	do
 		sleep 5
 		
 		idleTime=$("$scriptBin"/getIdle)
 		
-		if [[ "$idleTime" -lt "3300000" ]] && _daemonStatus
+		if [[ "$idleTime" -lt "$idleMin" ]] && _daemonStatus
 		then
 			true
 			_killDaemon	#Comment out if unnecessary.
 		fi
 		
 		
-		if [[ "$idleTime" -gt "3600000" ]] && ! _daemonStatus
+		if [[ "$idleTime" -gt "$idleMax" ]] && ! _daemonStatus
 		then
 			_execDaemon
 		fi

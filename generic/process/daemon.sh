@@ -1,14 +1,63 @@
-#Daemon signal handler is provided to allow entire process groups *not* to be killed, if this is not desired.
-#https://stackoverflow.com/questions/34438189/bash-sleep-process-not-getting-killed
-_daemonSendTERM() {
-	#pkill -TERM -P "$1"
-	
-	kill -TERM "$1"
+_test_daemon() {
+	_getDep pkill
 }
 
-_daemonSendKILL() {
-	#pkill -KILL -P "$1"
+#To ensure the lowest descendents are terminated first, the file must be created in reverse order.
+_prependDaemonPID() {
+	[[ ! -e "$daemonPidFile" ]] && echo >> "$daemonPidFile"
+	cat - "$daemonPidFile" >> "$daemonPidFile".tmp
+	mv "$daemonPidFile".tmp "$daemonPidFile"
+}
+
+#By default, process descendents will be terminated first. Doing so is essential to reaching sub-proesses of sub-scripts, without manual user input.
+#https://stackoverflow.com/questions/34438189/bash-sleep-process-not-getting-killed
+_daemonSendTERM() {
+	#Terminate descendents if parent has not been able to quit.
+	pkill -P "$1"
+	! ps -p "$1" >/dev/null 2>&1 && return 0
+	sleep 0.1
+	! ps -p "$1" >/dev/null 2>&1 && return 0
+	sleep 0.3
+	! ps -p "$1" >/dev/null 2>&1 && return 0
+	sleep 2
+	! ps -p "$1" >/dev/null 2>&1 && return 0
+	sleep 6
+	! ps -p "$1" >/dev/null 2>&1 && return 0
+	sleep 9
 	
+	#Kill descendents if parent has not been able to quit.
+	pkill -KILL -P "$1"
+	! ps -p "$1" >/dev/null 2>&1 && return 0
+	sleep 0.1
+	! ps -p "$1" >/dev/null 2>&1 && return 0
+	sleep 0.3
+	! ps -p "$1" >/dev/null 2>&1 && return 0
+	sleep 2
+	
+	#Terminate parent if parent has not been able to quit.
+	kill -TERM "$1"
+	! ps -p "$1" >/dev/null 2>&1 && return 0
+	sleep 0.1
+	! ps -p "$1" >/dev/null 2>&1 && return 0
+	sleep 0.3
+	! ps -p "$1" >/dev/null 2>&1 && return 0
+	sleep 2
+	
+	#Kill parent if parent has not been able to quit.
+	kill KILL "$1"
+	! ps -p "$1" >/dev/null 2>&1 && return 0
+	sleep 0.1
+	! ps -p "$1" >/dev/null 2>&1 && return 0
+	sleep 0.3
+	
+	#Failure to immediately kill parent is an extremely rare, serious error.
+	ps -p "$1" >/dev/null 2>&1 && return 1
+	return 0
+}
+
+#No production use.
+_daemonSendKILL() {
+	pkill -KILL -P "$1"
 	kill -KILL "$1"
 }
 
@@ -39,6 +88,7 @@ _daemonStatus() {
 	_daemonAction "status"
 }
 
+#No production use.
 _waitForTermination() {
 	_daemonStatus && sleep 0.1
 	_daemonStatus && sleep 0.3
@@ -51,12 +101,6 @@ alias _waitForDaemon=_waitForTermination
 _killDaemon() {
 	_daemonAction "terminate"
 	
-	_waitForTermination
-	
-	_daemonAction "kill"
-	
-	_waitForTermination
-	
 	#Do NOT detele this file unless daemon can be confirmed down.
 	! _daemonStatus && rm -f "$daemonPidFile" >/dev/null 2>&1
 }
@@ -67,7 +111,7 @@ _cmdDaemon() {
 	"$@" &
 	
 	#Any PID which may be part of a daemon may be appended to this file.
-	echo "$!" >> "$daemonPidFile"
+	echo "$!" | _prependDaemonPID
 }
 
 #Executes self in background (ie. as daemon).

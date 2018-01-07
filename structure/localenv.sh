@@ -66,7 +66,7 @@ _stop_emergency() {
 	_closeChRoot_emergency
 	
 	#Daemon uses a separate instance, and will not be affected by previous actions, possibly even if running in the foreground.
-	#jobs -p >> "$daemonPidFile"
+	#jobs -p >> "$daemonPidFile" #Could derrange the correct order of descendent job termination.
 	_tryExec _killDaemon
 	
 	_tryExec _stop_virtLocal

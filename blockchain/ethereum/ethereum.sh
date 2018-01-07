@@ -1,4 +1,6 @@
 _test_ethereum() {
+
+	_getDep xterm
 	
 	#OpenGL/OpenCL runtime dependency for mining.
 	_getDep GL/gl.h
