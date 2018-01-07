@@ -50,6 +50,8 @@ In most user environments, the latest git repository code will provide the stron
 * Thanks to "rocky" for workaround to bashdb/emacs issue - https://github.com/realgud/realgud/issues/205#issuecomment-354851601 .
 
 # Future Work
+* Demonstrate backgrounding in _main as a means to launch multiple daemonized services under control of a single script instance.
+
 * Portable Cygwin installation for MSW hosts.
 
 * Self-contained SAMBA server would provide useful virtualization compatibility guarantees if tightly integrated. QEMU seems to already include a solution using similar methods.
