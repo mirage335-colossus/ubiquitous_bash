@@ -51,11 +51,10 @@ export bootTmp="$scriptLocal"			#Fail-Safe
 [[ -d /dev/shm ]] && export bootTmp=/dev/shm	#Typical Linux
 
 #Process control.
-[[ "$pidFile" == "" ]] && export pidFile="$safeTmp"/.pid
+export pidFile="$safeTmp"/.pid
 export uPID="cwrxuk6wqzbzV6p8kPS8J4APYGX"	#Invalid do-not-match default.
 
-[[ "$daemonPidFile" == "" ]] && export daemonPidFile="$scriptLocal"/.bgpid
-export daemonPID="cwrxuk6wqzbzV6p8kPS8J4APYGX"	#Invalid do-not-match default.
+export daemonPidFile="$scriptLocal"/.bgpid
 
 #export varStore="$scriptAbsoluteFolder"/var
 
@@ -166,6 +165,7 @@ export hostMemoryQuantity="$hostMemoryTotal"
 
 
 #Machine allocation defaults.
+export vmMemoryAllocationDefault=96
 [[ "$hostMemoryQuantity" -gt "500000" ]] && export vmMemoryAllocationDefault=256
 [[ "$hostMemoryQuantity" -gt "800000" ]] && export vmMemoryAllocationDefault=512
 [[ "$hostMemoryQuantity" -gt "1500000" ]] && export vmMemoryAllocationDefault=896
@@ -176,7 +176,4 @@ export hostMemoryQuantity="$hostMemoryTotal"
 [[ "$hostMemoryQuantity" -gt "8000000" ]] && export vmMemoryAllocationDefault=1256
 [[ "$hostMemoryQuantity" -gt "12000000" ]] && export vmMemoryAllocationDefault=1512
 [[ "$hostMemoryQuantity" -gt "16000000" ]] && export vmMemoryAllocationDefault=1512
-
-[[ "$vmMemoryAllocationDefault" == "" ]] && export vmMemoryAllocationDefault=96
-
 

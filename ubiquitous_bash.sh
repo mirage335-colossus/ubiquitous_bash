@@ -489,15 +489,45 @@ _pauseForProcess() {
 alias _waitForProcess=_pauseForProcess
 alias waitForProcess=_pauseForProcess
 
-#True if daemon is running.
-_daemonStatus() {
-	if [[ -e "$daemonPidFile" ]]
-	then
-		export daemonPID=$(cat "$daemonPidFile")
-	fi
+#Daemon signal handler is provided to allow entire process groups *not* to be killed, if this is not desired.
+#https://stackoverflow.com/questions/34438189/bash-sleep-process-not-getting-killed
+_daemonSendTERM() {
+	#pkill -TERM -P "$1"
 	
-	ps -p "$daemonPID" >/dev/null 2>&1 && return 0
+	kill -TERM "$1"
+}
+
+_daemonSendKILL() {
+	#pkill -KILL -P "$1"
+	
+	kill -KILL "$1"
+}
+
+#True if any daemon registered process is running.
+_daemonAction() {
+	[[ ! -e "$daemonPidFile" ]] && return 1
+	
+	local currentLine
+	local processedLine
+	local daemonStatus
+	
+	while IFS='' read -r currentLine || [[ -n "$currentLine" ]]; do
+		processedLine=$(echo "$currentLine" | tr -dc '0-9')
+		if [[ "$processedLine" != "" ]] && ps -p "$processedLine" >/dev/null 2>&1
+		then
+			daemonStatus="up"
+			[[ "$1" == "status" ]] && return 0
+			[[ "$1" == "terminate" ]] && _daemonSendTERM "$processedLine"
+			[[ "$1" == "kill" ]] && _daemonSendKILL "$processedLine"
+		fi
+	done < "$daemonPidFile"
+	
+	[[ "$daemonStatus" == "up" ]] && return 0
 	return 1
+}
+
+_daemonStatus() {
+	_daemonAction "status"
 }
 
 _waitForTermination() {
@@ -510,21 +540,54 @@ alias _waitForDaemon=_waitForTermination
 
 #Kills background process using PID file.
 _killDaemon() {
-	_daemonStatus && kill -TERM "$daemonPID" >/dev/null 2>&1
+	_daemonAction "terminate"
 	
 	_waitForTermination
 	
-	_daemonStatus && kill -KILL "$daemonPID" >/dev/null 2>&1
+	_daemonAction "kill"
 	
 	_waitForTermination
 	
-	rm -f "$daemonPidFile" >/dev/null 2>&1
+	#Do NOT detele this file unless daemon can be confirmed down.
+	! _daemonStatus && rm -f "$daemonPidFile" >/dev/null 2>&1
+}
+
+_cmdDaemon() {
+	_daemonStatus && return 1
+	
+	export isDaemon="true"
+	
+	echo "$$" >> "$daemonPidFile"
+	
+	"$@" &
+	
+	#Any PID which may be part of a daemon may be appended to this file.
+	echo "$!" >> "$daemonPidFile"
 }
 
 #Executes self in background (ie. as daemon).
 _execDaemon() {
-	"$scriptAbsoluteLocation" >/dev/null 2>&1 &
-	echo "$!" > "$daemonPidFile"
+	_daemonStatus && return 1
+	export isDaemon="true"
+	echo "$$" >> "$daemonPidFile"
+	_cmdDaemon "$scriptAbsoluteLocation"
+}
+
+_launchDaemon() {
+	_start
+	
+	_killDaemon
+	
+	
+	_execDaemon
+	while _daemonStatus
+	do
+		sleep 5
+	done
+	
+	
+	
+	_stop
 }
 
 #Remote TERM signal wrapper. Verifies script is actually running at the specified PID before passing along signal to trigger an emergency stop.
@@ -6664,7 +6727,7 @@ _ethereum_status() {
 }
 
 _ethereum_mine() {
-	_ethereum_home "$scriptBin"/ethminer -G --farm-recheck 200 -S eu1.ethermine.org:4444 -FS us1.ethermine.org:4444 -O "$ethaddr"."$rigname"
+	_ethereum_home xterm -e "$scriptBin"/ethminer -G --farm-recheck 200 -S eu1.ethermine.org:4444 -FS us1.ethermine.org:4444 -O "$ethaddr"."$rigname"
 }
 
 _ethereum_mine_status() {
@@ -6794,11 +6857,10 @@ export bootTmp="$scriptLocal"			#Fail-Safe
 [[ -d /dev/shm ]] && export bootTmp=/dev/shm	#Typical Linux
 
 #Process control.
-[[ "$pidFile" == "" ]] && export pidFile="$safeTmp"/.pid
+export pidFile="$safeTmp"/.pid
 export uPID="cwrxuk6wqzbzV6p8kPS8J4APYGX"	#Invalid do-not-match default.
 
-[[ "$daemonPidFile" == "" ]] && export daemonPidFile="$scriptLocal"/.bgpid
-export daemonPID="cwrxuk6wqzbzV6p8kPS8J4APYGX"	#Invalid do-not-match default.
+export daemonPidFile="$scriptLocal"/.bgpid
 
 #export varStore="$scriptAbsoluteFolder"/var
 
@@ -6909,6 +6971,7 @@ export hostMemoryQuantity="$hostMemoryTotal"
 
 
 #Machine allocation defaults.
+export vmMemoryAllocationDefault=96
 [[ "$hostMemoryQuantity" -gt "500000" ]] && export vmMemoryAllocationDefault=256
 [[ "$hostMemoryQuantity" -gt "800000" ]] && export vmMemoryAllocationDefault=512
 [[ "$hostMemoryQuantity" -gt "1500000" ]] && export vmMemoryAllocationDefault=896
@@ -6919,9 +6982,6 @@ export hostMemoryQuantity="$hostMemoryTotal"
 [[ "$hostMemoryQuantity" -gt "8000000" ]] && export vmMemoryAllocationDefault=1256
 [[ "$hostMemoryQuantity" -gt "12000000" ]] && export vmMemoryAllocationDefault=1512
 [[ "$hostMemoryQuantity" -gt "16000000" ]] && export vmMemoryAllocationDefault=1512
-
-[[ "$vmMemoryAllocationDefault" == "" ]] && export vmMemoryAllocationDefault=96
-
 
 
 _prepareFakeHome() {
@@ -7255,6 +7315,8 @@ _start() {
 	
 	echo $$ > "$safeTmp"/.pid
 	
+	[[ "$isDaemon" == "true" ]] && echo "$$" >> "$daemonPidFile"
+	
 	_start_prog
 }
 
@@ -7280,13 +7342,10 @@ _stop() {
 	_safeRMR "$safeTmp"
 	_safeRMR "$shortTmp"
 	
-	#Daemon uses a separate instance, and will not be affected by previous actions.
-	_tryExec _killDaemon
-	
-	_tryExec _stop_virtLocal
-	
 	#Optionally always try to remove any systemd shutdown hook.
 	#_tryExec _unhook_systemd_shutdown
+	
+	_stop_prog
 	
 	if [[ "$1" != "" ]]
 	then
@@ -7294,8 +7353,6 @@ _stop() {
 	else
 		exit 0
 	fi
-	
-	_stop_prog
 }
 
 #Do not overload this unless you know why you need it instead of _stop_prog.
@@ -7311,6 +7368,12 @@ _stop_emergency() {
 	
 	#Not yet using _tryExec since this function would typically result from user intervention, or system shutdown, both emergency situations in which an error message would be ignored if not useful. Higher priority is guaranteeing execution if needed and available.
 	_closeChRoot_emergency
+	
+	#Daemon uses a separate instance, and will not be affected by previous actions, possibly even if running in the foreground.
+	#jobs -p >> "$daemonPidFile"
+	_tryExec _killDaemon
+	
+	_tryExec _stop_virtLocal
 	
 	_stop_emergency_prog
 	

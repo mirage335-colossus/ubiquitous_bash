@@ -13,6 +13,8 @@ _start() {
 	
 	echo $$ > "$safeTmp"/.pid
 	
+	[[ "$isDaemon" == "true" ]] && echo "$$" >> "$daemonPidFile"
+	
 	_start_prog
 }
 
@@ -38,13 +40,10 @@ _stop() {
 	_safeRMR "$safeTmp"
 	_safeRMR "$shortTmp"
 	
-	#Daemon uses a separate instance, and will not be affected by previous actions.
-	_tryExec _killDaemon
-	
-	_tryExec _stop_virtLocal
-	
 	#Optionally always try to remove any systemd shutdown hook.
 	#_tryExec _unhook_systemd_shutdown
+	
+	_stop_prog
 	
 	if [[ "$1" != "" ]]
 	then
@@ -52,8 +51,6 @@ _stop() {
 	else
 		exit 0
 	fi
-	
-	_stop_prog
 }
 
 #Do not overload this unless you know why you need it instead of _stop_prog.
@@ -69,6 +66,12 @@ _stop_emergency() {
 	
 	#Not yet using _tryExec since this function would typically result from user intervention, or system shutdown, both emergency situations in which an error message would be ignored if not useful. Higher priority is guaranteeing execution if needed and available.
 	_closeChRoot_emergency
+	
+	#Daemon uses a separate instance, and will not be affected by previous actions, possibly even if running in the foreground.
+	#jobs -p >> "$daemonPidFile"
+	_tryExec _killDaemon
+	
+	_tryExec _stop_virtLocal
 	
 	_stop_emergency_prog
 	

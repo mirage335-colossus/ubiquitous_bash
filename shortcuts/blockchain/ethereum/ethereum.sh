@@ -11,7 +11,7 @@ _ethereum_status() {
 }
 
 _ethereum_mine() {
-	_ethereum_home "$scriptBin"/ethminer -G --farm-recheck 200 -S eu1.ethermine.org:4444 -FS us1.ethermine.org:4444 -O "$ethaddr"."$rigname"
+	_ethereum_home xterm -e "$scriptBin"/ethminer -G --farm-recheck 200 -S eu1.ethermine.org:4444 -FS us1.ethermine.org:4444 -O "$ethaddr"."$rigname"
 }
 
 _ethereum_mine_status() {

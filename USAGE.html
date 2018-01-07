@@ -507,7 +507,7 @@ Also see [[AdvancedOptions]]</pre>
 </div>
 <!--POST-SHADOWAREA-->
 <div id="storeArea">
-<div title="Blockchain" creator="mirage335" modifier="mirage335" created="201801042119" modified="201801070010" changecount="9">
+<div title="Blockchain" creator="mirage335" modifier="mirage335" created="201801042119" modified="201801070258" changecount="10">
 <pre>Blockchains are distributed, verifiable databases commonly used to implement cryptocurrency.
 
 !geth
@@ -543,10 +543,14 @@ User interface for parity can be accessed through the browser launcher.
 //}}}
 
 !ethminer
-Configure address by writing &quot;_local/ops&quot; file.
+Configure address and daemon by writing &quot;_local/ops&quot; file.
 //{{{
 export ethaddr=hexStringAddress
 export rigname=unknown
+
+_main() {
+	_ethereum_mine
+}
 //}}}
 
 Run ethminer.
