@@ -553,11 +553,7 @@ _killDaemon() {
 }
 
 _cmdDaemon() {
-	_daemonStatus && return 1
-	
-	export isDaemon="true"
-	
-	echo "$$" >> "$daemonPidFile"
+	export isDaemon=true
 	
 	"$@" &
 	
@@ -567,9 +563,8 @@ _cmdDaemon() {
 
 #Executes self in background (ie. as daemon).
 _execDaemon() {
-	_daemonStatus && return 1
-	export isDaemon="true"
-	echo "$$" >> "$daemonPidFile"
+	#_daemonStatus && return 1
+	
 	_cmdDaemon "$scriptAbsoluteLocation"
 }
 
@@ -584,6 +579,8 @@ _launchDaemon() {
 	do
 		sleep 5
 	done
+	
+	
 	
 	
 	
@@ -7315,8 +7312,6 @@ _start() {
 	
 	echo $$ > "$safeTmp"/.pid
 	
-	[[ "$isDaemon" == "true" ]] && echo "$$" >> "$daemonPidFile"
-	
 	_start_prog
 }
 
@@ -8105,6 +8100,8 @@ _main() {
 }
 
 #####Overrides
+
+[[ "$isDaemon" == "true" ]] && echo "$$" >> "$daemonPidFile"
 
 #Traps, if script is not imported into existing shell, or bypass requested.
 if ! [[ "${BASH_SOURCE[0]}" != "${0}" ]] || ! [[ "$1" != "--bypass" ]]

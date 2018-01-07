@@ -13,8 +13,6 @@ _start() {
 	
 	echo $$ > "$safeTmp"/.pid
 	
-	[[ "$isDaemon" == "true" ]] && echo "$$" >> "$daemonPidFile"
-	
 	_start_prog
 }
 

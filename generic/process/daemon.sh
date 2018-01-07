@@ -62,11 +62,7 @@ _killDaemon() {
 }
 
 _cmdDaemon() {
-	_daemonStatus && return 1
-	
-	export isDaemon="true"
-	
-	echo "$$" >> "$daemonPidFile"
+	export isDaemon=true
 	
 	"$@" &
 	
@@ -76,9 +72,8 @@ _cmdDaemon() {
 
 #Executes self in background (ie. as daemon).
 _execDaemon() {
-	_daemonStatus && return 1
-	export isDaemon="true"
-	echo "$$" >> "$daemonPidFile"
+	#_daemonStatus && return 1
+	
 	_cmdDaemon "$scriptAbsoluteLocation"
 }
 
@@ -93,6 +88,8 @@ _launchDaemon() {
 	do
 		sleep 5
 	done
+	
+	
 	
 	
 	
