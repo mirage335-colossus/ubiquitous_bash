@@ -1,0 +1,4 @@
+[Desktop Entry]
+Exec=/path/to/blockchain/ubiquitous_bash.sh _idle
+Icon=exec
+Type=Application
