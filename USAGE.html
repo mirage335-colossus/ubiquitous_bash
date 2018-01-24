@@ -579,7 +579,7 @@ See status of miner in browser.
 
 </pre>
 </div>
-<div title="Command" creator="mirage335" modifier="mirage335" created="201710261745" modified="201712260306" changecount="37">
+<div title="Command" creator="mirage335" modifier="mirage335" created="201710261745" modified="201801240657" changecount="39">
 <pre>Internal functions and variables can be directly accessed externally. All implementation code provided by &quot;structure/overrides.sh&quot;.
 
 
@@ -601,6 +601,11 @@ Program code will not be reached if importing into the current shell - no action
 An import directive for Ubiquitous Bash functions and global variables can be automatically installed to a user's &quot;.bashrc&quot; file.
 //{{{
 ./ubiquitous_bash.sh _setupUbiquitous
+//}}}
+
+Once installed, the shell environment's function set may be updated from git by calling the same function, now available directly as a normal shell command.
+//{{{
+_setupUbiquitous
 //}}}
 
 Certain functions will be automatically executed, for example, to provide a more informative and separative bash prompt. All are documented as commands in the &quot;_importShortcuts&quot; function.
