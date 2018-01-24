@@ -1874,6 +1874,10 @@ _editShortHome() {
 	_editFakeHome_sequence "$@"
 }
 
+_shortHome() {
+	_userShortHome
+}
+
 _test_image() {
 	_mustGetSudo
 	

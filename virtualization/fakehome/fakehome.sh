@@ -262,3 +262,7 @@ _editShortHome() {
 	
 	_editFakeHome_sequence "$@"
 }
+
+_shortHome() {
+	_userShortHome
+}
