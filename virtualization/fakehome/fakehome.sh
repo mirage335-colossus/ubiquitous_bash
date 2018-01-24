@@ -264,5 +264,5 @@ _editShortHome() {
 }
 
 _shortHome() {
-	_userShortHome
+	_userShortHome "$@"
 }

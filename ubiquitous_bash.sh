@@ -1875,7 +1875,7 @@ _editShortHome() {
 }
 
 _shortHome() {
-	_userShortHome
+	_userShortHome "$@"
 }
 
 _test_image() {
