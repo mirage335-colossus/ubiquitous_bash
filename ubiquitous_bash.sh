@@ -1634,6 +1634,21 @@ _resetFakeHomeEnv() {
 	_resetFakeHomeEnv_nokeep
 }
 
+_prepareAppHome() {
+	mkdir -p "$globalFakeHome"
+	mkdir -p "$instancedFakeHome"
+
+	mkdir -p "$scriptLocal"/app/.app
+
+	_relink "$scriptLocal"/app/.app "$globalFakeHome"/.app
+
+	_relink "$scriptLocal"/app/.app "$instancedFakeHome"/.app
+}
+
+_setShortHome() {
+	export instancedFakeHome="$shortTmp"/h
+}
+
 _setFakeHomeEnv_extra() {
 	true
 }
@@ -1841,6 +1856,22 @@ _memFakeHome() {
 #For internal use.
 _selfFakeHome() {
 	"$scriptAbsoluteLocation" _userFakeHome "$scriptAbsoluteLocation" "$@"
+}
+
+_userShortHome() {
+	_setShortHome
+	
+	_prepareAppHome
+	
+	_userFakeHome_sequence "$@"
+}
+
+_editShortHome() {
+	_setShortHome
+	
+	_prepareAppHome
+	
+	_editFakeHome_sequence "$@"
 }
 
 _test_image() {

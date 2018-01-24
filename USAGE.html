@@ -2371,7 +2371,7 @@ apt-get install virtualbox-guest-dkms virtualbox-guest-x11 linux-headers-$(uname
 usermod -G vboxsf -a user
 //}}}</pre>
 </div>
-<div title="Virtualization" creator="mirage335" modifier="mirage335" created="201710270206" modified="201712310553" changecount="122">
+<div title="Virtualization" creator="mirage335" modifier="mirage335" created="201710270206" modified="201801240549" changecount="134">
 <pre>Ubiquitous Bash middleware has the capacity to provide true application virtualization, with automatic fileparameter translation, across a wide variety of platforms (x86/64, ARM), and operating systems (MSW, Unix), by using any available underlying tool (~ChRoot, QEMU, Xen, ~VirtualBox, Docker, Wine, Cygwin, &lt;nowiki&gt;DosBox&lt;/nowiki&gt;), on a common disk format (raw image). Most of this capability has been realized, most of the remainder will involve simply merging existing code from [[HostedXen|https://github.com/mirage335/HostedXen]], [[HostedOpenVZ|https://github.com/mirage335/hostedOpenVZ]]. Automatic selection of native application by platform is also well supported.
 
 &lt;&lt;showtoc&gt;&gt;
@@ -2608,6 +2608,25 @@ Same as user, but on a ramdisk. Requires effective root.
 _memFakeHome firefox --no-remote
 //}}}
 
+!!Short
+Some applications (eg. gpg) will not operate correctly if the &quot;$HOME&quot; variable contains a long path. As a workaround, a directory in &quot;/tmp&quot; can be used instead of the default &quot;_local/h&quot;.
+//{{{
+_userShortHome
+//}}}
+
+Because symlinks will generally be deferenced if used as &quot;$HOME&quot;, this workaround necessitates symlinking specific application's configuration directories. Further, &quot;_editShortHome&quot; actually disables the workaround, only serving to hook the &quot;_prepareAppHome&quot; function.
+
+Override the example &quot;_prepareAppHome&quot; in &quot;ops&quot; or elsewhere as appropriate for specific applications.
+//{{{
+_setShortHome
+
+_prepareAppHome
+
+_userFakeHome_sequence
+//}}}
+
+As a useful convention, consider using the &quot;_local/app&quot; default for persistent app configuration directories, unless a specific type of application for integration with meta-applications is to be denoted (ie. blockchain).
+
 !!Keep Fake Home
 Causes the ~/.bashrc hook installed with _setupUbiquitous to or not to reset ~FakeHome environment overrides. This will cause a terminal, opened from an emacs session under userFakeHome, to see the original HOME directory.
 //{{{
@@ -2615,6 +2634,7 @@ Causes the ~/.bashrc hook installed with _setupUbiquitous to or not to reset ~Fa
 export keepFakeHome=&quot;false&quot;
 _userFakeHome emacs
 //}}}
+
 </pre>
 </div>
 <div title="defaults" creator="YourName" modifier="mirage335" created="201502280426" modified="201710261734" tags="systemConfig" changecount="9">
