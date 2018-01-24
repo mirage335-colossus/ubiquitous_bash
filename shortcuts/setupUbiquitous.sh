@@ -20,6 +20,10 @@ _importShortcuts() {
 	_visualPrompt
 }
 
+_cloneUbiquitous() {
+	[[ "$nonet" != "true" ]] && type git > /dev/null 2>&1 && git clone git@github.com:mirage335/ubiquitous_bash.git
+}
+
 _setupUbiquitous() {
 	local ubHome
 	ubHome="$HOME"
@@ -44,7 +48,7 @@ _setupUbiquitous() {
 	[[ ! -d "$ubcoreDir" ]] && return 1
 	cd "$ubcoreDir"
 	
-	[[ "$nonet" != "true" ]] && type git > /dev/null 2>&1 && git clone git@github.com:mirage335/ubiquitous_bash.git
+	_cloneUbiquitous
 	mkdir -p "$ubcoreUBdir"
 	
 	if [[ ! -e "$ubcoreUBdir"/ubiquitous_bash.sh ]]
@@ -69,6 +73,8 @@ _setupUbiquitous() {
 	fi
 	
 	cd "$outerPWD"
+	
+	return 0
 }
 
 _setupUbiquitous_nonet() {
@@ -77,4 +83,8 @@ _setupUbiquitous_nonet() {
 	export nonet="true"
 	_setupUbiquitous "$@"
 	[[ "$oldNoNet" != "true" ]] && export nonet="$oldNoNet"
+}
+
+_upgradeUbiquitous() {
+	_setupUbiquitous
 }
