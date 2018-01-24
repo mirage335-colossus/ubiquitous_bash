@@ -40,9 +40,11 @@ _setupUbiquitous() {
 	then
 		cd "$ubcoreUBdir"
 		[[ "$nonet" != "true" ]] && type git > /dev/null 2>&1 && git pull
-		echo "Import new functionality into current shell."
+		echo "Import new functionality into current shell if not in current shell."
 		echo ". "'"'"$scriptAbsoluteLocation"'"'
 		cd "$outerPWD"
+		
+		. "$scriptAbsoluteLocation"
 		return 0
 	fi
 	
