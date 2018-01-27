@@ -104,6 +104,7 @@ _test() {
 	_tryExec "_test_daemon"
 	
 	_tryExec "_testFindPort"
+	_tryExec "_testProxyRouter"
 	
 	#_tryExec "_test_build"
 	

@@ -155,6 +155,10 @@ _deps_notLean() {
 	export enUb_notLean="true"
 }
 
+_deps_proxy() {
+	export enUb_proxy="true"
+}
+
 _deps_x11() {
 	_deps_notLean
 	export enUb_x11="true"
@@ -241,6 +245,8 @@ _deps_fakehome
 
 _deps_blockchain
 
+_deps_proxy
+
 #####
 
 
@@ -287,6 +293,9 @@ includeScriptList+=( "generic/process"/remotesig.sh )
 includeScriptList+=( "generic/net"/fetch.sh )
 
 includeScriptList+=( "generic/net"/findport.sh )
+
+[[ "$enUb_proxy" == "true" ]] && includeScriptList+=( "generic/net"/here_proxyrouter.sh )
+[[ "$enUb_proxy" == "true" ]] && includeScriptList+=( "generic/net"/proxyrouter.sh )
 
 includeScriptList+=( "generic"/uid.sh )
 
