@@ -6586,8 +6586,13 @@ _importShortcuts() {
 	_visualPrompt
 }
 
-_cloneUbiquitous() {
+_gitClone_ubiquitous() {
 	[[ "$nonet" != "true" ]] && type git > /dev/null 2>&1 && git clone git@github.com:mirage335/ubiquitous_bash.git
+}
+
+_cloneUbiquitous() {
+	"$scriptBin"/.ubrgbin.sh _ubrgbin_cpA "$scriptBin" "$ubcoreUBdir"/
+	cp -a "$scriptAbsoluteLocation" "$ubcoreUBdir"/ubiquitous_bash.sh
 }
 
 _setupUbiquitous() {
@@ -6606,6 +6611,12 @@ _setupUbiquitous() {
 	then
 		cd "$ubcoreUBdir"
 		[[ "$nonet" != "true" ]] && type git > /dev/null 2>&1 && git pull
+		
+		if ! [[ "$nonet" != "true" ]] || ! type git > /dev/null 2>&1
+		then
+			_cloneUbiquitous
+		fi
+		
 		echo "Import new functionality into current shell if not in current shell."
 		echo ". "'"'"$scriptAbsoluteLocation"'"'
 		cd "$outerPWD"
@@ -6618,13 +6629,12 @@ _setupUbiquitous() {
 	[[ ! -d "$ubcoreDir" ]] && return 1
 	cd "$ubcoreDir"
 	
-	_cloneUbiquitous
+	_gitClone_ubiquitous
 	mkdir -p "$ubcoreUBdir"
 	
 	if [[ ! -e "$ubcoreUBdir"/ubiquitous_bash.sh ]]
 	then
-		"$scriptBin"/.ubrgbin.sh _ubrgbin_cpA "$scriptBin" "$ubcoreUBdir"/
-		cp -a "$scriptAbsoluteLocation" "$ubcoreUBdir"/ubiquitous_bash.sh
+		_cloneUbiquitous
 	fi
 	
 	mkdir -p "$ubHome"/_bin/

@@ -143,7 +143,12 @@ _includeScripts() {
 # DANGER
 #Especially, be careful to explicitly check all prerequsites for _safeRMR are in place.
 
+_deps_git() {
+	export enUb_git="true"
+}
+
 _deps_notLean() {
+	_deps_git
 	export enUb_notLean="true"
 }
 
@@ -244,7 +249,7 @@ includeScriptList+=( "generic"/minimalheader.sh )
 #####Essential Utilities
 includeScriptList+=( "labels"/utilitiesLabel.sh )
 
-[[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "generic"/showCommand.sh )
+includeScriptList+=( "generic"/showCommand.sh )
 
 includeScriptList+=( "generic/filesystem"/absolutepaths.sh )
 
@@ -351,8 +356,8 @@ includeScriptList+=( "labels"/shortcutsLabel.sh )
 
 [[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "shortcuts/dev/app"/devemacs.sh )
 
-[[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "shortcuts/git"/git.sh )
-[[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "shortcuts/git"/gitBare.sh )
+[[ "$enUb_git" == "true" ]] && includeScriptList+=( "shortcuts/git"/git.sh )
+[[ "$enUb_git" == "true" ]] && includeScriptList+=( "shortcuts/git"/gitBare.sh )
 
 [[ "$enUb_image" == "true" ]] && includeScriptList+=( "shortcuts/mkboot"/here_mkboot.sh )
 [[ "$enUb_image" == "true" ]] && includeScriptList+=( "shortcuts/mkboot"/mkboot.sh )
@@ -362,10 +367,10 @@ includeScriptList+=( "labels"/shortcutsLabel.sh )
 [[ "$enUb_QEMU" == "true" ]] && includeScriptList+=( "shortcuts/distro/debian"/createDebian.sh )
 [[ "$enUb_image" == "true" ]] && includeScriptList+=( "shortcuts/distro/raspbian"/createRaspbian.sh )
 
-[[ "$enUb_msw" == "true" ]] && includeScriptList+=( "shortcuts/msw"/msw.sh )
+[[ "$enUb_msw" == "true" ]] && includeScriptList+=( "shortcuts/distro/msw"/msw.sh )
 
 
-[[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "shortcuts/prompt"/visualPrompt.sh )
+includeScriptList+=( "shortcuts/prompt"/visualPrompt.sh )
 
 [[ "$enUb_x11" == "true" ]] && includeScriptList+=( "shortcuts/x11"/testx11.sh )
 [[ "$enUb_x11" == "true" ]] && includeScriptList+=( "shortcuts/x11/clipboard"/x11ClipboardImage.sh )
@@ -383,7 +388,7 @@ includeScriptList+=( "labels"/shortcutsLabel.sh )
 
 [[ "$enUb_image" == "true" ]] && includeScriptList+=( "shortcuts/image"/gparted.sh )
 
-[[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "shortcuts"/setupUbiquitous.sh )
+includeScriptList+=( "shortcuts"/setupUbiquitous.sh )
 
 [[ "$enUb_blockchain" == "true" ]] && includeScriptList+=( "blockchain"/blockchain.sh )
 [[ "$enUb_blockchain" == "true" ]] && includeScriptList+=( "blockchain/ethereum"/ethereum.sh )
