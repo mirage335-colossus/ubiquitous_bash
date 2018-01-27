@@ -80,6 +80,7 @@ export ubiquitiousLibDir="."
 [[ -e "./_lib/ubiquitous_bash" ]] && export ubiquitiousLibDir="./_lib/ubiquitous_bash"
 export progDir="./_prog"
 export progScript="./ubiquitous_bash.sh"
+export configDir="./_config"
 
 #"$1" == file path
 _includeFile() {
@@ -99,16 +100,18 @@ _includeFile() {
 _includeScript() {
 
 	local includeScriptFilename=$(basename "$1")
-	local includeScribtSubdirectory=$(dirname "$1")
+	local includeScriptSubdirectory=$(dirname "$1")
 	
 	
-	_includeFile "$progDir"/"$includeScribtSubdirectory"/"$includeScriptFilename" && return 0
+	_includeFile "$progDir"/"$includeScriptSubdirectory"/"$includeScriptFilename" && return 0
 	
 	_includeFile "$progDir"/"$includeScriptFilename" && return 0
 	
-	_includeFile "$ubiquitiousLibDir"/"$includeScribtSubdirectory"/"$includeScriptFilename" && return 0
+	_includeFile "$ubiquitiousLibDir"/"$includeScriptSubdirectory"/"$includeScriptFilename" && return 0
 	
 	_includeFile "$ubiquitiousLibDir"/"$includeScriptFilename" && return 0
+	
+	_includeFile "$configDir"/"$includeScriptFilename" && return 0
 	
 }
 
@@ -245,6 +248,7 @@ _deps_blockchain
 rm "$progScript" >/dev/null 2>&1
 
 includeScriptList+=( "generic"/minimalheader.sh )
+includeScriptList+=( progheader.sh )
 
 #####Essential Utilities
 includeScriptList+=( "labels"/utilitiesLabel.sh )
@@ -395,6 +399,9 @@ includeScriptList+=( "shortcuts"/setupUbiquitous.sh )
 [[ "$enUb_blockchain" == "true" ]] && includeScriptList+=( "shortcuts/blockchain/ethereum"/ethereum.sh )
 
 [[ "$enUb_blockchain" == "true" ]] && includeScriptList+=( "blockchain/ethereum"/ethereum_parity.sh )
+
+#####Hardcoded
+includeScriptList+=( netvars.sh )
 
 #####Basic Variable Management
 includeScriptList+=( "labels"/basicvarLabel.sh )
