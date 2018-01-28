@@ -1,6 +1,7 @@
 #####Network Specific Variables
 #Statically embedded into monolithic cautossh script by compile script .
 
+# WARNING Must use unique netName!
 export netName=default
 export gatewayName="$netName"-gw
 export LOCALSSHPORT=22

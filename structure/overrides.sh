@@ -27,6 +27,10 @@ if [[ -e "$scriptLocal"/ops ]]
 then
 	. "$scriptLocal"/ops
 fi
+if [[ -e "$scriptLocal"/ssh/ops ]]
+then
+	. "$scriptLocal"/ssh/ops
+fi
 
 #WILL BE OVERWRITTEN FREQUENTLY.
 #Intended for automatically generated shell code identifying usable resources, such as unused network ports. Do NOT use for serialization of internal variables (use $varStore for that).
@@ -37,6 +41,10 @@ fi
 if [[ -e "$scriptLocal"/opsauto ]]
 then
 	. "$scriptLocal"/opsauto
+fi
+if [[ -e "$scriptLocal"/ssh/opsauto ]]
+then
+	. "$scriptLocal"/ssh/opsauto
 fi
 
 #Launch internal functions as commands.

@@ -23,7 +23,7 @@ _torServer_SSH_writeCfg() {
 		
 		echo "HiddenServiceDir "'"'"$scriptLocal"/tor/sshd/"$currentReversePort"/'"' >> "$scriptLocal"/tor/sshd/dd/torrc
 		
-		echo "HiddenServicePort ""$currentReversePort"" 127.0.0.1:22" >> "$scriptLocal"/tor/sshd/dd/torrc
+		echo "HiddenServicePort ""$currentReversePort"" 127.0.0.1:""$LOCALSSHPORT" >> "$scriptLocal"/tor/sshd/dd/torrc
 		
 		echo  >> "$scriptLocal"/tor/sshd/dd/torrc
 		

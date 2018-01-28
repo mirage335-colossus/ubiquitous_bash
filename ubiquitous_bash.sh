@@ -336,6 +336,11 @@ _relink() {
 	return 1
 }
 
+#Copies files only if source/destination do match. Keeps files in a completely written state as often as possible.
+_cpDiff() {
+	! diff "$1" "$2" > /dev/null 2>&1 && cp "$1" "$2"
+}
+
 _test_bashdb() {
 	#_getDep ddd
 	
@@ -764,7 +769,7 @@ _torServer_SSH_writeCfg() {
 		
 		echo "HiddenServiceDir "'"'"$scriptLocal"/tor/sshd/"$currentReversePort"/'"' >> "$scriptLocal"/tor/sshd/dd/torrc
 		
-		echo "HiddenServicePort ""$currentReversePort"" 127.0.0.1:22" >> "$scriptLocal"/tor/sshd/dd/torrc
+		echo "HiddenServicePort ""$currentReversePort"" 127.0.0.1:""$LOCALSSHPORT" >> "$scriptLocal"/tor/sshd/dd/torrc
 		
 		echo  >> "$scriptLocal"/tor/sshd/dd/torrc
 		
@@ -836,16 +841,6 @@ _torServer_SSH() {
 
 
 
-_here_proxyrouter_sshconfig_header() {
-	cat << 'CZXWXcRMTo8EmM8i4d'
-CanonicalizeHostname yes
-
-Host *.onion
-	VerifyHostKeyDNS no
-	ProxyCommand nc -x localhost:9050 -X 5 %h %p
-
-CZXWXcRMTo8EmM8i4d
-}
 
 
 _testProxyRouter_sequence() {
@@ -889,30 +884,30 @@ _proxy() {
 	nc "$proxyTargetHost" "$proxyTargetPort"
 }
 
-_writeSSH_machine() {
-	_here_proxyrouter_sshconfig_header
+_setup_ssh() {
+	! [[ -e ~/.ssh ]] && mkdir -p ~/.ssh && chmod 700 ~/.ssh
+	! [[ -e ~/.ssh/"$ubiquitiousBashID" ]] && mkdir -p ~/.ssh/"$ubiquitiousBashID" && chmod 700 ~/.ssh/"$ubiquitiousBashID"
+	! [[ -e ~/.ssh/"$ubiquitiousBashID"/"$netName" ]] && mkdir -p ~/.ssh/"$ubiquitiousBashID"/"$netName" && chmod 700 ~/.ssh/"$ubiquitiousBashID"/"$netName"
+	
+	! grep "$ubiquitiousBashID" ~/.ssh/config > /dev/null 2>&1 && echo "Include "'"'"~/.ssh/""$ubiquitiousBashID""/config"'"' >> ~/.ssh/config
+	
+	! grep "$netName" ~/.ssh/"$ubiquitiousBashID"/config > /dev/null 2>&1 && echo "Include "'"'"~/.ssh/""$ubiquitiousBashID""/""$netName""/config"'"' >> ~/.ssh/"$ubiquitiousBashID"/config
+	
+	_cpDiff "$scriptLocal"/ssh/config ~/.ssh/"$ubiquitiousBashID"/"$netName"/config
+	_cpDiff "$scriptLocal"/ssh/id_rsa ~/.ssh/"$ubiquitiousBashID"/"$netName"/id_rsa
+	_cpDiff "$scriptLocal"/ssh/id_rsa.pub ~/.ssh/"$ubiquitiousBashID"/"$netName"/id_rsa.pub
+	_cpDiff "$scriptLocal"/ssh/known_hosts ~/.ssh/"$ubiquitiousBashID"/"$netName"/known_hosts
+	
+	_cpDiff "$scriptAbsoluteLocation" ~/.ssh/"$ubiquitiousBashID"/"$netName"/cautossh
+	_cpDiff "$scriptLocal"/ssh/ops ~/.ssh/"$ubiquitiousBashID"/"$netName"/ops
+	
+	return 0
+	
 }
 
-_proxy_path_at_machine() {
-	mkdir -p "$safeTmp"/.ssh
-	_writeSSH_machine > "$safeTmp"/.ssh/config
-	
-	ssh -F "$safeTmp"/.ssh/config
-}
 
-#Example. WIP.
-_proxyrouter_machine() {
-	local sshProxyCommand
-	
-	_testRemotePort "$(machinePort)" _proxy_path_at_machine
-	
-	
-	
-}
 
-_proxyrouter() {
-	_proxyrouter_"$1"
-}
+
 
 #Generates random alphanumeric characters, default length 18.
 _uid() {
@@ -7082,6 +7077,7 @@ _parity_attach() {
 #####Network Specific Variables
 #Statically embedded into monolithic cautossh script by compile script .
 
+# WARNING Must use unique netName!
 export netName=default
 export gatewayName="$netName"-gw
 export LOCALSSHPORT=22
@@ -8200,6 +8196,8 @@ _test() {
 	_getDep true
 	_getDep false
 	
+	_getDep diff
+	
 	_tryExec "_test_daemon"
 	
 	_tryExec "_testFindPort"
@@ -8468,6 +8466,10 @@ if [[ -e "$scriptLocal"/ops ]]
 then
 	. "$scriptLocal"/ops
 fi
+if [[ -e "$scriptLocal"/ssh/ops ]]
+then
+	. "$scriptLocal"/ssh/ops
+fi
 
 #WILL BE OVERWRITTEN FREQUENTLY.
 #Intended for automatically generated shell code identifying usable resources, such as unused network ports. Do NOT use for serialization of internal variables (use $varStore for that).
@@ -8478,6 +8480,10 @@ fi
 if [[ -e "$scriptLocal"/opsauto ]]
 then
 	. "$scriptLocal"/opsauto
+fi
+if [[ -e "$scriptLocal"/ssh/opsauto ]]
+then
+	. "$scriptLocal"/ssh/opsauto
 fi
 
 #Launch internal functions as commands.

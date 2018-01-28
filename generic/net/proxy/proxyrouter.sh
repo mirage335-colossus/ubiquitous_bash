@@ -40,27 +40,27 @@ _proxy() {
 	nc "$proxyTargetHost" "$proxyTargetPort"
 }
 
-_writeSSH_machine() {
-	_here_proxyrouter_sshconfig_header
+_setup_ssh() {
+	! [[ -e ~/.ssh ]] && mkdir -p ~/.ssh && chmod 700 ~/.ssh
+	! [[ -e ~/.ssh/"$ubiquitiousBashID" ]] && mkdir -p ~/.ssh/"$ubiquitiousBashID" && chmod 700 ~/.ssh/"$ubiquitiousBashID"
+	! [[ -e ~/.ssh/"$ubiquitiousBashID"/"$netName" ]] && mkdir -p ~/.ssh/"$ubiquitiousBashID"/"$netName" && chmod 700 ~/.ssh/"$ubiquitiousBashID"/"$netName"
+	
+	! grep "$ubiquitiousBashID" ~/.ssh/config > /dev/null 2>&1 && echo "Include "'"'"~/.ssh/""$ubiquitiousBashID""/config"'"' >> ~/.ssh/config
+	
+	! grep "$netName" ~/.ssh/"$ubiquitiousBashID"/config > /dev/null 2>&1 && echo "Include "'"'"~/.ssh/""$ubiquitiousBashID""/""$netName""/config"'"' >> ~/.ssh/"$ubiquitiousBashID"/config
+	
+	_cpDiff "$scriptLocal"/ssh/config ~/.ssh/"$ubiquitiousBashID"/"$netName"/config
+	_cpDiff "$scriptLocal"/ssh/id_rsa ~/.ssh/"$ubiquitiousBashID"/"$netName"/id_rsa
+	_cpDiff "$scriptLocal"/ssh/id_rsa.pub ~/.ssh/"$ubiquitiousBashID"/"$netName"/id_rsa.pub
+	_cpDiff "$scriptLocal"/ssh/known_hosts ~/.ssh/"$ubiquitiousBashID"/"$netName"/known_hosts
+	
+	_cpDiff "$scriptAbsoluteLocation" ~/.ssh/"$ubiquitiousBashID"/"$netName"/cautossh
+	_cpDiff "$scriptLocal"/ssh/ops ~/.ssh/"$ubiquitiousBashID"/"$netName"/ops
+	
+	return 0
+	
 }
 
-_proxy_path_at_machine() {
-	mkdir -p "$safeTmp"/.ssh
-	_writeSSH_machine > "$safeTmp"/.ssh/config
-	
-	ssh -F "$safeTmp"/.ssh/config
-}
 
-#Example. WIP.
-_proxyrouter_machine() {
-	local sshProxyCommand
-	
-	_testRemotePort "$(machinePort)" _proxy_path_at_machine
-	
-	
-	
-}
 
-_proxyrouter() {
-	_proxyrouter_"$1"
-}
+

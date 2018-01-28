@@ -15,3 +15,8 @@ _relink() {
 	_rmlink "$2" && ln -s "$1" "$2" && return 0
 	return 1
 }
+
+#Copies files only if source/destination do match. Keeps files in a completely written state as often as possible.
+_cpDiff() {
+	! diff "$1" "$2" > /dev/null 2>&1 && cp "$1" "$2"
+}

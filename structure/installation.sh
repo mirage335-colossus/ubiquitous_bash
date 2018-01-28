@@ -101,6 +101,8 @@ _test() {
 	_getDep true
 	_getDep false
 	
+	_getDep diff
+	
 	_tryExec "_test_daemon"
 	
 	_tryExec "_testFindPort"
