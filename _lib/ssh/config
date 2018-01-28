@@ -1,6 +1,6 @@
 Host *-default
 	ExitOnForwardFailure yes
-	ConnectTimeout 24
+	ConnectTimeout 72
 	ConnectionAttempts 1
 	ServerAliveInterval 5
 	ServerAliveCountMax 5

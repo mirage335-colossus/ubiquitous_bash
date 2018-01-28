@@ -43,13 +43,13 @@ _proxy() {
 }
 
 #Enters remote server at hostname, by SSH, sets up a tunnel, checks tunnel for another SSH server.
-#"$1" == hostname
+#"$1" == host short name
 #"$2" == port
 _testRemotePort() {
 	local localPort
 	localPort=$(_findPort)
 	
-	_timeout 18 ssh -F "$sshDir"/config "$1" -L "$localPort":localhost:"$2" -N > /dev/null 2>&1 &
+	_timeout 18 _ssh "$1" -L "$localPort":localhost:"$2" -N > /dev/null 2>&1 &
 	sleep 2
 	nmap -Pn localhost -p "$localPort" -sV | grep 'ssh' > /dev/null 2>&1 && return 0
 	sleep 2
@@ -62,11 +62,62 @@ _testRemotePort() {
 	nmap -Pn localhost -p "$localPort" -sV | grep 'ssh' > /dev/null 2>&1 && return 0
 }
 
+#Launches proxy if remote port is open at hostname.
+#"$1" == host short name
+#"$2" == port
+_proxyRemotePort() {
+	if _testRemotePort "$1" "$2"
+	then
+		_ssh -q -W localhost:"$2" "$1"
+		_stop
+	fi
+	
+	return 0
+}
+
+#Checks all reverse port assignments through hostname, launches proxy if open.
+#"$1" == host short name
+_proxyRemote_reverse() {
+	_get_reversePorts "$1"
+	
+	local currentReversePort
+	for currentReversePort in "${matchingReversePorts[@]}"
+	do
+		_proxyRemotePort "$1" "$currentReversePort"
+	done
+}
+
 #Checks hostname for open port.
 #"$1" == hostname
 #"$2" == port
 _testPort() {
 	nmap -Pn "$1" -p "$2" | grep open > /dev/null 2>&1
+}
+
+#Launches proxy if port at hostname is open.
+#"$1" == hostname
+#"$2" == port
+_proxyPort() {
+	if _testPort "$1" "$2"
+	then
+		_proxy "$1" "$2"
+		_stop
+	fi
+	
+	return 0
+}
+
+#Checks all reverse port assignments, launches proxy if open.
+#"$1" == host short name
+#"$2" == hostname
+_proxyHost_reverse() {
+	_get_reversePorts "$1"
+	
+	local currentReversePort
+	for currentReversePort in "${matchingReversePorts[@]}"
+	do
+		_proxyPort "$2" "$currentReversePort"
+	done
 }
 
 _ssh() {
