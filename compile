@@ -294,8 +294,10 @@ includeScriptList+=( "generic/net"/fetch.sh )
 
 includeScriptList+=( "generic/net"/findport.sh )
 
-[[ "$enUb_proxy" == "true" ]] && includeScriptList+=( "generic/net"/here_proxyrouter.sh )
-[[ "$enUb_proxy" == "true" ]] && includeScriptList+=( "generic/net"/proxyrouter.sh )
+[[ "$enUb_proxy" == "true" ]] && includeScriptList+=( "generic/net/proxy/tor"/tor.sh )
+
+[[ "$enUb_proxy" == "true" ]] && includeScriptList+=( "generic/net/proxy"/here_proxyrouter.sh )
+[[ "$enUb_proxy" == "true" ]] && includeScriptList+=( "generic/net/proxy"/proxyrouter.sh )
 
 includeScriptList+=( "generic"/uid.sh )
 

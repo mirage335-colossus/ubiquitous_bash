@@ -9,20 +9,44 @@ export LOCALSSHPORT=22
 #[[ "$SSHUSER" == "" ]] && export SSHUSER=
 #[[ "$X11USER" == "" ]] && export X11USER=
 
-
 #Example ONLY. Modify port asignments.
-if [[ "$reversePort" == "" ]]
-then
-	export reversePort=20009
-	case $(hostname -s) in
-		alpha)
-			export reversePort=20000
-			;;
-		beta)
-			export reversePort=20001
-			export EMBEDDED=true
-			;;
-	esac
-fi
+_get_reversePorts() {
+	export matchingReversePorts
+	matchingReversePorts=()
+	export matchingEMBEDDED=false
+	
+	local matched
+	
+	local testHostname
+	testHostname="$1"
+	[[ "$testHostname" == "" ]] && testHostname=$(hostname -s)
+	
+	if [[ "$testHostname" == "alpha" ]] || [[ "$testHostname" == '*' ]]
+	then
+		matchingReversePorts+=( "20000" )
+		
+		matched=true
+	fi
+	
+	if [[ "$testHostname" == "beta" ]] || [[ "$testHostname" == '*' ]]
+	then
+		matchingReversePorts+=( "20001" )
+		export matchingEMBEDDED=true
+		
+		matched=true
+	fi
+	
+	if ! [[ "$matched" == "true" ]] || [[ "$testHostname" == '*' ]]
+	then
+		matchingReversePorts+=( "20008" )
+		matchingReversePorts+=( "20009" )
+	fi
+	
+	export matchingReversePorts
+}
+
+_get_reversePorts
+export reversePorts=("${matchingReversePorts[@]}")
+export EMBEDDED="$matchingEMBEDDED"
 
 export keepKeys=true
