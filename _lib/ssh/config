@@ -1,0 +1,19 @@
+Host *-default
+	ExitOnForwardFailure yes
+	ConnectTimeout 24
+	ConnectionAttempts 1
+	ServerAliveInterval 5
+	ServerAliveCountMax 5
+	#PubkeyAuthentication yes
+	#PasswordAuthentication no
+	StrictHostKeyChecking no
+	UserKnownHostsFile ~/.ssh/uk4uPhB663kVcygT0q/default/known_hosts
+	IdentityFile ~/.ssh/uk4uPhB663kVcygT0q/default/id_rsa
+	
+	Cipher aes256-gcm@openssh.com
+	Ciphers aes256-gcm@openssh.com,aes128-ctr,aes192-ctr,aes256-ctr,arcfour256,arcfour128,aes128-gcm@openssh.com,chacha20-poly1305@openssh.com,aes128-cbc,3des-cbc,blowfish-cbc,cast128-cbc,aes192-cbc,aes256-cbc,arcfour
+
+Host machine-default
+	User user
+	ProxyCommand ~/.ssh/uk4uPhB663kVcygT0q/default/cautossh _ssh_proxy_machine-default
+
