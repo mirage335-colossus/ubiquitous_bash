@@ -6,6 +6,8 @@ _validatePort() {
 }
 
 _testFindPort() {
+	_getDep ss
+	
 	local machineLowerPort=$(cat /proc/sys/net/ipv4/ip_local_port_range | cut -f1)
 	local machineUpperPort=$(cat /proc/sys/net/ipv4/ip_local_port_range | cut -f2)
 	
@@ -17,7 +19,9 @@ _testFindPort() {
 	[[ "$machineUpperPort" -gt "60999" ]] && echo "warn: high upper_port"
 	[[ "$machineUpperPort" -lt "60999" ]] && echo "warn: low upper_port"
 	
-	_validatePort && echo "invalid port discovery" && _stop 1
+	local testFoundPort
+	testFoundPort=$(_findPort)
+	! _validatePort "$testFoundPort" && echo "invalid port discovery" && _stop 1
 }
 
 

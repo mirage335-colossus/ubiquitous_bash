@@ -124,6 +124,25 @@ _ssh() {
 	ssh -F "$scriptLocal"/ssh/config "$@"
 }
 
+_vnc() {
+	_start
+	
+	let vncPort="${reversePorts[0]}"+20
+	
+	#https://wiki.archlinux.org/index.php/x11vnc#SSH_Tunnel
+	#ssh -t -L "$vncPort":localhost:"$vncPort" "$@" 'sudo x11vnc -display :0 -auth /home/USER/.Xauthority'
+	
+	"$scriptAbsoluteLocation" _ssh -C -c aes256-gcm@openssh.com -m hmac-sha1 -o ConnectTimeout=48 -o ConnectionAttempts=2 -o ServerAliveInterval=5 -o ServerAliveCountMax=5 -o ExitOnForwardFailure=yes -f -L "$vncPort":localhost:"$vncPort" "$@" 'x11vnc -localhost -rfbport '"$vncPort"' -timeout 8 -xkb -display :0 -auth /home/'"$X11USER"'/.Xauthority -noxrecord -noxdamage'
+	#-noxrecord -noxfixes -noxdamage
+	
+	sleep 3
+	
+	#vncviewer -encodings "copyrect tight zrle hextile" localhost:"$vncPort"
+	vncviewer localhost:"$vncPort"
+	
+	_stop
+}
+
 #Builtin version of ssh-copy-id.
 _ssh_copy_id() {
 	_start
@@ -170,6 +189,7 @@ _setup_ssh() {
 	return 0
 	
 }
+
 
 
 
