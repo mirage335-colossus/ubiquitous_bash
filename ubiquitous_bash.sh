@@ -1237,7 +1237,7 @@ _autossh() {
 }
 
 _reversessh() {
-	_ssh -R $reversePort:localhost:22 "$gatewayName" -N "$@"
+	_ssh -R "${reversePorts[0]}":localhost:22 "$gatewayName" -N "$@"
 }
 
 
