@@ -1,5 +1,5 @@
 #####Network Specific Variables
-#Statically embedded into monolithic cautossh script by compile script .
+#Statically embedded into monolithic ubiquitous_bash.sh/cautossh script by compile .
 
 # WARNING Must use unique netName!
 export netName=default

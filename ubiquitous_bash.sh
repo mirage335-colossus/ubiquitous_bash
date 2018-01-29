@@ -924,56 +924,14 @@ _proxyTor_reverse() {
 
 
 
-
-
-_testProxyRouter_sequence() {
-	_start
-	
-	local testPort
-	testPort=$(_findPort)
-	
-	_timeout 10 nc -l -p "$testPort" > "$safeTmp"/nctest &
-	
-	sleep 0.1 && ! echo PASS | nc localhost "$testPort" &&
-	sleep 0.3 && ! echo PASS | nc localhost "$testPort" &&
-	sleep 0.9 && ! echo PASS | nc localhost "$testPort" &&
-	sleep 3 && ! echo PASS | nc localhost "$testPort" &&
-	sleep 6 && ! echo PASS | nc localhost "$testPort" &&
-	false
-	! grep 'PASS' "$safeTmp"/nctest > /dev/null 2>&1 && _stop 1
-	
-	_stop 0
-}
-
-_testProxyRouter() {
-	_getDep nc
-	_getDep nmap
+_testProxySSH() {
 	_getDep ssh
-	
-	if "$scriptAbsoluteLocation" _testProxyRouter_sequence "$@"
-	then
-		return 0
-	fi
-	
-	_stop 1
-}
-
-#Routes standard in/out to a target host/port through netcat.
-_proxy_direct() {
-	local proxyTargetHost
-	local proxyTargetPort
-	
-	proxyTargetHost="$1"
-	proxyTargetPort="$2"
-	
-	#nc -q 96 "$proxyTargetHost" "$proxyTargetPort"
-	nc -q -1 "$proxyTargetHost" "$proxyTargetPort"
 }
 
 #Enters remote server at hostname, by SSH, sets up a tunnel, checks tunnel for another SSH server.
 #"$1" == host short name
 #"$2" == port
-_checkRemotePort() {
+_checkRemoteSSH() {
 	local localPort
 	localPort=$(_findPort)
 	
@@ -994,7 +952,7 @@ _checkRemotePort() {
 #"$1" == host short name
 #"$2" == port
 _proxySSH() {
-	if _checkRemotePort "$1" "$2"
+	if _checkRemoteSSH "$1" "$2"
 	then
 		_ssh -q -W localhost:"$2" "$1"
 		_stop
@@ -1012,39 +970,6 @@ _proxySSH_reverse() {
 	for currentReversePort in "${matchingReversePorts[@]}"
 	do
 		_proxySSH "$1" "$currentReversePort"
-	done
-}
-
-#Checks hostname for open port.
-#"$1" == hostname
-#"$2" == port
-_checkPort() {
-	nmap -Pn "$1" -p "$2" | grep open > /dev/null 2>&1
-}
-
-#Launches proxy if port at hostname is open.
-#"$1" == hostname
-#"$2" == port
-_proxy() {
-	if _checkPort "$1" "$2"
-	then
-		_proxy_direct "$1" "$2"
-		_stop
-	fi
-	
-	return 0
-}
-
-#Checks all reverse port assignments, launches proxy if open.
-#"$1" == host short name
-#"$2" == hostname
-_proxy_reverse() {
-	_get_reversePorts "$1"
-	
-	local currentReversePort
-	for currentReversePort in "${matchingReversePorts[@]}"
-	do
-		_proxy "$2" "$currentReversePort"
 	done
 }
 
@@ -1116,11 +1041,87 @@ _setup_ssh() {
 	
 	return 0
 	
+} 
+
+ 
+
+
+
+_testProxyRouter_sequence() {
+	_start
+	
+	local testPort
+	testPort=$(_findPort)
+	
+	_timeout 10 nc -l -p "$testPort" > "$safeTmp"/nctest &
+	
+	sleep 0.1 && ! echo PASS | nc localhost "$testPort" &&
+	sleep 0.3 && ! echo PASS | nc localhost "$testPort" &&
+	sleep 0.9 && ! echo PASS | nc localhost "$testPort" &&
+	sleep 3 && ! echo PASS | nc localhost "$testPort" &&
+	sleep 6 && ! echo PASS | nc localhost "$testPort" &&
+	false
+	! grep 'PASS' "$safeTmp"/nctest > /dev/null 2>&1 && _stop 1
+	
+	_stop 0
 }
 
+_testProxyRouter() {
+	_getDep nc
+	_getDep nmap
+	
+	if "$scriptAbsoluteLocation" _testProxyRouter_sequence "$@"
+	then
+		return 0
+	fi
+	
+	_stop 1
+}
 
+#Routes standard in/out to a target host/port through netcat.
+_proxy_direct() {
+	local proxyTargetHost
+	local proxyTargetPort
+	
+	proxyTargetHost="$1"
+	proxyTargetPort="$2"
+	
+	#nc -q 96 "$proxyTargetHost" "$proxyTargetPort"
+	nc -q -1 "$proxyTargetHost" "$proxyTargetPort"
+}
 
+#Checks hostname for open port.
+#"$1" == hostname
+#"$2" == port
+_checkPort() {
+	nmap -Pn "$1" -p "$2" | grep open > /dev/null 2>&1
+}
 
+#Launches proxy if port at hostname is open.
+#"$1" == hostname
+#"$2" == port
+_proxy() {
+	if _checkPort "$1" "$2"
+	then
+		_proxy_direct "$1" "$2"
+		_stop
+	fi
+	
+	return 0
+}
+
+#Checks all reverse port assignments, launches proxy if open.
+#"$1" == host short name
+#"$2" == hostname
+_proxy_reverse() {
+	_get_reversePorts "$1"
+	
+	local currentReversePort
+	for currentReversePort in "${matchingReversePorts[@]}"
+	do
+		_proxy "$2" "$currentReversePort"
+	done
+}
 
 
 #Generates random alphanumeric characters, default length 18.
@@ -7289,7 +7290,7 @@ _parity_attach() {
 }
 
 #####Network Specific Variables
-#Statically embedded into monolithic cautossh script by compile script .
+#Statically embedded into monolithic ubiquitous_bash.sh/cautossh script by compile .
 
 # WARNING Must use unique netName!
 export netName=default
