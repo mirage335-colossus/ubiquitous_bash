@@ -889,7 +889,10 @@ _torServer_SSH_launch() {
 }
 
 _torServer_SSH() {
-	"$scriptAbsoluteLocation" _cmdDaemon _torServer_SSH_launch
+	mkdir -p "$scriptLocal"/ssh/log
+	local logID
+	logID=$(_uid)
+	"$scriptAbsoluteLocation" _cmdDaemon _torServer_SSH_launch "$@" >> "$scriptLocal"/ssh/log/_torServer_SSH."$logID".log 2>&1
 }
 
 _checkTorPort_sequence() {
@@ -1083,7 +1086,9 @@ _setup_ssh_extra() {
 	true
 }
 
-_setup_ssh() {
+_setup_ssh_sequence() {
+	_start
+	
 	! [[ -e ~/.ssh ]] && mkdir -p ~/.ssh && chmod 700 ~/.ssh
 	! [[ -e ~/.ssh/"$ubiquitiousBashID" ]] && mkdir -p ~/.ssh/"$ubiquitiousBashID" && chmod 700 ~/.ssh/"$ubiquitiousBashID"
 	! [[ -e ~/.ssh/"$ubiquitiousBashID"/"$netName" ]] && mkdir -p ~/.ssh/"$ubiquitiousBashID"/"$netName" && chmod 700 ~/.ssh/"$ubiquitiousBashID"/"$netName"
@@ -1103,6 +1108,10 @@ _setup_ssh() {
 	_cpDiff "$scriptLocal"/ssh/config ~/.ssh/"$ubiquitiousBashID"/"$netName"/config
 	cp -n "$scriptLocal"/ssh/id_rsa ~/.ssh/"$ubiquitiousBashID"/"$netName"/id_rsa
 	cp -n "$scriptLocal"/ssh/id_rsa.pub ~/.ssh/"$ubiquitiousBashID"/"$netName"/id_rsa.pub
+	
+	sort "$scriptLocal"/ssh/known_hosts ~/.ssh/"$ubiquitiousBashID"/"$netName"/known_hosts | uniq > "$safeTmp"/known_hosts_uniq
+	_cpDiff "$safeTmp"/known_hosts_uniq "$scriptLocal"/ssh/known_hosts
+	
 	_cpDiff "$scriptLocal"/ssh/known_hosts ~/.ssh/"$ubiquitiousBashID"/"$netName"/known_hosts
 	
 	_cpDiff "$scriptAbsoluteLocation" ~/.ssh/"$ubiquitiousBashID"/"$netName"/cautossh
@@ -1110,13 +1119,127 @@ _setup_ssh() {
 	
 	_setup_ssh_extra
 	
-	return 0
+	_stop
+}
+
+_setup_ssh() {
+	"$scriptAbsoluteLocation" _setup_ssh_sequence "$@"
+}
+
+#May be overridden by "ops" if multiple gateways are required.
+_ssh_autoreverse() {
+	_torServer_SSH
+	_autossh
 	
-} 
+	#_autossh firstGateway
+	#_autossh secondGateway
+}
 
 _testAutoSSH() {
 	_getDep autossh
 }
+
+#"$1" == "$gatewayName"
+#"$2" == "$reversePort"
+_autossh_external() {
+	local autosshPID
+	/usr/bin/autossh -M 0 -F "$scriptLocal"/ssh/config -R "$2":localhost:22 "$1" -N &
+	autosshPID="$!"
+	
+	#echo "$autosshPID" | _prependDaemonPID
+	
+	#_pauseForProcess "$autosshPID"
+	wait "$autosshPID"
+}
+
+#Searches for an unused port in the reversePorts list, binds reverse proxy to it.
+#Until "_proxySSH_reverse" can differentiate "known_hosts" at remote ports, there is little point in performing a check for open ports at the remote end, since these would be used automatically. Thus, "_autossh_direct" is recommended for now.
+#"$1" == "$gatewayName"
+_autossh_find() {
+	local currentReversePort
+	for currentReversePort in "${reversePorts[@]}"
+	do
+		if ! _checkRemoteSSH "$1" "$currentReversePort"
+		then
+			_autossh_external "$1" "$currentReversePort"
+			return 0
+		fi
+	done
+	return 1
+}
+
+#"$1" == "$gatewayName"
+_autossh_direct() {
+	_autossh_external "$1" "${reversePorts[0]}"
+}
+
+#"$1" == "$gatewayName"
+_autossh_ready() {
+	local sshExitStatus
+	
+	_ssh "$1" true
+	sshExitStatus="$?"
+	if [[ "$sshExitStatus" != "255" ]]
+	then
+		_autossh_direct "$1"
+		_stop
+	fi
+}
+
+#May be overridden by "ops" if multiple gateways are required.
+#Not recommended. If multiple gateways are required, it is better to launch autossh daemons for each of them simultaneously. See "_ssh_autoreverse".
+_autossh_list_sequence() {
+	_start
+	
+	_autossh_ready "$1"
+	
+	#_autossh_ready firstGateway
+	#_autossh_ready secondGateway
+	
+	_stop
+}
+
+_autossh_list() {
+	"$scriptAbsoluteLocation" _autossh_list_sequence "$@"
+}
+
+#May be overridden by "ops" to point to direct, find, or list.
+_autossh_entry() {
+	[[ "$1" != "" ]] && export gatewayName="$1"
+	
+	_autossh_direct "$gatewayName"
+	#_autossh_find "$gatewayName"
+	#_autossh_list "$gatewayName"
+}
+
+_autossh_launch() {
+	_setup_ssh
+	
+	while true
+	do
+		_autossh_entry "$@"
+		
+		sleep 30
+		
+		if [[ "$EMBEDDED" == "true" ]]
+		then
+			sleep 270
+		fi
+		
+	done
+}
+
+_autossh() {
+	mkdir -p "$scriptLocal"/ssh/log
+	local logID
+	logID=$(_uid)
+	"$scriptAbsoluteLocation" _cmdDaemon _autossh_launch "$@" >> "$scriptLocal"/ssh/log/_autossh."$logID".log 2>&1
+}
+
+_reversessh() {
+	_ssh -R $reversePort:localhost:22 "$gatewayName" -N "$@"
+}
+
 
 
 

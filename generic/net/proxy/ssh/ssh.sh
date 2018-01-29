@@ -108,7 +108,9 @@ _setup_ssh_extra() {
 	true
 }
 
-_setup_ssh() {
+_setup_ssh_sequence() {
+	_start
+	
 	! [[ -e ~/.ssh ]] && mkdir -p ~/.ssh && chmod 700 ~/.ssh
 	! [[ -e ~/.ssh/"$ubiquitiousBashID" ]] && mkdir -p ~/.ssh/"$ubiquitiousBashID" && chmod 700 ~/.ssh/"$ubiquitiousBashID"
 	! [[ -e ~/.ssh/"$ubiquitiousBashID"/"$netName" ]] && mkdir -p ~/.ssh/"$ubiquitiousBashID"/"$netName" && chmod 700 ~/.ssh/"$ubiquitiousBashID"/"$netName"
@@ -128,6 +130,10 @@ _setup_ssh() {
 	_cpDiff "$scriptLocal"/ssh/config ~/.ssh/"$ubiquitiousBashID"/"$netName"/config
 	cp -n "$scriptLocal"/ssh/id_rsa ~/.ssh/"$ubiquitiousBashID"/"$netName"/id_rsa
 	cp -n "$scriptLocal"/ssh/id_rsa.pub ~/.ssh/"$ubiquitiousBashID"/"$netName"/id_rsa.pub
+	
+	sort "$scriptLocal"/ssh/known_hosts ~/.ssh/"$ubiquitiousBashID"/"$netName"/known_hosts | uniq > "$safeTmp"/known_hosts_uniq
+	_cpDiff "$safeTmp"/known_hosts_uniq "$scriptLocal"/ssh/known_hosts
+	
 	_cpDiff "$scriptLocal"/ssh/known_hosts ~/.ssh/"$ubiquitiousBashID"/"$netName"/known_hosts
 	
 	_cpDiff "$scriptAbsoluteLocation" ~/.ssh/"$ubiquitiousBashID"/"$netName"/cautossh
@@ -135,6 +141,18 @@ _setup_ssh() {
 	
 	_setup_ssh_extra
 	
-	return 0
+	_stop
+}
+
+_setup_ssh() {
+	"$scriptAbsoluteLocation" _setup_ssh_sequence "$@"
+}
+
+#May be overridden by "ops" if multiple gateways are required.
+_ssh_autoreverse() {
+	_torServer_SSH
+	_autossh
 	
-} 
+	#_autossh firstGateway
+	#_autossh secondGateway
+}

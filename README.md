@@ -97,6 +97,8 @@ In most user environments, the latest git repository code will provide the stron
 
 * BashDB is given a "frame 0" command to show large file source code window in emacs "realgud".
 
+* Order of termination does not strictly seem to preserve parent scripts with uncooperative children, when "_daemonAction" is used to terminate all daemon processes. This has the effect of allowing uncooperative children to interfere with logging and stop processes the parent may need to implement in non-emergency situations.
+
 
 # WARNING
 

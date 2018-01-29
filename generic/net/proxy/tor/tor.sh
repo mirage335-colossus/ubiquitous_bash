@@ -90,7 +90,10 @@ _torServer_SSH_launch() {
 }
 
 _torServer_SSH() {
-	"$scriptAbsoluteLocation" _cmdDaemon _torServer_SSH_launch
+	mkdir -p "$scriptLocal"/ssh/log
+	local logID
+	logID=$(_uid)
+	"$scriptAbsoluteLocation" _cmdDaemon _torServer_SSH_launch "$@" >> "$scriptLocal"/ssh/log/_torServer_SSH."$logID".log 2>&1
 }
 
 _checkTorPort_sequence() {
