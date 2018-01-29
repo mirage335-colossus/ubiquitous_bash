@@ -7420,6 +7420,17 @@ export daemonPidFile="$scriptLocal"/.bgpid
 
 #export varStore="$scriptAbsoluteFolder"/var
 
+#Network Defaults
+export AUTOSSH_FIRST_POLL=45
+export AUTOSSH_POLL=45
+#export AUTOSSH_GATETIME=0
+export AUTOSSH_GATETIME=15
+
+#export AUTOSSH_PORT=0
+
+#export AUTOSSH_DEBUG=1
+#export AUTOSSH_LOGLEVEL=7
+
 #Monolithic shared files.
 export lock_pathlock="$scriptLocal"/l_path
 export lock_quicktmp="$scriptLocal"/l_qtmp	#Used to make locking operations atomic as possible.
@@ -7837,9 +7848,16 @@ export netName=default
 export gatewayName="$netName"-gw
 export LOCALSSHPORT=22
 
-#Set to the desktop user most commonly logged in.
-#[[ "$SSHUSER" == "" ]] && export SSHUSER=
-#[[ "$X11USER" == "" ]] && export X11USER=
+#Network Defaults
+export AUTOSSH_FIRST_POLL=45
+export AUTOSSH_POLL=45
+#export AUTOSSH_GATETIME=0
+export AUTOSSH_GATETIME=15
+
+#export AUTOSSH_PORT=0
+
+#export AUTOSSH_DEBUG=1
+#export AUTOSSH_LOGLEVEL=7
 
 #Example ONLY. Modify port asignments.
 _get_reversePorts() {
@@ -7883,15 +7901,7 @@ export EMBEDDED="$matchingEMBEDDED"
 
 export keepKeys=true
 
-export AUTOSSH_FIRST_POLL=45
-export AUTOSSH_POLL=45
-#export AUTOSSH_GATETIME=0
-export AUTOSSH_GATETIME=15
 
-#export AUTOSSH_PORT=0
-
-#export AUTOSSH_DEBUG=1
-#export AUTOSSH_LOGLEVEL=7
 
 
 #####Local Environment Management (Resources)
