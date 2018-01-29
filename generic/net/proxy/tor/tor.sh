@@ -1,5 +1,6 @@
 _testTor() {
 	_getDep tor
+	_getDep torsocks
 }
 
 _torServer_SSH_writeCfg() {
@@ -90,6 +91,84 @@ _torServer_SSH_launch() {
 
 _torServer_SSH() {
 	"$scriptAbsoluteLocation" _cmdDaemon _torServer_SSH_launch
+}
+
+_checkTorPort_sequence() {
+	_start
+	
+	#Does not work, because torsocks does not handle the DNS resolution method used by nmap.
+	#torsocks nmap -n -Pn -sT "$1" -p "$2" | grep open > /dev/null 2>&1
+	
+	local curlPid
+	! torsocks curl --connect-timeout 72 --max-time 72 -v telnet://"$1":"$2" > "$safeTmp"/curl 2>&1 && echo FAIL > "$safeTmp"/fail &
+	curlPid=$!
+	
+	while true
+	do
+		if grep "Connected" "$safeTmp"/curl > /dev/null 2>&1
+		then
+			kill -TERM "$curlPid"
+			#Unneeded curl process considered lower risk than misdirected signal to user process.
+			#ps --no-headers -p "$curlPid" > /dev/null 2>&1 && sleep 0.1 && ps --no-headers -p "$curlPid" > /dev/null 2>&1 && kill -KILL "$curlPid"
+			_stop 0
+		fi
+		
+		if grep "FAIL" "$safeTmp"/fail > /dev/null 2>&1
+		then
+			_stop 1
+		fi
+		
+		
+		sleep 0.1
+	done
+	
+	
+	_stop
+	
+}
+
+#Checks hostname for open port.
+#"$1" == hostname
+#"$2" == port
+_checkTorPort() {
+	"$scriptAbsoluteLocation" _checkTorPort_sequence "$@"
+}
+
+_proxyTor_direct() {
+ 	local proxyTargetHost
+	local proxyTargetPort
+	
+	proxyTargetHost="$1"
+	proxyTargetPort="$2"
+	
+	#Use of "-q" parameter may not be useful in all cases.
+	##printf "HEAD / HTTP/1.0\r\n\r\n" | torsocks nc sejnfjrq6szgca7v.onion 80
+	#torsocks nc -q 96 "$proxyTargetHost" "$proxyTargetPort"
+	torsocks nc -q -1 "$proxyTargetHost" "$proxyTargetPort"
+}
+
+#Launches proxy if port at hostname is open.
+#"$1" == hostname
+#"$2" == port
+_proxyTor() {
+	if _checkTorPort "$1" "$2"
+	then
+		_proxyTor_direct "$1" "$2"
+		_stop
+	fi
+}
+
+#Checks all reverse port assignments through hostname, launches proxy if open.
+#"$1" == host short name
+#"$1" == hostname (typically onion)
+_proxyTor_reverse() {
+	_get_reversePorts "$1"
+	
+	local currentReversePort
+	for currentReversePort in "${matchingReversePorts[@]}"
+	do
+		_proxyTor "$2" "$currentReversePort"
+	done
 }
 
 

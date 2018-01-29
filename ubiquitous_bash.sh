@@ -750,6 +750,7 @@ _findPort() {
 
 _testTor() {
 	_getDep tor
+	_getDep torsocks
 }
 
 _torServer_SSH_writeCfg() {
@@ -842,6 +843,84 @@ _torServer_SSH() {
 	"$scriptAbsoluteLocation" _cmdDaemon _torServer_SSH_launch
 }
 
+_checkTorPort_sequence() {
+	_start
+	
+	#Does not work, because torsocks does not handle the DNS resolution method used by nmap.
+	#torsocks nmap -n -Pn -sT "$1" -p "$2" | grep open > /dev/null 2>&1
+	
+	local curlPid
+	! torsocks curl --connect-timeout 72 --max-time 72 -v telnet://"$1":"$2" > "$safeTmp"/curl 2>&1 && echo FAIL > "$safeTmp"/fail &
+	curlPid=$!
+	
+	while true
+	do
+		if grep "Connected" "$safeTmp"/curl > /dev/null 2>&1
+		then
+			kill -TERM "$curlPid"
+			#Unneeded curl process considered lower risk than misdirected signal to user process.
+			#ps --no-headers -p "$curlPid" > /dev/null 2>&1 && sleep 0.1 && ps --no-headers -p "$curlPid" > /dev/null 2>&1 && kill -KILL "$curlPid"
+			_stop 0
+		fi
+		
+		if grep "FAIL" "$safeTmp"/fail > /dev/null 2>&1
+		then
+			_stop 1
+		fi
+		
+		
+		sleep 0.1
+	done
+	
+	
+	_stop
+	
+}
+
+#Checks hostname for open port.
+#"$1" == hostname
+#"$2" == port
+_checkTorPort() {
+	"$scriptAbsoluteLocation" _checkTorPort_sequence "$@"
+}
+
+_proxyTor_direct() {
+ 	local proxyTargetHost
+	local proxyTargetPort
+	
+	proxyTargetHost="$1"
+	proxyTargetPort="$2"
+	
+	#Use of "-q" parameter may not be useful in all cases.
+	##printf "HEAD / HTTP/1.0\r\n\r\n" | torsocks nc sejnfjrq6szgca7v.onion 80
+	#torsocks nc -q 96 "$proxyTargetHost" "$proxyTargetPort"
+	torsocks nc -q -1 "$proxyTargetHost" "$proxyTargetPort"
+}
+
+#Launches proxy if port at hostname is open.
+#"$1" == hostname
+#"$2" == port
+_proxyTor() {
+	if _checkTorPort "$1" "$2"
+	then
+		_proxyTor_direct "$1" "$2"
+		_stop
+	fi
+}
+
+#Checks all reverse port assignments through hostname, launches proxy if open.
+#"$1" == host short name
+#"$1" == hostname (typically onion)
+_proxyTor_reverse() {
+	_get_reversePorts "$1"
+	
+	local currentReversePort
+	for currentReversePort in "${matchingReversePorts[@]}"
+	do
+		_proxyTor "$2" "$currentReversePort"
+	done
+}
+
 
 
 
@@ -880,20 +959,21 @@ _testProxyRouter() {
 }
 
 #Routes standard in/out to a target host/port through netcat.
-_proxy() {
+_proxy_direct() {
 	local proxyTargetHost
 	local proxyTargetPort
 	
 	proxyTargetHost="$1"
 	proxyTargetPort="$2"
 	
-	nc "$proxyTargetHost" "$proxyTargetPort"
+	#nc -q 96 "$proxyTargetHost" "$proxyTargetPort"
+	nc -q -1 "$proxyTargetHost" "$proxyTargetPort"
 }
 
 #Enters remote server at hostname, by SSH, sets up a tunnel, checks tunnel for another SSH server.
 #"$1" == host short name
 #"$2" == port
-_testRemotePort() {
+_checkRemotePort() {
 	local localPort
 	localPort=$(_findPort)
 	
@@ -913,8 +993,8 @@ _testRemotePort() {
 #Launches proxy if remote port is open at hostname.
 #"$1" == host short name
 #"$2" == port
-_proxyRemotePort() {
-	if _testRemotePort "$1" "$2"
+_proxySSH() {
+	if _checkRemotePort "$1" "$2"
 	then
 		_ssh -q -W localhost:"$2" "$1"
 		_stop
@@ -925,30 +1005,30 @@ _proxyRemotePort() {
 
 #Checks all reverse port assignments through hostname, launches proxy if open.
 #"$1" == host short name
-_proxyRemote_reverse() {
+_proxySSH_reverse() {
 	_get_reversePorts "$1"
 	
 	local currentReversePort
 	for currentReversePort in "${matchingReversePorts[@]}"
 	do
-		_proxyRemotePort "$1" "$currentReversePort"
+		_proxySSH "$1" "$currentReversePort"
 	done
 }
 
 #Checks hostname for open port.
 #"$1" == hostname
 #"$2" == port
-_testPort() {
+_checkPort() {
 	nmap -Pn "$1" -p "$2" | grep open > /dev/null 2>&1
 }
 
 #Launches proxy if port at hostname is open.
 #"$1" == hostname
 #"$2" == port
-_proxyPort() {
-	if _testPort "$1" "$2"
+_proxy() {
+	if _checkPort "$1" "$2"
 	then
-		_proxy "$1" "$2"
+		_proxy_direct "$1" "$2"
 		_stop
 	fi
 	
@@ -958,13 +1038,13 @@ _proxyPort() {
 #Checks all reverse port assignments, launches proxy if open.
 #"$1" == host short name
 #"$2" == hostname
-_proxyHost_reverse() {
+_proxy_reverse() {
 	_get_reversePorts "$1"
 	
 	local currentReversePort
 	for currentReversePort in "${matchingReversePorts[@]}"
 	do
-		_proxyPort "$2" "$currentReversePort"
+		_proxy "$2" "$currentReversePort"
 	done
 }
 
@@ -980,7 +1060,7 @@ _vnc() {
 	#https://wiki.archlinux.org/index.php/x11vnc#SSH_Tunnel
 	#ssh -t -L "$vncPort":localhost:"$vncPort" "$@" 'sudo x11vnc -display :0 -auth /home/USER/.Xauthority'
 	
-	"$scriptAbsoluteLocation" _ssh -C -c aes256-gcm@openssh.com -m hmac-sha1 -o ConnectTimeout=48 -o ConnectionAttempts=2 -o ServerAliveInterval=5 -o ServerAliveCountMax=5 -o ExitOnForwardFailure=yes -f -L "$vncPort":localhost:"$vncPort" "$@" 'x11vnc -localhost -rfbport '"$vncPort"' -timeout 8 -xkb -display :0 -auth /home/'"$X11USER"'/.Xauthority -noxrecord -noxdamage'
+	"$scriptAbsoluteLocation" _ssh -C -c aes256-gcm@openssh.com -m hmac-sha1 -o ConnectTimeout=72 -o ConnectionAttempts=2 -o ServerAliveInterval=5 -o ServerAliveCountMax=5 -o ExitOnForwardFailure=yes -f -L "$vncPort":localhost:"$vncPort" "$@" 'x11vnc -localhost -rfbport '"$vncPort"' -timeout 8 -xkb -display :0 -auth /home/'"$X11USER"'/.Xauthority -noxrecord -noxdamage'
 	#-noxrecord -noxfixes -noxdamage
 	
 	sleep 3

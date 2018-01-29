@@ -159,6 +159,11 @@ _deps_proxy() {
 	export enUb_proxy="true"
 }
 
+_deps_proxy_special() {
+	_deps_proxy
+	export enUb_proxy_special="true"
+}
+
 _deps_x11() {
 	_deps_notLean
 	export enUb_x11="true"
@@ -246,6 +251,7 @@ _deps_fakehome
 _deps_blockchain
 
 _deps_proxy
+_deps_proxy_special
 
 #####
 
@@ -294,7 +300,7 @@ includeScriptList+=( "generic/net"/fetch.sh )
 
 includeScriptList+=( "generic/net"/findport.sh )
 
-[[ "$enUb_proxy" == "true" ]] && includeScriptList+=( "generic/net/proxy/tor"/tor.sh )
+[[ "$enUb_proxy_special" == "true" ]] && includeScriptList+=( "generic/net/proxy/tor"/tor.sh )
 
 [[ "$enUb_proxy" == "true" ]] && includeScriptList+=( "generic/net/proxy"/here_proxyrouter.sh )
 [[ "$enUb_proxy" == "true" ]] && includeScriptList+=( "generic/net/proxy"/proxyrouter.sh )
