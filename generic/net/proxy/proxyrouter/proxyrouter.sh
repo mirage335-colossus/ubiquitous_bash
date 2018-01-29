@@ -42,13 +42,6 @@ _proxy_direct() {
 	nc -q -1 "$proxyTargetHost" "$proxyTargetPort"
 }
 
-#Checks hostname for open port.
-#"$1" == hostname
-#"$2" == port
-_checkPort() {
-	nmap -Pn "$1" -p "$2" | grep open > /dev/null 2>&1
-}
-
 #Launches proxy if port at hostname is open.
 #"$1" == hostname
 #"$2" == port

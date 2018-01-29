@@ -300,6 +300,8 @@ includeScriptList+=( "generic/net"/fetch.sh )
 
 includeScriptList+=( "generic/net"/findport.sh )
 
+includeScriptList+=( "generic/net"/waitport.sh )
+
 [[ "$enUb_proxy_special" == "true" ]] && includeScriptList+=( "generic/net/proxy/tor"/tor.sh )
 
 [[ "$enUb_proxy" == "true" ]] && includeScriptList+=( "generic/net/proxy/ssh"/ssh.sh )
@@ -420,9 +422,6 @@ includeScriptList+=( "shortcuts"/setupUbiquitous.sh )
 
 [[ "$enUb_blockchain" == "true" ]] && includeScriptList+=( "blockchain/ethereum"/ethereum_parity.sh )
 
-#####Hardcoded
-includeScriptList+=( netvars.sh )
-
 #####Basic Variable Management
 includeScriptList+=( "labels"/basicvarLabel.sh )
 
@@ -436,6 +435,9 @@ includeScriptList+=( "structure"/specglobalvars.sh )
 [[ "$enUb_docker" == "true" ]] && includeScriptList+=( "virtualization/docker"/dockervars.sh )
 
 includeScriptList+=( "shortcuts/git"/gitVars.sh )
+
+#####Hardcoded
+includeScriptList+=( netvars.sh )
 
 includeScriptList+=( "structure"/localfs.sh )
 

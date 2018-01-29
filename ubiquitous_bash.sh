@@ -699,7 +699,7 @@ _findPort() {
 	lower_port="$1"
 	upper_port="$2"
 	
-	#Non public ports are between 49152-65535 (215 + 214 to 216 − 1).
+	#Non public ports are between 49152-65535 (2^15 + 2^14 to 2^16 − 1).
 	#Convention is to assign ports 55000-65499 and 50025-53999 to specialized servers.
 	#read lower_port upper_port < /proc/sys/net/ipv4/ip_local_port_range
 	[[ "$lower_port" == "" ]] && lower_port=54000
@@ -746,6 +746,55 @@ _findPort() {
 	echo $currentPort
 	
 	_validatePort "$currentPort"
+}
+
+_test_waitport() {
+	_getDep nmap
+}
+
+#Checks hostname for open port.
+#"$1" == hostname
+#"$2" == port
+_checkPort() {
+	nmap -Pn "$1" -p "$2" | grep open > /dev/null 2>&1
+}
+
+#Waits a reasonable time interval for port to be open.
+#"$1" == hostname
+#"$2" == port
+_waitPort() {
+	_checkPort "$1" "$2" && return 0
+	sleep 0.1
+	_checkPort "$1" "$2" && return 0
+	sleep 0.1
+	_checkPort "$1" "$2" && return 0
+	sleep 0.1
+	_checkPort "$1" "$2" && return 0
+	sleep 0.1
+	_checkPort "$1" "$2" && return 0
+	sleep 0.1
+	_checkPort "$1" "$2" && return 0
+	sleep 0.1
+	_checkPort "$1" "$2" && return 0
+	sleep 0.1
+	_checkPort "$1" "$2" && return 0
+	sleep 0.1
+	_checkPort "$1" "$2" && return 0
+	sleep 0.3
+	_checkPort "$1" "$2" && return 0
+	sleep 0.3
+	_checkPort "$1" "$2" && return 0
+	sleep 0.6
+	
+	local checksDone
+	checksDone=0
+	while ! _checkPort "$1" "$2" && [[ "$checksDone" -lt 72 ]]
+	do
+		let checksDone+=1
+		sleep 1
+	done
+	
+	return 0
 }
 
 _testTor() {
@@ -980,18 +1029,40 @@ _ssh() {
 _vnc() {
 	_start
 	
-	let vncPort="${reversePorts[0]}"+20
+	local vncMinPort
+	let vncMinPort="${reversePorts[0]}"+20
+	
+	local vncMaxPort
+	let vncMaxPort="${reversePorts[0]}"+50
+	
+	local vncPort
+	vncPort=$(_findPort "$vncMinPort" "$vncMaxPort")
 	
 	#https://wiki.archlinux.org/index.php/x11vnc#SSH_Tunnel
 	#ssh -t -L "$vncPort":localhost:"$vncPort" "$@" 'sudo x11vnc -display :0 -auth /home/USER/.Xauthority'
 	
-	"$scriptAbsoluteLocation" _ssh -C -c aes256-gcm@openssh.com -m hmac-sha1 -o ConnectTimeout=72 -o ConnectionAttempts=2 -o ServerAliveInterval=5 -o ServerAliveCountMax=5 -o ExitOnForwardFailure=yes -f -L "$vncPort":localhost:"$vncPort" "$@" 'x11vnc -localhost -rfbport '"$vncPort"' -timeout 8 -xkb -display :0 -auth /home/'"$X11USER"'/.Xauthority -noxrecord -noxdamage'
+	#mkdir -p "$scriptTokens"
+	#if [[ ! -e "$scriptTokens" ]]
+	#then
+	#	echo > "$scriptTokens"/x11vncpasswd
+	#	chmod 600 "$scriptTokens"/x11vncpasswd
+	#	_uid > "$scriptTokens"/x11vncpasswd
+	#fi
+	#cp "$scriptTokens"/x11vncpasswd "$safeTmp"/x11vncpasswd
+	
+	echo > "$safeTmp"/x11vncpasswd
+	chmod 600 "$safeTmp"/x11vncpasswd
+	_uid > "$safeTmp"/x11vncpasswd
+	
+	cat "$safeTmp"/x11vncpasswd | "$scriptAbsoluteLocation" _ssh -C -c aes256-gcm@openssh.com -m hmac-sha1 -o ConnectTimeout=72 -o ConnectionAttempts=2 -o ServerAliveInterval=5 -o ServerAliveCountMax=5 -o ExitOnForwardFailure=yes -L "$vncPort":localhost:"$vncPort" "$@" 'x11vnc -passwdfile cmd:"/bin/cat -" -localhost -rfbport '"$vncPort"' -timeout 8 -xkb -display :0 -auth "$HOME"/.Xauthority -noxrecord -noxdamage' &
 	#-noxrecord -noxfixes -noxdamage
 	
-	sleep 3
+	_waitPort localhost "$vncPort"
+	sleep 0.8 #VNC service may not always be ready when port is up.
+	#sleep 1
 	
 	#vncviewer -encodings "copyrect tight zrle hextile" localhost:"$vncPort"
-	vncviewer localhost:"$vncPort"
+	cat "$safeTmp"/x11vncpasswd | vncviewer -autopass localhost:"$vncPort"
 	
 	_stop
 }
@@ -1043,7 +1114,9 @@ _setup_ssh() {
 	
 } 
 
- 
+_testAutoSSH() {
+	_getDep autossh
+}
 
 
 
@@ -1088,13 +1161,6 @@ _proxy_direct() {
 	
 	#nc -q 96 "$proxyTargetHost" "$proxyTargetPort"
 	nc -q -1 "$proxyTargetHost" "$proxyTargetPort"
-}
-
-#Checks hostname for open port.
-#"$1" == hostname
-#"$2" == port
-_checkPort() {
-	nmap -Pn "$1" -p "$2" | grep open > /dev/null 2>&1
 }
 
 #Launches proxy if port at hostname is open.
@@ -7289,60 +7355,6 @@ _parity_attach() {
 	_ethereum_home _geth attach ~/.local/share/io.parity.ethereum/jsonrpc.ipc "$@"
 }
 
-#####Network Specific Variables
-#Statically embedded into monolithic ubiquitous_bash.sh/cautossh script by compile .
-
-# WARNING Must use unique netName!
-export netName=default
-export gatewayName="$netName"-gw
-export LOCALSSHPORT=22
-
-#Set to the desktop user most commonly logged in.
-#[[ "$SSHUSER" == "" ]] && export SSHUSER=
-#[[ "$X11USER" == "" ]] && export X11USER=
-
-#Example ONLY. Modify port asignments.
-_get_reversePorts() {
-	export matchingReversePorts
-	matchingReversePorts=()
-	export matchingEMBEDDED=false
-	
-	local matched
-	
-	local testHostname
-	testHostname="$1"
-	[[ "$testHostname" == "" ]] && testHostname=$(hostname -s)
-	
-	if [[ "$testHostname" == "alpha" ]] || [[ "$testHostname" == '*' ]]
-	then
-		matchingReversePorts+=( "20000" )
-		
-		matched=true
-	fi
-	
-	if [[ "$testHostname" == "beta" ]] || [[ "$testHostname" == '*' ]]
-	then
-		matchingReversePorts+=( "20001" )
-		export matchingEMBEDDED=true
-		
-		matched=true
-	fi
-	
-	if ! [[ "$matched" == "true" ]] || [[ "$testHostname" == '*' ]]
-	then
-		matchingReversePorts+=( "20008" )
-		matchingReversePorts+=( "20009" )
-	fi
-	
-	export matchingReversePorts
-}
-
-_get_reversePorts
-export reversePorts=("${matchingReversePorts[@]}")
-export EMBEDDED="$matchingEMBEDDED"
-
-export keepKeys=true
-
 #####Basic Variable Management
 
 #####Global variables.
@@ -7390,6 +7402,9 @@ then
 		export scriptLocal="$HOME"/".ubcore"/_sys
 	fi
 fi
+
+#Essentially temporary tokens which may need to be reused. 
+export scriptTokens="$scriptLocal"/.tokens
 
 #Reboot Detection Token Storage
 # WARNING WIP. Not tested on all platforms. Requires a directory to be tmp/ram fs mounted. Worst case result is to preserve tokens across reboots.
@@ -7812,6 +7827,71 @@ _prepare_docker() {
 #_prepare_docker
 
 
+
+
+#####Network Specific Variables
+#Statically embedded into monolithic ubiquitous_bash.sh/cautossh script by compile .
+
+# WARNING Must use unique netName!
+export netName=default
+export gatewayName="$netName"-gw
+export LOCALSSHPORT=22
+
+#Set to the desktop user most commonly logged in.
+#[[ "$SSHUSER" == "" ]] && export SSHUSER=
+#[[ "$X11USER" == "" ]] && export X11USER=
+
+#Example ONLY. Modify port asignments.
+_get_reversePorts() {
+	export matchingReversePorts
+	matchingReversePorts=()
+	export matchingEMBEDDED=false
+	
+	local matched
+	
+	local testHostname
+	testHostname="$1"
+	[[ "$testHostname" == "" ]] && testHostname=$(hostname -s)
+	
+	if [[ "$testHostname" == "alpha" ]] || [[ "$testHostname" == '*' ]]
+	then
+		matchingReversePorts+=( "20000" )
+		
+		matched=true
+	fi
+	
+	if [[ "$testHostname" == "beta" ]] || [[ "$testHostname" == '*' ]]
+	then
+		matchingReversePorts+=( "20001" )
+		export matchingEMBEDDED=true
+		
+		matched=true
+	fi
+	
+	if ! [[ "$matched" == "true" ]] || [[ "$testHostname" == '*' ]]
+	then
+		matchingReversePorts+=( "20008" )
+		matchingReversePorts+=( "20009" )
+	fi
+	
+	export matchingReversePorts
+}
+
+_get_reversePorts
+export reversePorts=("${matchingReversePorts[@]}")
+export EMBEDDED="$matchingEMBEDDED"
+
+export keepKeys=true
+
+export AUTOSSH_FIRST_POLL=45
+export AUTOSSH_POLL=45
+#export AUTOSSH_GATETIME=0
+export AUTOSSH_GATETIME=15
+
+#export AUTOSSH_PORT=0
+
+#export AUTOSSH_DEBUG=1
+#export AUTOSSH_LOGLEVEL=7
 
 
 #####Local Environment Management (Resources)
@@ -8416,6 +8496,14 @@ _test() {
 	_tryExec "_test_daemon"
 	
 	_tryExec "_testFindPort"
+	_tryExec "_test_waitport"
+	
+	_tryExec "_testProxySSH"
+	
+	_tryExec "_testAutoSSH"
+	
+	_tryExec "_testTor"
+	
 	_tryExec "_testProxyRouter"
 	
 	#_tryExec "_test_build"

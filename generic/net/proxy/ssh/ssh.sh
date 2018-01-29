@@ -54,18 +54,40 @@ _ssh() {
 _vnc() {
 	_start
 	
-	let vncPort="${reversePorts[0]}"+20
+	local vncMinPort
+	let vncMinPort="${reversePorts[0]}"+20
+	
+	local vncMaxPort
+	let vncMaxPort="${reversePorts[0]}"+50
+	
+	local vncPort
+	vncPort=$(_findPort "$vncMinPort" "$vncMaxPort")
 	
 	#https://wiki.archlinux.org/index.php/x11vnc#SSH_Tunnel
 	#ssh -t -L "$vncPort":localhost:"$vncPort" "$@" 'sudo x11vnc -display :0 -auth /home/USER/.Xauthority'
 	
-	"$scriptAbsoluteLocation" _ssh -C -c aes256-gcm@openssh.com -m hmac-sha1 -o ConnectTimeout=72 -o ConnectionAttempts=2 -o ServerAliveInterval=5 -o ServerAliveCountMax=5 -o ExitOnForwardFailure=yes -f -L "$vncPort":localhost:"$vncPort" "$@" 'x11vnc -localhost -rfbport '"$vncPort"' -timeout 8 -xkb -display :0 -auth /home/'"$X11USER"'/.Xauthority -noxrecord -noxdamage'
+	#mkdir -p "$scriptTokens"
+	#if [[ ! -e "$scriptTokens" ]]
+	#then
+	#	echo > "$scriptTokens"/x11vncpasswd
+	#	chmod 600 "$scriptTokens"/x11vncpasswd
+	#	_uid > "$scriptTokens"/x11vncpasswd
+	#fi
+	#cp "$scriptTokens"/x11vncpasswd "$safeTmp"/x11vncpasswd
+	
+	echo > "$safeTmp"/x11vncpasswd
+	chmod 600 "$safeTmp"/x11vncpasswd
+	_uid > "$safeTmp"/x11vncpasswd
+	
+	cat "$safeTmp"/x11vncpasswd | "$scriptAbsoluteLocation" _ssh -C -c aes256-gcm@openssh.com -m hmac-sha1 -o ConnectTimeout=72 -o ConnectionAttempts=2 -o ServerAliveInterval=5 -o ServerAliveCountMax=5 -o ExitOnForwardFailure=yes -L "$vncPort":localhost:"$vncPort" "$@" 'x11vnc -passwdfile cmd:"/bin/cat -" -localhost -rfbport '"$vncPort"' -timeout 8 -xkb -display :0 -auth "$HOME"/.Xauthority -noxrecord -noxdamage' &
 	#-noxrecord -noxfixes -noxdamage
 	
-	sleep 3
+	_waitPort localhost "$vncPort"
+	sleep 0.8 #VNC service may not always be ready when port is up.
+	#sleep 1
 	
 	#vncviewer -encodings "copyrect tight zrle hextile" localhost:"$vncPort"
-	vncviewer localhost:"$vncPort"
+	cat "$safeTmp"/x11vncpasswd | vncviewer -autopass localhost:"$vncPort"
 	
 	_stop
 }

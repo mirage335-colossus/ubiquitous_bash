@@ -44,6 +44,9 @@ then
 	fi
 fi
 
+#Essentially temporary tokens which may need to be reused. 
+export scriptTokens="$scriptLocal"/.tokens
+
 #Reboot Detection Token Storage
 # WARNING WIP. Not tested on all platforms. Requires a directory to be tmp/ram fs mounted. Worst case result is to preserve tokens across reboots.
 export bootTmp="$scriptLocal"			#Fail-Safe
