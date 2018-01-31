@@ -8040,15 +8040,15 @@ _extra() {
 
 _prepare() {
 	
-	mkdir -p "$safeTmp"
+	! mkdir -p "$safeTmp" && exit 1
 	
-	mkdir -p "$shortTmp"
+	! mkdir -p "$shortTmp" && exit 1
 	
-	mkdir -p "$logTmp"
+	! mkdir -p "$logTmp" && exit 1
 	
-	mkdir -p "$scriptLocal"
+	! mkdir -p "$scriptLocal" && exit 1
 	
-	mkdir -p "$bootTmp"
+	! mkdir -p "$bootTmp" && exit 1
 	
 	_extra
 	_prepare_prog
