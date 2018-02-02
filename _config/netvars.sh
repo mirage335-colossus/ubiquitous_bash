@@ -57,7 +57,7 @@ _get_reversePorts
 export reversePorts=("${matchingReversePorts[@]}")
 export EMBEDDED="$matchingEMBEDDED"
 
-export keepKeys=true
+export keepKeys_SSH=true
 
 
 

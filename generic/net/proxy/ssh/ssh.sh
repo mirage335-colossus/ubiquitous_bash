@@ -119,6 +119,14 @@ _setup_ssh_sequence() {
 	
 	! grep "$netName" ~/.ssh/"$ubiquitiousBashID"/config > /dev/null 2>&1 && echo "Include "'"'"~/.ssh/""$ubiquitiousBashID""/""$netName""/config"'"' >> ~/.ssh/"$ubiquitiousBashID"/config
 	
+	if [[ "$keepKeys_SSH" == "false" ]]
+	then
+		rm -f "$scriptLocal"/ssh/id_rsa >/dev/null 2>&1
+		rm -f "$scriptLocal"/ssh/id_rsa.pub >/dev/null 2>&1
+		rm -f ~/.ssh/"$ubiquitiousBashID"/"$netName"/id_rsa >/dev/null 2>&1
+		rm -f ~/.ssh/"$ubiquitiousBashID"/"$netName"/id_rsa.pub >/dev/null 2>&1
+	fi
+	
 	if ! [[ -e "$scriptLocal"/ssh/id_rsa ]] && ! [[ -e ~/.ssh/"$ubiquitiousBashID"/"$netName"/id_rsa ]]
 	then
 		ssh-keygen -b 4096 -t rsa -N "" -f "$scriptLocal"/id_rsa
