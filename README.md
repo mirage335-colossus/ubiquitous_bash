@@ -56,6 +56,8 @@ In most user environments, the latest git repository code will provide the stron
 
 * Self-contained SAMBA server would provide useful virtualization compatibility guarantees if tightly integrated. QEMU seems to already include a solution using similar methods.
 
+* Self-contained SSH server (not requiring full virtualization images) would allow full self-testing of SSH procedures.
+
 * Merge HostedXen, and other related virtualization methods into ubiquitous bash.
 * Support shutdown hooks through init daemons other than systemd.
 * Service/cron installation hooks.
