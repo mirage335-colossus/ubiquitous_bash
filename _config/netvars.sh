@@ -46,8 +46,8 @@ _get_reversePorts() {
 	
 	if ! [[ "$matched" == "true" ]] || [[ "$testHostname" == '*' ]]
 	then
-		matchingReversePorts+=( "20008" )
 		matchingReversePorts+=( "20009" )
+		matchingReversePorts+=( "20008" )
 	fi
 	
 	export matchingReversePorts
