@@ -1029,6 +1029,33 @@ _proxyTor_reverse() {
 
 
 
+#Example only.
+_here_ssh_config() {
+	cat << CZXWXcRMTo8EmM8i4d
+
+Host *-"$netName"
+	ExitOnForwardFailure yes
+	ConnectTimeout 72
+	ConnectionAttempts 1
+	ServerAliveInterval 5
+	ServerAliveCountMax 5
+	#PubkeyAuthentication yes
+	#PasswordAuthentication no
+	StrictHostKeyChecking no
+	UserKnownHostsFile "$sshDir"/known_hosts
+	IdentityFile "$sshDir"/id_rsa
+	
+	Cipher aes256-gcm@openssh.com
+	Ciphers aes256-gcm@openssh.com,aes128-ctr,aes192-ctr,aes256-ctr,arcfour256,arcfour128,aes128-gcm@openssh.com,chacha20-poly1305@openssh.com,aes128-cbc,3des-cbc,blowfish-cbc,cast128-cbc,aes192-cbc,aes256-cbc,arcfour
+
+Host machine-"$netName"
+	User user
+	ProxyCommand "$sshDir"/cautossh _ssh_proxy_machine-"$netName"
+
+
+CZXWXcRMTo8EmM8i4d
+}
+
 _testProxySSH() {
 	_getDep ssh
 }
@@ -7739,6 +7766,71 @@ export vmMemoryAllocationDefault=96
 [[ "$hostMemoryQuantity" -gt "16000000" ]] && export vmMemoryAllocationDefault=1512
 
 
+# WARNING Must use unique netName!
+export netName=default
+export gatewayName="$netName"-gw
+export LOCALSSHPORT=22
+
+#Network Defaults
+export AUTOSSH_FIRST_POLL=45
+export AUTOSSH_POLL=45
+#export AUTOSSH_GATETIME=0
+export AUTOSSH_GATETIME=15
+
+#export AUTOSSH_PORT=0
+
+#export AUTOSSH_DEBUG=1
+#export AUTOSSH_LOGLEVEL=7
+
+#Example ONLY. Modify port asignments. Overriding with "netvars.sh" instead of "ops" recommended, especially for embedded systems relying on autossh.
+_get_reversePorts() {
+	export matchingReversePorts
+	matchingReversePorts=()
+	export matchingEMBEDDED=false
+	
+	local matched
+	
+	local testHostname
+	testHostname="$1"
+	[[ "$testHostname" == "" ]] && testHostname=$(hostname -s)
+	
+	if [[ "$testHostname" == "alpha" ]] || [[ "$testHostname" == '*' ]]
+	then
+		matchingReversePorts+=( "20000" )
+		
+		matched=true
+	fi
+	
+	if [[ "$testHostname" == "beta" ]] || [[ "$testHostname" == '*' ]]
+	then
+		matchingReversePorts+=( "20001" )
+		export matchingEMBEDDED=true
+		
+		matched=true
+	fi
+	
+	if ! [[ "$matched" == "true" ]] || [[ "$testHostname" == '*' ]]
+	then
+		matchingReversePorts+=( "20009" )
+		matchingReversePorts+=( "20008" )
+	fi
+	
+	export matchingReversePorts
+}
+
+_get_reversePorts
+export reversePorts=("${matchingReversePorts[@]}")
+export EMBEDDED="$matchingEMBEDDED"
+
+export keepKeys_SSH=true
+
+_prepare_ssh() {
+	[[ "$sshBase" == "" ]] && export sshBase="$HOME"/.ssh
+	export sshUbiquitous="$sshBase"/"$ubiquitiousBashID"
+	export sshDir="$sshUbiquitous"/"$netName"
+}
+_prepare_ssh
+
 _prepareFakeHome() {
 	mkdir -p "$globalFakeHome"
 }
@@ -8759,12 +8851,18 @@ _setupCommands() {
 	true
 }
 
+_setup_pre() {
+	true
+}
+
 _setup_prog() {
 	true
 }
 
 _setup() {
 	_start
+	
+	_setup_pre
 	
 	"$scriptAbsoluteLocation" _test || _stop 1
 	
@@ -8777,6 +8875,10 @@ _setup() {
 	fi
 	
 	_setupCommands
+	
+	_setup_pre
+	
+	_tryExec "_setup_ssh"
 	
 	_setup_prog
 	
@@ -8939,11 +9041,13 @@ export EMBEDDED="$matchingEMBEDDED"
 
 export keepKeys_SSH=true
 
-export sshBase="$HOME"/.ssh
-export sshUbiquitous="$sshBase"/"$ubiquitiousBashID"
-export sshDir="$sshUbiquitous"/"$netName"
+_prepare_sshVars() {
+	export sshBase="$HOME"/.ssh
+	export sshUbiquitous="$sshBase"/"$ubiquitiousBashID"
+	export sshDir="$sshUbiquitous"/"$netName"
+}
 
-
+_prepare_ssh
 
 
 #####Overrides

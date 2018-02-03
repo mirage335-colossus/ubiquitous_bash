@@ -230,8 +230,16 @@ _setupCommand() {
 	
 }
 
+#Consider placing files like ' _vnc-machine-"$netName" ' in an "_index" folder for automatic installation.
 _setupCommands() {
 	#find . -name '_command' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
+	find . -name '_vnc' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
+	find . -name '_ssh' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
+	find . -name '_wake' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
+	find . -name '_fs' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
+}
+
+_setup_pre() {
 	true
 }
 
@@ -241,6 +249,8 @@ _setup_prog() {
 
 _setup() {
 	_start
+	
+	_setup_pre
 	
 	"$scriptAbsoluteLocation" _test || _stop 1
 	
@@ -253,6 +263,10 @@ _setup() {
 	fi
 	
 	_setupCommands
+	
+	_setup_pre
+	
+	_tryExec "_setup_ssh"
 	
 	_setup_prog
 	

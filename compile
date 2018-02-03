@@ -309,6 +309,7 @@ includeScriptList+=( "generic/net"/waitport.sh )
 
 [[ "$enUb_proxy_special" == "true" ]] && includeScriptList+=( "generic/net/proxy/tor"/tor.sh )
 
+[[ "$enUb_proxy" == "true" ]] && includeScriptList+=( "generic/net/proxy/ssh"/here_ssh.sh )
 [[ "$enUb_proxy" == "true" ]] && includeScriptList+=( "generic/net/proxy/ssh"/ssh.sh )
 [[ "$enUb_proxy" == "true" ]] && includeScriptList+=( "generic/net/proxy/ssh"/autossh.sh )
 
@@ -435,6 +436,8 @@ includeScriptList+=( "structure"/globalvars.sh )
 
 includeScriptList+=( "structure"/specglobalvars.sh )
 
+[[ "$enUb_proxy" == "true" ]] && includeScriptList+=( "generic/net/proxy/ssh"/sshvars.sh )
+
 [[ "$enUb_fakehome" == "true" ]] && includeScriptList+=( "virtualization/fakehome"/fakehomevars.sh )
 [[ "$enUb_vbox" == "true" ]] && includeScriptList+=( "virtualization/vbox"/vboxvars.sh )
 [[ "$enUb_docker" == "true" ]] && includeScriptList+=( "virtualization/docker"/dockervars.sh )
@@ -455,7 +458,7 @@ includeScriptList+=( core.sh )
 includeScriptList+=( "structure"/build.sh )
 includeScriptList+=( "structure"/program.sh )
 
-#Hardcoded
+#####Hardcoded
 includeScriptList+=( netvars.sh )
 
 includeScriptList+=( "structure"/overrides.sh )

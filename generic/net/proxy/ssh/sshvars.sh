@@ -1,6 +1,3 @@
-#####Network Specific Variables
-#Statically embedded into monolithic ubiquitous_bash.sh/cautossh script by compile .
-
 # WARNING Must use unique netName!
 export netName=default
 export gatewayName="$netName"-gw
@@ -17,7 +14,7 @@ export AUTOSSH_GATETIME=15
 #export AUTOSSH_DEBUG=1
 #export AUTOSSH_LOGLEVEL=7
 
-#Example ONLY. Modify port asignments.
+#Example ONLY. Modify port asignments. Overriding with "netvars.sh" instead of "ops" recommended, especially for embedded systems relying on autossh.
 _get_reversePorts() {
 	export matchingReversePorts
 	matchingReversePorts=()
@@ -59,11 +56,9 @@ export EMBEDDED="$matchingEMBEDDED"
 
 export keepKeys_SSH=true
 
-_prepare_sshVars() {
-	export sshBase="$HOME"/.ssh
+_prepare_ssh() {
+	[[ "$sshBase" == "" ]] && export sshBase="$HOME"/.ssh
 	export sshUbiquitous="$sshBase"/"$ubiquitiousBashID"
 	export sshDir="$sshUbiquitous"/"$netName"
 }
-
 _prepare_ssh
-
