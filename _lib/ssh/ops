@@ -39,3 +39,7 @@ _setupCommands() {
 _setup_prog() {
 	_setup_ssh
 }
+
+export sshBase="$HOME"/.ssh
+export sshUbiquitous="$sshBase"/"$ubiquitiousBashID"
+export sshDir="$sshUbiquitous"/"$netName"
