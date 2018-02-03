@@ -1142,6 +1142,8 @@ _setup_ssh_extra() {
 _setup_ssh_sequence() {
 	_start
 	
+	mkdir -p "$scriptLocal"/ssh
+	
 	! [[ -e "$sshBase" ]] && mkdir -p "$sshBase" && chmod 700 "$sshBase"
 	! [[ -e "$sshBase"/"$ubiquitiousBashID" ]] && mkdir -p "$sshBase"/"$ubiquitiousBashID" && chmod 700 "$sshBase"/"$ubiquitiousBashID"
 	! [[ -e "$sshDir" ]] && mkdir -p "$sshDir" && chmod 700 "$sshDir"
@@ -1170,6 +1172,8 @@ _setup_ssh_sequence() {
 	cp -n "$scriptLocal"/ssh/id_rsa "$sshDir"/id_rsa
 	cp -n "$scriptLocal"/ssh/id_rsa.pub "$sshDir"/id_rsa.pub
 	
+	[[ ! -e "$scriptLocal"/ssh/known_hosts ]] && echo > "$scriptLocal"/ssh/known_hosts
+	[[ ! -e "$sshDir"/known_hosts ]] && echo > "$sshDir"/known_hosts
 	sort "$scriptLocal"/ssh/known_hosts "$sshDir"/known_hosts | uniq > "$safeTmp"/known_hosts_uniq
 	_cpDiff "$safeTmp"/known_hosts_uniq "$scriptLocal"/ssh/known_hosts
 	
