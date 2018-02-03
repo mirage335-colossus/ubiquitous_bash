@@ -113,7 +113,7 @@ _permissions_directory_checkForPath() {
 	
 	local checkScriptAbsoluteFolder="$(_getScriptAbsoluteFolder)"
 	
-	[[ "$parameterAbsoluteLocation" == "$PWD" ]] && [[ "$parameterAbsoluteLocation" == "$checkScriptAbsoluteFolder" ]]
+	[[ "$parameterAbsoluteLocation" == "$PWD" ]] && ! [[ "$parameterAbsoluteLocation" == "$checkScriptAbsoluteFolder" ]] && return 1
 	
 	local permissions_user
 	local permissions_group
@@ -7555,14 +7555,14 @@ export logTmp="$safeTmp"/log
 export shortTmp=/tmp/w_"$sessionid"	#Solely for misbehaved applications called upon.
 export scriptBin="$scriptAbsoluteFolder"/_bin
 export scriptLib="$scriptAbsoluteFolder"/_lib
-#For virtualized guests (exclusively intended to support _setupUbiquitous hook).
+#For virtualized guests (exclusively intended to support _setupUbiquitous and _drop* hooks).
 [[ ! -e "$scriptBin" ]] && export scriptBin="$scriptAbsoluteFolder"
 [[ ! -e "$scriptLib" ]] && export scriptLib="$scriptAbsoluteFolder"
 
 
 export scriptLocal="$scriptAbsoluteFolder"/_local
 
-#For system installations (exclusively intended to support _setupUbiquitous hook).
+#For system installations (exclusively intended to support _setupUbiquitous and _drop* hooks).
 [[ "$scriptAbsoluteLocation" == "/usr/bin"* ]] && export scriptBin="/usr/share/ubcore/bin"
 [[ "$scriptAbsoluteLocation" == "/usr/local/bin"* ]] && export scriptBin="/usr/local/share/ubcore/bin"
 if [[ "$scriptAbsoluteLocation" == "/usr/bin"* ]] || [[ "$scriptAbsoluteLocation" == "/usr/local/bin"* ]]
@@ -7647,8 +7647,8 @@ export objectDir="$scriptAbsoluteFolder"
 export objectName=$(basename "$objectDir")
 
 #Modify PATH to include own directories.
-export PATH="$PATH":"$scriptAbsoluteFolder"
-[[ -d "$scriptBin" ]] && export PATH="$PATH":"$scriptBin"
+_permissions_directory_checkForPath "$scriptAbsoluteFolder" && export PATH="$PATH":"$scriptAbsoluteFolder"
+[[ "$scriptBin" != "$scriptAbsoluteFolder" ]] && [[ -d "$scriptBin" ]] && _permissions_directory_checkForPath "$scriptBin" && export PATH="$PATH":"$scriptBin"
 
 export permaLog="$scriptLocal"
 

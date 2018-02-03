@@ -4,7 +4,7 @@ _permissions_directory_checkForPath() {
 	
 	local checkScriptAbsoluteFolder="$(_getScriptAbsoluteFolder)"
 	
-	[[ "$parameterAbsoluteLocation" == "$PWD" ]] && [[ "$parameterAbsoluteLocation" == "$checkScriptAbsoluteFolder" ]]
+	[[ "$parameterAbsoluteLocation" == "$PWD" ]] && ! [[ "$parameterAbsoluteLocation" == "$checkScriptAbsoluteFolder" ]] && return 1
 	
 	local permissions_user
 	local permissions_group
