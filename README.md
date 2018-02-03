@@ -101,6 +101,8 @@ In most user environments, the latest git repository code will provide the stron
 
 * Order of termination does not strictly seem to preserve parent scripts with uncooperative children, when "_daemonAction" is used to terminate all daemon processes. This has the effect of allowing uncooperative children to interfere with logging and stop processes the parent may need to implement in non-emergency situations.
 
+* SSH over Tor through "_proxyTor_direct" will not work as is under MSW/Cygwin hosts. A SOCKS capable version of netcat ("nc") may need to be installed under the Cygwin environment, detected, and used. Also, "curl" as used by "_checkTorPort" will need to directly work with the SOCKS proxy. By contrast, UNIX can support better portability, using "torsocks" in place of parameters specific to variants of "nc" or "curl".
+
 
 # WARNING
 
