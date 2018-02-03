@@ -107,6 +107,45 @@ _getAbsoluteFolder() {
 }
 alias getAbsoluteLocation=_getAbsoluteLocation
 
+_permissions_directory_checkForPath() {
+	local parameterAbsoluteLocation
+	parameterAbsoluteLocation=$(_getAbsoluteLocation "$PWD")
+	
+	local checkScriptAbsoluteFolder="$(_getScriptAbsoluteFolder)"
+	
+	[[ "$parameterAbsoluteLocation" == "$PWD" ]] && [[ "$parameterAbsoluteLocation" == "$checkScriptAbsoluteFolder" ]]
+	
+	local permissions_user
+	local permissions_group
+	local permissions_other
+	
+	permissions_user=$(stat -c "%a" "$1" | cut -c 1)
+	permissions_group=$(stat -c "%a" "$1" | cut -c 2)
+	permissions_other=$(stat -c "%a" "$1" | cut -c 3)
+	
+	[[ "$permissions_user" -gt "7" ]] && return 1
+	[[ "$permissions_group" -gt "7" ]] && return 1
+	[[ "$permissions_other" -gt "5" ]] && return 1
+	
+	local permissions_uid
+	local permissions_gid
+	
+	permissions_uid=$(stat -c "%u" "$1")
+	permissions_gid=$(stat -c "%g" "$1")
+	
+	#Normally these variables are available through ubiqutious bash, but this permissions check may be needed earlier in that global variables setting process.
+	local permissions_host_uid
+	local permissions_host_gid
+	
+	permissions_host_uid=$(id -u)
+	permissions_host_gid=$(id -g)
+	
+	[[ "$permissions_uid" != "$permissions_host_uid" ]] && return 1
+	[[ "$permissions_uid" != "$permissions_host_gid" ]] && return 1
+	
+	return 0
+}
+
 #Gets filename extension, specifically any last three characters in given string.
 #"$1" == filename
 _getExt() {
@@ -202,7 +241,7 @@ _safeRMR() {
 	#Whitelist.
 	local safeToRM=false
 	
-	local safeScriptAbsoluteFolder="$_getScriptAbsoluteFolder"
+	local safeScriptAbsoluteFolder="$(_getScriptAbsoluteFolder)"
 	
 	[[ "$1" == "./"* ]] && [[ "$PWD" == "$safeScriptAbsoluteFolder"* ]] && safeToRM="true"
 	
@@ -278,7 +317,7 @@ _safePath() {
 	#Whitelist.
 	local safeToRM=false
 	
-	local safeScriptAbsoluteFolder="$_getScriptAbsoluteFolder"
+	local safeScriptAbsoluteFolder="$(_getScriptAbsoluteFolder)"
 	
 	[[ "$1" == "./"* ]] && [[ "$PWD" == "$safeScriptAbsoluteFolder"* ]] && safeToRM="true"
 	
@@ -1089,23 +1128,23 @@ _setup_ssh_extra() {
 _setup_ssh_sequence() {
 	_start
 	
-	! [[ -e ~/.ssh ]] && mkdir -p ~/.ssh && chmod 700 ~/.ssh
-	! [[ -e ~/.ssh/"$ubiquitiousBashID" ]] && mkdir -p ~/.ssh/"$ubiquitiousBashID" && chmod 700 ~/.ssh/"$ubiquitiousBashID"
-	! [[ -e ~/.ssh/"$ubiquitiousBashID"/"$netName" ]] && mkdir -p ~/.ssh/"$ubiquitiousBashID"/"$netName" && chmod 700 ~/.ssh/"$ubiquitiousBashID"/"$netName"
+	! [[ -e "$sshBase" ]] && mkdir -p "$sshBase" && chmod 700 "$sshBase"
+	! [[ -e "$sshBase"/"$ubiquitiousBashID" ]] && mkdir -p "$sshBase"/"$ubiquitiousBashID" && chmod 700 "$sshBase"/"$ubiquitiousBashID"
+	! [[ -e "$sshDir" ]] && mkdir -p "$sshDir" && chmod 700 "$sshDir"
 	
-	! grep "$ubiquitiousBashID" ~/.ssh/config > /dev/null 2>&1 && echo "Include "'"'"~/.ssh/""$ubiquitiousBashID""/config"'"' >> ~/.ssh/config
+	! grep "$ubiquitiousBashID" "$sshBase"/config > /dev/null 2>&1 && echo 'Include "'"$sshUbiquitous"'/config"' >> "$sshBase"/config
 	
-	! grep "$netName" ~/.ssh/"$ubiquitiousBashID"/config > /dev/null 2>&1 && echo "Include "'"'"~/.ssh/""$ubiquitiousBashID""/""$netName""/config"'"' >> ~/.ssh/"$ubiquitiousBashID"/config
+	! grep "$netName" "$sshUbiquitous"/config > /dev/null 2>&1 && echo 'Include "'"$sshDir"'/config"' >> "$sshBase"/config >> "$sshUbiquitous"/config
 	
 	if [[ "$keepKeys_SSH" == "false" ]]
 	then
 		rm -f "$scriptLocal"/ssh/id_rsa >/dev/null 2>&1
 		rm -f "$scriptLocal"/ssh/id_rsa.pub >/dev/null 2>&1
-		rm -f ~/.ssh/"$ubiquitiousBashID"/"$netName"/id_rsa >/dev/null 2>&1
-		rm -f ~/.ssh/"$ubiquitiousBashID"/"$netName"/id_rsa.pub >/dev/null 2>&1
+		rm -f "$sshDir"/id_rsa >/dev/null 2>&1
+		rm -f "$sshDir"/id_rsa.pub >/dev/null 2>&1
 	fi
 	
-	if ! [[ -e "$scriptLocal"/ssh/id_rsa ]] && ! [[ -e ~/.ssh/"$ubiquitiousBashID"/"$netName"/id_rsa ]]
+	if ! [[ -e "$scriptLocal"/ssh/id_rsa ]] && ! [[ -e "$sshDir"/id_rsa ]]
 	then
 		ssh-keygen -b 4096 -t rsa -N "" -f "$scriptLocal"/id_rsa
 	fi
@@ -1113,17 +1152,17 @@ _setup_ssh_sequence() {
 	chmod 600 "$scriptLocal"/ssh/id_rsa
 	chmod 600 "$scriptLocal"/ssh/id_rsa.pub
 	
-	_cpDiff "$scriptLocal"/ssh/config ~/.ssh/"$ubiquitiousBashID"/"$netName"/config
-	cp -n "$scriptLocal"/ssh/id_rsa ~/.ssh/"$ubiquitiousBashID"/"$netName"/id_rsa
-	cp -n "$scriptLocal"/ssh/id_rsa.pub ~/.ssh/"$ubiquitiousBashID"/"$netName"/id_rsa.pub
+	_cpDiff "$scriptLocal"/ssh/config "$sshDir"/config
+	cp -n "$scriptLocal"/ssh/id_rsa "$sshDir"/id_rsa
+	cp -n "$scriptLocal"/ssh/id_rsa.pub "$sshDir"/id_rsa.pub
 	
-	sort "$scriptLocal"/ssh/known_hosts ~/.ssh/"$ubiquitiousBashID"/"$netName"/known_hosts | uniq > "$safeTmp"/known_hosts_uniq
+	sort "$scriptLocal"/ssh/known_hosts "$sshDir"/known_hosts | uniq > "$safeTmp"/known_hosts_uniq
 	_cpDiff "$safeTmp"/known_hosts_uniq "$scriptLocal"/ssh/known_hosts
 	
-	_cpDiff "$scriptLocal"/ssh/known_hosts ~/.ssh/"$ubiquitiousBashID"/"$netName"/known_hosts
+	_cpDiff "$scriptLocal"/ssh/known_hosts "$sshDir"/known_hosts
 	
-	_cpDiff "$scriptAbsoluteLocation" ~/.ssh/"$ubiquitiousBashID"/"$netName"/cautossh
-	_cpDiff "$scriptLocal"/ssh/ops ~/.ssh/"$ubiquitiousBashID"/"$netName"/ops
+	_cpDiff "$scriptAbsoluteLocation" "$sshDir"/cautossh
+	_cpDiff "$scriptLocal"/ssh/ops "$sshDir"/ops
 	
 	_setup_ssh_extra
 	
@@ -8032,6 +8071,10 @@ export EMBEDDED="$matchingEMBEDDED"
 
 export keepKeys_SSH=true
 
+export sshBase="$HOME"/.ssh
+export sshUbiquitous="$sshBase"/"$ubiquitiousBashID"
+export sshDir="$sshUbiquitous"/"$netName"
+
 
 
 
@@ -8584,7 +8627,11 @@ _test() {
 	
 	_messageNormal "Dependency checking..."
 	
-	# Check dependencies
+	## Check dependencies
+	
+	#"generic/filesystem"/permissions.sh
+	_checkDep stat
+	
 	_getDep wget
 	_getDep grep
 	_getDep fgrep

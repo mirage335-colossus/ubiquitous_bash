@@ -71,7 +71,7 @@ _safeRMR() {
 	#Whitelist.
 	local safeToRM=false
 	
-	local safeScriptAbsoluteFolder="$_getScriptAbsoluteFolder"
+	local safeScriptAbsoluteFolder="$(_getScriptAbsoluteFolder)"
 	
 	[[ "$1" == "./"* ]] && [[ "$PWD" == "$safeScriptAbsoluteFolder"* ]] && safeToRM="true"
 	
@@ -147,7 +147,7 @@ _safePath() {
 	#Whitelist.
 	local safeToRM=false
 	
-	local safeScriptAbsoluteFolder="$_getScriptAbsoluteFolder"
+	local safeScriptAbsoluteFolder="$(_getScriptAbsoluteFolder)"
 	
 	[[ "$1" == "./"* ]] && [[ "$PWD" == "$safeScriptAbsoluteFolder"* ]] && safeToRM="true"
 	

@@ -53,7 +53,11 @@ _test() {
 	
 	_messageNormal "Dependency checking..."
 	
-	# Check dependencies
+	## Check dependencies
+	
+	#"generic/filesystem"/permissions.sh
+	_checkDep stat
+	
 	_getDep wget
 	_getDep grep
 	_getDep fgrep

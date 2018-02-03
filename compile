@@ -269,6 +269,8 @@ includeScriptList+=( "generic"/showCommand.sh )
 
 includeScriptList+=( "generic/filesystem"/absolutepaths.sh )
 
+includeScriptList+=( "generic/filesystem/permissions"/checkpermissions.sh )
+
 includeScriptList+=( "generic/filesystem"/getext.sh )
 
 includeScriptList+=( "generic/filesystem"/finddir.sh )
