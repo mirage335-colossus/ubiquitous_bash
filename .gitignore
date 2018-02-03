@@ -1,3 +1,5 @@
+/ops
+
 w_*/
 v_*/
 h_*/
@@ -15,7 +17,6 @@ devtask*
 devtask/
 USAGE.*.html
 _buried
-ops
 
 id_rsa
 pubring.kbx
