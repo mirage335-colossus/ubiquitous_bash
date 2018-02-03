@@ -78,6 +78,7 @@ cd "$(_getScriptAbsoluteFolder)"
 
 export ubiquitiousLibDir="."
 [[ -e "./_lib/ubiquitous_bash" ]] && export ubiquitiousLibDir="./_lib/ubiquitous_bash"
+[[ -e "./_lib/coreautossh/ubiquitous_bash" ]] && export ubiquitiousLibDir="./_lib/coreautossh/ubiquitous_bash"
 export progDir="./_prog"
 export progScript="./ubiquitous_bash.sh"
 export configDir="./_config"
@@ -112,7 +113,9 @@ _includeScript() {
 	_includeFile "$ubiquitiousLibDir"/"$includeScriptFilename" && return 0
 	
 	_includeFile "$configDir"/"$includeScriptFilename" && return 0
+	_includeFile "$ubiquitiousLibDir"/"$configDir"/"$includeScriptFilename" && return 0
 	
+	return 1
 }
 
 # "$1" == script list array
