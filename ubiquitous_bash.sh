@@ -364,15 +364,29 @@ _rmlink() {
 }
 
 #Like "ln -sf", but will not proceed if target is not link and exists (ie. will not erase files).
-_relink() {
+_relink_sequence() {
 
 	#Do not update correct symlink.
 	local existingLinkTarget
 	existingLinkTarget=$(readlink "$2")
 	[[ "$existingLinkTarget" == "$1" ]] && return 0
 	
-	_rmlink "$2" && ln -s "$1" "$2" && return 0
+	! [[ "$relinkRelativeUb" == "true" ]] && _rmlink "$2" && ln -s "$1" "$2" && return 0
+	[[ "$relinkRelativeUb" == "true" ]] && _rmlink "$2" && ln -s -r "$1" "$2" && return 0
+	
 	return 1
+}
+
+_relink() {
+	[[ "$relinkRelativeUb" == "true" ]] && export relinkRelativeUb=""
+	_relink_sequence "$@"
+}
+
+_relink_relative() {
+	export relinkRelativeUb="true"
+	_relink_sequence "$@"
+	export relinkRelativeUb=""
+	unset relinkRelativeUb
 }
 
 #Copies files only if source/destination do match. Keeps files in a completely written state as often as possible.
@@ -8010,74 +8024,6 @@ _prepare_docker() {
 
 
 
-#####Network Specific Variables
-#Statically embedded into monolithic ubiquitous_bash.sh/cautossh script by compile .
-
-# WARNING Must use unique netName!
-export netName=default
-export gatewayName="$netName"-gw
-export LOCALSSHPORT=22
-
-#Network Defaults
-export AUTOSSH_FIRST_POLL=45
-export AUTOSSH_POLL=45
-#export AUTOSSH_GATETIME=0
-export AUTOSSH_GATETIME=15
-
-#export AUTOSSH_PORT=0
-
-#export AUTOSSH_DEBUG=1
-#export AUTOSSH_LOGLEVEL=7
-
-#Example ONLY. Modify port asignments.
-_get_reversePorts() {
-	export matchingReversePorts
-	matchingReversePorts=()
-	export matchingEMBEDDED=false
-	
-	local matched
-	
-	local testHostname
-	testHostname="$1"
-	[[ "$testHostname" == "" ]] && testHostname=$(hostname -s)
-	
-	if [[ "$testHostname" == "alpha" ]] || [[ "$testHostname" == '*' ]]
-	then
-		matchingReversePorts+=( "20000" )
-		
-		matched=true
-	fi
-	
-	if [[ "$testHostname" == "beta" ]] || [[ "$testHostname" == '*' ]]
-	then
-		matchingReversePorts+=( "20001" )
-		export matchingEMBEDDED=true
-		
-		matched=true
-	fi
-	
-	if ! [[ "$matched" == "true" ]] || [[ "$testHostname" == '*' ]]
-	then
-		matchingReversePorts+=( "20009" )
-		matchingReversePorts+=( "20008" )
-	fi
-	
-	export matchingReversePorts
-}
-
-_get_reversePorts
-export reversePorts=("${matchingReversePorts[@]}")
-export EMBEDDED="$matchingEMBEDDED"
-
-export keepKeys_SSH=true
-
-export sshBase="$HOME"/.ssh
-export sshUbiquitous="$sshBase"/"$ubiquitiousBashID"
-export sshDir="$sshUbiquitous"/"$netName"
-
-
-
-
 #####Local Environment Management (Resources)
 
 _prepare_prog() {
@@ -8799,7 +8745,7 @@ _setupCommand() {
 	local clientName
 	clientName=$(basename "$clientScriptFolder")
 	
-	ln -s -r "$clientScriptLocation" ~/bin/"$commandName""-""$clientName"
+	_relink_relative "$clientScriptLocation" ~/bin/"$commandName""-""$clientName"
 	
 	
 }
@@ -8927,6 +8873,74 @@ _main() {
 	
 	_stop
 }
+
+#####Network Specific Variables
+#Statically embedded into monolithic ubiquitous_bash.sh/cautossh script by compile .
+
+# WARNING Must use unique netName!
+export netName=default
+export gatewayName="$netName"-gw
+export LOCALSSHPORT=22
+
+#Network Defaults
+export AUTOSSH_FIRST_POLL=45
+export AUTOSSH_POLL=45
+#export AUTOSSH_GATETIME=0
+export AUTOSSH_GATETIME=15
+
+#export AUTOSSH_PORT=0
+
+#export AUTOSSH_DEBUG=1
+#export AUTOSSH_LOGLEVEL=7
+
+#Example ONLY. Modify port asignments.
+_get_reversePorts() {
+	export matchingReversePorts
+	matchingReversePorts=()
+	export matchingEMBEDDED=false
+	
+	local matched
+	
+	local testHostname
+	testHostname="$1"
+	[[ "$testHostname" == "" ]] && testHostname=$(hostname -s)
+	
+	if [[ "$testHostname" == "alpha" ]] || [[ "$testHostname" == '*' ]]
+	then
+		matchingReversePorts+=( "20000" )
+		
+		matched=true
+	fi
+	
+	if [[ "$testHostname" == "beta" ]] || [[ "$testHostname" == '*' ]]
+	then
+		matchingReversePorts+=( "20001" )
+		export matchingEMBEDDED=true
+		
+		matched=true
+	fi
+	
+	if ! [[ "$matched" == "true" ]] || [[ "$testHostname" == '*' ]]
+	then
+		matchingReversePorts+=( "20009" )
+		matchingReversePorts+=( "20008" )
+	fi
+	
+	export matchingReversePorts
+}
+
+_get_reversePorts
+export reversePorts=("${matchingReversePorts[@]}")
+export EMBEDDED="$matchingEMBEDDED"
+
+export keepKeys_SSH=true
+
+export sshBase="$HOME"/.ssh
+export sshUbiquitous="$sshBase"/"$ubiquitiousBashID"
+export sshDir="$sshUbiquitous"/"$netName"
+
+
+
 
 #####Overrides
 

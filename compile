@@ -438,9 +438,6 @@ includeScriptList+=( "structure"/specglobalvars.sh )
 
 includeScriptList+=( "shortcuts/git"/gitVars.sh )
 
-#####Hardcoded
-includeScriptList+=( netvars.sh )
-
 includeScriptList+=( "structure"/localfs.sh )
 
 includeScriptList+=( "structure"/localenv.sh )
@@ -454,6 +451,9 @@ includeScriptList+=( core.sh )
 
 includeScriptList+=( "structure"/build.sh )
 includeScriptList+=( "structure"/program.sh )
+
+#Hardcoded
+includeScriptList+=( netvars.sh )
 
 includeScriptList+=( "structure"/overrides.sh )
 

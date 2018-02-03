@@ -225,7 +225,7 @@ _setupCommand() {
 	local clientName
 	clientName=$(basename "$clientScriptFolder")
 	
-	ln -s -r "$clientScriptLocation" ~/bin/"$commandName""-""$clientName"
+	_relink_relative "$clientScriptLocation" ~/bin/"$commandName""-""$clientName"
 	
 	
 }
