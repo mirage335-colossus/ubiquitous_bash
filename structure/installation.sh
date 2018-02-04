@@ -250,8 +250,6 @@ _setup_prog() {
 _setup() {
 	_start
 	
-	_setup_pre
-	
 	"$scriptAbsoluteLocation" _test || _stop 1
 	
 	"$scriptAbsoluteLocation" _test_build || _stop 1

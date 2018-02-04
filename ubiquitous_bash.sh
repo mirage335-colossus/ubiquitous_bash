@@ -1110,8 +1110,10 @@ _ssh_sequence() {
 	_start
 	
 	export sshBase="$safeTmp"/.ssh
+	_prepare_ssh
 	
-	_setup_ssh
+	#_setup_ssh
+	_setup_ssh_commands
 	
 	ssh -F "$sshDir"/config "$@"
 	
@@ -7858,15 +7860,10 @@ export EMBEDDED="$matchingEMBEDDED"
 export keepKeys_SSH=true
 
 _prepare_ssh() {
-echo
-echo '>>>'
-echo *"$sshBase"*
-	[[ "$sshBase" == "" ]] && export sshBase="$HOME"/.ssh
+	[[ "$sshHomeBase" == "" ]] && export sshHomeBase="$HOME"/.ssh
+	[[ "$sshBase" == "" ]] && export sshBase="$sshHomeBase"
 	export sshUbiquitous="$sshBase"/"$ubiquitiousBashID"
 	export sshDir="$sshUbiquitous"/"$netName"
-echo *"$sshBase"*
-echo '<<<'
-echo
 }
 
 _prepareFakeHome() {
@@ -8903,8 +8900,6 @@ _setup_prog() {
 
 _setup() {
 	_start
-	
-	_setup_pre
 	
 	"$scriptAbsoluteLocation" _test || _stop 1
 	

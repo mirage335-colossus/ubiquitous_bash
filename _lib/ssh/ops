@@ -1,6 +1,6 @@
 export netName=default
 
-export sshBase="$HOME"/.ssh
+export sshHomeBase="$HOME"/.ssh
 
 #Example only.
 _here_ssh_config() {

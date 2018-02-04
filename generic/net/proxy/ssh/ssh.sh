@@ -51,8 +51,10 @@ _ssh_sequence() {
 	_start
 	
 	export sshBase="$safeTmp"/.ssh
+	_prepare_ssh
 	
-	_setup_ssh
+	#_setup_ssh
+	_setup_ssh_commands
 	
 	ssh -F "$sshDir"/config "$@"
 	
