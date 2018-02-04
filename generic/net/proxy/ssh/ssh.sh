@@ -54,7 +54,7 @@ _ssh_sequence() {
 	_prepare_ssh
 	
 	#_setup_ssh
-	_setup_ssh_commands
+	_setup_ssh_operations
 	
 	ssh -F "$sshDir"/config "$@"
 	
@@ -153,7 +153,7 @@ _setup_ssh_merge_known_hosts() {
 	_cpDiff "$scriptLocal"/ssh/known_hosts "$sshDir"/known_hosts
 }
 
-_setup_ssh_commands() {
+_setup_ssh_operations() {
 	_prepare_ssh
 	
 	mkdir -p "$scriptLocal"/ssh
@@ -195,13 +195,20 @@ _setup_ssh_commands() {
 _setup_ssh_sequence() {
 	_start
 	
-	_setup_ssh_commands
+	_setup_ssh_operations
 	
 	_stop
 }
 
 _setup_ssh() {
 	"$scriptAbsoluteLocation" _setup_ssh_sequence "$@"
+}
+
+_setup_ssh_commands() {
+	find . -name '_vnc' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
+	find . -name '_ssh' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
+	find . -name '_wake' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
+	find . -name '_fs' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
 }
 
 #May be overridden by "ops" if multiple gateways are required.

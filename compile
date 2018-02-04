@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
 #Critical prerequsites.
-#Critical prerequsites.
 _getAbsolute_criticalDep() {
 	! type realpath > /dev/null 2>&1 && return 1
 	! type readlink > /dev/null 2>&1 && return 1
