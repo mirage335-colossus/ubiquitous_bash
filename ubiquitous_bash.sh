@@ -1123,6 +1123,13 @@ _ssh_sequence() {
 }
 
 _ssh() {
+	if [[ "$sshInContainment" == "true" ]]
+	then
+		ssh -F "$sshDir"/config "$@"
+		return 0
+	fi
+	
+	export sshInContainment="true"
 	"$scriptAbsoluteLocation" _ssh_sequence "$@"
 }
 

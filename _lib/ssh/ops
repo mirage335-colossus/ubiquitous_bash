@@ -46,6 +46,8 @@ _ssh_proxy_machine-default() {
 	
 	_proxyTor_reverse machine address.onion
 	
+	_ssh machine-$netName -q -W machine-default:22
+	
 	_stop
 }
 
