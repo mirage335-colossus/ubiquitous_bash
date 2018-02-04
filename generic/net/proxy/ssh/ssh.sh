@@ -133,8 +133,8 @@ _setup_ssh_copyKey() {
 	sshKeyName="$1"
 	[[ "$2" != "" ]] && sshKeyLocalSubdirectory="$2"/
 	
-	chmod 600 "$scriptLocal"/ssh/"$sshKeyName"
-	chmod 600 "$scriptLocal"/ssh/"$sshKeyName".pub
+	chmod 600 "$scriptLocal"/ssh/"$sshKeyLocalSubdirectory""$sshKeyName"
+	chmod 600 "$scriptLocal"/ssh/"$sshKeyLocalSubdirectory""$sshKeyName".pub
 	cp -n "$scriptLocal"/ssh/"$sshKeyLocalSubdirectory""$sshKeyName" "$sshDir"/"$sshKeyName"
 	cp -n "$scriptLocal"/ssh/"$sshKeyLocalSubdirectory""$sshKeyName".pub "$sshDir"/"$sshKeyName".pub
 }
