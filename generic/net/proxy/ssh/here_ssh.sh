@@ -2,7 +2,7 @@
 _here_ssh_config() {
 	cat << CZXWXcRMTo8EmM8i4d
 
-Host *-$netName
+Host *-$netName*
 	Compression yes
 	ExitOnForwardFailure yes
 	ConnectTimeout 72
