@@ -1183,6 +1183,21 @@ _ssh_copy_id() {
 }
 alias _ssh-copy-id=_ssh_copy_id
 
+#"$1" == "key_name"
+#"$2" == "local_subdirectory" (optional)
+_setup_ssh_copyKey() {
+	local sshKeyName
+	local sshKeyLocalSubdirectory
+	
+	sshKeyName="$1"
+	[[ "$2" != "" ]] && sshKeyLocalSubdirectory="$2"/
+	
+	chmod 600 "$scriptLocal"/ssh/"$sshKeyName"
+	chmod 600 "$scriptLocal"/ssh/"$sshKeyName".pub
+	cp -n "$scriptLocal"/ssh/"$sshKeyLocalSubdirectory""$sshKeyName" "$sshDir"/"$sshKeyName"
+	cp -n "$scriptLocal"/ssh/"$sshKeyLocalSubdirectory""$sshKeyName".pub "$sshDir"/"$sshKeyName".pub
+}
+
 #Overload with "ops".
 _setup_ssh_extra() {
 	true
@@ -1223,15 +1238,10 @@ _setup_ssh_commands() {
 		ssh-keygen -b 4096 -t rsa -N "" -f "$scriptLocal"/id_rsa
 	fi
 	
-	chmod 600 "$scriptLocal"/ssh/id_rsa
-	chmod 600 "$scriptLocal"/ssh/id_rsa.pub
-	
 	_here_ssh_config >> "$safeTmp"/config
 	_cpDiff "$safeTmp"/config "$sshDir"/config
 	
-	
-	cp -n "$scriptLocal"/ssh/id_rsa "$sshDir"/id_rsa
-	cp -n "$scriptLocal"/ssh/id_rsa.pub "$sshDir"/id_rsa.pub
+	_setup_ssh_copyKey id_rsa
 	
 	_setup_ssh_merge_known_hosts
 	
