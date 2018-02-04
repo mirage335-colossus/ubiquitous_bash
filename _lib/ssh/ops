@@ -1,7 +1,6 @@
 export netName=default
 
 export sshBase="$HOME"/.ssh
-_prepare_ssh
 
 #Example only.
 _here_ssh_config() {
@@ -67,7 +66,12 @@ _setupCommands() {
 	find . -name '_fs' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
 }
 
-#Hooks "_setup" before "_setup_ssh" . Use to install extra files (eg. machine specific SSH keys).
+#Hooks "_setup_ssh" after other operations complete. Typically used to install special files (eg. machine specific keys).
+_setup_ssh_extra() {
+	true
+}
+
+#Hooks "_setup" before "_setup_ssh" .
 _setup_pre() {
 	true
 }

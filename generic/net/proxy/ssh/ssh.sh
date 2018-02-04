@@ -47,11 +47,25 @@ _proxySSH_reverse() {
 	done
 }
 
-_ssh() {
-	ssh -F "$scriptLocal"/ssh/config "$@"
+_ssh_sequence() {
+	_start
+	
+	export sshBase="$safeTmp"/.ssh
+	
+	_setup_ssh
+	
+	ssh -F "$sshDir"/config "$@"
+	
+	_setup_ssh_merge_known_hosts
+	
+	_stop
 }
 
-_vnc() {
+_ssh() {
+	"$scriptAbsoluteLocation" _ssh_sequence "$@"
+}
+
+_vnc_sequence() {
 	_start
 	
 	local vncMinPort
@@ -88,8 +102,13 @@ _vnc() {
 	
 	#vncviewer -encodings "copyrect tight zrle hextile" localhost:"$vncPort"
 	cat "$safeTmp"/x11vncpasswd | vncviewer -autopass localhost:"$vncPort"
+	stty echo
 	
 	_stop
+}
+
+_vnc() {
+	"$scriptAbsoluteLocation" _vnc_sequence "$@"
 }
 
 #Builtin version of ssh-copy-id.
@@ -108,8 +127,17 @@ _setup_ssh_extra() {
 	true
 }
 
-_setup_ssh_sequence() {
-	_start
+_setup_ssh_merge_known_hosts() {
+	[[ ! -e "$scriptLocal"/ssh/known_hosts ]] && echo > "$scriptLocal"/ssh/known_hosts
+	[[ ! -e "$sshDir"/known_hosts ]] && echo > "$sshDir"/known_hosts
+	sort "$scriptLocal"/ssh/known_hosts "$sshDir"/known_hosts | uniq > "$safeTmp"/known_hosts_uniq
+	_cpDiff "$safeTmp"/known_hosts_uniq "$scriptLocal"/ssh/known_hosts
+	
+	_cpDiff "$scriptLocal"/ssh/known_hosts "$sshDir"/known_hosts
+}
+
+_setup_ssh_commands() {
+	_prepare_ssh
 	
 	mkdir -p "$scriptLocal"/ssh
 	
@@ -137,21 +165,25 @@ _setup_ssh_sequence() {
 	chmod 600 "$scriptLocal"/ssh/id_rsa
 	chmod 600 "$scriptLocal"/ssh/id_rsa.pub
 	
-	_cpDiff "$scriptLocal"/ssh/config "$sshDir"/config
+	_here_ssh_config >> "$safeTmp"/config
+	_cpDiff "$safeTmp"/config "$sshDir"/config
+	
+	
 	cp -n "$scriptLocal"/ssh/id_rsa "$sshDir"/id_rsa
 	cp -n "$scriptLocal"/ssh/id_rsa.pub "$sshDir"/id_rsa.pub
 	
-	[[ ! -e "$scriptLocal"/ssh/known_hosts ]] && echo > "$scriptLocal"/ssh/known_hosts
-	[[ ! -e "$sshDir"/known_hosts ]] && echo > "$sshDir"/known_hosts
-	sort "$scriptLocal"/ssh/known_hosts "$sshDir"/known_hosts | uniq > "$safeTmp"/known_hosts_uniq
-	_cpDiff "$safeTmp"/known_hosts_uniq "$scriptLocal"/ssh/known_hosts
-	
-	_cpDiff "$scriptLocal"/ssh/known_hosts "$sshDir"/known_hosts
+	_setup_ssh_merge_known_hosts
 	
 	_cpDiff "$scriptAbsoluteLocation" "$sshDir"/cautossh
 	_cpDiff "$scriptLocal"/ssh/ops "$sshDir"/ops
 	
 	_setup_ssh_extra
+}
+
+_setup_ssh_sequence() {
+	_start
+	
+	_setup_ssh_commands
 	
 	_stop
 }

@@ -57,8 +57,13 @@ export EMBEDDED="$matchingEMBEDDED"
 export keepKeys_SSH=true
 
 _prepare_ssh() {
+echo
+echo '>>>'
+echo *"$sshBase"*
 	[[ "$sshBase" == "" ]] && export sshBase="$HOME"/.ssh
 	export sshUbiquitous="$sshBase"/"$ubiquitiousBashID"
 	export sshDir="$sshUbiquitous"/"$netName"
+echo *"$sshBase"*
+echo '<<<'
+echo
 }
-_prepare_ssh

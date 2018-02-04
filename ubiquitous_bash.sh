@@ -1033,7 +1033,8 @@ _proxyTor_reverse() {
 _here_ssh_config() {
 	cat << CZXWXcRMTo8EmM8i4d
 
-Host *-"$netName"
+Host *-$netName
+	Compression yes
 	ExitOnForwardFailure yes
 	ConnectTimeout 72
 	ConnectionAttempts 1
@@ -1042,15 +1043,15 @@ Host *-"$netName"
 	#PubkeyAuthentication yes
 	#PasswordAuthentication no
 	StrictHostKeyChecking no
-	UserKnownHostsFile "$sshDir"/known_hosts
-	IdentityFile "$sshDir"/id_rsa
+	UserKnownHostsFile "$sshDir/known_hosts"
+	IdentityFile "$sshDir/id_rsa"
 	
 	Cipher aes256-gcm@openssh.com
 	Ciphers aes256-gcm@openssh.com,aes128-ctr,aes192-ctr,aes256-ctr,arcfour256,arcfour128,aes128-gcm@openssh.com,chacha20-poly1305@openssh.com,aes128-cbc,3des-cbc,blowfish-cbc,cast128-cbc,aes192-cbc,aes256-cbc,arcfour
 
-Host machine-"$netName"
+Host machine-$netName
 	User user
-	ProxyCommand "$sshDir"/cautossh _ssh_proxy_machine-"$netName"
+	ProxyCommand "$sshDir/cautossh" _ssh_proxy_machine-$netName
 
 
 CZXWXcRMTo8EmM8i4d
@@ -1105,11 +1106,25 @@ _proxySSH_reverse() {
 	done
 }
 
-_ssh() {
-	ssh -F "$scriptLocal"/ssh/config "$@"
+_ssh_sequence() {
+	_start
+	
+	export sshBase="$safeTmp"/.ssh
+	
+	_setup_ssh
+	
+	ssh -F "$sshDir"/config "$@"
+	
+	_setup_ssh_merge_known_hosts
+	
+	_stop
 }
 
-_vnc() {
+_ssh() {
+	"$scriptAbsoluteLocation" _ssh_sequence "$@"
+}
+
+_vnc_sequence() {
 	_start
 	
 	local vncMinPort
@@ -1146,8 +1161,13 @@ _vnc() {
 	
 	#vncviewer -encodings "copyrect tight zrle hextile" localhost:"$vncPort"
 	cat "$safeTmp"/x11vncpasswd | vncviewer -autopass localhost:"$vncPort"
+	stty echo
 	
 	_stop
+}
+
+_vnc() {
+	"$scriptAbsoluteLocation" _vnc_sequence "$@"
 }
 
 #Builtin version of ssh-copy-id.
@@ -1166,8 +1186,17 @@ _setup_ssh_extra() {
 	true
 }
 
-_setup_ssh_sequence() {
-	_start
+_setup_ssh_merge_known_hosts() {
+	[[ ! -e "$scriptLocal"/ssh/known_hosts ]] && echo > "$scriptLocal"/ssh/known_hosts
+	[[ ! -e "$sshDir"/known_hosts ]] && echo > "$sshDir"/known_hosts
+	sort "$scriptLocal"/ssh/known_hosts "$sshDir"/known_hosts | uniq > "$safeTmp"/known_hosts_uniq
+	_cpDiff "$safeTmp"/known_hosts_uniq "$scriptLocal"/ssh/known_hosts
+	
+	_cpDiff "$scriptLocal"/ssh/known_hosts "$sshDir"/known_hosts
+}
+
+_setup_ssh_commands() {
+	_prepare_ssh
 	
 	mkdir -p "$scriptLocal"/ssh
 	
@@ -1195,21 +1224,25 @@ _setup_ssh_sequence() {
 	chmod 600 "$scriptLocal"/ssh/id_rsa
 	chmod 600 "$scriptLocal"/ssh/id_rsa.pub
 	
-	_cpDiff "$scriptLocal"/ssh/config "$sshDir"/config
+	_here_ssh_config >> "$safeTmp"/config
+	_cpDiff "$safeTmp"/config "$sshDir"/config
+	
+	
 	cp -n "$scriptLocal"/ssh/id_rsa "$sshDir"/id_rsa
 	cp -n "$scriptLocal"/ssh/id_rsa.pub "$sshDir"/id_rsa.pub
 	
-	[[ ! -e "$scriptLocal"/ssh/known_hosts ]] && echo > "$scriptLocal"/ssh/known_hosts
-	[[ ! -e "$sshDir"/known_hosts ]] && echo > "$sshDir"/known_hosts
-	sort "$scriptLocal"/ssh/known_hosts "$sshDir"/known_hosts | uniq > "$safeTmp"/known_hosts_uniq
-	_cpDiff "$safeTmp"/known_hosts_uniq "$scriptLocal"/ssh/known_hosts
-	
-	_cpDiff "$scriptLocal"/ssh/known_hosts "$sshDir"/known_hosts
+	_setup_ssh_merge_known_hosts
 	
 	_cpDiff "$scriptAbsoluteLocation" "$sshDir"/cautossh
 	_cpDiff "$scriptLocal"/ssh/ops "$sshDir"/ops
 	
 	_setup_ssh_extra
+}
+
+_setup_ssh_sequence() {
+	_start
+	
+	_setup_ssh_commands
 	
 	_stop
 }
@@ -7825,11 +7858,16 @@ export EMBEDDED="$matchingEMBEDDED"
 export keepKeys_SSH=true
 
 _prepare_ssh() {
+echo
+echo '>>>'
+echo *"$sshBase"*
 	[[ "$sshBase" == "" ]] && export sshBase="$HOME"/.ssh
 	export sshUbiquitous="$sshBase"/"$ubiquitiousBashID"
 	export sshDir="$sshUbiquitous"/"$netName"
+echo *"$sshBase"*
+echo '<<<'
+echo
 }
-_prepare_ssh
 
 _prepareFakeHome() {
 	mkdir -p "$globalFakeHome"
@@ -8846,9 +8884,13 @@ _setupCommand() {
 	
 }
 
+#Consider placing files like ' _vnc-machine-"$netName" ' in an "_index" folder for automatic installation.
 _setupCommands() {
 	#find . -name '_command' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
-	true
+	find . -name '_vnc' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
+	find . -name '_ssh' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
+	find . -name '_wake' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
+	find . -name '_fs' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
 }
 
 _setup_pre() {
@@ -9040,14 +9082,6 @@ export reversePorts=("${matchingReversePorts[@]}")
 export EMBEDDED="$matchingEMBEDDED"
 
 export keepKeys_SSH=true
-
-_prepare_sshVars() {
-	export sshBase="$HOME"/.ssh
-	export sshUbiquitous="$sshBase"/"$ubiquitiousBashID"
-	export sshDir="$sshUbiquitous"/"$netName"
-}
-
-_prepare_ssh
 
 
 #####Overrides
