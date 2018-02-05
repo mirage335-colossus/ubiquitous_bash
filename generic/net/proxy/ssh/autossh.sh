@@ -92,6 +92,7 @@ _autossh_launch() {
 	done
 }
 
+# WARNING Not all autossh functions have been fully tested yet. However, previous versions of this system are known to be much more robust than autossh defaults.
 _autossh() {
 	mkdir -p "$scriptLocal"/ssh/log
 	local logID

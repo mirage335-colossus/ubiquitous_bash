@@ -42,11 +42,12 @@ _ssh_proxy_machine-default() {
 	
 	_proxySSH gateway-default 20009
 	
-	_proxySSH_reverse gateway-default
+	_proxySSH_reverse machine gateway-default
 	
 	_proxyTor_reverse machine address.onion
 	
-	_ssh machine-$netName -q -W machine-default:22
+	_proxySSH gateway-default 22 machine-default
+	#_ssh gateway-default -q -W machine-default:22
 	
 	_stop
 }
