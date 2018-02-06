@@ -103,6 +103,8 @@ In most user environments, the latest git repository code will provide the stron
 
 * SSH over Tor through "_proxyTor_direct" will not work as is under MSW/Cygwin hosts. A SOCKS capable version of netcat ("nc") may need to be installed under the Cygwin environment, detected, and used. Also, "curl" as used by "_checkTorPort" will need to directly work with the SOCKS proxy. By contrast, UNIX can support better portability, using "torsocks" in place of parameters specific to variants of "nc" or "curl".
 
+* An error is thrown to standard error upon shutdown in some rare cases. As this is intermittent, the error has not yet been identified. Bug reports welcome.
+
 
 # WARNING
 
