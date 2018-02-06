@@ -44,7 +44,6 @@ _fetchDep_distro() {
 	return 1
 }
 
-#No production use.
 _wantGetDep() {
 	_wantDep "$@" && return 0
 	

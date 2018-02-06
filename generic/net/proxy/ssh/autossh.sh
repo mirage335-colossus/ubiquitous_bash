@@ -1,5 +1,9 @@
 _testAutoSSH() {
-	_getDep autossh
+	if ! _wantGetDep autossh
+	then
+		echo 'warn: autossh not available'
+		return 1
+	fi
 }
 
 #"$1" == "$gatewayName"

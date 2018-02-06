@@ -1,6 +1,15 @@
 _testTor() {
-	_getDep tor
-	_getDep torsocks
+	if ! _wantGetDep tor
+	then
+		echo 'warn: tor not available'
+		return 1
+	fi
+	
+	if ! _wantGetDep torsocks
+	then
+		echo 'warn: tor client support requires torsocks'
+		return 1
+	fi
 }
 
 _torServer_SSH_writeCfg() {

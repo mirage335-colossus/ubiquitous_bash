@@ -851,8 +851,17 @@ _waitPort() {
 }
 
 _testTor() {
-	_getDep tor
-	_getDep torsocks
+	if ! _wantGetDep tor
+	then
+		echo 'warn: tor not available'
+		return 1
+	fi
+	
+	if ! _wantGetDep torsocks
+	then
+		echo 'warn: tor client support requires torsocks'
+		return 1
+	fi
 }
 
 _torServer_SSH_writeCfg() {
@@ -1298,7 +1307,11 @@ _ssh_autoreverse() {
 }
 
 _testAutoSSH() {
-	_getDep autossh
+	if ! _wantGetDep autossh
+	then
+		echo 'warn: autossh not available'
+		return 1
+	fi
 }
 
 #"$1" == "$gatewayName"
@@ -1628,7 +1641,6 @@ _fetchDep_distro() {
 	return 1
 }
 
-#No production use.
 _wantGetDep() {
 	_wantDep "$@" && return 0
 	
