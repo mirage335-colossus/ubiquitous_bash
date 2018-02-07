@@ -1160,7 +1160,7 @@ _vnc_sequence() {
 	_start
 	
 	export permit_x11_override=("$scriptAbsoluteLocation" _ssh -C -o ConnectionAttempts=2 "$@")
-	_detect_x11 "$@"
+	_detect_x11
 	
 	local vncMinPort
 	let vncMinPort="${reversePorts[0]}"+20
@@ -1606,6 +1606,7 @@ _test_os_x11() {
 }
 
 #Default. Overridden where remote machine access is needed (ie. _ssh within _vnc) .
+#export permit_x11_override=("$scriptAbsoluteLocation" _ssh -C -o ConnectionAttempts=2 "$@")
 _permit_x11() {
 	if [[ "$permit_x11_override" != "" ]]
 	then

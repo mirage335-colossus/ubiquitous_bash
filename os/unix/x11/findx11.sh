@@ -3,6 +3,7 @@ _test_os_x11() {
 }
 
 #Default. Overridden where remote machine access is needed (ie. _ssh within _vnc) .
+#export permit_x11_override=("$scriptAbsoluteLocation" _ssh -C -o ConnectionAttempts=2 "$@")
 _permit_x11() {
 	if [[ "$permit_x11_override" != "" ]]
 	then
