@@ -1069,8 +1069,14 @@ CZXWXcRMTo8EmM8i4d
 _testProxySSH() {
 	_getDep ssh
 	
-	! _wantDep vncviewer && echo 'warn: vncviewer not found'
+	! _wantDep vncviewer && echo 'warn: no vncviewer, recommend tightvnc'
+	! _wantDep vncserver && echo 'warn: no vncserver, recommend tightvnc'
+	! _wantDep Xvnc && echo 'warn: no Xvnc, recommend tightvnc'
 	! _wantDep x11vnc && echo 'warn: x11vnc not found'
+	
+	! _wantDep xpra && echo 'warn: xpra not found'
+	! _wantDep xephyr && echo 'warn: xephyr not found'
+	! _wantDep xnest && echo 'warn: xnest not found'
 }
 
 #Enters remote server at hostname, by SSH, sets up a tunnel, checks tunnel for another SSH server.
@@ -1203,6 +1209,41 @@ _vnc_sequence() {
 
 _vnc() {
 	"$scriptAbsoluteLocation" _vnc_sequence "$@"
+}
+
+_desktop_serquence() {
+	_start
+	
+	local vncMinPort
+	let vncMinPort="${reversePorts[0]}"+20
+	
+	local vncMaxPort
+	let vncMaxPort="${reversePorts[0]}"+50
+	
+	local vncPort
+	vncPort=$(_findPort "$vncMinPort" "$vncMaxPort")
+	
+	echo > "$safeTmp"/x11vncpasswd
+	chmod 600 "$safeTmp"/x11vncpasswd
+	_uid > "$safeTmp"/x11vncpasswd
+	
+	cat "$safeTmp"/x11vncpasswd | "$scriptAbsoluteLocation" _ssh -C -c aes256-gcm@openssh.com -m hmac-sha1 -o ConnectTimeout=72 -o ConnectionAttempts=2 -o ServerAliveInterval=5 -o ServerAliveCountMax=5 -o ExitOnForwardFailure=yes -L "$vncPort":localhost:"$vncPort" "$@" 'Xvnc -geometry 1920x1080 -nevershared -passwdfile cmd:"/bin/cat -" -localhost -rfbport '"$vncPort"' -rfbwait 8000' &
+	
+	_waitPort localhost "$vncPort"
+	sleep 0.8 #VNC service may not always be ready when port is up.
+	#sleep 1
+	
+	#vncviewer -encodings "copyrect tight zrle hextile" localhost:"$vncPort"
+	cat "$safeTmp"/x11vncpasswd | vncviewer -autopass localhost:"$vncPort"
+	stty echo
+	
+	
+	
+	_stop
+}
+
+_desktop() {
+	"$scriptAbsoluteLocation" _desktop "$@"
 }
 
 #Builtin version of ssh-copy-id.
