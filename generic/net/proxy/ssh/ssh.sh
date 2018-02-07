@@ -4,6 +4,7 @@ _testProxySSH() {
 	! _wantDep vncviewer && echo 'warn: no vncviewer, recommend tightvnc'
 	! _wantDep vncserver && echo 'warn: no vncserver, recommend tightvnc'
 	! _wantDep Xvnc && echo 'warn: no Xvnc, recommend tightvnc'
+	
 	! _wantDep x11vnc && echo 'warn: x11vnc not found'
 	
 	! _wantDep xpra && echo 'warn: xpra not found'
@@ -92,6 +93,7 @@ _ssh() {
 	
 	export sshInContainment="true"
 	"$scriptAbsoluteLocation" _ssh_sequence "$@"
+	export sshInContainment=""
 }
 
 _vnc_sequence() {
@@ -143,7 +145,7 @@ _vnc() {
 	"$scriptAbsoluteLocation" _vnc_sequence "$@"
 }
 
-_desktop_serquence() {
+_desktop_sequence() {
 	_start
 	
 	local vncMinPort
@@ -155,27 +157,52 @@ _desktop_serquence() {
 	local vncPort
 	vncPort=$(_findPort "$vncMinPort" "$vncMaxPort")
 	
-	echo > "$safeTmp"/x11vncpasswd
-	chmod 600 "$safeTmp"/x11vncpasswd
-	_uid > "$safeTmp"/x11vncpasswd
+	local vncID
+	vncID=$(_uid)
+	local vncPasswdFile
+	vncPasswdFile='~/.vnctemp/passwd_'"$vncID"
+	local vncPIDfile
+	vncPIDfile='~/.vnctemp/pid_'"$vncID"
 	
-	cat "$safeTmp"/x11vncpasswd | "$scriptAbsoluteLocation" _ssh -C -c aes256-gcm@openssh.com -m hmac-sha1 -o ConnectTimeout=72 -o ConnectionAttempts=2 -o ServerAliveInterval=5 -o ServerAliveCountMax=5 -o ExitOnForwardFailure=yes -L "$vncPort":localhost:"$vncPort" "$@" 'Xvnc -geometry 1920x1080 -nevershared -passwdfile cmd:"/bin/cat -" -localhost -rfbport '"$vncPort"' -rfbwait 8000' &
+	local vncDisplay
+	local vncDisplayValid
+	for (( vncDisplay = 1 ; vncDisplay <= 9 ; vncDisplay++ ))
+	do
+		"$scriptAbsoluteLocation" _ssh -C -o ConnectionAttempts=2 "$@" '! [[ -e /tmp/.X'"$vncDisplay"'-lock ]] && ! [[ -e /tmp/.X11-unix/X'"$vncDisplay"' ]]' && vncDisplayValid=true && break
+	done
+	[[ "$vncDisplayValid" != "true" ]] && _stop 1
+	
+	echo > "$safeTmp"/vncserverpasswd
+	chmod 600 "$safeTmp"/vncserverpasswd
+	_uid 8 > "$safeTmp"/vncserverpasswd
+	
+	if ! _ssh -C -o ConnectionAttempts=2 "$@" 'mkdir -p ~/.vnctemp ; chmod 700 ~/.vnctemp'
+	then
+		_stop 1
+	fi
+	
+	desktopEnvironmentLaunch='xrdb \$HOME/.Xresources ; xsetroot -solid grey ; x-window-manager & export XKL_XMODMAP_DISABLE=1 ; /etc/X11/Xsession'
+	
+	cat "$safeTmp"/vncserverpasswd | "$scriptAbsoluteLocation" _ssh -C -c aes256-gcm@openssh.com -m hmac-sha1 -o ConnectTimeout=72 -o ConnectionAttempts=2 -o ServerAliveInterval=5 -o ServerAliveCountMax=5 -o ExitOnForwardFailure=yes -L "$vncPort":localhost:"$vncPort" "$@" 'vncpasswd -f > '"$vncPasswdFile"' && [[ -e '"$vncPasswdFile"' ]] && chmod 600 '"$vncPasswdFile"' ; Xvnc :'"$vncDisplay"' -depth 16 -geometry 1920x1080 -nevershared -dontdisconnect -localhost -rfbport '"$vncPort"' -rfbauth '"$vncPasswdFile"' -rfbwait 12000 & echo $! > '"$vncPIDfile"' ; export DISPLAY=:'"$vncDisplay"' ; '"$desktopEnvironmentLaunch"' ; sleep 12' &
 	
 	_waitPort localhost "$vncPort"
 	sleep 0.8 #VNC service may not always be ready when port is up.
 	#sleep 1
 	
 	#vncviewer -encodings "copyrect tight zrle hextile" localhost:"$vncPort"
-	cat "$safeTmp"/x11vncpasswd | vncviewer -autopass localhost:"$vncPort"
+	cat "$safeTmp"/vncserverpasswd | vncviewer -autopass localhost:"$vncPort"
 	stty echo
+	
+	_ssh -C -o ConnectionAttempts=2 "$@" 'kill $(cat '"$vncPIDfile"') ; rm -f '"$vncPasswdFile"' ; rm -f '"$vncPIDfile"''
 	
 	
 	
 	_stop
 }
 
+#Launches VNC server and client, with up to nine nonpersistent desktop environments.
 _desktop() {
-	"$scriptAbsoluteLocation" _desktop "$@"
+	"$scriptAbsoluteLocation" _desktop_sequence "$@"
 }
 
 #Builtin version of ssh-copy-id.
