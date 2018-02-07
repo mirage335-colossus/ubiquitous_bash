@@ -157,6 +157,10 @@ _deps_notLean() {
 	export enUb_notLean="true"
 }
 
+_deps_os_x11() {
+	export enUb_os_x11="true"
+}
+
 _deps_proxy() {
 	export enUb_proxy="true"
 }
@@ -238,6 +242,8 @@ _deps_fakehome() {
 #####
 
 _deps_notLean
+_deps_os_x11
+
 _deps_x11
 _deps_image
 _deps_virt
@@ -321,6 +327,8 @@ includeScriptList+=( "generic"/messaging.sh )
 includeScriptList+=( "generic"/validaterequest.sh )
 
 includeScriptList+=( "generic"/preserveLog.sh )
+
+[[ "$enUb_os_x11" == "true" ]] && includeScriptList+=( "os/unix/x11"/findx11.sh )
 
 includeScriptList+=( "os"/getDep.sh )
 [[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "os/distro/debian"/getDep_debian.sh )

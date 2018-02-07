@@ -1,5 +1,8 @@
 _testProxySSH() {
 	_getDep ssh
+	
+	! _wantDep vncviewer && echo 'warn: vncviewer not found'
+	! _wantDep x11vnc && echo 'warn: x11vnc not found'
 }
 
 #Enters remote server at hostname, by SSH, sets up a tunnel, checks tunnel for another SSH server.
@@ -88,6 +91,9 @@ _ssh() {
 _vnc_sequence() {
 	_start
 	
+	export permit_x11_override=("$scriptAbsoluteLocation" _ssh -C -o ConnectionAttempts=2 "$@")
+	_detect_x11 "$@"
+	
 	local vncMinPort
 	let vncMinPort="${reversePorts[0]}"+20
 	
@@ -113,7 +119,7 @@ _vnc_sequence() {
 	chmod 600 "$safeTmp"/x11vncpasswd
 	_uid > "$safeTmp"/x11vncpasswd
 	
-	cat "$safeTmp"/x11vncpasswd | "$scriptAbsoluteLocation" _ssh -C -c aes256-gcm@openssh.com -m hmac-sha1 -o ConnectTimeout=72 -o ConnectionAttempts=2 -o ServerAliveInterval=5 -o ServerAliveCountMax=5 -o ExitOnForwardFailure=yes -L "$vncPort":localhost:"$vncPort" "$@" 'x11vnc -passwdfile cmd:"/bin/cat -" -localhost -rfbport '"$vncPort"' -timeout 8 -xkb -display :0 -auth "$HOME"/.Xauthority -noxrecord -noxdamage' &
+	cat "$safeTmp"/x11vncpasswd | "$scriptAbsoluteLocation" _ssh -C -c aes256-gcm@openssh.com -m hmac-sha1 -o ConnectTimeout=72 -o ConnectionAttempts=2 -o ServerAliveInterval=5 -o ServerAliveCountMax=5 -o ExitOnForwardFailure=yes -L "$vncPort":localhost:"$vncPort" "$@" 'x11vnc -passwdfile cmd:"/bin/cat -" -localhost -rfbport '"$vncPort"' -timeout 8 -xkb -display '"$destination_DISPLAY"' -auth "$HOME"/.Xauthority -noxrecord -noxdamage' &
 	#-noxrecord -noxfixes -noxdamage
 	
 	_waitPort localhost "$vncPort"
