@@ -182,7 +182,7 @@ _readLocked() {
 	
 }
 
-#Using _readLocked before any _createLocked operation is strongly recommended.
+#Using _readLocked before any _createLocked operation is strongly recommended to remove any lock from prior UNIX session (ie. before latest reboot).
 _createLocked() {
 	[[ "$uDEBUG" == true ]] && caller 0 >> "$scriptLocal"/lock.log
 	[[ "$uDEBUG" == true ]] && echo -e '\t'"$sessionid"'\t'"$1" >> "$scriptLocal"/lock.log
@@ -191,16 +191,21 @@ _createLocked() {
 	
 	! [[ -e "$bootTmp"/"$sessionid" ]] && echo > "$bootTmp"/"$sessionid"
 	
-	echo "$sessionid" > "$lock_quicktmp"
+	# WARNING Recommend setting this to a permanent value when testing critical subsystems, such as with _userChRoot related operations.
+	local lockUID="$(_uid)"
 	
-	mv -n "$lock_quicktmp" "$1" > /dev/null 2>&1
+	echo "$sessionid" > "$lock_quicktmp"_"$lockUID"
 	
-	if [[ -e "$lock_quicktmp" ]]
+	mv -n "$lock_quicktmp"_"$lockUID" "$1" > /dev/null 2>&1
+	
+	if [[ -e "$lock_quicktmp"_"$lockUID" ]]
 	then
 		[[ "$uDEBUG" == true ]] && echo -e '\t'FAIL >> "$scriptLocal"/lock.log
+		rm -f "$lock_quicktmp"_"$lockUID" > /dev/null 2>&1
 		return 1
 	fi
 	
+	rm -f "$lock_quicktmp"_"$lockUID" > /dev/null 2>&1
 	return 0
 }
 

@@ -74,7 +74,7 @@ export AUTOSSH_GATETIME=15
 
 #Monolithic shared files.
 export lock_pathlock="$scriptLocal"/l_path
-export lock_quicktmp="$scriptLocal"/l_qtmp	#Used to make locking operations atomic as possible.
+export lock_quicktmp="$scriptLocal"/l_qt	#Used to make locking operations atomic as possible.
 export lock_emergency="$scriptLocal"/l_em
 export lock_open="$scriptLocal"/l_o
 export lock_opening="$scriptLocal"/l_opening

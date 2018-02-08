@@ -560,25 +560,31 @@ _test_daemon() {
 
 #To ensure the lowest descendents are terminated first, the file must be created in reverse order. Additionally, PID files created before a prior reboot must be discarded and ignored.
 _prependDaemonPID() {
-	while _readLocked "$daemonPidFile"cl || _readLocked "$daemonPidFile"op
+	
+	#Reset locks from before prior reboot.
+	_readLocked "$daemonPidFile"lk
+	_readLocked "$daemonPidFile"op
+	_readLocked "$daemonPidFile"cl
+	
+	while true
 	do
-		while true
-		do
-			! _readLocked "$daemonPidFile"cl && break
-			sleep 1
-		done
-		
-		while true
-		do
-			! _readLocked "$daemonPidFile"op && break
-			sleep 1
-		done
-		sleep 1
+		_createLocked "$daemonPidFile"op && break
+		sleep 0.1
 	done
 	
+	#Removes old PID file if not locked during current UNIX session (ie. since latest reboot).  Prevents termination of non-daemon PIDs.
+	if ! _readLocked "$daemonPidFile"lk
+	then
+		rm -f "$daemonPidFile"
+		rm -f "$daemonPidFile"t
+	fi
+	_createLocked "$daemonPidFile"lk
+	
 	[[ ! -e "$daemonPidFile" ]] && echo >> "$daemonPidFile"
-	cat - "$daemonPidFile" >> "$daemonPidFile".tmp
-	mv "$daemonPidFile".tmp "$daemonPidFile"
+	cat - "$daemonPidFile" >> "$daemonPidFile"t
+	mv "$daemonPidFile"t "$daemonPidFile"
+	
+	rm -f "$daemonPidFile"op
 }
 
 #By default, process descendents will be terminated first. Doing so is essential to reaching sub-proesses of sub-scripts, without manual user input.
@@ -695,35 +701,12 @@ _killDaemon() {
 }
 
 _cmdDaemon() {
-	#Do NOT proceed if daemon is critically starting (opening) or stopping (closing).
-	_readLocked "$daemonPidFile"op && return 1
-	_readLocked "$daemonPidFile"cl && return 1
-	
-	local daemonLockStatus
-	! _readLocked "$daemonPidFile"lk && daemonLockStatus="false"
-	
-	#Do NOT proceed if daemon is critically starting (opening) or stopping (closing).
-	_readLocked "$daemonPidFile"op && return 1
-	_readLocked "$daemonPidFile"cl && return 1
-	
-	if [[ "$daemonLockStatus" == "false" ]]
-	then
-		_createLocked "$daemonPidFile"op
-		_createLocked "$daemonPidFile"lk
-		rm -f "$daemonPidFile"
-	fi
-	
 	export isDaemon=true
 	
 	"$@" &
 	
 	#Any PID which may be part of a daemon may be appended to this file.
 	echo "$!" | _prependDaemonPID
-	
-	if [[ "$daemonLockStatus" == "false" ]]
-	then
-		rm -f "$daemonPidFile"op
-	fi
 }
 
 #Executes self in background (ie. as daemon).
@@ -8028,7 +8011,7 @@ export AUTOSSH_GATETIME=15
 
 #Monolithic shared files.
 export lock_pathlock="$scriptLocal"/l_path
-export lock_quicktmp="$scriptLocal"/l_qtmp	#Used to make locking operations atomic as possible.
+export lock_quicktmp="$scriptLocal"/l_qt	#Used to make locking operations atomic as possible.
 export lock_emergency="$scriptLocal"/l_em
 export lock_open="$scriptLocal"/l_o
 export lock_opening="$scriptLocal"/l_opening
@@ -8711,7 +8694,7 @@ _readLocked() {
 	
 }
 
-#Using _readLocked before any _createLocked operation is strongly recommended.
+#Using _readLocked before any _createLocked operation is strongly recommended to remove any lock from prior UNIX session (ie. before latest reboot).
 _createLocked() {
 	[[ "$uDEBUG" == true ]] && caller 0 >> "$scriptLocal"/lock.log
 	[[ "$uDEBUG" == true ]] && echo -e '\t'"$sessionid"'\t'"$1" >> "$scriptLocal"/lock.log
@@ -8720,16 +8703,21 @@ _createLocked() {
 	
 	! [[ -e "$bootTmp"/"$sessionid" ]] && echo > "$bootTmp"/"$sessionid"
 	
-	echo "$sessionid" > "$lock_quicktmp"
+	# WARNING Recommend setting this to a permanent value when testing critical subsystems, such as with _userChRoot related operations.
+	local lockUID="$(_uid)"
 	
-	mv -n "$lock_quicktmp" "$1" > /dev/null 2>&1
+	echo "$sessionid" > "$lock_quicktmp"_"$lockUID"
 	
-	if [[ -e "$lock_quicktmp" ]]
+	mv -n "$lock_quicktmp"_"$lockUID" "$1" > /dev/null 2>&1
+	
+	if [[ -e "$lock_quicktmp"_"$lockUID" ]]
 	then
 		[[ "$uDEBUG" == true ]] && echo -e '\t'FAIL >> "$scriptLocal"/lock.log
+		rm -f "$lock_quicktmp"_"$lockUID" > /dev/null 2>&1
 		return 1
 	fi
 	
+	rm -f "$lock_quicktmp"_"$lockUID" > /dev/null 2>&1
 	return 0
 }
 
