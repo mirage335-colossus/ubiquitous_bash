@@ -1,6 +1,6 @@
 _permissions_directory_checkForPath() {
 	local parameterAbsoluteLocation
-	parameterAbsoluteLocation=$(_getAbsoluteLocation "$PWD")
+	parameterAbsoluteLocation=$(_getAbsoluteLocation "$1")
 	
 	local checkScriptAbsoluteFolder="$(_getScriptAbsoluteFolder)"
 	
