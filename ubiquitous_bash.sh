@@ -551,8 +551,34 @@ _test_daemon() {
 	_getDep pkill
 }
 
-#To ensure the lowest descendents are terminated first, the file must be created in reverse order.
+#To ensure the lowest descendents are terminated first, the file must be created in reverse order. Additionally, PID files created before a prior reboot must be discarded and ignored.
 _prependDaemonPID() {
+	while _readLocked "$daemonPidFile"cl || _readLocked "$daemonPidFile"op
+	do
+		while true
+		do
+			! _readLocked "$daemonPidFile"cl && break
+			sleep 1
+		done
+		
+		while true
+		do
+			! _readLocked "$daemonPidFile"op && break
+			sleep 1
+		done
+		sleep 1
+	done
+	
+	if ! _readLocked "$daemonPidFile"lk
+	then
+		_createLocked "$daemonPidFile"op
+		_createLocked "$daemonPidFile"lk
+		
+		rm -f "$daemonPidFile"
+		
+		rm -f "$daemonPidFile"op
+	fi
+	
 	[[ ! -e "$daemonPidFile" ]] && echo >> "$daemonPidFile"
 	cat - "$daemonPidFile" >> "$daemonPidFile".tmp
 	mv "$daemonPidFile".tmp "$daemonPidFile"
@@ -648,10 +674,27 @@ alias _waitForDaemon=_waitForTermination
 
 #Kills background process using PID file.
 _killDaemon() {
+	#Do NOT proceed if PID values may be invalid.
+	! _readLocked "$daemonPidFile"lk && return 1
+	
+	#Do NOT proceed if daemon is starting (opening).
+	_readLocked "$daemonPidFile"op && return 1
+	
+	! _createLocked "$daemonPidFile"cl && return 1
+	
+	#Do NOT proceed if daemon is starting (opening).
+	_readLocked "$daemonPidFile"op && return 1
+	
 	_daemonAction "terminate"
 	
-	#Do NOT detele this file unless daemon can be confirmed down.
-	! _daemonStatus && rm -f "$daemonPidFile" >/dev/null 2>&1
+	#Do NOT proceed to detele lock/PID files unless daemon can be confirmed down.
+	_daemonStatus && return 1
+	
+	rm -f "$daemonPidFile" >/dev/null 2>&1
+	rm -f "$daemonPidFile"lk
+	rm -f "$daemonPidFile"cl
+	
+	return 0
 }
 
 _cmdDaemon() {
@@ -4571,6 +4614,7 @@ _editQemu_sequence() {
 	
 	_start
 	
+	_readLocked "$scriptLocal"/_qemuEdit && _stop 1
 	_createLocked "$scriptLocal"/_qemuEdit || _stop 1
 	
 	_integratedQemu "$@" || _stop 1
@@ -8552,6 +8596,7 @@ _readLocked() {
 	
 }
 
+#Using _readLocked before any _createLocked operation is strongly recommended.
 _createLocked() {
 	[[ "$uDEBUG" == true ]] && caller 0 >> "$scriptLocal"/lock.log
 	[[ "$uDEBUG" == true ]] && echo -e '\t'"$sessionid"'\t'"$1" >> "$scriptLocal"/lock.log
@@ -8569,6 +8614,8 @@ _createLocked() {
 		[[ "$uDEBUG" == true ]] && echo -e '\t'FAIL >> "$scriptLocal"/lock.log
 		return 1
 	fi
+	
+	return 0
 }
 
 _resetLocks() {
@@ -8777,11 +8824,11 @@ _idle() {
 	
 	_checkDep getIdle
 	
-	_killDaemon
+	_daemonStatus && _stop 1
 	
 	#Default 20 minutes.
 	[[ "$idleMax" == "" ]] && export idleMax=1200000
-	[[ "$idleMin" == "" ]] && export idleMin=1080000
+	[[ "$idleMin" == "" ]] && export idleMin=60000
 	
 	while true
 	do

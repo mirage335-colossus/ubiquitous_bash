@@ -81,6 +81,7 @@ _editQemu_sequence() {
 	
 	_start
 	
+	_readLocked "$scriptLocal"/_qemuEdit && _stop 1
 	_createLocked "$scriptLocal"/_qemuEdit || _stop 1
 	
 	_integratedQemu "$@" || _stop 1

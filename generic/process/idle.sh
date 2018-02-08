@@ -5,11 +5,11 @@ _idle() {
 	
 	_checkDep getIdle
 	
-	_killDaemon
+	_daemonStatus && _stop 1
 	
 	#Default 20 minutes.
 	[[ "$idleMax" == "" ]] && export idleMax=1200000
-	[[ "$idleMin" == "" ]] && export idleMin=1080000
+	[[ "$idleMin" == "" ]] && export idleMin=60000
 	
 	while true
 	do

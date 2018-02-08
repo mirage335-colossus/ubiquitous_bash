@@ -182,6 +182,7 @@ _readLocked() {
 	
 }
 
+#Using _readLocked before any _createLocked operation is strongly recommended.
 _createLocked() {
 	[[ "$uDEBUG" == true ]] && caller 0 >> "$scriptLocal"/lock.log
 	[[ "$uDEBUG" == true ]] && echo -e '\t'"$sessionid"'\t'"$1" >> "$scriptLocal"/lock.log
@@ -199,6 +200,8 @@ _createLocked() {
 		[[ "$uDEBUG" == true ]] && echo -e '\t'FAIL >> "$scriptLocal"/lock.log
 		return 1
 	fi
+	
+	return 0
 }
 
 _resetLocks() {
