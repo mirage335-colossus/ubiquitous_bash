@@ -1054,7 +1054,8 @@ _proxyTor_direct() {
 	#Use of "-q" parameter may not be useful in all cases.
 	##printf "HEAD / HTTP/1.0\r\n\r\n" | torsocks nc sejnfjrq6szgca7v.onion 80
 	#torsocks nc -q 96 "$proxyTargetHost" "$proxyTargetPort"
-	torsocks nc -q -1 "$proxyTargetHost" "$proxyTargetPort"
+	#torsocks nc -q -1 "$proxyTargetHost" "$proxyTargetPort"
+	torsocks nc "$proxyTargetHost" "$proxyTargetPort"
 }
 
 #Launches proxy if port at hostname is open.
@@ -1673,7 +1674,8 @@ _proxy_direct() {
 	proxyTargetPort="$2"
 	
 	#nc -q 96 "$proxyTargetHost" "$proxyTargetPort"
-	nc -q -1 "$proxyTargetHost" "$proxyTargetPort"
+	#nc -q -1 "$proxyTargetHost" "$proxyTargetPort"
+	nc "$proxyTargetHost" "$proxyTargetPort"
 }
 
 #Launches proxy if port at hostname is open.
