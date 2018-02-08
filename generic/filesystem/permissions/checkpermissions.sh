@@ -18,6 +18,9 @@ _permissions_directory_checkForPath() {
 	[[ "$permissions_group" -gt "7" ]] && return 1
 	[[ "$permissions_other" -gt "5" ]] && return 1
 	
+	#Above checks considered sufficient in typical cases, remainder for sake of example. Return true (safe).
+	return 0
+	
 	local permissions_uid
 	local permissions_gid
 	
