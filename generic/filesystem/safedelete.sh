@@ -71,7 +71,9 @@ _safeRMR() {
 	#Whitelist.
 	local safeToRM=false
 	
-	local safeScriptAbsoluteFolder="$(_getScriptAbsoluteFolder)"
+	local safeScriptAbsoluteFolder
+	#safeScriptAbsoluteFolder="$(_getScriptAbsoluteFolder)"
+	safeScriptAbsoluteFolder="$scriptAbsoluteFolder"
 	
 	[[ "$1" == "./"* ]] && [[ "$PWD" == "$safeScriptAbsoluteFolder"* ]] && safeToRM="true"
 	
@@ -83,7 +85,7 @@ _safeRMR() {
 	[[ "$safeToRM" == "false" ]] && return 1
 	
 	#Safeguards/
-	[[ "$safeToDeleteGit" != "true" ]] && [[ -d "$1" ]] && find "$1" | grep -i '\.git$' >/dev/null 2>&1 && return 1
+	[[ "$safeToDeleteGit" != "true" ]] && [[ -d "$1" ]] && [[ -e "$1" ]] && find "$1" | grep -i '\.git$' >/dev/null 2>&1 && return 1
 	
 	#Validate necessary tools were available for path building and checks.
 	_checkDep realpath
@@ -147,7 +149,9 @@ _safePath() {
 	#Whitelist.
 	local safeToRM=false
 	
-	local safeScriptAbsoluteFolder="$(_getScriptAbsoluteFolder)"
+	local safeScriptAbsoluteFolder
+	#safeScriptAbsoluteFolder="$(_getScriptAbsoluteFolder)"
+	safeScriptAbsoluteFolder="$scriptAbsoluteFolder"
 	
 	[[ "$1" == "./"* ]] && [[ "$PWD" == "$safeScriptAbsoluteFolder"* ]] && safeToRM="true"
 	
@@ -159,7 +163,7 @@ _safePath() {
 	[[ "$safeToRM" == "false" ]] && return 1
 	
 	#Safeguards/
-	[[ "$safeToDeleteGit" != "true" ]] && [[ -d "$1" ]] && find "$1" | grep -i '\.git$' >/dev/null 2>&1 && return 1
+	[[ "$safeToDeleteGit" != "true" ]] && [[ -d "$1" ]] && [[ -e "$1" ]] && find "$1" | grep -i '\.git$' >/dev/null 2>&1 && return 1
 	
 	#Validate necessary tools were available for path building and checks.
 	_checkDep realpath

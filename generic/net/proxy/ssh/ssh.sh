@@ -208,15 +208,16 @@ _desktop_sequence() {
 		_stop 1
 	fi
 	
-	desktopEnvironmentLaunch='xrdb \$HOME/.Xresources ; xsetroot -solid grey ; x-window-manager & export XKL_XMODMAP_DISABLE=1 ; /etc/X11/Xsession'
+	#desktopEnvironmentLaunch='xrdb \$HOME/.Xresources ; xsetroot -solid grey ; x-window-manager & export XKL_XMODMAP_DISABLE=1 ; /etc/X11/Xsession'
+	desktopEnvironmentLaunch='true'
 	desktopEnvironmentGeometry='1920x1080'
 	
 	local localClientDisplay="$DISPLAY"
 	
-	cat "$safeTmp"/vncserverpasswd | "$scriptAbsoluteLocation" _ssh -C -c aes256-gcm@openssh.com -m hmac-sha1 -o ConnectTimeout=72 -o ConnectionAttempts=2 -o ServerAliveInterval=5 -o ServerAliveCountMax=5 -o ExitOnForwardFailure=yes -L "$vncPort":localhost:"$vncPort" "$@" 'vncpasswd -f > '"$vncPasswdFile"' && [[ -e '"$vncPasswdFile"' ]] && chmod 600 '"$vncPasswdFile"' ; Xvnc :'"$vncDisplay"' -depth 16 -geometry '"$desktopEnvironmentGeometry"' -nevershared -dontdisconnect -localhost -rfbport '"$vncPort"' -rfbauth '"$vncPasswdFile"' -rfbwait 12000 & echo $! > '"$vncPIDfile"' ; export DISPLAY=:'"$vncDisplay"' ; '"$desktopEnvironmentLaunch"' ; sleep 12' &
+	#Xvnc works properly with PID files, whereas vncserver does not.
+	cat "$safeTmp"/vncserverpasswd | "$scriptAbsoluteLocation" _ssh -C -c aes256-gcm@openssh.com -m hmac-sha1 -o ConnectTimeout=72 -o ConnectionAttempts=2 -o ServerAliveInterval=5 -o ServerAliveCountMax=5 -o ExitOnForwardFailure=yes -L "$vncPort":localhost:"$vncPort" "$@" 'vncpasswd -f > '"$vncPasswdFile"' && [[ -e '"$vncPasswdFile"' ]] && chmod 600 '"$vncPasswdFile"' ; vncserver :'"$vncDisplay"' -depth 16 -geometry '"$desktopEnvironmentGeometry"' -nevershared -dontdisconnect -localhost -rfbport '"$vncPort"' -rfbauth '"$vncPasswdFile"' -rfbwait 12000 & echo $! > '"$vncPIDfile"' ; export DISPLAY=:'"$vncDisplay"' ; '"$desktopEnvironmentLaunch"' ; sleep 12' &
 	
 	export DISPLAY="$localClientDisplay"
-	echo $DISPLAY
 	
 	_waitPort localhost "$vncPort"
 	sleep 0.8 #VNC service may not always be ready when port is up.
@@ -226,8 +227,8 @@ _desktop_sequence() {
 	cat "$safeTmp"/vncserverpasswd | vncviewer -autopass localhost:"$vncPort"
 	stty echo
 	
-	_ssh -C -o ConnectionAttempts=2 "$@" 'kill $(cat '"$vncPIDfile"') ; rm -f '"$vncPasswdFile"' ; rm -f '"$vncPIDfile"''
-	
+	#_ssh -C -o ConnectionAttempts=2 "$@" 'kill $(cat '"$vncPIDfile"') ; rm -f '"$vncPasswdFile"' ; rm -f '"$vncPIDfile"''
+	_ssh -C -o ConnectionAttempts=2 "$@" 'pkill Xvnc ; pkill Xtightvnc  ; rm -f '"$vncPasswdFile"' ; rm -f '"$vncPIDfile"''
 	
 	
 	_stop
@@ -269,15 +270,16 @@ _push_desktop_sequence() {
 	mkdir -p ~/.vnctemp
 	chmod 700 ~/.vnctemp
 	
-	desktopEnvironmentLaunch='xrdb \$HOME/.Xresources ; xsetroot -solid grey ; x-window-manager & export XKL_XMODMAP_DISABLE=1 ; /etc/X11/Xsession'
+	#desktopEnvironmentLaunch='xrdb \$HOME/.Xresources ; xsetroot -solid grey ; x-window-manager & export XKL_XMODMAP_DISABLE=1 ; /etc/X11/Xsession'
+	desktopEnvironmentLaunch='true'
 	desktopEnvironmentGeometry='1280x720'
 	
 	local localClientDisplay="$DISPLAY"
 	
-	cat "$safeTmp"/vncserverpasswd | bash -c 'vncpasswd -f > '"$vncPasswdFile"' && [[ -e '"$vncPasswdFile"' ]] && chmod 600 '"$vncPasswdFile"' ; Xvnc :'"$vncDisplay"' -depth 16 -geometry '"$desktopEnvironmentGeometry"' -nevershared -dontdisconnect -localhost -rfbport '"$vncPort"' -rfbauth '"$vncPasswdFile"' -rfbwait 12000 & echo $! > '"$vncPIDfile"' ; export DISPLAY=:'"$vncDisplay"' ; '"$desktopEnvironmentLaunch"' ; sleep 12' &
+	#Xvnc works properly with PID files, whereas vncserver does not.
+	cat "$safeTmp"/vncserverpasswd | bash -c 'vncpasswd -f > '"$vncPasswdFile"' && [[ -e '"$vncPasswdFile"' ]] && chmod 600 '"$vncPasswdFile"' ; vncserver :'"$vncDisplay"' -depth 16 -geometry '"$desktopEnvironmentGeometry"' -nevershared -dontdisconnect -localhost -rfbport '"$vncPort"' -rfbauth '"$vncPasswdFile"' -rfbwait 12000 & echo $! > '"$vncPIDfile"' ; export DISPLAY=:'"$vncDisplay"' ; '"$desktopEnvironmentLaunch"' ; sleep 12' &
 	
 	export DISPLAY="$localClientDisplay"
-	echo $DISPLAY
 	
 	_waitPort localhost "$vncPort"
 	sleep 0.8 #VNC service may not always be ready when port is up.
@@ -287,10 +289,8 @@ _push_desktop_sequence() {
 	cat "$safeTmp"/vncserverpasswd | "$scriptAbsoluteLocation" _ssh -C -c aes256-gcm@openssh.com -m hmac-sha1 -o ConnectTimeout=72 -o ConnectionAttempts=2 -o ServerAliveInterval=5 -o ServerAliveCountMax=5 -o ExitOnForwardFailure=yes -R "$vncPort":localhost:"$vncPort" "$@" 'env DISPLAY='"$destination_DISPLAY"' vncviewer -autopass localhost:'"$vncPort"
 	stty echo
 	
-	kill $(cat "$vncPIDfile")
-	rm -f "$vncPasswdFile"
-	rm -f "$vncPIDfile"
-	
+	#kill $(cat "$vncPIDfile") ; rm -f "$vncPasswdFile" ; rm -f "$vncPIDfile"
+	pkill Xvnc ; pkill Xtightvnc ; rm -f "$vncPasswdFile" ; rm -f "$vncPIDfile"
 	
 	_stop
 }

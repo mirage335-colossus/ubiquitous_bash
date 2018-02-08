@@ -32,16 +32,16 @@ _stop_prog() {
 }
 
 _stop() {
+	_stop_prog
+	
 	_preserveLog
 	
 	rm -f "$pidFile" > /dev/null 2>&1	#Redundant, as this usually resides in "$safeTmp".
-	_safeRMR "$safeTmp"
 	_safeRMR "$shortTmp"
+	_safeRMR "$safeTmp"
 	
 	#Optionally always try to remove any systemd shutdown hook.
 	#_tryExec _unhook_systemd_shutdown
-	
-	_stop_prog
 	
 	if [[ "$1" != "" ]]
 	then
