@@ -20,16 +20,6 @@ _prependDaemonPID() {
 		sleep 1
 	done
 	
-	if ! _readLocked "$daemonPidFile"lk
-	then
-		_createLocked "$daemonPidFile"op
-		_createLocked "$daemonPidFile"lk
-		
-		rm -f "$daemonPidFile"
-		
-		rm -f "$daemonPidFile"op
-	fi
-	
 	[[ ! -e "$daemonPidFile" ]] && echo >> "$daemonPidFile"
 	cat - "$daemonPidFile" >> "$daemonPidFile".tmp
 	mv "$daemonPidFile".tmp "$daemonPidFile"
@@ -149,12 +139,35 @@ _killDaemon() {
 }
 
 _cmdDaemon() {
+	#Do NOT proceed if daemon is critically starting (opening) or stopping (closing).
+	_readLocked "$daemonPidFile"op && return 1
+	_readLocked "$daemonPidFile"cl && return 1
+	
+	local daemonLockStatus
+	! _readLocked "$daemonPidFile"lk && daemonLockStatus="false"
+	
+	#Do NOT proceed if daemon is critically starting (opening) or stopping (closing).
+	_readLocked "$daemonPidFile"op && return 1
+	_readLocked "$daemonPidFile"cl && return 1
+	
+	if [[ "$daemonLockStatus" == "false" ]]
+	then
+		_createLocked "$daemonPidFile"op
+		_createLocked "$daemonPidFile"lk
+		rm -f "$daemonPidFile"
+	fi
+	
 	export isDaemon=true
 	
 	"$@" &
 	
 	#Any PID which may be part of a daemon may be appended to this file.
 	echo "$!" | _prependDaemonPID
+	
+	if [[ "$daemonLockStatus" == "false" ]]
+	then
+		rm -f "$daemonPidFile"op
+	fi
 }
 
 #Executes self in background (ie. as daemon).
