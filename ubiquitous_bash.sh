@@ -8949,6 +8949,10 @@ _idle() {
 		if [[ "$idleTime" -gt "$idleMax" ]] && ! _daemonStatus
 		then
 			_execDaemon
+			while ! _daemonStatus
+			do
+				sleep 5
+			done
 		fi
 		
 		
