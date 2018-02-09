@@ -1280,19 +1280,19 @@ _vncviewer_operations() {
 	_detect_x11
 	export DISPLAY="$destination_DISPLAY"
 	
+	#TigerVNC
+	if vncviewer --help 2>&1 | grep 'PasswordFile   \- Password file for VNC authentication (default\=)' >/dev/null 2>&1
+	then
+		vncviewer -DotWhenNoCursor -passwd "$vncPasswdFile" localhost:"$vncPort" "$@"
+		stty echo
+		return 0
+	fi
+	
 	#TightVNC
 	if vncviewer --help 2>&1 | grep '\-passwd' >/dev/null 2>&1
 	then
 		#vncviewer -encodings "copyrect tight zrle hextile" localhost:"$vncPort"
 		vncviewer -passwd "$vncPasswdFile" localhost:"$vncPort" "$@"
-		stty echo
-		return 0
-	fi
-	
-	#TigerVNC
-	if vncviewer --help 2>&1 | grep 'PasswordFile   \- Password file for VNC authentication (default\=)' >/dev/null 2>&1
-	then
-		vncviewer -DotWhenNoCursor -passwd "$vncPasswdFile" localhost:"$vncPort" "$@"
 		stty echo
 		return 0
 	fi
