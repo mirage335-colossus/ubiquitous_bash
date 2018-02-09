@@ -64,7 +64,6 @@ export daemonPidFile="$scriptLocal"/.bgpid
 
 #export varStore="$scriptAbsoluteFolder"/var
 
-export vncPIDfile="$safeTmp"/.vncpid
 export vncPasswdFile="$safeTmp"/.vncpasswd
 
 #Network Defaults
