@@ -10,6 +10,8 @@ _testProxySSH() {
 	! _wantDep x11vnc && echo 'warn: x11vnc not found'
 	! _wantDep x0tigervncserver && echo 'warn: x0tigervncserver not found'
 	
+	! _wantDep xset && echo 'warn: xset not found'
+	
 	#! _wantDep xpra && echo 'warn: xpra not found'
 	#! _wantDep xephyr && echo 'warn: xephyr not found'
 	#! _wantDep xnest && echo 'warn: xnest not found'
@@ -144,6 +146,7 @@ _prepare_vnc() {
 	export vncPort=$(_findPort_vnc)
 	
 	export vncPIDfile="$safeTmpSSH"/.vncpid
+	export vncPIDfile_local="$safeTmp"/.vncpid
 	
 }
 
@@ -256,13 +259,20 @@ _vncserver_operations() {
 		echo
 		echo '*****TigerVNC Server Detected'
 		echo
-		vncserver :"$vncDisplay" -depth 16 -geometry "$desktopEnvironmentGeometry" -localhost -rfbport "$vncPort" -rfbauth "$vncPasswdFile" -fg &
+		#"-fg" may be unreliable
+		#vncserver :"$vncDisplay" -depth 16 -geometry "$desktopEnvironmentGeometry" -localhost -rfbport "$vncPort" -rfbauth "$vncPasswdFile" &
+		
+		
+		
+		Xvnc :"$vncDisplay" -depth 16 -geometry "$desktopEnvironmentGeometry" -localhost -rfbport "$vncPort" -rfbauth "$vncPasswdFile" &
 		echo $! > "$vncPIDfile"
 		
 		export DISPLAY=:"$vncDisplay"
 		
-		while ! xset q 2>&1 > /dev/null
+		local currentCount
+		for (( currentCount = 0 ; currentCount < 90 ; currentCount++ ))
 		do
+			xset q >/dev/null 2>&1 && break
 			sleep 1
 		done
 		
@@ -402,57 +412,22 @@ _desktop() {
 
 _push_desktop_sequence() {
 	_start
+	_start_safeTmp_ssh "$@"
+	_prepare_vnc
 	
-	export permit_x11_override=("$scriptAbsoluteLocation" _ssh -C -o ConnectionAttempts=2 "$@")
-	_detect_x11
 	
-	local vncPort
-	vncPort=$(_findPort_vnc)
+	cat "$vncPasswdFile".pln | bash -c 'env vncPort='"$vncPort"' vncPIDfile='"$vncPIDfile_local"' desktopEnvironmentGeometry='"$desktopEnvironmentGeometry"' desktopEnvironmentLaunch='"$desktopEnvironmentLaunch"' '"$scriptAbsoluteLocation"' _vncserver' &
 	
-	local vncID
-	vncID=$(_uid)
-	local vncPasswdFile
-	vncPasswdFile="$HOME"'/.vnctemp/passwd_'"$vncID"
-	local vncPIDfile
-	vncPIDfile="$HOME"'/.vnctemp/pid_'"$vncID"
-	
-	local vncDisplay
-	local vncDisplayValid
-	for (( vncDisplay = 1 ; vncDisplay <= 9 ; vncDisplay++ ))
-	do
-		! [[ -e /tmp/.X"$vncDisplay"-lock ]] && ! [[ -e /tmp/.X11-unix/X"$vncDisplay" ]] && vncDisplayValid=true && break
-	done
-	[[ "$vncDisplayValid" != "true" ]] && _stop 1
-	
-	echo > "$safeTmp"/vncserverpasswd
-	chmod 600 "$safeTmp"/vncserverpasswd
-	_uid 8 > "$safeTmp"/vncserverpasswd
-	
-	mkdir -p ~/.vnctemp
-	chmod 700 ~/.vnctemp
-	
-	#desktopEnvironmentLaunch='xrdb \$HOME/.Xresources ; xsetroot -solid grey ; x-window-manager & export XKL_XMODMAP_DISABLE=1 ; /etc/X11/Xsession'
-	desktopEnvironmentLaunch='true'
-	desktopEnvironmentGeometry='1280x720'
-	
-	local localClientDisplay="$DISPLAY"
-	
-	#Xvnc works properly with PID files, whereas vncserver does not.
-	cat "$safeTmp"/vncserverpasswd | bash -c 'vncpasswd -f > '"$vncPasswdFile"' && [[ -e '"$vncPasswdFile"' ]] && chmod 600 '"$vncPasswdFile"' ; vncserver :'"$vncDisplay"' -depth 16 -geometry '"$desktopEnvironmentGeometry"' -nevershared -dontdisconnect -localhost -rfbport '"$vncPort"' -rfbauth '"$vncPasswdFile"' -rfbwait 12000 & echo $! > '"$vncPIDfile"' ; export DISPLAY=:'"$vncDisplay"' ; '"$desktopEnvironmentLaunch"' ; sleep 12' &
-	
-	export DISPLAY="$localClientDisplay"
 	
 	_waitPort localhost "$vncPort"
 	sleep 0.8 #VNC service may not always be ready when port is up.
-	#sleep 1
 	
-	#vncviewer -encodings "copyrect tight zrle hextile" localhost:"$vncPort"
-	cat "$safeTmp"/vncserverpasswd | "$scriptAbsoluteLocation" _ssh -C -c aes256-gcm@openssh.com -m hmac-sha1 -o ConnectTimeout=72 -o ConnectionAttempts=2 -o ServerAliveInterval=5 -o ServerAliveCountMax=5 -o ExitOnForwardFailure=yes -R "$vncPort":localhost:"$vncPort" "$@" 'env DISPLAY='"$destination_DISPLAY"' vncviewer -autopass localhost:'"$vncPort"
+	cat "$vncPasswdFile".pln | _vnc_ssh -R "$vncPort":localhost:"$vncPort" "$@" 'env vncPort='"$vncPort"' destination_DISPLAY='""' '"$safeTmpSSH"/cautossh' _vncviewer'
 	stty echo
 	
-	#kill $(cat "$vncPIDfile") ; rm -f "$vncPasswdFile" ; rm -f "$vncPIDfile"
-	pkill Xvnc ; pkill Xtightvnc ; rm -f "$vncPasswdFile" ; rm -f "$vncPIDfile"
+	bash -c 'env vncPIDfile='"$vncPIDfile_local"' '"$scriptAbsoluteLocation"' _vncserver_terminate'
 	
+	_stop_safeTmp_ssh "$@"
 	_stop
 }
 
