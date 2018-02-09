@@ -1,6 +1,8 @@
 _testProxySSH() {
 	_getDep ssh
 	
+	! _wantDep base64 && echo 'warn: no base64'
+	
 	! _wantDep vncviewer && echo 'warn: no vncviewer, recommend tightvnc'
 	! _wantDep vncserver && echo 'warn: no vncserver, recommend tightvnc'
 	! _wantDep Xvnc && echo 'warn: no Xvnc, recommend tightvnc'
@@ -106,14 +108,77 @@ _findPort_vnc() {
 	_findPort "$vncMinPort" "$vncMaxPort"
 }
 
+_safeTmp_ssh() {
+	_ssh -C -o ConnectionAttempts=2 "$@" '
+mkdir -p '"$safeTmpSSH"'
+chmod 700 '"$safeTmpSSH"'
+'
+	
+	cat "$scriptAbsoluteLocation" | base64 | _ssh -C -o ConnectionAttempts=2 "$@" 'cat - | base64 -d > '"$safeTmpSSH"'/cautossh'
+}
+
+_vncpasswd() {
+	#Supported by both TightVNC and TigerVNC.
+	if echo | vncpasswd -x --help 2>&1 | grep -i 'vncpasswd \[FILE\]' >/dev/null 2>&1
+	then
+		cat "$vncPasswdFile".pln | vncpasswd "$vncPasswdFile"
+		return 0
+	fi
+	
+	return 1
+}
+
+_vncviewer_operations() {
+	#TightVNC
+	if vncviewer --help 2>&1 | grep '\-passwd' >/dev/null 2>&1
+	then
+		vncviewer -passwd "$vncPasswdFile" localhost:"$vncPort"
+	fi
+	
+	#TigerVNC
+	if vncviewer --help 2>&1 | grep 'PasswordFile   \- Password file for VNC authentication (default\=)' >/dev/null 2>&1
+	then
+		vncviewer -passwd "$vncPasswdFile" localhost:"$vncPort"
+	fi
+	
+}
+
+_vncviewer_sequence() {
+	_start
+	cat - > "$vncPasswdFile".pln
+	
+	! _vncpasswd && _stop 1
+	
+	! _vncviewer_operations && _stop 1
+	
+	
+	_stop
+}
+
+#Password must be given on standard input.
+_vncviewer() {
+	"$scriptAbsoluteLocation" _vncviewer_sequence "$@"
+}
+
+_prepare_vnc() {
+	
+	echo > "$vncPasswdFile".pln
+	chmod 600 "$vncPasswdFile".pln
+	_uid > "$vncPasswdFile".pln
+	
+	export vncPort=$(_findPort_vnc)
+	
+	
+	_safeTmp_ssh
+	
+}
+
 _vnc_sequence() {
 	_start
 	
 	export permit_x11_override=("$scriptAbsoluteLocation" _ssh -C -o ConnectionAttempts=2 "$@")
 	_detect_x11
 	
-	local vncPort
-	vncPort=$(_findPort_vnc)
 	
 	#https://wiki.archlinux.org/index.php/x11vnc#SSH_Tunnel
 	#ssh -t -L "$vncPort":localhost:"$vncPort" "$@" 'sudo x11vnc -display :0 -auth /home/USER/.Xauthority'

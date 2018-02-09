@@ -53,6 +53,9 @@ export bootTmp="$scriptLocal"			#Fail-Safe
 [[ -d /tmp ]] && export bootTmp=/tmp		#Typical BSD
 [[ -d /dev/shm ]] && export bootTmp=/dev/shm	#Typical Linux
 
+#Specialized temporary directories.
+export safeTmpSSH='~/.s_'"$sessionid"
+
 #Process control.
 export pidFile="$safeTmp"/.pid
 export uPID="cwrxuk6wqzbzV6p8kPS8J4APYGX"	#Invalid do-not-match default.
@@ -60,6 +63,9 @@ export uPID="cwrxuk6wqzbzV6p8kPS8J4APYGX"	#Invalid do-not-match default.
 export daemonPidFile="$scriptLocal"/.bgpid
 
 #export varStore="$scriptAbsoluteFolder"/var
+
+export vncPIDfile="$safeTmp"/.vncpid
+export vncPasswdFile="$safeTmp"/.vncpasswd
 
 #Network Defaults
 export AUTOSSH_FIRST_POLL=45
