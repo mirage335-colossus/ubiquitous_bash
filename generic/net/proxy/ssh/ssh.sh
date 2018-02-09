@@ -98,6 +98,32 @@ _ssh() {
 	export sshInContainment=""
 }
 
+_start_safeTmp_ssh() {
+	cat "$scriptAbsoluteLocation" | base64 | _ssh -C -o ConnectionAttempts=2 "$@" '
+mkdir -p '"$safeTmpSSH"'
+chmod 700 '"$safeTmpSSH"'
+cat - | base64 -d > '"$safeTmpSSH"'/cautossh
+chmod 700 '"$safeTmpSSH"'/cautossh
+'
+	
+	#cat "$scriptAbsoluteLocation" | base64 | _ssh -C -o ConnectionAttempts=2 "$@" 'cat - | base64 -d > '"$safeTmpSSH"'/cautossh'
+	#_ssh -C -o ConnectionAttempts=2 "$@" 'chmod 700 '"$safeTmpSSH"'/cautossh'
+}
+
+_stop_safeTmp_ssh() {
+#rm '"$safeTmpSSH"'/w_*/*
+	cat "$scriptAbsoluteLocation" | _ssh -C -o ConnectionAttempts=2 "$@" '
+rm '"$safeTmpSSH"'/cautossh
+rmdir '"$safeTmpSSH"'/_local
+rmdir '"$safeTmpSSH"'
+'
+	
+}
+
+_vnc_ssh() {
+	"$scriptAbsoluteLocation" _ssh -C -c aes256-gcm@openssh.com -m hmac-sha1 -o ConnectionAttempts=2 -o ServerAliveInterval=5 -o ServerAliveCountMax=5 -o ExitOnForwardFailure=yes "$@" 
+}
+
 _findPort_vnc() {
 	local vncMinPort
 	let vncMinPort="${reversePorts[0]}"+20
@@ -108,20 +134,21 @@ _findPort_vnc() {
 	_findPort "$vncMinPort" "$vncMaxPort"
 }
 
-_safeTmp_ssh() {
-	_ssh -C -o ConnectionAttempts=2 "$@" '
-mkdir -p '"$safeTmpSSH"'
-chmod 700 '"$safeTmpSSH"'
-'
+_prepare_vnc() {
 	
-	cat "$scriptAbsoluteLocation" | base64 | _ssh -C -o ConnectionAttempts=2 "$@" 'cat - | base64 -d > '"$safeTmpSSH"'/cautossh'
+	echo > "$vncPasswdFile".pln
+	chmod 600 "$vncPasswdFile".pln
+	_uid 8 > "$vncPasswdFile".pln
+	
+	export vncPort=$(_findPort_vnc)
+	
 }
 
 _vncpasswd() {
 	#Supported by both TightVNC and TigerVNC.
 	if echo | vncpasswd -x --help 2>&1 | grep -i 'vncpasswd \[FILE\]' >/dev/null 2>&1
 	then
-		cat "$vncPasswdFile".pln | vncpasswd "$vncPasswdFile"
+		echo | cat "$vncPasswdFile".pln - "$vncPasswdFile".pln | vncpasswd "$vncPasswdFile"
 		return 0
 	fi
 	
@@ -129,24 +156,33 @@ _vncpasswd() {
 }
 
 _vncviewer_operations() {
+	_detect_x11
+	export DISPLAY="$destination_DISPLAY"
+	
 	#TightVNC
 	if vncviewer --help 2>&1 | grep '\-passwd' >/dev/null 2>&1
 	then
+		#vncviewer -encodings "copyrect tight zrle hextile" localhost:"$vncPort"
 		vncviewer -passwd "$vncPasswdFile" localhost:"$vncPort"
+		stty echo
+		return 0
 	fi
 	
 	#TigerVNC
 	if vncviewer --help 2>&1 | grep 'PasswordFile   \- Password file for VNC authentication (default\=)' >/dev/null 2>&1
 	then
 		vncviewer -passwd "$vncPasswdFile" localhost:"$vncPort"
+		stty echo
+		return 0
 	fi
 	
+	return 1
 }
 
 _vncviewer_sequence() {
 	_start
-	cat - > "$vncPasswdFile".pln
 	
+	cat - > "$vncPasswdFile".pln
 	! _vncpasswd && _stop 1
 	
 	! _vncviewer_operations && _stop 1
@@ -155,58 +191,60 @@ _vncviewer_sequence() {
 	_stop
 }
 
-#Password must be given on standard input.
+#Password must be given on standard input. Environment variable "$vncPort" must be set. Environment variable "$destination_DISPLAY" may be forced.
 _vncviewer() {
 	"$scriptAbsoluteLocation" _vncviewer_sequence "$@"
 }
 
-_prepare_vnc() {
+_x11vnc_operations() {
+	_detect_x11
+	export DISPLAY="$destination_DISPLAY"
 	
-	echo > "$vncPasswdFile".pln
-	chmod 600 "$vncPasswdFile".pln
-	_uid > "$vncPasswdFile".pln
+	#x11vnc
+	if type x11vnc >/dev/null 2>&1
+	then
+		#-passwdfile cmd:"/bin/cat -"
+		x11vnc -localhost -rfbauth "$vncPasswdFile" -rfbport "$vncPort" -timeout 8 -xkb -display "$destination_DISPLAY" -auth "$HOME"/.Xauthority -noxrecord -noxdamage
+		#-noxrecord -noxfixes -noxdamage
+		return 0
+	fi
 	
-	export vncPort=$(_findPort_vnc)
+	return 1
+}
+
+_x11vnc_sequence() {
+	_start
 	
+	cat - > "$vncPasswdFile".pln
+	! _vncpasswd && _stop 1
 	
-	_safeTmp_ssh
+	! _x11vnc_operations && _stop 1
 	
+	_stop
+}
+
+#Password must be given on standard input. Environment variable "$vncPort" must be set. Environment variable "$destination_DISPLAY" may be forced.
+_x11vnc() {
+	"$scriptAbsoluteLocation" _x11vnc_sequence "$@"
 }
 
 _vnc_sequence() {
 	_start
+	_start_safeTmp_ssh "$@"
+	_prepare_vnc
 	
-	export permit_x11_override=("$scriptAbsoluteLocation" _ssh -C -o ConnectionAttempts=2 "$@")
-	_detect_x11
 	
-	
-	#https://wiki.archlinux.org/index.php/x11vnc#SSH_Tunnel
-	#ssh -t -L "$vncPort":localhost:"$vncPort" "$@" 'sudo x11vnc -display :0 -auth /home/USER/.Xauthority'
-	
-	#mkdir -p "$scriptTokens"
-	#if [[ ! -e "$scriptTokens" ]]
-	#then
-	#	echo > "$scriptTokens"/x11vncpasswd
-	#	chmod 600 "$scriptTokens"/x11vncpasswd
-	#	_uid > "$scriptTokens"/x11vncpasswd
-	#fi
-	#cp "$scriptTokens"/x11vncpasswd "$safeTmp"/x11vncpasswd
-	
-	echo > "$safeTmp"/x11vncpasswd
-	chmod 600 "$safeTmp"/x11vncpasswd
-	_uid > "$safeTmp"/x11vncpasswd
-	
-	cat "$safeTmp"/x11vncpasswd | "$scriptAbsoluteLocation" _ssh -C -c aes256-gcm@openssh.com -m hmac-sha1 -o ConnectTimeout=72 -o ConnectionAttempts=2 -o ServerAliveInterval=5 -o ServerAliveCountMax=5 -o ExitOnForwardFailure=yes -L "$vncPort":localhost:"$vncPort" "$@" 'x11vnc -passwdfile cmd:"/bin/cat -" -localhost -rfbport '"$vncPort"' -timeout 8 -xkb -display '"$destination_DISPLAY"' -auth "$HOME"/.Xauthority -noxrecord -noxdamage' &
+	cat "$vncPasswdFile".pln | _vnc_ssh -L "$vncPort":localhost:"$vncPort" "$@" 'env vncPort='"$vncPort"' safeTmpSSH='"$safeTmpSSH"' '"$safeTmpSSH"/cautossh' _x11vnc' &
 	#-noxrecord -noxfixes -noxdamage
 	
 	_waitPort localhost "$vncPort"
 	sleep 0.8 #VNC service may not always be ready when port is up.
-	#sleep 1
 	
-	#vncviewer -encodings "copyrect tight zrle hextile" localhost:"$vncPort"
-	cat "$safeTmp"/x11vncpasswd | vncviewer -autopass localhost:"$vncPort"
+	cat "$vncPasswdFile".pln | env vncPort="$vncPort" destination_DISPLAY="$DISPLAY" "$scriptAbsoluteLocation" _vncviewer
+	
 	stty echo
 	
+	_stop_safeTmp_ssh "$@"
 	_stop
 }
 
