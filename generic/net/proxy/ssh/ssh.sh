@@ -3,15 +3,16 @@ _testProxySSH() {
 	
 	! _wantDep base64 && echo 'warn: no base64'
 	
-	! _wantDep vncviewer && echo 'warn: no vncviewer, recommend tightvnc'
-	! _wantDep vncserver && echo 'warn: no vncserver, recommend tightvnc'
-	! _wantDep Xvnc && echo 'warn: no Xvnc, recommend tightvnc'
+	! _wantDep vncviewer && echo 'warn: no vncviewer, recommend tigervnc'
+	! _wantDep vncserver && echo 'warn: no vncserver, recommend tigervnc'
+	! _wantDep Xvnc && echo 'warn: no Xvnc, recommend tigervnc'
 	
 	! _wantDep x11vnc && echo 'warn: x11vnc not found'
+	! _wantDep x0tigervncserver && echo 'warn: x0tigervncserver not found'
 	
-	! _wantDep xpra && echo 'warn: xpra not found'
-	! _wantDep xephyr && echo 'warn: xephyr not found'
-	! _wantDep xnest && echo 'warn: xnest not found'
+	#! _wantDep xpra && echo 'warn: xpra not found'
+	#! _wantDep xephyr && echo 'warn: xephyr not found'
+	#! _wantDep xnest && echo 'warn: xnest not found'
 }
 
 #Enters remote server at hostname, by SSH, sets up a tunnel, checks tunnel for another SSH server.
@@ -163,7 +164,7 @@ _vncviewer_operations() {
 	if vncviewer --help 2>&1 | grep '\-passwd' >/dev/null 2>&1
 	then
 		#vncviewer -encodings "copyrect tight zrle hextile" localhost:"$vncPort"
-		vncviewer -passwd "$vncPasswdFile" localhost:"$vncPort"
+		vncviewer -passwd "$vncPasswdFile" localhost:"$vncPort" "$@"
 		stty echo
 		return 0
 	fi
@@ -171,7 +172,7 @@ _vncviewer_operations() {
 	#TigerVNC
 	if vncviewer --help 2>&1 | grep 'PasswordFile   \- Password file for VNC authentication (default\=)' >/dev/null 2>&1
 	then
-		vncviewer -passwd "$vncPasswdFile" localhost:"$vncPort"
+		vncviewer -DotWhenNoCursor -passwd "$vncPasswdFile" localhost:"$vncPort" "$@"
 		stty echo
 		return 0
 	fi
@@ -185,7 +186,7 @@ _vncviewer_sequence() {
 	cat - > "$vncPasswdFile".pln
 	! _vncpasswd && _stop 1
 	
-	! _vncviewer_operations && _stop 1
+	! _vncviewer_operations "$@" && _stop 1
 	
 	
 	_stop
@@ -206,6 +207,13 @@ _x11vnc_operations() {
 		#-passwdfile cmd:"/bin/cat -"
 		x11vnc -localhost -rfbauth "$vncPasswdFile" -rfbport "$vncPort" -timeout 8 -xkb -display "$destination_DISPLAY" -auth "$HOME"/.Xauthority -noxrecord -noxdamage
 		#-noxrecord -noxfixes -noxdamage
+		return 0
+	fi
+	
+	#TigerVNC.
+	if type x0tigervncserver
+	then
+		x0tigervncserver -rfbauth "$vncPasswdFile" -rfbport "$vncPort"
 		return 0
 	fi
 	
@@ -240,7 +248,7 @@ _vnc_sequence() {
 	_waitPort localhost "$vncPort"
 	sleep 0.8 #VNC service may not always be ready when port is up.
 	
-	cat "$vncPasswdFile".pln | env vncPort="$vncPort" destination_DISPLAY="$DISPLAY" "$scriptAbsoluteLocation" _vncviewer
+	cat "$vncPasswdFile".pln | bash -c 'env vncPort='"$vncPort"' destination_DISPLAY='"$DISPLAY"' '"$scriptAbsoluteLocation"' _vncviewer'
 	
 	stty echo
 	
@@ -254,26 +262,18 @@ _vnc() {
 
 _push_vnc_sequence() {
 	_start
+	_start_safeTmp_ssh "$@"
+	_prepare_vnc
 	
-	export permit_x11_override=("$scriptAbsoluteLocation" _ssh -C -o ConnectionAttempts=2 "$@")
-	_detect_x11
-	
-	local vncPort
-	vncPort=$(_findPort_vnc)
-	
-	echo > "$safeTmp"/x11vncpasswd
-	chmod 600 "$safeTmp"/x11vncpasswd
-	_uid > "$safeTmp"/x11vncpasswd
-	
-	cat "$safeTmp"/x11vncpasswd | x11vnc -passwdfile cmd:"/bin/cat -" -localhost -rfbport "$vncPort" -timeout 8 -xkb -display "$DISPLAY" -auth "$HOME"/.Xauthority -noxrecord -noxdamage &
+	cat "$vncPasswdFile".pln | bash -c 'env vncPort='"$vncPort"' safeTmpSSH='"$safeTmpSSH"' '"$scriptAbsoluteLocation"' _x11vnc' &
 	#-noxrecord -noxfixes -noxdamage
 	
 	_waitPort localhost "$vncPort"
 	sleep 0.8 #VNC service may not always be ready when port is up.
 	
-	cat "$safeTmp"/x11vncpasswd | "$scriptAbsoluteLocation" _ssh -C -c aes256-gcm@openssh.com -m hmac-sha1 -o ConnectTimeout=72 -o ConnectionAttempts=2 -o ServerAliveInterval=5 -o ServerAliveCountMax=5 -o ExitOnForwardFailure=yes -R "$vncPort":localhost:"$vncPort" "$@" 'env DISPLAY='"$destination_DISPLAY"' vncviewer -autopass localhost:'"$vncPort"
-	stty echo
+	cat "$vncPasswdFile".pln | _vnc_ssh -R "$vncPort":localhost:"$vncPort" "$@" 'env vncPort='"$vncPort"' destination_DISPLAY='"$DISPLAY"' '"$safeTmpSSH"/cautossh' _vncviewer'
 	
+	_stop_safeTmp_ssh "$@"
 	_stop
 }
 
