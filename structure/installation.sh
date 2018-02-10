@@ -284,6 +284,7 @@ _package_prog() {
 # WARNING Must define "_package_license" function in ops to include license files in package!
 _package() {
 	_start
+	mkdir -p "$safeTmp"/package
 	
 	_package_prog
 	
@@ -292,20 +293,22 @@ _package() {
 	_tryExec "_package_cautossh"
 	
 	#scriptBasename=$(basename "$scriptAbsoluteLocation")
-	#cp -a "$scriptAbsoluteLocation" "$safeTmp"/"$scriptBasename"
-	cp -a "$scriptAbsoluteLocation" "$safeTmp"/
-	cp -a "$scriptAbsoluteFolder"/ops "$safeTmp"/
+	#cp -a "$scriptAbsoluteLocation" "$safeTmp"/package/"$scriptBasename"
+	cp -a "$scriptAbsoluteLocation" "$safeTmp"/package/
+	cp -a "$scriptAbsoluteFolder"/ops "$safeTmp"/package/
 	
 	#cp -a "$scriptAbsoluteFolder"/_bin "$safeTmp"
 	#cp -a "$scriptAbsoluteFolder"/_config "$safeTmp"
 	#cp -a "$scriptAbsoluteFolder"/_prog "$safeTmp"
 	
-	cp -a "$scriptAbsoluteFolder"/_local "$safeTmp"/
+	cp -a "$scriptAbsoluteFolder"/_local "$safeTmp"/package/
 	
-	cp -a "$scriptAbsoluteFolder"/README.md "$safeTmp"/
-	cp -a "$scriptAbsoluteFolder"/USAGE.html "$safeTmp"/
+	cp -a "$scriptAbsoluteFolder"/README.md "$safeTmp"/package/
+	cp -a "$scriptAbsoluteFolder"/USAGE.html "$safeTmp"/package/
 	
-	tar -czvf "$scriptAbsoluteFolder"/package.tar.gz "$safeTmp"/.
+	cd "$safeTmp"/package/
+	tar -czvf "$scriptAbsoluteFolder"/package.tar.gz .
 	
+	cd "$outerPWD"
 	_stop
 }

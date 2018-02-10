@@ -1645,10 +1645,19 @@ _setup_ssh() {
 }
 
 _setup_ssh_commands() {
-	find . -name '_vnc' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
 	find . -name '_ssh' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
-	find . -name '_wake' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
 	find . -name '_fs' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
+	
+	find . -name '_vnc' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
+	find . -name '_push_vnc' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
+	find . -name '_desktop' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
+	find . -name '_push_desktop' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
+	
+	find . -name '_wake' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
+}
+
+_package_cautossh() {
+	cp -a "$scriptAbsoluteFolder"/_index "$safeTmp"/package
 }
 
 #May be overridden by "ops" if multiple gateways are required.
@@ -9242,6 +9251,9 @@ _test() {
 	
 	_getDep diff
 	
+	_tryExec "_test_package"
+	
+	
 	_tryExec "_test_daemon"
 	
 	_tryExec "_testFindPort"
@@ -9401,6 +9413,47 @@ _setup() {
 	
 	_setup_prog
 	
+	_stop
+}
+
+_test_package() {
+	_getDep tar
+	_getDep gzip
+}
+
+_package_prog() {
+	true
+}
+
+# WARNING Must define "_package_license" function in ops to include license files in package!
+_package() {
+	_start
+	mkdir -p "$safeTmp"/package
+	
+	_package_prog
+	
+	_tryExec "_package_license"
+	
+	_tryExec "_package_cautossh"
+	
+	#scriptBasename=$(basename "$scriptAbsoluteLocation")
+	#cp -a "$scriptAbsoluteLocation" "$safeTmp"/package/"$scriptBasename"
+	cp -a "$scriptAbsoluteLocation" "$safeTmp"/package/
+	cp -a "$scriptAbsoluteFolder"/ops "$safeTmp"/package/
+	
+	#cp -a "$scriptAbsoluteFolder"/_bin "$safeTmp"
+	#cp -a "$scriptAbsoluteFolder"/_config "$safeTmp"
+	#cp -a "$scriptAbsoluteFolder"/_prog "$safeTmp"
+	
+	cp -a "$scriptAbsoluteFolder"/_local "$safeTmp"/package/
+	
+	cp -a "$scriptAbsoluteFolder"/README.md "$safeTmp"/package/
+	cp -a "$scriptAbsoluteFolder"/USAGE.html "$safeTmp"/package/
+	
+	cd "$safeTmp"/package/
+	tar -czvf "$scriptAbsoluteFolder"/package.tar.gz .
+	
+	cd "$outerPWD"
 	_stop
 }
 

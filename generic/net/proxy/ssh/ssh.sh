@@ -539,7 +539,7 @@ _setup_ssh_commands() {
 }
 
 _package_cautossh() {
-	cp -a "$scriptAbsoluteFolder"/_index "$safeTmp"/
+	cp -a "$scriptAbsoluteFolder"/_index "$safeTmp"/package
 }
 
 #May be overridden by "ops" if multiple gateways are required.
