@@ -30,6 +30,9 @@ _failExec() {
 #"$1" == directory to remove
 _safeRMR() {
 	
+	#Fail sooner, avoiding irrelevant error messages. Especially important to cases where an upstream process has already removed the "$safeTmp" directory of a downstream process which reaches "_stop" later.
+	! [[ -e "$1" ]] && return 1
+	
 	[[ ! -e "$scriptAbsoluteLocation" ]] && return 1
 	[[ ! -e "$scriptAbsoluteFolder" ]] && return 1
 	_failExec || return 1
