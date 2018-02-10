@@ -107,6 +107,9 @@ _test() {
 	
 	_getDep diff
 	
+	_tryExec "_test_package"
+	
+	
 	_tryExec "_test_daemon"
 	
 	_tryExec "_testFindPort"
@@ -265,6 +268,44 @@ _setup() {
 	_tryExec "_setup_ssh"
 	
 	_setup_prog
+	
+	_stop
+}
+
+_test_package() {
+	_getDep tar
+	_getDep gzip
+}
+
+_package_prog() {
+	true
+}
+
+# WARNING Must define "_package_license" function in ops to include license files in package!
+_package() {
+	_start
+	
+	_package_prog
+	
+	_tryExec "_package_license"
+	
+	_tryExec "_package_cautossh"
+	
+	#scriptBasename=$(basename "$scriptAbsoluteLocation")
+	#cp -a "$scriptAbsoluteLocation" "$safeTmp"/"$scriptBasename"
+	cp -a "$scriptAbsoluteLocation" "$safeTmp"/
+	cp -a "$scriptAbsoluteFolder"/ops "$safeTmp"/
+	
+	#cp -a "$scriptAbsoluteFolder"/_bin "$safeTmp"
+	#cp -a "$scriptAbsoluteFolder"/_config "$safeTmp"
+	#cp -a "$scriptAbsoluteFolder"/_prog "$safeTmp"
+	
+	cp -a "$scriptAbsoluteFolder"/_local "$safeTmp"/
+	
+	cp -a "$scriptAbsoluteFolder"/README.md "$safeTmp"/
+	cp -a "$scriptAbsoluteFolder"/USAGE.html "$safeTmp"/
+	
+	tar -czvf "$scriptAbsoluteFolder"/package.tar.gz "$safeTmp"/.
 	
 	_stop
 }

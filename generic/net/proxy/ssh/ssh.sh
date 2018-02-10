@@ -527,10 +527,19 @@ _setup_ssh() {
 }
 
 _setup_ssh_commands() {
-	find . -name '_vnc' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
 	find . -name '_ssh' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
-	find . -name '_wake' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
 	find . -name '_fs' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
+	
+	find . -name '_vnc' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
+	find . -name '_push_vnc' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
+	find . -name '_desktop' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
+	find . -name '_push_desktop' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
+	
+	find . -name '_wake' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
+}
+
+_package_cautossh() {
+	cp -a "$scriptAbsoluteFolder"/_index "$safeTmp"/
 }
 
 #May be overridden by "ops" if multiple gateways are required.
