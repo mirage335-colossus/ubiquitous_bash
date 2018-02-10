@@ -8093,7 +8093,7 @@ export lowsessionid=$(echo -n "$sessionid" | tr A-Z a-z )
 export scriptAbsoluteLocation=$(_getScriptAbsoluteLocation)
 export scriptAbsoluteFolder=$(_getScriptAbsoluteFolder)
 
-if ( [[ "$scriptAbsoluteLocation" == "/bin/bash" ]] || [[ "$scriptAbsoluteLocation" == "/usr/bin/bash" ]] || [[ "$scriptAbsoluteLocation" == "-bash" ]] )  && [[ "${BASH_SOURCE[0]}" != "${0}" ]] && [[ "$profileScriptLocation" != "" ]] && [[ "$profileScriptFolder" != "" ]]
+if ( [[ "$scriptAbsoluteLocation" == "/bin/bash" ]] || [[ "$scriptAbsoluteLocation" == "/usr/bin/bash" ]] || [[ "$0" == "-bash" ]] )  && [[ "${BASH_SOURCE[0]}" != "${0}" ]] && [[ "$profileScriptLocation" != "" ]] && [[ "$profileScriptFolder" != "" ]]
 then
 	export scriptAbsoluteLocation="$profileScriptLocation"
 	export scriptAbsoluteFolder="$profileScriptFolder"
