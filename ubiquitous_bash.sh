@@ -9358,8 +9358,11 @@ _testBuilt() {
 	_stop
 }
 
-#Creates symlink in ~/bin, to the executable at "$1", named according to its residing directory and file name.
+#Creates symlink in "$HOME"/bin, to the executable at "$1", named according to its residing directory and file name.
 _setupCommand() {
+	mkdir -p "$HOME"/bin
+	! [[ -e "$HOME"/bin ]] && return 1
+	
 	local clientScriptLocation
 	clientScriptLocation=$(_getAbsoluteLocation "$1")
 	
@@ -9372,7 +9375,7 @@ _setupCommand() {
 	local clientName
 	clientName=$(basename "$clientScriptFolder")
 	
-	_relink_relative "$clientScriptLocation" ~/bin/"$commandName""-""$clientName"
+	_relink_relative "$clientScriptLocation" "$HOME"/bin/"$commandName""-""$clientName"
 	
 	
 }
