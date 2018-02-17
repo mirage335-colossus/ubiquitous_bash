@@ -709,7 +709,15 @@ _deps_fakehome() {
 	_deps_notLean
 	export enUb_fakehome="true"
 }
- 
+
+_deps_build_bash() {
+	export enUb_buildBash="true"
+}
+
+_deps_build_bash_ubiquitous() {
+	_deps_build_bash
+	export enUb_buildBashUbiquitous="true"
+}
 
 _generate_bash() {
 	
@@ -751,6 +759,9 @@ _generate_bash() {
 	echo _generate_compile_bash >> "$progScript"
 	
 	chmod u+x "$progScript"
+	
+	# DANGER Do NOT remove.
+	exit
 }
 
 _vars_generate_bash() {
@@ -763,7 +774,7 @@ _vars_generate_bash() {
 #Intended as last command in a compile script. Updates the compile script itself, uses the updated script to update itself again, then compiles product with fully synchronized script.
 # WARNING Must be last command and part of a function, or there will be risk of re-entering the script at an incorrect location.
 _generate_compile_bash() {
-	_generate_bash
+	"$scriptAbsoluteLocation" _generate_bash
 	"$scriptAbsoluteFolder"/compile.sh _generate_bash
 	"$scriptAbsoluteFolder"/compile.sh _compile_bash
 	exit
@@ -780,6 +791,8 @@ _bootstrap_bash_basic() {
 #Ubiquitous Bash compile script. Override with "ops", "_config", or "_prog" directives through "generate.sh" to compile other work products through similar scripting.
 # DANGER
 #Especially, be careful to explicitly check all prerequsites for _safeRMR are in place.
+# DANGER
+#Not recommended from within "$progScript" itself (eg. "ubiquitous_bash.sh"). Especially do not remove the terminating "exit" which helps prevent return to script code which may not be within a memory cached function.
 # WARNING
 #Beware lean configurations have not yet been properly tested, and are considered experimental. Their purpose is to disable irrelevant dependency checking in "_test" procedures. Rigorous test procedures covering all intended functionality should always be included in downstream projects. Pull requests welcome.
 _compile_bash() {
@@ -807,6 +820,9 @@ _compile_bash() {
 	
 	_deps_proxy
 	_deps_proxy_special
+	
+	_deps_build_bash
+	_deps_build_bash_ubiquitous
 	
 	#####
 	
@@ -843,7 +859,7 @@ _compile_bash() {
 	
 	includeScriptList+=( "generic/filesystem/mounts"/mountchecks.sh )
 	
-	includeScriptList+=( "build/bash"/include.sh )
+	[[ "$enUb_buildBash" == "true" ]] && includeScriptList+=( "build/bash"/include.sh )
 	
 	includeScriptList+=( "generic/process"/timeout.sh )
 	
@@ -1016,11 +1032,12 @@ _compile_bash() {
 	includeScriptList+=( netvars.sh )
 	
 	#####Generate/Compile
-	includeScriptList+=( "build/bash/ubiquitous"/discoverubiquitious.sh )
-	includeScriptList+=( "build/bash/ubiquitous"/depsubiquitous.sh )
-	includeScriptList+=( deps.sh )
-	includeScriptList+=( "build/bash"/generate.sh )
-	includeScriptList+=( "build/bash"/compile.sh )
+	[[ "$enUb_buildBashUbiquitous" == "true" ]] && includeScriptList+=( "build/bash/ubiquitous"/discoverubiquitious.sh )
+	[[ "$enUb_buildBashUbiquitous" == "true" ]] && includeScriptList+=( "build/bash/ubiquitous"/depsubiquitous.sh )
+	[[ "$enUb_buildBashUbiquitous" == "true" ]] && includeScriptList+=( deps.sh )
+	[[ "$enUb_buildBashUbiquitous" == "true" ]] && includeScriptList+=( "build/bash"/generate.sh )
+	[[ "$enUb_buildBashUbiquitous" == "true" ]] && includeScriptList+=( "build/bash"/compile.sh )
+	
 	includeScriptList+=( "structure"/overrides.sh )
 	
 	includeScriptList+=( "structure"/overrides.sh )
@@ -1047,6 +1064,9 @@ _compile_bash() {
 	#fi
 	
 	#"$progScript" _package
+	
+	# DANGER Do NOT remove.
+	exit
 }
 
 _vars_compile_bash() {

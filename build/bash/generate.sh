@@ -38,6 +38,9 @@ _generate_bash() {
 	echo _generate_compile_bash >> "$progScript"
 	
 	chmod u+x "$progScript"
+	
+	# DANGER Do NOT remove.
+	exit
 }
 
 _vars_generate_bash() {
@@ -50,7 +53,7 @@ _vars_generate_bash() {
 #Intended as last command in a compile script. Updates the compile script itself, uses the updated script to update itself again, then compiles product with fully synchronized script.
 # WARNING Must be last command and part of a function, or there will be risk of re-entering the script at an incorrect location.
 _generate_compile_bash() {
-	_generate_bash
+	"$scriptAbsoluteLocation" _generate_bash
 	"$scriptAbsoluteFolder"/compile.sh _generate_bash
 	"$scriptAbsoluteFolder"/compile.sh _compile_bash
 	exit

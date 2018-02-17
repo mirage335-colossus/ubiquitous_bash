@@ -84,4 +84,12 @@ _deps_fakehome() {
 	_deps_notLean
 	export enUb_fakehome="true"
 }
- 
+
+_deps_build_bash() {
+	export enUb_buildBash="true"
+}
+
+_deps_build_bash_ubiquitous() {
+	_deps_build_bash
+	export enUb_buildBashUbiquitous="true"
+}
