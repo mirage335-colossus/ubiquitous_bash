@@ -2,6 +2,25 @@
 
 [[ "$isDaemon" == "true" ]] && echo "$$" | _prependDaemonPID
 
+#May allow traps to work properly in simple scripts which do not include more comprehensive "_stop" or "_stop_emergency" implementations.
+if ! type _stop > /dev/null 2>&1
+then
+	_stop() {
+		if [[ "$1" != "" ]]
+		then
+			exit "$1"
+		else
+			exit 0
+		fi
+	}
+fi
+if ! type _stop_emergency > /dev/null 2>&1
+then
+	_stop_emergency() {
+		_stop "$1"
+	}
+fi
+
 #Traps, if script is not imported into existing shell, or bypass requested.
 if ! [[ "${BASH_SOURCE[0]}" != "${0}" ]] || ! [[ "$1" != "--bypass" ]]
 then
