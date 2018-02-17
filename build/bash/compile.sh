@@ -2,7 +2,8 @@
 # DANGER
 #Especially, be careful to explicitly check all prerequsites for _safeRMR are in place.
 # DANGER
-#Not recommended from within "$progScript" itself (eg. "ubiquitous_bash.sh"). Especially do not remove the terminating "exit" which helps prevent return to script code which may not be within a memory cached function.
+# Intended only for manual use, or within a memory cached function terminated by "exit". Launching through "$scriptAbsoluteLocation" is not adequate protection if the original script itself can reach modified code!
+# However, launching through "$scriptAbsoluteLocation" can be used to run a command within the new version fo the script. Use this capability only with full understanding of this notification. 
 # WARNING
 #Beware lean configurations have not yet been properly tested, and are considered experimental. Their purpose is to disable irrelevant dependency checking in "_test" procedures. Rigorous test procedures covering all intended functionality should always be included in downstream projects. Pull requests welcome.
 _compile_bash() {

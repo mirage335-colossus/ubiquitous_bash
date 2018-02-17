@@ -56,6 +56,8 @@ _generate_compile_bash() {
 	"$scriptAbsoluteLocation" _generate_bash
 	"$scriptAbsoluteFolder"/compile.sh _generate_bash
 	"$scriptAbsoluteFolder"/compile.sh _compile_bash
+	
+	# DANGER Do NOT remove.
 	exit
 }
 
