@@ -51,8 +51,9 @@ _vars_generate_bash() {
 # WARNING Must be last command and part of a function, or there will be risk of re-entering the script at an incorrect location.
 _generate_compile_bash() {
 	_generate_bash
-	"$scriptAbsoluteLocation" _generate_bash
-	"$scriptAbsoluteLocation" _compile_bash
+	"$scriptAbsoluteFolder"/compile.sh _generate_bash
+	"$scriptAbsoluteFolder"/compile.sh _compile_bash
+	exit
 }
 
 #Typically not used literally. Preserved as an example command set to build the otherwise self-hosted generate/compile script manually.

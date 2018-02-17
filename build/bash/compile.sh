@@ -64,6 +64,8 @@ _compile_bash() {
 	
 	includeScriptList+=( "generic/filesystem/mounts"/mountchecks.sh )
 	
+	includeScriptList+=( "build/bash"/include.sh )
+	
 	includeScriptList+=( "generic/process"/timeout.sh )
 	
 	includeScriptList+=( "generic/process"/waitforprocess.sh )
@@ -233,6 +235,14 @@ _compile_bash() {
 	
 	#####Hardcoded
 	includeScriptList+=( netvars.sh )
+	
+	#####Generate/Compile
+	includeScriptList+=( "build/bash/ubiquitous"/discoverubiquitious.sh )
+	includeScriptList+=( "build/bash/ubiquitous"/depsubiquitous.sh )
+	includeScriptList+=( deps.sh )
+	includeScriptList+=( "build/bash"/generate.sh )
+	includeScriptList+=( "build/bash"/compile.sh )
+	includeScriptList+=( "structure"/overrides.sh )
 	
 	includeScriptList+=( "structure"/overrides.sh )
 	
