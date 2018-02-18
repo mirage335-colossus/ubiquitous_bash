@@ -2,12 +2,6 @@
 
 #####Utilities
 
-#Run command and output to terminal with colorful formatting. Controlled variant of "bash -v".
-_showCommand() {
-	echo -e '\E[1;32;46m $ '"$1"' \E[0m'
-	"$@"
-}
-
 #Critical prerequsites.
 _getAbsolute_criticalDep() {
 	! type realpath > /dev/null 2>&1 && return 1
@@ -106,70 +100,6 @@ _getAbsoluteFolder() {
 	dirname "$absoluteLocation"
 }
 alias getAbsoluteLocation=_getAbsoluteLocation
-
-_permissions_directory_checkForPath() {
-	local parameterAbsoluteLocation
-	parameterAbsoluteLocation=$(_getAbsoluteLocation "$1")
-	
-	local checkScriptAbsoluteFolder="$(_getScriptAbsoluteFolder)"
-	
-	[[ "$parameterAbsoluteLocation" == "$PWD" ]] && ! [[ "$parameterAbsoluteLocation" == "$checkScriptAbsoluteFolder" ]] && return 1
-	
-	local permissions_user
-	local permissions_group
-	local permissions_other
-	
-	permissions_user=$(stat -c "%a" "$1" | cut -c 1)
-	permissions_group=$(stat -c "%a" "$1" | cut -c 2)
-	permissions_other=$(stat -c "%a" "$1" | cut -c 3)
-	
-	[[ "$permissions_user" -gt "7" ]] && return 1
-	[[ "$permissions_group" -gt "7" ]] && return 1
-	[[ "$permissions_other" -gt "5" ]] && return 1
-	
-	#Above checks considered sufficient in typical cases, remainder for sake of example. Return true (safe).
-	return 0
-	
-	local permissions_uid
-	local permissions_gid
-	
-	permissions_uid=$(stat -c "%u" "$1")
-	permissions_gid=$(stat -c "%g" "$1")
-	
-	#Normally these variables are available through ubiqutious bash, but this permissions check may be needed earlier in that global variables setting process.
-	local permissions_host_uid
-	local permissions_host_gid
-	
-	permissions_host_uid=$(id -u)
-	permissions_host_gid=$(id -g)
-	
-	[[ "$permissions_uid" != "$permissions_host_uid" ]] && return 1
-	[[ "$permissions_uid" != "$permissions_host_gid" ]] && return 1
-	
-	return 0
-}
-
-#Gets filename extension, specifically any last three characters in given string.
-#"$1" == filename
-_getExt() {
-	echo "$1" | tr -dc 'a-zA-Z0-9.' | tr '[:upper:]' '[:lower:]' | tail -c 4
-}
-
-#Reports either the directory provided, or the directory of the file provided.
-_findDir() {
-	local dirIn=$(_getAbsoluteLocation "$1")
-	dirInLogical=$(realpath -L -s "$dirIn")
-	
-	if [[ -d "$dirInLogical" ]]
-	then
-		echo "$dirInLogical"
-		return
-	fi
-	
-	echo $(_getAbsoluteFolder "$dirInLogical")
-	return
-	
-}
 
 #Checks whether command or function is available.
 # WARNING Needed by safeRMR .
@@ -357,6 +287,139 @@ _safePath() {
 }
 
 
+#http://stackoverflow.com/questions/687948/timeout-a-command-in-bash-without-unnecessary-delay
+_timeout() { ( set +b; sleep "$1" & "${@:2}" & wait -n; r=$?; kill -9 `jobs -p`; exit $r; ) } 
+
+#Generates random alphanumeric characters, default length 18.
+_uid() {
+	local uidLength
+	[[ -z "$1" ]] && uidLength=18 || uidLength="$1"
+	
+	cat /dev/urandom | base64 | tr -dc 'a-zA-Z0-9' | head -c "$uidLength"
+}
+
+_permissions_directory_checkForPath() {
+	local parameterAbsoluteLocation
+	parameterAbsoluteLocation=$(_getAbsoluteLocation "$1")
+	
+	local checkScriptAbsoluteFolder="$(_getScriptAbsoluteFolder)"
+	
+	[[ "$parameterAbsoluteLocation" == "$PWD" ]] && ! [[ "$parameterAbsoluteLocation" == "$checkScriptAbsoluteFolder" ]] && return 1
+	
+	local permissions_user
+	local permissions_group
+	local permissions_other
+	
+	permissions_user=$(stat -c "%a" "$1" | cut -c 1)
+	permissions_group=$(stat -c "%a" "$1" | cut -c 2)
+	permissions_other=$(stat -c "%a" "$1" | cut -c 3)
+	
+	[[ "$permissions_user" -gt "7" ]] && return 1
+	[[ "$permissions_group" -gt "7" ]] && return 1
+	[[ "$permissions_other" -gt "5" ]] && return 1
+	
+	#Above checks considered sufficient in typical cases, remainder for sake of example. Return true (safe).
+	return 0
+	
+	local permissions_uid
+	local permissions_gid
+	
+	permissions_uid=$(stat -c "%u" "$1")
+	permissions_gid=$(stat -c "%g" "$1")
+	
+	#Normally these variables are available through ubiqutious bash, but this permissions check may be needed earlier in that global variables setting process.
+	local permissions_host_uid
+	local permissions_host_gid
+	
+	permissions_host_uid=$(id -u)
+	permissions_host_gid=$(id -g)
+	
+	[[ "$permissions_uid" != "$permissions_host_uid" ]] && return 1
+	[[ "$permissions_uid" != "$permissions_host_gid" ]] && return 1
+	
+	return 0
+}
+
+#"$1" == file path
+_includeFile() {
+	
+	if [[ -e  "$1" ]]
+	then
+		cat "$1" >> "$progScript"
+		echo >> "$progScript"
+		return 0
+	fi
+	
+	return 1
+}
+
+#Provide only approximate, realative paths. These will be disassembled and treated as a search query following stricti preferences
+#"generic/filesystem/absolutepaths.sh"
+_includeScript() {
+
+	local includeScriptFilename=$(basename "$1")
+	local includeScriptSubdirectory=$(dirname "$1")
+	
+	
+	_includeFile "$progDir"/"$includeScriptSubdirectory"/"$includeScriptFilename" && return 0
+	
+	_includeFile "$progDir"/"$includeScriptFilename" && return 0
+	
+	_includeFile "$ubiquitiousLibDir"/"$includeScriptSubdirectory"/"$includeScriptFilename" && return 0
+	
+	_includeFile "$ubiquitiousLibDir"/"$includeScriptFilename" && return 0
+	
+	_includeFile "$configDir"/"$includeScriptFilename" && return 0
+	_includeFile "$ubiquitiousLibDir"/"$configDir"/"$includeScriptFilename" && return 0
+	
+	return 1
+}
+
+# "$1" == script list array
+_includeScripts() {
+	local currentIncludeScript
+	local historyIncludeScript
+	local historyIncludedScript
+	local duplicateIncludeScript
+	
+	for currentIncludeScript in "$@"
+	do	
+		duplicateIncludeScript="false"
+		for historyIncludedScript in "${historyIncludeScript[@]}"
+		do
+			if [[ "$historyIncludedScript" == "$currentIncludeScript" ]]
+			then
+				duplicateIncludeScript="true"
+			fi
+		done
+		historyIncludeScript+=("$currentIncludeScript")
+		
+		[[ "$duplicateIncludeScript" != "true" ]] && _includeScript "$currentIncludeScript"
+	done
+}
+
+#Gets filename extension, specifically any last three characters in given string.
+#"$1" == filename
+_getExt() {
+	echo "$1" | tr -dc 'a-zA-Z0-9.' | tr '[:upper:]' '[:lower:]' | tail -c 4
+}
+
+#Reports either the directory provided, or the directory of the file provided.
+_findDir() {
+	local dirIn=$(_getAbsoluteLocation "$1")
+	dirInLogical=$(realpath -L -s "$dirIn")
+	
+	if [[ -d "$dirInLogical" ]]
+	then
+		echo "$dirInLogical"
+		return
+	fi
+	
+	echo $(_getAbsoluteFolder "$dirInLogical")
+	return
+	
+}
+
 _discoverResource() {
 	
 	[[ "$scriptAbsoluteFolder" == "" ]] && return 1
@@ -406,27 +469,6 @@ _relink_relative() {
 _cpDiff() {
 	! diff "$1" "$2" > /dev/null 2>&1 && cp "$1" "$2"
 }
-
-_test_bashdb() {
-	#_getDep ddd
-	
-	#if ! _discoverResource bashdb-code/bashdb.sh > /dev/null 2>&1
-	#then
-	#	echo
-	#	echo 'bashdb required for debugging'
-		#_stop 1
-	#fi
-	
-	if ! type bashdb > /dev/null 2>&1
-	then
-		echo
-		echo 'warn: bashdb required for debugging'
-	#_stop 1
-	fi
-	
-	return 0
-}
-
 
 _testBindMountManager() {
 	_getDep mount
@@ -546,67 +588,6 @@ _checkForMounts() {
 	
 	_stop 0
 }
-
-#"$1" == file path
-_includeFile() {
-	
-	if [[ -e  "$1" ]]
-	then
-		cat "$1" >> "$progScript"
-		echo >> "$progScript"
-		return 0
-	fi
-	
-	return 1
-}
-
-#Provide only approximate, realative paths. These will be disassembled and treated as a search query following stricti preferences
-#"generic/filesystem/absolutepaths.sh"
-_includeScript() {
-
-	local includeScriptFilename=$(basename "$1")
-	local includeScriptSubdirectory=$(dirname "$1")
-	
-	
-	_includeFile "$progDir"/"$includeScriptSubdirectory"/"$includeScriptFilename" && return 0
-	
-	_includeFile "$progDir"/"$includeScriptFilename" && return 0
-	
-	_includeFile "$ubiquitiousLibDir"/"$includeScriptSubdirectory"/"$includeScriptFilename" && return 0
-	
-	_includeFile "$ubiquitiousLibDir"/"$includeScriptFilename" && return 0
-	
-	_includeFile "$configDir"/"$includeScriptFilename" && return 0
-	_includeFile "$ubiquitiousLibDir"/"$configDir"/"$includeScriptFilename" && return 0
-	
-	return 1
-}
-
-# "$1" == script list array
-_includeScripts() {
-	local currentIncludeScript
-	local historyIncludeScript
-	local historyIncludedScript
-	local duplicateIncludeScript
-	
-	for currentIncludeScript in "$@"
-	do	
-		duplicateIncludeScript="false"
-		for historyIncludedScript in "${historyIncludeScript[@]}"
-		do
-			if [[ "$historyIncludedScript" == "$currentIncludeScript" ]]
-			then
-				duplicateIncludeScript="true"
-			fi
-		done
-		historyIncludeScript+=("$currentIncludeScript")
-		
-		[[ "$duplicateIncludeScript" != "true" ]] && _includeScript "$currentIncludeScript"
-	done
-}
-
-#http://stackoverflow.com/questions/687948/timeout-a-command-in-bash-without-unnecessary-delay
-_timeout() { ( set +b; sleep "$1" & "${@:2}" & wait -n; r=$?; kill -9 `jobs -p`; exit $r; ) } 
 
 #Waits for the process PID specified by first parameter to end. Useful in conjunction with $! to provide process control and/or PID files. Unlike wait command, does not require PID to be a child of the current shell.
 _pauseForProcess() {
@@ -1914,12 +1895,10 @@ _proxy_reverse() {
 }
 
 
-#Generates random alphanumeric characters, default length 18.
-_uid() {
-	local uidLength
-	[[ -z "$1" ]] && uidLength=18 || uidLength="$1"
-	
-	cat /dev/urandom | base64 | tr -dc 'a-zA-Z0-9' | head -c "$uidLength"
+#Run command and output to terminal with colorful formatting. Controlled variant of "bash -v".
+_showCommand() {
+	echo -e '\E[1;32;46m $ '"$1"' \E[0m'
+	"$@"
 }
 
 _messageNormal() {
@@ -2712,6 +2691,27 @@ _getUUID() {
 	cat /proc/sys/kernel/random/uuid
 }
 alias getUUID=_getUUID
+
+_test_bashdb() {
+	#_getDep ddd
+	
+	#if ! _discoverResource bashdb-code/bashdb.sh > /dev/null 2>&1
+	#then
+	#	echo
+	#	echo 'bashdb required for debugging'
+		#_stop 1
+	#fi
+	
+	if ! type bashdb > /dev/null 2>&1
+	then
+		echo
+		echo 'warn: bashdb required for debugging'
+	#_stop 1
+	fi
+	
+	return 0
+}
+
 
 
 _start_virt_instance() {
@@ -6127,6 +6127,10 @@ _userDocker() {
 
 #####Shortcuts
 
+_visualPrompt() {
+export PS1='\[\033[01;40m\]\[\033[01;36m\]+\[\033[01;34m\]-|\[\033[01;31m\]${?}:${debian_chroot:+($debian_chroot)}\[\033[01;33m\]\u\[\033[01;32m\]@\h\[\033[01;36m\]\[\033[01;34m\])-\[\033[01;36m\]----------\[\033[01;34m\]-(\[\033[01;35m\]$(date +%H:%M:%S\ %b\ %d,\ %y)\[\033[01;34m\])-\[\033[01;36m\]--- - - - |\[\033[00m\]\n\[\033[01;40m\]\[\033[01;36m\]+\[\033[01;34m\]-|\[\033[37m\][\w]\[\033[00m\]\n\[\033[01;36m\]+\[\033[01;34m\]-|\#) \[\033[36m\]>\[\033[00m\] '
+} 
+
 #https://stackoverflow.com/questions/15432156/display-filename-before-matching-line-grep
 _grepFileLine() {
 	grep -n "$@" /dev/null
@@ -6742,10 +6746,6 @@ _create_msw_qemu() {
 _create_msw() {
 	_create_msw_vbox "$@"
 }
-
-_visualPrompt() {
-export PS1='\[\033[01;40m\]\[\033[01;36m\]+\[\033[01;34m\]-|\[\033[01;31m\]${?}:${debian_chroot:+($debian_chroot)}\[\033[01;33m\]\u\[\033[01;32m\]@\h\[\033[01;36m\]\[\033[01;34m\])-\[\033[01;36m\]----------\[\033[01;34m\]-(\[\033[01;35m\]$(date +%H:%M:%S\ %b\ %d,\ %y)\[\033[01;34m\])-\[\033[01;36m\]--- - - - |\[\033[00m\]\n\[\033[01;40m\]\[\033[01;36m\]+\[\033[01;34m\]-|\[\033[37m\][\w]\[\033[00m\]\n\[\033[01;36m\]+\[\033[01;34m\]-|\#) \[\033[36m\]>\[\033[00m\] '
-} 
 
 _testX11() {
 	
@@ -9683,111 +9683,6 @@ export EMBEDDED="$matchingEMBEDDED"
 export keepKeys_SSH=true
 
 
-_compile_bash_header_prog() {	
-	export includeScriptList
-	true
-}
-
-_compile_bash_essential_utilities_prog() {	
-	export includeScriptList
-	true
-}
-
-_compile_bash_utilities_virtualization_prog() {	
-	export includeScriptList
-	true
-}
-
-_compile_bash_utilities_prog() {	
-	export includeScriptList
-	true
-}
-
-_compile_bash_shortcuts_prog() {	
-	export includeScriptList
-	true
-}
-
-_compile_bash_shortcuts_setup_prog() {	
-	export includeScriptList
-	true
-}
-
-_compile_bash_bundled_prog() {	
-	export includeScriptList
-	true
-}
-
-_compile_bash_vars_basic_prog() {	
-	export includeScriptList
-	true
-}
-
-_compile_bash_vars_global_prog() {	
-	export includeScriptList
-	true
-}
-
-_compile_bash_vars_spec_prog() {	
-	export includeScriptList
-	true
-}
-
-_compile_bash_vars_shortcuts_prog() {	
-	export includeScriptList
-	true
-}
-
-_compile_bash_vars_virtualization_prog() {	
-	export includeScriptList
-	true
-}
-
-_compile_bash_vars_bundled_prog() {	
-	export includeScriptList
-	true
-}
-
-_compile_bash_buildin_prog() {	
-	export includeScriptList
-	true
-}
-
-_compile_bash_environment_prog() {	
-	export includeScriptList
-	true
-}
-
-_compile_bash_installation_prog() {	
-	export includeScriptList
-	true
-}
-
-_compile_bash_program_prog() {	
-	export includeScriptList
-	true
-}
-
-_compile_bash_config_prog() {	
-	export includeScriptList
-	true
-}
-
-_compile_bash_selfHost_prog() {	
-	export includeScriptList
-	true
-}
-
-_compile_bash_overrides_prog() {	
-	export includeScriptList
-	true
-}
-
-_compile_bash_entry_prog() {	
-	export includeScriptList
-	true
-}
-
 _findUbiquitous() {
 	export ubiquitiousLibDir="$scriptAbsoluteFolder"
 	
@@ -9915,34 +9810,24 @@ _generate_bash() {
 	_findUbiquitous
 	_vars_generate_bash
 	
+	#####
+	
+	_deps_build_bash
+	_deps_build_bash_ubiquitous
+	
+	#####
+	
 	rm -f "$progScript" >/dev/null 2>&1
 	
-	includeScriptList+=( "generic"/minimalheader.sh )
+	_compile_bash_header
 	
-	#####Essential Utilities
-	includeScriptList+=( "labels"/utilitiesLabel.sh )
-	includeScriptList+=( "generic/filesystem"/absolutepaths.sh )
-	includeScriptList+=( "generic/filesystem"/safedelete.sh )
-	includeScriptList+=( "generic/process"/timeout.sh )
-	includeScriptList+=( "generic"/uid.sh )
-	includeScriptList+=( "generic/filesystem/permissions"/checkpermissions.sh )
+	_compile_bash_essential_utilities
 	
-	includeScriptList+=( "build/bash"/include.sh )
+	_compile_bash_vars_global
 	
-	includeScriptList+=( "structure"/globalvars.sh )
+	_compile_bash_selfHost
 	
-	includeScriptList+=( "build/bash/ubiquitous"/discoverubiquitious.sh )
-	
-	includeScriptList+=( "build/bash/ubiquitous"/depsubiquitous.sh )
-	
-	includeScriptList+=( deps.sh )
-	
-	includeScriptList+=( "build/bash"/generate.sh )
-	
-	includeScriptList+=( "build/bash"/compile_prog.sh )
-	includeScriptList+=( "build/bash"/compile.sh )
-	
-	includeScriptList+=( "structure"/overrides.sh )
+	_compile_bash_overrides
 	
 	_includeScripts "${includeScriptList[@]}"
 	
@@ -9982,10 +9867,125 @@ _bootstrap_bash_basic() {
 	chmod u+x ./compile.sh
 }
 
+_compile_bash_header_prog() {	
+	export includeScriptList
+	true
+}
+
+_compile_bash_header_program_prog() {	
+	export includeScriptList
+	true
+}
+
+_compile_bash_essential_utilities_prog() {	
+	export includeScriptList
+	true
+}
+
+_compile_bash_utilities_virtualization_prog() {	
+	export includeScriptList
+	true
+}
+
+_compile_bash_utilities_prog() {	
+	export includeScriptList
+	true
+}
+
+_compile_bash_shortcuts_prog() {	
+	export includeScriptList
+	true
+}
+
+_compile_bash_shortcuts_setup_prog() {	
+	export includeScriptList
+	true
+}
+
+_compile_bash_bundled_prog() {	
+	export includeScriptList
+	true
+}
+
+_compile_bash_vars_basic_prog() {	
+	export includeScriptList
+	true
+}
+
+_compile_bash_vars_global_prog() {	
+	export includeScriptList
+	true
+}
+
+_compile_bash_vars_spec_prog() {	
+	export includeScriptList
+	true
+}
+
+_compile_bash_vars_shortcuts_prog() {	
+	export includeScriptList
+	true
+}
+
+_compile_bash_vars_virtualization_prog() {	
+	export includeScriptList
+	true
+}
+
+_compile_bash_vars_bundled_prog() {	
+	export includeScriptList
+	true
+}
+
+_compile_bash_buildin_prog() {	
+	export includeScriptList
+	true
+}
+
+_compile_bash_environment_prog() {	
+	export includeScriptList
+	true
+}
+
+_compile_bash_installation_prog() {	
+	export includeScriptList
+	true
+}
+
+_compile_bash_program_prog() {	
+	export includeScriptList
+	true
+}
+
+_compile_bash_config_prog() {	
+	export includeScriptList
+	true
+}
+
+_compile_bash_selfHost_prog() {	
+	export includeScriptList
+	true
+}
+
+_compile_bash_overrides_prog() {	
+	export includeScriptList
+	true
+}
+
+_compile_bash_entry_prog() {	
+	export includeScriptList
+	true
+}
+
 _compile_bash_header() {
 	export includeScriptList
 	
 	includeScriptList+=( "generic"/minimalheader.sh )
+}
+
+_compile_bash_header_program() {
+	export includeScriptList
+	
 	includeScriptList+=( progheader.sh )
 }
 
@@ -9994,22 +9994,74 @@ _compile_bash_essential_utilities() {
 	
 	#####Essential Utilities
 	includeScriptList+=( "labels"/utilitiesLabel.sh )
-	
-	includeScriptList+=( "generic"/showCommand.sh )
-	
 	includeScriptList+=( "generic/filesystem"/absolutepaths.sh )
-	
+	includeScriptList+=( "generic/filesystem"/safedelete.sh )
+	includeScriptList+=( "generic/process"/timeout.sh )
+	includeScriptList+=( "generic"/uid.sh )
 	includeScriptList+=( "generic/filesystem/permissions"/checkpermissions.sh )
 	
+	[[ "$enUb_buildBash" == "true" ]] && includeScriptList+=( "build/bash"/include.sh )
+}
+
+_compile_bash_utilities() {
+	export includeScriptList
+	
+	#####Utilities
 	includeScriptList+=( "generic/filesystem"/getext.sh )
 	
 	includeScriptList+=( "generic/filesystem"/finddir.sh )
 	
-	includeScriptList+=( "generic/filesystem"/safedelete.sh )
-	
 	includeScriptList+=( "generic/filesystem"/discoverresource.sh )
 	
 	includeScriptList+=( "generic/filesystem"/relink.sh )
+	
+	[[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "generic/filesystem/mounts"/bindmountmanager.sh )
+	
+	includeScriptList+=( "generic/filesystem/mounts"/waitumount.sh )
+	
+	includeScriptList+=( "generic/filesystem/mounts"/mountchecks.sh )
+	
+	includeScriptList+=( "generic/process"/waitforprocess.sh )
+	
+	includeScriptList+=( "generic/process"/daemon.sh )
+	
+	includeScriptList+=( "generic/process"/remotesig.sh )
+	
+	includeScriptList+=( "generic/net"/fetch.sh )
+	
+	includeScriptList+=( "generic/net"/findport.sh )
+	
+	includeScriptList+=( "generic/net"/waitport.sh )
+	
+	[[ "$enUb_proxy_special" == "true" ]] && includeScriptList+=( "generic/net/proxy/tor"/tor.sh )
+	
+	[[ "$enUb_proxy" == "true" ]] && includeScriptList+=( "generic/net/proxy/ssh"/here_ssh.sh )
+	[[ "$enUb_proxy" == "true" ]] && includeScriptList+=( "generic/net/proxy/ssh"/ssh.sh )
+	[[ "$enUb_proxy" == "true" ]] && includeScriptList+=( "generic/net/proxy/ssh"/autossh.sh )
+	
+	[[ "$enUb_proxy" == "true" ]] && includeScriptList+=( "generic/net/proxy/proxyrouter"/here_proxyrouter.sh )
+	[[ "$enUb_proxy" == "true" ]] && includeScriptList+=( "generic/net/proxy/proxyrouter"/proxyrouter.sh )
+	
+	includeScriptList+=( "generic"/showCommand.sh )
+	includeScriptList+=( "generic"/messaging.sh )
+	includeScriptList+=( "generic"/validaterequest.sh )
+	
+	includeScriptList+=( "generic"/preserveLog.sh )
+	
+	[[ "$enUb_os_x11" == "true" ]] && includeScriptList+=( "os/unix/x11"/findx11.sh )
+	
+	includeScriptList+=( "os"/getDep.sh )
+	[[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "os/distro/debian"/getDep_debian.sh )
+	
+	[[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "os/unix/systemd"/here_systemd.sh )
+	[[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "os/unix/systemd"/hook_systemd.sh )
+	
+	includeScriptList+=( "special"/mustberoot.sh )
+	includeScriptList+=( "special"/mustgetsudo.sh )
+	
+	[[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "special/gosu"/gosu.sh )
+	
+	includeScriptList+=( "special"/uuid.sh )
 	
 	[[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "instrumentation"/bashdb/bashdb.sh )
 }
@@ -10063,70 +10115,14 @@ _compile_bash_utilities_virtualization() {
 	[[ "$enUb_docker" == "true" ]] && includeScriptList+=( "virtualization/docker"/dockeruser.sh )
 }
 
-_compile_bash_utilities() {
-	export includeScriptList
-	
-	#####Utilities
-	[[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "generic/filesystem/mounts"/bindmountmanager.sh )
-	
-	includeScriptList+=( "generic/filesystem/mounts"/waitumount.sh )
-	
-	includeScriptList+=( "generic/filesystem/mounts"/mountchecks.sh )
-	
-	[[ "$enUb_buildBash" == "true" ]] && includeScriptList+=( "build/bash"/include.sh )
-	
-	includeScriptList+=( "generic/process"/timeout.sh )
-	
-	includeScriptList+=( "generic/process"/waitforprocess.sh )
-	
-	includeScriptList+=( "generic/process"/daemon.sh )
-	
-	includeScriptList+=( "generic/process"/remotesig.sh )
-	
-	includeScriptList+=( "generic/net"/fetch.sh )
-	
-	includeScriptList+=( "generic/net"/findport.sh )
-	
-	includeScriptList+=( "generic/net"/waitport.sh )
-	
-	[[ "$enUb_proxy_special" == "true" ]] && includeScriptList+=( "generic/net/proxy/tor"/tor.sh )
-	
-	[[ "$enUb_proxy" == "true" ]] && includeScriptList+=( "generic/net/proxy/ssh"/here_ssh.sh )
-	[[ "$enUb_proxy" == "true" ]] && includeScriptList+=( "generic/net/proxy/ssh"/ssh.sh )
-	[[ "$enUb_proxy" == "true" ]] && includeScriptList+=( "generic/net/proxy/ssh"/autossh.sh )
-	
-	[[ "$enUb_proxy" == "true" ]] && includeScriptList+=( "generic/net/proxy/proxyrouter"/here_proxyrouter.sh )
-	[[ "$enUb_proxy" == "true" ]] && includeScriptList+=( "generic/net/proxy/proxyrouter"/proxyrouter.sh )
-	
-	includeScriptList+=( "generic"/uid.sh )
-	
-	includeScriptList+=( "generic"/messaging.sh )
-	includeScriptList+=( "generic"/validaterequest.sh )
-	
-	includeScriptList+=( "generic"/preserveLog.sh )
-	
-	[[ "$enUb_os_x11" == "true" ]] && includeScriptList+=( "os/unix/x11"/findx11.sh )
-	
-	includeScriptList+=( "os"/getDep.sh )
-	[[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "os/distro/debian"/getDep_debian.sh )
-	
-	[[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "os/unix/systemd"/here_systemd.sh )
-	[[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "os/unix/systemd"/hook_systemd.sh )
-	
-	includeScriptList+=( "special"/mustberoot.sh )
-	includeScriptList+=( "special"/mustgetsudo.sh )
-	
-	[[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "special/gosu"/gosu.sh )
-	
-	includeScriptList+=( "special"/uuid.sh )
-}
-
 _compile_bash_shortcuts() {
 	export includeScriptList
 	
 	
 	#####Shortcuts
 	includeScriptList+=( "labels"/shortcutsLabel.sh )
+	
+	includeScriptList+=( "shortcuts/prompt"/visualPrompt.sh )
 	
 	[[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "shortcuts/dev"/devsearch.sh )
 	
@@ -10144,9 +10140,6 @@ _compile_bash_shortcuts() {
 	[[ "$enUb_image" == "true" ]] && includeScriptList+=( "shortcuts/distro/raspbian"/createRaspbian.sh )
 	
 	[[ "$enUb_msw" == "true" ]] && includeScriptList+=( "shortcuts/distro/msw"/msw.sh )
-	
-	
-	includeScriptList+=( "shortcuts/prompt"/visualPrompt.sh )
 	
 	[[ "$enUb_x11" == "true" ]] && includeScriptList+=( "shortcuts/x11"/testx11.sh )
 	[[ "$enUb_x11" == "true" ]] && includeScriptList+=( "shortcuts/x11/clipboard"/x11ClipboardImage.sh )
@@ -10273,12 +10266,12 @@ _compile_bash_selfHost() {
 	
 	
 	#####Generate/Compile
-	[[ "$enUb_buildBashUbiquitous" == "true" ]] && includeScriptList+=( "build/bash"/compile_prog.sh )
-	
 	[[ "$enUb_buildBashUbiquitous" == "true" ]] && includeScriptList+=( "build/bash/ubiquitous"/discoverubiquitious.sh )
 	[[ "$enUb_buildBashUbiquitous" == "true" ]] && includeScriptList+=( "build/bash/ubiquitous"/depsubiquitous.sh )
 	[[ "$enUb_buildBashUbiquitous" == "true" ]] && includeScriptList+=( deps.sh )
 	[[ "$enUb_buildBashUbiquitous" == "true" ]] && includeScriptList+=( "build/bash"/generate.sh )
+	
+	[[ "$enUb_buildBashUbiquitous" == "true" ]] && includeScriptList+=( "build/bash"/compile_prog.sh )
 	[[ "$enUb_buildBashUbiquitous" == "true" ]] && includeScriptList+=( "build/bash"/compile.sh )
 }
 
@@ -10341,6 +10334,8 @@ _compile_bash() {
 	
 	_compile_bash_header
 	_compile_bash_header_prog
+	_compile_bash_header_program
+	_compile_bash_header_program_prog
 	
 	_compile_bash_essential_utilities
 	_compile_bash_essential_utilities_prog

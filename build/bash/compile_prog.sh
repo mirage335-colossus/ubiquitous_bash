@@ -3,6 +3,11 @@ _compile_bash_header_prog() {
 	true
 }
 
+_compile_bash_header_program_prog() {	
+	export includeScriptList
+	true
+}
+
 _compile_bash_essential_utilities_prog() {	
 	export includeScriptList
 	true

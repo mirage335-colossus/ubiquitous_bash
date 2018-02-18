@@ -3,34 +3,24 @@ _generate_bash() {
 	_findUbiquitous
 	_vars_generate_bash
 	
+	#####
+	
+	_deps_build_bash
+	_deps_build_bash_ubiquitous
+	
+	#####
+	
 	rm -f "$progScript" >/dev/null 2>&1
 	
-	includeScriptList+=( "generic"/minimalheader.sh )
+	_compile_bash_header
 	
-	#####Essential Utilities
-	includeScriptList+=( "labels"/utilitiesLabel.sh )
-	includeScriptList+=( "generic/filesystem"/absolutepaths.sh )
-	includeScriptList+=( "generic/filesystem"/safedelete.sh )
-	includeScriptList+=( "generic/process"/timeout.sh )
-	includeScriptList+=( "generic"/uid.sh )
-	includeScriptList+=( "generic/filesystem/permissions"/checkpermissions.sh )
+	_compile_bash_essential_utilities
 	
-	includeScriptList+=( "build/bash"/include.sh )
+	_compile_bash_vars_global
 	
-	includeScriptList+=( "structure"/globalvars.sh )
+	_compile_bash_selfHost
 	
-	includeScriptList+=( "build/bash/ubiquitous"/discoverubiquitious.sh )
-	
-	includeScriptList+=( "build/bash/ubiquitous"/depsubiquitous.sh )
-	
-	includeScriptList+=( deps.sh )
-	
-	includeScriptList+=( "build/bash"/generate.sh )
-	
-	includeScriptList+=( "build/bash"/compile_prog.sh )
-	includeScriptList+=( "build/bash"/compile.sh )
-	
-	includeScriptList+=( "structure"/overrides.sh )
+	_compile_bash_overrides
 	
 	_includeScripts "${includeScriptList[@]}"
 	

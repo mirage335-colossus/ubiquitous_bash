@@ -724,34 +724,24 @@ _generate_bash() {
 	_findUbiquitous
 	_vars_generate_bash
 	
+	#####
+	
+	_deps_build_bash
+	_deps_build_bash_ubiquitous
+	
+	#####
+	
 	rm -f "$progScript" >/dev/null 2>&1
 	
-	includeScriptList+=( "generic"/minimalheader.sh )
+	_compile_bash_header
 	
-	#####Essential Utilities
-	includeScriptList+=( "labels"/utilitiesLabel.sh )
-	includeScriptList+=( "generic/filesystem"/absolutepaths.sh )
-	includeScriptList+=( "generic/filesystem"/safedelete.sh )
-	includeScriptList+=( "generic/process"/timeout.sh )
-	includeScriptList+=( "generic"/uid.sh )
-	includeScriptList+=( "generic/filesystem/permissions"/checkpermissions.sh )
+	_compile_bash_essential_utilities
 	
-	includeScriptList+=( "build/bash"/include.sh )
+	_compile_bash_vars_global
 	
-	includeScriptList+=( "structure"/globalvars.sh )
+	_compile_bash_selfHost
 	
-	includeScriptList+=( "build/bash/ubiquitous"/discoverubiquitious.sh )
-	
-	includeScriptList+=( "build/bash/ubiquitous"/depsubiquitous.sh )
-	
-	includeScriptList+=( deps.sh )
-	
-	includeScriptList+=( "build/bash"/generate.sh )
-	
-	includeScriptList+=( "build/bash"/compile_prog.sh )
-	includeScriptList+=( "build/bash"/compile.sh )
-	
-	includeScriptList+=( "structure"/overrides.sh )
+	_compile_bash_overrides
 	
 	_includeScripts "${includeScriptList[@]}"
 	
@@ -792,6 +782,11 @@ _bootstrap_bash_basic() {
 }
 
 _compile_bash_header_prog() {	
+	export includeScriptList
+	true
+}
+
+_compile_bash_header_program_prog() {	
 	export includeScriptList
 	true
 }
@@ -900,6 +895,11 @@ _compile_bash_header() {
 	export includeScriptList
 	
 	includeScriptList+=( "generic"/minimalheader.sh )
+}
+
+_compile_bash_header_program() {
+	export includeScriptList
+	
 	includeScriptList+=( progheader.sh )
 }
 
@@ -908,22 +908,74 @@ _compile_bash_essential_utilities() {
 	
 	#####Essential Utilities
 	includeScriptList+=( "labels"/utilitiesLabel.sh )
-	
-	includeScriptList+=( "generic"/showCommand.sh )
-	
 	includeScriptList+=( "generic/filesystem"/absolutepaths.sh )
-	
+	includeScriptList+=( "generic/filesystem"/safedelete.sh )
+	includeScriptList+=( "generic/process"/timeout.sh )
+	includeScriptList+=( "generic"/uid.sh )
 	includeScriptList+=( "generic/filesystem/permissions"/checkpermissions.sh )
 	
+	[[ "$enUb_buildBash" == "true" ]] && includeScriptList+=( "build/bash"/include.sh )
+}
+
+_compile_bash_utilities() {
+	export includeScriptList
+	
+	#####Utilities
 	includeScriptList+=( "generic/filesystem"/getext.sh )
 	
 	includeScriptList+=( "generic/filesystem"/finddir.sh )
 	
-	includeScriptList+=( "generic/filesystem"/safedelete.sh )
-	
 	includeScriptList+=( "generic/filesystem"/discoverresource.sh )
 	
 	includeScriptList+=( "generic/filesystem"/relink.sh )
+	
+	[[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "generic/filesystem/mounts"/bindmountmanager.sh )
+	
+	includeScriptList+=( "generic/filesystem/mounts"/waitumount.sh )
+	
+	includeScriptList+=( "generic/filesystem/mounts"/mountchecks.sh )
+	
+	includeScriptList+=( "generic/process"/waitforprocess.sh )
+	
+	includeScriptList+=( "generic/process"/daemon.sh )
+	
+	includeScriptList+=( "generic/process"/remotesig.sh )
+	
+	includeScriptList+=( "generic/net"/fetch.sh )
+	
+	includeScriptList+=( "generic/net"/findport.sh )
+	
+	includeScriptList+=( "generic/net"/waitport.sh )
+	
+	[[ "$enUb_proxy_special" == "true" ]] && includeScriptList+=( "generic/net/proxy/tor"/tor.sh )
+	
+	[[ "$enUb_proxy" == "true" ]] && includeScriptList+=( "generic/net/proxy/ssh"/here_ssh.sh )
+	[[ "$enUb_proxy" == "true" ]] && includeScriptList+=( "generic/net/proxy/ssh"/ssh.sh )
+	[[ "$enUb_proxy" == "true" ]] && includeScriptList+=( "generic/net/proxy/ssh"/autossh.sh )
+	
+	[[ "$enUb_proxy" == "true" ]] && includeScriptList+=( "generic/net/proxy/proxyrouter"/here_proxyrouter.sh )
+	[[ "$enUb_proxy" == "true" ]] && includeScriptList+=( "generic/net/proxy/proxyrouter"/proxyrouter.sh )
+	
+	includeScriptList+=( "generic"/showCommand.sh )
+	includeScriptList+=( "generic"/messaging.sh )
+	includeScriptList+=( "generic"/validaterequest.sh )
+	
+	includeScriptList+=( "generic"/preserveLog.sh )
+	
+	[[ "$enUb_os_x11" == "true" ]] && includeScriptList+=( "os/unix/x11"/findx11.sh )
+	
+	includeScriptList+=( "os"/getDep.sh )
+	[[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "os/distro/debian"/getDep_debian.sh )
+	
+	[[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "os/unix/systemd"/here_systemd.sh )
+	[[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "os/unix/systemd"/hook_systemd.sh )
+	
+	includeScriptList+=( "special"/mustberoot.sh )
+	includeScriptList+=( "special"/mustgetsudo.sh )
+	
+	[[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "special/gosu"/gosu.sh )
+	
+	includeScriptList+=( "special"/uuid.sh )
 	
 	[[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "instrumentation"/bashdb/bashdb.sh )
 }
@@ -977,70 +1029,14 @@ _compile_bash_utilities_virtualization() {
 	[[ "$enUb_docker" == "true" ]] && includeScriptList+=( "virtualization/docker"/dockeruser.sh )
 }
 
-_compile_bash_utilities() {
-	export includeScriptList
-	
-	#####Utilities
-	[[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "generic/filesystem/mounts"/bindmountmanager.sh )
-	
-	includeScriptList+=( "generic/filesystem/mounts"/waitumount.sh )
-	
-	includeScriptList+=( "generic/filesystem/mounts"/mountchecks.sh )
-	
-	[[ "$enUb_buildBash" == "true" ]] && includeScriptList+=( "build/bash"/include.sh )
-	
-	includeScriptList+=( "generic/process"/timeout.sh )
-	
-	includeScriptList+=( "generic/process"/waitforprocess.sh )
-	
-	includeScriptList+=( "generic/process"/daemon.sh )
-	
-	includeScriptList+=( "generic/process"/remotesig.sh )
-	
-	includeScriptList+=( "generic/net"/fetch.sh )
-	
-	includeScriptList+=( "generic/net"/findport.sh )
-	
-	includeScriptList+=( "generic/net"/waitport.sh )
-	
-	[[ "$enUb_proxy_special" == "true" ]] && includeScriptList+=( "generic/net/proxy/tor"/tor.sh )
-	
-	[[ "$enUb_proxy" == "true" ]] && includeScriptList+=( "generic/net/proxy/ssh"/here_ssh.sh )
-	[[ "$enUb_proxy" == "true" ]] && includeScriptList+=( "generic/net/proxy/ssh"/ssh.sh )
-	[[ "$enUb_proxy" == "true" ]] && includeScriptList+=( "generic/net/proxy/ssh"/autossh.sh )
-	
-	[[ "$enUb_proxy" == "true" ]] && includeScriptList+=( "generic/net/proxy/proxyrouter"/here_proxyrouter.sh )
-	[[ "$enUb_proxy" == "true" ]] && includeScriptList+=( "generic/net/proxy/proxyrouter"/proxyrouter.sh )
-	
-	includeScriptList+=( "generic"/uid.sh )
-	
-	includeScriptList+=( "generic"/messaging.sh )
-	includeScriptList+=( "generic"/validaterequest.sh )
-	
-	includeScriptList+=( "generic"/preserveLog.sh )
-	
-	[[ "$enUb_os_x11" == "true" ]] && includeScriptList+=( "os/unix/x11"/findx11.sh )
-	
-	includeScriptList+=( "os"/getDep.sh )
-	[[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "os/distro/debian"/getDep_debian.sh )
-	
-	[[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "os/unix/systemd"/here_systemd.sh )
-	[[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "os/unix/systemd"/hook_systemd.sh )
-	
-	includeScriptList+=( "special"/mustberoot.sh )
-	includeScriptList+=( "special"/mustgetsudo.sh )
-	
-	[[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "special/gosu"/gosu.sh )
-	
-	includeScriptList+=( "special"/uuid.sh )
-}
-
 _compile_bash_shortcuts() {
 	export includeScriptList
 	
 	
 	#####Shortcuts
 	includeScriptList+=( "labels"/shortcutsLabel.sh )
+	
+	includeScriptList+=( "shortcuts/prompt"/visualPrompt.sh )
 	
 	[[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "shortcuts/dev"/devsearch.sh )
 	
@@ -1058,9 +1054,6 @@ _compile_bash_shortcuts() {
 	[[ "$enUb_image" == "true" ]] && includeScriptList+=( "shortcuts/distro/raspbian"/createRaspbian.sh )
 	
 	[[ "$enUb_msw" == "true" ]] && includeScriptList+=( "shortcuts/distro/msw"/msw.sh )
-	
-	
-	includeScriptList+=( "shortcuts/prompt"/visualPrompt.sh )
 	
 	[[ "$enUb_x11" == "true" ]] && includeScriptList+=( "shortcuts/x11"/testx11.sh )
 	[[ "$enUb_x11" == "true" ]] && includeScriptList+=( "shortcuts/x11/clipboard"/x11ClipboardImage.sh )
@@ -1187,12 +1180,12 @@ _compile_bash_selfHost() {
 	
 	
 	#####Generate/Compile
-	[[ "$enUb_buildBashUbiquitous" == "true" ]] && includeScriptList+=( "build/bash"/compile_prog.sh )
-	
 	[[ "$enUb_buildBashUbiquitous" == "true" ]] && includeScriptList+=( "build/bash/ubiquitous"/discoverubiquitious.sh )
 	[[ "$enUb_buildBashUbiquitous" == "true" ]] && includeScriptList+=( "build/bash/ubiquitous"/depsubiquitous.sh )
 	[[ "$enUb_buildBashUbiquitous" == "true" ]] && includeScriptList+=( deps.sh )
 	[[ "$enUb_buildBashUbiquitous" == "true" ]] && includeScriptList+=( "build/bash"/generate.sh )
+	
+	[[ "$enUb_buildBashUbiquitous" == "true" ]] && includeScriptList+=( "build/bash"/compile_prog.sh )
 	[[ "$enUb_buildBashUbiquitous" == "true" ]] && includeScriptList+=( "build/bash"/compile.sh )
 }
 
@@ -1255,6 +1248,8 @@ _compile_bash() {
 	
 	_compile_bash_header
 	_compile_bash_header_prog
+	_compile_bash_header_program
+	_compile_bash_header_program_prog
 	
 	_compile_bash_essential_utilities
 	_compile_bash_essential_utilities_prog
