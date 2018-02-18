@@ -242,7 +242,7 @@ _compile_bash_vars_bundled() {
 	[[ "$enUb_proxy" == "true" ]] && includeScriptList+=( "generic/net/proxy/ssh"/sshvars.sh )
 }
 
-_compile_bash_bunildin() {
+_compile_bash_buildin() {
 	export includeScriptList
 	
 	includeScriptList+=( "generic/hello"/hello.sh )
@@ -276,7 +276,7 @@ _compile_bash_program() {
 	includeScriptList+=( "structure"/program.sh )
 }
 
-_compile_bash_hardcoded() {
+_compile_bash_config() {
 	export includeScriptList
 	
 	
@@ -364,9 +364,9 @@ _compile_bash() {
 	
 	_compile_bash_bundled
 	
-	_compile_bash_basicvars
-	_compile_bash_globalvars
-	_compile_bash_specvars
+	_compile_bash_vars_basic
+	_compile_bash_vars_global
+	_compile_bash_vars_spec
 	
 	_compile_bash_vars_shortcuts
 	

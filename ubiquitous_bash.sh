@@ -2525,6 +2525,194 @@ _unhook_systemd_shutdown() {
 	sudo -n rm -f /etc/systemd/system/"$hookSessionid".service 2>&1 | sudo tee -a "$permaLog"/gsysd.log > /dev/null 2>&1
 }
 
+#Determines if user is root. If yes, then continue. If not, exits after printing error message.
+_mustBeRoot() {
+if [[ $(id -u) != 0 ]]; then 
+	echo "This must be run as root!"
+	exit
+fi
+}
+alias mustBeRoot=_mustBeRoot
+
+#Determines if sudo is usable by scripts.
+_mustGetSudo() {
+	local rootAvailable
+	rootAvailable=false
+	
+	rootAvailable=$(sudo -n echo true)
+	
+	#[[ $(id -u) == 0 ]] && rootAvailable=true
+	
+	! [[ "$rootAvailable" == "true" ]] && exit 1
+	
+	return 0
+}
+
+#Determines if sudo is usable by scripts. Will not exit on failure.
+_wantSudo() {
+	local rootAvailable
+	rootAvailable=false
+	
+	rootAvailable=$(sudo -n echo true 2> /dev/null)
+	
+	#[[ $(id -u) == 0 ]] && rootAvailable=true
+	
+	! [[ "$rootAvailable" == "true" ]] && return 1
+	
+	return 0
+}
+
+#####Idle
+
+_gosuBinary() {
+	echo "$hostArch" | grep x86_64 > /dev/null 2>&1 && export gosuBinary="gosu-amd64" && return
+	echo "$hostArch" | grep x86 > /dev/null 2>&1 && export gosuBinary="gosu-i386" && return
+	echo "$hostArch" | grep arm > /dev/null 2>&1 && export gosuBinary="gosu-armel" && return
+	
+	uname -m | grep x86_64 > /dev/null 2>&1 && export gosuBinary="gosu-amd64" && return
+	uname -m | grep x86 > /dev/null 2>&1 && export gosuBinary="gosu-i386" && return
+	uname -m | grep arm > /dev/null 2>&1 && export gosuBinary="gosu-armel" && return
+}
+
+_gosuExecVirt() {
+	_gosuBinary
+	
+	if [[ "$1" == "" ]]
+	then
+		exec "$scriptBin"/"$gosuBinary" "$virtSharedUser" /bin/bash "$@"
+		return
+	fi
+	
+	exec "$scriptBin"/"$gosuBinary" "$virtSharedUser" "$@"
+}
+
+_test_buildGoSu() {
+	_getDep gpg
+	_getDep dirmngr
+}
+
+_testBuiltGosu() {
+	#export PATH="$PATH":"$scriptBin"
+	
+	_getDep gpg
+	_getDep dirmngr
+	
+	_gosuBinary
+	
+	_checkDep "$gosuBinary"
+	
+	#Beware, this test requires either root or sudo to actually verify functionality.
+	if ! "$scriptBin"/"$gosuBinary" "$USER" true >/dev/null 2>&1 && ! sudo -n "$scriptBin"/"$gosuBinary" "$USER" true >/dev/null 2>&1
+	then
+		echo gosu invalid response
+		_stop 1
+	fi
+	
+}
+
+_verifyGosu_sequence() {
+	_start
+	
+	local gpgTestDir
+	gpgTestDir="$safeTmp"
+	[[ -e "$scriptBin"/gosu-armel ]] && [[ -e "$scriptBin"/gosu-armel.asc ]] && [[ -e "$scriptBin"/gosu-amd64 ]] && [[ -e "$scriptBin"/gosu-amd64.asc ]] && [[ -e "$scriptBin"/gosu-i386 ]] && [[ -e "$scriptBin"/gosu-i386.asc ]] && [[ -e "$scriptBin"/gosudev.asc ]] && gpgTestDir="$scriptBin" #&& _stop 1
+	
+	[[ "$1" != "" ]] && gpgTestDir="$1"
+	
+	if ! [[ -e "$gpgTestDir"/gosu-armel ]] || ! [[ -e "$gpgTestDir"/gosu-armel.asc ]] || ! [[ -e "$gpgTestDir"/gosu-amd64 ]] || ! [[ -e "$gpgTestDir"/gosu-amd64.asc ]] || ! [[ -e "$gpgTestDir"/gosu-i386 ]] || ! [[ -e "$gpgTestDir"/gosu-i386.asc ]] || ! [[ -e "$gpgTestDir"/gosudev.asc ]]
+	then
+		_stop 1
+	fi
+	
+	# verify the signature
+	export GNUPGHOME="$shortTmp"/vgosu
+	mkdir -m 700 -p "$GNUPGHOME" > /dev/null 2>&1
+	mkdir -p "$GNUPGHOME"
+	chmod 700 "$shortTmp"/vgosu
+	
+	# TODO Add further verification steps.
+	gpg --armor --import "$gpgTestDir"/gosudev.asc || _stop 1
+	
+	gpg --batch --verify "$gpgTestDir"/gosu-armel.asc "$gpgTestDir"/gosu-armel || _stop 1
+	gpg --batch --verify "$gpgTestDir"/gosu-amd64.asc "$gpgTestDir"/gosu-amd64 || _stop 1
+	gpg --batch --verify "$gpgTestDir"/gosu-i386.asc "$gpgTestDir"/gosu-i386 || _stop 1
+	
+	_stop
+}
+
+_verifyGosu() {
+	if ! "$scriptAbsoluteLocation" _verifyGosu_sequence "$@"
+	then
+		return 1
+	fi
+	return 0
+}
+
+_testGosu() {
+	if ! _verifyGosu > /dev/null 2>&1
+	then
+		echo 'need valid gosu'
+		_stop 1
+	fi
+	return 0
+}
+
+#From https://github.com/tianon/gosu/blob/master/INSTALL.md .
+# TODO Build locally from git repo and verify.
+_buildGosu_sequence() {
+	_start
+	
+	local haveGosuBin
+	haveGosuBin=false
+	[[ -e "$scriptBin"/gosu-armel ]] && [[ -e "$scriptBin"/gosu-armel.asc ]] && [[ -e "$scriptBin"/gosu-amd64 ]] && [[ -e "$scriptBin"/gosu-amd64.asc ]] && [[ -e "$scriptBin"/gosu-i386 ]] && [[ -e "$scriptBin"/gosu-i386.asc ]] && [[ -e "$scriptBin"/gosudev.asc ]] && haveGosuBin=true #&& return 0
+	
+	local GOSU_VERSION
+	GOSU_VERSION=1.10
+	
+	if [[ "$haveGosuBin" != "true" ]]
+	then
+		wget -O "$safeTmp"/gosu-armel https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-armel
+		wget -O "$safeTmp"/gosu-armel.asc https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-armel.asc
+		
+		wget -O "$safeTmp"/gosu-amd64 https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-amd64
+		wget -O "$safeTmp"/gosu-amd64.asc https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-amd64.asc
+		
+		wget -O "$safeTmp"/gosu-i386 https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-i386
+		wget -O "$safeTmp"/gosu-i386.asc https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-i386.asc
+	fi
+	
+	export GNUPGHOME="$shortTmp"/bgosu
+	mkdir -m 700 -p "$GNUPGHOME" > /dev/null 2>&1
+	mkdir -p "$GNUPGHOME"
+	chmod 700 "$shortTmp"/bgosu
+	gpg --keyserver ha.pool.sks-keyservers.net --recv-keys B42F6819007F00F88E364FD4036A9C25BF357DD4 || _stop 1
+	gpg --armor --export 036A9C25BF357DD4 > "$safeTmp"/gosudev.asc || stop 1
+	
+	if [[ "$haveGosuBin" != "true" ]]
+	then
+		_verifyGosu "$safeTmp" > /dev/null 2>&1 || _stop 1
+	fi
+	if [[ "$haveGosuBin" == "true" ]]
+	then
+		_verifyGosu "$scriptBin" > /dev/null 2>&1 || _stop 1
+	fi
+	
+	[[ "$haveGosuBin" != "true" ]] && mv "$safeTmp"/gosu* "$scriptBin"/
+	[[ "$haveGosuBin" != "true" ]] && chmod ugoa+rx "$scriptBin"/gosu-*
+	
+	_stop
+}
+
+_buildGosu() {
+	"$scriptAbsoluteLocation" _buildGosu_sequence "$@"
+}
+
+#Returns a UUID in the form of xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+_getUUID() {
+	cat /proc/sys/kernel/random/uuid
+}
+alias getUUID=_getUUID
+
 
 _start_virt_instance() {
 	
@@ -5937,194 +6125,6 @@ _userDocker() {
 	return "$?"
 }
 
-#Determines if user is root. If yes, then continue. If not, exits after printing error message.
-_mustBeRoot() {
-if [[ $(id -u) != 0 ]]; then 
-	echo "This must be run as root!"
-	exit
-fi
-}
-alias mustBeRoot=_mustBeRoot
-
-#Determines if sudo is usable by scripts.
-_mustGetSudo() {
-	local rootAvailable
-	rootAvailable=false
-	
-	rootAvailable=$(sudo -n echo true)
-	
-	#[[ $(id -u) == 0 ]] && rootAvailable=true
-	
-	! [[ "$rootAvailable" == "true" ]] && exit 1
-	
-	return 0
-}
-
-#Determines if sudo is usable by scripts. Will not exit on failure.
-_wantSudo() {
-	local rootAvailable
-	rootAvailable=false
-	
-	rootAvailable=$(sudo -n echo true 2> /dev/null)
-	
-	#[[ $(id -u) == 0 ]] && rootAvailable=true
-	
-	! [[ "$rootAvailable" == "true" ]] && return 1
-	
-	return 0
-}
-
-#####Idle
-
-_gosuBinary() {
-	echo "$hostArch" | grep x86_64 > /dev/null 2>&1 && export gosuBinary="gosu-amd64" && return
-	echo "$hostArch" | grep x86 > /dev/null 2>&1 && export gosuBinary="gosu-i386" && return
-	echo "$hostArch" | grep arm > /dev/null 2>&1 && export gosuBinary="gosu-armel" && return
-	
-	uname -m | grep x86_64 > /dev/null 2>&1 && export gosuBinary="gosu-amd64" && return
-	uname -m | grep x86 > /dev/null 2>&1 && export gosuBinary="gosu-i386" && return
-	uname -m | grep arm > /dev/null 2>&1 && export gosuBinary="gosu-armel" && return
-}
-
-_gosuExecVirt() {
-	_gosuBinary
-	
-	if [[ "$1" == "" ]]
-	then
-		exec "$scriptBin"/"$gosuBinary" "$virtSharedUser" /bin/bash "$@"
-		return
-	fi
-	
-	exec "$scriptBin"/"$gosuBinary" "$virtSharedUser" "$@"
-}
-
-_test_buildGoSu() {
-	_getDep gpg
-	_getDep dirmngr
-}
-
-_testBuiltGosu() {
-	#export PATH="$PATH":"$scriptBin"
-	
-	_getDep gpg
-	_getDep dirmngr
-	
-	_gosuBinary
-	
-	_checkDep "$gosuBinary"
-	
-	#Beware, this test requires either root or sudo to actually verify functionality.
-	if ! "$scriptBin"/"$gosuBinary" "$USER" true >/dev/null 2>&1 && ! sudo -n "$scriptBin"/"$gosuBinary" "$USER" true >/dev/null 2>&1
-	then
-		echo gosu invalid response
-		_stop 1
-	fi
-	
-}
-
-_verifyGosu_sequence() {
-	_start
-	
-	local gpgTestDir
-	gpgTestDir="$safeTmp"
-	[[ -e "$scriptBin"/gosu-armel ]] && [[ -e "$scriptBin"/gosu-armel.asc ]] && [[ -e "$scriptBin"/gosu-amd64 ]] && [[ -e "$scriptBin"/gosu-amd64.asc ]] && [[ -e "$scriptBin"/gosu-i386 ]] && [[ -e "$scriptBin"/gosu-i386.asc ]] && [[ -e "$scriptBin"/gosudev.asc ]] && gpgTestDir="$scriptBin" #&& _stop 1
-	
-	[[ "$1" != "" ]] && gpgTestDir="$1"
-	
-	if ! [[ -e "$gpgTestDir"/gosu-armel ]] || ! [[ -e "$gpgTestDir"/gosu-armel.asc ]] || ! [[ -e "$gpgTestDir"/gosu-amd64 ]] || ! [[ -e "$gpgTestDir"/gosu-amd64.asc ]] || ! [[ -e "$gpgTestDir"/gosu-i386 ]] || ! [[ -e "$gpgTestDir"/gosu-i386.asc ]] || ! [[ -e "$gpgTestDir"/gosudev.asc ]]
-	then
-		_stop 1
-	fi
-	
-	# verify the signature
-	export GNUPGHOME="$shortTmp"/vgosu
-	mkdir -m 700 -p "$GNUPGHOME" > /dev/null 2>&1
-	mkdir -p "$GNUPGHOME"
-	chmod 700 "$shortTmp"/vgosu
-	
-	# TODO Add further verification steps.
-	gpg --armor --import "$gpgTestDir"/gosudev.asc || _stop 1
-	
-	gpg --batch --verify "$gpgTestDir"/gosu-armel.asc "$gpgTestDir"/gosu-armel || _stop 1
-	gpg --batch --verify "$gpgTestDir"/gosu-amd64.asc "$gpgTestDir"/gosu-amd64 || _stop 1
-	gpg --batch --verify "$gpgTestDir"/gosu-i386.asc "$gpgTestDir"/gosu-i386 || _stop 1
-	
-	_stop
-}
-
-_verifyGosu() {
-	if ! "$scriptAbsoluteLocation" _verifyGosu_sequence "$@"
-	then
-		return 1
-	fi
-	return 0
-}
-
-_testGosu() {
-	if ! _verifyGosu > /dev/null 2>&1
-	then
-		echo 'need valid gosu'
-		_stop 1
-	fi
-	return 0
-}
-
-#From https://github.com/tianon/gosu/blob/master/INSTALL.md .
-# TODO Build locally from git repo and verify.
-_buildGosu_sequence() {
-	_start
-	
-	local haveGosuBin
-	haveGosuBin=false
-	[[ -e "$scriptBin"/gosu-armel ]] && [[ -e "$scriptBin"/gosu-armel.asc ]] && [[ -e "$scriptBin"/gosu-amd64 ]] && [[ -e "$scriptBin"/gosu-amd64.asc ]] && [[ -e "$scriptBin"/gosu-i386 ]] && [[ -e "$scriptBin"/gosu-i386.asc ]] && [[ -e "$scriptBin"/gosudev.asc ]] && haveGosuBin=true #&& return 0
-	
-	local GOSU_VERSION
-	GOSU_VERSION=1.10
-	
-	if [[ "$haveGosuBin" != "true" ]]
-	then
-		wget -O "$safeTmp"/gosu-armel https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-armel
-		wget -O "$safeTmp"/gosu-armel.asc https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-armel.asc
-		
-		wget -O "$safeTmp"/gosu-amd64 https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-amd64
-		wget -O "$safeTmp"/gosu-amd64.asc https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-amd64.asc
-		
-		wget -O "$safeTmp"/gosu-i386 https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-i386
-		wget -O "$safeTmp"/gosu-i386.asc https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-i386.asc
-	fi
-	
-	export GNUPGHOME="$shortTmp"/bgosu
-	mkdir -m 700 -p "$GNUPGHOME" > /dev/null 2>&1
-	mkdir -p "$GNUPGHOME"
-	chmod 700 "$shortTmp"/bgosu
-	gpg --keyserver ha.pool.sks-keyservers.net --recv-keys B42F6819007F00F88E364FD4036A9C25BF357DD4 || _stop 1
-	gpg --armor --export 036A9C25BF357DD4 > "$safeTmp"/gosudev.asc || stop 1
-	
-	if [[ "$haveGosuBin" != "true" ]]
-	then
-		_verifyGosu "$safeTmp" > /dev/null 2>&1 || _stop 1
-	fi
-	if [[ "$haveGosuBin" == "true" ]]
-	then
-		_verifyGosu "$scriptBin" > /dev/null 2>&1 || _stop 1
-	fi
-	
-	[[ "$haveGosuBin" != "true" ]] && mv "$safeTmp"/gosu* "$scriptBin"/
-	[[ "$haveGosuBin" != "true" ]] && chmod ugoa+rx "$scriptBin"/gosu-*
-	
-	_stop
-}
-
-_buildGosu() {
-	"$scriptAbsoluteLocation" _buildGosu_sequence "$@"
-}
-
-#Returns a UUID in the form of xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
-_getUUID() {
-	cat /proc/sys/kernel/random/uuid
-}
-alias getUUID=_getUUID
-
 #####Shortcuts
 
 #https://stackoverflow.com/questions/15432156/display-filename-before-matching-line-grep
@@ -8408,6 +8408,8 @@ _prepare_ssh() {
 	export sshDir="$sshUbiquitous"/"$netName"
 }
 
+
+
 _prepareFakeHome() {
 	mkdir -p "$globalFakeHome"
 }
@@ -8695,7 +8697,149 @@ _prepare_docker() {
 #_prepare_docker
 
 
+_buildHello() {
+	local helloSourceCode
+	helloSourceCode=$(find "$scriptAbsoluteFolder" -type f -name "hello.c" | head -n 1)
+	
+	mkdir -p "$scriptBin"
+	gcc -o "$scriptBin"/hello -static -nostartfiles "$helloSourceCode"
+}
 
+#####Idle
+
+_idle() {
+	_start
+	
+	_checkDep getIdle
+	
+	_daemonStatus && _stop 1
+	
+	#Default 20 minutes.
+	[[ "$idleMax" == "" ]] && export idleMax=1200000
+	[[ "$idleMin" == "" ]] && export idleMin=60000
+	
+	while true
+	do
+		sleep 5
+		
+		idleTime=$("$scriptBin"/getIdle)
+		
+		if [[ "$idleTime" -lt "$idleMin" ]] && _daemonStatus
+		then
+			true
+			_killDaemon	#Comment out if unnecessary.
+		fi
+		
+		
+		if [[ "$idleTime" -gt "$idleMax" ]] && ! _daemonStatus
+		then
+			_execDaemon
+			while ! _daemonStatus
+			do
+				sleep 5
+			done
+		fi
+		
+		
+		
+	done
+	
+	_stop
+}
+
+_test_buildIdle() {
+	_getDep "X11/extensions/scrnsaver.h"
+}
+
+_testBuiltIdle() {
+	
+	_checkDep getIdle
+	
+	idleTime=$("$scriptBin"/getIdle)
+	
+	if ! echo "$idleTime" | grep '^[0-9]*$' >/dev/null 2>&1
+	then
+		echo getIdle invalid response
+		_stop 1
+	fi
+	
+}
+
+_buildIdle() {
+	
+	idleSourceCode=$(find "$scriptAbsoluteFolder" -type f -name "getIdle.c" | head -n 1)
+	
+	mkdir -p "$scriptBin"
+	gcc -o "$scriptBin"/getIdle "$idleSourceCode" -lXss -lX11
+	
+}
+
+_test_build_prog() {
+	true
+}
+
+_test_build() {
+	_getDep gcc
+	_getDep g++
+	_getDep make
+	
+	_getDep cmake
+	
+	_getDep autoreconf
+	_getDep autoconf
+	_getDep automake
+	
+	_getDep libtool
+	
+	_getDep makeinfo
+	
+	_getDep pkg-config
+	
+	_tryExec _test_buildGoSu
+	
+	_tryExec _test_buildIdle
+	
+	_tryExec _test_bashdb
+	
+	_tryExec _test_ethereum_build
+	_tryExec _test_ethereum_parity_build
+	
+	_tryExec _test_build_prog
+}
+alias _testBuild=_test_build
+
+_buildSequence() {
+	_start
+	
+	echo -e '\E[1;32;46m Binary compiling...	\E[0m'
+	
+	_tryExec _buildHello
+	
+	_tryExec _buildIdle
+	_tryExec _buildGosu
+	
+	_tryExec _build_geth
+	_tryExec _build_ethereum_parity
+	
+	_tryExec _buildChRoot
+	_tryExec _buildQEMU
+	
+	_tryExec _buildExtra
+	
+	echo "     ...DONE"
+	
+	_stop
+}
+
+_build_prog() {
+	true
+}
+
+_build() {
+	"$scriptAbsoluteLocation" _buildSequence
+	
+	_build_prog
+}
 
 #####Local Environment Management (Resources)
 
@@ -9126,83 +9270,6 @@ _preserveVar() {
 }
 
 
-_buildHello() {
-	local helloSourceCode
-	helloSourceCode=$(find "$scriptAbsoluteFolder" -type f -name "hello.c" | head -n 1)
-	
-	mkdir -p "$scriptBin"
-	gcc -o "$scriptBin"/hello -static -nostartfiles "$helloSourceCode"
-}
-
-#####Idle
-
-_idle() {
-	_start
-	
-	_checkDep getIdle
-	
-	_daemonStatus && _stop 1
-	
-	#Default 20 minutes.
-	[[ "$idleMax" == "" ]] && export idleMax=1200000
-	[[ "$idleMin" == "" ]] && export idleMin=60000
-	
-	while true
-	do
-		sleep 5
-		
-		idleTime=$("$scriptBin"/getIdle)
-		
-		if [[ "$idleTime" -lt "$idleMin" ]] && _daemonStatus
-		then
-			true
-			_killDaemon	#Comment out if unnecessary.
-		fi
-		
-		
-		if [[ "$idleTime" -gt "$idleMax" ]] && ! _daemonStatus
-		then
-			_execDaemon
-			while ! _daemonStatus
-			do
-				sleep 5
-			done
-		fi
-		
-		
-		
-	done
-	
-	_stop
-}
-
-_test_buildIdle() {
-	_getDep "X11/extensions/scrnsaver.h"
-}
-
-_testBuiltIdle() {
-	
-	_checkDep getIdle
-	
-	idleTime=$("$scriptBin"/getIdle)
-	
-	if ! echo "$idleTime" | grep '^[0-9]*$' >/dev/null 2>&1
-	then
-		echo getIdle invalid response
-		_stop 1
-	fi
-	
-}
-
-_buildIdle() {
-	
-	idleSourceCode=$(find "$scriptAbsoluteFolder" -type f -name "getIdle.c" | head -n 1)
-	
-	mkdir -p "$scriptBin"
-	gcc -o "$scriptBin"/getIdle "$idleSourceCode" -lXss -lX11
-	
-}
-
 #####Installation
 
 #Verifies the timeout and sleep commands work properly, with subsecond specifications.
@@ -9526,73 +9593,6 @@ _package() {
 	_stop
 }
 
-_test_build_prog() {
-	true
-}
-
-_test_build() {
-	_getDep gcc
-	_getDep g++
-	_getDep make
-	
-	_getDep cmake
-	
-	_getDep autoreconf
-	_getDep autoconf
-	_getDep automake
-	
-	_getDep libtool
-	
-	_getDep makeinfo
-	
-	_getDep pkg-config
-	
-	_tryExec _test_buildGoSu
-	
-	_tryExec _test_buildIdle
-	
-	_tryExec _test_bashdb
-	
-	_tryExec _test_ethereum_build
-	_tryExec _test_ethereum_parity_build
-	
-	_tryExec _test_build_prog
-}
-alias _testBuild=_test_build
-
-_buildSequence() {
-	_start
-	
-	echo -e '\E[1;32;46m Binary compiling...	\E[0m'
-	
-	_tryExec _buildHello
-	
-	_tryExec _buildIdle
-	_tryExec _buildGosu
-	
-	_tryExec _build_geth
-	_tryExec _build_ethereum_parity
-	
-	_tryExec _buildChRoot
-	_tryExec _buildQEMU
-	
-	_tryExec _buildExtra
-	
-	echo "     ...DONE"
-	
-	_stop
-}
-
-_build_prog() {
-	true
-}
-
-_build() {
-	"$scriptAbsoluteLocation" _buildSequence
-	
-	_build_prog
-}
-
 #####Program
 
 #Typically launches an application - ie. through virtualized container.
@@ -9876,49 +9876,15 @@ _bootstrap_bash_basic() {
 	chmod u+x ./compile.sh
 }
 
-#Ubiquitous Bash compile script. Override with "ops", "_config", or "_prog" directives through "generate.sh" to compile other work products through similar scripting.
-# DANGER
-#Especially, be careful to explicitly check all prerequsites for _safeRMR are in place.
-# DANGER
-# Intended only for manual use, or within a memory cached function terminated by "exit". Launching through "$scriptAbsoluteLocation" is not adequate protection if the original script itself can reach modified code!
-# However, launching through "$scriptAbsoluteLocation" can be used to run a command within the new version fo the script. Use this capability only with full understanding of this notification. 
-# WARNING
-#Beware lean configurations have not yet been properly tested, and are considered experimental. Their purpose is to disable irrelevant dependency checking in "_test" procedures. Rigorous test procedures covering all intended functionality should always be included in downstream projects. Pull requests welcome.
-_compile_bash() {
-	_findUbiquitous
-	_vars_compile_bash
-	
-	#####
-	
-	_deps_notLean
-	_deps_os_x11
-	
-	_deps_x11
-	_deps_image
-	_deps_virt
-	_deps_chroot
-	_deps_qemu
-	_deps_vbox
-	_deps_docker
-	_deps_wine
-	_deps_dosbox
-	_deps_msw
-	_deps_fakehome
-	
-	_deps_blockchain
-	
-	_deps_proxy
-	_deps_proxy_special
-	
-	_deps_build_bash
-	_deps_build_bash_ubiquitous
-	
-	#####
-	
-	rm "$progScript" >/dev/null 2>&1
+_compile_bash_header() {
+	export includeScriptList
 	
 	includeScriptList+=( "generic"/minimalheader.sh )
 	includeScriptList+=( progheader.sh )
+}
+
+_compile_bash_essential_utilities() {
+	export includeScriptList
 	
 	#####Essential Utilities
 	includeScriptList+=( "labels"/utilitiesLabel.sh )
@@ -9940,6 +9906,59 @@ _compile_bash() {
 	includeScriptList+=( "generic/filesystem"/relink.sh )
 	
 	[[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "instrumentation"/bashdb/bashdb.sh )
+}
+
+_compile_bash_utilities_virtualization() {
+	export includeScriptList
+	
+	[[ "$enUb_virt" == "true" ]] && includeScriptList+=( "virtualization"/virtenv.sh )
+	
+	[[ "$enUb_virt" == "true" ]] && includeScriptList+=( "virtualization"/osTranslation.sh )
+	[[ "$enUb_virt" == "true" ]] && includeScriptList+=( "virtualization"/localPathTranslation.sh )
+	
+	[[ "$enUb_fakehome" == "true" ]] && includeScriptList+=( "virtualization/fakehome"/fakehome.sh )
+	
+	[[ "$enUb_image" == "true" ]] && includeScriptList+=( "virtualization/image"/mountimage.sh )
+	[[ "$enUb_image" == "true" ]] && includeScriptList+=( "virtualization/image"/createImage.sh )
+	[[ "$enUb_image" == "true" ]] && includeScriptList+=( "virtualization/image"/here_bootdisc.sh )
+	[[ "$enUb_image" == "true" ]] && includeScriptList+=( "virtualization/image"/bootdisc.sh )
+	[[ "$enUb_image" == "true" ]] && includeScriptList+=( "virtualization/image"/userpersistenthome.sh )
+	[[ "$enUb_image" == "true" ]] && includeScriptList+=( "virtualization/image"/transferimage.sh )
+	
+	[[ "$enUb_ChRoot" == "true" ]] && includeScriptList+=( "virtualization/chroot"/testchroot.sh )
+	
+	[[ "$enUb_ChRoot" == "true" ]] && includeScriptList+=( "virtualization/chroot"/procchroot.sh )
+	[[ "$enUb_ChRoot" == "true" ]] && includeScriptList+=( "virtualization/chroot"/mountchroot.sh )
+	[[ "$enUb_ChRoot" == "true" ]] && includeScriptList+=( "virtualization/chroot"/enterchroot.sh )
+	
+	[[ "$enUb_ChRoot" == "true" ]] && includeScriptList+=( "virtualization/chroot"/mountchrootuser.sh )
+	[[ "$enUb_ChRoot" == "true" ]] && includeScriptList+=( "virtualization/chroot"/userchroot.sh )
+	[[ "$enUb_ChRoot" == "true" ]] && includeScriptList+=( "virtualization/chroot"/dropchroot.sh )
+	
+	[[ "$enUb_QEMU" == "true" ]] && includeScriptList+=( "virtualization/qemu"/qemu-raspi-raspi.sh )
+	[[ "$enUb_QEMU" == "true" ]] && includeScriptList+=( "virtualization/qemu"/qemu-x64-raspi.sh )
+	[[ "$enUb_QEMU" == "true" ]] && includeScriptList+=( "virtualization/qemu"/qemu-x64-x64.sh )
+	[[ "$enUb_QEMU" == "true" ]] && includeScriptList+=( "virtualization/qemu"/qemu.sh )
+	
+	[[ "$enUb_vbox" == "true" ]] && includeScriptList+=( "virtualization/vbox"/vboxtest.sh )
+	[[ "$enUb_vbox" == "true" ]] && includeScriptList+=( "virtualization/vbox"/vboxmount.sh )
+	[[ "$enUb_vbox" == "true" ]] && includeScriptList+=( "virtualization/vbox"/vboxlab.sh )
+	[[ "$enUb_vbox" == "true" ]] && includeScriptList+=( "virtualization/vbox"/vboxuser.sh )
+	
+	[[ "$enUb_DosBox" == "true" ]] && includeScriptList+=( "virtualization/dosbox"/here_dosbox.sh )
+	[[ "$enUb_DosBox" == "true" ]] && includeScriptList+=( "virtualization/dosbox"/dosbox.sh )
+	
+	[[ "$enUb_wine" == "true" ]] && includeScriptList+=( "virtualization/wine"/wine.sh )
+	
+	[[ "$enUb_docker" == "true" ]] && includeScriptList+=( "virtualization/docker"/here_docker.sh )
+	[[ "$enUb_docker" == "true" ]] && includeScriptList+=( "virtualization/docker"/dockerdrop.sh )
+	[[ "$enUb_docker" == "true" ]] && includeScriptList+=( "virtualization/docker"/dockertest.sh )
+	[[ "$enUb_docker" == "true" ]] && includeScriptList+=( "virtualization/docker"/dockerchecks.sh )
+	[[ "$enUb_docker" == "true" ]] && includeScriptList+=( "virtualization/docker"/dockeruser.sh )
+}
+
+_compile_bash_utilities() {
+	export includeScriptList
 	
 	#####Utilities
 	[[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "generic/filesystem/mounts"/bindmountmanager.sh )
@@ -9988,57 +10007,21 @@ _compile_bash() {
 	[[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "os/unix/systemd"/here_systemd.sh )
 	[[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "os/unix/systemd"/hook_systemd.sh )
 	
-	[[ "$enUb_virt" == "true" ]] && includeScriptList+=( "virtualization"/virtenv.sh )
-	
-	[[ "$enUb_virt" == "true" ]] && includeScriptList+=( "virtualization"/osTranslation.sh )
-	[[ "$enUb_virt" == "true" ]] && includeScriptList+=( "virtualization"/localPathTranslation.sh )
-	
-	[[ "$enUb_fakehome" == "true" ]] && includeScriptList+=( "virtualization/fakehome"/fakehome.sh )
-	
-	[[ "$enUb_image" == "true" ]] && includeScriptList+=( "virtualization/image"/mountimage.sh )
-	[[ "$enUb_image" == "true" ]] && includeScriptList+=( "virtualization/image"/createImage.sh )
-	[[ "$enUb_image" == "true" ]] && includeScriptList+=( "virtualization/image"/here_bootdisc.sh )
-	[[ "$enUb_image" == "true" ]] && includeScriptList+=( "virtualization/image"/bootdisc.sh )
-	[[ "$enUb_image" == "true" ]] && includeScriptList+=( "virtualization/image"/userpersistenthome.sh )
-	[[ "$enUb_image" == "true" ]] && includeScriptList+=( "virtualization/image"/transferimage.sh )
-	
-	[[ "$enUb_ChRoot" == "true" ]] && includeScriptList+=( "virtualization/chroot"/testchroot.sh )
-	
-	[[ "$enUb_ChRoot" == "true" ]] && includeScriptList+=( "virtualization/chroot"/procchroot.sh )
-	[[ "$enUb_ChRoot" == "true" ]] && includeScriptList+=( "virtualization/chroot"/mountchroot.sh )
-	[[ "$enUb_ChRoot" == "true" ]] && includeScriptList+=( "virtualization/chroot"/enterchroot.sh )
-	
-	[[ "$enUb_ChRoot" == "true" ]] && includeScriptList+=( "virtualization/chroot"/mountchrootuser.sh )
-	[[ "$enUb_ChRoot" == "true" ]] && includeScriptList+=( "virtualization/chroot"/userchroot.sh )
-	[[ "$enUb_ChRoot" == "true" ]] && includeScriptList+=( "virtualization/chroot"/dropchroot.sh )
-	
-	[[ "$enUb_QEMU" == "true" ]] && includeScriptList+=( "virtualization/qemu"/qemu-raspi-raspi.sh )
-	[[ "$enUb_QEMU" == "true" ]] && includeScriptList+=( "virtualization/qemu"/qemu-x64-raspi.sh )
-	[[ "$enUb_QEMU" == "true" ]] && includeScriptList+=( "virtualization/qemu"/qemu-x64-x64.sh )
-	[[ "$enUb_QEMU" == "true" ]] && includeScriptList+=( "virtualization/qemu"/qemu.sh )
-	
-	[[ "$enUb_vbox" == "true" ]] && includeScriptList+=( "virtualization/vbox"/vboxtest.sh )
-	[[ "$enUb_vbox" == "true" ]] && includeScriptList+=( "virtualization/vbox"/vboxmount.sh )
-	[[ "$enUb_vbox" == "true" ]] && includeScriptList+=( "virtualization/vbox"/vboxlab.sh )
-	[[ "$enUb_vbox" == "true" ]] && includeScriptList+=( "virtualization/vbox"/vboxuser.sh )
-	
-	[[ "$enUb_DosBox" == "true" ]] && includeScriptList+=( "virtualization/dosbox"/here_dosbox.sh )
-	[[ "$enUb_DosBox" == "true" ]] && includeScriptList+=( "virtualization/dosbox"/dosbox.sh )
-	
-	[[ "$enUb_wine" == "true" ]] && includeScriptList+=( "virtualization/wine"/wine.sh )
-	
-	[[ "$enUb_docker" == "true" ]] && includeScriptList+=( "virtualization/docker"/here_docker.sh )
-	[[ "$enUb_docker" == "true" ]] && includeScriptList+=( "virtualization/docker"/dockerdrop.sh )
-	[[ "$enUb_docker" == "true" ]] && includeScriptList+=( "virtualization/docker"/dockertest.sh )
-	[[ "$enUb_docker" == "true" ]] && includeScriptList+=( "virtualization/docker"/dockerchecks.sh )
-	[[ "$enUb_docker" == "true" ]] && includeScriptList+=( "virtualization/docker"/dockeruser.sh )
-	
 	includeScriptList+=( "special"/mustberoot.sh )
 	includeScriptList+=( "special"/mustgetsudo.sh )
 	
 	[[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "special/gosu"/gosu.sh )
 	
 	includeScriptList+=( "special"/uuid.sh )
+}
+
+_compile_bash_shortcuts_setup() {
+	includeScriptList+=( "shortcuts"/setupUbiquitous.sh )
+}
+
+_compile_bash_shortcuts() {
+	export includeScriptList
+	
 	
 	#####Shortcuts
 	includeScriptList+=( "labels"/shortcutsLabel.sh )
@@ -10078,47 +10061,110 @@ _compile_bash() {
 	[[ "$enUb_docker" == "true" ]] && includeScriptList+=( "shortcuts/docker"/dockercontainer.sh )
 	
 	[[ "$enUb_image" == "true" ]] && includeScriptList+=( "shortcuts/image"/gparted.sh )
+}
+
+_compile_bash_bundled() {
+	export includeScriptList
 	
-	includeScriptList+=( "shortcuts"/setupUbiquitous.sh )
 	
 	[[ "$enUb_blockchain" == "true" ]] && includeScriptList+=( "blockchain"/blockchain.sh )
 	[[ "$enUb_blockchain" == "true" ]] && includeScriptList+=( "blockchain/ethereum"/ethereum.sh )
 	[[ "$enUb_blockchain" == "true" ]] && includeScriptList+=( "shortcuts/blockchain/ethereum"/ethereum.sh )
 	
 	[[ "$enUb_blockchain" == "true" ]] && includeScriptList+=( "blockchain/ethereum"/ethereum_parity.sh )
+}
+
+_compile_bash_vars_basic() {
+	export includeScriptList
+	
 	
 	#####Basic Variable Management
 	includeScriptList+=( "labels"/basicvarLabel.sh )
+}
+
+_compile_bash_vars_global() {
+	export includeScriptList
+	
 	
 	#####Global variables.
 	includeScriptList+=( "structure"/globalvars.sh )
+}
+
+_compile_bash_vars_spec() {
+	export includeScriptList
+	
 	
 	includeScriptList+=( "structure"/specglobalvars.sh )
-	
 	[[ "$enUb_proxy" == "true" ]] && includeScriptList+=( "generic/net/proxy/ssh"/sshvars.sh )
+}
+
+_compile_bash_vars_shortcuts() {
+	export includeScriptList
+	
+	includeScriptList+=( "shortcuts/git"/gitVars.sh )
+}
+
+_compile_bash_vars_virtualization() {
+	export includeScriptList
+	
 	
 	[[ "$enUb_fakehome" == "true" ]] && includeScriptList+=( "virtualization/fakehome"/fakehomevars.sh )
 	[[ "$enUb_vbox" == "true" ]] && includeScriptList+=( "virtualization/vbox"/vboxvars.sh )
 	[[ "$enUb_docker" == "true" ]] && includeScriptList+=( "virtualization/docker"/dockervars.sh )
+}
+
+_compile_bash_vars_bundled() {
+	export includeScriptList
 	
-	includeScriptList+=( "shortcuts/git"/gitVars.sh )
 	
-	includeScriptList+=( "structure"/localfs.sh )
-	
-	includeScriptList+=( "structure"/localenv.sh )
+	[[ "$enUb_proxy" == "true" ]] && includeScriptList+=( "generic/net/proxy/ssh"/sshvars.sh )
+}
+
+_compile_bash_buildin() {
+	export includeScriptList
 	
 	includeScriptList+=( "generic/hello"/hello.sh )
 	[[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "generic/process"/idle.sh )
 	
+	includeScriptList+=( "structure"/build.sh )
+}
+
+_compile_bash_environment() {
+	export includeScriptList
+	
+	
+	includeScriptList+=( "structure"/localfs.sh )
+	
+	includeScriptList+=( "structure"/localenv.sh )
+}
+
+_compile_bash_installation() {
+	export includeScriptList
+	
+	
 	includeScriptList+=( "structure"/installation.sh )
+}
+
+_compile_bash_program() {
+	export includeScriptList
+	
 	
 	includeScriptList+=( core.sh )
 	
-	includeScriptList+=( "structure"/build.sh )
 	includeScriptList+=( "structure"/program.sh )
+}
+
+_compile_bash_config() {
+	export includeScriptList
+	
 	
 	#####Hardcoded
 	includeScriptList+=( netvars.sh )
+}
+
+_compile_bash_selfHost() {
+	export includeScriptList
+	
 	
 	#####Generate/Compile
 	[[ "$enUb_buildBashUbiquitous" == "true" ]] && includeScriptList+=( "build/bash/ubiquitous"/discoverubiquitious.sh )
@@ -10126,18 +10172,103 @@ _compile_bash() {
 	[[ "$enUb_buildBashUbiquitous" == "true" ]] && includeScriptList+=( deps.sh )
 	[[ "$enUb_buildBashUbiquitous" == "true" ]] && includeScriptList+=( "build/bash"/generate.sh )
 	[[ "$enUb_buildBashUbiquitous" == "true" ]] && includeScriptList+=( "build/bash"/compile.sh )
+}
+
+_compile_bash_overrides() {
+	export includeScriptList
+	
 	
 	includeScriptList+=( "structure"/overrides.sh )
+}
+
+_compile_bash_entry() {
+	export includeScriptList
 	
-	includeScriptList+=( "structure"/overrides.sh )
 	
 	includeScriptList+=( "structure"/entry.sh )
+}
+
+#Ubiquitous Bash compile script. Override with "ops", "_config", or "_prog" directives through "generate.sh" to compile other work products through similar scripting.
+# DANGER
+#Especially, be careful to explicitly check all prerequsites for _safeRMR are in place.
+# DANGER
+# Intended only for manual use, or within a memory cached function terminated by "exit". Launching through "$scriptAbsoluteLocation" is not adequate protection if the original script itself can reach modified code!
+# However, launching through "$scriptAbsoluteLocation" can be used to run a command within the new version fo the script. Use this capability only with full understanding of this notification. 
+# WARNING
+#Beware lean configurations have not yet been properly tested, and are considered experimental. Their purpose is to disable irrelevant dependency checking in "_test" procedures. Rigorous test procedures covering all intended functionality should always be included in downstream projects. Pull requests welcome.
+_compile_bash() {
+	_findUbiquitous
+	_vars_compile_bash
+	
+	#####
+	
+	_deps_notLean
+	_deps_os_x11
+	
+	_deps_x11
+	_deps_image
+	_deps_virt
+	_deps_chroot
+	_deps_qemu
+	_deps_vbox
+	_deps_docker
+	_deps_wine
+	_deps_dosbox
+	_deps_msw
+	_deps_fakehome
+	
+	_deps_blockchain
+	
+	_deps_proxy
+	_deps_proxy_special
+	
+	_deps_build_bash
+	_deps_build_bash_ubiquitous
+	
+	#####
+	
+	rm "$progScript" >/dev/null 2>&1
+	
+	export includeScriptList
+	
+	_compile_bash_header
+	
+	_compile_bash_essential_utilities
+	_compile_bash_utilities
+	_compile_bash_utilities_virtualization
+	
+	_compile_bash_shortcuts
+	_compile_bash_shortcuts_setup
+	
+	_compile_bash_bundled
+	
+	_compile_bash_vars_basic
+	_compile_bash_vars_global
+	_compile_bash_vars_spec
+	
+	_compile_bash_vars_shortcuts
+	
+	_compile_bash_vars_virtualization
+	_compile_bash_vars_bundled
+	
+	_compile_bash_buildin
 	
 	
+	_compile_bash_environment
+	
+	_compile_bash_installation
+	
+	_compile_bash_program
 	
 	
+	_compile_bash_config
+	
+	_compile_bash_selfHost
 	
 	
+	_compile_bash_overrides
+	
+	_compile_bash_entry
 	
 	
 	
