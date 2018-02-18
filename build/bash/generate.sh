@@ -27,6 +27,7 @@ _generate_bash() {
 	
 	includeScriptList+=( "build/bash"/generate.sh )
 	
+	includeScriptList+=( "build/bash"/compile_prog.sh )
 	includeScriptList+=( "build/bash"/compile.sh )
 	
 	includeScriptList+=( "structure"/overrides.sh )

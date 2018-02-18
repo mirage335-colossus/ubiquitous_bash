@@ -748,6 +748,7 @@ _generate_bash() {
 	
 	includeScriptList+=( "build/bash"/generate.sh )
 	
+	includeScriptList+=( "build/bash"/compile_prog.sh )
 	includeScriptList+=( "build/bash"/compile.sh )
 	
 	includeScriptList+=( "structure"/overrides.sh )
@@ -790,11 +791,118 @@ _bootstrap_bash_basic() {
 	chmod u+x ./compile.sh
 }
 
+_compile_bash_header_prog() {	
+	export includeScriptList
+	true
+}
+
+_compile_bash_essential_utilities_prog() {	
+	export includeScriptList
+	true
+}
+
+_compile_bash_utilities_virtualization_prog() {	
+	export includeScriptList
+	true
+}
+
+_compile_bash_utilities_prog() {	
+	export includeScriptList
+	true
+}
+
+_compile_bash_shortcuts_prog() {	
+	export includeScriptList
+	true
+}
+
+_compile_bash_shortcuts_setup_prog() {	
+	export includeScriptList
+	true
+}
+
+_compile_bash_bundled_prog() {	
+	export includeScriptList
+	true
+}
+
+_compile_bash_vars_basic_prog() {	
+	export includeScriptList
+	true
+}
+
+_compile_bash_vars_global_prog() {	
+	export includeScriptList
+	true
+}
+
+_compile_bash_vars_spec_prog() {	
+	export includeScriptList
+	true
+}
+
+_compile_bash_vars_shortcuts_prog() {	
+	export includeScriptList
+	true
+}
+
+_compile_bash_vars_virtualization_prog() {	
+	export includeScriptList
+	true
+}
+
+_compile_bash_vars_bundled_prog() {	
+	export includeScriptList
+	true
+}
+
+_compile_bash_buildin_prog() {	
+	export includeScriptList
+	true
+}
+
+_compile_bash_environment_prog() {	
+	export includeScriptList
+	true
+}
+
+_compile_bash_installation_prog() {	
+	export includeScriptList
+	true
+}
+
+_compile_bash_program_prog() {	
+	export includeScriptList
+	true
+}
+
+_compile_bash_config_prog() {	
+	export includeScriptList
+	true
+}
+
+_compile_bash_selfHost_prog() {	
+	export includeScriptList
+	true
+}
+
+_compile_bash_overrides_prog() {	
+	export includeScriptList
+	true
+}
+
+_compile_bash_entry_prog() {	
+	export includeScriptList
+	true
+}
+
 _compile_bash_header() {
 	export includeScriptList
 	
 	includeScriptList+=( "generic"/minimalheader.sh )
 	includeScriptList+=( progheader.sh )
+	
+	_compile_bash_header_prog
 }
 
 _compile_bash_essential_utilities() {
@@ -820,6 +928,8 @@ _compile_bash_essential_utilities() {
 	includeScriptList+=( "generic/filesystem"/relink.sh )
 	
 	[[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "instrumentation"/bashdb/bashdb.sh )
+	
+	_compile_bash_essential_utilities_prog
 }
 
 _compile_bash_utilities_virtualization() {
@@ -869,6 +979,8 @@ _compile_bash_utilities_virtualization() {
 	[[ "$enUb_docker" == "true" ]] && includeScriptList+=( "virtualization/docker"/dockertest.sh )
 	[[ "$enUb_docker" == "true" ]] && includeScriptList+=( "virtualization/docker"/dockerchecks.sh )
 	[[ "$enUb_docker" == "true" ]] && includeScriptList+=( "virtualization/docker"/dockeruser.sh )
+	
+	_compile_bash_utilities_virtualization_prog
 }
 
 _compile_bash_utilities() {
@@ -927,10 +1039,8 @@ _compile_bash_utilities() {
 	[[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "special/gosu"/gosu.sh )
 	
 	includeScriptList+=( "special"/uuid.sh )
-}
-
-_compile_bash_shortcuts_setup() {
-	includeScriptList+=( "shortcuts"/setupUbiquitous.sh )
+	
+	_compile_bash_utilities_prog
 }
 
 _compile_bash_shortcuts() {
@@ -975,6 +1085,14 @@ _compile_bash_shortcuts() {
 	[[ "$enUb_docker" == "true" ]] && includeScriptList+=( "shortcuts/docker"/dockercontainer.sh )
 	
 	[[ "$enUb_image" == "true" ]] && includeScriptList+=( "shortcuts/image"/gparted.sh )
+	
+	_compile_bash_shortcuts_prog
+}
+
+_compile_bash_shortcuts_setup() {
+	includeScriptList+=( "shortcuts"/setupUbiquitous.sh )
+	
+	_compile_bash_shortcuts_setup_prog
 }
 
 _compile_bash_bundled() {
@@ -986,6 +1104,8 @@ _compile_bash_bundled() {
 	[[ "$enUb_blockchain" == "true" ]] && includeScriptList+=( "shortcuts/blockchain/ethereum"/ethereum.sh )
 	
 	[[ "$enUb_blockchain" == "true" ]] && includeScriptList+=( "blockchain/ethereum"/ethereum_parity.sh )
+	
+	_compile_bash_bundled_prog
 }
 
 _compile_bash_vars_basic() {
@@ -994,6 +1114,8 @@ _compile_bash_vars_basic() {
 	
 	#####Basic Variable Management
 	includeScriptList+=( "labels"/basicvarLabel.sh )
+	
+	_compile_bash_vars_basic_prog
 }
 
 _compile_bash_vars_global() {
@@ -1002,6 +1124,8 @@ _compile_bash_vars_global() {
 	
 	#####Global variables.
 	includeScriptList+=( "structure"/globalvars.sh )
+	
+	_compile_bash_vars_global_prog
 }
 
 _compile_bash_vars_spec() {
@@ -1010,12 +1134,16 @@ _compile_bash_vars_spec() {
 	
 	includeScriptList+=( "structure"/specglobalvars.sh )
 	[[ "$enUb_proxy" == "true" ]] && includeScriptList+=( "generic/net/proxy/ssh"/sshvars.sh )
+	
+	_compile_bash_vars_spec_prog
 }
 
 _compile_bash_vars_shortcuts() {
 	export includeScriptList
 	
 	includeScriptList+=( "shortcuts/git"/gitVars.sh )
+	
+	_compile_bash_vars_shortcuts_prog
 }
 
 _compile_bash_vars_virtualization() {
@@ -1025,6 +1153,8 @@ _compile_bash_vars_virtualization() {
 	[[ "$enUb_fakehome" == "true" ]] && includeScriptList+=( "virtualization/fakehome"/fakehomevars.sh )
 	[[ "$enUb_vbox" == "true" ]] && includeScriptList+=( "virtualization/vbox"/vboxvars.sh )
 	[[ "$enUb_docker" == "true" ]] && includeScriptList+=( "virtualization/docker"/dockervars.sh )
+	
+	_compile_bash_vars_shortcuts_prog
 }
 
 _compile_bash_vars_bundled() {
@@ -1032,6 +1162,8 @@ _compile_bash_vars_bundled() {
 	
 	
 	[[ "$enUb_proxy" == "true" ]] && includeScriptList+=( "generic/net/proxy/ssh"/sshvars.sh )
+	
+	_compile_bash_vars_shortcuts_prog
 }
 
 _compile_bash_buildin() {
@@ -1041,6 +1173,8 @@ _compile_bash_buildin() {
 	[[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "generic/process"/idle.sh )
 	
 	includeScriptList+=( "structure"/build.sh )
+	
+	_compile_bash_vars_shortcuts_prog
 }
 
 _compile_bash_environment() {
@@ -1050,6 +1184,8 @@ _compile_bash_environment() {
 	includeScriptList+=( "structure"/localfs.sh )
 	
 	includeScriptList+=( "structure"/localenv.sh )
+	
+	_compile_bash_vars_shortcuts_prog
 }
 
 _compile_bash_installation() {
@@ -1057,6 +1193,8 @@ _compile_bash_installation() {
 	
 	
 	includeScriptList+=( "structure"/installation.sh )
+	
+	_compile_bash_vars_shortcuts_prog
 }
 
 _compile_bash_program() {
@@ -1066,6 +1204,8 @@ _compile_bash_program() {
 	includeScriptList+=( core.sh )
 	
 	includeScriptList+=( "structure"/program.sh )
+	
+	_compile_bash_vars_shortcuts_prog
 }
 
 _compile_bash_config() {
@@ -1074,6 +1214,8 @@ _compile_bash_config() {
 	
 	#####Hardcoded
 	includeScriptList+=( netvars.sh )
+	
+	_compile_bash_config_prog
 }
 
 _compile_bash_selfHost() {
@@ -1081,11 +1223,15 @@ _compile_bash_selfHost() {
 	
 	
 	#####Generate/Compile
+	[[ "$enUb_buildBashUbiquitous" == "true" ]] && includeScriptList+=( "build/bash"/compile_prog.sh )
+	
 	[[ "$enUb_buildBashUbiquitous" == "true" ]] && includeScriptList+=( "build/bash/ubiquitous"/discoverubiquitious.sh )
 	[[ "$enUb_buildBashUbiquitous" == "true" ]] && includeScriptList+=( "build/bash/ubiquitous"/depsubiquitous.sh )
 	[[ "$enUb_buildBashUbiquitous" == "true" ]] && includeScriptList+=( deps.sh )
 	[[ "$enUb_buildBashUbiquitous" == "true" ]] && includeScriptList+=( "build/bash"/generate.sh )
 	[[ "$enUb_buildBashUbiquitous" == "true" ]] && includeScriptList+=( "build/bash"/compile.sh )
+	
+	_compile_bash_selfHost_prog
 }
 
 _compile_bash_overrides() {
@@ -1093,6 +1239,8 @@ _compile_bash_overrides() {
 	
 	
 	includeScriptList+=( "structure"/overrides.sh )
+	
+	_compile_bash_overrides_prog
 }
 
 _compile_bash_entry() {
@@ -1100,6 +1248,8 @@ _compile_bash_entry() {
 	
 	
 	includeScriptList+=( "structure"/entry.sh )
+	
+	_compile_bash_entry_prog
 }
 
 #Ubiquitous Bash compile script. Override with "ops", "_config", or "_prog" directives through "generate.sh" to compile other work products through similar scripting.
