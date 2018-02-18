@@ -30,7 +30,7 @@ find . -maxdepth 1 -type f -exec sed -i s/YEAR/$(date +%Y)/g {} \;
 
 ##### Binary Executables
 cp -a ./_lib/ubiquitous_bash/_bin ./_bin
-cp -a ./_lib/ubiquitous_bash/_bin ./_lib
+cp -a ./_lib/ubiquitous_bash/_lib ./_lib
 
 ##### Commonly customized scripts.
 

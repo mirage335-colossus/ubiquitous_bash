@@ -25,9 +25,11 @@ export safeTmp="$scriptAbsoluteFolder"/w_"$sessionid"
 export logTmp="$safeTmp"/log
 export shortTmp=/tmp/w_"$sessionid"	#Solely for misbehaved applications called upon.
 export scriptBin="$scriptAbsoluteFolder"/_bin
+export scriptBundle="$scriptAbsoluteFolder"/_bundle
 export scriptLib="$scriptAbsoluteFolder"/_lib
 #For virtualized guests (exclusively intended to support _setupUbiquitous and _drop* hooks).
 [[ ! -e "$scriptBin" ]] && export scriptBin="$scriptAbsoluteFolder"
+[[ ! -e "$scriptBundle" ]] && export scriptBin="$scriptAbsoluteFolder"
 [[ ! -e "$scriptLib" ]] && export scriptLib="$scriptAbsoluteFolder"
 
 
@@ -125,6 +127,7 @@ export objectName=$(basename "$objectDir")
 #Modify PATH to include own directories.
 _permissions_directory_checkForPath "$scriptAbsoluteFolder" && export PATH="$PATH":"$scriptAbsoluteFolder"
 [[ "$scriptBin" != "$scriptAbsoluteFolder" ]] && [[ -d "$scriptBin" ]] && _permissions_directory_checkForPath "$scriptBin" && export PATH="$PATH":"$scriptBin"
+[[ "$scriptBundle" != "$scriptAbsoluteFolder" ]] && [[ -d "$scriptBundle" ]] && _permissions_directory_checkForPath "$scriptBundle" && export PATH="$PATH":"$scriptBundle"
 
 export permaLog="$scriptLocal"
 

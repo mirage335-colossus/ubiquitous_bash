@@ -7989,7 +7989,7 @@ _build_geth_sequence() {
 	cd go-ethereum
 	make geth
 	
-	cp build/bin/geth "$scriptBin"/
+	cp build/bin/geth "$scriptBundle"/
 	
 	cd "$safeTmp"/..
 	_stop
@@ -8067,7 +8067,7 @@ _ethereum_status() {
 }
 
 _ethereum_mine() {
-	_ethereum_home xterm -e "$scriptBin"/ethminer -G --farm-recheck 200 -S eu1.ethermine.org:4444 -FS us1.ethermine.org:4444 -O "$ethaddr"."$rigname"
+	_ethereum_home xterm -e "$scriptBundle"/ethminer -G --farm-recheck 200 -S eu1.ethermine.org:4444 -FS us1.ethermine.org:4444 -O "$ethaddr"."$rigname"
 }
 
 _ethereum_mine_status() {
@@ -8116,7 +8116,7 @@ _build_ethereum_parity_sequence() {
 	cd parity
 	cargo build --release
 	
-	cp ./target/release/parity "$scriptBin"/
+	cp ./target/release/parity "$scriptBundle"/
 	
 	cd "$safeTmp"/..
 	_stop
@@ -8171,9 +8171,11 @@ export safeTmp="$scriptAbsoluteFolder"/w_"$sessionid"
 export logTmp="$safeTmp"/log
 export shortTmp=/tmp/w_"$sessionid"	#Solely for misbehaved applications called upon.
 export scriptBin="$scriptAbsoluteFolder"/_bin
+export scriptBundle="$scriptAbsoluteFolder"/_bundle
 export scriptLib="$scriptAbsoluteFolder"/_lib
 #For virtualized guests (exclusively intended to support _setupUbiquitous and _drop* hooks).
 [[ ! -e "$scriptBin" ]] && export scriptBin="$scriptAbsoluteFolder"
+[[ ! -e "$scriptBundle" ]] && export scriptBin="$scriptAbsoluteFolder"
 [[ ! -e "$scriptLib" ]] && export scriptLib="$scriptAbsoluteFolder"
 
 
@@ -8271,6 +8273,7 @@ export objectName=$(basename "$objectDir")
 #Modify PATH to include own directories.
 _permissions_directory_checkForPath "$scriptAbsoluteFolder" && export PATH="$PATH":"$scriptAbsoluteFolder"
 [[ "$scriptBin" != "$scriptAbsoluteFolder" ]] && [[ -d "$scriptBin" ]] && _permissions_directory_checkForPath "$scriptBin" && export PATH="$PATH":"$scriptBin"
+[[ "$scriptBundle" != "$scriptAbsoluteFolder" ]] && [[ -d "$scriptBundle" ]] && _permissions_directory_checkForPath "$scriptBundle" && export PATH="$PATH":"$scriptBundle"
 
 export permaLog="$scriptLocal"
 

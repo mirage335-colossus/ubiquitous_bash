@@ -26,7 +26,7 @@ _build_ethereum_parity_sequence() {
 	cd parity
 	cargo build --release
 	
-	cp ./target/release/parity "$scriptBin"/
+	cp ./target/release/parity "$scriptBundle"/
 	
 	cd "$safeTmp"/..
 	_stop
