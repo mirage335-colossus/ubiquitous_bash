@@ -15,7 +15,7 @@ mkdir ./_prog
 
 git init
 
-git submodule add git@github.com:mirage335/ubiquitous_bash.git ./_lib/ubiquitous_bash
+git submodule add --depth 1 git@github.com:mirage335/ubiquitous_bash.git ./_lib/ubiquitous_bash
 
 git add -A .
 git commit -a -m "first commit"
