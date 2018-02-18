@@ -9461,11 +9461,16 @@ _setup() {
 	
 	"$scriptAbsoluteLocation" _test || _stop 1
 	
-	"$scriptAbsoluteLocation" _test_build || _stop 1
+	#Only attempt build procedures if their functions have been defined from "build.sh" . Pure shell script projects (eg. CoreAutoSSH), and projects using only statically compiled binaries, need NOT include such procedures.
+	local buildSupported
+	type _build > /dev/null 2>&1 && type _test_build > /dev/null 2>&1 && buildSupported="true"
+	
+	[[ "$buildSupported" == "true" ]] && "$scriptAbsoluteLocation" _test_build || _stop 1
 	
 	if ! "$scriptAbsoluteLocation" _testBuilt
 	then
-		"$scriptAbsoluteLocation" _build "$@" || _stop 1
+		! [[ "$buildSupported" == "true" ]] && _stop 1
+		[[ "$buildSupported" == "true" ]] && "$scriptAbsoluteLocation" _build "$@" || _stop 1
 		"$scriptAbsoluteLocation" _testBuilt || _stop 1
 	fi
 	
