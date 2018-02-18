@@ -9867,6 +9867,15 @@ _bootstrap_bash_basic() {
 	chmod u+x ./compile.sh
 }
 
+_vars_compile_bash_prog() {
+	#export configDir="$scriptAbsoluteFolder"/_config
+	
+	#export progDir="$scriptAbsoluteFolder"/_prog
+	#export progScript="$scriptAbsoluteFolder"/ubiquitous_bash.sh
+	
+	true
+}
+
 _compile_bash_header_prog() {	
 	export includeScriptList
 	true
@@ -9975,6 +9984,15 @@ _compile_bash_overrides_prog() {
 _compile_bash_entry_prog() {	
 	export includeScriptList
 	true
+}
+
+_vars_compile_bash() {
+	export configDir="$scriptAbsoluteFolder"/_config
+	
+	export progDir="$scriptAbsoluteFolder"/_prog
+	export progScript="$scriptAbsoluteFolder"/ubiquitous_bash.sh
+	
+	_vars_compile_bash_prog
 }
 
 _compile_bash_header() {
@@ -10411,13 +10429,6 @@ _compile_bash() {
 	
 	# DANGER Do NOT remove.
 	exit
-}
-
-_vars_compile_bash() {
-	export configDir="$scriptAbsoluteFolder"/_config
-	
-	export progDir="$scriptAbsoluteFolder"/_prog
-	export progScript="$scriptAbsoluteFolder"/ubiquitous_bash.sh
 }
 
 #####Overrides

@@ -1,3 +1,42 @@
+_compile_bash_deps_prog() {
+	true
+}
+
+# #Default is to include all. For this reason, it will be more typical to override this entire function, rather than append any additional code.
+# _compile_bash_deps() {
+# 	_deps_notLean
+# 	_deps_os_x11
+# 	
+# 	_deps_x11
+# 	_deps_image
+# 	_deps_virt
+# 	_deps_chroot
+# 	_deps_qemu
+# 	_deps_vbox
+# 	_deps_docker
+# 	_deps_wine
+# 	_deps_dosbox
+# 	_deps_msw
+# 	_deps_fakehome
+# 	
+# 	_deps_blockchain
+# 	
+# 	_deps_proxy
+# 	_deps_proxy_special
+# 	
+# 	_deps_build_bash
+# 	_deps_build_bash_ubiquitous
+# }
+
+_vars_compile_bash_prog() {
+	#export configDir="$scriptAbsoluteFolder"/_config
+	
+	#export progDir="$scriptAbsoluteFolder"/_prog
+	#export progScript="$scriptAbsoluteFolder"/ubiquitous_bash.sh
+	
+	true
+}
+
 _compile_bash_header_prog() {	
 	export includeScriptList
 	true

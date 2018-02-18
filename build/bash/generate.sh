@@ -52,10 +52,10 @@ _generate_compile_bash() {
 	exit
 }
 
-#Typically not used literally. Preserved as an example command set to build the otherwise self-hosted generate/compile script manually.
-_bootstrap_bash_basic() {
-	cat "generic"/minimalheader.sh "labels"/utilitiesLabel.sh "generic/filesystem"/absolutepaths.sh "generic/filesystem"/safedelete.sh "generic/process"/timeout.sh "generic"/uid.sh "generic/filesystem/permissions"/checkpermissions.sh "build/bash"/include.sh "structure"/globalvars.sh "build/bash/ubiquitous"/discoverubiquitious.sh "build/bash/ubiquitous"/depsubiquitous.sh "build/bash"/generate.sh "build/bash"/compile.sh "structure"/overrides.sh > ./compile.sh
-	echo >> ./compile.sh
-	echo _generate_compile_bash >> ./compile.sh
-	chmod u+x ./compile.sh
-}
+# #No production use. Unmaintained, obsolete. Never used literally. Preserved as an example command set to build the otherwise self-hosted generate/compile script manually (ie. bootstrapping).
+# _bootstrap_bash_basic() {
+# 	cat "generic"/minimalheader.sh "labels"/utilitiesLabel.sh "generic/filesystem"/absolutepaths.sh "generic/filesystem"/safedelete.sh "generic/process"/timeout.sh "generic"/uid.sh "generic/filesystem/permissions"/checkpermissions.sh "build/bash"/include.sh "structure"/globalvars.sh "build/bash/ubiquitous"/discoverubiquitious.sh "build/bash/ubiquitous"/depsubiquitous.sh "build/bash"/generate.sh "build/bash"/compile.sh "structure"/overrides.sh > ./compile.sh
+# 	echo >> ./compile.sh
+# 	echo _generate_compile_bash >> ./compile.sh
+# 	chmod u+x ./compile.sh
+# }

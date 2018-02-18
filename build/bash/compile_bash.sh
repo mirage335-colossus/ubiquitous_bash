@@ -1,3 +1,38 @@
+#Default is to include all. For this reason, it will be more typical to override this entire function, rather than append any additional code.
+_compile_bash_deps() {
+	_deps_notLean
+	_deps_os_x11
+	
+	_deps_x11
+	_deps_image
+	_deps_virt
+	_deps_chroot
+	_deps_qemu
+	_deps_vbox
+	_deps_docker
+	_deps_wine
+	_deps_dosbox
+	_deps_msw
+	_deps_fakehome
+	
+	_deps_blockchain
+	
+	_deps_proxy
+	_deps_proxy_special
+	
+	_deps_build_bash
+	_deps_build_bash_ubiquitous
+}
+
+_vars_compile_bash() {
+	export configDir="$scriptAbsoluteFolder"/_config
+	
+	export progDir="$scriptAbsoluteFolder"/_prog
+	export progScript="$scriptAbsoluteFolder"/ubiquitous_bash.sh
+	
+	_vars_compile_bash_prog
+}
+
 _compile_bash_header() {
 	export includeScriptList
 	
@@ -292,8 +327,8 @@ _compile_bash_selfHost() {
 	[[ "$enUb_buildBashUbiquitous" == "true" ]] && includeScriptList+=( deps.sh )
 	[[ "$enUb_buildBashUbiquitous" == "true" ]] && includeScriptList+=( "build/bash"/generate.sh )
 	
-	[[ "$enUb_buildBashUbiquitous" == "true" ]] && includeScriptList+=( "build/bash"/compile_prog.sh )
-	[[ "$enUb_buildBashUbiquitous" == "true" ]] && includeScriptList+=( "build/bash"/compile.sh )
+	[[ "$enUb_buildBashUbiquitous" == "true" ]] && includeScriptList+=( "build/bash"/compile_bash_prog.sh )
+	[[ "$enUb_buildBashUbiquitous" == "true" ]] && includeScriptList+=( "build/bash"/compile_bash.sh )
 }
 
 _compile_bash_overrides() {
@@ -310,42 +345,22 @@ _compile_bash_entry() {
 	includeScriptList+=( "structure"/entry.sh )
 }
 
-#Ubiquitous Bash compile script. Override with "ops", "_config", or "_prog" directives through "generate.sh" to compile other work products through similar scripting.
+#Ubiquitous Bash compile script. Override with "ops", "_config", or "_prog" directives through "compile_bash_prog.sh" to compile other work products through similar scripting.
 # DANGER
 #Especially, be careful to explicitly check all prerequsites for _safeRMR are in place.
 # DANGER
 # Intended only for manual use, or within a memory cached function terminated by "exit". Launching through "$scriptAbsoluteLocation" is not adequate protection if the original script itself can reach modified code!
 # However, launching through "$scriptAbsoluteLocation" can be used to run a command within the new version fo the script. Use this capability only with full understanding of this notification. 
 # WARNING
-#Beware lean configurations have not yet been properly tested, and are considered experimental. Their purpose is to disable irrelevant dependency checking in "_test" procedures. Rigorous test procedures covering all intended functionality should always be included in downstream projects. Pull requests welcome.
+#Beware lean configurations may not have been properly tested, and are of course intended for developer use. Their purpose is to disable irrelevant dependency checking in "_test" procedures. Rigorous test procedures covering all intended functionality should always be included in downstream projects. Pull requests welcome.
 _compile_bash() {
 	_findUbiquitous
 	_vars_compile_bash
 	
 	#####
 	
-	_deps_notLean
-	_deps_os_x11
-	
-	_deps_x11
-	_deps_image
-	_deps_virt
-	_deps_chroot
-	_deps_qemu
-	_deps_vbox
-	_deps_docker
-	_deps_wine
-	_deps_dosbox
-	_deps_msw
-	_deps_fakehome
-	
-	_deps_blockchain
-	
-	_deps_proxy
-	_deps_proxy_special
-	
-	_deps_build_bash
-	_deps_build_bash_ubiquitous
+	_compile_bash_deps
+	_compile_bash_deps_prog
 	
 	#####
 	
@@ -432,11 +447,4 @@ _compile_bash() {
 	
 	# DANGER Do NOT remove.
 	exit
-}
-
-_vars_compile_bash() {
-	export configDir="$scriptAbsoluteFolder"/_config
-	
-	export progDir="$scriptAbsoluteFolder"/_prog
-	export progScript="$scriptAbsoluteFolder"/ubiquitous_bash.sh
 }
