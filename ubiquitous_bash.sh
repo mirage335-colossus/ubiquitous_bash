@@ -9867,155 +9867,6 @@ _generate_compile_bash() {
 # 	chmod u+x ./compile.sh
 # }
 
-_compile_bash_deps_prog() {
-	true
-}
-
-# #Default is to include all. For this reason, it will be more typical to override this entire function, rather than append any additional code.
-# _compile_bash_deps() {
-# 	_deps_notLean
-# 	_deps_os_x11
-# 	
-# 	_deps_x11
-# 	_deps_image
-# 	_deps_virt
-# 	_deps_chroot
-# 	_deps_qemu
-# 	_deps_vbox
-# 	_deps_docker
-# 	_deps_wine
-# 	_deps_dosbox
-# 	_deps_msw
-# 	_deps_fakehome
-# 	
-# 	_deps_blockchain
-# 	
-# 	_deps_proxy
-# 	_deps_proxy_special
-# 	
-# 	_deps_build_bash
-# 	_deps_build_bash_ubiquitous
-# }
-
-_vars_compile_bash_prog() {
-	#export configDir="$scriptAbsoluteFolder"/_config
-	
-	#export progDir="$scriptAbsoluteFolder"/_prog
-	#export progScript="$scriptAbsoluteFolder"/ubiquitous_bash.sh
-	
-	true
-}
-
-_compile_bash_header_prog() {	
-	export includeScriptList
-	true
-}
-
-_compile_bash_header_program_prog() {	
-	export includeScriptList
-	true
-}
-
-_compile_bash_essential_utilities_prog() {	
-	export includeScriptList
-	true
-}
-
-_compile_bash_utilities_virtualization_prog() {	
-	export includeScriptList
-	true
-}
-
-_compile_bash_utilities_prog() {	
-	export includeScriptList
-	true
-}
-
-_compile_bash_shortcuts_prog() {	
-	export includeScriptList
-	true
-}
-
-_compile_bash_shortcuts_setup_prog() {	
-	export includeScriptList
-	true
-}
-
-_compile_bash_bundled_prog() {	
-	export includeScriptList
-	true
-}
-
-_compile_bash_vars_basic_prog() {	
-	export includeScriptList
-	true
-}
-
-_compile_bash_vars_global_prog() {	
-	export includeScriptList
-	true
-}
-
-_compile_bash_vars_spec_prog() {	
-	export includeScriptList
-	true
-}
-
-_compile_bash_vars_shortcuts_prog() {	
-	export includeScriptList
-	true
-}
-
-_compile_bash_vars_virtualization_prog() {	
-	export includeScriptList
-	true
-}
-
-_compile_bash_vars_bundled_prog() {	
-	export includeScriptList
-	true
-}
-
-_compile_bash_buildin_prog() {	
-	export includeScriptList
-	true
-}
-
-_compile_bash_environment_prog() {	
-	export includeScriptList
-	true
-}
-
-_compile_bash_installation_prog() {	
-	export includeScriptList
-	true
-}
-
-_compile_bash_program_prog() {	
-	export includeScriptList
-	true
-}
-
-_compile_bash_config_prog() {	
-	export includeScriptList
-	true
-}
-
-_compile_bash_selfHost_prog() {	
-	export includeScriptList
-	true
-}
-
-_compile_bash_overrides_prog() {	
-	export includeScriptList
-	true
-}
-
-_compile_bash_entry_prog() {	
-	export includeScriptList
-	true
-}
-
 #Default is to include all. For this reason, it will be more typical to override this entire function, rather than append any additional code.
 _compile_bash_deps() {
 	_deps_notLean
@@ -10345,8 +10196,8 @@ _compile_bash_selfHost() {
 	[[ "$enUb_buildBashUbiquitous" == "true" ]] && includeScriptList+=( deps.sh )
 	[[ "$enUb_buildBashUbiquitous" == "true" ]] && includeScriptList+=( "build/bash"/generate_bash.sh )
 	
-	[[ "$enUb_buildBashUbiquitous" == "true" ]] && includeScriptList+=( "build/bash"/compile_bash_prog.sh )
 	[[ "$enUb_buildBashUbiquitous" == "true" ]] && includeScriptList+=( "build/bash"/compile_bash.sh )
+	[[ "$enUb_buildBashUbiquitous" == "true" ]] && includeScriptList+=( "build/bash"/compile_bash_prog.sh )
 }
 
 _compile_bash_overrides() {
@@ -10465,6 +10316,155 @@ _compile_bash() {
 	
 	# DANGER Do NOT remove.
 	exit
+}
+
+_compile_bash_deps_prog() {
+	true
+}
+
+# #Default is to include all. For this reason, it will be more typical to override this entire function, rather than append any additional code.
+# _compile_bash_deps() {
+# 	_deps_notLean
+# 	_deps_os_x11
+# 	
+# 	_deps_x11
+# 	_deps_image
+# 	_deps_virt
+# 	_deps_chroot
+# 	_deps_qemu
+# 	_deps_vbox
+# 	_deps_docker
+# 	_deps_wine
+# 	_deps_dosbox
+# 	_deps_msw
+# 	_deps_fakehome
+# 	
+# 	_deps_blockchain
+# 	
+# 	_deps_proxy
+# 	_deps_proxy_special
+# 	
+# 	_deps_build_bash
+# 	_deps_build_bash_ubiquitous
+# }
+
+_vars_compile_bash_prog() {
+	#export configDir="$scriptAbsoluteFolder"/_config
+	
+	#export progDir="$scriptAbsoluteFolder"/_prog
+	#export progScript="$scriptAbsoluteFolder"/ubiquitous_bash.sh
+	
+	true
+}
+
+_compile_bash_header_prog() {	
+	export includeScriptList
+	true
+}
+
+_compile_bash_header_program_prog() {	
+	export includeScriptList
+	true
+}
+
+_compile_bash_essential_utilities_prog() {	
+	export includeScriptList
+	true
+}
+
+_compile_bash_utilities_virtualization_prog() {	
+	export includeScriptList
+	true
+}
+
+_compile_bash_utilities_prog() {	
+	export includeScriptList
+	true
+}
+
+_compile_bash_shortcuts_prog() {	
+	export includeScriptList
+	true
+}
+
+_compile_bash_shortcuts_setup_prog() {	
+	export includeScriptList
+	true
+}
+
+_compile_bash_bundled_prog() {	
+	export includeScriptList
+	true
+}
+
+_compile_bash_vars_basic_prog() {	
+	export includeScriptList
+	true
+}
+
+_compile_bash_vars_global_prog() {	
+	export includeScriptList
+	true
+}
+
+_compile_bash_vars_spec_prog() {	
+	export includeScriptList
+	true
+}
+
+_compile_bash_vars_shortcuts_prog() {	
+	export includeScriptList
+	true
+}
+
+_compile_bash_vars_virtualization_prog() {	
+	export includeScriptList
+	true
+}
+
+_compile_bash_vars_bundled_prog() {	
+	export includeScriptList
+	true
+}
+
+_compile_bash_buildin_prog() {	
+	export includeScriptList
+	true
+}
+
+_compile_bash_environment_prog() {	
+	export includeScriptList
+	true
+}
+
+_compile_bash_installation_prog() {	
+	export includeScriptList
+	true
+}
+
+_compile_bash_program_prog() {	
+	export includeScriptList
+	true
+}
+
+_compile_bash_config_prog() {	
+	export includeScriptList
+	true
+}
+
+_compile_bash_selfHost_prog() {	
+	export includeScriptList
+	true
+}
+
+_compile_bash_overrides_prog() {	
+	export includeScriptList
+	true
+}
+
+_compile_bash_entry_prog() {	
+	export includeScriptList
+	true
 }
 
 #####Overrides
