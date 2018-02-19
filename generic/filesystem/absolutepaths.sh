@@ -15,8 +15,6 @@ _getAbsolute_criticalDep() {
 #However, will dereference symlinks IF the script location itself is a symlink. This is to allow symlinking to scripts to function normally.
 #Suitable for allowing scripts to find other scripts they depend on. May look like an ugly hack, but it has proven reliable over the years.
 _getScriptAbsoluteLocation() {
-	! _getAbsolute_criticalDep && return 1
-	
 	if [[ "$0" == "-"* ]]
 	then
 		return 1
@@ -43,8 +41,6 @@ alias getScriptAbsoluteLocation=_getScriptAbsoluteLocation
 #Retrieves absolute path of current script, while maintaining symlinks, even when "./" would translate with "readlink -f" into something disregarding symlinked components in $PWD.
 #Suitable for allowing scripts to find other scripts they depend on.
 _getScriptAbsoluteFolder() {
-	! _getAbsolute_criticalDep && return 1
-	
 	if [[ "$0" == "-"* ]]
 	then
 		return 1
@@ -57,8 +53,6 @@ alias getScriptAbsoluteFolder=_getScriptAbsoluteFolder
 #Retrieves absolute path of parameter, while maintaining symlinks, even when "./" would translate with "readlink -f" into something disregarding symlinked components in $PWD.
 #Suitable for finding absolute paths, when it is desirable not to interfere with symlink specified folder structure.
 _getAbsoluteLocation() {
-	! _getAbsolute_criticalDep && return 1
-	
 	if [[ "$1" == "-"* ]]
 	then
 		return 1
@@ -85,8 +79,6 @@ alias getAbsoluteLocation=_getAbsoluteLocation
 #Retrieves absolute path of parameter, while maintaining symlinks, even when "./" would translate with "readlink -f" into something disregarding symlinked components in $PWD.
 #Suitable for finding absolute paths, when it is desirable not to interfere with symlink specified folder structure.
 _getAbsoluteFolder() {
-	! _getAbsolute_criticalDep && return 1
-	
 	if [[ "$1" == "-"* ]]
 	then
 		return 1

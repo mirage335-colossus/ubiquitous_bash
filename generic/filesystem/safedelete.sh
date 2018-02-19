@@ -29,6 +29,8 @@ _failExec() {
 # WARNING Consider using this function even if program control flow can be proven safe. Redundant checks just might catch catastrophic memory errors.
 #"$1" == directory to remove
 _safeRMR() {
+	! type _getAbsolute_criticalDep > /dev/null 2>&1 && return 1
+	! _getAbsolute_criticalDep && return 1
 	
 	#Fail sooner, avoiding irrelevant error messages. Especially important to cases where an upstream process has already removed the "$safeTmp" directory of a downstream process which reaches "_stop" later.
 	! [[ -e "$1" ]] && return 1
@@ -110,6 +112,8 @@ _safeRMR() {
 # WARNING Do NOT rely upon outside of internal programmatic usage inside script!
 #"$1" == file/directory path to sanity check
 _safePath() {
+	! type _getAbsolute_criticalDep > /dev/null 2>&1 && return 1
+	! _getAbsolute_criticalDep && return 1
 	
 	[[ ! -e "$scriptAbsoluteLocation" ]] && return 1
 	[[ ! -e "$scriptAbsoluteFolder" ]] && return 1

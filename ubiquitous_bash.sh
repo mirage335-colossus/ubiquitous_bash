@@ -19,8 +19,6 @@ _getAbsolute_criticalDep() {
 #However, will dereference symlinks IF the script location itself is a symlink. This is to allow symlinking to scripts to function normally.
 #Suitable for allowing scripts to find other scripts they depend on. May look like an ugly hack, but it has proven reliable over the years.
 _getScriptAbsoluteLocation() {
-	! _getAbsolute_criticalDep && return 1
-	
 	if [[ "$0" == "-"* ]]
 	then
 		return 1
@@ -47,8 +45,6 @@ alias getScriptAbsoluteLocation=_getScriptAbsoluteLocation
 #Retrieves absolute path of current script, while maintaining symlinks, even when "./" would translate with "readlink -f" into something disregarding symlinked components in $PWD.
 #Suitable for allowing scripts to find other scripts they depend on.
 _getScriptAbsoluteFolder() {
-	! _getAbsolute_criticalDep && return 1
-	
 	if [[ "$0" == "-"* ]]
 	then
 		return 1
@@ -61,8 +57,6 @@ alias getScriptAbsoluteFolder=_getScriptAbsoluteFolder
 #Retrieves absolute path of parameter, while maintaining symlinks, even when "./" would translate with "readlink -f" into something disregarding symlinked components in $PWD.
 #Suitable for finding absolute paths, when it is desirable not to interfere with symlink specified folder structure.
 _getAbsoluteLocation() {
-	! _getAbsolute_criticalDep && return 1
-	
 	if [[ "$1" == "-"* ]]
 	then
 		return 1
@@ -89,8 +83,6 @@ alias getAbsoluteLocation=_getAbsoluteLocation
 #Retrieves absolute path of parameter, while maintaining symlinks, even when "./" would translate with "readlink -f" into something disregarding symlinked components in $PWD.
 #Suitable for finding absolute paths, when it is desirable not to interfere with symlink specified folder structure.
 _getAbsoluteFolder() {
-	! _getAbsolute_criticalDep && return 1
-	
 	if [[ "$1" == "-"* ]]
 	then
 		return 1
@@ -132,6 +124,8 @@ _failExec() {
 # WARNING Consider using this function even if program control flow can be proven safe. Redundant checks just might catch catastrophic memory errors.
 #"$1" == directory to remove
 _safeRMR() {
+	! type _getAbsolute_criticalDep > /dev/null 2>&1 && return 1
+	! _getAbsolute_criticalDep && return 1
 	
 	#Fail sooner, avoiding irrelevant error messages. Especially important to cases where an upstream process has already removed the "$safeTmp" directory of a downstream process which reaches "_stop" later.
 	! [[ -e "$1" ]] && return 1
@@ -213,6 +207,8 @@ _safeRMR() {
 # WARNING Do NOT rely upon outside of internal programmatic usage inside script!
 #"$1" == file/directory path to sanity check
 _safePath() {
+	! type _getAbsolute_criticalDep > /dev/null 2>&1 && return 1
+	! _getAbsolute_criticalDep && return 1
 	
 	[[ ! -e "$scriptAbsoluteLocation" ]] && return 1
 	[[ ! -e "$scriptAbsoluteFolder" ]] && return 1
