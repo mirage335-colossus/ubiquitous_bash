@@ -28,7 +28,11 @@ _includeScript() {
 	_includeFile "$ubiquitiousLibDir"/"$includeScriptFilename" && return 0
 	
 	_includeFile "$configDir"/"$includeScriptFilename" && return 0
-	_includeFile "$ubiquitiousLibDir"/"$configDir"/"$includeScriptFilename" && return 0
+	
+	#[[ "$configBaseDir" == "" ]] && configBaseDir="_config"
+	[[ "$configBaseDir" == "" ]] && configBaseDir=$(basename "$configDir")
+	
+	_includeFile "$ubiquitiousLibDir"/"$configBaseDir"/"$includeScriptFilename" && return 0
 	
 	return 1
 }

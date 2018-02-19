@@ -16,11 +16,9 @@ mkdir ./_prog
 git init
 
 git submodule add --depth 1 git@github.com:mirage335/ubiquitous_bash.git ./_lib/ubiquitous_bash
+#git submodule update --depth 1 --init --recursive ./_lib/ubiquitous_bash
 
-git add -A .
-git commit -a -m "first commit"
-
-cp ./_lib/ubiquitous_bash/compile ./
+cp ./_lib/ubiquitous_bash/compile.sh ./
 cp ./_lib/ubiquitous_bash/license.txt.gpl ./license.txt
 cp ./_lib/ubiquitous_bash/README.md.template ./README.md
 
@@ -29,8 +27,12 @@ find . -maxdepth 1 -type f -exec sed -i s/DeveloperName/"$devName"/g {} \;
 find . -maxdepth 1 -type f -exec sed -i s/YEAR/$(date +%Y)/g {} \;
 
 ##### Binary Executables
-cp -a ./_lib/ubiquitous_bash/_bin ./_bin
-cp -a ./_lib/ubiquitous_bash/_lib ./_lib
+mkdir -p ./_bin
+cp -a ./_lib/ubiquitous_bash/_bin/. ./_bin
+mkdir -p ./_lib
+cp -a ./_lib/ubiquitous_bash/_lib/. ./_lib
+mkdir -p ./_bundle
+#cp -a ./_lib/ubiquitous_bash/_bundle/. ./_bundle
 
 ##### Commonly customized scripts.
 
@@ -51,9 +53,10 @@ echo '' >> ./_prog/core.sh
 
 cp ./_lib/ubiquitous_bash/structure/program.sh ./_prog/
 
-cp ./_lib/ubiquitous_bash/structure/compile_bash_prog.sh ./_prog/
+cp ./_lib/ubiquitous_bash/build/bash/compile_bash_prog.sh ./_prog/
 
-
+git add -A .
+git commit -a -m "first commit"
 
 
 
