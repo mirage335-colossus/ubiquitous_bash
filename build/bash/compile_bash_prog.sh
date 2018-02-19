@@ -2,30 +2,46 @@ _compile_bash_deps_prog() {
 	true
 }
 
-# #Default is to include all. For this reason, it will be more typical to override this entire function, rather than append any additional code.
+# #Default is to include all, or run a specified configuration. For this reason, it will be more typical to override this entire function, rather than append any additional code.
 # _compile_bash_deps() {
-# 	_deps_notLean
-# 	_deps_os_x11
+# 	[[ "$1" == "lean" ]] && return 0
 # 	
-# 	_deps_x11
-# 	_deps_image
-# 	_deps_virt
-# 	_deps_chroot
-# 	_deps_qemu
-# 	_deps_vbox
-# 	_deps_docker
-# 	_deps_wine
-# 	_deps_dosbox
-# 	_deps_msw
-# 	_deps_fakehome
+# 	if [[ "$1" == "cautossh" ]]
+# 	then
+# 		_deps_os_x11
+# 		_deps_proxy
+# 		_deps_proxy_special
+# 		
+# 		return 0
+# 	fi
 # 	
-# 	_deps_blockchain
-# 	
-# 	_deps_proxy
-# 	_deps_proxy_special
-# 	
-# 	_deps_build_bash
-# 	_deps_build_bash_ubiquitous
+# 	if [[ "$1" == "" ]]
+# 	then
+# 		_deps_notLean
+# 		_deps_os_x11
+# 		
+# 		_deps_x11
+# 		_deps_image
+# 		_deps_virt
+# 		_deps_chroot
+# 		_deps_qemu
+# 		_deps_vbox
+# 		_deps_docker
+# 		_deps_wine
+# 		_deps_dosbox
+# 		_deps_msw
+# 		_deps_fakehome
+# 		
+# 		_deps_blockchain
+# 		
+# 		_deps_proxy
+# 		_deps_proxy_special
+# 		
+# 		_deps_build_bash
+# 		_deps_build_bash_ubiquitous
+# 		
+# 		return 0
+# 	fi
 # }
 
 _vars_compile_bash_prog() {

@@ -2,6 +2,15 @@
 _compile_bash_deps() {
 	[[ "$1" == "lean" ]] && return 0
 	
+	if [[ "$1" == "cautossh" ]]
+	then
+		_deps_os_x11
+		_deps_proxy
+		_deps_proxy_special
+		
+		return 0
+	fi
+	
 	if [[ "$1" == "" ]]
 	then
 		_deps_notLean
@@ -26,6 +35,8 @@ _compile_bash_deps() {
 		
 		_deps_build_bash
 		_deps_build_bash_ubiquitous
+		
+		return 0
 	fi
 }
 

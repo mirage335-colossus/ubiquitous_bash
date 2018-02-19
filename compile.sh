@@ -777,10 +777,6 @@ _vars_generate_bash() {
 	export progScript="$scriptAbsoluteFolder"/compile.sh
 }
 
-_generate_compile_bash_prog() {
-	true
-}
-
 #Intended as last command in a compile script. Updates the compile script itself, uses the updated script to update itself again, then compiles product with fully synchronized script.
 # WARNING Must be last command and part of a function, or there will be risk of re-entering the script at an incorrect location.
 _generate_compile_bash() {
@@ -814,6 +810,15 @@ _generate_compile_bash_prog() {
 _compile_bash_deps() {
 	[[ "$1" == "lean" ]] && return 0
 	
+	if [[ "$1" == "cautossh" ]]
+	then
+		_deps_os_x11
+		_deps_proxy
+		_deps_proxy_special
+		
+		return 0
+	fi
+	
 	if [[ "$1" == "" ]]
 	then
 		_deps_notLean
@@ -838,6 +843,8 @@ _compile_bash_deps() {
 		
 		_deps_build_bash
 		_deps_build_bash_ubiquitous
+		
+		return 0
 	fi
 }
 
@@ -1282,30 +1289,46 @@ _compile_bash_deps_prog() {
 	true
 }
 
-# #Default is to include all. For this reason, it will be more typical to override this entire function, rather than append any additional code.
+# #Default is to include all, or run a specified configuration. For this reason, it will be more typical to override this entire function, rather than append any additional code.
 # _compile_bash_deps() {
-# 	_deps_notLean
-# 	_deps_os_x11
+# 	[[ "$1" == "lean" ]] && return 0
 # 	
-# 	_deps_x11
-# 	_deps_image
-# 	_deps_virt
-# 	_deps_chroot
-# 	_deps_qemu
-# 	_deps_vbox
-# 	_deps_docker
-# 	_deps_wine
-# 	_deps_dosbox
-# 	_deps_msw
-# 	_deps_fakehome
+# 	if [[ "$1" == "cautossh" ]]
+# 	then
+# 		_deps_os_x11
+# 		_deps_proxy
+# 		_deps_proxy_special
+# 		
+# 		return 0
+# 	fi
 # 	
-# 	_deps_blockchain
-# 	
-# 	_deps_proxy
-# 	_deps_proxy_special
-# 	
-# 	_deps_build_bash
-# 	_deps_build_bash_ubiquitous
+# 	if [[ "$1" == "" ]]
+# 	then
+# 		_deps_notLean
+# 		_deps_os_x11
+# 		
+# 		_deps_x11
+# 		_deps_image
+# 		_deps_virt
+# 		_deps_chroot
+# 		_deps_qemu
+# 		_deps_vbox
+# 		_deps_docker
+# 		_deps_wine
+# 		_deps_dosbox
+# 		_deps_msw
+# 		_deps_fakehome
+# 		
+# 		_deps_blockchain
+# 		
+# 		_deps_proxy
+# 		_deps_proxy_special
+# 		
+# 		_deps_build_bash
+# 		_deps_build_bash_ubiquitous
+# 		
+# 		return 0
+# 	fi
 # }
 
 _vars_compile_bash_prog() {
