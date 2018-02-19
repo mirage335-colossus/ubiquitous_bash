@@ -49,11 +49,11 @@ _generate_compile_bash() {
 	"$scriptAbsoluteFolder"/compile.sh _generate_bash
 	"$scriptAbsoluteFolder"/compile.sh _compile_bash
 	
-	_generate_compile_bash_prog
-	
 	[[ "$objectName" == "ubiquitous_bash" ]] && "$scriptAbsoluteFolder"/compile.sh _compile_bash lean lean.sh
 	
 	[[ "$1" != "" ]] && "$scriptAbsoluteFolder"/compile.sh _compile_bash "$@"
+	
+	_generate_compile_bash_prog
 	
 	# DANGER Do NOT remove.
 	exit 0
