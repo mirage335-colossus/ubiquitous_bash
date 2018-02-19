@@ -484,7 +484,18 @@ _setup_ssh_operations() {
 	! [[ -e "$sshBase"/"$ubiquitiousBashID" ]] && mkdir -p "$sshBase"/"$ubiquitiousBashID" && chmod 700 "$sshBase"/"$ubiquitiousBashID"
 	! [[ -e "$sshDir" ]] && mkdir -p "$sshDir" && chmod 700 "$sshDir"
 	
-	! grep "$ubiquitiousBashID" "$sshBase"/config > /dev/null 2>&1 && echo 'Include "'"$sshUbiquitous"'/config"' >> "$sshBase"/config
+	#! grep "$ubiquitiousBashID" "$sshBase"/config > /dev/null 2>&1 && echo 'Include "'"$sshUbiquitous"'/config"' >> "$sshBase"/config
+	
+	#Prepend include directive. Mitigates the risk of falling under an existing config directive (eg. Host/Match). Carries the relatively insignificant risk of a non-atomic operation.
+	if ! grep "$ubiquitiousBashID" "$sshBase"/config > /dev/null 2>&1
+	then
+		echo -n >> "$sshBase"/config
+		echo 'Include "'"$sshUbiquitous"'/config"' >> "$sshBase"/config.tmp
+		echo >> "$sshBase"/config.tmp
+		cat "$sshBase"/config >> "$sshBase"/config.tmp
+		mv "$sshBase"/config.tmp "$sshBase"/config
+		
+	fi
 	
 	! grep "$netName" "$sshUbiquitous"/config > /dev/null 2>&1 && echo 'Include "'"$sshDir"'/config"' >> "$sshBase"/config >> "$sshUbiquitous"/config
 	
