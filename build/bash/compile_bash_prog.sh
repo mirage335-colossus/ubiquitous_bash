@@ -33,6 +33,7 @@ _vars_compile_bash_prog() {
 	
 	#export progDir="$scriptAbsoluteFolder"/_prog
 	#export progScript="$scriptAbsoluteFolder"/ubiquitous_bash.sh
+	#[[ "$1" != "" ]] && export progScript="$scriptAbsoluteFolder"/"$1"
 	
 	true
 }

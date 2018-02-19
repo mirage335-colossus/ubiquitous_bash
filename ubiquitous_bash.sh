@@ -9762,6 +9762,32 @@ _findUbiquitous() {
 }
 
 
+_init_deps() {
+	export enUb_set="true"
+	
+	export enUb_machineinfo=""
+	export enUb_git=""
+	export enUb_notLean=""
+	export enUb_os_x11=""
+	export enUb_proxy=""
+	export enUb_proxy_special=""
+	export enUb_x11=""
+	export enUb_blockchain=""
+	export enUb_image=""
+	export enUb_virt=""
+	export enUb_ChRoot=""
+	export enUb_QEMU=""
+	export enUb_vbox=""
+	export enUb_docker=""
+	export enUb_wine=""
+	export enUb_DosBox=""
+	export enUb_msw=""
+	export enUb_fakehome=""
+	export enUb_buildBash=""
+	export enUb_buildBashUbiquitous=""
+}
+
+
 _deps_machineinfo() {
 	export enUb_machineinfo="true"
 }
@@ -9892,12 +9918,13 @@ _generate_bash() {
 	
 	#Default command.
 	echo >> "$progScript"
-	echo _generate_compile_bash >> "$progScript"
+	echo '_generate_compile_bash "$@"' >> "$progScript"
+	echo 'exit 0' >> "$progScript"
 	
 	chmod u+x "$progScript"
 	
 	# DANGER Do NOT remove.
-	exit
+	exit 0
 }
 
 _vars_generate_bash() {
@@ -9913,9 +9940,11 @@ _generate_compile_bash() {
 	"$scriptAbsoluteLocation" _generate_bash
 	"$scriptAbsoluteFolder"/compile.sh _generate_bash
 	"$scriptAbsoluteFolder"/compile.sh _compile_bash
+	"$scriptAbsoluteFolder"/compile.sh _compile_bash lean lean.sh
+	[[ "$1" != "" ]] && "$scriptAbsoluteFolder"/compile.sh _compile_bash "$@"
 	
 	# DANGER Do NOT remove.
-	exit
+	exit 0
 }
 
 # #No production use. Unmaintained, obsolete. Never used literally. Preserved as an example command set to build the otherwise self-hosted generate/compile script manually (ie. bootstrapping).
@@ -9926,30 +9955,35 @@ _generate_compile_bash() {
 # 	chmod u+x ./compile.sh
 # }
 
-#Default is to include all. For this reason, it will be more typical to override this entire function, rather than append any additional code.
+#Default is to include all, or run a specified configuration. For this reason, it will be more typical to override this entire function, rather than append any additional code.
 _compile_bash_deps() {
-	_deps_notLean
-	_deps_os_x11
+	[[ "$1" == "lean" ]] && return 0
 	
-	_deps_x11
-	_deps_image
-	_deps_virt
-	_deps_chroot
-	_deps_qemu
-	_deps_vbox
-	_deps_docker
-	_deps_wine
-	_deps_dosbox
-	_deps_msw
-	_deps_fakehome
-	
-	_deps_blockchain
-	
-	_deps_proxy
-	_deps_proxy_special
-	
-	_deps_build_bash
-	_deps_build_bash_ubiquitous
+	if [[ "$1" == "" ]]
+	then
+		_deps_notLean
+		_deps_os_x11
+		
+		_deps_x11
+		_deps_image
+		_deps_virt
+		_deps_chroot
+		_deps_qemu
+		_deps_vbox
+		_deps_docker
+		_deps_wine
+		_deps_dosbox
+		_deps_msw
+		_deps_fakehome
+		
+		_deps_blockchain
+		
+		_deps_proxy
+		_deps_proxy_special
+		
+		_deps_build_bash
+		_deps_build_bash_ubiquitous
+	fi
 }
 
 _vars_compile_bash() {
@@ -9957,8 +9991,9 @@ _vars_compile_bash() {
 	
 	export progDir="$scriptAbsoluteFolder"/_prog
 	export progScript="$scriptAbsoluteFolder"/ubiquitous_bash.sh
+	[[ "$1" != "" ]] && export progScript="$scriptAbsoluteFolder"/"$1"
 	
-	_vars_compile_bash_prog
+	_vars_compile_bash_prog "$@"
 }
 
 _compile_bash_header() {
@@ -10281,6 +10316,8 @@ _compile_bash_entry() {
 }
 
 #Ubiquitous Bash compile script. Override with "ops", "_config", or "_prog" directives through "compile_bash_prog.sh" to compile other work products through similar scripting.
+# "$1" == configuration
+# "$2" == output filename
 # DANGER
 #Especially, be careful to explicitly check all prerequsites for _safeRMR are in place.
 # DANGER
@@ -10290,12 +10327,12 @@ _compile_bash_entry() {
 #Beware lean configurations may not have been properly tested, and are of course intended for developer use. Their purpose is to disable irrelevant dependency checking in "_test" procedures. Rigorous test procedures covering all intended functionality should always be included in downstream projects. Pull requests welcome.
 _compile_bash() {
 	_findUbiquitous
-	_vars_compile_bash
+	_vars_compile_bash "$2"
 	
 	#####
 	
-	_compile_bash_deps
-	_compile_bash_deps_prog
+	_compile_bash_deps "$1"
+	_compile_bash_deps_prog "$1"
 	
 	#####
 	
@@ -10381,7 +10418,7 @@ _compile_bash() {
 	#"$progScript" _package
 	
 	# DANGER Do NOT remove.
-	exit
+	exit 0
 }
 
 _compile_bash_deps_prog() {
@@ -10419,6 +10456,7 @@ _vars_compile_bash_prog() {
 	
 	#export progDir="$scriptAbsoluteFolder"/_prog
 	#export progScript="$scriptAbsoluteFolder"/ubiquitous_bash.sh
+	#[[ "$1" != "" ]] && export progScript="$scriptAbsoluteFolder"/"$1"
 	
 	true
 }

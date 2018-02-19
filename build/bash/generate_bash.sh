@@ -26,12 +26,13 @@ _generate_bash() {
 	
 	#Default command.
 	echo >> "$progScript"
-	echo _generate_compile_bash >> "$progScript"
+	echo '_generate_compile_bash "$@"' >> "$progScript"
+	echo 'exit 0' >> "$progScript"
 	
 	chmod u+x "$progScript"
 	
 	# DANGER Do NOT remove.
-	exit
+	exit 0
 }
 
 _vars_generate_bash() {
@@ -47,9 +48,11 @@ _generate_compile_bash() {
 	"$scriptAbsoluteLocation" _generate_bash
 	"$scriptAbsoluteFolder"/compile.sh _generate_bash
 	"$scriptAbsoluteFolder"/compile.sh _compile_bash
+	"$scriptAbsoluteFolder"/compile.sh _compile_bash lean lean.sh
+	[[ "$1" != "" ]] && "$scriptAbsoluteFolder"/compile.sh _compile_bash "$@"
 	
 	# DANGER Do NOT remove.
-	exit
+	exit 0
 }
 
 # #No production use. Unmaintained, obsolete. Never used literally. Preserved as an example command set to build the otherwise self-hosted generate/compile script manually (ie. bootstrapping).

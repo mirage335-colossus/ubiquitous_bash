@@ -2282,7 +2282,7 @@ table.listView th, table.listView td, table.listView tr {padding:0 3px 0 3px;}
 /*}}}*/
 </pre>
 </div>
-<div title="Technique" creator="mirage335" modifier="mirage335" created="201710270318" modified="201710271805" changecount="8">
+<div title="Technique" creator="mirage335" modifier="mirage335" created="201710270318" modified="201802191717" changecount="9">
 <pre>All about the quickest and most robust way to do things, both immediately, and scaling up.
 
 
@@ -2290,7 +2290,12 @@ table.listView th, table.listView td, table.listView tr {padding:0 3px 0 3px;}
 !Compiling
 Ubiquitous Bash is a &quot;statically linked&quot; executable script, compiled by the &quot;compile&quot; script, entirely from submodule text files, containing only closely related functions.
 //{{{
-./compile
+./compile.sh
+//}}}
+
+Specific versions may be compiled by passing parameters, and overriding functions with &quot;ops&quot;.
+//{{{
+./compile.sh lean lean.sh
 //}}}
 
 !Hiearchy

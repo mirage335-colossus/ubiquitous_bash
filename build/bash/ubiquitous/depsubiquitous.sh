@@ -1,3 +1,29 @@
+_init_deps() {
+	export enUb_set="true"
+	
+	export enUb_machineinfo=""
+	export enUb_git=""
+	export enUb_notLean=""
+	export enUb_os_x11=""
+	export enUb_proxy=""
+	export enUb_proxy_special=""
+	export enUb_x11=""
+	export enUb_blockchain=""
+	export enUb_image=""
+	export enUb_virt=""
+	export enUb_ChRoot=""
+	export enUb_QEMU=""
+	export enUb_vbox=""
+	export enUb_docker=""
+	export enUb_wine=""
+	export enUb_DosBox=""
+	export enUb_msw=""
+	export enUb_fakehome=""
+	export enUb_buildBash=""
+	export enUb_buildBashUbiquitous=""
+}
+
+
 _deps_machineinfo() {
 	export enUb_machineinfo="true"
 }
