@@ -2743,6 +2743,19 @@ _test_bashdb() {
 }
 
 
+_stopwatch() {
+	local measureDateA
+	local measureDateB
+	
+	measureDateA=$(date +%s%N | cut -b1-13)
+
+	"$@"
+
+	measureDateB=$(date +%s%N | cut -b1-13)
+
+	bc <<< "$measureDateB - $measureDateA"
+}
+
 
 _start_virt_instance() {
 	
@@ -10083,6 +10096,7 @@ _compile_bash_utilities() {
 	includeScriptList+=( "special"/uuid.sh )
 	
 	[[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "instrumentation"/bashdb/bashdb.sh )
+	[[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "instrumentation"/profiling/stopwatch.sh )
 }
 
 _compile_bash_utilities_virtualization() {
