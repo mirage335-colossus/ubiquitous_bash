@@ -139,9 +139,6 @@ export permaLog="$scriptLocal"
 
 export HOST_USER_ID=$(id -u)
 export HOST_GROUP_ID=$(id -g)
-export virtGuestUserDrop="ubvrtusr"
-export virtGuestUser="$virtGuestUserDrop"
-[[ "$HOST_USER_ID" == 0 ]] && export virtGuestUser="root"
 
 export globalArcDir="$scriptLocal"/a
 export globalArcFS="$globalArcDir"/fs
@@ -151,40 +148,7 @@ export globalBuildDir="$scriptLocal"/b
 export globalBuildFS="$globalBuildDir"/fs
 export globalBuildTmp="$globalBuildDir"/tmp
 
-export globalVirtDir="$scriptLocal"/v
-export globalVirtFS="$globalVirtDir"/fs
-export globalVirtTmp="$globalVirtDir"/tmp
 
-export instancedVirtDir="$scriptAbsoluteFolder"/v_"$sessionid"
-export instancedVirtFS="$instancedVirtDir"/fs
-export instancedVirtTmp="$instancedVirtDir"/tmp
-
-export virtGuestHomeDrop=/home/"$virtGuestUserDrop"
-export virtGuestHome="$virtGuestHomeDrop"
-[[ "$HOST_USER_ID" == 0 ]] && export virtGuestHome=/root
-###export virtGuestHomeRef="$virtGuestHome".ref
-
-export instancedVirtHome="$instancedVirtFS""$virtGuestHome"
-###export instancedVirtHomeRef="$instancedVirtHome".ref
-
-export sharedHostProjectDirDefault=""
-export sharedGuestProjectDirDefault="$virtGuestHome"/project
-
-export sharedHostProjectDir="$sharedHostProjectDirDefault"
-export sharedGuestProjectDir="$sharedGuestProjectDirDefault"
-
-export instancedProjectDir="$instancedVirtHome"/project
-export instancedDownloadsDir="$instancedVirtHome"/Downloads
-
-export hostToGuestDir="$instancedVirtDir"/htg
-export hostToGuestFiles="$hostToGuestDir"/files
-export hostToGuestISO="$instancedVirtDir"/htg/htg.iso
-
-export chrootDir="$globalVirtFS"
-export vboxRaw="$scriptLocal"/vmvdiraw.vmdk
-
-export globalFakeHome="$scriptLocal"/h
-export instancedFakeHome="$scriptAbsoluteFolder"/h_"$sessionid"
 
 #Machine information.
 export hostMemoryTotal=$(cat /proc/meminfo | grep MemTotal | tr -cd '[[:digit:]]')

@@ -250,7 +250,10 @@ _compile_bash_vars_spec() {
 	
 	
 	includeScriptList+=( "structure"/specglobalvars.sh )
+	
 	[[ "$enUb_virt" == "true" ]] && includeScriptList+=( "virtualization"/virtvars.sh )
+	[[ "$enUb_virt" == "true" ]] && includeScriptList+=( "virtualization"/image/imagevars.sh )
+	
 	[[ "$enUb_proxy" == "true" ]] && includeScriptList+=( "generic/net/proxy/ssh"/sshvars.sh )
 }
 
