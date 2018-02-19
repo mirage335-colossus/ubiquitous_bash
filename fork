@@ -39,7 +39,7 @@ find . -maxdepth 1 -type f -exec sed -i s/YEAR/$(date +%Y)/g {} \;
 mkdir -p ./_bin
 cp -a ./_lib/ubiquitous_bash/_bin/. ./_bin
 mkdir -p ./_lib
-cp -a ./_lib/ubiquitous_bash/_lib/. ./_lib
+#cp -a ./_lib/ubiquitous_bash/_lib/. ./_lib
 mkdir -p ./_bundle
 cp -a ./_lib/ubiquitous_bash/_bundle/. ./_bundle
 
@@ -71,6 +71,7 @@ echo '' >> ./_prog/core.sh
 cp ./_lib/ubiquitous_bash/structure/program.sh ./_prog/
 
 cp ./_lib/ubiquitous_bash/build/bash/compile_bash_prog.sh ./_prog/
+cp ./_lib/ubiquitous_bash/build/bash/generate_bash_prog.sh ./_prog/
 
 ##### Runtime Configuration
 

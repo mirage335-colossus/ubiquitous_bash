@@ -777,13 +777,21 @@ _vars_generate_bash() {
 	export progScript="$scriptAbsoluteFolder"/compile.sh
 }
 
+_generate_compile_bash_prog() {
+	true
+}
+
 #Intended as last command in a compile script. Updates the compile script itself, uses the updated script to update itself again, then compiles product with fully synchronized script.
 # WARNING Must be last command and part of a function, or there will be risk of re-entering the script at an incorrect location.
 _generate_compile_bash() {
 	"$scriptAbsoluteLocation" _generate_bash
 	"$scriptAbsoluteFolder"/compile.sh _generate_bash
 	"$scriptAbsoluteFolder"/compile.sh _compile_bash
-	"$scriptAbsoluteFolder"/compile.sh _compile_bash lean lean.sh
+	
+	_generate_compile_bash_prog
+	
+	[[ "$objectName" == "ubiquitous_bash" ]] && "$scriptAbsoluteFolder"/compile.sh _compile_bash lean lean.sh
+	
 	[[ "$1" != "" ]] && "$scriptAbsoluteFolder"/compile.sh _compile_bash "$@"
 	
 	# DANGER Do NOT remove.
@@ -797,6 +805,10 @@ _generate_compile_bash() {
 # 	echo _generate_compile_bash >> ./compile.sh
 # 	chmod u+x ./compile.sh
 # }
+
+_generate_compile_bash_prog() {
+	true
+} 
 
 #Default is to include all, or run a specified configuration. For this reason, it will be more typical to override this entire function, rather than append any additional code.
 _compile_bash_deps() {
@@ -1140,6 +1152,7 @@ _compile_bash_selfHost() {
 	[[ "$enUb_buildBashUbiquitous" == "true" ]] && includeScriptList+=( "build/bash/ubiquitous"/depsubiquitous.sh )
 	[[ "$enUb_buildBashUbiquitous" == "true" ]] && includeScriptList+=( deps.sh )
 	[[ "$enUb_buildBashUbiquitous" == "true" ]] && includeScriptList+=( "build/bash"/generate_bash.sh )
+	[[ "$enUb_buildBashUbiquitous" == "true" ]] && includeScriptList+=( "build/bash"/generate_bash_prog.sh )
 	
 	[[ "$enUb_buildBashUbiquitous" == "true" ]] && includeScriptList+=( "build/bash"/compile_bash.sh )
 	[[ "$enUb_buildBashUbiquitous" == "true" ]] && includeScriptList+=( "build/bash"/compile_bash_prog.sh )
