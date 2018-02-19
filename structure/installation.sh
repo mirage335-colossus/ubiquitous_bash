@@ -51,6 +51,8 @@ _test_prog() {
 _test() {
 	_start
 	
+	_tryExec "_test_permissions_ubiquitous"
+	
 	_messageNormal "Dependency checking..."
 	
 	## Check dependencies

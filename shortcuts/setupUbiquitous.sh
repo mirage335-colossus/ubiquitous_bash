@@ -17,6 +17,11 @@ _resetOps() {
 _importShortcuts() {
 	_tryExec "_resetFakeHomeEnv"
 	
+	if ! [[ "$PATH" == *":""$HOME""/bin"* ]] && ! [[ "$PATH" == "$HOME""/bin"* ]] && [[ -e "$HOME"/bin ]]
+	then
+		export PATH="$PATH":"$HOME"/bin
+	fi
+	
 	_visualPrompt
 }
 
@@ -60,7 +65,7 @@ _setupUbiquitous() {
 	fi
 	
 	mkdir -p "$ubcoreDir"
-	[[ ! -d "$ubcoreDir" ]] && return 1
+	[[ ! -d "$ubcoreDir" ]] && cd "$outerPWD" && return 1
 	cd "$ubcoreDir"
 	
 	_gitClone_ubiquitous
@@ -78,6 +83,8 @@ _setupUbiquitous() {
 	echo 'export profileScriptLocation='"$ubcoreUBdir"/ubiquitous_bash.sh >> "$ubcoreFile"
 	echo 'export profileScriptFolder='"$ubcoreUBdir" >> "$ubcoreFile"
 	echo '. '"$ubcoreUBdir"/ubiquitous_bash.sh' _importShortcuts' >> "$ubcoreFile"
+	
+	! _permissions_ubiquitous_repo "$ubcoreUBdir" && cd "$outerPWD" && return 1
 	
 	if ! grep ubcore "$ubHome"/.bashrc > /dev/null 2>&1
 	then

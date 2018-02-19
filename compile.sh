@@ -302,13 +302,15 @@ _permissions_directory_checkForPath() {
 	
 	[[ "$parameterAbsoluteLocation" == "$PWD" ]] && ! [[ "$parameterAbsoluteLocation" == "$checkScriptAbsoluteFolder" ]] && return 1
 	
+	local permissions_readout=$(stat -c "%a" "$1")
+	
 	local permissions_user
 	local permissions_group
 	local permissions_other
 	
-	permissions_user=$(stat -c "%a" "$1" | cut -c 1)
-	permissions_group=$(stat -c "%a" "$1" | cut -c 2)
-	permissions_other=$(stat -c "%a" "$1" | cut -c 3)
+	permissions_user=$(echo "$permissions_readout" | cut -c 1)
+	permissions_group=$(echo "$permissions_readout" | cut -c 2)
+	permissions_other=$(echo "$permissions_readout" | cut -c 3)
 	
 	[[ "$permissions_user" -gt "7" ]] && return 1
 	[[ "$permissions_group" -gt "7" ]] && return 1
@@ -332,6 +334,34 @@ _permissions_directory_checkForPath() {
 	
 	[[ "$permissions_uid" != "$permissions_host_uid" ]] && return 1
 	[[ "$permissions_uid" != "$permissions_host_gid" ]] && return 1
+	
+	return 0
+}
+
+#Checks whether the repository has unsafe permissions for adding binary files to path. Used as an extra safety check by "_setupUbiquitous" before adding a hook to the user's default shell environment.
+_permissions_ubiquitous_repo() {
+	local parameterAbsoluteLocation
+	parameterAbsoluteLocation=$(_getAbsoluteLocation "$1")
+	
+	[[ ! -e "$parameterAbsoluteLocation" ]] && return 0
+	
+	! _permissions_directory_checkForPath "$parameterAbsoluteLocation" && return 1
+	
+	[[ -e "$parameterAbsoluteLocation"/_bin ]] && ! _permissions_directory_checkForPath "$parameterAbsoluteLocation"/_bin && return 1
+	[[ -e "$parameterAbsoluteLocation"/_bundle ]] && ! _permissions_directory_checkForPath "$parameterAbsoluteLocation"/_bundle && return 1
+	
+	return 0
+}
+
+#Checks whether currently set "$scriptBin" and similar locations are actually safe.
+# WARNING Keep in mind this is necessarily run only after PATH would already have been modified, and does not guard against threats already present on the local machine.
+_test_permissions_ubiquitous() {
+	[[ ! -e "$scriptAbsoluteFolder" ]] && _stop 1
+	
+	! _permissions_directory_checkForPath "$scriptAbsoluteFolder" && _stop 1
+	
+	[[ -e "$scriptBin" ]] && ! _permissions_directory_checkForPath "$scriptBin" && _stop 1
+	[[ -e "$scriptBundle" ]] && ! _permissions_directory_checkForPath "$scriptBundle" && _stop 1
 	
 	return 0
 }
@@ -405,13 +435,15 @@ export ubiquitiousBashID="uk4uPhB663kVcygT0q"
 
 export sessionid=$(_uid)
 export lowsessionid=$(echo -n "$sessionid" | tr A-Z a-z )
-export scriptAbsoluteLocation=$(_getScriptAbsoluteLocation)
-export scriptAbsoluteFolder=$(_getScriptAbsoluteFolder)
 
-if ( [[ "$scriptAbsoluteLocation" == "/bin/bash" ]] || [[ "$scriptAbsoluteLocation" == "/usr/bin/bash" ]] || [[ "$0" == "-bash" ]] )  && [[ "${BASH_SOURCE[0]}" != "${0}" ]] && [[ "$profileScriptLocation" != "" ]] && [[ "$profileScriptFolder" != "" ]]
+#Importing ubiquitous bash into a login shell with "~/.bashrc" is the only known cause for "_getScriptAbsoluteLocation" to return a result such as "/bin/bash".
+if ( [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] )  && [[ "${BASH_SOURCE[0]}" != "${0}" ]] && [[ "$profileScriptLocation" != "" ]] && [[ "$profileScriptFolder" != "" ]]
 then
 	export scriptAbsoluteLocation="$profileScriptLocation"
 	export scriptAbsoluteFolder="$profileScriptFolder"
+else
+	export scriptAbsoluteLocation=$(_getScriptAbsoluteLocation)
+	export scriptAbsoluteFolder=$(_getScriptAbsoluteFolder)
 fi
 
 #Current directory for preservation.
@@ -427,19 +459,20 @@ export shortTmp=/tmp/w_"$sessionid"	#Solely for misbehaved applications called u
 export scriptBin="$scriptAbsoluteFolder"/_bin
 export scriptBundle="$scriptAbsoluteFolder"/_bundle
 export scriptLib="$scriptAbsoluteFolder"/_lib
-#For virtualized guests (exclusively intended to support _setupUbiquitous and _drop* hooks).
+#For trivial installations and virtualized guests. Exclusively intended to support _setupUbiquitous and _drop* hooks.
 [[ ! -e "$scriptBin" ]] && export scriptBin="$scriptAbsoluteFolder"
-[[ ! -e "$scriptBundle" ]] && export scriptBin="$scriptAbsoluteFolder"
+[[ ! -e "$scriptBundle" ]] && export scriptBundle="$scriptAbsoluteFolder"
 [[ ! -e "$scriptLib" ]] && export scriptLib="$scriptAbsoluteFolder"
 
 
 export scriptLocal="$scriptAbsoluteFolder"/_local
 
 #For system installations (exclusively intended to support _setupUbiquitous and _drop* hooks).
-[[ "$scriptAbsoluteLocation" == "/usr/bin"* ]] && export scriptBin="/usr/share/ubcore/bin"
-[[ "$scriptAbsoluteLocation" == "/usr/local/bin"* ]] && export scriptBin="/usr/local/share/ubcore/bin"
-if [[ "$scriptAbsoluteLocation" == "/usr/bin"* ]] || [[ "$scriptAbsoluteLocation" == "/usr/local/bin"* ]]
+if [[ "$scriptAbsoluteLocation" == "/usr/local/bin"* ]] || [[ "$scriptAbsoluteLocation" == "/usr/bin"* ]]
 then
+	[[ "$scriptAbsoluteLocation" == "/usr/bin"* ]] && export scriptBin="/usr/share/ubcore/bin"
+	[[ "$scriptAbsoluteLocation" == "/usr/local/bin"* ]] && export scriptBin="/usr/local/share/ubcore/bin"
+	
 	if [[ -d "$HOME" ]]
 	then
 		export scriptLocal="$HOME"/".ubcore"/_sys
@@ -456,7 +489,9 @@ export bootTmp="$scriptLocal"			#Fail-Safe
 [[ -d /dev/shm ]] && export bootTmp=/dev/shm	#Typical Linux
 
 #Specialized temporary directories.
-export safeTmpSSH='~/.s_'"$sessionid"
+# Unusually, safeTmpSSH must not be interpreted by client, and therefore is single quoted.
+# TODO Test safeTmpSSH variants including spaces in path.
+export safeTmpSSH='~/.sshtmp/.s_'"$sessionid"
 
 #Process control.
 export pidFile="$safeTmp"/.pid
@@ -525,9 +560,10 @@ export objectDir="$scriptAbsoluteFolder"
 export objectName=$(basename "$objectDir")
 
 #Modify PATH to include own directories.
-_permissions_directory_checkForPath "$scriptAbsoluteFolder" && export PATH="$PATH":"$scriptAbsoluteFolder"
-[[ "$scriptBin" != "$scriptAbsoluteFolder" ]] && [[ -d "$scriptBin" ]] && _permissions_directory_checkForPath "$scriptBin" && export PATH="$PATH":"$scriptBin"
-[[ "$scriptBundle" != "$scriptAbsoluteFolder" ]] && [[ -d "$scriptBundle" ]] && _permissions_directory_checkForPath "$scriptBundle" && export PATH="$PATH":"$scriptBundle"
+if ! [[ "$PATH" == *":""$scriptAbsoluteFolder"* ]] && ! [[ "$PATH" == "$scriptAbsoluteFolder"* ]]
+then
+	export PATH="$PATH":"$scriptAbsoluteFolder":"$scriptBin":"$scriptBundle"
+fi
 
 export permaLog="$scriptLocal"
 
@@ -535,7 +571,7 @@ export HOST_USER_ID=$(id -u)
 export HOST_GROUP_ID=$(id -g)
 export virtGuestUserDrop="ubvrtusr"
 export virtGuestUser="$virtGuestUserDrop"
-[[ $(id -u) == 0 ]] && export virtGuestUser="root"
+[[ "$HOST_USER_ID" == 0 ]] && export virtGuestUser="root"
 
 export globalArcDir="$scriptLocal"/a
 export globalArcFS="$globalArcDir"/fs
@@ -555,7 +591,7 @@ export instancedVirtTmp="$instancedVirtDir"/tmp
 
 export virtGuestHomeDrop=/home/"$virtGuestUserDrop"
 export virtGuestHome="$virtGuestHomeDrop"
-[[ $(id -u) == 0 ]] && export virtGuestHome=/root
+[[ "$HOST_USER_ID" == 0 ]] && export virtGuestHome=/root
 ###export virtGuestHomeRef="$virtGuestHome".ref
 
 export instancedVirtHome="$instancedVirtFS""$virtGuestHome"
@@ -584,20 +620,6 @@ export instancedFakeHome="$scriptAbsoluteFolder"/h_"$sessionid"
 export hostMemoryTotal=$(cat /proc/meminfo | grep MemTotal | tr -cd '[[:digit:]]')
 export hostMemoryAvailable=$(cat /proc/meminfo | grep MemAvailable | tr -cd '[[:digit:]]')
 export hostMemoryQuantity="$hostMemoryTotal"
-
-
-#Machine allocation defaults.
-export vmMemoryAllocationDefault=96
-[[ "$hostMemoryQuantity" -gt "500000" ]] && export vmMemoryAllocationDefault=256
-[[ "$hostMemoryQuantity" -gt "800000" ]] && export vmMemoryAllocationDefault=512
-[[ "$hostMemoryQuantity" -gt "1500000" ]] && export vmMemoryAllocationDefault=896
-
-[[ "$hostMemoryQuantity" -gt "3000000" ]] && export vmMemoryAllocationDefault=896
-[[ "$hostMemoryQuantity" -gt "6000000" ]] && export vmMemoryAllocationDefault=1024
-
-[[ "$hostMemoryQuantity" -gt "8000000" ]] && export vmMemoryAllocationDefault=1256
-[[ "$hostMemoryQuantity" -gt "12000000" ]] && export vmMemoryAllocationDefault=1512
-[[ "$hostMemoryQuantity" -gt "16000000" ]] && export vmMemoryAllocationDefault=1512
 
 
 _findUbiquitous() {
@@ -1036,6 +1058,7 @@ _compile_bash_vars_spec() {
 	
 	
 	includeScriptList+=( "structure"/specglobalvars.sh )
+	[[ "$enUb_virt" == "true" ]] && includeScriptList+=( "virtualization"/virtvars.sh )
 	[[ "$enUb_proxy" == "true" ]] && includeScriptList+=( "generic/net/proxy/ssh"/sshvars.sh )
 }
 

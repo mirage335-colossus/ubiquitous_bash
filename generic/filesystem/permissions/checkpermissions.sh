@@ -6,13 +6,15 @@ _permissions_directory_checkForPath() {
 	
 	[[ "$parameterAbsoluteLocation" == "$PWD" ]] && ! [[ "$parameterAbsoluteLocation" == "$checkScriptAbsoluteFolder" ]] && return 1
 	
+	local permissions_readout=$(stat -c "%a" "$1")
+	
 	local permissions_user
 	local permissions_group
 	local permissions_other
 	
-	permissions_user=$(stat -c "%a" "$1" | cut -c 1)
-	permissions_group=$(stat -c "%a" "$1" | cut -c 2)
-	permissions_other=$(stat -c "%a" "$1" | cut -c 3)
+	permissions_user=$(echo "$permissions_readout" | cut -c 1)
+	permissions_group=$(echo "$permissions_readout" | cut -c 2)
+	permissions_other=$(echo "$permissions_readout" | cut -c 3)
 	
 	[[ "$permissions_user" -gt "7" ]] && return 1
 	[[ "$permissions_group" -gt "7" ]] && return 1
@@ -36,6 +38,34 @@ _permissions_directory_checkForPath() {
 	
 	[[ "$permissions_uid" != "$permissions_host_uid" ]] && return 1
 	[[ "$permissions_uid" != "$permissions_host_gid" ]] && return 1
+	
+	return 0
+}
+
+#Checks whether the repository has unsafe permissions for adding binary files to path. Used as an extra safety check by "_setupUbiquitous" before adding a hook to the user's default shell environment.
+_permissions_ubiquitous_repo() {
+	local parameterAbsoluteLocation
+	parameterAbsoluteLocation=$(_getAbsoluteLocation "$1")
+	
+	[[ ! -e "$parameterAbsoluteLocation" ]] && return 0
+	
+	! _permissions_directory_checkForPath "$parameterAbsoluteLocation" && return 1
+	
+	[[ -e "$parameterAbsoluteLocation"/_bin ]] && ! _permissions_directory_checkForPath "$parameterAbsoluteLocation"/_bin && return 1
+	[[ -e "$parameterAbsoluteLocation"/_bundle ]] && ! _permissions_directory_checkForPath "$parameterAbsoluteLocation"/_bundle && return 1
+	
+	return 0
+}
+
+#Checks whether currently set "$scriptBin" and similar locations are actually safe.
+# WARNING Keep in mind this is necessarily run only after PATH would already have been modified, and does not guard against threats already present on the local machine.
+_test_permissions_ubiquitous() {
+	[[ ! -e "$scriptAbsoluteFolder" ]] && _stop 1
+	
+	! _permissions_directory_checkForPath "$scriptAbsoluteFolder" && _stop 1
+	
+	[[ -e "$scriptBin" ]] && ! _permissions_directory_checkForPath "$scriptBin" && _stop 1
+	[[ -e "$scriptBundle" ]] && ! _permissions_directory_checkForPath "$scriptBundle" && _stop 1
 	
 	return 0
 }
