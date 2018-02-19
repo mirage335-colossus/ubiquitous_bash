@@ -2,6 +2,8 @@
 
 #Creates derivative project importing ubiquitous_bash as a static library.
 
+workingDir="$PWD"
+
 devName=newDeveloperName
 projectName=newProjectName
 
@@ -18,7 +20,9 @@ git init
 git submodule add --depth 1 git@github.com:mirage335/ubiquitous_bash.git ./_lib/ubiquitous_bash
 
 #Parent derivative of ubiquitous_bash.
-#git submodule update --depth 1 --init ./_lib/parent/_lib/ubiquitous_bash
+#cd ./_lib/parent
+#git submodule update --depth 1 --init ./_lib/ubiquitous_bash
+#cd "$workingDir"/"$projectName"
 
 #git submodule update --depth 1 --init --recursive
 
