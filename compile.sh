@@ -579,13 +579,6 @@ export globalBuildFS="$globalBuildDir"/fs
 export globalBuildTmp="$globalBuildDir"/tmp
 
 
-
-#Machine information.
-export hostMemoryTotal=$(cat /proc/meminfo | grep MemTotal | tr -cd '[[:digit:]]')
-export hostMemoryAvailable=$(cat /proc/meminfo | grep MemAvailable | tr -cd '[[:digit:]]')
-export hostMemoryQuantity="$hostMemoryTotal"
-
-
 _findUbiquitous() {
 	export ubiquitiousLibDir="$scriptAbsoluteFolder"
 	
@@ -611,6 +604,10 @@ _findUbiquitous() {
 	return 1
 }
 
+
+_deps_machineinfo() {
+	export enUb_machineinfo="true"
+}
 
 _deps_git() {
 	export enUb_git="true"
@@ -647,11 +644,13 @@ _deps_blockchain() {
 
 _deps_image() {
 	_deps_notLean
+	_deps_machineinfo
 	export enUb_image="true"
 }
 
 _deps_virt() {
 	_deps_notLean
+	_deps_machineinfo
 	_deps_image
 	export enUb_virt="true"
 }
@@ -1021,12 +1020,15 @@ _compile_bash_vars_spec() {
 	export includeScriptList
 	
 	
-	includeScriptList+=( "structure"/specglobalvars.sh )
+	[[ "$enUb_machineinfo" == "true" ]] && includeScriptList+=( "special/machineinfo"/machinevars.sh )
 	
 	[[ "$enUb_virt" == "true" ]] && includeScriptList+=( "virtualization"/virtvars.sh )
 	[[ "$enUb_virt" == "true" ]] && includeScriptList+=( "virtualization"/image/imagevars.sh )
 	
 	[[ "$enUb_proxy" == "true" ]] && includeScriptList+=( "generic/net/proxy/ssh"/sshvars.sh )
+	
+	
+	includeScriptList+=( "structure"/specglobalvars.sh )
 }
 
 _compile_bash_vars_shortcuts() {

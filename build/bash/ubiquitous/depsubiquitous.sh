@@ -1,3 +1,7 @@
+_deps_machineinfo() {
+	export enUb_machineinfo="true"
+}
+
 _deps_git() {
 	export enUb_git="true"
 }
@@ -33,11 +37,13 @@ _deps_blockchain() {
 
 _deps_image() {
 	_deps_notLean
+	_deps_machineinfo
 	export enUb_image="true"
 }
 
 _deps_virt() {
 	_deps_notLean
+	_deps_machineinfo
 	_deps_image
 	export enUb_virt="true"
 }
