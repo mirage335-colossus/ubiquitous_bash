@@ -487,7 +487,7 @@ _setup_ssh_operations() {
 	#! grep "$ubiquitiousBashID" "$sshBase"/config > /dev/null 2>&1 && echo 'Include "'"$sshUbiquitous"'/config"' >> "$sshBase"/config
 	
 	#Prepend include directive. Mitigates the risk of falling under an existing config directive (eg. Host/Match). Carries the relatively insignificant risk of a non-atomic operation.
-	if ! grep "$ubiquitiousBashID" "$sshBase"/config > /dev/null 2>&1
+	if ! grep "$ubiquitiousBashID" "$sshBase"/config > /dev/null 2>&1 && [[ ! -e "$sshBase"/config.tmp ]]
 	then
 		echo -n >> "$sshBase"/config
 		echo 'Include "'"$sshUbiquitous"'/config"' >> "$sshBase"/config.tmp
