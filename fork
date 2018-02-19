@@ -16,8 +16,13 @@ mkdir ./_prog
 git init
 
 git submodule add --depth 1 git@github.com:mirage335/ubiquitous_bash.git ./_lib/ubiquitous_bash
-#git submodule update --depth 1 --init --recursive ./_lib/ubiquitous_bash
 
+#Parent derivative of ubiquitous_bash.
+#git submodule update --depth 1 --init ./_lib/parent/_lib/ubiquitous_bash
+
+#git submodule update --depth 1 --init --recursive
+
+cp ./_lib/ubiquitous_bash/ubiquitous_bash.sh ./
 cp ./_lib/ubiquitous_bash/compile.sh ./
 cp ./_lib/ubiquitous_bash/license.txt.gpl ./license.txt
 cp ./_lib/ubiquitous_bash/README.md.template ./README.md
@@ -36,7 +41,7 @@ cp -a ./_lib/ubiquitous_bash/_bundle/. ./_bundle
 
 ##### Hardcoded Configuration
 mkdir -p ./_config
-cp -a ./_lib/ubiquitous_bash/_config/. ./_bin
+cp -a ./_lib/ubiquitous_bash/_config/. ./_config
 
 ##### Commonly customized scripts.
 
@@ -48,6 +53,10 @@ cp -a ./_lib/ubiquitous_bash/_config/. ./_bin
 
 #cp ./_lib/ubiquitous_bash/structure/installation.sh ./_prog/
 
+##### Parent Derivative Scripts
+#mkdir -p ./_prog
+#cp -a ./_lib/parent/_prog/. ./_prog
+
 ##### Dedicated program scripts.
 
 echo -n >> ./_prog/specglobalvars.sh
@@ -58,6 +67,16 @@ echo '' >> ./_prog/core.sh
 cp ./_lib/ubiquitous_bash/structure/program.sh ./_prog/
 
 cp ./_lib/ubiquitous_bash/build/bash/compile_bash_prog.sh ./_prog/
+
+##### Runtime Configuration
+
+#mkdir -p ./_local/ssh
+#cp -d --preserve=all ./_lib/ubiquitous_bash/_lib/ssh/ops ./_local/ssh/ops
+
+#Parent derivative of ubiquitous_bash.
+#cp -d --preserve=all ./_lib/parent/_lib/ubiquitous_bash/_lib/ssh/ops ./_local/ssh/ops
+
+#cp -a ./_lib/coreautossh/_local ./
 
 
 ./compile.sh
