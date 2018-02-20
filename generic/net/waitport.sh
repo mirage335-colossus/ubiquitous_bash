@@ -6,7 +6,7 @@ _test_waitport() {
 #"$1" == hostname
 #"$2" == port
 _checkPort() {
-	nmap -Pn "$1" -p "$2" | grep open > /dev/null 2>&1
+	nmap -Pn "$1" -p "$2" 2> /dev/null | grep open > /dev/null 2>&1
 }
 
 #Waits a reasonable time interval for port to be open.
