@@ -1221,15 +1221,15 @@ _checkRemoteSSH() {
 	
 	_timeout 18 _ssh "$1" -L "$localPort":"$remoteHostDestination":"$2" -N > /dev/null 2>&1 &
 	sleep 2
-	nmap -Pn localhost -p "$localPort" -sV | grep 'ssh' > /dev/null 2>&1 && return 0
+	nmap -Pn localhost -p "$localPort" -sV 2> /dev/null | grep 'ssh' > /dev/null 2>&1 && return 0
 	sleep 2
-	nmap -Pn localhost -p "$localPort" -sV | grep 'ssh' > /dev/null 2>&1 && return 0
+	nmap -Pn localhost -p "$localPort" -sV 2> /dev/null | grep 'ssh' > /dev/null 2>&1 && return 0
 	sleep 2
-	nmap -Pn localhost -p "$localPort" -sV | grep 'ssh' > /dev/null 2>&1 && return 0
+	nmap -Pn localhost -p "$localPort" -sV 2> /dev/null | grep 'ssh' > /dev/null 2>&1 && return 0
 	sleep 2
-	nmap -Pn localhost -p "$localPort" -sV | grep 'ssh' > /dev/null 2>&1 && return 0
+	nmap -Pn localhost -p "$localPort" -sV 2> /dev/null | grep 'ssh' > /dev/null 2>&1 && return 0
 	sleep 6
-	nmap -Pn localhost -p "$localPort" -sV | grep 'ssh' > /dev/null 2>&1 && return 0
+	nmap -Pn localhost -p "$localPort" -sV 2> /dev/null | grep 'ssh' > /dev/null 2>&1 && return 0
 }
 
 #Launches proxy if remote port is open at hostname.
@@ -1906,7 +1906,7 @@ _proxy_direct() {
 	
 	#nc -q 96 "$proxyTargetHost" "$proxyTargetPort"
 	#nc -q -1 "$proxyTargetHost" "$proxyTargetPort"
-	nc "$proxyTargetHost" "$proxyTargetPort"
+	nc "$proxyTargetHost" "$proxyTargetPort" 2> /dev/null
 }
 
 #Launches proxy if port at hostname is open.

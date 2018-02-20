@@ -40,7 +40,7 @@ _proxy_direct() {
 	
 	#nc -q 96 "$proxyTargetHost" "$proxyTargetPort"
 	#nc -q -1 "$proxyTargetHost" "$proxyTargetPort"
-	nc "$proxyTargetHost" "$proxyTargetPort"
+	nc "$proxyTargetHost" "$proxyTargetPort" 2> /dev/null
 }
 
 #Launches proxy if port at hostname is open.
