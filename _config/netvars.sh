@@ -29,14 +29,14 @@ _get_reversePorts() {
 	testHostname="$1"
 	[[ "$testHostname" == "" ]] && testHostname=$(hostname -s)
 	
-	if [[ "$testHostname" == "alpha" ]] || [[ "$testHostname" == '*' ]]
+	if [[ "$testHostname" == "alpha" ]]
 	then
 		matchingReversePorts+=( "20000" )
 		
 		matched=true
 	fi
 	
-	if [[ "$testHostname" == "beta" ]] || [[ "$testHostname" == '*' ]]
+	if [[ "$testHostname" == "beta" ]]
 	then
 		matchingReversePorts+=( "20001" )
 		export matchingEMBEDDED=true
