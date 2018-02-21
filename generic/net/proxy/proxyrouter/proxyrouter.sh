@@ -49,8 +49,10 @@ _proxy_direct() {
 _proxy() {
 	if _checkPort "$1" "$2"
 	then
-		_proxy_direct "$1" "$2"
-		_stop
+		if _proxy_direct "$1" "$2"
+		then
+			_stop
+		fi
 	fi
 	
 	return 0

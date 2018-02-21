@@ -947,7 +947,11 @@ _test_waitport() {
 #"$1" == hostname
 #"$2" == port
 _checkPort() {
-	nmap -Pn "$1" -p "$2" 2> /dev/null | grep open > /dev/null 2>&1
+	if nmap -Pn "$1" -p "$2" 2> /dev/null | grep open > /dev/null 2>&1
+	then
+		return 0
+	fi
+	return 1
 }
 
 #Waits a reasonable time interval for port to be open.
@@ -1249,6 +1253,8 @@ _checkRemoteSSH() {
 	nmap -Pn localhost -p "$localPort" -sV 2> /dev/null | grep 'ssh' > /dev/null 2>&1 && return 0
 	sleep 6
 	nmap -Pn localhost -p "$localPort" -sV 2> /dev/null | grep 'ssh' > /dev/null 2>&1 && return 0
+	
+	return 1
 }
 
 #Launches proxy if remote port is open at hostname.
@@ -1262,8 +1268,10 @@ _proxySSH() {
 	
 	if _checkRemoteSSH "$1" "$2" "$remoteHostDestination"
 	then
-		_ssh -q -W "$remoteHostDestination":"$2" "$1"
-		_stop
+		if _ssh -q -W "$remoteHostDestination":"$2" "$1"
+		then
+			_stop
+		fi
 	fi
 	
 	return 0
@@ -1291,23 +1299,34 @@ _ssh_sequence() {
 	#_setup_ssh
 	_setup_ssh_operations
 	
+	local sshExitStatus
 	ssh -F "$sshDir"/config "$@"
+	sshExitStatus="$?"
 	
 	_setup_ssh_merge_known_hosts
 	
-	_stop
+	_stop "$sshExitStatus"
 }
 
 _ssh() {
 	if [[ "$sshInContainment" == "true" ]]
 	then
-		ssh -F "$sshDir"/config "$@"
-		return 0
+		if ssh -F "$sshDir"/config "$@"
+		then
+			return 0
+		fi
+		return 1
 	fi
 	
 	export sshInContainment="true"
+	
+	local sshExitStatus
 	"$scriptAbsoluteLocation" _ssh_sequence "$@"
+	sshExitStatus="$?"
+	
 	export sshInContainment=""
+	
+	return "$sshExitStatus"
 }
 
 _start_safeTmp_ssh() {
@@ -1939,8 +1958,10 @@ _proxy_direct() {
 _proxy() {
 	if _checkPort "$1" "$2"
 	then
-		_proxy_direct "$1" "$2"
-		_stop
+		if _proxy_direct "$1" "$2"
+		then
+			_stop
+		fi
 	fi
 	
 	return 0
