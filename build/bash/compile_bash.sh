@@ -70,6 +70,7 @@ _compile_bash_essential_utilities() {
 	includeScriptList+=( "generic/filesystem"/absolutepaths.sh )
 	includeScriptList+=( "generic/filesystem"/safedelete.sh )
 	includeScriptList+=( "generic/process"/timeout.sh )
+	includeScriptList+=( "generic/process"/terminate.sh )
 	includeScriptList+=( "generic"/uid.sh )
 	includeScriptList+=( "generic/filesystem/permissions"/checkpermissions.sh )
 	

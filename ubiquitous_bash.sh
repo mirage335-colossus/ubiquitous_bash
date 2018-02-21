@@ -286,6 +286,23 @@ _safePath() {
 #http://stackoverflow.com/questions/687948/timeout-a-command-in-bash-without-unnecessary-delay
 _timeout() { ( set +b; sleep "$1" & "${@:2}" & wait -n; r=$?; kill -9 `jobs -p`; exit $r; ) } 
 
+_terminateAll() {
+	local processListFile
+	processListFile="$scriptAbsoluteFolder"/.pidlist_$(_uid)
+	
+	local currentPID
+	
+	cat ./w_*/.pid > "$processListFile"
+	
+	while read -r "$currentPID"
+	do
+		pkill -P "$line"
+		pkill "$line"
+	done < "$processListFile"
+	
+	rm "$processListFile"
+}
+
 #Generates random alphanumeric characters, default length 18.
 _uid() {
 	local uidLength
@@ -1394,6 +1411,11 @@ _vncviewer() {
 	"$scriptAbsoluteLocation" _vncviewer_sequence "$@"
 }
 
+#To be overrideden by ops (eg. for "-repeat").
+_x11vnc_command() {
+	x11vnc "$@"
+}
+
 _x11vnc_operations() {
 	_detect_x11
 	export DISPLAY="$destination_DISPLAY"
@@ -1402,7 +1424,7 @@ _x11vnc_operations() {
 	if type x11vnc >/dev/null 2>&1
 	then
 		#-passwdfile cmd:"/bin/cat -"
-		x11vnc -localhost -rfbauth "$vncPasswdFile" -rfbport "$vncPort" -timeout 8 -xkb -display "$destination_DISPLAY" -auth "$HOME"/.Xauthority -noxrecord -noxdamage
+		_x11vnc_command -localhost -rfbauth "$vncPasswdFile" -rfbport "$vncPort" -timeout 8 -xkb -display "$destination_DISPLAY" -auth "$HOME"/.Xauthority -noxrecord -noxdamage
 		#-noxrecord -noxfixes -noxdamage
 		return 0
 	fi
@@ -10061,6 +10083,7 @@ _compile_bash_essential_utilities() {
 	includeScriptList+=( "generic/filesystem"/absolutepaths.sh )
 	includeScriptList+=( "generic/filesystem"/safedelete.sh )
 	includeScriptList+=( "generic/process"/timeout.sh )
+	includeScriptList+=( "generic/process"/terminate.sh )
 	includeScriptList+=( "generic"/uid.sh )
 	includeScriptList+=( "generic/filesystem/permissions"/checkpermissions.sh )
 	

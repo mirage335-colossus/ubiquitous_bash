@@ -286,6 +286,23 @@ _safePath() {
 #http://stackoverflow.com/questions/687948/timeout-a-command-in-bash-without-unnecessary-delay
 _timeout() { ( set +b; sleep "$1" & "${@:2}" & wait -n; r=$?; kill -9 `jobs -p`; exit $r; ) } 
 
+_terminateAll() {
+	local processListFile
+	processListFile="$scriptAbsoluteFolder"/.pidlist_$(_uid)
+	
+	local currentPID
+	
+	cat ./w_*/.pid > "$processListFile"
+	
+	while read -r "$currentPID"
+	do
+		pkill -P "$line"
+		pkill "$line"
+	done < "$processListFile"
+	
+	rm "$processListFile"
+}
+
 #Generates random alphanumeric characters, default length 18.
 _uid() {
 	local uidLength
