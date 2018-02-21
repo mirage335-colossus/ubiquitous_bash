@@ -10,6 +10,8 @@ _testProxySSH() {
 	! _wantDep x11vnc && echo 'warn: x11vnc not found'
 	! _wantDep x0tigervncserver && echo 'warn: x0tigervncserver not found'
 	
+	! _wantDep vncpasswd && echo 'warn: vncpasswd not found, x11vnc broken!'
+	
 	! _wantDep xset && echo 'warn: xset not found'
 	
 	#! _wantDep xpra && echo 'warn: xpra not found'
@@ -202,6 +204,11 @@ _vncviewer() {
 	"$scriptAbsoluteLocation" _vncviewer_sequence "$@"
 }
 
+#To be overrideden by ops (eg. for "-repeat").
+_x11vnc_command() {
+	x11vnc "$@"
+}
+
 _x11vnc_operations() {
 	_detect_x11
 	export DISPLAY="$destination_DISPLAY"
@@ -210,7 +217,7 @@ _x11vnc_operations() {
 	if type x11vnc >/dev/null 2>&1
 	then
 		#-passwdfile cmd:"/bin/cat -"
-		x11vnc -localhost -rfbauth "$vncPasswdFile" -rfbport "$vncPort" -timeout 8 -xkb -display "$destination_DISPLAY" -auth "$HOME"/.Xauthority -noxrecord -noxdamage
+		_x11vnc_command -localhost -rfbauth "$vncPasswdFile" -rfbport "$vncPort" -timeout 8 -xkb -display "$destination_DISPLAY" -auth "$HOME"/.Xauthority -noxrecord -noxdamage
 		#-noxrecord -noxfixes -noxdamage
 		return 0
 	fi
