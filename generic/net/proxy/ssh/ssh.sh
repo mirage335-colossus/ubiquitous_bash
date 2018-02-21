@@ -516,7 +516,7 @@ _setup_ssh_operations() {
 	
 	if ! [[ -e "$scriptLocal"/ssh/id_rsa ]] && ! [[ -e "$sshDir"/id_rsa ]]
 	then
-		ssh-keygen -b 4096 -t rsa -N "" -f "$scriptLocal"/id_rsa
+		ssh-keygen -b 4096 -t rsa -N "" -f "$scriptLocal"/ssh/id_rsa
 	fi
 	
 	_here_ssh_config >> "$safeTmp"/config
