@@ -1806,14 +1806,29 @@ _testAutoSSH() {
 #"$1" == "$gatewayName"
 #"$2" == "$reversePort"
 _autossh_external() {
+	_start
+	
+	export sshBase="$safeTmp"/.ssh
+	_prepare_ssh
+	
+	#_setup_ssh
+	_setup_ssh_operations
+	
+	
+	
 	local autosshPID
-	/usr/bin/autossh -M 0 -F "$scriptLocal"/ssh/config -R "$2":localhost:22 "$1" -N &
+	/usr/bin/autossh -M 0 -F "$sshDir"/config -R "$2":localhost:22 "$1" -N &
 	autosshPID="$!"
 	
 	#echo "$autosshPID" | _prependDaemonPID
 	
 	#_pauseForProcess "$autosshPID"
 	wait "$autosshPID"
+	
+	
+	_setup_ssh_merge_known_hosts
+	
+	_stop "$sshExitStatus"
 }
 
 #Searches for an unused port in the reversePorts list, binds reverse proxy to it.
@@ -1881,7 +1896,7 @@ _autossh_launch() {
 	
 	while true
 	do
-		_autossh_entry "$@"
+		"$scriptAbsoluteLocation" _autossh_entry "$@"
 		
 		sleep 30
 		
