@@ -294,10 +294,10 @@ _terminateAll() {
 	
 	cat ./w_*/.pid > "$processListFile"
 	
-	while read -r "$currentPID"
+	while read -r currentPID
 	do
-		pkill -P "$line"
-		pkill "$line"
+		pkill -P "$currentPID"
+		pkill "$currentPID"
 	done < "$processListFile"
 	
 	rm "$processListFile"
