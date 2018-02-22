@@ -9,15 +9,8 @@ _testAutoSSH() {
 #"$1" == "$gatewayName"
 #"$2" == "$reversePort"
 _autossh_external() {
-	_start
-	
-	export sshBase="$safeTmp"/.ssh
-	_prepare_ssh
-	
-	#_setup_ssh
-	_setup_ssh_operations
-	
-	
+	#Workaround. SSH will call CoreAutoSSH recursively as the various "proxy" directives are called. These processes must be managed by SSH, and not recorded in the daemon PID list file, as daemon management scripts will be confused by these many processes quitting long before daemon failure.
+	export isDaemon=
 	
 	local autosshPID
 	/usr/bin/autossh -M 0 -F "$sshDir"/config -R "$2":localhost:22 "$1" -N &
@@ -27,11 +20,6 @@ _autossh_external() {
 	
 	#_pauseForProcess "$autosshPID"
 	wait "$autosshPID"
-	
-	
-	_setup_ssh_merge_known_hosts
-	
-	_stop "$sshExitStatus"
 }
 
 #Searches for an unused port in the reversePorts list, binds reverse proxy to it.
@@ -95,7 +83,13 @@ _autossh_entry() {
 }
 
 _autossh_launch() {
-	_setup_ssh
+	_start
+	
+	export sshBase="$safeTmp"/.ssh
+	_prepare_ssh
+	
+	#_setup_ssh
+	_setup_ssh_operations
 	
 	while true
 	do
@@ -109,6 +103,8 @@ _autossh_launch() {
 		fi
 		
 	done
+	
+	_stop
 }
 
 # WARNING Not all autossh functions have been fully tested yet. However, previous versions of this system are known to be much more robust than autossh defaults.
