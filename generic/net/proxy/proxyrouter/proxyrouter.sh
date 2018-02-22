@@ -5,13 +5,13 @@ _testProxyRouter_sequence() {
 	local testPort
 	testPort=$(_findPort)
 	
-	_timeout 10 nc -l -p "$testPort" > "$safeTmp"/nctest &
+	_timeout 10 nc -l -p "$testPort" 2>/dev/null > "$safeTmp"/nctest &
 	
-	sleep 0.1 && ! echo PASS | nc localhost "$testPort" &&
-	sleep 0.3 && ! echo PASS | nc localhost "$testPort" &&
-	sleep 0.9 && ! echo PASS | nc localhost "$testPort" &&
-	sleep 3 && ! echo PASS | nc localhost "$testPort" &&
-	sleep 6 && ! echo PASS | nc localhost "$testPort" &&
+	sleep 0.1 && ! echo PASS | nc localhost "$testPort" 2>/dev/null &&
+	sleep 0.3 && ! echo PASS | nc localhost "$testPort" 2>/dev/null &&
+	sleep 0.9 && ! echo PASS | nc localhost "$testPort" 2>/dev/null &&
+	sleep 3 && ! echo PASS | nc localhost "$testPort" 2>/dev/null &&
+	sleep 6 && ! echo PASS | nc localhost "$testPort" 2>/dev/null &&
 	false
 	! grep 'PASS' "$safeTmp"/nctest > /dev/null 2>&1 && _stop 1
 	
