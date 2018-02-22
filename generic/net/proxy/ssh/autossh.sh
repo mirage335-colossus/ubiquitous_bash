@@ -9,7 +9,7 @@ _testAutoSSH() {
 #"$1" == "$gatewayName"
 #"$2" == "$reversePort"
 _autossh_external() {
-	#Workaround. SSH will call CoreAutoSSH recursively as the various "proxy" directives are called. These processes must be managed by SSH, and not recorded in the daemon PID list file, as daemon management scripts will be confused by these many processes quitting long before daemon failure.
+	#Workaround. SSH will call CoreAutoSSH recursively as the various "proxy" directives are called. These processes should be managed by SSH, and not recorded in the daemon PID list file, as daemon management scripts may be confused by these many processes quitting long before daemon failure.
 	export isDaemon=
 	
 	local autosshPID
@@ -91,6 +91,8 @@ _autossh_launch() {
 	#_setup_ssh
 	_setup_ssh_operations
 	
+	export sshInContainment="true"
+	
 	while true
 	do
 		"$scriptAbsoluteLocation" _autossh_entry "$@"
@@ -112,7 +114,7 @@ _autossh() {
 	mkdir -p "$scriptLocal"/ssh/log
 	local logID
 	logID=$(_uid)
-	"$scriptAbsoluteLocation" _cmdDaemon _autossh_launch "$@" >> "$scriptLocal"/ssh/log/_autossh."$logID".log 2>&1
+	_cmdDaemon "$scriptAbsoluteLocation" _autossh_launch "$@" >> "$scriptLocal"/ssh/log/_autossh."$logID".log 2>&1
 }
 
 _reversessh() {
