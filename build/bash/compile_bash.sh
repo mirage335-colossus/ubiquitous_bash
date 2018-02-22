@@ -33,6 +33,8 @@ _compile_bash_deps() {
 		_deps_proxy
 		_deps_proxy_special
 		
+		_deps_build
+		
 		_deps_build_bash
 		_deps_build_bash_ubiquitous
 		
@@ -304,10 +306,10 @@ _compile_bash_vars_bundled() {
 _compile_bash_buildin() {
 	export includeScriptList
 	
-	includeScriptList+=( "generic/hello"/hello.sh )
-	[[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "generic/process"/idle.sh )
+	[[ "$enUb_build" == "true" ]] && includeScriptList+=( "generic/hello"/hello.sh )
+	[[ "$enUb_build" == "true" ]] && [[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "generic/process"/idle.sh )
 	
-	includeScriptList+=( "structure"/build.sh )
+	[[ "$enUb_build" == "true" ]] && includeScriptList+=( "structure"/build.sh )
 }
 
 _compile_bash_environment() {

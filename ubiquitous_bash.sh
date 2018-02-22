@@ -9856,6 +9856,7 @@ _init_deps() {
 	export enUb_machineinfo=""
 	export enUb_git=""
 	export enUb_notLean=""
+	export enUb_build=""
 	export enUb_os_x11=""
 	export enUb_proxy=""
 	export enUb_proxy_special=""
@@ -9889,6 +9890,20 @@ _deps_notLean() {
 	export enUb_notLean="true"
 }
 
+_deps_build() {
+	export enUb_build="true"
+}
+
+#Note that '_build_bash' does not incur '_build', expected to require only scripted concatenation.
+_deps_build_bash() {
+	export enUb_buildBash="true"
+}
+
+_deps_build_bash_ubiquitous() {
+	_deps_build_bash
+	export enUb_buildBashUbiquitous="true"
+}
+
 _deps_os_x11() {
 	export enUb_os_x11="true"
 }
@@ -9903,6 +9918,7 @@ _deps_proxy_special() {
 }
 
 _deps_x11() {
+	_deps_build
 	_deps_notLean
 	export enUb_x11="true"
 }
@@ -9920,6 +9936,7 @@ _deps_image() {
 }
 
 _deps_virt() {
+	_deps_build
 	_deps_notLean
 	_deps_machineinfo
 	_deps_image
@@ -9969,14 +9986,6 @@ _deps_fakehome() {
 	export enUb_fakehome="true"
 }
 
-_deps_build_bash() {
-	export enUb_buildBash="true"
-}
-
-_deps_build_bash_ubiquitous() {
-	_deps_build_bash
-	export enUb_buildBashUbiquitous="true"
-}
 
 _generate_bash() {
 	
@@ -10085,6 +10094,8 @@ _compile_bash_deps() {
 		
 		_deps_proxy
 		_deps_proxy_special
+		
+		_deps_build
 		
 		_deps_build_bash
 		_deps_build_bash_ubiquitous
@@ -10357,10 +10368,10 @@ _compile_bash_vars_bundled() {
 _compile_bash_buildin() {
 	export includeScriptList
 	
-	includeScriptList+=( "generic/hello"/hello.sh )
-	[[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "generic/process"/idle.sh )
+	[[ "$enUb_build" == "true" ]] && includeScriptList+=( "generic/hello"/hello.sh )
+	[[ "$enUb_build" == "true" ]] && [[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "generic/process"/idle.sh )
 	
-	includeScriptList+=( "structure"/build.sh )
+	[[ "$enUb_build" == "true" ]] && includeScriptList+=( "structure"/build.sh )
 }
 
 _compile_bash_environment() {
@@ -10569,6 +10580,8 @@ _compile_bash_deps_prog() {
 # 		
 # 		_deps_proxy
 # 		_deps_proxy_special
+#		
+#		_deps_build
 # 		
 # 		_deps_build_bash
 # 		_deps_build_bash_ubiquitous
