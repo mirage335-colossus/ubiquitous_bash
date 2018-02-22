@@ -993,6 +993,9 @@ _waitPort() {
 }
 
 _testTor() {
+	_getDep socat
+	_getDep curl
+	
 	if ! _wantGetDep tor
 	then
 		echo 'warn: tor not available'
@@ -1151,7 +1154,8 @@ _proxyTor_direct() {
 	##printf "HEAD / HTTP/1.0\r\n\r\n" | torsocks nc sejnfjrq6szgca7v.onion 80
 	#torsocks nc -q 96 "$proxyTargetHost" "$proxyTargetPort"
 	#torsocks nc -q -1 "$proxyTargetHost" "$proxyTargetPort"
-	torsocks nc "$proxyTargetHost" "$proxyTargetPort"
+	#torsocks nc "$proxyTargetHost" "$proxyTargetPort"
+	torsocks socat - TCP:"$proxyTargetHost":"$proxyTargetPort"
 }
 
 #Launches proxy if port at hostname is open.
@@ -1160,8 +1164,10 @@ _proxyTor_direct() {
 _proxyTor() {
 	if _checkTorPort "$1" "$2"
 	then
-		_proxyTor_direct "$1" "$2"
-		_stop
+		if _proxyTor_direct "$1" "$2"
+		then
+			_stop
+		fi
 	fi
 }
 
@@ -1927,13 +1933,13 @@ _testProxyRouter_sequence() {
 	local testPort
 	testPort=$(_findPort)
 	
-	_timeout 10 nc -l -p "$testPort" > "$safeTmp"/nctest &
+	_timeout 10 nc -l -p "$testPort" 2>/dev/null > "$safeTmp"/nctest &
 	
-	sleep 0.1 && ! echo PASS | nc localhost "$testPort" &&
-	sleep 0.3 && ! echo PASS | nc localhost "$testPort" &&
-	sleep 0.9 && ! echo PASS | nc localhost "$testPort" &&
-	sleep 3 && ! echo PASS | nc localhost "$testPort" &&
-	sleep 6 && ! echo PASS | nc localhost "$testPort" &&
+	sleep 0.1 && ! echo PASS | nc localhost "$testPort" 2>/dev/null &&
+	sleep 0.3 && ! echo PASS | nc localhost "$testPort" 2>/dev/null &&
+	sleep 0.9 && ! echo PASS | nc localhost "$testPort" 2>/dev/null &&
+	sleep 3 && ! echo PASS | nc localhost "$testPort" 2>/dev/null &&
+	sleep 6 && ! echo PASS | nc localhost "$testPort" 2>/dev/null &&
 	false
 	! grep 'PASS' "$safeTmp"/nctest > /dev/null 2>&1 && _stop 1
 	
