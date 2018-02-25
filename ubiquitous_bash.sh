@@ -306,7 +306,7 @@ _terminateAll() {
 #Generates random alphanumeric characters, default length 18.
 _uid() {
 	local uidLength
-	[[ -z "$1" ]] && uidLength=18 || uidLength="$1"
+	! [[ -z "$1" ]] && uidLength="$1" || uidLength=18
 	
 	cat /dev/urandom | base64 | tr -dc 'a-zA-Z0-9' | head -c "$uidLength"
 }
@@ -9678,13 +9678,13 @@ _setup() {
 	local buildSupported
 	type _build > /dev/null 2>&1 && type _test_build > /dev/null 2>&1 && buildSupported="true"
 	
-	[[ "$buildSupported" == "true" ]] && "$scriptAbsoluteLocation" _test_build || _stop 1
+	[[ "$buildSupported" == "true" ]] && ! "$scriptAbsoluteLocation" _test_build && _stop 1
 	
 	if ! "$scriptAbsoluteLocation" _testBuilt
 	then
 		! [[ "$buildSupported" == "true" ]] && _stop 1
-		[[ "$buildSupported" == "true" ]] && "$scriptAbsoluteLocation" _build "$@" || _stop 1
-		"$scriptAbsoluteLocation" _testBuilt || _stop 1
+		[[ "$buildSupported" == "true" ]] && ! "$scriptAbsoluteLocation" _build "$@" && _stop 1
+		! "$scriptAbsoluteLocation" _testBuilt && _stop 1
 	fi
 	
 	_setupCommands
