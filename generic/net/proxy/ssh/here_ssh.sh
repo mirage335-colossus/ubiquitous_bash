@@ -12,8 +12,8 @@ Host *-$netName*
 	#PubkeyAuthentication yes
 	#PasswordAuthentication no
 	StrictHostKeyChecking no
-	UserKnownHostsFile "$sshDir/known_hosts"
-	IdentityFile "$sshDir/id_rsa"
+	UserKnownHostsFile "$sshLocalSSH/known_hosts"
+	IdentityFile "$sshLocalSSH/id_rsa"
 	
 	Cipher aes256-gcm@openssh.com
 	Ciphers aes256-gcm@openssh.com,aes128-ctr,aes192-ctr,aes256-ctr,arcfour256,arcfour128,aes128-gcm@openssh.com,chacha20-poly1305@openssh.com,aes128-cbc,3des-cbc,blowfish-cbc,cast128-cbc,aes192-cbc,aes256-cbc,arcfour
