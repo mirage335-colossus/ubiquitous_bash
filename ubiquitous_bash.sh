@@ -1248,7 +1248,7 @@ _checkRemoteSSH() {
 	remoteHostDestination="$3"
 	[[ "$remoteHostDestination" == "" ]] && remoteHostDestination="localhost"
 	
-	_timeout 18 _ssh "$1" -L "$localPort":"$remoteHostDestination":"$2" -N > /dev/null 2>&1 &
+	_timeout 14 _ssh -f "$1" -L "$localPort":"$remoteHostDestination":"$2" -N > /dev/null 2>&1
 	sleep 2
 	nmap -Pn localhost -p "$localPort" -sV 2> /dev/null | grep 'ssh' > /dev/null 2>&1 && return 0
 	sleep 2
@@ -1257,7 +1257,7 @@ _checkRemoteSSH() {
 	nmap -Pn localhost -p "$localPort" -sV 2> /dev/null | grep 'ssh' > /dev/null 2>&1 && return 0
 	sleep 2
 	nmap -Pn localhost -p "$localPort" -sV 2> /dev/null | grep 'ssh' > /dev/null 2>&1 && return 0
-	sleep 6
+	sleep 3
 	nmap -Pn localhost -p "$localPort" -sV 2> /dev/null | grep 'ssh' > /dev/null 2>&1 && return 0
 	
 	return 1
@@ -1272,13 +1272,14 @@ _proxySSH() {
 	remoteHostDestination="$3"
 	[[ "$remoteHostDestination" == "" ]] && remoteHostDestination="localhost"
 	
-	if _checkRemoteSSH "$1" "$2" "$remoteHostDestination"
-	then
+	#Checking for remote port is usually unnecessary, as the SSH command seems to fail normally if the remote destination is not up. Not explicitly checking with nmap saves significant time (performance). However, the code remains in place for immediate return to default if proven useful.
+	#if _checkRemoteSSH "$1" "$2" "$remoteHostDestination"
+	#then
 		if _ssh -q -W "$remoteHostDestination":"$2" "$1"
 		then
 			_stop
 		fi
-	fi
+	#fi
 	
 	return 0
 }
@@ -1308,6 +1309,9 @@ _ssh_sequence() {
 	local sshExitStatus
 	ssh -F "$sshDir"/config "$@"
 	sshExitStatus="$?"
+	
+	#Preventative workaround, not normally necessary.
+	stty echo
 	
 	_setup_ssh_merge_known_hosts
 	
@@ -1482,6 +1486,7 @@ _x11vnc() {
 
 _vncserver_operations() {
 	[[ "$desktopEnvironmentLaunch" == "" ]] && desktopEnvironmentLaunch="true"
+	[[ "$desktopEnvironmentLaunch" == "" ]] && desktopEnvironmentLaunch="startlxde"
 	[[ "$desktopEnvironmentGeometry" == "" ]] && desktopEnvironmentGeometry='1920x1080'
 	
 	local vncDisplay
@@ -1585,7 +1590,7 @@ _vnc_sequence() {
 	_prepare_vnc
 	
 	
-	cat "$vncPasswdFile".pln | _vnc_ssh -L "$vncPort":localhost:"$vncPort" "$@" 'env vncPort='"$vncPort"' '"$safeTmpSSH"/cautossh' _x11vnc' &
+	cat "$vncPasswdFile".pln | _vnc_ssh -f -L "$vncPort":localhost:"$vncPort" "$@" 'env vncPort='"$vncPort"' '"$safeTmpSSH"/cautossh' _x11vnc' &
 	
 	_waitPort localhost "$vncPort"
 	sleep 0.8 #VNC service may not always be ready when port is up.
@@ -1629,7 +1634,7 @@ _desktop_sequence() {
 	_prepare_vnc
 	
 	
-	cat "$vncPasswdFile".pln | _vnc_ssh -L "$vncPort":localhost:"$vncPort" "$@" 'env vncPort='"$vncPort"' vncPIDfile='"$vncPIDfile"' desktopEnvironmentGeometry='"$desktopEnvironmentGeometry"' desktopEnvironmentLaunch='"$desktopEnvironmentLaunch"' '"$safeTmpSSH"/cautossh' _vncserver' &
+	cat "$vncPasswdFile".pln | _vnc_ssh -f -L "$vncPort":localhost:"$vncPort" "$@" 'env vncPort='"$vncPort"' vncPIDfile='"$vncPIDfile"' desktopEnvironmentGeometry='"$desktopEnvironmentGeometry"' desktopEnvironmentLaunch='"$desktopEnvironmentLaunch"' '"$safeTmpSSH"/cautossh' _vncserver' &
 	
 	
 	_waitPort localhost "$vncPort"
