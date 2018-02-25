@@ -61,4 +61,6 @@ _prepare_ssh() {
 	[[ "$sshBase" == "" ]] && export sshBase="$sshHomeBase"
 	export sshUbiquitous="$sshBase"/"$ubiquitiousBashID"
 	export sshDir="$sshUbiquitous"/"$netName"
+	export sshLocal="$sshDir"/_local
+	export sshLocalSSH="$sshLocal"/ssh
 }

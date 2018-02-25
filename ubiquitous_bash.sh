@@ -1311,7 +1311,7 @@ _ssh_sequence() {
 	sshExitStatus="$?"
 	
 	#Preventative workaround, not normally necessary.
-	stty echo
+	stty echo > /dev/null 2>&1
 	
 	_setup_ssh_merge_known_hosts
 	
@@ -1407,7 +1407,7 @@ _vncviewer_operations() {
 	if vncviewer --help 2>&1 | grep 'PasswordFile   \- Password file for VNC authentication (default\=)' >/dev/null 2>&1
 	then
 		vncviewer -DotWhenNoCursor -passwd "$vncPasswdFile" localhost:"$vncPort" "$@"
-		stty echo
+		stty echo > /dev/null 2>&1
 		return 0
 	fi
 	
@@ -1416,7 +1416,7 @@ _vncviewer_operations() {
 	then
 		#vncviewer -encodings "copyrect tight zrle hextile" localhost:"$vncPort"
 		vncviewer -passwd "$vncPasswdFile" localhost:"$vncPort" "$@"
-		stty echo
+		stty echo > /dev/null 2>&1
 		return 0
 	fi
 	
@@ -1597,7 +1597,7 @@ _vnc_sequence() {
 	
 	cat "$vncPasswdFile".pln | bash -c 'env vncPort='"$vncPort"' destination_DISPLAY='"$DISPLAY"' '"$scriptAbsoluteLocation"' _vncviewer'
 	
-	stty echo
+	stty echo > /dev/null 2>&1
 	
 	_stop_safeTmp_ssh "$@"
 	_stop
@@ -1641,7 +1641,7 @@ _desktop_sequence() {
 	sleep 0.8 #VNC service may not always be ready when port is up.
 	
 	cat "$vncPasswdFile".pln | bash -c 'env vncPort='"$vncPort"' destination_DISPLAY='"$DISPLAY"' '"$scriptAbsoluteLocation"' _vncviewer'
-	stty echo
+	stty echo > /dev/null 2>&1
 	
 	_vnc_ssh "$@" 'env vncPIDfile='"$vncPIDfile"' '"$safeTmpSSH"/cautossh' _vncserver_terminate'
 	
@@ -1667,7 +1667,7 @@ _push_desktop_sequence() {
 	sleep 0.8 #VNC service may not always be ready when port is up.
 	
 	cat "$vncPasswdFile".pln | _vnc_ssh -R "$vncPort":localhost:"$vncPort" "$@" 'env vncPort='"$vncPort"' destination_DISPLAY='""' '"$safeTmpSSH"/cautossh' _vncviewer'
-	stty echo
+	stty echo > /dev/null 2>&1
 	
 	bash -c 'env vncPIDfile='"$vncPIDfile_local"' '"$scriptAbsoluteLocation"' _vncserver_terminate'
 	
@@ -1701,8 +1701,8 @@ _setup_ssh_copyKey() {
 	
 	chmod 600 "$scriptLocal"/ssh/"$sshKeyLocalSubdirectory""$sshKeyName"
 	chmod 600 "$scriptLocal"/ssh/"$sshKeyLocalSubdirectory""$sshKeyName".pub
-	cp -n "$scriptLocal"/ssh/"$sshKeyLocalSubdirectory""$sshKeyName" "$sshDir"/"$sshKeyName"
-	cp -n "$scriptLocal"/ssh/"$sshKeyLocalSubdirectory""$sshKeyName".pub "$sshDir"/"$sshKeyName".pub
+	cp -n "$scriptLocal"/ssh/"$sshKeyLocalSubdirectory""$sshKeyName" "$sshLocalSSH"/"$sshKeyName"
+	cp -n "$scriptLocal"/ssh/"$sshKeyLocalSubdirectory""$sshKeyName".pub "$sshLocalSSH"/"$sshKeyName".pub
 }
 
 #Overload with "ops".
@@ -1712,11 +1712,11 @@ _setup_ssh_extra() {
 
 _setup_ssh_merge_known_hosts() {
 	[[ ! -e "$scriptLocal"/ssh/known_hosts ]] && echo > "$scriptLocal"/ssh/known_hosts
-	[[ ! -e "$sshDir"/known_hosts ]] && echo > "$sshDir"/known_hosts
-	sort "$scriptLocal"/ssh/known_hosts "$sshDir"/known_hosts | uniq > "$safeTmp"/known_hosts_uniq
+	[[ ! -e "$sshLocalSSH"/known_hosts ]] && echo > "$sshLocalSSH"/known_hosts
+	sort "$scriptLocal"/ssh/known_hosts "$sshLocalSSH"/known_hosts | uniq > "$safeTmp"/known_hosts_uniq
 	_cpDiff "$safeTmp"/known_hosts_uniq "$scriptLocal"/ssh/known_hosts
 	
-	_cpDiff "$scriptLocal"/ssh/known_hosts "$sshDir"/known_hosts
+	_cpDiff "$scriptLocal"/ssh/known_hosts "$sshLocalSSH"/known_hosts
 }
 
 _setup_ssh_operations() {
@@ -1727,6 +1727,8 @@ _setup_ssh_operations() {
 	! [[ -e "$sshBase" ]] && mkdir -p "$sshBase" && chmod 700 "$sshBase"
 	! [[ -e "$sshBase"/"$ubiquitiousBashID" ]] && mkdir -p "$sshBase"/"$ubiquitiousBashID" && chmod 700 "$sshBase"/"$ubiquitiousBashID"
 	! [[ -e "$sshDir" ]] && mkdir -p "$sshDir" && chmod 700 "$sshDir"
+	! [[ -e "$sshLocal" ]] && mkdir -p "$sshLocal" && chmod 700 "$sshLocal"
+	! [[ -e "$sshLocalSSH" ]] && mkdir -p "$sshLocalSSH" && chmod 700 "$sshLocalSSH"
 	
 	#! grep "$ubiquitiousBashID" "$sshBase"/config > /dev/null 2>&1 && echo 'Include "'"$sshUbiquitous"'/config"' >> "$sshBase"/config
 	
@@ -1749,9 +1751,11 @@ _setup_ssh_operations() {
 		rm -f "$scriptLocal"/ssh/id_rsa.pub >/dev/null 2>&1
 		rm -f "$sshDir"/id_rsa >/dev/null 2>&1
 		rm -f "$sshDir"/id_rsa.pub >/dev/null 2>&1
+		rm -f "$sshLocalSSH"/id_rsa >/dev/null 2>&1
+		rm -f "$sshLocalSSH"/id_rsa.pub >/dev/null 2>&1
 	fi
 	
-	if ! [[ -e "$scriptLocal"/ssh/id_rsa ]] && ! [[ -e "$sshDir"/id_rsa ]]
+	if ! [[ -e "$scriptLocal"/ssh/id_rsa ]] && ! [[ -e "$sshLocalSSH"/id_rsa ]]
 	then
 		ssh-keygen -b 4096 -t rsa -N "" -f "$scriptLocal"/ssh/id_rsa
 	fi
@@ -1764,7 +1768,19 @@ _setup_ssh_operations() {
 	_setup_ssh_merge_known_hosts
 	
 	_cpDiff "$scriptAbsoluteLocation" "$sshDir"/cautossh
-	_cpDiff "$scriptLocal"/ssh/ops "$sshDir"/ops
+	
+	# TODO Replace with a less oversimplified destination directory structure.
+	#Concatenates all "ops" directives into one file to allow a single "cpDiff" operation.
+	[[ -e "$objectDir"/ops ]] && cat "$objectDir"/ops >> "$safeTmp"/opsAll
+	[[ -e "$scriptLocal"/ops ]] && cat "$scriptLocal"/ops >> "$safeTmp"/opsAll
+	[[ -e "$scriptLocal"/ssh/ops ]] && cat "$scriptLocal"/ssh/ops >> "$safeTmp"/opsAll
+	
+	[[ -e "$objectDir"/opsauto ]] && cat "$objectDir"/opsauto >> "$safeTmp"/opsAll
+	[[ -e "$scriptLocal"/opsauto ]] && cat "$scriptLocal"/opsauto >> "$safeTmp"/opsAll
+	[[ -e "$scriptLocal"/ssh/opsauto ]] && cat "$scriptLocal"/ssh/opsauto >> "$safeTmp"/opsAll
+	
+	
+	_cpDiff "$safeTmp"/opsAll "$sshLocalSSH"/ops
 	
 	_setup_ssh_extra
 }
@@ -8550,6 +8566,8 @@ _prepare_ssh() {
 	[[ "$sshBase" == "" ]] && export sshBase="$sshHomeBase"
 	export sshUbiquitous="$sshBase"/"$ubiquitiousBashID"
 	export sshDir="$sshUbiquitous"/"$netName"
+	export sshLocal="$sshDir"/_local
+	export sshLocalSSH="$sshLocal"/ssh
 }
 
 
