@@ -17,6 +17,11 @@ _testProxySSH() {
 	#! _wantDep xpra && echo 'warn: xpra not found'
 	#! _wantDep xephyr && echo 'warn: xephyr not found'
 	#! _wantDep xnest && echo 'warn: xnest not found'
+	
+	if [[ -e /usr/share/doc/realvnc-vnc-server ]] || type vnclicense >/dev/null 2>&1
+	then
+		echo 'TAINT: unsupported vnc!'
+	fi
 }
 
 #Enters remote server at hostname, by SSH, sets up a tunnel, checks tunnel for another SSH server.
@@ -172,6 +177,13 @@ _prepare_vnc() {
 }
 
 _vncpasswd() {
+	#TigerVNC, specifically.
+	if type tigervncpasswd >/dev/null 2>&1
+	then
+		echo | cat "$vncPasswdFile".pln - "$vncPasswdFile".pln | tigervncpasswd "$vncPasswdFile"
+		return 0
+	fi
+	
 	#Supported by both TightVNC and TigerVNC.
 	if echo | vncpasswd -x --help 2>&1 | grep -i 'vncpasswd \[FILE\]' >/dev/null 2>&1
 	then
@@ -276,7 +288,7 @@ _vncserver_operations() {
 	local vncDisplayValid
 	for (( vncDisplay = 1 ; vncDisplay <= 9 ; vncDisplay++ ))
 	do
-		! [[ -e /tmp/.X'"$vncDisplay"'-lock ]] && ! [[ -e /tmp/.X11-unix/X'"$vncDisplay"' ]] && vncDisplayValid=true && break
+		! [[ -e /tmp/.X"$vncDisplay"-lock ]] && ! [[ -e /tmp/.X11-unix/X"$vncDisplay" ]] && vncDisplayValid=true && break
 	done
 	[[ "$vncDisplayValid" != "true" ]] && _stop 1
 	
@@ -290,8 +302,9 @@ _vncserver_operations() {
 		#vncserver :"$vncDisplay" -depth 16 -geometry "$desktopEnvironmentGeometry" -localhost -rfbport "$vncPort" -rfbauth "$vncPasswdFile" &
 		
 		
-		
-		Xvnc :"$vncDisplay" -depth 16 -geometry "$desktopEnvironmentGeometry" -localhost -rfbport "$vncPort" -rfbauth "$vncPasswdFile" &
+		export XvncCommand="Xvnc"
+		type Xtigervnc >/dev/null 2>&1 && export XvncCommand="Xtigervnc"
+		"$XvncCommand" :"$vncDisplay" -depth 16 -geometry "$desktopEnvironmentGeometry" -localhost -rfbport "$vncPort" -rfbauth "$vncPasswdFile" &
 		echo $! > "$vncPIDfile"
 		
 		export DISPLAY=:"$vncDisplay"
