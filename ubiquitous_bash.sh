@@ -1155,7 +1155,8 @@ _proxyTor_direct() {
 	#torsocks nc -q 96 "$proxyTargetHost" "$proxyTargetPort"
 	#torsocks nc -q -1 "$proxyTargetHost" "$proxyTargetPort"
 	#torsocks nc "$proxyTargetHost" "$proxyTargetPort"
-	torsocks socat - TCP:"$proxyTargetHost":"$proxyTargetPort"
+	#torsocks socat - TCP:"$proxyTargetHost":"$proxyTargetPort"
+	socat - SOCKS4A:localhost:"$proxyTargetHost":"$proxyTargetPort",socksport=9050
 }
 
 #Launches proxy if port at hostname is open.
