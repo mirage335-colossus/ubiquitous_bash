@@ -9,10 +9,10 @@ _here_ssh_config() {
 Host *-$netName*
 	Compression yes
 	ExitOnForwardFailure yes
-	ConnectTimeout 72
-	ConnectionAttempts 1
-	ServerAliveInterval 5
-	ServerAliveCountMax 5
+	ConnectTimeout 36
+	ConnectionAttempts 3
+	ServerAliveInterval 6
+	ServerAliveCountMax 18
 	#PubkeyAuthentication yes
 	#PasswordAuthentication no
 	StrictHostKeyChecking no

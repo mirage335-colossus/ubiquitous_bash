@@ -1982,6 +1982,8 @@ _testProxyRouter_sequence() {
 }
 
 _testProxyRouter() {
+	_getDep socat
+	
 	_getDep nc
 	_getDep nmap
 	
@@ -2003,7 +2005,8 @@ _proxy_direct() {
 	
 	#nc -q 96 "$proxyTargetHost" "$proxyTargetPort"
 	#nc -q -1 "$proxyTargetHost" "$proxyTargetPort"
-	nc "$proxyTargetHost" "$proxyTargetPort" 2> /dev/null
+	#nc "$proxyTargetHost" "$proxyTargetPort" 2> /dev/null
+	socat - TCP:"$proxyTargetHost":"$proxyTargetPort" 2> /dev/null
 }
 
 #Launches proxy if port at hostname is open.
