@@ -33,8 +33,8 @@ _detect_x11_displays() {
 
 _detect_x11() {
 	
-	[[ "$destination_DISPLAY" != "" ]] && return 0
-	[[ "$destination_AUTH" != "" ]] && return 0
+	[[ "$destination_DISPLAY" != "" ]] && return 1
+	[[ "$destination_AUTH" != "" ]] && return 1
 	
 	export destination_DISPLAY
 	export destination_AUTH
