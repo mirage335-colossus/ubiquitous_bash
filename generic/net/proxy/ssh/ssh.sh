@@ -248,7 +248,7 @@ _x11vnc_operations() {
 	if type x11vnc >/dev/null 2>&1
 	then
 		#-passwdfile cmd:"/bin/cat -"
-		_x11vnc_command -localhost -rfbauth "$vncPasswdFile" -rfbport "$vncPort" -timeout 8 -xkb -display "$destination_DISPLAY" -auth "$HOME"/.Xauthority -noxrecord -noxdamage
+		_x11vnc_command -localhost -rfbauth "$vncPasswdFile" -rfbport "$vncPort" -timeout 16 -xkb -display "$destination_DISPLAY" -auth guess -noxrecord -noxdamage
 		#-noxrecord -noxfixes -noxdamage
 		return 0
 	fi
@@ -414,10 +414,28 @@ _push_vnc_sequence() {
 	_waitPort localhost "$vncPort"
 	sleep 0.8 #VNC service may not always be ready when port is up.
 	
-	cat "$vncPasswdFile".pln | _vnc_ssh -R "$vncPort":localhost:"$vncPort" "$@" 'env vncPort='"$vncPort"' destination_DISPLAY='"$DISPLAY"' '"$safeTmpSSH"/cautossh' _vncviewer'
+	if cat "$vncPasswdFile".pln | _vnc_ssh -R "$vncPort":localhost:"$vncPort" "$@" 'env vncPort='"$vncPort"' destination_DISPLAY='"$DISPLAY"' '"$safeTmpSSH"/cautossh' _vncviewer'
+	then
+		_stop_safeTmp_ssh "$@"
+		_stop
+	fi
+	
+	sleep 3
+	if cat "$vncPasswdFile".pln | _vnc_ssh -R "$vncPort":localhost:"$vncPort" "$@" 'env vncPort='"$vncPort"' destination_DISPLAY='"$DISPLAY"' '"$safeTmpSSH"/cautossh' _vncviewer'
+	then
+		_stop_safeTmp_ssh "$@"
+		_stop
+	fi
+	
+	sleep 9
+	if cat "$vncPasswdFile".pln | _vnc_ssh -R "$vncPort":localhost:"$vncPort" "$@" 'env vncPort='"$vncPort"' destination_DISPLAY='"$DISPLAY"' '"$safeTmpSSH"/cautossh' _vncviewer'
+	then
+		_stop_safeTmp_ssh "$@"
+		_stop
+	fi
 	
 	_stop_safeTmp_ssh "$@"
-	_stop
+	_stop 1
 }
 
 _push_vnc() {

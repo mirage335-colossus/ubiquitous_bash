@@ -1466,7 +1466,7 @@ _x11vnc_operations() {
 	if type x11vnc >/dev/null 2>&1
 	then
 		#-passwdfile cmd:"/bin/cat -"
-		_x11vnc_command -localhost -rfbauth "$vncPasswdFile" -rfbport "$vncPort" -timeout 8 -xkb -display "$destination_DISPLAY" -auth "$HOME"/.Xauthority -noxrecord -noxdamage
+		_x11vnc_command -localhost -rfbauth "$vncPasswdFile" -rfbport "$vncPort" -timeout 16 -xkb -display "$destination_DISPLAY" -auth guess -noxrecord -noxdamage
 		#-noxrecord -noxfixes -noxdamage
 		return 0
 	fi
@@ -1632,10 +1632,28 @@ _push_vnc_sequence() {
 	_waitPort localhost "$vncPort"
 	sleep 0.8 #VNC service may not always be ready when port is up.
 	
-	cat "$vncPasswdFile".pln | _vnc_ssh -R "$vncPort":localhost:"$vncPort" "$@" 'env vncPort='"$vncPort"' destination_DISPLAY='"$DISPLAY"' '"$safeTmpSSH"/cautossh' _vncviewer'
+	if cat "$vncPasswdFile".pln | _vnc_ssh -R "$vncPort":localhost:"$vncPort" "$@" 'env vncPort='"$vncPort"' destination_DISPLAY='"$DISPLAY"' '"$safeTmpSSH"/cautossh' _vncviewer'
+	then
+		_stop_safeTmp_ssh "$@"
+		_stop
+	fi
+	
+	sleep 3
+	if cat "$vncPasswdFile".pln | _vnc_ssh -R "$vncPort":localhost:"$vncPort" "$@" 'env vncPort='"$vncPort"' destination_DISPLAY='"$DISPLAY"' '"$safeTmpSSH"/cautossh' _vncviewer'
+	then
+		_stop_safeTmp_ssh "$@"
+		_stop
+	fi
+	
+	sleep 9
+	if cat "$vncPasswdFile".pln | _vnc_ssh -R "$vncPort":localhost:"$vncPort" "$@" 'env vncPort='"$vncPort"' destination_DISPLAY='"$DISPLAY"' '"$safeTmpSSH"/cautossh' _vncviewer'
+	then
+		_stop_safeTmp_ssh "$@"
+		_stop
+	fi
 	
 	_stop_safeTmp_ssh "$@"
-	_stop
+	_stop 1
 }
 
 _push_vnc() {
@@ -2158,48 +2176,78 @@ _permit_x11() {
 	"$@"
 }
 
-_detect_x11() {
-	[[ "$destination_DISPLAY" != "" ]] && return 0
-	
-	if _permit_x11 env DISPLAY=$DISPLAY xset -q
-	then
-		export destination_DISPLAY="$DISPLAY"
-		return 0
-	fi
-	
-	if _permit_x11 env DISPLAY=:0 xset -q
-	then
-		export destination_DISPLAY=":0"
-		return 0
-	fi
-	
-	if _permit_x11 env DISPLAY=:1 xset -q
-	then
-		export destination_DISPLAY=":1"
-		return 0
-	fi
-	
-	if _permit_x11 env DISPLAY=:10 xset -q
-	then
-		export destination_DISPLAY=":10"
-		return 0
-	fi
-	
-	if _permit_x11 env DISPLAY=:11 xset -q
-	then
-		export destination_DISPLAY=":11"
-		return 0
-	fi
+_detect_x11_displays() {
+	local current_XAUTH
+	[[ "$1" != "" ]] && current_XAUTH="$1"
 	
 	local current_DISPLAY
 	for (( current_DISPLAY = 0 ; current_DISPLAY <= 12 ; current_DISPLAY++ ))
 	do
-		if _permit_x11 env DISPLAY=:$current_DISPLAY xset -q
+		if _permit_x11 env DISPLAY=:"$current_DISPLAY" XAUTHORITY="$current_XAUTH" xset -q > /dev/null 2>&1
 		then
 			export destination_DISPLAY=":""$current_DISPLAY"
 			return 0
 		fi
 	done
+	return 1
+}
+
+_detect_x11() {
+	
+	[[ "$destination_DISPLAY" != "" ]] && return 0
+	
+	export destination_DISPLAY
+	
+	if _permit_x11 env DISPLAY=$DISPLAY xset -q > /dev/null 2>&1
+	then
+		export destination_DISPLAY="$DISPLAY"
+		return 0
+	fi
+	
+	if _permit_x11 env DISPLAY=:0 xset -q > /dev/null 2>&1
+	then
+		export destination_DISPLAY=":0"
+		return 0
+	fi
+	
+	if _permit_x11 env DISPLAY=:1 xset -q > /dev/null 2>&1
+	then
+		export destination_DISPLAY=":1"
+		return 0
+	fi
+	
+	if _permit_x11 env DISPLAY=:10 xset -q > /dev/null 2>&1
+	then
+		export destination_DISPLAY=":10"
+		return 0
+	fi
+	
+	if _permit_x11 env DISPLAY=:11 xset -q > /dev/null 2>&1
+	then
+		export destination_DISPLAY=":11"
+		return 0
+	fi
+	
+	local current_XAUTH
+	
+	#current_XAUTH=""
+	#_detect_x11_displays
+	
+	current_XAUTH="$XAUTHORITY"
+	_detect_x11_displays "$current_XAUTH"
+	
+	local destination_XAUTH_given
+	destination_XAUTH_given="$HOME"/.Xauthority
+	[[ -e "$destination_XAUTH_given" ]] && current_XAUTH="$destination_XAUTH_given" && _detect_x11_displays "$current_XAUTH" && return 0
+	
+	local destination_XAUTH_x11vnc
+	_wantDep x11vnc && destination_XAUTH_x11vnc=$(x11vnc -findauth)
+	[[ -e "$destination_XAUTH_x11vnc" ]] && current_XAUTH="$destination_XAUTH_x11vnc" && _detect_x11_displays "$current_XAUTH" && return 0
+	
+	local destination_XAUTH_ps
+	destination_XAUTH_ps=$(ps -eo args -fp $(pgrep Xorg | head -n 1) 2>/dev/null | tail -n+2 | sort | sed 's/.*X.*\-auth\ \(.*\)/\1/' | sed 's/\ \-.*//g')
+	[[ -e "$destination_XAUTH_ps" ]] && current_XAUTH="$destination_XAUTH_ps" && _detect_x11_displays "$current_XAUTH" && return 0
+	
 	
 	export destination_DISPLAY=":0"
 	return 1
