@@ -197,6 +197,7 @@ _vncpasswd() {
 _vncviewer_operations() {
 	_detect_x11
 	export DISPLAY="$destination_DISPLAY"
+	export XAUTHORITY="$destination_AUTH"
 	
 	#TigerVNC
 	if vncviewer --help 2>&1 | grep 'PasswordFile   \- Password file for VNC authentication (default\=)' >/dev/null 2>&1
@@ -243,6 +244,8 @@ _x11vnc_command() {
 _x11vnc_operations() {
 	_detect_x11
 	export DISPLAY="$destination_DISPLAY"
+	export XAUTHORITY="$destination_AUTH"
+	
 	
 	#x11vnc
 	if type x11vnc >/dev/null 2>&1
