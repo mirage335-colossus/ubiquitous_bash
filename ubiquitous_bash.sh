@@ -1466,7 +1466,7 @@ _x11vnc_operations() {
 	if type x11vnc >/dev/null 2>&1
 	then
 		#-passwdfile cmd:"/bin/cat -"
-		_x11vnc_command -localhost -rfbauth "$vncPasswdFile" -rfbport "$vncPort" -timeout 16 -xkb -display "$destination_DISPLAY" -auth guess -noxrecord -noxdamage
+		_x11vnc_command -localhost -rfbauth "$vncPasswdFile" -rfbport "$vncPort" -timeout 16 -xkb -display "$destination_DISPLAY" -auth "$destination_AUTH" -noxrecord -noxdamage
 		#-noxrecord -noxfixes -noxdamage
 		return 0
 	fi
@@ -1607,8 +1607,34 @@ _vnc_sequence() {
 	cat "$vncPasswdFile".pln | _vnc_ssh -L "$vncPort":localhost:"$vncPort" "$@" 'env vncPort='"$vncPort"' '"$safeTmpSSH"/cautossh' _x11vnc' &
 	
 	_waitPort localhost "$vncPort"
-	sleep 0.8 #VNC service may not always be ready when port is up.
 	
+	#VNC service may not always be ready when port is up.
+	
+	sleep 0.8
+	if ! _checkPort localhost "$vncPort"
+	then
+		stty echo > /dev/null 2>&1
+		_stop_safeTmp_ssh "$@"
+		_stop
+	fi
+	cat "$vncPasswdFile".pln | bash -c 'env vncPort='"$vncPort"' destination_DISPLAY='"$DISPLAY"' '"$scriptAbsoluteLocation"' _vncviewer'
+	
+	sleep 3
+	if ! _checkPort localhost "$vncPort"
+	then
+		stty echo > /dev/null 2>&1
+		_stop_safeTmp_ssh "$@"
+		_stop
+	fi
+	cat "$vncPasswdFile".pln | bash -c 'env vncPort='"$vncPort"' destination_DISPLAY='"$DISPLAY"' '"$scriptAbsoluteLocation"' _vncviewer'
+	
+	sleep 9
+	if ! _checkPort localhost "$vncPort"
+	then
+		stty echo > /dev/null 2>&1
+		_stop_safeTmp_ssh "$@"
+		_stop
+	fi
 	cat "$vncPasswdFile".pln | bash -c 'env vncPort='"$vncPort"' destination_DISPLAY='"$DISPLAY"' '"$scriptAbsoluteLocation"' _vncviewer'
 	
 	stty echo > /dev/null 2>&1
@@ -1630,27 +1656,35 @@ _push_vnc_sequence() {
 	#-noxrecord -noxfixes -noxdamage
 	
 	_waitPort localhost "$vncPort"
-	sleep 0.8 #VNC service may not always be ready when port is up.
 	
-	if cat "$vncPasswdFile".pln | _vnc_ssh -R "$vncPort":localhost:"$vncPort" "$@" 'env vncPort='"$vncPort"' destination_DISPLAY='"$DISPLAY"' '"$safeTmpSSH"/cautossh' _vncviewer'
+	#VNC service may not always be ready when port is up.
+	
+	sleep 0.8
+	if ! _checkPort localhost "$vncPort"
 	then
+		stty echo > /dev/null 2>&1
 		_stop_safeTmp_ssh "$@"
 		_stop
 	fi
+	cat "$vncPasswdFile".pln | bash -c 'env vncPort='"$vncPort"' destination_DISPLAY='"$DISPLAY"' '"$scriptAbsoluteLocation"' _vncviewer'
 	
 	sleep 3
-	if cat "$vncPasswdFile".pln | _vnc_ssh -R "$vncPort":localhost:"$vncPort" "$@" 'env vncPort='"$vncPort"' destination_DISPLAY='"$DISPLAY"' '"$safeTmpSSH"/cautossh' _vncviewer'
+	if ! _checkPort localhost "$vncPort"
 	then
+		stty echo > /dev/null 2>&1
 		_stop_safeTmp_ssh "$@"
 		_stop
 	fi
+	cat "$vncPasswdFile".pln | bash -c 'env vncPort='"$vncPort"' destination_DISPLAY='"$DISPLAY"' '"$scriptAbsoluteLocation"' _vncviewer'
 	
 	sleep 9
-	if cat "$vncPasswdFile".pln | _vnc_ssh -R "$vncPort":localhost:"$vncPort" "$@" 'env vncPort='"$vncPort"' destination_DISPLAY='"$DISPLAY"' '"$safeTmpSSH"/cautossh' _vncviewer'
+	if ! _checkPort localhost "$vncPort"
 	then
+		stty echo > /dev/null 2>&1
 		_stop_safeTmp_ssh "$@"
 		_stop
 	fi
+	cat "$vncPasswdFile".pln | bash -c 'env vncPort='"$vncPort"' destination_DISPLAY='"$DISPLAY"' '"$scriptAbsoluteLocation"' _vncviewer'
 	
 	_stop_safeTmp_ssh "$@"
 	_stop 1
@@ -2185,6 +2219,7 @@ _detect_x11_displays() {
 	do
 		if _permit_x11 env DISPLAY=:"$current_DISPLAY" XAUTHORITY="$current_XAUTH" xset -q > /dev/null 2>&1
 		then
+			export destination_AUTH="$currentAUTH"
 			export destination_DISPLAY=":""$current_DISPLAY"
 			return 0
 		fi
@@ -2195,8 +2230,10 @@ _detect_x11_displays() {
 _detect_x11() {
 	
 	[[ "$destination_DISPLAY" != "" ]] && return 0
+	[[ "$destination_AUTH" != "" ]] && return 0
 	
 	export destination_DISPLAY
+	export destination_AUTH
 	
 	if _permit_x11 env DISPLAY=$DISPLAY xset -q > /dev/null 2>&1
 	then
@@ -2228,27 +2265,23 @@ _detect_x11() {
 		return 0
 	fi
 	
-	local current_XAUTH
+	#destination_XAUTH=""
+	#_detect_x11_displays "$destination_XAUTH" && return 0
 	
-	#current_XAUTH=""
-	#_detect_x11_displays
+	destination_XAUTH="$XAUTHORITY"
+	_detect_x11_displays "$destination_XAUTH" && return 0
 	
-	current_XAUTH="$XAUTHORITY"
-	_detect_x11_displays "$current_XAUTH"
-	
-	local destination_XAUTH_given
-	destination_XAUTH_given="$HOME"/.Xauthority
-	[[ -e "$destination_XAUTH_given" ]] && current_XAUTH="$destination_XAUTH_given" && _detect_x11_displays "$current_XAUTH" && return 0
+	destination_XAUTH="$HOME"/.Xauthority
+	[[ -e "$destination_XAUTH" ]] && _detect_x11_displays "$destination_XAUTH" && return 0
 	
 	local destination_XAUTH_x11vnc
-	_wantDep x11vnc && destination_XAUTH_x11vnc=$(x11vnc -findauth)
-	[[ -e "$destination_XAUTH_x11vnc" ]] && current_XAUTH="$destination_XAUTH_x11vnc" && _detect_x11_displays "$current_XAUTH" && return 0
+	_wantDep x11vnc && export destination_DISPLAY=$(x11vnc -findauth -finddpy | cut -f1 -d\, | cut -f2- -d\=) &&  destination_XAUTH_x11vnc=$(x11vnc -display "$destination_DISPLAY" -findauth | cut -f2- -d\=)
+	[[ -e "$destination_XAUTH_x11vnc" ]] && export destination_AUTH="$destination_XAUTH_x11vnc" && return 0
 	
-	local destination_XAUTH_ps
-	destination_XAUTH_ps=$(ps -eo args -fp $(pgrep Xorg | head -n 1) 2>/dev/null | tail -n+2 | sort | sed 's/.*X.*\-auth\ \(.*\)/\1/' | sed 's/\ \-.*//g')
-	[[ -e "$destination_XAUTH_ps" ]] && current_XAUTH="$destination_XAUTH_ps" && _detect_x11_displays "$current_XAUTH" && return 0
+	destination_XAUTH=$(ps -eo args -fp $(pgrep Xorg | head -n 1) 2>/dev/null | tail -n+2 | sort | sed 's/.*X.*\-auth\ \(.*\)/\1/' | sed 's/\ \-.*//g')
+	[[ -e "$destination_XAUTH" ]] && _detect_x11_displays "$destination_XAUTH" && return 0
 	
-	
+	export destination_AUTH=""
 	export destination_DISPLAY=":0"
 	return 1
 }

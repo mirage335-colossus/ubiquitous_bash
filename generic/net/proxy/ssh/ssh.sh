@@ -248,7 +248,7 @@ _x11vnc_operations() {
 	if type x11vnc >/dev/null 2>&1
 	then
 		#-passwdfile cmd:"/bin/cat -"
-		_x11vnc_command -localhost -rfbauth "$vncPasswdFile" -rfbport "$vncPort" -timeout 16 -xkb -display "$destination_DISPLAY" -auth guess -noxrecord -noxdamage
+		_x11vnc_command -localhost -rfbauth "$vncPasswdFile" -rfbport "$vncPort" -timeout 16 -xkb -display "$destination_DISPLAY" -auth "$destination_AUTH" -noxrecord -noxdamage
 		#-noxrecord -noxfixes -noxdamage
 		return 0
 	fi
@@ -390,26 +390,34 @@ _vnc_sequence() {
 	
 	_waitPort localhost "$vncPort"
 	
-	sleep 0.8 #VNC service may not always be ready when port is up.
-	if cat "$vncPasswdFile".pln | bash -c 'env vncPort='"$vncPort"' destination_DISPLAY='"$DISPLAY"' '"$scriptAbsoluteLocation"' _vncviewer'
+	#VNC service may not always be ready when port is up.
+	
+	sleep 0.8
+	if ! _checkPort localhost "$vncPort"
 	then
+		stty echo > /dev/null 2>&1
 		_stop_safeTmp_ssh "$@"
 		_stop
 	fi
+	cat "$vncPasswdFile".pln | bash -c 'env vncPort='"$vncPort"' destination_DISPLAY='"$DISPLAY"' '"$scriptAbsoluteLocation"' _vncviewer'
 	
 	sleep 3
-	if cat "$vncPasswdFile".pln | bash -c 'env vncPort='"$vncPort"' destination_DISPLAY='"$DISPLAY"' '"$scriptAbsoluteLocation"' _vncviewer'
+	if ! _checkPort localhost "$vncPort"
 	then
+		stty echo > /dev/null 2>&1
 		_stop_safeTmp_ssh "$@"
 		_stop
 	fi
+	cat "$vncPasswdFile".pln | bash -c 'env vncPort='"$vncPort"' destination_DISPLAY='"$DISPLAY"' '"$scriptAbsoluteLocation"' _vncviewer'
 	
 	sleep 9
-	if cat "$vncPasswdFile".pln | bash -c 'env vncPort='"$vncPort"' destination_DISPLAY='"$DISPLAY"' '"$scriptAbsoluteLocation"' _vncviewer'
+	if ! _checkPort localhost "$vncPort"
 	then
+		stty echo > /dev/null 2>&1
 		_stop_safeTmp_ssh "$@"
 		_stop
 	fi
+	cat "$vncPasswdFile".pln | bash -c 'env vncPort='"$vncPort"' destination_DISPLAY='"$DISPLAY"' '"$scriptAbsoluteLocation"' _vncviewer'
 	
 	stty echo > /dev/null 2>&1
 	
@@ -431,26 +439,34 @@ _push_vnc_sequence() {
 	
 	_waitPort localhost "$vncPort"
 	
-	sleep 0.8 #VNC service may not always be ready when port is up.
-	if cat "$vncPasswdFile".pln | _vnc_ssh -R "$vncPort":localhost:"$vncPort" "$@" 'env vncPort='"$vncPort"' destination_DISPLAY='"$DISPLAY"' '"$safeTmpSSH"/cautossh' _vncviewer'
+	#VNC service may not always be ready when port is up.
+	
+	sleep 0.8
+	if ! _checkPort localhost "$vncPort"
 	then
+		stty echo > /dev/null 2>&1
 		_stop_safeTmp_ssh "$@"
 		_stop
 	fi
+	cat "$vncPasswdFile".pln | bash -c 'env vncPort='"$vncPort"' destination_DISPLAY='"$DISPLAY"' '"$scriptAbsoluteLocation"' _vncviewer'
 	
 	sleep 3
-	if cat "$vncPasswdFile".pln | _vnc_ssh -R "$vncPort":localhost:"$vncPort" "$@" 'env vncPort='"$vncPort"' destination_DISPLAY='"$DISPLAY"' '"$safeTmpSSH"/cautossh' _vncviewer'
+	if ! _checkPort localhost "$vncPort"
 	then
+		stty echo > /dev/null 2>&1
 		_stop_safeTmp_ssh "$@"
 		_stop
 	fi
+	cat "$vncPasswdFile".pln | bash -c 'env vncPort='"$vncPort"' destination_DISPLAY='"$DISPLAY"' '"$scriptAbsoluteLocation"' _vncviewer'
 	
 	sleep 9
-	if cat "$vncPasswdFile".pln | _vnc_ssh -R "$vncPort":localhost:"$vncPort" "$@" 'env vncPort='"$vncPort"' destination_DISPLAY='"$DISPLAY"' '"$safeTmpSSH"/cautossh' _vncviewer'
+	if ! _checkPort localhost "$vncPort"
 	then
+		stty echo > /dev/null 2>&1
 		_stop_safeTmp_ssh "$@"
 		_stop
 	fi
+	cat "$vncPasswdFile".pln | bash -c 'env vncPort='"$vncPort"' destination_DISPLAY='"$DISPLAY"' '"$scriptAbsoluteLocation"' _vncviewer'
 	
 	_stop_safeTmp_ssh "$@"
 	_stop 1
