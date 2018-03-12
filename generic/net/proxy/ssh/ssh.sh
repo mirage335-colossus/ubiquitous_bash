@@ -389,9 +389,27 @@ _vnc_sequence() {
 	cat "$vncPasswdFile".pln | _vnc_ssh -L "$vncPort":localhost:"$vncPort" "$@" 'env vncPort='"$vncPort"' '"$safeTmpSSH"/cautossh' _x11vnc' &
 	
 	_waitPort localhost "$vncPort"
-	sleep 0.8 #VNC service may not always be ready when port is up.
 	
-	cat "$vncPasswdFile".pln | bash -c 'env vncPort='"$vncPort"' destination_DISPLAY='"$DISPLAY"' '"$scriptAbsoluteLocation"' _vncviewer'
+	sleep 0.8 #VNC service may not always be ready when port is up.
+	if cat "$vncPasswdFile".pln | bash -c 'env vncPort='"$vncPort"' destination_DISPLAY='"$DISPLAY"' '"$scriptAbsoluteLocation"' _vncviewer'
+	then
+		_stop_safeTmp_ssh "$@"
+		_stop
+	fi
+	
+	sleep 3
+	if cat "$vncPasswdFile".pln | bash -c 'env vncPort='"$vncPort"' destination_DISPLAY='"$DISPLAY"' '"$scriptAbsoluteLocation"' _vncviewer'
+	then
+		_stop_safeTmp_ssh "$@"
+		_stop
+	fi
+	
+	sleep 9
+	if cat "$vncPasswdFile".pln | bash -c 'env vncPort='"$vncPort"' destination_DISPLAY='"$DISPLAY"' '"$scriptAbsoluteLocation"' _vncviewer'
+	then
+		_stop_safeTmp_ssh "$@"
+		_stop
+	fi
 	
 	stty echo > /dev/null 2>&1
 	
@@ -412,8 +430,8 @@ _push_vnc_sequence() {
 	#-noxrecord -noxfixes -noxdamage
 	
 	_waitPort localhost "$vncPort"
-	sleep 0.8 #VNC service may not always be ready when port is up.
 	
+	sleep 0.8 #VNC service may not always be ready when port is up.
 	if cat "$vncPasswdFile".pln | _vnc_ssh -R "$vncPort":localhost:"$vncPort" "$@" 'env vncPort='"$vncPort"' destination_DISPLAY='"$DISPLAY"' '"$safeTmpSSH"/cautossh' _vncviewer'
 	then
 		_stop_safeTmp_ssh "$@"
