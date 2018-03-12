@@ -426,7 +426,6 @@ _vnc_sequence() {
 	cat "$vncPasswdFile".pln | bash -c 'env vncPort='"$vncPort"' destination_DISPLAY='"$DISPLAY"' '"$scriptAbsoluteLocation"' _vncviewer'
 	
 	stty echo > /dev/null 2>&1
-	
 	_stop_safeTmp_ssh "$@"
 	_stop
 }
@@ -454,7 +453,7 @@ _push_vnc_sequence() {
 		_stop_safeTmp_ssh "$@"
 		_stop
 	fi
-	cat "$vncPasswdFile".pln | bash -c 'env vncPort='"$vncPort"' destination_DISPLAY='"$DISPLAY"' '"$scriptAbsoluteLocation"' _vncviewer'
+	cat "$vncPasswdFile".pln | _vnc_ssh -R "$vncPort":localhost:"$vncPort" "$@" 'env vncPort='"$vncPort"' destination_DISPLAY='"$DISPLAY"' '"$safeTmpSSH"/cautossh' _vncviewer'
 	
 	sleep 3
 	if ! _checkPort localhost "$vncPort"
@@ -463,7 +462,7 @@ _push_vnc_sequence() {
 		_stop_safeTmp_ssh "$@"
 		_stop
 	fi
-	cat "$vncPasswdFile".pln | bash -c 'env vncPort='"$vncPort"' destination_DISPLAY='"$DISPLAY"' '"$scriptAbsoluteLocation"' _vncviewer'
+	cat "$vncPasswdFile".pln | _vnc_ssh -R "$vncPort":localhost:"$vncPort" "$@" 'env vncPort='"$vncPort"' destination_DISPLAY='"$DISPLAY"' '"$safeTmpSSH"/cautossh' _vncviewer'
 	
 	sleep 9
 	if ! _checkPort localhost "$vncPort"
@@ -472,8 +471,9 @@ _push_vnc_sequence() {
 		_stop_safeTmp_ssh "$@"
 		_stop
 	fi
-	cat "$vncPasswdFile".pln | bash -c 'env vncPort='"$vncPort"' destination_DISPLAY='"$DISPLAY"' '"$scriptAbsoluteLocation"' _vncviewer'
+	cat "$vncPasswdFile".pln | _vnc_ssh -R "$vncPort":localhost:"$vncPort" "$@" 'env vncPort='"$vncPort"' destination_DISPLAY='"$DISPLAY"' '"$safeTmpSSH"/cautossh' _vncviewer'
 	
+	stty echo > /dev/null 2>&1
 	_stop_safeTmp_ssh "$@"
 	_stop 1
 }
