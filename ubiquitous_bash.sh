@@ -2263,35 +2263,35 @@ _detect_x11() {
 	if _permit_x11 env DISPLAY=$DISPLAY xset -q > /dev/null 2>&1
 	then
 		export destination_DISPLAY="$DISPLAY"
-		export destination_AUTH="$DISPLAY"
+		export destination_AUTH="$XAUTHORITY"
 		return 0
 	fi
 	
 	if _permit_x11 env DISPLAY=:0 xset -q > /dev/null 2>&1
 	then
 		export destination_DISPLAY=":0"
-		export destination_AUTH="$DISPLAY"
+		export destination_AUTH="$XAUTHORITY"
 		return 0
 	fi
 	
 	if _permit_x11 env DISPLAY=:1 xset -q > /dev/null 2>&1
 	then
 		export destination_DISPLAY=":1"
-		export destination_AUTH="$DISPLAY"
+		export destination_AUTH="$XAUTHORITY"
 		return 0
 	fi
 	
 	if _permit_x11 env DISPLAY=:10 xset -q > /dev/null 2>&1
 	then
 		export destination_DISPLAY=":10"
-		export destination_AUTH="$DISPLAY"
+		export destination_AUTH="$XAUTHORITY"
 		return 0
 	fi
 	
 	if _permit_x11 env DISPLAY=:11 xset -q > /dev/null 2>&1
 	then
 		export destination_DISPLAY=":11"
-		export destination_AUTH="$DISPLAY"
+		export destination_AUTH="$XAUTHORITY"
 		return 0
 	fi
 	
