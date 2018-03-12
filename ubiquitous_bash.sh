@@ -1671,7 +1671,7 @@ _push_vnc_sequence() {
 		_stop_safeTmp_ssh "$@"
 		_stop
 	fi
-	cat "$vncPasswdFile".pln | _vnc_ssh -R "$vncPort":localhost:"$vncPort" "$@" 'env vncPort='"$vncPort"' destination_DISPLAY='"$DISPLAY"' '"$safeTmpSSH"/cautossh' _vncviewer'
+	cat "$vncPasswdFile".pln | _vnc_ssh -R "$vncPort":localhost:"$vncPort" "$@" 'env vncPort='"$vncPort"' '"$safeTmpSSH"/cautossh' _vncviewer'
 	
 	sleep 3
 	if ! _checkPort localhost "$vncPort"
@@ -1680,7 +1680,7 @@ _push_vnc_sequence() {
 		_stop_safeTmp_ssh "$@"
 		_stop
 	fi
-	cat "$vncPasswdFile".pln | _vnc_ssh -R "$vncPort":localhost:"$vncPort" "$@" 'env vncPort='"$vncPort"' destination_DISPLAY='"$DISPLAY"' '"$safeTmpSSH"/cautossh' _vncviewer'
+	cat "$vncPasswdFile".pln | _vnc_ssh -R "$vncPort":localhost:"$vncPort" "$@" 'env vncPort='"$vncPort"' '"$safeTmpSSH"/cautossh' _vncviewer'
 	
 	sleep 9
 	if ! _checkPort localhost "$vncPort"
@@ -1689,7 +1689,7 @@ _push_vnc_sequence() {
 		_stop_safeTmp_ssh "$@"
 		_stop
 	fi
-	cat "$vncPasswdFile".pln | _vnc_ssh -R "$vncPort":localhost:"$vncPort" "$@" 'env vncPort='"$vncPort"' destination_DISPLAY='"$DISPLAY"' '"$safeTmpSSH"/cautossh' _vncviewer'
+	cat "$vncPasswdFile".pln | _vnc_ssh -R "$vncPort":localhost:"$vncPort" "$@" 'env vncPort='"$vncPort"' '"$safeTmpSSH"/cautossh' _vncviewer'
 	
 	stty echo > /dev/null 2>&1
 	_stop_safeTmp_ssh "$@"
@@ -2263,30 +2263,35 @@ _detect_x11() {
 	if _permit_x11 env DISPLAY=$DISPLAY xset -q > /dev/null 2>&1
 	then
 		export destination_DISPLAY="$DISPLAY"
+		export destination_AUTH="$DISPLAY"
 		return 0
 	fi
 	
 	if _permit_x11 env DISPLAY=:0 xset -q > /dev/null 2>&1
 	then
 		export destination_DISPLAY=":0"
+		export destination_AUTH="$DISPLAY"
 		return 0
 	fi
 	
 	if _permit_x11 env DISPLAY=:1 xset -q > /dev/null 2>&1
 	then
 		export destination_DISPLAY=":1"
+		export destination_AUTH="$DISPLAY"
 		return 0
 	fi
 	
 	if _permit_x11 env DISPLAY=:10 xset -q > /dev/null 2>&1
 	then
 		export destination_DISPLAY=":10"
+		export destination_AUTH="$DISPLAY"
 		return 0
 	fi
 	
 	if _permit_x11 env DISPLAY=:11 xset -q > /dev/null 2>&1
 	then
 		export destination_DISPLAY=":11"
+		export destination_AUTH="$DISPLAY"
 		return 0
 	fi
 	
