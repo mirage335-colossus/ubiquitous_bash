@@ -21,6 +21,15 @@ _gitInfo() {
 	true
 }
 
+_gitRemote() {
+	if git config --get remote.origin.url > /dev/null 2>&1
+	then
+		echo -n "git clone "
+		git config --get remote.origin.url
+		return 0
+	fi
+	_gitBare
+}
 
 _gitNew() {
 	git init

@@ -1246,7 +1246,7 @@ _testRemoteSSH() {
 	_start
 	_start_safeTmp_ssh "$@"
 	
-	_ssh "$@" '"$safeTmpSSH"'/cautossh' _test'
+	_ssh "$@" "$safeTmpSSH"'/cautossh _test'
 	
 	_stop_safeTmp_ssh "$@"
 	_stop
@@ -6531,6 +6531,15 @@ _gitInfo() {
 	true
 }
 
+_gitRemote() {
+	if git config --get remote.origin.url > /dev/null 2>&1
+	then
+		echo -n "git clone "
+		git config --get remote.origin.url
+		return 0
+	fi
+	_gitBare
+}
 
 _gitNew() {
 	git init

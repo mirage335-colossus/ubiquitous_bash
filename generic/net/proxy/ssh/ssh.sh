@@ -28,7 +28,7 @@ _testRemoteSSH() {
 	_start
 	_start_safeTmp_ssh "$@"
 	
-	_ssh "$@" '"$safeTmpSSH"'/cautossh' _test'
+	_ssh "$@" "$safeTmpSSH"'/cautossh _test'
 	
 	_stop_safeTmp_ssh "$@"
 	_stop
