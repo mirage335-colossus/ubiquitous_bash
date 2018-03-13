@@ -1262,7 +1262,7 @@ _ssh_self() {
 	_stop
 }
 
-_setupUbiquitous_ssh() {
+_ssh_setupUbiquitous() {
 	_start
 	_start_safeTmp_ssh "$@"
 	
@@ -1272,7 +1272,7 @@ _setupUbiquitous_ssh() {
 	_stop
 }
 
-_setupUbiquitous_ssh_nonet() {
+_ssh_setupUbiquitous_nonet() {
 	_start
 	_start_safeTmp_ssh "$@"
 	
