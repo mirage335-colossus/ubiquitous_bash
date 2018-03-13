@@ -1242,6 +1242,16 @@ _testProxySSH() {
 	fi
 }
 
+_testRemoteSSH() {
+	_start
+	_start_safeTmp_ssh
+	
+	_ssh "$@" '"$safeTmpSSH"'/cautossh' _test'
+	
+	_stop_safeTmp_ssh
+	_stop
+}
+
 #Enters remote server at hostname, by SSH, sets up a tunnel, checks tunnel for another SSH server.
 #"$1" == host short name
 #"$2" == port
