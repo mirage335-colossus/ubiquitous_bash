@@ -34,6 +34,36 @@ _testRemoteSSH() {
 	_stop
 }
 
+_ssh_self() {
+	_start
+	_start_safeTmp_ssh "$1"
+	
+	_ssh "$1" "$safeTmpSSH"'/cautossh '"$@"
+	
+	_stop_safeTmp_ssh "$1"
+	_stop
+}
+
+_setupUbiquitous_ssh() {
+	_start
+	_start_safeTmp_ssh "$@"
+	
+	_ssh "$@" "$safeTmpSSH"'/cautossh _setupUbiquitous'
+	
+	_stop_safeTmp_ssh "$@"
+	_stop
+}
+
+_setupUbiquitous_ssh_nonet() {
+	_start
+	_start_safeTmp_ssh "$@"
+	
+	_ssh "$@" "$safeTmpSSH"'/cautossh _setupUbiquitous_nonet'
+	
+	_stop_safeTmp_ssh "$@"
+	_stop
+}
+
 #Enters remote server at hostname, by SSH, sets up a tunnel, checks tunnel for another SSH server.
 #"$1" == host short name
 #"$2" == port
