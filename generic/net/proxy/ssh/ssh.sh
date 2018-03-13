@@ -26,11 +26,11 @@ _testProxySSH() {
 
 _testRemoteSSH() {
 	_start
-	_start_safeTmp_ssh
+	_start_safeTmp_ssh "$@"
 	
 	_ssh "$@" '"$safeTmpSSH"'/cautossh' _test'
 	
-	_stop_safeTmp_ssh
+	_stop_safeTmp_ssh "$@"
 	_stop
 }
 
@@ -345,9 +345,23 @@ _vncserver_operations() {
 		echo
 		echo '*****TightVNC Server Detected'
 		echo
-		vncserver :"$vncDisplay" -depth 16 -geometry "$desktopEnvironmentGeometry" -nevershared -dontdisconnect -localhost -rfbport "$vncPort" -rfbauth "$vncPasswdFile" -rfbwait 12000
+		
+		#TightVNC may refuse to use an aribtary password file if system default does not exist.
+		[[ ! -e "$HOME"/.vnc/passwd ]] && echo | cat "$vncPasswdFile".pln - "$vncPasswdFile".pln | vncpasswd
+		
+		export XvncCommand="Xvnc"
+		type Xtightvnc >/dev/null 2>&1 && export XvncCommand="Xtightvnc"
+		"$XvncCommand" :"$vncDisplay" -depth 16 -geometry "$desktopEnvironmentGeometry" -nevershared -dontdisconnect -localhost -rfbport "$vncPort" -rfbauth "$vncPasswdFile" -rfbwait 12000 &
+		echo $! > "$vncPIDfile"
 		
 		export DISPLAY=:"$vncDisplay"
+		
+		local currentCount
+		for (( currentCount = 0 ; currentCount < 90 ; currentCount++ ))
+		do
+			xset q >/dev/null 2>&1 && break
+			sleep 1
+		done
 		
 		bash -c "$desktopEnvironmentLaunch" &
 		
