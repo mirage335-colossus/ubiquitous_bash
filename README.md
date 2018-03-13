@@ -90,8 +90,11 @@ In most user environments, the latest git repository code will provide the stron
 
 # Known Issues
 
+* Typical TCP/IP and related software cannot be configured for resilience under packet corruption, heavy packet loss, multi-second latency, or address/ap roaming. A proxy handling these issues through named pipes and tcpwrappers
+https://stackoverflow.com/questions/28643392/bash-scripting-permanent-pipe
+
 * Some ChRoot mounting functions are in fact generic, and should be renamed as such after audit.
-* Nested virtualization has not been specifically tested and documented.
+* Nested virtualization needs further testing and documentation, especially beyond the QEMU.
 * ChRoot close function might have a path to exit true while mounts are still active.
 
 * KWrite under ChRoot may lock up the mounts, preventing _closeChRoot from working. Error messages suggest PulseAudio is not working normally. Nevertheless, cleanup seems to take place through the systemd hook upon shutdown.
@@ -101,9 +104,9 @@ In most user environments, the latest git repository code will provide the stron
 
 * Order of termination does not strictly seem to preserve parent scripts with uncooperative children, when "_daemonAction" is used to terminate all daemon processes. This has the effect of allowing uncooperative children to interfere with logging and stop processes the parent may need to implement in non-emergency situations.
 
-* SSH over Tor through "_proxyTor_direct" will not work as is under MSW/Cygwin hosts. A SOCKS capable version of netcat ("nc") may need to be installed under the Cygwin environment, detected, and used. Also, "curl" as used by "_checkTorPort" will need to directly work with the SOCKS proxy. By contrast, UNIX can support better portability, using "torsocks" in place of parameters specific to variants of "nc" or "curl".
+* SSH over Tor through "_proxyTor_direct" has not been tested as is under MSW/Cygwin hosts. With the adoption of socat instead of netcat, this should be straightforward.
 
-* An error is thrown to standard error upon shutdown in some rare cases. As this is intermittent, the error has not yet been identified. Bug reports welcome.
+* An error has been thrown to standard error upon shutdown in some rare cases. Preventative measures are now believed to be operational, however, as the error is intermittent, bug reports are encouraged.
 	realpath: .../ubiquitous_bash/w_.../.ssh/.../cautossh: No such file or directory
 	find: ‘.../ubiquitous_bash/w_.../.ssh/.../w_...’: No such file or directory
 
