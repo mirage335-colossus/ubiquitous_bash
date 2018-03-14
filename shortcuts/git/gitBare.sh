@@ -24,12 +24,12 @@ _showGitRepoURI() {
 	echo git clone --recursive ssh://"$USER"@"$repoHostname""$repoPort""$bareRepoAbsoluteDir" "$repoName"
 	
 	
-	if [[ "$repoHostname" != "" ]]
-	then
-		clear
-		echo ssh://"$USER"@"$repoHostname""$repoPort""$bareRepoAbsoluteDir"
-		sleep 15
-	fi
+	#if [[ "$repoHostname" != "" ]]
+	#then
+	#	clear
+	#	echo ssh://"$USER"@"$repoHostname""$repoPort""$bareRepoAbsoluteDir"
+	#	sleep 15
+	#fi
 }
 
 _gitBareSequence() {

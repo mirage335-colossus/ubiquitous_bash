@@ -6564,7 +6564,7 @@ _gitInfo() {
 _gitRemote() {
 	if git config --get remote.origin.url > /dev/null 2>&1
 	then
-		echo -n "git clone "
+		echo -n "git clone --recursive "
 		git config --get remote.origin.url
 		return 0
 	fi
@@ -6625,12 +6625,12 @@ _showGitRepoURI() {
 	echo git clone --recursive ssh://"$USER"@"$repoHostname""$repoPort""$bareRepoAbsoluteDir" "$repoName"
 	
 	
-	if [[ "$repoHostname" != "" ]]
-	then
-		clear
-		echo ssh://"$USER"@"$repoHostname""$repoPort""$bareRepoAbsoluteDir"
-		sleep 15
-	fi
+	#if [[ "$repoHostname" != "" ]]
+	#then
+	#	clear
+	#	echo ssh://"$USER"@"$repoHostname""$repoPort""$bareRepoAbsoluteDir"
+	#	sleep 15
+	#fi
 }
 
 _gitBareSequence() {
