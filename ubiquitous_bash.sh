@@ -1386,7 +1386,7 @@ _ssh() {
 }
 
 _rsync() {
-	rsync -e "_ssh" "$@"
+	rsync -e "$scriptAbsoluteLocation"" _ssh" "$@"
 }
 
 _start_safeTmp_ssh() {
