@@ -4,6 +4,7 @@
 export ubiquitiousBashID="uk4uPhB663kVcygT0q"
 
 export sessionid=$(_uid)
+[[ "$sessionid" == "" ]] && exit 1
 export lowsessionid=$(echo -n "$sessionid" | tr A-Z a-z )
 
 #Importing ubiquitous bash into a login shell with "~/.bashrc" is the only known cause for "_getScriptAbsoluteLocation" to return a result such as "/bin/bash".

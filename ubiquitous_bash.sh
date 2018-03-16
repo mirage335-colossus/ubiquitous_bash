@@ -308,7 +308,7 @@ _uid() {
 	local uidLength
 	! [[ -z "$1" ]] && uidLength="$1" || uidLength=18
 	
-	cat /dev/urandom | base64 | tr -dc 'a-zA-Z0-9' | head -c "$uidLength"
+	cat /dev/urandom 2> /dev/null | base64 2> /dev/null | tr -dc 'a-zA-Z0-9' 2> /dev/null | head -c "$uidLength" 2> /dev/null
 }
 
 _permissions_directory_checkForPath() {
@@ -8496,6 +8496,7 @@ _parity_attach() {
 export ubiquitiousBashID="uk4uPhB663kVcygT0q"
 
 export sessionid=$(_uid)
+[[ "$sessionid" == "" ]] && exit 1
 export lowsessionid=$(echo -n "$sessionid" | tr A-Z a-z )
 
 #Importing ubiquitous bash into a login shell with "~/.bashrc" is the only known cause for "_getScriptAbsoluteLocation" to return a result such as "/bin/bash".
