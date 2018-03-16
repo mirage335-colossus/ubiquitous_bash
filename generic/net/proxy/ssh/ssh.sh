@@ -167,6 +167,10 @@ _ssh() {
 	return "$sshExitStatus"
 }
 
+_rsync() {
+	rsync -e "_ssh" "$@"
+}
+
 _start_safeTmp_ssh() {
 	cat "$scriptAbsoluteLocation" | base64 | _ssh -C -o ConnectionAttempts=2 "$@" '
 mkdir -p '"$safeTmpSSH"'
@@ -726,6 +730,10 @@ _setup_ssh() {
 
 _setup_ssh_commands() {
 	find . -name '_ssh' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
+	find . -name '_rsync' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
+	
+	find . -name '_web' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
+	
 	find . -name '_fs' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
 	
 	find . -name '_vnc' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
