@@ -165,6 +165,9 @@ _test() {
 	_tryExec "_testExtra"
 	
 	_tryExec "_testGit"
+	
+	_tryExec "_test_bup"
+	
 	_tryExec "_testX11"
 	
 	_tryExec "_test_virtLocal_X11"

@@ -28,6 +28,8 @@ _compile_bash_deps() {
 		_deps_msw
 		_deps_fakehome
 		
+		_deps_bup
+		
 		_deps_blockchain
 		
 		_deps_proxy
@@ -207,6 +209,8 @@ _compile_bash_shortcuts() {
 	
 	[[ "$enUb_git" == "true" ]] && includeScriptList+=( "shortcuts/git"/git.sh )
 	[[ "$enUb_git" == "true" ]] && includeScriptList+=( "shortcuts/git"/gitBare.sh )
+	
+	[[ "$enUb_bup" == "true" ]] && includeScriptList+=( "shortcuts/bup"/bup.sh )
 	
 	[[ "$enUb_image" == "true" ]] && includeScriptList+=( "shortcuts/mkboot"/here_mkboot.sh )
 	[[ "$enUb_image" == "true" ]] && includeScriptList+=( "shortcuts/mkboot"/mkboot.sh )

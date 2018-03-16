@@ -3,6 +3,7 @@ _init_deps() {
 	
 	export enUb_machineinfo=""
 	export enUb_git=""
+	export enUb_bup=""
 	export enUb_notLean=""
 	export enUb_build=""
 	export enUb_os_x11=""
@@ -31,6 +32,10 @@ _deps_machineinfo() {
 
 _deps_git() {
 	export enUb_git="true"
+}
+
+_deps_bup() {
+	export enUb_bup="true"
 }
 
 _deps_notLean() {

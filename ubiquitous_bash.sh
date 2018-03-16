@@ -6671,6 +6671,36 @@ _gitBare() {
 
 
 
+_test_bup() {
+	! _wantDep bup && echo 'warn: no bup'
+}
+
+_bupNew() {
+	export BUP_DIR="./.bup"
+	
+	[[ -e "$BUP_DIR" ]] && return 1
+	bup init
+}
+
+_bupList() {
+	export BUP_DIR="./.bup"
+	bup ls HEAD
+}
+
+_bupStore() {
+	export BUP_DIR="./.bup"
+	
+	[[ ! -e "$BUP_DIR" ]] && return 1
+	tar -exclude ./.bup -cvf - . | bup split -n HEAD -vv
+}
+
+_bupRetrieve() {
+	export BUP_DIR="./.bup"
+	
+	[[ ! -e "$BUP_DIR" ]] && return 1
+	bup join HEAD | tar -tf -
+}
+
 _here_mkboot_grubcfg() {
 	
 	cat << 'CZXWXcRMTo8EmM8i4d'
@@ -9800,6 +9830,9 @@ _test() {
 	_tryExec "_testExtra"
 	
 	_tryExec "_testGit"
+	
+	_tryExec "_test_bup"
+	
 	_tryExec "_testX11"
 	
 	_tryExec "_test_virtLocal_X11"
@@ -10079,6 +10112,7 @@ _init_deps() {
 	
 	export enUb_machineinfo=""
 	export enUb_git=""
+	export enUb_bup=""
 	export enUb_notLean=""
 	export enUb_build=""
 	export enUb_os_x11=""
@@ -10107,6 +10141,10 @@ _deps_machineinfo() {
 
 _deps_git() {
 	export enUb_git="true"
+}
+
+_deps_bup() {
+	export enUb_bup="true"
 }
 
 _deps_notLean() {
@@ -10314,6 +10352,8 @@ _compile_bash_deps() {
 		_deps_msw
 		_deps_fakehome
 		
+		_deps_bup
+		
 		_deps_blockchain
 		
 		_deps_proxy
@@ -10493,6 +10533,8 @@ _compile_bash_shortcuts() {
 	
 	[[ "$enUb_git" == "true" ]] && includeScriptList+=( "shortcuts/git"/git.sh )
 	[[ "$enUb_git" == "true" ]] && includeScriptList+=( "shortcuts/git"/gitBare.sh )
+	
+	[[ "$enUb_bup" == "true" ]] && includeScriptList+=( "shortcuts/bup"/bup.sh )
 	
 	[[ "$enUb_image" == "true" ]] && includeScriptList+=( "shortcuts/mkboot"/here_mkboot.sh )
 	[[ "$enUb_image" == "true" ]] && includeScriptList+=( "shortcuts/mkboot"/mkboot.sh )
