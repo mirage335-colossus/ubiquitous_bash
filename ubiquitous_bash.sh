@@ -1952,6 +1952,8 @@ _setup_ssh_commands() {
 	
 	find . -name '_web' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
 	
+	find . -name '_backup' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
+	
 	find . -name '_fs' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
 	
 	find . -name '_vnc' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
