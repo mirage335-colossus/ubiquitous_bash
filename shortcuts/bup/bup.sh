@@ -31,5 +31,5 @@ _bupRetrieve() {
 	[[ "$1" != "" ]] && export BUP_SOURCE="$1"
 	
 	[[ ! -e "$BUP_DIR" ]] && return 1
-	bup join HEAD | tar -xf -
+	bup join "$BUP_SOURCE" | tar -xf -
 }
