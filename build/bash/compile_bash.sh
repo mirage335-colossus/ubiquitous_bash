@@ -8,6 +8,9 @@ _compile_bash_deps() {
 		_deps_proxy
 		_deps_proxy_special
 		
+		_deps_git
+		_deps_bup
+		
 		return 0
 	fi
 	
