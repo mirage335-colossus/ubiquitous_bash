@@ -18,7 +18,7 @@ _bupStore() {
 	export BUP_DIR="./.bup"
 	
 	[[ ! -e "$BUP_DIR" ]] && return 1
-	tar -exclude ./.bup -cvf - . | bup split -n HEAD -vv
+	tar --exclude "$BUP_DIR" -cvf - . | bup split -n HEAD -vv
 }
 
 _bupRetrieve() {
