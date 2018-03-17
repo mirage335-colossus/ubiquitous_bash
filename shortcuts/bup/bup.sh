@@ -17,12 +17,18 @@ _bupList() {
 _bupStore() {
 	export BUP_DIR="./.bup"
 	
+	export BUP_DESTINATION="HEAD"
+	[[ "$1" != "" ]] && export BUP_DESTINATION="$1"
+	
 	[[ ! -e "$BUP_DIR" ]] && return 1
-	tar --exclude "$BUP_DIR" -cvf - . | bup split -n HEAD -vv
+	tar --exclude "$BUP_DIR" -cvf - . | bup split -n "$BUP_DESTINATION" -vv
 }
 
 _bupRetrieve() {
 	export BUP_DIR="./.bup"
+	
+	export BUP_SOURCE="HEAD"
+	[[ "$1" != "" ]] && export BUP_SOURCE="$1"
 	
 	[[ ! -e "$BUP_DIR" ]] && return 1
 	bup join HEAD | tar -xf -
