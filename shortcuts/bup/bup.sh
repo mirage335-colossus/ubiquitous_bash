@@ -25,5 +25,5 @@ _bupRetrieve() {
 	export BUP_DIR="./.bup"
 	
 	[[ ! -e "$BUP_DIR" ]] && return 1
-	bup join HEAD | tar -tf -
+	bup join HEAD | tar -xf -
 }
