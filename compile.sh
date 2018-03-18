@@ -1569,6 +1569,11 @@ _bin() {
 	"$@"
 }
 
+#Launch internal functions as commands, and other commands, as root.
+_sudo() {
+	sudo -n "$scriptAbsoluteLocation" _bin "$@"
+}
+
 _true() {
 	true
 }

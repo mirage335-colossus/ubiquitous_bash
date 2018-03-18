@@ -22,6 +22,9 @@ _testProxySSH() {
 	then
 		echo 'TAINT: unsupported vnc!'
 	fi
+	
+	#Desirable for _rsync backup.
+	! _wantDep fakeroot && echo 'warn: fakeroot not found'
 }
 
 _testRemoteSSH() {

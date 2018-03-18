@@ -1240,6 +1240,9 @@ _testProxySSH() {
 	then
 		echo 'TAINT: unsupported vnc!'
 	fi
+	
+	#Desirable for _rsync backup.
+	! _wantDep fakeroot && echo 'warn: fakeroot not found'
 }
 
 _testRemoteSSH() {
@@ -6675,12 +6678,16 @@ _gitBare() {
 
 _test_bup() {
 	! _wantDep bup && echo 'warn: no bup'
+	
+	! man tar | grep '\-\-xattrs' > /dev/null 2>&1 && echo 'warn: tar does not support xattrs'
+	! man tar | grep '\-\-acls' > /dev/null 2>&1 && echo 'warn: tar does not support acls'
 }
 
 _bupNew() {
 	export BUP_DIR="./.bup"
 	
 	[[ -e "$BUP_DIR" ]] && return 1
+	
 	bup init
 }
 
@@ -6688,11 +6695,14 @@ _bupLog() {
 	export BUP_DIR="./.bup"
 	
 	[[ ! -e "$BUP_DIR" ]] && return 1
+	
 	git --git-dir=./.bup log
 }
 
 _bupList() {
 	export BUP_DIR="./.bup"
+	
+	[[ ! -e "$BUP_DIR" ]] && return 1
 	
 	if [[ "$1" == "" ]]
 	then
@@ -6705,23 +6715,33 @@ _bupList() {
 _bupStore() {
 	export BUP_DIR="./.bup"
 	
+	[[ ! -e "$BUP_DIR" ]] && return 1
+	
+	! man tar | grep '\-\-xattrs' > /dev/null 2>&1 && return 1
+	! man tar | grep '\-\-acls' > /dev/null 2>&1 && return 1
+	
 	if [[ "$1" == "" ]]
 	then
-		tar --exclude "$BUP_DIR" -cvf - . | bup split -n "HEAD" -vv
+		tar --xattrs --acls --exclude "$BUP_DIR" -cvf - . | bup split -n "HEAD" -vv
 		return
 	fi
-	[[ "$1" != "" ]] && tar --exclude "$BUP_DIR" -cvf - . | bup split -n "$@" -vv
+	[[ "$1" != "" ]] && tar --xattrs --acls --exclude "$BUP_DIR" -cvf - . | bup split -n "$@" -vv
 }
 
 _bupRetrieve() {
 	export BUP_DIR="./.bup"
 	
+	[[ ! -e "$BUP_DIR" ]] && return 1
+	
+	! man tar | grep '\-\-xattrs' > /dev/null 2>&1 && return 1
+	! man tar | grep '\-\-acls' > /dev/null 2>&1 && return 1
+	
 	if [[ "$1" == "" ]]
 	then
-		bup join "HEAD" | tar -xf -
+		bup join "HEAD" | tar --xattrs --acls -xf -
 		return
 	fi
-	[[ "$1" != "" ]] && bup join "$@" | tar -xf -
+	[[ "$1" != "" ]] && bup join "$@" | tar --xattrs --acls -xf -
 }
 
 _here_mkboot_grubcfg() {
@@ -11074,6 +11094,11 @@ fi
 #Wrapper function to launch arbitrary commands within the ubiquitous_bash environment, including its PATH with scriptBin.
 _bin() {
 	"$@"
+}
+
+#Launch internal functions as commands, and other commands, as root.
+_sudo() {
+	sudo -n "$scriptAbsoluteLocation" _bin "$@"
 }
 
 _true() {
