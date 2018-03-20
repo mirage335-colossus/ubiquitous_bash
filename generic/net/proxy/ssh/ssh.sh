@@ -206,67 +206,65 @@ _ssh_command_machine() {
 	true
 }
 
-# DANGER Last line of defense against catastrophic errors when using "delete" flag with rsync.
-# WARNING Intended for direct copy/paste inclusion into independent launch wrapper scripts. Kept here for redundancy as well as example and maintenance.
-_command_safeBackup() {
-	! type _command_getAbsolute_criticalDep > /dev/null 2>&1 && return 1
-	! _command_getAbsolute_criticalDep && return 1
-	
-	[[ ! -e "$commandScriptAbsoluteLocation" ]] && exit 1
-	[[ ! -e "$commandScriptAbsoluteFolder" ]] && exit 1
-	
-	#Fail sooner, avoiding irrelevant error messages. Especially important to cases where an upstream process has already removed the "$safeTmp" directory of a downstream process which reaches "_stop" later.
-	! [[ -e "$1" ]] && return 1
-	
-	[[ "$1" == "" ]] && return 1
-	[[ "$1" == "/" ]] && return 1
-	[[ "$1" == "-"* ]] && return 1
-	
-	[[ "$1" == "/home" ]] && return 1
-	[[ "$1" == "/home/" ]] && return 1
-	[[ "$1" == "/home/$USER" ]] && return 1
-	[[ "$1" == "/home/$USER/" ]] && return 1
-	[[ "$1" == "/$USER" ]] && return 1
-	[[ "$1" == "/$USER/" ]] && return 1
-	
-	[[ "$1" == "/root" ]] && return 1
-	[[ "$1" == "/root/" ]] && return 1
-	[[ "$1" == "/root/$USER" ]] && return 1
-	[[ "$1" == "/root/$USER/" ]] && return 1
-	[[ "$1" == "/$USER" ]] && return 1
-	[[ "$1" == "/$USER/" ]] && return 1
-	
-	[[ "$1" == "/tmp" ]] && return 1
-	[[ "$1" == "/tmp/" ]] && return 1
-	
-	[[ "$1" == "$HOME" ]] && return 1
-	[[ "$1" == "$HOME/" ]] && return 1
-	
-	! type realpath > /dev/null 2>&1 && return 1
-	! type readlink > /dev/null 2>&1 && return 1
-	! type dirname > /dev/null 2>&1 && return 1
-	! type basename > /dev/null 2>&1 && return 1
-	
-	return 0
-}
-
 _rsync_command_check_backup_dependencies() {
-	_command_messageNormal "Checking - dependencies."
+	#_messageNormal "Checking - dependencies."
 	
 	##Check for sudo, especially if fakeroot is unavailable or undesirable.
 	#if [[ "$criticalSSHUSER" == "root" ]]
 	#then
-		#[[ $(id -u) != 0 ]] && _command_messageError 'fail: not root' && return 1
+		#[[ $(id -u) != 0 ]] && _messageError 'fail: not root' && return 1
 		criticalSudoAvailable=false
 		criticalSudoAvailable=$(sudo -n echo true)
-		! [[ "$criticalSudoAvailable" == "true" ]] && _command_messageError 'bad: sudo' && return 1
+		! [[ "$criticalSudoAvailable" == "true" ]] && _messageError 'bad: sudo' && return 1
 	#fi
 
 	#Check for fakeroot.
-	#! type fakeroot > /dev/null 2>&1  && _command_messageError 'missing: fakeroot' && return 1
+	#! type fakeroot > /dev/null 2>&1  && _messageError 'missing: fakeroot' && return 1
 	
 	# WARNING Intended for direct copy/paste inclusion into independent launch wrapper scripts. Kept here for redundancy.
-	! _command_safeBackup "$criticalBackupDestination" && _command_messageError "check: _command_safeBackup" && return 1
+	! _command_safeBackup "$criticalBackupDestination" && _messageError "check: _command_safeBackup" && return 1
+	
+	return 0
+}
+
+#"$1" == criticalBackupSource
+#"$2" == criticalBackupDestination
+_prepare_rsync_backup_env() {
+	_messageNormal "Preparing - env."
+	
+	[[ "$1" != "" ]] && export criticalBackupSource="$1"
+	[[ "$2" != "" ]] && export criticalBackupDestination="$2"
+
+	[[ "$criticalBackupSource" == "" ]] && _messageError 'blank: criticalBackupSource' && return 1
+	[[ "$criticalBackupDestination" == "" ]] && _messageError 'blank: criticalBackupDestination' && return 1
+
+	mkdir -p "$criticalBackupDestination"
+	[[ ! -e "$criticalBackupDestination" ]] && _messageError 'fail: mkdir criticalBackupDestination= '"$criticalBackupDestination" && return 1
+
+	mkdir -p "$criticalBackupDestination"/fs
+	[[ ! -e "$criticalBackupDestination"/fs ]] && _messageError 'fail: mkdir criticalBackupDestination/fs= '"$criticalBackupDestination"/fs && return 1
+	
+	! sudo -n chown root:root "$criticalBackupDestination"/fs && _messageError 'chown: '"$criticalBackupDestination" && return 1
+	! sudo -n chmod 700 "$criticalBackupDestination"/fs && _messageError 'chmod: '"$criticalBackupDestination" && return 1
+
+	#Fakeroot, pseudo, and image, optional features are provisioned here, but not expected to be used. Containing all operations within Uqibuitous Bash virtualization is generally expected to represent best practice.
+
+	#mkdir -p "$criticalBackupDestination"/fakeroot
+	#[[ ! -e "$criticalBackupDestination"/fakeroot ]] && _messageError 'fail: mkdir criticalBackupDestination/fakeroot= '"$criticalBackupDestination"/fakeroot && return 1
+	#[[ ! -e "$criticalBackupDestination"/fakeroot.db ]] && echo -n > "$criticalBackupDestination"/fakeroot.db
+	#[[ ! -e "$criticalBackupDestination"/fakeroot.db ]] && _messageError 'fail: mkdir criticalBackupDestination/fakeroot.db= '"$criticalBackupDestination"/fakeroot.db && return 1
+
+	#mkdir -p "$criticalBackupDestination"/pseudo
+	#[[ ! -e "$criticalBackupDestination"/pseudo ]] && _messageError 'fail: mkdir criticalBackupDestination/pseudo= '"$criticalBackupDestination"/pseudo && return 1
+	#[[ ! -e "$criticalBackupDestination"/pseudo.db ]] && echo -n > "$criticalBackupDestination"/pseudo.db
+	#[[ ! -e "$criticalBackupDestination"/pseudo.db ]] && _messageError 'fail: mkdir criticalBackupDestination/pseudo.db= '"$criticalBackupDestination"/pseudo.db && return 1
+
+	#mkdir -p "$criticalBackupDestination"/image
+	#[[ ! -e "$criticalBackupDestination"/image ]] && _messageError 'fail: mkdir criticalBackupDestination/image= '"$criticalBackupDestination"/image && return 1
+	#[[ ! -e "$criticalBackupDestination"/image.img ]] && echo -n > "$criticalBackupDestination"/image.img
+	#[[ ! -e "$criticalBackupDestination"/image.img ]] && _messageError 'fail: mkdir criticalBackupDestination/image.img= '"$criticalBackupDestination"/image.img && return 1
+
+	! _safeBackup "$criticalBackupDestination" && _messageError "check: _command_safeBackup" && return 1
 	
 	return 0
 }

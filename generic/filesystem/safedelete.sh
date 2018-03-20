@@ -1,5 +1,5 @@
 #Checks whether command or function is available.
-# WARNING Needed by safeRMR .
+# DANGER Needed by safeRMR .
 _checkDep() {
 	if ! type "$1" >/dev/null 2>&1
 	then
@@ -24,6 +24,7 @@ _failExec() {
 }
 
 #Portable sanity checked "rm -r" command.
+# DANGER Last line of defense against catastrophic errors where "rm -r" or similar would be used!
 # WARNING Not foolproof. Use to guard against systematic errors, not carelessness.
 # WARNING Do NOT rely upon outside of internal programmatic usage inside script!
 # WARNING Consider using this function even if program control flow can be proven safe. Redundant checks just might catch catastrophic memory errors.
@@ -186,4 +187,92 @@ _safePath() {
 		return 0
 	fi
 }
+
+# DANGER Last line of defense against catastrophic errors when using "delete" flag with rsync or similar!
+_safeBackup() {
+	! type getAbsolute_criticalDep > /dev/null 2>&1 && return 1
+	! getAbsolute_criticalDep && return 1
+	
+	[[ ! -e "$scriptAbsoluteLocation" ]] && exit 1
+	[[ ! -e "$scriptAbsoluteFolder" ]] && exit 1
+	
+	#Fail sooner, avoiding irrelevant error messages. Especially important to cases where an upstream process has already removed the "$safeTmp" directory of a downstream process which reaches "_stop" later.
+	! [[ -e "$1" ]] && return 1
+	
+	[[ "$1" == "" ]] && return 1
+	[[ "$1" == "/" ]] && return 1
+	[[ "$1" == "-"* ]] && return 1
+	
+	[[ "$1" == "/home" ]] && return 1
+	[[ "$1" == "/home/" ]] && return 1
+	[[ "$1" == "/home/$USER" ]] && return 1
+	[[ "$1" == "/home/$USER/" ]] && return 1
+	[[ "$1" == "/$USER" ]] && return 1
+	[[ "$1" == "/$USER/" ]] && return 1
+	
+	[[ "$1" == "/root" ]] && return 1
+	[[ "$1" == "/root/" ]] && return 1
+	[[ "$1" == "/root/$USER" ]] && return 1
+	[[ "$1" == "/root/$USER/" ]] && return 1
+	[[ "$1" == "/$USER" ]] && return 1
+	[[ "$1" == "/$USER/" ]] && return 1
+	
+	[[ "$1" == "/tmp" ]] && return 1
+	[[ "$1" == "/tmp/" ]] && return 1
+	
+	[[ "$1" == "$HOME" ]] && return 1
+	[[ "$1" == "$HOME/" ]] && return 1
+	
+	! type realpath > /dev/null 2>&1 && return 1
+	! type readlink > /dev/null 2>&1 && return 1
+	! type dirname > /dev/null 2>&1 && return 1
+	! type basename > /dev/null 2>&1 && return 1
+	
+	return 0
+}
+
+# DANGER Last line of defense against catastrophic errors when using "delete" flag with rsync or similar!
+# WARNING Intended for direct copy/paste inclusion into independent launch wrapper scripts. Kept here for redundancy as well as example and maintenance.
+_command_safeBackup() {
+	! type _command_getAbsolute_criticalDep > /dev/null 2>&1 && return 1
+	! _command_getAbsolute_criticalDep && return 1
+	
+	[[ ! -e "$commandScriptAbsoluteLocation" ]] && exit 1
+	[[ ! -e "$commandScriptAbsoluteFolder" ]] && exit 1
+	
+	#Fail sooner, avoiding irrelevant error messages. Especially important to cases where an upstream process has already removed the "$safeTmp" directory of a downstream process which reaches "_stop" later.
+	! [[ -e "$1" ]] && return 1
+	
+	[[ "$1" == "" ]] && return 1
+	[[ "$1" == "/" ]] && return 1
+	[[ "$1" == "-"* ]] && return 1
+	
+	[[ "$1" == "/home" ]] && return 1
+	[[ "$1" == "/home/" ]] && return 1
+	[[ "$1" == "/home/$USER" ]] && return 1
+	[[ "$1" == "/home/$USER/" ]] && return 1
+	[[ "$1" == "/$USER" ]] && return 1
+	[[ "$1" == "/$USER/" ]] && return 1
+	
+	[[ "$1" == "/root" ]] && return 1
+	[[ "$1" == "/root/" ]] && return 1
+	[[ "$1" == "/root/$USER" ]] && return 1
+	[[ "$1" == "/root/$USER/" ]] && return 1
+	[[ "$1" == "/$USER" ]] && return 1
+	[[ "$1" == "/$USER/" ]] && return 1
+	
+	[[ "$1" == "/tmp" ]] && return 1
+	[[ "$1" == "/tmp/" ]] && return 1
+	
+	[[ "$1" == "$HOME" ]] && return 1
+	[[ "$1" == "$HOME/" ]] && return 1
+	
+	! type realpath > /dev/null 2>&1 && return 1
+	! type readlink > /dev/null 2>&1 && return 1
+	! type dirname > /dev/null 2>&1 && return 1
+	! type basename > /dev/null 2>&1 && return 1
+	
+	return 0
+}
+
 
