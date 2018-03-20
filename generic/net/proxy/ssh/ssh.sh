@@ -222,7 +222,7 @@ _rsync_command_check_backup_dependencies() {
 	#! type fakeroot > /dev/null 2>&1  && _messageError 'missing: fakeroot' && return 1
 	
 	# WARNING Intended for direct copy/paste inclusion into independent launch wrapper scripts. Kept here for redundancy.
-	! type _command_safeBackup > /dev/null 2>&1 && _messageError "check: _command_safeBackup" && return 1
+	! type _command_safeBackup > /dev/null 2>&1 && _messageError "missing: _command_safeBackup" && return 1
 	
 	return 0
 }
@@ -237,8 +237,6 @@ _prepare_rsync_backup_env() {
 
 	[[ "$criticalBackupSource" == "" ]] && _messageError 'blank: criticalBackupSource' && return 1
 	[[ "$criticalBackupDestination" == "" ]] && _messageError 'blank: criticalBackupDestination' && return 1
-	
-	! _safeBackup "$criticalBackupDestination" && _messageError "check: _command_safeBackup" && return 1
 
 	mkdir -p "$criticalBackupDestination"
 	[[ ! -e "$criticalBackupDestination" ]] && _messageError 'fail: mkdir criticalBackupDestination= '"$criticalBackupDestination" && return 1
@@ -265,6 +263,8 @@ _prepare_rsync_backup_env() {
 	#[[ ! -e "$criticalBackupDestination"/image ]] && _messageError 'fail: mkdir criticalBackupDestination/image= '"$criticalBackupDestination"/image && return 1
 	#[[ ! -e "$criticalBackupDestination"/image.img ]] && echo -n > "$criticalBackupDestination"/image.img
 	#[[ ! -e "$criticalBackupDestination"/image.img ]] && _messageError 'fail: mkdir criticalBackupDestination/image.img= '"$criticalBackupDestination"/image.img && return 1
+	
+	! _safeBackup "$criticalBackupDestination" && _messageError "check: _command_safeBackup" && return 1
 	
 	return 0
 }
