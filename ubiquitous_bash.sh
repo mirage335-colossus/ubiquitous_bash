@@ -1388,6 +1388,128 @@ _ssh() {
 	return "$sshExitStatus"
 }
 
+
+#"$1" == commandName
+_ssh_command_user_field() {
+	echo "$1" | grep '^_ssh$' > /dev/null 2>&1 && return 1
+	echo "$1" | grep '^_ssh' > /dev/null 2>&1 && echo "$1" | sed 's/^_ssh-//g' && return 0
+	echo "$1" | grep '^_rsync$' > /dev/null 2>&1 && return 1
+	echo "$1" | grep '^_rsync' > /dev/null 2>&1 && echo "$1" | sed 's/^_rsync-//g' && return 0
+	
+	echo "$1" | grep '^_backup$' > /dev/null 2>&1 && return 1
+	echo "$1" | grep '^_backup' > /dev/null 2>&1 && echo "$1" | sed 's/^_backup-//g' && return 0
+	
+	return 1
+}
+
+#"$1" == commandName
+_ssh_command_user() {
+	local field_sshCommandUser
+	field_sshCommandUser=$(_ssh_command_user_field "$1")
+	
+	#Output blank, default user specified by SSH config or here document.
+	[[ "$field_sshCommandUser" == "home" ]] && return 0
+	
+	[[ "$field_sshCommandUser" != "" ]] && echo "$field_sshCommandUser" && return 0
+	
+	#Blank may be regarded as error condition.
+	return 1
+	
+}
+
+_ssh_command_machine() {
+	true
+}
+
+_rsync_command_check_backup_dependencies() {
+	_command_messageNormal "Checking - dependencies."
+	
+	##Check for sudo, especially if fakeroot is unavailable or undesirable.
+	#if [[ "$criticalSSHUSER" == "root" ]]
+	#then
+		#[[ $(id -u) != 0 ]] && _command_messageError 'fail: not root' && return 1
+		criticalSudoAvailable=false
+		criticalSudoAvailable=$(sudo -n echo true)
+		! [[ "$criticalSudoAvailable" == "true" ]] && _command_messageError 'bad: sudo' && return 1
+	#fi
+
+	#Check for fakeroot.
+	#! type fakeroot > /dev/null 2>&1  && _command_messageError 'missing: fakeroot' && return 1
+	
+	return 0
+}
+
+# WARNING Sets and accepts global variables. Do NOT reuse or recurse without careful consideration or guard statements.
+#Generates "root@machine:/" format rsync address from machine name, user, and path.
+#_rsync_sourceAddress "machine" "/path/" "user"
+#_rsync_sourceAddress "machine" "" "user"
+#"$1" == criticalSSHmachine
+#"$2" == criticalSourcePath (optional)
+#"$3" == criticalUser (optional)
+_rsync_remoteAddress() {
+	#root@machine:/
+	#user@machine:
+	#machine:
+	
+	[[ "$1" != "" ]] && export criticalSSHmachine="$1"
+	[[ "$2" != "" ]] && export criticalSourcePath="$2"
+	[[ "$3" != "" ]] && export criticalUser="$3"
+	
+	[[ "$criticalSourcePath" == "" ]] && [[ "$criticalUser" == "root" ]] && export criticalSourcePath="/"
+	
+	export criticalUserAddress="$criticalUser"
+	[[ "$criticalUserAddress" != "" ]] && export criticalUserAddress="$criticalUser"'@'
+	
+	export criticalRsyncAddress="$criticalUserAddress""$criticalSSHmachine"':'"$criticalSourcePath"
+	
+	echo "$criticalRsyncAddress"
+	
+	[[ "$criticalSSHmachine" == "" ]] && return 1
+	return 0
+}
+
+# WARNING Sets and accepts global variables. Do NOT reuse or recurse without careful consideration or guard statements.
+#"$1" == criticalSSHmachine
+#"$2" == criticalSourcePath (optional)
+#"$3" == criticalUser (optional)
+#"$4" == commandName
+#_rsync_source "$machineName" "" "" "$commandName"
+_rsync_backup_remote() {
+	[[ "$1" != "" ]] && export criticalSSHmachine="$1"
+	[[ "$2" != "" ]] && export criticalSourcePath="$2"
+	[[ "$3" != "" ]] && export criticalUser="$3"
+	
+	[[ "$criticalUser" == "" ]] && export criticalUser=$(_ssh_command_user "$4")
+	
+	[[ "$criticalSSHmachine" == "" ]] && return 1
+	
+	_rsync_remoteAddress "$criticalSSHmachine" "$criticalSourcePath" "$criticalUser"
+}
+
+# WARNING Sets and accepts global variables. Do NOT reuse or recurse without careful consideration or guard statements.
+#"$1" == criticalDestinationPrefix (optional, default "_arc")
+#"$2" == $criticalDestinationPath (optional)
+#"$3" == criticalUser (optional)
+#"$4" == commandName
+#_rsync_source "" "" "" "$commandName"
+_rsync_backup_local() {
+	[[ "$1" != "" ]] && export criticalDestinationPrefix="$1"
+	[[ "$criticalDestinationPrefix" == "" ]] && export criticalDestinationPrefix="_arc"
+	
+	[[ "$3" != "" ]] && export criticalUser="$3"
+	[[ "$criticalUser" == "" ]] && export criticalUser=$(_ssh_command_user_field "$4")
+	
+	[[ "$2" != "" ]] && export criticalDestinationPath="$2"
+	[[ "$criticalDestinationPath" == "" ]] && export criticalDestinationPath="$criticalUser"
+	
+	[[ "$criticalDestinationPath" == "" ]] && return 1
+	
+	export criticalDestinationPrefixAddress="$criticalDestinationPrefix"
+	[[ "$criticalDestinationPrefixAddress" != "" ]] && export criticalDestinationPrefixAddress="$criticalDestinationPrefixAddress"'/'
+	
+	echo "$criticalDestinationPrefixAddress""$criticalDestinationPath"
+}
+
 _rsync() {
 	rsync -e "$scriptAbsoluteLocation"" _ssh" "$@"
 }
