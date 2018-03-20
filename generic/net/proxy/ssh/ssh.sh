@@ -206,6 +206,50 @@ _ssh_command_machine() {
 	true
 }
 
+# DANGER Last line of defense against catastrophic errors when using "delete" flag with rsync.
+# WARNING Intended for direct copy/paste inclusion into independent launch wrapper scripts. Kept here for redundancy as well as example and maintenance.
+_command_safeBackup() {
+	! type _command_getAbsolute_criticalDep > /dev/null 2>&1 && return 1
+	! _command_getAbsolute_criticalDep && return 1
+	
+	[[ ! -e "$commandScriptAbsoluteLocation" ]] && exit 1
+	[[ ! -e "$commandScriptAbsoluteFolder" ]] && exit 1
+	
+	#Fail sooner, avoiding irrelevant error messages. Especially important to cases where an upstream process has already removed the "$safeTmp" directory of a downstream process which reaches "_stop" later.
+	! [[ -e "$1" ]] && return 1
+	
+	[[ "$1" == "" ]] && return 1
+	[[ "$1" == "/" ]] && return 1
+	[[ "$1" == "-"* ]] && return 1
+	
+	[[ "$1" == "/home" ]] && return 1
+	[[ "$1" == "/home/" ]] && return 1
+	[[ "$1" == "/home/$USER" ]] && return 1
+	[[ "$1" == "/home/$USER/" ]] && return 1
+	[[ "$1" == "/$USER" ]] && return 1
+	[[ "$1" == "/$USER/" ]] && return 1
+	
+	[[ "$1" == "/root" ]] && return 1
+	[[ "$1" == "/root/" ]] && return 1
+	[[ "$1" == "/root/$USER" ]] && return 1
+	[[ "$1" == "/root/$USER/" ]] && return 1
+	[[ "$1" == "/$USER" ]] && return 1
+	[[ "$1" == "/$USER/" ]] && return 1
+	
+	[[ "$1" == "/tmp" ]] && return 1
+	[[ "$1" == "/tmp/" ]] && return 1
+	
+	[[ "$1" == "$HOME" ]] && return 1
+	[[ "$1" == "$HOME/" ]] && return 1
+	
+	! type realpath > /dev/null 2>&1 && return 1
+	! type readlink > /dev/null 2>&1 && return 1
+	! type dirname > /dev/null 2>&1 && return 1
+	! type basename > /dev/null 2>&1 && return 1
+	
+	return 0
+}
+
 _rsync_command_check_backup_dependencies() {
 	_command_messageNormal "Checking - dependencies."
 	
@@ -220,6 +264,9 @@ _rsync_command_check_backup_dependencies() {
 
 	#Check for fakeroot.
 	#! type fakeroot > /dev/null 2>&1  && _command_messageError 'missing: fakeroot' && return 1
+	
+	# WARNING Intended for direct copy/paste inclusion into independent launch wrapper scripts. Kept here for redundancy.
+	! _command_safeBackup "$criticalBackupDestination" && _command_messageError "check: _command_safeBackup" && return 1
 	
 	return 0
 }
@@ -258,7 +305,7 @@ _rsync_remoteAddress() {
 #"$2" == criticalSourcePath (optional)
 #"$3" == criticalUser (optional)
 #"$4" == commandName
-#_rsync_source "$machineName" "" "" "$commandName"
+#_rsync_backup_remote "$machineName" "" "" "$commandName"
 _rsync_backup_remote() {
 	[[ "$1" != "" ]] && export criticalSSHmachine="$1"
 	[[ "$2" != "" ]] && export criticalSourcePath="$2"
@@ -276,7 +323,7 @@ _rsync_backup_remote() {
 #"$2" == $criticalDestinationPath (optional)
 #"$3" == criticalUser (optional)
 #"$4" == commandName
-#_rsync_source "" "" "" "$commandName"
+#_rsync_backup_local "" "" "" "$commandName"
 _rsync_backup_local() {
 	[[ "$1" != "" ]] && export criticalDestinationPrefix="$1"
 	[[ "$criticalDestinationPrefix" == "" ]] && export criticalDestinationPrefix="_arc"
