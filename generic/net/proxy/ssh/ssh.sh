@@ -1,6 +1,9 @@
 _testProxySSH() {
 	_getDep ssh
 	
+	#For both _package and _rsync .
+	! _wantDep rsync && echo 'warn: no rsync'
+	
 	! _wantDep base64 && echo 'warn: no base64'
 	
 	! _wantDep vncviewer && echo 'warn: no vncviewer, recommend tigervnc'
@@ -872,7 +875,12 @@ _setup_ssh_commands() {
 }
 
 _package_cautossh() {
-	cp -a "$scriptAbsoluteFolder"/_index "$safeTmp"/package
+	#cp -a "$scriptAbsoluteFolder"/_index "$safeTmp"/package
+	
+	#https://stackoverflow.com/questions/4585929/how-to-use-cp-command-to-exclude-a-specific-directory
+	#find "$scriptAbsoluteFolder"/_index -type f -not -path '*_arc*' -exec cp -d --preserve=all {} "$safeTmp"'/package/'{} \;
+	
+	rsync -av --progress --exclude "_arc" "$scriptAbsoluteFolder"/_index/ "$safeTmp"/package/_index/
 }
 
 #May be overridden by "ops" if multiple gateways are required.
