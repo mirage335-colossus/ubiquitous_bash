@@ -1728,7 +1728,6 @@ _vncpasswd() {
 	then
 		_messagePlain_good 'found: tigervnc'
 		_report_vncpasswd
-		"$vncPasswdFile".pln
 		! echo | cat "$vncPasswdFile".pln - "$vncPasswdFile".pln | tigervncpasswd "$vncPasswdFile" && _messagePlain_bad 'fail: vncpasswd' && return 1
 		return 0
 	fi
@@ -2033,6 +2032,9 @@ _vncserver_terminate() {
 		#kill -KILL $(cat "$vncPIDfile")
 		rm "$vncPIDfile"
 		
+		pgrep Xvnc && _messagePlain_warn 'found: Xvnc process'
+		pgrep Xtightvnc && _messagePlain_warn 'found: Xtightvnc process'
+		pgrep Xtigervnc && _messagePlain_warn 'found: Xtigervnc process'
 		
 		return 0
 	fi
@@ -2660,7 +2662,7 @@ _messagePlain_good() {
 }
 
 #Yellow. May or may not be a problem.
-_messagePlain_warning() {
+_messagePlain_warn() {
 	echo -e -n '\E[1;33m '
 	echo -n "$@"
 	echo -e -n ' \E[0m'

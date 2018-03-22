@@ -46,7 +46,7 @@ _messagePlain_good() {
 }
 
 #Yellow. May or may not be a problem.
-_messagePlain_warning() {
+_messagePlain_warn() {
 	echo -e -n '\E[1;33m '
 	echo -n "$@"
 	echo -e -n ' \E[0m'
