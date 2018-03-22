@@ -1930,17 +1930,18 @@ _vncserver_operations() {
 		[[ ! -e "$vncPIDfile" ]] && _messagePlain_bad 'missing: "$vncPIDfile"' && return 1
 		local vncPIDactual=$(cat $vncPIDfile)
 		! ps -p "$vncPIDactual" > /dev/null 2>&1 && _messagePlain_bad 'inactive: vncPID= '"$vncPIDactual" && return 1
+		_messagePlain_good 'active: vncPID= '"$vncPIDactual"
 		
 		export DISPLAY=:"$vncDisplay"
 		
 		local currentCount
 		for (( currentCount = 0 ; currentCount < 90 ; currentCount++ ))
 		do
-			xset q >/dev/null 2>&1 && _messagePlain_good 'connect: display= '"$DISPLAY" && break
+			xset q >/dev/null 2>&1 && _messagePlain_good 'connect: DISPLAY= '"$DISPLAY" && break
 			sleep 1
 		done
 		
-		[[ "$currentCount" == "90" ]] && _messagePlain_bad 'fail: connect: display= '"$DISPLAY" && return 1
+		[[ "$currentCount" == "90" ]] && _messagePlain_bad 'fail: connect: DISPLAY= '"$DISPLAY" && return 1
 		
 		bash -c "$desktopEnvironmentLaunch" &
 		
@@ -1973,17 +1974,18 @@ _vncserver_operations() {
 		[[ ! -e "$vncPIDfile" ]] && _messagePlain_bad 'missing: "$vncPIDfile"' && return 1
 		local vncPIDactual=$(cat $vncPIDfile)
 		! ps -p "$vncPIDactual" > /dev/null 2>&1 && _messagePlain_bad 'inactive: vncPID= '"$vncPIDactual" && return 1
+		_messagePlain_good 'active: vncPID= '"$vncPIDactual"
 		
 		export DISPLAY=:"$vncDisplay"
 		
 		local currentCount
 		for (( currentCount = 0 ; currentCount < 90 ; currentCount++ ))
 		do
-			xset q >/dev/null 2>&1 && _messagePlain_good 'connect: display= '"$DISPLAY" && break
+			xset q >/dev/null 2>&1 && _messagePlain_good 'connect: DISPLAY= '"$DISPLAY" && break
 			sleep 1
 		done
 		
-		[[ "$currentCount" == "90" ]] && _messagePlain_bad 'fail: connect: display= '"$DISPLAY" && return 1
+		[[ "$currentCount" == "90" ]] && _messagePlain_bad 'fail: connect: DISPLAY= '"$DISPLAY" && return 1
 		
 		bash -c "$desktopEnvironmentLaunch" &
 		
