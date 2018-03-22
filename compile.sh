@@ -285,8 +285,8 @@ _safePath() {
 
 # DANGER Last line of defense against catastrophic errors when using "delete" flag with rsync or similar!
 _safeBackup() {
-	! type getAbsolute_criticalDep > /dev/null 2>&1 && return 1
-	! getAbsolute_criticalDep && return 1
+	! type _getAbsolute_criticalDep > /dev/null 2>&1 && return 1
+	! _getAbsolute_criticalDep && return 1
 	
 	[[ ! -e "$scriptAbsoluteLocation" ]] && exit 1
 	[[ ! -e "$scriptAbsoluteFolder" ]] && exit 1

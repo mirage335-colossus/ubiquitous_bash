@@ -393,35 +393,76 @@ _prepare_vnc() {
 	
 }
 
+_report_vncpasswd() {
+	_messagePlain_probe 'report: _report_vncpasswd'
+	
+	! [[ -e "$vncPasswdFile".pln ]] && _messagePlain_bad 'missing: "$vncPasswdFile".pln' && return 0
+	
+	! [[ -s "$vncPasswdFile".pln ]] && _messagePlain_bad 'blank: "$vncPasswdFile".pln' && return 0
+	
+	if [[ -s "$vncPasswdFile".pln ]]
+	then
+		#Blue. Diagnostic instrumentation.
+		echo -e -n '\E[0;34m '
+		cat "$vncPasswdFile".pln
+		echo -e -n ' \E[0m'
+		echo
+		return 0
+	fi
+	
+	return 0
+}
+
 _vncpasswd() {
+	_messagePlain_nominal "init: _vncpasswd"
+	
 	#TigerVNC, specifically.
 	if type tigervncpasswd >/dev/null 2>&1
 	then
-		echo | cat "$vncPasswdFile".pln - "$vncPasswdFile".pln | tigervncpasswd "$vncPasswdFile"
+		_messagePlain_good 'found: tigervnc'
+		_report_vncpasswd
+		! echo | cat "$vncPasswdFile".pln - "$vncPasswdFile".pln | tigervncpasswd "$vncPasswdFile" && _messagePlain_bad 'fail: vncpasswd' && return 1
 		return 0
 	fi
 	
 	#Supported by both TightVNC and TigerVNC.
 	if echo | vncpasswd -x --help 2>&1 | grep -i 'vncpasswd \[FILE\]' >/dev/null 2>&1
 	then
-		echo | cat "$vncPasswdFile".pln - "$vncPasswdFile".pln | vncpasswd "$vncPasswdFile"
+		_messagePlain_good 'found: vncpasswd'
+		_report_vncpasswd
+		! echo | cat "$vncPasswdFile".pln - "$vncPasswdFile".pln | vncpasswd "$vncPasswdFile" && _messagePlain_bad 'fail: vncpasswd' && return 1
 		return 0
 	fi
+	
+	type vncpasswd > /dev/null 2>&1 && _messagePlain_bad 'unsupported: vncpasswd'
+	! type vncpasswd > /dev/null 2>&1 && _messagePlain_bad 'missing: vncpasswd'
 	
 	return 1
 }
 
 _vncviewer_operations() {
-	if _detect_x11
-	then
-		export DISPLAY="$destination_DISPLAY"
-		export XAUTHORITY="$destination_AUTH"
-	fi
+	_messagePlain_nominal 'init: _vncviewer_operations'
 	
+	_messagePlain_nominal 'Searching for X11 display.'
+	! _detect_x11 && _messagePlain_bad 'fail: _detect_x11'
+	
+	export DISPLAY="$destination_DISPLAY"
+	export XAUTHORITY="$destination_AUTH"
+	_messagePlain_probe '_vncviewer_operations'
+	_report_detect_x11
+	
+	_messagePlain_nominal 'Detecting and launching vncviewer.'
 	#TigerVNC
 	if vncviewer --help 2>&1 | grep 'PasswordFile   \- Password file for VNC authentication (default\=)' >/dev/null 2>&1
 	then
-		vncviewer -DotWhenNoCursor -passwd "$vncPasswdFile" localhost:"$vncPort" "$@"
+		_messagePlain_good 'found: vncviewer (TigerVNC)'
+		
+		if ! vncviewer -DotWhenNoCursor -passwd "$vncPasswdFile" localhost:"$vncPort" "$@"
+		then
+			_messagePlain_bad 'fail: vncviewer'
+			stty echo > /dev/null 2>&1
+			return 1
+		fi
 		stty echo > /dev/null 2>&1
 		return 0
 	fi
@@ -429,24 +470,38 @@ _vncviewer_operations() {
 	#TightVNC
 	if vncviewer --help 2>&1 | grep '\-passwd' >/dev/null 2>&1
 	then
-		#vncviewer -encodings "copyrect tight zrle hextile" localhost:"$vncPort"
-		vncviewer -passwd "$vncPasswdFile" localhost:"$vncPort" "$@"
+		_messagePlain_good 'found: vncviewer (TightVNC)'
+		
+		#if ! vncviewer -encodings "copyrect tight zrle hextile" localhost:"$vncPort"
+		if ! vncviewer -passwd "$vncPasswdFile" localhost:"$vncPort" "$@"
+		then
+			_messagePlain_bad 'fail: vncviewer'
+			stty echo > /dev/null 2>&1
+			return 1
+		fi
 		stty echo > /dev/null 2>&1
 		return 0
 	fi
+	
+	type vncviewer > /dev/null 2>&1 && _messagePlain_bad 'unsupported: vncviewer'
+	! type vncviewer > /dev/null 2>&1 && _messagePlain_bad 'missing: vncviewer'
 	
 	return 1
 }
 
 _vncviewer_sequence() {
+	_messageNormal '_vncviewer_sequence: Start'
 	_start
 	
+	_messageNormal '_vncviewer_sequence: Setting vncpasswd .'
 	cat - > "$vncPasswdFile".pln
-	! _vncpasswd && _stop 1
+	_report_vncpasswd
+	! _vncpasswd && _messageError 'FAIL: vncpasswd' && _stop 1
 	
-	! _vncviewer_operations "$@" && _stop 1
+	_messageNormal '_vncviewer_sequence: Operations .'
+	! _vncviewer_operations "$@" && _messageError 'FAIL: vncviewer' && _stop 1
 	
-	
+	_messageNormal '_vncviewer_sequence: Stop'
 	_stop
 }
 
@@ -461,39 +516,64 @@ _x11vnc_command() {
 }
 
 _x11vnc_operations() {
-	if _detect_x11
-	then
-		export DISPLAY="$destination_DISPLAY"
-		export XAUTHORITY="$destination_AUTH"
-	fi
+	_messagePlain_nominal 'init: _x11vnc_operations'
 	
+	_messagePlain_nominal 'Searching for X11 display.'
+	! _detect_x11 && _messagePlain_bad 'fail: _detect_x11'
+	
+	export DISPLAY="$destination_DISPLAY"
+	export XAUTHORITY="$destination_AUTH"
+	_messagePlain_probe 'x11vnc_operations'
+	_report_detect_x11
+	
+	_messagePlain_nominal 'Detecting and launching x11vnc.'
 	#x11vnc
 	if type x11vnc >/dev/null 2>&1
 	then
+		_messagePlain_good 'found: x11vnc'
+		
 		#-passwdfile cmd:"/bin/cat -"
-		_x11vnc_command -localhost -rfbauth "$vncPasswdFile" -rfbport "$vncPort" -timeout 16 -xkb -display "$destination_DISPLAY" -auth "$destination_AUTH" -noxrecord -noxdamage
 		#-noxrecord -noxfixes -noxdamage
+		if ! _x11vnc_command -localhost -rfbauth "$vncPasswdFile" -rfbport "$vncPort" -timeout 16 -xkb -display "$destination_DISPLAY" -auth "$destination_AUTH" -noxrecord -noxdamage
+		then
+			_messagePlain_bad 'fail: x11vnc'
+			return 1
+		fi
+		
 		return 0
 	fi
 	
 	#TigerVNC.
 	if type x0tigervncserver
 	then
-		x0tigervncserver -rfbauth "$vncPasswdFile" -rfbport "$vncPort"
+		_messagePlain_good 'found: x0tigervncserver'
+		
+		if ! x0tigervncserver -rfbauth "$vncPasswdFile" -rfbport "$vncPort"
+		then
+			_messagePlain_bad 'fail: x0tigervncserver'
+			return 1
+		fi
 		return 0
 	fi
+	
+	_messagePlain_bad 'missing: x11vnc || x0tigervncserver'
 	
 	return 1
 }
 
 _x11vnc_sequence() {
+	_messageNormal '_x11vnc_sequence: Start'
 	_start
 	
+	_messageNormal '_x11vnc_sequence: Setting vncpasswd .'
 	cat - > "$vncPasswdFile".pln
-	! _vncpasswd && _stop 1
+	_report_vncpasswd
+	! _vncpasswd && _messageError 'FAIL: vncpasswd' && _stop 1
 	
-	! _x11vnc_operations && _stop 1
+	_messageNormal '_x11vnc_sequence: Operations .'
+	! _x11vnc_operations && _messageError 'FAIL: x11vnc' && _stop 1
 	
+	_messageNormal '_x11vnc_sequence: Stop'
 	_stop
 }
 
@@ -503,21 +583,26 @@ _x11vnc() {
 }
 
 _vncserver_operations() {
+	_messagePlain_nominal 'init: _vncserver_operations'
+	
 	#[[ "$desktopEnvironmentLaunch" == "" ]] && desktopEnvironmentLaunch="true"
 	[[ "$desktopEnvironmentLaunch" == "" ]] && desktopEnvironmentLaunch="startlxde"
 	[[ "$desktopEnvironmentGeometry" == "" ]] && desktopEnvironmentGeometry='1920x1080'
 	
+	_messagePlain_nominal 'Searching for unused X11 display.'
 	local vncDisplay
 	local vncDisplayValid
 	for (( vncDisplay = 1 ; vncDisplay <= 9 ; vncDisplay++ ))
 	do
-		! [[ -e /tmp/.X"$vncDisplay"-lock ]] && ! [[ -e /tmp/.X11-unix/X"$vncDisplay" ]] && vncDisplayValid=true && break
+		! [[ -e /tmp/.X"$vncDisplay"-lock ]] && ! [[ -e /tmp/.X11-unix/X"$vncDisplay" ]] && vncDisplayValid=true && _messagePlain_good 'found: unused X11 display= '"$vncDisplay" && break
 	done
-	[[ "$vncDisplayValid" != "true" ]] && _stop 1
+	[[ "$vncDisplayValid" != "true" ]] && _messagePlain_bad 'fail: vncDisplayValid != "true"' && _stop 1
 	
+	_messagePlain_nominal 'Detecting and launching vncserver.'
 	#TigerVNC
 	if echo | vncserver -x --help 2>&1 | grep '\-fg' >/dev/null 2>&1
 	then
+		_messagePlain_good 'found: vncserver (TigerVNC)'
 		echo
 		echo '*****TigerVNC Server Detected'
 		echo
@@ -527,17 +612,28 @@ _vncserver_operations() {
 		
 		export XvncCommand="Xvnc"
 		type Xtigervnc >/dev/null 2>&1 && export XvncCommand="Xtigervnc"
+		
+		type "$XvncCommand" > /dev/null 2>&1 && _messagePlain_good 'found: XvncCommand= '"$XvncCommand"
+		! type "$XvncCommand" > /dev/null 2>&1 && _messagePlain_bad 'missing: XvncCommand= '"$XvncCommand"
+		
 		"$XvncCommand" :"$vncDisplay" -depth 16 -geometry "$desktopEnvironmentGeometry" -localhost -rfbport "$vncPort" -rfbauth "$vncPasswdFile" &
 		echo $! > "$vncPIDfile"
+		
+		sleep 0.3
+		[[ ! -e "$vncPIDfile" ]] && _messagePlain_bad 'missing: "$vncPIDfile"' && return 1
+		local vncPIDactual=$(cat $vncPIDfile)
+		! ps -p "$vncPIDactual" > /dev/null 2>&1 && _messagePlain_bad 'inactive: vncPID= '"$vncPIDactual" && return 1
 		
 		export DISPLAY=:"$vncDisplay"
 		
 		local currentCount
 		for (( currentCount = 0 ; currentCount < 90 ; currentCount++ ))
 		do
-			xset q >/dev/null 2>&1 && break
+			xset q >/dev/null 2>&1 && _messagePlain_good 'connect: display= '"$DISPLAY" && break
 			sleep 1
 		done
+		
+		[[ "$currentCount" == "90" ]] && _messagePlain_bad 'fail: connect: display= '"$DISPLAY" && return 1
 		
 		bash -c "$desktopEnvironmentLaunch" &
 		
@@ -549,6 +645,7 @@ _vncserver_operations() {
 	#TightVNC
 	if type vncserver >/dev/null 2>&1
 	then
+		_messagePlain_good 'found: vncserver (TightVNC)'
 		echo
 		echo '*****TightVNC Server Detected'
 		echo
@@ -558,17 +655,28 @@ _vncserver_operations() {
 		
 		export XvncCommand="Xvnc"
 		type Xtightvnc >/dev/null 2>&1 && export XvncCommand="Xtightvnc"
+		
+		type "$XvncCommand" > /dev/null 2>&1 && _messagePlain_good 'found: XvncCommand= '"$XvncCommand"
+		! type "$XvncCommand" > /dev/null 2>&1 && _messagePlain_bad 'missing: XvncCommand= '"$XvncCommand"
+		
 		"$XvncCommand" :"$vncDisplay" -depth 16 -geometry "$desktopEnvironmentGeometry" -nevershared -dontdisconnect -localhost -rfbport "$vncPort" -rfbauth "$vncPasswdFile" -rfbwait 12000 &
 		echo $! > "$vncPIDfile"
+		
+		sleep 0.3
+		[[ ! -e "$vncPIDfile" ]] && _messagePlain_bad 'missing: "$vncPIDfile"' && return 1
+		local vncPIDactual=$(cat $vncPIDfile)
+		! ps -p "$vncPIDactual" > /dev/null 2>&1 && _messagePlain_bad 'inactive: vncPID= '"$vncPIDactual" && return 1
 		
 		export DISPLAY=:"$vncDisplay"
 		
 		local currentCount
 		for (( currentCount = 0 ; currentCount < 90 ; currentCount++ ))
 		do
-			xset q >/dev/null 2>&1 && break
+			xset q >/dev/null 2>&1 && _messagePlain_good 'connect: display= '"$DISPLAY" && break
 			sleep 1
 		done
+		
+		[[ "$currentCount" == "90" ]] && _messagePlain_bad 'fail: connect: display= '"$DISPLAY" && return 1
 		
 		bash -c "$desktopEnvironmentLaunch" &
 		
@@ -577,16 +685,23 @@ _vncserver_operations() {
 		return 0
 	fi
 	
+	type vncserver > /dev/null 2>&1 && type Xvnc > /dev/null 2>&1 && _messagePlain_bad 'unsupported: vncserver || Xvnc' && return 1
+	
+	_messagePlain_bad 'missing: vncserver || Xvnc'
+	
 	return 1
 }
 
 _vncserver_sequence() {
+	_messageNormal '_vncserver_sequence: Start'
 	_start
 	
+	_messageNormal '_vncserver_sequence: Setting vncpasswd .'
 	cat - > "$vncPasswdFile".pln
-	! _vncpasswd && _stop 1
+	! _vncpasswd && _messageError 'FAIL: vncpasswd' && _stop 1
 	
-	! _vncserver_operations && _stop 1
+	_messageNormal '_x11vnc_sequence: Operations .'
+	! _vncserver_operations && _messageError 'FAIL: vncserver' && _stop 1
 	
 	_stop
 }
@@ -598,34 +713,50 @@ _vncserver() {
 
 #Environment variable "$vncPIDfile", must be set.
 _vncserver_terminate() {
+	
+	# WARNING: For now, this does not always work with TigerVNC.
 	if [[ -e "$vncPIDfile" ]] && [[ -s "$vncPIDfile" ]]
 	then
+		_messagePlain_good 'found: usable "$vncPIDfile"'
+		
 		pkill -P $(cat "$vncPIDfile")
 		kill $(cat "$vncPIDfile")
 		#sleep 1
 		#kill -KILL $(cat "$vncPIDfile")
 		rm "$vncPIDfile"
 		
-		#For now, this does not always work with TigerVNC.
-		#return 0
+		pgrep Xvnc && _messagePlain_warn 'found: Xvnc process'
+		pgrep Xtightvnc && _messagePlain_warn 'found: Xtightvnc process'
+		pgrep Xtigervnc && _messagePlain_warn 'found: Xtigervnc process'
+		
+		return 0
 	fi
+	
+	_messagePlain_bad 'missing: usable "$vncPIDfile'
+	_messagePlain_bad 'terminate: Xvnc, Xtightvnc, Xtigervnc'
 	
 	pkill Xvnc
 	pkill Xtightvnc
 	pkill Xtigervnc
 	rm "$vncPIDfile"
+	
 	return 1
 }
 
 _vnc_sequence() {
+	_messageNormal '_vnc_sequence: Start'
 	_start
 	_start_safeTmp_ssh "$@"
 	_prepare_vnc
+	
+	_messageNormal '_vnc_sequence: Launch: _x11vnc'
 	
 	# TODO WARNING Terminal echo (ie. "stty echo") lockup errors are possible as ssh is backgrounded without "-f".
 	cat "$vncPasswdFile".pln | _vnc_ssh -L "$vncPort":localhost:"$vncPort" "$@" 'env vncPort='"$vncPort"' '"$safeTmpSSH"/cautossh' _x11vnc' &
 	
 	_waitPort localhost "$vncPort"
+	
+	_messageNormal '_vnc_sequence: Ready: _waitPort localhost vncport= '"$vncPort"
 	
 	#VNC service may not always be ready when port is up.
 	
@@ -636,6 +767,7 @@ _vnc_sequence() {
 		_stop_safeTmp_ssh "$@"
 		_stop
 	fi
+	_messageNormal '_vnc_sequence: Ready: sleep, _checkPort. Launch: _vncviewer'
 	cat "$vncPasswdFile".pln | bash -c 'env vncPort='"$vncPort"' destination_DISPLAY='"$DISPLAY"' '"$scriptAbsoluteLocation"' _vncviewer'
 	
 	sleep 3
@@ -645,6 +777,7 @@ _vnc_sequence() {
 		_stop_safeTmp_ssh "$@"
 		_stop
 	fi
+	_messageNormal '_vnc_sequence: Ready: sleep, _checkPort. Launch: _vncviewer'
 	cat "$vncPasswdFile".pln | bash -c 'env vncPort='"$vncPort"' destination_DISPLAY='"$DISPLAY"' '"$scriptAbsoluteLocation"' _vncviewer'
 	
 	sleep 9
@@ -654,8 +787,13 @@ _vnc_sequence() {
 		_stop_safeTmp_ssh "$@"
 		_stop
 	fi
+	_messageNormal '_vnc_sequence: Ready: sleep, _checkPort. Launch: _vncviewer'
 	cat "$vncPasswdFile".pln | bash -c 'env vncPort='"$vncPort"' destination_DISPLAY='"$DISPLAY"' '"$scriptAbsoluteLocation"' _vncviewer'
 	
+	
+	_messageNormal '_vnc_sequence: Done: final attempt: _vncviewer'
+	
+	_messageNormal '_vnc_sequence: Stop'
 	stty echo > /dev/null 2>&1
 	_stop_safeTmp_ssh "$@"
 	_stop
@@ -666,14 +804,19 @@ _vnc() {
 }
 
 _push_vnc_sequence() {
+	_messageNormal '_push_vnc_sequence: Start'
 	_start
 	_start_safeTmp_ssh "$@"
 	_prepare_vnc
+	
+	_messageNormal '_push_vnc_sequence: Launch: _x11vnc'
 	
 	cat "$vncPasswdFile".pln | bash -c 'env vncPort='"$vncPort"' '"$scriptAbsoluteLocation"' _x11vnc' &
 	#-noxrecord -noxfixes -noxdamage
 	
 	_waitPort localhost "$vncPort"
+	
+	_messageNormal '_push_vnc_sequence: Ready: _waitPort localhost vncport= '"$vncPort"
 	
 	#VNC service may not always be ready when port is up.
 	
@@ -684,6 +827,7 @@ _push_vnc_sequence() {
 		_stop_safeTmp_ssh "$@"
 		_stop
 	fi
+	_messageNormal '_push_vnc_sequence: Ready: sleep, _checkPort. Launch: _vncviewer'
 	cat "$vncPasswdFile".pln | _vnc_ssh -R "$vncPort":localhost:"$vncPort" "$@" 'env vncPort='"$vncPort"' '"$safeTmpSSH"/cautossh' _vncviewer'
 	
 	sleep 3
@@ -693,6 +837,7 @@ _push_vnc_sequence() {
 		_stop_safeTmp_ssh "$@"
 		_stop
 	fi
+	_messageNormal '_push_vnc_sequence: Ready: sleep, _checkPort. Launch: _vncviewer'
 	cat "$vncPasswdFile".pln | _vnc_ssh -R "$vncPort":localhost:"$vncPort" "$@" 'env vncPort='"$vncPort"' '"$safeTmpSSH"/cautossh' _vncviewer'
 	
 	sleep 9
@@ -702,8 +847,12 @@ _push_vnc_sequence() {
 		_stop_safeTmp_ssh "$@"
 		_stop
 	fi
+	_messageNormal '_push_vnc_sequence: Ready: sleep, _checkPort. Launch: _vncviewer'
 	cat "$vncPasswdFile".pln | _vnc_ssh -R "$vncPort":localhost:"$vncPort" "$@" 'env vncPort='"$vncPort"' '"$safeTmpSSH"/cautossh' _vncviewer'
 	
+	_messageNormal '_push_vnc_sequence: Done: final attempt: _vncviewer'
+	
+	_messageNormal '_push_vnc_sequence: Stop'
 	stty echo > /dev/null 2>&1
 	_stop_safeTmp_ssh "$@"
 	_stop 1
@@ -714,10 +863,12 @@ _push_vnc() {
 }
 
 _desktop_sequence() {
+	_messageNormal '_desktop_sequence: Start'
 	_start
 	_start_safeTmp_ssh "$@"
 	_prepare_vnc
 	
+	_messageNormal '_vnc_sequence: Launch: _vncserver'
 	# TODO WARNING Terminal echo (ie. "stty echo") lockup errors are possible as ssh is backgrounded without "-f".
 	cat "$vncPasswdFile".pln | _vnc_ssh -L "$vncPort":localhost:"$vncPort" "$@" 'env vncPort='"$vncPort"' vncPIDfile='"$vncPIDfile"' desktopEnvironmentGeometry='"$desktopEnvironmentGeometry"' desktopEnvironmentLaunch='"$desktopEnvironmentLaunch"' '"$safeTmpSSH"/cautossh' _vncserver' &
 	
@@ -725,11 +876,16 @@ _desktop_sequence() {
 	_waitPort localhost "$vncPort"
 	sleep 0.8 #VNC service may not always be ready when port is up.
 	
+	_messageNormal '_vnc_sequence: Ready: _waitPort. Launch: _vncviewer'
+	
 	cat "$vncPasswdFile".pln | bash -c 'env vncPort='"$vncPort"' destination_DISPLAY='"$DISPLAY"' '"$scriptAbsoluteLocation"' _vncviewer'
 	stty echo > /dev/null 2>&1
 	
+	_messageNormal '_vnc_sequence: Terminate: _vncserver_terminate'
+	
 	_vnc_ssh "$@" 'env vncPIDfile='"$vncPIDfile"' '"$safeTmpSSH"/cautossh' _vncserver_terminate'
 	
+	_messageNormal '_desktop_sequence: Stop'
 	_stop_safeTmp_ssh "$@"
 	_stop
 }
@@ -740,22 +896,28 @@ _desktop() {
 }
 
 _push_desktop_sequence() {
+	_messageNormal '_push_desktop_sequence: Start'
 	_start
 	_start_safeTmp_ssh "$@"
 	_prepare_vnc
 	
-	
+	_messageNormal '_push_desktop_sequence: Launch: _vncserver'
 	cat "$vncPasswdFile".pln | bash -c 'env vncPort='"$vncPort"' vncPIDfile='"$vncPIDfile_local"' desktopEnvironmentGeometry='"$desktopEnvironmentGeometry"' desktopEnvironmentLaunch='"$desktopEnvironmentLaunch"' '"$scriptAbsoluteLocation"' _vncserver' &
 	
 	
 	_waitPort localhost "$vncPort"
 	sleep 0.8 #VNC service may not always be ready when port is up.
 	
+	_messageNormal '_push_desktop_sequence: Ready: _waitPort. Launch: _vncviewer'
+	
 	cat "$vncPasswdFile".pln | _vnc_ssh -R "$vncPort":localhost:"$vncPort" "$@" 'env vncPort='"$vncPort"' destination_DISPLAY='""' '"$safeTmpSSH"/cautossh' _vncviewer'
 	stty echo > /dev/null 2>&1
 	
+	_messageNormal '_push_desktop_sequence: Terminate: _vncserver_terminate'
+	
 	bash -c 'env vncPIDfile='"$vncPIDfile_local"' '"$scriptAbsoluteLocation"' _vncserver_terminate'
 	
+	_messageNormal '_desktop_sequence: Stop'
 	_stop_safeTmp_ssh "$@"
 	_stop
 }
