@@ -1751,7 +1751,7 @@ _vncviewer_operations() {
 	_messagePlain_nominal 'init: _vncviewer_operations'
 	
 	_messagePlain_nominal 'Searching for X11 display.'
-	! _detect_x11 && _messagePlain_bad 'fail: _detect_x11'
+	! _detect_x11 && _messagePlain_warn 'fail: _detect_x11'
 	
 	export DISPLAY="$destination_DISPLAY"
 	export XAUTHORITY="$destination_AUTH"
@@ -1841,7 +1841,7 @@ _x11vnc_operations() {
 		
 		#-passwdfile cmd:"/bin/cat -"
 		#-noxrecord -noxfixes -noxdamage
-		if ! _x11vnc_command -localhost -rfbauth "$vncPasswdFile" -rfbport "$vncPort" -timeout 16 -xkb -display "$destination_DISPLAY" -auth "$destination_AUTH" -noxrecord -noxdamage
+		if ! _x11vnc_command -localhost -rfbauth "$vncPasswdFile" -rfbport "$vncPort" -timeout 48 -xkb -display "$destination_DISPLAY" -auth "$destination_AUTH" -noxrecord -noxdamage
 		then
 			_messagePlain_bad 'fail: x11vnc'
 			return 1
@@ -1923,7 +1923,7 @@ _vncserver_operations() {
 		type "$XvncCommand" > /dev/null 2>&1 && _messagePlain_good 'found: XvncCommand= '"$XvncCommand"
 		! type "$XvncCommand" > /dev/null 2>&1 && _messagePlain_bad 'missing: XvncCommand= '"$XvncCommand"
 		
-		"$XvncCommand" :"$vncDisplay" -depth 16 -geometry "$desktopEnvironmentGeometry" -localhost -rfbport "$vncPort" -rfbauth "$vncPasswdFile" &
+		"$XvncCommand" :"$vncDisplay" -depth 16 -geometry "$desktopEnvironmentGeometry" -localhost -rfbport "$vncPort" -rfbauth "$vncPasswdFile" -rfbwait 48000 &
 		echo $! > "$vncPIDfile"
 		
 		sleep 0.3
@@ -1966,7 +1966,7 @@ _vncserver_operations() {
 		type "$XvncCommand" > /dev/null 2>&1 && _messagePlain_good 'found: XvncCommand= '"$XvncCommand"
 		! type "$XvncCommand" > /dev/null 2>&1 && _messagePlain_bad 'missing: XvncCommand= '"$XvncCommand"
 		
-		"$XvncCommand" :"$vncDisplay" -depth 16 -geometry "$desktopEnvironmentGeometry" -nevershared -dontdisconnect -localhost -rfbport "$vncPort" -rfbauth "$vncPasswdFile" -rfbwait 12000 &
+		"$XvncCommand" :"$vncDisplay" -depth 16 -geometry "$desktopEnvironmentGeometry" -nevershared -dontdisconnect -localhost -rfbport "$vncPort" -rfbauth "$vncPasswdFile" -rfbwait 48000 &
 		echo $! > "$vncPIDfile"
 		
 		sleep 0.3
@@ -2075,7 +2075,7 @@ _vnc_sequence() {
 		_stop
 	fi
 	_messageNormal '_vnc_sequence: Ready: sleep, _checkPort. Launch: _vncviewer'
-	cat "$vncPasswdFile".pln | bash -c 'env vncPort='"$vncPort"' destination_DISPLAY='"$DISPLAY"' '"$scriptAbsoluteLocation"' _vncviewer'
+	cat "$vncPasswdFile".pln | bash -c 'env vncPort='"$vncPort"' destination_DISPLAY='"$DISPLAY"' destination_AUTH='"$XAUTHORITY"' '"$scriptAbsoluteLocation"' _vncviewer'
 	
 	sleep 3
 	if ! _checkPort localhost "$vncPort"
@@ -2085,7 +2085,7 @@ _vnc_sequence() {
 		_stop
 	fi
 	_messageNormal '_vnc_sequence: Ready: sleep, _checkPort. Launch: _vncviewer'
-	cat "$vncPasswdFile".pln | bash -c 'env vncPort='"$vncPort"' destination_DISPLAY='"$DISPLAY"' '"$scriptAbsoluteLocation"' _vncviewer'
+	cat "$vncPasswdFile".pln | bash -c 'env vncPort='"$vncPort"' destination_DISPLAY='"$DISPLAY"' destination_AUTH='"$XAUTHORITY"' '"$scriptAbsoluteLocation"' _vncviewer'
 	
 	sleep 9
 	if ! _checkPort localhost "$vncPort"
@@ -2095,7 +2095,7 @@ _vnc_sequence() {
 		_stop
 	fi
 	_messageNormal '_vnc_sequence: Ready: sleep, _checkPort. Launch: _vncviewer'
-	cat "$vncPasswdFile".pln | bash -c 'env vncPort='"$vncPort"' destination_DISPLAY='"$DISPLAY"' '"$scriptAbsoluteLocation"' _vncviewer'
+	cat "$vncPasswdFile".pln | bash -c 'env vncPort='"$vncPort"' destination_DISPLAY='"$DISPLAY"' destination_AUTH='"$XAUTHORITY"' '"$scriptAbsoluteLocation"' _vncviewer'
 	
 	
 	_messageNormal '_vnc_sequence: Done: final attempt: _vncviewer'
@@ -2185,7 +2185,7 @@ _desktop_sequence() {
 	
 	_messageNormal '_vnc_sequence: Ready: _waitPort. Launch: _vncviewer'
 	
-	cat "$vncPasswdFile".pln | bash -c 'env vncPort='"$vncPort"' destination_DISPLAY='"$DISPLAY"' '"$scriptAbsoluteLocation"' _vncviewer'
+	cat "$vncPasswdFile".pln | bash -c 'env vncPort='"$vncPort"' destination_DISPLAY='"$DISPLAY"' destination_AUTH='"$XAUTHORITY"' '"$scriptAbsoluteLocation"' _vncviewer'
 	stty echo > /dev/null 2>&1
 	
 	_messageNormal '_vnc_sequence: Terminate: _vncserver_terminate'
