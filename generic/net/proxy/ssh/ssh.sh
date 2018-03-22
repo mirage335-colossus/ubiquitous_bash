@@ -630,7 +630,7 @@ _vncserver_operations() {
 		local currentCount
 		for (( currentCount = 0 ; currentCount < 90 ; currentCount++ ))
 		do
-			xset q >/dev/null 2>&1 && _messagePlain_good 'connect: DISPLAY= '"$DISPLAY" && break
+			_timeout 3 xset q >/dev/null 2>&1 && _messagePlain_good 'connect: DISPLAY= '"$DISPLAY" && break
 			sleep 1
 		done
 		
