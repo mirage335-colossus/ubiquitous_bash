@@ -22,6 +22,19 @@ _gitInfo() {
 }
 
 _gitRemote() {
+	_gitInfo
+	
+	if [[ -e "$bareRepoDir" ]]
+	then
+		_showGitRepoURI
+		return 0
+	fi
+	
+	if ! [[ -e "$repoDir"/.git ]]
+	then
+		return 1
+	fi
+	
 	if git config --get remote.origin.url > /dev/null 2>&1
 	then
 		echo -n "git clone --recursive "
@@ -50,6 +63,15 @@ _gitImport() {
 	git clone "$@"
 	
 	cd "$scriptFolder"
+}
+
+_gitPull() {
+	git pull
+	git submodule update --recursive
+}
+
+_gitPullRecursive() {
+	find . -name .git -type d -exec bash -c 'echo ----- $(basename $(dirname $(realpath {}))) ; cd $(dirname $(realpath {})) ; '"$scriptAbsoluteLocation"' _gitPull' \;
 }
 
 # DANGER
