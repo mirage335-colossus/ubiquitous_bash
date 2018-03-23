@@ -70,6 +70,8 @@ _gitPull() {
 	git submodule update --recursive
 }
 
+# DANGER
+#Updates all git repositories recursively.
 _gitPullRecursive() {
 	find . -name .git -type d -exec bash -c 'echo ----- $(basename $(dirname $(realpath {}))) ; cd $(dirname $(realpath {})) ; '"$scriptAbsoluteLocation"' _gitPull' \;
 }
