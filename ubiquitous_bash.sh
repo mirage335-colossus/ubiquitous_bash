@@ -7170,7 +7170,7 @@ _gitNew() {
 }
 
 _gitCheck() {
-	find . -name .git -type d -exec bash -c 'echo ----- $(basename $(dirname $(realpath {}))) ; cd $(dirname $(realpath {})) ; git status' \;
+	find . -name .git -type d -prune -exec bash -c 'echo ----- $(basename $(dirname $(realpath {}))) ; cd $(dirname $(realpath {})) ; git status' \;
 }
 
 _gitImport() {
@@ -7192,7 +7192,7 @@ _gitPull() {
 # DANGER
 #Updates all git repositories recursively.
 _gitPullRecursive() {
-	find . -name .git -type d -exec bash -c 'echo ----- $(basename $(dirname $(realpath {}))) ; cd $(dirname $(realpath {})) ; '"$scriptAbsoluteLocation"' _gitPull' \;
+	find . -name .git -type d -prune -exec bash -c 'echo ----- $(basename $(dirname $(realpath {}))) ; cd $(dirname $(realpath {})) ; '"$scriptAbsoluteLocation"' _gitPull' \;
 }
 
 # DANGER
