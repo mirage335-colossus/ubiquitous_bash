@@ -24,11 +24,13 @@ _init_deps() {
 	export enUb_buildBash=""
 	export enUb_buildBashUbiquitous=""
 	
-	export enUb_user=""
+	export enUb_command=""
 	export enUb_synergy=""
 	
 	export enUb_hardware=""
 	export enUb_enUb_x220t=""
+	
+	export enUb_user=""
 }
 
 
@@ -146,6 +148,15 @@ _deps_fakehome() {
 	export enUb_fakehome="true"
 }
 
+_deps_command() {
+	export enUb_command="true"
+}
+
+_deps_synergy() {
+	_deps_command
+	export enUb_synergy="true"
+}
+
 _deps_hardware() {
 	_deps_notLean
 	export enUb_hardware="true"
@@ -160,11 +171,5 @@ _deps_x220t() {
 _deps_user() {
 	_deps_notLean
 	export enUb_user="true"
-}
-
-_deps_synergy() {
-	_deps_notLean
-	_deps_user
-	export enUb_synergy="true"
 }
 

@@ -23,11 +23,12 @@ _testProxySSH() {
 	
 	if [[ -e /usr/share/doc/realvnc-vnc-server ]] || type vnclicense >/dev/null 2>&1
 	then
+		export ubTAINT="true"
 		echo 'TAINT: unsupported vnc!'
 	fi
 	
-	#Desirable for _rsync backup.
-	! _wantDep fakeroot && echo 'warn: fakeroot not found'
+	#May be required by some _rsync backup scripts.
+	#! _wantDep fakeroot && echo 'warn: fakeroot not found'
 }
 
 _testRemoteSSH() {

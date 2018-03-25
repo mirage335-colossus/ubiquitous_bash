@@ -11,7 +11,7 @@ _compile_bash_deps() {
 		_deps_git
 		_deps_bup
 		
-		_deps_user
+		_deps_command
 		_deps_synergy
 		
 		return 0
@@ -38,11 +38,13 @@ _compile_bash_deps() {
 		
 		_deps_blockchain
 		
+		_deps_command
+		_deps_synergy
+		
 		_deps_hardware
 		_deps_x220t
 		
 		_deps_user
-		_deps_synergy
 		
 		_deps_proxy
 		_deps_proxy_special
@@ -268,9 +270,13 @@ _compile_bash_bundled() {
 	[[ "$enUb_blockchain" == "true" ]] && includeScriptList+=( "blockchain/ethereum"/ethereum_parity.sh )
 }
 
+_compile_bash_command() {
+	[[ "$enUb_command" == "true" ]] && [[ "$enUb_synergy" == "true" ]] && includeScriptList+=( "generic/net/command/synergy"/here_synergy.sh )
+	[[ "$enUb_command" == "true" ]] && [[ "$enUb_synergy" == "true" ]] && includeScriptList+=( "generic/net/command/synergy"/synergy.sh )
+}
+
 _compile_bash_user() {
-	[[ "$enUb_user" == "true" ]] && [[ "$enUb_synergy" == "true" ]] && includeScriptList+=( "user/synergy"/here_synergy.sh )
-	[[ "$enUb_user" == "true" ]] && [[ "$enUb_synergy" == "true" ]] && includeScriptList+=( "user/synergy"/synergy.sh )
+	true
 }
 
 _compile_bash_hardware() {
@@ -445,6 +451,8 @@ _compile_bash() {
 	
 	_compile_bash_bundled
 	_compile_bash_bundled_prog
+	
+	_compile_bash_command
 	
 	_compile_bash_user
 	
