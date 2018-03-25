@@ -168,6 +168,30 @@ _synergy_sequence() {
 	
 	bash -c 'env synergyPort='"$synergyPort"' destination_DISPLAY='"$DISPLAY"' destination_AUTH='"$XAUTHORITY"' '"$scriptAbsoluteLocation"' _synergyc'
 	
+	sleep 3
+	if ! _checkPort localhost "$synergyPort"
+	then
+		stty echo > /dev/null 2>&1
+		_stop_safeTmp_ssh "$@"
+		_stop
+	fi
+	
+	_messageNormal '_synergy_sequence: Ready: sleep, _checkPort. Launch: _synergyc'
+	
+	bash -c 'env synergyPort='"$synergyPort"' destination_DISPLAY='"$DISPLAY"' destination_AUTH='"$XAUTHORITY"' '"$scriptAbsoluteLocation"' _synergyc'
+	
+	sleep 9
+	if ! _checkPort localhost "$synergyPort"
+	then
+		stty echo > /dev/null 2>&1
+		_stop_safeTmp_ssh "$@"
+		_stop
+	fi
+	
+	_messageNormal '_synergy_sequence: Ready: sleep, _checkPort. Launch: _synergyc'
+	
+	bash -c 'env synergyPort='"$synergyPort"' destination_DISPLAY='"$DISPLAY"' destination_AUTH='"$XAUTHORITY"' '"$scriptAbsoluteLocation"' _synergyc'
+	
 	_stop_safeTmp_ssh "$@"
 	_stop
 }
@@ -192,6 +216,30 @@ _push_synergy_sequence() {
 	#Service may not always be ready when port is up.
 	
 	sleep 0.8
+	if ! _checkPort localhost "$synergyPort"
+	then
+		stty echo > /dev/null 2>&1
+		_stop_safeTmp_ssh "$@"
+		_stop
+	fi
+	
+	_messageNormal '_synergy_sequence: Ready: sleep, _checkPort. Launch: _synergyc'
+	
+	_synergy_ssh -L "$synergyPort":localhost:24800 "$@" 'env synergyPort='"$synergyPort"' '"$safeTmpSSH"/cautossh' _synergyc'
+	
+	sleep 3
+	if ! _checkPort localhost "$synergyPort"
+	then
+		stty echo > /dev/null 2>&1
+		_stop_safeTmp_ssh "$@"
+		_stop
+	fi
+	
+	_messageNormal '_synergy_sequence: Ready: sleep, _checkPort. Launch: _synergyc'
+	
+	_synergy_ssh -L "$synergyPort":localhost:24800 "$@" 'env synergyPort='"$synergyPort"' '"$safeTmpSSH"/cautossh' _synergyc'
+	
+	sleep 9
 	if ! _checkPort localhost "$synergyPort"
 	then
 		stty echo > /dev/null 2>&1
