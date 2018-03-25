@@ -1,5 +1,7 @@
 _test_synergy() {
 	_getDep synergy
+	_getDep synergyc
+	_getDep synergys
 	#_getDep quicksynergy
 }
 
@@ -13,9 +15,22 @@ _findPort_synergy() {
 
 _prepare_synergy() {
 	export synergyPort=$(_findPort_synergy)
+	_messagePlain_probe 'synergyPort= '"$synergyPort"
 }
 
-_synergy_command() {
+_synergy_command_client() {
+	#[[ "$synergyRemoteHostname" == "" ]] && export synergyRemoteHostname="generic"
+	#export HOME="$HOME"/'.ubcore'/net/"$synergyRemoteHostname"
+	
+	#export HOME="$HOME"/'.ubcore'/net/synergy
+	
+	mkdir -p "$HOME"
+	cd "$HOME"
+	
+	synergyc "$@"
+}
+
+_synergy_command_server() {
 	#[[ "$synergyRemoteHostname" == "" ]] && export synergyRemoteHostname="generic"
 	#export HOME="$HOME"/'.ubcore'/net/"$synergyRemoteHostname"
 	
@@ -40,7 +55,7 @@ _synergyc_operations() {
 	
 	_messagePlain_nominal 'Launching synergy (client).'
 	
-	_synergy_command "$@"
+	_synergy_command_client localhost:"$synergyPort"
 }
 
 _synergyc() {
@@ -60,7 +75,7 @@ _synergys_operations() {
 	
 	_messagePlain_nominal 'Launching synergy (server).'
 	
-	_synergy_command "$@"
+	_synergy_command_server "$@"
 }
 
 _synergys() {
@@ -71,6 +86,7 @@ _synergy_sequence() {
 	_messageNormal '_synergy_sequence Start'
 	_start
 	_start_safeTmp_ssh "$@"
+	_prepare_synergy
 	
 	_messageNormal '_synergy_sequence Launch: _synergys'
 	_synergy_ssh -L "$synergyPort":localhost:24800 "$@" 'env synergyPort='"$synergyPort"' '"$safeTmpSSH"/cautossh' _synergys' &
@@ -86,13 +102,14 @@ _synergy_sequence() {
 }
 
 _synergy() {
-	"$scriptAbsoluteLoation" _synergy_sequence "$@"
+	"scriptAbsoluteLocation" _synergy_sequence "$@"
 }
 
 _push_synergy_sequence() {
 	_messageNormal '_push_synergy_sequence Start'
 	_start
 	_start_safeTmp_ssh "$@"
+	_prepare_synergy
 	
 	_messageNormal '_push_synergy_sequence Launch: _synergys'
 	_synergy_ssh -L "$synergyPort":localhost:24800 "$@" 'env synergyPort='"$synergyPort"' '"$safeTmpSSH"/cautossh' _synergyc' &
@@ -108,5 +125,5 @@ _push_synergy_sequence() {
 }
 
 _push_synergy() {
-	"$scriptAbsoluteLoation" _push_synergy_sequence "$@"
+	"scriptAbsoluteLocation" _push_synergy_sequence "$@"
 }
