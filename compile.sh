@@ -760,6 +760,7 @@ _deps_bup() {
 
 _deps_notLean() {
 	_deps_git
+	_deps_bup
 	export enUb_notLean="true"
 }
 

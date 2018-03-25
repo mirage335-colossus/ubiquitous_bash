@@ -2814,10 +2814,10 @@ _permit_x11() {
 _report_detect_x11() {
 	_messagePlain_probe 'report: _report_detect_x11'
 	
-	[[ "$destination_DISPLAY" == "" ]] && _messagePlain_bad 'blank: $destination_DISPLAY'
+	[[ "$destination_DISPLAY" == "" ]] && _messagePlain_warn 'blank: $destination_DISPLAY'
 	[[ "$destination_DISPLAY" != "" ]] && _messagePlain_probe 'destination_DISPLAY= '"$destination_DISPLAY"
 	
-	[[ "$destination_AUTH" == "" ]] && _messagePlain_bad 'blank: $destination_AUTH'
+	[[ "$destination_AUTH" == "" ]] && _messagePlain_warn 'blank: $destination_AUTH'
 	[[ "$destination_AUTH" != "" ]] && _messagePlain_probe 'destination_AUTH= '"$destination_AUTH"
 	
 	return 0
@@ -2886,16 +2886,6 @@ _detect_x11() {
 		return 0
 	fi
 	
-	if _permit_x11 env DISPLAY=:1 XAUTHORITY="$XAUTHORITY" xset -q > /dev/null 2>&1
-	then
-		export destination_DISPLAY=":1"
-		export destination_AUTH="$XAUTHORITY"
-		
-		_messagePlain_good 'accept: $DISPLAY=:1 $XAUTHORITY'
-		_report_detect_x11
-		return 0
-	fi
-	
 	if _permit_x11 env DISPLAY=:10 XAUTHORITY="$XAUTHORITY" xset -q > /dev/null 2>&1
 	then
 		export destination_DISPLAY=":10"
@@ -2906,33 +2896,20 @@ _detect_x11() {
 		return 0
 	fi
 	
-	if _permit_x11 env DISPLAY=:11 XAUTHORITY="$XAUTHORITY" xset -q > /dev/null 2>&1
-	then
-		export destination_DISPLAY=":11"
-		export destination_AUTH="$XAUTHORITY"
-		
-		_messagePlain_good 'accept: $DISPLAY=:11 $XAUTHORITY'
-		_report_detect_x11
-		return 0
-	fi
-	
-	#export destination_AUTH=""
-	#_detect_x11_displays "$destination_AUTH" && return 0
-	
-	export destination_AUTH="$XAUTHORITY"
-	_messagePlain_nominal "Searching X11 display locations, XAUTHORITY as set."
+	export destination_AUTH=$(ps -eo args -fp $(pgrep Xorg | head -n 1) 2>/dev/null | tail -n+2 | sort | sed 's/.*X.*\-auth\ \(.*\)/\1/' | sed 's/\ \-.*//g')
+	_messagePlain_nominal "Searching X11 display locations, from process list"
 	_messagePlain_probe 'destination_AUTH= '"$destination_AUTH"
-	_detect_x11_displays "$destination_AUTH" && _messagePlain_good 'return: _detect_x11' && _report_detect_x11 && return 0
+	[[ -e "$destination_AUTH" ]] && _detect_x11_displays "$destination_AUTH" && _messagePlain_good 'return: _detect_x11' && _report_detect_x11 && return 0
 	
 	export destination_AUTH="$HOME"/.Xauthority
 	_messagePlain_nominal "Searching X11 display locations, XAUTHORITY at HOME."
 	_messagePlain_probe 'destination_AUTH= '"$destination_AUTH"
 	[[ -e "$destination_AUTH" ]] && _detect_x11_displays "$destination_AUTH" && _messagePlain_good 'return: _detect_x11' && _report_detect_x11 && return 0
 	
-	export destination_AUTH=$(ps -eo args -fp $(pgrep Xorg | head -n 1) 2>/dev/null | tail -n+2 | sort | sed 's/.*X.*\-auth\ \(.*\)/\1/' | sed 's/\ \-.*//g')
-	_messagePlain_nominal "Searching X11 display locations, from process list"
+	export destination_AUTH="$XAUTHORITY"
+	_messagePlain_nominal "Searching X11 display locations, XAUTHORITY as set."
 	_messagePlain_probe 'destination_AUTH= '"$destination_AUTH"
-	[[ -e "$destination_AUTH" ]] && _detect_x11_displays "$destination_AUTH" && _messagePlain_good 'return: _detect_x11' && _report_detect_x11 && return 0
+	_detect_x11_displays "$destination_AUTH" && _messagePlain_good 'return: _detect_x11' && _report_detect_x11 && return 0
 	
 	#Unreliable, extra dependencies, last resort.
 	local destination_AUTH
@@ -10870,6 +10847,7 @@ _deps_bup() {
 
 _deps_notLean() {
 	_deps_git
+	_deps_bup
 	export enUb_notLean="true"
 }
 

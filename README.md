@@ -1,3 +1,4 @@
+Top-level subystem integration framework.
 
 Multiplatform structured programming and application virtualization middleware. Architecturally, a suite of functions following a UNIX-like philosophy, compilable to a single dedicated monolithic kernel for completely portable (meta)applications. Emphasis on mitigating lock-in.
 
