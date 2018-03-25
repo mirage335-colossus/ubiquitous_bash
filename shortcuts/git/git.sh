@@ -50,10 +50,6 @@ _gitNew() {
 	git commit -a -m "first commit"
 }
 
-_gitCheck() {
-	find . -name .git -type d -prune -exec bash -c 'echo ----- $(basename $(dirname $(realpath {}))) ; cd $(dirname $(realpath {})) ; git status' \;
-}
-
 _gitImport() {
 	cd "$scriptFolder"
 	
@@ -65,15 +61,77 @@ _gitImport() {
 	cd "$scriptFolder"
 }
 
+_findGit_sequence() {
+	cd "$1"
+	shift
+	
+	if [[ -e "./.git" ]]
+	then
+		"$@"
+		return 0
+	fi
+	
+	find -L . -mindepth 1 -maxdepth 1 -type d -exec "$scriptAbsoluteLocation" _findGit_sequence {} "$@" \;
+}
+
+#Recursively searches for directories containing ".git".
+_findGit() {
+	if [[ "$findGit_firstRun" == "true" ]]
+	then
+		cd "$1"
+		shift
+	fi
+	
+	export findGit_firstRun="true"
+	
+	if [[ -e "./.git" ]]
+	then
+		"$@"
+		return 0
+	fi
+	
+	find -L . -mindepth 1 -maxdepth 1 -type d -exec "$scriptAbsoluteLocation" _findGit_sequence {} "$@" \;
+}
+
 _gitPull() {
 	git pull
 	git submodule update --recursive
 }
 
+_gitCheck_sequence() {
+	echo '-----'
+	
+	local checkRealpath
+	checkRealpath=$(realpath .)
+	local checkDirname
+	checkDirname=$(dirname "$checkRealpath")
+	local checkBasename
+	checkBasename=$(basename "$checkDirname")
+	
+	git status
+}
+
+_gitCheck() {
+	_findGit "$scriptAbsoluteLocation" _gitCheck_sequence
+}
+
+_gitPullRecursive_sequence() {
+	echo '-----'
+	
+	local checkRealpath
+	checkRealpath=$(realpath .)
+	local checkDirname
+	checkDirname=$(dirname "$checkRealpath")
+	local checkBasename
+	checkBasename=$(basename "$checkDirname")
+	
+	"$scriptAbsoluteLocation" _gitPull
+}
+
 # DANGER
 #Updates all git repositories recursively.
 _gitPullRecursive() {
-	find . -name .git -type d -prune -exec bash -c 'echo ----- $(basename $(dirname $(realpath {}))) ; cd $(dirname $(realpath {})) ; '"$scriptAbsoluteLocation"' _gitPull' \;
+	_findGit "$scriptAbsoluteLocation" _gitPullRecursive_sequence
 }
 
 # DANGER
