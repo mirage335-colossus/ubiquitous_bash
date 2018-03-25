@@ -7195,14 +7195,6 @@ _findGit_sequence() {
 
 #Recursively searches for directories containing ".git".
 _findGit() {
-	if [[ "$findGit_firstRun" == "true" ]]
-	then
-		cd "$1"
-		shift
-	fi
-	
-	export findGit_firstRun="true"
-	
 	if [[ -e "./.git" ]]
 	then
 		"$@"
@@ -7210,8 +7202,6 @@ _findGit() {
 	fi
 	
 	find -L . -mindepth 1 -maxdepth 1 -type d -exec "$scriptAbsoluteLocation" _findGit_sequence {} "$@" \;
-	
-	export findGit_firstRun="false"
 }
 
 _gitPull() {
