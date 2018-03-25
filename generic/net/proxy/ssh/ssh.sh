@@ -639,7 +639,7 @@ _vncserver_operations() {
 		
 		bash -c "$desktopEnvironmentLaunch" &
 		
-		sleep 12
+		sleep 48
 		
 		return 0
 	fi
@@ -683,7 +683,7 @@ _vncserver_operations() {
 		
 		bash -c "$desktopEnvironmentLaunch" &
 		
-		sleep 12
+		sleep 48
 		
 		return 0
 	fi

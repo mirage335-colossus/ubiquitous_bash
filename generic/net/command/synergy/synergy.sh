@@ -42,10 +42,11 @@ _synergy_command_server() {
 	mkdir -p "$HOME"
 	cd "$HOME"
 	
-	pgrep ^synergy$ && return 0
+	pgrep ^synergy$ && sleep 48 && return 0
 	
 	synergy "$@" &
 	[[ "$synergyPIDfile" != "" ]] && echo $! > "$synergyPIDfile"
+	sleep 48
 }
 
 _synergyc_operations() {
@@ -156,7 +157,7 @@ _synergy_sequence() {
 	#Service may not always be ready when port is up.
 	
 	sleep 0.8
-	if ! _checkPort localhost "$vncPort"
+	if ! _checkPort localhost "$synergyPort"
 	then
 		stty echo > /dev/null 2>&1
 		_stop_safeTmp_ssh "$@"
@@ -191,7 +192,7 @@ _push_synergy_sequence() {
 	#Service may not always be ready when port is up.
 	
 	sleep 0.8
-	if ! _checkPort localhost "$vncPort"
+	if ! _checkPort localhost "$synergyPort"
 	then
 		stty echo > /dev/null 2>&1
 		_stop_safeTmp_ssh "$@"
