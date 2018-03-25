@@ -174,6 +174,8 @@ _test() {
 	
 	_tryExec "_test_gparted"
 	
+	_tryExec "_test_synergy"
+	
 	_tryExec "_test_devemacs"
 	
 	_tryExec "_test_ethereum"

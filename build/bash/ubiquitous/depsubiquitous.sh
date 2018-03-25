@@ -149,6 +149,10 @@ _deps_fakehome() {
 }
 
 _deps_command() {
+	_deps_os_x11
+	_deps_proxy
+	_deps_proxy_special
+	
 	export enUb_command="true"
 }
 
