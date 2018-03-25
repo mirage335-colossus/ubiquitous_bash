@@ -7227,6 +7227,8 @@ _gitCheck_sequence() {
 	local checkBasename
 	checkBasename=$(basename "$checkDirname")
 	
+	echo "$checkBasename"
+	
 	git status
 }
 
@@ -7243,6 +7245,8 @@ _gitPullRecursive_sequence() {
 	checkDirname=$(dirname "$checkRealpath")
 	local checkBasename
 	checkBasename=$(basename "$checkDirname")
+	
+	echo "$checkBasename"
 	
 	"$scriptAbsoluteLocation" _gitPull
 }
