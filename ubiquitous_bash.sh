@@ -7210,6 +7210,8 @@ _findGit() {
 	fi
 	
 	find -L . -mindepth 1 -maxdepth 1 -type d -exec "$scriptAbsoluteLocation" _findGit_sequence {} "$@" \;
+	
+	export findGit_firstRun="false"
 }
 
 _gitPull() {
@@ -7222,10 +7224,8 @@ _gitCheck_sequence() {
 	
 	local checkRealpath
 	checkRealpath=$(realpath .)
-	local checkDirname
-	checkDirname=$(dirname "$checkRealpath")
 	local checkBasename
-	checkBasename=$(basename "$checkDirname")
+	checkBasename=$(basename "$checkRealpath")
 	
 	echo "$checkBasename"
 	
@@ -7241,10 +7241,8 @@ _gitPullRecursive_sequence() {
 	
 	local checkRealpath
 	checkRealpath=$(realpath .)
-	local checkDirname
-	checkDirname=$(dirname "$checkRealpath")
 	local checkBasename
-	checkBasename=$(basename "$checkDirname")
+	checkBasename=$(basename "$checkRealpath")
 	
 	echo "$checkBasename"
 	
