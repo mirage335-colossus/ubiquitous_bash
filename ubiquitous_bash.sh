@@ -9475,8 +9475,8 @@ _prepare_x220() {
 
 _x220_getTrackpoint() {
 	export xi_devID=$(xinput list | grep 'TPPS/2 IBM TrackPoint' | cut -d= -f 2 | cut -f 1)
-	export xi_state=$(xinput -list-props $xi_devID | grep -i 'Device Enabled' | cut -d\) -f2 | sed 's/[^0-9]//g')
-	export xi_propNumber=$(xinput -list-props $xi_devID | grep -i 'Device Enabled' | cut -d\( -f2 | cut -d\) -f1 | sed 's/[^0-9]//g')
+	export xi_state=$(xinput -list-props "$xi_devID" | grep -i 'Device Enabled' | cut -d\) -f2 | sed 's/[^0-9]//g')
+	export xi_propNumber=$(xinput -list-props "$xi_devID" | grep -i 'Device Enabled' | cut -d\( -f2 | cut -d\) -f1 | sed 's/[^0-9]//g')
 }
 
 _x220_setTrackPoint() {
@@ -9488,18 +9488,18 @@ _x220_setTrackPoint() {
 
 _x220_enableTrackPoint() {
 	_messagePlain_nominal "Enabling TrackPoint."
-	_setTrackPoint 1
+	_x220_setTrackPoint 1
 }
 
 _x220_disableTrackPoint() {
 	_messagePlain_nominal "Disabling TrackPoint."
-	_setTrackPoint 0
+	_x220_setTrackPoint 0
 }
 
 _x220_getTouch() {
 	export xi_devID=$(xinput list | grep 'Wacom ISDv4 E6 Finger touch' | cut -d= -f 2 | cut -f 1)
-	export xi_state=$(xinput -list-props $devID | grep -i 'Device Enabled' | cut -d\) -f2 | sed 's/[^0-9]//g')
-	export xi_propNumber=$(xinput -list-props $devID | grep -i 'Device Enabled' | cut -d\( -f2 | cut -d\) -f1 | sed 's/[^0-9]//g')
+	export xi_state=$(xinput -list-props "$xi_devID" | grep -i 'Device Enabled' | cut -d\) -f2 | sed 's/[^0-9]//g')
+	export xi_propNumber=$(xinput -list-props "$xi_devID" | grep -i 'Device Enabled' | cut -d\( -f2 | cut -d\) -f1 | sed 's/[^0-9]//g')
 }
 
 _x220_setTouch() {
@@ -9549,7 +9549,7 @@ _x220_wacomLVDS() {
 }
 
 _x220_setWacomRotation() {
-	wacomLVDS
+	_x220_wacomLVDS
 	
 	xsetwacom --set 'Wacom ISDv4 E6 Pen stylus' rotate $1
 	xsetwacom --set 'Wacom ISDv4 E6 Pen eraser' rotate $1
