@@ -9179,6 +9179,10 @@ _parity_attach() {
 	_ethereum_home _geth attach ~/.local/share/io.parity.ethereum/jsonrpc.ipc "$@"
 }
 
+_setup_command_commands() {
+	find . -name '_synergy' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
+}
+
 _here_synergy_config() {
 	true
 }
@@ -10859,6 +10863,7 @@ _setupCommands() {
 	#find . -name '_command' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
 	
 	_tryExec "_setup_ssh_commands"
+	_tryExec "_setup_command_commands"
 }
 
 _setup_pre() {
@@ -11581,6 +11586,8 @@ _compile_bash_bundled() {
 }
 
 _compile_bash_command() {
+	[[ "$enUb_command" == "true" ]] && includeScriptList+=( "generic/net/command"/command.sh )
+	
 	[[ "$enUb_command" == "true" ]] && [[ "$enUb_synergy" == "true" ]] && includeScriptList+=( "generic/net/command/synergy"/here_synergy.sh )
 	[[ "$enUb_command" == "true" ]] && [[ "$enUb_synergy" == "true" ]] && includeScriptList+=( "generic/net/command/synergy"/synergy.sh )
 }

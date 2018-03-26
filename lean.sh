@@ -2218,6 +2218,7 @@ _setupCommands() {
 	#find . -name '_command' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
 	
 	_tryExec "_setup_ssh_commands"
+	_tryExec "_setup_command_commands"
 }
 
 _setup_pre() {

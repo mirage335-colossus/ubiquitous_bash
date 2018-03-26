@@ -271,6 +271,8 @@ _compile_bash_bundled() {
 }
 
 _compile_bash_command() {
+	[[ "$enUb_command" == "true" ]] && includeScriptList+=( "generic/net/command"/command.sh )
+	
 	[[ "$enUb_command" == "true" ]] && [[ "$enUb_synergy" == "true" ]] && includeScriptList+=( "generic/net/command/synergy"/here_synergy.sh )
 	[[ "$enUb_command" == "true" ]] && [[ "$enUb_synergy" == "true" ]] && includeScriptList+=( "generic/net/command/synergy"/synergy.sh )
 }
