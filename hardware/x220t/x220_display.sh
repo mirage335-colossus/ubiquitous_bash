@@ -103,6 +103,8 @@ _x220_tablet_N000() {
 	
 	_x220_enableTouch
 	_x220_enableTrackPoint
+	
+	_reset_KDE
 }
 
 _x220_tablet_E090() {
@@ -116,6 +118,8 @@ _x220_tablet_E090() {
 	
 	_x220_disableTouch
 	_x220_disableTrackPoint
+	
+	_reset_KDE
 }
 
 _x220_tablet_S180() {
@@ -129,10 +133,16 @@ _x220_tablet_S180() {
 	
 	_x220_enableTouch
 	_x220_disableTrackPoint
+	
+	_reset_KDE
 }
 
 #Flip through tablet rotations. Recommend binding to key or quicklaunch.
 _x220_tablet_flip() {
+	_messagePlain_nominal "Tablet - Flip"
+	
+	_prepare_x220
+	
 	if [[ ! -f "$ub_hardware_x220_dir"/screenRotationState ]]
 	then
 		echo 'S180' > "$ub_hardware_x220_dir"/screenRotationState
@@ -141,16 +151,19 @@ _x220_tablet_flip() {
 	local currentState
 	currentState=$(cat "$ub_hardware_x220_dir"/screenRotationState)
 	
+	_messagePlain_probe "currentState= ""$currentState"
+	
 	case "$currentState" in
-		S180|N00)
+		N000)
 		_x220_tablet_E090
 		;;
 		E090)
 		_x220_tablet_S180
 		;;
+		S180)
+		_x220_tablet_N000
+		;;
 	esac
-	
-	_reset_KDE
 }
 
 
