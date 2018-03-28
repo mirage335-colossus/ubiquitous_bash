@@ -1311,6 +1311,8 @@ _testProxySSH() {
 	#For both _package and _rsync .
 	! _wantDep rsync && echo 'warn: no rsync'
 	
+	! _wantDep sshfs && echo 'warn: sshfs not found'
+	
 	! _wantDep base64 && echo 'warn: no base64'
 	
 	! _wantDep vncviewer && echo 'warn: no vncviewer, recommend tigervnc'
@@ -1474,6 +1476,50 @@ _ssh() {
 	
 	local sshExitStatus
 	"$scriptAbsoluteLocation" _ssh_sequence "$@"
+	sshExitStatus="$?"
+	
+	export sshInContainment=""
+	
+	return "$sshExitStatus"
+}
+
+# WARNING Structure should match _ssh_sequence .
+_sshfs_sequence() {
+	_start
+	
+	export sshBase="$safeTmp"/.ssh
+	_prepare_ssh
+	
+	#_setup_ssh
+	_setup_ssh_operations
+	
+	local sshExitStatus
+	sshfs -F "$sshDir"/config "$@"
+	sshExitStatus="$?"
+	
+	#Preventative workaround, not normally necessary.
+	stty echo > /dev/null 2>&1
+	
+	_setup_ssh_merge_known_hosts
+	
+	_stop "$sshExitStatus"
+}
+
+# WARNING Structure should match _ssh .
+_sshfs() {
+	if [[ "$sshInContainment" == "true" ]]
+	then
+		if sshfs -F "$sshDir"/config "$@"
+		then
+			return 0
+		fi
+		return 1
+	fi
+	
+	export sshInContainment="true"
+	
+	local sshExitStatus
+	"$scriptAbsoluteLocation" _sshfs_sequence "$@"
 	sshExitStatus="$?"
 	
 	export sshInContainment=""
@@ -2376,6 +2422,8 @@ _setup_ssh() {
 _setup_ssh_commands() {
 	find . -name '_ssh' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
 	find . -name '_rsync' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
+	
+	find . -name '_sshfs' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
 	
 	find . -name '_web' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
 	
