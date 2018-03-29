@@ -13,26 +13,31 @@ _unset_vbox() {
 	
 	export VBOX_IPC_SOCKETID=""
 	export VBoxXPCOMIPCD_PIDfile=""
+	
+	_messagePlain_nominal 'clear: _unset_vbox'
 }
 
 _reset_vboxLabID() {
-	[[ "$VBOX_ID_FILE" == "" ]] && return 1
+	[[ "$VBOX_ID_FILE" == "" ]] && _messagePlain_bad 'blank: VBOX_ID_FILE' && return 1
 	
 	rm -f "$VBOX_ID_FILE" > /dev/null 2>&1
 	
-	[[ -e "$VBOX_ID_FILE" ]] && return 1
+	[[ -e "$VBOX_ID_FILE" ]] && _messagePlain_bad 'fail: VBOX_ID_FILE exists' && return 1
 	
 	return 0
 }
 
 #"$1" == virtualbox instance directory (optional)
 _prepare_vbox() {
+	_messagePlain_nominal 'init: _prepare_vbox'
+	
 	_unset_vbox
 	
 	export vBox_vdi="$scriptLocal/_vboxvdi"
 	
 	export vBoxInstanceDir="$scriptLocal"
 	[[ "$1" != "" ]] && export vBoxInstanceDir="$1"
+	_messagePlain_probe 'vBoxInstanceDir= '"$vBoxInstanceDir"
 	
 	mkdir -p "$vBoxInstanceDir" > /dev/null 2>&1 || return 1
 	mkdir -p "$scriptLocal" > /dev/null 2>&1 || return 1
@@ -43,7 +48,7 @@ _prepare_vbox() {
 	export VBOX_ID_FILE
 	VBOX_ID_FILE="$vBoxInstanceDir"/vbox.id
 	
-	_pathLocked _reset_vboxLabID || return 1
+	! _pathLocked _reset_vboxLabID && _messagePlain_bad 'fail: path has changed and lock not reset' && return 1
 	
 	[[ ! -e "$VBOX_ID_FILE" ]] && sleep 0.1 && [[ ! -e "$VBOX_ID_FILE" ]] && echo -e -n "$sessionid" > "$VBOX_ID_FILE" 2> /dev/null
 	[[ -e "$VBOX_ID_FILE" ]] && export VBOXID=$(cat "$VBOX_ID_FILE" 2> /dev/null)
@@ -60,8 +65,8 @@ _prepare_vbox() {
 	
 	
 	
-	[[ "$VBOXID" == "" ]] && return 1
-	[[ ! -e "$VBOX_ID_FILE" ]] && return 1
+	[[ "$VBOXID" == "" ]] && _messagePlain_bad 'blank: VBOXID' && return 1
+	[[ ! -e "$VBOX_ID_FILE" ]] && _messagePlain_bad 'missing: VBOX_ID_FILE= '"$VBOX_ID_FILE" && return 1
 	
 	
 	mkdir -p "$VBOX_USER_HOME" > /dev/null 2>&1 || return 1
@@ -73,7 +78,7 @@ _prepare_vbox() {
 	oldLinkPath=$(readlink "$VBOX_USER_HOME_short")
 	[[ "$oldLinkPath" != "$VBOX_USER_HOME_local" ]] && ln -sf "$VBOX_USER_HOME_local" "$VBOX_USER_HOME_short" > /dev/null 2>&1
 	oldLinkPath=$(readlink "$VBOX_USER_HOME_short")
-	[[ "$oldLinkPath" != "$VBOX_USER_HOME_local" ]] && return 1
+	[[ "$oldLinkPath" != "$VBOX_USER_HOME_local" ]] && _messagePlain_bad 'fail: symlink VBOX_USER_HOME_local to VBOX_USER_HOME_short' && return 1
 	
 	return 0
 }

@@ -6062,8 +6062,8 @@ _testVBox() {
 
 _checkVBox_raw() {
 	#Use existing VDI image if available.
-	[[ -e "$scriptLocal"/vm.vdi ]] && return 1
-	[[ ! -e "$scriptLocal"/vm.img ]] && return 1
+	[[ -e "$scriptLocal"/vm.vdi ]] && _messagePlain_bad 'conflict: vm.vdi' && return 1
+	[[ ! -e "$scriptLocal"/vm.img ]] && _messagePlain_bad 'missing: vm.img' && return 1
 	
 	return 0
 }
@@ -6072,33 +6072,47 @@ _checkVBox_raw() {
 # Per VirtualBox developers, "This is a development tool and shall only be used to analyse problems. It is completely unsupported and will change in incompatible ways without warning."
 # If that happens, this function will be revised quickly, possibly to the point of generating the VMDK file itself with a here document instead of VirtualBox commands. See "_diag/data/vmdkRawExample".
 _create_vbox_raw() {
-	VBoxManage internalcommands createrawvmdk -filename "$vboxRaw" -rawdisk "$1" > "$vboxRaw".log
+	if ! VBoxManage internalcommands createrawvmdk -filename "$vboxRaw" -rawdisk "$1" > "$vboxRaw".log
+	then
+		_messagePlain_bad 'fail: 'VBoxManage internalcommands createrawvmdk -filename "$vboxRaw" -rawdisk "$1" '>' "$vboxRaw".log
+	fi
+	return 0
 }
 
 
 _mountVBox_raw_sequence() {
+	_messagePlain_nominal 'start: _mountVBox_raw_sequence'
 	_start
 	
 	_checkVBox_raw || _stop 1
 	
-	_wantSudo || return 1
+	! _wantSudo && _messagePlain_bad 'bad: sudo' && return 1
 	
 	_prepare_instance_vbox
 	
 	rm -f "$vboxRaw" > /dev/null 2>&1
 	
-	sudo -n losetup -f -P --show "$scriptLocal"/vm.img > "$safeTmp"/vboxloop 2> /dev/null || _stop 1
+	_messagePlain_nominal 'Creating loopback.'
+	! sudo -n losetup -f -P --show "$scriptLocal"/vm.img > "$safeTmp"/vboxloop 2> /dev/null && _messagePlain_bad 'fail: losetup' && _stop 1
 	
-	cp -n "$safeTmp"/vboxloop "$scriptLocal"/vboxloop > /dev/null 2>&1 || _stop 1
+	! cp -n "$safeTmp"/vboxloop "$scriptLocal"/vboxloop > /dev/null 2>&1 && _messagePlain_bad 'fail: copy vboxloop' && _stop 1
 	
 	local vboximagedev
 	vboximagedev=$(cat "$safeTmp"/vboxloop)
 	
-	_tryExecFull _hook_systemd_shutdown_action "_closeVBoxRaw" "$sessionid"
+	if _tryExecFull _hook_systemd_shutdown_action "_closeVBoxRaw" "$sessionid"
+	then
+		_messagePlain_good 'pass: _hook_systemd_shutdown_action'
+	else
+		_messagePlain_bad 'fail: _hook_systemd_shutdown_action'
+	fi
 	
-	sudo chown "$USER" "$vboximagedev" || _stop 1
+	! sudo -n chown "$USER" "$vboximagedev" && _messagePlain_bad 'chown vboximagedev= '"$vboximagedev" && _stop 1
+	
+	_messagePlain_nominal 'Creating VBoxRaw.'
 	_create_vbox_raw "$vboximagedev"
 	
+	_messagePlain_nominal 'stop: _mountVBox_raw_sequence'
 	_safeRMR "$instancedVirtDir" || _stop 1
 	_stop 0
 }
@@ -6136,6 +6150,7 @@ _waitVBox_closing() {
 _openVBoxRaw() {
 	_checkVBox_raw || _stop 1
 	
+	_messagePlain_nominal 'launch: _open _waitVBox_opening _mountVBox_raw'
 	_open _waitVBox_opening _mountVBox_raw
 }
 
@@ -6263,7 +6278,15 @@ _set_instance_vbox_type() {
 	[[ "$vboxOStype" == "" ]] && _readLocked "$lock_open" && export vboxOStype=Debian_64
 	[[ "$vboxOStype" == "" ]] && export vboxOStype=WindowsXP
 	
-	VBoxManage createvm --name "$sessionid" --ostype "$vboxOStype" --register --basefolder "$VBOX_USER_HOME_short"
+	_messagePlain_probe 'vboxOStype= '"$vboxOStype"
+	
+	if VBoxManage createvm --name "$sessionid" --ostype "$vboxOStype" --register --basefolder "$VBOX_USER_HOME_short"
+	then
+		_messagePlain_probe VBoxManage createvm --name "$sessionid" --ostype "$vboxOStype" --register --basefolder "$VBOX_USER_HOME_short"
+		return 0
+	fi
+	_messagePlain_bad 'fail: 'VBoxManage createvm --name "$sessionid" --ostype "$vboxOStype" --register --basefolder "$VBOX_USER_HOME_short"
+	return 1
 }
 
 _set_instance_vbox_features() {
@@ -6272,59 +6295,95 @@ _set_instance_vbox_features() {
 	local vboxChipset
 	vboxChipset="ich9"
 	#[[ "$vboxOStype" == *"Win"*"XP"* ]] && vboxChipset="piix3"
+	_messagePlain_probe 'vboxChipset= '"$vboxChipset"
 	
 	local vboxNictype
 	vboxNictype="82543GC"
 	[[ "$vboxOStype" == *"Win"*"10"* ]] && vboxNictype="82540EM"
+	_messagePlain_probe 'vboxNictype= '"$vboxNictype"
 	
 	local vboxAudioController
 	vboxAudioController="ac97"
 	[[ "$vboxOStype" == *"Win"*"10"* ]] && vboxAudioController="hda"
+	_messagePlain_probe 'vboxAudioController= '"$vboxAudioController"
 	
 	[[ "$vmMemoryAllocation" == "" ]] && vmMemoryAllocation=vmMemoryAllocationDefault
+	_messagePlain_probe 'vmMemoryAllocation= '"$vmMemoryAllocation"
 	
-	VBoxManage modifyvm "$sessionid" --boot1 disk --biosbootmenu disabled --bioslogofadein off --bioslogofadeout off --bioslogodisplaytime 1 --vram 64 --memory "$vmMemoryAllocation" --nic1 nat --nictype1 "$vboxNictype" --clipboard bidirectional --accelerate3d off --accelerate2dvideo off --vrde off --audio pulse --usb on --cpus 4 --ioapic on --acpi on --pae on --chipset "$vboxChipset" --audiocontroller="$vboxAudioController"
+	_messagePlain_nominal "Setting VBox VM features."
+	if ! VBoxManage modifyvm "$sessionid" --boot1 disk --biosbootmenu disabled --bioslogofadein off --bioslogofadeout off --bioslogodisplaytime 1 --vram 64 --memory "$vmMemoryAllocation" --nic1 nat --nictype1 "$vboxNictype" --clipboard bidirectional --accelerate3d off --accelerate2dvideo off --vrde off --audio pulse --usb on --cpus 4 --ioapic on --acpi on --pae on --chipset "$vboxChipset" --audiocontroller="$vboxAudioController"
+	then
+		_messagePlain_probe VBoxManage modifyvm "$sessionid" --boot1 disk --biosbootmenu disabled --bioslogofadein off --bioslogofadeout off --bioslogodisplaytime 1 --vram 64 --memory "$vmMemoryAllocation" --nic1 nat --nictype1 "$vboxNictype" --clipboard bidirectional --accelerate3d off --accelerate2dvideo off --vrde off --audio pulse --usb on --cpus 4 --ioapic on --acpi on --pae on --chipset "$vboxChipset" --audiocontroller="$vboxAudioController"
+		_messagePlain_bad 'fail: VBoxManage'
+		return 1
+	fi
+	return 0
 	
 }
 
 _set_instance_vbox_share() {
 	#VBoxManage sharedfolder add "$sessionid" --name "root" --hostpath "/"
-	[[ "$sharedHostProjectDir" != "" ]] && VBoxManage sharedfolder add "$sessionid" --name "appFolder" --hostpath "$sharedHostProjectDir"
+	if [[ "$sharedHostProjectDir" != "" ]]
+	then
+		_messagePlain_probe VBoxManage sharedfolder add "$sessionid" --name "appFolder" --hostpath "$sharedHostProjectDir"
+		
+		! VBoxManage sharedfolder add "$sessionid" --name "appFolder" --hostpath "$sharedHostProjectDir" && _messagePlain_warn 'fail: mount sharedHostProjectDir= '"$sharedHostProjectDir"
+	fi
 	
-	[[ -e "$HOME"/Downloads ]] && VBoxManage sharedfolder add "$sessionid" --name "Downloads" --hostpath "$HOME"/Downloads
+	if [[ -e "$HOME"/Downloads ]]
+	then
+		_messagePlain_probe VBoxManage sharedfolder add "$sessionid" --name "Downloads" --hostpath "$HOME"/Downloads
+		
+		! VBoxManage sharedfolder add "$sessionid" --name "Downloads" --hostpath "$HOME"/Downloads && _messagePlain_warn 'fail: mount (shared) Downloads= '"$HOME"/Downloads
+	fi
 }
 
 _set_instance_vbox_command() {
-	_commandBootdisc "$@" || return 1
+	_messagePlain_nominal 'Creating BootDisc.'
+	! _commandBootdisc "$@" && _messagePlain_bad 'fail: _commandBootdisc' && return 1
+	return 0
 }
 
 _create_instance_vbox() {
+	
 	#Use existing VDI image if available.
-	! [[ -e "$scriptLocal"/vm.vdi ]] && _openVBoxRaw
+	if ! [[ -e "$scriptLocal"/vm.vdi ]]
+	then
+		_messagePlain_nominal 'Missing VDI. Attempting to create from IMG.'
+		_openVBoxRaw
+	fi
+	
+	_messagePlain_nominal 'Checking VDI file.'
 	export vboxInstanceDiskImage="$scriptLocal"/vm.vdi
 	_readLocked "$lock_open" && vboxInstanceDiskImage="$vboxRaw"
-	! [[ -e "$vboxInstanceDiskImage" ]] && return 1
+	! [[ -e "$vboxInstanceDiskImage" ]] && _messagePlain_bad 'missing: vboxInstanceDiskImage= '"$vboxInstanceDiskImage" && return 1
 	
+	_messageNominal 'Determining OS type.'
 	_set_instance_vbox_type
 	
-	_set_instance_vbox_features
+	! _set_instance_vbox_features && _messageError 'FAIL' && return 1
 	
 	_set_instance_vbox_command "$@"
 	
+	_messageNominal 'Mounting shared filesystems.'
 	_set_instance_vbox_share
 	
-	VBoxManage storagectl "$sessionid" --name "IDE Controller" --add ide --controller PIIX4
+	_messageNominal 'Attaching local filesystems.'
+	! VBoxManage storagectl "$sessionid" --name "IDE Controller" --add ide --controller PIIX4 && _messagePlain_bad 'fail: VBoxManage... attach ide controller'
 	
 	#export vboxDiskMtype="normal"
 	[[ "$vboxDiskMtype" == "" ]] && export vboxDiskMtype="multiattach"
-	VBoxManage storageattach "$sessionid" --storagectl "IDE Controller" --port 0 --device 0 --type hdd --medium "$vboxInstanceDiskImage" --mtype "$vboxDiskMtype"
+	_messagePlain_probe 'vboxDiskMtype= '"$vboxDiskMtype"
 	
-	[[ -e "$hostToGuestISO" ]] && VBoxManage storageattach "$sessionid" --storagectl "IDE Controller" --port 1 --device 0 --type dvddrive --medium "$hostToGuestISO"
+	_messagePlain_probe VBoxManage storageattach "$sessionid" --storagectl "IDE Controller" --port 0 --device 0 --type hdd --medium "$vboxInstanceDiskImage" --mtype "$vboxDiskMtype"
+	! VBoxManage storageattach "$sessionid" --storagectl "IDE Controller" --port 0 --device 0 --type hdd --medium "$vboxInstanceDiskImage" --mtype "$vboxDiskMtype" && _messagePlain_bad 'fail: VBoxManage... attach vboxInstanceDiskImage= '"$vboxInstanceDiskImage"
+	
+	[[ -e "$hostToGuestISO" ]] && ! VBoxManage storageattach "$sessionid" --storagectl "IDE Controller" --port 1 --device 0 --type dvddrive --medium "$hostToGuestISO" && _messagePlain_bad 'fail: VBoxManage... attach hostToGuestISO= '"$hostToGuestISO"
 	
 	#VBoxManage showhdinfo "$scriptLocal"/vm.vdi
 
 	#Suppress annoying warnings.
-	VBoxManage setextradata global GUI/SuppressMessages "remindAboutAutoCapture,remindAboutMouseIntegration,remindAboutMouseIntegrationOn,showRuntimeError.warning.HostAudioNotResponding,remindAboutGoingSeamless,remindAboutInputCapture,remindAboutGoingFullscreen,remindAboutMouseIntegrationOff,confirmGoingSeamless,confirmInputCapture,remindAboutPausedVMInput,confirmVMReset,confirmGoingFullscreen,remindAboutWrongColorDepth"
+	! VBoxManage setextradata global GUI/SuppressMessages "remindAboutAutoCapture,remindAboutMouseIntegration,remindAboutMouseIntegrationOn,showRuntimeError.warning.HostAudioNotResponding,remindAboutGoingSeamless,remindAboutInputCapture,remindAboutGoingFullscreen,remindAboutMouseIntegrationOff,confirmGoingSeamless,confirmInputCapture,remindAboutPausedVMInput,confirmVMReset,confirmGoingFullscreen,remindAboutWrongColorDepth" && _messagePlain_warn 'fail: VBoxManage... suppress messages'
 	
 	
 	
@@ -6333,18 +6392,24 @@ _create_instance_vbox() {
 
 #Create and launch temporary VM around persistent disk image.
 _user_instance_vbox_sequence() {
+	_messageNormal '_user_instance_vbox_sequence: start'
 	_start
 	
 	_prepare_instance_vbox || return 1
 	
-	_readLocked "$vBox_vdi" && return 1
+	_messageNormal '_user_instance_vbox_sequence: Checking lock vBox_vdi= '"$vBox_vdi"
+	_readLocked "$vBox_vdi" && _messagePlain_bad 'lock: vBox_vdi= '"$vBox_vdi" && return 1
 	
+	_messageNormal '_user_instance_vbox_sequence: Creating instance. '"$vBox_vdi"
 	_create_instance_vbox "$@"
 	
+	_messageNormal '_user_instance_vbox_sequence: Launch: _vboxGUI '"$vBox_vdi"
 	 _vboxGUI --startvm "$sessionid"
 	
+	_messageNormal '_user_instance_vbox_sequence: Removing instance. '"$vBox_vdi"
 	_rm_instance_vbox
 	
+	_messageNormal '_user_instance_vbox_sequence: stop'
 	_stop
 }
 
@@ -6353,7 +6418,9 @@ _user_instance_vbox() {
 }
 
 _userVBox() {
+	_messageNormal 'Begin: '"$@"
 	_user_instance_vbox "$@"
+	_messageNormal 'End: '"$@"
 }
 
 _edit_instance_vbox_sequence() {
@@ -10039,26 +10106,31 @@ _unset_vbox() {
 	
 	export VBOX_IPC_SOCKETID=""
 	export VBoxXPCOMIPCD_PIDfile=""
+	
+	_messagePlain_nominal 'clear: _unset_vbox'
 }
 
 _reset_vboxLabID() {
-	[[ "$VBOX_ID_FILE" == "" ]] && return 1
+	[[ "$VBOX_ID_FILE" == "" ]] && _messagePlain_bad 'blank: VBOX_ID_FILE' && return 1
 	
 	rm -f "$VBOX_ID_FILE" > /dev/null 2>&1
 	
-	[[ -e "$VBOX_ID_FILE" ]] && return 1
+	[[ -e "$VBOX_ID_FILE" ]] && _messagePlain_bad 'fail: VBOX_ID_FILE exists' && return 1
 	
 	return 0
 }
 
 #"$1" == virtualbox instance directory (optional)
 _prepare_vbox() {
+	_messagePlain_nominal 'init: _prepare_vbox'
+	
 	_unset_vbox
 	
 	export vBox_vdi="$scriptLocal/_vboxvdi"
 	
 	export vBoxInstanceDir="$scriptLocal"
 	[[ "$1" != "" ]] && export vBoxInstanceDir="$1"
+	_messagePlain_probe 'vBoxInstanceDir= '"$vBoxInstanceDir"
 	
 	mkdir -p "$vBoxInstanceDir" > /dev/null 2>&1 || return 1
 	mkdir -p "$scriptLocal" > /dev/null 2>&1 || return 1
@@ -10069,7 +10141,7 @@ _prepare_vbox() {
 	export VBOX_ID_FILE
 	VBOX_ID_FILE="$vBoxInstanceDir"/vbox.id
 	
-	_pathLocked _reset_vboxLabID || return 1
+	! _pathLocked _reset_vboxLabID && _messagePlain_bad 'fail: path has changed and lock not reset' && return 1
 	
 	[[ ! -e "$VBOX_ID_FILE" ]] && sleep 0.1 && [[ ! -e "$VBOX_ID_FILE" ]] && echo -e -n "$sessionid" > "$VBOX_ID_FILE" 2> /dev/null
 	[[ -e "$VBOX_ID_FILE" ]] && export VBOXID=$(cat "$VBOX_ID_FILE" 2> /dev/null)
@@ -10086,8 +10158,8 @@ _prepare_vbox() {
 	
 	
 	
-	[[ "$VBOXID" == "" ]] && return 1
-	[[ ! -e "$VBOX_ID_FILE" ]] && return 1
+	[[ "$VBOXID" == "" ]] && _messagePlain_bad 'blank: VBOXID' && return 1
+	[[ ! -e "$VBOX_ID_FILE" ]] && _messagePlain_bad 'missing: VBOX_ID_FILE= '"$VBOX_ID_FILE" && return 1
 	
 	
 	mkdir -p "$VBOX_USER_HOME" > /dev/null 2>&1 || return 1
@@ -10099,7 +10171,7 @@ _prepare_vbox() {
 	oldLinkPath=$(readlink "$VBOX_USER_HOME_short")
 	[[ "$oldLinkPath" != "$VBOX_USER_HOME_local" ]] && ln -sf "$VBOX_USER_HOME_local" "$VBOX_USER_HOME_short" > /dev/null 2>&1
 	oldLinkPath=$(readlink "$VBOX_USER_HOME_short")
-	[[ "$oldLinkPath" != "$VBOX_USER_HOME_local" ]] && return 1
+	[[ "$oldLinkPath" != "$VBOX_USER_HOME_local" ]] && _messagePlain_bad 'fail: symlink VBOX_USER_HOME_local to VBOX_USER_HOME_short' && return 1
 	
 	return 0
 }

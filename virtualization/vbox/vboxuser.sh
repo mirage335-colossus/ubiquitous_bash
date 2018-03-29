@@ -52,7 +52,15 @@ _set_instance_vbox_type() {
 	[[ "$vboxOStype" == "" ]] && _readLocked "$lock_open" && export vboxOStype=Debian_64
 	[[ "$vboxOStype" == "" ]] && export vboxOStype=WindowsXP
 	
-	VBoxManage createvm --name "$sessionid" --ostype "$vboxOStype" --register --basefolder "$VBOX_USER_HOME_short"
+	_messagePlain_probe 'vboxOStype= '"$vboxOStype"
+	
+	if VBoxManage createvm --name "$sessionid" --ostype "$vboxOStype" --register --basefolder "$VBOX_USER_HOME_short"
+	then
+		_messagePlain_probe VBoxManage createvm --name "$sessionid" --ostype "$vboxOStype" --register --basefolder "$VBOX_USER_HOME_short"
+		return 0
+	fi
+	_messagePlain_bad 'fail: 'VBoxManage createvm --name "$sessionid" --ostype "$vboxOStype" --register --basefolder "$VBOX_USER_HOME_short"
+	return 1
 }
 
 _set_instance_vbox_features() {
@@ -61,59 +69,95 @@ _set_instance_vbox_features() {
 	local vboxChipset
 	vboxChipset="ich9"
 	#[[ "$vboxOStype" == *"Win"*"XP"* ]] && vboxChipset="piix3"
+	_messagePlain_probe 'vboxChipset= '"$vboxChipset"
 	
 	local vboxNictype
 	vboxNictype="82543GC"
 	[[ "$vboxOStype" == *"Win"*"10"* ]] && vboxNictype="82540EM"
+	_messagePlain_probe 'vboxNictype= '"$vboxNictype"
 	
 	local vboxAudioController
 	vboxAudioController="ac97"
 	[[ "$vboxOStype" == *"Win"*"10"* ]] && vboxAudioController="hda"
+	_messagePlain_probe 'vboxAudioController= '"$vboxAudioController"
 	
 	[[ "$vmMemoryAllocation" == "" ]] && vmMemoryAllocation=vmMemoryAllocationDefault
+	_messagePlain_probe 'vmMemoryAllocation= '"$vmMemoryAllocation"
 	
-	VBoxManage modifyvm "$sessionid" --boot1 disk --biosbootmenu disabled --bioslogofadein off --bioslogofadeout off --bioslogodisplaytime 1 --vram 64 --memory "$vmMemoryAllocation" --nic1 nat --nictype1 "$vboxNictype" --clipboard bidirectional --accelerate3d off --accelerate2dvideo off --vrde off --audio pulse --usb on --cpus 4 --ioapic on --acpi on --pae on --chipset "$vboxChipset" --audiocontroller="$vboxAudioController"
+	_messagePlain_nominal "Setting VBox VM features."
+	if ! VBoxManage modifyvm "$sessionid" --boot1 disk --biosbootmenu disabled --bioslogofadein off --bioslogofadeout off --bioslogodisplaytime 1 --vram 64 --memory "$vmMemoryAllocation" --nic1 nat --nictype1 "$vboxNictype" --clipboard bidirectional --accelerate3d off --accelerate2dvideo off --vrde off --audio pulse --usb on --cpus 4 --ioapic on --acpi on --pae on --chipset "$vboxChipset" --audiocontroller="$vboxAudioController"
+	then
+		_messagePlain_probe VBoxManage modifyvm "$sessionid" --boot1 disk --biosbootmenu disabled --bioslogofadein off --bioslogofadeout off --bioslogodisplaytime 1 --vram 64 --memory "$vmMemoryAllocation" --nic1 nat --nictype1 "$vboxNictype" --clipboard bidirectional --accelerate3d off --accelerate2dvideo off --vrde off --audio pulse --usb on --cpus 4 --ioapic on --acpi on --pae on --chipset "$vboxChipset" --audiocontroller="$vboxAudioController"
+		_messagePlain_bad 'fail: VBoxManage'
+		return 1
+	fi
+	return 0
 	
 }
 
 _set_instance_vbox_share() {
 	#VBoxManage sharedfolder add "$sessionid" --name "root" --hostpath "/"
-	[[ "$sharedHostProjectDir" != "" ]] && VBoxManage sharedfolder add "$sessionid" --name "appFolder" --hostpath "$sharedHostProjectDir"
+	if [[ "$sharedHostProjectDir" != "" ]]
+	then
+		_messagePlain_probe VBoxManage sharedfolder add "$sessionid" --name "appFolder" --hostpath "$sharedHostProjectDir"
+		
+		! VBoxManage sharedfolder add "$sessionid" --name "appFolder" --hostpath "$sharedHostProjectDir" && _messagePlain_warn 'fail: mount sharedHostProjectDir= '"$sharedHostProjectDir"
+	fi
 	
-	[[ -e "$HOME"/Downloads ]] && VBoxManage sharedfolder add "$sessionid" --name "Downloads" --hostpath "$HOME"/Downloads
+	if [[ -e "$HOME"/Downloads ]]
+	then
+		_messagePlain_probe VBoxManage sharedfolder add "$sessionid" --name "Downloads" --hostpath "$HOME"/Downloads
+		
+		! VBoxManage sharedfolder add "$sessionid" --name "Downloads" --hostpath "$HOME"/Downloads && _messagePlain_warn 'fail: mount (shared) Downloads= '"$HOME"/Downloads
+	fi
 }
 
 _set_instance_vbox_command() {
-	_commandBootdisc "$@" || return 1
+	_messagePlain_nominal 'Creating BootDisc.'
+	! _commandBootdisc "$@" && _messagePlain_bad 'fail: _commandBootdisc' && return 1
+	return 0
 }
 
 _create_instance_vbox() {
+	
 	#Use existing VDI image if available.
-	! [[ -e "$scriptLocal"/vm.vdi ]] && _openVBoxRaw
+	if ! [[ -e "$scriptLocal"/vm.vdi ]]
+	then
+		_messagePlain_nominal 'Missing VDI. Attempting to create from IMG.'
+		_openVBoxRaw
+	fi
+	
+	_messagePlain_nominal 'Checking VDI file.'
 	export vboxInstanceDiskImage="$scriptLocal"/vm.vdi
 	_readLocked "$lock_open" && vboxInstanceDiskImage="$vboxRaw"
-	! [[ -e "$vboxInstanceDiskImage" ]] && return 1
+	! [[ -e "$vboxInstanceDiskImage" ]] && _messagePlain_bad 'missing: vboxInstanceDiskImage= '"$vboxInstanceDiskImage" && return 1
 	
+	_messageNominal 'Determining OS type.'
 	_set_instance_vbox_type
 	
-	_set_instance_vbox_features
+	! _set_instance_vbox_features && _messageError 'FAIL' && return 1
 	
 	_set_instance_vbox_command "$@"
 	
+	_messageNominal 'Mounting shared filesystems.'
 	_set_instance_vbox_share
 	
-	VBoxManage storagectl "$sessionid" --name "IDE Controller" --add ide --controller PIIX4
+	_messageNominal 'Attaching local filesystems.'
+	! VBoxManage storagectl "$sessionid" --name "IDE Controller" --add ide --controller PIIX4 && _messagePlain_bad 'fail: VBoxManage... attach ide controller'
 	
 	#export vboxDiskMtype="normal"
 	[[ "$vboxDiskMtype" == "" ]] && export vboxDiskMtype="multiattach"
-	VBoxManage storageattach "$sessionid" --storagectl "IDE Controller" --port 0 --device 0 --type hdd --medium "$vboxInstanceDiskImage" --mtype "$vboxDiskMtype"
+	_messagePlain_probe 'vboxDiskMtype= '"$vboxDiskMtype"
 	
-	[[ -e "$hostToGuestISO" ]] && VBoxManage storageattach "$sessionid" --storagectl "IDE Controller" --port 1 --device 0 --type dvddrive --medium "$hostToGuestISO"
+	_messagePlain_probe VBoxManage storageattach "$sessionid" --storagectl "IDE Controller" --port 0 --device 0 --type hdd --medium "$vboxInstanceDiskImage" --mtype "$vboxDiskMtype"
+	! VBoxManage storageattach "$sessionid" --storagectl "IDE Controller" --port 0 --device 0 --type hdd --medium "$vboxInstanceDiskImage" --mtype "$vboxDiskMtype" && _messagePlain_bad 'fail: VBoxManage... attach vboxInstanceDiskImage= '"$vboxInstanceDiskImage"
+	
+	[[ -e "$hostToGuestISO" ]] && ! VBoxManage storageattach "$sessionid" --storagectl "IDE Controller" --port 1 --device 0 --type dvddrive --medium "$hostToGuestISO" && _messagePlain_bad 'fail: VBoxManage... attach hostToGuestISO= '"$hostToGuestISO"
 	
 	#VBoxManage showhdinfo "$scriptLocal"/vm.vdi
 
 	#Suppress annoying warnings.
-	VBoxManage setextradata global GUI/SuppressMessages "remindAboutAutoCapture,remindAboutMouseIntegration,remindAboutMouseIntegrationOn,showRuntimeError.warning.HostAudioNotResponding,remindAboutGoingSeamless,remindAboutInputCapture,remindAboutGoingFullscreen,remindAboutMouseIntegrationOff,confirmGoingSeamless,confirmInputCapture,remindAboutPausedVMInput,confirmVMReset,confirmGoingFullscreen,remindAboutWrongColorDepth"
+	! VBoxManage setextradata global GUI/SuppressMessages "remindAboutAutoCapture,remindAboutMouseIntegration,remindAboutMouseIntegrationOn,showRuntimeError.warning.HostAudioNotResponding,remindAboutGoingSeamless,remindAboutInputCapture,remindAboutGoingFullscreen,remindAboutMouseIntegrationOff,confirmGoingSeamless,confirmInputCapture,remindAboutPausedVMInput,confirmVMReset,confirmGoingFullscreen,remindAboutWrongColorDepth" && _messagePlain_warn 'fail: VBoxManage... suppress messages'
 	
 	
 	
@@ -122,18 +166,24 @@ _create_instance_vbox() {
 
 #Create and launch temporary VM around persistent disk image.
 _user_instance_vbox_sequence() {
+	_messageNormal '_user_instance_vbox_sequence: start'
 	_start
 	
 	_prepare_instance_vbox || return 1
 	
-	_readLocked "$vBox_vdi" && return 1
+	_messageNormal '_user_instance_vbox_sequence: Checking lock vBox_vdi= '"$vBox_vdi"
+	_readLocked "$vBox_vdi" && _messagePlain_bad 'lock: vBox_vdi= '"$vBox_vdi" && return 1
 	
+	_messageNormal '_user_instance_vbox_sequence: Creating instance. '"$vBox_vdi"
 	_create_instance_vbox "$@"
 	
+	_messageNormal '_user_instance_vbox_sequence: Launch: _vboxGUI '"$vBox_vdi"
 	 _vboxGUI --startvm "$sessionid"
 	
+	_messageNormal '_user_instance_vbox_sequence: Removing instance. '"$vBox_vdi"
 	_rm_instance_vbox
 	
+	_messageNormal '_user_instance_vbox_sequence: stop'
 	_stop
 }
 
@@ -142,7 +192,9 @@ _user_instance_vbox() {
 }
 
 _userVBox() {
+	_messageNormal 'Begin: '"$@"
 	_user_instance_vbox "$@"
+	_messageNormal 'End: '"$@"
 }
 
 _edit_instance_vbox_sequence() {
