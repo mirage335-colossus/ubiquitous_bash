@@ -81,7 +81,7 @@ _set_instance_vbox_features() {
 	[[ "$vboxOStype" == *"Win"*"10"* ]] && vboxAudioController="hda"
 	_messagePlain_probe 'vboxAudioController= '"$vboxAudioController"
 	
-	[[ "$vmMemoryAllocation" == "" ]] && vmMemoryAllocation=vmMemoryAllocationDefault
+	[[ "$vmMemoryAllocation" == "" ]] && vmMemoryAllocation="$vmMemoryAllocationDefault"
 	_messagePlain_probe 'vmMemoryAllocation= '"$vmMemoryAllocation"
 	
 	_messagePlain_nominal "Setting VBox VM features."
@@ -132,17 +132,17 @@ _create_instance_vbox() {
 	_readLocked "$lock_open" && vboxInstanceDiskImage="$vboxRaw"
 	! [[ -e "$vboxInstanceDiskImage" ]] && _messagePlain_bad 'missing: vboxInstanceDiskImage= '"$vboxInstanceDiskImage" && return 1
 	
-	_messageNominal 'Determining OS type.'
+	_messagePlain_nominal 'Determining OS type.'
 	_set_instance_vbox_type
 	
 	! _set_instance_vbox_features && _messageError 'FAIL' && return 1
 	
 	_set_instance_vbox_command "$@"
 	
-	_messageNominal 'Mounting shared filesystems.'
+	_messagePlain_nominal 'Mounting shared filesystems.'
 	_set_instance_vbox_share
 	
-	_messageNominal 'Attaching local filesystems.'
+	_messagePlain_nominal 'Attaching local filesystems.'
 	! VBoxManage storagectl "$sessionid" --name "IDE Controller" --add ide --controller PIIX4 && _messagePlain_bad 'fail: VBoxManage... attach ide controller'
 	
 	#export vboxDiskMtype="normal"
