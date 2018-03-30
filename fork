@@ -73,6 +73,8 @@ cp ./_lib/ubiquitous_bash/structure/program.sh ./_prog/
 cp ./_lib/ubiquitous_bash/build/bash/compile_bash_prog.sh ./_prog/
 cp ./_lib/ubiquitous_bash/build/bash/generate_bash_prog.sh ./_prog/
 
+cp ./_lib/ubiquitous_bash/os/override/override_prog.sh ./_prog/
+
 ##### Runtime Configuration
 
 #mkdir -p ./_local/ssh

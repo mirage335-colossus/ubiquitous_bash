@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+#Override.
+
+#Override (Program).
+
 #####Utilities
 
 #Critical prerequsites.
@@ -3247,6 +3251,29 @@ _fetchDep_debianStretch_special() {
 		sudo -n apt-get install --install-recommends -y golang-go
 		
 		return 0
+	fi
+	
+	if [[ "$1" == "cura-lulzbot" ]]
+	then
+		#Testing/Sid only as of Stretch release cycle.
+		#sudo -n apt-get install --install-recommends -y rustc cargo
+		
+		echo "Requires manual installation. See https://www.lulzbot.com/learn/tutorials/cura-lulzbot-edition-installation-debian ."
+cat << 'CZXWXcRMTo8EmM8i4d'
+wget -qO - https://download.alephobjects.com/ao/aodeb/aokey.pub | sudo apt-key add -
+sudo cp /etc/apt/sources.list /etc/apt/sources.list.bak && sudo sed -i '$a deb http://download.alephobjects.com/ao/aodeb jessie main' /etc/apt/sources.list && sudo apt-get update && sudo apt-get install cura-lulzbot
+CZXWXcRMTo8EmM8i4d
+		echo "(typical)"
+		_stop 1
+	fi
+	
+	if [[ "$1" == *"FlashPrint"* ]]
+	then
+		#Testing/Sid only as of Stretch release cycle.
+		#sudo -n apt-get install --install-recommends -y rustc cargo
+		
+		echo "Requires manual installation. See http://www.flashforge.com/support-center/flashprint-support/ ."
+		_stop 1
 	fi
 	
 	if [[ "$1" == "cargo" ]] || [[ "$1" == "rustc" ]]
@@ -11710,6 +11737,9 @@ _compile_bash_header() {
 	export includeScriptList
 	
 	includeScriptList+=( "generic"/minimalheader.sh )
+	
+	includeScriptList+=( "os/override"/override.sh )
+	includeScriptList+=( "os/override"/override_prog.sh )
 }
 
 _compile_bash_header_program() {

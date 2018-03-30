@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+#Override.
+
+#Override (Program).
+
 #####Utilities
 
 #Critical prerequsites.
@@ -1039,6 +1043,9 @@ _compile_bash_header() {
 	export includeScriptList
 	
 	includeScriptList+=( "generic"/minimalheader.sh )
+	
+	includeScriptList+=( "os/override"/override.sh )
+	includeScriptList+=( "os/override"/override_prog.sh )
 }
 
 _compile_bash_header_program() {
