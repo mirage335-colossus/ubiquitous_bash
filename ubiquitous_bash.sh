@@ -3267,7 +3267,7 @@ CZXWXcRMTo8EmM8i4d
 		_stop 1
 	fi
 	
-	if [[ "$1" == *"FlashPrint"* ]]
+	if [[ "$1" =~ "FlashPrint" ]]
 	then
 		#Testing/Sid only as of Stretch release cycle.
 		#sudo -n apt-get install --install-recommends -y rustc cargo
