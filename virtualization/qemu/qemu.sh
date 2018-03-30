@@ -58,7 +58,7 @@ _integratedQemu() {
 	if _testQEMU_hostArch_x64_hardwarevt
 	then
 		_messagePlain_good 'found: kvm'
-		_mesqemuArgs+=(-machine accel=kvm)
+		qemuArgs+=(-machine accel=kvm)
 	else
 		_messagePlain_warn 'missing: kvm'
 	fi
