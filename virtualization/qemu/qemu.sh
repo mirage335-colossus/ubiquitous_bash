@@ -3,10 +3,11 @@ _qemu() {
 	local qemuHostArch
 	qemuHostArch=$(uname -m)
 	[[ "$qemuHostArch" == "" ]] && qemuGuestArch="$qemuHostArch"
+	 _messagePlain_probe 'qemuGuestArch= '"$qemuGuestArch"
 	
 	local qemuExitStatus
 	
-	[[ "$qemuHostArch" == "x86_64" ]] && qemu-system-x86_64 "$@"
+	[[ "$qemuHostArch" == "x86_64" ]] && _messagePlain_probe '>qemu= qemu-system-x86_64' && qemu-system-x86_64 "$@"
 	qemuExitStatus="$?"
 	
 	
@@ -14,9 +15,11 @@ _qemu() {
 }
 
 _integratedQemu() {
-	mkdir -p "$instancedVirtDir" || _stop 1
+	_messagePlain_nominal 'init: _integratedQemu'
 	
-	_commandBootdisc "$@" || _stop 1
+	! mkdir -p "$instancedVirtDir" && _messagePlain_bad 'fail: mkdir -p instancedVirtDir= '"$instancedVirtDir" && _stop 1
+	
+	! _commandBootdisc "$@" && _messagePlain_bad 'fail: _commandBootdisc' && _stop 1
 	
 	#qemu-system-x86_64 -snapshot -machine accel=kvm -drive format=raw,file="$scriptLocal"/vm.img -drive file="$hostToGuestISO",media=cdrom -boot c -m 768
 	
@@ -27,11 +30,17 @@ _integratedQemu() {
 	#https://unix.stackexchange.com/questions/165554/shared-folder-between-qemu-windows-guest-and-linux-host
 	#https://linux.die.net/man/1/qemu-kvm
 	
-	_testQEMU_hostArch_x64_nested && qemuArgs+=(-cpu host)
+	if _testQEMU_hostArch_x64_nested
+	then
+		_messagePlain_good 'supported: nested x64'
+		qemuArgs+=(-cpu host)
+	else
+		_messagePlain_warn 'warn: no nested x64'
+	fi
 	
 	local hostThreadCount=$(cat /proc/cpuinfo | grep MHz | wc -l)
-	[[ "$hostThreadCount" -ge "4" ]] && [[ "$hostThreadCount" -lt "8" ]] && qemuArgs+=(-smp 4)
-	[[ "$hostThreadCount" -ge "8" ]] && qemuArgs+=(-smp 6)
+	[[ "$hostThreadCount" -ge "4" ]] && [[ "$hostThreadCount" -lt "8" ]] && _messagePlain_probe 'cpu: >4' && qemuArgs+=(-smp 4)
+	[[ "$hostThreadCount" -ge "8" ]] && _messagePlain_probe 'cpu: >6' && qemuArgs+=(-smp 6)
 	
 	qemuUserArgs+=(-drive format=raw,file="$scriptLocal"/vm.img -drive file="$hostToGuestISO",media=cdrom -boot c)
 	
@@ -46,10 +55,17 @@ _integratedQemu() {
 	
 	qemuArgs+=(-show-cursor)
 	
-	_testQEMU_hostArch_x64_hardwarevt && qemuArgs+=(-machine accel=kvm)
+	if _testQEMU_hostArch_x64_hardwarevt
+	then
+		_messagePlain_good 'found: kvm'
+		_mesqemuArgs+=(-machine accel=kvm)
+	else
+		_messagePlain_warn 'missing: kvm'
+	fi
 	
 	qemuArgs+=("${qemuSpecialArgs[@]}" "${qemuUserArgs[@]}")
 	
+	_messagePlain_probe _qemu "${qemuArgs[@]}"
 	_qemu "${qemuArgs[@]}"
 	
 	_safeRMR "$instancedVirtDir" || _stop 1
@@ -81,10 +97,12 @@ _editQemu_sequence() {
 	
 	_start
 	
-	_readLocked "$scriptLocal"/_qemuEdit && _stop 1
-	_createLocked "$scriptLocal"/_qemuEdit || _stop 1
+	_messageNormal "Checking lock."
+	_readLocked "$scriptLocal"/_qemuEdit && _messageError 'lock: _qemuEdit' && _stop 1
+	! _createLocked "$scriptLocal"/_qemuEdit  && _messageError 'lock: _qemuEdit' && _stop 1
 	
-	_integratedQemu "$@" || _stop 1
+	_messageNormal "Launch: _integratedQemu."
+	! _integratedQemu "$@" && _messageError 'FAIL' && _stop 1
 	
 	rm -f "$scriptLocal"/_qemuEdit
 	
