@@ -88,3 +88,16 @@ _getAbsoluteFolder() {
 	dirname "$absoluteLocation"
 }
 alias getAbsoluteLocation=_getAbsoluteLocation
+
+_getScriptLinkName() {
+	! [[ -e "$0" ]] && return 1
+	! [[ -L "$0" ]] && return 1
+	
+	! type basename > /dev/null 2>&1 && return 1
+	
+	local scriptLinkName
+	scriptLinkName=$(basename "$0")
+	
+	[[ "$scriptLinkName" == "" ]] && return 1
+	echo "$scriptLinkName"
+}
