@@ -66,6 +66,9 @@ _set_instance_vbox_type() {
 _set_instance_vbox_features() {
 	#VBoxManage modifyvm "$sessionid" --boot1 disk --biosbootmenu disabled --bioslogofadein off --bioslogofadeout off --bioslogodisplaytime 5 --vram 128 --memory 1512 --nic1 nat --nictype1 "82543GC" --clipboard bidirectional --accelerate3d off --accelerate2dvideo off --vrde off --audio pulse --usb on --cpus 1 --ioapic off --acpi on --pae off --chipset piix3
 	
+	[[ "$vboxNic" == "" ]] && vboxNic="nat"
+	_messagePlain_probe 'vboxNic= '"$vboxNic"
+	
 	local vboxChipset
 	vboxChipset="ich9"
 	#[[ "$vboxOStype" == *"Win"*"XP"* ]] && vboxChipset="piix3"
@@ -73,11 +76,13 @@ _set_instance_vbox_features() {
 	
 	local vboxNictype
 	vboxNictype="82543GC"
+	[[ "$vboxOStype" == *"Win"*"7"* ]] && vboxNictype="82540EM"
 	[[ "$vboxOStype" == *"Win"*"10"* ]] && vboxNictype="82540EM"
 	_messagePlain_probe 'vboxNictype= '"$vboxNictype"
 	
 	local vboxAudioController
 	vboxAudioController="ac97"
+	[[ "$vboxOStype" == *"Win"*"7"* ]] && vboxNictype="hda"
 	[[ "$vboxOStype" == *"Win"*"10"* ]] && vboxAudioController="hda"
 	_messagePlain_probe 'vboxAudioController= '"$vboxAudioController"
 	
@@ -85,9 +90,9 @@ _set_instance_vbox_features() {
 	_messagePlain_probe 'vmMemoryAllocation= '"$vmMemoryAllocation"
 	
 	_messagePlain_nominal "Setting VBox VM features."
-	if ! VBoxManage modifyvm "$sessionid" --boot1 disk --biosbootmenu disabled --bioslogofadein off --bioslogofadeout off --bioslogodisplaytime 1 --vram 64 --memory "$vmMemoryAllocation" --nic1 nat --nictype1 "$vboxNictype" --clipboard bidirectional --accelerate3d off --accelerate2dvideo off --vrde off --audio pulse --usb on --cpus 4 --ioapic on --acpi on --pae on --chipset "$vboxChipset" --audiocontroller="$vboxAudioController"
+	if ! VBoxManage modifyvm "$sessionid" --boot1 disk --biosbootmenu disabled --bioslogofadein off --bioslogofadeout off --bioslogodisplaytime 1 --vram 128 --memory "$vmMemoryAllocation" --nic1 "$vboxNic" --nictype1 "$vboxNictype" --clipboard bidirectional --accelerate3d off --accelerate2dvideo off --vrde off --audio pulse --usb on --cpus 4 --ioapic on --acpi on --pae on --chipset "$vboxChipset" --audiocontroller="$vboxAudioController"
 	then
-		_messagePlain_probe VBoxManage modifyvm "$sessionid" --boot1 disk --biosbootmenu disabled --bioslogofadein off --bioslogofadeout off --bioslogodisplaytime 1 --vram 64 --memory "$vmMemoryAllocation" --nic1 nat --nictype1 "$vboxNictype" --clipboard bidirectional --accelerate3d off --accelerate2dvideo off --vrde off --audio pulse --usb on --cpus 4 --ioapic on --acpi on --pae on --chipset "$vboxChipset" --audiocontroller="$vboxAudioController"
+		_messagePlain_probe VBoxManage modifyvm "$sessionid" --boot1 disk --biosbootmenu disabled --bioslogofadein off --bioslogofadeout off --bioslogodisplaytime 1 --vram 128 --memory "$vmMemoryAllocation" --nic1 "$vboxNic" --nictype1 "$vboxNictype" --clipboard bidirectional --accelerate3d off --accelerate2dvideo off --vrde off --audio pulse --usb on --cpus 4 --ioapic on --acpi on --pae on --chipset "$vboxChipset" --audiocontroller="$vboxAudioController"
 		_messagePlain_bad 'fail: VBoxManage'
 		return 1
 	fi
