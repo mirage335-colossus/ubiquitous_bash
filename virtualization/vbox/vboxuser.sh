@@ -82,7 +82,7 @@ _set_instance_vbox_features() {
 	
 	local vboxAudioController
 	vboxAudioController="ac97"
-	[[ "$vboxOStype" == *"Win"*"7"* ]] && vboxNictype="hda"
+	[[ "$vboxOStype" == *"Win"*"7"* ]] && vboxAudioController="hda"
 	[[ "$vboxOStype" == *"Win"*"10"* ]] && vboxAudioController="hda"
 	_messagePlain_probe 'vboxAudioController= '"$vboxAudioController"
 	
