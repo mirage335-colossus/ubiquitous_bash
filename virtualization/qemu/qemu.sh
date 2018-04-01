@@ -47,11 +47,15 @@ _integratedQemu() {
 	[[ "$vmMemoryAllocation" == "" ]] && vmMemoryAllocation="$vmMemoryAllocationDefault"
 	qemuUserArgs+=(-m "$vmMemoryAllocation")
 	
-	qemuUserArgs+=(-net nic,model=rtl8139 -net user,smb="$sharedHostProjectDir")
+	[[ "$qemuUserArgs_netRestrict" == "" ]] && qemuUserArgs_netRestrict="n"
+	
+	qemuUserArgs+=(-net nic,model=rtl8139 -net user,restrict="$qemuUserArgs_netRestrict",smb="$sharedHostProjectDir")
 	
 	qemuArgs+=(-usbdevice tablet)
 	
 	qemuArgs+=(-vga cirrus)
+	
+	[[ "$qemuArgs_audio" == "" ]] && qemuArgs+=(-device ich9-intel-hda -device hda-duplex)
 	
 	qemuArgs+=(-show-cursor)
 	
