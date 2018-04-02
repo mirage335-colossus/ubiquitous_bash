@@ -1475,7 +1475,21 @@ _proxySSH_reverse() {
 
 _ssh_command() {
 	! _ssh_criticalDep && return 1
-	ssh -F "$sshDir"/config "$@"
+	
+	if [[ -L /usr/local/bin/ssh ]] && ls -l /usr/local/bin/ssh | grep firejail > /dev/null 2>&1
+	then
+		if /usr/bin/ssh -F "$sshDir"/config "$@"
+		then
+			return 0
+		fi
+		return 1
+	fi
+	
+	if ssh -F "$sshDir"/config "$@"
+	then
+		return 0
+	fi
+	return 1
 }
 
 _ssh_sequence() {
