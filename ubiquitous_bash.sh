@@ -1326,6 +1326,7 @@ _ssh_criticalDep() {
 	! type ssh > /dev/null 2>&1 && return 1
 	#! type ssh > /dev/null 2>&1 && _messagePlain_bad 'missing: ssh' && return 1
 	[[ -L /usr/bin/ssh ]] && ls -l /usr/bin/ssh | grep firejail > /dev/null 2>&1 && _messagePlain_bad 'conflict: firejail' && return 1
+	return 0
 }
 
 _testProxySSH() {
