@@ -3303,6 +3303,13 @@ CZXWXcRMTo8EmM8i4d
 		_stop 1
 	fi
 	
+	if [[ "$1" == "firejail" ]]
+	then
+		echo "WARNING: Recommend manual system configuration after install. See https://firejail.wordpress.com/download-2/ ."
+		echo "WARNING: Desktop override symlinks may cause problems, especially preventing proxy host jumping by CoreAutoSSH!"
+		return 1
+	fi
+	
 	
 	return 1
 }
