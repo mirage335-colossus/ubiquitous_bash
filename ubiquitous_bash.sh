@@ -1322,8 +1322,22 @@ Host machine-$netName
 CZXWXcRMTo8EmM8i4d
 }
 
+_ssh_criticalDep() {
+	! type ssh > /dev/null 2>&1 && return 1
+	#! type ssh > /dev/null 2>&1 && _messagePlain_bad 'missing: ssh' && return 1
+	[[ -L /usr/bin/ssh ]] && ls -l /usr/bin/ssh | grep firejail > /dev/null 2>&1 && _messagePlain_bad 'conflict: firejail' && return 1
+}
+
 _testProxySSH() {
 	_getDep ssh
+	
+	if [[ -L /usr/local/bin/ssh ]] && ls -l /usr/local/bin/ssh | grep firejail > /dev/null 2>&1
+	then
+		_messagePlain_warn 'workaround: firejail'
+		_messagePlain_pass 'FireJail containment of SSH itself interferes with proxy host jumping, and also inserts a message into the character stream. Most CoreAutoSSH features will not work, if bypassing this is not possible.'
+		
+		[[ -L /usr/bin/ssh ]] && ls -l /usr/bin/ssh | grep firejail > /dev/null 2>&1 && _messagePlain_bad 'conflict: firejail' && return 1
+	fi
 	
 	#For both _package and _rsync .
 	! _wantDep rsync && echo 'warn: no rsync'
@@ -1458,6 +1472,11 @@ _proxySSH_reverse() {
 	done
 }
 
+_ssh_command() {
+	! _ssh_criticalDep && return 1
+	ssh -F "$sshDir"/config "$@"
+}
+
 _ssh_sequence() {
 	_start
 	
@@ -1468,7 +1487,7 @@ _ssh_sequence() {
 	_setup_ssh_operations
 	
 	local sshExitStatus
-	ssh -F "$sshDir"/config "$@"
+	_ssh_command "$@"
 	sshExitStatus="$?"
 	
 	#Preventative workaround, not normally necessary.
@@ -1482,7 +1501,7 @@ _ssh_sequence() {
 _ssh() {
 	if [[ "$sshInContainment" == "true" ]]
 	then
-		if ssh -F "$sshDir"/config "$@"
+		if _ssh_command "$@"
 		then
 			return 0
 		fi
@@ -1546,7 +1565,7 @@ _sshfs() {
 
 
 #"$1" == commandName
-_ssh_command_user_field() {
+_command_ssh_user_field() {
 	echo "$1" | grep '^_ssh$' > /dev/null 2>&1 && return 1
 	echo "$1" | grep '^_ssh' > /dev/null 2>&1 && echo "$1" | sed 's/^_ssh-//g' && return 0
 	echo "$1" | grep '^_rsync$' > /dev/null 2>&1 && return 1
@@ -1559,9 +1578,9 @@ _ssh_command_user_field() {
 }
 
 #"$1" == commandName
-_ssh_command_user() {
+_command_ssh_user() {
 	local field_sshCommandUser
-	field_sshCommandUser=$(_ssh_command_user_field "$1")
+	field_sshCommandUser=$(_command_ssh_user_field "$1")
 	
 	#Output blank, default user specified by SSH config or here document.
 	[[ "$field_sshCommandUser" == "home" ]] && return 0
@@ -1573,7 +1592,7 @@ _ssh_command_user() {
 	
 }
 
-_ssh_command_machine() {
+_command_ssh_machine() {
 	true
 }
 
@@ -1680,7 +1699,7 @@ _rsync_backup_remote() {
 	[[ "$2" != "" ]] && export criticalSourcePath="$2"
 	[[ "$3" != "" ]] && export criticalUser="$3"
 	
-	[[ "$criticalUser" == "" ]] && export criticalUser=$(_ssh_command_user "$4")
+	[[ "$criticalUser" == "" ]] && export criticalUser=$(_command_ssh_user "$4")
 	
 	[[ "$criticalSSHmachine" == "" ]] && return 1
 	
@@ -1698,7 +1717,7 @@ _rsync_backup_local() {
 	[[ "$criticalDestinationPrefix" == "" ]] && export criticalDestinationPrefix="_arc"
 	
 	[[ "$3" != "" ]] && export criticalUser="$3"
-	[[ "$criticalUser" == "" ]] && export criticalUser=$(_ssh_command_user_field "$4")
+	[[ "$criticalUser" == "" ]] && export criticalUser=$(_command_ssh_user_field "$4")
 	
 	[[ "$2" != "" ]] && export criticalDestinationPath="$2"
 	[[ "$criticalDestinationPath" == "" ]] && export criticalDestinationPath="$criticalUser"
