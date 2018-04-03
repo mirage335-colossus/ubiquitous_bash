@@ -1,5 +1,7 @@
 _test_dosbox() {
 	_getDep dosbox
+	
+	! _noFireJail dosbox && _stop 1
 }
 
 _prepare_dosbox() {

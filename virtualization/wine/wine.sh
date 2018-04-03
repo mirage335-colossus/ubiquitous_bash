@@ -6,6 +6,8 @@ _testWINE() {
 		echo 'wine32 may be missing'
 		_stop 1
 	fi
+	
+	! _noFireJail wine && _stop 1
 }
 
 _setBottleDir() {

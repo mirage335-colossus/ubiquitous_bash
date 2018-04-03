@@ -1166,6 +1166,16 @@ _nocolor() {
 	sed -r "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[m|K]//g"
 }
 
+_noFireJail() {
+	if ( [[ -L /usr/local/bin/"$1" ]] && ls -l /usr/local/bin/"$1" | grep firejail > /dev/null 2>&1 ) || ( [[ -L /usr/bin/"$1" ]] && ls -l /usr/bin/"$1" | grep firejail > /dev/null 2>&1 )
+	then
+		 _messagePlain_bad 'conflict: firejail: '"$1"
+		 return 1
+	fi
+	
+	return 0
+}
+
 #Copy log files to "$permaLog" or current directory (default) for analysis.
 _preserveLog() {
 	if [[ ! -d "$permaLog" ]]
