@@ -1164,6 +1164,8 @@ _setup_ssh_commands() {
 	find . -name '_push_desktop' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
 	
 	find . -name '_wake' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
+	
+	find . -name '_meta' -exec "$scriptAbsoluteLocation" _setupCommand_meta {} \;
 }
 
 _package_cautossh() {
