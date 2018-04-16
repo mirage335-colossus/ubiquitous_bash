@@ -2240,6 +2240,27 @@ _setupCommand() {
 	
 }
 
+_setupCommand_meta() {
+	mkdir -p "$HOME"/bin
+	! [[ -e "$HOME"/bin ]] && return 1
+	
+	local clientScriptLocation
+	clientScriptLocation=$(_getAbsoluteLocation "$1")
+	
+	local clientScriptFolder
+	clientScriptFolder=$(_getAbsoluteFolder "$1")
+	
+	local commandName
+	commandName=$(basename "$1")
+	
+	local clientName
+	clientName=$(basename "$clientScriptFolder"/..)
+	
+	_relink_relative "$clientScriptLocation" "$HOME"/bin/"$commandName""-""$clientName"
+	
+	
+}
+
 #Consider placing files like ' _vnc-machine-"$netName" ' in an "_index" folder for automatic installation.
 _setupCommands() {
 	#find . -name '_command' -exec "$scriptAbsoluteLocation" _setupCommand {} \;

@@ -2488,6 +2488,8 @@ _setup_ssh_commands() {
 	find . -name '_push_desktop' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
 	
 	find . -name '_wake' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
+	
+	find . -name '_meta' -exec "$scriptAbsoluteLocation" _setupCommand_meta {} \;
 }
 
 _package_cautossh() {
@@ -6433,9 +6435,9 @@ _set_instance_vbox_features() {
 	_messagePlain_probe 'vmMemoryAllocation= '"$vmMemoryAllocation"
 	
 	_messagePlain_nominal "Setting VBox VM features."
-	if ! VBoxManage modifyvm "$sessionid" --boot1 disk --biosbootmenu disabled --bioslogofadein off --bioslogofadeout off --bioslogodisplaytime 1 --vram 128 --memory "$vmMemoryAllocation" --nic1 "$vboxNic" --nictype1 "$vboxNictype" --clipboard bidirectional --accelerate3d off --accelerate2dvideo off --vrde off --audio pulse --usb on --cpus 4 --ioapic on --acpi on --pae on --chipset "$vboxChipset" --audiocontroller="$vboxAudioController"
+	if ! VBoxManage modifyvm "$sessionid" --biosbootmenu disabled --bioslogofadein off --bioslogofadeout off --bioslogodisplaytime 1 --vram 128 --memory "$vmMemoryAllocation" --nic1 "$vboxNic" --nictype1 "$vboxNictype" --clipboard bidirectional --accelerate3d off --accelerate2dvideo off --vrde off --audio pulse --usb on --cpus 4 --ioapic on --acpi on --pae on --chipset "$vboxChipset" --audiocontroller="$vboxAudioController"
 	then
-		_messagePlain_probe VBoxManage modifyvm "$sessionid" --boot1 disk --biosbootmenu disabled --bioslogofadein off --bioslogofadeout off --bioslogodisplaytime 1 --vram 128 --memory "$vmMemoryAllocation" --nic1 "$vboxNic" --nictype1 "$vboxNictype" --clipboard bidirectional --accelerate3d off --accelerate2dvideo off --vrde off --audio pulse --usb on --cpus 4 --ioapic on --acpi on --pae on --chipset "$vboxChipset" --audiocontroller="$vboxAudioController"
+		_messagePlain_probe VBoxManage modifyvm "$sessionid" --biosbootmenu disabled --bioslogofadein off --bioslogofadeout off --bioslogodisplaytime 1 --vram 128 --memory "$vmMemoryAllocation" --nic1 "$vboxNic" --nictype1 "$vboxNictype" --clipboard bidirectional --accelerate3d off --accelerate2dvideo off --vrde off --audio pulse --usb on --cpus 4 --ioapic on --acpi on --pae on --chipset "$vboxChipset" --audiocontroller="$vboxAudioController"
 		_messagePlain_bad 'fail: VBoxManage'
 		return 1
 	fi
@@ -11298,6 +11300,27 @@ _setupCommand() {
 	
 	local clientName
 	clientName=$(basename "$clientScriptFolder")
+	
+	_relink_relative "$clientScriptLocation" "$HOME"/bin/"$commandName""-""$clientName"
+	
+	
+}
+
+_setupCommand_meta() {
+	mkdir -p "$HOME"/bin
+	! [[ -e "$HOME"/bin ]] && return 1
+	
+	local clientScriptLocation
+	clientScriptLocation=$(_getAbsoluteLocation "$1")
+	
+	local clientScriptFolder
+	clientScriptFolder=$(_getAbsoluteFolder "$1")
+	
+	local commandName
+	commandName=$(basename "$1")
+	
+	local clientName
+	clientName=$(basename "$clientScriptFolder"/..)
 	
 	_relink_relative "$clientScriptLocation" "$HOME"/bin/"$commandName""-""$clientName"
 	
