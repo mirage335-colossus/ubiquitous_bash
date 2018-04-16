@@ -7540,6 +7540,7 @@ _gitBare() {
 _test_bup() {
 	! _wantDep bup && echo 'warn: no bup'
 	
+	! man tar | grep '\-\-one-file-system' > /dev/null 2>&1 && echo 'warn: tar does not support one-file-system' && return 1
 	! man tar | grep '\-\-xattrs' > /dev/null 2>&1 && echo 'warn: tar does not support xattrs'
 	! man tar | grep '\-\-acls' > /dev/null 2>&1 && echo 'warn: tar does not support acls'
 }
@@ -7578,15 +7579,16 @@ _bupStore() {
 	
 	[[ ! -e "$BUP_DIR" ]] && return 1
 	
+	! man tar | grep '\-\-one-file-system' > /dev/null 2>&1 && return 1
 	! man tar | grep '\-\-xattrs' > /dev/null 2>&1 && return 1
 	! man tar | grep '\-\-acls' > /dev/null 2>&1 && return 1
 	
 	if [[ "$1" == "" ]]
 	then
-		tar --xattrs --acls --exclude "$BUP_DIR" -cvf - . | bup split -n "HEAD" -vv
+		tar --one-file-system --xattrs --acls --exclude "$BUP_DIR" -cvf - . | bup split -n "HEAD" -vv
 		return
 	fi
-	[[ "$1" != "" ]] && tar --xattrs --acls --exclude "$BUP_DIR" -cvf - . | bup split -n "$@" -vv
+	[[ "$1" != "" ]] && tar --one-file-system --xattrs --acls --exclude "$BUP_DIR" -cvf - . | bup split -n "$@" -vv
 }
 
 _bupRetrieve() {
@@ -7594,15 +7596,16 @@ _bupRetrieve() {
 	
 	[[ ! -e "$BUP_DIR" ]] && return 1
 	
+	! man tar | grep '\-\-one-file-system' > /dev/null 2>&1 && return 1
 	! man tar | grep '\-\-xattrs' > /dev/null 2>&1 && return 1
 	! man tar | grep '\-\-acls' > /dev/null 2>&1 && return 1
 	
 	if [[ "$1" == "" ]]
 	then
-		bup join "HEAD" | tar --xattrs --acls -xf -
+		bup join "HEAD" | tar --one-file-system --xattrs --acls -xf -
 		return
 	fi
-	[[ "$1" != "" ]] && bup join "$@" | tar --xattrs --acls -xf -
+	[[ "$1" != "" ]] && bup join "$@" | tar --one-file-system --xattrs --acls -xf -
 }
 
 _here_mkboot_grubcfg() {
