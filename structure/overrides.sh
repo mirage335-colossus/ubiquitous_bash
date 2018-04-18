@@ -90,6 +90,8 @@ _echo() {
 #Set "ubOnlyMain" in "ops" overrides as necessary.
 if [[ "$ubOnlyMain" != "true" ]]
 then
+	
+	#Launch command named by link name.
 	if scriptLinkCommand=$(_getScriptLinkName)
 	then
 		if [[ "$scriptLinkCommand" == '_'* ]]

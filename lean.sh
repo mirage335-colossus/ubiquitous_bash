@@ -489,6 +489,37 @@ _test_permissions_ubiquitous() {
 	return 0
 }
 
+#Triggers before "user" and "edit" virtualization commands, to allow a single installation of a virtual machine to be used by multiple ubiquitous labs.
+#Does NOT trigger for all non-user commands (eg. open, docker conversion), as these are intended for developers with awareness of associated files under "$scriptLocal".
+
+# WARNING
+# DISABLED by default. Must be explicitly enabled in "ops" file.
+
+#toImage
+
+#_closeChRoot
+
+#_closeVBoxRaw
+
+#_editQemu
+#_editVBox
+
+#_userChRoot
+#_userQemu
+#_userVBox
+
+#_userDocker
+
+#_dockerCommit
+#_dockerLaunch
+#_dockerAttach
+#_dockerOn
+#_dockerOff
+
+_findInfrastructure_virtImage() {
+	false
+}
+
 #Gets filename extension, specifically any last three characters in given string.
 #"$1" == filename
 _getExt() {
@@ -2527,9 +2558,11 @@ _echo() {
 	echo "$@"
 }
 
+#Set "ubOnlyMain" in "ops" overrides as necessary.
 if [[ "$ubOnlyMain" != "true" ]]
 then
-
+	
+	#Launch command named by link name.
 	if scriptLinkCommand=$(_getScriptLinkName)
 	then
 		if [[ "$scriptLinkCommand" == '_'* ]]
@@ -2564,6 +2597,7 @@ then
 		#_stop "$?"
 	fi
 fi
+[[ "$ubOnlyMain" == "true" ]] && export  ubOnlyMain="false"
 
 #Stop if script is imported into an existing shell and bypass not requested.
 if [[ "${BASH_SOURCE[0]}" != "${0}" ]] && [[ "$1" != "--bypass" ]]
