@@ -2352,6 +2352,7 @@ _package() {
 #Typically launches an application - ie. through virtualized container.
 _launch() {
 	false
+	#"$@"
 }
 
 #Typically gathers command/variable scripts from other (ie. yaml) file types (ie. AppImage recipes).
@@ -2361,7 +2362,7 @@ _collect() {
 
 #Typical program entry point, absent any instancing support.
 _enter() {
-	_launch
+	_launch "$@"
 }
 
 #Typical program entry point.
@@ -2370,7 +2371,7 @@ _main() {
 	
 	_collect
 	
-	_enter
+	_enter "$@"
 	
 	_stop
 }
@@ -2525,19 +2526,43 @@ _false() {
 _echo() {
 	echo "$@"
 }
-#if [[ "$1" != "" ]] && [[ "$1" != "-"* ]] && [[ ! -e "$1" ]]
-#if [[ "$1" == '_'* ]] || [[ "$1" == "true" ]] || [[ "$1" == "false" ]]
-if [[ "$1" == '_'* ]]
+
+if [[ "$ubOnlyMain" != "true" ]]
 then
-	"$@"
-	internalFunctionExitStatus="$?"
-	#Exit if not imported into existing shell, or bypass requested, else fall through to subsequent return.
-	if ! [[ "${BASH_SOURCE[0]}" != "${0}" ]] || ! [[ "$1" != "--bypass" ]]
+
+	if scriptLinkCommand=$(_getScriptLinkName)
 	then
-		#export noEmergency=true
-		exit "$internalFunctionExitStatus"
+		if [[ "$scriptLinkCommand" == '_'* ]]
+		then
+			"$scriptLinkCommand" "$@"
+			internalFunctionExitStatus="$?"
+			
+			#Exit if not imported into existing shell, or bypass requested, else fall through to subsequent return.
+			if ! [[ "${BASH_SOURCE[0]}" != "${0}" ]] || ! [[ "$1" != "--bypass" ]]
+			then
+				#export noEmergency=true
+				exit "$internalFunctionExitStatus"
+			fi
+			
+		fi
 	fi
-	#_stop "$?"
+	
+	#if [[ "$1" != "" ]] && [[ "$1" != "-"* ]] && [[ ! -e "$1" ]]
+	#if [[ "$1" == '_'* ]] || [[ "$1" == "true" ]] || [[ "$1" == "false" ]]
+	if [[ "$1" == '_'* ]]
+	then
+		"$@"
+		internalFunctionExitStatus="$?"
+		
+		#Exit if not imported into existing shell, or bypass requested, else fall through to subsequent return.
+		if ! [[ "${BASH_SOURCE[0]}" != "${0}" ]] || ! [[ "$1" != "--bypass" ]]
+		then
+			#export noEmergency=true
+			exit "$internalFunctionExitStatus"
+		fi
+		
+		#_stop "$?"
+	fi
 fi
 
 #Stop if script is imported into an existing shell and bypass not requested.
