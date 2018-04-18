@@ -101,14 +101,20 @@ _editQemu_sequence() {
 	
 	_start
 	
-	_messageNormal "Checking lock."
-	_readLocked "$scriptLocal"/_qemuEdit && _messageError 'lock: _qemuEdit' && _stop 1
-	! _createLocked "$scriptLocal"/_qemuEdit  && _messageError 'lock: _qemuEdit' && _stop 1
+	#_messageNormal "Checking lock."
+	#_readLocked "$scriptLocal"/_qemuEdit && _messageError 'lock: _qemuEdit' && _stop 1
+	#! _createLocked "$scriptLocal"/_qemuEdit  && _messageError 'lock: _qemuEdit' && _stop 1
+	
+	_messageNormal "Checking lock and conflicts."
+	export specialLock="$lock_open_qemu"
+	_open true true
 	
 	_messageNormal "Launch: _integratedQemu."
 	! _integratedQemu "$@" && _messageError 'FAIL' && _stop 1
 	
-	rm -f "$scriptLocal"/_qemuEdit
+	rm -f "$scriptLocal"/_qemuEdit > /dev/null 2>&1
+	export specialLock="$lock_open_qemu"
+	_close true true
 	
 	_stop
 }
