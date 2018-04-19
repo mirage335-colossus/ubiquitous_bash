@@ -6511,7 +6511,7 @@ _create_instance_vbox() {
 	if ! [[ -e "$scriptLocal"/vm.vdi ]]
 	then
 		_messagePlain_nominal 'Missing VDI. Attempting to create from IMG.'
-		_openVBoxRaw
+		! _openVBoxRaw && _messageError 'FAIL' && return 1
 	fi
 	
 	_messagePlain_nominal 'Checking VDI file.'
@@ -6556,13 +6556,16 @@ _user_instance_vbox_sequence() {
 	_messageNormal '_user_instance_vbox_sequence: start'
 	_start
 	
-	_prepare_instance_vbox || return 1
+	_prepare_instance_vbox || _stop 1
 	
 	_messageNormal '_user_instance_vbox_sequence: Checking lock vBox_vdi= '"$vBox_vdi"
-	_readLocked "$vBox_vdi" && _messagePlain_bad 'lock: vBox_vdi= '"$vBox_vdi" && return 1
+	_readLocked "$vBox_vdi" && _messagePlain_bad 'lock: vBox_vdi= '"$vBox_vdi" && _stop 1
 	
 	_messageNormal '_user_instance_vbox_sequence: Creating instance. '"$vBox_vdi"
-	_create_instance_vbox "$@"
+	if ! _create_instance_vbox "$@"
+	then
+		return 1
+	fi
 	
 	_messageNormal '_user_instance_vbox_sequence: Launch: _vboxGUI '"$vBox_vdi"
 	 _vboxGUI --startvm "$sessionid"
@@ -6596,7 +6599,10 @@ _edit_instance_vbox_sequence() {
 	#VBoxManage modifymedium "$scriptLocal"/vm.vdi --type normal
 	
 	export vboxDiskMtype="normal"
-	_create_instance_vbox "$@"
+	if ! _create_instance_vbox "$@"
+	then
+		return 1
+	fi
 	
 	env HOME="$VBOX_USER_HOME_short" VirtualBox
 	
@@ -6611,12 +6617,14 @@ _edit_instance_vbox_sequence() {
 	_stop
 }
 
-_edit_instance_vbox() {	
+_edit_instance_vbox() {
 	"$scriptAbsoluteLocation" _edit_instance_vbox_sequence "$@"
 }
 
 _editVBox() {
+	_messageNormal 'Begin: '"$@"
 	_edit_instance_vbox "$@"
+	_messageNormal 'End: '"$@"
 }
 
 
