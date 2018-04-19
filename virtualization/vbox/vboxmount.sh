@@ -92,9 +92,14 @@ _openVBoxRaw() {
 	_checkVBox_raw || _stop 1
 	
 	_messagePlain_nominal 'launch: _open _waitVBox_opening _mountVBox_raw'
+	
+	local openVBoxRaw_exitStatus
 	_open _waitVBox_opening _mountVBox_raw
+	openVBoxRaw_exitStatus="$?"
 	
 	export specialLock=""
+	
+	return "$openVBoxRaw_exitStatus"
 }
 
 _closeVBoxRaw() {

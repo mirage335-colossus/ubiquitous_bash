@@ -107,14 +107,14 @@ _editQemu_sequence() {
 	
 	_messageNormal "Checking lock and conflicts."
 	export specialLock="$lock_open_qemu"
-	_open true true
+	! _open true true && _messageError 'FAIL' && _stop 1
 	
 	_messageNormal "Launch: _integratedQemu."
 	! _integratedQemu "$@" && _messageError 'FAIL' && _stop 1
 	
 	rm -f "$scriptLocal"/_qemuEdit > /dev/null 2>&1
 	export specialLock="$lock_open_qemu"
-	_close true true
+	! _close true true && _messageError 'FAIL' && _stop 1
 	
 	_stop
 }

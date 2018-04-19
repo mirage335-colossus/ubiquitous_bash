@@ -179,16 +179,16 @@ _user_instance_vbox_sequence() {
 	_messageNormal '_user_instance_vbox_sequence: Checking lock vBox_vdi= '"$vBox_vdi"
 	_readLocked "$vBox_vdi" && _messagePlain_bad 'lock: vBox_vdi= '"$vBox_vdi" && _stop 1
 	
-	_messageNormal '_user_instance_vbox_sequence: Creating instance. '"$vBox_vdi"
+	_messageNormal '_user_instance_vbox_sequence: Creating instance. '"$sessionid"
 	if ! _create_instance_vbox "$@"
 	then
 		_stop 1
 	fi
 	
-	_messageNormal '_user_instance_vbox_sequence: Launch: _vboxGUI '"$vBox_vdi"
+	_messageNormal '_user_instance_vbox_sequence: Launch: _vboxGUI '"$sessionid"
 	 _vboxGUI --startvm "$sessionid"
 	
-	_messageNormal '_user_instance_vbox_sequence: Removing instance. '"$vBox_vdi"
+	_messageNormal '_user_instance_vbox_sequence: Removing instance. '"$sessionid"
 	_rm_instance_vbox
 	
 	_messageNormal '_user_instance_vbox_sequence: stop'
@@ -210,10 +210,6 @@ _edit_instance_vbox_sequence() {
 	
 	_prepare_instance_vbox || return 1
 	
-	_readLocked "$vBox_vdi" && return 1
-	
-	_createLocked "$vBox_vdi" || return 1
-	
 	#VBoxManage modifymedium "$scriptLocal"/vm.vdi --type normal
 	
 	export vboxDiskMtype="normal"
@@ -221,6 +217,10 @@ _edit_instance_vbox_sequence() {
 	then
 		return 1
 	fi
+	
+	_readLocked "$vBox_vdi" && return 1
+	
+	_createLocked "$vBox_vdi" || return 1
 	
 	env HOME="$VBOX_USER_HOME_short" VirtualBox
 	
