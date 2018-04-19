@@ -94,6 +94,9 @@ _ubvrtusrChRoot() {
 }
 
 _userChRoot() {
+	_findInfrastructure_virtImage "$@"
+	[[ "$ubVirtImageLocal" == "false" ]] && return
+	
 	_start
 	_start_virt_all
 	export chrootDir="$globalVirtFS"

@@ -103,6 +103,9 @@ _openVBoxRaw() {
 }
 
 _closeVBoxRaw() {
+	_findInfrastructure_virtImage "$@"
+	[[ "$ubVirtImageLocal" == "false" ]] && return
+	
 	export specialLock="$lock_open_vbox"
 	
 	if [[ "$1" == "--force" ]]

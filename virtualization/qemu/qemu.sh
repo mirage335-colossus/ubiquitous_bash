@@ -91,6 +91,9 @@ _userQemu_sequence() {
 }
 
 _userQemu() {
+	_findInfrastructure_virtImage "$@"
+	[[ "$ubVirtImageLocal" == "false" ]] && return
+	
 	"$scriptAbsoluteLocation" _userQemu_sequence "$@"
 }
 

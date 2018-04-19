@@ -307,6 +307,9 @@ _openChRoot() {
 }
 
 _closeChRoot() {
+	_findInfrastructure_virtImage "$@"
+	[[ "$ubVirtImageLocal" == "false" ]] && return
+	
 	export specialLock="$lock_open_chroot"
 	if [[ "$1" == "--force" ]]
 	then

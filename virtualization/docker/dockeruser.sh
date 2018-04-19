@@ -39,6 +39,9 @@ _userDocker_sequence() {
 }
 
 _userDocker() {
+	_findInfrastructure_virtImage "$@"
+	[[ "$ubVirtImageLocal" == "false" ]] && return
+	
 	local dockerImageNeeded
 	"$scriptAbsoluteLocation" _create_docker_image_needed_sequence > /dev/null 2>&1
 	dockerImageNeeded="$?"

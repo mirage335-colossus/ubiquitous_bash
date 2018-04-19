@@ -5,6 +5,9 @@ _test_transferimage() {
 }
 
 _toImage() {
+	_findInfrastructure_virtImage "$@"
+	[[ "$ubVirtImageLocal" == "false" ]] && return
+	
 	#_openImage || return 1
 	_openChRoot || return 1
 	
