@@ -110,6 +110,18 @@ _getScriptLinkName() {
 	echo "$scriptLinkName"
 }
 
+_recursion_guard() {
+	! type "$1" >/dev/null 2>&1 && return 1
+	
+	local launchGuardScriptAbsoluteLocation
+	launchGuardScriptAbsoluteLocation=$(_getScriptAbsoluteLocation)
+	local launchGuardTestAbsoluteLocation
+	launchGuardTestAbsoluteLocation=$(_getAbsoluteLocation "$1")
+	[[ "$launchGuardScriptAbsoluteLocation" == "$launchGuardTestAbsoluteLocation" ]] && return 1
+	
+	return 0
+}
+
 #Checks whether command or function is available.
 # DANGER Needed by safeRMR .
 _checkDep() {
@@ -489,36 +501,7 @@ _test_permissions_ubiquitous() {
 	return 0
 }
 
-#Triggers before "user" and "edit" virtualization commands, to allow a single installation of a virtual machine to be used by multiple ubiquitous labs.
-#Does NOT trigger for all non-user commands (eg. open, docker conversion), as these are intended for developers with awareness of associated files under "$scriptLocal".
 
-# WARNING
-# DISABLED by default. Must be explicitly enabled in "ops" file.
-
-#toImage
-
-#_closeChRoot
-
-#_closeVBoxRaw
-
-#_editQemu
-#_editVBox
-
-#_userChRoot
-#_userQemu
-#_userVBox
-
-#_userDocker
-
-#_dockerCommit
-#_dockerLaunch
-#_dockerAttach
-#_dockerOn
-#_dockerOff
-
-_findInfrastructure_virtImage() {
-	false
-}
 
 #Gets filename extension, specifically any last three characters in given string.
 #"$1" == filename
@@ -1563,6 +1546,8 @@ specialLocks+=("$lock_open_qemu")
 export specialLock=""
 export specialLocks
 
+export ubVirtImageLocal="true"
+
 #Monolithic shared log files.
 export importLog="$scriptLocal"/import.log
 
@@ -2537,7 +2522,6 @@ then
 	. "$scriptLocal"/ssh/opsauto
 fi
 
-#Launch internal functions as commands.
 #Wrapper function to launch arbitrary commands within the ubiquitous_bash environment, including its PATH with scriptBin.
 _bin() {
 	"$@"
@@ -2580,6 +2564,7 @@ then
 		fi
 	fi
 	
+	# NOTICE Launch internal functions as commands.
 	#if [[ "$1" != "" ]] && [[ "$1" != "-"* ]] && [[ ! -e "$1" ]]
 	#if [[ "$1" == '_'* ]] || [[ "$1" == "true" ]] || [[ "$1" == "false" ]]
 	if [[ "$1" == '_'* ]]

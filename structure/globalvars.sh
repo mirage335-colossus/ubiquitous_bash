@@ -118,6 +118,8 @@ specialLocks+=("$lock_open_qemu")
 export specialLock=""
 export specialLocks
 
+export ubVirtImageLocal="true"
+
 #Monolithic shared log files.
 export importLog="$scriptLocal"/import.log
 

@@ -101,3 +101,17 @@ _getScriptLinkName() {
 	[[ "$scriptLinkName" == "" ]] && return 1
 	echo "$scriptLinkName"
 }
+
+_recursion_guard() {
+	! [[ -e "$1" ]] && return 1
+	
+	! type "$1" >/dev/null 2>&1 && return 1
+	
+	local launchGuardScriptAbsoluteLocation
+	launchGuardScriptAbsoluteLocation=$(_getScriptAbsoluteLocation)
+	local launchGuardTestAbsoluteLocation
+	launchGuardTestAbsoluteLocation=$(_getAbsoluteLocation "$1")
+	[[ "$launchGuardScriptAbsoluteLocation" == "$launchGuardTestAbsoluteLocation" ]] && return 1
+	
+	return 0
+}

@@ -66,7 +66,6 @@ then
 	. "$scriptLocal"/ssh/opsauto
 fi
 
-#Launch internal functions as commands.
 #Wrapper function to launch arbitrary commands within the ubiquitous_bash environment, including its PATH with scriptBin.
 _bin() {
 	"$@"
@@ -109,6 +108,7 @@ then
 		fi
 	fi
 	
+	# NOTICE Launch internal functions as commands.
 	#if [[ "$1" != "" ]] && [[ "$1" != "-"* ]] && [[ ! -e "$1" ]]
 	#if [[ "$1" == '_'* ]] || [[ "$1" == "true" ]] || [[ "$1" == "false" ]]
 	if [[ "$1" == '_'* ]]

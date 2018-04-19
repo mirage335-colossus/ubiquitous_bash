@@ -110,6 +110,18 @@ _getScriptLinkName() {
 	echo "$scriptLinkName"
 }
 
+_recursion_guard() {
+	! type "$1" >/dev/null 2>&1 && return 1
+	
+	local launchGuardScriptAbsoluteLocation
+	launchGuardScriptAbsoluteLocation=$(_getScriptAbsoluteLocation)
+	local launchGuardTestAbsoluteLocation
+	launchGuardTestAbsoluteLocation=$(_getAbsoluteLocation "$1")
+	[[ "$launchGuardScriptAbsoluteLocation" == "$launchGuardTestAbsoluteLocation" ]] && return 1
+	
+	return 0
+}
+
 #Checks whether command or function is available.
 # DANGER Needed by safeRMR .
 _checkDep() {
@@ -489,36 +501,7 @@ _test_permissions_ubiquitous() {
 	return 0
 }
 
-#Triggers before "user" and "edit" virtualization commands, to allow a single installation of a virtual machine to be used by multiple ubiquitous labs.
-#Does NOT trigger for all non-user commands (eg. open, docker conversion), as these are intended for developers with awareness of associated files under "$scriptLocal".
 
-# WARNING
-# DISABLED by default. Must be explicitly enabled in "ops" file.
-
-#toImage
-
-#_closeChRoot
-
-#_closeVBoxRaw
-
-#_editQemu
-#_editVBox
-
-#_userChRoot
-#_userQemu
-#_userVBox
-
-#_userDocker
-
-#_dockerCommit
-#_dockerLaunch
-#_dockerAttach
-#_dockerOn
-#_dockerOff
-
-_findInfrastructure_virtImage() {
-	false
-}
 
 #"$1" == file path
 _includeFile() {
@@ -3827,6 +3810,118 @@ _stop_virt_all() {
 	
 }
 
+
+#Triggers before "user" and "edit" virtualization commands, to allow a single installation of a virtual machine to be used by multiple ubiquitous labs.
+#Does NOT trigger for all non-user commands (eg. open, docker conversion), as these are intended for developers with awareness of associated files under "$scriptLocal".
+
+# WARNING
+# DISABLED by default. Must be explicitly enabled in "ops" file.
+
+#toImage
+
+#_closeChRoot
+
+#_closeVBoxRaw
+
+#_editQemu
+#_editVBox
+
+#_userChRoot
+#_userQemu
+#_userVBox
+
+#_userDocker
+
+#_dockerCommit
+#_dockerLaunch
+#_dockerAttach
+#_dockerOn
+#_dockerOff
+
+_findInfrastructure_virtImage() {
+	[[ "$ubVirtImageLocal" != "false" ]] && return 0
+	
+	[[ -e "$scriptLocal"/vm.img ]] && export ubVirtImageLocal="true" && return 0
+	[[ -e "$scriptLocal"/vm.vdi ]] && export ubVirtImageLocal="true" && return 0
+	[[ -e "$scriptLocal"/vmvdiraw.vmdi ]] && export ubVirtImageLocal="true" && return 0
+	
+	_checkSpecialLocks && export ubVirtImageLocal="true" && return 0
+	
+	_findInfrastructure_virtImage_script "$@"
+}
+
+_findInfrastructure_virtImage_script() {
+	local infrastructureName=$(basename "$scriptAbsoluteFolder")
+	
+	local recursionExec
+	
+	recursionExec="$scriptAbsoluteFolder"/../core/infrastructure/vm/"$infrastructureName"/ubiquitous_bash.sh
+	if _recursion_guard "$recursionExec"
+	then
+		"$recursionExec" "$@"
+		return
+	fi
+	
+	recursionExec="$scriptAbsoluteFolder"/../../../../core/infrastructure/vm/"$infrastructureName"/ubiquitous_bash.sh
+	if _recursion_guard "$recursionExec"
+	then
+		"$recursionExec" "$@"
+		return
+	fi
+	
+	recursionExec="$scriptAbsoluteFolder"/../../../../../../core/infrastructure/vm/"$infrastructureName"/ubiquitous_bash.sh
+	if _recursion_guard "$recursionExec"
+	then
+		"$recursionExec" "$@"
+		return
+	fi
+	
+	recursionExec="$scriptAbsoluteFolder"/../../../../../../../core/infrastructure/vm/"$infrastructureName"/ubiquitous_bash.sh
+	if _recursion_guard "$recursionExec"
+	then
+		"$recursionExec" "$@"
+		return
+	fi
+	
+	recursionExec="$scriptAbsoluteFolder"/../core/lab/vm/"$infrastructureName"/ubiquitous_bash.sh
+	if _recursion_guard "$recursionExec"
+	then
+		"$recursionExec" "$@"
+		return
+	fi
+	
+	recursionExec="$scriptAbsoluteFolder"/../../../../core/lab/vm/"$infrastructureName"/ubiquitous_bash.sh
+	if _recursion_guard "$recursionExec"
+	then
+		"$recursionExec" "$@"
+		return
+	fi
+	
+	recursionExec="$scriptAbsoluteFolder"/../../../../../../core/lab/vm/"$infrastructureName"/ubiquitous_bash.sh
+	if _recursion_guard "$recursionExec"
+	then
+		"$recursionExec" "$@"
+		return
+	fi
+	
+	recursionExec="$scriptAbsoluteFolder"/../../../../../../../core/lab/vm/"$infrastructureName"/ubiquitous_bash.sh
+	if _recursion_guard "$recursionExec"
+	then
+		"$recursionExec" "$@"
+		return
+	fi
+	
+	
+	recursionExec="$HOME"/core/infrastructure/nixexevm/ubiquitous_bash.sh
+	[[ "$virtOStype" == 'MSW'* ]] recursionExec="$HOME"/core/infrastructure/winexevm/ubiquitous_bash.sh
+	[[ "$virtOStype" == 'Windows'* ]] recursionExec="$HOME"/core/infrastructure/winexevm/ubiquitous_bash.sh
+	[[ "$vboxOStype" == 'Windows'* ]] recursionExec="$HOME"/core/infrastructure/winexevm/ubiquitous_bash.sh
+	if _recursion_guard "$recursionExec"
+	then
+		"$recursionExec" "$@"
+		return
+	fi
+}
 
 
 #Removes 'file://' often used by browsers.
@@ -10093,6 +10188,8 @@ specialLocks+=("$lock_open_qemu")
 export specialLock=""
 export specialLocks
 
+export ubVirtImageLocal="true"
+
 #Monolithic shared log files.
 export importLog="$scriptLocal"/import.log
 
@@ -12013,6 +12110,8 @@ _compile_bash_utilities_virtualization() {
 	
 	[[ "$enUb_virt" == "true" ]] && includeScriptList+=( "virtualization"/virtenv.sh )
 	
+	[[ "$enUb_virt" == "true" ]] && includeScriptList+=( "virtualization"/findInfrastructure_virt.sh )
+	
 	[[ "$enUb_virt" == "true" ]] && includeScriptList+=( "virtualization"/osTranslation.sh )
 	[[ "$enUb_virt" == "true" ]] && includeScriptList+=( "virtualization"/localPathTranslation.sh )
 	
@@ -12609,7 +12708,6 @@ then
 	. "$scriptLocal"/ssh/opsauto
 fi
 
-#Launch internal functions as commands.
 #Wrapper function to launch arbitrary commands within the ubiquitous_bash environment, including its PATH with scriptBin.
 _bin() {
 	"$@"
@@ -12652,6 +12750,7 @@ then
 		fi
 	fi
 	
+	# NOTICE Launch internal functions as commands.
 	#if [[ "$1" != "" ]] && [[ "$1" != "-"* ]] && [[ ! -e "$1" ]]
 	#if [[ "$1" == '_'* ]] || [[ "$1" == "true" ]] || [[ "$1" == "false" ]]
 	if [[ "$1" == '_'* ]]
