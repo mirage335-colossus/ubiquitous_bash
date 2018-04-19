@@ -235,7 +235,7 @@ _edit_instance_vbox_sequence() {
 	_stop
 }
 
-_edit_instance_vbox() {	
+_edit_instance_vbox() {
 	"$scriptAbsoluteLocation" _edit_instance_vbox_sequence "$@"
 }
 

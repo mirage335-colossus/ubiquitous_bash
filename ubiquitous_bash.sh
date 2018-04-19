@@ -6304,23 +6304,30 @@ _waitVBox_closing() {
 }
 
 _openVBoxRaw() {
+	export specialLock="$lock_open_vbox"
+	
 	_checkVBox_raw || _stop 1
 	
 	_messagePlain_nominal 'launch: _open _waitVBox_opening _mountVBox_raw'
 	_open _waitVBox_opening _mountVBox_raw
+	
+	export specialLock=""
 }
 
 _closeVBoxRaw() {
+	export specialLock="$lock_open_vbox"
+	
 	if [[ "$1" == "--force" ]]
 	then
 		_close --force _waitVBox_closing _umountVBox_raw
 		[[ "$1" != "" ]] && _tryExecFull _unhook_systemd_shutdown "$1"
+		export specialLock=""
 		return 0
 	fi
 	
 	_close _waitVBox_closing _umountVBox_raw
 	[[ "$1" != "" ]] && _tryExecFull _unhook_systemd_shutdown "$1"
-	
+	export specialLock=""
 	return 0
 }
 
@@ -6564,7 +6571,7 @@ _user_instance_vbox_sequence() {
 	_messageNormal '_user_instance_vbox_sequence: Creating instance. '"$vBox_vdi"
 	if ! _create_instance_vbox "$@"
 	then
-		return 1
+		_stop 1
 	fi
 	
 	_messageNormal '_user_instance_vbox_sequence: Launch: _vboxGUI '"$vBox_vdi"
