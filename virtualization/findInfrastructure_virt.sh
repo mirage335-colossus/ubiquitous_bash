@@ -149,7 +149,24 @@ _findInfrastructure_virtImage_script() {
 		return
 	fi
 	
+	recursionExec="$HOME"/extra/infrastructure/vm/"$infrastructureName"/ubiquitous_bash.sh
+	if _recursion_guard "$recursionExec"
+	then
+		"$recursionExec" "$@"
+		return
+	fi
+	
 	recursionExec="$HOME"/core/infrastructure/nixexevm/ubiquitous_bash.sh
+	[[ "$virtOStype" == 'MSW'* ]] recursionExec="$HOME"/core/infrastructure/winexevm/ubiquitous_bash.sh
+	[[ "$virtOStype" == 'Windows'* ]] recursionExec="$HOME"/core/infrastructure/winexevm/ubiquitous_bash.sh
+	[[ "$vboxOStype" == 'Windows'* ]] recursionExec="$HOME"/core/infrastructure/winexevm/ubiquitous_bash.sh
+	if _recursion_guard "$recursionExec"
+	then
+		"$recursionExec" "$@"
+		return
+	fi
+	
+	recursionExec="$HOME"/extra/infrastructure/nixexevm/ubiquitous_bash.sh
 	[[ "$virtOStype" == 'MSW'* ]] recursionExec="$HOME"/core/infrastructure/winexevm/ubiquitous_bash.sh
 	[[ "$virtOStype" == 'Windows'* ]] recursionExec="$HOME"/core/infrastructure/winexevm/ubiquitous_bash.sh
 	[[ "$vboxOStype" == 'Windows'* ]] recursionExec="$HOME"/core/infrastructure/winexevm/ubiquitous_bash.sh
