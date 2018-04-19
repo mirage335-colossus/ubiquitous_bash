@@ -120,5 +120,8 @@ _editQemu_sequence() {
 }
 
 _editQemu() {
+	_findInfrastructure_virtImage "$@"
+	[[ "$ubVirtImageLocal" == "false" ]] && return
+	
 	"$scriptAbsoluteLocation" _editQemu_sequence "$@"
 }

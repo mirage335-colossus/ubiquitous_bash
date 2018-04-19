@@ -111,6 +111,8 @@ _getScriptLinkName() {
 }
 
 _recursion_guard() {
+	! [[ -e "$1" ]] && return 1
+	
 	! type "$1" >/dev/null 2>&1 && return 1
 	
 	local launchGuardScriptAbsoluteLocation
@@ -3815,7 +3817,7 @@ _stop_virt_all() {
 #Does NOT trigger for all non-user commands (eg. open, docker conversion), as these are intended for developers with awareness of associated files under "$scriptLocal".
 
 # WARNING
-# DISABLED by default. Must be explicitly enabled in "ops" file.
+# DISABLED by default. Must be explicitly enabled by setting "$ubVirtImageLocal" to "false" in "ops".
 
 #toImage
 
@@ -3850,6 +3852,8 @@ _findInfrastructure_virtImage() {
 	_findInfrastructure_virtImage_script "$@"
 }
 
+# WARNING
+#Overloading with "ops" is recommended.
 _findInfrastructure_virtImage_script() {
 	local infrastructureName=$(basename "$scriptAbsoluteFolder")
 	
@@ -3862,7 +3866,28 @@ _findInfrastructure_virtImage_script() {
 		return
 	fi
 	
+	recursionExec="$scriptAbsoluteFolder"/../../core/infrastructure/vm/"$infrastructureName"/ubiquitous_bash.sh
+	if _recursion_guard "$recursionExec"
+	then
+		"$recursionExec" "$@"
+		return
+	fi
+	
+	recursionExec="$scriptAbsoluteFolder"/../../../core/infrastructure/vm/"$infrastructureName"/ubiquitous_bash.sh
+	if _recursion_guard "$recursionExec"
+	then
+		"$recursionExec" "$@"
+		return
+	fi
+	
 	recursionExec="$scriptAbsoluteFolder"/../../../../core/infrastructure/vm/"$infrastructureName"/ubiquitous_bash.sh
+	if _recursion_guard "$recursionExec"
+	then
+		"$recursionExec" "$@"
+		return
+	fi
+	
+	recursionExec="$scriptAbsoluteFolder"/../../../../../core/infrastructure/vm/"$infrastructureName"/ubiquitous_bash.sh
 	if _recursion_guard "$recursionExec"
 	then
 		"$recursionExec" "$@"
@@ -3883,39 +3908,83 @@ _findInfrastructure_virtImage_script() {
 		return
 	fi
 	
-	recursionExec="$scriptAbsoluteFolder"/../core/lab/vm/"$infrastructureName"/ubiquitous_bash.sh
+	recursionExec="$scriptAbsoluteFolder"/../core/lab/"$infrastructureName"/ubiquitous_bash.sh
 	if _recursion_guard "$recursionExec"
 	then
 		"$recursionExec" "$@"
 		return
 	fi
 	
-	recursionExec="$scriptAbsoluteFolder"/../../../../core/lab/vm/"$infrastructureName"/ubiquitous_bash.sh
+	recursionExec="$scriptAbsoluteFolder"/../../core/lab/"$infrastructureName"/ubiquitous_bash.sh
 	if _recursion_guard "$recursionExec"
 	then
 		"$recursionExec" "$@"
 		return
 	fi
 	
-	recursionExec="$scriptAbsoluteFolder"/../../../../../../core/lab/vm/"$infrastructureName"/ubiquitous_bash.sh
+	recursionExec="$scriptAbsoluteFolder"/../../../core/lab/"$infrastructureName"/ubiquitous_bash.sh
 	if _recursion_guard "$recursionExec"
 	then
 		"$recursionExec" "$@"
 		return
 	fi
 	
-	recursionExec="$scriptAbsoluteFolder"/../../../../../../../core/lab/vm/"$infrastructureName"/ubiquitous_bash.sh
+	recursionExec="$scriptAbsoluteFolder"/../../../../core/lab/"$infrastructureName"/ubiquitous_bash.sh
 	if _recursion_guard "$recursionExec"
 	then
 		"$recursionExec" "$@"
 		return
 	fi
 	
+	recursionExec="$scriptAbsoluteFolder"/../../../../../core/lab/"$infrastructureName"/ubiquitous_bash.sh
+	if _recursion_guard "$recursionExec"
+	then
+		"$recursionExec" "$@"
+		return
+	fi
+	
+	recursionExec="$scriptAbsoluteFolder"/../../../../../../core/lab/"$infrastructureName"/ubiquitous_bash.sh
+	if _recursion_guard "$recursionExec"
+	then
+		"$recursionExec" "$@"
+		return
+	fi
+	
+	recursionExec="$scriptAbsoluteFolder"/../../../../../../../core/lab/"$infrastructureName"/ubiquitous_bash.sh
+	if _recursion_guard "$recursionExec"
+	then
+		"$recursionExec" "$@"
+		return
+	fi
+	
+	recursionExec="$HOME"/core/infrastructure/vm/"$infrastructureName"/ubiquitous_bash.sh
+	if _recursion_guard "$recursionExec"
+	then
+		"$recursionExec" "$@"
+		return
+	fi
+	
+	recursionExec="$HOME"/extra/infrastructure/vm/"$infrastructureName"/ubiquitous_bash.sh
+	if _recursion_guard "$recursionExec"
+	then
+		"$recursionExec" "$@"
+		return
+	fi
 	
 	recursionExec="$HOME"/core/infrastructure/nixexevm/ubiquitous_bash.sh
-	[[ "$virtOStype" == 'MSW'* ]] recursionExec="$HOME"/core/infrastructure/winexevm/ubiquitous_bash.sh
-	[[ "$virtOStype" == 'Windows'* ]] recursionExec="$HOME"/core/infrastructure/winexevm/ubiquitous_bash.sh
-	[[ "$vboxOStype" == 'Windows'* ]] recursionExec="$HOME"/core/infrastructure/winexevm/ubiquitous_bash.sh
+	[[ "$virtOStype" == 'MSW'* ]] && recursionExec="$HOME"/core/infrastructure/winexevm/ubiquitous_bash.sh
+	[[ "$virtOStype" == 'Windows'* ]] && recursionExec="$HOME"/core/infrastructure/winexevm/ubiquitous_bash.sh
+	[[ "$vboxOStype" == 'Windows'* ]] && recursionExec="$HOME"/core/infrastructure/winexevm/ubiquitous_bash.sh
+	if _recursion_guard "$recursionExec"
+	then
+		"$recursionExec" "$@"
+		return
+	fi
+	
+	recursionExec="$HOME"/extra/infrastructure/nixexevm/ubiquitous_bash.sh
+	[[ "$virtOStype" == 'MSW'* ]] && recursionExec="$HOME"/core/infrastructure/winexevm/ubiquitous_bash.sh
+	[[ "$virtOStype" == 'Windows'* ]] && recursionExec="$HOME"/core/infrastructure/winexevm/ubiquitous_bash.sh
+	[[ "$vboxOStype" == 'Windows'* ]] && recursionExec="$HOME"/core/infrastructure/winexevm/ubiquitous_bash.sh
 	if _recursion_guard "$recursionExec"
 	then
 		"$recursionExec" "$@"
@@ -6296,6 +6365,9 @@ _editQemu_sequence() {
 }
 
 _editQemu() {
+	_findInfrastructure_virtImage "$@"
+	[[ "$ubVirtImageLocal" == "false" ]] && return
+	
 	"$scriptAbsoluteLocation" _editQemu_sequence "$@"
 }
 

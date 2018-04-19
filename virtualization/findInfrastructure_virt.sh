@@ -157,9 +157,9 @@ _findInfrastructure_virtImage_script() {
 	fi
 	
 	recursionExec="$HOME"/core/infrastructure/nixexevm/ubiquitous_bash.sh
-	[[ "$virtOStype" == 'MSW'* ]] recursionExec="$HOME"/core/infrastructure/winexevm/ubiquitous_bash.sh
-	[[ "$virtOStype" == 'Windows'* ]] recursionExec="$HOME"/core/infrastructure/winexevm/ubiquitous_bash.sh
-	[[ "$vboxOStype" == 'Windows'* ]] recursionExec="$HOME"/core/infrastructure/winexevm/ubiquitous_bash.sh
+	[[ "$virtOStype" == 'MSW'* ]] && recursionExec="$HOME"/core/infrastructure/winexevm/ubiquitous_bash.sh
+	[[ "$virtOStype" == 'Windows'* ]] && recursionExec="$HOME"/core/infrastructure/winexevm/ubiquitous_bash.sh
+	[[ "$vboxOStype" == 'Windows'* ]] && recursionExec="$HOME"/core/infrastructure/winexevm/ubiquitous_bash.sh
 	if _recursion_guard "$recursionExec"
 	then
 		"$recursionExec" "$@"
@@ -167,9 +167,9 @@ _findInfrastructure_virtImage_script() {
 	fi
 	
 	recursionExec="$HOME"/extra/infrastructure/nixexevm/ubiquitous_bash.sh
-	[[ "$virtOStype" == 'MSW'* ]] recursionExec="$HOME"/core/infrastructure/winexevm/ubiquitous_bash.sh
-	[[ "$virtOStype" == 'Windows'* ]] recursionExec="$HOME"/core/infrastructure/winexevm/ubiquitous_bash.sh
-	[[ "$vboxOStype" == 'Windows'* ]] recursionExec="$HOME"/core/infrastructure/winexevm/ubiquitous_bash.sh
+	[[ "$virtOStype" == 'MSW'* ]] && recursionExec="$HOME"/core/infrastructure/winexevm/ubiquitous_bash.sh
+	[[ "$virtOStype" == 'Windows'* ]] && recursionExec="$HOME"/core/infrastructure/winexevm/ubiquitous_bash.sh
+	[[ "$vboxOStype" == 'Windows'* ]] && recursionExec="$HOME"/core/infrastructure/winexevm/ubiquitous_bash.sh
 	if _recursion_guard "$recursionExec"
 	then
 		"$recursionExec" "$@"

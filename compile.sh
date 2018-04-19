@@ -111,6 +111,8 @@ _getScriptLinkName() {
 }
 
 _recursion_guard() {
+	! [[ -e "$1" ]] && return 1
+	
 	! type "$1" >/dev/null 2>&1 && return 1
 	
 	local launchGuardScriptAbsoluteLocation
