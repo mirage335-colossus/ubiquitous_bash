@@ -3866,49 +3866,14 @@ _findInfrastructure_virtImage_script() {
 		return
 	fi
 	
-	recursionExec="$scriptAbsoluteFolder"/../../core/infrastructure/vm/"$infrastructureName"/ubiquitous_bash.sh
-	if _recursion_guard "$recursionExec"
-	then
-		"$recursionExec" "$@"
-		return
-	fi
-	
-	recursionExec="$scriptAbsoluteFolder"/../../../core/infrastructure/vm/"$infrastructureName"/ubiquitous_bash.sh
-	if _recursion_guard "$recursionExec"
-	then
-		"$recursionExec" "$@"
-		return
-	fi
-	
-	recursionExec="$scriptAbsoluteFolder"/../../../../core/infrastructure/vm/"$infrastructureName"/ubiquitous_bash.sh
-	if _recursion_guard "$recursionExec"
-	then
-		"$recursionExec" "$@"
-		return
-	fi
-	
-	recursionExec="$scriptAbsoluteFolder"/../../../../../core/infrastructure/vm/"$infrastructureName"/ubiquitous_bash.sh
-	if _recursion_guard "$recursionExec"
-	then
-		"$recursionExec" "$@"
-		return
-	fi
-	
-	recursionExec="$scriptAbsoluteFolder"/../../../../../../core/infrastructure/vm/"$infrastructureName"/ubiquitous_bash.sh
-	if _recursion_guard "$recursionExec"
-	then
-		"$recursionExec" "$@"
-		return
-	fi
-	
-	recursionExec="$scriptAbsoluteFolder"/../../../../../../../core/infrastructure/vm/"$infrastructureName"/ubiquitous_bash.sh
-	if _recursion_guard "$recursionExec"
-	then
-		"$recursionExec" "$@"
-		return
-	fi
-	
 	recursionExec="$scriptAbsoluteFolder"/../core/lab/"$infrastructureName"/ubiquitous_bash.sh
+	if _recursion_guard "$recursionExec"
+	then
+		"$recursionExec" "$@"
+		return
+	fi
+	
+	recursionExec="$scriptAbsoluteFolder"/../../core/infrastructure/vm/"$infrastructureName"/ubiquitous_bash.sh
 	if _recursion_guard "$recursionExec"
 	then
 		"$recursionExec" "$@"
@@ -3922,7 +3887,21 @@ _findInfrastructure_virtImage_script() {
 		return
 	fi
 	
+	recursionExec="$scriptAbsoluteFolder"/../../../core/infrastructure/vm/"$infrastructureName"/ubiquitous_bash.sh
+	if _recursion_guard "$recursionExec"
+	then
+		"$recursionExec" "$@"
+		return
+	fi
+	
 	recursionExec="$scriptAbsoluteFolder"/../../../core/lab/"$infrastructureName"/ubiquitous_bash.sh
+	if _recursion_guard "$recursionExec"
+	then
+		"$recursionExec" "$@"
+		return
+	fi
+	
+	recursionExec="$scriptAbsoluteFolder"/../../../../core/infrastructure/vm/"$infrastructureName"/ubiquitous_bash.sh
 	if _recursion_guard "$recursionExec"
 	then
 		"$recursionExec" "$@"
@@ -3936,6 +3915,13 @@ _findInfrastructure_virtImage_script() {
 		return
 	fi
 	
+	recursionExec="$scriptAbsoluteFolder"/../../../../../core/infrastructure/vm/"$infrastructureName"/ubiquitous_bash.sh
+	if _recursion_guard "$recursionExec"
+	then
+		"$recursionExec" "$@"
+		return
+	fi
+	
 	recursionExec="$scriptAbsoluteFolder"/../../../../../core/lab/"$infrastructureName"/ubiquitous_bash.sh
 	if _recursion_guard "$recursionExec"
 	then
@@ -3943,7 +3929,21 @@ _findInfrastructure_virtImage_script() {
 		return
 	fi
 	
+	recursionExec="$scriptAbsoluteFolder"/../../../../../../core/infrastructure/vm/"$infrastructureName"/ubiquitous_bash.sh
+	if _recursion_guard "$recursionExec"
+	then
+		"$recursionExec" "$@"
+		return
+	fi
+	
 	recursionExec="$scriptAbsoluteFolder"/../../../../../../core/lab/"$infrastructureName"/ubiquitous_bash.sh
+	if _recursion_guard "$recursionExec"
+	then
+		"$recursionExec" "$@"
+		return
+	fi
+	
+	recursionExec="$scriptAbsoluteFolder"/../../../../../../../core/infrastructure/vm/"$infrastructureName"/ubiquitous_bash.sh
 	if _recursion_guard "$recursionExec"
 	then
 		"$recursionExec" "$@"
