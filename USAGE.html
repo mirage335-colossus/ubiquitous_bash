@@ -2346,10 +2346,17 @@ A &quot;_tryExec&quot; function is generally used to call a function which check
 <pre>|~ViewToolbar|closeTiddler closeOthers editTiddler &gt; fields syncing permalink references jump|
 |~EditToolbar|+saveTiddler -cancelTiddler deleteTiddler|</pre>
 </div>
-<div title="Ubiquitous Lab" creator="mirage335" modifier="mirage335" created="201804191902" modified="201804201827" changecount="11">
+<div title="Ubiquitous Lab" creator="mirage335" modifier="mirage335" created="201804191902" modified="201804202153" changecount="13">
 <pre>Top-level control of meta-applications, referred to as a &quot;lab&quot;, is a primary goal for Ubiquitous Bash.
 
 Following an &quot;Ubiquitous Lab&quot; standard layout will allow modules to be added and removed as needed for contingencies or efficiency.
+
+!Conventions
+!!Generic Virtual Machines
+//{{{
+&quot;$HOME&quot;/core/infrastructure/winexevm
+&quot;$HOME&quot;/core/infrastructure/nixexevm
+//}}}
 
 !Rules
 * An anchor searches down, findInfrastructure searches up.
@@ -2403,7 +2410,7 @@ See &quot;_anchor&quot; script for template.
 Basic directory structure may be created by the &quot;lab&quot; script included with Ubiquitous Bash.
 
 !!App
-Applications, possibly relying on virtualization features of Ubiquitous Bash, sometimes including a mix of FakeHome as well as full operation system visualization, are forks of Ubiquitous Bash itself. Configure and run the &quot;fork&quot; script included with Ubiquitous Bash.
+Applications, possibly relying on virtualization features of Ubiquitous Bash, sometimes including a mix of ~FakeHome as well as full operation system visualization, are forks of Ubiquitous Bash itself. Configure and run the &quot;fork&quot; script included with Ubiquitous Bash.
 </pre>
 </div>
 <div title="VBoxGuestNIX" creator="mirage335" modifier="mirage335" created="201712181803" modified="201712261800" changecount="4">

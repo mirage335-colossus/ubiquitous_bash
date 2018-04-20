@@ -35,6 +35,20 @@ _user_log_anchor() {
 	cat - >> "$HOME"/.ubcore/userlog/a-undef.log
 }
 
+#Universal debugging filesystem.
+_user_log_template() {
+	# DANGER Do NOT create automatically, or reference any existing directory!
+	! [[ -d "$HOME"/.ubcore/userlog ]] && cat - > /dev/null 2>&1 return 1
+	
+	#Terminal session may be used - the sessionid may be set through .bashrc/.ubcorerc .
+	if [[ "$sessionid" != "" ]]
+	then
+		cat - >> "$HOME"/.ubcore/userlog/t-"$sessionid".log
+		return
+	fi
+	cat - >> "$HOME"/.ubcore/userlog/t-undef.log
+}
+
 _messageColors() {
 	echo -e '\E[1;37m 'white' \E[0m'
 	echo -e '\E[0;30m 'black' \E[0m'

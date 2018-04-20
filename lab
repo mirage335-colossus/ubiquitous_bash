@@ -187,8 +187,71 @@ _project() {
 	cd "$workingDir"
 }
 
-export devName="devName"
-export projectName="projectName"
+_vm_list() {
+	_messageNormal "LIST: VM"
+	
+	for currentProject in "${virtualMachines[@]}"
+	do
+		_project "$currentProject" "$1"/core/infrastructure/vm
+	done
+}
 
-_project "$projectName"
+_app_list() {
+	_messageNormal "LIST: APP"
+	
+	for currentProject in "${applications[@]}"
+	do
+		_project "$currentProject" "$1"/core/installations
+	done
+}
+
+_lab_basicFS() {
+	_messageNormal "LABFS: ""$1"
+	
+	mkdir -p "$1"/_index
+	mkdir -p "$1"/_local/_index
+	
+	mkdir -p "$1"/core/lab
+	mkdir -p "$1"/core/installations
+	mkdir -p "$1"/core/infrastructure/vm
+}
+
+_lab_accessories() {
+	_messageNormal "ACCESSORIES: ""$1"
+	git clone --depth 1 git@github.com:mirage335/ubiquitous_bash.git "$1"/core/infrastructure/ubiquitous_bash
+	
+	cp "$1"/core/infrastructure/ubiquitous_bash/_anchor "$1"/_index/
+	cp "$1"/core/infrastructure/ubiquitous_bash/_anchor "$1"/_local/_index
+}
+
+
+_lab() {
+	labDir="$1"
+	[[ "$labDir" == "" ]] && labDir=./"$labName"
+	
+	_lab_basicFS "$labDir"
+	
+	_lab_accessories "$labDir"
+	
+	_vm_list "$labDir"
+	_app_list "$labDir"
+}
+
+export devName="devName"
+export labName="labName"
+export labNameMini="$labName"Mini
+
+
+virtualmachines+=("$labName"First-vm)
+virtualmachines+=("$labName"Second-vm)
+
+applications+=("$labName"First-app)
+applications+=("$labName"Second-app)
+
+_lab ./"$labName"
+_lab ./"$labName"/core/lab/"$labNameMini"
+
+
+
+
 
