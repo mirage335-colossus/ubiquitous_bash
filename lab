@@ -190,7 +190,7 @@ _project() {
 _vm_list() {
 	_messageNormal "LIST: VM"
 	
-	for currentProject in "${virtualMachines[@]}"
+	for currentProject in "${virtualmachines[@]}"
 	do
 		_project "$currentProject" "$1"/core/infrastructure/vm
 	done
