@@ -245,6 +245,10 @@ export labNameMini="$labName"Mini
 virtualmachines+=("$labName"First-vm)
 virtualmachines+=("$labName"Second-vm)
 
+#Without VM images of their own, these will eventually point to the user's installed VM at "$HOME"/core/infrastructure/<nixexevm|winexevm> .
+virtualmachines+=(nixexevm)
+virtualmachines+=(winexevm)
+
 applications+=("$labName"First-app)
 applications+=("$labName"Second-app)
 
