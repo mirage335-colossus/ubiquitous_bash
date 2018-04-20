@@ -1447,7 +1447,7 @@ Explicitly setting VM size may also be necessary.
 //}}}
 </pre>
 </div>
-<div title="MainMenu" creator="YourName" modifier="mirage335" created="201202151614" modified="201801042118" tags="excludeLists excludeSearch" changecount="26">
+<div title="MainMenu" creator="YourName" modifier="mirage335" created="201202151614" modified="201804191903" tags="excludeLists excludeSearch" changecount="28">
 <pre>[[Demo]]
 
 [[Blockchain]]
@@ -1462,6 +1462,8 @@ Explicitly setting VM size may also be necessary.
 [[Technique]]
 
 [[Stability]]
+
+[[Ubiquitous Lab]]
 
 [[Reference]]
 
@@ -2343,6 +2345,66 @@ A &quot;_tryExec&quot; function is generally used to call a function which check
 <div title="ToolbarCommands" creator="mirage335" modifier="mirage335" created="201710301933" changecount="1">
 <pre>|~ViewToolbar|closeTiddler closeOthers editTiddler &gt; fields syncing permalink references jump|
 |~EditToolbar|+saveTiddler -cancelTiddler deleteTiddler|</pre>
+</div>
+<div title="Ubiquitous Lab" creator="mirage335" modifier="mirage335" created="201804191902" modified="201804201827" changecount="11">
+<pre>Top-level control of meta-applications, referred to as a &quot;lab&quot;, is a primary goal for Ubiquitous Bash.
+
+Following an &quot;Ubiquitous Lab&quot; standard layout will allow modules to be added and removed as needed for contingencies or efficiency.
+
+!Rules
+* An anchor searches down, findInfrastructure searches up.
+* Strict rules allow anchors to search up in specific cases. An anchor never looks beyond user HOME directory, or more than two directories above, only one directory above unless parent is &quot;_local/_index&quot;.
+* All programs MUST launch from the lowest subdirectory available, confining data, configuration, FakeHome, and similar resources, to one location - that which will be shared most widely.
+
+* Shortcuts to specific applications should be placed under &quot;core/_index&quot; folders. Such shortcuts should be anchors.
+* Shortcuts to launch multiple, possibly connected, applications, should be placed under a &quot;core/_meta&quot; folder, referencing anchors.
+
+* Images of disk operating systems should be placed above the &quot;Mini&quot; lab if possible. Future reassignment should be simple as moving or copying the directory.
+
+!Overloads
+Consider setting the following variables, through &quot;ops&quot;, for production Ubiquitous Bash repositories.
+//{{{
+#Enable search if &quot;vm.img&quot; and related files are missing.
+export ubVirtImageLocal=&quot;false&quot;
+//}}}
+
+!Directory
+Like any Filesystem Hiearchy Standard, a hierarchical approach allows programs to automatically detect other programs. However, here the goal is to allow neighboring programs to reside in parent or subdirectories. Lightweight &quot;Mini&quot; versions of any lab environment may thus be kept as subdirectories of a parent, which may include larger virtualization images, or backups, not needed in production.
+//{{{
+labName
+	_index
+	_local
+		_index
+	core
+		infrastructure
+			vm
+				vmFirstApp
+				vmSecondApp
+			lab
+				labNameMini
+					core
+						infrastructure
+							vm
+								vmSecondApp
+							lab
+								labOther
+//}}}
+Here, &quot;vmSecondApp&quot;, as included with &quot;labNameMini&quot;, might not have the necessary &quot;vm.img&quot; file. Ubiquitous Bash &quot;_findInfrastructure_virt&quot;, would locate the &quot;vmSecondApp&quot; script which actually does have the necessary &quot;vm.img&quot; file, sending commands to that script instead. Several contingencies are available, and may be overloaded further, as documented by &quot;virtualization/findInfrastructure_virt.sh&quot;.
+
+!Anchor
+Applications, virtual machines, and complete labs, may need to be reassigned by moving their directories, as a complete module. Symlinks, pointed at a specific target, might not follow these changes, leading to data not being saved where expected, and subsequent data-loss accidents. Anchor scripts, may be used to guarantee the lowest subdirectory available is used as a source for these programs, providing consistent expectations.
+
+Anchor scripts, by default, search for a named Ubiquitous Bash fork, as well as other anchors, but may be configured only to search for other anchors, as would be appropriate for other labs.
+
+See &quot;_anchor&quot; script for template.
+
+!Construction
+!!Lab
+Basic directory structure may be created by the &quot;lab&quot; script included with Ubiquitous Bash.
+
+!!App
+Applications, possibly relying on virtualization features of Ubiquitous Bash, sometimes including a mix of FakeHome as well as full operation system visualization, are forks of Ubiquitous Bash itself. Configure and run the &quot;fork&quot; script included with Ubiquitous Bash.
+</pre>
 </div>
 <div title="VBoxGuestNIX" creator="mirage335" modifier="mirage335" created="201712181803" modified="201712261800" changecount="4">
 <pre>!Debian

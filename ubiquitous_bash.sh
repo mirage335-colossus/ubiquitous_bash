@@ -110,6 +110,22 @@ _getScriptLinkName() {
 	echo "$scriptLinkName"
 }
 
+#https://unix.stackexchange.com/questions/27021/how-to-name-a-file-in-the-deepest-level-of-a-directory-tree?answertab=active#tab-top
+_filter_lowestPath() {
+	awk -F'/' 'NF > depth {
+depth = NF;
+deepest = $0;
+}
+END {
+print deepest;
+}'
+}
+
+#https://stackoverflow.com/questions/1086907/can-find-or-any-other-tool-search-for-files-breadth-first
+_filter_highestPath() {
+	awk -F'/' '{print "", NF, $F}' | sort -n | awk '{print $2}' | head -n 1
+}
+
 _recursion_guard() {
 	! [[ -e "$1" ]] && return 1
 	
@@ -2734,6 +2750,43 @@ _showCommand() {
 	"$@"
 }
 
+#Universal debugging filesystem.
+#End user function.
+_user_log() {
+	# DANGER Do NOT create automatically, or reference any existing directory!
+	! [[ -d "$HOME"/.ubcore/userlog ]] && cat - > /dev/null 2>&1 return 1
+	
+	cat - >> "$HOME"/.ubcore/userlog/user.log
+}
+
+#Universal debugging filesystem.
+_user_log-ub() {
+	# DANGER Do NOT create automatically, or reference any existing directory!
+	! [[ -d "$HOME"/.ubcore/userlog ]] && cat - > /dev/null 2>&1 return 1
+	
+	#Terminal session may be used - the sessionid may be set through .bashrc/.ubcorerc .
+	if [[ "$sessionid" != "" ]]
+	then
+		cat - >> "$HOME"/.ubcore/userlog/u-"$sessionid".log
+		return
+	fi
+	cat - >> "$HOME"/.ubcore/userlog/u-undef.log
+}
+
+#Universal debugging filesystem.
+_user_log_anchor() {
+	# DANGER Do NOT create automatically, or reference any existing directory!
+	! [[ -d "$HOME"/.ubcore/userlog ]] && cat - > /dev/null 2>&1 return 1
+	
+	#Terminal session may be used - the sessionid may be set through .bashrc/.ubcorerc .
+	if [[ "$sessionid" != "" ]]
+	then
+		cat - >> "$HOME"/.ubcore/userlog/a-"$sessionid".log
+		return
+	fi
+	cat - >> "$HOME"/.ubcore/userlog/a-undef.log
+}
+
 _messageColors() {
 	echo -e '\E[1;37m 'white' \E[0m'
 	echo -e '\E[0;30m 'black' \E[0m'
@@ -3866,12 +3919,12 @@ _findInfrastructure_virtImage_script() {
 		return
 	fi
 	
-	recursionExec="$scriptAbsoluteFolder"/../core/lab/"$infrastructureName"/ubiquitous_bash.sh
-	if _recursion_guard "$recursionExec"
-	then
-		"$recursionExec" "$@"
-		return
-	fi
+# 	recursionExec="$scriptAbsoluteFolder"/../core/lab/"$infrastructureName"/ubiquitous_bash.sh
+# 	if _recursion_guard "$recursionExec"
+# 	then
+# 		"$recursionExec" "$@"
+# 		return
+# 	fi
 	
 	recursionExec="$scriptAbsoluteFolder"/../../core/infrastructure/vm/"$infrastructureName"/ubiquitous_bash.sh
 	if _recursion_guard "$recursionExec"
@@ -3880,12 +3933,12 @@ _findInfrastructure_virtImage_script() {
 		return
 	fi
 	
-	recursionExec="$scriptAbsoluteFolder"/../../core/lab/"$infrastructureName"/ubiquitous_bash.sh
-	if _recursion_guard "$recursionExec"
-	then
-		"$recursionExec" "$@"
-		return
-	fi
+# 	recursionExec="$scriptAbsoluteFolder"/../../core/lab/"$infrastructureName"/ubiquitous_bash.sh
+# 	if _recursion_guard "$recursionExec"
+# 	then
+# 		"$recursionExec" "$@"
+# 		return
+# 	fi
 	
 	recursionExec="$scriptAbsoluteFolder"/../../../core/infrastructure/vm/"$infrastructureName"/ubiquitous_bash.sh
 	if _recursion_guard "$recursionExec"
@@ -3894,12 +3947,12 @@ _findInfrastructure_virtImage_script() {
 		return
 	fi
 	
-	recursionExec="$scriptAbsoluteFolder"/../../../core/lab/"$infrastructureName"/ubiquitous_bash.sh
-	if _recursion_guard "$recursionExec"
-	then
-		"$recursionExec" "$@"
-		return
-	fi
+# 	recursionExec="$scriptAbsoluteFolder"/../../../core/lab/"$infrastructureName"/ubiquitous_bash.sh
+# 	if _recursion_guard "$recursionExec"
+# 	then
+# 		"$recursionExec" "$@"
+# 		return
+# 	fi
 	
 	recursionExec="$scriptAbsoluteFolder"/../../../../core/infrastructure/vm/"$infrastructureName"/ubiquitous_bash.sh
 	if _recursion_guard "$recursionExec"
@@ -3908,12 +3961,12 @@ _findInfrastructure_virtImage_script() {
 		return
 	fi
 	
-	recursionExec="$scriptAbsoluteFolder"/../../../../core/lab/"$infrastructureName"/ubiquitous_bash.sh
-	if _recursion_guard "$recursionExec"
-	then
-		"$recursionExec" "$@"
-		return
-	fi
+# 	recursionExec="$scriptAbsoluteFolder"/../../../../core/lab/"$infrastructureName"/ubiquitous_bash.sh
+# 	if _recursion_guard "$recursionExec"
+# 	then
+# 		"$recursionExec" "$@"
+# 		return
+# 	fi
 	
 	recursionExec="$scriptAbsoluteFolder"/../../../../../core/infrastructure/vm/"$infrastructureName"/ubiquitous_bash.sh
 	if _recursion_guard "$recursionExec"
@@ -3922,12 +3975,12 @@ _findInfrastructure_virtImage_script() {
 		return
 	fi
 	
-	recursionExec="$scriptAbsoluteFolder"/../../../../../core/lab/"$infrastructureName"/ubiquitous_bash.sh
-	if _recursion_guard "$recursionExec"
-	then
-		"$recursionExec" "$@"
-		return
-	fi
+# 	recursionExec="$scriptAbsoluteFolder"/../../../../../core/lab/"$infrastructureName"/ubiquitous_bash.sh
+# 	if _recursion_guard "$recursionExec"
+# 	then
+# 		"$recursionExec" "$@"
+# 		return
+# 	fi
 	
 	recursionExec="$scriptAbsoluteFolder"/../../../../../../core/infrastructure/vm/"$infrastructureName"/ubiquitous_bash.sh
 	if _recursion_guard "$recursionExec"
@@ -3936,12 +3989,12 @@ _findInfrastructure_virtImage_script() {
 		return
 	fi
 	
-	recursionExec="$scriptAbsoluteFolder"/../../../../../../core/lab/"$infrastructureName"/ubiquitous_bash.sh
-	if _recursion_guard "$recursionExec"
-	then
-		"$recursionExec" "$@"
-		return
-	fi
+# 	recursionExec="$scriptAbsoluteFolder"/../../../../../../core/lab/"$infrastructureName"/ubiquitous_bash.sh
+# 	if _recursion_guard "$recursionExec"
+# 	then
+# 		"$recursionExec" "$@"
+# 		return
+# 	fi
 	
 	recursionExec="$scriptAbsoluteFolder"/../../../../../../../core/infrastructure/vm/"$infrastructureName"/ubiquitous_bash.sh
 	if _recursion_guard "$recursionExec"
@@ -3950,12 +4003,12 @@ _findInfrastructure_virtImage_script() {
 		return
 	fi
 	
-	recursionExec="$scriptAbsoluteFolder"/../../../../../../../core/lab/"$infrastructureName"/ubiquitous_bash.sh
-	if _recursion_guard "$recursionExec"
-	then
-		"$recursionExec" "$@"
-		return
-	fi
+# 	recursionExec="$scriptAbsoluteFolder"/../../../../../../../core/lab/"$infrastructureName"/ubiquitous_bash.sh
+# 	if _recursion_guard "$recursionExec"
+# 	then
+# 		"$recursionExec" "$@"
+# 		return
+# 	fi
 	
 	recursionExec="$HOME"/core/infrastructure/vm/"$infrastructureName"/ubiquitous_bash.sh
 	if _recursion_guard "$recursionExec"

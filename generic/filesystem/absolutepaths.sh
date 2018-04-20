@@ -102,6 +102,22 @@ _getScriptLinkName() {
 	echo "$scriptLinkName"
 }
 
+#https://unix.stackexchange.com/questions/27021/how-to-name-a-file-in-the-deepest-level-of-a-directory-tree?answertab=active#tab-top
+_filter_lowestPath() {
+	awk -F'/' 'NF > depth {
+depth = NF;
+deepest = $0;
+}
+END {
+print deepest;
+}'
+}
+
+#https://stackoverflow.com/questions/1086907/can-find-or-any-other-tool-search-for-files-breadth-first
+_filter_highestPath() {
+	awk -F'/' '{print "", NF, $F}' | sort -n | awk '{print $2}' | head -n 1
+}
+
 _recursion_guard() {
 	! [[ -e "$1" ]] && return 1
 	
