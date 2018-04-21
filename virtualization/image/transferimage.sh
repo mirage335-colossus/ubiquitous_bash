@@ -5,7 +5,7 @@ _test_transferimage() {
 }
 
 _toImage() {
-	_findInfrastructure_virtImage "$@"
+	_findInfrastructure_virtImage ${FUNCNAME[0]} "$@"
 	[[ "$ubVirtImageLocal" == "false" ]] && return
 	
 	#_openImage || return 1

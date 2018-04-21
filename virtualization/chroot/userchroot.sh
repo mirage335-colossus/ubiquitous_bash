@@ -94,7 +94,7 @@ _ubvrtusrChRoot() {
 }
 
 _userChRoot() {
-	_findInfrastructure_virtImage "$@"
+	_findInfrastructure_virtImage ${FUNCNAME[0]} "$@"
 	[[ "$ubVirtImageLocal" == "false" ]] && return
 	
 	_start

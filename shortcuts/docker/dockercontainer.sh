@@ -8,7 +8,7 @@ _dockerCommit_sequence() {
 }
 
 _dockerCommit() {
-	_findInfrastructure_virtImage "$@"
+	_findInfrastructure_virtImage ${FUNCNAME[0]} "$@"
 	[[ "$ubVirtImageLocal" == "false" ]] && return
 	
 	if ! "$scriptAbsoluteLocation" _create_docker_container_quick > /dev/null 2>&1
@@ -32,7 +32,7 @@ _dockerLaunch_sequence() {
 }
 
 _dockerLaunch() {
-	_findInfrastructure_virtImage "$@"
+	_findInfrastructure_virtImage ${FUNCNAME[0]} "$@"
 	[[ "$ubVirtImageLocal" == "false" ]] && return
 	
 	if ! "$scriptAbsoluteLocation" _create_docker_container_quick > /dev/null 2>&1
@@ -54,7 +54,7 @@ _dockerAttach_sequence() {
 }
 
 _dockerAttach() {
-	_findInfrastructure_virtImage "$@"
+	_findInfrastructure_virtImage ${FUNCNAME[0]} "$@"
 	[[ "$ubVirtImageLocal" == "false" ]] && return
 	
 	if ! "$scriptAbsoluteLocation" _create_docker_container_quick > /dev/null 2>&1
@@ -77,7 +77,7 @@ _dockerOn_sequence() {
 
 
 _dockerOn() {
-	_findInfrastructure_virtImage "$@"
+	_findInfrastructure_virtImage ${FUNCNAME[0]} "$@"
 	[[ "$ubVirtImageLocal" == "false" ]] && return
 	
 	if ! "$scriptAbsoluteLocation" _create_docker_container_quick > /dev/null 2>&1
@@ -99,7 +99,7 @@ _dockerOff_sequence() {
 }
 
 _dockerOff() {
-	_findInfrastructure_virtImage "$@"
+	_findInfrastructure_virtImage ${FUNCNAME[0]} "$@"
 	[[ "$ubVirtImageLocal" == "false" ]] && return
 	
 	if ! "$scriptAbsoluteLocation" _create_docker_container_quick > /dev/null 2>&1

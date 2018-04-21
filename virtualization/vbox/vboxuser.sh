@@ -200,7 +200,7 @@ _user_instance_vbox() {
 }
 
 _userVBox() {
-	_findInfrastructure_virtImage "$@"
+	_findInfrastructure_virtImage ${FUNCNAME[0]} "$@"
 	[[ "$ubVirtImageLocal" == "false" ]] && return
 	
 	_messageNormal 'Begin: '"$@"
@@ -243,7 +243,7 @@ _edit_instance_vbox() {
 }
 
 _editVBox() {
-	_findInfrastructure_virtImage "$@"
+	_findInfrastructure_virtImage ${FUNCNAME[0]} "$@"
 	[[ "$ubVirtImageLocal" == "false" ]] && return
 	
 	_messageNormal 'Begin: '"$@"

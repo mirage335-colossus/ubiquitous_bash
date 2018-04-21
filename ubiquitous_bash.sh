@@ -5281,7 +5281,7 @@ _test_transferimage() {
 }
 
 _toImage() {
-	_findInfrastructure_virtImage "$@"
+	_findInfrastructure_virtImage ${FUNCNAME[0]} "$@"
 	[[ "$ubVirtImageLocal" == "false" ]] && return
 	
 	#_openImage || return 1
@@ -5767,7 +5767,7 @@ _openChRoot() {
 }
 
 _closeChRoot() {
-	_findInfrastructure_virtImage "$@"
+	_findInfrastructure_virtImage ${FUNCNAME[0]} "$@"
 	[[ "$ubVirtImageLocal" == "false" ]] && return
 	
 	export specialLock="$lock_open_chroot"
@@ -6115,7 +6115,7 @@ _ubvrtusrChRoot() {
 }
 
 _userChRoot() {
-	_findInfrastructure_virtImage "$@"
+	_findInfrastructure_virtImage ${FUNCNAME[0]} "$@"
 	[[ "$ubVirtImageLocal" == "false" ]] && return
 	
 	_start
@@ -6412,7 +6412,7 @@ _userQemu_sequence() {
 }
 
 _userQemu() {
-	_findInfrastructure_virtImage "$@"
+	_findInfrastructure_virtImage ${FUNCNAME[0]} "$@"
 	[[ "$ubVirtImageLocal" == "false" ]] && return
 	
 	"$scriptAbsoluteLocation" _userQemu_sequence "$@"
@@ -6444,7 +6444,7 @@ _editQemu_sequence() {
 }
 
 _editQemu() {
-	_findInfrastructure_virtImage "$@"
+	_findInfrastructure_virtImage ${FUNCNAME[0]} "$@"
 	[[ "$ubVirtImageLocal" == "false" ]] && return
 	
 	"$scriptAbsoluteLocation" _editQemu_sequence "$@"
@@ -6566,7 +6566,7 @@ _openVBoxRaw() {
 }
 
 _closeVBoxRaw() {
-	_findInfrastructure_virtImage "$@"
+	_findInfrastructure_virtImage ${FUNCNAME[0]} "$@"
 	[[ "$ubVirtImageLocal" == "false" ]] && return
 	
 	export specialLock="$lock_open_vbox"
@@ -6843,7 +6843,7 @@ _user_instance_vbox() {
 }
 
 _userVBox() {
-	_findInfrastructure_virtImage "$@"
+	_findInfrastructure_virtImage ${FUNCNAME[0]} "$@"
 	[[ "$ubVirtImageLocal" == "false" ]] && return
 	
 	_messageNormal 'Begin: '"$@"
@@ -6886,7 +6886,7 @@ _edit_instance_vbox() {
 }
 
 _editVBox() {
-	_findInfrastructure_virtImage "$@"
+	_findInfrastructure_virtImage ${FUNCNAME[0]} "$@"
 	[[ "$ubVirtImageLocal" == "false" ]] && return
 	
 	_messageNormal 'Begin: '"$@"
@@ -7549,7 +7549,7 @@ _userDocker_sequence() {
 }
 
 _userDocker() {
-	_findInfrastructure_virtImage "$@"
+	_findInfrastructure_virtImage ${FUNCNAME[0]} "$@"
 	[[ "$ubVirtImageLocal" == "false" ]] && return
 	
 	local dockerImageNeeded
@@ -9259,7 +9259,7 @@ _dockerCommit_sequence() {
 }
 
 _dockerCommit() {
-	_findInfrastructure_virtImage "$@"
+	_findInfrastructure_virtImage ${FUNCNAME[0]} "$@"
 	[[ "$ubVirtImageLocal" == "false" ]] && return
 	
 	if ! "$scriptAbsoluteLocation" _create_docker_container_quick > /dev/null 2>&1
@@ -9283,7 +9283,7 @@ _dockerLaunch_sequence() {
 }
 
 _dockerLaunch() {
-	_findInfrastructure_virtImage "$@"
+	_findInfrastructure_virtImage ${FUNCNAME[0]} "$@"
 	[[ "$ubVirtImageLocal" == "false" ]] && return
 	
 	if ! "$scriptAbsoluteLocation" _create_docker_container_quick > /dev/null 2>&1
@@ -9305,7 +9305,7 @@ _dockerAttach_sequence() {
 }
 
 _dockerAttach() {
-	_findInfrastructure_virtImage "$@"
+	_findInfrastructure_virtImage ${FUNCNAME[0]} "$@"
 	[[ "$ubVirtImageLocal" == "false" ]] && return
 	
 	if ! "$scriptAbsoluteLocation" _create_docker_container_quick > /dev/null 2>&1
@@ -9328,7 +9328,7 @@ _dockerOn_sequence() {
 
 
 _dockerOn() {
-	_findInfrastructure_virtImage "$@"
+	_findInfrastructure_virtImage ${FUNCNAME[0]} "$@"
 	[[ "$ubVirtImageLocal" == "false" ]] && return
 	
 	if ! "$scriptAbsoluteLocation" _create_docker_container_quick > /dev/null 2>&1
@@ -9350,7 +9350,7 @@ _dockerOff_sequence() {
 }
 
 _dockerOff() {
-	_findInfrastructure_virtImage "$@"
+	_findInfrastructure_virtImage ${FUNCNAME[0]} "$@"
 	[[ "$ubVirtImageLocal" == "false" ]] && return
 	
 	if ! "$scriptAbsoluteLocation" _create_docker_container_quick > /dev/null 2>&1

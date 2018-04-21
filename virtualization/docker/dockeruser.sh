@@ -39,7 +39,7 @@ _userDocker_sequence() {
 }
 
 _userDocker() {
-	_findInfrastructure_virtImage "$@"
+	_findInfrastructure_virtImage ${FUNCNAME[0]} "$@"
 	[[ "$ubVirtImageLocal" == "false" ]] && return
 	
 	local dockerImageNeeded
