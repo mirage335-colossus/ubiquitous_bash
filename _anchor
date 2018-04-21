@@ -220,7 +220,15 @@ _launch_anchor() {
 	local recursionExec
 	local anchorParent
 	
-	anchorDestination=$(find "$anchorScriptAbsoluteFolder"/.. -type f,s -path \*"$anchorSource" | _check_anchor | _filter_lowestPath)
+	recursionExec="$anchorScriptAbsoluteFolder"/../"$anchorSource"
+	if _recursion_guard "$recursionExec"
+	then
+		_messagePlain_good 'self: '"$recursionExec"  "$anchorName" "$@" | _user_log_anchor
+		"$recursionExec" "$anchorName" "$@"
+		exit $?
+	fi
+	
+	anchorDestination=$(find "$anchorScriptAbsoluteFolder"/.. ! -path \*_lib\* ! -path \*_local\* -type f,s -path \*"$anchorSource" | _check_anchor | _filter_lowestPath)
 	if [[ "$anchorDestination" != "" ]]
 	then
 		_messagePlain_good 'launch: '"$anchorDestination" "$anchorName" "$@" | _user_log_anchor
@@ -233,7 +241,7 @@ _launch_anchor() {
 	if [[ "$anchorScriptAbsoluteFolder" == *"_local/_index" ]]
 	then
 		_messagePlain_probe 'detected: parent: _local/_index' | _user_log_anchor
-		anchorDestination=$(find "$anchorParent" -type f,s -path \*_index/"$anchorName" ! -path \*_local/_index\* | _check_anchor | _filter_highestPath)
+		anchorDestination=$(find "$anchorParent" ! -path \*_lib\* ! -path \*_local\* -type f,s -path \*_index/"$anchorName" ! -path \*_local/_index\* | _check_anchor | _filter_highestPath)
 		if [[ "$anchorDestination" != "" ]]
 		then
 			_messagePlain_probe 'anchorDestination='"$anchorDestination" | _user_log_anchor
