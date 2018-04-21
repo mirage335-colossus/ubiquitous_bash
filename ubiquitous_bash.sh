@@ -4319,6 +4319,8 @@ _test_virtLocal_X11() {
 _test_fakehome() {
 	_getDep mount
 	_getDep mountpoint
+	
+	_getDep rsync
 }
 
 _resetFakeHomeEnv_extra() {
@@ -10539,7 +10541,8 @@ _prepareFakeHome_instance() {
 	_prepareFakeHome
 	
 	mkdir -p "$instancedFakeHome"
-	cp -a "$globalFakeHome"/. "$instancedFakeHome"
+	#cp -a "$globalFakeHome"/. "$instancedFakeHome"
+	rsync -q -ax --exclude "/.cache" "$globalFakeHome"/ "$instancedFakeHome"/
 }
 
 _rm_instance_fakeHome() {

@@ -6,7 +6,8 @@ _prepareFakeHome_instance() {
 	_prepareFakeHome
 	
 	mkdir -p "$instancedFakeHome"
-	cp -a "$globalFakeHome"/. "$instancedFakeHome"
+	#cp -a "$globalFakeHome"/. "$instancedFakeHome"
+	rsync -q -ax --exclude "/.cache" "$globalFakeHome"/ "$instancedFakeHome"/
 }
 
 _rm_instance_fakeHome() {

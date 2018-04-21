@@ -1,6 +1,8 @@
 _test_fakehome() {
 	_getDep mount
 	_getDep mountpoint
+	
+	_getDep rsync
 }
 
 _resetFakeHomeEnv_extra() {
