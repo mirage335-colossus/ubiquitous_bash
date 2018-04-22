@@ -196,6 +196,16 @@ _vm_list() {
 	done
 }
 
+#Generic Apps/VMs/etc treated as infrastructure outright, typically nixexevm/winexevm .
+_infrastructure_list() {
+	_messageNormal "LIST: INFRASTRUCTURE"
+	
+	for currentProject in "${infrastructures[@]}"
+	do
+		_project "$currentProject" "$1"/core/infrastructure
+	done
+}
+
 _app_list() {
 	_messageNormal "LIST: APP"
 	
@@ -246,8 +256,8 @@ virtualmachines+=("$labName"First-vm)
 virtualmachines+=("$labName"Second-vm)
 
 #Without VM images of their own, these will eventually point to the user's installed VM at "$HOME"/core/infrastructure/<nixexevm|winexevm> .
-virtualmachines+=(nixexevm)
-virtualmachines+=(winexevm)
+infrastructures+=(nixexevm)
+infrastructures+=(winexevm)
 
 applications+=("$labName"First-app)
 applications+=("$labName"Second-app)
