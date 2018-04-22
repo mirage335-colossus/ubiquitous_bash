@@ -79,23 +79,25 @@ _findInfrastructure_virtImage_script() {
 	
 	
 	recursionExecList+=("$scriptAbsoluteFolder"/../core/infrastructure/"$whichExeVM"/ubiquitous_bash.sh)
+	recursionExecList+=("$scriptAbsoluteFolder"/../core/infrastructure/vm/"$whichExeVM"/ubiquitous_bash.sh)
 	recursionExecList+=("$scriptAbsoluteFolder"/../../core/infrastructure/"$whichExeVM"/ubiquitous_bash.sh)
+	recursionExecList+=("$scriptAbsoluteFolder"/../../core/infrastructure/vm/"$whichExeVM"/ubiquitous_bash.sh)
 	recursionExecList+=("$scriptAbsoluteFolder"/../../../core/infrastructure/"$whichExeVM"/ubiquitous_bash.sh)
+	recursionExecList+=("$scriptAbsoluteFolder"/../../../core/infrastructure/vm/"$whichExeVM"/ubiquitous_bash.sh)
 	recursionExecList+=("$scriptAbsoluteFolder"/../../../../core/infrastructure/"$whichExeVM"/ubiquitous_bash.sh)
+	recursionExecList+=("$scriptAbsoluteFolder"/../../../../core/infrastructure/vm/"$whichExeVM"/ubiquitous_bash.sh)
 	recursionExecList+=("$scriptAbsoluteFolder"/../../../../../core/infrastructure/"$whichExeVM"/ubiquitous_bash.sh)
+	recursionExecList+=("$scriptAbsoluteFolder"/../../../../../core/infrastructure/vm/"$whichExeVM"/ubiquitous_bash.sh)
 	recursionExecList+=("$scriptAbsoluteFolder"/../../../../../../core/infrastructure/"$whichExeVM"/ubiquitous_bash.sh)
+	recursionExecList+=("$scriptAbsoluteFolder"/../../../../../../core/infrastructure/vm/"$whichExeVM"/ubiquitous_bash.sh)
 	recursionExecList+=("$scriptAbsoluteFolder"/../../../../../../../core/infrastructure/"$whichExeVM"/ubiquitous_bash.sh)
-	
-	recursionExecList+=("$scriptAbsoluteFolder"/../extra/infrastructure/"$whichExeVM"/ubiquitous_bash.sh)
-	recursionExecList+=("$scriptAbsoluteFolder"/../../extra/infrastructure/"$whichExeVM"/ubiquitous_bash.sh)
-	recursionExecList+=("$scriptAbsoluteFolder"/../../../extra/infrastructure/"$whichExeVM"/ubiquitous_bash.sh)
-	recursionExecList+=("$scriptAbsoluteFolder"/../../../../extra/infrastructure/"$whichExeVM"/ubiquitous_bash.sh)
-	recursionExecList+=("$scriptAbsoluteFolder"/../../../../../extra/infrastructure/"$whichExeVM"/ubiquitous_bash.sh)
-	recursionExecList+=("$scriptAbsoluteFolder"/../../../../../../extra/infrastructure/"$whichExeVM"/ubiquitous_bash.sh)
-	recursionExecList+=("$scriptAbsoluteFolder"/../../../../../../../extra/infrastructure/"$whichExeVM"/ubiquitous_bash.sh)
+	recursionExecList+=("$scriptAbsoluteFolder"/../../../../../../../core/infrastructure/vm/"$whichExeVM"/ubiquitous_bash.sh)
 	
 	recursionExecList+=("$HOME"/core/infrastructure/"$whichExeVM"/ubiquitous_bash.sh)
 	recursionExecList+=("$HOME"/extra/infrastructure/"$whichExeVM"/ubiquitous_bash.sh)
+	
+	recursionExecList+=("$HOME"/core/infrastructure/vm/"$whichExeVM"/ubiquitous_bash.sh)
+	recursionExecList+=("$HOME"/extra/infrastructure/vm/"$whichExeVM"/ubiquitous_bash.sh)
 	
 	for currentRecursionExec in "${recursionExecList[@]}"
 	do
