@@ -3925,138 +3925,68 @@ _findInfrastructure_virtImage_script() {
 	local infrastructureName=$(basename "$scriptAbsoluteFolder")
 	
 	local recursionExec
+	local recursionExecList
+	local currentRecursionExec
 	
-	recursionExec="$scriptAbsoluteFolder"/../core/infrastructure/vm/"$infrastructureName"/ubiquitous_bash.sh
-	if _recursion_guard "$recursionExec"
-	then
-		"$recursionExec" "$@"
-		return
-	fi
+	recursionExecList+=("$scriptAbsoluteFolder"/../core/infrastructure/vm/"$infrastructureName"/ubiquitous_bash.sh)
+	#recursionExecList+=("$scriptAbsoluteFolder"/../core/lab/"$infrastructureName"/ubiquitous_bash.sh
 	
-# 	recursionExec="$scriptAbsoluteFolder"/../core/lab/"$infrastructureName"/ubiquitous_bash.sh
-# 	if _recursion_guard "$recursionExec"
-# 	then
-# 		"$recursionExec" "$@"
-# 		return
-# 	fi
+	recursionExecList+=("$scriptAbsoluteFolder"/../../core/infrastructure/vm/"$infrastructureName"/ubiquitous_bash.sh
+	#recursionExecList+=("$scriptAbsoluteFolder"/../../core/lab/"$infrastructureName"/ubiquitous_bash.sh
 	
-	recursionExec="$scriptAbsoluteFolder"/../../core/infrastructure/vm/"$infrastructureName"/ubiquitous_bash.sh
-	if _recursion_guard "$recursionExec"
-	then
-		"$recursionExec" "$@"
-		return
-	fi
+	recursionExecList+=("$scriptAbsoluteFolder"/../../../core/infrastructure/vm/"$infrastructureName"/ubiquitous_bash.sh
+	#recursionExecList+=("$scriptAbsoluteFolder"/../../../core/lab/"$infrastructureName"/ubiquitous_bash.sh
 	
-# 	recursionExec="$scriptAbsoluteFolder"/../../core/lab/"$infrastructureName"/ubiquitous_bash.sh
-# 	if _recursion_guard "$recursionExec"
-# 	then
-# 		"$recursionExec" "$@"
-# 		return
-# 	fi
+	recursionExecList+=("$scriptAbsoluteFolder"/../../../../core/infrastructure/vm/"$infrastructureName"/ubiquitous_bash.sh
+	#recursionExecList+=("$scriptAbsoluteFolder"/../../../../core/lab/"$infrastructureName"/ubiquitous_bash.sh
 	
-	recursionExec="$scriptAbsoluteFolder"/../../../core/infrastructure/vm/"$infrastructureName"/ubiquitous_bash.sh
-	if _recursion_guard "$recursionExec"
-	then
-		"$recursionExec" "$@"
-		return
-	fi
+	recursionExecList+=("$scriptAbsoluteFolder"/../../../../../core/infrastructure/vm/"$infrastructureName"/ubiquitous_bash.sh
+	#recursionExecList+=("$scriptAbsoluteFolder"/../../../../../core/lab/"$infrastructureName"/ubiquitous_bash.sh
 	
-# 	recursionExec="$scriptAbsoluteFolder"/../../../core/lab/"$infrastructureName"/ubiquitous_bash.sh
-# 	if _recursion_guard "$recursionExec"
-# 	then
-# 		"$recursionExec" "$@"
-# 		return
-# 	fi
+	recursionExecList+=("$scriptAbsoluteFolder"/../../../../../../core/infrastructure/vm/"$infrastructureName"/ubiquitous_bash.sh
+	#recursionExecList+=("$scriptAbsoluteFolder"/../../../../../../core/lab/"$infrastructureName"/ubiquitous_bash.sh
 	
-	recursionExec="$scriptAbsoluteFolder"/../../../../core/infrastructure/vm/"$infrastructureName"/ubiquitous_bash.sh
-	if _recursion_guard "$recursionExec"
-	then
-		"$recursionExec" "$@"
-		return
-	fi
+	recursionExecList+=("$scriptAbsoluteFolder"/../../../../../../../core/infrastructure/vm/"$infrastructureName"/ubiquitous_bash.sh
+	#recursionExecList+=("$scriptAbsoluteFolder"/../../../../../../../core/lab/"$infrastructureName"/ubiquitous_bash.sh
 	
-# 	recursionExec="$scriptAbsoluteFolder"/../../../../core/lab/"$infrastructureName"/ubiquitous_bash.sh
-# 	if _recursion_guard "$recursionExec"
-# 	then
-# 		"$recursionExec" "$@"
-# 		return
-# 	fi
+	recursionExecList+=("$HOME"/core/infrastructure/vm/"$infrastructureName"/ubiquitous_bash.sh
 	
-	recursionExec="$scriptAbsoluteFolder"/../../../../../core/infrastructure/vm/"$infrastructureName"/ubiquitous_bash.sh
-	if _recursion_guard "$recursionExec"
-	then
-		"$recursionExec" "$@"
-		return
-	fi
+	recursionExecList+=("$HOME"/extra/infrastructure/vm/"$infrastructureName"/ubiquitous_bash.sh
 	
-# 	recursionExec="$scriptAbsoluteFolder"/../../../../../core/lab/"$infrastructureName"/ubiquitous_bash.sh
-# 	if _recursion_guard "$recursionExec"
-# 	then
-# 		"$recursionExec" "$@"
-# 		return
-# 	fi
+	local whichExeVM
+	whichExeVM=nixexevm
+	[[ "$virtOStype" == 'MSW'* ]] && whichExeVM=winexevm
+	[[ "$virtOStype" == 'Windows'* ]] && whichExeVM=winexevm
+	[[ "$vboxOStype" == 'Windows'* ]] && whichExeVM=winexevm
 	
-	recursionExec="$scriptAbsoluteFolder"/../../../../../../core/infrastructure/vm/"$infrastructureName"/ubiquitous_bash.sh
-	if _recursion_guard "$recursionExec"
-	then
-		"$recursionExec" "$@"
-		return
-	fi
 	
-# 	recursionExec="$scriptAbsoluteFolder"/../../../../../../core/lab/"$infrastructureName"/ubiquitous_bash.sh
-# 	if _recursion_guard "$recursionExec"
-# 	then
-# 		"$recursionExec" "$@"
-# 		return
-# 	fi
+	recursionExecList+=("$scriptAbsoluteFolder"/../core/infrastructure/"$whichExeVM"/ubiquitous_bash.sh)
+	recursionExecList+=("$scriptAbsoluteFolder"/../../core/infrastructure/"$whichExeVM"/ubiquitous_bash.sh)
+	recursionExecList+=("$scriptAbsoluteFolder"/../../../core/infrastructure/"$whichExeVM"/ubiquitous_bash.sh)
+	recursionExecList+=("$scriptAbsoluteFolder"/../../../../core/infrastructure/"$whichExeVM"/ubiquitous_bash.sh)
+	recursionExecList+=("$scriptAbsoluteFolder"/../../../../../core/infrastructure/"$whichExeVM"/ubiquitous_bash.sh)
+	recursionExecList+=("$scriptAbsoluteFolder"/../../../../../../core/infrastructure/"$whichExeVM"/ubiquitous_bash.sh)
+	recursionExecList+=("$scriptAbsoluteFolder"/../../../../../../../core/infrastructure/"$whichExeVM"/ubiquitous_bash.sh)
 	
-	recursionExec="$scriptAbsoluteFolder"/../../../../../../../core/infrastructure/vm/"$infrastructureName"/ubiquitous_bash.sh
-	if _recursion_guard "$recursionExec"
-	then
-		"$recursionExec" "$@"
-		return
-	fi
+	recursionExecList+=("$scriptAbsoluteFolder"/../extra/infrastructure/"$whichExeVM"/ubiquitous_bash.sh)
+	recursionExecList+=("$scriptAbsoluteFolder"/../../extra/infrastructure/"$whichExeVM"/ubiquitous_bash.sh)
+	recursionExecList+=("$scriptAbsoluteFolder"/../../../extra/infrastructure/"$whichExeVM"/ubiquitous_bash.sh)
+	recursionExecList+=("$scriptAbsoluteFolder"/../../../../extra/infrastructure/"$whichExeVM"/ubiquitous_bash.sh)
+	recursionExecList+=("$scriptAbsoluteFolder"/../../../../../extra/infrastructure/"$whichExeVM"/ubiquitous_bash.sh)
+	recursionExecList+=("$scriptAbsoluteFolder"/../../../../../../extra/infrastructure/"$whichExeVM"/ubiquitous_bash.sh)
+	recursionExecList+=("$scriptAbsoluteFolder"/../../../../../../../extra/infrastructure/"$whichExeVM"/ubiquitous_bash.sh)
 	
-# 	recursionExec="$scriptAbsoluteFolder"/../../../../../../../core/lab/"$infrastructureName"/ubiquitous_bash.sh
-# 	if _recursion_guard "$recursionExec"
-# 	then
-# 		"$recursionExec" "$@"
-# 		return
-# 	fi
+	recursionExecList+=("$HOME"/core/infrastructure/"$whichExeVM"/ubiquitous_bash.sh)
+	recursionExecList+=("$HOME"/extra/infrastructure/"$whichExeVM"/ubiquitous_bash.sh)
 	
-	recursionExec="$HOME"/core/infrastructure/vm/"$infrastructureName"/ubiquitous_bash.sh
-	if _recursion_guard "$recursionExec"
-	then
-		"$recursionExec" "$@"
-		return
-	fi
-	
-	recursionExec="$HOME"/extra/infrastructure/vm/"$infrastructureName"/ubiquitous_bash.sh
-	if _recursion_guard "$recursionExec"
-	then
-		"$recursionExec" "$@"
-		return
-	fi
-	
-	recursionExec="$HOME"/core/infrastructure/nixexevm/ubiquitous_bash.sh
-	[[ "$virtOStype" == 'MSW'* ]] && recursionExec="$HOME"/core/infrastructure/winexevm/ubiquitous_bash.sh
-	[[ "$virtOStype" == 'Windows'* ]] && recursionExec="$HOME"/core/infrastructure/winexevm/ubiquitous_bash.sh
-	[[ "$vboxOStype" == 'Windows'* ]] && recursionExec="$HOME"/core/infrastructure/winexevm/ubiquitous_bash.sh
-	if _recursion_guard "$recursionExec"
-	then
-		"$recursionExec" "$@"
-		return
-	fi
-	
-	recursionExec="$HOME"/extra/infrastructure/nixexevm/ubiquitous_bash.sh
-	[[ "$virtOStype" == 'MSW'* ]] && recursionExec="$HOME"/core/infrastructure/winexevm/ubiquitous_bash.sh
-	[[ "$virtOStype" == 'Windows'* ]] && recursionExec="$HOME"/core/infrastructure/winexevm/ubiquitous_bash.sh
-	[[ "$vboxOStype" == 'Windows'* ]] && recursionExec="$HOME"/core/infrastructure/winexevm/ubiquitous_bash.sh
-	if _recursion_guard "$recursionExec"
-	then
-		"$recursionExec" "$@"
-		return
-	fi
+	for currentRecursionExec in "${recursionExecList[@]}"
+	do
+		if _recursion_guard "$recursionExec"
+		then
+			"$recursionExec" "$@"
+			return
+		fi
+	done
 }
 
 
