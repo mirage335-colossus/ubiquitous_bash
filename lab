@@ -243,6 +243,7 @@ _lab() {
 	
 	_lab_accessories "$labDir"
 	
+	_infrastructure_list "$labDir"
 	_vm_list "$labDir"
 	_app_list "$labDir"
 }
