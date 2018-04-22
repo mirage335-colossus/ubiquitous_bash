@@ -101,9 +101,9 @@ _findInfrastructure_virtImage_script() {
 	
 	for currentRecursionExec in "${recursionExecList[@]}"
 	do
-		if _recursion_guard "$recursionExec"
+		if _recursion_guard "$currentRecursionExec"
 		then
-			"$recursionExec" "$@"
+			"$currentRecursionExec" "$@"
 			return
 		fi
 	done
