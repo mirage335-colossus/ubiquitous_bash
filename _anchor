@@ -198,7 +198,7 @@ _check_anchor() {
 		#Conventionally a git submodule for compile purposes only.
 		[[ "$anchorCheckLine" == *'_lib/ubiquitous_bash/ubiquitous_bash.sh' ]] && continue
 		
-		[[ "$anchorCheckLine" != *'ubiquitous_bash.sh' ]] && [[ "$anchorCheckLine" != *"$anchorName" ]] && continue
+		[[ "$anchorCheckLine" != *"$anchorSource" ]] && [[ "$anchorCheckLine" != *'ubiquitous_bash.sh' ]] && [[ "$anchorCheckLine" != *"$anchorName" ]] && continue
 		
 		! _recursion_guard "$anchorCheckLine" && continue
 		
@@ -212,7 +212,7 @@ _launch_anchor() {
 	_messagePlain_probe 'anchorScriptAbsoluteLocation='"$anchorScriptAbsoluteLocation" | _user_log_anchor
 	_messagePlain_probe 'anchorScriptAbsoluteFolder='"$anchorScriptAbsoluteFolder" | _user_log_anchor
 
-	_messagePlain_probe 'anchorSource='"$anchorSource" | _user_log_anchor
+	_messagePlain_probe 'anchorSourcePath='"$anchorSourcePath" | _user_log_anchor
 	_messagePlain_probe 'anchorLabName='"$anchorLabName" | _user_log_anchor
 	_messagePlain_probe 'anchorLabNameAlt='"$anchorLabNameAlt" | _user_log_anchor
 	_messagePlain_probe 'anchorEntity='"$anchorEntity" | _user_log_anchor
@@ -220,7 +220,7 @@ _launch_anchor() {
 	local recursionExec
 	local anchorParent
 	
-	recursionExec="$anchorScriptAbsoluteFolder"/../"$anchorSource"
+	recursionExec="$anchorScriptAbsoluteFolder"/../"$anchorSourcePath"
 	if _recursion_guard "$recursionExec"
 	then
 		_messagePlain_good 'self: '"$recursionExec"  "$anchorName" "$@" | _user_log_anchor
@@ -228,11 +228,17 @@ _launch_anchor() {
 		exit $?
 	fi
 	
-	anchorDestination=$(find "$anchorScriptAbsoluteFolder"/.. ! -path \*_lib\* ! -path \*_local\* -type f,s -path \*"$anchorSource" | _check_anchor | _filter_lowestPath)
+	anchorDestination=$(find "$anchorScriptAbsoluteFolder"/.. ! -path \*_lib\* ! -path \*_local\* -type f,s -path \*"$anchorSourcePath" | _check_anchor | _filter_lowestPath)
 	if [[ "$anchorDestination" != "" ]]
 	then
-		_messagePlain_good 'launch: '"$anchorDestination" "$anchorName" "$@" | _user_log_anchor
-		"$anchorDestination" "$anchorName" "$@"
+		if [[ "$anchorDestination" == *"ubiquitous_bash.sh" ]]
+		then
+			_messagePlain_good 'launch: '"$anchorDestination" "$anchorName" "$@" | _user_log_anchor
+			"$anchorDestination" "$anchorName" "$@"
+			exit $?
+		fi
+		_messagePlain_good 'launch: '"$anchorDestination" "$@" | _user_log_anchor
+		"$anchorDestination" "$@"
 		exit $?
 	fi
 	
@@ -251,7 +257,7 @@ _launch_anchor() {
 		fi
 	fi
 	
-	recursionExec="$HOME"/core/infrastructure/vm/"$anchorSource"
+	recursionExec="$HOME"/core/infrastructure/vm/"$anchorSourcePath"
 	if _recursion_guard "$recursionExec"
 	then
 		_messagePlain_good 'launch: '"$recursionExec" "$@" | _user_log_anchor
@@ -259,7 +265,7 @@ _launch_anchor() {
 		exit $?
 	fi
 
-	recursionExec="$HOME"/extra/infrastructure/vm/"$anchorSource"
+	recursionExec="$HOME"/extra/infrastructure/vm/"$anchorSourcePath"
 	if _recursion_guard "$recursionExec"
 	then
 		_messagePlain_good 'launch: '"$recursionExec" "$@" | _user_log_anchor
@@ -267,7 +273,7 @@ _launch_anchor() {
 		exit $?
 	fi
 	
-	recursionExec="$HOME"/core/installations/"$anchorSource"
+	recursionExec="$HOME"/core/installations/"$anchorSourcePath"
 	if _recursion_guard "$recursionExec"
 	then
 		_messagePlain_good 'launch: '"$recursionExec" "$@" | _user_log_anchor
@@ -275,7 +281,7 @@ _launch_anchor() {
 		exit $?
 	fi
 
-	recursionExec="$HOME"/extra/installations/"$anchorSource"
+	recursionExec="$HOME"/extra/installations/"$anchorSourcePath"
 	if _recursion_guard "$recursionExec"
 	then
 		_messagePlain_good 'launch: '"$recursionExec" "$@" | _user_log_anchor
@@ -320,7 +326,8 @@ export anchorScriptAbsoluteLocation=$(_getScriptAbsoluteLocation)
 export anchorScriptAbsoluteFolder=$(_getScriptAbsoluteFolder)
 export anchorName=$(basename "$anchorScriptAbsoluteLocation")
 
-export anchorSource="vmName-vm/ubiquitous_bash.sh"
+export anchorSource="ubiquitous_bash.sh"
+export anchorSourcePath=vmName-vm/"$anchorSource"
 
 export anchorLabName=anchorLabName
 export anchorLabNameAlt="$anchorLabName"Mini
