@@ -265,7 +265,7 @@ _launch_anchor() {
 		exit $?
 	fi
 	
-	anchorDestination=$(_findAnchorName "$anchorScriptAbsoluteFolder"/.. | _check_anchor | _filter_lowestPath)
+	anchorDestination=$(_findAnchorSource "$anchorScriptAbsoluteFolder"/.. | _check_anchor | _filter_lowestPath)
 	if [[ "$anchorDestination" != "" ]]
 	then
 		if [[ "$anchorDestination" == *"ubiquitous_bash.sh" ]]
@@ -284,7 +284,7 @@ _launch_anchor() {
 	if [[ "$anchorScriptAbsoluteFolder" == *"_local/_index" ]]
 	then
 		_messagePlain_probe 'detected: parent: _local/_index' | _user_log_anchor
-		anchorDestination=$(_findAnchorSource | _check_anchor | _filter_highestPath)
+		anchorDestination=$(_findAnchorName | _check_anchor | _filter_highestPath)
 		if [[ "$anchorDestination" != "" ]]
 		then
 			_messagePlain_probe 'anchorDestination='"$anchorDestination" | _user_log_anchor
