@@ -191,78 +191,25 @@ _messageError() {
 	return 0
 }
 
-# ATTENTION CONTINGENCY
-_findAnchorSource_sequence() {
-	local anchorCurrentSearchDir
-	anchorCurrentSearchDir="$1"
-	shift
-	
-	find "$anchorCurrentSearchDir" -type f,s \( -path \*\.git\* -o -path \*_arc\* -o -path \*_buried\* -o -path \*_lib\* -o -path \*_local\* -o -path \*_local/_index\* \) -prune -path \*"$anchorSourcePath"
-	
-	#find "$anchorCurrentSearchDir" -mindepth 1 -maxdepth 1 -type f,s \( -path \*\.git\* -o -path \*_arc\* -o -path \*_buried\* -o -path \*_lib\* -o -path \*_local\* -o -path \*_local/_index\* \) -prune -path \*_index/"$anchorName"
-	
-	if [[ "$anchorCurrentSearchDirAbsolute" == *'_arc'* ]] || [[ "$anchorCurrentSearchDirAbsolute" == *'_buried'* ]] || [[ "$anchorCurrentSearchDirAbsolute" == *'_lib'* ]] || [[ "$anchorCurrentSearchDirAbsolute" == *'_local'* ]] || [[ "$anchorCurrentSearchDirAbsolute" == *'_local/_index'* ]]
-	then
-		"$@"
-		return 0
-	fi
-	
-	find -L "$anchorCurrentSearchDir" -mindepth 1 -maxdepth 1 -type d -exec "$anchorScriptAbsoluteLocation" _findAnchorSource_sequence {} "$@" \;
+#https://stackoverflow.com/questions/4210042/how-to-exclude-a-directory-in-find-command/16595367#16595367
+_findAnchor() {
+	find -L .. -not \( -path \*.git\* -prune \) -not \( -path \*_arc\* -prune \) -not \( -path \*_buried\* -prune \) -not \( -path \*_lib\* -prune \) -not \( -path \*_local\* -prune \) -not \( -path \*_local/_index\* -prune \) "$@"
 }
 
 #Recursively searches for directories.
 _findAnchorSource() {
 	local anchorCurrentSearchDir
 	anchorCurrentSearchDir="$1"
-	#! cd "$1" && return
-	! [[ -e "$1" ]] && return
 	shift
 	
 	local anchorCurrentSearchDirAbsolute
 	anchorCurrentSearchDirAbsolute=$(_getAbsoluteLocation "$anchorCurrentSearchDir")
 	
-	local anchorCurrentSearchDirAbsolute
-	anchorCurrentSearchDirAbsolute=$(getAbsoluteLocation "$anchorCurrentSearchDir")
+	_findAnchor -path \*"$anchorSourcePath"
 	
-	find "$anchorCurrentSearchDir" -type f,s \( -path \*\.git\* -o -path \*_arc\* -o -path \*_buried\* -o -path \*_lib\* -o -path \*_local\* -o -path \*_local/_index\* \) -prune -path \*"$anchorSourcePath"
+	#_findAnchor -path \*_index/"$anchorName"
 	
-	#find "$anchorCurrentSearchDir" -mindepth 1 -maxdepth 1 -type f,s \( -path \*\.git\* -o -path \*_arc\* -o -path \*_buried\* -o -path \*_lib\* -o -path \*_local\* -o -path \*_local/_index\* \) -prune -path \*_index/"$anchorName"
-	
-	if [[ "$anchorCurrentSearchDirAbsolute" == *'_arc'* ]] || [[ "$anchorCurrentSearchDirAbsolute" == *'_buried'* ]] || [[ "$anchorCurrentSearchDirAbsolute" == *'_lib'* ]] || [[ "$anchorCurrentSearchDirAbsolute" == *'_local'* ]] || [[ "$anchorCurrentSearchDirAbsolute" == *'_local/_index'* ]]
-	then
-		"$@"
-		return 0
-	fi
-	
-	find -L "$anchorCurrentSearchDir" -mindepth 1 -maxdepth 1 -type d -exec "$anchorScriptAbsoluteLocation" _findAnchorSource_sequence {} "$@" \;
-}
-
-_findAnchorName_sequence() {
-	local anchorCurrentSearchDir
-	anchorCurrentSearchDir="$1"
-	shift
-	
-	local anchorCurrentSearchDirAbsolute
-	anchorCurrentSearchDirAbsolute=$(_getAbsoluteLocation "$anchorCurrentSearchDir")
-	
-	#find "$anchorCurrentSearchDir" -type f,s \( -path \*\.git\* -o -path \*_arc\* -o -path \*_buried\* -o -path \*_lib\* -o -path \*_local\* -o -path \*_local/_index\* \) -prune -path \*"$anchorSourcePath"
-	
-	find "$anchorCurrentSearchDir" -mindepth 1 -maxdepth 1 -type f,s \( -path \*\.git\* -o -path \*_arc\* -o -path \*_buried\* -o -path \*_lib\* -o -path \*_local\* -o -path \*_local/_index\* \) -prune -path \*_index/"$anchorName"
-	
-	if [[ "$anchorCurrentSearchDirAbsolute" == *'_arc'* ]] || [[ "$anchorCurrentSearchDirAbsolute" == *'_buried'* ]] || [[ "$anchorCurrentSearchDirAbsolute" == *'_lib'* ]] || [[ "$anchorCurrentSearchDirAbsolute" == *'_local'* ]] || [[ "$anchorCurrentSearchDirAbsolute" == *'_local/_index'* ]] || [[ "$anchorCurrentSearchDirAbsolute" == *'.git'* ]]
-	then
-		"$@"
-		return 0
-	fi
-	
-	# ATTENTION CONTINGENCY
-	#https://stackoverflow.com/questions/4321456/find-exec-a-shell-function
-	export -f _findAnchorName_sequence
-	export -f _getAbsoluteLocation
-	find -L "$anchorCurrentSearchDir" -mindepth 1 -maxdepth 1 -type d \( -path \*\.git\* -o -path \*_arc\* -o -path \*_buried\* -o -path \*_lib\* -o -path \*_local\* -o -path \*_local/_index\* \) -prune -exec bash -c '_findAnchorName_sequence "$0"' {} "$@" \;
 	return
-	
-	#find -L "$anchorCurrentSearchDir" -mindepth 1 -maxdepth 1 -type d \( -path \*\.git\* -o -path \*_arc\* -o -path \*_buried\* -o -path \*_lib\* -o -path \*_local\* -o -path \*_local/_index\* \) -prune -exec "$anchorScriptAbsoluteLocation" _findAnchorName_sequence {} "$@" \;
 }
 
 #Recursively searches for directories.
@@ -274,29 +221,11 @@ _findAnchorName() {
 	local anchorCurrentSearchDirAbsolute
 	anchorCurrentSearchDirAbsolute=$(_getAbsoluteLocation "$anchorCurrentSearchDir")
 	
-	#find -L "$anchorCurrentSearchDir" -type f,s \( -path \*\.git\* -o -path \*_arc\* -o -path \*_buried\* -o -path \*_lib\* -o -path \*_local\* -o -path \*_local/_index\* \) -prune -path \*"$anchorSourcePath"
+	#_findAnchor -path \*"$anchorSourcePath"
 	
-	# ATTENTION CONTINGENCY
-	find -L "$anchorCurrentSearchDir" -not \( -path \*\.git\* -o -path \*_arc\* -o -path \*_buried\* -o -path \*_lib\* -o -path \*_local\* -o -path \*_local/_index\* \) -prune -type f,s -o -print -path \*_index/"$anchorName"
+	_findAnchor -path \*_index/"$anchorName"
+	
 	return
-	
-	if [[ "$anchorCurrentSearchDirAbsolute" == *'_arc'* ]] || [[ "$anchorCurrentSearchDirAbsolute" == *'_buried'* ]] || [[ "$anchorCurrentSearchDirAbsolute" == *'_lib'* ]] || [[ "$anchorCurrentSearchDirAbsolute" == *'_local'* ]] || [[ "$anchorCurrentSearchDirAbsolute" == *'_local/_index'* ]]
-	then
-		"$@"
-		return 0
-	fi
-	
-	# ATTENTION CONTINGENCY
-	find "$anchorCurrentSearchDir" -mindepth 1 -maxdepth 1 -type f,s \( -path \*\.git\* -o -path \*_arc\* -o -path \*_buried\* -o -path \*_lib\* -o -path \*_local\* -o -path \*_local/_index\* \) -prune -path \*_index/"$anchorName"
-	
-	# ATTENTION CONTINGENCY
-	##https://stackoverflow.com/questions/4321456/find-exec-a-shell-function
-	export -f _findAnchorName_sequence
-	export -f _getAbsoluteLocation
-	find -L "$anchorCurrentSearchDir" -mindepth 1 -maxdepth 1 -type d -exec bash -c '_findAnchorName_sequence "$0"' {} "$@" \;
-	
-	# ATTENTION CONTINGENCY
-	#find -L "$anchorCurrentSearchDir" -mindepth 1 -maxdepth 1 -type d -exec "$anchorScriptAbsoluteLocation" _findAnchorName_sequence {} "$@" \;
 }
 
 _check_anchor() {
@@ -349,13 +278,13 @@ _launch_anchor() {
 		"$anchorDestination" "$@"
 		exit $?
 	fi
-	exit
+	
 	anchorParent=$(_getAbsoluteLocation "$anchorScriptAbsoluteFolder"/../..)
 	_messagePlain_probe 'anchorParent='"$anchorParent" | _user_log_anchor
 	if [[ "$anchorScriptAbsoluteFolder" == *"_local/_index" ]]
 	then
 		_messagePlain_probe 'detected: parent: _local/_index' | _user_log_anchor
-		anchorDestination=$(find "$anchorParent" ! -path \*_arc\* ! -path \*_buried\* ! -path \*_lib\* ! -path \*_local\* -type f,s -path \*_index/"$anchorName" ! -path \*_local/_index\* | _check_anchor | _filter_highestPath)
+		anchorDestination=$(_findAnchorSource | _check_anchor | _filter_highestPath)
 		if [[ "$anchorDestination" != "" ]]
 		then
 			_messagePlain_probe 'anchorDestination='"$anchorDestination" | _user_log_anchor
