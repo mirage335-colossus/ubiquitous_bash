@@ -3951,7 +3951,7 @@ _findInfrastructure_virtImage_script() {
 	
 	recursionExecList+=("$HOME"/core/infrastructure/vm/"$infrastructureName"/ubiquitous_bash.sh)
 	
-	recursionExecList+=("$HOME"/extra/infrastructure/vm/"$infrastructureName"/ubiquitous_bash.sh)
+	recursionExecList+=("$HOME"/core/extra/infrastructure/vm/"$infrastructureName"/ubiquitous_bash.sh)
 	
 	local whichExeVM
 	whichExeVM=nixexevm
@@ -3976,16 +3976,16 @@ _findInfrastructure_virtImage_script() {
 	recursionExecList+=("$scriptAbsoluteFolder"/../../../../../../../core/infrastructure/vm/"$whichExeVM"/ubiquitous_bash.sh)
 	
 	recursionExecList+=("$HOME"/core/infrastructure/"$whichExeVM"/ubiquitous_bash.sh)
-	recursionExecList+=("$HOME"/extra/infrastructure/"$whichExeVM"/ubiquitous_bash.sh)
+	recursionExecList+=("$HOME"/core/extra/infrastructure/"$whichExeVM"/ubiquitous_bash.sh)
 	
 	recursionExecList+=("$HOME"/core/infrastructure/vm/"$whichExeVM"/ubiquitous_bash.sh)
-	recursionExecList+=("$HOME"/extra/infrastructure/vm/"$whichExeVM"/ubiquitous_bash.sh)
+	recursionExecList+=("$HOME"/core/extra/infrastructure/vm/"$whichExeVM"/ubiquitous_bash.sh)
 	
 	for currentRecursionExec in "${recursionExecList[@]}"
 	do
-		if _recursion_guard "$recursionExec"
+		if _recursion_guard "$currentRecursionExec"
 		then
-			"$recursionExec" "$@"
+			"$currentRecursionExec" "$@"
 			return
 		fi
 	done
