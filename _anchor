@@ -193,7 +193,11 @@ _messageError() {
 
 #https://stackoverflow.com/questions/4210042/how-to-exclude-a-directory-in-find-command/16595367#16595367
 _findAnchor() {
-	find -L .. -not \( -path \*.git\* -prune \) -not \( -path \*_arc\* -prune \) -not \( -path \*_buried\* -prune \) -not \( -path \*_lib\* -prune \) -not \( -path \*_local\* -prune \) -not \( -path \*_local/_index\* -prune \) "$@"
+	local anchorCurrentSearchDir
+	anchorCurrentSearchDir="$1"
+	shift
+	
+	find -L "$anchorCurrentSearchDir" -not \( -path \*.git\* -prune \) -not \( -path \*_arc\* -prune \) -not \( -path \*_buried\* -prune \) -not \( -path \*_lib\* -prune \) -not \( -path \*_local\* -prune \) -not \( -path \*_local/_index\* -prune \) "$@"
 }
 
 #Recursively searches for directories.
@@ -205,9 +209,7 @@ _findAnchorSource() {
 	local anchorCurrentSearchDirAbsolute
 	anchorCurrentSearchDirAbsolute=$(_getAbsoluteLocation "$anchorCurrentSearchDir")
 	
-	_findAnchor -path \*"$anchorSourcePath"
-	
-	#_findAnchor -path \*_index/"$anchorName"
+	_findAnchor "$anchorCurrentSearchDir" -path \*"$anchorSourcePath"
 	
 	return
 }
@@ -221,9 +223,7 @@ _findAnchorName() {
 	local anchorCurrentSearchDirAbsolute
 	anchorCurrentSearchDirAbsolute=$(_getAbsoluteLocation "$anchorCurrentSearchDir")
 	
-	#_findAnchor -path \*"$anchorSourcePath"
-	
-	_findAnchor -path \*_index/"$anchorName"
+	_findAnchor "$anchorCurrentSearchDir" -path \*_index/"$anchorName"
 	
 	return
 }
@@ -284,7 +284,7 @@ _launch_anchor() {
 	if [[ "$anchorScriptAbsoluteFolder" == *"_local/_index" ]]
 	then
 		_messagePlain_probe 'detected: parent: _local/_index' | _user_log_anchor
-		anchorDestination=$(_findAnchorName | _check_anchor | _filter_highestPath)
+		anchorDestination=$(_findAnchorName "$anchorParent" | _check_anchor | _filter_highestPath)
 		if [[ "$anchorDestination" != "" ]]
 		then
 			_messagePlain_probe 'anchorDestination='"$anchorDestination" | _user_log_anchor
