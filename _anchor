@@ -191,6 +191,93 @@ _messageError() {
 	return 0
 }
 
+_findAnchorSource_sequence() {
+	local anchorCurrentSearchDir
+	anchorCurrentSearchDir="$1"
+	shift
+	
+	find "$anchorCurrentSearchDir" -type f,s ! -path \*_arc\* ! -path \*_buried\* ! -path \*_lib\* ! -path \*_local\* ! -path \*_local/_index\* -path \*"$anchorSourcePath"
+	
+	#find "$anchorCurrentSearchDir" -mindepth 1 -maxdepth 1 -type f,s ! -path \*_arc\* ! -path \*_buried\* ! -path \*_lib\* ! -path \*_local\* ! -path \*_local/_index\* -path \*_index/"$anchorName"
+	
+	if [[ "$anchorCurrentSearchDirAbsolute" == *'_arc'* ]] || [[ "$anchorCurrentSearchDirAbsolute" == *'_buried'* ]] || [[ "$anchorCurrentSearchDirAbsolute" == *'_lib'* ]] || [[ "$anchorCurrentSearchDirAbsolute" == *'_local'* ]] || [[ "$anchorCurrentSearchDirAbsolute" == *'_local/_index'* ]]
+	then
+		"$@"
+		return 0
+	fi
+	
+	find -L "$anchorCurrentSearchDir" -mindepth 1 -maxdepth 1 -type d -exec "$anchorScriptAbsoluteLocation" _findAnchorSource_sequence {} "$@" \;
+}
+
+#Recursively searches for directories.
+_findAnchorSource() {
+	local anchorCurrentSearchDir
+	anchorCurrentSearchDir="$1"
+	#! cd "$1" && return
+	! [[ -e "$1" ]] && return
+	shift
+	
+	local anchorCurrentSearchDirAbsolute
+	anchorCurrentSearchDirAbsolute=$(_getAbsoluteLocation "$anchorCurrentSearchDir")
+	
+	local anchorCurrentSearchDirAbsolute
+	anchorCurrentSearchDirAbsolute=$(getAbsoluteLocation "$anchorCurrentSearchDir")
+	
+	find "$anchorCurrentSearchDir" -type f,s ! -path \*_arc\* ! -path \*_buried\* ! -path \*_lib\* ! -path \*_local\* ! -path \*_local/_index\* -path \*"$anchorSourcePath"
+	
+	#find "$anchorCurrentSearchDir" -mindepth 1 -maxdepth 1 -type f,s ! -path \*_arc\* ! -path \*_buried\* ! -path \*_lib\* ! -path \*_local\* ! -path \*_local/_index\* -path \*_index/"$anchorName"
+	
+	if [[ "$anchorCurrentSearchDirAbsolute" == *'_arc'* ]] || [[ "$anchorCurrentSearchDirAbsolute" == *'_buried'* ]] || [[ "$anchorCurrentSearchDirAbsolute" == *'_lib'* ]] || [[ "$anchorCurrentSearchDirAbsolute" == *'_local'* ]] || [[ "$anchorCurrentSearchDirAbsolute" == *'_local/_index'* ]]
+	then
+		"$@"
+		return 0
+	fi
+	
+	find -L "$anchorCurrentSearchDir" -mindepth 1 -maxdepth 1 -type d -exec "$anchorScriptAbsoluteLocation" _findAnchorSource_sequence {} "$@" \;
+}
+
+_findAnchorName_sequence() {
+	local anchorCurrentSearchDir
+	anchorCurrentSearchDir="$1"
+	shift
+	
+	local anchorCurrentSearchDirAbsolute
+	anchorCurrentSearchDirAbsolute=$(_getAbsoluteLocation "$anchorCurrentSearchDir")
+	
+	#find "$anchorCurrentSearchDir" -type f,s ! -path \*_arc\* ! -path \*_buried\* ! -path \*_lib\* ! -path \*_local\* ! -path \*_local/_index\* -path \*"$anchorSourcePath"
+	
+	find "$anchorCurrentSearchDir" -mindepth 1 -maxdepth 1 -type f,s ! -path \*_arc\* ! -path \*_buried\* ! -path \*_lib\* ! -path \*_local\* ! -path \*_local/_index\* -path \*_index/"$anchorName"
+	
+	if [[ "$anchorCurrentSearchDirAbsolute" == *'_arc'* ]] || [[ "$anchorCurrentSearchDirAbsolute" == *'_buried'* ]] || [[ "$anchorCurrentSearchDirAbsolute" == *'_lib'* ]] || [[ "$anchorCurrentSearchDirAbsolute" == *'_local'* ]] || [[ "$anchorCurrentSearchDirAbsolute" == *'_local/_index'* ]] || [[ "$anchorCurrentSearchDirAbsolute" == *'.git'* ]]
+	then
+		"$@"
+		return 0
+	fi
+	
+	find -L "$anchorCurrentSearchDir" -mindepth 1 -maxdepth 1 -type d -exec "$anchorScriptAbsoluteLocation" _findAnchorName_sequence {} "$@" \;
+}
+
+#Recursively searches for directories.
+_findAnchorName() {
+	local anchorCurrentSearchDir
+	anchorCurrentSearchDir="$1"
+	shift
+	
+	local anchorCurrentSearchDirAbsolute
+	anchorCurrentSearchDirAbsolute=$(_getAbsoluteLocation "$anchorCurrentSearchDir")
+	
+	#find "$anchorCurrentSearchDir" -type f,s ! -path \*_arc\* ! -path \*_buried\* ! -path \*_lib\* ! -path \*_local\* ! -path \*_local/_index\* -path \*"$anchorSourcePath"
+	
+	find "$anchorCurrentSearchDir" -mindepth 1 -maxdepth 1 -type f,s ! -path \*_arc\* ! -path \*_buried\* ! -path \*_lib\* ! -path \*_local\* ! -path \*_local/_index\* -path \*_index/"$anchorName"
+	
+	if [[ "$anchorCurrentSearchDirAbsolute" == *'_arc'* ]] || [[ "$anchorCurrentSearchDirAbsolute" == *'_buried'* ]] || [[ "$anchorCurrentSearchDirAbsolute" == *'_lib'* ]] || [[ "$anchorCurrentSearchDirAbsolute" == *'_local'* ]] || [[ "$anchorCurrentSearchDirAbsolute" == *'_local/_index'* ]]
+	then
+		"$@"
+		return 0
+	fi
+	find -L "$anchorCurrentSearchDir" -mindepth 1 -maxdepth 1 -type d -exec "$anchorScriptAbsoluteLocation" _findAnchorName_sequence {} "$@" \;
+}
+
 _check_anchor() {
 	local anchorCheckLine
 	while IFS='' read -r anchorCheckLine || [[ -n "$anchorCheckLine" ]]
@@ -335,6 +422,27 @@ export anchorLabNameAlt="$anchorLabName"Mini
 export anchorEntity=""
 #export anchorEntity="entity/"
 
-_launch_anchor "$@"
 
+# NOTICE Launch internal functions as commands.
+#if [[ "$1" != "" ]] && [[ "$1" != "-"* ]] && [[ ! -e "$1" ]]
+#if [[ "$1" == '_'* ]] || [[ "$1" == "true" ]] || [[ "$1" == "false" ]]
+#if [[ "$1" == '_'* ]]
+if [[ "$1" == '_findAnchorName_sequence' ]] || [[ "$1" == '_findAnchorSource_sequence' ]]
+then
+	"$@"
+	internalFunctionExitStatus="$?"
+	
+	#Exit if not imported into existing shell, or bypass requested, else fall through to subsequent return.
+	if ! [[ "${BASH_SOURCE[0]}" != "${0}" ]] || ! [[ "$1" != "--bypass" ]]
+	then
+		#export noEmergency=true
+		exit "$internalFunctionExitStatus"
+	fi
+	
+	#_stop "$?"
+fi
+
+#_launch_anchor "$@"
+
+_findAnchorName .
 
