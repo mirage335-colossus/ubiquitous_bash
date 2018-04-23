@@ -2754,7 +2754,7 @@ _showCommand() {
 #End user function.
 _user_log() {
 	# DANGER Do NOT create automatically, or reference any existing directory!
-	! [[ -d "$HOME"/.ubcore/userlog ]] && cat - > /dev/null 2>&1 return 1
+	! [[ -d "$HOME"/.ubcore/userlog ]] && cat - > /dev/null 2>&1 && return 1
 	
 	cat - >> "$HOME"/.ubcore/userlog/user.log
 }
@@ -2762,7 +2762,7 @@ _user_log() {
 #Universal debugging filesystem.
 _user_log-ub() {
 	# DANGER Do NOT create automatically, or reference any existing directory!
-	! [[ -d "$HOME"/.ubcore/userlog ]] && cat - > /dev/null 2>&1 return 1
+	! [[ -d "$HOME"/.ubcore/userlog ]] && cat - > /dev/null 2>&1 && return 1
 	
 	#Terminal session may be used - the sessionid may be set through .bashrc/.ubcorerc .
 	if [[ "$sessionid" != "" ]]
@@ -2776,7 +2776,7 @@ _user_log-ub() {
 #Universal debugging filesystem.
 _user_log_anchor() {
 	# DANGER Do NOT create automatically, or reference any existing directory!
-	! [[ -d "$HOME"/.ubcore/userlog ]] && cat - > /dev/null 2>&1 return 1
+	! [[ -d "$HOME"/.ubcore/userlog ]] && cat - > /dev/null 2>&1 && return 1
 	
 	#Terminal session may be used - the sessionid may be set through .bashrc/.ubcorerc .
 	if [[ "$sessionid" != "" ]]
@@ -2790,7 +2790,7 @@ _user_log_anchor() {
 #Universal debugging filesystem.
 _user_log_template() {
 	# DANGER Do NOT create automatically, or reference any existing directory!
-	! [[ -d "$HOME"/.ubcore/userlog ]] && cat - > /dev/null 2>&1 return 1
+	! [[ -d "$HOME"/.ubcore/userlog ]] && cat - > /dev/null 2>&1 && return 1
 	
 	#Terminal session may be used - the sessionid may be set through .bashrc/.ubcorerc .
 	if [[ "$sessionid" != "" ]]
