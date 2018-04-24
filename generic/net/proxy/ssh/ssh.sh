@@ -1147,25 +1147,25 @@ _setup_ssh() {
 }
 
 _setup_ssh_commands() {
-	find . -type f,s -name '_ssh' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
-	find . -type f,s -name '_rsync' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
+	_find_setupCommands -name '_ssh' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
+	_find_setupCommands -name '_rsync' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
 	
-	find . -type f,s -name '_sshfs' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
+	_find_setupCommands -name '_sshfs' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
 	
-	find . -type f,s -name '_web' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
+	_find_setupCommands -name '_web' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
 	
-	find . -type f,s -name '_backup' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
+	_find_setupCommands -name '_backup' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
 	
-	find . -type f,s -name '_fs' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
+	_find_setupCommands -name '_fs' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
 	
-	find . -type f,s -name '_vnc' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
-	find . -type f,s -name '_push_vnc' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
-	find . -type f,s -name '_desktop' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
-	find . -type f,s -name '_push_desktop' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
+	_find_setupCommands -name '_vnc' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
+	_find_setupCommands -name '_push_vnc' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
+	_find_setupCommands -name '_desktop' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
+	_find_setupCommands -name '_push_desktop' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
 	
-	find . -type f,s -name '_wake' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
+	_find_setupCommands -name '_wake' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
 	
-	find . -type f,s -name '_meta' -exec "$scriptAbsoluteLocation" _setupCommand_meta {} \;
+	_find_setupCommands -name '_meta' -exec "$scriptAbsoluteLocation" _setupCommand_meta {} \;
 }
 
 _package_cautossh() {

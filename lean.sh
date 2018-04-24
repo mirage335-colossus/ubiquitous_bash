@@ -2346,9 +2346,13 @@ _setupCommand_meta() {
 	
 }
 
+_find_setupCommands() {
+	find -L "$scriptAbsoluteFolder" -not \( -path \*_arc\* -prune \) "$@"
+}
+
 #Consider placing files like ' _vnc-machine-"$netName" ' in an "_index" folder for automatic installation.
 _setupCommands() {
-	#find . -type f,s -name '_command' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
+	#_find_setupCommands -name '_command' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
 	
 	_tryExec "_setup_ssh_commands"
 	_tryExec "_setup_command_commands"
