@@ -98,7 +98,7 @@ _project() {
 
 	#All content in this folder not owned by other authors is intended to be public domain. Other copyright notices may be provided as templates. See license.txt for details.
 
-	mkdir "$projectFolder"
+	mkdir -p "$projectFolder"
 	cd "$projectFolder"
 
 	mkdir ./_lib

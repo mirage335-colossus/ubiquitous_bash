@@ -98,7 +98,7 @@ _project() {
 
 	#All content in this folder not owned by other authors is intended to be public domain. Other copyright notices may be provided as templates. See license.txt for details.
 
-	mkdir "$projectFolder"
+	mkdir -p "$projectFolder"
 	cd "$projectFolder"
 
 	mkdir ./_lib
@@ -187,18 +187,11 @@ _project() {
 	cd "$workingDir"
 }
 
-_vm_list() {
-	_messageNormal "LIST: VM"
-	
-	for currentProject in "${virtualmachines[@]}"
-	do
-		_project "$currentProject" "$1"/core/infrastructure/vm
-	done
-}
-
 #Generic Apps/VMs/etc treated as infrastructure outright, typically nixexevm/winexevm .
 _infrastructure_list() {
 	_messageNormal "LIST: INFRASTRUCTURE"
+	
+	local currentProject
 	
 	for currentProject in "${infrastructures[@]}"
 	do
@@ -206,8 +199,21 @@ _infrastructure_list() {
 	done
 }
 
+_vm_list() {
+	_messageNormal "LIST: VM"
+	
+	local currentProject
+	
+	for currentProject in "${virtualmachines[@]}"
+	do
+		_project "$currentProject" "$1"/core/infrastructure/vm
+	done
+}
+
 _app_list() {
 	_messageNormal "LIST: APP"
+	
+	local currentProject
 	
 	for currentProject in "${applications[@]}"
 	do
@@ -218,12 +224,29 @@ _app_list() {
 _lab_basicFS() {
 	_messageNormal "LABFS: ""$1"
 	
+	local currentProject
+	
 	mkdir -p "$1"/_index
 	mkdir -p "$1"/_local/_index
 	
 	mkdir -p "$1"/core/lab
 	mkdir -p "$1"/core/installations
 	mkdir -p "$1"/core/infrastructure/vm
+	
+	for currentProject in "${infrastructures[@]}"
+	do
+		mkdir -p "$1"/core/infrastructure/"$currentProject"
+	done
+	
+	for currentProject in "${virtualmachines[@]}"
+	do
+		mkdir -p "$1"/core/infrastructure/vm/"$currentProject"
+	done
+	
+	for currentProject in "${applications[@]}"
+	do
+		mkdir -p "$1"/core/installations/"$currentProject"
+	done
 }
 
 _lab_accessories() {
@@ -232,6 +255,31 @@ _lab_accessories() {
 	
 	cp "$1"/core/infrastructure/ubiquitous_bash/_anchor "$1"/_index/
 	cp "$1"/core/infrastructure/ubiquitous_bash/_anchor "$1"/_local/_index
+}
+
+_labLinking() {
+	_messageNormal "LINKING: ""$1"
+	_messagePlain_probe "SOURCE (FULL): ""$1"
+	_messagePlain_probe "DESTINATION (MINI): ""$2"
+	
+	rm -f "$1"/_local/_index/_anchor > /dev/null 2>&1
+	rmdir "$1"/_local/_index > /dev/null 2>&1
+	rmdir "$1"/_local > /dev/null 2>&1
+	rmdir "$1"/_ref > /dev/null 2>&1
+	rmdir "$1"/records > /dev/null 2>&1
+	
+	mkdir -p "$1"/"$2"/_local/_index
+	mkdir -p "$1"/"$2"/_ref
+	mkdir -p "$1"/"$2"/records
+	
+	ln -s "$2"/_local "$1"/_local
+	ln -s "$2"/_ref "$1"/_ref
+	ln -s "$2"/records "$1"/records
+	
+	rm -f "$1"/_index/update.sh > /dev/null 2>&1
+	echo 'cp ./_* '../_local/_index/ >> "$1"/_index/update.sh
+	echo 'cp ./_* '../"$2"/_index/ >> "$1"/_index/update.sh
+	echo 'cp ./_* '../"$2"/_local/_index/ >> "$1"/_index/update.sh
 }
 
 
@@ -263,10 +311,10 @@ infrastructures+=(winexevm)
 applications+=("$labName"First-app)
 applications+=("$labName"Second-app)
 
-_lab ./"$labName"
 _lab ./"$labName"/core/lab/"$labNameMini"
+_lab ./"$labName"
 
-
+_labLinking ./"$labName" ./core/lab/"$labNameMini"
 
 
 
