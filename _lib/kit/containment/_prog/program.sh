@@ -2,15 +2,7 @@
 
 #Typically launches an application - ie. through virtualized container.
 _launch() {
-	local scriptLinkCommand
-	
-	if scriptLinkCommand=$(_getScriptLinkName)
-	then
-		"$scriptLinkCommand" "$@"
-	else
-		_gnucash "$@"
-		return 0
-	fi
+	_app "$@"
 }
 
 #Typically gathers command/variable scripts from other (ie. yaml) file types (ie. AppImage recipes).
