@@ -11584,13 +11584,16 @@ _setupCommand_meta() {
 	clientScriptLocation=$(_getAbsoluteLocation "$1")
 	
 	local clientScriptFolder
-	clientScriptFolder=$(_getAbsoluteFolder "$1"/..)
+	clientScriptFolder=$(_getAbsoluteFolder "$1")
+	
+	local clientScriptFolderResidence
+	clientScriptFolderResidence=$(_getAbsoluteFolder "$clientScriptFolder")
 	
 	local commandName
 	commandName=$(basename "$1")
 	
 	local clientName
-	clientName=$(basename "$clientScriptFolder")
+	clientName=$(basename "$clientScriptFolderResidence")
 	
 	_relink_relative "$clientScriptLocation" "$HOME"/bin/"$commandName""-""$clientName"
 	
