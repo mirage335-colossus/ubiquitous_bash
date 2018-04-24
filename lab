@@ -156,6 +156,8 @@ _project() {
 
 	echo '##### Core' >> ./_prog/core.sh
 	echo '' >> ./_prog/core.sh
+	
+	echo > ./_prog/installation_prog.sh
 
 	cp ./_lib/ubiquitous_bash/structure/program.sh ./_prog/
 

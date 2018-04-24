@@ -1386,7 +1386,7 @@ _compile_bash_environment() {
 _compile_bash_installation() {
 	export includeScriptList
 	
-	
+	includeScriptList+=( "structure"/installation_prog.sh )
 	includeScriptList+=( "structure"/installation.sh )
 }
 
