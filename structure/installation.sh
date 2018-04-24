@@ -251,13 +251,13 @@ _setupCommand_meta() {
 	clientScriptLocation=$(_getAbsoluteLocation "$1")
 	
 	local clientScriptFolder
-	clientScriptFolder=$(_getAbsoluteFolder "$1")
+	clientScriptFolder=$(_getAbsoluteFolder "$1"/..)
 	
 	local commandName
 	commandName=$(basename "$1")
 	
 	local clientName
-	clientName=$(basename "$clientScriptFolder"/..)
+	clientName=$(basename "$clientScriptFolder")
 	
 	_relink_relative "$clientScriptLocation" "$HOME"/bin/"$commandName""-""$clientName"
 	
@@ -266,7 +266,7 @@ _setupCommand_meta() {
 
 #Consider placing files like ' _vnc-machine-"$netName" ' in an "_index" folder for automatic installation.
 _setupCommands() {
-	#find . -name '_command' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
+	#find . -type f,s -name '_command' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
 	
 	_tryExec "_setup_ssh_commands"
 	_tryExec "_setup_command_commands"

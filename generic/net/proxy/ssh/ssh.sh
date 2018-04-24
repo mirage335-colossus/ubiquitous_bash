@@ -1147,25 +1147,25 @@ _setup_ssh() {
 }
 
 _setup_ssh_commands() {
-	find . -name '_ssh' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
-	find . -name '_rsync' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
+	find . -type f,s -name '_ssh' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
+	find . -type f,s -name '_rsync' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
 	
-	find . -name '_sshfs' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
+	find . -type f,s -name '_sshfs' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
 	
-	find . -name '_web' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
+	find . -type f,s -name '_web' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
 	
-	find . -name '_backup' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
+	find . -type f,s -name '_backup' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
 	
-	find . -name '_fs' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
+	find . -type f,s -name '_fs' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
 	
-	find . -name '_vnc' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
-	find . -name '_push_vnc' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
-	find . -name '_desktop' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
-	find . -name '_push_desktop' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
+	find . -type f,s -name '_vnc' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
+	find . -type f,s -name '_push_vnc' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
+	find . -type f,s -name '_desktop' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
+	find . -type f,s -name '_push_desktop' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
 	
-	find . -name '_wake' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
+	find . -type f,s -name '_wake' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
 	
-	find . -name '_meta' -exec "$scriptAbsoluteLocation" _setupCommand_meta {} \;
+	find . -type f,s -name '_meta' -exec "$scriptAbsoluteLocation" _setupCommand_meta {} \;
 }
 
 _package_cautossh() {

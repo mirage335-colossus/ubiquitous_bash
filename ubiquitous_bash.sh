@@ -2503,25 +2503,25 @@ _setup_ssh() {
 }
 
 _setup_ssh_commands() {
-	find . -name '_ssh' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
-	find . -name '_rsync' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
+	find . -type f,s -name '_ssh' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
+	find . -type f,s -name '_rsync' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
 	
-	find . -name '_sshfs' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
+	find . -type f,s -name '_sshfs' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
 	
-	find . -name '_web' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
+	find . -type f,s -name '_web' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
 	
-	find . -name '_backup' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
+	find . -type f,s -name '_backup' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
 	
-	find . -name '_fs' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
+	find . -type f,s -name '_fs' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
 	
-	find . -name '_vnc' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
-	find . -name '_push_vnc' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
-	find . -name '_desktop' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
-	find . -name '_push_desktop' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
+	find . -type f,s -name '_vnc' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
+	find . -type f,s -name '_push_vnc' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
+	find . -type f,s -name '_desktop' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
+	find . -type f,s -name '_push_desktop' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
 	
-	find . -name '_wake' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
+	find . -type f,s -name '_wake' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
 	
-	find . -name '_meta' -exec "$scriptAbsoluteLocation" _setupCommand_meta {} \;
+	find . -type f,s -name '_meta' -exec "$scriptAbsoluteLocation" _setupCommand_meta {} \;
 }
 
 _package_cautossh() {
@@ -9704,7 +9704,7 @@ _parity_attach() {
 }
 
 _setup_command_commands() {
-	find . -name '_synergy' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
+	find . -type f,s -name '_synergy' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
 }
 
 _here_synergy_config() {
@@ -11584,13 +11584,13 @@ _setupCommand_meta() {
 	clientScriptLocation=$(_getAbsoluteLocation "$1")
 	
 	local clientScriptFolder
-	clientScriptFolder=$(_getAbsoluteFolder "$1")
+	clientScriptFolder=$(_getAbsoluteFolder "$1"/..)
 	
 	local commandName
 	commandName=$(basename "$1")
 	
 	local clientName
-	clientName=$(basename "$clientScriptFolder"/..)
+	clientName=$(basename "$clientScriptFolder")
 	
 	_relink_relative "$clientScriptLocation" "$HOME"/bin/"$commandName""-""$clientName"
 	
@@ -11599,7 +11599,7 @@ _setupCommand_meta() {
 
 #Consider placing files like ' _vnc-machine-"$netName" ' in an "_index" folder for automatic installation.
 _setupCommands() {
-	#find . -name '_command' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
+	#find . -type f,s -name '_command' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
 	
 	_tryExec "_setup_ssh_commands"
 	_tryExec "_setup_command_commands"

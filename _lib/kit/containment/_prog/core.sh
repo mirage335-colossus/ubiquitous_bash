@@ -17,12 +17,15 @@ _v_app() {
 }
 
 _app() {
+	if ! _check_prog
+	then
+		_messageNormal 'Launch: _v'${FUNCNAME[0]}
+		_v${FUNCNAME[0]} "$@"
+		return
+	fi
+	
 	_app_user "$@" && return 0
 	
-	_messageNormal 'Launch: _v_'${FUNCNAME[0]}
-	_v_${FUNCNAME[0]} "$@"
-}
-
-_appUnique() {
-	_launch "$@"
+	#_messageNormal 'Launch: _v'${FUNCNAME[0]}
+	#_v${FUNCNAME[0]} "$@"
 }
