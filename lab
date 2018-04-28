@@ -269,14 +269,17 @@ _labLinking() {
 	rmdir "$1"/_local > /dev/null 2>&1
 	rmdir "$1"/_ref > /dev/null 2>&1
 	rmdir "$1"/records > /dev/null 2>&1
+	rmdir "$1"/templates > /dev/null 2>&1
 	
 	mkdir -p "$1"/"$2"/_local/_index
 	mkdir -p "$1"/"$2"/_ref
 	mkdir -p "$1"/"$2"/records
+	mkdir -p "$1"/"$2"/templates
 	
 	ln -s "$2"/_local "$1"/_local
 	ln -s "$2"/_ref "$1"/_ref
 	ln -s "$2"/records "$1"/records
+	ln -s "$2"/templates "$1"/templates
 	
 	rm -f "$1"/_index/update.sh > /dev/null 2>&1
 	echo 'cp ./_* '../_local/_index/ >> "$1"/_index/update.sh
