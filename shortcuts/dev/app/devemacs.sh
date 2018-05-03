@@ -5,8 +5,18 @@ _test_devemacs() {
 	! [[ "$emacsDetectedVersion" -ge "24" ]] && echo emacs too old && _stop 1
 }
 
+_set_emacsFakeHomeSource() {
+	export emacsFakeHomeSource="$scriptLib"/app/emacs/home
+	if ! [[ -e "$emacsFakeHomeSource" ]]
+	then
+		export emacsFakeHomeSource="$scriptLib"/ubiquitous_bash/_lib/app/emacs/home
+	fi
+}
+
 _prepare_emacsDev_fakeHome() {
-	cp -a "$scriptLib"/app/emacs/home/. "$HOME"
+	_set_emacsFakeHomeSource
+	
+	cp -a "$emacsFakeHomeSource"/. "$HOME"
 }
 
 _emacsDev_sequence() {
@@ -26,7 +36,8 @@ _emacs() {
 }
 
 _emacsDev_edit_sequence() {
-	export appGlobalFakeHome="$scriptLib"/app/emacs/home
+	_set_emacsFakeHomeSource
+	export appGlobalFakeHome="$emacsFakeHomeSource"
 	
 	_editFakeHome emacs "$@"
 }
