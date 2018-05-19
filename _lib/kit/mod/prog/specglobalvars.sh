@@ -1,14 +1,13 @@
 export blockly_orig="$scriptLib"/blockly
 export SigBlockly_mod="$scriptLib"/SigBlockly
 
-export modLanguageName=python
-export modLanguageNameProper=Python
-
 export generatorSource=generators/"$modLanguageName"
 export generatorSourceEntry=generators/"$modLanguageName".js
 
 
 export scriptModules="$scriptLib"/modules
+
+export overlay="$scriptModules"/overlay
 
 export splice="$scriptModules"/splice
 export spliceGitdiff="$scriptModules"/splice/gitdiff

@@ -4425,7 +4425,7 @@ _editFakeHome_sequence() {
 	env -i DISPLAY="$DISPLAY" XAUTH="$XAUTH" XAUTHORITY="$XAUTHORITY" XSOCK="$XSOCK" HOME="$HOME" setFakeHome="$setFakeHome" TERM="${TERM}" SHELL="${SHELL}" PATH="${PATH}" dbus-run-session "$@"
 	#"$@"
 	
-	_unmakeFakeHome > /dev/null 2>&1
+	#_unmakeFakeHome > /dev/null 2>&1
 	
 	_resetFakeHomeEnv_nokeep
 	_stop
