@@ -29,3 +29,7 @@ _app() {
 	#_messageNormal 'Launch: _v'${FUNCNAME[0]}
 	#_v${FUNCNAME[0]} "$@"
 }
+
+_refresh_anchors() {
+	cp -a "$scriptAbsoluteFolder"/_anchor "$scriptAbsoluteFolder"/_app
+}
