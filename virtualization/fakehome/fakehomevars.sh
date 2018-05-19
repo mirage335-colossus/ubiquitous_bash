@@ -1,13 +1,26 @@
 _prepareFakeHome() {
 	mkdir -p "$globalFakeHome"
+	[[ "$appGlobalFakeHome" != "" ]] && mkdir -p "$appGlobalFakeHome"
 }
 
 _prepareFakeHome_instance() {
 	_prepareFakeHome
 	
 	mkdir -p "$instancedFakeHome"
-	#cp -a "$globalFakeHome"/. "$instancedFakeHome"
-	rsync -q -ax --exclude "/.cache" "$globalFakeHome"/ "$instancedFakeHome"/
+	
+	if [[ "$appGlobalFakeHome" == "" ]]
+	then
+		#cp -a "$globalFakeHome"/. "$instancedFakeHome"
+		rsync -q -ax --exclude "/.cache" "$globalFakeHome"/ "$instancedFakeHome"/
+		return
+	fi
+	
+	if [[ "$appGlobalFakeHome" != "" ]]
+	then
+		#cp -a "$appGlobalFakeHome"/. "$instancedFakeHome"
+		rsync -q -ax --exclude "/.cache" "$appGlobalFakeHome"/ "$instancedFakeHome"/
+		return
+	fi
 }
 
 _rm_instance_fakeHome() {
