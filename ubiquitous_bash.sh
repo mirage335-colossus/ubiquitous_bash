@@ -4300,7 +4300,7 @@ _setFakeHomeEnv() {
 	
 	export realHome="$HOME"
 	
-	[[ "$appGlobalFakeHome" == "" ]] && export fakeHome=$(_findDir "$1")
+	export fakeHome=$(_findDir "$1")
 	[[ "$appGlobalFakeHome" != "" ]] && [[ "$1" != "$instancedFakeHome" ]] && export fakeHome=$(_findDir "$appGlobalFakeHome")
 	
 	export HOME="$fakeHome"
