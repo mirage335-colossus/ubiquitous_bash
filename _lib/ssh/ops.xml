@@ -1,0 +1,361 @@
+<xml xmlns="http://www.w3.org/1999/xhtml">
+  <variables>
+    <variable type="" id="OpoQ,~AY(#PA~Pj(wbWh">netName</variable>
+  </variables>
+  <block type="arbitrary_code" id="PxdWwJ/,+YISSNw/t!x[" x="-38" y="-37">
+    <field name="arbitraryCode"># WARNING Must use unique netName!</field>
+    <next>
+      <block type="bash_export" id="PWqC9=SWVh:u{-E{}T0K">
+        <value name="NAME">
+          <block type="arbitrary_deconverter" id="-yM4vOfbrqGLblXjZFJ)">
+            <statement name="NAME">
+              <block type="variables_set" id="+SZ:)3.ND8Rq{,s^4z/g">
+                <field name="VAR" id="OpoQ,~AY(#PA~Pj(wbWh" variabletype="">netName</field>
+                <value name="VALUE">
+                  <block type="text" id="VLp8NP^RlONfNyK9U-.j">
+                    <field name="TEXT">default</field>
+                  </block>
+                </value>
+              </block>
+            </statement>
+          </block>
+        </value>
+        <next>
+          <block type="arbitrary_code" id="n*9~8GMI3*jRy!5um[$p">
+            <field name="arbitraryCode"></field>
+            <next>
+              <block type="bash_export" id="q,eoHouW7mE6y,K[LR)#">
+                <value name="NAME">
+                  <block type="arbitrary_input" id="QFO%0~.Y8CnuhROWq^/|">
+                    <field name="arbitraryInput">sshHomeBase="$HOME"/.ssh</field>
+                  </block>
+                </value>
+                <next>
+                  <block type="arbitrary_code" id="hnctZ?^p=pcA~dHew[x4">
+                    <field name="arbitraryCode"></field>
+                    <next>
+                      <block type="_ub_here_ssh_config" id="D,.VwK!I%4gJb?jxBO]M">
+                        <statement name="NAME">
+                          <block type="blockly_comment" id="lzJpy/(8a[LIw?A|o0,v">
+                            <field name="colour">#333333</field>
+                            <field name="blockly_comment">Recommended defaults.</field>
+                            <next>
+                              <block type="_ub_ssh_header" id="Yw!se27TpNAACqMv::OK">
+                                <field name="hostname">*-$netName*</field>
+                                <field name="commentCompression"></field>
+                                <field name="Compression">yes</field>
+                                <field name="commentExitOnForwardFailure"></field>
+                                <field name="ExitOnForwardFailure">yes</field>
+                                <field name="commentConnectTimeout"></field>
+                                <field name="ConnectTimeout">36</field>
+                                <field name="commentConnectionAttempts"></field>
+                                <field name="ConnectionAttempts">3</field>
+                                <field name="commentServerAliveInterval"></field>
+                                <field name="ServerAliveInterval">6</field>
+                                <field name="commentServerAliveCountMax"></field>
+                                <field name="ServerAliveCountMax">18</field>
+                                <field name="commentPubkeyAuthentication">#</field>
+                                <field name="PubkeyAuthentication">yes</field>
+                                <field name="commentPasswordAuthentication">#</field>
+                                <field name="PasswordAuthentication">no</field>
+                                <field name="commentStrictHostKeyChecking"></field>
+                                <field name="StrictHostKeyChecking">no</field>
+                                <field name="commentUserKnownHostsFile"></field>
+                                <field name="UserKnownHostsFile">"$sshLocalSSH/known_hosts"</field>
+                                <field name="commentIdentityFile"></field>
+                                <field name="IdentityFile">"$sshLocalSSH/id_rsa"</field>
+                                <field name="commentCipher"></field>
+                                <field name="Cipher">aes256-gcm@openssh.com</field>
+                                <field name="commentCiphers"></field>
+                                <field name="Ciphers">aes256-gcm@openssh.com,aes128-ctr,aes192-ctr,aes256-ctr,arcfour256,arcfour128,aes128-gcm@openssh.com,chacha20-poly1305@openssh.com,aes128-cbc,3des-cbc,blowfish-cbc,cast128-cbc,aes192-cbc,aes256-cbc,arcfour</field>
+                                <next>
+                                  <block type="blockly_comment" id="6;$op9Me^Ixd1v:J!I4W">
+                                    <field name="colour">#333333</field>
+                                    <field name="blockly_comment">Enumerate your servers and jump hosts here.</field>
+                                    <next>
+                                      <block type="_ub_ssh_host" id="5[*M+*%!Ed6e-B.BMqyt">
+                                        <field name="hostname">gw</field>
+                                        <field name="netname">-$netName</field>
+                                        <field name="commentProxyCommand"></field>
+                                        <field name="ProxyCommand">_ssh_proxy_server-$netName</field>
+                                        <field name="commentUser"></field>
+                                        <field name="User">gateway</field>
+                                        <field name="commentIdentityFile">#</field>
+                                        <field name="IdentityFile">"$sshLocalSSH/id_rsa"</field>
+                                        <next>
+                                          <block type="_ub_ssh_host" id=")yUX5d34LwWkme{P5]`I">
+                                            <field name="hostname">server</field>
+                                            <field name="netname">-$netName</field>
+                                            <field name="commentProxyCommand"></field>
+                                            <field name="ProxyCommand">_ssh_proxy_server-$netName</field>
+                                            <field name="commentUser"></field>
+                                            <field name="User">user</field>
+                                            <field name="commentIdentityFile">#</field>
+                                            <field name="IdentityFile">"$sshLocalSSH/id_rsa"</field>
+                                            <next>
+                                              <block type="_ub_ssh_host" id="sbGsX+;o|o?CF0J,(}xt">
+                                                <field name="hostname">hostnameA</field>
+                                                <field name="netname">-$netName</field>
+                                                <field name="commentProxyCommand"></field>
+                                                <field name="ProxyCommand">_ssh_proxy_hostnameA-$netName</field>
+                                                <field name="commentUser"></field>
+                                                <field name="User">user</field>
+                                                <field name="commentIdentityFile">#</field>
+                                                <field name="IdentityFile">"$sshLocalSSH/id_rsa"</field>
+                                                <next>
+                                                  <block type="_ub_ssh_host" id="oXagotR(Uvd/FvQz#Hj:">
+                                                    <field name="hostname">hostnameC</field>
+                                                    <field name="netname">-$netName</field>
+                                                    <field name="commentProxyCommand"></field>
+                                                    <field name="ProxyCommand">_ssh_proxy_hostnameC-$netName</field>
+                                                    <field name="commentUser"></field>
+                                                    <field name="User">user</field>
+                                                    <field name="commentIdentityFile">#</field>
+                                                    <field name="IdentityFile">"$sshLocalSSH/id_rsa"</field>
+                                                  </block>
+                                                </next>
+                                              </block>
+                                            </next>
+                                          </block>
+                                        </next>
+                                      </block>
+                                    </next>
+                                  </block>
+                                </next>
+                              </block>
+                            </next>
+                          </block>
+                        </statement>
+                        <next>
+                          <block type="blockly_comment" id="W~v=Z+O}Gq|(P[PYp_XE">
+                            <field name="colour">#333333</field>
+                            <field name="blockly_comment">Returns true if connected to specified subnet. Enables direct connection to local static IP address.</field>
+                            <next>
+                              <block type="_ub_check_lan" id=".}-d[zQ_f/zphQ[:/!va">
+                                <field name="network">default</field>
+                                <field name="NAME">'192\.168\.x'</field>
+                                <next>
+                                  <block type="_ub_ssh_proxy_machine_network" id=".g@fIvZjK=;w_Qon{p`r">
+                                    <field name="hostname">server-default</field>
+                                    <statement name="NAME">
+                                      <block type="_ub_proxy" id="PF:N}=vBXm#)aM%sjjhR">
+                                        <field name="hostname">x.x.x.x</field>
+                                        <field name="port">22</field>
+                                        <next>
+                                          <block type="_ub_proxy" id="v%PFWuJq3S*BD7=d/MzB">
+                                            <field name="hostname">server.domain.tld</field>
+                                            <field name="port">22</field>
+                                          </block>
+                                        </next>
+                                      </block>
+                                    </statement>
+                                    <next>
+                                      <block type="_ub_ssh_proxy_machine_network" id="^t[zy@|LKWgjt*a1PQ|X">
+                                        <field name="hostname">hostnameA-default</field>
+                                        <statement name="NAME">
+                                          <block type="_ub_proxy" id="9dAy8.xrxFIlCruA}}/D">
+                                            <field name="hostname">hostnameA.domain.tld</field>
+                                            <field name="port">20001</field>
+                                            <next>
+                                              <block type="_ub_proxy" id="YdYPyr,u+}K9J/h;/v|e">
+                                                <field name="hostname">hostnameA.domain.tld</field>
+                                                <field name="port">22</field>
+                                                <next>
+                                                  <block type="arbitrary_converter" id="Y$JB6m9:c,_9?gxh6?f2">
+                                                    <value name="content">
+                                                      <block type="logic_operation" id="9=k;{h2Oz1hPuPOkM9~-">
+                                                        <field name="OP">AND</field>
+                                                        <value name="A">
+                                                          <block type="_ub_call_checklan" id="oOFoHl#d2HP,n{QdUPv1">
+                                                            <field name="NAME">default</field>
+                                                          </block>
+                                                        </value>
+                                                        <value name="B">
+                                                          <block type="arbitrary_deconverter" id="=JgX4yuO($bSj?/KLY,g">
+                                                            <statement name="NAME">
+                                                              <block type="_ub_proxy" id="s[Edw{wC0{?BZ]Zn_=K@">
+                                                                <field name="hostname">192.168.x.x</field>
+                                                                <field name="port">22</field>
+                                                              </block>
+                                                            </statement>
+                                                          </block>
+                                                        </value>
+                                                      </block>
+                                                    </value>
+                                                    <next>
+                                                      <block type="_ub_proxyssh_reverse" id="(T_7Xs4al`Z2jIw/XPlV">
+                                                        <field name="hostname">hostnameA</field>
+                                                        <field name="jump">gw-default</field>
+                                                        <next>
+                                                          <block type="_ub_proxyssh" id="$5s%oRkSs~;xm{PM$f4m">
+                                                            <field name="hostname">hostnameC-default</field>
+                                                            <field name="port">22</field>
+                                                            <field name="address">192.168.xxx.xxx</field>
+                                                            <next>
+                                                              <block type="_ub_proxyTor_reverse" id="(Xz|g)MAl*nRBL9#5Vxt">
+                                                                <field name="hostname">hostnameA</field>
+                                                                <field name="address">xxxxxxxxxxxxxxxxx.onion</field>
+                                                              </block>
+                                                            </next>
+                                                          </block>
+                                                        </next>
+                                                      </block>
+                                                    </next>
+                                                  </block>
+                                                </next>
+                                              </block>
+                                            </next>
+                                          </block>
+                                        </statement>
+                                        <next>
+                                          <block type="_ub_ssh_proxy_machine_network" id="Zz?6ls=(x|sC5Kc6*2kX">
+                                            <field name="hostname">hostnameC-default</field>
+                                            <statement name="NAME">
+                                              <block type="_ub_proxy" id="R0{C*EQ7MX@z~?eU9?}#">
+                                                <field name="hostname">hostnameC.domain.tld</field>
+                                                <field name="port">20002</field>
+                                                <next>
+                                                  <block type="_ub_proxy" id="{b0SFf1=NH}Z?#U9dhh4">
+                                                    <field name="hostname">hostnameC.domain.tld</field>
+                                                    <field name="port">22</field>
+                                                    <next>
+                                                      <block type="arbitrary_converter" id="~=Ly^7,D`6H]`ic:P3S:">
+                                                        <value name="content">
+                                                          <block type="logic_operation" id="J}AT}2d_iM2r;S8HUVTe">
+                                                            <field name="OP">AND</field>
+                                                            <value name="A">
+                                                              <block type="_ub_call_checklan" id="mO;T-un3+AgRl|21omhD">
+                                                                <field name="NAME">default</field>
+                                                              </block>
+                                                            </value>
+                                                            <value name="B">
+                                                              <block type="arbitrary_deconverter" id="WJ]VN[KTd$`@-r#PxX9p">
+                                                                <statement name="NAME">
+                                                                  <block type="_ub_proxy" id="o}qzQPQk}I341|:IU*9$">
+                                                                    <field name="hostname">192.168.x.x</field>
+                                                                    <field name="port">22</field>
+                                                                  </block>
+                                                                </statement>
+                                                              </block>
+                                                            </value>
+                                                          </block>
+                                                        </value>
+                                                        <next>
+                                                          <block type="_ub_proxyssh_reverse" id="ysrDH`LTtKN{]935J:H~">
+                                                            <field name="hostname">hostnameC</field>
+                                                            <field name="jump">gw-default</field>
+                                                            <next>
+                                                              <block type="_ub_proxyssh" id="|hKzw41NT4Y6}#sti`AB">
+                                                                <field name="hostname">hostnameA-default</field>
+                                                                <field name="port">22</field>
+                                                                <field name="address">192.168.xxx.xxx</field>
+                                                                <next>
+                                                                  <block type="_ub_proxyTor_reverse" id="RKL-lySSBPK@UD=/}[(m">
+                                                                    <field name="hostname">hostnameC</field>
+                                                                    <field name="address">xxxxxxxxxxxxxxxxx.onion</field>
+                                                                  </block>
+                                                                </next>
+                                                              </block>
+                                                            </next>
+                                                          </block>
+                                                        </next>
+                                                      </block>
+                                                    </next>
+                                                  </block>
+                                                </next>
+                                              </block>
+                                            </statement>
+                                          </block>
+                                        </next>
+                                      </block>
+                                    </next>
+                                  </block>
+                                </next>
+                              </block>
+                            </next>
+                          </block>
+                        </next>
+                      </block>
+                    </next>
+                  </block>
+                </next>
+              </block>
+            </next>
+          </block>
+        </next>
+      </block>
+    </next>
+  </block>
+  <block type="blockly_comment" id="rjw@GmYZ.=MbT^o:F*Qj" x="762" y="-13">
+    <field name="colour">#333333</field>
+    <field name="blockly_comment">Default functions, definition not required.</field>
+  </block>
+  <block type="procedures_defnoreturn" id="cJ[%iKx;47lzbaU?}t;!" x="763" y="38">
+    <field name="NAME">_ssh_autoreverse</field>
+    <comment pinned="false" h="46" w="540">Daemon commands. Do not define unless multi-gateway redundancy is needed. Tor services redundancy is expected to be far more reliable than such fallbacks.</comment>
+    <statement name="STACK">
+      <block type="arbitrary_code" id=".dWyEKZ]DY}%@I#1EPNh">
+        <field name="arbitraryCode">_torServer_SSH</field>
+        <next>
+          <block type="arbitrary_code" id="lcTrEHmHY1|=)AkG_wb#">
+            <field name="arbitraryCode">_autossh</field>
+            <next>
+              <block type="arbitrary_code" id="!N$N{aVto^1O!2U}ik#r">
+                <field name="arbitraryCode"></field>
+                <next>
+                  <block type="arbitrary_code" id="J*KlNEwS7`LW]:3ZD]r^">
+                    <field name="arbitraryCode">#_autossh firstGateway</field>
+                    <next>
+                      <block type="arbitrary_code" id="6(n}Vq:^wlqV,Q8Vt14`">
+                        <field name="arbitraryCode">#_autossh secondGateway</field>
+                      </block>
+                    </next>
+                  </block>
+                </next>
+              </block>
+            </next>
+          </block>
+        </next>
+      </block>
+    </statement>
+  </block>
+  <block type="procedures_defnoreturn" id="9}l8LW.w7)y!A,NxOM3`" x="762" y="213">
+    <field name="NAME">_setup_ssh_extra</field>
+    <comment pinned="false" h="56" w="433">Hooks "_setup_ssh" after other operations complete. Typically used to install special files (eg. machine specific keys).</comment>
+    <statement name="STACK">
+      <block type="arbitrary_converter" id="^oLB@^^Whb^iu7enz)`Z">
+        <value name="content">
+          <block type="logic_boolean" id="J!{H4#+=2YPllk:wMl?i">
+            <field name="BOOL">TRUE</field>
+          </block>
+        </value>
+      </block>
+    </statement>
+  </block>
+  <block type="procedures_defnoreturn" id="06xho2mn9By7Vo5Ky/NH" x="763" y="288">
+    <field name="NAME">_setup_pre</field>
+    <comment pinned="false" h="56" w="433">#Hooks "_setup" before "_setup_ssh" .</comment>
+    <statement name="STACK">
+      <block type="arbitrary_converter" id="zU:)^u(M(.i^|R%G9]@)">
+        <value name="content">
+          <block type="logic_boolean" id="OSmOrQ`c1Z]woBXh8V3@">
+            <field name="BOOL">TRUE</field>
+          </block>
+        </value>
+      </block>
+    </statement>
+  </block>
+  <block type="procedures_defnoreturn" id="*VoNSV2h|u-Hw1Ib}c%g" x="762" y="363">
+    <field name="NAME">_setup_prog</field>
+    <comment pinned="false" h="56" w="433">#Hooks "_setup" after "_setup_ssh" .</comment>
+    <statement name="STACK">
+      <block type="arbitrary_converter" id="a)x5MD5.:H@E?5xD::aT">
+        <value name="content">
+          <block type="logic_boolean" id="u%_vvsE5#,XZ;4!gig4o">
+            <field name="BOOL">TRUE</field>
+          </block>
+        </value>
+      </block>
+    </statement>
+  </block>
+</xml>

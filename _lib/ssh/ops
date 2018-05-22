@@ -1,8 +1,38 @@
-export netName=default
+#netName=""
+
+#Daemon commands. Do not define unless multi-gateway
+#redundancy is needed. Tor services redundancy is
+#expected to be far more reliable than such fallbacks.
+_ssh_autoreverse() {
+	_torServer_SSH
+	_autossh
+
+	#_autossh firstGateway
+	#_autossh secondGateway
+}
+
+#Hooks "_setup_ssh" after other operations complete. Typically
+#used to install special files (eg. machine specific keys).
+_setup_ssh_extra() {
+	true
+}
+
+##Hooks "_setup" before "_setup_ssh" .
+_setup_pre() {
+	true
+}
+
+##Hooks "_setup" after "_setup_ssh" .
+_setup_prog() {
+	true
+}
+
+
+# WARNING Must use unique netName!
+export netName='default'
 
 export sshHomeBase="$HOME"/.ssh
 
-#Example only.
 _here_ssh_config() {
 	cat << CZXWXcRMTo8EmM8i4d
 
@@ -18,7 +48,6 @@ Host *-$netName*
 	StrictHostKeyChecking no
 	UserKnownHostsFile "$sshLocalSSH/known_hosts"
 	IdentityFile "$sshLocalSSH/id_rsa"
-	
 	Cipher aes256-gcm@openssh.com
 	Ciphers aes256-gcm@openssh.com,aes128-ctr,aes192-ctr,aes256-ctr,arcfour256,arcfour128,aes128-gcm@openssh.com,chacha20-poly1305@openssh.com,aes128-cbc,3des-cbc,blowfish-cbc,cast128-cbc,aes192-cbc,aes256-cbc,arcfour
 
@@ -42,7 +71,6 @@ Host hostnameC-$netName
 	User user
 	#IdentityFile "$sshLocalSSH/id_rsa"
 
-
 CZXWXcRMTo8EmM8i4d
 }
 
@@ -53,77 +81,55 @@ _check_LAN_default() {
 
 _ssh_proxy_server-default() {
 	_start
-	
+
 	_proxy x.x.x.x 22
-	
+
 	_proxy server.domain.tld 22
-	
+
+
 	_stop
 }
 
 _ssh_proxy_hostnameA-default() {
 	_start
-	
+
 	_proxy hostnameA.domain.tld 20001
-	
+
 	_proxy hostnameA.domain.tld 22
-	
+
 	_check_LAN_default && _proxy 192.168.x.x 22
-	
 	_proxySSH_reverse hostnameA gw-default
-	
-	if [[ "$proxySSH_loopGuard" != true ]]
+
+	if [[ "$proxySSH_loopGuard" != "true" ]]
 	then
 		export proxySSH_loopGuard="true"
-		_proxySSH hostnameC-default 22 192.168.x.x
+		_proxySSH hostnameC-default 22 192.168.xxx.xxx
 	fi
-	
-	_proxyTor_reverse hostnameA address.onion
-	
+
+	_proxyTor_reverse hostnameA xxxxxxxxxxxxxxxxx.onion
+
+
 	_stop
 }
 
 _ssh_proxy_hostnameC-default() {
 	_start
-	
+
 	_proxy hostnameC.domain.tld 20002
-	
+
 	_proxy hostnameC.domain.tld 22
-	
+
 	_check_LAN_default && _proxy 192.168.x.x 22
-	
 	_proxySSH_reverse hostnameC gw-default
-	
-	if [[ "$proxySSH_loopGuard" != true ]]
+
+	if [[ "$proxySSH_loopGuard" != "true" ]]
 	then
 		export proxySSH_loopGuard="true"
-		_proxySSH hostnameC-default 22 192.168.x.x
+		_proxySSH hostnameA-default 22 192.168.xxx.xxx
 	fi
-	
-	_proxyTor_reverse hostnameC address.onion
-	
+
+	_proxyTor_reverse hostnameC xxxxxxxxxxxxxxxxx.onion
+
+
 	_stop
-}
-
-_ssh_autoreverse() {
-	_torServer_SSH
-	_autossh
-	
-	#_autossh firstGateway
-	#_autossh secondGateway
-}
-
-#Hooks "_setup_ssh" after other operations complete. Typically used to install special files (eg. machine specific keys).
-_setup_ssh_extra() {
-	true
-}
-
-#Hooks "_setup" before "_setup_ssh" .
-_setup_pre() {
-	true
-}
-
-#Hooks "_setup" after "_setup_ssh" .
-_setup_prog() {
-	true
 }
