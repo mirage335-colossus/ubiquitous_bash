@@ -22,32 +22,85 @@ Host *-$netName*
 	Cipher aes256-gcm@openssh.com
 	Ciphers aes256-gcm@openssh.com,aes128-ctr,aes192-ctr,aes256-ctr,arcfour256,arcfour128,aes128-gcm@openssh.com,chacha20-poly1305@openssh.com,aes128-cbc,3des-cbc,blowfish-cbc,cast128-cbc,aes192-cbc,aes256-cbc,arcfour
 
-Host machine-$netName
+Host gw-$netName
+	ProxyCommand "$sshDir/cautossh" _ssh_proxy_server-$netName
+	User gateway
+	#IdentityFile "$sshLocalSSH/id_rsa"
+
+Host server-$netName
+	ProxyCommand "$sshDir/cautossh" _ssh_proxy_server-$netName
 	User user
-	ProxyCommand "$sshDir/cautossh" _ssh_proxy_machine-$netName
+	#IdentityFile "$sshLocalSSH/id_rsa"
+
+Host hostnameA-$netName
+	ProxyCommand "$sshDir/cautossh" _ssh_proxy_hostnameA-$netName
+	User user
+	#IdentityFile "$sshLocalSSH/id_rsa"
+
+Host hostnameC-$netName
+	ProxyCommand "$sshDir/cautossh" _ssh_proxy_hostnameC-$netName
+	User user
+	#IdentityFile "$sshLocalSSH/id_rsa"
 
 
 CZXWXcRMTo8EmM8i4d
 }
 
+_check_LAN_default() {
+	ip addr show | grep '192\.168\.x' > /dev/null 2>&1 && return 0
+	return 1
+}
 
-_ssh_proxy_machine-default() {
+_ssh_proxy_server-default() {
 	_start
 	
-	_proxy machine-default 2222
+	_proxy x.x.x.x 22
 	
-	_proxy machine-default 22
+	_proxy server.domain.tld 22
 	
-	_proxy_reverse machine machine.domain.tld
+	_stop
+}
+
+_ssh_proxy_hostnameA-default() {
+	_start
 	
-	_proxySSH gateway-default 20009
+	_proxy hostnameA.domain.tld 20001
 	
-	_proxySSH_reverse machine gateway-default
+	_proxy hostnameA.domain.tld 22
 	
-	_proxyTor_reverse machine address.onion
+	_check_LAN_default && _proxy 192.168.x.x 22
 	
-	_proxySSH gateway-default 22 machine-default
-	#_ssh gateway-default -q -W machine-default:22
+	_proxySSH_reverse hostnameA gw-default
+	
+	if [[ "$proxySSH_loopGuard" != true ]]
+	then
+		export proxySSH_loopGuard="true"
+		_proxySSH hostnameC-default 22 192.168.x.x
+	fi
+	
+	_proxyTor_reverse hostnameA address.onion
+	
+	_stop
+}
+
+_ssh_proxy_hostnameC-default() {
+	_start
+	
+	_proxy hostnameC.domain.tld 20002
+	
+	_proxy hostnameC.domain.tld 22
+	
+	_check_LAN_default && _proxy 192.168.x.x 22
+	
+	_proxySSH_reverse hostnameC gw-default
+	
+	if [[ "$proxySSH_loopGuard" != true ]]
+	then
+		export proxySSH_loopGuard="true"
+		_proxySSH hostnameC-default 22 192.168.x.x
+	fi
+	
+	_proxyTor_reverse hostnameC address.onion
 	
 	_stop
 }

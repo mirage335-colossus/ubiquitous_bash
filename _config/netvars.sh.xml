@@ -1,0 +1,265 @@
+<xml xmlns="http://www.w3.org/1999/xhtml">
+  <variables>
+    <variable type="" id="d.Kb#.=z`/6/4oPRogXO">matchingReversePorts</variable>
+    <variable type="" id="wo%6{!!s8g:IXvrP-32p">matchingEMBEDDED</variable>
+  </variables>
+  <block type="arbitrary_code" id="J3R3bE~CzVm{znqywbOq" x="38" y="-37">
+    <field name="arbitraryCode">#####Network Specific Variables</field>
+    <next>
+      <block type="arbitrary_code" id="nH*zy[dWYdsIR^=)abVX">
+        <field name="arbitraryCode">#Statically embedded into monolithic ubiquitous_bash.sh/cautossh script by compile .</field>
+        <next>
+          <block type="arbitrary_code" id="Ut[CC+5Q@tiHmL|~vY3~">
+            <field name="arbitraryCode"></field>
+            <next>
+              <block type="blockly_comment" id="D!ymdAS{)rH:{1^-)#D.">
+                <field name="colour">#333333</field>
+                <field name="blockly_comment">Set "netName". Recommend defaults for others.</field>
+                <next>
+                  <block type="_ub_netvars" id="Z./%.atNMk{H0hkZYKMw">
+                    <field name="netName">default</field>
+                    <field name="gatewayName">gw-"$netName"</field>
+                    <field name="LOCALSSHPORT">22</field>
+                    <next>
+                      <block type="blockly_comment" id="qOc6aw0UlIg,7(j?(j_(">
+                        <field name="colour">#333333</field>
+                        <field name="blockly_comment">Recommended defaults.</field>
+                        <next>
+                          <block type="_ub_autosshvars" id="V#IG^d!B3e}P-.ic/V[=">
+                            <field name="commentAUTOSSH_FIRST_POLL"></field>
+                            <field name="AUTOSSH_FIRST_POLL">45</field>
+                            <field name="commentAUTOSSH_POLL"></field>
+                            <field name="AUTOSSH_POLL">45</field>
+                            <field name="commentAUTOSSH_GATETIME_disable">#</field>
+                            <field name="AUTOSSH_GATETIME_disable">0</field>
+                            <field name="commentAUTOSSH_GATETIME"></field>
+                            <field name="AUTOSSH_GATETIME">15</field>
+                            <field name="commentAUTOSSH_PORT">#</field>
+                            <field name="AUTOSSH_PORT">0</field>
+                            <field name="commentAUTOSSH_DEBUG">#</field>
+                            <field name="AUTOSSH_DEBUG">1</field>
+                            <field name="commentAUTOSSH_LOGLEVEL">#</field>
+                            <field name="AUTOSSH_LOGLEVEL">7</field>
+                            <next>
+                              <block type="blockly_comment" id="ao$e?=[NZa@X//mpS?C/">
+                                <field name="colour">#333333</field>
+                                <field name="blockly_comment">HOSTNAME to PORT, reverse SSH config.</field>
+                                <next>
+                                  <block type="_ub_get_reverseports" id="pMA]iA(*n4ig(h_D,`HJ">
+                                    <statement name="conditions">
+                                      <block type="controls_if" id="W*9R{{Z5V;^2,DTyvu$L">
+                                        <value name="IF0">
+                                          <block type="logic_operation" id="!bCo;tF@5:OFGj7+{kIo">
+                                            <field name="OP">OR</field>
+                                            <value name="A">
+                                              <block type="logic_compare" id="K,o:`AQGUK{W_$^9@R%k">
+                                                <field name="OP">EQ</field>
+                                                <value name="A">
+                                                  <block type="arbitrary_input" id="PZt/xmn4?c^vIS0qC_Ou">
+                                                    <field name="arbitraryInput">"$testHostname"</field>
+                                                  </block>
+                                                </value>
+                                                <value name="B">
+                                                  <block type="text" id="{S0sA*A9.w4Jh?=_V%Va">
+                                                    <field name="TEXT">hostnameA</field>
+                                                  </block>
+                                                </value>
+                                              </block>
+                                            </value>
+                                            <value name="B">
+                                              <block type="logic_compare" id="su|CO~6bv]{X;#{#Mj6Z">
+                                                <field name="OP">EQ</field>
+                                                <value name="A">
+                                                  <block type="arbitrary_input" id="jVVy?a-9..fK|lAbtNYY">
+                                                    <field name="arbitraryInput">"$testHostname"</field>
+                                                  </block>
+                                                </value>
+                                                <value name="B">
+                                                  <block type="text" id="?~`Lu3LghYzB:g(r9UOx">
+                                                    <field name="TEXT">hostnameB</field>
+                                                  </block>
+                                                </value>
+                                              </block>
+                                            </value>
+                                          </block>
+                                        </value>
+                                        <statement name="DO0">
+                                          <block type="bash_addlist" id="wL3]-0S{^L[@M=G4,onV">
+                                            <field name="variableName" id="d.Kb#.=z`/6/4oPRogXO" variabletype="">matchingReversePorts</field>
+                                            <value name="content">
+                                              <block type="text" id="*i%al=(M|/}Uj`Gb?ghP">
+                                                <field name="TEXT">20001</field>
+                                              </block>
+                                            </value>
+                                            <next>
+                                              <block type="arbitrary_code" id="o61dA}[h`L!hnH%g~+Y%">
+                                                <field name="arbitraryCode">matched='true'</field>
+                                              </block>
+                                            </next>
+                                          </block>
+                                        </statement>
+                                        <next>
+                                          <block type="controls_if" id="O_-kLAalZE@v%/{xDooZ">
+                                            <value name="IF0">
+                                              <block type="logic_operation" id="AC9Uo*!o^dWKCDWX8n95">
+                                                <field name="OP">OR</field>
+                                                <value name="A">
+                                                  <block type="logic_compare" id="kDQayc4y[.?lA5iQf*b^">
+                                                    <field name="OP">EQ</field>
+                                                    <value name="A">
+                                                      <block type="arbitrary_input" id="rL?B9Z$Z=JUwd1(B/tg8">
+                                                        <field name="arbitraryInput">"$testHostname"</field>
+                                                      </block>
+                                                    </value>
+                                                    <value name="B">
+                                                      <block type="text" id=".rT196:bDLYq5B{tFXNO">
+                                                        <field name="TEXT">hostnameC</field>
+                                                      </block>
+                                                    </value>
+                                                  </block>
+                                                </value>
+                                                <value name="B">
+                                                  <block type="logic_compare" id=")A.0zPjFY|z8sv^)`mCK">
+                                                    <field name="OP">EQ</field>
+                                                    <value name="A">
+                                                      <block type="arbitrary_input" id="nj,|R[8|?jf0Yr/v/.ua">
+                                                        <field name="arbitraryInput">"$testHostname"</field>
+                                                      </block>
+                                                    </value>
+                                                    <value name="B">
+                                                      <block type="text" id="b|XPe8m1;RT2,(Nvr}Sb">
+                                                        <field name="TEXT">hostnameD</field>
+                                                      </block>
+                                                    </value>
+                                                  </block>
+                                                </value>
+                                              </block>
+                                            </value>
+                                            <statement name="DO0">
+                                              <block type="bash_addlist" id="}ErCI:8RWf}g8.t6#t)]">
+                                                <field name="variableName" id="d.Kb#.=z`/6/4oPRogXO" variabletype="">matchingReversePorts</field>
+                                                <value name="content">
+                                                  <block type="text" id="Z*U`Oh_AyLRF[6wT@Tx$">
+                                                    <field name="TEXT">20002</field>
+                                                  </block>
+                                                </value>
+                                                <next>
+                                                  <block type="bash_export" id="J[[/DvTWBrzo}8vS(*Dv">
+                                                    <value name="NAME">
+                                                      <block type="arbitrary_deconverter" id="n)@;g}3R]rS.%[!!#^p4">
+                                                        <statement name="NAME">
+                                                          <block type="variables_set" id="CZm-tVcps_nqRAxJ_Riq">
+                                                            <field name="VAR" id="wo%6{!!s8g:IXvrP-32p" variabletype="">matchingEMBEDDED</field>
+                                                            <value name="VALUE">
+                                                              <block type="text" id="1T1XP%4a4N3YNY}n.kNh">
+                                                                <field name="TEXT">true</field>
+                                                              </block>
+                                                            </value>
+                                                          </block>
+                                                        </statement>
+                                                      </block>
+                                                    </value>
+                                                    <next>
+                                                      <block type="arbitrary_code" id="g}g[-S;Wt+,CM9Fundefined">
+                                                        <field name="arbitraryCode">matched='true'</field>
+                                                      </block>
+                                                    </next>
+                                                  </block>
+                                                </next>
+                                              </block>
+                                            </statement>
+                                            <next>
+                                              <block type="controls_if" id="k30KPL*KRBuS79@BtbZk">
+                                                <value name="IF0">
+                                                  <block type="logic_operation" id="2RI1-x6@yaCX?`$He(?G">
+                                                    <field name="OP">OR</field>
+                                                    <value name="A">
+                                                      <block type="logic_negate" id="R_Otw=z,^!_PFU-;_X}4">
+                                                        <value name="BOOL">
+                                                          <block type="logic_compare" id="iE?FB:,o5i5,|!,.(Z1r">
+                                                            <field name="OP">EQ</field>
+                                                            <value name="A">
+                                                              <block type="arbitrary_input" id="yAAwnydam[vPVW.-1Pib">
+                                                                <field name="arbitraryInput">"$matched"</field>
+                                                              </block>
+                                                            </value>
+                                                            <value name="B">
+                                                              <block type="text" id="4:aN_}F8ogW;)jX!YSnA">
+                                                                <field name="TEXT">true</field>
+                                                              </block>
+                                                            </value>
+                                                          </block>
+                                                        </value>
+                                                      </block>
+                                                    </value>
+                                                    <value name="B">
+                                                      <block type="logic_compare" id="bgA?~f}+A)b}Mol_[c!t">
+                                                        <field name="OP">EQ</field>
+                                                        <value name="A">
+                                                          <block type="arbitrary_input" id="YDxOXTN)dD^usyIF8boc">
+                                                            <field name="arbitraryInput">"$testHostname"</field>
+                                                          </block>
+                                                        </value>
+                                                        <value name="B">
+                                                          <block type="text" id="5p8^P_FXb3YYqtN]MKhQ">
+                                                            <field name="TEXT">*</field>
+                                                          </block>
+                                                        </value>
+                                                      </block>
+                                                    </value>
+                                                  </block>
+                                                </value>
+                                                <statement name="DO0">
+                                                  <block type="bash_addlist" id="nbSpwhW}p*d_$gpQ4(rq">
+                                                    <field name="variableName" id="d.Kb#.=z`/6/4oPRogXO" variabletype="">matchingReversePorts</field>
+                                                    <value name="content">
+                                                      <block type="text" id="h!-2NS/3.szYt3}wI[jU">
+                                                        <field name="TEXT">20003</field>
+                                                      </block>
+                                                    </value>
+                                                  </block>
+                                                </statement>
+                                              </block>
+                                            </next>
+                                          </block>
+                                        </next>
+                                      </block>
+                                    </statement>
+                                    <next>
+                                      <block type="arbitrary_code" id="J3}eSLL5*VLJ2PSiZK-m">
+                                        <field name="arbitraryCode"></field>
+                                        <next>
+                                          <block type="blockly_comment" id="4]p?6j[KAoJVqgkDVGur">
+                                            <field name="colour">#333333</field>
+                                            <field name="blockly_comment">Recommended defaults.</field>
+                                            <next>
+                                              <block type="bash_export" id="`P+#4g{6GQt0dbfr+9]]">
+                                                <value name="NAME">
+                                                  <block type="arbitrary_input" id="+@Tzo@ZOf(bVHfsV-GH_">
+                                                    <field name="arbitraryInput">keepKeys_SSH='true'</field>
+                                                  </block>
+                                                </value>
+                                              </block>
+                                            </next>
+                                          </block>
+                                        </next>
+                                      </block>
+                                    </next>
+                                  </block>
+                                </next>
+                              </block>
+                            </next>
+                          </block>
+                        </next>
+                      </block>
+                    </next>
+                  </block>
+                </next>
+              </block>
+            </next>
+          </block>
+        </next>
+      </block>
+    </next>
+  </block>
+</xml>
