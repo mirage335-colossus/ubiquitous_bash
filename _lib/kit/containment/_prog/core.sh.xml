@@ -1,0 +1,217 @@
+<xml xmlns="http://www.w3.org/1999/xhtml">
+  <variables>
+    <variable type="" id="~FS/Qnc3Mev]WWqMy,zZ">all</variable>
+  </variables>
+  <block type="arbitrary_code" id="T}~l]+@M_uD!tnn#2JM6" x="-187" y="-12">
+    <field name="arbitraryCode">#####^ Core </field>
+  </block>
+  <block type="procedures_defnoreturn" id="MexkJ8{Z=|G(8{iWO9as" x="-187" y="38">
+    <mutation>
+      <arg name="all" varid="~FS/Qnc3Mev]WWqMy,zZ"></arg>
+    </mutation>
+    <field name="NAME">_app_command</field>
+    <comment pinned="false" h="80" w="160">command</comment>
+    <statement name="STACK">
+      <block type="_ub_scriptabsolutefolder_statements" id="k11NZnNKSaxG3D?x~b*.">
+        <field name="NAME">/_local/setups/appExe</field>
+        <statement name="NAME">
+          <block type="bash_functions_arg" id="v.%k7aGb)z+y9%dFTY_H">
+            <field name="punctuation"></field>
+            <value name="data">
+              <block type="bash_specvar" id="wG^aF$^gxZHmusp36Nx|">
+                <field name="NAME">@</field>
+              </block>
+            </value>
+          </block>
+        </statement>
+      </block>
+    </statement>
+  </block>
+  <block type="procedures_defnoreturn" id="Za7mcK5(d;24@?[nqj3a" x="-187" y="163">
+    <mutation>
+      <arg name="all" varid="~FS/Qnc3Mev]WWqMy,zZ"></arg>
+    </mutation>
+    <field name="NAME">_app_edit</field>
+    <comment pinned="false" h="80" w="160">edit</comment>
+    <statement name="STACK">
+      <block type="ub_scriptabsolutelocation" id="G,AQ1b`yEQk;lTXl5N1D">
+        <statement name="NAME">
+          <block type="ub_virt_editfakehome" id="2y~@sKfY/?fw,~z`c|(n">
+            <statement name="NAME">
+              <block type="ub_scriptabsolutelocation" id="i`axFkySG#S~vq?%s^6j">
+                <statement name="NAME">
+                  <block type="procedures_callnoreturn" id="Nxb6I(hWA8]6,dFnfJr!">
+                    <mutation name="_app_command">
+                      <arg name="all"></arg>
+                    </mutation>
+                    <value name="ARG0">
+                      <block type="bash_specvar" id="=6PI)OyQpG`BN)HFPJ[e">
+                        <field name="NAME">@</field>
+                      </block>
+                    </value>
+                  </block>
+                </statement>
+              </block>
+            </statement>
+          </block>
+        </statement>
+      </block>
+    </statement>
+  </block>
+  <block type="procedures_defnoreturn" id="b)M#jx@ly:Y=culw{tT," x="-187" y="388">
+    <mutation>
+      <arg name="all" varid="~FS/Qnc3Mev]WWqMy,zZ"></arg>
+    </mutation>
+    <field name="NAME">_app_user</field>
+    <comment pinned="false" h="80" w="160">user</comment>
+    <statement name="STACK">
+      <block type="ub_scriptabsolutelocation" id="Xk:@?|rD0?FpB~S2wx8Q">
+        <statement name="NAME">
+          <block type="ub_virt_userfakehome" id="B{-~M=@~oO3$DR458)VD">
+            <statement name="NAME">
+              <block type="ub_scriptabsolutelocation" id="/)c795-qw!T;V.]Kfy,x">
+                <statement name="NAME">
+                  <block type="procedures_callnoreturn" id="S-yygJoB8g3VX0E/saRS">
+                    <mutation name="_app_command">
+                      <arg name="all"></arg>
+                    </mutation>
+                    <value name="ARG0">
+                      <block type="bash_specvar" id="l[ek%h`Pzba_5_UFvM)6">
+                        <field name="NAME">@</field>
+                      </block>
+                    </value>
+                  </block>
+                </statement>
+              </block>
+            </statement>
+          </block>
+        </statement>
+      </block>
+    </statement>
+  </block>
+  <block type="procedures_defnoreturn" id="-3A!n7_U#cfoqocYEsM|" x="-187" y="613">
+    <mutation>
+      <arg name="all" varid="~FS/Qnc3Mev]WWqMy,zZ"></arg>
+    </mutation>
+    <field name="NAME">_v_app</field>
+    <comment pinned="false" h="80" w="160">virtualized</comment>
+    <statement name="STACK">
+      <block type="ub_virt_userqemu" id="j1|bW1{!b_aDJw*VD*)S">
+        <statement name="NAME">
+          <block type="ub_scriptabsolutelocation" id="fram,[ICI`7kHi/}]bNu">
+            <statement name="NAME">
+              <block type="procedures_callnoreturn" id="D?{SIu[c1yr3%tnHkh{S">
+                <mutation name="_app_user">
+                  <arg name="all"></arg>
+                </mutation>
+                <value name="ARG0">
+                  <block type="bash_specvar" id="c;(o_0E!wWt:oGhgxvhj">
+                    <field name="NAME">@</field>
+                  </block>
+                </value>
+              </block>
+            </statement>
+          </block>
+        </statement>
+      </block>
+    </statement>
+  </block>
+  <block type="procedures_defnoreturn" id="C:o=8)$Jl%%E,^S^CB!Q" x="-187" y="813">
+    <mutation>
+      <arg name="all" varid="~FS/Qnc3Mev]WWqMy,zZ"></arg>
+    </mutation>
+    <field name="NAME">_app</field>
+    <comment pinned="false" h="80" w="160">default</comment>
+    <statement name="STACK">
+      <block type="controls_if" id="K=Dvzz%8+_/g9!a5-[2G">
+        <value name="IF0">
+          <block type="logic_negate" id="FMUbGa1(@GWBF0?hYJw.">
+            <value name="BOOL">
+              <block type="arbitrary_input" id="];lBoa#?62BzId)hb$qj">
+                <field name="arbitraryInput">_check_prog</field>
+              </block>
+            </value>
+          </block>
+        </value>
+        <statement name="DO0">
+          <block type="arbitrary_code" id="k,z/WdeA-hd{3t=RA~.8">
+            <field name="arbitraryCode">_messageNormal 'Launch: _v'${FUNCNAME[0]}</field>
+            <next>
+              <block type="arbitrary_code" id="wV?:6WtcK($)]/P@?3vp">
+                <field name="arbitraryCode">_v${FUNCNAME[0]} "$@"</field>
+                <next>
+                  <block type="functions_return" id="PC`d_)U]|`ErswjMx*;n"></block>
+                </next>
+              </block>
+            </next>
+          </block>
+        </statement>
+        <next>
+          <block type="arbitrary_converter" id="tI;$1mL,Nq!_v2vVkS3*">
+            <value name="content">
+              <block type="logic_operation" id="/al9%C!e.P3.,KJS0Bt=">
+                <field name="OP">AND</field>
+                <value name="A">
+                  <block type="arbitrary_deconverter" id=":OqmA5yTcnmoS~snDFPD">
+                    <statement name="NAME">
+                      <block type="procedures_callnoreturn" id="AzQL|:YT9I;{Uq/Vceb2">
+                        <mutation name="_app_user">
+                          <arg name="all"></arg>
+                        </mutation>
+                        <value name="ARG0">
+                          <block type="bash_specvar" id="[lcbnt40/yRd%JD-2bg4">
+                            <field name="NAME">@</field>
+                          </block>
+                        </value>
+                      </block>
+                    </statement>
+                  </block>
+                </value>
+                <value name="B">
+                  <block type="arbitrary_deconverter" id="o$WdP=}s#@thR(vZKnqf">
+                    <statement name="NAME">
+                      <block type="functions_return" id="(Qq%:(:.hdsYzJS?:v^q">
+                        <value name="varName">
+                          <block type="math_number" id="sQbYZ(48!G`R/{PBiHDo">
+                            <field name="NUM">0</field>
+                          </block>
+                        </value>
+                      </block>
+                    </statement>
+                  </block>
+                </value>
+              </block>
+            </value>
+            <next>
+              <block type="arbitrary_code" id="AZX3oPFg#F8[KP|%L8PL">
+                <field name="arbitraryCode"></field>
+                <next>
+                  <block type="arbitrary_code" id=",i.U,M{!i,Ph#qL3rl9S">
+                    <field name="arbitraryCode">#_messageNormal 'Launch: _v'${FUNCNAME[0]}</field>
+                    <next>
+                      <block type="arbitrary_code" id="*0XR+F#Ubi=!4p==)`WJ">
+                        <field name="arbitraryCode">#_v${FUNCNAME[0]} "$@"</field>
+                      </block>
+                    </next>
+                  </block>
+                </next>
+              </block>
+            </next>
+          </block>
+        </next>
+      </block>
+    </statement>
+  </block>
+  <block type="procedures_defnoreturn" id="F`!5.2~O,TALx]9m`{}k" x="-188" y="1163">
+    <mutation>
+      <arg name="all" varid="~FS/Qnc3Mev]WWqMy,zZ"></arg>
+    </mutation>
+    <field name="NAME">_refresh_anchors</field>
+    <comment pinned="false" h="80" w="160">duplicate _anchor</comment>
+    <statement name="STACK">
+      <block type="arbitrary_code" id="]H_Zi^4.wajX$)vVPj+R">
+        <field name="arbitraryCode">cp -a "$scriptAbsoluteFolder"/_anchor "$scriptAbsoluteFolder"/_app</field>
+      </block>
+    </statement>
+  </block>
+</xml>
