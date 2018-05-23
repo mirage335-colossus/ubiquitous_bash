@@ -8,7 +8,7 @@ _test_devatom() {
 _set_atomFakeHomeSource() {
 	if [[ ! -e "$scriptLib"/app/atom/home ]]
 	then
-		_messageError 'missing: '"$scriptLib"'/app/atom/home'
+		_messageError 'missing: '"$scriptLib"'/app/atom/home' > /dev/tty
 		_messageFAIL
 		_stop 1
 	fi
@@ -39,7 +39,7 @@ _atomDev() {
 }
 
 _atom() {
-	_atomDev "$@" &
+	_atomDev "$@"  > /dev/null 2>&1 &
 }
 
 _atomDev_edit_sequence() {
@@ -54,5 +54,5 @@ _atomDev_edit() {
 }
 
 _atom_edit() {
-	_atomDev_edit "$@" &
+	_atomDev_edit "$@"  > /dev/null 2>&1 &
 }
