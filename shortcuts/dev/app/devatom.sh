@@ -65,5 +65,5 @@ _atom_config() {
 }
 
 _atom() {
-	_atomDev "$@"  > /dev/null 2>&1 &
+	_atom_user "$@"
 }
