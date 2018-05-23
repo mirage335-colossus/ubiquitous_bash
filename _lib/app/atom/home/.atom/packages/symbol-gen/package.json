@@ -1,0 +1,83 @@
+{
+  "_args": [
+    [
+      {
+        "raw": "/tmp/d-118423-20783-y2zhco.un7zt73nmi/package.tgz",
+        "scope": null,
+        "escapedName": null,
+        "name": null,
+        "rawSpec": "/tmp/d-118423-20783-y2zhco.un7zt73nmi/package.tgz",
+        "spec": "/tmp/d-118423-20783-y2zhco.un7zt73nmi/package.tgz",
+        "type": "local"
+      },
+      "/tmp/apm-install-dir-118423-20783-7h2ybi.40p9442t9"
+    ]
+  ],
+  "_from": "../d-118423-20783-y2zhco.un7zt73nmi/package.tgz",
+  "_id": "symbol-gen@1.3.1",
+  "_inCache": true,
+  "_location": "/symbol-gen",
+  "_phantomChildren": {},
+  "_requested": {
+    "raw": "/tmp/d-118423-20783-y2zhco.un7zt73nmi/package.tgz",
+    "scope": null,
+    "escapedName": null,
+    "name": null,
+    "rawSpec": "/tmp/d-118423-20783-y2zhco.un7zt73nmi/package.tgz",
+    "spec": "/tmp/d-118423-20783-y2zhco.un7zt73nmi/package.tgz",
+    "type": "local"
+  },
+  "_requiredBy": [
+    "#USER"
+  ],
+  "_resolved": "file:../d-118423-20783-y2zhco.un7zt73nmi/package.tgz",
+  "_shasum": "bbafd14b7f3c793db51a0e61793bcb5526820eeb",
+  "_shrinkwrap": null,
+  "_spec": "/tmp/d-118423-20783-y2zhco.un7zt73nmi/package.tgz",
+  "_where": "/tmp/apm-install-dir-118423-20783-7h2ybi.40p9442t9",
+  "bugs": {
+    "url": "https://github.com/weskinner/symbol-gen/issues"
+  },
+  "consumedServices": {
+    "status-bar": {
+      "versions": {
+        "^1.0.0": "consumeStatusBar"
+      }
+    }
+  },
+  "dependencies": {
+    "atom-space-pen-views": "^2.0.3",
+    "ignored": "^2.0.4",
+    "q": "~1.0.0"
+  },
+  "description": "Generate symbols with cmd-alt-g so you can fuzzy search for symbols across your project.",
+  "devDependencies": {},
+  "engines": {
+    "atom": ">=0.174.0 <2.0.0"
+  },
+  "homepage": "https://github.com/weskinner/symbol-gen#readme",
+  "keywords": [
+    "tags",
+    "tag",
+    "ctags",
+    "ctag",
+    "symbol",
+    "symbols",
+    "symbol generator",
+    "tags generator",
+    "jump to symbol",
+    "go to symbol"
+  ],
+  "license": "MIT",
+  "main": "./lib/symbol-gen",
+  "name": "symbol-gen",
+  "optionalDependencies": {},
+  "private": false,
+  "readme": "# Symbol-Gen package\n\nAdds a shortcut to generate ctags symbols file for your project.  After you generate this file\nyou will be able to find symbols across your project using `cmd-shift-r`.  Symbol-gen includes\nthe options [found here](https://github.com/weskinner/symbol-gen/blob/master/lib/.ctags) by default.\nHowever, you can include your own settings by adding them to `~/.ctags` on mac / linux or\n`C:\\ctags.conf` on windows.\n\n###Installing\n\nInstall using the Atom Package Manager.\n\n`apm install symbol-gen`\n\n###Shortcut\n\nHit `cmd-alt-g` to generate tags file for your project.  This can take a few moments.\n\n###Configuration\n\nSymbol-gen will pay attention to your \"Exclude VCS Ignored Paths\" and \"Ignored Names\" atom settings.\n\n###Caveats\n\nThe current implementation of Symbols View can take a bit to load a large (>20MB) tags file.  Be patient.\n",
+  "readmeFilename": "README.md",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/weskinner/symbol-gen.git"
+  },
+  "version": "1.3.1"
+}

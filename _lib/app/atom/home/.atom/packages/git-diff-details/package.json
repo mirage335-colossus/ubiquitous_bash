@@ -1,0 +1,72 @@
+{
+  "_args": [
+    [
+      {
+        "raw": "/tmp/d-118423-21203-7ryswk.gd8zq1714i/package.tgz",
+        "scope": null,
+        "escapedName": null,
+        "name": null,
+        "rawSpec": "/tmp/d-118423-21203-7ryswk.gd8zq1714i/package.tgz",
+        "spec": "/tmp/d-118423-21203-7ryswk.gd8zq1714i/package.tgz",
+        "type": "local"
+      },
+      "/tmp/apm-install-dir-118423-21203-cdzusu.6k84hx5hfr"
+    ]
+  ],
+  "_from": "../d-118423-21203-7ryswk.gd8zq1714i/package.tgz",
+  "_id": "git-diff-details@1.4.0",
+  "_inCache": true,
+  "_location": "/git-diff-details",
+  "_phantomChildren": {},
+  "_requested": {
+    "raw": "/tmp/d-118423-21203-7ryswk.gd8zq1714i/package.tgz",
+    "scope": null,
+    "escapedName": null,
+    "name": null,
+    "rawSpec": "/tmp/d-118423-21203-7ryswk.gd8zq1714i/package.tgz",
+    "spec": "/tmp/d-118423-21203-7ryswk.gd8zq1714i/package.tgz",
+    "type": "local"
+  },
+  "_requiredBy": [
+    "#USER"
+  ],
+  "_resolved": "file:../d-118423-21203-7ryswk.gd8zq1714i/package.tgz",
+  "_shasum": "3d587061b9ccaac33b505a4790596b1998800a49",
+  "_shrinkwrap": null,
+  "_spec": "/tmp/d-118423-21203-7ryswk.gd8zq1714i/package.tgz",
+  "_where": "/tmp/apm-install-dir-118423-21203-cdzusu.6k84hx5hfr",
+  "bugs": {
+    "url": "https://github.com/samu/git-diff-details/issues"
+  },
+  "dependencies": {
+    "atom-space-pen-views": "^2.0.3",
+    "diff": "^2.2.2",
+    "fs-plus": "^2.0.0",
+    "mixto": "1.x",
+    "underscore-plus": "^1.6.6"
+  },
+  "description": "View git diffs directly in atom.",
+  "devDependencies": {},
+  "engines": {
+    "atom": ">=1.7.0"
+  },
+  "homepage": "https://github.com/samu/git-diff-details#readme",
+  "keywords": [
+    "git",
+    "diff",
+    "details",
+    "inline",
+    "undo"
+  ],
+  "license": "MIT",
+  "main": "./lib/main",
+  "name": "git-diff-details",
+  "optionalDependencies": {},
+  "readme": "# git-diff-details package\n\nView git diffs directly in atom.\n\nPlease note this package will show one diff at\na time, as opposed to all diffs at once\n(see [#58](https://github.com/samu/git-diff-details/issues/58)).\n\n## Keybindings\n  * `alt-g alt-d` to toggle the diff view (You'll need to press these keys one\n    after another, and you'll need to place the cursor on a line that is marked\n    as a diff)\n  * `escape` to close the diff view\n  * `alt-u` for undo\n  * `alt-c` for copy\n\n## Syntax highlighting\nYou can choose whether the diff should be highlighted or not:\n\n![git-diff-details](https://github.com/samu/git-diff-details/blob/master/flat.png?raw=true)\n\n![git-diff-details](https://github.com/samu/git-diff-details/blob/master/highlighted.png?raw=true)\n\n## Styling\nYou can style the diffs to your liking. Here's an example:\n\n```less\natom-text-editor::shadow .line {\n  &.git-diff-details-new-highlighted {\n    background-color: rgba(162, 232, 120, 0.4) !important;\n  }\n\n  &.git-diff-details-old-highlighted {\n    background-color: rgba(232, 120, 120, 0.4) !important;\n  }\n\n  &.git-diff-details-new-flat {\n    background-color: rgba(162, 232, 120, 0.7) !important;\n  }\n\n  &.git-diff-details-old-flat {\n    background-color: rgba(232, 120, 120, 0.7) !important;\n  }\n}\n```\n\n## Contributing\nI'd like to be conservative about adding features to this plugin. If you want to implement something, please create an issue first so we can discuss whether i'd accept a pull request.\n",
+  "readmeFilename": "README.md",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/samu/git-diff-details.git"
+  },
+  "version": "1.4.0"
+}

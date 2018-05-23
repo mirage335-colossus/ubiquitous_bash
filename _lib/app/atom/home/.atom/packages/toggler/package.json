@@ -1,0 +1,76 @@
+{
+  "_args": [
+    [
+      {
+        "raw": "/tmp/d-118423-20893-kouyhp.zp1adfs9k9/package.tgz",
+        "scope": null,
+        "escapedName": null,
+        "name": null,
+        "rawSpec": "/tmp/d-118423-20893-kouyhp.zp1adfs9k9/package.tgz",
+        "spec": "/tmp/d-118423-20893-kouyhp.zp1adfs9k9/package.tgz",
+        "type": "local"
+      },
+      "/tmp/apm-install-dir-118423-20893-1d1z58q.2r8qnz5mi"
+    ]
+  ],
+  "_from": "../d-118423-20893-kouyhp.zp1adfs9k9/package.tgz",
+  "_id": "toggler@0.3.1",
+  "_inCache": true,
+  "_location": "/toggler",
+  "_phantomChildren": {},
+  "_requested": {
+    "raw": "/tmp/d-118423-20893-kouyhp.zp1adfs9k9/package.tgz",
+    "scope": null,
+    "escapedName": null,
+    "name": null,
+    "rawSpec": "/tmp/d-118423-20893-kouyhp.zp1adfs9k9/package.tgz",
+    "spec": "/tmp/d-118423-20893-kouyhp.zp1adfs9k9/package.tgz",
+    "type": "local"
+  },
+  "_requiredBy": [
+    "#USER"
+  ],
+  "_resolved": "file:../d-118423-20893-kouyhp.zp1adfs9k9/package.tgz",
+  "_shasum": "26cd58944598b068d5a6282b2b8ea9ce4b36e509",
+  "_shrinkwrap": null,
+  "_spec": "/tmp/d-118423-20893-kouyhp.zp1adfs9k9/package.tgz",
+  "_where": "/tmp/apm-install-dir-118423-20893-1d1z58q.2r8qnz5mi",
+  "activationCommands": {
+    "atom-workspace": [
+      "toggler:toggle",
+      "toggler:config"
+    ]
+  },
+  "author": {
+    "name": "HiDeoo"
+  },
+  "bugs": {
+    "url": "https://github.com/HiDeoo/toggler/issues"
+  },
+  "contributors": [],
+  "dependencies": {},
+  "description": "Toggle words and symbols",
+  "devDependencies": {},
+  "engines": {
+    "atom": ">=1.0.0 <2.0.0"
+  },
+  "homepage": "https://github.com/HiDeoo/toggler",
+  "keywords": [
+    "toggle",
+    "words",
+    "symbols",
+    "cursor",
+    "selection"
+  ],
+  "license": "MIT",
+  "main": "./lib/toggler",
+  "name": "toggler",
+  "optionalDependencies": {},
+  "readme": "# Toggler Package\n\n[![OS X Build Status](https://travis-ci.org/HiDeoo/toggler.svg?branch=master)](https://travis-ci.org/HiDeoo/toggler)\n[![Windows Build Status](https://ci.appveyor.com/api/projects/status/wbyrhho7e2icp5sx/branch/master?svg=true)](https://ci.appveyor.com/project/HiDeoo/toggler/branch/master)\n[![Dependency Status](https://david-dm.org/HiDeoo/toggler.svg)](https://david-dm.org/HiDeoo/toggler)\n\nToggle words and symbols in Atom using a user defined configuration.\n\nAn **official** port for VS Code is also available [here](https://marketplace.visualstudio.com/items?itemName=hideoo.toggler).\n\n![Screenshot of the Toggler Package](http://i.imgur.com/uCltY1U.gif)\n\n[Changelog](https://github.com/HiDeoo/toggler/blob/master/CHANGELOG.md)\n\n## Features\n\nAs none of the existing words toggling package were fitting my needs, I decided to write my own with the following features:\n\n  * **Easily user customizable.**\n  * Maintain word case.\n  * Multiple toggles support.\n  * Multiple cursors support.\n  * Multiple selections support.\n  * No dependency.\n\n## Usage\n\nSet your cursor on a word or select a word and press the associated keybinding (<kbd>Ctrl</kbd>+<kbd>r</kbd> by default on macOS, <kbd>Alt</kbd>+<kbd>r</kbd> on Windows and Linux).\n\nYou can also use the Atom Command Palette and choose the `Toggler - Toggle` command, or use the `Toggle` action in a context menu or use the application menu `Packages -> Toggler -> Toggle`.\n\n## Configuration.\n\nThe configuration is saved in a `toggler.json` file which will be located in your Atom configuration directory.\n\nTo open the configuration, you can use the Atom Command Palette and choose the `Toggler - Config` command, or use the application menu `Packages -> Toggler -> Configure`. This will automatically open the configuration file in Atom.\n\n```\n[\n  [\"absolute\", \"relative\"],\n  [\"high\", \"low\"],\n  [\"horizontal\", \"vertical\"],\n  [\"in\", \"out\"],\n  [\"inner\", \"outer\"],\n  [\"left\", \"right\"],\n  [\"top\", \"bottom\"],\n  [\"up\", \"down\"],\n\n  [\"black\", \"white\"],\n  [\"gray\", \"maroon\", \"red\", \"purple\", \"fuchsia\", \"green\", \"yellow\", \"blue\", \"aqua\"],\n\n  [\"const\", \"let\", \"var\"],\n  [\"import\", \"export\"],\n  [\"join\", \"split\"],\n  [\"JSON.parse\", \"JSON.stringify\"],\n  [\"parse\", \"stringify\"],\n  [\"pop\", \"push\"],\n  [\"unshift\", \"shift\"],\n  [\"test.only\", \"test\"],\n\n  [\"onAnimationStart\", \"onAnimationEnd\"],\n  [\"onChange\", \"onInput\", \"onSubmit\"],\n  [\"onClick\", \"onDoubleClick\"],\n  [\"onCompositionStart\", \"onCompositionEnd\"],\n  [\"onCopy\", \"onCut\", \"onPaste\"],\n  [\"onDragEnter\", \"onDragLeave\"],\n  [\"onDragStart\", \"onDragEnd\"],\n  [\"onFocus\", \"onBlur\"],\n  [\"onKeyDown\", \"onKeyUp\"],\n  [\"onMouseDown\", \"onMouseUp\"],\n  [\"onMouseEnter\", \"onMouseLeave\"],\n  [\"onTouchStart\", \"onTouchEnd\"],\n  [\"addEventListener\", \"removeEventListener\"],\n  [\"animationstart\", \"animationend\"],\n  [\"change\", \"input\", \"submit\"],\n  [\"dblclick\", \"click\"],\n  [\"compositionstart\", \"compositionend\"],\n  [\"copy\", \"cut\", \"paste\"],\n  [\"dragenter\", \"dragleave\"],\n  [\"dragstart\", \"dragend\"],\n  [\"focus\", \"blur\"],\n  [\"keydown\", \"keyup\"],\n  [\"mousedown\", \"mouseup\"],\n  [\"mouseenter\", \"mouseleave\"],\n  [\"touchstart\", \"touchend\"],\n\n  [\"componentDidMount\", \"componentWillUnmount\"],\n  [\"getState\", \"setState\"],\n  [\"container\", \"component\"],\n\n  [\"atan\", \"tan\"],\n  [\"ceil\", \"floor\"],\n  [\"cos\", \"sin\"],\n  [\"Math.atan\", \"Math.tan\"],\n  [\"Math.ceil\", \"Math.floor\"],\n  [\"Math.cos\", \"Math.sin\"],\n  [\"Math.min\", \"Math.max\"],\n  [\"min\", \"max\"],\n\n  [\"activate\", \"deactivate\"],\n  [\"address\", \"port\"],\n  [\"add\", \"remove\"],\n  [\"available\", \"unavailable\"],\n  [\"background\", \"foreground\"],\n  [\"before\", \"after\"],\n  [\"client\", \"server\"],\n  [\"connected\", \"disconnected\"],\n  [\"connect\", \"disconnect\"],\n  [\"development\", \"production\"],\n  [\"dev\", \"prod\"],\n  [\"drag\", \"drop\"],\n  [\"file\", \"folder\"],\n  [\"first\", \"last\"],\n  [\"from\", \"to\"],\n  [\"get\", \"set\"],\n  [\"input\", \"output\"],\n  [\"install\", \"uninstall\"],\n  [\"key\", \"value\"],\n  [\"load\", \"unload\"],\n  [\"minor\", \"major\"],\n  [\"online\", \"offline\"],\n  [\"open\", \"close\"],\n  [\"parent\", \"child\"],\n  [\"positive\", \"negative\"],\n  [\"prefix\", \"suffix\"],\n  [\"previous\", \"next\"],\n  [\"public\", \"private\"],\n  [\"request\", \"response\"],\n  [\"req\", \"res\"],\n  [\"row\", \"column\"],\n  [\"short\", \"long\"],\n  [\"show\", \"hide\"],\n  [\"source\", \"destination\"],\n  [\"start\", \"stop\"],\n  [\"valid\", \"invalid\"],\n  [\"visible\", \"hidden\"],\n  [\"width\", \"height\"],\n  [\"x\", \"y\"],\n\n  [\"0\", \"1\"],\n  [\"enabled\", \"disabled\"],\n  [\"enable\", \"disable\"],\n  [\"on\", \"off\"],\n  [\"true\", \"false\"],\n  [\"yes\", \"no\"],\n\n  [\"div\", \"span\"],\n  [\"head\", \"body\"],\n  [\"header\", \"footer\"],\n  [\"ol\", \"ul\"],\n  [\"tr\", \"td\"],\n\n  [\"[]\", \"{}\"],\n  [\"(\", \")\"],\n  [\"[\", \"]\"],\n  [\"{\", \"}\"],\n  [\"'\", \"\\\"\", \"`\"],\n\n  [\"*=\", \"/=\"],\n  [\"*\", \"/\"],\n  [\"&&\", \"||\"],\n  [\"&\", \"|\"],\n  [\"++\", \"--\"],\n  [\"+=\", \"-=\"],\n  [\"+\", \"-\"],\n  [\"<<\", \">>\"],\n  [\"<=\", \">=\"],\n  [\"<\", \">\"],\n  [\"===\", \"!==\"],\n  [\"==\", \"!=\"]\n]\n```\n\n## Copyright and license\n\nCopyright (c) 2017 HiDeoo. Code released under the [MIT license](https://github.com/HiDeoo/toggler/blob/master/LICENSE.md).\n",
+  "readmeFilename": "README.md",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/HiDeoo/toggler.git"
+  },
+  "version": "0.3.1"
+}

@@ -30,3 +30,6 @@ trustdb.gpg
 *.bak
 *swp
 *.kate-swp
+
+.pki
+.nv

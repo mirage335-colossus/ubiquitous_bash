@@ -1,0 +1,26 @@
+{
+  "context-menu": {
+    "atom-text-editor": [
+      {
+        "label": "Create Snippet",
+        "command": "snippet-creator:create"
+      }
+    ]
+  },
+  "menu": [
+    {
+      "label": "Packages",
+      "submenu": [
+        {
+          "label": "snippet-creator",
+          "submenu": [
+            {
+              "label": "Create Snippet",
+              "command": "snippet-creator:create"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

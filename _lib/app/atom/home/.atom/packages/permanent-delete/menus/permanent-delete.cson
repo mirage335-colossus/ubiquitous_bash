@@ -1,0 +1,8 @@
+# See https://atom.io/docs/latest/creating-a-package#menus for more details
+'context-menu':
+  '.tree-view .entry': [
+    {
+      'label': 'Delete permanently'
+      'command': 'permanent-delete:delete'
+    }
+  ]

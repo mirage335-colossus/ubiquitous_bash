@@ -1,0 +1,8 @@
+{
+  ".platform-darwin atom-text-editor": {
+    "ctrl-r": "toggler:toggle"
+  },
+  ".platform-win32 atom-text-editor, .platform-linux atom-text-editor": {
+    "alt-r": "toggler:toggle"
+  }
+}

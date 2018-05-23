@@ -1,0 +1,67 @@
+{
+  "_args": [
+    [
+      {
+        "raw": "/tmp/d-118423-20991-70ynsz.2kwu7n9udi/package.tgz",
+        "scope": null,
+        "escapedName": null,
+        "name": null,
+        "rawSpec": "/tmp/d-118423-20991-70ynsz.2kwu7n9udi/package.tgz",
+        "spec": "/tmp/d-118423-20991-70ynsz.2kwu7n9udi/package.tgz",
+        "type": "local"
+      },
+      "/tmp/apm-install-dir-118423-20991-1n3odl1.7f8xueg66r"
+    ]
+  ],
+  "_from": "../d-118423-20991-70ynsz.2kwu7n9udi/package.tgz",
+  "_id": "snippet-creator@0.2.0",
+  "_inCache": true,
+  "_location": "/snippet-creator",
+  "_phantomChildren": {},
+  "_requested": {
+    "raw": "/tmp/d-118423-20991-70ynsz.2kwu7n9udi/package.tgz",
+    "scope": null,
+    "escapedName": null,
+    "name": null,
+    "rawSpec": "/tmp/d-118423-20991-70ynsz.2kwu7n9udi/package.tgz",
+    "spec": "/tmp/d-118423-20991-70ynsz.2kwu7n9udi/package.tgz",
+    "type": "local"
+  },
+  "_requiredBy": [
+    "#USER"
+  ],
+  "_resolved": "file:../d-118423-20991-70ynsz.2kwu7n9udi/package.tgz",
+  "_shasum": "806bfef1982847a7802136ad2661aabdf44f22ea",
+  "_shrinkwrap": null,
+  "_spec": "/tmp/d-118423-20991-70ynsz.2kwu7n9udi/package.tgz",
+  "_where": "/tmp/apm-install-dir-118423-20991-1n3odl1.7f8xueg66r",
+  "activationCommands": {
+    "atom-workspace": "snippet-creator:create"
+  },
+  "bugs": {
+    "url": "https://github.com/ungb/snippet-creator/issues"
+  },
+  "dependencies": {
+    "cson": "~3.0.2",
+    "escape-json-node": "1.0.8",
+    "etch": "0.8.0"
+  },
+  "description": "User Friendly way to create snippets in Atom!",
+  "devDependencies": {},
+  "engines": {
+    "atom": ">=1.0.0 <2.0.0"
+  },
+  "homepage": "https://github.com/ungb/snippet-creator#readme",
+  "keywords": [],
+  "license": "MIT",
+  "main": "./lib/snippet-creator",
+  "name": "snippet-creator",
+  "optionalDependencies": {},
+  "readme": "\n# snippet-creator package\n\nA User-friendly way to create snippets on Atom.\n\nThis is still in active development and has some bugs and needs test still.  Please use at your own risk!  \n\n\n\n![snippet-creator](https://user-images.githubusercontent.com/5624870/32352329-0bfad3da-bfde-11e7-8daa-862db67db1ca.gif)\n",
+  "readmeFilename": "README.md",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ungb/snippet-creator.git"
+  },
+  "version": "0.2.0"
+}

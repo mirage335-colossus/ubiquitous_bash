@@ -1,0 +1,30 @@
+{
+  "context-menu": {
+    "atom-text-editor": [
+      {
+        "label": "Toggle",
+        "command": "toggler:toggle"
+      }
+    ]
+  },
+  "menu": [
+    {
+      "label": "Packages",
+      "submenu": [
+        {
+          "label": "Toggler",
+          "submenu": [
+            {
+              "label": "Toggle",
+              "command": "toggler:toggle"
+            },
+            {
+              "label": "Configure",
+              "command": "toggler:config"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

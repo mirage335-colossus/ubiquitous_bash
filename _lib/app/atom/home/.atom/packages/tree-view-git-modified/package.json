@@ -1,0 +1,64 @@
+{
+  "_args": [
+    [
+      {
+        "raw": "/tmp/d-118423-21098-7mui76.g0w1nn4s4i/package.tgz",
+        "scope": null,
+        "escapedName": null,
+        "name": null,
+        "rawSpec": "/tmp/d-118423-21098-7mui76.g0w1nn4s4i/package.tgz",
+        "spec": "/tmp/d-118423-21098-7mui76.g0w1nn4s4i/package.tgz",
+        "type": "local"
+      },
+      "/tmp/apm-install-dir-118423-21098-1b0e9xw.8bcid4pldi"
+    ]
+  ],
+  "_from": "../d-118423-21098-7mui76.g0w1nn4s4i/package.tgz",
+  "_id": "tree-view-git-modified@0.7.3",
+  "_inCache": true,
+  "_location": "/tree-view-git-modified",
+  "_phantomChildren": {},
+  "_requested": {
+    "raw": "/tmp/d-118423-21098-7mui76.g0w1nn4s4i/package.tgz",
+    "scope": null,
+    "escapedName": null,
+    "name": null,
+    "rawSpec": "/tmp/d-118423-21098-7mui76.g0w1nn4s4i/package.tgz",
+    "spec": "/tmp/d-118423-21098-7mui76.g0w1nn4s4i/package.tgz",
+    "type": "local"
+  },
+  "_requiredBy": [
+    "#USER"
+  ],
+  "_resolved": "file:../d-118423-21098-7mui76.g0w1nn4s4i/package.tgz",
+  "_shasum": "5a3f2025670bec72e18cf76f888c496afbb0d87c",
+  "_shrinkwrap": null,
+  "_spec": "/tmp/d-118423-21098-7mui76.g0w1nn4s4i/package.tgz",
+  "_where": "/tmp/apm-install-dir-118423-21098-1b0e9xw.8bcid4pldi",
+  "bugs": {
+    "url": "https://github.com/rjaviervega/tree-view-git-modified/issues"
+  },
+  "dependencies": {
+    "atom-utils": ">=0.6.3",
+    "event-kit": "^0.8.0",
+    "lodash": "^2.4.1",
+    "space-pen": "^3.8.0"
+  },
+  "description": "View all git modified files on top of your tree-view panel.",
+  "devDependencies": {},
+  "engines": {
+    "atom": ">=0.174.0 <2.0.0"
+  },
+  "homepage": "https://github.com/rjaviervega/tree-view-git-modified#readme",
+  "license": "MIT",
+  "main": "./lib/tree-view-git-modified",
+  "name": "tree-view-git-modified",
+  "optionalDependencies": {},
+  "readme": "# tree-view-git-modified package\n\nShows a list of git modified files on top of the tree-view for easy access. Opens all git modified files at once with a simple command.\n\nThis plugin was developed by using code samples from the following atom plugins:\n- tree-view-open-files\n- open-git-modified-files\n\n## Usage\n\n```\n'ctrl-alt-o': 'tree-view-git-modified:toggle' // Shows or hides panel\n'ctrl-cmd-o': 'tree-view-git-modified:openAll' // Open all git modified files\n```\n\n![A screenshot of your package](https://raw.githubusercontent.com/rjaviervega/tree-view-git-modified/master/screenshots/tree-view-git-modified.png)\n\n## Issues\n\n- This package doesn't work well when the package tree-view-git-projects is installed.\n- Known bug, if a project folder is removed from the tree and then added again in the same session the list of modified files will not be refresh until Atom is restarted (looks like a bug on Atom related to adding a project folder after it is removed).\n\n## TODO\n\n- Include option to customize background color of selected items on tree-view.\n- Include icons to show git statuses and icons to quickly add/remove from git index.\n- Review why tree-view-git-projects breaks this package and try to make them compatible.\n- Add additional test cases.\n\n## License MIT.\n",
+  "readmeFilename": "README.md",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rjaviervega/tree-view-git-modified.git"
+  },
+  "version": "0.7.3"
+}

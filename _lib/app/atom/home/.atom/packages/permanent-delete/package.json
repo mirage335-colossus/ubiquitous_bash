@@ -1,0 +1,66 @@
+{
+  "_args": [
+    [
+      {
+        "raw": "/tmp/d-118423-20673-lpqdnf.gtkrl766r/package.tgz",
+        "scope": null,
+        "escapedName": null,
+        "name": null,
+        "rawSpec": "/tmp/d-118423-20673-lpqdnf.gtkrl766r/package.tgz",
+        "spec": "/tmp/d-118423-20673-lpqdnf.gtkrl766r/package.tgz",
+        "type": "local"
+      },
+      "/tmp/apm-install-dir-118423-20673-txpop3.1e75dk7qfr"
+    ]
+  ],
+  "_from": "../d-118423-20673-lpqdnf.gtkrl766r/package.tgz",
+  "_id": "permanent-delete@0.1.7",
+  "_inCache": true,
+  "_location": "/permanent-delete",
+  "_phantomChildren": {},
+  "_requested": {
+    "raw": "/tmp/d-118423-20673-lpqdnf.gtkrl766r/package.tgz",
+    "scope": null,
+    "escapedName": null,
+    "name": null,
+    "rawSpec": "/tmp/d-118423-20673-lpqdnf.gtkrl766r/package.tgz",
+    "spec": "/tmp/d-118423-20673-lpqdnf.gtkrl766r/package.tgz",
+    "type": "local"
+  },
+  "_requiredBy": [
+    "#USER"
+  ],
+  "_resolved": "file:../d-118423-20673-lpqdnf.gtkrl766r/package.tgz",
+  "_shasum": "615ad64d90fa9f0d9ccaa693ec85ff2920f54f4d",
+  "_shrinkwrap": null,
+  "_spec": "/tmp/d-118423-20673-lpqdnf.gtkrl766r/package.tgz",
+  "_where": "/tmp/apm-install-dir-118423-20673-txpop3.1e75dk7qfr",
+  "activationCommands": {
+    "atom-workspace": [
+      "permanent-delete:delete"
+    ]
+  },
+  "bugs": {
+    "url": "https://github.com/olmokramer/atom-permanent-delete/issues"
+  },
+  "dependencies": {
+    "fs-plus": "^2.6.0"
+  },
+  "description": "Bypass the recycle bin",
+  "devDependencies": {},
+  "engines": {
+    "atom": ">0.50.0"
+  },
+  "homepage": "https://github.com/olmokramer/atom-permanent-delete#readme",
+  "license": "MIT",
+  "main": "./lib/permanent-delete",
+  "name": "permanent-delete",
+  "optionalDependencies": {},
+  "readme": "# permanent-delete package\n\nPermanently delete, i.e. bypass the recycle bin, files from the tree view.\n\n## Config\n\n| setting | type | default | description |\n|---------|------|---------|-------------|\n| `confirm` | boolean | `true` | Show a confirm dialog before deleting the files. |\n\n## Commands\n\n| command | scope-selector: keybinding | description |\n|---------|----------------------------|-------------|\n| `permanent-delete:delete` | `.tree-view`: <kbd>Shift-Delete</kbd> | Delete the selected entries, either files or directories, from the tree view |\n\n## Issues/suggestions\n\nPlease file issues or suggestions on the [issues page on github](https://github.com/olmokramer/atom-permanent-delete/issues/new), or even better, [submit a pull request](https://github.com/olmokramer/atom-permanent-delete/pulls)\n\n## License\n\n`permanent-delete` is released under the [MIT License](LICENSE.md)<br>\n&copy; 2015 Olmo Kramer",
+  "readmeFilename": "README.md",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/olmokramer/atom-permanent-delete.git"
+  },
+  "version": "0.1.7"
+}
