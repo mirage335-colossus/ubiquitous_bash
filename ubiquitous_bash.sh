@@ -7639,6 +7639,7 @@ _atomDev_sequence() {
 	#echo -n "$@" >> "$HOME"/.atom
 	
 	atom "$@"
+	wait "$!"
 }
 
 _atomDev() {
@@ -7646,7 +7647,7 @@ _atomDev() {
 }
 
 _atom() {
-	_atomDev "$@"
+	_atomDev "$@" &
 }
 
 _atomDev_edit_sequence() {
@@ -7658,6 +7659,10 @@ _atomDev_edit_sequence() {
 
 _atomDev_edit() {
 	"$scriptAbsoluteLocation" _atomDev_edit_sequence "$@"
+}
+
+_atom_edit() {
+	_atomDev_edit "$@" &
 }
 
 _testGit() {
