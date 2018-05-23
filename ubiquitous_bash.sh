@@ -7645,7 +7645,7 @@ _atomDev() {
 	_selfFakeHome _atomDev_sequence "$@"
 }
 
-_atom() {
+_atom_user() {
 	_atomDev "$@"  > /dev/null 2>&1 &
 }
 
@@ -7662,6 +7662,15 @@ _atomDev_edit() {
 
 _atom_edit() {
 	_atomDev_edit "$@"  > /dev/null 2>&1 &
+}
+
+_atom_config() {
+	export ATOM_HOME="$scriptLib"/app/atom/home/.atom
+	atom "$@"
+}
+
+_atom() {
+	_atomDev "$@"  > /dev/null 2>&1 &
 }
 
 _testGit() {
