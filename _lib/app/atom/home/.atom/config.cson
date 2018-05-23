@@ -9,7 +9,9 @@
     restorePreviousWindowsOnStart: "no"
     telemetryConsent: "no"
   editor:
+    scrollPastEnd: true
     softTabs: false
+    softWrap: true
   "exception-reporting":
     userId: "fe71d4f1-959d-4a01-b2de-3e879b4f2225"
   minimap:
@@ -39,3 +41,5 @@
       loginShell: false
   welcome:
     showOnStartup: false
+  whitespace:
+    removeTrailingWhitespace: false
