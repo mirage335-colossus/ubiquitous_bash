@@ -31,8 +31,7 @@ _atomDev_sequence() {
 	
 	#echo -n "$@" >> "$HOME"/.atom
 	
-	atom "$@"
-	wait "$!"
+	atom --foreground true "$@"
 }
 
 _atomDev() {
@@ -47,7 +46,7 @@ _atomDev_edit_sequence() {
 	_set_atomFakeHomeSource
 	export appGlobalFakeHome="$atomFakeHomeSource"
 	
-	_editFakeHome atom "$@"
+	_editFakeHome atom --foreground true "$@"
 }
 
 _atomDev_edit() {

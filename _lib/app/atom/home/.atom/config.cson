@@ -9,5 +9,16 @@
     softTabs: false
   "exception-reporting":
     userId: "fe71d4f1-959d-4a01-b2de-3e879b4f2225"
+  "platformio-ide-terminal":
+    core:
+      mapTerminalsTo: "File"
+      scrollback: 100000
+      workingDirectory: "Active File"
+    style:
+      animationSpeed: 4
+      defaultPanelHeight: "245"
+    toggles:
+      autoClose: true
+      loginShell: false
   welcome:
     showOnStartup: false
