@@ -1,0 +1,71 @@
+{
+  "_args": [
+    [
+      {
+        "raw": "/tmp/d-118423-1175-zvj6lm.w31irafw29/package.tgz",
+        "scope": null,
+        "escapedName": null,
+        "name": null,
+        "rawSpec": "/tmp/d-118423-1175-zvj6lm.w31irafw29/package.tgz",
+        "spec": "/tmp/d-118423-1175-zvj6lm.w31irafw29/package.tgz",
+        "type": "local"
+      },
+      "/tmp/apm-install-dir-118423-1175-12acfkw.13gxp0t3xr"
+    ]
+  ],
+  "_from": "../d-118423-1175-zvj6lm.w31irafw29/package.tgz",
+  "_id": "minimap-cursorline@0.2.0",
+  "_inCache": true,
+  "_location": "/minimap-cursorline",
+  "_phantomChildren": {},
+  "_requested": {
+    "raw": "/tmp/d-118423-1175-zvj6lm.w31irafw29/package.tgz",
+    "scope": null,
+    "escapedName": null,
+    "name": null,
+    "rawSpec": "/tmp/d-118423-1175-zvj6lm.w31irafw29/package.tgz",
+    "spec": "/tmp/d-118423-1175-zvj6lm.w31irafw29/package.tgz",
+    "type": "local"
+  },
+  "_requiredBy": [
+    "#USER"
+  ],
+  "_resolved": "file:../d-118423-1175-zvj6lm.w31irafw29/package.tgz",
+  "_shasum": "e453900a4e932f1aa23b34a850b19d8cca186207",
+  "_shrinkwrap": null,
+  "_spec": "/tmp/d-118423-1175-zvj6lm.w31irafw29/package.tgz",
+  "_where": "/tmp/apm-install-dir-118423-1175-12acfkw.13gxp0t3xr",
+  "bugs": {
+    "url": "https://github.com/atom-minimap/minimap-cursorline/issues"
+  },
+  "consumedServices": {
+    "minimap": {
+      "versions": {
+        "1.0.0": "consumeMinimapServiceV1"
+      }
+    }
+  },
+  "dependencies": {},
+  "description": "Displays Atom cursorline in the minimap",
+  "devDependencies": {},
+  "engines": {
+    "atom": ">=0.184.0"
+  },
+  "homepage": "https://github.com/atom-minimap/minimap-cursorline#readme",
+  "keywords": [
+    "minimap",
+    "cursorline",
+    "cursor"
+  ],
+  "license": "MIT",
+  "main": "./lib/minimap-cursorline",
+  "name": "minimap-cursorline",
+  "optionalDependencies": {},
+  "readme": "# minimap-cursorline package [![Build Status](https://travis-ci.org/atom-minimap/minimap-cursorline.svg?branch=master)](https://travis-ci.org/atom-minimap/minimap-cursorline)\n\nDisplays Atom cursorline in the minimap.\n\n![Minimap cursorline Screenshot](https://github.com/atom-minimap/minimap-cursorline/blob/master/screenshot.gif?raw=true)\n\nCustomization\n\nIf you want to change the color of the minimap `cursorline` use the following\nCSS rules in your user stylesheet:\n\n```css\n.minimap .cursor-line {\n  background: green;\n}\n```\n",
+  "readmeFilename": "README.md",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/atom-minimap/minimap-cursorline.git"
+  },
+  "version": "0.2.0"
+}

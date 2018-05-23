@@ -1,0 +1,73 @@
+{
+  "_args": [
+    [
+      {
+        "raw": "/tmp/d-118423-1116-mwzma9.8ylxytx1or/package.tgz",
+        "scope": null,
+        "escapedName": null,
+        "name": null,
+        "rawSpec": "/tmp/d-118423-1116-mwzma9.8ylxytx1or/package.tgz",
+        "spec": "/tmp/d-118423-1116-mwzma9.8ylxytx1or/package.tgz",
+        "type": "local"
+      },
+      "/tmp/apm-install-dir-118423-1116-184g4cu.yeh7x2yb9"
+    ]
+  ],
+  "_from": "../d-118423-1116-mwzma9.8ylxytx1or/package.tgz",
+  "_id": "minimap-git-diff@4.3.1",
+  "_inCache": true,
+  "_location": "/minimap-git-diff",
+  "_phantomChildren": {},
+  "_requested": {
+    "raw": "/tmp/d-118423-1116-mwzma9.8ylxytx1or/package.tgz",
+    "scope": null,
+    "escapedName": null,
+    "name": null,
+    "rawSpec": "/tmp/d-118423-1116-mwzma9.8ylxytx1or/package.tgz",
+    "spec": "/tmp/d-118423-1116-mwzma9.8ylxytx1or/package.tgz",
+    "type": "local"
+  },
+  "_requiredBy": [
+    "#USER"
+  ],
+  "_resolved": "file:../d-118423-1116-mwzma9.8ylxytx1or/package.tgz",
+  "_shasum": "351b314abee91e17e3688479ada6b6fd49e94d89",
+  "_shrinkwrap": null,
+  "_spec": "/tmp/d-118423-1116-mwzma9.8ylxytx1or/package.tgz",
+  "_where": "/tmp/apm-install-dir-118423-1116-184g4cu.yeh7x2yb9",
+  "author": {
+    "name": "Cédric Néhémie",
+    "email": "cedric.nehemie@gmail.com"
+  },
+  "bugs": {
+    "url": "https://github.com/atom-minimap/minimap-git-diff/issues"
+  },
+  "consumedServices": {
+    "minimap": {
+      "versions": {
+        "1.0.0": "consumeMinimapServiceV1"
+      }
+    }
+  },
+  "dependencies": {
+    "fs-plus": "^2.0.0",
+    "mixto": "1.x"
+  },
+  "description": "A minimap binding for the git diff package",
+  "devDependencies": {},
+  "engines": {
+    "atom": ">0.125.0"
+  },
+  "homepage": "https://github.com/atom-minimap/minimap-git-diff#readme",
+  "license": "MIT",
+  "main": "./lib/minimap-git-diff",
+  "name": "minimap-git-diff",
+  "optionalDependencies": {},
+  "readme": "# minimap-git-diff package\n\nA minimap binding for the Atom git-diff package.\n\n![Minimap Git Diff Screenshot](https://github.com/atom-minimap/minimap-git-diff/blob/master/screenshot.png?raw=true)\n\nYou will need the [Minimap package](https://github.com/fundon/atom-minimap) installed to use this package.\n",
+  "readmeFilename": "README.md",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/atom-minimap/minimap-git-diff.git"
+  },
+  "version": "4.3.1"
+}

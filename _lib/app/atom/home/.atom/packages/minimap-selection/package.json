@@ -1,0 +1,68 @@
+{
+  "_args": [
+    [
+      {
+        "raw": "/tmp/d-118423-1229-4rufbc.pwj3wn4s4i/package.tgz",
+        "scope": null,
+        "escapedName": null,
+        "name": null,
+        "rawSpec": "/tmp/d-118423-1229-4rufbc.pwj3wn4s4i/package.tgz",
+        "spec": "/tmp/d-118423-1229-4rufbc.pwj3wn4s4i/package.tgz",
+        "type": "local"
+      },
+      "/tmp/apm-install-dir-118423-1229-5y1r11.8if73tbj4i"
+    ]
+  ],
+  "_from": "../d-118423-1229-4rufbc.pwj3wn4s4i/package.tgz",
+  "_id": "minimap-selection@4.5.0",
+  "_inCache": true,
+  "_location": "/minimap-selection",
+  "_phantomChildren": {},
+  "_requested": {
+    "raw": "/tmp/d-118423-1229-4rufbc.pwj3wn4s4i/package.tgz",
+    "scope": null,
+    "escapedName": null,
+    "name": null,
+    "rawSpec": "/tmp/d-118423-1229-4rufbc.pwj3wn4s4i/package.tgz",
+    "spec": "/tmp/d-118423-1229-4rufbc.pwj3wn4s4i/package.tgz",
+    "type": "local"
+  },
+  "_requiredBy": [
+    "#USER"
+  ],
+  "_resolved": "file:../d-118423-1229-4rufbc.pwj3wn4s4i/package.tgz",
+  "_shasum": "6aa897ee3a46b285d6bcc2047b0c490db1c7906c",
+  "_shrinkwrap": null,
+  "_spec": "/tmp/d-118423-1229-4rufbc.pwj3wn4s4i/package.tgz",
+  "_where": "/tmp/apm-install-dir-118423-1229-5y1r11.8if73tbj4i",
+  "bugs": {
+    "url": "https://github.com/atom-minimap/minimap-selection/issues"
+  },
+  "consumedServices": {
+    "minimap": {
+      "versions": {
+        "1.0.0": "consumeMinimapServiceV1"
+      }
+    }
+  },
+  "dependencies": {
+    "event-kit": "1.x"
+  },
+  "description": "Display the buffer's selections on the minimap",
+  "devDependencies": {},
+  "engines": {
+    "atom": ">=0.175.0"
+  },
+  "homepage": "https://github.com/atom-minimap/minimap-selection#readme",
+  "license": "MIT",
+  "main": "./lib/minimap-selection",
+  "name": "minimap-selection",
+  "optionalDependencies": {},
+  "readme": "# minimap-selection package [![Build Status](https://travis-ci.org/atom-minimap/minimap-selection.svg?branch=v4.1.0)](https://travis-ci.org/atom-minimap/minimap-selection)\n\nDisplay the buffer's selections on the minimap\n\n![Screenshot](https://github.com/atom-minimap/minimap-selection/blob/master/screenshot.gif?raw=true)\n\n## Settings\n\n### Highlight Cursors Lines\n\nWhen enabled, lines that holds a cursors will be highlighted in the minimap.\n\n### Customization\n\nThe selection color can be customized using the following CSS rule in your user stylesheet:\n\n```css\n.minimap-selection .region {\n  background: green;\n}\n```\n\nWhen the `Highlight Cursors Lines` setting is enabled the line's highlight color can be customized using the following CSS rule in your user stylesheet:\n\n```css\n.minimap-selection .cursor-line {\n  background: blue;\n}\n```\n\nWhen the `Outline Selection` setting is enabled, the outline color can be customized using the following CSS rule:\n\n```css\n.minimap-selection .region-outline {\n  background: green;\n}\n```\n",
+  "readmeFilename": "README.md",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/atom-minimap/minimap-selection.git"
+  },
+  "version": "4.5.0"
+}

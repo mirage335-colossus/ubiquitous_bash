@@ -2,6 +2,9 @@
   core:
     automaticallyUpdate: false
     closeDeletedFileTabs: true
+    disabledPackages: [
+      "tree-view-git-modified"
+    ]
     openEmptyEditorOnStart: false
     restorePreviousWindowsOnStart: "no"
     telemetryConsent: "no"
@@ -9,6 +12,20 @@
     softTabs: false
   "exception-reporting":
     userId: "fe71d4f1-959d-4a01-b2de-3e879b4f2225"
+  minimap:
+    plugins:
+      bookmarks: true
+      bookmarksDecorationsZIndex: 0
+      cursorline: true
+      cursorlineDecorationsZIndex: 0
+      "find-and-replace": true
+      "find-and-replaceDecorationsZIndex": 0
+      "git-diff": true
+      "git-diffDecorationsZIndex": 0
+      "highlight-selected": true
+      "highlight-selectedDecorationsZIndex": 0
+      selection: true
+      selectionDecorationsZIndex: 0
   "platformio-ide-terminal":
     core:
       mapTerminalsTo: "File"

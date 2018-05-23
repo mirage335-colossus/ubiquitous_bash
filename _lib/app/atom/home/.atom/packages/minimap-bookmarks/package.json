@@ -1,0 +1,73 @@
+{
+  "_args": [
+    [
+      {
+        "raw": "/tmp/d-118423-1285-1c0bl53.3ce4s4i/package.tgz",
+        "scope": null,
+        "escapedName": null,
+        "name": null,
+        "rawSpec": "/tmp/d-118423-1285-1c0bl53.3ce4s4i/package.tgz",
+        "spec": "/tmp/d-118423-1285-1c0bl53.3ce4s4i/package.tgz",
+        "type": "local"
+      },
+      "/tmp/apm-install-dir-118423-1285-rge92a.z5rfsthuxr"
+    ]
+  ],
+  "_from": "../d-118423-1285-1c0bl53.3ce4s4i/package.tgz",
+  "_id": "minimap-bookmarks@0.4.2",
+  "_inCache": true,
+  "_location": "/minimap-bookmarks",
+  "_phantomChildren": {},
+  "_requested": {
+    "raw": "/tmp/d-118423-1285-1c0bl53.3ce4s4i/package.tgz",
+    "scope": null,
+    "escapedName": null,
+    "name": null,
+    "rawSpec": "/tmp/d-118423-1285-1c0bl53.3ce4s4i/package.tgz",
+    "spec": "/tmp/d-118423-1285-1c0bl53.3ce4s4i/package.tgz",
+    "type": "local"
+  },
+  "_requiredBy": [
+    "#USER"
+  ],
+  "_resolved": "file:../d-118423-1285-1c0bl53.3ce4s4i/package.tgz",
+  "_shasum": "0fcdeebf04d07dccbc995b09501160e88c6566e2",
+  "_shrinkwrap": null,
+  "_spec": "/tmp/d-118423-1285-1c0bl53.3ce4s4i/package.tgz",
+  "_where": "/tmp/apm-install-dir-118423-1285-rge92a.z5rfsthuxr",
+  "bugs": {
+    "url": "https://github.com/atom-minimap/minimap-bookmarks/issues"
+  },
+  "consumedServices": {
+    "minimap": {
+      "versions": {
+        "1.0.0": "consumeMinimapServiceV1"
+      }
+    }
+  },
+  "dependencies": {
+    "atom-utils": "*"
+  },
+  "description": "Displays Atom bookmarks in the minimap",
+  "devDependencies": {},
+  "engines": {
+    "atom": ">=0.184.0"
+  },
+  "homepage": "https://github.com/atom-minimap/minimap-bookmarks#readme",
+  "keywords": [
+    "minimap",
+    "bookmarks",
+    "bookmark"
+  ],
+  "license": "MIT",
+  "main": "./lib/minimap-bookmarks",
+  "name": "minimap-bookmarks",
+  "optionalDependencies": {},
+  "readme": "# minimap-bookmarks package [![Build Status](https://travis-ci.org/atom-minimap/minimap-bookmarks.svg?branch=master)](https://travis-ci.org/atom-minimap/minimap-bookmarks)\n\nDisplays Atom bookmarks in the minimap.\n\n![Minimap Bookmarks Screenshot](https://github.com/atom-minimap/minimap-bookmarks/blob/master/screenshot.gif?raw=true)\n\nCustomization\n\nIf you want to change the color of the minimap bookmarks use the following CSS rules in your user stylesheet:\n\n```css\n.minimap .bookmark {\n  background: #09C;\n}\n```\n",
+  "readmeFilename": "README.md",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/atom-minimap/minimap-bookmarks.git"
+  },
+  "version": "0.4.2"
+}
