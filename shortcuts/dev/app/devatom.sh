@@ -29,7 +29,7 @@ _prepare_atomDev_fakeHome() {
 _atomDev_sequence() {
 	_prepare_atomDev_fakeHome
 	
-	#echo -n "$@" >> "$HOME"/.atom
+	export keepFakeHome="false"
 	
 	atom --foreground true "$@"
 }
@@ -45,6 +45,8 @@ _atom_user() {
 _atomDev_edit_sequence() {
 	_set_atomFakeHomeSource
 	export appGlobalFakeHome="$atomFakeHomeSource"
+	
+	export keepFakeHome="false"
 	
 	_editFakeHome atom --foreground true "$@"
 }
