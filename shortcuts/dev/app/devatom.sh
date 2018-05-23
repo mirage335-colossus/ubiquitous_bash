@@ -67,3 +67,7 @@ _atom_config() {
 _atom() {
 	_atom_user "$@"
 }
+
+_ubide() {
+	_atom . ./ubiquitous_bash.sh "$@"
+}

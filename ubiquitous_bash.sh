@@ -7675,6 +7675,10 @@ _atom() {
 	_atom_user "$@"
 }
 
+_ubide() {
+	_atom . ./ubiquitous_bash.sh "$@"
+}
+
 _testGit() {
 	_getDep git
 }
