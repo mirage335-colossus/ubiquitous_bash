@@ -31,6 +31,8 @@ trustdb.gpg
 *swp
 *.kate-swp
 
+nohup.out
+
 *.log
 
 **/*Cache*
