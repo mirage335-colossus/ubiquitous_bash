@@ -226,6 +226,7 @@ _compile_bash_shortcuts() {
 	[[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "shortcuts/dev"/devsearch.sh )
 	
 	[[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "shortcuts/dev/app"/devemacs.sh )
+	[[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "shortcuts/dev/app"/devatom.sh )
 	
 	[[ "$enUb_git" == "true" ]] && includeScriptList+=( "shortcuts/git"/git.sh )
 	[[ "$enUb_git" == "true" ]] && includeScriptList+=( "shortcuts/git"/gitBare.sh )

@@ -4422,7 +4422,7 @@ _editFakeHome_sequence() {
 	_setFakeHomeEnv "$globalFakeHome"
 	_makeFakeHome > /dev/null 2>&1
 	
-	env -i DISPLAY="$DISPLAY" XAUTH="$XAUTH" XAUTHORITY="$XAUTHORITY" XSOCK="$XSOCK" HOME="$HOME" setFakeHome="$setFakeHome" TERM="${TERM}" SHELL="${SHELL}" PATH="${PATH}" dbus-run-session "$@"
+	env -i DISPLAY="$DISPLAY" XAUTH="$XAUTH" XAUTHORITY="$XAUTHORITY" XSOCK="$XSOCK" realHome="$realHome" keepFakeHome="$keepFakeHome" HOME="$HOME" setFakeHome="$setFakeHome" TERM="${TERM}" SHELL="${SHELL}" PATH="${PATH}" dbus-run-session "$@"
 	#"$@"
 	
 	#_unmakeFakeHome > /dev/null 2>&1
@@ -4476,7 +4476,7 @@ _userFakeHome_sequence() {
 	_setFakeHomeEnv "$instancedFakeHome"
 	_makeFakeHome > /dev/null 2>&1
 	
-	env -i DISPLAY="$DISPLAY" XAUTH="$XAUTH" XAUTHORITY="$XAUTHORITY" XSOCK="$XSOCK" HOME="$HOME" setFakeHome="$setFakeHome" TERM="${TERM}" SHELL="${SHELL}" PATH="${PATH}" dbus-run-session "$@"
+	env -i DISPLAY="$DISPLAY" XAUTH="$XAUTH" XAUTHORITY="$XAUTHORITY" XSOCK="$XSOCK" realHome="$realHome" keepFakeHome="$keepFakeHome" HOME="$HOME" setFakeHome="$setFakeHome" TERM="${TERM}" SHELL="${SHELL}" PATH="${PATH}" dbus-run-session "$@"
 	#"$@"
 	
 	[[ "$userFakeHome_enableMemMount" == "true" ]] && ! _umountUserFakeHome_instance && _stop 1
@@ -7529,6 +7529,13 @@ _test_devemacs() {
 }
 
 _set_emacsFakeHomeSource() {
+	if [[ ! -e "$scriptLib"/app/emacs/home ]]
+	then
+		_messageError 'missing: '"$scriptLib"'/app/emacs/home'
+		_messageFAIL
+		_stop 1
+	fi
+	
 	export emacsFakeHomeSource="$scriptLib"/app/emacs/home
 	if ! [[ -e "$emacsFakeHomeSource" ]]
 	then
@@ -7596,6 +7603,61 @@ _bashdb() {
 
 _ubdb() {
 	_bashdb "$scriptAbsoluteLocation" "$@"
+}
+
+_test_devatom() {
+	_getDep atom
+	
+	#local atomDetectedVersion=$(atom --version | head -n 1 | cut -f 2- -d \: | cut -f 2- -d \  | cut -f 2 -d \. )
+	#! [[ "$atomDetectedVersion" -ge "27" ]] && echo atom too old && _stop 1
+}
+
+_set_atomFakeHomeSource() {
+	if [[ ! -e "$scriptLib"/app/atom/home ]]
+	then
+		_messageError 'missing: '"$scriptLib"'/app/atom/home'
+		_messageFAIL
+		_stop 1
+	fi
+	
+	export atomFakeHomeSource="$scriptLib"/app/atom/home
+	if ! [[ -e "$atomFakeHomeSource" ]]
+	then
+		export atomFakeHomeSource="$scriptLib"/ubiquitous_bash/_lib/app/atom/home
+	fi
+}
+
+_prepare_atomDev_fakeHome() {
+	_set_atomFakeHomeSource
+	
+	cp -a "$atomFakeHomeSource"/. "$HOME"
+}
+
+_atomDev_sequence() {
+	_prepare_atomDev_fakeHome
+	
+	#echo -n "$@" >> "$HOME"/.atom
+	
+	atom "$@"
+}
+
+_atomDev() {
+	_selfFakeHome _atomDev_sequence "$@"
+}
+
+_atom() {
+	_atomDev "$@"
+}
+
+_atomDev_edit_sequence() {
+	_set_atomFakeHomeSource
+	export appGlobalFakeHome="$atomFakeHomeSource"
+	
+	_editFakeHome atom "$@"
+}
+
+_atomDev_edit() {
+	"$scriptAbsoluteLocation" _atomDev_edit_sequence "$@"
 }
 
 _testGit() {
@@ -11743,6 +11805,10 @@ _main() {
 	_stop
 }
 
+#matchingReversePorts=""
+#matchingEMBEDDED=""
+
+
 #####Network Specific Variables
 #Statically embedded into monolithic ubiquitous_bash.sh/cautossh script by compile .
 
@@ -11751,59 +11817,48 @@ export netName=default
 export gatewayName=gw-"$netName"
 export LOCALSSHPORT=22
 
-#Network Defaults
 export AUTOSSH_FIRST_POLL=45
 export AUTOSSH_POLL=45
 #export AUTOSSH_GATETIME=0
 export AUTOSSH_GATETIME=15
-
 #export AUTOSSH_PORT=0
-
 #export AUTOSSH_DEBUG=1
 #export AUTOSSH_LOGLEVEL=7
 
-#Example ONLY. Modify port asignments.
 _get_reversePorts() {
 	export matchingReversePorts
 	matchingReversePorts=()
-	export matchingEMBEDDED=false
-	
+	export matchingEMBEDDED="false"
+
 	local matched
-	
+
 	local testHostname
 	testHostname="$1"
 	[[ "$testHostname" == "" ]] && testHostname=$(hostname -s)
-	
-	if [[ "$testHostname" == "alpha" ]]
+
+	if [[ "$testHostname" == 'hostnameA' ]] || [[ "$testHostname" == 'hostnameB' ]]
 	then
-		matchingReversePorts+=( "20000" )
-		
-		matched=true
+		matchingReversePorts+=( '20001' )
+		matched='true'
 	fi
-	
-	if [[ "$testHostname" == "beta" ]]
+	if [[ "$testHostname" == 'hostnameC' ]] || [[ "$testHostname" == 'hostnameD' ]]
 	then
-		matchingReversePorts+=( "20001" )
-		export matchingEMBEDDED=true
-		
-		matched=true
+		matchingReversePorts+=( '20002' )
+		export matchingEMBEDDED='true'
+		matched='true'
 	fi
-	
-	if ! [[ "$matched" == "true" ]] || [[ "$testHostname" == '*' ]]
+	if ! [[ "$matched" == 'true' ]] || [[ "$testHostname" == '*' ]]
 	then
-		matchingReversePorts+=( "20009" )
-		matchingReversePorts+=( "20008" )
+		matchingReversePorts+=( '20003' )
 	fi
-	
+
 	export matchingReversePorts
 }
-
 _get_reversePorts
 export reversePorts=("${matchingReversePorts[@]}")
 export EMBEDDED="$matchingEMBEDDED"
 
-export keepKeys_SSH=true
-
+export keepKeys_SSH='true'
 
 _findUbiquitous() {
 	export ubiquitiousLibDir="$scriptAbsoluteFolder"
@@ -12312,6 +12367,7 @@ _compile_bash_shortcuts() {
 	[[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "shortcuts/dev"/devsearch.sh )
 	
 	[[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "shortcuts/dev/app"/devemacs.sh )
+	[[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "shortcuts/dev/app"/devatom.sh )
 	
 	[[ "$enUb_git" == "true" ]] && includeScriptList+=( "shortcuts/git"/git.sh )
 	[[ "$enUb_git" == "true" ]] && includeScriptList+=( "shortcuts/git"/gitBare.sh )

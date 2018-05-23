@@ -6,6 +6,13 @@ _test_devemacs() {
 }
 
 _set_emacsFakeHomeSource() {
+	if [[ ! -e "$scriptLib"/app/emacs/home ]]
+	then
+		_messageError 'missing: '"$scriptLib"'/app/emacs/home'
+		_messageFAIL
+		_stop 1
+	fi
+	
 	export emacsFakeHomeSource="$scriptLib"/app/emacs/home
 	if ! [[ -e "$emacsFakeHomeSource" ]]
 	then
