@@ -4,6 +4,8 @@
     closeDeletedFileTabs: true
     disabledPackages: [
       "tree-view-git-modified"
+      "github"
+      "open-on-github"
     ]
     openEmptyEditorOnStart: false
     restorePreviousWindowsOnStart: "no"
@@ -39,7 +41,11 @@
     toggles:
       autoClose: true
       loginShell: false
+  "tool-bar-gui":
+    undefined:
+      items: []
   welcome:
     showOnStartup: false
   whitespace:
+    ensureSingleTrailingNewline: false
     removeTrailingWhitespace: false

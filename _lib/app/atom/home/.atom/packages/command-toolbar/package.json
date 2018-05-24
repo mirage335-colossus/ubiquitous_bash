@@ -1,0 +1,64 @@
+{
+  "_args": [
+    [
+      {
+        "raw": "/tmp/d-118424-15891-rrnrb7.jsa2rcnmi/package.tgz",
+        "scope": null,
+        "escapedName": null,
+        "name": null,
+        "rawSpec": "/tmp/d-118424-15891-rrnrb7.jsa2rcnmi/package.tgz",
+        "spec": "/tmp/d-118424-15891-rrnrb7.jsa2rcnmi/package.tgz",
+        "type": "local"
+      },
+      "/tmp/apm-install-dir-118424-15891-14c1h6r.wvotfkcsor"
+    ]
+  ],
+  "_from": "../d-118424-15891-rrnrb7.jsa2rcnmi/package.tgz",
+  "_id": "command-toolbar@1.0.12",
+  "_inCache": true,
+  "_location": "/command-toolbar",
+  "_phantomChildren": {},
+  "_requested": {
+    "raw": "/tmp/d-118424-15891-rrnrb7.jsa2rcnmi/package.tgz",
+    "scope": null,
+    "escapedName": null,
+    "name": null,
+    "rawSpec": "/tmp/d-118424-15891-rrnrb7.jsa2rcnmi/package.tgz",
+    "spec": "/tmp/d-118424-15891-rrnrb7.jsa2rcnmi/package.tgz",
+    "type": "local"
+  },
+  "_requiredBy": [
+    "#USER"
+  ],
+  "_resolved": "file:../d-118424-15891-rrnrb7.jsa2rcnmi/package.tgz",
+  "_shasum": "549130723fa48208f87371819c727c7ec7f1c5a4",
+  "_shrinkwrap": null,
+  "_spec": "/tmp/d-118424-15891-rrnrb7.jsa2rcnmi/package.tgz",
+  "_where": "/tmp/apm-install-dir-118424-15891-14c1h6r.wvotfkcsor",
+  "bugs": {
+    "url": "https://github.com/mark-hahn/command-toolbar/issues"
+  },
+  "dependencies": {
+    "atom-space-pen-views": "^2.0.3",
+    "fuzzaldrin": "^2.1.0",
+    "sub-atom": "*",
+    "underscore-plus": "1.x"
+  },
+  "description": "A toolbar with easily customized buttons for any command.",
+  "devDependencies": {},
+  "engines": {
+    "atom": ">0.190.0"
+  },
+  "homepage": "https://github.com/mark-hahn/command-toolbar",
+  "license": "MIT",
+  "main": "./lib/command-toolbar",
+  "name": "command-toolbar",
+  "optionalDependencies": {},
+  "readme": "command-toolbar\r\n===============\r\n\r\nAtom editor toolbar with easily customized buttons for any command.\r\n\r\n![Image inserted by Atom editor package auto-host-markdown-image](http://i.imgur.com/WKiq18y.gif?delhash=yjNlcuDbSIQTrEX)\r\n\r\n## Installation\r\n\r\nRun `apm install command-toolbar` or use the settings screen.\r\n\r\n## Usage\r\n\r\n* **Open/close** the toolbar using the command `command-toolbar:toggle`.  By default it is bound to the key `ctrl-6`.\r\n* **Execute** a command by simply clicking on its button.\r\n* **Create** a button by clicking on the first icon (three bars). A selection box identical to the command palette will pop up.  Choose a command and a new button for that command will appear in the toolbar.  Ctrl-click will add the location of the selected tab.  See below.\r\n* **Edit** a button label by clicking on the button with the ctrl key held down.\r\n  * Note: There is currently a problem with ctrl-click on some setups.  If you have trouble you may use alt-click instead.\r\n* **Rearrange** buttons by clicking and dragging them.\r\n* **Delete** buttons by clicking on the button and dragging the cursor away from the bar.  The btn will not move before deletion.\r\n* **Move** the toolbar to any of the four sides of the window by clicking on the first icon (three bars) and dragging the cursor to the middle of a different side.\r\n* **View** the complete command assigned to a button by hovering over it for one second.\r\n* **Close** the toolbar by clicking on the globe on the far left.\r\n\r\n## Files and Web pages\r\n\r\nIf you `ctrl-click` the first icon (three bars) it will add a button as usual.  But instead of opening the command palette to choose a command it will create a button immediately with the file path of the currently selected tab.  Clicking on this button will open the file just as if you clicked in the file tree.  Files can be opened no matter what project is open. The button always opens that file.\r\n\r\nIf you have the `web-browser` package installed and the currently selected teb is a web page, then `ctrl-click` will create a button for that web URL.  Clicking on that button will open the web page at any time, even when the web browser toolbar isn't open.  This means this button toolbar can be the \"favorites\" toolbar for the web browser.\r\n\r\nThis means this command-toolbar package can have buttons for commands, files, and web pages all at once.\r\n\r\n\r\n## Configuration\r\n\r\nThere is one setting `Always Show Toolbar On Load`. If it is checked then the toolbar will always be loaded when Atom is loaded.  If not checked then the toolbar will be visible on load only if it was visible when Atom was closed.\r\n\r\n## License\r\n\r\ncommand-toolbar is copyright Mark Hahn with the MIT license.\r\n\r\n",
+  "readmeFilename": "README.md",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mark-hahn/command-toolbar.git"
+  },
+  "version": "1.0.12"
+}

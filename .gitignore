@@ -34,6 +34,7 @@ trustdb.gpg
 nohup.out
 
 *.log
+*.ldb
 
 **/*Cache*
 **/*LOG*
