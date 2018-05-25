@@ -7606,6 +7606,8 @@ _ubdb() {
 }
 
 _test_devatom() {
+	_getDep rsync
+	
 	_getDep atom
 	
 	#local atomDetectedVersion=$(atom --version | head -n 1 | cut -f 2- -d \: | cut -f 2- -d \  | cut -f 2 -d \. )
@@ -7669,6 +7671,23 @@ _atom_edit() {
 _atom_config() {
 	export ATOM_HOME="$scriptLib"/app/atom/home/.atom
 	atom "$@"
+}
+
+_atom_tmp_sequence() {
+	_start
+	
+	mkdir -p "$safeTmp"/appcfg
+	
+	rsync -q -ax --exclude "/.cache" "$scriptLib"/app/atom/home/.atom/ "$safeTmp"/appcfg/
+	
+	export ATOM_HOME="$safeTmp"/appcfg
+	atom --foreground true "$@"
+	
+	_stop
+}
+
+_atom_tmp() {
+	_atom_tmp_sequence "$@"
 }
 
 _atom() {
