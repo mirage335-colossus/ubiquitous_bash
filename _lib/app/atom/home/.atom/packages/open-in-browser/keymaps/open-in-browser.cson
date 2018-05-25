@@ -1,0 +1,8 @@
+'.platform-win32 atom-workspace atom-text-editor':
+  'ctrl-shift-q': 'open-in-browser:open'
+
+'.platform-linux atom-workspace atom-text-editor':
+  'ctrl-shift-q': 'open-in-browser:open'
+
+'.platform-darwin atom-workspace atom-text-editor':
+  'cmd-shift-q': 'open-in-browser:open'

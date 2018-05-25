@@ -1,0 +1,63 @@
+{
+  "_args": [
+    [
+      {
+        "raw": "/tmp/d-118425-21388-17tskdg.8uc1bgldi/package.tgz",
+        "scope": null,
+        "escapedName": null,
+        "name": null,
+        "rawSpec": "/tmp/d-118425-21388-17tskdg.8uc1bgldi/package.tgz",
+        "spec": "/tmp/d-118425-21388-17tskdg.8uc1bgldi/package.tgz",
+        "type": "local"
+      },
+      "/tmp/apm-install-dir-118425-21388-12wxp14.e0xiveipb9"
+    ]
+  ],
+  "_from": "../d-118425-21388-17tskdg.8uc1bgldi/package.tgz",
+  "_id": "open-in-browser@0.5.2",
+  "_inCache": true,
+  "_location": "/open-in-browser",
+  "_phantomChildren": {},
+  "_requested": {
+    "raw": "/tmp/d-118425-21388-17tskdg.8uc1bgldi/package.tgz",
+    "scope": null,
+    "escapedName": null,
+    "name": null,
+    "rawSpec": "/tmp/d-118425-21388-17tskdg.8uc1bgldi/package.tgz",
+    "spec": "/tmp/d-118425-21388-17tskdg.8uc1bgldi/package.tgz",
+    "type": "local"
+  },
+  "_requiredBy": [
+    "#USER"
+  ],
+  "_resolved": "file:../d-118425-21388-17tskdg.8uc1bgldi/package.tgz",
+  "_shasum": "19bd4a1585ce989c3a3d69664bef3105d23c2eff",
+  "_shrinkwrap": null,
+  "_spec": "/tmp/d-118425-21388-17tskdg.8uc1bgldi/package.tgz",
+  "_where": "/tmp/apm-install-dir-118425-21388-12wxp14.e0xiveipb9",
+  "bugs": {
+    "url": "https://github.com/magbicaleman/open-in-browser/issues"
+  },
+  "dependencies": {
+    "opn": "^4.0.2"
+  },
+  "description": "Simple Package to open file in default application",
+  "devDependencies": {
+    "coffeelint": "^1.15.0"
+  },
+  "engines": {
+    "atom": ">0.50.0"
+  },
+  "homepage": "https://github.com/magbicaleman/open-in-browser#readme",
+  "license": "MIT",
+  "main": "./lib/open-in-browser",
+  "name": "open-in-browser",
+  "optionalDependencies": {},
+  "readme": "# Open in Browser Atom.io Package\n\n[![Atom Package](https://img.shields.io/apm/v/open-in-browser.svg)](https://atom.io/packages/open-in-browser)\n[![Atom Package Downloads](https://img.shields.io/apm/dm/open-in-browser.svg)](https://atom.io/packages/open-in-browser)\n[![Build Status (Linux)](https://travis-ci.org/magbicaleman/open-in-browser.svg?branch=master)](https://travis-ci.org/magbicaleman/open-in-browser)\n<!-- [![Build Status (Windows)](https://ci.appveyor.com/api/projects/status/XXXXXXXXX?svg=true)](https://ci.appveyor.com/project/magbicaleman/open-in-browser) -->\n[![MIT License](http://img.shields.io/badge/license-MIT-blue.svg?style=flat)](https://github.com/magbicaleman/open-in-browser/blob/master/LICENSE.md)\n\nA very simple Open in Browser Atom.io Package. This allows you to right click\nand have a menu that will open the current file in your default program. That\nopens that extension. **Files will open in your default browser or\napplication**.\n\n## v 0.5.0\n - Huge thanks to [ldez](https://github.com/ldez) for the contributions on pull request [#34](https://github.com/magbicaleman/open-in-browser/pull/34) which solves a few issues some users were having.\n\n## v 0.4.7\n* \"Open In Browser\" context menu, from tree view or text editor pane, should be\n  functional when nuclide package is installed\n* Should Fix\n * [Not compatible with nuclide-file-tree :(](https://github.com/magbicaleman/open-in-browser/issues/29)\n * by @aiboy\n\n## v 0.4.6\n* \"Open In Browser\" context menu, from tree view or text editor pane, should be\n  functional\n* Should Fix\n * [Failed to activate the open-in-browser package](https://github.com/magbicaleman/open-in-browser/issues/17)\n\n## v 0.4.5\n* Had to apply fixes differently because the pull-request was using outdated version.\n* [fix deprecations](https://github.com/andya9/open-in-browser/commit/de3e796bd6f26e3e87c43ac56664b58f7558c93e)\n  * by @andya9\n\n## v 0.4.4\n\n* [fixed deprecation of stylesheets folder](https://github.com/magbicaleman/open-in-browser/pull/14)\n  * by @andya9\n\n## v 0.4.3\n\n* [Fixes deprecation warnings and some indentations](https://github.com/magbicaleman/open-in-browser/pull/12)\n  * by @zimme\n\n\n## v 0.4.2\n\n* Fixes \"Open In Browser\" not showing up in the workspace context menu\n\n## v 0.4.0\n\n\nUpdate by \"MetaMemoryT\"\n\nNow able to right click on tree-view and select \"Open in browser\"\n\nUpdate by \"mesosteros\"\n\nReplace editor class with `atom-text-editor` tag.\nShortcut was conflicting with meteor developers who use <kbd>Ctrl-Alt-M</kbd> in\nMeteor.js packages for Atom, so use <kbd>Ctrl-Alt-Q</kbd> instead.\n",
+  "readmeFilename": "README.md",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/magbicaleman/open-in-browser.git"
+  },
+  "version": "0.5.2"
+}
