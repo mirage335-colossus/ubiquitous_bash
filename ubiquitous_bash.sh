@@ -7615,17 +7615,19 @@ _test_devatom() {
 }
 
 _set_atomFakeHomeSource() {
-	if [[ ! -e "$scriptLib"/app/atom/home ]]
-	then
-		_messageError 'missing: '"$scriptLib"'/app/atom/home' > /dev/tty
-		_messageFAIL
-		_stop 1
-	fi
-	
 	export atomFakeHomeSource="$scriptLib"/app/atom/home
+	
 	if ! [[ -e "$atomFakeHomeSource" ]]
 	then
-		export atomFakeHomeSource="$scriptLib"/ubiquitous_bash/_lib/app/atom/home
+		true
+		#export atomFakeHomeSource="$scriptLib"/ubiquitous_bash/_lib/app/atom/home
+	fi
+	
+	if [[ ! -e "$scriptLib"/app/atom/home ]]
+	then
+		_messageError 'missing: atomFakeHomeSource= '"$atomFakeHomeSource" > /dev/tty
+		_messageFAIL
+		_stop 1
 	fi
 }
 
@@ -7669,16 +7671,19 @@ _atom_edit() {
 }
 
 _atom_config() {
-	export ATOM_HOME="$scriptLib"/app/atom/home/.atom
+	_set_atomFakeHomeSource
+	
+	export ATOM_HOME="$atomFakeHomeSource"/.atom
 	atom "$@"
 }
 
 _atom_tmp_sequence() {
 	_start
+	_set_atomFakeHomeSource
 	
 	mkdir -p "$safeTmp"/appcfg
 	
-	rsync -q -ax --exclude "/.cache" "$scriptLib"/app/atom/home/.atom/ "$safeTmp"/appcfg/
+	rsync -q -ax --exclude "/.cache" "$atomFakeHomeSource"/.atom/ "$safeTmp"/appcfg/
 	
 	export ATOM_HOME="$safeTmp"/appcfg
 	atom --foreground true "$@"
