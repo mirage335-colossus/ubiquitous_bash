@@ -59,8 +59,9 @@ _testBuiltIdle() {
 }
 
 _buildIdle() {
-	
-	idleSourceCode=$(find "$scriptAbsoluteFolder" -type f -name "getIdle.c" | head -n 1)
+	local idleSourceCode
+	idleSourceCode="$scriptAbsoluteFolder"/generic/process/idle.c
+	! [[ -e "$idleSourceCode" ]] && idleSourceCode="$scriptLib"/ubiquitous_bash/generic/process/idle.c
 	
 	mkdir -p "$scriptBin"
 	gcc -o "$scriptBin"/getIdle "$idleSourceCode" -lXss -lX11
