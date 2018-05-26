@@ -157,7 +157,7 @@ _localDir() {
 		return
 	fi
 	
-	[[ "$3" != "" ]] && [[ "$3" != "/" ]] && echo -n "$3"/
+	[[ "$3" != "" ]] && echo -n "$3" && [[ "$3" != "/" ]] && echo "/"
 	realpath -L -s --relative-to="$2" "$1"
 	
 }
