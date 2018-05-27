@@ -17,7 +17,48 @@ _compile_bash_deps() {
 		return 0
 	fi
 	
-	if [[ "$1" == "" ]]
+	if [[ "$1" == "core" ]]
+	then
+		_deps_notLean
+		_deps_os_x11
+		
+		_deps_x11
+		_deps_image
+		_deps_virt
+		_deps_chroot
+		_deps_qemu
+		_deps_vbox
+		#_deps_docker
+		_deps_wine
+		_deps_dosbox
+		_deps_msw
+		_deps_fakehome
+		
+		_deps_git
+		_deps_bup
+		
+		#_deps_blockchain
+		
+		#_deps_command
+		#_deps_synergy
+		
+		#_deps_hardware
+		#_deps_x220t
+		
+		#_deps_user
+		
+		#_deps_proxy
+		#_deps_proxy_special
+		
+		_deps_build
+		
+		_deps_build_bash
+		_deps_build_bash_ubiquitous
+		
+		return 0
+	fi
+	
+	if [[ "$1" == "" ]] || [[ "$1" == "ubiquitous_bash" ]] || [[ "$1" == "ubiquitous_bash.sh" ]] || [[ "$1" == "complete" ]]
 	then
 		_deps_notLean
 		_deps_os_x11
@@ -34,6 +75,7 @@ _compile_bash_deps() {
 		_deps_msw
 		_deps_fakehome
 		
+		_deps_git
 		_deps_bup
 		
 		_deps_blockchain
@@ -56,6 +98,8 @@ _compile_bash_deps() {
 		
 		return 0
 	fi
+	
+	return 1
 }
 
 _vars_compile_bash() {
