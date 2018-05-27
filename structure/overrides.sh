@@ -86,6 +86,12 @@ _echo() {
 	echo "$@"
 }
 
+#Stop if script is imported into an existing shell and bypass not requested.
+if [[ "${BASH_SOURCE[0]}" != "${0}" ]] && [[ "$1" != "--bypass" ]]
+then
+	return
+fi
+
 #Set "ubOnlyMain" in "ops" overrides as necessary.
 if [[ "$ubOnlyMain" != "true" ]]
 then
@@ -127,12 +133,6 @@ then
 	fi
 fi
 [[ "$ubOnlyMain" == "true" ]] && export  ubOnlyMain="false"
-
-#Stop if script is imported into an existing shell and bypass not requested.
-if [[ "${BASH_SOURCE[0]}" != "${0}" ]] && [[ "$1" != "--bypass" ]]
-then
-	return
-fi
 
 if ! [[ "$1" != "--bypass" ]]
 then
