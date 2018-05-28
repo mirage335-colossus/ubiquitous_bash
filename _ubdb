@@ -357,7 +357,7 @@ _launch_anchor() {
 		"$recursionExec" "$@"
 		exit $?
 	fi
-	_messagePlain_bad 'missing: '"$anchorSource"
+	_messagePlain_bad 'missing: '"$anchorSource" | _user_log_anchor
 }
 
 export anchorScriptAbsoluteLocation=$(_getScriptAbsoluteLocation)
