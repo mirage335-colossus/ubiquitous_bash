@@ -1,8 +1,6 @@
-export blockly_orig="$scriptLib"/blockly
-export SigBlockly_mod="$scriptLib"/SigBlockly
+export app_orig="$scriptLib"/app
+export app_mod="$scriptLib"/modName
 
-export generatorSource=generators/"$modLanguageName"
-export generatorSourceEntry=generators/"$modLanguageName".js
 
 
 export scriptModules="$scriptLib"/modules
@@ -18,4 +16,8 @@ export spliceTmpGitdiff="$spliceTmp"/gitdiff
 _prepare_splice() {
 	mkdir -p "$spliceTmp"
 	mkdir -p "$spliceTmpGitdiff"
+}
+
+_prepare_prog() {
+	true
 }

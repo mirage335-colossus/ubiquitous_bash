@@ -89,7 +89,7 @@ _atom_tmp() {
 }
 
 _atom() {
-	_atom_user "$@"
+	_atom_tmp "$@"
 }
 
 _ubide() {

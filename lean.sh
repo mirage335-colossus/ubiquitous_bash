@@ -1493,6 +1493,14 @@ _upgradeUbiquitous() {
 	_setupUbiquitous
 }
 
+_refresh_anchors_ubiquitous() {
+	cp -a "$scriptAbsoluteFolder"/_anchor "$scriptAbsoluteFolder"/_refresh_anchors_ubiquitous
+	
+	cp -a "$scriptAbsoluteFolder"/_anchor "$scriptAbsoluteFolder"/_ubide
+	cp -a "$scriptAbsoluteFolder"/_anchor "$scriptAbsoluteFolder"/_ubdb
+}
+
+
 #####Basic Variable Management
 
 #####Global variables.

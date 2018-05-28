@@ -36,6 +36,8 @@ _app() {
 
 #duplicate _anchor
 _refresh_anchors() {
+	_refresh_anchors_ubiquitous
+	
 	cp -a "$scriptAbsoluteFolder"/_anchor "$scriptAbsoluteFolder"/_app
 }
 

@@ -4,8 +4,6 @@
     closeDeletedFileTabs: true
     disabledPackages: [
       "tree-view-git-modified"
-      "github"
-      "open-on-github"
     ]
     openEmptyEditorOnStart: false
     restorePreviousWindowsOnStart: "no"
