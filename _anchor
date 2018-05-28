@@ -197,7 +197,7 @@ _findAnchor() {
 	anchorCurrentSearchDir="$1"
 	shift
 	
-	find -L "$anchorCurrentSearchDir" -not \( -path \*.git\* -prune \) -not \( -path \*_arc\* -prune \) -not \( -path \*_buried\* -prune \) -not \( -path \*_lib\* -prune \) -not \( -path \*_local\* -prune \) -not \( -path \*_local/_index\* -prune \) "$@"
+	find -L "$anchorCurrentSearchDir" -not \( -path \*.git\* -prune \) -not \( -path \*_arc\* -prune \) -not \( -path \*_buried\* -prune \) -not \( -path \*_lib\* -prune \) -not \( -path \*_local\* -prune \) -not \( -path \*_local/_index\* -prune \) -not \( -path \*_local/h\* -prune \) -not \( -path \*h_/\* -prune \) -not \( -path \*w_/\* -prune \) "$@"
 }
 
 #Recursively searches for directories.
@@ -357,6 +357,7 @@ _launch_anchor() {
 		"$recursionExec" "$@"
 		exit $?
 	fi
+	_messagePlain_bad 'missing: '"$anchorSource"
 }
 
 export anchorScriptAbsoluteLocation=$(_getScriptAbsoluteLocation)
@@ -364,7 +365,7 @@ export anchorScriptAbsoluteFolder=$(_getScriptAbsoluteFolder)
 export anchorName=$(basename "$anchorScriptAbsoluteLocation")
 
 export anchorSource="ubiquitous_bash.sh"
-export anchorSourcePath=vmName-vm/"$anchorSource"
+export anchorSourcePath=ubiquitous_bash/"$anchorSource"
 
 export anchorLabName=anchorLabName
 export anchorLabNameAlt="$anchorLabName"Mini

@@ -85,7 +85,7 @@ _atom_tmp_sequence() {
 }
 
 _atom_tmp() {
-	_atom_tmp_sequence "$@"
+	"$scriptAbsoluteLocation" _atom_tmp_sequence "$@"  > /dev/null 2>&1 &
 }
 
 _atom() {

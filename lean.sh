@@ -1494,10 +1494,20 @@ _upgradeUbiquitous() {
 }
 
 _refresh_anchors_ubiquitous() {
-	cp -a "$scriptAbsoluteFolder"/_anchor "$scriptAbsoluteFolder"/_refresh_anchors_ubiquitous
-	
 	cp -a "$scriptAbsoluteFolder"/_anchor "$scriptAbsoluteFolder"/_ubide
 	cp -a "$scriptAbsoluteFolder"/_anchor "$scriptAbsoluteFolder"/_ubdb
+}
+
+_anchor() {
+	[[ "$scriptAbsoluteFolder" == *"ubiquitous_bash" ]] && _refresh_anchors_ubiquitous
+	
+	if type "_refresh_anchors" > /dev/null 2>&1
+	then
+		_tryExec "_refresh_anchors"
+		return
+	fi
+	
+	return 0
 }
 
 
