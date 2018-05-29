@@ -35,7 +35,7 @@ _atomDev_sequence() {
 	
 	export keepFakeHome="false"
 	
-	atom --foreground true "$@"
+	atom --foreground "$@"
 }
 
 _atomDev() {
@@ -52,7 +52,7 @@ _atomDev_edit_sequence() {
 	
 	export keepFakeHome="false"
 	
-	_editFakeHome atom --foreground true "$@"
+	_editFakeHome atom --foreground "$@"
 }
 
 _atomDev_edit() {
@@ -79,7 +79,7 @@ _atom_tmp_sequence() {
 	rsync -q -ax --exclude "/.cache" "$atomFakeHomeSource"/.atom/ "$safeTmp"/appcfg/
 	
 	export ATOM_HOME="$safeTmp"/appcfg
-	atom --foreground true "$@"
+	atom --foreground "$@"
 	
 	_stop
 }
