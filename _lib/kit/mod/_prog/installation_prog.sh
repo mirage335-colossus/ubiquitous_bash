@@ -28,7 +28,7 @@ _build_prog() {
 _setup_udev() {
 	! _wantSudo && echo 'denied: sudo' && _stop 1
 	
-	sudo -n bash -c '[[ -e /etc/udev/rules.d/ ]]' && sudo -n cp "$scriptLib"/udev/rules/. /etc/udev/rules.d/
+	sudo -n bash -c '[[ -e /etc/udev/rules.d/ ]]' && sudo -n cp "$scriptLib"/app/udev/rules/. /etc/udev/rules.d/
 	
 	
 	sudo -n usermod -a -G plugdev "$USER"
