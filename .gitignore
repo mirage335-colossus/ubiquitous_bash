@@ -36,6 +36,7 @@ nohup.out
 *.log
 *.ldb
 
+**/*cache*
 **/*Cache*
 **/*LOG*
 **/*Log*
@@ -63,3 +64,8 @@ nohup.out
 **/home/project
 **/home/projects
 **/home/realHome
+
+**/home/.java
+**/home/.oracle_jre*
+
+_local/h/.arduino15/staging/

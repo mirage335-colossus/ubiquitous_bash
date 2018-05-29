@@ -171,6 +171,10 @@ _project() {
 	cp ./_lib/ubiquitous_bash/_anchor ./
 	#cp ./_lib/ubiquitous_bash/_ubdb ./_ubdb
 	#cp ./_lib/ubiquitous_bash/_ubide ./_ubide
+	
+	##### Kits (all, default)
+	
+	cp ./_lib/ubiquitous_bash/_lib/kit/all/. ./
 
 	##### Runtime Configuration
 
