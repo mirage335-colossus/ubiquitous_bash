@@ -165,6 +165,12 @@ _project() {
 	cp ./_lib/ubiquitous_bash/build/bash/generate_bash_prog.sh ./_prog/
 
 	cp ./_lib/ubiquitous_bash/os/override/override_prog.sh ./_prog/
+	
+	##### Anchors
+	
+	cp ./_lib/ubiquitous_bash/_anchor ./
+	#cp ./_lib/ubiquitous_bash/_ubdb ./_ubdb
+	#cp ./_lib/ubiquitous_bash/_ubide ./_ubide
 
 	##### Runtime Configuration
 
