@@ -174,7 +174,7 @@ _project() {
 	
 	##### Kits (all, default)
 	
-	cp ./_lib/ubiquitous_bash/_lib/kit/all/. ./
+	cp -r ./_lib/ubiquitous_bash/_lib/kit/all/. ./
 
 	##### Runtime Configuration
 
@@ -199,8 +199,8 @@ _project() {
 	cd "$workingDir"
 }
 
-export devName="devName"
-export projectName="projectName"
+export devName="m335"
+export projectName="openocd-static"
 
 _project "$projectName"
 

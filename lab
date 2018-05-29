@@ -174,7 +174,7 @@ _project() {
 	
 	##### Kits (all, default)
 	
-	cp ./_lib/ubiquitous_bash/_lib/kit/all/. ./
+	cp -r ./_lib/ubiquitous_bash/_lib/kit/all/. ./
 
 	##### Runtime Configuration
 
