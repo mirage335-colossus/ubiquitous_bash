@@ -2445,7 +2445,7 @@ _package() {
 	#cp -a "$scriptAbsoluteFolder"/_config "$safeTmp"
 	#cp -a "$scriptAbsoluteFolder"/_prog "$safeTmp"
 	
-	cp -a "$scriptAbsoluteFolder"/_local "$safeTmp"/package/
+	#cp -a "$scriptAbsoluteFolder"/_local "$safeTmp"/package/
 	
 	cp -a "$scriptAbsoluteFolder"/README.md "$safeTmp"/package/
 	cp -a "$scriptAbsoluteFolder"/USAGE.html "$safeTmp"/package/

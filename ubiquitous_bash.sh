@@ -2531,6 +2531,9 @@ _package_cautossh() {
 	#find "$scriptAbsoluteFolder"/_index -type f -not -path '*_arc*' -exec cp -d --preserve=all {} "$safeTmp"'/package/'{} \;
 	
 	rsync -av --progress --exclude "_arc" "$scriptAbsoluteFolder"/_index/ "$safeTmp"/package/_index/
+	
+	cp -a "$scriptAbsoluteFolder"/_local/ssh "$safeTmp"/package/
+	cp -a "$scriptAbsoluteFolder"/_local/tor "$safeTmp"/package/
 }
 
 #May be overridden by "ops" if multiple gateways are required.
@@ -11827,7 +11830,7 @@ _package() {
 	#cp -a "$scriptAbsoluteFolder"/_config "$safeTmp"
 	#cp -a "$scriptAbsoluteFolder"/_prog "$safeTmp"
 	
-	cp -a "$scriptAbsoluteFolder"/_local "$safeTmp"/package/
+	#cp -a "$scriptAbsoluteFolder"/_local "$safeTmp"/package/
 	
 	cp -a "$scriptAbsoluteFolder"/README.md "$safeTmp"/package/
 	cp -a "$scriptAbsoluteFolder"/USAGE.html "$safeTmp"/package/
