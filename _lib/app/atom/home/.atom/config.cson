@@ -1,4 +1,6 @@
 "*":
+  "autocomplete-plus":
+    confirmCompletion: "tab always, enter when suggestion explicitly selected"
   core:
     automaticallyUpdate: false
     closeDeletedFileTabs: true
@@ -7,6 +9,7 @@
       "metrics"
       "welcome"
     ]
+    fileSystemWatcher: "poll"
     openEmptyEditorOnStart: false
     restorePreviousWindowsOnStart: "no"
     telemetryConsent: "no"
