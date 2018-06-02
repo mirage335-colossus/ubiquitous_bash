@@ -4509,7 +4509,7 @@ _userShortHome() {
 	
 	_prepareAppHome
 	
-	_userFakeHome_sequence "$@"
+	"$scriptAbsoluteLocation" _userFakeHome_sequence "$@"
 }
 
 _editShortHome() {
@@ -4517,7 +4517,7 @@ _editShortHome() {
 	
 	_prepareAppHome
 	
-	_editFakeHome_sequence "$@"
+	"$scriptAbsoluteLocation" _editFakeHome_sequence "$@"
 }
 
 _shortHome() {
