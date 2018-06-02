@@ -523,6 +523,7 @@ _test_permissions_ubiquitous() {
 
 #Takes "$@". Places in global array variable "globalArgs".
 # WARNING Adding this globalvariable to the "structure/globalvars.sh" declaration or similar to be overridden at script launch is not recommended.
+#"${globalArgs[@]}"
 _gather_params() {
 	export globalArgs=("${@}")
 }
@@ -1471,7 +1472,8 @@ _setupUbiquitous() {
 	echo -e -n > "$ubcoreFile"
 	echo 'export profileScriptLocation='"$ubcoreUBdir"/ubiquitous_bash.sh >> "$ubcoreFile"
 	echo 'export profileScriptFolder='"$ubcoreUBdir" >> "$ubcoreFile"
-	echo '. '"$ubcoreUBdir"/ubiquitous_bash.sh' _importShortcuts' >> "$ubcoreFile"
+	echo '[[ "$scriptAbsoluteLocation" == "" ]] && export scriptAbsoluteLocation='"$ubcoreUBdir"/ubiquitous_bash.sh >> "$ubcoreFile"
+	echo '. ''"$scriptAbsoluteLocation"'' _importShortcuts' >> "$ubcoreFile"
 	
 	! _permissions_ubiquitous_repo "$ubcoreUBdir" && cd "$outerPWD" && return 1
 	
@@ -2635,18 +2637,12 @@ _echo() {
 	echo "$@"
 }
 
-#Stop if script is imported into an existing shell and bypass not requested.
-if [[ "${BASH_SOURCE[0]}" != "${0}" ]] && [[ "$1" != "--bypass" ]]
-then
-	return
-fi
-
 #Set "ubOnlyMain" in "ops" overrides as necessary.
 if [[ "$ubOnlyMain" != "true" ]]
 then
 	
 	#Launch command named by link name.
-	if scriptLinkCommand=$(_getScriptLinkName)
+	if [[ "${BASH_SOURCE[0]}" != "${0}" ]] && scriptLinkCommand=$(_getScriptLinkName)
 	then
 		if [[ "$scriptLinkCommand" == '_'* ]]
 		then
@@ -2683,6 +2679,11 @@ then
 fi
 [[ "$ubOnlyMain" == "true" ]] && export  ubOnlyMain="false"
 
+#Stop if script is imported into an existing shell and bypass not requested.
+if [[ "${BASH_SOURCE[0]}" != "${0}" ]] && [[ "$1" != "--bypass" ]]
+then
+	return
+fi
 if ! [[ "$1" != "--bypass" ]]
 then
 	shift

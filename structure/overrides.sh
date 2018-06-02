@@ -86,18 +86,12 @@ _echo() {
 	echo "$@"
 }
 
-#Stop if script is imported into an existing shell and bypass not requested.
-if [[ "${BASH_SOURCE[0]}" != "${0}" ]] && [[ "$1" != "--bypass" ]]
-then
-	return
-fi
-
 #Set "ubOnlyMain" in "ops" overrides as necessary.
 if [[ "$ubOnlyMain" != "true" ]]
 then
 	
 	#Launch command named by link name.
-	if scriptLinkCommand=$(_getScriptLinkName)
+	if [[ "${BASH_SOURCE[0]}" != "${0}" ]] && scriptLinkCommand=$(_getScriptLinkName)
 	then
 		if [[ "$scriptLinkCommand" == '_'* ]]
 		then
@@ -134,6 +128,11 @@ then
 fi
 [[ "$ubOnlyMain" == "true" ]] && export  ubOnlyMain="false"
 
+#Stop if script is imported into an existing shell and bypass not requested.
+if [[ "${BASH_SOURCE[0]}" != "${0}" ]] && [[ "$1" != "--bypass" ]]
+then
+	return
+fi
 if ! [[ "$1" != "--bypass" ]]
 then
 	shift

@@ -82,7 +82,8 @@ _setupUbiquitous() {
 	echo -e -n > "$ubcoreFile"
 	echo 'export profileScriptLocation='"$ubcoreUBdir"/ubiquitous_bash.sh >> "$ubcoreFile"
 	echo 'export profileScriptFolder='"$ubcoreUBdir" >> "$ubcoreFile"
-	echo '. '"$ubcoreUBdir"/ubiquitous_bash.sh' _importShortcuts' >> "$ubcoreFile"
+	echo '[[ "$scriptAbsoluteLocation" == "" ]] && export scriptAbsoluteLocation='"$ubcoreUBdir"/ubiquitous_bash.sh >> "$ubcoreFile"
+	echo '. ''"$scriptAbsoluteLocation"'' _importShortcuts' >> "$ubcoreFile"
 	
 	! _permissions_ubiquitous_repo "$ubcoreUBdir" && cd "$outerPWD" && return 1
 	
