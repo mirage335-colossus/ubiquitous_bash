@@ -521,6 +521,12 @@ _test_permissions_ubiquitous() {
 
 
 
+#Takes "$@". Places in global array variable "globalArgs".
+# WARNING Adding this globalvariable to the "structure/globalvars.sh" declaration or similar to be overridden at script launch is not recommended.
+_gather_params() {
+	export globalArgs=("${@}")
+}
+
 #"$1" == file path
 _includeFile() {
 	
@@ -12360,6 +12366,7 @@ _compile_bash_essential_utilities() {
 	includeScriptList+=( "generic"/uid.sh )
 	includeScriptList+=( "generic/filesystem/permissions"/checkpermissions.sh )
 	includeScriptList+=( "generic"/findInfrastructure.sh )
+	includeScriptList+=( "generic"/gather.sh )
 	
 	[[ "$enUb_buildBash" == "true" ]] && includeScriptList+=( "build/bash"/include_bash.sh )
 }

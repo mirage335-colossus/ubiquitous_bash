@@ -521,6 +521,12 @@ _test_permissions_ubiquitous() {
 
 
 
+#Takes "$@". Places in global array variable "globalArgs".
+# WARNING Adding this globalvariable to the "structure/globalvars.sh" declaration or similar to be overridden at script launch is not recommended.
+_gather_params() {
+	export globalArgs=("${@}")
+}
+
 #Gets filename extension, specifically any last three characters in given string.
 #"$1" == filename
 _getExt() {
