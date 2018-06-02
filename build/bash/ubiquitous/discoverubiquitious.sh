@@ -7,9 +7,9 @@ _findUbiquitous() {
 		return 0
 	fi
 	
-	if [[ -e "./_lib/ubiquitous_bash" ]]
+	if [[ -e "$ubiquitiousLibDir"/_lib/ubiquitous_bash ]]
 	then
-		export ubiquitiousLibDir="./_lib/ubiquitous_bash"
+		export ubiquitiousLibDir="$ubiquitiousLibDir"/_lib/ubiquitous_bash
 		return 0
 	fi
 	
