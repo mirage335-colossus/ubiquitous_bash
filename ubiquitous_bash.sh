@@ -10330,19 +10330,23 @@ _x220_vgaTablet() {
 #Fixed unique identifier for ubiquitious bash created global resources, such as bootdisc images to be automaticaly mounted by guests. Should NOT be changed.
 export ubiquitiousBashID="uk4uPhB663kVcygT0q"
 
-export sessionid=$(_uid)
-[[ "$sessionid" == "" ]] && exit 1
-export lowsessionid=$(echo -n "$sessionid" | tr A-Z a-z )
-
 #Importing ubiquitous bash into a login shell with "~/.bashrc" is the only known cause for "_getScriptAbsoluteLocation" to return a result such as "/bin/bash".
 if ( [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] )  && [[ "${BASH_SOURCE[0]}" != "${0}" ]] && [[ "$profileScriptLocation" != "" ]] && [[ "$profileScriptFolder" != "" ]]
 then
-	export scriptAbsoluteLocation="$profileScriptLocation"
-	export scriptAbsoluteFolder="$profileScriptFolder"
+	if [[ "$scriptAbsoluteLocation" == "" ]] && [[ "$scriptAbsoluteFolder" == "" ]] && [[ "$sessionid" == "" ]]
+	then
+		[[ "$scriptAbsoluteLocation" == "" ]] && export scriptAbsoluteLocation="$profileScriptLocation"
+		[[ "$scriptAbsoluteFolder" == "" ]] && export scriptAbsoluteFolder="$profileScriptFolder"
+		export sessionid=$(_uid)
+	fi
 else
 	export scriptAbsoluteLocation=$(_getScriptAbsoluteLocation)
 	export scriptAbsoluteFolder=$(_getScriptAbsoluteFolder)
+	export sessionid=$(_uid)
 fi
+
+[[ "$sessionid" == "" ]] && exit 1
+export lowsessionid=$(echo -n "$sessionid" | tr A-Z a-z )
 
 #Current directory for preservation.
 export outerPWD=$(_getAbsoluteLocation "$PWD")
