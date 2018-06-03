@@ -2646,18 +2646,10 @@ if [[ "${BASH_SOURCE[0]}" != "${0}" ]] && [[ "$1" != "--bypass" ]]  && [[ "$1" !
 then
 	return
 fi
-_bypass() {
-	[[ "$1" == "--bypass" ]] && shift
-	[[ "$1" == "--return" ]] && shift
-	"$@"
-}
-_bypass_two() {
-	local ubOneArg
-	ubOneArg="$1"
-	[[ "$2" == "--bypass" ]] && shift && shift
-	[[ "$2" == "--return" ]] && shift && shift
-	"$ubOneArg" "$@"
-}
+ub_bypass=
+ub_return=
+[[ "$1" == "--bypass" ]] && ub_bypass=true && shift
+[[ "$1" == "--return" ]] && ub_return=true && shift
 
 #Set "ubOnlyMain" in "ops" overrides as necessary.
 if [[ "$ubOnlyMain" != "true" ]]
@@ -2668,14 +2660,14 @@ then
 	then
 		if [[ "$scriptLinkCommand" == '_'* ]]
 		then
-			_bypass_two "$scriptLinkCommand" "$@"
+			"$scriptLinkCommand" "$@"
 			internalFunctionExitStatus="$?"
 			
 			#Exit if not imported into existing shell, or bypass requested, else fall through to subsequent return.
-			if ! [[ "${BASH_SOURCE[0]}" != "${0}" ]] || ! [[ "$1" != "--bypass" ]]
+			if ! [[ "${BASH_SOURCE[0]}" != "${0}" ]] || ! [[ "$ub_bypass" != "true" ]]
 			then
 				#export noEmergency=true
-				[[ "$1" != "--return" ]] && exit "$internalFunctionExitStatus"
+				[[ "$ub_return" != "true" ]] && exit "$internalFunctionExitStatus"
 			fi
 			return "$internalFunctionExitStatus"
 		fi
@@ -2686,21 +2678,21 @@ then
 	#if [[ "$1" == '_'* ]] || [[ "$1" == "true" ]] || [[ "$1" == "false" ]]
 	if [[ "$1" == '_'* ]]
 	then
-		_bypass "$@"
+		"$@"
 		internalFunctionExitStatus="$?"
 		
 		#Exit if not imported into existing shell, or bypass requested, else fall through to subsequent return.
-		if ! [[ "${BASH_SOURCE[0]}" != "${0}" ]] || ! [[ "$1" != "--bypass" ]]
+		if ! [[ "${BASH_SOURCE[0]}" != "${0}" ]] || ! [[ "$ub_bypass" != "true" ]]
 		then
 			#export noEmergency=true
-			[[ "$1" != "--return" ]] && exit "$internalFunctionExitStatus"
+			[[ "$ub_return" != "true" ]] && exit "$internalFunctionExitStatus"
 		fi
 		return "$internalFunctionExitStatus"
 		#_stop "$?"
 	fi
 fi
-[[ "$1" == "--bypass" ]] && shift
-[[ "$1" == "--return" ]] && shift
+unset ub_bypass
+unset ub_return
 
 [[ "$ubOnlyMain" == "true" ]] && export  ubOnlyMain="false"
 
