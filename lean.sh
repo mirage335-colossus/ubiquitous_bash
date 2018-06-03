@@ -1527,7 +1527,7 @@ _anchor() {
 export ubiquitiousBashID="uk4uPhB663kVcygT0q"
 
 #Importing ubiquitous bash into a login shell with "~/.bashrc" is the only known cause for "_getScriptAbsoluteLocation" to return a result such as "/bin/bash". Also, "--bypass" or "--return" implies a requirement to keep current session.
-if ( [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] || [[ "$1" == "--bypass" ]] || [[ "$1" == "--return" ]] )  && [[ "${BASH_SOURCE[0]}" != "${0}" ]] && [[ "$profileScriptLocation" != "" ]] && [[ "$profileScriptFolder" != "" ]]
+if ( [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] )  && [[ "${BASH_SOURCE[0]}" != "${0}" ]] && [[ "$profileScriptLocation" != "" ]] && [[ "$profileScriptFolder" != "" ]]
 then
 	if [[ "$scriptAbsoluteLocation" == "" ]] && [[ "$scriptAbsoluteFolder" == "" ]] && [[ "$sessionid" == "" ]]
 	then
@@ -1536,9 +1536,12 @@ then
 		export sessionid=$(_uid)
 	fi
 else
-	export scriptAbsoluteLocation=$(_getScriptAbsoluteLocation)
-	export scriptAbsoluteFolder=$(_getScriptAbsoluteFolder)
-	export sessionid=$(_uid)
+	if [[ "$1" != "--bypass" ]] && [[ "$1" != "--return" ]]
+	then
+		export scriptAbsoluteLocation=$(_getScriptAbsoluteLocation)
+		export scriptAbsoluteFolder=$(_getScriptAbsoluteFolder)
+		export sessionid=$(_uid)
+	fi
 fi
 
 [[ "$sessionid" == "" ]] && exit 1
