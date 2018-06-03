@@ -91,8 +91,18 @@ if [[ "${BASH_SOURCE[0]}" != "${0}" ]] && [[ "$1" != "--bypass" ]]  && [[ "$1" !
 then
 	return
 fi
-[[ "$1" == "--bypass" ]] && shift
-[[ "$1" == "--return" ]] && shift
+_bypass() {
+	[[ "$1" == "--bypass" ]] && shift
+	[[ "$1" == "--return" ]] && shift
+	"$@"
+}
+_bypass_two() {
+	local ubOneArg
+	ubOneArg="$1"
+	[[ "$2" == "--bypass" ]] && shift && shift
+	[[ "$2" == "--return" ]] && shift && shift
+	"$ubOneArg" "$@"
+}
 
 #Set "ubOnlyMain" in "ops" overrides as necessary.
 if [[ "$ubOnlyMain" != "true" ]]
@@ -103,14 +113,14 @@ then
 	then
 		if [[ "$scriptLinkCommand" == '_'* ]]
 		then
-			"$scriptLinkCommand" "$@"
+			_bypass_two "$scriptLinkCommand" "$@"
 			internalFunctionExitStatus="$?"
 			
 			#Exit if not imported into existing shell, or bypass requested, else fall through to subsequent return.
 			if ! [[ "${BASH_SOURCE[0]}" != "${0}" ]] || ! [[ "$1" != "--bypass" ]]
 			then
 				#export noEmergency=true
-				exit "$internalFunctionExitStatus"
+				[[ "$1" != "--return" ]] && exit "$internalFunctionExitStatus"
 			fi
 			return "$internalFunctionExitStatus"
 		fi
@@ -121,19 +131,22 @@ then
 	#if [[ "$1" == '_'* ]] || [[ "$1" == "true" ]] || [[ "$1" == "false" ]]
 	if [[ "$1" == '_'* ]]
 	then
-		"$@"
+		_bypass "$@"
 		internalFunctionExitStatus="$?"
 		
 		#Exit if not imported into existing shell, or bypass requested, else fall through to subsequent return.
 		if ! [[ "${BASH_SOURCE[0]}" != "${0}" ]] || ! [[ "$1" != "--bypass" ]]
 		then
 			#export noEmergency=true
-			exit "$internalFunctionExitStatus"
+			[[ "$1" != "--return" ]] && exit "$internalFunctionExitStatus"
 		fi
 		return "$internalFunctionExitStatus"
 		#_stop "$?"
 	fi
 fi
+[[ "$1" == "--bypass" ]] && shift
+[[ "$1" == "--return" ]] && shift
+
 [[ "$ubOnlyMain" == "true" ]] && export  ubOnlyMain="false"
 
 #Do not continue script execution through program code if critical global variables are not sane.
