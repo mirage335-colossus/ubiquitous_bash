@@ -10,8 +10,8 @@ export lowsessionid=$(echo -n "$sessionid" | tr A-Z a-z )
 #Importing ubiquitous bash into a login shell with "~/.bashrc" is the only known cause for "_getScriptAbsoluteLocation" to return a result such as "/bin/bash".
 if ( [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] )  && [[ "${BASH_SOURCE[0]}" != "${0}" ]] && [[ "$profileScriptLocation" != "" ]] && [[ "$profileScriptFolder" != "" ]]
 then
-	export scriptAbsoluteLocation="$profileScriptLocation"
-	export scriptAbsoluteFolder="$profileScriptFolder"
+	[[ "$scriptAbsoluteLocation" == "" ]] && export scriptAbsoluteLocation="$profileScriptLocation"
+	[[ "$scriptAbsoluteFolder" == "" ]] && export scriptAbsoluteFolder="$profileScriptFolder"
 else
 	export scriptAbsoluteLocation=$(_getScriptAbsoluteLocation)
 	export scriptAbsoluteFolder=$(_getScriptAbsoluteFolder)
