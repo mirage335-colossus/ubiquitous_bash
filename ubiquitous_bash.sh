@@ -9510,7 +9510,7 @@ _importShortcuts() {
 }
 
 _gitClone_ubiquitous() {
-	[[ "$nonet" != "true" ]] && type git > /dev/null 2>&1 && git clone git@github.com:mirage335/ubiquitous_bash.git
+	[[ "$nonet" != "true" ]] && type git > /dev/null 2>&1 && git clone --depth 1 git@github.com:mirage335/ubiquitous_bash.git
 }
 
 _cloneUbiquitous() {
@@ -13026,11 +13026,12 @@ _echo() {
 }
 
 #Stop if script is imported into an existing shell and bypass not requested.
-if [[ "${BASH_SOURCE[0]}" != "${0}" ]] && [[ "$1" != "--bypass" ]]
+if [[ "${BASH_SOURCE[0]}" != "${0}" ]] && [[ "$1" != "--bypass" ]]  && [[ "$1" != "--return" ]]
 then
 	return
 fi
 [[ "$1" == "--bypass" ]] && shift
+[[ "$1" == "--return" ]] && shift
 
 #Set "ubOnlyMain" in "ops" overrides as necessary.
 if [[ "$ubOnlyMain" != "true" ]]
@@ -13050,7 +13051,7 @@ then
 				#export noEmergency=true
 				exit "$internalFunctionExitStatus"
 			fi
-			
+			return "$internalFunctionExitStatus"
 		fi
 	fi
 	
@@ -13068,7 +13069,7 @@ then
 			#export noEmergency=true
 			exit "$internalFunctionExitStatus"
 		fi
-		
+		return "$internalFunctionExitStatus"
 		#_stop "$?"
 	fi
 fi

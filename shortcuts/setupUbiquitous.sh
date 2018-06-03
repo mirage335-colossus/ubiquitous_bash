@@ -26,7 +26,7 @@ _importShortcuts() {
 }
 
 _gitClone_ubiquitous() {
-	[[ "$nonet" != "true" ]] && type git > /dev/null 2>&1 && git clone git@github.com:mirage335/ubiquitous_bash.git
+	[[ "$nonet" != "true" ]] && type git > /dev/null 2>&1 && git clone --depth 1 git@github.com:mirage335/ubiquitous_bash.git
 }
 
 _cloneUbiquitous() {
