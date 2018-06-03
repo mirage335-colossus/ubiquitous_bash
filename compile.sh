@@ -1840,6 +1840,7 @@ if [[ "${BASH_SOURCE[0]}" != "${0}" ]] && [[ "$1" != "--bypass" ]]
 then
 	return
 fi
+[[ "$1" == "--bypass" ]] && shift
 
 #Set "ubOnlyMain" in "ops" overrides as necessary.
 if [[ "$ubOnlyMain" != "true" ]]
@@ -1882,11 +1883,6 @@ then
 	fi
 fi
 [[ "$ubOnlyMain" == "true" ]] && export  ubOnlyMain="false"
-
-if ! [[ "$1" != "--bypass" ]]
-then
-	shift
-fi
 
 #Do not continue script execution through program code if critical global variables are not sane.
 [[ ! -e "$scriptAbsoluteLocation" ]] && exit 1
