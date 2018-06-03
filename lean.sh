@@ -1472,8 +1472,8 @@ _setupUbiquitous() {
 	echo -e -n > "$ubcoreFile"
 	echo 'export profileScriptLocation='"$ubcoreUBdir"/ubiquitous_bash.sh >> "$ubcoreFile"
 	echo 'export profileScriptFolder='"$ubcoreUBdir" >> "$ubcoreFile"
-	echo '[[ "$scriptAbsoluteLocation" == "" ]] && export scriptAbsoluteLocation='"$ubcoreUBdir"/ubiquitous_bash.sh >> "$ubcoreFile"
-	echo '. ''"$scriptAbsoluteLocation"'' --return _importShortcuts' >> "$ubcoreFile"
+	echo '[[ "$scriptAbsoluteLocation" == "" ]] && . '"$ubcoreUBdir"'/ubiquitous_bash.sh --return _importShortcuts' >> "$ubcoreFile"
+	echo '[[ "$scriptAbsoluteLocation" != "" ]] && . '"$scriptAbsoluteLocation"' --return _importShortcuts' >> "$ubcoreFile"
 	
 	! _permissions_ubiquitous_repo "$ubcoreUBdir" && cd "$outerPWD" && return 1
 	
@@ -1527,12 +1527,12 @@ _anchor() {
 export ubiquitiousBashID="uk4uPhB663kVcygT0q"
 
 #Importing ubiquitous bash into a login shell with "~/.bashrc" is the only known cause for "_getScriptAbsoluteLocation" to return a result such as "/bin/bash".
-if ( [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] )  && [[ "${BASH_SOURCE[0]}" != "${0}" ]] && [[ "$profileScriptLocation" != "" ]] && [[ "$profileScriptFolder" != "" ]]
+if ( [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] )  && [[ "${BASH_SOURCE[0]}" != "${0}" ]] && [[ "$profileScriptLocation" != "" ]] && [[ "$profileScriptFolder" != "" ]]
 then
 	if [[ "$scriptAbsoluteLocation" == "" ]] && [[ "$scriptAbsoluteFolder" == "" ]] && [[ "$sessionid" == "" ]]
 	then
-		[[ "$scriptAbsoluteLocation" == "" ]] && export scriptAbsoluteLocation="$profileScriptLocation"
-		[[ "$scriptAbsoluteFolder" == "" ]] && export scriptAbsoluteFolder="$profileScriptFolder"
+		export scriptAbsoluteLocation="$profileScriptLocation"
+		export scriptAbsoluteFolder="$profileScriptFolder"
 		export sessionid=$(_uid)
 	fi
 else
