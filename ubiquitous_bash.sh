@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+
 #Override.
 
 #Override (Program).
@@ -9482,6 +9483,15 @@ _gparted() {
 	"$scriptAbsoluteLocation" _gparted_sequence
 }
 
+_setupUbiquitous_here() {
+	cat << CZXWXcRMTo8EmM8i4d
+export profileScriptLocation="$ubcoreUBdir"/ubiquitous_bash.sh
+export profileScriptFolder="$ubcoreUBdir"
+[[ "$scriptAbsoluteLocation" == "" ]] && . "$ubcoreUBdir"/ubiquitous_bash.sh --return _importShortcuts
+[[ "$scriptAbsoluteLocation" != "" ]] && . "$scriptAbsoluteLocation" --return _importShortcuts
+CZXWXcRMTo8EmM8i4d
+}
+
 _configureLocal() {
 	_configureFile "$1" "_local"
 }
@@ -9509,76 +9519,101 @@ _importShortcuts() {
 	_visualPrompt
 }
 
-_gitClone_ubiquitous() {
-	[[ "$nonet" != "true" ]] && type git > /dev/null 2>&1 && git clone --depth 1 git@github.com:mirage335/ubiquitous_bash.git
+_gitPull_ubiquitous() {
+	git pull
 }
 
-_cloneUbiquitous() {
+_gitClone_ubiquitous() {
+	git clone --depth 1 git@github.com:mirage335/ubiquitous_bash.git
+}
+
+_selfCloneUbiquitous() {
 	"$scriptBin"/.ubrgbin.sh _ubrgbin_cpA "$scriptBin" "$ubcoreUBdir"/ > /dev/null 2>&1
+	cp -a "$scriptAbsoluteFolder"/lean.sh "$ubcoreUBdir"/lean.sh
 	cp -a "$scriptAbsoluteLocation" "$ubcoreUBdir"/ubiquitous_bash.sh
 }
 
+_installUbiquitous() {
+	local localFunctionEntryPWD
+	localFunctionEntryPWD="$PWD"
+	
+	cd "$ubcoreDir"
+	
+	_messagePlain_nominal 'attempt: git pull'
+	if [[ "$nonet" != "true" ]] && type git > /dev/null 2>&1
+	then
+		cd "$ubcoreUBdir"
+		
+		local ub_gitPullStatus
+		git pull
+		ub_gitPullStatus="$?"
+		! cd "$localFunctionEntryPWD" && return 1
+		
+		[[ "$ub_gitPullStatus" == "0" ]] && _messagePlain_good 'pass: git pull' && return 0
+		cd "$localFunctionEntryPWD"
+	fi
+	_messagePlain_warn 'fail: git pull'
+	
+	_messagePlain_nominal 'attempt: git clone'
+	[[ "$nonet" != "true" ]] && type git > /dev/null 2>&1 && [[ ! -e ".git" ]] && _gitClone_ubiquitous && _messagePlain_good 'pass: git clone' && return 0
+	_messagePlain_warn 'fail: git clone'
+	
+	_messagePlain_nominal 'attempt: self clone'
+	[[ -e ".git" ]] && _messagePlain_bad 'fail: self clone' && return 1
+	_selfCloneUbiquitous && return 0
+	_messagePlain_bad 'fail: self clone' && return 1
+	
+	return 0
+	
+	cd "$localFunctionEntryPWD"
+}
+
+
 _setupUbiquitous() {
+	_messageNormal "init: setupUbiquitous"
 	local ubHome
 	ubHome="$HOME"
 	[[ "$1" != "" ]] && ubHome="$1"
 	
-	local ubcoreDir
-	ubcoreDir="$ubHome"/.ubcore
-	local ubcoreUBdir
-	ubcoreUBdir="$ubcoreDir"/ubiquitous_bash
-	local ubcoreFile
-	ubcoreFile="$ubcoreDir"/.ubcorerc
+	export ubcoreDir="$ubHome"/.ubcore
+	export ubcoreFile="$ubcoreDir"/.ubcorerc
 	
-	if [[ -e "$ubcoreUBdir" ]]
-	then
-		cd "$ubcoreUBdir"
-		[[ "$nonet" != "true" ]] && type git > /dev/null 2>&1 && git pull
-		
-		if ! [[ "$nonet" != "true" ]] || ! type git > /dev/null 2>&1
-		then
-			_cloneUbiquitous
-		fi
-		
-		echo "Import new functionality into current shell if not in current shell."
-		echo ". "'"'"$scriptAbsoluteLocation"'"'
-		cd "$outerPWD"
-		
-		. "$scriptAbsoluteLocation"
-		return 0
-	fi
+	export ubcoreUBdir="$ubcoreDir"/ubiquitous_bash
+	export ubcoreUBfile="$ubcoreDir"/ubiquitous_bash/ubiquitous_bash.sh
 	
-	mkdir -p "$ubcoreDir"
-	[[ ! -d "$ubcoreDir" ]] && cd "$outerPWD" && return 1
-	cd "$ubcoreDir"
+	_messagePlain_probe 'ubHome= '"$ubHome"
+	_messagePlain_probe 'ubcoreDir= '"$ubcoreDir"
+	_messagePlain_probe 'ubcoreFile= '"$ubcoreFile"
 	
-	_gitClone_ubiquitous
+	_messagePlain_probe 'ubcoreUBdir= '"$ubcoreUBdir"
+	_messagePlain_probe 'ubcoreUBfile= '"$ubcoreUBfile"
+	
 	mkdir -p "$ubcoreUBdir"
+	! [[ -e "$ubcoreUBdir" ]] && _messagePlain_bad 'missing: ubcoreUBdir= '"$ubcoreUBdir" && _messageFAIL && return 1
 	
-	if [[ ! -e "$ubcoreUBdir"/ubiquitous_bash.sh ]]
-	then
-		_cloneUbiquitous
-	fi
 	
-	mkdir -p "$ubHome"/_bin/
-	ln -sf "$ubcoreUBdir"/ubiquitous_bash.sh "$ubHome"/_bin/ubiquitous_bash.sh
+	_messageNormal "install: setupUbiquitous"
+	! _installUbiquitous && _messageFAIL && return 1
+	! [[ -e "$ubcoreUBfile" ]] && _messagePlain_bad 'missing: ubcoreUBfile= '"$ubcoreUBfile" && _messageFAIL && return 1
 	
-	echo -e -n > "$ubcoreFile"
-	echo 'export profileScriptLocation='"$ubcoreUBdir"/ubiquitous_bash.sh >> "$ubcoreFile"
-	echo 'export profileScriptFolder='"$ubcoreUBdir" >> "$ubcoreFile"
-	echo '[[ "$scriptAbsoluteLocation" == "" ]] && . '"$ubcoreUBdir"'/ubiquitous_bash.sh --return _importShortcuts' >> "$ubcoreFile"
-	echo '[[ "$scriptAbsoluteLocation" != "" ]] && . ''"$scriptAbsoluteLocation"'' --return _importShortcuts' >> "$ubcoreFile"
 	
-	! _permissions_ubiquitous_repo "$ubcoreUBdir" && cd "$outerPWD" && return 1
+	_messageNormal "hook: setupUbiquitous"
+	! _permissions_ubiquitous_repo "$ubcoreUBdir" && _messagePlain_bad 'permissions: ubcoreUBdir = '"$ubcoreUBdir" && _messageFAIL && return 1
 	
-	if ! grep ubcore "$ubHome"/.bashrc > /dev/null 2>&1
-	then
-		#echo "$ubHome"/.bashrc > /dev/tty
-		#ls -l "$ubHome"/.bashrc > /dev/tty
-		echo ". ""$ubcoreFile" >> "$ubHome"/.bashrc
-	fi
+	mkdir -p "$ubHome"/bin/
+	ln -sf "$ubcoreUBfile" "$ubHome"/bin/ubiquitous_bash.sh
 	
-	cd "$outerPWD"
+	_setupUbiquitous_here > "$ubcoreFile"
+	! [[ -e "$ubcoreFile" ]] && _messagePlain_bad 'missing: ubcoreFile= '"$ubcoreFile" && _messageFAIL && return 1
+	
+	
+	! grep ubcore "$ubHome"/.bashrc > /dev/null 2>&1 && _messagePlain_probe "$ubcoreFile"' >> '"$ubHome"/.bashrc && echo ". ""$ubcoreFile" >> "$ubHome"/.bashrc
+	! grep ubcore "$ubHome"/.bashrc > /dev/null 2>&1 && _messagePlain_bad 'missing: bashrc hook' && _messageFAIL && return 1
+	
+	
+	echo "Now import new functionality into current shell if not in current shell."
+	echo ". "'"'"$scriptAbsoluteLocation"'"' --return _importShortcuts
+	
 	
 	return 0
 }
@@ -9593,6 +9628,25 @@ _setupUbiquitous_nonet() {
 
 _upgradeUbiquitous() {
 	_setupUbiquitous
+}
+
+_resetUbiquitous_sequence() {
+	_start
+	
+	[[ ! -e "$HOME"/.bashrc ]] && return 0
+	cp "$HOME"/.bashrc "$HOME"/.bashrc.bak
+	cp "$HOME"/.bashrc "$safeTmp"/.bashrc
+	grep -v 'ubcore' "$safeTmp"/.bashrc > "$safeTmp"/.bashrc.tmp
+	mv "$safeTmp"/.bashrc.tmp "$HOME"/.bashrc
+	
+	[[ ! -e "$HOME"/.ubcore ]] && return 0
+	rm "$HOME"/.ubcorerc
+	
+	_stop
+}
+
+_resetUbiquitous() {
+	"$scriptAbsoluteLocation" _resetUbiquitous_sequence
 }
 
 _refresh_anchors_ubiquitous() {
@@ -12352,6 +12406,7 @@ _compile_bash_header() {
 	export includeScriptList
 	
 	includeScriptList+=( "generic"/minimalheader.sh )
+	includeScriptList+=( "generic"/ubiquitousheader.sh )
 	
 	includeScriptList+=( "os/override"/override.sh )
 	includeScriptList+=( "os/override"/override_prog.sh )
@@ -12547,6 +12602,7 @@ _compile_bash_shortcuts() {
 _compile_bash_shortcuts_setup() {
 	export includeScriptList
 	
+	includeScriptList+=( "shortcuts"/setupUbiquitous_here.sh )
 	includeScriptList+=( "shortcuts"/setupUbiquitous.sh )
 }
 

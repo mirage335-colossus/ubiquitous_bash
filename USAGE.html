@@ -579,7 +579,7 @@ See status of miner in browser.
 
 </pre>
 </div>
-<div title="Command" creator="mirage335" modifier="mirage335" created="201710261745" modified="201801240657" changecount="39">
+<div title="Command" creator="mirage335" modifier="YourName" created="201710261745" modified="201806061906" changecount="42">
 <pre>Internal functions and variables can be directly accessed externally. All implementation code provided by &quot;structure/overrides.sh&quot;.
 
 
@@ -594,7 +594,7 @@ Exit status is preserved.
 !Import
 Program code will not be reached if importing into the current shell - no action will be taken without &lt;nowiki&gt;&quot;--bypass&quot;&lt;/nowiki&gt; directive.
 //{{{
-. ./ubiquitous_bash.sh
+. ./ubiquitous_bash.sh --return
 //}}}
 
 !Bash Profile
@@ -610,7 +610,7 @@ _setupUbiquitous
 
 Certain functions will be automatically executed, for example, to provide a more informative and separative bash prompt. All are documented as commands in the &quot;_importShortcuts&quot; function.
 //{{{
-./ubiquitous_bash.sh _importShortcuts
+. ./ubiquitous_bash.sh _importShortcuts --return
 //}}}
 
 WARNING

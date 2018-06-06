@@ -116,6 +116,7 @@ _compile_bash_header() {
 	export includeScriptList
 	
 	includeScriptList+=( "generic"/minimalheader.sh )
+	includeScriptList+=( "generic"/ubiquitousheader.sh )
 	
 	includeScriptList+=( "os/override"/override.sh )
 	includeScriptList+=( "os/override"/override_prog.sh )
@@ -311,6 +312,7 @@ _compile_bash_shortcuts() {
 _compile_bash_shortcuts_setup() {
 	export includeScriptList
 	
+	includeScriptList+=( "shortcuts"/setupUbiquitous_here.sh )
 	includeScriptList+=( "shortcuts"/setupUbiquitous.sh )
 }
 
