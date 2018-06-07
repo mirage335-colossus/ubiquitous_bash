@@ -579,7 +579,7 @@ See status of miner in browser.
 
 </pre>
 </div>
-<div title="Command" creator="mirage335" modifier="YourName" created="201710261745" modified="201806061906" changecount="42">
+<div title="Command" creator="mirage335" modifier="YourName" created="201710261745" modified="201806072230" changecount="48">
 <pre>Internal functions and variables can be directly accessed externally. All implementation code provided by &quot;structure/overrides.sh&quot;.
 
 
@@ -592,9 +592,30 @@ If first parameter starts with &quot;_&quot;, script will internally execute all
 Exit status is preserved.
 
 !Import
-Program code will not be reached if importing into the current shell - no action will be taken without &lt;nowiki&gt;&quot;--bypass&quot;&lt;/nowiki&gt; directive.
+Script recognizes several import modes, identified by first parameter, which is shifted out if found. When imported mode, normal 'main()' script actions will not take place without &lt;nowiki&gt;&quot;--bypass&quot;&lt;/nowiki&gt; directive, which otherwise has identical behavior to other parameters in the same category.
 //{{{
-. ./ubiquitous_bash.sh --return
+#&quot;--profile&quot;
+#&quot;--parent&quot;, &quot;--return&quot;, &quot;--devenv&quot;
+#&quot;--call&quot;, &quot;--script&quot;, &quot;--shell&quot;, &quot;&quot;, &quot;--bypass&quot;
+//}}}
+
+Safety checks (including &quot;_safeRMR&quot;) rely upon an accurate &quot;$scriptAbsoluteLocation&quot; setting, which cannot be obtained automatically if launched from a login shell. Consequently, all import modes require external information from parent script or user.
+//{{{
+export importScriptLocation=&quot;$PWD&quot;/ubiquitous_bash.sh
+export importScriptFolder=&quot;$PWD&quot;
+. &quot;$importScriptLocation&quot; --call
+//}}}
+
+Script location may be obtained by _getAbsoluteLocation, etc, from parent script. 
+//{{{
+export importScriptLocation=&quot;$getScriptAbsoluteFolder&quot;/ubiquitous_bash.sh
+export importScriptFolder=&quot;$getScriptAbsoluteFolder&quot;
+. &quot;$importScriptLocation&quot; --script
+//}}}
+
+Import behavior may be manually tested under a subshell of a login shell.
+//{{{
+rm ~/.ubcore/userlog/* &gt;/dev/null 2&gt;&amp;1 ; bash -c 'export importScriptLocation=&quot;'&quot;$PWD&quot;'&quot;/ubiquitous_bash.sh ; export importScriptFolder=&quot;'&quot;$PWD&quot;'&quot; ; . ./ubiquitous_bash.sh' ; echo &quot;$?&quot; ; cat ~/.ubcore/userlog/* ; rm ~/.ubcore/userlog/*
 //}}}
 
 !Bash Profile
@@ -610,7 +631,9 @@ _setupUbiquitous
 
 Certain functions will be automatically executed, for example, to provide a more informative and separative bash prompt. All are documented as commands in the &quot;_importShortcuts&quot; function.
 //{{{
-. ./ubiquitous_bash.sh _importShortcuts --return
+export importScriptLocation=&quot;$PWD&quot;/ubiquitous_bash.sh
+export importScriptFolder=&quot;$PWD&quot;
+. &quot;$importScriptLocation&quot; _importShortcuts --call
 //}}}
 
 WARNING
@@ -1447,7 +1470,7 @@ Explicitly setting VM size may also be necessary.
 //}}}
 </pre>
 </div>
-<div title="MainMenu" creator="YourName" modifier="mirage335" created="201202151614" modified="201804191903" tags="excludeLists excludeSearch" changecount="28">
+<div title="MainMenu" creator="YourName" modifier="YourName" created="201202151614" modified="201806072122" tags="excludeLists excludeSearch" changecount="30">
 <pre>[[Demo]]
 
 [[Blockchain]]

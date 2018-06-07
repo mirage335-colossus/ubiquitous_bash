@@ -142,6 +142,8 @@ _compile_bash_essential_utilities() {
 	includeScriptList+=( "generic"/findInfrastructure.sh )
 	includeScriptList+=( "generic"/gather.sh )
 	
+	includeScriptList+=( "generic"/messaging.sh )
+	
 	[[ "$enUb_buildBash" == "true" ]] && includeScriptList+=( "build/bash"/include_bash.sh )
 }
 
@@ -185,7 +187,6 @@ _compile_bash_utilities() {
 	[[ "$enUb_proxy" == "true" ]] && includeScriptList+=( "generic/net/proxy/proxyrouter"/proxyrouter.sh )
 	
 	includeScriptList+=( "generic"/showCommand.sh )
-	includeScriptList+=( "generic"/messaging.sh )
 	includeScriptList+=( "generic"/validaterequest.sh )
 	
 	includeScriptList+=( "generic"/preserveLog.sh )

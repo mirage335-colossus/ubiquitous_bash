@@ -86,15 +86,8 @@ _echo() {
 	echo "$@"
 }
 
-#Stop if script is imported into an existing shell and bypass not requested.
-if [[ "${BASH_SOURCE[0]}" != "${0}" ]] && [[ "$1" != "--bypass" ]]  && [[ "$1" != "--return" ]]
-then
-	return
-fi
-ub_bypass=
-ub_return=
-[[ "$1" == "--bypass" ]] && ub_bypass=true && shift
-[[ "$1" == "--return" ]] && ub_return=true && shift
+#Stop if script is imported, parameter not specified, and command not given.
+[[ "$ub_import" == "true" ]] && [[ "$ub_import_param" == "" ]] && [[ "$1" != '_'* ]] && _messagePlain_warn 'import: missing: parameter, missing: command' | _user_log-ub && return 1
 
 #Set "ubOnlyMain" in "ops" overrides as necessary.
 if [[ "$ubOnlyMain" != "true" ]]
@@ -109,10 +102,10 @@ then
 			internalFunctionExitStatus="$?"
 			
 			#Exit if not imported into existing shell, or bypass requested, else fall through to subsequent return.
-			if ! [[ "${BASH_SOURCE[0]}" != "${0}" ]] || ! [[ "$ub_bypass" != "true" ]]
+			if [[ "$ub_import" != "true" ]] || [[ "$ub_import_param" == "--bypass" ]]
 			then
 				#export noEmergency=true
-				[[ "$ub_return" != "true" ]] && exit "$internalFunctionExitStatus"
+				exit "$internalFunctionExitStatus"
 			fi
 			return "$internalFunctionExitStatus"
 		fi
@@ -127,19 +120,17 @@ then
 		internalFunctionExitStatus="$?"
 		
 		#Exit if not imported into existing shell, or bypass requested, else fall through to subsequent return.
-		if ! [[ "${BASH_SOURCE[0]}" != "${0}" ]] || ! [[ "$ub_bypass" != "true" ]]
+		if [[ "$ub_import" != "true" ]] || [[ "$ub_import_param" == "--bypass" ]]
 		then
 			#export noEmergency=true
-			[[ "$ub_return" != "true" ]] && exit "$internalFunctionExitStatus"
+			exit "$internalFunctionExitStatus"
 		fi
 		return "$internalFunctionExitStatus"
 		#_stop "$?"
 	fi
 fi
-unset ub_bypass
-unset ub_return
 
-[[ "$ubOnlyMain" == "true" ]] && export  ubOnlyMain="false"
+[[ "$ubOnlyMain" == "true" ]] && export ubOnlyMain="false"
 
 #Do not continue script execution through program code if critical global variables are not sane.
 [[ ! -e "$scriptAbsoluteLocation" ]] && exit 1

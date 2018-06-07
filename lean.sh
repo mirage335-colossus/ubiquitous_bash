@@ -1,5 +1,106 @@
 #!/usr/bin/env bash
 
+#Universal debugging filesystem.
+_user_log-ub() {
+	# DANGER Do NOT create automatically, or reference any existing directory!
+	! [[ -d "$HOME"/.ubcore/userlog ]] && cat - > /dev/null 2>&1 && return 0
+	
+	#Terminal session may be used - the sessionid may be set through .bashrc/.ubcorerc .
+	if [[ "$sessionid" != "" ]]
+	then
+		cat - >> "$HOME"/.ubcore/userlog/u-"$sessionid".log
+		return 0
+	fi
+	cat - >> "$HOME"/.ubcore/userlog/u-undef.log
+	
+	return 0
+}
+
+#Cyan. Harmless status messages.
+_messagePlain_nominal() {
+	echo -e -n '\E[0;36m '
+	echo -n "$@"
+	echo -e -n ' \E[0m'
+	echo
+	return 0
+}
+
+#Blue. Diagnostic instrumentation.
+_messagePlain_probe() {
+	echo -e -n '\E[0;34m '
+	echo -n "$@"
+	echo -e -n ' \E[0m'
+	echo
+	return 0
+}
+
+#Blue. Diagnostic instrumentation.
+_messagePlain_probe_expr() {
+	echo -e -n '\E[0;34m '
+	echo -e -n "$@"
+	echo -e -n ' \E[0m'
+	echo
+	return 0
+}
+
+#Green. Working as expected.
+_messagePlain_good() {
+	echo -e -n '\E[0;32m '
+	echo -n "$@"
+	echo -e -n ' \E[0m'
+	echo
+	return 0
+}
+
+#Yellow. May or may not be a problem.
+_messagePlain_warn() {
+	echo -e -n '\E[1;33m '
+	echo -n "$@"
+	echo -e -n ' \E[0m'
+	echo
+	return 0
+}
+
+#Red. Will result in missing functionality, reduced performance, etc, but not necessarily program failure overall.
+_messagePlain_bad() {
+	echo -e -n '\E[0;31m '
+	echo -n "$@"
+	echo -e -n ' \E[0m'
+	echo
+	return 0
+}
+
+##Parameters
+#"--shell", ""
+#"--profile"
+#"--parent", "--return", "--devenv"
+#"--call", "--script" "--bypass"
+
+ub_import=
+ub_import_param=
+ub_import_script=
+ub_loginshell=
+
+#Importing ubiquitous bash into a login shell with "~/.bashrc" is the only known cause for "_getScriptAbsoluteLocation" to return a result such as "/bin/bash".
+[[ "${BASH_SOURCE[0]}" != "${0}" ]] && ub_import="true"
+([[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '#--parent' ]]) && ub_import_param="$1" && shift
+([[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]]) && ub_loginshell="true"
+[[ "$ub_import" == "true" ]] && ! [[ "$ub_loginshell" == "true" ]] && ub_import_script="true"
+
+_messagePlain_probe_expr '$0= '"$0"'\n ''ub_import= '"$ub_import"'\n ''ub_import_param= '"$ub_import_param"'\n ''ub_import_script= '"$ub_import_script"'\n ''ub_loginshell= '"$ub_loginshell" | _user_log-ub
+
+# DANGER Prohibited import from login shell. Use _setupUbiquitous, call from another script, or manually set importScriptLocation.
+([[ "$ub_import" == "true" ]] || [[ "$ub_import_param" == "--shell" ]]) && ([[ "$importScriptLocation" == "" ]] ||  [[ "$importScriptFolder" == "" ]]) && _messagePlain_bad 'import: call: missing: importScriptLocation, missing: importScriptFolder' | _user_log-ub && return 1
+
+## WARNING Catch likely critical failure conditions.
+#Exit immediately if imported within another script without parameter.
+[[ "$ub_import_script" == "true" ]] && [[ "$ub_import_param" == "" ]] && _messagePlain_bad 'import: script: missing: parameter' | _user_log-ub && return 1
+#Exit immediately if profile requested without necessary configuration.
+[[ "$ub_import_param" == "--profile" ]] && [[ "$profileScriptLocation" == "" ]] && [[ "$profileScriptFolder" == "" ]] && _messagePlain_bad 'import: profile: missing: profileScriptLocation, missing: profileScriptFolder' | _user_log-ub && return 1
+#Exit immediately if script import requested without necessary configuration.
+([[ "$ub_import_param" == "--call" ]] || [[ "$ub_import_param" == "--script" ]])  && [[ "$importScriptLocation" == "" ]] && [[ "$importScriptFolder" == "" ]] && _messagePlain_bad 'import: call: missing: importScriptLocation, missing: importScriptFolder' | _user_log-ub && return 1
+#Exit immediately if parent requested without necessary configuration.
+([[ "$ub_import_param" == "--parent" ]] || [[ "$ub_import_param" == "--return" ]] || [[ "$ub_import_param" == "--devenv" ]])  && [[ "$scriptAbsoluteLocation" != "" ]] && [[ "$scriptAbsoluteFolder" != "" ]] && [[ "$sessionid" != "" ]] && _messagePlain_bad 'import: parent: missing: scriptAbsoluteLocation, missing: scriptAbsoluteFolder, missing: sessionid' | _user_log-ub && return 1
 
 #Override.
 
@@ -529,6 +630,253 @@ _gather_params() {
 	export globalArgs=("${@}")
 }
 
+#Universal debugging filesystem.
+#End user function.
+_user_log() {
+	# DANGER Do NOT create automatically, or reference any existing directory!
+	! [[ -d "$HOME"/.ubcore/userlog ]] && cat - > /dev/null 2>&1 && return 0
+	
+	cat - >> "$HOME"/.ubcore/userlog/user.log
+	
+	return 0
+}
+
+_monitor_user_log() {
+	! [[ -d "$HOME"/.ubcore/userlog ]] && return 1
+	
+	tail -f "$HOME"/.ubcore/userlog/*
+}
+
+#Universal debugging filesystem.
+#"generic/ubiquitousheader.sh"
+_user_log-ub() {
+	# DANGER Do NOT create automatically, or reference any existing directory!
+	! [[ -d "$HOME"/.ubcore/userlog ]] && cat - > /dev/null 2>&1 && return 0
+	
+	#Terminal session may be used - the sessionid may be set through .bashrc/.ubcorerc .
+	if [[ "$sessionid" != "" ]]
+	then
+		cat - >> "$HOME"/.ubcore/userlog/u-"$sessionid".log
+		return 0
+	fi
+	cat - >> "$HOME"/.ubcore/userlog/u-undef.log
+	
+	return 0
+}
+
+_monitor_user_log-ub() {
+	! [[ -d "$HOME"/.ubcore/userlog ]] && return 1
+	
+	tail -f "$HOME"/.ubcore/userlog/u-*
+}
+
+#Universal debugging filesystem.
+_user_log_anchor() {
+	# DANGER Do NOT create automatically, or reference any existing directory!
+	! [[ -d "$HOME"/.ubcore/userlog ]] && cat - > /dev/null 2>&1 && return 0
+	
+	#Terminal session may be used - the sessionid may be set through .bashrc/.ubcorerc .
+	if [[ "$sessionid" != "" ]]
+	then
+		cat - >> "$HOME"/.ubcore/userlog/a-"$sessionid".log
+		return 0
+	fi
+	cat - >> "$HOME"/.ubcore/userlog/a-undef.log
+	
+	return 0
+}
+
+_monitor_user_log_anchor() {
+	! [[ -d "$HOME"/.ubcore/userlog ]] && return 1
+	
+	tail -f "$HOME"/.ubcore/userlog/a-*
+}
+
+#Universal debugging filesystem.
+_user_log_template() {
+	# DANGER Do NOT create automatically, or reference any existing directory!
+	! [[ -d "$HOME"/.ubcore/userlog ]] && cat - > /dev/null 2>&1 && return 0
+	
+	#Terminal session may be used - the sessionid may be set through .bashrc/.ubcorerc .
+	if [[ "$sessionid" != "" ]]
+	then
+		cat - >> "$HOME"/.ubcore/userlog/t-"$sessionid".log
+		return 0
+	fi
+	cat - >> "$HOME"/.ubcore/userlog/t-undef.log
+	
+	return 0
+}
+
+_messageColors() {
+	echo -e '\E[1;37m 'white' \E[0m'
+	echo -e '\E[0;30m 'black' \E[0m'
+	echo -e '\E[0;34m 'blue' \E[0m'
+	echo -e '\E[1;34m 'blue_light' \E[0m'
+	echo -e '\E[0;32m 'green' \E[0m'
+	echo -e '\E[1;32m 'green_light' \E[0m'
+	echo -e '\E[0;36m 'cyan' \E[0m'
+	echo -e '\E[1;36m 'cyan_light' \E[0m'
+	echo -e '\E[0;31m 'red' \E[0m'
+	echo -e '\E[1;31m 'red_light' \E[0m'
+	echo -e '\E[0;35m 'purple' \E[0m'
+	echo -e '\E[1;35m 'purple_light' \E[0m'
+	echo -e '\E[0;33m 'brown' \E[0m'
+	echo -e '\E[1;33m 'yellow' \E[0m'
+	echo -e '\E[0;30m 'gray' \E[0m'
+	echo -e '\E[1;37m 'gray_light' \E[0m'
+	return 0
+}
+
+#Cyan. Harmless status messages.
+#"generic/ubiquitousheader.sh"
+_messagePlain_nominal() {
+	echo -e -n '\E[0;36m '
+	echo -n "$@"
+	echo -e -n ' \E[0m'
+	echo
+	return 0
+}
+
+#Blue. Diagnostic instrumentation.
+#"generic/ubiquitousheader.sh"
+_messagePlain_probe() {
+	echo -e -n '\E[0;34m '
+	echo -n "$@"
+	echo -e -n ' \E[0m'
+	echo
+	return 0
+}
+
+#Blue. Diagnostic instrumentation.
+#"generic/ubiquitousheader.sh"
+_messagePlain_probe_expr() {
+	echo -e -n '\E[0;34m '
+	echo -e -n "$@"
+	echo -e -n ' \E[0m'
+	echo
+	return 0
+}
+
+#Green. Working as expected.
+#"generic/ubiquitousheader.sh"
+_messagePlain_good() {
+	echo -e -n '\E[0;32m '
+	echo -n "$@"
+	echo -e -n ' \E[0m'
+	echo
+	return 0
+}
+
+#Yellow. May or may not be a problem.
+#"generic/ubiquitousheader.sh"
+_messagePlain_warn() {
+	echo -e -n '\E[1;33m '
+	echo -n "$@"
+	echo -e -n ' \E[0m'
+	echo
+	return 0
+}
+
+#Red. Will result in missing functionality, reduced performance, etc, but not necessarily program failure overall.
+_messagePlain_bad() {
+	echo -e -n '\E[0;31m '
+	echo -n "$@"
+	echo -e -n ' \E[0m'
+	echo
+	return 0
+}
+
+#Demarcate major steps.
+_messageNormal() {
+	echo -e -n '\E[1;32;46m '
+	echo -n "$@"
+	echo -e -n ' \E[0m'
+	echo
+	return 0
+}
+
+#Demarcate major failures.
+_messageError() {
+	echo -e -n '\E[1;33;41m '
+	echo -n "$@"
+	echo -e -n ' \E[0m'
+	echo
+	return 0
+}
+
+#Demarcate need to fetch/generate dependency automatically - not a failure condition.
+_messageNEED() {
+	_messageNormal "NEED"
+	#echo " NEED "
+}
+
+#Demarcate have dependency already, no need to fetch/generate.
+_messageHAVE() {
+	_messageNormal "HAVE"
+	#echo " HAVE "
+}
+
+_messageWANT() {
+	_messageNormal "WANT"
+	#echo " WANT "
+}
+
+#Demarcate where PASS/FAIL status cannot be absolutely proven. Rarely appropriate - usual best practice is to simply progress to the next major step.
+_messageDONE() {
+	_messageNormal "DONE"
+	#echo " DONE "
+}
+
+_messagePASS() {
+	_messageNormal "PASS"
+	#echo " PASS "
+}
+
+#Major failure. Program stopped.
+_messageFAIL() {
+	_messageError "FAIL"
+	#echo " FAIL "
+	_stop 1
+}
+
+_messageWARN() {
+	echo
+	echo "$@"
+	return 0
+}
+
+
+_messageProcess() {
+	local processString
+	processString="$1""..."
+	
+	local processStringLength
+	processStringLength=${#processString}
+	
+	local currentIteration
+	currentIteration=0
+	
+	local padLength
+	let padLength=40-"$processStringLength"
+	
+	[[ "$processStringLength" -gt "38" ]] && _messageNormal "$processString" && return 0
+	
+	echo -e -n '\E[1;32;46m '
+	
+	echo -n "$processString"
+	
+	echo -e -n '\E[0m'
+	
+	while [[ "$currentIteration" -lt "$padLength" ]]
+	do
+		echo -e -n ' '
+		let currentIteration="$currentIteration"+1
+	done
+	
+	return 0
+}
+
 #Gets filename extension, specifically any last three characters in given string.
 #"$1" == filename
 _getExt() {
@@ -1038,212 +1386,6 @@ _showCommand() {
 	"$@"
 }
 
-#Universal debugging filesystem.
-#End user function.
-_user_log() {
-	# DANGER Do NOT create automatically, or reference any existing directory!
-	! [[ -d "$HOME"/.ubcore/userlog ]] && cat - > /dev/null 2>&1 && return 1
-	
-	cat - >> "$HOME"/.ubcore/userlog/user.log
-}
-
-#Universal debugging filesystem.
-_user_log-ub() {
-	# DANGER Do NOT create automatically, or reference any existing directory!
-	! [[ -d "$HOME"/.ubcore/userlog ]] && cat - > /dev/null 2>&1 && return 1
-	
-	#Terminal session may be used - the sessionid may be set through .bashrc/.ubcorerc .
-	if [[ "$sessionid" != "" ]]
-	then
-		cat - >> "$HOME"/.ubcore/userlog/u-"$sessionid".log
-		return
-	fi
-	cat - >> "$HOME"/.ubcore/userlog/u-undef.log
-}
-
-#Universal debugging filesystem.
-_user_log_anchor() {
-	# DANGER Do NOT create automatically, or reference any existing directory!
-	! [[ -d "$HOME"/.ubcore/userlog ]] && cat - > /dev/null 2>&1 && return 1
-	
-	#Terminal session may be used - the sessionid may be set through .bashrc/.ubcorerc .
-	if [[ "$sessionid" != "" ]]
-	then
-		cat - >> "$HOME"/.ubcore/userlog/a-"$sessionid".log
-		return
-	fi
-	cat - >> "$HOME"/.ubcore/userlog/a-undef.log
-}
-
-#Universal debugging filesystem.
-_user_log_template() {
-	# DANGER Do NOT create automatically, or reference any existing directory!
-	! [[ -d "$HOME"/.ubcore/userlog ]] && cat - > /dev/null 2>&1 && return 1
-	
-	#Terminal session may be used - the sessionid may be set through .bashrc/.ubcorerc .
-	if [[ "$sessionid" != "" ]]
-	then
-		cat - >> "$HOME"/.ubcore/userlog/t-"$sessionid".log
-		return
-	fi
-	cat - >> "$HOME"/.ubcore/userlog/t-undef.log
-}
-
-_messageColors() {
-	echo -e '\E[1;37m 'white' \E[0m'
-	echo -e '\E[0;30m 'black' \E[0m'
-	echo -e '\E[0;34m 'blue' \E[0m'
-	echo -e '\E[1;34m 'blue_light' \E[0m'
-	echo -e '\E[0;32m 'green' \E[0m'
-	echo -e '\E[1;32m 'green_light' \E[0m'
-	echo -e '\E[0;36m 'cyan' \E[0m'
-	echo -e '\E[1;36m 'cyan_light' \E[0m'
-	echo -e '\E[0;31m 'red' \E[0m'
-	echo -e '\E[1;31m 'red_light' \E[0m'
-	echo -e '\E[0;35m 'purple' \E[0m'
-	echo -e '\E[1;35m 'purple_light' \E[0m'
-	echo -e '\E[0;33m 'brown' \E[0m'
-	echo -e '\E[1;33m 'yellow' \E[0m'
-	echo -e '\E[0;30m 'gray' \E[0m'
-	echo -e '\E[1;37m 'gray_light' \E[0m'
-	return 0
-}
-
-#Cyan. Harmless status messages.
-_messagePlain_nominal() {
-	echo -e -n '\E[0;36m '
-	echo -n "$@"
-	echo -e -n ' \E[0m'
-	echo
-	return 0
-}
-
-#Blue. Diagnostic instrumentation.
-_messagePlain_probe() {
-	echo -e -n '\E[0;34m '
-	echo -n "$@"
-	echo -e -n ' \E[0m'
-	echo
-	return 0
-}
-
-#Green. Working as expected.
-_messagePlain_good() {
-	echo -e -n '\E[0;32m '
-	echo -n "$@"
-	echo -e -n ' \E[0m'
-	echo
-	return 0
-}
-
-#Yellow. May or may not be a problem.
-_messagePlain_warn() {
-	echo -e -n '\E[1;33m '
-	echo -n "$@"
-	echo -e -n ' \E[0m'
-	echo
-	return 0
-}
-
-#Red. Will result in missing functionality, reduced performance, etc, but not necessarily program failure overall.
-_messagePlain_bad() {
-	echo -e -n '\E[0;31m '
-	echo -n "$@"
-	echo -e -n ' \E[0m'
-	echo
-	return 0
-}
-
-#Demarcate major steps.
-_messageNormal() {
-	echo -e -n '\E[1;32;46m '
-	echo -n "$@"
-	echo -e -n ' \E[0m'
-	echo
-	return 0
-}
-
-#Demarcate major failures.
-_messageError() {
-	echo -e -n '\E[1;33;41m '
-	echo -n "$@"
-	echo -e -n ' \E[0m'
-	echo
-	return 0
-}
-
-#Demarcate need to fetch/generate dependency automatically - not a failure condition.
-_messageNEED() {
-	_messageNormal "NEED"
-	#echo " NEED "
-}
-
-#Demarcate have dependency already, no need to fetch/generate.
-_messageHAVE() {
-	_messageNormal "HAVE"
-	#echo " HAVE "
-}
-
-_messageWANT() {
-	_messageNormal "WANT"
-	#echo " WANT "
-}
-
-#Demarcate where PASS/FAIL status cannot be absolutely proven. Rarely appropriate - usual best practice is to simply progress to the next major step.
-_messageDONE() {
-	_messageNormal "DONE"
-	#echo " DONE "
-}
-
-_messagePASS() {
-	_messageNormal "PASS"
-	#echo " PASS "
-}
-
-#Major failure. Program stopped.
-_messageFAIL() {
-	_messageError "FAIL"
-	#echo " FAIL "
-	_stop 1
-}
-
-_messageWARN() {
-	echo
-	echo "$@"
-	return 0
-}
-
-
-_messageProcess() {
-	local processString
-	processString="$1""..."
-	
-	local processStringLength
-	processStringLength=${#processString}
-	
-	local currentIteration
-	currentIteration=0
-	
-	local padLength
-	let padLength=40-"$processStringLength"
-	
-	[[ "$processStringLength" -gt "38" ]] && _messageNormal "$processString" && return
-	
-	echo -e -n '\E[1;32;46m '
-	
-	echo -n "$processString"
-	
-	echo -e -n '\E[0m'
-	
-	while [[ "$currentIteration" -lt "$padLength" ]]
-	do
-		echo -e -n ' '
-		let currentIteration="$currentIteration"+1
-	done
-	
-	return 0
-}
-
 #Validates non-empty request.
 _validateRequest() {
 	echo -e -n '\E[1;32;46m Validating request '"$1"'...	\E[0m'
@@ -1393,8 +1535,8 @@ _setupUbiquitous_here() {
 	cat << CZXWXcRMTo8EmM8i4d
 export profileScriptLocation="$ubcoreUBdir"/ubiquitous_bash.sh
 export profileScriptFolder="$ubcoreUBdir"
-[[ "$scriptAbsoluteLocation" == "" ]] && . "$ubcoreUBdir"/ubiquitous_bash.sh --return _importShortcuts
-[[ "$scriptAbsoluteLocation" != "" ]] && . "$scriptAbsoluteLocation" --return _importShortcuts
+[[ "$scriptAbsoluteLocation" == "" ]] && . "$ubcoreUBdir"/ubiquitous_bash.sh --profile _importShortcuts
+[[ "$scriptAbsoluteLocation" != "" ]] && . "$scriptAbsoluteLocation" --parent _importShortcuts
 CZXWXcRMTo8EmM8i4d
 }
 
@@ -1576,29 +1718,44 @@ _anchor() {
 #####Basic Variable Management
 
 #####Global variables.
-
 #Fixed unique identifier for ubiquitious bash created global resources, such as bootdisc images to be automaticaly mounted by guests. Should NOT be changed.
 export ubiquitiousBashID="uk4uPhB663kVcygT0q"
 
-#Importing ubiquitous bash into a login shell with "~/.bashrc" is the only known cause for "_getScriptAbsoluteLocation" to return a result such as "/bin/bash". Also, "--bypass" or "--return" implies a requirement to keep current session.
-if ( [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] )  && [[ "${BASH_SOURCE[0]}" != "${0}" ]] && [[ "$profileScriptLocation" != "" ]] && [[ "$profileScriptFolder" != "" ]]
+##Parameters
+#"--shell", ""
+#"--profile"
+#"--parent", "--return", "--devenv"
+#"--call", "--script" "--bypass"
+if [[ "$ub_import_param" == "--profile" ]]
 then
-	if [[ "$scriptAbsoluteLocation" == "" ]] && [[ "$scriptAbsoluteFolder" == "" ]] && [[ "$sessionid" == "" ]]
-	then
-		export scriptAbsoluteLocation="$profileScriptLocation"
-		export scriptAbsoluteFolder="$profileScriptFolder"
-		export sessionid=$(_uid)
-	fi
-else
-	if [[ "$1" != "--bypass" ]] && [[ "$1" != "--return" ]]
-	then
-		export scriptAbsoluteLocation=$(_getScriptAbsoluteLocation)
-		export scriptAbsoluteFolder=$(_getScriptAbsoluteFolder)
-		export sessionid=$(_uid)
-	fi
+	export scriptAbsoluteLocation="$profileScriptLocation"
+	export scriptAbsoluteFolder="$profileScriptFolder"
+	export sessionid=$(_uid)
+	_messagePlain_probe_expr 'profile: scriptAbsoluteLocation= '"$scriptAbsoluteLocation"'\n ''profile: scriptAbsoluteFolder= '"$scriptAbsoluteFolder"'\n ''profile: sessionid= '"$sessionid" | _user_log-ub
+elif [[ "$ub_import" != "true" ]]	#"--shell", ""
+then
+	export scriptAbsoluteLocation=$(_getScriptAbsoluteLocation)
+	export scriptAbsoluteFolder=$(_getScriptAbsoluteFolder)
+	export sessionid=$(_uid)
+	_messagePlain_probe_expr 'default: scriptAbsoluteLocation= '"$scriptAbsoluteLocation"'\n ''default: scriptAbsoluteFolder= '"$scriptAbsoluteFolder"'\n ''default: sessionid= '"$sessionid" | _user_log-ub
+elif ([[ "$ub_import_param" == "--parent" ]] || [[ "$ub_import_param" == "--return" ]] || [[ "$ub_import_param" == "--devenv" ]])  && [[ "$scriptAbsoluteLocation" != "" ]] && [[ "$scriptAbsoluteFolder" != "" ]] && [[ "$sessionid" != "" ]]
+then
+	true #Do not override.
+	_messagePlain_probe_expr 'parent: scriptAbsoluteLocation= '"$scriptAbsoluteLocation"'\n ''parent: scriptAbsoluteFolder= '"$scriptAbsoluteFolder"'\n ''parent: sessionid= '"$sessionid" | _user_log-ub
+elif ([[ "$ub_import_param" == "--call" ]] || [[ "$ub_import_param" == "--script" ]] || [[ "$ub_import_param" == "--bypass" ]] || [[ "$ub_import_param" == "--shell" ]] || [[ "$ub_import_param" == "" ]])
+then
+	export scriptAbsoluteLocation="$importScriptLocation"
+	export scriptAbsoluteFolder="$importScriptFolder"
+	export sessionid=$(_uid)
+	_messagePlain_probe_expr 'call: scriptAbsoluteLocation= '"$scriptAbsoluteLocation"'\n ''call: scriptAbsoluteFolder= '"$scriptAbsoluteFolder"'\n ''call: sessionid= '"$sessionid" | _user_log-ub
+else	#FAIL, implies [[ "$ub_import" == "true" ]]
+	_messagePlain_bad 'import: fall: fail' | _user_log-ub && return 1
+	exit 1
 fi
 
-[[ "$sessionid" == "" ]] && exit 1
+[[ ! -e "$scriptAbsoluteLocation" ]] && _messagePlain_bad 'missing: scriptAbsoluteLocation= '"$scriptAbsoluteLocation" | _user_log-ub && exit 1
+[[ "$sessionid" == "" ]] && _messagePlain_bad 'missing: sessionid' | _user_log-ub && exit 1
+
 export lowsessionid=$(echo -n "$sessionid" | tr A-Z a-z )
 
 #Current directory for preservation.
@@ -2698,15 +2855,8 @@ _echo() {
 	echo "$@"
 }
 
-#Stop if script is imported into an existing shell and bypass not requested.
-if [[ "${BASH_SOURCE[0]}" != "${0}" ]] && [[ "$1" != "--bypass" ]]  && [[ "$1" != "--return" ]]
-then
-	return
-fi
-ub_bypass=
-ub_return=
-[[ "$1" == "--bypass" ]] && ub_bypass=true && shift
-[[ "$1" == "--return" ]] && ub_return=true && shift
+#Stop if script is imported, parameter not specified, and command not given.
+[[ "$ub_import" == "true" ]] && [[ "$ub_import_param" == "" ]] && [[ "$1" != '_'* ]] && _messagePlain_warn 'import: missing: parameter, missing: command' | _user_log-ub && return 1
 
 #Set "ubOnlyMain" in "ops" overrides as necessary.
 if [[ "$ubOnlyMain" != "true" ]]
@@ -2721,10 +2871,10 @@ then
 			internalFunctionExitStatus="$?"
 			
 			#Exit if not imported into existing shell, or bypass requested, else fall through to subsequent return.
-			if ! [[ "${BASH_SOURCE[0]}" != "${0}" ]] || ! [[ "$ub_bypass" != "true" ]]
+			if [[ "$ub_import" != "true" ]] || [[ "$ub_import_param" == "--bypass" ]]
 			then
 				#export noEmergency=true
-				[[ "$ub_return" != "true" ]] && exit "$internalFunctionExitStatus"
+				exit "$internalFunctionExitStatus"
 			fi
 			return "$internalFunctionExitStatus"
 		fi
@@ -2739,19 +2889,17 @@ then
 		internalFunctionExitStatus="$?"
 		
 		#Exit if not imported into existing shell, or bypass requested, else fall through to subsequent return.
-		if ! [[ "${BASH_SOURCE[0]}" != "${0}" ]] || ! [[ "$ub_bypass" != "true" ]]
+		if [[ "$ub_import" != "true" ]] || [[ "$ub_import_param" == "--bypass" ]]
 		then
 			#export noEmergency=true
-			[[ "$ub_return" != "true" ]] && exit "$internalFunctionExitStatus"
+			exit "$internalFunctionExitStatus"
 		fi
 		return "$internalFunctionExitStatus"
 		#_stop "$?"
 	fi
 fi
-unset ub_bypass
-unset ub_return
 
-[[ "$ubOnlyMain" == "true" ]] && export  ubOnlyMain="false"
+[[ "$ubOnlyMain" == "true" ]] && export ubOnlyMain="false"
 
 #Do not continue script execution through program code if critical global variables are not sane.
 [[ ! -e "$scriptAbsoluteLocation" ]] && exit 1

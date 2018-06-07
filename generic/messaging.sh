@@ -2,51 +2,78 @@
 #End user function.
 _user_log() {
 	# DANGER Do NOT create automatically, or reference any existing directory!
-	! [[ -d "$HOME"/.ubcore/userlog ]] && cat - > /dev/null 2>&1 && return 1
+	! [[ -d "$HOME"/.ubcore/userlog ]] && cat - > /dev/null 2>&1 && return 0
 	
 	cat - >> "$HOME"/.ubcore/userlog/user.log
+	
+	return 0
+}
+
+_monitor_user_log() {
+	! [[ -d "$HOME"/.ubcore/userlog ]] && return 1
+	
+	tail -f "$HOME"/.ubcore/userlog/*
 }
 
 #Universal debugging filesystem.
+#"generic/ubiquitousheader.sh"
 _user_log-ub() {
 	# DANGER Do NOT create automatically, or reference any existing directory!
-	! [[ -d "$HOME"/.ubcore/userlog ]] && cat - > /dev/null 2>&1 && return 1
+	! [[ -d "$HOME"/.ubcore/userlog ]] && cat - > /dev/null 2>&1 && return 0
 	
 	#Terminal session may be used - the sessionid may be set through .bashrc/.ubcorerc .
 	if [[ "$sessionid" != "" ]]
 	then
 		cat - >> "$HOME"/.ubcore/userlog/u-"$sessionid".log
-		return
+		return 0
 	fi
 	cat - >> "$HOME"/.ubcore/userlog/u-undef.log
+	
+	return 0
+}
+
+_monitor_user_log-ub() {
+	! [[ -d "$HOME"/.ubcore/userlog ]] && return 1
+	
+	tail -f "$HOME"/.ubcore/userlog/u-*
 }
 
 #Universal debugging filesystem.
 _user_log_anchor() {
 	# DANGER Do NOT create automatically, or reference any existing directory!
-	! [[ -d "$HOME"/.ubcore/userlog ]] && cat - > /dev/null 2>&1 && return 1
+	! [[ -d "$HOME"/.ubcore/userlog ]] && cat - > /dev/null 2>&1 && return 0
 	
 	#Terminal session may be used - the sessionid may be set through .bashrc/.ubcorerc .
 	if [[ "$sessionid" != "" ]]
 	then
 		cat - >> "$HOME"/.ubcore/userlog/a-"$sessionid".log
-		return
+		return 0
 	fi
 	cat - >> "$HOME"/.ubcore/userlog/a-undef.log
+	
+	return 0
+}
+
+_monitor_user_log_anchor() {
+	! [[ -d "$HOME"/.ubcore/userlog ]] && return 1
+	
+	tail -f "$HOME"/.ubcore/userlog/a-*
 }
 
 #Universal debugging filesystem.
 _user_log_template() {
 	# DANGER Do NOT create automatically, or reference any existing directory!
-	! [[ -d "$HOME"/.ubcore/userlog ]] && cat - > /dev/null 2>&1 && return 1
+	! [[ -d "$HOME"/.ubcore/userlog ]] && cat - > /dev/null 2>&1 && return 0
 	
 	#Terminal session may be used - the sessionid may be set through .bashrc/.ubcorerc .
 	if [[ "$sessionid" != "" ]]
 	then
 		cat - >> "$HOME"/.ubcore/userlog/t-"$sessionid".log
-		return
+		return 0
 	fi
 	cat - >> "$HOME"/.ubcore/userlog/t-undef.log
+	
+	return 0
 }
 
 _messageColors() {
@@ -70,6 +97,7 @@ _messageColors() {
 }
 
 #Cyan. Harmless status messages.
+#"generic/ubiquitousheader.sh"
 _messagePlain_nominal() {
 	echo -e -n '\E[0;36m '
 	echo -n "$@"
@@ -79,6 +107,7 @@ _messagePlain_nominal() {
 }
 
 #Blue. Diagnostic instrumentation.
+#"generic/ubiquitousheader.sh"
 _messagePlain_probe() {
 	echo -e -n '\E[0;34m '
 	echo -n "$@"
@@ -87,7 +116,18 @@ _messagePlain_probe() {
 	return 0
 }
 
+#Blue. Diagnostic instrumentation.
+#"generic/ubiquitousheader.sh"
+_messagePlain_probe_expr() {
+	echo -e -n '\E[0;34m '
+	echo -e -n "$@"
+	echo -e -n ' \E[0m'
+	echo
+	return 0
+}
+
 #Green. Working as expected.
+#"generic/ubiquitousheader.sh"
 _messagePlain_good() {
 	echo -e -n '\E[0;32m '
 	echo -n "$@"
@@ -97,6 +137,7 @@ _messagePlain_good() {
 }
 
 #Yellow. May or may not be a problem.
+#"generic/ubiquitousheader.sh"
 _messagePlain_warn() {
 	echo -e -n '\E[1;33m '
 	echo -n "$@"
@@ -187,7 +228,7 @@ _messageProcess() {
 	local padLength
 	let padLength=40-"$processStringLength"
 	
-	[[ "$processStringLength" -gt "38" ]] && _messageNormal "$processString" && return
+	[[ "$processStringLength" -gt "38" ]] && _messageNormal "$processString" && return 0
 	
 	echo -e -n '\E[1;32;46m '
 	

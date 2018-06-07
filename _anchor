@@ -358,6 +358,7 @@ _launch_anchor() {
 		exit $?
 	fi
 	_messagePlain_bad 'missing: '"$anchorSource" | _user_log_anchor
+	return 1
 }
 
 export anchorScriptAbsoluteLocation=$(_getScriptAbsoluteLocation)

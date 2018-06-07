@@ -15,6 +15,7 @@ _generate_bash() {
 	_compile_bash_header
 	
 	_compile_bash_essential_utilities
+	_compile_bash_utilities
 	
 	_compile_bash_vars_global
 	
