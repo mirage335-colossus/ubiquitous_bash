@@ -23,7 +23,7 @@ elif ([[ "$ub_import_param" == "--parent" ]] || [[ "$ub_import_param" == "--retu
 then
 	true #Do not override.
 	_messagePlain_probe_expr 'parent: scriptAbsoluteLocation= '"$scriptAbsoluteLocation"'\n ''parent: scriptAbsoluteFolder= '"$scriptAbsoluteFolder"'\n ''parent: sessionid= '"$sessionid" | _user_log-ub
-elif ([[ "$ub_import_param" == "--call" ]] || [[ "$ub_import_param" == "--script" ]] || [[ "$ub_import_param" == "--bypass" ]] || [[ "$ub_import_param" == "--shell" ]] || [[ "$ub_import_param" == "" ]])
+elif [[ "$ub_import_param" == "--call" ]] || [[ "$ub_import_param" == "--script" ]] || [[ "$ub_import_param" == "--bypass" ]] || [[ "$ub_import_param" == "--shell" ]] || [[ "$ub_import_param" == "" ]]
 then
 	export scriptAbsoluteLocation="$importScriptLocation"
 	export scriptAbsoluteFolder="$importScriptFolder"
@@ -33,6 +33,8 @@ else	#FAIL, implies [[ "$ub_import" == "true" ]]
 	_messagePlain_bad 'import: fall: fail' | _user_log-ub && return 1
 	exit 1
 fi
+[[ "$importScriptLocation" != "" ]] && export importScriptLocation=
+[[ "$importScriptFolder" != "" ]] && export importScriptFolder=
 
 [[ ! -e "$scriptAbsoluteLocation" ]] && _messagePlain_bad 'missing: scriptAbsoluteLocation= '"$scriptAbsoluteLocation" | _user_log-ub && exit 1
 [[ "$sessionid" == "" ]] && _messagePlain_bad 'missing: sessionid' | _user_log-ub && exit 1
