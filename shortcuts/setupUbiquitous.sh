@@ -118,7 +118,7 @@ _setupUbiquitous() {
 	
 	
 	echo "Now import new functionality into current shell if not in current shell."
-	echo ". "'"'"$scriptAbsoluteLocation"'"' --return _importShortcuts
+	echo ". "'"'"$scriptAbsoluteLocation"'"' --profile _importShortcuts
 	
 	
 	return 0

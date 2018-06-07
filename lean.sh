@@ -82,11 +82,11 @@ ub_import_script=
 ub_loginshell=
 
 [[ "${BASH_SOURCE[0]}" != "${0}" ]] && ub_import="true"
-([[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '#--parent' ]]) && ub_import_param="$1" && shift
+([[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]]) && ub_import_param="$1" && shift
 ([[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]]) && ub_loginshell="true"	#Importing ubiquitous bash into a login shell with "~/.bashrc" is the only known cause for "_getScriptAbsoluteLocation" to return a result such as "/bin/bash".
 [[ "$ub_import" == "true" ]] && ! [[ "$ub_loginshell" == "true" ]] && ub_import_script="true"
 
-_messagePlain_probe_expr '$0= '"$0"'\n ''ub_import= '"$ub_import"'\n ''ub_import_param= '"$ub_import_param"'\n ''ub_import_script= '"$ub_import_script"'\n ''ub_loginshell= '"$ub_loginshell" | _user_log-ub
+_messagePlain_probe_expr '$0= '"$0"'\n ''$1= '"$1"'\n ''ub_import= '"$ub_import"'\n ''ub_import_param= '"$ub_import_param"'\n ''ub_import_script= '"$ub_import_script"'\n ''ub_loginshell= '"$ub_loginshell" | _user_log-ub
 
 # DANGER Prohibited import from login shell. Use _setupUbiquitous, call from another script, or manually set importScriptLocation.
 if [[ "$ub_import_param" == "--profile" ]]
@@ -101,6 +101,9 @@ then
 elif [[ "$ub_import_param" == "--call" ]] || [[ "$ub_import_param" == "--script" ]] || [[ "$ub_import_param" == "--bypass" ]] || [[ "$ub_import_param" == "--shell" ]] || [[ "$ub_import_param" == "" ]]
 then
 	([[ "$importScriptLocation" == "" ]] ||  [[ "$importScriptFolder" == "" ]]) && _messagePlain_bad 'import: call: missing: importScriptLocation, missing: importScriptFolder' | _user_log-ub && return 1
+else	#FAIL, implies [[ "$ub_import" == "true" ]]
+	_messagePlain_bad 'import: fall: fail' | _user_log-ub && return 1
+	exit 1
 fi
 
 #Override.
@@ -1536,8 +1539,8 @@ _setupUbiquitous_here() {
 	cat << CZXWXcRMTo8EmM8i4d
 export profileScriptLocation="$ubcoreUBdir"/ubiquitous_bash.sh
 export profileScriptFolder="$ubcoreUBdir"
-[[ "$scriptAbsoluteLocation" == "" ]] && . "$ubcoreUBdir"/ubiquitous_bash.sh --profile _importShortcuts
-[[ "$scriptAbsoluteLocation" != "" ]] && . "$scriptAbsoluteLocation" --parent _importShortcuts
+[[ "\$scriptAbsoluteLocation" != "" ]] && . "\$scriptAbsoluteLocation" --parent _importShortcuts
+[[ "\$scriptAbsoluteLocation" == "" ]] && . "\$profileScriptLocation" --profile _importShortcuts
 CZXWXcRMTo8EmM8i4d
 }
 
@@ -1661,7 +1664,7 @@ _setupUbiquitous() {
 	
 	
 	echo "Now import new functionality into current shell if not in current shell."
-	echo ". "'"'"$scriptAbsoluteLocation"'"' --return _importShortcuts
+	echo ". "'"'"$scriptAbsoluteLocation"'"' --profile _importShortcuts
 	
 	
 	return 0
