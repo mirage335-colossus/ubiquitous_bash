@@ -138,3 +138,6 @@ fi
 [[ ! -e "$scriptAbsoluteLocation" ]] && exit 1
 [[ ! -e "$scriptAbsoluteFolder" ]] && exit 1
 _failExec || exit 1
+
+#Return if script is under import mode, and bypass is not requested.
+[[ "$ub_import" == "true" ]] && [[ "$ub_import_param" != "--bypass" ]] && return 0
