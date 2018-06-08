@@ -579,7 +579,7 @@ See status of miner in browser.
 
 </pre>
 </div>
-<div title="Command" creator="mirage335" modifier="YourName" created="201710261745" modified="201806072230" changecount="48">
+<div title="Command" creator="mirage335" modifier="YourName" created="201710261745" modified="201806082013" changecount="50">
 <pre>Internal functions and variables can be directly accessed externally. All implementation code provided by &quot;structure/overrides.sh&quot;.
 
 
@@ -592,12 +592,13 @@ If first parameter starts with &quot;_&quot;, script will internally execute all
 Exit status is preserved.
 
 !Import
-Script recognizes several import modes, identified by first parameter, which is shifted out if found. When imported mode, normal 'main()' script actions will not take place without &lt;nowiki&gt;&quot;--bypass&quot;&lt;/nowiki&gt; directive, which otherwise has identical behavior to other parameters in the same category.
+Script recognizes several import modes, identified by first parameter, which is shifted out if found.
 //{{{
 #&quot;--profile&quot;
 #&quot;--parent&quot;, &quot;--return&quot;, &quot;--devenv&quot;
 #&quot;--call&quot;, &quot;--script&quot;, &quot;--shell&quot;, &quot;&quot;, &quot;--bypass&quot;
 //}}}
+If imported, script will generally &quot;return&quot; before reaching &quot;main()&quot;. Using &lt;nowiki&gt;&quot;--bypass&quot;&lt;/nowiki&gt; will force normal exit and allow main to be reached, even if script is not imported.
 
 Safety checks (including &quot;_safeRMR&quot;) rely upon an accurate &quot;$scriptAbsoluteLocation&quot; setting, which cannot be obtained automatically if launched from a login shell. Consequently, all import modes require external information from parent script or user.
 //{{{
