@@ -171,6 +171,9 @@ _compile_bash_utilities() {
 	
 	includeScriptList+=( "generic/process"/remotesig.sh )
 	
+	includeScriptList+=( "generic/process"/embed_here.sh )
+	includeScriptList+=( "generic/process"/embed.sh )
+	
 	includeScriptList+=( "generic/net"/fetch.sh )
 	
 	includeScriptList+=( "generic/net"/findport.sh )

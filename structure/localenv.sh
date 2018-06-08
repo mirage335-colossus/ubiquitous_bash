@@ -12,6 +12,7 @@ _start() {
 	#. "$varStore"
 	
 	echo $$ > "$safeTmp"/.pid
+	_embed_here > "$safeTmp"/embed.sh
 	
 	_start_prog
 }
