@@ -87,18 +87,20 @@ ub_loginshell=
 _messagePlain_probe_expr '$0= '"$0"'\n ''$1= '"$1"'\n ''ub_import= '"$ub_import"'\n ''ub_import_param= '"$ub_import_param"'\n ''ub_import_script= '"$ub_import_script"'\n ''ub_loginshell= '"$ub_loginshell" | _user_log-ub
 
 # DANGER Prohibited import from login shell. Use _setupUbiquitous, call from another script, or manually set importScriptLocation.
+# WARNING Import from shell can be detected. Import from script cannot. Asserting that script has been imported is possible. Asserting that script has not been imported is not possible. Users may be protected from interactive mistakes. Script developers are NOT protected.
 if [[ "$ub_import_param" == "--profile" ]]
 then
 	([[ "$profileScriptLocation" == "" ]] ||  [[ "$profileScriptFolder" == "" ]]) && _messagePlain_bad 'import: profile: missing: profileScriptLocation, missing: profileScriptFolder' | _user_log-ub && return 1
-elif [[ "$ub_import" != "true" ]]	#"--shell", ""
-then
-	true #no problem
 elif ([[ "$ub_import_param" == "--parent" ]] || [[ "$ub_import_param" == "--return" ]] || [[ "$ub_import_param" == "--devenv" ]])
 then
 	([[ "$scriptAbsoluteLocation" != "" ]] || [[ "$scriptAbsoluteFolder" != "" ]] || [[ "$sessionid" != "" ]]) && _messagePlain_bad 'import: parent: missing: scriptAbsoluteLocation, missing: scriptAbsoluteFolder, missing: sessionid' | _user_log-ub && return 1
-elif [[ "$ub_import_param" == "--call" ]] || [[ "$ub_import_param" == "--script" ]] || [[ "$ub_import_param" == "--bypass" ]] || [[ "$ub_import_param" == "--shell" ]] || [[ "$ub_import_param" == "" ]]
+elif [[ "$ub_import_param" == "--call" ]] || [[ "$ub_import_param" == "--script" ]] || [[ "$ub_import_param" == "--bypass" ]] || [[ "$ub_import_param" == "--shell" ]] || ([[ "$ub_import" == "true" ]] && [[ "$ub_import_param" == "" ]])
 then
 	([[ "$importScriptLocation" == "" ]] ||  [[ "$importScriptFolder" == "" ]]) && _messagePlain_bad 'import: call: missing: importScriptLocation, missing: importScriptFolder' | _user_log-ub && return 1
+elif [[ "$ub_import" != "true" ]]	#"--shell", ""
+then
+	_messagePlain_warn 'import: undetected: cannot determine if imported' | _user_log-ub
+	true #no problem
 else	#FAIL, implies [[ "$ub_import" == "true" ]]
 	_messagePlain_bad 'import: fall: fail' | _user_log-ub && return 1
 	exit 1

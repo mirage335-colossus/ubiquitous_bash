@@ -9,26 +9,29 @@ export ubiquitiousBashID="uk4uPhB663kVcygT0q"
 #"--call", "--script" "--bypass"
 if [[ "$ub_import_param" == "--profile" ]]
 then
+	ub_import=true
 	export scriptAbsoluteLocation="$profileScriptLocation"
 	export scriptAbsoluteFolder="$profileScriptFolder"
 	export sessionid=$(_uid)
 	_messagePlain_probe_expr 'profile: scriptAbsoluteLocation= '"$scriptAbsoluteLocation"'\n ''profile: scriptAbsoluteFolder= '"$scriptAbsoluteFolder"'\n ''profile: sessionid= '"$sessionid" | _user_log-ub
+elif ([[ "$ub_import_param" == "--parent" ]] || [[ "$ub_import_param" == "--return" ]] || [[ "$ub_import_param" == "--devenv" ]])  && [[ "$scriptAbsoluteLocation" != "" ]] && [[ "$scriptAbsoluteFolder" != "" ]] && [[ "$sessionid" != "" ]]
+then
+	ub_import=true
+	true #Do not override.
+	_messagePlain_probe_expr 'parent: scriptAbsoluteLocation= '"$scriptAbsoluteLocation"'\n ''parent: scriptAbsoluteFolder= '"$scriptAbsoluteFolder"'\n ''parent: sessionid= '"$sessionid" | _user_log-ub
+elif [[ "$ub_import_param" == "--call" ]] || [[ "$ub_import_param" == "--script" ]] || [[ "$ub_import_param" == "--bypass" ]] || [[ "$ub_import_param" == "--shell" ]] || ([[ "$ub_import" == "true" ]] && [[ "$ub_import_param" == "" ]])
+then
+	ub_import=true
+	export scriptAbsoluteLocation="$importScriptLocation"
+	export scriptAbsoluteFolder="$importScriptFolder"
+	export sessionid=$(_uid)
+	_messagePlain_probe_expr 'call: scriptAbsoluteLocation= '"$scriptAbsoluteLocation"'\n ''call: scriptAbsoluteFolder= '"$scriptAbsoluteFolder"'\n ''call: sessionid= '"$sessionid" | _user_log-ub
 elif [[ "$ub_import" != "true" ]]	#"--shell", ""
 then
 	export scriptAbsoluteLocation=$(_getScriptAbsoluteLocation)
 	export scriptAbsoluteFolder=$(_getScriptAbsoluteFolder)
 	export sessionid=$(_uid)
 	_messagePlain_probe_expr 'default: scriptAbsoluteLocation= '"$scriptAbsoluteLocation"'\n ''default: scriptAbsoluteFolder= '"$scriptAbsoluteFolder"'\n ''default: sessionid= '"$sessionid" | _user_log-ub
-elif ([[ "$ub_import_param" == "--parent" ]] || [[ "$ub_import_param" == "--return" ]] || [[ "$ub_import_param" == "--devenv" ]])  && [[ "$scriptAbsoluteLocation" != "" ]] && [[ "$scriptAbsoluteFolder" != "" ]] && [[ "$sessionid" != "" ]]
-then
-	true #Do not override.
-	_messagePlain_probe_expr 'parent: scriptAbsoluteLocation= '"$scriptAbsoluteLocation"'\n ''parent: scriptAbsoluteFolder= '"$scriptAbsoluteFolder"'\n ''parent: sessionid= '"$sessionid" | _user_log-ub
-elif [[ "$ub_import_param" == "--call" ]] || [[ "$ub_import_param" == "--script" ]] || [[ "$ub_import_param" == "--bypass" ]] || [[ "$ub_import_param" == "--shell" ]] || [[ "$ub_import_param" == "" ]]
-then
-	export scriptAbsoluteLocation="$importScriptLocation"
-	export scriptAbsoluteFolder="$importScriptFolder"
-	export sessionid=$(_uid)
-	_messagePlain_probe_expr 'call: scriptAbsoluteLocation= '"$scriptAbsoluteLocation"'\n ''call: scriptAbsoluteFolder= '"$scriptAbsoluteFolder"'\n ''call: sessionid= '"$sessionid" | _user_log-ub
 else	#FAIL, implies [[ "$ub_import" == "true" ]]
 	_messagePlain_bad 'import: fall: fail' | _user_log-ub && return 1
 	exit 1

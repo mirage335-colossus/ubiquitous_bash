@@ -22,7 +22,7 @@ then
 fi
 
 #Traps, if script is not imported into existing shell, or bypass requested.
-if ! [[ "${BASH_SOURCE[0]}" != "${0}" ]] || ! [[ "$1" != "--bypass" ]]
+if [[ "$ub_import" != "true" ]] || [[ "$ub_import_param" == "--bypass" ]]
 then
 	trap 'excode=$?; _stop $excode; trap - EXIT; echo $excode' EXIT HUP QUIT PIPE 	# reset
 	trap 'excode=$?; trap "" EXIT; _stop $excode; echo $excode' EXIT HUP QUIT PIPE 	# ignore
@@ -87,7 +87,7 @@ _echo() {
 }
 
 #Stop if script is imported, parameter not specified, and command not given.
-[[ "$ub_import" == "true" ]] && [[ "$ub_import_param" == "" ]] && [[ "$1" != '_'* ]] && _messagePlain_warn 'import: missing: parameter, missing: command' | _user_log-ub && return 1
+[[ "$ub_import" == "true" ]] && [[ "$ub_import_param" == "" ]] && [[ "$1" != '_'* ]] && _messagePlain_warn 'import: missing: parameter, missing: command' | _user_log-ub && ub_import="" && return 1
 
 #Set "ubOnlyMain" in "ops" overrides as necessary.
 if [[ "$ubOnlyMain" != "true" ]]
@@ -107,6 +107,7 @@ then
 				#export noEmergency=true
 				exit "$internalFunctionExitStatus"
 			fi
+			ub_import=""
 			return "$internalFunctionExitStatus"
 		fi
 	fi
@@ -125,6 +126,7 @@ then
 			#export noEmergency=true
 			exit "$internalFunctionExitStatus"
 		fi
+		ub_import=""
 		return "$internalFunctionExitStatus"
 		#_stop "$?"
 	fi
