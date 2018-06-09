@@ -4474,9 +4474,13 @@ _prepareAppHome() {
 
 	mkdir -p "$scriptLocal"/app/.app
 
-	_relink "$scriptLocal"/app/.app "$globalFakeHome"/.app
-
-	_relink "$scriptLocal"/app/.app "$instancedFakeHome"/.app
+	#_relink "$scriptLocal"/app/.app "$globalFakeHome"/.app
+	
+	mkdir -p "$instancedFakeHome"/.app
+	rsync -q -ax --exclude "/.cache" --exclude "/.git" "$scriptLocal"/app/.app/. "$instancedFakeHome"/.app/
+	#_relink "$scriptLocal"/app/.app "$instancedFakeHome"/.app
+	
+	export ub_disable_prepareFakeHome_instance=true
 }
 
 _setShortHome() {
@@ -10881,6 +10885,8 @@ _prepareFakeHome() {
 
 _prepareFakeHome_instance() {
 	_prepareFakeHome
+	
+	[[ "$ub_disable_prepareFakeHome_instance" == "true" ]] && return
 	
 	mkdir -p "$instancedFakeHome"
 	

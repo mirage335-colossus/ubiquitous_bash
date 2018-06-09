@@ -6,6 +6,8 @@ _prepareFakeHome() {
 _prepareFakeHome_instance() {
 	_prepareFakeHome
 	
+	[[ "$ub_disable_prepareFakeHome_instance" == "true" ]] && return
+	
 	mkdir -p "$instancedFakeHome"
 	
 	if [[ "$appGlobalFakeHome" == "" ]]
