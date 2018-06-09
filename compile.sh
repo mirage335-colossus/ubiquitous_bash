@@ -2842,6 +2842,7 @@ then
 fi
 
 #Traps, if script is not imported into existing shell, or bypass requested.
+# WARNING Exact behavior of this system is critical to some use cases.
 if [[ "$ub_import" != "true" ]] || [[ "$ub_import_param" == "--bypass" ]]
 then
 	trap 'excode=$?; _stop $excode; trap - EXIT; echo $excode' EXIT HUP QUIT PIPE 	# reset
@@ -2907,7 +2908,13 @@ _echo() {
 }
 
 #Stop if script is imported, parameter not specified, and command not given.
-[[ "$ub_import" == "true" ]] && [[ "$ub_import_param" == "" ]] && [[ "$1" != '_'* ]] && _messagePlain_warn 'import: missing: parameter, missing: command' | _user_log-ub && ub_import="" && return 1
+if [[ "$ub_import" == "true" ]] && [[ "$ub_import_param" == "" ]] && [[ "$1" != '_'* ]]
+then
+	_messagePlain_warn 'import: missing: parameter, missing: command' | _user_log-ub
+	ub_import=""
+	return 1 > /dev/null 2>&1
+	exit 1
+fi
 
 #Set "ubOnlyMain" in "ops" overrides as necessary.
 if [[ "$ubOnlyMain" != "true" ]]
@@ -2928,7 +2935,8 @@ then
 				exit "$internalFunctionExitStatus"
 			fi
 			ub_import=""
-			return "$internalFunctionExitStatus"
+			return "$internalFunctionExitStatus" > /dev/null 2>&1
+			exit "$internalFunctionExitStatus"
 		fi
 	fi
 	
@@ -2947,7 +2955,8 @@ then
 			exit "$internalFunctionExitStatus"
 		fi
 		ub_import=""
-		return "$internalFunctionExitStatus"
+		return "$internalFunctionExitStatus" > /dev/null 2>&1
+		exit "$internalFunctionExitStatus"
 		#_stop "$?"
 	fi
 fi
@@ -2960,7 +2969,11 @@ fi
 _failExec || exit 1
 
 #Return if script is under import mode, and bypass is not requested.
-[[ "$ub_import" == "true" ]] && [[ "$ub_import_param" != "--bypass" ]] && return 0
+if [[ "$ub_import" == "true" ]] && [[ "$ub_import_param" != "--bypass" ]]
+then
+	return 0 > /dev/null 2>&1
+	exit 0
+fi
 
 
 _generate_compile_bash "$@"
