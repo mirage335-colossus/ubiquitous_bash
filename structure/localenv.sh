@@ -39,6 +39,17 @@ _stop() {
 	
 	_preserveLog
 	
+	local ub_stop_pid
+	if [[ -e "$safeTmp"/.pid ]]
+	then
+		ub_stop_pid=$(cat "$safeTmp"/.pid)
+		if [[ $$ != "$ub_stop_pid" ]]
+		then
+			pkill -P "$ub_stop_pid"
+			kill "$ub_stop_pid"
+		fi
+	fi
+	
 	rm -f "$pidFile" > /dev/null 2>&1	#Redundant, as this usually resides in "$safeTmp".
 	_safeRMR "$shortTmp"
 	_safeRMR "$safeTmp"

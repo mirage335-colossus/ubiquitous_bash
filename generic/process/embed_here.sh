@@ -5,7 +5,7 @@ _embed_here() {
 export scriptAbsoluteLocation="$scriptAbsoluteLocation"
 export scriptAbsoluteFolder="$scriptAbsoluteFolder"
 export sessionid="$sessionid"
-. "$scriptAbsoluteLocation" --embed "$@"
+. "$scriptAbsoluteLocation" --embed "\$@"
 CZXWXcRMTo8EmM8i4d
 }
  

@@ -530,6 +530,23 @@ _command_safeBackup() {
 #http://stackoverflow.com/questions/687948/timeout-a-command-in-bash-without-unnecessary-delay
 _timeout() { ( set +b; sleep "$1" & "${@:2}" & wait -n; r=$?; kill -9 `jobs -p`; exit $r; ) } 
 
+_terminate() {
+	local processListFile
+	processListFile="$scriptAbsoluteFolder"/.pidlist_$(_uid)
+	
+	local currentPID
+	
+	cat "$safeTmp"/.pid > "$processListFile"
+	
+	while read -r currentPID
+	do
+		pkill -P "$currentPID"
+		kill "$currentPID"
+	done < "$processListFile"
+	
+	rm "$processListFile"
+}
+
 _terminateAll() {
 	local processListFile
 	processListFile="$scriptAbsoluteFolder"/.pidlist_$(_uid)
@@ -541,7 +558,7 @@ _terminateAll() {
 	while read -r currentPID
 	do
 		pkill -P "$currentPID"
-		pkill "$currentPID"
+		kill "$currentPID"
 	done < "$processListFile"
 	
 	rm "$processListFile"
@@ -1349,7 +1366,7 @@ _embed_here() {
 export scriptAbsoluteLocation="$scriptAbsoluteLocation"
 export scriptAbsoluteFolder="$scriptAbsoluteFolder"
 export sessionid="$sessionid"
-. "$scriptAbsoluteLocation" --embed "$@"
+. "$scriptAbsoluteLocation" --embed "\$@"
 CZXWXcRMTo8EmM8i4d
 }
  
@@ -11376,6 +11393,17 @@ _stop() {
 	_stop_prog
 	
 	_preserveLog
+	
+	local ub_stop_pid
+	if [[ -e "$safeTmp"/.pid ]]
+	then
+		ub_stop_pid=$(cat "$safeTmp"/.pid)
+		if [[ $$ != "$ub_stop_pid" ]]
+		then
+			pkill -P "$ub_stop_pid"
+			kill "$ub_stop_pid"
+		fi
+	fi
 	
 	rm -f "$pidFile" > /dev/null 2>&1	#Redundant, as this usually resides in "$safeTmp".
 	_safeRMR "$shortTmp"
