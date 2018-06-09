@@ -117,15 +117,17 @@ _uid() {
 #Universal debugging filesystem.
 _user_log_anchor() {
 	# DANGER Do NOT create automatically, or reference any existing directory!
-	! [[ -d "$HOME"/.ubcore/userlog ]] && cat - > /dev/null 2>&1 && return 1
+	! [[ -d "$HOME"/.ubcore/userlog ]] && cat - > /dev/null 2>&1 && return 0
 	
 	#Terminal session may be used - the sessionid may be set through .bashrc/.ubcorerc .
 	if [[ "$sessionid" != "" ]]
 	then
 		cat - >> "$HOME"/.ubcore/userlog/a-"$sessionid".log
-		return
+		return 0
 	fi
 	cat - >> "$HOME"/.ubcore/userlog/a-undef.log
+	
+	return 0
 }
 
 #Cyan. Harmless status messages.
