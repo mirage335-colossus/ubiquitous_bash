@@ -12,7 +12,9 @@ _start() {
 	#. "$varStore"
 	
 	echo $$ > "$safeTmp"/.pid
-	_embed_here > "$safeTmp"/embed.sh
+	echo "$sessionid" > "$safeTmp"/.sessionid
+	_embed_here > "$safeTmp"/.embed.sh
+	chmod 755 "$safeTmp"/.embed.sh
 	
 	_start_prog
 }
