@@ -1,5 +1,10 @@
 #####Installation
 
+
+_vector() {
+	_tryExec "_vector_virtUser"
+}
+
 #Verifies the timeout and sleep commands work properly, with subsecond specifications.
 _timetest() {
 	
@@ -189,6 +194,10 @@ _test() {
 	_timetest
 	
 	_test_prog
+	
+	_messageNormal 'Vector...'
+	_vector
+	_messagePASS
 	
 	_stop
 	

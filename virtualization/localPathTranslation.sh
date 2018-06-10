@@ -27,11 +27,13 @@ _checkBaseDirRemote_app_remoteOnly() {
 	[[ "$1" == "/bin/bash" ]] && return 0
 }
 
+# WARNING Strongly recommend not sharing root with guest, but this can be overridden by "ops".
 _checkBaseDirRemote_common_localOnly() {
 	[[ "$1" == "." ]] && return 0
 	[[ "$1" == "./" ]] && return 0
 	[[ "$1" == ".." ]] && return 0
 	[[ "$1" == "../" ]] && return 0
+	
 	[[ "$1" == "/" ]] && return 0
 	
 	return 1
@@ -151,13 +153,13 @@ _localDir() {
 		return
 	fi
 	
-	if [[ ! -e "$1" ]] && ! _pathPartOf "$1" "$2"
+	if [[ ! -e "$1" ]] || ! _pathPartOf "$1" "$2"
 	then
 		echo "$1"
 		return
 	fi
 	
-	[[ "$3" != "" ]] && echo -n "$3" && [[ "$3" != "/" ]] && echo "/"
+	[[ "$3" != "" ]] && echo -n "$3" && [[ "$3" != "/" ]] && echo -n "/"
 	realpath -L -s --relative-to="$2" "$1"
 	
 }
@@ -225,3 +227,32 @@ _stop_virtLocal() {
 _test_virtLocal_X11() {
 	_getDep xauth
 }
+
+# TODO: Expansion needed.
+_vector_virtUser() {
+	export sharedHostProjectDir=
+	export sharedGuestProjectDir=/home/user/project
+	_virtUser /tmp
+	#echo "${processedArgs[0]}"
+	[[ "${processedArgs[0]}" != '/home/user/project/tmp' ]] && echo 'fail: _vector_virtUser' && _messageFAIL
+	
+	export sharedHostProjectDir=/
+	export sharedGuestProjectDir='Z:'
+	_virtUser /tmp
+	#echo "${processedArgs[0]}"
+	[[ "${processedArgs[0]}" != 'Z:\tmp' ]] && echo 'fail: _vector_virtUser' && _messageFAIL
+	
+	export sharedHostProjectDir=/tmp
+	export sharedGuestProjectDir='/home/user/project/tmp'
+	_virtUser /tmp
+	#echo "${processedArgs[0]}"
+	[[ "${processedArgs[0]}" != '/home/user/project/tmp/.' ]] && echo 'fail: _vector_virtUser' && _messageFAIL
+	
+	
+	return 0
+}
+
+
+
+
+
