@@ -8,4 +8,5 @@ _test_prog() {
 	_getDep dependency
 	
 	! _check_prog && echo 'missing: dependency mismatch' && stop 1
+	return 0
 }
