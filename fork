@@ -199,8 +199,8 @@ _project() {
 	cd "$workingDir"
 }
 
-export devName="m335"
-export projectName="openocd-static"
+export devName="devName"
+export projectName="projectName"
 
 _project "$projectName"
 
