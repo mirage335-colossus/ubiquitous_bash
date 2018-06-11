@@ -9757,25 +9757,26 @@ _installUbiquitous() {
 	
 	cd "$ubcoreDir"
 	
+	cd "$ubcoreUBdir"
 	_messagePlain_nominal 'attempt: git pull'
 	if [[ "$nonet" != "true" ]] && type git > /dev/null 2>&1
 	then
-		cd "$ubcoreUBdir"
 		
 		local ub_gitPullStatus
 		git pull
 		ub_gitPullStatus="$?"
 		! cd "$localFunctionEntryPWD" && return 1
 		
-		[[ "$ub_gitPullStatus" == "0" ]] && _messagePlain_good 'pass: git pull' && return 0
-		cd "$localFunctionEntryPWD"
+		[[ "$ub_gitPullStatus" == "0" ]] && _messagePlain_good 'pass: git pull' cd "$localFunctionEntryPWD" && return 0
 	fi
 	_messagePlain_warn 'fail: git pull'
 	
+	cd "$ubcoreDir"
 	_messagePlain_nominal 'attempt: git clone'
 	[[ "$nonet" != "true" ]] && type git > /dev/null 2>&1 && [[ ! -e ".git" ]] && _gitClone_ubiquitous && _messagePlain_good 'pass: git clone' && return 0
 	_messagePlain_warn 'fail: git clone'
 	
+	cd "$ubcoreDir"
 	_messagePlain_nominal 'attempt: self clone'
 	[[ -e ".git" ]] && _messagePlain_bad 'fail: self clone' && return 1
 	_selfCloneUbiquitous && return 0
