@@ -7902,9 +7902,9 @@ _editFakeHome_atom_sequence() {
 	_set_atomFakeHomeSource
 	export appGlobalFakeHome="$atomFakeHomeSource"
 	
-	export keepFakeHome="false"
+	#export keepFakeHome="false"
 	
-	"$@"
+	_editFakeHome "$@"
 }
 
 _editFakeHome_atom() {
