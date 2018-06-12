@@ -108,6 +108,17 @@ else	#FAIL, implies [[ "$ub_import" == "true" ]]
 	exit 1
 fi
 
+if [[ "$ub_import_param" == "--profile" ]]
+then
+	ub_import=true
+elif ([[ "$ub_import_param" == "--parent" ]] || [[ "$ub_import_param" == "--embed" ]] || [[ "$ub_import_param" == "--return" ]] || [[ "$ub_import_param" == "--devenv" ]])  && [[ "$scriptAbsoluteLocation" != "" ]] && [[ "$scriptAbsoluteFolder" != "" ]] && [[ "$sessionid" != "" ]]
+then
+	ub_import=true
+elif [[ "$ub_import_param" == "--call" ]] || [[ "$ub_import_param" == "--script" ]] || [[ "$ub_import_param" == "--bypass" ]] || [[ "$ub_import_param" == "--shell" ]] || ([[ "$ub_import" == "true" ]] && [[ "$ub_import_param" == "" ]])
+then
+	ub_import=true
+fi
+
 [[ "$ub_import" != "true" ]] && ub_import_param=
 
 #Critical prerequsites.
