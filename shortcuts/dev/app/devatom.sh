@@ -63,6 +63,19 @@ _atom_edit() {
 	_atomDev_edit "$@"  > /dev/null 2>&1 &
 }
 
+_editFakeHome_atom_sequence() {
+	_set_atomFakeHomeSource
+	export appGlobalFakeHome="$atomFakeHomeSource"
+	
+	export keepFakeHome="false"
+	
+	"$@"
+}
+
+_editFakeHome_atom() {
+	"$scriptAbsoluteLocation" _editFakeHome_atom_sequence "$@"
+}
+
 _atom_config() {
 	_set_atomFakeHomeSource
 	
