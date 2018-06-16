@@ -69,3 +69,9 @@ nohup.out
 **/home/.oracle_jre*
 
 _local/h/.arduino15/staging/
+
+**/node_modules/pty.js/build/Makefile
+**/node_modules/pty.js/build/config.gypi
+**/node_modules/pty.js/build/pty.target.mk
+
+**/.atom/.apm

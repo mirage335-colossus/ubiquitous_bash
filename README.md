@@ -47,6 +47,9 @@ In most user environments, the latest git repository code will provide the stron
 * parity
 * ethminer
 
+# Likely Problems
+* Atom packages are not necessarily safe for portable operation. At least "PlatformIO Terminal" and "Command Toolbar" make reference to absolute file paths. Atom packages installed with "apm", as would be done for git submodules, also make reference to absolute file paths. Atom cannot be relied upon as a general purpose project specific IDE.
+
 # Credit
 * Thanks to "rocky" for workaround to bashdb/emacs issue - https://github.com/realgud/realgud/issues/205#issuecomment-354851601 .
 
