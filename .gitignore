@@ -75,3 +75,12 @@ _local/h/.arduino15/staging/
 **/node_modules/pty.js/build/pty.target.mk
 
 **/.atom/.apm
+
+**/.config/Atom/QuotaManager
+**/.config/Atom/QuotaManager-journal
+**/.config/Atom/QuotaManager*
+**/.config/Atom/Local Storage/
+**/.config/Atom/databases
+**/.config/Atom/Cookies
+**/.config/Atom/Cookies-journal
+**/.config/Atom/Cookies*
