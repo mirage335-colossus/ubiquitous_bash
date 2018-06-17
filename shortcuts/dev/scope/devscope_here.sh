@@ -17,6 +17,7 @@ export specimen="$specimen"
 export ub_scope_name="$ub_scope_name"
 export ub_scope="$ub_scope"
 export scope="$scope"
+
 CZXWXcRMTo8EmM8i4d
 	
 	_scope_var_here_prog "$@"
@@ -56,6 +57,26 @@ export sessionid="$sessionid"
 CZXWXcRMTo8EmM8i4d
 }
 
+_scope_command_external_here() {
+	cat << CZXWXcRMTo8EmM8i4d
+#!/usr/bin/env bash
+
+CZXWXcRMTo8EmM8i4d
+
+	_scope_var_here
+
+	cat << CZXWXcRMTo8EmM8i4d
+
+export importScriptLocation="$scriptAbsoluteLocation"
+export importScriptFolder="$scriptAbsoluteFolder"
+. "$scriptAbsoluteLocation" --script "$1" "\$@"
+CZXWXcRMTo8EmM8i4d
+}
+
 _scope_command_write() {
+	_scope_command_here "$@" > "$ub_scope"/"$1"
+}
+
+_scope_command_external_write() {
 	_scope_command_here "$@" > "$ub_scope"/"$1"
 }

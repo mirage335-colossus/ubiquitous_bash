@@ -4472,6 +4472,102 @@ _vector_virtUser() {
 
 
 
+_makeFakeHome_extra_layer0() {
+	_relink "$1"/.bashrc "$2"/.bashrc
+	_relink "$1"/.ubcore "$2"/.ubcore
+	
+	_relink "$1"/.Xauthority "$2"/.Xauthority
+	
+	_relink "$1"/.ssh "$2"/.ssh
+	_relink "$1"/.gitconfig "$2"/.gitconfig
+	
+	mkdir -p "$2"/.config
+}
+
+_makeFakeHome_extra_layer1() {
+	true
+}
+
+#"$1" == sourceHome
+#"$2" == destinationHome
+_makeFakeHome() {
+	[[ "$1" == "" ]] && return 1
+	! [[ -d "$1" ]] && return 1
+	
+	[[ "$2" == "" ]] && return 1
+	[[ "$2" == "/home/""$USER" ]] && return 1
+	! [[ -d "$2" ]] && return 1
+	
+	_relink "$1" "$2"/realHome
+	
+	_relink "$1"/Downloads "$2"/Downloads
+	
+	_relink "$1"/Desktop "$2"/Desktop
+	_relink "$1"/Documents "$2"/Documents
+	_relink "$1"/Music "$2"/Music
+	_relink "$1"/Pictures "$2"/Pictures
+	_relink "$1"/Public "$2"/Public
+	_relink "$1"/Templates "$2"/Templates
+	_relink "$1"/Videos "$2"/Videos
+	
+	_relink "$1"/bin "$2"/bin
+	
+	_relink "$1"/core "$2"/core
+	_relink "$1"/project "$2"/project
+	_relink "$1"/projects "$2"/projects
+	
+	
+	
+	_makeFakeHome_extra_layer0 "$@"
+	_makeFakeHome_extra_layer1 "$@"
+}
+
+_unmakeFakeHome_extra_layer0() {
+	_rmlink "$1"/.bashrc
+	_rmlink "$1"/.ubcore
+	
+	_rmlink "$1"/.Xauthority
+	
+	_rmlink "$1"/.ssh
+	_rmlink "$1"/.gitconfig
+	
+	rmdir "$1"/.config
+}
+
+_unmakeFakeHome_extra_layer1() {
+	true
+}
+
+#"$1" == destinationHome
+_unmakeFakeHome() {
+	[[ "$1" == "" ]] && return 1
+	[[ "$1" == "/home/""$USER" ]] && return 1
+	! [[ -d "$1" ]] && return 1
+	
+	_rmlink "$1"/realHome
+	
+	_rmlink "$1"/Downloads
+	
+	_rmlink "$1"/Desktop
+	_rmlink "$1"/Documents
+	_rmlink "$1"/Music
+	_rmlink "$1"/Pictures
+	_rmlink "$1"/Public
+	_rmlink "$1"/Templates
+	_rmlink "$1"/Videos
+	
+	_rmlink "$1"/bin
+	
+	_rmlink "$1"/core
+	_rmlink "$1"/project
+	_rmlink "$1"/projects
+	
+	
+	
+	_unmakeFakeHome_extra_layer0 "$@"
+	_unmakeFakeHome_extra_layer1 "$@"
+}
+
 _test_fakehome() {
 	_getDep mount
 	_getDep mountpoint
@@ -4479,156 +4575,71 @@ _test_fakehome() {
 	_getDep rsync
 }
 
-_prepareAppHome() {
-	mkdir -p "$globalFakeHome"
-	mkdir -p "$instancedFakeHome"
+#"$1" == source directory
+#actualFakeHome
+	#default: "$instancedFakeHome"
+	#"$globalFakeHome" || "$instancedFakeHome" || "$shortFakeHome" || "$arbitraryFakeHome"/arbitrary
+_install_fakeHome() {
+	! [[ -e "$1" ]] && return 1
+	! [[ -d "$1" ]] && return 1
+	! [[ -e "$actualFakeHome" ]] && return 1
+	! [[ -d "$actualFakeHome" ]] && return 1
+	rsync -q -ax --exclude "/.cache" --exclude "/.git" "$1"/. "$actualFakeHome"/
+}
 
+#Example. Run similar code under "core.sh" before calling "_fakeHome", "_install_fakeHome", or similar, to set a specific type/location for fakeHome environment - global, instanced, or otherwise.
+_arbitrary_fakeHome_app() {
+	export actualFakeHome="$instancedFakeHome"
+	#export actualFakeHome="$shortFakeHome"
+	
+	#export actualFakeHome="$globalFakeHome"
+	#export actualFakeHome=""$arbitraryFakeHome"/arbitrary"
+}
+
+#Example. Run similar code under "core.sh" before calling "_fakeHome" to add features to any fakeHome environment, global, instanced, or otherwise.
+_install_fakeHome_app() {
 	mkdir -p "$scriptLocal"/app/.app
-
+	
+	_install_fakeHome "$scriptLocal"/app/.
 	#_relink "$scriptLocal"/app/.app "$globalFakeHome"/.app
-	
-	mkdir -p "$instancedFakeHome"/.app
-	rsync -q -ax --exclude "/.cache" --exclude "/.git" "$scriptLocal"/app/.app/. "$instancedFakeHome"/.app/
-	#_relink "$scriptLocal"/app/.app "$instancedFakeHome"/.app
-	
-	export ub_disable_prepareFakeHome_instance=true
 }
 
-_setShortHome() {
-	export instancedFakeHome="$shortTmp"/h
+#Run before _fakeHome to use a ramdisk as home directory. Wrap within "_wantSudo" and ">/dev/null 2>&1" to use optionally. Especially helpful to limit SSD wear when dealing with moderately large (ie. ~2GB) fakeHome environments which must be instanced.
+_mountRAM_fakeHome() {
+	_mustGetSudo
+	mkdir -p "$actualFakeHome"
+	sudo -n mount -t ramfs ramfs "$actualFakeHome"
+	sudo -n chown "$USER":"$USER" "$actualFakeHome"
+	! mountpoint "$actualFakeHome" > /dev/null 2>&1 && _stop 1
+	return 0
 }
 
-_setFakeHomeEnv_extra() {
-	true
+_umountRAM_fakeHome() {
+	mkdir -p "$actualFakeHome"
+	sudo -n umount "$actualFakeHome"
+	mountpoint "$actualFakeHome" > /dev/null 2>&1 && _stop 1
+	return 0
 }
 
-_setFakeHomeEnv() {
-	[[ "$setFakeHome" == "true" ]] && return 0
-	export setFakeHome="true"
+#actualFakeHome
+	#default: "$instancedFakeHome"
+	#"$globalFakeHome" || "$instancedFakeHome" || "$shortFakeHome" || "$arbitraryFakeHome"/arbitrary
+#keepFakeHome
+	#default: true
+	#"true" || "false"
+_fakeHome() {
+	#Recursive fakeHome prohibited. Instead, start new script session, with new sessionid, and keepFakeHome=false. Do not workaround without a clear understanding why this may endanger your application.
+	[[ "$setFakeHome" == "true" ]] && return 1
+	#_resetFakeHomeEnv_nokeep
 	
-	export realHome="$HOME"
+	[[ "$realHome" == "" ]] && export realHome="$HOME"
 	
-	export fakeHome=$(_findDir "$1")
-	[[ "$appGlobalFakeHome" != "" ]] && [[ "$1" != "$instancedFakeHome" ]] && export fakeHome=$(_findDir "$appGlobalFakeHome")
+	export HOME="$actualFakeHome"
+	export setFakeHome=true
 	
-	export HOME="$fakeHome"
-	
-	_setFakeHomeEnv_extra
-}
-
-_makeFakeHome_extra_layer0() {
-	_relink "$realHome"/.bashrc "$HOME"/.bashrc
-	_relink "$realHome"/.ubcore "$HOME"/.ubcore
-	
-	_relink "$realHome"/.Xauthority "$HOME"/.Xauthority
-	
-	_relink "$realHome"/.ssh "$HOME"/.ssh
-	_relink "$realHome"/.gitconfig "$HOME"/.gitconfig
-	
-	mkdir -p "$HOME"/.config
-}
-
-_makeFakeHome_extra_layer1() {
-	true
-}
-
-_makeFakeHome() {
-	[[ "$HOME" == "" ]] && return 0
-	[[ "$HOME" == "/home/""$USER" ]] && return 0
-	
-	_relink "$realHome" "$HOME"/realHome
-	
-	_relink "$realHome"/Downloads "$HOME"/Downloads
-	
-	_relink "$realHome"/Desktop "$HOME"/Desktop
-	_relink "$realHome"/Documents "$HOME"/Documents
-	_relink "$realHome"/Music "$HOME"/Music
-	_relink "$realHome"/Pictures "$HOME"/Pictures
-	_relink "$realHome"/Public "$HOME"/Public
-	_relink "$realHome"/Templates "$HOME"/Templates
-	_relink "$realHome"/Videos "$HOME"/Videos
-	
-	_relink "$realHome"/bin "$HOME"/bin
-	
-	_relink "$realHome"/core "$HOME"/core
-	_relink "$realHome"/project "$HOME"/project
-	_relink "$realHome"/projects "$HOME"/projects
-	
-	
-	
-	_makeFakeHome_extra_layer0
-	_makeFakeHome_extra_layer1
-}
-
-_unmakeFakeHome_extra_layer0() {
-	_rmlink "$HOME"/.bashrc
-	_rmlink "$HOME"/.ubcore
-	
-	_rmlink "$HOME"/.Xauthority
-	
-	_rmlink "$HOME"/.ssh
-	_rmlink "$HOME"/.gitconfig
-	
-	rmdir "$HOME"/.config
-}
-
-_unmakeFakeHome_extra_layer1() {
-	true
-}
-
-_unmakeFakeHome() {
-	[[ "$HOME" == "" ]] && return 0
-	[[ "$HOME" == "/home/""$USER" ]] && return 0
-	
-	_rmlink "$HOME"/realHome
-	
-	_rmlink "$HOME"/Downloads
-	
-	_rmlink "$HOME"/Desktop
-	_rmlink "$HOME"/Documents
-	_rmlink "$HOME"/Music
-	_rmlink "$HOME"/Pictures
-	_rmlink "$HOME"/Public
-	_rmlink "$HOME"/Templates
-	_rmlink "$HOME"/Videos
-	
-	_rmlink "$HOME"/bin
-	
-	_rmlink "$HOME"/core
-	_rmlink "$HOME"/project
-	_rmlink "$HOME"/projects
-	
-	
-	
-	_unmakeFakeHome_extra_layer0
-	_unmakeFakeHome_extra_layer1
-}
-
-_createFakeHome_sequence() {
-	_start
-	
-	_resetFakeHomeEnv_nokeep
-	_prepareFakeHome
-	
-	_setFakeHomeEnv "$globalFakeHome"
-	_makeFakeHome
-	
-	_resetFakeHomeEnv_nokeep
-	_stop
-}
-
-_createFakeHome() {
-	"$scriptAbsoluteLocation" _createFakeHome_sequence "$@"
-}
-
-_editFakeHome_sequence() {
-	_start
-	
-	_resetFakeHomeEnv_nokeep
-	_prepareFakeHome
-	
-	_setFakeHomeEnv "$globalFakeHome"
-	_makeFakeHome > /dev/null 2>&1
+	_prepareFakeHome > /dev/null 2>&1
+	_install_fakeHome "$globalFakeHome"
+	_makeFakeHome "$realHome" "$actualFakeHome"
 	
 	env -i DISPLAY="$DISPLAY" XAUTH="$XAUTH" XAUTHORITY="$XAUTHORITY" XSOCK="$XSOCK" realHome="$realHome" keepFakeHome="$keepFakeHome" HOME="$HOME" setFakeHome="$setFakeHome" TERM="${TERM}" SHELL="${SHELL}" PATH="${PATH}" dbus-run-session "$@"
 	#"$@"
@@ -4636,97 +4647,6 @@ _editFakeHome_sequence() {
 	#_unmakeFakeHome > /dev/null 2>&1
 	
 	_resetFakeHomeEnv_nokeep
-	_stop
-}
-
-_editFakeHome() {
-	"$scriptAbsoluteLocation" _editFakeHome_sequence "$@"
-}
-
-_mountRAM_fakeHome_instance_sequence() {
-	_mustGetSudo
-	mkdir -p "$instancedFakeHome"
-	sudo -n mount -t ramfs ramfs "$instancedFakeHome"
-	sudo -n chown "$USER":"$USER" "$instancedFakeHome"
-	! mountpoint "$instancedFakeHome" > /dev/null 2>&1 && _stop 1
-	return 0
-}
-
-_mountUserFakeHome_instance() {
-	! _mountRAM_fakeHome_instance_sequence && _stop 1
-	return 0
-}
-
-_umountRAM_fakeHome_instance_sequence() {
-	mkdir -p "$instancedFakeHome"
-	sudo -n umount "$instancedFakeHome"
-	mountpoint "$instancedFakeHome" > /dev/null 2>&1 && _stop 1
-	return 0
-}
-
-_umountUserFakeHome_instance() {
-	! _umountRAM_fakeHome_instance_sequence && _stop 1
-	return 0
-}
-
-#userFakeHome_enableMemMount="true"
-_userFakeHome_sequence() {
-	_start
-	
-	[[ "$instancedFakeHome" == "" ]] && _stop 1
-	
-	[[ "$userFakeHome_enableMemMount" == "true" ]] && ! _mountUserFakeHome_instance && _stop 1
-	
-	_resetFakeHomeEnv_nokeep
-	_prepareFakeHome
-	_prepareFakeHome_instance
-	
-	_setFakeHomeEnv "$instancedFakeHome"
-	_makeFakeHome > /dev/null 2>&1
-	
-	env -i DISPLAY="$DISPLAY" XAUTH="$XAUTH" XAUTHORITY="$XAUTHORITY" XSOCK="$XSOCK" realHome="$realHome" keepFakeHome="$keepFakeHome" HOME="$HOME" setFakeHome="$setFakeHome" userFakeHome="true" TERM="${TERM}" SHELL="${SHELL}" PATH="${PATH}" dbus-run-session "$@"
-	#"$@"
-	
-	[[ "$userFakeHome_enableMemMount" == "true" ]] && ! _umountUserFakeHome_instance && _stop 1
-	
-	_resetFakeHomeEnv_nokeep
-	_rm_instance_fakeHome
-	
-	_stop
-}
-
-_userFakeHome() {
-	"$scriptAbsoluteLocation" _userFakeHome_sequence "$@"
-}
-
-_memFakeHome() {
-	export userFakeHome_enableMemMount="true"
-	"$scriptAbsoluteLocation" _userFakeHome_sequence "$@"
-}
-
-#For internal use.
-_selfFakeHome() {
-	"$scriptAbsoluteLocation" _userFakeHome "$scriptAbsoluteLocation" "$@"
-}
-
-_userShortHome() {
-	_setShortHome
-	
-	_prepareAppHome
-	
-	_userFakeHome_sequence "$@"
-}
-
-_editShortHome() {
-	_setShortHome
-	
-	_prepareAppHome
-	
-	_editFakeHome_sequence "$@"
-}
-
-_shortHome() {
-	_userShortHome "$@"
 }
 
 _resetFakeHomeEnv_extra() {
@@ -7971,6 +7891,7 @@ _scope_attach() {
 	_scope_readme_here > "$ub_scope"/README
 	
 	_scope_command_write _scope_compile
+	#_scope_command_external_here _scope_compile
 }
 
 _prepare_scope() {
@@ -8087,6 +8008,7 @@ export specimen="$specimen"
 export ub_scope_name="$ub_scope_name"
 export ub_scope="$ub_scope"
 export scope="$scope"
+
 CZXWXcRMTo8EmM8i4d
 	
 	_scope_var_here_prog "$@"
@@ -8126,7 +8048,27 @@ export sessionid="$sessionid"
 CZXWXcRMTo8EmM8i4d
 }
 
+_scope_command_external_here() {
+	cat << CZXWXcRMTo8EmM8i4d
+#!/usr/bin/env bash
+
+CZXWXcRMTo8EmM8i4d
+
+	_scope_var_here
+
+	cat << CZXWXcRMTo8EmM8i4d
+
+export importScriptLocation="$scriptAbsoluteLocation"
+export importScriptFolder="$scriptAbsoluteFolder"
+. "$scriptAbsoluteLocation" --script "$1" "\$@"
+CZXWXcRMTo8EmM8i4d
+}
+
 _scope_command_write() {
+	_scope_command_here "$@" > "$ub_scope"/"$1"
+}
+
+_scope_command_external_write() {
 	_scope_command_here "$@" > "$ub_scope"/"$1"
 }
 
@@ -11016,8 +10958,16 @@ export instancedDownloadsDir="$instancedVirtHome"/Downloads
 export chrootDir="$globalVirtFS"
 export vboxRaw="$scriptLocal"/vmvdiraw.vmdk
 
+#Only globalFakeHome is persistent. All other default home directories are removed in some way by "_stop".
 export globalFakeHome="$scriptLocal"/h
 export instancedFakeHome="$scriptAbsoluteFolder"/h_"$sessionid"
+export shortFakeHome="$shortTmp"/h
+
+#Do not use directly as home directory. Append subdirectories.
+export arbitraryFakeHome="$shortTmp"/a
+
+#Default, override.
+export actualFakeHome="$instancedFakeHome"
 
 #Automatically assigns appropriate memory quantities to nested virtual machines.
 _vars_vmMemoryAllocationDefault() {
@@ -11111,39 +11061,20 @@ _prepare_ssh() {
 
 
 _prepareFakeHome() {
-	mkdir -p "$globalFakeHome"
-	[[ "$appGlobalFakeHome" != "" ]] && mkdir -p "$appGlobalFakeHome"
-}
-
-_prepareFakeHome_instance() {
-	_prepareFakeHome
-	
-	[[ "$ub_disable_prepareFakeHome_instance" == "true" ]] && return
-	
-	mkdir -p "$instancedFakeHome"
-	
-	if [[ "$appGlobalFakeHome" == "" ]]
-	then
-		#cp -a "$globalFakeHome"/. "$instancedFakeHome"
-		rsync -q -ax --exclude "/.cache" "$globalFakeHome"/ "$instancedFakeHome"/
-		return
-	fi
-	
-	if [[ "$appGlobalFakeHome" != "" ]]
-	then
-		#cp -a "$appGlobalFakeHome"/. "$instancedFakeHome"
-		rsync -q -ax --exclude "/.cache" "$appGlobalFakeHome"/ "$instancedFakeHome"/
-		return
-	fi
+	mkdir -p "$actualFakeHome"
 }
 
 _rm_instance_fakeHome() {
-	rmdir "$instancedFakeHome" > /dev/null 2>&1
+	! [[ -e "$instancedFakeHome" ]] && return 0
+	
+	[[ -e "$instancedFakeHome" ]] && rmdir "$instancedFakeHome" > /dev/null 2>&1
+	
+	[[ -e "$instancedFakeHome" ]] && _unmakeFakeHome "$instancedFakeHome" > /dev/null 2>&1
 	
 	# DANGER Allows folders containing ".git" to be removed in all further shells inheriting this environment!
 	export safeToDeleteGit="true"
-	
-	[[ -e "$instancedFakeHome" ]] & _safeRMR "$instancedFakeHome"
+	[[ -e "$instancedFakeHome" ]] && _safeRMR "$instancedFakeHome"
+	export safeToDeleteGit="false"
 }
 
 ##### VBoxVars
@@ -11632,6 +11563,7 @@ _stop() {
 	
 	_preserveLog
 	
+	#Kill process responsible for initiating session. Not expected to be used normally, but an important fallback.
 	local ub_stop_pid
 	if [[ -e "$safeTmp"/.pid ]]
 	then
@@ -11648,6 +11580,8 @@ _stop() {
 	[[ -e "$scopeTmp" ]] && _safeRMR "$scopeTmp"			#Only created if needed by scope.
 	_safeRMR "$shortTmp"
 	_safeRMR "$safeTmp"
+	
+	_tryExec _rm_instance_fakeHome
 	
 	#Optionally always try to remove any systemd shutdown hook.
 	#_tryExec _unhook_systemd_shutdown
@@ -12980,6 +12914,7 @@ _compile_bash_utilities_virtualization() {
 	[[ "$enUb_virt" == "true" ]] && includeScriptList+=( "virtualization"/osTranslation.sh )
 	[[ "$enUb_virt" == "true" ]] && includeScriptList+=( "virtualization"/localPathTranslation.sh )
 	
+	[[ "$enUb_fakehome" == "true" ]] && includeScriptList+=( "virtualization/fakehome"/fakehomemake.sh )
 	[[ "$enUb_fakehome" == "true" ]] && includeScriptList+=( "virtualization/fakehome"/fakehome.sh )
 	includeScriptList+=( "virtualization/fakehome"/fakehomereset.sh )
 	

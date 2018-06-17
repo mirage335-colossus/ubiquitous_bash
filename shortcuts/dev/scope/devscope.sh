@@ -11,6 +11,7 @@ _scope_attach() {
 	_scope_readme_here > "$ub_scope"/README
 	
 	_scope_command_write _scope_compile
+	#_scope_command_external_here _scope_compile
 }
 
 _prepare_scope() {

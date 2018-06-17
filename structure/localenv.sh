@@ -39,6 +39,7 @@ _stop() {
 	
 	_preserveLog
 	
+	#Kill process responsible for initiating session. Not expected to be used normally, but an important fallback.
 	local ub_stop_pid
 	if [[ -e "$safeTmp"/.pid ]]
 	then
@@ -55,6 +56,8 @@ _stop() {
 	[[ -e "$scopeTmp" ]] && _safeRMR "$scopeTmp"			#Only created if needed by scope.
 	_safeRMR "$shortTmp"
 	_safeRMR "$safeTmp"
+	
+	_tryExec _rm_instance_fakeHome
 	
 	#Optionally always try to remove any systemd shutdown hook.
 	#_tryExec _unhook_systemd_shutdown

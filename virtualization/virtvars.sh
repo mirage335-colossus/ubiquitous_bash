@@ -30,8 +30,16 @@ export instancedDownloadsDir="$instancedVirtHome"/Downloads
 export chrootDir="$globalVirtFS"
 export vboxRaw="$scriptLocal"/vmvdiraw.vmdk
 
+#Only globalFakeHome is persistent. All other default home directories are removed in some way by "_stop".
 export globalFakeHome="$scriptLocal"/h
 export instancedFakeHome="$scriptAbsoluteFolder"/h_"$sessionid"
+export shortFakeHome="$shortTmp"/h
+
+#Do not use directly as home directory. Append subdirectories.
+export arbitraryFakeHome="$shortTmp"/a
+
+#Default, override.
+export actualFakeHome="$instancedFakeHome"
 
 #Automatically assigns appropriate memory quantities to nested virtual machines.
 _vars_vmMemoryAllocationDefault() {
