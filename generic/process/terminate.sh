@@ -4,7 +4,7 @@ _terminate() {
 	
 	local currentPID
 	
-	cat "$safeTmp"/.pid > "$processListFile"
+	cat "$safeTmp"/.pid >> "$processListFile" 2> /dev/null
 	
 	while read -r currentPID
 	do
@@ -21,8 +21,8 @@ _terminateAll() {
 	
 	local currentPID
 	
-	cat ./w_*/.pid > "$processListFile" > /dev/null 2>&1
-	cat ./.s_*/.pid > "$processListFile" > /dev/null 2>&1
+	cat ./w_*/.pid >> "$processListFile" 2> /dev/null
+	cat ./.s_*/.pid >> "$processListFile" 2> /dev/null
 	
 	while read -r currentPID
 	do
