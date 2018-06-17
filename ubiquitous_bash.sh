@@ -8048,7 +8048,6 @@ _scope_interact() {
 
 
 _scope_sequence() {
-	export ub_scope_name='scope'
 	_messagePlain_nominal 'init: scope: '"$ub_scope_name"
 	_messagePlain_probe 'HOME= '"$HOME"
 	
@@ -8065,6 +8064,7 @@ _scope_sequence() {
 }
 
 _scope() {
+	export ub_scope_name='scope'
 	"$scriptAbsoluteLocation" _scope_sequence "$@"
 }
 
