@@ -7974,12 +7974,14 @@ _scope_attach() {
 }
 
 _prepare_scope() {
-	mkdir -p "$safeTmp"/scope
+	#mkdir -p "$safeTmp"/scope
+	mkdir -p "$scopeTmp"
 	#true
 }
 
 _relink_scope() {
-	_relink "$safeTmp"/scope "$ub_scope"
+	#_relink "$safeTmp"/scope "$ub_scope"
+	_relink "$scopeTmp" "$ub_scope"
 	#_relink "$safeTmp" "$ub_scope"
 	
 	_relink "$safeTmp" "$ub_scope"/safeTmp
@@ -8026,12 +8028,6 @@ _start_scope() {
 	_messagePlain_good 'pass: prepare, relink'
 	
 	return 0
-}
-
-_stop_scope() {
-	_messagePlain_nominal '_stop_scope'
-	
-	
 }
 
 _scope_terminal() {
@@ -10855,6 +10851,7 @@ intInitPWD="$PWD"
 
 #Temporary directories.
 export safeTmp="$scriptAbsoluteFolder"/w_"$sessionid"
+export scopeTmp="$scriptAbsoluteFolder"/s_"$sessionid"
 export logTmp="$safeTmp"/log
 export shortTmp=/tmp/w_"$sessionid"	#Solely for misbehaved applications called upon.
 export scriptBin="$scriptAbsoluteFolder"/_bin
@@ -11648,6 +11645,7 @@ _stop() {
 	
 	rm -f "$pidFile" > /dev/null 2>&1	#Redundant, as this usually resides in "$safeTmp".
 	rm -f "$ub_scope" > /dev/null 2>&1	#Symlink, or nonexistent.
+	[[ -e "$scopeTmp" ]] && _safeRMR "$scopeTmp"			#Only created if needed by scope.
 	_safeRMR "$shortTmp"
 	_safeRMR "$safeTmp"
 	
