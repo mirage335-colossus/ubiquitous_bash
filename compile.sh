@@ -553,8 +553,8 @@ _terminateAll() {
 	
 	local currentPID
 	
-	cat ./w_*/.pid > "$processListFile"
-	cat ./.s_*/.pid > "$processListFile"
+	cat ./w_*/.pid > "$processListFile" > /dev/null 2>&1
+	cat ./.s_*/.pid > "$processListFile" > /dev/null 2>&1
 	
 	while read -r currentPID
 	do

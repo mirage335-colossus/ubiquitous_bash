@@ -553,8 +553,8 @@ _terminateAll() {
 	
 	local currentPID
 	
-	cat ./w_*/.pid > "$processListFile"
-	cat ./.s_*/.pid > "$processListFile"
+	cat ./w_*/.pid > "$processListFile" > /dev/null 2>&1
+	cat ./.s_*/.pid > "$processListFile" > /dev/null 2>&1
 	
 	while read -r currentPID
 	do
@@ -1588,7 +1588,9 @@ _resetFakeHomeEnv() {
 #####Shortcuts
 
 _visualPrompt() {
-export PS1='\[\033[01;40m\]\[\033[01;36m\]+\[\033[01;34m\]-|\[\033[01;31m\]${?}:${debian_chroot:+($debian_chroot)}\[\033[01;33m\]\u\[\033[01;32m\]@\h\[\033[01;36m\]\[\033[01;34m\])-\[\033[01;36m\]----------\[\033[01;34m\]-(\[\033[01;35m\]$(date +%H:%M:%S\ %b\ %d,\ %y)\[\033[01;34m\])-\[\033[01;36m\]--- - - - |\[\033[00m\]\n\[\033[01;40m\]\[\033[01;36m\]+\[\033[01;34m\]-|\[\033[37m\][\w]\[\033[00m\]\n\[\033[01;36m\]+\[\033[01;34m\]-|\#) \[\033[36m\]>\[\033[00m\] '
+#+%H:%M:%S\ %Y-%m-%d\ Q%q
+#+%H:%M:%S\ %b\ %d,\ %y
+export PS1='\[\033[01;40m\]\[\033[01;36m\]+\[\033[01;34m\]-|\[\033[01;31m\]${?}:${debian_chroot:+($debian_chroot)}\[\033[01;33m\]\u\[\033[01;32m\]@\h\[\033[01;36m\]\[\033[01;34m\])-\[\033[01;36m\]------------------------\[\033[01;34m\]-(\[\033[01;35m\]$(date +%H:%M:%S\ .%d)\[\033[01;34m\])-\[\033[01;36m\]- -|\[\033[00m\]\n\[\033[01;40m\]\[\033[01;36m\]+\[\033[01;34m\]-|\[\033[37m\][\w]\[\033[00m\]\n\[\033[01;36m\]+\[\033[01;34m\]-|\#) \[\033[36m\]>\[\033[00m\] '
 } 
 
 _setupUbiquitous_here() {
@@ -2042,6 +2044,7 @@ _stop() {
 	fi
 	
 	rm -f "$pidFile" > /dev/null 2>&1	#Redundant, as this usually resides in "$safeTmp".
+	rm -f "$ub_scope" > /dev/null 2>&1	#Symlink, or nonexistent.
 	_safeRMR "$shortTmp"
 	_safeRMR "$safeTmp"
 	

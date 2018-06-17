@@ -51,6 +51,7 @@ _stop() {
 	fi
 	
 	rm -f "$pidFile" > /dev/null 2>&1	#Redundant, as this usually resides in "$safeTmp".
+	rm -f "$ub_scope" > /dev/null 2>&1	#Symlink, or nonexistent.
 	_safeRMR "$shortTmp"
 	_safeRMR "$safeTmp"
 	

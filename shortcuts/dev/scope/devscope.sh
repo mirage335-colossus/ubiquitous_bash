@@ -10,12 +10,7 @@ _scope_attach() {
 	_scope_here > "$ub_scope"/.devenv
 	_scope_readme_here > "$ub_scope"/README
 	
-	_scope_command_here _scope_compile
-}
-
-#Example, override with "core.sh" .
-_scope_detach() {
-	_messagePlain_nominal '_scope_detach'
+	_scope_command_write _scope_compile
 }
 
 _prepare_scope() {
@@ -76,14 +71,23 @@ _start_scope() {
 _stop_scope() {
 	_messagePlain_nominal '_stop_scope'
 	
-	rm "$ub_scope"
+	
 }
 
-#Default, waits for kill signal, override with "core.sh" . May run file manager, terminal, etc.
+_scope_terminal() {
+	export PS1='\[\033[01;40m\]\[\033[01;36m\]+\[\033[01;34m\]-|\[\033[01;31m\]${?}:${debian_chroot:+($debian_chroot)}\[\033[01;33m\]\u\[\033[01;32m\]@\h\[\033[01;36m\]\[\033[01;34m\])-\[\033[01;36m\]------------------------\[\033[01;34m\]-(\[\033[01;35m\]$(date +%H:%M:%S\ .%d)\[\033[01;34m\])-\[\033[01;36m\]- -|\[\033[00m\]\n\[\033[01;40m\]\[\033[01;36m\]+\[\033[01;34m\]-|\[\033[37m\][\w]\[\033[00m\]\n\[\033[01;36m\]+\[\033[01;34m\]-|\#) \[\033[36m\]'"$ub_scope_name"'>\[\033[00m\] '
+	echo
+	/bin/bash --norc
+	echo
+}
+
+#Defaults, bash terminal, wait for kill signal, wait for line break, etc. Override with "core.sh" . May run file manager, terminal, etc.
 # WARNING: Scope should only be terminated by process or user managing this interaction (eg. by closing file manager). Manager must be aware of any inter-scope dependencies.
 _scope_interact() {
-	_messagePlain_nominal '_stop_interact'
-	while true ; do sleep 1 ; done
+	_messagePlain_nominal '_scope_interact'
+	#read > /dev/null 2>&1
+	
+	_scope_terminal
 }
 
 
@@ -101,9 +105,6 @@ _scope_sequence() {
 	#User interaction.
 	_scope_interact
 	
-	_scope_detach "$@"
-	
-	_stop_scope "$@"
 	_stop
 }
 

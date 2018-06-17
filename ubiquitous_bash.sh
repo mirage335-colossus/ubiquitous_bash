@@ -553,8 +553,8 @@ _terminateAll() {
 	
 	local currentPID
 	
-	cat ./w_*/.pid > "$processListFile"
-	cat ./.s_*/.pid > "$processListFile"
+	cat ./w_*/.pid > "$processListFile" > /dev/null 2>&1
+	cat ./.s_*/.pid > "$processListFile" > /dev/null 2>&1
 	
 	while read -r currentPID
 	do
@@ -7727,7 +7727,9 @@ _userDocker() {
 #####Shortcuts
 
 _visualPrompt() {
-export PS1='\[\033[01;40m\]\[\033[01;36m\]+\[\033[01;34m\]-|\[\033[01;31m\]${?}:${debian_chroot:+($debian_chroot)}\[\033[01;33m\]\u\[\033[01;32m\]@\h\[\033[01;36m\]\[\033[01;34m\])-\[\033[01;36m\]----------\[\033[01;34m\]-(\[\033[01;35m\]$(date +%H:%M:%S\ %b\ %d,\ %y)\[\033[01;34m\])-\[\033[01;36m\]--- - - - |\[\033[00m\]\n\[\033[01;40m\]\[\033[01;36m\]+\[\033[01;34m\]-|\[\033[37m\][\w]\[\033[00m\]\n\[\033[01;36m\]+\[\033[01;34m\]-|\#) \[\033[36m\]>\[\033[00m\] '
+#+%H:%M:%S\ %Y-%m-%d\ Q%q
+#+%H:%M:%S\ %b\ %d,\ %y
+export PS1='\[\033[01;40m\]\[\033[01;36m\]+\[\033[01;34m\]-|\[\033[01;31m\]${?}:${debian_chroot:+($debian_chroot)}\[\033[01;33m\]\u\[\033[01;32m\]@\h\[\033[01;36m\]\[\033[01;34m\])-\[\033[01;36m\]------------------------\[\033[01;34m\]-(\[\033[01;35m\]$(date +%H:%M:%S\ .%d)\[\033[01;34m\])-\[\033[01;36m\]- -|\[\033[00m\]\n\[\033[01;40m\]\[\033[01;36m\]+\[\033[01;34m\]-|\[\033[37m\][\w]\[\033[00m\]\n\[\033[01;36m\]+\[\033[01;34m\]-|\#) \[\033[36m\]>\[\033[00m\] '
 } 
 
 #https://stackoverflow.com/questions/15432156/display-filename-before-matching-line-grep
@@ -7968,12 +7970,7 @@ _scope_attach() {
 	_scope_here > "$ub_scope"/.devenv
 	_scope_readme_here > "$ub_scope"/README
 	
-	_scope_command_here _scope_compile
-}
-
-#Example, override with "core.sh" .
-_scope_detach() {
-	_messagePlain_nominal '_scope_detach'
+	_scope_command_write _scope_compile
 }
 
 _prepare_scope() {
@@ -8034,14 +8031,23 @@ _start_scope() {
 _stop_scope() {
 	_messagePlain_nominal '_stop_scope'
 	
-	rm "$ub_scope"
+	
 }
 
-#Default, waits for kill signal, override with "core.sh" . May run file manager, terminal, etc.
+_scope_terminal() {
+	export PS1='\[\033[01;40m\]\[\033[01;36m\]+\[\033[01;34m\]-|\[\033[01;31m\]${?}:${debian_chroot:+($debian_chroot)}\[\033[01;33m\]\u\[\033[01;32m\]@\h\[\033[01;36m\]\[\033[01;34m\])-\[\033[01;36m\]------------------------\[\033[01;34m\]-(\[\033[01;35m\]$(date +%H:%M:%S\ .%d)\[\033[01;34m\])-\[\033[01;36m\]- -|\[\033[00m\]\n\[\033[01;40m\]\[\033[01;36m\]+\[\033[01;34m\]-|\[\033[37m\][\w]\[\033[00m\]\n\[\033[01;36m\]+\[\033[01;34m\]-|\#) \[\033[36m\]'"$ub_scope_name"'>\[\033[00m\] '
+	echo
+	/bin/bash --norc
+	echo
+}
+
+#Defaults, bash terminal, wait for kill signal, wait for line break, etc. Override with "core.sh" . May run file manager, terminal, etc.
 # WARNING: Scope should only be terminated by process or user managing this interaction (eg. by closing file manager). Manager must be aware of any inter-scope dependencies.
 _scope_interact() {
-	_messagePlain_nominal '_stop_interact'
-	while true ; do sleep 1 ; done
+	_messagePlain_nominal '_scope_interact'
+	#read > /dev/null 2>&1
+	
+	_scope_terminal
 }
 
 
@@ -8059,9 +8065,6 @@ _scope_sequence() {
 	#User interaction.
 	_scope_interact
 	
-	_scope_detach "$@"
-	
-	_stop_scope "$@"
 	_stop
 }
 
@@ -8075,15 +8078,33 @@ Ubiquitous Bash scope.
 CZXWXcRMTo8EmM8i4d
 }
 
+#Example, override with "core.sh" .
+_scope_var_here_prog() {
+	cat << CZXWXcRMTo8EmM8i4d
+CZXWXcRMTo8EmM8i4d
+}
+
+_scope_var_here() {
+	cat << CZXWXcRMTo8EmM8i4d
+export ub_specimen="$ub_specimen"
+export specimen="$specimen"
+export ub_scope_name="$ub_scope_name"
+export ub_scope="$ub_scope"
+export scope="$scope"
+CZXWXcRMTo8EmM8i4d
+	
+	_scope_var_here_prog "$@"
+}
+
 _scope_here() {
 	cat << CZXWXcRMTo8EmM8i4d
 #!/usr/bin/env bash
 
-export ub_specimen="$ub_specimen"
-export specimen="$specimen"
-export ub_scope_name="$ub_specimen"
-export ub_scope="$ub_scope"
-export scope="$scope"
+CZXWXcRMTo8EmM8i4d
+
+	_scope_var_here
+
+	cat << CZXWXcRMTo8EmM8i4d
 
 export scriptAbsoluteLocation="$scriptAbsoluteLocation"
 export scriptAbsoluteFolder="$scriptAbsoluteFolder"
@@ -8096,17 +8117,21 @@ _scope_command_here() {
 	cat << CZXWXcRMTo8EmM8i4d
 #!/usr/bin/env bash
 
-export ub_specimen="$ub_specimen"
-export specimen="$specimen"
-export ub_scope_name="$ub_specimen"
-export ub_scope="$ub_scope"
-export scope="$scope"
+CZXWXcRMTo8EmM8i4d
+
+	_scope_var_here
+
+	cat << CZXWXcRMTo8EmM8i4d
 
 export scriptAbsoluteLocation="$scriptAbsoluteLocation"
 export scriptAbsoluteFolder="$scriptAbsoluteFolder"
 export sessionid="$sessionid"
 . "$scriptAbsoluteLocation" --devenv "$1" "\$@"
-CZXWXcRMTo8EmM8i4d > "$ub_scope"/"$1"
+CZXWXcRMTo8EmM8i4d
+}
+
+_scope_command_write() {
+	_scope_command_here "$@" > "$ub_scope"/"$1"
 }
 
 _testGit() {
@@ -11622,6 +11647,7 @@ _stop() {
 	fi
 	
 	rm -f "$pidFile" > /dev/null 2>&1	#Redundant, as this usually resides in "$safeTmp".
+	rm -f "$ub_scope" > /dev/null 2>&1	#Symlink, or nonexistent.
 	_safeRMR "$shortTmp"
 	_safeRMR "$safeTmp"
 	
