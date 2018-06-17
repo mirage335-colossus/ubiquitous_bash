@@ -22,6 +22,7 @@ _terminateAll() {
 	local currentPID
 	
 	cat ./w_*/.pid > "$processListFile"
+	cat ./.s_*/.pid > "$processListFile"
 	
 	while read -r currentPID
 	do

@@ -8,4 +8,3 @@ export sessionid="$sessionid"
 . "$scriptAbsoluteLocation" --embed "\$@"
 CZXWXcRMTo8EmM8i4d
 }
- 

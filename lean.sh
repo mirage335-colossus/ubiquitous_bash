@@ -554,6 +554,7 @@ _terminateAll() {
 	local currentPID
 	
 	cat ./w_*/.pid > "$processListFile"
+	cat ./.s_*/.pid > "$processListFile"
 	
 	while read -r currentPID
 	do
@@ -1263,7 +1264,6 @@ export sessionid="$sessionid"
 . "$scriptAbsoluteLocation" --embed "\$@"
 CZXWXcRMTo8EmM8i4d
 }
- 
 
 _embed() {
 	export sessionid="$1"
@@ -1564,6 +1564,26 @@ _getUUID() {
 	cat /proc/sys/kernel/random/uuid
 }
 alias getUUID=_getUUID
+
+_resetFakeHomeEnv_extra() {
+	true
+}
+
+_resetFakeHomeEnv_nokeep() {
+	! [[ "$setFakeHome" == "true" ]] && return 0
+	export setFakeHome="false"
+	
+	export HOME="$realHome"
+	
+	_resetFakeHomeEnv_extra
+}
+
+_resetFakeHomeEnv() {
+	#[[ "$keepFakeHome" == "true" ]] && return 0
+	[[ "$keepFakeHome" != "false" ]] && return 0
+	
+	_resetFakeHomeEnv_nokeep
+} 
 
 #####Shortcuts
 

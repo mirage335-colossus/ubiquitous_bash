@@ -224,6 +224,7 @@ _compile_bash_utilities_virtualization() {
 	[[ "$enUb_virt" == "true" ]] && includeScriptList+=( "virtualization"/localPathTranslation.sh )
 	
 	[[ "$enUb_fakehome" == "true" ]] && includeScriptList+=( "virtualization/fakehome"/fakehome.sh )
+	includeScriptList+=( "virtualization/fakehome"/fakehomereset.sh )
 	
 	[[ "$enUb_image" == "true" ]] && includeScriptList+=( "virtualization/image"/mountimage.sh )
 	[[ "$enUb_image" == "true" ]] && includeScriptList+=( "virtualization/image"/createImage.sh )
@@ -275,8 +276,11 @@ _compile_bash_shortcuts() {
 	
 	[[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "shortcuts/dev"/devsearch.sh )
 	
-	[[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "shortcuts/dev/app"/devemacs.sh )
-	[[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "shortcuts/dev/app"/devatom.sh )
+	[[ "$enUb_fakehome" == "true" ]] && [[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "shortcuts/dev/app"/devemacs.sh )
+	[[ "$enUb_fakehome" == "true" ]] && [[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "shortcuts/dev/app"/devatom.sh )
+	
+	[[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "shortcuts/dev/scope"/devscope.sh )
+	[[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "shortcuts/dev/scope"/devscope_here.sh )
 	
 	[[ "$enUb_git" == "true" ]] && includeScriptList+=( "shortcuts/git"/git.sh )
 	[[ "$enUb_git" == "true" ]] && includeScriptList+=( "shortcuts/git"/gitBare.sh )
