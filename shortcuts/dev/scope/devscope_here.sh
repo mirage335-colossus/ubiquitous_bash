@@ -75,8 +75,10 @@ CZXWXcRMTo8EmM8i4d
 
 _scope_command_write() {
 	_scope_command_here "$@" > "$ub_scope"/"$1"
+	chmod u+x "$ub_scope"/"$1"
 }
 
 _scope_command_external_write() {
-	_scope_command_here "$@" > "$ub_scope"/"$1"
+	_scope_command_external_here "$@" > "$ub_scope"/"$1"
+	chmod u+x "$ub_scope"/"$1"
 }

@@ -8078,6 +8078,7 @@ _scope_attach() {
 	_messagePlain_nominal '_scope_attach'
 	
 	_scope_here > "$ub_scope"/.devenv
+	chmod u+x "$ub_scope"/.devenv
 	_scope_readme_here > "$ub_scope"/README
 	
 	_scope_command_write _scope_compile
@@ -8143,6 +8144,7 @@ _start_scope() {
 
 _scope_terminal() {
 	export PS1='\[\033[01;40m\]\[\033[01;36m\]+\[\033[01;34m\]-|\[\033[01;31m\]${?}:${debian_chroot:+($debian_chroot)}\[\033[01;33m\]\u\[\033[01;32m\]@\h\[\033[01;36m\]\[\033[01;34m\])-\[\033[01;36m\]------------------------\[\033[01;34m\]-(\[\033[01;35m\]$(date +%H:%M:%S\ .%d)\[\033[01;34m\])-\[\033[01;36m\]- -|\[\033[00m\]\n\[\033[01;40m\]\[\033[01;36m\]+\[\033[01;34m\]-|\[\033[37m\][\w]\[\033[00m\]\n\[\033[01;36m\]+\[\033[01;34m\]-|\#) \[\033[36m\]'"$ub_scope_name"'>\[\033[00m\] '
+	export PATH="$PATH":"$ub_scope"
 	echo
 	/bin/bash --norc
 	echo
@@ -8256,10 +8258,12 @@ CZXWXcRMTo8EmM8i4d
 
 _scope_command_write() {
 	_scope_command_here "$@" > "$ub_scope"/"$1"
+	chmod u+x "$ub_scope"/"$1"
 }
 
 _scope_command_external_write() {
-	_scope_command_here "$@" > "$ub_scope"/"$1"
+	_scope_command_external_here "$@" > "$ub_scope"/"$1"
+	chmod u+x "$ub_scope"/"$1"
 }
 
 _testGit() {
