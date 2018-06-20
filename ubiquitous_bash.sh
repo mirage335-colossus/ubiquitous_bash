@@ -654,6 +654,14 @@ _gather_params() {
 	export globalArgs=("${@}")
 }
 
+_instance_internal() {
+	! [[ -e "$1" ]] && return 1
+	! [[ -d "$1" ]] && return 1
+	! [[ -e "$2" ]] && return 1
+	! [[ -d "$2" ]] && return 1
+	rsync -q -ax --exclude "/.cache" --exclude "/.git" "$@"
+}
+
 #Universal debugging filesystem.
 #End user function.
 _user_log() {
@@ -4575,18 +4583,6 @@ _test_fakehome() {
 	_getDep rsync
 }
 
-#"$1" == source directory
-#actualFakeHome
-	#default: "$instancedFakeHome"
-	#"$globalFakeHome" || "$instancedFakeHome" || "$shortFakeHome" || "$arbitraryFakeHome"/arbitrary
-_install_fakeHome() {
-	! [[ -e "$1" ]] && return 1
-	! [[ -d "$1" ]] && return 1
-	! [[ -e "$actualFakeHome" ]] && return 1
-	! [[ -d "$actualFakeHome" ]] && return 1
-	rsync -q -ax --exclude "/.cache" --exclude "/.git" "$1"/. "$actualFakeHome"/
-}
-
 #Example. Run similar code under "core.sh" before calling "_fakeHome", "_install_fakeHome", or similar, to set a specific type/location for fakeHome environment - global, instanced, or otherwise.
 _arbitrary_fakeHome_app() {
 	export actualFakeHome="$instancedFakeHome"
@@ -4596,12 +4592,47 @@ _arbitrary_fakeHome_app() {
 	#export actualFakeHome=""$arbitraryFakeHome"/arbitrary"
 }
 
-#Example. Run similar code under "core.sh" before calling "_fakeHome" to add features to any fakeHome environment, global, instanced, or otherwise.
-_install_fakeHome_app() {
-	mkdir -p "$scriptLocal"/app/.app
+#"$1" == lib source path (eg. "$scriptLib"/app/.app)
+#"$2" == home destination path (eg. ".app")
+_link_fakeHome() {
+	mkdir -p "$1" > /dev/null 2>&1
+	mkdir -p "$actualFakeHome"/"$2" > /dev/null 2>&1
 	
-	_install_fakeHome "$scriptLocal"/app/.
-	#_relink "$scriptLocal"/app/.app "$globalFakeHome"/.app
+	if [[ "$actualFakeHome" == "$globalFakeHome" ]] || [[ "$fakeHomeEditLib" == "true" ]]
+	then
+		rmdir "$actualFakeHome"/"$2"
+		_relink "$1" "$actualFakeHome"/"$2"
+		return 0
+	fi
+	
+	#Actual directories will not be overwritten by symlinks when "$globalFakeHome" is copied to "$actualFakeHome".
+	_rmlink "$actualFakeHome"/"$2"
+	mkdir -p "$actualFakeHome"/"$2"
+	
+	if ! [[ -d "$1" ]] && [[ -e "$1" ]]
+	then
+		rmdir "$actualFakeHome"/"$2"
+		
+		cp "$1" "$actualFakeHome"/"$2"
+	fi
+	
+	_instance_internal "$1"/. "$actualFakeHome"/"$2"/
+}
+
+#Example. Override with "core.sh". Allows specific application configuration directories to reside outside of globalFakeHome, for organization, testing, and distribution.
+_install_fakeHome_app() {
+	#_link_fakeHome "$scriptLib"/app/.app ".app"
+	
+	true
+}
+
+#actualFakeHome
+_install_fakeHome() {
+	_install_fakeHome_app
+	
+	[[ "$actualFakeHome" == "$globalFakeHome" ]] && return 0
+	
+	_instance_internal "$globalFakeHome"/. "$actualFakeHome"/
 }
 
 #Run before _fakeHome to use a ramdisk as home directory. Wrap within "_wantSudo" and ">/dev/null 2>&1" to use optionally. Especially helpful to limit SSD wear when dealing with moderately large (ie. ~2GB) fakeHome environments which must be instanced.
@@ -4638,15 +4669,129 @@ _fakeHome() {
 	export setFakeHome=true
 	
 	_prepareFakeHome > /dev/null 2>&1
-	_install_fakeHome "$globalFakeHome"
+	
+	_install_fakeHome
+	
 	_makeFakeHome "$realHome" "$actualFakeHome"
+	
+	export fakeHomeEditLib="false"
+	
+	local fakeHomeExitStatus
 	
 	env -i DISPLAY="$DISPLAY" XAUTH="$XAUTH" XAUTHORITY="$XAUTHORITY" XSOCK="$XSOCK" realHome="$realHome" keepFakeHome="$keepFakeHome" HOME="$HOME" setFakeHome="$setFakeHome" TERM="${TERM}" SHELL="${SHELL}" PATH="${PATH}" dbus-run-session "$@"
 	#"$@"
+	fakeHomeExitStatus=$?
 	
 	#_unmakeFakeHome > /dev/null 2>&1
 	
 	_resetFakeHomeEnv_nokeep
+	
+	return "$fakeHomeExitStatus"
+}
+
+_userFakeHome_procedure() {
+	export actualFakeHome="$instancedFakeHome"
+	export fakeHomeEditLib="false"
+	_fakeHome "$@"
+}
+
+_userFakeHome_sequence() {
+	_start
+	
+	_userFakeHome_procedure "$@"
+	
+	_stop $?
+}
+
+_userFakeHome() {
+	"$scriptAbsoluteLocation" _userFakeHome_sequence "$@"
+}
+
+_editFakeHome_procedure() {
+	export actualFakeHome="$globalFakeHome"
+	export fakeHomeEditLib="false"
+	_fakeHome "$@"
+}
+
+_editFakeHome_sequence() {
+	_start
+	
+	_editFakeHome_procedure "$@"
+	
+	_stop $?
+}
+
+_editFakeHome() {
+	"$scriptAbsoluteLocation" _editFakeHome_sequence "$@"
+}
+
+_userShortHome_procedure() {
+	export actualFakeHome="$shortFakeHome"
+	export fakeHomeEditLib="false"
+	_fakeHome "$@"
+}
+
+_userShortHome_sequence() {
+	_start
+	
+	_userShortHome_procedure "$@"
+	
+	_stop $?
+}
+
+_userShortHome() {
+	"$scriptAbsoluteLocation" _userShortHome_sequence "$@"
+}
+
+_editShortHome_procedure() {
+	export actualFakeHome="$shortFakeHome"
+	export fakeHomeEditLib="true"
+	_fakeHome "$@"
+}
+
+_editShortHome_sequence() {
+	_start
+	
+	_editShortHome_procedure "$@"
+	
+	_stop $?
+}
+
+# WARNING: Only allows persistent modifications to directories which have been linked by "_link_fakeHome" or similar.
+_editShortHome() {
+	"$scriptAbsoluteLocation" _editShortHome_sequence "$@"
+}
+
+_shortHome() {
+	_userShortHome "$@"
+}
+
+_memFakeHome_procedure() {
+	export actualFakeHome="$instancedFakeHome"
+	export fakeHomeEditLib="false"
+	
+	_mountRAM_fakeHome
+	
+	local fakeHomeExitStatus
+	
+	_fakeHome "$@"
+	fakeHomeExitStatus=$?
+	
+	_umountRAM_fakeHome
+	
+	return "$fakeHomeExitStatus"
+}
+
+_memFakeHome_sequence() {
+	_start
+	
+	_memFakeHome_procedure "$@"
+	
+	_stop $?
+}
+
+_memFakeHome() {
+	"$scriptAbsoluteLocation" _memFakeHome_sequence "$@"
 }
 
 _resetFakeHomeEnv_extra() {
@@ -4658,6 +4803,8 @@ _resetFakeHomeEnv_nokeep() {
 	export setFakeHome="false"
 	
 	export HOME="$realHome"
+	
+	#export realHome=""
 	
 	_resetFakeHomeEnv_extra
 }
@@ -7693,62 +7840,106 @@ _set_emacsFakeHomeSource() {
 	fi
 }
 
-_prepare_emacsDev_fakeHome() {
-	_set_emacsFakeHomeSource
-	
-	cp -a "$emacsFakeHomeSource"/. "$HOME"
+_install_fakeHome_emacs() {
+	_link_fakeHome "$emacsFakeHomeSource"/.emacs .emacs
+	_link_fakeHome "$emacsFakeHomeSource"/.emacs.d .emacs.d
 }
 
-_emacsDev_sequence() {
-	_prepare_emacsDev_fakeHome
+_emacs_edit_procedure() {
+	_set_emacsFakeHomeSource
+	
+	export actualFakeHome="$instancedFakeHome"
+	#export actualFakeHome="$globalFakeHome"
+	export fakeHomeEditLib="true"
+	export keepFakeHome="false"
+	
+	_install_fakeHome_emacs
 	
 	#echo -n "$@" >> "$HOME"/.emacs
 	
-	emacs "$@"
+	_fakeHome emacs "$@"
 }
 
-_emacsDev() {
-	_selfFakeHome _emacsDev_sequence "$@"
+_emacs_edit_sequence() {
+	_start
+	
+	_emacs_edit_procedure "$@"
+	
+	_stop $?
+}
+
+_emacs_edit() {
+	"$scriptAbsoluteLocation" _emacs_edit_sequence "$@"
+}
+
+_emacs_user_procedure() {
+	_set_emacsFakeHomeSource
+	
+	export actualFakeHome="$instancedFakeHome"
+	#export actualFakeHome="$globalFakeHome"
+	export fakeHomeEditLib="false"
+	export keepFakeHome="false"
+	
+	_install_fakeHome_emacs
+	
+	#echo -n "$@" >> "$HOME"/.emacs
+	
+	_fakeHome emacs "$@"
+}
+
+_emacs_user_sequence() {
+	_start
+	
+	_emacs_user_procedure "$@"
+	
+	_stop $?
+}
+
+_emacs_user() {
+	"$scriptAbsoluteLocation" _emacs_user_sequence "$@"
 }
 
 _emacs() {
-	_emacsDev "$@"
+	_emacs_user "$@"
 }
 
-_emacsDev_edit_sequence() {
+_bashdb_procedure() {
 	_set_emacsFakeHomeSource
-	export appGlobalFakeHome="$emacsFakeHomeSource"
 	
-	_editFakeHome emacs "$@"
-}
-
-_emacsDev_edit() {
-	"$scriptAbsoluteLocation" _emacsDev_edit_sequence "$@"
-}
-
-_bashdb_sequence() {
-	_prepare_emacsDev_fakeHome
+	export actualFakeHome="$instancedFakeHome"
+	export fakeHomeEditLib="false"
+	export keepFakeHome="false"
 	
-	#echo -n '(bashdb "bash --debugger' >> "$HOME"/.emacs
-	echo -n '(bashdb-large "bash --debugger' >> "$HOME"/.emacs
+	_install_fakeHome_emacs
+	
+	#echo -n '(bashdb "bash --debugger' >> "$actualFakeHome"/.emacs
+	echo -n '(bashdb-large "bash --debugger' >> "$actualFakeHome"/.emacs
 	
 	local currentArg
 	
 	for currentArg in "$@"
 	do
-		echo -n ' ' >> "$HOME"/.emacs
-		echo -n '\"' >> "$HOME"/.emacs
-		echo -n "$currentArg" >> "$HOME"/.emacs
-		echo -n '\"' >> "$HOME"/.emacs
+		echo -n ' ' >> "$actualFakeHome"/.emacs
+		echo -n '\"' >> "$actualFakeHome"/.emacs
+		echo -n "$currentArg" >> "$actualFakeHome"/.emacs
+		echo -n '\"' >> "$actualFakeHome"/.emacs
 	done
 	
-	echo '")' >> "$HOME"/.emacs
+	echo '")' >> "$actualFakeHome"/.emacs
 	
-	emacs
+	_fakeHome emacs
+}
+
+_bashdb_sequence() {
+	_start
+	
+	_bashdb_procedure "$@"
+	
+	_stop $?
 }
 
 _bashdb() {
-	_selfFakeHome _bashdb_sequence "$@"
+	"$scriptAbsoluteLocation" _bashdb_sequence "$@"
 }
 
 _ubdb() {
@@ -7764,11 +7955,10 @@ _test_devatom() {
 	#! [[ "$atomDetectedVersion" -ge "27" ]] && echo atom too old && _stop 1
 }
 
-#Needed, because as an IDE, Atom may need to be part of the same home directory as another application.
-_relink_atom() {
-	_relink "$atomFakeHomeSource"/.atom "$globalFakeHome"/.atom
-	mkdir -p "$globalFakeHome"/.config/Atom
-	_relink "$atomFakeHomeSource"/.config/Atom "$globalFakeHome"/.config/Atom
+_install_fakeHome_atom() {	
+	_link_fakeHome "$atomFakeHomeSource"/.atom .atom
+	
+	_link_fakeHome "$atomFakeHomeSource"/.config/Atom .config/Atom
 }
 
 _set_atomFakeHomeSource() {
@@ -7788,82 +7978,81 @@ _set_atomFakeHomeSource() {
 	fi
 }
 
-_prepare_atomDev_fakeHome() {
+_atom_user_procedure() {
 	_set_atomFakeHomeSource
-	_relink_atom
 	
-	cp -a "$atomFakeHomeSource"/. "$HOME"
+	export actualFakeHome="$instancedFakeHome"
+	#export actualFakeHome="$globalFakeHome"
+	export fakeHomeEditLib="false"
+	export keepFakeHome="true"
+	
+	_install_fakeHome_atom
+	
+	_fakeHome atom --foreground "$@"
 }
 
-_atomDev_sequence() {
-	_prepare_atomDev_fakeHome
+_atom_user_sequence() {
+	_start
 	
-	export keepFakeHome="false"
+	"$scriptAbsoluteLocation" _atom_user_procedure "$@"
 	
-	atom --foreground "$@"
-}
-
-_atomDev() {
-	_selfFakeHome _atomDev_sequence "$@"
+	_stop $?
 }
 
 _atom_user() {
-	_atomDev "$@"  > /dev/null 2>&1 &
+	_atom_user_sequence "$@"  > /dev/null 2>&1 &
 }
 
-_atomDev_edit_sequence() {
+_atom_edit_procedure() {
 	_set_atomFakeHomeSource
-	_relink_atom
-	export appGlobalFakeHome="$atomFakeHomeSource"
 	
-	export keepFakeHome="false"
+	export actualFakeHome="$instancedFakeHome"
+	#export actualFakeHome="$globalFakeHome"
+	export fakeHomeEditLib="true"
+	export keepFakeHome="true"
 	
-	_editFakeHome atom --foreground "$@"
+	_install_fakeHome_atom
+	
+	_fakeHome atom --foreground "$@"
 }
 
-_atomDev_edit() {
-	"$scriptAbsoluteLocation" _atomDev_edit_sequence "$@"
+_atom_edit_sequence() {
+	_start
+	
+	_atom_edit_procedure "$@"
+	
+	_stop $?
 }
 
 _atom_edit() {
-	_atomDev_edit "$@"  > /dev/null 2>&1 &
-}
-
-_editFakeHome_atom_sequence() {
-	_set_atomFakeHomeSource
-	_relink_atom
-	export appGlobalFakeHome="$atomFakeHomeSource"
-	
-	#export keepFakeHome="false"
-	
-	_editFakeHome "$@"
-}
-
-_editFakeHome_atom() {
-	"$scriptAbsoluteLocation" _editFakeHome_atom_sequence "$@"
+	"$scriptAbsoluteLocation" _atom_edit_sequence "$@"  > /dev/null 2>&1 &
 }
 
 _atom_config() {
 	_set_atomFakeHomeSource
-	_relink_atom
 	
 	export ATOM_HOME="$atomFakeHomeSource"/.atom
 	atom "$@"
 }
 
+_atom_tmp_procedure() {
+	_set_atomFakeHomeSource
+	
+	mkdir -p "$safeTmp"/atom
+	
+	rsync -q -ax --exclude "/.cache" "$atomFakeHomeSource"/.atom/ "$safeTmp"/atom/
+	
+	export ATOM_HOME="$safeTmp"/atom
+	atom --foreground "$@"
+	unset ATOM_HOME
+}
+
 _atom_tmp_sequence() {
 	_start
-	_set_atomFakeHomeSource
-	_relink_atom
 	
-	mkdir -p "$safeTmp"/appcfg
+	_atom_tmp_procedure "$@"
 	
-	rsync -q -ax --exclude "/.cache" "$atomFakeHomeSource"/.atom/ "$safeTmp"/appcfg/
-	
-	export ATOM_HOME="$safeTmp"/appcfg
-	atom --foreground "$@"
-	
-	_stop
+	_stop $?
 }
 
 _atom_tmp() {
@@ -10127,45 +10316,30 @@ _prepare_ethereum_data() {
 	mkdir -p "$scriptLocal"/blkchain/io.parity.ethereum
 }
 
-_prepare_ethereum_fakeHome() {
+_install_fakeHome_ethereum() {
 	_prepare_ethereum_data
 	
-	export instancedFakeHome="$shortTmp"/h
-	mkdir -p "$instancedFakeHome"
-	#_relink "$scriptLocal"/blkchain/h "$instancedFakeHome"
+	_link_fakeHome "$scriptLocal"/blkchain/ethereum .ethereum
 	
-	_relink "$scriptLocal"/blkchain/ethereum "$instancedFakeHome"/.ethereum
-	
-	mkdir -p "$instancedFakeHome"/.local/share
-	_relink "$scriptLocal"/blkchain/io.parity.ethereum "$instancedFakeHome"/.local/share/io.parity.ethereum
+	_link_fakeHome "$scriptLocal"/blkchain/io.parity.ethereum .local/share/io.parity.ethereum
 }
 
+#Similar to editShortHome .
 _ethereum_home_sequence() {
-	_prepare_ethereum_fakeHome
+	_start
 	
-	_userFakeHome_sequence "$@"
+	export actualFakeHome="$shortFakeHome"
+	export fakeHomeEditLib="true"
 	
-	rmdir "$shortTmp"
+	_install_fakeHome_ethereum
+	
+	_fakeHome "$@"
+	
+	_stop $?
 }
 
 _ethereum_home() {
 	"$scriptAbsoluteLocation" _ethereum_home_sequence "$@"
-}
-
-_edit_ethereum_home() {
-	_prepare_ethereum_data
-	
-	_relink ../ethereum "$scriptLocal"/blkchain/h/.ethereum
-	mkdir -p "$scriptLocal"/blkchain/h/.local/share
-	_relink "$scriptLocal"/blkchain/io.parity.ethereum "$scriptLocal"/blkchain/h/.local/share/io.parity.ethereum
-	
-	export appGlobalFakeHome="$scriptLocal"/blkchain/h
-	mkdir -p "$appGlobalFakeHome" > /dev/null 2>&1
-	[[ ! -e "$appGlobalFakeHome" ]] && return 1
-	
-	_editFakeHome "$@"
-	
-	#_rmlink "$appGlobalFakeHome"/.ethereum
 }
 
 _geth() {
@@ -12833,6 +13007,8 @@ _compile_bash_essential_utilities() {
 	includeScriptList+=( "generic"/findInfrastructure.sh )
 	includeScriptList+=( "generic"/gather.sh )
 	
+	includeScriptList+=( "generic/filesystem"/internal.sh )
+	
 	includeScriptList+=( "generic"/messaging.sh )
 	
 	[[ "$enUb_buildBash" == "true" ]] && includeScriptList+=( "build/bash"/include_bash.sh )
@@ -12916,6 +13092,7 @@ _compile_bash_utilities_virtualization() {
 	
 	[[ "$enUb_fakehome" == "true" ]] && includeScriptList+=( "virtualization/fakehome"/fakehomemake.sh )
 	[[ "$enUb_fakehome" == "true" ]] && includeScriptList+=( "virtualization/fakehome"/fakehome.sh )
+	[[ "$enUb_fakehome" == "true" ]] && includeScriptList+=( "virtualization/fakehome"/fakehomeuser.sh )
 	includeScriptList+=( "virtualization/fakehome"/fakehomereset.sh )
 	
 	[[ "$enUb_image" == "true" ]] && includeScriptList+=( "virtualization/image"/mountimage.sh )

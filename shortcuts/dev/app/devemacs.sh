@@ -20,62 +20,106 @@ _set_emacsFakeHomeSource() {
 	fi
 }
 
-_prepare_emacsDev_fakeHome() {
-	_set_emacsFakeHomeSource
-	
-	cp -a "$emacsFakeHomeSource"/. "$HOME"
+_install_fakeHome_emacs() {
+	_link_fakeHome "$emacsFakeHomeSource"/.emacs .emacs
+	_link_fakeHome "$emacsFakeHomeSource"/.emacs.d .emacs.d
 }
 
-_emacsDev_sequence() {
-	_prepare_emacsDev_fakeHome
+_emacs_edit_procedure() {
+	_set_emacsFakeHomeSource
+	
+	export actualFakeHome="$instancedFakeHome"
+	#export actualFakeHome="$globalFakeHome"
+	export fakeHomeEditLib="true"
+	export keepFakeHome="false"
+	
+	_install_fakeHome_emacs
 	
 	#echo -n "$@" >> "$HOME"/.emacs
 	
-	emacs "$@"
+	_fakeHome emacs "$@"
 }
 
-_emacsDev() {
-	_selfFakeHome _emacsDev_sequence "$@"
+_emacs_edit_sequence() {
+	_start
+	
+	_emacs_edit_procedure "$@"
+	
+	_stop $?
+}
+
+_emacs_edit() {
+	"$scriptAbsoluteLocation" _emacs_edit_sequence "$@"
+}
+
+_emacs_user_procedure() {
+	_set_emacsFakeHomeSource
+	
+	export actualFakeHome="$instancedFakeHome"
+	#export actualFakeHome="$globalFakeHome"
+	export fakeHomeEditLib="false"
+	export keepFakeHome="false"
+	
+	_install_fakeHome_emacs
+	
+	#echo -n "$@" >> "$HOME"/.emacs
+	
+	_fakeHome emacs "$@"
+}
+
+_emacs_user_sequence() {
+	_start
+	
+	_emacs_user_procedure "$@"
+	
+	_stop $?
+}
+
+_emacs_user() {
+	"$scriptAbsoluteLocation" _emacs_user_sequence "$@"
 }
 
 _emacs() {
-	_emacsDev "$@"
+	_emacs_user "$@"
 }
 
-_emacsDev_edit_sequence() {
+_bashdb_procedure() {
 	_set_emacsFakeHomeSource
-	export appGlobalFakeHome="$emacsFakeHomeSource"
 	
-	_editFakeHome emacs "$@"
-}
-
-_emacsDev_edit() {
-	"$scriptAbsoluteLocation" _emacsDev_edit_sequence "$@"
-}
-
-_bashdb_sequence() {
-	_prepare_emacsDev_fakeHome
+	export actualFakeHome="$instancedFakeHome"
+	export fakeHomeEditLib="false"
+	export keepFakeHome="false"
 	
-	#echo -n '(bashdb "bash --debugger' >> "$HOME"/.emacs
-	echo -n '(bashdb-large "bash --debugger' >> "$HOME"/.emacs
+	_install_fakeHome_emacs
+	
+	#echo -n '(bashdb "bash --debugger' >> "$actualFakeHome"/.emacs
+	echo -n '(bashdb-large "bash --debugger' >> "$actualFakeHome"/.emacs
 	
 	local currentArg
 	
 	for currentArg in "$@"
 	do
-		echo -n ' ' >> "$HOME"/.emacs
-		echo -n '\"' >> "$HOME"/.emacs
-		echo -n "$currentArg" >> "$HOME"/.emacs
-		echo -n '\"' >> "$HOME"/.emacs
+		echo -n ' ' >> "$actualFakeHome"/.emacs
+		echo -n '\"' >> "$actualFakeHome"/.emacs
+		echo -n "$currentArg" >> "$actualFakeHome"/.emacs
+		echo -n '\"' >> "$actualFakeHome"/.emacs
 	done
 	
-	echo '")' >> "$HOME"/.emacs
+	echo '")' >> "$actualFakeHome"/.emacs
 	
-	emacs
+	_fakeHome emacs
+}
+
+_bashdb_sequence() {
+	_start
+	
+	_bashdb_procedure "$@"
+	
+	_stop $?
 }
 
 _bashdb() {
-	_selfFakeHome _bashdb_sequence "$@"
+	"$scriptAbsoluteLocation" _bashdb_sequence "$@"
 }
 
 _ubdb() {

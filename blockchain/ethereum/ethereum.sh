@@ -50,45 +50,30 @@ _prepare_ethereum_data() {
 	mkdir -p "$scriptLocal"/blkchain/io.parity.ethereum
 }
 
-_prepare_ethereum_fakeHome() {
+_install_fakeHome_ethereum() {
 	_prepare_ethereum_data
 	
-	export instancedFakeHome="$shortTmp"/h
-	mkdir -p "$instancedFakeHome"
-	#_relink "$scriptLocal"/blkchain/h "$instancedFakeHome"
+	_link_fakeHome "$scriptLocal"/blkchain/ethereum .ethereum
 	
-	_relink "$scriptLocal"/blkchain/ethereum "$instancedFakeHome"/.ethereum
-	
-	mkdir -p "$instancedFakeHome"/.local/share
-	_relink "$scriptLocal"/blkchain/io.parity.ethereum "$instancedFakeHome"/.local/share/io.parity.ethereum
+	_link_fakeHome "$scriptLocal"/blkchain/io.parity.ethereum .local/share/io.parity.ethereum
 }
 
+#Similar to editShortHome .
 _ethereum_home_sequence() {
-	_prepare_ethereum_fakeHome
+	_start
 	
-	_userFakeHome_sequence "$@"
+	export actualFakeHome="$shortFakeHome"
+	export fakeHomeEditLib="true"
 	
-	rmdir "$shortTmp"
+	_install_fakeHome_ethereum
+	
+	_fakeHome "$@"
+	
+	_stop $?
 }
 
 _ethereum_home() {
 	"$scriptAbsoluteLocation" _ethereum_home_sequence "$@"
-}
-
-_edit_ethereum_home() {
-	_prepare_ethereum_data
-	
-	_relink ../ethereum "$scriptLocal"/blkchain/h/.ethereum
-	mkdir -p "$scriptLocal"/blkchain/h/.local/share
-	_relink "$scriptLocal"/blkchain/io.parity.ethereum "$scriptLocal"/blkchain/h/.local/share/io.parity.ethereum
-	
-	export appGlobalFakeHome="$scriptLocal"/blkchain/h
-	mkdir -p "$appGlobalFakeHome" > /dev/null 2>&1
-	[[ ! -e "$appGlobalFakeHome" ]] && return 1
-	
-	_editFakeHome "$@"
-	
-	#_rmlink "$appGlobalFakeHome"/.ethereum
 }
 
 _geth() {

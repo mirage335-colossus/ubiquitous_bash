@@ -7,11 +7,10 @@ _test_devatom() {
 	#! [[ "$atomDetectedVersion" -ge "27" ]] && echo atom too old && _stop 1
 }
 
-#Needed, because as an IDE, Atom may need to be part of the same home directory as another application.
-_relink_atom() {
-	_relink "$atomFakeHomeSource"/.atom "$globalFakeHome"/.atom
-	mkdir -p "$globalFakeHome"/.config/Atom
-	_relink "$atomFakeHomeSource"/.config/Atom "$globalFakeHome"/.config/Atom
+_install_fakeHome_atom() {	
+	_link_fakeHome "$atomFakeHomeSource"/.atom .atom
+	
+	_link_fakeHome "$atomFakeHomeSource"/.config/Atom .config/Atom
 }
 
 _set_atomFakeHomeSource() {
@@ -31,82 +30,81 @@ _set_atomFakeHomeSource() {
 	fi
 }
 
-_prepare_atomDev_fakeHome() {
+_atom_user_procedure() {
 	_set_atomFakeHomeSource
-	_relink_atom
 	
-	cp -a "$atomFakeHomeSource"/. "$HOME"
+	export actualFakeHome="$instancedFakeHome"
+	#export actualFakeHome="$globalFakeHome"
+	export fakeHomeEditLib="false"
+	export keepFakeHome="true"
+	
+	_install_fakeHome_atom
+	
+	_fakeHome atom --foreground "$@"
 }
 
-_atomDev_sequence() {
-	_prepare_atomDev_fakeHome
+_atom_user_sequence() {
+	_start
 	
-	export keepFakeHome="false"
+	"$scriptAbsoluteLocation" _atom_user_procedure "$@"
 	
-	atom --foreground "$@"
-}
-
-_atomDev() {
-	_selfFakeHome _atomDev_sequence "$@"
+	_stop $?
 }
 
 _atom_user() {
-	_atomDev "$@"  > /dev/null 2>&1 &
+	_atom_user_sequence "$@"  > /dev/null 2>&1 &
 }
 
-_atomDev_edit_sequence() {
+_atom_edit_procedure() {
 	_set_atomFakeHomeSource
-	_relink_atom
-	export appGlobalFakeHome="$atomFakeHomeSource"
 	
-	export keepFakeHome="false"
+	export actualFakeHome="$instancedFakeHome"
+	#export actualFakeHome="$globalFakeHome"
+	export fakeHomeEditLib="true"
+	export keepFakeHome="true"
 	
-	_editFakeHome atom --foreground "$@"
+	_install_fakeHome_atom
+	
+	_fakeHome atom --foreground "$@"
 }
 
-_atomDev_edit() {
-	"$scriptAbsoluteLocation" _atomDev_edit_sequence "$@"
+_atom_edit_sequence() {
+	_start
+	
+	_atom_edit_procedure "$@"
+	
+	_stop $?
 }
 
 _atom_edit() {
-	_atomDev_edit "$@"  > /dev/null 2>&1 &
-}
-
-_editFakeHome_atom_sequence() {
-	_set_atomFakeHomeSource
-	_relink_atom
-	export appGlobalFakeHome="$atomFakeHomeSource"
-	
-	#export keepFakeHome="false"
-	
-	_editFakeHome "$@"
-}
-
-_editFakeHome_atom() {
-	"$scriptAbsoluteLocation" _editFakeHome_atom_sequence "$@"
+	"$scriptAbsoluteLocation" _atom_edit_sequence "$@"  > /dev/null 2>&1 &
 }
 
 _atom_config() {
 	_set_atomFakeHomeSource
-	_relink_atom
 	
 	export ATOM_HOME="$atomFakeHomeSource"/.atom
 	atom "$@"
 }
 
+_atom_tmp_procedure() {
+	_set_atomFakeHomeSource
+	
+	mkdir -p "$safeTmp"/atom
+	
+	rsync -q -ax --exclude "/.cache" "$atomFakeHomeSource"/.atom/ "$safeTmp"/atom/
+	
+	export ATOM_HOME="$safeTmp"/atom
+	atom --foreground "$@"
+	unset ATOM_HOME
+}
+
 _atom_tmp_sequence() {
 	_start
-	_set_atomFakeHomeSource
-	_relink_atom
 	
-	mkdir -p "$safeTmp"/appcfg
+	_atom_tmp_procedure "$@"
 	
-	rsync -q -ax --exclude "/.cache" "$atomFakeHomeSource"/.atom/ "$safeTmp"/appcfg/
-	
-	export ATOM_HOME="$safeTmp"/appcfg
-	atom --foreground "$@"
-	
-	_stop
+	_stop $?
 }
 
 _atom_tmp() {

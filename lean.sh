@@ -654,6 +654,14 @@ _gather_params() {
 	export globalArgs=("${@}")
 }
 
+_instance_internal() {
+	! [[ -e "$1" ]] && return 1
+	! [[ -d "$1" ]] && return 1
+	! [[ -e "$2" ]] && return 1
+	! [[ -d "$2" ]] && return 1
+	rsync -q -ax --exclude "/.cache" --exclude "/.git" "$@"
+}
+
 #Universal debugging filesystem.
 #End user function.
 _user_log() {
@@ -1574,6 +1582,8 @@ _resetFakeHomeEnv_nokeep() {
 	export setFakeHome="false"
 	
 	export HOME="$realHome"
+	
+	#export realHome=""
 	
 	_resetFakeHomeEnv_extra
 }

@@ -8,6 +8,8 @@ _resetFakeHomeEnv_nokeep() {
 	
 	export HOME="$realHome"
 	
+	#export realHome=""
+	
 	_resetFakeHomeEnv_extra
 }
 
