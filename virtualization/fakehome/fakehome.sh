@@ -52,7 +52,8 @@ _install_fakeHome_app() {
 _install_fakeHome() {
 	_install_fakeHome_app
 	
-	[[ "$actualFakeHome" == "$globalFakeHome" ]] && return 0
+	#Asterisk used where multiple global home folders are needed, following convention "$scriptLocal"/h_* . Used by webClient for _firefox_esr .
+	[[ "$actualFakeHome" == "$globalFakeHome"* ]] && return 0
 	
 	_instance_internal "$globalFakeHome"/. "$actualFakeHome"/
 }
