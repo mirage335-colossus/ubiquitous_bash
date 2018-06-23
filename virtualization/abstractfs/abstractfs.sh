@@ -18,11 +18,10 @@ _abstractfs() {
 	
 	export abstractfs="$abstractfs_root"/"$abstractfs_name"
 	
-	_set_share_abstractfs
-	
-	_virtUser "$@"
-	
 	_relink_abstractfs
+	
+	_set_share_abstractfs
+	_virtUser "$@"
 	
 	cd "$localPWD"
 	#cd "$abstractfs_base"

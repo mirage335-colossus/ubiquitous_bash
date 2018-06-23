@@ -79,7 +79,7 @@ _describe_abstractfs() {
 
 _base_abstractfs() {
 	[[ "$@" == "" ]] && export abstractfs_base=$(_searchBaseDir "$@" "$virtUserPWD")
-	[[ "$1" != "" ]] && export abstractfs_base=$(_searchBaseDir "$@")
+	[[ "$abstractfs_base" == "" ]] && export abstractfs_base=$(_searchBaseDir "$@")
 }
 
 _findProjectAFS_procedure() {
@@ -141,17 +141,20 @@ _default_name_abstractfs() {
 }
 
 _name_abstractfs() {
+	export abstractfs_name=
 	export abstractfs_projectafs=$(_findProjectAFS "$abstractfs_base")
-	[[ -e "$abstractfs_projectafs" ]] && . "$abstractfs_projectafs" --noexec
+	[[ "$abstractfs_projectafs" != "" ]] && [[ -e "$abstractfs_projectafs" ]] && . "$abstractfs_projectafs" --noexec
 	
 	if [[ "$abstractfs_name" == "" ]]
 	then
 		export abstractfs_name=$(_default_name_abstractfs)
+		[[ "$nofs" == "true" ]] && return
 		_write_projectAFS
 		export abstractfs_name=
 	fi
 	
-	[[ -e "$abstractfs_projectafs" ]] && . "$abstractfs_projectafs" --noexec
+	export abstractfs_projectafs=$(_findProjectAFS "$abstractfs_base")
+	[[ "$abstractfs_projectafs" != "" ]] && [[ -e "$abstractfs_projectafs" ]] && . "$abstractfs_projectafs" --noexec
 	
 	[[ "$nofs" != "true" ]] && [[ ! -e "$abstractfs_projectafs" ]] && return 1
 	[[ "$abstractfs_name" == "" ]] && return 1

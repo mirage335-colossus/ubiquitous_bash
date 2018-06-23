@@ -1849,7 +1849,8 @@ intInitPWD="$PWD"
 export safeTmp="$scriptAbsoluteFolder"/w_"$sessionid"
 export scopeTmp="$scriptAbsoluteFolder"/s_"$sessionid"
 export logTmp="$safeTmp"/log
-export shortTmp=/tmp/w_"$sessionid"	#Solely for misbehaved applications called upon.
+#Solely for misbehaved applications called upon.
+export shortTmp=/tmp/w_"$sessionid"
 
 export scriptBin="$scriptAbsoluteFolder"/_bin
 export scriptBundle="$scriptAbsoluteFolder"/_bundle
@@ -1879,9 +1880,12 @@ export scriptTokens="$scriptLocal"/.tokens
 
 #Reboot Detection Token Storage
 # WARNING WIP. Not tested on all platforms. Requires a directory to be tmp/ram fs mounted. Worst case result is to preserve tokens across reboots.
-export bootTmp="$scriptLocal"			#Fail-Safe
-[[ -d /tmp ]] && export bootTmp=/tmp		#Typical BSD
-[[ -d /dev/shm ]] && export bootTmp=/dev/shm	#Typical Linux
+#Fail-Safe
+export bootTmp="$scriptLocal"
+#Typical BSD
+[[ -d /tmp ]] && export bootTmp='/tmp'
+#Typical Linux
+[[ -d /dev/shm ]] && export bootTmp='/dev/shm'
 
 #Specialized temporary directories.
 
@@ -1890,8 +1894,8 @@ export bootTmp="$scriptLocal"			#Fail-Safe
 # DANGER: Permitting multi-user access to this directory may cause unexpected behavior, including inconsitent file ownership.
 #Consistent absolute path abstraction.
 export abstractfs_root=/tmp/"$ubiquitiousBashIDnano"
-( [[ "$bootTmp" == '/dev/shm' ]] || [[ "$bootTmp" == '/tmp' ]] ) && export abstractFS_root="$bootTmp"/"$ubiquitiousBashIDnano"
-export abstractfs_lock=/"$bootTmp"/"$ubiquitiousBashID"/afs
+( [[ "$bootTmp" == '/dev/shm' ]] || [[ "$bootTmp" == '/tmp' ]] ) && export abstractfs_root="$bootTmp"/"$ubiquitiousBashIDnano"
+export abstractfs_lock=/"$bootTmp"/"$ubiquitiousBashID"/afslock
 
 # Unusually, safeTmpSSH must not be interpreted by client, and therefore is single quoted.
 # TODO Test safeTmpSSH variants including spaces in path.
@@ -1899,7 +1903,8 @@ export safeTmpSSH='~/.sshtmp/.s_'"$sessionid"
 
 #Process control.
 export pidFile="$safeTmp"/.pid
-export uPID="cwrxuk6wqzbzV6p8kPS8J4APYGX"	#Invalid do-not-match default.
+#Invalid do-not-match default.
+export uPID="cwrxuk6wqzbzV6p8kPS8J4APYGX"
 
 export daemonPidFile="$scriptLocal"/.bgpid
 
@@ -1920,7 +1925,8 @@ export AUTOSSH_GATETIME=15
 
 #Monolithic shared files.
 export lock_pathlock="$scriptLocal"/l_path
-export lock_quicktmp="$scriptLocal"/l_qt	#Used to make locking operations atomic as possible.
+#Used to make locking operations atomic as possible.
+export lock_quicktmp="$scriptLocal"/l_qt
 export lock_emergency="$scriptLocal"/l_em
 export lock_open="$scriptLocal"/l_o
 export lock_opening="$scriptLocal"/l_opening
@@ -1998,10 +2004,15 @@ _extra() {
 }
 
 _prepare_abstract() {
-	! mkdir -p "$abstractfs" && exit 1
-	chmod 0700 "$abstractfs" > /dev/null 2>&1
-	! chmod 700 "$abstractfs" && exit 1
-	! chown "$USER":"$USER" "$abstractfs" && exit 1
+	! mkdir -p "$abstractfs_root" && exit 1
+	chmod 0700 "$abstractfs_root" > /dev/null 2>&1
+	! chmod 700 "$abstractfs_root" && exit 1
+	! chown "$USER":"$USER" "$abstractfs_root" && exit 1
+	
+	! mkdir -p "$abstractfs_lock" && exit 1
+	chmod 0700 "$abstractfs_lock" > /dev/null 2>&1
+	! chmod 700 "$abstractfs_lock" && exit 1
+	! chown "$USER":"$USER" "$abstractfs_lock" && exit 1
 }
 
 _prepare() {
