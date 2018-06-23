@@ -4496,6 +4496,12 @@ _test_abstractfs() {
 }
 
 _abstractfs() {
+	#Nesting prohibited. Not fully tested.
+	# WARNING: May cause infinite recursion symlinks.
+	[[ "$abstractfs" != "" ]] && return 1
+	
+	_reset_abstractfs
+	
 	_prepare_abstract
 	
 	local abstractfs_command="$1"
@@ -4520,11 +4526,24 @@ _abstractfs() {
 	#cd "$abstractfs_base"
 	#cd "$abstractfs"
 	
+	local commandExitStatus
+	
 	#_scope_terminal "${processedArgs[@]}"
 	"$abstractfs_command" "${processedArgs[@]}"
+	commandExitStatus=$?
 	
 	_set_share_abstractfs_reset
 	_rmlink_abstractfs
+	
+	return "$commandExitStatus"
+}
+
+_reset_abstractfs() {
+	export abstractfs=
+	export abstractfs_base=
+	export abstractfs_name=
+	export abstractfs_puid=
+	export abstractfs_projectafs=
 }
 
 _prohibit_rmlink_abstractfs() {
@@ -4608,8 +4627,9 @@ _describe_abstractfs() {
 }
 
 _base_abstractfs() {
-	[[ "$@" == "" ]] && export abstractfs_base=$(_searchBaseDir "$@" "$virtUserPWD")
-	[[ "$abstractfs_base" == "" ]] && export abstractfs_base=$(_searchBaseDir "$@")
+	export abstractfs_base=
+	[[ "$@" != "" ]] && export abstractfs_base=$(_searchBaseDir "$@")
+	[[ "$abstractfs_base" == "" ]] && export abstractfs_base=$(_searchBaseDir "$@" "$virtUserPWD")
 }
 
 _findProjectAFS_procedure() {

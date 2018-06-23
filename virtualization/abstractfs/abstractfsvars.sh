@@ -1,3 +1,11 @@
+_reset_abstractfs() {
+	export abstractfs=
+	export abstractfs_base=
+	export abstractfs_name=
+	export abstractfs_puid=
+	export abstractfs_projectafs=
+}
+
 _prohibit_rmlink_abstractfs() {
 	#mkdir -p "$abstractfs_lock"/"$abstractfs_name"
 	mkdir -p "$abstractfs_lock"/"$abstractfs_name"/"$abstractfs_puid"
@@ -79,8 +87,9 @@ _describe_abstractfs() {
 }
 
 _base_abstractfs() {
-	[[ "$@" == "" ]] && export abstractfs_base=$(_searchBaseDir "$@" "$virtUserPWD")
-	[[ "$abstractfs_base" == "" ]] && export abstractfs_base=$(_searchBaseDir "$@")
+	export abstractfs_base=
+	[[ "$@" != "" ]] && export abstractfs_base=$(_searchBaseDir "$@")
+	[[ "$abstractfs_base" == "" ]] && export abstractfs_base=$(_searchBaseDir "$@" "$virtUserPWD")
 }
 
 _findProjectAFS_procedure() {
