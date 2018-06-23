@@ -69,7 +69,7 @@ _describe_abstractfs() {
 	local localFunctionEntryPWD
 	localFunctionEntryPWD="$PWD"
 	
-	echo "$abstractfs_base"
+	echo $(basename "$abstractfs_base")
 	! cd "$abstractfs_base" >/dev/null 2>&1 && cd "$localFunctionEntryPWD" && return 1
 	git rev-parse --abbrev-ref HEAD 2>/dev/null
 	git remote show origin 2>/dev/null
@@ -131,7 +131,7 @@ _default_name_abstractfs() {
 	#If "$abstractfs_name" is not saved to file, a consistent, compressed, naming scheme, is required.
 	if [[ "$nofs" == "true" ]]
 	then
-		#echo "$abstractfs_base" | md5sum | head -c 8
+		#echo $(basename "$abstractfs_base") | md5sum | head -c 8
 		_describe_abstractfs | md5sum | head -c 8
 		return
 	fi
