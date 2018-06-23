@@ -61,7 +61,7 @@ _gitImport() {
 	cd "$scriptFolder"
 }
 
-_findGit_sequence() {
+_findGit_procedure() {
 	cd "$1"
 	shift
 	
@@ -71,7 +71,7 @@ _findGit_sequence() {
 		return 0
 	fi
 	
-	find -L . -mindepth 1 -maxdepth 1 -type d -exec "$scriptAbsoluteLocation" _findGit_sequence {} "$@" \;
+	find -L . -mindepth 1 -maxdepth 1 -type d -exec "$scriptAbsoluteLocation" _findGit_procedure {} "$@" \;
 }
 
 #Recursively searches for directories containing ".git".
@@ -82,7 +82,7 @@ _findGit() {
 		return 0
 	fi
 	
-	find -L . -mindepth 1 -maxdepth 1 -type d -exec "$scriptAbsoluteLocation" _findGit_sequence {} "$@" \;
+	find -L . -mindepth 1 -maxdepth 1 -type d -exec "$scriptAbsoluteLocation" _findGit_procedure {} "$@" \;
 }
 
 _gitPull() {

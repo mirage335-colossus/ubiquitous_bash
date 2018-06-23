@@ -147,6 +147,7 @@ _test() {
 	
 	_tryExec "_test_mkboot"
 	
+	_tryExec "_test_abstractfs"
 	_tryExec "_test_fakehome"
 	_tryExec "_testChRoot"
 	_tryExec "_testQEMU"

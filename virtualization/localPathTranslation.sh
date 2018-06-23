@@ -182,6 +182,8 @@ _virtUser() {
 	export sharedHostProjectDir="$sharedHostProjectDir"
 	export processedArgs
 	
+	[[ "$virtUserPWD" == "" ]] && export virtUserPWD="$outerPWD"
+	
 	if [[ -e /tmp/.X11-unix ]] && [[ "$DISPLAY" != "" ]] && type xauth > /dev/null 2>&1
 	then
 		export XSOCK=/tmp/.X11-unix
@@ -192,12 +194,13 @@ _virtUser() {
 	
 	if [[ "$sharedHostProjectDir" == "" ]]
 	then
-		sharedHostProjectDir=$(_searchBaseDir "$@" "$outerPWD")
+		sharedHostProjectDir=$(_searchBaseDir "$@" "$virtUserPWD")
 		#sharedHostProjectDir="$safeTmp"/shared
 		mkdir -p "$sharedHostProjectDir"
 	fi
 	
-	export localPWD=$(_localDir "$outerPWD" "$sharedHostProjectDir" "$sharedGuestProjectDir")
+	export localPWD=$(_localDir "$virtUserPWD" "$sharedHostProjectDir" "$sharedGuestProjectDir")
+	export virtUserPWD=
 	
 	#If $sharedGuestProjectDir matches MSW drive letter format, enable translation of other non-UNIX file parameter differences.
 	local enableMSWtranslation
@@ -247,6 +250,14 @@ _vector_virtUser() {
 	_virtUser /tmp
 	#echo "${processedArgs[0]}"
 	[[ "${processedArgs[0]}" != '/home/user/project/tmp/.' ]] && echo 'fail: _vector_virtUser' && _messageFAIL
+	
+	export virtUserPWD='/tmp'
+	export sharedHostProjectDir=/tmp
+	export sharedGuestProjectDir='/home/user/project/tmp'
+	_virtUser /tmp
+	#echo "${processedArgs[0]}"
+	#echo "$localPWD"
+	[[ "$localPWD" != '/home/user/project/tmp/.' ]] && echo 'fail: _vector_virtUser' && _messageFAIL
 	
 	
 	return 0
