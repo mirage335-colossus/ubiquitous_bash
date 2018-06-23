@@ -4563,6 +4563,7 @@ _rmlink_abstractfs() {
 	echo > "$abstractfs_lock"/"$abstractfs_name"_rmlink
 	
 	rmdir "$abstractfs_lock"/"$abstractfs_name" >/dev/null 2>&1 && _rmlink "$abstractfs"
+	rmdir "$abstractfs_root" >/dev/null 2>&1
 	
 	rm "$abstractfs_lock"/"$abstractfs_name"_rmlink
 }
@@ -8309,6 +8310,10 @@ _relink_scope() {
 	
 	_relink "$safeTmp" "$ub_scope"/safeTmp
 	_relink "$shortTmp" "$ub_scope"/shortTmp
+	
+	# DANGER: Creates infinitely recursive symlinks.
+	#[[ -e "$abstractfs_projectafs" ]] && _relink "$abstractfs_projectafs" "$ub_scope"/project.afs
+	#[[ -d "$abstractfs" ]] && _relink "$abstractfs" "$ub_scope"/afs
 }
 
 _ops_scope() {

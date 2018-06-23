@@ -34,6 +34,7 @@ _rmlink_abstractfs() {
 	echo > "$abstractfs_lock"/"$abstractfs_name"_rmlink
 	
 	rmdir "$abstractfs_lock"/"$abstractfs_name" >/dev/null 2>&1 && _rmlink "$abstractfs"
+	rmdir "$abstractfs_root" >/dev/null 2>&1
 	
 	rm "$abstractfs_lock"/"$abstractfs_name"_rmlink
 }

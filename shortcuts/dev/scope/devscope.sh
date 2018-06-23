@@ -28,6 +28,10 @@ _relink_scope() {
 	
 	_relink "$safeTmp" "$ub_scope"/safeTmp
 	_relink "$shortTmp" "$ub_scope"/shortTmp
+	
+	# DANGER: Creates infinitely recursive symlinks.
+	#[[ -e "$abstractfs_projectafs" ]] && _relink "$abstractfs_projectafs" "$ub_scope"/project.afs
+	#[[ -d "$abstractfs" ]] && _relink "$abstractfs" "$ub_scope"/afs
 }
 
 _ops_scope() {
