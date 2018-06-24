@@ -7,9 +7,7 @@ s_*/
 w_*/
 v_*/
 h_*/
-*.tar
-*.zip
-*.iso
+
 vm.vdi
 vm.img
 vm*.img
@@ -21,6 +19,10 @@ devtask*
 devtask/
 USAGE.*.html
 _buried
+
+*.tar
+*.zip
+*.iso
 
 package.tar.gz
 
