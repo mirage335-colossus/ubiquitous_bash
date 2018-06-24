@@ -323,8 +323,28 @@ _launch_anchor() {
 	if _recursion_guard "$recursionExec"
 	then
 		[[ "$ub_import" != "true" ]] && _messagePlain_good 'self: '"$recursionExec" "$anchorName" "$@" | _user_log_anchor
-			[[ "$ub_import" != "true" ]] && "$recursionExec" "$anchorName" "$@"
-			[[ "$ub_import" != "true" ]] && exit $?
+			if [[ "$ub_import" != "true" ]]
+			then
+				"$recursionExec" "$anchorName" "$@"
+				exit $?
+			fi
+		
+		[[ "$ub_import" == "true" ]] && _messagePlain_good 'self: '"$recursionExec" "$ub_import_param" "$anchorName" "$@" | _user_log_anchor
+			[[ "$ub_import" == "true" ]] && "$recursionExec" "$ub_import_param" "$anchorName" "$@"
+		
+		exit $?
+	fi
+	
+	#Resolves placement under "$anchorSourcePath"/_index .
+	recursionExec="$anchorScriptAbsoluteFolder"/../../"$anchorSourcePath"
+	if _recursion_guard "$recursionExec"
+	then
+		[[ "$ub_import" != "true" ]] && _messagePlain_good 'self: '"$recursionExec" "$anchorName" "$@" | _user_log_anchor
+			if [[ "$ub_import" != "true" ]]
+			then
+				"$recursionExec" "$anchorName" "$@"
+				exit $?
+			fi
 		
 		[[ "$ub_import" == "true" ]] && _messagePlain_good 'self: '"$recursionExec" "$ub_import_param" "$anchorName" "$@" | _user_log_anchor
 			[[ "$ub_import" == "true" ]] && "$recursionExec" "$ub_import_param" "$anchorName" "$@"
@@ -338,8 +358,11 @@ _launch_anchor() {
 		if [[ "$anchorDestination" == *"ubiquitous_bash.sh" ]]
 		then
 			_messagePlain_good 'launch: '"$anchorDestination" "$ub_import_param" "$anchorName" "$@" | _user_log_anchor
-			[[ "$ub_import" != "true" ]] && "$anchorDestination" "$anchorName" "$@"
-			[[ "$ub_import" != "true" ]] && exit $?
+			if [[ "$ub_import" != "true" ]]
+			then
+				"$anchorDestination" "$anchorName" "$@"
+				exit $?
+			fi
 			
 			[[ "$ub_import" == "true" ]] && "$anchorDestination" "$ub_import_param" "$anchorName" "$@"
 			exit $?
@@ -374,8 +397,11 @@ _launch_anchor() {
 	if _recursion_guard "$recursionExec"
 	then
 		[[ "$ub_import" != "true" ]] && _messagePlain_good 'launch: '"$recursionExec" "$anchorName" "$@" | _user_log_anchor
-			[[ "$ub_import" != "true" ]] && "$recursionExec" "$anchorName" "$@"
-			[[ "$ub_import" != "true" ]] && exit $?
+			if [[ "$ub_import" != "true" ]]
+			then
+				"$recursionExec" "$anchorName" "$@"
+				exit $?
+			fi
 		
 		[[ "$ub_import" == "true" ]] && _messagePlain_good 'launch: '"$recursionExec" "$ub_import_param" "$anchorName" "$@" | _user_log_anchor
 			[[ "$ub_import" == "true" ]] && "$recursionExec" "$ub_import_param" "$anchorName" "$@"
@@ -386,8 +412,11 @@ _launch_anchor() {
 	if _recursion_guard "$recursionExec"
 	then
 		[[ "$ub_import" != "true" ]] && _messagePlain_good 'launch: '"$recursionExec" "$anchorName" "$@" | _user_log_anchor
-			[[ "$ub_import" != "true" ]] && "$recursionExec" "$anchorName" "$@"
-			[[ "$ub_import" != "true" ]] && exit $?
+			if [[ "$ub_import" != "true" ]]
+			then
+				"$recursionExec" "$anchorName" "$@"
+				exit $?
+			fi
 		
 		[[ "$ub_import" == "true" ]] && _messagePlain_good 'launch: '"$recursionExec" "$ub_import_param" "$anchorName" "$@" | _user_log_anchor
 			[[ "$ub_import" == "true" ]] && "$recursionExec" "$ub_import_param" "$anchorName" "$@"
@@ -398,8 +427,11 @@ _launch_anchor() {
 	if _recursion_guard "$recursionExec"
 	then
 		[[ "$ub_import" != "true" ]] && _messagePlain_good 'launch: '"$recursionExec" "$anchorName" "$@" | _user_log_anchor
-			[[ "$ub_import" != "true" ]] && "$recursionExec" "$anchorName" "$@"
-			[[ "$ub_import" != "true" ]] && exit $?
+			if [[ "$ub_import" != "true" ]]
+			then
+				"$recursionExec" "$anchorName" "$@"
+				exit $?
+			fi
 		
 		[[ "$ub_import" == "true" ]] && _messagePlain_good 'launch: '"$recursionExec" "$ub_import_param" "$anchorName" "$@" | _user_log_anchor
 			[[ "$ub_import" == "true" ]] && "$recursionExec" "$ub_import_param" "$anchorName" "$@"
@@ -410,8 +442,11 @@ _launch_anchor() {
 	if _recursion_guard "$recursionExec"
 	then
 		[[ "$ub_import" != "true" ]] && _messagePlain_good 'launch: '"$recursionExec" "$anchorName" "$@" | _user_log_anchor
-			[[ "$ub_import" != "true" ]] && "$recursionExec" "$anchorName" "$@"
-			[[ "$ub_import" != "true" ]] && exit $?
+			if [[ "$ub_import" != "true" ]]
+			then
+				"$recursionExec" "$anchorName" "$@"
+				exit $?
+			fi
 		
 		[[ "$ub_import" == "true" ]] && _messagePlain_good 'launch: '"$recursionExec" "$ub_import_param" "$anchorName" "$@" | _user_log_anchor
 			[[ "$ub_import" == "true" ]] && "$recursionExec" "$ub_import_param" "$anchorName" "$@"
@@ -422,8 +457,11 @@ _launch_anchor() {
 	if _recursion_guard "$recursionExec"
 	then
 		[[ "$ub_import" != "true" ]] && _messagePlain_good 'reference: '"$recursionExec" "$@" | _user_log_anchor
-			[[ "$ub_import" != "true" ]] && "$recursionExec" "$@"
-			[[ "$ub_import" != "true" ]] && exit $?
+			if [[ "$ub_import" != "true" ]]
+			then
+				"$recursionExec" "$@"
+				exit $?
+			fi
 		
 		[[ "$ub_import" == "true" ]] && _messagePlain_good 'reference: '"$recursionExec" "$ub_import_param" "$@" | _user_log_anchor
 			[[ "$ub_import" == "true" ]] && "$recursionExec" "$ub_import_param" "$@"
@@ -434,8 +472,11 @@ _launch_anchor() {
 	if _recursion_guard "$recursionExec"
 	then
 		[[ "$ub_import" != "true" ]] && _messagePlain_good 'reference: '"$recursionExec" "$@" | _user_log_anchor
-			[[ "$ub_import" != "true" ]] && "$recursionExec" "$@"
-			[[ "$ub_import" != "true" ]] && exit $?
+			if [[ "$ub_import" != "true" ]]
+			then
+				"$recursionExec" "$@"
+				exit $?
+			fi
 		
 		[[ "$ub_import" == "true" ]] && _messagePlain_good 'reference: '"$recursionExec" "$ub_import_param" "$@" | _user_log_anchor
 			[[ "$ub_import" == "true" ]] && "$recursionExec" "$ub_import_param" "$@"
@@ -446,8 +487,11 @@ _launch_anchor() {
 	if _recursion_guard "$recursionExec"
 	then
 		[[ "$ub_import" != "true" ]] && _messagePlain_good 'reference: '"$recursionExec" "$@" | _user_log_anchor
-			[[ "$ub_import" != "true" ]] && "$recursionExec" "$@"
-			[[ "$ub_import" != "true" ]] && exit $?
+			if [[ "$ub_import" != "true" ]]
+			then
+				"$recursionExec" "$@"
+				exit $?
+			fi
 		
 		[[ "$ub_import" == "true" ]] && _messagePlain_good 'reference: '"$recursionExec" "$ub_import_param" "$@" | _user_log_anchor
 			[[ "$ub_import" == "true" ]] && "$recursionExec" "$ub_import_param" "$@"
@@ -458,8 +502,11 @@ _launch_anchor() {
 	if _recursion_guard "$recursionExec"
 	then
 		[[ "$ub_import" != "true" ]] && _messagePlain_good 'reference: '"$recursionExec" "$@" | _user_log_anchor
-			[[ "$ub_import" != "true" ]] && "$recursionExec" "$@"
-			[[ "$ub_import" != "true" ]] && exit $?
+			if [[ "$ub_import" != "true" ]]
+			then
+				"$recursionExec" "$@"
+				exit $?
+			fi
 		
 		[[ "$ub_import" == "true" ]] && _messagePlain_good 'reference: '"$recursionExec" "$ub_import_param" "$@" | _user_log_anchor
 			[[ "$ub_import" == "true" ]] && "$recursionExec" "$ub_import_param" "$@"

@@ -2337,7 +2337,7 @@ table.listView th, table.listView td, table.listView tr {padding:0 3px 0 3px;}
 /*}}}*/
 </pre>
 </div>
-<div title="Technique" creator="mirage335" modifier="mirage335" created="201710270318" modified="201802191717" changecount="9">
+<div title="Technique" creator="mirage335" modifier="mirage335" created="201710270318" modified="201806240326" changecount="10">
 <pre>All about the quickest and most robust way to do things, both immediately, and scaling up.
 
 
@@ -2360,7 +2360,7 @@ During compilation, submodule text files are searched for, starting with the dir
 After all functions and variables are defined, but before any actions are performed, an &quot;ops&quot; file in script's parent directory will be imported if present. Any function declarations, variable definitions, or code in this file will execute within the context of the parent script (ie. &quot;ubiquitous_bash.sh&quot;). Thus, this is a dynamic method to override precisely just what is needed, at run time. In simple cases, this may simplify software maintenance, or provide infinitely flexible end-user configuration. Automatic generation by graphical programs also managed with an Ubiquitous Bash middleware layer is another possibility.
 
 !Forking
-When not developing Ubiquitous Bash itself, it is strongly recommended to import the middleware as a git submodule in a new project. This will allow a quick &quot;git pull&quot; to incorporate any changes, which occasionally include additional safety checks.
+When not developing Ubiquitous Bash itself, it is strongly recommended to import the middleware as a &quot;git submodule&quot; in a new project. This will allow a quick &quot;git pull&quot; to incorporate any changes, which occasionally include additional safety checks.
 //{{{
 mkdir project
 cd project
@@ -2386,10 +2386,22 @@ Forking can be done automatically with the &quot;fork&quot; script, which will a
 Symbolic links to user PATH may be added automatically based upon directory name, script name, or find commands to locate other scripts. See &quot;structure/installation.sh&quot;, specifically functions _setupCommand and _setupCommands . Overloading these functions with &quot;ops&quot; is best practice.
 
 !Best Practices
-!!Anchor
-Specialized uses for an application may call for specific variables to be set, or specific internal commands to be run. A small anchor script can be used to accomplish this, sometimes using information which would not be available to the target, such as the location that script is placed in. Additionally, this may offer the only defense against some rare problems with multilayer symlinks.
+!!Anchor and Call
+Anchor and Call scripts are shortcuts, searching based on rules, rather than following a single pointer, as with symlinks. Anchor scripts search down, Call scripts search up.
 
-Examples have not yet been integrated with Ubiquitous Bash itself, but are part of the [[CoreAutoSSH|https://github.com/mirage335/CoreAutoSSH/blob/master/_index/_alpha/_ssh]] and [[DockerApp|https://github.com/mirage335/DockerApp/blob/master/dockerfiles/app/libreoffice]] projects.
+System PATH should include neither Anchor nor Call scripts. Anchor scripts may be symlinked, but NOT copied, into PATH.
+
+Anchor scripts find specially named subdirectories containing a specially named script, then refer to their own name as the command to run. Anchor scripts rely on the portable filesystem hierarchy defined by [[Ubiquitous Lab]]. Incorrect installation of Anchor scripts may result in excessively deep searches through their use of the &quot;find&quot; command.
+//{{{
+./_anchor
+&quot;$HOME&quot;/core/installations/ubiquitous_bash/ubiquitous_bash.sh _anchor
+//}}}
+
+Call scripts seek an identically named executable (typically an Anchor script). Call scripts may be installed anywhere, and may include hardcoded user-specified parameters or filesystem lock mechanisms. Call scripts are typically copied to project directories.
+//{{{
+./_call ./file.txt
+&quot;$HOME&quot;/core/installations/_call --user-specified ./file.txt
+//}}}
 
 !!Specialized Dependencies
 A &quot;_tryExec&quot; function is generally used to call a function which checks for dependencies used only by specific submodules. If the relevant test function has not been declared, because its submodule has not been included, because the relevant functionality is not needed in the current project, then the dependency check will be skipped automatically.
