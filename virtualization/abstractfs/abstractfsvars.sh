@@ -131,7 +131,7 @@ CZXWXcRMTo8EmM8i4d
 }
 
 _write_projectAFS() {
-	[[ "$nofs" == "true" ]] && return
+	( [[ "$nofs" == "true" ]] || [[ "$afs_nofs" == "true" ]] ) && return
 	_projectAFS_here > "$abstractfs_base"/project.afs
 	chmod u+x "$abstractfs_base"/project.afs
 }
@@ -139,7 +139,7 @@ _write_projectAFS() {
 # DANGER: Mandatory strict directory 8.3 compliance for this variable! Long subdirectory/filenames permitted thereafter.
 _default_name_abstractfs() {
 	#If "$abstractfs_name" is not saved to file, a consistent, compressed, naming scheme, is required.
-	if [[ "$nofs" == "true" ]]
+	if ( [[ "$nofs" == "true" ]] || [[ "$afs_nofs" == "true" ]] )
 	then
 		#echo $(basename "$abstractfs_base") | md5sum | head -c 8
 		_describe_abstractfs | md5sum | head -c 8
@@ -158,7 +158,7 @@ _name_abstractfs() {
 	if [[ "$abstractfs_name" == "" ]]
 	then
 		export abstractfs_name=$(_default_name_abstractfs)
-		[[ "$nofs" == "true" ]] && return
+		( [[ "$nofs" == "true" ]] || [[ "$afs_nofs" == "true" ]] ) && return
 		_write_projectAFS
 		export abstractfs_name=
 	fi
@@ -166,7 +166,7 @@ _name_abstractfs() {
 	export abstractfs_projectafs=$(_findProjectAFS "$abstractfs_base")
 	[[ "$abstractfs_projectafs" != "" ]] && [[ -e "$abstractfs_projectafs" ]] && . "$abstractfs_projectafs" --noexec
 	
-	[[ "$nofs" != "true" ]] && [[ ! -e "$abstractfs_projectafs" ]] && return 1
+	( [[ "$nofs" == "true" ]] || [[ "$afs_nofs" == "true" ]] ) && [[ ! -e "$abstractfs_projectafs" ]] && return 1
 	[[ "$abstractfs_name" == "" ]] && return 1
 	
 	return 0
