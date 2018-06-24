@@ -36,7 +36,7 @@ _dosbox_sequence() {
 	
 	#Alternatively, "-c" could be used with dosbox, but this seems not to work well with multiple parameters.
 	#Note "DOS" will not like paths not conforming to 8.3 .
-	echo "${processedArgs[@]}" >> "$instancedVirtDir"/dosbox.conf
+	_safeEcho_newline "${processedArgs[@]}" >> "$instancedVirtDir"/dosbox.conf
 	
 	dosbox -conf "$instancedVirtDir"/dosbox.conf
 	

@@ -78,7 +78,7 @@ _describe_abstractfs() {
 	local localFunctionEntryPWD
 	localFunctionEntryPWD="$PWD"
 	
-	echo $(basename "$abstractfs_base")
+	basename "$abstractfs_base"
 	! cd "$abstractfs_base" >/dev/null 2>&1 && cd "$localFunctionEntryPWD" && return 1
 	git rev-parse --abbrev-ref HEAD 2>/dev/null
 	git remote show origin 2>/dev/null

@@ -72,7 +72,7 @@ _getAbsoluteLocation() {
 			else
 	absoluteLocation=$(realpath -L "$1")
 	fi
-	echo $absoluteLocation
+	echo "$absoluteLocation"
 }
 alias getAbsoluteLocation=_getAbsoluteLocation
 

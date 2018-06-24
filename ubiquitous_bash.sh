@@ -188,7 +188,7 @@ _getAbsoluteLocation() {
 			else
 	absoluteLocation=$(realpath -L "$1")
 	fi
-	echo $absoluteLocation
+	echo "$absoluteLocation"
 }
 alias getAbsoluteLocation=_getAbsoluteLocation
 
@@ -660,6 +660,28 @@ _instance_internal() {
 	! [[ -e "$2" ]] && return 1
 	! [[ -d "$2" ]] && return 1
 	rsync -q -ax --exclude "/.cache" --exclude "/.git" "$@"
+}
+
+#echo -n
+_safeEcho() {
+	printf '%s' "$1"
+	shift
+	
+	[[ "$@" == "" ]] && return 0
+	
+	local currentArg
+	for currentArg in "$@"
+	do
+		printf '%s' " "
+		printf '%s' "$currentArg"
+	done
+	return 0
+}
+
+#echo
+_safeEcho_newline() {
+	_safeEcho "$@"
+	printf '\n'
 }
 
 #Universal debugging filesystem.
@@ -1476,7 +1498,7 @@ _findPort() {
 		
 	fi
 	
-	echo $currentPort
+	echo "$currentPort"
 	
 	_validatePort "$currentPort"
 }
@@ -4198,7 +4220,7 @@ _removeFilePrefix() {
 	local translatedFileParam
 	translatedFileParam=${1/#file:\/\/}
 	
-	echo "$translatedFileParam"
+	_safeEcho_newline "$translatedFileParam"
 }
 
 #Translates back slash parameters (UNIX paths) to forward slash parameters (MSW paths).
@@ -4206,7 +4228,7 @@ _slashBackToForward() {
 	local translatedFileParam
 	translatedFileParam=${1//\//\\}
 	
-	echo "$translatedFileParam"
+	_safeEcho_newline "$translatedFileParam"
 }
 
 _nixToMSW() {
@@ -4356,7 +4378,7 @@ _searchBaseDir() {
 		
 	done
 	
-	echo "$baseDir"
+	_safeEcho_newline "$baseDir"
 }
 
 #Converts to relative path, if provided a file parameter.
@@ -4366,23 +4388,23 @@ _searchBaseDir() {
 _localDir() {
 	if _checkBaseDirRemote "$1"
 	then
-		echo "$1"
+		_safeEcho_newline "$1"
 		return
 	fi
 	
 	if [[ ! -e "$2" ]]
 	then
-		echo "$1"
+		_safeEcho_newline "$1"
 		return
 	fi
 	
 	if [[ ! -e "$1" ]] || ! _pathPartOf "$1" "$2"
 	then
-		echo "$1"
+		_safeEcho_newline "$1"
 		return
 	fi
 	
-	[[ "$3" != "" ]] && echo -n "$3" && [[ "$3" != "/" ]] && echo -n "/"
+	[[ "$3" != "" ]] && _safeEcho "$3" && [[ "$3" != "/" ]] && _safeEcho "/"
 	realpath -L -s --relative-to="$2" "$1"
 	
 }
@@ -4428,7 +4450,7 @@ _virtUser() {
 	#If $sharedGuestProjectDir matches MSW drive letter format, enable translation of other non-UNIX file parameter differences.
 	local enableMSWtranslation
 	enableMSWtranslation=false
-	echo "$sharedGuestProjectDir" | grep '^[[:alpha:]]\:\|^[[:alnum:]][[:alnum:]]\:\|^[[:alnum:]][[:alnum:]][[:alnum:]]\:' > /dev/null 2>&1 && enableMSWtranslation=true
+	_safeEcho_newline "$sharedGuestProjectDir" | grep '^[[:alpha:]]\:\|^[[:alnum:]][[:alnum:]]\:\|^[[:alnum:]][[:alnum:]][[:alnum:]]\:' > /dev/null 2>&1 && enableMSWtranslation=true
 	
 	#http://stackoverflow.com/questions/15420790/create-array-in-loop-from-number-of-arguments
 	#local processedArgs
@@ -4459,28 +4481,35 @@ _vector_virtUser() {
 	export sharedHostProjectDir=
 	export sharedGuestProjectDir=/home/user/project
 	_virtUser /tmp
-	#echo "${processedArgs[0]}"
+	#_safeEcho_newline "${processedArgs[0]}"
 	[[ "${processedArgs[0]}" != '/home/user/project/tmp' ]] && echo 'fail: _vector_virtUser' && _messageFAIL
 	
 	export sharedHostProjectDir=/
 	export sharedGuestProjectDir='Z:'
 	_virtUser /tmp
-	#echo "${processedArgs[0]}"
+	#_safeEcho_newline "${processedArgs[0]}"
 	[[ "${processedArgs[0]}" != 'Z:\tmp' ]] && echo 'fail: _vector_virtUser' && _messageFAIL
 	
 	export sharedHostProjectDir=/tmp
 	export sharedGuestProjectDir='/home/user/project/tmp'
 	_virtUser /tmp
-	#echo "${processedArgs[0]}"
+	#_safeEcho_newline "${processedArgs[0]}"
 	[[ "${processedArgs[0]}" != '/home/user/project/tmp/.' ]] && echo 'fail: _vector_virtUser' && _messageFAIL
 	
 	export virtUserPWD='/tmp'
 	export sharedHostProjectDir=/tmp
 	export sharedGuestProjectDir='/home/user/project/tmp'
 	_virtUser /tmp
-	#echo "${processedArgs[0]}"
-	#echo "$localPWD"
+	#_safeEcho_newline "${processedArgs[0]}"
+	#_safeEcho_newline "$localPWD"
 	[[ "$localPWD" != '/home/user/project/tmp/.' ]] && echo 'fail: _vector_virtUser' && _messageFAIL
+	
+	export virtUserPWD='/tmp'
+	export sharedHostProjectDir=/tmp
+	export sharedGuestProjectDir='/home/user/project/tmp'
+	_virtUser -e /tmp
+	#_safeEcho_newline "${processedArgs[0]}"
+	[[ "${processedArgs[0]}" != '-e' ]] && echo 'fail: _vector_virtUser' && _messageFAIL
 	
 	
 	return 0
@@ -4618,7 +4647,7 @@ _describe_abstractfs() {
 	local localFunctionEntryPWD
 	localFunctionEntryPWD="$PWD"
 	
-	echo $(basename "$abstractfs_base")
+	basename "$abstractfs_base"
 	! cd "$abstractfs_base" >/dev/null 2>&1 && cd "$localFunctionEntryPWD" && return 1
 	git rev-parse --abbrev-ref HEAD 2>/dev/null
 	git remote show origin 2>/dev/null
@@ -5595,7 +5624,7 @@ _createHTG_MSW() {
 	
 	_preCommand_MSW >> "$hostToGuestFiles"/application.bat
 	
-	echo "${processedArgs[@]}" >> "$hostToGuestFiles"/application.bat
+	_safeEcho_newline "${processedArgs[@]}" >> "$hostToGuestFiles"/application.bat
 	 
 	echo ""  >> "$hostToGuestFiles"/application.bat
 	
@@ -5651,7 +5680,7 @@ _createHTG_UNIX() {
 	
 	echo '#!/usr/bin/env bash' >> "$hostToGuestFiles"/cmd.sh
 	echo "export localPWD=""$localPWD" >> "$hostToGuestFiles"/cmd.sh
-	echo "/media/bootdisc/ubiquitous_bash.sh _dropBootdisc ${processedArgs[@]}" >> "$hostToGuestFiles"/cmd.sh
+	_safeEcho_newline "/media/bootdisc/ubiquitous_bash.sh _dropBootdisc ${processedArgs[@]}" >> "$hostToGuestFiles"/cmd.sh
 }
 
 _commandBootdisc() {
@@ -5947,6 +5976,14 @@ _mountChRoot() {
 	sudo -n cp "$scriptAbsoluteLocation" "$absolute1"/usr/local/bin/ubiquitous_bash.sh
 	sudo -n chmod 0755 "$absolute1"/usr/local/bin/ubiquitous_bash.sh
 	sudo -n chown root:root "$absolute1"/usr/local/bin/ubiquitous_bash.sh
+	
+	if [[ -e "$scriptAbsoluteFolder"/lean.sh ]]
+	then
+		sudo -n cp "$scriptAbsoluteFolder"/lean.sh "$absolute1"/usr/local/bin/lean.sh
+		sudo -n chmod 0755 "$absolute1"/usr/local/bin/lean.sh
+		sudo -n chown root:root "$absolute1"/usr/local/bin/lean.sh
+	fi
+	
 	sudo -n cp "$scriptBin"/gosu-armel "$absolute1"/usr/local/share/ubcore/bin/gosu-armel
 	sudo -n cp "$scriptBin"/gosu-amd64 "$absolute1"/usr/local/share/ubcore/bin/gosu-amd64
 	sudo -n cp "$scriptBin"/gosu-i386 "$absolute1"/usr/local/share/ubcore/bin/gosu-i386
@@ -7644,7 +7681,7 @@ _dosbox_sequence() {
 	
 	#Alternatively, "-c" could be used with dosbox, but this seems not to work well with multiple parameters.
 	#Note "DOS" will not like paths not conforming to 8.3 .
-	echo "${processedArgs[@]}" >> "$instancedVirtDir"/dosbox.conf
+	_safeEcho_newline "${processedArgs[@]}" >> "$instancedVirtDir"/dosbox.conf
 	
 	dosbox -conf "$instancedVirtDir"/dosbox.conf
 	
@@ -10318,7 +10355,7 @@ _gitClone_ubiquitous() {
 
 _selfCloneUbiquitous() {
 	"$scriptBin"/.ubrgbin.sh _ubrgbin_cpA "$scriptBin" "$ubcoreUBdir"/ > /dev/null 2>&1
-	cp -a "$scriptAbsoluteFolder"/lean.sh "$ubcoreUBdir"/lean.sh
+	cp -a "$scriptAbsoluteFolder"/lean.sh "$ubcoreUBdir"/lean.sh > /dev/null 2>&1
 	cp -a "$scriptAbsoluteLocation" "$ubcoreUBdir"/ubiquitous_bash.sh
 }
 
@@ -12487,6 +12524,8 @@ _test() {
 	_getDep trap
 	_getDep return
 	_getDep set
+	
+	_getDep printf
 	
 	_getDep dd
 	

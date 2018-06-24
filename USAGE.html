@@ -1699,6 +1699,35 @@ Basename of the directory containing script. Typically used to cause the script 
 
 </pre>
 </div>
+<div title="Scope" creator="YourName" modifier="m335" created="201806232231" modified="201806240214" changecount="6">
+<pre>Shell script driven Integrated Development Environment (IDE).
+
+Creates a temporary directory of shell scripts under &quot;./.s_scope&quot;, or similar. Scripts are written out intelligently from here documents, include hardcoded path to parent ubiquitous bash script. Consequently, any function or program may be called to operate on the 'specimen' directory. Especially intended for routine compile/debug jobs typically launched manually.
+
+Scopes may not operate in parallel on the same specimen directory. Parallel processes may be managed within the scope environment, typically by an end user, but possibly through any supervisory process.
+
+Override &quot;_scope_interact&quot; under &quot;core.sh&quot; to specify a specific program to be used to control the scope environment. Typically this will be a command prompt, terminal emulator, or file manager. When the interactive program is closed, the temporary scope environment will be removed.
+
+An &quot;ops&quot; file is imported if available from the specimen directory. Especially intended for setting project-specific compile/debug configuration.
+
+//{{{
+_scope .
+//}}}
+
+Virtualization may be used on the entire scope environment, deploying the entire IDE within a temporary VM. 
+//{{{
+./ubiquitous_bash.sh _userChRoot ./ubiquitous_bash.sh _scope .
+./ubiquitous_bash.sh _userQemu konsole -e ./ubiquitous_bash.sh _scope .
+//}}}
+
+~AbstractFS should be used for applications within the scope environment, not for the scope environment itself. Nested ~AbstractFS is not recommended.
+//{{{
+_scope .
+#User interaction.
+_abstractfs ls -lad ./.
+//}}}
+</pre>
+</div>
 <div title="SearchDevel" creator="mirage335" modifier="mirage335" created="201712251604" modified="201712251604" changecount="3">
 <pre>!Find Function
 Searches current directory for references to function name. Ignores large files.
@@ -1707,7 +1736,7 @@ _findFunction _true
 //}}}
 </pre>
 </div>
-<div title="Shortcuts" creator="mirage335" modifier="mirage335" created="201710261859" modified="201801042216" changecount="26">
+<div title="Shortcuts" creator="mirage335" modifier="m335" created="201710261859" modified="201806232233" changecount="28">
 <pre>Many functions are relevant to, or intended to simplify, typical desktop usage. Generally sorted into &quot;generic&quot; or &quot;shortcuts&quot; subdirectories.
 
 
@@ -2474,7 +2503,7 @@ apt-get install virtualbox-guest-dkms virtualbox-guest-x11 linux-headers-$(uname
 usermod -G vboxsf -a user
 //}}}</pre>
 </div>
-<div title="Virtualization" creator="mirage335" modifier="mirage335" created="201710270206" modified="201801240549" changecount="134">
+<div title="Virtualization" creator="mirage335" modifier="m335" created="201710270206" modified="201806240215" changecount="137">
 <pre>Ubiquitous Bash middleware has the capacity to provide true application virtualization, with automatic fileparameter translation, across a wide variety of platforms (x86/64, ARM), and operating systems (MSW, Unix), by using any available underlying tool (~ChRoot, QEMU, Xen, ~VirtualBox, Docker, Wine, Cygwin, &lt;nowiki&gt;DosBox&lt;/nowiki&gt;), on a common disk format (raw image). Most of this capability has been realized, most of the remainder will involve simply merging existing code from [[HostedXen|https://github.com/mirage335/HostedXen]], [[HostedOpenVZ|https://github.com/mirage335/hostedOpenVZ]]. Automatic selection of native application by platform is also well supported.
 
 &lt;&lt;showtoc&gt;&gt;
@@ -2687,6 +2716,8 @@ _dosbox dir ./
 !&lt;nowiki&gt;FakeHome&lt;/nowiki&gt;
 Many programs inappropriately assume the user's &quot;home&quot; folder is the appropriate place for configurations which might actually need to be different for different use cases. Overriding the &quot;$HOME&quot; environment variable, more rarely other variables as well, can resolve the resulting conflicts. ~FakeHome is a feature of ubiquitous bash which goes a few steps further depending on which function is used, what environment variables are set, what overrides are present in &quot;ops&quot;, and whether setupUbiquitous has hooked the user's actual &quot;.bashrc&quot;. For example, it is possible to automatically drop the redirection when a later subshell is launched.
 
+End user FakeHome functions documented here are also intended as documentation themselves. Application developers needing more granular control of the fakeHome environment may use their simple sequences as examples. See &quot;virtualization/fakehome/fakehomeuser.sh&quot; .
+
 !!Create
 Automatically adds typical shared directories, such as &quot;~/Downloads&quot; to ~FakeHome environment, by symlink.
 //{{{
@@ -2717,15 +2748,14 @@ Some applications (eg. gpg) will not operate correctly if the &quot;$HOME&quot; 
 _userShortHome
 //}}}
 
-Because symlinks will generally be deferenced if used as &quot;$HOME&quot;, this workaround necessitates symlinking specific application's configuration directories. Further, &quot;_editShortHome&quot; actually disables the workaround, only serving to hook the &quot;_prepareAppHome&quot; function.
+Because symlinks will generally be deferenced if used as &quot;$HOME&quot;, this workaround necessitates symlinking specific application's configuration directories.
 
-Override the example &quot;_prepareAppHome&quot; in &quot;ops&quot; or elsewhere as appropriate for specific applications.
+Override, or implement, the example &quot;_install_fakeHome_app&quot; in &quot;ops&quot;, &quot;core.sh&quot;, or elsewhere, as appropriate for specific applications.
 //{{{
-_setShortHome
-
-_prepareAppHome
-
-_userFakeHome_sequence
+_install_fakeHome_app() {
+	#_link_fakeHome &quot;$scriptLib&quot;/app/.app &quot;.app&quot;
+	true
+}
 //}}}
 
 As a useful convention, consider using the &quot;_local/app&quot; default for persistent app configuration directories, unless a specific type of application for integration with meta-applications is to be denoted (ie. blockchain).
@@ -2738,6 +2768,12 @@ export keepFakeHome=&quot;false&quot;
 _userFakeHome emacs
 //}}}
 
+!&lt;nowiki&gt;AbstractFS&lt;/nowiki&gt;
+Local file parameter translation. Converts all parameters to a consistently defined, symlinked path under &quot;/tmp&quot; or similar, compliant to &quot;8.3&quot; format. Especially intended as a workaround for any application making inappropriate use of absolute paths.
+//{{{
+_abstractfs ls -lad ./.
+rm project.afs
+//}}}
 </pre>
 </div>
 <div title="defaults" creator="YourName" modifier="mirage335" created="201502280426" modified="201710261734" tags="systemConfig" changecount="9">

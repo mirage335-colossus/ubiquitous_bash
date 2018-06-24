@@ -1,3 +1,25 @@
+#echo -n
+_safeEcho() {
+	printf '%s' "$1"
+	shift
+	
+	[[ "$@" == "" ]] && return 0
+	
+	local currentArg
+	for currentArg in "$@"
+	do
+		printf '%s' " "
+		printf '%s' "$currentArg"
+	done
+	return 0
+}
+
+#echo
+_safeEcho_newline() {
+	_safeEcho "$@"
+	printf '\n'
+}
+
 #Universal debugging filesystem.
 #End user function.
 _user_log() {

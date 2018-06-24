@@ -4,7 +4,7 @@ _removeFilePrefix() {
 	local translatedFileParam
 	translatedFileParam=${1/#file:\/\/}
 	
-	echo "$translatedFileParam"
+	_safeEcho_newline "$translatedFileParam"
 }
 
 #Translates back slash parameters (UNIX paths) to forward slash parameters (MSW paths).
@@ -12,7 +12,7 @@ _slashBackToForward() {
 	local translatedFileParam
 	translatedFileParam=${1//\//\\}
 	
-	echo "$translatedFileParam"
+	_safeEcho_newline "$translatedFileParam"
 }
 
 _nixToMSW() {

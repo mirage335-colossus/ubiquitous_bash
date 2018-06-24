@@ -25,6 +25,14 @@ _mountChRoot() {
 	sudo -n cp "$scriptAbsoluteLocation" "$absolute1"/usr/local/bin/ubiquitous_bash.sh
 	sudo -n chmod 0755 "$absolute1"/usr/local/bin/ubiquitous_bash.sh
 	sudo -n chown root:root "$absolute1"/usr/local/bin/ubiquitous_bash.sh
+	
+	if [[ -e "$scriptAbsoluteFolder"/lean.sh ]]
+	then
+		sudo -n cp "$scriptAbsoluteFolder"/lean.sh "$absolute1"/usr/local/bin/lean.sh
+		sudo -n chmod 0755 "$absolute1"/usr/local/bin/lean.sh
+		sudo -n chown root:root "$absolute1"/usr/local/bin/lean.sh
+	fi
+	
 	sudo -n cp "$scriptBin"/gosu-armel "$absolute1"/usr/local/share/ubcore/bin/gosu-armel
 	sudo -n cp "$scriptBin"/gosu-amd64 "$absolute1"/usr/local/share/ubcore/bin/gosu-amd64
 	sudo -n cp "$scriptBin"/gosu-i386 "$absolute1"/usr/local/share/ubcore/bin/gosu-i386

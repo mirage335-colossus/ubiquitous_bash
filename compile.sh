@@ -188,7 +188,7 @@ _getAbsoluteLocation() {
 			else
 	absoluteLocation=$(realpath -L "$1")
 	fi
-	echo $absoluteLocation
+	echo "$absoluteLocation"
 }
 alias getAbsoluteLocation=_getAbsoluteLocation
 
@@ -660,6 +660,28 @@ _instance_internal() {
 	! [[ -e "$2" ]] && return 1
 	! [[ -d "$2" ]] && return 1
 	rsync -q -ax --exclude "/.cache" --exclude "/.git" "$@"
+}
+
+#echo -n
+_safeEcho() {
+	printf '%s' "$1"
+	shift
+	
+	[[ "$@" == "" ]] && return 0
+	
+	local currentArg
+	for currentArg in "$@"
+	do
+		printf '%s' " "
+		printf '%s' "$currentArg"
+	done
+	return 0
+}
+
+#echo
+_safeEcho_newline() {
+	_safeEcho "$@"
+	printf '\n'
 }
 
 #Universal debugging filesystem.
@@ -1432,7 +1454,7 @@ _findPort() {
 		
 	fi
 	
-	echo $currentPort
+	echo "$currentPort"
 	
 	_validatePort "$currentPort"
 }

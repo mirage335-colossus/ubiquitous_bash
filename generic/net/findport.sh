@@ -77,7 +77,7 @@ _findPort() {
 		
 	fi
 	
-	echo $currentPort
+	echo "$currentPort"
 	
 	_validatePort "$currentPort"
 }

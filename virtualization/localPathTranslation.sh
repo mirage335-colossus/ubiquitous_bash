@@ -133,7 +133,7 @@ _searchBaseDir() {
 		
 	done
 	
-	echo "$baseDir"
+	_safeEcho_newline "$baseDir"
 }
 
 #Converts to relative path, if provided a file parameter.
@@ -143,23 +143,23 @@ _searchBaseDir() {
 _localDir() {
 	if _checkBaseDirRemote "$1"
 	then
-		echo "$1"
+		_safeEcho_newline "$1"
 		return
 	fi
 	
 	if [[ ! -e "$2" ]]
 	then
-		echo "$1"
+		_safeEcho_newline "$1"
 		return
 	fi
 	
 	if [[ ! -e "$1" ]] || ! _pathPartOf "$1" "$2"
 	then
-		echo "$1"
+		_safeEcho_newline "$1"
 		return
 	fi
 	
-	[[ "$3" != "" ]] && echo -n "$3" && [[ "$3" != "/" ]] && echo -n "/"
+	[[ "$3" != "" ]] && _safeEcho "$3" && [[ "$3" != "/" ]] && _safeEcho "/"
 	realpath -L -s --relative-to="$2" "$1"
 	
 }
@@ -205,7 +205,7 @@ _virtUser() {
 	#If $sharedGuestProjectDir matches MSW drive letter format, enable translation of other non-UNIX file parameter differences.
 	local enableMSWtranslation
 	enableMSWtranslation=false
-	echo "$sharedGuestProjectDir" | grep '^[[:alpha:]]\:\|^[[:alnum:]][[:alnum:]]\:\|^[[:alnum:]][[:alnum:]][[:alnum:]]\:' > /dev/null 2>&1 && enableMSWtranslation=true
+	_safeEcho_newline "$sharedGuestProjectDir" | grep '^[[:alpha:]]\:\|^[[:alnum:]][[:alnum:]]\:\|^[[:alnum:]][[:alnum:]][[:alnum:]]\:' > /dev/null 2>&1 && enableMSWtranslation=true
 	
 	#http://stackoverflow.com/questions/15420790/create-array-in-loop-from-number-of-arguments
 	#local processedArgs
@@ -236,28 +236,35 @@ _vector_virtUser() {
 	export sharedHostProjectDir=
 	export sharedGuestProjectDir=/home/user/project
 	_virtUser /tmp
-	#echo "${processedArgs[0]}"
+	#_safeEcho_newline "${processedArgs[0]}"
 	[[ "${processedArgs[0]}" != '/home/user/project/tmp' ]] && echo 'fail: _vector_virtUser' && _messageFAIL
 	
 	export sharedHostProjectDir=/
 	export sharedGuestProjectDir='Z:'
 	_virtUser /tmp
-	#echo "${processedArgs[0]}"
+	#_safeEcho_newline "${processedArgs[0]}"
 	[[ "${processedArgs[0]}" != 'Z:\tmp' ]] && echo 'fail: _vector_virtUser' && _messageFAIL
 	
 	export sharedHostProjectDir=/tmp
 	export sharedGuestProjectDir='/home/user/project/tmp'
 	_virtUser /tmp
-	#echo "${processedArgs[0]}"
+	#_safeEcho_newline "${processedArgs[0]}"
 	[[ "${processedArgs[0]}" != '/home/user/project/tmp/.' ]] && echo 'fail: _vector_virtUser' && _messageFAIL
 	
 	export virtUserPWD='/tmp'
 	export sharedHostProjectDir=/tmp
 	export sharedGuestProjectDir='/home/user/project/tmp'
 	_virtUser /tmp
-	#echo "${processedArgs[0]}"
-	#echo "$localPWD"
+	#_safeEcho_newline "${processedArgs[0]}"
+	#_safeEcho_newline "$localPWD"
 	[[ "$localPWD" != '/home/user/project/tmp/.' ]] && echo 'fail: _vector_virtUser' && _messageFAIL
+	
+	export virtUserPWD='/tmp'
+	export sharedHostProjectDir=/tmp
+	export sharedGuestProjectDir='/home/user/project/tmp'
+	_virtUser -e /tmp
+	#_safeEcho_newline "${processedArgs[0]}"
+	[[ "${processedArgs[0]}" != '-e' ]] && echo 'fail: _vector_virtUser' && _messageFAIL
 	
 	
 	return 0

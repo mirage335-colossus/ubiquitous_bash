@@ -69,7 +69,7 @@ _createHTG_MSW() {
 	
 	_preCommand_MSW >> "$hostToGuestFiles"/application.bat
 	
-	echo "${processedArgs[@]}" >> "$hostToGuestFiles"/application.bat
+	_safeEcho_newline "${processedArgs[@]}" >> "$hostToGuestFiles"/application.bat
 	 
 	echo ""  >> "$hostToGuestFiles"/application.bat
 	
@@ -125,7 +125,7 @@ _createHTG_UNIX() {
 	
 	echo '#!/usr/bin/env bash' >> "$hostToGuestFiles"/cmd.sh
 	echo "export localPWD=""$localPWD" >> "$hostToGuestFiles"/cmd.sh
-	echo "/media/bootdisc/ubiquitous_bash.sh _dropBootdisc ${processedArgs[@]}" >> "$hostToGuestFiles"/cmd.sh
+	_safeEcho_newline "/media/bootdisc/ubiquitous_bash.sh _dropBootdisc ${processedArgs[@]}" >> "$hostToGuestFiles"/cmd.sh
 }
 
 _commandBootdisc() {

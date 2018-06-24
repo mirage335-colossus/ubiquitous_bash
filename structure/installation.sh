@@ -97,6 +97,8 @@ _test() {
 	_getDep return
 	_getDep set
 	
+	_getDep printf
+	
 	_getDep dd
 	
 	_getDep rm
