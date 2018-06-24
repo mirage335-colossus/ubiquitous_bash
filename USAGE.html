@@ -1699,7 +1699,7 @@ Basename of the directory containing script. Typically used to cause the script 
 
 </pre>
 </div>
-<div title="Scope" creator="YourName" modifier="m335" created="201806232231" modified="201806240214" changecount="6">
+<div title="Scope" creator="mirage335" modifier="mirage335" created="201806232231" modified="201806240214" changecount="6">
 <pre>Shell script driven Integrated Development Environment (IDE).
 
 Creates a temporary directory of shell scripts under &quot;./.s_scope&quot;, or similar. Scripts are written out intelligently from here documents, include hardcoded path to parent ubiquitous bash script. Consequently, any function or program may be called to operate on the 'specimen' directory. Especially intended for routine compile/debug jobs typically launched manually.
@@ -1736,7 +1736,7 @@ _findFunction _true
 //}}}
 </pre>
 </div>
-<div title="Shortcuts" creator="mirage335" modifier="m335" created="201710261859" modified="201806232233" changecount="28">
+<div title="Shortcuts" creator="mirage335" modifier="mirage335" created="201710261859" modified="201806232233" changecount="28">
 <pre>Many functions are relevant to, or intended to simplify, typical desktop usage. Generally sorted into &quot;generic&quot; or &quot;shortcuts&quot; subdirectories.
 
 
@@ -2337,7 +2337,7 @@ table.listView th, table.listView td, table.listView tr {padding:0 3px 0 3px;}
 /*}}}*/
 </pre>
 </div>
-<div title="Technique" creator="mirage335" modifier="mirage335" created="201710270318" modified="201806240326" changecount="10">
+<div title="Technique" creator="mirage335" modifier="mirage335" created="201710270318" modified="201806240454" changecount="12">
 <pre>All about the quickest and most robust way to do things, both immediately, and scaling up.
 
 
@@ -2387,20 +2387,20 @@ Symbolic links to user PATH may be added automatically based upon directory name
 
 !Best Practices
 !!Anchor and Call
-Anchor and Call scripts are shortcuts, searching based on rules, rather than following a single pointer, as with symlinks. Anchor scripts search down, Call scripts search up.
+Anchor and Call scripts are shortcuts, searching based on rules, rather than following a single pointer, as with symlinks. Anchor scripts are general purpose links, searching mostly down, passing all parameters. Call scripts may be special purpose, checking hardcoded paths, opening a program at a specific location.
 
-System PATH should include neither Anchor nor Call scripts. Anchor scripts may be symlinked, but NOT copied, into PATH.
+System PATH should only include symlinks to Anchor and Call scripts. Both internally determine their actual path, so copying them to unintended locations results in undefined behavior.
 
-Anchor scripts find specially named subdirectories containing a specially named script, then refer to their own name as the command to run. Anchor scripts rely on the portable filesystem hierarchy defined by [[Ubiquitous Lab]]. Incorrect installation of Anchor scripts may result in excessively deep searches through their use of the &quot;find&quot; command.
+Anchor scripts are typically symlinked to PATH. Anchor scripts must be installed in one of a few locations illustrated by [[Ubiquitous Lab]].
 //{{{
-./_anchor
-&quot;$HOME&quot;/core/installations/ubiquitous_bash/ubiquitous_bash.sh _anchor
+./_anchor ./file.txt
+&quot;$HOME&quot;/core/installations/ubiquitous_bash/ubiquitous_bash.sh _anchor ./file.txt
 //}}}
 
-Call scripts seek an identically named executable (typically an Anchor script). Call scripts may be installed anywhere, and may include hardcoded user-specified parameters or filesystem lock mechanisms. Call scripts are typically copied to project directories.
+Call scripts are typically copied to project directories. Call scripts may be installed anywhere. Call scripts may include hardcoded paths, arbitrary parameters, or filesystem specific lock mechanisms.
 //{{{
 ./_call ./file.txt
-&quot;$HOME&quot;/core/installations/_call --user-specified ./file.txt
+&quot;$HOME&quot;/core/lab/labName/_index/_call --user-specified ./file.txt
 //}}}
 
 !!Specialized Dependencies
@@ -2515,7 +2515,7 @@ apt-get install virtualbox-guest-dkms virtualbox-guest-x11 linux-headers-$(uname
 usermod -G vboxsf -a user
 //}}}</pre>
 </div>
-<div title="Virtualization" creator="mirage335" modifier="m335" created="201710270206" modified="201806240215" changecount="137">
+<div title="Virtualization" creator="mirage335" modifier="mirage335" created="201710270206" modified="201806240215" changecount="137">
 <pre>Ubiquitous Bash middleware has the capacity to provide true application virtualization, with automatic fileparameter translation, across a wide variety of platforms (x86/64, ARM), and operating systems (MSW, Unix), by using any available underlying tool (~ChRoot, QEMU, Xen, ~VirtualBox, Docker, Wine, Cygwin, &lt;nowiki&gt;DosBox&lt;/nowiki&gt;), on a common disk format (raw image). Most of this capability has been realized, most of the remainder will involve simply merging existing code from [[HostedXen|https://github.com/mirage335/HostedXen]], [[HostedOpenVZ|https://github.com/mirage335/hostedOpenVZ]]. Automatic selection of native application by platform is also well supported.
 
 &lt;&lt;showtoc&gt;&gt;
