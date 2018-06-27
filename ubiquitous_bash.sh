@@ -4700,7 +4700,7 @@ CZXWXcRMTo8EmM8i4d
 }
 
 _write_projectAFS() {
-	[[ "$nofs" == "true" ]] && return
+	( [[ "$nofs" == "true" ]] || [[ "$afs_nofs" == "true" ]] ) && return
 	_projectAFS_here > "$abstractfs_base"/project.afs
 	chmod u+x "$abstractfs_base"/project.afs
 }
@@ -4708,7 +4708,7 @@ _write_projectAFS() {
 # DANGER: Mandatory strict directory 8.3 compliance for this variable! Long subdirectory/filenames permitted thereafter.
 _default_name_abstractfs() {
 	#If "$abstractfs_name" is not saved to file, a consistent, compressed, naming scheme, is required.
-	if [[ "$nofs" == "true" ]]
+	if ( [[ "$nofs" == "true" ]] || [[ "$afs_nofs" == "true" ]] )
 	then
 		#echo $(basename "$abstractfs_base") | md5sum | head -c 8
 		_describe_abstractfs | md5sum | head -c 8
@@ -4727,7 +4727,7 @@ _name_abstractfs() {
 	if [[ "$abstractfs_name" == "" ]]
 	then
 		export abstractfs_name=$(_default_name_abstractfs)
-		[[ "$nofs" == "true" ]] && return
+		( [[ "$nofs" == "true" ]] || [[ "$afs_nofs" == "true" ]] ) && return
 		_write_projectAFS
 		export abstractfs_name=
 	fi
@@ -4735,7 +4735,7 @@ _name_abstractfs() {
 	export abstractfs_projectafs=$(_findProjectAFS "$abstractfs_base")
 	[[ "$abstractfs_projectafs" != "" ]] && [[ -e "$abstractfs_projectafs" ]] && . "$abstractfs_projectafs" --noexec
 	
-	[[ "$nofs" != "true" ]] && [[ ! -e "$abstractfs_projectafs" ]] && return 1
+	( [[ "$nofs" == "true" ]] || [[ "$afs_nofs" == "true" ]] ) && [[ ! -e "$abstractfs_projectafs" ]] && return 1
 	[[ "$abstractfs_name" == "" ]] && return 1
 	
 	return 0
@@ -4855,29 +4855,52 @@ _arbitrary_fakeHome_app() {
 
 #"$1" == lib source path (eg. "$scriptLib"/app/.app)
 #"$2" == home destination path (eg. ".app")
+# WARNING: Locking mechanism not intended to be relied on.
+# WARNING: Return status success may not reflect successful link/copy.
 _link_fakeHome() {
 	mkdir -p "$1" > /dev/null 2>&1
-	mkdir -p "$actualFakeHome"/"$2" > /dev/null 2>&1
+	mkdir -p "$actualFakeHome" > /dev/null 2>&1
 	
 	if [[ "$actualFakeHome" == "$globalFakeHome" ]] || [[ "$fakeHomeEditLib" == "true" ]]
 	then
-		rmdir "$actualFakeHome"/"$2"
+		rmdir "$actualFakeHome"/"$2" > /dev/null 2>&1
 		_relink "$1" "$actualFakeHome"/"$2"
 		return 0
 	fi
 	
-	#Actual directories will not be overwritten by symlinks when "$globalFakeHome" is copied to "$actualFakeHome".
+	#Actual files/directories will not be overwritten by symlinks when "$globalFakeHome" is copied to "$actualFakeHome". Remainder of this function dedicated to creating copies, before and instead of, symlinks.
+	
+	#rmdir "$actualFakeHome"/"$2" > /dev/null 2>&1
 	_rmlink "$actualFakeHome"/"$2"
+	
+	#Waits if copy is in progress, delaying program launch.
+	local lockWaitTimer
+	for (( lockWaitTimer = 0 ; lockWaitTimer <= 90 ; lockWaitTimer++ )); do
+		! [[ -e "$actualFakeHome"/"$2".lck ]] && break
+		sleep 0.3
+	done
+	
+	#Checks if copy has already been made.
+	[[ -e "$actualFakeHome"/"$2" ]] && return 0
+	
 	mkdir -p "$actualFakeHome"/"$2"
 	
+	#Copy file.
 	if ! [[ -d "$1" ]] && [[ -e "$1" ]]
 	then
-		rmdir "$actualFakeHome"/"$2"
+		rmdir "$actualFakeHome"/"$2" > /dev/null 2>&1
 		
+		echo > "$actualFakeHome"/"$2".lck
 		cp "$1" "$actualFakeHome"/"$2"
+		rm "$actualFakeHome"/"$2".lck
+		return 0
 	fi
 	
+	#Copy directory.
+	echo > "$actualFakeHome"/"$2".lck
 	_instance_internal "$1"/. "$actualFakeHome"/"$2"/
+	rm "$actualFakeHome"/"$2".lck
+	return 0
 }
 
 #Example. Override with "core.sh". Allows specific application configuration directories to reside outside of globalFakeHome, for organization, testing, and distribution.
