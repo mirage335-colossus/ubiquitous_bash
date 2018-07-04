@@ -8,6 +8,8 @@ w_*/
 v_*/
 h_*/
 
+*_history
+
 vm.vdi
 vm.img
 vm*.img

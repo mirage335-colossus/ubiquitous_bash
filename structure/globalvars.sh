@@ -35,7 +35,8 @@ then
 	export sessionid=$(_uid)
 	_messagePlain_probe_expr 'default: scriptAbsoluteLocation= '"$scriptAbsoluteLocation"'\n ''default: scriptAbsoluteFolder= '"$scriptAbsoluteFolder"'\n ''default: sessionid= '"$sessionid" | _user_log-ub
 else	#FAIL, implies [[ "$ub_import" == "true" ]]
-	_messagePlain_bad 'import: fall: fail' | _user_log-ub && return 1
+	_messagePlain_bad 'import: fall: fail' | _user_log-ub
+	return 1 >/dev/null 2>&1
 	exit 1
 fi
 [[ "$importScriptLocation" != "" ]] && export importScriptLocation=

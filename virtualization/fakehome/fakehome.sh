@@ -98,13 +98,7 @@ _umountRAM_fakeHome() {
 	return 0
 }
 
-#actualFakeHome
-	#default: "$instancedFakeHome"
-	#"$globalFakeHome" || "$instancedFakeHome" || "$shortFakeHome" || "$arbitraryFakeHome"/arbitrary
-#keepFakeHome
-	#default: true
-	#"true" || "false"
-_fakeHome() {
+_begin_fakeHome() {
 	#Recursive fakeHome prohibited. Instead, start new script session, with new sessionid, and keepFakeHome=false. Do not workaround without a clear understanding why this may endanger your application.
 	[[ "$setFakeHome" == "true" ]] && return 1
 	#_resetFakeHomeEnv_nokeep
@@ -122,10 +116,26 @@ _fakeHome() {
 	
 	export fakeHomeEditLib="false"
 	
+	export realScriptAbsoluteLocation="$scriptAbsoluteLocation"
+	export realScriptAbsoluteFolder="$scriptAbsoluteFolder"
+	export realSessionID="$sessionid"
+}
+
+#actualFakeHome
+	#default: "$instancedFakeHome"
+	#"$globalFakeHome" || "$instancedFakeHome" || "$shortFakeHome" || "$arbitraryFakeHome"/arbitrary
+#keepFakeHome
+	#default: true
+	#"true" || "false"
+_fakeHome() {
+	_begin_fakeHome "$@"
 	local fakeHomeExitStatus
 	
-	env -i DISPLAY="$DISPLAY" XAUTH="$XAUTH" XAUTHORITY="$XAUTHORITY" XSOCK="$XSOCK" realHome="$realHome" keepFakeHome="$keepFakeHome" HOME="$HOME" setFakeHome="$setFakeHome" TERM="${TERM}" SHELL="${SHELL}" PATH="${PATH}" dbus-run-session "$@"
+	env -i DISPLAY="$DISPLAY" XAUTH="$XAUTH" XAUTHORITY="$XAUTHORITY" XSOCK="$XSOCK" realHome="$realHome" keepFakeHome="$keepFakeHome" HOME="$HOME" setFakeHome="$setFakeHome" TERM="${TERM}" SHELL="${SHELL}" PATH="${PATH}" scriptAbsoluteLocation="$scriptAbsoluteLocation" sessionid="$sessionid" scriptAbsoluteFolder="$scriptAbsoluteFolder" realSessionID="$realSessionID" realScriptAbsoluteLocation="$realScriptAbsoluteLocation" realScriptAbsoluteFolder="$realScriptAbsoluteFolder" dbus-run-session "$@"
+	#env -i DISPLAY="$DISPLAY" XAUTH="$XAUTH" XAUTHORITY="$XAUTHORITY" XSOCK="$XSOCK" realHome="$realHome" keepFakeHome="$keepFakeHome" HOME="$HOME" setFakeHome="$setFakeHome" TERM="${TERM}" SHELL="${SHELL}" PATH="${PATH}" scriptAbsoluteLocation="$scriptAbsoluteLocation" scriptAbsoluteFolder="$scriptAbsoluteFolder" dbus-run-session "$@"
+	#dbus-run-session "$@"
 	#"$@"
+	#. "$@"
 	fakeHomeExitStatus=$?
 	
 	#_unmakeFakeHome > /dev/null 2>&1
@@ -134,3 +144,50 @@ _fakeHome() {
 	
 	return "$fakeHomeExitStatus"
 }
+
+#Do NOT keep parent session under fakeHome environment. Do NOT regain parent session if "~/.ubcore/.ubcorerc" is imported (typically upon shell launch).
+_fakeHome_specific() {
+	_begin_fakeHome "$@"
+	local fakeHomeExitStatus
+	
+	#env -i DISPLAY="$DISPLAY" XAUTH="$XAUTH" XAUTHORITY="$XAUTHORITY" XSOCK="$XSOCK" realHome="$realHome" keepFakeHome="$keepFakeHome" HOME="$HOME" setFakeHome="$setFakeHome" TERM="${TERM}" SHELL="${SHELL}" PATH="${PATH}" scriptAbsoluteLocation="$scriptAbsoluteLocation" scriptAbsoluteFolder="$scriptAbsoluteFolder" realScriptAbsoluteLocation="$realScriptAbsoluteLocation" realScriptAbsoluteFolder="$realScriptAbsoluteFolder" dbus-run-session "$@"
+	env -i DISPLAY="$DISPLAY" XAUTH="$XAUTH" XAUTHORITY="$XAUTHORITY" XSOCK="$XSOCK" realHome="$realHome" keepFakeHome="$keepFakeHome" HOME="$HOME" setFakeHome="$setFakeHome" TERM="${TERM}" SHELL="${SHELL}" PATH="${PATH}" dbus-run-session "$@"
+	#dbus-run-session "$@"
+	#"$@"
+	#. "$@"
+	fakeHomeExitStatus=$?
+	
+	#_unmakeFakeHome > /dev/null 2>&1
+	
+	_resetFakeHomeEnv_nokeep
+	
+	return "$fakeHomeExitStatus"
+}
+
+#No workarounds, run in current shell.
+# WARNING: Not recommended. No production use. Do not launch GUI applications.
+_fakeHome_embedded() {
+	_begin_fakeHome "$@"
+	local fakeHomeExitStatus
+	
+	#env -i DISPLAY="$DISPLAY" XAUTH="$XAUTH" XAUTHORITY="$XAUTHORITY" XSOCK="$XSOCK" realHome="$realHome" keepFakeHome="$keepFakeHome" HOME="$HOME" setFakeHome="$setFakeHome" TERM="${TERM}" SHELL="${SHELL}" PATH="${PATH}" scriptAbsoluteLocation="$scriptAbsoluteLocation" scriptAbsoluteFolder="$scriptAbsoluteFolder" realScriptAbsoluteLocation="$realScriptAbsoluteLocation" realScriptAbsoluteFolder="$realScriptAbsoluteFolder" dbus-run-session "$@"
+	#env -i DISPLAY="$DISPLAY" XAUTH="$XAUTH" XAUTHORITY="$XAUTHORITY" XSOCK="$XSOCK" realHome="$realHome" keepFakeHome="$keepFakeHome" HOME="$HOME" setFakeHome="$setFakeHome" TERM="${TERM}" SHELL="${SHELL}" PATH="${PATH}" scriptAbsoluteLocation="$scriptAbsoluteLocation" scriptAbsoluteFolder="$scriptAbsoluteFolder" dbus-run-session "$@"
+	#dbus-run-session "$@"
+	#"$@"
+	. "$@"
+	fakeHomeExitStatus=$?
+	
+	#_unmakeFakeHome > /dev/null 2>&1
+	
+	_resetFakeHomeEnv_nokeep
+	
+	return "$fakeHomeExitStatus"
+}
+
+_fakeHome_() {
+	_fakeHome_embedded "$@"
+}
+
+
+
+

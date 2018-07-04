@@ -92,19 +92,32 @@ _messagePlain_probe_expr '$0= '"$0"'\n ''$1= '"$1"'\n ''ub_import= '"$ub_import"
 # WARNING Import from shell can be detected. Import from script cannot. Asserting that script has been imported is possible. Asserting that script has not been imported is not possible. Users may be protected from interactive mistakes. Script developers are NOT protected.
 if [[ "$ub_import_param" == "--profile" ]]
 then
-	([[ "$profileScriptLocation" == "" ]] ||  [[ "$profileScriptFolder" == "" ]]) && _messagePlain_bad 'import: profile: missing: profileScriptLocation, missing: profileScriptFolder' | _user_log-ub && return 1
+	if ([[ "$profileScriptLocation" == "" ]] ||  [[ "$profileScriptFolder" == "" ]]) && _messagePlain_bad 'import: profile: missing: profileScriptLocation, missing: profileScriptFolder' | _user_log-ub
+	then
+		return 1 >/dev/null 2>&1
+		exit 1
+	fi
 elif ([[ "$ub_import_param" == "--parent" ]] || [[ "$ub_import_param" == "--embed" ]] || [[ "$ub_import_param" == "--return" ]] || [[ "$ub_import_param" == "--devenv" ]])
 then
-	([[ "$scriptAbsoluteLocation" == "" ]] || [[ "$scriptAbsoluteFolder" == "" ]] || [[ "$sessionid" == "" ]]) && _messagePlain_bad 'import: parent: missing: scriptAbsoluteLocation, missing: scriptAbsoluteFolder, missing: sessionid' | _user_log-ub && return 1
+	if ([[ "$scriptAbsoluteLocation" == "" ]] || [[ "$scriptAbsoluteFolder" == "" ]] || [[ "$sessionid" == "" ]]) && _messagePlain_bad 'import: parent: missing: scriptAbsoluteLocation, missing: scriptAbsoluteFolder, missing: sessionid' | _user_log-ub
+	then
+		return 1 >/dev/null 2>&1
+		exit 1
+	fi
 elif [[ "$ub_import_param" == "--call" ]] || [[ "$ub_import_param" == "--script" ]] || [[ "$ub_import_param" == "--bypass" ]] || [[ "$ub_import_param" == "--shell" ]] || ([[ "$ub_import" == "true" ]] && [[ "$ub_import_param" == "" ]])
 then
-	([[ "$importScriptLocation" == "" ]] ||  [[ "$importScriptFolder" == "" ]]) && _messagePlain_bad 'import: call: missing: importScriptLocation, missing: importScriptFolder' | _user_log-ub && return 1
+	if ([[ "$importScriptLocation" == "" ]] ||  [[ "$importScriptFolder" == "" ]]) && _messagePlain_bad 'import: call: missing: importScriptLocation, missing: importScriptFolder' | _user_log-ub
+	then
+		return 1 >/dev/null 2>&1
+		exit 1
+	fi
 elif [[ "$ub_import" != "true" ]]	#"--shell", ""
 then
 	_messagePlain_warn 'import: undetected: cannot determine if imported' | _user_log-ub
 	true #no problem
 else	#FAIL, implies [[ "$ub_import" == "true" ]]
-	_messagePlain_bad 'import: fall: fail' | _user_log-ub && return 1
+	_messagePlain_bad 'import: fall: fail' | _user_log-ub
+	return 1 >/dev/null 2>&1
 	exit 1
 fi
 
@@ -4937,13 +4950,7 @@ _umountRAM_fakeHome() {
 	return 0
 }
 
-#actualFakeHome
-	#default: "$instancedFakeHome"
-	#"$globalFakeHome" || "$instancedFakeHome" || "$shortFakeHome" || "$arbitraryFakeHome"/arbitrary
-#keepFakeHome
-	#default: true
-	#"true" || "false"
-_fakeHome() {
+_begin_fakeHome() {
 	#Recursive fakeHome prohibited. Instead, start new script session, with new sessionid, and keepFakeHome=false. Do not workaround without a clear understanding why this may endanger your application.
 	[[ "$setFakeHome" == "true" ]] && return 1
 	#_resetFakeHomeEnv_nokeep
@@ -4961,10 +4968,26 @@ _fakeHome() {
 	
 	export fakeHomeEditLib="false"
 	
+	export realScriptAbsoluteLocation="$scriptAbsoluteLocation"
+	export realScriptAbsoluteFolder="$scriptAbsoluteFolder"
+	export realSessionID="$sessionid"
+}
+
+#actualFakeHome
+	#default: "$instancedFakeHome"
+	#"$globalFakeHome" || "$instancedFakeHome" || "$shortFakeHome" || "$arbitraryFakeHome"/arbitrary
+#keepFakeHome
+	#default: true
+	#"true" || "false"
+_fakeHome() {
+	_begin_fakeHome "$@"
 	local fakeHomeExitStatus
 	
-	env -i DISPLAY="$DISPLAY" XAUTH="$XAUTH" XAUTHORITY="$XAUTHORITY" XSOCK="$XSOCK" realHome="$realHome" keepFakeHome="$keepFakeHome" HOME="$HOME" setFakeHome="$setFakeHome" TERM="${TERM}" SHELL="${SHELL}" PATH="${PATH}" dbus-run-session "$@"
+	env -i DISPLAY="$DISPLAY" XAUTH="$XAUTH" XAUTHORITY="$XAUTHORITY" XSOCK="$XSOCK" realHome="$realHome" keepFakeHome="$keepFakeHome" HOME="$HOME" setFakeHome="$setFakeHome" TERM="${TERM}" SHELL="${SHELL}" PATH="${PATH}" scriptAbsoluteLocation="$scriptAbsoluteLocation" sessionid="$sessionid" scriptAbsoluteFolder="$scriptAbsoluteFolder" realSessionID="$realSessionID" realScriptAbsoluteLocation="$realScriptAbsoluteLocation" realScriptAbsoluteFolder="$realScriptAbsoluteFolder" dbus-run-session "$@"
+	#env -i DISPLAY="$DISPLAY" XAUTH="$XAUTH" XAUTHORITY="$XAUTHORITY" XSOCK="$XSOCK" realHome="$realHome" keepFakeHome="$keepFakeHome" HOME="$HOME" setFakeHome="$setFakeHome" TERM="${TERM}" SHELL="${SHELL}" PATH="${PATH}" scriptAbsoluteLocation="$scriptAbsoluteLocation" scriptAbsoluteFolder="$scriptAbsoluteFolder" dbus-run-session "$@"
+	#dbus-run-session "$@"
 	#"$@"
+	#. "$@"
 	fakeHomeExitStatus=$?
 	
 	#_unmakeFakeHome > /dev/null 2>&1
@@ -4973,6 +4996,53 @@ _fakeHome() {
 	
 	return "$fakeHomeExitStatus"
 }
+
+#Do NOT keep parent session under fakeHome environment. Do NOT regain parent session if "~/.ubcore/.ubcorerc" is imported (typically upon shell launch).
+_fakeHome_specific() {
+	_begin_fakeHome "$@"
+	local fakeHomeExitStatus
+	
+	#env -i DISPLAY="$DISPLAY" XAUTH="$XAUTH" XAUTHORITY="$XAUTHORITY" XSOCK="$XSOCK" realHome="$realHome" keepFakeHome="$keepFakeHome" HOME="$HOME" setFakeHome="$setFakeHome" TERM="${TERM}" SHELL="${SHELL}" PATH="${PATH}" scriptAbsoluteLocation="$scriptAbsoluteLocation" scriptAbsoluteFolder="$scriptAbsoluteFolder" realScriptAbsoluteLocation="$realScriptAbsoluteLocation" realScriptAbsoluteFolder="$realScriptAbsoluteFolder" dbus-run-session "$@"
+	env -i DISPLAY="$DISPLAY" XAUTH="$XAUTH" XAUTHORITY="$XAUTHORITY" XSOCK="$XSOCK" realHome="$realHome" keepFakeHome="$keepFakeHome" HOME="$HOME" setFakeHome="$setFakeHome" TERM="${TERM}" SHELL="${SHELL}" PATH="${PATH}" dbus-run-session "$@"
+	#dbus-run-session "$@"
+	#"$@"
+	#. "$@"
+	fakeHomeExitStatus=$?
+	
+	#_unmakeFakeHome > /dev/null 2>&1
+	
+	_resetFakeHomeEnv_nokeep
+	
+	return "$fakeHomeExitStatus"
+}
+
+#No workarounds, run in current shell.
+# WARNING: Not recommended. No production use. Do not launch GUI applications.
+_fakeHome_embedded() {
+	_begin_fakeHome "$@"
+	local fakeHomeExitStatus
+	
+	#env -i DISPLAY="$DISPLAY" XAUTH="$XAUTH" XAUTHORITY="$XAUTHORITY" XSOCK="$XSOCK" realHome="$realHome" keepFakeHome="$keepFakeHome" HOME="$HOME" setFakeHome="$setFakeHome" TERM="${TERM}" SHELL="${SHELL}" PATH="${PATH}" scriptAbsoluteLocation="$scriptAbsoluteLocation" scriptAbsoluteFolder="$scriptAbsoluteFolder" realScriptAbsoluteLocation="$realScriptAbsoluteLocation" realScriptAbsoluteFolder="$realScriptAbsoluteFolder" dbus-run-session "$@"
+	#env -i DISPLAY="$DISPLAY" XAUTH="$XAUTH" XAUTHORITY="$XAUTHORITY" XSOCK="$XSOCK" realHome="$realHome" keepFakeHome="$keepFakeHome" HOME="$HOME" setFakeHome="$setFakeHome" TERM="${TERM}" SHELL="${SHELL}" PATH="${PATH}" scriptAbsoluteLocation="$scriptAbsoluteLocation" scriptAbsoluteFolder="$scriptAbsoluteFolder" dbus-run-session "$@"
+	#dbus-run-session "$@"
+	#"$@"
+	. "$@"
+	fakeHomeExitStatus=$?
+	
+	#_unmakeFakeHome > /dev/null 2>&1
+	
+	_resetFakeHomeEnv_nokeep
+	
+	return "$fakeHomeExitStatus"
+}
+
+_fakeHome_() {
+	_fakeHome_embedded "$@"
+}
+
+
+
+
 
 _userFakeHome_procedure() {
 	export actualFakeHome="$instancedFakeHome"
@@ -10360,12 +10430,12 @@ _resetOps() {
 _importShortcuts() {
 	_tryExec "_resetFakeHomeEnv"
 	
-	if ! [[ "$PATH" == *":""$HOME""/bin"* ]] && ! [[ "$PATH" == "$HOME""/bin"* ]] && [[ -e "$HOME"/bin ]]
+	if ! [[ "$PATH" == *":""$HOME""/bin"* ]] && ! [[ "$PATH" == "$HOME""/bin"* ]] && [[ -e "$HOME"/bin ]] && [[ -d "$HOME"/bin ]]
 	then
 		export PATH="$PATH":"$HOME"/bin
 	fi
 	
-	_visualPrompt
+	_tryExec "_visualPrompt"
 }
 
 _gitPull_ubiquitous() {
@@ -11253,7 +11323,8 @@ then
 	export sessionid=$(_uid)
 	_messagePlain_probe_expr 'default: scriptAbsoluteLocation= '"$scriptAbsoluteLocation"'\n ''default: scriptAbsoluteFolder= '"$scriptAbsoluteFolder"'\n ''default: sessionid= '"$sessionid" | _user_log-ub
 else	#FAIL, implies [[ "$ub_import" == "true" ]]
-	_messagePlain_bad 'import: fall: fail' | _user_log-ub && return 1
+	_messagePlain_bad 'import: fall: fail' | _user_log-ub
+	return 1 >/dev/null 2>&1
 	exit 1
 fi
 [[ "$importScriptLocation" != "" ]] && export importScriptLocation=
@@ -12511,6 +12582,18 @@ _test() {
 	
 	_tryExec "_test_permissions_ubiquitous"
 	
+	echo -n -e '\E[1;32;46m Argument length...	\E[0m'
+	
+	local testArgLength
+	
+	! testArgLength=$(getconf ARG_MAX) && _messageFAIL && _stop 1
+	[[ "$testArgLength" -lt 131071 ]] && _messageFAIL && _stop 1
+	
+	_messagePASS
+	
+	echo -n -e '\E[1;32;46m Timing...		\E[0m'
+	_timetest
+	
 	_messageNormal "Dependency checking..."
 	
 	## Check dependencies
@@ -12646,17 +12729,13 @@ _test() {
 	
 	_messagePASS
 	
-	echo -n -e '\E[1;32;46m Timing...		\E[0m'
-	_timetest
-	
-	_test_prog
-	
 	_messageNormal 'Vector...'
 	_vector
 	_messagePASS
 	
-	_stop
+	_test_prog
 	
+	_stop
 }
 
 _testBuilt_prog() {

@@ -58,6 +58,18 @@ _test() {
 	
 	_tryExec "_test_permissions_ubiquitous"
 	
+	echo -n -e '\E[1;32;46m Argument length...	\E[0m'
+	
+	local testArgLength
+	
+	! testArgLength=$(getconf ARG_MAX) && _messageFAIL && _stop 1
+	[[ "$testArgLength" -lt 131071 ]] && _messageFAIL && _stop 1
+	
+	_messagePASS
+	
+	echo -n -e '\E[1;32;46m Timing...		\E[0m'
+	_timetest
+	
 	_messageNormal "Dependency checking..."
 	
 	## Check dependencies
@@ -193,17 +205,13 @@ _test() {
 	
 	_messagePASS
 	
-	echo -n -e '\E[1;32;46m Timing...		\E[0m'
-	_timetest
-	
-	_test_prog
-	
 	_messageNormal 'Vector...'
 	_vector
 	_messagePASS
 	
-	_stop
+	_test_prog
 	
+	_stop
 }
 
 _testBuilt_prog() {

@@ -141,6 +141,6 @@ https://stackoverflow.com/questions/28643392/bash-scripting-permanent-pipe
 All content in this folder not owned by other authors is intended to be public domain. Other copyright notices may be provided as templates. See license.txt for details.
 
 # Reference
-[1] https://developer.apple.com/library/content/documentation/Darwin/Conceptual/index.html
+https://developer.apple.com/library/content/documentation/Darwin/Conceptual/index.html
 https://en.wikipedia.org/wiki/Software_architecture
 https://en.wikipedia.org/wiki/Middleware
