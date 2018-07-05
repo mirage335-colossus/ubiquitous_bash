@@ -24,6 +24,47 @@ _testFindPort() {
 	! _validatePort "$testFoundPort" && echo "invalid port discovery" && _stop 1
 }
 
+#True if port open (in use).
+_checkPort_local() {
+	[[ "$1" == "" ]] && return 1
+	
+	if ss -lpn | grep ":$1 " > /dev/null 2>&1
+	then
+		return 0
+	fi
+	return 1
+}
+
+#Waits a reasonable time interval for port to be open (in use).
+#"$1" == port
+_waitPort_local() {
+	local checksDone
+	checksDone=0
+	while ! _checkPort_local "$1" && [[ "$checksDone" -lt 72 ]]
+	do
+		let checksDone+=1
+		sleep 0.1
+	done
+	
+	local checksDone
+	checksDone=0
+	while ! _checkPort_local "$1" && [[ "$checksDone" -lt 72 ]]
+	do
+		let checksDone+=1
+		sleep 0.3
+	done
+	
+	local checksDone
+	checksDone=0
+	while ! _checkPort_local "$1" && [[ "$checksDone" -lt 72 ]]
+	do
+		let checksDone+=1
+		sleep 1
+	done
+	
+	return 0
+}
+
 
 #http://unix.stackexchange.com/questions/55913/whats-the-easiest-way-to-find-an-unused-local-port
 _findPort() {
