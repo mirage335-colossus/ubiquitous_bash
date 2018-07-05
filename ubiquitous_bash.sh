@@ -4930,7 +4930,8 @@ _install_fakeHome() {
 	#Asterisk used where multiple global home folders are needed, following convention "$scriptLocal"/h_* . Used by webClient for _firefox_esr .
 	[[ "$actualFakeHome" == "$globalFakeHome"* ]] && return 0
 	
-	_instance_internal "$globalFakeHome"/. "$actualFakeHome"/
+	#Any globalFakeHome links created by "_link_fakeHome" are not to overwrite copies made to instancedFakeHome directories. Related errors emitted by "rsync" are normal, and therefore, silenced.
+	_instance_internal "$globalFakeHome"/. "$actualFakeHome"/ > /dev/null 2>&1
 }
 
 #Run before _fakeHome to use a ramdisk as home directory. Wrap within "_wantSudo" and ">/dev/null 2>&1" to use optionally. Especially helpful to limit SSD wear when dealing with moderately large (ie. ~2GB) fakeHome environments which must be instanced.
@@ -11533,7 +11534,10 @@ export shortFakeHome="$shortTmp"/h
 export arbitraryFakeHome="$shortTmp"/a
 
 #Default, override.
+# WARNING: Do not disable.
 export actualFakeHome="$instancedFakeHome"
+export fakeHomeEditLib="false"
+export keepFakeHome="true"
 
 #Automatically assigns appropriate memory quantities to nested virtual machines.
 _vars_vmMemoryAllocationDefault() {

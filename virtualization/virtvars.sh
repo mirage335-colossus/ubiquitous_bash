@@ -39,7 +39,10 @@ export shortFakeHome="$shortTmp"/h
 export arbitraryFakeHome="$shortTmp"/a
 
 #Default, override.
+# WARNING: Do not disable.
 export actualFakeHome="$instancedFakeHome"
+export fakeHomeEditLib="false"
+export keepFakeHome="true"
 
 #Automatically assigns appropriate memory quantities to nested virtual machines.
 _vars_vmMemoryAllocationDefault() {
