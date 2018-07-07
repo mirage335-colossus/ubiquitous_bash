@@ -4600,9 +4600,8 @@ _abstractfs() {
 	
 	export abstractfs="$abstractfs_root"/"$abstractfs_name"
 	
-	_relink_abstractfs
-	
 	_set_share_abstractfs
+	_relink_abstractfs
 	_virtUser "$@"
 	
 	cd "$localPWD"
@@ -4678,7 +4677,7 @@ _relink_abstractfs() {
 	
 	! _wait_rmlink_abstractfs && return 1
 	
-	_relink "$abstractfs_base" "$abstractfs"
+	_relink "$sharedHostProjectDir" "$sharedGuestProjectDir"
 }
 
 #Precaution. Should not be a requirement in any production use.
@@ -4687,10 +4686,12 @@ _set_share_abstractfs_reset() {
 	export sharedGuestProjectDir="$sharedGuestProjectDirDefault"
 }
 
+# ATTENTION: Overload with "core.sh".
 _set_share_abstractfs() {
 	_set_share_abstractfs_reset
 	
 	export sharedHostProjectDir="$abstractfs_base"
+	#export sharedHostProjectDir=$(_getAbsoluteFolder "$abstractfs_base")
 	export sharedGuestProjectDir="$abstractfs"
 	
 	#Blank default. Resolves to lowest directory shared by "$PWD" and "$@" .

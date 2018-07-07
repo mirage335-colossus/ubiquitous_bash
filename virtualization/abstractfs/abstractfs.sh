@@ -24,9 +24,8 @@ _abstractfs() {
 	
 	export abstractfs="$abstractfs_root"/"$abstractfs_name"
 	
-	_relink_abstractfs
-	
 	_set_share_abstractfs
+	_relink_abstractfs
 	_virtUser "$@"
 	
 	cd "$localPWD"
