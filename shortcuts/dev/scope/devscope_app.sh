@@ -18,6 +18,7 @@ _scope_terminal() {
 	shiftParam1="$1"
 	shift
 	
+	[[ "$ub_scope_name" == "" ]] && export ub_scope_name='scope'
 	_scope "$shiftParam1" "_scope_terminal_procedure" "$@"
 }
 
@@ -30,11 +31,12 @@ _scope_eclipse() {
 	shiftParam1="$1"
 	shift
 	
+	[[ "$ub_scope_name" == "" ]] && export ub_scope_name='scope'
 	_scope "$shiftParam1" "_scope_eclipse_procedure" "$@"
 }
 
 _scope_atom_procedure() {
-	_atom "$ub_specimen" "$@"
+	"$scriptAbsoluteLocation" _atom_tmp_sequence "$ub_specimen" "$@"  > /dev/null 2>&1
 }
 
 # WARNING: No production use. Not to be relied upon. May be removed.
@@ -43,10 +45,12 @@ _scope_atom() {
 	shiftParam1="$1"
 	shift
 	
+	[[ "$ub_scope_name" == "" ]] && export ub_scope_name='scope'
 	_scope "$shiftParam1" "_scope_atom_procedure" "$@"
 }
 
 _scope_konsole_procedure() {
+	_messagePlain_probe konsole --workdir "$ub_specimen" "$@"
 	konsole --workdir "$ub_specimen" "$@"
 }
 
@@ -55,7 +59,8 @@ _scope_konsole() {
 	shiftParam1="$1"
 	shift
 	
-	_scope "$shiftParam1" "_scope_konsole_procedure" "$@"
+	[[ "$ub_scope_name" == "" ]] && export ub_scope_name='scope'
+	_scope "$shiftParam1" "_scope_konsole_procedure" -p tabtitle="$ub_scope_name" "$@"
 }
 
 _scope_dolphin_procedure() {
@@ -67,5 +72,6 @@ _scope_dolphin() {
 	shiftParam1="$1"
 	shift
 	
+	[[ "$ub_scope_name" == "" ]] && export ub_scope_name='scope'
 	_scope "$shiftParam1" "_scope_dolphin_procedure" "$@"
 }

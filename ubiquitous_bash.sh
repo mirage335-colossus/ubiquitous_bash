@@ -8667,6 +8667,11 @@ _scope_attach() {
 	chmod u+x "$ub_scope"/.devenv
 	_scope_readme_here > "$ub_scope"/README
 	
+	_scope_command_write _scope_konsole_procedure
+	_scope_command_write _scope_dolphin_procedure
+	_scope_command_write _scope_eclipse_procedure
+	_scope_command_write _scope_atom_procedure
+	
 	_scope_command_write _scope_compile
 	#_scope_command_external_here _scope_compile
 }
@@ -8734,7 +8739,7 @@ _start_scope() {
 	return 0
 }
 
-#Defaults, bash terminal, wait for kill signal, wait for line break, etc. Override with "core.sh" . May run file manager, terminal, etc.
+#Defaults, bash terminal, wait for kill signal, wait for EOF, etc. Override with "core.sh" . May run file manager, terminal, etc.
 # WARNING: Scope should only be terminated by process or user managing this interaction (eg. by closing file manager). Manager must be aware of any inter-scope dependencies.
 #"$@" <commands>
 _scope_interact() {
@@ -8773,7 +8778,7 @@ _scope_sequence() {
 }
 
 _scope() {
-	export ub_scope_name='scope'
+	[[ "$ub_scope_name" == "" ]] && export ub_scope_name='scope'
 	"$scriptAbsoluteLocation" _scope_sequence "$@"
 }
 
@@ -8884,6 +8889,7 @@ _scope_terminal() {
 	shiftParam1="$1"
 	shift
 	
+	[[ "$ub_scope_name" == "" ]] && export ub_scope_name='scope'
 	_scope "$shiftParam1" "_scope_terminal_procedure" "$@"
 }
 
@@ -8896,11 +8902,12 @@ _scope_eclipse() {
 	shiftParam1="$1"
 	shift
 	
+	[[ "$ub_scope_name" == "" ]] && export ub_scope_name='scope'
 	_scope "$shiftParam1" "_scope_eclipse_procedure" "$@"
 }
 
 _scope_atom_procedure() {
-	_atom "$ub_specimen" "$@"
+	"$scriptAbsoluteLocation" _atom_tmp_sequence "$ub_specimen" "$@"  > /dev/null 2>&1
 }
 
 # WARNING: No production use. Not to be relied upon. May be removed.
@@ -8909,10 +8916,12 @@ _scope_atom() {
 	shiftParam1="$1"
 	shift
 	
+	[[ "$ub_scope_name" == "" ]] && export ub_scope_name='scope'
 	_scope "$shiftParam1" "_scope_atom_procedure" "$@"
 }
 
 _scope_konsole_procedure() {
+	_messagePlain_probe konsole --workdir "$ub_specimen" "$@"
 	konsole --workdir "$ub_specimen" "$@"
 }
 
@@ -8921,7 +8930,8 @@ _scope_konsole() {
 	shiftParam1="$1"
 	shift
 	
-	_scope "$shiftParam1" "_scope_konsole_procedure" "$@"
+	[[ "$ub_scope_name" == "" ]] && export ub_scope_name='scope'
+	_scope "$shiftParam1" "_scope_konsole_procedure" -p tabtitle="$ub_scope_name" "$@"
 }
 
 _scope_dolphin_procedure() {
@@ -8933,6 +8943,7 @@ _scope_dolphin() {
 	shiftParam1="$1"
 	shift
 	
+	[[ "$ub_scope_name" == "" ]] && export ub_scope_name='scope'
 	_scope "$shiftParam1" "_scope_dolphin_procedure" "$@"
 }
 

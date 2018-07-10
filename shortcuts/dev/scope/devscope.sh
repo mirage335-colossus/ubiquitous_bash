@@ -11,8 +11,13 @@ _scope_attach() {
 	chmod u+x "$ub_scope"/.devenv
 	_scope_readme_here > "$ub_scope"/README
 	
-	_scope_command_write _scope_compile
-	#_scope_command_external_here _scope_compile
+	_scope_command_write _scope_konsole_procedure
+	_scope_command_write _scope_dolphin_procedure
+	_scope_command_write _scope_eclipse_procedure
+	_scope_command_write _scope_atom_procedure
+	
+	_scope_command_write _compile
+	#_scope_command_external_here _compile
 }
 
 _prepare_scope() {
@@ -78,7 +83,7 @@ _start_scope() {
 	return 0
 }
 
-#Defaults, bash terminal, wait for kill signal, wait for line break, etc. Override with "core.sh" . May run file manager, terminal, etc.
+#Defaults, bash terminal, wait for kill signal, wait for EOF, etc. Override with "core.sh" . May run file manager, terminal, etc.
 # WARNING: Scope should only be terminated by process or user managing this interaction (eg. by closing file manager). Manager must be aware of any inter-scope dependencies.
 #"$@" <commands>
 _scope_interact() {
@@ -117,6 +122,6 @@ _scope_sequence() {
 }
 
 _scope() {
-	export ub_scope_name='scope'
+	[[ "$ub_scope_name" == "" ]] && export ub_scope_name='scope'
 	"$scriptAbsoluteLocation" _scope_sequence "$@"
 }
