@@ -85,12 +85,12 @@ _scope_interact() {
 	_messagePlain_nominal '_scope_interact'
 	#read > /dev/null 2>&1
 	
-	_scope_prompt
+	_scopePrompt
 	
 	if [[ "$@" == "" ]]
 	then
-		_terminal
-		#_eclipse
+		_scope_terminal_procedure
+		#_scope_eclipse_procedure
 		#eclipse
 # 		return
 	fi

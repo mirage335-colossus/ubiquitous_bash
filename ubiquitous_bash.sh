@@ -8740,8 +8740,8 @@ _scope_interact() {
 	
 	if [[ "$@" == "" ]]
 	then
-		_terminal
-		#_eclipse
+		_scope_terminal_procedure
+		#_scope_eclipse_procedure
 		#eclipse
 # 		return
 	fi
