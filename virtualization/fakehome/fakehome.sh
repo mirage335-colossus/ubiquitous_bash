@@ -21,6 +21,11 @@ _arbitrary_fakeHome_app() {
 _link_fakeHome() {
 	mkdir -p "$1" > /dev/null 2>&1
 	mkdir -p "$actualFakeHome" > /dev/null 2>&1
+	mkdir -p "$globalFakeHome" > /dev/null 2>&1
+	
+	#If globalFakeHome symlinks are obsolete, subsequent _instance_internal operation may overwrite valid links with them. See _install_fakeHome .
+	rmdir "$globalFakeHome"/"$2" > /dev/null 2>&1
+	_relink "$1" "$globalFakeHome"/"$2"
 	
 	if [[ "$actualFakeHome" == "$globalFakeHome" ]] || [[ "$fakeHomeEditLib" == "true" ]]
 	then
