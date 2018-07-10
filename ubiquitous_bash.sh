@@ -8736,7 +8736,7 @@ _scope_interact() {
 	_messagePlain_nominal '_scope_interact'
 	#read > /dev/null 2>&1
 	
-	_scope_prompt
+	_scopePrompt
 	
 	if [[ "$@" == "" ]]
 	then
@@ -8859,7 +8859,7 @@ _scope_command_external_write() {
 	chmod u+x "$ub_scope"/"$1"
 }
 
-_scope_prompt() {
+_scopePrompt() {
 	[[ "$ub_scope_name" == "" ]] && return 0
 	
 	export PS1='\[\033[01;40m\]\[\033[01;36m\]+\[\033[01;34m\]-|\[\033[01;31m\]${?}:${debian_chroot:+($debian_chroot)}\[\033[01;33m\]\u\[\033[01;32m\]@\h\[\033[01;36m\]\[\033[01;34m\])-\[\033[01;36m\]------------------------\[\033[01;34m\]-(\[\033[01;35m\]$(date +%H:%M:%S\ .%d)\[\033[01;34m\])-\[\033[01;36m\]- -|\[\033[00m\]\n\[\033[01;40m\]\[\033[01;36m\]+\[\033[01;34m\]-|\[\033[37m\][\w]\[\033[00m\]\n\[\033[01;36m\]+\[\033[01;34m\]-|\#) \[\033[36m\]'"$ub_scope_name"'>\[\033[00m\] '
@@ -10736,7 +10736,7 @@ _importShortcuts() {
 	
 	_tryExec "_visualPrompt"
 	
-	_tryExec "_scopePrompt"
+	_tryExec "_scope_prompt"
 }
 
 _gitPull_ubiquitous() {

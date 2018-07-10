@@ -1722,7 +1722,7 @@ _importShortcuts() {
 	
 	_tryExec "_visualPrompt"
 	
-	_tryExec "_scopePrompt"
+	_tryExec "_scope_prompt"
 }
 
 _gitPull_ubiquitous() {
