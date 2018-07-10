@@ -10736,7 +10736,7 @@ _importShortcuts() {
 	
 	_tryExec "_visualPrompt"
 	
-	_tryExec "_scope_prompt"
+	_tryExec "_scopePrompt"
 }
 
 _gitPull_ubiquitous() {
