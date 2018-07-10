@@ -23,6 +23,8 @@ _importShortcuts() {
 	fi
 	
 	_tryExec "_visualPrompt"
+	
+	_tryExec "_scopePrompt"
 }
 
 _gitPull_ubiquitous() {

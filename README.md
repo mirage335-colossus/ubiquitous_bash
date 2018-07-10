@@ -47,6 +47,9 @@ In most user environments, the latest git repository code will provide the stron
 * parity
 * ethminer
 
+# Safety
+* WARNING: Do NOT export specimen directories as part of Eclipse projects. ONLY export project files, and reference specimen directories relative to the workspace path variable. Symlinks to temporary and scope directories may not be intended for the recursive copy that would result. New users do not need to worry about this until they know what it means.
+
 # Likely Problems
 * Atom packages are not necessarily safe for portable operation. At least "Command Toolbar" makes reference to absolute file paths. Atom packages installed with "apm", as would be done for git submodules, also make reference to absolute file paths. Atom cannot be relied upon as a general purpose project specific IDE.
 	For "Command Toolbar, a workaround is to delete, and manually edit, "_lib/app/atom/home/.atom/command-toolbar.json" .
@@ -144,3 +147,6 @@ All content in this folder not owned by other authors is intended to be public d
 https://developer.apple.com/library/content/documentation/Darwin/Conceptual/index.html
 https://en.wikipedia.org/wiki/Software_architecture
 https://en.wikipedia.org/wiki/Middleware
+
+https://bugs.eclipse.org/bugs/show_bug.cgi?id=122945
+

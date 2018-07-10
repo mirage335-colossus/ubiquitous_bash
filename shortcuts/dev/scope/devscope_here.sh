@@ -14,6 +14,8 @@ _scope_var_here() {
 	cat << CZXWXcRMTo8EmM8i4d
 export ub_specimen="$ub_specimen"
 export specimen="$specimen"
+export ub_specimen_basename="$ub_specimen_basename"
+export basename="$basename"
 export ub_scope_name="$ub_scope_name"
 export ub_scope="$ub_scope"
 export scope="$scope"

@@ -944,6 +944,13 @@ _messageProcess() {
 	return 0
 }
 
+_mustcarry() {
+	grep "$1" "$2" > /dev/null 2>&1 && return 0
+	
+	echo "$1" >> "$2"
+	return
+}
+
 #"$1" == file path
 _includeFile() {
 	
@@ -4595,7 +4602,7 @@ _abstractfs() {
 	export abstractfs_puid=$(_uid)
 	
 	_base_abstractfs "$@"
-	_name_abstractfs "$@"
+	_name_abstractfs > /dev/null 2>&1
 	[[ "$abstractfs_name" == "" ]] && return 1
 	
 	export abstractfs="$abstractfs_root"/"$abstractfs_name"
@@ -4702,8 +4709,12 @@ _describe_abstractfs() {
 	local localFunctionEntryPWD
 	localFunctionEntryPWD="$PWD"
 	
-	basename "$abstractfs_base"
-	! cd "$abstractfs_base" >/dev/null 2>&1 && cd "$localFunctionEntryPWD" && return 1
+	local testAbstractfsBase
+	testAbstractfsBase="$abstractfs_base"
+	[[ "$1" != "" ]] && testAbstractfsBase=$(_getAbsoluteLocation "$1")
+	
+	basename "$testAbstractfsBase"
+	! cd "$testAbstractfsBase" >/dev/null 2>&1 && cd "$localFunctionEntryPWD" && return 1
 	git rev-parse --abbrev-ref HEAD 2>/dev/null
 	git remote show origin 2>/dev/null
 	
@@ -4734,7 +4745,7 @@ _findProjectAFS_procedure() {
 	_findProjectAFS_procedure
 }
 
-#Recursively searches for directories containing ".git".
+#Recursively searches for directories containing "project.afs".
 _findProjectAFS() {
 	local localFunctionEntryPWD
 	localFunctionEntryPWD="$PWD"
@@ -4755,9 +4766,13 @@ CZXWXcRMTo8EmM8i4d
 }
 
 _write_projectAFS() {
+	local testAbstractfsBase
+	testAbstractfsBase="$abstractfs_base"
+	[[ "$1" != "" ]] && testAbstractfsBase=$(_getAbsoluteLocation "$1")
+	
 	( [[ "$nofs" == "true" ]] || [[ "$afs_nofs" == "true" ]] ) && return
-	_projectAFS_here > "$abstractfs_base"/project.afs
-	chmod u+x "$abstractfs_base"/project.afs
+	_projectAFS_here > "$testAbstractfsBase"/project.afs
+	chmod u+x "$testAbstractfsBase"/project.afs
 }
 
 # DANGER: Mandatory strict directory 8.3 compliance for this variable! Long subdirectory/filenames permitted thereafter.
@@ -4766,7 +4781,7 @@ _default_name_abstractfs() {
 	if ( [[ "$nofs" == "true" ]] || [[ "$afs_nofs" == "true" ]] )
 	then
 		#echo $(basename "$abstractfs_base") | md5sum | head -c 8
-		_describe_abstractfs | md5sum | head -c 8
+		_describe_abstractfs "$@" | md5sum | head -c 8
 		return
 	fi
 	
@@ -4774,25 +4789,36 @@ _default_name_abstractfs() {
 	cat /dev/urandom 2> /dev/null | base64 2> /dev/null | tr -dc 'a-z0-9' 2> /dev/null | head -c "7" 2> /dev/null
 }
 
+#"$1" == "$abstractfs_base" || ""
 _name_abstractfs() {
 	export abstractfs_name=
-	export abstractfs_projectafs=$(_findProjectAFS "$abstractfs_base")
+	
+	local testAbstractfsBase
+	testAbstractfsBase="$abstractfs_base"
+	[[ "$1" != "" ]] && testAbstractfsBase=$(_getAbsoluteLocation "$1")
+	
+	export abstractfs_projectafs=$(_findProjectAFS "$testAbstractfsBase")
 	[[ "$abstractfs_projectafs" != "" ]] && [[ -e "$abstractfs_projectafs" ]] && . "$abstractfs_projectafs" --noexec
 	
 	if [[ "$abstractfs_name" == "" ]]
 	then
-		export abstractfs_name=$(_default_name_abstractfs)
-		( [[ "$nofs" == "true" ]] || [[ "$afs_nofs" == "true" ]] ) && return
-		_write_projectAFS
+		export abstractfs_name=$(_default_name_abstractfs "$testAbstractfsBase")
+		if ( [[ "$nofs" == "true" ]] || [[ "$afs_nofs" == "true" ]] )
+		then
+			echo "$abstractfs_name"
+			return
+		fi
+		_write_projectAFS "$testAbstractfsBase"
 		export abstractfs_name=
 	fi
 	
-	export abstractfs_projectafs=$(_findProjectAFS "$abstractfs_base")
+	export abstractfs_projectafs=$(_findProjectAFS "$testAbstractfsBase")
 	[[ "$abstractfs_projectafs" != "" ]] && [[ -e "$abstractfs_projectafs" ]] && . "$abstractfs_projectafs" --noexec
 	
 	( [[ "$nofs" == "true" ]] || [[ "$afs_nofs" == "true" ]] ) && [[ ! -e "$abstractfs_projectafs" ]] && return 1
 	[[ "$abstractfs_name" == "" ]] && return 1
 	
+	echo "$abstractfs_name"
 	return 0
 }
 
@@ -8473,6 +8499,156 @@ _ubide() {
 	_atom . ./ubiquitous_bash.sh "$@"
 }
 
+_test_deveclipse() {
+	_getDep eclipse
+	
+	! [[ -e /usr/share/eclipse/dropins/cdt ]] && echo 'warn: missing: /usr/share/eclipse/dropins/cdt'
+}
+
+#"$1" == workspaceDir
+_prepare_eclipse_workspace() {
+	local local_workspace_import="$1"/_import
+	
+	mkdir -p "$local_workspace_import"
+	
+	local local_workspace_abstract
+	
+	#Scope
+	if [[ "$ub_specimen" != "" ]] && [[ "$ub_scope" != "" ]]
+	then
+		local_workspace_abstract=$(_name_abstractfs "$ub_specimen")
+		
+		mkdir -p "$local_workspace_import"/"$local_workspace_abstract"
+		
+		_relink "$ub_specimen" "$local_workspace_import"/"$local_workspace_abstract"/specimen
+		_relink "$ub_scope" "$local_workspace_import"/"$local_workspace_abstract"/scope
+		
+		#Export directories to be used for projects/sets to be stored in shared repositories.
+		mkdir -p "$ub_specimen"/_export
+		_relink "$ub_specimen"/_export "$local_workspace_import"/"$local_workspace_abstract"/_export
+		
+		_messagePlain_good 'eclipse: install: specimen, scope: '"$local_workspace_import"/"$local_workspace_abstract"
+	fi
+	
+	#Arbitary Project
+	if [[ "$arbitraryProjectDir" != "" ]]
+	then
+		local_workspace_abstract=$(_name_abstractfs "$arbitraryProjectDir")
+		
+		mkdir -p "$local_workspace_import"/"$local_workspace_abstract"
+		
+		_relink "$arbitraryProjectDir" "$local_workspace_import"/"$local_workspace_abstract"
+		
+		#Export directories to be used for projects/sets to be stored in shared repositories.
+		mkdir -p "$arbitraryProjectDir"/_export
+		_relink "$arbitraryProjectDir"/_export "$local_workspace_import"/"$local_workspace_abstract"/_export
+		
+		_messagePlain_good 'eclipse: install: arbitraryProjectDir: '"$local_workspace_import"/"$local_workspace_abstract"
+	fi
+}
+
+#Creates user and export directories for eclipse instance. User directories to be used for project specific workspace. Export directories to be used for projects/sets to be stored in shared repositories.
+#"$eclipse_path" (eg. "$ub_specimen")
+#"eclipse_root" (eg. ".eclipser")
+_prepare_eclipse() {
+	#Special meaning of "$PWD" when run under _abstractfs ("$localPWD") is intended.
+	if [[ "$eclipse_path" == "" ]]
+	then
+		export eclipse_path=$(_getAbsoluteLocation "$PWD"/..)
+		[[ "$ub_specimen" != "" ]] && export eclipse_path=$(_getAbsoluteLocation "$ub_specimen"/..)
+		#[[ "$ub_scope" != "" ]] && export eclipse_path=$(_getAbsoluteLocation "$ub_scope")
+	fi
+	
+	if [[ "$eclipse_root" == "" ]]
+	then
+		export eclipse_root=$(_name_abstractfs "$ub_specimen")
+		export eclipse_root="$eclipse_root".ecr
+		#export eclipse_root='eclipser'
+		#export eclipse_root='.eclipser'
+	fi
+	
+	export eclipse_user='user'
+	
+	#export eclipse_export='_export'
+	
+	export eclipse_data='workspace'
+	export eclipse_config='configuration'
+	
+	mkdir -p "$eclipse_path"/"$eclipse_root"
+	mkdir -p "$eclipse_path"/"$eclipse_root"/"$eclipse_user"
+	#mkdir -p "$eclipse_path"/"$eclipse_root"/"$eclipse_export"
+	mkdir -p "$eclipse_path"/"$eclipse_root"/"$eclipse_data"
+	mkdir -p "$eclipse_path"/"$eclipse_root"/"$eclipse_user"/"$eclipse_config"
+	
+	#_mustcarry 'eclipser/' "$eclipse_path"/"$eclipse_root"/.gitignore
+	_mustcarry "$eclipse_user"/ "$eclipse_path"/"$eclipse_root"/.gitignore
+	_mustcarry "$eclipse_data"/ "$eclipse_path"/"$eclipse_root"/.gitignore
+	_mustcarry "$eclipse_user"/"$eclipse_config"/ "$eclipse_path"/"$eclipse_root"/.gitignore
+}
+
+_install_fakeHome_eclipse() {	
+	_link_fakeHome "$eclipse_path"/"$eclipse_root"/"$eclipse_data" workspace
+	
+	_link_fakeHome "$eclipse_path"/"$eclipse_root"/"$eclipse_user" .eclipse
+	#_link_fakeHome "$eclipse_path"/"$eclipse_root"/"$eclipse_user"/"$eclipse_config" .eclipse/configuration
+}
+
+_eclipse_procedure() {
+	_prepare_eclipse
+	_prepare_eclipse_workspace "$eclipse_path"/"$eclipse_root"/"$eclipse_data"
+	_messagePlain_probe eclipse -data "$eclipse_path"/"$eclipse_root"/"$eclipse_data" -configuration "$eclipse_path"/"$eclipse_root"/"$eclipse_user"/"$eclipse_config" "$@"
+	eclipse -data "$eclipse_path"/"$eclipse_root"/"$eclipse_data" -configuration "$eclipse_path"/"$eclipse_root"/"$eclipse_user"/"$eclipse_config" "$@"
+}
+
+_eclipse_config() {
+	_eclipse_procedure "$@"
+}
+
+_eclipse_stock() {
+	_prepare_eclipse_workspace "$HOME"/workspace
+	eclipse -data "$HOME"/workspace "$@"
+}
+
+_eclipse_home() {
+	_prepare_eclipse_workspace "$HOME"/workspace
+	_messagePlain_probe eclipse -data "$HOME"/workspace -configuration "$HOME"/.eclipse/configuration "$@"
+	eclipse -data "$HOME"/workspace -configuration "$HOME"/.eclipse/configuration "$@"
+}
+
+_eclipse_edit() {
+	_prepare_eclipse
+	
+	export actualFakeHome="$shortFakeHome"
+	#export actualFakeHome="$globalFakeHome"
+	export fakeHomeEditLib="true"
+	export keepFakeHome="true"
+	
+	_install_fakeHome_eclipse
+	
+	_fakeHome "$scriptAbsoluteLocation" --parent _eclipse_home "$@"
+}
+
+_eclipse_user() {
+	_prepare_eclipse
+	
+	export actualFakeHome="$shortFakeHome"
+	#export actualFakeHome="$globalFakeHome"
+	export fakeHomeEditLib="false"
+	export keepFakeHome="true"
+	
+	_install_fakeHome_eclipse
+	
+	_fakeHome "$scriptAbsoluteLocation" --parent _eclipse_home "$@"
+}
+
+
+
+
+
+_eclipse() {
+	_eclipse_config "$@"
+}
+
 #Example, override with "core.sh" .
 _scope_compile() {
 	true
@@ -8525,6 +8701,8 @@ _start_scope() {
 	
 	export ub_specimen=$(_getAbsoluteLocation "$1")
 	export specimen="$ub_specimen"
+	export ub_specimen_basename=$(basename "$ub_specimen")
+	export basename="$ub_specimen_basename"
 	[[ ! -d "$ub_specimen" ]] && _messagePlain_bad 'missing: specimen= '"$ub_specimen" && _stop 1
 	[[ ! -e "$ub_specimen" ]] && _messagePlain_bad 'missing: specimen= '"$ub_specimen" && _stop 1
 	
@@ -8551,21 +8729,24 @@ _start_scope() {
 	return 0
 }
 
-_scope_terminal() {
-	export PS1='\[\033[01;40m\]\[\033[01;36m\]+\[\033[01;34m\]-|\[\033[01;31m\]${?}:${debian_chroot:+($debian_chroot)}\[\033[01;33m\]\u\[\033[01;32m\]@\h\[\033[01;36m\]\[\033[01;34m\])-\[\033[01;36m\]------------------------\[\033[01;34m\]-(\[\033[01;35m\]$(date +%H:%M:%S\ .%d)\[\033[01;34m\])-\[\033[01;36m\]- -|\[\033[00m\]\n\[\033[01;40m\]\[\033[01;36m\]+\[\033[01;34m\]-|\[\033[37m\][\w]\[\033[00m\]\n\[\033[01;36m\]+\[\033[01;34m\]-|\#) \[\033[36m\]'"$ub_scope_name"'>\[\033[00m\] '
-	export PATH="$PATH":"$ub_scope"
-	echo
-	/bin/bash --norc
-	echo
-}
-
 #Defaults, bash terminal, wait for kill signal, wait for line break, etc. Override with "core.sh" . May run file manager, terminal, etc.
 # WARNING: Scope should only be terminated by process or user managing this interaction (eg. by closing file manager). Manager must be aware of any inter-scope dependencies.
+#"$@" <commands>
 _scope_interact() {
 	_messagePlain_nominal '_scope_interact'
 	#read > /dev/null 2>&1
 	
-	_scope_terminal
+	_scope_prompt
+	
+	if [[ "$@" == "" ]]
+	then
+		_terminal
+		#_eclipse
+		#eclipse
+# 		return
+	fi
+	
+	"$@"
 }
 
 
@@ -8580,7 +8761,8 @@ _scope_sequence() {
 	_scope_attach "$@"
 	
 	#User interaction.
-	_scope_interact
+	shift
+	_scope_interact "$@"
 	
 	_stop
 }
@@ -8606,6 +8788,8 @@ _scope_var_here() {
 	cat << CZXWXcRMTo8EmM8i4d
 export ub_specimen="$ub_specimen"
 export specimen="$specimen"
+export ub_specimen_basename="$ub_specimen_basename"
+export basename="$basename"
 export ub_scope_name="$ub_scope_name"
 export ub_scope="$ub_scope"
 export scope="$scope"
@@ -8673,6 +8857,78 @@ _scope_command_write() {
 _scope_command_external_write() {
 	_scope_command_external_here "$@" > "$ub_scope"/"$1"
 	chmod u+x "$ub_scope"/"$1"
+}
+
+_scope_prompt() {
+	[[ "$ub_scope_name" == "" ]] && return 0
+	
+	export PS1='\[\033[01;40m\]\[\033[01;36m\]+\[\033[01;34m\]-|\[\033[01;31m\]${?}:${debian_chroot:+($debian_chroot)}\[\033[01;33m\]\u\[\033[01;32m\]@\h\[\033[01;36m\]\[\033[01;34m\])-\[\033[01;36m\]------------------------\[\033[01;34m\]-(\[\033[01;35m\]$(date +%H:%M:%S\ .%d)\[\033[01;34m\])-\[\033[01;36m\]- -|\[\033[00m\]\n\[\033[01;40m\]\[\033[01;36m\]+\[\033[01;34m\]-|\[\033[37m\][\w]\[\033[00m\]\n\[\033[01;36m\]+\[\033[01;34m\]-|\#) \[\033[36m\]'"$ub_scope_name"'>\[\033[00m\] '
+}
+
+_scope_terminal_procedure() {
+	#_tryExec '_visualPrompt'
+	
+	export PATH="$PATH":"$ub_scope"
+	echo
+	/bin/bash --norc
+	echo
+}
+
+_scope_terminal() {
+	local shiftParam1
+	shiftParam1="$1"
+	shift
+	
+	_scope "$shiftParam1" "_scope_terminal_procedure" "$@"
+}
+
+_scope_eclipse_procedure() {
+	_eclipse "$@"
+}
+
+_scope_eclipse() {
+	local shiftParam1
+	shiftParam1="$1"
+	shift
+	
+	_scope "$shiftParam1" "_scope_eclipse_procedure" "$@"
+}
+
+_scope_atom_procedure() {
+	_atom "$ub_specimen" "$@"
+}
+
+# WARNING: No production use. Not to be relied upon. May be removed.
+_scope_atom() {
+	local shiftParam1
+	shiftParam1="$1"
+	shift
+	
+	_scope "$shiftParam1" "_scope_atom_procedure" "$@"
+}
+
+_scope_konsole_procedure() {
+	konsole --workdir "$ub_specimen" "$@"
+}
+
+_scope_konsole() {
+	local shiftParam1
+	shiftParam1="$1"
+	shift
+	
+	_scope "$shiftParam1" "_scope_konsole_procedure" "$@"
+}
+
+_scope_dolphin_procedure() {
+	dolphin "$ub_specimen" "$@"
+}
+
+_scope_dolphin() {
+	local shiftParam1
+	shiftParam1="$1"
+	shift
+	
+	_scope "$shiftParam1" "_scope_dolphin_procedure" "$@"
 }
 
 _testGit() {
@@ -10479,6 +10735,8 @@ _importShortcuts() {
 	fi
 	
 	_tryExec "_visualPrompt"
+	
+	_tryExec "_scopePrompt"
 }
 
 _gitPull_ubiquitous() {
@@ -12766,7 +13024,9 @@ _test() {
 	
 	_tryExec "_test_synergy"
 	
+	_tryExec "_test_devatom"
 	_tryExec "_test_devemacs"
+	_tryExec "_test_deveclipse"
 	
 	_tryExec "_test_ethereum"
 	_tryExec "_test_ethereum_parity"
@@ -13490,6 +13750,8 @@ _compile_bash_essential_utilities() {
 	
 	includeScriptList+=( "generic"/messaging.sh )
 	
+	includeScriptList+=( "generic"/config/mustcarry.sh )
+	
 	[[ "$enUb_buildBash" == "true" ]] && includeScriptList+=( "build/bash"/include_bash.sh )
 }
 
@@ -13629,9 +13891,13 @@ _compile_bash_shortcuts() {
 	
 	[[ "$enUb_fakehome" == "true" ]] && [[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "shortcuts/dev/app"/devemacs.sh )
 	[[ "$enUb_fakehome" == "true" ]] && [[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "shortcuts/dev/app"/devatom.sh )
+	[[ "$enUb_fakehome" == "true" ]] && [[ "$enUb_abstractfs" == "true" ]] && [[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "shortcuts/dev/app"/deveclipse.sh )
 	
 	[[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "shortcuts/dev/scope"/devscope.sh )
 	[[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "shortcuts/dev/scope"/devscope_here.sh )
+	
+	# WARNING: Some apps may have specific dependencies (eg. fakeHome, abstractfs, eclipse, atom).
+	[[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "shortcuts/dev/scope"/devscope_app.sh )
 	
 	[[ "$enUb_git" == "true" ]] && includeScriptList+=( "shortcuts/git"/git.sh )
 	[[ "$enUb_git" == "true" ]] && includeScriptList+=( "shortcuts/git"/gitBare.sh )

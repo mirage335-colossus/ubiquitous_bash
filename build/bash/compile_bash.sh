@@ -148,6 +148,8 @@ _compile_bash_essential_utilities() {
 	
 	includeScriptList+=( "generic"/messaging.sh )
 	
+	includeScriptList+=( "generic"/config/mustcarry.sh )
+	
 	[[ "$enUb_buildBash" == "true" ]] && includeScriptList+=( "build/bash"/include_bash.sh )
 }
 
@@ -287,9 +289,13 @@ _compile_bash_shortcuts() {
 	
 	[[ "$enUb_fakehome" == "true" ]] && [[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "shortcuts/dev/app"/devemacs.sh )
 	[[ "$enUb_fakehome" == "true" ]] && [[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "shortcuts/dev/app"/devatom.sh )
+	[[ "$enUb_fakehome" == "true" ]] && [[ "$enUb_abstractfs" == "true" ]] && [[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "shortcuts/dev/app"/deveclipse.sh )
 	
 	[[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "shortcuts/dev/scope"/devscope.sh )
 	[[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "shortcuts/dev/scope"/devscope_here.sh )
+	
+	# WARNING: Some apps may have specific dependencies (eg. fakeHome, abstractfs, eclipse, atom).
+	[[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "shortcuts/dev/scope"/devscope_app.sh )
 	
 	[[ "$enUb_git" == "true" ]] && includeScriptList+=( "shortcuts/git"/git.sh )
 	[[ "$enUb_git" == "true" ]] && includeScriptList+=( "shortcuts/git"/gitBare.sh )

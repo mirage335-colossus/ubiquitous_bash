@@ -50,6 +50,8 @@ _start_scope() {
 	
 	export ub_specimen=$(_getAbsoluteLocation "$1")
 	export specimen="$ub_specimen"
+	export ub_specimen_basename=$(basename "$ub_specimen")
+	export basename="$ub_specimen_basename"
 	[[ ! -d "$ub_specimen" ]] && _messagePlain_bad 'missing: specimen= '"$ub_specimen" && _stop 1
 	[[ ! -e "$ub_specimen" ]] && _messagePlain_bad 'missing: specimen= '"$ub_specimen" && _stop 1
 	
@@ -76,21 +78,24 @@ _start_scope() {
 	return 0
 }
 
-_scope_terminal() {
-	export PS1='\[\033[01;40m\]\[\033[01;36m\]+\[\033[01;34m\]-|\[\033[01;31m\]${?}:${debian_chroot:+($debian_chroot)}\[\033[01;33m\]\u\[\033[01;32m\]@\h\[\033[01;36m\]\[\033[01;34m\])-\[\033[01;36m\]------------------------\[\033[01;34m\]-(\[\033[01;35m\]$(date +%H:%M:%S\ .%d)\[\033[01;34m\])-\[\033[01;36m\]- -|\[\033[00m\]\n\[\033[01;40m\]\[\033[01;36m\]+\[\033[01;34m\]-|\[\033[37m\][\w]\[\033[00m\]\n\[\033[01;36m\]+\[\033[01;34m\]-|\#) \[\033[36m\]'"$ub_scope_name"'>\[\033[00m\] '
-	export PATH="$PATH":"$ub_scope"
-	echo
-	/bin/bash --norc
-	echo
-}
-
 #Defaults, bash terminal, wait for kill signal, wait for line break, etc. Override with "core.sh" . May run file manager, terminal, etc.
 # WARNING: Scope should only be terminated by process or user managing this interaction (eg. by closing file manager). Manager must be aware of any inter-scope dependencies.
+#"$@" <commands>
 _scope_interact() {
 	_messagePlain_nominal '_scope_interact'
 	#read > /dev/null 2>&1
 	
-	_scope_terminal
+	_scope_prompt
+	
+	if [[ "$@" == "" ]]
+	then
+		_terminal
+		#_eclipse
+		#eclipse
+# 		return
+	fi
+	
+	"$@"
 }
 
 
@@ -105,7 +110,8 @@ _scope_sequence() {
 	_scope_attach "$@"
 	
 	#User interaction.
-	_scope_interact
+	shift
+	_scope_interact "$@"
 	
 	_stop
 }

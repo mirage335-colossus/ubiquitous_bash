@@ -80,8 +80,12 @@ _describe_abstractfs() {
 	local localFunctionEntryPWD
 	localFunctionEntryPWD="$PWD"
 	
-	basename "$abstractfs_base"
-	! cd "$abstractfs_base" >/dev/null 2>&1 && cd "$localFunctionEntryPWD" && return 1
+	local testAbstractfsBase
+	testAbstractfsBase="$abstractfs_base"
+	[[ "$1" != "" ]] && testAbstractfsBase=$(_getAbsoluteLocation "$1")
+	
+	basename "$testAbstractfsBase"
+	! cd "$testAbstractfsBase" >/dev/null 2>&1 && cd "$localFunctionEntryPWD" && return 1
 	git rev-parse --abbrev-ref HEAD 2>/dev/null
 	git remote show origin 2>/dev/null
 	
@@ -112,7 +116,7 @@ _findProjectAFS_procedure() {
 	_findProjectAFS_procedure
 }
 
-#Recursively searches for directories containing ".git".
+#Recursively searches for directories containing "project.afs".
 _findProjectAFS() {
 	local localFunctionEntryPWD
 	localFunctionEntryPWD="$PWD"
@@ -133,9 +137,13 @@ CZXWXcRMTo8EmM8i4d
 }
 
 _write_projectAFS() {
+	local testAbstractfsBase
+	testAbstractfsBase="$abstractfs_base"
+	[[ "$1" != "" ]] && testAbstractfsBase=$(_getAbsoluteLocation "$1")
+	
 	( [[ "$nofs" == "true" ]] || [[ "$afs_nofs" == "true" ]] ) && return
-	_projectAFS_here > "$abstractfs_base"/project.afs
-	chmod u+x "$abstractfs_base"/project.afs
+	_projectAFS_here > "$testAbstractfsBase"/project.afs
+	chmod u+x "$testAbstractfsBase"/project.afs
 }
 
 # DANGER: Mandatory strict directory 8.3 compliance for this variable! Long subdirectory/filenames permitted thereafter.
@@ -144,7 +152,7 @@ _default_name_abstractfs() {
 	if ( [[ "$nofs" == "true" ]] || [[ "$afs_nofs" == "true" ]] )
 	then
 		#echo $(basename "$abstractfs_base") | md5sum | head -c 8
-		_describe_abstractfs | md5sum | head -c 8
+		_describe_abstractfs "$@" | md5sum | head -c 8
 		return
 	fi
 	
@@ -152,24 +160,35 @@ _default_name_abstractfs() {
 	cat /dev/urandom 2> /dev/null | base64 2> /dev/null | tr -dc 'a-z0-9' 2> /dev/null | head -c "7" 2> /dev/null
 }
 
+#"$1" == "$abstractfs_base" || ""
 _name_abstractfs() {
 	export abstractfs_name=
-	export abstractfs_projectafs=$(_findProjectAFS "$abstractfs_base")
+	
+	local testAbstractfsBase
+	testAbstractfsBase="$abstractfs_base"
+	[[ "$1" != "" ]] && testAbstractfsBase=$(_getAbsoluteLocation "$1")
+	
+	export abstractfs_projectafs=$(_findProjectAFS "$testAbstractfsBase")
 	[[ "$abstractfs_projectafs" != "" ]] && [[ -e "$abstractfs_projectafs" ]] && . "$abstractfs_projectafs" --noexec
 	
 	if [[ "$abstractfs_name" == "" ]]
 	then
-		export abstractfs_name=$(_default_name_abstractfs)
-		( [[ "$nofs" == "true" ]] || [[ "$afs_nofs" == "true" ]] ) && return
-		_write_projectAFS
+		export abstractfs_name=$(_default_name_abstractfs "$testAbstractfsBase")
+		if ( [[ "$nofs" == "true" ]] || [[ "$afs_nofs" == "true" ]] )
+		then
+			echo "$abstractfs_name"
+			return
+		fi
+		_write_projectAFS "$testAbstractfsBase"
 		export abstractfs_name=
 	fi
 	
-	export abstractfs_projectafs=$(_findProjectAFS "$abstractfs_base")
+	export abstractfs_projectafs=$(_findProjectAFS "$testAbstractfsBase")
 	[[ "$abstractfs_projectafs" != "" ]] && [[ -e "$abstractfs_projectafs" ]] && . "$abstractfs_projectafs" --noexec
 	
 	( [[ "$nofs" == "true" ]] || [[ "$afs_nofs" == "true" ]] ) && [[ ! -e "$abstractfs_projectafs" ]] && return 1
 	[[ "$abstractfs_name" == "" ]] && return 1
 	
+	echo "$abstractfs_name"
 	return 0
 }

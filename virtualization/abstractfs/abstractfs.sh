@@ -19,7 +19,7 @@ _abstractfs() {
 	export abstractfs_puid=$(_uid)
 	
 	_base_abstractfs "$@"
-	_name_abstractfs "$@"
+	_name_abstractfs > /dev/null 2>&1
 	[[ "$abstractfs_name" == "" ]] && return 1
 	
 	export abstractfs="$abstractfs_root"/"$abstractfs_name"

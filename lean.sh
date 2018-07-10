@@ -944,6 +944,13 @@ _messageProcess() {
 	return 0
 }
 
+_mustcarry() {
+	grep "$1" "$2" > /dev/null 2>&1 && return 0
+	
+	echo "$1" >> "$2"
+	return
+}
+
 #Gets filename extension, specifically any last three characters in given string.
 #"$1" == filename
 _getExt() {
@@ -1714,6 +1721,8 @@ _importShortcuts() {
 	fi
 	
 	_tryExec "_visualPrompt"
+	
+	_tryExec "_scopePrompt"
 }
 
 _gitPull_ubiquitous() {
@@ -2731,7 +2740,9 @@ _test() {
 	
 	_tryExec "_test_synergy"
 	
+	_tryExec "_test_devatom"
 	_tryExec "_test_devemacs"
+	_tryExec "_test_deveclipse"
 	
 	_tryExec "_test_ethereum"
 	_tryExec "_test_ethereum_parity"
