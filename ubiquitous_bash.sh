@@ -8682,6 +8682,8 @@ _scope_attach() {
 	chmod u+x "$ub_scope"/.devenv
 	_scope_readme_here > "$ub_scope"/README
 	
+	_scope_command_write _scope_terminal_procedure
+	
 	_scope_command_write _scope_konsole_procedure
 	_scope_command_write _scope_dolphin_procedure
 	_scope_command_write _scope_eclipse_procedure
@@ -8897,6 +8899,7 @@ _scopePrompt() {
 }
 
 _scope_terminal_procedure() {
+	_tryExec '_scopePrompt'
 	#_tryExec '_visualPrompt'
 	
 	export PATH="$PATH":"$ub_scope"

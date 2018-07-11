@@ -5,6 +5,7 @@ _scopePrompt() {
 }
 
 _scope_terminal_procedure() {
+	_tryExec '_scopePrompt'
 	#_tryExec '_visualPrompt'
 	
 	export PATH="$PATH":"$ub_scope"
