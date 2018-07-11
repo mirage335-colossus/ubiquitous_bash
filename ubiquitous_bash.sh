@@ -8792,7 +8792,13 @@ _scope_sequence() {
 	_stop
 }
 
+# ATTENTION: Overload with "core.sh" or similar!
+_scope_prog() {
+	[[ "$ub_scope_name" == "" ]] && export ub_scope_name='scope'
+}
+
 _scope() {
+	_scope_prog
 	[[ "$ub_scope_name" == "" ]] && export ub_scope_name='scope'
 	"$scriptAbsoluteLocation" _scope_sequence "$@"
 }
@@ -8904,7 +8910,7 @@ _scope_terminal() {
 	shiftParam1="$1"
 	shift
 	
-	[[ "$ub_scope_name" == "" ]] && export ub_scope_name='scope'
+	_scope_prog "$@"
 	_scope "$shiftParam1" "_scope_terminal_procedure" "$@"
 }
 
@@ -8917,7 +8923,7 @@ _scope_eclipse() {
 	shiftParam1="$1"
 	shift
 	
-	[[ "$ub_scope_name" == "" ]] && export ub_scope_name='scope'
+	_scope_prog "$@"
 	_scope "$shiftParam1" "_scope_eclipse_procedure" "$@"
 }
 
@@ -8931,7 +8937,7 @@ _scope_atom() {
 	shiftParam1="$1"
 	shift
 	
-	[[ "$ub_scope_name" == "" ]] && export ub_scope_name='scope'
+	_scope_prog "$@"
 	_scope "$shiftParam1" "_scope_atom_procedure" "$@"
 }
 
@@ -8945,7 +8951,7 @@ _scope_konsole() {
 	shiftParam1="$1"
 	shift
 	
-	[[ "$ub_scope_name" == "" ]] && export ub_scope_name='scope'
+	_scope_prog "$@"
 	_scope "$shiftParam1" "_scope_konsole_procedure" -p tabtitle="$ub_scope_name" "$@"
 }
 
@@ -8958,7 +8964,7 @@ _scope_dolphin() {
 	shiftParam1="$1"
 	shift
 	
-	[[ "$ub_scope_name" == "" ]] && export ub_scope_name='scope'
+	_scope_prog "$@"
 	_scope "$shiftParam1" "_scope_dolphin_procedure" "$@"
 }
 
