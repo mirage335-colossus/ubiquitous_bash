@@ -149,4 +149,5 @@ https://en.wikipedia.org/wiki/Software_architecture
 https://en.wikipedia.org/wiki/Middleware
 
 https://bugs.eclipse.org/bugs/show_bug.cgi?id=122945
+https://superuser.com/questions/163957/is-eclipse-installation-portable
 
