@@ -8942,8 +8942,8 @@ _prepare_query() {
 	mkdir -p "$ub_queryclientdir"
 	mkdir -p "$ub_queryserverdir"
 	
-	cp -n "$scriptAbsoluteLocation" "$ub_queryclient"
-	cp -n "$scriptAbsoluteLocation" "$ub_queryserver"
+	! [[ -e "$ub_queryclient" ]] && cp "$scriptAbsoluteLocation" "$ub_queryclient"
+	! [[ -e "$ub_queryserver" ]] && cp "$scriptAbsoluteLocation" "$ub_queryserver"
 	
 	_prepare_query_prog "$@"
 }
