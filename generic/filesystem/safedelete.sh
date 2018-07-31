@@ -94,10 +94,10 @@ _safeRMR() {
 	[[ "$safeToDeleteGit" != "true" ]] && [[ -d "$1" ]] && [[ -e "$1" ]] && find "$1" | grep -i '\.git$' >/dev/null 2>&1 && return 1
 	
 	#Validate necessary tools were available for path building and checks.
-	_checkDep realpath
-	_checkDep readlink
-	_checkDep dirname
-	_checkDep basename
+	! type realpath > /dev/null 2>&1 && return 1
+	! type readlink > /dev/null 2>&1 && return 1
+	! type dirname > /dev/null 2>&1 && return 1
+	! type basename > /dev/null 2>&1 && return 1
 	
 	if [[ -e "$1" ]]
 	then
@@ -174,10 +174,10 @@ _safePath() {
 	[[ "$safeToDeleteGit" != "true" ]] && [[ -d "$1" ]] && [[ -e "$1" ]] && find "$1" | grep -i '\.git$' >/dev/null 2>&1 && return 1
 	
 	#Validate necessary tools were available for path building and checks.
-	_checkDep realpath
-	_checkDep readlink
-	_checkDep dirname
-	_checkDep basename
+	! type realpath > /dev/null 2>&1 && return 1
+	! type readlink > /dev/null 2>&1 && return 1
+	! type dirname > /dev/null 2>&1 && return 1
+	! type basename > /dev/null 2>&1 && return 1
 	
 	if [[ -e "$1" ]]
 	then
@@ -193,8 +193,8 @@ _safeBackup() {
 	! type _getAbsolute_criticalDep > /dev/null 2>&1 && return 1
 	! _getAbsolute_criticalDep && return 1
 	
-	[[ ! -e "$scriptAbsoluteLocation" ]] && exit 1
-	[[ ! -e "$scriptAbsoluteFolder" ]] && exit 1
+	[[ ! -e "$scriptAbsoluteLocation" ]] && return 1
+	[[ ! -e "$scriptAbsoluteFolder" ]] && return 1
 	
 	#Fail sooner, avoiding irrelevant error messages. Especially important to cases where an upstream process has already removed the "$safeTmp" directory of a downstream process which reaches "_stop" later.
 	! [[ -e "$1" ]] && return 1
@@ -237,8 +237,8 @@ _command_safeBackup() {
 	! type _command_getAbsolute_criticalDep > /dev/null 2>&1 && return 1
 	! _command_getAbsolute_criticalDep && return 1
 	
-	[[ ! -e "$commandScriptAbsoluteLocation" ]] && exit 1
-	[[ ! -e "$commandScriptAbsoluteFolder" ]] && exit 1
+	[[ ! -e "$commandScriptAbsoluteLocation" ]] && return 1
+	[[ ! -e "$commandScriptAbsoluteFolder" ]] && return 1
 	
 	#Fail sooner, avoiding irrelevant error messages. Especially important to cases where an upstream process has already removed the "$safeTmp" directory of a downstream process which reaches "_stop" later.
 	! [[ -e "$1" ]] && return 1

@@ -67,6 +67,10 @@ _test() {
 	
 	_messagePASS
 	
+	_messageNormal "Absolute pathfinding..."
+	_test_getAbsoluteLocation
+	_messagePASS
+	
 	echo -n -e '\E[1;32;46m Timing...		\E[0m'
 	_timetest
 	
