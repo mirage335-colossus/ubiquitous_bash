@@ -183,6 +183,10 @@ _compat_realpath() {
 	export compat_realpath_bin=$(/usr/bin/realpath)
 	[[ -e "$compat_realpath_bin" ]] && [[ "$compat_realpath_bin" != "" ]] && return 0
 	
+	# ATTENTION
+	# Command "readlink -f" or text processing can be used as fallbacks to obtain absolute path
+	# https://stackoverflow.com/questions/3572030/bash-script-absolute-path-with-osx
+	
 	export compat_realpath_bin=""
 	return 1
 }
