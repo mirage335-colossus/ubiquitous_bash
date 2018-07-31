@@ -56,7 +56,9 @@ _test_prog() {
 _test() {
 	_start
 	
-	_tryExec "_test_permissions_ubiquitous"
+	_messageNormal "Permissions..."
+	
+	! _test_permissions_ubiquitous && _messageFAIL
 	
 	echo -n -e '\E[1;32;46m Argument length...	\E[0m'
 	
@@ -68,7 +70,7 @@ _test() {
 	_messagePASS
 	
 	_messageNormal "Absolute pathfinding..."
-	_test_getAbsoluteLocation
+	#_tryExec "_test_getAbsoluteLocation"
 	_messagePASS
 	
 	echo -n -e '\E[1;32;46m Timing...		\E[0m'
@@ -91,7 +93,7 @@ _test() {
 	_getDep tail
 	
 	
-	_getDep realpath
+	! _compat_realpath && ! _wantGetDep realpath && echo 'realpath missing'
 	_getDep readlink
 	_getDep dirname
 	_getDep basename

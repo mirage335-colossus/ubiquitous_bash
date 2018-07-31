@@ -167,9 +167,9 @@ _compile_bash_utilities() {
 	
 	[[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "generic/filesystem/mounts"/bindmountmanager.sh )
 	
-	includeScriptList+=( "generic/filesystem/mounts"/waitumount.sh )
+	[[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "generic/filesystem/mounts"/waitumount.sh )
 	
-	includeScriptList+=( "generic/filesystem/mounts"/mountchecks.sh )
+	[[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "generic/filesystem/mounts"/mountchecks.sh )
 	
 	includeScriptList+=( "generic/process"/waitforprocess.sh )
 	

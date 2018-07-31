@@ -1,3 +1,19 @@
+_compat_stat_c_run() {
+	local functionOutput
+	
+	functionOutput=$(stat -c "$@" 2> /dev/null)
+	[[ "$?" == "0" ]] && echo "$functionOutput" && return 0
+	
+	#BSD
+	if stat --help 2>&1 | grep '\-f ' > /dev/null 2>&1
+	then
+		functionOutput=$(stat -f "$@" 2> /dev/null)
+		[[ "$?" == "0" ]] && echo "$functionOutput" && return 0
+	fi
+	
+	return 1
+}
+
 _permissions_directory_checkForPath() {
 	local parameterAbsoluteLocation
 	parameterAbsoluteLocation=$(_getAbsoluteLocation "$1")
@@ -6,7 +22,7 @@ _permissions_directory_checkForPath() {
 	
 	[[ "$parameterAbsoluteLocation" == "$PWD" ]] && ! [[ "$parameterAbsoluteLocation" == "$checkScriptAbsoluteFolder" ]] && return 1
 	
-	local permissions_readout=$(stat -c "%a" "$1")
+	local permissions_readout=$(_compat_stat_c_run "%a" "$1")
 	
 	local permissions_user
 	local permissions_group
@@ -26,8 +42,8 @@ _permissions_directory_checkForPath() {
 	local permissions_uid
 	local permissions_gid
 	
-	permissions_uid=$(stat -c "%u" "$1")
-	permissions_gid=$(stat -c "%g" "$1")
+	permissions_uid=$(_compat_stat_c_run "%u" "$1")
+	permissions_gid=$(_compat_stat_c_run "%g" "$1")
 	
 	#Normally these variables are available through ubiqutious bash, but this permissions check may be needed earlier in that global variables setting process.
 	local permissions_host_uid

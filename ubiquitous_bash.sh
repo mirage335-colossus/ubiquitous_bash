@@ -300,16 +300,16 @@ _compat_realpath() {
 	[[ -e "$compat_realpath_bin" ]] && [[ "$compat_realpath_bin" != "" ]] && return 0
 	
 	#Workaround, Mac. See https://github.com/mirage335/ubiquitous_bash/issues/1 .
-	export compat_realpath_bin=$(/opt/local/libexec/gnubin/realpath)
+	export compat_realpath_bin=/opt/local/libexec/gnubin/realpath
 	[[ -e "$compat_realpath_bin" ]] && [[ "$compat_realpath_bin" != "" ]] && return 0
 	
 	export compat_realpath_bin=$(which realpath)
 	[[ -e "$compat_realpath_bin" ]] && [[ "$compat_realpath_bin" != "" ]] && return 0
 	
-	export compat_realpath_bin=$(/bin/realpath)
+	export compat_realpath_bin=/bin/realpath
 	[[ -e "$compat_realpath_bin" ]] && [[ "$compat_realpath_bin" != "" ]] && return 0
 	
-	export compat_realpath_bin=$(/usr/bin/realpath)
+	export compat_realpath_bin=/usr/bin/realpath
 	[[ -e "$compat_realpath_bin" ]] && [[ "$compat_realpath_bin" != "" ]] && return 0
 	
 	# ATTENTION
@@ -577,7 +577,7 @@ _safeRMR() {
 	[[ "$safeToDeleteGit" != "true" ]] && [[ -d "$1" ]] && [[ -e "$1" ]] && find "$1" | grep -i '\.git$' >/dev/null 2>&1 && return 1
 	
 	#Validate necessary tools were available for path building and checks.
-	! type realpath > /dev/null 2>&1 && return 1
+	#! type realpath > /dev/null 2>&1 && return 1
 	! type readlink > /dev/null 2>&1 && return 1
 	! type dirname > /dev/null 2>&1 && return 1
 	! type basename > /dev/null 2>&1 && return 1
@@ -657,7 +657,7 @@ _safePath() {
 	[[ "$safeToDeleteGit" != "true" ]] && [[ -d "$1" ]] && [[ -e "$1" ]] && find "$1" | grep -i '\.git$' >/dev/null 2>&1 && return 1
 	
 	#Validate necessary tools were available for path building and checks.
-	! type realpath > /dev/null 2>&1 && return 1
+	#! type realpath > /dev/null 2>&1 && return 1
 	! type readlink > /dev/null 2>&1 && return 1
 	! type dirname > /dev/null 2>&1 && return 1
 	! type basename > /dev/null 2>&1 && return 1
@@ -750,7 +750,7 @@ _command_safeBackup() {
 	[[ "$1" == "$HOME" ]] && return 1
 	[[ "$1" == "$HOME/" ]] && return 1
 	
-	! type realpath > /dev/null 2>&1 && return 1
+	#! type realpath > /dev/null 2>&1 && return 1
 	! type readlink > /dev/null 2>&1 && return 1
 	! type dirname > /dev/null 2>&1 && return 1
 	! type basename > /dev/null 2>&1 && return 1
@@ -806,6 +806,22 @@ _uid() {
 	cat /dev/urandom 2> /dev/null | base64 2> /dev/null | tr -dc 'a-zA-Z0-9' 2> /dev/null | head -c "$uidLength" 2> /dev/null
 }
 
+_compat_stat_c_run() {
+	local functionOutput
+	
+	functionOutput=$(stat -c "$@" 2> /dev/null)
+	[[ "$?" == "0" ]] && echo "$functionOutput" && return 0
+	
+	#BSD
+	if stat --help 2>&1 | grep '\-f ' > /dev/null 2>&1
+	then
+		functionOutput=$(stat -f "$@" 2> /dev/null)
+		[[ "$?" == "0" ]] && echo "$functionOutput" && return 0
+	fi
+	
+	return 1
+}
+
 _permissions_directory_checkForPath() {
 	local parameterAbsoluteLocation
 	parameterAbsoluteLocation=$(_getAbsoluteLocation "$1")
@@ -814,7 +830,7 @@ _permissions_directory_checkForPath() {
 	
 	[[ "$parameterAbsoluteLocation" == "$PWD" ]] && ! [[ "$parameterAbsoluteLocation" == "$checkScriptAbsoluteFolder" ]] && return 1
 	
-	local permissions_readout=$(stat -c "%a" "$1")
+	local permissions_readout=$(_compat_stat_c_run "%a" "$1")
 	
 	local permissions_user
 	local permissions_group
@@ -834,8 +850,8 @@ _permissions_directory_checkForPath() {
 	local permissions_uid
 	local permissions_gid
 	
-	permissions_uid=$(stat -c "%u" "$1")
-	permissions_gid=$(stat -c "%g" "$1")
+	permissions_uid=$(_compat_stat_c_run "%u" "$1")
+	permissions_gid=$(_compat_stat_c_run "%g" "$1")
 	
 	#Normally these variables are available through ubiqutious bash, but this permissions check may be needed earlier in that global variables setting process.
 	local permissions_host_uid
@@ -1667,10 +1683,17 @@ _validatePort() {
 }
 
 _testFindPort() {
-	_getDep ss
+	! _wantGetDep ss
+	! _wantGetDep sockstat
 	
-	local machineLowerPort=$(cat /proc/sys/net/ipv4/ip_local_port_range | cut -f1)
-	local machineUpperPort=$(cat /proc/sys/net/ipv4/ip_local_port_range | cut -f2)
+	! type ss > /dev/null 2>&1 && ! type sockstat > /dev/null 2>&1 && echo "missing socket detection" && _stop 1
+	
+	local machineLowerPort=$(cat /proc/sys/net/ipv4/ip_local_port_range 2> /dev/null | cut -f1)
+	local machineUpperPort=$(cat /proc/sys/net/ipv4/ip_local_port_range 2> /dev/null | cut -f2)
+	
+	[[ "$machineLowerPort" == "" ]] && echo "warn: autodetect: lower_port"
+	[[ "$machineUpperPort" == "" ]] && echo "warn: autodetect: upper_port"
+	[[ "$machineLowerPort" == "" ]] || [[ "$machineUpperPort" == "" ]] && return 0
 	
 	[[ "$machineLowerPort" -lt "1024" ]] && echo "invalid lower_port" && _stop 1
 	[[ "$machineLowerPort" -lt "32768" ]] && echo "warn: low lower_port"
@@ -1689,10 +1712,18 @@ _testFindPort() {
 _checkPort_local() {
 	[[ "$1" == "" ]] && return 1
 	
-	if ss -lpn | grep ":$1 " > /dev/null 2>&1
+	if type ss > /dev/null 2>&1
 	then
-		return 0
+		ss -lpn | grep ':'"$1"' ' > /dev/null 2>&1
+		return $?
 	fi
+	
+	if type sockstat > /dev/null 2>&1
+	then
+		sockstat -46ln | grep '\.'"$1"' ' > /dev/null 2>&1
+		return $?
+	fi
+	
 	return 1
 }
 
@@ -1759,10 +1790,10 @@ _findPort() {
 	while true
 	do
 		for (( currentPort = lower_port ; currentPort <= upper_port ; currentPort++ )); do
-			if ! ss -lpn | grep ":$currentPort " > /dev/null 2>&1
+			if ! _checkPort_local "$currentPort"
 			then
 				sleep 0.1
-				if ! ss -lpn | grep ":$currentPort " > /dev/null 2>&1
+				if ! _checkPort_local "$currentPort"
 				then
 					break 2
 				fi
@@ -13144,7 +13175,9 @@ _test_prog() {
 _test() {
 	_start
 	
-	_tryExec "_test_permissions_ubiquitous"
+	_messageNormal "Permissions..."
+	
+	! _test_permissions_ubiquitous && _messageFAIL
 	
 	echo -n -e '\E[1;32;46m Argument length...	\E[0m'
 	
@@ -13156,7 +13189,7 @@ _test() {
 	_messagePASS
 	
 	_messageNormal "Absolute pathfinding..."
-	_test_getAbsoluteLocation
+	#_tryExec "_test_getAbsoluteLocation"
 	_messagePASS
 	
 	echo -n -e '\E[1;32;46m Timing...		\E[0m'
@@ -13179,7 +13212,7 @@ _test() {
 	_getDep tail
 	
 	
-	_getDep realpath
+	! _compat_realpath && ! _wantGetDep realpath && echo 'realpath missing'
 	_getDep readlink
 	_getDep dirname
 	_getDep basename
@@ -14033,9 +14066,9 @@ _compile_bash_utilities() {
 	
 	[[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "generic/filesystem/mounts"/bindmountmanager.sh )
 	
-	includeScriptList+=( "generic/filesystem/mounts"/waitumount.sh )
+	[[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "generic/filesystem/mounts"/waitumount.sh )
 	
-	includeScriptList+=( "generic/filesystem/mounts"/mountchecks.sh )
+	[[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "generic/filesystem/mounts"/mountchecks.sh )
 	
 	includeScriptList+=( "generic/process"/waitforprocess.sh )
 	

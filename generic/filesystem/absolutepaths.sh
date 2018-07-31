@@ -171,16 +171,16 @@ _compat_realpath() {
 	[[ -e "$compat_realpath_bin" ]] && [[ "$compat_realpath_bin" != "" ]] && return 0
 	
 	#Workaround, Mac. See https://github.com/mirage335/ubiquitous_bash/issues/1 .
-	export compat_realpath_bin=$(/opt/local/libexec/gnubin/realpath)
+	export compat_realpath_bin=/opt/local/libexec/gnubin/realpath
 	[[ -e "$compat_realpath_bin" ]] && [[ "$compat_realpath_bin" != "" ]] && return 0
 	
 	export compat_realpath_bin=$(which realpath)
 	[[ -e "$compat_realpath_bin" ]] && [[ "$compat_realpath_bin" != "" ]] && return 0
 	
-	export compat_realpath_bin=$(/bin/realpath)
+	export compat_realpath_bin=/bin/realpath
 	[[ -e "$compat_realpath_bin" ]] && [[ "$compat_realpath_bin" != "" ]] && return 0
 	
-	export compat_realpath_bin=$(/usr/bin/realpath)
+	export compat_realpath_bin=/usr/bin/realpath
 	[[ -e "$compat_realpath_bin" ]] && [[ "$compat_realpath_bin" != "" ]] && return 0
 	
 	# ATTENTION

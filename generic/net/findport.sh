@@ -6,10 +6,17 @@ _validatePort() {
 }
 
 _testFindPort() {
-	_getDep ss
+	! _wantGetDep ss
+	! _wantGetDep sockstat
 	
-	local machineLowerPort=$(cat /proc/sys/net/ipv4/ip_local_port_range | cut -f1)
-	local machineUpperPort=$(cat /proc/sys/net/ipv4/ip_local_port_range | cut -f2)
+	! type ss > /dev/null 2>&1 && ! type sockstat > /dev/null 2>&1 && echo "missing socket detection" && _stop 1
+	
+	local machineLowerPort=$(cat /proc/sys/net/ipv4/ip_local_port_range 2> /dev/null | cut -f1)
+	local machineUpperPort=$(cat /proc/sys/net/ipv4/ip_local_port_range 2> /dev/null | cut -f2)
+	
+	[[ "$machineLowerPort" == "" ]] && echo "warn: autodetect: lower_port"
+	[[ "$machineUpperPort" == "" ]] && echo "warn: autodetect: upper_port"
+	[[ "$machineLowerPort" == "" ]] || [[ "$machineUpperPort" == "" ]] && return 0
 	
 	[[ "$machineLowerPort" -lt "1024" ]] && echo "invalid lower_port" && _stop 1
 	[[ "$machineLowerPort" -lt "32768" ]] && echo "warn: low lower_port"
@@ -28,10 +35,18 @@ _testFindPort() {
 _checkPort_local() {
 	[[ "$1" == "" ]] && return 1
 	
-	if ss -lpn | grep ":$1 " > /dev/null 2>&1
+	if type ss > /dev/null 2>&1
 	then
-		return 0
+		ss -lpn | grep ':'"$1"' ' > /dev/null 2>&1
+		return $?
 	fi
+	
+	if type sockstat > /dev/null 2>&1
+	then
+		sockstat -46ln | grep '\.'"$1"' ' > /dev/null 2>&1
+		return $?
+	fi
+	
 	return 1
 }
 
@@ -98,10 +113,10 @@ _findPort() {
 	while true
 	do
 		for (( currentPort = lower_port ; currentPort <= upper_port ; currentPort++ )); do
-			if ! ss -lpn | grep ":$currentPort " > /dev/null 2>&1
+			if ! _checkPort_local "$currentPort"
 			then
 				sleep 0.1
-				if ! ss -lpn | grep ":$currentPort " > /dev/null 2>&1
+				if ! _checkPort_local "$currentPort"
 				then
 					break 2
 				fi
