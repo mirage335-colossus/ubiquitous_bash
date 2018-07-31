@@ -1952,6 +1952,7 @@ intInitPWD="$PWD"
 #Temporary directories.
 export safeTmp="$scriptAbsoluteFolder"/w_"$sessionid"
 export scopeTmp="$scriptAbsoluteFolder"/s_"$sessionid"
+export queryTmp="$scriptAbsoluteFolder"/q_"$sessionid"
 export logTmp="$safeTmp"/log
 #Solely for misbehaved applications called upon.
 export shortTmp=/tmp/w_"$sessionid"
@@ -2697,11 +2698,13 @@ _compile_bash_shortcuts() {
 	[[ "$enUb_fakehome" == "true" ]] && [[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "shortcuts/dev/app"/devatom.sh )
 	[[ "$enUb_fakehome" == "true" ]] && [[ "$enUb_abstractfs" == "true" ]] && [[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "shortcuts/dev/app"/deveclipse.sh )
 	
-	[[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "shortcuts/dev/scope"/devscope.sh )
-	[[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "shortcuts/dev/scope"/devscope_here.sh )
+	includeScriptList+=( "shortcuts/dev/query"/devquery.sh )
+	
+	includeScriptList+=( "shortcuts/dev/scope"/devscope.sh )
+	includeScriptList+=( "shortcuts/dev/scope"/devscope_here.sh )
 	
 	# WARNING: Some apps may have specific dependencies (eg. fakeHome, abstractfs, eclipse, atom).
-	[[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "shortcuts/dev/scope"/devscope_app.sh )
+	includeScriptList+=( "shortcuts/dev/scope"/devscope_app.sh )
 	
 	[[ "$enUb_git" == "true" ]] && includeScriptList+=( "shortcuts/git"/git.sh )
 	[[ "$enUb_git" == "true" ]] && includeScriptList+=( "shortcuts/git"/gitBare.sh )
@@ -3226,6 +3229,10 @@ _false() {
 }
 _echo() {
 	echo "$@"
+}
+
+_diag() {
+	echo "$sessionid"
 }
 
 #Stop if script is imported, parameter not specified, and command not given.

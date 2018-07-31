@@ -52,8 +52,14 @@ _stop() {
 	fi
 	
 	rm -f "$pidFile" > /dev/null 2>&1	#Redundant, as this usually resides in "$safeTmp".
-	rm -f "$ub_scope" > /dev/null 2>&1	#Symlink, or nonexistent.
-	[[ -e "$scopeTmp" ]] && _safeRMR "$scopeTmp"			#Only created if needed by scope.
+	
+	if [[ -e "$scopeTmp" ]] && [[ -e "$scopeTmp"/.pid ]] && [[ "$$" == $(cat "$scopeTmp"/.pid 2>/dev/null) ]]
+	then
+		rm -f "$ub_scope" > /dev/null 2>&1			#Symlink, or nonexistent.
+		[[ -e "$scopeTmp" ]] && _safeRMR "$scopeTmp"		#Only created if needed by scope.
+	fi
+	
+	[[ -e "$queryTmp" ]] && _safeRMR "$queryTmp"			#Only created if needed by query.
 	_safeRMR "$shortTmp"
 	_safeRMR "$safeTmp"
 	
@@ -82,7 +88,7 @@ _stop_emergency() {
 	export EMERGENCYSHUTDOWN=true
 	
 	#Not yet using _tryExec since this function would typically result from user intervention, or system shutdown, both emergency situations in which an error message would be ignored if not useful. Higher priority is guaranteeing execution if needed and available.
-	_closeChRoot_emergency
+	_tryExec "_closeChRoot_emergency"
 	
 	#Daemon uses a separate instance, and will not be affected by previous actions, possibly even if running in the foreground.
 	#jobs -p >> "$daemonPidFile" #Could derrange the correct order of descendent job termination.

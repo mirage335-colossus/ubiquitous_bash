@@ -10,7 +10,7 @@ _scope_terminal_procedure() {
 	
 	export PATH="$PATH":"$ub_scope"
 	echo
-	/bin/bash --norc
+	/usr/bin/env bash --norc
 	echo
 }
 

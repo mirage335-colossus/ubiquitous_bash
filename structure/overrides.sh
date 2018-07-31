@@ -87,6 +87,10 @@ _echo() {
 	echo "$@"
 }
 
+_diag() {
+	echo "$sessionid"
+}
+
 #Stop if script is imported, parameter not specified, and command not given.
 if [[ "$ub_import" == "true" ]] && [[ "$ub_import_param" == "" ]] && [[ "$1" != '_'* ]]
 then

@@ -56,6 +56,7 @@ intInitPWD="$PWD"
 #Temporary directories.
 export safeTmp="$scriptAbsoluteFolder"/w_"$sessionid"
 export scopeTmp="$scriptAbsoluteFolder"/s_"$sessionid"
+export queryTmp="$scriptAbsoluteFolder"/q_"$sessionid"
 export logTmp="$safeTmp"/log
 #Solely for misbehaved applications called upon.
 export shortTmp=/tmp/w_"$sessionid"

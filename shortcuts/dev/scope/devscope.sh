@@ -18,7 +18,11 @@ _scope_attach() {
 	_scope_command_write _scope_eclipse_procedure
 	_scope_command_write _scope_atom_procedure
 	
-	_scope_command_write _compile
+	_scope_command_write _query
+	_scope_command_write _qs
+	_scope_command_write _qc
+	
+	#_scope_command_write _compile
 	#_scope_command_external_here _compile
 }
 

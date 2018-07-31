@@ -60,6 +60,8 @@ _test() {
 	
 	! _test_permissions_ubiquitous && _messageFAIL
 	
+	_messagePASS
+	
 	echo -n -e '\E[1;32;46m Argument length...	\E[0m'
 	
 	local testArgLength

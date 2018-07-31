@@ -8920,6 +8920,55 @@ _eclipse() {
 	_eclipse_config "$@"
 }
 
+#Simulated client/server discussion testing.
+
+_prepare_query_prog() {
+	true
+}
+
+_prepare_query() {
+	export ub_queryclientdir="$queryTmp"/client
+	export qc="$ub_queryclientdir"
+	
+	export ub_queryclient="$ub_queryclientdir"/script
+	export qce="$ub_queryclient"
+	
+	export ub_queryserverdir="$queryTmp"/server
+	export qs="$ub_queryserverdir"
+	
+	export ub_queryserver="$ub_queryserverdir"/script
+	export qse="$ub_queryserver"
+	
+	mkdir -p "$ub_queryclientdir"
+	mkdir -p "$ub_queryserverdir"
+	
+	cp -n "$scriptAbsoluteLocation" "$ub_queryclient"
+	cp -n "$scriptAbsoluteLocation" "$ub_queryserver"
+	
+	_prepare_query_prog "$@"
+}
+
+_queryServer() {
+	_prepare_query
+	"$ub_queryserver" "$@"
+}
+_qs() {
+	_queryServer "$@"
+}
+
+_queryClient() {
+	_prepare_query
+	"$ub_queryclient" "$@"
+}
+_qc() {
+	_queryClient "$@"
+}
+
+#Example only. Overload with "core.sh" or similar.
+_query() {
+	( cd "$qc" ; _queryClient _bin cat | ( cd "$qs" ; _queryServer _bin cat | ( cd "$ub_queryserverdir" ; _queryClient _bin cat )))
+}
+
 #Example, override with "core.sh" .
 _scope_compile() {
 	true
@@ -8940,7 +8989,11 @@ _scope_attach() {
 	_scope_command_write _scope_eclipse_procedure
 	_scope_command_write _scope_atom_procedure
 	
-	_scope_command_write _compile
+	_scope_command_write _query
+	_scope_command_write _qs
+	_scope_command_write _qc
+	
+	#_scope_command_write _compile
 	#_scope_command_external_here _compile
 }
 
@@ -9155,7 +9208,7 @@ _scope_terminal_procedure() {
 	
 	export PATH="$PATH":"$ub_scope"
 	echo
-	/bin/bash --norc
+	/usr/bin/env bash --norc
 	echo
 }
 
@@ -11936,6 +11989,7 @@ intInitPWD="$PWD"
 #Temporary directories.
 export safeTmp="$scriptAbsoluteFolder"/w_"$sessionid"
 export scopeTmp="$scriptAbsoluteFolder"/s_"$sessionid"
+export queryTmp="$scriptAbsoluteFolder"/q_"$sessionid"
 export logTmp="$safeTmp"/log
 #Solely for misbehaved applications called upon.
 export shortTmp=/tmp/w_"$sessionid"
@@ -12750,8 +12804,14 @@ _stop() {
 	fi
 	
 	rm -f "$pidFile" > /dev/null 2>&1	#Redundant, as this usually resides in "$safeTmp".
-	rm -f "$ub_scope" > /dev/null 2>&1	#Symlink, or nonexistent.
-	[[ -e "$scopeTmp" ]] && _safeRMR "$scopeTmp"			#Only created if needed by scope.
+	
+	if [[ -e "$scopeTmp" ]] && [[ -e "$scopeTmp"/.pid ]] && [[ "$$" == $(cat "$scopeTmp"/.pid 2>/dev/null) ]]
+	then
+		rm -f "$ub_scope" > /dev/null 2>&1			#Symlink, or nonexistent.
+		[[ -e "$scopeTmp" ]] && _safeRMR "$scopeTmp"		#Only created if needed by scope.
+	fi
+	
+	[[ -e "$queryTmp" ]] && _safeRMR "$queryTmp"			#Only created if needed by query.
 	_safeRMR "$shortTmp"
 	_safeRMR "$safeTmp"
 	
@@ -12780,7 +12840,7 @@ _stop_emergency() {
 	export EMERGENCYSHUTDOWN=true
 	
 	#Not yet using _tryExec since this function would typically result from user intervention, or system shutdown, both emergency situations in which an error message would be ignored if not useful. Higher priority is guaranteeing execution if needed and available.
-	_closeChRoot_emergency
+	_tryExec "_closeChRoot_emergency"
 	
 	#Daemon uses a separate instance, and will not be affected by previous actions, possibly even if running in the foreground.
 	#jobs -p >> "$daemonPidFile" #Could derrange the correct order of descendent job termination.
@@ -13178,6 +13238,8 @@ _test() {
 	_messageNormal "Permissions..."
 	
 	! _test_permissions_ubiquitous && _messageFAIL
+	
+	_messagePASS
 	
 	echo -n -e '\E[1;32;46m Argument length...	\E[0m'
 	
@@ -14190,11 +14252,13 @@ _compile_bash_shortcuts() {
 	[[ "$enUb_fakehome" == "true" ]] && [[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "shortcuts/dev/app"/devatom.sh )
 	[[ "$enUb_fakehome" == "true" ]] && [[ "$enUb_abstractfs" == "true" ]] && [[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "shortcuts/dev/app"/deveclipse.sh )
 	
-	[[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "shortcuts/dev/scope"/devscope.sh )
-	[[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "shortcuts/dev/scope"/devscope_here.sh )
+	includeScriptList+=( "shortcuts/dev/query"/devquery.sh )
+	
+	includeScriptList+=( "shortcuts/dev/scope"/devscope.sh )
+	includeScriptList+=( "shortcuts/dev/scope"/devscope_here.sh )
 	
 	# WARNING: Some apps may have specific dependencies (eg. fakeHome, abstractfs, eclipse, atom).
-	[[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "shortcuts/dev/scope"/devscope_app.sh )
+	includeScriptList+=( "shortcuts/dev/scope"/devscope_app.sh )
 	
 	[[ "$enUb_git" == "true" ]] && includeScriptList+=( "shortcuts/git"/git.sh )
 	[[ "$enUb_git" == "true" ]] && includeScriptList+=( "shortcuts/git"/gitBare.sh )
@@ -14719,6 +14783,10 @@ _false() {
 }
 _echo() {
 	echo "$@"
+}
+
+_diag() {
+	echo "$sessionid"
 }
 
 #Stop if script is imported, parameter not specified, and command not given.

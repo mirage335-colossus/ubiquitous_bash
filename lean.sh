@@ -1862,6 +1862,361 @@ _visualPrompt() {
 export PS1='\[\033[01;40m\]\[\033[01;36m\]+\[\033[01;34m\]-|\[\033[01;31m\]${?}:${debian_chroot:+($debian_chroot)}\[\033[01;33m\]\u\[\033[01;32m\]@\h\[\033[01;36m\]\[\033[01;34m\])-\[\033[01;36m\]------------------------\[\033[01;34m\]-(\[\033[01;35m\]$(date +%H:%M:%S\ .%d)\[\033[01;34m\])-\[\033[01;36m\]- -|\[\033[00m\]\n\[\033[01;40m\]\[\033[01;36m\]+\[\033[01;34m\]-|\[\033[37m\][\w]\[\033[00m\]\n\[\033[01;36m\]+\[\033[01;34m\]-|\#) \[\033[36m\]>\[\033[00m\] '
 } 
 
+#Simulated client/server discussion testing.
+
+_prepare_query_prog() {
+	true
+}
+
+_prepare_query() {
+	export ub_queryclientdir="$queryTmp"/client
+	export qc="$ub_queryclientdir"
+	
+	export ub_queryclient="$ub_queryclientdir"/script
+	export qce="$ub_queryclient"
+	
+	export ub_queryserverdir="$queryTmp"/server
+	export qs="$ub_queryserverdir"
+	
+	export ub_queryserver="$ub_queryserverdir"/script
+	export qse="$ub_queryserver"
+	
+	mkdir -p "$ub_queryclientdir"
+	mkdir -p "$ub_queryserverdir"
+	
+	cp -n "$scriptAbsoluteLocation" "$ub_queryclient"
+	cp -n "$scriptAbsoluteLocation" "$ub_queryserver"
+	
+	_prepare_query_prog "$@"
+}
+
+_queryServer() {
+	_prepare_query
+	"$ub_queryserver" "$@"
+}
+_qs() {
+	_queryServer "$@"
+}
+
+_queryClient() {
+	_prepare_query
+	"$ub_queryclient" "$@"
+}
+_qc() {
+	_queryClient "$@"
+}
+
+#Example only. Overload with "core.sh" or similar.
+_query() {
+	( cd "$qc" ; _queryClient _bin cat | ( cd "$qs" ; _queryServer _bin cat | ( cd "$ub_queryserverdir" ; _queryClient _bin cat )))
+}
+
+#Example, override with "core.sh" .
+_scope_compile() {
+	true
+}
+
+#Example, override with "core.sh" .
+_scope_attach() {
+	_messagePlain_nominal '_scope_attach'
+	
+	_scope_here > "$ub_scope"/.devenv
+	chmod u+x "$ub_scope"/.devenv
+	_scope_readme_here > "$ub_scope"/README
+	
+	_scope_command_write _scope_terminal_procedure
+	
+	_scope_command_write _scope_konsole_procedure
+	_scope_command_write _scope_dolphin_procedure
+	_scope_command_write _scope_eclipse_procedure
+	_scope_command_write _scope_atom_procedure
+	
+	_scope_command_write _query
+	_scope_command_write _qs
+	_scope_command_write _qc
+	
+	#_scope_command_write _compile
+	#_scope_command_external_here _compile
+}
+
+_prepare_scope() {
+	#mkdir -p "$safeTmp"/scope
+	mkdir -p "$scopeTmp"
+	#true
+}
+
+_relink_scope() {
+	#_relink "$safeTmp"/scope "$ub_scope"
+	_relink "$scopeTmp" "$ub_scope"
+	#_relink "$safeTmp" "$ub_scope"
+	
+	_relink "$safeTmp" "$ub_scope"/safeTmp
+	_relink "$shortTmp" "$ub_scope"/shortTmp
+	
+	# DANGER: Creates infinitely recursive symlinks.
+	#[[ -e "$abstractfs_projectafs" ]] && _relink "$abstractfs_projectafs" "$ub_scope"/project.afs
+	#[[ -d "$abstractfs" ]] && _relink "$abstractfs" "$ub_scope"/afs
+}
+
+_ops_scope() {
+	_messagePlain_nominal '_ops_scope'
+	
+	#Find/run ops file in project dir.
+	! [[ -e "$ub_specimen"/ops ]] && _messagePlain_warn 'aU: undef: sketch ops'
+	[[ -e "$ub_specimen"/ops ]] && _messagePlain_good 'aU: found: sketch ops' && . "$ub_specimen"/ops
+}
+
+#"$1" == ub_specimen
+#"$ub_scope_name" (default "scope")
+# WARNING Multiple instances of same scope on a single specimen strictly forbidden. Launch multiple applications within a scope, not multiple scopes.
+_start_scope() {
+	_messagePlain_nominal '_start_scope'
+	
+	export ub_specimen=$(_getAbsoluteLocation "$1")
+	export specimen="$ub_specimen"
+	export ub_specimen_basename=$(basename "$ub_specimen")
+	export basename="$ub_specimen_basename"
+	[[ ! -d "$ub_specimen" ]] && _messagePlain_bad 'missing: specimen= '"$ub_specimen" && _stop 1
+	[[ ! -e "$ub_specimen" ]] && _messagePlain_bad 'missing: specimen= '"$ub_specimen" && _stop 1
+	
+	[[ "$ub_scope_name" == "" ]] && export ub_scope_name='scope'
+	
+	export ub_scope="$ub_specimen"/.s_"$ub_scope_name"
+	export scope="$ub_scope"
+	[[ -e "$ub_scope" ]] && _messagePlain_bad 'fail: safety: multiple scopes && single specimen' && _stop 1
+	[[ -L "$ub_scope" ]] && _messagePlain_bad 'fail: safety: multiple scopes && single specimen' && _stop 1
+	
+	#export ub_scope_tmp="$ub_scope"/s_"$sessionid"
+	
+	_prepare_scope "$@"
+	_relink_scope "$@"
+	[[ ! -d "$ub_scope" ]] && _messagePlain_bad 'fail: link scope= '"$ub_scope" && _stop 1
+	#[[ ! -d "$ub_scope_tmp" ]] && _messagePlain_bad 'fail: create ub_scope_tmp= '"$ub_scope_tmp" && _stop 1
+	[[ ! -d "$ub_scope"/safeTmp ]] && _messagePlain_bad 'fail: link' && _stop 1
+	[[ ! -d "$ub_scope"/shortTmp ]] && _messagePlain_bad 'fail: link' && _stop 1
+	
+	[[ ! -e "$ub_scope"/.pid ]] && echo $$ > "$ub_scope"/.pid
+	
+	_messagePlain_good 'pass: prepare, relink'
+	
+	return 0
+}
+
+#Defaults, bash terminal, wait for kill signal, wait for EOF, etc. Override with "core.sh" . May run file manager, terminal, etc.
+# WARNING: Scope should only be terminated by process or user managing this interaction (eg. by closing file manager). Manager must be aware of any inter-scope dependencies.
+#"$@" <commands>
+_scope_interact() {
+	_messagePlain_nominal '_scope_interact'
+	#read > /dev/null 2>&1
+	
+	_scopePrompt
+	
+	if [[ "$@" == "" ]]
+	then
+		_scope_terminal_procedure
+		#_scope_eclipse_procedure
+		#eclipse
+# 		return
+	fi
+	
+	"$@"
+}
+
+
+_scope_sequence() {
+	_messagePlain_nominal 'init: scope: '"$ub_scope_name"
+	_messagePlain_probe 'HOME= '"$HOME"
+	
+	_start
+	_start_scope "$@"
+	_ops_scope
+	
+	_scope_attach "$@"
+	
+	#User interaction.
+	shift
+	_scope_interact "$@"
+	
+	_stop
+}
+
+# ATTENTION: Overload with "core.sh" or similar!
+_scope_prog() {
+	[[ "$ub_scope_name" == "" ]] && export ub_scope_name='scope'
+}
+
+_scope() {
+	_scope_prog
+	[[ "$ub_scope_name" == "" ]] && export ub_scope_name='scope'
+	"$scriptAbsoluteLocation" _scope_sequence "$@"
+}
+
+_scope_readme_here() {
+	cat << CZXWXcRMTo8EmM8i4d
+Ubiquitous Bash scope.
+CZXWXcRMTo8EmM8i4d
+}
+
+#Example, override with "core.sh" .
+_scope_var_here_prog() {
+	cat << CZXWXcRMTo8EmM8i4d
+CZXWXcRMTo8EmM8i4d
+}
+
+_scope_var_here() {
+	cat << CZXWXcRMTo8EmM8i4d
+export ub_specimen="$ub_specimen"
+export specimen="$specimen"
+export ub_specimen_basename="$ub_specimen_basename"
+export basename="$basename"
+export ub_scope_name="$ub_scope_name"
+export ub_scope="$ub_scope"
+export scope="$scope"
+
+CZXWXcRMTo8EmM8i4d
+	
+	_scope_var_here_prog "$@"
+}
+
+_scope_here() {
+	cat << CZXWXcRMTo8EmM8i4d
+#!/usr/bin/env bash
+
+CZXWXcRMTo8EmM8i4d
+
+	_scope_var_here
+
+	cat << CZXWXcRMTo8EmM8i4d
+
+export scriptAbsoluteLocation="$scriptAbsoluteLocation"
+export scriptAbsoluteFolder="$scriptAbsoluteFolder"
+export sessionid="$sessionid"
+. "$scriptAbsoluteLocation" --devenv "\$@"
+CZXWXcRMTo8EmM8i4d
+}
+
+_scope_command_here() {
+	cat << CZXWXcRMTo8EmM8i4d
+#!/usr/bin/env bash
+
+CZXWXcRMTo8EmM8i4d
+
+	_scope_var_here
+
+	cat << CZXWXcRMTo8EmM8i4d
+
+export scriptAbsoluteLocation="$scriptAbsoluteLocation"
+export scriptAbsoluteFolder="$scriptAbsoluteFolder"
+export sessionid="$sessionid"
+. "$scriptAbsoluteLocation" --devenv "$1" "\$@"
+CZXWXcRMTo8EmM8i4d
+}
+
+_scope_command_external_here() {
+	cat << CZXWXcRMTo8EmM8i4d
+#!/usr/bin/env bash
+
+CZXWXcRMTo8EmM8i4d
+
+	_scope_var_here
+
+	cat << CZXWXcRMTo8EmM8i4d
+
+export importScriptLocation="$scriptAbsoluteLocation"
+export importScriptFolder="$scriptAbsoluteFolder"
+. "$scriptAbsoluteLocation" --script "$1" "\$@"
+CZXWXcRMTo8EmM8i4d
+}
+
+_scope_command_write() {
+	_scope_command_here "$@" > "$ub_scope"/"$1"
+	chmod u+x "$ub_scope"/"$1"
+}
+
+_scope_command_external_write() {
+	_scope_command_external_here "$@" > "$ub_scope"/"$1"
+	chmod u+x "$ub_scope"/"$1"
+}
+
+_scopePrompt() {
+	[[ "$ub_scope_name" == "" ]] && return 0
+	
+	export PS1='\[\033[01;40m\]\[\033[01;36m\]+\[\033[01;34m\]-|\[\033[01;31m\]${?}:${debian_chroot:+($debian_chroot)}\[\033[01;33m\]\u\[\033[01;32m\]@\h\[\033[01;36m\]\[\033[01;34m\])-\[\033[01;36m\]------------------------\[\033[01;34m\]-(\[\033[01;35m\]$(date +%H:%M:%S\ .%d)\[\033[01;34m\])-\[\033[01;36m\]- -|\[\033[00m\]\n\[\033[01;40m\]\[\033[01;36m\]+\[\033[01;34m\]-|\[\033[37m\][\w]\[\033[00m\]\n\[\033[01;36m\]+\[\033[01;34m\]-|\#) \[\033[36m\]'"$ub_scope_name"'>\[\033[00m\] '
+}
+
+_scope_terminal_procedure() {
+	_tryExec '_scopePrompt'
+	#_tryExec '_visualPrompt'
+	
+	export PATH="$PATH":"$ub_scope"
+	echo
+	/usr/bin/env bash --norc
+	echo
+}
+
+_scope_terminal() {
+	local shiftParam1
+	shiftParam1="$1"
+	shift
+	
+	_scope_prog "$@"
+	_scope "$shiftParam1" "_scope_terminal_procedure" "$@"
+}
+
+_scope_eclipse_procedure() {
+	_eclipse "$@"
+}
+
+_scope_eclipse() {
+	local shiftParam1
+	shiftParam1="$1"
+	shift
+	
+	_scope_prog "$@"
+	_scope "$shiftParam1" "_scope_eclipse_procedure" "$@"
+}
+
+_scope_atom_procedure() {
+	"$scriptAbsoluteLocation" _atom_tmp_sequence "$ub_specimen" "$@"  > /dev/null 2>&1
+}
+
+# WARNING: No production use. Not to be relied upon. May be removed.
+_scope_atom() {
+	local shiftParam1
+	shiftParam1="$1"
+	shift
+	
+	_scope_prog "$@"
+	_scope "$shiftParam1" "_scope_atom_procedure" "$@"
+}
+
+_scope_konsole_procedure() {
+	_messagePlain_probe konsole --workdir "$ub_specimen" "$@"
+	konsole --workdir "$ub_specimen" "$@"
+}
+
+_scope_konsole() {
+	local shiftParam1
+	shiftParam1="$1"
+	shift
+	
+	_scope_prog "$@"
+	_scope "$shiftParam1" "_scope_konsole_procedure" -p tabtitle="$ub_scope_name" "$@"
+}
+
+_scope_dolphin_procedure() {
+	dolphin "$ub_specimen" "$@"
+}
+
+_scope_dolphin() {
+	local shiftParam1
+	shiftParam1="$1"
+	shift
+	
+	_scope_prog "$@"
+	_scope "$shiftParam1" "_scope_dolphin_procedure" "$@"
+}
+
 _setupUbiquitous_here() {
 	cat << CZXWXcRMTo8EmM8i4d
 export profileScriptLocation="$ubcoreUBdir"/ubiquitous_bash.sh
@@ -2112,6 +2467,7 @@ intInitPWD="$PWD"
 #Temporary directories.
 export safeTmp="$scriptAbsoluteFolder"/w_"$sessionid"
 export scopeTmp="$scriptAbsoluteFolder"/s_"$sessionid"
+export queryTmp="$scriptAbsoluteFolder"/q_"$sessionid"
 export logTmp="$safeTmp"/log
 #Solely for misbehaved applications called upon.
 export shortTmp=/tmp/w_"$sessionid"
@@ -2351,8 +2707,14 @@ _stop() {
 	fi
 	
 	rm -f "$pidFile" > /dev/null 2>&1	#Redundant, as this usually resides in "$safeTmp".
-	rm -f "$ub_scope" > /dev/null 2>&1	#Symlink, or nonexistent.
-	[[ -e "$scopeTmp" ]] && _safeRMR "$scopeTmp"			#Only created if needed by scope.
+	
+	if [[ -e "$scopeTmp" ]] && [[ -e "$scopeTmp"/.pid ]] && [[ "$$" == $(cat "$scopeTmp"/.pid 2>/dev/null) ]]
+	then
+		rm -f "$ub_scope" > /dev/null 2>&1			#Symlink, or nonexistent.
+		[[ -e "$scopeTmp" ]] && _safeRMR "$scopeTmp"		#Only created if needed by scope.
+	fi
+	
+	[[ -e "$queryTmp" ]] && _safeRMR "$queryTmp"			#Only created if needed by query.
 	_safeRMR "$shortTmp"
 	_safeRMR "$safeTmp"
 	
@@ -2381,7 +2743,7 @@ _stop_emergency() {
 	export EMERGENCYSHUTDOWN=true
 	
 	#Not yet using _tryExec since this function would typically result from user intervention, or system shutdown, both emergency situations in which an error message would be ignored if not useful. Higher priority is guaranteeing execution if needed and available.
-	_closeChRoot_emergency
+	_tryExec "_closeChRoot_emergency"
 	
 	#Daemon uses a separate instance, and will not be affected by previous actions, possibly even if running in the foreground.
 	#jobs -p >> "$daemonPidFile" #Could derrange the correct order of descendent job termination.
@@ -2779,6 +3141,8 @@ _test() {
 	_messageNormal "Permissions..."
 	
 	! _test_permissions_ubiquitous && _messageFAIL
+	
+	_messagePASS
 	
 	echo -n -e '\E[1;32;46m Argument length...	\E[0m'
 	
@@ -3276,6 +3640,10 @@ _false() {
 }
 _echo() {
 	echo "$@"
+}
+
+_diag() {
+	echo "$sessionid"
 }
 
 #Stop if script is imported, parameter not specified, and command not given.
