@@ -378,6 +378,8 @@ _compile_bash_vars_basic() {
 _compile_bash_vars_global() {
 	export includeScriptList
 	
+	#Optional, rarely used, intended for overload.
+	includeScriptList+=( "structure"/prefixvars.sh )
 	
 	#####Global variables.
 	includeScriptList+=( "structure"/globalvars.sh )
