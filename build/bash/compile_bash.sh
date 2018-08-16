@@ -438,6 +438,7 @@ _compile_bash_environment() {
 	includeScriptList+=( "structure"/localfs.sh )
 	
 	includeScriptList+=( "structure"/localenv.sh )
+	includeScriptList+=( "structure"/localenv_prog.sh )
 }
 
 _compile_bash_installation() {
