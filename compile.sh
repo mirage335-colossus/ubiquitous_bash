@@ -1950,9 +1950,9 @@ export initPWD="$PWD"
 intInitPWD="$PWD"
 
 #Temporary directories.
-export safeTmp="$scriptAbsoluteFolder"/w_"$sessionid"
-export scopeTmp="$scriptAbsoluteFolder"/s_"$sessionid"
-export queryTmp="$scriptAbsoluteFolder"/q_"$sessionid"
+export safeTmp="$scriptAbsoluteFolder""$tmpPrefix"/w_"$sessionid"
+export scopeTmp="$scriptAbsoluteFolder""$tmpPrefix"/s_"$sessionid"
+export queryTmp="$scriptAbsoluteFolder""$tmpPrefix"/q_"$sessionid"
 export logTmp="$safeTmp"/log
 #Solely for misbehaved applications called upon.
 export shortTmp=/tmp/w_"$sessionid"
@@ -2096,6 +2096,27 @@ export globalBuildFS="$globalBuildDir"/fs
 export globalBuildTmp="$globalBuildDir"/tmp
 
 
+#Reset prefixes.
+export tmpPrefix=""
+
+_deps_metaengine() {
+	_deps_notLean
+	
+	export enUb_metaengine="true"
+} 
+
+_compile_bash_metaengine() {
+	export includeScriptList
+	
+	#[[ "$enUb_buildBashUbiquitous" == "true" ]] && includeScriptList+=( "metaengine"/undefined.sh )
+}
+
+_compile_bash_vars_metaengine() {
+	export includeScriptList
+	
+	#[[ "$enUb_buildBashUbiquitous" == "true" ]] && includeScriptList+=( "metaengine"/undefined_vars.sh )
+}
+
 _findUbiquitous() {
 	export ubiquitiousLibDir="$scriptAbsoluteFolder"
 	
@@ -2156,8 +2177,9 @@ _init_deps() {
 	export enUb_enUb_x220t=""
 	
 	export enUb_user=""
+	
+	export enUb_metaengine=""
 }
-
 
 _deps_machineinfo() {
 	export enUb_machineinfo="true"
@@ -2316,6 +2338,13 @@ _deps_user() {
 	export enUb_user="true"
 }
 
+#placeholder, define under "metaengine/build"
+#_deps_metaengine() {
+#	_deps_notLean
+#	
+#	export enUb_metaengine="true"
+#}
+
 
 _generate_bash() {
 	
@@ -2338,7 +2367,9 @@ _generate_bash() {
 	
 	_compile_bash_vars_global
 	
+	_compile_bash_extension
 	_compile_bash_selfHost
+	_compile_bash_selfHost_prog
 	
 	_compile_bash_overrides
 	
@@ -2442,6 +2473,8 @@ _compile_bash_deps() {
 		_deps_fakehome
 		_deps_abstractfs
 		
+		_deps_metaengine
+		
 		_deps_git
 		_deps_bup
 		
@@ -2483,6 +2516,8 @@ _compile_bash_deps() {
 		_deps_msw
 		_deps_fakehome
 		_deps_abstractfs
+		
+		_deps_metaengine
 		
 		_deps_git
 		_deps_bup
@@ -2785,6 +2820,8 @@ _compile_bash_vars_basic() {
 _compile_bash_vars_global() {
 	export includeScriptList
 	
+	#Optional, rarely used, intended for overload.
+	includeScriptList+=( "structure"/prefixvars.sh )
 	
 	#####Global variables.
 	includeScriptList+=( "structure"/globalvars.sh )
@@ -2843,6 +2880,7 @@ _compile_bash_environment() {
 	includeScriptList+=( "structure"/localfs.sh )
 	
 	includeScriptList+=( "structure"/localenv.sh )
+	includeScriptList+=( "structure"/localenv_prog.sh )
 }
 
 _compile_bash_installation() {
@@ -2898,6 +2936,23 @@ _compile_bash_entry() {
 	includeScriptList+=( "structure"/entry.sh )
 }
 
+_compile_bash_extension() {
+	export includeScriptList
+	
+	[[ "$enUb_buildBashUbiquitous" == "true" ]] && includeScriptList+=( "metaengine/build"/deps_meta.sh )
+	[[ "$enUb_buildBashUbiquitous" == "true" ]] && includeScriptList+=( "metaengine/build"/compile_meta.sh )
+}
+
+#placehoder, define under "metaengine/build"
+#_compile_bash_metaengine() {
+#	true
+#}
+
+#placeholder, define under "metaengine/build"
+#_compile_bash_vars_metaengine() {
+#	true
+#}
+
 #Ubiquitous Bash compile script. Override with "ops", "_config", or "_prog" directives through "compile_bash_prog.sh" to compile other work products through similar scripting.
 # "$1" == configuration
 # "$2" == output filename
@@ -2949,6 +3004,8 @@ _compile_bash() {
 	
 	_compile_bash_hardware
 	
+	_tryExec _compile_bash_metaengine
+	
 	_compile_bash_vars_basic
 	_compile_bash_vars_basic_prog
 	_compile_bash_vars_global
@@ -2963,6 +3020,8 @@ _compile_bash() {
 	_compile_bash_vars_virtualization_prog
 	_compile_bash_vars_bundled
 	_compile_bash_vars_bundled_prog
+	
+	_tryExec _compile_bash_vars_metaengine
 	
 	_compile_bash_buildin
 	_compile_bash_buildin_prog
@@ -2981,6 +3040,7 @@ _compile_bash() {
 	_compile_bash_config
 	_compile_bash_config_prog
 	
+	_compile_bash_extension
 	_compile_bash_selfHost
 	_compile_bash_selfHost_prog
 	

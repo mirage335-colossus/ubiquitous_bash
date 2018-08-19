@@ -32,8 +32,9 @@ _init_deps() {
 	export enUb_enUb_x220t=""
 	
 	export enUb_user=""
+	
+	export enUb_metaengine=""
 }
-
 
 _deps_machineinfo() {
 	export enUb_machineinfo="true"
@@ -191,4 +192,11 @@ _deps_user() {
 	_deps_notLean
 	export enUb_user="true"
 }
+
+#placeholder, define under "metaengine/build"
+#_deps_metaengine() {
+#	_deps_notLean
+#	
+#	export enUb_metaengine="true"
+#}
 

@@ -19,7 +19,9 @@ _generate_bash() {
 	
 	_compile_bash_vars_global
 	
+	_compile_bash_extension
 	_compile_bash_selfHost
+	_compile_bash_selfHost_prog
 	
 	_compile_bash_overrides
 	
