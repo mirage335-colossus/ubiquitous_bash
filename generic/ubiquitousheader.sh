@@ -41,6 +41,22 @@ _messagePlain_probe_expr() {
 	return 0
 }
 
+#Blue. Diagnostic instrumentation.
+_messagePlain_probe_var() {
+	echo -e -n '\E[0;34m '
+	
+	echo -n "$1"'= '
+	
+	eval echo -e -n \$"$1"
+	
+	echo -e -n ' \E[0m'
+	echo
+	return 0
+}
+_messageVar() {
+	_messagePlain_probe_var "$@"
+}
+
 #Green. Working as expected.
 _messagePlain_good() {
 	echo -e -n '\E[0;32m '

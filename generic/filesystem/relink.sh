@@ -1,12 +1,16 @@
 _rmlink() {
+	! [[ -h "$1" ]] && return 1
+	[[ "$1" == "/dev/null" ]] && return 1
+	
 	[[ -h "$1" ]] && rm -f "$1" && return 0
+	
 	! [[ -e "$1" ]] && return 0
+	
 	return 1
 }
 
 #Like "ln -sf", but will not proceed if target is not link and exists (ie. will not erase files).
-_relink_sequence() {
-
+_relink_procedure() {
 	#Do not update correct symlink.
 	local existingLinkTarget
 	existingLinkTarget=$(readlink "$2")
@@ -20,12 +24,12 @@ _relink_sequence() {
 
 _relink() {
 	[[ "$relinkRelativeUb" == "true" ]] && export relinkRelativeUb=""
-	_relink_sequence "$@"
+	_relink_procedure "$@"
 }
 
 _relink_relative() {
 	export relinkRelativeUb="true"
-	_relink_sequence "$@"
+	_relink_procedure "$@"
 	export relinkRelativeUb=""
 	unset relinkRelativeUb
 }

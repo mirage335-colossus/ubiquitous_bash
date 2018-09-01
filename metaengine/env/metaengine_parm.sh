@@ -1,0 +1,156 @@
+
+_assign_me_objname() {
+	export metaObjName="$1"
+	_messagePlain_nominal 'set: metaObjName= '"$metaObjName"
+}
+
+_set_me_type_tmp() {
+	export metaType=""
+	_messagePlain_nominal 'set: metaType= (tmp)'"$metaType"
+}
+
+_set_me_type_base() {
+	export metaType="base"
+	_messagePlain_nominal 'set: metaType= '"$metaType"
+}
+
+_reset_me_type() {
+	export metaType=
+}
+
+
+_cycle_me_name() {
+	export in_me_a_name="$out_me_a_name"
+	export in_me_b_name="$out_me_b_name"
+	_set_me_rand_out
+	
+	_messagePlain_nominal 'cycle: in_me_a_name= (out_me_a_name)'"$in_me_a_name"' ''cycle: in_me_b_name= (out_me_b_name)'"$in_me_b_name"
+	_messagePlain_probe 'rand: out_me_a_name= '"$out_me_a_name"' ''rand: out_me_b_name= '"$out_me_b_name"
+}
+
+
+
+_assign_me_name_ai() {
+	export in_me_a_name="$1"
+}
+
+_assign_me_name_bi() {
+	export in_me_b_name="$1"
+}
+
+_assign_me_name_ao() {
+	export in_me_ao_name="$1"
+}
+
+_assign_me_name_bo() {
+	export in_me_bo_name="$1"
+}
+
+
+
+# WARNING: Coordinate assignment by centroid for 3D pipeline representation ONLY. Detailed spatial data to be completely represented in binary formatted named buffers.
+#_assign_me aiX aiY aiZ biX biY biZ aoX aoY aoZ boX boY boZ
+_assign_me_coordinates() {
+	shift ; shift ; shift
+		_assign_me_coordinates_ai
+	shift ; shift ; shift
+		_assign_me_coordinates_bi
+	shift ; shift ; shift
+		_assign_me_coordinates_ao
+	shift ; shift ; shift
+		_assign_me_coordinates_bo
+}
+
+#_assign_me... X Y Z
+_assign_me_coordinates_ai() {
+	shift
+	export in_me_a_x="$1"
+	shift
+	export in_me_a_y="$1"
+	shift
+	export in_me_a_z="$1"
+}
+
+#_assign_me... X Y Z
+_assign_me_coordinates_bi() {
+	shift
+	export in_me_b_x="$1"
+	shift
+	export in_me_b_y="$1"
+	shift
+	export in_me_b_z="$1"
+}
+
+#_assign_me... X Y Z
+_assign_me_coordinates_ao() {
+	shift
+	export out_me_a_x="$1"
+	shift
+	export out_me_a_y="$1"
+	shift
+	export out_me_a_z="$1"
+}
+
+#_assign_me... X Y Z
+_assign_me_coordinates_bo() {
+	shift
+	export out_me_b_x="$1"
+	shift
+	export out_me_b_y="$1"
+	shift
+	export out_me_b_z="$1"
+}
+
+
+_set_me_rand_ai() {
+	export in_me_a_name="$(_uid)"
+}
+
+_set_me_rand_bi() {
+	export in_me_b_name="$(_uid)"
+}
+
+_set_me_rand_ao() {
+	export out_me_a_name="$(_uid)"
+}
+
+_set_me_rand_bo() {
+	export out_me_b_name="$(_uid)"
+}
+
+
+_set_me_rand_in() {
+	_messagePlain_nominal 'init: _set_me_rand_in'
+	_set_me_rand_ai
+	_set_me_rand_bi
+}
+
+_set_me_rand_out() {
+	_messagePlain_nominal 'init: _set_me_rand_out'
+	_set_me_rand_ao
+	_set_me_rand_bo
+}
+
+_set_me_rand() {
+	_messagePlain_nominal 'init: _set_me_rand'
+	_set_me_rand_in
+	_set_me_rand_out
+}
+
+_set_me_null_in() {
+	_messagePlain_nominal 'init: _set_me_null_in'
+	_assign_me_name_ai null
+	_assign_me_name_bi null
+}
+
+_set_me_null_out() {
+	_messagePlain_nominal 'init: _set_me_null_out'
+	_assign_me_name_ao null
+	_assign_me_name_bo null
+}
+
+_set_me_null() {
+	_messagePlain_nominal 'init: _set_me_null'
+	_set_me_null_in
+	_set_me_null_out
+}

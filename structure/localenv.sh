@@ -60,6 +60,10 @@ _stop() {
 	fi
 	
 	[[ -e "$queryTmp" ]] && _safeRMR "$queryTmp"			#Only created if needed by query.
+	
+	[[ -e "$engineTmp" ]] && _safeRMR "$engineTmp"			#Only created if needed by engine.
+	[[ -e "$metaTmp" ]] && _safeRMR "$metaTmp"			#Only created if needed by meta.
+	
 	_safeRMR "$shortTmp"
 	_safeRMR "$safeTmp"
 	

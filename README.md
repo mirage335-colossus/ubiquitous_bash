@@ -151,3 +151,12 @@ https://en.wikipedia.org/wiki/Middleware
 https://bugs.eclipse.org/bugs/show_bug.cgi?id=122945
 https://superuser.com/questions/163957/is-eclipse-installation-portable
 
+https://www.suse.com/support/kb/doc/?id=7007602
+https://en.wikipedia.org/wiki/CPU_shielding
+https://wiki.linuxfoundation.org/realtime/documentation/howto/tools/cpu-partitioning/irqbalanced
+https://wiki.linuxfoundation.org/realtime/documentation/howto/tools/cpu-partitioning/cpusets
+
+https://en.wikipedia.org/wiki/Scene_graph
+
+https://github.com/PipelineAI/pipeline
+

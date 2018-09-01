@@ -73,6 +73,8 @@ _start_scope() {
 	[[ -e "$ub_scope" ]] && _messagePlain_bad 'fail: safety: multiple scopes && single specimen' && _stop 1
 	[[ -L "$ub_scope" ]] && _messagePlain_bad 'fail: safety: multiple scopes && single specimen' && _stop 1
 	
+	#[[ -e "$ub_specimen"/.e_* ]] && _messagePlain_bad 'fail: safety: engine root scope strongly discouraged' && _stop 1
+	
 	#export ub_scope_tmp="$ub_scope"/s_"$sessionid"
 	
 	_prepare_scope "$@"

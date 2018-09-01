@@ -98,6 +98,10 @@ export bootTmp="$scriptLocal"
 
 #Specialized temporary directories.
 
+#MetaEngine/Engine Tmp Defaults
+export metaTmp="$scriptAbsoluteFolder""$tmpPrefix"/.m_"$sessionid"
+export engineTmp="$scriptAbsoluteFolder""$tmpPrefix"/.e_"$sessionid"
+
 # WARNING: Only one user per (virtual) machine. Requires _prepare_abstract . Not default.
 # DANGER: Mandatory strict directory 8.3 compliance for this variable! Long subdirectory/filenames permitted thereafter.
 # DANGER: Permitting multi-user access to this directory may cause unexpected behavior, including inconsitent file ownership.

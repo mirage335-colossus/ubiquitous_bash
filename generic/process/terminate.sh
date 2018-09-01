@@ -22,7 +22,11 @@ _terminateAll() {
 	local currentPID
 	
 	cat ./w_*/.pid >> "$processListFile" 2> /dev/null
+	
 	cat ./.s_*/.pid >> "$processListFile" 2> /dev/null
+	
+	cat ./.e_*/.pid >> "$processListFile" 2> /dev/null
+	cat ./.m_*/.pid >> "$processListFile" 2> /dev/null
 	
 	while read -r currentPID
 	do
