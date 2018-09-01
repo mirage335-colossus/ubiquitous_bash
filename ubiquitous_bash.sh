@@ -43,6 +43,22 @@ _messagePlain_probe_expr() {
 	return 0
 }
 
+#Blue. Diagnostic instrumentation.
+_messagePlain_probe_var() {
+	echo -e -n '\E[0;34m '
+	
+	echo -n "$1"'= '
+	
+	eval echo -e -n \$"$1"
+	
+	echo -e -n ' \E[0m'
+	echo
+	return 0
+}
+_messageVar() {
+	_messagePlain_probe_var "$@"
+}
+
 #Green. Working as expected.
 _messagePlain_good() {
 	echo -e -n '\E[0;32m '
@@ -787,7 +803,11 @@ _terminateAll() {
 	local currentPID
 	
 	cat ./w_*/.pid >> "$processListFile" 2> /dev/null
+	
 	cat ./.s_*/.pid >> "$processListFile" 2> /dev/null
+	
+	cat ./.e_*/.pid >> "$processListFile" 2> /dev/null
+	cat ./.m_*/.pid >> "$processListFile" 2> /dev/null
 	
 	while read -r currentPID
 	do
@@ -1061,6 +1081,23 @@ _messagePlain_probe_expr() {
 	return 0
 }
 
+#Blue. Diagnostic instrumentation.
+#"generic/ubiquitousheader.sh"
+_messagePlain_probe_var() {
+	echo -e -n '\E[0;34m '
+	
+	echo -n "$1"'= '
+	
+	eval echo -e -n \$"$1"
+	
+	echo -e -n ' \E[0m'
+	echo
+	return 0
+}
+_messageVar() {
+	_messagePlain_probe_var "$@"
+}
+
 #Green. Working as expected.
 #"generic/ubiquitousheader.sh"
 _messagePlain_good() {
@@ -1285,14 +1322,18 @@ _discoverResource() {
 }
 
 _rmlink() {
+	! [[ -h "$1" ]] && return 1
+	[[ "$1" == "/dev/null" ]] && return 1
+	
 	[[ -h "$1" ]] && rm -f "$1" && return 0
+	
 	! [[ -e "$1" ]] && return 0
+	
 	return 1
 }
 
 #Like "ln -sf", but will not proceed if target is not link and exists (ie. will not erase files).
-_relink_sequence() {
-
+_relink_procedure() {
 	#Do not update correct symlink.
 	local existingLinkTarget
 	existingLinkTarget=$(readlink "$2")
@@ -1306,12 +1347,12 @@ _relink_sequence() {
 
 _relink() {
 	[[ "$relinkRelativeUb" == "true" ]] && export relinkRelativeUb=""
-	_relink_sequence "$@"
+	_relink_procedure "$@"
 }
 
 _relink_relative() {
 	export relinkRelativeUb="true"
-	_relink_sequence "$@"
+	_relink_procedure "$@"
 	export relinkRelativeUb=""
 	unset relinkRelativeUb
 }
@@ -9044,6 +9085,8 @@ _start_scope() {
 	[[ -e "$ub_scope" ]] && _messagePlain_bad 'fail: safety: multiple scopes && single specimen' && _stop 1
 	[[ -L "$ub_scope" ]] && _messagePlain_bad 'fail: safety: multiple scopes && single specimen' && _stop 1
 	
+	#[[ -e "$ub_specimen"/.e_* ]] && _messagePlain_bad 'fail: safety: engine root scope strongly discouraged' && _stop 1
+	
 	#export ub_scope_tmp="$ub_scope"/s_"$sessionid"
 	
 	_prepare_scope "$@"
@@ -12031,6 +12074,10 @@ export bootTmp="$scriptLocal"
 
 #Specialized temporary directories.
 
+#MetaEngine/Engine Tmp Defaults
+export metaTmp="$scriptAbsoluteFolder""$tmpPrefix"/.m_"$sessionid"
+export engineTmp="$scriptAbsoluteFolder""$tmpPrefix"/.e_"$sessionid"
+
 # WARNING: Only one user per (virtual) machine. Requires _prepare_abstract . Not default.
 # DANGER: Mandatory strict directory 8.3 compliance for this variable! Long subdirectory/filenames permitted thereafter.
 # DANGER: Permitting multi-user access to this directory may cause unexpected behavior, including inconsitent file ownership.
@@ -12567,6 +12614,740 @@ _prepare_docker() {
 #_prepare_docker
 
 
+_report_metaengine() {
+	_messagePlain_nominal 'init: _report_metaengine'
+	
+	[[ ! -e "$metaTmp" ]] && _messagePlain_bad 'missing: metaTmp'
+	
+	
+	[[ "$metaBase" == "" ]] && _messagePlain_warn 'blank: metaBase'
+	[[ "$metaObjName" == "" ]] && _messagePlain_warn 'blank: metaObjName'
+	
+	[[ "$metaID" == "" ]] && _messagePlain_warn 'blank: metaID'
+	
+	[[ "$metaPath" == "" ]] && _messagePlain_warn 'blank: metaPath'
+	
+	[[ "$metaDir_tmp" == "" ]] && _messagePlain_warn 'blank: metaDir_tmp'
+	[[ "$metaDir_base" == "" ]] && _messagePlain_warn 'blank: metaDir_base'
+	[[ "$metaDir" == "" ]] && _messagePlain_warn 'blank: metaDir'
+	
+	[[ "$metaReg" == "" ]] && _messagePlain_warn 'blank: metaReg'
+	
+	
+	[[ ! -e "$metaBase" ]] && _messagePlain_warn 'missing: metaBase'
+	
+	[[ ! -e "$metaDir_tmp" ]] && _messagePlain_warn 'missing: metaDir_tmp'
+	[[ ! -e "$metaDir_base" ]] && _messagePlain_warn 'missing: metaDir_base'
+	[[ ! -e "$metaDir" ]] && _messagePlain_warn 'missing: metaDir'
+	
+	[[ ! -e "$metaReg" ]] && _messagePlain_warn 'missing: metaReg'
+	
+	[[ ! -e "$metaDir"/ai ]] && _messagePlain_warn 'missing: "$metaDir"/ai'
+	[[ ! -e "$metaDir"/bi ]] && _messagePlain_warn 'missing: "$metaDir"/bi'
+	[[ ! -e "$metaDir"/ao ]] && _messagePlain_warn 'missing: "$metaDir"/ao'
+	[[ ! -e "$metaDir"/bo ]] && _messagePlain_warn 'missing: "$metaDir"/bo'
+	
+	[[ ! -e "$in_me_a_path"/ai ]] && _messagePlain_warn 'missing: in_me_a_path'
+	[[ ! -e "$in_me_b_path"/bi ]] && _messagePlain_warn 'missing: in_me_b_path'
+	[[ ! -e "$out_me_a_path"/ao ]] && _messagePlain_warn 'missing: out_me_a_path'
+	[[ ! -e "$out_me_b_path"/bo ]] && _messagePlain_warn 'missing: out_me_b_path'
+}
+
+_message_me_vars() {
+	_message_me_set
+	_message_me_coordinates
+	_message_me_name
+}
+
+_message_me_set() {
+	_messagePlain_probe '########## SET'
+	
+	_messageVar metaBase
+	_messageVar metaObjName
+	echo
+	_messageVar metaID
+	echo
+	_messageVar metaPath
+	_messageVar metaDir_tmp
+	_messageVar metaDir_base
+	_messageVar metaDir
+	_messageVar metaReg
+	echo
+	_message_me_path
+}
+
+_message_me_path() {
+	_messagePlain_probe '########## PATH'
+	_messageVar in_me_a_path
+	_messageVar in_me_b_path
+	_messageVar out_me_a_path
+	_messageVar out_me_b_path
+	echo
+}
+
+_message_me_coordinates() {
+	_messagePlain_probe '########## IO - COORDINATES'
+	_messagePlain_probe '##### ai'
+	_messageVar in_me_a_z
+	_messageVar in_me_a_x
+	_messageVar in_me_a_y
+	echo
+	_messagePlain_probe '##### bi'
+	_messageVar in_me_b_z
+	_messageVar in_me_b_x
+	_messageVar in_me_b_y
+	echo
+	_messagePlain_probe '##### ao'
+	_messageVar out_me_a_z
+	_messageVar out_me_a_x
+	_messageVar out_me_a_y
+	echo
+	_messagePlain_probe '##### bo'
+	_messageVar out_me_b_z
+	_messageVar out_me_b_x
+	_messageVar out_me_b_y
+	echo
+}
+
+_message_me_name() {
+	_messagePlain_probe '########## IO - NAMES'
+	_messageVar in_me_a_name
+	_messageVar in_me_b_name
+	_messageVar out_me_a_name
+	_messageVar out_me_b_name
+}
+
+_set_me() {
+	_messagePlain_nominal 'init: _set_me'
+	
+	_set_me_base
+	#_set_me_objname
+	
+	_set_me_uid
+	
+	_set_me_path
+	_set_me_dir
+	_set_me_reg
+	
+	_set_me_io
+	
+	_message_me_set
+}
+
+_reset_me() {
+	_reset_me_base
+	#_reset_me_objname
+	
+	_reset_me_uid
+	
+	_reset_me_path
+	_reset_me_dir
+	_reset_me_reg
+	
+	_reset_me_name
+	_reset_me_coordinates
+	
+	_reset_me_type
+	
+	_reset_me_io
+}
+
+_set_me_uid() {
+	export metaID=$(_uid)
+}
+
+_reset_me_uid() {
+	export metaID=
+}
+
+_set_me_path() {
+	export metaPath="$metaID"
+}
+
+_reset_me_path() {
+	export metaPath=
+}
+
+_set_me_dir() {
+	export metaDir_tmp="$metaTmp"/"$metaPath"
+	export metaDir_base="$metaBase"/"$metaPath"
+	
+	export metaDir="$metaDir_tmp"
+	[[ "$metaType" == "base" ]] && export metaDir="$metaDir_base" && _messagePlain_warn 'metaType= base'
+	[[ "$metaType" == "" ]] && _messagePlain_good 'metaType= '
+}
+
+_reset_me_dir() {
+	export metaDir_tmp=
+	export metaDir_base=
+	
+	export metaDir=
+}
+
+_set_me_reg() {
+	export metaReg="$metaTmp"/_reg
+	[[ "$metaType" == "base" ]] && export metaReg="$metaBase"/_reg
+}
+
+_reset_me_reg() {
+	export metaReg=
+}
+
+
+
+
+# ATTENTION: Overload with "core.sh" if appropriate.
+_set_me_base() {
+	export metaBase=
+	
+	export metaBase="$outerPWD"
+	
+	#[[ "$@" != "" ]] && export metaengine_base=$(_searchBaseDir "$@")
+	#[[ "$metaengine_base" == "" ]] && export metaengine_base=$(_searchBaseDir "$@" "$virtUserPWD")
+	
+	#export metaengine_base="$scriptAbsoluteLocation"
+}
+
+_reset_me_base() {
+	export metaBase=
+}
+
+# ATTENTION: Overload with "core.sh" if appropriate.
+# WARNING: No production use.
+_set_me_objname() {
+	export metaObjName=
+	
+	export metaObjName="$objectName"
+}
+
+_reset_me_objname() {
+	export metaObjName=
+}
+
+
+
+_reset_me_coordinates_ai() {
+	export in_me_a_x=
+	export in_me_a_y=
+	export in_me_a_z=
+}
+
+_reset_me_coordinates_bi() {
+	export in_me_b_x=
+	export in_me_b_y=
+	export in_me_b_z=
+}
+
+_reset_me_coordinates_ao() {
+	export out_me_a_x=
+	export out_me_a_y=
+	export out_me_a_z=
+}
+
+_reset_me_coordinates_bo() {
+	export out_me_b_x=
+	export out_me_b_y=
+	export out_me_b_z=
+}
+
+_reset_me_coordinates() {
+	_reset_me_coordinates_ai
+	_reset_me_coordinates_bi
+	_reset_me_coordinates_ao
+	_reset_me_coordinates_bo
+}
+
+
+_check_me_coordinates_ai() {
+	[[ "$in_me_a_x" == "" ]] && return 1
+	[[ "$in_me_a_y" == "" ]] && return 1
+	[[ "$in_me_a_z" == "" ]] && return 1
+	return 0
+}
+
+_check_me_coordinates_bi() {
+	[[ "$in_me_b_x" == "" ]] && return 1
+	[[ "$in_me_b_y" == "" ]] && return 1
+	[[ "$in_me_b_z" == "" ]] && return 1
+	return 0
+}
+
+_check_me_coordinates_ao() {
+	[[ "$out_me_a_x" == "" ]] && return 1
+	[[ "$out_me_a_y" == "" ]] && return 1
+	[[ "$out_me_a_z" == "" ]] && return 1
+	return 0
+}
+
+_check_me_coordinates_bo() {
+	[[ "$out_me_b_x" == "" ]] && return 1
+	[[ "$out_me_b_y" == "" ]] && return 1
+	[[ "$out_me_b_z" == "" ]] && return 1
+	return 0
+}
+
+_check_me_coordinates() {
+	! _check_me_coordinates_ai && return 1
+	! _check_me_coordinates_bi && return 1
+	! _check_me_coordinates_ao && return 1
+	! _check_me_coordinates_bo && return 1
+	return 0
+}
+
+_reset_me_name_ai() {
+	export in_me_a_name=
+}
+
+_reset_me_name_bi() {
+	export in_me_b_name=
+}
+
+_reset_me_name_ao() {
+	export out_me_a_name=
+}
+
+_reset_me_name_bo() {
+	export out_me_b_name=
+}
+
+_reset_me_rand() {
+	_reset_me_name_ai
+	_reset_me_name_bi
+	_reset_me_name_ao
+	_reset_me_name_bo
+}
+_reset_me_name() {
+	_reset_me_name_ai
+	_reset_me_name_bi
+	_reset_me_name_ao
+	_reset_me_name_bo
+}
+
+_check_me_name() {
+	[[ "$in_me_a_name" == "" ]] && return 1
+	[[ "$in_me_b_name" == "" ]] && return 1
+	[[ "$out_me_a_name" == "" ]] && return 1
+	[[ "$out_me_b_name" == "" ]] && return 1
+	return 0
+}
+_check_me_name() {
+	_check_me_rand
+}
+
+_set_me_io_name() {
+	_messagePlain_nominal 'init: _set_me_io_name'
+	
+	export in_me_a_path="$metaReg"/name/"$in_me_a_name"/ai
+		[[ "$in_me_a_name" == "null" ]] && export in_me_a_path=/dev/null
+	export in_me_b_path="$metaReg"/name/"$in_me_b_name"/bi
+		[[ "$in_me_b_name" == "null" ]] && export in_me_b_path=/dev/null
+	export out_me_a_path="$metaReg"/name/"$out_me_a_name"/ao
+		[[ "$out_me_a_name" == "null" ]] && export out_me_a_path=/dev/null
+	export out_me_b_path="$metaReg"/name/"$out_me_b_name"/bo
+		[[ "$out_me_b_name" == "null" ]] && export out_me_b_path=/dev/null
+	
+	_messagePlain_good 'return: success'
+	return 0
+}
+
+_set_me_io_coordinates() {
+	_messagePlain_nominal 'init: _set_me_io_coordinates'
+	
+	export in_me_a_path="$metaReg"/grid/"$in_me_a_z"/"$in_me_a_x"/"$in_me_a_y"
+	export in_me_b_path="$metaReg"/grid/"$in_me_b_z"/"$in_me_b_x"/"$in_me_b_y"
+	export out_me_a_path="$metaReg"/grid/"$out_me_a_z"/"$out_me_a_x"/"$out_me_a_y"
+	export out_me_b_path="$metaReg"/grid/"$out_me_b_z"/"$out_me_b_x"/"$out_me_b_y"
+	
+	_messagePlain_good 'return: success'
+	return 0
+}
+
+_set_me_io() {
+	_messagePlain_nominal 'init: _set_me_io'
+	
+	! _check_me_coordinates && ! _check_me_name && _messageError 'FAIL: invalid IO coordinates and names' && return 1
+	
+	_check_me_name && _messagePlain_good 'valid: name' && _set_me_io_name && _messagePlain_good 'return: success' && return 0
+	
+	_check_me_coordinates && _messagePlain_good 'valid: coordinates' && _set_me_io_coordinates && _messagePlain_good 'return: success' && return 0
+	
+	_messagePlain_warn 'return: undefined failure'
+	return 1
+}
+
+_reset_me_io() {
+	export in_me_a_path=
+	export in_me_b_path=
+	export out_me_a_path=
+	export out_me_b_path=
+}
+
+
+
+_assign_me_objname() {
+	export metaObjName="$1"
+	_messagePlain_nominal 'set: metaObjName= '"$metaObjName"
+}
+
+_set_me_type_tmp() {
+	export metaType=""
+	_messagePlain_nominal 'set: metaType= (tmp)'"$metaType"
+}
+
+_set_me_type_base() {
+	export metaType="base"
+	_messagePlain_nominal 'set: metaType= '"$metaType"
+}
+
+_reset_me_type() {
+	export metaType=
+}
+
+
+_cycle_me_name() {
+	export in_me_a_name="$out_me_a_name"
+	export in_me_b_name="$out_me_b_name"
+	_set_me_rand_out
+	
+	_messagePlain_nominal 'cycle: in_me_a_name= (out_me_a_name)'"$in_me_a_name"' ''cycle: in_me_b_name= (out_me_b_name)'"$in_me_b_name"
+	_messagePlain_probe 'rand: out_me_a_name= '"$out_me_a_name"' ''rand: out_me_b_name= '"$out_me_b_name"
+}
+
+
+
+_assign_me_name_ai() {
+	export in_me_a_name="$1"
+}
+
+_assign_me_name_bi() {
+	export in_me_b_name="$1"
+}
+
+_assign_me_name_ao() {
+	export in_me_ao_name="$1"
+}
+
+_assign_me_name_bo() {
+	export in_me_bo_name="$1"
+}
+
+
+
+# WARNING: Coordinate assignment by centroid for 3D pipeline representation ONLY. Detailed spatial data to be completely represented in binary formatted named buffers.
+#_assign_me aiX aiY aiZ biX biY biZ aoX aoY aoZ boX boY boZ
+_assign_me_coordinates() {
+	shift ; shift ; shift
+		_assign_me_coordinates_ai
+	shift ; shift ; shift
+		_assign_me_coordinates_bi
+	shift ; shift ; shift
+		_assign_me_coordinates_ao
+	shift ; shift ; shift
+		_assign_me_coordinates_bo
+}
+
+#_assign_me... X Y Z
+_assign_me_coordinates_ai() {
+	shift
+	export in_me_a_x="$1"
+	shift
+	export in_me_a_y="$1"
+	shift
+	export in_me_a_z="$1"
+}
+
+#_assign_me... X Y Z
+_assign_me_coordinates_bi() {
+	shift
+	export in_me_b_x="$1"
+	shift
+	export in_me_b_y="$1"
+	shift
+	export in_me_b_z="$1"
+}
+
+#_assign_me... X Y Z
+_assign_me_coordinates_ao() {
+	shift
+	export out_me_a_x="$1"
+	shift
+	export out_me_a_y="$1"
+	shift
+	export out_me_a_z="$1"
+}
+
+#_assign_me... X Y Z
+_assign_me_coordinates_bo() {
+	shift
+	export out_me_b_x="$1"
+	shift
+	export out_me_b_y="$1"
+	shift
+	export out_me_b_z="$1"
+}
+
+
+_set_me_rand_ai() {
+	export in_me_a_name="$(_uid)"
+}
+
+_set_me_rand_bi() {
+	export in_me_b_name="$(_uid)"
+}
+
+_set_me_rand_ao() {
+	export out_me_a_name="$(_uid)"
+}
+
+_set_me_rand_bo() {
+	export out_me_b_name="$(_uid)"
+}
+
+
+_set_me_rand_in() {
+	_messagePlain_nominal 'init: _set_me_rand_in'
+	_set_me_rand_ai
+	_set_me_rand_bi
+}
+
+_set_me_rand_out() {
+	_messagePlain_nominal 'init: _set_me_rand_out'
+	_set_me_rand_ao
+	_set_me_rand_bo
+}
+
+_set_me_rand() {
+	_messagePlain_nominal 'init: _set_me_rand'
+	_set_me_rand_in
+	_set_me_rand_out
+}
+
+_set_me_null_in() {
+	_messagePlain_nominal 'init: _set_me_null_in'
+	_assign_me_name_ai null
+	_assign_me_name_bi null
+}
+
+_set_me_null_out() {
+	_messagePlain_nominal 'init: _set_me_null_out'
+	_assign_me_name_ao null
+	_assign_me_name_bo null
+}
+
+_set_me_null() {
+	_messagePlain_nominal 'init: _set_me_null'
+	_set_me_null_in
+	_set_me_null_out
+}
+
+_relink_metaengine_coordinates() {
+	_messagePlain_nominal 'init: _relink_metaengine_coordinates'
+	
+	mkdir -p "$metaReg"/grid/"$in_me_a_z"/"$in_me_a_x"
+	_relink "$in_me_a_path" "$metaDir"/ai
+	
+	mkdir -p "$metaReg"/grid/"$in_me_b_z"/"$in_me_b_x"
+	_relink "$in_me_b_path" "$metaDir"/bi
+	
+	mkdir -p "$metaReg"/grid/"$out_me_a_z"/"$out_me_a_x"
+	_relink "$metaDir"/ao "$out_me_a_path"
+	
+	mkdir -p "$metaReg"/grid/"$out_me_b_z"/"$out_me_b_x"
+	_relink "$metaDir"/bo "$out_me_b_path"
+	
+	_messagePlain_good 'return: complete'
+	return 0
+}
+
+_rmlink_metaengine_coordinates() {
+	#_rmlink "$metaDir"/ai > /dev/null 2>&1
+	#rmdir "$metaReg"/grid/"$in_me_a_z"/"$in_me_a_x" > /dev/null 2>&1
+	#rmdir "$metaReg"/grid/"$in_me_a_z" > /dev/null 2>&1
+	
+	#_rmlink "$metaDir"/bi > /dev/null 2>&1
+	#rmdir "$metaReg"/grid/"$in_me_b_z"/"$in_me_b_x" > /dev/null 2>&1
+	#rmdir "$metaReg"/grid/"$in_me_b_z" > /dev/null 2>&1
+	
+	_rmlink "$out_me_a_path" > /dev/null 2>&1
+	rmdir "$metaReg"/grid/"$out_me_a_z"/"$out_me_a_x" > /dev/null 2>&1
+	rmdir "$metaReg"/grid/"$out_me_a_z" > /dev/null 2>&1
+	
+	_rmlink "$out_me_b_path" > /dev/null 2>&1
+	rmdir "$metaReg"/grid/"$out_me_b_z"/"$out_me_b_x" > /dev/null 2>&1
+	rmdir "$metaReg"/grid/"$out_me_b_z" > /dev/null 2>&1
+}
+
+
+
+_relink_metaengine_name() {
+	_messagePlain_nominal 'init: _relink_metaengine_name'
+	
+	#No known production relevance.
+	[[ -e "$metaReg"/name/"$metaID" ]] && _messageError 'FAIL: unexpected safety' && _stop 1
+	
+	mkdir -p "$metaReg"/name/"$in_me_a_name"
+	_relink "$in_me_a_path" "$metaDir"/ai
+	mkdir -p "$metaReg"/name/"$in_me_b_name"
+	_relink "$in_me_b_path" "$metaDir"/bi
+	
+	mkdir -p "$metaReg"/name/"$out_me_a_name"
+	_relink "$metaDir"/ao "$out_me_a_path"
+	mkdir -p "$metaReg"/name/"$out_me_b_name"
+	_relink "$metaDir"/bo "$out_me_b_path"
+	
+	_messagePlain_good 'return: complete'
+	return 0
+}
+
+_rmlink_metaengine_name() {
+	
+	#_rmlink "$metaDir"/ai > /dev/null 2>&1
+	#rmdir "$metaReg"/name/"$in_me_a_name" > /dev/null 2>&1
+	#_rmlink "$metaDir"/bi > /dev/null 2>&1
+	#rmdir "$metaReg"/name/"$in_me_a_name" > /dev/null 2>&1
+	
+	_rmlink "$out_me_a_path" > /dev/null 2>&1
+	rmdir "$metaReg"/name/"$out_me_a_name" > /dev/null 2>&1
+	_rmlink "$out_me_b_path" > /dev/null 2>&1
+	rmdir "$metaReg"/name/"$out_me_b_name" > /dev/null 2>&1
+}
+
+
+
+_relink_metaengine() {
+	_messagePlain_nominal 'init: _relink_metaengine'
+	
+	! _check_me_coordinates && ! _check_me_name && _messageError 'FAIL: invalid IO coordinates and names' && _stop 1
+	
+	_check_me_name && _messagePlain_good 'valid: name' && _prepare_metaengine_name && _relink_metaengine_name && _messagePlain_good 'return: success' return 0
+	
+	_check_me_coordinates && _messagePlain_good 'valid: coordinates' && _prepare_metaengine_coordinates && _relink_metaengine_coordinates && _messagePlain_good 'return: success' return 0
+	
+	_messagePlain_bad 'stop: undefined failure'
+	_stop 1
+}
+
+
+_prepare_metaengine_coordinates() {
+	mkdir -p "$metaReg"/grid
+	mkdir -p "$metaReg"/x
+	mkdir -p "$metaReg"/y
+	mkdir -p "$metaReg"/z
+}
+
+_prepare_metaengine_name() {
+	mkdir -p "$metaReg"/name
+}
+
+_prepare_metaengine() {
+	mkdir -p "$metaTmp"
+	
+	[[ "$metaDir_tmp" != "" ]] && mkdir -p "$metaDir_tmp"
+	[[ "$metaDir" != "" ]] && mkdir -p "$metaDir"
+	
+	mkdir -p "$metaDir"/ao
+	mkdir -p "$metaDir"/bo
+}
+
+_start_metaengine_host() {
+	[[ -e "$engineTmp" ]] && _messageError 'FAIL: safety: meta conflicts engine' && _stop 1
+	
+	_messageNormal 'init: _start_metaengine_host'
+	
+	_start
+	
+	mkdir -p "$metaTmp"
+	
+	_relink "$safeTmp"/.pid "$metaTmp"/.pid
+}
+
+_start_metaengine() {
+	[[ -e "$engineTmp" ]] && _messageError 'FAIL: safety: meta conflicts engine' && _stop 1
+	
+	_messageNormal 'init: _start_metaengine_host'
+	
+	_start
+	
+	_set_me
+	_prepare_metaengine
+	_relink_metaengine
+	
+	_report_metaengine
+	
+	echo $$ > "$metaDir"/.pid
+	echo "$sessionid" > "$metaDir"/.sessionid
+	_embed_here > "$metaDir"/.embed.sh
+	chmod 755 "$metaDir"/.embed.sh
+}
+
+_ready_me_in() {
+	! [[ -e "$in_me_a_path" ]] && _messagePlain_warn 'missing: in_me_a_path= '"$in_me_a_path" && return 1
+	! [[ -e "$in_me_b_path" ]] && _messagePlain_warn 'missing: in_me_b_path= '"$in_me_b_path" && return 1
+	
+	_messagePlain_good 'ready: in path'
+	return 0
+}
+
+# ATTENTION: Overload with "core.sh" if appropriate.
+_wait_metaengine() {
+	_messagePlain_nominal 'init: _wait_metaengine'
+	
+	! _ready_me_in && sleep 0.1
+	! _ready_me_in && sleep 0.3
+	! _ready_me_in && sleep 1
+	! _ready_me_in && sleep 3
+	! _ready_me_in && sleep 10
+	! _ready_me_in && sleep 10
+	! _ready_me_in && sleep 10
+	! _ready_me_in && sleep 20
+	! _ready_me_in && sleep 20
+	! _ready_me_in && sleep 20
+	
+	#while ! _ready_me_in
+	#do
+	#	sleep 0.1
+	#done
+}
+
+# TODO: WIP intended to illustrate the basic logic flow. Uses global variables for some arguments - resetting these is MANDATORY .
+_process() {
+	_start_metaengine_host
+	
+	_set_me_null_in
+	_set_me_rand_out
+	_processor_name
+	
+	_cycle_me
+	_processor_name
+	
+	_cycle_me
+	_processor_name
+	
+	_set_me_null_out
+	_processor_name
+	
+	_reset_me
+	
+	_stop
+}
+
+# TODO: WIP intended to illustrate the basic logic flow. Uses global variables for some arguments - resetting these is MANDATORY .
+_processor_name() {
+	_assign_me_objname "_processor_name"
+	
+	"$scriptAbsoluteLocaton" _me_processor_name &
+}
+
+_me_processor_name() {
+	_start_metaengine
+	_wait_metaengine
+	
+	#Do something.
+	#> cat >
+	
+	_stop
+}
+
 _buildHello() {
 	local helloSourceCode
 	helloSourceCode="$scriptAbsoluteFolder"/generic/hello/hello.c
@@ -12815,6 +13596,10 @@ _stop() {
 	fi
 	
 	[[ -e "$queryTmp" ]] && _safeRMR "$queryTmp"			#Only created if needed by query.
+	
+	[[ -e "$engineTmp" ]] && _safeRMR "$engineTmp"			#Only created if needed by engine.
+	[[ -e "$metaTmp" ]] && _safeRMR "$metaTmp"			#Only created if needed by meta.
+	
 	_safeRMR "$shortTmp"
 	_safeRMR "$safeTmp"
 	
@@ -13664,13 +14449,19 @@ _deps_metaengine() {
 _compile_bash_metaengine() {
 	export includeScriptList
 	
-	#[[ "$enUb_buildBashUbiquitous" == "true" ]] && includeScriptList+=( "metaengine"/undefined.sh )
+	#[[ "$enUb_metaengine" == "true" ]] && includeScriptList+=( "metaengine"/undefined.sh )
 }
 
 _compile_bash_vars_metaengine() {
 	export includeScriptList
 	
-	#[[ "$enUb_buildBashUbiquitous" == "true" ]] && includeScriptList+=( "metaengine"/undefined_vars.sh )
+	[[ "$enUb_metaengine" == "true" ]] && includeScriptList+=( "metaengine/env"/metaengine_diag.sh )
+	[[ "$enUb_metaengine" == "true" ]] && includeScriptList+=( "metaengine/env"/metaengine_vars.sh )
+	[[ "$enUb_metaengine" == "true" ]] && includeScriptList+=( "metaengine/env"/metaengine_parm.sh )
+	[[ "$enUb_metaengine" == "true" ]] && includeScriptList+=( "metaengine/env"/metaengine_local.sh )
+	
+	[[ "$enUb_metaengine" == "true" ]] && includeScriptList+=( "metaengine/example"/metaengine_chain.sh )
+	[[ "$enUb_metaengine" == "true" ]] && includeScriptList+=( "metaengine/example"/metaengine_object.sh )
 }
 
 _findUbiquitous() {

@@ -41,7 +41,7 @@ _relink_metaengine_name() {
 	_messagePlain_nominal 'init: _relink_metaengine_name'
 	
 	#No known production relevance.
-	[[ -e "$metaReg"/name/"$metaID" ]] _messageError 'FAIL: unexpected safety' && _stop 1
+	[[ -e "$metaReg"/name/"$metaID" ]] && _messageError 'FAIL: unexpected safety' && _stop 1
 	
 	mkdir -p "$metaReg"/name/"$in_me_a_name"
 	_relink "$in_me_a_path" "$metaDir"/ai
@@ -77,9 +77,9 @@ _relink_metaengine() {
 	
 	! _check_me_coordinates && ! _check_me_name && _messageError 'FAIL: invalid IO coordinates and names' && _stop 1
 	
-	_check_me_name && _messagePlain_good 'valid: name' && _prepare_metaengine_name && _relink_metaengine_name && && _messagePlain_good 'return: success' return 0
+	_check_me_name && _messagePlain_good 'valid: name' && _prepare_metaengine_name && _relink_metaengine_name && _messagePlain_good 'return: success' return 0
 	
-	_check_me_coordinates && _messagePlain_good 'valid: coordinates' && _prepare_metaengine_coordinates && _relink_metaengine_coordinates && && _messagePlain_good 'return: success' return 0
+	_check_me_coordinates && _messagePlain_good 'valid: coordinates' && _prepare_metaengine_coordinates && _relink_metaengine_coordinates && _messagePlain_good 'return: success' return 0
 	
 	_messagePlain_bad 'stop: undefined failure'
 	_stop 1
