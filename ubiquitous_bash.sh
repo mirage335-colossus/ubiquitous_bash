@@ -796,18 +796,58 @@ _terminate() {
 	rm "$processListFile"
 }
 
-_terminateAll() {
+_terminateMetaHostAll() {
+	! ls -d -1 ./.m_*/.pid > dev/null 2>&1 && return 0
+	
 	local processListFile
 	processListFile="$scriptAbsoluteFolder"/.pidlist_$(_uid)
 	
 	local currentPID
 	
-	cat ./w_*/.pid >> "$processListFile" 2> /dev/null
+	cat ./.m_*/.pid >> "$processListFile" 2> /dev/null
+	
+	while read -r currentPID
+	do
+		pkill -P "$currentPID"
+		kill "$currentPID"
+	done < "$processListFile"
+	
+	rm "$processListFile"
+	
+	! ls -d -1 ./.m_*/.pid > dev/null 2>&1 && return 0
+	sleep 0.3
+	! ls -d -1 ./.m_*/.pid > dev/null 2>&1 && return 0
+	sleep 1
+	! ls -d -1 ./.m_*/.pid > dev/null 2>&1 && return 0
+	sleep 3
+	! ls -d -1 ./.m_*/.pid > dev/null 2>&1 && return 0
+	sleep 10
+	! ls -d -1 ./.m_*/.pid > dev/null 2>&1 && return 0
+	sleep 20
+	! ls -d -1 ./.m_*/.pid > dev/null 2>&1 && return 0
+	sleep 20
+	! ls -d -1 ./.m_*/.pid > dev/null 2>&1 && return 0
+	sleep 20
+	! ls -d -1 ./.m_*/.pid > dev/null 2>&1 && return 0
+	
+	return 1
+}
+
+_terminateAll() {
+	_terminateMetaHostAll
+	
+	local processListFile
+	processListFile="$scriptAbsoluteFolder"/.pidlist_$(_uid)
+	
+	local currentPID
+	
 	
 	cat ./.s_*/.pid >> "$processListFile" 2> /dev/null
 	
 	cat ./.e_*/.pid >> "$processListFile" 2> /dev/null
 	cat ./.m_*/.pid >> "$processListFile" 2> /dev/null
+	
+	cat ./w_*/.pid >> "$processListFile" 2> /dev/null
 	
 	while read -r currentPID
 	do
@@ -13174,6 +13214,7 @@ _relink_metaengine_coordinates() {
 	return 0
 }
 
+#No production use. Untested.
 _rmlink_metaengine_coordinates() {
 	#_rmlink "$metaDir"/ai > /dev/null 2>&1
 	#rmdir "$metaReg"/grid/"$in_me_a_z"/"$in_me_a_x" > /dev/null 2>&1
@@ -13214,6 +13255,7 @@ _relink_metaengine_name() {
 	return 0
 }
 
+#No production use. Untested.
 _rmlink_metaengine_name() {
 	
 	#_rmlink "$metaDir"/ai > /dev/null 2>&1
@@ -13325,7 +13367,7 @@ _rm_instance_metaengine() {
 	[[ "$metaStop" != "true" ]] && return 0
 	export metaStop="false"
 	
-	_terminateMeta
+	_terminateMetaProcessorAll_metaengine
 	
 	#Only created if needed by meta.
 	[[ "$metaTmp" != "" ]] && [[ -e "$metaTmp" ]] && _safeRMR "$metaTmp"
@@ -13374,7 +13416,7 @@ _wait_metaengine() {
 	return 1
 }
 
-_terminateMeta() {
+_terminateMetaProcessorAll_metaengine() {
 	local processListFile
 	processListFile="$scriptAbsoluteFolder"/.pidlist_$(_uid)
 	
