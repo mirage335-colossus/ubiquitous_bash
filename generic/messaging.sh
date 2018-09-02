@@ -194,6 +194,25 @@ _messagePlain_bad() {
 	return 0
 }
 
+#Blue. Diagnostic instrumentation.
+#Prints "$@" and runs "$@".
+# WARNING: Use with care.
+_messagePlain_probe_cmd() {
+	echo -e -n '\E[0;34m '
+	
+	_safeEcho "$@"
+	
+	echo -e -n ' \E[0m'
+	echo
+	
+	"$@"
+	
+	return
+}
+_messageCMD() {
+	_messagePlain_probe_cmd "$@"
+}
+
 #Demarcate major steps.
 _messageNormal() {
 	echo -e -n '\E[1;32;46m '

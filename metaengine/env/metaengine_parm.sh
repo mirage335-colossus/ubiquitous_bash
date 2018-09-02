@@ -27,7 +27,9 @@ _cycle_me_name() {
 	_messagePlain_nominal 'cycle: in_me_a_name= (out_me_a_name)'"$in_me_a_name"' ''cycle: in_me_b_name= (out_me_b_name)'"$in_me_b_name"
 	_messagePlain_probe 'rand: out_me_a_name= '"$out_me_a_name"' ''rand: out_me_b_name= '"$out_me_b_name"
 }
-
+_cycle_me() {
+	_cycle_me_name
+}
 
 
 _assign_me_name_ai() {
@@ -101,36 +103,24 @@ _assign_me_coordinates_bo() {
 	export out_me_b_z="$1"
 }
 
-
-_set_me_rand_ai() {
-	export in_me_a_name="$(_uid)"
-}
-
-_set_me_rand_bi() {
-	export in_me_b_name="$(_uid)"
-}
-
-_set_me_rand_ao() {
-	export out_me_a_name="$(_uid)"
-}
-
-_set_me_rand_bo() {
-	export out_me_b_name="$(_uid)"
-}
-
-
+# No known production use.
 _set_me_rand_in() {
 	_messagePlain_nominal 'init: _set_me_rand_in'
-	_set_me_rand_ai
-	_set_me_rand_bi
+	local rand_uid
+	rand_uid=$(_uid)
+	export in_me_a_name="$rand_uid"
+	export in_me_b_name="$rand_uid"
 }
 
 _set_me_rand_out() {
 	_messagePlain_nominal 'init: _set_me_rand_out'
-	_set_me_rand_ao
-	_set_me_rand_bo
+	local rand_uid
+	rand_uid=$(_uid)
+	export out_me_a_name="$rand_uid"
+	export out_me_b_name="$rand_uid"
 }
 
+# No known production use.
 _set_me_rand() {
 	_messagePlain_nominal 'init: _set_me_rand'
 	_set_me_rand_in

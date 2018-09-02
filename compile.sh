@@ -1127,6 +1127,25 @@ _messagePlain_bad() {
 	return 0
 }
 
+#Blue. Diagnostic instrumentation.
+#Prints "$@" and runs "$@".
+# WARNING: Use with care.
+_messagePlain_probe_cmd() {
+	echo -e -n '\E[0;34m '
+	
+	_safeEcho "$@"
+	
+	echo -e -n ' \E[0m'
+	echo
+	
+	"$@"
+	
+	return
+}
+_messageCMD() {
+	_messagePlain_probe_cmd "$@"
+}
+
 #Demarcate major steps.
 _messageNormal() {
 	echo -e -n '\E[1;32;46m '
@@ -1322,7 +1341,6 @@ _discoverResource() {
 }
 
 _rmlink() {
-	! [[ -h "$1" ]] && return 1
 	[[ "$1" == "/dev/null" ]] && return 1
 	
 	[[ -h "$1" ]] && rm -f "$1" && return 0
@@ -1346,6 +1364,7 @@ _relink_procedure() {
 }
 
 _relink() {
+	[[ "$2" == "/dev/null" ]] && return 1
 	[[ "$relinkRelativeUb" == "true" ]] && export relinkRelativeUb=""
 	_relink_procedure "$@"
 }
@@ -2035,9 +2054,9 @@ export bootTmp="$scriptLocal"
 
 #Specialized temporary directories.
 
-#MetaEngine/Engine Tmp Defaults
-export metaTmp="$scriptAbsoluteFolder""$tmpPrefix"/.m_"$sessionid"
-export engineTmp="$scriptAbsoluteFolder""$tmpPrefix"/.e_"$sessionid"
+#MetaEngine/Engine Tmp Defaults (example, no production use)
+#export metaTmp="$scriptAbsoluteFolder""$tmpPrefix"/.m_"$sessionid"
+#export engineTmp="$scriptAbsoluteFolder""$tmpPrefix"/.e_"$sessionid"
 
 # WARNING: Only one user per (virtual) machine. Requires _prepare_abstract . Not default.
 # DANGER: Mandatory strict directory 8.3 compliance for this variable! Long subdirectory/filenames permitted thereafter.

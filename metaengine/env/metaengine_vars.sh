@@ -1,3 +1,7 @@
+_set_me_host() {
+	export metaTmp="$scriptAbsoluteFolder""$tmpPrefix"/.m_"$sessionid"
+}
+
 _set_me() {
 	_messagePlain_nominal 'init: _set_me'
 	
@@ -31,6 +35,8 @@ _reset_me() {
 	_reset_me_type
 	
 	_reset_me_io
+	
+	_stop_metaengine_allow
 }
 
 _set_me_uid() {
@@ -211,8 +217,8 @@ _check_me_name() {
 	[[ "$out_me_b_name" == "" ]] && return 1
 	return 0
 }
-_check_me_name() {
-	_check_me_rand
+_check_me_rand() {
+	_check_me_name
 }
 
 _set_me_io_name() {

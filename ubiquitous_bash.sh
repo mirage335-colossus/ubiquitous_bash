@@ -1127,6 +1127,25 @@ _messagePlain_bad() {
 	return 0
 }
 
+#Blue. Diagnostic instrumentation.
+#Prints "$@" and runs "$@".
+# WARNING: Use with care.
+_messagePlain_probe_cmd() {
+	echo -e -n '\E[0;34m '
+	
+	_safeEcho "$@"
+	
+	echo -e -n ' \E[0m'
+	echo
+	
+	"$@"
+	
+	return
+}
+_messageCMD() {
+	_messagePlain_probe_cmd "$@"
+}
+
 #Demarcate major steps.
 _messageNormal() {
 	echo -e -n '\E[1;32;46m '
@@ -1322,7 +1341,6 @@ _discoverResource() {
 }
 
 _rmlink() {
-	! [[ -h "$1" ]] && return 1
 	[[ "$1" == "/dev/null" ]] && return 1
 	
 	[[ -h "$1" ]] && rm -f "$1" && return 0
@@ -1346,6 +1364,7 @@ _relink_procedure() {
 }
 
 _relink() {
+	[[ "$2" == "/dev/null" ]] && return 1
 	[[ "$relinkRelativeUb" == "true" ]] && export relinkRelativeUb=""
 	_relink_procedure "$@"
 }
@@ -12074,9 +12093,9 @@ export bootTmp="$scriptLocal"
 
 #Specialized temporary directories.
 
-#MetaEngine/Engine Tmp Defaults
-export metaTmp="$scriptAbsoluteFolder""$tmpPrefix"/.m_"$sessionid"
-export engineTmp="$scriptAbsoluteFolder""$tmpPrefix"/.e_"$sessionid"
+#MetaEngine/Engine Tmp Defaults (example, no production use)
+#export metaTmp="$scriptAbsoluteFolder""$tmpPrefix"/.m_"$sessionid"
+#export engineTmp="$scriptAbsoluteFolder""$tmpPrefix"/.e_"$sessionid"
 
 # WARNING: Only one user per (virtual) machine. Requires _prepare_abstract . Not default.
 # DANGER: Mandatory strict directory 8.3 compliance for this variable! Long subdirectory/filenames permitted thereafter.
@@ -12647,10 +12666,10 @@ _report_metaengine() {
 	[[ ! -e "$metaDir"/ao ]] && _messagePlain_warn 'missing: "$metaDir"/ao'
 	[[ ! -e "$metaDir"/bo ]] && _messagePlain_warn 'missing: "$metaDir"/bo'
 	
-	[[ ! -e "$in_me_a_path"/ai ]] && _messagePlain_warn 'missing: in_me_a_path'
-	[[ ! -e "$in_me_b_path"/bi ]] && _messagePlain_warn 'missing: in_me_b_path'
-	[[ ! -e "$out_me_a_path"/ao ]] && _messagePlain_warn 'missing: out_me_a_path'
-	[[ ! -e "$out_me_b_path"/bo ]] && _messagePlain_warn 'missing: out_me_b_path'
+	[[ ! -e "$in_me_a_path" ]] && _messagePlain_warn 'missing: in_me_a_path'
+	[[ ! -e "$in_me_b_path" ]] && _messagePlain_warn 'missing: in_me_b_path'
+	[[ ! -e "$out_me_a_path" ]] && _messagePlain_warn 'missing: out_me_a_path'
+	[[ ! -e "$out_me_b_path" ]] && _messagePlain_warn 'missing: out_me_b_path'
 }
 
 _message_me_vars() {
@@ -12717,6 +12736,10 @@ _message_me_name() {
 	_messageVar out_me_b_name
 }
 
+_set_me_host() {
+	export metaTmp="$scriptAbsoluteFolder""$tmpPrefix"/.m_"$sessionid"
+}
+
 _set_me() {
 	_messagePlain_nominal 'init: _set_me'
 	
@@ -12750,6 +12773,8 @@ _reset_me() {
 	_reset_me_type
 	
 	_reset_me_io
+	
+	_stop_metaengine_allow
 }
 
 _set_me_uid() {
@@ -12930,8 +12955,8 @@ _check_me_name() {
 	[[ "$out_me_b_name" == "" ]] && return 1
 	return 0
 }
-_check_me_name() {
-	_check_me_rand
+_check_me_rand() {
+	_check_me_name
 }
 
 _set_me_io_name() {
@@ -13012,7 +13037,9 @@ _cycle_me_name() {
 	_messagePlain_nominal 'cycle: in_me_a_name= (out_me_a_name)'"$in_me_a_name"' ''cycle: in_me_b_name= (out_me_b_name)'"$in_me_b_name"
 	_messagePlain_probe 'rand: out_me_a_name= '"$out_me_a_name"' ''rand: out_me_b_name= '"$out_me_b_name"
 }
-
+_cycle_me() {
+	_cycle_me_name
+}
 
 
 _assign_me_name_ai() {
@@ -13086,36 +13113,24 @@ _assign_me_coordinates_bo() {
 	export out_me_b_z="$1"
 }
 
-
-_set_me_rand_ai() {
-	export in_me_a_name="$(_uid)"
-}
-
-_set_me_rand_bi() {
-	export in_me_b_name="$(_uid)"
-}
-
-_set_me_rand_ao() {
-	export out_me_a_name="$(_uid)"
-}
-
-_set_me_rand_bo() {
-	export out_me_b_name="$(_uid)"
-}
-
-
+# No known production use.
 _set_me_rand_in() {
 	_messagePlain_nominal 'init: _set_me_rand_in'
-	_set_me_rand_ai
-	_set_me_rand_bi
+	local rand_uid
+	rand_uid=$(_uid)
+	export in_me_a_name="$rand_uid"
+	export in_me_b_name="$rand_uid"
 }
 
 _set_me_rand_out() {
 	_messagePlain_nominal 'init: _set_me_rand_out'
-	_set_me_rand_ao
-	_set_me_rand_bo
+	local rand_uid
+	rand_uid=$(_uid)
+	export out_me_a_name="$rand_uid"
+	export out_me_b_name="$rand_uid"
 }
 
+# No known production use.
 _set_me_rand() {
 	_messagePlain_nominal 'init: _set_me_rand'
 	_set_me_rand_in
@@ -13143,17 +13158,17 @@ _set_me_null() {
 _relink_metaengine_coordinates() {
 	_messagePlain_nominal 'init: _relink_metaengine_coordinates'
 	
-	mkdir -p "$metaReg"/grid/"$in_me_a_z"/"$in_me_a_x"
-	_relink "$in_me_a_path" "$metaDir"/ai
+	_messageCMD mkdir -p "$metaReg"/grid/"$in_me_a_z"/"$in_me_a_x"
+	_messageCMD _relink "$in_me_a_path" "$metaDir"/ai
 	
-	mkdir -p "$metaReg"/grid/"$in_me_b_z"/"$in_me_b_x"
-	_relink "$in_me_b_path" "$metaDir"/bi
+	_messageCMD mkdir -p "$metaReg"/grid/"$in_me_b_z"/"$in_me_b_x"
+	_messageCMD _relink "$in_me_b_path" "$metaDir"/bi
 	
-	mkdir -p "$metaReg"/grid/"$out_me_a_z"/"$out_me_a_x"
-	_relink "$metaDir"/ao "$out_me_a_path"
+	_messageCMD mkdir -p "$metaReg"/grid/"$out_me_a_z"/"$out_me_a_x"
+	_messageCMD _relink "$metaDir"/ao "$out_me_a_path"
 	
-	mkdir -p "$metaReg"/grid/"$out_me_b_z"/"$out_me_b_x"
-	_relink "$metaDir"/bo "$out_me_b_path"
+	_messageCMD mkdir -p "$metaReg"/grid/"$out_me_b_z"/"$out_me_b_x"
+	_messageCMD _relink "$metaDir"/bo "$out_me_b_path"
 	
 	_messagePlain_good 'return: complete'
 	return 0
@@ -13185,15 +13200,15 @@ _relink_metaengine_name() {
 	#No known production relevance.
 	[[ -e "$metaReg"/name/"$metaID" ]] && _messageError 'FAIL: unexpected safety' && _stop 1
 	
-	mkdir -p "$metaReg"/name/"$in_me_a_name"
-	_relink "$in_me_a_path" "$metaDir"/ai
-	mkdir -p "$metaReg"/name/"$in_me_b_name"
-	_relink "$in_me_b_path" "$metaDir"/bi
+	_messageCMD mkdir -p "$metaReg"/name/"$in_me_a_name"
+	_messageCMD _relink "$in_me_a_path" "$metaDir"/ai
+	_messageCMD mkdir -p "$metaReg"/name/"$in_me_b_name"
+	_messageCMD _relink "$in_me_b_path" "$metaDir"/bi
 	
-	mkdir -p "$metaReg"/name/"$out_me_a_name"
-	_relink "$metaDir"/ao "$out_me_a_path"
-	mkdir -p "$metaReg"/name/"$out_me_b_name"
-	_relink "$metaDir"/bo "$out_me_b_path"
+	_messageCMD mkdir -p "$metaReg"/name/"$out_me_a_name"
+	_messageCMD _relink "$metaDir"/ao "$out_me_a_path"
+	_messageCMD mkdir -p "$metaReg"/name/"$out_me_b_name"
+	_messageCMD _relink "$metaDir"/bo "$out_me_b_path"
 	
 	_messagePlain_good 'return: complete'
 	return 0
@@ -13219,9 +13234,9 @@ _relink_metaengine() {
 	
 	! _check_me_coordinates && ! _check_me_name && _messageError 'FAIL: invalid IO coordinates and names' && _stop 1
 	
-	_check_me_name && _messagePlain_good 'valid: name' && _prepare_metaengine_name && _relink_metaengine_name && _messagePlain_good 'return: success' return 0
+	_check_me_name && _messagePlain_good 'valid: name' && _prepare_metaengine_name && _relink_metaengine_name && _messagePlain_good 'return: success' && return 0
 	
-	_check_me_coordinates && _messagePlain_good 'valid: coordinates' && _prepare_metaengine_coordinates && _relink_metaengine_coordinates && _messagePlain_good 'return: success' return 0
+	_check_me_coordinates && _messagePlain_good 'valid: coordinates' && _prepare_metaengine_coordinates && _relink_metaengine_coordinates && _messagePlain_good 'return: success' && return 0
 	
 	_messagePlain_bad 'stop: undefined failure'
 	_stop 1
@@ -13250,9 +13265,11 @@ _prepare_metaengine() {
 }
 
 _start_metaengine_host() {
-	[[ -e "$engineTmp" ]] && _messageError 'FAIL: safety: meta conflicts engine' && _stop 1
+	[[ -e "$scriptAbsoluteFolder""$tmpPrefix"/.e_"$sessionid" ]] && _messageError 'FAIL: safety: meta conflicts engine' && _stop 1
 	
 	_messageNormal 'init: _start_metaengine_host'
+	
+	_set_me_host
 	
 	_start
 	
@@ -13262,9 +13279,10 @@ _start_metaengine_host() {
 }
 
 _start_metaengine() {
-	[[ -e "$engineTmp" ]] && _messageError 'FAIL: safety: meta conflicts engine' && _stop 1
+	[[ -e "$scriptAbsoluteFolder""$tmpPrefix"/.e_"$sessionid" ]] && _messageError 'FAIL: safety: meta conflicts engine' && _stop 1
 	
-	_messageNormal 'init: _start_metaengine_host'
+	_messageNormal 'processor: '"$metaObjName"
+	_messagePlain_probe 'init: _start_metaengine'
 	
 	_start
 	
@@ -13280,11 +13298,33 @@ _start_metaengine() {
 	chmod 755 "$metaDir"/.embed.sh
 }
 
+_stop_metaengine_allow() {
+	export metaStop=true
+}
+
+#Indefinitely pauses, allowing SIGINT or similar to trigger "_stop" at any time.
+_stop_metaengine_wait() {
+	_stop_metaengine_allow
+	
+	while true
+	do
+		sleep 90
+	done
+}
+
+_rm_instance_metaengine() {
+	[[ "$metaStop" != "true" ]] && return 0
+	export metaStop=false
+	echo test
+	#Only created if needed by meta.
+	[[ "$metaTmp" != "" ]] && [[ -e "$metaTmp" ]] && _safeRMR "$metaTmp"
+}
+
 _ready_me_in() {
 	! [[ -e "$in_me_a_path" ]] && _messagePlain_warn 'missing: in_me_a_path= '"$in_me_a_path" && return 1
 	! [[ -e "$in_me_b_path" ]] && _messagePlain_warn 'missing: in_me_b_path= '"$in_me_b_path" && return 1
 	
-	_messagePlain_good 'ready: in path'
+	_messagePlain_good 'ready: in_me_a_path, in_me_b_path'
 	return 0
 }
 
@@ -13292,21 +13332,35 @@ _ready_me_in() {
 _wait_metaengine() {
 	_messagePlain_nominal 'init: _wait_metaengine'
 	
-	! _ready_me_in && sleep 0.1
-	! _ready_me_in && sleep 0.3
-	! _ready_me_in && sleep 1
-	! _ready_me_in && sleep 3
-	! _ready_me_in && sleep 10
-	! _ready_me_in && sleep 10
-	! _ready_me_in && sleep 10
-	! _ready_me_in && sleep 20
-	! _ready_me_in && sleep 20
-	! _ready_me_in && sleep 20
+	_ready_me_in && return 0
+	sleep 0.1
+	_ready_me_in && return 0
+	sleep 0.3
+	_ready_me_in && return 0
+	sleep 1
+	_ready_me_in && return 0
+	sleep 3
+	_ready_me_in && return 0
+	sleep 10
+	_ready_me_in && return 0
+	sleep 10
+	_ready_me_in && return 0
+	sleep 10
+	_ready_me_in && return 0
+	sleep 20
+	_ready_me_in && return 0
+	sleep 20
+	_ready_me_in && return 0
+	sleep 20
+	_ready_me_in && return 0
 	
 	#while ! _ready_me_in
 	#do
 	#	sleep 0.1
 	#done
+	
+	_messagePlain_bad 'missing: in_me_a_path, in_me_b_path'
+	return 1
 }
 
 # TODO: WIP intended to illustrate the basic logic flow. Uses global variables for some arguments - resetting these is MANDATORY .
@@ -13328,14 +13382,17 @@ _process() {
 	
 	_reset_me
 	
-	_stop
+	_stop_metaengine_wait
 }
 
 # TODO: WIP intended to illustrate the basic logic flow. Uses global variables for some arguments - resetting these is MANDATORY .
 _processor_name() {
 	_assign_me_objname "_processor_name"
 	
-	"$scriptAbsoluteLocaton" _me_processor_name &
+	"$scriptAbsoluteLocation" _me_processor_name &
+	
+	#Optional. Usually correctly orders diagnostic output.
+	sleep 10
 }
 
 _me_processor_name() {
@@ -13344,6 +13401,7 @@ _me_processor_name() {
 	
 	#Do something.
 	#> cat >
+	sleep 10
 	
 	_stop
 }
@@ -13592,13 +13650,17 @@ _stop() {
 	if [[ -e "$scopeTmp" ]] && [[ -e "$scopeTmp"/.pid ]] && [[ "$$" == $(cat "$scopeTmp"/.pid 2>/dev/null) ]]
 	then
 		rm -f "$ub_scope" > /dev/null 2>&1			#Symlink, or nonexistent.
-		[[ -e "$scopeTmp" ]] && _safeRMR "$scopeTmp"		#Only created if needed by scope.
+		#Only created if needed by scope.
+		[[ -e "$scopeTmp" ]] && _safeRMR "$scopeTmp"
 	fi
 	
-	[[ -e "$queryTmp" ]] && _safeRMR "$queryTmp"			#Only created if needed by query.
+	#Only created if needed by query.
+	[[ -e "$queryTmp" ]] && _safeRMR "$queryTmp"
 	
-	[[ -e "$engineTmp" ]] && _safeRMR "$engineTmp"			#Only created if needed by engine.
-	[[ -e "$metaTmp" ]] && _safeRMR "$metaTmp"			#Only created if needed by meta.
+	#Only created if needed by engine.
+	[[ -e "$engineTmp" ]] && _safeRMR "$engineTmp"
+	
+	_tryExec _rm_instance_metaengine
 	
 	_safeRMR "$shortTmp"
 	_safeRMR "$safeTmp"

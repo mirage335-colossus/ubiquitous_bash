@@ -56,13 +56,17 @@ _stop() {
 	if [[ -e "$scopeTmp" ]] && [[ -e "$scopeTmp"/.pid ]] && [[ "$$" == $(cat "$scopeTmp"/.pid 2>/dev/null) ]]
 	then
 		rm -f "$ub_scope" > /dev/null 2>&1			#Symlink, or nonexistent.
-		[[ -e "$scopeTmp" ]] && _safeRMR "$scopeTmp"		#Only created if needed by scope.
+		#Only created if needed by scope.
+		[[ -e "$scopeTmp" ]] && _safeRMR "$scopeTmp"
 	fi
 	
-	[[ -e "$queryTmp" ]] && _safeRMR "$queryTmp"			#Only created if needed by query.
+	#Only created if needed by query.
+	[[ -e "$queryTmp" ]] && _safeRMR "$queryTmp"
 	
-	[[ -e "$engineTmp" ]] && _safeRMR "$engineTmp"			#Only created if needed by engine.
-	[[ -e "$metaTmp" ]] && _safeRMR "$metaTmp"			#Only created if needed by meta.
+	#Only created if needed by engine.
+	[[ -e "$engineTmp" ]] && _safeRMR "$engineTmp"
+	
+	_tryExec _rm_instance_metaengine
 	
 	_safeRMR "$shortTmp"
 	_safeRMR "$safeTmp"

@@ -1,5 +1,4 @@
 _rmlink() {
-	! [[ -h "$1" ]] && return 1
 	[[ "$1" == "/dev/null" ]] && return 1
 	
 	[[ -h "$1" ]] && rm -f "$1" && return 0
@@ -23,6 +22,7 @@ _relink_procedure() {
 }
 
 _relink() {
+	[[ "$2" == "/dev/null" ]] && return 1
 	[[ "$relinkRelativeUb" == "true" ]] && export relinkRelativeUb=""
 	_relink_procedure "$@"
 }

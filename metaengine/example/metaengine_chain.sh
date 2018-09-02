@@ -17,5 +17,5 @@ _process() {
 	
 	_reset_me
 	
-	_stop
+	_stop_metaengine_wait
 }

@@ -31,10 +31,10 @@ _report_metaengine() {
 	[[ ! -e "$metaDir"/ao ]] && _messagePlain_warn 'missing: "$metaDir"/ao'
 	[[ ! -e "$metaDir"/bo ]] && _messagePlain_warn 'missing: "$metaDir"/bo'
 	
-	[[ ! -e "$in_me_a_path"/ai ]] && _messagePlain_warn 'missing: in_me_a_path'
-	[[ ! -e "$in_me_b_path"/bi ]] && _messagePlain_warn 'missing: in_me_b_path'
-	[[ ! -e "$out_me_a_path"/ao ]] && _messagePlain_warn 'missing: out_me_a_path'
-	[[ ! -e "$out_me_b_path"/bo ]] && _messagePlain_warn 'missing: out_me_b_path'
+	[[ ! -e "$in_me_a_path" ]] && _messagePlain_warn 'missing: in_me_a_path'
+	[[ ! -e "$in_me_b_path" ]] && _messagePlain_warn 'missing: in_me_b_path'
+	[[ ! -e "$out_me_a_path" ]] && _messagePlain_warn 'missing: out_me_a_path'
+	[[ ! -e "$out_me_b_path" ]] && _messagePlain_warn 'missing: out_me_b_path'
 }
 
 _message_me_vars() {

@@ -1,17 +1,17 @@
 _relink_metaengine_coordinates() {
 	_messagePlain_nominal 'init: _relink_metaengine_coordinates'
 	
-	mkdir -p "$metaReg"/grid/"$in_me_a_z"/"$in_me_a_x"
-	_relink "$in_me_a_path" "$metaDir"/ai
+	_messageCMD mkdir -p "$metaReg"/grid/"$in_me_a_z"/"$in_me_a_x"
+	_messageCMD _relink "$in_me_a_path" "$metaDir"/ai
 	
-	mkdir -p "$metaReg"/grid/"$in_me_b_z"/"$in_me_b_x"
-	_relink "$in_me_b_path" "$metaDir"/bi
+	_messageCMD mkdir -p "$metaReg"/grid/"$in_me_b_z"/"$in_me_b_x"
+	_messageCMD _relink "$in_me_b_path" "$metaDir"/bi
 	
-	mkdir -p "$metaReg"/grid/"$out_me_a_z"/"$out_me_a_x"
-	_relink "$metaDir"/ao "$out_me_a_path"
+	_messageCMD mkdir -p "$metaReg"/grid/"$out_me_a_z"/"$out_me_a_x"
+	_messageCMD _relink "$metaDir"/ao "$out_me_a_path"
 	
-	mkdir -p "$metaReg"/grid/"$out_me_b_z"/"$out_me_b_x"
-	_relink "$metaDir"/bo "$out_me_b_path"
+	_messageCMD mkdir -p "$metaReg"/grid/"$out_me_b_z"/"$out_me_b_x"
+	_messageCMD _relink "$metaDir"/bo "$out_me_b_path"
 	
 	_messagePlain_good 'return: complete'
 	return 0
@@ -43,15 +43,15 @@ _relink_metaengine_name() {
 	#No known production relevance.
 	[[ -e "$metaReg"/name/"$metaID" ]] && _messageError 'FAIL: unexpected safety' && _stop 1
 	
-	mkdir -p "$metaReg"/name/"$in_me_a_name"
-	_relink "$in_me_a_path" "$metaDir"/ai
-	mkdir -p "$metaReg"/name/"$in_me_b_name"
-	_relink "$in_me_b_path" "$metaDir"/bi
+	_messageCMD mkdir -p "$metaReg"/name/"$in_me_a_name"
+	_messageCMD _relink "$in_me_a_path" "$metaDir"/ai
+	_messageCMD mkdir -p "$metaReg"/name/"$in_me_b_name"
+	_messageCMD _relink "$in_me_b_path" "$metaDir"/bi
 	
-	mkdir -p "$metaReg"/name/"$out_me_a_name"
-	_relink "$metaDir"/ao "$out_me_a_path"
-	mkdir -p "$metaReg"/name/"$out_me_b_name"
-	_relink "$metaDir"/bo "$out_me_b_path"
+	_messageCMD mkdir -p "$metaReg"/name/"$out_me_a_name"
+	_messageCMD _relink "$metaDir"/ao "$out_me_a_path"
+	_messageCMD mkdir -p "$metaReg"/name/"$out_me_b_name"
+	_messageCMD _relink "$metaDir"/bo "$out_me_b_path"
 	
 	_messagePlain_good 'return: complete'
 	return 0
@@ -77,9 +77,9 @@ _relink_metaengine() {
 	
 	! _check_me_coordinates && ! _check_me_name && _messageError 'FAIL: invalid IO coordinates and names' && _stop 1
 	
-	_check_me_name && _messagePlain_good 'valid: name' && _prepare_metaengine_name && _relink_metaengine_name && _messagePlain_good 'return: success' return 0
+	_check_me_name && _messagePlain_good 'valid: name' && _prepare_metaengine_name && _relink_metaengine_name && _messagePlain_good 'return: success' && return 0
 	
-	_check_me_coordinates && _messagePlain_good 'valid: coordinates' && _prepare_metaengine_coordinates && _relink_metaengine_coordinates && _messagePlain_good 'return: success' return 0
+	_check_me_coordinates && _messagePlain_good 'valid: coordinates' && _prepare_metaengine_coordinates && _relink_metaengine_coordinates && _messagePlain_good 'return: success' && return 0
 	
 	_messagePlain_bad 'stop: undefined failure'
 	_stop 1
@@ -108,9 +108,11 @@ _prepare_metaengine() {
 }
 
 _start_metaengine_host() {
-	[[ -e "$engineTmp" ]] && _messageError 'FAIL: safety: meta conflicts engine' && _stop 1
+	[[ -e "$scriptAbsoluteFolder""$tmpPrefix"/.e_"$sessionid" ]] && _messageError 'FAIL: safety: meta conflicts engine' && _stop 1
 	
 	_messageNormal 'init: _start_metaengine_host'
+	
+	_set_me_host
 	
 	_start
 	
@@ -120,9 +122,10 @@ _start_metaengine_host() {
 }
 
 _start_metaengine() {
-	[[ -e "$engineTmp" ]] && _messageError 'FAIL: safety: meta conflicts engine' && _stop 1
+	[[ -e "$scriptAbsoluteFolder""$tmpPrefix"/.e_"$sessionid" ]] && _messageError 'FAIL: safety: meta conflicts engine' && _stop 1
 	
-	_messageNormal 'init: _start_metaengine_host'
+	_messageNormal 'processor: '"$metaObjName"
+	_messagePlain_probe 'init: _start_metaengine'
 	
 	_start
 	
@@ -138,11 +141,33 @@ _start_metaengine() {
 	chmod 755 "$metaDir"/.embed.sh
 }
 
+_stop_metaengine_allow() {
+	export metaStop=true
+}
+
+#Indefinitely pauses, allowing SIGINT or similar to trigger "_stop" at any time.
+_stop_metaengine_wait() {
+	_stop_metaengine_allow
+	
+	while true
+	do
+		sleep 90
+	done
+}
+
+_rm_instance_metaengine() {
+	[[ "$metaStop" != "true" ]] && return 0
+	export metaStop=false
+	echo test
+	#Only created if needed by meta.
+	[[ "$metaTmp" != "" ]] && [[ -e "$metaTmp" ]] && _safeRMR "$metaTmp"
+}
+
 _ready_me_in() {
 	! [[ -e "$in_me_a_path" ]] && _messagePlain_warn 'missing: in_me_a_path= '"$in_me_a_path" && return 1
 	! [[ -e "$in_me_b_path" ]] && _messagePlain_warn 'missing: in_me_b_path= '"$in_me_b_path" && return 1
 	
-	_messagePlain_good 'ready: in path'
+	_messagePlain_good 'ready: in_me_a_path, in_me_b_path'
 	return 0
 }
 
@@ -150,19 +175,33 @@ _ready_me_in() {
 _wait_metaengine() {
 	_messagePlain_nominal 'init: _wait_metaengine'
 	
-	! _ready_me_in && sleep 0.1
-	! _ready_me_in && sleep 0.3
-	! _ready_me_in && sleep 1
-	! _ready_me_in && sleep 3
-	! _ready_me_in && sleep 10
-	! _ready_me_in && sleep 10
-	! _ready_me_in && sleep 10
-	! _ready_me_in && sleep 20
-	! _ready_me_in && sleep 20
-	! _ready_me_in && sleep 20
+	_ready_me_in && return 0
+	sleep 0.1
+	_ready_me_in && return 0
+	sleep 0.3
+	_ready_me_in && return 0
+	sleep 1
+	_ready_me_in && return 0
+	sleep 3
+	_ready_me_in && return 0
+	sleep 10
+	_ready_me_in && return 0
+	sleep 10
+	_ready_me_in && return 0
+	sleep 10
+	_ready_me_in && return 0
+	sleep 20
+	_ready_me_in && return 0
+	sleep 20
+	_ready_me_in && return 0
+	sleep 20
+	_ready_me_in && return 0
 	
 	#while ! _ready_me_in
 	#do
 	#	sleep 0.1
 	#done
+	
+	_messagePlain_bad 'missing: in_me_a_path, in_me_b_path'
+	return 1
 }
