@@ -13297,6 +13297,8 @@ _start_metaengine() {
 	_report_metaengine
 	
 	echo $$ > "$metaDir"/.pid
+	_relink "$metaDir"/.pid "$metaDir_tmp"/.pid
+	
 	echo "$sessionid" > "$metaDir"/.sessionid
 	_embed_here > "$metaDir"/.embed.sh
 	chmod 755 "$metaDir"/.embed.sh
@@ -13322,6 +13324,8 @@ _stop_metaengine_wait() {
 _rm_instance_metaengine() {
 	[[ "$metaStop" != "true" ]] && return 0
 	export metaStop="false"
+	
+	_terminateMeta
 	
 	#Only created if needed by meta.
 	[[ "$metaTmp" != "" ]] && [[ -e "$metaTmp" ]] && _safeRMR "$metaTmp"
@@ -13368,6 +13372,23 @@ _wait_metaengine() {
 	
 	_messagePlain_bad 'missing: in_me_a_path, in_me_b_path'
 	return 1
+}
+
+_terminateMeta() {
+	local processListFile
+	processListFile="$scriptAbsoluteFolder"/.pidlist_$(_uid)
+	
+	local currentPID
+	
+	cat "$metaTmp"/*/.pid >> "$processListFile" 2> /dev/null
+	
+	while read -r currentPID
+	do
+		pkill -P "$currentPID"
+		kill "$currentPID"
+	done < "$processListFile"
+	
+	rm "$processListFile"
 }
 
 # TODO: WIP intended to illustrate the basic logic flow. Uses global variables for some arguments - resetting these is MANDATORY .
