@@ -108,6 +108,8 @@ _prepare_metaengine() {
 }
 
 _start_metaengine_host() {
+	_stop_metaengine_allow
+	
 	[[ -e "$scriptAbsoluteFolder""$tmpPrefix"/.e_"$sessionid" ]] && _messageError 'FAIL: safety: meta conflicts engine' && _stop 1
 	
 	_messageNormal 'init: _start_metaengine_host'
@@ -122,6 +124,8 @@ _start_metaengine_host() {
 }
 
 _start_metaengine() {
+	_stop_metaengine_prohibit
+	
 	[[ -e "$scriptAbsoluteFolder""$tmpPrefix"/.e_"$sessionid" ]] && _messageError 'FAIL: safety: meta conflicts engine' && _stop 1
 	
 	_messageNormal 'processor: '"$metaObjName"
@@ -142,7 +146,10 @@ _start_metaengine() {
 }
 
 _stop_metaengine_allow() {
-	export metaStop=true
+	export metaStop="true"
+}
+_stop_metaengine_prohibit() {
+	export metaStop="true"
 }
 
 #Indefinitely pauses, allowing SIGINT or similar to trigger "_stop" at any time.
@@ -157,8 +164,8 @@ _stop_metaengine_wait() {
 
 _rm_instance_metaengine() {
 	[[ "$metaStop" != "true" ]] && return 0
-	export metaStop=false
-	echo test
+	export metaStop="false"
+	
 	#Only created if needed by meta.
 	[[ "$metaTmp" != "" ]] && [[ -e "$metaTmp" ]] && _safeRMR "$metaTmp"
 }
