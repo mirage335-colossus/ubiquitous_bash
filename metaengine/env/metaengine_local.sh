@@ -122,7 +122,7 @@ _start_metaengine_host() {
 	
 	mkdir -p "$metaTmp"
 	
-	_relink "$safeTmp"/.pid "$metaTmp"/.pid
+	#_relink "$safeTmp"/.pid "$metaTmp"/.pid
 }
 
 _start_metaengine() {
@@ -153,7 +153,7 @@ _stop_metaengine_allow() {
 	export metaStop="true"
 }
 _stop_metaengine_prohibit() {
-	export metaStop="true"
+	export metaStop="false"
 }
 
 #Indefinitely pauses, allowing SIGINT or similar to trigger "_stop" at any time.
@@ -221,7 +221,7 @@ _wait_metaengine() {
 
 _terminateMetaProcessorAll_metaengine() {
 	local processListFile
-	processListFile="$scriptAbsoluteFolder"/.pidlist_$(_uid)
+	processListFile="$scriptAbsoluteFolder"/.pidlist_m_$(_uid)
 	
 	local currentPID
 	
@@ -229,8 +229,8 @@ _terminateMetaProcessorAll_metaengine() {
 	
 	while read -r currentPID
 	do
-		pkill -P "$currentPID"
-		kill "$currentPID"
+		pkill -P "$currentPID" > /dev/null 2>&1
+		kill "$currentPID" > /dev/null 2>&1
 	done < "$processListFile"
 	
 	rm "$processListFile"
