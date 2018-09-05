@@ -7,6 +7,8 @@ _report_metaengine() {
 	[[ "$metaBase" == "" ]] && _messagePlain_warn 'blank: metaBase'
 	[[ "$metaObjName" == "" ]] && _messagePlain_warn 'blank: metaObjName'
 	
+	#[[ "$metaType" == "" ]] && _messagePlain_warn 'blank: metaID'
+	
 	[[ "$metaID" == "" ]] && _messagePlain_warn 'blank: metaID'
 	
 	[[ "$metaPath" == "" ]] && _messagePlain_warn 'blank: metaPath'

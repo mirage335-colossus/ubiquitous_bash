@@ -12682,6 +12682,8 @@ _report_metaengine() {
 	[[ "$metaBase" == "" ]] && _messagePlain_warn 'blank: metaBase'
 	[[ "$metaObjName" == "" ]] && _messagePlain_warn 'blank: metaObjName'
 	
+	#[[ "$metaType" == "" ]] && _messagePlain_warn 'blank: metaID'
+	
 	[[ "$metaID" == "" ]] && _messagePlain_warn 'blank: metaID'
 	
 	[[ "$metaPath" == "" ]] && _messagePlain_warn 'blank: metaPath'
@@ -12776,6 +12778,128 @@ _message_me_name() {
 	_messageVar out_me_b_name
 }
 
+_me_var_here_script() {
+	cat << CZXWXcRMTo8EmM8i4d
+	
+export scriptAbsoluteLocation="$scriptAbsoluteLocation"
+export scriptAbsoluteFolder="$scriptAbsoluteFolder"
+export sessionid="$sessionid"
+
+CZXWXcRMTo8EmM8i4d
+}
+
+_me_var_here_prog() {
+	cat << CZXWXcRMTo8EmM8i4d
+CZXWXcRMTo8EmM8i4d
+}
+
+_me_var_here() {
+	_me_var_here_script
+
+	cat << CZXWXcRMTo8EmM8i4d
+
+#Special. Signals do NOT reset metaID .
+export metaEmbed="true"
+
+#equivalent: _set_me_host
+	export metaTmp="$scriptAbsoluteFolder""$tmpPrefix"/.m_"$sessionid"
+
+export metaBase="$metaBase"
+export metaObjName="$metaObjName"
+
+export metaType="$metaType"
+
+export metaID="$metaID"
+
+export metaPath="$metaPath"
+
+export metaDir_tmp="$metaTmp"/"$metaPath"
+export metaDir_base="$metaBase"/"$metaPath"
+
+#equivalent _set_me_dir
+	export metaDir_tmp="$metaTmp"/"$metaPath"
+	export metaDir_base="$metaBase"/"$metaPath"
+	export metaDir="$metaDir_tmp"
+	[[ "$metaType" == "base" ]] && export metaDir="$metaDir_base" && _messagePlain_warn 'metaType= base'
+	[[ "$metaType" == "" ]] && _messagePlain_good 'metaType= '
+
+export metaReg="$metaReg"
+
+export in_me_a_path="$in_me_a_path"
+export in_me_b_path="$in_me_b_path"
+export out_me_a_path="$out_me_a_path"
+export out_me_b_path="$out_me_b_path"
+
+
+
+CZXWXcRMTo8EmM8i4d
+	
+	_me_var_here_prog "$@"
+}
+
+_me_command_here() {
+	cat << CZXWXcRMTo8EmM8i4d
+#!/usr/bin/env bash
+
+#Green. Working as expected.
+_messagePlain_good() {
+	echo -e -n '\E[0;32m '
+	echo -n "$@"
+	echo -e -n ' \E[0m'
+	echo
+	return 0
+}
+
+#Yellow. May or may not be a problem.
+_messagePlain_warn() {
+	echo -e -n '\E[1;33m '
+	echo -n "$@"
+	echo -e -n ' \E[0m'
+	echo
+	return 0
+}
+
+#Red. Will result in missing functionality, reduced performance, etc, but not necessarily program failure overall.
+_messagePlain_bad() {
+	echo -e -n '\E[0;31m '
+	echo -n "$@"
+	echo -e -n ' \E[0m'
+	echo
+	return 0
+}
+
+CZXWXcRMTo8EmM8i4d
+
+	_me_var_here
+
+	cat << CZXWXcRMTo8EmM8i4d
+
+
+. "$scriptAbsoluteLocation" --embed "$1" "\$@"
+CZXWXcRMTo8EmM8i4d
+}
+
+_me_command_here_write() {
+	mkdir -p "$metaDir"
+	_me_command_here "$1" > "$metaDir"/me.sh
+	chmod 700 "$metaDir"/me.sh
+}
+_me_command_here_write_noclobber() {
+	[[ -e "$metaDir"/me.sh ]] && return 0
+	
+	_me_command_here_write "$@"
+}
+_me_command() {
+	_messageNormal 'write: '"$metaObjName"
+	_set_me
+	_me_command_here_write "$@"
+	
+	_messageNormal 'fork: '"$metaObjName"': '"$metaDir"/me.sh
+	"$metaDir"/me.sh &
+}
+
+
+
 _set_me_host() {
 	export metaTmp="$scriptAbsoluteFolder""$tmpPrefix"/.m_"$sessionid"
 }
@@ -12818,6 +12942,8 @@ _reset_me() {
 }
 
 _set_me_uid() {
+	[[ "$metaEmbed" == "true" ]] && return 0
+	echo SETMID
 	export metaID=$(_uid)
 }
 
@@ -12836,7 +12962,6 @@ _reset_me_path() {
 _set_me_dir() {
 	export metaDir_tmp="$metaTmp"/"$metaPath"
 	export metaDir_base="$metaBase"/"$metaPath"
-	
 	export metaDir="$metaDir_tmp"
 	[[ "$metaType" == "base" ]] && export metaDir="$metaDir_base" && _messagePlain_warn 'metaType= base'
 	[[ "$metaType" == "" ]] && _messagePlain_good 'metaType= '
@@ -13199,16 +13324,16 @@ _relink_metaengine_coordinates() {
 	_messagePlain_nominal 'init: _relink_metaengine_coordinates'
 	
 	_messageCMD mkdir -p "$metaReg"/grid/"$in_me_a_z"/"$in_me_a_x"
-	_messageCMD _relink "$in_me_a_path" "$metaDir"/ai
+	_messageCMD _relink_relative "$in_me_a_path" "$metaDir"/ai
 	
 	_messageCMD mkdir -p "$metaReg"/grid/"$in_me_b_z"/"$in_me_b_x"
-	_messageCMD _relink "$in_me_b_path" "$metaDir"/bi
+	_messageCMD _relink_relative "$in_me_b_path" "$metaDir"/bi
 	
 	_messageCMD mkdir -p "$metaReg"/grid/"$out_me_a_z"/"$out_me_a_x"
-	_messageCMD _relink "$metaDir"/ao "$out_me_a_path"
+	_messageCMD _relink_relative "$metaDir"/ao "$out_me_a_path"
 	
 	_messageCMD mkdir -p "$metaReg"/grid/"$out_me_b_z"/"$out_me_b_x"
-	_messageCMD _relink "$metaDir"/bo "$out_me_b_path"
+	_messageCMD _relink_relative "$metaDir"/bo "$out_me_b_path"
 	
 	_messagePlain_good 'return: complete'
 	return 0
@@ -13242,14 +13367,14 @@ _relink_metaengine_name() {
 	[[ -e "$metaReg"/name/"$metaID" ]] && _messageError 'FAIL: unexpected safety' && _stop 1
 	
 	_messageCMD mkdir -p "$metaReg"/name/"$in_me_a_name"
-	_messageCMD _relink "$in_me_a_path" "$metaDir"/ai
+	_messageCMD _relink_relative "$in_me_a_path" "$metaDir"/ai
 	_messageCMD mkdir -p "$metaReg"/name/"$in_me_b_name"
-	_messageCMD _relink "$in_me_b_path" "$metaDir"/bi
+	_messageCMD _relink_relative "$in_me_b_path" "$metaDir"/bi
 	
 	_messageCMD mkdir -p "$metaReg"/name/"$out_me_a_name"
-	_messageCMD _relink "$metaDir"/ao "$out_me_a_path"
+	_messageCMD _relink_relative "$metaDir"/ao "$out_me_a_path"
 	_messageCMD mkdir -p "$metaReg"/name/"$out_me_b_name"
-	_messageCMD _relink "$metaDir"/bo "$out_me_b_path"
+	_messageCMD _relink_relative "$metaDir"/bo "$out_me_b_path"
 	
 	_messagePlain_good 'return: complete'
 	return 0
@@ -13302,6 +13427,8 @@ _prepare_metaengine() {
 	[[ "$metaDir_tmp" != "" ]] && mkdir -p "$metaDir_tmp"
 	[[ "$metaDir" != "" ]] && mkdir -p "$metaDir"
 	
+	mkdir -p "$metaReg"
+	
 	mkdir -p "$metaDir"/ao
 	mkdir -p "$metaDir"/bo
 }
@@ -13319,7 +13446,7 @@ _start_metaengine_host() {
 	
 	mkdir -p "$metaTmp"
 	
-	#_relink "$safeTmp"/.pid "$metaTmp"/.pid
+	#_relink_relative "$safeTmp"/.pid "$metaTmp"/.pid
 }
 
 _start_metaengine() {
@@ -13339,7 +13466,7 @@ _start_metaengine() {
 	_report_metaengine
 	
 	echo $$ > "$metaDir"/.pid
-	_relink "$metaDir"/.pid "$metaDir_tmp"/.pid
+	_relink_relative "$metaDir"/.pid "$metaDir_tmp"/.pid
 	
 	echo "$sessionid" > "$metaDir"/.sessionid
 	_embed_here > "$metaDir"/.embed.sh
@@ -13459,20 +13586,24 @@ _process() {
 _processor_name() {
 	_assign_me_objname "_processor_name"
 	
-	"$scriptAbsoluteLocation" _me_processor_name &
+	_me_command "_me_processor_name"
 	
 	#Optional. Usually correctly orders diagnostic output.
 	sleep 10
 }
 
 _me_processor_name() {
+	_messageNormal 'launch: '"$metaObjName"
+	
 	_start_metaengine
 	_wait_metaengine
 	
 	#Do something.
 	#> cat >
+	echo test
 	sleep 10
 	
+	#optional
 	_stop
 }
 
@@ -14588,6 +14719,8 @@ _compile_bash_vars_metaengine() {
 	export includeScriptList
 	
 	[[ "$enUb_metaengine" == "true" ]] && includeScriptList+=( "metaengine/env"/metaengine_diag.sh )
+	
+	[[ "$enUb_metaengine" == "true" ]] && includeScriptList+=( "metaengine/env"/metaengine_here.sh )
 	[[ "$enUb_metaengine" == "true" ]] && includeScriptList+=( "metaengine/env"/metaengine_vars.sh )
 	[[ "$enUb_metaengine" == "true" ]] && includeScriptList+=( "metaengine/env"/metaengine_parm.sh )
 	[[ "$enUb_metaengine" == "true" ]] && includeScriptList+=( "metaengine/env"/metaengine_local.sh )

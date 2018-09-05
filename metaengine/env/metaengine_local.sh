@@ -2,16 +2,16 @@ _relink_metaengine_coordinates() {
 	_messagePlain_nominal 'init: _relink_metaengine_coordinates'
 	
 	_messageCMD mkdir -p "$metaReg"/grid/"$in_me_a_z"/"$in_me_a_x"
-	_messageCMD _relink "$in_me_a_path" "$metaDir"/ai
+	_messageCMD _relink_relative "$in_me_a_path" "$metaDir"/ai
 	
 	_messageCMD mkdir -p "$metaReg"/grid/"$in_me_b_z"/"$in_me_b_x"
-	_messageCMD _relink "$in_me_b_path" "$metaDir"/bi
+	_messageCMD _relink_relative "$in_me_b_path" "$metaDir"/bi
 	
 	_messageCMD mkdir -p "$metaReg"/grid/"$out_me_a_z"/"$out_me_a_x"
-	_messageCMD _relink "$metaDir"/ao "$out_me_a_path"
+	_messageCMD _relink_relative "$metaDir"/ao "$out_me_a_path"
 	
 	_messageCMD mkdir -p "$metaReg"/grid/"$out_me_b_z"/"$out_me_b_x"
-	_messageCMD _relink "$metaDir"/bo "$out_me_b_path"
+	_messageCMD _relink_relative "$metaDir"/bo "$out_me_b_path"
 	
 	_messagePlain_good 'return: complete'
 	return 0
@@ -45,14 +45,14 @@ _relink_metaengine_name() {
 	[[ -e "$metaReg"/name/"$metaID" ]] && _messageError 'FAIL: unexpected safety' && _stop 1
 	
 	_messageCMD mkdir -p "$metaReg"/name/"$in_me_a_name"
-	_messageCMD _relink "$in_me_a_path" "$metaDir"/ai
+	_messageCMD _relink_relative "$in_me_a_path" "$metaDir"/ai
 	_messageCMD mkdir -p "$metaReg"/name/"$in_me_b_name"
-	_messageCMD _relink "$in_me_b_path" "$metaDir"/bi
+	_messageCMD _relink_relative "$in_me_b_path" "$metaDir"/bi
 	
 	_messageCMD mkdir -p "$metaReg"/name/"$out_me_a_name"
-	_messageCMD _relink "$metaDir"/ao "$out_me_a_path"
+	_messageCMD _relink_relative "$metaDir"/ao "$out_me_a_path"
 	_messageCMD mkdir -p "$metaReg"/name/"$out_me_b_name"
-	_messageCMD _relink "$metaDir"/bo "$out_me_b_path"
+	_messageCMD _relink_relative "$metaDir"/bo "$out_me_b_path"
 	
 	_messagePlain_good 'return: complete'
 	return 0
@@ -105,6 +105,8 @@ _prepare_metaengine() {
 	[[ "$metaDir_tmp" != "" ]] && mkdir -p "$metaDir_tmp"
 	[[ "$metaDir" != "" ]] && mkdir -p "$metaDir"
 	
+	mkdir -p "$metaReg"
+	
 	mkdir -p "$metaDir"/ao
 	mkdir -p "$metaDir"/bo
 }
@@ -122,7 +124,7 @@ _start_metaengine_host() {
 	
 	mkdir -p "$metaTmp"
 	
-	#_relink "$safeTmp"/.pid "$metaTmp"/.pid
+	#_relink_relative "$safeTmp"/.pid "$metaTmp"/.pid
 }
 
 _start_metaengine() {
@@ -142,7 +144,7 @@ _start_metaengine() {
 	_report_metaengine
 	
 	echo $$ > "$metaDir"/.pid
-	_relink "$metaDir"/.pid "$metaDir_tmp"/.pid
+	_relink_relative "$metaDir"/.pid "$metaDir_tmp"/.pid
 	
 	echo "$sessionid" > "$metaDir"/.sessionid
 	_embed_here > "$metaDir"/.embed.sh

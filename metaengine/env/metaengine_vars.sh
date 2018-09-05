@@ -40,6 +40,7 @@ _reset_me() {
 }
 
 _set_me_uid() {
+	[[ "$metaEmbed" == "true" ]] && return 0
 	export metaID=$(_uid)
 }
 
@@ -58,7 +59,6 @@ _reset_me_path() {
 _set_me_dir() {
 	export metaDir_tmp="$metaTmp"/"$metaPath"
 	export metaDir_base="$metaBase"/"$metaPath"
-	
 	export metaDir="$metaDir_tmp"
 	[[ "$metaType" == "base" ]] && export metaDir="$metaDir_base" && _messagePlain_warn 'metaType= base'
 	[[ "$metaType" == "" ]] && _messagePlain_good 'metaType= '
