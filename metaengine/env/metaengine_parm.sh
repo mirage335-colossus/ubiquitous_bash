@@ -41,11 +41,16 @@ _assign_me_name_bi() {
 }
 
 _assign_me_name_ao() {
-	export in_me_ao_name="$1"
+	export out_me_a_name="$1"
 }
 
 _assign_me_name_bo() {
-	export in_me_bo_name="$1"
+	export out_me_b_name="$1"
+}
+
+_assign_me_name_out() {
+	_assign_me_name_ao "$1"
+	_assign_me_name_bo "$1"
 }
 
 

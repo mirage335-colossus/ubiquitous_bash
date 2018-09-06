@@ -54,6 +54,9 @@ _relink_metaengine_name() {
 	_messageCMD mkdir -p "$metaReg"/name/"$out_me_b_name"
 	_messageCMD _relink_relative "$metaDir"/bo "$out_me_b_path"
 	
+	[[ "$out_me_a_path" == "/dev/null" ]] && rmdir "$metaDir"/ao && _relink_relative /dev/null "$metaDir"/ao
+	[[ "$out_me_b_path" == "/dev/null" ]] && rmdir "$metaDir"/bo && _relink_relative /dev/null "$metaDir"/bo
+	
 	_messagePlain_good 'return: complete'
 	return 0
 }
@@ -179,8 +182,13 @@ _rm_instance_metaengine() {
 }
 
 _ready_me_in() {
-	! [[ -e "$in_me_a_path" ]] && _messagePlain_warn 'missing: in_me_a_path= '"$in_me_a_path" && return 1
-	! [[ -e "$in_me_b_path" ]] && _messagePlain_warn 'missing: in_me_b_path= '"$in_me_b_path" && return 1
+	! [[ -e "$in_me_a_path" ]] && _messagePlain_warn 'missing: in_me_a_path= '"$in_me_a_path"
+	! [[ -e "$in_me_b_path" ]] && _messagePlain_warn 'missing: in_me_b_path= '"$in_me_b_path"
+	
+	if [[ ! -e "$in_me_a_path" ]] || [[ ! -e "$in_me_b_path" ]]
+	then
+		return 1
+	fi
 	
 	_messagePlain_good 'ready: in_me_a_path, in_me_b_path'
 	return 0

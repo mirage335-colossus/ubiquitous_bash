@@ -224,9 +224,9 @@ _check_me_rand() {
 _set_me_io_name() {
 	_messagePlain_nominal 'init: _set_me_io_name'
 	
-	export in_me_a_path="$metaReg"/name/"$in_me_a_name"/ai
+	export in_me_a_path="$metaReg"/name/"$in_me_a_name"/ao
 		[[ "$in_me_a_name" == "null" ]] && export in_me_a_path=/dev/null
-	export in_me_b_path="$metaReg"/name/"$in_me_b_name"/bi
+	export in_me_b_path="$metaReg"/name/"$in_me_b_name"/bo
 		[[ "$in_me_b_name" == "null" ]] && export in_me_b_path=/dev/null
 	export out_me_a_path="$metaReg"/name/"$out_me_a_name"/ao
 		[[ "$out_me_a_name" == "null" ]] && export out_me_a_path=/dev/null

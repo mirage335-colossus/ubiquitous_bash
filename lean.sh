@@ -797,7 +797,7 @@ _terminate() {
 }
 
 _terminateMetaHostAll() {
-	! ls -d -1 ./.m_*/.pid > dev/null 2>&1 && return 0
+	! ls -d -1 ./.m_*/.pid > /dev/null 2>&1 && return 0
 	
 	local processListFile
 	processListFile="$scriptAbsoluteFolder"/.pidlist_$(_uid)
@@ -814,21 +814,21 @@ _terminateMetaHostAll() {
 	
 	rm "$processListFile"
 	
-	! ls -d -1 ./.m_*/.pid > dev/null 2>&1 && return 0
+	! ls -d -1 ./.m_*/.pid > /dev/null 2>&1 && return 0
 	sleep 0.3
-	! ls -d -1 ./.m_*/.pid > dev/null 2>&1 && return 0
+	! ls -d -1 ./.m_*/.pid > /dev/null 2>&1 && return 0
 	sleep 1
-	! ls -d -1 ./.m_*/.pid > dev/null 2>&1 && return 0
+	! ls -d -1 ./.m_*/.pid > /dev/null 2>&1 && return 0
 	sleep 3
-	! ls -d -1 ./.m_*/.pid > dev/null 2>&1 && return 0
+	! ls -d -1 ./.m_*/.pid > /dev/null 2>&1 && return 0
 	sleep 10
-	! ls -d -1 ./.m_*/.pid > dev/null 2>&1 && return 0
+	! ls -d -1 ./.m_*/.pid > /dev/null 2>&1 && return 0
 	sleep 20
-	! ls -d -1 ./.m_*/.pid > dev/null 2>&1 && return 0
+	! ls -d -1 ./.m_*/.pid > /dev/null 2>&1 && return 0
 	sleep 20
-	! ls -d -1 ./.m_*/.pid > dev/null 2>&1 && return 0
+	! ls -d -1 ./.m_*/.pid > /dev/null 2>&1 && return 0
 	sleep 20
-	! ls -d -1 ./.m_*/.pid > dev/null 2>&1 && return 0
+	! ls -d -1 ./.m_*/.pid > /dev/null 2>&1 && return 0
 	
 	return 1
 }

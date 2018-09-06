@@ -797,7 +797,7 @@ _terminate() {
 }
 
 _terminateMetaHostAll() {
-	! ls -d -1 ./.m_*/.pid > dev/null 2>&1 && return 0
+	! ls -d -1 ./.m_*/.pid > /dev/null 2>&1 && return 0
 	
 	local processListFile
 	processListFile="$scriptAbsoluteFolder"/.pidlist_$(_uid)
@@ -814,21 +814,21 @@ _terminateMetaHostAll() {
 	
 	rm "$processListFile"
 	
-	! ls -d -1 ./.m_*/.pid > dev/null 2>&1 && return 0
+	! ls -d -1 ./.m_*/.pid > /dev/null 2>&1 && return 0
 	sleep 0.3
-	! ls -d -1 ./.m_*/.pid > dev/null 2>&1 && return 0
+	! ls -d -1 ./.m_*/.pid > /dev/null 2>&1 && return 0
 	sleep 1
-	! ls -d -1 ./.m_*/.pid > dev/null 2>&1 && return 0
+	! ls -d -1 ./.m_*/.pid > /dev/null 2>&1 && return 0
 	sleep 3
-	! ls -d -1 ./.m_*/.pid > dev/null 2>&1 && return 0
+	! ls -d -1 ./.m_*/.pid > /dev/null 2>&1 && return 0
 	sleep 10
-	! ls -d -1 ./.m_*/.pid > dev/null 2>&1 && return 0
+	! ls -d -1 ./.m_*/.pid > /dev/null 2>&1 && return 0
 	sleep 20
-	! ls -d -1 ./.m_*/.pid > dev/null 2>&1 && return 0
+	! ls -d -1 ./.m_*/.pid > /dev/null 2>&1 && return 0
 	sleep 20
-	! ls -d -1 ./.m_*/.pid > dev/null 2>&1 && return 0
+	! ls -d -1 ./.m_*/.pid > /dev/null 2>&1 && return 0
 	sleep 20
-	! ls -d -1 ./.m_*/.pid > dev/null 2>&1 && return 0
+	! ls -d -1 ./.m_*/.pid > /dev/null 2>&1 && return 0
 	
 	return 1
 }
@@ -12943,7 +12943,6 @@ _reset_me() {
 
 _set_me_uid() {
 	[[ "$metaEmbed" == "true" ]] && return 0
-	echo SETMID
 	export metaID=$(_uid)
 }
 
@@ -13127,9 +13126,9 @@ _check_me_rand() {
 _set_me_io_name() {
 	_messagePlain_nominal 'init: _set_me_io_name'
 	
-	export in_me_a_path="$metaReg"/name/"$in_me_a_name"/ai
+	export in_me_a_path="$metaReg"/name/"$in_me_a_name"/ao
 		[[ "$in_me_a_name" == "null" ]] && export in_me_a_path=/dev/null
-	export in_me_b_path="$metaReg"/name/"$in_me_b_name"/bi
+	export in_me_b_path="$metaReg"/name/"$in_me_b_name"/bo
 		[[ "$in_me_b_name" == "null" ]] && export in_me_b_path=/dev/null
 	export out_me_a_path="$metaReg"/name/"$out_me_a_name"/ao
 		[[ "$out_me_a_name" == "null" ]] && export out_me_a_path=/dev/null
@@ -13216,11 +13215,16 @@ _assign_me_name_bi() {
 }
 
 _assign_me_name_ao() {
-	export in_me_ao_name="$1"
+	export out_me_a_name="$1"
 }
 
 _assign_me_name_bo() {
-	export in_me_bo_name="$1"
+	export out_me_b_name="$1"
+}
+
+_assign_me_name_out() {
+	_assign_me_name_ao "$1"
+	_assign_me_name_bo "$1"
 }
 
 
@@ -13376,6 +13380,9 @@ _relink_metaengine_name() {
 	_messageCMD mkdir -p "$metaReg"/name/"$out_me_b_name"
 	_messageCMD _relink_relative "$metaDir"/bo "$out_me_b_path"
 	
+	[[ "$out_me_a_path" == "/dev/null" ]] && rmdir "$metaDir"/ao && _relink_relative /dev/null "$metaDir"/ao
+	[[ "$out_me_b_path" == "/dev/null" ]] && rmdir "$metaDir"/bo && _relink_relative /dev/null "$metaDir"/bo
+	
 	_messagePlain_good 'return: complete'
 	return 0
 }
@@ -13501,8 +13508,13 @@ _rm_instance_metaengine() {
 }
 
 _ready_me_in() {
-	! [[ -e "$in_me_a_path" ]] && _messagePlain_warn 'missing: in_me_a_path= '"$in_me_a_path" && return 1
-	! [[ -e "$in_me_b_path" ]] && _messagePlain_warn 'missing: in_me_b_path= '"$in_me_b_path" && return 1
+	! [[ -e "$in_me_a_path" ]] && _messagePlain_warn 'missing: in_me_a_path= '"$in_me_a_path"
+	! [[ -e "$in_me_b_path" ]] && _messagePlain_warn 'missing: in_me_b_path= '"$in_me_b_path"
+	
+	if [[ ! -e "$in_me_a_path" ]] || [[ ! -e "$in_me_b_path" ]]
+	then
+		return 1
+	fi
 	
 	_messagePlain_good 'ready: in_me_a_path, in_me_b_path'
 	return 0
@@ -13560,48 +13572,98 @@ _terminateMetaProcessorAll_metaengine() {
 	rm "$processListFile"
 }
 
-# TODO: WIP intended to illustrate the basic logic flow. Uses global variables for some arguments - resetting these is MANDATORY .
-_process() {
+# Intended to illustrate the basic logic flow. Uses global variables for some arguments - resetting these is MANDATORY .
+_example_process_rand() {
 	_start_metaengine_host
 	
 	_set_me_null_in
 	_set_me_rand_out
-	_processor_name
+	_example_processor_name
 	
 	_cycle_me
-	_processor_name
+	_example_processor_name
 	
 	_cycle_me
-	_processor_name
+	_example_processor_name
 	
+	_cycle_me
 	_set_me_null_out
-	_processor_name
+	_example_processor_name
 	
 	_reset_me
 	
 	_stop_metaengine_wait
 }
 
-# TODO: WIP intended to illustrate the basic logic flow. Uses global variables for some arguments - resetting these is MANDATORY .
-_processor_name() {
-	_assign_me_objname "_processor_name"
+# Intended to illustrate the basic logic flow. Uses global variables for some arguments - resetting these is MANDATORY .
+_example_process_name() {
+	_start_metaengine_host
 	
-	_me_command "_me_processor_name"
+	_set_me_null_in
+	_assign_me_name_out "1"
+	_example_processor_name
 	
-	#Optional. Usually correctly orders diagnostic output.
-	sleep 10
+	_cycle_me
+	_assign_me_name_out "2"
+	_example_processor_name
+	
+	_cycle_me
+	_assign_me_name_out "3"
+	_example_processor_name
+	
+	_cycle_me
+	_set_me_null_out
+	_example_processor_name
+	
+	_reset_me
+	
+	_stop_metaengine_wait
 }
 
-_me_processor_name() {
+# Intended to illustrate the basic logic flow. Uses global variables for some arguments - resetting these is MANDATORY .
+_example_process_coordinates() {
+	_start_metaengine_host
+	
+	_assign_me_coordinates 0 0 0 0 0 0 1 1 1 1 1 1
+	_example_processor_name
+	
+	_assign_me_coordinates 1 1 1 1 1 1 2 2 2 2 2 2
+	_example_processor_name
+	
+	_assign_me_coordinates 2 2 2 2 2 2 3 3 3 3 3 3
+	_example_processor_name
+	
+	_assign_me_coordinates 3 3 3 3 3 3 4 4 4 4 4 4
+	_example_processor_name
+	
+	_reset_me
+	
+	_stop_metaengine_wait
+}
+
+
+# TODO: WIP intended to illustrate the basic logic flow. Uses global variables for some arguments - resetting these is MANDATORY .
+_example_processor_name() {
+	_assign_me_objname "_example_processor_name"
+	
+	_me_command "_example_me_processor_name"
+	
+	#Optional. Usually correctly orders diagnostic output.
+	sleep 3
+}
+
+_example_me_processor_name() {
 	_messageNormal 'launch: '"$metaObjName"
 	
-	_start_metaengine
 	_wait_metaengine
+	_start_metaengine
 	
 	#Do something.
 	#> cat >
-	echo test
-	sleep 10
+	while true
+	do
+		sleep 10
+	done
 	
 	#optional
 	_stop
