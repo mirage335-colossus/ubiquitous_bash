@@ -205,20 +205,20 @@ _wait_metaengine() {
 	_ready_me_in && return 0
 	sleep 1
 	_ready_me_in && return 0
-	sleep 3
-	_ready_me_in && return 0
-	sleep 10
-	_ready_me_in && return 0
-	sleep 10
-	_ready_me_in && return 0
-	sleep 10
-	_ready_me_in && return 0
-	sleep 20
-	_ready_me_in && return 0
-	sleep 20
-	_ready_me_in && return 0
-	sleep 20
-	_ready_me_in && return 0
+	#sleep 3
+	#_ready_me_in && return 0
+	#sleep 10
+	#_ready_me_in && return 0
+	#sleep 10
+	#_ready_me_in && return 0
+	#sleep 10
+	#_ready_me_in && return 0
+	#sleep 20
+	#_ready_me_in && return 0
+	#sleep 20
+	#_ready_me_in && return 0
+	#sleep 20
+	#_ready_me_in && return 0
 	
 	#while ! _ready_me_in
 	#do

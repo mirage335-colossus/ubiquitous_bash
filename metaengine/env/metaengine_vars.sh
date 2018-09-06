@@ -252,14 +252,14 @@ _set_me_io_coordinates() {
 _set_me_io() {
 	_messagePlain_nominal 'init: _set_me_io'
 	
-	! _check_me_coordinates && ! _check_me_name && _messageError 'FAIL: invalid IO coordinates and names' && return 1
+	! _check_me_coordinates && ! _check_me_name && _messageError 'FAIL: invalid IO coordinates and names' && _stop 1
 	
 	_check_me_name && _messagePlain_good 'valid: name' && _set_me_io_name && _messagePlain_good 'return: success' && return 0
 	
 	_check_me_coordinates && _messagePlain_good 'valid: coordinates' && _set_me_io_coordinates && _messagePlain_good 'return: success' && return 0
 	
-	_messagePlain_warn 'return: undefined failure'
-	return 1
+	_messageError 'FAIL: undefined failure'
+	_stop 1
 }
 
 _reset_me_io() {

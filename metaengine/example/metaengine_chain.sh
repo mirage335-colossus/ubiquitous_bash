@@ -51,6 +51,7 @@ _example_process_coordinates() {
 	_start_metaengine_host
 	
 	_assign_me_coordinates 0 0 0 0 0 0 1 1 1 1 1 1
+	_message_me_coordinates
 	_example_processor_name
 	
 	_assign_me_coordinates 1 1 1 1 1 1 2 2 2 2 2 2

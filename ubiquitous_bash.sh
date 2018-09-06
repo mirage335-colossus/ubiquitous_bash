@@ -13154,14 +13154,14 @@ _set_me_io_coordinates() {
 _set_me_io() {
 	_messagePlain_nominal 'init: _set_me_io'
 	
-	! _check_me_coordinates && ! _check_me_name && _messageError 'FAIL: invalid IO coordinates and names' && return 1
+	! _check_me_coordinates && ! _check_me_name && _messageError 'FAIL: invalid IO coordinates and names' && _stop 1
 	
 	_check_me_name && _messagePlain_good 'valid: name' && _set_me_io_name && _messagePlain_good 'return: success' && return 0
 	
 	_check_me_coordinates && _messagePlain_good 'valid: coordinates' && _set_me_io_coordinates && _messagePlain_good 'return: success' && return 0
 	
-	_messagePlain_warn 'return: undefined failure'
-	return 1
+	_messageError 'FAIL: undefined failure'
+	_stop 1
 }
 
 _reset_me_io() {
@@ -13232,53 +13232,48 @@ _assign_me_name_out() {
 # WARNING: Coordinate assignment by centroid for 3D pipeline representation ONLY. Detailed spatial data to be completely represented in binary formatted named buffers.
 #_assign_me aiX aiY aiZ biX biY biZ aoX aoY aoZ boX boY boZ
 _assign_me_coordinates() {
-	shift ; shift ; shift
-		_assign_me_coordinates_ai
-	shift ; shift ; shift
-		_assign_me_coordinates_bi
-	shift ; shift ; shift
-		_assign_me_coordinates_ao
-	shift ; shift ; shift
-		_assign_me_coordinates_bo
+	_assign_me_coordinates_ai "$1" "$2" "$3"
+		shift ; shift ; shift
+	_assign_me_coordinates_bi "$1" "$2" "$3"
+		shift ; shift ; shift
+	_assign_me_coordinates_ao "$1" "$2" "$3"
+		shift ; shift ; shift
+	_assign_me_coordinates_bo "$1" "$2" "$3"
 }
 
 #_assign_me... X Y Z
 _assign_me_coordinates_ai() {
-	shift
 	export in_me_a_x="$1"
-	shift
+		shift
 	export in_me_a_y="$1"
-	shift
+		shift
 	export in_me_a_z="$1"
 }
 
 #_assign_me... X Y Z
 _assign_me_coordinates_bi() {
-	shift
 	export in_me_b_x="$1"
-	shift
+		shift
 	export in_me_b_y="$1"
-	shift
+		shift
 	export in_me_b_z="$1"
 }
 
 #_assign_me... X Y Z
 _assign_me_coordinates_ao() {
-	shift
 	export out_me_a_x="$1"
-	shift
+		shift
 	export out_me_a_y="$1"
-	shift
+		shift
 	export out_me_a_z="$1"
 }
 
 #_assign_me... X Y Z
 _assign_me_coordinates_bo() {
-	shift
 	export out_me_b_x="$1"
-	shift
+		shift
 	export out_me_b_y="$1"
-	shift
+		shift
 	export out_me_b_z="$1"
 }
 
@@ -13531,20 +13526,20 @@ _wait_metaengine() {
 	_ready_me_in && return 0
 	sleep 1
 	_ready_me_in && return 0
-	sleep 3
-	_ready_me_in && return 0
-	sleep 10
-	_ready_me_in && return 0
-	sleep 10
-	_ready_me_in && return 0
-	sleep 10
-	_ready_me_in && return 0
-	sleep 20
-	_ready_me_in && return 0
-	sleep 20
-	_ready_me_in && return 0
-	sleep 20
-	_ready_me_in && return 0
+	#sleep 3
+	#_ready_me_in && return 0
+	#sleep 10
+	#_ready_me_in && return 0
+	#sleep 10
+	#_ready_me_in && return 0
+	#sleep 10
+	#_ready_me_in && return 0
+	#sleep 20
+	#_ready_me_in && return 0
+	#sleep 20
+	#_ready_me_in && return 0
+	#sleep 20
+	#_ready_me_in && return 0
 	
 	#while ! _ready_me_in
 	#do
@@ -13625,6 +13620,7 @@ _example_process_coordinates() {
 	_start_metaengine_host
 	
 	_assign_me_coordinates 0 0 0 0 0 0 1 1 1 1 1 1
+	_message_me_coordinates
 	_example_processor_name
 	
 	_assign_me_coordinates 1 1 1 1 1 1 2 2 2 2 2 2
