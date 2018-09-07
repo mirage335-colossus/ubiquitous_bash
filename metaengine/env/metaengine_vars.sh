@@ -1,11 +1,21 @@
 _set_me_host() {
+	_set_me_base
+	
 	export metaTmp="$scriptAbsoluteFolder""$tmpPrefix"/.m_"$sessionid"
+	export metaProc="$metaBase""$tmpPrefix"/.m_"$sessionid"
+}
+
+_reset_me_host() {
+	_reset_me_base
+	
+	export metaTmp=
+	export metaProc
 }
 
 _set_me() {
 	_messagePlain_nominal 'init: _set_me'
 	
-	_set_me_base
+	#_set_me_base
 	#_set_me_objname
 	
 	_set_me_uid
@@ -21,8 +31,10 @@ _set_me() {
 }
 
 _reset_me() {
-	_reset_me_base
+	#_reset_me_base
 	#_reset_me_objname
+	
+	_reset_me_host
 	
 	_reset_me_uid
 	
@@ -57,12 +69,15 @@ _reset_me_path() {
 	export metaPath=
 }
 
+# ATTENTION: Overload with "core.sh" if appropriate.
 _set_me_dir() {
 	export metaDir_tmp="$metaTmp"/"$metaPath"
-	export metaDir_base="$metaBase"/"$metaPath"
+	
+	export metaDir_base="$metaProc"/"$metaPath"
+	
 	export metaDir="$metaDir_tmp"
-	[[ "$metaType" == "base" ]] && export metaDir="$metaDir_base" && _messagePlain_warn 'metaType= base'
-	[[ "$metaType" == "" ]] && _messagePlain_good 'metaType= '
+	[[ "$metaType" == "base" ]] && export metaDir="$metaDir_base" && _messagePlain_warn 'metaDir= base'
+	[[ "$metaType" == "" ]] && _messagePlain_good 'metaDir= tmp'
 }
 
 _reset_me_dir() {
@@ -72,9 +87,11 @@ _reset_me_dir() {
 	export metaDir=
 }
 
+# ATTENTION: Overload with "core.sh" if appropriate.
 _set_me_reg() {
 	export metaReg="$metaTmp"/_reg
-	[[ "$metaType" == "base" ]] && export metaReg="$metaBase"/_reg
+	[[ "$metaType" == "base" ]] && export metaReg="$metaBase"/_reg && _messagePlain_warn 'metaReg= base'
+	[[ "$metaType" == "" ]] && _messagePlain_good 'metaReg= tmp'
 }
 
 _reset_me_reg() {
@@ -101,7 +118,7 @@ _reset_me_base() {
 }
 
 # ATTENTION: Overload with "core.sh" if appropriate.
-# WARNING: No production use.
+# WARNING: No default production use.
 _set_me_objname() {
 	export metaObjName=
 	

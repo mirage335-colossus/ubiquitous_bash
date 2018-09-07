@@ -22,10 +22,10 @@ _me_var_here() {
 export metaEmbed="true"
 
 #equivalent: _set_me_host
+	export metaBase="$metaBase"
+	export metaObjName="$metaObjName"
 	export metaTmp="$scriptAbsoluteFolder""$tmpPrefix"/.m_"$sessionid"
-
-export metaBase="$metaBase"
-export metaObjName="$metaObjName"
+	export metaProc="$metaBase""$tmpPrefix"/.m_"$sessionid"
 
 export metaType="$metaType"
 
