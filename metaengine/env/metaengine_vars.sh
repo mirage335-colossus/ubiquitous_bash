@@ -2,6 +2,8 @@ _set_me_host() {
 	_set_me_base
 	
 	export metaTmp="$scriptAbsoluteFolder""$tmpPrefix"/.m_"$sessionid"
+	
+	# WARNING: Setting metaProc to a value not including sessionid disables automatic removal by default!
 	export metaProc="$metaBase""$tmpPrefix"/.m_"$sessionid"
 }
 

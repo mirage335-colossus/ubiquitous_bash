@@ -587,6 +587,9 @@ _safeRMR() {
 	#[[ "$1" == "/home/$USER"* ]] && safeToRM="true"
 	[[ "$1" == "/tmp/"* ]] && safeToRM="true"
 	
+	# WARNING: Allows removal of temporary folders created by current ubiquitous bash session only.
+	[[ "$sessionid" != "" ]] && [[ "$1" == *"$sessionid"* ]] && safeToRM="true"
+	
 	[[ "$safeToRM" == "false" ]] && return 1
 	
 	#Safeguards/
@@ -666,6 +669,9 @@ _safePath() {
 	
 	#[[ "$1" == "/home/$USER"* ]] && safeToRM="true"
 	[[ "$1" == "/tmp/"* ]] && safeToRM="true"
+	
+	# WARNING: Allows removal of temporary folders created by current ubiquitous bash session only.
+	[[ "$sessionid" != "" ]] && [[ "$1" == *"$sessionid"* ]] && safeToRM="true"
 	
 	[[ "$safeToRM" == "false" ]] && return 1
 	
@@ -12802,10 +12808,12 @@ _me_var_here() {
 export metaEmbed="true"
 
 #equivalent: _set_me_host
+	export metaBase="$metaBase"
+	export metaObjName="$metaObjName"
 	export metaTmp="$scriptAbsoluteFolder""$tmpPrefix"/.m_"$sessionid"
-
-export metaBase="$metaBase"
-export metaObjName="$metaObjName"
+	export metaProc="$metaProc"
+	# WARNING: Setting metaProc to a value not including sessionid disables automatic removal by default!
+	#export metaProc="$metaBase""$tmpPrefix"/.m_"$sessionid"
 
 export metaType="$metaType"
 
@@ -12901,13 +12909,25 @@ _me_command() {
 
 
 _set_me_host() {
+	_set_me_base
+	
 	export metaTmp="$scriptAbsoluteFolder""$tmpPrefix"/.m_"$sessionid"
+	
+	# WARNING: Setting metaProc to a value not including sessionid disables automatic removal by default!
+	export metaProc="$metaBase""$tmpPrefix"/.m_"$sessionid"
+}
+
+_reset_me_host() {
+	_reset_me_base
+	
+	export metaTmp=
+	export metaProc
 }
 
 _set_me() {
 	_messagePlain_nominal 'init: _set_me'
 	
-	_set_me_base
+	#_set_me_base
 	#_set_me_objname
 	
 	_set_me_uid
@@ -12923,8 +12943,10 @@ _set_me() {
 }
 
 _reset_me() {
-	_reset_me_base
+	#_reset_me_base
 	#_reset_me_objname
+	
+	_reset_me_host
 	
 	_reset_me_uid
 	
@@ -12959,12 +12981,15 @@ _reset_me_path() {
 	export metaPath=
 }
 
+# ATTENTION: Overload with "core.sh" if appropriate.
 _set_me_dir() {
 	export metaDir_tmp="$metaTmp"/"$metaPath"
-	export metaDir_base="$metaBase"/"$metaPath"
+	
+	export metaDir_base="$metaProc"/"$metaPath"
+	
 	export metaDir="$metaDir_tmp"
-	[[ "$metaType" == "base" ]] && export metaDir="$metaDir_base" && _messagePlain_warn 'metaType= base'
-	[[ "$metaType" == "" ]] && _messagePlain_good 'metaType= '
+	[[ "$metaType" == "base" ]] && export metaDir="$metaDir_base" && _messagePlain_warn 'metaDir= base'
+	[[ "$metaType" == "" ]] && _messagePlain_good 'metaDir= tmp'
 }
 
 _reset_me_dir() {
@@ -12974,9 +12999,11 @@ _reset_me_dir() {
 	export metaDir=
 }
 
+# ATTENTION: Overload with "core.sh" if appropriate.
 _set_me_reg() {
 	export metaReg="$metaTmp"/_reg
-	[[ "$metaType" == "base" ]] && export metaReg="$metaBase"/_reg
+	[[ "$metaType" == "base" ]] && export metaReg="$metaBase"/_reg && _messagePlain_warn 'metaReg= base'
+	[[ "$metaType" == "" ]] && _messagePlain_good 'metaReg= tmp'
 }
 
 _reset_me_reg() {
@@ -13003,7 +13030,7 @@ _reset_me_base() {
 }
 
 # ATTENTION: Overload with "core.sh" if appropriate.
-# WARNING: No production use.
+# WARNING: No default production use.
 _set_me_objname() {
 	export metaObjName=
 	
@@ -13698,6 +13725,8 @@ _rm_instance_metaengine() {
 	
 	#Only created if needed by meta.
 	[[ "$metaTmp" != "" ]] && [[ -e "$metaTmp" ]] && _safeRMR "$metaTmp"
+	
+	[[ "$metaProc" != "" ]] && [[ "$metaProc" == *"$sessionid"* ]] && [[ -e "$metaProc" ]] && _safeRMR "$metaProc"
 }
 
 _ready_me_in() {

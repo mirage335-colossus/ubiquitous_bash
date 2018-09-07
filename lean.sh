@@ -587,6 +587,9 @@ _safeRMR() {
 	#[[ "$1" == "/home/$USER"* ]] && safeToRM="true"
 	[[ "$1" == "/tmp/"* ]] && safeToRM="true"
 	
+	# WARNING: Allows removal of temporary folders created by current ubiquitous bash session only.
+	[[ "$sessionid" != "" ]] && [[ "$1" == *"$sessionid"* ]] && safeToRM="true"
+	
 	[[ "$safeToRM" == "false" ]] && return 1
 	
 	#Safeguards/
@@ -666,6 +669,9 @@ _safePath() {
 	
 	#[[ "$1" == "/home/$USER"* ]] && safeToRM="true"
 	[[ "$1" == "/tmp/"* ]] && safeToRM="true"
+	
+	# WARNING: Allows removal of temporary folders created by current ubiquitous bash session only.
+	[[ "$sessionid" != "" ]] && [[ "$1" == *"$sessionid"* ]] && safeToRM="true"
 	
 	[[ "$safeToRM" == "false" ]] && return 1
 	

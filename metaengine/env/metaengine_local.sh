@@ -271,7 +271,7 @@ _rm_instance_metaengine() {
 	#Only created if needed by meta.
 	[[ "$metaTmp" != "" ]] && [[ -e "$metaTmp" ]] && _safeRMR "$metaTmp"
 	
-	[[ "$metaProc" != "" ]] && [[ -e "$metaProc" ]] && _safeRMR "$metaProc"
+	[[ "$metaProc" != "" ]] && [[ "$metaProc" == *"$sessionid"* ]] && [[ -e "$metaProc" ]] && _safeRMR "$metaProc"
 }
 
 _ready_me_in() {
