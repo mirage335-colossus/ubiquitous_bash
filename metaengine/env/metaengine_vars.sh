@@ -14,7 +14,8 @@ _set_me() {
 	_set_me_dir
 	_set_me_reg
 	
-	_set_me_io
+	_set_me_io_in
+	_set_me_io_out
 	
 	_message_me_set
 }
@@ -173,6 +174,18 @@ _check_me_coordinates_bo() {
 	return 0
 }
 
+_check_me_coordinates_in() {
+	! _check_me_coordinates_ai && return 1
+	! _check_me_coordinates_bi && return 1
+	return 0
+}
+
+_check_me_coordinates_out() {
+	! _check_me_coordinates_ao && return 1
+	! _check_me_coordinates_bo && return 1
+	return 0
+}
+
 _check_me_coordinates() {
 	! _check_me_coordinates_ai && return 1
 	! _check_me_coordinates_bi && return 1
@@ -210,6 +223,18 @@ _reset_me_name() {
 	_reset_me_name_bo
 }
 
+_check_me_name_in() {
+	[[ "$in_me_a_name" == "" ]] && return 1
+	[[ "$in_me_b_name" == "" ]] && return 1
+	return 0
+}
+
+_check_me_name_out() {
+	[[ "$out_me_a_name" == "" ]] && return 1
+	[[ "$out_me_b_name" == "" ]] && return 1
+	return 0
+}
+
 _check_me_name() {
 	[[ "$in_me_a_name" == "" ]] && return 1
 	[[ "$in_me_b_name" == "" ]] && return 1
@@ -221,6 +246,32 @@ _check_me_rand() {
 	_check_me_name
 }
 
+
+_set_me_io_name_in() {
+	_messagePlain_nominal 'init: _set_me_io_name_in'
+	
+	export in_me_a_path="$metaReg"/name/"$in_me_a_name"/ao
+		[[ "$in_me_a_name" == "null" ]] && export in_me_a_path=/dev/null
+	export in_me_b_path="$metaReg"/name/"$in_me_b_name"/bo
+		[[ "$in_me_b_name" == "null" ]] && export in_me_b_path=/dev/null
+	
+	_messagePlain_good 'return: success'
+	return 0
+}
+
+_set_me_io_name_out() {
+	_messagePlain_nominal 'init: _set_me_io_name_out'
+	
+	export out_me_a_path="$metaReg"/name/"$out_me_a_name"/ao
+		[[ "$out_me_a_name" == "null" ]] && export out_me_a_path=/dev/null
+	export out_me_b_path="$metaReg"/name/"$out_me_b_name"/bo
+		[[ "$out_me_b_name" == "null" ]] && export out_me_b_path=/dev/null
+	
+	_messagePlain_good 'return: success'
+	return 0
+}
+
+#No production use.
 _set_me_io_name() {
 	_messagePlain_nominal 'init: _set_me_io_name'
 	
@@ -237,6 +288,27 @@ _set_me_io_name() {
 	return 0
 }
 
+_set_me_io_coordinates_in() {
+	_messagePlain_nominal 'init: _set_me_io_coordinates_in'
+	
+	export in_me_a_path="$metaReg"/grid/"$in_me_a_z"/"$in_me_a_x"/"$in_me_a_y"
+	export in_me_b_path="$metaReg"/grid/"$in_me_b_z"/"$in_me_b_x"/"$in_me_b_y"
+	
+	_messagePlain_good 'return: success'
+	return 0
+}
+
+_set_me_io_coordinates_out() {
+	_messagePlain_nominal 'init: _set_me_io_coordinates_out'
+	
+	export out_me_a_path="$metaReg"/grid/"$out_me_a_z"/"$out_me_a_x"/"$out_me_a_y"
+	export out_me_b_path="$metaReg"/grid/"$out_me_b_z"/"$out_me_b_x"/"$out_me_b_y"
+	
+	_messagePlain_good 'return: success'
+	return 0
+}
+
+#No production use.
 _set_me_io_coordinates() {
 	_messagePlain_nominal 'init: _set_me_io_coordinates'
 	
@@ -249,14 +321,49 @@ _set_me_io_coordinates() {
 	return 0
 }
 
+_set_me_io_in() {
+	_messagePlain_nominal 'init: _set_me_io'
+	
+	! _check_me_coordinates_in && ! _check_me_name_in && _messageError 'FAIL: invalid IO coordinates and names' && _stop 1
+	
+	#_check_me_name && _messagePlain_good 'valid: name' && _set_me_io_name && _messagePlain_good 'return: success' && return 0
+	_check_me_name_in && _messagePlain_good 'valid: name_in' && _set_me_io_name_in && _messagePlain_good 'return: success' && return 0
+	
+	#_check_me_coordinates && _messagePlain_good 'valid: coordinates' && _set_me_io_coordinates && _messagePlain_good 'return: success' && return 0
+	_check_me_coordinates_in && _messagePlain_good 'valid: coordinates_in' && _set_me_io_coordinates_in && _messagePlain_good 'return: success' && return 0
+	
+	_messageError 'FAIL: undefined failure'
+	_stop 1
+}
+
+_set_me_io_out() {
+	_messagePlain_nominal 'init: _set_me_io'
+	
+	! _check_me_coordinates_out && ! _check_me_name_out && _messageError 'FAIL: invalid IO coordinates and names' && _stop 1
+	
+	#_check_me_name && _messagePlain_good 'valid: name' && _set_me_io_name && _messagePlain_good 'return: success' && return 0
+	_check_me_name_out && _messagePlain_good 'valid: name_out' && _set_me_io_name_out && _messagePlain_good 'return: success' && return 0
+	
+	#_check_me_coordinates && _messagePlain_good 'valid: coordinates' && _set_me_io_coordinates && _messagePlain_good 'return: success' && return 0
+	_check_me_coordinates_out && _messagePlain_good 'valid: coordinates_out' && _set_me_io_coordinates_out && _messagePlain_good 'return: success' && return 0
+	
+	_messageError 'FAIL: undefined failure'
+	_stop 1
+}
+
+#No production use.
 _set_me_io() {
 	_messagePlain_nominal 'init: _set_me_io'
 	
 	! _check_me_coordinates && ! _check_me_name && _messageError 'FAIL: invalid IO coordinates and names' && _stop 1
 	
-	_check_me_name && _messagePlain_good 'valid: name' && _set_me_io_name && _messagePlain_good 'return: success' && return 0
+	#_check_me_name && _messagePlain_good 'valid: name' && _set_me_io_name && _messagePlain_good 'return: success' && return 0
+	_check_me_name_in && _messagePlain_good 'valid: name_in' && _set_me_io_name_in && _messagePlain_good 'return: success' && return 0
+	_check_me_name_out && _messagePlain_good 'valid: name_out' && _set_me_io_name_out && _messagePlain_good 'return: success' && return 0
 	
-	_check_me_coordinates && _messagePlain_good 'valid: coordinates' && _set_me_io_coordinates && _messagePlain_good 'return: success' && return 0
+	#_check_me_coordinates && _messagePlain_good 'valid: coordinates' && _set_me_io_coordinates && _messagePlain_good 'return: success' && return 0
+	_check_me_coordinates_in && _messagePlain_good 'valid: coordinates_in' && _set_me_io_coordinates_in && _messagePlain_good 'return: success' && return 0
+	_check_me_coordinates_out && _messagePlain_good 'valid: coordinates_out' && _set_me_io_coordinates_out && _messagePlain_good 'return: success' && return 0
 	
 	_messageError 'FAIL: undefined failure'
 	_stop 1

@@ -53,17 +53,21 @@ _example_process_coordinates() {
 	#_assign_me_coordinates aiX aiY aiZ biX biY biZ aoX aoY aoZ boX boY boZ
 	#"$metaReg"/grid/"$z"/"$x"/"$y"
 	
-	_assign_me_coordinates 0 0 0 0 0 0 0 1 0 0 1 0
-	_message_me_coordinates
+	_reset_me_name
+	_assign_me_coordinates "" "" "" "" "" "" 0 1 0 1 1 0
+	_set_me_null_in
 	_example_processor_name
 	
-	_assign_me_coordinates 0 1 0 0 1 0 0 2 0 0 2 0
+	_reset_me_name
+	_assign_me_coordinates 0 1 0 1 1 0 0 2 0 1 2 0
 	_example_processor_name
 	
-	_assign_me_coordinates 0 2 0 0 2 0 0 3 0 0 3 0
+	_reset_me_name
+	_assign_me_coordinates 0 2 0 1 2 0 0 3 0 1 3 0
 	_example_processor_name
 	
-	_assign_me_coordinates 0 3 0 0 3 0 0 4 0 0 4 0
+	_reset_me_name
+	_assign_me_coordinates 0 3 0 1 3 0 0 4 0 1 4 0
 	_example_processor_name
 	
 	_reset_me

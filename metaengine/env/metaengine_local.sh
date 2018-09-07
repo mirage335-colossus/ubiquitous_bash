@@ -1,3 +1,30 @@
+_relink_metaengine_coordinates_in() {
+	_messagePlain_nominal 'init: _relink_metaengine_coordinates_in'
+	
+	_messageCMD mkdir -p "$metaReg"/grid/"$in_me_a_z"/"$in_me_a_x"
+	_messageCMD _relink_relative "$in_me_a_path" "$metaDir"/ai
+	
+	_messageCMD mkdir -p "$metaReg"/grid/"$in_me_b_z"/"$in_me_b_x"
+	_messageCMD _relink_relative "$in_me_b_path" "$metaDir"/bi
+	
+	_messagePlain_good 'return: complete'
+	return 0
+}
+
+_relink_metaengine_coordinates_out() {
+	_messagePlain_nominal 'init: _relink_metaengine_coordinates_out'
+	
+	_messageCMD mkdir -p "$metaReg"/grid/"$out_me_a_z"/"$out_me_a_x"
+	_messageCMD _relink_relative "$metaDir"/ao "$out_me_a_path"
+	
+	_messageCMD mkdir -p "$metaReg"/grid/"$out_me_b_z"/"$out_me_b_x"
+	_messageCMD _relink_relative "$metaDir"/bo "$out_me_b_path"
+	
+	_messagePlain_good 'return: complete'
+	return 0
+}
+
+#No production use.
 _relink_metaengine_coordinates() {
 	_messagePlain_nominal 'init: _relink_metaengine_coordinates'
 	
@@ -36,8 +63,40 @@ _rmlink_metaengine_coordinates() {
 	rmdir "$metaReg"/grid/"$out_me_b_z" > /dev/null 2>&1
 }
 
+_relink_metaengine_name_in() {
+	_messagePlain_nominal 'init: _relink_metaengine_name'
+	
+	#No known production relevance.
+	[[ -e "$metaReg"/name/"$metaID" ]] && _messageError 'FAIL: unexpected safety' && _stop 1
+	
+	_messageCMD mkdir -p "$metaReg"/name/"$in_me_a_name"
+	_messageCMD _relink_relative "$in_me_a_path" "$metaDir"/ai
+	_messageCMD mkdir -p "$metaReg"/name/"$in_me_b_name"
+	_messageCMD _relink_relative "$in_me_b_path" "$metaDir"/bi
+	
+	_messagePlain_good 'return: complete'
+	return 0
+}
 
+_relink_metaengine_name_out() {
+	_messagePlain_nominal 'init: _relink_metaengine_name'
+	
+	#No known production relevance.
+	[[ -e "$metaReg"/name/"$metaID" ]] && _messageError 'FAIL: unexpected safety' && _stop 1
+	
+	_messageCMD mkdir -p "$metaReg"/name/"$out_me_a_name"
+	_messageCMD _relink_relative "$metaDir"/ao "$out_me_a_path"
+	_messageCMD mkdir -p "$metaReg"/name/"$out_me_b_name"
+	_messageCMD _relink_relative "$metaDir"/bo "$out_me_b_path"
+	
+	[[ "$out_me_a_path" == "/dev/null" ]] && rmdir "$metaDir"/ao && _relink_relative /dev/null "$metaDir"/ao
+	[[ "$out_me_b_path" == "/dev/null" ]] && rmdir "$metaDir"/bo && _relink_relative /dev/null "$metaDir"/bo
+	
+	_messagePlain_good 'return: complete'
+	return 0
+}
 
+#No production use.
 _relink_metaengine_name() {
 	_messagePlain_nominal 'init: _relink_metaengine_name'
 	
@@ -76,15 +135,49 @@ _rmlink_metaengine_name() {
 }
 
 
+_relink_metaengine_out() {
+	_messagePlain_nominal 'init: _relink_metaengine'
+	
+	! _check_me_coordinates_out && ! _check_me_name_out && _messageError 'FAIL: invalid IO coordinates and names' && _stop 1
+	
+	#_check_me_name && _messagePlain_good 'valid: name' && _prepare_metaengine_name && _relink_metaengine_name && _messagePlain_good 'return: success' && return 0
+	_check_me_name_out && _messagePlain_good 'valid: name_out' && _prepare_metaengine_name && _relink_metaengine_name_out && _messagePlain_good 'return: success' && return 0
+	
+	#_check_me_coordinates && _messagePlain_good 'valid: coordinates' && _prepare_metaengine_coordinates && _relink_metaengine_coordinates && _messagePlain_good 'return: success' && return 0
+	_check_me_coordinates_out && _messagePlain_good 'valid: coordinates_out' && _prepare_metaengine_coordinates && _relink_metaengine_coordinates_out && _messagePlain_good 'return: success' && return 0
+	
+	_messagePlain_bad 'stop: undefined failure'
+	_stop 1
+}
 
+_relink_metaengine_in() {
+	_messagePlain_nominal 'init: _relink_metaengine'
+	
+	! _check_me_coordinates_in && ! _check_me_name_in && _messageError 'FAIL: invalid IO coordinates and names' && _stop 1
+	
+	#_check_me_name && _messagePlain_good 'valid: name' && _prepare_metaengine_name && _relink_metaengine_name && _messagePlain_good 'return: success' && return 0
+	_check_me_name_in && _messagePlain_good 'valid: name_in' && _prepare_metaengine_name && _relink_metaengine_name_in && _messagePlain_good 'return: success' && return 0
+	
+	#_check_me_coordinates && _messagePlain_good 'valid: coordinates' && _prepare_metaengine_coordinates && _relink_metaengine_coordinates && _messagePlain_good 'return: success' && return 0
+	_check_me_coordinates_in && _messagePlain_good 'valid: coordinates_in' && _prepare_metaengine_coordinates && _relink_metaengine_coordinates_in && _messagePlain_good 'return: success' && return 0
+	
+	_messagePlain_bad 'stop: undefined failure'
+	_stop 1
+}
+
+#No production use.
 _relink_metaengine() {
 	_messagePlain_nominal 'init: _relink_metaengine'
 	
 	! _check_me_coordinates && ! _check_me_name && _messageError 'FAIL: invalid IO coordinates and names' && _stop 1
 	
-	_check_me_name && _messagePlain_good 'valid: name' && _prepare_metaengine_name && _relink_metaengine_name && _messagePlain_good 'return: success' && return 0
+	#_check_me_name && _messagePlain_good 'valid: name' && _prepare_metaengine_name && _relink_metaengine_name && _messagePlain_good 'return: success' && return 0
+	_check_me_name_in && _messagePlain_good 'valid: name_in' && _prepare_metaengine_name && _relink_metaengine_name_in && _messagePlain_good 'return: success' && return 0
+	_check_me_name_out && _messagePlain_good 'valid: name_out' && _prepare_metaengine_name && _relink_metaengine_name_out && _messagePlain_good 'return: success' && return 0
 	
-	_check_me_coordinates && _messagePlain_good 'valid: coordinates' && _prepare_metaengine_coordinates && _relink_metaengine_coordinates && _messagePlain_good 'return: success' && return 0
+	#_check_me_coordinates && _messagePlain_good 'valid: coordinates' && _prepare_metaengine_coordinates && _relink_metaengine_coordinates && _messagePlain_good 'return: success' && return 0
+	_check_me_coordinates_in && _messagePlain_good 'valid: coordinates_in' && _prepare_metaengine_coordinates && _relink_metaengine_coordinates_in && _messagePlain_good 'return: success' && return 0
+	_check_me_coordinates_out && _messagePlain_good 'valid: coordinates_out' && _prepare_metaengine_coordinates && _relink_metaengine_coordinates_out && _messagePlain_good 'return: success' && return 0
 	
 	_messagePlain_bad 'stop: undefined failure'
 	_stop 1
@@ -93,9 +186,6 @@ _relink_metaengine() {
 
 _prepare_metaengine_coordinates() {
 	mkdir -p "$metaReg"/grid
-	mkdir -p "$metaReg"/x
-	mkdir -p "$metaReg"/y
-	mkdir -p "$metaReg"/z
 }
 
 _prepare_metaengine_name() {
@@ -142,7 +232,8 @@ _start_metaengine() {
 	
 	_set_me
 	_prepare_metaengine
-	_relink_metaengine
+	_relink_metaengine_in
+	_relink_metaengine_out
 	
 	_report_metaengine
 	
