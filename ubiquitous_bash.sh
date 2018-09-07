@@ -13230,7 +13230,7 @@ _assign_me_name_out() {
 
 
 # WARNING: Coordinate assignment by centroid for 3D pipeline representation ONLY. Detailed spatial data to be completely represented in binary formatted named buffers.
-#_assign_me aiX aiY aiZ biX biY biZ aoX aoY aoZ boX boY boZ
+#_assign_me_coordinates aiX aiY aiZ biX biY biZ aoX aoY aoZ boX boY boZ
 _assign_me_coordinates() {
 	_assign_me_coordinates_ai "$1" "$2" "$3"
 		shift ; shift ; shift
@@ -13619,17 +13619,19 @@ _example_process_name() {
 _example_process_coordinates() {
 	_start_metaengine_host
 	
-	_assign_me_coordinates 0 0 0 0 0 0 1 1 1 1 1 1
+	#_assign_me_coordinates aiX aiY aiZ biX biY biZ aoX aoY aoZ boX boY boZ
+	
+	_assign_me_coordinates 0 0 0 0 0 0 0 1 0 0 1 0
 	_message_me_coordinates
 	_example_processor_name
 	
-	_assign_me_coordinates 1 1 1 1 1 1 2 2 2 2 2 2
+	_assign_me_coordinates 0 1 0 0 1 0 0 2 0 0 2 0
 	_example_processor_name
 	
-	_assign_me_coordinates 2 2 2 2 2 2 3 3 3 3 3 3
+	_assign_me_coordinates 0 2 0 0 2 0 0 3 0 0 3 0
 	_example_processor_name
 	
-	_assign_me_coordinates 3 3 3 3 3 3 4 4 4 4 4 4
+	_assign_me_coordinates 0 3 0 0 3 0 0 4 0 0 4 0
 	_example_processor_name
 	
 	_reset_me

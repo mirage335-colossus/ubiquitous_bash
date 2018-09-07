@@ -56,7 +56,7 @@ _assign_me_name_out() {
 
 
 # WARNING: Coordinate assignment by centroid for 3D pipeline representation ONLY. Detailed spatial data to be completely represented in binary formatted named buffers.
-#_assign_me aiX aiY aiZ biX biY biZ aoX aoY aoZ boX boY boZ
+#_assign_me_coordinates aiX aiY aiZ biX biY biZ aoX aoY aoZ boX boY boZ
 _assign_me_coordinates() {
 	_assign_me_coordinates_ai "$1" "$2" "$3"
 		shift ; shift ; shift
