@@ -4449,11 +4449,11 @@ _stopwatch() {
 	local measureDateB
 	
 	measureDateA=$(date +%s%N | cut -b1-13)
-
+	
 	"$@"
-
+	
 	measureDateB=$(date +%s%N | cut -b1-13)
-
+	
 	bc <<< "$measureDateB - $measureDateA"
 }
 
@@ -13688,7 +13688,8 @@ _start_metaengine() {
 	_messageNormal 'processor: '"$metaObjName"
 	_messagePlain_probe 'init: _start_metaengine'
 	
-	_start
+	_prepare
+	#_start
 	
 	_set_me
 	_prepare_metaengine
@@ -13718,7 +13719,7 @@ _stop_metaengine_wait() {
 	
 	while true
 	do
-		sleep 90
+		sleep 1
 	done
 }
 
@@ -14047,16 +14048,19 @@ _example_process_base() {
 
 
 # Intended to illustrate the basic logic flow. Uses global variables for some arguments - resetting these is MANDATORY .
-_example_processor_name() {
-	_assign_me_objname "_example_processor_name"
+#"$1" == _me_processor_name
+#"$2" == metaObjName (optional)
+_processor_launch() {
+	_assign_me_objname "$1"
+	[[ "$2" != "" ]] && _assign_me_objname "$2"
 	
-	_me_command "_example_me_processor_name"
+	_me_command "$1"
 	
 	#Optional. Usually correctly orders diagnostic output.
 	sleep 3
 }
 
-_example_me_processor_name() {
+_me_processor_noise() {
 	_messageNormal 'launch: '"$metaObjName"
 	
 	_wait_metaengine
@@ -14066,7 +14070,7 @@ _example_me_processor_name() {
 	#> cat >
 	while true
 	do
-		sleep 10
+		sleep 1
 	done
 	
 	#optional
@@ -15196,6 +15200,7 @@ _compile_bash_vars_metaengine() {
 	
 	[[ "$enUb_metaengine" == "true" ]] && includeScriptList+=( "metaengine/typical"/typical_metaengine_chain.sh )
 	[[ "$enUb_metaengine" == "true" ]] && includeScriptList+=( "metaengine/typical"/typical_metaengine_object.sh )
+	[[ "$enUb_metaengine" == "true" ]] && includeScriptList+=( "metaengine/typical"/typical_metaengine_vars.sh )
 }
 
 _findUbiquitous() {

@@ -228,7 +228,8 @@ _start_metaengine() {
 	_messageNormal 'processor: '"$metaObjName"
 	_messagePlain_probe 'init: _start_metaengine'
 	
-	_start
+	_prepare
+	#_start
 	
 	_set_me
 	_prepare_metaengine
@@ -258,7 +259,7 @@ _stop_metaengine_wait() {
 	
 	while true
 	do
-		sleep 90
+		sleep 1
 	done
 }
 
