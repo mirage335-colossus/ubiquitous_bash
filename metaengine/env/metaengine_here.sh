@@ -21,7 +21,7 @@ _me_var_here() {
 #Special. Signals do NOT reset metaID .
 export metaEmbed="true"
 
-#equivalent: _set_me_host
+#near equivalent: _set_me_host
 	export metaBase="$metaBase"
 	export metaObjName="$metaObjName"
 	export metaTmp="$scriptAbsoluteFolder""$tmpPrefix"/.m_"$sessionid"
@@ -35,14 +35,19 @@ export metaID="$metaID"
 
 export metaPath="$metaPath"
 
-export metaDir_tmp="$metaTmp"/"$metaPath"
-export metaDir_base="$metaBase"/"$metaPath"
+#export metaDir_tmp="$metaTmp"/"$metaPath"
+#export metaDir_base="$metaProc"/"$metaPath"
 
-#equivalent _set_me_dir
-	export metaDir_tmp="$metaTmp"/"$metaPath"
-	export metaDir_base="$metaBase"/"$metaPath"
-	export metaDir="$metaDir_tmp"
-	[[ "$metaType" == "base" ]] && export metaDir="$metaDir_base" && _messagePlain_warn 'metaType= base'
+#near equivalent _set_me_dir
+	#export metaDir_tmp="$metaTmp"/"$metaPath"
+	#export metaDir_base="$metaProc"/"$metaPath"
+	#export metaDir="$metaDir_tmp"
+	export metaDir_tmp="$metaDir_tmp"
+	export metaDir_base="$metaDir_base"
+	export metaDir="$metaDir"
+	#[[ "$metaType" == "base" ]] && export metaDir="$metaDir_base" && _messagePlain_warn 'metaType= base'
+	#[[ "$metaType" == "" ]] && _messagePlain_good 'metaType= '
+	[[ "$metaType" == "base" ]] && _messagePlain_warn 'metaType= base'
 	[[ "$metaType" == "" ]] && _messagePlain_good 'metaType= '
 
 export metaReg="$metaReg"
@@ -66,7 +71,7 @@ _me_command_here() {
 #Green. Working as expected.
 _messagePlain_good() {
 	echo -e -n '\E[0;32m '
-	echo -n "$@"
+	echo -n "\$@"
 	echo -e -n ' \E[0m'
 	echo
 	return 0
@@ -75,7 +80,7 @@ _messagePlain_good() {
 #Yellow. May or may not be a problem.
 _messagePlain_warn() {
 	echo -e -n '\E[1;33m '
-	echo -n "$@"
+	echo -n "\$@"
 	echo -e -n ' \E[0m'
 	echo
 	return 0
@@ -84,7 +89,7 @@ _messagePlain_warn() {
 #Red. Will result in missing functionality, reduced performance, etc, but not necessarily program failure overall.
 _messagePlain_bad() {
 	echo -e -n '\E[0;31m '
-	echo -n "$@"
+	echo -n "\$@"
 	echo -e -n ' \E[0m'
 	echo
 	return 0

@@ -12807,7 +12807,7 @@ _me_var_here() {
 #Special. Signals do NOT reset metaID .
 export metaEmbed="true"
 
-#equivalent: _set_me_host
+#near equivalent: _set_me_host
 	export metaBase="$metaBase"
 	export metaObjName="$metaObjName"
 	export metaTmp="$scriptAbsoluteFolder""$tmpPrefix"/.m_"$sessionid"
@@ -12821,14 +12821,19 @@ export metaID="$metaID"
 
 export metaPath="$metaPath"
 
-export metaDir_tmp="$metaTmp"/"$metaPath"
-export metaDir_base="$metaBase"/"$metaPath"
+#export metaDir_tmp="$metaTmp"/"$metaPath"
+#export metaDir_base="$metaProc"/"$metaPath"
 
-#equivalent _set_me_dir
-	export metaDir_tmp="$metaTmp"/"$metaPath"
-	export metaDir_base="$metaBase"/"$metaPath"
-	export metaDir="$metaDir_tmp"
-	[[ "$metaType" == "base" ]] && export metaDir="$metaDir_base" && _messagePlain_warn 'metaType= base'
+#near equivalent _set_me_dir
+	#export metaDir_tmp="$metaTmp"/"$metaPath"
+	#export metaDir_base="$metaProc"/"$metaPath"
+	#export metaDir="$metaDir_tmp"
+	export metaDir_tmp="$metaDir_tmp"
+	export metaDir_base="$metaDir_base"
+	export metaDir="$metaDir"
+	#[[ "$metaType" == "base" ]] && export metaDir="$metaDir_base" && _messagePlain_warn 'metaType= base'
+	#[[ "$metaType" == "" ]] && _messagePlain_good 'metaType= '
+	[[ "$metaType" == "base" ]] && _messagePlain_warn 'metaType= base'
 	[[ "$metaType" == "" ]] && _messagePlain_good 'metaType= '
 
 export metaReg="$metaReg"
@@ -12852,7 +12857,7 @@ _me_command_here() {
 #Green. Working as expected.
 _messagePlain_good() {
 	echo -e -n '\E[0;32m '
-	echo -n "$@"
+	echo -n "\$@"
 	echo -e -n ' \E[0m'
 	echo
 	return 0
@@ -12861,7 +12866,7 @@ _messagePlain_good() {
 #Yellow. May or may not be a problem.
 _messagePlain_warn() {
 	echo -e -n '\E[1;33m '
-	echo -n "$@"
+	echo -n "\$@"
 	echo -e -n ' \E[0m'
 	echo
 	return 0
@@ -12870,7 +12875,7 @@ _messagePlain_warn() {
 #Red. Will result in missing functionality, reduced performance, etc, but not necessarily program failure overall.
 _messagePlain_bad() {
 	echo -e -n '\E[0;31m '
-	echo -n "$@"
+	echo -n "\$@"
 	echo -e -n ' \E[0m'
 	echo
 	return 0
@@ -12921,7 +12926,7 @@ _reset_me_host() {
 	_reset_me_base
 	
 	export metaTmp=
-	export metaProc
+	export metaProc=
 }
 
 _set_me() {
@@ -12946,7 +12951,7 @@ _reset_me() {
 	#_reset_me_base
 	#_reset_me_objname
 	
-	_reset_me_host
+	#_reset_me_host
 	
 	_reset_me_uid
 	
@@ -13718,6 +13723,8 @@ _stop_metaengine_wait() {
 }
 
 _rm_instance_metaengine() {
+	echo "$metaTmp"
+	echo "$metaProc"
 	[[ "$metaStop" != "true" ]] && return 0
 	export metaStop="false"
 	
@@ -13903,7 +13910,143 @@ _example_process_base() {
 }
 
 
-# TODO: WIP intended to illustrate the basic logic flow. Uses global variables for some arguments - resetting these is MANDATORY .
+# Intended to illustrate the basic logic flow. Uses global variables for some arguments - resetting these is MANDATORY .
+_example_processor_name() {
+	_assign_me_objname "_example_processor_name"
+	
+	_me_command "_example_me_processor_name"
+	
+	#Optional. Usually correctly orders diagnostic output.
+	sleep 3
+}
+
+_example_me_processor_name() {
+	_messageNormal 'launch: '"$metaObjName"
+	
+	_wait_metaengine
+	_start_metaengine
+	
+	#Do something.
+	#> cat >
+	while true
+	do
+		sleep 10
+	done
+	
+	#optional
+	_stop
+}
+
+# Intended to illustrate the basic logic flow. Uses global variables for some arguments - resetting these is MANDATORY .
+_example_process_rand() {
+	_start_metaengine_host
+	
+	_set_me_null_in
+	_set_me_rand_out
+	_example_processor_name
+	
+	_cycle_me
+	_example_processor_name
+	
+	_cycle_me
+	_example_processor_name
+	
+	_cycle_me
+	_set_me_null_out
+	_example_processor_name
+	
+	_reset_me
+	
+	_stop_metaengine_wait
+}
+
+# Intended to illustrate the basic logic flow. Uses global variables for some arguments - resetting these is MANDATORY .
+_example_process_name() {
+	_start_metaengine_host
+	
+	_set_me_null_in
+	_assign_me_name_out "1"
+	_example_processor_name
+	
+	_cycle_me
+	_assign_me_name_out "2"
+	_example_processor_name
+	
+	_cycle_me
+	_assign_me_name_out "3"
+	_example_processor_name
+	
+	_cycle_me
+	_set_me_null_out
+	_example_processor_name
+	
+	_reset_me
+	
+	_stop_metaengine_wait
+}
+
+# Intended to illustrate the basic logic flow. Uses global variables for some arguments - resetting these is MANDATORY .
+_example_process_coordinates() {
+	_start_metaengine_host
+	
+	#_assign_me_coordinates aiX aiY aiZ biX biY biZ aoX aoY aoZ boX boY boZ
+	#"$metaReg"/grid/"$z"/"$x"/"$y"
+	
+	_reset_me_name
+	_assign_me_coordinates "" "" "" "" "" "" 0 1 0 1 1 0
+	_set_me_null_in
+	_example_processor_name
+	
+	_reset_me_name
+	_assign_me_coordinates 0 1 0 1 1 0 0 2 0 1 2 0
+	_example_processor_name
+	
+	_reset_me_name
+	_assign_me_coordinates 0 2 0 1 2 0 0 3 0 1 3 0
+	_example_processor_name
+	
+	_reset_me_name
+	_assign_me_coordinates 0 3 0 1 3 0 0 4 0 1 4 0
+	_example_processor_name
+	
+	_reset_me
+	
+	_stop_metaengine_wait
+}
+
+# Intended to illustrate the basic logic flow. Uses global variables for some arguments - resetting these is MANDATORY .
+_example_process_base() {
+	_start_metaengine_host
+	
+	_set_me_type_base
+	
+	#_assign_me_coordinates aiX aiY aiZ biX biY biZ aoX aoY aoZ boX boY boZ
+	#"$metaReg"/grid/"$z"/"$x"/"$y"
+	
+	_reset_me_name
+	_assign_me_coordinates "" "" "" "" "" "" 0 1 0 1 1 0
+	_set_me_null_in
+	_example_processor_name
+	
+	_reset_me_name
+	_assign_me_coordinates 0 1 0 1 1 0 0 2 0 1 2 0
+	_example_processor_name
+	
+	_reset_me_name
+	_assign_me_coordinates 0 2 0 1 2 0 0 3 0 1 3 0
+	_example_processor_name
+	
+	_reset_me_name
+	_assign_me_coordinates 0 3 0 1 3 0 0 4 0 1 4 0
+	_example_processor_name
+	
+	_reset_me
+	
+	_stop_metaengine_wait
+}
+
+
+# Intended to illustrate the basic logic flow. Uses global variables for some arguments - resetting these is MANDATORY .
 _example_processor_name() {
 	_assign_me_objname "_example_processor_name"
 	
@@ -15048,8 +15191,11 @@ _compile_bash_vars_metaengine() {
 	[[ "$enUb_metaengine" == "true" ]] && includeScriptList+=( "metaengine/env"/metaengine_parm.sh )
 	[[ "$enUb_metaengine" == "true" ]] && includeScriptList+=( "metaengine/env"/metaengine_local.sh )
 	
-	[[ "$enUb_metaengine" == "true" ]] && includeScriptList+=( "metaengine/example"/metaengine_chain.sh )
-	[[ "$enUb_metaengine" == "true" ]] && includeScriptList+=( "metaengine/example"/metaengine_object.sh )
+	[[ "$enUb_metaengine" == "true" ]] && includeScriptList+=( "metaengine/example"/example_metaengine_chain.sh )
+	[[ "$enUb_metaengine" == "true" ]] && includeScriptList+=( "metaengine/example"/example_metaengine_object.sh )
+	
+	[[ "$enUb_metaengine" == "true" ]] && includeScriptList+=( "metaengine/typical"/typical_metaengine_chain.sh )
+	[[ "$enUb_metaengine" == "true" ]] && includeScriptList+=( "metaengine/typical"/typical_metaengine_object.sh )
 }
 
 _findUbiquitous() {

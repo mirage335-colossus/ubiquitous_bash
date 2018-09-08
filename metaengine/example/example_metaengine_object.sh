@@ -1,4 +1,4 @@
-# TODO: WIP intended to illustrate the basic logic flow. Uses global variables for some arguments - resetting these is MANDATORY .
+# Intended to illustrate the basic logic flow. Uses global variables for some arguments - resetting these is MANDATORY .
 _example_processor_name() {
 	_assign_me_objname "_example_processor_name"
 	

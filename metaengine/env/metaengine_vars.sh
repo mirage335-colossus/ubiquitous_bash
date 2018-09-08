@@ -11,7 +11,7 @@ _reset_me_host() {
 	_reset_me_base
 	
 	export metaTmp=
-	export metaProc
+	export metaProc=
 }
 
 _set_me() {
@@ -36,7 +36,7 @@ _reset_me() {
 	#_reset_me_base
 	#_reset_me_objname
 	
-	_reset_me_host
+	#_reset_me_host
 	
 	_reset_me_uid
 	
