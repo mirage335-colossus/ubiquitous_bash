@@ -1502,14 +1502,13 @@ Explicitly setting VM size may also be necessary.
 &lt;html&gt;&lt;hr&gt;&lt;/html&gt;
 </pre>
 </div>
-<div title="MetaEngine" creator="YourName" modifier="mirage335" created="201808242001" modified="201809072039" changecount="8">
-<pre>Ad-hoc interprocess communication standard. Similar to UNIX pipelines, extending the concept to multiple inputs/outputs, clocked page flipping, and naming conventions (where appropriate).
+<div title="MetaEngine" creator="YourName" modifier="mirage335" created="201808242001" modified="201809092059" changecount="16">
+<pre>Process and inter-process-communication, standard and management system. Indexes existing mechanisms (threads, pipes) implemented by various programming language implementations (bash, C, ~OpenCL) into a common filesystem, text, and graphical interface. Extends existing communication methods to multiple inputs/outputs, clocked page flipping, and naming conventions (where appropriate).
 
-Suitable for roughly similar implementation in multiple languages. Bash implementation intended for bridging existing applications.
 
-External dependencies are kept to an absolute minimum. Calls to other software libraries and applications restricted to what would be commonly already be available on any intended platform. Network ports not consumed.
+Specification is driven by the bash implementation code under directory &quot;metaengine&quot;.  Any ~MetaEngine documentation in conflict should be ignored as not current. Sample directory structure provided under &quot;_lib/sample/metaengine/mebase.tar&quot;, intended only to roughly illustrate expected functionality.
 
-Specification is driven by the bash implementation. Any ~MetaEngine documentation in conflict should be ignored in favor of compatibility with bash implementation.
+External dependencies are kept to an absolute minimum. Calls to other software libraries and applications restricted to what would be commonly already be available on any intended platform. Network ports not consumed except by dedicated processor bridge to another inter-process-communication mechanism.
 </pre>
 </div>
 <div title="Migration" creator="mirage335" modifier="mirage335" created="201712282059" changecount="1">
