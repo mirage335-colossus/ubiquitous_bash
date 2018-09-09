@@ -21,6 +21,6 @@ _example_me_processor_name() {
 		sleep 10
 	done
 	
-	#optional
-	_stop
+	#optional, closes host upon completion
+	#_stop
 }

@@ -264,8 +264,6 @@ _stop_metaengine_wait() {
 }
 
 _rm_instance_metaengine() {
-	echo "$metaTmp"
-	echo "$metaProc"
 	[[ "$metaStop" != "true" ]] && return 0
 	export metaStop="false"
 	

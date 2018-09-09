@@ -4449,11 +4449,11 @@ _stopwatch() {
 	local measureDateB
 	
 	measureDateA=$(date +%s%N | cut -b1-13)
-	
+
 	"$@"
-	
+
 	measureDateB=$(date +%s%N | cut -b1-13)
-	
+
 	bc <<< "$measureDateB - $measureDateA"
 }
 
@@ -13724,8 +13724,6 @@ _stop_metaengine_wait() {
 }
 
 _rm_instance_metaengine() {
-	echo "$metaTmp"
-	echo "$metaProc"
 	[[ "$metaStop" != "true" ]] && return 0
 	export metaStop="false"
 	
@@ -13934,8 +13932,8 @@ _example_me_processor_name() {
 		sleep 10
 	done
 	
-	#optional
-	_stop
+	#optional, closes host upon completion
+	#_stop
 }
 
 # Intended to illustrate the basic logic flow. Uses global variables for some arguments - resetting these is MANDATORY .
@@ -14066,16 +14064,443 @@ _me_processor_noise() {
 	_wait_metaengine
 	_start_metaengine
 	
-	#Do something.
-	#> cat >
-	while true
+	_buffer_me_processor_fifo
+	
+	cat < /dev/urandom > "$metaDir"/ao/fifo
+	
+	#while true
+	#do
+	#	sleep 1
+	#done
+	
+	#optional, closes host upon completion
+	#_stop
+}
+
+_me_divert() {
+	_buffer_me_processor_divert "$@"
+}
+
+#Registers an output to a diversion directory for processors which may support more than two inputs. Expected to be used with special processors creating their own unique registrations (ie. _reg/special).
+_buffer_me_processor_divert() {
+	mkdir -p "$metaReg"/"$1"/divert
+	mkdir -p "$metaReg"/"$2"/divert
+	
+	
+	_relink "$metaDir"/ao "$metaReg"/"$1"/divert/"$metaID"
+	_relink "$metaDir"/bo "$metaReg"/"$2"/divert/"$metaID"
+}
+
+_me_fifo() {
+	_buffer_me_processor_fifo
+}
+
+_me_snippet_reset() {
+	_buffer_me_processor_snippet_reset
+}
+
+_me_snippet_write() {
+	_buffer_me_processor_snippet_write
+}
+
+_me_snippet_read() {
+	_buffer_me_processor_snippet_read
+}
+
+_me_snippet_read_wait() {
+	_buffer_me_processor_snippet_read_wait
+}
+
+_me_confidence_full() {
+	_buffer_me_processor_confidence_full
+}
+
+_me_confidence_none() {
+	_buffer_me_processor_confidence_none
+}
+
+_buffer_me_processor_fifo() {
+	_buffer_me_processor_fifo_rm
+	
+	#[[ -d "$metaDir"/ai ]] && mkfifo "$metaDir"/ai/fifo
+	#[[ -d "$metaDir"/bi ]] && mkfifo "$metaDir"/bi/fifo
+	
+	[[ -d "$metaDir"/ao ]] && mkfifo "$metaDir"/ao/fifo
+	#[[ -d "$metaDir"/bo ]] && mkfifo "$metaDir"/bo/fifo
+}
+
+_buffer_me_processor_fifo_rm() {
+	rm -f "$metaDir"/ao/fifo > /dev/null 2>&1
+	#rm -f "$metaDir"/bo/fifo > /dev/null 2>&1
+}
+
+_buffer_me_processor_snippet_reset() {
+	echo | _buffer_me_processor_snippet_assign
+}
+
+_buffer_me_processor_snippet_write() {
+	! [[ -d "$metaDir"/ao ]] && return 1
+	
+	cat > "$metaDir"/ao/quicktmp_snippet
+	mv -n "$metaDir"/ao/quicktmp_snippet "$metaDir"/ao/snippet
+	rm -f "$metaDir"/ao/quicktmp_snippet > /dev/null 2>&1
+}
+
+_buffer_me_processor_snippet_check_binary() {
+	! [[ -e "$metaDir"/bi/confidence ]] && return 1
+	! [[ -e "$metaDir"/ai/snippet ]] && return 1
+	
+	local snippetConfidence
+	snippetConfidence=$(cat "$metaDir"/bi/confidence)
+	
+	#cat "$metaDir"/bi/confidence
+	
+	[[ "$snippetConfidence" == "1" ]] && return 0
+	return 1
+}
+
+_buffer_me_processor_snippet_check() {
+	! [[ -e "$metaDir"/bi/confidence ]] && return 1
+	! [[ -e "$metaDir"/ai/snippet ]] && return 1
+	
+	local snippetConfidence
+	snippetConfidence=$(cat "$metaDir"/bi/confidence)
+	
+	cat "$metaDir"/bi/confidence
+	
+	[[ "$snippetConfidence" == "1" ]] && return 0
+	return 1
+}
+
+_buffer_me_processor_snippet_read() {
+	! [[ -d "$metaDir"/ai ]] && return 1
+	! [[ -d "$metaDir"/bi ]] && return 1
+	
+	! [[ -e "$metaDir"/ai/snippet ]] && return 1
+	
+	cat "$metaDir"/ai/snippet
+}
+
+_buffer_me_processor_snippet_read_wait() {
+	! [[ -d "$metaDir"/ai ]] && return 1
+	! [[ -d "$metaDir"/bi ]] && return 1
+	
+	while ! _buffer_me_processor_snippet_check_binary
 	do
-		sleep 1
+		sleep 0.3
 	done
 	
-	#optional
-	_stop
+	cat "$metaDir"/ai/snippet
 }
+
+_buffer_me_processor_confidence_reset() {
+	_buffer_me_processor_confidence_none
+}
+
+_buffer_me_processor_confidence_none() {
+	echo 0 | _buffer_me_processor_confidence_write
+}
+
+#Typically signals snippet processor task complete.
+_buffer_me_processor_confidence_full() {
+	echo 1 | _buffer_me_processor_confidence_write
+}
+
+_buffer_me_processor_confidence_write() {
+	! [[ -d "$metaDir"/bo ]] && return 1
+	
+	cat > "$metaDir"/bo/quicktmp_confidence
+	mv "$metaDir"/bo/quicktmp_confidence "$metaDir"/bo/confidence
+	rm -f "$metaDir"/bo/quicktmp_confidence > /dev/null 2>&1
+}
+
+# WARNING: Untested.
+_me_page_read() {
+	_buffer_me_processor_page_in_read "$@"
+}
+
+# WARNING: Untested.
+_me_page_write() {
+	_buffer_me_processor_page_out_write "$@"
+}
+
+_me_page_tick_read() {
+	_buffer_me_processor_page_tick_default _me_page_read "$@"
+}
+
+_me_page_tick_write() {
+	_buffer_me_processor_page_tick_default _me_page_write "$@"
+}
+
+# WARNING: High performance is not to be expected from bash implementation. C/OpenCL may be better suited.
+_me_page_tick_advance() {
+	_buffer_me_processor_page_tick_advance_default "$@"
+}
+
+
+
+
+_buffer_me_processor_page_tick() {
+	local measureTickA
+	local measureTickB
+	local measureTickDifference
+	
+	measureTickA=$(cat "$bufferTick_file")
+	
+	while true
+	do
+		measureTickB=$(cat "$bufferTick_file")
+		measureTickDifference=$(bc <<< "$measureTickB - $measureTickA")
+		
+		if [[ "$measureTickDifference" -ge "$bufferTick_count" ]]
+		then
+			"$@"
+		fi
+		
+		sleep 0.005
+	done
+}
+
+_buffer_me_processor_page_tick_default() {
+	export bufferTick_file="$metaReg"/tick
+	export bufferTick_count=1
+	
+	_buffer_me_processor_page_tick "$@"
+	
+	export bufferTick_file=
+	export bufferTick_count=
+}
+
+_buffer_me_processor_page_tick_advance_default() {
+	export bufferTick_file="$metaReg"/tick
+	export bufferTick_count=1
+	
+	_buffer_me_processor_page_tick_advance "$@"
+	
+	export bufferTick_file=
+	export bufferTick_count=
+}
+
+_buffer_me_processor_page_tick_advance() {
+	! [[ -e "$bufferTick_file" ]] && _buffer_me_processor_page_tick_reset
+	
+	local bufferTick_current
+	bufferTick_current=$(cat "$bufferTick_file")
+	
+	local bufferTick_next
+	bufferTick_next=$(bc <<< "$bufferTick_current + 1")
+	
+	echo "$bufferTick_next" | _buffer_me_processor_page_tick_write
+}
+
+_buffer_me_processor_page_tick_reset() {
+	echo 0 | _buffer_me_processor_page_tick_write
+}
+
+_buffer_me_processor_page_tick_write() {
+	#! [[ -d "$metaReg" ]] && return 1
+	
+	cat > "$bufferTick_file".tmp
+	mv "$bufferTick_file".tmp "$bufferTick_file"
+	rm -f "$bufferTick_file".tmp > /dev/null 2>&1
+}
+
+_buffer_me_processor_page_clock() {
+	local measureDateA
+	local measureDateB
+	local measureDateDifference
+	
+	measureDateA=$(date +%s%N | cut -b1-13)
+	
+	while true
+	do
+		measureDateB=$(date +%s%N | cut -b1-13)
+		measureDateDifference=$(bc <<< "$measureDateB - $measureDateA")
+		
+		if [[ "$measureDateDifference" -ge "$bufferClock_ms" ]]
+		then
+			"$@"
+		fi
+		
+		[[ "$bufferClock_ms" -ge "3000" ]] && sleep 1
+		[[ "$bufferClock_ms" -ge "300" ]] && sleep 0.1
+		sleep 0.005
+	done
+}
+
+_buffer_me_processor_page_clock_100fps() {
+	export bufferClock_ms=10
+	_buffer_me_processor_page_clock "$@"
+	export bufferClock_ms=
+}
+
+_buffer_me_processor_page_clock_90fps() {
+	export bufferClock_ms=11
+	_buffer_me_processor_page_clock "$@"
+	export bufferClock_ms=
+}
+
+_buffer_me_processor_page_clock_30fps() {
+	export bufferClock_ms=33
+	_buffer_me_processor_page_clock "$@"
+	export bufferClock_ms=
+}
+
+_buffer_me_processor_page_clock_1fps() {
+	export bufferClock_ms=1000
+	_buffer_me_processor_page_clock "$@"
+	export bufferClock_ms=
+}
+
+_buffer_me_processor_page_clock_1fpm() {
+	export bufferClock_ms=60000
+	_buffer_me_processor_page_clock "$@"
+	export bufferClock_ms=
+}
+
+_buffer_me_processor_page_clock_1fph() {
+	export bufferClock_ms=360000
+	_buffer_me_processor_page_clock "$@"
+	export bufferClock_ms=
+}
+
+
+
+
+_buffer_me_processor_page_in_read() {
+	! [[ -e "$metaDir"/bi/pointer ]] && return 1
+	
+	local bufferPointerRead
+	
+	bufferPointerRead=$(_buffer_me_processor_page_pointer_in_get_current)
+	
+	! [[ -e "$metaDir"/ai/"$bufferPointerRead" ]] && return 1
+	
+	cat "$metaDir"/ai/"$bufferPointerRead"
+}
+
+
+_buffer_me_processor_page_pointer_in_get_current() {
+	! [[ -e "$metaDir"/bi/pointer ]] && return 1
+	
+	cat "$metaDir"/bi/pointer
+}
+
+_buffer_me_processor_page_pointer_out_get_previous() {
+	! [[ -e "$metaDir"/bi/pointer ]] && return 1
+	
+	local bufferPointer
+	
+	bufferPointer=$(cat "$metaDir"/bi/pointer)
+	
+	[[ "$bufferPointer" == "0" ]] && echo 2 && return 0
+	[[ "$bufferPointer" == "1" ]] && echo 0 && return 0
+	[[ "$bufferPointer" == "2" ]] && echo 1 && return 0
+}
+
+_buffer_me_processor_page_pointer_out_get_next() {
+	! [[ -e "$metaDir"/bi/pointer ]] && return 1
+	
+	local bufferPointer
+	
+	bufferPointer=$(cat "$metaDir"/bi/pointer)
+	
+	[[ "$bufferPointer" == "0" ]] && echo 1 && return 0
+	[[ "$bufferPointer" == "1" ]] && echo 2 && return 0
+	[[ "$bufferPointer" == "2" ]] && echo 0 && return 0
+}
+
+
+
+
+
+_buffer_me_processor_page_out_write() {
+	_buffer_me_processor_page_pointer_out_advance
+	
+	local bufferPointerWrite
+	bufferPointerNext=$(_buffer_me_processor_page_pointer_out_get_next)
+	
+	cat > "$metaDir"/ao/quicktmp_page"$bufferPointerWrite"
+	mv "$metaDir"/ao/quicktmp_page"$bufferPointerWrite" "$metaDir"/ao/"$bufferPointerWrite"
+	rm -f "$metaDir"/ao/quicktmp_page"$bufferPointerWrite" > /dev/null 2>&1
+}
+
+_buffer_me_processor_page_pointer_out_advance() {
+	! [[ -d "$metaDir"/bo ]] && return 1
+	
+	! [[ -e "$metaDir"/bo/pointer ]] && _buffer_me_processor_page_pointer_out_reset
+	
+	local bufferPointerNext
+	bufferPointerNext=$(_buffer_me_processor_page_pointer_out_get_next)
+	
+	echo "$bufferPointerNext" | _buffer_me_processor_page_pointer_out_write
+}
+
+_buffer_me_processor_page_pointer_out_get_current() {
+	! [[ -e "$metaDir"/bo/pointer ]] && return 1
+	
+	cat "$metaDir"/bo/pointer
+}
+
+_buffer_me_processor_page_pointer_out_get_previous() {
+	! [[ -e "$metaDir"/bo/pointer ]] && return 1
+	
+	local bufferPointer
+	
+	bufferPointer=$(cat "$metaDir"/bo/pointer)
+	
+	[[ "$bufferPointer" == "0" ]] && echo 2 && return 0
+	[[ "$bufferPointer" == "1" ]] && echo 0 && return 0
+	[[ "$bufferPointer" == "2" ]] && echo 1 && return 0
+}
+
+_buffer_me_processor_page_pointer_out_get_next() {
+	! [[ -e "$metaDir"/bo/pointer ]] && return 1
+	
+	local bufferPointer
+	
+	bufferPointer=$(cat "$metaDir"/bo/pointer)
+	
+	[[ "$bufferPointer" == "0" ]] && echo 1 && return 0
+	[[ "$bufferPointer" == "1" ]] && echo 2 && return 0
+	[[ "$bufferPointer" == "2" ]] && echo 0 && return 0
+}
+
+#No production use.
+_buffer_me_processor_page_reset() {
+	_buffer_me_processor_page_pointer_reset
+	
+	rm -f "$metaDir"/ao/0 > /dev/null 2>&1
+	rm -f "$metaDir"/ao/1 > /dev/null 2>&1
+	rm -f "$metaDir"/ao/2 > /dev/null 2>&1
+}
+
+_buffer_me_processor_page_pointer_out_reset() {
+	_buffer_me_processor_page_pointer_out_0
+}
+
+_buffer_me_processor_page_pointer_out_0() {
+	echo 0 | _buffer_me_processor_page_pointer_out_write
+}
+
+_buffer_me_processor_page_pointer_out_1() {
+	echo 1 | _buffer_me_processor_page_pointer_out_write
+}
+
+_buffer_me_processor_page_pointer_out_2() {
+	echo 2 | _buffer_me_processor_page_pointer_out_write
+}
+
+
+_buffer_me_processor_page_pointer_out_write() {
+	! [[ -d "$metaDir"/bo ]] && return 1
+	
+	cat > "$metaDir"/bo/quicktmp_pointer
+	mv "$metaDir"/bo/quicktmp_pointer "$metaDir"/bo/pointer
+	rm -f "$metaDir"/bo/quicktmp_pointer > /dev/null 2>&1
+}
+
+
 
 _buildHello() {
 	local helloSourceCode
@@ -15201,6 +15626,11 @@ _compile_bash_vars_metaengine() {
 	[[ "$enUb_metaengine" == "true" ]] && includeScriptList+=( "metaengine/typical"/typical_metaengine_chain.sh )
 	[[ "$enUb_metaengine" == "true" ]] && includeScriptList+=( "metaengine/typical"/typical_metaengine_object.sh )
 	[[ "$enUb_metaengine" == "true" ]] && includeScriptList+=( "metaengine/typical"/typical_metaengine_vars.sh )
+	
+	[[ "$enUb_metaengine" == "true" ]] && includeScriptList+=( "metaengine/typical"/typical_metaengine_divert.sh )
+	
+	[[ "$enUb_metaengine" == "true" ]] && includeScriptList+=( "metaengine/typical"/typical_metaengine_buffer.sh )
+	[[ "$enUb_metaengine" == "true" ]] && includeScriptList+=( "metaengine/typical"/typical_metaengine_page.sh )
 }
 
 _findUbiquitous() {

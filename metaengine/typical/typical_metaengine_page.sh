@@ -69,7 +69,7 @@ _buffer_me_processor_page_tick_advance() {
 	! [[ -e "$bufferTick_file" ]] && _buffer_me_processor_page_tick_reset
 	
 	local bufferTick_current
-	bufferTick_current=$(cat "$bufferTick_file"
+	bufferTick_current=$(cat "$bufferTick_file")
 	
 	local bufferTick_next
 	bufferTick_next=$(bc <<< "$bufferTick_current + 1")
@@ -88,9 +88,6 @@ _buffer_me_processor_page_tick_write() {
 	mv "$bufferTick_file".tmp "$bufferTick_file"
 	rm -f "$bufferTick_file".tmp > /dev/null 2>&1
 }
-
-
-"$metaReg"/tick
 
 _buffer_me_processor_page_clock() {
 	local measureDateA

@@ -26,6 +26,6 @@ _me_processor_noise() {
 	#	sleep 1
 	#done
 	
-	#optional
+	#optional, closes host upon completion
 	#_stop
 }
