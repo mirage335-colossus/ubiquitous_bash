@@ -1,3 +1,31 @@
+_me_fifo() {
+	_buffer_me_processor_fifo
+}
+
+_me_snippet_reset() {
+	_buffer_me_processor_snippet_reset
+}
+
+_me_snippet_write() {
+	_buffer_me_processor_snippet_write
+}
+
+_me_snippet_read() {
+	_buffer_me_processor_snippet_read
+}
+
+_me_snippet_read_wait() {
+	_buffer_me_processor_snippet_read_wait
+}
+
+_me_confidence_full() {
+	_buffer_me_processor_confidence_full
+}
+
+_me_confidence_none() {
+	_buffer_me_processor_confidence_none
+}
+
 _buffer_me_processor_fifo() {
 	_buffer_me_processor_fifo_rm
 	
@@ -47,7 +75,7 @@ _buffer_me_processor_snippet_check() {
 	
 	cat "$metaDir"/bi/confidence
 	
-	[[ "$snippetConfidence" == 1 ]] && return 0
+	[[ "$snippetConfidence" == "1" ]] && return 0
 	return 1
 }
 
