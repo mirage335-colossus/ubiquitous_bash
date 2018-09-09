@@ -12784,6 +12784,40 @@ _message_me_name() {
 	_messageVar out_me_b_name
 }
 
+_me_header_here() {
+	cat << CZXWXcRMTo8EmM8i4d
+#!/usr/bin/env bash
+
+#Green. Working as expected.
+_messagePlain_good() {
+	echo -e -n '\E[0;32m '
+	echo -n "\$@"
+	echo -e -n ' \E[0m'
+	echo
+	return 0
+}
+
+#Yellow. May or may not be a problem.
+_messagePlain_warn() {
+	echo -e -n '\E[1;33m '
+	echo -n "\$@"
+	echo -e -n ' \E[0m'
+	echo
+	return 0
+}
+
+#Red. Will result in missing functionality, reduced performance, etc, but not necessarily program failure overall.
+_messagePlain_bad() {
+	echo -e -n '\E[0;31m '
+	echo -n "\$@"
+	echo -e -n ' \E[0m'
+	echo
+	return 0
+}
+
+CZXWXcRMTo8EmM8i4d
+}
+
 _me_var_here_script() {
 	cat << CZXWXcRMTo8EmM8i4d
 	
@@ -12850,41 +12884,23 @@ CZXWXcRMTo8EmM8i4d
 	_me_var_here_prog "$@"
 }
 
-_me_command_here() {
-	cat << CZXWXcRMTo8EmM8i4d
-#!/usr/bin/env bash
-
-#Green. Working as expected.
-_messagePlain_good() {
-	echo -e -n '\E[0;32m '
-	echo -n "\$@"
-	echo -e -n ' \E[0m'
-	echo
-	return 0
-}
-
-#Yellow. May or may not be a problem.
-_messagePlain_warn() {
-	echo -e -n '\E[1;33m '
-	echo -n "\$@"
-	echo -e -n ' \E[0m'
-	echo
-	return 0
-}
-
-#Red. Will result in missing functionality, reduced performance, etc, but not necessarily program failure overall.
-_messagePlain_bad() {
-	echo -e -n '\E[0;31m '
-	echo -n "\$@"
-	echo -e -n ' \E[0m'
-	echo
-	return 0
-}
-
-CZXWXcRMTo8EmM8i4d
-
+_me_embed_here() {
+	_me_header_here
+	
 	_me_var_here
+	
+	cat << CZXWXcRMTo8EmM8i4d
 
+
+. "$scriptAbsoluteLocation" --embed "\$@"
+CZXWXcRMTo8EmM8i4d
+}
+
+_me_command_here() {
+	_me_header_here
+	
+	_me_var_here
+	
 	cat << CZXWXcRMTo8EmM8i4d
 
 
@@ -13530,9 +13546,15 @@ _relink_metaengine_name_in() {
 	[[ -e "$metaReg"/name/"$metaID" ]] && _messageError 'FAIL: unexpected safety' && _stop 1
 	
 	_messageCMD mkdir -p "$metaReg"/name/"$in_me_a_name"
-	_messageCMD _relink_relative "$in_me_a_path" "$metaDir"/ai
+	! [[ "$in_me_a_path" == "/dev/null" ]] && _messageCMD _relink_relative "$in_me_a_path" "$metaDir"/ai
 	_messageCMD mkdir -p "$metaReg"/name/"$in_me_b_name"
-	_messageCMD _relink_relative "$in_me_b_path" "$metaDir"/bi
+	! [[ "$in_me_a_path" == "/dev/null" ]] && _messageCMD _relink_relative "$in_me_b_path" "$metaDir"/bi
+	
+	[[ "$in_me_a_path" == "/dev/null" ]] && _relink "$in_me_a_path" "$metaDir"/ai
+	[[ "$in_me_b_path" == "/dev/null" ]] && _relink "$in_me_b_path" "$metaDir"/bi
+	
+	# DANGER: Administrative/visualization use ONLY.
+	([[ "$in_me_a_path" == "/dev/null" ]] || [[ "$in_me_b_path" == "/dev/null" ]]) && _relink_relative "$metaDir" "$metaReg"/name/null/"$metaID"
 	
 	_messagePlain_good 'return: complete'
 	return 0
@@ -13545,18 +13567,21 @@ _relink_metaengine_name_out() {
 	[[ -e "$metaReg"/name/"$metaID" ]] && _messageError 'FAIL: unexpected safety' && _stop 1
 	
 	_messageCMD mkdir -p "$metaReg"/name/"$out_me_a_name"
-	_messageCMD _relink_relative "$metaDir"/ao "$out_me_a_path"
+	! [[ "$out_me_a_path" == "/dev/null" ]] && _messageCMD _relink_relative "$metaDir"/ao "$out_me_a_path"
 	_messageCMD mkdir -p "$metaReg"/name/"$out_me_b_name"
-	_messageCMD _relink_relative "$metaDir"/bo "$out_me_b_path"
+	! [[ "$out_me_b_path" == "/dev/null" ]] && _messageCMD _relink_relative "$metaDir"/bo "$out_me_b_path"
 	
-	[[ "$out_me_a_path" == "/dev/null" ]] && rmdir "$metaDir"/ao && _relink_relative /dev/null "$metaDir"/ao
-	[[ "$out_me_b_path" == "/dev/null" ]] && rmdir "$metaDir"/bo && _relink_relative /dev/null "$metaDir"/bo
+	[[ "$out_me_a_path" == "/dev/null" ]] && rmdir "$metaDir"/ao && _relink /dev/null "$metaDir"/ao
+	[[ "$out_me_b_path" == "/dev/null" ]] && rmdir "$metaDir"/bo && _relink /dev/null "$metaDir"/bo
+	
+	# DANGER: Administrative/visualization use ONLY.
+	([[ "$out_me_a_path" == "/dev/null" ]] || [[ "$out_me_b_path" == "/dev/null" ]]) && _relink_relative "$metaDir" "$metaReg"/name/null/"$metaID"
 	
 	_messagePlain_good 'return: complete'
 	return 0
 }
 
-#No production use.
+#No production use. Unmaintained.
 _relink_metaengine_name() {
 	_messagePlain_nominal 'init: _relink_metaengine_name'
 	
@@ -13573,8 +13598,8 @@ _relink_metaengine_name() {
 	_messageCMD mkdir -p "$metaReg"/name/"$out_me_b_name"
 	_messageCMD _relink_relative "$metaDir"/bo "$out_me_b_path"
 	
-	[[ "$out_me_a_path" == "/dev/null" ]] && rmdir "$metaDir"/ao && _relink_relative /dev/null "$metaDir"/ao
-	[[ "$out_me_b_path" == "/dev/null" ]] && rmdir "$metaDir"/bo && _relink_relative /dev/null "$metaDir"/bo
+	[[ "$out_me_a_path" == "/dev/null" ]] && rmdir "$metaDir"/ao && _relink /dev/null "$metaDir"/ao
+	[[ "$out_me_b_path" == "/dev/null" ]] && rmdir "$metaDir"/bo && _relink /dev/null "$metaDir"/bo
 	
 	_messagePlain_good 'return: complete'
 	return 0
@@ -13625,7 +13650,7 @@ _relink_metaengine_in() {
 	_stop 1
 }
 
-#No production use.
+#No production use.  Unmaintained.
 _relink_metaengine() {
 	_messagePlain_nominal 'init: _relink_metaengine'
 	
@@ -13701,6 +13726,9 @@ _start_metaengine() {
 	echo $$ > "$metaDir"/.pid
 	_relink_relative "$metaDir"/.pid "$metaDir_tmp"/.pid
 	
+	_me_embed_here > "$metaDir"/.metaenv.sh
+	chmod 755 "$metaDir"/.metaenv.sh
+	
 	echo "$sessionid" > "$metaDir"/.sessionid
 	_embed_here > "$metaDir"/.embed.sh
 	chmod 755 "$metaDir"/.embed.sh
@@ -13723,7 +13751,18 @@ _stop_metaengine_wait() {
 	done
 }
 
+#_rm_instance_metaengine_metaDir() {
+#	# WARNING: No production use, heredoc unsupported.
+#	[[ "$metaPreserve" == "true" ]] && return 0
+#	
+#	[[ "$metaDir" != "" ]] && [[ "$metaDir" == *"$sessionid"* ]] && [[ -e "$metaDir" ]] && _safeRMR "$metaDir"
+#}
+
 _rm_instance_metaengine() {
+	# WARNING: Documentation only. Any "_stop" condition expected to cleanup work directory corresponding to sessionid.
+	# Recommended practice is separate MetaEngine host for any intermittent processing chain.
+	#_rm_instance_metaengine_metaDir
+	
 	[[ "$metaStop" != "true" ]] && return 0
 	export metaStop="false"
 	
@@ -13934,114 +13973,6 @@ _example_me_processor_name() {
 	
 	#optional, closes host upon completion
 	#_stop
-}
-
-# Intended to illustrate the basic logic flow. Uses global variables for some arguments - resetting these is MANDATORY .
-_example_process_rand() {
-	_start_metaengine_host
-	
-	_set_me_null_in
-	_set_me_rand_out
-	_example_processor_name
-	
-	_cycle_me
-	_example_processor_name
-	
-	_cycle_me
-	_example_processor_name
-	
-	_cycle_me
-	_set_me_null_out
-	_example_processor_name
-	
-	_reset_me
-	
-	_stop_metaengine_wait
-}
-
-# Intended to illustrate the basic logic flow. Uses global variables for some arguments - resetting these is MANDATORY .
-_example_process_name() {
-	_start_metaengine_host
-	
-	_set_me_null_in
-	_assign_me_name_out "1"
-	_example_processor_name
-	
-	_cycle_me
-	_assign_me_name_out "2"
-	_example_processor_name
-	
-	_cycle_me
-	_assign_me_name_out "3"
-	_example_processor_name
-	
-	_cycle_me
-	_set_me_null_out
-	_example_processor_name
-	
-	_reset_me
-	
-	_stop_metaengine_wait
-}
-
-# Intended to illustrate the basic logic flow. Uses global variables for some arguments - resetting these is MANDATORY .
-_example_process_coordinates() {
-	_start_metaengine_host
-	
-	#_assign_me_coordinates aiX aiY aiZ biX biY biZ aoX aoY aoZ boX boY boZ
-	#"$metaReg"/grid/"$z"/"$x"/"$y"
-	
-	_reset_me_name
-	_assign_me_coordinates "" "" "" "" "" "" 0 1 0 1 1 0
-	_set_me_null_in
-	_example_processor_name
-	
-	_reset_me_name
-	_assign_me_coordinates 0 1 0 1 1 0 0 2 0 1 2 0
-	_example_processor_name
-	
-	_reset_me_name
-	_assign_me_coordinates 0 2 0 1 2 0 0 3 0 1 3 0
-	_example_processor_name
-	
-	_reset_me_name
-	_assign_me_coordinates 0 3 0 1 3 0 0 4 0 1 4 0
-	_example_processor_name
-	
-	_reset_me
-	
-	_stop_metaengine_wait
-}
-
-# Intended to illustrate the basic logic flow. Uses global variables for some arguments - resetting these is MANDATORY .
-_example_process_base() {
-	_start_metaengine_host
-	
-	_set_me_type_base
-	
-	#_assign_me_coordinates aiX aiY aiZ biX biY biZ aoX aoY aoZ boX boY boZ
-	#"$metaReg"/grid/"$z"/"$x"/"$y"
-	
-	_reset_me_name
-	_assign_me_coordinates "" "" "" "" "" "" 0 1 0 1 1 0
-	_set_me_null_in
-	_example_processor_name
-	
-	_reset_me_name
-	_assign_me_coordinates 0 1 0 1 1 0 0 2 0 1 2 0
-	_example_processor_name
-	
-	_reset_me_name
-	_assign_me_coordinates 0 2 0 1 2 0 0 3 0 1 3 0
-	_example_processor_name
-	
-	_reset_me_name
-	_assign_me_coordinates 0 3 0 1 3 0 0 4 0 1 4 0
-	_example_processor_name
-	
-	_reset_me
-	
-	_stop_metaengine_wait
 }
 
 

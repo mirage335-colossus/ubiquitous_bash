@@ -1,3 +1,37 @@
+_me_header_here() {
+	cat << CZXWXcRMTo8EmM8i4d
+#!/usr/bin/env bash
+
+#Green. Working as expected.
+_messagePlain_good() {
+	echo -e -n '\E[0;32m '
+	echo -n "\$@"
+	echo -e -n ' \E[0m'
+	echo
+	return 0
+}
+
+#Yellow. May or may not be a problem.
+_messagePlain_warn() {
+	echo -e -n '\E[1;33m '
+	echo -n "\$@"
+	echo -e -n ' \E[0m'
+	echo
+	return 0
+}
+
+#Red. Will result in missing functionality, reduced performance, etc, but not necessarily program failure overall.
+_messagePlain_bad() {
+	echo -e -n '\E[0;31m '
+	echo -n "\$@"
+	echo -e -n ' \E[0m'
+	echo
+	return 0
+}
+
+CZXWXcRMTo8EmM8i4d
+}
+
 _me_var_here_script() {
 	cat << CZXWXcRMTo8EmM8i4d
 	
@@ -64,41 +98,23 @@ CZXWXcRMTo8EmM8i4d
 	_me_var_here_prog "$@"
 }
 
-_me_command_here() {
-	cat << CZXWXcRMTo8EmM8i4d
-#!/usr/bin/env bash
-
-#Green. Working as expected.
-_messagePlain_good() {
-	echo -e -n '\E[0;32m '
-	echo -n "\$@"
-	echo -e -n ' \E[0m'
-	echo
-	return 0
-}
-
-#Yellow. May or may not be a problem.
-_messagePlain_warn() {
-	echo -e -n '\E[1;33m '
-	echo -n "\$@"
-	echo -e -n ' \E[0m'
-	echo
-	return 0
-}
-
-#Red. Will result in missing functionality, reduced performance, etc, but not necessarily program failure overall.
-_messagePlain_bad() {
-	echo -e -n '\E[0;31m '
-	echo -n "\$@"
-	echo -e -n ' \E[0m'
-	echo
-	return 0
-}
-
-CZXWXcRMTo8EmM8i4d
-
+_me_embed_here() {
+	_me_header_here
+	
 	_me_var_here
+	
+	cat << CZXWXcRMTo8EmM8i4d
 
+
+. "$scriptAbsoluteLocation" --embed "\$@"
+CZXWXcRMTo8EmM8i4d
+}
+
+_me_command_here() {
+	_me_header_here
+	
+	_me_var_here
+	
 	cat << CZXWXcRMTo8EmM8i4d
 
 

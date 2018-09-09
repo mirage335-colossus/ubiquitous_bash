@@ -70,9 +70,15 @@ _relink_metaengine_name_in() {
 	[[ -e "$metaReg"/name/"$metaID" ]] && _messageError 'FAIL: unexpected safety' && _stop 1
 	
 	_messageCMD mkdir -p "$metaReg"/name/"$in_me_a_name"
-	_messageCMD _relink_relative "$in_me_a_path" "$metaDir"/ai
+	! [[ "$in_me_a_path" == "/dev/null" ]] && _messageCMD _relink_relative "$in_me_a_path" "$metaDir"/ai
 	_messageCMD mkdir -p "$metaReg"/name/"$in_me_b_name"
-	_messageCMD _relink_relative "$in_me_b_path" "$metaDir"/bi
+	! [[ "$in_me_a_path" == "/dev/null" ]] && _messageCMD _relink_relative "$in_me_b_path" "$metaDir"/bi
+	
+	[[ "$in_me_a_path" == "/dev/null" ]] && _relink "$in_me_a_path" "$metaDir"/ai
+	[[ "$in_me_b_path" == "/dev/null" ]] && _relink "$in_me_b_path" "$metaDir"/bi
+	
+	# DANGER: Administrative/visualization use ONLY.
+	([[ "$in_me_a_path" == "/dev/null" ]] || [[ "$in_me_b_path" == "/dev/null" ]]) && _relink_relative "$metaDir" "$metaReg"/name/null/"$metaID"
 	
 	_messagePlain_good 'return: complete'
 	return 0
@@ -85,18 +91,21 @@ _relink_metaengine_name_out() {
 	[[ -e "$metaReg"/name/"$metaID" ]] && _messageError 'FAIL: unexpected safety' && _stop 1
 	
 	_messageCMD mkdir -p "$metaReg"/name/"$out_me_a_name"
-	_messageCMD _relink_relative "$metaDir"/ao "$out_me_a_path"
+	! [[ "$out_me_a_path" == "/dev/null" ]] && _messageCMD _relink_relative "$metaDir"/ao "$out_me_a_path"
 	_messageCMD mkdir -p "$metaReg"/name/"$out_me_b_name"
-	_messageCMD _relink_relative "$metaDir"/bo "$out_me_b_path"
+	! [[ "$out_me_b_path" == "/dev/null" ]] && _messageCMD _relink_relative "$metaDir"/bo "$out_me_b_path"
 	
-	[[ "$out_me_a_path" == "/dev/null" ]] && rmdir "$metaDir"/ao && _relink_relative /dev/null "$metaDir"/ao
-	[[ "$out_me_b_path" == "/dev/null" ]] && rmdir "$metaDir"/bo && _relink_relative /dev/null "$metaDir"/bo
+	[[ "$out_me_a_path" == "/dev/null" ]] && rmdir "$metaDir"/ao && _relink /dev/null "$metaDir"/ao
+	[[ "$out_me_b_path" == "/dev/null" ]] && rmdir "$metaDir"/bo && _relink /dev/null "$metaDir"/bo
+	
+	# DANGER: Administrative/visualization use ONLY.
+	([[ "$out_me_a_path" == "/dev/null" ]] || [[ "$out_me_b_path" == "/dev/null" ]]) && _relink_relative "$metaDir" "$metaReg"/name/null/"$metaID"
 	
 	_messagePlain_good 'return: complete'
 	return 0
 }
 
-#No production use.
+#No production use. Unmaintained.
 _relink_metaengine_name() {
 	_messagePlain_nominal 'init: _relink_metaengine_name'
 	
@@ -113,8 +122,8 @@ _relink_metaengine_name() {
 	_messageCMD mkdir -p "$metaReg"/name/"$out_me_b_name"
 	_messageCMD _relink_relative "$metaDir"/bo "$out_me_b_path"
 	
-	[[ "$out_me_a_path" == "/dev/null" ]] && rmdir "$metaDir"/ao && _relink_relative /dev/null "$metaDir"/ao
-	[[ "$out_me_b_path" == "/dev/null" ]] && rmdir "$metaDir"/bo && _relink_relative /dev/null "$metaDir"/bo
+	[[ "$out_me_a_path" == "/dev/null" ]] && rmdir "$metaDir"/ao && _relink /dev/null "$metaDir"/ao
+	[[ "$out_me_b_path" == "/dev/null" ]] && rmdir "$metaDir"/bo && _relink /dev/null "$metaDir"/bo
 	
 	_messagePlain_good 'return: complete'
 	return 0
@@ -165,7 +174,7 @@ _relink_metaengine_in() {
 	_stop 1
 }
 
-#No production use.
+#No production use.  Unmaintained.
 _relink_metaengine() {
 	_messagePlain_nominal 'init: _relink_metaengine'
 	
@@ -241,6 +250,9 @@ _start_metaengine() {
 	echo $$ > "$metaDir"/.pid
 	_relink_relative "$metaDir"/.pid "$metaDir_tmp"/.pid
 	
+	_me_embed_here > "$metaDir"/.metaenv.sh
+	chmod 755 "$metaDir"/.metaenv.sh
+	
 	echo "$sessionid" > "$metaDir"/.sessionid
 	_embed_here > "$metaDir"/.embed.sh
 	chmod 755 "$metaDir"/.embed.sh
@@ -263,7 +275,18 @@ _stop_metaengine_wait() {
 	done
 }
 
+#_rm_instance_metaengine_metaDir() {
+#	# WARNING: No production use, heredoc unsupported.
+#	[[ "$metaPreserve" == "true" ]] && return 0
+#	
+#	[[ "$metaDir" != "" ]] && [[ "$metaDir" == *"$sessionid"* ]] && [[ -e "$metaDir" ]] && _safeRMR "$metaDir"
+#}
+
 _rm_instance_metaengine() {
+	# WARNING: Documentation only. Any "_stop" condition expected to cleanup work directory corresponding to sessionid.
+	# Recommended practice is separate MetaEngine host for any intermittent processing chain.
+	#_rm_instance_metaengine_metaDir
+	
 	[[ "$metaStop" != "true" ]] && return 0
 	export metaStop="false"
 	
