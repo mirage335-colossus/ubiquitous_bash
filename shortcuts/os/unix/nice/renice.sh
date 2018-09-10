@@ -93,9 +93,7 @@ _unix_renice_interactive() {
 	_priority_enumerate_pattern "^kwin$" >> "$processListFile"
 	_priority_enumerate_pattern "^pager$" >> "$processListFile"
 	
-	_priority_enumerate_pattern "^plasmashell$" >> "$processListFile"
 	_priority_enumerate_pattern "^pulseaudio$" >> "$processListFile"
-	_priority_enumerate_pattern "^plasmashell$" >> "$processListFile"
 	
 	_priority_enumerate_pattern "^synergy$" >> "$processListFile"
 	_priority_enumerate_pattern "^synergys$" >> "$processListFile"
@@ -118,6 +116,8 @@ _unix_renice_app() {
 	local processListFile
 	processListFile="$scriptAbsoluteFolder"/.pidlist_$(_uid)
 	
+	_priority_enumerate_pattern "^plasmashell$" >> "$processListFile"
+	
 	_priority_enumerate_pattern "^audacious$" >> "$processListFile"
 	_priority_enumerate_pattern "^vlc$" >> "$processListFile"
 	
@@ -127,7 +127,7 @@ _unix_renice_app() {
 	
 	_priority_enumerate_pattern "^kwrite$" >> "$processListFile"
 	
-	#_priority_enumerate_pattern "^konsole$" >> "$processListFile"
+	_priority_enumerate_pattern "^konsole$" >> "$processListFile"
 	
 	_priority_enumerate_pattern "^pavucontrol$" >> "$processListFile"
 	
@@ -149,13 +149,13 @@ _unix_renice_idle() {
 	
 	_priority_enumerate_pattern "^apt-config$" >> "$processListFile"
 	
-	_priority_enumerate_pattern "^ModemManager$" >> "$processListFile"
+	#_priority_enumerate_pattern "^ModemManager$" >> "$processListFile"
 	
 	#_priority_enumerate_pattern "^sddm$" >> "$processListFile"
 	
-	_priority_enumerate_pattern "^lpqd$" >> "$processListFile"
-	_priority_enumerate_pattern "^cupsd$" >> "$processListFile"
-	_priority_enumerate_pattern "^cups-browsed$" >> "$processListFile"
+	#_priority_enumerate_pattern "^lpqd$" >> "$processListFile"
+	#_priority_enumerate_pattern "^cupsd$" >> "$processListFile"
+	#_priority_enumerate_pattern "^cups-browsed$" >> "$processListFile"
 	
 	_priority_enumerate_pattern "^akonadi" >> "$processListFile"
 	_priority_enumerate_pattern "^akonadi_indexing_agent$" >> "$processListFile"
@@ -173,7 +173,7 @@ _unix_renice_idle() {
 	_priority_enumerate_pattern "^apache2$" >> "$processListFile"
 	_priority_enumerate_pattern "^mysqld$" >> "$processListFile"
 	_priority_enumerate_pattern "^ntpd$" >> "$processListFile"
-	_priority_enumerate_pattern "^avahi-daemon$" >> "$processListFile"
+	#_priority_enumerate_pattern "^avahi-daemon$" >> "$processListFile"
 	
 	
 	local currentPID
