@@ -116,7 +116,7 @@ _priority_zero_pid_root() {
 _priority_zero_pid() {
 	[[ "$1" == "" ]] && return 1
 	
-	_priority_idle_pid_root "$1" && return 0
+	_priority_zero_pid_root "$1" && return 0
 	
 	#https://linux.die.net/man/1/ionice
 	ionice -c 2 -n 4 -p "$1"
