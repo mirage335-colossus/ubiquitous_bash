@@ -2793,6 +2793,11 @@ _unix_renice_critical() {
 	
 	_priority_enumerate_pattern "^ssh$" >> "$processListFile"
 	_priority_enumerate_pattern "^sshd$" >> "$processListFile"
+	_priority_enumerate_pattern "^ssh-agent$" >> "$processListFile"
+	
+	_priority_enumerate_pattern "^sshfs$" >> "$processListFile"
+	
+	_priority_enumerate_pattern "^socat$" >> "$processListFile"
 	
 	#_priority_enumerate_pattern "^cron$" >> "$processListFile"
 	
