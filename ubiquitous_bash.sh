@@ -11311,10 +11311,15 @@ _gparted() {
 
 _setupUbiquitous_here() {
 	cat << CZXWXcRMTo8EmM8i4d
+groups | grep -E 'wheel|sudo' > /dev/null 2>&1 && sudo -n renice -n -10 -p $$ > /dev/null 2>&1
+
 export profileScriptLocation="$ubcoreUBdir"/ubiquitous_bash.sh
 export profileScriptFolder="$ubcoreUBdir"
 [[ "\$scriptAbsoluteLocation" != "" ]] && . "\$scriptAbsoluteLocation" --parent _importShortcuts
 [[ "\$scriptAbsoluteLocation" == "" ]] && . "\$profileScriptLocation" --profile _importShortcuts
+
+renice -n 0 -p $$ > /dev/null 2>&1
+
 true
 CZXWXcRMTo8EmM8i4d
 }
@@ -11523,8 +11528,27 @@ _unix_renice_daemon() {
 _unix_renice_repeat() {
 	while true
 	do
+		_unix_renice_app > /dev/null 2>&1
+		sleep 10
+		_unix_renice_app > /dev/null 2>&1
+		sleep 10
+		_unix_renice_app > /dev/null 2>&1
+		sleep 10
+		_unix_renice_app > /dev/null 2>&1
+		sleep 10
+		_unix_renice_app > /dev/null 2>&1
+		sleep 10
+		_unix_renice_app > /dev/null 2>&1
+		sleep 10
+		_unix_renice_app > /dev/null 2>&1
+		sleep 10
+		_unix_renice_app > /dev/null 2>&1
+		sleep 10
+		_unix_renice_app > /dev/null 2>&1
+		sleep 10
+		
 		_unix_renice
-		sleep 90
+		sleep 10
 	done
 }
 
@@ -11609,7 +11633,7 @@ _unix_renice_app() {
 	
 	_priority_enumerate_pattern "^kwrite$" >> "$processListFile"
 	
-	_priority_enumerate_pattern "^konsole$" >> "$processListFile"
+	#_priority_enumerate_pattern "^konsole$" >> "$processListFile"
 	
 	_priority_enumerate_pattern "^pavucontrol$" >> "$processListFile"
 	
@@ -11633,7 +11657,7 @@ _unix_renice_idle() {
 	
 	_priority_enumerate_pattern "^ModemManager$" >> "$processListFile"
 	
-	_priority_enumerate_pattern "^sddm$" >> "$processListFile"
+	#_priority_enumerate_pattern "^sddm$" >> "$processListFile"
 	
 	_priority_enumerate_pattern "^lpqd$" >> "$processListFile"
 	_priority_enumerate_pattern "^cupsd$" >> "$processListFile"
@@ -11646,8 +11670,8 @@ _unix_renice_idle() {
 	#_priority_enumerate_pattern "^kacceessibleapp$" >> "$processListFile"
 	#_priority_enumerate_pattern "^kglobalaccel5$" >> "$processListFile"
 	
-	_priority_enumerate_pattern "^kded4$" >> "$processListFile"
-	_priority_enumerate_pattern "^ksmserver$" >> "$processListFile"
+	#_priority_enumerate_pattern "^kded4$" >> "$processListFile"
+	#_priority_enumerate_pattern "^ksmserver$" >> "$processListFile"
 	
 	_priority_enumerate_pattern "^sleep$" >> "$processListFile"
 	
