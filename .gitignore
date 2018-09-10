@@ -1,5 +1,7 @@
 /ops
 
+.pidlist*
+
 .e_*
 .e_*/
 e_*/

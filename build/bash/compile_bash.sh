@@ -17,6 +17,15 @@ _compile_bash_deps() {
 		return 0
 	fi
 	
+	if [[ "$1" == "processor" ]]
+	then
+		_deps_metaengine
+		
+		_deps_abstractfs
+		
+		return 0
+	fi
+	
 	if [[ "$1" == "core" ]]
 	then
 		_deps_notLean
@@ -147,6 +156,8 @@ _compile_bash_essential_utilities() {
 	includeScriptList+=( "generic/filesystem/permissions"/checkpermissions.sh )
 	includeScriptList+=( "generic"/findInfrastructure.sh )
 	includeScriptList+=( "generic"/gather.sh )
+	
+	includeScriptList+=( "generic/process"/priority.sh )
 	
 	includeScriptList+=( "generic/filesystem"/internal.sh )
 	
@@ -343,6 +354,12 @@ _compile_bash_shortcuts_setup() {
 	
 	includeScriptList+=( "shortcuts"/setupUbiquitous_here.sh )
 	includeScriptList+=( "shortcuts"/setupUbiquitous.sh )
+}
+
+_compile_bash_shortcuts_os() {
+	export includeScriptList
+	
+	includeScriptList+=( "shortcuts/os/unix/nice"/renice.sh )
 }
 
 _compile_bash_bundled() {
@@ -556,6 +573,8 @@ _compile_bash() {
 	_compile_bash_shortcuts_prog
 	_compile_bash_shortcuts_setup
 	_compile_bash_shortcuts_setup_prog
+	
+	_compile_bash_shortcuts_os
 	
 	_compile_bash_bundled
 	_compile_bash_bundled_prog
