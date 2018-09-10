@@ -986,7 +986,26 @@ _gather_params() {
 	export globalArgs=("${@}")
 }
 
-# WARNING: Functions in this file are only partially tested.
+_self_critial() {
+	_priority_critical_pid $$
+}
+
+_self_interactive() {
+	_priority_interactive_pid $$
+}
+
+_self_idle() {
+	_priority_idle_pid $$
+}
+
+_self_app() {
+	_priority_app_pid $$
+}
+
+_self_zero() {
+	_priority_zero_pid $$
+}
+
 
 #Example.
 _priority_critical() {
@@ -1073,6 +1092,27 @@ _priority_idle_pid() {
 	renice -n +15 -p "$1"
 }
 
+_priority_zero_pid_root() {
+	! _wantSudo && return 1
+	
+	sudo -n ionice -c 2 -n 4 -p "$1"
+	! sudo -n renice -n 0 -p "$1" && return 1
+	
+	return 0
+}
+
+_priority_zero_pid() {
+	[[ "$1" == "" ]] && return 1
+	
+	_priority_idle_pid_root "$1" && return 0
+	
+	#https://linux.die.net/man/1/ionice
+	ionice -c 2 -n 4 -p "$1"
+	
+	renice -n 0 -p "$1"
+}
+
+# WARNING: Untested.
 _priority_dispatch() {
 	local processListFile
 	processListFile="$scriptAbsoluteFolder"/.pidlist_$(_uid)
@@ -1090,6 +1130,7 @@ _priority_dispatch() {
 	rm "$processListFile"
 }
 
+# WARNING: Untested.
 _priority_enumerate_pid() {
 	[[ "$1" == "" ]] && return 1
 	
@@ -11311,14 +11352,14 @@ _gparted() {
 
 _setupUbiquitous_here() {
 	cat << CZXWXcRMTo8EmM8i4d
-groups | grep -E 'wheel|sudo' > /dev/null 2>&1 && sudo -n renice -n -10 -p $$ > /dev/null 2>&1
+type sudo > /dev/null 2>&1 && groups | grep -E 'wheel|sudo' > /dev/null 2>&1 && sudo -n renice -n -10 -p \$\$ > /dev/null 2>&1
 
 export profileScriptLocation="$ubcoreUBdir"/ubiquitous_bash.sh
 export profileScriptFolder="$ubcoreUBdir"
 [[ "\$scriptAbsoluteLocation" != "" ]] && . "\$scriptAbsoluteLocation" --parent _importShortcuts
 [[ "\$scriptAbsoluteLocation" == "" ]] && . "\$profileScriptLocation" --profile _importShortcuts
 
-renice -n 0 -p $$ > /dev/null 2>&1
+renice -n 0 -p \$\$ > /dev/null 2>&1
 
 true
 CZXWXcRMTo8EmM8i4d
