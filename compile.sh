@@ -2506,6 +2506,16 @@ _init_deps() {
 	export enUb_metaengine=""
 }
 
+_deps_dev_heavy() {
+	_deps_notLean
+	export enUB_dev_heavy="true"
+}
+
+_deps_mount() {
+	_deps_notLean
+	export enUB_mount="true"
+}
+
 _deps_machineinfo() {
 	export enUb_machineinfo="true"
 }
@@ -2569,9 +2579,13 @@ _deps_image() {
 	export enUb_image="true"
 }
 
-_deps_virt() {
+_deps_virt_thick() {
 	_deps_build
 	_deps_notLean
+	export enUb_virt_thick="true"
+}
+
+_deps_virt() {
 	_deps_machineinfo
 	_deps_image
 	export enUb_virt="true"
@@ -2580,24 +2594,28 @@ _deps_virt() {
 _deps_chroot() {
 	_deps_notLean
 	_deps_virt
+	_deps_virt_thick
 	export enUb_ChRoot="true"
 }
 
 _deps_qemu() {
 	_deps_notLean
 	_deps_virt
+	_deps_virt_thick
 	export enUb_QEMU="true"
 }
 
 _deps_vbox() {
 	_deps_notLean
 	_deps_virt
+	_deps_virt_thick
 	export enUb_vbox="true"
 }
 
 _deps_docker() {
 	_deps_notLean
 	_deps_virt
+	_deps_virt_thick
 	export enUb_docker="true"
 }
 
@@ -2616,6 +2634,7 @@ _deps_dosbox() {
 _deps_msw() {
 	_deps_notLean
 	_deps_virt
+	_deps_virt_thick
 	_deps_qemu
 	_deps_vbox
 	_deps_wine
@@ -2791,12 +2810,19 @@ _compile_bash_deps() {
 	
 	if [[ "$1" == "core" ]]
 	then
+		_deps_dev_heavy
+		
+		_deps_mount
+		
 		_deps_notLean
 		_deps_os_x11
 		
 		_deps_x11
 		_deps_image
+		
 		_deps_virt
+		_deps_virt_thick
+		
 		_deps_chroot
 		_deps_qemu
 		_deps_vbox
@@ -2835,12 +2861,19 @@ _compile_bash_deps() {
 	
 	if [[ "$1" == "" ]] || [[ "$1" == "ubiquitous_bash" ]] || [[ "$1" == "ubiquitous_bash.sh" ]] || [[ "$1" == "complete" ]]
 	then
+		_deps_dev_heavy
+		
+		_deps_mount
+		
 		_deps_notLean
 		_deps_os_x11
 		
 		_deps_x11
 		_deps_image
+		
 		_deps_virt
+		_deps_virt_thick
+		
 		_deps_chroot
 		_deps_qemu
 		_deps_vbox
@@ -2943,11 +2976,11 @@ _compile_bash_utilities() {
 	
 	includeScriptList+=( "generic/filesystem"/relink.sh )
 	
-	[[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "generic/filesystem/mounts"/bindmountmanager.sh )
+	[[ "$enUB_mount" == "true" ]] && includeScriptList+=( "generic/filesystem/mounts"/bindmountmanager.sh )
 	
-	[[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "generic/filesystem/mounts"/waitumount.sh )
+	[[ "$enUB_mount" == "true" ]] && includeScriptList+=( "generic/filesystem/mounts"/waitumount.sh )
 	
-	[[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "generic/filesystem/mounts"/mountchecks.sh )
+	[[ "$enUB_mount" == "true" ]] && includeScriptList+=( "generic/filesystem/mounts"/mountchecks.sh )
 	
 	includeScriptList+=( "generic/process"/waitforprocess.sh )
 	
@@ -2989,16 +3022,17 @@ _compile_bash_utilities() {
 	includeScriptList+=( "special"/mustberoot.sh )
 	includeScriptList+=( "special"/mustgetsudo.sh )
 	
-	[[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "special/gosu"/gosu.sh )
-	
 	includeScriptList+=( "special"/uuid.sh )
 	
-	[[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "instrumentation"/bashdb/bashdb.sh )
+	[[ "$enUB_dev_heavy" == "true" ]] && includeScriptList+=( "instrumentation"/bashdb/bashdb.sh )
 	[[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "instrumentation"/profiling/stopwatch.sh )
 }
 
 _compile_bash_utilities_virtualization() {
 	export includeScriptList
+	
+	# ATTENTION: Although the only known requirement for gosu is virtualization, it may be necessary wherever sudo is not sufficient to drop privileges.
+	[[ "$enUb_virt_thick" == "true" ]] && includeScriptList+=( "special/gosu"/gosu.sh )
 	
 	[[ "$enUb_virt" == "true" ]] && includeScriptList+=( "virtualization"/virtenv.sh )
 	
@@ -3063,11 +3097,11 @@ _compile_bash_shortcuts() {
 	
 	includeScriptList+=( "shortcuts/prompt"/visualPrompt.sh )
 	
-	[[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "shortcuts/dev"/devsearch.sh )
+	[[ "$enUB_dev_heavy" == "true" ]] && includeScriptList+=( "shortcuts/dev"/devsearch.sh )
 	
-	[[ "$enUb_fakehome" == "true" ]] && [[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "shortcuts/dev/app"/devemacs.sh )
-	[[ "$enUb_fakehome" == "true" ]] && [[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "shortcuts/dev/app"/devatom.sh )
-	[[ "$enUb_fakehome" == "true" ]] && [[ "$enUb_abstractfs" == "true" ]] && [[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "shortcuts/dev/app"/deveclipse.sh )
+	[[ "$enUb_fakehome" == "true" ]] && [[ "$enUB_dev_heavy" == "true" ]] && includeScriptList+=( "shortcuts/dev/app"/devemacs.sh )
+	[[ "$enUb_fakehome" == "true" ]] && [[ "$enUB_dev_heavy" == "true" ]] && includeScriptList+=( "shortcuts/dev/app"/devatom.sh )
+	[[ "$enUb_fakehome" == "true" ]] && [[ "$enUb_abstractfs" == "true" ]] && [[ "$enUB_dev_heavy" == "true" ]] && includeScriptList+=( "shortcuts/dev/app"/deveclipse.sh )
 	
 	includeScriptList+=( "shortcuts/dev/query"/devquery.sh )
 	
@@ -3210,7 +3244,9 @@ _compile_bash_buildin() {
 	export includeScriptList
 	
 	[[ "$enUb_build" == "true" ]] && includeScriptList+=( "generic/hello"/hello.sh )
-	[[ "$enUb_build" == "true" ]] && [[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "generic/process"/idle.sh )
+	
+	# ATTENTION: Running while X11 session is idle is a common requirement for a daemon.
+	[[ "$enUb_build" == "true" ]] && [[ "$enUb_x11" == "true" ]] && includeScriptList+=( "generic/process"/idle.sh )
 	
 	[[ "$enUb_build" == "true" ]] && includeScriptList+=( "structure"/build.sh )
 }
