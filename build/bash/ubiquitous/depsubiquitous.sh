@@ -36,6 +36,16 @@ _init_deps() {
 	export enUb_metaengine=""
 }
 
+_deps_dev_heavy() {
+	_deps_notLean
+	export enUB_dev_heavy="true"
+}
+
+_deps_mount() {
+	_deps_notLean
+	export enUB_mount="true"
+}
+
 _deps_machineinfo() {
 	export enUb_machineinfo="true"
 }
@@ -99,9 +109,13 @@ _deps_image() {
 	export enUb_image="true"
 }
 
-_deps_virt() {
+_deps_virt_thick() {
 	_deps_build
 	_deps_notLean
+	export enUb_virt_thick="true"
+}
+
+_deps_virt() {
 	_deps_machineinfo
 	_deps_image
 	export enUb_virt="true"
@@ -110,24 +124,28 @@ _deps_virt() {
 _deps_chroot() {
 	_deps_notLean
 	_deps_virt
+	_deps_virt_thick
 	export enUb_ChRoot="true"
 }
 
 _deps_qemu() {
 	_deps_notLean
 	_deps_virt
+	_deps_virt_thick
 	export enUb_QEMU="true"
 }
 
 _deps_vbox() {
 	_deps_notLean
 	_deps_virt
+	_deps_virt_thick
 	export enUb_vbox="true"
 }
 
 _deps_docker() {
 	_deps_notLean
 	_deps_virt
+	_deps_virt_thick
 	export enUb_docker="true"
 }
 
@@ -146,6 +164,7 @@ _deps_dosbox() {
 _deps_msw() {
 	_deps_notLean
 	_deps_virt
+	_deps_virt_thick
 	_deps_qemu
 	_deps_vbox
 	_deps_wine
