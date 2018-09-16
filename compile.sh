@@ -1503,7 +1503,7 @@ _includeFile() {
 #Provide only approximate, realative paths. These will be disassembled and treated as a search query following stricti preferences
 #"generic/filesystem/absolutepaths.sh"
 _includeScript() {
-	_includeScript_prog "$1" && return 0
+	_tryExec "_includeScript_prog" "$1" && return 0
 
 	local includeScriptFilename=$(basename "$1")
 	local includeScriptSubdirectory=$(dirname "$1")
@@ -1550,13 +1550,15 @@ _includeScripts() {
 }
 
 # WARNING: Untested.
-_includeScript_prog() {
-	false
+#_includeScript_prog() {
+#	false
 	
 	# WARNING: Not recommended. Create folders and submodules under "_prog" instead, as in "_prog/libName".
 	#_includeFile "$scriptLib"/libName/"$includeScriptSubdirectory"/"$includeScriptFilename" && return 0
 	#_includeFile "$scriptLib"/libName/"$includeScriptFilename" && return 0
-}
+	
+	#return 1
+#}
 
 #Gets filename extension, specifically any last three characters in given string.
 #"$1" == filename
