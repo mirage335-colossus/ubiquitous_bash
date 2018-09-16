@@ -14,10 +14,10 @@ _includeFile() {
 #Provide only approximate, realative paths. These will be disassembled and treated as a search query following stricti preferences
 #"generic/filesystem/absolutepaths.sh"
 _includeScript() {
+	_includeScript_prog "$1" && return 0
 
 	local includeScriptFilename=$(basename "$1")
 	local includeScriptSubdirectory=$(dirname "$1")
-	
 	
 	_includeFile "$progDir"/"$includeScriptSubdirectory"/"$includeScriptFilename" && return 0
 	

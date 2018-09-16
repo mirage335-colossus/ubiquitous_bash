@@ -1503,10 +1503,10 @@ _includeFile() {
 #Provide only approximate, realative paths. These will be disassembled and treated as a search query following stricti preferences
 #"generic/filesystem/absolutepaths.sh"
 _includeScript() {
+	_includeScript_prog "$1" && return 0
 
 	local includeScriptFilename=$(basename "$1")
 	local includeScriptSubdirectory=$(dirname "$1")
-	
 	
 	_includeFile "$progDir"/"$includeScriptSubdirectory"/"$includeScriptFilename" && return 0
 	
@@ -1547,6 +1547,15 @@ _includeScripts() {
 		
 		[[ "$duplicateIncludeScript" != "true" ]] && _includeScript "$currentIncludeScript"
 	done
+}
+
+# WARNING: Untested.
+_includeScript_prog() {
+	false
+	
+	# WARNING: Not recommended. Create folders and submodules under "_prog" instead, as in "_prog/libName".
+	#_includeFile "$scriptLib"/libName/"$includeScriptSubdirectory"/"$includeScriptFilename" && return 0
+	#_includeFile "$scriptLib"/libName/"$includeScriptFilename" && return 0
 }
 
 #Gets filename extension, specifically any last three characters in given string.
@@ -16482,6 +16491,7 @@ _compile_bash_essential_utilities() {
 	includeScriptList+=( "generic"/config/mustcarry.sh )
 	
 	[[ "$enUb_buildBash" == "true" ]] && includeScriptList+=( "build/bash"/include_bash.sh )
+	[[ "$enUb_buildBash" == "true" ]] && includeScriptList+=( "build/bash"/include_bash_prog.sh )
 }
 
 _compile_bash_utilities() {
