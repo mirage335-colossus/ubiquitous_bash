@@ -54,7 +54,20 @@ _test_prog() {
 }
 
 _test() {
+	_messageNormal "Sanity..."
+	
+	local santiySessionID_length
+	santiySessionID_length=$(echo -n "$sessionid" | wc -c)
+	
+	[[ "$santiySessionID_length" -lt "18" ]] && _messageFAIL && return 1
+	[[ "$uidLengthPrefix" != "" ]] && [[ "$santiySessionID_length" -lt "$uidLengthPrefix" ]] && _messageFAIL && return 1
+	
+	[[ -e "$safeTmp" ]] && _messageFAIL && return 1
+	
 	_start
+	
+	_messagePASS
+	
 	
 	_messageNormal "Permissions..."
 	

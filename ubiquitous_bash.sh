@@ -883,10 +883,13 @@ _terminateAll() {
 
 #Generates random alphanumeric characters, default length 18.
 _uid() {
-	local uidLength
-	! [[ -z "$1" ]] && uidLength="$1" || uidLength=18
-	
-	cat /dev/urandom 2> /dev/null | base64 2> /dev/null | tr -dc 'a-zA-Z0-9' 2> /dev/null | head -c "$uidLength" 2> /dev/null
+	local curentLengthUID
+
+	currentLengthUID="18"
+	! [[ -z "$uidLengthPrefix" ]] && ! [[ "$uidLengthPrefix" -lt "18" ]] && currentLengthUID="$uidLengthPrefix"
+	! [[ -z "$1" ]] && currentLengthUID="$1"
+
+	cat /dev/urandom 2> /dev/null | base64 2> /dev/null | tr -dc 'a-zA-Z0-9' 2> /dev/null | head -c "$currentLengthUID" 2> /dev/null
 }
 
 _compat_stat_c_run() {
@@ -15569,7 +15572,20 @@ _test_prog() {
 }
 
 _test() {
+	_messageNormal "Sanity..."
+	
+	local santiySessionID_length
+	santiySessionID_length=$(echo -n "$sessionid" | wc -c)
+	
+	[[ "$santiySessionID_length" -lt "18" ]] && _messageFAIL && return 1
+	[[ "$uidLengthPrefix" != "" ]] && [[ "$santiySessionID_length" -lt "$uidLengthPrefix" ]] && _messageFAIL && return 1
+	
+	[[ -e "$safeTmp" ]] && _messageFAIL && return 1
+	
 	_start
+	
+	_messagePASS
+	
 	
 	_messageNormal "Permissions..."
 	
