@@ -213,6 +213,8 @@ _test() {
 	_tryExec "_test_ethereum"
 	_tryExec "_test_ethereum_parity"
 	
+	_tryExec "_test_metaengine"
+	
 	[[ -e /dev/urandom ]] || echo /dev/urandom missing _stop
 	
 	_messagePASS

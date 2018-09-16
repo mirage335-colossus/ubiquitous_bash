@@ -5145,8 +5145,21 @@ _vector_virtUser() {
 
 
 
+_test_abstractfs_sequence() {
+	export afs_nofs="true"
+	if ! "$scriptAbsoluteLocation" _abstractfs ls "$scriptAbsoluteLocation" > /dev/null 2>&1
+	then
+		_stop 1
+	fi
+}
+
 _test_abstractfs() {
 	_getDep md5sum
+	if ! "$scriptAbsoluteLocation" _test_abstractfs_sequence
+	then
+		echo 'fail: abstractfs: ls'
+		_stop 1
+	fi
 }
 
 _abstractfs() {
@@ -5334,7 +5347,7 @@ _write_projectAFS() {
 	testAbstractfsBase="$abstractfs_base"
 	[[ "$1" != "" ]] && testAbstractfsBase=$(_getAbsoluteLocation "$1")
 	
-	( [[ "$nofs" == "true" ]] || [[ "$afs_nofs" == "true" ]] ) && return
+	( [[ "$nofs" == "true" ]] || [[ "$afs_nofs" == "true" ]] ) && return 0
 	_projectAFS_here > "$testAbstractfsBase"/project.afs
 	chmod u+x "$testAbstractfsBase"/project.afs
 }
@@ -13086,6 +13099,43 @@ _prepare_docker() {
 #_prepare_docker
 
 
+_test_metaengine_sequence() {
+	! _start_metaengine_host && _stop 1
+	! _stop_metaengine_allow && _stop 1
+	
+	! _reset_me_name && _stop 1
+	! _assign_me_coordinates "" "" "" "" "" "" 0 1 0 1 1 0 && _stop 1
+	! _set_me_null_in && _stop 1
+	
+	
+	! _reset_me_name && _stop 1
+	! _set_me_null_in && _stop 1
+	! _set_me_rand_out && _stop 1
+	! _cycle_me && _stop 1
+	! _set_me_null_out && _stop 1
+	
+	! _reset_me_name && _stop 1
+	! _set_me_null_in && _stop 1
+	! _assign_me_name_out "1" && _stop 1
+	! _cycle_me && _stop 1
+	! _assign_me_name_out "2" && _stop 1
+	! _cycle_me && _stop 1
+	! _assign_me_name_out "3" && _stop 1
+	! _cycle_me && _stop 1
+	! _set_me_null_out && _stop 1
+	
+	! _stop_metaengine_allow && _stop 1
+	_stop
+}
+
+_test_metaengine() {
+	if ! "$scriptAbsoluteLocation" _test_metaengine_sequence > /dev/null 2>&1
+	then
+		echo 'fail: metaengine: internal'
+		_stop 1
+	fi
+}
+
 _report_metaengine() {
 	_messagePlain_nominal 'init: _report_metaengine'
 	
@@ -15676,6 +15726,8 @@ _test() {
 	_tryExec "_test_ethereum"
 	_tryExec "_test_ethereum_parity"
 	
+	_tryExec "_test_metaengine"
+	
 	[[ -e /dev/urandom ]] || echo /dev/urandom missing _stop
 	
 	_messagePASS
@@ -15937,7 +15989,7 @@ export EMBEDDED="$matchingEMBEDDED"
 export keepKeys_SSH='true'
 
 _deps_metaengine() {
-	_deps_notLean
+# 	#_deps_notLean
 	
 	export enUb_metaengine="true"
 } 
@@ -15950,6 +16002,8 @@ _compile_bash_metaengine() {
 
 _compile_bash_vars_metaengine() {
 	export includeScriptList
+	
+	[[ "$enUb_metaengine" == "true" ]] && includeScriptList+=( "metaengine/"/metaengine.sh )
 	
 	[[ "$enUb_metaengine" == "true" ]] && includeScriptList+=( "metaengine/env"/metaengine_diag.sh )
 	

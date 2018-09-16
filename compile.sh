@@ -2417,7 +2417,7 @@ export globalBuildTmp="$globalBuildDir"/tmp
 export tmpPrefix=""
 
 _deps_metaengine() {
-	_deps_notLean
+# 	#_deps_notLean
 	
 	export enUb_metaengine="true"
 } 
@@ -2430,6 +2430,8 @@ _compile_bash_metaengine() {
 
 _compile_bash_vars_metaengine() {
 	export includeScriptList
+	
+	[[ "$enUb_metaengine" == "true" ]] && includeScriptList+=( "metaengine/"/metaengine.sh )
 	
 	[[ "$enUb_metaengine" == "true" ]] && includeScriptList+=( "metaengine/env"/metaengine_diag.sh )
 	
