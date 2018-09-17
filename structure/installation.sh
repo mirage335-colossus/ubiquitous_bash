@@ -66,6 +66,19 @@ _test() {
 	
 	_start
 	
+	[[ ! -e "$safeTmp" ]] && _messageFAIL && return 1
+	
+	local currentTestUID=$(_uid 245)
+	mkdir -p "$safeTmp"/"$currentTestUID"
+	echo > "$safeTmp"/"$currentTestUID"/"$currentTestUID"
+	
+	[[ ! -e "$safeTmp"/"$currentTestUID"/"$currentTestUID" ]] && _messageFAIL && return 1
+	
+	rm -f "$safeTmp"/"$currentTestUID"/"$currentTestUID"
+	rmdir "$safeTmp"/"$currentTestUID"
+	
+	[[ -e "$safeTmp"/"$currentTestUID" ]] && _messageFAIL && return 1
+	
 	_messagePASS
 	
 	
