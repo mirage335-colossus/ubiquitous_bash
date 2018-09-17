@@ -8,6 +8,8 @@ _compile_bash_deps() {
 		_deps_proxy
 		_deps_proxy_special
 		
+		_deps_channel
+		
 		_deps_git
 		_deps_bup
 		
@@ -19,6 +21,9 @@ _compile_bash_deps() {
 	
 	if [[ "$1" == "processor" ]]
 	then
+		
+		_deps_channel
+		
 		_deps_metaengine
 		
 		_deps_abstractfs
@@ -50,6 +55,8 @@ _compile_bash_deps() {
 		_deps_msw
 		_deps_fakehome
 		_deps_abstractfs
+		
+		_deps_channel
 		
 		_deps_metaengine
 		
@@ -101,6 +108,8 @@ _compile_bash_deps() {
 		_deps_msw
 		_deps_fakehome
 		_deps_abstractfs
+		
+		_deps_channel
 		
 		_deps_metaengine
 		
@@ -200,6 +209,8 @@ _compile_bash_utilities() {
 	[[ "$enUB_mount" == "true" ]] && includeScriptList+=( "generic/filesystem/mounts"/waitumount.sh )
 	
 	[[ "$enUB_mount" == "true" ]] && includeScriptList+=( "generic/filesystem/mounts"/mountchecks.sh )
+	
+	[[ "$enUb_channel" == "true" ]] && includeScriptList+=( "generic/process/"channel.sh )
 	
 	includeScriptList+=( "generic/process"/waitforprocess.sh )
 	

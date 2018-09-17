@@ -212,6 +212,10 @@ _deps_user() {
 	export enUb_user="true"
 }
 
+_deps_channel() {
+	export enUb_channel="true"
+}
+
 #placeholder, define under "metaengine/build"
 #_deps_metaengine() {
 #	_deps_notLean

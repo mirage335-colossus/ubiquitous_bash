@@ -228,6 +228,8 @@ _test() {
 	
 	_tryExec "_test_metaengine"
 	
+	_tryExec "_test_channel"
+	
 	[[ -e /dev/urandom ]] || echo /dev/urandom missing _stop
 	
 	_messagePASS

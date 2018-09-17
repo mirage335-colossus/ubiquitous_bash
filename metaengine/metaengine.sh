@@ -28,6 +28,8 @@ _test_metaengine_sequence() {
 }
 
 _test_metaengine() {
+	_getDep mkfifo
+	
 	if ! "$scriptAbsoluteLocation" _test_metaengine_sequence > /dev/null 2>&1
 	then
 		echo 'fail: metaengine: internal'

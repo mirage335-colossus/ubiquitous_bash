@@ -3238,6 +3238,7 @@ _stop() {
 	[[ -e "$engineTmp" ]] && _safeRMR "$engineTmp"
 	
 	_tryExec _rm_instance_metaengine
+	_tryExec _rm_instance_channel
 	
 	_safeRMR "$shortTmp"
 	_safeRMR "$safeTmp"
@@ -3833,6 +3834,8 @@ _test() {
 	_tryExec "_test_ethereum_parity"
 	
 	_tryExec "_test_metaengine"
+	
+	_tryExec "_test_channel"
 	
 	[[ -e /dev/urandom ]] || echo /dev/urandom missing _stop
 	

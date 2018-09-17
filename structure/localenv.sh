@@ -67,6 +67,7 @@ _stop() {
 	[[ -e "$engineTmp" ]] && _safeRMR "$engineTmp"
 	
 	_tryExec _rm_instance_metaengine
+	_tryExec _rm_instance_channel
 	
 	_safeRMR "$shortTmp"
 	_safeRMR "$safeTmp"
