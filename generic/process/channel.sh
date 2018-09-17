@@ -34,17 +34,16 @@ _rm_instance_channel() {
 	[[ "$channelTmp" != "" ]] && [[ "$channelTmp" == *"$sessionid"* ]] && [[ -e "$channelTmp" ]] && _safeRMR "$channelTmp"
 }
 
-_channel_fifo_procedure_example() {
+_channel_fifo_example() {
 	cat /dev/urandom | base64
 }
 
 _channel_fifo_sequence() {
 	_stop_channel_allow
-	_start
 	
 	"$@" 2>/dev/null > "$commandFIFO"
 	
-	_stop
+	_rm_instance_channel
 }
 
 _channel_host_fifo_sequence() {
@@ -64,7 +63,7 @@ _channel_host_fifo_sequence() {
 	disown -a -h
 }
 
-# example: dd if=$(./ubiquitous_bash.sh _channel_host_fifo _channel_fifo_procedure_example) of=/dev/null
+# example: dd if=$(./ubiquitous_bash.sh _channel_host_fifo _channel_fifo_example) of=/dev/null
 # example: dd if=$(./ubiquitous_bash.sh _channel_host_fifo cat /dev/zero) of=/dev/null bs=1M count=10000 iflag=fullblock
 _channel_host_fifo() {
 	"$scriptAbsoluteLocation" _channel_host_fifo_sequence "$@"
