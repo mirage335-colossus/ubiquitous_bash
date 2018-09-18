@@ -3,9 +3,9 @@
 #"$2" == metaObjName (optional)
 _processor_launch() {
 	_assign_me_objname "$1"
-	[[ "$2" != "" ]] && _assign_me_objname "$2"
+	#[[ "$2" != "" ]] && _assign_me_objname "$2"
 	
-	_me_command "$1"
+	_me_command "$@"
 	
 	#Optional. Usually correctly orders diagnostic output.
 	sleep 3
