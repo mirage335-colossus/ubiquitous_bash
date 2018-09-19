@@ -8,7 +8,7 @@ _processor_launch() {
 	_me_command "$@"
 	
 	#Optional. Usually correctly orders diagnostic output.
-	sleep 3
+	#sleep 3
 }
 
 _me_processor_noise() {

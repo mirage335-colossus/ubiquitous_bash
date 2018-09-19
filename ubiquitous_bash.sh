@@ -14361,10 +14361,10 @@ _wait_metaengine() {
 	#sleep 20
 	#_ready_me_in && return 0
 	
-	#while ! _ready_me_in
-	#do
-	#	sleep 0.1
-	#done
+	while ! _ready_me_in
+	do
+		sleep 0.1
+	done
 	
 	_messagePlain_bad 'missing: in_me_a_path, in_me_b_path'
 	return 1
@@ -14534,7 +14534,7 @@ _processor_launch() {
 	_me_command "$@"
 	
 	#Optional. Usually correctly orders diagnostic output.
-	sleep 3
+	#sleep 3
 }
 
 _me_processor_noise() {
