@@ -14146,7 +14146,7 @@ _relink_metaengine_name_in() {
 	[[ "$in_me_b_path" == "/dev/null" ]] && _relink "$in_me_b_path" "$metaDir"/bi
 	
 	# DANGER: Administrative/visualization use ONLY.
-	([[ "$in_me_a_path" == "/dev/null" ]] || [[ "$in_me_b_path" == "/dev/null" ]]) && _relink_relative "$metaDir" "$metaReg"/name/null/"$metaID"
+	( [[ "$in_me_a_path" == "/dev/null" ]] || [[ "$in_me_b_path" == "/dev/null" ]] ) && _relink_relative "$metaDir" "$metaReg"/name/null/"$metaID"
 	
 	_messagePlain_good 'return: complete'
 	return 0
@@ -14167,7 +14167,7 @@ _relink_metaengine_name_out() {
 	[[ "$out_me_b_path" == "/dev/null" ]] && rmdir "$metaDir"/bo && _relink /dev/null "$metaDir"/bo
 	
 	# DANGER: Administrative/visualization use ONLY.
-	([[ "$out_me_a_path" == "/dev/null" ]] || [[ "$out_me_b_path" == "/dev/null" ]]) && _relink_relative "$metaDir" "$metaReg"/name/null/"$metaID"
+	( [[ "$out_me_a_path" == "/dev/null" ]] || [[ "$out_me_b_path" == "/dev/null" ]] ) && _relink_relative "$metaDir" "$metaReg"/name/null/"$metaID"
 	
 	_messagePlain_good 'return: complete'
 	return 0
@@ -14346,6 +14346,18 @@ _stop_metaengine_wait() {
 			sleep 1
 		done
 	fi
+}
+
+_confidence_metaengine() {
+	if [[ -e "$metaConfidence" ]]
+	then
+		local currentMetaConfidenceValue
+		currentMetaConfidenceValue=$(cat "$metaConfidence")
+		
+		[[ "$currentMetaConfidenceValue" == '1' ]] && return 1
+	fi
+	
+	return 0
 }
 
 #_rm_instance_metaengine_metaDir() {
