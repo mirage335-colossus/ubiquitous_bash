@@ -19,6 +19,7 @@ _report_metaengine() {
 	
 	[[ "$metaReg" == "" ]] && _messagePlain_warn 'blank: metaReg'
 	
+	[[ "$metaConfidence" == "" ]] && _messagePlain_warn 'blank: metaConfidence'
 	
 	[[ ! -e "$metaBase" ]] && _messagePlain_warn 'missing: metaBase'
 	
@@ -58,6 +59,7 @@ _message_me_set() {
 	_messageVar metaDir_base
 	_messageVar metaDir
 	_messageVar metaReg
+	_messageVar metaConfidence
 	echo
 	_message_me_path
 }

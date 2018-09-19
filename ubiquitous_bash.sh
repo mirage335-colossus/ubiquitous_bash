@@ -13256,6 +13256,7 @@ _report_metaengine() {
 	
 	[[ "$metaReg" == "" ]] && _messagePlain_warn 'blank: metaReg'
 	
+	[[ "$metaConfidence" == "" ]] && _messagePlain_warn 'blank: metaConfidence'
 	
 	[[ ! -e "$metaBase" ]] && _messagePlain_warn 'missing: metaBase'
 	
@@ -13295,6 +13296,7 @@ _message_me_set() {
 	_messageVar metaDir_base
 	_messageVar metaDir
 	_messageVar metaReg
+	_messageVar metaConfidence
 	echo
 	_message_me_path
 }
@@ -13497,13 +13499,21 @@ _me_command() {
 
 
 
+# ATTENTION: Declare with "core.sh" or similar if appropriate.
+# WARNING: Any "$tmpPrefix" will be reset before metaengine unless explicitly declared here.
+#_set_me_host_prefix() {
+#	export metaPrefix="prefix"
+#}
+
 _set_me_host() {
 	_set_me_base
 	
-	export metaTmp="$scriptAbsoluteFolder""$tmpPrefix"/.m_"$sessionid"
+	_tryExec "_set_me_host_prefix"
+	
+	export metaTmp="$scriptAbsoluteFolder""$metaPrefix"/.m_"$sessionid"
 	
 	# WARNING: Setting metaProc to a value not including sessionid disables automatic removal by default!
-	export metaProc="$metaBase""$tmpPrefix"/.m_"$sessionid"
+	export metaProc="$metaBase""$metaPrefix"/.m_"$sessionid"
 }
 
 _reset_me_host() {
@@ -13525,6 +13535,8 @@ _set_me() {
 	_set_me_dir
 	_set_me_reg
 	
+	_set_me_confidence
+	
 	_set_me_io_in
 	_set_me_io_out
 	
@@ -13542,6 +13554,8 @@ _reset_me() {
 	_reset_me_path
 	_reset_me_dir
 	_reset_me_reg
+	
+	_reset_me_confidence
 	
 	_reset_me_name
 	_reset_me_coordinates
@@ -13599,6 +13613,14 @@ _reset_me_reg() {
 	export metaReg=
 }
 
+#Intended to signal task completion, allowing shutdown of processing chain.
+_set_me_confidence() {
+	export metaConfidence="$metaReg"/confidence
+}
+
+_reset_me_confidence() {
+	export metaConfidence=
+}
 
 
 
