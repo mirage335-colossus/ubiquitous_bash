@@ -799,6 +799,23 @@ _command_safeBackup() {
 
 
 
+_all_exist() {
+	local currentArg
+	for currentArg in "$@"
+	do
+		! [[ -e "$currentArg" ]] && return 1
+	done
+	
+	return 0
+}
+
+_wait_not_all_exist() {
+	while ! _all_exist "$@"
+	do
+		sleep 0.1
+	done
+}
+
 #http://stackoverflow.com/questions/687948/timeout-a-command-in-bash-without-unnecessary-delay
 _timeout() { ( set +b; sleep "$1" & "${@:2}" & wait -n; r=$?; kill -9 `jobs -p`; exit $r; ) } 
 
@@ -13473,8 +13490,6 @@ _me_command() {
 	
 	_messageNormal 'fork: '"$metaObjName"': '"$metaDir"/me.sh
 	"$metaDir"/me.sh &
-	
-	_wait_metaengine_host
 }
 
 
@@ -14295,10 +14310,15 @@ _stop_metaengine_prohibit() {
 _stop_metaengine_wait() {
 	_stop_metaengine_allow
 	
-	while true
-	do
-		sleep 1
-	done
+	_wait_all_exist "$@"
+	
+	if [[ "$1" == "" ]]
+	then
+		while true
+		do
+			sleep 1
+		done
+	fi
 }
 
 #_rm_instance_metaengine_metaDir() {
@@ -14544,6 +14564,7 @@ _processor_launch() {
 	_me_command "$@"
 	
 	#Optional. Usually correctly orders diagnostic output.
+	#_wait_metaengine_host
 	#sleep 3
 }
 
@@ -16672,6 +16693,7 @@ _compile_bash_essential_utilities() {
 	includeScriptList+=( "labels"/utilitiesLabel.sh )
 	includeScriptList+=( "generic/filesystem"/absolutepaths.sh )
 	includeScriptList+=( "generic/filesystem"/safedelete.sh )
+	includeScriptList+=( "generic/filesystem"/allLogic.sh )
 	includeScriptList+=( "generic/process"/timeout.sh )
 	includeScriptList+=( "generic/process"/terminate.sh )
 	includeScriptList+=( "generic"/uid.sh )

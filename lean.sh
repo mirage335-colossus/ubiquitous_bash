@@ -799,6 +799,23 @@ _command_safeBackup() {
 
 
 
+_all_exist() {
+	local currentArg
+	for currentArg in "$@"
+	do
+		! [[ -e "$currentArg" ]] && return 1
+	done
+	
+	return 0
+}
+
+_wait_not_all_exist() {
+	while ! _all_exist "$@"
+	do
+		sleep 0.1
+	done
+}
+
 #http://stackoverflow.com/questions/687948/timeout-a-command-in-bash-without-unnecessary-delay
 _timeout() { ( set +b; sleep "$1" & "${@:2}" & wait -n; r=$?; kill -9 `jobs -p`; exit $r; ) } 
 
