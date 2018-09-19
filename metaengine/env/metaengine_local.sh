@@ -299,8 +299,8 @@ _rm_instance_metaengine() {
 }
 
 _ready_me_in() {
-	! [[ -e "$in_me_a_path" ]] && _messagePlain_warn 'missing: in_me_a_path= '"$in_me_a_path"
-	! [[ -e "$in_me_b_path" ]] && _messagePlain_warn 'missing: in_me_b_path= '"$in_me_b_path"
+	#! [[ -e "$in_me_a_path" ]] && _messagePlain_warn 'missing: in_me_a_path= '"$in_me_a_path"
+	#! [[ -e "$in_me_b_path" ]] && _messagePlain_warn 'missing: in_me_b_path= '"$in_me_b_path"
 	
 	if [[ ! -e "$in_me_a_path" ]] || [[ ! -e "$in_me_b_path" ]]
 	then
