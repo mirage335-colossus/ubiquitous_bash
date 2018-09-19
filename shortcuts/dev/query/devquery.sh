@@ -1,5 +1,6 @@
 #Simulated client/server discussion testing.
 
+# ATTENTION: Overload with "core.sh" or similar.
 _prepare_query_prog() {
 	true
 }
@@ -27,7 +28,7 @@ _prepare_query() {
 }
 
 _queryServer() {
-	_prepare_query
+	export queryType="server"
 	"$ub_queryserver" "$@"
 }
 _qs() {
@@ -35,14 +36,16 @@ _qs() {
 }
 
 _queryClient() {
-	_prepare_query
+	export queryType="client"
 	"$ub_queryclient" "$@"
 }
 _qc() {
 	_queryClient "$@"
 }
 
-#Example only. Overload with "core.sh" or similar.
+# ATTENTION: Overload with "core.sh" or similar.
 _query() {
+	_prepare_query
+	
 	( cd "$qc" ; _queryClient _bin cat | ( cd "$qs" ; _queryServer _bin cat | ( cd "$ub_queryserverdir" ; _queryClient _bin cat )))
 }
