@@ -8,6 +8,7 @@ _processor_launch() {
 	_me_command "$@"
 	
 	#Optional. Usually correctly orders diagnostic output.
+	#_wait_metaengine_host
 	#sleep 3
 }
 

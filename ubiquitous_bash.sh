@@ -13473,6 +13473,8 @@ _me_command() {
 	
 	_messageNormal 'fork: '"$metaObjName"': '"$metaDir"/me.sh
 	"$metaDir"/me.sh &
+	
+	_wait_metaengine_host
 }
 
 
@@ -14335,10 +14337,18 @@ _ready_me_in() {
 	return 0
 }
 
-# ATTENTION: Overload with "core.sh" if appropriate.
+_wait_metaengine_host() {
+	_messagePlain_nominal 'init: _wait_metaengine_host'
+	_wait_metaengine_in "$@"
+}
+
 _wait_metaengine() {
 	_messagePlain_nominal 'init: _wait_metaengine'
-	
+	_wait_metaengine_in "$@"
+}
+
+# ATTENTION: Overload with "core.sh" if appropriate.
+_wait_metaengine_in() {
 	_ready_me_in && return 0
 	sleep 0.1
 	_ready_me_in && return 0
