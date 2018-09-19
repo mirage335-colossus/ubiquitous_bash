@@ -269,7 +269,7 @@ _stop_metaengine_prohibit() {
 _stop_metaengine_wait() {
 	_stop_metaengine_allow
 	
-	_wait_all_exist "$@"
+	_wait_not_all_exist "$@"
 	
 	if [[ "$1" == "" ]]
 	then

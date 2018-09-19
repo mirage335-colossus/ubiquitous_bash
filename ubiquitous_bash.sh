@@ -14306,11 +14306,11 @@ _stop_metaengine_prohibit() {
 	export metaStop="false"
 }
 
-#Indefinitely pauses, allowing SIGINT or similar to trigger "_stop" at any time.
+#Waits for files to exist, or indefinitely pauses, allowing SIGINT or similar to trigger "_stop" at any time.
 _stop_metaengine_wait() {
 	_stop_metaengine_allow
 	
-	_wait_all_exist "$@"
+	_wait_not_all_exist "$@"
 	
 	if [[ "$1" == "" ]]
 	then
