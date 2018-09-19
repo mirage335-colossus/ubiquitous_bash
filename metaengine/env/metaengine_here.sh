@@ -115,16 +115,28 @@ _me_command_here() {
 	
 	_me_var_here
 	
-	cat << CZXWXcRMTo8EmM8i4d
+	#cat << CZXWXcRMTo8EmM8i4d
+#
+#
+#. "$scriptAbsoluteLocation" --embed "$1" "\$@"
+#CZXWXcRMTo8EmM8i4d
 
+echo -n '. "$scriptAbsoluteLocation" --embed'
 
-. "$scriptAbsoluteLocation" --embed "$1" "\$@"
-CZXWXcRMTo8EmM8i4d
+local currentArg
+for currentArg in "$@"
+do
+	echo -n ' '
+	_safeEcho \""$currentArg"\'
+done
+
+echo ' "$@"'
+
 }
 
 _me_command_here_write() {
 	mkdir -p "$metaDir"
-	_me_command_here "$1" > "$metaDir"/me.sh
+	_me_command_here "$@" > "$metaDir"/me.sh
 	chmod 700 "$metaDir"/me.sh
 }
 _me_command_here_write_noclobber() {
