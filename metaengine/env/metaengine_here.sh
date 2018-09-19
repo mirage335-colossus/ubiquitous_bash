@@ -127,7 +127,7 @@ local currentArg
 for currentArg in "$@"
 do
 	echo -n ' '
-	_safeEcho \""$currentArg"\'
+	_safeEcho \""$currentArg"\"
 done
 
 echo ' "$@"'
