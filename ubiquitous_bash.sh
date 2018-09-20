@@ -9389,7 +9389,7 @@ _qc() {
 _query() {
 	_prepare_query
 	
-	( cd "$qc" ; _queryClient _bin cat | ( cd "$qs" ; _queryServer _bin cat | ( cd "$ub_queryserverdir" ; _queryClient _bin cat )))
+	( cd "$qc" ; _queryClient _bin cat | ( cd "$qs" ; _queryServer _bin cat | ( cd "$qc" ; _queryClient _bin cat )))
 }
 
 #Example, override with "core.sh" .
@@ -14376,6 +14376,13 @@ _rm_instance_metaengine() {
 	export metaStop="false"
 	
 	_terminateMetaProcessorAll_metaengine
+	
+	# ATTENTION: Optional feature. Copies host metaengine directories for analysis.
+	if [[ "$metaLog" != "" ]] && [[ -e "$metaLog" ]]
+	then
+		cp -a "$metaTmp" "$metaLog"/metaTmp
+		cp -a "$metaProc" "$metaLog"/metaProc
+	fi
 	
 	#Only created if needed by meta.
 	[[ "$metaTmp" != "" ]] && [[ -e "$metaTmp" ]] && _safeRMR "$metaTmp"

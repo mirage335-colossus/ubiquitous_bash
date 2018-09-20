@@ -47,5 +47,5 @@ _qc() {
 _query() {
 	_prepare_query
 	
-	( cd "$qc" ; _queryClient _bin cat | ( cd "$qs" ; _queryServer _bin cat | ( cd "$ub_queryserverdir" ; _queryClient _bin cat )))
+	( cd "$qc" ; _queryClient _bin cat | ( cd "$qs" ; _queryServer _bin cat | ( cd "$qc" ; _queryClient _bin cat )))
 }
