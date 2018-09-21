@@ -79,7 +79,7 @@ _qc() {
 }
 
 _query_diag() {
-	_query "$@"
+	echo test | _query "$@"
 	local currentExitStatus="$?"
 	
 	_messagePlain_nominal 'diag: tx.log'
@@ -98,5 +98,5 @@ _query_diag() {
 _query() {
 	_prepare_query
 	
-	( cd "$qc" ; _queryClient _echo echo | _log_query "$queryTmp"/tx.log | ( cd "$qs" ; _queryServer _bin cat | _log_query "$queryTmp"/xc.log | ( cd "$qc" ; _queryClient _bin cat | _log_query "$queryTmp"/rx.log ; return "${PIPESTATUS[0]}" )))
+	( cd "$qc" ; _queryClient _bin cat | _log_query "$queryTmp"/tx.log | ( cd "$qs" ; _queryServer _bin cat | _log_query "$queryTmp"/xc.log | ( cd "$qc" ; _queryClient _bin cat | _log_query "$queryTmp"/rx.log ; return "${PIPESTATUS[0]}" )))
 }
