@@ -2188,6 +2188,27 @@ export PS1='\[\033[01;40m\]\[\033[01;36m\]+\[\033[01;34m\]-|\[\033[01;31m\]${?}:
 
 #Simulated client/server discussion testing.
 
+_log_query() {
+	[[ "$1" == "" ]] && return 1
+	
+	tee "$1"
+	
+	return 0
+}
+
+_report_query_stdout() {
+	[[ "$1" == "" ]] && return 1
+	
+	_messagePlain_probe 'stdout: strings'
+	strings "$1"
+	
+	_messagePlain_probe 'stdout: hex'
+	xxd -p "$1" | tr -d '\n'
+	echo
+	
+	return 0
+}
+
 # ATTENTION: Overload with "core.sh" or similar.
 _prepare_query_prog() {
 	true
@@ -2215,27 +2236,57 @@ _prepare_query() {
 	_prepare_query_prog "$@"
 }
 
-_queryServer() {
+_queryServer_sequence() {
+	_start
+	
 	export queryType="server"
 	"$ub_queryserver" "$@"
+	
+	_stop "$?"
+}
+_queryServer() {
+	"$scriptAbsoluteLocation" _queryServer_sequence "$@"
 }
 _qs() {
 	_queryServer "$@"
 }
 
-_queryClient() {
+_queryClient_sequence() {
+	_start
+	
 	export queryType="client"
 	"$ub_queryclient" "$@"
+	
+	_stop "$?"
+}
+_queryClient() {
+	"$scriptAbsoluteLocation" _queryClient_sequence "$@"
 }
 _qc() {
 	_queryClient "$@"
+}
+
+_query_diag() {
+	_query "$@"
+	local currentExitStatus="$?"
+	
+	_messagePlain_nominal 'diag: tx.log'
+	_report_query_stdout "$queryTmp"/tx.log
+	
+	_messagePlain_nominal 'diag: xc.log'
+	_report_query_stdout "$queryTmp"/xc.log
+	
+	_messagePlain_nominal 'diag: rx.log'
+	_report_query_stdout "$queryTmp"/rx.log
+	
+	return "$currentExitStatus"
 }
 
 # ATTENTION: Overload with "core.sh" or similar.
 _query() {
 	_prepare_query
 	
-	( cd "$qc" ; _queryClient _bin cat | ( cd "$qs" ; _queryServer _bin cat | ( cd "$qc" ; _queryClient _bin cat )))
+	( cd "$qc" ; _queryClient _echo echo | _log_query "$queryTmp"/tx.log | ( cd "$qs" ; _queryServer _bin cat | _log_query "$queryTmp"/xc.log | ( cd "$qc" ; _queryClient _bin cat | _log_query "$queryTmp"/rx.log ; return "${PIPESTATUS[0]}" )))
 }
 
 #Example, override with "core.sh" .
