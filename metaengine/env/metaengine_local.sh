@@ -296,10 +296,10 @@ _confidence_metaengine() {
 		local currentMetaConfidenceValue
 		currentMetaConfidenceValue=$(cat "$metaConfidence")
 		
-		[[ "$currentMetaConfidenceValue" == '1' ]] && return 1
+		[[ "$currentMetaConfidenceValue" == '1' ]] && return 0
 	fi
 	
-	return 0
+	return 1
 }
 
 #_rm_instance_metaengine_metaDir() {
