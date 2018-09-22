@@ -48,6 +48,11 @@ _assign_me_name_bo() {
 	export out_me_b_name="$1"
 }
 
+_assign_me_name_in() {
+	_assign_me_name_ai "$1"
+	_assign_me_name_bi "$1"
+}
+
 _assign_me_name_out() {
 	_assign_me_name_ao "$1"
 	_assign_me_name_bo "$1"
