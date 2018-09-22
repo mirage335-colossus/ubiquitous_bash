@@ -1,21 +1,25 @@
 _self_critial() {
-	_priority_critical_pid $$
+	_priority_critical_pid "$$"
 }
 
 _self_interactive() {
-	_priority_interactive_pid $$
+	_priority_interactive_pid "$$"
+}
+
+_self_background() {
+	_priority_background_pid "$$"
 }
 
 _self_idle() {
-	_priority_idle_pid $$
+	_priority_idle_pid "$$"
 }
 
 _self_app() {
-	_priority_app_pid $$
+	_priority_app_pid "$$"
 }
 
 _self_zero() {
-	_priority_zero_pid $$
+	_priority_zero_pid "$$"
 }
 
 
@@ -28,7 +32,7 @@ _priority_critical_pid_root() {
 	! _wantSudo && return 1
 	
 	sudo -n ionice -c 2 -n 2 -p "$1"
-	! sudo -n renice -n -15 -p "$1" && return 1
+	! sudo -n renice -15 -p "$1" && return 1
 	
 	return 0
 }
@@ -39,7 +43,7 @@ _priority_critical_pid() {
 	_priority_critical_pid_root "$1" && return 0
 	
 	ionice -c 2 -n 4 -p "$1"
-	! renice -n 0 -p "$1" && return 1
+	! renice 0 -p "$1" && return 1
 	
 	return 1
 }
@@ -48,7 +52,7 @@ _priority_interactive_pid_root() {
 	! _wantSudo && return 1
 	
 	sudo -n ionice -c 2 -n 2 -p "$1"
-	! sudo -n renice -n -10 -p "$1" && return 1
+	! sudo -n renice -10 -p "$1" && return 1
 	
 	return 0
 }
@@ -59,7 +63,7 @@ _priority_interactive_pid() {
 	_priority_interactive_pid_root "$1" && return 0
 	
 	ionice -c 2 -n 4 -p "$1"
-	! renice -n 0 -p "$1" && return 1
+	! renice 0 -p "$1" && return 1
 	
 	return 1
 }
@@ -68,7 +72,7 @@ _priority_app_pid_root() {
 	! _wantSudo && return 1
 	
 	sudo -n ionice -c 2 -n 3 -p "$1"
-	! sudo -n renice -n -5 -p "$1" && return 1
+	! sudo -n renice -5 -p "$1" && return 1
 	
 	return 0
 }
@@ -79,16 +83,43 @@ _priority_app_pid() {
 	_priority_app_pid_root "$1" && return 0
 	
 	ionice -c 2 -n 4 -p "$1"
-	! renice -n 0 -p "$1" && return 1
+	! renice 0 -p "$1" && return 1
 	
 	return 1
 }
+
+_priority_background_pid_root() {
+	! _wantSudo && return 1
+	
+	sudo -n ionice -c 2 -n 5 -p "$1"
+	! sudo -n renice +5 -p "$1" && return 1
+	
+	return 0
+}
+
+_priority_background_pid() {
+	[[ "$1" == "" ]] && return 1
+	
+	if ! type ionice > /dev/null 2>&1 || ! groups | grep -E 'wheel|sudo' > /dev/null 2>&1
+	then
+		renice +5 -p "$1"
+		return 0
+	fi
+	
+	_priority_background_pid_root "$1" && return 0
+	
+	ionice -c 2 -n 5 -p "$1"
+	
+	renice +5 -p "$1"
+}
+
+
 
 _priority_idle_pid_root() {
 	! _wantSudo && return 1
 	
 	sudo -n ionice -c 3 -p "$1"
-	! sudo -n renice -n +15 -p "$1" && return 1
+	! sudo -n renice +15 -p "$1" && return 1
 	
 	return 0
 }
@@ -96,19 +127,25 @@ _priority_idle_pid_root() {
 _priority_idle_pid() {
 	[[ "$1" == "" ]] && return 1
 	
+	if ! type ionice > /dev/null 2>&1 || ! groups | grep -E 'wheel|sudo' > /dev/null 2>&1
+	then
+		renice +15 -p "$1"
+		return 0
+	fi
+	
 	_priority_idle_pid_root "$1" && return 0
 	
 	#https://linux.die.net/man/1/ionice
 	ionice -c 3 -p "$1"
 	
-	renice -n +15 -p "$1"
+	renice +15 -p "$1"
 }
 
 _priority_zero_pid_root() {
 	! _wantSudo && return 1
 	
 	sudo -n ionice -c 2 -n 4 -p "$1"
-	! sudo -n renice -n 0 -p "$1" && return 1
+	! sudo -n renice 0 -p "$1" && return 1
 	
 	return 0
 }
@@ -121,7 +158,7 @@ _priority_zero_pid() {
 	#https://linux.die.net/man/1/ionice
 	ionice -c 2 -n 4 -p "$1"
 	
-	renice -n 0 -p "$1"
+	renice 0 -p "$1"
 }
 
 # WARNING: Untested.
