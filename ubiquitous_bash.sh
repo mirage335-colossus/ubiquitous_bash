@@ -13317,13 +13317,19 @@ _report_metaengine() {
 	
 	[[ ! -e "$metaReg" ]] && _messagePlain_warn 'missing: metaReg'
 	
-	[[ ! -e "$metaDir"/ai ]] && _messagePlain_warn 'missing: "$metaDir"/ai'
-	[[ ! -e "$metaDir"/bi ]] && _messagePlain_warn 'missing: "$metaDir"/bi'
 	[[ ! -e "$metaDir"/ao ]] && _messagePlain_warn 'missing: "$metaDir"/ao'
 	[[ ! -e "$metaDir"/bo ]] && _messagePlain_warn 'missing: "$metaDir"/bo'
 	
 	[[ ! -e "$in_me_a_path" ]] && _messagePlain_warn 'missing: in_me_a_path'
 	[[ ! -e "$in_me_b_path" ]] && _messagePlain_warn 'missing: in_me_b_path'
+}
+
+_report_metaengine_relink_in() {
+	[[ ! -e "$metaDir"/ai ]] && _messagePlain_warn 'missing: "$metaDir"/ai'
+	[[ ! -e "$metaDir"/bi ]] && _messagePlain_warn 'missing: "$metaDir"/bi'
+}
+
+_report_metaengine_relink_out() {
 	[[ ! -e "$out_me_a_path" ]] && _messagePlain_warn 'missing: out_me_a_path'
 	[[ ! -e "$out_me_b_path" ]] && _messagePlain_warn 'missing: out_me_b_path'
 }
@@ -14126,6 +14132,8 @@ _relink_metaengine_coordinates_in() {
 	_messageCMD mkdir -p "$metaReg"/grid/"$in_me_b_z"/"$in_me_b_x"
 	_messageCMD _relink_relative "$in_me_b_path" "$metaDir"/bi
 	
+	_report_metaengine_relink_in
+	
 	_messagePlain_good 'return: complete'
 	return 0
 }
@@ -14138,6 +14146,8 @@ _relink_metaengine_coordinates_out() {
 	
 	_messageCMD mkdir -p "$metaReg"/grid/"$out_me_b_z"/"$out_me_b_x"
 	_messageCMD _relink_relative "$metaDir"/bo "$out_me_b_path"
+	
+	_report_metaengine_relink_out
 	
 	_messagePlain_good 'return: complete'
 	return 0
@@ -14199,6 +14209,8 @@ _relink_metaengine_name_in() {
 	# DANGER: Administrative/visualization use ONLY.
 	( [[ "$in_me_a_path" == "/dev/null" ]] || [[ "$in_me_b_path" == "/dev/null" ]] ) && _relink_relative "$metaDir" "$metaReg"/name/null/"$metaID"
 	
+	_report_metaengine_relink_in
+	
 	_messagePlain_good 'return: complete'
 	return 0
 }
@@ -14219,6 +14231,8 @@ _relink_metaengine_name_out() {
 	
 	# DANGER: Administrative/visualization use ONLY.
 	( [[ "$out_me_a_path" == "/dev/null" ]] || [[ "$out_me_b_path" == "/dev/null" ]] ) && _relink_relative "$metaDir" "$metaReg"/name/null/"$metaID"
+	
+	_report_metaengine_relink_out
 	
 	_messagePlain_good 'return: complete'
 	return 0
@@ -14361,8 +14375,10 @@ _start_metaengine() {
 	
 	_set_me
 	_prepare_metaengine
-	_relink_metaengine_in
-	_relink_metaengine_out
+	
+	# WARNING: Processors must include "_relink_metaengine_in" and "_relink_metaengine_out" where appropriate.
+	#_relink_metaengine_in
+	#_relink_metaengine_out
 	
 	_report_metaengine
 	
@@ -14466,13 +14482,14 @@ _wait_metaengine() {
 
 # ATTENTION: Overload with "core.sh" if appropriate.
 _wait_metaengine_in() {
-	_ready_me_in && return 0
-	sleep 0.1
-	_ready_me_in && return 0
-	sleep 0.3
-	_ready_me_in && return 0
-	sleep 1
-	_ready_me_in && return 0
+	#_ready_me_in && return 0
+	#sleep 0.1
+	#_ready_me_in && return 0
+	#sleep 0.3
+	#_ready_me_in && return 0
+	#sleep 1
+	#_ready_me_in && return 0
+	
 	#sleep 3
 	#_ready_me_in && return 0
 	#sleep 10
@@ -14492,6 +14509,7 @@ _wait_metaengine_in() {
 	do
 		sleep 0.1
 	done
+	return 0
 	
 	_messagePlain_bad 'missing: in_me_a_path, in_me_b_path'
 	return 1
@@ -14638,6 +14656,8 @@ _example_me_processor_name() {
 	
 	_wait_metaengine
 	_start_metaengine
+	_relink_metaengine_in
+	_relink_metaengine_out
 	
 	#Do something.
 	#> cat >
@@ -14670,6 +14690,8 @@ _me_processor_noise() {
 	
 	_wait_metaengine
 	_start_metaengine
+	_relink_metaengine_in
+	_relink_metaengine_out
 	
 	_buffer_me_processor_fifo
 	

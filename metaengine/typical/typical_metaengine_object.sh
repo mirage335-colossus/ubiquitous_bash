@@ -17,6 +17,8 @@ _me_processor_noise() {
 	
 	_wait_metaengine
 	_start_metaengine
+	_relink_metaengine_in
+	_relink_metaengine_out
 	
 	_buffer_me_processor_fifo
 	
