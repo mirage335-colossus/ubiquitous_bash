@@ -13887,8 +13887,12 @@ _set_me_io_name_in() {
 	_messagePlain_nominal 'init: _set_me_io_name_in'
 	
 	# Optional feature. While used, must must contain at least one file/dir.
-	export in_me_active="$metaReg"/name/"$in_me_name"/_active
-	export in_me_active_tmp="$in_me_active"_tmp
+	export in_me_a_active="$metaReg"/name/"$in_me_a_name"/_active
+	export in_me_a_active_tmp="$in_me_a_active"_tmp
+	export in_me_b_active="$metaReg"/name/"$in_me_b_name"/_active
+	export in_me_b_active_tmp="$in_me_b_active"_tmp
+	export in_me_active="$in_me_a_active"
+	export in_me_active_tmp="$in_me_a_active_tmp"
 	
 	export in_me_a_path="$metaReg"/name/"$in_me_a_name"/ao
 		[[ "$in_me_a_name" == "null" ]] && export in_me_a_path=/dev/null
@@ -13903,8 +13907,12 @@ _set_me_io_name_out() {
 	_messagePlain_nominal 'init: _set_me_io_name_out'
 	
 	# Optional feature. While used, must must contain at least one file/dir.
-	export out_me_active="$metaReg"/name/"$out_me_name"/_active
-	export out_me_active_tmp="$out_me_active"_tmp
+	export out_me_a_active="$metaReg"/name/"$out_me_a_name"/_active
+	export out_me_a_active_tmp="$out_me_a_active"_tmp
+	export out_me_b_active="$metaReg"/name/"$out_me_b_name"/_active
+	export out_me_b_active_tmp="$out_me_b_active"_tmp
+	export out_me_active="$out_me_a_active"
+	export out_me_active_tmp="$out_me_a_active_tmp"
 	
 	export out_me_a_path="$metaReg"/name/"$out_me_a_name"/ao
 		[[ "$out_me_a_name" == "null" ]] && export out_me_a_path=/dev/null
@@ -14582,7 +14590,7 @@ _wait_metaengine_in() {
 	
 	if _complete_me_active
 	then
-		rmdir "$in_me_active"
+		rm "$in_me_active"
 		_messagePlain_bad 'died: '"$in_me_active"/_active && return 1
 	fi
 	
