@@ -20,10 +20,6 @@ _reset_me_type() {
 
 
 _cycle_me_name() {
-	export in_me_a_active="$out_me_a_active"
-	export in_me_b_active="$out_me_b_active"
-	export in_me_active="$out_me_active"
-	
 	export in_me_a_name="$out_me_a_name"
 	export in_me_b_name="$out_me_b_name"
 	_set_me_rand_out

@@ -413,6 +413,20 @@ _wait_metaengine_in() {
 	! _ready_me_in && _messagePlain_bad 'unexpected: missing: in_me_a_path, in_me_b_path' && return 1
 }
 
+# "$1" == uid
+_active_me() {
+	_set_me_io_out
+	
+	mkdir -p "$out_me_active_tmp"
+	echo "$$" > "$out_me_active_tmp"/"$1"
+	_relink_relative "$out_me_active_tmp" "$out_me_active"
+}
+
+# "$1" == uid
+_complete_me() {
+	rm "$out_me_active_tmp"/"$1"
+}
+
 _terminateMetaProcessorAll_metaengine() {
 	local processListFile
 	processListFile="$scriptAbsoluteFolder"/.pidlist_m_$(_uid)

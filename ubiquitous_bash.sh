@@ -14052,10 +14052,6 @@ _reset_me_type() {
 
 
 _cycle_me_name() {
-	export in_me_a_active="$out_me_a_active"
-	export in_me_b_active="$out_me_b_active"
-	export in_me_active="$out_me_active"
-	
 	export in_me_a_name="$out_me_a_name"
 	export in_me_b_name="$out_me_b_name"
 	_set_me_rand_out
@@ -14599,6 +14595,20 @@ _wait_metaengine_in() {
 	
 	# Unexpected.
 	! _ready_me_in && _messagePlain_bad 'unexpected: missing: in_me_a_path, in_me_b_path' && return 1
+}
+
+# "$1" == uid
+_active_me() {
+	_set_me_io_out
+	
+	mkdir -p "$out_me_active_tmp"
+	echo "$$" > "$out_me_active_tmp"/"$1"
+	_relink_relative "$out_me_active_tmp" "$out_me_active"
+}
+
+# "$1" == uid
+_complete_me() {
+	rm "$out_me_active_tmp"/"$1"
 }
 
 _terminateMetaProcessorAll_metaengine() {
