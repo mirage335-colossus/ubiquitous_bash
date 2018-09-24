@@ -14521,7 +14521,6 @@ _complete_me_active() {
 	
 	if [[ "$currentActiveProcCount" == '0' ]]
 	then
-		rmdir "$in_me_active"
 		return 0
 	fi
 	
@@ -14581,7 +14580,11 @@ _wait_metaengine_in() {
 		sleep 0.1
 	done
 	
-	! _complete_me_active && _messagePlain_bad 'died: '"$metaProc"/_active && return 1
+	if _complete_me_active
+	then
+		rmdir "$in_me_active"
+		_messagePlain_bad 'died: '"$in_me_active"/_active && return 1
+	fi
 	
 	return 0
 	
@@ -14728,7 +14731,7 @@ _example_processor_name() {
 _example_me_processor_name() {
 	_messageNormal 'launch: '"$metaObjName"
 	
-	_wait_metaengine
+	! _wait_metaengine && _stop 1
 	_start_metaengine
 	_relink_metaengine_in
 	_relink_metaengine_out
@@ -14762,7 +14765,7 @@ _processor_launch() {
 _me_processor_noise() {
 	_messageNormal 'launch: '"$metaObjName"
 	
-	_wait_metaengine
+	! _wait_metaengine && _stop 1
 	_start_metaengine
 	_relink_metaengine_in
 	_relink_metaengine_out
