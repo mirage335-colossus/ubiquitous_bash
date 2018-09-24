@@ -403,7 +403,8 @@ _wait_metaengine_in() {
 	if _complete_me_active
 	then
 		rm "$in_me_active"
-		_messagePlain_bad 'died: '"$in_me_active"/_active && return 1
+		[[ -e "$in_me_active" ]] && rmdir "$in_me_active"
+		_messagePlain_bad 'died: '"$in_me_active" && return 1
 	fi
 	
 	return 0
