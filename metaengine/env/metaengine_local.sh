@@ -400,7 +400,7 @@ _wait_metaengine_in() {
 		sleep 0.1
 	done
 	
-	if _complete_me_active
+	if ! _ready_me_in && _complete_me_active
 	then
 		rm "$in_me_active"
 		[[ -e "$in_me_active" ]] && rmdir "$in_me_active"
