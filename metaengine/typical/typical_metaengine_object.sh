@@ -15,7 +15,7 @@ _processor_launch() {
 _me_processor_noise() {
 	_messageNormal 'launch: '"$metaObjName"
 	
-	_wait_metaengine
+	! _wait_metaengine && _stop 1
 	_start_metaengine
 	_relink_metaengine_in
 	_relink_metaengine_out

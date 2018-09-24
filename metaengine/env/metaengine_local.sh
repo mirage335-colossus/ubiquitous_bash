@@ -401,7 +401,7 @@ _wait_metaengine_in() {
 		sleep 0.1
 	done
 	
-	! _complete_me_active && _messagePlain_bad 'died: '"$metaProc"/_active && return 1
+	[[ "$in_me_active" == "" ]] && [[ -e "$in_me_active" ]] && ! _complete_me_active && _messagePlain_bad 'died: '"$metaProc"/_active && return 1
 	
 	return 0
 	
