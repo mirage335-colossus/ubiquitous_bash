@@ -13886,6 +13886,10 @@ _check_me_rand() {
 _set_me_io_name_in() {
 	_messagePlain_nominal 'init: _set_me_io_name_in'
 	
+	# Optional feature. While used, must must contain at least one file/dir.
+	export in_me_active="$metaReg"/name/"$in_me_name"/_active
+	export in_me_active_tmp="$in_me_active"_tmp
+	
 	export in_me_a_path="$metaReg"/name/"$in_me_a_name"/ao
 		[[ "$in_me_a_name" == "null" ]] && export in_me_a_path=/dev/null
 	export in_me_b_path="$metaReg"/name/"$in_me_b_name"/bo
@@ -13898,23 +13902,10 @@ _set_me_io_name_in() {
 _set_me_io_name_out() {
 	_messagePlain_nominal 'init: _set_me_io_name_out'
 	
-	export out_me_a_path="$metaReg"/name/"$out_me_a_name"/ao
-		[[ "$out_me_a_name" == "null" ]] && export out_me_a_path=/dev/null
-	export out_me_b_path="$metaReg"/name/"$out_me_b_name"/bo
-		[[ "$out_me_b_name" == "null" ]] && export out_me_b_path=/dev/null
+	# Optional feature. While used, must must contain at least one file/dir.
+	export out_me_active="$metaReg"/name/"$out_me_name"/_active
+	export out_me_active_tmp="$out_me_active"_tmp
 	
-	_messagePlain_good 'return: success'
-	return 0
-}
-
-#No production use.
-_set_me_io_name() {
-	_messagePlain_nominal 'init: _set_me_io_name'
-	
-	export in_me_a_path="$metaReg"/name/"$in_me_a_name"/ao
-		[[ "$in_me_a_name" == "null" ]] && export in_me_a_path=/dev/null
-	export in_me_b_path="$metaReg"/name/"$in_me_b_name"/bo
-		[[ "$in_me_b_name" == "null" ]] && export in_me_b_path=/dev/null
 	export out_me_a_path="$metaReg"/name/"$out_me_a_name"/ao
 		[[ "$out_me_a_name" == "null" ]] && export out_me_a_path=/dev/null
 	export out_me_b_path="$metaReg"/name/"$out_me_b_name"/bo
@@ -13927,6 +13918,15 @@ _set_me_io_name() {
 _set_me_io_coordinates_in() {
 	_messagePlain_nominal 'init: _set_me_io_coordinates_in'
 	
+	# WARNING: Untested.
+	# Optional feature. While used, must must contain at least one file/dir.
+	export in_me_a_active="$metaReg"/grid/_active/"$in_me_a_z"/"$in_me_a_x"/"$in_me_a_y"
+	export in_me_a_active_tmp="$in_me_a_active"_tmp
+	export in_me_b_active="$metaReg"/grid/_active/"$in_me_b_z"/"$in_me_b_x"/"$in_me_b_y"
+	export in_me_b_active_tmp="$in_me_b_active"_tmp
+	export in_me_active="$in_me_a_active"
+	export in_me_active_tmp="$in_me_a_active_tmp"
+	
 	export in_me_a_path="$metaReg"/grid/"$in_me_a_z"/"$in_me_a_x"/"$in_me_a_y"
 	export in_me_b_path="$metaReg"/grid/"$in_me_b_z"/"$in_me_b_x"/"$in_me_b_y"
 	
@@ -13936,6 +13936,15 @@ _set_me_io_coordinates_in() {
 
 _set_me_io_coordinates_out() {
 	_messagePlain_nominal 'init: _set_me_io_coordinates_out'
+	
+	# WARNING: Untested.
+	# Optional feature. While used, must must contain at least one file/dir.
+	export out_me_a_active="$metaReg"/grid/_active/"$out_me_a_z"/"$out_me_a_x"/"$out_me_a_y"
+	export out_me_a_active_tmp="$out_me_a_active"_tmp
+	export out_me_b_active="$metaReg"/grid/_active/"$out_me_b_z"/"$out_me_b_x"/"$out_me_b_y"
+	export out_me_b_active_tmp="$out_me_b_active"_tmp
+	export out_me_active="$out_me_a_active"
+	export out_me_active_tmp="$out_me_a_active_tmp"
 	
 	export out_me_a_path="$metaReg"/grid/"$out_me_a_z"/"$out_me_a_x"/"$out_me_a_y"
 	export out_me_b_path="$metaReg"/grid/"$out_me_b_z"/"$out_me_b_x"/"$out_me_b_y"
@@ -14035,6 +14044,10 @@ _reset_me_type() {
 
 
 _cycle_me_name() {
+	export in_me_a_active="$out_me_a_active"
+	export in_me_b_active="$out_me_b_active"
+	export in_me_active="$out_me_active"
+	
 	export in_me_a_name="$out_me_a_name"
 	export in_me_b_name="$out_me_b_name"
 	_set_me_rand_out
@@ -14463,10 +14476,10 @@ _confidence_metaengine() {
 		local currentMetaConfidenceValue
 		currentMetaConfidenceValue=$(cat "$metaConfidence")
 		
-		[[ "$currentMetaConfidenceValue" == '1' ]] && return 1
+		[[ "$currentMetaConfidenceValue" == '1' ]] && return 0
 	fi
 	
-	return 0
+	return 1
 }
 
 #_rm_instance_metaengine_metaDir() {
@@ -14497,6 +14510,22 @@ _rm_instance_metaengine() {
 	[[ "$metaTmp" != "" ]] && [[ -e "$metaTmp" ]] && _safeRMR "$metaTmp"
 	
 	[[ "$metaProc" != "" ]] && [[ "$metaProc" == *"$sessionid"* ]] && [[ -e "$metaProc" ]] && _safeRMR "$metaProc"
+}
+
+_complete_me_active() {
+	[[ "$in_me_active" == "" ]] && return 1
+	! [[ -e "$in_me_active" ]] && return 1
+	
+	local currentActiveProcCount
+	currentActiveProcCount=$(ls -1 "$in_me_active" | wc -l)
+	
+	if [[ "$currentActiveProcCount" == '0' ]]
+	then
+		rmdir "$in_me_active"
+		return 0
+	fi
+	
+	return 1
 }
 
 _ready_me_in() {
@@ -14547,14 +14576,17 @@ _wait_metaengine_in() {
 	#sleep 20
 	#_ready_me_in && return 0
 	
-	while ! _ready_me_in
+	while ! _ready_me_in && ! _complete_me_active
 	do
 		sleep 0.1
 	done
+	
+	! _complete_me_active && _messagePlain_bad 'died: '"$metaProc"/_active && return 1
+	
 	return 0
 	
-	_messagePlain_bad 'missing: in_me_a_path, in_me_b_path'
-	return 1
+	# Unexpected.
+	! _ready_me_in && _messagePlain_bad 'unexpected: missing: in_me_a_path, in_me_b_path' && return 1
 }
 
 _terminateMetaProcessorAll_metaengine() {

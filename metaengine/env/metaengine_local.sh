@@ -332,6 +332,22 @@ _rm_instance_metaengine() {
 	[[ "$metaProc" != "" ]] && [[ "$metaProc" == *"$sessionid"* ]] && [[ -e "$metaProc" ]] && _safeRMR "$metaProc"
 }
 
+_complete_me_active() {
+	[[ "$in_me_active" == "" ]] && return 1
+	! [[ -e "$in_me_active" ]] && return 1
+	
+	local currentActiveProcCount
+	currentActiveProcCount=$(ls -1 "$in_me_active" | wc -l)
+	
+	if [[ "$currentActiveProcCount" == '0' ]]
+	then
+		rmdir "$in_me_active"
+		return 0
+	fi
+	
+	return 1
+}
+
 _ready_me_in() {
 	#! [[ -e "$in_me_a_path" ]] && _messagePlain_warn 'missing: in_me_a_path= '"$in_me_a_path"
 	#! [[ -e "$in_me_b_path" ]] && _messagePlain_warn 'missing: in_me_b_path= '"$in_me_b_path"
@@ -380,14 +396,17 @@ _wait_metaengine_in() {
 	#sleep 20
 	#_ready_me_in && return 0
 	
-	while ! _ready_me_in
+	while ! _ready_me_in && ! _complete_me_active
 	do
 		sleep 0.1
 	done
+	
+	! _complete_me_active && _messagePlain_bad 'died: '"$metaProc"/_active && return 1
+	
 	return 0
 	
-	_messagePlain_bad 'missing: in_me_a_path, in_me_b_path'
-	return 1
+	# Unexpected.
+	! _ready_me_in && _messagePlain_bad 'unexpected: missing: in_me_a_path, in_me_b_path' && return 1
 }
 
 _terminateMetaProcessorAll_metaengine() {
