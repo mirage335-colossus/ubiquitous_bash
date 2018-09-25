@@ -14579,16 +14579,28 @@ _wait_metaengine_in() {
 	#sleep 20
 	#_ready_me_in && return 0
 	
-	while ! _ready_me_in && ! _complete_me_active
+	while ! _ready_me_in && ! _complete_me_active && ! [[ -e "$metaConfidence" ]]
 	do
 		sleep 0.1
 	done
+	
+	if [[ -e "$metaConfidence" ]]
+	then
+		if [[ $(head -c 1 "$metaConfidence") == '0' ]]
+		then
+			_messagePlain_bad 'fail: flag: exists: false: metaConfidence= '"$metaConfidence"
+			return 1
+		fi
+		
+		_messagePlain_good 'pass: flag: exists: metaConfidence= '"$metaConfidence"
+		return 1
+	fi
 	
 	if ! _ready_me_in && _complete_me_active
 	then
 		rm "$in_me_active"
 		[[ -e "$in_me_active" ]] && rmdir "$in_me_active"
-		_messagePlain_bad 'died: '"$in_me_active" && return 1
+		_messagePlain_bad 'fail: died: '"$in_me_active" && return 1
 	fi
 	
 	return 0
