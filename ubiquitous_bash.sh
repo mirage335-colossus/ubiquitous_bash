@@ -14459,11 +14459,14 @@ _stop_metaengine_prohibit() {
 	export metaStop="false"
 }
 
-#Waits for files to exist, or indefinitely pauses, allowing SIGINT or similar to trigger "_stop" at any time.
+#Waits for files to exist, or indefinitely pauses, allowing SIGINT or similar to trigger "_stop" at any time. Former case also terminates if metaConfidence is set.
 _stop_metaengine_wait() {
 	_stop_metaengine_allow
 	
-	_wait_not_all_exist "$@"
+	while ! _all_exist "$@" 
+	do
+		sleep 0.1
+	done
 	
 	if [[ "$1" == "" ]]
 	then
@@ -14514,6 +14517,13 @@ _rm_instance_metaengine() {
 	[[ "$metaTmp" != "" ]] && [[ -e "$metaTmp" ]] && _safeRMR "$metaTmp"
 	
 	[[ "$metaProc" != "" ]] && [[ "$metaProc" == *"$sessionid"* ]] && [[ -e "$metaProc" ]] && _safeRMR "$metaProc"
+	
+	# Mark task complete, if part of parallel thread set.
+	if [[ "$processThreadID" != "" ]]
+	then
+		_complete_me "$processThreadID"
+		rm -f "$metaProc"/_active/"$processThreadID" > /dev/null 2>&1
+	fi
 }
 
 _complete_me_active() {
