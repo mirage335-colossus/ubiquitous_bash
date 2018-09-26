@@ -333,13 +333,6 @@ _rm_instance_metaengine() {
 	[[ "$metaTmp" != "" ]] && [[ -e "$metaTmp" ]] && _safeRMR "$metaTmp"
 	
 	[[ "$metaProc" != "" ]] && [[ "$metaProc" == *"$sessionid"* ]] && [[ -e "$metaProc" ]] && _safeRMR "$metaProc"
-	
-	# Mark task complete, if part of parallel thread set.
-	if [[ "$processThreadID" != "" ]]
-	then
-		_complete_me "$processThreadID"
-		rm -f "$metaProc"/_active/"$processThreadID" > /dev/null 2>&1
-	fi
 }
 
 _complete_me_active() {
