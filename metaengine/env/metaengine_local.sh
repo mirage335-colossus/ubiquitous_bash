@@ -414,8 +414,8 @@ _wait_metaengine_in() {
 	
 	if ! _ready_me_in && _complete_me_active
 	then
-		rm "$in_me_active"
-		[[ -e "$in_me_active" ]] && rmdir "$in_me_active"
+		rm -f "$in_me_active" > /dev/null 2>&1
+		[[ -e "$in_me_active" ]] && rmdir "$in_me_active" > /dev/null 2>&1
 		_messagePlain_bad 'fail: died: '"$in_me_active" && return 1
 	fi
 	
