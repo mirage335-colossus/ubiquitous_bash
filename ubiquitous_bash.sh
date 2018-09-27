@@ -1847,7 +1847,7 @@ _checkForMounts() {
 _test_channel_fifo() {
 	_getDep mkfifo
 	
-	if ! dd if=$(./ubiquitous_bash.sh _channel_host_fifo cat /dev/zero) of=/dev/null bs=1M count=10 iflag=fullblock > /dev/null 2>&1
+	if ! dd if=$("$scriptAbsoluteLocation" _channel_host_fifo cat /dev/zero) of=/dev/null bs=1M count=10 iflag=fullblock > /dev/null 2>&1
 	then
 		echo 'fail: channel: fifo'
 		_stop 1
