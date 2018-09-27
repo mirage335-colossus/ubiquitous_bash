@@ -2689,12 +2689,12 @@ _deps_virt_thick() {
 	_deps_distro
 	_deps_build
 	_deps_notLean
+	_deps_image
 	export enUb_virt_thick="true"
 }
 
 _deps_virt() {
 	_deps_machineinfo
-	_deps_image
 	export enUb_virt="true"
 }
 
