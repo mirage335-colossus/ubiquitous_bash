@@ -5032,6 +5032,11 @@ _nixToMSW() {
 	_slashBackToForward "$intermediateStepOne"
 }
 
+_test_localpath() {
+	_getDep realpath
+}
+
+
 #Determines whether test parameter is in the path of base parameter.
 #"$1" == testParameter
 #"$2" == baseParameter
@@ -16839,6 +16844,15 @@ _compile_bash_deps() {
 	if [[ "$1" == "processor" ]]
 	then
 		
+		_deps_channel
+		
+		_deps_metaengine
+		
+		return 0
+	fi
+	
+	if [[ "$1" == "abstract" ]]
+	then
 		_deps_channel
 		
 		_deps_metaengine

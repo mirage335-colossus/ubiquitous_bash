@@ -1,3 +1,8 @@
+_test_localpath() {
+	_getDep realpath
+}
+
+
 #Determines whether test parameter is in the path of base parameter.
 #"$1" == testParameter
 #"$2" == baseParameter

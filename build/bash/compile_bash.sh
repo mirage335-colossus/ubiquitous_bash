@@ -26,6 +26,15 @@ _compile_bash_deps() {
 		
 		_deps_metaengine
 		
+		return 0
+	fi
+	
+	if [[ "$1" == "abstract" ]]
+	then
+		_deps_channel
+		
+		_deps_metaengine
+		
 		_deps_abstractfs
 		
 		return 0
