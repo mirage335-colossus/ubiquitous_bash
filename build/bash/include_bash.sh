@@ -11,7 +11,7 @@ _includeFile() {
 	return 1
 }
 
-#Provide only approximate, realative paths. These will be disassembled and treated as a search query following stricti preferences
+#Provide only approximate, realative paths. These will be disassembled and treated as a search query following strict preferences.
 #"generic/filesystem/absolutepaths.sh"
 _includeScript() {
 	_tryExec "_includeScript_prog" "$1" && return 0

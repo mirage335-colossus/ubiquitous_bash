@@ -164,8 +164,9 @@ _test() {
 	
 	_getDep diff
 	
-	_tryExec "_test_package"
+	_test_readlink_f
 	
+	_tryExec "_test_package"
 	
 	_tryExec "_test_daemon"
 	

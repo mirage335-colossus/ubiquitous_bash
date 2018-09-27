@@ -329,6 +329,38 @@ _test_realpath() {
 	_test_realpath_L_s "$@"
 }
 
+_test_readlink_f_sequence() {
+	_start
+	
+	echo > "$safeTmp"/realFile
+	ln -s "$safeTmp"/realFile "$safeTmp"/linkA
+	ln -s "$safeTmp"/linkA "$safeTmp"/linkB
+	
+	local currentReadlinkResult
+	currentReadlinkResult=$(readlink -f "$safeTmp"/linkB)
+	
+	local currentReadlinkResultBasename
+	currentReadlinkResultBasename=$(basename "$currentReadlinkResult")
+	
+	if [[ "$currentReadlinkResultBasename" != "realFile" ]]
+	then
+		#echo 'fail: readlink -f'
+		_stop 1
+	fi
+	
+	_stop 0
+}
+
+_test_readlink_f() {
+	if ! "$scriptAbsoluteLocation" _test_readlink_f_sequence
+	then
+		echo 'fail: readlink -f'
+		_stop 1
+	fi
+	
+	return 0
+}
+
 _compat_realpath() {
 	[[ -e "$compat_realpath_bin" ]] && [[ "$compat_realpath_bin" != "" ]] && return 0
 	
@@ -1557,7 +1589,7 @@ _includeFile() {
 	return 1
 }
 
-#Provide only approximate, realative paths. These will be disassembled and treated as a search query following stricti preferences
+#Provide only approximate, realative paths. These will be disassembled and treated as a search query following strict preferences.
 #"generic/filesystem/absolutepaths.sh"
 _includeScript() {
 	_tryExec "_includeScript_prog" "$1" && return 0
@@ -16047,8 +16079,9 @@ _test() {
 	
 	_getDep diff
 	
-	_tryExec "_test_package"
+	_test_readlink_f
 	
+	_tryExec "_test_package"
 	
 	_tryExec "_test_daemon"
 	
