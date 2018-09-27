@@ -3803,6 +3803,9 @@ _test_prog() {
 _test() {
 	_messageNormal "Sanity..."
 	
+	! "$scriptAbsoluteLocation" _true && _messageFAIL && return 1
+	"$scriptAbsoluteLocation" _false && _messageFAIL && return 1
+	
 	local santiySessionID_length
 	santiySessionID_length=$(echo -n "$sessionid" | wc -c)
 	

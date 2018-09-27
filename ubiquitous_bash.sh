@@ -15971,6 +15971,9 @@ _test_prog() {
 _test() {
 	_messageNormal "Sanity..."
 	
+	! "$scriptAbsoluteLocation" _true && _messageFAIL && return 1
+	"$scriptAbsoluteLocation" _false && _messageFAIL && return 1
+	
 	local santiySessionID_length
 	santiySessionID_length=$(echo -n "$sessionid" | wc -c)
 	
@@ -16548,6 +16551,10 @@ _deps_notLean() {
 	export enUb_notLean="true"
 }
 
+_deps_distro() {
+	export enUb_distro="true"
+}
+
 _deps_build() {
 	export enUb_build="true"
 }
@@ -16594,6 +16601,7 @@ _deps_image() {
 }
 
 _deps_virt_thick() {
+	_deps_distro
 	_deps_build
 	_deps_notLean
 	export enUb_virt_thick="true"
@@ -16662,7 +16670,8 @@ _deps_fakehome() {
 }
 
 _deps_abstractfs() {
-	_deps_notLean
+	_deps_git
+	_deps_bup
 	_deps_virt
 	export enUb_abstractfs="true"
 }
@@ -16863,6 +16872,8 @@ _compile_bash_deps() {
 		_deps_git
 		_deps_bup
 		
+		_deps_distro
+		
 		#_deps_blockchain
 		
 		#_deps_command
@@ -16915,6 +16926,8 @@ _compile_bash_deps() {
 		
 		_deps_git
 		_deps_bup
+		
+		_deps_distro
 		
 		_deps_blockchain
 		
@@ -17150,12 +17163,12 @@ _compile_bash_shortcuts() {
 	[[ "$enUb_image" == "true" ]] && includeScriptList+=( "shortcuts/mkboot"/here_mkboot.sh )
 	[[ "$enUb_image" == "true" ]] && includeScriptList+=( "shortcuts/mkboot"/mkboot.sh )
 	
-	[[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "shortcuts/distro"/distro.sh )
+	[[ "$enUb_notLean" == "true" ]] && [[ "$enUb_distro" == "true" ]] && includeScriptList+=( "shortcuts/distro"/distro.sh )
 	
-	[[ "$enUb_QEMU" == "true" ]] && includeScriptList+=( "shortcuts/distro/debian"/createDebian.sh )
-	[[ "$enUb_image" == "true" ]] && includeScriptList+=( "shortcuts/distro/raspbian"/createRaspbian.sh )
+	[[ "$enUb_QEMU" == "true" ]] && [[ "$enUb_distro" == "true" ]] && includeScriptList+=( "shortcuts/distro/debian"/createDebian.sh )
+	[[ "$enUb_image" == "true" ]] && [[ "$enUb_distro" == "true" ]] && includeScriptList+=( "shortcuts/distro/raspbian"/createRaspbian.sh )
 	
-	[[ "$enUb_msw" == "true" ]] && includeScriptList+=( "shortcuts/distro/msw"/msw.sh )
+	[[ "$enUb_msw" == "true" ]] && [[ "$enUb_distro" == "true" ]] && includeScriptList+=( "shortcuts/distro/msw"/msw.sh )
 	
 	[[ "$enUb_x11" == "true" ]] && includeScriptList+=( "shortcuts/x11"/testx11.sh )
 	[[ "$enUb_x11" == "true" ]] && includeScriptList+=( "shortcuts/x11"/xinput.sh )

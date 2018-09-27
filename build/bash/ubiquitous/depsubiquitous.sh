@@ -64,6 +64,10 @@ _deps_notLean() {
 	export enUb_notLean="true"
 }
 
+_deps_distro() {
+	export enUb_distro="true"
+}
+
 _deps_build() {
 	export enUb_build="true"
 }
@@ -110,6 +114,7 @@ _deps_image() {
 }
 
 _deps_virt_thick() {
+	_deps_distro
 	_deps_build
 	_deps_notLean
 	export enUb_virt_thick="true"
@@ -178,7 +183,8 @@ _deps_fakehome() {
 }
 
 _deps_abstractfs() {
-	_deps_notLean
+	_deps_git
+	_deps_bup
 	_deps_virt
 	export enUb_abstractfs="true"
 }
