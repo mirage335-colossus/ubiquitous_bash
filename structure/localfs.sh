@@ -12,7 +12,7 @@ _prepare_abstract() {
 	! mkdir -p "$abstractfs_root" && exit 1
 	chmod 0700 "$abstractfs_root" > /dev/null 2>&1
 	! chmod 700 "$abstractfs_root" && exit 1
-	if ! chown "$USER":"$USER" "$abstractfs_root"
+	if ! chown "$USER":"$USER" "$abstractfs_root" > /dev/null 2>&1
 	then
 		! /sbin/chown "$USER" "$abstractfs_root" && exit 1
 	fi
@@ -21,7 +21,7 @@ _prepare_abstract() {
 	! mkdir -p "$abstractfs_lock" && exit 1
 	chmod 0700 "$abstractfs_lock" > /dev/null 2>&1
 	! chmod 700 "$abstractfs_lock" && exit 1
-	if ! chown "$USER":"$USER" "$abstractfs_lock"
+	if ! chown "$USER":"$USER" "$abstractfs_lock" > /dev/null 2>&1
 	then
 		! /sbin/chown "$USER" "$abstractfs_root" && exit 1
 	fi

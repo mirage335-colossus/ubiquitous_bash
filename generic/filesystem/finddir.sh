@@ -1,7 +1,7 @@
 #Reports either the directory provided, or the directory of the file provided.
 _findDir() {
 	local dirIn=$(_getAbsoluteLocation "$1")
-	dirInLogical=$(realpath -L -s "$dirIn")
+	dirInLogical=$(_realpath_L_s "$dirIn")
 	
 	if [[ -d "$dirInLogical" ]]
 	then
