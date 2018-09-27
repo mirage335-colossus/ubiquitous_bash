@@ -340,7 +340,7 @@ _complete_me_active() {
 	! [[ -e "$in_me_active" ]] && return 1
 	
 	local currentActiveProcCount
-	currentActiveProcCount=$(ls -1 "$in_me_active" | wc -l)
+	currentActiveProcCount=$(ls -1 "$in_me_active" | wc -l | tr -dc '0-9')
 	
 	if [[ "$currentActiveProcCount" == '0' ]]
 	then

@@ -38,7 +38,7 @@ _integratedQemu() {
 		_messagePlain_warn 'warn: no nested x64'
 	fi
 	
-	local hostThreadCount=$(cat /proc/cpuinfo | grep MHz | wc -l)
+	local hostThreadCount=$(cat /proc/cpuinfo | grep MHz | wc -l | tr -dc '0-9')
 	[[ "$hostThreadCount" -ge "4" ]] && [[ "$hostThreadCount" -lt "8" ]] && _messagePlain_probe 'cpu: >4' && qemuArgs+=(-smp 4)
 	[[ "$hostThreadCount" -ge "8" ]] && _messagePlain_probe 'cpu: >6' && qemuArgs+=(-smp 6)
 	
