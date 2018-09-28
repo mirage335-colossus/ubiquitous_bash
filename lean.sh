@@ -655,7 +655,7 @@ _safeRMR() {
 		#sleep 0
 		#echo "$1"
 		# WARNING Recommend against adding any non-portable flags.
-		rm -rf "$1"
+		rm -rf "$1" > /dev/null 2>&1
 	fi
 }
 
