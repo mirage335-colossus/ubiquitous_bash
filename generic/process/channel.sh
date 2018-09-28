@@ -32,7 +32,16 @@ _rm_instance_channel() {
 	[[ "$channelStop" != "true" ]] && return 0
 	export channelStop="false"
 	
-	[[ "$channelTmp" != "" ]] && [[ "$channelTmp" == *"$sessionid"* ]] && [[ -e "$channelTmp" ]] && _safeRMR "$channelTmp"
+	if [[ "$channelTmp" != "" ]] && [[ "$channelTmp" == *"$sessionid"* ]] && [[ -e "$channelTmp" ]]
+	then
+		_safeRMR "$channelTmp"
+		[[ -e "$channelTmp" ]] && sleep 0.1 && _safeRMR "$channelTmp"
+		[[ -e "$channelTmp" ]] && sleep 0.3 && _safeRMR "$channelTmp"
+		[[ -e "$channelTmp" ]] && sleep 1 && _safeRMR "$channelTmp"
+		[[ -e "$channelTmp" ]] && sleep 3 && _safeRMR "$channelTmp"
+		[[ -e "$channelTmp" ]] && sleep 3 && _safeRMR "$channelTmp"
+		[[ -e "$channelTmp" ]] && sleep 3 && _safeRMR "$channelTmp"
+	fi
 }
 
 _channel_fifo_example() {

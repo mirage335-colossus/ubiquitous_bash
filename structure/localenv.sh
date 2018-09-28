@@ -35,8 +35,6 @@ _stop_prog() {
 }
 
 _stop() {
-	sleep 0.1
-	
 	_stop_prog
 	
 	_preserveLog
@@ -73,6 +71,13 @@ _stop() {
 	
 	_safeRMR "$shortTmp"
 	_safeRMR "$safeTmp"
+	
+	[[ -e "$safeTmp" ]] && sleep 0.1 && _safeRMR "$safeTmp"
+	[[ -e "$safeTmp" ]] && sleep 0.3 && _safeRMR "$safeTmp"
+	[[ -e "$safeTmp" ]] && sleep 1 && _safeRMR "$safeTmp"
+	[[ -e "$safeTmp" ]] && sleep 3 && _safeRMR "$safeTmp"
+	[[ -e "$safeTmp" ]] && sleep 3 && _safeRMR "$safeTmp"
+	[[ -e "$safeTmp" ]] && sleep 3 && _safeRMR "$safeTmp"
 	
 	_tryExec _rm_instance_fakeHome
 	
