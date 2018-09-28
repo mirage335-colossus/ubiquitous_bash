@@ -16,7 +16,11 @@ _relink_procedure() {
 	[[ "$existingLinkTarget" == "$1" ]] && return 0
 	
 	! [[ "$relinkRelativeUb" == "true" ]] && _rmlink "$2" && ln -s "$1" "$2" && return 0
-	[[ "$relinkRelativeUb" == "true" ]] && _rmlink "$2" && ln -s -r "$1" "$2" && return 0
+	
+	if [[ "$relinkRelativeUb" == "true" ]]
+	then
+		_rmlink "$2" && ln -s --relative "$1" "$2" && return 0
+	fi
 	
 	return 1
 }
@@ -28,7 +32,12 @@ _relink() {
 }
 
 _relink_relative() {
-	export relinkRelativeUb="true"
+	export relinkRelativeUb=""
+	
+	[[ "$relinkRelativeUb" != "true" ]] && ln --help 2>/dev/null | grep '\-\-relative' && export relinkRelativeUb="true"
+	[[ "$relinkRelativeUb" != "true" ]] && ln 2>&1 | grep '\-\-relative' > /dev/null && export relinkRelativeUb="true"
+	[[ "$relinkRelativeUb" != "true" ]] && man ln 2>/dev/null | grep '\-\-relative' && export relinkRelativeUb="true"
+	
 	_relink_procedure "$@"
 	export relinkRelativeUb=""
 	unset relinkRelativeUb
