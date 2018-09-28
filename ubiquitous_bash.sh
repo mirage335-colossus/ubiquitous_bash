@@ -7786,7 +7786,7 @@ _integratedQemu() {
 		_messagePlain_warn 'warn: no nested x64'
 	fi
 	
-	local hostThreadCount=$(cat /proc/cpuinfo | grep MHz | wc -l)
+	local hostThreadCount=$(cat /proc/cpuinfo | grep MHz | wc -l | tr -dc '0-9')
 	[[ "$hostThreadCount" -ge "4" ]] && [[ "$hostThreadCount" -lt "8" ]] && _messagePlain_probe 'cpu: >4' && qemuArgs+=(-smp 4)
 	[[ "$hostThreadCount" -ge "8" ]] && _messagePlain_probe 'cpu: >6' && qemuArgs+=(-smp 6)
 	
@@ -14579,7 +14579,7 @@ _complete_me_active() {
 	! [[ -e "$in_me_active" ]] && return 1
 	
 	local currentActiveProcCount
-	currentActiveProcCount=$(ls -1 "$in_me_active" | wc -l)
+	currentActiveProcCount=$(ls -1 "$in_me_active" | wc -l | tr -dc '0-9')
 	
 	if [[ "$currentActiveProcCount" == '0' ]]
 	then
@@ -15527,6 +15527,8 @@ _stop_prog() {
 }
 
 _stop() {
+	sleep 0.1
+	
 	_stop_prog
 	
 	_preserveLog
@@ -15988,7 +15990,7 @@ _test() {
 	"$scriptAbsoluteLocation" _false && _messageFAIL && return 1
 	
 	local santiySessionID_length
-	santiySessionID_length=$(echo -n "$sessionid" | wc -c)
+	santiySessionID_length=$(echo -n "$sessionid" | wc -c | tr -dc '0-9')
 	
 	[[ "$santiySessionID_length" -lt "18" ]] && _messageFAIL && return 1
 	[[ "$uidLengthPrefix" != "" ]] && [[ "$santiySessionID_length" -lt "$uidLengthPrefix" ]] && _messageFAIL && return 1

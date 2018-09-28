@@ -35,6 +35,8 @@ _stop_prog() {
 }
 
 _stop() {
+	sleep 0.1
+	
 	_stop_prog
 	
 	_preserveLog

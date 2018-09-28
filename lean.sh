@@ -3353,6 +3353,8 @@ _stop_prog() {
 }
 
 _stop() {
+	sleep 0.1
+	
 	_stop_prog
 	
 	_preserveLog
@@ -3814,7 +3816,7 @@ _test() {
 	"$scriptAbsoluteLocation" _false && _messageFAIL && return 1
 	
 	local santiySessionID_length
-	santiySessionID_length=$(echo -n "$sessionid" | wc -c)
+	santiySessionID_length=$(echo -n "$sessionid" | wc -c | tr -dc '0-9')
 	
 	[[ "$santiySessionID_length" -lt "18" ]] && _messageFAIL && return 1
 	[[ "$uidLengthPrefix" != "" ]] && [[ "$santiySessionID_length" -lt "$uidLengthPrefix" ]] && _messageFAIL && return 1
