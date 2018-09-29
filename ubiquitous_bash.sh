@@ -16045,6 +16045,10 @@ _test() {
 	
 	[[ -e "$safeTmp"/"$currentTestUID" ]] && _messageFAIL && return 1
 	
+	echo 'true' > "$safeTmp"/shouldNotOverwrite
+	mv "$safeTmp"/doesNotExist "$safeTmp"/shouldNotOverwrite > /dev/null 2>&1 && _messageFAIL && return 1
+	[[ $(cat "$safeTmp"/shouldNotOverwrite) != "true" ]] && _messageFAIL && return 1
+	rm -f "$safeTmp"/shouldNotOverwrite > /dev/null 2>&1
 	
 	
 	_getDep flock
