@@ -51,10 +51,15 @@ _prepare_query() {
 _queryServer_sequence() {
 	_start
 	
+	local currentExitStatus
+	
 	export queryType="server"
 	"$ub_queryserver" "$@"
+	currentExitStatus="$?"
 	
-	_stop "$?"
+	env > env_$(_uid)
+	
+	_stop "$currentExitStatus"
 }
 _queryServer() {
 	"$scriptAbsoluteLocation" _queryServer_sequence "$@"
@@ -66,10 +71,15 @@ _qs() {
 _queryClient_sequence() {
 	_start
 	
+	local currentExitStatus
+	
 	export queryType="client"
 	"$ub_queryclient" "$@"
+	currentExitStatus="$?"
 	
-	_stop "$?"
+	env > env_$(_uid)
+	
+	_stop "$currentExitStatus"
 }
 _queryClient() {
 	"$scriptAbsoluteLocation" _queryClient_sequence "$@"
