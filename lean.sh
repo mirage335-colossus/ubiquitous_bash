@@ -3862,6 +3862,20 @@ _test() {
 	
 	[[ -e "$safeTmp"/"$currentTestUID" ]] && _messageFAIL && return 1
 	
+	
+	
+	_getDep flock
+	
+	( flock 200; echo > "$safeTmp"/ready ; sleep 3 ) 200>"$safeTmp"/flock &
+	sleep 1
+	if ( flock 200; ! [[ -e "$safeTmp"/ready ]] ) 200>"$safeTmp"/flock
+	then
+		_messageFAIL
+		_stop 1
+	fi
+	rm -f "$safeTmp"/flock > /dev/null 2>&1
+	rm -f "$safeTmp"/ready > /dev/null 2>&1
+	
 	_messagePASS
 	
 	
