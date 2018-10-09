@@ -1,8 +1,8 @@
 #####Local Environment Management (Instancing)
 
-_start_prog() {
-	true
-}
+#_start_prog() {
+#	true
+#}
 
 _start() {
 	
@@ -16,26 +16,26 @@ _start() {
 	_embed_here > "$safeTmp"/.embed.sh
 	chmod 755 "$safeTmp"/.embed.sh
 	
-	_start_prog
+	_tryExec "_start_prog"
 }
 
-_saveVar_prog() {
-	true
-}
+#_saveVar_prog() {
+#	true
+#}
 
 _saveVar() {
 	true
 	#declare -p varName > "$varStore"
 	
-	_saveVar_prog
+	_tryExec "_saveVar_prog"
 }
 
-_stop_prog() {
-	true
-}
+#_stop_prog() {
+#	true
+#}
 
 _stop() {
-	_stop_prog
+	_tryExec "_stop_prog"
 	
 	_preserveLog
 	
@@ -93,9 +93,9 @@ _stop() {
 }
 
 #Do not overload this unless you know why you need it instead of _stop_prog.
-_stop_emergency_prog() {
-	true
-}
+#_stop_emergency_prog() {
+#	true
+#}
 
 #Called upon SIGTERM or similar signal.
 _stop_emergency() {
@@ -112,7 +112,7 @@ _stop_emergency() {
 	
 	_tryExec _stop_virtLocal
 	
-	_stop_emergency_prog
+	_tryExec "_stop_emergency_prog"
 	
 	_stop "$1"
 	

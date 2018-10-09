@@ -15473,9 +15473,9 @@ _build() {
 
 #####Local Environment Management (Resources)
 
-_prepare_prog() {
-	true
-}
+#_prepare_prog() {
+#	true
+#}
 
 _extra() {
 	true
@@ -15515,14 +15515,14 @@ _prepare() {
 	#_prepare_abstract
 	
 	_extra
-	_prepare_prog
+	_tryExec "_prepare_prog"
 }
 
 #####Local Environment Management (Instancing)
 
-_start_prog() {
-	true
-}
+#_start_prog() {
+#	true
+#}
 
 _start() {
 	
@@ -15536,26 +15536,26 @@ _start() {
 	_embed_here > "$safeTmp"/.embed.sh
 	chmod 755 "$safeTmp"/.embed.sh
 	
-	_start_prog
+	_tryExec "_start_prog"
 }
 
-_saveVar_prog() {
-	true
-}
+#_saveVar_prog() {
+#	true
+#}
 
 _saveVar() {
 	true
 	#declare -p varName > "$varStore"
 	
-	_saveVar_prog
+	_tryExec "_saveVar_prog"
 }
 
-_stop_prog() {
-	true
-}
+#_stop_prog() {
+#	true
+#}
 
 _stop() {
-	_stop_prog
+	_tryExec "_stop_prog"
 	
 	_preserveLog
 	
@@ -15613,9 +15613,9 @@ _stop() {
 }
 
 #Do not overload this unless you know why you need it instead of _stop_prog.
-_stop_emergency_prog() {
-	true
-}
+#_stop_emergency_prog() {
+#	true
+#}
 
 #Called upon SIGTERM or similar signal.
 _stop_emergency() {
@@ -15632,7 +15632,7 @@ _stop_emergency() {
 	
 	_tryExec _stop_virtLocal
 	
-	_stop_emergency_prog
+	_tryExec "_stop_emergency_prog"
 	
 	_stop "$1"
 	
@@ -16012,9 +16012,9 @@ _timetest() {
 	_stop 1
 }
 
-_test_prog() {
-	true
-}
+#_test_prog() {
+#	true
+#}
 
 _test() {
 	_messageNormal "Sanity..."
@@ -16236,14 +16236,14 @@ _test() {
 	_vector
 	_messagePASS
 	
-	_test_prog
+	_tryExec "_test_prog"
 	
 	_stop
 }
 
-_testBuilt_prog() {
-	true
-}
+#_testBuilt_prog() {
+#	true
+#}
 
 _testBuilt() {
 	_start
@@ -16261,7 +16261,7 @@ _testBuilt() {
 	
 	_tryExec "_testBuiltExtra"
 	
-	_testBuilt_prog
+	_tryExec "_testBuilt_prog"
 	
 	_messagePASS
 	
@@ -16326,13 +16326,13 @@ _setupCommands() {
 	_tryExec "_setup_command_commands"
 }
 
-_setup_pre() {
-	true
-}
+#_setup_pre() {
+#	true
+#}
 
-_setup_prog() {
-	true
-}
+#_setup_prog() {
+#	true
+#}
 
 _setup() {
 	_start
@@ -16354,11 +16354,11 @@ _setup() {
 	
 	_setupCommands
 	
-	_setup_pre
+	_tryExec "_setup_pre"
 	
 	_tryExec "_setup_ssh"
 	
-	_setup_prog
+	_tryExec "_setup_prog"
 	
 	_stop
 }
@@ -16591,12 +16591,12 @@ _init_deps() {
 
 _deps_dev_heavy() {
 	_deps_notLean
-	export enUB_dev_heavy="true"
+	export enUb_dev_heavy="true"
 }
 
 _deps_mount() {
 	_deps_notLean
-	export enUB_mount="true"
+	export enUb_mount="true"
 }
 
 _deps_machineinfo() {
@@ -17093,11 +17093,11 @@ _compile_bash_utilities() {
 	
 	includeScriptList+=( "generic/filesystem"/relink.sh )
 	
-	[[ "$enUB_mount" == "true" ]] && includeScriptList+=( "generic/filesystem/mounts"/bindmountmanager.sh )
+	[[ "$enUb_mount" == "true" ]] && includeScriptList+=( "generic/filesystem/mounts"/bindmountmanager.sh )
 	
-	[[ "$enUB_mount" == "true" ]] && includeScriptList+=( "generic/filesystem/mounts"/waitumount.sh )
+	[[ "$enUb_mount" == "true" ]] && includeScriptList+=( "generic/filesystem/mounts"/waitumount.sh )
 	
-	[[ "$enUB_mount" == "true" ]] && includeScriptList+=( "generic/filesystem/mounts"/mountchecks.sh )
+	[[ "$enUb_mount" == "true" ]] && includeScriptList+=( "generic/filesystem/mounts"/mountchecks.sh )
 	
 	[[ "$enUb_channel" == "true" ]] && includeScriptList+=( "generic/process/"channel.sh )
 	
@@ -17143,7 +17143,7 @@ _compile_bash_utilities() {
 	
 	includeScriptList+=( "special"/uuid.sh )
 	
-	[[ "$enUB_dev_heavy" == "true" ]] && includeScriptList+=( "instrumentation"/bashdb/bashdb.sh )
+	[[ "$enUb_dev_heavy" == "true" ]] && includeScriptList+=( "instrumentation"/bashdb/bashdb.sh )
 	[[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "instrumentation"/profiling/stopwatch.sh )
 }
 
@@ -17216,11 +17216,11 @@ _compile_bash_shortcuts() {
 	
 	includeScriptList+=( "shortcuts/prompt"/visualPrompt.sh )
 	
-	[[ "$enUB_dev_heavy" == "true" ]] && includeScriptList+=( "shortcuts/dev"/devsearch.sh )
+	[[ "$enUb_dev_heavy" == "true" ]] && includeScriptList+=( "shortcuts/dev"/devsearch.sh )
 	
-	[[ "$enUb_fakehome" == "true" ]] && [[ "$enUB_dev_heavy" == "true" ]] && includeScriptList+=( "shortcuts/dev/app"/devemacs.sh )
-	[[ "$enUb_fakehome" == "true" ]] && [[ "$enUB_dev_heavy" == "true" ]] && includeScriptList+=( "shortcuts/dev/app"/devatom.sh )
-	[[ "$enUb_fakehome" == "true" ]] && [[ "$enUb_abstractfs" == "true" ]] && [[ "$enUB_dev_heavy" == "true" ]] && includeScriptList+=( "shortcuts/dev/app"/deveclipse.sh )
+	[[ "$enUb_fakehome" == "true" ]] && [[ "$enUb_dev_heavy" == "true" ]] && includeScriptList+=( "shortcuts/dev/app"/devemacs.sh )
+	[[ "$enUb_fakehome" == "true" ]] && [[ "$enUb_dev_heavy" == "true" ]] && includeScriptList+=( "shortcuts/dev/app"/devatom.sh )
+	[[ "$enUb_fakehome" == "true" ]] && [[ "$enUb_abstractfs" == "true" ]] && [[ "$enUb_dev_heavy" == "true" ]] && includeScriptList+=( "shortcuts/dev/app"/deveclipse.sh )
 	
 	includeScriptList+=( "shortcuts/dev/query"/devquery.sh )
 	

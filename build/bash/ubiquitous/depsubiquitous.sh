@@ -38,12 +38,12 @@ _init_deps() {
 
 _deps_dev_heavy() {
 	_deps_notLean
-	export enUB_dev_heavy="true"
+	export enUb_dev_heavy="true"
 }
 
 _deps_mount() {
 	_deps_notLean
-	export enUB_mount="true"
+	export enUb_mount="true"
 }
 
 _deps_machineinfo() {

@@ -1,8 +1,8 @@
 #####Local Environment Management (Resources)
 
-_prepare_prog() {
-	true
-}
+#_prepare_prog() {
+#	true
+#}
 
 _extra() {
 	true
@@ -42,5 +42,5 @@ _prepare() {
 	#_prepare_abstract
 	
 	_extra
-	_prepare_prog
+	_tryExec "_prepare_prog"
 }
