@@ -526,7 +526,7 @@ _compile_bash_config() {
 	
 	
 	#####Hardcoded
-	includeScriptList+=( netvars.sh )
+	includeScriptList+=( "_config"/netvars.sh )
 }
 
 _compile_bash_selfHost() {
