@@ -36,6 +36,10 @@ _init_deps() {
 	export enUb_metaengine=""
 }
 
+_deps_dev() {
+	export enUb_dev="true"
+}
+
 _deps_dev_heavy() {
 	_deps_notLean
 	export enUb_dev_heavy="true"

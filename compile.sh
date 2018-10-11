@@ -2520,6 +2520,7 @@ export tmpPrefix=""
 
 _deps_metaengine() {
 # 	#_deps_notLean
+	_deps_dev
 	
 	export enUb_metaengine="true"
 } 
@@ -2617,6 +2618,10 @@ _init_deps() {
 	export enUb_user=""
 	
 	export enUb_metaengine=""
+}
+
+_deps_dev() {
+	export enUb_dev="true"
 }
 
 _deps_dev_heavy() {
@@ -2927,6 +2932,8 @@ _compile_bash_deps() {
 	if [[ "$1" == "processor" ]]
 	then
 		
+		_deps_dev
+		
 		_deps_channel
 		
 		_deps_metaengine
@@ -2936,6 +2943,8 @@ _compile_bash_deps() {
 	
 	if [[ "$1" == "abstract" ]]
 	then
+		_deps_dev
+		
 		_deps_channel
 		
 		_deps_metaengine
@@ -2948,6 +2957,7 @@ _compile_bash_deps() {
 	if [[ "$1" == "core" ]]
 	then
 		_deps_dev_heavy
+		_deps_dev
 		
 		_deps_mount
 		
@@ -3003,6 +3013,7 @@ _compile_bash_deps() {
 	if [[ "$1" == "" ]] || [[ "$1" == "ubiquitous_bash" ]] || [[ "$1" == "ubiquitous_bash.sh" ]] || [[ "$1" == "complete" ]]
 	then
 		_deps_dev_heavy
+		_deps_dev
 		
 		_deps_mount
 		
@@ -3254,11 +3265,11 @@ _compile_bash_shortcuts() {
 	
 	includeScriptList+=( "shortcuts/dev/query"/devquery.sh )
 	
-	includeScriptList+=( "shortcuts/dev/scope"/devscope.sh )
-	includeScriptList+=( "shortcuts/dev/scope"/devscope_here.sh )
+	[[ "$enUb_dev" == "true" ]] && includeScriptList+=( "shortcuts/dev/scope"/devscope.sh )
+	[[ "$enUb_dev" == "true" ]] && includeScriptList+=( "shortcuts/dev/scope"/devscope_here.sh )
 	
 	# WARNING: Some apps may have specific dependencies (eg. fakeHome, abstractfs, eclipse, atom).
-	includeScriptList+=( "shortcuts/dev/scope"/devscope_app.sh )
+	[[ "$enUb_dev" == "true" ]] && includeScriptList+=( "shortcuts/dev/scope"/devscope_app.sh )
 	
 	[[ "$enUb_git" == "true" ]] && includeScriptList+=( "shortcuts/git"/git.sh )
 	[[ "$enUb_git" == "true" ]] && includeScriptList+=( "shortcuts/git"/gitBare.sh )
