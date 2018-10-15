@@ -36,82 +36,117 @@
                     <next>
                       <block type="_ub_here_ssh_config" id="D,.VwK!I%4gJb?jxBO]M">
                         <statement name="NAME">
-                          <block type="blockly_comment" id="lzJpy/(8a[LIw?A|o0,v">
+                          <block type="blockly_comment" id="6;$op9Me^Ixd1v:J!I4W">
                             <field name="colour">#333333</field>
-                            <field name="blockly_comment">Recommended defaults.</field>
+                            <field name="blockly_comment">Enumerate your servers and jump hosts here.</field>
                             <next>
-                              <block type="_ub_ssh_header" id="Yw!se27TpNAACqMv::OK">
-                                <field name="hostname">*-$netName*</field>
-                                <field name="commentCompression"></field>
-                                <field name="Compression">yes</field>
-                                <field name="commentExitOnForwardFailure"></field>
-                                <field name="ExitOnForwardFailure">yes</field>
-                                <field name="commentConnectTimeout"></field>
-                                <field name="ConnectTimeout">36</field>
-                                <field name="commentConnectionAttempts"></field>
-                                <field name="ConnectionAttempts">3</field>
-                                <field name="commentServerAliveInterval"></field>
-                                <field name="ServerAliveInterval">6</field>
-                                <field name="commentServerAliveCountMax"></field>
-                                <field name="ServerAliveCountMax">18</field>
-                                <field name="commentPubkeyAuthentication">#</field>
-                                <field name="PubkeyAuthentication">yes</field>
-                                <field name="commentPasswordAuthentication">#</field>
-                                <field name="PasswordAuthentication">no</field>
-                                <field name="commentStrictHostKeyChecking"></field>
-                                <field name="StrictHostKeyChecking">no</field>
-                                <field name="commentUserKnownHostsFile"></field>
-                                <field name="UserKnownHostsFile">"$sshLocalSSH/known_hosts"</field>
-                                <field name="commentIdentityFile"></field>
+                              <block type="_ub_ssh_host" id="5[*M+*%!Ed6e-B.BMqyt">
+                                <field name="hostname">gw</field>
+                                <field name="netname">-$netName</field>
+                                <field name="commentProxyCommand"></field>
+                                <field name="ProxyCommand">_ssh_proxy_server-$netName</field>
+                                <field name="commentUser"></field>
+                                <field name="User">gateway</field>
+                                <field name="commentIdentityFile">#</field>
                                 <field name="IdentityFile">"$sshLocalSSH/id_rsa"</field>
-                                <field name="commentCipher"></field>
-                                <field name="Cipher">aes256-gcm@openssh.com</field>
-                                <field name="commentCiphers"></field>
-                                <field name="Ciphers">aes256-gcm@openssh.com,aes128-ctr,aes192-ctr,aes256-ctr,arcfour256,arcfour128,aes128-gcm@openssh.com,chacha20-poly1305@openssh.com,aes128-cbc,3des-cbc,blowfish-cbc,cast128-cbc,aes192-cbc,aes256-cbc,arcfour</field>
                                 <next>
-                                  <block type="blockly_comment" id="6;$op9Me^Ixd1v:J!I4W">
-                                    <field name="colour">#333333</field>
-                                    <field name="blockly_comment">Enumerate your servers and jump hosts here.</field>
+                                  <block type="arbitrary_code" id="@:#LeI_/w5Pu;#9H:%hQ">
+                                    <field name="arbitraryCode">	Compression no</field>
                                     <next>
-                                      <block type="_ub_ssh_host" id="5[*M+*%!Ed6e-B.BMqyt">
-                                        <field name="hostname">gw</field>
-                                        <field name="netname">-$netName</field>
-                                        <field name="commentProxyCommand"></field>
-                                        <field name="ProxyCommand">_ssh_proxy_server-$netName</field>
-                                        <field name="commentUser"></field>
-                                        <field name="User">gateway</field>
-                                        <field name="commentIdentityFile">#</field>
-                                        <field name="IdentityFile">"$sshLocalSSH/id_rsa"</field>
+                                      <block type="arbitrary_code" id=")ol;-yV:bU-w;zqajz@N">
+                                        <field name="arbitraryCode">	#Aggressively disconnects quickly. Comment if margins insufficient for high-latency.</field>
                                         <next>
-                                          <block type="_ub_ssh_host" id=")yUX5d34LwWkme{P5]`I">
-                                            <field name="hostname">server</field>
-                                            <field name="netname">-$netName</field>
-                                            <field name="commentProxyCommand"></field>
-                                            <field name="ProxyCommand">_ssh_proxy_server-$netName</field>
-                                            <field name="commentUser"></field>
-                                            <field name="User">user</field>
-                                            <field name="commentIdentityFile">#</field>
-                                            <field name="IdentityFile">"$sshLocalSSH/id_rsa"</field>
+                                          <block type="arbitrary_code" id="pcEkz(v4YqJ0eU/557Tb">
+                                            <field name="arbitraryCode">	ConnectTimeout 3</field>
                                             <next>
-                                              <block type="_ub_ssh_host" id="sbGsX+;o|o?CF0J,(}xt">
-                                                <field name="hostname">hostnameA</field>
-                                                <field name="netname">-$netName</field>
-                                                <field name="commentProxyCommand"></field>
-                                                <field name="ProxyCommand">_ssh_proxy_hostnameA-$netName</field>
-                                                <field name="commentUser"></field>
-                                                <field name="User">user</field>
-                                                <field name="commentIdentityFile">#</field>
-                                                <field name="IdentityFile">"$sshLocalSSH/id_rsa"</field>
+                                              <block type="arbitrary_code" id=".ElkGCC1nK`a#2IU#^bj">
+                                                <field name="arbitraryCode">	ConnectionAttempts 3</field>
                                                 <next>
-                                                  <block type="_ub_ssh_host" id="oXagotR(Uvd/FvQz#Hj:">
-                                                    <field name="hostname">hostnameC</field>
-                                                    <field name="netname">-$netName</field>
-                                                    <field name="commentProxyCommand"></field>
-                                                    <field name="ProxyCommand">_ssh_proxy_hostnameC-$netName</field>
-                                                    <field name="commentUser"></field>
-                                                    <field name="User">user</field>
-                                                    <field name="commentIdentityFile">#</field>
-                                                    <field name="IdentityFile">"$sshLocalSSH/id_rsa"</field>
+                                                  <block type="arbitrary_code" id="Q{:GW#]~S5Bi?):p*jm8">
+                                                    <field name="arbitraryCode">	ServerAliveInterval 3</field>
+                                                    <next>
+                                                      <block type="arbitrary_code" id="ISuQ=!oCdq;I*kGHU~Il">
+                                                        <field name="arbitraryCode">	ServerAliveCountMax 3</field>
+                                                        <next>
+                                                          <block type="arbitrary_code" id="{?skREwCA`w*SnAucdzT">
+                                                            <field name="arbitraryCode"></field>
+                                                            <next>
+                                                              <block type="_ub_ssh_host" id=")yUX5d34LwWkme{P5]`I">
+                                                                <field name="hostname">server</field>
+                                                                <field name="netname">-$netName</field>
+                                                                <field name="commentProxyCommand"></field>
+                                                                <field name="ProxyCommand">_ssh_proxy_server-$netName</field>
+                                                                <field name="commentUser"></field>
+                                                                <field name="User">user</field>
+                                                                <field name="commentIdentityFile">#</field>
+                                                                <field name="IdentityFile">"$sshLocalSSH/id_rsa"</field>
+                                                                <next>
+                                                                  <block type="_ub_ssh_host" id="sbGsX+;o|o?CF0J,(}xt">
+                                                                    <field name="hostname">hostnameA</field>
+                                                                    <field name="netname">-$netName</field>
+                                                                    <field name="commentProxyCommand"></field>
+                                                                    <field name="ProxyCommand">_ssh_proxy_hostnameA-$netName</field>
+                                                                    <field name="commentUser"></field>
+                                                                    <field name="User">user</field>
+                                                                    <field name="commentIdentityFile">#</field>
+                                                                    <field name="IdentityFile">"$sshLocalSSH/id_rsa"</field>
+                                                                    <next>
+                                                                      <block type="_ub_ssh_host" id="oXagotR(Uvd/FvQz#Hj:">
+                                                                        <field name="hostname">hostnameC</field>
+                                                                        <field name="netname">-$netName</field>
+                                                                        <field name="commentProxyCommand"></field>
+                                                                        <field name="ProxyCommand">_ssh_proxy_hostnameC-$netName</field>
+                                                                        <field name="commentUser"></field>
+                                                                        <field name="User">user</field>
+                                                                        <field name="commentIdentityFile">#</field>
+                                                                        <field name="IdentityFile">"$sshLocalSSH/id_rsa"</field>
+                                                                        <next>
+                                                                          <block type="blockly_comment" id="lzJpy/(8a[LIw?A|o0,v">
+                                                                            <field name="colour">#333333</field>
+                                                                            <field name="blockly_comment">Recommended defaults.</field>
+                                                                            <next>
+                                                                              <block type="_ub_ssh_header" id="Yw!se27TpNAACqMv::OK">
+                                                                                <field name="hostname">*-$netName*</field>
+                                                                                <field name="commentCompression"></field>
+                                                                                <field name="Compression">yes</field>
+                                                                                <field name="commentExitOnForwardFailure"></field>
+                                                                                <field name="ExitOnForwardFailure">yes</field>
+                                                                                <field name="commentConnectTimeout"></field>
+                                                                                <field name="ConnectTimeout">18</field>
+                                                                                <field name="commentConnectionAttempts"></field>
+                                                                                <field name="ConnectionAttempts">3</field>
+                                                                                <field name="commentServerAliveInterval"></field>
+                                                                                <field name="ServerAliveInterval">6</field>
+                                                                                <field name="commentServerAliveCountMax"></field>
+                                                                                <field name="ServerAliveCountMax">9</field>
+                                                                                <field name="commentPubkeyAuthentication">#</field>
+                                                                                <field name="PubkeyAuthentication">yes</field>
+                                                                                <field name="commentPasswordAuthentication">#</field>
+                                                                                <field name="PasswordAuthentication">no</field>
+                                                                                <field name="commentStrictHostKeyChecking"></field>
+                                                                                <field name="StrictHostKeyChecking">no</field>
+                                                                                <field name="commentUserKnownHostsFile"></field>
+                                                                                <field name="UserKnownHostsFile">"$sshLocalSSH/known_hosts"</field>
+                                                                                <field name="commentIdentityFile"></field>
+                                                                                <field name="IdentityFile">"$sshLocalSSH/id_rsa"</field>
+                                                                                <field name="commentCipher">#</field>
+                                                                                <field name="Cipher">aes256-gcm@openssh.com</field>
+                                                                                <field name="commentCiphers">#</field>
+                                                                                <field name="Ciphers">aes256-gcm@openssh.com,aes128-ctr,aes192-ctr,aes256-ctr,arcfour256,arcfour128,aes128-gcm@openssh.com,chacha20-poly1305@openssh.com,aes128-cbc,3des-cbc,blowfish-cbc,cast128-cbc,aes192-cbc,aes256-cbc,arcfour</field>
+                                                                              </block>
+                                                                            </next>
+                                                                          </block>
+                                                                        </next>
+                                                                      </block>
+                                                                    </next>
+                                                                  </block>
+                                                                </next>
+                                                              </block>
+                                                            </next>
+                                                          </block>
+                                                        </next>
+                                                      </block>
+                                                    </next>
                                                   </block>
                                                 </next>
                                               </block>
@@ -286,11 +321,11 @@
       </block>
     </next>
   </block>
-  <block type="blockly_comment" id="rjw@GmYZ.=MbT^o:F*Qj" x="762" y="-13">
+  <block type="blockly_comment" id="rjw@GmYZ.=MbT^o:F*Qj" x="663" y="-12">
     <field name="colour">#333333</field>
     <field name="blockly_comment">Default functions, definition not required.</field>
   </block>
-  <block type="procedures_defnoreturn" id="cJ[%iKx;47lzbaU?}t;!" x="763" y="38">
+  <block type="procedures_defnoreturn" id="cJ[%iKx;47lzbaU?}t;!" x="663" y="38">
     <field name="NAME">_ssh_autoreverse</field>
     <comment pinned="false" h="46" w="540">Daemon commands. Do not define unless multi-gateway redundancy is needed. Tor services redundancy is expected to be far more reliable than such fallbacks.</comment>
     <statement name="STACK">
@@ -319,7 +354,7 @@
       </block>
     </statement>
   </block>
-  <block type="procedures_defnoreturn" id="9}l8LW.w7)y!A,NxOM3`" x="762" y="213">
+  <block type="procedures_defnoreturn" id="9}l8LW.w7)y!A,NxOM3`" x="663" y="213">
     <field name="NAME">_setup_ssh_extra</field>
     <comment pinned="false" h="56" w="433">Hooks "_setup_ssh" after other operations complete. Typically used to install special files (eg. machine specific keys).</comment>
     <statement name="STACK">
@@ -332,7 +367,7 @@
       </block>
     </statement>
   </block>
-  <block type="procedures_defnoreturn" id="06xho2mn9By7Vo5Ky/NH" x="763" y="288">
+  <block type="procedures_defnoreturn" id="06xho2mn9By7Vo5Ky/NH" x="663" y="288">
     <field name="NAME">_setup_pre</field>
     <comment pinned="false" h="56" w="433">#Hooks "_setup" before "_setup_ssh" .</comment>
     <statement name="STACK">
@@ -345,7 +380,7 @@
       </block>
     </statement>
   </block>
-  <block type="procedures_defnoreturn" id="*VoNSV2h|u-Hw1Ib}c%g" x="762" y="363">
+  <block type="procedures_defnoreturn" id="*VoNSV2h|u-Hw1Ib}c%g" x="663" y="363">
     <field name="NAME">_setup_prog</field>
     <comment pinned="false" h="56" w="433">#Hooks "_setup" after "_setup_ssh" .</comment>
     <statement name="STACK">

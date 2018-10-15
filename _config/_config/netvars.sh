@@ -10,6 +10,8 @@ export netName=default
 export gatewayName=gw-"$netName"
 export LOCALSSHPORT=22
 
+# ATTENTION: Mostly future proofing. Due to placement of autossh within a 'while true' loop, associated environment variables are expected to have minimal, if any, effect.
+#Poll time must be double network timeouts.
 export AUTOSSH_FIRST_POLL=45
 export AUTOSSH_POLL=45
 #export AUTOSSH_GATETIME=0

@@ -35,26 +35,17 @@ export sshHomeBase="$HOME"/.ssh
 
 _here_ssh_config() {
 	cat << CZXWXcRMTo8EmM8i4d
-
-Host *-$netName*
-	Compression yes
-	ExitOnForwardFailure yes
-	ConnectTimeout 36
-	ConnectionAttempts 3
-	ServerAliveInterval 6
-	ServerAliveCountMax 18
-	#PubkeyAuthentication yes
-	#PasswordAuthentication no
-	StrictHostKeyChecking no
-	UserKnownHostsFile "$sshLocalSSH/known_hosts"
-	IdentityFile "$sshLocalSSH/id_rsa"
-	#Cipher aes256-gcm@openssh.com
-	#Ciphers aes256-gcm@openssh.com,aes128-ctr,aes192-ctr,aes256-ctr,arcfour256,arcfour128,aes128-gcm@openssh.com,chacha20-poly1305@openssh.com,aes128-cbc,3des-cbc,blowfish-cbc,cast128-cbc,aes192-cbc,aes256-cbc,arcfour
-
 Host gw-$netName
 	ProxyCommand "$sshDir/cautossh" _ssh_proxy_server-$netName
 	User gateway
 	#IdentityFile "$sshLocalSSH/id_rsa"
+
+	Compression no
+	#Aggressively disconnects quickly. Comment if margins insufficient for high-latency.
+	ConnectTimeout 3
+	ConnectionAttempts 3
+	ServerAliveInterval 3
+	ServerAliveCountMax 3
 
 Host server-$netName
 	ProxyCommand "$sshDir/cautossh" _ssh_proxy_server-$netName
@@ -70,6 +61,22 @@ Host hostnameC-$netName
 	ProxyCommand "$sshDir/cautossh" _ssh_proxy_hostnameC-$netName
 	User user
 	#IdentityFile "$sshLocalSSH/id_rsa"
+
+
+Host *-$netName*
+	Compression yes
+	ExitOnForwardFailure yes
+	ConnectTimeout 18
+	ConnectionAttempts 3
+	ServerAliveInterval 6
+	ServerAliveCountMax 9
+	#PubkeyAuthentication yes
+	#PasswordAuthentication no
+	StrictHostKeyChecking no
+	UserKnownHostsFile "$sshLocalSSH/known_hosts"
+	IdentityFile "$sshLocalSSH/id_rsa"
+	#Cipher aes256-gcm@openssh.com
+	#Ciphers aes256-gcm@openssh.com,aes128-ctr,aes192-ctr,aes256-ctr,arcfour256,arcfour128,aes128-gcm@openssh.com,chacha20-poly1305@openssh.com,aes128-cbc,3des-cbc,blowfish-cbc,cast128-cbc,aes192-cbc,aes256-cbc,arcfour
 
 CZXWXcRMTo8EmM8i4d
 }

@@ -97,7 +97,7 @@ _autossh_launch() {
 	do
 		"$scriptAbsoluteLocation" _autossh_entry "$@"
 		
-		sleep 30
+		sleep 3
 		
 		if [[ "$EMBEDDED" == "true" ]]
 		then
