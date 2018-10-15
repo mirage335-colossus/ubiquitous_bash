@@ -1,7 +1,7 @@
 _test_synergy() {
-	_getDep synergy
-	_getDep synergyc
-	_getDep synergys
+	"$scriptAbsoluteLocation" _getDep synergy
+	"$scriptAbsoluteLocation" _getDep synergyc
+	"$scriptAbsoluteLocation" _getDep synergys
 	#_getDep quicksynergy
 }
 

@@ -3879,7 +3879,7 @@ _autossh_launch() {
 	do
 		"$scriptAbsoluteLocation" _autossh_entry "$@"
 		
-		sleep 30
+		sleep 3
 		
 		if [[ "$EMBEDDED" == "true" ]]
 		then
@@ -12244,9 +12244,9 @@ _here_synergy_config() {
 }
 
 _test_synergy() {
-	_getDep synergy
-	_getDep synergyc
-	_getDep synergys
+	"$scriptAbsoluteLocation" _getDep synergy
+	"$scriptAbsoluteLocation" _getDep synergyc
+	"$scriptAbsoluteLocation" _getDep synergys
 	#_getDep quicksynergy
 }
 
@@ -16447,6 +16447,8 @@ export netName=default
 export gatewayName=gw-"$netName"
 export LOCALSSHPORT=22
 
+# ATTENTION: Mostly future proofing. Due to placement of autossh within a 'while true' loop, associated environment variables are expected to have minimal, if any, effect.
+#Poll time must be double network timeouts.
 export AUTOSSH_FIRST_POLL=45
 export AUTOSSH_POLL=45
 #export AUTOSSH_GATETIME=0
