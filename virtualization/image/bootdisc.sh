@@ -54,6 +54,8 @@ _setShareMSW() {
 
 #Consider using explorer.exe to use file associations within the guest. Overload with ops to force a more specific 'preCommand'.
 _preCommand_MSW() {
+	echo 'X:'
+	echo 'cd '"$localPWD"
 	echo -e -n 'start /MAX "" "explorer.exe" '
 }
 
