@@ -2119,7 +2119,7 @@ _test_waitport() {
 #"$1" == hostname
 #"$2" == port
 _checkPort() {
-	if nmap -Pn "$1" -p "$2" 2> /dev/null | grep open > /dev/null 2>&1
+	if nmap --host-timeout "$netTimeout" -Pn "$1" -p "$2" 2> /dev/null | grep open > /dev/null 2>&1
 	then
 		return 0
 	fi
@@ -2437,6 +2437,8 @@ export daemonPidFile="$scriptLocal"/.bgpid
 export vncPasswdFile="$safeTmp"/.vncpasswd
 
 #Network Defaults
+[[ "$netTimeout" == "" ]] && export netTimeout=18
+
 export AUTOSSH_FIRST_POLL=45
 export AUTOSSH_POLL=45
 #export AUTOSSH_GATETIME=0
