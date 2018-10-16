@@ -126,6 +126,8 @@ export daemonPidFile="$scriptLocal"/.bgpid
 export vncPasswdFile="$safeTmp"/.vncpasswd
 
 #Network Defaults
+[[ "$netTimeout" == "" ]] && export netTimeout=18
+
 export AUTOSSH_FIRST_POLL=45
 export AUTOSSH_POLL=45
 #export AUTOSSH_GATETIME=0

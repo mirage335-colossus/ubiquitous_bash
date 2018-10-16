@@ -43,20 +43,23 @@ _proxy_direct() {
 	#nc -q 96 "$proxyTargetHost" "$proxyTargetPort"
 	#nc -q -1 "$proxyTargetHost" "$proxyTargetPort"
 	#nc "$proxyTargetHost" "$proxyTargetPort" 2> /dev/null
-	socat - TCP:"$proxyTargetHost":"$proxyTargetPort" 2> /dev/null
+	
+	socat - TCP:"$proxyTargetHost":"$proxyTargetPort",connect-timeout="$netTimeout" 2> /dev/null
 }
 
 #Launches proxy if port at hostname is open.
 #"$1" == hostname
 #"$2" == port
 _proxy() {
-	if _checkPort "$1" "$2"
-	then
+	#if _checkPort "$1" "$2"
+	#then
+		#_proxy_direct "$1" "$2"
 		if _proxy_direct "$1" "$2"
 		then
+			# WARNING: Not to be relied upon. May not reach if terminated by signal.
 			_stop
 		fi
-	fi
+	#fi
 	
 	return 0
 }

@@ -93,27 +93,35 @@ _ssh_setupUbiquitous_nonet() {
 #"$2" == port
 #"$3" == remote host (optional, localhost default)
 _checkRemoteSSH() {
-	local localPort
-	localPort=$(_findPort)
-	
 	local remoteHostDestination
 	remoteHostDestination="$3"
 	[[ "$remoteHostDestination" == "" ]] && remoteHostDestination="localhost"
 	
-	_timeout 14 _ssh -f "$1" -L "$localPort":"$remoteHostDestination":"$2" -N > /dev/null 2>&1
-	sleep 2
-	nmap -Pn localhost -p "$localPort" -sV 2> /dev/null | grep 'ssh' > /dev/null 2>&1 && return 0
-	sleep 2
-	nmap -Pn localhost -p "$localPort" -sV 2> /dev/null | grep 'ssh' > /dev/null 2>&1 && return 0
-	sleep 2
-	nmap -Pn localhost -p "$localPort" -sV 2> /dev/null | grep 'ssh' > /dev/null 2>&1 && return 0
-	sleep 2
-	nmap -Pn localhost -p "$localPort" -sV 2> /dev/null | grep 'ssh' > /dev/null 2>&1 && return 0
-	sleep 3
-	nmap -Pn localhost -p "$localPort" -sV 2> /dev/null | grep 'ssh' > /dev/null 2>&1 && return 0
+	#local localPort
+	#localPort=$(_findPort)
+	
+	#_timeout "$netTimeout" _ssh -f "$1" -L "$localPort":"$remoteHostDestination":"$2" -N > /dev/null 2>&1
+	#sleep 2
+	#nmap --host-timeout "$netTimeout" -Pn localhost -p "$localPort" -sV 2> /dev/null | grep 'ssh' > /dev/null 2>&1 && return 0
+	
+	mkdir -p "$safeTmp"
+	_timeout "$netTimeout" _ssh -q -W "$remoteHostDestination":"$2" "$1" | head -c 3 2> /dev/null > "$safeTmp"/_checkRemoteSSH_header &
+	
+	local currentIteration
+	
+	for currentIteration in `seq 1 "$netTimeout"`;
+	do
+		sleep 0.3
+		grep 'SSH' "$safeTmp"/_checkRemoteSSH_header > /dev/null 2>&1 && return 0
+		sleep 0.3
+		grep 'SSH' "$safeTmp"/_checkRemoteSSH_header > /dev/null 2>&1 && return 0
+		sleep 0.3
+		grep 'SSH' "$safeTmp"/_checkRemoteSSH_header > /dev/null 2>&1 && return 0
+	done
 	
 	return 1
 }
+
 
 #Launches proxy if remote port is open at hostname.
 #"$1" == gateway name
@@ -124,14 +132,14 @@ _proxySSH() {
 	remoteHostDestination="$3"
 	[[ "$remoteHostDestination" == "" ]] && remoteHostDestination="localhost"
 	
-	#Checking for remote port is usually unnecessary, as the SSH command seems to fail normally if the remote destination is not up. Not explicitly checking with nmap saves significant time (performance). However, the code remains in place for immediate return to default if proven useful.
-	#if _checkRemoteSSH "$1" "$2" "$remoteHostDestination"
-	#then
+	#Checking for remote port is necessary, as the SSH command hangs indefinitely if a zombie tunnel is present (usually avoidable but highly detremential failure mode).
+	if _checkRemoteSSH "$1" "$2" "$remoteHostDestination"
+	then
 		if _ssh -q -W "$remoteHostDestination":"$2" "$1"
 		then
 			_stop
 		fi
-	#fi
+	fi
 	
 	return 0
 }

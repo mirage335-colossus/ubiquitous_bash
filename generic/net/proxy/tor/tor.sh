@@ -165,14 +165,17 @@ _proxyTor_direct() {
 	socat - SOCKS4A:localhost:"$proxyTargetHost":"$proxyTargetPort",socksport=9050
 }
 
+# WARNING: Does NOT honor "$netTimeout" !
 #Launches proxy if port at hostname is open.
 #"$1" == hostname
 #"$2" == port
 _proxyTor() {
 	if _checkTorPort "$1" "$2"
 	then
+		_proxyTor_direct "$1" "$2"
 		if _proxyTor_direct "$1" "$2"
 		then
+			# WARNING: Not to be relied upon. May not reach if terminated by signal.
 			_stop
 		fi
 	fi
