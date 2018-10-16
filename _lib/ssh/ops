@@ -1,3 +1,4 @@
+#netTimeout=""
 #netName=""
 
 #Daemon commands. Do not define unless multi-gateway
@@ -28,6 +29,9 @@ _setup_prog() {
 }
 
 
+# Must be much less than half "ConnectTimeout" value .
+export netTimeout='18'
+
 # WARNING Must use unique netName!
 export netName='default'
 
@@ -42,7 +46,7 @@ Host gw-$netName
 
 	Compression no
 	#Aggressively disconnects quickly. Comment if margins insufficient for high-latency.
-	ConnectTimeout 3
+	ConnectTimeout 18
 	ConnectionAttempts 3
 	ServerAliveInterval 3
 	ServerAliveCountMax 3
@@ -66,7 +70,7 @@ Host hostnameC-$netName
 Host *-$netName*
 	Compression yes
 	ExitOnForwardFailure yes
-	ConnectTimeout 18
+	ConnectTimeout 72
 	ConnectionAttempts 3
 	ServerAliveInterval 6
 	ServerAliveCountMax 9
@@ -89,6 +93,7 @@ _check_LAN_default() {
 _ssh_proxy_server-default() {
 	_start
 
+	export netTimeout='3'
 	_proxy x.x.x.x 22
 
 	_proxy server.domain.tld 22
