@@ -642,7 +642,7 @@ _safeRMR() {
 	[[ "$safeToRM" == "false" ]] && return 1
 	
 	#Safeguards/
-	[[ "$safeToDeleteGit" != "true" ]] && [[ -d "$1" ]] && [[ -e "$1" ]] && find "$1" | grep -i '\.git$' >/dev/null 2>&1 && return 1
+	[[ "$safeToDeleteGit" != "true" ]] && [[ -d "$1" ]] && [[ -e "$1" ]] && find "$1" 2>/dev/null | grep -i '\.git$' >/dev/null 2>&1 && return 1
 	
 	#Validate necessary tools were available for path building and checks.
 	#! type realpath > /dev/null 2>&1 && return 1
@@ -725,7 +725,7 @@ _safePath() {
 	[[ "$safeToRM" == "false" ]] && return 1
 	
 	#Safeguards/
-	[[ "$safeToDeleteGit" != "true" ]] && [[ -d "$1" ]] && [[ -e "$1" ]] && find "$1" | grep -i '\.git$' >/dev/null 2>&1 && return 1
+	[[ "$safeToDeleteGit" != "true" ]] && [[ -d "$1" ]] && [[ -e "$1" ]] && find "$1" 2>/dev/null | grep -i '\.git$' >/dev/null 2>&1 && return 1
 	
 	#Validate necessary tools were available for path building and checks.
 	#! type realpath > /dev/null 2>&1 && return 1

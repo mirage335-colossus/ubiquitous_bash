@@ -642,7 +642,7 @@ _safeRMR() {
 	[[ "$safeToRM" == "false" ]] && return 1
 	
 	#Safeguards/
-	[[ "$safeToDeleteGit" != "true" ]] && [[ -d "$1" ]] && [[ -e "$1" ]] && find "$1" | grep -i '\.git$' >/dev/null 2>&1 && return 1
+	[[ "$safeToDeleteGit" != "true" ]] && [[ -d "$1" ]] && [[ -e "$1" ]] && find "$1" 2>/dev/null | grep -i '\.git$' >/dev/null 2>&1 && return 1
 	
 	#Validate necessary tools were available for path building and checks.
 	#! type realpath > /dev/null 2>&1 && return 1
@@ -725,7 +725,7 @@ _safePath() {
 	[[ "$safeToRM" == "false" ]] && return 1
 	
 	#Safeguards/
-	[[ "$safeToDeleteGit" != "true" ]] && [[ -d "$1" ]] && [[ -e "$1" ]] && find "$1" | grep -i '\.git$' >/dev/null 2>&1 && return 1
+	[[ "$safeToDeleteGit" != "true" ]] && [[ -d "$1" ]] && [[ -e "$1" ]] && find "$1" 2>/dev/null | grep -i '\.git$' >/dev/null 2>&1 && return 1
 	
 	#Validate necessary tools were available for path building and checks.
 	#! type realpath > /dev/null 2>&1 && return 1
@@ -3081,12 +3081,13 @@ _stop() {
 			kill "$ub_stop_pid"
 		fi
 	fi
-	
-	rm -f "$pidFile" > /dev/null 2>&1	#Redundant, as this usually resides in "$safeTmp".
+	#Redundant, as this usually resides in "$safeTmp".
+	rm -f "$pidFile" > /dev/null 2>&1
 	
 	if [[ -e "$scopeTmp" ]] && [[ -e "$scopeTmp"/.pid ]] && [[ "$$" == $(cat "$scopeTmp"/.pid 2>/dev/null) ]]
 	then
-		rm -f "$ub_scope" > /dev/null 2>&1			#Symlink, or nonexistent.
+		#Symlink, or nonexistent.
+		rm -f "$ub_scope" > /dev/null 2>&1
 		#Only created if needed by scope.
 		[[ -e "$scopeTmp" ]] && _safeRMR "$scopeTmp"
 	fi

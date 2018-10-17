@@ -50,12 +50,13 @@ _stop() {
 			kill "$ub_stop_pid"
 		fi
 	fi
-	
-	rm -f "$pidFile" > /dev/null 2>&1	#Redundant, as this usually resides in "$safeTmp".
+	#Redundant, as this usually resides in "$safeTmp".
+	rm -f "$pidFile" > /dev/null 2>&1
 	
 	if [[ -e "$scopeTmp" ]] && [[ -e "$scopeTmp"/.pid ]] && [[ "$$" == $(cat "$scopeTmp"/.pid 2>/dev/null) ]]
 	then
-		rm -f "$ub_scope" > /dev/null 2>&1			#Symlink, or nonexistent.
+		#Symlink, or nonexistent.
+		rm -f "$ub_scope" > /dev/null 2>&1
 		#Only created if needed by scope.
 		[[ -e "$scopeTmp" ]] && _safeRMR "$scopeTmp"
 	fi
