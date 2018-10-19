@@ -2382,7 +2382,13 @@ _testTor() {
 	fi
 }
 
+# ATTENTION: Respects "$LOCALLISTENPORT". May be repurposed for services other than SSH (ie. HTTPS).
 _torServer_SSH_writeCfg() {
+	local currentLocalSSHport
+	currentLocalSSHport="$LOCALLISTENPORT"
+	[[ "$currentLocalSSHport" == "" ]] && currentLocalSSHport="$LOCALSSHPORT"
+	[[ "$currentLocalSSHport" == "" ]] && currentLocalSSHport=22
+	
 	mkdir -p "$scriptLocal"/tor/sshd/dd
 	
 	rm "$scriptLocal"/tor/sshd/dd/torrc > /dev/null 2>&1
@@ -2403,7 +2409,7 @@ _torServer_SSH_writeCfg() {
 		
 		echo "HiddenServiceDir "'"'"$scriptLocal"/tor/sshd/"$currentReversePort"/'"' >> "$scriptLocal"/tor/sshd/dd/torrc
 		
-		echo "HiddenServicePort ""$currentReversePort"" 127.0.0.1:""$LOCALSSHPORT" >> "$scriptLocal"/tor/sshd/dd/torrc
+		echo "HiddenServicePort ""$currentReversePort"" 127.0.0.1:""$currentLocalSSHport" >> "$scriptLocal"/tor/sshd/dd/torrc
 		
 		echo  >> "$scriptLocal"/tor/sshd/dd/torrc
 		
@@ -2447,6 +2453,7 @@ _show_torServer_SSH_hostnames() {
 #Typically used to create onion addresses for an entire network of machines.
 _torServer_SSH_all_launch() {
 	_get_reversePorts '*'
+	_offset_reversePorts
 	
 	_torServer_SSH_writeCfg
 	
@@ -2456,10 +2463,9 @@ _torServer_SSH_all_launch() {
 	
 }
 
+# WARNING: Accepts "matchingReversePorts". Must be set with current values by "_get_reversePorts" or similar!
 #Especially intended for IPv4 NAT punching.
 _torServer_SSH_launch() {
-	_get_reversePorts
-	
 	_torServer_SSH_writeCfg
 	
 	tor -f "$scriptLocal"/tor/sshd/dd/torrc
@@ -3792,21 +3798,27 @@ _ssh_autoreverse() {
 }
 
 _testAutoSSH() {
-	if ! _wantGetDep autossh
+	if ! _wantGetDep /usr/bin/autossh
 	then
 		echo 'warn: autossh not available'
 		return 1
 	fi
 }
 
+# ATTENTION: Respects "$LOCALLISTENPORT". May be repurposed for services other than SSH (ie. HTTPS).
 #"$1" == "$gatewayName"
 #"$2" == "$reversePort"
 _autossh_external() {
 	#Workaround. SSH will call CoreAutoSSH recursively as the various "proxy" directives are called. These processes should be managed by SSH, and not recorded in the daemon PID list file, as daemon management scripts may be confused by these many processes quitting long before daemon failure.
 	export isDaemon=
 	
+	local currentLocalSSHport
+	currentLocalSSHport="$LOCALLISTENPORT"
+	[[ "$currentLocalSSHport" == "" ]] && currentLocalSSHport="$LOCALSSHPORT"
+	[[ "$currentLocalSSHport" == "" ]] && currentLocalSSHport=22
+	
 	local autosshPID
-	/usr/bin/autossh -M 0 -F "$sshDir"/config -R "$2":localhost:22 "$1" -N &
+	/usr/bin/autossh -M 0 -F "$sshDir"/config -R "$2":localhost:"$currentLocalSSHport" "$1" -N &
 	autosshPID="$!"
 	
 	#echo "$autosshPID" | _prependDaemonPID
@@ -3815,12 +3827,13 @@ _autossh_external() {
 	wait "$autosshPID"
 }
 
+# WARNING: Accepts "matchingReversePorts". Must be set with current values by "_get_reversePorts" or similar!
 #Searches for an unused port in the reversePorts list, binds reverse proxy to it.
 #Until "_proxySSH_reverse" can differentiate "known_hosts" at remote ports, there is little point in performing a check for open ports at the remote end, since these would be used automatically. Thus, "_autossh_direct" is recommended for now.
 #"$1" == "$gatewayName"
 _autossh_find() {
 	local currentReversePort
-	for currentReversePort in "${reversePorts[@]}"
+	for currentReversePort in "${matchingReversePorts[@]}"
 	do
 		if ! _checkRemoteSSH "$1" "$currentReversePort"
 		then
@@ -3831,9 +3844,10 @@ _autossh_find() {
 	return 1
 }
 
+# WARNING: Accepts "matchingReversePorts". Must be set with current values by "_get_reversePorts" or similar!
 #"$1" == "$gatewayName"
 _autossh_direct() {
-	_autossh_external "$1" "${reversePorts[0]}"
+	_autossh_external "$1" "${matchingReversePorts[0]}"
 }
 
 #"$1" == "$gatewayName"
@@ -3910,8 +3924,14 @@ _autossh() {
 	_cmdDaemon "$scriptAbsoluteLocation" _autossh_launch "$@" >> "$scriptLocal"/ssh/log/_autossh."$logID".log 2>&1
 }
 
+# WARNING: Accepts "matchingReversePorts". Must be set with current values by "_get_reversePorts" or similar!
 _reversessh() {
-	_ssh -R "${reversePorts[0]}":localhost:22 "$gatewayName" -N "$@"
+	local currentLocalSSHport
+	currentLocalSSHport="$LOCALLISTENPORT"
+	[[ "$currentLocalSSHport" == "" ]] && currentLocalSSHport="$LOCALSSHPORT"
+	[[ "$currentLocalSSHport" == "" ]] && currentLocalSSHport=22
+	
+	_ssh -R "${matchingReversePorts[0]}":localhost:"$currentLocalSSHport" "$gatewayName" -N "$@"
 }
 
 
@@ -16454,8 +16474,28 @@ _main() {
 	_stop
 }
 
+#currentReversePort=""
+#currentMatchingReversePorts=""
+#currentReversePortOffset=""
+#matchingOffsetPorts=""
 #matchingReversePorts=""
 #matchingEMBEDDED=""
+
+#Creates "${matchingOffsetPorts}[@]" from "${matchingReversePorts}[@]".
+#Intended for public server tunneling (ie. HTTPS).
+# ATTENTION: Overload with 'ops' .
+_offset_reversePorts() {
+	local currentReversePort
+	local currentMatchingReversePorts
+	local currentReversePortOffset
+	for currentReversePort in "${matchingReversePorts[$@]}"
+	do
+		let currentReversePortOffset="$currentReversePort"+100
+		currentMatchingReversePorts+=( "$currentReversePortOffset" )
+	done
+	matchingOffsetPorts=("${currentMatchingReversePorts[@]}")
+	export matchingOffsetPorts
+}
 
 
 #####Network Specific Variables
@@ -16465,6 +16505,10 @@ _main() {
 export netName=default
 export gatewayName=gw-"$netName"
 export LOCALSSHPORT=22
+
+
+#Optional equivalent to LOCALSSHPORT, also respected for tunneling ports from other services.
+export LOCALLISTENPORT="$LOCALSSHPORT"
 
 # ATTENTION: Mostly future proofing. Due to placement of autossh within a 'while true' loop, associated environment variables are expected to have minimal, if any, effect.
 #Poll time must be double network timeouts.
@@ -16508,6 +16552,9 @@ _get_reversePorts() {
 _get_reversePorts
 export reversePorts=("${matchingReversePorts[@]}")
 export EMBEDDED="$matchingEMBEDDED"
+
+_offset_reversePorts
+export matchingOffsetPorts
 
 export keepKeys_SSH='true'
 
