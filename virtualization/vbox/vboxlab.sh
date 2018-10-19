@@ -55,7 +55,11 @@ _vboxlabSSH() {
 }
 
 _labVBox_migrate() {
-	false
+	! _prepare_lab_vbox && _messagePlain_bad 'fail: _prepare_lab_vbox' && return 1
+	
+	export ub_new_VBOXID=$(_uid)
+	
+	find . \( -iname '*.xml' -o -iname '*.xml*' -o -iname '*.xbel' -o -iname '*.conf' -o -iname '*.vbox' -o -iname '*.vbox*' -o -iname '*.id' \) -exec sed -i 's/'$VBOXID'/'"$ub_new_VBOXID"'/g' '{}' \;
 }
 
 
