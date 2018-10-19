@@ -20,6 +20,8 @@ _unset_vbox() {
 _reset_vboxLabID() {
 	[[ "$VBOX_ID_FILE" == "" ]] && _messagePlain_bad 'blank: VBOX_ID_FILE' && return 1
 	
+	[[ "$ub_VBoxLab_prepare" == "true" ]] && return 0
+	
 	rm -f "$VBOX_ID_FILE" > /dev/null 2>&1
 	
 	[[ -e "$VBOX_ID_FILE" ]] && _messagePlain_bad 'fail: VBOX_ID_FILE exists' && return 1
@@ -84,7 +86,9 @@ _prepare_vbox() {
 }
 
 _prepare_lab_vbox() {
+	export ub_VBoxLab_prepare='true'
 	_prepare_vbox "$scriptLocal"
+	export ub_VBoxLab_prepare='false'
 }
 #_prepare_lab_vbox
 

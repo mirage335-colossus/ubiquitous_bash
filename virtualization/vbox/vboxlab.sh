@@ -53,3 +53,9 @@ _labVBox() {
 _vboxlabSSH() {
 	ssh -q -F "$scriptLocal"/vblssh -i "$scriptLocal"/id_rsa "$1"
 }
+
+_labVBox_migrate() {
+	false
+}
+
+
