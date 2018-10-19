@@ -20,7 +20,12 @@ _unset_vbox() {
 _reset_vboxLabID() {
 	[[ "$VBOX_ID_FILE" == "" ]] && _messagePlain_bad 'blank: VBOX_ID_FILE' && return 1
 	
-	[[ "$ub_VBoxLab_prepare" == "true" ]] && return 0
+	if [[ "$ub_VBoxLab_prepare" == "true" ]]
+	then
+		_messagePlain_warn 'warn: path has changed and lock not reset'
+		_messagePlain_warn 'user: recommend: _labVBox_migrate'
+		return 0
+	fi
 	
 	rm -f "$VBOX_ID_FILE" > /dev/null 2>&1
 	
