@@ -120,9 +120,9 @@ _project() {
 	cp ./_lib/ubiquitous_bash/license.txt.gpl ./license.txt
 	cp ./_lib/ubiquitous_bash/README.md.template ./README.md
 
-	find . -maxdepth 1 -type f -exec sed -i s/Project/"$projectName"/g {} \;
-	find . -maxdepth 1 -type f -exec sed -i s/DeveloperName/"$devName"/g {} \;
-	find . -maxdepth 1 -type f -exec sed -i s/YEAR/$(date +%Y)/g {} \;
+	find . -maxdepth 1 -type f -exec sed -i s/Project/"$projectName"/g '{}' \;
+	find . -maxdepth 1 -type f -exec sed -i s/DeveloperName/"$devName"/g '{}' \;
+	find . -maxdepth 1 -type f -exec sed -i s/YEAR/$(date +%Y)/g '{}' \;
 
 	##### Binary Executables
 	mkdir -p ./_bin

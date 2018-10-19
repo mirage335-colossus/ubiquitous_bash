@@ -1155,32 +1155,32 @@ _setup_ssh() {
 }
 
 _setup_ssh_commands() {
-	_find_setupCommands -name '_ssh' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
-	_find_setupCommands -name '_rsync' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
+	_find_setupCommands -name '_ssh' -exec "$scriptAbsoluteLocation" _setupCommand '{}' \;
+	_find_setupCommands -name '_rsync' -exec "$scriptAbsoluteLocation" _setupCommand '{}' \;
 	
-	_find_setupCommands -name '_sshfs' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
+	_find_setupCommands -name '_sshfs' -exec "$scriptAbsoluteLocation" _setupCommand '{}' \;
 	
-	_find_setupCommands -name '_web' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
+	_find_setupCommands -name '_web' -exec "$scriptAbsoluteLocation" _setupCommand '{}' \;
 	
-	_find_setupCommands -name '_backup' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
+	_find_setupCommands -name '_backup' -exec "$scriptAbsoluteLocation" _setupCommand '{}' \;
 	
-	_find_setupCommands -name '_fs' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
+	_find_setupCommands -name '_fs' -exec "$scriptAbsoluteLocation" _setupCommand '{}' \;
 	
-	_find_setupCommands -name '_vnc' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
-	_find_setupCommands -name '_push_vnc' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
-	_find_setupCommands -name '_desktop' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
-	_find_setupCommands -name '_push_desktop' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
+	_find_setupCommands -name '_vnc' -exec "$scriptAbsoluteLocation" _setupCommand '{}' \;
+	_find_setupCommands -name '_push_vnc' -exec "$scriptAbsoluteLocation" _setupCommand '{}' \;
+	_find_setupCommands -name '_desktop' -exec "$scriptAbsoluteLocation" _setupCommand '{}' \;
+	_find_setupCommands -name '_push_desktop' -exec "$scriptAbsoluteLocation" _setupCommand '{}' \;
 	
-	_find_setupCommands -name '_wake' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
+	_find_setupCommands -name '_wake' -exec "$scriptAbsoluteLocation" _setupCommand '{}' \;
 	
-	_find_setupCommands -name '_meta' -exec "$scriptAbsoluteLocation" _setupCommand_meta {} \;
+	_find_setupCommands -name '_meta' -exec "$scriptAbsoluteLocation" _setupCommand_meta '{}' \;
 }
 
 _package_cautossh() {
 	#cp -a "$scriptAbsoluteFolder"/_index "$safeTmp"/package
 	
 	#https://stackoverflow.com/questions/4585929/how-to-use-cp-command-to-exclude-a-specific-directory
-	#find "$scriptAbsoluteFolder"/_index -type f -not -path '*_arc*' -exec cp -d --preserve=all {} "$safeTmp"'/package/'{} \;
+	find "$scriptAbsoluteFolder"/_index -type f -not -path '*_arc*' -exec cp -d --preserve=all '{}' "$safeTmp"'/package/''{}' \;
 	
 	rsync -av --progress --exclude "_arc" "$scriptAbsoluteFolder"/_index/ "$safeTmp"/package/_index/
 	

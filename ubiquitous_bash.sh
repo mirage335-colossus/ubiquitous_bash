@@ -1840,9 +1840,9 @@ _checkForMounts() {
 	# TODO: Possible stability/portability improvements.
 	#https://unix.stackexchange.com/questions/248472/finding-mount-points-with-the-find-command
 	
-	find "$1" -type d -exec sudo -n mountpoint {} 2>/dev/null \; | grep 'is a mountpoint' >/dev/null 2>&1 && echo -n true > "$mountCheckFile"
+	find "$1" -type d -exec sudo -n mountpoint '{}' 2>/dev/null \; | grep 'is a mountpoint' >/dev/null 2>&1 && echo -n true > "$mountCheckFile"
 	
-	#find "$1" -type d -exec "$scriptAbsoluteLocation" {} "$mountCheckFile" \;
+	#find "$1" -type d -exec "$scriptAbsoluteLocation" '{}' "$mountCheckFile" \;
 	
 	local includesMount
 	includesMount=$(cat "$mountCheckFile")
@@ -3755,32 +3755,32 @@ _setup_ssh() {
 }
 
 _setup_ssh_commands() {
-	_find_setupCommands -name '_ssh' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
-	_find_setupCommands -name '_rsync' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
+	_find_setupCommands -name '_ssh' -exec "$scriptAbsoluteLocation" _setupCommand '{}' \;
+	_find_setupCommands -name '_rsync' -exec "$scriptAbsoluteLocation" _setupCommand '{}' \;
 	
-	_find_setupCommands -name '_sshfs' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
+	_find_setupCommands -name '_sshfs' -exec "$scriptAbsoluteLocation" _setupCommand '{}' \;
 	
-	_find_setupCommands -name '_web' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
+	_find_setupCommands -name '_web' -exec "$scriptAbsoluteLocation" _setupCommand '{}' \;
 	
-	_find_setupCommands -name '_backup' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
+	_find_setupCommands -name '_backup' -exec "$scriptAbsoluteLocation" _setupCommand '{}' \;
 	
-	_find_setupCommands -name '_fs' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
+	_find_setupCommands -name '_fs' -exec "$scriptAbsoluteLocation" _setupCommand '{}' \;
 	
-	_find_setupCommands -name '_vnc' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
-	_find_setupCommands -name '_push_vnc' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
-	_find_setupCommands -name '_desktop' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
-	_find_setupCommands -name '_push_desktop' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
+	_find_setupCommands -name '_vnc' -exec "$scriptAbsoluteLocation" _setupCommand '{}' \;
+	_find_setupCommands -name '_push_vnc' -exec "$scriptAbsoluteLocation" _setupCommand '{}' \;
+	_find_setupCommands -name '_desktop' -exec "$scriptAbsoluteLocation" _setupCommand '{}' \;
+	_find_setupCommands -name '_push_desktop' -exec "$scriptAbsoluteLocation" _setupCommand '{}' \;
 	
-	_find_setupCommands -name '_wake' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
+	_find_setupCommands -name '_wake' -exec "$scriptAbsoluteLocation" _setupCommand '{}' \;
 	
-	_find_setupCommands -name '_meta' -exec "$scriptAbsoluteLocation" _setupCommand_meta {} \;
+	_find_setupCommands -name '_meta' -exec "$scriptAbsoluteLocation" _setupCommand_meta '{}' \;
 }
 
 _package_cautossh() {
 	#cp -a "$scriptAbsoluteFolder"/_index "$safeTmp"/package
 	
 	#https://stackoverflow.com/questions/4585929/how-to-use-cp-command-to-exclude-a-specific-directory
-	#find "$scriptAbsoluteFolder"/_index -type f -not -path '*_arc*' -exec cp -d --preserve=all {} "$safeTmp"'/package/'{} \;
+	find "$scriptAbsoluteFolder"/_index -type f -not -path '*_arc*' -exec cp -d --preserve=all '{}' "$safeTmp"'/package/''{}' \;
 	
 	rsync -av --progress --exclude "_arc" "$scriptAbsoluteFolder"/_index/ "$safeTmp"/package/_index/
 	
@@ -7264,8 +7264,8 @@ _closeChRoot() {
 }
 
 _haltAllChRoot() {
-	find "$scriptAbsoluteFolder"/v_*/fs -maxdepth 1 -type d -exec "$scriptAbsoluteLocation" _umountChRoot_directory {} \;
-	find "$scriptAbsoluteFolder"/v_*/tmp -maxdepth 1 -type d -exec sudo -n umount {} \;
+	find "$scriptAbsoluteFolder"/v_*/fs -maxdepth 1 -type d -exec "$scriptAbsoluteLocation" _umountChRoot_directory '{}' \;
+	find "$scriptAbsoluteFolder"/v_*/tmp -maxdepth 1 -type d -exec sudo -n umount '{}' \;
 	find "$scriptAbsoluteFolder"/v_*/ -maxdepth 12 -type d | head -n 48 | tac | xargs rmdir
 	
 	"$scriptAbsoluteLocation" _closeChRoot --force
@@ -9075,15 +9075,15 @@ _grepFileLine() {
 _findFunction() {
 	#-name '*.sh'
 	#-not -path "./_local/*"
-	#find ./blockchain -name '*.sh' -type f -size -10000k -exec grep -n "$@" {} /dev/null \;
-	#find ./generic -name '*.sh' -type f -size -10000k -exec grep -n "$@" {} /dev/null \;
-	#find ./instrumentation -name '*.sh' -type f -size -10000k -exec grep -n "$@" {} /dev/null \;
-	#find ./labels -name '*.sh' -type f -size -10000k -exec grep -n "$@" {} /dev/null \;
-	#find ./os -name '*.sh' -type f -size -10000k -exec grep -n "$@" {} /dev/null \;
-	#find ./shortcuts -name '*.sh' -type f -size -10000k -exec grep -n "$@" {} /dev/null \;
-	#find . -name '*.sh' -type f -size -10000k -exec grep -n "$@" {} /dev/null \;
+	#find ./blockchain -name '*.sh' -type f -size -10000k -exec grep -n "$@" '{}' /dev/null \;
+	#find ./generic -name '*.sh' -type f -size -10000k -exec grep -n "$@" '{}' /dev/null \;
+	#find ./instrumentation -name '*.sh' -type f -size -10000k -exec grep -n "$@" '{}' /dev/null \;
+	#find ./labels -name '*.sh' -type f -size -10000k -exec grep -n "$@" '{}' /dev/null \;
+	#find ./os -name '*.sh' -type f -size -10000k -exec grep -n "$@" '{}' /dev/null \;
+	#find ./shortcuts -name '*.sh' -type f -size -10000k -exec grep -n "$@" '{}' /dev/null \;
+	#find . -name '*.sh' -type f -size -10000k -exec grep -n "$@" '{}' /dev/null \;
 	
-	find . -not -path "./_local/*" -name '*.sh' -type f -size -1000k -exec grep -n "$@" {} /dev/null \;
+	find . -not -path "./_local/*" -name '*.sh' -type f -size -1000k -exec grep -n "$@" '{}' /dev/null \;
 }
 
 _test_devemacs() {
@@ -9979,7 +9979,7 @@ _findGit_procedure() {
 		return 0
 	fi
 	
-	find -L . -mindepth 1 -maxdepth 1 -type d -exec "$scriptAbsoluteLocation" _findGit_procedure {} "$@" \;
+	find -L . -mindepth 1 -maxdepth 1 -type d -exec "$scriptAbsoluteLocation" _findGit_procedure '{}' "$@" \;
 }
 
 #Recursively searches for directories containing ".git".
@@ -9990,7 +9990,7 @@ _findGit() {
 		return 0
 	fi
 	
-	find -L . -mindepth 1 -maxdepth 1 -type d -exec "$scriptAbsoluteLocation" _findGit_procedure {} "$@" \;
+	find -L . -mindepth 1 -maxdepth 1 -type d -exec "$scriptAbsoluteLocation" _findGit_procedure '{}' "$@" \;
 }
 
 _gitPull() {
@@ -12286,7 +12286,7 @@ _parity_attach() {
 }
 
 _setup_command_commands() {
-	_find_setupCommands -name '_synergy' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
+	_find_setupCommands -name '_synergy' -exec "$scriptAbsoluteLocation" _setupCommand '{}' \;
 }
 
 _here_synergy_config() {
@@ -16388,7 +16388,7 @@ _find_setupCommands() {
 
 #Consider placing files like ' _vnc-machine-"$netName" ' in an "_index" folder for automatic installation.
 _setupCommands() {
-	#_find_setupCommands -name '_command' -exec "$scriptAbsoluteLocation" _setupCommand {} \;
+	#_find_setupCommands -name '_command' -exec "$scriptAbsoluteLocation" _setupCommand '{}' \;
 	
 	_tryExec "_setup_ssh_commands"
 	_tryExec "_setup_command_commands"
