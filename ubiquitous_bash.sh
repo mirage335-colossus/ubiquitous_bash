@@ -13166,7 +13166,7 @@ _reset_vboxLabID() {
 	then
 		_messagePlain_warn 'warn: path has changed and lock not reset'
 		_messagePlain_warn 'user: recommend: _labVBox_migrate'
-		return 0
+		return 1
 	fi
 	
 	rm -f "$VBOX_ID_FILE" > /dev/null 2>&1
