@@ -13234,8 +13234,12 @@ _prepare_vbox() {
 
 _prepare_lab_vbox() {
 	export ub_VBoxLab_prepare='true'
+	local currentExitStatus
 	_prepare_vbox "$scriptLocal"
+	currentExitStatus="$?"
 	export ub_VBoxLab_prepare='false'
+	
+	return "$currentExitStatus"
 }
 #_prepare_lab_vbox
 
