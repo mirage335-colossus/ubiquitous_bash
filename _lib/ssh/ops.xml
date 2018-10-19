@@ -368,28 +368,103 @@
       </block>
     </next>
   </block>
-  <block type="blockly_comment" id="rjw@GmYZ.=MbT^o:F*Qj" x="663" y="-12">
+  <block type="blockly_comment" id="rjw@GmYZ.=MbT^o:F*Qj" x="738" y="38">
     <field name="colour">#333333</field>
     <field name="blockly_comment">Default functions, definition not required.</field>
   </block>
-  <block type="procedures_defnoreturn" id="cJ[%iKx;47lzbaU?}t;!" x="663" y="38">
+  <block type="procedures_defnoreturn" id="cJ[%iKx;47lzbaU?}t;!" x="738" y="188">
     <field name="NAME">_ssh_autoreverse</field>
     <comment pinned="false" h="46" w="540">Daemon commands. Do not define unless multi-gateway redundancy is needed. Tor services redundancy is expected to be far more reliable than such fallbacks.</comment>
     <statement name="STACK">
-      <block type="arbitrary_code" id=".dWyEKZ]DY}%@I#1EPNh">
-        <field name="arbitraryCode">_torServer_SSH</field>
+      <block type="arbitrary_code" id="u7_3=U](P$Q1bkz?0uW%">
+        <field name="arbitraryCode">_get_reversePorts</field>
         <next>
-          <block type="arbitrary_code" id="lcTrEHmHY1|=)AkG_wb#">
-            <field name="arbitraryCode">_autossh</field>
+          <block type="arbitrary_code" id=".dWyEKZ]DY}%@I#1EPNh">
+            <field name="arbitraryCode">_torServer_SSH</field>
             <next>
-              <block type="arbitrary_code" id="!N$N{aVto^1O!2U}ik#r">
-                <field name="arbitraryCode"></field>
+              <block type="arbitrary_code" id="lcTrEHmHY1|=)AkG_wb#">
+                <field name="arbitraryCode">_autossh</field>
                 <next>
-                  <block type="arbitrary_code" id="J*KlNEwS7`LW]:3ZD]r^">
-                    <field name="arbitraryCode">#_autossh firstGateway</field>
+                  <block type="arbitrary_code" id="!N$N{aVto^1O!2U}ik#r">
+                    <field name="arbitraryCode"></field>
                     <next>
-                      <block type="arbitrary_code" id="6(n}Vq:^wlqV,Q8Vt14`">
-                        <field name="arbitraryCode">#_autossh secondGateway</field>
+                      <block type="arbitrary_code" id="J*KlNEwS7`LW]:3ZD]r^">
+                        <field name="arbitraryCode">#_autossh firstGateway</field>
+                        <next>
+                          <block type="arbitrary_code" id="6(n}Vq:^wlqV,Q8Vt14`">
+                            <field name="arbitraryCode">#_autossh secondGateway</field>
+                            <next>
+                              <block type="arbitrary_code" id="KrBa_$QfU{ebHe8Qlk*{">
+                                <field name="arbitraryCode"></field>
+                                <next>
+                                  <block type="functions_return" id="Q1:`|L{RD2Ap`NC=yR.`">
+                                    <value name="varName">
+                                      <block type="text" id="~mW|kJjDPgD1X@j/4%ZK">
+                                        <field name="TEXT">0</field>
+                                      </block>
+                                    </value>
+                                    <next>
+                                      <block type="arbitrary_code" id="N4AiARDyRIg=GJ*2$|Li">
+                                        <field name="arbitraryCode"></field>
+                                        <next>
+                                          <block type="arbitrary_code" id="APiM8wH([iE4d,#,rsbP">
+                                            <field name="arbitraryCode">## Optional - tunnel public web server.</field>
+                                            <next>
+                                              <block type="arbitrary_code" id="m=IzyEJX)Md:4RqcRWQ(">
+                                                <field name="arbitraryCode"></field>
+                                                <next>
+                                                  <block type="arbitrary_code" id="s]F1W^:*Z6keJE5]ioU{">
+                                                    <field name="arbitraryCode">export LOCALLISTENPORT=443</field>
+                                                    <next>
+                                                      <block type="bash_functioncall" id="X]lHeJ)IA^2}CkJl4~Wp">
+                                                        <field name="functionCall">_get_reversePorts</field>
+                                                        <statement name="NAME">
+                                                          <block type="blockly_separator" id="S;kfkV#(pjw(cVCdc(WB"></block>
+                                                        </statement>
+                                                        <next>
+                                                          <block type="bash_functioncall" id="?(VXP7_C{@.f0RM[2,xp">
+                                                            <field name="functionCall">_offset_reversePorts</field>
+                                                            <statement name="NAME">
+                                                              <block type="blockly_separator" id="hxq`Qdmxt`9hOzOklB,y"></block>
+                                                            </statement>
+                                                            <next>
+                                                              <block type="arbitrary_code" id="H6R$0W2I`^`jq}qsNEz%">
+                                                                <field name="arbitraryCode">export reversePorts=( "${matchingOffsetPorts[0]}" )</field>
+                                                                <next>
+                                                                  <block type="arbitrary_code" id="]Ab:p^)@(|~lx;:|(H##">
+                                                                    <field name="arbitraryCode"></field>
+                                                                    <next>
+                                                                      <block type="arbitrary_code" id="t=kV3.Vi#_ykT7g[j4w`">
+                                                                        <field name="arbitraryCode">_torServer_SSH</field>
+                                                                        <next>
+                                                                          <block type="arbitrary_code" id="(S(DBS_3q+3Jbk1FtQ,1">
+                                                                            <field name="arbitraryCode">_autossh</field>
+                                                                          </block>
+                                                                        </next>
+                                                                      </block>
+                                                                    </next>
+                                                                  </block>
+                                                                </next>
+                                                              </block>
+                                                            </next>
+                                                          </block>
+                                                        </next>
+                                                      </block>
+                                                    </next>
+                                                  </block>
+                                                </next>
+                                              </block>
+                                            </next>
+                                          </block>
+                                        </next>
+                                      </block>
+                                    </next>
+                                  </block>
+                                </next>
+                              </block>
+                            </next>
+                          </block>
+                        </next>
                       </block>
                     </next>
                   </block>
@@ -401,7 +476,7 @@
       </block>
     </statement>
   </block>
-  <block type="procedures_defnoreturn" id="9}l8LW.w7)y!A,NxOM3`" x="663" y="213">
+  <block type="procedures_defnoreturn" id="9}l8LW.w7)y!A,NxOM3`" x="738" y="838">
     <field name="NAME">_setup_ssh_extra</field>
     <comment pinned="false" h="56" w="433">Hooks "_setup_ssh" after other operations complete. Typically used to install special files (eg. machine specific keys).</comment>
     <statement name="STACK">
@@ -414,7 +489,7 @@
       </block>
     </statement>
   </block>
-  <block type="procedures_defnoreturn" id="06xho2mn9By7Vo5Ky/NH" x="663" y="288">
+  <block type="procedures_defnoreturn" id="06xho2mn9By7Vo5Ky/NH" x="738" y="913">
     <field name="NAME">_setup_pre</field>
     <comment pinned="false" h="56" w="433">#Hooks "_setup" before "_setup_ssh" .</comment>
     <statement name="STACK">
@@ -427,7 +502,7 @@
       </block>
     </statement>
   </block>
-  <block type="procedures_defnoreturn" id="*VoNSV2h|u-Hw1Ib}c%g" x="663" y="363">
+  <block type="procedures_defnoreturn" id="*VoNSV2h|u-Hw1Ib}c%g" x="738" y="988">
     <field name="NAME">_setup_prog</field>
     <comment pinned="false" h="56" w="433">#Hooks "_setup" after "_setup_ssh" .</comment>
     <statement name="STACK">

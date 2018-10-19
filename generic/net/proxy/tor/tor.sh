@@ -15,7 +15,13 @@ _testTor() {
 	fi
 }
 
+# ATTENTION: Respects "$LOCALLISTENPORT". May be repurposed for services other than SSH (ie. HTTPS).
 _torServer_SSH_writeCfg() {
+	local currentLocalSSHport
+	currentLocalSSHport="$LOCALLISTENPORT"
+	[[ "$currentLocalSSHport" == "" ]] && currentLocalSSHport="$LOCALSSHPORT"
+	[[ "$currentLocalSSHport" == "" ]] && currentLocalSSHport=22
+	
 	mkdir -p "$scriptLocal"/tor/sshd/dd
 	
 	rm "$scriptLocal"/tor/sshd/dd/torrc > /dev/null 2>&1
@@ -36,7 +42,7 @@ _torServer_SSH_writeCfg() {
 		
 		echo "HiddenServiceDir "'"'"$scriptLocal"/tor/sshd/"$currentReversePort"/'"' >> "$scriptLocal"/tor/sshd/dd/torrc
 		
-		echo "HiddenServicePort ""$currentReversePort"" 127.0.0.1:""$LOCALSSHPORT" >> "$scriptLocal"/tor/sshd/dd/torrc
+		echo "HiddenServicePort ""$currentReversePort"" 127.0.0.1:""$currentLocalSSHport" >> "$scriptLocal"/tor/sshd/dd/torrc
 		
 		echo  >> "$scriptLocal"/tor/sshd/dd/torrc
 		
@@ -80,6 +86,7 @@ _show_torServer_SSH_hostnames() {
 #Typically used to create onion addresses for an entire network of machines.
 _torServer_SSH_all_launch() {
 	_get_reversePorts '*'
+	_offset_reversePorts
 	
 	_torServer_SSH_writeCfg
 	
@@ -89,10 +96,9 @@ _torServer_SSH_all_launch() {
 	
 }
 
+# WARNING: Accepts "matchingReversePorts". Must be set with current values by "_get_reversePorts" or similar!
 #Especially intended for IPv4 NAT punching.
 _torServer_SSH_launch() {
-	_get_reversePorts
-	
 	_torServer_SSH_writeCfg
 	
 	tor -f "$scriptLocal"/tor/sshd/dd/torrc

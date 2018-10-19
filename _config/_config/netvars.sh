@@ -1,5 +1,25 @@
+#currentReversePort=""
+#currentMatchingReversePorts=""
+#currentReversePortOffset=""
+#matchingOffsetPorts=""
 #matchingReversePorts=""
 #matchingEMBEDDED=""
+
+#Creates "${matchingOffsetPorts}[@]" from "${matchingReversePorts}[@]".
+#Intended for public server tunneling (ie. HTTPS).
+# ATTENTION: Overload with 'ops' .
+_offset_reversePorts() {
+	local currentReversePort
+	local currentMatchingReversePorts
+	local currentReversePortOffset
+	for currentReversePort in "${matchingReversePorts[$@]}"
+	do
+		let currentReversePortOffset="$currentReversePort"+100
+		currentMatchingReversePorts+=( "$currentReversePortOffset" )
+	done
+	matchingOffsetPorts=("${currentMatchingReversePorts[@]}")
+	export matchingOffsetPorts
+}
 
 
 #####Network Specific Variables
@@ -9,6 +29,10 @@
 export netName=default
 export gatewayName=gw-"$netName"
 export LOCALSSHPORT=22
+
+
+#Optional equivalent to LOCALSSHPORT, also respected for tunneling ports from other services.
+export LOCALLISTENPORT="$LOCALSSHPORT"
 
 # ATTENTION: Mostly future proofing. Due to placement of autossh within a 'while true' loop, associated environment variables are expected to have minimal, if any, effect.
 #Poll time must be double network timeouts.
@@ -52,5 +76,8 @@ _get_reversePorts() {
 _get_reversePorts
 export reversePorts=("${matchingReversePorts[@]}")
 export EMBEDDED="$matchingEMBEDDED"
+
+_offset_reversePorts
+export matchingOffsetPorts
 
 export keepKeys_SSH='true'
