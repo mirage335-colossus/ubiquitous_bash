@@ -414,7 +414,7 @@
                                                 <field name="arbitraryCode"></field>
                                                 <next>
                                                   <block type="arbitrary_code" id="s]F1W^:*Z6keJE5]ioU{">
-                                                    <field name="arbitraryCode">export LOCALLISTENPORT=443</field>
+                                                    <field name="arbitraryCode">export overrideLOCALLISTENPORT=443</field>
                                                     <next>
                                                       <block type="bash_functioncall" id="X]lHeJ)IA^2}CkJl4~Wp">
                                                         <field name="functionCall">_get_reversePorts</field>
@@ -429,7 +429,7 @@
                                                             </statement>
                                                             <next>
                                                               <block type="arbitrary_code" id="H6R$0W2I`^`jq}qsNEz%">
-                                                                <field name="arbitraryCode">export reversePorts=( "${matchingOffsetPorts[0]}" )</field>
+                                                                <field name="arbitraryCode">export overrideMatchingReversePorts=( "${matchingOffsetPorts[0]}" )</field>
                                                                 <next>
                                                                   <block type="arbitrary_code" id="]Ab:p^)@(|~lx;:|(H##">
                                                                     <field name="arbitraryCode"></field>

@@ -10,6 +10,8 @@ _testAutoSSH() {
 #"$1" == "$gatewayName"
 #"$2" == "$reversePort"
 _autossh_external() {
+	_overrideReversePorts
+	
 	#Workaround. SSH will call CoreAutoSSH recursively as the various "proxy" directives are called. These processes should be managed by SSH, and not recorded in the daemon PID list file, as daemon management scripts may be confused by these many processes quitting long before daemon failure.
 	export isDaemon=
 	
@@ -91,6 +93,8 @@ _autossh_entry() {
 }
 
 _autossh_launch() {
+	_overrideReversePorts
+	
 	_start
 	
 	export sshBase="$safeTmp"/.ssh
@@ -133,5 +137,10 @@ _reversessh() {
 	[[ "$currentLocalSSHport" == "" ]] && currentLocalSSHport=22
 	
 	_ssh -R "${matchingReversePorts[0]}":localhost:"$currentLocalSSHport" "$gatewayName" -N "$@"
+}
+
+_overrideReversePorts() {
+	[[ "$overrideLOCALLISTENPORT" != "" ]] && export LOCALLISTENPORT="$overrideLOCALLISTENPORT"
+	[[ "${overrideMatchingReversePorts[0]}" != "" ]] && export matchingReversePorts=( "${overrideMatchingReversePorts[@]}" )
 }
 

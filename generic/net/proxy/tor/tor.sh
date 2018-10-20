@@ -86,19 +86,29 @@ _show_torServer_SSH_hostnames() {
 #Typically used to create onion addresses for an entire network of machines.
 _torServer_SSH_all_launch() {
 	_get_reversePorts '*'
-	_offset_reversePorts
-	
 	_torServer_SSH_writeCfg
-	
 	tor -f "$scriptLocal"/tor/sshd/dd/torrc
 	
+	_get_reversePorts '*'
+	_offset_reversePorts
+	export matchingReversePorts=( "${matchingOffsetPorts[@]}" )
+	_torServer_SSH_writeCfg
+	tor -f "$scriptLocal"/tor/sshd/dd/torrc
+	
+	_get_reversePorts '*'
 	_show_torServer_SSH_hostnames
 	
+	_get_reversePorts '*'
+	_offset_reversePorts
+	export matchingReversePorts=( "${matchingOffsetPorts[@]}" )
+	_show_torServer_SSH_hostnames
 }
 
 # WARNING: Accepts "matchingReversePorts". Must be set with current values by "_get_reversePorts" or similar!
 #Especially intended for IPv4 NAT punching.
 _torServer_SSH_launch() {
+	_overrideReversePorts
+	
 	_torServer_SSH_writeCfg
 	
 	tor -f "$scriptLocal"/tor/sshd/dd/torrc

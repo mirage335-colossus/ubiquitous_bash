@@ -16,10 +16,10 @@ _ssh_autoreverse() {
 
 	## Optional - tunnel public web server.
 
-	export LOCALLISTENPORT=443
+	export overrideLOCALLISTENPORT=443
 	_get_reversePorts
 	_offset_reversePorts
-	export reversePorts=( "${matchingOffsetPorts[0]}" )
+	export overrideMatchingReversePorts=( "${matchingOffsetPorts[0]}" )
 
 	_torServer_SSH
 	_autossh
