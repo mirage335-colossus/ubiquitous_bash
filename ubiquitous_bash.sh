@@ -3859,6 +3859,7 @@ _autossh_find() {
 # WARNING: Accepts "matchingReversePorts". Must be set with current values by "_get_reversePorts" or similar!
 #"$1" == "$gatewayName"
 _autossh_direct() {
+	_overrideReversePorts
 	_autossh_external "$1" "${matchingReversePorts[0]}"
 }
 
@@ -3894,6 +3895,7 @@ _autossh_list() {
 
 #May be overridden by "ops" to point to direct, find, or list.
 _autossh_entry() {
+	_overrideReversePorts
 	[[ "$1" != "" ]] && export gatewayName="$1"
 	
 	_autossh_direct "$gatewayName"
@@ -3950,7 +3952,7 @@ _reversessh() {
 
 _overrideReversePorts() {
 	[[ "$overrideLOCALLISTENPORT" != "" ]] && export LOCALLISTENPORT="$overrideLOCALLISTENPORT"
-	[[ "${overrideMatchingReversePorts[0]}" != "" ]] && export matchingReversePorts=( "${overrideMatchingReversePorts[@]}" )
+	[[ "$overrideMatchingReversePort" != "" ]] && export matchingReversePorts=( "$overrideMatchingReversePort" )
 }
 
 
