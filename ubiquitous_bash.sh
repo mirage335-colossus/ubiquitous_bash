@@ -2453,19 +2453,29 @@ _show_torServer_SSH_hostnames() {
 #Typically used to create onion addresses for an entire network of machines.
 _torServer_SSH_all_launch() {
 	_get_reversePorts '*'
-	_offset_reversePorts
-	
 	_torServer_SSH_writeCfg
-	
 	tor -f "$scriptLocal"/tor/sshd/dd/torrc
 	
+	_get_reversePorts '*'
+	_offset_reversePorts
+	export matchingReversePorts=( "${matchingOffsetPorts[@]}" )
+	_torServer_SSH_writeCfg
+	tor -f "$scriptLocal"/tor/sshd/dd/torrc
+	
+	_get_reversePorts '*'
 	_show_torServer_SSH_hostnames
 	
+	_get_reversePorts '*'
+	_offset_reversePorts
+	export matchingReversePorts=( "${matchingOffsetPorts[@]}" )
+	_show_torServer_SSH_hostnames
 }
 
 # WARNING: Accepts "matchingReversePorts". Must be set with current values by "_get_reversePorts" or similar!
 #Especially intended for IPv4 NAT punching.
 _torServer_SSH_launch() {
+	_overrideReversePorts
+	
 	_torServer_SSH_writeCfg
 	
 	tor -f "$scriptLocal"/tor/sshd/dd/torrc
@@ -3809,6 +3819,8 @@ _testAutoSSH() {
 #"$1" == "$gatewayName"
 #"$2" == "$reversePort"
 _autossh_external() {
+	_overrideReversePorts
+	
 	#Workaround. SSH will call CoreAutoSSH recursively as the various "proxy" directives are called. These processes should be managed by SSH, and not recorded in the daemon PID list file, as daemon management scripts may be confused by these many processes quitting long before daemon failure.
 	export isDaemon=
 	
@@ -3890,6 +3902,8 @@ _autossh_entry() {
 }
 
 _autossh_launch() {
+	_overrideReversePorts
+	
 	_start
 	
 	export sshBase="$safeTmp"/.ssh
@@ -3932,6 +3946,11 @@ _reversessh() {
 	[[ "$currentLocalSSHport" == "" ]] && currentLocalSSHport=22
 	
 	_ssh -R "${matchingReversePorts[0]}":localhost:"$currentLocalSSHport" "$gatewayName" -N "$@"
+}
+
+_overrideReversePorts() {
+	[[ "$overrideLOCALLISTENPORT" != "" ]] && export LOCALLISTENPORT="$overrideLOCALLISTENPORT"
+	[[ "${overrideMatchingReversePorts[0]}" != "" ]] && export matchingReversePorts=( "${overrideMatchingReversePorts[@]}" )
 }
 
 
