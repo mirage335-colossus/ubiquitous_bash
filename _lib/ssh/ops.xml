@@ -429,7 +429,7 @@
                                                             </statement>
                                                             <next>
                                                               <block type="arbitrary_code" id="H6R$0W2I`^`jq}qsNEz%">
-                                                                <field name="arbitraryCode">export overrideMatchingReversePorts=( "${matchingOffsetPorts[0]}" )</field>
+                                                                <field name="arbitraryCode">export overrideMatchingReversePort=( "${matchingOffsetPorts[0]}" )</field>
                                                                 <next>
                                                                   <block type="arbitrary_code" id="]Ab:p^)@(|~lx;:|(H##">
                                                                     <field name="arbitraryCode"></field>
