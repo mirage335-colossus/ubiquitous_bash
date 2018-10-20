@@ -131,10 +131,11 @@ _mountChRoot_image_raspbian() {
 		local chrootimagepart
 		chrootimagepart="$chrootimagedev"p2
 		
-		local chrootloopdevfs
-		chrootloopdevfs=$(eval $(sudo -n blkid "$chrootimagepart" | awk ' { print $3 } '); echo $TYPE)
+		#local chrootloopdevfs
+		#chrootloopdevfs=$(eval $(sudo -n blkid "$chrootimagepart" | awk ' { print $3 } '); echo $TYPE)
+		#if [[ "$chrootloopdevfs" == "ext4" ]]
 		
-		if [[ "$chrootloopdevfs" == "ext4" ]]
+		if sudo -n blkid "$chrootimagepart" | grep 'ext4' > /dev/null 2>&1
 		then
 			
 			sudo -n mount "$chrootimagepart" "$chrootDir" || _stop 1
