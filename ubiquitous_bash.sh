@@ -2456,19 +2456,25 @@ _torServer_SSH_all_launch() {
 	_torServer_SSH_writeCfg
 	tor -f "$scriptLocal"/tor/sshd/dd/torrc
 	
-	_get_reversePorts '*'
-	_offset_reversePorts
-	export matchingReversePorts=( "${matchingOffsetPorts[@]}" )
-	_torServer_SSH_writeCfg
-	tor -f "$scriptLocal"/tor/sshd/dd/torrc
+	if type _offset_reversePorts > /dev/null 2>&1
+	then
+		_get_reversePorts '*'
+		_offset_reversePorts
+		export matchingReversePorts=( "${matchingOffsetPorts[@]}" )
+		_torServer_SSH_writeCfg
+		tor -f "$scriptLocal"/tor/sshd/dd/torrc
+	fi
 	
 	_get_reversePorts '*'
 	_show_torServer_SSH_hostnames
 	
-	_get_reversePorts '*'
-	_offset_reversePorts
-	export matchingReversePorts=( "${matchingOffsetPorts[@]}" )
-	_show_torServer_SSH_hostnames
+	if type _offset_reversePorts > /dev/null 2>&1
+	then
+		_get_reversePorts '*'
+		_offset_reversePorts
+		export matchingReversePorts=( "${matchingOffsetPorts[@]}" )
+		_show_torServer_SSH_hostnames
+	fi
 }
 
 # WARNING: Accepts "matchingReversePorts". Must be set with current values by "_get_reversePorts" or similar!
