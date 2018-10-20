@@ -19,7 +19,7 @@ _ssh_autoreverse() {
 	export overrideLOCALLISTENPORT=443
 	_get_reversePorts
 	_offset_reversePorts
-	export overrideMatchingReversePort=( "${matchingOffsetPorts[0]}" )
+	export overrideMatchingReversePort="${matchingOffsetPorts[0]}"
 
 	_torServer_SSH
 	_autossh
