@@ -4002,12 +4002,12 @@ _get_reversePorts() {
 	testHostname="$1"
 	[[ "$testHostname" == "" ]] && testHostname=$(hostname -s)
 
-	if [[ "$testHostname" == 'hostnameA' ]] || [[ "$testHostname" == 'hostnameB' ]]
+	if [[ "$testHostname" == 'hostnameA' ]] || [[ "$testHostname" == 'hostnameB' ]] || [[ "$testHostname" == '*' ]]
 	then
 		matchingReversePorts+=( '20001' )
 		matched='true'
 	fi
-	if [[ "$testHostname" == 'hostnameC' ]] || [[ "$testHostname" == 'hostnameD' ]]
+	if [[ "$testHostname" == 'hostnameC' ]] || [[ "$testHostname" == 'hostnameD' ]] || [[ "$testHostname" == '*' ]]
 	then
 		matchingReversePorts+=( '20002' )
 		export matchingEMBEDDED='true'

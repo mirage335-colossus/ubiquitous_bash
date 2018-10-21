@@ -2384,6 +2384,8 @@ _testTor() {
 
 # ATTENTION: Respects "$LOCALLISTENPORT". May be repurposed for services other than SSH (ie. HTTPS).
 _torServer_SSH_writeCfg() {
+	_overrideReversePorts
+	
 	local currentLocalSSHport
 	currentLocalSSHport="$LOCALLISTENPORT"
 	[[ "$currentLocalSSHport" == "" ]] && currentLocalSSHport="$LOCALSSHPORT"
@@ -2452,17 +2454,30 @@ _show_torServer_SSH_hostnames() {
 
 #Typically used to create onion addresses for an entire network of machines.
 _torServer_SSH_all_launch() {
+	local currentReversePort
+	
 	_get_reversePorts '*'
-	_torServer_SSH_writeCfg
-	tor -f "$scriptLocal"/tor/sshd/dd/torrc
+	
+	for currentReversePort in "${matchingReversePorts[@]}"
+	do
+		export overrideMatchingReversePort="$currentReversePort"
+		_torServer_SSH_writeCfg
+		_timeout 45 tor -f "$scriptLocal"/tor/sshd/dd/torrc
+	done
+	
 	
 	if type _offset_reversePorts > /dev/null 2>&1
 	then
 		_get_reversePorts '*'
 		_offset_reversePorts
 		export matchingReversePorts=( "${matchingOffsetPorts[@]}" )
-		_torServer_SSH_writeCfg
-		tor -f "$scriptLocal"/tor/sshd/dd/torrc
+		
+		for currentReversePort in "${matchingOffsetPorts[@]}"
+		do
+			export overrideMatchingReversePort="$currentReversePort"
+			_torServer_SSH_writeCfg
+			_timeout 45 tor -f "$scriptLocal"/tor/sshd/dd/torrc
+		done
 	fi
 	
 	_get_reversePorts '*'
@@ -16586,12 +16601,12 @@ _get_reversePorts() {
 	testHostname="$1"
 	[[ "$testHostname" == "" ]] && testHostname=$(hostname -s)
 
-	if [[ "$testHostname" == 'hostnameA' ]] || [[ "$testHostname" == 'hostnameB' ]]
+	if [[ "$testHostname" == 'hostnameA' ]] || [[ "$testHostname" == 'hostnameB' ]] || [[ "$testHostname" == '*' ]]
 	then
 		matchingReversePorts+=( '20001' )
 		matched='true'
 	fi
-	if [[ "$testHostname" == 'hostnameC' ]] || [[ "$testHostname" == 'hostnameD' ]]
+	if [[ "$testHostname" == 'hostnameC' ]] || [[ "$testHostname" == 'hostnameD' ]] || [[ "$testHostname" == '*' ]]
 	then
 		matchingReversePorts+=( '20002' )
 		export matchingEMBEDDED='true'
