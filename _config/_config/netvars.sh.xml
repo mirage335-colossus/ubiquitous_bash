@@ -89,16 +89,36 @@
                                                                       </block>
                                                                     </value>
                                                                     <value name="B">
-                                                                      <block type="logic_compare" id="su|CO~6bv]{X;#{#Mj6Z">
-                                                                        <field name="OP">EQ</field>
+                                                                      <block type="logic_operation" id="zO|~Y_2`mbC0;3-{)-h0">
+                                                                        <field name="OP">OR</field>
                                                                         <value name="A">
-                                                                          <block type="arbitrary_input" id="jVVy?a-9..fK|lAbtNYY">
-                                                                            <field name="arbitraryInput">"$testHostname"</field>
+                                                                          <block type="logic_compare" id="su|CO~6bv]{X;#{#Mj6Z">
+                                                                            <field name="OP">EQ</field>
+                                                                            <value name="A">
+                                                                              <block type="arbitrary_input" id="jVVy?a-9..fK|lAbtNYY">
+                                                                                <field name="arbitraryInput">"$testHostname"</field>
+                                                                              </block>
+                                                                            </value>
+                                                                            <value name="B">
+                                                                              <block type="text" id="?~`Lu3LghYzB:g(r9UOx">
+                                                                                <field name="TEXT">hostnameB</field>
+                                                                              </block>
+                                                                            </value>
                                                                           </block>
                                                                         </value>
                                                                         <value name="B">
-                                                                          <block type="text" id="?~`Lu3LghYzB:g(r9UOx">
-                                                                            <field name="TEXT">hostnameB</field>
+                                                                          <block type="logic_compare" id="up*.A1]3:mx@O=xHG:-3">
+                                                                            <field name="OP">EQ</field>
+                                                                            <value name="A">
+                                                                              <block type="arbitrary_input" id="dAvU=8r`uYt^6Q?sk*rc">
+                                                                                <field name="arbitraryInput">"$testHostname"</field>
+                                                                              </block>
+                                                                            </value>
+                                                                            <value name="B">
+                                                                              <block type="text" id="Gb/T}d?AKRY=bfuF5-GC">
+                                                                                <field name="TEXT">*</field>
+                                                                              </block>
+                                                                            </value>
                                                                           </block>
                                                                         </value>
                                                                       </block>
@@ -141,16 +161,36 @@
                                                                           </block>
                                                                         </value>
                                                                         <value name="B">
-                                                                          <block type="logic_compare" id=")A.0zPjFY|z8sv^)`mCK">
-                                                                            <field name="OP">EQ</field>
+                                                                          <block type="logic_operation" id="%qsi5ixYH8ptfb02,k!2">
+                                                                            <field name="OP">OR</field>
                                                                             <value name="A">
-                                                                              <block type="arbitrary_input" id="nj,|R[8|?jf0Yr/v/.ua">
-                                                                                <field name="arbitraryInput">"$testHostname"</field>
+                                                                              <block type="logic_compare" id="2V=bn}3s3U-AyN9%^lgB">
+                                                                                <field name="OP">EQ</field>
+                                                                                <value name="A">
+                                                                                  <block type="arbitrary_input" id="(HHPqO.c$(sxuIxfSRvj">
+                                                                                    <field name="arbitraryInput">"$testHostname"</field>
+                                                                                  </block>
+                                                                                </value>
+                                                                                <value name="B">
+                                                                                  <block type="text" id="m_ap}Kd~!s2da(H1%+1X">
+                                                                                    <field name="TEXT">hostnameD</field>
+                                                                                  </block>
+                                                                                </value>
                                                                               </block>
                                                                             </value>
                                                                             <value name="B">
-                                                                              <block type="text" id="b|XPe8m1;RT2,(Nvr}Sb">
-                                                                                <field name="TEXT">hostnameD</field>
+                                                                              <block type="logic_compare" id="*,NN];-Snt3R5UI,J+_c">
+                                                                                <field name="OP">EQ</field>
+                                                                                <value name="A">
+                                                                                  <block type="arbitrary_input" id="+|.8~`./h/*cj!eFyCl4">
+                                                                                    <field name="arbitraryInput">"$testHostname"</field>
+                                                                                  </block>
+                                                                                </value>
+                                                                                <value name="B">
+                                                                                  <block type="text" id="5HNeBz8cV#H(%})*mc2z">
+                                                                                    <field name="TEXT">*</field>
+                                                                                  </block>
+                                                                                </value>
                                                                               </block>
                                                                             </value>
                                                                           </block>
@@ -349,7 +389,7 @@
                     <field name="VAR" id="lBchV;6BHM_5/sD3mTn5" variabletype="">currentReversePort</field>
                     <value name="LIST">
                       <block type="arbitrary_input" id="ru+(a~m8Qr:9N0tKubH-">
-                        <field name="arbitraryInput">"${matchingReversePorts[$@]}"</field>
+                        <field name="arbitraryInput">"${matchingReversePorts[@]}"</field>
                       </block>
                     </value>
                     <statement name="DO">
