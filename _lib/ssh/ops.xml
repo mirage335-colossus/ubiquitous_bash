@@ -410,35 +410,40 @@
                                           <block type="arbitrary_code" id="APiM8wH([iE4d,#,rsbP">
                                             <field name="arbitraryCode">## Optional - tunnel public web server.</field>
                                             <next>
-                                              <block type="arbitrary_code" id="m=IzyEJX)Md:4RqcRWQ(">
-                                                <field name="arbitraryCode"></field>
+                                              <block type="arbitrary_code" id="@xR;71zPp0%QBuFaA67F">
+                                                <field name="arbitraryCode">export autosshPublic="true"</field>
                                                 <next>
-                                                  <block type="arbitrary_code" id="s]F1W^:*Z6keJE5]ioU{">
-                                                    <field name="arbitraryCode">export overrideLOCALLISTENPORT=443</field>
+                                                  <block type="arbitrary_code" id="m=IzyEJX)Md:4RqcRWQ(">
+                                                    <field name="arbitraryCode"></field>
                                                     <next>
-                                                      <block type="bash_functioncall" id="X]lHeJ)IA^2}CkJl4~Wp">
-                                                        <field name="functionCall">_get_reversePorts</field>
-                                                        <statement name="NAME">
-                                                          <block type="blockly_separator" id="S;kfkV#(pjw(cVCdc(WB"></block>
-                                                        </statement>
+                                                      <block type="arbitrary_code" id="s]F1W^:*Z6keJE5]ioU{">
+                                                        <field name="arbitraryCode">export overrideLOCALLISTENPORT=443</field>
                                                         <next>
-                                                          <block type="bash_functioncall" id="?(VXP7_C{@.f0RM[2,xp">
-                                                            <field name="functionCall">_offset_reversePorts</field>
+                                                          <block type="bash_functioncall" id="X]lHeJ)IA^2}CkJl4~Wp">
+                                                            <field name="functionCall">_get_reversePorts</field>
                                                             <statement name="NAME">
-                                                              <block type="blockly_separator" id="hxq`Qdmxt`9hOzOklB,y"></block>
+                                                              <block type="blockly_separator" id="S;kfkV#(pjw(cVCdc(WB"></block>
                                                             </statement>
                                                             <next>
-                                                              <block type="arbitrary_code" id="H6R$0W2I`^`jq}qsNEz%">
-                                                                <field name="arbitraryCode">export overrideMatchingReversePort="${matchingOffsetPorts[0]}"</field>
+                                                              <block type="bash_functioncall" id="?(VXP7_C{@.f0RM[2,xp">
+                                                                <field name="functionCall">_offset_reversePorts</field>
+                                                                <statement name="NAME">
+                                                                  <block type="blockly_separator" id="hxq`Qdmxt`9hOzOklB,y"></block>
+                                                                </statement>
                                                                 <next>
-                                                                  <block type="arbitrary_code" id="]Ab:p^)@(|~lx;:|(H##">
-                                                                    <field name="arbitraryCode"></field>
+                                                                  <block type="arbitrary_code" id="H6R$0W2I`^`jq}qsNEz%">
+                                                                    <field name="arbitraryCode">export overrideMatchingReversePort="${matchingOffsetPorts[0]}"</field>
                                                                     <next>
-                                                                      <block type="arbitrary_code" id="t=kV3.Vi#_ykT7g[j4w`">
-                                                                        <field name="arbitraryCode">_torServer_SSH</field>
+                                                                      <block type="arbitrary_code" id="]Ab:p^)@(|~lx;:|(H##">
+                                                                        <field name="arbitraryCode"></field>
                                                                         <next>
-                                                                          <block type="arbitrary_code" id="(S(DBS_3q+3Jbk1FtQ,1">
-                                                                            <field name="arbitraryCode">_autossh</field>
+                                                                          <block type="arbitrary_code" id="t=kV3.Vi#_ykT7g[j4w`">
+                                                                            <field name="arbitraryCode">_torServer_SSH</field>
+                                                                            <next>
+                                                                              <block type="arbitrary_code" id="(S(DBS_3q+3Jbk1FtQ,1">
+                                                                                <field name="arbitraryCode">_autossh</field>
+                                                                              </block>
+                                                                            </next>
                                                                           </block>
                                                                         </next>
                                                                       </block>

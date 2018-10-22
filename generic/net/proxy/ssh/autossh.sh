@@ -21,8 +21,17 @@ _autossh_external() {
 	[[ "$currentLocalSSHport" == "" ]] && currentLocalSSHport=22
 	
 	local autosshPID
-	/usr/bin/autossh -M 0 -F "$sshDir"/config -R "$2":localhost:"$currentLocalSSHport" "$1" -N &
-	autosshPID="$!"
+	
+	if [[ "$autosshPublic" == "true" ]]
+	then
+		/usr/bin/autossh -M 0 -F "$sshDir"/config -R \*:"$2":localhost:"$currentLocalSSHport" "$1" -N &
+		autosshPID="$!"
+	fi
+	if [[ "$autosshPublic" != "true" ]]
+	then
+		/usr/bin/autossh -M 0 -F "$sshDir"/config -R "$2":localhost:"$currentLocalSSHport" "$1" -N &
+		autosshPID="$!"
+	fi
 	
 	#echo "$autosshPID" | _prependDaemonPID
 	

@@ -15,6 +15,7 @@ _ssh_autoreverse() {
 	return '0'
 
 	## Optional - tunnel public web server.
+	export autosshPublic="true"
 
 	export overrideLOCALLISTENPORT=443
 	_get_reversePorts
