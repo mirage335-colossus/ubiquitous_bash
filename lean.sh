@@ -3959,7 +3959,7 @@ _offset_reversePorts() {
 	local currentReversePort
 	local currentMatchingReversePorts
 	local currentReversePortOffset
-	for currentReversePort in "${matchingReversePorts[$@]}"
+	for currentReversePort in "${matchingReversePorts[@]}"
 	do
 		let currentReversePortOffset="$currentReversePort"+100
 		currentMatchingReversePorts+=( "$currentReversePortOffset" )

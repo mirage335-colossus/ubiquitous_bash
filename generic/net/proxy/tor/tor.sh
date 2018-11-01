@@ -26,14 +26,14 @@ _torServer_SSH_writeCfg() {
 	
 	mkdir -p "$scriptLocal"/tor/sshd/dd
 	
-	rm "$scriptLocal"/tor/sshd/dd/torrc > /dev/null 2>&1
+	rm "$scriptLocal"/tor/sshd/dd/torrc_"${matchingOffsetPorts[0]}" > /dev/null 2>&1
 	
-	echo "RunAsDaemon 0" >> "$scriptLocal"/tor/sshd/dd/torrc
-	echo "DataDirectory "'"'"$scriptLocal"/tor/sshd/dd'"' >> "$scriptLocal"/tor/sshd/dd/torrc
-	echo  >> "$scriptLocal"/tor/sshd/dd/torrc
+	echo "RunAsDaemon 0" >> "$scriptLocal"/tor/sshd/dd/torrc_"${matchingOffsetPorts[0]}"
+	echo "DataDirectory "'"'"$scriptLocal"/tor/sshd/dd'"' >> "$scriptLocal"/tor/sshd/dd/torrc_"${matchingOffsetPorts[0]}"
+	echo  >> "$scriptLocal"/tor/sshd/dd/torrc_"${matchingOffsetPorts[0]}"
 	
-	echo "SocksPort 0" >> "$scriptLocal"/tor/sshd/dd/torrc
-	echo  >> "$scriptLocal"/tor/sshd/dd/torrc
+	echo "SocksPort 0" >> "$scriptLocal"/tor/sshd/dd/torrc_"${matchingOffsetPorts[0]}"
+	echo  >> "$scriptLocal"/tor/sshd/dd/torrc_"${matchingOffsetPorts[0]}"
 	
 	local currentReversePort
 	for currentReversePort in "${matchingReversePorts[@]}"
@@ -42,11 +42,11 @@ _torServer_SSH_writeCfg() {
 		mkdir -p "$scriptLocal"/tor/sshd/"$currentReversePort"
 		chmod 700 "$scriptLocal"/tor/sshd/"$currentReversePort"
 		
-		echo "HiddenServiceDir "'"'"$scriptLocal"/tor/sshd/"$currentReversePort"/'"' >> "$scriptLocal"/tor/sshd/dd/torrc
+		echo "HiddenServiceDir "'"'"$scriptLocal"/tor/sshd/"$currentReversePort"/'"' >> "$scriptLocal"/tor/sshd/dd/torrc_"${matchingOffsetPorts[0]}"
 		
-		echo "HiddenServicePort ""$currentReversePort"" 127.0.0.1:""$currentLocalSSHport" >> "$scriptLocal"/tor/sshd/dd/torrc
+		echo "HiddenServicePort ""$currentReversePort"" 127.0.0.1:""$currentLocalSSHport" >> "$scriptLocal"/tor/sshd/dd/torrc_"${matchingOffsetPorts[0]}"
 		
-		echo  >> "$scriptLocal"/tor/sshd/dd/torrc
+		echo  >> "$scriptLocal"/tor/sshd/dd/torrc_"${matchingOffsetPorts[0]}"
 		
 	done
 	
@@ -95,7 +95,7 @@ _torServer_SSH_all_launch() {
 	do
 		export overrideMatchingReversePort="$currentReversePort"
 		_torServer_SSH_writeCfg
-		_timeout 45 tor -f "$scriptLocal"/tor/sshd/dd/torrc
+		_timeout 45 tor -f "$scriptLocal"/tor/sshd/dd/torrc_"$overrideMatchingReversePort"
 	done
 	
 	
@@ -109,7 +109,7 @@ _torServer_SSH_all_launch() {
 		do
 			export overrideMatchingReversePort="$currentReversePort"
 			_torServer_SSH_writeCfg
-			_timeout 45 tor -f "$scriptLocal"/tor/sshd/dd/torrc
+			_timeout 45 tor -f "$scriptLocal"/tor/sshd/dd/torrc_"$overrideMatchingReversePort"
 		done
 	fi
 	
@@ -132,7 +132,7 @@ _torServer_SSH_launch() {
 	
 	_torServer_SSH_writeCfg
 	
-	tor -f "$scriptLocal"/tor/sshd/dd/torrc
+	tor -f "$scriptLocal"/tor/sshd/dd/torrc_"${matchingOffsetPorts[0]}"
 	
 	_show_torServer_SSH_hostnames
 	
