@@ -7092,6 +7092,12 @@ _readyChRoot() {
 	
 }
 
+# ATTENTION: Override with "core.sh" or similar.
+# WARNING: Must return true to complete mount/umount procedure
+_mountChRoot_image_raspbian_prog() {
+	true
+}
+
 _mountChRoot_image_raspbian() {
 	_mustGetSudo
 	
@@ -7137,6 +7143,8 @@ _mountChRoot_image_raspbian() {
 			
 			sudo -n cp -n "$chrootDir"/etc/ld.so.preload "$chrootDir"/etc/ld.so.preload.orig
 			echo | sudo -n tee "$chrootDir"/etc/ld.so.preload > /dev/null 2>&1
+			
+			! _mountChRoot_image_raspbian_prog "$chrootimagedev" && _stop 1
 			
 			_stop 0
 		fi
@@ -7244,10 +7252,20 @@ _umountChRoot_directory() {
 	"$scriptAbsoluteLocation" _checkForMounts "$1" && return 1
 }
 
+# ATTENTION: Override with "core.sh" or similar.
+# WARNING: Must return true to complete mount/umount procedure
+_umountChRoot_image_prog() {
+	true
+}
+
 _umountChRoot_image() {
 	_mustGetSudo || return 1
 	
 	_umountChRoot_directory "$chrootDir" && return 1
+	
+	! _umountChRoot_image_prog && return 1
+	
+	[[ -d "$globalVirtFS"/../boot ]] && mountpoint "$globalVirtFS"/../boot >/dev/null 2>&1 && sudo -n umount "$globalVirtFS"/../boot
 	
 	local chrootimagedev
 	chrootimagedev=$(cat "$scriptLocal"/imagedev)
