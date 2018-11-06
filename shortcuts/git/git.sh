@@ -127,6 +127,15 @@ _gitPullRecursive() {
 }
 
 # DANGER
+# Pushes all changes as a commit described as "Upstream."
+_gitUpstream() {
+	git add -A . ; git commit -a -m "Upstream." ; git push
+}
+_gitUp() {
+	_gitUpstream
+}
+
+# DANGER
 #Removes all but the .git folder from the working directory.
 #_gitFresh() {
 #	find . -not -path '\.\/\.git*' -delete
