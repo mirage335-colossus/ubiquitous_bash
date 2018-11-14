@@ -1021,12 +1021,34 @@ _push_desktop() {
 _ssh_copy_id() {
 	_start
 	
-	"$scriptAbsoluteLocation" _ssh "$@" 'mkdir -p "$HOME"/.ssh'
-	cat "$scriptLocal"/ssh/id_rsa.pub | "$scriptAbsoluteLocation" _ssh "$@" 'cat - >> "$HOME"/.ssh/authorized_keys'
+	#"$scriptAbsoluteLocation" _ssh "$@" 'mkdir -p "$HOME"/.ssh'
+	cat "$scriptLocal"/ssh/id_rsa.pub | "$scriptAbsoluteLocation" _ssh "$@" 'mkdir -p "$HOME"/.ssh < /dev/null ; cat - >> "$HOME"/.ssh/authorized_keys'
 	
 	_stop
 }
 alias _ssh-copy-id=_ssh_copy_id
+
+#Builtin version of ssh-copy-id.
+_ssh_copy_id_gateway() {
+	_start
+	
+	#"$scriptAbsoluteLocation" _ssh "$@" 'mkdir -p "$HOME"/.ssh'
+	cat "$scriptLocal"/ssh/rev_gate.pub | "$scriptAbsoluteLocation" _ssh "$@" 'mkdir -p "$HOME"/.ssh < /dev/null ; cat - >> "$HOME"/.ssh/authorized_keys'
+	
+	_stop
+}
+alias _ssh-copy-id-gateway=_ssh_copy_id_gateway
+
+#Builtin version of ssh-copy-id.
+_ssh_copy_id_command() {
+	_start
+	
+	#"$scriptAbsoluteLocation" _ssh "$@" 'mkdir -p "$HOME"/.ssh'
+	cat "$scriptLocal"/ssh/rev_command.pub | "$scriptAbsoluteLocation" _ssh "$@" 'mkdir -p "$HOME"/.ssh < /dev/null ; cat - >> "$HOME"/.ssh/authorized_keys'
+	
+	_stop
+}
+alias _ssh-copy-id-command=_ssh_copy_id_command
 
 #"$1" == "key_name"
 #"$2" == "local_subdirectory" (optional)
@@ -1076,6 +1098,15 @@ _setup_ssh_merge_known_hosts() {
 	_cpDiff "$scriptLocal"/ssh/known_hosts "$sshLocalSSH"/known_hosts
 }
 
+_setup_ssh_rmKey() {
+	rm -f "$scriptLocal"/ssh/"$1" >/dev/null 2>&1
+	rm -f "$scriptLocal"/ssh/"$1".pub >/dev/null 2>&1
+	rm -f "$sshDir"/"$1" >/dev/null 2>&1
+	rm -f "$sshDir"/"$1".pub >/dev/null 2>&1
+	rm -f "$sshLocalSSH"/"$1" >/dev/null 2>&1
+	rm -f "$sshLocalSSH"/"$1".pub >/dev/null 2>&1
+}
+
 _setup_ssh_operations() {
 	_prepare_ssh
 	
@@ -1104,12 +1135,9 @@ _setup_ssh_operations() {
 	
 	if [[ "$keepKeys_SSH" == "false" ]]
 	then
-		rm -f "$scriptLocal"/ssh/id_rsa >/dev/null 2>&1
-		rm -f "$scriptLocal"/ssh/id_rsa.pub >/dev/null 2>&1
-		rm -f "$sshDir"/id_rsa >/dev/null 2>&1
-		rm -f "$sshDir"/id_rsa.pub >/dev/null 2>&1
-		rm -f "$sshLocalSSH"/id_rsa >/dev/null 2>&1
-		rm -f "$sshLocalSSH"/id_rsa.pub >/dev/null 2>&1
+		_setup_ssh_rmKey id_rsa
+		_setup_ssh_rmKey rev_gate
+		_setup_ssh_rmKey rev_cmd
 	fi
 	
 	if ! [[ -e "$scriptLocal"/ssh/id_rsa ]] && ! [[ -e "$sshLocalSSH"/id_rsa ]]
@@ -1117,10 +1145,24 @@ _setup_ssh_operations() {
 		ssh-keygen -b 4096 -t rsa -N "" -f "$scriptLocal"/ssh/id_rsa
 	fi
 	
+	#Less privileged key used by asset machines to establish persistent reverse tunnels ending at a gateway server.
+	if ! [[ -e "$scriptLocal"/ssh/rev_gate ]] && ! [[ -e "$sshLocalSSH"/rev_gate ]]
+	then
+		ssh-keygen -b 4096 -t rsa -N "" -f "$scriptLocal"/ssh/rev_gate
+	fi
+	
+	#Less privileged key used by random machines to establish temporary reverse tunnels ending at a command machine.
+	if ! [[ -e "$scriptLocal"/ssh/rev_cmd ]] && ! [[ -e "$sshLocalSSH"/rev_cmd ]]
+	then
+		ssh-keygen -b 4096 -t rsa -N "" -f "$scriptLocal"/ssh/rev_cmd
+	fi
+	
 	_here_ssh_config >> "$safeTmp"/config
 	_cpDiff "$safeTmp"/config "$sshDir"/config
 	
 	_setup_ssh_copyKey id_rsa
+	_setup_ssh_copyKey rev_gate
+	_setup_ssh_copyKey rev_cmd
 	
 	_setup_ssh_merge_known_hosts
 	

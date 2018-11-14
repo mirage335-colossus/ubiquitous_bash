@@ -56,7 +56,7 @@ _here_ssh_config() {
 Host gw-$netName
 	ProxyCommand "$sshDir/cautossh" _ssh_proxy_server-$netName
 	User gateway
-	#IdentityFile "$sshLocalSSH/id_rsa"
+	#IdentityFile "$sshLocalSSH/rev_gate"
 
 	Compression no
 	#Aggressively disconnects quickly. Comment if margins insufficient for high-latency.
@@ -70,13 +70,23 @@ Host server-$netName
 	User user
 	#IdentityFile "$sshLocalSSH/id_rsa"
 
-Host hostnameA-$netName
-	ProxyCommand "$sshDir/cautossh" _ssh_proxy_hostnameA-$netName
-	User user
+Host raspi-$netName
+	ProxyCommand "$sshDir/cautossh" _ssh_proxy_raspi-$netName
+	User pi
 	#IdentityFile "$sshLocalSSH/id_rsa"
 
-Host hostnameC-$netName
-	ProxyCommand "$sshDir/cautossh" _ssh_proxy_hostnameC-$netName
+Host lan-$netName
+	ProxyCommand "$sshDir/cautossh" _ssh_proxy_lan-$netName
+	User root
+	#IdentityFile "$sshLocalSSH/id_rsa"
+
+Host wan-$netName
+	ProxyCommand "$sshDir/cautossh" _ssh_proxy_wan-$netName
+	User root
+	#IdentityFile "$sshLocalSSH/id_rsa"
+
+Host assetA-$netName
+	ProxyCommand "$sshDir/cautossh" _ssh_proxy_assetA-$netName
 	User user
 	#IdentityFile "$sshLocalSSH/id_rsa"
 
@@ -104,10 +114,16 @@ _check_LAN_default() {
 	return 1
 }
 
+_check_LAN_simulation() {
+	ip addr show | grep '192\.168\.x' > /dev/null 2>&1 && return 0
+	return 1
+}
+
 _ssh_proxy_server-default() {
 	_start
 
 	export netTimeout='3'
+	# May prefer port "2022" or similar if domain is shared by NAT.
 	_proxy x.x.x.x 22
 
 	_proxy server.domain.tld 22
@@ -116,45 +132,91 @@ _ssh_proxy_server-default() {
 	_stop
 }
 
-_ssh_proxy_hostnameA-default() {
+_ssh_proxy_raspi-default() {
 	_start
 
-	_proxy hostnameA.domain.tld 20001
+	export netTimeout='0.1'
+	_proxy localhost 20001
 
-	_proxy hostnameA.domain.tld 22
+	export netTimeout='18'
 
+	_check_LAN_simulation && _proxy 192.168.x.x 22
+	_check_LAN_default && _proxy raspi.lan 20001
 	_check_LAN_default && _proxy 192.168.x.x 22
-	_proxySSH_reverse hostnameA gw-default
+	_proxySSH_reverse raspi gw-default
 
-	if [[ "$proxySSH_loopGuard" != "true" ]]
-	then
-		export proxySSH_loopGuard="true"
-		_proxySSH hostnameC-default 22 192.168.xxx.xxx
-	fi
-
-	_proxyTor_reverse hostnameA xxxxxxxxxxxxxxxxx.onion
+	_proxyTor_reverse raspi xxxxxxxxxxxxxxxxx.onion
 
 
 	_stop
 }
 
-_ssh_proxy_hostnameC-default() {
+_ssh_proxy_lan-default() {
 	_start
 
-	_proxy hostnameC.domain.tld 20002
-
-	_proxy hostnameC.domain.tld 22
-
+	_check_LAN_simulation && _proxy 192.168.x.x 22
+	_check_LAN_default && _proxy defaultl.lan 22
 	_check_LAN_default && _proxy 192.168.x.x 22
-	_proxySSH_reverse hostnameC gw-default
+	if [[ "$proxySSH_loopGuard" != "true" ]]
+	then
+		export proxySSH_loopGuard="true"
+		_proxySSH raspi-default 22 defaultl.lan
+	fi
 
 	if [[ "$proxySSH_loopGuard" != "true" ]]
 	then
 		export proxySSH_loopGuard="true"
-		_proxySSH hostnameA-default 22 192.168.xxx.xxx
+		_proxySSH raspi-default 22 192.168.xxx.xxx
 	fi
 
-	_proxyTor_reverse hostnameC xxxxxxxxxxxxxxxxx.onion
+
+	_stop
+}
+
+_ssh_proxy_wan-default() {
+	_start
+
+	_check_LAN_simulation && _proxy 192.168.x.x 22
+	_check_LAN_default && _proxy defaultw.lan 22
+	_check_LAN_default && _proxy 192.168.x.x 22
+	if [[ "$proxySSH_loopGuard" != "true" ]]
+	then
+		export proxySSH_loopGuard="true"
+		_proxySSH raspi-default 22 defaultw.lan
+	fi
+
+	if [[ "$proxySSH_loopGuard" != "true" ]]
+	then
+		export proxySSH_loopGuard="true"
+		_proxySSH raspi-default 22 192.168.xxx.xxx
+	fi
+
+
+	_stop
+}
+
+_ssh_proxy_assetA-default() {
+	_start
+
+	export netTimeout='0.1'
+	_proxy localhost 20002
+
+	export netTimeout='18'
+
+	_proxy assetA.domain.tld 20002
+
+	_check_LAN_simulation && _proxy 192.168.x.x 22
+	_check_LAN_default && _proxy assetA.lan 20002
+	_check_LAN_default && _proxy 192.168.x.x 22
+	_proxySSH_reverse assetA gw-default
+
+	if [[ "$proxySSH_loopGuard" != "true" ]]
+	then
+		export proxySSH_loopGuard="true"
+		_proxySSH raspi-default 22 192.168.xxx.xxx
+	fi
+
+	_proxyTor_reverse assetA xxxxxxxxxxxxxxxxx.onion
 
 
 	_stop
