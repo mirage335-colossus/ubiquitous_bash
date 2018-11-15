@@ -1,21 +1,18 @@
-#Overload this function, or the guestArch variable, to configure QEMU to  guest with a specif
-_qemu() {
-	local qemuHostArch
-	qemuHostArch=$(uname -m)
-	[[ "$qemuHostArch" == "" ]] && qemuGuestArch="$qemuHostArch"
-	 _messagePlain_probe 'qemuGuestArch= '"$qemuGuestArch"
-	
-	local qemuExitStatus
-	
-	[[ "$qemuHostArch" == "x86_64" ]] && _messagePlain_probe '>qemu= qemu-system-x86_64' && qemu-system-x86_64 "$@"
-	qemuExitStatus="$?"
-	
-	
-	return "$qemuExitStatus"
+#Overload this function, or the guestArch variable, to configure QEMU with specialized parameters.
+_qemu_system_x86_64() {
+	qemu-system-x86_64 "$@"
 }
 
-_integratedQemu() {
-	_messagePlain_nominal 'init: _integratedQemu'
+_qemu_system_arm() {
+	qemu-system-arm "$@"
+}
+
+_qemu_system_aarch64() {
+	qemu-system-aarch64 "$@"
+}
+
+_integratedQemu_x64() {
+	_messagePlain_nominal 'init: _integratedQemu_x64'
 	
 	! mkdir -p "$instancedVirtDir" && _messagePlain_bad 'fail: mkdir -p instancedVirtDir= '"$instancedVirtDir" && _stop 1
 	
@@ -69,10 +66,91 @@ _integratedQemu() {
 	
 	qemuArgs+=("${qemuSpecialArgs[@]}" "${qemuUserArgs[@]}")
 	
-	_messagePlain_probe _qemu "${qemuArgs[@]}"
-	_qemu "${qemuArgs[@]}"
+	_messagePlain_probe _qemu_system_x86_64 "${qemuArgs[@]}"
+	_qemu_system_x86_64 "${qemuArgs[@]}"
 	
 	_safeRMR "$instancedVirtDir" || _stop 1
+}
+
+# DANGER: Do NOT call without snapshot on RasPi images intended for real (ie. arm64, "RPI3") hardware! Untested!
+# WARNING: NOT recommended. Severely restricted performance and features.
+#https://azeria-labs.com/emulate-raspberry-pi-with-qemu/
+#https://www.raspberrypi.org/forums/viewtopic.php?t=195565
+#https://github.com/dhruvvyas90/qemu-rpi-kernel
+#qemu-system-arm -kernel ./kernel-raspi -cpu arm1176 -m 256 -M versatilepb -serial stdio -append "root=/dev/sda2 rootfstype=ext4 rw" -hda ./vm-raspbian.img -redir tcp:5022::22 -no-reboot
+#qemu-system-arm -kernel ./kernel-raspi -cpu arm1176 -m 256 -M versatilepb -dtb versatile-pb.dtb -no-reboot -append "root=/dev/sda2 panic=1 rootfstype=ext4 rw" -net nic -net user,hostfwd=tcp::5022-:22 -hda ./vm-raspbian.img
+#https://raspberrypi.stackexchange.com/questions/45936/has-anyone-managed-to-run-raspberry-pi-3-with-kvm-enabled
+#https://wiki.qemu.org/Documentation/Platforms/ARM
+#https://github.com/bztsrc/raspi3-tutorial
+#https://translatedcode.wordpress.com/2018/04/25/debian-on-qemus-raspberry-pi-3-model/
+_integratedQemu_raspi() {
+	_messagePlain_nominal 'init: _integratedQemu_raspi'
+	
+	! mkdir -p "$instancedVirtDir" && _messagePlain_bad 'fail: mkdir -p instancedVirtDir= '"$instancedVirtDir" && _stop 1
+	
+	! _commandBootdisc "$@" && _messagePlain_bad 'fail: _commandBootdisc' && _stop 1
+	
+	! [[ -e "$scriptLocal"/kernel-raspi ]] && _messagePlain_bad 'fail: missing: kernel-raspi' && _messagePlain_probe 'request: obtain kernel-raspi : https://github.com/dhruvvyas90/qemu-rpi-kernel'
+	! [[ -e "$scriptLocal"/kernel-raspi ]] && _messagePlain_bad 'fail: missing: versatile-pb.dtb' && _messagePlain_probe 'request: obtain versatile-pb.dtb : https://github.com/dhruvvyas90/qemu-rpi-kernel'
+	qemuUserArgs+=(-kernel "$scriptLocal"/kernel-raspi -cpu arm1176 -M versatilepb -dtb "$scriptLocal"/versatile-pb.dtb -append "root=/dev/sda2 panic=1 rootfstype=ext4 rw" -no-reboot)
+	#qemuUserArgs+=(-kernel "$scriptLocal"/kernel-raspi -M raspi3 -append "root=/dev/sda2 rootfstype=ext4 rw" -no-reboot)
+	#qemuUserArgs+=(-kernel "$scriptLocal"/kernel-raspi -M virt -bios /usr/share/qemu-efi/QEMU_EFI.fd -append "root=/dev/sda2 panic=1 rootfstype=ext4 rw" -no-reboot)
+	#qemuUserArgs+=(-kernel "$scriptLocal"/kernel-raspi -cpu arm1176 -M virt -bios /usr/share/qemu-efi/QEMU_EFI.fd -append "root=/dev/sda2 panic=1 rootfstype=ext4 rw" -no-reboot)
+	
+	#local hostThreadCount=$(cat /proc/cpuinfo | grep MHz | wc -l | tr -dc '0-9')
+	#[[ "$hostThreadCount" -ge "4" ]] && _messagePlain_probe 'cpu: >4' && qemuArgs+=(-smp 4)
+	
+	qemuUserArgs+=(-drive format=raw,file="$scriptLocal"/vm-raspbian.img)
+	#qemuUserArgs+=(-drive if=none,id=uas-cdrom,media=cdrom,file="$hostToGuestISO" -device nec-usb-xhci,id=xhci -device usb-uas,id=uas,bus=xhci.0 -device scsi-cd,bus=uas.0,scsi-id=0,lun=5,drive=uas-cdrom)
+	qemuUserArgs+=(-drive file="$hostToGuestISO",media=cdrom -boot c)
+	
+	#[[ "$vmMemoryAllocation" == "" ]] && vmMemoryAllocation="$vmMemoryAllocationDefault"
+	#qemuUserArgs+=(-m "$vmMemoryAllocation")
+	qemuUserArgs+=(-m 256)
+	
+	# ATTENTION: Overload with "ops" or similar.
+	[[ "$qemuUserArgs_netRestrict" == "" ]] && qemuUserArgs_netRestrict="n"
+	#[[ "$qemuUserArgs_net_guestSSH" == "" ]] && qemuUserArgs_net_guestSSH=",hostfwd=tcp::5022-:22"
+	[[ "$qemuUserArgs_net_guestSSH" == "" ]] && qemuUserArgs_net_guestSSH=""
+	
+	#qemuUserArgs+=(-net nic,model=rtl8139 -net user,restrict="$qemuUserArgs_netRestrict",smb="$sharedHostProjectDir")
+	qemuUserArgs+=(-net nic -net user,restrict="$qemuUserArgs_netRestrict""$qemuUserArgs_net_guestSSH",smb="$sharedHostProjectDir")
+	
+	#qemuArgs+=(-usbdevice tablet)
+	
+	#qemuArgs+=(-vga cirrus)
+	
+	#[[ "$qemuArgs_audio" == "" ]] && qemuArgs+=(-device ich9-intel-hda -device hda-duplex)
+	
+	#qemuArgs+=(-show-cursor)
+	
+	qemuUserArgs+=(-serial stdio)
+	
+	qemuArgs+=("${qemuSpecialArgs[@]}" "${qemuUserArgs[@]}")
+	
+	_messagePlain_probe _qemu_system_arm "${qemuArgs[@]}"
+	_qemu_system_arm "${qemuArgs[@]}"
+	#_messagePlain_probe _qemu_system_aarch64 "${qemuArgs[@]}"
+	#_qemu_system_aarch64 "${qemuArgs[@]}"
+	
+	_safeRMR "$instancedVirtDir" || _stop 1
+}
+
+_integratedQemu() {
+	if [[ -e "$scriptLocal"/vm.img ]]
+	then
+		_integratedQemu_x64 "$@"
+		return 0
+	fi
+	
+	if [[ -e "$scriptLocal"/vm-raspbian.img ]]
+	then
+		_integratedQemu_raspi "$@"
+		return 0
+	fi
+	
+	_messagePlain_bad 'fail: missing: vm*.img'
+	return 1
 }
 
 #"${qemuSpecialArgs[@]}" == ["-snapshot "]
@@ -122,6 +200,7 @@ _editQemu_sequence() {
 	_stop
 }
 
+# DANGER: Do NOT call without snapshot on RasPi images intended for real (ie. arm64, "RPI3") hardware! Untested!
 _editQemu() {
 	_findInfrastructure_virtImage ${FUNCNAME[0]} "$@"
 	[[ "$ubVirtImageLocal" == "false" ]] && return
