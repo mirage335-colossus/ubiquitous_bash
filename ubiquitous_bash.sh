@@ -3739,6 +3739,9 @@ _setup_ssh_rmKey() {
 }
 
 _setup_ssh_operations() {
+	# "_setup_local" .
+	[[ "$ub_setup_local" == true ]] && export sshBase="$safeTmp"/.ssh
+	
 	_prepare_ssh
 	
 	mkdir -p "$scriptLocal"/ssh
@@ -16632,6 +16635,14 @@ _setup() {
 	_tryExec "_setup_prog"
 	
 	_stop
+}
+
+# DANGER: Especially not expected to modify system program behavior (eg. not to modify "$HOME"/.ssh ).
+# WARNING: Strictly expected to not modify anyting outside the script directory.
+_setup_local() {
+	export ub_setup_local='true'
+	
+	_setup
 }
 
 _test_package() {

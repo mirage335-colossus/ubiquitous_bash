@@ -400,6 +400,14 @@ _setup() {
 	_stop
 }
 
+# DANGER: Especially not expected to modify system program behavior (eg. not to modify "$HOME"/.ssh ).
+# WARNING: Strictly expected to not modify anyting outside the script directory.
+_setup_local() {
+	export ub_setup_local='true'
+	
+	_setup
+}
+
 _test_package() {
 	_getDep tar
 	_getDep gzip
