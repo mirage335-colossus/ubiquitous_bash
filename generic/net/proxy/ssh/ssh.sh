@@ -1109,7 +1109,7 @@ _setup_ssh_rmKey() {
 
 _setup_ssh_operations() {
 	# "_setup_local" .
-	[[ "$ub_setup_local" == true ]] && export sshBase="$safeTmp"/.ssh
+	[[ "$ub_setup_local" == 'true' ]] && export sshBase="$safeTmp"/.ssh
 	
 	_prepare_ssh
 	
