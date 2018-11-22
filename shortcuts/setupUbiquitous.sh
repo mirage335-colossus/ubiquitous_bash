@@ -57,7 +57,7 @@ _installUbiquitous() {
 		ub_gitPullStatus="$?"
 		! cd "$localFunctionEntryPWD" && return 1
 		
-		[[ "$ub_gitPullStatus" == "0" ]] && _messagePlain_good 'pass: git pull' cd "$localFunctionEntryPWD" && return 0
+		[[ "$ub_gitPullStatus" == "0" ]] && _messagePlain_good 'pass: git pull' && cd "$localFunctionEntryPWD" && return 0
 	fi
 	_messagePlain_warn 'fail: git pull'
 	
