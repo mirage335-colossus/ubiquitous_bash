@@ -1,3 +1,4 @@
+# Environment variables "x11vnc_clip" and "x11vnc_scale" may be forced.
 _x11vnc_operations() {
 	_messagePlain_nominal 'init: _x11vnc_operations'
 	
@@ -9,6 +10,11 @@ _x11vnc_operations() {
 	_messagePlain_probe 'x11vnc_operations'
 	_report_detect_x11
 	
+	#local x11vncArgs
+	
+	[[ "$x11vnc_clip" != "" ]] && x11vncArgs+=(-clip "$x11vnc_clip")
+	[[ "$x11vnc_scale" != "" ]] && x11vncArgs+=(-scale "$x11vnc_scale")
+	
 	_messagePlain_nominal 'Detecting and launching x11vnc.'
 	#x11vnc
 	if type x11vnc >/dev/null 2>&1
@@ -17,7 +23,7 @@ _x11vnc_operations() {
 		
 		#-passwdfile cmd:"/bin/cat -"
 		#-noxrecord -noxfixes -noxdamage
-		if ! _x11vnc_command -localhost -rfbauth "$vncPasswdFile" -rfbport "$vncPort" -timeout 48 -xkb -display "$destination_DISPLAY" -auth "$destination_AUTH" -noxrecord -noxdamage
+		if ! _x11vnc_command -localhost -rfbauth "$vncPasswdFile" -rfbport "$vncPort" -timeout 48 -xkb -display "$destination_DISPLAY" -auth "$destination_AUTH" -noxrecord -noxdamage "${x11vncArgs[@]}"
 		then
 			_messagePlain_bad 'fail: x11vnc'
 			return 1
