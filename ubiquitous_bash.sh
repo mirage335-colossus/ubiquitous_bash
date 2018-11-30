@@ -3160,55 +3160,6 @@ _vncpasswd() {
 	return 1
 }
 
-_vncviewer_operations() {
-	_messagePlain_nominal 'init: _vncviewer_operations'
-	
-	_messagePlain_nominal 'Searching for X11 display.'
-	! _detect_x11 && _messagePlain_warn 'fail: _detect_x11'
-	
-	export DISPLAY="$destination_DISPLAY"
-	export XAUTHORITY="$destination_AUTH"
-	_messagePlain_probe '_vncviewer_operations'
-	_report_detect_x11
-	
-	_messagePlain_nominal 'Detecting and launching vncviewer.'
-	#TigerVNC
-	if vncviewer --help 2>&1 | grep 'PasswordFile   \- Password file for VNC authentication (default\=)' >/dev/null 2>&1
-	then
-		_messagePlain_good 'found: vncviewer (TigerVNC)'
-		
-		if ! vncviewer -DotWhenNoCursor -passwd "$vncPasswdFile" localhost:"$vncPort" "$@"
-		then
-			_messagePlain_bad 'fail: vncviewer'
-			stty echo > /dev/null 2>&1
-			return 1
-		fi
-		stty echo > /dev/null 2>&1
-		return 0
-	fi
-	
-	#TightVNC
-	if vncviewer --help 2>&1 | grep '\-passwd' >/dev/null 2>&1
-	then
-		_messagePlain_good 'found: vncviewer (TightVNC)'
-		
-		#if ! vncviewer -encodings "copyrect tight zrle hextile" localhost:"$vncPort"
-		if ! vncviewer -passwd "$vncPasswdFile" localhost:"$vncPort" "$@"
-		then
-			_messagePlain_bad 'fail: vncviewer'
-			stty echo > /dev/null 2>&1
-			return 1
-		fi
-		stty echo > /dev/null 2>&1
-		return 0
-	fi
-	
-	type vncviewer > /dev/null 2>&1 && _messagePlain_bad 'unsupported: vncviewer'
-	! type vncviewer > /dev/null 2>&1 && _messagePlain_bad 'missing: vncviewer'
-	
-	return 1
-}
-
 _vncviewer_sequence() {
 	_messageNormal '_vncviewer_sequence: Start'
 	_start
@@ -3235,52 +3186,6 @@ _x11vnc_command() {
 	x11vnc "$@"
 }
 
-_x11vnc_operations() {
-	_messagePlain_nominal 'init: _x11vnc_operations'
-	
-	_messagePlain_nominal 'Searching for X11 display.'
-	! _detect_x11 && _messagePlain_bad 'fail: _detect_x11'
-	
-	export DISPLAY="$destination_DISPLAY"
-	export XAUTHORITY="$destination_AUTH"
-	_messagePlain_probe 'x11vnc_operations'
-	_report_detect_x11
-	
-	_messagePlain_nominal 'Detecting and launching x11vnc.'
-	#x11vnc
-	if type x11vnc >/dev/null 2>&1
-	then
-		_messagePlain_good 'found: x11vnc'
-		
-		#-passwdfile cmd:"/bin/cat -"
-		#-noxrecord -noxfixes -noxdamage
-		if ! _x11vnc_command -localhost -rfbauth "$vncPasswdFile" -rfbport "$vncPort" -timeout 48 -xkb -display "$destination_DISPLAY" -auth "$destination_AUTH" -noxrecord -noxdamage
-		then
-			_messagePlain_bad 'fail: x11vnc'
-			return 1
-		fi
-		
-		return 0
-	fi
-	
-	#TigerVNC.
-	if type x0tigervncserver
-	then
-		_messagePlain_good 'found: x0tigervncserver'
-		
-		if ! x0tigervncserver -rfbauth "$vncPasswdFile" -rfbport "$vncPort"
-		then
-			_messagePlain_bad 'fail: x0tigervncserver'
-			return 1
-		fi
-		return 0
-	fi
-	
-	_messagePlain_bad 'missing: x11vnc || x0tigervncserver'
-	
-	return 1
-}
-
 _x11vnc_sequence() {
 	_messageNormal '_x11vnc_sequence: Start'
 	_start
@@ -3300,118 +3205,6 @@ _x11vnc_sequence() {
 #Password must be given on standard input. Environment variable "$vncPort" must be set. Environment variable "$destination_DISPLAY" may be forced.
 _x11vnc() {
 	"$scriptAbsoluteLocation" _x11vnc_sequence "$@"
-}
-
-_vncserver_operations() {
-	_messagePlain_nominal 'init: _vncserver_operations'
-	
-	#[[ "$desktopEnvironmentLaunch" == "" ]] && desktopEnvironmentLaunch="true"
-	[[ "$desktopEnvironmentLaunch" == "" ]] && desktopEnvironmentLaunch="startlxde"
-	[[ "$desktopEnvironmentGeometry" == "" ]] && desktopEnvironmentGeometry='1920x1080'
-	
-	_messagePlain_nominal 'Searching for unused X11 display.'
-	local vncDisplay
-	local vncDisplayValid
-	for (( vncDisplay = 1 ; vncDisplay <= 9 ; vncDisplay++ ))
-	do
-		! [[ -e /tmp/.X"$vncDisplay"-lock ]] && ! [[ -e /tmp/.X11-unix/X"$vncDisplay" ]] && vncDisplayValid=true && _messagePlain_good 'found: unused X11 display= '"$vncDisplay" && break
-	done
-	[[ "$vncDisplayValid" != "true" ]] && _messagePlain_bad 'fail: vncDisplayValid != "true"' && _stop 1
-	
-	_messagePlain_nominal 'Detecting and launching vncserver.'
-	#TigerVNC
-	if echo | vncserver -x --help 2>&1 | grep '\-fg' >/dev/null 2>&1
-	then
-		_messagePlain_good 'found: vncserver (TigerVNC)'
-		echo
-		echo '*****TigerVNC Server Detected'
-		echo
-		#"-fg" may be unreliable
-		#vncserver :"$vncDisplay" -depth 16 -geometry "$desktopEnvironmentGeometry" -localhost -rfbport "$vncPort" -rfbauth "$vncPasswdFile" &
-		
-		
-		export XvncCommand="Xvnc"
-		type Xtigervnc >/dev/null 2>&1 && export XvncCommand="Xtigervnc"
-		
-		type "$XvncCommand" > /dev/null 2>&1 && _messagePlain_good 'found: XvncCommand= '"$XvncCommand"
-		! type "$XvncCommand" > /dev/null 2>&1 && _messagePlain_bad 'missing: XvncCommand= '"$XvncCommand"
-		
-		"$XvncCommand" :"$vncDisplay" -depth 16 -geometry "$desktopEnvironmentGeometry" -localhost -rfbport "$vncPort" -rfbauth "$vncPasswdFile" -rfbwait 48000 &
-		echo $! > "$vncPIDfile"
-		
-		sleep 0.3
-		[[ ! -e "$vncPIDfile" ]] && _messagePlain_bad 'missing: "$vncPIDfile"' && return 1
-		local vncPIDactual=$(cat $vncPIDfile)
-		! ps -p "$vncPIDactual" > /dev/null 2>&1 && _messagePlain_bad 'inactive: vncPID= '"$vncPIDactual" && return 1
-		_messagePlain_good 'active: vncPID= '"$vncPIDactual"
-		
-		export DISPLAY=:"$vncDisplay"
-		
-		local currentCount
-		for (( currentCount = 0 ; currentCount < 90 ; currentCount++ ))
-		do
-			_timeout 3 xset q >/dev/null 2>&1 && _messagePlain_good 'connect: DISPLAY= '"$DISPLAY" && break
-			sleep 1
-		done
-		
-		[[ "$currentCount" == "90" ]] && _messagePlain_bad 'fail: connect: DISPLAY= '"$DISPLAY" && return 1
-		
-		bash -c "$desktopEnvironmentLaunch" &
-		
-		sleep 48
-		
-		return 0
-	fi
-	
-	#TightVNC
-	if type vncserver >/dev/null 2>&1
-	then
-		_messagePlain_good 'found: vncserver (TightVNC)'
-		echo
-		echo '*****TightVNC Server Detected'
-		echo
-		
-		#TightVNC may refuse to use an aribtary password file if system default does not exist.
-		[[ ! -e "$HOME"/.vnc/passwd ]] && echo | cat "$vncPasswdFile".pln - "$vncPasswdFile".pln | vncpasswd
-		
-		export XvncCommand="Xvnc"
-		type Xtightvnc >/dev/null 2>&1 && export XvncCommand="Xtightvnc"
-		
-		type "$XvncCommand" > /dev/null 2>&1 && _messagePlain_good 'found: XvncCommand= '"$XvncCommand"
-		! type "$XvncCommand" > /dev/null 2>&1 && _messagePlain_bad 'missing: XvncCommand= '"$XvncCommand"
-		
-		"$XvncCommand" :"$vncDisplay" -depth 16 -geometry "$desktopEnvironmentGeometry" -nevershared -dontdisconnect -localhost -rfbport "$vncPort" -rfbauth "$vncPasswdFile" -rfbwait 48000 &
-		echo $! > "$vncPIDfile"
-		
-		sleep 0.3
-		[[ ! -e "$vncPIDfile" ]] && _messagePlain_bad 'missing: "$vncPIDfile"' && return 1
-		local vncPIDactual=$(cat $vncPIDfile)
-		! ps -p "$vncPIDactual" > /dev/null 2>&1 && _messagePlain_bad 'inactive: vncPID= '"$vncPIDactual" && return 1
-		_messagePlain_good 'active: vncPID= '"$vncPIDactual"
-		
-		export DISPLAY=:"$vncDisplay"
-		
-		local currentCount
-		for (( currentCount = 0 ; currentCount < 90 ; currentCount++ ))
-		do
-			xset q >/dev/null 2>&1 && _messagePlain_good 'connect: DISPLAY= '"$DISPLAY" && break
-			sleep 1
-		done
-		
-		[[ "$currentCount" == "90" ]] && _messagePlain_bad 'fail: connect: DISPLAY= '"$DISPLAY" && return 1
-		
-		bash -c "$desktopEnvironmentLaunch" &
-		
-		sleep 48
-		
-		return 0
-	fi
-	
-	type vncserver > /dev/null 2>&1 && type Xvnc > /dev/null 2>&1 && _messagePlain_bad 'unsupported: vncserver || Xvnc' && return 1
-	
-	_messagePlain_bad 'missing: vncserver || Xvnc'
-	
-	return 1
 }
 
 _vncserver_sequence() {
@@ -4030,6 +3823,213 @@ _overrideReversePorts() {
 	[[ "$overrideMatchingReversePort" != "" ]] && export matchingReversePorts=( "$overrideMatchingReversePort" )
 }
 
+
+_vncserver_operations() {
+	_messagePlain_nominal 'init: _vncserver_operations'
+	
+	#[[ "$desktopEnvironmentLaunch" == "" ]] && desktopEnvironmentLaunch="true"
+	[[ "$desktopEnvironmentLaunch" == "" ]] && desktopEnvironmentLaunch="startlxde"
+	[[ "$desktopEnvironmentGeometry" == "" ]] && desktopEnvironmentGeometry='1920x1080'
+	
+	_messagePlain_nominal 'Searching for unused X11 display.'
+	local vncDisplay
+	local vncDisplayValid
+	for (( vncDisplay = 1 ; vncDisplay <= 9 ; vncDisplay++ ))
+	do
+		! [[ -e /tmp/.X"$vncDisplay"-lock ]] && ! [[ -e /tmp/.X11-unix/X"$vncDisplay" ]] && vncDisplayValid=true && _messagePlain_good 'found: unused X11 display= '"$vncDisplay" && break
+	done
+	[[ "$vncDisplayValid" != "true" ]] && _messagePlain_bad 'fail: vncDisplayValid != "true"' && _stop 1
+	
+	_messagePlain_nominal 'Detecting and launching vncserver.'
+	#TigerVNC
+	if echo | vncserver -x --help 2>&1 | grep '\-fg' >/dev/null 2>&1
+	then
+		_messagePlain_good 'found: vncserver (TigerVNC)'
+		echo
+		echo '*****TigerVNC Server Detected'
+		echo
+		#"-fg" may be unreliable
+		#vncserver :"$vncDisplay" -depth 16 -geometry "$desktopEnvironmentGeometry" -localhost -rfbport "$vncPort" -rfbauth "$vncPasswdFile" &
+		
+		
+		export XvncCommand="Xvnc"
+		type Xtigervnc >/dev/null 2>&1 && export XvncCommand="Xtigervnc"
+		
+		type "$XvncCommand" > /dev/null 2>&1 && _messagePlain_good 'found: XvncCommand= '"$XvncCommand"
+		! type "$XvncCommand" > /dev/null 2>&1 && _messagePlain_bad 'missing: XvncCommand= '"$XvncCommand"
+		
+		"$XvncCommand" :"$vncDisplay" -depth 16 -geometry "$desktopEnvironmentGeometry" -localhost -rfbport "$vncPort" -rfbauth "$vncPasswdFile" -rfbwait 48000 &
+		echo $! > "$vncPIDfile"
+		
+		sleep 0.3
+		[[ ! -e "$vncPIDfile" ]] && _messagePlain_bad 'missing: "$vncPIDfile"' && return 1
+		local vncPIDactual=$(cat $vncPIDfile)
+		! ps -p "$vncPIDactual" > /dev/null 2>&1 && _messagePlain_bad 'inactive: vncPID= '"$vncPIDactual" && return 1
+		_messagePlain_good 'active: vncPID= '"$vncPIDactual"
+		
+		export DISPLAY=:"$vncDisplay"
+		
+		local currentCount
+		for (( currentCount = 0 ; currentCount < 90 ; currentCount++ ))
+		do
+			_timeout 3 xset q >/dev/null 2>&1 && _messagePlain_good 'connect: DISPLAY= '"$DISPLAY" && break
+			sleep 1
+		done
+		
+		[[ "$currentCount" == "90" ]] && _messagePlain_bad 'fail: connect: DISPLAY= '"$DISPLAY" && return 1
+		
+		bash -c "$desktopEnvironmentLaunch" &
+		
+		sleep 48
+		
+		return 0
+	fi
+	
+	#TightVNC
+	if type vncserver >/dev/null 2>&1
+	then
+		_messagePlain_good 'found: vncserver (TightVNC)'
+		echo
+		echo '*****TightVNC Server Detected'
+		echo
+		
+		#TightVNC may refuse to use an aribtary password file if system default does not exist.
+		[[ ! -e "$HOME"/.vnc/passwd ]] && echo | cat "$vncPasswdFile".pln - "$vncPasswdFile".pln | vncpasswd
+		
+		export XvncCommand="Xvnc"
+		type Xtightvnc >/dev/null 2>&1 && export XvncCommand="Xtightvnc"
+		
+		type "$XvncCommand" > /dev/null 2>&1 && _messagePlain_good 'found: XvncCommand= '"$XvncCommand"
+		! type "$XvncCommand" > /dev/null 2>&1 && _messagePlain_bad 'missing: XvncCommand= '"$XvncCommand"
+		
+		"$XvncCommand" :"$vncDisplay" -depth 16 -geometry "$desktopEnvironmentGeometry" -nevershared -dontdisconnect -localhost -rfbport "$vncPort" -rfbauth "$vncPasswdFile" -rfbwait 48000 &
+		echo $! > "$vncPIDfile"
+		
+		sleep 0.3
+		[[ ! -e "$vncPIDfile" ]] && _messagePlain_bad 'missing: "$vncPIDfile"' && return 1
+		local vncPIDactual=$(cat $vncPIDfile)
+		! ps -p "$vncPIDactual" > /dev/null 2>&1 && _messagePlain_bad 'inactive: vncPID= '"$vncPIDactual" && return 1
+		_messagePlain_good 'active: vncPID= '"$vncPIDactual"
+		
+		export DISPLAY=:"$vncDisplay"
+		
+		local currentCount
+		for (( currentCount = 0 ; currentCount < 90 ; currentCount++ ))
+		do
+			xset q >/dev/null 2>&1 && _messagePlain_good 'connect: DISPLAY= '"$DISPLAY" && break
+			sleep 1
+		done
+		
+		[[ "$currentCount" == "90" ]] && _messagePlain_bad 'fail: connect: DISPLAY= '"$DISPLAY" && return 1
+		
+		bash -c "$desktopEnvironmentLaunch" &
+		
+		sleep 48
+		
+		return 0
+	fi
+	
+	type vncserver > /dev/null 2>&1 && type Xvnc > /dev/null 2>&1 && _messagePlain_bad 'unsupported: vncserver || Xvnc' && return 1
+	
+	_messagePlain_bad 'missing: vncserver || Xvnc'
+	
+	return 1
+} 
+
+_vncviewer_operations() {
+	_messagePlain_nominal 'init: _vncviewer_operations'
+	
+	_messagePlain_nominal 'Searching for X11 display.'
+	! _detect_x11 && _messagePlain_warn 'fail: _detect_x11'
+	
+	export DISPLAY="$destination_DISPLAY"
+	export XAUTHORITY="$destination_AUTH"
+	_messagePlain_probe '_vncviewer_operations'
+	_report_detect_x11
+	
+	_messagePlain_nominal 'Detecting and launching vncviewer.'
+	#TigerVNC
+	if vncviewer --help 2>&1 | grep 'PasswordFile   \- Password file for VNC authentication (default\=)' >/dev/null 2>&1
+	then
+		_messagePlain_good 'found: vncviewer (TigerVNC)'
+		
+		if ! vncviewer -DotWhenNoCursor -passwd "$vncPasswdFile" localhost:"$vncPort" "$@"
+		then
+			_messagePlain_bad 'fail: vncviewer'
+			stty echo > /dev/null 2>&1
+			return 1
+		fi
+		stty echo > /dev/null 2>&1
+		return 0
+	fi
+	
+	#TightVNC
+	if vncviewer --help 2>&1 | grep '\-passwd' >/dev/null 2>&1
+	then
+		_messagePlain_good 'found: vncviewer (TightVNC)'
+		
+		#if ! vncviewer -encodings "copyrect tight zrle hextile" localhost:"$vncPort"
+		if ! vncviewer -passwd "$vncPasswdFile" localhost:"$vncPort" "$@"
+		then
+			_messagePlain_bad 'fail: vncviewer'
+			stty echo > /dev/null 2>&1
+			return 1
+		fi
+		stty echo > /dev/null 2>&1
+		return 0
+	fi
+	
+	type vncviewer > /dev/null 2>&1 && _messagePlain_bad 'unsupported: vncviewer'
+	! type vncviewer > /dev/null 2>&1 && _messagePlain_bad 'missing: vncviewer'
+	
+	return 1
+}
+
+_x11vnc_operations() {
+	_messagePlain_nominal 'init: _x11vnc_operations'
+	
+	_messagePlain_nominal 'Searching for X11 display.'
+	! _detect_x11 && _messagePlain_bad 'fail: _detect_x11'
+	
+	export DISPLAY="$destination_DISPLAY"
+	export XAUTHORITY="$destination_AUTH"
+	_messagePlain_probe 'x11vnc_operations'
+	_report_detect_x11
+	
+	_messagePlain_nominal 'Detecting and launching x11vnc.'
+	#x11vnc
+	if type x11vnc >/dev/null 2>&1
+	then
+		_messagePlain_good 'found: x11vnc'
+		
+		#-passwdfile cmd:"/bin/cat -"
+		#-noxrecord -noxfixes -noxdamage
+		if ! _x11vnc_command -localhost -rfbauth "$vncPasswdFile" -rfbport "$vncPort" -timeout 48 -xkb -display "$destination_DISPLAY" -auth "$destination_AUTH" -noxrecord -noxdamage
+		then
+			_messagePlain_bad 'fail: x11vnc'
+			return 1
+		fi
+		
+		return 0
+	fi
+	
+	#TigerVNC.
+	if type x0tigervncserver
+	then
+		_messagePlain_good 'found: x0tigervncserver'
+		
+		if ! x0tigervncserver -rfbauth "$vncPasswdFile" -rfbport "$vncPort"
+		then
+			_messagePlain_bad 'fail: x0tigervncserver'
+			return 1
+		fi
+		return 0
+	fi
+	
+	_messagePlain_bad 'missing: x11vnc || x0tigervncserver'
+	
+	return 1
+}
 
 
 
@@ -17443,6 +17443,10 @@ _compile_bash_utilities() {
 	[[ "$enUb_proxy" == "true" ]] && includeScriptList+=( "generic/net/proxy/ssh"/here_ssh.sh )
 	[[ "$enUb_proxy" == "true" ]] && includeScriptList+=( "generic/net/proxy/ssh"/ssh.sh )
 	[[ "$enUb_proxy" == "true" ]] && includeScriptList+=( "generic/net/proxy/ssh"/autossh.sh )
+	
+	[[ "$enUb_proxy" == "true" ]] && includeScriptList+=( "generic/net/proxy/vnc"/vnc_vncserver_operations.sh )
+	[[ "$enUb_proxy" == "true" ]] && includeScriptList+=( "generic/net/proxy/vnc"/vnc_vncviewer_operations.sh )
+	[[ "$enUb_proxy" == "true" ]] && includeScriptList+=( "generic/net/proxy/vnc"/vnc_x11vnc_operations.sh )
 	
 	[[ "$enUb_proxy" == "true" ]] && includeScriptList+=( "generic/net/proxy/proxyrouter"/here_proxyrouter.sh )
 	[[ "$enUb_proxy" == "true" ]] && includeScriptList+=( "generic/net/proxy/proxyrouter"/proxyrouter.sh )
