@@ -14,6 +14,7 @@ _x11vnc_operations() {
 	
 	[[ "$x11vnc_clip" != "" ]] && x11vncArgs+=(-clip "$x11vnc_clip")
 	[[ "$x11vnc_scale" != "" ]] && x11vncArgs+=(-scale "$x11vnc_scale")
+	[[ "$x11vnc_scale_cursor" != "" ]] && x11vncArgs+=(-cursor arrow -scale_cursor "$x11vnc_scale_cursor")
 	
 	_messagePlain_nominal 'Detecting and launching x11vnc.'
 	#x11vnc
