@@ -12720,14 +12720,16 @@ _push_synergy_sequence() {
 	_messageNormal '_synergy_sequence Launch: _synergys'
 	bash -c 'env synergyPort='"$synergyPort"' destination_DISPLAY='"$DISPLAY"' destination_AUTH='"$XAUTHORITY"' '"$scriptAbsoluteLocation"' _synergys' &
 	
-	_waitPort localhost "$synergyPort"
+	#_waitPort localhost "$synergyPort"
+	_waitPort localhost 24800
 	
 	_messageNormal 'synergy_sequence: Ready: _waitPort localhost synergyport= '"$synergyPort"
 	
 	#Service may not always be ready when port is up.
 	
 	sleep 0.8
-	if ! _checkPort localhost "$synergyPort"
+	#if ! _checkPort localhost "$synergyPort"
+	if ! _checkPort localhost 24800
 	then
 		stty echo > /dev/null 2>&1
 		_stop_safeTmp_ssh "$@"
@@ -12736,7 +12738,8 @@ _push_synergy_sequence() {
 	
 	_messageNormal '_synergy_sequence: Ready: sleep, _checkPort. Launch: _synergyc'
 	
-	_synergy_ssh -L "$synergyPort":localhost:24800 "$@" 'env synergyPort='"$synergyPort"' '"$safeTmpSSH"/cautossh' _synergyc'
+	#_synergy_ssh -L "$synergyPort":localhost:24800 "$@" 'env synergyPort='"$synergyPort"' '"$safeTmpSSH"/cautossh' _synergyc'
+	_synergy_ssh -R "$synergyPort":localhost:24800 "$@" 'env synergyPort='"$synergyPort"' '"$safeTmpSSH"/cautossh' _synergyc'
 	
 	sleep 3
 	if ! _checkPort localhost "$synergyPort"
@@ -12748,7 +12751,8 @@ _push_synergy_sequence() {
 	
 	_messageNormal '_synergy_sequence: Ready: sleep, _checkPort. Launch: _synergyc'
 	
-	_synergy_ssh -L "$synergyPort":localhost:24800 "$@" 'env synergyPort='"$synergyPort"' '"$safeTmpSSH"/cautossh' _synergyc'
+	#_synergy_ssh -L "$synergyPort":localhost:24800 "$@" 'env synergyPort='"$synergyPort"' '"$safeTmpSSH"/cautossh' _synergyc'
+	_synergy_ssh -R "$synergyPort":localhost:24800 "$@" 'env synergyPort='"$synergyPort"' '"$safeTmpSSH"/cautossh' _synergyc'
 	
 	sleep 9
 	if ! _checkPort localhost "$synergyPort"
@@ -12760,7 +12764,8 @@ _push_synergy_sequence() {
 	
 	_messageNormal '_synergy_sequence: Ready: sleep, _checkPort. Launch: _synergyc'
 	
-	_synergy_ssh -L "$synergyPort":localhost:24800 "$@" 'env synergyPort='"$synergyPort"' '"$safeTmpSSH"/cautossh' _synergyc'
+	#_synergy_ssh -L "$synergyPort":localhost:24800 "$@" 'env synergyPort='"$synergyPort"' '"$safeTmpSSH"/cautossh' _synergyc'
+	_synergy_ssh -R "$synergyPort":localhost:24800 "$@" 'env synergyPort='"$synergyPort"' '"$safeTmpSSH"/cautossh' _synergyc'
 	
 	_stop_safeTmp_ssh "$@"
 	_stop
