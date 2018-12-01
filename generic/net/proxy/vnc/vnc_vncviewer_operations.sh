@@ -15,7 +15,9 @@ _vncviewer_operations() {
 	then
 		_messagePlain_good 'found: vncviewer (TigerVNC)'
 		
-		if ! vncviewer -DotWhenNoCursor -passwd "$vncPasswdFile" localhost:"$vncPort" "$@"
+		[[ "$vncviewer_startFull" == "true" ]] && vncviewerArgs+=(-FullScreen)
+		
+		if ! vncviewer -DotWhenNoCursor -passwd "$vncPasswdFile" localhost:"$vncPort" "${vncviewerArgs[@]}" "$@"
 		then
 			_messagePlain_bad 'fail: vncviewer'
 			stty echo > /dev/null 2>&1

@@ -3268,6 +3268,7 @@ _vnc_sequence() {
 	
 	# TODO WARNING Terminal echo (ie. "stty echo") lockup errors are possible as ssh is backgrounded without "-f".
 	cat "$vncPasswdFile".pln | _vnc_ssh -L "$vncPort":localhost:"$vncPort" "$@" 'env vncPort='"$vncPort"' '"$safeTmpSSH"/cautossh' _x11vnc' &
+	cat "$vncPasswdFile".pln | _vnc_ssh -L "$vncPort":localhost:"$vncPort" "$@" 'env vncPort='"$vncPort"' x11vnc_clip='"$x11vnc_clip"' x11vnc_scale='"$x11vnc_scale"' '"$safeTmpSSH"/cautossh' _x11vnc' &
 	
 	_waitPort localhost "$vncPort"
 	
@@ -3283,7 +3284,8 @@ _vnc_sequence() {
 		_stop
 	fi
 	_messageNormal '_vnc_sequence: Ready: sleep, _checkPort. Launch: _vncviewer'
-	cat "$vncPasswdFile".pln | bash -c 'env vncPort='"$vncPort"' destination_DISPLAY='"$DISPLAY"' destination_AUTH='"$XAUTHORITY"' '"$scriptAbsoluteLocation"' _vncviewer'
+	cat "$vncPasswdFile".pln | bash -c 'env vncPort='"$vncPort"' destination_DISPLAY='"$DISPLAY"' destination_AUTH='"$XAUTHORITY"' vncviewer_startFull='"$vncviewer_startFull"' '"$scriptAbsoluteLocation"' _vncviewer'
+	'env vncPort='"$vncPort"' destination_DISPLAY='"$DISPLAY"' destination_AUTH='"$XAUTHORITY"' vncviewer_startFull='"$vncviewer_startFull"' '"$scriptAbsoluteLocation"' _vncviewer'
 	
 	sleep 3
 	if ! _checkPort localhost "$vncPort"
@@ -3293,7 +3295,7 @@ _vnc_sequence() {
 		_stop
 	fi
 	_messageNormal '_vnc_sequence: Ready: sleep, _checkPort. Launch: _vncviewer'
-	cat "$vncPasswdFile".pln | bash -c 'env vncPort='"$vncPort"' destination_DISPLAY='"$DISPLAY"' destination_AUTH='"$XAUTHORITY"' '"$scriptAbsoluteLocation"' _vncviewer'
+	cat "$vncPasswdFile".pln | bash -c 'env vncPort='"$vncPort"' destination_DISPLAY='"$DISPLAY"' destination_AUTH='"$XAUTHORITY"' vncviewer_startFull='"$vncviewer_startFull"' '"$scriptAbsoluteLocation"' _vncviewer'
 	
 	sleep 9
 	if ! _checkPort localhost "$vncPort"
@@ -3303,7 +3305,7 @@ _vnc_sequence() {
 		_stop
 	fi
 	_messageNormal '_vnc_sequence: Ready: sleep, _checkPort. Launch: _vncviewer'
-	cat "$vncPasswdFile".pln | bash -c 'env vncPort='"$vncPort"' destination_DISPLAY='"$DISPLAY"' destination_AUTH='"$XAUTHORITY"' '"$scriptAbsoluteLocation"' _vncviewer'
+	cat "$vncPasswdFile".pln | bash -c 'env vncPort='"$vncPort"' destination_DISPLAY='"$DISPLAY"' destination_AUTH='"$XAUTHORITY"' vncviewer_startFull='"$vncviewer_startFull"' '"$scriptAbsoluteLocation"' _vncviewer'
 	
 	
 	_messageNormal '_vnc_sequence: Done: final attempt: _vncviewer'
@@ -3326,7 +3328,7 @@ _push_vnc_sequence() {
 	
 	_messageNormal '_push_vnc_sequence: Launch: _x11vnc'
 	
-	cat "$vncPasswdFile".pln | bash -c 'env vncPort='"$vncPort"' '"$scriptAbsoluteLocation"' _x11vnc' &
+	cat "$vncPasswdFile".pln | bash -c 'env vncPort='"$vncPort"' x11vnc_clip='"$x11vnc_clip"' x11vnc_scale='"$x11vnc_scale"' '"$scriptAbsoluteLocation"' _x11vnc' &
 	#-noxrecord -noxfixes -noxdamage
 	
 	_waitPort localhost "$vncPort"
@@ -3343,7 +3345,7 @@ _push_vnc_sequence() {
 		_stop
 	fi
 	_messageNormal '_push_vnc_sequence: Ready: sleep, _checkPort. Launch: _vncviewer'
-	cat "$vncPasswdFile".pln | _vnc_ssh -R "$vncPort":localhost:"$vncPort" "$@" 'env vncPort='"$vncPort"' '"$safeTmpSSH"/cautossh' _vncviewer'
+	cat "$vncPasswdFile".pln | _vnc_ssh -R "$vncPort":localhost:"$vncPort" "$@" 'env vncPort='"$vncPort"' vncviewer_startFull='"$vncviewer_startFull"' '"$safeTmpSSH"/cautossh' _vncviewer'
 	
 	sleep 3
 	if ! _checkPort localhost "$vncPort"
@@ -3353,7 +3355,7 @@ _push_vnc_sequence() {
 		_stop
 	fi
 	_messageNormal '_push_vnc_sequence: Ready: sleep, _checkPort. Launch: _vncviewer'
-	cat "$vncPasswdFile".pln | _vnc_ssh -R "$vncPort":localhost:"$vncPort" "$@" 'env vncPort='"$vncPort"' '"$safeTmpSSH"/cautossh' _vncviewer'
+	cat "$vncPasswdFile".pln | _vnc_ssh -R "$vncPort":localhost:"$vncPort" "$@" 'env vncPort='"$vncPort"' vncviewer_startFull='"$vncviewer_startFull"' '"$safeTmpSSH"/cautossh' _vncviewer'
 	
 	sleep 9
 	if ! _checkPort localhost "$vncPort"
@@ -3363,7 +3365,7 @@ _push_vnc_sequence() {
 		_stop
 	fi
 	_messageNormal '_push_vnc_sequence: Ready: sleep, _checkPort. Launch: _vncviewer'
-	cat "$vncPasswdFile".pln | _vnc_ssh -R "$vncPort":localhost:"$vncPort" "$@" 'env vncPort='"$vncPort"' '"$safeTmpSSH"/cautossh' _vncviewer'
+	cat "$vncPasswdFile".pln | _vnc_ssh -R "$vncPort":localhost:"$vncPort" "$@" 'env vncPort='"$vncPort"' vncviewer_startFull='"$vncviewer_startFull"' '"$safeTmpSSH"/cautossh' _vncviewer'
 	
 	_messageNormal '_push_vnc_sequence: Done: final attempt: _vncviewer'
 	
@@ -3393,7 +3395,7 @@ _desktop_sequence() {
 	
 	_messageNormal '_vnc_sequence: Ready: _waitPort. Launch: _vncviewer'
 	
-	cat "$vncPasswdFile".pln | bash -c 'env vncPort='"$vncPort"' destination_DISPLAY='"$DISPLAY"' destination_AUTH='"$XAUTHORITY"' '"$scriptAbsoluteLocation"' _vncviewer'
+	cat "$vncPasswdFile".pln | bash -c 'env vncPort='"$vncPort"' destination_DISPLAY='"$DISPLAY"' destination_AUTH='"$XAUTHORITY"' vncviewer_startFull='"$vncviewer_startFull"' '"$scriptAbsoluteLocation"' _vncviewer'
 	stty echo > /dev/null 2>&1
 	
 	_messageNormal '_vnc_sequence: Terminate: _vncserver_terminate'
@@ -3425,7 +3427,7 @@ _push_desktop_sequence() {
 	
 	_messageNormal '_push_desktop_sequence: Ready: _waitPort. Launch: _vncviewer'
 	
-	cat "$vncPasswdFile".pln | _vnc_ssh -R "$vncPort":localhost:"$vncPort" "$@" 'env vncPort='"$vncPort"' destination_DISPLAY='""' '"$safeTmpSSH"/cautossh' _vncviewer'
+	cat "$vncPasswdFile".pln | _vnc_ssh -R "$vncPort":localhost:"$vncPort" "$@" 'env vncPort='"$vncPort"' destination_DISPLAY='""' vncviewer_startFull='"$vncviewer_startFull"' '"$safeTmpSSH"/cautossh' _vncviewer'
 	stty echo > /dev/null 2>&1
 	
 	_messageNormal '_push_desktop_sequence: Terminate: _vncserver_terminate'
@@ -3953,7 +3955,9 @@ _vncviewer_operations() {
 	then
 		_messagePlain_good 'found: vncviewer (TigerVNC)'
 		
-		if ! vncviewer -DotWhenNoCursor -passwd "$vncPasswdFile" localhost:"$vncPort" "$@"
+		[[ "$vncviewer_startFull" == "true" ]] && vncviewerArgs+=(-FullScreen)
+		
+		if ! vncviewer -DotWhenNoCursor -passwd "$vncPasswdFile" localhost:"$vncPort" "${vncviewerArgs[@]}" "$@"
 		then
 			_messagePlain_bad 'fail: vncviewer'
 			stty echo > /dev/null 2>&1
@@ -3985,6 +3989,7 @@ _vncviewer_operations() {
 	return 1
 }
 
+# Environment variables "x11vnc_clip" and "x11vnc_scale" may be forced.
 _x11vnc_operations() {
 	_messagePlain_nominal 'init: _x11vnc_operations'
 	
@@ -3996,6 +4001,11 @@ _x11vnc_operations() {
 	_messagePlain_probe 'x11vnc_operations'
 	_report_detect_x11
 	
+	#local x11vncArgs
+	
+	[[ "$x11vnc_clip" != "" ]] && x11vncArgs+=(-clip "$x11vnc_clip")
+	[[ "$x11vnc_scale" != "" ]] && x11vncArgs+=(-scale "$x11vnc_scale")
+	
 	_messagePlain_nominal 'Detecting and launching x11vnc.'
 	#x11vnc
 	if type x11vnc >/dev/null 2>&1
@@ -4004,7 +4014,7 @@ _x11vnc_operations() {
 		
 		#-passwdfile cmd:"/bin/cat -"
 		#-noxrecord -noxfixes -noxdamage
-		if ! _x11vnc_command -localhost -rfbauth "$vncPasswdFile" -rfbport "$vncPort" -timeout 48 -xkb -display "$destination_DISPLAY" -auth "$destination_AUTH" -noxrecord -noxdamage
+		if ! _x11vnc_command -localhost -rfbauth "$vncPasswdFile" -rfbport "$vncPort" -timeout 48 -xkb -display "$destination_DISPLAY" -auth "$destination_AUTH" -noxrecord -noxdamage "${x11vncArgs[@]}"
 		then
 			_messagePlain_bad 'fail: x11vnc'
 			return 1
