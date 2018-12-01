@@ -3571,19 +3571,19 @@ _setup_ssh_operations() {
 	
 	if ! [[ -e "$scriptLocal"/ssh/id_rsa ]] && ! [[ -e "$sshLocalSSH"/id_rsa ]]
 	then
-		ssh-keygen -b 4096 -t rsa -N "" -f "$scriptLocal"/ssh/id_rsa
+		ssh-keygen -b 4096 -t rsa -N "" -f "$scriptLocal"/ssh/id_rsa -C cautossh@"$netName"
 	fi
 	
 	#Less privileged key used by asset machines to establish persistent reverse tunnels ending at a gateway server.
 	if ! [[ -e "$scriptLocal"/ssh/rev_gate ]] && ! [[ -e "$sshLocalSSH"/rev_gate ]]
 	then
-		ssh-keygen -b 4096 -t rsa -N "" -f "$scriptLocal"/ssh/rev_gate
+		ssh-keygen -b 4096 -t rsa -N "" -f "$scriptLocal"/ssh/rev_gate -C cautossh@"$netName"
 	fi
 	
 	#Less privileged key used by random machines to establish temporary reverse tunnels ending at a command machine.
 	if ! [[ -e "$scriptLocal"/ssh/rev_cmd ]] && ! [[ -e "$sshLocalSSH"/rev_cmd ]]
 	then
-		ssh-keygen -b 4096 -t rsa -N "" -f "$scriptLocal"/ssh/rev_cmd
+		ssh-keygen -b 4096 -t rsa -N "" -f "$scriptLocal"/ssh/rev_cmd -C cautossh@"$netName"
 	fi
 	
 	_here_ssh_config >> "$safeTmp"/config
