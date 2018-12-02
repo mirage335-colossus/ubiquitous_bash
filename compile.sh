@@ -143,7 +143,7 @@ fi
 if ! type md5sum > /dev/null 2>&1 && type md5 > /dev/null 2>&1
 then
 	md5sum() {
-		md5
+		md5 "$@"
 	}
 fi
 
@@ -152,7 +152,7 @@ fi
 #if ! type md5 > /dev/null 2>&1 && type md5sum > /dev/null 2>&1
 #then
 #	md5() {
-#		md5sum
+#		md5sum "$@"
 #	}
 #fi
 
@@ -166,6 +166,14 @@ then
 		'/cygdrive/c/Program Files (x86)/Nmap/nmap.exe' "$@"
 	}
 fi
+
+if ! type vncviewer > /dev/null 2>&1 && type '/cygdrive/c/Program Files/TigerVNC/vncviewer.exe' > /dev/null 2>&1
+then
+	vncviewer() {
+		'/cygdrive/c/Program Files/TigerVNC/vncviewer.exe' "$@"
+	}
+fi
+
 
 #####Utilities
 
