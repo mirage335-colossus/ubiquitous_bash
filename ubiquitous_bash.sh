@@ -4087,8 +4087,13 @@ _testProxyRouter_sequence() {
 _testProxyRouter() {
 	_getDep socat
 	
-	_getDep nc
 	_getDep nmap
+	
+	# WARNING: Cygwin does not pass netcat tests.
+	uname -a | grep -i cygwin > /dev/null 2>&1 && return 0
+	
+	# WARNING: Do not rely on 'netcat' functionality. Relatively non-portable. Prefer "socat" .
+	_getDep nc
 	
 	if "$scriptAbsoluteLocation" _testProxyRouter_sequence "$@"
 	then
