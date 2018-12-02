@@ -160,7 +160,7 @@ fi
 
 #Override, cygwin.
 
-if ! type nmap > /dev/null && type '/cygdrive/c/Program Files (x86)/Nmap/nmap.exe' > /dev/null 2>&1
+if ! type nmap > /dev/null 2>&1 && type '/cygdrive/c/Program Files (x86)/Nmap/nmap.exe' > /dev/null 2>&1
 then
 	nmap() {
 		'/cygdrive/c/Program Files (x86)/Nmap/nmap.exe' "$@"
@@ -2039,6 +2039,7 @@ _checkPort_local() {
 	if uname -a | grep -i cygwin > /dev/null 2>&1
 	then
 		nmap --host-timeout 0.1 -Pn localhost -p "$1" 2> /dev/null | grep open > /dev/null 2>&1
+		return $?
 	fi
 	
 	return 1
