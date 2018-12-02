@@ -158,6 +158,8 @@ fi
 
 #Override (Program).
 
+
+
 #####Utilities
 
 _test_getAbsoluteLocation_sequence() {
@@ -3089,6 +3091,8 @@ _compile_bash_header() {
 	
 	includeScriptList+=( "os/override"/override.sh )
 	includeScriptList+=( "os/override"/override_prog.sh )
+	
+	includeScriptList+=( "os/override"/override_cygwin.sh )
 }
 
 _compile_bash_header_program() {
