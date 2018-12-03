@@ -31,8 +31,8 @@ _testProxySSH() {
 	! _wantDep x0tigervncserver && echo 'warn: x0tigervncserver not found'
 	
 	! _wantDep vncpasswd && echo 'warn: vncpasswd not found, x11vnc broken!'
+	! _wantDep xset && echo 'warn: xset not found, vnc broken!'
 	
-	! _wantDep xset && echo 'warn: xset not found'
 	
 	#! _wantDep xpra && echo 'warn: xpra not found'
 	#! _wantDep xephyr && echo 'warn: xephyr not found'
