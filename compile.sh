@@ -174,21 +174,24 @@ then
 	}
 fi
 
+
+# WARNING: Native 'vncviewer.exe' has not been successfully tested and cannot be launched from Cygwin SSH server.
+
 #if ! type vncviewer > /dev/null 2>&1 && type '/cygdrive/c/Program Files/TigerVNC/vncviewer.exe' > /dev/null 2>&1
 
-if type '/cygdrive/c/Program Files/TigerVNC/vncviewer.exe' > /dev/null 2>&1 && uname -a | grep -i cygwin > /dev/null 2>&1
-then
-	vncviewer() {
-		'/cygdrive/c/Program Files/TigerVNC/vncviewer.exe' "$@"
-	}
-fi
+#if type '/cygdrive/c/Program Files/TigerVNC/vncviewer.exe' > /dev/null 2>&1 && uname -a | grep -i cygwin > /dev/null 2>&1
+#then
+#	vncviewer() {
+#		'/cygdrive/c/Program Files/TigerVNC/vncviewer.exe' "$@"
+#	}
+#fi
 
-if type '/cygdrive/c/Program Files (x86)/TigerVNC/vncviewer.exe' > /dev/null 2>&1 && uname -a | grep -i cygwin > /dev/null 2>&1
-then
-	vncviewer() {
-		'/cygdrive/c/Program Files (x86)/TigerVNC/vncviewer.exe' "$@"
-	}
-fi
+#if type '/cygdrive/c/Program Files (x86)/TigerVNC/vncviewer.exe' > /dev/null 2>&1 && uname -a | grep -i cygwin > /dev/null 2>&1
+#then
+#	vncviewer() {
+#		'/cygdrive/c/Program Files (x86)/TigerVNC/vncviewer.exe' "$@"
+#	}
+#fi
 
 
 #####Utilities

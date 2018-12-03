@@ -174,21 +174,24 @@ then
 	}
 fi
 
+
+# WARNING: Native 'vncviewer.exe' has not been successfully tested and cannot be launched from Cygwin SSH server.
+
 #if ! type vncviewer > /dev/null 2>&1 && type '/cygdrive/c/Program Files/TigerVNC/vncviewer.exe' > /dev/null 2>&1
 
-if type '/cygdrive/c/Program Files/TigerVNC/vncviewer.exe' > /dev/null 2>&1 && uname -a | grep -i cygwin > /dev/null 2>&1
-then
-	vncviewer() {
-		'/cygdrive/c/Program Files/TigerVNC/vncviewer.exe' "$@"
-	}
-fi
+#if type '/cygdrive/c/Program Files/TigerVNC/vncviewer.exe' > /dev/null 2>&1 && uname -a | grep -i cygwin > /dev/null 2>&1
+#then
+#	vncviewer() {
+#		'/cygdrive/c/Program Files/TigerVNC/vncviewer.exe' "$@"
+#	}
+#fi
 
-if type '/cygdrive/c/Program Files (x86)/TigerVNC/vncviewer.exe' > /dev/null 2>&1 && uname -a | grep -i cygwin > /dev/null 2>&1
-then
-	vncviewer() {
-		'/cygdrive/c/Program Files (x86)/TigerVNC/vncviewer.exe' "$@"
-	}
-fi
+#if type '/cygdrive/c/Program Files (x86)/TigerVNC/vncviewer.exe' > /dev/null 2>&1 && uname -a | grep -i cygwin > /dev/null 2>&1
+#then
+#	vncviewer() {
+#		'/cygdrive/c/Program Files (x86)/TigerVNC/vncviewer.exe' "$@"
+#	}
+#fi
 
 
 #####Utilities
@@ -2708,8 +2711,8 @@ _testProxySSH() {
 	! _wantDep x0tigervncserver && echo 'warn: x0tigervncserver not found'
 	
 	! _wantDep vncpasswd && echo 'warn: vncpasswd not found, x11vnc broken!'
+	! _wantDep xset && echo 'warn: xset not found, vnc broken!'
 	
-	! _wantDep xset && echo 'warn: xset not found'
 	
 	#! _wantDep xpra && echo 'warn: xpra not found'
 	#! _wantDep xephyr && echo 'warn: xephyr not found'
@@ -4060,7 +4063,7 @@ _x11vnc_operations() {
 		
 		#-passwdfile cmd:"/bin/cat -"
 		#-noxrecord -noxfixes -noxdamage
-		if ! _x11vnc_command -localhost -rfbauth "$vncPasswdFile" -rfbport "$vncPort" -timeout 48 -xkb -display "$destination_DISPLAY" -auth "$destination_AUTH" -noxrecord -noxdamage "${x11vncArgs[@]}"
+		if ! _x11vnc_command -localhost -rfbauth "$vncPasswdFile" -rfbport "$vncPort" -timeout 48 -xkb -display "$destination_DISPLAY" -auth "$destination_AUTH" -noxrecord -noxdamage -xrefresh 1 -fixscreen "V=3,C=3,X=3,8=3" -ungrabboth "${x11vncArgs[@]}"
 		then
 			_messagePlain_bad 'fail: x11vnc'
 			return 1
