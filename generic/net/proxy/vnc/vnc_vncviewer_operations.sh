@@ -5,20 +5,27 @@ _vncviewer_operations() {
 	#https://steamcommunity.com/app/382110/discussions/0/1741101364304281184/
 	if [[ "$vncviewer_manual" == 'true' ]]
 	then
+		[[ "$vncviewer_startFull" == "true" ]] && vncviewerArgs+=(-FullScreen)
+		
 		mkdir -p "$HOME"/usrcmd
 		
-		local usrcmdUID=$(_uid)
+		local usrcmdUID
+		usrcmdUID=$(_uid)
 		
 		_safeEcho_newline 'vncviewer -DotWhenNoCursor -passwd '"$vncPasswdFile"' localhost:'"$vncPort"' '"${vncviewerArgs[@]}"' '"$@" > "$HOME"/usrcmd/"$usrcmdUID"
 		
+		local msw_vncPasswdFile
+		msw_vncPasswdFile=$(_slashBackToForward "$vncPasswdFile")
+		msw_vncPasswdFile='C:\cygwin64'"$vncPasswdFile"
+		
 		if type '/cygdrive/c/Program Files/TigerVNC/vncviewer.exe' > /dev/null 2>&1 && uname -a | grep -i cygwin > /dev/null 2>&1
 		then
-			_safeEcho_newline 'C:\Program Files\TigerVNC\vncviewer.exe'' -DotWhenNoCursor -passwd '"$vncPasswdFile"' localhost:'"$vncPort"' '"${vncviewerArgs[@]}"' '"$@" > "$HOME"/usrcmd/"$usrcmdUID"_x64.bat
+			_safeEcho_newline 'C:\Program Files\TigerVNC\vncviewer.exe'' -DotWhenNoCursor -passwd '"$msw_vncPasswdFile"' localhost:'"$vncPort"' '"${vncviewerArgs[@]}"' '"$@" > "$HOME"/usrcmd/"$usrcmdUID"_x64.bat
 		fi
 		
 		if type '/cygdrive/c/Program Files (x86)/TigerVNC/vncviewer.exe' > /dev/null 2>&1 && uname -a | grep -i cygwin > /dev/null 2>&1
 		then
-			_safeEcho_newline 'C:\Program Files (x86)\TigerVNC\vncviewer.exe'' -DotWhenNoCursor -passwd '"$vncPasswdFile"' localhost:'"$vncPort"' '"${vncviewerArgs[@]}"' '"$@" > "$HOME"/usrcmd/"$usrcmdUID"_x86.bat
+			_safeEcho_newline 'C:\Program Files (x86)\TigerVNC\vncviewer.exe'' -DotWhenNoCursor -passwd '"$msw_vncPasswdFile"' localhost:'"$vncPort"' '"${vncviewerArgs[@]}"' '"$@" > "$HOME"/usrcmd/"$usrcmdUID"_x86.bat
 		fi
 		
 		_messagePlain_request 'request: manual launch: vncviewer: time 120s: instructions:' "$HOME"/usrcmd/"$usrcmdUID"
