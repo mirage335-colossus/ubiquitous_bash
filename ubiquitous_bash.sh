@@ -3722,8 +3722,9 @@ _package_cautossh() {
 	
 	rsync -av --progress --exclude "_arc" ./_index/ "$safeTmp"/package/_index/
 	
-	cp -a ./_local/ssh "$safeTmp"/package/
-	cp -a ./_local/tor "$safeTmp"/package/
+	mkdir -p ./_local
+	cp -a ./_local/ssh "$safeTmp"/package/_local/
+	cp -a ./_local/tor "$safeTmp"/package/_local/
 	
 	
 	cd "$localFunctionEntryPWD"
