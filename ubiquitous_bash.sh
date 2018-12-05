@@ -3710,15 +3710,23 @@ _setup_ssh_commands() {
 }
 
 _package_cautossh() {
+	local localFunctionEntryPWD
+	localFunctionEntryPWD="$PWD"
+	cd "$scriptAbsoluteFolder"
+	
+	
 	#cp -a "$scriptAbsoluteFolder"/_index "$safeTmp"/package
 	
 	#https://stackoverflow.com/questions/4585929/how-to-use-cp-command-to-exclude-a-specific-directory
-	find "$scriptAbsoluteFolder"/_index -type f -not -path '*_arc*' -exec cp -d --preserve=all '{}' "$safeTmp"'/package/''{}' \;
+	find ./_index -type f -not -path '*_arc*' -exec cp -d --preserve=all '{}' "$safeTmp"'/package/''{}' \;
 	
-	rsync -av --progress --exclude "_arc" "$scriptAbsoluteFolder"/_index/ "$safeTmp"/package/_index/
+	rsync -av --progress --exclude "_arc" ./_index/ "$safeTmp"/package/_index/
 	
-	cp -a "$scriptAbsoluteFolder"/_local/ssh "$safeTmp"/package/
-	cp -a "$scriptAbsoluteFolder"/_local/tor "$safeTmp"/package/
+	cp -a ./_local/ssh "$safeTmp"/package/
+	cp -a ./_local/tor "$safeTmp"/package/
+	
+	
+	cd "$localFunctionEntryPWD"
 }
 
 #May be overridden by "ops" if multiple gateways are required.
