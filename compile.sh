@@ -175,7 +175,10 @@ then
 fi
 
 
-# WARNING: Native 'vncviewer.exe' has not been successfully tested and cannot be launched from Cygwin SSH server.
+# WARNING: Native 'vncviewer.exe' cannot be launched from Cygwin SSH server.
+
+# ATTENTION: If needed, launch "tmux" (no parameters) in a graphical Cygwin terminal.
+# https://superuser.com/questions/531787/starting-windows-gui-program-in-windows-through-cygwin-sshd-from-ssh-client
 
 #if ! type vncviewer > /dev/null 2>&1 && type '/cygdrive/c/Program Files/TigerVNC/vncviewer.exe' > /dev/null 2>&1
 
@@ -183,7 +186,7 @@ if type '/cygdrive/c/Program Files/TigerVNC/vncviewer.exe' > /dev/null 2>&1 && u
 then
 	export override_cygwin_vncviewer='true'
 	vncviewer() {
-		'/cygdrive/c/Program Files/TigerVNC/vncviewer.exe' "$@"
+		tmux new-window '/cygdrive/c/Program Files/TigerVNC/vncviewer.exe' "$@"
 	}
 fi
 
@@ -191,7 +194,7 @@ if type '/cygdrive/c/Program Files (x86)/TigerVNC/vncviewer.exe' > /dev/null 2>&
 then
 	export override_cygwin_vncviewer='true'
 	vncviewer() {
-		'/cygdrive/c/Program Files (x86)/TigerVNC/vncviewer.exe' "$@"
+		tmux new-window '/cygdrive/c/Program Files (x86)/TigerVNC/vncviewer.exe' "$@"
 	}
 fi
 
