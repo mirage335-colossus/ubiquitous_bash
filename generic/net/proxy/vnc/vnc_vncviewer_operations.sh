@@ -9,18 +9,20 @@ _vncviewer_operations() {
 		
 		local usrcmdUID=$(_uid)
 		
-		echo 'vncviewer localhost:'"$vncPort" > "$HOME"/usrcmd/"$usrcmdUID"
+		_safeEcho_newline 'vncviewer -DotWhenNoCursor -passwd '"$vncPasswdFile"' localhost:'"$vncPort"' '"${vncviewerArgs[@]}"' '"$@" > "$HOME"/usrcmd/"$usrcmdUID"
 		
 		_messagePlain_request 'request: manual launch: vncviewer: time 120s: instructions:' "$HOME"/usrcmd/"$usrcmdUID"
 		
 		_messagePlain_nominal 'wait...'
 		
 		sleep 9
-		while ! _checkPort localhost "$vncPort"
+		while _checkPort localhost "$vncPort"
 		do
 			sleep 6
 		done
 		sleep 3
+		
+		rm -f "$HOME"/usrcmd/"$usrcmdUID" > /dev/null 2>&1
 		
 		return 0
 	fi
