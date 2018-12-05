@@ -1420,6 +1420,15 @@ _messageColors() {
 	return 0
 }
 
+#Purple. User must do something manually to proceed. NOT to be used for dependency installation requests - use probe, bad, and fail statements for that.
+_messagePlain_request() {
+	echo -e -n '\E[0;35m '
+	echo -n "$@"
+	echo -e -n ' \E[0m'
+	echo
+	return 0
+}
+
 #Cyan. Harmless status messages.
 #"generic/ubiquitousheader.sh"
 _messagePlain_nominal() {
@@ -3332,8 +3341,8 @@ _vnc_sequence() {
 		_stop
 	fi
 	_messageNormal '_vnc_sequence: Ready: sleep, _checkPort. Launch: _vncviewer'
-	cat "$vncPasswdFile".pln | bash -c 'env vncPort='"$vncPort"' destination_DISPLAY='"$DISPLAY"' destination_AUTH='"$XAUTHORITY"' vncviewer_startFull='"$vncviewer_startFull"' '"$scriptAbsoluteLocation"' _vncviewer'
-	'env vncPort='"$vncPort"' destination_DISPLAY='"$DISPLAY"' destination_AUTH='"$XAUTHORITY"' vncviewer_startFull='"$vncviewer_startFull"' '"$scriptAbsoluteLocation"' _vncviewer'
+	cat "$vncPasswdFile".pln | bash -c 'env vncPort='"$vncPort"' destination_DISPLAY='"$DISPLAY"' destination_AUTH='"$XAUTHORITY"' vncviewer_startFull='"$vncviewer_startFull"' vncviewer_manual='"$vncviewer_manual"' '"$scriptAbsoluteLocation"' _vncviewer'
+	'env vncPort='"$vncPort"' destination_DISPLAY='"$DISPLAY"' destination_AUTH='"$XAUTHORITY"' vncviewer_startFull='"$vncviewer_startFull"' vncviewer_manual='"$vncviewer_manual"' '"$scriptAbsoluteLocation"' _vncviewer'
 	
 	sleep 3
 	if ! _checkPort localhost "$vncPort"
@@ -3343,7 +3352,7 @@ _vnc_sequence() {
 		_stop
 	fi
 	_messageNormal '_vnc_sequence: Ready: sleep, _checkPort. Launch: _vncviewer'
-	cat "$vncPasswdFile".pln | bash -c 'env vncPort='"$vncPort"' destination_DISPLAY='"$DISPLAY"' destination_AUTH='"$XAUTHORITY"' vncviewer_startFull='"$vncviewer_startFull"' '"$scriptAbsoluteLocation"' _vncviewer'
+	cat "$vncPasswdFile".pln | bash -c 'env vncPort='"$vncPort"' destination_DISPLAY='"$DISPLAY"' destination_AUTH='"$XAUTHORITY"' vncviewer_startFull='"$vncviewer_startFull"' vncviewer_manual='"$vncviewer_manual"' '"$scriptAbsoluteLocation"' _vncviewer'
 	
 	sleep 9
 	if ! _checkPort localhost "$vncPort"
@@ -3353,7 +3362,7 @@ _vnc_sequence() {
 		_stop
 	fi
 	_messageNormal '_vnc_sequence: Ready: sleep, _checkPort. Launch: _vncviewer'
-	cat "$vncPasswdFile".pln | bash -c 'env vncPort='"$vncPort"' destination_DISPLAY='"$DISPLAY"' destination_AUTH='"$XAUTHORITY"' vncviewer_startFull='"$vncviewer_startFull"' '"$scriptAbsoluteLocation"' _vncviewer'
+	cat "$vncPasswdFile".pln | bash -c 'env vncPort='"$vncPort"' destination_DISPLAY='"$DISPLAY"' destination_AUTH='"$XAUTHORITY"' vncviewer_startFull='"$vncviewer_startFull"' vncviewer_manual='"$vncviewer_manual"' '"$scriptAbsoluteLocation"' _vncviewer'
 	
 	
 	_messageNormal '_vnc_sequence: Done: final attempt: _vncviewer'
@@ -3393,7 +3402,7 @@ _push_vnc_sequence() {
 		_stop
 	fi
 	_messageNormal '_push_vnc_sequence: Ready: sleep, _checkPort. Launch: _vncviewer'
-	cat "$vncPasswdFile".pln | _vnc_ssh -R "$vncPort":localhost:"$vncPort" "$@" 'env vncPort='"$vncPort"' vncviewer_startFull='"$vncviewer_startFull"' '"$safeTmpSSH"/cautossh' _vncviewer'
+	cat "$vncPasswdFile".pln | _vnc_ssh -R "$vncPort":localhost:"$vncPort" "$@" 'env vncPort='"$vncPort"' vncviewer_startFull='"$vncviewer_startFull"' vncviewer_manual='"$vncviewer_manual"' '"$safeTmpSSH"/cautossh' _vncviewer'
 	
 	sleep 3
 	if ! _checkPort localhost "$vncPort"
@@ -3403,7 +3412,7 @@ _push_vnc_sequence() {
 		_stop
 	fi
 	_messageNormal '_push_vnc_sequence: Ready: sleep, _checkPort. Launch: _vncviewer'
-	cat "$vncPasswdFile".pln | _vnc_ssh -R "$vncPort":localhost:"$vncPort" "$@" 'env vncPort='"$vncPort"' vncviewer_startFull='"$vncviewer_startFull"' '"$safeTmpSSH"/cautossh' _vncviewer'
+	cat "$vncPasswdFile".pln | _vnc_ssh -R "$vncPort":localhost:"$vncPort" "$@" 'env vncPort='"$vncPort"' vncviewer_startFull='"$vncviewer_startFull"' vncviewer_manual='"$vncviewer_manual"' '"$safeTmpSSH"/cautossh' _vncviewer'
 	
 	sleep 9
 	if ! _checkPort localhost "$vncPort"
@@ -3413,7 +3422,7 @@ _push_vnc_sequence() {
 		_stop
 	fi
 	_messageNormal '_push_vnc_sequence: Ready: sleep, _checkPort. Launch: _vncviewer'
-	cat "$vncPasswdFile".pln | _vnc_ssh -R "$vncPort":localhost:"$vncPort" "$@" 'env vncPort='"$vncPort"' vncviewer_startFull='"$vncviewer_startFull"' '"$safeTmpSSH"/cautossh' _vncviewer'
+	cat "$vncPasswdFile".pln | _vnc_ssh -R "$vncPort":localhost:"$vncPort" "$@" 'env vncPort='"$vncPort"' vncviewer_startFull='"$vncviewer_startFull"' vncviewer_manual='"$vncviewer_manual"' '"$safeTmpSSH"/cautossh' _vncviewer'
 	
 	_messageNormal '_push_vnc_sequence: Done: final attempt: _vncviewer'
 	
@@ -3443,7 +3452,7 @@ _desktop_sequence() {
 	
 	_messageNormal '_vnc_sequence: Ready: _waitPort. Launch: _vncviewer'
 	
-	cat "$vncPasswdFile".pln | bash -c 'env vncPort='"$vncPort"' destination_DISPLAY='"$DISPLAY"' destination_AUTH='"$XAUTHORITY"' vncviewer_startFull='"$vncviewer_startFull"' '"$scriptAbsoluteLocation"' _vncviewer'
+	cat "$vncPasswdFile".pln | bash -c 'env vncPort='"$vncPort"' destination_DISPLAY='"$DISPLAY"' destination_AUTH='"$XAUTHORITY"' vncviewer_startFull='"$vncviewer_startFull"' vncviewer_manual='"$vncviewer_manual"' '"$scriptAbsoluteLocation"' _vncviewer'
 	stty echo > /dev/null 2>&1
 	
 	_messageNormal '_vnc_sequence: Terminate: _vncserver_terminate'
@@ -3475,7 +3484,7 @@ _push_desktop_sequence() {
 	
 	_messageNormal '_push_desktop_sequence: Ready: _waitPort. Launch: _vncviewer'
 	
-	cat "$vncPasswdFile".pln | _vnc_ssh -R "$vncPort":localhost:"$vncPort" "$@" 'env vncPort='"$vncPort"' destination_DISPLAY='""' vncviewer_startFull='"$vncviewer_startFull"' '"$safeTmpSSH"/cautossh' _vncviewer'
+	cat "$vncPasswdFile".pln | _vnc_ssh -R "$vncPort":localhost:"$vncPort" "$@" 'env vncPort='"$vncPort"' destination_DISPLAY='""' vncviewer_startFull='"$vncviewer_startFull"' vncviewer_manual='"$vncviewer_manual"' '"$safeTmpSSH"/cautossh' _vncviewer'
 	stty echo > /dev/null 2>&1
 	
 	_messageNormal '_push_desktop_sequence: Terminate: _vncserver_terminate'
@@ -3989,6 +3998,30 @@ _vncserver_operations() {
 _vncviewer_operations() {
 	_messagePlain_nominal 'init: _vncviewer_operations'
 	
+	#Typically set in '~/.bashrc' for *unusual* machines which have problems using vncviewer under X11.
+	#https://steamcommunity.com/app/382110/discussions/0/1741101364304281184/
+	if [[ "$vncviewer_manual" == 'true' ]]
+	then
+		mkdir -p "$HOME"/usrcmd
+		
+		local usrcmdUID=$(_uid)
+		
+		echo 'vncviewer localhost:'"$vncPort" > "$HOME"/usrcmd/"$usrcmdUID"
+		
+		_messagePlain_request 'request: manual launch: vncviewer: time 120s: instructions:' "$HOME"/usrcmd/"$usrcmdUID"
+		
+		_messagePlain_nominal 'wait...'
+		
+		sleep 9
+		while ! _checkPort localhost "$vncPort"
+		do
+			sleep 6
+		done
+		sleep 3
+		
+		return 0
+	fi
+	
 	_messagePlain_nominal 'Searching for X11 display.'
 	! _detect_x11 && _messagePlain_warn 'fail: _detect_x11'
 	
@@ -4063,7 +4096,7 @@ _x11vnc_operations() {
 		
 		#-passwdfile cmd:"/bin/cat -"
 		#-noxrecord -noxfixes -noxdamage
-		if ! _x11vnc_command -localhost -rfbauth "$vncPasswdFile" -rfbport "$vncPort" -timeout 48 -xkb -display "$destination_DISPLAY" -auth "$destination_AUTH" -noxrecord -noxdamage -xrefresh 1 -fixscreen "V=3,C=3,X=3,8=3" -ungrabboth "${x11vncArgs[@]}"
+		if ! _x11vnc_command -localhost -rfbauth "$vncPasswdFile" -rfbport "$vncPort" -timeout 120 -xkb -display "$destination_DISPLAY" -auth "$destination_AUTH" -noxrecord -noxdamage -xrefresh 1 -fixscreen "V=3,C=3,X=3,8=3" -ungrabboth "${x11vncArgs[@]}"
 		then
 			_messagePlain_bad 'fail: x11vnc'
 			return 1
