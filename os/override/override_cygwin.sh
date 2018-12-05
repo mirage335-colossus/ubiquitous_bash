@@ -1,5 +1,19 @@
 #Override, cygwin.
 
+# ATTENTION: User must launch "tmux" (no parameters) in a graphical Cygwin terminal.
+# Launches graphical application through "tmux new-window" if available.
+# https://superuser.com/questions/531787/starting-windows-gui-program-in-windows-through-cygwin-sshd-from-ssh-client
+_workaround_cygwin_tmux() {
+	if pgrep -u "$USER" ^tmux$ > /dev/null 2>&1
+	then
+		tmux new-window "$@"
+		return "$?"
+	fi
+	
+	"$@"
+	return "$?"
+}
+
 if ! type nmap > /dev/null 2>&1 && type '/cygdrive/c/Program Files/Nmap/nmap.exe' > /dev/null 2>&1
 then
 	nmap() {
@@ -30,10 +44,7 @@ fi
 
 
 
-# WARNING: Native 'vncviewer.exe' cannot be launched from Cygwin SSH server.
-
-# ATTENTION: If needed, launch "tmux" (no parameters) in a graphical Cygwin terminal.
-# https://superuser.com/questions/531787/starting-windows-gui-program-in-windows-through-cygwin-sshd-from-ssh-client
+# WARNING: Native 'vncviewer.exe' is a GUI app, and cannot be launched directly from Cygwin SSH server.
 
 #if ! type vncviewer > /dev/null 2>&1 && type '/cygdrive/c/Program Files/TigerVNC/vncviewer.exe' > /dev/null 2>&1
 
@@ -41,7 +52,7 @@ if type '/cygdrive/c/Program Files/TigerVNC/vncviewer.exe' > /dev/null 2>&1 && u
 then
 	export override_cygwin_vncviewer='true'
 	vncviewer() {
-		tmux new-window '/cygdrive/c/Program Files/TigerVNC/vncviewer.exe' "$@"
+		_workaround_cygwin_tmux '/cygdrive/c/Program Files/TigerVNC/vncviewer.exe' "$@"
 	}
 fi
 
@@ -49,7 +60,7 @@ if type '/cygdrive/c/Program Files (x86)/TigerVNC/vncviewer.exe' > /dev/null 2>&
 then
 	export override_cygwin_vncviewer='true'
 	vncviewer() {
-		tmux new-window '/cygdrive/c/Program Files (x86)/TigerVNC/vncviewer.exe' "$@"
+		_workaround_cygwin_tmux '/cygdrive/c/Program Files (x86)/TigerVNC/vncviewer.exe' "$@"
 	}
 fi
 
