@@ -3136,7 +3136,7 @@ chmod 700 '"$safeTmpSSH"'/cautossh
 
 _stop_safeTmp_ssh() {
 #rm '"$safeTmpSSH"'/w_*/*
-	cat "$scriptAbsoluteLocation" | _ssh -C -o ConnectionAttempts=2 "$@" '
+	_ssh -C -o ConnectionAttempts=2 "$@" '
 rm '"$safeTmpSSH"'/cautossh
 rmdir '"$safeTmpSSH"'/_local
 rmdir '"$safeTmpSSH"'
