@@ -174,6 +174,21 @@ then
 	}
 fi
 
+# DANGER: Severely differing functionality. Intended only to stand in for "ip addr show" and similar.
+if ! type ip > /dev/null 2>&1 && type 'ipconfig' && uname -a | grep -i cygwin > /dev/null 2>&1
+then
+	ip() {
+		if [[ "$1" == "addr" ]] && [[ "$2" == "show" ]]
+		then
+			ipconfig
+			return $?
+		fi
+		
+		return 1
+	}
+fi
+
+
 
 # WARNING: Native 'vncviewer.exe' cannot be launched from Cygwin SSH server.
 
