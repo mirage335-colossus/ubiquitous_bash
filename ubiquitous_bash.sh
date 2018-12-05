@@ -4033,10 +4033,12 @@ _vncviewer_operations() {
 		
 		_messagePlain_nominal 'wait...'
 		
+		# WARNING: Relies on VNC server replying "RFP" to TCP connections.
 		sleep 9
-		while _checkPort localhost "$vncPort"
+		#while _checkPort localhost "$vncPort"
+		while _timeout 6 socat - TCP:localhost:33773,connect-timeout="$netTimeout" 2> /dev/null | grep RFB >/dev/null 2>&1
 		do
-			sleep 6
+			sleep 3
 		done
 		sleep 3
 		
