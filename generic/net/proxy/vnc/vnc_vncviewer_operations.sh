@@ -11,6 +11,16 @@ _vncviewer_operations() {
 		
 		_safeEcho_newline 'vncviewer -DotWhenNoCursor -passwd '"$vncPasswdFile"' localhost:'"$vncPort"' '"${vncviewerArgs[@]}"' '"$@" > "$HOME"/usrcmd/"$usrcmdUID"
 		
+		if type '/cygdrive/c/Program Files/TigerVNC/vncviewer.exe' > /dev/null 2>&1 && uname -a | grep -i cygwin > /dev/null 2>&1
+		then
+			_safeEcho_newline 'C:\Program Files\TigerVNC\vncviewer.exe'' -DotWhenNoCursor -passwd '"$vncPasswdFile"' localhost:'"$vncPort"' '"${vncviewerArgs[@]}"' '"$@" > "$HOME"/usrcmd/"$usrcmdUID"_x64.bat
+		fi
+		
+		if type '/cygdrive/c/Program Files (x86)/TigerVNC/vncviewer.exe' > /dev/null 2>&1 && uname -a | grep -i cygwin > /dev/null 2>&1
+		then
+			_safeEcho_newline 'C:\Program Files (x86)\TigerVNC\vncviewer.exe'' -DotWhenNoCursor -passwd '"$vncPasswdFile"' localhost:'"$vncPort"' '"${vncviewerArgs[@]}"' '"$@" > "$HOME"/usrcmd/"$usrcmdUID"_x86.bat
+		fi
+		
 		_messagePlain_request 'request: manual launch: vncviewer: time 120s: instructions:' "$HOME"/usrcmd/"$usrcmdUID"
 		
 		_messagePlain_nominal 'wait...'
