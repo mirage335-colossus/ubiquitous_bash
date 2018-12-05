@@ -1024,8 +1024,9 @@ _package_cautossh() {
 	#cp -a "$scriptAbsoluteFolder"/_index "$safeTmp"/package
 	
 	#https://stackoverflow.com/questions/4585929/how-to-use-cp-command-to-exclude-a-specific-directory
-	find ./_index -type f -not -path '*_arc*' -exec cp -d --preserve=all '{}' "$safeTmp"'/package/''{}' \;
+	#find ./_index -type f -not -path '*_arc*' -exec cp -d --preserve=all '{}' "$safeTmp"'/package/''{}' \;
 	
+	mkdir -p ./_local
 	rsync -av --progress --exclude "_arc" ./_index/ "$safeTmp"/package/_index/
 	
 	mkdir -p ./_local
