@@ -181,6 +181,7 @@ fi
 
 if type '/cygdrive/c/Program Files/TigerVNC/vncviewer.exe' > /dev/null 2>&1 && uname -a | grep -i cygwin > /dev/null 2>&1
 then
+	export override_cygwin_vncviewer='true'
 	vncviewer() {
 		'/cygdrive/c/Program Files/TigerVNC/vncviewer.exe' "$@"
 	}
@@ -188,6 +189,7 @@ fi
 
 if type '/cygdrive/c/Program Files (x86)/TigerVNC/vncviewer.exe' > /dev/null 2>&1 && uname -a | grep -i cygwin > /dev/null 2>&1
 then
+	export override_cygwin_vncviewer='true'
 	vncviewer() {
 		'/cygdrive/c/Program Files (x86)/TigerVNC/vncviewer.exe' "$@"
 	}
