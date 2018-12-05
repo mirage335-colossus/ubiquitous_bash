@@ -4009,7 +4009,9 @@ _vncviewer_operations() {
 		local usrcmdUID
 		usrcmdUID=$(_uid)
 		
-		_safeEcho_newline 'vncviewer -DotWhenNoCursor -passwd '"$vncPasswdFile"' localhost:'"$vncPort"' '"${vncviewerArgs[@]}"' '"$@" > "$HOME"/usrcmd/"$usrcmdUID"
+		_safeEcho_newline 'vncviewer -DotWhenNoCursor -passwd '\""$vncPasswdFile"\"' localhost:'"$vncPort"' '"${vncviewerArgs[@]}"' '"$@" > "$HOME"/usrcmd/"$usrcmdUID"
+		_safeEcho_newline 'vncviewer -DotWhenNoCursor -passwd '\""$vncPasswdFile"\"' localhost:'"$vncPort"' '"${vncviewerArgs[@]}"' '"$@" > "$HOME"/usrcmd/"$usrcmdUID".sh
+		chmod u+x "$HOME"/usrcmd/"$usrcmdUID".sh
 		
 		local msw_vncPasswdFile
 		msw_vncPasswdFile=$(_slashBackToForward "$vncPasswdFile")
@@ -4017,12 +4019,14 @@ _vncviewer_operations() {
 		
 		if type '/cygdrive/c/Program Files/TigerVNC/vncviewer.exe' > /dev/null 2>&1 && uname -a | grep -i cygwin > /dev/null 2>&1
 		then
-			_safeEcho_newline 'C:\Program Files\TigerVNC\vncviewer.exe'' -DotWhenNoCursor -passwd '"$msw_vncPasswdFile"' localhost:'"$vncPort"' '"${vncviewerArgs[@]}"' '"$@" > "$HOME"/usrcmd/"$usrcmdUID"_x64.bat
+			_safeEcho_newline '"C:\Program Files\TigerVNC\vncviewer.exe"'' -DotWhenNoCursor -passwd '\""$msw_vncPasswdFile"\"' localhost:'"$vncPort"' '"${vncviewerArgs[@]}"' '"$@" > "$HOME"/usrcmd/"$usrcmdUID"_x64.bat
+			chmod u+x "$HOME"/usrcmd/"$usrcmdUID"_x64.bat
 		fi
 		
 		if type '/cygdrive/c/Program Files (x86)/TigerVNC/vncviewer.exe' > /dev/null 2>&1 && uname -a | grep -i cygwin > /dev/null 2>&1
 		then
-			_safeEcho_newline 'C:\Program Files (x86)\TigerVNC\vncviewer.exe'' -DotWhenNoCursor -passwd '"$msw_vncPasswdFile"' localhost:'"$vncPort"' '"${vncviewerArgs[@]}"' '"$@" > "$HOME"/usrcmd/"$usrcmdUID"_x86.bat
+			_safeEcho_newline '"C:\Program Files (x86)\TigerVNC\vncviewer.exe"'' -DotWhenNoCursor -passwd '\""$msw_vncPasswdFile"\"' localhost:'"$vncPort"' '"${vncviewerArgs[@]}"' '"$@" > "$HOME"/usrcmd/"$usrcmdUID"_x86.bat
+			chmod u+x "$HOME"/usrcmd/"$usrcmdUID"_x86.bat
 		fi
 		
 		_messagePlain_request 'request: manual launch: vncviewer: time 120s: instructions:' "$HOME"/usrcmd/"$usrcmdUID"
@@ -4037,6 +4041,9 @@ _vncviewer_operations() {
 		sleep 3
 		
 		rm -f "$HOME"/usrcmd/"$usrcmdUID" > /dev/null 2>&1
+		rm -f "$HOME"/usrcmd/"$usrcmdUID".sh > /dev/null 2>&1
+		rm -f "$HOME"/usrcmd/"$usrcmdUID"_x86.bat > /dev/null 2>&1
+		rm -f "$HOME"/usrcmd/"$usrcmdUID"_x64.bat > /dev/null 2>&1
 		
 		return 0
 	fi
