@@ -37,6 +37,26 @@ _testProxyRouter() {
 	_stop 1
 }
 
+_proxy_direct_ipv4() {
+	local proxyTargetHost
+	local proxyTargetPort
+	
+	proxyTargetHost="$1"
+	proxyTargetPort="$2"
+	
+	socat -4 - TCP:"$proxyTargetHost":"$proxyTargetPort",connect-timeout="$netTimeout" 2> /dev/null
+}
+
+_proxy_direct_ipv6() {
+	local proxyTargetHost
+	local proxyTargetPort
+	
+	proxyTargetHost="$1"
+	proxyTargetPort="$2"
+	
+	socat -6 - TCP:"$proxyTargetHost":"$proxyTargetPort",connect-timeout="$netTimeout" 2> /dev/null
+}
+
 #Routes standard in/out to a target host/port through netcat.
 _proxy_direct() {
 	local proxyTargetHost
@@ -50,6 +70,34 @@ _proxy_direct() {
 	#nc "$proxyTargetHost" "$proxyTargetPort" 2> /dev/null
 	
 	socat - TCP:"$proxyTargetHost":"$proxyTargetPort",connect-timeout="$netTimeout" 2> /dev/null
+}
+
+_proxy_ipv4() {
+	if _checkPort_ipv4 "$1" "$2"
+	then
+		#_proxy_direct_ipv4 "$1" "$2"
+		if _proxy_direct_ipv4 "$1" "$2"
+		then
+			# WARNING: Not to be relied upon. May not reach if terminated by signal.
+			_stop
+		fi
+	fi
+	
+	return 0
+}
+
+_proxy_ipv6() {
+	if _checkPort_ipv6 "$1" "$2"
+	then
+		#_proxy_direct_ipv6 "$1" "$2"
+		if _proxy_direct_ipv6 "$1" "$2"
+		then
+			# WARNING: Not to be relied upon. May not reach if terminated by signal.
+			_stop
+		fi
+	fi
+	
+	return 0
 }
 
 #Launches proxy if port at hostname is open.
