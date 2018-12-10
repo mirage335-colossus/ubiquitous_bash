@@ -61,11 +61,14 @@ _checkPort_sequence() {
 	[[ "$COPROC_PID" ]] && kill "$COPROC_PID"
 	coproc {
 		( (
-			_showPort_ipv6 "$1" "$2"
+			_showPort_ipv4 "$1" "$2"
 		) & )
 
 		( (
-			_showPort_ipv4 "$1" "$2"
+			#Lessens unlikely occurrence of interleaved text within "open" keyword.
+			#IPv6 delayed instead of IPv4 due to likelihood of additional delay by IPv6 tunneling.
+			sleep 0.1
+			_showPort_ipv6 "$1" "$2"
 		) & )
 
 		sleep 2
