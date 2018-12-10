@@ -54,6 +54,8 @@ _proxy_direct_ipv6() {
 	proxyTargetHost="$1"
 	proxyTargetPort="$2"
 	
+	proxyTargetHost='['"$proxyTargetHost"']'
+	
 	socat -6 - TCP:"$proxyTargetHost":"$proxyTargetPort",connect-timeout="$netTimeout" 2> /dev/null
 }
 
@@ -64,6 +66,8 @@ _proxy_direct() {
 	
 	proxyTargetHost="$1"
 	proxyTargetPort="$2"
+	
+	[[ "$proxyTargetHost" == *':'* ]] && proxyTargetHost='['"$proxyTargetHost"']'
 	
 	#nc -q 96 "$proxyTargetHost" "$proxyTargetPort"
 	#nc -q -1 "$proxyTargetHost" "$proxyTargetPort"
