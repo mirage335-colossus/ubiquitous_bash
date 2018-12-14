@@ -2240,7 +2240,7 @@ _checkPort_ipv4() {
 #coproc { echo test ; echo x ; } ; sleep 1 ; grep -m1 test <&${COPROC[0]}
 _checkPort_sequence() {
 	local currentEchoStatus
-	currentEchoStatus=$(stty -g)
+	currentEchoStatus=$(stty --file=/dev/tty -g 2>/dev/null)
 	
 	local currentExitStatus
 	
@@ -2260,25 +2260,33 @@ _checkPort_sequence() {
 	#coproc { sleep 30 ; echo foo ; sleep 30 ; echo bar; } ; grep -m1 foo <&${COPROC[0]}
 	#[[ $COPROC_PID ]] && kill $COPROC_PID ; coproc { ((sleep 1 ; echo test) &) ; echo x ; sleep 3 ; } ; sleep 0.1 ; grep -m1 test <&${COPROC[0]}
 	
-	[[ "$COPROC_PID" ]] && kill "$COPROC_PID"
+	[[ "$COPROC_PID" ]] && kill "$COPROC_PID" > /dev/null 2>&1
 	coproc {
-		( (
-			_showPort_ipv4 "$1" "$2"
-		) & )
+		( ( _showPort_ipv4 "$1" "$2" ) & )
+		
+		#[sleep] Lessens unlikely occurrence of interleaved text within "open" keyword.
+		#IPv6 delayed instead of IPv4 due to likelihood of additional delay by IPv6 tunneling.
+		#sleep 0.1
+		
+		# TODO: Better characterize problems with sleep.
+		# Workaround - sleep may disable 'stty echo', which may be irreversable within SSH proxy command.
+		#_timeout 0.1 cat < /dev/zero > /dev/null
+		if ! ping -c 2 -i 0.1 localhost > /dev/null 2>&1
+		then
+			ping -c 2 -i 1 localhost > /dev/null 2>&1
+		fi
+		
+		#[sleep] Lessens unlikely occurrence of interleaved text within "open" keyword.
+		#IPv6 delayed instead of IPv4 due to likelihood of additional delay by IPv6 tunneling.
+		( ( _showPort_ipv6 "$1" "$2" ) & )
 
-		( (
-			#Lessens unlikely occurrence of interleaved text within "open" keyword.
-			#IPv6 delayed instead of IPv4 due to likelihood of additional delay by IPv6 tunneling.
-			sleep 0.1
-			_showPort_ipv6 "$1" "$2"
-		) & )
-
-		sleep 2
+		#sleep 2
+		ping -c 2 -i 2 localhost > /dev/null 2>&1
 	}
 	grep -m1 open <&"${COPROC[0]}" > /dev/null 2>&1
 	currentExitStatus="$?"
 	
-	stty "$currentEchoStatus"
+	stty --file=/dev/tty "$currentEchoStatus" 2> /dev/null
 	
 	return "$currentExitStatus"
 }
@@ -2286,12 +2294,17 @@ _checkPort_sequence() {
 #Checks hostname for open port.
 #"$1" == hostname
 #"$2" == port
-
 _checkPort() {
-	if "$scriptAbsoluteLocation" _checkPort_sequence "$@" > /dev/null 2>&1
+	#local currentEchoStatus
+	#currentEchoStatus=$(stty --file=/dev/tty -g 2>/dev/null)
+	
+	#if bash -c \""$scriptAbsoluteLocation"\"\ _checkPort_sequence\ \""$1"\"\ \""$2"\" > /dev/null 2>&1
+	if "$scriptAbsoluteLocation" _checkPort_sequence "$1" "$2" > /dev/null 2>&1
 	then
+		#stty --file=/dev/tty "$currentEchoStatus" 2> /dev/null
 		return 0
 	fi
+	#stty --file=/dev/tty "$currentEchoStatus" 2> /dev/null
 	return 1
 }
 
