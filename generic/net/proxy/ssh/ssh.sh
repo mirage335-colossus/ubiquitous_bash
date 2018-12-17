@@ -461,7 +461,8 @@ rm '"$safeTmpSSH"'/cautossh
 rmdir '"$safeTmpSSH"'/_local
 rmdir '"$safeTmpSSH"'
 '
-	
+	#Preventative workaround, not normally necessary.
+	stty echo > /dev/null 2>&1
 }
 
 _vnc_ssh() {
