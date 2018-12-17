@@ -4013,7 +4013,7 @@ _ssh_benchmark_sequence() {
 	# https://superuser.com/questions/792427/creating-a-large-file-of-random-bytes-quickly
 	#dd if=<(openssl enc -aes-256-ctr -pass pass:"$(dd if=/dev/urandom bs=128 count=1 2>/dev/null | base64)" -nosalt < /dev/zero) bs=1M count=100 iflag=fullblock
 	
-	_timeout 45 _ssh "$@" 'dd if=<(openssl enc -aes-256-ctr -pass pass:"$(dd if=/dev/urandom bs=128 count=1 2>/dev/null | base64)" -nosalt < /dev/zero) bs=1M count=15 iflag=fullblock 2>/dev/null' | dd bs=1M of=/dev/null | grep -v records
+	_timeout 45 _ssh "$@" 'dd if=<(openssl enc -aes-256-ctr -pass pass:"$(head -c 128 /dev/urandom | base64)" -nosalt < /dev/zero 2> /dev/null ) bs=1M count=15 iflag=fullblock 2>/dev/null' | dd bs=1M of=/dev/null | grep -v records
 	
 	_stop_safeTmp_ssh "$@"
 	_stop
@@ -4028,7 +4028,16 @@ _ssh_benchmark() {
 # "$1" == listen port
 # "$2" == MB (MegaBytes)
 _ssh_benchmark_download_public_source_sequence() {
-	dd if=<(openssl enc -aes-256-ctr -pass pass:"$(dd if=/dev/urandom bs=128 count=1 2>/dev/null | base64)" -nosalt < /dev/zero) bs=1M count="$2" iflag=fullblock 2>/dev/null | socat - TCP-LISTEN:"$1" > /dev/null 2>&1 &
+	dd if=<(openssl enc -aes-256-ctr -pass pass:"$(head -c 128 /dev/urandom | base64)" -nosalt < /dev/zero 2> /dev/null ) bs=1M count="$2" iflag=fullblock 2>/dev/null | socat - TCP-LISTEN:"$1"
+	
+	#openssl enc -aes-256-ctr -pass pass:$(dd if=/dev/urandom bs=128 count=1 2>/dev/null | base64) -nosalt < /dev/zero) | socat - TCP-LISTEN:"10000" > /dev/null 2>&1 &
+	#openssl enc -aes-256-ctr -pass pass:"$(head -c 128 /dev/urandom | base64)" -nosalt < /dev/zero 2>/dev/null | head -c 15000000 | socat - TCP-LISTEN:"10000"
+	
+	#socat -u /dev/zero TCP4-LISTEN:10000
+	#_proxy_direct 45.62.232.168 10000 | dd bs=1M count=15 of=/dev/null iflag=fullblock
+	
+	#socat -u /dev/zero TCP4-LISTEN:10000
+	#socat -u TCP4:45.62.232.168:10000 STDOUT | dd of=/dev/null iflag=fullblock bs=1M count=100
 }
 
 _ssh_benchmark_download_public_source() {
@@ -4039,7 +4048,7 @@ _ssh_benchmark_download_public_source() {
 # CAUTION: Generally, SSH connections are to be preferred for simplicity and flexiblity.
 # WARNING: Requires public IP address, LAN IP address, and/or forwarded ports 35500-49075 .
 # WARNING: Intended to produce end-user data. Use multiple specific IPv4 or IPv6 tests at a static address if greater reliability is needed.
-_ssh_benchmark_download_raw() {
+ssh_benchmark_download_raw() {
 	_start
 	_start_safeTmp_ssh "$@"
 	
@@ -4047,27 +4056,31 @@ _ssh_benchmark_download_raw() {
 	currentRemotePublicIPv4=$(_ssh "$@" "$safeTmpSSH"'/cautossh' _find_public_ipv4 | tr -dc 'a-zA-Z0-9.:' )
 	
 	local currentRemotePublicIPv6
-	currentRemotePublicIPv6=$(_ssh "$@" "$safeTmpSSH"'/cautossh' _find_public_ipv4 | tr -dc 'a-zA-Z0-9.:' )
+	currentRemotePublicIPv6=$(_ssh "$@" "$safeTmpSSH"'/cautossh' _find_public_ipv6 | tr -dc 'a-zA-Z0-9.:' )
+	
 	
 	local currentRemotePublicPortIPv4
 	currentRemotePublicPortIPv4=$(_ssh "$@" "$safeTmpSSH"'/cautossh' _findPort 35500 49075 | tr -dc 'a-zA-Z0-9.:' )
 	
-	_ssh "$@" "$safeTmpSSH"'/cautossh' _ssh_benchmark_download_public_source "$currentRemotePublicPortIPv4" | tr -dc 'a-zA-Z0-9.:'
+	_messagePlain_probe _ssh_benchmark_download_public_source "$currentRemotePublicPortIPv4"
+	_ssh "$@" "$safeTmpSSH"'/cautossh' _ssh_benchmark_download_public_source "$currentRemotePublicPortIPv4" 15 | tr -dc 'a-zA-Z0-9.:'
 	
 	
 	local currentRemotePublicPortIPv6
 	currentRemotePublicPortIPv6=$(_ssh "$@" "$safeTmpSSH"'/cautossh' _findPort 35500 49075 | tr -dc 'a-zA-Z0-9.:' )
 	
-	_ssh "$@" "$safeTmpSSH"'/cautossh' _ssh_benchmark_download_public_source "$currentRemotePublicPortIPv6" | tr -dc 'a-zA-Z0-9.:'
-	
+	_messagePlain_probe _ssh_benchmark_download_public_source "$currentRemotePublicPortIPv6"
+	_ssh "$@" "$safeTmpSSH"'/cautossh' _ssh_benchmark_download_public_source "$currentRemotePublicPortIPv6" 15 | tr -dc 'a-zA-Z0-9.:'
 	
 	_messagePlain_nominal '_download: public IPv4'
+	_messagePlain_probe _proxy_direct "$currentRemotePublicIPv4" "$currentRemotePublicPortIPv4"
 	_proxy_direct "$currentRemotePublicIPv4" "$currentRemotePublicPortIPv4" | dd of=/dev/null | grep -v records
 	
 	_messagePlain_nominal '_download: public IPv6'
+	_messagePlain_probe _proxy_direct "$currentRemotePublicIPv6" "$currentRemotePublicPortIPv6"
 	_proxy_direct "$currentRemotePublicIPv6" "$currentRemotePublicPortIPv6" | dd of=/dev/null | grep -v records
 	
-	sleep 20
+	sleep 2
 	
 	_stop_safeTmp_ssh "$@"
 	_stop
