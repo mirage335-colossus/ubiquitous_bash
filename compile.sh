@@ -2231,6 +2231,47 @@ _checkPort_ipv4() {
 	return 1
 }
 
+_checkPort_sequence() {
+	_start
+	
+	local currentEchoStatus
+	currentEchoStatus=$(stty --file=/dev/tty -g 2>/dev/null)
+	
+	local currentExitStatus
+	
+	if ( [[ "$1" == 'localhost' ]] || [[ "$1" == '::1' ]] || [[ "$1" == '127.0.0.1' ]] )
+	then
+		_checkPort_ipv4 "localhost" "$2"
+		return "$?"
+	fi
+	
+	#Lack of coproc support implies old system, which implies IPv4 only.
+	if ! type coproc >/dev/null 2>&1
+	then
+		_checkPort_ipv4 "$1" "$2"
+		return "$?"
+	fi
+	
+	( ( _showPort_ipv4 "$1" "$2" ) 2> /dev/null > "$safeTmp"/_showPort_ipv4 & )
+	
+	( ( _showPort_ipv6 "$1" "$2" ) 2> /dev/null > "$safeTmp"/_showPort_ipv6 & )
+	
+	
+	local currentTimer
+	currentTimer=1
+	while [[ "$currentTimer" -le "$netTimeout" ]]
+	do
+		grep -m1 'open' "$safeTmp"/_showPort_ipv4 > /dev/null 2>&1 && _stop
+		grep -m1 'open' "$safeTmp"/_showPort_ipv6 > /dev/null 2>&1 && _stop
+		let currentTimer="$currentTimer"+1
+		sleep 1
+	done
+	
+	
+	_stop 1
+}
+
+# DANGER: Unstable, abandoned. Reference only.
 # WARNING: Limited support for older systems.
 #https://unix.stackexchange.com/questions/86270/how-do-you-use-the-command-coproc-in-various-shells
 #http://wiki.bash-hackers.org/syntax/keywords/coproc
@@ -2238,7 +2279,7 @@ _checkPort_ipv4() {
 #[[ $COPROC_PID ]] && kill $COPROC_PID
 #coproc { bash -c '(sleep 9 ; echo test) &' ; bash -c 'echo test' ;  } ; grep -m1 test <&${COPROC[0]}
 #coproc { echo test ; echo x ; } ; sleep 1 ; grep -m1 test <&${COPROC[0]}
-_checkPort_sequence() {
+_checkPort_sequence_coproc() {
 	local currentEchoStatus
 	currentEchoStatus=$(stty --file=/dev/tty -g 2>/dev/null)
 	
@@ -2803,6 +2844,8 @@ _init_deps() {
 	export enUb_user=""
 	
 	export enUb_metaengine=""
+	
+	export enUb_stopwatch=""
 }
 
 _deps_dev() {
@@ -2995,6 +3038,10 @@ _deps_channel() {
 	export enUb_channel="true"
 }
 
+_deps_stopwatch() {
+	export enUb_stopwatch="true"
+}
+
 #placeholder, define under "metaengine/build"
 #_deps_metaengine() {
 #	_deps_notLean
@@ -3110,6 +3157,8 @@ _compile_bash_deps() {
 		
 		_deps_command
 		_deps_synergy
+		
+		_deps_stopwatch
 		
 		return 0
 	fi
@@ -3376,7 +3425,7 @@ _compile_bash_utilities() {
 	includeScriptList+=( "special"/uuid.sh )
 	
 	[[ "$enUb_dev_heavy" == "true" ]] && includeScriptList+=( "instrumentation"/bashdb/bashdb.sh )
-	[[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "instrumentation"/profiling/stopwatch.sh )
+	([[ "$enUb_notLean" == "true" ]] || [[ "$enUb_stopwatch" == "true" ]]) && includeScriptList+=( "instrumentation"/profiling/stopwatch.sh )
 }
 
 _compile_bash_utilities_virtualization() {

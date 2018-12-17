@@ -2432,6 +2432,47 @@ _checkPort_ipv4() {
 	return 1
 }
 
+_checkPort_sequence() {
+	_start
+	
+	local currentEchoStatus
+	currentEchoStatus=$(stty --file=/dev/tty -g 2>/dev/null)
+	
+	local currentExitStatus
+	
+	if ( [[ "$1" == 'localhost' ]] || [[ "$1" == '::1' ]] || [[ "$1" == '127.0.0.1' ]] )
+	then
+		_checkPort_ipv4 "localhost" "$2"
+		return "$?"
+	fi
+	
+	#Lack of coproc support implies old system, which implies IPv4 only.
+	if ! type coproc >/dev/null 2>&1
+	then
+		_checkPort_ipv4 "$1" "$2"
+		return "$?"
+	fi
+	
+	( ( _showPort_ipv4 "$1" "$2" ) 2> /dev/null > "$safeTmp"/_showPort_ipv4 & )
+	
+	( ( _showPort_ipv6 "$1" "$2" ) 2> /dev/null > "$safeTmp"/_showPort_ipv6 & )
+	
+	
+	local currentTimer
+	currentTimer=1
+	while [[ "$currentTimer" -le "$netTimeout" ]]
+	do
+		grep -m1 'open' "$safeTmp"/_showPort_ipv4 > /dev/null 2>&1 && _stop
+		grep -m1 'open' "$safeTmp"/_showPort_ipv6 > /dev/null 2>&1 && _stop
+		let currentTimer="$currentTimer"+1
+		sleep 1
+	done
+	
+	
+	_stop 1
+}
+
+# DANGER: Unstable, abandoned. Reference only.
 # WARNING: Limited support for older systems.
 #https://unix.stackexchange.com/questions/86270/how-do-you-use-the-command-coproc-in-various-shells
 #http://wiki.bash-hackers.org/syntax/keywords/coproc
@@ -2439,7 +2480,7 @@ _checkPort_ipv4() {
 #[[ $COPROC_PID ]] && kill $COPROC_PID
 #coproc { bash -c '(sleep 9 ; echo test) &' ; bash -c 'echo test' ;  } ; grep -m1 test <&${COPROC[0]}
 #coproc { echo test ; echo x ; } ; sleep 1 ; grep -m1 test <&${COPROC[0]}
-_checkPort_sequence() {
+_checkPort_sequence_coproc() {
 	local currentEchoStatus
 	currentEchoStatus=$(stty --file=/dev/tty -g 2>/dev/null)
 	
@@ -3272,7 +3313,7 @@ _stop_safeTmp_ssh() {
 #rm '"$safeTmpSSH"'/w_*/*
 	_ssh -C -o ConnectionAttempts=2 "$@" '
 rm '"$safeTmpSSH"'/cautossh
-rmdir '"$safeTmpSSH"'/_local
+rmdir '"$safeTmpSSH"'/_local > /dev/null 2>&1
 rmdir '"$safeTmpSSH"'
 '
 	#Preventative workaround, not normally necessary.
@@ -3913,6 +3954,10 @@ _ssh_cipher_benchmark_local_sequence() {
 	_stop
 }
 
+_ssh_sendRawRandom() {
+	_proxy_direct
+}
+
 _ssh_cipher_benchmark_remote_sequence() {
 	_start
 	_start_safeTmp_ssh "$@"
@@ -3953,17 +3998,17 @@ _ssh_benchmark_sequence() {
 	_messagePlain_nominal '_ssh_benchmark: upload'
 	
 	_messagePlain_probe '1k'
-	dd if="$safeTmp"/fill_001k bs=512 2>/dev/null | _timeout 10 _ssh "$@" 'dd of=/dev/null' 2>&1 | grep -v records
+	dd if="$safeTmp"/fill_001k bs=512 2>/dev/null | _timeout 5 _ssh "$@" 'dd of=/dev/null' 2>&1 | grep -v records
 	_messagePlain_probe '10k'
-	dd if="$safeTmp"/fill_010k bs=1k 2>/dev/null | _timeout 10 _ssh "$@" 'dd of=/dev/null' 2>&1 | grep -v records
+	dd if="$safeTmp"/fill_010k bs=1k 2>/dev/null | _timeout 5 _ssh "$@" 'dd of=/dev/null' 2>&1 | grep -v records
 	
 	_messagePlain_probe '1M'
 	dd if="$safeTmp"/fill_001M bs=4096 2>/dev/null | _timeout 10 _ssh "$@" 'dd of=/dev/null' 2>&1 | grep -v records
 	_messagePlain_probe '10M'
-	dd if="$safeTmp"/fill_010M bs=4096 2>/dev/null | _timeout 10 _ssh "$@" 'dd of=/dev/null' 2>&1 | grep -v records
+	dd if="$safeTmp"/fill_010M bs=4096 2>/dev/null | _timeout 30 _ssh "$@" 'dd of=/dev/null' 2>&1 | grep -v records
 	
 	_messagePlain_probe '100M'
-	dd if="$safeTmp"/fill_100M bs=4096 2>/dev/null | _timeout 10 _ssh "$@" 'dd of=/dev/null' 2>&1 | grep -v records
+	dd if="$safeTmp"/fill_100M bs=4096 2>/dev/null | _timeout 45 _ssh "$@" 'dd of=/dev/null' 2>&1 | grep -v records
 	
 	# WARNING: Less reliable test, may not reach link capacity.
 	_messagePlain_nominal '_ssh_benchmark: download'
@@ -3971,7 +4016,7 @@ _ssh_benchmark_sequence() {
 	# https://superuser.com/questions/792427/creating-a-large-file-of-random-bytes-quickly
 	#dd if=<(openssl enc -aes-256-ctr -pass pass:"$(dd if=/dev/urandom bs=128 count=1 2>/dev/null | base64)" -nosalt < /dev/zero) bs=1M count=100 iflag=fullblock
 	
-	_timeout 10 _ssh "$@" 'dd if=<(openssl enc -aes-256-ctr -pass pass:"$(dd if=/dev/urandom bs=128 count=1 2>/dev/null | base64)" -nosalt < /dev/zero) bs=1M count=100 iflag=fullblock 2>/dev/null' | dd bs=1M of=/dev/null | grep -v records
+	_timeout 45 _ssh "$@" 'dd if=<(openssl enc -aes-256-ctr -pass pass:"$(dd if=/dev/urandom bs=128 count=1 2>/dev/null | base64)" -nosalt < /dev/zero) bs=1M count=15 iflag=fullblock 2>/dev/null' | dd bs=1M of=/dev/null | grep -v records
 	
 	_stop_safeTmp_ssh "$@"
 	_stop
@@ -17425,6 +17470,8 @@ _init_deps() {
 	export enUb_user=""
 	
 	export enUb_metaengine=""
+	
+	export enUb_stopwatch=""
 }
 
 _deps_dev() {
@@ -17617,6 +17664,10 @@ _deps_channel() {
 	export enUb_channel="true"
 }
 
+_deps_stopwatch() {
+	export enUb_stopwatch="true"
+}
+
 #placeholder, define under "metaengine/build"
 #_deps_metaengine() {
 #	_deps_notLean
@@ -17732,6 +17783,8 @@ _compile_bash_deps() {
 		
 		_deps_command
 		_deps_synergy
+		
+		_deps_stopwatch
 		
 		return 0
 	fi
@@ -17998,7 +18051,7 @@ _compile_bash_utilities() {
 	includeScriptList+=( "special"/uuid.sh )
 	
 	[[ "$enUb_dev_heavy" == "true" ]] && includeScriptList+=( "instrumentation"/bashdb/bashdb.sh )
-	[[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "instrumentation"/profiling/stopwatch.sh )
+	([[ "$enUb_notLean" == "true" ]] || [[ "$enUb_stopwatch" == "true" ]]) && includeScriptList+=( "instrumentation"/profiling/stopwatch.sh )
 }
 
 _compile_bash_utilities_virtualization() {
