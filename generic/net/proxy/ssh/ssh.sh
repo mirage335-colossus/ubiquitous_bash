@@ -1165,15 +1165,15 @@ _ssh_benchmark_sequence() {
 	local currentPort_iperf_up=$(_findPort)
 	_messageCMD _ssh -o 'Compression=no' -L "$currentPort_iperf_up":localhost:"$currentPort_iperf_up" "$@" "$safeTmpSSH"/cautossh' '_ssh_benchmark_iperf_server' '"$currentPort_iperf_up" &
 	sleep 5
-	_waitPort localhost "$currentPort_iperf_up"
+	#_waitPort localhost "$currentPort_iperf_up"
 	iperf3 -c "localhost" -p "$currentPort_iperf_up"
 	
 	_messagePlain_nominal '_ssh_benchmark: iperf: B'
 	local currentPort_iperf_down=$(_findPort)
 	_ssh_benchmark_iperf_server "$currentPort_iperf_down" &
 	sleep 5
-	_waitPort localhost "$currentPort_iperf_down"
-	_messageCMD _ssh -o 'Compression=no' -R "$currentPort_iperf_down":localhost:"$currentPort_iperf_down" "$@" 'iperf -c localhost -p '"$currentPort_iperf_down"
+	#_waitPort localhost "$currentPort_iperf_down"
+	_messageCMD _ssh -o 'Compression=no' -R "$currentPort_iperf_down":localhost:"$currentPort_iperf_down" "$@" 'iperf3 -c localhost -p '"$currentPort_iperf_down"
 	
 	
 	_messagePlain_nominal '_ssh_benchmark: upload'
@@ -1380,11 +1380,11 @@ _ssh_benchmark_iperf_raw() {
 	
 	_waitPort "$currentRemotePublicIPv4" "$currentRemotePublicPortIPv4"
 	
-	_messagePlain_nominal 'upload: public IPv4'
+	_messagePlain_nominal 'A: public IPv4'
 	_messagePlain_probe _ssh_benchmark_iperf_client_ipv4 "$currentRemotePublicIPv4" "$currentRemotePublicPortIPv4"
 	_ssh_benchmark_iperf_client_ipv4 "$currentRemotePublicIPv4" "$currentRemotePublicPortIPv4"
 	
-	_messagePlain_nominal '_download: public IPv4'
+	_messagePlain_nominal 'B: public IPv4'
 	_messagePlain_probe _ssh_benchmark_iperf_client_ipv4_rev "$currentRemotePublicIPv4" "$currentRemotePublicPortIPv4"
 	_ssh_benchmark_iperf_client_ipv4_rev "$currentRemotePublicIPv4" "$currentRemotePublicPortIPv4"
 	
@@ -1397,11 +1397,11 @@ _ssh_benchmark_iperf_raw() {
 	
 	_waitPort "$currentRemotePublicIPv6" "$currentRemotePublicPortIPv6"
 	
-	_messagePlain_nominal 'upload: public IPv6'
+	_messagePlain_nominal 'A: public IPv6'
 	_messagePlain_probe _ssh_benchmark_iperf_client_ipv6 "$currentRemotePublicIPv4" "$currentRemotePublicPortIPv4"
 	_ssh_benchmark_iperf_client_ipv6 "$currentRemotePublicIPv4" "$currentRemotePublicPortIPv6"
 	
-	_messagePlain_nominal '_download: public IPv6'
+	_messagePlain_nominal 'B: public IPv6'
 	_messagePlain_probe _ssh_benchmark_iperf_client_ipv6_rev "$currentRemotePublicIPv6" "$currentRemotePublicPortIPv6"
 	_ssh_benchmark_iperf_client_ipv6_rev "$currentRemotePublicIPv6" "$currentRemotePublicPortIPv6"
 	
