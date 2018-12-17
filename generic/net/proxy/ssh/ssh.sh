@@ -37,6 +37,7 @@ _testProxySSH() {
 	#! _wantDep time && echo 'warn: time not found, ssh benchmark broken'
 	
 	! _wantDep curl && echo 'warn: curl not found, raw benchmark broken'
+	! _wantDep iperf && echo 'warn: iperf not found, raw benchmark broken'
 	
 	#! _wantDep xpra && echo 'warn: xpra not found'
 	#! _wantDep xephyr && echo 'warn: xephyr not found'

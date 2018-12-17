@@ -2892,6 +2892,7 @@ _testProxySSH() {
 	#! _wantDep time && echo 'warn: time not found, ssh benchmark broken'
 	
 	! _wantDep curl && echo 'warn: curl not found, raw benchmark broken'
+	! _wantDep iperf && echo 'warn: iperf not found, raw benchmark broken'
 	
 	#! _wantDep xpra && echo 'warn: xpra not found'
 	#! _wantDep xephyr && echo 'warn: xephyr not found'
@@ -4057,6 +4058,22 @@ _ssh_benchmark_download_public_source_ipv6() {
 	nohup "$scriptAbsoluteLocation" _ssh_benchmark_download_public_source_sequence_ipv6 "$@" > /dev/null 2>&1 &
 }
 
+_ssh_benchmark_iperf_server_ipv4() {
+	nohup "$scriptAbsoluteLocation" _timeout 300 iperf -s -p "$1" > /dev/null 2>&1 &
+}
+
+_ssh_benchmark_iperf_server_ipv6() {
+	nohup "$scriptAbsoluteLocation" _timeout 300 iperf -V -s -p "$1" > /dev/null 2>&1 &
+}
+
+_ssh_benchmark_iperf_client_ipv4() {
+	_timeout 120 iperf -c "$1" -d -p "$2"
+}
+
+_ssh_benchmark_iperf_client_ipv6() {
+	_timeout 120 iperf -V -c "$1" -d -p "$2"
+}
+
 # Establishes raw tunel and transmits random binary data through it as bandwidth test.
 # CAUTION: Generally, SSH connections are to be preferred for simplicity and flexiblity.
 # WARNING: Requires public IP address, LAN IP address, and/or forwarded ports 35500-49075 .
@@ -4085,6 +4102,9 @@ _ssh_benchmark_download_raw() {
 	_messagePlain_probe _ssh_benchmark_download_public_source_ipv6 "$currentRemotePublicPortIPv6"
 	_ssh "$@" "$safeTmpSSH"'/cautossh' _ssh_benchmark_download_public_source_ipv6 "$currentRemotePublicPortIPv6" 15 | tr -dc 'a-zA-Z0-9.:'
 	
+	
+	sleep 3
+	
 	_messagePlain_nominal '_download: public IPv4'
 	_messagePlain_probe _proxy_direct "$currentRemotePublicIPv4" "$currentRemotePublicPortIPv4"
 	_proxy_direct "$currentRemotePublicIPv4" "$currentRemotePublicPortIPv4" | dd of=/dev/null | grep -v records
@@ -4092,6 +4112,52 @@ _ssh_benchmark_download_raw() {
 	_messagePlain_nominal '_download: public IPv6'
 	_messagePlain_probe _proxy_direct "$currentRemotePublicIPv6" "$currentRemotePublicPortIPv6"
 	_proxy_direct "$currentRemotePublicIPv6" "$currentRemotePublicPortIPv6" | dd of=/dev/null | grep -v records
+	
+	sleep 2
+	
+	_stop_safeTmp_ssh "$@"
+	_stop
+}
+
+# Establishes raw tunel and runs iperf across it.
+# CAUTION: Generally, SSH connections are to be preferred for simplicity and flexiblity.
+# WARNING: Requires public IP address, LAN IP address, and/or forwarded ports 35500-49075 .
+# WARNING: Intended to produce end-user data. Use multiple specific IPv4 or IPv6 tests at a static address if greater reliability is needed.
+_ssh_benchmark_iperf_raw() {
+	_start
+	_start_safeTmp_ssh "$@"
+	
+	local currentRemotePublicIPv4
+	currentRemotePublicIPv4=$(_ssh "$@" "$safeTmpSSH"'/cautossh' _find_public_ipv4 | tr -dc 'a-zA-Z0-9.:' )
+	
+	local currentRemotePublicIPv6
+	currentRemotePublicIPv6=$(_ssh "$@" "$safeTmpSSH"'/cautossh' _find_public_ipv6 | tr -dc 'a-zA-Z0-9.:' )
+	
+	
+	local currentRemotePublicPortIPv4
+	currentRemotePublicPortIPv4=$(_ssh "$@" "$safeTmpSSH"'/cautossh' _findPort 35500 49075 | tr -dc 'a-zA-Z0-9.:' )
+	
+	_messagePlain_probe _ssh_benchmark_iperf_server_ipv4 "$currentRemotePublicPortIPv4"
+	_ssh "$@" "$safeTmpSSH"'/cautossh' _ssh_benchmark_iperf_server_ipv4 "$currentRemotePublicPortIPv4" 15 | tr -dc 'a-zA-Z0-9.:'
+	
+	_waitPort "$currentRemotePublicIPv4" "$currentRemotePublicPortIPv4"
+	
+	_messagePlain_nominal '_download: public IPv4'
+	_messagePlain_probe _ssh_benchmark_iperf_client_ipv4 "$currentRemotePublicIPv4" "$currentRemotePublicPortIPv4"
+	_ssh_benchmark_iperf_client_ipv4 "$currentRemotePublicIPv4" "$currentRemotePublicPortIPv4"
+	
+	
+	local currentRemotePublicPortIPv6
+	currentRemotePublicPortIPv6=$(_ssh "$@" "$safeTmpSSH"'/cautossh' _findPort 35500 49075 | tr -dc 'a-zA-Z0-9.:' )
+	
+	_messagePlain_probe _ssh_benchmark_iperf_server_ipv6 "$currentRemotePublicPortIPv6"
+	_ssh "$@" "$safeTmpSSH"'/cautossh' _ssh_benchmark_iperf_server_ipv6 "$currentRemotePublicPortIPv6" 15 | tr -dc 'a-zA-Z0-9.:'
+	
+	_waitPort "$currentRemotePublicIPv6" "$currentRemotePublicPortIPv6"
+	
+	_messagePlain_nominal '_download: public IPv6'
+	_messagePlain_probe _ssh_benchmark_iperf_client_ipv6 "$currentRemotePublicIPv6" "$currentRemotePublicPortIPv6"
+	_ssh_benchmark_iperf_client_ipv6 "$currentRemotePublicIPv6" "$currentRemotePublicPortIPv6"
 	
 	sleep 2
 	
