@@ -1257,8 +1257,16 @@ _ssh_benchmark_iperf_client_ipv4() {
 	_timeout 120 iperf3 -c "$1" -p "$2"
 }
 
+_ssh_benchmark_iperf_client_ipv4_rev() {
+	_timeout 120 iperf3 -c "$1" -p "$2" -R
+}
+
 _ssh_benchmark_iperf_client_ipv6() {
 	_timeout 120 iperf3 -V -c "$1" -p "$2"
+}
+
+_ssh_benchmark_iperf_client_ipv6_rev() {
+	_timeout 120 iperf3 -V -c "$1" -p "$2" -R
 }
 
 _ssh_benchmark_download_raw_procedure_ipv4() {
@@ -1349,6 +1357,7 @@ _ssh_benchmark_download_raw() {
 }
 
 # Establishes raw connection and runs iperf across it.
+# DANGER: Not completely tested. May be inaccurate.
 # CAUTION: Generally, SSH connections are to be preferred for simplicity and flexiblity.
 # WARNING: Requires public IP address, LAN IP address, and/or forwarded ports 35500-49075 .
 # WARNING: Intended to produce end-user data. Use multiple specific IPv4 or IPv6 tests at a static address if greater reliability is needed.
@@ -1371,9 +1380,13 @@ _ssh_benchmark_iperf_raw() {
 	
 	_waitPort "$currentRemotePublicIPv4" "$currentRemotePublicPortIPv4"
 	
-	_messagePlain_nominal '_download: public IPv4'
+	_messagePlain_nominal 'upload: public IPv4'
 	_messagePlain_probe _ssh_benchmark_iperf_client_ipv4 "$currentRemotePublicIPv4" "$currentRemotePublicPortIPv4"
 	_ssh_benchmark_iperf_client_ipv4 "$currentRemotePublicIPv4" "$currentRemotePublicPortIPv4"
+	
+	_messagePlain_nominal '_download: public IPv4'
+	_messagePlain_probe _ssh_benchmark_iperf_client_ipv4_rev "$currentRemotePublicIPv4" "$currentRemotePublicPortIPv4"
+	_ssh_benchmark_iperf_client_ipv4_rev "$currentRemotePublicIPv4" "$currentRemotePublicPortIPv4"
 	
 	
 	local currentRemotePublicPortIPv6
@@ -1384,9 +1397,13 @@ _ssh_benchmark_iperf_raw() {
 	
 	_waitPort "$currentRemotePublicIPv6" "$currentRemotePublicPortIPv6"
 	
+	_messagePlain_nominal 'upload: public IPv6'
+	_messagePlain_probe _ssh_benchmark_iperf_client_ipv6 "$currentRemotePublicIPv4" "$currentRemotePublicPortIPv4"
+	_ssh_benchmark_iperf_client_ipv6 "$currentRemotePublicIPv4" "$currentRemotePublicPortIPv6"
+	
 	_messagePlain_nominal '_download: public IPv6'
-	_messagePlain_probe _ssh_benchmark_iperf_client_ipv6 "$currentRemotePublicIPv6" "$currentRemotePublicPortIPv6"
-	_ssh_benchmark_iperf_client_ipv6 "$currentRemotePublicIPv6" "$currentRemotePublicPortIPv6"
+	_messagePlain_probe _ssh_benchmark_iperf_client_ipv6_rev "$currentRemotePublicIPv6" "$currentRemotePublicPortIPv6"
+	_ssh_benchmark_iperf_client_ipv6_rev "$currentRemotePublicIPv6" "$currentRemotePublicPortIPv6"
 	
 	sleep 2
 	
