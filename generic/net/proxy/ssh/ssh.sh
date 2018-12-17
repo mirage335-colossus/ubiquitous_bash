@@ -1126,12 +1126,15 @@ _ssh_benchmark_sequence() {
 	_start_safeTmp_ssh "$@"
 	
 	_messagePlain_nominal '_ssh_benchmark: fill'
-	dd if=/dev/urandom bs=1k count=1 | base64 > "$safeTmp"/fill_001k
-	dd if=/dev/urandom bs=1k count=10 | base64 > "$safeTmp"/fill_010k
+	dd if=/dev/urandom bs=1k count=1 2>/dev/null | base64 > "$safeTmp"/fill_001k
+	dd if=/dev/urandom bs=1k count=10 2>/dev/null | base64 > "$safeTmp"/fill_010k
 	
-	dd if=/dev/urandom bs=1M count=1 | base64 > "$safeTmp"/fill_001M
-	dd if=/dev/urandom bs=1M count=10 | base64 > "$safeTmp"/fill_010M
-	dd if=/dev/urandom bs=1M count=100 | base64 > "$safeTmp"/fill_100M
+	dd if=/dev/urandom bs=1M count=1 2>/dev/null | base64 > "$safeTmp"/fill_001M
+	dd if=/dev/urandom bs=1M count=10 2>/dev/null | base64 > "$safeTmp"/fill_010M
+	dd if=/dev/urandom bs=1M count=100 2>/dev/null | base64 > "$safeTmp"/fill_100M
+	
+	_messagePlain_nominal '_ssh_benchmark: ping (ms)'
+	_stopwatch _ssh "$@" true
 	
 	_messagePlain_nominal '_ssh_benchmark: upload'
 	
@@ -1147,6 +1150,14 @@ _ssh_benchmark_sequence() {
 	
 	_messagePlain_probe '100M'
 	dd if="$safeTmp"/fill_100M bs=4096 2>/dev/null | _timeout 10 _ssh "$@" 'dd of=/dev/null' 2>&1 | grep -v records
+	
+	# WARNING: Less reliable test, may not reach link capacity.
+	_messagePlain_nominal '_ssh_benchmark: download'
+	
+	# https://superuser.com/questions/792427/creating-a-large-file-of-random-bytes-quickly
+	#dd if=<(openssl enc -aes-256-ctr -pass pass:"$(dd if=/dev/urandom bs=128 count=1 2>/dev/null | base64)" -nosalt < /dev/zero) bs=1M count=100 iflag=fullblock
+	
+	_timeout 10 _ssh "$@" 'dd if=<(openssl enc -aes-256-ctr -pass pass:"$(dd if=/dev/urandom bs=128 count=1 2>/dev/null | base64)" -nosalt < /dev/zero) bs=1M count=100 iflag=fullblock 2>/dev/null' | dd bs=1M of=/dev/null | grep -v records
 	
 	_stop_safeTmp_ssh "$@"
 	_stop
