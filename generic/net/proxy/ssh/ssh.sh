@@ -1261,7 +1261,36 @@ _ssh_benchmark_iperf_client_ipv6() {
 	_timeout 120 iperf -V -c "$1" -p "$2"
 }
 
+_ssh_benchmark_download_raw_procedure_ipv4() {
+	local currentRemotePublicPortIPv4
+	currentRemotePublicPortIPv4=$(_ssh "$@" "$safeTmpSSH_alt"'/cautossh' _findPort 35500 49075 | tr -dc 'a-zA-Z0-9.:' )
+	
+	#_messagePlain_probe _ssh_benchmark_download_public_source_ipv4 "$currentRemotePublicPortIPv4"
+	_ssh "$@" "$safeTmpSSH_alt"'/cautossh'' '_ssh_benchmark_download_public_source_ipv4' '"$currentRemotePublicPortIPv4"' '25 > /dev/null 2>&1 &
+	
+	sleep 3
+	
+	#_messagePlain_nominal '_download: public IPv4'
+	#_messagePlain_probe _proxy_direct "$currentRemotePublicIPv4" "$currentRemotePublicPortIPv4"
+	_proxy_direct "$currentRemotePublicIPv4" "$currentRemotePublicPortIPv4"
+}
+
+_ssh_benchmark_download_raw_procedure_ipv6() {
+	local currentRemotePublicPortIPv6
+	currentRemotePublicPortIPv6=$(_ssh "$@" "$safeTmpSSH_alt"'/cautossh' _findPort 35500 49075 | tr -dc 'a-zA-Z0-9.:' )
+	
+	_messagePlain_probe _ssh_benchmark_download_public_source_ipv6 "$currentRemotePublicPortIPv6"
+	_ssh "$@" "$safeTmpSSH_alt"'/cautossh'' '_ssh_benchmark_download_public_source_ipv6' '"$currentRemotePublicPortIPv6"' '25 > /dev/null 2>&1 &
+	
+	sleep 3
+	
+	#_messagePlain_nominal '_download: public IPv6'
+	#_messagePlain_probe _proxy_direct "$currentRemotePublicIPv4" "$currentRemotePublicPortIPv6"
+	_proxy_direct "$currentRemotePublicIPv6" "$currentRemotePublicPortIPv6"
+}
+
 # Establishes raw tunel and transmits random binary data through it as bandwidth test.
+# DANGER: Even with many parallel streams, this technique tends to be inaccurate.
 # CAUTION: Generally, SSH connections are to be preferred for simplicity and flexiblity.
 # WARNING: Requires public IP address, LAN IP address, and/or forwarded ports 35500-49075 .
 # WARNING: Intended to produce end-user data. Use multiple specific IPv4 or IPv6 tests at a static address if greater reliability is needed.
@@ -1269,36 +1298,49 @@ _ssh_benchmark_download_raw() {
 	_start
 	_start_safeTmp_ssh "$@"
 	
-	local currentRemotePublicIPv4
-	currentRemotePublicIPv4=$(_ssh "$@" "$safeTmpSSH"'/cautossh' _find_public_ipv4 | tr -dc 'a-zA-Z0-9.:' )
+	mkfifo "$safeTmp"/aggregate_fifo
 	
-	local currentRemotePublicIPv6
-	currentRemotePublicIPv6=$(_ssh "$@" "$safeTmpSSH"'/cautossh' _find_public_ipv6 | tr -dc 'a-zA-Z0-9.:' )
+	#local currentRemotePublicIPv4
+	export currentRemotePublicIPv4=$(_ssh "$@" "$safeTmpSSH"'/cautossh' _find_public_ipv4 | tr -dc 'a-zA-Z0-9.:' )
+	
+	#local currentRemotePublicIPv6
+	export currentRemotePublicIPv6=$(_ssh "$@" "$safeTmpSSH"'/cautossh' _find_public_ipv6 | tr -dc 'a-zA-Z0-9.:' )
+	
+	export safeTmpSSH_alt="$safeTmpSSH"
+	
+	_messagePlain_nominal '_download: public IPv4: establishing links'
+	
+	local currentIteration
+	for ((currentIteration=0; currentIteration < "12"; currentIteration++))
+	do
+		"$scriptAbsoluteLocation" _ssh_benchmark_download_raw_procedure_ipv4 "$@" > "$safeTmp"/aggregate_fifo &
+		#head -c 100000000 /dev/urandom > "$safeTmp"/aggregate_fifo &
+	done
+	
+	sleep 12
+	
+	_messagePlain_nominal '_download: public IPv4: downloading'
+	dd if="$safeTmp"/aggregate_fifo of=/dev/null iflag=fullblock
+	#cat "$safeTmp"/aggregate_fifo
+	
+	sleep 2
 	
 	
-	local currentRemotePublicPortIPv4
-	currentRemotePublicPortIPv4=$(_ssh "$@" "$safeTmpSSH"'/cautossh' _findPort 35500 49075 | tr -dc 'a-zA-Z0-9.:' )
 	
-	_messagePlain_probe _ssh_benchmark_download_public_source_ipv4 "$currentRemotePublicPortIPv4"
-	_ssh "$@" "$safeTmpSSH"'/cautossh' _ssh_benchmark_download_public_source_ipv4 "$currentRemotePublicPortIPv4" 15 | tr -dc 'a-zA-Z0-9.:'
+	_messagePlain_nominal '_download: public IPv6: establishing links'
 	
+	local currentIteration
+	for ((currentIteration=0; currentIteration < "12"; currentIteration++))
+	do
+		"$scriptAbsoluteLocation" _ssh_benchmark_download_raw_procedure_ipv6 "$@" > "$safeTmp"/aggregate_fifo &
+		#head -c 100000000 /dev/urandom > "$safeTmp"/aggregate_fifo &
+	done
 	
-	local currentRemotePublicPortIPv6
-	currentRemotePublicPortIPv6=$(_ssh "$@" "$safeTmpSSH"'/cautossh' _findPort 35500 49075 | tr -dc 'a-zA-Z0-9.:' )
+	sleep 12
 	
-	_messagePlain_probe _ssh_benchmark_download_public_source_ipv6 "$currentRemotePublicPortIPv6"
-	_ssh "$@" "$safeTmpSSH"'/cautossh' _ssh_benchmark_download_public_source_ipv6 "$currentRemotePublicPortIPv6" 15 | tr -dc 'a-zA-Z0-9.:'
-	
-	
-	sleep 3
-	
-	_messagePlain_nominal '_download: public IPv4'
-	_messagePlain_probe _proxy_direct "$currentRemotePublicIPv4" "$currentRemotePublicPortIPv4"
-	_proxy_direct "$currentRemotePublicIPv4" "$currentRemotePublicPortIPv4" | dd of=/dev/null | grep -v records
-	
-	_messagePlain_nominal '_download: public IPv6'
-	_messagePlain_probe _proxy_direct "$currentRemotePublicIPv6" "$currentRemotePublicPortIPv6"
-	_proxy_direct "$currentRemotePublicIPv6" "$currentRemotePublicPortIPv6" | dd of=/dev/null | grep -v records
+	_messagePlain_nominal '_download: public IPv6: downloading'
+	dd if="$safeTmp"/aggregate_fifo of=/dev/null iflag=fullblock
+	#cat "$safeTmp"/aggregate_fifo
 	
 	sleep 2
 	
@@ -1325,7 +1367,7 @@ _ssh_benchmark_iperf_raw() {
 	currentRemotePublicPortIPv4=$(_ssh "$@" "$safeTmpSSH"'/cautossh' _findPort 35500 49075 | tr -dc 'a-zA-Z0-9.:' )
 	
 	_messagePlain_probe _ssh_benchmark_iperf_server_ipv4 "$currentRemotePublicPortIPv4"
-	_ssh "$@" "$safeTmpSSH"'/cautossh' _ssh_benchmark_iperf_server_ipv4 "$currentRemotePublicPortIPv4" 15 | tr -dc 'a-zA-Z0-9.:'
+	_ssh "$@" "$safeTmpSSH"'/cautossh' _ssh_benchmark_iperf_server_ipv4 "$currentRemotePublicPortIPv4" | tr -dc 'a-zA-Z0-9.:'
 	
 	_waitPort "$currentRemotePublicIPv4" "$currentRemotePublicPortIPv4"
 	
@@ -1338,7 +1380,7 @@ _ssh_benchmark_iperf_raw() {
 	currentRemotePublicPortIPv6=$(_ssh "$@" "$safeTmpSSH"'/cautossh' _findPort 35500 49075 | tr -dc 'a-zA-Z0-9.:' )
 	
 	_messagePlain_probe _ssh_benchmark_iperf_server_ipv6 "$currentRemotePublicPortIPv6"
-	_ssh "$@" "$safeTmpSSH"'/cautossh' _ssh_benchmark_iperf_server_ipv6 "$currentRemotePublicPortIPv6" 15 | tr -dc 'a-zA-Z0-9.:'
+	_ssh "$@" "$safeTmpSSH"'/cautossh' _ssh_benchmark_iperf_server_ipv6 "$currentRemotePublicPortIPv6" | tr -dc 'a-zA-Z0-9.:'
 	
 	_waitPort "$currentRemotePublicIPv6" "$currentRemotePublicPortIPv6"
 	
