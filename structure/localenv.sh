@@ -4,7 +4,13 @@
 #	true
 #}
 
+_start_stty() {
+	true
+	#export ubFoundEchoStatus=$(stty --file=/dev/tty -g 2>/dev/null)
+}
+
 _start() {
+	_start_stty
 	
 	_prepare
 	
@@ -34,7 +40,19 @@ _saveVar() {
 #	true
 #}
 
+# ATTENTION: Consider carefully, override with "ops".
+# WARNING: Unfortunate, but apparently necessary, workaround for script termintaing while "sleep" or similar run under background.
+_stop_stty_echo() {
+	#true
+	
+	stty echo > /dev/null 2>&1
+	
+	#[[ "$ubFoundEchoStatus" != "" ]] && stty --file=/dev/tty "$ubFoundEchoStatus" 2> /dev/null
+}
+
 _stop() {
+	_stop_stty_echo
+	
 	_tryExec "_stop_prog"
 	
 	_preserveLog
@@ -85,6 +103,8 @@ _stop() {
 	#Optionally always try to remove any systemd shutdown hook.
 	#_tryExec _unhook_systemd_shutdown
 	
+	
+	_stop_stty_echo
 	if [[ "$1" != "" ]]
 	then
 		exit "$1"
