@@ -34,6 +34,8 @@ _init_deps() {
 	export enUb_user=""
 	
 	export enUb_metaengine=""
+	
+	export enUb_stopwatch=""
 }
 
 _deps_dev() {
@@ -224,6 +226,10 @@ _deps_user() {
 
 _deps_channel() {
 	export enUb_channel="true"
+}
+
+_deps_stopwatch() {
+	export enUb_stopwatch="true"
 }
 
 #placeholder, define under "metaengine/build"

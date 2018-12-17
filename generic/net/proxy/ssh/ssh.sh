@@ -458,7 +458,7 @@ _stop_safeTmp_ssh() {
 #rm '"$safeTmpSSH"'/w_*/*
 	_ssh -C -o ConnectionAttempts=2 "$@" '
 rm '"$safeTmpSSH"'/cautossh
-rmdir '"$safeTmpSSH"'/_local
+rmdir '"$safeTmpSSH"'/_local > /dev/null 2>&1
 rmdir '"$safeTmpSSH"'
 '
 	#Preventative workaround, not normally necessary.
