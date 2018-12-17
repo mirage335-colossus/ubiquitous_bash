@@ -2891,8 +2891,10 @@ _testProxySSH() {
 	#! _wantDep pv && echo 'warn: pv not found, ssh benchmark broken'
 	#! _wantDep time && echo 'warn: time not found, ssh benchmark broken'
 	
-	! _wantDep curl && echo 'warn: curl not found, raw benchmark broken'
-	! _wantDep iperf3 && echo 'warn: iperf3 not found, raw benchmark broken'
+	! _wantDep curl && echo 'warn: missing: curl - public ip detection broken'
+	! _wantDep iperf3 && echo 'warn: missing: iperf3 - throughput benchmark broken'
+	
+	! _wantDep dash && echo 'warn: dash not found, latency benchmark inflated'
 	
 	#! _wantDep xpra && echo 'warn: xpra not found'
 	#! _wantDep xephyr && echo 'warn: xephyr not found'
@@ -3299,6 +3301,10 @@ _rsync() {
 	rsync -e "$scriptAbsoluteLocation"" _ssh" "$@"
 }
 
+_ssh_internal_command() {
+	_ssh -C -o ConnectionAttempts=3 "$@"
+}
+
 _start_safeTmp_ssh() {
 	cat "$scriptAbsoluteLocation" | base64 | _ssh -C -o ConnectionAttempts=2 "$@" '
 mkdir -p '"$safeTmpSSH"'
@@ -3313,13 +3319,30 @@ chmod 700 '"$safeTmpSSH"'/cautossh
 
 _stop_safeTmp_ssh() {
 #rm '"$safeTmpSSH"'/w_*/*
-	_ssh -C -o ConnectionAttempts=2 "$@" '
+	_ssh_internal_command "$@" '
 rm '"$safeTmpSSH"'/cautossh
 rmdir '"$safeTmpSSH"'/_local > /dev/null 2>&1
 rmdir '"$safeTmpSSH"'
 '
 	#Preventative workaround, not normally necessary.
 	stty echo > /dev/null 2>&1
+}
+
+_get_ssh_external() {
+	export remotePublicIPv4=$(_ssh_internal_command "$@" "$safeTmpSSH"'/cautossh' _find_public_ipv4 | tr -dc 'a-zA-Z0-9.:')
+	export remotePublicIPv6=$(_ssh_internal_command "$@" "$safeTmpSSH"'/cautossh' _find_public_ipv6 | tr -dc 'a-zA-Z0-9.:')
+	
+	export remoteRouteIPv4=$(_ssh_internal_command "$@" "$safeTmpSSH"'/cautossh' _find_route_ipv4 | tr -dc 'a-zA-Z0-9.:')
+	export remoteRouteIPv6=$(_ssh_internal_command "$@" "$safeTmpSSH"'/cautossh' _find_route_ipv6 | tr -dc 'a-zA-Z0-9.:')
+	
+	# Common practice to use separate ports for dynamic IPv4 and IPv6 services, due to some applications not supporting both simultaneously.
+	export remotePortPublicIPv4=$(_ssh_internal_command "$@" "$safeTmpSSH"'/cautossh' _findPort 35500 49075 | tr -dc 'a-zA-Z0-9.:')
+	export remotePortPublicIPv6=$(_ssh_internal_command "$@" "$safeTmpSSH"'/cautossh' _findPort 35500 49075 | tr -dc 'a-zA-Z0-9.:')
+}
+
+_prepare_ssh_fifo() {
+	mkfifo "$safeTmp"/up
+	mkfifo "$safeTmp"/down
 }
 
 _vnc_ssh() {
@@ -3978,81 +4001,66 @@ _ssh_cipher_benchmark() {
 	_ssh_cipher_benchmark_remote "$@"
 }
 
-_ssh_benchmark_sequence() {
-	_start
-	_start_safeTmp_ssh "$@"
-	
-	_messagePlain_nominal '_ssh_benchmark: fill'
-	dd if=/dev/urandom bs=1k count=1 2>/dev/null | base64 > "$safeTmp"/fill_001k
-	dd if=/dev/urandom bs=1k count=10 2>/dev/null | base64 > "$safeTmp"/fill_010k
-	
-	dd if=/dev/urandom bs=1M count=1 2>/dev/null | base64 > "$safeTmp"/fill_001M
-	dd if=/dev/urandom bs=1M count=10 2>/dev/null | base64 > "$safeTmp"/fill_010M
-	dd if=/dev/urandom bs=1M count=100 2>/dev/null | base64 > "$safeTmp"/fill_100M
-	
-	_messagePlain_nominal '_ssh_benchmark: ping (ms)'
-	_stopwatch _ssh "$@" true
-	
-	#_messagePlain_nominal '_ssh_benchmark: iperf'
-	
-	#local currentPort_iperf_local
-	#local currentPort_iperf_remote
-	
-	#local currentPort_iperf_a_local=$(_findPort)
-	#local currentPort_iperf_a_remote=$(_ssh "$@" "$safeTmpSSH"'/cautossh' _findPort | tr -dc 'a-zA-Z0-9.:')
-	
-	# Bidirectional. Not fully tested.
-	#local currentPort_iperf_b_local=$(_findPort)
-	#local currentPort_iperf_b_remote=$(_ssh "$@" "$safeTmpSSH"'/cautossh' _findPort | tr -dc 'a-zA-Z0-9.:')
-	
-	#_messageCMD _ssh -o 'Compression=no' -L "$currentPort_iperf_a_local":localhost:"$currentPort_iperf_a_local" -R "$currentPort_iperf_b_local":localhost:"$currentPort_iperf_b_local" "$@" "$safeTmpSSH"/cautossh' _ssh_benchmark_iperf_server '"$currentPort_iperf_a_local" &
-	
-	#_waitPort localhost "$currentPort_iperf_a_local"
-	#_waitPort localhost "$currentPort_iperf_b_local"
-	
-	#sleep 3
-	
-	#iperf -c "localhost" -p "$currentPort_iperf_a_local" -L "$currentPort_iperf_b_local" -d
-	#iperf -c "localhost" -p "$currentPort_iperf_a_local"
-	
-	
-	_messagePlain_nominal '_ssh_benchmark: iperf: A'
+_ssh_iperf_procedure() {
+	_messagePlain_nominal 'iperf: A'
 	local currentPort_iperf_up=$(_findPort)
 	_messageCMD _ssh -o 'Compression=no' -L "$currentPort_iperf_up":localhost:"$currentPort_iperf_up" "$@" "$safeTmpSSH"/cautossh' '_ssh_benchmark_iperf_server' '"$currentPort_iperf_up" &
 	sleep 5
-	_waitPort localhost "$currentPort_iperf_up"
+	#_waitPort localhost "$currentPort_iperf_up"
 	iperf3 -c "localhost" -p "$currentPort_iperf_up"
 	
-	_messagePlain_nominal '_ssh_benchmark: iperf: B'
+	_messagePlain_nominal 'iperf: B'
 	local currentPort_iperf_down=$(_findPort)
 	_ssh_benchmark_iperf_server "$currentPort_iperf_down" &
 	sleep 5
-	_waitPort localhost "$currentPort_iperf_down"
-	_messageCMD _ssh -o 'Compression=no' -R "$currentPort_iperf_down":localhost:"$currentPort_iperf_down" "$@" 'iperf -c localhost -p '"$currentPort_iperf_down"
-	
-	
-	_messagePlain_nominal '_ssh_benchmark: upload'
+	#_waitPort localhost "$currentPort_iperf_down"
+	_messageCMD _ssh -o 'Compression=no' -R "$currentPort_iperf_down":localhost:"$currentPort_iperf_down" "$@" 'iperf3 -c localhost -p '"$currentPort_iperf_down"
+}
+
+_ssh_emit_procedure() {
+	_messagePlain_nominal 'emit: upload'
 	
 	_messagePlain_probe '1k'
+	dd if=/dev/urandom bs=1k count=1 2>/dev/null | base64 > "$safeTmp"/fill_001k
 	dd if="$safeTmp"/fill_001k bs=512 2>/dev/null | _timeout 5 _ssh "$@" 'dd of=/dev/null' 2>&1 | grep -v records
 	_messagePlain_probe '10k'
+	dd if=/dev/urandom bs=1k count=10 2>/dev/null | base64 > "$safeTmp"/fill_010k
 	dd if="$safeTmp"/fill_010k bs=1k 2>/dev/null | _timeout 5 _ssh "$@" 'dd of=/dev/null' 2>&1 | grep -v records
 	
 	_messagePlain_probe '1M'
+	dd if=/dev/urandom bs=1M count=1 2>/dev/null | base64 > "$safeTmp"/fill_001M
 	dd if="$safeTmp"/fill_001M bs=4096 2>/dev/null | _timeout 10 _ssh "$@" 'dd of=/dev/null' 2>&1 | grep -v records
 	_messagePlain_probe '10M'
+	dd if=/dev/urandom bs=1M count=10 2>/dev/null | base64 > "$safeTmp"/fill_010M
 	dd if="$safeTmp"/fill_010M bs=4096 2>/dev/null | _timeout 30 _ssh "$@" 'dd of=/dev/null' 2>&1 | grep -v records
 	
 	_messagePlain_probe '100M'
+	dd if=/dev/urandom bs=1M count=100 2>/dev/null | base64 > "$safeTmp"/fill_100M
 	dd if="$safeTmp"/fill_100M bs=4096 2>/dev/null | _timeout 45 _ssh "$@" 'dd of=/dev/null' 2>&1 | grep -v records
 	
-	# WARNING: Less reliable test, may not reach link capacity.
-	_messagePlain_nominal '_ssh_benchmark: download'
+	# WARNING: Less reliable test, non-link bottlenecks.
+	_messagePlain_nominal 'emit: download'
 	
 	# https://superuser.com/questions/792427/creating-a-large-file-of-random-bytes-quickly
 	#dd if=<(openssl enc -aes-256-ctr -pass pass:"$(dd if=/dev/urandom bs=128 count=1 2>/dev/null | base64)" -nosalt < /dev/zero) bs=1M count=100 iflag=fullblock
 	
 	_timeout 45 _ssh "$@" 'dd if=<(openssl enc -aes-256-ctr -pass pass:"$(head -c 128 /dev/urandom | base64)" -nosalt < /dev/zero 2> /dev/null ) bs=1M count=15 iflag=fullblock 2>/dev/null' | dd bs=1M of=/dev/null | grep -v records
+}
+
+_ssh_benchmark_sequence() {
+	_start
+	_start_safeTmp_ssh "$@"
+	_get_ssh_external "$@"
+	_prepare_ssh_fifo
+	
+	_ssh_cycle
+	
+	_ssh_latency_procedure
+	
+	_ssh_iperf_procedure
+	_ssh_emit_procedure
+	
+	_ssh_common_internal_procedure
 	
 	_stop_safeTmp_ssh "$@"
 	_stop
@@ -4060,6 +4068,52 @@ _ssh_benchmark_sequence() {
 
 _ssh_benchmark() {
 	"$scriptAbsoluteLocation" _ssh_benchmark_sequence "$@"
+}
+
+_ssh_pulse_sequence() {
+	_start
+	_start_safeTmp_ssh "$@"
+	_get_ssh_external "$@"
+	_prepare_ssh_fifo
+	
+	_ssh_ping_public_procedure "$@"
+	_ssh_ping_route_procedure "$@"
+	
+	_ssh_iperf_raw_public_procedure "$@"
+	_ssh_iperf_raw_route_procedure "$@"
+	
+	_ssh_common_external_public_procedure "$@"
+	_ssh_common_external_route_procedure "$@"
+	
+	stop_safeTmp_ssh "$@"
+	_stop
+}
+
+_ssh_check_sequence() {
+	_start
+	_start_safeTmp_ssh "$@"
+	_get_ssh_external "$@"
+	_prepare_ssh_fifo
+	
+	_ssh_cycle
+	
+	_ssh_latency_procedure
+	
+	_ssh_iperf_procedure
+	_ssh_emit_procedure
+	
+	
+	_ssh_ping_public_procedure "$@"
+	_ssh_ping_route_procedure "$@"
+	
+	_ssh_iperf_raw_public_procedure "$@"
+	_ssh_iperf_raw_route_procedure "$@"
+	
+	_ssh_common_external_public_procedure "$@"
+	_ssh_common_external_route_procedure "$@"
+	
+	stop_safeTmp_ssh "$@"
+	_stop
 }
 
 
@@ -4125,49 +4179,39 @@ _ssh_benchmark_iperf_client_ipv6_rev() {
 }
 
 _ssh_benchmark_download_raw_procedure_ipv4() {
-	local currentRemotePublicPortIPv4
-	currentRemotePublicPortIPv4=$(_ssh "$@" "$safeTmpSSH_alt"'/cautossh' _findPort 35500 49075 | tr -dc 'a-zA-Z0-9.:' )
-	
-	#_messagePlain_probe _ssh_benchmark_download_public_source_ipv4 "$currentRemotePublicPortIPv4"
-	_ssh "$@" "$safeTmpSSH_alt"'/cautossh'' '_ssh_benchmark_download_public_source_ipv4' '"$currentRemotePublicPortIPv4"' '25 > /dev/null 2>&1 &
+	#_messagePlain_probe _ssh_benchmark_download_public_source_ipv4 "$remotePortPublicIPv4"
+	_ssh "$@" "$safeTmpSSH_alt"'/cautossh'' '_ssh_benchmark_download_public_source_ipv4' '"$remotePortPublicIPv4"' '25 > /dev/null 2>&1 &
 	
 	sleep 3
 	
 	#_messagePlain_nominal '_download: public IPv4'
-	#_messagePlain_probe _proxy_direct "$currentRemotePublicIPv4" "$currentRemotePublicPortIPv4"
-	_proxy_direct "$currentRemotePublicIPv4" "$currentRemotePublicPortIPv4"
+	#_messagePlain_probe _proxy_direct "$remotePublicIPv4" "$remotePortPublicIPv4"
+	_proxy_direct "$remotePublicIPv4" "$remotePortPublicIPv4"
 }
 
 _ssh_benchmark_download_raw_procedure_ipv6() {
-	local currentRemotePublicPortIPv6
-	currentRemotePublicPortIPv6=$(_ssh "$@" "$safeTmpSSH_alt"'/cautossh' _findPort 35500 49075 | tr -dc 'a-zA-Z0-9.:' )
-	
-	_messagePlain_probe _ssh_benchmark_download_public_source_ipv6 "$currentRemotePublicPortIPv6"
-	_ssh "$@" "$safeTmpSSH_alt"'/cautossh'' '_ssh_benchmark_download_public_source_ipv6' '"$currentRemotePublicPortIPv6"' '25 > /dev/null 2>&1 &
+	_messagePlain_probe _ssh_benchmark_download_public_source_ipv6 "$remotePortPublicIPv6"
+	_ssh "$@" "$safeTmpSSH_alt"'/cautossh'' '_ssh_benchmark_download_public_source_ipv6' '"$remotePortPublicIPv6"' '25 > /dev/null 2>&1 &
 	
 	sleep 3
 	
 	#_messagePlain_nominal '_download: public IPv6'
-	#_messagePlain_probe _proxy_direct "$currentRemotePublicIPv4" "$currentRemotePublicPortIPv6"
-	_proxy_direct "$currentRemotePublicIPv6" "$currentRemotePublicPortIPv6"
+	#_messagePlain_probe _proxy_direct "$remotePublicIPv4" "$remotePortPublicIPv6"
+	_proxy_direct "$remotePublicIPv6" "$remotePortPublicIPv6"
 }
 
 # Establishes raw tunel and transmits random binary data through it as bandwidth test.
 # DANGER: Even with many parallel streams, this technique tends to be inaccurate.
 # CAUTION: Generally, SSH connections are to be preferred for simplicity and flexiblity.
+# WARNING: ATTENTION: Considered to use relatively poor programming practices.
 # WARNING: Requires public IP address, LAN IP address, and/or forwarded ports 35500-49075 .
 # WARNING: Intended to produce end-user data. Use multiple specific IPv4 or IPv6 tests at a static address if greater reliability is needed.
 _ssh_benchmark_download_raw() {
 	_start
 	_start_safeTmp_ssh "$@"
+	_get_ssh_external "$@"
 	
 	mkfifo "$safeTmp"/aggregate_fifo
-	
-	#local currentRemotePublicIPv4
-	export currentRemotePublicIPv4=$(_ssh "$@" "$safeTmpSSH"'/cautossh' _find_public_ipv4 | tr -dc 'a-zA-Z0-9.:' )
-	
-	#local currentRemotePublicIPv6
-	export currentRemotePublicIPv6=$(_ssh "$@" "$safeTmpSSH"'/cautossh' _find_public_ipv6 | tr -dc 'a-zA-Z0-9.:' )
 	
 	export safeTmpSSH_alt="$safeTmpSSH"
 	
@@ -4211,59 +4255,219 @@ _ssh_benchmark_download_raw() {
 	_stop
 }
 
+_ssh_iperf_raw_public_procedure() {
+	_messagePlain_probe _ssh_benchmark_iperf_server_ipv4 "$remotePortPublicIPv4"
+	_ssh "$@" "$safeTmpSSH"'/cautossh' _ssh_benchmark_iperf_server_ipv4 "$remotePortPublicIPv4" | tr -dc 'a-zA-Z0-9.:'
+	
+	#_waitPort "$remotePublicIPv4" "$remotePortPublicIPv4"
+	sleep 3
+	
+	_messagePlain_nominal 'iperf: A: public IPv4'
+	_messagePlain_probe _ssh_benchmark_iperf_client_ipv4 "$remotePublicIPv4" "$remotePortPublicIPv4"
+	_ssh_benchmark_iperf_client_ipv4 "$remotePublicIPv4" "$remotePortPublicIPv4"
+	
+	_messagePlain_nominal 'iperf: B: public IPv4'
+	_messagePlain_probe _ssh_benchmark_iperf_client_ipv4_rev "$remotePublicIPv4" "$remotePortPublicIPv4"
+	_ssh_benchmark_iperf_client_ipv4_rev "$remotePublicIPv4" "$remotePortPublicIPv4"
+	
+	_messagePlain_probe _ssh_benchmark_iperf_server_ipv6 "$remotePortPublicIPv6"
+	_ssh "$@" "$safeTmpSSH"'/cautossh' _ssh_benchmark_iperf_server_ipv6 "$remotePortPublicIPv6" | tr -dc 'a-zA-Z0-9.:'
+	
+	#_waitPort "$remotePublicIPv6" "$remotePortPublicIPv6"
+	sleep 3
+	
+	_messagePlain_nominal 'iperf: A: public IPv6'
+	_messagePlain_probe _ssh_benchmark_iperf_client_ipv6 "$remotePublicIPv4" "$remotePortPublicIPv4"
+	_ssh_benchmark_iperf_client_ipv6 "$remotePublicIPv4" "$remotePortPublicIPv6"
+	
+	_messagePlain_nominal 'iperf: B: public IPv6'
+	_messagePlain_probe _ssh_benchmark_iperf_client_ipv6_rev "$remotePublicIPv6" "$remotePortPublicIPv6"
+	_ssh_benchmark_iperf_client_ipv6_rev "$remotePublicIPv6" "$remotePortPublicIPv6"
+	
+	sleep 2
+}
+
+_ssh_iperf_raw_route_procedure() {
+	_messagePlain_probe _ssh_benchmark_iperf_server_ipv4 "$remotePortRouteIPv4"
+	_ssh "$@" "$safeTmpSSH"'/cautossh' _ssh_benchmark_iperf_server_ipv4 "$remotePortRouteIPv4" | tr -dc 'a-zA-Z0-9.:'
+	
+	#_waitPort "$remoteRouteIPv4" "$remotePortRouteIPv4"
+	sleep 3
+	
+	_messagePlain_nominal 'iperf: A: route IPv4'
+	_messagePlain_probe _ssh_benchmark_iperf_client_ipv4 "$remoteRouteIPv4" "$remotePortRouteIPv4"
+	_ssh_benchmark_iperf_client_ipv4 "$remoteRouteIPv4" "$remotePortRouteIPv4"
+	
+	_messagePlain_nominal 'iperf: B: route IPv4'
+	_messagePlain_probe _ssh_benchmark_iperf_client_ipv4_rev "$remoteRouteIPv4" "$remotePortRouteIPv4"
+	_ssh_benchmark_iperf_client_ipv4_rev "$remoteRouteIPv4" "$remotePortRouteIPv4"
+	
+	_messagePlain_probe _ssh_benchmark_iperf_server_ipv6 "$remotePortRouteIPv6"
+	_ssh "$@" "$safeTmpSSH"'/cautossh' _ssh_benchmark_iperf_server_ipv6 "$remotePortRouteIPv6" | tr -dc 'a-zA-Z0-9.:'
+	
+	#_waitPort "$remoteRouteIPv6" "$remotePortRouteIPv6"
+	sleep 3
+	
+	_messagePlain_nominal 'iperf: A: route IPv6'
+	_messagePlain_probe _ssh_benchmark_iperf_client_ipv6 "$remoteRouteIPv4" "$remotePortRouteIPv4"
+	_ssh_benchmark_iperf_client_ipv6 "$remoteRouteIPv4" "$remotePortRouteIPv6"
+	
+	_messagePlain_nominal 'iperf: B: route IPv6'
+	_messagePlain_probe _ssh_benchmark_iperf_client_ipv6_rev "$remoteRouteIPv6" "$remotePortRouteIPv6"
+	_ssh_benchmark_iperf_client_ipv6_rev "$remoteRouteIPv6" "$remotePortRouteIPv6"
+	
+	sleep 2
+}
+
 # Establishes raw connection and runs iperf across it.
 # DANGER: Not completely tested. May be inaccurate.
 # CAUTION: Generally, SSH connections are to be preferred for simplicity and flexiblity.
 # WARNING: Requires public IP address, LAN IP address, and/or forwarded ports 35500-49075 .
 # WARNING: Intended to produce end-user data. Use multiple specific IPv4 or IPv6 tests at a static address if greater reliability is needed.
-_ssh_benchmark_iperf_raw() {
+_ssh_iperf_public_raw_sequence() {
 	_start
 	_start_safeTmp_ssh "$@"
+	_get_ssh_external "$@"
 	
-	local currentRemotePublicIPv4
-	currentRemotePublicIPv4=$(_ssh "$@" "$safeTmpSSH"'/cautossh' _find_public_ipv4 | tr -dc 'a-zA-Z0-9.:' )
-	
-	local currentRemotePublicIPv6
-	currentRemotePublicIPv6=$(_ssh "$@" "$safeTmpSSH"'/cautossh' _find_public_ipv6 | tr -dc 'a-zA-Z0-9.:' )
-	
-	
-	local currentRemotePublicPortIPv4
-	currentRemotePublicPortIPv4=$(_ssh "$@" "$safeTmpSSH"'/cautossh' _findPort 35500 49075 | tr -dc 'a-zA-Z0-9.:' )
-	
-	_messagePlain_probe _ssh_benchmark_iperf_server_ipv4 "$currentRemotePublicPortIPv4"
-	_ssh "$@" "$safeTmpSSH"'/cautossh' _ssh_benchmark_iperf_server_ipv4 "$currentRemotePublicPortIPv4" | tr -dc 'a-zA-Z0-9.:'
-	
-	_waitPort "$currentRemotePublicIPv4" "$currentRemotePublicPortIPv4"
-	
-	_messagePlain_nominal 'upload: public IPv4'
-	_messagePlain_probe _ssh_benchmark_iperf_client_ipv4 "$currentRemotePublicIPv4" "$currentRemotePublicPortIPv4"
-	_ssh_benchmark_iperf_client_ipv4 "$currentRemotePublicIPv4" "$currentRemotePublicPortIPv4"
-	
-	_messagePlain_nominal '_download: public IPv4'
-	_messagePlain_probe _ssh_benchmark_iperf_client_ipv4_rev "$currentRemotePublicIPv4" "$currentRemotePublicPortIPv4"
-	_ssh_benchmark_iperf_client_ipv4_rev "$currentRemotePublicIPv4" "$currentRemotePublicPortIPv4"
-	
-	
-	local currentRemotePublicPortIPv6
-	currentRemotePublicPortIPv6=$(_ssh "$@" "$safeTmpSSH"'/cautossh' _findPort 35500 49075 | tr -dc 'a-zA-Z0-9.:' )
-	
-	_messagePlain_probe _ssh_benchmark_iperf_server_ipv6 "$currentRemotePublicPortIPv6"
-	_ssh "$@" "$safeTmpSSH"'/cautossh' _ssh_benchmark_iperf_server_ipv6 "$currentRemotePublicPortIPv6" | tr -dc 'a-zA-Z0-9.:'
-	
-	_waitPort "$currentRemotePublicIPv6" "$currentRemotePublicPortIPv6"
-	
-	_messagePlain_nominal 'upload: public IPv6'
-	_messagePlain_probe _ssh_benchmark_iperf_client_ipv6 "$currentRemotePublicIPv4" "$currentRemotePublicPortIPv4"
-	_ssh_benchmark_iperf_client_ipv6 "$currentRemotePublicIPv4" "$currentRemotePublicPortIPv6"
-	
-	_messagePlain_nominal '_download: public IPv6'
-	_messagePlain_probe _ssh_benchmark_iperf_client_ipv6_rev "$currentRemotePublicIPv6" "$currentRemotePublicPortIPv6"
-	_ssh_benchmark_iperf_client_ipv6_rev "$currentRemotePublicIPv6" "$currentRemotePublicPortIPv6"
-	
-	sleep 2
+	_ssh_iperf_raw_public_procedure "$@"
 	
 	_stop_safeTmp_ssh "$@"
 	_stop
+}
+
+# Establishes raw connection and runs iperf across it.
+# DANGER: Not completely tested. May be inaccurate.
+# CAUTION: Generally, SSH connections are to be preferred for simplicity and flexiblity.
+# WARNING: Requires public IP address, LAN IP address, and/or forwarded ports 35500-49075 .
+# WARNING: Intended to produce end-user data. Use multiple specific IPv4 or IPv6 tests at a static address if greater reliability is needed.
+_ssh_iperf_route_raw_sequence() {
+	_start
+	_start_safeTmp_ssh "$@"
+	_get_ssh_external "$@"
+	
+	_ssh_iperf_raw_route_procedure "$@"
+	
+	_stop_safeTmp_ssh "$@"
+	_stop
+}
+
+_ssh_ping_public_procedure() {
+	_messagePlain_nominal 'ping: public: IPv4'
+	_messageCMD ping -4 -i 1 -c 3 "$remotePublicIPv4"
+	
+	_messagePlain_nominal 'ping: public: IPv4'
+	_messageCMD ping -6 -i 1 -c 3 "$remotePublicIPv6"
+}
+
+_ssh_ping_public_sequence() {
+	_start
+	_start_safeTmp_ssh "$@"
+	_get_ssh_external "$@"
+	
+	_ssh_ping_public_procedure "$@"
+	
+	_stop_safeTmp_ssh "$@"
+	_stop
+}
+
+_ssh_ping_public() {
+	"$scriptAbsoluteLocation" _ssh_ping_public_sequence "$@"
+}
+
+_ssh_ping_route_procedure() {
+	_messagePlain_nominal 'ping: route: IPv4'
+	_messageCMD ping -4 -i 1 -c 3 "$remoteRouteIPv4"
+	
+	_messagePlain_nominal 'ping: route: IPv6'
+	_messageCMD ping -6 -i 1 -c 3 "$remoteRouteIPv6"
+}
+
+_ssh_ping_route_sequence() {
+	_start
+	_start_safeTmp_ssh "$@"
+	_get_ssh_external "$@"
+	
+	_ssh_ping_route_procedure "$@"
+	
+	_stop_safeTmp_ssh "$@"
+	_stop
+}
+
+_ssh_ping_route() {
+	"$scriptAbsoluteLocation" _ssh_ping_route_sequence "$@"
+}
+
+_ssh_ping_sequence() {
+	_start
+	_start_safeTmp_ssh "$@"
+	_get_ssh_external "$@"
+	
+	_ssh_ping_public_procedure "$@"
+	_ssh_ping_route_procedure "$@"
+	
+	_stop_safeTmp_ssh "$@"
+	_stop
+}
+
+_ssh_ping() {
+	"$scriptAbsoluteLocation" _ssh_ping_sequence "$@"
+}
+
+_ssh_cycle() {
+	_messagePlain_nominal 'cycle: ms'
+	_stopwatch _ssh "$@" true
+}
+
+_ssh_latency_procedure() {
+	head -c 1 "$safeTmp"/up | ssh "$@" head -c 1 > "$safeTmp"/down &
+	
+	if type dash > /dev/null 2>&1
+	then
+		_stopwatch dash -c 'echo -n x > up'
+		return 0
+	fi
+	
+	_stopwatch bash -c 'echo -n x > up'
+	return 0
+}
+
+_ssh_latency_sequence() {
+	_start
+	_prepare_ssh_fifo
+	
+	_ssh_latency_procedure "$@"
+	
+	_stop
+}
+
+_ssh_latency() {
+	"$scriptAbsoluteFolder" _ssh_latency_sequence "$@"
+}
+
+# Checks common ports.
+_ssh_common_internal_procedure() {
+	_messagePlain_nominal 'nmap: IPv4'
+	ssh "$@" nmap localhost -p 22,80,443
+	
+	_messagePlain_nominal 'nmap: IPv6'
+	ssh "$@" nmap -6 localhost -p 22,80,443
+}
+
+
+_ssh_common_external_public_procedure() {
+	_messagePlain_nominal 'nmap: public IPv4'
+	nmap "$remotePublicIPv4" -p 22,80,443
+	
+	_messagePlain_nominal 'nmap: public IPv6'
+	nmap "$remotePublicIPv6" -6 localhost -p 22,80,443
+}
+
+_ssh_common_external_route_procedure() {
+	_messagePlain_nominal 'nmap: route IPv4'
+	nmap "$remoteRouteIPv4" -p 22,80,443
+	
+	_messagePlain_nominal 'nmap: route IPv6'
+	nmap "$remoteRouteIPv6" -6 localhost -p 22,80,443
 }
 
 
