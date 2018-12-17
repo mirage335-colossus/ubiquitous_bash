@@ -183,3 +183,29 @@ _find_public_ip() {
 	return 0
 }
 
+#https://stackoverflow.com/questions/21336126/linux-bash-script-to-extract-ip-address
+_find_route_ipv4() {
+	#ip route get 8.8.8.8 | awk 'NR==1 {print $NF}'
+	ip route get 8.8.8.8 | awk -F"src " 'NR==1{split($2,a," ");print a[1]}'
+}
+
+#https://stackoverflow.com/questions/21336126/linux-bash-script-to-extract-ip-address
+_find_route_ipv6() {
+	ip route get 2001:4860:4860::8888 | awk -F"src " 'NR==1{split($2,a," ");print a[1]}'
+}
+
+_find_route_ip() {
+	local currentRouteIPaddr
+	
+	[[ "$currentRouteIPaddr" == "" ]] && currentRouteIPaddr=$(_find_route_ipv6)
+	[[ "$currentRouteIPaddr" == "" ]] && currentRouteIPaddr=$(_find_route_ipv4)
+	
+	[[ "$currentRouteIPaddr" == "" ]] && return 1
+	echo -n "$currentRouteIPaddr"
+	return 0
+}
+
+
+
+
+

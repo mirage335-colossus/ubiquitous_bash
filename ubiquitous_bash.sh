@@ -4037,9 +4037,9 @@ _ssh_benchmark_download_public_source() {
 
 # Establishes raw tunel and transmits random binary data through it as bandwidth test.
 # CAUTION: Generally, SSH connections are to be preferred for simplicity and flexiblity.
-# WARNING: Requires public IP address and/or forwarded ports 35500-49075 .
+# WARNING: Requires public IP address, LAN IP address, and/or forwarded ports 35500-49075 .
 # WARNING: Intended to produce end-user data. Use multiple specific IPv4 or IPv6 tests at a static address if greater reliability is needed.
-_ssh_benchmark_download_public() {
+_ssh_benchmark_download_raw() {
 	_start
 	_start_safeTmp_ssh "$@"
 	
@@ -4061,11 +4061,13 @@ _ssh_benchmark_download_public() {
 	_ssh "$@" "$safeTmpSSH"'/cautossh' _ssh_benchmark_download_public_source "$currentRemotePublicPortIPv6" | tr -dc 'a-zA-Z0-9.:'
 	
 	
-	_messagePlain_nominal '_download_public: IPv4'
+	_messagePlain_nominal '_download: public IPv4'
 	_proxy_direct "$currentRemotePublicIPv4" "$currentRemotePublicPortIPv4" | dd of=/dev/null | grep -v records
 	
-	_messagePlain_nominal '_download_public: IPv6'
+	_messagePlain_nominal '_download: public IPv6'
 	_proxy_direct "$currentRemotePublicIPv6" "$currentRemotePublicPortIPv6" | dd of=/dev/null | grep -v records
+	
+	sleep 20
 	
 	_stop_safeTmp_ssh "$@"
 	_stop
@@ -4731,6 +4733,32 @@ _find_public_ip() {
 	echo -n "$currentPublicIPaddr"
 	return 0
 }
+
+#https://stackoverflow.com/questions/21336126/linux-bash-script-to-extract-ip-address
+_find_route_ipv4() {
+	#ip route get 8.8.8.8 | awk 'NR==1 {print $NF}'
+	ip route get 8.8.8.8 | awk -F"src " 'NR==1{split($2,a," ");print a[1]}'
+}
+
+#https://stackoverflow.com/questions/21336126/linux-bash-script-to-extract-ip-address
+_find_route_ipv6() {
+	ip route get 2001:4860:4860::8888 | awk -F"src " 'NR==1{split($2,a," ");print a[1]}'
+}
+
+_find_route_ip() {
+	local currentRouteIPaddr
+	
+	[[ "$currentRouteIPaddr" == "" ]] && currentRouteIPaddr=$(_find_route_ipv6)
+	[[ "$currentRouteIPaddr" == "" ]] && currentRouteIPaddr=$(_find_route_ipv4)
+	
+	[[ "$currentRouteIPaddr" == "" ]] && return 1
+	echo -n "$currentRouteIPaddr"
+	return 0
+}
+
+
+
+
 
 
 #Run command and output to terminal with colorful formatting. Controlled variant of "bash -v".

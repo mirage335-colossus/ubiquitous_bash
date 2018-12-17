@@ -1182,9 +1182,9 @@ _ssh_benchmark_download_public_source() {
 
 # Establishes raw tunel and transmits random binary data through it as bandwidth test.
 # CAUTION: Generally, SSH connections are to be preferred for simplicity and flexiblity.
-# WARNING: Requires public IP address and/or forwarded ports 35500-49075 .
+# WARNING: Requires public IP address, LAN IP address, and/or forwarded ports 35500-49075 .
 # WARNING: Intended to produce end-user data. Use multiple specific IPv4 or IPv6 tests at a static address if greater reliability is needed.
-_ssh_benchmark_download_public() {
+_ssh_benchmark_download_raw() {
 	_start
 	_start_safeTmp_ssh "$@"
 	
@@ -1206,11 +1206,13 @@ _ssh_benchmark_download_public() {
 	_ssh "$@" "$safeTmpSSH"'/cautossh' _ssh_benchmark_download_public_source "$currentRemotePublicPortIPv6" | tr -dc 'a-zA-Z0-9.:'
 	
 	
-	_messagePlain_nominal '_download_public: IPv4'
+	_messagePlain_nominal '_download: public IPv4'
 	_proxy_direct "$currentRemotePublicIPv4" "$currentRemotePublicPortIPv4" | dd of=/dev/null | grep -v records
 	
-	_messagePlain_nominal '_download_public: IPv6'
+	_messagePlain_nominal '_download: public IPv6'
 	_proxy_direct "$currentRemotePublicIPv6" "$currentRemotePublicPortIPv6" | dd of=/dev/null | grep -v records
+	
+	sleep 20
 	
 	_stop_safeTmp_ssh "$@"
 	_stop
