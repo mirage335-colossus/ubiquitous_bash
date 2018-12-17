@@ -16284,13 +16284,18 @@ _prepare() {
 #	true
 #}
 
-_start_stty() {
-	true
+# ATTENTION: Consider carefully, override with "ops".
+# WARNING: Unfortunate, but apparently necessary, workaround for script termintaing while "sleep" or similar run under background.
+_start_stty_echo() {
+	#true
+	
+	stty echo --file=/dev/tty > /dev/null 2>&1
+	
 	#export ubFoundEchoStatus=$(stty --file=/dev/tty -g 2>/dev/null)
 }
 
 _start() {
-	_start_stty
+	_start_stty_echo
 	
 	_prepare
 	
@@ -16325,7 +16330,7 @@ _saveVar() {
 _stop_stty_echo() {
 	#true
 	
-	stty echo > /dev/null 2>&1
+	stty echo --file=/dev/tty > /dev/null 2>&1
 	
 	#[[ "$ubFoundEchoStatus" != "" ]] && stty --file=/dev/tty "$ubFoundEchoStatus" 2> /dev/null
 }
@@ -18558,7 +18563,18 @@ _compile_bash_entry_prog() {
 #May allow traps to work properly in simple scripts which do not include more comprehensive "_stop" or "_stop_emergency" implementations.
 if ! type _stop > /dev/null 2>&1
 then
+	# ATTENTION: Consider carefully, override with "ops".
+	# WARNING: Unfortunate, but apparently necessary, workaround for script termintaing while "sleep" or similar run under background.
+	_stop_stty_echo() {
+		#true
+		
+		stty echo --file=/dev/tty > /dev/null 2>&1
+		
+		#[[ "$ubFoundEchoStatus" != "" ]] && stty --file=/dev/tty "$ubFoundEchoStatus" 2> /dev/null
+	}
 	_stop() {
+		_stop_stty_echo
+		
 		if [[ "$1" != "" ]]
 		then
 			exit "$1"
