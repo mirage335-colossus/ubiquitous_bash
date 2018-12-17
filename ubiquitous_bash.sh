@@ -2847,6 +2847,9 @@ _testProxySSH() {
 	! _wantDep vncpasswd && echo 'warn: vncpasswd not found, x11vnc broken!'
 	! _wantDep xset && echo 'warn: xset not found, vnc broken!'
 	
+	! _wantDep pv && echo 'warn: pv not found, benchmark broken'
+	! _wantDep time && echo 'warn: time not found, benchmark broken'
+	
 	
 	#! _wantDep xpra && echo 'warn: xpra not found'
 	#! _wantDep xephyr && echo 'warn: xephyr not found'
@@ -3012,12 +3015,17 @@ _ssh_sequence() {
 }
 
 _ssh() {
+	local currentEchoStatus
+	currentEchoStatus=$(stty --file=/dev/tty -g 2>/dev/null)
+	
 	if [[ "$sshInContainment" == "true" ]]
 	then
 		if _ssh_command "$@"
 		then
+			stty --file=/dev/tty "$currentEchoStatus" 2> /dev/null
 			return 0
 		fi
+		stty --file=/dev/tty "$currentEchoStatus" 2> /dev/null
 		return 1
 	fi
 	
@@ -3029,6 +3037,7 @@ _ssh() {
 	
 	export sshInContainment=""
 	
+	stty --file=/dev/tty "$currentEchoStatus" 2> /dev/null
 	return "$sshExitStatus"
 }
 
@@ -3859,6 +3868,108 @@ _ssh_autoreverse() {
 	#_autossh firstGateway
 	#_autossh secondGateway
 }
+
+# WARNING: Allows self to login as self to local SSH server with own SSH key.
+# WARNING: Requires local SSH server listening on port 22.
+#https://blog.famzah.net/2015/06/26/openssh-ciphers-performance-benchmark-update-2015/
+_ssh_cipher_benchmark_local_sequence() {
+	_start
+	
+	local localSSHpubKeySample
+	localSSHpubKeySample=$(tail -c +9 "$HOME"/.ssh/id_rsa.pub | head -c 36 | tr -dc 'a-zA-Z0-9')
+	
+	mkdir -p "$HOME"/.ssh
+	[[ ! -e "$HOME"/.ssh/id_rsa ]] && [[ ! -e "$HOME"/.ssh/id_rsa.pub ]] && ssh-keygen -b 4096 -t rsa -N "" -f "$HOME"/.ssh/id_rsa
+	
+	[[ ! -e "$HOME"/.ssh/authorized_keys ]] && echo >> "$HOME"/.ssh/authorized_keys
+	
+	! grep "$localSSHpubKeySample" "$HOME"/.ssh/authorized_keys > /dev/null 2>&1 && cat "$HOME"/.ssh/id_rsa.pub >> "$HOME"/.ssh/authorized_keys
+	
+	[[ ! -e "$HOME"/.ssh/id_rsa ]] && _messagePlain_bad 'fail: missing: ssh key private' && _stop 1
+	[[ ! -e "$HOME"/.ssh/id_rsa.pub ]] && _messagePlain_bad 'fail: missing: ssh key public' && _stop 1
+	[[ ! -e "$HOME"/.ssh/authorized_keys ]] && _messagePlain_bad 'fail: missing: ssh authorized_keys' && _stop 1
+	
+	_messagePlain_nominal '_ssh_cipher_benchmark: fill'
+	dd if=/dev/urandom bs=1M count=512 | base64 > "$safeTmp"/fill
+	[[ ! -e "$safeTmp"/fill ]] && _messagePlain_bad 'fail: missing: fill' && _stop 1
+	
+	_messagePlain_nominal '_ssh_cipher_benchmark: benchmark'
+	# uses "$safeTmp"/dd.txt as a temporary file
+	#for cipher in aes128-cbc aes128-ctr aes128-gcm@openssh.com aes192-cbc aes192-ctr aes256-cbc aes256-ctr aes256-gcm@openssh.com arcfour arcfour128 arcfour256 blowfish-cbc cast128-cbc chacha20-poly1305@openssh.com 3des-cbc
+	for cipher in aes128-ctr aes128-gcm@openssh.com aes192-ctr aes256-ctr aes256-gcm@openssh.com chacha20-poly1305@openssh.com
+	do
+		for i in 1 2 3
+		do
+			_messagePlain_probe "Cipher: $cipher (try $i)"
+			
+			#dd if="$safeTmp"/fill bs=4M count=512 2>"$safeTmp"/dd.txt | pv --size 2G | time -p ssh -c "$cipher" "$USER"@localhost 'cat > /dev/null'
+			dd if="$safeTmp"/fill bs=4M 2>/dev/null | ssh -c "$cipher" "$USER"@localhost 'dd of=/dev/null' 2>&1 | grep -v records
+			#grep -v records "$safeTmp"/dd.txt
+		done
+	done
+	
+	
+	_stop
+}
+
+_ssh_cipher_benchmark_remote_sequence() {
+	_start
+	_start_safeTmp_ssh "$@"
+	
+	_ssh "$@" "$safeTmpSSH"'/cautossh _ssh_cipher_benchmark_local_sequence'
+	
+	_stop_safeTmp_ssh "$@"
+	_stop
+}
+
+_ssh_cipher_benchmark_local() {
+	"$scriptAbsoluteLocation" _ssh_cipher_benchmark_local_sequence "$@"
+}
+
+_ssh_cipher_benchmark_remote() {
+	"$scriptAbsoluteLocation" _ssh_cipher_benchmark_remote_sequence "$@"
+}
+
+_ssh_cipher_benchmark() {
+	_ssh_cipher_benchmark_remote "$@"
+}
+
+_ssh_benchmark_sequence() {
+	_start
+	_start_safeTmp_ssh "$@"
+	
+	_messagePlain_nominal '_ssh_benchmark: fill'
+	dd if=/dev/urandom bs=1k count=1 | base64 > "$safeTmp"/fill_001k
+	dd if=/dev/urandom bs=1k count=10 | base64 > "$safeTmp"/fill_010k
+	
+	dd if=/dev/urandom bs=1M count=1 | base64 > "$safeTmp"/fill_001M
+	dd if=/dev/urandom bs=1M count=10 | base64 > "$safeTmp"/fill_010M
+	dd if=/dev/urandom bs=1M count=100 | base64 > "$safeTmp"/fill_100M
+	
+	_messagePlain_nominal '_ssh_benchmark: benchmark'
+	
+	_messagePlain_probe '1k'
+	dd if="$safeTmp"/fill_001k bs=512 2>/dev/null | _timeout 10 _ssh "$@" 'dd of=/dev/null' 2>&1 | grep -v records
+	_messagePlain_probe '10k'
+	dd if="$safeTmp"/fill_010k bs=1k 2>/dev/null | _timeout 10 _ssh "$@" 'dd of=/dev/null' 2>&1 | grep -v records
+	
+	_messagePlain_probe '1M'
+	dd if="$safeTmp"/fill_001M bs=4096 2>/dev/null | _timeout 10 _ssh "$@" 'dd of=/dev/null' 2>&1 | grep -v records
+	_messagePlain_probe '10M'
+	dd if="$safeTmp"/fill_010M bs=4096 2>/dev/null | _timeout 10 _ssh "$@" 'dd of=/dev/null' 2>&1 | grep -v records
+	
+	_messagePlain_probe '100M'
+	dd if="$safeTmp"/fill_100M bs=4096 2>/dev/null | _timeout 10 _ssh "$@" 'dd of=/dev/null' 2>&1 | grep -v records
+	
+	_stop_safeTmp_ssh "$@"
+	_stop
+}
+
+_ssh_benchmark() {
+	"$scriptAbsoluteLocation" _ssh_benchmark_sequence "$@"
+}
+
+
 
 _testAutoSSH() {
 	if ! _wantGetDep /usr/bin/autossh
