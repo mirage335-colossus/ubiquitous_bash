@@ -1187,7 +1187,7 @@ _ssh_benchmark_download_public_source_sequence_ipv4() {
 }
 
 _ssh_benchmark_download_public_source_ipv4() {
-	nohup "$scriptAbsoluteLocation" _ssh_benchmark_download_public_source_sequence "$@" > /dev/null 2>&1 &
+	nohup "$scriptAbsoluteLocation" _ssh_benchmark_download_public_source_sequence_ipv4 "$@" > /dev/null 2>&1 &
 }
 
 # Tests showed slightly better performance with netcat vs socat, and 2-3x improvement over SSH.
@@ -1199,7 +1199,7 @@ _ssh_benchmark_download_public_source_sequence_ipv6() {
 }
 
 _ssh_benchmark_download_public_source_ipv6() {
-	nohup "$scriptAbsoluteLocation" _ssh_benchmark_download_public_source_sequence "$@" > /dev/null 2>&1 &
+	nohup "$scriptAbsoluteLocation" _ssh_benchmark_download_public_source_sequence_ipv6 "$@" > /dev/null 2>&1 &
 }
 
 # Establishes raw tunel and transmits random binary data through it as bandwidth test.
