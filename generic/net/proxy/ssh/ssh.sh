@@ -1133,7 +1133,7 @@ _ssh_benchmark_sequence() {
 	dd if=/dev/urandom bs=1M count=10 | base64 > "$safeTmp"/fill_010M
 	dd if=/dev/urandom bs=1M count=100 | base64 > "$safeTmp"/fill_100M
 	
-	_messagePlain_nominal '_ssh_benchmark: benchmark'
+	_messagePlain_nominal '_ssh_benchmark: upload'
 	
 	_messagePlain_probe '1k'
 	dd if="$safeTmp"/fill_001k bs=512 2>/dev/null | _timeout 10 _ssh "$@" 'dd of=/dev/null' 2>&1 | grep -v records
