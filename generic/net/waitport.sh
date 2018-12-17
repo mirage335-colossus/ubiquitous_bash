@@ -44,11 +44,11 @@ _checkPort_sequence() {
 	fi
 	
 	#Lack of coproc support implies old system, which implies IPv4 only.
-	if ! type coproc >/dev/null 2>&1
-	then
-		_checkPort_ipv4 "$1" "$2"
-		return "$?"
-	fi
+	#if ! type coproc >/dev/null 2>&1
+	#then
+	#	_checkPort_ipv4 "$1" "$2"
+	#	return "$?"
+	#fi
 	
 	( ( _showPort_ipv4 "$1" "$2" ) 2> /dev/null > "$safeTmp"/_showPort_ipv4 & )
 	

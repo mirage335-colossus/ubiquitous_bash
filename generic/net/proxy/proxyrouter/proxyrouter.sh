@@ -23,6 +23,8 @@ _testProxyRouter() {
 	
 	_getDep nmap
 	
+	_getDep curl
+	
 	# WARNING: Cygwin does not pass netcat tests.
 	uname -a | grep -i cygwin > /dev/null 2>&1 && return 0
 	
@@ -132,5 +134,52 @@ _proxy_reverse() {
 	do
 		_proxy "$2" "$currentReversePort"
 	done
+}
+
+# WARNING: Choose reputable services that have been documented alive for at least a few years.
+#https://gist.github.com/yurrriq/7fc7634dd00494072f45
+_find_public_ipv4() {
+	local currentPublicIPaddr
+	
+	currentPublicIPaddr=$(curl --connect-timeout "$netTimeout" -4 -s https://ipv4.icanhazip.com/ | tr -dc 'a-zA-Z0-9.:')
+	[[ "$currentPublicIPaddr" == "" ]] && currentPublicIPaddr=$(curl --connect-timeout "$netTimeout" -4 -s https://ipv4.icanhazip.com/ | tr -dc 'a-zA-Z0-9.:')
+	
+	[[ "$currentPublicIPaddr" == "" ]] && currentPublicIPaddr=$(curl --connect-timeout "$netTimeout" -4 -s https://v4.ident.me/ | tr -dc 'a-zA-Z0-9.:')
+	
+	# CAUTION: Not explicitly IPv4 (though probably nearly so) - https://ipecho.net/developers.html .
+	[[ "$currentPublicIPaddr" == "" ]] && currentPublicIPaddr=$(curl --connect-timeout "$netTimeout" -4 -s https://ipecho.net/plain | tr -dc 'a-zA-Z0-9.:')
+	
+	
+	[[ "$currentPublicIPaddr" == "" ]] && return 1
+	echo -n "$currentPublicIPaddr"
+	return 0
+}
+
+# WARNING: Choose reputable services that have been documented alive for at least a few years.
+#https://gist.github.com/yurrriq/7fc7634dd00494072f45
+_find_public_ipv6() {
+	local currentPublicIPaddr
+	
+	currentPublicIPaddr=$(curl --connect-timeout "$netTimeout" -6 -s https://ipv6.icanhazip.com/ | tr -dc 'a-zA-Z0-9.:')
+	[[ "$currentPublicIPaddr" == "" ]] && currentPublicIPaddr=$(curl --connect-timeout "$netTimeout" -6 -s https://ipv6.icanhazip.com/ | tr -dc 'a-zA-Z0-9.:')
+	
+	[[ "$currentPublicIPaddr" == "" ]] && currentPublicIPaddr=$(curl --connect-timeout "$netTimeout" -6 -s https://v6.ident.me/ | tr -dc 'a-zA-Z0-9.:')
+	
+	
+	[[ "$currentPublicIPaddr" == "" ]] && return 1
+	echo -n "$currentPublicIPaddr"
+	return 0
+}
+
+_find_public_ip() {
+	local currentPublicIPaddr
+	
+	[[ "$currentPublicIPaddr" == "" ]] && currentPublicIPaddr=$(_find_public_ipv6)
+	[[ "$currentPublicIPaddr" == "" ]] && currentPublicIPaddr=$(_find_public_ipv4)
+	
+	
+	[[ "$currentPublicIPaddr" == "" ]] && return 1
+	echo -n "$currentPublicIPaddr"
+	return 0
 }
 

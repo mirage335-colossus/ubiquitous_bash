@@ -33,9 +33,10 @@ _testProxySSH() {
 	! _wantDep vncpasswd && echo 'warn: vncpasswd not found, x11vnc broken!'
 	! _wantDep xset && echo 'warn: xset not found, vnc broken!'
 	
-	! _wantDep pv && echo 'warn: pv not found, benchmark broken'
-	! _wantDep time && echo 'warn: time not found, benchmark broken'
+	#! _wantDep pv && echo 'warn: pv not found, ssh benchmark broken'
+	#! _wantDep time && echo 'warn: time not found, ssh benchmark broken'
 	
+	! _wantDep curl && echo 'warn: curl not found, raw benchmark broken'
 	
 	#! _wantDep xpra && echo 'warn: xpra not found'
 	#! _wantDep xephyr && echo 'warn: xephyr not found'
@@ -1165,6 +1166,54 @@ _ssh_benchmark_sequence() {
 
 _ssh_benchmark() {
 	"$scriptAbsoluteLocation" _ssh_benchmark_sequence "$@"
+}
+
+
+# Stream of pseudorandom bytes to whoever connects. Intended only for benchmarking.
+# "$1" == listen port
+# "$2" == MB (MegaBytes)
+_ssh_benchmark_download_public_source_sequence() {
+	dd if=<(openssl enc -aes-256-ctr -pass pass:"$(dd if=/dev/urandom bs=128 count=1 2>/dev/null | base64)" -nosalt < /dev/zero) bs=1M count="$2" iflag=fullblock 2>/dev/null | socat - TCP-LISTEN:"$1" > /dev/null 2>&1 &
+}
+
+_ssh_benchmark_download_public_source() {
+	_nohup "$scriptAbsoluteLocation" _ssh_benchmark_download_public_source_sequence "$@" > /dev/null 2>&1 &
+}
+
+# Establishes raw tunel and transmits random binary data through it as bandwidth test.
+# CAUTION: Generally, SSH connections are to be preferred for simplicity and flexiblity.
+# WARNING: Requires public IP address and/or forwarded ports 35500-49075 .
+# WARNING: Intended to produce end-user data. Use multiple specific IPv4 or IPv6 tests at a static address if greater reliability is needed.
+_ssh_benchmark_download_public() {
+	_start
+	_start_safeTmp_ssh "$@"
+	
+	local currentRemotePublicIPv4
+	currentRemotePublicIPv4=$(_ssh "$@" "$safeTmpSSH"'/cautossh' _find_public_ipv4 | tr -dc 'a-zA-Z0-9.:' )
+	
+	local currentRemotePublicIPv6
+	currentRemotePublicIPv6=$(_ssh "$@" "$safeTmpSSH"'/cautossh' _find_public_ipv4 | tr -dc 'a-zA-Z0-9.:' )
+	
+	local currentRemotePublicPortIPv4
+	currentRemotePublicPortIPv4=$(_ssh "$@" "$safeTmpSSH"'/cautossh' _findPort 35500 49075 | tr -dc 'a-zA-Z0-9.:' )
+	
+	_ssh "$@" "$safeTmpSSH"'/cautossh' _ssh_benchmark_download_public_source "$currentRemotePublicPortIPv4" | tr -dc 'a-zA-Z0-9.:'
+	
+	
+	local currentRemotePublicPortIPv6
+	currentRemotePublicPortIPv6=$(_ssh "$@" "$safeTmpSSH"'/cautossh' _findPort 35500 49075 | tr -dc 'a-zA-Z0-9.:' )
+	
+	_ssh "$@" "$safeTmpSSH"'/cautossh' _ssh_benchmark_download_public_source "$currentRemotePublicPortIPv6" | tr -dc 'a-zA-Z0-9.:'
+	
+	
+	_messagePlain_nominal '_download_public: IPv4'
+	_proxy_direct "$currentRemotePublicIPv4" "$currentRemotePublicPortIPv4" | dd of=/dev/null | grep -v records
+	
+	_messagePlain_nominal '_download_public: IPv6'
+	_proxy_direct "$currentRemotePublicIPv6" "$currentRemotePublicPortIPv6" | dd of=/dev/null | grep -v records
+	
+	_stop_safeTmp_ssh "$@"
+	_stop
 }
 
 
