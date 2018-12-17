@@ -3993,6 +3993,44 @@ _ssh_benchmark_sequence() {
 	_messagePlain_nominal '_ssh_benchmark: ping (ms)'
 	_stopwatch _ssh "$@" true
 	
+	#_messagePlain_nominal '_ssh_benchmark: iperf'
+	
+	#local currentPort_iperf_local
+	#local currentPort_iperf_remote
+	
+	#local currentPort_iperf_a_local=$(_findPort)
+	#local currentPort_iperf_a_remote=$(_ssh "$@" "$safeTmpSSH"'/cautossh' _findPort | tr -dc 'a-zA-Z0-9.:')
+	
+	# Bidirectional. Not fully tested.
+	#local currentPort_iperf_b_local=$(_findPort)
+	#local currentPort_iperf_b_remote=$(_ssh "$@" "$safeTmpSSH"'/cautossh' _findPort | tr -dc 'a-zA-Z0-9.:')
+	
+	#_messageCMD _ssh -o 'Compression=no' -L "$currentPort_iperf_a_local":localhost:"$currentPort_iperf_a_local" -R "$currentPort_iperf_b_local":localhost:"$currentPort_iperf_b_local" "$@" "$safeTmpSSH"/cautossh' _ssh_benchmark_iperf_server '"$currentPort_iperf_a_local" &
+	
+	#_waitPort localhost "$currentPort_iperf_a_local"
+	#_waitPort localhost "$currentPort_iperf_b_local"
+	
+	#sleep 3
+	
+	#iperf -c "localhost" -p "$currentPort_iperf_a_local" -L "$currentPort_iperf_b_local" -d
+	#iperf -c "localhost" -p "$currentPort_iperf_a_local"
+	
+	
+	_messagePlain_nominal '_ssh_benchmark: iperf: A'
+	local currentPort_iperf_up=$(_findPort)
+	_messageCMD _ssh -o 'Compression=no' -L "$currentPort_iperf_up":localhost:"$currentPort_iperf_up" "$@" "$safeTmpSSH"/cautossh' '_ssh_benchmark_iperf_server' '"$currentPort_iperf_up" &
+	sleep 5
+	_waitPort localhost "$currentPort_iperf_up"
+	iperf -c "localhost" -p "$currentPort_iperf_up"
+	
+	_messagePlain_nominal '_ssh_benchmark: iperf: B'
+	local currentPort_iperf_down=$(_findPort)
+	_ssh_benchmark_iperf_server "$currentPort_iperf_down" &
+	sleep 5
+	_waitPort localhost "$currentPort_iperf_down"
+	_messageCMD _ssh -o 'Compression=no' -R "$currentPort_iperf_down":localhost:"$currentPort_iperf_down" "$@" 'iperf -c localhost -p '"$currentPort_iperf_down"
+	
+	
 	_messagePlain_nominal '_ssh_benchmark: upload'
 	
 	_messagePlain_probe '1k'
@@ -4058,6 +4096,10 @@ _ssh_benchmark_download_public_source_ipv6() {
 	nohup "$scriptAbsoluteLocation" _ssh_benchmark_download_public_source_sequence_ipv6 "$@" > /dev/null 2>&1 &
 }
 
+_ssh_benchmark_iperf_server() {
+	"$scriptAbsoluteLocation" _timeout 300 iperf -s -p "$1" > /dev/null 2>&1
+}
+
 _ssh_benchmark_iperf_server_ipv4() {
 	nohup "$scriptAbsoluteLocation" _timeout 300 iperf -s -p "$1" > /dev/null 2>&1 &
 }
@@ -4067,11 +4109,11 @@ _ssh_benchmark_iperf_server_ipv6() {
 }
 
 _ssh_benchmark_iperf_client_ipv4() {
-	_timeout 120 iperf -c "$1" -d -p "$2"
+	_timeout 120 iperf -c "$1" -p "$2"
 }
 
 _ssh_benchmark_iperf_client_ipv6() {
-	_timeout 120 iperf -V -c "$1" -d -p "$2"
+	_timeout 120 iperf -V -c "$1" -p "$2"
 }
 
 # Establishes raw tunel and transmits random binary data through it as bandwidth test.
