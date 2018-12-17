@@ -1169,11 +1169,12 @@ _ssh_benchmark() {
 }
 
 
+# Tests showed slightly better performance with netcat vs socat, and 2-3x improvement over SSH.
 # Stream of pseudorandom bytes to whoever connects. Intended only for benchmarking.
 # "$1" == listen port
 # "$2" == MB (MegaBytes)
-_ssh_benchmark_download_public_source_sequence() {
-	dd if=<(openssl enc -aes-256-ctr -pass pass:"$(head -c 128 /dev/urandom | base64)" -nosalt < /dev/zero 2> /dev/null ) bs=1M count="$2" iflag=fullblock 2>/dev/null | socat - TCP-LISTEN:"$1"
+_ssh_benchmark_download_public_source_sequence_ipv4() {
+	dd if=<(openssl enc -aes-256-ctr -pass pass:"$(head -c 128 /dev/urandom | base64)" -nosalt < /dev/zero 2> /dev/null ) bs=1M count="$2" iflag=fullblock 2>/dev/null | socat -4 - TCP-LISTEN:"$1"
 	
 	#openssl enc -aes-256-ctr -pass pass:$(dd if=/dev/urandom bs=128 count=1 2>/dev/null | base64) -nosalt < /dev/zero) | socat - TCP-LISTEN:"10000" > /dev/null 2>&1 &
 	#openssl enc -aes-256-ctr -pass pass:"$(head -c 128 /dev/urandom | base64)" -nosalt < /dev/zero 2>/dev/null | head -c 15000000 | socat - TCP-LISTEN:"10000"
@@ -1185,15 +1186,27 @@ _ssh_benchmark_download_public_source_sequence() {
 	#socat -u TCP4:45.62.232.168:10000 STDOUT | dd of=/dev/null iflag=fullblock bs=1M count=100
 }
 
-_ssh_benchmark_download_public_source() {
-	_nohup "$scriptAbsoluteLocation" _ssh_benchmark_download_public_source_sequence "$@" > /dev/null 2>&1 &
+_ssh_benchmark_download_public_source_ipv4() {
+	nohup "$scriptAbsoluteLocation" _ssh_benchmark_download_public_source_sequence "$@" > /dev/null 2>&1 &
+}
+
+# Tests showed slightly better performance with netcat vs socat, and 2-3x improvement over SSH.
+# Stream of pseudorandom bytes to whoever connects. Intended only for benchmarking.
+# "$1" == listen port
+# "$2" == MB (MegaBytes)
+_ssh_benchmark_download_public_source_sequence_ipv6() {
+	dd if=<(openssl enc -aes-256-ctr -pass pass:"$(head -c 128 /dev/urandom | base64)" -nosalt < /dev/zero 2> /dev/null ) bs=1M count="$2" iflag=fullblock 2>/dev/null | socat -6 - TCP-LISTEN:"$1"
+}
+
+_ssh_benchmark_download_public_source_ipv6() {
+	nohup "$scriptAbsoluteLocation" _ssh_benchmark_download_public_source_sequence "$@" > /dev/null 2>&1 &
 }
 
 # Establishes raw tunel and transmits random binary data through it as bandwidth test.
 # CAUTION: Generally, SSH connections are to be preferred for simplicity and flexiblity.
 # WARNING: Requires public IP address, LAN IP address, and/or forwarded ports 35500-49075 .
 # WARNING: Intended to produce end-user data. Use multiple specific IPv4 or IPv6 tests at a static address if greater reliability is needed.
-ssh_benchmark_download_raw() {
+_ssh_benchmark_download_raw() {
 	_start
 	_start_safeTmp_ssh "$@"
 	
@@ -1207,15 +1220,15 @@ ssh_benchmark_download_raw() {
 	local currentRemotePublicPortIPv4
 	currentRemotePublicPortIPv4=$(_ssh "$@" "$safeTmpSSH"'/cautossh' _findPort 35500 49075 | tr -dc 'a-zA-Z0-9.:' )
 	
-	_messagePlain_probe _ssh_benchmark_download_public_source "$currentRemotePublicPortIPv4"
-	_ssh "$@" "$safeTmpSSH"'/cautossh' _ssh_benchmark_download_public_source "$currentRemotePublicPortIPv4" 15 | tr -dc 'a-zA-Z0-9.:'
+	_messagePlain_probe _ssh_benchmark_download_public_source_ipv4 "$currentRemotePublicPortIPv4"
+	_ssh "$@" "$safeTmpSSH"'/cautossh' _ssh_benchmark_download_public_source_ipv4 "$currentRemotePublicPortIPv4" 15 | tr -dc 'a-zA-Z0-9.:'
 	
 	
 	local currentRemotePublicPortIPv6
 	currentRemotePublicPortIPv6=$(_ssh "$@" "$safeTmpSSH"'/cautossh' _findPort 35500 49075 | tr -dc 'a-zA-Z0-9.:' )
 	
-	_messagePlain_probe _ssh_benchmark_download_public_source "$currentRemotePublicPortIPv6"
-	_ssh "$@" "$safeTmpSSH"'/cautossh' _ssh_benchmark_download_public_source "$currentRemotePublicPortIPv6" 15 | tr -dc 'a-zA-Z0-9.:'
+	_messagePlain_probe _ssh_benchmark_download_public_source_ipv6 "$currentRemotePublicPortIPv6"
+	_ssh "$@" "$safeTmpSSH"'/cautossh' _ssh_benchmark_download_public_source_ipv6 "$currentRemotePublicPortIPv6" 15 | tr -dc 'a-zA-Z0-9.:'
 	
 	_messagePlain_nominal '_download: public IPv4'
 	_messagePlain_probe _proxy_direct "$currentRemotePublicIPv4" "$currentRemotePublicPortIPv4"
