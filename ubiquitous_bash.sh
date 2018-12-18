@@ -4092,7 +4092,7 @@ _ssh_pulse_sequence() {
 	_ssh_common_external_public_procedure "$@"
 	_ssh_common_external_route_procedure "$@"
 	
-	stop_safeTmp_ssh "$@"
+	_stop_safeTmp_ssh "$@"
 	_stop
 }
 
@@ -4449,18 +4449,15 @@ _ssh_cycle() {
 	_stopwatch _ssh "$@" true
 }
 
+# WARNING: May not be an exact measurement, especially at ranges near 3second . Expected error is less than plus cycle time.
+#https://serverfault.com/questions/807910/measure-total-latency-of-ssh-session
 _ssh_latency_procedure() {
 	_messagePlain_nominal 'latency: ms'
 	
 	head -c 10 "$safeTmp"/up | ssh "$@" head -c 5 > "$safeTmp"/down &
 	
-	if type dash > /dev/null 2>&1
-	then
-		_stopwatch dash -c 'echo -n 1234567890 > up ; cat down > /dev/null 2>&1'
-		return 0
-	fi
+	( head -c 1 down > /dev/null 2>&1 & sleep 3 ; echo -n 1 > up ; _stopwatch wait )
 	
-	_stopwatch bash -c 'echo -n 1234567890 > up ; cat down > /dev/null 2>&1'
 	return 0
 }
 
