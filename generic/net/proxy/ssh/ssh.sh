@@ -1596,43 +1596,58 @@ _ssh_cycle() {
 	_stopwatch _ssh "$@" true
 }
 
-_ssh_latency_procedure() {
-	local currentPortIn=$(_findPort)
-	local currentPortOut=$(_findPort)
-	
-	socat -4 - TCP-LISTEN:"$currentPortOut" > /dev/null 2>&1 &
-	
-	_ssh "$@" -L "$currentPortIn":localhost:"$remotePortPublicIPv4" -R "$remotePortRouteIPv4":localhost:"$currentPortOut" socat tcp-listen:"$remotePortPublicIPv4",reuseaddr,fork tcp:localhost:"$remotePortRouteIPv4" &
-	
-	echo -n 1 > _proxy localhost "$currentPortIn"
-	
-	_stopwatch wait
+# WARNING: May be significantly inflated. Consider as a 'worst case' measurement.
+# ATTENTION: Values comparable to "$netTimeout" indicate failure.
+# PREREQUSITE: _get_ssh_relay "$@"
+_ssh_latency_net_procedure() {
+	(
+		_messagePlain_nominal 'latency: ms'
+		
+		local currentPortIn=$(_findPort)
+		local currentPortOut=$(_findPort)
+		
+		#_messagePlain_probe 'socat -4 - TCP-LISTEN:'"$currentPortOut"' > /dev/null 2>&1 &'
+		_timeout "$netTimeout" socat -4 - TCP-LISTEN:"$currentPortOut" | head -c 1 > /dev/null 2>&1 &
+		
+		#_messagePlain_probe '_ssh '"$@"' -L '"$currentPortIn"':localhost:'"$relayPortOut"' -R '"$relayPortIn"':localhost:'"$currentPortOut"' socat tcp-listen:'"$relayPortOut"' tcp:localhost:'"$relayPortIn"' &'
+		_timeout "$netTimeout" _ssh "$@" -L "$currentPortIn":localhost:"$relayPortOut" -R "$relayPortIn":localhost:"$currentPortOut" socat tcp-listen:"$relayPortOut" tcp:localhost:"$relayPortIn" &
+		
+		sleep 3
+		
+		#_messagePlain_probe 'echo -n 1 | _proxy_direct localhost '"$currentPortIn"
+		echo -n 1 | _proxy_direct localhost "$currentPortIn" > /dev/null 2>&1
+		
+		( sleep 6 ; echo -n 1 | _proxy_direct localhost "$currentPortIn" ) &
+		( sleep 9 ; echo -n 1 | _proxy_direct localhost "$currentPortIn" ) &
+		( sleep $(expr "$netTimeout" - 2) ; echo -n 1 | _proxy_direct localhost "$currentPortIn" ) &
+		
+		#_messagePlain_probe wait %1
+		_stopwatch wait %1
+	)
 }
 
 
-# DANGER: Considered obsolete.
 # WARNING: May not be an exact measurement, especially at ranges near 3second . Expected error is less than plus cycle time.
 #https://serverfault.com/questions/807910/measure-total-latency-of-ssh-session
 #https://www.cyberciti.biz/faq/linux-unix-read-one-character-atatime-while-loop/
 _ssh_latency_character_procedure() {
 	_messagePlain_nominal 'latency: ms'
 	
-	sleep 90 > "$safeTmp"/up &
-	#sleep 90 < "$safeTmp"/down
-	
+	sleep 90 < "$safeTmp"/down &
+	#sleep 90 > "$safeTmp"/up &
 	
 	(
 	
-	cat down > /dev/null 2>&1 &
 	sleep 3
-	echo -n 12345 > up
+	
+	cat "$safeTmp"/down > /dev/null 2>&1 &
+	
+	echo -n 1 > "$safeTmp"/up
 	_stopwatch wait
 	
 	) &
 	
-	head -c 1 "$safeTmp"/up | ssh "$@" head -c 1 > "$safeTmp"/down
-	
-	
+	cat "$safeTmp"/up | _ssh "$@" head -c 1 > "$safeTmp"/down
 	
 	return 0
 }
@@ -1642,10 +1657,12 @@ _ssh_latency_sequence() {
 	_start_safeTmp_ssh "$@"
 	_prepare_ssh_fifo
 	
-	_messagePlain_nominal 'get: external'
-	_get_ssh_external "$@"
+	#_messagePlain_nominal 'get: external'
+	#_get_ssh_external "$@"
+	#_messagePlain_nominal 'get: internal'
+	#_get_ssh_relay "$@"
 	
-	_ssh_latency_procedure "$@"
+	_ssh_latency_character_procedure "$@"
 	
 	_stop_safeTmp_ssh "$@"
 	_stop
@@ -1654,6 +1671,7 @@ _ssh_latency_sequence() {
 _ssh_latency() {
 	"$scriptAbsoluteLocation" _ssh_latency_sequence "$@"
 }
+
 
 # Checks common ports.
 _ssh_common_internal_procedure() {
