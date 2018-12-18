@@ -491,6 +491,8 @@ _get_ssh_external() {
 _prepare_ssh_fifo() {
 	mkfifo "$safeTmp"/up
 	mkfifo "$safeTmp"/down
+	mkfifo "$safeTmp"/control
+	mkfifo "$safeTmp"/back
 }
 
 _vnc_ssh() {
@@ -1523,10 +1525,10 @@ _ssh_iperf_route_raw_sequence() {
 
 _ssh_ping_public_procedure() {
 	_messagePlain_nominal 'ping: public: IPv4'
-	_messageCMD ping -4 -i 1 -c 3 "$remotePublicIPv4"
+	_messageCMD ping -4 -U -i 1 -c 3 "$remotePublicIPv4"
 	
 	_messagePlain_nominal 'ping: public: IPv6'
-	_messageCMD ping -6 -i 1 -c 3 "$remotePublicIPv6"
+	_messageCMD ping -6 -U -i 1 -c 3 "$remotePublicIPv6"
 }
 
 _ssh_ping_public_sequence() {
@@ -1548,10 +1550,10 @@ _ssh_ping_public() {
 
 _ssh_ping_route_procedure() {
 	_messagePlain_nominal 'ping: route: IPv4'
-	_messageCMD ping -4 -i 1 -c 3 "$remoteRouteIPv4"
+	_messageCMD ping -4 -U -i 1 -c 3 "$remoteRouteIPv4"
 	
 	_messagePlain_nominal 'ping: route: IPv6'
-	_messageCMD ping -6 -i 1 -c 3 "$remoteRouteIPv6"
+	_messageCMD ping -6 -U -i 1 -c 3 "$remoteRouteIPv6"
 }
 
 _ssh_ping_route_sequence() {
@@ -1594,29 +1596,63 @@ _ssh_cycle() {
 	_stopwatch _ssh "$@" true
 }
 
+_ssh_latency_procedure() {
+	local currentPortIn=$(_findPort)
+	local currentPortOut=$(_findPort)
+	
+	socat -4 - TCP-LISTEN:"$currentPortOut" > /dev/null 2>&1 &
+	
+	_ssh "$@" -L "$currentPortIn":localhost:"$remotePortPublicIPv4" -R "$remotePortRouteIPv4":localhost:"$currentPortOut" socat tcp-listen:"$remotePortPublicIPv4",reuseaddr,fork tcp:localhost:"$remotePortRouteIPv4" &
+	
+	echo -n 1 > _proxy localhost "$currentPortIn"
+	
+	_stopwatch wait
+}
+
+
+# DANGER: Considered obsolete.
 # WARNING: May not be an exact measurement, especially at ranges near 3second . Expected error is less than plus cycle time.
 #https://serverfault.com/questions/807910/measure-total-latency-of-ssh-session
-_ssh_latency_procedure() {
+#https://www.cyberciti.biz/faq/linux-unix-read-one-character-atatime-while-loop/
+_ssh_latency_character_procedure() {
 	_messagePlain_nominal 'latency: ms'
 	
-	head -c 10 "$safeTmp"/up | ssh "$@" head -c 5 > "$safeTmp"/down &
+	sleep 90 > "$safeTmp"/up &
+	#sleep 90 < "$safeTmp"/down
 	
-	( head -c 1 down > /dev/null 2>&1 & sleep 3 ; echo -n 1 > up ; _stopwatch wait )
+	
+	(
+	
+	cat down > /dev/null 2>&1 &
+	sleep 3
+	echo -n 12345 > up
+	_stopwatch wait
+	
+	) &
+	
+	head -c 1 "$safeTmp"/up | ssh "$@" head -c 1 > "$safeTmp"/down
+	
+	
 	
 	return 0
 }
 
 _ssh_latency_sequence() {
 	_start
+	_start_safeTmp_ssh "$@"
 	_prepare_ssh_fifo
+	
+	_messagePlain_nominal 'get: external'
+	_get_ssh_external "$@"
 	
 	_ssh_latency_procedure "$@"
 	
+	_stop_safeTmp_ssh "$@"
 	_stop
 }
 
 _ssh_latency() {
-	"$scriptAbsoluteFolder" _ssh_latency_sequence "$@"
+	"$scriptAbsoluteLocation" _ssh_latency_sequence "$@"
 }
 
 # Checks common ports.

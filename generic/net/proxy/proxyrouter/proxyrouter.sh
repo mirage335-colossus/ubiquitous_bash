@@ -136,6 +136,10 @@ _proxy_reverse() {
 	done
 }
 
+_relay() {
+	socat tcp-listen:"$1",reuseaddr,fork tcp:localhost:"$2"
+}
+
 # WARNING: Choose reputable services that have been documented alive for at least a few years.
 #https://gist.github.com/yurrriq/7fc7634dd00494072f45
 _find_public_ipv4() {
