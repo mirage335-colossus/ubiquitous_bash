@@ -483,6 +483,9 @@ _get_ssh_external() {
 	# Common practice to use separate ports for dynamic IPv4 and IPv6 services, due to some applications not supporting both simultaneously.
 	export remotePortPublicIPv4=$(_ssh_internal_command "$@" "$safeTmpSSH"'/cautossh' _findPort 35500 49075 | tr -dc 'a-zA-Z0-9.:')
 	export remotePortPublicIPv6=$(_ssh_internal_command "$@" "$safeTmpSSH"'/cautossh' _findPort 35500 49075 | tr -dc 'a-zA-Z0-9.:')
+	
+	export remotePortRouteIPv4=$(_ssh_internal_command "$@" "$safeTmpSSH"'/cautossh' _findPort 35500 49075 | tr -dc 'a-zA-Z0-9.:')
+	export remotePortRouteIPv6=$(_ssh_internal_command "$@" "$safeTmpSSH"'/cautossh' _findPort 35500 49075 | tr -dc 'a-zA-Z0-9.:')
 }
 
 _prepare_ssh_fifo() {
@@ -1195,17 +1198,19 @@ _ssh_emit_procedure() {
 _ssh_benchmark_sequence() {
 	_start
 	_start_safeTmp_ssh "$@"
-	_get_ssh_external "$@"
 	_prepare_ssh_fifo
 	
-	_ssh_cycle
+	_messagePlain_nominal 'get: external'
+	#_get_ssh_external "$@"
 	
-	_ssh_latency_procedure
+	_ssh_cycle "$@"
 	
-	_ssh_iperf_procedure
-	_ssh_emit_procedure
+	_ssh_latency_procedure "$@"
 	
-	_ssh_common_internal_procedure
+	_ssh_iperf_procedure "$@"
+	_ssh_emit_procedure "$@"
+	
+	_ssh_common_internal_procedure "$@"
 	
 	_stop_safeTmp_ssh "$@"
 	_stop
@@ -1218,8 +1223,10 @@ _ssh_benchmark() {
 _ssh_pulse_sequence() {
 	_start
 	_start_safeTmp_ssh "$@"
-	_get_ssh_external "$@"
 	_prepare_ssh_fifo
+	
+	_messagePlain_nominal 'get: external'
+	_get_ssh_external "$@"
 	
 	_ssh_ping_public_procedure "$@"
 	_ssh_ping_route_procedure "$@"
@@ -1234,18 +1241,24 @@ _ssh_pulse_sequence() {
 	_stop
 }
 
+_ssh_pulse() {
+	"$scriptAbsoluteLocation" _ssh_pulse_sequence "$@"
+}
+
 _ssh_check_sequence() {
 	_start
 	_start_safeTmp_ssh "$@"
-	_get_ssh_external "$@"
 	_prepare_ssh_fifo
 	
-	_ssh_cycle
+	_messagePlain_nominal 'get: external'
+	_get_ssh_external "$@"
 	
-	_ssh_latency_procedure
+	_ssh_cycle "$@"
 	
-	_ssh_iperf_procedure
-	_ssh_emit_procedure
+	_ssh_latency_procedure "$@"
+	
+	_ssh_iperf_procedure "$@"
+	_ssh_emit_procedure "$@"
 	
 	
 	_ssh_ping_public_procedure "$@"
@@ -1259,6 +1272,10 @@ _ssh_check_sequence() {
 	
 	stop_safeTmp_ssh "$@"
 	_stop
+}
+
+_ssh_check() {
+	"$scriptAbsoluteLocation" _ssh_check_sequence "$@"
 }
 
 
@@ -1354,6 +1371,8 @@ _ssh_benchmark_download_raw_procedure_ipv6() {
 _ssh_benchmark_download_raw() {
 	_start
 	_start_safeTmp_ssh "$@"
+	
+	_messagePlain_nominal 'get: external'
 	_get_ssh_external "$@"
 	
 	mkfifo "$safeTmp"/aggregate_fifo
@@ -1422,8 +1441,8 @@ _ssh_iperf_raw_public_procedure() {
 	sleep 3
 	
 	_messagePlain_nominal 'iperf: A: public IPv6'
-	_messagePlain_probe _ssh_benchmark_iperf_client_ipv6 "$remotePublicIPv4" "$remotePortPublicIPv4"
-	_ssh_benchmark_iperf_client_ipv6 "$remotePublicIPv4" "$remotePortPublicIPv6"
+	_messagePlain_probe _ssh_benchmark_iperf_client_ipv6 "$remotePublicIPv6" "$remotePortPublicIPv6"
+	_ssh_benchmark_iperf_client_ipv6 "$remotePublicIPv6" "$remotePortPublicIPv6"
 	
 	_messagePlain_nominal 'iperf: B: public IPv6'
 	_messagePlain_probe _ssh_benchmark_iperf_client_ipv6_rev "$remotePublicIPv6" "$remotePortPublicIPv6"
@@ -1454,8 +1473,8 @@ _ssh_iperf_raw_route_procedure() {
 	sleep 3
 	
 	_messagePlain_nominal 'iperf: A: route IPv6'
-	_messagePlain_probe _ssh_benchmark_iperf_client_ipv6 "$remoteRouteIPv4" "$remotePortRouteIPv4"
-	_ssh_benchmark_iperf_client_ipv6 "$remoteRouteIPv4" "$remotePortRouteIPv6"
+	_messagePlain_probe _ssh_benchmark_iperf_client_ipv6 "$remoteRouteIPv6" "$remotePortRouteIPv6"
+	_ssh_benchmark_iperf_client_ipv6 "$remoteRouteIPv6" "$remotePortRouteIPv6"
 	
 	_messagePlain_nominal 'iperf: B: route IPv6'
 	_messagePlain_probe _ssh_benchmark_iperf_client_ipv6_rev "$remoteRouteIPv6" "$remotePortRouteIPv6"
@@ -1472,6 +1491,8 @@ _ssh_iperf_raw_route_procedure() {
 _ssh_iperf_public_raw_sequence() {
 	_start
 	_start_safeTmp_ssh "$@"
+	
+	_messagePlain_nominal 'get: external'
 	_get_ssh_external "$@"
 	
 	_ssh_iperf_raw_public_procedure "$@"
@@ -1488,6 +1509,10 @@ _ssh_iperf_public_raw_sequence() {
 _ssh_iperf_route_raw_sequence() {
 	_start
 	_start_safeTmp_ssh "$@"
+	
+	_messagePlain_nominal 'get: external'
+	
+	_messagePlain_nominal 'get: external'
 	_get_ssh_external "$@"
 	
 	_ssh_iperf_raw_route_procedure "$@"
@@ -1500,13 +1525,15 @@ _ssh_ping_public_procedure() {
 	_messagePlain_nominal 'ping: public: IPv4'
 	_messageCMD ping -4 -i 1 -c 3 "$remotePublicIPv4"
 	
-	_messagePlain_nominal 'ping: public: IPv4'
+	_messagePlain_nominal 'ping: public: IPv6'
 	_messageCMD ping -6 -i 1 -c 3 "$remotePublicIPv6"
 }
 
 _ssh_ping_public_sequence() {
 	_start
 	_start_safeTmp_ssh "$@"
+	
+	_messagePlain_nominal 'get: external'
 	_get_ssh_external "$@"
 	
 	_ssh_ping_public_procedure "$@"
@@ -1530,6 +1557,8 @@ _ssh_ping_route_procedure() {
 _ssh_ping_route_sequence() {
 	_start
 	_start_safeTmp_ssh "$@"
+	
+	_messagePlain_nominal 'get: external'
 	_get_ssh_external "$@"
 	
 	_ssh_ping_route_procedure "$@"
@@ -1545,6 +1574,8 @@ _ssh_ping_route() {
 _ssh_ping_sequence() {
 	_start
 	_start_safeTmp_ssh "$@"
+	
+	_messagePlain_nominal 'get: external'
 	_get_ssh_external "$@"
 	
 	_ssh_ping_public_procedure "$@"
@@ -1564,15 +1595,17 @@ _ssh_cycle() {
 }
 
 _ssh_latency_procedure() {
-	head -c 1 "$safeTmp"/up | ssh "$@" head -c 1 > "$safeTmp"/down &
+	_messagePlain_nominal 'latency: ms'
+	
+	head -c 5 "$safeTmp"/up | ssh "$@" head -c 5 > "$safeTmp"/down &
 	
 	if type dash > /dev/null 2>&1
 	then
-		_stopwatch dash -c 'echo -n x > up'
+		_stopwatch dash -c 'echo -n 12345 > up'
 		return 0
 	fi
 	
-	_stopwatch bash -c 'echo -n x > up'
+	_stopwatch bash -c 'echo -n 12345 > up'
 	return 0
 }
 
