@@ -1597,15 +1597,15 @@ _ssh_cycle() {
 _ssh_latency_procedure() {
 	_messagePlain_nominal 'latency: ms'
 	
-	head -c 5 "$safeTmp"/up | ssh "$@" head -c 5 > "$safeTmp"/down &
+	head -c 10 "$safeTmp"/up | ssh "$@" head -c 5 > "$safeTmp"/down &
 	
 	if type dash > /dev/null 2>&1
 	then
-		_stopwatch dash -c 'echo -n 12345 > up'
+		_stopwatch dash -c 'echo -n 1234567890 > up ; cat down > /dev/null 2>&1'
 		return 0
 	fi
 	
-	_stopwatch bash -c 'echo -n 12345 > up'
+	_stopwatch bash -c 'echo -n 1234567890 > up ; cat down > /dev/null 2>&1'
 	return 0
 }
 
@@ -1637,7 +1637,7 @@ _ssh_common_external_public_procedure() {
 	nmap "$remotePublicIPv4" -p 22,80,443
 	
 	_messagePlain_nominal 'nmap: public IPv6'
-	nmap "$remotePublicIPv6" -6 localhost -p 22,80,443
+	nmap -6 "$remotePublicIPv6" localhost -p 22,80,443
 }
 
 _ssh_common_external_route_procedure() {
@@ -1645,7 +1645,7 @@ _ssh_common_external_route_procedure() {
 	nmap "$remoteRouteIPv4" -p 22,80,443
 	
 	_messagePlain_nominal 'nmap: route IPv6'
-	nmap "$remoteRouteIPv6" -6 localhost -p 22,80,443
+	nmap -6 "$remoteRouteIPv6" -p 22,80,443
 }
 
 
