@@ -473,6 +473,7 @@ rmdir '"$safeTmpSSH"'
 	stty echo > /dev/null 2>&1
 }
 
+# WARNING: Intermittent unreliability due to unlikely port collision rate.
 _get_ssh_external() {
 	export remotePublicIPv4=$(_ssh_internal_command "$@" "$safeTmpSSH"'/cautossh' _find_public_ipv4 | tr -dc 'a-zA-Z0-9.:')
 	export remotePublicIPv6=$(_ssh_internal_command "$@" "$safeTmpSSH"'/cautossh' _find_public_ipv6 | tr -dc 'a-zA-Z0-9.:')
@@ -486,6 +487,12 @@ _get_ssh_external() {
 	
 	export remotePortRouteIPv4=$(_ssh_internal_command "$@" "$safeTmpSSH"'/cautossh' _findPort 35500 49075 | tr -dc 'a-zA-Z0-9.:')
 	export remotePortRouteIPv6=$(_ssh_internal_command "$@" "$safeTmpSSH"'/cautossh' _findPort 35500 49075 | tr -dc 'a-zA-Z0-9.:')
+}
+
+# WARNING: Intermittent unreliability due to significant port collision rate.
+_get_ssh_relay() {
+	export relayPortIn=$(_ssh_internal_command "$@" "$safeTmpSSH"'/cautossh' _findPort | tr -dc 'a-zA-Z0-9.:')
+	export relayPortOut=$(_ssh_internal_command "$@" "$safeTmpSSH"'/cautossh' _findPort | tr -dc 'a-zA-Z0-9.:')
 }
 
 _prepare_ssh_fifo() {
