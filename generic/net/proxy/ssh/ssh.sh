@@ -39,7 +39,7 @@ _testProxySSH() {
 	! _wantDep curl && echo 'warn: missing: curl - public ip detection broken'
 	! _wantDep iperf3 && echo 'warn: missing: iperf3 - throughput benchmark broken'
 	
-	! _wantDep dash && echo 'warn: dash not found, latency benchmark inflated'
+	#! _wantDep dash && echo 'warn: dash not found, latency benchmark inflated'
 	
 	#! _wantDep xpra && echo 'warn: xpra not found'
 	#! _wantDep xephyr && echo 'warn: xephyr not found'
