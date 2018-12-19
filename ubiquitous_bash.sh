@@ -4489,7 +4489,7 @@ _ssh_latency_net_procedure() {
 }
 
 
-# WARNING: May not be an exact measurement, especially at ranges near 3second . Expected error is less than plus cycle time.
+# WARNING: May not be an exact measurement, especially at ranges near 3second . Expected error is less than approximately plus cycle time.
 #https://serverfault.com/questions/807910/measure-total-latency-of-ssh-session
 #https://www.cyberciti.biz/faq/linux-unix-read-one-character-atatime-while-loop/
 _ssh_latency_character_procedure() {
@@ -4514,6 +4514,13 @@ _ssh_latency_character_procedure() {
 	return 0
 }
 
+# WARNING: Depends on python resources.
+_ssh_latency_python_procedure() {
+	_messagePlain_nominal 'latency: ms'
+	
+	python -m timeit -n 25 -s 'import subprocess; p = subprocess.Popen(["'"$scriptAbsoluteLocation"'", "_ssh", "'"$@"'", "cat"], stdin=subprocess.PIPE, stdout=subprocess.PIPE, bufsize=0); p.stdin.write(b"z"); assert p.stdout.read(1) == b"z"' 'p.stdin.write(b"z"); assert p.stdout.read(1) == b"z"'
+}
+
 _ssh_latency_sequence() {
 	_start
 	_start_safeTmp_ssh "$@"
@@ -4524,7 +4531,11 @@ _ssh_latency_sequence() {
 	#_messagePlain_nominal 'get: internal'
 	#_get_ssh_relay "$@"
 	
-	_ssh_latency_character_procedure "$@"
+	#_ssh_latency_net_procedure "$@"
+	
+	#_ssh_latency_character_procedure "$@"
+	
+	_ssh_latency_python_procedure "$@"
 	
 	_stop_safeTmp_ssh "$@"
 	_stop
