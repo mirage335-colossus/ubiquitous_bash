@@ -69,8 +69,8 @@ _stop() {
 		ub_stop_pid=$(cat "$safeTmp"/.pid)
 		if [[ $$ != "$ub_stop_pid" ]]
 		then
-			pkill -P "$ub_stop_pid"
-			kill "$ub_stop_pid"
+			pkill -P "$ub_stop_pid" > /dev/null 2>&1
+			kill "$ub_stop_pid" > /dev/null 2>&1
 		fi
 	fi
 	#Redundant, as this usually resides in "$safeTmp".
