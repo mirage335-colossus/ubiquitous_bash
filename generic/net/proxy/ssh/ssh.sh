@@ -1281,7 +1281,7 @@ _ssh_benchmark_sequence() {
 	_start_safeTmp_ssh "$@"
 	_prepare_ssh_fifo
 	
-	_messagePlain_nominal 'get: external'
+	#_messagePlain_nominal 'get: external'
 	#_get_ssh_external "$@"
 	#_messagePlain_nominal 'get: relay'
 	#_get_ssh_relay "$@"

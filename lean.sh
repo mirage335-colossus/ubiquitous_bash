@@ -3321,7 +3321,7 @@ _stop() {
 	local ub_stop_pid
 	if [[ -e "$safeTmp"/.pid ]]
 	then
-		ub_stop_pid=$(cat "$safeTmp"/.pid)
+		ub_stop_pid=$(cat "$safeTmp"/.pid 2> /dev/null)
 		if [[ $$ != "$ub_stop_pid" ]]
 		then
 			pkill -P "$ub_stop_pid" > /dev/null 2>&1

@@ -4136,7 +4136,7 @@ _ssh_benchmark_sequence() {
 	_start_safeTmp_ssh "$@"
 	_prepare_ssh_fifo
 	
-	_messagePlain_nominal 'get: external'
+	#_messagePlain_nominal 'get: external'
 	#_get_ssh_external "$@"
 	#_messagePlain_nominal 'get: relay'
 	#_get_ssh_relay "$@"
@@ -17111,7 +17111,7 @@ _stop() {
 	local ub_stop_pid
 	if [[ -e "$safeTmp"/.pid ]]
 	then
-		ub_stop_pid=$(cat "$safeTmp"/.pid)
+		ub_stop_pid=$(cat "$safeTmp"/.pid 2> /dev/null)
 		if [[ $$ != "$ub_stop_pid" ]]
 		then
 			pkill -P "$ub_stop_pid" > /dev/null 2>&1
