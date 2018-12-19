@@ -1093,6 +1093,78 @@ _ssh_autoreverse() {
 	#_autossh secondGateway
 }
 
+_ssh_external_procedure() {
+	echo
+	_messagePlain_probe_var remotePublicIPv4
+	_messagePlain_probe_var remotePublicIPv6
+	echo
+	_messagePlain_probe_var remoteRouteIPv4
+	_messagePlain_probe_var remoteRouteIPv6
+	echo
+}
+
+_ssh_external_sequence() {
+	_start
+	_start_safeTmp_ssh "$@"
+	
+	_messagePlain_nominal 'get: external'
+	_get_ssh_external "$@"
+	
+	_messagePlain_nominal 'report: IP Address'
+	_ssh_external_procedure "$@"
+	
+	_stop_safeTmp_ssh "$@"
+	_stop
+}
+
+_ssh_external() {
+	_ssh_external_sequence "$@"
+}
+
+_ssh_public_ipv4() {
+	_start
+	_start_safeTmp_ssh "$@"
+	_get_ssh_external "$@"
+	
+	echo "$remotePublicIPv4"
+	
+	_stop_safeTmp_ssh "$@"
+	_stop
+}
+
+_ssh_public_ipv6() {
+	_start
+	_start_safeTmp_ssh "$@"
+	_get_ssh_external "$@"
+	
+	echo "$remotePublicIPv6"
+	
+	_stop_safeTmp_ssh "$@"
+	_stop
+}
+
+_ssh_route_ipv4() {
+	_start
+	_start_safeTmp_ssh "$@"
+	_get_ssh_external "$@"
+	
+	echo "$remoteRouteIPv4"
+	
+	_stop_safeTmp_ssh "$@"
+	_stop
+}
+
+_ssh_route_ipv6() {
+	_start
+	_start_safeTmp_ssh "$@"
+	_get_ssh_external "$@"
+	
+	echo "$remoteRouteIPv6"
+	
+	_stop_safeTmp_ssh "$@"
+	_stop
+}
+
 # WARNING: Allows self to login as self to local SSH server with own SSH key.
 # WARNING: Requires local SSH server listening on port 22.
 #https://blog.famzah.net/2015/06/26/openssh-ciphers-performance-benchmark-update-2015/
@@ -1214,6 +1286,9 @@ _ssh_benchmark_sequence() {
 	#_messagePlain_nominal 'get: relay'
 	#_get_ssh_relay "$@"
 	
+	#_ssh_external_procedure "$@"
+	#_messagePlain_nominal 'report: IP Address'
+	
 	_ssh_cycle "$@"
 	
 	_ssh_latency_procedure "$@"
@@ -1241,6 +1316,9 @@ _ssh_pulse_sequence() {
 	#_messagePlain_nominal 'get: relay'
 	#_get_ssh_relay "$@"
 	
+	_ssh_external_procedure "$@"
+	_messagePlain_nominal 'report: IP Address'
+	
 	_ssh_ping_public_procedure "$@"
 	_ssh_ping_route_procedure "$@"
 	
@@ -1267,6 +1345,9 @@ _ssh_check_sequence() {
 	_get_ssh_external "$@"
 	#_messagePlain_nominal 'get: relay'
 	#_get_ssh_relay "$@"
+	
+	_ssh_external_procedure "$@"
+	_messagePlain_nominal 'report: IP Address'
 	
 	_ssh_cycle "$@"
 	
