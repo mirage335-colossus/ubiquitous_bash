@@ -1409,15 +1409,15 @@ _ssh_benchmark_download_public_source_ipv6() {
 }
 
 _ssh_benchmark_iperf_server() {
-	"$scriptAbsoluteLocation" _timeout $(expr "$netTimeout" + 17 ) iperf3 -s -p "$1" > /dev/null 2>&1
+	"$scriptAbsoluteLocation" _timeout $(expr "$netTimeout" '*' 2 + 17 '*' 2 ) iperf3 -s -p "$1" > /dev/null 2>&1
 }
 
 _ssh_benchmark_iperf_server_ipv4() {
-	nohup "$scriptAbsoluteLocation" _timeout $(expr "$netTimeout" + 17 ) iperf3 -s -p "$1" > /dev/null 2>&1 &
+	nohup "$scriptAbsoluteLocation" _timeout $(expr "$netTimeout" '*' 2 + 17 '*' 2 ) iperf3 -s -p "$1" > /dev/null 2>&1 &
 }
 
 _ssh_benchmark_iperf_server_ipv6() {
-	nohup "$scriptAbsoluteLocation"_timeout $(expr "$netTimeout" + 17 ) iperf3 -V -s -p "$1" > /dev/null 2>&1 &
+	nohup "$scriptAbsoluteLocation"_timeout $(expr "$netTimeout" '*' 2 + 17 '*' 2 ) iperf3 -V -s -p "$1" > /dev/null 2>&1 &
 }
 
 _ssh_benchmark_iperf_client_ipv4() {
