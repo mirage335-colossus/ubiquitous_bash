@@ -4140,7 +4140,7 @@ _ssh_check_sequence() {
 	_ssh_common_external_public_procedure "$@"
 	_ssh_common_external_route_procedure "$@"
 	
-	stop_safeTmp_ssh "$@"
+	_stop_safeTmp_ssh "$@"
 	_stop
 }
 
