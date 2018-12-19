@@ -1417,7 +1417,7 @@ _ssh_benchmark_iperf_server_ipv4() {
 }
 
 _ssh_benchmark_iperf_server_ipv6() {
-	nohup "$scriptAbsoluteLocation"_timeout $(expr "$netTimeout" '*' 2 + 17 '*' 2 ) iperf3 -V -s -p "$1" > /dev/null 2>&1 &
+	nohup "$scriptAbsoluteLocation" _timeout $(expr "$netTimeout" '*' 3 + 17 '*' 3 + 4 '*' 3 ) iperf3 -V -s -p "$1" > /dev/null 2>&1 &
 }
 
 _ssh_benchmark_iperf_client_ipv4() {
