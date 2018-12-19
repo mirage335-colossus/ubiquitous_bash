@@ -4528,7 +4528,7 @@ _ssh_latency_python_procedure() {
 }
 
 _ssh_latency_procedure() {
-	_ssh_latency_python_procedure
+	_ssh_latency_python_procedure "$@"
 }
 
 _ssh_latency_sequence() {
