@@ -9,9 +9,9 @@
 _start_stty_echo() {
 	#true
 	
-	stty echo --file=/dev/tty > /dev/null 2>&1
+	#stty echo --file=/dev/tty > /dev/null 2>&1
 	
-	#export ubFoundEchoStatus=$(stty --file=/dev/tty -g 2>/dev/null)
+	export ubFoundEchoStatus=$(stty --file=/dev/tty -g 2>/dev/null)
 }
 
 _start() {
@@ -50,9 +50,9 @@ _saveVar() {
 _stop_stty_echo() {
 	#true
 	
-	stty echo --file=/dev/tty > /dev/null 2>&1
+	#stty echo --file=/dev/tty > /dev/null 2>&1
 	
-	#[[ "$ubFoundEchoStatus" != "" ]] && stty --file=/dev/tty "$ubFoundEchoStatus" 2> /dev/null
+	[[ "$ubFoundEchoStatus" != "" ]] && stty --file=/dev/tty "$ubFoundEchoStatus" 2> /dev/null
 }
 
 _stop() {
