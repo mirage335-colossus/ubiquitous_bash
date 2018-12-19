@@ -1211,6 +1211,8 @@ _ssh_benchmark_sequence() {
 	
 	_messagePlain_nominal 'get: external'
 	#_get_ssh_external "$@"
+	#_messagePlain_nominal 'get: relay'
+	#_get_ssh_relay "$@"
 	
 	_ssh_cycle "$@"
 	
@@ -1236,6 +1238,8 @@ _ssh_pulse_sequence() {
 	
 	_messagePlain_nominal 'get: external'
 	_get_ssh_external "$@"
+	#_messagePlain_nominal 'get: relay'
+	#_get_ssh_relay "$@"
 	
 	_ssh_ping_public_procedure "$@"
 	_ssh_ping_route_procedure "$@"
@@ -1261,6 +1265,8 @@ _ssh_check_sequence() {
 	
 	_messagePlain_nominal 'get: external'
 	_get_ssh_external "$@"
+	#_messagePlain_nominal 'get: relay'
+	#_get_ssh_relay "$@"
 	
 	_ssh_cycle "$@"
 	
@@ -1666,6 +1672,10 @@ _ssh_latency_python_procedure() {
 	python -m timeit -n 25 -s 'import subprocess; p = subprocess.Popen(["'"$scriptAbsoluteLocation"'", "_ssh", "'"$@"'", "cat"], stdin=subprocess.PIPE, stdout=subprocess.PIPE, bufsize=0); p.stdin.write(b"z"); assert p.stdout.read(1) == b"z"' 'p.stdin.write(b"z"); assert p.stdout.read(1) == b"z"'
 }
 
+_ssh_latency_procedure() {
+	_ssh_latency_python_procedure
+}
+
 _ssh_latency_sequence() {
 	_start
 	_start_safeTmp_ssh "$@"
@@ -1673,7 +1683,7 @@ _ssh_latency_sequence() {
 	
 	#_messagePlain_nominal 'get: external'
 	#_get_ssh_external "$@"
-	#_messagePlain_nominal 'get: internal'
+	#_messagePlain_nominal 'get: relay'
 	#_get_ssh_relay "$@"
 	
 	#_ssh_latency_net_procedure "$@"
