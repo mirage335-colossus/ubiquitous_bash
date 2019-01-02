@@ -67,7 +67,7 @@ _verifyGosu_sequence() {
 	chmod 700 "$shortTmp"/vgosu
 	
 	# TODO Add further verification steps.
-	gpg --armor --import "$gpgTestDir"/gosudev.asc || _stop 1
+	gpg -q --batch --armor --import "$gpgTestDir"/gosudev.asc || _stop 1
 	
 	gpg --batch --verify "$gpgTestDir"/gosu-armel.asc "$gpgTestDir"/gosu-armel || _stop 1
 	gpg --batch --verify "$gpgTestDir"/gosu-amd64.asc "$gpgTestDir"/gosu-amd64 || _stop 1

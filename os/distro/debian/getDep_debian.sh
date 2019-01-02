@@ -31,7 +31,7 @@ _fetchDep_debianStretch_special() {
 	then
 		sudo -n dpkg --add-architecture i386
 		sudo -n apt-get update
-		sudo -n apt-get install --install-recommends -y wine
+		sudo -n apt-get install --install-recommends -y wine wine32 wine64 libwine libwine:i386 fonts-wine
 		return 0
 	fi
 	

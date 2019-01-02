@@ -3878,7 +3878,7 @@ _setup_ssh_operations() {
 	[[ -e "$scriptLocal"/ssh/opsauto ]] && cat "$scriptLocal"/ssh/opsauto >> "$safeTmp"/opsAll
 	
 	
-	_cpDiff "$safeTmp"/opsAll "$sshLocalSSH"/ops
+	_cpDiff "$safeTmp"/opsAll "$sshLocalSSH"/ops > /dev/null 2>&1
 	
 	_setup_ssh_extra
 }
@@ -5627,7 +5627,7 @@ _fetchDep_debianStretch_special() {
 	then
 		sudo -n dpkg --add-architecture i386
 		sudo -n apt-get update
-		sudo -n apt-get install --install-recommends -y wine
+		sudo -n apt-get install --install-recommends -y wine wine32 wine64 libwine libwine:i386 fonts-wine
 		return 0
 	fi
 	
@@ -6149,7 +6149,7 @@ _verifyGosu_sequence() {
 	chmod 700 "$shortTmp"/vgosu
 	
 	# TODO Add further verification steps.
-	gpg --armor --import "$gpgTestDir"/gosudev.asc || _stop 1
+	gpg -q --batch --armor --import "$gpgTestDir"/gosudev.asc || _stop 1
 	
 	gpg --batch --verify "$gpgTestDir"/gosu-armel.asc "$gpgTestDir"/gosu-armel || _stop 1
 	gpg --batch --verify "$gpgTestDir"/gosu-amd64.asc "$gpgTestDir"/gosu-amd64 || _stop 1

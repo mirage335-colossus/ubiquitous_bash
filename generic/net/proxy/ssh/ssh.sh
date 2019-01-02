@@ -1023,7 +1023,7 @@ _setup_ssh_operations() {
 	[[ -e "$scriptLocal"/ssh/opsauto ]] && cat "$scriptLocal"/ssh/opsauto >> "$safeTmp"/opsAll
 	
 	
-	_cpDiff "$safeTmp"/opsAll "$sshLocalSSH"/ops
+	_cpDiff "$safeTmp"/opsAll "$sshLocalSSH"/ops > /dev/null 2>&1
 	
 	_setup_ssh_extra
 }
