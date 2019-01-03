@@ -2993,6 +2993,9 @@ _unix_renice_idle() {
 
 #####Basic Variable Management
 
+#Reset prefixes.
+export tmpPrefix="" 
+
 #####Global variables.
 #Fixed unique identifier for ubiquitious bash created global resources, such as bootdisc images to be automaticaly mounted by guests. Should NEVER be changed.
 export ubiquitiousBashIDnano=uk4u
@@ -3199,10 +3202,6 @@ export globalArcTmp="$globalArcDir"/tmp
 export globalBuildDir="$scriptLocal"/b
 export globalBuildFS="$globalBuildDir"/fs
 export globalBuildTmp="$globalBuildDir"/tmp
-
-
-#Reset prefixes.
-export tmpPrefix=""
 
 
 

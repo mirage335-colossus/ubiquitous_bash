@@ -1,0 +1,2 @@
+#Reset prefixes.
+export tmpPrefix="" 
