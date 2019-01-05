@@ -208,6 +208,13 @@ _fetchDep_debianStretch_special() {
 		return 0
 	fi
 	
+	if [[ "$1" == "php" ]]
+	then
+		sudo -n apt-get install --no-install-recommends -y php
+		
+		return 0
+	fi
+	
 	if [[ "$1" == "cura-lulzbot" ]]
 	then
 		#Testing/Sid only as of Stretch release cycle.
