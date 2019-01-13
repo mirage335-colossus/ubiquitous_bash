@@ -5692,7 +5692,9 @@ _fetchDep_debianStretch_special() {
 		wget -q https://www.virtualbox.org/download/oracle_vbox.asc -O- | sudo -n apt-key add -
 		
 		sudo -n apt-get update
-		sudo -n apt-get install --install-recommends -y dkms virtualbox-5.2
+		sudo -n apt-get install --install-recommends -y dkms virtualbox-6.0
+		
+		echo "WARNING: Recommend manual system configuration after install. See https://www.virtualbox.org/wiki/Downloads ."
 		
 		return 0
 	fi
@@ -9627,7 +9629,34 @@ _remove_instance_vbox() {
 	_prepare_instance_vbox || return 1
 }
 
+#https://www.virtualbox.org/ticket/18257
+_workaround_VirtualBoxVM() {
+	if type VirtualBoxVM > /dev/null 2>&1
+	then
+		VirtualBoxVM "$@"
+		return
+	fi
+	if ! type VirtualBoxVM > /dev/null 2>&1 && type /usr/lib/virtualbox/VirtualBoxVM > /dev/null 2>&1
+	then
+		/usr/lib/virtualbox/VirtualBoxVM "$@"
+		return
+	fi
+	if ! type VirtualBoxVM > /dev/null 2>&1 && type /usr/local/lib/virtualbox/VirtualBoxVM > /dev/null 2>&1
+	then
+		/usr/local/lib/virtualbox/VirtualBoxVM "$@"
+		return
+	fi
+	if ! type VirtualBoxVM > /dev/null 2>&1
+	then
+		VirtualBox "$@"
+		return
+	fi
+}
+
 _vboxGUI() {
+	#_workaround_VirtualBoxVM "$@"
+	
+	#VirtualBoxVM "$@"
 	#VirtualBox "$@"
 	VBoxSDL "$@"
 }
@@ -9690,6 +9719,11 @@ _set_instance_vbox_features() {
 	
 }
 
+_set_instance_vbox_features_app() {
+	true
+	#VBoxManage modifyvm "$sessionid" --usbxhci on
+}
+
 _set_instance_vbox_share() {
 	#VBoxManage sharedfolder add "$sessionid" --name "root" --hostpath "/"
 	if [[ "$sharedHostProjectDir" != "" ]]
@@ -9741,7 +9775,8 @@ _create_instance_vbox() {
 	! VBoxManage storagectl "$sessionid" --name "IDE Controller" --add ide --controller PIIX4 && _messagePlain_bad 'fail: VBoxManage... attach ide controller'
 	
 	#export vboxDiskMtype="normal"
-	[[ "$vboxDiskMtype" == "" ]] && export vboxDiskMtype="multiattach"
+	#[[ "$vboxDiskMtype" == "" ]] && export vboxDiskMtype="multiattach"
+	[[ "$vboxDiskMtype" == "" ]] && export vboxDiskMtype="immutable"
 	_messagePlain_probe 'vboxDiskMtype= '"$vboxDiskMtype"
 	
 	_messagePlain_probe VBoxManage storageattach "$sessionid" --storagectl "IDE Controller" --port 0 --device 0 --type hdd --medium "$vboxInstanceDiskImage" --mtype "$vboxDiskMtype"

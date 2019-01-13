@@ -97,7 +97,9 @@ _fetchDep_debianStretch_special() {
 		wget -q https://www.virtualbox.org/download/oracle_vbox.asc -O- | sudo -n apt-key add -
 		
 		sudo -n apt-get update
-		sudo -n apt-get install --install-recommends -y dkms virtualbox-5.2
+		sudo -n apt-get install --install-recommends -y dkms virtualbox-6.0
+		
+		echo "WARNING: Recommend manual system configuration after install. See https://www.virtualbox.org/wiki/Downloads ."
 		
 		return 0
 	fi
