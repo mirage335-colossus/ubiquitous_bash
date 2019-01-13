@@ -9766,6 +9766,8 @@ _create_instance_vbox() {
 	
 	! _set_instance_vbox_features && _messageError 'FAIL' && return 1
 	
+	! _set_instance_vbox_features_app && _messageError 'FAIL: unknown app failure' && return 1
+	
 	_set_instance_vbox_command "$@"
 	
 	_messagePlain_nominal 'Mounting shared filesystems.'
