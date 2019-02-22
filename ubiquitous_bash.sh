@@ -9721,6 +9721,7 @@ _set_instance_vbox_features() {
 
 _set_instance_vbox_features_app() {
 	true
+	#[[ "$vboxOStype" == *"Win"*"XP"* ]] && vboxChipset="piix3"
 	#VBoxManage modifyvm "$sessionid" --usbxhci on
 }
 
