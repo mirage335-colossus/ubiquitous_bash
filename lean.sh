@@ -2729,6 +2729,8 @@ _setupUbiquitous() {
 	
 	mkdir -p "$ubHome"/bin/
 	ln -sf "$ubcoreUBfile" "$ubHome"/bin/ubiquitous_bash.sh
+	ln -sf "$ubcoreUBfile" "$ubHome"/bin/_winehere
+	ln -sf "$ubcoreUBfile" "$ubHome"/bin/_winecfghere
 	
 	_setupUbiquitous_here > "$ubcoreFile"
 	! [[ -e "$ubcoreFile" ]] && _messagePlain_bad 'missing: ubcoreFile= '"$ubcoreFile" && _messageFAIL && return 1
