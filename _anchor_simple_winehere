@@ -205,11 +205,25 @@ _messageError() {
 	return 0
 }
 
+export simple_ubcoreUBfile="$HOME"/.ubcore/ubiquitous_bash/ubiquitous_bash.sh
+
 export simpleAnchorScriptAbsoluteLocation=$(_getScriptAbsoluteLocation)
 export simpleAnchorScriptAbsoluteFolder=$(_getScriptAbsoluteFolder)
 export simpleAnchorName=$(basename "$simpleAnchorScriptAbsoluteLocation" 2>/dev/null)
 
-export simpleAnchorSource="$simpleAnchorScriptAbsoluteFolder""/_wbottle/drive_c/Program Files (x86)/program/program.exe"
+export simpleAnchorSub="_wbottle/drive_c/Program Files (x86)/program/program.exe"
+export simpleAnchorSource="$simpleAnchorScriptAbsoluteFolder"/"$simpleAnchorSub"
+export simpleAnchorInstallation="$HOME"/core/installations/program/"$simpleAnchorSub"
 
-"$HOME"/.ubcore/ubiquitous_bash/ubiquitous_bash.sh _winehere "$simpleAnchorSource" "$@"
+if [[ -e "$simpleAnchorSource" ]]
+then
+	"$simple_ubcoreUBfile" _winehere "$simpleAnchorSource" "$@"
+	exit
+fi
+
+if [[ -e "$simpleAnchorInstallation" ]]
+then
+	"$simple_ubcoreUBfile" _winehere "$simpleAnchorInstallation" "$@"
+	exit
+fi
 
