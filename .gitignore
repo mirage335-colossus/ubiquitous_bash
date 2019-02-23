@@ -29,13 +29,18 @@ vm.vdi
 vm.img
 vm*.img
 WARNING
-_local
-_index
 *.log
 devtask*
 devtask/
 USAGE.*.html
 _buried
+
+_local
+_index
+
+**/_wbottle/.update-timestamp
+**/_wbottle/dosdevices
+**/_wbottle/drive_c/users
 
 *.tar
 *.zip

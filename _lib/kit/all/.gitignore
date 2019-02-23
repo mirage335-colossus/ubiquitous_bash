@@ -36,6 +36,10 @@ _buried
 _local
 _index
 
+**/_wbottle/.update-timestamp
+**/_wbottle/dosdevices
+**/_wbottle/drive_c/users
+
 \#*\#
 *~
 *.bak
