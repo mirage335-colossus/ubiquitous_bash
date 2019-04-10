@@ -10,6 +10,9 @@ Alternatively, Xorg may be configured by an "xorg.cfg" file, with the xserver-xo
 
 Neither of these workarounds are required if nonpersistent desktops are used. However, these may suffer performance degradation with a few (usually low-power) systems.
 
+# WARNING
+Example "ops" provided here is an unconfigured example documenting only available functionality. For a complete, configured, example, compliant to an informal standard suitable for high-fidelity simulation, see the "CoreAutoSSH" project.
+
 
 # Reference
 * https://github.com/mirage335/CoreAutoSSH
