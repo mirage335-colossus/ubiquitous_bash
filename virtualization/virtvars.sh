@@ -52,9 +52,12 @@ _vars_vmMemoryAllocationDefault() {
 	
 	[[ "$hostMemoryQuantity" -lt "1256000" ]] && export vmMemoryAllocationDefault=512 && return 0
 	[[ "$hostMemoryQuantity" -lt "1768000" ]] && export vmMemoryAllocationDefault=1024 && return 0
-	[[ "$hostMemoryQuantity" -lt "8000000" ]] && export vmMemoryAllocationDefault=1512 && return 0
+	[[ "$hostMemoryQuantity" -lt "6000000" ]] && export vmMemoryAllocationDefault=1512 && return 0
 	
-	[[ "$hostMemoryQuantity" -ge "14000000" ]] && export vmMemoryAllocationDefault=1512 && return 0
+	[[ "$hostMemoryQuantity" -lt "7000000" ]] && export vmMemoryAllocationDefault=2560 && return 0
+	[[ "$hostMemoryQuantity" -lt "14000000" ]] && export vmMemoryAllocationDefault=2560 && return 0
+	
+	[[ "$hostMemoryQuantity" -ge "18000000" ]] && export vmMemoryAllocationDefault=3072 && return 0
 	
 	return 1
 }
