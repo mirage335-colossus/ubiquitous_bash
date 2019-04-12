@@ -48,16 +48,31 @@ export keepFakeHome="true"
 _vars_vmMemoryAllocationDefault() {
 	export vmMemoryAllocationDefault=96
 	
+	
+	# Invalid.
+	[[ "$hostMemoryQuantity" -lt "64000" ]] && return 1
+	! [[ "$hostMemoryQuantity" -ge "64000" ]] && return 1
+	
+	
+	# Embedded host typical.
 	[[ "$hostMemoryQuantity" -lt "500000" ]] && export vmMemoryAllocationDefault=256 && return 1
 	
+	# Obsolete hardware or guest typical.
 	[[ "$hostMemoryQuantity" -lt "1256000" ]] && export vmMemoryAllocationDefault=512 && return 0
 	[[ "$hostMemoryQuantity" -lt "1768000" ]] && export vmMemoryAllocationDefault=1024 && return 0
 	[[ "$hostMemoryQuantity" -lt "6000000" ]] && export vmMemoryAllocationDefault=1512 && return 0
 	
-	[[ "$hostMemoryQuantity" -lt "7000000" ]] && export vmMemoryAllocationDefault=2560 && return 0
-	[[ "$hostMemoryQuantity" -lt "14000000" ]] && export vmMemoryAllocationDefault=2560 && return 0
+	# Modern host typical.
+	[[ "$hostMemoryQuantity" -lt "7000000" ]] && export vmMemoryAllocationDefault=2048 && return 0
+	[[ "$hostMemoryQuantity" -lt "18000000" ]] && export vmMemoryAllocationDefault=2560 && return 0
+	[[ "$hostMemoryQuantity" -lt "34000000" ]] && export vmMemoryAllocationDefault=3072 && return 0
 	
-	[[ "$hostMemoryQuantity" -ge "18000000" ]] && export vmMemoryAllocationDefault=3072 && return 0
+	# Workstation typical.
+	[[ "$hostMemoryQuantity" -lt "72000000" ]] && export vmMemoryAllocationDefault=4096 && return 0
+	[[ "$hostMemoryQuantity" -lt "132000000" ]] && export vmMemoryAllocationDefault=4096 && return 0
+	
+	# Atypical host.
+	export vmMemoryAllocationDefault=4096 && return 0
 	
 	return 1
 }
