@@ -259,7 +259,7 @@ _findAnchor() {
 	anchorCurrentSearchDir="$1"
 	shift
 	
-	find -L "$anchorCurrentSearchDir" -not \( -path \*.git\* -prune \) -not \( -path \*_arc\* -prune \) -not \( -path \*_buried\* -prune \) -not \( -path \*_lib\* -prune \) -not \( -path \*_local\* -prune \) -not \( -path \*_local/_index\* -prune \) -not \( -path \*_local/h\* -prune \) -not \( -path \*h_/\* -prune \) -not \( -path \*w_/\* -prune \) "$@"
+	find -P "$anchorCurrentSearchDir" -not \( -path \*.git\* -prune \) -not \( -path \*_arc\* -prune \) -not \( -path \*_buried\* -prune \) -not \( -path \*_lib\* -prune \) -not \( -path \*_local\* -prune \) -not \( -path \*_local/_index\* -prune \) -not \( -path \*_local/h\* -prune \) -not \( -path \*h_\*/\* -prune \) -not \( -path \*w_\*/\* -prune \) "$@"
 }
 
 #Recursively searches for directories.
