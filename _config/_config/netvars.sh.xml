@@ -22,7 +22,7 @@
                 <next>
                   <block type="_ub_netvars" id="Z./%.atNMk{H0hkZYKMw">
                     <field name="netName">default</field>
-                    <field name="gatewayName">gw-"$netName"</field>
+                    <field name="gatewayName">gw-"$netName"-"$netName"</field>
                     <field name="LOCALSSHPORT">22</field>
                     <next>
                       <block type="arbitrary_code" id="}Y25}-=~85lAt@jtiV?`">

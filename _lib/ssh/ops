@@ -47,13 +47,15 @@ _setup_prog() {
 export netTimeout='18'
 
 # WARNING Must use unique netName!
+# WARNING Rename 'gw-default-$netName' to match!
 export netName='default'
+export gatewayName=gw-"$netName"-"$netName"
 
 export sshHomeBase="$HOME"/.ssh
 
 _here_ssh_config() {
 	cat << CZXWXcRMTo8EmM8i4d
-Host gw-$netName
+Host gw-default-$netName
 	ProxyCommand "$sshDir/cautossh" _ssh_proxy_server-$netName
 	User gateway
 	#IdentityFile "$sshLocalSSH/rev_gate"
