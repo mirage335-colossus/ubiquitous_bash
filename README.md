@@ -118,6 +118,10 @@ https://stackoverflow.com/questions/28643392/bash-scripting-permanent-pipe
 	realpath: .../ubiquitous_bash/w_.../.ssh/.../cautossh: No such file or directory
 	find: ‘.../ubiquitous_bash/w_.../.ssh/.../w_...’: No such file or directory
 
+# API Plan
+
+* Currently, "gatewayName" default is 'gw-"$netName"' . This will change to 'gw-"$netName"-"$netName"' as already updated in "netvars.sh" and "ops" example files for CoreAutoSSH usage. The new format allows automatic selection of correct default gateway for autossh, while ensuring uniqueness if the configuration text is reused elsewhere.
+
 
 # WARNING
 
