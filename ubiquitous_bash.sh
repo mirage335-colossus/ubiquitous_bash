@@ -5014,6 +5014,18 @@ _vncviewer_operations() {
 		
 		[[ "$vncviewer_startFull" == "true" ]] && vncviewerArgs+=(-FullScreen)
 		
+		# ATTENTION: Uncomment to log debug output from MSW vncviewer.
+		
+		#_messagePlain_probe  -----
+		#_messagePlain_probe '"${vncviewerArgs[@]}"'
+		#_safeEcho "${vncviewerArgs[@]}"
+		#_messagePlain_probe -----
+		#_messagePlain_probe '"$@"'
+		#_safeEcho "$@"
+		#_messagePlain_probe -----
+		
+		#tmux new-window bash -c '"/cygdrive/c/Program Files (x86)/TigerVNC/vncviewer.exe" -DotWhenNoCursor -passwd "'$current_vncPasswdFile'" localhost:"'$vncPort'" > ~/.sshtmp/vncerr 2>&1'
+		
 		if ! vncviewer -DotWhenNoCursor -passwd "$current_vncPasswdFile" localhost:"$vncPort" "${vncviewerArgs[@]}" "$@"
 		then
 			_messagePlain_bad 'fail: vncviewer'
@@ -5114,7 +5126,8 @@ _x11vnc_operations() {
 		
 		#-passwdfile cmd:"/bin/cat -"
 		#-noxrecord -noxfixes -noxdamage
-		if ! _x11vnc_command  -no6 -noipv6 -localhost -rfbportv6 -1 -rfbauth "$vncPasswdFile" -rfbport "$vncPort" -timeout 120 -xkb -display "$destination_DISPLAY" -auth "$destination_AUTH" -noxrecord -noxdamage -xrefresh 1 -fixscreen "V=3,C=3,X=3,8=3" -ungrabboth "${x11vncArgs[@]}"
+		#-shared
+		if ! _x11vnc_command  -once -notightfilexfer -no6 -noipv6 -localhost -rfbportv6 -1 -rfbauth "$vncPasswdFile" -rfbport "$vncPort" -timeout 120 -xkb -display "$destination_DISPLAY" -auth "$destination_AUTH" -noxrecord -noxdamage -xrefresh 1 -fixscreen "V=3,C=3,X=3,8=3" -ungrabboth -shared "${x11vncArgs[@]}"
 		then
 			_messagePlain_bad 'fail: x11vnc'
 			return 1

@@ -74,6 +74,18 @@ _vncviewer_operations() {
 		
 		[[ "$vncviewer_startFull" == "true" ]] && vncviewerArgs+=(-FullScreen)
 		
+		# ATTENTION: Uncomment to log debug output from MSW vncviewer.
+		
+		#_messagePlain_probe  -----
+		#_messagePlain_probe '"${vncviewerArgs[@]}"'
+		#_safeEcho "${vncviewerArgs[@]}"
+		#_messagePlain_probe -----
+		#_messagePlain_probe '"$@"'
+		#_safeEcho "$@"
+		#_messagePlain_probe -----
+		
+		#tmux new-window bash -c '"/cygdrive/c/Program Files (x86)/TigerVNC/vncviewer.exe" -DotWhenNoCursor -passwd "'$current_vncPasswdFile'" localhost:"'$vncPort'" > ~/.sshtmp/vncerr 2>&1'
+		
 		if ! vncviewer -DotWhenNoCursor -passwd "$current_vncPasswdFile" localhost:"$vncPort" "${vncviewerArgs[@]}" "$@"
 		then
 			_messagePlain_bad 'fail: vncviewer'
