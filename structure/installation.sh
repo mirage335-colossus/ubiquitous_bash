@@ -446,6 +446,7 @@ _package() {
 	#cp -a "$scriptAbsoluteLocation" "$safeTmp"/package/"$scriptBasename"
 	cp -a "$scriptAbsoluteLocation" "$safeTmp"/package/
 	cp -a "$scriptAbsoluteFolder"/ops "$safeTmp"/package/
+	cp -a "$scriptAbsoluteFolder"/ops.sh "$safeTmp"/package/
 	
 	#cp -a "$scriptAbsoluteFolder"/_bin "$safeTmp"
 	#cp -a "$scriptAbsoluteFolder"/_config "$safeTmp"

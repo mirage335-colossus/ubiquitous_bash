@@ -49,8 +49,9 @@ _ops_scope() {
 	_messagePlain_nominal '_ops_scope'
 	
 	#Find/run ops file in project dir.
-	! [[ -e "$ub_specimen"/ops ]] && _messagePlain_warn 'aU: undef: sketch ops'
-	[[ -e "$ub_specimen"/ops ]] && _messagePlain_good 'aU: found: sketch ops' && . "$ub_specimen"/ops
+	! [[ -e "$ub_specimen"/ops ]] && ! [[ -e "$ub_specimen"/ops.sh ]] && _messagePlain_warn 'aU: undef: sketch ops'
+	[[ -e "$ub_specimen"/ops ]] && _messagePlain_good 'aU: found: sketch ops: ops' && . "$ub_specimen"/ops
+	[[ -e "$ub_specimen"/ops.sh ]] && _messagePlain_good 'aU: found: sketch ops: ops.sh' && . "$ub_specimen"/ops.sh
 }
 
 #"$1" == ub_specimen

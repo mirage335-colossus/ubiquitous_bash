@@ -1016,6 +1016,9 @@ _setup_ssh_operations() {
 	[[ -e "$objectDir"/ops ]] && cat "$objectDir"/ops >> "$safeTmp"/opsAll
 	[[ -e "$scriptLocal"/ops ]] && cat "$scriptLocal"/ops >> "$safeTmp"/opsAll
 	[[ -e "$scriptLocal"/ssh/ops ]] && cat "$scriptLocal"/ssh/ops >> "$safeTmp"/opsAll
+	[[ -e "$objectDir"/ops.sh ]] && cat "$objectDir"/ops.sh >> "$safeTmp"/opsAll
+	[[ -e "$scriptLocal"/ops.sh ]] && cat "$scriptLocal"/ops.sh >> "$safeTmp"/opsAll
+	[[ -e "$scriptLocal"/ssh/ops.sh ]] && cat "$scriptLocal"/ssh/ops.sh >> "$safeTmp"/opsAll
 	
 	[[ -e "$objectDir"/opsauto ]] && cat "$objectDir"/opsauto >> "$safeTmp"/opsAll
 	[[ -e "$scriptLocal"/opsauto ]] && cat "$scriptLocal"/opsauto >> "$safeTmp"/opsAll

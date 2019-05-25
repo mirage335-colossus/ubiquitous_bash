@@ -3871,6 +3871,9 @@ _setup_ssh_operations() {
 	[[ -e "$objectDir"/ops ]] && cat "$objectDir"/ops >> "$safeTmp"/opsAll
 	[[ -e "$scriptLocal"/ops ]] && cat "$scriptLocal"/ops >> "$safeTmp"/opsAll
 	[[ -e "$scriptLocal"/ssh/ops ]] && cat "$scriptLocal"/ssh/ops >> "$safeTmp"/opsAll
+	[[ -e "$objectDir"/ops.sh ]] && cat "$objectDir"/ops.sh >> "$safeTmp"/opsAll
+	[[ -e "$scriptLocal"/ops.sh ]] && cat "$scriptLocal"/ops.sh >> "$safeTmp"/opsAll
+	[[ -e "$scriptLocal"/ssh/ops.sh ]] && cat "$scriptLocal"/ssh/ops.sh >> "$safeTmp"/opsAll
 	
 	[[ -e "$objectDir"/opsauto ]] && cat "$objectDir"/opsauto >> "$safeTmp"/opsAll
 	[[ -e "$scriptLocal"/opsauto ]] && cat "$scriptLocal"/opsauto >> "$safeTmp"/opsAll
@@ -11150,8 +11153,9 @@ _ops_scope() {
 	_messagePlain_nominal '_ops_scope'
 	
 	#Find/run ops file in project dir.
-	! [[ -e "$ub_specimen"/ops ]] && _messagePlain_warn 'aU: undef: sketch ops'
-	[[ -e "$ub_specimen"/ops ]] && _messagePlain_good 'aU: found: sketch ops' && . "$ub_specimen"/ops
+	! [[ -e "$ub_specimen"/ops ]] && ! [[ -e "$ub_specimen"/ops.sh ]] && _messagePlain_warn 'aU: undef: sketch ops'
+	[[ -e "$ub_specimen"/ops ]] && _messagePlain_good 'aU: found: sketch ops: ops' && . "$ub_specimen"/ops
+	[[ -e "$ub_specimen"/ops.sh ]] && _messagePlain_good 'aU: found: sketch ops: ops.sh' && . "$ub_specimen"/ops.sh
 }
 
 #"$1" == ub_specimen
@@ -18036,6 +18040,7 @@ _package() {
 	#cp -a "$scriptAbsoluteLocation" "$safeTmp"/package/"$scriptBasename"
 	cp -a "$scriptAbsoluteLocation" "$safeTmp"/package/
 	cp -a "$scriptAbsoluteFolder"/ops "$safeTmp"/package/
+	cp -a "$scriptAbsoluteFolder"/ops.sh "$safeTmp"/package/
 	
 	#cp -a "$scriptAbsoluteFolder"/_bin "$safeTmp"
 	#cp -a "$scriptAbsoluteFolder"/_config "$safeTmp"
