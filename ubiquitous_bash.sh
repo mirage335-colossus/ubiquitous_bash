@@ -19459,17 +19459,31 @@ fi
 #fi
 
 #Override functions with external definitions from a separate file if available.
+# CAUTION: Recommend only "ops" or "ops.sh" . Using both can cause confusion.
+# ATTENTION: Recommend "ops.sh" only when unusually long. Specifically intended for "CoreAutoSSH" .
 if [[ -e "$objectDir"/ops ]]
 then
 	. "$objectDir"/ops
+fi
+if [[ -e "$objectDir"/ops.sh ]]
+then
+	. "$objectDir"/ops.sh
 fi
 if [[ -e "$scriptLocal"/ops ]]
 then
 	. "$scriptLocal"/ops
 fi
+if [[ -e "$scriptLocal"/ops.sh ]]
+then
+	. "$scriptLocal"/ops.sh
+fi
 if [[ -e "$scriptLocal"/ssh/ops ]]
 then
 	. "$scriptLocal"/ssh/ops
+fi
+if [[ -e "$scriptLocal"/ssh/ops.sh ]]
+then
+	. "$scriptLocal"/ssh/ops.sh
 fi
 
 #WILL BE OVERWRITTEN FREQUENTLY.
