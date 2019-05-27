@@ -1,193 +1,240 @@
 <xml xmlns="http://www.w3.org/1999/xhtml">
   <variables>
+    <variable type="" id="5h7t3WS^1]skL~|e0~xM">envGuard</variable>
     <variable type="" id=";MXIKr`/ZQYyYaD7zMz`">netTimeout</variable>
     <variable type="" id="OpoQ,~AY(#PA~Pj(wbWh">netName</variable>
   </variables>
-  <block type="arbitrary_code" id="Vm[_dUqDW7a,7UX|s9q}" x="-12" y="-112">
-    <field name="arbitraryCode"># Must be much less than half "ConnectTimeout" value .</field>
-    <next>
-      <block type="bash_export" id="!MQc8J]C=i]$)zYtg_-h">
-        <value name="NAME">
-          <block type="arbitrary_deconverter" id="o?|Y9L23+PK_x^B{xf?.">
-            <statement name="NAME">
-              <block type="variables_set" id="*Jm81{0pcx[5?nBjUS!H">
-                <field name="VAR" id=";MXIKr`/ZQYyYaD7zMz`" variabletype="">netTimeout</field>
-                <value name="VALUE">
-                  <block type="text" id="3{_%9s7?hfmw,!ms+XI/">
-                    <field name="TEXT">18</field>
-                  </block>
-                </value>
+  <block type="controls_if" id="~LS)n)aq}?;24#Dgj*xz" x="-12" y="-213">
+    <value name="IF0">
+      <block type="logic_compare" id="UjaGL4.=Z1)}R:G}VP/_">
+        <field name="OP">NEQ</field>
+        <value name="A">
+          <block type="bash_deref" id="E}mUfF.l6;n^EV?h{CG0">
+            <value name="source">
+              <block type="variables_get" id="G{=@s=_9uYE/P=xAZ+YB">
+                <field name="VAR" id="5h7t3WS^1]skL~|e0~xM" variabletype="">envGuard</field>
               </block>
-            </statement>
+            </value>
           </block>
         </value>
+        <value name="B">
+          <block type="arbitrary_input" id="RaiOZN+Aj~R;aaA3~AK:">
+            <field name="arbitraryInput">"$scriptAbsoluteLocation"</field>
+          </block>
+        </value>
+      </block>
+    </value>
+    <statement name="DO0">
+      <block type="arbitrary_code" id="Vm[_dUqDW7a,7UX|s9q}">
+        <field name="arbitraryCode"># Must be much less than half "ConnectTimeout" value .</field>
         <next>
-          <block type="arbitrary_code" id="P2BJhZjcA58maarj0S2y">
-            <field name="arbitraryCode"></field>
+          <block type="bash_export" id="!MQc8J]C=i]$)zYtg_-h">
+            <value name="NAME">
+              <block type="arbitrary_deconverter" id="o?|Y9L23+PK_x^B{xf?.">
+                <statement name="NAME">
+                  <block type="variables_set" id="*Jm81{0pcx[5?nBjUS!H">
+                    <field name="VAR" id=";MXIKr`/ZQYyYaD7zMz`" variabletype="">netTimeout</field>
+                    <value name="VALUE">
+                      <block type="text" id="3{_%9s7?hfmw,!ms+XI/">
+                        <field name="TEXT">18</field>
+                      </block>
+                    </value>
+                  </block>
+                </statement>
+              </block>
+            </value>
             <next>
-              <block type="arbitrary_code" id="PxdWwJ/,+YISSNw/t!x[">
-                <field name="arbitraryCode"># WARNING Must use unique netName!</field>
+              <block type="arbitrary_code" id="!|(wZ9k@Ke__*hu@,z`Y">
+                <field name="arbitraryCode"></field>
                 <next>
-                  <block type="arbitrary_code" id="tm+@KI|%E5^^jH[EX(PR">
-                    <field name="arbitraryCode"># WARNING Rename 'gw-default-$netName' to match!</field>
-                    <next>
-                      <block type="bash_export" id="PWqC9=SWVh:u{-E{}T0K">
-                        <value name="NAME">
-                          <block type="arbitrary_deconverter" id="-yM4vOfbrqGLblXjZFJ)">
-                            <statement name="NAME">
-                              <block type="variables_set" id="+SZ:)3.ND8Rq{,s^4z/g">
-                                <field name="VAR" id="OpoQ,~AY(#PA~Pj(wbWh" variabletype="">netName</field>
-                                <value name="VALUE">
-                                  <block type="text" id="VLp8NP^RlONfNyK9U-.j">
-                                    <field name="TEXT">default</field>
-                                  </block>
-                                </value>
+                  <block type="bash_export" id="|?H+UmfT)M[Sc$#XJ_nL">
+                    <value name="NAME">
+                      <block type="arbitrary_deconverter" id="`{Ah7,oLPN|Oe;M:kwvI">
+                        <statement name="NAME">
+                          <block type="variables_set" id=".:;_a@FX5mf)FU@O.uj]">
+                            <field name="VAR" id="5h7t3WS^1]skL~|e0~xM" variabletype="">envGuard</field>
+                            <value name="VALUE">
+                              <block type="arbitrary_input" id="s=2#=fI%u.Z)F/f|sXA@">
+                                <field name="arbitraryInput">"$scriptAbsoluteLocation"</field>
                               </block>
-                            </statement>
+                            </value>
+                          </block>
+                        </statement>
+                      </block>
+                    </value>
+                  </block>
+                </next>
+              </block>
+            </next>
+          </block>
+        </next>
+      </block>
+    </statement>
+    <next>
+      <block type="arbitrary_code" id="P2BJhZjcA58maarj0S2y">
+        <field name="arbitraryCode"></field>
+        <next>
+          <block type="arbitrary_code" id="PxdWwJ/,+YISSNw/t!x[">
+            <field name="arbitraryCode"># WARNING Must use unique netName!</field>
+            <next>
+              <block type="arbitrary_code" id="tm+@KI|%E5^^jH[EX(PR">
+                <field name="arbitraryCode"># WARNING Rename 'gw-default-$netName' to match!</field>
+                <next>
+                  <block type="bash_export" id="PWqC9=SWVh:u{-E{}T0K">
+                    <value name="NAME">
+                      <block type="arbitrary_deconverter" id="-yM4vOfbrqGLblXjZFJ)">
+                        <statement name="NAME">
+                          <block type="variables_set" id="+SZ:)3.ND8Rq{,s^4z/g">
+                            <field name="VAR" id="OpoQ,~AY(#PA~Pj(wbWh" variabletype="">netName</field>
+                            <value name="VALUE">
+                              <block type="text" id="VLp8NP^RlONfNyK9U-.j">
+                                <field name="TEXT">default</field>
+                              </block>
+                            </value>
+                          </block>
+                        </statement>
+                      </block>
+                    </value>
+                    <next>
+                      <block type="bash_export" id="6VgVX}V(eRn91-WLUd$l">
+                        <value name="NAME">
+                          <block type="arbitrary_input" id="C}B~n.Hm%D*g!x.9T[^n">
+                            <field name="arbitraryInput">gatewayName=gw-"$netName"-"$netName"</field>
                           </block>
                         </value>
                         <next>
-                          <block type="bash_export" id="6VgVX}V(eRn91-WLUd$l">
-                            <value name="NAME">
-                              <block type="arbitrary_input" id="C}B~n.Hm%D*g!x.9T[^n">
-                                <field name="arbitraryInput">gatewayName=gw-"$netName"-"$netName"</field>
-                              </block>
-                            </value>
+                          <block type="arbitrary_code" id="n*9~8GMI3*jRy!5um[$p">
+                            <field name="arbitraryCode"></field>
                             <next>
-                              <block type="arbitrary_code" id="n*9~8GMI3*jRy!5um[$p">
-                                <field name="arbitraryCode"></field>
+                              <block type="bash_export" id="q,eoHouW7mE6y,K[LR)#">
+                                <value name="NAME">
+                                  <block type="arbitrary_input" id="QFO%0~.Y8CnuhROWq^/|">
+                                    <field name="arbitraryInput">sshHomeBase="$HOME"/.ssh</field>
+                                  </block>
+                                </value>
                                 <next>
-                                  <block type="bash_export" id="q,eoHouW7mE6y,K[LR)#">
-                                    <value name="NAME">
-                                      <block type="arbitrary_input" id="QFO%0~.Y8CnuhROWq^/|">
-                                        <field name="arbitraryInput">sshHomeBase="$HOME"/.ssh</field>
-                                      </block>
-                                    </value>
+                                  <block type="arbitrary_code" id="hnctZ?^p=pcA~dHew[x4">
+                                    <field name="arbitraryCode"></field>
                                     <next>
-                                      <block type="arbitrary_code" id="hnctZ?^p=pcA~dHew[x4">
-                                        <field name="arbitraryCode"></field>
-                                        <next>
-                                          <block type="_ub_here_ssh_config" id="D,.VwK!I%4gJb?jxBO]M">
-                                            <statement name="NAME">
-                                              <block type="blockly_comment" id="6;$op9Me^Ixd1v:J!I4W">
-                                                <field name="colour">#333333</field>
-                                                <field name="blockly_comment">Enumerate your servers and jump hosts here.</field>
+                                      <block type="_ub_here_ssh_config" id="D,.VwK!I%4gJb?jxBO]M">
+                                        <statement name="NAME">
+                                          <block type="blockly_comment" id="6;$op9Me^Ixd1v:J!I4W">
+                                            <field name="colour">#333333</field>
+                                            <field name="blockly_comment">Enumerate your servers and jump hosts here.</field>
+                                            <next>
+                                              <block type="_ub_ssh_host" id="5[*M+*%!Ed6e-B.BMqyt">
+                                                <field name="hostname">gw-default</field>
+                                                <field name="netname">-$netName</field>
+                                                <field name="commentProxyCommand"></field>
+                                                <field name="ProxyCommand">_ssh_proxy_server-$netName</field>
+                                                <field name="commentUser"></field>
+                                                <field name="User">gateway</field>
+                                                <field name="commentIdentityFile">#</field>
+                                                <field name="IdentityFile">"$sshLocalSSH/rev_gate"</field>
                                                 <next>
-                                                  <block type="_ub_ssh_host" id="5[*M+*%!Ed6e-B.BMqyt">
-                                                    <field name="hostname">gw-default</field>
-                                                    <field name="netname">-$netName</field>
-                                                    <field name="commentProxyCommand"></field>
-                                                    <field name="ProxyCommand">_ssh_proxy_server-$netName</field>
-                                                    <field name="commentUser"></field>
-                                                    <field name="User">gateway</field>
-                                                    <field name="commentIdentityFile">#</field>
-                                                    <field name="IdentityFile">"$sshLocalSSH/rev_gate"</field>
+                                                  <block type="arbitrary_code" id="@:#LeI_/w5Pu;#9H:%hQ">
+                                                    <field name="arbitraryCode">	Compression no</field>
                                                     <next>
-                                                      <block type="arbitrary_code" id="@:#LeI_/w5Pu;#9H:%hQ">
-                                                        <field name="arbitraryCode">	Compression no</field>
+                                                      <block type="arbitrary_code" id=")ol;-yV:bU-w;zqajz@N">
+                                                        <field name="arbitraryCode">	#Aggressively disconnects quickly. Comment if margins insufficient for high-latency.</field>
                                                         <next>
-                                                          <block type="arbitrary_code" id=")ol;-yV:bU-w;zqajz@N">
-                                                            <field name="arbitraryCode">	#Aggressively disconnects quickly. Comment if margins insufficient for high-latency.</field>
+                                                          <block type="arbitrary_code" id="pcEkz(v4YqJ0eU/557Tb">
+                                                            <field name="arbitraryCode">	ConnectTimeout 18</field>
                                                             <next>
-                                                              <block type="arbitrary_code" id="pcEkz(v4YqJ0eU/557Tb">
-                                                                <field name="arbitraryCode">	ConnectTimeout 18</field>
+                                                              <block type="arbitrary_code" id=".ElkGCC1nK`a#2IU#^bj">
+                                                                <field name="arbitraryCode">	ConnectionAttempts 3</field>
                                                                 <next>
-                                                                  <block type="arbitrary_code" id=".ElkGCC1nK`a#2IU#^bj">
-                                                                    <field name="arbitraryCode">	ConnectionAttempts 3</field>
+                                                                  <block type="arbitrary_code" id="Q{:GW#]~S5Bi?):p*jm8">
+                                                                    <field name="arbitraryCode">	ServerAliveInterval 3</field>
                                                                     <next>
-                                                                      <block type="arbitrary_code" id="Q{:GW#]~S5Bi?):p*jm8">
-                                                                        <field name="arbitraryCode">	ServerAliveInterval 3</field>
+                                                                      <block type="arbitrary_code" id="ISuQ=!oCdq;I*kGHU~Il">
+                                                                        <field name="arbitraryCode">	ServerAliveCountMax 3</field>
                                                                         <next>
-                                                                          <block type="arbitrary_code" id="ISuQ=!oCdq;I*kGHU~Il">
-                                                                            <field name="arbitraryCode">	ServerAliveCountMax 3</field>
+                                                                          <block type="arbitrary_code" id="{?skREwCA`w*SnAucdzT">
+                                                                            <field name="arbitraryCode"></field>
                                                                             <next>
-                                                                              <block type="arbitrary_code" id="{?skREwCA`w*SnAucdzT">
-                                                                                <field name="arbitraryCode"></field>
+                                                                              <block type="_ub_ssh_host" id=")yUX5d34LwWkme{P5]`I">
+                                                                                <field name="hostname">server</field>
+                                                                                <field name="netname">-$netName</field>
+                                                                                <field name="commentProxyCommand"></field>
+                                                                                <field name="ProxyCommand">_ssh_proxy_server-$netName</field>
+                                                                                <field name="commentUser"></field>
+                                                                                <field name="User">user</field>
+                                                                                <field name="commentIdentityFile">#</field>
+                                                                                <field name="IdentityFile">"$sshLocalSSH/id_rsa"</field>
                                                                                 <next>
-                                                                                  <block type="_ub_ssh_host" id=")yUX5d34LwWkme{P5]`I">
-                                                                                    <field name="hostname">server</field>
+                                                                                  <block type="_ub_ssh_host" id="sbGsX+;o|o?CF0J,(}xt">
+                                                                                    <field name="hostname">raspi</field>
                                                                                     <field name="netname">-$netName</field>
                                                                                     <field name="commentProxyCommand"></field>
-                                                                                    <field name="ProxyCommand">_ssh_proxy_server-$netName</field>
+                                                                                    <field name="ProxyCommand">_ssh_proxy_raspi-$netName</field>
                                                                                     <field name="commentUser"></field>
-                                                                                    <field name="User">user</field>
+                                                                                    <field name="User">pi</field>
                                                                                     <field name="commentIdentityFile">#</field>
                                                                                     <field name="IdentityFile">"$sshLocalSSH/id_rsa"</field>
                                                                                     <next>
-                                                                                      <block type="_ub_ssh_host" id="sbGsX+;o|o?CF0J,(}xt">
-                                                                                        <field name="hostname">raspi</field>
+                                                                                      <block type="_ub_ssh_host" id="^:V2yd[xL$3b{0ZrG*UO">
+                                                                                        <field name="hostname">lan</field>
                                                                                         <field name="netname">-$netName</field>
                                                                                         <field name="commentProxyCommand"></field>
-                                                                                        <field name="ProxyCommand">_ssh_proxy_raspi-$netName</field>
+                                                                                        <field name="ProxyCommand">_ssh_proxy_lan-$netName</field>
                                                                                         <field name="commentUser"></field>
-                                                                                        <field name="User">pi</field>
+                                                                                        <field name="User">root</field>
                                                                                         <field name="commentIdentityFile">#</field>
                                                                                         <field name="IdentityFile">"$sshLocalSSH/id_rsa"</field>
                                                                                         <next>
-                                                                                          <block type="_ub_ssh_host" id="^:V2yd[xL$3b{0ZrG*UO">
-                                                                                            <field name="hostname">lan</field>
+                                                                                          <block type="_ub_ssh_host" id="Z}XWl?oxyfBF|NEA+$Vl">
+                                                                                            <field name="hostname">wan</field>
                                                                                             <field name="netname">-$netName</field>
                                                                                             <field name="commentProxyCommand"></field>
-                                                                                            <field name="ProxyCommand">_ssh_proxy_lan-$netName</field>
+                                                                                            <field name="ProxyCommand">_ssh_proxy_wan-$netName</field>
                                                                                             <field name="commentUser"></field>
                                                                                             <field name="User">root</field>
                                                                                             <field name="commentIdentityFile">#</field>
                                                                                             <field name="IdentityFile">"$sshLocalSSH/id_rsa"</field>
                                                                                             <next>
-                                                                                              <block type="_ub_ssh_host" id="Z}XWl?oxyfBF|NEA+$Vl">
-                                                                                                <field name="hostname">wan</field>
+                                                                                              <block type="_ub_ssh_host" id="oXagotR(Uvd/FvQz#Hj:">
+                                                                                                <field name="hostname">assetA</field>
                                                                                                 <field name="netname">-$netName</field>
                                                                                                 <field name="commentProxyCommand"></field>
-                                                                                                <field name="ProxyCommand">_ssh_proxy_wan-$netName</field>
+                                                                                                <field name="ProxyCommand">_ssh_proxy_assetA-$netName</field>
                                                                                                 <field name="commentUser"></field>
-                                                                                                <field name="User">root</field>
+                                                                                                <field name="User">user</field>
                                                                                                 <field name="commentIdentityFile">#</field>
                                                                                                 <field name="IdentityFile">"$sshLocalSSH/id_rsa"</field>
                                                                                                 <next>
-                                                                                                  <block type="_ub_ssh_host" id="oXagotR(Uvd/FvQz#Hj:">
-                                                                                                    <field name="hostname">assetA</field>
-                                                                                                    <field name="netname">-$netName</field>
-                                                                                                    <field name="commentProxyCommand"></field>
-                                                                                                    <field name="ProxyCommand">_ssh_proxy_assetA-$netName</field>
-                                                                                                    <field name="commentUser"></field>
-                                                                                                    <field name="User">user</field>
-                                                                                                    <field name="commentIdentityFile">#</field>
-                                                                                                    <field name="IdentityFile">"$sshLocalSSH/id_rsa"</field>
+                                                                                                  <block type="blockly_comment" id="lzJpy/(8a[LIw?A|o0,v">
+                                                                                                    <field name="colour">#333333</field>
+                                                                                                    <field name="blockly_comment">Recommended defaults.</field>
                                                                                                     <next>
-                                                                                                      <block type="blockly_comment" id="lzJpy/(8a[LIw?A|o0,v">
-                                                                                                        <field name="colour">#333333</field>
-                                                                                                        <field name="blockly_comment">Recommended defaults.</field>
-                                                                                                        <next>
-                                                                                                          <block type="_ub_ssh_header" id="Yw!se27TpNAACqMv::OK">
-                                                                                                            <field name="hostname">*-$netName*</field>
-                                                                                                            <field name="commentCompression"></field>
-                                                                                                            <field name="Compression">yes</field>
-                                                                                                            <field name="commentExitOnForwardFailure"></field>
-                                                                                                            <field name="ExitOnForwardFailure">yes</field>
-                                                                                                            <field name="commentConnectTimeout"></field>
-                                                                                                            <field name="ConnectTimeout">72</field>
-                                                                                                            <field name="commentConnectionAttempts"></field>
-                                                                                                            <field name="ConnectionAttempts">3</field>
-                                                                                                            <field name="commentServerAliveInterval"></field>
-                                                                                                            <field name="ServerAliveInterval">6</field>
-                                                                                                            <field name="commentServerAliveCountMax"></field>
-                                                                                                            <field name="ServerAliveCountMax">9</field>
-                                                                                                            <field name="commentPubkeyAuthentication">#</field>
-                                                                                                            <field name="PubkeyAuthentication">yes</field>
-                                                                                                            <field name="commentPasswordAuthentication">#</field>
-                                                                                                            <field name="PasswordAuthentication">no</field>
-                                                                                                            <field name="commentStrictHostKeyChecking"></field>
-                                                                                                            <field name="StrictHostKeyChecking">no</field>
-                                                                                                            <field name="commentUserKnownHostsFile"></field>
-                                                                                                            <field name="UserKnownHostsFile">"$sshLocalSSH/known_hosts"</field>
-                                                                                                            <field name="commentIdentityFile"></field>
-                                                                                                            <field name="IdentityFile">"$sshLocalSSH/id_rsa"</field>
-                                                                                                            <field name="commentCipher">#</field>
-                                                                                                            <field name="Cipher">aes256-gcm@openssh.com</field>
-                                                                                                            <field name="commentCiphers">#</field>
-                                                                                                            <field name="Ciphers">aes256-gcm@openssh.com,aes128-ctr,aes192-ctr,aes256-ctr,arcfour256,arcfour128,aes128-gcm@openssh.com,chacha20-poly1305@openssh.com,aes128-cbc,3des-cbc,blowfish-cbc,cast128-cbc,aes192-cbc,aes256-cbc,arcfour</field>
-                                                                                                          </block>
-                                                                                                        </next>
+                                                                                                      <block type="_ub_ssh_header" id="Yw!se27TpNAACqMv::OK">
+                                                                                                        <field name="hostname">*-$netName*</field>
+                                                                                                        <field name="commentCompression"></field>
+                                                                                                        <field name="Compression">yes</field>
+                                                                                                        <field name="commentExitOnForwardFailure"></field>
+                                                                                                        <field name="ExitOnForwardFailure">yes</field>
+                                                                                                        <field name="commentConnectTimeout"></field>
+                                                                                                        <field name="ConnectTimeout">72</field>
+                                                                                                        <field name="commentConnectionAttempts"></field>
+                                                                                                        <field name="ConnectionAttempts">3</field>
+                                                                                                        <field name="commentServerAliveInterval"></field>
+                                                                                                        <field name="ServerAliveInterval">6</field>
+                                                                                                        <field name="commentServerAliveCountMax"></field>
+                                                                                                        <field name="ServerAliveCountMax">9</field>
+                                                                                                        <field name="commentPubkeyAuthentication">#</field>
+                                                                                                        <field name="PubkeyAuthentication">yes</field>
+                                                                                                        <field name="commentPasswordAuthentication">#</field>
+                                                                                                        <field name="PasswordAuthentication">no</field>
+                                                                                                        <field name="commentStrictHostKeyChecking"></field>
+                                                                                                        <field name="StrictHostKeyChecking">no</field>
+                                                                                                        <field name="commentUserKnownHostsFile"></field>
+                                                                                                        <field name="UserKnownHostsFile">"$sshLocalSSH/known_hosts"</field>
+                                                                                                        <field name="commentIdentityFile"></field>
+                                                                                                        <field name="IdentityFile">"$sshLocalSSH/id_rsa"</field>
+                                                                                                        <field name="commentCipher">#</field>
+                                                                                                        <field name="Cipher">aes256-gcm@openssh.com</field>
+                                                                                                        <field name="commentCiphers">#</field>
+                                                                                                        <field name="Ciphers">aes256-gcm@openssh.com,aes128-ctr,aes192-ctr,aes256-ctr,arcfour256,arcfour128,aes128-gcm@openssh.com,chacha20-poly1305@openssh.com,aes128-cbc,3des-cbc,blowfish-cbc,cast128-cbc,aes192-cbc,aes256-cbc,arcfour</field>
                                                                                                       </block>
                                                                                                     </next>
                                                                                                   </block>
@@ -217,32 +264,72 @@
                                                   </block>
                                                 </next>
                                               </block>
-                                            </statement>
+                                            </next>
+                                          </block>
+                                        </statement>
+                                        <next>
+                                          <block type="blockly_comment" id="W~v=Z+O}Gq|(P[PYp_XE">
+                                            <field name="colour">#333333</field>
+                                            <field name="blockly_comment">Returns true if connected to specified subnet. Enables direct connection to local static IP address.</field>
                                             <next>
-                                              <block type="blockly_comment" id="W~v=Z+O}Gq|(P[PYp_XE">
-                                                <field name="colour">#333333</field>
-                                                <field name="blockly_comment">Returns true if connected to specified subnet. Enables direct connection to local static IP address.</field>
+                                              <block type="_ub_check_lan" id=".}-d[zQ_f/zphQ[:/!va">
+                                                <field name="network">default</field>
+                                                <field name="NAME">'192\.168\.x'</field>
                                                 <next>
-                                                  <block type="_ub_check_lan" id=".}-d[zQ_f/zphQ[:/!va">
-                                                    <field name="network">default</field>
+                                                  <block type="_ub_check_lan" id="Z`4GBoKhYa@vW2[{lHfE">
+                                                    <field name="network">simulation</field>
                                                     <field name="NAME">'192\.168\.x'</field>
                                                     <next>
-                                                      <block type="_ub_check_lan" id="Z`4GBoKhYa@vW2[{lHfE">
-                                                        <field name="network">simulation</field>
-                                                        <field name="NAME">'192\.168\.x'</field>
+                                                      <block type="_ub_ssh_proxy_machine_network" id=".g@fIvZjK=;w_Qon{p`r">
+                                                        <field name="hostname">server-default</field>
+                                                        <statement name="NAME">
+                                                          <block type="bash_export" id="NybmX=9Y!a.@2n{][ZUy">
+                                                            <value name="NAME">
+                                                              <block type="arbitrary_deconverter" id="7kXQq+i70x!7-HNqNhK)">
+                                                                <statement name="NAME">
+                                                                  <block type="variables_set" id="hKN.)xxT!BGYN]8`,#fj">
+                                                                    <field name="VAR" id=";MXIKr`/ZQYyYaD7zMz`" variabletype="">netTimeout</field>
+                                                                    <value name="VALUE">
+                                                                      <block type="text" id="/45aa%64.8O50nx|SowV">
+                                                                        <field name="TEXT">3</field>
+                                                                      </block>
+                                                                    </value>
+                                                                  </block>
+                                                                </statement>
+                                                              </block>
+                                                            </value>
+                                                            <next>
+                                                              <block type="arbitrary_code" id="U_DTCbpmkVf2{6M,a`K%">
+                                                                <field name="arbitraryCode"># May prefer port "2022" or similar if domain is shared by NAT.</field>
+                                                                <next>
+                                                                  <block type="_ub_proxy" id="PF:N}=vBXm#)aM%sjjhR">
+                                                                    <field name="hostname">x.x.x.x</field>
+                                                                    <field name="port">22</field>
+                                                                    <next>
+                                                                      <block type="_ub_proxy" id="v%PFWuJq3S*BD7=d/MzB">
+                                                                        <field name="hostname">server.domain.tld</field>
+                                                                        <field name="port">22</field>
+                                                                      </block>
+                                                                    </next>
+                                                                  </block>
+                                                                </next>
+                                                              </block>
+                                                            </next>
+                                                          </block>
+                                                        </statement>
                                                         <next>
-                                                          <block type="_ub_ssh_proxy_machine_network" id=".g@fIvZjK=;w_Qon{p`r">
-                                                            <field name="hostname">server-default</field>
+                                                          <block type="_ub_ssh_proxy_machine_network" id="@m!EDz(/jFATP[4Yy^8B">
+                                                            <field name="hostname">raspi-default</field>
                                                             <statement name="NAME">
-                                                              <block type="bash_export" id="NybmX=9Y!a.@2n{][ZUy">
+                                                              <block type="bash_export" id="FC;owBRvETZpEO,{;J5[">
                                                                 <value name="NAME">
-                                                                  <block type="arbitrary_deconverter" id="7kXQq+i70x!7-HNqNhK)">
+                                                                  <block type="arbitrary_deconverter" id="N-.leU#?4M0(W]X-xoRt">
                                                                     <statement name="NAME">
-                                                                      <block type="variables_set" id="hKN.)xxT!BGYN]8`,#fj">
+                                                                      <block type="variables_set" id="LvK;|GUhK.iYj_4}}Jgu">
                                                                         <field name="VAR" id=";MXIKr`/ZQYyYaD7zMz`" variabletype="">netTimeout</field>
                                                                         <value name="VALUE">
-                                                                          <block type="text" id="/45aa%64.8O50nx|SowV">
-                                                                            <field name="TEXT">3</field>
+                                                                          <block type="text" id="r}+l%mUg8mI1tE1HCllg">
+                                                                            <field name="TEXT">0.1</field>
                                                                           </block>
                                                                         </value>
                                                                       </block>
@@ -250,82 +337,66 @@
                                                                   </block>
                                                                 </value>
                                                                 <next>
-                                                                  <block type="arbitrary_code" id="U_DTCbpmkVf2{6M,a`K%">
-                                                                    <field name="arbitraryCode"># May prefer port "2022" or similar if domain is shared by NAT.</field>
+                                                                  <block type="_ub_proxy" id="D#QgU@Drh9||B2%^jadf">
+                                                                    <field name="hostname">localhost</field>
+                                                                    <field name="port">20001</field>
                                                                     <next>
-                                                                      <block type="_ub_proxy" id="PF:N}=vBXm#)aM%sjjhR">
-                                                                        <field name="hostname">x.x.x.x</field>
-                                                                        <field name="port">22</field>
-                                                                        <next>
-                                                                          <block type="_ub_proxy" id="v%PFWuJq3S*BD7=d/MzB">
-                                                                            <field name="hostname">server.domain.tld</field>
-                                                                            <field name="port">22</field>
-                                                                          </block>
-                                                                        </next>
-                                                                      </block>
-                                                                    </next>
-                                                                  </block>
-                                                                </next>
-                                                              </block>
-                                                            </statement>
-                                                            <next>
-                                                              <block type="_ub_ssh_proxy_machine_network" id="@m!EDz(/jFATP[4Yy^8B">
-                                                                <field name="hostname">raspi-default</field>
-                                                                <statement name="NAME">
-                                                                  <block type="bash_export" id="FC;owBRvETZpEO,{;J5[">
-                                                                    <value name="NAME">
-                                                                      <block type="arbitrary_deconverter" id="N-.leU#?4M0(W]X-xoRt">
-                                                                        <statement name="NAME">
-                                                                          <block type="variables_set" id="LvK;|GUhK.iYj_4}}Jgu">
-                                                                            <field name="VAR" id=";MXIKr`/ZQYyYaD7zMz`" variabletype="">netTimeout</field>
-                                                                            <value name="VALUE">
-                                                                              <block type="text" id="r}+l%mUg8mI1tE1HCllg">
-                                                                                <field name="TEXT">0.1</field>
+                                                                      <block type="bash_export" id="|XYfXIk}k#P|I{P_kelZ">
+                                                                        <value name="NAME">
+                                                                          <block type="arbitrary_deconverter" id="kF:{ZzijYYytNUCB1@BY">
+                                                                            <statement name="NAME">
+                                                                              <block type="variables_set" id="42TmAXw%}vl1~bEKC]D~">
+                                                                                <field name="VAR" id=";MXIKr`/ZQYyYaD7zMz`" variabletype="">netTimeout</field>
+                                                                                <value name="VALUE">
+                                                                                  <block type="text" id=";gq`ODf0{KD8qW(O8)cR">
+                                                                                    <field name="TEXT">18</field>
+                                                                                  </block>
+                                                                                </value>
                                                                               </block>
-                                                                            </value>
+                                                                            </statement>
                                                                           </block>
-                                                                        </statement>
-                                                                      </block>
-                                                                    </value>
-                                                                    <next>
-                                                                      <block type="_ub_proxy" id="D#QgU@Drh9||B2%^jadf">
-                                                                        <field name="hostname">localhost</field>
-                                                                        <field name="port">20001</field>
+                                                                        </value>
                                                                         <next>
-                                                                          <block type="bash_export" id="|XYfXIk}k#P|I{P_kelZ">
-                                                                            <value name="NAME">
-                                                                              <block type="arbitrary_deconverter" id="kF:{ZzijYYytNUCB1@BY">
-                                                                                <statement name="NAME">
-                                                                                  <block type="variables_set" id="42TmAXw%}vl1~bEKC]D~">
-                                                                                    <field name="VAR" id=";MXIKr`/ZQYyYaD7zMz`" variabletype="">netTimeout</field>
-                                                                                    <value name="VALUE">
-                                                                                      <block type="text" id=";gq`ODf0{KD8qW(O8)cR">
-                                                                                        <field name="TEXT">18</field>
+                                                                          <block type="arbitrary_code" id="g%)_5J|f0LKx|(5Yf{T+">
+                                                                            <field name="arbitraryCode"></field>
+                                                                            <next>
+                                                                              <block type="arbitrary_converter" id=":CA%%6r+%_7NX`ovA@v~">
+                                                                                <value name="content">
+                                                                                  <block type="logic_operation" id="i_y-QVvR7xJ914z$7Q/)">
+                                                                                    <field name="OP">AND</field>
+                                                                                    <value name="A">
+                                                                                      <block type="_ub_call_checklan" id="{fNBTVbY))HJtE8JKP6Z">
+                                                                                        <field name="NAME">simulation</field>
+                                                                                      </block>
+                                                                                    </value>
+                                                                                    <value name="B">
+                                                                                      <block type="arbitrary_deconverter" id="[:iD/U=y.:]J~70!n0hI">
+                                                                                        <statement name="NAME">
+                                                                                          <block type="_ub_proxy" id="?|7pfy.vJ~quI2p#!2Wq">
+                                                                                            <field name="hostname">192.168.x.x</field>
+                                                                                            <field name="port">22</field>
+                                                                                          </block>
+                                                                                        </statement>
                                                                                       </block>
                                                                                     </value>
                                                                                   </block>
-                                                                                </statement>
-                                                                              </block>
-                                                                            </value>
-                                                                            <next>
-                                                                              <block type="arbitrary_code" id="g%)_5J|f0LKx|(5Yf{T+">
-                                                                                <field name="arbitraryCode"></field>
+                                                                                </value>
                                                                                 <next>
-                                                                                  <block type="arbitrary_converter" id=":CA%%6r+%_7NX`ovA@v~">
+                                                                                  <block type="arbitrary_converter" id="OA?Mr7p8Q/G_v$zC.;Q[">
                                                                                     <value name="content">
-                                                                                      <block type="logic_operation" id="i_y-QVvR7xJ914z$7Q/)">
+                                                                                      <block type="logic_operation" id="5VJ_T7WHJ=4{J#cdDsYX">
                                                                                         <field name="OP">AND</field>
                                                                                         <value name="A">
-                                                                                          <block type="_ub_call_checklan" id="{fNBTVbY))HJtE8JKP6Z">
-                                                                                            <field name="NAME">simulation</field>
+                                                                                          <block type="_ub_call_checklan" id="~[SF%VuG.)`(|iMk-sV*">
+                                                                                            <field name="NAME">default</field>
                                                                                           </block>
                                                                                         </value>
                                                                                         <value name="B">
-                                                                                          <block type="arbitrary_deconverter" id="[:iD/U=y.:]J~70!n0hI">
+                                                                                          <block type="arbitrary_deconverter" id="N*4}9{*q~gLoi*pwV6I[">
                                                                                             <statement name="NAME">
-                                                                                              <block type="_ub_proxy" id="?|7pfy.vJ~quI2p#!2Wq">
-                                                                                                <field name="hostname">192.168.x.x</field>
-                                                                                                <field name="port">22</field>
+                                                                                              <block type="_ub_proxy" id="1=9JAd^X58TmXR4kbLQ5">
+                                                                                                <field name="hostname">raspi.lan</field>
+                                                                                                <field name="port">20001</field>
                                                                                               </block>
                                                                                             </statement>
                                                                                           </block>
@@ -333,21 +404,21 @@
                                                                                       </block>
                                                                                     </value>
                                                                                     <next>
-                                                                                      <block type="arbitrary_converter" id="OA?Mr7p8Q/G_v$zC.;Q[">
+                                                                                      <block type="arbitrary_converter" id="!]q.fUY+w(/u:)My[by{">
                                                                                         <value name="content">
-                                                                                          <block type="logic_operation" id="5VJ_T7WHJ=4{J#cdDsYX">
+                                                                                          <block type="logic_operation" id="R4E9bYH5`JCxO?8Fcp)u">
                                                                                             <field name="OP">AND</field>
                                                                                             <value name="A">
-                                                                                              <block type="_ub_call_checklan" id="~[SF%VuG.)`(|iMk-sV*">
+                                                                                              <block type="_ub_call_checklan" id="1*r?c`WkhbW7![!yt6{L">
                                                                                                 <field name="NAME">default</field>
                                                                                               </block>
                                                                                             </value>
                                                                                             <value name="B">
-                                                                                              <block type="arbitrary_deconverter" id="N*4}9{*q~gLoi*pwV6I[">
+                                                                                              <block type="arbitrary_deconverter" id="65M0Cq!-u1hJ`.yS~,88">
                                                                                                 <statement name="NAME">
-                                                                                                  <block type="_ub_proxy" id="1=9JAd^X58TmXR4kbLQ5">
-                                                                                                    <field name="hostname">raspi.lan</field>
-                                                                                                    <field name="port">20001</field>
+                                                                                                  <block type="_ub_proxy" id="vonLohmp/2:(jpEWvP%!">
+                                                                                                    <field name="hostname">192.168.x.x</field>
+                                                                                                    <field name="port">22</field>
                                                                                                   </block>
                                                                                                 </statement>
                                                                                               </block>
@@ -355,37 +426,13 @@
                                                                                           </block>
                                                                                         </value>
                                                                                         <next>
-                                                                                          <block type="arbitrary_converter" id="!]q.fUY+w(/u:)My[by{">
-                                                                                            <value name="content">
-                                                                                              <block type="logic_operation" id="R4E9bYH5`JCxO?8Fcp)u">
-                                                                                                <field name="OP">AND</field>
-                                                                                                <value name="A">
-                                                                                                  <block type="_ub_call_checklan" id="1*r?c`WkhbW7![!yt6{L">
-                                                                                                    <field name="NAME">default</field>
-                                                                                                  </block>
-                                                                                                </value>
-                                                                                                <value name="B">
-                                                                                                  <block type="arbitrary_deconverter" id="65M0Cq!-u1hJ`.yS~,88">
-                                                                                                    <statement name="NAME">
-                                                                                                      <block type="_ub_proxy" id="vonLohmp/2:(jpEWvP%!">
-                                                                                                        <field name="hostname">192.168.x.x</field>
-                                                                                                        <field name="port">22</field>
-                                                                                                      </block>
-                                                                                                    </statement>
-                                                                                                  </block>
-                                                                                                </value>
-                                                                                              </block>
-                                                                                            </value>
+                                                                                          <block type="_ub_proxyssh_reverse" id="a=K/r8Cjo7eo%b=!1WVZ">
+                                                                                            <field name="hostname">raspi</field>
+                                                                                            <field name="jump">gw-default</field>
                                                                                             <next>
-                                                                                              <block type="_ub_proxyssh_reverse" id="a=K/r8Cjo7eo%b=!1WVZ">
+                                                                                              <block type="_ub_proxyTor_reverse" id="P@i3`rB2u@_{Aa_+#UOP">
                                                                                                 <field name="hostname">raspi</field>
-                                                                                                <field name="jump">gw-default</field>
-                                                                                                <next>
-                                                                                                  <block type="_ub_proxyTor_reverse" id="P@i3`rB2u@_{Aa_+#UOP">
-                                                                                                    <field name="hostname">raspi</field>
-                                                                                                    <field name="address">xxxxxxxxxxxxxxxxx.onion</field>
-                                                                                                  </block>
-                                                                                                </next>
+                                                                                                <field name="address">xxxxxxxxxxxxxxxxx.onion</field>
                                                                                               </block>
                                                                                             </next>
                                                                                           </block>
@@ -401,24 +448,115 @@
                                                                       </block>
                                                                     </next>
                                                                   </block>
-                                                                </statement>
-                                                                <next>
-                                                                  <block type="_ub_ssh_proxy_machine_network" id="S.UDEARm#2}p90~mK]fZ">
-                                                                    <field name="hostname">lan-default</field>
-                                                                    <statement name="NAME">
-                                                                      <block type="arbitrary_converter" id="62LK8FY%[U)T8wxm`OWb">
+                                                                </next>
+                                                              </block>
+                                                            </statement>
+                                                            <next>
+                                                              <block type="_ub_ssh_proxy_machine_network" id="S.UDEARm#2}p90~mK]fZ">
+                                                                <field name="hostname">lan-default</field>
+                                                                <statement name="NAME">
+                                                                  <block type="arbitrary_converter" id="62LK8FY%[U)T8wxm`OWb">
+                                                                    <value name="content">
+                                                                      <block type="logic_operation" id="P5Y1WR8[oy_/3?Ig}=wL">
+                                                                        <field name="OP">AND</field>
+                                                                        <value name="A">
+                                                                          <block type="_ub_call_checklan" id="@yQCM8.*cuyi^|(t}Ahx">
+                                                                            <field name="NAME">simulation</field>
+                                                                          </block>
+                                                                        </value>
+                                                                        <value name="B">
+                                                                          <block type="arbitrary_deconverter" id="Jm7c_LPB4HoEzwEYpjk;">
+                                                                            <statement name="NAME">
+                                                                              <block type="_ub_proxy" id="a@_#UH3|S/Rx{Wyq{~J,">
+                                                                                <field name="hostname">192.168.x.x</field>
+                                                                                <field name="port">22</field>
+                                                                              </block>
+                                                                            </statement>
+                                                                          </block>
+                                                                        </value>
+                                                                      </block>
+                                                                    </value>
+                                                                    <next>
+                                                                      <block type="arbitrary_converter" id="mr5_nwS6?7v0DRdF2fdI">
                                                                         <value name="content">
-                                                                          <block type="logic_operation" id="P5Y1WR8[oy_/3?Ig}=wL">
+                                                                          <block type="logic_operation" id="#X_p1)%k:.m{4r+0eMhF">
                                                                             <field name="OP">AND</field>
                                                                             <value name="A">
-                                                                              <block type="_ub_call_checklan" id="@yQCM8.*cuyi^|(t}Ahx">
+                                                                              <block type="_ub_call_checklan" id="{//UdABK~HFvIoG*K6-/">
+                                                                                <field name="NAME">default</field>
+                                                                              </block>
+                                                                            </value>
+                                                                            <value name="B">
+                                                                              <block type="arbitrary_deconverter" id="eRjf%DYXY[:)999G+T:;">
+                                                                                <statement name="NAME">
+                                                                                  <block type="_ub_proxy" id="65|Rkc4:x}B-qTG9A~xL">
+                                                                                    <field name="hostname">defaultl.lan</field>
+                                                                                    <field name="port">22</field>
+                                                                                  </block>
+                                                                                </statement>
+                                                                              </block>
+                                                                            </value>
+                                                                          </block>
+                                                                        </value>
+                                                                        <next>
+                                                                          <block type="arbitrary_converter" id=".]K+eWg6sH6*ZUNga!UY">
+                                                                            <value name="content">
+                                                                              <block type="logic_operation" id="p%:(dyyWrxs)hg$}`lT.">
+                                                                                <field name="OP">AND</field>
+                                                                                <value name="A">
+                                                                                  <block type="_ub_call_checklan" id="IIroQ*5n8w@$;g[;e8U~">
+                                                                                    <field name="NAME">default</field>
+                                                                                  </block>
+                                                                                </value>
+                                                                                <value name="B">
+                                                                                  <block type="arbitrary_deconverter" id="=N8^VyN.7o(!|l9Dd+([">
+                                                                                    <statement name="NAME">
+                                                                                      <block type="_ub_proxy" id=";6)eZkgn;%FwM!2?P0NB">
+                                                                                        <field name="hostname">192.168.x.x</field>
+                                                                                        <field name="port">22</field>
+                                                                                      </block>
+                                                                                    </statement>
+                                                                                  </block>
+                                                                                </value>
+                                                                              </block>
+                                                                            </value>
+                                                                            <next>
+                                                                              <block type="_ub_proxyssh" id="w!ocpC%X-R1*Lc#)r{hO">
+                                                                                <field name="hostname">raspi-default</field>
+                                                                                <field name="port">22</field>
+                                                                                <field name="address">defaultl.lan</field>
+                                                                                <next>
+                                                                                  <block type="_ub_proxyssh" id="^?b+K1-ON-S!L:ew4c;W">
+                                                                                    <field name="hostname">raspi-default</field>
+                                                                                    <field name="port">22</field>
+                                                                                    <field name="address">192.168.xxx.xxx</field>
+                                                                                  </block>
+                                                                                </next>
+                                                                              </block>
+                                                                            </next>
+                                                                          </block>
+                                                                        </next>
+                                                                      </block>
+                                                                    </next>
+                                                                  </block>
+                                                                </statement>
+                                                                <next>
+                                                                  <block type="_ub_ssh_proxy_machine_network" id="%L}Ex1leeTFNvlOhn|un">
+                                                                    <field name="hostname">wan-default</field>
+                                                                    <statement name="NAME">
+                                                                      <block type="arbitrary_converter" id="ltFSUR~mv?%;4p|NbqjC">
+                                                                        <value name="content">
+                                                                          <block type="logic_operation" id="hA01;M(?hnDYJI~f:[kF">
+                                                                            <field name="OP">AND</field>
+                                                                            <value name="A">
+                                                                              <block type="_ub_call_checklan" id="@H9K35+~I;dhok^.(xco">
                                                                                 <field name="NAME">simulation</field>
                                                                               </block>
                                                                             </value>
                                                                             <value name="B">
-                                                                              <block type="arbitrary_deconverter" id="Jm7c_LPB4HoEzwEYpjk;">
+                                                                              <block type="arbitrary_deconverter" id="g[T]7dpHt(/cqlMx5Ef!">
                                                                                 <statement name="NAME">
-                                                                                  <block type="_ub_proxy" id="a@_#UH3|S/Rx{Wyq{~J,">
+                                                                                  <block type="_ub_proxy" id="O!4}%#5fv?wA^;g(~8$p">
                                                                                     <field name="hostname">192.168.x.x</field>
                                                                                     <field name="port">22</field>
                                                                                   </block>
@@ -428,20 +566,20 @@
                                                                           </block>
                                                                         </value>
                                                                         <next>
-                                                                          <block type="arbitrary_converter" id="mr5_nwS6?7v0DRdF2fdI">
+                                                                          <block type="arbitrary_converter" id="HGO40#o/zu9g;*fTX.()">
                                                                             <value name="content">
-                                                                              <block type="logic_operation" id="#X_p1)%k:.m{4r+0eMhF">
+                                                                              <block type="logic_operation" id="/v;BGSHO[Tvox6H:Vk(^">
                                                                                 <field name="OP">AND</field>
                                                                                 <value name="A">
-                                                                                  <block type="_ub_call_checklan" id="{//UdABK~HFvIoG*K6-/">
+                                                                                  <block type="_ub_call_checklan" id="Jc7dK|4%f96psx|e}_[n">
                                                                                     <field name="NAME">default</field>
                                                                                   </block>
                                                                                 </value>
                                                                                 <value name="B">
-                                                                                  <block type="arbitrary_deconverter" id="eRjf%DYXY[:)999G+T:;">
+                                                                                  <block type="arbitrary_deconverter" id="8F,4fZ6l[hvFpd_Wu6$d">
                                                                                     <statement name="NAME">
-                                                                                      <block type="_ub_proxy" id="65|Rkc4:x}B-qTG9A~xL">
-                                                                                        <field name="hostname">defaultl.lan</field>
+                                                                                      <block type="_ub_proxy" id="68;gfz(_C;Kh5z#)=I(O">
+                                                                                        <field name="hostname">defaultw.lan</field>
                                                                                         <field name="port">22</field>
                                                                                       </block>
                                                                                     </statement>
@@ -450,19 +588,19 @@
                                                                               </block>
                                                                             </value>
                                                                             <next>
-                                                                              <block type="arbitrary_converter" id=".]K+eWg6sH6*ZUNga!UY">
+                                                                              <block type="arbitrary_converter" id="~FHw_qAK)`dE@e]8:5P[">
                                                                                 <value name="content">
-                                                                                  <block type="logic_operation" id="p%:(dyyWrxs)hg$}`lT.">
+                                                                                  <block type="logic_operation" id="-XF@ll.$ma=s~-SHK@G^">
                                                                                     <field name="OP">AND</field>
                                                                                     <value name="A">
-                                                                                      <block type="_ub_call_checklan" id="IIroQ*5n8w@$;g[;e8U~">
+                                                                                      <block type="_ub_call_checklan" id="1FH_aft(tss;:KJU-#$u">
                                                                                         <field name="NAME">default</field>
                                                                                       </block>
                                                                                     </value>
                                                                                     <value name="B">
-                                                                                      <block type="arbitrary_deconverter" id="=N8^VyN.7o(!|l9Dd+([">
+                                                                                      <block type="arbitrary_deconverter" id="/GQ1B^{hjsH3+{K.SU2r">
                                                                                         <statement name="NAME">
-                                                                                          <block type="_ub_proxy" id=";6)eZkgn;%FwM!2?P0NB">
+                                                                                          <block type="_ub_proxy" id="`{+n|qI]4|16#-;gm)i[">
                                                                                             <field name="hostname">192.168.x.x</field>
                                                                                             <field name="port">22</field>
                                                                                           </block>
@@ -472,12 +610,12 @@
                                                                                   </block>
                                                                                 </value>
                                                                                 <next>
-                                                                                  <block type="_ub_proxyssh" id="w!ocpC%X-R1*Lc#)r{hO">
+                                                                                  <block type="_ub_proxyssh" id="5:8{SpU)|r3U3Rai8UiS">
                                                                                     <field name="hostname">raspi-default</field>
                                                                                     <field name="port">22</field>
-                                                                                    <field name="address">defaultl.lan</field>
+                                                                                    <field name="address">defaultw.lan</field>
                                                                                     <next>
-                                                                                      <block type="_ub_proxyssh" id="^?b+K1-ON-S!L:ew4c;W">
+                                                                                      <block type="_ub_proxyssh" id="RN78l)mz*?HaTA*}]iB(">
                                                                                         <field name="hostname">raspi-default</field>
                                                                                         <field name="port">22</field>
                                                                                         <field name="address">192.168.xxx.xxx</field>
@@ -492,156 +630,89 @@
                                                                       </block>
                                                                     </statement>
                                                                     <next>
-                                                                      <block type="_ub_ssh_proxy_machine_network" id="%L}Ex1leeTFNvlOhn|un">
-                                                                        <field name="hostname">wan-default</field>
+                                                                      <block type="_ub_ssh_proxy_machine_network" id="^t[zy@|LKWgjt*a1PQ|X">
+                                                                        <field name="hostname">assetA-default</field>
                                                                         <statement name="NAME">
-                                                                          <block type="arbitrary_converter" id="ltFSUR~mv?%;4p|NbqjC">
-                                                                            <value name="content">
-                                                                              <block type="logic_operation" id="hA01;M(?hnDYJI~f:[kF">
-                                                                                <field name="OP">AND</field>
-                                                                                <value name="A">
-                                                                                  <block type="_ub_call_checklan" id="@H9K35+~I;dhok^.(xco">
-                                                                                    <field name="NAME">simulation</field>
-                                                                                  </block>
-                                                                                </value>
-                                                                                <value name="B">
-                                                                                  <block type="arbitrary_deconverter" id="g[T]7dpHt(/cqlMx5Ef!">
-                                                                                    <statement name="NAME">
-                                                                                      <block type="_ub_proxy" id="O!4}%#5fv?wA^;g(~8$p">
-                                                                                        <field name="hostname">192.168.x.x</field>
-                                                                                        <field name="port">22</field>
+                                                                          <block type="bash_export" id=")O2H[Hk_/KaS@|imCMj5">
+                                                                            <value name="NAME">
+                                                                              <block type="arbitrary_deconverter" id=")J~m3=;htoRE8:)ZrY8_">
+                                                                                <statement name="NAME">
+                                                                                  <block type="variables_set" id=";oCo26lE-/;zQ|SrnVq3">
+                                                                                    <field name="VAR" id=";MXIKr`/ZQYyYaD7zMz`" variabletype="">netTimeout</field>
+                                                                                    <value name="VALUE">
+                                                                                      <block type="text" id=",^5.|$lQRxj7DnKF}ug#">
+                                                                                        <field name="TEXT">0.1</field>
                                                                                       </block>
-                                                                                    </statement>
+                                                                                    </value>
                                                                                   </block>
-                                                                                </value>
+                                                                                </statement>
                                                                               </block>
                                                                             </value>
                                                                             <next>
-                                                                              <block type="arbitrary_converter" id="HGO40#o/zu9g;*fTX.()">
-                                                                                <value name="content">
-                                                                                  <block type="logic_operation" id="/v;BGSHO[Tvox6H:Vk(^">
-                                                                                    <field name="OP">AND</field>
-                                                                                    <value name="A">
-                                                                                      <block type="_ub_call_checklan" id="Jc7dK|4%f96psx|e}_[n">
-                                                                                        <field name="NAME">default</field>
-                                                                                      </block>
-                                                                                    </value>
-                                                                                    <value name="B">
-                                                                                      <block type="arbitrary_deconverter" id="8F,4fZ6l[hvFpd_Wu6$d">
+                                                                              <block type="_ub_proxy" id="rb`77,gK(JNHDyUdq?=k">
+                                                                                <field name="hostname">localhost</field>
+                                                                                <field name="port">20002</field>
+                                                                                <next>
+                                                                                  <block type="bash_export" id="*qr3iM~P^m7*s|ln;VPt">
+                                                                                    <value name="NAME">
+                                                                                      <block type="arbitrary_deconverter" id="F[tpp4byFeYsg{K[TQS7">
                                                                                         <statement name="NAME">
-                                                                                          <block type="_ub_proxy" id="68;gfz(_C;Kh5z#)=I(O">
-                                                                                            <field name="hostname">defaultw.lan</field>
-                                                                                            <field name="port">22</field>
+                                                                                          <block type="variables_set" id="l}RCesU?LqV9vh*8~%Dx">
+                                                                                            <field name="VAR" id=";MXIKr`/ZQYyYaD7zMz`" variabletype="">netTimeout</field>
+                                                                                            <value name="VALUE">
+                                                                                              <block type="text" id="8]}.gSqfF+Ol;IrpI.Q|">
+                                                                                                <field name="TEXT">18</field>
+                                                                                              </block>
+                                                                                            </value>
                                                                                           </block>
                                                                                         </statement>
                                                                                       </block>
                                                                                     </value>
-                                                                                  </block>
-                                                                                </value>
-                                                                                <next>
-                                                                                  <block type="arbitrary_converter" id="~FHw_qAK)`dE@e]8:5P[">
-                                                                                    <value name="content">
-                                                                                      <block type="logic_operation" id="-XF@ll.$ma=s~-SHK@G^">
-                                                                                        <field name="OP">AND</field>
-                                                                                        <value name="A">
-                                                                                          <block type="_ub_call_checklan" id="1FH_aft(tss;:KJU-#$u">
-                                                                                            <field name="NAME">default</field>
-                                                                                          </block>
-                                                                                        </value>
-                                                                                        <value name="B">
-                                                                                          <block type="arbitrary_deconverter" id="/GQ1B^{hjsH3+{K.SU2r">
-                                                                                            <statement name="NAME">
-                                                                                              <block type="_ub_proxy" id="`{+n|qI]4|16#-;gm)i[">
-                                                                                                <field name="hostname">192.168.x.x</field>
-                                                                                                <field name="port">22</field>
-                                                                                              </block>
-                                                                                            </statement>
-                                                                                          </block>
-                                                                                        </value>
-                                                                                      </block>
-                                                                                    </value>
                                                                                     <next>
-                                                                                      <block type="_ub_proxyssh" id="5:8{SpU)|r3U3Rai8UiS">
-                                                                                        <field name="hostname">raspi-default</field>
-                                                                                        <field name="port">22</field>
-                                                                                        <field name="address">defaultw.lan</field>
+                                                                                      <block type="arbitrary_code" id="o$DU+a;Q|euV2Yhc:KCe">
+                                                                                        <field name="arbitraryCode"></field>
                                                                                         <next>
-                                                                                          <block type="_ub_proxyssh" id="RN78l)mz*?HaTA*}]iB(">
-                                                                                            <field name="hostname">raspi-default</field>
-                                                                                            <field name="port">22</field>
-                                                                                            <field name="address">192.168.xxx.xxx</field>
-                                                                                          </block>
-                                                                                        </next>
-                                                                                      </block>
-                                                                                    </next>
-                                                                                  </block>
-                                                                                </next>
-                                                                              </block>
-                                                                            </next>
-                                                                          </block>
-                                                                        </statement>
-                                                                        <next>
-                                                                          <block type="_ub_ssh_proxy_machine_network" id="^t[zy@|LKWgjt*a1PQ|X">
-                                                                            <field name="hostname">assetA-default</field>
-                                                                            <statement name="NAME">
-                                                                              <block type="bash_export" id=")O2H[Hk_/KaS@|imCMj5">
-                                                                                <value name="NAME">
-                                                                                  <block type="arbitrary_deconverter" id=")J~m3=;htoRE8:)ZrY8_">
-                                                                                    <statement name="NAME">
-                                                                                      <block type="variables_set" id=";oCo26lE-/;zQ|SrnVq3">
-                                                                                        <field name="VAR" id=";MXIKr`/ZQYyYaD7zMz`" variabletype="">netTimeout</field>
-                                                                                        <value name="VALUE">
-                                                                                          <block type="text" id=",^5.|$lQRxj7DnKF}ug#">
-                                                                                            <field name="TEXT">0.1</field>
-                                                                                          </block>
-                                                                                        </value>
-                                                                                      </block>
-                                                                                    </statement>
-                                                                                  </block>
-                                                                                </value>
-                                                                                <next>
-                                                                                  <block type="_ub_proxy" id="rb`77,gK(JNHDyUdq?=k">
-                                                                                    <field name="hostname">localhost</field>
-                                                                                    <field name="port">20002</field>
-                                                                                    <next>
-                                                                                      <block type="bash_export" id="*qr3iM~P^m7*s|ln;VPt">
-                                                                                        <value name="NAME">
-                                                                                          <block type="arbitrary_deconverter" id="F[tpp4byFeYsg{K[TQS7">
-                                                                                            <statement name="NAME">
-                                                                                              <block type="variables_set" id="l}RCesU?LqV9vh*8~%Dx">
-                                                                                                <field name="VAR" id=";MXIKr`/ZQYyYaD7zMz`" variabletype="">netTimeout</field>
-                                                                                                <value name="VALUE">
-                                                                                                  <block type="text" id="8]}.gSqfF+Ol;IrpI.Q|">
-                                                                                                    <field name="TEXT">18</field>
+                                                                                          <block type="_ub_proxy" id="9dAy8.xrxFIlCruA}}/D">
+                                                                                            <field name="hostname">assetA.domain.tld</field>
+                                                                                            <field name="port">20002</field>
+                                                                                            <next>
+                                                                                              <block type="arbitrary_converter" id="0$d~swJ^EwR*BP3h,{ar">
+                                                                                                <value name="content">
+                                                                                                  <block type="logic_operation" id="e(_@M+-3m%umoV9ex}iP">
+                                                                                                    <field name="OP">AND</field>
+                                                                                                    <value name="A">
+                                                                                                      <block type="_ub_call_checklan" id="#]?^V4s@ex_B.WiA`6D]">
+                                                                                                        <field name="NAME">simulation</field>
+                                                                                                      </block>
+                                                                                                    </value>
+                                                                                                    <value name="B">
+                                                                                                      <block type="arbitrary_deconverter" id="PJmNdbPN$b33y3Ton/2X">
+                                                                                                        <statement name="NAME">
+                                                                                                          <block type="_ub_proxy" id="*5=y:K;]Dl(i!L1HpG#$">
+                                                                                                            <field name="hostname">192.168.x.x</field>
+                                                                                                            <field name="port">22</field>
+                                                                                                          </block>
+                                                                                                        </statement>
+                                                                                                      </block>
+                                                                                                    </value>
                                                                                                   </block>
                                                                                                 </value>
-                                                                                              </block>
-                                                                                            </statement>
-                                                                                          </block>
-                                                                                        </value>
-                                                                                        <next>
-                                                                                          <block type="arbitrary_code" id="o$DU+a;Q|euV2Yhc:KCe">
-                                                                                            <field name="arbitraryCode"></field>
-                                                                                            <next>
-                                                                                              <block type="_ub_proxy" id="9dAy8.xrxFIlCruA}}/D">
-                                                                                                <field name="hostname">assetA.domain.tld</field>
-                                                                                                <field name="port">20002</field>
                                                                                                 <next>
-                                                                                                  <block type="arbitrary_converter" id="0$d~swJ^EwR*BP3h,{ar">
+                                                                                                  <block type="arbitrary_converter" id="Y$JB6m9:c,_9?gxh6?f2">
                                                                                                     <value name="content">
-                                                                                                      <block type="logic_operation" id="e(_@M+-3m%umoV9ex}iP">
+                                                                                                      <block type="logic_operation" id="9=k;{h2Oz1hPuPOkM9~-">
                                                                                                         <field name="OP">AND</field>
                                                                                                         <value name="A">
-                                                                                                          <block type="_ub_call_checklan" id="#]?^V4s@ex_B.WiA`6D]">
-                                                                                                            <field name="NAME">simulation</field>
+                                                                                                          <block type="_ub_call_checklan" id="oOFoHl#d2HP,n{QdUPv1">
+                                                                                                            <field name="NAME">default</field>
                                                                                                           </block>
                                                                                                         </value>
                                                                                                         <value name="B">
-                                                                                                          <block type="arbitrary_deconverter" id="PJmNdbPN$b33y3Ton/2X">
+                                                                                                          <block type="arbitrary_deconverter" id="=JgX4yuO($bSj?/KLY,g">
                                                                                                             <statement name="NAME">
-                                                                                                              <block type="_ub_proxy" id="*5=y:K;]Dl(i!L1HpG#$">
-                                                                                                                <field name="hostname">192.168.x.x</field>
-                                                                                                                <field name="port">22</field>
+                                                                                                              <block type="_ub_proxy" id="/2p/=T%F|Y-uR:urRY0N">
+                                                                                                                <field name="hostname">assetA.lan</field>
+                                                                                                                <field name="port">20002</field>
                                                                                                               </block>
                                                                                                             </statement>
                                                                                                           </block>
@@ -649,21 +720,21 @@
                                                                                                       </block>
                                                                                                     </value>
                                                                                                     <next>
-                                                                                                      <block type="arbitrary_converter" id="Y$JB6m9:c,_9?gxh6?f2">
+                                                                                                      <block type="arbitrary_converter" id=";]%bWmz3RMI|N*msHA_D">
                                                                                                         <value name="content">
-                                                                                                          <block type="logic_operation" id="9=k;{h2Oz1hPuPOkM9~-">
+                                                                                                          <block type="logic_operation" id="TkI?73}BSfIkh,Z2:Nf.">
                                                                                                             <field name="OP">AND</field>
                                                                                                             <value name="A">
-                                                                                                              <block type="_ub_call_checklan" id="oOFoHl#d2HP,n{QdUPv1">
+                                                                                                              <block type="_ub_call_checklan" id="#!_C3{q*!gm-jc:$Rc5y">
                                                                                                                 <field name="NAME">default</field>
                                                                                                               </block>
                                                                                                             </value>
                                                                                                             <value name="B">
-                                                                                                              <block type="arbitrary_deconverter" id="=JgX4yuO($bSj?/KLY,g">
+                                                                                                              <block type="arbitrary_deconverter" id="9x]ZIA.KXao*AW^tAk9e">
                                                                                                                 <statement name="NAME">
-                                                                                                                  <block type="_ub_proxy" id="/2p/=T%F|Y-uR:urRY0N">
-                                                                                                                    <field name="hostname">assetA.lan</field>
-                                                                                                                    <field name="port">20002</field>
+                                                                                                                  <block type="_ub_proxy" id="s[Edw{wC0{?BZ]Zn_=K@">
+                                                                                                                    <field name="hostname">192.168.x.x</field>
+                                                                                                                    <field name="port">22</field>
                                                                                                                   </block>
                                                                                                                 </statement>
                                                                                                               </block>
@@ -671,42 +742,18 @@
                                                                                                           </block>
                                                                                                         </value>
                                                                                                         <next>
-                                                                                                          <block type="arbitrary_converter" id=";]%bWmz3RMI|N*msHA_D">
-                                                                                                            <value name="content">
-                                                                                                              <block type="logic_operation" id="TkI?73}BSfIkh,Z2:Nf.">
-                                                                                                                <field name="OP">AND</field>
-                                                                                                                <value name="A">
-                                                                                                                  <block type="_ub_call_checklan" id="#!_C3{q*!gm-jc:$Rc5y">
-                                                                                                                    <field name="NAME">default</field>
-                                                                                                                  </block>
-                                                                                                                </value>
-                                                                                                                <value name="B">
-                                                                                                                  <block type="arbitrary_deconverter" id="9x]ZIA.KXao*AW^tAk9e">
-                                                                                                                    <statement name="NAME">
-                                                                                                                      <block type="_ub_proxy" id="s[Edw{wC0{?BZ]Zn_=K@">
-                                                                                                                        <field name="hostname">192.168.x.x</field>
-                                                                                                                        <field name="port">22</field>
-                                                                                                                      </block>
-                                                                                                                    </statement>
-                                                                                                                  </block>
-                                                                                                                </value>
-                                                                                                              </block>
-                                                                                                            </value>
+                                                                                                          <block type="_ub_proxyssh_reverse" id="(T_7Xs4al`Z2jIw/XPlV">
+                                                                                                            <field name="hostname">assetA</field>
+                                                                                                            <field name="jump">gw-default</field>
                                                                                                             <next>
-                                                                                                              <block type="_ub_proxyssh_reverse" id="(T_7Xs4al`Z2jIw/XPlV">
-                                                                                                                <field name="hostname">assetA</field>
-                                                                                                                <field name="jump">gw-default</field>
+                                                                                                              <block type="_ub_proxyssh" id="$5s%oRkSs~;xm{PM$f4m">
+                                                                                                                <field name="hostname">raspi-default</field>
+                                                                                                                <field name="port">22</field>
+                                                                                                                <field name="address">192.168.xxx.xxx</field>
                                                                                                                 <next>
-                                                                                                                  <block type="_ub_proxyssh" id="$5s%oRkSs~;xm{PM$f4m">
-                                                                                                                    <field name="hostname">raspi-default</field>
-                                                                                                                    <field name="port">22</field>
-                                                                                                                    <field name="address">192.168.xxx.xxx</field>
-                                                                                                                    <next>
-                                                                                                                      <block type="_ub_proxyTor_reverse" id="(Xz|g)MAl*nRBL9#5Vxt">
-                                                                                                                        <field name="hostname">assetA</field>
-                                                                                                                        <field name="address">xxxxxxxxxxxxxxxxx.onion</field>
-                                                                                                                      </block>
-                                                                                                                    </next>
+                                                                                                                  <block type="_ub_proxyTor_reverse" id="(Xz|g)MAl*nRBL9#5Vxt">
+                                                                                                                    <field name="hostname">assetA</field>
+                                                                                                                    <field name="address">xxxxxxxxxxxxxxxxx.onion</field>
                                                                                                                   </block>
                                                                                                                 </next>
                                                                                                               </block>
@@ -726,9 +773,9 @@
                                                                                   </block>
                                                                                 </next>
                                                                               </block>
-                                                                            </statement>
+                                                                            </next>
                                                                           </block>
-                                                                        </next>
+                                                                        </statement>
                                                                       </block>
                                                                     </next>
                                                                   </block>
