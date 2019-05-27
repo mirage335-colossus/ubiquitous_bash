@@ -1,3 +1,4 @@
+#envGuard=""
 #netTimeout=""
 #netName=""
 
@@ -43,8 +44,13 @@ _setup_prog() {
 }
 
 
-# Must be much less than half "ConnectTimeout" value .
-export netTimeout='18'
+if [[ "$envGuard" != "$scriptAbsoluteLocation" ]]
+then
+	# Must be much less than half "ConnectTimeout" value .
+	export netTimeout='18'
+
+	export envGuard="$scriptAbsoluteLocation"
+fi
 
 # WARNING Must use unique netName!
 # WARNING Rename 'gw-default-$netName' to match!
