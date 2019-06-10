@@ -115,19 +115,6 @@ Host assetA-$netName
 CZXWXcRMTo8EmM8i4d
 }
 
-_ssh_proxy_server-default() {
-	_start
-
-	export netTimeout='3'
-	# May prefer port "2022" or similar if domain is shared by NAT.
-	_proxy x.x.x.x 22
-
-	_proxy server.domain.tld 22
-
-
-	_stop
-}
-
 _ssh_proxy_raspi-default() {
 	_start
 
