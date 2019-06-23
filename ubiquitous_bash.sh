@@ -7447,6 +7447,7 @@ _loopImage_sequence() {
 	[[ -e "$scriptLocal"/imagedev ]] && _stop 1
 	
 	local imagefilename
+	[[ -e "$scriptLocal"/vm-raspbian.img ]] && imagefilename="$scriptLocal"/vm-raspbian.img
 	#[[ -e "$scriptLocal"/vm-x64.img ]] && imagefilename="$scriptLocal"/vm-x64.img
 	[[ -e "$scriptLocal"/vm.img ]] && imagefilename="$scriptLocal"/vm.img
 	
