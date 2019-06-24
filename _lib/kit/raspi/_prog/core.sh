@@ -23,6 +23,11 @@ _refresh_anchors() {
 	
 	cp -a "$scriptAbsoluteFolder"/_anchor "$scriptAbsoluteFolder"/_chroot
 	cp -a "$scriptAbsoluteFolder"/_anchor "$scriptAbsoluteFolder"/_userChRoot
+	
+	cp -a "$scriptAbsoluteFolder"/_anchor "$scriptAbsoluteFolder"/_openLoop
+	cp -a "$scriptAbsoluteFolder"/_anchor "$scriptAbsoluteFolder"/_closeLoop
+	
+	cp -a "$scriptAbsoluteFolder"/_anchor "$scriptAbsoluteFolder"/_gparted
 }
 
 
