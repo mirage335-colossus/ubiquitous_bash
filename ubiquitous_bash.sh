@@ -13216,12 +13216,12 @@ _gparted_sequence() {
 		
 		
 		_messagePlain_nominal 'Replace: /boot/cmdline.txt'
-		sudo -n _messagePlain_probe "$globalVirtFS"/../boot/cmdline.txt
-		sed -i 's/'"$orig_ptuuid"'/'"$modified_ptuuid"'/g' "$globalVirtFS"/../boot/cmdline.txt
+		_messagePlain_probe "$globalVirtFS"/../boot/cmdline.txt
+		sudo -n sed -i 's/'"$orig_ptuuid"'/'"$modified_ptuuid"'/g' "$globalVirtFS"/../boot/cmdline.txt
 		
 		_messagePlain_nominal 'Replace: /etc/fstab'
-		sudo -n _messagePlain_probe "$globalVirtFS"/../fs/etc/fstab
-		sed -i 's/'"$orig_ptuuid"'/'"$modified_ptuuid"'/g' "$globalVirtFS"/../fs/etc/fstab
+		_messagePlain_probe "$globalVirtFS"/../fs/etc/fstab
+		sudo -n sed -i 's/'"$orig_ptuuid"'/'"$modified_ptuuid"'/g' "$globalVirtFS"/../fs/etc/fstab
 		
 		
 		_messagePlain_nominal 'Attempt: _closeChRoot'
