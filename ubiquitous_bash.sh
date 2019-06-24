@@ -13207,7 +13207,7 @@ _gparted_sequence() {
 	
 	if [[ -e "$scriptLocal"/vm-raspbian.img ]]
 	then
-		_messageNormal 'update raspbian'
+		_messageNormal 'Config: raspbian'
 		_messagePlain_probe_var orig_ptuuid
 		_messagePlain_probe_var modified_ptuuid
 		
@@ -13216,11 +13216,12 @@ _gparted_sequence() {
 		
 		
 		_messagePlain_nominal 'Replace: /boot/cmdline.txt'
-		_messagePlain_probe "$globalVirtFS"/../boot/cmdline.txt
+		sudo -n _messagePlain_probe "$globalVirtFS"/../boot/cmdline.txt
 		sed -i 's/'"$orig_ptuuid"'/'"$modified_ptuuid"'/g' "$globalVirtFS"/../boot/cmdline.txt
 		
 		_messagePlain_nominal 'Replace: /etc/fstab'
-		sed -i 's/'"$orig_ptuuid"'/'"$modified_ptuuid"'/g' "$globalVirtFS"/../etc/fstab
+		sudo -n _messagePlain_probe "$globalVirtFS"/../fs/etc/fstab
+		sed -i 's/'"$orig_ptuuid"'/'"$modified_ptuuid"'/g' "$globalVirtFS"/../fs/etc/fstab
 		
 		
 		_messagePlain_nominal 'Attempt: _closeChRoot'
