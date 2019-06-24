@@ -13173,7 +13173,7 @@ _test_gparted() {
 }
 
 _gparted_sequence() {
-	_messageNormal 'launch gparted'
+	_messageNormal 'Launch: gparted'
 	
 	_start
 	
