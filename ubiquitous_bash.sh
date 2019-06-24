@@ -5770,7 +5770,7 @@ _fetchDep_debianStretch_special() {
 	
 	if [[ "$1" == "docker" ]]
 	then
-		sudo apt-get install --install-recommends -y apt-transport-https ca-certificates curl gnupg2 software-properties-common
+		sudo -n apt-get install --install-recommends -y apt-transport-https ca-certificates curl gnupg2 software-properties-common
 		
 		"$scriptAbsoluteLocation" _getDep curl
 		! _wantDep curl && return 1
@@ -5838,8 +5838,8 @@ _fetchDep_debianStretch_special() {
 		
 		echo "Requires manual installation. See https://www.lulzbot.com/learn/tutorials/cura-lulzbot-edition-installation-debian ."
 cat << 'CZXWXcRMTo8EmM8i4d'
-wget -qO - https://download.alephobjects.com/ao/aodeb/aokey.pub | sudo apt-key add -
-sudo cp /etc/apt/sources.list /etc/apt/sources.list.bak && sudo sed -i '$a deb http://download.alephobjects.com/ao/aodeb jessie main' /etc/apt/sources.list && sudo apt-get update && sudo apt-get install cura-lulzbot
+wget -qO - https://download.alephobjects.com/ao/aodeb/aokey.pub | sudo -n apt-key add -
+sudo -n cp /etc/apt/sources.list /etc/apt/sources.list.bak && sudo -n sed -i '$a deb http://download.alephobjects.com/ao/aodeb jessie main' /etc/apt/sources.list && sudo -n apt-get update && sudo -n apt-get install cura-lulzbot
 CZXWXcRMTo8EmM8i4d
 		echo "(typical)"
 		_stop 1
@@ -5994,8 +5994,8 @@ _hook_systemd_shutdown() {
 	! [[ -e /etc/systemd/system ]] && return 0
 	
 	_here_systemd_shutdown | sudo -n tee /etc/systemd/system/"$sessionid".service > /dev/null
-	sudo -n systemctl enable "$sessionid".service 2>&1 | sudo tee -a "$permaLog"/gsysd.log > /dev/null 2>&1
-	sudo -n systemctl start "$sessionid".service 2>&1 | sudo tee -a "$permaLog"/gsysd.log > /dev/null 2>&1
+	sudo -n systemctl enable "$sessionid".service 2>&1 | sudo -n tee -a "$permaLog"/gsysd.log > /dev/null 2>&1
+	sudo -n systemctl start "$sessionid".service 2>&1 | sudo -n tee -a "$permaLog"/gsysd.log > /dev/null 2>&1
 }
 
 _hook_systemd_shutdown_action() {
@@ -6006,8 +6006,8 @@ _hook_systemd_shutdown_action() {
 	! [[ -e /etc/systemd/system ]] && return 0
 	
 	_here_systemd_shutdown_action "$@" | sudo -n tee /etc/systemd/system/"$sessionid".service > /dev/null
-	sudo -n systemctl enable "$sessionid".service 2>&1 | sudo tee -a "$permaLog"/gsysd.log > /dev/null 2>&1
-	sudo -n systemctl start "$sessionid".service 2>&1 | sudo tee -a "$permaLog"/gsysd.log > /dev/null 2>&1
+	sudo -n systemctl enable "$sessionid".service 2>&1 | sudo -n tee -a "$permaLog"/gsysd.log > /dev/null 2>&1
+	sudo -n systemctl start "$sessionid".service 2>&1 | sudo -n tee -a "$permaLog"/gsysd.log > /dev/null 2>&1
 	
 }
 
@@ -6023,11 +6023,11 @@ _unhook_systemd_shutdown() {
 	
 	! [[ -e /etc/systemd/system ]] && return 0
 	
-	[[ "$SYSTEMCTLDISABLE" == "true" ]] && echo SYSTEMCTLDISABLE | sudo tee -a "$permaLog"/gsysd.log > /dev/null 2>&1 && return 0
+	[[ "$SYSTEMCTLDISABLE" == "true" ]] && echo SYSTEMCTLDISABLE | sudo -n tee -a "$permaLog"/gsysd.log > /dev/null 2>&1 && return 0
 	export SYSTEMCTLDISABLE=true
 	
-	sudo -n systemctl disable "$hookSessionid".service 2>&1 | sudo tee -a "$permaLog"/gsysd.log > /dev/null 2>&1
-	sudo -n rm -f /etc/systemd/system/"$hookSessionid".service 2>&1 | sudo tee -a "$permaLog"/gsysd.log > /dev/null 2>&1
+	sudo -n systemctl disable "$hookSessionid".service 2>&1 | sudo -n tee -a "$permaLog"/gsysd.log > /dev/null 2>&1
+	sudo -n rm -f /etc/systemd/system/"$hookSessionid".service 2>&1 | sudo -n tee -a "$permaLog"/gsysd.log > /dev/null 2>&1
 }
 
 #Determines if user is root. If yes, then continue. If not, exits after printing error message.
@@ -8354,12 +8354,12 @@ _mountChRoot() {
 	
 	if ! grep '8\.8\.8\.8' "$absolute1"/etc/resolv.conf > /dev/null 2>&1
 	then
-		echo 'nameserver 8.8.8.8' | sudo tee -a "$absolute1"/etc/resolv.conf > /dev/null 2>&1
+		echo 'nameserver 8.8.8.8' | sudo -n tee -a "$absolute1"/etc/resolv.conf > /dev/null 2>&1
 	fi
 	
 	if ! grep '2001\:4860\:4860\:\:8888' "$absolute1"/etc/resolv.conf > /dev/null 2>&1
 	then
-		echo 'nameserver 2001:4860:4860::8888' | sudo tee -a "$absolute1"/etc/resolv.conf > /dev/null 2>&1
+		echo 'nameserver 2001:4860:4860::8888' | sudo -n tee -a "$absolute1"/etc/resolv.conf > /dev/null 2>&1
 	fi
 }
 
@@ -8757,9 +8757,9 @@ _mountChRoot_userAndHome() {
 	
 	# TODO Device Mapper snapshot ChRoot instancing alternative. Disadvantage of not allowing the root filesystem to be simultaneously mounted read-write.
 	# TODO Develop a function to automatically select whatever unionfs equivalent may be supported by the host.
-	#sudo /bin/mount -t unionfs -o dirs="$instancedVirtTmp":"$globalVirtFS"=ro unionfs "$instancedVirtFS"
+	#sudo -n /bin/mount -t unionfs -o dirs="$instancedVirtTmp":"$globalVirtFS"=ro unionfs "$instancedVirtFS"
 	sudo -n unionfs-fuse -o cow,allow_other,use_ino,suid,dev "$instancedVirtTmp"=RW:"$globalVirtFS"=RO "$instancedVirtFS"
-	#sudo unionfs -o dirs="$instancedVirtTmp":"$globalVirtFS"=ro "$instancedVirtFS"
+	#sudo -n unionfs -o dirs="$instancedVirtTmp":"$globalVirtFS"=ro "$instancedVirtFS"
 	sudo -n chown "$USER":"$USER" "$instancedVirtFS"
 	
 	#unionfs-fuse -o cow,max_files=32768 -o allow_other,use_ino,suid,dev,nonempty /u/host/etc=RW:/u/group/etc=RO:/u/common/etc=RO /u/union/etc
@@ -10456,7 +10456,7 @@ _test_docker() {
 	
 	#https://docs.docker.com/engine/installation/linux/docker-ce/debian/#install-using-the-repository
 	#https://wiki.archlinux.org/index.php/Docker#Installation
-	#sudo usermod -a -G docker "$USER"
+	#sudo -n usermod -a -G docker "$USER"
 	
 	_getDep /sbin/losetup
 	if ! [[ -e "/dev/loop-control" ]] || ! [[ -e "/sbin/losetup" ]]
@@ -12175,7 +12175,7 @@ _vdi_gparted() {
 	
 	sudo -n partprobe
 	
-	kdesudo gparted /dev/nbd0
+	sudo -n gparted /dev/nbd0
 	
 	sudo -n qemu-nbd -d /dev/nbd0
 }
@@ -12202,7 +12202,7 @@ _vdi_resize() {
 	
 	
 	
-	kdesudo gparted /dev/nbd0 /dev/nbd1
+	sudo -n gparted /dev/nbd0 /dev/nbd1
 	
 	sudo -n qemu-nbd -d /dev/nbd0
 	sudo -n qemu-nbd -d /dev/nbd1
@@ -13191,14 +13191,14 @@ _gparted_sequence() {
 	_messagePlain_probe 'blkid'
 	sudo -n blkid "$imagedev"
 	local orig_ptuuid
-	orig_ptuuid=$(sudo blkid -s PTUUID -o value /dev/loop0)
+	orig_ptuuid=$(sudo -n blkid -s PTUUID -o value /dev/loop0)
 	
 	sudo -n gparted "$imagedev"
 	
 	_messagePlain_probe 'blkid'
 	sudo -n blkid "$imagedev"
 	local modified_ptuuid
-	modified_ptuuid=$(sudo blkid -s PTUUID -o value /dev/loop0)
+	modified_ptuuid=$(sudo -n blkid -s PTUUID -o value /dev/loop0)
 	
 	
 	_messagePlain_nominal 'Attempt: _closeLoop'

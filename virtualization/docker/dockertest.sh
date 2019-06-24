@@ -25,7 +25,7 @@ _test_docker() {
 	
 	#https://docs.docker.com/engine/installation/linux/docker-ce/debian/#install-using-the-repository
 	#https://wiki.archlinux.org/index.php/Docker#Installation
-	#sudo usermod -a -G docker "$USER"
+	#sudo -n usermod -a -G docker "$USER"
 	
 	_getDep /sbin/losetup
 	if ! [[ -e "/dev/loop-control" ]] || ! [[ -e "/sbin/losetup" ]]

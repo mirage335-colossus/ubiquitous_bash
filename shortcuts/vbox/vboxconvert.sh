@@ -18,7 +18,7 @@ _vdi_gparted() {
 	
 	sudo -n partprobe
 	
-	kdesudo gparted /dev/nbd0
+	sudo -n gparted /dev/nbd0
 	
 	sudo -n qemu-nbd -d /dev/nbd0
 }
@@ -45,7 +45,7 @@ _vdi_resize() {
 	
 	
 	
-	kdesudo gparted /dev/nbd0 /dev/nbd1
+	sudo -n gparted /dev/nbd0 /dev/nbd1
 	
 	sudo -n qemu-nbd -d /dev/nbd0
 	sudo -n qemu-nbd -d /dev/nbd1

@@ -39,7 +39,7 @@ _custom_rsync() {
 	
 	sudo -n mkdir -p "$2"
 	sudo -n rsync -avx --delete "$1" "$2"
-	sudo chown -R 1000:1000 "$1"
+	sudo -n chown -R 1000:1000 "$1"
 	
 }
 
@@ -71,7 +71,7 @@ _custom() {
 	cat "$scriptLib"/'cautossh'/_local/ssh/id_rsa.pub | sudo -n tee -a "$globalVirtFS"/home/pi/.ssh/authorized_keys > /dev/null
 	cat "$scriptLib"/'cautossh'/_local/ssh/entity/id_rsa.pub | sudo -n tee -a "$globalVirtFS"/home/pi/.ssh/authorized_keys > /dev/null
 	
-	sudo chown -R 1000:1000 "$globalVirtFS"/home/pi/.ssh
+	sudo -n chown -R 1000:1000 "$globalVirtFS"/home/pi/.ssh
 	
 	
 	# ATTENTION: Configure .

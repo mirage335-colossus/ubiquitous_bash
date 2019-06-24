@@ -21,14 +21,14 @@ _gparted_sequence() {
 	_messagePlain_probe 'blkid'
 	sudo -n blkid "$imagedev"
 	local orig_ptuuid
-	orig_ptuuid=$(sudo blkid -s PTUUID -o value /dev/loop0)
+	orig_ptuuid=$(sudo -n blkid -s PTUUID -o value /dev/loop0)
 	
 	sudo -n gparted "$imagedev"
 	
 	_messagePlain_probe 'blkid'
 	sudo -n blkid "$imagedev"
 	local modified_ptuuid
-	modified_ptuuid=$(sudo blkid -s PTUUID -o value /dev/loop0)
+	modified_ptuuid=$(sudo -n blkid -s PTUUID -o value /dev/loop0)
 	
 	
 	_messagePlain_nominal 'Attempt: _closeLoop'

@@ -48,12 +48,12 @@ _mountChRoot() {
 	
 	if ! grep '8\.8\.8\.8' "$absolute1"/etc/resolv.conf > /dev/null 2>&1
 	then
-		echo 'nameserver 8.8.8.8' | sudo tee -a "$absolute1"/etc/resolv.conf > /dev/null 2>&1
+		echo 'nameserver 8.8.8.8' | sudo -n tee -a "$absolute1"/etc/resolv.conf > /dev/null 2>&1
 	fi
 	
 	if ! grep '2001\:4860\:4860\:\:8888' "$absolute1"/etc/resolv.conf > /dev/null 2>&1
 	then
-		echo 'nameserver 2001:4860:4860::8888' | sudo tee -a "$absolute1"/etc/resolv.conf > /dev/null 2>&1
+		echo 'nameserver 2001:4860:4860::8888' | sudo -n tee -a "$absolute1"/etc/resolv.conf > /dev/null 2>&1
 	fi
 }
 
