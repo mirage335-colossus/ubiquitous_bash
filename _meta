@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # EXAMPLE ONLY
 # Intended to call local _index files and similar.
@@ -137,6 +137,18 @@ cd "$metaScriptFolder"
 echo $metaScriptFolder
 
 
+! type konsole > /dev/null 2>&1 && exit 1
+
+
+#https://stackoverflow.com/questions/32779281/how-to-launch-a-kde-konsole-with-multiple-tabs-running-various-progs
+#https://stackoverflow.com/questions/19897787/change-konsole-tab-title-from-command-line-and-make-it-persistent
+
+#export interactiveWaitPrompt=true
+
+#echo -ne "\033]30;test change title\007"
+
+#konsole --workdir . --hold --new-tab -p tabtitle='title' -e ./dir/exec.sh &
+#konsole --workdir . --hold --new-tab -p tabtitle='title' -e ./dir/exec.sh &
 
 
 
