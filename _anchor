@@ -122,6 +122,27 @@ fi
 [[ "$ub_import" != "true" ]] && ub_import_param=
 
 #Critical prerequsites.
+
+_realpath_L() {
+	if ! _compat_realpath_run -L . > /dev/null 2>&1
+	then
+		readlink -f "$@"
+		return
+	fi
+	
+	realpath -L "$@"
+}
+
+_realpath_L_s() {
+	if ! _compat_realpath_run -L . > /dev/null 2>&1
+	then
+		readlink -f "$@"
+		return
+	fi
+	
+	realpath -L -s "$@"
+}
+
 _getAbsolute_criticalDep() {
 	! type realpath > /dev/null 2>&1 && return 1
 	! type readlink > /dev/null 2>&1 && return 1
@@ -146,20 +167,21 @@ _getScriptAbsoluteLocation() {
 	
 	local absoluteLocation
 	if [[ (-e $PWD\/$0) && ($0 != "") ]] && [[ "$0" != "/"* ]]
-			then
-	absoluteLocation="$PWD"\/"$0"
-	absoluteLocation=$(realpath -L -s "$absoluteLocation")
-			else
-	absoluteLocation=$(realpath -L "$0")
+	then
+		absoluteLocation="$PWD"\/"$0"
+		absoluteLocation=$(_realpath_L_s "$absoluteLocation")
+	else
+		absoluteLocation=$(_realpath_L "$0")
 	fi
-
+	
 	if [[ -h "$absoluteLocation" ]]
-			then
-	absoluteLocation=$(readlink -f "$absoluteLocation")
-	absoluteLocation=$(realpath -L "$absoluteLocation")
+	then
+		absoluteLocation=$(readlink -f "$absoluteLocation")
+		absoluteLocation=$(_realpath_L "$absoluteLocation")
 	fi
 	echo $absoluteLocation
 }
+alias getScriptAbsoluteLocation=_getScriptAbsoluteLocation
 
 #Retrieves absolute path of current script, while maintaining symlinks, even when "./" would translate with "readlink -f" into something disregarding symlinked components in $PWD.
 #Suitable for allowing scripts to find other scripts they depend on.
@@ -171,6 +193,8 @@ _getScriptAbsoluteFolder() {
 	
 	dirname "$(_getScriptAbsoluteLocation)"
 }
+alias getScriptAbsoluteFolder=_getScriptAbsoluteFolder
+
 
 #Retrieves absolute path of parameter, while maintaining symlinks, even when "./" would translate with "readlink -f" into something disregarding symlinked components in $PWD.
 #Suitable for finding absolute paths, when it is desirable not to interfere with symlink specified folder structure.
@@ -188,14 +212,15 @@ _getAbsoluteLocation() {
 	
 	local absoluteLocation
 	if [[ (-e $PWD\/$1) && ($1 != "") ]] && [[ "$1" != "/"* ]]
-			then
-	absoluteLocation="$PWD"\/"$1"
-	absoluteLocation=$(realpath -L -s "$absoluteLocation")
-			else
-	absoluteLocation=$(realpath -L "$1")
+	then
+		absoluteLocation="$PWD"\/"$1"
+		absoluteLocation=$(_realpath_L_s "$absoluteLocation")
+	else
+		absoluteLocation=$(_realpath_L "$1")
 	fi
-	echo $absoluteLocation
+	echo "$absoluteLocation"
 }
+alias getAbsoluteLocation=_getAbsoluteLocation
 
 #https://unix.stackexchange.com/questions/27021/how-to-name-a-file-in-the-deepest-level-of-a-directory-tree?answertab=active#tab-top
 _filter_lowestPath() {
