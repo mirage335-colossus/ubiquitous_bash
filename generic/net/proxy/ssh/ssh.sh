@@ -19,6 +19,8 @@ _testProxySSH() {
 	#For both _package and _rsync .
 	! _wantDep rsync && echo 'warn: no rsync'
 	
+	! _wantDep scp && echo 'warn: no scp'
+	
 	! _wantDep sshfs && echo 'warn: sshfs not found'
 	
 	! _wantDep base64 && echo 'warn: no base64'
@@ -444,6 +446,12 @@ _rsync_backup_local() {
 
 _rsync() {
 	rsync -e "$scriptAbsoluteLocation"" _ssh" "$@"
+}
+
+_scp() {
+	! _ssh_criticalDep && return 1
+	
+	scp -F "$sshDir"/config "$@"
 }
 
 _ssh_internal_command() {
