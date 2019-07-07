@@ -448,10 +448,34 @@ _rsync() {
 	rsync -e "$scriptAbsoluteLocation"" _ssh" "$@"
 }
 
-_scp() {
+_scp_command() {
 	! _ssh_criticalDep && return 1
-	
 	scp -F "$sshDir"/config "$@"
+}
+
+_scp_sequence() {
+	_start
+	
+	export sshBase="$safeTmp"/.ssh
+	_prepare_ssh
+	
+	#_setup_ssh
+	_setup_ssh_operations
+	
+	local sshExitStatus
+	_scp_command "$@"
+	sshExitStatus="$?"
+	
+	#Preventative workaround, not normally necessary.
+	stty echo > /dev/null 2>&1
+	
+	_setup_ssh_merge_known_hosts
+	
+	_stop "$sshExitStatus"
+}
+
+_scp() {
+	"$scriptAbsoluteLocation" _scp_sequence "$@"
 }
 
 _ssh_internal_command() {
