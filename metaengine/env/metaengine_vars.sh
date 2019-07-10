@@ -12,7 +12,10 @@ _set_me_host() {
 	export metaTmp="$scriptAbsoluteFolder""$metaPrefix"/.m_"$sessionid"
 	
 	# WARNING: Setting metaProc to a value not including sessionid disables automatic removal by default!
-	export metaProc="$metaBase""$metaPrefix"/.m_"$sessionid"
+	# WARNING: Setting metaProc to a value not accepted by "_safeRMR" disables automatic removal by default!
+	export metaProc="$scriptAbsoluteFolder""$metaPrefix"/.m_"$sessionid"
+	[[ "$metaType" == "base" ]] && export metaProc="$metaBase""$metaPrefix"/.m_"$sessionid"
+	#[[ "$metaType" == "" ]] && export metaProc="$scriptAbsoluteFolder""$metaPrefix"/.m_"$sessionid"
 }
 
 _reset_me_host() {
