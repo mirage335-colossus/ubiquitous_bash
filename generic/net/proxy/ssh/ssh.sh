@@ -1119,12 +1119,34 @@ _package_cautossh() {
 }
 
 #May be overridden by "ops" if multiple gateways are required.
+# ATTENTION: An "ops.sh" file will almost always include simpler directives, specifically uncommented unconditional "_torServer_SSH" and "_autossh" commands.
 _ssh_autoreverse() {
-	_torServer_SSH
-	_autossh
+	true
+	local currentExitStatus
+	currentExitStatus='1'
 	
+	#_torServer_SSH
+	
+	#_autossh
+	
+	# ATTENTION: Supports multiple jump hosts if desired.
 	#_autossh firstGateway
 	#_autossh secondGateway
+	
+	
+	# Conditional fallback. Only appropriate if directive from "ops.sh" is unavialable.
+	
+	[[ -e "$scriptLocal"/tor/sshd/"${matchingReversePorts[0]}" ]] && currentExitStatus='0' && _torServer_SSH
+	#[[ $? == '0' ]] && currentExitStatus='0'
+	
+	if [[ -e "$objectDir"/ops ]] || [[ -e "$objectDir"/ops.sh ]] || [[ -e "$scriptLocal"/ops ]] || [[ -e "$scriptLocal"/ops.sh ]] || [[ -e "$scriptLocal"/ssh/ops ]] || [[ -e "$scriptLocal"/ssh/ops.sh ]]
+	then
+		currentExitStatus='0'
+		_autossh
+	fi
+	#[[ $? == '0' ]] && currentExitStatus='0'
+	
+	return "$currentExitStatus"
 }
 
 _ssh_external_procedure() {
