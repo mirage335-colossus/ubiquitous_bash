@@ -54,6 +54,40 @@ _get_reversePorts
 export reversePorts=("${matchingReversePorts[@]}")
 export EMBEDDED="$matchingEMBEDDED"
 
+
+# WARNING: Any changes to output text format *will* break API compatibility.
+# Example usage: currentPortList=( $(./ubiquitous_bash.sh _show_reversePorts '*') ) ; echo ${currentPortList[@]} ; echo ${currentPortList[0]} ; echo ${currentPortList[1]}
+_show_reversePorts_sequence() {
+	_get_reversePorts "$1"
+	echo "${matchingReversePorts[@]}"
+}
+_show_reversePorts() {
+	"$scriptAbsoluteLocation" _show_reversePorts_sequence "$@"
+}
+_show_reversePorts_single_sequence() {
+	_get_reversePorts "$1"
+	echo "${matchingReversePorts[0]}"
+}
+_show_reversePorts_single() {
+	"$scriptAbsoluteLocation" _show_reversePorts_single_sequence "$@"
+}
+_show_offset_reversePorts_sequence() {
+	_get_reversePorts "$1"
+	_offset_reversePorts
+	echo "${matchingOffsetPorts[@]}"
+}
+_show_offset_reversePorts() {
+	"$scriptAbsoluteLocation" _show_offset_reversePorts_sequence "$@"
+}
+_show_offset_reversePorts_single_sequence() {
+	_get_reversePorts "$1"
+	_offset_reversePorts
+	echo "${matchingOffsetPorts[0]}"
+}
+_show_offset_reversePorts_single() {
+	"$scriptAbsoluteLocation" _show_offset_reversePorts_single_sequence "$@"
+}
+
 export keepKeys_SSH=true
 
 _prepare_ssh() {
