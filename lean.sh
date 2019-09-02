@@ -997,6 +997,14 @@ _terminateAll() {
 	rm "$processListFile"
 }
 
+_condition_lines_zero() {
+	local currentLineCount
+	currentLineCount=$(wc -l)
+	
+	[[ "$currentLineCount" == 0 ]] && return 0
+	return 1
+}
+
 #Generates random alphanumeric characters, default length 18.
 _uid() {
 	local curentLengthUID

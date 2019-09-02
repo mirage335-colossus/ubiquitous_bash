@@ -997,6 +997,14 @@ _terminateAll() {
 	rm "$processListFile"
 }
 
+_condition_lines_zero() {
+	local currentLineCount
+	currentLineCount=$(wc -l)
+	
+	[[ "$currentLineCount" == 0 ]] && return 0
+	return 1
+}
+
 #Generates random alphanumeric characters, default length 18.
 _uid() {
 	local curentLengthUID
@@ -3343,6 +3351,7 @@ _compile_bash_essential_utilities() {
 	includeScriptList+=( "generic/filesystem"/allLogic.sh )
 	includeScriptList+=( "generic/process"/timeout.sh )
 	includeScriptList+=( "generic/process"/terminate.sh )
+	includeScriptList+=( "generic"/condition.sh )
 	includeScriptList+=( "generic"/uid.sh )
 	includeScriptList+=( "generic/filesystem/permissions"/checkpermissions.sh )
 	includeScriptList+=( "generic"/findInfrastructure.sh )
