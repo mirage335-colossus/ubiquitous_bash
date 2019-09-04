@@ -108,7 +108,14 @@ _compile_bash_installation_prog() {
 _compile_bash_program_prog() {	
 	export includeScriptList
 	
-	includeScriptList+=( core.sh )
+	includeScriptList+=( 00_core_custom.sh )
+	includeScriptList+=( 10_core_custom_user.sh )
+	includeScriptList+=( 15_core_custom_fs.sh )
+	includeScriptList+=( 30_core_custom_manage.sh )
+	includeScriptList+=( 60_core_custom_cautossh.sh )
+	includeScriptList+=( 70_core_custom_cautossh_limited.sh )
+	includeScriptList+=( 90_core_custom_infrastructure.sh )
+	includeScriptList+=( 99_core_custom_config.sh )
 }
 
 _compile_bash_config_prog() {	
