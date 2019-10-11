@@ -11,8 +11,8 @@ _generate_self_custom_cautossh-limited() {
 	current_user_uid=$(_chroot id -u "$custom_name" 2>/dev/null)
 	[[ "$current_user_uid" == "" ]] && current_user_uid='1000'
 	
-	sudo -n chown "$custom_name":"$custom_name" "$custom_self_cautossh_limited_identity_dst_file"
-	sudo -n chown "$custom_name":"$custom_name" "$custom_self_cautossh_limited_identity_dst_file".pub
+	sudo -n chown "$current_user_uid":"$current_user_uid" "$custom_self_cautossh_limited_identity_dst_file"
+	sudo -n chown "$current_user_uid":"$current_user_uid" "$custom_self_cautossh_limited_identity_dst_file".pub
 }
 
 _remove_custom_cautossh_identity() {
