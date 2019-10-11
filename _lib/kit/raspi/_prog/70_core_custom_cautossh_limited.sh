@@ -51,15 +51,15 @@ _prepare_self_custom_cautossh-limited() {
 	_messagePlain_probe_var custom_self_cautossh_limited_identity_lcl_dir
 	
 	mkdir -p "$custom_self_cautossh_limited_identity_src_dir"
-	mkdir -p "$custom_self_cautossh_limited_identity_dst_dir"
-	mkdir -p "$custom_self_cautossh_limited_identity_lcl_dir"
+	sudo -n mkdir -p "$custom_self_cautossh_limited_identity_dst_dir"
+	sudo -n mkdir -p "$custom_self_cautossh_limited_identity_lcl_dir"
 	
 	chmod 700 "$custom_self_cautossh_limited_identity_src_dir"
-	chmod 700 "$custom_self_cautossh_limited_identity_dst_dir"
-	chmod 700 "$custom_self_cautossh_limited_identity_lcl_dir"
+	sudo -n chmod 700 "$custom_self_cautossh_limited_identity_dst_dir"
+	sudo -n chmod 700 "$custom_self_cautossh_limited_identity_lcl_dir"
 	
-	mkdir -p "$custom_cautossh_limited_dst_dir"/_local/tor/
-	chmod 700 "$custom_cautossh_limited_dst_dir"/_local/tor/
+	sudo -n mkdir -p "$custom_cautossh_limited_dst_dir"/_local/tor/
+	sudo -n chmod 700 "$custom_cautossh_limited_dst_dir"/_local/tor/
 	
 	export custom_self_cautossh_limited_identity_src_file="$custom_self_cautossh_limited_identity_src_dir"/id_rsa
 	export custom_self_cautossh_limited_identity_dst_file="$custom_self_cautossh_limited_identity_dst_dir"/id_rsa
@@ -76,11 +76,11 @@ _safety_self_custom_cautossh-limited() {
 	
 	# DANGER: *Prohibit* git repository for any 'limited' CoreAutoSSH package.
 	find "$custom_self_cautossh_limited_identity_src_dir" -prune -path '_lib' 2>/dev/null | grep -i '\.git$' >/dev/null 2>&1 && return 1
-	find "$custom_self_cautossh_limited_identity_dst_dir" -prune -path '_lib' 2>/dev/null | grep -i '\.git$' >/dev/null 2>&1 && return 1
+	sudo -n find "$custom_self_cautossh_limited_identity_dst_dir" -prune -path '_lib' 2>/dev/null | grep -i '\.git$' >/dev/null 2>&1 && return 1
 	
 	
 	# DANGER: *Prohibit* full package for any machine intended to use 'limited' CoreAutoSSH package.
-	[[ -e "$custom_cautossh_dst_dir" ]] && 'FAIL: DANGER: #*#*UNSAFE*#*# !!!' && _stop 1
+	sudo -n test -e "$custom_cautossh_dst_dir" && 'FAIL: DANGER: #*#*UNSAFE*#*# !!!' && _stop 1
 	! [[ "$custom_cautossh_limited_dirname" == *'limited' ]] && _messageError 'FAIL: DANGER: #*#*UNSAFE*#*# !!!' && _stop 1
 	! [[ -e "$custom_cautossh_limited_src_exe" ]] && _messageError 'FAIL: DANGER: #*#*UNSAFE*#*# !!!' && _stop 1
 	
@@ -98,22 +98,22 @@ _safety_self_custom_cautossh-limited() {
 	[[ -e "$custom_self_cautossh_limited_identity_src_dir"/known_hosts ]] && _messagePlain_warn 'warn: uncertain: src: known_hosts'
 	
 	# Rare.
-	if ! find "$custom_self_cautossh_limited_identity_dst_dir" -mindepth 1 -maxdepth 2 -type f ! -name 'id_rsa' ! -name 'id_rsa.pub' ! -name 'ops.sh' ! -name 'known_hosts' 2>/dev/null | _condition_lines_zero
+	if ! sudo -n find "$custom_self_cautossh_limited_identity_dst_dir" -mindepth 1 -maxdepth 2 -type f ! -name 'id_rsa' ! -name 'id_rsa.pub' ! -name 'ops.sh' ! -name 'known_hosts' 2>/dev/null | _condition_lines_zero
 	then
 		_messagePlain_warn 'warn: uncertain: dst'
-		ls -ld "$custom_self_cautossh_limited_identity_dst_dir"
+		sudo -n ls -ld "$custom_self_cautossh_limited_identity_dst_dir"
 		echo
-		ls -R "$custom_self_cautossh_limited_identity_dst_dir"
+		sudo -n ls -R "$custom_self_cautossh_limited_identity_dst_dir"
 		echo
 	fi
 	
 	# Expected. Reminder.
-	[[ -e "$custom_self_cautossh_limited_identity_dst_dir"/ops.sh ]] && _messagePlain_warn 'warn: uncertain: dst: ops.sh'
-	[[ -e "$custom_self_cautossh_limited_identity_dst_dir"/known_hosts ]] && _messagePlain_warn 'warn: uncertain: dst: known_hosts'
+	sudo -n test -e "$custom_self_cautossh_limited_identity_dst_dir"/ops.sh && _messagePlain_warn 'warn: uncertain: dst: ops.sh'
+	sudo -n test -e "$custom_self_cautossh_limited_identity_dst_dir"/known_hosts && _messagePlain_warn 'warn: uncertain: dst: known_hosts'
 	
 	
 	# DANGER: Do NOT include more than exactly two 'reversePorts' .
-	[[ "$custom_cautossh_limited_reversePort_count" -gt '2' ]] && _messageError 'FAIL: DANGER: #*#*UNSAFE*#*# !!!' && _stop 1
+	[[ "$custom_cautossh_limited_reversePort_count" -gt '2' ]] && [[ "$allow_multiple_reversePorts" != 'true' ]] && _messageError 'FAIL: DANGER: #*#*UNSAFE*#*# !!!' && _stop 1
 	
 	# DANGER: Do NOT include any unnecessary files.
 	# Existence of 'dd' directory should instead be detected/reported by finding files/folders not matching expected 'reversePort' .
@@ -158,13 +158,13 @@ _check_self_custom_cautossh-limited() {
 	export custom_self_cautossh_limited_file_broken='false'
 	export custom_self_cautossh_limited_file_desync='false'
 	
-	[[ -e "$custom_self_cautossh_limited_identity_src_file".pub ]] && export custom_self_cautossh_limited_file_exists='true'
-	[[ -e "$custom_self_cautossh_limited_identity_dst_file".pub ]] && export custom_self_cautossh_limited_file_exists='true'
-	[[ -e "$custom_self_cautossh_limited_identity_lcl_file".pub ]] && export custom_self_cautossh_limited_file_exists='true'
+	sudo -n test -e "$custom_self_cautossh_limited_identity_src_file".pub && export custom_self_cautossh_limited_file_exists='true'
+	sudo -n test -e "$custom_self_cautossh_limited_identity_dst_file".pub && export custom_self_cautossh_limited_file_exists='true'
+	sudo -n test -e "$custom_self_cautossh_limited_identity_lcl_file".pub && export custom_self_cautossh_limited_file_exists='true'
 	
-	! grep "$custom_self_cautossh_limited_comment" "$custom_self_cautossh_limited_identity_src_file".pub > /dev/null 2>&1 && export custom_self_cautossh_limited_file_broken='true'
-	! grep "$custom_self_cautossh_limited_comment" "$custom_self_cautossh_limited_identity_dst_file".pub > /dev/null 2>&1 && export custom_self_cautossh_limited_file_broken='true'
-	! grep "$custom_self_cautossh_limited_comment" "$custom_self_cautossh_limited_identity_lcl_file".pub > /dev/null 2>&1 && export custom_self_cautossh_limited_file_broken='true'
+	! sudo -n grep "$custom_self_cautossh_limited_comment" "$custom_self_cautossh_limited_identity_src_file".pub > /dev/null 2>&1 && export custom_self_cautossh_limited_file_broken='true'
+	! sudo -n grep "$custom_self_cautossh_limited_comment" "$custom_self_cautossh_limited_identity_dst_file".pub > /dev/null 2>&1 && export custom_self_cautossh_limited_file_broken='true'
+	! sudo -n grep "$custom_self_cautossh_limited_comment" "$custom_self_cautossh_limited_identity_lcl_file".pub > /dev/null 2>&1 && export custom_self_cautossh_limited_file_broken='true'
 	
 	! sudo -n diff "$custom_self_cautossh_limited_identity_dst_file" "$custom_self_cautossh_limited_identity_src_file" > /dev/null 2>&1 && custom_self_cautossh_limited_file_desync='true'
 	! sudo -n diff "$custom_self_cautossh_limited_identity_dst_file" "$custom_self_cautossh_limited_identity_lcl_file" > /dev/null 2>&1 && custom_self_cautossh_limited_file_desync='true'
@@ -180,7 +180,7 @@ _copy_self_custom_cautossh-limited_prog() {
 
 
 _copy_self_custom_cautossh-limited() {
-	if ! diff "$custom_self_cautossh_limited_identity_dst_file" "$custom_self_cautossh_limited_identity_src_file" > /dev/null 2>&1 || ! diff "$custom_self_cautossh_limited_identity_dst_file" "$custom_self_cautossh_limited_identity_lcl_file" > /dev/null 2>&1
+	if ! sudo -n diff "$custom_self_cautossh_limited_identity_dst_file" "$custom_self_cautossh_limited_identity_src_file" > /dev/null 2>&1 || ! sudo -n diff "$custom_self_cautossh_limited_identity_dst_file" "$custom_self_cautossh_limited_identity_lcl_file" > /dev/null 2>&1
 	then
 		_messagePlain_probe 'copy: identity'
 	fi
@@ -191,8 +191,8 @@ _copy_self_custom_cautossh-limited() {
 	sudo -n cp "$custom_cautossh_limited_src_exe" "$custom_cautossh_limited_dst_exe"
 	sudo -n chmod 700 "$custom_cautossh_limited_dst_exe"
 	
-	cp "$custom_self_cautossh_limited_identity_src_dir"/ops.sh "$custom_self_cautossh_limited_identity_dst_dir"/ops.sh
-	cp "$custom_self_cautossh_limited_identity_src_dir"/known_hosts "$custom_self_cautossh_limited_identity_dst_dir"/known_hosts
+	sudo -n cp "$custom_self_cautossh_limited_identity_src_dir"/ops.sh "$custom_self_cautossh_limited_identity_dst_dir"/ops.sh
+	sudo -n cp "$custom_self_cautossh_limited_identity_src_dir"/known_hosts "$custom_self_cautossh_limited_identity_dst_dir"/known_hosts
 	
 	_custom_rsync "$custom_cautossh_limited_src_dir"/_local/tor/ "$custom_cautossh_limited_dst_dir"/_local/tor/
 	sudo -n chmod 700 "$custom_cautossh_limited_dst_dir"/_local/tor/
@@ -219,7 +219,7 @@ _self_custom_cautossh-limited() {
 }
 
 _custom_cautossh-limited_cron_entry() {
-	[[ ! -e "$custom_cautossh_limited_dst_exe" ]] && return 1
+	sudo -n test ! -e "$custom_cautossh_limited_dst_exe" && return 1
 	echo '@reboot /home/'"$custom_user"'/core/'"$custom_cautossh_limited_dirname"'/cautossh _ssh_autoreverse' | _custom_hook_crontab
 }
 

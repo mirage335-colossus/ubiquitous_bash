@@ -1,10 +1,10 @@
 _generate_self_custom_cautossh-limited() {
 	_check_self_custom_cautossh-limited
 	
-	if ! grep "$custom_self_cautossh_limited_comment" "$custom_self_cautossh_limited_identity_dst_file".pub > /dev/null 2>&1
+	if ! sudo -n grep "$custom_self_cautossh_limited_comment" "$custom_self_cautossh_limited_identity_dst_file".pub > /dev/null 2>&1
 	then
 		_messagePlain_probe 'generate: identity'
-		ssh-keygen -b 4096 -t rsa -N "" -f "$custom_self_cautossh_limited_identity_dst_file" -C "$custom_self_cautossh_limited_comment"
+		sudo -n ssh-keygen -b 4096 -t rsa -N "" -f "$custom_self_cautossh_limited_identity_dst_file" -C "$custom_self_cautossh_limited_comment"
 	fi
 	
 	local current_user_uid
@@ -61,7 +61,7 @@ _custom_rsync() {
 	
 	sudo -n mkdir -p "$2"
 	sudo -n rsync -avx --delete "$1" "$2"
-	sudo -n chown -R "$current_user_uid":"$current_user_uid" "$1"
+	sudo -n chown -R "$current_user_uid":"$current_user_uid" "$2"
 }
 
 

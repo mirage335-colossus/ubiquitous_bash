@@ -9,6 +9,9 @@ _custom_set() {
 	export custom_user="user"
 	[[ -e "$scriptLocal"/vm-raspbian.img ]] && export custom_user="pi"
 	#export custom_user="username"
+	
+	# DANGER: Extremely rare. Do NOT enable without a SPECIFIC reason.
+       export allow_multiple_reversePorts='true'
 }
 
 # ATTENTION: Configure (if necessary) .
@@ -40,12 +43,17 @@ _custom_users_ssh() {
 
 # ATTENTION: Override (if necessary) .
 _custom_packages() {
+	sudo -n rm -f "$globalVirtFS"/var/lib/apt/lists/lock
+	sudo -n rm -f "$globalVirtFS"/var/lib/dpkg/lock
+	
 	_chroot apt-get update
 	
 	# DANGER: Requires expanded image!
 	#_chroot apt-get upgrade -y
 	
-	_chroot apt-get install -y bc nmap autossh socat sshfs tor bup
+	_chroot apt-get install -y bup
+	
+	_chroot apt-get install -y bc nmap autossh socat sshfs tor
 	
 	_chroot apt-get install -y tigervnc-viewer
 	_chroot apt-get install -y x11vnc

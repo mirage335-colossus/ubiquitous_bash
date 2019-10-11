@@ -122,6 +122,8 @@ _custom() {
 	# Guarantee permissions, inclusions, etc.
 	_custom_users
 	_custom_users_ssh
+	
+	 _messageNormal '_custom: END'
 }
 
 
