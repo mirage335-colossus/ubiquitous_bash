@@ -5999,6 +5999,12 @@ _fetchDep_debian() {
 		return
 	fi
 	
+	if [[ -e /etc/debian_version ]] && cat /etc/debian_version | head -c 2 | grep 10 > /dev/null 2>&1
+	then
+		_fetchDep_debianStretch "$@"
+		return
+	fi
+	
 	return 1
 }
 
@@ -8546,6 +8552,7 @@ _umountChRoot_directory_raspbian() {
 	
 }
 
+# ATTENTION: Mounts image containing only root partiton.
 _mountChRoot_image_x64() {
 	_mustGetSudo
 	
@@ -8559,20 +8566,33 @@ _mountChRoot_image_x64() {
 	[[ -e "$scriptLocal"/vm-x64.img ]] && chrootvmimage="$scriptLocal"/vm-x64.img
 	[[ -e "$scriptLocal"/vm.img ]] && chrootvmimage="$scriptLocal"/vm.img
 	
-	sudo -n losetup -f -P --show "$chrootvmimage" > "$safeTmp"/imagedev 2> /dev/null || _stop 1
-	sudo -n partprobe > /dev/null 2>&1
+	[[ "$ubVirtImageOverride" != '' ]] && chrootvmimage="$ubVirtImageOverride"
 	
-	cp -n "$safeTmp"/imagedev "$scriptLocal"/imagedev > /dev/null 2>&1 || _stop 1
 	
-	local chrootimagedev
-	chrootimagedev=$(cat "$safeTmp"/imagedev)
+	if ! _detect_deviceAsVirtImage
+	then
+		sudo -n losetup -f -P --show "$chrootvmimage" > "$safeTmp"/imagedev 2> /dev/null || _stop 1
+		sudo -n partprobe > /dev/null 2>&1
+		
+		cp -n "$safeTmp"/imagedev "$scriptLocal"/imagedev > /dev/null 2>&1 || _stop 1
+		
+		local chrootimagedev
+		chrootimagedev=$(cat "$safeTmp"/imagedev)
+		
+		local chrootimagepart
+		#chrootimagepart="$chrootimagedev"p2
+		chrootimagepart="$chrootimagedev"p1
+		
+	fi
 	
-	local chrootimagepart
-	#chrootimagepart="$chrootimagedev"p2
-	chrootimagepart="$chrootimagedev"p1
+	# DANGER: REQUIRES image including only root partition!
+	[[ "$ubVirtImageIsRootPartition" == 'true' ]] && chrootimagepart="$chrootimagedev"
 	
 	local chrootloopdevfs
 	chrootloopdevfs=$(eval $(sudo -n blkid "$chrootimagepart" | awk ' { print $3 } '); echo $TYPE)
+	
+	# DANGER: REQUIRES image including only root partition!
+	[[ "$ubVirtImageIsRootPartition" == 'true' ]] && chrootloopdevfs=$(eval $(sudo -n blkid "$chrootimagepart" | awk ' { print $4 } '); echo $TYPE)
 	
 	! [[ "$chrootloopdevfs" == "ext4" ]] && _stop 1
 	
@@ -8652,10 +8672,10 @@ _umountChRoot_image() {
 	local chrootimagedev
 	chrootimagedev=$(cat "$scriptLocal"/imagedev)
 	
-	sudo -n losetup -d "$chrootimagedev" > /dev/null 2>&1 || return 1
+	! _detect_deviceAsVirtImage && ! sudo -n losetup -d "$chrootimagedev" > /dev/null 2>&1 && return 1
 	sudo -n partprobe > /dev/null 2>&1
 	
-	rm -f "$scriptLocal"/imagedev || return 1
+	! _detect_deviceAsVirtImage && ! rm -f "$scriptLocal"/imagedev && return 1
 	
 	rm -f "$lock_quicktmp" > /dev/null 2>&1
 	

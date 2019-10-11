@@ -323,5 +323,11 @@ _fetchDep_debian() {
 		return
 	fi
 	
+	if [[ -e /etc/debian_version ]] && cat /etc/debian_version | head -c 2 | grep 10 > /dev/null 2>&1
+	then
+		_fetchDep_debianStretch "$@"
+		return
+	fi
+	
 	return 1
 }
