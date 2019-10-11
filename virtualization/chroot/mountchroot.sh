@@ -178,6 +178,7 @@ _umountChRoot_directory_raspbian() {
 	
 }
 
+# ATTENTION: Mounts image containing only root partiton.
 _mountChRoot_image_x64() {
 	_mustGetSudo
 	
