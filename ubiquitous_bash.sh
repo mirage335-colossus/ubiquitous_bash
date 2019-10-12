@@ -14285,8 +14285,11 @@ _x220_toggleTouch() {
 #Workaround. Display configuration changes may inappropriately remap pen/eraser/touch input off matching internal screen.
 _x220_wacomLVDS() {
 	xsetwacom --set 'Wacom ISDv4 E6 Pen stylus'  "MapToOutput" LVDS1
+	xsetwacom --set 'Wacom ISDv4 E6 Pen stylus'  "MapToOutput" LVDS-1
 	xsetwacom --set 'Wacom ISDv4 E6 Pen eraser'  "MapToOutput" LVDS1
+	xsetwacom --set 'Wacom ISDv4 E6 Pen eraser'  "MapToOutput" LVDS-1
 	xsetwacom --set 'Wacom ISDv4 E6 Finger touch'  "MapToOutput" LVDS1
+	xsetwacom --set 'Wacom ISDv4 E6 Finger touch'  "MapToOutput" LVDS-1
 }
 
 _x220_setWacomRotation() {
@@ -14303,6 +14306,7 @@ _x220_tablet_N000() {
 	_prepare_x220
 	
 	xrandr --output LVDS1 --rotate normal
+	xrandr --output LVDS-1 --rotate normal
 	_x220_setWacomRotation none
 	echo "N000" > "$ub_hardware_x220_dir"/screenRotationState
 	
@@ -14318,6 +14322,7 @@ _x220_tablet_E090() {
 	_prepare_x220
 	
 	xrandr --output LVDS1 --rotate right
+	xrandr --output LVDS-1 --rotate right
 	_x220_setWacomRotation cw
 	echo "E090" > "$ub_hardware_x220_dir"/screenRotationState
 	
@@ -14333,6 +14338,7 @@ _x220_tablet_S180() {
 	_prepare_x220
 	
 	xrandr --output LVDS1 --rotate inverted
+	xrandr --output LVDS-1 --rotate inverted
 	_x220_setWacomRotation half
 	echo "S180" > "$ub_hardware_x220_dir"/screenRotationState
 	
@@ -14374,12 +14380,18 @@ _x220_tablet_flip() {
 
 _x220_vgaSmall() {
 	xrandr --addmode VGA1 1366x768
+	xrandr --addmode VGA-1 1366x768
 	xrandr --output VGA1 --same-as LVDS1 --mode 1366x768
+	xrandr --output VGA-1 --same-as LVDS-1 --mode 1366x768
 	xrandr --output LVDS1 --primary --auto
+	xrandr --output LVDS-1 --primary --auto
 	
 	xrandr --addmode VGA1 1366x768
+	xrandr --addmode VGA-1 1366x768
 	xrandr --output VGA1 --same-as LVDS1 --mode 1366x768
+	xrandr --output VGA-1 --same-as LVDS-1 --mode 1366x768
 	xrandr --output LVDS1 --primary --auto
+	xrandr --output LVDS-1 --primary --auto
 	
 	_x220_tablet_N000
 }
@@ -14387,24 +14399,36 @@ _x220_vgaSmall() {
 #Most commonly used mode. Recommend binding to key or quicklaunch.
 _x220_vgaRightOf() {
 	xrandr --output LVDS1 --primary --mode 1366x768
+	xrandr --output LVDS-1 --primary --mode 1366x768
 	xrandr --output VGA1 --right-of LVDS1 --auto
+	xrandr --output VGA-1 --right-of LVDS-1 --auto
 	xrandr --output LVDS1 --primary --mode 1366x768
+	xrandr --output LVDS-1 --primary --mode 1366x768
 	
 	xrandr --output LVDS1 --primary --mode 1366x768
+	xrandr --output LVDS-1 --primary --mode 1366x768
 	xrandr --output VGA1 --right-of LVDS1 --auto
+	xrandr --output VGA-1 --right-of LVDS-1 --auto
 	xrandr --output LVDS1 --primary --mode 1366x768
+	xrandr --output LVDS-1 --primary --mode 1366x768
 	
 	_x220_tablet_N000
 }
 
 _x220_vgaTablet() {
 	xrandr --output LVDS1 --primary --mode 1366x768
+	xrandr --output LVDS-1 --primary --mode 1366x768
 	xrandr --output VGA1 --right-of LVDS1 --auto
+	xrandr --output VGA-1 --right-of LVDS-1 --auto
 	xrandr --output LVDS1 --primary --mode 1366x768
+	xrandr --output LVDS-1 --primary --mode 1366x768
 	
 	xrandr --output LVDS1 --primary --mode 1366x768
+	xrandr --output LVDS-1 --primary --mode 1366x768
 	xrandr --output VGA1 --right-of LVDS1 --auto
+	xrandr --output VGA-1 --right-of LVDS-1 --auto
 	xrandr --output LVDS1 --primary --mode 1366x768
+	xrandr --output LVDS-1 --primary --mode 1366x768
 	
 	_x220_tablet_S180
 }
