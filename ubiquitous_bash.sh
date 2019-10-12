@@ -14204,7 +14204,8 @@ _push_synergy() {
 }
 
 _test_x220() {
-	_getDep xlock
+	#_getDep xlock
+	_getDep loginctl
 	
 	_getDep xsetwacom
 }
@@ -14254,13 +14255,15 @@ _x220_enableTouch() {
 	_messagePlain_nominal "Enabling Touch."
 	
 	#On enable, momentarily block input events. Otherwise, all touch previous touch events will be processed.
-	xlock -mode flag -message "Enabling touch..." &
+	#xlock -mode flag -message "Enabling touch..." &
+	loginctl lock-session
 	sleep 2
 	
 	_x220_setTouch 1
 	
 	sleep 2
-	kill -KILL $!
+	#kill -KILL $!
+	loginctl unlock-session
 }
 
 _x220_disableTouch() {
