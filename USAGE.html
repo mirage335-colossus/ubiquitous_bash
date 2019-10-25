@@ -917,8 +917,22 @@ Fetches and verifies x64 Debian installation ISO, saves to current directory (ie
 !_create_x64_debianLiteVM
 Creates custom bootable x64 Debian image. Requires [[fetch|Debian]] dependencies, QEMU, and manual guidance through the setup process.</pre>
 </div>
-<div title="DebianPrereq" creator="mirage335" modifier="mirage335" created="201712220319" modified="201801060143" changecount="13">
+<div title="DebianPrereq" creator="mirage335" modifier="YourName" created="201712220319" modified="201910250621" changecount="15">
 <pre>!Generic
+Docker may not work with 'nftables' as of 2019-10-25. 
+//{{{
+sudo update-alternatives --set iptables /usr/sbin/iptables-legacy
+sudo update-alternatives --set ip6tables /usr/sbin/ip6tables-legacy
+//}}}
+
+Eclipse is supported and a requirement of full Ubiquitous Bash.
+https://www.eclipse.org/cdt/downloads.php
+//{{{
+sudo apt install openjdk-11-jdk
+//}}}
+
+
+
 All crucial dependencies should be automatically installed through the built-in test procedure.
 //{{{
 ./ubiquitous_bash.sh _test
