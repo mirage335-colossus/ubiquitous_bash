@@ -125,7 +125,7 @@ _x220_tablet_E090() {
 	echo "E090" > "$ub_hardware_x220_dir"/screenRotationState
 	
 	_x220_disableTouch
-	_x220_disableTrackPoint
+	#_x220_disableTrackPoint
 	
 	_reset_KDE
 }
@@ -141,7 +141,7 @@ _x220_tablet_S180() {
 	echo "S180" > "$ub_hardware_x220_dir"/screenRotationState
 	
 	_x220_enableTouch
-	_x220_disableTrackPoint
+	#_x220_disableTrackPoint
 	
 	_reset_KDE
 }
