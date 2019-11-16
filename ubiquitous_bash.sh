@@ -9823,8 +9823,14 @@ _set_instance_vbox_features() {
 
 _set_instance_vbox_features_app() {
 	true
-	#[[ "$vboxOStype" == *"Win"*"XP"* ]] && vboxChipset="piix3"
-	#VBoxManage modifyvm "$sessionid" --usbxhci on
+	
+	#if [[ "$vboxOStype" == *"Win"*"XP"* ]]
+	#then
+	#	export vboxChipset="piix3"
+	#	! VBoxManage modifyvm "$sessionid" --chipset "$vboxChipset" && return 1
+	#fi
+	
+	#! VBoxManage modifyvm "$sessionid" --usbxhci on && return 1
 }
 
 _set_instance_vbox_share() {
