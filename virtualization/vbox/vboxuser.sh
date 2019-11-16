@@ -93,8 +93,44 @@ _set_instance_vbox_type() {
 _set_instance_vbox_features() {
 	#VBoxManage modifyvm "$sessionid" --boot1 disk --biosbootmenu disabled --bioslogofadein off --bioslogofadeout off --bioslogodisplaytime 5 --vram 128 --memory 1512 --nic1 nat --nictype1 "82543GC" --clipboard bidirectional --accelerate3d off --accelerate2dvideo off --vrde off --audio pulse --usb on --cpus 1 --ioapic off --acpi on --pae off --chipset piix3
 	
-	[[ "$vboxNic" == "" ]] && vboxNic="nat"
+	# WARNING: Do not set "$vboxCPUs" to a high number unless specifically required.
+	if [[ "$vboxCPUs" == "" ]]
+	then
+		# Physical Cores.
+		local hostThreadCount=$(grep ^cpu\\scores /proc/cpuinfo | head -n 1 | tr -dc '0-9')
+		[[ "$hostThreadCount" -lt "1" ]] && _messagePlain_bad 'fail: hostThreadCount' && return 1
+		[[ "$hostThreadCount" == "" ]] && _messagePlain_bad 'fail: hostThreadCount' && return 1
+		
+		export vboxCPUs=1
+		[[ "$hostThreadCount" -ge "4" ]] && [[ "$hostThreadCount" -lt "8" ]] && _messagePlain_probe 'cpu: >2' && export vboxCPUs=2
+		[[ "$hostThreadCount" -ge "8" ]] && [[ "$hostThreadCount" -lt "14" ]] && _messagePlain_probe 'cpu: >4' && export vboxCPUs=4
+		[[ "$hostThreadCount" -ge "14" ]] && _messagePlain_probe 'cpu: >6' && export vboxCPUs=6
+		
+		# WARNING: Do not set "$vboxCPUsAllowMany" unless it is acceptable for VM to consume (at least nearly) 100% CPU resources.
+		let hostThreadAllowance="$hostThreadCount"-2
+		if [[ "$vboxCPUsAllowMany" == 'true' ]] && [[ "$hostThreadCount" -ge "16" ]]
+		then
+			export vboxCPUs="$hostThreadAllowance"
+		fi
+	fi
+	#if [[ "$vboxCPUs" == "" ]]
+	#then
+		# Logical Cores. Discouraged.
+		#local hostThreadCount=$(cat /proc/cpuinfo | grep MHz | wc -l | tr -dc '0-9')
+		
+		#export vboxCPUs=1
+		#[[ "$hostThreadCount" -ge "4" ]] && [[ "$hostThreadCount" -lt "8" ]] && _messagePlain_probe 'cpu: >4' && export vboxCPUs=2
+		#[[ "$hostThreadCount" -ge "8" ]] && [[ "$hostThreadCount" -lt "14" ]] && _messagePlain_probe 'cpu: >4' && export vboxCPUs=4
+		#[[ "$hostThreadCount" -ge "14" ]] && _messagePlain_probe 'cpu: >6' && export vboxCPUs=6
+	#fi
+	
+	# WARNING: Do not set "$vmMemoryAllocation" to a high number unless specifically required.
+	[[ "$vmMemoryAllocation" == "" ]] && vmMemoryAllocation="$vmMemoryAllocationDefault"
+	_messagePlain_probe 'vmMemoryAllocation= '"$vmMemoryAllocation"
+	
+	[[ "$vboxNic" == "" ]] && export vboxNic="nat"
 	_messagePlain_probe 'vboxNic= '"$vboxNic"
+	
 	
 	local vboxChipset
 	vboxChipset="ich9"
@@ -113,16 +149,23 @@ _set_instance_vbox_features() {
 	[[ "$vboxOStype" == *"Win"*"10"* ]] && vboxAudioController="hda"
 	_messagePlain_probe 'vboxAudioController= '"$vboxAudioController"
 	
-	[[ "$vmMemoryAllocation" == "" ]] && vmMemoryAllocation="$vmMemoryAllocationDefault"
-	_messagePlain_probe 'vmMemoryAllocation= '"$vmMemoryAllocation"
-	
 	_messagePlain_nominal "Setting VBox VM features."
-	if ! VBoxManage modifyvm "$sessionid" --biosbootmenu disabled --bioslogofadein off --bioslogofadeout off --bioslogodisplaytime 1 --vram 128 --memory "$vmMemoryAllocation" --nic1 "$vboxNic" --nictype1 "$vboxNictype" --clipboard bidirectional --accelerate3d off --accelerate2dvideo off --vrde off --audio pulse --usb on --cpus 4 --ioapic on --acpi on --pae on --chipset "$vboxChipset" --audiocontroller="$vboxAudioController"
+	if ! VBoxManage modifyvm "$sessionid" --biosbootmenu disabled --bioslogofadein off --bioslogofadeout off --bioslogodisplaytime 1 --vram 128 --memory "$vmMemoryAllocation" --nic1 "$vboxNic" --nictype1 "$vboxNictype" --clipboard bidirectional --accelerate3d off --accelerate2dvideo off --vrde off --audio pulse --usb on --cpus "$vboxCPUs" --ioapic on --acpi on --pae on --chipset "$vboxChipset" --audiocontroller="$vboxAudioController"
 	then
-		_messagePlain_probe VBoxManage modifyvm "$sessionid" --biosbootmenu disabled --bioslogofadein off --bioslogofadeout off --bioslogodisplaytime 1 --vram 128 --memory "$vmMemoryAllocation" --nic1 "$vboxNic" --nictype1 "$vboxNictype" --clipboard bidirectional --accelerate3d off --accelerate2dvideo off --vrde off --audio pulse --usb on --cpus 4 --ioapic on --acpi on --pae on --chipset "$vboxChipset" --audiocontroller="$vboxAudioController"
+		_messagePlain_probe VBoxManage modifyvm "$sessionid" --biosbootmenu disabled --bioslogofadein off --bioslogofadeout off --bioslogodisplaytime 1 --vram 128 --memory "$vmMemoryAllocation" --nic1 "$vboxNic" --nictype1 "$vboxNictype" --clipboard bidirectional --accelerate3d off --accelerate2dvideo off --vrde off --audio pulse --usb on --cpus "$vboxCPUs" --ioapic on --acpi on --pae on --chipset "$vboxChipset" --audiocontroller="$vboxAudioController"
 		_messagePlain_bad 'fail: VBoxManage'
 		return 1
 	fi
+	
+	# Assuming x64 hosts served by VBox will have at least 'Intel HD Graphics 3000' (as found on X220 laptop/tablet) equivalent.
+	if [[ "$vboxOStype" == *"Win"*"10"* ]]
+	then
+		if ! VBoxManage modifyvm "$sessionid" --graphicscontroller vboxsvga --accelerate3d on --accelerate2dvideo on
+		then
+			_messagePlain_warn 'warn: VBoxManage: --graphicscontroller vboxsvga --accelerate3d on --accelerate2dvideo on'
+		fi
+	fi
+	
 	return 0
 	
 }
