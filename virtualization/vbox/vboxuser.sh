@@ -157,9 +157,10 @@ _set_instance_vbox_features() {
 		return 1
 	fi
 	
-	# Assuming x64 hosts served by VBox will have at least 'Intel HD Graphics 3000' (as found on X220 laptop/tablet) equivalent.
-	if [[ "$vboxOStype" == *"Win"*"10"* ]]
+	# Assuming x64 hosts served by VBox will have at least 'Intel HD Graphics 3000' (as found on X220 laptop/tablet) equivalent. Lesser hardware not recommended.
+	if [[ "$vboxOStype" == *"Win"*"10"* ]] && [[ "$hostThreadCount" -ge "2" ]]
 	then
+		_messagePlain_probe VBoxManage modifyvm "$sessionid" --graphicscontroller vboxsvga --accelerate3d on --accelerate2dvideo on
 		if ! VBoxManage modifyvm "$sessionid" --graphicscontroller vboxsvga --accelerate3d on --accelerate2dvideo on
 		then
 			_messagePlain_warn 'warn: VBoxManage: --graphicscontroller vboxsvga --accelerate3d on --accelerate2dvideo on'
