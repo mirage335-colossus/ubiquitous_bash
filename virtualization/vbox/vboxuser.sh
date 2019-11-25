@@ -142,6 +142,7 @@ _set_instance_vbox_cores() {
 		[[ "$hostCoreCount" -lt "6" ]] && _set_instance_vbox_cores_more "$hostCoreCount"
 		
 		# DANGER: Do not set "vboxCPUsAllowManyThreads" if processor capabilities (eg. Intel Atom) will be uncertain and/or host/guest latencies may be important.
+		# Not recommended for Intel i7-2640M (as found in Lenovo X220) or older hosts.
 		# Nevertheless, power efficiency (eg Intel Atom) may be a good reason to specifically enable this.
 		# https://unix.stackexchange.com/questions/325932/virtualbox-is-it-a-bad-idea-to-assign-more-virtual-cpu-cores-than-number-of-phy
 		# https://en.wikipedia.org/wiki/Hyper-threading
