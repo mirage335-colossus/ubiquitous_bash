@@ -30,9 +30,24 @@ _integratedQemu_x64() {
 	if _testQEMU_hostArch_x64_nested
 	then
 		_messagePlain_good 'supported: nested x64'
-		qemuArgs+=(-cpu host)
+		
+		# WARNING: Nested virtualization support currently disabled by default. May impose frequent software updates or commonality between host/guest.
+		# Fail for Debian Buster/Stretch host/guest.
+		# Reasonably expected to fail with proprietary guest.
+		# https://bugzilla.redhat.com/show_bug.cgi?id=1565179
+		
+		# ATTENTION: Overload "demandNestKVM" with "ops" or similar.
+		if [[ "$demandNestKVM" == 'true' ]] #|| ( ! [[ "$virtOStype" == 'MSW'* ]] && ! [[ "$virtOStype" == 'Windows'* ]] && ! [[ "$vboxOStype" == 'Windows'* ]] )
+		then
+			[[ "$demandNestKVM" == 'true' ]] && _messagePlain_warn 'force: nested x64'
+			_messagePlain_warn 'warn: set: nested x64'
+			qemuArgs+=(-cpu host)
+		else
+			_messagePlain_good 'unset: nested x64'
+		fi
+		
 	else
-		_messagePlain_warn 'warn: no nested x64'
+		_messagePlain_warn 'missing: nested x64'
 	fi
 	
 	local hostThreadCount=$(cat /proc/cpuinfo | grep MHz | wc -l | tr -dc '0-9')
