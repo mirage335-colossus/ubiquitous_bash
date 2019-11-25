@@ -150,6 +150,8 @@ _set_instance_vbox_cores() {
 		then
 			_messagePlain_warn 'warn: configured: vboxCPUsAllowManyThreads'
 			
+			[[ "$hostCoreCount" -lt "4" ]] && _set_instance_vbox_cores_more "$hostThreadCount"
+			
 			let hostThreadAllowance="$hostThreadCount"-2
 			_set_instance_vbox_cores_more "$hostThreadAllowance"
 		fi
