@@ -90,39 +90,118 @@ _set_instance_vbox_type() {
 	return 1
 }
 
+_set_instance_vbox_cores_more() {
+	[[ "$1" -ge "$vboxCPUs" ]] && _messagePlain_probe 'cpu: >'"$1" && export vboxCPUs="$1"
+}
+
+# ATTENTION: Override, function, or, variables, with "ops" or similar.
+# WARNING: Do not cause use of more than half the number of physical cores (not threads) unless specifically required.
+_set_instance_vbox_cores() {
+	# DANGER: Do not set "vboxCPUs" unless specifically required.
+	# Intended only where specifically necessary to force a specific number of threads (eg. "1").
+	# FAIL if "hostThreadCount" < "vboxCPUs" .
+	# FAIL or DEGRADE if "hostCoreCount" < "vboxCPUs" .
+	# POSSIBLE DEGRADE if nesting AND "vboxCPUs" != "" .
+	[[ "$vboxCPUs" != "" ]] && _messagePlain_warn 'warn: configured: force: vboxCPUs= '"$vboxCPUs" && return 0
+	
+	export vboxCPUs=1
+	
+	local hostCoreCount
+	local hostThreadCount
+	local hostThreadAllowance
+	
+	
+	# Physical Cores.
+	local hostCoreCount=$(grep ^cpu\\scores /proc/cpuinfo | head -n 1 | tr -dc '0-9')
+	
+	# Logical Threads.
+	local hostThreadCount=$(cat /proc/cpuinfo | grep MHz | wc -l | tr -dc '0-9')
+	
+	# Typical stability margin reservation.
+	let hostThreadAllowance="$hostCoreCount"-2
+	
+	_messagePlain_probe_var hostCoreCount
+	_messagePlain_probe_var hostThreadCount
+	
+	# Catch core/thread detection failure.
+	if [[ "$hostCoreCount" -lt "1" ]] || [[ "$hostCoreCount" == "" ]] || [[ "$hostThreadCount" -lt "1" ]] || [[ "$hostThreadCount" == "" ]]
+	then
+		_messagePlain_bad 'fail: hostCoreCount, hostThreadCount'
+		_messagePlain_warn 'missing: smp: force: vboxCPUs= '1
+		
+		# Default, allow single threaded operation if core/thread count was indeterminite.
+		return 0
+	fi
+	
+	# Logical Threads > Physical Cores ('SMT', 'Hyper-Threading', etc)
+	if [[ "$hostThreadCount" -gt "$hostCoreCount" ]]
+	then
+		# Logical Threads Present
+		_messagePlain_good 'detect: logical threads'
+		
+		[[ "$hostCoreCount" -lt "6" ]] && _set_instance_vbox_cores_more "$hostCoreCount"
+		
+		# DANGER: Do not set "vboxCPUsAllowManyThreads" if processor capabilities (eg. Intel Atom) will be uncertain and/or host/guest latencies may be important.
+		# Nevertheless, power efficiency (eg Intel Atom) may be a good reason to specifically enable this.
+		# https://unix.stackexchange.com/questions/325932/virtualbox-is-it-a-bad-idea-to-assign-more-virtual-cpu-cores-than-number-of-phy
+		# https://en.wikipedia.org/wiki/Hyper-threading
+		if [[ "$vboxCPUsAllowManyThreads" == 'true' ]]
+		then
+			_messagePlain_warn 'warn: configured: vboxCPUsAllowManyThreads'
+			
+			let hostThreadAllowance="$hostThreadCount"-2
+			_set_instance_vbox_cores_more "$hostThreadAllowance"
+		fi
+		
+		# WARNING: Do not set "vboxCPUsAllowManyCores" unless it is acceptable for guest to consume (at least nearly) 100% CPU cores/threads/time/resources.
+		if [[ "$vboxCPUsAllowManyCores" == 'true' ]]
+		then
+			_messagePlain_probe 'configured: vboxCPUsAllowManyCores'
+			
+			let hostThreadAllowance="$hostCoreCount"-2
+			_set_instance_vbox_cores_more "$hostThreadAllowance"
+		fi
+		
+		[[ "$hostCoreCount" -ge "32" ]] && _set_instance_vbox_cores_more 20
+		
+		[[ "$hostCoreCount" -lt "32" ]] && [[ "$hostCoreCount" -ge "24" ]] && _set_instance_vbox_cores_more 14
+		[[ "$hostCoreCount" -lt "24" ]] && [[ "$hostCoreCount" -ge "16" ]] && _set_instance_vbox_cores_more 10
+		[[ "$hostCoreCount" -lt "16" ]] && [[ "$hostCoreCount" -ge "12" ]] && _set_instance_vbox_cores_more 8
+		[[ "$hostCoreCount" -lt "12" ]] && [[ "$hostCoreCount" -ge "10" ]] && _set_instance_vbox_cores_more 8
+		[[ "$hostCoreCount" -lt "10" ]] && [[ "$hostCoreCount" -ge "8" ]] && _set_instance_vbox_cores_more 6
+		[[ "$hostCoreCount" -lt "8" ]] && [[ "$hostCoreCount" -ge "6" ]] && _set_instance_vbox_cores_more 4
+		
+		
+	else
+		# Logical Threads Absent
+		_messagePlain_bad 'missing: logical threads'
+		
+		[[ "$hostCoreCount" -lt "4" ]] && _set_instance_vbox_cores_more "$hostCoreCount"
+		
+		# WARNING: Do not set "vboxCPUsAllowManyCores" unless it is acceptable for guest to consume (at least nearly) 100% CPU cores/threads/time/resources.
+		if [[ "$vboxCPUsAllowManyCores" == 'true' ]]
+		then
+			let hostThreadAllowance="$hostCoreCount"-2
+			_set_instance_vbox_cores_more "$hostThreadAllowance"
+		fi
+		
+		[[ "$hostCoreCount" -ge "32" ]] && _set_instance_vbox_cores_more 16
+		
+		[[ "$hostCoreCount" -lt "32" ]] && [[ "$hostCoreCount" -ge "24" ]] && _set_instance_vbox_cores_more 12
+		[[ "$hostCoreCount" -lt "24" ]] && [[ "$hostCoreCount" -ge "16" ]] && _set_instance_vbox_cores_more 8
+		[[ "$hostCoreCount" -lt "16" ]] && [[ "$hostCoreCount" -ge "10" ]] && _set_instance_vbox_cores_more 6
+		[[ "$hostCoreCount" -lt "10" ]] && [[ "$hostCoreCount" -ge "8" ]] && _set_instance_vbox_cores_more 4
+		[[ "$hostCoreCount" -lt "8" ]] && [[ "$hostCoreCount" -ge "4" ]] && _set_instance_vbox_cores_more 4
+	fi
+	
+	_messagePlain_probe_var vboxCPUs
+	return 0
+}
+
 _set_instance_vbox_features() {
 	#VBoxManage modifyvm "$sessionid" --boot1 disk --biosbootmenu disabled --bioslogofadein off --bioslogofadeout off --bioslogodisplaytime 5 --vram 128 --memory 1512 --nic1 nat --nictype1 "82543GC" --clipboard bidirectional --accelerate3d off --accelerate2dvideo off --vrde off --audio pulse --usb on --cpus 1 --ioapic off --acpi on --pae off --chipset piix3
 	
-	# WARNING: Do not set "$vboxCPUs" to a high number unless specifically required.
-	if [[ "$vboxCPUs" == "" ]]
-	then
-		# Physical Cores.
-		local hostThreadCount=$(grep ^cpu\\scores /proc/cpuinfo | head -n 1 | tr -dc '0-9')
-		[[ "$hostThreadCount" -lt "1" ]] && _messagePlain_bad 'fail: hostThreadCount' && return 1
-		[[ "$hostThreadCount" == "" ]] && _messagePlain_bad 'fail: hostThreadCount' && return 1
-		
-		export vboxCPUs=1
-		[[ "$hostThreadCount" -ge "4" ]] && [[ "$hostThreadCount" -lt "8" ]] && _messagePlain_probe 'cpu: >2' && export vboxCPUs=2
-		[[ "$hostThreadCount" -ge "8" ]] && [[ "$hostThreadCount" -lt "14" ]] && _messagePlain_probe 'cpu: >4' && export vboxCPUs=4
-		[[ "$hostThreadCount" -ge "14" ]] && _messagePlain_probe 'cpu: >6' && export vboxCPUs=6
-		
-		# WARNING: Do not set "$vboxCPUsAllowMany" unless it is acceptable for VM to consume (at least nearly) 100% CPU resources.
-		let hostThreadAllowance="$hostThreadCount"-2
-		if [[ "$vboxCPUsAllowMany" == 'true' ]] && [[ "$hostThreadCount" -ge "16" ]]
-		then
-			export vboxCPUs="$hostThreadAllowance"
-		fi
-	fi
-	#if [[ "$vboxCPUs" == "" ]]
-	#then
-		# Logical Cores. Discouraged.
-		#local hostThreadCount=$(cat /proc/cpuinfo | grep MHz | wc -l | tr -dc '0-9')
-		
-		#export vboxCPUs=1
-		#[[ "$hostThreadCount" -ge "4" ]] && [[ "$hostThreadCount" -lt "8" ]] && _messagePlain_probe 'cpu: >4' && export vboxCPUs=2
-		#[[ "$hostThreadCount" -ge "8" ]] && [[ "$hostThreadCount" -lt "14" ]] && _messagePlain_probe 'cpu: >4' && export vboxCPUs=4
-		#[[ "$hostThreadCount" -ge "14" ]] && _messagePlain_probe 'cpu: >6' && export vboxCPUs=6
-	#fi
+	! _set_instance_vbox_cores && return 1
 	
 	# WARNING: Do not set "$vmMemoryAllocation" to a high number unless specifically required.
 	[[ "$vmMemoryAllocation" == "" ]] && vmMemoryAllocation="$vmMemoryAllocationDefault"
