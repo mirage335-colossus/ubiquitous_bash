@@ -272,6 +272,15 @@ _set_instance_vbox_features_app() {
 	#! VBoxManage modifyvm "$sessionid" --usbxhci on && return 1
 }
 
+_set_instance_vbox_features_app_post() {
+	true
+	
+	#if ! _messagePlain_probe_cmd VBoxManage storageattach "$sessionid" --storagectl "IDE Controller" --port 2 --device 0 --type hdd --medium "$scriptLocal"/vm_bulk.vdi --mtype "immutable"
+	#then
+	#	_messagePlain_warn 'fail: vm_bulk.vdi'
+	#fi
+}
+
 _set_instance_vbox_share() {
 	#VBoxManage sharedfolder add "$sessionid" --name "root" --hostpath "/"
 	if [[ "$sharedHostProjectDir" != "" ]]
@@ -339,7 +348,7 @@ _create_instance_vbox() {
 	#Suppress annoying warnings.
 	! VBoxManage setextradata global GUI/SuppressMessages "remindAboutAutoCapture,remindAboutMouseIntegration,remindAboutMouseIntegrationOn,showRuntimeError.warning.HostAudioNotResponding,remindAboutGoingSeamless,remindAboutInputCapture,remindAboutGoingFullscreen,remindAboutMouseIntegrationOff,confirmGoingSeamless,confirmInputCapture,remindAboutPausedVMInput,confirmVMReset,confirmGoingFullscreen,remindAboutWrongColorDepth" && _messagePlain_warn 'fail: VBoxManage... suppress messages'
 	
-	
+	_set_instance_vbox_features_app_post
 	
 	return 0
 }
