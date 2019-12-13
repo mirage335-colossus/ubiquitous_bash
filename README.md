@@ -96,6 +96,8 @@ In most user environments, the latest git repository code will provide the stron
 * Hard and soft cpu, memory, swap, I/O, and storage limits on all subprocesses independent of full virtualization.
 * Automatically adjust limits and priorities based on system latency impacts correlated to program operation.
 
+* Voice commands using Pocket Sphinx and limited vocabulary. Specifically NOT a 'digital assistant'.
+
 # Known Issues
 
 * Typical TCP/IP and related software cannot be configured for resilience under packet corruption, heavy packet loss, multi-second latency, or address/ap roaming. A proxy handling these issues through named pipes and tcpwrappers

@@ -6759,7 +6759,8 @@ _stop_virtLocal() {
 }
 
 _test_virtLocal_X11() {
-	_getDep xauth
+	! _wantGetDep xauth && echo xauth missing && return 1
+	return 0
 }
 
 # TODO: Expansion needed.
