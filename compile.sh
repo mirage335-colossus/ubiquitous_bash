@@ -3304,6 +3304,8 @@ _compile_bash_deps() {
 		_deps_proxy
 		_deps_proxy_special
 		
+		_deps_stopwatch
+		
 		_deps_build
 		
 		_deps_build_bash
