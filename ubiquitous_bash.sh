@@ -10171,6 +10171,38 @@ _editVBox() {
 }
 
 
+
+
+_launch_user_vbox_manage_sequence() {
+	_start
+	
+	_prepare_instance_vbox || _stop 1
+	
+	_readLocked "$vBox_vdi" && return 1
+	
+	_createLocked "$vBox_vdi" || return 1
+	
+	env HOME="$VBOX_USER_HOME_short" VBoxManage "$@"
+	
+	_wait_instance_vbox
+	
+	rm -f "$vBox_vdi" > /dev/null 2>&1
+	
+	_rm_instance_vbox
+	
+	_stop
+}
+
+_launch_user_vbox_manage() {
+	"$scriptAbsoluteLocation" _launch_user_vbox_manage_sequence "$@"
+}
+
+_userVBoxManage() {
+	_launch_user_vbox_manage "$@"
+}
+
+
+
 _here_dosbox_base_conf() {
 
 cat << 'CZXWXcRMTo8EmM8i4d'
@@ -12426,14 +12458,14 @@ _reset_KDE() {
 	fi
 }
 
-# Also depends on '_labVBoxManage' .
+# Also depends on '_labVBoxManage' and '_userVBoxManage' .
 _test_vboxconvert() {
 	_getDep VBoxManage
 }
 
 #No production use.
 _vdi_get_UUID() {
-	_labVBoxManage showhdinfo "$scriptLocal"/vm.vdi | grep ^UUID | cut -f2- -d\  | tr -dc 'a-zA-Z0-9\-'
+	_userVBoxManage showhdinfo "$scriptLocal"/vm.vdi | grep ^UUID | cut -f2- -d\  | tr -dc 'a-zA-Z0-9\-'
 }
 
 #No production use.
@@ -12476,15 +12508,18 @@ _vdi_to_img() {
 	fi
 	
 	_messageNormal '_vdi_to_img: clonehd'
-	if _labVBoxManage clonehd "$scriptLocal"/vm.vdi "$scriptLocal"/vm.img --format RAW
+	if _userVBoxManage clonehd "$scriptLocal"/vm.vdi "$scriptLocal"/vm.img --format RAW
 	then
-		_messageNormal '_vdi_to_img: closemedium'
-		_labVBoxManage closemedium "$scriptLocal"/vm.img
+		#_messageNormal '_vdi_to_img: closemedium'
+		#_userVBoxManage closemedium "$scriptLocal"/vm.img
 		_messagePlain_request 'request: rm '"$scriptLocal"/vm.vdi
 		_messagePlain_good 'End.'
 		return 0
 	fi
-	_labVBoxManage closemedium "$scriptLocal"/vm.img
+	#_messageNormal '_vdi_to_img: closemedium'
+	#_userVBoxManage closemedium "$scriptLocal"/vm.img
+	
+	_messageFAIL
 	return 1
 }
 
@@ -12495,10 +12530,11 @@ _img_to_vdi() {
 	[[ -e "$scriptLocal"/vm.vdi ]] && _messagePlain_request 'request: rm '"$scriptLocal"/vm.vdi && return 1
 	
 	_messageNormal '_img_to_vdi: convertdd'
-	if _labVBoxManage convertdd "$scriptLocal"/vm.img "$scriptLocal"/vm-c.vdi --format VDI
+	if _userVBoxManage convertdd "$scriptLocal"/vm.img "$scriptLocal"/vm-c.vdi --format VDI
 	then
-		_messageNormal '_img_to_vdi: closemedium'
-		_labVBoxManage closemedium "$scriptLocal"/vm-c.vdi
+		#_messageNormal '_img_to_vdi: closemedium'
+		#_userVBoxManage closemedium "$scriptLocal"/vm-c.vdi
+		_messageNormal '_img_to_vdi: mv vm-c.vdi vm.vdi'
 		mv -n "$scriptLocal"/vm-c.vdi "$scriptLocal"/vm.vdi
 		_messageNormal '_img_to_vdi: setuuid'
 		VBoxManage internalcommands sethduuid "$scriptLocal"/vm.vdi $(_vdi_read_UUID)

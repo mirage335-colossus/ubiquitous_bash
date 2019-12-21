@@ -435,3 +435,35 @@ _editVBox() {
 	_messageNormal 'End: '"$@"
 }
 
+
+
+
+_launch_user_vbox_manage_sequence() {
+	_start
+	
+	_prepare_instance_vbox || _stop 1
+	
+	_readLocked "$vBox_vdi" && return 1
+	
+	_createLocked "$vBox_vdi" || return 1
+	
+	env HOME="$VBOX_USER_HOME_short" VBoxManage "$@"
+	
+	_wait_instance_vbox
+	
+	rm -f "$vBox_vdi" > /dev/null 2>&1
+	
+	_rm_instance_vbox
+	
+	_stop
+}
+
+_launch_user_vbox_manage() {
+	"$scriptAbsoluteLocation" _launch_user_vbox_manage_sequence "$@"
+}
+
+_userVBoxManage() {
+	_launch_user_vbox_manage "$@"
+}
+
+
