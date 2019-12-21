@@ -8,7 +8,7 @@ _vdi_to_img() {
 
 #No production use. Not recommended except to accommodate MSW hosts.
 _img_to_vdi() {
-	VBoxManage convertdd "$scriptLocal"/vm.vdi "$scriptLocal"/vm.img --format VDI
+	VBoxManage convertdd "$scriptLocal"/vm.img "$scriptLocal"/vm.vdi --format VDI
 }
 
 
