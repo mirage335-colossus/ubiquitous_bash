@@ -4,7 +4,7 @@ _kernelConfig_panel() {
 	
 	[[ "$kernelConfig_tradeoff_perform" == "" ]] && export kernelConfig_tradeoff_perform='false'
 	[[ "$kernelConfig_frequency" == "" ]] && export kernelConfig_frequency=300
-	export kernelConfig_tickless='false'
+	[[ "$kernelConfig_tickless" == "" ]] && export kernelConfig_tickless='false'
 	
 	_kernelConfig_require-tradeoff "$@"
 	
@@ -39,7 +39,7 @@ _kernelConfig_mobile() {
 	
 	[[ "$kernelConfig_tradeoff_perform" == "" ]] && export kernelConfig_tradeoff_perform='false'
 	[[ "$kernelConfig_frequency" == "" ]] && export kernelConfig_frequency=300
-	export kernelConfig_tickless='true'
+	[[ "$kernelConfig_tickless" == "" ]] && export kernelConfig_tickless='true'
 	
 	_kernelConfig_require-tradeoff "$@"
 	
