@@ -3,13 +3,84 @@ _test_vboxconvert() {
 	_getDep VBoxManage
 }
 
+#No production use.
+_vdi_get_UUID() {
+	_labVBoxManage showhdinfo "$scriptLocal"/vm.vdi | grep ^UUID | cut -f2- -d\  | tr -dc 'a-zA-Z0-9\-'
+}
+
+#No production use.
+_vdi_write_UUID() {
+	_vdi_get_UUID > "$scriptLocal"/vm.vdi.uuid.quicktmp
+	
+	if [[ -e "$scriptLocal"/vm.vdi.uuid ]] && ! diff "$scriptLocal"/vm.vdi.uuid.quicktmp "$scriptLocal"/vm.vdi.uuid > /dev/null 2>&1
+	then
+		_messagePlain_bad 'conflict: mismatch: existing vdi uuid'
+		_messagePlain_request 'request: rm '"$scriptLocal"/vm.vdi.uuid
+		return 1
+	fi
+	
+	mv "$scriptLocal"/vm.vdi.uuid.quicktmp "$scriptLocal"/vm.vdi.uuid
+	return
+}
+
+#No production use.
+_vdi_read_UUID() {
+	local current_UUID
+	current_UUID=$(cat "$scriptLocal"/vm.vdi.uuid 2>/dev/null | tr -dc 'a-zA-Z0-9\-')
+	
+	[[ "$current_UUID" == "" ]] && return 1
+	echo "$current_UUID"
+	return 0
+}
+
+
 _vdi_to_img() {
-	_labVBoxManage clonehd "$scriptLocal"/vm.vdi "$scriptLocal"/vm.img --format RAW
+	_messageNormal '_vdi_to_img: init'
+	! [[ -e "$scriptLocal"/vm.vdi ]] && _messagePlain_bad 'fail: missing: in file' && return 1
+	[[ -e "$scriptLocal"/vm.img ]] && _messagePlain_request 'request: rm '"$scriptLocal"/vm.img && return 1
+	
+	_messageNormal '_vdi_to_img: _vdi_write_UUID'
+	# No production use. Only required by other functions, also no production use.
+	if ! _vdi_write_UUID
+	then
+		_messagePlain_bad 'fail: _vdi_write_UUID'
+		return 1
+	fi
+	
+	_messageNormal '_vdi_to_img: clonehd'
+	if _labVBoxManage clonehd "$scriptLocal"/vm.vdi "$scriptLocal"/vm.img --format RAW
+	then
+		_messageNormal '_vdi_to_img: closemedium'
+		_labVBoxManage closemedium "$scriptLocal"/vm.img
+		_messagePlain_request 'request: rm '"$scriptLocal"/vm.vdi
+		_messagePlain_good 'End.'
+		return 0
+	fi
+	_labVBoxManage closemedium "$scriptLocal"/vm.img
+	return 1
 }
 
 #No production use. Not recommended except to accommodate MSW hosts.
 _img_to_vdi() {
-	_labVBoxManage convertdd "$scriptLocal"/vm.img "$scriptLocal"/vm.vdi --format VDI
+	_messageNormal '_img_to_vdi: init'
+	! [[ -e "$scriptLocal"/vm.img ]] && _messagePlain_bad 'fail: missing: in file' && return 1
+	[[ -e "$scriptLocal"/vm.vdi ]] && _messagePlain_request 'request: rm '"$scriptLocal"/vm.vdi && return 1
+	
+	_messageNormal '_img_to_vdi: convertdd'
+	if _labVBoxManage convertdd "$scriptLocal"/vm.img "$scriptLocal"/vm-c.vdi --format VDI
+	then
+		_messageNormal '_img_to_vdi: closemedium'
+		_labVBoxManage closemedium "$scriptLocal"/vm-c.vdi
+		mv -n "$scriptLocal"/vm-c.vdi "$scriptLocal"/vm.vdi
+		_messageNormal '_img_to_vdi: setuuid'
+		VBoxManage internalcommands sethduuid "$scriptLocal"/vm.vdi $(_vdi_read_UUID)
+		_messagePlain_request 'request: rm '"$scriptLocal"/vm.img
+		_messagePlain_good 'End.'
+		return 0
+	fi
+	
+	_messageFAIL
+	return 1
 }
 
 
