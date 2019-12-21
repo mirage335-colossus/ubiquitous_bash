@@ -14016,7 +14016,10 @@ _kernelConfig_require-memory() {
 	export kernelConfig_file="$1"
 	
 	# Uncertain.
+	# https://fa.linux.kernel.narkive.com/CNnVwDlb/hack-bench-regression-with-config-slub-cpu-partial-disabled-info-only
 	_kernelConfig_warn-y__ CONFIG_SLUB_CPU_PARTIAL
+	
+	# Uncertain.
 	_kernelConfig_warn-y__ CONFIG_TRANSPARENT_HUGEPAGE
 	_kernelConfig_warn-y__ CONFIG_CLEANCACHE
 	_kernelConfig_warn-y__ CONFIG_FRONTSWAP
