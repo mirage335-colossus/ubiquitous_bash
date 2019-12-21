@@ -232,6 +232,11 @@ _deps_stopwatch() {
 	export enUb_stopwatch="true"
 }
 
+# WARNING: Specifically refers to 'Linux', the kernel, and things specific to it, NOT any other UNIX like features.
+_deps_linux() {
+	export enUb_linux="true"
+}
+
 #placeholder, define under "metaengine/build"
 #_deps_metaengine() {
 #	_deps_notLean
