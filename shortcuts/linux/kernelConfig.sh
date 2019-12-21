@@ -118,7 +118,9 @@ _kernelConfig_require-tradeoff-harden() {
 	_kernelConfig__bad-y__ CONFIG_PAGE_TABLE_ISOLATION
 	_kernelConfig__bad-y__ CONFIG_X86_SMAP
 	
-	_kernelConfig__bad-y__ CONFIG_REFCOUNT_FULL
+	# Uncertain.
+	#_kernelConfig__bad-y__ CONFIG_REFCOUNT_FULL
+	
 	#_kernelConfig_warn-y__ CONFIG_DEBUG_NOTIFIERS
 	
 	_kernelConfig_warn-y__ CONFIG_FTRACE
@@ -317,7 +319,7 @@ _kernelConfig_require-arch-x64() {
 	_kernelConfig_warn-y_m CONFIG_EFIVAR_FS
 	
 	# Presumably mixing entropy may be preferable.
-	_kernelConfig__bad-y__ CONFIG_RANDOM_TRUST_CPU
+	_kernelConfig__bad-n__ CONFIG_RANDOM_TRUST_CPU
 	
 	
 	# If possible, it may be desirable to check clocksource defaults.
