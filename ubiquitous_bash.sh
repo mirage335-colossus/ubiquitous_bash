@@ -8373,6 +8373,17 @@ _stopChRoot() {
 	
 }
 
+
+# May override with 'ops.sh' or similar. Future development intended. Currently, creating an image of a physical device is strongly recommended instead.
+_detect_deviceAsChRootImage() {
+	false
+	
+	# TODO: Determine if "$ubVirtImageOverride" or "$scriptLocal" points to a device file (typically under '/dev').
+	# TODO: Should call separate function _detect_deviceAsVirtImage .
+	# DANGER: Functions under 'mountimage.sh' must also respect this.
+}
+
+
 #"$1" == ChRoot Dir
 _mountChRoot() {
 	_mustGetSudo
@@ -8570,7 +8581,7 @@ _mountChRoot_image_x64() {
 	[[ "$ubVirtImageOverride" != '' ]] && chrootvmimage="$ubVirtImageOverride"
 	
 	
-	if ! _detect_deviceAsVirtImage
+	if ! _detect_deviceAsChRootImage
 	then
 		sudo -n losetup -f -P --show "$chrootvmimage" > "$safeTmp"/imagedev 2> /dev/null || _stop 1
 		sudo -n partprobe > /dev/null 2>&1
@@ -8673,10 +8684,10 @@ _umountChRoot_image() {
 	local chrootimagedev
 	chrootimagedev=$(cat "$scriptLocal"/imagedev)
 	
-	! _detect_deviceAsVirtImage && ! sudo -n losetup -d "$chrootimagedev" > /dev/null 2>&1 && return 1
+	! _detect_deviceAsChRootImage && ! sudo -n losetup -d "$chrootimagedev" > /dev/null 2>&1 && return 1
 	sudo -n partprobe > /dev/null 2>&1
 	
-	! _detect_deviceAsVirtImage && ! rm -f "$scriptLocal"/imagedev && return 1
+	! _detect_deviceAsChRootImage && ! rm -f "$scriptLocal"/imagedev && return 1
 	
 	rm -f "$lock_quicktmp" > /dev/null 2>&1
 	
