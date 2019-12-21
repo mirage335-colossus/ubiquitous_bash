@@ -1,14 +1,15 @@
+# Also depends on '_labVBoxManage' .
 _test_vboxconvert() {
 	_getDep VBoxManage
 }
 
 _vdi_to_img() {
-	VBoxManage clonehd "$scriptLocal"/vm.vdi "$scriptLocal"/vm.img --format RAW
+	_labVBoxManage clonehd "$scriptLocal"/vm.vdi "$scriptLocal"/vm.img --format RAW
 }
 
 #No production use. Not recommended except to accommodate MSW hosts.
 _img_to_vdi() {
-	VBoxManage convertdd "$scriptLocal"/vm.img "$scriptLocal"/vm.vdi --format VDI
+	_labVBoxManage convertdd "$scriptLocal"/vm.img "$scriptLocal"/vm.vdi --format VDI
 }
 
 

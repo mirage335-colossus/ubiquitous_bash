@@ -50,6 +50,31 @@ _labVBox() {
 	_launch_lab_vbox "$@"
 }
 
+_launch_lab_vbox_manage_sequence() {
+	_start
+	
+	_prepare_lab_vbox || return 1
+	
+	#Directly opening raw images in the VBoxLab environment is not recommended, due to changing VMDK disk identifiers.
+	#Better practice may be to instead programmatically construct the raw image virtual machines before opening VBoxLab environment.
+	#_openVBoxRaw
+	
+	env HOME="$VBOX_USER_HOME_short" VBoxManage "$@"
+	
+	_wait_lab_vbox
+	
+	_stop
+}
+
+_launch_lab_vbox() {	
+	"$scriptAbsoluteLocation" _launch_lab_vbox_manage_sequence "$@"
+}
+
+_labVBoxManage() {
+	_launch_lab_vbox_manage
+}
+
+
 _vboxlabSSH() {
 	ssh -q -F "$scriptLocal"/vblssh -i "$scriptLocal"/id_rsa "$1"
 }
