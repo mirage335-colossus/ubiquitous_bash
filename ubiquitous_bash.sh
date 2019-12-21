@@ -9706,12 +9706,12 @@ _launch_lab_vbox_manage_sequence() {
 	_stop
 }
 
-_launch_lab_vbox() {	
+_launch_lab_vbox_manage() {	
 	"$scriptAbsoluteLocation" _launch_lab_vbox_manage_sequence "$@"
 }
 
 _labVBoxManage() {
-	_launch_lab_vbox_manage
+	_launch_lab_vbox_manage "$@"
 }
 
 
