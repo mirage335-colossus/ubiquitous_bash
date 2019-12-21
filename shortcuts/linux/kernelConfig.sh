@@ -187,6 +187,11 @@ _kernelConfig_require-virtualization-accessory() {
 	_kernelConfig_warn-y__ CONFIG_XEN_SYMS
 	
 	_kernelConfig_warn-y__ CONFIG_DRM_XEN
+	
+	# Uncertain.
+	#_kernelConfig_warn-n__ CONFIG_XEN_SELFBALLOONING
+	#_kernelConfig_warn-n__ CONFIG_IOMMU_DEFAULT_PASSTHROUGH
+	#_kernelConfig_warn-n__ CONFIG_INTEL_IOMMU_DEFAULT_ON
 }
 
 # https://wiki.gentoo.org/wiki/VirtualBox
@@ -324,6 +329,9 @@ _kernelConfig_require-arch-x64() {
 	_kernelConfig_warn-y__ HPET_MMAP
 	_kernelConfig_warn-y__ HPET_MMAP_DEFAULT
 	_kernelConfig_warn-y__ HPET_TIMER
+	
+	_kernelConfig__bad-y__ CONFIG_IA32_EMULATION
+	_kernelConfig__bad-y__ CONFIG_X86_X32
 }
 
 _kernelConfig_require-accessory() {
@@ -345,6 +353,9 @@ _kernelConfig_require-accessory() {
 	_kernelConfig_warn-y_m CONFIG_DRM_I915
 	_kernelConfig_warn-y_m CONFIG_DRM_VIA
 	_kernelConfig_warn-y_m CONFIG_DRM_NOUVEAU
+	
+	# Uncertain.
+	#_kernelConfig_warn-y__ CONFIG_IRQ_REMAP
 	
 	# TODO: Accessory features which may become interesting.
 	#ACPI_HMAT
@@ -393,6 +404,10 @@ _kernelConfig_require-latency() {
 	export kernelConfig_file="$1"
 	
 	# CRITICAL!
+	_kernelConfig__bad-y__ CPU_FREQ_DEFAULT_GOV_ONDEMAND
+	_kernelConfig__bad-y__ CONFIG_CPU_FREQ_GOV_ONDEMAND
+	
+	# CRITICAL!
 	# CONFIG_PREEMPT is significantly more stable and compatible with third party (eg. VirtualBox) modules.
 	# CONFIG_PREEMPT_RT is significantly less likely to incurr noticeable worst-case latency.
 	# Lack of both CONFIG_PREEMPT and CONFIG_PREEMPT_RT may incurr noticeable worst-case latency.
@@ -423,6 +438,8 @@ _kernelConfig_require-latency() {
 		_kernelConfig__bad-n__ CONFIG_NO_HZ_FULL
 		_kernelConfig__bad-n__ CONFIG_NO_HZ_IDLE
 		_kernelConfig__bad-n__ CONFIG_RCU_FAST_NO_HZ
+		
+		_kernelConfig__bad-y__ CPU_IDLE_GOV_MENU
 	fi
 	
 	# Essential.
@@ -451,6 +468,16 @@ _kernelConfig_require-latency() {
 	_kernelConfig__bad-y__ CONFIG_IOSCHED_BFQ
 	_kernelConfig__bad-y__ CONFIG_BFQ_GROUP_IOSCHED
 	
+	
+	# Uncertain.
+	# https://forum.manjaro.org/t/please-enable-writeback-throttling-by-default-linux-4-10/18135/22
+	#_kernelConfig__bad-y__ BLK_WBT
+	#_kernelConfig__bad-y__ BLK_WBT_MQ
+	#_kernelConfig__bad-y__ BLK_WBT_SQ
+	
+	# CRITICAL!
+	# Lightweight kernel compression theoretically may significantly accelerate startup from slow disks.
+	_kernelConfig__bad-y__ CONFIG_KERNEL_LZO
 }
 
 _kernelConfig_require-memory() {
