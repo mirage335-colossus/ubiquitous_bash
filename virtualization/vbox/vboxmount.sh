@@ -31,6 +31,7 @@ _mountVBox_raw_sequence() {
 	
 	rm -f "$vboxRaw" > /dev/null 2>&1
 	
+	# TODO: Ignore device files.
 	_messagePlain_nominal 'Creating loopback.'
 	! sudo -n losetup -f -P --show "$scriptLocal"/vm.img > "$safeTmp"/vboxloop 2> /dev/null && _messagePlain_bad 'fail: losetup' && _stop 1
 	
@@ -48,6 +49,7 @@ _mountVBox_raw_sequence() {
 	
 	! sudo -n chown "$USER" "$vboximagedev" && _messagePlain_bad 'chown vboximagedev= '"$vboximagedev" && _stop 1
 	
+	# TODO: Test use of device files.
 	_messagePlain_nominal 'Creating VBoxRaw.'
 	_create_vbox_raw "$vboximagedev"
 	
@@ -73,6 +75,7 @@ _umountVBox_raw() {
 	local vboximagedev
 	vboximagedev=$(cat "$scriptLocal"/vboxloop)
 	
+	# TODO: Ignore device files.
 	sudo -n losetup -d "$vboximagedev" > /dev/null 2>&1 || return 1
 	
 	rm -f "$scriptLocal"/vboxloop > /dev/null 2>&1

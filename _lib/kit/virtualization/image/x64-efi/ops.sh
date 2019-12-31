@@ -2,6 +2,23 @@
 export ubVirtImageLocal="true"
 
 
+[[ "$vboxOStype" == "" ]] && export vboxOStype=Debian_64
+#[[ "$vboxOStype" == "" ]] && export vboxOStype=Gentoo_64
+
+# DANGER: Do not set "vboxCPUs" unless specifically required.
+#export vboxCPUs=2
+
+# WARNING: Do not set "$vmMemoryAllocation" to a high number unless specifically required.
+#export vmMemoryAllocation=2048
+
+# WARNING: Do not set "vboxCPUsAllowManyCores" unless it is acceptable for guest to consume (at least nearly) 100% CPU cores/threads/time/resources.
+#export vboxCPUsAllowManyCores=true
+
+# DANGER: Do not set "vboxCPUsAllowManyThreads" if processor capabilities (eg. Intel Atom) will be uncertain and/or host/guest latencies may be important.
+#export vboxCPUsAllowManyThreads=true
+
+
+
 ###
 
 # ATTENTION: Override with 'ops', env, or similar.
@@ -13,18 +30,18 @@ export ubVirtImageLocal="true"
 #export ubVirtImageIsRootPartition='true'
 
 #export ubVirtImageIsDevice='true'
-#export ubVirtImageOverride='/dev/disk/by-id/identifier-part2'
+#export ubVirtImageOverride='/dev/disk/by-id/identifier-part3'
 
 # ATTENTION: Device file pointing to full disk, including partition table, for full booting.
 # Will take precedence over "ubVirtImageOverride" with virtualization backends capable of full booting.
 # vbox , qemu
-##export ubVirtDeviceOverride='/dev/disk/by-id/identifier'
+#export ubVirtDeviceOverride='/dev/disk/by-id/identifier'
 
 
 # ATTENTION: Explicitly override platform. Not all backends support all platforms.
 # chroot , qemu
 # x64-bios , raspbian , x64-efi
-export ubVirtPlatformOverride='raspbian'
+export ubVirtPlatformOverride='x64-efi'
 
 ###
 

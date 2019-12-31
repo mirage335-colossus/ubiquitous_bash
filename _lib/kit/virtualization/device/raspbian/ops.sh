@@ -10,15 +10,15 @@ export ubVirtImageLocal="true"
 # WARNING: Implies 'true' "ubVirtImageLocal" .
 
 # WARNING: Implies blank "ubVirtImagePartition" .
-#export ubVirtImageIsRootPartition='true'
+export ubVirtImageIsRootPartition='true'
 
-#export ubVirtImageIsDevice='true'
-#export ubVirtImageOverride='/dev/disk/by-id/identifier-part2'
+export ubVirtImageIsDevice='true'
+export ubVirtImageOverride='/dev/disk/by-id/identifier-part2'
 
 # ATTENTION: Device file pointing to full disk, including partition table, for full booting.
 # Will take precedence over "ubVirtImageOverride" with virtualization backends capable of full booting.
 # vbox , qemu
-##export ubVirtDeviceOverride='/dev/disk/by-id/identifier'
+#export ubVirtDeviceOverride='/dev/disk/by-id/identifier'
 
 
 # ATTENTION: Explicitly override platform. Not all backends support all platforms.

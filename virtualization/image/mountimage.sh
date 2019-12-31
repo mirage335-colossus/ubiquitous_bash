@@ -5,6 +5,180 @@ _test_image() {
 	#_getDep partprobe
 }
 
+
+
+###
+
+# ATTENTION: Override with 'ops', env, or similar.
+# DANGER: NOT respected (and possibly not needed) by some virtualization backends.
+# DANGER: Root image/device/partiton must be correct!
+# WARNING: Root/Image/Device override implies 'true' "ubVirtImageLocal" .
+
+# WARNING: Implies blank "ubVirtImagePartition" .
+#export ubVirtImageIsRootPartition='true'
+
+#export ubVirtImageIsDevice='true'
+#export ubVirtImageOverride='/dev/disk/by-id/identifier-part'
+
+# ATTENTION: Device file pointing to full disk, including partition table, for full booting.
+# Will take precedence over "ubVirtImageOverride" with virtualization backends capable of full booting.
+# vbox , qemu
+#export ubVirtDeviceOverride='/dev/disk/by-id/identifier'
+
+
+# ATTENTION: Explicitly override platform. Not all backends support all platforms.
+# chroot , qemu
+# x64-bios , raspbian , x64-efi
+#export ubVirtPlatformOverride='x64-bios'
+
+###
+
+
+
+###
+
+# ATTENTION: Override with 'ops' or similar.
+# WARNING: Do not override unnecessarily. Default rules are expected to accommodate typical requirements.
+
+# WARNING: Only applies to imagedev (text) loopback device.
+# x64 bios , raspbian , x64 efi (respectively)
+#export ubVirtImagePartition='p1'
+#export ubVirtImagePartition='p2'
+#export ubVirtImagePartition='p3'
+
+###
+
+
+
+# ATTENTION: Override with 'ops' or similar.
+# WARNING: Prefer to avoid override in favor of overriding other relevant variables or functions.
+# DANGER: Required for safety mechanisms which may also be used by some other virtualization backends!
+# WARNING: Dependency: Should run _loopImage_imagefilename .
+# "$1" == imagedev
+# "$2" == default (if any)
+_determine_rawFileRootPartition() {
+	# DANGER: REQUIRES image/device including ONLY root partition!
+	if [[ "$ubVirtImageIsRootPartition" == 'true' ]]
+	then
+		export ubVirtImagePartition=''
+		echo "$1"
+		return 0
+	fi
+	
+	if [[ "$ubVirtImagePartition" != "" ]]
+	then
+		echo "$1""$ubVirtImagePartition"
+		return 0
+	fi
+	
+	if [[ "$2" != "" ]]
+	then
+		export ubVirtImagePartition="$2"
+		echo "$1""$2"
+		return 0
+	fi
+	
+	#Platform defaults.
+	export ubVirtImagePartition=""
+	[[ "$ubVirtPlatform" == "x64-bios" ]] && export ubVirtImagePartition=p1
+	[[ "$ubVirtPlatform" == "x64-efi" ]] && export ubVirtImagePartition=p3
+	[[ "$ubVirtPlatform" == "raspbian" ]] && export ubVirtImagePartition=p2
+	
+	#Default.
+	# DANGER: Do NOT set blank.
+	[[ "$ubVirtImagePartition" == "" ]] && export ubVirtImagePartition=p1
+	
+	return 0
+}
+
+
+
+# ATTENTION: Override with 'ops' or similar.
+# WARNING: Uncommenting will cause losetup not to be used for 'vm.img' and similar even if symlinked to '/dev'. This will break 'ubVirtImagePartition' .
+# DANGER: Unnecessarily linking 'vm.img' or similar to device file strongly discouraged. May allow some virtualization backends to attempt to perform unsupported operations (ie. rm -f) on device file.
+_detect_deviceAsVirtImage_symlinks() {
+	#[[ -h "$scriptLocal"/vm.img ]] && readlink "$scriptLocal"/vm.img | grep ^\/dev\/\.\* > /dev/null 2>&1 && return 0
+	#[[ -h "$scriptLocal"/vm-x64.img ]] && readlink "$scriptLocal"/vm-x64.img | grep ^\/dev\/\.\* > /dev/null 2>&1 && return 0
+	#[[ -h "$scriptLocal"/vm-raspbian.img ]] && readlink "$scriptLocal"/vm-raspbian.img | grep ^\/dev\/\.\* > /dev/null 2>&1 && return 0
+	
+	# WARNING: Symlinks to locations outside a home subfolder (including relative symlinks) will be presumed to be device files if uncommented.
+	#[[ -h "$scriptLocal"/vm.img ]] && ! readlink "$scriptLocal"/vm.img | grep ^\/home\/\.\* > /dev/null 2>&1 && return 0
+	#[[ -h "$scriptLocal"/vm-x64.img ]] && ! readlink "$scriptLocal"/vm-x64.img | grep ^\/home\/\.\* > /dev/null 2>&1 && return 0
+	#[[ -h "$scriptLocal"/vm-raspbian.img ]] && ! readlink "$scriptLocal"/vm-raspbian.img | grep ^\/home\/\.\* > /dev/null 2>&1 && return 0
+	
+	return 1
+}
+
+
+# DANGER: Required for safety mechanisms which may also be used by some other virtualization backends!
+# DANGER: Multiple 'vm.img' variants (eg. 'vm-x64.img') available simultaneously is NOT deliberately supported and NOT safe!
+# DANGER: Multiple symlinks or other conditions may confuse this safety mechanism. Only intended to prevent casual misuse.
+# image
+# chroot
+# vbox
+# qemu
+# "$1" == imagefilename
+_detect_deviceAsVirtImage() {
+	[[ "$ubVirtImageIsDevice" != "" ]] && return 0
+	[[ "$ubVirtImageOverride" == '/dev/'* ]] && return 0
+	
+	[[ "$1" == '/dev/'* ]] && return 0
+	
+	
+	[[ "$1" != "" ]] && [[ -h "$1" ]] && ! readlink "$1" | grep ^\/dev\/\.\* > /dev/null 2>&1 && return 1
+	[[ "$1" != "" ]] && [[ -e "$1" ]] && return 1
+	_detect_deviceAsVirtImage_symlinks "$1" && return 0
+	
+	return 1
+}
+
+# ATTENTION: Override with 'ops' or similar.
+# WARNING: Prefer to avoid override in favor of overriding other relevant variables or functions.
+# DANGER: Required for safety mechanisms which may also be used by some other virtualization backends!
+# "$1" == imagedev
+# "$2" == imagepart
+_determine_rawIsRootPartition() {
+	[[ "$ubVirtImageIsRootPartition" == 'true' ]] && return 0
+	[[ "$1" == "$2" ]] && return 0
+	return 1
+}
+
+
+_loopImage_imagefilename() {
+	local current_imagefilename
+	[[ -e "$scriptLocal"/vm-raspbian.img ]] && current_imagefilename="$scriptLocal"/vm-raspbian.img && export ubVirtPlatform=raspbian
+	[[ -e "$scriptLocal"/vm-x64.img ]] && current_imagefilename="$scriptLocal"/vm-x64.img && export ubVirtPlatform=x64-bios
+	[[ -e "$scriptLocal"/vm.img ]] && current_imagefilename="$scriptLocal"/vm.img && export ubVirtPlatform=x64-bios
+	[[ "$ubVirtImageOverride" != "" ]] && current_imagefilename="$ubVirtImageOverride"
+	
+	
+	[[ "$ubVirtPlatform" == "" ]] && export ubVirtPlatform=x64-bios
+	[[ "$ubVirtPlatformOverride" != "" ]] && export ubVirtPlatform="$ubVirtPlatformOverride"
+	
+	echo "$current_imagefilename"
+}
+
+
+# "$1" == imagefilename
+# "$2" == imagedev (text)
+_loopImage_sequence_losetup() {
+	if _detect_deviceAsVirtImage "$1"
+	then
+		! [[ -e "$1" ]] || _stop 1
+		echo "$1" > "$safeTmp"/imagedev
+		sudo -n partprobe > /dev/null 2>&1
+		
+		cp -n "$safeTmp"/imagedev "$2" > /dev/null 2>&1 || _stop 1
+		return 0
+	fi
+	
+	sudo -n losetup -f -P --show "$1" > "$safeTmp"/imagedev 2> /dev/null || _stop 1
+	sudo -n partprobe > /dev/null 2>&1
+	
+	cp -n "$safeTmp"/imagedev "$2" > /dev/null 2>&1 || _stop 1
+	return 0
+}
+
 _loopImage_sequence() {
 	_mustGetSudo
 	
@@ -14,21 +188,43 @@ _loopImage_sequence() {
 	
 	[[ -e "$scriptLocal"/imagedev ]] && _stop 1
 	
-	local imagefilename
-	[[ -e "$scriptLocal"/vm-raspbian.img ]] && imagefilename="$scriptLocal"/vm-raspbian.img
-	#[[ -e "$scriptLocal"/vm-x64.img ]] && imagefilename="$scriptLocal"/vm-x64.img
-	[[ -e "$scriptLocal"/vm.img ]] && imagefilename="$scriptLocal"/vm.img
+	local current_imagefilename
+	current_imagefilename=$(_loopImage_imagefilename)
 	
-	sudo -n losetup -f -P --show "$imagefilename" > "$safeTmp"/imagedev 2> /dev/null || _stop 1
-	sudo -n partprobe > /dev/null 2>&1
-	
-	cp -n "$safeTmp"/imagedev "$scriptLocal"/imagedev > /dev/null 2>&1 || _stop 1
+	_loopImage_sequence_losetup "$current_imagefilename" "$scriptLocal"/imagedev
 	
 	_stop 0
 }
 
 _loopImage() {
-	"$scriptAbsoluteLocation" _loopImage_sequence
+	"$scriptAbsoluteLocation" _loopImage_sequence "$@"
+}
+
+
+# ATTENTION: Override with 'ops' or similar.
+# DANGER: Allowing types other than 'ext4' (eg. fat), may allow mounting of filesystems other than an UNIX-like userspace root.
+_mountImageFS_sequence_blkid_fstype() {
+	! [[ "$1" == "ext4" ]] && _stop 1
+	return 0
+}
+
+# "$1" == imagedev
+# "$2" == imagepart
+# "$3" == dirVirtFS (RESERVED)
+_mountImageFS_sequence_blkid() {
+	local loopdevfs
+	
+	# DANGER: Must ignore/reject 'PTTYPE' field if given.
+	if _determine_rawIsRootPartition "$1" "$2"
+	then
+		loopdevfs=$(eval $(sudo -n blkid "$2" | tr -dc 'a-zA-Z0-9\=\"' | awk ' { print $3 } '); echo $TYPE)
+	else
+		loopdevfs=$(eval $(sudo -n blkid "$2" | tr -dc 'a-zA-Z0-9\=\"' | awk ' { print $4 } '); echo $TYPE)
+	fi
+	
+	! _mountImageFS_sequence_blkid_fstype "$loopdevfs" && _stop 1
+	
+	return 0
 }
 
 _mountImageFS_sequence() {
@@ -40,19 +236,18 @@ _mountImageFS_sequence() {
 	
 	"$scriptAbsoluteLocation" _checkForMounts "$globalVirtFS" && _stop 1
 	
-	local imagedev
-	imagedev=$(cat "$scriptLocal"/imagedev)
+	local current_imagedev
+	current_imagedev=$(cat "$scriptLocal"/imagedev)
 	
-	local imagepart
-	#imagepart="$imagedev"p2
-	imagepart="$imagedev"p1
+	local current_imagepart
+	current_imagepart=$(_determine_rawFileRootPartition "$current_imagedev")
+	#current_imagepart=$(_determine_rawFileRootPartition "$current_imagedev" "x64-bios")
 	
-	local loopdevfs
-	loopdevfs=$(eval $(sudo -n blkid "$imagepart" | awk ' { print $3 } '); echo $TYPE)
 	
-	! [[ "$loopdevfs" == "ext4" ]] && _stop 1
+	_mountImageFS_sequence_blkid "$current_imagedev" "$current_imagepart" "$globalVirtFS" || _stop 1
 	
-	sudo -n mount "$imagepart" "$globalVirtFS" || _stop 1
+	
+	sudo -n mount "$current_imagepart" "$globalVirtFS" || _stop 1
 	
 	mountpoint "$globalVirtFS" > /dev/null 2>&1 || _stop 1
 	
@@ -64,44 +259,69 @@ _mountImageFS() {
 }
 
 _mountImage() {
-	"$scriptAbsoluteLocation" _loopImage_sequence 
+	"$scriptAbsoluteLocation" _loopImage_sequence
 	"$scriptAbsoluteLocation" _mountImageFS_sequence
+}
+
+# "$1" == imagedev
+# "$2" == imagedev (text)
+# "$3" == imagefilename
+_unmountLoop_losetup() {
+	#if _detect_deviceAsVirtImage "$3" || [[ "$1" == '/dev/loop'* ]]
+	if _detect_deviceAsVirtImage "$3"
+	then
+		! [[ -e "$1" ]] || return 1
+		! [[ -e "$2" ]] || return 1
+		! [[ -e "$3" ]] || return 1
+		sudo -n partprobe > /dev/null 2>&1
+		
+		rm -f "$2" || return 1
+		return 0
+	fi
+	
+	# DANGER: Should never happen.
+	[[ "$1" == '/dev/loop'* ]] || return 1
+	
+	# WARNING: Should never happen.
+	! [[ -e "$3" ]] || return 1
+	
+	sudo -n losetup -d "$1" > /dev/null 2>&1 || return 1
+	sudo -n partprobe > /dev/null 2>&1
+	
+	rm -f "$2" || return 1
+	return 0
 }
 
 _umountLoop() {
 	_mustGetSudo || return 1
 	
-	local imagedev
-	imagedev=$(cat "$scriptLocal"/imagedev)
+	[[ -e "$scriptLocal"/imagedev ]] || return 1
+	local current_imagedev
+	current_imagedev=$(cat "$scriptLocal"/imagedev 2>/dev/null)
 	
-	sudo -n losetup -d "$imagedev" > /dev/null 2>&1 || return 1
-	sudo -n partprobe > /dev/null 2>&1
 	
-	rm -f "$scriptLocal"/imagedev || return 1
+	# WARNING: Consistent rules required to select correct imagefilename for both _umountLoop and _loopImage regardless of VM backend or 'ops' overrides.
+	local current_imagefilename
+	current_imagefilename=$(_loopImage_imagefilename)
+	
+	_unmountLoop_losetup "$current_imagedev" "$scriptLocal"/imagedev "$current_imagefilename" || return 1
 	
 	rm -f "$lock_quicktmp" > /dev/null 2>&1
 	
 	return 0
 }
 
-# TODO Duplicates some code from _umountLoop. Test, and remove.
 _umountImage() {
 	_mustGetSudo || return 1
 	
 	sudo -n umount "$globalVirtFS" > /dev/null 2>&1
 	
 	#Uniquely, it is desirable to allow unmounting to proceed a little further if the filesystem was not mounted to begin with. Enables manual intervention.
+	
+	#Filesystem must be unmounted before proceeding.
 	_readyImage "$globalVirtFS" && return 1
 	
-	local imagedev
-	imagedev=$(cat "$scriptLocal"/imagedev)
-	
-	sudo -n losetup -d "$imagedev" > /dev/null 2>&1 || return 1
-	sudo -n partprobe > /dev/null 2>&1
-	
-	rm -f "$scriptLocal"/imagedev || return 1
-	
-	rm -f "$lock_quicktmp" > /dev/null 2>&1
+	! _umountLoop && return 1
 	
 	return 0
 }

@@ -122,7 +122,7 @@ _buildGosu_sequence() {
 	mkdir -p "$GNUPGHOME"
 	chmod 700 "$shortTmp"/bgosu
 	gpg --keyserver ha.pool.sks-keyservers.net --recv-keys B42F6819007F00F88E364FD4036A9C25BF357DD4 || _stop 1
-	gpg --armor --export 036A9C25BF357DD4 > "$safeTmp"/gosudev.asc || stop 1
+	gpg --armor --export 036A9C25BF357DD4 > "$safeTmp"/gosudev.asc || _stop 1
 	
 	if [[ "$haveGosuBin" != "true" ]]
 	then
