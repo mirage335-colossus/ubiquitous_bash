@@ -64,7 +64,7 @@ _createFS_sequence() {
 	imagepart="$imagedev"p1
 	
 	local loopdevfs
-	loopdevfs=$(eval $(sudo -n blkid "$imagepart" | awk ' { print $3 } '); echo $TYPE)
+	loopdevfs=$(sudo -n blkid -s TYPE -o value "$imagepart" | tr -dc 'a-zA-Z0-9')
 	[[ "$loopdevfs" == "ext4" ]] && _stop 1
 	sudo -n mkfs.ext4 "$imagepart" > /dev/null 2>&1 || _stop 1
 	
