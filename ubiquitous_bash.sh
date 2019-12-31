@@ -7675,7 +7675,7 @@ _loopImage_imagefilename() {
 
 # "$1" == imagefilename
 # "$2" == imagedev (text)
-_loopImage_sequence_losetup() {
+_loopImage_procedure_losetup() {
 	if _detect_deviceAsVirtImage "$1"
 	then
 		! [[ -e "$1" ]] || _stop 1
@@ -7705,7 +7705,7 @@ _loopImage_sequence() {
 	local current_imagefilename
 	current_imagefilename=$(_loopImage_imagefilename)
 	
-	_loopImage_sequence_losetup "$current_imagefilename" "$scriptLocal"/imagedev
+	_loopImage_procedure_losetup "$current_imagefilename" "$scriptLocal"/imagedev
 	
 	_stop 0
 }
@@ -7717,7 +7717,7 @@ _loopImage() {
 
 # ATTENTION: Override with 'ops' or similar.
 # DANGER: Allowing types other than 'ext4' (eg. fat), may allow mounting of filesystems other than an UNIX-like userspace root.
-_mountImageFS_sequence_blkid_fstype() {
+_mountImageFS_procedure_blkid_fstype() {
 	! [[ "$1" == "ext4" ]] && _stop 1
 	return 0
 }
@@ -7725,18 +7725,18 @@ _mountImageFS_sequence_blkid_fstype() {
 # "$1" == imagedev
 # "$2" == imagepart
 # "$3" == dirVirtFS (RESERVED)
-_mountImageFS_sequence_blkid() {
+_mountImageFS_procedure_blkid() {
 	local loopdevfs
 	
 	# DANGER: Must ignore/reject 'PTTYPE' field if given.
 	if _determine_rawIsRootPartition "$1" "$2"
 	then
-		loopdevfs=$(eval $(sudo -n blkid "$2" | tr -dc 'a-zA-Z0-9\=\"' | awk ' { print $3 } '); echo $TYPE)
-	else
 		loopdevfs=$(eval $(sudo -n blkid "$2" | tr -dc 'a-zA-Z0-9\=\"' | awk ' { print $4 } '); echo $TYPE)
+	else
+		loopdevfs=$(eval $(sudo -n blkid "$2" | tr -dc 'a-zA-Z0-9\=\"' | awk ' { print $3 } '); echo $TYPE)
 	fi
 	
-	! _mountImageFS_sequence_blkid_fstype "$loopdevfs" && _stop 1
+	! _mountImageFS_procedure_blkid_fstype "$loopdevfs" && _stop 1
 	
 	return 0
 }
@@ -7750,6 +7750,9 @@ _mountImageFS_sequence() {
 	
 	"$scriptAbsoluteLocation" _checkForMounts "$globalVirtFS" && _stop 1
 	
+	# Include platform determination code for correct determination of partition.
+	_loopImage_imagefilename
+	
 	local current_imagedev
 	current_imagedev=$(cat "$scriptLocal"/imagedev)
 	
@@ -7758,7 +7761,7 @@ _mountImageFS_sequence() {
 	#current_imagepart=$(_determine_rawFileRootPartition "$current_imagedev" "x64-bios")
 	
 	
-	_mountImageFS_sequence_blkid "$current_imagedev" "$current_imagepart" "$globalVirtFS" || _stop 1
+	_mountImageFS_procedure_blkid "$current_imagedev" "$current_imagepart" "$globalVirtFS" || _stop 1
 	
 	
 	sudo -n mount "$current_imagepart" "$globalVirtFS" || _stop 1
