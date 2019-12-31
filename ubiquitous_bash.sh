@@ -7797,7 +7797,7 @@ _unmountLoop_losetup() {
 	[[ "$1" == '/dev/loop'* ]] || return 1
 	
 	# WARNING: Should never happen.
-	! [[ -e "$3" ]] || return 1
+	[[ -e "$3" ]] || return 1
 	
 	sudo -n losetup -d "$1" > /dev/null 2>&1 || return 1
 	sudo -n partprobe > /dev/null 2>&1
