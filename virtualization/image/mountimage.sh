@@ -88,6 +88,8 @@ _determine_rawFileRootPartition() {
 	# DANGER: Do NOT set blank.
 	[[ "$ubVirtImagePartition" == "" ]] && export ubVirtImagePartition=p1
 	
+	echo "$1""$ubVirtImagePartition"
+	
 	return 0
 }
 
@@ -215,12 +217,13 @@ _mountImageFS_procedure_blkid() {
 	local loopdevfs
 	
 	# DANGER: Must ignore/reject 'PTTYPE' field if given.
-	if _determine_rawIsRootPartition "$1" "$2"
-	then
-		loopdevfs=$(eval $(sudo -n blkid "$2" | tr -dc 'a-zA-Z0-9\=\"' | awk ' { print $4 } '); echo $TYPE)
-	else
-		loopdevfs=$(eval $(sudo -n blkid "$2" | tr -dc 'a-zA-Z0-9\=\"' | awk ' { print $3 } '); echo $TYPE)
-	fi
+	#if _determine_rawIsRootPartition "$1" "$2"
+	#then
+		#loopdevfs=$(eval $(sudo -n blkid "$2" | tr -dc 'a-zA-Z0-9\=\"\ \:\/\-' | awk ' { print $4 } '); echo $TYPE)
+	#else
+		#loopdevfs=$(eval $(sudo -n blkid "$2" | tr -dc 'a-zA-Z0-9\=\"\ \:\/\-' | awk ' { print $3 } '); echo $TYPE)
+	#fi
+	loopdevfs=$(sudo -n blkid -s TYPE -o value "$2" | tr -dc 'a-zA-Z0-9')
 	
 	! _mountImageFS_procedure_blkid_fstype "$loopdevfs" && _stop 1
 	
@@ -237,7 +240,7 @@ _mountImageFS_sequence() {
 	"$scriptAbsoluteLocation" _checkForMounts "$globalVirtFS" && _stop 1
 	
 	# Include platform determination code for correct determination of partition.
-	_loopImage_imagefilename
+	_loopImage_imagefilename > /dev/null 2>&1
 	
 	local current_imagedev
 	current_imagedev=$(cat "$scriptLocal"/imagedev)
