@@ -66,6 +66,8 @@ _mountChRoot() {
 	then
 		echo 'nameserver 2001:4860:4860::8888' | sudo -n tee -a "$absolute1"/etc/resolv.conf > /dev/null 2>&1
 	fi
+	
+	return 0
 }
 
 #"$1" == ChRoot Dir
@@ -92,8 +94,8 @@ _umountChRoot() {
 	
 	_wait_umount "$absolute1"/dev
 	
-	_wait_umount "$absolute1" >/dev/null 2>&1
-	
+	# Full umount of chroot directory may be done by standard '_umountImage'.
+	#_wait_umount "$absolute1" >/dev/null 2>&1
 }
 
 _readyChRoot() {
@@ -132,51 +134,25 @@ _mountChRoot_image_raspbian() {
 	
 	"$scriptAbsoluteLocation" _checkForMounts "$chrootDir" && _stop 1
 	
-	if sudo -n losetup -f -P --show "$scriptLocal"/vm-raspbian.img > "$safeTmp"/imagedev 2> /dev/null
-	then
-		#Preemptively declare device open to prevent potentially dangerous multiple mount attempts.
-		#Should now be redundant with use of lock_opening .
-		#_createLocked "$lock_open" || _stop 1
-		
-		sudo -n partprobe > /dev/null 2>&1
-		
-		cp -n "$safeTmp"/imagedev "$scriptLocal"/imagedev > /dev/null 2>&1 || _stop 1
-		
-		local chrootimagedev
-		chrootimagedev=$(cat "$safeTmp"/imagedev)
-		
-		local chrootimagepart
-		chrootimagepart="$chrootimagedev"p2
-		
-		#local chrootloopdevfs
-		#chrootloopdevfs=$(eval $(sudo -n blkid "$chrootimagepart" | awk ' { print $3 } '); echo $TYPE)
-		#if [[ "$chrootloopdevfs" == "ext4" ]]
-		
-		if sudo -n blkid "$chrootimagepart" | grep 'ext4' > /dev/null 2>&1
-		then
-			
-			sudo -n mount "$chrootimagepart" "$chrootDir" || _stop 1
-			
-			mountpoint "$chrootDir" > /dev/null 2>&1 || _stop 1
-			
-			_mountChRoot "$chrootDir"
-			
-			_readyChRoot "$chrootDir" || _stop 1
-			
-			sudo -n cp /usr/bin/qemu-arm-static "$chrootDir"/usr/bin/
-			sudo -n cp /usr/bin/qemu-armeb-static "$chrootDir"/usr/bin/
-			
-			sudo -n cp -n "$chrootDir"/etc/ld.so.preload "$chrootDir"/etc/ld.so.preload.orig
-			echo | sudo -n tee "$chrootDir"/etc/ld.so.preload > /dev/null 2>&1
-			
-			! _mountChRoot_image_raspbian_prog "$chrootimagedev" && _stop 1
-			
-			_stop 0
-		fi
-		
-	fi
 	
-	_stop 1
+	! _mountImage "$chrootDir" && _stop 1
+	
+	
+	
+	_mountChRoot "$chrootDir"
+	
+	_readyChRoot "$chrootDir" || _stop 1
+	
+	sudo -n cp /usr/bin/qemu-arm-static "$chrootDir"/usr/bin/
+	sudo -n cp /usr/bin/qemu-armeb-static "$chrootDir"/usr/bin/
+	
+	sudo -n cp -n "$chrootDir"/etc/ld.so.preload "$chrootDir"/etc/ld.so.preload.orig
+	echo | sudo -n tee "$chrootDir"/etc/ld.so.preload > /dev/null 2>&1
+	
+	! _mountChRoot_image_raspbian_prog && _stop 1
+	
+	
+	_stop 0
 }
 
 _umountChRoot_directory_raspbian() {
@@ -199,43 +175,10 @@ _mountChRoot_image_x64() {
 	
 	"$scriptAbsoluteLocation" _checkForMounts "$chrootDir" && _stop 1
 	
-	local chrootvmimage
-	[[ -e "$scriptLocal"/vm-x64.img ]] && chrootvmimage="$scriptLocal"/vm-x64.img
-	[[ -e "$scriptLocal"/vm.img ]] && chrootvmimage="$scriptLocal"/vm.img
 	
-	[[ "$ubVirtImageOverride" != '' ]] && chrootvmimage="$ubVirtImageOverride"
+	! _mountImage "$chrootDir" && _stop 1
 	
 	
-	if ! _detect_deviceAsChRootImage
-	then
-		sudo -n losetup -f -P --show "$chrootvmimage" > "$safeTmp"/imagedev 2> /dev/null || _stop 1
-		sudo -n partprobe > /dev/null 2>&1
-		
-		cp -n "$safeTmp"/imagedev "$scriptLocal"/imagedev > /dev/null 2>&1 || _stop 1
-		
-		local chrootimagedev
-		chrootimagedev=$(cat "$safeTmp"/imagedev)
-		
-		local chrootimagepart
-		#chrootimagepart="$chrootimagedev"p2
-		chrootimagepart="$chrootimagedev"p1
-		
-	fi
-	
-	# DANGER: REQUIRES image including only root partition!
-	[[ "$ubVirtImageIsRootPartition" == 'true' ]] && chrootimagepart="$chrootimagedev"
-	
-	local chrootloopdevfs
-	chrootloopdevfs=$(eval $(sudo -n blkid "$chrootimagepart" | awk ' { print $3 } '); echo $TYPE)
-	
-	# DANGER: REQUIRES image including only root partition!
-	[[ "$ubVirtImageIsRootPartition" == 'true' ]] && chrootloopdevfs=$(eval $(sudo -n blkid "$chrootimagepart" | awk ' { print $4 } '); echo $TYPE)
-	
-	! [[ "$chrootloopdevfs" == "ext4" ]] && _stop 1
-	
-	sudo -n mount "$chrootimagepart" "$chrootDir" || _stop 1
-	
-	mountpoint "$chrootDir" > /dev/null 2>&1 || _stop 1
 	
 	_mountChRoot "$chrootDir"
 	
@@ -253,42 +196,58 @@ _umountChRoot_directory_x64() {
 _mountChRoot_image() {
 	_tryExecFull _hook_systemd_shutdown_action "_closeChRoot_emergency" "$sessionid"
 	
-	if [[ -e "$scriptLocal"/vm-raspbian.img ]]
+	# Include platform determination code for correct determination of partition and mounts.
+	_loopImage_imagefilename > /dev/null 2>&1
+	
+	if [[ "$ubVirtPlatform" == "raspbian" ]]
 	then
-		"$scriptAbsoluteLocation" _mountChRoot_image_raspbian
+		_mountChRoot_image_raspbian
 		return "$?"
 	fi
 	
-	if [[ -e "$scriptLocal"/vm-x64.img ]]
+	if [[ "$ubVirtPlatform" == "x64"* ]]
 	then
-		"$scriptAbsoluteLocation" _mountChRoot_image_x64
+		_mountChRoot_image_x64
 		return "$?"
 	fi
 	
-	#Default "vm.img" will be operated on as x64 image.
+	#Default x64 .
 	"$scriptAbsoluteLocation" _mountChRoot_image_x64
 	return "$?"
 }
 
-_umountChRoot_directory() {
-	if [[ -e "$scriptLocal"/vm-raspbian.img ]]
+_umountChRoot_directory_platform() {
+	# Include platform determination code for correct determination of partition and mounts.
+	_loopImage_imagefilename > /dev/null 2>&1
+	
+	if [[ "$ubVirtPlatform" == "raspbian" ]]
 	then
-		"$scriptAbsoluteLocation" _umountChRoot_directory_raspbian || return "$?"
+		"$scriptAbsoluteLocation" _umountChRoot_directory_raspbian
+		return "$?"
 	fi
 	
-	if [[ -e "$scriptLocal"/vm-x64.img ]]
+	if [[ "$ubVirtPlatform" == "x64"* ]]
 	then
-		"$scriptAbsoluteLocation" _umountChRoot_directory_x64 || return "$?"
+		"$scriptAbsoluteLocation" _umountChRoot_directory_x64
+		return "$?"
 	fi
 	
 	#Default "vm.img" will be operated on as x64 image.
-	"$scriptAbsoluteLocation" _umountChRoot_directory_x64 || return "$?"
+	"$scriptAbsoluteLocation" _umountChRoot_directory_x64
+	return "$?"
+}
+
+_umountChRoot_directory() {
+	! _umountChRoot_directory_platform && return 1
 	
 	_stopChRoot "$1"
 	_umountChRoot "$1"
-	mountpoint "$1" > /dev/null 2>&1 && sudo -n umount "$1"
 	
-	"$scriptAbsoluteLocation" _checkForMounts "$1" && return 1
+	# Full umount of chroot directory may be done by standard '_umountImage'.
+	#mountpoint "$1" > /dev/null 2>&1 && sudo -n umount "$1"
+	#"$scriptAbsoluteLocation" _checkForMounts "$1" && return 1
+	
+	return 0
 }
 
 # ATTENTION: Override with "core.sh" or similar.
@@ -304,17 +263,12 @@ _umountChRoot_image() {
 	
 	! _umountChRoot_image_prog && return 1
 	
-	[[ -d "$globalVirtFS"/../boot ]] && mountpoint "$globalVirtFS"/../boot >/dev/null 2>&1 && sudo -n umount "$globalVirtFS"/../boot
+	[[ -d "$globalVirtFS"/../boot ]] && mountpoint "$globalVirtFS"/../boot >/dev/null 2>&1 && sudo -n umount "$globalVirtFS"/../boot >/dev/null 2>&1
 	
-	local chrootimagedev
-	chrootimagedev=$(cat "$scriptLocal"/imagedev)
 	
-	! _detect_deviceAsChRootImage && ! sudo -n losetup -d "$chrootimagedev" > /dev/null 2>&1 && return 1
-	sudo -n partprobe > /dev/null 2>&1
+	_umountImage "$chrootDir"
 	
-	! _detect_deviceAsChRootImage && ! rm -f "$scriptLocal"/imagedev && return 1
 	
-	rm -f "$lock_quicktmp" > /dev/null 2>&1
 	
 	rm -f "$permaLog"/gsysd.log > /dev/null 2>&1
 	

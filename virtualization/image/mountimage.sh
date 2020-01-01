@@ -6,6 +6,8 @@ _test_image() {
 }
 
 
+# ATTENTION: WARNING: TODO: UNCOMMENT SAFE/EMPTY CONFIGURATION VARIABLES HERE IF NEEDED TO RESET ENVIRONMENT!
+
 
 ###
 
@@ -146,6 +148,8 @@ _determine_rawIsRootPartition() {
 }
 
 
+# DANGER: Required for safety mechanisms which may also be used by some other virtualization backends!
+# DANGER: Exact values of 'ubVirtPlatform' and other variables may be required by other virtualization backends!
 _loopImage_imagefilename() {
 	local current_imagefilename
 	[[ -e "$scriptLocal"/vm-raspbian.img ]] && current_imagefilename="$scriptLocal"/vm-raspbian.img && export ubVirtPlatform=raspbian
@@ -199,7 +203,11 @@ _loopImage_sequence() {
 }
 
 _loopImage() {
-	"$scriptAbsoluteLocation" _loopImage_sequence "$@"
+	if "$scriptAbsoluteLocation" _loopImage_sequence "$@"
+	then
+		return 0
+	fi
+	return 1
 }
 
 
@@ -230,16 +238,21 @@ _mountImageFS_procedure_blkid() {
 	return 0
 }
 
+# "$1" == destinationDir (default: "$globalVirtFS")
 _mountImageFS_sequence() {
 	_mustGetSudo
 	
 	_start
 	
+	local currentDestinationDir
+	currentDestinationDir="$1"
+	[[ "$currentDestinationDir" == "" ]] && currentDestinationDir="$globalVirtFS"
+	
 	mkdir -p "$globalVirtFS"
 	
-	"$scriptAbsoluteLocation" _checkForMounts "$globalVirtFS" && _stop 1
+	"$scriptAbsoluteLocation" _checkForMounts "$currentDestinationDir" && _stop 1
 	
-	# Include platform determination code for correct determination of partition.
+	# Include platform determination code for correct determination of partition and mounts.
 	_loopImage_imagefilename > /dev/null 2>&1
 	
 	local current_imagedev
@@ -250,23 +263,32 @@ _mountImageFS_sequence() {
 	#current_imagepart=$(_determine_rawFileRootPartition "$current_imagedev" "x64-bios")
 	
 	
-	_mountImageFS_procedure_blkid "$current_imagedev" "$current_imagepart" "$globalVirtFS" || _stop 1
+	_mountImageFS_procedure_blkid "$current_imagedev" "$current_imagepart" "$currentDestinationDir" || _stop 1
 	
 	
-	sudo -n mount "$current_imagepart" "$globalVirtFS" || _stop 1
+	sudo -n mount "$current_imagepart" "$currentDestinationDir" || _stop 1
 	
-	mountpoint "$globalVirtFS" > /dev/null 2>&1 || _stop 1
+	mountpoint "$currentDestinationDir" > /dev/null 2>&1 || _stop 1
 	
 	_stop 0
 }
 
 _mountImageFS() {
-	"$scriptAbsoluteLocation" _mountImageFS_sequence
+	if "$scriptAbsoluteLocation" _mountImageFS_sequence
+	then
+		return 0
+	fi
+	return 1
 }
 
 _mountImage() {
-	"$scriptAbsoluteLocation" _loopImage_sequence
-	"$scriptAbsoluteLocation" _mountImageFS_sequence
+	# Include platform determination code for correct determination of partition and mounts.
+	_loopImage_imagefilename > /dev/null 2>&1
+	
+	! _loopImage && _stop 1
+	! _mountImageFS "$1" && _stop 1
+	
+	return 0
 }
 
 # "$1" == imagedev
@@ -317,15 +339,20 @@ _umountLoop() {
 	return 0
 }
 
+# "$1" == destinationDir (default: "$globalVirtFS")
 _umountImage() {
 	_mustGetSudo || return 1
 	
-	sudo -n umount "$globalVirtFS" > /dev/null 2>&1
+	local currentDestinationDir
+	currentDestinationDir="$1"
+	[[ "$currentDestinationDir" == "" ]] && currentDestinationDir="$globalVirtFS"
+	
+	sudo -n umount "$currentDestinationDir" > /dev/null 2>&1
 	
 	#Uniquely, it is desirable to allow unmounting to proceed a little further if the filesystem was not mounted to begin with. Enables manual intervention.
 	
 	#Filesystem must be unmounted before proceeding.
-	_readyImage "$globalVirtFS" && return 1
+	_readyImage "$currentDestinationDir" && return 1
 	
 	! _umountLoop && return 1
 	

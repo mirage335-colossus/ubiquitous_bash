@@ -97,6 +97,7 @@ In most user environments, the latest git repository code will provide the stron
 * Automatically adjust limits and priorities based on system latency impacts correlated to program operation.
 
 * Voice commands using Pocket Sphinx and limited vocabulary. Specifically NOT a 'digital assistant'.
+* Voice feedback.
 
 # Known Issues
 
