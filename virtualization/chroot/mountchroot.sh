@@ -259,7 +259,7 @@ _umountChRoot_image_prog() {
 _umountChRoot_image() {
 	_mustGetSudo || return 1
 	
-	_umountChRoot_directory "$chrootDir" && return 1
+	! _umountChRoot_directory "$chrootDir" && return 1
 	
 	! _umountChRoot_image_prog && return 1
 	
