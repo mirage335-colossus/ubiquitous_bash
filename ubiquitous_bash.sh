@@ -8793,7 +8793,7 @@ _mountChRoot_image_raspbian() {
 	! _mountChRoot_image_raspbian_prog && _stop 1
 	
 	
-	_stop 0
+	return 0
 }
 
 _umountChRoot_directory_raspbian() {
@@ -8825,7 +8825,7 @@ _mountChRoot_image_x64() {
 	
 	_readyChRoot "$chrootDir" || _stop 1
 	
-	_stop 0
+	return 0
 }
 
 _umountChRoot_directory_x64() {
