@@ -3,7 +3,7 @@ _dropChRoot() {
 	# Change to localPWD or home.
 	cd "$localPWD"
 	
-	"$scriptAbsoluteLocation" _gosuExecVirt cp -r /etc/skel/. "$virtGuestHomeDrop" > dev/null 2>&1
+	"$scriptAbsoluteLocation" _gosuExecVirt cp -r /etc/skel/. "$virtGuestHomeDrop" > /dev/null 2>&1
 	
 	"$scriptAbsoluteLocation" _gosuExecVirt "$scriptAbsoluteLocation" _setupUbiquitous_nonet > /dev/null 2>&1
 	
