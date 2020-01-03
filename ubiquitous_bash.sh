@@ -9884,7 +9884,7 @@ _mountVBox_raw_sequence() {
 	
 	
 	local vboximagedev
-	vboximagedev=$(cat "$safeTmp"/vboxloop)
+	vboximagedev=$(cat "$scriptLocal"/vboxloop)
 	
 	
 	if _detect_deviceAsVirtImage "$current_imagefilename"
