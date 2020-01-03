@@ -11,8 +11,34 @@ _qemu_system_aarch64() {
 	qemu-system-aarch64 "$@"
 }
 
+_integratedQemu_imagefilename() {
+	if [[ "$ubVirtDiskOverride" == "" ]]
+	then
+		local current_imagefilename
+		if ! current_imagefilename=$(_loopImage_imagefilename)
+		then
+			_messagePlain_bad 'fail: missing: vm*.img'
+			return 1
+		fi
+	else
+		current_imagefilename="$ubVirtDiskOverride"
+	fi
+	
+	echo "$current_imagefilename"
+	
+	return 0
+}
+
 _integratedQemu_x64() {
 	_messagePlain_nominal 'init: _integratedQemu_x64'
+	
+	
+	local current_imagefilename
+	if ! current_imagefilename=$(_integratedQemu_imagefilename)
+	then
+		_stop 1
+	fi
+	
 	
 	! mkdir -p "$instancedVirtDir" && _messagePlain_bad 'fail: mkdir -p instancedVirtDir= '"$instancedVirtDir" && _stop 1
 	
@@ -54,7 +80,11 @@ _integratedQemu_x64() {
 	[[ "$hostThreadCount" -ge "4" ]] && [[ "$hostThreadCount" -lt "8" ]] && _messagePlain_probe 'cpu: >4' && qemuArgs+=(-smp 4)
 	[[ "$hostThreadCount" -ge "8" ]] && _messagePlain_probe 'cpu: >6' && qemuArgs+=(-smp 6)
 	
-	qemuUserArgs+=(-drive format=raw,file="$scriptLocal"/vm.img -drive file="$hostToGuestISO",media=cdrom -boot c)
+	#https://superuser.com/questions/342719/how-to-boot-a-physical-windows-partition-with-qemu
+	#qemuUserArgs+=(-drive format=raw,file="$scriptLocal"/vm.img)
+	qemuUserArgs+=(-drive format=raw,file="$current_imagefilename")
+	
+	qemuUserArgs+=(-drive file="$hostToGuestISO",media=cdrom -boot c)
 	
 	[[ "$vmMemoryAllocation" == "" ]] && vmMemoryAllocation="$vmMemoryAllocationDefault"
 	qemuUserArgs+=(-m "$vmMemoryAllocation")
@@ -101,6 +131,14 @@ _integratedQemu_x64() {
 _integratedQemu_raspi() {
 	_messagePlain_nominal 'init: _integratedQemu_raspi'
 	
+	
+	local current_imagefilename
+	if ! current_imagefilename=$(_integratedQemu_imagefilename)
+	then
+		_stop 1
+	fi
+	
+	
 	! mkdir -p "$instancedVirtDir" && _messagePlain_bad 'fail: mkdir -p instancedVirtDir= '"$instancedVirtDir" && _stop 1
 	
 	! _commandBootdisc "$@" && _messagePlain_bad 'fail: _commandBootdisc' && _stop 1
@@ -115,8 +153,13 @@ _integratedQemu_raspi() {
 	#local hostThreadCount=$(cat /proc/cpuinfo | grep MHz | wc -l | tr -dc '0-9')
 	#[[ "$hostThreadCount" -ge "4" ]] && _messagePlain_probe 'cpu: >4' && qemuArgs+=(-smp 4)
 	
-	qemuUserArgs+=(-drive format=raw,file="$scriptLocal"/vm-raspbian.img)
+	#https://superuser.com/questions/342719/how-to-boot-a-physical-windows-partition-with-qemu
+	#qemuUserArgs+=(-drive format=raw,file="$scriptLocal"/vm-raspbian.img)
+	qemuUserArgs+=(-drive format=raw,file="$current_imagefilename")
+	
+	
 	#qemuUserArgs+=(-drive if=none,id=uas-cdrom,media=cdrom,file="$hostToGuestISO" -device nec-usb-xhci,id=xhci -device usb-uas,id=uas,bus=xhci.0 -device scsi-cd,bus=uas.0,scsi-id=0,lun=5,drive=uas-cdrom)
+	
 	qemuUserArgs+=(-drive file="$hostToGuestISO",media=cdrom -boot c)
 	
 	#[[ "$vmMemoryAllocation" == "" ]] && vmMemoryAllocation="$vmMemoryAllocationDefault"
@@ -152,20 +195,24 @@ _integratedQemu_raspi() {
 }
 
 _integratedQemu() {
-	if [[ -e "$scriptLocal"/vm.img ]]
+	# Include platform determination code for correct determination of partition and mounts.
+	_loopImage_imagefilename > /dev/null 2>&1
+	
+	if [[ "$ubVirtPlatform" == "x64"* ]]
 	then
-		_integratedQemu_x64 "$@"
-		return 0
+		_integratedQemu_x64
+		return "$?"
 	fi
 	
-	if [[ -e "$scriptLocal"/vm-raspbian.img ]]
+	if [[ "$ubVirtPlatform" == "raspbian" ]]
 	then
-		_integratedQemu_raspi "$@"
-		return 0
+		_integratedQemu_raspi
+		return "$?"
 	fi
 	
-	_messagePlain_bad 'fail: missing: vm*.img'
-	return 1
+	#Default x64 .
+	"$scriptAbsoluteLocation" _integratedQemu_x64
+	return "$?"
 }
 
 #"${qemuSpecialArgs[@]}" == ["-snapshot "]
