@@ -9789,11 +9789,14 @@ _integratedQemu() {
 	# Include platform determination code for correct determination of partition and mounts.
 	_loopImage_imagefilename > /dev/null 2>&1
 	
-	if [[ "$ubVirtPlatform" == "x64"* ]]
+	if [[ "$ubVirtPlatform" == "x64-bios" ]]
 	then
 		_integratedQemu_x64
 		return "$?"
 	fi
+	
+	# TODO: 'efi' .
+	#https://unix.stackexchange.com/questions/52996/how-to-boot-efi-kernel-using-qemu-kvm
 	
 	if [[ "$ubVirtPlatform" == "raspbian" ]]
 	then
