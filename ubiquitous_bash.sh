@@ -7536,10 +7536,10 @@ _test_image() {
 #export ubVirtImageIsDevice='true'
 #export ubVirtImageOverride='/dev/disk/by-id/identifier-part'
 
-# ATTENTION: Device file pointing to full disk, including partition table, for full booting.
+# ATTENTION: Path pointing to full disk device or image, including partition table, for full booting.
 # Will take precedence over "ubVirtImageOverride" with virtualization backends capable of full booting.
 # vbox , qemu
-#export ubVirtDeviceOverride='/dev/disk/by-id/identifier'
+#export ubVirtDiskOverride='/dev/disk/by-id/identifier'
 
 
 # ATTENTION: Explicitly override platform. Not all backends support all platforms.
@@ -7699,6 +7699,8 @@ _loopImage_procedure_losetup() {
 	return 0
 }
 
+# DANGER: Optional parameter intended only for virtualization backends using only loopback devices without filesystem mounting (vbox) .
+# "$1" == imagedev (text)
 _loopImage_sequence() {
 	_mustGetSudo
 	
@@ -7706,12 +7708,16 @@ _loopImage_sequence() {
 	
 	mkdir -p "$globalVirtFS"
 	
-	[[ -e "$scriptLocal"/imagedev ]] && _stop 1
+	local current_imagedev_text
+	current_imagedev_text="$1"
+	[[ "$current_imagedev_text" == "" ]] && current_imagedev_text="$scriptLocal"/imagedev
+	
+	[[ -e "$current_imagedev_text" ]] && _stop 1
 	
 	local current_imagefilename
 	current_imagefilename=$(_loopImage_imagefilename)
 	
-	_loopImage_procedure_losetup "$current_imagefilename" "$scriptLocal"/imagedev
+	_loopImage_procedure_losetup "$current_imagefilename" "$current_imagedev_text"
 	
 	_stop 0
 }
@@ -7721,6 +7727,41 @@ _loopImage() {
 	then
 		return 0
 	fi
+	return 1
+}
+
+# DANGER: Only use with backends supporting full disk booting!
+# "$1" == imagedev (text)
+_loopFull_procedure() {
+	if [[ "$ubVirtDiskOverride" == "" ]]
+	then
+		! _loopImage "$1" && _stop 1
+	else
+		! _loopImage_procedure_losetup "$ubVirtDiskOverride" "$1" && _stop 1
+	fi
+	return 0
+}
+
+# "$1" == imagedev (text)
+_loopFull_sequence() {
+	_start
+	
+	if ! _loopFull_procedure "$@"
+	then
+		_stop 1
+	fi
+	
+	_stop 0
+}
+
+# "$1" == imagedev (text)
+_loopFull() {
+	if "$scriptAbsoluteLocation" _loopFull_sequence "$@"
+	then
+		return 0
+	fi
+	
+	# Typically requires "_stop 1" .
 	return 1
 }
 
@@ -7834,23 +7875,62 @@ _unmountLoop_losetup() {
 	return 0
 }
 
+# DANGER: Optional parameter intended only for virtualization backends using only loopback devices without filesystem mounting (vbox) .
+# "$1" == imagedev (text)
 _umountLoop() {
 	_mustGetSudo || return 1
 	
-	[[ -e "$scriptLocal"/imagedev ]] || return 1
+	local current_imagedev_text
+	current_imagedev_text="$1"
+	[[ "$current_imagedev_text" == "" ]] && current_imagedev_text="$scriptLocal"/imagedev
+	
+	[[ -e "$current_imagedev_text" ]] || return 1
 	local current_imagedev
-	current_imagedev=$(cat "$scriptLocal"/imagedev 2>/dev/null)
+	current_imagedev=$(cat "$current_imagedev_text" 2>/dev/null)
 	
 	
 	# WARNING: Consistent rules required to select correct imagefilename for both _umountLoop and _loopImage regardless of VM backend or 'ops' overrides.
 	local current_imagefilename
 	current_imagefilename=$(_loopImage_imagefilename)
 	
-	_unmountLoop_losetup "$current_imagedev" "$scriptLocal"/imagedev "$current_imagefilename" || return 1
+	_unmountLoop_losetup "$current_imagedev" "$current_imagedev_text" "$current_imagefilename" || return 1
 	
 	rm -f "$lock_quicktmp" > /dev/null 2>&1
 	
 	return 0
+}
+
+# DANGER: Only use with backends supporting full disk booting!
+# "$1" == imagedev (text)
+_umountFull_procedure() {
+	if [[ "$ubVirtDiskOverride" == "" ]]
+	then
+		! _umountLoop "$1" && _stop 1
+	else
+		! _unmountLoop_losetup "$ubVirtDiskOverride" "$1" "$ubVirtDiskOverride" && _stop 1
+	fi
+	return 0
+}
+
+_umountFull_sequence() {
+	_start
+	
+	if ! _umountFull_procedure "$@"
+	then
+		_stop 1
+	fi
+	
+	_stop 0
+}
+
+_umountFull() {
+	if "$scriptAbsoluteLocation" _umountFull_sequence "$@"
+	then
+		return 0
+	fi
+	
+	# Typically requires "_stop 1" .
+	return 1
 }
 
 # "$1" == destinationDir (default: "$globalVirtFS")
@@ -9749,6 +9829,8 @@ _testVBox() {
 _checkVBox_raw() {
 	#Use existing VDI image if available.
 	[[ -e "$scriptLocal"/vm.vdi ]] && _messagePlain_bad 'conflict: vm.vdi' && return 1
+	
+	# WARNING: Only 'vm.img' is supported as a raw image file name for vbox virtualization backend.
 	[[ ! -e "$scriptLocal"/vm.img ]] && _messagePlain_bad 'missing: vm.img' && return 1
 	
 	return 0
@@ -9765,7 +9847,6 @@ _create_vbox_raw() {
 	return 0
 }
 
-
 _mountVBox_raw_sequence() {
 	_messagePlain_nominal 'start: _mountVBox_raw_sequence'
 	_start
@@ -9778,14 +9859,7 @@ _mountVBox_raw_sequence() {
 	
 	rm -f "$vboxRaw" > /dev/null 2>&1
 	
-	# TODO: Ignore device files.
-	_messagePlain_nominal 'Creating loopback.'
-	! sudo -n losetup -f -P --show "$scriptLocal"/vm.img > "$safeTmp"/vboxloop 2> /dev/null && _messagePlain_bad 'fail: losetup' && _stop 1
 	
-	! cp -n "$safeTmp"/vboxloop "$scriptLocal"/vboxloop > /dev/null 2>&1 && _messagePlain_bad 'fail: copy vboxloop' && _stop 1
-	
-	local vboximagedev
-	vboximagedev=$(cat "$safeTmp"/vboxloop)
 	
 	if _tryExecFull _hook_systemd_shutdown_action "_closeVBoxRaw" "$sessionid"
 	then
@@ -9794,11 +9868,37 @@ _mountVBox_raw_sequence() {
 		_messagePlain_bad 'fail: _hook_systemd_shutdown_action'
 	fi
 	
-	! sudo -n chown "$USER" "$vboximagedev" && _messagePlain_bad 'chown vboximagedev= '"$vboximagedev" && _stop 1
 	
-	# TODO: Test use of device files.
+	
+	
+	local current_imagefilename
+	current_imagefilename=$(_loopImage_imagefilename)
+	
+	_messagePlain_nominal 'Creating loopback.'
+	
+	# Echo error message.
+	[[ -e "$scriptLocal"/vboxloop ]] && _messagePlain_bad 'fail: copy vboxloop' && _stop 1
+	
+	! _loopFull "$scriptLocal"/vboxloop && _messagePlain_bad 'fail: losetup' && _stop 1
+	
+	
+	
+	local vboximagedev
+	vboximagedev=$(cat "$safeTmp"/vboxloop)
+	
+	
+	if _detect_deviceAsVirtImage "$current_imagefilename"
+	then
+		_messagePlain_warn 'warn: chown: ignoring device'
+	else
+		! sudo -n chown "$USER" "$vboximagedev" && _messagePlain_bad 'chown vboximagedev= '"$vboximagedev" && _stop 1
+	fi
+	
+	
 	_messagePlain_nominal 'Creating VBoxRaw.'
 	_create_vbox_raw "$vboximagedev"
+	
+	
 	
 	_messagePlain_nominal 'stop: _mountVBox_raw_sequence'
 	_safeRMR "$instancedVirtDir" || _stop 1
@@ -9819,11 +9919,7 @@ _waitVBox_opening() {
 }
 
 _umountVBox_raw() {
-	local vboximagedev
-	vboximagedev=$(cat "$scriptLocal"/vboxloop)
-	
-	# TODO: Ignore device files.
-	sudo -n losetup -d "$vboximagedev" > /dev/null 2>&1 || return 1
+	! _umountFull "$scriptLocal"/vboxloop && _stop 1
 	
 	rm -f "$scriptLocal"/vboxloop > /dev/null 2>&1
 	rm -f "$vboxRaw" > /dev/null 2>&1
@@ -10279,11 +10375,12 @@ _create_instance_vbox() {
 	#Use existing VDI image if available.
 	if ! [[ -e "$scriptLocal"/vm.vdi ]]
 	then
-		_messagePlain_nominal 'Missing VDI. Attempting to create from IMG.'
+		# IMG file may be a device file. See 'virtualization/image/mountimage.sh' .
+		_messagePlain_nominal 'Missing VDI. Attempting to open IMG.'
 		! _openVBoxRaw && _messageError 'FAIL' && return 1
 	fi
 	
-	_messagePlain_nominal 'Checking VDI file.'
+	_messagePlain_nominal 'Checking VDI or IMG availability.'
 	export vboxInstanceDiskImage="$scriptLocal"/vm.vdi
 	_readLocked "$lock_open" && vboxInstanceDiskImage="$vboxRaw"
 	! [[ -e "$vboxInstanceDiskImage" ]] && _messagePlain_bad 'missing: vboxInstanceDiskImage= '"$vboxInstanceDiskImage" && return 1
@@ -10292,6 +10389,15 @@ _create_instance_vbox() {
 	_set_instance_vbox_type
 	
 	! _set_instance_vbox_features && _messageError 'FAIL' && return 1
+	
+	
+	if [[ "$ubVirtPlatformOverride" == *'efi' ]]
+	then
+		VBoxManage modifyvm "$sessionid" --firmware efi64
+	else
+		# Default.
+		VBoxManage modifyvm "$sessionid" --firmware bios
+	fi
 	
 	! _set_instance_vbox_features_app && _messageError 'FAIL: unknown app failure' && return 1
 	

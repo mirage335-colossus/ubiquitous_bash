@@ -2,6 +2,8 @@
 _checkVBox_raw() {
 	#Use existing VDI image if available.
 	[[ -e "$scriptLocal"/vm.vdi ]] && _messagePlain_bad 'conflict: vm.vdi' && return 1
+	
+	# WARNING: Only 'vm.img' is supported as a raw image file name for vbox virtualization backend.
 	[[ ! -e "$scriptLocal"/vm.img ]] && _messagePlain_bad 'missing: vm.img' && return 1
 	
 	return 0
@@ -18,7 +20,6 @@ _create_vbox_raw() {
 	return 0
 }
 
-
 _mountVBox_raw_sequence() {
 	_messagePlain_nominal 'start: _mountVBox_raw_sequence'
 	_start
@@ -31,14 +32,7 @@ _mountVBox_raw_sequence() {
 	
 	rm -f "$vboxRaw" > /dev/null 2>&1
 	
-	# TODO: Ignore device files.
-	_messagePlain_nominal 'Creating loopback.'
-	! sudo -n losetup -f -P --show "$scriptLocal"/vm.img > "$safeTmp"/vboxloop 2> /dev/null && _messagePlain_bad 'fail: losetup' && _stop 1
 	
-	! cp -n "$safeTmp"/vboxloop "$scriptLocal"/vboxloop > /dev/null 2>&1 && _messagePlain_bad 'fail: copy vboxloop' && _stop 1
-	
-	local vboximagedev
-	vboximagedev=$(cat "$safeTmp"/vboxloop)
 	
 	if _tryExecFull _hook_systemd_shutdown_action "_closeVBoxRaw" "$sessionid"
 	then
@@ -47,11 +41,37 @@ _mountVBox_raw_sequence() {
 		_messagePlain_bad 'fail: _hook_systemd_shutdown_action'
 	fi
 	
-	! sudo -n chown "$USER" "$vboximagedev" && _messagePlain_bad 'chown vboximagedev= '"$vboximagedev" && _stop 1
 	
-	# TODO: Test use of device files.
+	
+	
+	local current_imagefilename
+	current_imagefilename=$(_loopImage_imagefilename)
+	
+	_messagePlain_nominal 'Creating loopback.'
+	
+	# Echo error message.
+	[[ -e "$scriptLocal"/vboxloop ]] && _messagePlain_bad 'fail: copy vboxloop' && _stop 1
+	
+	! _loopFull "$scriptLocal"/vboxloop && _messagePlain_bad 'fail: losetup' && _stop 1
+	
+	
+	
+	local vboximagedev
+	vboximagedev=$(cat "$safeTmp"/vboxloop)
+	
+	
+	if _detect_deviceAsVirtImage "$current_imagefilename"
+	then
+		_messagePlain_warn 'warn: chown: ignoring device'
+	else
+		! sudo -n chown "$USER" "$vboximagedev" && _messagePlain_bad 'chown vboximagedev= '"$vboximagedev" && _stop 1
+	fi
+	
+	
 	_messagePlain_nominal 'Creating VBoxRaw.'
 	_create_vbox_raw "$vboximagedev"
+	
+	
 	
 	_messagePlain_nominal 'stop: _mountVBox_raw_sequence'
 	_safeRMR "$instancedVirtDir" || _stop 1
@@ -72,11 +92,7 @@ _waitVBox_opening() {
 }
 
 _umountVBox_raw() {
-	local vboximagedev
-	vboximagedev=$(cat "$scriptLocal"/vboxloop)
-	
-	# TODO: Ignore device files.
-	sudo -n losetup -d "$vboximagedev" > /dev/null 2>&1 || return 1
+	! _umountFull "$scriptLocal"/vboxloop && _stop 1
 	
 	rm -f "$scriptLocal"/vboxloop > /dev/null 2>&1
 	rm -f "$vboxRaw" > /dev/null 2>&1

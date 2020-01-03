@@ -22,10 +22,10 @@ _test_image() {
 #export ubVirtImageIsDevice='true'
 #export ubVirtImageOverride='/dev/disk/by-id/identifier-part'
 
-# ATTENTION: Device file pointing to full disk, including partition table, for full booting.
+# ATTENTION: Path pointing to full disk device or image, including partition table, for full booting.
 # Will take precedence over "ubVirtImageOverride" with virtualization backends capable of full booting.
 # vbox , qemu
-#export ubVirtDeviceOverride='/dev/disk/by-id/identifier'
+#export ubVirtDiskOverride='/dev/disk/by-id/identifier'
 
 
 # ATTENTION: Explicitly override platform. Not all backends support all platforms.
@@ -185,6 +185,8 @@ _loopImage_procedure_losetup() {
 	return 0
 }
 
+# DANGER: Optional parameter intended only for virtualization backends using only loopback devices without filesystem mounting (vbox) .
+# "$1" == imagedev (text)
 _loopImage_sequence() {
 	_mustGetSudo
 	
@@ -192,12 +194,16 @@ _loopImage_sequence() {
 	
 	mkdir -p "$globalVirtFS"
 	
-	[[ -e "$scriptLocal"/imagedev ]] && _stop 1
+	local current_imagedev_text
+	current_imagedev_text="$1"
+	[[ "$current_imagedev_text" == "" ]] && current_imagedev_text="$scriptLocal"/imagedev
+	
+	[[ -e "$current_imagedev_text" ]] && _stop 1
 	
 	local current_imagefilename
 	current_imagefilename=$(_loopImage_imagefilename)
 	
-	_loopImage_procedure_losetup "$current_imagefilename" "$scriptLocal"/imagedev
+	_loopImage_procedure_losetup "$current_imagefilename" "$current_imagedev_text"
 	
 	_stop 0
 }
@@ -207,6 +213,41 @@ _loopImage() {
 	then
 		return 0
 	fi
+	return 1
+}
+
+# DANGER: Only use with backends supporting full disk booting!
+# "$1" == imagedev (text)
+_loopFull_procedure() {
+	if [[ "$ubVirtDiskOverride" == "" ]]
+	then
+		! _loopImage "$1" && _stop 1
+	else
+		! _loopImage_procedure_losetup "$ubVirtDiskOverride" "$1" && _stop 1
+	fi
+	return 0
+}
+
+# "$1" == imagedev (text)
+_loopFull_sequence() {
+	_start
+	
+	if ! _loopFull_procedure "$@"
+	then
+		_stop 1
+	fi
+	
+	_stop 0
+}
+
+# "$1" == imagedev (text)
+_loopFull() {
+	if "$scriptAbsoluteLocation" _loopFull_sequence "$@"
+	then
+		return 0
+	fi
+	
+	# Typically requires "_stop 1" .
 	return 1
 }
 
@@ -320,23 +361,62 @@ _unmountLoop_losetup() {
 	return 0
 }
 
+# DANGER: Optional parameter intended only for virtualization backends using only loopback devices without filesystem mounting (vbox) .
+# "$1" == imagedev (text)
 _umountLoop() {
 	_mustGetSudo || return 1
 	
-	[[ -e "$scriptLocal"/imagedev ]] || return 1
+	local current_imagedev_text
+	current_imagedev_text="$1"
+	[[ "$current_imagedev_text" == "" ]] && current_imagedev_text="$scriptLocal"/imagedev
+	
+	[[ -e "$current_imagedev_text" ]] || return 1
 	local current_imagedev
-	current_imagedev=$(cat "$scriptLocal"/imagedev 2>/dev/null)
+	current_imagedev=$(cat "$current_imagedev_text" 2>/dev/null)
 	
 	
 	# WARNING: Consistent rules required to select correct imagefilename for both _umountLoop and _loopImage regardless of VM backend or 'ops' overrides.
 	local current_imagefilename
 	current_imagefilename=$(_loopImage_imagefilename)
 	
-	_unmountLoop_losetup "$current_imagedev" "$scriptLocal"/imagedev "$current_imagefilename" || return 1
+	_unmountLoop_losetup "$current_imagedev" "$current_imagedev_text" "$current_imagefilename" || return 1
 	
 	rm -f "$lock_quicktmp" > /dev/null 2>&1
 	
 	return 0
+}
+
+# DANGER: Only use with backends supporting full disk booting!
+# "$1" == imagedev (text)
+_umountFull_procedure() {
+	if [[ "$ubVirtDiskOverride" == "" ]]
+	then
+		! _umountLoop "$1" && _stop 1
+	else
+		! _unmountLoop_losetup "$ubVirtDiskOverride" "$1" "$ubVirtDiskOverride" && _stop 1
+	fi
+	return 0
+}
+
+_umountFull_sequence() {
+	_start
+	
+	if ! _umountFull_procedure "$@"
+	then
+		_stop 1
+	fi
+	
+	_stop 0
+}
+
+_umountFull() {
+	if "$scriptAbsoluteLocation" _umountFull_sequence "$@"
+	then
+		return 0
+	fi
+	
+	# Typically requires "_stop 1" .
+	return 1
 }
 
 # "$1" == destinationDir (default: "$globalVirtFS")

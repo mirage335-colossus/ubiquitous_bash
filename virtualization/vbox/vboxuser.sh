@@ -310,11 +310,12 @@ _create_instance_vbox() {
 	#Use existing VDI image if available.
 	if ! [[ -e "$scriptLocal"/vm.vdi ]]
 	then
-		_messagePlain_nominal 'Missing VDI. Attempting to create from IMG.'
+		# IMG file may be a device file. See 'virtualization/image/mountimage.sh' .
+		_messagePlain_nominal 'Missing VDI. Attempting to open IMG.'
 		! _openVBoxRaw && _messageError 'FAIL' && return 1
 	fi
 	
-	_messagePlain_nominal 'Checking VDI file.'
+	_messagePlain_nominal 'Checking VDI or IMG availability.'
 	export vboxInstanceDiskImage="$scriptLocal"/vm.vdi
 	_readLocked "$lock_open" && vboxInstanceDiskImage="$vboxRaw"
 	! [[ -e "$vboxInstanceDiskImage" ]] && _messagePlain_bad 'missing: vboxInstanceDiskImage= '"$vboxInstanceDiskImage" && return 1
@@ -323,6 +324,15 @@ _create_instance_vbox() {
 	_set_instance_vbox_type
 	
 	! _set_instance_vbox_features && _messageError 'FAIL' && return 1
+	
+	
+	if [[ "$ubVirtPlatformOverride" == *'efi' ]]
+	then
+		VBoxManage modifyvm "$sessionid" --firmware efi64
+	else
+		# Default.
+		VBoxManage modifyvm "$sessionid" --firmware bios
+	fi
 	
 	! _set_instance_vbox_features_app && _messageError 'FAIL: unknown app failure' && return 1
 	
