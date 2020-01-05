@@ -10362,13 +10362,32 @@ _set_instance_vbox_features() {
 		return 1
 	fi
 	
+	# Linux hosts may benefit from 'vboxsvga' instead of 'vmsvga'.
+	#https://wiki.gentoo.org/wiki/VirtualBox
+	if [[ "$vboxOStype" == *"Debian"* ]] || [[ "$vboxOStype" == *"Gentoo"* ]]
+	then
+		# Assuming x64 hosts served by VBox will have at least 'Intel HD Graphics 3000' (as found on X220 laptop/tablet) equivalent. Lesser hardware not recommended.
+		if [[ "$vboxCPUs" -ge "2" ]]
+		then
+			if ! _messagePlain_probe_cmd VBoxManage modifyvm "$sessionid" --graphicscontroller vboxsvga --accelerate3d on --accelerate2dvideo off
+			then
+				_messagePlain_warn 'warn: fail: VBoxManage: --graphicscontroller vboxsvga --accelerate3d on --accelerate2dvideo off'
+			fi
+		else
+			if ! _messagePlain_probe_cmd VBoxManage modifyvm "$sessionid" --graphicscontroller vboxsvga --accelerate3d off --accelerate2dvideo off
+			then
+				_messagePlain_warn 'warn: fail: VBoxManage: --graphicscontroller vboxsvga --accelerate3d off --accelerate2dvideo off'
+			fi
+		fi
+	fi
+	
 	# Assuming x64 hosts served by VBox will have at least 'Intel HD Graphics 3000' (as found on X220 laptop/tablet) equivalent. Lesser hardware not recommended.
 	if [[ "$vboxOStype" == *"Win"*"10"* ]] && [[ "$vboxCPUs" -ge "2" ]]
 	then
 		_messagePlain_probe VBoxManage modifyvm "$sessionid" --graphicscontroller vboxsvga --accelerate3d on --accelerate2dvideo on
 		if ! VBoxManage modifyvm "$sessionid" --graphicscontroller vboxsvga --accelerate3d on --accelerate2dvideo on
 		then
-			_messagePlain_warn 'warn: VBoxManage: --graphicscontroller vboxsvga --accelerate3d on --accelerate2dvideo on'
+			_messagePlain_warn 'warn: fail: VBoxManage: --graphicscontroller vboxsvga --accelerate3d on --accelerate2dvideo on'
 		fi
 	fi
 	
