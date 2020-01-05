@@ -295,6 +295,7 @@ _set_instance_vbox_features_app() {
 _set_instance_vbox_features_app_post() {
 	true
 	
+	# WARNING: Change to 'SATA Controller' if appropriate.
 	#if ! _messagePlain_probe_cmd VBoxManage storageattach "$sessionid" --storagectl "IDE Controller" --port 2 --device 0 --type hdd --medium "$scriptLocal"/vm_bulk.vdi --mtype "immutable"
 	#then
 	#	_messagePlain_warn 'fail: vm_bulk.vdi'
