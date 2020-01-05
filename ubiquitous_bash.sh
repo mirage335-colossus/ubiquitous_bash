@@ -10113,7 +10113,7 @@ _labVBox_migrate() {
 
 
 
-_prepare_instance_vbox() {
+f_prepare_instance_vbox() {
 	_prepare_vbox "$instancedVirtDir"
 }
 
@@ -10420,6 +10420,50 @@ _set_instance_vbox_command() {
 	return 0
 }
 
+_create_instance_vbox_storageattach_ide() {
+	_messagePlain_nominal 'Attaching local filesystems.'
+	! VBoxManage storagectl "$sessionid" --name "IDE Controller" --add ide --controller PIIX4 && _messagePlain_bad 'fail: VBoxManage... attach ide controller'
+	
+	#export vboxDiskMtype="normal"
+	#[[ "$vboxDiskMtype" == "" ]] && export vboxDiskMtype="multiattach"
+	[[ "$vboxDiskMtype" == "" ]] && export vboxDiskMtype="immutable"
+	_messagePlain_probe 'vboxDiskMtype= '"$vboxDiskMtype"
+	
+	_messagePlain_probe VBoxManage storageattach "$sessionid" --storagectl "IDE Controller" --port 0 --device 0 --type hdd --medium "$vboxInstanceDiskImage" --mtype "$vboxDiskMtype"
+	! VBoxManage storageattach "$sessionid" --storagectl "IDE Controller" --port 0 --device 0 --type hdd --medium "$vboxInstanceDiskImage" --mtype "$vboxDiskMtype" && _messagePlain_bad 'fail: VBoxManage... attach vboxInstanceDiskImage= '"$vboxInstanceDiskImage"
+	
+	[[ -e "$hostToGuestISO" ]] && ! VBoxManage storageattach "$sessionid" --storagectl "IDE Controller" --port 1 --device 0 --type dvddrive --medium "$hostToGuestISO" && _messagePlain_bad 'fail: VBoxManage... attach hostToGuestISO= '"$hostToGuestISO"
+}
+
+_create_instance_vbox_storageattach_sata() {
+	_messagePlain_nominal 'Attaching local filesystems.'
+	! VBoxManage storagectl "$sessionid" --name "SATA Controller" --add sata --controller IntelAHCI --hostiocache on && _messagePlain_bad 'fail: VBoxManage... attach sata controller'
+	
+	#export vboxDiskMtype="normal"
+	#[[ "$vboxDiskMtype" == "" ]] && export vboxDiskMtype="multiattach"
+	[[ "$vboxDiskMtype" == "" ]] && export vboxDiskMtype="immutable"
+	_messagePlain_probe 'vboxDiskMtype= '"$vboxDiskMtype"
+	
+	_messagePlain_probe VBoxManage storageattach "$sessionid" --storagectl "SATA Controller" --port 0 --device 0 --type hdd --medium "$vboxInstanceDiskImage" --mtype "$vboxDiskMtype"
+	! VBoxManage storageattach "$sessionid" --storagectl "SATA Controller" --port 0 --device 0 --type hdd --medium "$vboxInstanceDiskImage" --mtype "$vboxDiskMtype" && _messagePlain_bad 'fail: VBoxManage... attach vboxInstanceDiskImage= '"$vboxInstanceDiskImage"
+	
+	[[ -e "$hostToGuestISO" ]] && ! VBoxManage storageattach "$sessionid" --storagectl "SATA Controller" --port 1 --device 0 --type dvddrive --medium "$hostToGuestISO" && _messagePlain_bad 'fail: VBoxManage... attach hostToGuestISO= '"$hostToGuestISO"
+}
+
+_create_instance_vbox_storageattach() {
+	# IDE Controller found to have some problems with at least Gentoo_64 EFI guests.
+	# WARNING: Do NOT change without consideration for legacy VMs.
+	if [[ "$ubVirtPlatformOverride" == *'efi' ]] || ( [[ "$vboxOStype" != "" ]] && [[ "$vboxOStype" != *"Debian"* ]] && [[ "$vboxOStype" != *"Win"*"XP"* ]] && [[ "$vboxOStype" != *"Win"*"10"* ]] && [[ "$vboxOStype" != *"Win"* ]] )
+	then
+		_create_instance_vbox_storageattach_sata
+		return
+	fi
+	
+	# Legacy default.
+	_create_instance_vbox_storageattach_ide
+	return
+}
+
 _create_instance_vbox() {
 	
 	#Use existing VDI image if available.
@@ -10456,18 +10500,9 @@ _create_instance_vbox() {
 	_messagePlain_nominal 'Mounting shared filesystems.'
 	_set_instance_vbox_share
 	
-	_messagePlain_nominal 'Attaching local filesystems.'
-	! VBoxManage storagectl "$sessionid" --name "IDE Controller" --add ide --controller PIIX4 && _messagePlain_bad 'fail: VBoxManage... attach ide controller'
+	_create_instance_vbox_storageattach
 	
-	#export vboxDiskMtype="normal"
-	#[[ "$vboxDiskMtype" == "" ]] && export vboxDiskMtype="multiattach"
-	[[ "$vboxDiskMtype" == "" ]] && export vboxDiskMtype="immutable"
-	_messagePlain_probe 'vboxDiskMtype= '"$vboxDiskMtype"
 	
-	_messagePlain_probe VBoxManage storageattach "$sessionid" --storagectl "IDE Controller" --port 0 --device 0 --type hdd --medium "$vboxInstanceDiskImage" --mtype "$vboxDiskMtype"
-	! VBoxManage storageattach "$sessionid" --storagectl "IDE Controller" --port 0 --device 0 --type hdd --medium "$vboxInstanceDiskImage" --mtype "$vboxDiskMtype" && _messagePlain_bad 'fail: VBoxManage... attach vboxInstanceDiskImage= '"$vboxInstanceDiskImage"
-	
-	[[ -e "$hostToGuestISO" ]] && ! VBoxManage storageattach "$sessionid" --storagectl "IDE Controller" --port 1 --device 0 --type dvddrive --medium "$hostToGuestISO" && _messagePlain_bad 'fail: VBoxManage... attach hostToGuestISO= '"$hostToGuestISO"
 	
 	#VBoxManage showhdinfo "$scriptLocal"/vm.vdi
 
