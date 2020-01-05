@@ -14266,7 +14266,8 @@ _kernelConfig_require-virtualization-accessory() {
 	_kernelConfig_warn-y_m CONFIG_VHOST_SCSI
 	_kernelConfig_warn-y_m CONFIG_VHOST_VSOCK
 	
-	_kernelConfig_warn-y__ CONFIG_VBOXGUEST
+	_kernelConfig__bad-n__ CONFIG_VBOXGUEST
+	_kernelConfig__bad-n__ CONFIG_DRM_VBOXVIDEO
 	
 	_kernelConfig_warn-y__ VIRTIO_MENU
 	_kernelConfig_warn-y__ CONFIG_VIRTIO_PCI
