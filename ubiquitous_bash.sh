@@ -10113,7 +10113,7 @@ _labVBox_migrate() {
 
 
 
-f_prepare_instance_vbox() {
+_prepare_instance_vbox() {
 	_prepare_vbox "$instancedVirtDir"
 }
 
@@ -10437,7 +10437,7 @@ _create_instance_vbox_storageattach_ide() {
 
 _create_instance_vbox_storageattach_sata() {
 	_messagePlain_nominal 'Attaching local filesystems.'
-	! VBoxManage storagectl "$sessionid" --name "SATA Controller" --add sata --controller IntelAHCI --hostiocache on && _messagePlain_bad 'fail: VBoxManage... attach sata controller'
+	! VBoxManage storagectl "$sessionid" --name "SATA Controller" --add sata --controller IntelAHCI --portcount 5 --hostiocache on && _messagePlain_bad 'fail: VBoxManage... attach sata controller'
 	
 	#export vboxDiskMtype="normal"
 	#[[ "$vboxDiskMtype" == "" ]] && export vboxDiskMtype="multiattach"
