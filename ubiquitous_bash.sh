@@ -14162,6 +14162,11 @@ _kernelConfig_warn-n__() {
 	return 1
 }
 
+_kernelConfig_warn-any() {
+	_kernelConfig_warn-y_m "$1"
+	_kernelConfig_warn-n__ "$1"
+}
+
 _kernelConfig__bad-y__() {
 	_kernelConfig_require-yes "$1" && return 0
 	_messagePlain_bad 'bad: not:     Y: '"$1"
@@ -14181,6 +14186,13 @@ _kernelConfig__bad-n__() {
 	_messagePlain_bad 'bad: not:     N: '"$1"
 	export kernelConfig_bad='true'
 	return 1
+}
+
+_kernelConfig_require-tradeoff-legacy() {
+	_messagePlain_nominal 'kernelConfig: tradeoff-legacy'
+	_messagePlain_request 'Carefully evaluate '\''tradeoff-legacy'\'' for specific use cases.'
+	
+	_kernelConfig__bad-y__ LEGACY_VSYSCALL_EMULATE
 }
 
 # WARNING: Risk must be evaluated for specific use cases.
@@ -14242,6 +14254,9 @@ _kernelConfig_require-tradeoff-harden() {
 
 # ATTENTION: Override with 'ops.sh' or similar.
 _kernelConfig_require-tradeoff() {
+	_kernelConfig_require-tradeoff-legacy
+	
+	
 	[[ "$kernelConfig_tradeoff_perform" == "" ]] && export kernelConfig_tradeoff_perform='false'
 	
 	if [[ "$kernelConfig_tradeoff_perform" == 'true' ]]
@@ -14639,6 +14654,31 @@ _kernelConfig_require-integration() {
 }
 
 
+# ATTENTION: Insufficiently investigated stuff to think about. Unknown consequences.
+_kernelConfig_require-investigation() {
+	_messagePlain_nominal 'kernelConfig: investigation'
+	
+	_kernelConfig_warn-any ACPI_HMAT
+	_kernelConfig_warn-any PCIE_BW
+	
+	_kernelConfig_warn-any CONFIG_UCLAMP_TASK
+	
+	_kernelConfig_warn-any CPU_IDLE_GOV_TEO
+	
+	_kernelConfig_warn-any LOCK_EVENT_COUNTS
+	
+	_kernelConfig_require-investigation_prog "$@"
+	true
+}
+
+
+_kernelConfig_require-investigation_prog() {
+	_messagePlain_nominal 'kernelConfig: investigation: prog'
+	
+	true
+}
+
+
 
 
 
@@ -14684,6 +14724,8 @@ _kernelConfig_panel() {
 	
 	_kernelConfig_require-integration "$@"
 	
+	_kernelConfig_require-investigation "$@"
+	
 	
 	_kernelConfig_request_build
 }
@@ -14716,6 +14758,8 @@ _kernelConfig_mobile() {
 	
 	_kernelConfig_require-integration "$@"
 	
+	_kernelConfig_require-investigation "$@"
+	
 	
 	_kernelConfig_request_build
 }
@@ -14747,6 +14791,8 @@ _kernelConfig_desktop() {
 	_kernelConfig_require-memory "$@"
 	
 	_kernelConfig_require-integration "$@"
+	
+	_kernelConfig_require-investigation "$@"
 	
 	
 	_kernelConfig_request_build

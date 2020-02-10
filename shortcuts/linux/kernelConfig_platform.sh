@@ -39,6 +39,8 @@ _kernelConfig_panel() {
 	
 	_kernelConfig_require-integration "$@"
 	
+	_kernelConfig_require-investigation "$@"
+	
 	
 	_kernelConfig_request_build
 }
@@ -71,6 +73,8 @@ _kernelConfig_mobile() {
 	
 	_kernelConfig_require-integration "$@"
 	
+	_kernelConfig_require-investigation "$@"
+	
 	
 	_kernelConfig_request_build
 }
@@ -102,6 +106,8 @@ _kernelConfig_desktop() {
 	_kernelConfig_require-memory "$@"
 	
 	_kernelConfig_require-integration "$@"
+	
+	_kernelConfig_require-investigation "$@"
 	
 	
 	_kernelConfig_request_build
