@@ -14191,6 +14191,7 @@ _kernelConfig__bad-n__() {
 _kernelConfig_require-tradeoff-legacy() {
 	_messagePlain_nominal 'kernelConfig: tradeoff-legacy'
 	_messagePlain_request 'Carefully evaluate '\''tradeoff-legacy'\'' for specific use cases.'
+	export kernelConfig_file="$1"
 	
 	_kernelConfig__bad-n__ LEGACY_VSYSCALL_EMULATE
 }
@@ -14254,7 +14255,7 @@ _kernelConfig_require-tradeoff-harden() {
 
 # ATTENTION: Override with 'ops.sh' or similar.
 _kernelConfig_require-tradeoff() {
-	_kernelConfig_require-tradeoff-legacy
+	_kernelConfig_require-tradeoff-legacy "$@"
 	
 	
 	[[ "$kernelConfig_tradeoff_perform" == "" ]] && export kernelConfig_tradeoff_perform='false'
@@ -14657,6 +14658,7 @@ _kernelConfig_require-integration() {
 # ATTENTION: Insufficiently investigated stuff to think about. Unknown consequences.
 _kernelConfig_require-investigation() {
 	_messagePlain_nominal 'kernelConfig: investigation'
+	export kernelConfig_file="$1"
 	
 	_kernelConfig_warn-any ACPI_HMAT
 	_kernelConfig_warn-any PCIE_BW
@@ -14674,6 +14676,7 @@ _kernelConfig_require-investigation() {
 
 _kernelConfig_require-investigation_prog() {
 	_messagePlain_nominal 'kernelConfig: investigation: prog'
+	export kernelConfig_file="$1"
 	
 	true
 }
