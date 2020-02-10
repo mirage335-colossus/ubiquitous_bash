@@ -1,10 +1,6 @@
 _kernelConfig_request_build() {
 	_messagePlain_request 'request: make menuconfig'
 	
-	# WARNING: Processor architecture may need to be less aggressive for some embedded platforms (though this will become increasingly unlikely). Default "-march=sandybridge -mtune=skylake".
-	_messagePlain_request 'request: export KCFLAGS="-O2 -march=sandybridge -mtune=skylake -pipe"'
-	_messagePlain_request 'request: export KCPPFLAGS="-O2 -march=sandybridge -mtune=skylake -pipe"'
-	
 	_messagePlain_request 'request: make -j $(nproc)'
 	
 	# WARNING: Building debian kernel packages from Gentoo may be complex.
