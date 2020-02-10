@@ -14192,7 +14192,7 @@ _kernelConfig_require-tradeoff-legacy() {
 	_messagePlain_nominal 'kernelConfig: tradeoff-legacy'
 	_messagePlain_request 'Carefully evaluate '\''tradeoff-legacy'\'' for specific use cases.'
 	
-	_kernelConfig__bad-y__ LEGACY_VSYSCALL_EMULATE
+	_kernelConfig__bad-n__ LEGACY_VSYSCALL_EMULATE
 }
 
 # WARNING: Risk must be evaluated for specific use cases.
