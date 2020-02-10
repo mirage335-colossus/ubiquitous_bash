@@ -1,3 +1,16 @@
+_kernelConfig_request_build() {
+	_messagePlain_request 'request: make menuconfig'
+	
+	_messagePlain_request 'request: make -j $(nproc)'
+	
+	# WARNING: Building debian kernel packages from Gentoo may be complex.
+	#https://forums.gentoo.org/viewtopic-t-1096872-start-0.html
+	#_messagePlain_request 'emerge dpkg fakeroot bc kmod cpio ; touch /var/lib/dpkg/status'
+	
+	_messagePlain_request 'request: make deb-pkg -j $(nproc)'
+}
+
+
 # ATTENTION: As desired, ignore, or override with 'ops.sh' or similar.
 _kernelConfig_panel() {
 	_messageNormal 'kernelConfig: panel'
@@ -27,10 +40,7 @@ _kernelConfig_panel() {
 	_kernelConfig_require-integration "$@"
 	
 	
-	_messagePlain_request 'request: make menuconfig'
-	
-	_messagePlain_request 'request: make -j $(nproc)'
-	_messagePlain_request 'request: make deb-pkg -j $(nproc)'
+	_kernelConfig_request_build
 }
 
 # ATTENTION: As desired, ignore, or override with 'ops.sh' or similar.
@@ -62,10 +72,7 @@ _kernelConfig_mobile() {
 	_kernelConfig_require-integration "$@"
 	
 	
-	_messagePlain_request 'request: make menuconfig'
-	
-	_messagePlain_request 'request: make -j $(nproc)'
-	_messagePlain_request 'request: make deb-pkg -j $(nproc)'
+	_kernelConfig_request_build
 }
 
 # ATTENTION: As desired, ignore, or override with 'ops.sh' or similar.
@@ -97,9 +104,6 @@ _kernelConfig_desktop() {
 	_kernelConfig_require-integration "$@"
 	
 	
-	_messagePlain_request 'request: make menuconfig'
-	
-	_messagePlain_request 'request: make -j $(nproc)'
-	_messagePlain_request 'request: make deb-pkg -j $(nproc)'
+	_kernelConfig_request_build
 }
 
