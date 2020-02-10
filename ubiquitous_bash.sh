@@ -14296,6 +14296,9 @@ _kernelConfig_require-virtualization-accessory() {
 	_kernelConfig__bad-y_m CONFIG_VIRTIO_MMIO
 	_kernelConfig_warn-y__ CONFIG_VIRTIO_MMIO_CMDLINE_DEVICES
 	
+	# Uncertain. Apparently new feature.
+	_kernelConfig_warn-y_m CONFIG_VIRTIO_FS
+	
 	_kernelConfig_warn-y_m CONFIG_HYPERV
 	_kernelConfig_warn-y_m CONFIG_HYPERV_UTILS
 	_kernelConfig_warn-y_m CONFIG_HYPERV_BALLOON
