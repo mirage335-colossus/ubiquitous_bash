@@ -275,12 +275,14 @@ _kernelConfig_require-boot() {
 	_kernelConfig__bad-y__ CONFIG_EXT4_FS_SECURITY
 	#_kernelConfig__bad-y__ CONFIG_EXT4_ENCRYPTION
 	
-	if ! _kernelConfig_warn-y__ CONFIG_EXT4_USE_FOR_EXT2
+	if ! _kernelConfig_warn-y__ CONFIG_EXT4_USE_FOR_EXT2 > /dev/null 2>&1
 	then
 		_kernelConfig__bad-y__ CONFIG_EXT2_FS
 		_kernelConfig__bad-y__ CONFIG_EXT3_FS
 		_kernelConfig__bad-y__ CONFIG_EXT3_FS_POSIX_ACL
 		_kernelConfig__bad-y__ CONFIG_EXT3_FS_SECURITY
+	else
+		_kernelConfig_warn-y__ CONFIG_EXT4_USE_FOR_EXT2
 	fi
 	
 	_kernelConfig__bad-y__ CONFIG_MSDOS_FS
