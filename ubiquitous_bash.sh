@@ -14374,7 +14374,7 @@ _kernelConfig_require-boot() {
 	export kernelConfig_file="$1"
 	
 	_kernelConfig__bad-y__ CONFIG_FW_LOADER
-	_kernelConfig__bad-y__ CONFIG_FIRMWARE_IN_KERNEL
+	#_kernelConfig__bad-y__ CONFIG_FIRMWARE_IN_KERNEL
 	
 	_kernelConfig__bad-y__ CONFIG_DEVTMPFS
 	_kernelConfig__bad-y__ CONFIG_DEVTMPFS_MOUNT
@@ -14438,7 +14438,7 @@ _kernelConfig_require-arch-x64() {
 	_messagePlain_request 'export KCFLAGS="-O2 -march=sandybridge -mtune=skylake -pipe"'
 	_messagePlain_request 'export KCPPFLAGS="-O2 -march=sandybridge -mtune=skylake -pipe"'
 	
-	_kernelConfig_warn-y__ CONFIG_GENERIC_CPU
+	_kernelConfig_warn-n__ CONFIG_GENERIC_CPU
 	
 	_kernelConfig_request MCORE2
 	
@@ -14472,7 +14472,7 @@ _kernelConfig_require-arch-x64() {
 	_kernelConfig__bad-y__ CONFIG_X86_X32
 	
 	_kernelConfig__bad-y__ CONFIG_BINFMT_ELF
-	_kernelConfig__bad-y__ CONFIG_BINFMT_MISC
+	_kernelConfig__bad-y_m CONFIG_BINFMT_MISC
 	
 	# May not have been optional under older kernel configurations.
 	_kernelConfig__bad-y__ CONFIG_BINFMT_SCRIPT
@@ -14624,7 +14624,7 @@ _kernelConfig_require-latency() {
 	
 	
 	# https://lwn.net/Articles/789304/
-	_kernelConfig__bad-n__ CONFIG_SPARSEMEM_MANUAL
+	_kernelConfig__bad-y__ CONFIG_SPARSEMEM
 	
 	
 	_kernelConfig__bad-n__ CONFIG_REFCOUNT_FULL
