@@ -14215,12 +14215,9 @@ _kernelConfig_require-tradeoff-perform() {
 	_kernelConfig__bad-n__ CONFIG_PAGE_TABLE_ISOLATION
 	_kernelConfig__bad-n__ CONFIG_X86_SMAP
 	
-	_kernelConfig__bad-n__ CONFIG_REFCOUNT_FULL
-	_kernelConfig__bad-n__ CONFIG_DEBUG_NOTIFIERS
-	
-	_kernelConfig_warn-y__ CONFIG_FTRACE
-	
 	_kernelConfig_warn-n__ AMD_MEM_ENCRYPT
+	
+	_kernelConfig__bad-y__ CONFIG_X86_INTEL_TSX_MODE_ON
 }
 
 # WARNING: Risk must be evaluated for specific use cases.
@@ -14243,14 +14240,9 @@ _kernelConfig_require-tradeoff-harden() {
 	_kernelConfig__bad-y__ CONFIG_X86_SMAP
 	
 	# Uncertain.
-	#_kernelConfig__bad-y__ CONFIG_REFCOUNT_FULL
-	
-	#_kernelConfig_warn-y__ CONFIG_DEBUG_NOTIFIERS
-	
-	_kernelConfig_warn-y__ CONFIG_FTRACE
-	
-	# Uncertain.
 	#_kernelConfig_warn-y__ AMD_MEM_ENCRYPT
+	
+	_kernelConfig__bad-y__ CONFIG_X86_INTEL_TSX_MODE_OFF
 }
 
 # ATTENTION: Override with 'ops.sh' or similar.
@@ -14285,6 +14277,8 @@ _kernelConfig_require-virtualization-accessory() {
 	_kernelConfig_warn-y_m CONFIG_VHOST_SCSI
 	_kernelConfig_warn-y_m CONFIG_VHOST_VSOCK
 	
+	_kernelConfig__bad-y_m DRM_VMWGFX
+	
 	_kernelConfig__bad-n__ CONFIG_VBOXGUEST
 	_kernelConfig__bad-n__ CONFIG_DRM_VBOXVIDEO
 	
@@ -14295,6 +14289,8 @@ _kernelConfig_require-virtualization-accessory() {
 	_kernelConfig__bad-y_m CONFIG_VIRTIO_INPUT
 	_kernelConfig__bad-y_m CONFIG_VIRTIO_MMIO
 	_kernelConfig_warn-y__ CONFIG_VIRTIO_MMIO_CMDLINE_DEVICES
+	
+	_kernelConfig_warn-y_m CONFIG_DRM_VIRTIO_GPU
 	
 	# Uncertain. Apparently new feature.
 	_kernelConfig_warn-y_m CONFIG_VIRTIO_FS
@@ -14350,9 +14346,6 @@ _kernelConfig_require-virtualbox() {
 	_kernelConfig__bad-y__ CONFIG_INPUT_MOUSE
 	_kernelConfig__bad-y__ CONFIG_MOUSE_PS2
 	
-	_kernelConfig__bad-y__ VIRTIO_MENU
-	_kernelConfig__bad-y__ CONFIG_VIRTIO_PCI
-	
 	_kernelConfig__bad-y__ CONFIG_DRM
 	_kernelConfig__bad-y__ CONFIG_DRM_FBDEV_EMULATION
 	_kernelConfig__bad-y__ CONFIG_DRM_VIRTIO_GPU
@@ -14380,18 +14373,26 @@ _kernelConfig_require-boot() {
 	_messagePlain_nominal 'kernelConfig: boot'
 	export kernelConfig_file="$1"
 	
+	_kernelConfig__bad-y__ CONFIG_FW_LOADER
+	_kernelConfig__bad-y__ CONFIG_FIRMWARE_IN_KERNEL
+	
 	_kernelConfig__bad-y__ CONFIG_DEVTMPFS
 	_kernelConfig__bad-y__ CONFIG_DEVTMPFS_MOUNT
 	_kernelConfig__bad-y__ CONFIG_BLK_DEV_SD
 	
-	_kernelConfig__bad-y__ CONFIG_EXT2_FS
-	_kernelConfig__bad-y__ CONFIG_EXT3_FS
-	_kernelConfig__bad-y__ CONFIG_EXT3_FS_POSIX_ACL
-	_kernelConfig__bad-y__ CONFIG_EXT3_FS_SECURITY
+	
 	_kernelConfig__bad-y__ CONFIG_EXT4_FS
 	_kernelConfig__bad-y__ CONFIG_EXT4_FS_POSIX_ACL
 	_kernelConfig__bad-y__ CONFIG_EXT4_FS_SECURITY
-	_kernelConfig__bad-y__ CONFIG_EXT4_ENCRYPTION
+	#_kernelConfig__bad-y__ CONFIG_EXT4_ENCRYPTION
+	
+	if ! _kernelConfig_warn-y__ CONFIG_EXT4_USE_FOR_EXT2
+	then
+		_kernelConfig__bad-y__ CONFIG_EXT2_FS
+		_kernelConfig__bad-y__ CONFIG_EXT3_FS
+		_kernelConfig__bad-y__ CONFIG_EXT3_FS_POSIX_ACL
+		_kernelConfig__bad-y__ CONFIG_EXT3_FS_SECURITY
+	fi
 	
 	_kernelConfig__bad-y__ CONFIG_MSDOS_FS
 	_kernelConfig__bad-y__ CONFIG_VFAT_FS
@@ -14405,6 +14406,8 @@ _kernelConfig_require-boot() {
 	
 	_kernelConfig__bad-y__ CONFIG_SMP
 	
+	# https://wiki.gentoo.org/wiki/Kernel/Gentoo_Kernel_Configuration_Guide
+	# 'Support for Host-side USB'
 	_kernelConfig__bad-y__ CONFIG_USB_SUPPORT
 	_kernelConfig__bad-y__ CONFIG_USB_XHCI_HCD
 	_kernelConfig__bad-y__ CONFIG_USB_EHCI_HCD
@@ -14463,8 +14466,16 @@ _kernelConfig_require-arch-x64() {
 	_kernelConfig_warn-y__ HPET_MMAP_DEFAULT
 	_kernelConfig_warn-y__ HPET_TIMER
 	
+	
 	_kernelConfig__bad-y__ CONFIG_IA32_EMULATION
+	_kernelConfig_warn-n__ IA32_AOUT
 	_kernelConfig__bad-y__ CONFIG_X86_X32
+	
+	_kernelConfig__bad-y__ CONFIG_BINFMT_ELF
+	_kernelConfig__bad-y__ CONFIG_BINFMT_MISC
+	
+	# May not have been optional under older kernel configurations.
+	_kernelConfig__bad-y__ CONFIG_BINFMT_SCRIPT
 }
 
 _kernelConfig_require-accessory() {
@@ -14535,6 +14546,9 @@ _kernelConfig_require-latency_frequency() {
 _kernelConfig_require-latency() {
 	_messagePlain_nominal 'kernelConfig: latency'
 	export kernelConfig_file="$1"
+	
+	# Uncertain. Default off per Debian config.
+	_kernelConfig_warn-n__ CONFIG_X86_GENERIC
 	
 	# CRITICAL!
 	_kernelConfig__bad-y__ CPU_FREQ_DEFAULT_GOV_ONDEMAND
@@ -14608,9 +14622,21 @@ _kernelConfig_require-latency() {
 	#_kernelConfig__bad-y__ BLK_WBT_MQ
 	#_kernelConfig__bad-y__ BLK_WBT_SQ
 	
+	
+	# https://lwn.net/Articles/789304/
+	_kernelConfig__bad-n__ CONFIG_SPARSEMEM_MANUAL
+	
+	
+	_kernelConfig__bad-n__ CONFIG_REFCOUNT_FULL
+	_kernelConfig__bad-n__ CONFIG_DEBUG_NOTIFIERS
+	_kernelConfig_warn-n__ CONFIG_FTRACE
+	
+	_kernelConfig__bad-y__ CONFIG_CC_OPTIMIZE_FOR_PERFORMANCE
+	
 	# CRITICAL!
 	# Lightweight kernel compression theoretically may significantly accelerate startup from slow disks.
 	_kernelConfig__bad-y__ CONFIG_KERNEL_LZO
+	
 }
 
 _kernelConfig_require-memory() {
@@ -14626,6 +14652,10 @@ _kernelConfig_require-memory() {
 	_kernelConfig_warn-y__ CONFIG_CLEANCACHE
 	_kernelConfig_warn-y__ CONFIG_FRONTSWAP
 	_kernelConfig_warn-y__ CONFIG_ZSWAP
+	
+	
+	_kernelConfig__bad-y__ CONFIG_COMPACTION
+	_kernelConfig_warn-y__ CONFIG_BALLOON_COMPACTION
 	
 	# Uncertain.
 	_kernelConfig_warn-y__ CONFIG_MEMORY_FAILURE
