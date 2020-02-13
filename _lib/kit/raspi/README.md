@@ -4,7 +4,9 @@ Requires specific files to be installed in specific locations. See "_doc" for br
 
 Typically intended for embedded computers, such as raspi .
 
-Despite the name "raspi", this kit is designed to, but not guaranteed to be tested to, modify standard bootable x64 images as well.
+Support for x64, and even x64 specific features, may be included.
+
+Despite the name "raspi", this kit is designed to, but not guaranteed to be tested to, modify standard bootable x64 images as well. Rather, "raspi" is the original primarily supported device.
 
 # Exceptions
 

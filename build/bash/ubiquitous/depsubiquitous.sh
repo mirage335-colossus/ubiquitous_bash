@@ -246,6 +246,8 @@ _deps_stopwatch() {
 }
 
 # WARNING: Specifically refers to 'Linux', the kernel, and things specific to it, NOT any other UNIX like features.
+# WARNING: Beware Linux shortcut specific dependency programs must not be required, or will break other operating systems!
+# ie. _test_linux must not require Linux-only binaries
 _deps_linux() {
 	export enUb_linux="true"
 }

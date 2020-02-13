@@ -78,6 +78,10 @@ dtoverlay=pi3-disable-bt
 CZXWXcRMTo8EmM8i4d
 }
 
+_custom_write_bfq() {
+	true
+}
+
 _custom_write_fs() {
 	_custom_write_hostname
 	_custom_write_sudoers
