@@ -79,7 +79,7 @@ CZXWXcRMTo8EmM8i4d
 }
 
 _custom_write_bfq() {
-	true
+	_write_bfq "$globalVirtFS"
 }
 
 _custom_write_fs() {
