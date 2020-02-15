@@ -33,7 +33,7 @@ _compile_bash_deps() {
 		return 0
 	fi
 	
-	if [[ "$1" == "abstract" ]]
+	if [[ "$1" == "abstract" ]] || [[ "$1" == "abstractfs" ]]
 	then
 		_deps_dev
 		
@@ -41,6 +41,21 @@ _compile_bash_deps() {
 		
 		_deps_metaengine
 		
+		_deps_abstractfs
+		
+		return 0
+	fi
+	
+	# Beware most uses of fakehome will benefit from full virtualization fallback.
+	if [[ "$1" == "fakehome" ]]
+	then
+		_deps_dev
+		
+		_deps_channel
+		
+		_deps_metaengine
+		
+		_deps_fakehome
 		_deps_abstractfs
 		
 		return 0
