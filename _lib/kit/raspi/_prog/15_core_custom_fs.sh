@@ -82,8 +82,17 @@ _custom_write_bfq() {
 	_write_bfq "$globalVirtFS"
 }
 
+# ATTENTION: Override .
+_custom_write_fs_prog() {
+	true
+	
+	#_custom_write_bfq
+}
+
 _custom_write_fs() {
 	_custom_write_hostname
 	_custom_write_sudoers
 	_custom_write_boot
+	
+	_custom_write_fs_prog
 }

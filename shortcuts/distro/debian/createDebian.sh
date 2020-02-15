@@ -2,12 +2,13 @@
 _test_fetchDebian() {
 	if ! ls /usr/share/keyrings/debian-role-keys.gpg > /dev/null 2>&1
 	then
-		echo 'Debian Keyring missing.'
-		echo 'apt-get install debian-keyring'
+		echo 'warn: Debian Keyring missing.'
+		echo 'request: apt-get install debian-keyring'
 		_mustGetSudo
 		sudo -n apt-get install -y debian-keyring
-		! ls /usr/share/keyrings/debian-role-keys.gpg && _stop 1
+		! ls /usr/share/keyrings/debian-role-keys.gpg && return 1
 	fi
+	return 0
 }
 
 _fetch_x64_debianLiteISO_sequence() {
