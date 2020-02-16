@@ -175,7 +175,7 @@ fi
 
 if ! type qemu-armeb-static > /dev/null 2>&1 && type qemu-armeb > /dev/null 2>&1
 then
-	qemu-arm-static() {
+	qemu-armeb-static() {
 		qemu-armeb "$@"
 	}
 fi
