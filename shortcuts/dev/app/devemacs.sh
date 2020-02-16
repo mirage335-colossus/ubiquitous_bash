@@ -1,8 +1,10 @@
 _test_devemacs() {
-	_getDep emacs
+	_wantGetDep emacs
 	
 	local emacsDetectedVersion=$(emacs --version | head -n 1 | cut -f 3 -d\ | cut -d\. -f1)
-	! [[ "$emacsDetectedVersion" -ge "24" ]] && echo emacs too old && _stop 1
+	! [[ "$emacsDetectedVersion" -ge "24" ]] && echo emacs too old && return 1
+	
+	return 0
 }
 
 _set_emacsFakeHomeSource() {

@@ -1,6 +1,6 @@
 # Also depends on '_labVBoxManage' and '_userVBoxManage' .
 _test_vboxconvert() {
-	_getDep VBoxManage
+	_wantGetDep VBoxManage
 }
 
 #No production use.

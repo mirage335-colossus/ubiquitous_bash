@@ -4,7 +4,7 @@ _test_fetchDebian() {
 	then
 		echo 'warn: Debian Keyring missing.'
 		echo 'request: apt-get install debian-keyring'
-		_mustGetSudo
+		! _wantSudo && echo 'warn: no sudo'
 		sudo -n apt-get install -y debian-keyring
 		! ls /usr/share/keyrings/debian-role-keys.gpg && return 1
 	fi

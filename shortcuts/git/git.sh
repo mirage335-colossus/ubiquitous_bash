@@ -1,5 +1,5 @@
 _testGit() {
-	_getDep git
+	_wantGetDep git
 }
 
 #Ignores file modes, suitable for use with possibly broken filesystems like NTFS.

@@ -1,3 +1,12 @@
+
+_test_mkboot() {
+	! _wantSudo && echo 'warn: no sudo'
+	
+	_wantGetDep grub-install
+	_wantGetDep MAKEDEV
+}
+
+
 #http://nairobi-embedded.org/making_a_qemu_disk_image_bootable_with_grub.html
 _mkboot_sequence() {
 	_start
@@ -132,10 +141,3 @@ _mkboot() {
 	"$scriptAbsoluteLocation" _mkboot_sequence "$@"
 }
 
-
-_test_mkboot() {
-	_mustGetSudo
-	
-	_getDep grub-install
-	_getDep MAKEDEV
-}

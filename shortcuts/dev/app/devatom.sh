@@ -1,10 +1,12 @@
 _test_devatom() {
-	_getDep rsync
+	_wantGetDep rsync
 	
-	_getDep atom
+	_wantGetDep atom
 	
 	#local atomDetectedVersion=$(atom --version | head -n 1 | cut -f 2- -d \: | cut -f 2- -d \  | cut -f 2 -d \. )
-	#! [[ "$atomDetectedVersion" -ge "27" ]] && echo atom too old && _stop 1
+	#! [[ "$atomDetectedVersion" -ge "27" ]] && echo atom too old && return 1
+	
+	return 0
 }
 
 _install_fakeHome_atom() {	

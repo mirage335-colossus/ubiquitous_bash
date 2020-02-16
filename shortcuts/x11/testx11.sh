@@ -1,5 +1,5 @@
 _testX11() {
-	_getDep xclip
+	_wantGetDep xclip
 	
-	_getDep xinput
+	_wantGetDep xinput
 }

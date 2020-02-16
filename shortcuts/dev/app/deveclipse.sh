@@ -1,5 +1,5 @@
 _test_deveclipse() {
-	_getDep eclipse
+	_wantGetDep eclipse
 	
 	! [[ -e /usr/share/eclipse/dropins/cdt ]] && echo 'warn: missing: /usr/share/eclipse/dropins/cdt'
 }

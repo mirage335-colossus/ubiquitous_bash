@@ -1,5 +1,5 @@
 _test_docker_mkimage() {
-	_getDep "debootstrap"
+	_wantGetDep "debootstrap"
 }
 
 _create_docker_mkimage_sequence() {

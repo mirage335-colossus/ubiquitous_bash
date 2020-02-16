@@ -1,5 +1,5 @@
 _testDistro() {
-	_getDep sha256sum
-	_getDep sha512sum
-	_getDep axel
+	_wantGetDep sha256sum
+	_wantGetDep sha512sum
+	_wantGetDep axel
 }

@@ -1,5 +1,5 @@
 _test_gparted() {
-	_getDep gparted
+	_wantGetDep gparted
 }
 
 _gparted_sequence() {
