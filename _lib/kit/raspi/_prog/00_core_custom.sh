@@ -123,6 +123,9 @@ _custom() {
 	_custom_users
 	_custom_users_ssh
 	
+	_messagePlain_nominal '_custom: requestLog'
+	#_messagePlain_request 'request: request' | tee -a "$scriptLocal"/_custom/requestLog
+	cat "$scriptLocal"/_custom/requestLog 2> /dev/null
 	 _messageNormal '_custom: END'
 }
 
