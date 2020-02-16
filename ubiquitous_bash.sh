@@ -14637,8 +14637,8 @@ _kernelConfig_require-latency() {
 	# CRITICAL!
 	# Default cannot be set currently.
 	_messagePlain_request 'request: Set '\''bfq'\'' as default IO scheduler (strongly recommended).'
-	#_kernelConfig_bad-y__ DEFAULT_IOSCHED
-	#_kernelConfig_bad-y__ DEFAULT_BFQ
+	#_kernelConfig__bad-y__ DEFAULT_IOSCHED
+	#_kernelConfig__bad-y__ DEFAULT_BFQ
 	
 	# CRITICAL!
 	# Expected to protect interactive applications from background IO.
@@ -14718,6 +14718,18 @@ _kernelConfig_require-integration() {
 	_kernelConfig_warn-y__ CONFIG_GENTOO_LINUX_INIT_SYSTEMD
 }
 
+# Recommended by docker ebuild during installation under Gentoo.
+_kernelConfig_require-investigation_docker() {
+	_messagePlain_nominal 'kernelConfig: investigation: docker'
+	export kernelConfig_file="$1"
+	
+	_kernelConfig_warn-y__ CONFIG_MEMCG_SWAP_ENABLED
+	_kernelConfig_warn-y__ CONFIG_CGROUP_HUGETLB
+	_kernelConfig_warn-y__ CONFIG_RT_GROUP_SCHED
+	
+	true
+}
+
 
 # ATTENTION: Insufficiently investigated stuff to think about. Unknown consequences.
 _kernelConfig_require-investigation() {
@@ -14733,6 +14745,8 @@ _kernelConfig_require-investigation() {
 	
 	_kernelConfig_warn-any LOCK_EVENT_COUNTS
 	
+	
+	_kernelConfig_require-investigation_docker "$@"
 	_kernelConfig_require-investigation_prog "$@"
 	true
 }
