@@ -8,7 +8,13 @@ _test_ethereum() {
 	_getDep GL/glx.h
 	_getDep GL/glxext.h
 	_getDep GL/internal/dri_interface.h
-	_getDep x86_64-linux-gnu/pkgconfig/dri.pc
+	
+	if [[ ! -e 'x86_64-linux-gnu/pkgconfig/dri.pc' ]] && [[ ! -e '/usr/lib64/pkgconfig/dri.pc' ]] && [[ ! -e '/usr/lib32/pkgconfig/dri.pc' ]]
+	then
+		_wantGetDep x86_64-linux-gnu/pkgconfig/dri.pc
+		_wantGetDep /usr/lib64/pkgconfig/dri.pc
+		[[ ! -e 'x86_64-linux-gnu/pkgconfig/dri.pc' ]] && [[ ! -e '/usr/lib64/pkgconfig/dri.pc' ]] && [[ ! -e '/usr/lib32/pkgconfig/dri.pc' ]] && _stop 1
+	fi
 	
 }
 
