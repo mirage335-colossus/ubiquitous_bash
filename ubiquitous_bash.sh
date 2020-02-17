@@ -15366,7 +15366,7 @@ _test_ethereum() {
 	_getDep GL/glxext.h
 	_getDep GL/internal/dri_interface.h
 	
-	if ! _wantGetDep x86_64-linux-gnu/pkgconfig/dri.pc && _wantGetDep pkgconfig/dri.pc
+	if ! _wantGetDep x86_64-linux-gnu/pkgconfig/dri.pc && ! _wantGetDep pkgconfig/dri.pc
 	then
 		_stop 1
 	fi
