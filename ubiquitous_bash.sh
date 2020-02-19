@@ -14953,13 +14953,33 @@ CZXWXcRMTo8EmM8i4d
 
 _setupUbiquitous_here() {
 	cat << CZXWXcRMTo8EmM8i4d
-type sudo > /dev/null 2>&1 && groups | grep -E 'wheel|sudo' > /dev/null 2>&1 && sudo -n renice -n -10 -p \$\$ > /dev/null 2>&1
+
+if type sudo > /dev/null 2>&1 && groups | grep -E 'wheel|sudo' > /dev/null 2>&1
+then
+	# Greater or equal, '_priority_critical_pid_root' .
+	sudo -n renice -n -15 -p \$\$ > /dev/null 2>&1
+	sudo -n ionice -c 2 -n 2 -p \$\$ > /dev/null 2>&1
+fi
+# ^
+# Ensures admin user shell startup, including Ubiquitous Bash, is relatively quick under heavy system load.
+# Near-realtime priority may be acceptable, due to reliability of relevant Ubiquitous Bash functions.
+# WARNING: Do NOT prioritize highly enough to interfere with embedded hard realtime processes.
+
 
 export profileScriptLocation="$ubcoreUBdir"/ubiquitous_bash.sh
 export profileScriptFolder="$ubcoreUBdir"
 [[ "\$scriptAbsoluteLocation" != "" ]] && . "\$scriptAbsoluteLocation" --parent _importShortcuts
 [[ "\$scriptAbsoluteLocation" == "" ]] && . "\$profileScriptLocation" --profile _importShortcuts
 
+
+# Returns priority to normal.
+# Greater or equal, '_priority_app_pid_root' .
+#ionice -c 2 -n 3 -p \$\$
+#renice -n -5 -p \$\$ > /dev/null 2>&1
+
+# Returns priority to normal.
+# Greater or equal, '_priority_app_pid' .
+ionice -c 2 -n 4 -p \$\$
 renice -n 0 -p \$\$ > /dev/null 2>&1
 
 true
@@ -15148,6 +15168,77 @@ _anchor() {
 }
 
 
+
+
+_setup_renice() {
+	_messageNormal '_setup_renice'
+	
+	if [[ "$scriptAbsoluteFolder" == *'ubiquitous_bash' ]] && [[ "$1" != '--force' ]]
+	then
+		_messagePlain_bad 'bad: generic ubiquitous_bash installation detected'
+		_messageFAIL
+		_stop 1
+	fi
+	
+	
+	_messagePlain_nominal '_setup_renice: hook: ubcore'
+	local ubHome
+	ubHome="$HOME"
+	export ubcoreDir="$ubHome"/.ubcore
+	export ubcoreFile="$ubcoreDir"/.ubcorerc
+	
+	if ! [[ -e "$ubcoreFile" ]]
+	then
+		_messagePlain_warn 'fail: hook: missing: .ubcorerc'
+		return 1
+	fi
+	
+	if grep 'token_ub_renice' "$ubcoreFile" > /dev/null 2>&1
+	then
+		_messagePlain_good 'good: hook: present: .ubcorerc'
+		return 0
+	fi
+	
+	#echo '# token_ub_renice' >> "$ubcoreFile"
+	cat << CZXWXcRMTo8EmM8i4d >> "$ubcoreFile"
+
+# token_ub_renice
+if [[ "\$__overrideRecursionGuard_make" != 'true' ]] && [[ "\$__overrideKeepPriority_make" != 'true' ]] && type which > /dev/null 2>&1 && which make > /dev/null 2>&1
+then
+	__overrideRecursionGuard_make='true'
+	__override_make=$(which make 2>/dev/null)
+	make() {
+		#Greater or equal, _priority_idle_pid
+		
+ 		ionice -c 2 -n 5 -p \$\$ > /dev/null 2>&1
+		renice -n 3 -p \$\$ > /dev/null 2>&1
+		
+		"\$__override_make" "\$@"
+	}
+fi
+
+CZXWXcRMTo8EmM8i4d
+	
+	if grep 'token_ub_renice' "$ubcoreFile" > /dev/null 2>&1
+	then
+		_messagePlain_good 'good: hook: present: .ubcorerc'
+		#return 0
+	else
+		_messagePlain_bad 'fail: hook: missing: token: .ubcorerc'
+		_messageFAIL
+		return 1
+	fi
+	
+	
+	
+	_messagePlain_nominal '_setup_renice: hook: cron'
+	echo '@reboot '"$scriptAbsoluteLocation"' _unix_renice_execDaemon' | crontab -
+	
+	#echo '*/7 * * * * '"$scriptAbsoluteLocation"' _unix_renice'
+	#echo '*/1 * * * * '"$scriptAbsoluteLocation"' _unix_renice_app'
+}
+
+# WARNING: Recommend, using an independent installation (ie. not '~/core/infrastructure/ubiquitous_bash').
 _unix_renice_execDaemon() {
 	_cmdDaemon "$scriptAbsoluteLocation" _unix_renice_repeat
 }
@@ -15170,26 +15261,23 @@ _unix_renice_daemon() {
 }
 
 _unix_renice_repeat() {
+	#sleep 0.7
+	_unix_renice_app
+	_unix_renice
+	sleep 15
+	_unix_renice_app
+	_unix_renice
+	
+	local currentIteration
 	while true
 	do
-		_unix_renice_app > /dev/null 2>&1
-		sleep 10
-		_unix_renice_app > /dev/null 2>&1
-		sleep 10
-		_unix_renice_app > /dev/null 2>&1
-		sleep 10
-		_unix_renice_app > /dev/null 2>&1
-		sleep 10
-		_unix_renice_app > /dev/null 2>&1
-		sleep 10
-		_unix_renice_app > /dev/null 2>&1
-		sleep 10
-		_unix_renice_app > /dev/null 2>&1
-		sleep 10
-		_unix_renice_app > /dev/null 2>&1
-		sleep 10
-		_unix_renice_app > /dev/null 2>&1
-		sleep 10
+		currentIteration=0
+		while [[ "$currentIteration" -lt "50" ]]
+		do
+			_unix_renice_app > /dev/null 2>&1
+			sleep 10
+			let currentIteration="$currentIteration"+1
+		done
 		
 		_unix_renice
 		sleep 10
@@ -15284,6 +15372,14 @@ _unix_renice_app() {
 	
 	_priority_enumerate_pattern "^konsole$" >> "$processListFile"
 	
+	
+	_priority_enumerate_pattern "^okular$" >> "$processListFile"
+	
+	_priority_enumerate_pattern "^xournal$" >> "$processListFile"
+	
+	_priority_enumerate_pattern "^soffice.bin$" >> "$processListFile"
+	
+	
 	_priority_enumerate_pattern "^pavucontrol$" >> "$processListFile"
 	
 	local currentPID
@@ -15329,6 +15425,11 @@ _unix_renice_idle() {
 	_priority_enumerate_pattern "^mysqld$" >> "$processListFile"
 	_priority_enumerate_pattern "^ntpd$" >> "$processListFile"
 	#_priority_enumerate_pattern "^avahi-daemon$" >> "$processListFile"
+	
+	
+	# WARNING: Probably unnecessary and counterproductive. May risk halting important compile jobs.
+	#_priority_enumerate_pattern "^cc1$" >> "$processListFile"
+	#_priority_enumerate_pattern "^cc1plus$" >> "$processListFile"
 	
 	
 	local currentPID

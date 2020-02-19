@@ -43,21 +43,11 @@ _custom_users_ssh() {
 
 # ATTENTION: Override (if necessary) .
 _custom_packages() {
-	sudo -n rm -f "$globalVirtFS"/var/lib/apt/lists/lock
-	sudo -n rm -f "$globalVirtFS"/var/lib/dpkg/lock
+	true
 	
-	_chroot apt-get update
+	_custom_packages_debian "$@"
 	
-	# DANGER: Requires expanded image!
-	#_chroot apt-get upgrade -y
-	
-	_chroot apt-get install -y bup
-	
-	_chroot apt-get install -y bc nmap autossh socat sshfs tor
-	
-	_chroot apt-get install -y tigervnc-viewer
-	_chroot apt-get install -y x11vnc
-	_chroot apt-get install -y tigervnc-standalone-server
+	#_custom_packages_gentoo "$@"
 }
 
 # ATTENTION: Override (if necessary) .
