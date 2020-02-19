@@ -91,10 +91,23 @@ _unix_renice_daemon() {
 }
 
 _unix_renice_repeat() {
-	#sleep 0.7
+	# sleep 0.7
 	_unix_renice_app
 	_unix_renice
-	sleep 15
+	
+	sleep 3
+	_unix_renice_app
+	_unix_renice
+	
+	sleep 9
+	_unix_renice_app
+	_unix_renice
+	
+	sleep 27
+	_unix_renice_app
+	_unix_renice
+	
+	sleep 27
 	_unix_renice_app
 	_unix_renice
 	
@@ -102,15 +115,15 @@ _unix_renice_repeat() {
 	while true
 	do
 		currentIteration=0
-		while [[ "$currentIteration" -lt "50" ]]
+		while [[ "$currentIteration" -lt "4" ]]
 		do
+			sleep 120
+			[[ "$matchingEMBEDDED" != 'false' ]] && sleep 120
 			_unix_renice_app > /dev/null 2>&1
-			sleep 10
 			let currentIteration="$currentIteration"+1
 		done
 		
 		_unix_renice
-		sleep 10
 	done
 }
 
