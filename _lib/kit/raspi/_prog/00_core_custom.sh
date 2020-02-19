@@ -110,6 +110,11 @@ _custom_packages_gentoo() {
 	_chroot etc-update --automode -5
 	_chroot emerge --update firefox
 	
+	# WARNING: Chromium may attempt lengthy rebuild.
+	#_chroot emerge --update --autounmask-write chromium
+	#_chroot etc-update --automode -5
+	#_chroot emerge --update chromium
+	
 	_chroot emerge --update xournal
 	_chroot emerge --update kwrite
 	
