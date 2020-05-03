@@ -161,7 +161,9 @@ _custom_packages_gentoo() {
 	_chroot systemctl enable systemd-binfmt
 	
 	
-	_chroot emerge --update virtualbox
+	# WARNING:May slow down virtualized guest startup/shutdown.
+	# May be necessary to pass full ubiquitous_bash "_test" procedure.
+	#_chroot emerge --update virtualbox
 	
 	
 	_chroot emerge --update dosbox
@@ -172,9 +174,11 @@ _custom_packages_gentoo() {
 	_chroot env USE=-gpm emerge --update wine
 	
 	
-	_chroot env USE=cgroup-hybrid emerge sys-apps/systemd
-	_chroot emerge --update app-emulation/docker
-	_chroot systemctl enable docker
+	_chroot env USE=cgroup-hybrid emerge --changed-use --update sys-apps/systemd
+	# WARNING:May slow down virtualized guest startup/shutdown.
+	# May be necessary to pass full ubiquitous_bash "_test" procedure.
+	#_chroot emerge --update app-emulation/docker
+	#_chroot systemctl enable docker
 	
 	# https://wiki.gentoo.org/wiki/Docker#Docker_service_runs_but_fails_to_start_container_.28systemd.29
 	_messagePlain_request 'request: boot parameters: systemd.legacy_systemd_cgroup_controller=yes systemd.unified_cgroup_hierarchy=0' | tee -a "$scriptLocal"/_custom/requestLog
