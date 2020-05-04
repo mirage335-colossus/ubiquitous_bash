@@ -19295,8 +19295,8 @@ _testBuiltIdle() {
 
 _buildIdle() {
 	local idleSourceCode
-	idleSourceCode="$scriptAbsoluteFolder"/generic/process/idle.c
-	! [[ -e "$idleSourceCode" ]] && idleSourceCode="$scriptLib"/ubiquitous_bash/generic/process/idle.c
+	idleSourceCode="$scriptAbsoluteFolder"/generic/process/getIdle.c
+	! [[ -e "$idleSourceCode" ]] && idleSourceCode="$scriptLib"/ubiquitous_bash/generic/process/getIdle.c
 	
 	mkdir -p "$scriptBin"
 	gcc -o "$scriptBin"/getIdle "$idleSourceCode" -lXss -lX11
