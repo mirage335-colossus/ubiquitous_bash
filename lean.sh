@@ -2850,6 +2850,15 @@ _refresh_anchors_ubiquitous() {
 }
 
 _anchor() {
+	! [[ -e "$scriptAbsoluteFolder"/_anchor ]] && return 1
+	
+	#https://superuser.com/questions/450868/what-is-the-simplest-scriptable-way-to-check-whether-a-shell-variable-is-exporte
+	! [ "$(bash -c 'echo ${objectName}')" ] && return 1
+	
+	
+	perl -p -e 's/export anchorSourceDir=.*/export anchorSourceDir="$ENV{objectName}"/g' "$scriptAbsoluteFolder"/_anchor > "$scriptAbsoluteFolder"/_anchor.tmp
+	mv "$scriptAbsoluteFolder"/_anchor.tmp "$scriptAbsoluteFolder"/_anchor
+	
 	[[ "$scriptAbsoluteFolder" == *"ubiquitous_bash" ]] && _refresh_anchors_ubiquitous
 	
 	if type "_refresh_anchors" > /dev/null 2>&1

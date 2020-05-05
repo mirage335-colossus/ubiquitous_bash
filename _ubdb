@@ -545,8 +545,9 @@ export anchorScriptAbsoluteLocation=$(_getScriptAbsoluteLocation)
 export anchorScriptAbsoluteFolder=$(_getScriptAbsoluteFolder)
 export anchorName=$(basename "$anchorScriptAbsoluteLocation")
 
+export anchorSourceDir="ubiquitous_bash"
 export anchorSource="ubiquitous_bash.sh"
-export anchorSourcePath=ubiquitous_bash/"$anchorSource"
+export anchorSourcePath="$anchorSourceDir"/"$anchorSource"
 
 export anchorLabName=anchorLabName
 export anchorLabNameAlt="$anchorLabName"Mini
