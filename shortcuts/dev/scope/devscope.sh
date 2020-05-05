@@ -115,6 +115,14 @@ _scope_interact() {
 	"$@"
 }
 
+# ATTENTION: Overload with "core.sh" or similar!
+_scope_prog_procedure() {
+	# WARNING: Not necessarily wise for all applications. However, applications needing a different working directory should get there from an environment variable relative to script or specimen directory.
+	cd "$ub_specimen"
+	
+	#true
+}
+
 
 _scope_sequence() {
 	_messagePlain_nominal 'init: scope: '"$ub_scope_name"
@@ -123,6 +131,8 @@ _scope_sequence() {
 	_start
 	_start_scope "$@"
 	_ops_scope
+	
+	_scope_prog_procedure "$@"
 	
 	_scope_attach "$@"
 	
@@ -139,7 +149,7 @@ _scope_prog() {
 }
 
 _scope() {
-	_scope_prog
+	_scope_prog "$@"
 	[[ "$ub_scope_name" == "" ]] && export ub_scope_name='scope'
 	"$scriptAbsoluteLocation" _scope_sequence "$@"
 }
