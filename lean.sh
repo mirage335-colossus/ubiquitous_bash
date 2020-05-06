@@ -2856,6 +2856,8 @@ _anchor() {
 	! [ "$(bash -c 'echo ${objectName}')" ] && return 1
 	
 	
+	rm -f "$scriptAbsoluteFolder"/_anchor.tmp > /dev/null 2>&1
+	cp "$scriptAbsoluteFolder"/_anchor "$scriptAbsoluteFolder"/_anchor.tmp
 	perl -p -e 's/export anchorSourceDir=.*/export anchorSourceDir="$ENV{objectName}"/g' "$scriptAbsoluteFolder"/_anchor > "$scriptAbsoluteFolder"/_anchor.tmp
 	mv "$scriptAbsoluteFolder"/_anchor.tmp "$scriptAbsoluteFolder"/_anchor
 	
