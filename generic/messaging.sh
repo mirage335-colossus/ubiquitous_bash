@@ -222,6 +222,45 @@ _messageCMD() {
 	_messagePlain_probe_cmd "$@"
 }
 
+#Blue. Diagnostic instrumentation.
+#Prints "$@" with quotes around every parameter.
+_messagePlain_probe_quoteAdd() {
+	
+	#https://stackoverflow.com/questions/1668649/how-to-keep-quotes-in-bash-arguments
+	
+	local currentCommandStringPunctuated
+	local currentCommandStringParameter
+	for currentCommandStringParameter in "$@"; do 
+		currentCommandStringParameter="${currentCommandStringParameter//\\/\\\\}"
+		currentCommandStringPunctuated="$currentCommandStringPunctuated \"${currentCommandStringParameter//\"/\\\"}\""
+	done
+	#_messagePlain_probe "$currentCommandStringPunctuated"
+	
+	echo -e -n '\E[0;34m '
+	
+	_safeEcho "$currentCommandStringPunctuated"
+	
+	echo -e -n ' \E[0m'
+	echo
+	
+	return
+}
+
+#Blue. Diagnostic instrumentation.
+#Prints "$@" and runs "$@".
+# WARNING: Use with care.
+_messagePlain_probe_cmd_quoteAdd() {
+	
+	_messagePlain_probe_quoteAdd "$@"
+	
+	"$@"
+	
+	return
+}
+_messageCMD_quoteAdd() {
+	_messagePlain_probe_cmd_quoteAdd "$@"
+}
+
 #Demarcate major steps.
 _messageNormal() {
 	echo -e -n '\E[1;32;46m '
