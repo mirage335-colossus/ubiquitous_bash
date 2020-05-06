@@ -1,9 +1,21 @@
-#Example, override with "core.sh" .
-_scope_compile() {
+_scope_attach_prog() {
 	true
 }
 
-#Example, override with "core.sh" .
+# No known production use.
+_scope_attach_compile() {
+	#_scope_command_write _compile
+	#_scope_command_external_here _compile
+	true
+}
+
+_scope_attach_query() {
+	_scope_command_write _query
+	_scope_command_write _qs
+	_scope_command_write _qc
+}
+
+# ATTENTION: Overload with "core.sh" or similar!
 _scope_attach() {
 	_messagePlain_nominal '_scope_attach'
 	
@@ -18,12 +30,11 @@ _scope_attach() {
 	_scope_command_write _scope_eclipse_procedure
 	_scope_command_write _scope_atom_procedure
 	
-	_scope_command_write _query
-	_scope_command_write _qs
-	_scope_command_write _qc
+	_scope_attach_query "$@"
 	
-	#_scope_command_write _compile
-	#_scope_command_external_here _compile
+	_scope_attach_compile "$@"
+	
+	_scope_attach_prog "$@"
 }
 
 _prepare_scope() {
