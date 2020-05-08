@@ -170,6 +170,10 @@ _refresh_anchors_ubiquitous() {
 # ATTENTION: Overload with 'core.sh' or similar.
 # WARNING: May become default behavior.
 _anchor_autoupgrade() {
+	local currentScriptBaseName
+	currentScriptBaseName=$(basename $scriptAbsoluteLocation)
+	[[ "$currentScriptBaseName" != "ubiquitous_bash.sh" ]] && return 1
+	
 	true
 	#[[ -e "$scriptLib"/ubiquitous_bash/_anchor ]] && cp -a "$scriptLib"/ubiquitous_bash/_anchor "$scriptAbsoluteFolder"/_anchor
 }
