@@ -167,7 +167,16 @@ _refresh_anchors_ubiquitous() {
 	cp -a "$scriptAbsoluteFolder"/_anchor "$scriptAbsoluteFolder"/_false
 }
 
+# ATTENTION: Overload with 'core.sh' or similar.
+# WARNING: May become default behavior.
+_anchor_autoupgrade() {
+	true
+	#[[ -e "$scriptLib"/ubiquitous_bash/_anchor ]] && cp -a "$scriptLib"/ubiquitous_bash/_anchor "$scriptAbsoluteFolder"/_anchor
+}
+
 _anchor() {
+	_anchor_autoupgrade
+	
 	! [[ -e "$scriptAbsoluteFolder"/_anchor ]] && return 1
 	
 	#https://superuser.com/questions/450868/what-is-the-simplest-scriptable-way-to-check-whether-a-shell-variable-is-exporte
