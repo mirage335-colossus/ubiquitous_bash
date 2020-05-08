@@ -545,14 +545,6 @@ export anchorScriptAbsoluteLocation=$(_getScriptAbsoluteLocation)
 export anchorScriptAbsoluteFolder=$(_getScriptAbsoluteFolder)
 export anchorName=$(basename "$anchorScriptAbsoluteLocation")
 
-if [[ "$anchorName" == "_anchor" ]]
-then
-	! [[ -e "$anchorScriptAbsoluteFolder"/ubiquitous_bash.sh ]] && exit 1
-	
-	"$anchorScriptAbsoluteFolder"/ubiquitous_bash.sh _anchor
-	exit "$?"
-fi
-
 
 export anchorSourceDir="ubiquitous_bash"
 export anchorSource="ubiquitous_bash.sh"
@@ -563,6 +555,14 @@ export anchorLabNameAlt="$anchorLabName"Mini
 
 export anchorEntity=""
 #export anchorEntity="entity/"
+
+if [[ "$anchorName" == "_anchor" ]]
+then
+	! [[ -e "$anchorScriptAbsoluteFolder"/"$anchorSource" ]] && exit 1
+	
+	"$anchorScriptAbsoluteFolder"/"$anchorSource" _anchor
+	exit "$?"
+fi
 
 _launch_anchor "$@"
 
