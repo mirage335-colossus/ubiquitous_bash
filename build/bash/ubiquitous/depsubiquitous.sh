@@ -113,6 +113,10 @@ _deps_blockchain() {
 	export enUb_blockchain="true"
 }
 
+_deps_java() {
+	export enUb_java="true"
+}
+
 _deps_image() {
 	_deps_notLean
 	_deps_machineinfo
