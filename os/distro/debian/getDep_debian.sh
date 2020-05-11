@@ -36,6 +36,12 @@ _apt-file() {
 
 
 _fetchDep_debianStretch_special() {
+# 	if [[ "$1" == *"java"* ]]
+# 	then
+# 		sudo -n apt-get install --install-recommends -y default-jdk default-jre
+# 		return 0
+# 	fi
+	
 	if [[ "$1" == *"wine"* ]] && ! dpkg --print-foreign-architectures | grep i386 > /dev/null 2>&1
 	then
 		sudo -n dpkg --add-architecture i386
@@ -344,6 +350,12 @@ _fetchDep_debianStretch() {
 
 
 _fetchDep_debianBuster_special() {
+# 	if [[ "$1" == *"java"* ]]
+# 	then
+# 		sudo -n apt-get install --install-recommends -y default-jdk default-jre
+# 		return 0
+# 	fi
+	
 	if [[ "$1" == *"wine"* ]] && ! dpkg --print-foreign-architectures | grep i386 > /dev/null 2>&1
 	then
 		sudo -n dpkg --add-architecture i386

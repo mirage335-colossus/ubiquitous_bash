@@ -33,10 +33,10 @@ _setup_renice() {
 	cat << CZXWXcRMTo8EmM8i4d >> "$ubcoreFile"
 
 # token_ub_renice
-if [[ "\$__overrideRecursionGuard_make" != 'true' ]] && [[ "\$__overrideKeepPriority_make" != 'true' ]] && type which > /dev/null 2>&1 && which make > /dev/null 2>&1
+if [[ "\$__overrideRecursionGuard_make" != 'true' ]] && [[ "\$__overrideKeepPriority_make" != 'true' ]] && type type > /dev/null 2>&1 && type -p make > /dev/null 2>&1
 then
 	__overrideRecursionGuard_make='true'
-	__override_make=$(which make 2>/dev/null)
+	__override_make=$(type -p make 2>/dev/null)
 	make() {
 		#Greater or equal, _priority_idle_pid
 		

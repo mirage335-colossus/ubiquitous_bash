@@ -460,7 +460,7 @@ _compat_realpath() {
 	export compat_realpath_bin=/opt/local/libexec/gnubin/realpath
 	[[ -e "$compat_realpath_bin" ]] && [[ "$compat_realpath_bin" != "" ]] && return 0
 	
-	export compat_realpath_bin=$(which realpath)
+	export compat_realpath_bin=$(type -p realpath)
 	[[ -e "$compat_realpath_bin" ]] && [[ "$compat_realpath_bin" != "" ]] && return 0
 	
 	export compat_realpath_bin=/bin/realpath
@@ -5776,6 +5776,12 @@ _apt-file() {
 
 
 _fetchDep_debianStretch_special() {
+# 	if [[ "$1" == *"java"* ]]
+# 	then
+# 		sudo -n apt-get install --install-recommends -y default-jdk default-jre
+# 		return 0
+# 	fi
+	
 	if [[ "$1" == *"wine"* ]] && ! dpkg --print-foreign-architectures | grep i386 > /dev/null 2>&1
 	then
 		sudo -n dpkg --add-architecture i386
@@ -6084,6 +6090,12 @@ _fetchDep_debianStretch() {
 
 
 _fetchDep_debianBuster_special() {
+# 	if [[ "$1" == *"java"* ]]
+# 	then
+# 		sudo -n apt-get install --install-recommends -y default-jdk default-jre
+# 		return 0
+# 	fi
+	
 	if [[ "$1" == *"wine"* ]] && ! dpkg --print-foreign-architectures | grep i386 > /dev/null 2>&1
 	then
 		sudo -n dpkg --add-architecture i386
@@ -6577,6 +6589,406 @@ _stopwatch() {
 
 	bc <<< "$measureDateB - $measureDateA"
 }
+
+
+
+_set_java_arbitrary() {
+	export ubJava="$1"
+}
+
+
+_java_openjdkANY_check_filter() {
+	head -n 1 | grep -i 'OpenJDK'
+}
+_java_openjdk11_check_filter() {
+	_java_openjdkANY_check_filter | grep 'version.\{0,4\}11'
+}
+_java_openjdk11_debian_check() {
+	local current_java_path='/usr/lib/jvm/java-11-openjdk-amd64/bin/java'
+	
+	! type "$current_java_path" > /dev/null 2>&1 && return 1
+	
+	#! "$current_java_path" -version 2>&1 | _java_openjdk11_check_filter > /dev/null 2>&1 && return 1
+	
+	_set_java_arbitrary "$current_java_path"
+	
+	return 0
+}
+_java_openjdk11_debian() {
+	if _java_openjdk11_debian_check
+	then
+		[[ "$ubJava_setOnly" == 'true' ]] && return 0
+		"$ubJava" "$@"
+		_stop "$?"
+	fi
+	return 1
+}
+_java_openjdk11_usrbin_check() {
+	local current_java_path='/usr/bin/java'
+	
+	! type "$current_java_path" > /dev/null 2>&1 && return 1
+	
+	! "$current_java_path" -version 2>&1 | _java_openjdk11_check_filter > /dev/null 2>&1 && return 1
+	
+	_set_java_arbitrary "$current_java_path"
+	
+	return 0
+}
+_java_openjdk11_usrbin() {
+	if _java_openjdk11_usrbin_check
+	then
+		[[ "$ubJava_setOnly" == 'true' ]] && return 0
+		"$ubJava" "$@"
+		_stop "$?"
+	fi
+	return 1
+}
+_java_openjdk11_PATH_check() {
+	local current_java_path=$(type -p java 2>/dev/null)
+	
+	[[ ! -e "$current_java_path" ]] && return 1
+	[[ "$current_java_path" == "" ]] && return 1
+	! type "$current_java_path" > /dev/null 2>&1 && return 1
+	
+	! "$current_java_path" -version 2>&1 | _java_openjdk11_check_filter > /dev/null 2>&1 && return 1
+	
+	_set_java_arbitrary "$current_java_path"
+	
+	return 0
+}
+_java_openjdk11_PATH() {
+	if _java_openjdk11_PATH_check
+	then
+		[[ "$ubJava_setOnly" == 'true' ]] && return 0
+		"$ubJava" "$@"
+		_stop "$?"
+	fi
+	return 1
+}
+_java_openjdk11() {
+	_java_openjdk11_debian "$@"
+	_java_openjdk11_usrbin "$@"
+	_java_openjdk11_PATH "$@"
+}
+_set_java_openjdk11() {
+	export ubJava_setOnly='true'
+	_java_openjdk11
+	export ubJava_setOnly='false'
+}
+_check_java_openjdk11() {
+	_java_openjdk11_debian_check && return 0
+	_java_openjdk11_usrbin_check && return 0
+	_java_openjdk11_PATH_check && return 0
+	return 1
+}
+
+
+
+
+# WARNING: Untested.
+_java_openjdk8_check_filter() {
+	_java_openjdkANY_check_filter | grep 'version.\{0,5\}8'
+}
+_java_openjdk8_debian_check() {
+	local current_java_path='/usr/lib/jvm/java-8-openjdk-amd64/bin/java'
+	
+	! type "$current_java_path" > /dev/null 2>&1 && return 1
+	
+	#! "$current_java_path" -version 2>&1 | _java_openjdk8_check_filter > /dev/null 2>&1 && return 1
+	
+	_set_java_arbitrary "$current_java_path"
+	
+	return 0
+}
+_java_openjdk8_debian() {
+	if _java_openjdk8_debian_check
+	then
+		[[ "$ubJava_setOnly" == 'true' ]] && return 0
+		"$ubJava" "$@"
+		_stop "$?"
+	fi
+	return 1
+}
+_java_openjdk8_usrbin_check() {
+	local current_java_path='/usr/bin/java'
+	
+	! type "$current_java_path" > /dev/null 2>&1 && return 1
+	
+	! "$current_java_path" -version 2>&1 | _java_openjdk8_check_filter > /dev/null 2>&1 && return 1
+	
+	_set_java_arbitrary "$current_java_path"
+	
+	return 0
+}
+_java_openjdk8_usrbin() {
+	if _java_openjdk8_usrbin_check
+	then
+		[[ "$ubJava_setOnly" == 'true' ]] && return 0
+		"$ubJava" "$@"
+		_stop "$?"
+	fi
+	return 1
+}
+_java_openjdk8_PATH_check() {
+	local current_java_path=$(type -p java 2>/dev/null)
+	
+	[[ ! -e "$current_java_path" ]] && return 1
+	[[ "$current_java_path" == "" ]] && return 1
+	! type "$current_java_path" > /dev/null 2>&1 && return 1
+	
+	! "$current_java_path" -version 2>&1 | _java_openjdk8_check_filter > /dev/null 2>&1 && return 1
+	
+	_set_java_arbitrary "$current_java_path"
+	
+	return 0
+}
+_java_openjdk8_PATH() {
+	if _java_openjdk8_PATH_check
+	then
+		[[ "$ubJava_setOnly" == 'true' ]] && return 0
+		"$ubJava" "$@"
+		_stop "$?"
+	fi
+	return 1
+}
+_java_openjdk8() {
+	_java_openjdk8_debian "$@"
+	_java_openjdk8_usrbin "$@"
+	_java_openjdk8_PATH "$@"
+}
+_set_java_openjdk8() {
+	export ubJava_setOnly='true'
+	_java_openjdk8
+	export ubJava_setOnly='false'
+}
+_check_java_openjdk8() {
+	_java_openjdk8_debian_check && return 0
+	_java_openjdk8_usrbin_check && return 0
+	_java_openjdk8_PATH_check && return 0
+	return 1
+}
+
+
+
+_java_openjdkANY_debian() {
+	_java_openjdk8_debian "$@"
+	_java_openjdk11_debian "$@"
+}
+_java_openjdkANY_usrbin_check() {
+	local current_java_path='/usr/bin/java'
+	
+	! type "$current_java_path" > /dev/null 2>&1 && return 1
+	
+	! "$current_java_path" -version 2>&1 | _java_openjdkANY_check_filter > /dev/null 2>&1 && return 1
+	
+	_set_java_arbitrary "$current_java_path"
+	
+	return 0
+}
+_java_openjdkANY_usrbin() {
+	if _java_openjdkANY_usrbin_check
+	then
+		[[ "$ubJava_setOnly" == 'true' ]] && return 0
+		"$ubJava" "$@"
+		_stop "$?"
+	fi
+	return 1
+}
+_java_openjdkANY_PATH_check() {
+	local current_java_path=$(type -p java 2>/dev/null)
+	
+	[[ ! -e "$current_java_path" ]] && return 1
+	[[ "$current_java_path" == "" ]] && return 1
+	! type "$current_java_path" > /dev/null 2>&1 && return 1
+	
+	! "$current_java_path" -version 2>&1 | _java_openjdkANY_check_filter > /dev/null 2>&1 && return 1
+	
+	_set_java_arbitrary "$current_java_path"
+	
+	return 0
+}
+_java_openjdkANY_PATH() {
+	if _java_openjdkANY_PATH_check
+	then
+		[[ "$ubJava_setOnly" == 'true' ]] && return 0
+		"$ubJava" "$@"
+		_stop "$?"
+	fi
+	return 1
+}
+_java_openjdkANY() {
+	_java_openjdkANY_debian "$@"
+	_java_openjdkANY_usrbin "$@"
+	_java_openjdkANY_PATH "$@"
+}
+_java_openjdk() {
+	_java_openjdkANY "$@"
+}
+_set_java_openjdkANY() {
+	export ubJava_setOnly='true'
+	_java_openjdkANY
+	export ubJava_setOnly='false'
+}
+_set_java_openjdk() {
+	export ubJava_setOnly='true'
+	_java_openjdk
+	export ubJava_setOnly='false'
+}
+_check_java_openjdkANY() {
+	_check_java_openjdk11 && return 0
+	_check_java_openjdk8 && return 0
+	_java_openjdkANY_usrbin_check && return 0
+	_java_openjdkANY_PATH_check && return 0
+	return 1
+}
+
+
+
+
+# DANGER: Oracle Java *strongly* discouraged. Support provided as rough example only.
+_java_oraclejdk11_debian_check() {
+	local current_java_path='/usr/lib/jvm/java-11-oracle/bin/java'
+	
+	! type "$current_java_path" > /dev/null 2>&1 && return 1
+	
+	#! "$current_java_path" -version 2>&1 | _java_oraclejdk11_check_filter > /dev/null 2>&1 && return 1
+	
+	_set_java_arbitrary "$current_java_path"
+	
+	return 0
+}
+_java_oraclejdk11_debian() {
+	if _java_oraclejdk11_debian_check
+	then
+		[[ "$ubJava_setOnly" == 'true' ]] && return 0
+		"$ubJava" "$@"
+		_stop "$?"
+	fi
+	return 1
+}
+# _java_oraclejdk11_usrbin_check() {
+# 	local current_java_path='/usr/bin/java'
+# 	
+# 	! type "$current_java_path" > /dev/null 2>&1 && return 1
+# 	
+# 	! "$current_java_path" -version 2>&1 | _java_oraclejdk11_check_filter > /dev/null 2>&1 && return 1
+# 	
+# 	_set_java_arbitrary "$current_java_path"
+# 	
+# 	return 0
+# }
+# _java_oraclejdk11_usrbin() {
+# 	if _java_oraclejdk11_usrbin_check
+# 	then
+# 		[[ "$ubJava_setOnly" == 'true' ]] && return 0
+# 		"$ubJava" "$@"
+# 		_stop "$?"
+# 	fi
+# 	return 1
+# }
+# _java_oraclejdk11_PATH_check() {
+# 	local current_java_path=$(type -p java 2>/dev/null)
+# 	
+# 	[[ ! -e "$current_java_path" ]] && return 1
+# 	[[ "$current_java_path" == "" ]] && return 1
+# 	! type "$current_java_path" > /dev/null 2>&1 && return 1
+# 	
+# 	! "$current_java_path" -version 2>&1 | _java_oraclejdk11_check_filter > /dev/null 2>&1 && return 1
+# 	
+# 	_set_java_arbitrary "$current_java_path"
+# 	
+# 	return 0
+# }
+# _java_oraclejdk11_PATH() {
+# 	if _java_oraclejdk11_PATH_check
+# 	then
+# 		[[ "$ubJava_setOnly" == 'true' ]] && return 0
+# 		"$ubJava" "$@"
+# 		_stop "$?"
+# 	fi
+# 	return 1
+# }
+_java_oraclejdk11() {
+	_java_oraclejdk11_debian "$@"
+# 	_java_oraclejdk11_usrbin "$@"
+# 	_java_oraclejdk11_PATH "$@"
+}
+_set_java_oraclejdk11() {
+	export ubJava_setOnly='true'
+	_java_oraclejdk11
+	export ubJava_setOnly='false'
+}
+_check_java_oraclejdk11() {
+	_java_oraclejdk11_debian_check && return 0
+	return 1
+}
+_java_oraclejdk_ANY() {
+	_java_oraclejdk11 "$@"
+}
+_java_oraclejdk() {
+	_java_oraclejdk_ANY "$@"
+}
+_set_java_oraclejdk_ANY() {
+	export ubJava_setOnly='true'
+	_java_oraclejdk_ANY
+	export ubJava_setOnly='false'
+}
+_set_java_oraclejdk() {
+	export ubJava_setOnly='true'
+	_java_oraclejdk
+	export ubJava_setOnly='false'
+}
+_check_java_oraclejdk(){
+	_check_java_oraclejdk11
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# ATTENTION Overload with 'core.sh' or similar ONLY if further specialization is actually required!
+_test_java() {
+	_wantGetDep java
+	
+	! _check_java_openjdkANY && echo 'missing: openjdk'
+	#! _check_java_openjdk8 && echo 'missing: openjdk8'
+	#! _check_java_openjdk11 && echo 'missing: openjdk11'
+	
+	# DANGER: Oracle Java *strongly* discouraged. Support provided as rough example only.
+	#! _check_java_oraclejdk && echo 'missing: oraclejdk'
+	#! _check_java_oraclejdk11  && echo 'missing: oraclejdk11'
+	
+	return 0
+}
+
+# ATTENTION Overload with 'core.sh' or similar ONLY if further specialization is actually required!
+_set_java() {
+	export ubJava_setOnly='true'
+	_java
+	export ubJava_setOnly='false'
+}
+
+# ATTENTION Overload with 'core.sh' or similar ONLY if further specialization is actually required!
+_java() {
+	_java_openjdk11 "$@"
+	_java_openjdk8 "$@"
+	_java_openjdkANY "$@"
+	
+	# DANGER: Oracle Java *strongly* discouraged. Support provided as rough example only.
+	#_java_oraclejdk11 "$@"
+	#_java_oraclejdk "$@"
+}
+
+
 
 #####Idle
 
@@ -9569,7 +9981,7 @@ _chroot() {
 	
 	local chrootExitStatus
 	
-	sudo -n env -i HOME="/root" TERM="${TERM}" SHELL="/bin/bash" PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" DISPLAY="$DISPLAY" XSOCK="$XSOCK" XAUTH="$XAUTH" localPWD="$localPWD" hostArch=$(uname -m) virtSharedUser="$virtGuestUser" $(sudo -n which chroot) "$chrootDir" "$@"
+	sudo -n env -i HOME="/root" TERM="${TERM}" SHELL="/bin/bash" PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" DISPLAY="$DISPLAY" XSOCK="$XSOCK" XAUTH="$XAUTH" localPWD="$localPWD" hostArch=$(uname -m) virtSharedUser="$virtGuestUser" $(sudo -n bash -c "type -p chroot") "$chrootDir" "$@"
 	
 	chrootExitStatus="$?"
 	
@@ -12057,6 +12469,12 @@ _atom() {
 _ubide() {
 	_atom . ./ubiquitous_bash.sh "$@"
 }
+
+ 
+
+ 
+
+ 
 
 _test_deveclipse() {
 	_wantGetDep eclipse
@@ -15646,10 +16064,10 @@ _setup_renice() {
 	cat << CZXWXcRMTo8EmM8i4d >> "$ubcoreFile"
 
 # token_ub_renice
-if [[ "\$__overrideRecursionGuard_make" != 'true' ]] && [[ "\$__overrideKeepPriority_make" != 'true' ]] && type which > /dev/null 2>&1 && which make > /dev/null 2>&1
+if [[ "\$__overrideRecursionGuard_make" != 'true' ]] && [[ "\$__overrideKeepPriority_make" != 'true' ]] && type type > /dev/null 2>&1 && type -p make > /dev/null 2>&1
 then
 	__overrideRecursionGuard_make='true'
-	__override_make=$(which make 2>/dev/null)
+	__override_make=$(type -p make 2>/dev/null)
 	make() {
 		#Greater or equal, _priority_idle_pid
 		
@@ -19566,6 +19984,7 @@ _stop_stty_echo() {
 	[[ "$ubFoundEchoStatus" != "" ]] && stty --file=/dev/tty "$ubFoundEchoStatus" 2> /dev/null
 }
 
+# DANGER: Use of "_stop" must NOT require successful "_start". Do NOT include actions which would not be safe if "_start" was not used or unsuccessful.
 _stop() {
 	_stop_stty_echo
 	
@@ -20171,6 +20590,11 @@ _test() {
 	_getDep return
 	_getDep set
 	
+	# WARNING: Deprecated. Migrate to 'type -p' instead when possible.
+	# WARNING: No known production use.
+	#https://unix.stackexchange.com/questions/85249/why-not-use-which-what-to-use-then
+	_getDep which
+	
 	_getDep printf
 	
 	_getDep dd
@@ -20747,6 +21171,10 @@ _deps_blockchain() {
 	export enUb_blockchain="true"
 }
 
+_deps_java() {
+	export enUb_java="true"
+}
+
 _deps_image() {
 	_deps_notLean
 	_deps_machineinfo
@@ -21009,7 +21437,6 @@ _compile_bash_deps() {
 	
 	if [[ "$1" == "processor" ]]
 	then
-		
 		_deps_dev
 		
 		_deps_channel
@@ -21056,6 +21483,9 @@ _compile_bash_deps() {
 		
 		_deps_notLean
 		_deps_os_x11
+		
+		_deps_java
+		
 		
 		_deps_x11
 		_deps_image
@@ -21119,6 +21549,9 @@ _compile_bash_deps() {
 		
 		_deps_notLean
 		_deps_os_x11
+		
+		_deps_java
+		
 		
 		_deps_x11
 		_deps_image
@@ -21296,7 +21729,16 @@ _compile_bash_utilities() {
 	includeScriptList+=( "special"/uuid.sh )
 	
 	[[ "$enUb_dev_heavy" == "true" ]] && includeScriptList+=( "instrumentation"/bashdb/bashdb.sh )
-	([[ "$enUb_notLean" == "true" ]] || [[ "$enUb_stopwatch" == "true" ]]) && includeScriptList+=( "instrumentation"/profiling/stopwatch.sh )
+	( [[ "$enUb_notLean" == "true" ]] || [[ "$enUb_stopwatch" == "true" ]] ) && includeScriptList+=( "instrumentation"/profiling/stopwatch.sh )
+}
+
+# Specifically intended to support Eclipse as necessary for building existing software .
+# Java is regarded as something similar to, but not, an unusual virtualization backend, due to its perhaps rare combination of portability, ongoing incompatible versions, lack of root or kernelspace requirements, typical operating system wide installation, and overall complexity.
+# Multiple 'jre' and 'jdk' packages or script contained versions may be able to, or required, to satisfy related dependencies.
+# WARNING: This is intended to provide for java *applications*, NOT necessarily browser java 'applets'.
+# WARNING: Do NOT deprecate java versions for 'security' reasons - this is intended ONLY to support applications which already normally require user or root permissions.
+_compile_bash_utilities_java() {
+	[[ "$enUb_java" == "true" ]] && includeScriptList+=( "special/java"/java.sh )
 }
 
 _compile_bash_utilities_virtualization() {
@@ -21374,7 +21816,11 @@ _compile_bash_shortcuts() {
 	
 	[[ "$enUb_fakehome" == "true" ]] && [[ "$enUb_dev_heavy" == "true" ]] && includeScriptList+=( "shortcuts/dev/app"/devemacs.sh )
 	[[ "$enUb_fakehome" == "true" ]] && [[ "$enUb_dev_heavy" == "true" ]] && includeScriptList+=( "shortcuts/dev/app"/devatom.sh )
-	[[ "$enUb_fakehome" == "true" ]] && [[ "$enUb_abstractfs" == "true" ]] && [[ "$enUb_dev_heavy" == "true" ]] && includeScriptList+=( "shortcuts/dev/app"/deveclipse.sh )
+	
+	[[ "$enUb_fakehome" == "true" ]] && [[ "$enUb_abstractfs" == "true" ]] && [[ "$enUb_dev_heavy" == "true" ]] && includeScriptList+=( "shortcuts/dev/app/eclipse"/deveclipse_java.sh )
+	[[ "$enUb_fakehome" == "true" ]] && [[ "$enUb_abstractfs" == "true" ]] && [[ "$enUb_dev_heavy" == "true" ]] && includeScriptList+=( "shortcuts/dev/app/eclipse"/deveclipse_env.sh )
+	[[ "$enUb_fakehome" == "true" ]] && [[ "$enUb_abstractfs" == "true" ]] && [[ "$enUb_dev_heavy" == "true" ]] && includeScriptList+=( "shortcuts/dev/app/eclipse"/deveclipse_app.sh )
+	[[ "$enUb_fakehome" == "true" ]] && [[ "$enUb_abstractfs" == "true" ]] && [[ "$enUb_dev_heavy" == "true" ]] && includeScriptList+=( "shortcuts/dev/app/eclipse"/deveclipse.sh )
 	
 	includeScriptList+=( "shortcuts/dev/query"/devquery.sh )
 	
@@ -21647,6 +22093,7 @@ _compile_bash() {
 	_compile_bash_essential_utilities_prog
 	_compile_bash_utilities
 	_compile_bash_utilities_prog
+	_compile_bash_utilities_java
 	_compile_bash_utilities_virtualization
 	_compile_bash_utilities_virtualization_prog
 	

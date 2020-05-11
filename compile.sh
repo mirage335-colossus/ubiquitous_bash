@@ -460,7 +460,7 @@ _compat_realpath() {
 	export compat_realpath_bin=/opt/local/libexec/gnubin/realpath
 	[[ -e "$compat_realpath_bin" ]] && [[ "$compat_realpath_bin" != "" ]] && return 0
 	
-	export compat_realpath_bin=$(which realpath)
+	export compat_realpath_bin=$(type -p realpath)
 	[[ -e "$compat_realpath_bin" ]] && [[ "$compat_realpath_bin" != "" ]] && return 0
 	
 	export compat_realpath_bin=/bin/realpath
@@ -2997,6 +2997,10 @@ _deps_blockchain() {
 	export enUb_blockchain="true"
 }
 
+_deps_java() {
+	export enUb_java="true"
+}
+
 _deps_image() {
 	_deps_notLean
 	_deps_machineinfo
@@ -3259,7 +3263,6 @@ _compile_bash_deps() {
 	
 	if [[ "$1" == "processor" ]]
 	then
-		
 		_deps_dev
 		
 		_deps_channel
@@ -3306,6 +3309,9 @@ _compile_bash_deps() {
 		
 		_deps_notLean
 		_deps_os_x11
+		
+		_deps_java
+		
 		
 		_deps_x11
 		_deps_image
@@ -3369,6 +3375,9 @@ _compile_bash_deps() {
 		
 		_deps_notLean
 		_deps_os_x11
+		
+		_deps_java
+		
 		
 		_deps_x11
 		_deps_image
@@ -3546,7 +3555,16 @@ _compile_bash_utilities() {
 	includeScriptList+=( "special"/uuid.sh )
 	
 	[[ "$enUb_dev_heavy" == "true" ]] && includeScriptList+=( "instrumentation"/bashdb/bashdb.sh )
-	([[ "$enUb_notLean" == "true" ]] || [[ "$enUb_stopwatch" == "true" ]]) && includeScriptList+=( "instrumentation"/profiling/stopwatch.sh )
+	( [[ "$enUb_notLean" == "true" ]] || [[ "$enUb_stopwatch" == "true" ]] ) && includeScriptList+=( "instrumentation"/profiling/stopwatch.sh )
+}
+
+# Specifically intended to support Eclipse as necessary for building existing software .
+# Java is regarded as something similar to, but not, an unusual virtualization backend, due to its perhaps rare combination of portability, ongoing incompatible versions, lack of root or kernelspace requirements, typical operating system wide installation, and overall complexity.
+# Multiple 'jre' and 'jdk' packages or script contained versions may be able to, or required, to satisfy related dependencies.
+# WARNING: This is intended to provide for java *applications*, NOT necessarily browser java 'applets'.
+# WARNING: Do NOT deprecate java versions for 'security' reasons - this is intended ONLY to support applications which already normally require user or root permissions.
+_compile_bash_utilities_java() {
+	[[ "$enUb_java" == "true" ]] && includeScriptList+=( "special/java"/java.sh )
 }
 
 _compile_bash_utilities_virtualization() {
@@ -3624,7 +3642,11 @@ _compile_bash_shortcuts() {
 	
 	[[ "$enUb_fakehome" == "true" ]] && [[ "$enUb_dev_heavy" == "true" ]] && includeScriptList+=( "shortcuts/dev/app"/devemacs.sh )
 	[[ "$enUb_fakehome" == "true" ]] && [[ "$enUb_dev_heavy" == "true" ]] && includeScriptList+=( "shortcuts/dev/app"/devatom.sh )
-	[[ "$enUb_fakehome" == "true" ]] && [[ "$enUb_abstractfs" == "true" ]] && [[ "$enUb_dev_heavy" == "true" ]] && includeScriptList+=( "shortcuts/dev/app"/deveclipse.sh )
+	
+	[[ "$enUb_fakehome" == "true" ]] && [[ "$enUb_abstractfs" == "true" ]] && [[ "$enUb_dev_heavy" == "true" ]] && includeScriptList+=( "shortcuts/dev/app/eclipse"/deveclipse_java.sh )
+	[[ "$enUb_fakehome" == "true" ]] && [[ "$enUb_abstractfs" == "true" ]] && [[ "$enUb_dev_heavy" == "true" ]] && includeScriptList+=( "shortcuts/dev/app/eclipse"/deveclipse_env.sh )
+	[[ "$enUb_fakehome" == "true" ]] && [[ "$enUb_abstractfs" == "true" ]] && [[ "$enUb_dev_heavy" == "true" ]] && includeScriptList+=( "shortcuts/dev/app/eclipse"/deveclipse_app.sh )
+	[[ "$enUb_fakehome" == "true" ]] && [[ "$enUb_abstractfs" == "true" ]] && [[ "$enUb_dev_heavy" == "true" ]] && includeScriptList+=( "shortcuts/dev/app/eclipse"/deveclipse.sh )
 	
 	includeScriptList+=( "shortcuts/dev/query"/devquery.sh )
 	
@@ -3897,6 +3919,7 @@ _compile_bash() {
 	_compile_bash_essential_utilities_prog
 	_compile_bash_utilities
 	_compile_bash_utilities_prog
+	_compile_bash_utilities_java
 	_compile_bash_utilities_virtualization
 	_compile_bash_utilities_virtualization_prog
 	

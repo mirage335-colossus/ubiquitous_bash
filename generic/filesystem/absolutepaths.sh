@@ -206,7 +206,7 @@ _compat_realpath() {
 	export compat_realpath_bin=/opt/local/libexec/gnubin/realpath
 	[[ -e "$compat_realpath_bin" ]] && [[ "$compat_realpath_bin" != "" ]] && return 0
 	
-	export compat_realpath_bin=$(which realpath)
+	export compat_realpath_bin=$(type -p realpath)
 	[[ -e "$compat_realpath_bin" ]] && [[ "$compat_realpath_bin" != "" ]] && return 0
 	
 	export compat_realpath_bin=/bin/realpath

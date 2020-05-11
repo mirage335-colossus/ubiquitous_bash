@@ -191,6 +191,11 @@ _test() {
 	_getDep return
 	_getDep set
 	
+	# WARNING: Deprecated. Migrate to 'type -p' instead when possible.
+	# WARNING: No known production use.
+	#https://unix.stackexchange.com/questions/85249/why-not-use-which-what-to-use-then
+	_getDep which
+	
 	_getDep printf
 	
 	_getDep dd

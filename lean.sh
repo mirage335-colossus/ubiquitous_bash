@@ -460,7 +460,7 @@ _compat_realpath() {
 	export compat_realpath_bin=/opt/local/libexec/gnubin/realpath
 	[[ -e "$compat_realpath_bin" ]] && [[ "$compat_realpath_bin" != "" ]] && return 0
 	
-	export compat_realpath_bin=$(which realpath)
+	export compat_realpath_bin=$(type -p realpath)
 	[[ -e "$compat_realpath_bin" ]] && [[ "$compat_realpath_bin" != "" ]] && return 0
 	
 	export compat_realpath_bin=/bin/realpath
@@ -2960,10 +2960,10 @@ _setup_renice() {
 	cat << CZXWXcRMTo8EmM8i4d >> "$ubcoreFile"
 
 # token_ub_renice
-if [[ "\$__overrideRecursionGuard_make" != 'true' ]] && [[ "\$__overrideKeepPriority_make" != 'true' ]] && type which > /dev/null 2>&1 && which make > /dev/null 2>&1
+if [[ "\$__overrideRecursionGuard_make" != 'true' ]] && [[ "\$__overrideKeepPriority_make" != 'true' ]] && type type > /dev/null 2>&1 && type -p make > /dev/null 2>&1
 then
 	__overrideRecursionGuard_make='true'
-	__override_make=$(which make 2>/dev/null)
+	__override_make=$(type -p make 2>/dev/null)
 	make() {
 		#Greater or equal, _priority_idle_pid
 		
@@ -3532,6 +3532,7 @@ _stop_stty_echo() {
 	[[ "$ubFoundEchoStatus" != "" ]] && stty --file=/dev/tty "$ubFoundEchoStatus" 2> /dev/null
 }
 
+# DANGER: Use of "_stop" must NOT require successful "_start". Do NOT include actions which would not be safe if "_start" was not used or unsuccessful.
 _stop() {
 	_stop_stty_echo
 	
@@ -4136,6 +4137,11 @@ _test() {
 	_getDep trap
 	_getDep return
 	_getDep set
+	
+	# WARNING: Deprecated. Migrate to 'type -p' instead when possible.
+	# WARNING: No known production use.
+	#https://unix.stackexchange.com/questions/85249/why-not-use-which-what-to-use-then
+	_getDep which
 	
 	_getDep printf
 	
