@@ -6595,6 +6595,9 @@ _stopwatch() {
 _set_java_arbitrary() {
 	export ubJava="$1"
 }
+_check_java_arbitrary() {
+	type "$ubJava" > /dev/null 2>&1
+}
 
 
 _java_openjdkANY_check_filter() {
@@ -6667,13 +6670,17 @@ _java_openjdk11_PATH() {
 }
 _java_openjdk11() {
 	_java_openjdk11_debian "$@"
+	[[ "$?" == '0' ]] && return 0
 	_java_openjdk11_usrbin "$@"
+	[[ "$?" == '0' ]] && return 0
 	_java_openjdk11_PATH "$@"
+	[[ "$?" == '0' ]] && return 0
 }
 _set_java_openjdk11() {
 	export ubJava_setOnly='true'
 	_java_openjdk11
 	export ubJava_setOnly='false'
+	_check_java_arbitrary
 }
 _check_java_openjdk11() {
 	_java_openjdk11_debian_check && return 0
@@ -6753,13 +6760,17 @@ _java_openjdk8_PATH() {
 }
 _java_openjdk8() {
 	_java_openjdk8_debian "$@"
+	[[ "$?" == '0' ]] && return 0
 	_java_openjdk8_usrbin "$@"
+	[[ "$?" == '0' ]] && return 0
 	_java_openjdk8_PATH "$@"
+	[[ "$?" == '0' ]] && return 0
 }
 _set_java_openjdk8() {
 	export ubJava_setOnly='true'
 	_java_openjdk8
 	export ubJava_setOnly='false'
+	_check_java_arbitrary
 }
 _check_java_openjdk8() {
 	_java_openjdk8_debian_check && return 0
@@ -6772,7 +6783,9 @@ _check_java_openjdk8() {
 
 _java_openjdkANY_debian() {
 	_java_openjdk8_debian "$@"
+	[[ "$?" == '0' ]] && return 0
 	_java_openjdk11_debian "$@"
+	[[ "$?" == '0' ]] && return 0
 }
 _java_openjdkANY_usrbin_check() {
 	local current_java_path='/usr/bin/java'
@@ -6818,8 +6831,11 @@ _java_openjdkANY_PATH() {
 }
 _java_openjdkANY() {
 	_java_openjdkANY_debian "$@"
+	[[ "$?" == '0' ]] && return 0
 	_java_openjdkANY_usrbin "$@"
+	[[ "$?" == '0' ]] && return 0
 	_java_openjdkANY_PATH "$@"
+	[[ "$?" == '0' ]] && return 0
 }
 _java_openjdk() {
 	_java_openjdkANY "$@"
@@ -6828,11 +6844,13 @@ _set_java_openjdkANY() {
 	export ubJava_setOnly='true'
 	_java_openjdkANY
 	export ubJava_setOnly='false'
+	_check_java_arbitrary
 }
 _set_java_openjdk() {
 	export ubJava_setOnly='true'
 	_java_openjdk
 	export ubJava_setOnly='false'
+	_check_java_arbitrary
 }
 _check_java_openjdkANY() {
 	_check_java_openjdk11 && return 0
@@ -6910,13 +6928,17 @@ _java_oraclejdk11_debian() {
 # }
 _java_oraclejdk11() {
 	_java_oraclejdk11_debian "$@"
+	[[ "$?" == '0' ]] && return 0
 # 	_java_oraclejdk11_usrbin "$@"
+# 	[[ "$?" == '0' ]] && return 0
 # 	_java_oraclejdk11_PATH "$@"
+# 	[[ "$?" == '0' ]] && return 0
 }
 _set_java_oraclejdk11() {
 	export ubJava_setOnly='true'
 	_java_oraclejdk11
 	export ubJava_setOnly='false'
+	_check_java_arbitrary
 }
 _check_java_oraclejdk11() {
 	_java_oraclejdk11_debian_check && return 0
@@ -6924,6 +6946,7 @@ _check_java_oraclejdk11() {
 }
 _java_oraclejdk_ANY() {
 	_java_oraclejdk11 "$@"
+	[[ "$?" == '0' ]] && return 0
 }
 _java_oraclejdk() {
 	_java_oraclejdk_ANY "$@"
@@ -6932,11 +6955,13 @@ _set_java_oraclejdk_ANY() {
 	export ubJava_setOnly='true'
 	_java_oraclejdk_ANY
 	export ubJava_setOnly='false'
+	_check_java_arbitrary
 }
 _set_java_oraclejdk() {
 	export ubJava_setOnly='true'
 	_java_oraclejdk
 	export ubJava_setOnly='false'
+	_check_java_arbitrary
 }
 _check_java_oraclejdk(){
 	_check_java_oraclejdk11
@@ -6975,6 +7000,7 @@ _set_java() {
 	export ubJava_setOnly='true'
 	_java
 	export ubJava_setOnly='false'
+	_check_java_arbitrary
 }
 
 # ATTENTION Overload with 'core.sh' or similar ONLY if further specialization is actually required!
@@ -7683,16 +7709,183 @@ _abstractfs() {
 	#cd "$abstractfs"
 	
 	local commandExitStatus
+	commandExitStatus=1
 	
 	#_scope_terminal "${processedArgs[@]}"
-	"$abstractfs_command" "${processedArgs[@]}"
-	commandExitStatus=$?
+	
+	[[ "$abstractfs_command" == 'ub_abstractfs_getOnly_dst' ]] && echo "$abstractfs"
+	[[ "$abstractfs_command" == 'ub_abstractfs_getOnly_src' ]] && echo "$abstractfs_base"
+	if [[ "$abstractfs_command" != 'ub_abstractfs_getOnly_dst' ]] && [[ "$abstractfs_command" != 'ub_abstractfs_getOnly_src' ]]
+	then
+		"$abstractfs_command" "${processedArgs[@]}"
+		commandExitStatus="$?"
+	fi
 	
 	_set_share_abstractfs_reset
 	_rmlink_abstractfs
 	
 	return "$commandExitStatus"
 }
+
+
+
+
+
+_get_abstractfs_dst_procedure() {
+	shift
+	_abstractfs 'ub_abstractfs_getOnly_dst' "$@"
+}
+_get_abstractfs_dst_sequence() {
+	_start
+	_get_abstractfs_dst_procedure "$@"
+	_stop 0
+}
+
+# If the result independent of any particular command is desired, use "_true" as command (first parameter).
+_get_abstractfs_dst() {
+	"$scriptAbsoluteLocation" _get_abstractfs_dst_sequence "$@"
+}
+_get_abstractfs() {
+	_get_abstractfs_dst "$@"
+}
+
+
+
+_get_abstractfs_src_procedure() {
+	shift
+	_abstractfs 'ub_abstractfs_getOnly_src' "$@"
+}
+_get_abstractfs_src_sequence() {
+	_start
+	_get_abstractfs_src_procedure "$@"
+	_stop 0
+}
+# If the result independent of any particular command is desired, use "_true" as command (first parameter).
+_get_abstractfs_src() {
+	"$scriptAbsoluteLocation" _get_abstractfs_src_sequence "$@"
+}
+
+_get_base_abstractfs() {
+	_get_abstractfs_src "$@"
+}
+_get_base_abstractfs_name() {
+	local current_abstractfs_base
+	current_abstractfs_base=$(_get_abstractfs_src "$@")
+	basename "$current_abstractfs_base"
+}
+
+
+
+
+
+
+# WARNING: Input parameters must NOT include neighboring ConfigurationLookupDirectory, regardless of whether static ConfigurationLookupDirectory is used.
+_set_abstractfs_AbstractSourceDirectory() {
+	# AbstractSourceDirectory
+	export ubASD=$(_get_base_abstractfs "$@" "$ub_specimen")
+	export ubASD_name=$(basename $ubASD)
+	
+	# Should never be reached. Also, undesirable default.
+	[[ "$ubASD_name" == "" ]] && export ubASD_name=project
+	
+	# ApplicationSourceDirectory-ConfigurationLookupDirectory
+	# Project directory is *source* directory.
+	# ConfigurationLookupDirectory is *neighbor*, using absolute path *outside* abstractfs translation.
+	# CAUTION: Not compatible with applications requiring all paths translated by abstractfs.
+	export ubASD_CLD="$ubASD"/../"$ubASD_name".cld
+	
+	# Internal '_export' folder instead of neighboring ConfigurationLookupDirectory .
+	export ubASD_CLD_export="$ubASD"/_export/afscld
+}
+
+
+
+
+
+
+# WARNING: Input parameters must NOT include neighboring ConfigurationLookupDirectory, regardless of whether static ConfigurationLookupDirectory is used.
+_prepare_abstractfs_appdir_export() {
+	_set_abstractfs_AbstractSourceDirectory "$@"
+	
+	mkdir -p "$ubASD_CLD_export"
+	
+	##### # ATTENTION: Prior to abstractfs. 'ApplicationProjectDirectory', ConfigurationLookupDirectory.
+	export ubAPD_prior_export="$ubASD"
+	export ubCLD_prior_export="$ubASD_CLD_export"
+	#####
+	
+	##### # ATTENTION: Export. 'ApplicationProjectDirectory', ConfigurationLookupDirectory.
+	export ubAPD_export="$ubADD"
+	export ubCLD_export="$ubASD_CLD_export"
+	#####
+}
+
+
+
+
+# ATTENTION Overload ONLY if further specialization is actually required!
+# WARNING: Input parameters must NOT include neighboring ConfigurationLookupDirectory, regardless of whether static ConfigurationLookupDirectory is used.
+_prepare_abstractfs_appdir() {
+	_set_abstractfs_AbstractSourceDirectory "$@"
+	
+	mkdir -p "$ubASD"
+	mkdir -p "$ubASD_CLD"
+	
+	
+	##### # ATTENTION: Prior to abstractfs. 'ApplicationProjectDirectory', ConfigurationLookupDirectory.
+	export ubAPD_prior="$ubASD"
+	export ubCLD_prior="$ubASD_CLD"
+	#####
+	
+	
+	# AbstractDestinationDirectory
+	export ubADD=$(_get_abstractfs "$@" "$ub_specimen")
+	
+	
+	##### # ATTENTION: Static. 'ApplicationProjectDirectory', ConfigurationLookupDirectory.
+	export ubAPD_static="$ubADD"
+	export ubCLD_static="$ubASD_CLD"
+	#####
+	
+	
+	export ubASDdyn=$(_get_base_abstractfs "$@" "$ub_specimen" "$ubASD_CLD")
+	export ubADDdyn=$(_get_abstractfs "$@" "$ub_specimen" "$ubASD_CLD")
+	
+	export ubADDdyn_CLD="$ubADDdyn"/"$ubASD_name".cld
+	
+	
+	##### # ATTENTION: Dynamic. 'ApplicationProjectDirectory', ConfigurationLookupDirectory.
+	export ubAPD_dynamic="$ubADDdyn"/"$ubASD_name"
+	export ubCLD_dynamic="$ubADDdyn_CLD"
+	#####
+}
+# MISUSE. Permissible, given rare requirement to ensure directories exist to perform common directory determination.
+_set_abstractfs_appdir() {
+	_prepare_abstractfs_appdir "$@"
+}
+
+
+_probe_prepare_abstractfs_appdir_prior() {
+	_messagePlain_nominal '_probe_prepare_abstractfs_appdir_prior'
+	_messagePlain_probe_var ubAPD_prior
+	_messagePlain_probe_var ubCLD_prior
+}
+_probe_prepare_abstractfs_appdir_static() {
+	_messagePlain_nominal '_probe_prepare_abstractfs_appdir_static'
+	_messagePlain_probe_var ubAPD_static
+	_messagePlain_probe_var ubCLD_static
+}
+_probe_prepare_abstractfs_appdir_dynamic() {
+	_messagePlain_nominal '_probe_prepare_abstractfs_appdir_dynamic'
+	_messagePlain_probe_var ubAPD_dynamic
+	_messagePlain_probe_var ubCLD_dynamic
+}
+_probe_prepare_abstractfs_appdir() {
+	_probe_prepare_abstractfs_appdir_prior
+	_probe_prepare_abstractfs_appdir_static
+	_probe_prepare_abstractfs_appdir_dynamic
+}
+
 
 _reset_abstractfs() {
 	export abstractfs=
@@ -12476,154 +12669,72 @@ _ubide() {
 
  
 
-_test_deveclipse() {
-	_wantGetDep eclipse
+ 
+
+ 
+
+
+_prepare_example_ConfigurationLookupDirectory_eclipse() {
+	_prepare_abstractfs_appdir "$@"
+	_probe_prepare_abstractfs_appdir_static
 	
-	! [[ -e /usr/share/eclipse/dropins/cdt ]] && echo 'warn: missing: /usr/share/eclipse/dropins/cdt'
+	export ub_eclipse_workspace="$ubCLD_static"/_eclipse-workspace
+	export ub_eclipse_configuration="$ubCLD_static"/_eclipse-configuration/_eclipse_configuration
+	
+	mkdir -p "$ub_eclipse_workspace"
+	mkdir -p "$ub_eclipse_configuration"
 }
 
-#"$1" == workspaceDir
-_prepare_eclipse_workspace() {
-	local local_workspace_import="$1"/_import
-	
-	mkdir -p "$local_workspace_import"
-	
-	local local_workspace_abstract
-	
-	#Scope
-	if [[ "$ub_specimen" != "" ]] && [[ "$ub_scope" != "" ]]
-	then
-		local_workspace_abstract=$(_name_abstractfs "$ub_specimen")
-		
-		mkdir -p "$local_workspace_import"/"$local_workspace_abstract"
-		
-		_relink "$ub_specimen" "$local_workspace_import"/"$local_workspace_abstract"/specimen
-		_relink "$ub_scope" "$local_workspace_import"/"$local_workspace_abstract"/scope
-		
-		#Export directories to be used for projects/sets to be stored in shared repositories.
-		mkdir -p "$ub_specimen"/_export
-		_relink "$ub_specimen"/_export "$local_workspace_import"/"$local_workspace_abstract"/_export
-		
-		_messagePlain_good 'eclipse: install: specimen, scope: '"$local_workspace_import"/"$local_workspace_abstract"
-	fi
-	
-	#Arbitary Project
-	if [[ "$arbitraryProjectDir" != "" ]]
-	then
-		local_workspace_abstract=$(_name_abstractfs "$arbitraryProjectDir")
-		
-		mkdir -p "$local_workspace_import"/"$local_workspace_abstract"
-		
-		_relink "$arbitraryProjectDir" "$local_workspace_import"/"$local_workspace_abstract"
-		
-		#Export directories to be used for projects/sets to be stored in shared repositories.
-		mkdir -p "$arbitraryProjectDir"/_export
-		_relink "$arbitraryProjectDir"/_export "$local_workspace_import"/"$local_workspace_abstract"/_export
-		
-		_messagePlain_good 'eclipse: install: arbitraryProjectDir: '"$local_workspace_import"/"$local_workspace_abstract"
-	fi
+
+
+_eclipse_example_binary() {
+	eclipse "$@"
 }
 
-#Creates user and export directories for eclipse instance. User directories to be used for project specific workspace. Export directories to be used for projects/sets to be stored in shared repositories.
-#"$eclipse_path" (eg. "$ub_specimen")
-#"eclipse_root" (eg. ".eclipser")
-_prepare_eclipse() {
-	#Special meaning of "$PWD" when run under _abstractfs ("$localPWD") is intended.
-	if [[ "$eclipse_path" == "" ]]
-	then
-		export eclipse_path=$(_getAbsoluteLocation "$PWD"/..)
-		[[ "$ub_specimen" != "" ]] && export eclipse_path=$(_getAbsoluteLocation "$ub_specimen"/..)
-		#[[ "$ub_scope" != "" ]] && export eclipse_path=$(_getAbsoluteLocation "$ub_scope")
-	fi
-	
-	if [[ "$eclipse_root" == "" ]]
-	then
-		export eclipse_root=$(_name_abstractfs "$ub_specimen")
-		export eclipse_root="$eclipse_root".ecr
-		#export eclipse_root='eclipser'
-		#export eclipse_root='.eclipser'
-	fi
-	
-	export eclipse_user='user'
-	
-	#export eclipse_export='_export'
-	
-	export eclipse_data='workspace'
-	export eclipse_config='configuration'
-	
-	mkdir -p "$eclipse_path"/"$eclipse_root"
-	mkdir -p "$eclipse_path"/"$eclipse_root"/"$eclipse_user"
-	#mkdir -p "$eclipse_path"/"$eclipse_root"/"$eclipse_export"
-	mkdir -p "$eclipse_path"/"$eclipse_root"/"$eclipse_data"
-	mkdir -p "$eclipse_path"/"$eclipse_root"/"$eclipse_user"/"$eclipse_config"
-	
-	#_mustcarry 'eclipser/' "$eclipse_path"/"$eclipse_root"/.gitignore
-	_mustcarry "$eclipse_user"/ "$eclipse_path"/"$eclipse_root"/.gitignore
-	_mustcarry "$eclipse_data"/ "$eclipse_path"/"$eclipse_root"/.gitignore
-	_mustcarry "$eclipse_user"/"$eclipse_config"/ "$eclipse_path"/"$eclipse_root"/.gitignore
-}
-
-_install_fakeHome_eclipse() {	
-	_link_fakeHome "$eclipse_path"/"$eclipse_root"/"$eclipse_data" workspace
-	
-	_link_fakeHome "$eclipse_path"/"$eclipse_root"/"$eclipse_user" .eclipse
-	#_link_fakeHome "$eclipse_path"/"$eclipse_root"/"$eclipse_user"/"$eclipse_config" .eclipse/configuration
-}
-
-_eclipse_procedure() {
-	_prepare_eclipse
-	_prepare_eclipse_workspace "$eclipse_path"/"$eclipse_root"/"$eclipse_data"
-	_messagePlain_probe eclipse -data "$eclipse_path"/"$eclipse_root"/"$eclipse_data" -configuration "$eclipse_path"/"$eclipse_root"/"$eclipse_user"/"$eclipse_config" "$@"
-	eclipse -data "$eclipse_path"/"$eclipse_root"/"$eclipse_data" -configuration "$eclipse_path"/"$eclipse_root"/"$eclipse_user"/"$eclipse_config" "$@"
-}
-
-_eclipse_config() {
-	_eclipse_procedure "$@"
-}
-
-_eclipse_stock() {
-	_prepare_eclipse_workspace "$HOME"/workspace
-	eclipse -data "$HOME"/workspace "$@"
-}
-
-_eclipse_home() {
-	_prepare_eclipse_workspace "$HOME"/workspace
-	_messagePlain_probe eclipse -data "$HOME"/workspace -configuration "$HOME"/.eclipse/configuration "$@"
-	eclipse -data "$HOME"/workspace -configuration "$HOME"/.eclipse/configuration "$@"
-}
-
-_eclipse_edit() {
-	_prepare_eclipse
-	
-	export actualFakeHome="$shortFakeHome"
-	#export actualFakeHome="$globalFakeHome"
-	export fakeHomeEditLib="true"
-	export keepFakeHome="true"
-	
-	_install_fakeHome_eclipse
-	
-	_fakeHome "$scriptAbsoluteLocation" --parent _eclipse_home "$@"
-}
-
-_eclipse_user() {
-	_prepare_eclipse
-	
-	export actualFakeHome="$shortFakeHome"
-	#export actualFakeHome="$globalFakeHome"
-	export fakeHomeEditLib="false"
-	export keepFakeHome="true"
-	
-	_install_fakeHome_eclipse
-	
-	_fakeHome "$scriptAbsoluteLocation" --parent _eclipse_home "$@"
+# ATTENTION: Override with 'core.sh', 'ops', or similar.
+# Static parameters. Must be accepted if function overridden to point script contained installation.
+_eclipse_example-static() {
+	_eclipse_example_binary -vm "$ubJava" -data "$ub_eclipse_workspace" -configuration "$ub_eclipse_configuration" "$@"
 }
 
 
 
 
 
-_eclipse() {
-	_eclipse_config "$@"
+
+
+
+
+_eclipse_example() {
+	! _set_java_openjdk && _stop 1
+	
+	# Scope will by default... cd "$ub_specimen" ...
+	#... abstractfs... consistent directory name... '_eclipse_executable'
+	mkdir -p ./project
+	cd ./project
+	
+	
+	# Configuration Lookup Directory
+	_prepare_example_ConfigurationLookupDirectory_eclipse _eclipse_example-static "$@"
+	
+	
+	#... fakeHome ?
+	
+	# Example only.
+	[[ "$specialGCC" != '' ]] && _messagePlain_request 'request: special GCC bin='"$specialGCC"
+	
+	#echo "$ub_specimen"
+	
+	
+	#                     '                              
+	_messagePlain_request 'request: abstractfs:          '"$ubAPD_static"
+	
+	
+	#_abstractfs bash
+	#eclipse -vm "$ubJava"  "$@"
+	
+	
+	_abstractfs _eclipse_example-static "$@"
 }
 
 #Simulated client/server discussion testing.
@@ -12870,6 +12981,7 @@ _scope_interact() {
 # ATTENTION: Overload with "core.sh" or similar!
 _scope_prog_procedure() {
 	# WARNING: Not necessarily wise for all applications. However, applications needing a different working directory should get there from an environment variable relative to script or specimen directory.
+	# WARNING: Disabling this may cause inconsistencies with programs which require "_abstractfs" (eg. Arduino, Eclipse).
 	cd "$ub_specimen"
 	
 	#true
@@ -21756,6 +21868,7 @@ _compile_bash_utilities_virtualization() {
 	[[ "$enUb_virt" == "true" ]] && includeScriptList+=( "virtualization"/localPathTranslation.sh )
 	
 	[[ "$enUb_abstractfs" == "true" ]] && includeScriptList+=( "virtualization/abstractfs"/abstractfs.sh )
+	[[ "$enUb_abstractfs" == "true" ]] && includeScriptList+=( "virtualization/abstractfs"/abstractfs_appdir.sh )
 	[[ "$enUb_abstractfs" == "true" ]] && includeScriptList+=( "virtualization/abstractfs"/abstractfsvars.sh )
 	
 	[[ "$enUb_fakehome" == "true" ]] && includeScriptList+=( "virtualization/fakehome"/fakehomemake.sh )
@@ -21819,7 +21932,10 @@ _compile_bash_shortcuts() {
 	
 	[[ "$enUb_fakehome" == "true" ]] && [[ "$enUb_abstractfs" == "true" ]] && [[ "$enUb_dev_heavy" == "true" ]] && includeScriptList+=( "shortcuts/dev/app/eclipse"/deveclipse_java.sh )
 	[[ "$enUb_fakehome" == "true" ]] && [[ "$enUb_abstractfs" == "true" ]] && [[ "$enUb_dev_heavy" == "true" ]] && includeScriptList+=( "shortcuts/dev/app/eclipse"/deveclipse_env.sh )
+	[[ "$enUb_fakehome" == "true" ]] && [[ "$enUb_abstractfs" == "true" ]] && [[ "$enUb_dev_heavy" == "true" ]] && includeScriptList+=( "shortcuts/dev/app/eclipse"/deveclipse_bin_.sh )
 	[[ "$enUb_fakehome" == "true" ]] && [[ "$enUb_abstractfs" == "true" ]] && [[ "$enUb_dev_heavy" == "true" ]] && includeScriptList+=( "shortcuts/dev/app/eclipse"/deveclipse_app.sh )
+	[[ "$enUb_fakehome" == "true" ]] && [[ "$enUb_abstractfs" == "true" ]] && [[ "$enUb_dev_heavy" == "true" ]] && includeScriptList+=( "shortcuts/dev/app/eclipse"/deveclipse_example_export.sh )
+	[[ "$enUb_fakehome" == "true" ]] && [[ "$enUb_abstractfs" == "true" ]] && [[ "$enUb_dev_heavy" == "true" ]] && includeScriptList+=( "shortcuts/dev/app/eclipse"/deveclipse_example.sh )
 	[[ "$enUb_fakehome" == "true" ]] && [[ "$enUb_abstractfs" == "true" ]] && [[ "$enUb_dev_heavy" == "true" ]] && includeScriptList+=( "shortcuts/dev/app/eclipse"/deveclipse.sh )
 	
 	includeScriptList+=( "shortcuts/dev/query"/devquery.sh )

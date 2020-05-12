@@ -46,13 +46,71 @@ _abstractfs() {
 	#cd "$abstractfs"
 	
 	local commandExitStatus
+	commandExitStatus=1
 	
 	#_scope_terminal "${processedArgs[@]}"
-	"$abstractfs_command" "${processedArgs[@]}"
-	commandExitStatus=$?
+	
+	[[ "$abstractfs_command" == 'ub_abstractfs_getOnly_dst' ]] && echo "$abstractfs"
+	[[ "$abstractfs_command" == 'ub_abstractfs_getOnly_src' ]] && echo "$abstractfs_base"
+	if [[ "$abstractfs_command" != 'ub_abstractfs_getOnly_dst' ]] && [[ "$abstractfs_command" != 'ub_abstractfs_getOnly_src' ]]
+	then
+		"$abstractfs_command" "${processedArgs[@]}"
+		commandExitStatus="$?"
+	fi
 	
 	_set_share_abstractfs_reset
 	_rmlink_abstractfs
 	
 	return "$commandExitStatus"
 }
+
+
+
+
+
+_get_abstractfs_dst_procedure() {
+	shift
+	_abstractfs 'ub_abstractfs_getOnly_dst' "$@"
+}
+_get_abstractfs_dst_sequence() {
+	_start
+	_get_abstractfs_dst_procedure "$@"
+	_stop 0
+}
+
+# If the result independent of any particular command is desired, use "_true" as command (first parameter).
+_get_abstractfs_dst() {
+	"$scriptAbsoluteLocation" _get_abstractfs_dst_sequence "$@"
+}
+_get_abstractfs() {
+	_get_abstractfs_dst "$@"
+}
+
+
+
+_get_abstractfs_src_procedure() {
+	shift
+	_abstractfs 'ub_abstractfs_getOnly_src' "$@"
+}
+_get_abstractfs_src_sequence() {
+	_start
+	_get_abstractfs_src_procedure "$@"
+	_stop 0
+}
+# If the result independent of any particular command is desired, use "_true" as command (first parameter).
+_get_abstractfs_src() {
+	"$scriptAbsoluteLocation" _get_abstractfs_src_sequence "$@"
+}
+
+_get_base_abstractfs() {
+	_get_abstractfs_src "$@"
+}
+_get_base_abstractfs_name() {
+	local current_abstractfs_base
+	current_abstractfs_base=$(_get_abstractfs_src "$@")
+	basename "$current_abstractfs_base"
+}
+
+
+
+

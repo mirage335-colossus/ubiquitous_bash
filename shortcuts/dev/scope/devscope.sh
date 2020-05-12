@@ -129,6 +129,7 @@ _scope_interact() {
 # ATTENTION: Overload with "core.sh" or similar!
 _scope_prog_procedure() {
 	# WARNING: Not necessarily wise for all applications. However, applications needing a different working directory should get there from an environment variable relative to script or specimen directory.
+	# WARNING: Disabling this may cause inconsistencies with programs which require "_abstractfs" (eg. Arduino, Eclipse).
 	cd "$ub_specimen"
 	
 	#true

@@ -3,6 +3,9 @@
 _set_java_arbitrary() {
 	export ubJava="$1"
 }
+_check_java_arbitrary() {
+	type "$ubJava" > /dev/null 2>&1
+}
 
 
 _java_openjdkANY_check_filter() {
@@ -75,13 +78,17 @@ _java_openjdk11_PATH() {
 }
 _java_openjdk11() {
 	_java_openjdk11_debian "$@"
+	[[ "$?" == '0' ]] && return 0
 	_java_openjdk11_usrbin "$@"
+	[[ "$?" == '0' ]] && return 0
 	_java_openjdk11_PATH "$@"
+	[[ "$?" == '0' ]] && return 0
 }
 _set_java_openjdk11() {
 	export ubJava_setOnly='true'
 	_java_openjdk11
 	export ubJava_setOnly='false'
+	_check_java_arbitrary
 }
 _check_java_openjdk11() {
 	_java_openjdk11_debian_check && return 0
@@ -161,13 +168,17 @@ _java_openjdk8_PATH() {
 }
 _java_openjdk8() {
 	_java_openjdk8_debian "$@"
+	[[ "$?" == '0' ]] && return 0
 	_java_openjdk8_usrbin "$@"
+	[[ "$?" == '0' ]] && return 0
 	_java_openjdk8_PATH "$@"
+	[[ "$?" == '0' ]] && return 0
 }
 _set_java_openjdk8() {
 	export ubJava_setOnly='true'
 	_java_openjdk8
 	export ubJava_setOnly='false'
+	_check_java_arbitrary
 }
 _check_java_openjdk8() {
 	_java_openjdk8_debian_check && return 0
@@ -180,7 +191,9 @@ _check_java_openjdk8() {
 
 _java_openjdkANY_debian() {
 	_java_openjdk8_debian "$@"
+	[[ "$?" == '0' ]] && return 0
 	_java_openjdk11_debian "$@"
+	[[ "$?" == '0' ]] && return 0
 }
 _java_openjdkANY_usrbin_check() {
 	local current_java_path='/usr/bin/java'
@@ -226,8 +239,11 @@ _java_openjdkANY_PATH() {
 }
 _java_openjdkANY() {
 	_java_openjdkANY_debian "$@"
+	[[ "$?" == '0' ]] && return 0
 	_java_openjdkANY_usrbin "$@"
+	[[ "$?" == '0' ]] && return 0
 	_java_openjdkANY_PATH "$@"
+	[[ "$?" == '0' ]] && return 0
 }
 _java_openjdk() {
 	_java_openjdkANY "$@"
@@ -236,11 +252,13 @@ _set_java_openjdkANY() {
 	export ubJava_setOnly='true'
 	_java_openjdkANY
 	export ubJava_setOnly='false'
+	_check_java_arbitrary
 }
 _set_java_openjdk() {
 	export ubJava_setOnly='true'
 	_java_openjdk
 	export ubJava_setOnly='false'
+	_check_java_arbitrary
 }
 _check_java_openjdkANY() {
 	_check_java_openjdk11 && return 0
@@ -318,13 +336,17 @@ _java_oraclejdk11_debian() {
 # }
 _java_oraclejdk11() {
 	_java_oraclejdk11_debian "$@"
+	[[ "$?" == '0' ]] && return 0
 # 	_java_oraclejdk11_usrbin "$@"
+# 	[[ "$?" == '0' ]] && return 0
 # 	_java_oraclejdk11_PATH "$@"
+# 	[[ "$?" == '0' ]] && return 0
 }
 _set_java_oraclejdk11() {
 	export ubJava_setOnly='true'
 	_java_oraclejdk11
 	export ubJava_setOnly='false'
+	_check_java_arbitrary
 }
 _check_java_oraclejdk11() {
 	_java_oraclejdk11_debian_check && return 0
@@ -332,6 +354,7 @@ _check_java_oraclejdk11() {
 }
 _java_oraclejdk_ANY() {
 	_java_oraclejdk11 "$@"
+	[[ "$?" == '0' ]] && return 0
 }
 _java_oraclejdk() {
 	_java_oraclejdk_ANY "$@"
@@ -340,11 +363,13 @@ _set_java_oraclejdk_ANY() {
 	export ubJava_setOnly='true'
 	_java_oraclejdk_ANY
 	export ubJava_setOnly='false'
+	_check_java_arbitrary
 }
 _set_java_oraclejdk() {
 	export ubJava_setOnly='true'
 	_java_oraclejdk
 	export ubJava_setOnly='false'
+	_check_java_arbitrary
 }
 _check_java_oraclejdk(){
 	_check_java_oraclejdk11
@@ -383,6 +408,7 @@ _set_java() {
 	export ubJava_setOnly='true'
 	_java
 	export ubJava_setOnly='false'
+	_check_java_arbitrary
 }
 
 # ATTENTION Overload with 'core.sh' or similar ONLY if further specialization is actually required!
