@@ -9371,6 +9371,60 @@ IF NOT EXIST "X:\" GOTO checkMount
 CZXWXcRMTo8EmM8i4d
 }
 
+
+#Prints "$@" with quotes around every parameter.
+_echoArgsBootdisc_MSW() {
+	
+	#https://stackoverflow.com/questions/1668649/how-to-keep-quotes-in-bash-arguments
+	
+	local currentCommandStringPunctuated
+	local currentCommandStringParameter
+	for currentCommandStringParameter in "$@"; do 
+		
+		# MSW interprets the expression \" and similar differently from UNIX.
+		#currentCommandStringParameter="${currentCommandStringParameter//\\/\\\\}"
+		
+		currentCommandStringPunctuated="$currentCommandStringPunctuated \"${currentCommandStringParameter//\"/\\\"}\""
+	done
+	#_messagePlain_probe "$currentCommandStringPunctuated"
+	
+	#echo -e -n '\E[0;34m '
+	
+	_safeEcho "$currentCommandStringPunctuated"
+	
+	#echo -e -n ' \E[0m'
+	echo
+	
+	return
+}
+
+#Prints "$@" with quotes around every parameter.
+_echoArgsBootdisc_UNIX() {
+	
+	#https://stackoverflow.com/questions/1668649/how-to-keep-quotes-in-bash-arguments
+	
+	local currentCommandStringPunctuated
+	local currentCommandStringParameter
+	for currentCommandStringParameter in "$@"; do 
+		
+		# MSW interprets the expression \" and similar differently from UNIX.
+		currentCommandStringParameter="${currentCommandStringParameter//\\/\\\\}"
+		
+		currentCommandStringPunctuated="$currentCommandStringPunctuated \"${currentCommandStringParameter//\"/\\\"}\""
+	done
+	#_messagePlain_probe "$currentCommandStringPunctuated"
+	
+	#echo -e -n '\E[0;34m '
+	
+	_safeEcho "$currentCommandStringPunctuated"
+	
+	#echo -e -n ' \E[0m'
+	echo
+	
+	return
+}
+
+
 _testVirtBootdisc() {
 	if ! type mkisofs > /dev/null 2>&1 && ! type genisoimage > /dev/null 2>&1
 	then
@@ -9444,8 +9498,10 @@ _createHTG_MSW() {
 	
 	_preCommand_MSW >> "$hostToGuestFiles"/application.bat
 	
-	_safeEcho_newline "${processedArgs[@]}" >> "$hostToGuestFiles"/application.bat
-	 
+	# WARNING: Not fully tested with all plausible inputs. Beware possible misinterpretations of '$' and similar characters.
+	#_safeEcho_newline "${processedArgs[@]}" >> "$hostToGuestFiles"/application.bat
+	_echoArgsBootdisc_MSW "${processedArgs[@]}" >> "$hostToGuestFiles"/application.bat
+	
 	echo ""  >> "$hostToGuestFiles"/application.bat
 	
 	echo -e -n >> "$hostToGuestFiles"/loader.bat
@@ -9500,7 +9556,12 @@ _createHTG_UNIX() {
 	
 	echo '#!/usr/bin/env bash' >> "$hostToGuestFiles"/cmd.sh
 	echo "export localPWD=""$localPWD" >> "$hostToGuestFiles"/cmd.sh
-	_safeEcho_newline "/media/bootdisc/ubiquitous_bash.sh _dropBootdisc ${processedArgs[@]}" >> "$hostToGuestFiles"/cmd.sh
+	
+	# WARNING: Not fully tested with all plausible inputs. Beware possible misinterpretations of '$' and similar characters.
+	#_safeEcho_newline "/media/bootdisc/ubiquitous_bash.sh _dropBootdisc ${processedArgs[@]}" >> "$hostToGuestFiles"/cmd.sh
+	echo -n "/media/bootdisc/ubiquitous_bash.sh _dropBootdisc " >> "$hostToGuestFiles"/cmd.sh
+	_echoArgsBootdisc_UNIX "${processedArgs[@]}" >> "$hostToGuestFiles"/cmd.sh
+	
 }
 
 _commandBootdisc() {
@@ -10844,7 +10905,7 @@ _integratedQemu() {
 	
 	if [[ "$ubVirtPlatform" == "x64-bios" ]]
 	then
-		_integratedQemu_x64
+		_integratedQemu_x64 "$@"
 		return "$?"
 	fi
 	
@@ -10853,12 +10914,12 @@ _integratedQemu() {
 	
 	if [[ "$ubVirtPlatform" == "raspbian" ]]
 	then
-		_integratedQemu_raspi
+		_integratedQemu_raspi "$@"
 		return "$?"
 	fi
 	
 	#Default x64 .
-	"$scriptAbsoluteLocation" _integratedQemu_x64
+	"$scriptAbsoluteLocation" _integratedQemu_x64 "$@"
 	return "$?"
 }
 

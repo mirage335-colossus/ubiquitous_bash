@@ -200,7 +200,7 @@ _integratedQemu() {
 	
 	if [[ "$ubVirtPlatform" == "x64-bios" ]]
 	then
-		_integratedQemu_x64
+		_integratedQemu_x64 "$@"
 		return "$?"
 	fi
 	
@@ -209,12 +209,12 @@ _integratedQemu() {
 	
 	if [[ "$ubVirtPlatform" == "raspbian" ]]
 	then
-		_integratedQemu_raspi
+		_integratedQemu_raspi "$@"
 		return "$?"
 	fi
 	
 	#Default x64 .
-	"$scriptAbsoluteLocation" _integratedQemu_x64
+	"$scriptAbsoluteLocation" _integratedQemu_x64 "$@"
 	return "$?"
 }
 
