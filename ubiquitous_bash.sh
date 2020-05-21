@@ -21046,10 +21046,56 @@ _package_prog() {
 	true
 }
 
+
+_package_ubcp_copy() {
+	mkdir -p "$safeTmp"/package/_local
+	
+	if [[ -e "$scriptLocal"/ubcp ]]
+	then
+		cp -a "$scriptLocal"/ubcp "$safeTmp"/package/_local/
+		return 0
+	fi
+	if [[ -e "$scriptLib"/ubcp ]]
+	then
+		cp -a "$scriptLib"/ubcp "$safeTmp"/package/_local/
+		return 0
+	fi
+	if [[ -e "$scriptAbsoluteFolder"/ubcp ]]
+	then
+		cp -a "$scriptAbsoluteFolder"/ubcp "$safeTmp"/package/_local/
+		return 0
+	fi
+	
+	
+	if [[ -e "$scriptLib"/ubiquitous_bash/_local/ubcp ]]
+	then
+		cp -a "$scriptLib"/ubiquitous_bash/_local/ubcp "$safeTmp"/package/_local/
+		return 0
+	fi
+	if [[ -e "$scriptLib"/ubiquitous_bash/_lib/ubcp ]]
+	then
+		cp -a "$scriptLib"/ubiquitous_bash/_lib/ubcp "$safeTmp"/package/_local/
+		return 0
+	fi
+	if [[ -e "$scriptLib"/ubiquitous_bash/ubcp ]]
+	then
+		cp -a "$scriptLib"/ubiquitous_bash/ubcp "$safeTmp"/package/_local/
+		return 0
+	fi
+	
+	
+	cd "$outerPWD"
+	_stop 1
+}
+
+
 # WARNING Must define "_package_license" function in ops to include license files in package!
-_package() {
+_package_procedure() {
 	_start
 	mkdir -p "$safeTmp"/package
+	
+	# WARNING: Largely due to presence of '.gitignore' files in 'ubcp' .
+	export safeToDeleteGit="true"
 	
 	_package_prog
 	
@@ -21063,6 +21109,12 @@ _package() {
 	cp -a "$scriptAbsoluteFolder"/ops "$safeTmp"/package/
 	cp -a "$scriptAbsoluteFolder"/ops.sh "$safeTmp"/package/
 	
+	cp "$scriptAbsoluteFolder"/_* "$safeTmp"/package/
+	cp "$scriptAbsoluteFolder"/*.sh "$safeTmp"/package/
+	
+	cp -a "$scriptLocal"/ops "$safeTmp"/package/
+	cp -a "$scriptLocal"/ops.sh "$safeTmp"/package/
+	
 	#cp -a "$scriptAbsoluteFolder"/_bin "$safeTmp"
 	#cp -a "$scriptAbsoluteFolder"/_config "$safeTmp"
 	#cp -a "$scriptAbsoluteFolder"/_prog "$safeTmp"
@@ -21072,12 +21124,38 @@ _package() {
 	cp -a "$scriptAbsoluteFolder"/README.md "$safeTmp"/package/
 	cp -a "$scriptAbsoluteFolder"/USAGE.html "$safeTmp"/package/
 	
+	if [[ "$ubPackage_enable_ubcp" == 'true' ]]
+	then
+		_package_ubcp_copy "$@"
+	fi
+	
 	cd "$safeTmp"/package/
-	tar -czvf "$scriptAbsoluteFolder"/package.tar.gz .
+	
+	! [[ "$ubPackage_enable_ubcp" == 'true' ]] && tar -czvf "$scriptAbsoluteFolder"/package.tar.gz .
+	[[ "$ubPackage_enable_ubcp" == 'true' ]] && tar -czvf "$scriptAbsoluteFolder"/package_ubcp.tar.gz .
+	
+	if [[ "$ubPackage_enable_ubcp" == 'true' ]]
+	then
+		_messagePlain_request 'request: review contents of _local/ubcp/cygwin/home and similar directories'
+	fi
 	
 	cd "$outerPWD"
 	_stop
 }
+
+_package() {
+	export ubPackage_enable_ubcp='false'
+	"$scriptAbsoluteLocation" _package_procedure "$@"
+	
+	export ubPackage_enable_ubcp='true'
+	"$scriptAbsoluteLocation" _package_procedure "$@"
+}
+
+
+
+
+
+
 
 #####Program
 

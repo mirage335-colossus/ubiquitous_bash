@@ -49,6 +49,7 @@ _index
 *.iso
 
 package.tar.gz
+package_ubcp.tar.gz
 
 id_rsa
 pubring.kbx
