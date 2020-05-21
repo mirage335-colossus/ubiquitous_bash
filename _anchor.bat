@@ -679,29 +679,34 @@ REM Filename of 'cygwin-portable.cmd' or equivalent.
 REM NOT 'cygwin-portable.cmd' due to possible bug.
 SET ubcp_cmd_file=ubcp.cmd
 
-
-REM Default install of cygwin-portable.cmd' or equivalent.
-SET ubcp_cmd_path="%~dp0"_local\ubcp\"%ubcp_cmd_file%"
+SET "ubcp_cmd_dir=%~dp0_local\ubcp"
 
 REM Local install of cygwin-portable.cmd' or equivalent.
-IF NOT EXIST "%ubcp_cmd_path%" SET "ubcp_cmd_path=%~dp0"_local\ubcp\"%ubcp_cmd_file%"
-IF NOT EXIST "%ubcp_cmd_path%" SET "ubcp_cmd_path=%~dp0"_lib\ubcp\"%ubcp_cmd_file%"
-IF NOT EXIST "%ubcp_cmd_path%" SET "ubcp_cmd_path=%~dp0"ubcp\"%ubcp_cmd_file%"
+IF NOT EXIST "%ubcp_cmd_dir%"\cygwin SET "ubcp_cmd_dir=%~dp0_local\ubcp"
+IF NOT EXIST "%ubcp_cmd_dir%"\cygwin SET "ubcp_cmd_dir=%~dp0_lib\ubcp"
+IF NOT EXIST "%ubcp_cmd_dir%"\cygwin SET "ubcp_cmd_dir=%~dp0ubcp"
 
 REM Local install of cygwin-portable.cmd' or equivalent, brought in by ubiquitous_bash submodule.
-REM WARNING: No known production use.
-IF NOT EXIST "%ubcp_cmd_path%" SET "ubcp_cmd_path=%~dp0"_lib\ubiquitous_bash\_local\ubcp\"%ubcp_cmd_file%"
-IF NOT EXIST "%ubcp_cmd_path%" SET "ubcp_cmd_path=%~dp0"_lib\ubiquitous_bash\_lib\ubcp\"%ubcp_cmd_file%"
-IF NOT EXIST "%ubcp_cmd_path%" SET "ubcp_cmd_path=%~dp0"_lib\ubiquitous_bash\ubcp\"%ubcp_cmd_file%"
+REM WARNING: No known production use..
+IF NOT EXIST "%ubcp_cmd_dir%"\cygwin SET "ubcp_cmd_dir=%~dp0_lib\ubiquitous_bash\_local\ubcp"
+IF NOT EXIST "%ubcp_cmd_dir%"\cygwin SET "ubcp_cmd_dir=%~dp0_lib\ubiquitous_bash\_lib\ubcp"
+IF NOT EXIST "%ubcp_cmd_dir%"\cygwin SET "ubcp_cmd_dir=%~dp0_lib\ubiquitous_bash\ubcp"
 
 REM Global install of cygwin-portable.cmd' or equivalent.
-IF NOT EXIST "%ubcp_cmd_path%" SET "ubcp_cmd_path=C:\ubcp\%ubcp_cmd_file%"
-IF NOT EXIST "%ubcp_cmd_path%" SET "ubcp_cmd_path=C:\core\infrastructure\ubcp\%ubcp_cmd_file%"
+IF NOT EXIST "%ubcp_cmd_dir%"\cygwin SET "ubcp_cmd_dir=C:\ubcp"
+IF NOT EXIST "%ubcp_cmd_dir%"\cygwin SET "ubcp_cmd_dir=C:\core\infrastructure\ubcp"
 
-IF NOT EXIST "%ubcp_cmd_path%" SET "ubcp_cmd_path=C:\cp\%ubcp_cmd_file%"
-IF NOT EXIST "%ubcp_cmd_path%" SET "ubcp_cmd_path=C:\core\infrastructure\cp\%ubcp_cmd_file%"
+REM Global install of cygwin-portable.cmd' or equivalent.
+IF NOT EXIST "%ubcp_cmd_dir%"\cygwin SET "ubcp_cmd_dir=C:\core\infrastructure\cp"
+IF NOT EXIST "%ubcp_cmd_dir%"\cygwin SET "ubcp_cmd_dir=C:\cp"
 
-REM echo "%ubcp_cmd_path%"
+
+REM FAILURE
+IF NOT EXIST "%ubcp_cmd_dir%"\cygwin exit
+
+
+SET "ubcp_cmd_path=%ubcp_cmd_dir%\%ubcp_cmd_file%"
+IF NOT EXIST "%ubcp_cmd_path%" exit
 
 
 
