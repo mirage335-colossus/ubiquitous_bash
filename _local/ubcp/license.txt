@@ -1,0 +1,8 @@
+_
+
+Unmodified upstream source code is kept in source directory "_upstream" . This should only be updated in sync with the modified scripts actually used by 'ubcp' .
+
+Some files have been modified as required or to correct issues.
+* ubcp-cygwin-portable-installer.cmd
+* ubcp.cmd
+

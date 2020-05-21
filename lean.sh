@@ -3291,6 +3291,7 @@ export scriptLib="$scriptAbsoluteFolder"/_lib
 [[ ! -e "$scriptLib" ]] && export scriptLib="$scriptAbsoluteFolder"
 
 
+# WARNING: Standard relied upon by other standalone scripts (eg. MSW compatible _anchor.bat )
 export scriptLocal="$scriptAbsoluteFolder"/_local
 
 #For system installations (exclusively intended to support _setupUbiquitous and _drop* hooks).
