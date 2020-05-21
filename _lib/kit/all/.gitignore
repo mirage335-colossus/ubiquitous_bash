@@ -33,7 +33,9 @@ devtask/
 USAGE.*.html
 _buried
 
-_local
+_local/*
+!_local/ubcp
+
 _index
 
 **/_wbottle/.update-timestamp
