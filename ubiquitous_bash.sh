@@ -16161,8 +16161,14 @@ _resetUbiquitous() {
 _refresh_anchors_ubiquitous() {
 	cp -a "$scriptAbsoluteFolder"/_anchor "$scriptAbsoluteFolder"/_ubide
 	cp -a "$scriptAbsoluteFolder"/_anchor "$scriptAbsoluteFolder"/_ubdb
+	
+	cp -a "$scriptAbsoluteFolder"/_anchor "$scriptAbsoluteFolder"/_test
 	cp -a "$scriptAbsoluteFolder"/_anchor "$scriptAbsoluteFolder"/_true
 	cp -a "$scriptAbsoluteFolder"/_anchor "$scriptAbsoluteFolder"/_false
+	
+	cp -a "$scriptAbsoluteFolder"/_anchor.bat "$scriptAbsoluteFolder"/_test.bat
+	cp -a "$scriptAbsoluteFolder"/_anchor.bat "$scriptAbsoluteFolder"/_true.bat
+	cp -a "$scriptAbsoluteFolder"/_anchor.bat "$scriptAbsoluteFolder"/_false.bat
 }
 
 # ATTENTION: Overload with 'core.sh' or similar.
@@ -16176,19 +16182,39 @@ _anchor_autoupgrade() {
 	#[[ -e "$scriptLib"/ubiquitous_bash/_anchor ]] && cp -a "$scriptLib"/ubiquitous_bash/_anchor "$scriptAbsoluteFolder"/_anchor
 }
 
-_anchor() {
+_anchor_configure() {
+	export ubAnchorTemplateCurrent="$scriptAbsoluteFolder"/_anchor
+	[[ "$1" != "" ]] && export ubAnchorTemplateCurrent="$1"
+	
+	
 	_anchor_autoupgrade
 	
-	! [[ -e "$scriptAbsoluteFolder"/_anchor ]] && return 1
+	! [[ -e "$ubAnchorTemplateCurrent" ]] && return 1
 	
 	#https://superuser.com/questions/450868/what-is-the-simplest-scriptable-way-to-check-whether-a-shell-variable-is-exporte
 	! [ "$(bash -c 'echo ${objectName}')" ] && return 1
 	
 	
-	rm -f "$scriptAbsoluteFolder"/_anchor.tmp > /dev/null 2>&1
-	cp "$scriptAbsoluteFolder"/_anchor "$scriptAbsoluteFolder"/_anchor.tmp
-	perl -p -e 's/export anchorSourceDir=.*/export anchorSourceDir="$ENV{objectName}"/g' "$scriptAbsoluteFolder"/_anchor > "$scriptAbsoluteFolder"/_anchor.tmp
-	mv "$scriptAbsoluteFolder"/_anchor.tmp "$scriptAbsoluteFolder"/_anchor
+	rm -f "$scriptAbsoluteFolder"/_anchor.tmp "$scriptAbsoluteFolder"/_anchor.tmp1 "$scriptAbsoluteFolder"/_anchor.tmp2 > /dev/null 2>&1
+	cp "$ubAnchorTemplateCurrent" "$scriptAbsoluteFolder"/_anchor.tmp
+	cp "$ubAnchorTemplateCurrent" "$scriptAbsoluteFolder"/_anchor.tmp1
+	cp "$ubAnchorTemplateCurrent" "$scriptAbsoluteFolder"/_anchor.tmp2
+	
+	
+	perl -p -e 's/export anchorSourceDir=.*/export anchorSourceDir="$ENV{objectName}"/g' "$scriptAbsoluteFolder"/_anchor.tmp > "$scriptAbsoluteFolder"/_anchor.tmp1
+	
+	perl -p -e 's/SET "MSWanchorSourceDir=.*/SET "MSWanchorSourceDir=$ENV{objectName}"/g' "$scriptAbsoluteFolder"/_anchor.tmp1 > "$scriptAbsoluteFolder"/_anchor.tmp2
+	
+	
+	mv "$scriptAbsoluteFolder"/_anchor.tmp2 "$ubAnchorTemplateCurrent"
+	rm -f "$scriptAbsoluteFolder"/_anchor.tmp "$scriptAbsoluteFolder"/_anchor.tmp1 "$scriptAbsoluteFolder"/_anchor.tmp2 > /dev/null 2>&1
+}
+
+_anchor() {
+	_anchor_configure
+	_anchor_configure "$scriptAbsoluteFolder"/_anchor.bat
+	
+	! [[ -e "$scriptAbsoluteFolder"/_anchor ]] && ! [[ -e "$scriptAbsoluteFolder"/_anchor.bat ]] && return 1
 	
 	[[ "$scriptAbsoluteFolder" == *"ubiquitous_bash" ]] && _refresh_anchors_ubiquitous
 	
