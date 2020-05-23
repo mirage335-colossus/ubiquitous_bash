@@ -12754,6 +12754,7 @@ _eclipse_example_binary() {
 	eclipse "$@"
 }
 
+
 # ATTENTION: Override with 'core.sh', 'ops', or similar.
 # Static parameters. Must be accepted if function overridden to point script contained installation.
 _eclipse_example-static() {
@@ -12762,7 +12763,7 @@ _eclipse_example-static() {
 
 
 
-_eclipse_example() {
+_eclipse_example_procedure() {
 	! _set_java_openjdk && _stop 1
 	
 	# Scope will by default... cd "$ub_specimen" ...
@@ -12775,9 +12776,8 @@ _eclipse_example() {
 	_prepare_example_ConfigurationLookupDirectory_eclipse _eclipse_example-static "$@"
 	
 	
-	#... fakeHome ?
-	#./ubiquitous_bash.sh _abstractfs _fakeHome bash
-	#./ubiquitous_bash.sh _fakeHome ./ubiquitous_bash.sh _abstractfs bash
+	#... fakeHome... preparation... disable ?
+	
 	
 	# Example only.
 	[[ "$specialGCC" != '' ]] && _messagePlain_request 'request: special GCC bin='"$specialGCC"
@@ -12785,7 +12785,7 @@ _eclipse_example() {
 	#echo "$ub_specimen"
 	
 	
-	#                     '                              
+	
 	_messagePlain_request 'request: abstractfs:          '"$ubAPD_static"
 	
 	
@@ -12795,6 +12795,12 @@ _eclipse_example() {
 	
 	# DANGER: Current directory WILL be included in directory chosen by "_abstractfs" !
 	_abstractfs _eclipse_example-static "$@"
+}
+
+
+_eclipse_example() {
+	#_fakeHome "$scriptAbsoluteLocation" _eclipse_example_procedure "$@"
+	"$scriptAbsoluteLocation" _eclipse_example_procedure "$@"
 }
 
 

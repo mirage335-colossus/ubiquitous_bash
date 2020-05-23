@@ -1,3 +1,7 @@
+
+# ATTENTION: DANGER: Obsolete. Not included by default. No known production use.
+
+
 _test_deveclipse() {
 	_wantGetDep eclipse
 	
