@@ -730,18 +730,59 @@ SET "MSWanchorSourcePath=%MSWanchorSourceDir%\%MSWanchorSource%"
 
 REM Due to the MSW tendency to use shortcuts instead of symlinks, and lack of "find" command,
 REM MSW Anchor (Batch Version) is strictly limited to finding the source script only if
-REM neighboring in the same directory or in direct subdirectory.
+REM neighboring in the same directory, in direct subdirectory, or in a few static default locations.
 REM WARNING: The direct subdirectory capability is intended for testing, and is not preferred for production use.
 
+REM TODO: Test all variables.
+
+REM Neighboring in the same directory.
 IF EXIST "%~dp0%MSWanchorSource%" (
 "%ubcp_cmd_path%" "%~dp0%MSWanchorSource%" "%MSWanchorName%" %*
 exit
 )
 
+REM Direct subdirectory.
 IF EXIST "%~dp0%MSWanchorSourcePath%" (
 "%ubcp_cmd_path%" "%~dp0%MSWanchorSourcePath%" "%MSWanchorName%" %*
 exit
 )
+
+
+REM Program Files .
+IF EXIST "C:\Program Files\%MSWanchorSourcePath%" (
+"%ubcp_cmd_path%" "C:\Program Files\%MSWanchorSourcePath%" "%MSWanchorName%" %*
+exit
+)
+
+REM Program Files (x86) .
+IF EXIST "C:\Program Files (x86)\%MSWanchorSourcePath%" (
+"%ubcp_cmd_path%" "C:\Program Files (x86)\%MSWanchorSourcePath%" "%MSWanchorName%" %*
+exit
+)
+
+
+REM TODO: Test - variable name.
+REM AppData (Local) .
+REM https://www.thewindowsclub.com/local-localnow-roaming-folders-windows-10/
+IF EXIST "%APPDATA%%MSWanchorSourcePath%" (
+"%ubcp_cmd_path%" "%APPDATA%%MSWanchorSourcePath%" "%MSWanchorName%" %*
+exit
+)
+
+
+REM core infrastructure .
+IF EXIST "C:\core\infrastructure\%MSWanchorSourcePath%" (
+"%ubcp_cmd_path%" "C:\core\infrastructure\%MSWanchorSourcePath%" "%MSWanchorName%" %*
+exit
+)
+
+
+REM core installations .
+IF EXIST "C:\core\installations\%MSWanchorSourcePath%" (
+"%ubcp_cmd_path%" "C:\core\installations\%MSWanchorSourcePath%" "%MSWanchorName%" %*
+exit
+)
+
 
 
 
