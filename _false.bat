@@ -1597,7 +1597,6 @@ exit
 )
 
 
-REM TODO: Test - variable name.
 REM AppData (Local) .
 REM https://www.thewindowsclub.com/local-localnow-roaming-folders-windows-10/
 IF EXIST "%LOCALAPPDATA%\%MSWanchorSourcePath%" (
