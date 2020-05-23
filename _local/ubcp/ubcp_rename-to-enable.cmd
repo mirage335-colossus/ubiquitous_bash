@@ -37,17 +37,34 @@ REM echo Replacing [/etc/fstab]...
 %CYGWIN_DRIVE%
 chdir "%CYGWIN_ROOT%\bin"
 REM echo Loading [%CYGWIN_ROOT%\portable-init.sh]...
-bash "%CYGWIN_ROOT%\portable-init.sh"
+REM Performed later to (possibly) save time. bash "%CYGWIN_ROOT%\portable-init.sh"
 
 set "arg1=%~1"
 setlocal EnableDelayedExpansion
 if "!arg1!" == "" (
+  
+  bash "%CYGWIN_ROOT%\portable-init.sh"
+  
   start "" "%~dp0conemu\ConEmu64.exe" -Title cygwin-portable  -QuitOnClose
 ) else (
   if "!arg1!" == "no-mintty" (
+	
+	bash "%CYGWIN_ROOT%\portable-init.sh"
+	
     bash --login -i
+	
   ) else (
-    REM bash --login -c %*
+    
+	REM TODO: Calling from same shell may improve performance.
+	bash "%CYGWIN_ROOT%\portable-init.sh"
+	
+	REM Faster, but may not set environment variables and such.
+	REM bash -- %*
+	
+	REM Parameters may not be interpreted correctly.
+	REM bash --login -c %*
+	
+	REM Better chance of correctly interpreting parameters.
 	bash --login -- %*
   )
 )

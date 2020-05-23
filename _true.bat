@@ -682,37 +682,49 @@ SET ubcp_cmd_file=ubcp.cmd
 SET "ubcp_cmd_dir=%~dp0_local\ubcp"
 
 REM Local install of cygwin-portable.cmd' or equivalent.
-IF NOT EXIST "%ubcp_cmd_dir%"\cygwin SET "ubcp_cmd_dir=%~dp0_local\ubcp"
-IF NOT EXIST "%ubcp_cmd_dir%"\cygwin SET "ubcp_cmd_dir=%~dp0_lib\ubcp"
-IF NOT EXIST "%ubcp_cmd_dir%"\cygwin SET "ubcp_cmd_dir=%~dp0ubcp"
+SET "ubcp_cmd_dir=%~dp0_local\ubcp"
+IF EXIST "%ubcp_cmd_dir%"\cygwin goto b1
+SET "ubcp_cmd_dir=%~dp0_lib\ubcp"
+IF EXIST "%ubcp_cmd_dir%"\cygwin goto b1
+SET "ubcp_cmd_dir=%~dp0ubcp"
+IF EXIST "%ubcp_cmd_dir%"\cygwin goto b1
 
 REM Local install of cygwin-portable.cmd' or equivalent, brought in by ubiquitous_bash submodule.
 REM WARNING: No known production use..
-IF NOT EXIST "%ubcp_cmd_dir%"\cygwin SET "ubcp_cmd_dir=%~dp0_lib\ubiquitous_bash\_local\ubcp"
-IF NOT EXIST "%ubcp_cmd_dir%"\cygwin SET "ubcp_cmd_dir=%~dp0_lib\ubiquitous_bash\_lib\ubcp"
-IF NOT EXIST "%ubcp_cmd_dir%"\cygwin SET "ubcp_cmd_dir=%~dp0_lib\ubiquitous_bash\ubcp"
+SET "ubcp_cmd_dir=%~dp0_lib\ubiquitous_bash\_local\ubcp"
+IF EXIST "%ubcp_cmd_dir%"\cygwin goto b1
+SET "ubcp_cmd_dir=%~dp0_lib\ubiquitous_bash\_lib\ubcp"
+IF EXIST "%ubcp_cmd_dir%"\cygwin goto b1
+SET "ubcp_cmd_dir=%~dp0_lib\ubiquitous_bash\ubcp"
+IF EXIST "%ubcp_cmd_dir%"\cygwin goto b1
 
 REM Global install of cygwin-portable.cmd' or equivalent.
-IF NOT EXIST "%ubcp_cmd_dir%"\cygwin SET "ubcp_cmd_dir=C:\ubcp"
-IF NOT EXIST "%ubcp_cmd_dir%"\cygwin SET "ubcp_cmd_dir=C:\core\infrastructure\ubcp"
+SET "ubcp_cmd_dir=C:\ubcp"
+IF EXIST "%ubcp_cmd_dir%"\cygwin goto b1
+SET "ubcp_cmd_dir=C:\core\infrastructure\ubcp"
+IF EXIST "%ubcp_cmd_dir%"\cygwin goto b1
 
 REM Global install of cygwin-portable.cmd' or equivalent.
-IF NOT EXIST "%ubcp_cmd_dir%"\cygwin SET "ubcp_cmd_dir=C:\core\infrastructure\cp"
-IF NOT EXIST "%ubcp_cmd_dir%"\cygwin SET "ubcp_cmd_dir=C:\cp"
-
+SET "ubcp_cmd_dir=C:\core\infrastructure\cp"
+IF EXIST "%ubcp_cmd_dir%"\cygwin goto b1
+SET "ubcp_cmd_dir=C:\cp"
+IF EXIST "%ubcp_cmd_dir%"\cygwin goto b1
 
 REM FAILURE
 IF NOT EXIST "%ubcp_cmd_dir%"\cygwin exit
 
 
+:b1
 SET "ubcp_cmd_path=%ubcp_cmd_dir%\%ubcp_cmd_file%"
+
+REM FAILURE
 IF NOT EXIST "%ubcp_cmd_path%" exit
 
+REM echo "%ubcp_cmd_path%"
 
-
-
-SET "MSWanchorScriptAbsoluteLocation=%~dp0%0"
-SET "MSWanchorScriptAbsoluteFolder=%~dp0"
+REM WARNING: No known production use.
+REM SET "MSWanchorScriptAbsoluteLocation=%~dp0%0"
+REM SET "MSWanchorScriptAbsoluteFolder=%~dp0"
 
 
 REM Does NOT include the '.bat' extension.
@@ -733,7 +745,14 @@ REM MSW Anchor (Batch Version) is strictly limited to finding the source script 
 REM neighboring in the same directory, in direct subdirectory, or in a few static default locations.
 REM WARNING: The direct subdirectory capability is intended for testing, and is not preferred for production use.
 
-REM TODO: Test all variables.
+REM Test all variables.
+REM echo "%~dp0%MSWanchorSource%"
+REM echo "%~dp0%MSWanchorSourcePath%"
+REM echo "C:\Program Files\%MSWanchorSourcePath%"
+REM echo "C:\Program Files (x86)\%MSWanchorSourcePath%"
+REM echo "%LOCALAPPDATA%\%MSWanchorSourcePath%"
+REM echo "C:\core\infrastructure\%MSWanchorSourcePath%"
+REM echo "C:\core\installations\%MSWanchorSourcePath%"
 
 REM Neighboring in the same directory.
 IF EXIST "%~dp0%MSWanchorSource%" (
@@ -764,8 +783,8 @@ exit
 REM TODO: Test - variable name.
 REM AppData (Local) .
 REM https://www.thewindowsclub.com/local-localnow-roaming-folders-windows-10/
-IF EXIST "%APPDATA%%MSWanchorSourcePath%" (
-"%ubcp_cmd_path%" "%APPDATA%%MSWanchorSourcePath%" "%MSWanchorName%" %*
+IF EXIST "%LOCALAPPDATA%\%MSWanchorSourcePath%" (
+"%ubcp_cmd_path%" "%LOCALAPPDATA%\%MSWanchorSourcePath%" "%MSWanchorName%" %*
 exit
 )
 
