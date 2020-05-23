@@ -8337,6 +8337,7 @@ _fakeHome() {
 	fakeHomeENVvars+=(DISPLAY="$DISPLAY" XAUTH="$XAUTH" XAUTHORITY="$XAUTHORITY" XSOCK="$XSOCK" XDG_SESSION_DESKTOP="$XDG_SESSION_DESKTOP" XDG_CURRENT_DESKTOP="$XDG_SESSION_DESKTOP")
 	fakeHomeENVvars+=(realHome="$realHome" keepFakeHome="$keepFakeHome" HOME="$HOME" setFakeHome="$setFakeHome")
 	fakeHomeENVvars+=(TERM="${TERM}" SHELL="${SHELL}" PATH="${PATH}")
+	[[ "$ub_fakeHome_dropPWD" != 'true' ]] && fakeHomeENVvars+=(PWD="$PWD")
 	fakeHomeENVvars+=(_JAVA_OPTIONS="${_JAVA_OPTIONS}")
 	fakeHomeENVvars+=(scriptAbsoluteLocation="$scriptAbsoluteLocation" scriptAbsoluteFolder="$scriptAbsoluteFolder" realScriptAbsoluteLocation="$realScriptAbsoluteLocation" realScriptAbsoluteFolder="$realScriptAbsoluteFolder")
 	fakeHomeENVvars+=(sessionid="$sessionid" realSessionID="$realSessionID" )
@@ -8378,6 +8379,7 @@ _fakeHome_specific() {
 	fakeHomeENVvars+=(DISPLAY="$DISPLAY" XAUTH="$XAUTH" XAUTHORITY="$XAUTHORITY" XSOCK="$XSOCK" XDG_SESSION_DESKTOP="$XDG_SESSION_DESKTOP" XDG_CURRENT_DESKTOP="$XDG_SESSION_DESKTOP")
 	fakeHomeENVvars+=(realHome="$realHome" keepFakeHome="$keepFakeHome" HOME="$HOME" setFakeHome="$setFakeHome")
 	fakeHomeENVvars+=(TERM="${TERM}" SHELL="${SHELL}" PATH="${PATH}")
+	[[ "$ub_fakeHome_dropPWD" != 'true' ]] && fakeHomeENVvars+=(PWD="$PWD")
 	fakeHomeENVvars+=(_JAVA_OPTIONS="${_JAVA_OPTIONS}")
 	#fakeHomeENVvars+=(scriptAbsoluteLocation="$scriptAbsoluteLocation" scriptAbsoluteFolder="$scriptAbsoluteFolder"realScriptAbsoluteLocation="$realScriptAbsoluteLocation" realScriptAbsoluteFolder="$realScriptAbsoluteFolder")
 	#fakeHomeENVvars+=(sessionid="$sessionid" realSessionID="$realSessionID" )
@@ -12760,12 +12762,6 @@ _eclipse_example-static() {
 
 
 
-
-
-
-
-
-
 _eclipse_example() {
 	! _set_java_openjdk && _stop 1
 	
@@ -12780,6 +12776,8 @@ _eclipse_example() {
 	
 	
 	#... fakeHome ?
+	#./ubiquitous_bash.sh _abstractfs _fakeHome bash
+	#./ubiquitous_bash.sh _fakeHome ./ubiquitous_bash.sh _abstractfs bash
 	
 	# Example only.
 	[[ "$specialGCC" != '' ]] && _messagePlain_request 'request: special GCC bin='"$specialGCC"
@@ -12795,8 +12793,10 @@ _eclipse_example() {
 	#eclipse -vm "$ubJava"  "$@"
 	
 	
+	# DANGER: Current directory WILL be included in directory chosen by "_abstractfs" !
 	_abstractfs _eclipse_example-static "$@"
 }
+
 
 #Simulated client/server discussion testing.
 

@@ -24,12 +24,6 @@ _eclipse_example-static() {
 
 
 
-
-
-
-
-
-
 _eclipse_example() {
 	! _set_java_openjdk && _stop 1
 	
@@ -44,6 +38,8 @@ _eclipse_example() {
 	
 	
 	#... fakeHome ?
+	#./ubiquitous_bash.sh _abstractfs _fakeHome bash
+	#./ubiquitous_bash.sh _fakeHome ./ubiquitous_bash.sh _abstractfs bash
 	
 	# Example only.
 	[[ "$specialGCC" != '' ]] && _messagePlain_request 'request: special GCC bin='"$specialGCC"
@@ -59,5 +55,7 @@ _eclipse_example() {
 	#eclipse -vm "$ubJava"  "$@"
 	
 	
+	# DANGER: Current directory WILL be included in directory chosen by "_abstractfs" !
 	_abstractfs _eclipse_example-static "$@"
 }
+
