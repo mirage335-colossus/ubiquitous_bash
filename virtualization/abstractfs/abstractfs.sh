@@ -15,6 +15,9 @@ _test_abstractfs() {
 	fi
 }
 
+# WARNING: First parameter, "$1" , must always be non-translated program to run or specialized abstractfs command.
+# Specifically do not attempt _abstractfs "$scriptAbsoluteLocation" or similar.
+# "$scriptAbsoluteLocation" _fakeHome "$scriptAbsoluteLocation" _abstractfs bash
 _abstractfs() {
 	#Nesting prohibited. Not fully tested.
 	# WARNING: May cause infinite recursion symlinks.
@@ -31,7 +34,13 @@ _abstractfs() {
 	
 	export abstractfs_puid=$(_uid)
 	
-	_base_abstractfs "$@"
+	if [[ "$ubAbstractFS_enable_CLD" == 'true' ]] && [[ "$ubASD_CLD" != '' ]]
+	then
+		_base_abstractfs "$@" "$ubASD_PRJ" "$ubASD_CLD"
+	else
+		_base_abstractfs "$@"
+	fi
+	
 	_name_abstractfs > /dev/null 2>&1
 	[[ "$abstractfs_name" == "" ]] && return 1
 	
@@ -39,6 +48,7 @@ _abstractfs() {
 	
 	_set_share_abstractfs
 	_relink_abstractfs
+	
 	_virtUser "$@"
 	
 	cd "$localPWD"
@@ -50,6 +60,16 @@ _abstractfs() {
 	
 	#_scope_terminal "${processedArgs[@]}"
 	
+	if ! [[ -L "$abstractfs" ]] && [[ -d "$abstractfs" ]]
+	then
+		# _messagePlain_bad 'fail: abstractfs: abstractfs_base is a directory: abstractfs_base= ""$abstractfs_base"
+		rmdir "$abstractfs"
+		_set_share_abstractfs_reset
+		_rmlink_abstractfs
+		return 1
+	fi
+	
+	_set_abstractfs_disable_CLD
 	[[ "$abstractfs_command" == 'ub_abstractfs_getOnly_dst' ]] && echo "$abstractfs"
 	[[ "$abstractfs_command" == 'ub_abstractfs_getOnly_src' ]] && echo "$abstractfs_base"
 	if [[ "$abstractfs_command" != 'ub_abstractfs_getOnly_dst' ]] && [[ "$abstractfs_command" != 'ub_abstractfs_getOnly_src' ]]

@@ -7501,7 +7501,10 @@ _searchBaseDir() {
 			
 			newDir=$(_findDir "$subArg")
 			
-			while [[ "$newDir" != "$baseDir"* ]]
+			# Trailing slash added to comparison to prevent partial matching of directory names.
+			# https://stackoverflow.com/questions/12340846/bash-shell-script-to-find-the-closest-parent-directory-of-several-files
+			# https://stackoverflow.com/questions/9018723/what-is-the-simplest-way-to-remove-a-trailing-slash-from-each-parameter
+			while [[ "${newDir%/}/" != "${baseDir%/}/"* ]]
 			do
 				baseDir=$(_findDir "$baseDir"/..)
 				
@@ -7678,6 +7681,9 @@ _test_abstractfs() {
 	fi
 }
 
+# WARNING: First parameter, "$1" , must always be non-translated program to run or specialized abstractfs command.
+# Specifically do not attempt _abstractfs "$scriptAbsoluteLocation" or similar.
+# "$scriptAbsoluteLocation" _fakeHome "$scriptAbsoluteLocation" _abstractfs bash
 _abstractfs() {
 	#Nesting prohibited. Not fully tested.
 	# WARNING: May cause infinite recursion symlinks.
@@ -7694,7 +7700,13 @@ _abstractfs() {
 	
 	export abstractfs_puid=$(_uid)
 	
-	_base_abstractfs "$@"
+	if [[ "$ubAbstractFS_enable_CLD" == 'true' ]] && [[ "$ubASD_CLD" != '' ]]
+	then
+		_base_abstractfs "$@" "$ubASD_PRJ" "$ubASD_CLD"
+	else
+		_base_abstractfs "$@"
+	fi
+	
 	_name_abstractfs > /dev/null 2>&1
 	[[ "$abstractfs_name" == "" ]] && return 1
 	
@@ -7702,6 +7714,7 @@ _abstractfs() {
 	
 	_set_share_abstractfs
 	_relink_abstractfs
+	
 	_virtUser "$@"
 	
 	cd "$localPWD"
@@ -7713,6 +7726,16 @@ _abstractfs() {
 	
 	#_scope_terminal "${processedArgs[@]}"
 	
+	if ! [[ -L "$abstractfs" ]] && [[ -d "$abstractfs" ]]
+	then
+		# _messagePlain_bad 'fail: abstractfs: abstractfs_base is a directory: abstractfs_base= ""$abstractfs_base"
+		rmdir "$abstractfs"
+		_set_share_abstractfs_reset
+		_rmlink_abstractfs
+		return 1
+	fi
+	
+	_set_abstractfs_disable_CLD
 	[[ "$abstractfs_command" == 'ub_abstractfs_getOnly_dst' ]] && echo "$abstractfs"
 	[[ "$abstractfs_command" == 'ub_abstractfs_getOnly_src' ]] && echo "$abstractfs_base"
 	if [[ "$abstractfs_command" != 'ub_abstractfs_getOnly_dst' ]] && [[ "$abstractfs_command" != 'ub_abstractfs_getOnly_src' ]]
@@ -7778,112 +7801,404 @@ _get_base_abstractfs_name() {
 
 
 
-
+# No known production use.
+# ATTENTION Overload ONLY if further specialization is actually required!
 # WARNING: Input parameters must NOT include neighboring ConfigurationLookupDirectory, regardless of whether static ConfigurationLookupDirectory is used.
+_prepare_abstractfs_appdir_none() {
+	_set_abstractfs_AbstractSourceDirectory "$@"
+	#_probe_prepare_abstractfs_appdir_AbstractSourceDirectory
+	
+	##### # ATTENTION: Prior to abstractfs. 'ApplicationProjectDirectory', ConfigurationLookupDirectory.
+	
+	#export ubASD="$ubASD"
+	
+	export ubASD_PRJ="$ubASD_PRJ_none"
+	#export ubASD_PRJ="$ubASD_PRJ_independent"
+	#export ubASD_PRJ="$ubASD_PRJ_shared"
+	#export ubASD_PRJ="$ubASD_PRJ_export"
+	
+	export ubASD_CLD="$ubASD_CLD_none"
+	#export ubASD_CLD="$ubASD_CLD_independent"
+	#export ubASD_CLD="$ubASD_CLD_shared"
+	#export ubASD_CLD="$ubASD_CLD_export"
+	
+	#_probe_prepare_abstractfs_appdir_AbstractSourceDirectory_prior
+	
+	
+	
+	
+	# CLD_none , CLD_independent , CLD_export
+	_set_abstractfs_disable_CLD
+	
+	# CLD_shared
+	#_set_abstractfs_enable_CLD
+	
+	_prepare_abstractfs_appdir "$@"
+	
+	
+	# CAUTION: May be invalid. Do not use or enable. For reference only.
+	#export ubADD_PRJ="$ubADD""$ubADD_PRJ_none_sub"
+	#export ubADD_PRJ="$ubADD""$ubADD_PRJ_independent_sub"
+	#export ubADD_PRJ="$ubADD""$ubADD_PRJ_shared_sub"
+	#export ubADD_PRJ="$ubADD""$ubADD_PRJ_export_sub"
+	#export ubADD_CLD="$ubADD""$ubADD_CLD_none_sub"
+	##export ubADD_CLD="$ubADD""$ubADD_CLD_independent_sub"
+	#export ubADD_CLD="$ubADD""$ubADD_CLD_shared_sub"
+	#export ubADD_CLD="$ubADD""$ubADD_CLD_export_sub"
+	
+	
+	export ubAFS_PRJ="$ubADD""$ubADD_PRJ_none_sub"
+	#export ubAFS_PRJ="$ubADD""$ubADD_PRJ_independent_sub"
+	#export ubAFS_PRJ="$ubADD""$ubADD_PRJ_shared_sub"
+	#export ubAFS_PRJ="$ubADD""$ubADD_PRJ_export_sub"
+	
+	export ubAFS_CLD="$ubADD""$ubADD_CLD_none_sub"
+	#export ubAFS_CLD="$ubASD_CLD_independent"
+	#export ubAFS_CLD="$ubADD""$ubADD_CLD_shared_sub"
+	#export ubAFS_CLD="$ubADD""$ubADD_CLD_export_sub"
+	
+	
+	#_probe_prepare_abstractfs_appdir_post
+}
+# MISUSE. Permissible, given rare requirement to ensure directories exist to perform common directory determination.
+_set_abstractfs_appdir_none() {
+	_prepare_abstractfs_appdir_none "$@"
+}
+
+
+
+
+
+# No known production use.
+# ATTENTION Overload ONLY if further specialization is actually required!
+# WARNING: Input parameters must NOT include neighboring ConfigurationLookupDirectory, regardless of whether static ConfigurationLookupDirectory is used.
+_prepare_abstractfs_appdir_independent() {
+	_set_abstractfs_AbstractSourceDirectory "$@"
+	#_probe_prepare_abstractfs_appdir_AbstractSourceDirectory
+	
+	##### # ATTENTION: Prior to abstractfs. 'ApplicationProjectDirectory', ConfigurationLookupDirectory.
+	
+	#export ubASD="$ubASD"
+	
+	#export ubASD_PRJ="$ubASD_PRJ_none"
+	export ubASD_PRJ="$ubASD_PRJ_independent"
+	#export ubASD_PRJ="$ubASD_PRJ_shared"
+	#export ubASD_PRJ="$ubASD_PRJ_export"
+	
+	#export ubASD_CLD="$ubASD_CLD_none"
+	export ubASD_CLD="$ubASD_CLD_independent"
+	#export ubASD_CLD="$ubASD_CLD_shared"
+	#export ubASD_CLD="$ubASD_CLD_export"
+	
+	#_probe_prepare_abstractfs_appdir_AbstractSourceDirectory_prior
+	
+	
+	
+	
+	# CLD_none , CLD_independent , CLD_export
+	_set_abstractfs_disable_CLD
+	
+	# CLD_shared
+	#_set_abstractfs_enable_CLD
+	
+	_prepare_abstractfs_appdir "$@"
+	
+	
+	# CAUTION: May be invalid. Do not use or enable. For reference only.
+	#export ubADD_PRJ="$ubADD""$ubADD_PRJ_none_sub"
+	#export ubADD_PRJ="$ubADD""$ubADD_PRJ_independent_sub"
+	#export ubADD_PRJ="$ubADD""$ubADD_PRJ_shared_sub"
+	#export ubADD_PRJ="$ubADD""$ubADD_PRJ_export_sub"
+	#export ubADD_CLD="$ubADD""$ubADD_CLD_none_sub"
+	##export ubADD_CLD="$ubADD""$ubADD_CLD_independent_sub"
+	#export ubADD_CLD="$ubADD""$ubADD_CLD_shared_sub"
+	#export ubADD_CLD="$ubADD""$ubADD_CLD_export_sub"
+	
+	
+	#export ubAFS_PRJ="$ubADD""$ubADD_PRJ_none_sub"
+	export ubAFS_PRJ="$ubADD""$ubADD_PRJ_independent_sub"
+	#export ubAFS_PRJ="$ubADD""$ubADD_PRJ_shared_sub"
+	#export ubAFS_PRJ="$ubADD""$ubADD_PRJ_export_sub"
+	
+	#export ubAFS_CLD="$ubADD""$ubADD_CLD_none_sub"
+	export ubAFS_CLD="$ubASD_CLD_independent"
+	#export ubAFS_CLD="$ubADD""$ubADD_CLD_shared_sub"
+	#export ubAFS_CLD="$ubADD""$ubADD_CLD_export_sub"
+	
+	
+	#_probe_prepare_abstractfs_appdir_post
+}
+# MISUSE. Permissible, given rare requirement to ensure directories exist to perform common directory determination.
+_set_abstractfs_appdir_independent() {
+	_prepare_abstractfs_appdir_independent "$@"
+}
+
+
+
+
+
+# No known production use.
+# ATTENTION Overload ONLY if further specialization is actually required!
+# WARNING: Input parameters must NOT include neighboring ConfigurationLookupDirectory, regardless of whether static ConfigurationLookupDirectory is used.
+_prepare_abstractfs_appdir_shared() {
+	_set_abstractfs_AbstractSourceDirectory "$@"
+	#_probe_prepare_abstractfs_appdir_AbstractSourceDirectory
+	
+	##### # ATTENTION: Prior to abstractfs. 'ApplicationProjectDirectory', ConfigurationLookupDirectory.
+	
+	#export ubASD="$ubASD"
+	
+	#export ubASD_PRJ="$ubASD_PRJ_none"
+	#export ubASD_PRJ="$ubASD_PRJ_independent"
+	export ubASD_PRJ="$ubASD_PRJ_shared"
+	#export ubASD_PRJ="$ubASD_PRJ_export"
+	
+	#export ubASD_CLD="$ubASD_CLD_none"
+	#export ubASD_CLD="$ubASD_CLD_independent"
+	export ubASD_CLD="$ubASD_CLD_shared"
+	#export ubASD_CLD="$ubASD_CLD_export"
+	
+	#_probe_prepare_abstractfs_appdir_AbstractSourceDirectory_prior
+	
+	
+	
+	
+	# CLD_none , CLD_independent , CLD_export
+	#_set_abstractfs_disable_CLD
+	
+	# CLD_shared
+	_set_abstractfs_enable_CLD
+	
+	_prepare_abstractfs_appdir "$@"
+	
+	
+	# CAUTION: May be invalid. Do not use or enable. For reference only.
+	#export ubADD_PRJ="$ubADD""$ubADD_PRJ_none_sub"
+	#export ubADD_PRJ="$ubADD""$ubADD_PRJ_independent_sub"
+	#export ubADD_PRJ="$ubADD""$ubADD_PRJ_shared_sub"
+	#export ubADD_PRJ="$ubADD""$ubADD_PRJ_export_sub"
+	#export ubADD_CLD="$ubADD""$ubADD_CLD_none_sub"
+	##export ubADD_CLD="$ubADD""$ubADD_CLD_independent_sub"
+	#export ubADD_CLD="$ubADD""$ubADD_CLD_shared_sub"
+	#export ubADD_CLD="$ubADD""$ubADD_CLD_export_sub"
+	
+	
+	#export ubAFS_PRJ="$ubADD""$ubADD_PRJ_none_sub"
+	#export ubAFS_PRJ="$ubADD""$ubADD_PRJ_independent_sub"
+	export ubAFS_PRJ="$ubADD""$ubADD_PRJ_shared_sub"
+	#export ubAFS_PRJ="$ubADD""$ubADD_PRJ_export_sub"
+	
+	#export ubAFS_CLD="$ubADD""$ubADD_CLD_none_sub"
+	#export ubAFS_CLD="$ubASD_CLD_independent"
+	export ubAFS_CLD="$ubADD""$ubADD_CLD_shared_sub"
+	#export ubAFS_CLD="$ubADD""$ubADD_CLD_export_sub"
+	
+	
+	#_probe_prepare_abstractfs_appdir_post
+}
+# MISUSE. Permissible, given rare requirement to ensure directories exist to perform common directory determination.
+_set_abstractfs_appdir_shared() {
+	_prepare_abstractfs_appdir_shared "$@"
+}
+
+
+
+
+
+# No known production use.
+# ATTENTION Overload ONLY if further specialization is actually required!
+# WARNING: Input parameters must NOT include neighboring ConfigurationLookupDirectory, regardless of whether static ConfigurationLookupDirectory is used.
+_prepare_abstractfs_appdir_export() {
+	_set_abstractfs_AbstractSourceDirectory "$@"
+	#_probe_prepare_abstractfs_appdir_AbstractSourceDirectory
+	
+	##### # ATTENTION: Prior to abstractfs. 'ApplicationProjectDirectory', ConfigurationLookupDirectory.
+	
+	#export ubASD="$ubASD"
+	
+	#export ubASD_PRJ="$ubASD_PRJ_none"
+	#export ubASD_PRJ="$ubASD_PRJ_independent"
+	#export ubASD_PRJ="$ubASD_PRJ_shared"
+	export ubASD_PRJ="$ubASD_PRJ_export"
+	
+	#export ubASD_CLD="$ubASD_CLD_none"
+	#export ubASD_CLD="$ubASD_CLD_independent"
+	#export ubASD_CLD="$ubASD_CLD_shared"
+	export ubASD_CLD="$ubASD_CLD_export"
+	
+	#_probe_prepare_abstractfs_appdir_AbstractSourceDirectory_prior
+	
+	
+	
+	
+	# CLD_none , CLD_independent , CLD_export
+	_set_abstractfs_disable_CLD
+	
+	# CLD_shared
+	#_set_abstractfs_enable_CLD
+	
+	_prepare_abstractfs_appdir "$@"
+	
+	
+	# CAUTION: May be invalid. Do not use or enable. For reference only.
+	#export ubADD_PRJ="$ubADD""$ubADD_PRJ_none_sub"
+	#export ubADD_PRJ="$ubADD""$ubADD_PRJ_independent_sub"
+	#export ubADD_PRJ="$ubADD""$ubADD_PRJ_shared_sub"
+	#export ubADD_PRJ="$ubADD""$ubADD_PRJ_export_sub"
+	#export ubADD_CLD="$ubADD""$ubADD_CLD_none_sub"
+	##export ubADD_CLD="$ubADD""$ubADD_CLD_independent_sub"
+	#export ubADD_CLD="$ubADD""$ubADD_CLD_shared_sub"
+	#export ubADD_CLD="$ubADD""$ubADD_CLD_export_sub"
+	
+	
+	#export ubAFS_PRJ="$ubADD""$ubADD_PRJ_none_sub"
+	#export ubAFS_PRJ="$ubADD""$ubADD_PRJ_independent_sub"
+	#export ubAFS_PRJ="$ubADD""$ubADD_PRJ_shared_sub"
+	export ubAFS_PRJ="$ubADD""$ubADD_PRJ_export_sub"
+	
+	#export ubAFS_CLD="$ubADD""$ubADD_CLD_none_sub"
+	#export ubAFS_CLD="$ubASD_CLD_independent"
+	#export ubAFS_CLD="$ubADD""$ubADD_CLD_shared_sub"
+	export ubAFS_CLD="$ubADD""$ubADD_CLD_export_sub"
+	
+	
+	#_probe_prepare_abstractfs_appdir_post
+}
+# MISUSE. Permissible, given rare requirement to ensure directories exist to perform common directory determination.
+_prepare_abstractfs_appdir_export() {
+	_prepare_abstractfs_appdir_export "$@"
+}
+
+
+
+
+
+
+# CAUTION: ConfigurationLookupDirectory, managed by "_appdir" functions, is NOT a global configuration registry. ONLY intended to support programs which may require *project-specific* configuration (eg. Eclipse).
+# WARNING: Input parameters must NOT include neighboring ConfigurationLookupDirectory, regardless of whether static ConfigurationLookupDirectory is used.
+# WARNING: All 'mkdir' operations using "$ubADD" or similar must take place *within* abstractfs, to avoid creating a folder conflicting with the required symlink.
+# Input
+# "$@"
 _set_abstractfs_AbstractSourceDirectory() {
 	# AbstractSourceDirectory
-	export ubASD=$(_get_base_abstractfs "$@" "$ub_specimen")
+	_set_abstractfs_disable_CLD
+	export ubASD=$(export afs_nofs_write="true" ; "$scriptAbsoluteLocation" _get_base_abstractfs "$@" "$ub_specimen")
+	_set_abstractfs_disable_CLD
 	export ubASD_name=$(basename $ubASD)
 	
 	# Should never be reached. Also, undesirable default.
 	[[ "$ubASD_name" == "" ]] && export ubASD_name=project
 	
+	
+	# No known production use.
+	export ubADD_CLD_none_sub=""
+	export ubADD_PRJ_none_sub=""
+	export ubASD_CLD_none_sub="$ubADD_CLD_none_sub"
+	export ubASD_CLD_none="$ubASD"
+	export ubASD_PRJ_none=""
+	export ubASD_PRJ_none="$ubASD""$ubASD_PRJ_none"
+	
 	# ApplicationSourceDirectory-ConfigurationLookupDirectory
 	# Project directory is *source* directory.
 	# ConfigurationLookupDirectory is *neighbor*, using absolute path *outside* abstractfs translation.
 	# CAUTION: Not compatible with applications requiring all paths translated by abstractfs.
-	export ubASD_CLD="$ubASD"/../"$ubASD_name".cld
+	# CAUTION: Invalid to combine "$ubADD" with "$ubADD_CLD_independent_sub" .
+	export ubADD_CLD_independent_sub=/../"$ubASD_name".cld
+	export ubADD_PRJ_independent_sub=""
+	export ubASD_CLD_independent_sub="$ubADD_CLD_independent_sub"
+	export ubASD_CLD_independent="$ubASD""$ubASD_CLD_independent_sub"
+	export ubASD_PRJ_independent_sub=""
+	export ubASD_PRJ_independent="$ubASD""$ubASD_PRJ_independent_sub"
+	
+	# ConfigurationLookupDirectory is *neighbor*, next to project directory, in *shared* abstractfs directory.
+	export ubADD_CLD_shared_sub=/"$ubASD_name".cld
+	export ubADD_PRJ_shared_sub=/"$ubASD_name"
+	export ubASD_CLD_shared_sub=/.."$ubADD_CLD_shared_sub"
+	export ubASD_CLD_shared="$ubASD""$ubASD_CLD_shared_sub"
+	export ubASD_PRJ_shared_sub=""
+	export ubASD_PRJ_shared="$ubASD""$ubASD_PRJ_shared_sub"
 	
 	# Internal '_export' folder instead of neighboring ConfigurationLookupDirectory .
-	export ubASD_CLD_export="$ubASD"/_export/afscld
+	export ubADD_CLD_export_sub=/_export/afscld
+	export ubADD_PRJ_export_sub=""
+	export ubASD_CLD_export_sub="$ubADD_CLD_export_sub"
+	export ubASD_CLD_export="$ubASD""$ubASD_CLD_export_sub"
+	export ubASD_PRJ_export_sub="$ubASD_CLD_export_sub"
+	export ubASD_PRJ_export="$ubASD"
 }
 
-
-
-
-
-
-# WARNING: Input parameters must NOT include neighboring ConfigurationLookupDirectory, regardless of whether static ConfigurationLookupDirectory is used.
-_prepare_abstractfs_appdir_export() {
-	_set_abstractfs_AbstractSourceDirectory "$@"
-	
-	mkdir -p "$ubASD_CLD_export"
-	
-	##### # ATTENTION: Prior to abstractfs. 'ApplicationProjectDirectory', ConfigurationLookupDirectory.
-	export ubAPD_prior_export="$ubASD"
-	export ubCLD_prior_export="$ubASD_CLD_export"
-	#####
-	
-	##### # ATTENTION: Export. 'ApplicationProjectDirectory', ConfigurationLookupDirectory.
-	export ubAPD_export="$ubADD"
-	export ubCLD_export="$ubASD_CLD_export"
-	#####
+_set_abstractfs_enable_CLD() {
+	export ubAbstractFS_enable_CLD='true'
 }
 
+_set_abstractfs_disable_CLD() {
+	export ubAbstractFS_enable_CLD='false'
+	
+	# No known production use.
+	export ubAbstractFS_enable_CLDnone='false'
+	export ubAbstractFS_enable_CLDindependent='false'
+	export ubAbstractFS_enable_CLDshared='false'
+	export ubAbstractFS_enable_CLDexport='false'
+}
 
-
-
-# ATTENTION Overload ONLY if further specialization is actually required!
-# WARNING: Input parameters must NOT include neighboring ConfigurationLookupDirectory, regardless of whether static ConfigurationLookupDirectory is used.
 _prepare_abstractfs_appdir() {
-	_set_abstractfs_AbstractSourceDirectory "$@"
-	
 	mkdir -p "$ubASD"
 	mkdir -p "$ubASD_CLD"
-	
-	
-	##### # ATTENTION: Prior to abstractfs. 'ApplicationProjectDirectory', ConfigurationLookupDirectory.
-	export ubAPD_prior="$ubASD"
-	export ubCLD_prior="$ubASD_CLD"
-	#####
-	
-	
-	# AbstractDestinationDirectory
-	export ubADD=$(_get_abstractfs "$@" "$ub_specimen")
-	
-	
-	##### # ATTENTION: Static. 'ApplicationProjectDirectory', ConfigurationLookupDirectory.
-	export ubAPD_static="$ubADD"
-	export ubCLD_static="$ubASD_CLD"
-	#####
-	
-	
-	export ubASDdyn=$(_get_base_abstractfs "$@" "$ub_specimen" "$ubASD_CLD")
-	export ubADDdyn=$(_get_abstractfs "$@" "$ub_specimen" "$ubASD_CLD")
-	
-	export ubADDdyn_CLD="$ubADDdyn"/"$ubASD_name".cld
-	
-	
-	##### # ATTENTION: Dynamic. 'ApplicationProjectDirectory', ConfigurationLookupDirectory.
-	export ubAPD_dynamic="$ubADDdyn"/"$ubASD_name"
-	export ubCLD_dynamic="$ubADDdyn_CLD"
-	#####
-}
-# MISUSE. Permissible, given rare requirement to ensure directories exist to perform common directory determination.
-_set_abstractfs_appdir() {
-	_prepare_abstractfs_appdir "$@"
+	#_set_abstractfs_disable_CLD
+	export ubADD=$(export afs_nofs="true" ; _get_abstractfs "$@" "$ub_specimen")
+	#_set_abstractfs_disable_CLD
 }
 
 
-_probe_prepare_abstractfs_appdir_prior() {
-	_messagePlain_nominal '_probe_prepare_abstractfs_appdir_prior'
-	_messagePlain_probe_var ubAPD_prior
-	_messagePlain_probe_var ubCLD_prior
+
+
+
+
+
+
+
+
+
+_probe_prepare_abstractfs_appdir_AbstractSourceDirectory() {
+	_messagePlain_nominal '_probe_prepare_abstractfs_appdir_AbstractSourceDirectory'
+	_messagePlain_probe_var ubASD
+	_messagePlain_probe_var ubASD_name
+	
+	_messagePlain_probe_var ubASD_CLD_none_sub
+	_messagePlain_probe_var ubASD_CLD_none
+	
+	_messagePlain_probe_var ubASD_CLD_independent_sub
+	_messagePlain_probe_var ubASD_CLD_independent
+	
+	_messagePlain_probe_var ubASD_CLD_shared_sub
+	_messagePlain_probe_var ubASD_CLD_shared
+	
+	_messagePlain_probe_var ubASD_CLD_export_sub
+	_messagePlain_probe_var ubASD_CLD_export
 }
-_probe_prepare_abstractfs_appdir_static() {
-	_messagePlain_nominal '_probe_prepare_abstractfs_appdir_static'
-	_messagePlain_probe_var ubAPD_static
-	_messagePlain_probe_var ubCLD_static
+
+_probe_prepare_abstractfs_appdir_AbstractSourceDirectory_prior() {
+	_messagePlain_nominal '_probe_prepare_abstractfs_appdir_AbstractSourceDirectory_prior'
+	_messagePlain_probe_var ubASD
+	_messagePlain_probe_var ubASD_PRJ
+	_messagePlain_probe_var ubASD_CLD
 }
-_probe_prepare_abstractfs_appdir_dynamic() {
-	_messagePlain_nominal '_probe_prepare_abstractfs_appdir_dynamic'
-	_messagePlain_probe_var ubAPD_dynamic
-	_messagePlain_probe_var ubCLD_dynamic
+
+_probe_prepare_abstractfs_appdir_post() {
+	_messagePlain_nominal '_probe_prepare_abstractfs_appdir_post'
+	_messagePlain_probe_var ubADD
+	#_messagePlain_probe_var ubADD_PRJ
+	#_messagePlain_probe_var ubADD_CLD
+	_messagePlain_probe_var ubAFS_PRJ
+	_messagePlain_probe_var ubAFS_CLD
 }
+
+
+
 _probe_prepare_abstractfs_appdir() {
-	_probe_prepare_abstractfs_appdir_prior
-	_probe_prepare_abstractfs_appdir_static
-	_probe_prepare_abstractfs_appdir_dynamic
+	_probe_prepare_abstractfs_appdir_AbstractSourceDirectory
+	_probe_prepare_abstractfs_appdir_AbstractSourceDirectory_prior
+	_probe_prepare_abstractfs_appdir_post
 }
 
 
@@ -8035,7 +8350,7 @@ _write_projectAFS() {
 	testAbstractfsBase="$abstractfs_base"
 	[[ "$1" != "" ]] && testAbstractfsBase=$(_getAbsoluteLocation "$1")
 	
-	( [[ "$nofs" == "true" ]] || [[ "$afs_nofs" == "true" ]] ) && return 0
+	( [[ "$nofs" == "true" ]] || [[ "$afs_nofs" == "true" ]] || [[ "$nofs_write" == "true" ]] || [[ "$afs_nofs_write" == "true" ]] ) && return 0
 	_projectAFS_here > "$testAbstractfsBase"/project.afs
 	chmod u+x "$testAbstractfsBase"/project.afs
 }
@@ -12726,45 +13041,68 @@ _ubide() {
 	_atom . ./ubiquitous_bash.sh "$@"
 }
 
- 
+_set_java__eclipse() {
+	_set_java_openjdk "$@"
+}
 
- 
 
- 
+_eclipse_binary() {
+	eclipse "$@"
+}
 
- 
+# ATTENTION: Override with 'core.sh', 'ops', or similar.
+# Static parameters. Must be accepted if function overridden to point script contained installation.
+_eclipse_param() {
+	_eclipse_example_binary -vm "$ubJava" -data "$ub_eclipse_workspace" -configuration "$ub_eclipse_configuration" "$@"
+}
+
+
+
+
+
+
 
  
 
 
 _prepare_example_ConfigurationLookupDirectory_eclipse() {
-	_prepare_abstractfs_appdir "$@"
-	_probe_prepare_abstractfs_appdir_static
+	#_prepare_abstractfs_appdir_none "$@"
+	#_prepare_abstractfs_appdir_independent "$@"
+	_prepare_abstractfs_appdir_shared "$@"
+	#_prepare_abstractfs_appdir_export "$@"
 	
-	export ub_eclipse_workspace="$ubCLD_static"/_eclipse-workspace
-	export ub_eclipse_configuration="$ubCLD_static"/_eclipse-configuration/_eclipse_configuration
+	#_probe_prepare_abstractfs_appdir_AbstractSourceDirectory
+	#_probe_prepare_abstractfs_appdir_AbstractSourceDirectory_prior
+	#_probe_prepare_abstractfs_appdir_post
+	_probe_prepare_abstractfs_appdir
 	
-	mkdir -p "$ub_eclipse_workspace"
-	mkdir -p "$ub_eclipse_configuration"
+	export ub_eclipse_workspace="$ubAFS_CLD"/_eclipse-workspace
+	export ub_eclipse_configuration="$ubAFS_CLD"/_eclipse-configuration/_eclipse_configuration
+	
+	mkdir -p "$ubASD_PRJ"
+	mkdir -p "$ubASD_CLD"
 }
 
 
 
 _eclipse_example_binary() {
 	eclipse "$@"
+	#sleep 9
 }
 
 
 # ATTENTION: Override with 'core.sh', 'ops', or similar.
 # Static parameters. Must be accepted if function overridden to point script contained installation.
 _eclipse_example-static() {
+	mkdir -p "$ub_eclipse_workspace"
+	mkdir -p "$ub_eclipse_configuration"
 	_eclipse_example_binary -vm "$ubJava" -data "$ub_eclipse_workspace" -configuration "$ub_eclipse_configuration" "$@"
 }
 
 
 
 _eclipse_example_procedure() {
-	! _set_java_openjdk && _stop 1
+	! _set_java__eclipse && _stop 1
 	
 	# Scope will by default... cd "$ub_specimen" ...
 	#... abstractfs... consistent directory name... '_eclipse_executable'
@@ -12786,7 +13124,7 @@ _eclipse_example_procedure() {
 	
 	
 	
-	_messagePlain_request 'request: abstractfs:          '"$ubAPD_static"
+	_messagePlain_request 'request: abstractfs: project:  '"$ubAFS_PRJ"
 	
 	
 	#_abstractfs bash
@@ -22040,6 +22378,7 @@ _compile_bash_utilities_virtualization() {
 	[[ "$enUb_virt" == "true" ]] && includeScriptList+=( "virtualization"/localPathTranslation.sh )
 	
 	[[ "$enUb_abstractfs" == "true" ]] && includeScriptList+=( "virtualization/abstractfs"/abstractfs.sh )
+	[[ "$enUb_abstractfs" == "true" ]] && includeScriptList+=( "virtualization/abstractfs"/abstractfs_appdir_specific.sh )
 	[[ "$enUb_abstractfs" == "true" ]] && includeScriptList+=( "virtualization/abstractfs"/abstractfs_appdir.sh )
 	[[ "$enUb_abstractfs" == "true" ]] && includeScriptList+=( "virtualization/abstractfs"/abstractfsvars.sh )
 	

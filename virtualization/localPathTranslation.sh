@@ -121,7 +121,10 @@ _searchBaseDir() {
 			
 			newDir=$(_findDir "$subArg")
 			
-			while [[ "$newDir" != "$baseDir"* ]]
+			# Trailing slash added to comparison to prevent partial matching of directory names.
+			# https://stackoverflow.com/questions/12340846/bash-shell-script-to-find-the-closest-parent-directory-of-several-files
+			# https://stackoverflow.com/questions/9018723/what-is-the-simplest-way-to-remove-a-trailing-slash-from-each-parameter
+			while [[ "${newDir%/}/" != "${baseDir%/}/"* ]]
 			do
 				baseDir=$(_findDir "$baseDir"/..)
 				

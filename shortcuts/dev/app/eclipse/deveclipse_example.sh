@@ -1,32 +1,42 @@
 
 _prepare_example_ConfigurationLookupDirectory_eclipse() {
-	_prepare_abstractfs_appdir "$@"
-	_probe_prepare_abstractfs_appdir_static
+	#_prepare_abstractfs_appdir_none "$@"
+	#_prepare_abstractfs_appdir_independent "$@"
+	_prepare_abstractfs_appdir_shared "$@"
+	#_prepare_abstractfs_appdir_export "$@"
 	
-	export ub_eclipse_workspace="$ubCLD_static"/_eclipse-workspace
-	export ub_eclipse_configuration="$ubCLD_static"/_eclipse-configuration/_eclipse_configuration
+	#_probe_prepare_abstractfs_appdir_AbstractSourceDirectory
+	#_probe_prepare_abstractfs_appdir_AbstractSourceDirectory_prior
+	#_probe_prepare_abstractfs_appdir_post
+	_probe_prepare_abstractfs_appdir
 	
-	mkdir -p "$ub_eclipse_workspace"
-	mkdir -p "$ub_eclipse_configuration"
+	export ub_eclipse_workspace="$ubAFS_CLD"/_eclipse-workspace
+	export ub_eclipse_configuration="$ubAFS_CLD"/_eclipse-configuration/_eclipse_configuration
+	
+	mkdir -p "$ubASD_PRJ"
+	mkdir -p "$ubASD_CLD"
 }
 
 
 
 _eclipse_example_binary() {
 	eclipse "$@"
+	#sleep 9
 }
 
 
 # ATTENTION: Override with 'core.sh', 'ops', or similar.
 # Static parameters. Must be accepted if function overridden to point script contained installation.
 _eclipse_example-static() {
+	mkdir -p "$ub_eclipse_workspace"
+	mkdir -p "$ub_eclipse_configuration"
 	_eclipse_example_binary -vm "$ubJava" -data "$ub_eclipse_workspace" -configuration "$ub_eclipse_configuration" "$@"
 }
 
 
 
 _eclipse_example_procedure() {
-	! _set_java_openjdk && _stop 1
+	! _set_java__eclipse && _stop 1
 	
 	# Scope will by default... cd "$ub_specimen" ...
 	#... abstractfs... consistent directory name... '_eclipse_executable'
@@ -48,7 +58,7 @@ _eclipse_example_procedure() {
 	
 	
 	
-	_messagePlain_request 'request: abstractfs:          '"$ubAPD_static"
+	_messagePlain_request 'request: abstractfs: project:  '"$ubAFS_PRJ"
 	
 	
 	#_abstractfs bash
