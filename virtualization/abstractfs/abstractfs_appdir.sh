@@ -69,7 +69,7 @@ _prepare_abstractfs_appdir() {
 	mkdir -p "$ubASD"
 	mkdir -p "$ubASD_CLD"
 	#_set_abstractfs_disable_CLD
-	export ubADD=$(export afs_nofs="true" ; _get_abstractfs "$@" "$ub_specimen")
+	export ubADD=$(export afs_nofs="true" ; "$scriptAbsoluteLocation" _get_abstractfs "$@" "$ub_specimen")
 	#_set_abstractfs_disable_CLD
 }
 

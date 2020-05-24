@@ -8065,7 +8065,7 @@ _prepare_abstractfs_appdir_export() {
 	#_probe_prepare_abstractfs_appdir_post
 }
 # MISUSE. Permissible, given rare requirement to ensure directories exist to perform common directory determination.
-_prepare_abstractfs_appdir_export() {
+_set_abstractfs_appdir_export() {
 	_prepare_abstractfs_appdir_export "$@"
 }
 
@@ -8145,7 +8145,7 @@ _prepare_abstractfs_appdir() {
 	mkdir -p "$ubASD"
 	mkdir -p "$ubASD_CLD"
 	#_set_abstractfs_disable_CLD
-	export ubADD=$(export afs_nofs="true" ; _get_abstractfs "$@" "$ub_specimen")
+	export ubADD=$(export afs_nofs="true" ; "$scriptAbsoluteLocation" _get_abstractfs "$@" "$ub_specimen")
 	#_set_abstractfs_disable_CLD
 }
 
@@ -13068,8 +13068,8 @@ _eclipse_param() {
 _prepare_example_ConfigurationLookupDirectory_eclipse() {
 	#_prepare_abstractfs_appdir_none "$@"
 	#_prepare_abstractfs_appdir_independent "$@"
-	_prepare_abstractfs_appdir_shared "$@"
-	#_prepare_abstractfs_appdir_export "$@"
+	#_prepare_abstractfs_appdir_shared "$@"
+	_prepare_abstractfs_appdir_export "$@"
 	
 	#_probe_prepare_abstractfs_appdir_AbstractSourceDirectory
 	#_probe_prepare_abstractfs_appdir_AbstractSourceDirectory_prior

@@ -2,8 +2,8 @@
 _prepare_example_ConfigurationLookupDirectory_eclipse() {
 	#_prepare_abstractfs_appdir_none "$@"
 	#_prepare_abstractfs_appdir_independent "$@"
-	_prepare_abstractfs_appdir_shared "$@"
-	#_prepare_abstractfs_appdir_export "$@"
+	#_prepare_abstractfs_appdir_shared "$@"
+	_prepare_abstractfs_appdir_export "$@"
 	
 	#_probe_prepare_abstractfs_appdir_AbstractSourceDirectory
 	#_probe_prepare_abstractfs_appdir_AbstractSourceDirectory_prior

@@ -262,7 +262,7 @@ _prepare_abstractfs_appdir_export() {
 	#_probe_prepare_abstractfs_appdir_post
 }
 # MISUSE. Permissible, given rare requirement to ensure directories exist to perform common directory determination.
-_prepare_abstractfs_appdir_export() {
+_set_abstractfs_appdir_export() {
 	_prepare_abstractfs_appdir_export "$@"
 }
 
