@@ -35,6 +35,7 @@ _set_abstractfs_AbstractSourceDirectory() {
 	export ubASD_PRJ_independent="$ubASD""$ubASD_PRJ_independent_sub"
 	
 	# ConfigurationLookupDirectory is *neighbor*, next to project directory, in *shared* abstractfs directory.
+	# DANGER: Strongly discouraged. May break use of "project.afs" with alternative layouts and vice versa.
 	export ubADD_CLD_shared_sub=/"$ubASD_name".cld
 	export ubADD_PRJ_shared_sub=/"$ubASD_name"
 	export ubASD_CLD_shared_sub=/.."$ubADD_CLD_shared_sub"

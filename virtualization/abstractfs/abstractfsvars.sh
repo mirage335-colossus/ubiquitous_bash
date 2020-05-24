@@ -4,6 +4,7 @@ _reset_abstractfs() {
 	export abstractfs_name=
 	export abstractfs_puid=
 	export abstractfs_projectafs=
+	export abstractfs_projectafs_dir=
 }
 
 _prohibit_rmlink_abstractfs() {
@@ -111,6 +112,7 @@ _findProjectAFS_procedure() {
 	if [[ -e "./project.afs" ]]
 	then
 		_getAbsoluteLocation "./project.afs"
+		export abstractfs_projectafs_dir=$(_getAbsoluteFolder "./project.afs")
 		return 0
 	fi
 	

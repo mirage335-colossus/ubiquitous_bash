@@ -137,6 +137,7 @@ _set_abstractfs_appdir_independent() {
 # No known production use.
 # ATTENTION Overload ONLY if further specialization is actually required!
 # WARNING: Input parameters must NOT include neighboring ConfigurationLookupDirectory, regardless of whether static ConfigurationLookupDirectory is used.
+# DANGER: Strongly discouraged. May break use of "project.afs" with alternative layouts and vice versa.
 _prepare_abstractfs_appdir_shared() {
 	_set_abstractfs_AbstractSourceDirectory "$@"
 	#_probe_prepare_abstractfs_appdir_AbstractSourceDirectory
