@@ -3180,6 +3180,7 @@ _generate_bash() {
 	
 	#Default command.
 	echo >> "$progScript"
+	echo 'export ub_ops_disable=true'  >> "$progScript"
 	echo '_generate_compile_bash "$@"' >> "$progScript"
 	echo 'exit 0' >> "$progScript"
 	
@@ -4188,53 +4189,58 @@ then
 	trap 'excode=$?; trap "" EXIT; _stop_emergency $excode; echo $excode' INT TERM	# ignore
 fi
 
-#Override functions with external definitions from a separate file if available.
-#if [[ -e "./ops" ]]
-#then
-#	. ./ops
-#fi
+# DANGER: NEVER intended to be set in an end user shell for ANY reason.
+# DANGER: Implemented to prevent 'compile.sh' from attempting to run functions from 'ops.sh'. No other valid use currently known or anticipated!
+if [[ "$ub_ops_disable" != 'true' ]]
+then
+	#Override functions with external definitions from a separate file if available.
+	#if [[ -e "./ops" ]]
+	#then
+	#	. ./ops
+	#fi
 
-#Override functions with external definitions from a separate file if available.
-# CAUTION: Recommend only "ops" or "ops.sh" . Using both can cause confusion.
-# ATTENTION: Recommend "ops.sh" only when unusually long. Specifically intended for "CoreAutoSSH" .
-if [[ -e "$objectDir"/ops ]]
-then
-	. "$objectDir"/ops
-fi
-if [[ -e "$objectDir"/ops.sh ]]
-then
-	. "$objectDir"/ops.sh
-fi
-if [[ -e "$scriptLocal"/ops ]]
-then
-	. "$scriptLocal"/ops
-fi
-if [[ -e "$scriptLocal"/ops.sh ]]
-then
-	. "$scriptLocal"/ops.sh
-fi
-if [[ -e "$scriptLocal"/ssh/ops ]]
-then
-	. "$scriptLocal"/ssh/ops
-fi
-if [[ -e "$scriptLocal"/ssh/ops.sh ]]
-then
-	. "$scriptLocal"/ssh/ops.sh
-fi
+	#Override functions with external definitions from a separate file if available.
+	# CAUTION: Recommend only "ops" or "ops.sh" . Using both can cause confusion.
+	# ATTENTION: Recommend "ops.sh" only when unusually long. Specifically intended for "CoreAutoSSH" .
+	if [[ -e "$objectDir"/ops ]]
+	then
+		. "$objectDir"/ops
+	fi
+	if [[ -e "$objectDir"/ops.sh ]]
+	then
+		. "$objectDir"/ops.sh
+	fi
+	if [[ -e "$scriptLocal"/ops ]]
+	then
+		. "$scriptLocal"/ops
+	fi
+	if [[ -e "$scriptLocal"/ops.sh ]]
+	then
+		. "$scriptLocal"/ops.sh
+	fi
+	if [[ -e "$scriptLocal"/ssh/ops ]]
+	then
+		. "$scriptLocal"/ssh/ops
+	fi
+	if [[ -e "$scriptLocal"/ssh/ops.sh ]]
+	then
+		. "$scriptLocal"/ssh/ops.sh
+	fi
 
-#WILL BE OVERWRITTEN FREQUENTLY.
-#Intended for automatically generated shell code identifying usable resources, such as unused network ports. Do NOT use for serialization of internal variables (use $varStore for that).
-if [[ -e "$objectDir"/opsauto ]]
-then
-	. "$objectDir"/opsauto
-fi
-if [[ -e "$scriptLocal"/opsauto ]]
-then
-	. "$scriptLocal"/opsauto
-fi
-if [[ -e "$scriptLocal"/ssh/opsauto ]]
-then
-	. "$scriptLocal"/ssh/opsauto
+	#WILL BE OVERWRITTEN FREQUENTLY.
+	#Intended for automatically generated shell code identifying usable resources, such as unused network ports. Do NOT use for serialization of internal variables (use $varStore for that).
+	if [[ -e "$objectDir"/opsauto ]]
+	then
+		. "$objectDir"/opsauto
+	fi
+	if [[ -e "$scriptLocal"/opsauto ]]
+	then
+		. "$scriptLocal"/opsauto
+	fi
+	if [[ -e "$scriptLocal"/ssh/opsauto ]]
+	then
+		. "$scriptLocal"/ssh/opsauto
+	fi
 fi
 
 #Wrapper function to launch arbitrary commands within the ubiquitous_bash environment, including its PATH with scriptBin.
@@ -4330,5 +4336,6 @@ then
 fi
 
 
+export ub_ops_disable=true
 _generate_compile_bash "$@"
 exit 0

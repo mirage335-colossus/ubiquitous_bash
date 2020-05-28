@@ -7700,12 +7700,20 @@ _abstractfs() {
 	
 	export abstractfs_puid=$(_uid)
 	
-	if [[ "$ubAbstractFS_enable_CLD" == 'true' ]] && [[ "$ubASD_CLD" != '' ]]
-	then
-		_base_abstractfs "$@" "$ubASD_PRJ" "$ubASD_CLD"
-	else
-		_base_abstractfs "$@"
-	fi
+	
+	local current_abstractfs_base_args
+	current_abstractfs_base_args=("${@}")
+	
+	[[ "$ubAbstractFS_enable_CLD" == 'true' ]] && [[ "$ubASD_CLD" != '' ]] && current_abstractfs_base_args+=( "$ubASD_PRJ" "$ubASD_CLD" )
+	
+	# WARNING: Enabling may allow a misplaced 'project.afs' file in "/" , "$HOME' , or similar, to override a legitimate directory.
+	# However, such a misplaced file may already cause wrong directory collisions with abstractfs.
+	# Historically not enabled by default. Consider enabling by default equivalent to at least a minor version bump - be wary of any possible broken use cases.
+	[[ "$abstractfs_projectafs_dir" != "" ]] && [[ "$ubAbstractFS_enable_projectafs_dir" == 'true' ]] && current_abstractfs_base_args+=( "$abstractfs_projectafs_dir" )
+	#[[ "$abstractfs_projectafs_dir" != "" ]] && [[ "$ubAbstractFS_enable_projectafs_dir" != 'false' ]] && current_abstractfs_base_args+=( "$abstractfs_projectafs_dir" )
+	
+	_base_abstractfs "${current_abstractfs_base_args[@]}"
+	
 	
 	_name_abstractfs > /dev/null 2>&1
 	[[ "$abstractfs_name" == "" ]] && return 1
@@ -7940,6 +7948,7 @@ _set_abstractfs_appdir_independent() {
 # No known production use.
 # ATTENTION Overload ONLY if further specialization is actually required!
 # WARNING: Input parameters must NOT include neighboring ConfigurationLookupDirectory, regardless of whether static ConfigurationLookupDirectory is used.
+# DANGER: Strongly discouraged. May break use of "project.afs" with alternative layouts and vice versa.
 _prepare_abstractfs_appdir_shared() {
 	_set_abstractfs_AbstractSourceDirectory "$@"
 	#_probe_prepare_abstractfs_appdir_AbstractSourceDirectory
@@ -8111,6 +8120,7 @@ _set_abstractfs_AbstractSourceDirectory() {
 	export ubASD_PRJ_independent="$ubASD""$ubASD_PRJ_independent_sub"
 	
 	# ConfigurationLookupDirectory is *neighbor*, next to project directory, in *shared* abstractfs directory.
+	# DANGER: Strongly discouraged. May break use of "project.afs" with alternative layouts and vice versa.
 	export ubADD_CLD_shared_sub=/"$ubASD_name".cld
 	export ubADD_PRJ_shared_sub=/"$ubASD_name"
 	export ubASD_CLD_shared_sub=/.."$ubADD_CLD_shared_sub"
@@ -8208,6 +8218,7 @@ _reset_abstractfs() {
 	export abstractfs_name=
 	export abstractfs_puid=
 	export abstractfs_projectafs=
+	export abstractfs_projectafs_dir=
 }
 
 _prohibit_rmlink_abstractfs() {
@@ -8315,6 +8326,7 @@ _findProjectAFS_procedure() {
 	if [[ -e "./project.afs" ]]
 	then
 		_getAbsoluteLocation "./project.afs"
+		export abstractfs_projectafs_dir=$(_getAbsoluteFolder "./project.afs")
 		return 0
 	fi
 	
@@ -13067,8 +13079,12 @@ _eclipse_param() {
 
 _prepare_example_ConfigurationLookupDirectory_eclipse() {
 	#_prepare_abstractfs_appdir_none "$@"
+	
 	#_prepare_abstractfs_appdir_independent "$@"
+	
+	# DANGER: Strongly discouraged. May break use of "project.afs" with alternative layouts and vice versa.
 	#_prepare_abstractfs_appdir_shared "$@"
+	
 	_prepare_abstractfs_appdir_export "$@"
 	
 	#_probe_prepare_abstractfs_appdir_AbstractSourceDirectory
@@ -21975,6 +21991,7 @@ _generate_bash() {
 	
 	#Default command.
 	echo >> "$progScript"
+	echo 'export ub_ops_disable=true'  >> "$progScript"
 	echo '_generate_compile_bash "$@"' >> "$progScript"
 	echo 'exit 0' >> "$progScript"
 	
@@ -22983,53 +23000,58 @@ then
 	trap 'excode=$?; trap "" EXIT; _stop_emergency $excode; echo $excode' INT TERM	# ignore
 fi
 
-#Override functions with external definitions from a separate file if available.
-#if [[ -e "./ops" ]]
-#then
-#	. ./ops
-#fi
+# DANGER: NEVER intended to be set in an end user shell for ANY reason.
+# DANGER: Implemented to prevent 'compile.sh' from attempting to run functions from 'ops.sh'. No other valid use currently known or anticipated!
+if [[ "$ub_ops_disable" != 'true' ]]
+then
+	#Override functions with external definitions from a separate file if available.
+	#if [[ -e "./ops" ]]
+	#then
+	#	. ./ops
+	#fi
 
-#Override functions with external definitions from a separate file if available.
-# CAUTION: Recommend only "ops" or "ops.sh" . Using both can cause confusion.
-# ATTENTION: Recommend "ops.sh" only when unusually long. Specifically intended for "CoreAutoSSH" .
-if [[ -e "$objectDir"/ops ]]
-then
-	. "$objectDir"/ops
-fi
-if [[ -e "$objectDir"/ops.sh ]]
-then
-	. "$objectDir"/ops.sh
-fi
-if [[ -e "$scriptLocal"/ops ]]
-then
-	. "$scriptLocal"/ops
-fi
-if [[ -e "$scriptLocal"/ops.sh ]]
-then
-	. "$scriptLocal"/ops.sh
-fi
-if [[ -e "$scriptLocal"/ssh/ops ]]
-then
-	. "$scriptLocal"/ssh/ops
-fi
-if [[ -e "$scriptLocal"/ssh/ops.sh ]]
-then
-	. "$scriptLocal"/ssh/ops.sh
-fi
+	#Override functions with external definitions from a separate file if available.
+	# CAUTION: Recommend only "ops" or "ops.sh" . Using both can cause confusion.
+	# ATTENTION: Recommend "ops.sh" only when unusually long. Specifically intended for "CoreAutoSSH" .
+	if [[ -e "$objectDir"/ops ]]
+	then
+		. "$objectDir"/ops
+	fi
+	if [[ -e "$objectDir"/ops.sh ]]
+	then
+		. "$objectDir"/ops.sh
+	fi
+	if [[ -e "$scriptLocal"/ops ]]
+	then
+		. "$scriptLocal"/ops
+	fi
+	if [[ -e "$scriptLocal"/ops.sh ]]
+	then
+		. "$scriptLocal"/ops.sh
+	fi
+	if [[ -e "$scriptLocal"/ssh/ops ]]
+	then
+		. "$scriptLocal"/ssh/ops
+	fi
+	if [[ -e "$scriptLocal"/ssh/ops.sh ]]
+	then
+		. "$scriptLocal"/ssh/ops.sh
+	fi
 
-#WILL BE OVERWRITTEN FREQUENTLY.
-#Intended for automatically generated shell code identifying usable resources, such as unused network ports. Do NOT use for serialization of internal variables (use $varStore for that).
-if [[ -e "$objectDir"/opsauto ]]
-then
-	. "$objectDir"/opsauto
-fi
-if [[ -e "$scriptLocal"/opsauto ]]
-then
-	. "$scriptLocal"/opsauto
-fi
-if [[ -e "$scriptLocal"/ssh/opsauto ]]
-then
-	. "$scriptLocal"/ssh/opsauto
+	#WILL BE OVERWRITTEN FREQUENTLY.
+	#Intended for automatically generated shell code identifying usable resources, such as unused network ports. Do NOT use for serialization of internal variables (use $varStore for that).
+	if [[ -e "$objectDir"/opsauto ]]
+	then
+		. "$objectDir"/opsauto
+	fi
+	if [[ -e "$scriptLocal"/opsauto ]]
+	then
+		. "$scriptLocal"/opsauto
+	fi
+	if [[ -e "$scriptLocal"/ssh/opsauto ]]
+	then
+		. "$scriptLocal"/ssh/opsauto
+	fi
 fi
 
 #Wrapper function to launch arbitrary commands within the ubiquitous_bash environment, including its PATH with scriptBin.

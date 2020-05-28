@@ -29,6 +29,7 @@ _generate_bash() {
 	
 	#Default command.
 	echo >> "$progScript"
+	echo 'export ub_ops_disable=true'  >> "$progScript"
 	echo '_generate_compile_bash "$@"' >> "$progScript"
 	echo 'exit 0' >> "$progScript"
 	
