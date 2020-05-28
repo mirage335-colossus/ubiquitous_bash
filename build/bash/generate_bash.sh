@@ -23,13 +23,13 @@ _generate_bash() {
 	_compile_bash_selfHost
 	_compile_bash_selfHost_prog
 	
+	_compile_bash_overrides_disable
 	_compile_bash_overrides
 	
 	_includeScripts "${includeScriptList[@]}"
 	
 	#Default command.
 	echo >> "$progScript"
-	echo 'export ub_ops_disable=true'  >> "$progScript"
 	echo '_generate_compile_bash "$@"' >> "$progScript"
 	echo 'exit 0' >> "$progScript"
 	

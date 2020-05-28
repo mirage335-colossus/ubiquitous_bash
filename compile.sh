@@ -3174,13 +3174,13 @@ _generate_bash() {
 	_compile_bash_selfHost
 	_compile_bash_selfHost_prog
 	
+	_compile_bash_overrides_disable
 	_compile_bash_overrides
 	
 	_includeScripts "${includeScriptList[@]}"
 	
 	#Default command.
 	echo >> "$progScript"
-	echo 'export ub_ops_disable=true'  >> "$progScript"
 	echo '_generate_compile_bash "$@"' >> "$progScript"
 	echo 'exit 0' >> "$progScript"
 	
@@ -3868,6 +3868,13 @@ _compile_bash_overrides() {
 	includeScriptList+=( "structure"/overrides.sh )
 }
 
+_compile_bash_overrides_disable() {
+	export includeScriptList
+	
+	
+	includeScriptList+=( "structure"/overrides_disable.sh )
+}
+
 _compile_bash_entry() {
 	export includeScriptList
 	
@@ -4144,6 +4151,13 @@ _compile_bash_entry_prog() {
 	true
 }
 
+#####Overrides DISABLE
+
+# DANGER: NEVER intended to be set in an end user shell for ANY reason.
+# DANGER: Implemented to prevent 'compile.sh' from attempting to run functions from 'ops.sh'. No other valid use currently known or anticipated!
+export ub_ops_disable='true'
+
+
 #####Overrides
 
 [[ "$isDaemon" == "true" ]] && echo "$$" | _prependDaemonPID
@@ -4336,6 +4350,5 @@ then
 fi
 
 
-export ub_ops_disable=true
 _generate_compile_bash "$@"
 exit 0

@@ -626,6 +626,13 @@ _compile_bash_overrides() {
 	includeScriptList+=( "structure"/overrides.sh )
 }
 
+_compile_bash_overrides_disable() {
+	export includeScriptList
+	
+	
+	includeScriptList+=( "structure"/overrides_disable.sh )
+}
+
 _compile_bash_entry() {
 	export includeScriptList
 	
