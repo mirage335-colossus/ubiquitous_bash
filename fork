@@ -196,6 +196,8 @@ _project() {
 	echo '#export ub_anchor_specificSoftwareName="experimental"' >> ./_local/ops.sh
 	echo '#export ub_anchor_user="true"' >> ./_local/ops.sh
 	echo '' >> ./_local/ops.sh
+	echo '#export ub_anchor_autoupgrade="true"' >> ./_local/ops.sh
+	echo '' >> ./_local/ops.sh
 	
 	./compile.sh
 

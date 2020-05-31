@@ -2826,6 +2826,10 @@ export ub_anchor_specificSoftwareName
 export ub_anchor_user=""
 export ub_anchor_user
 
+export ub_anchor_autoupgrade=""
+export ub_anchor_autoupgrade
+
+
 
 _deps_metaengine() {
 # 	#_deps_notLean

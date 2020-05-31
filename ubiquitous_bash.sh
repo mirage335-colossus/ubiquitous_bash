@@ -16543,7 +16543,7 @@ _refresh_anchors_ubiquitous() {
 # ATTENTION: Set "$ub_anchor_specificSoftwareName" or similar in "ops.sh".
 # ATTENTION: Set ub_anchor_user='true' or similar in "ops.sh".
 #export ub_anchor_specificSoftwareName='experimental'
-#export ub_anchor_user='true'
+#export ub_anchor_user="true"
 _set_refresh_anchors_specific() {
 	export ub_anchor_suffix=
 	export ub_anchor_suffix
@@ -16585,8 +16585,9 @@ _anchor_autoupgrade() {
 	currentScriptBaseName=$(basename $scriptAbsoluteLocation)
 	[[ "$currentScriptBaseName" != "ubiquitous_bash.sh" ]] && return 1
 	
-	true
-	#[[ -e "$scriptLib"/ubiquitous_bash/_anchor ]] && cp -a "$scriptLib"/ubiquitous_bash/_anchor "$scriptAbsoluteFolder"/_anchor
+	[[ "$ub_anchor_autoupgrade" != 'true' ]] && return 0
+	
+	[[ -e "$scriptLib"/ubiquitous_bash/_anchor ]] && cp -a "$scriptLib"/ubiquitous_bash/_anchor "$scriptAbsoluteFolder"/_anchor
 }
 
 _anchor_configure() {
@@ -17889,6 +17890,10 @@ export ub_anchor_specificSoftwareName
 
 export ub_anchor_user=""
 export ub_anchor_user
+
+export ub_anchor_autoupgrade=""
+export ub_anchor_autoupgrade
+
 
 
 #Machine information.
