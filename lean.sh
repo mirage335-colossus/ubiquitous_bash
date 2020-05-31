@@ -2957,9 +2957,6 @@ _anchor_configure() {
 	export ubAnchorTemplateCurrent="$scriptAbsoluteFolder"/_anchor
 	[[ "$1" != "" ]] && export ubAnchorTemplateCurrent="$1"
 	
-	
-	_anchor_autoupgrade
-	
 	! [[ -e "$ubAnchorTemplateCurrent" ]] && return 1
 	
 	#https://superuser.com/questions/450868/what-is-the-simplest-scriptable-way-to-check-whether-a-shell-variable-is-exporte
@@ -2982,6 +2979,8 @@ _anchor_configure() {
 }
 
 _anchor() {
+	_anchor_autoupgrade
+	
 	_anchor_configure
 	_anchor_configure "$scriptAbsoluteFolder"/_anchor.bat
 	
