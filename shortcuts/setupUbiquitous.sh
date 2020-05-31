@@ -229,7 +229,9 @@ _anchor_autoupgrade() {
 	
 	[[ "$ub_anchor_autoupgrade" != 'true' ]] && return 0
 	
-	[[ -e "$scriptLib"/ubiquitous_bash/_anchor ]] && cp -a "$scriptLib"/ubiquitous_bash/_anchor "$scriptAbsoluteFolder"/_anchor
+	_findUbiquitous
+	
+	[[ -e "$ubiquitiousLibDir"/_anchor ]] && cp -a "$ubiquitiousLibDir"/_anchor "$scriptAbsoluteFolder"/_anchor
 }
 
 _anchor_configure() {
