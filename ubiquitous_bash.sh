@@ -16554,29 +16554,41 @@ _set_refresh_anchors_specific() {
 	
 	return 0
 }
-# EXAMPLE ONLY.
-_refresh_anchors_specific() {
+
+_refresh_anchors_specific_single_procedure() {
 	[[ "$ub_anchor_specificSoftwareName" == "" ]] && return 1
 	
 	_set_refresh_anchors_specific
 	
-	cp -a "$scriptAbsoluteFolder"/_anchor "$scriptAbsoluteFolder"/_true"$ub_anchor_suffix"
+	cp -a "$scriptAbsoluteFolder"/_anchor "$scriptAbsoluteFolder"/"$1""$ub_anchor_suffix"
 	
 	return 0
 }
-# EXAMPLE ONLY.
 # Assumes user has included "$HOME"/bin in their "$PATH".
-_refresh_anchors_user() {
+_refresh_anchors_user_single_procedure() {
 	[[ "$ub_anchor_user" != 'true' ]] && return 1
 	
 	_set_refresh_anchors_specific
 	! mkdir -p "$HOME"/bin && return 1
 	
-	#ln -s "$scriptAbsoluteFolder"/_true"$ub_anchor_suffix" "$HOME"/bin/
-	ln -sf "$scriptAbsoluteFolder"/_true"$ub_anchor_suffix" "$HOME"/bin/
+	#ln -s "$scriptAbsoluteFolder"/"$1"$ub_anchor_suffix" "$HOME"/bin/
+	ln -sf "$scriptAbsoluteFolder"/"$1""$ub_anchor_suffix" "$HOME"/bin/
 	
 	return 0
 }
+
+# ATTENTION: Overload with 'core.sh' or similar.
+# # EXAMPLE ONLY.
+# _refresh_anchors_specific() {
+# 	_refresh_anchors_specific_single_procedure _true
+# }
+# # EXAMPLE ONLY.
+# _refresh_anchors_user() {
+# 	_refresh_anchors_user_single_procedure _true
+# }
+
+
+
 
 # ATTENTION: Overload with 'core.sh' or similar.
 # WARNING: May become default behavior.
