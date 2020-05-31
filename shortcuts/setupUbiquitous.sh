@@ -173,6 +173,53 @@ _refresh_anchors_ubiquitous() {
 	cp -a "$scriptAbsoluteFolder"/_anchor.bat "$scriptAbsoluteFolder"/_false.bat
 }
 
+# EXAMPLE ONLY.
+# _refresh_anchors() {
+# 	cp -a "$scriptAbsoluteFolder"/_anchor "$scriptAbsoluteFolder"/_true
+# }
+
+
+# CAUTION: Anchor scripts MUST include code to ignore '--' suffix specific software name convention!
+# CAUTION: ONLY intended to be used either with generic software, or anchors following '--' suffix specific software name convention!
+# WARNING: DO NOT enable in "core.sh". Intended to be enabled by "_local/ops.sh".
+# ATTENTION: Set "$ub_anchor_specificSoftwareName" or similar in "ops.sh".
+# ATTENTION: Set ub_anchor_user='true' or similar in "ops.sh".
+#export ub_anchor_specificSoftwareName='experimental'
+#export ub_anchor_user="true"
+_set_refresh_anchors_specific() {
+	export ub_anchor_suffix=
+	export ub_anchor_suffix
+	
+	[[ "$ub_anchor_specificSoftwareName" == "" ]] && return 0
+	
+	export ub_anchor_suffix='--'"$ub_anchor_specificSoftwareName"
+	
+	return 0
+}
+# EXAMPLE ONLY.
+_refresh_anchors_specific() {
+	[[ "$ub_anchor_specificSoftwareName" == "" ]] && return 1
+	
+	_set_refresh_anchors_specific
+	
+	cp -a "$scriptAbsoluteFolder"/_anchor "$scriptAbsoluteFolder"/_true"$ub_anchor_suffix"
+	
+	return 0
+}
+# EXAMPLE ONLY.
+# Assumes user has included "$HOME"/bin in their "$PATH".
+_refresh_anchors_user() {
+	[[ "$ub_anchor_user" != 'true' ]] && return 1
+	
+	_set_refresh_anchors_specific
+	! mkdir -p "$HOME"/bin && return 1
+	
+	#ln -s "$scriptAbsoluteFolder"/_true"$ub_anchor_suffix" "$HOME"/bin/
+	ln -sf "$scriptAbsoluteFolder"/_true"$ub_anchor_suffix" "$HOME"/bin/
+	
+	return 0
+}
+
 # ATTENTION: Overload with 'core.sh' or similar.
 # WARNING: May become default behavior.
 _anchor_autoupgrade() {
@@ -223,7 +270,23 @@ _anchor() {
 	if type "_refresh_anchors" > /dev/null 2>&1
 	then
 		_tryExec "_refresh_anchors"
-		return
+		#return
+	fi
+	
+	# CAUTION: Anchor scripts MUST include code to ignore '--' suffix specific software name convention!
+	# WARNING: DO NOT enable in "core.sh". Intended to be enabled by "_local/ops.sh".
+	if type "_refresh_anchors_specific" > /dev/null 2>&1
+	then
+		_tryExec "_refresh_anchors_specific"
+		#return
+	fi
+	
+	# CAUTION: ONLY intended to be used either with generic software, or anchors following '--' suffix specific software name convention!
+	# WARNING: DO NOT enable in "core.sh". Intended to be enabled by "_local/ops.sh".
+	if type "_refresh_anchors_user" > /dev/null 2>&1
+	then
+		_tryExec "_refresh_anchors_user"
+		#return
 	fi
 	
 	return 0

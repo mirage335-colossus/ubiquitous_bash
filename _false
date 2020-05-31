@@ -545,6 +545,8 @@ export anchorScriptAbsoluteLocation=$(_getScriptAbsoluteLocation)
 export anchorScriptAbsoluteFolder=$(_getScriptAbsoluteFolder)
 export anchorName=$(basename "$anchorScriptAbsoluteLocation")
 
+# Ignore '--' suffix specific software name convention.
+export anchorName=${anchorName%"--"*}
 
 export anchorSourceDir="ubiquitous_bash"
 export anchorSource="ubiquitous_bash.sh"

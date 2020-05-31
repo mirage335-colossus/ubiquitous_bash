@@ -205,3 +205,11 @@ export globalArcTmp="$globalArcDir"/tmp
 export globalBuildDir="$scriptLocal"/b
 export globalBuildFS="$globalBuildDir"/fs
 export globalBuildTmp="$globalBuildDir"/tmp
+
+
+export ub_anchor_specificSoftwareName=""
+export ub_anchor_specificSoftwareName
+
+export ub_anchor_user=""
+export ub_anchor_user
+
