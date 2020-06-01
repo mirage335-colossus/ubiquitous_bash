@@ -427,6 +427,12 @@ _setup() {
 	
 	_tryExec "_setup_prog"
 	
+	if type "_associate_anchors_request" > /dev/null 2>&1
+	then
+		_tryExec "_associate_anchors_request"
+		#return
+	fi
+	
 	_stop
 }
 

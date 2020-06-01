@@ -213,8 +213,8 @@ _refresh_anchors_user_single_procedure() {
 	_set_refresh_anchors_specific
 	! mkdir -p "$HOME"/bin && return 1
 	
-	#ln -s "$scriptAbsoluteFolder"/"$1"$ub_anchor_suffix" "$HOME"/bin/
-	ln -sf "$scriptAbsoluteFolder"/"$1""$ub_anchor_suffix" "$HOME"/bin/
+	ln -s "$scriptAbsoluteFolder"/"$1""$ub_anchor_suffix" "$HOME"/bin/
+	#ln -sf "$scriptAbsoluteFolder"/"$1""$ub_anchor_suffix" "$HOME"/bin/
 	
 	return 0
 }
@@ -229,6 +229,19 @@ _refresh_anchors_user_single_procedure() {
 # 	_refresh_anchors_user_single_procedure _true
 # }
 
+
+# ATTENTION: Overload with 'core'sh' or similar.
+# Keep in mind these anchors are linked to PATH through "$HOME"/bin .
+_associate_anchors_request() {
+	if type "_refresh_anchors_user" > /dev/null 2>&1
+	then
+		_tryExec "_refresh_anchors_user"
+		#return
+	fi
+	
+	_messagePlain_request 'association:  dir: _scope_konsole'
+	_messagePlain_request 'association: file: _scope_konsole'
+}
 
 
 
@@ -302,6 +315,13 @@ _anchor() {
 		_tryExec "_refresh_anchors_user"
 		#return
 	fi
+	
+	# WARNING: Calls _refresh_anchors_user . Same variables required to enable, intended to be set by "_local/ops.sh".
+	#if type "_associate_anchors_request" > /dev/null 2>&1
+	#then
+		#_tryExec "_associate_anchors_request"
+		##return
+	#fi
 	
 	return 0
 }
