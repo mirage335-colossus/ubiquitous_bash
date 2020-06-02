@@ -401,6 +401,15 @@ _setupCommands() {
 #	true
 #}
 
+
+_setup_anchor() {
+	if type "_associate_anchors_request" > /dev/null 2>&1
+	then
+		_tryExec "_associate_anchors_request"
+		return
+	fi
+}
+
 _setup() {
 	_start
 	
@@ -427,11 +436,7 @@ _setup() {
 	
 	_tryExec "_setup_prog"
 	
-	if type "_associate_anchors_request" > /dev/null 2>&1
-	then
-		_tryExec "_associate_anchors_request"
-		#return
-	fi
+	_setup_anchor
 	
 	_stop
 }

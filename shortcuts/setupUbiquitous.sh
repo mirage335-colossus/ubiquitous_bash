@@ -213,8 +213,14 @@ _refresh_anchors_user_single_procedure() {
 	_set_refresh_anchors_specific
 	! mkdir -p "$HOME"/bin && return 1
 	
-	ln -s "$scriptAbsoluteFolder"/"$1""$ub_anchor_suffix" "$HOME"/bin/
-	#ln -sf "$scriptAbsoluteFolder"/"$1""$ub_anchor_suffix" "$HOME"/bin/
+	
+	# WARNING: Default to replacement. Rare case considered acceptable for several reasons.
+	# Negligible damage potential - all replaced files are symlinks or anchors.
+	# Limited to specifically named anchor symlinks, defined in "_associate_anchors_request", typically overloaded with 'core.sh' or similar.
+	# Usually requested 'manually' through "_setup" or "_anchor", even if called through a multi-installation request.
+	# Incorrectly calling a moved, uninstalled, or otherwise incorrect previous version, of linked software, is anticipated to be a more commonly impose greater risk.
+	#ln -s "$scriptAbsoluteFolder"/"$1""$ub_anchor_suffix" "$HOME"/bin/ > /dev/null 2>&1
+	ln -sf "$scriptAbsoluteFolder"/"$1""$ub_anchor_suffix" "$HOME"/bin/
 	
 	return 0
 }
@@ -231,17 +237,22 @@ _refresh_anchors_user_single_procedure() {
 
 
 # ATTENTION: Overload with 'core'sh' or similar.
-# Keep in mind these anchors are linked to PATH through "$HOME"/bin .
-_associate_anchors_request() {
-	if type "_refresh_anchors_user" > /dev/null 2>&1
-	then
-		_tryExec "_refresh_anchors_user"
-		#return
-	fi
-	
-	_messagePlain_request 'association:  dir: _scope_konsole'
-	_messagePlain_request 'association: file: _scope_konsole'
-}
+# _associate_anchors_request() {
+# 	if type "_refresh_anchors_user" > /dev/null 2>&1
+# 	then
+# 		_tryExec "_refresh_anchors_user"
+# 		#return
+# 	fi
+# 	
+# 	_messagePlain_request 'association: dir'
+# 	echo _scope_konsole"$ub_anchor_suffix"
+# 	
+# 	_messagePlain_request 'association: dir'
+# 	echo _scope_designer_designeride"$ub_anchor_suffix"
+# 	
+# 	_messagePlain_request 'association: dir, *.ino'
+# 	echo _designer_generate"$ub_anchor_suffix"
+# }
 
 
 
