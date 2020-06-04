@@ -5676,6 +5676,10 @@ _detect_x11() {
 }
 
 _typeDep() {
+	
+	# WARNING: Allows specification of entire path from root. *Strongly* prefer use of subpath matching, for increased portability.
+	[[ "$1" == '/'* ]] && [[ -e "$1" ]] && return 0
+	
 	[[ -e /lib/"$1" ]] && return 0
 	[[ -e /lib/x86_64-linux-gnu/"$1" ]] && return 0
 	[[ -e /lib64/"$1" ]] && return 0
