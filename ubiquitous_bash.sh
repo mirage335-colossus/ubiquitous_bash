@@ -7066,6 +7066,7 @@ _testBuiltGosu() {
 		_stop 1
 	fi
 	
+	return 0
 }
 
 _verifyGosu_sequence() {
@@ -7122,7 +7123,11 @@ _buildGosu_sequence() {
 	
 	local haveGosuBin
 	haveGosuBin=false
-	[[ -e "$scriptBin"/gosu-armel ]] && [[ -e "$scriptBin"/gosu-armel.asc ]] && [[ -e "$scriptBin"/gosu-amd64 ]] && [[ -e "$scriptBin"/gosu-amd64.asc ]] && [[ -e "$scriptBin"/gosu-i386 ]] && [[ -e "$scriptBin"/gosu-i386.asc ]] && [[ -e "$scriptBin"/gosudev.asc ]] && haveGosuBin=true #&& return 0
+	if [[ -e "$scriptBin"/gosu-armel ]] && [[ -e "$scriptBin"/gosu-armel.asc ]] && [[ -e "$scriptBin"/gosu-amd64 ]] && [[ -e "$scriptBin"/gosu-amd64.asc ]] && [[ -e "$scriptBin"/gosu-i386 ]] && [[ -e "$scriptBin"/gosu-i386.asc ]] && [[ -e "$scriptBin"/gosudev.asc ]] && haveGosuBin=true
+	then
+		_wantSudo && _testBuiltGosu && return 0
+	fi
+	#&& return 0
 	
 	local GOSU_VERSION
 	GOSU_VERSION=1.10
