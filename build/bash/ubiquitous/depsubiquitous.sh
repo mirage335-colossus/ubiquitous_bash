@@ -149,6 +149,11 @@ _deps_virt() {
 	export enUb_virt="true"
 }
 
+# Specifically intended to support shortcuts using file parameter translation.
+_deps_virt_translation() {
+	export enUb_virt_translation="true"
+}
+
 _deps_chroot() {
 	_deps_notLean
 	_deps_virt

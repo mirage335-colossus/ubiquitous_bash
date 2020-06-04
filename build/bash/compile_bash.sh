@@ -1,6 +1,37 @@
 #Default is to include all, or run a specified configuration. For this reason, it will be more typical to override this entire function, rather than append any additional code.
 _compile_bash_deps() {
-	[[ "$1" == "lean" ]] && return 0
+	if [[ "$1" == "lean" ]]
+	then
+		#_deps_git
+		
+		#_deps_virt_translation
+		
+		#_deps_stopwatch
+		
+		return 0
+	fi
+	
+	# Specifically intended to be imported into user profile.
+	if [[ "$1" == "ubcore" ]]
+	then
+		_deps_notLean
+		
+		_deps_git
+		_deps_bup
+		
+		_deps_abstractfs
+		
+		_deps_virt_translation
+		
+		_deps_stopwatch
+		
+		
+		_deps_distro
+		_deps_linux
+		
+		# _compile_bash_deps 'core'
+		return 0
+	fi
 	
 	if [[ "$1" == "cautossh" ]]
 	then
@@ -338,8 +369,8 @@ _compile_bash_utilities_virtualization() {
 	[[ "$enUb_virt" == "true" ]] && includeScriptList+=( "virtualization"/findInfrastructure_virt.sh )
 	
 	# Any script managing MSW from UNIX may need basic file parameter translation without needing complete remapping. Example: "_vncviewer_operations" .
-	( [[ "$enUb_virt" == "true" ]] || [[ "$enUb_proxy" == "true" ]] ) && includeScriptList+=( "virtualization"/osTranslation.sh )
-	[[ "$enUb_virt" == "true" ]] && includeScriptList+=( "virtualization"/localPathTranslation.sh )
+	( [[ "$enUb_virt" == "true" ]] || [[ "$enUb_proxy" == "true" ]] || [[ "$enUb_virt_translation" == "true" ]] ) && includeScriptList+=( "virtualization"/osTranslation.sh )
+	( [[ "$enUb_virt" == "true" ]] || [[ "$enUb_virt_translation" == "true" ]] ) && includeScriptList+=( "virtualization"/localPathTranslation.sh )
 	
 	[[ "$enUb_abstractfs" == "true" ]] && includeScriptList+=( "virtualization/abstractfs"/abstractfs.sh )
 	[[ "$enUb_abstractfs" == "true" ]] && includeScriptList+=( "virtualization/abstractfs"/abstractfs_appdir_specific.sh )

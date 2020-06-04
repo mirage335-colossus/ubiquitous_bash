@@ -2494,6 +2494,781 @@ _getDep() {
 	_mustGetDep "$@"
 }
 
+_apt-file_sequence() {
+	_start
+	
+	_mustGetSudo
+	#_mustGetDep su
+	
+	! _wantDep apt-file && sudo -n apt-get install --install-recommends -y apt-file
+	_checkDep apt-file
+	
+	sudo -n apt-file "$@" > "$safeTmp"/pkgsOut 2> "$safeTmp"/pkgsErr
+	sudo -n apt-file search bash > "$safeTmp"/checkOut 2> "$safeTmp"/checkErr
+	
+	while ! [[ -s "$safeTmp"/checkOut ]] || cat "$safeTmp"/pkgsErr | grep 'cache is empty' > /dev/null 2>&1
+	do
+		sudo -n apt-file update > "$safeTmp"/updateOut 2> "$safeTmp"/updateErr
+		sudo -n apt-file "$@" > "$safeTmp"/pkgsOut 2> "$safeTmp"/pkgsErr
+		sudo -n apt-file search bash > "$safeTmp"/checkOut 2> "$safeTmp"/checkErr
+	done
+	
+	cat "$safeTmp"/pkgsOut
+	#cat "$safeTmp"/pkgsErr >&2
+	_stop
+}
+
+_apt-file() {
+	_timeout 750 "$scriptAbsoluteLocation" _apt-file_sequence "$@"
+}
+
+
+
+
+
+
+
+
+
+
+_fetchDep_debianStretch_special() {
+# 	if [[ "$1" == *"java"* ]]
+# 	then
+# 		sudo -n apt-get install --install-recommends -y default-jdk default-jre
+# 		return 0
+# 	fi
+	
+	if [[ "$1" == *"wine"* ]] && ! dpkg --print-foreign-architectures | grep i386 > /dev/null 2>&1
+	then
+		sudo -n dpkg --add-architecture i386
+		sudo -n apt-get update
+		sudo -n apt-get install --install-recommends -y wine wine32 wine64 libwine libwine:i386 fonts-wine
+		return 0
+	fi
+	
+	if [[ "$1" == "realpath" ]] || [[ "$1" == "readlink" ]] || [[ "$1" == "dirname" ]] || [[ "$1" == "basename" ]] || [[ "$1" == "sha512sum" ]] || [[ "$1" == "sha256sum" ]] || [[ "$1" == "head" ]] || [[ "$1" == "tail" ]] || [[ "$1" == "sleep" ]] || [[ "$1" == "env" ]] || [[ "$1" == "cat" ]] || [[ "$1" == "mkdir" ]] || [[ "$1" == "dd" ]] || [[ "$1" == "rm" ]] || [[ "$1" == "ln" ]] || [[ "$1" == "ls" ]] || [[ "$1" == "test" ]] || [[ "$1" == "true" ]] || [[ "$1" == "false" ]]
+	then
+		sudo -n apt-get install --install-recommends -y coreutils
+		return 0
+	fi
+	
+	if [[ "$1" == "mount" ]] || [[ "$1" == "umount" ]] || [[ "$1" == "losetup" ]]
+	then
+		sudo -n apt-get install --install-recommends -y mount
+		return 0
+	fi
+	
+	if [[ "$1" == "mountpoint" ]] || [[ "$1" == "mkfs" ]]
+	then
+		sudo -n apt-get install --install-recommends -y util-linux
+		return 0
+	fi
+	
+	if [[ "$1" == "mkfs.ext4" ]]
+	then
+		sudo -n apt-get install --install-recommends -y e2fsprogs
+		return 0
+	fi
+	
+	if [[ "$1" == "parted" ]] || [[ "$1" == "partprobe" ]]
+	then
+		sudo -n apt-get install --install-recommends -y parted
+		return 0
+	fi
+	
+	if [[ "$1" == "qemu-arm-static" ]] || [[ "$1" == "qemu-armeb-static" ]]
+	then
+		sudo -n apt-get install --install-recommends -y qemu qemu-user-static binfmt-support
+		#update-binfmts --display
+		return 0
+	fi
+	
+	if [[ "$1" == "qemu-system-x86_64" ]]
+	then
+		sudo -n apt-get install --install-recommends -y qemu-system-x86
+		return 0
+	fi
+	
+	if [[ "$1" == "qemu-img" ]]
+	then
+		sudo -n apt-get install --install-recommends -y qemu-utils
+		return 0
+	fi
+	
+	if [[ "$1" == "VirtualBox" ]] || [[ "$1" == "VBoxSDL" ]] || [[ "$1" == "VBoxManage" ]] || [[ "$1" == "VBoxHeadless" ]]
+	then
+		sudo -n mkdir -p /etc/apt/sources.list.d
+		echo 'deb http://download.virtualbox.org/virtualbox/debian stretch contrib' | sudo -n tee /etc/apt/sources.list.d/vbox.list > /dev/null 2>&1
+		
+		"$scriptAbsoluteLocation" _getDep wget
+		! _wantDep wget && return 1
+		
+		# TODO Check key fingerprints match "B9F8 D658 297A F3EF C18D  5CDF A2F6 83C5 2980 AECF" and "7B0F AB3A 13B9 0743 5925  D9C9 5442 2A4B 98AB 5139" respectively.
+		wget -q https://www.virtualbox.org/download/oracle_vbox_2016.asc -O- | sudo -n apt-key add -
+		wget -q https://www.virtualbox.org/download/oracle_vbox.asc -O- | sudo -n apt-key add -
+		
+		sudo -n apt-get update
+		sudo -n apt-get install --install-recommends -y dkms virtualbox-6.1
+		
+		echo "WARNING: Recommend manual system configuration after install. See https://www.virtualbox.org/wiki/Downloads ."
+		
+		return 0
+	fi
+	
+	if [[ "$1" == "gpg" ]]
+	then
+		sudo -n apt-get install --install-recommends -y gnupg
+		return 0
+	fi
+	
+	#Unlikely scenario for hosts.
+	if [[ "$1" == "grub-install" ]]
+	then
+		sudo -n apt-get install --install-recommends -y grub2
+		#sudo -n apt-get install --install-recommends -y grub-legacy
+		return 0
+	fi
+	
+	if [[ "$1" == "MAKEDEV" ]]
+	then
+		sudo -n apt-get install --install-recommends -y makedev
+		return 0
+	fi
+	
+	if [[ "$1" == "fgrep" ]]
+	then
+		sudo -n apt-get install --install-recommends -y grep
+		return 0
+	fi
+	
+	if [[ "$1" == "fgrep" ]]
+	then
+		sudo -n apt-get install --install-recommends -y grep
+		return 0
+	fi
+	
+	if [[ "$1" == "awk" ]]
+	then
+		sudo -n apt-get install --install-recommends -y mawk
+		return 0
+	fi
+	
+	if [[ "$1" == "kill" ]] || [[ "$1" == "ps" ]]
+	then
+		sudo -n apt-get install --install-recommends -y procps
+		return 0
+	fi
+	
+	if [[ "$1" == "find" ]]
+	then
+		sudo -n apt-get install --install-recommends -y findutils
+		return 0
+	fi
+	
+	if [[ "$1" == "docker" ]]
+	then
+		sudo -n apt-get install --install-recommends -y apt-transport-https ca-certificates curl gnupg2 software-properties-common
+		
+		"$scriptAbsoluteLocation" _getDep curl
+		! _wantDep curl && return 1
+		
+		curl -fsSL https://download.docker.com/linux/$(. /etc/os-release; echo "$ID")/gpg | sudo -n apt-key add -
+		local aptKeyFingerprint
+		aptKeyFingerprint=$(sudo -n apt-key fingerprint 0EBFCD88 2> /dev/null)
+		[[ "$aptKeyFingerprint" == "" ]] && return 1
+		
+		sudo -n add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/$(. /etc/os-release; echo "$ID") $(lsb_release -cs) stable"
+		
+		sudo -n apt-get update
+		
+		sudo -n apt-get remove -y docker docker-engine docker.io docker-ce docker
+		sudo -n apt-get install --install-recommends -y docker-ce
+		
+		sudo -n usermod -a -G docker "$USER"
+		
+		return 0
+	fi
+	
+	if [[ "$1" == "smbd" ]]
+	then
+		sudo -n apt-get install --install-recommends -y samba
+		return 0
+	fi
+	
+	if [[ "$1" == "atom" ]]
+	then
+		curl -L https://packagecloud.io/AtomEditor/atom/gpgkey | sudo -n apt-key add -
+		sudo -n sh -c 'echo "deb [arch=amd64] https://packagecloud.io/AtomEditor/atom/any/ any main" > /etc/apt/sources.list.d/atom.list'
+		
+		sudo -n apt-get update
+		
+		sudo -n apt-get install --install-recommends -y atom
+		
+		return 0
+	fi
+	
+	if [[ "$1" == "GL/gl.h" ]] || [[ "$1" == "GL/glext.h" ]] || [[ "$1" == "GL/glx.h" ]] || [[ "$1" == "GL/glxext.h" ]] || [[ "$1" == "GL/dri_interface.h" ]] || [[ "$1" == "x86_64-linux-gnu/pkgconfig/dri.pc" ]]
+	then
+		sudo -n apt-get install --install-recommends -y mesa-common-dev
+		
+		return 0
+	fi
+	
+	if [[ "$1" == "go" ]]
+	then
+		sudo -n apt-get install --install-recommends -y golang-go
+		
+		return 0
+	fi
+	
+	if [[ "$1" == "php" ]]
+	then
+		sudo -n apt-get install --no-install-recommends -y php
+		
+		return 0
+	fi
+	
+	if [[ "$1" == "cura-lulzbot" ]]
+	then
+		#Testing/Sid only as of Stretch release cycle.
+		#sudo -n apt-get install --install-recommends -y rustc cargo
+		
+		echo "Requires manual installation. See https://www.lulzbot.com/learn/tutorials/cura-lulzbot-edition-installation-debian ."
+cat << 'CZXWXcRMTo8EmM8i4d'
+wget -qO - https://download.alephobjects.com/ao/aodeb/aokey.pub | sudo -n apt-key add -
+sudo -n cp /etc/apt/sources.list /etc/apt/sources.list.bak && sudo -n sed -i '$a deb http://download.alephobjects.com/ao/aodeb jessie main' /etc/apt/sources.list && sudo -n apt-get update && sudo -n apt-get install cura-lulzbot
+CZXWXcRMTo8EmM8i4d
+		echo "(typical)"
+		_stop 1
+	fi
+	
+	if [[ "$1" =~ "FlashPrint" ]]
+	then
+		#Testing/Sid only as of Stretch release cycle.
+		#sudo -n apt-get install --install-recommends -y rustc cargo
+		
+		echo "Requires manual installation. See http://www.flashforge.com/support-center/flashprint-support/ ."
+		_stop 1
+	fi
+	
+	if [[ "$1" == "cargo" ]] || [[ "$1" == "rustc" ]]
+	then
+		#Testing/Sid only as of Stretch release cycle.
+		#sudo -n apt-get install --install-recommends -y rustc cargo
+		
+		echo "Requires manual installation."
+cat << 'CZXWXcRMTo8EmM8i4d'
+curl https://sh.rustup.rs -sSf | sh
+echo '[[ -e "$HOME"/.cargo/bin ]] && export PATH="$HOME/.cargo/bin:$PATH"' >> ~/.bashrc
+CZXWXcRMTo8EmM8i4d
+		echo "(typical)"
+		_stop 1
+	fi
+	
+	if [[ "$1" == "firejail" ]]
+	then
+		echo "WARNING: Recommend manual system configuration after install. See https://firejail.wordpress.com/download-2/ ."
+		echo "WARNING: Desktop override symlinks may cause problems, especially preventing proxy host jumping by CoreAutoSSH!"
+		return 1
+	fi
+	
+	
+	return 1
+}
+
+_fetchDep_debianStretch_sequence() {
+	_start
+	
+	_mustGetSudo
+	
+	_wantDep "$1" && _stop 0
+	
+	_fetchDep_debianStretch_special "$@" && _wantDep "$1" && _stop 0
+	
+	sudo -n apt-get install --install-recommends -y "$1" && _wantDep "$1" && _stop 0
+	
+	_apt-file search "$1" > "$safeTmp"/pkgsOut 2> "$safeTmp"/pkgsErr
+	
+	local sysPathAll
+	sysPathAll=$(sudo -n bash -c "echo \$PATH")
+	sysPathAll="$PATH":"$sysPathAll"
+	local sysPathArray
+	IFS=':' read -r -a sysPathArray <<< "$sysPathAll"
+	
+	local currentSysPath
+	local matchingPackageFile
+	local matchingPackagePattern
+	local matchingPackage
+	for currentSysPath in "${sysPathArray[@]}"
+	do
+		matchingPackageFile=""
+		matchingPackagePath=""
+		matchingPackage=""
+		matchingPackagePattern="$currentSysPath"/"$1"
+		matchingPackageFile=$(grep ': '$matchingPackagePattern'$' "$safeTmp"/pkgsOut | cut -f2- -d' ')
+		matchingPackage=$(grep ': '$matchingPackagePattern'$' "$safeTmp"/pkgsOut | cut -f1 -d':')
+		if [[ "$matchingPackage" != "" ]]
+		then
+			sudo -n apt-get install --install-recommends -y "$matchingPackage"
+			_wantDep "$1" && _stop 0
+		fi
+	done
+	matchingPackage=""
+	matchingPackage=$(head -n 1 "$safeTmp"/pkgsOut | cut -f1 -d':')
+	sudo -n apt-get install --install-recommends -y "$matchingPackage"
+	_wantDep "$1" && _stop 0
+	
+	_stop 1
+}
+
+_fetchDep_debianStretch() {
+	#Run up to 2 times. On rare occasion, cache will become unusable again by apt-find before an installation can be completed. Overall, apt-find is the single weakest link in the system.
+	"$scriptAbsoluteLocation" _fetchDep_debianStretch_sequence "$@"
+	"$scriptAbsoluteLocation" _fetchDep_debianStretch_sequence "$@"
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+_fetchDep_debianBuster_special() {
+# 	if [[ "$1" == *"java"* ]]
+# 	then
+# 		sudo -n apt-get install --install-recommends -y default-jdk default-jre
+# 		return 0
+# 	fi
+	
+	if [[ "$1" == *"wine"* ]] && ! dpkg --print-foreign-architectures | grep i386 > /dev/null 2>&1
+	then
+		sudo -n dpkg --add-architecture i386
+		sudo -n apt-get update
+		sudo -n apt-get install --install-recommends -y wine wine32 wine64 libwine libwine:i386 fonts-wine
+		return 0
+	fi
+	
+	if [[ "$1" == "realpath" ]] || [[ "$1" == "readlink" ]] || [[ "$1" == "dirname" ]] || [[ "$1" == "basename" ]] || [[ "$1" == "sha512sum" ]] || [[ "$1" == "sha256sum" ]] || [[ "$1" == "head" ]] || [[ "$1" == "tail" ]] || [[ "$1" == "sleep" ]] || [[ "$1" == "env" ]] || [[ "$1" == "cat" ]] || [[ "$1" == "mkdir" ]] || [[ "$1" == "dd" ]] || [[ "$1" == "rm" ]] || [[ "$1" == "ln" ]] || [[ "$1" == "ls" ]] || [[ "$1" == "test" ]] || [[ "$1" == "true" ]] || [[ "$1" == "false" ]]
+	then
+		sudo -n apt-get install --install-recommends -y coreutils
+		return 0
+	fi
+	
+	if [[ "$1" == "mount" ]] || [[ "$1" == "umount" ]] || [[ "$1" == "losetup" ]]
+	then
+		sudo -n apt-get install --install-recommends -y mount
+		return 0
+	fi
+	
+	if [[ "$1" == "mountpoint" ]] || [[ "$1" == "mkfs" ]]
+	then
+		sudo -n apt-get install --install-recommends -y util-linux
+		return 0
+	fi
+	
+	if [[ "$1" == "mkfs.ext4" ]]
+	then
+		sudo -n apt-get install --install-recommends -y e2fsprogs
+		return 0
+	fi
+	
+	if [[ "$1" == "parted" ]] || [[ "$1" == "partprobe" ]]
+	then
+		sudo -n apt-get install --install-recommends -y parted
+		return 0
+	fi
+	
+	if [[ "$1" == "qemu-arm-static" ]] || [[ "$1" == "qemu-armeb-static" ]]
+	then
+		sudo -n apt-get install --install-recommends -y qemu qemu-user-static binfmt-support
+		#update-binfmts --display
+		return 0
+	fi
+	
+	if [[ "$1" == "qemu-system-x86_64" ]]
+	then
+		sudo -n apt-get install --install-recommends -y qemu-system-x86
+		return 0
+	fi
+	
+	if [[ "$1" == "qemu-img" ]]
+	then
+		sudo -n apt-get install --install-recommends -y qemu-utils
+		return 0
+	fi
+	
+	if [[ "$1" == "VirtualBox" ]] || [[ "$1" == "VBoxSDL" ]] || [[ "$1" == "VBoxManage" ]] || [[ "$1" == "VBoxHeadless" ]]
+	then
+		sudo -n mkdir -p /etc/apt/sources.list.d
+		echo 'deb http://download.virtualbox.org/virtualbox/debian buster contrib' | sudo -n tee /etc/apt/sources.list.d/vbox.list > /dev/null 2>&1
+		
+		"$scriptAbsoluteLocation" _getDep wget
+		! _wantDep wget && return 1
+		
+		# TODO Check key fingerprints match "B9F8 D658 297A F3EF C18D  5CDF A2F6 83C5 2980 AECF" and "7B0F AB3A 13B9 0743 5925  D9C9 5442 2A4B 98AB 5139" respectively.
+		wget -q https://www.virtualbox.org/download/oracle_vbox_2016.asc -O- | sudo -n apt-key add -
+		wget -q https://www.virtualbox.org/download/oracle_vbox.asc -O- | sudo -n apt-key add -
+		
+		sudo -n apt-get update
+		sudo -n apt-get install --install-recommends -y dkms virtualbox-6.1
+		
+		echo "WARNING: Recommend manual system configuration after install. See https://www.virtualbox.org/wiki/Downloads ."
+		
+		return 0
+	fi
+	
+	if [[ "$1" == "gpg" ]]
+	then
+		sudo -n apt-get install --install-recommends -y gnupg
+		return 0
+	fi
+	
+	#Unlikely scenario for hosts.
+	if [[ "$1" == "grub-install" ]]
+	then
+		sudo -n apt-get install --install-recommends -y grub2
+		#sudo -n apt-get install --install-recommends -y grub-legacy
+		return 0
+	fi
+	
+	if [[ "$1" == "MAKEDEV" ]]
+	then
+		sudo -n apt-get install --install-recommends -y makedev
+		return 0
+	fi
+	
+	if [[ "$1" == "fgrep" ]]
+	then
+		sudo -n apt-get install --install-recommends -y grep
+		return 0
+	fi
+	
+	if [[ "$1" == "fgrep" ]]
+	then
+		sudo -n apt-get install --install-recommends -y grep
+		return 0
+	fi
+	
+	if [[ "$1" == "awk" ]]
+	then
+		sudo -n apt-get install --install-recommends -y mawk
+		return 0
+	fi
+	
+	if [[ "$1" == "kill" ]] || [[ "$1" == "ps" ]]
+	then
+		sudo -n apt-get install --install-recommends -y procps
+		return 0
+	fi
+	
+	if [[ "$1" == "find" ]]
+	then
+		sudo -n apt-get install --install-recommends -y findutils
+		return 0
+	fi
+	
+	if [[ "$1" == "docker" ]]
+	then
+		sudo -n update-alternatives --set iptables /usr/sbin/iptables-legacy
+		sudo -n update-alternatives --set ip6tables /usr/sbin/ip6tables-legacy
+		#sudo -n systemctl restart docker
+		
+		sudo -n apt-get install --install-recommends -y apt-transport-https ca-certificates curl gnupg2 software-properties-common
+		
+		"$scriptAbsoluteLocation" _getDep curl
+		! _wantDep curl && return 1
+		
+		curl -fsSL https://download.docker.com/linux/$(. /etc/os-release; echo "$ID")/gpg | sudo -n apt-key add -
+		local aptKeyFingerprint
+		aptKeyFingerprint=$(sudo -n apt-key fingerprint 0EBFCD88 2> /dev/null)
+		[[ "$aptKeyFingerprint" == "" ]] && return 1
+		
+		sudo -n add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/$(. /etc/os-release; echo "$ID") $(lsb_release -cs) stable"
+		
+		sudo -n apt-get update
+		
+		sudo -n apt-get remove -y docker docker-engine docker.io docker-ce docker
+		sudo -n apt-get install --install-recommends -y docker-ce
+		
+		sudo -n usermod -a -G docker "$USER"
+		
+		return 0
+	fi
+	
+	if [[ "$1" == "smbd" ]]
+	then
+		sudo -n apt-get install --install-recommends -y samba
+		return 0
+	fi
+	
+	if [[ "$1" == "atom" ]]
+	then
+		curl -L https://packagecloud.io/AtomEditor/atom/gpgkey | sudo -n apt-key add -
+		sudo -n sh -c 'echo "deb [arch=amd64] https://packagecloud.io/AtomEditor/atom/any/ any main" > /etc/apt/sources.list.d/atom.list'
+		
+		sudo -n apt-get update
+		
+		sudo -n apt-get install --install-recommends -y atom
+		
+		return 0
+	fi
+	
+	if [[ "$1" == "GL/gl.h" ]] || [[ "$1" == "GL/glext.h" ]] || [[ "$1" == "GL/glx.h" ]] || [[ "$1" == "GL/glxext.h" ]] || [[ "$1" == "GL/dri_interface.h" ]] || [[ "$1" == "x86_64-linux-gnu/pkgconfig/dri.pc" ]]
+	then
+		sudo -n apt-get install --install-recommends -y mesa-common-dev
+		
+		return 0
+	fi
+	
+	if [[ "$1" == "go" ]]
+	then
+		sudo -n apt-get install --install-recommends -y golang-go
+		
+		return 0
+	fi
+	
+	if [[ "$1" == "php" ]]
+	then
+		sudo -n apt-get install --no-install-recommends -y php
+		
+		return 0
+	fi
+	
+	if [[ "$1" == "cura-lulzbot" ]]
+	then
+		#Testing/Sid only as of Stretch release cycle.
+		#sudo -n apt-get install --install-recommends -y rustc cargo
+		
+		echo "Requires manual installation. See https://www.lulzbot.com/learn/tutorials/cura-lulzbot-edition-installation-debian ."
+cat << 'CZXWXcRMTo8EmM8i4d'
+wget -qO - https://download.alephobjects.com/ao/aodeb/aokey.pub | sudo -n apt-key add -
+sudo -n cp /etc/apt/sources.list /etc/apt/sources.list.bak && sudo -n sed -i '$a deb http://download.alephobjects.com/ao/aodeb jessie main' /etc/apt/sources.list && sudo -n apt-get update && sudo -n apt-get install cura-lulzbot
+CZXWXcRMTo8EmM8i4d
+		echo "(typical)"
+		_stop 1
+	fi
+	
+	if [[ "$1" =~ "FlashPrint" ]]
+	then
+		#Testing/Sid only as of Stretch release cycle.
+		#sudo -n apt-get install --install-recommends -y rustc cargo
+		
+		echo "Requires manual installation. See http://www.flashforge.com/support-center/flashprint-support/ ."
+		_stop 1
+	fi
+	
+	if [[ "$1" == "cargo" ]] || [[ "$1" == "rustc" ]]
+	then
+		#Testing/Sid only as of Stretch release cycle.
+		#sudo -n apt-get install --install-recommends -y rustc cargo
+		
+		echo "Requires manual installation."
+cat << 'CZXWXcRMTo8EmM8i4d'
+curl https://sh.rustup.rs -sSf | sh
+echo '[[ -e "$HOME"/.cargo/bin ]] && export PATH="$HOME/.cargo/bin:$PATH"' >> ~/.bashrc
+CZXWXcRMTo8EmM8i4d
+		echo "(typical)"
+		_stop 1
+	fi
+	
+	if [[ "$1" == "firejail" ]]
+	then
+		echo "WARNING: Recommend manual system configuration after install. See https://firejail.wordpress.com/download-2/ ."
+		echo "WARNING: Desktop override symlinks may cause problems, especially preventing proxy host jumping by CoreAutoSSH!"
+		return 1
+	fi
+	
+	
+	return 1
+}
+
+_fetchDep_debianBuster_sequence() {
+	_start
+	
+	_mustGetSudo
+	
+	_wantDep "$1" && _stop 0
+	
+	_fetchDep_debianBuster_special "$@" && _wantDep "$1" && _stop 0
+	
+	sudo -n apt-get install --install-recommends -y "$1" && _wantDep "$1" && _stop 0
+	
+	_apt-file search "$1" > "$safeTmp"/pkgsOut 2> "$safeTmp"/pkgsErr
+	
+	local sysPathAll
+	sysPathAll=$(sudo -n bash -c "echo \$PATH")
+	sysPathAll="$PATH":"$sysPathAll"
+	local sysPathArray
+	IFS=':' read -r -a sysPathArray <<< "$sysPathAll"
+	
+	local currentSysPath
+	local matchingPackageFile
+	local matchingPackagePattern
+	local matchingPackage
+	for currentSysPath in "${sysPathArray[@]}"
+	do
+		matchingPackageFile=""
+		matchingPackagePath=""
+		matchingPackage=""
+		matchingPackagePattern="$currentSysPath"/"$1"
+		matchingPackageFile=$(grep ': '$matchingPackagePattern'$' "$safeTmp"/pkgsOut | cut -f2- -d' ')
+		matchingPackage=$(grep ': '$matchingPackagePattern'$' "$safeTmp"/pkgsOut | cut -f1 -d':')
+		if [[ "$matchingPackage" != "" ]]
+		then
+			sudo -n apt-get install --install-recommends -y "$matchingPackage"
+			_wantDep "$1" && _stop 0
+		fi
+	done
+	matchingPackage=""
+	matchingPackage=$(head -n 1 "$safeTmp"/pkgsOut | cut -f1 -d':')
+	sudo -n apt-get install --install-recommends -y "$matchingPackage"
+	_wantDep "$1" && _stop 0
+	
+	_stop 1
+}
+
+_fetchDep_debianBuster() {
+	#Run up to 2 times. On rare occasion, cache will become unusable again by apt-find before an installation can be completed. Overall, apt-find is the single weakest link in the system.
+	"$scriptAbsoluteLocation" _fetchDep_debianBuster_sequence "$@"
+	"$scriptAbsoluteLocation" _fetchDep_debianBuster_sequence "$@"
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+_fetchDep_debian() {
+	
+	# WARNING: Obsolete. Declining support. Eventual removal expected approximately one year after two Debian stable releases.
+	if [[ -e /etc/debian_version ]] && cat /etc/debian_version | head -c 1 | grep 9 > /dev/null 2>&1
+	then
+		_fetchDep_debianStretch "$@"
+		return
+	fi
+	
+	if [[ -e /etc/debian_version ]] && cat /etc/debian_version | head -c 2 | grep 10 > /dev/null 2>&1
+	then
+		_fetchDep_debianBuster "$@"
+		return
+	fi
+	
+	return 1
+}
+
+#https://unix.stackexchange.com/questions/39226/how-to-run-a-script-with-systemd-right-before-shutdown
+
+
+_here_systemd_shutdown_action() {
+
+cat << 'CZXWXcRMTo8EmM8i4d'
+[Unit]
+Description=...
+
+[Service]
+Type=oneshot
+RemainAfterExit=true
+ExecStart=/bin/true
+CZXWXcRMTo8EmM8i4d
+
+echo ExecStop="$scriptAbsoluteLocation" "$@"
+
+cat << 'CZXWXcRMTo8EmM8i4d'
+
+[Install]
+WantedBy=multi-user.target
+CZXWXcRMTo8EmM8i4d
+
+}
+
+_here_systemd_shutdown() {
+
+cat << 'CZXWXcRMTo8EmM8i4d'
+[Unit]
+Description=...
+
+[Service]
+Type=oneshot
+RemainAfterExit=true
+CZXWXcRMTo8EmM8i4d
+
+echo ExecStop="$scriptAbsoluteLocation" _remoteSigTERM "$safeTmp"/.pid "$sessionid"
+
+cat << 'CZXWXcRMTo8EmM8i4d'
+
+[Install]
+WantedBy=multi-user.target
+CZXWXcRMTo8EmM8i4d
+
+}
+
+_hook_systemd_shutdown() {
+	[[ -e /etc/systemd/system/"$sessionid".service ]] && return 0
+	
+	! _wantSudo && return 1
+	
+	! [[ -e /etc/systemd/system ]] && return 0
+	
+	_here_systemd_shutdown | sudo -n tee /etc/systemd/system/"$sessionid".service > /dev/null
+	sudo -n systemctl enable "$sessionid".service 2>&1 | sudo -n tee -a "$permaLog"/gsysd.log > /dev/null 2>&1
+	sudo -n systemctl start "$sessionid".service 2>&1 | sudo -n tee -a "$permaLog"/gsysd.log > /dev/null 2>&1
+}
+
+_hook_systemd_shutdown_action() {
+	[[ -e /etc/systemd/system/"$sessionid".service ]] && return 0
+	
+	! _wantSudo && return 1
+	
+	! [[ -e /etc/systemd/system ]] && return 0
+	
+	_here_systemd_shutdown_action "$@" | sudo -n tee /etc/systemd/system/"$sessionid".service > /dev/null
+	sudo -n systemctl enable "$sessionid".service 2>&1 | sudo -n tee -a "$permaLog"/gsysd.log > /dev/null 2>&1
+	sudo -n systemctl start "$sessionid".service 2>&1 | sudo -n tee -a "$permaLog"/gsysd.log > /dev/null 2>&1
+	
+}
+
+#"$1" == sessionid (optional override for cleaning up stale systemd files)
+_unhook_systemd_shutdown() {
+	local hookSessionid
+	hookSessionid="$sessionid"
+	[[ "$1" != "" ]] && hookSessionid="$1"
+	
+	[[ ! -e /etc/systemd/system/"$hookSessionid".service ]] && return 0
+	
+	! _wantSudo && return 1
+	
+	! [[ -e /etc/systemd/system ]] && return 0
+	
+	[[ "$SYSTEMCTLDISABLE" == "true" ]] && echo SYSTEMCTLDISABLE | sudo -n tee -a "$permaLog"/gsysd.log > /dev/null 2>&1 && return 0
+	export SYSTEMCTLDISABLE=true
+	
+	sudo -n systemctl disable "$hookSessionid".service 2>&1 | sudo -n tee -a "$permaLog"/gsysd.log > /dev/null 2>&1
+	sudo -n rm -f /etc/systemd/system/"$hookSessionid".service 2>&1 | sudo -n tee -a "$permaLog"/gsysd.log > /dev/null 2>&1
+}
+
 #Determines if user is root. If yes, then continue. If not, exits after printing error message.
 _mustBeRoot() {
 if [[ $(id -u) != 0 ]]; then 
@@ -2536,6 +3311,1272 @@ _getUUID() {
 	cat /proc/sys/kernel/random/uuid
 }
 alias getUUID=_getUUID
+
+_stopwatch() {
+	local measureDateA
+	local measureDateB
+	
+	measureDateA=$(date +%s%N | cut -b1-13)
+
+	"$@"
+
+	measureDateB=$(date +%s%N | cut -b1-13)
+
+	bc <<< "$measureDateB - $measureDateA"
+}
+
+
+_start_virt_instance() {
+	
+	mkdir -p "$instancedVirtDir" || return 1
+	mkdir -p "$instancedVirtFS" || return 1
+	mkdir -p "$instancedVirtTmp" || return 1
+	
+	mkdir -p "$instancedVirtHome" || return 1
+	###mkdir -p "$instancedVirtHomeRef" || return 1
+	
+	mkdir -p "$sharedHostProjectDir" > /dev/null 2>&1
+	mkdir -p "$instancedProjectDir" || return 1
+	
+}
+
+_start_virt_all() {
+	
+	_start_virt_instance
+	
+	mkdir -p "$globalVirtDir" || return 1
+	mkdir -p "$globalVirtFS" || return 1
+	mkdir -p "$globalVirtTmp" || return 1
+	
+	
+	return 0
+}
+
+_stop_virt_instance() {
+	
+	_wait_umount "$instancedProjectDir"
+	sudo -n rmdir "$instancedProjectDir"
+	
+	_wait_umount "$instancedVirtHome"
+	sudo -n rmdir "$instancedVirtHome"
+	###_wait_umount "$instancedVirtHomeRef"
+	###sudo -n rmdir "$instancedVirtHomeRef"
+	sudo -n rmdir "$instancedVirtFS"/home
+	
+	_wait_umount "$instancedVirtFS"
+	sudo -n rmdir "$instancedVirtFS"
+	_wait_umount "$instancedVirtTmp"
+	sudo -n rmdir "$instancedVirtTmp"
+	_wait_umount "$instancedVirtDir"
+	sudo -n rmdir "$instancedVirtDir"
+	
+	
+	
+	return 0
+	
+}
+
+_stop_virt_all() {
+	
+	_stop_virt_instance || return 1
+	
+	_wait_umount "$globalVirtFS" || return 1
+	_wait_umount "$globalVirtTmp" || return 1
+	_wait_umount "$globalVirtDir" || return 1
+	
+	
+	
+}
+
+
+#Triggers before "user" and "edit" virtualization commands, to allow a single installation of a virtual machine to be used by multiple ubiquitous labs.
+#Does NOT trigger for all non-user commands (eg. open, docker conversion), as these are intended for developers with awareness of associated files under "$scriptLocal".
+
+# WARNING
+# DISABLED by default. Must be explicitly enabled by setting "$ubVirtImageLocal" to "false" in "ops".
+
+#toImage
+
+#_closeChRoot
+
+#_closeVBoxRaw
+
+#_editQemu
+#_editVBox
+
+#_userChRoot
+#_userQemu
+#_userVBox
+
+#_userDocker
+
+#_dockerCommit
+#_dockerLaunch
+#_dockerAttach
+#_dockerOn
+#_dockerOff
+
+_findInfrastructure_virtImage() {
+	[[ "$ubVirtImageLocal" != "false" ]] && return 0
+	
+	[[ -e "$scriptLocal"/vm.img ]] && export ubVirtImageLocal="true" && return 0
+	[[ -e "$scriptLocal"/vm.vdi ]] && export ubVirtImageLocal="true" && return 0
+	[[ -e "$scriptLocal"/vmvdiraw.vmdi ]] && export ubVirtImageLocal="true" && return 0
+	
+	# WARNING: Override implies local image.
+	[[ "$ubVirtImageIsRootPartition" != "" ]] && export ubVirtImageLocal="true" && return 0
+	[[ "$ubVirtImageIsDevice" != "" ]] && export ubVirtImageLocal="true" && return 0
+	[[ "$ubVirtImageOverride" != "" ]] && export ubVirtImageLocal="true" && return 0
+	[[ "$ubVirtDeviceOverride" != "" ]] && export ubVirtImageLocal="true" && return 0
+	#[[ "$ubVirtPlatformOverride" != "" ]] && export ubVirtImageLocal="true" && return 0
+	
+	# WARNING: Symlink implies local image (even if non-existent destination).
+	[[ -h "$scriptLocal"/vm.img ]] && export ubVirtImageLocal="true" && return 0
+	[[ -h "$scriptLocal"/vm.vdi ]] && export ubVirtImageLocal="true" && return 0
+	[[ -h "$scriptLocal"/vmvdiraw.vmdi ]] && export ubVirtImageLocal="true" && return 0
+	
+	_checkSpecialLocks && export ubVirtImageLocal="true" && return 0
+	
+	# DANGER: Recursion hazard.
+	_findInfrastructure_virtImage_script "$@"
+}
+
+# WARNING
+#Overloading with "ops" is recommended.
+_findInfrastructure_virtImage_script() {
+	local infrastructureName=$(basename "$scriptAbsoluteFolder")
+	
+	local recursionExec
+	local recursionExecList
+	local currentRecursionExec
+	
+	recursionExecList+=("$scriptAbsoluteFolder"/../core/infrastructure/vm/"$infrastructureName"/ubiquitous_bash.sh)
+	#recursionExecList+=("$scriptAbsoluteFolder"/../core/lab/"$infrastructureName"/ubiquitous_bash.sh)
+	
+	recursionExecList+=("$scriptAbsoluteFolder"/../../core/infrastructure/vm/"$infrastructureName"/ubiquitous_bash.sh)
+	#recursionExecList+=("$scriptAbsoluteFolder"/../../core/lab/"$infrastructureName"/ubiquitous_bash.sh)
+	
+	recursionExecList+=("$scriptAbsoluteFolder"/../../../core/infrastructure/vm/"$infrastructureName"/ubiquitous_bash.sh)
+	#recursionExecList+=("$scriptAbsoluteFolder"/../../../core/lab/"$infrastructureName"/ubiquitous_bash.sh)
+	
+	recursionExecList+=("$scriptAbsoluteFolder"/../../../../core/infrastructure/vm/"$infrastructureName"/ubiquitous_bash.sh)
+	#recursionExecList+=("$scriptAbsoluteFolder"/../../../../core/lab/"$infrastructureName"/ubiquitous_bash.sh)
+	
+	recursionExecList+=("$scriptAbsoluteFolder"/../../../../../core/infrastructure/vm/"$infrastructureName"/ubiquitous_bash.sh)
+	#recursionExecList+=("$scriptAbsoluteFolder"/../../../../../core/lab/"$infrastructureName"/ubiquitous_bash.sh)
+	
+	recursionExecList+=("$scriptAbsoluteFolder"/../../../../../../core/infrastructure/vm/"$infrastructureName"/ubiquitous_bash.sh)
+	#recursionExecList+=("$scriptAbsoluteFolder"/../../../../../../core/lab/"$infrastructureName"/ubiquitous_bash.sh)
+	
+	recursionExecList+=("$scriptAbsoluteFolder"/../../../../../../../core/infrastructure/vm/"$infrastructureName"/ubiquitous_bash.sh)
+	#recursionExecList+=("$scriptAbsoluteFolder"/../../../../../../../core/lab/"$infrastructureName"/ubiquitous_bash.sh)
+	
+	recursionExecList+=("$HOME"/core/infrastructure/vm/"$infrastructureName"/ubiquitous_bash.sh)
+	
+	recursionExecList+=("$HOME"/core/extra/infrastructure/vm/"$infrastructureName"/ubiquitous_bash.sh)
+	
+	local whichExeVM
+	whichExeVM=nixexevm
+	[[ "$virtOStype" == 'MSW'* ]] && whichExeVM=winexevm
+	[[ "$virtOStype" == 'Windows'* ]] && whichExeVM=winexevm
+	[[ "$vboxOStype" == 'Windows'* ]] && whichExeVM=winexevm
+	
+	
+	recursionExecList+=("$scriptAbsoluteFolder"/../core/infrastructure/"$whichExeVM"/ubiquitous_bash.sh)
+	recursionExecList+=("$scriptAbsoluteFolder"/../core/infrastructure/vm/"$whichExeVM"/ubiquitous_bash.sh)
+	recursionExecList+=("$scriptAbsoluteFolder"/../../core/infrastructure/"$whichExeVM"/ubiquitous_bash.sh)
+	recursionExecList+=("$scriptAbsoluteFolder"/../../core/infrastructure/vm/"$whichExeVM"/ubiquitous_bash.sh)
+	recursionExecList+=("$scriptAbsoluteFolder"/../../../core/infrastructure/"$whichExeVM"/ubiquitous_bash.sh)
+	recursionExecList+=("$scriptAbsoluteFolder"/../../../core/infrastructure/vm/"$whichExeVM"/ubiquitous_bash.sh)
+	recursionExecList+=("$scriptAbsoluteFolder"/../../../../core/infrastructure/"$whichExeVM"/ubiquitous_bash.sh)
+	recursionExecList+=("$scriptAbsoluteFolder"/../../../../core/infrastructure/vm/"$whichExeVM"/ubiquitous_bash.sh)
+	recursionExecList+=("$scriptAbsoluteFolder"/../../../../../core/infrastructure/"$whichExeVM"/ubiquitous_bash.sh)
+	recursionExecList+=("$scriptAbsoluteFolder"/../../../../../core/infrastructure/vm/"$whichExeVM"/ubiquitous_bash.sh)
+	recursionExecList+=("$scriptAbsoluteFolder"/../../../../../../core/infrastructure/"$whichExeVM"/ubiquitous_bash.sh)
+	recursionExecList+=("$scriptAbsoluteFolder"/../../../../../../core/infrastructure/vm/"$whichExeVM"/ubiquitous_bash.sh)
+	recursionExecList+=("$scriptAbsoluteFolder"/../../../../../../../core/infrastructure/"$whichExeVM"/ubiquitous_bash.sh)
+	recursionExecList+=("$scriptAbsoluteFolder"/../../../../../../../core/infrastructure/vm/"$whichExeVM"/ubiquitous_bash.sh)
+	
+	recursionExecList+=("$HOME"/core/infrastructure/"$whichExeVM"/ubiquitous_bash.sh)
+	recursionExecList+=("$HOME"/core/extra/infrastructure/"$whichExeVM"/ubiquitous_bash.sh)
+	
+	recursionExecList+=("$HOME"/core/infrastructure/vm/"$whichExeVM"/ubiquitous_bash.sh)
+	recursionExecList+=("$HOME"/core/extra/infrastructure/vm/"$whichExeVM"/ubiquitous_bash.sh)
+	
+	for currentRecursionExec in "${recursionExecList[@]}"
+	do
+		if _recursion_guard "$currentRecursionExec"
+		then
+			"$currentRecursionExec" "$@"
+			return
+		fi
+	done
+}
+
+
+#Removes 'file://' often used by browsers.
+_removeFilePrefix() {
+	local translatedFileParam
+	translatedFileParam=${1/#file:\/\/}
+	
+	_safeEcho_newline "$translatedFileParam"
+}
+
+#Translates back slash parameters (UNIX paths) to forward slash parameters (MSW paths).
+_slashBackToForward() {
+	local translatedFileParam
+	translatedFileParam=${1//\//\\}
+	
+	_safeEcho_newline "$translatedFileParam"
+}
+
+_nixToMSW() {
+	echo -e -n 'Z:'
+	
+	local localAbsoluteFirstParam
+	localAbsoluteFirstParam=$(_getAbsoluteLocation "$1")
+	
+	local intermediateStepOne
+	intermediateStepOne=_removeFilePrefix "$localAbsoluteFirstParam"
+	
+	_slashBackToForward "$intermediateStepOne"
+}
+
+_test_localpath() {
+	_getDep realpath
+}
+
+
+#Determines whether test parameter is in the path of base parameter.
+#"$1" == testParameter
+#"$2" == baseParameter
+_pathPartOf() {
+	local testParameter
+	testParameter="IAUjqyPF2s3gqjC0t1"
+	local baseParameter
+	baseParameter="JQRBqIoOVoDJuzc7k9"
+	
+	[[ -e "$1" ]] && testParameter=$(_getAbsoluteLocation "$1")
+	[[ -e "$2" ]] && baseParameter=$(_getAbsoluteLocation "$2")
+	
+	[[ "$testParameter" != "$baseParameter"* ]] && return 1
+	return 0
+}
+
+#Checks if file/directory exists on local filesystem, and meets other criteria. Intended to be called within the virtualization platform, through _checkBaseDirRemote . Often maintained merely for the sake of example.
+_checkBaseDirLocal() {
+	/bin/bash -c '[[ -e "'"$1"'" ]] && ! [[ -d "'"$1"'" ]] && [[ "'"$1"'" != "." ]] && [[ "'"$1"'" != ".." ]] && [[ "'"$1"'" != "./" ]] && [[ "'"$1"'" != "../" ]]'
+}
+
+_checkBaseDirRemote_app_localOnly() {
+	false
+}
+
+_checkBaseDirRemote_app_remoteOnly() {
+	[[ "$1" == "/bin/bash" ]] && return 0
+}
+
+# WARNING Strongly recommend not sharing root with guest, but this can be overridden by "ops".
+_checkBaseDirRemote_common_localOnly() {
+	[[ "$1" == "." ]] && return 0
+	[[ "$1" == "./" ]] && return 0
+	[[ "$1" == ".." ]] && return 0
+	[[ "$1" == "../" ]] && return 0
+	
+	[[ "$1" == "/" ]] && return 0
+	
+	return 1
+}
+
+_checkBaseDirRemote_common_remoteOnly() {
+	[[ "$1" == "/bin"* ]] && return 0
+	[[ "$1" == "/lib"* ]] && return 0
+	[[ "$1" == "/lib64"* ]] && return 0
+	[[ "$1" == "/opt"* ]] && return 0
+	[[ "$1" == "/usr"* ]] && return 0
+	
+	[[ "$1" == "/bin/bash" ]] && return 0
+	
+	#type "$1" > /dev/null 2>&1 && return 0
+	
+	#! [[ "$1" == "/"* ]] && return 0
+	
+	return 1
+}
+
+#Checks if file/directory exists on remote system. Overload this function with implementation specific to the container/virtualization solution in use (ie. docker run).
+_checkBaseDirRemote() {
+	_checkBaseDirRemote_common_localOnly "$1" && return 0
+	_checkBaseDirRemote_common_remoteOnly "$1" && return 1
+	
+	_checkBaseDirRemote_app_localOnly "$1" && return 0
+	_checkBaseDirRemote_app_remoteOnly "$1" && return 1
+	
+	[[ "$checkBaseDirRemote" == "" ]] && checkBaseDirRemote="false"
+	"$checkBaseDirRemote" "$1" || return 1
+	return 0
+}
+
+#Reports the highest-level directory containing all files in given parameter set.
+#"$@" == parameters to search
+#$checkBaseDirRemote == function to check if file/directory exists on remote system
+_searchBaseDir() {
+	local baseDir
+	local newDir
+	
+	baseDir=""
+	
+	local processedArgs
+	local currentArg
+	local currentResult
+	
+	#Do not translate if exists on remote filesystem. Dummy check by default unless overloaded, by $checkBaseDirRemote value.
+	#Intended to prevent "/bin/true" and similar from being translated, so execution of remote programs can be requested.
+	for currentArg in "$@"
+	do
+		if _checkBaseDirRemote "$currentArg"
+		then
+			continue
+		fi
+		
+		currentResult="$currentArg"
+		processedArgs+=("$currentResult")
+	done
+	
+	for currentArg in "${processedArgs[@]}"
+	do
+		
+		if [[ ! -e "$currentArg" ]]
+		then
+			continue
+		fi
+		
+		if [[ "$baseDir" == "" ]]
+		then
+			baseDir=$(_findDir "$currentArg")
+		fi
+		
+		for subArg in "${processedArgs[@]}"
+		do
+			if [[ ! -e "$subArg" ]]
+			then
+				continue
+			fi
+			
+			newDir=$(_findDir "$subArg")
+			
+			# Trailing slash added to comparison to prevent partial matching of directory names.
+			# https://stackoverflow.com/questions/12340846/bash-shell-script-to-find-the-closest-parent-directory-of-several-files
+			# https://stackoverflow.com/questions/9018723/what-is-the-simplest-way-to-remove-a-trailing-slash-from-each-parameter
+			while [[ "${newDir%/}/" != "${baseDir%/}/"* ]]
+			do
+				baseDir=$(_findDir "$baseDir"/..)
+				
+				if [[ "$baseDir" == "/" ]]
+				then
+					break
+				fi
+			done
+			
+		done
+		
+		
+		
+		
+	done
+	
+	_safeEcho_newline "$baseDir"
+}
+
+#Converts to relative path, if provided a file parameter.
+#"$1" == parameter to search
+#"$2" == sharedHostProjectDir
+#"$3" == sharedGuestProjectDir (optional)
+_localDir() {
+	if _checkBaseDirRemote "$1"
+	then
+		_safeEcho_newline "$1"
+		return
+	fi
+	
+	if [[ ! -e "$2" ]]
+	then
+		_safeEcho_newline "$1"
+		return
+	fi
+	
+	if [[ ! -e "$1" ]] || ! _pathPartOf "$1" "$2"
+	then
+		_safeEcho_newline "$1"
+		return
+	fi
+	
+	[[ "$3" != "" ]] && _safeEcho "$3" && [[ "$3" != "/" ]] && _safeEcho "/"
+	realpath -L -s --relative-to="$2" "$1"
+	
+}
+
+
+#Takes a list of parameters, idenfities file parameters, finds a common path, and translates all parameters to that path. Essentially provides shared folder and file parameter translation for application virtualization solutions.
+#Keep in mind this function has a relatively complex set of inputs and outputs, serving a critically wide variety of edgy use cases across platforms.
+#"$@" == input parameters
+
+#"$sharedHostProjectDir" == if already set, overrides the directory that will be shared, rarely used to share entire root
+#"$sharedGuestProjectDir" == script default is /home/ubvrtusr/project, can be overridden, "X:" typical for MSW guests
+#Setting sharedGuestProjectDir to a drive letter designation will also enable UNIX/MSW parameter translation mechanisms.
+
+# export sharedHostProjectDir == common directory to bind mount
+# export processedArgs == translated arguments to be used in place of "$@"
+
+# WARNING Consider specified syntax for portability.
+# _runExec "${processedArgs[@]}"
+_virtUser() {
+	export sharedHostProjectDir="$sharedHostProjectDir"
+	export processedArgs
+	
+	[[ "$virtUserPWD" == "" ]] && export virtUserPWD="$outerPWD"
+	
+	if [[ -e /tmp/.X11-unix ]] && [[ "$DISPLAY" != "" ]] && type xauth > /dev/null 2>&1
+	then
+		export XSOCK=/tmp/.X11-unix
+		export XAUTH=/tmp/.virtuser.xauth."$sessionid"
+		touch $XAUTH
+		xauth nlist $DISPLAY | sed -e 's/^..../ffff/' | xauth -f $XAUTH nmerge -
+	fi
+	
+	if [[ "$sharedHostProjectDir" == "" ]]
+	then
+		sharedHostProjectDir=$(_searchBaseDir "$@" "$virtUserPWD")
+		#sharedHostProjectDir="$safeTmp"/shared
+		mkdir -p "$sharedHostProjectDir"
+	fi
+	
+	export localPWD=$(_localDir "$virtUserPWD" "$sharedHostProjectDir" "$sharedGuestProjectDir")
+	export virtUserPWD=
+	
+	#If $sharedGuestProjectDir matches MSW drive letter format, enable translation of other non-UNIX file parameter differences.
+	local enableMSWtranslation
+	enableMSWtranslation=false
+	_safeEcho_newline "$sharedGuestProjectDir" | grep '^[[:alpha:]]\:\|^[[:alnum:]][[:alnum:]]\:\|^[[:alnum:]][[:alnum:]][[:alnum:]]\:' > /dev/null 2>&1 && enableMSWtranslation=true
+	
+	#http://stackoverflow.com/questions/15420790/create-array-in-loop-from-number-of-arguments
+	#local processedArgs
+	local currentArg
+	local currentResult
+	processedArgs=()
+	for currentArg in "$@"
+	do
+		currentResult=$(_localDir "$currentArg" "$sharedHostProjectDir" "$sharedGuestProjectDir")
+		[[ "$enableMSWtranslation" == "true" ]] && currentResult=$(_slashBackToForward "$currentResult")
+		processedArgs+=("$currentResult")
+	done
+}
+
+_stop_virtLocal() {
+	[[ "$XAUTH" == "" ]] && return
+	[[ ! -e "$XAUTH" ]] && return
+	
+	rm -f "$XAUTH" > /dev/null 2>&1
+}
+
+_test_virtLocal_X11() {
+	! _wantGetDep xauth && echo warn: missing: xauth && return 1
+	return 0
+}
+
+# TODO: Expansion needed.
+_vector_virtUser() {
+	export sharedHostProjectDir=
+	export sharedGuestProjectDir=/home/user/project
+	_virtUser /tmp
+	#_safeEcho_newline "${processedArgs[0]}"
+	[[ "${processedArgs[0]}" != '/home/user/project/tmp' ]] && echo 'fail: _vector_virtUser' && _messageFAIL
+	
+	export sharedHostProjectDir=/
+	export sharedGuestProjectDir='Z:'
+	_virtUser /tmp
+	#_safeEcho_newline "${processedArgs[0]}"
+	[[ "${processedArgs[0]}" != 'Z:\tmp' ]] && echo 'fail: _vector_virtUser' && _messageFAIL
+	
+	export sharedHostProjectDir=/tmp
+	export sharedGuestProjectDir='/home/user/project/tmp'
+	_virtUser /tmp
+	#_safeEcho_newline "${processedArgs[0]}"
+	[[ "${processedArgs[0]}" != '/home/user/project/tmp/.' ]] && echo 'fail: _vector_virtUser' && _messageFAIL
+	
+	export virtUserPWD='/tmp'
+	export sharedHostProjectDir=/tmp
+	export sharedGuestProjectDir='/home/user/project/tmp'
+	_virtUser /tmp
+	#_safeEcho_newline "${processedArgs[0]}"
+	#_safeEcho_newline "$localPWD"
+	[[ "$localPWD" != '/home/user/project/tmp/.' ]] && echo 'fail: _vector_virtUser' && _messageFAIL
+	
+	export virtUserPWD='/tmp'
+	export sharedHostProjectDir=/tmp
+	export sharedGuestProjectDir='/home/user/project/tmp'
+	_virtUser -e /tmp
+	#_safeEcho_newline "${processedArgs[0]}"
+	[[ "${processedArgs[0]}" != '-e' ]] && echo 'fail: _vector_virtUser' && _messageFAIL
+	
+	
+	return 0
+}
+
+
+
+
+
+
+_test_abstractfs_sequence() {
+	export afs_nofs="true"
+	if ! "$scriptAbsoluteLocation" _abstractfs ls "$scriptAbsoluteLocation" > /dev/null 2>&1
+	then
+		_stop 1
+	fi
+}
+
+_test_abstractfs() {
+	_getDep md5sum
+	if ! "$scriptAbsoluteLocation" _test_abstractfs_sequence
+	then
+		echo 'fail: abstractfs: ls'
+		_stop 1
+	fi
+}
+
+# WARNING: First parameter, "$1" , must always be non-translated program to run or specialized abstractfs command.
+# Specifically do not attempt _abstractfs "$scriptAbsoluteLocation" or similar.
+# "$scriptAbsoluteLocation" _fakeHome "$scriptAbsoluteLocation" _abstractfs bash
+_abstractfs() {
+	#Nesting prohibited. Not fully tested.
+	# WARNING: May cause infinite recursion symlinks.
+	[[ "$abstractfs" != "" ]] && return 1
+	
+	_reset_abstractfs
+	
+	_prepare_abstract
+	
+	local abstractfs_command="$1"
+	shift
+	
+	export virtUserPWD="$PWD"
+	
+	export abstractfs_puid=$(_uid)
+	
+	
+	local current_abstractfs_base_args
+	current_abstractfs_base_args=("${@}")
+	
+	[[ "$ubAbstractFS_enable_CLD" == 'true' ]] && [[ "$ubASD_CLD" != '' ]] && current_abstractfs_base_args+=( "$ubASD_PRJ" "$ubASD_CLD" )
+	
+	# WARNING: Enabling may allow a misplaced 'project.afs' file in "/" , "$HOME' , or similar, to override a legitimate directory.
+	# However, such a misplaced file may already cause wrong directory collisions with abstractfs.
+	# Historically not enabled by default. Consider enabling by default equivalent to at least a minor version bump - be wary of any possible broken use cases.
+	[[ "$abstractfs_projectafs_dir" != "" ]] && [[ "$ubAbstractFS_enable_projectafs_dir" == 'true' ]] && current_abstractfs_base_args+=( "$abstractfs_projectafs_dir" )
+	#[[ "$abstractfs_projectafs_dir" != "" ]] && [[ "$ubAbstractFS_enable_projectafs_dir" != 'false' ]] && current_abstractfs_base_args+=( "$abstractfs_projectafs_dir" )
+	
+	_base_abstractfs "${current_abstractfs_base_args[@]}"
+	
+	
+	_name_abstractfs > /dev/null 2>&1
+	[[ "$abstractfs_name" == "" ]] && return 1
+	
+	export abstractfs="$abstractfs_root"/"$abstractfs_name"
+	
+	_set_share_abstractfs
+	_relink_abstractfs
+	
+	_virtUser "$@"
+	
+	cd "$localPWD"
+	#cd "$abstractfs_base"
+	#cd "$abstractfs"
+	
+	local commandExitStatus
+	commandExitStatus=1
+	
+	#_scope_terminal "${processedArgs[@]}"
+	
+	if ! [[ -L "$abstractfs" ]] && [[ -d "$abstractfs" ]]
+	then
+		# _messagePlain_bad 'fail: abstractfs: abstractfs_base is a directory: abstractfs_base= ""$abstractfs_base"
+		rmdir "$abstractfs"
+		_set_share_abstractfs_reset
+		_rmlink_abstractfs
+		return 1
+	fi
+	
+	_set_abstractfs_disable_CLD
+	[[ "$abstractfs_command" == 'ub_abstractfs_getOnly_dst' ]] && echo "$abstractfs"
+	[[ "$abstractfs_command" == 'ub_abstractfs_getOnly_src' ]] && echo "$abstractfs_base"
+	if [[ "$abstractfs_command" != 'ub_abstractfs_getOnly_dst' ]] && [[ "$abstractfs_command" != 'ub_abstractfs_getOnly_src' ]]
+	then
+		"$abstractfs_command" "${processedArgs[@]}"
+		commandExitStatus="$?"
+	fi
+	
+	_set_share_abstractfs_reset
+	_rmlink_abstractfs
+	
+	return "$commandExitStatus"
+}
+
+
+
+
+
+_get_abstractfs_dst_procedure() {
+	shift
+	_abstractfs 'ub_abstractfs_getOnly_dst' "$@"
+}
+_get_abstractfs_dst_sequence() {
+	_start
+	_get_abstractfs_dst_procedure "$@"
+	_stop 0
+}
+
+# If the result independent of any particular command is desired, use "_true" as command (first parameter).
+_get_abstractfs_dst() {
+	"$scriptAbsoluteLocation" _get_abstractfs_dst_sequence "$@"
+}
+_get_abstractfs() {
+	_get_abstractfs_dst "$@"
+}
+
+
+
+_get_abstractfs_src_procedure() {
+	shift
+	_abstractfs 'ub_abstractfs_getOnly_src' "$@"
+}
+_get_abstractfs_src_sequence() {
+	_start
+	_get_abstractfs_src_procedure "$@"
+	_stop 0
+}
+# If the result independent of any particular command is desired, use "_true" as command (first parameter).
+_get_abstractfs_src() {
+	"$scriptAbsoluteLocation" _get_abstractfs_src_sequence "$@"
+}
+
+_get_base_abstractfs() {
+	_get_abstractfs_src "$@"
+}
+_get_base_abstractfs_name() {
+	local current_abstractfs_base
+	current_abstractfs_base=$(_get_abstractfs_src "$@")
+	basename "$current_abstractfs_base"
+}
+
+
+
+
+
+# No known production use.
+# ATTENTION Overload ONLY if further specialization is actually required!
+# WARNING: Input parameters must NOT include neighboring ConfigurationLookupDirectory, regardless of whether static ConfigurationLookupDirectory is used.
+_prepare_abstractfs_appdir_none() {
+	_set_abstractfs_AbstractSourceDirectory "$@"
+	#_probe_prepare_abstractfs_appdir_AbstractSourceDirectory
+	
+	##### # ATTENTION: Prior to abstractfs. 'ApplicationProjectDirectory', ConfigurationLookupDirectory.
+	
+	#export ubASD="$ubASD"
+	
+	export ubASD_PRJ="$ubASD_PRJ_none"
+	#export ubASD_PRJ="$ubASD_PRJ_independent"
+	#export ubASD_PRJ="$ubASD_PRJ_shared"
+	#export ubASD_PRJ="$ubASD_PRJ_export"
+	
+	export ubASD_CLD="$ubASD_CLD_none"
+	#export ubASD_CLD="$ubASD_CLD_independent"
+	#export ubASD_CLD="$ubASD_CLD_shared"
+	#export ubASD_CLD="$ubASD_CLD_export"
+	
+	#_probe_prepare_abstractfs_appdir_AbstractSourceDirectory_prior
+	
+	
+	
+	
+	# CLD_none , CLD_independent , CLD_export
+	_set_abstractfs_disable_CLD
+	
+	# CLD_shared
+	#_set_abstractfs_enable_CLD
+	
+	_prepare_abstractfs_appdir "$@"
+	
+	
+	# CAUTION: May be invalid. Do not use or enable. For reference only.
+	#export ubADD_PRJ="$ubADD""$ubADD_PRJ_none_sub"
+	#export ubADD_PRJ="$ubADD""$ubADD_PRJ_independent_sub"
+	#export ubADD_PRJ="$ubADD""$ubADD_PRJ_shared_sub"
+	#export ubADD_PRJ="$ubADD""$ubADD_PRJ_export_sub"
+	#export ubADD_CLD="$ubADD""$ubADD_CLD_none_sub"
+	##export ubADD_CLD="$ubADD""$ubADD_CLD_independent_sub"
+	#export ubADD_CLD="$ubADD""$ubADD_CLD_shared_sub"
+	#export ubADD_CLD="$ubADD""$ubADD_CLD_export_sub"
+	
+	
+	export ubAFS_PRJ="$ubADD""$ubADD_PRJ_none_sub"
+	#export ubAFS_PRJ="$ubADD""$ubADD_PRJ_independent_sub"
+	#export ubAFS_PRJ="$ubADD""$ubADD_PRJ_shared_sub"
+	#export ubAFS_PRJ="$ubADD""$ubADD_PRJ_export_sub"
+	
+	export ubAFS_CLD="$ubADD""$ubADD_CLD_none_sub"
+	#export ubAFS_CLD="$ubASD_CLD_independent"
+	#export ubAFS_CLD="$ubADD""$ubADD_CLD_shared_sub"
+	#export ubAFS_CLD="$ubADD""$ubADD_CLD_export_sub"
+	
+	
+	#_probe_prepare_abstractfs_appdir_post
+}
+# MISUSE. Permissible, given rare requirement to ensure directories exist to perform common directory determination.
+_set_abstractfs_appdir_none() {
+	_prepare_abstractfs_appdir_none "$@"
+}
+
+
+
+
+
+# No known production use.
+# ATTENTION Overload ONLY if further specialization is actually required!
+# WARNING: Input parameters must NOT include neighboring ConfigurationLookupDirectory, regardless of whether static ConfigurationLookupDirectory is used.
+_prepare_abstractfs_appdir_independent() {
+	_set_abstractfs_AbstractSourceDirectory "$@"
+	#_probe_prepare_abstractfs_appdir_AbstractSourceDirectory
+	
+	##### # ATTENTION: Prior to abstractfs. 'ApplicationProjectDirectory', ConfigurationLookupDirectory.
+	
+	#export ubASD="$ubASD"
+	
+	#export ubASD_PRJ="$ubASD_PRJ_none"
+	export ubASD_PRJ="$ubASD_PRJ_independent"
+	#export ubASD_PRJ="$ubASD_PRJ_shared"
+	#export ubASD_PRJ="$ubASD_PRJ_export"
+	
+	#export ubASD_CLD="$ubASD_CLD_none"
+	export ubASD_CLD="$ubASD_CLD_independent"
+	#export ubASD_CLD="$ubASD_CLD_shared"
+	#export ubASD_CLD="$ubASD_CLD_export"
+	
+	#_probe_prepare_abstractfs_appdir_AbstractSourceDirectory_prior
+	
+	
+	
+	
+	# CLD_none , CLD_independent , CLD_export
+	_set_abstractfs_disable_CLD
+	
+	# CLD_shared
+	#_set_abstractfs_enable_CLD
+	
+	_prepare_abstractfs_appdir "$@"
+	
+	
+	# CAUTION: May be invalid. Do not use or enable. For reference only.
+	#export ubADD_PRJ="$ubADD""$ubADD_PRJ_none_sub"
+	#export ubADD_PRJ="$ubADD""$ubADD_PRJ_independent_sub"
+	#export ubADD_PRJ="$ubADD""$ubADD_PRJ_shared_sub"
+	#export ubADD_PRJ="$ubADD""$ubADD_PRJ_export_sub"
+	#export ubADD_CLD="$ubADD""$ubADD_CLD_none_sub"
+	##export ubADD_CLD="$ubADD""$ubADD_CLD_independent_sub"
+	#export ubADD_CLD="$ubADD""$ubADD_CLD_shared_sub"
+	#export ubADD_CLD="$ubADD""$ubADD_CLD_export_sub"
+	
+	
+	#export ubAFS_PRJ="$ubADD""$ubADD_PRJ_none_sub"
+	export ubAFS_PRJ="$ubADD""$ubADD_PRJ_independent_sub"
+	#export ubAFS_PRJ="$ubADD""$ubADD_PRJ_shared_sub"
+	#export ubAFS_PRJ="$ubADD""$ubADD_PRJ_export_sub"
+	
+	#export ubAFS_CLD="$ubADD""$ubADD_CLD_none_sub"
+	export ubAFS_CLD="$ubASD_CLD_independent"
+	#export ubAFS_CLD="$ubADD""$ubADD_CLD_shared_sub"
+	#export ubAFS_CLD="$ubADD""$ubADD_CLD_export_sub"
+	
+	
+	#_probe_prepare_abstractfs_appdir_post
+}
+# MISUSE. Permissible, given rare requirement to ensure directories exist to perform common directory determination.
+_set_abstractfs_appdir_independent() {
+	_prepare_abstractfs_appdir_independent "$@"
+}
+
+
+
+
+
+# No known production use.
+# ATTENTION Overload ONLY if further specialization is actually required!
+# WARNING: Input parameters must NOT include neighboring ConfigurationLookupDirectory, regardless of whether static ConfigurationLookupDirectory is used.
+# DANGER: Strongly discouraged. May break use of "project.afs" with alternative layouts and vice versa.
+_prepare_abstractfs_appdir_shared() {
+	_set_abstractfs_AbstractSourceDirectory "$@"
+	#_probe_prepare_abstractfs_appdir_AbstractSourceDirectory
+	
+	##### # ATTENTION: Prior to abstractfs. 'ApplicationProjectDirectory', ConfigurationLookupDirectory.
+	
+	#export ubASD="$ubASD"
+	
+	#export ubASD_PRJ="$ubASD_PRJ_none"
+	#export ubASD_PRJ="$ubASD_PRJ_independent"
+	export ubASD_PRJ="$ubASD_PRJ_shared"
+	#export ubASD_PRJ="$ubASD_PRJ_export"
+	
+	#export ubASD_CLD="$ubASD_CLD_none"
+	#export ubASD_CLD="$ubASD_CLD_independent"
+	export ubASD_CLD="$ubASD_CLD_shared"
+	#export ubASD_CLD="$ubASD_CLD_export"
+	
+	#_probe_prepare_abstractfs_appdir_AbstractSourceDirectory_prior
+	
+	
+	
+	
+	# CLD_none , CLD_independent , CLD_export
+	#_set_abstractfs_disable_CLD
+	
+	# CLD_shared
+	_set_abstractfs_enable_CLD
+	
+	_prepare_abstractfs_appdir "$@"
+	
+	
+	# CAUTION: May be invalid. Do not use or enable. For reference only.
+	#export ubADD_PRJ="$ubADD""$ubADD_PRJ_none_sub"
+	#export ubADD_PRJ="$ubADD""$ubADD_PRJ_independent_sub"
+	#export ubADD_PRJ="$ubADD""$ubADD_PRJ_shared_sub"
+	#export ubADD_PRJ="$ubADD""$ubADD_PRJ_export_sub"
+	#export ubADD_CLD="$ubADD""$ubADD_CLD_none_sub"
+	##export ubADD_CLD="$ubADD""$ubADD_CLD_independent_sub"
+	#export ubADD_CLD="$ubADD""$ubADD_CLD_shared_sub"
+	#export ubADD_CLD="$ubADD""$ubADD_CLD_export_sub"
+	
+	
+	#export ubAFS_PRJ="$ubADD""$ubADD_PRJ_none_sub"
+	#export ubAFS_PRJ="$ubADD""$ubADD_PRJ_independent_sub"
+	export ubAFS_PRJ="$ubADD""$ubADD_PRJ_shared_sub"
+	#export ubAFS_PRJ="$ubADD""$ubADD_PRJ_export_sub"
+	
+	#export ubAFS_CLD="$ubADD""$ubADD_CLD_none_sub"
+	#export ubAFS_CLD="$ubASD_CLD_independent"
+	export ubAFS_CLD="$ubADD""$ubADD_CLD_shared_sub"
+	#export ubAFS_CLD="$ubADD""$ubADD_CLD_export_sub"
+	
+	
+	#_probe_prepare_abstractfs_appdir_post
+}
+# MISUSE. Permissible, given rare requirement to ensure directories exist to perform common directory determination.
+_set_abstractfs_appdir_shared() {
+	_prepare_abstractfs_appdir_shared "$@"
+}
+
+
+
+
+
+# No known production use.
+# ATTENTION Overload ONLY if further specialization is actually required!
+# WARNING: Input parameters must NOT include neighboring ConfigurationLookupDirectory, regardless of whether static ConfigurationLookupDirectory is used.
+_prepare_abstractfs_appdir_export() {
+	_set_abstractfs_AbstractSourceDirectory "$@"
+	#_probe_prepare_abstractfs_appdir_AbstractSourceDirectory
+	
+	##### # ATTENTION: Prior to abstractfs. 'ApplicationProjectDirectory', ConfigurationLookupDirectory.
+	
+	#export ubASD="$ubASD"
+	
+	#export ubASD_PRJ="$ubASD_PRJ_none"
+	#export ubASD_PRJ="$ubASD_PRJ_independent"
+	#export ubASD_PRJ="$ubASD_PRJ_shared"
+	export ubASD_PRJ="$ubASD_PRJ_export"
+	
+	#export ubASD_CLD="$ubASD_CLD_none"
+	#export ubASD_CLD="$ubASD_CLD_independent"
+	#export ubASD_CLD="$ubASD_CLD_shared"
+	export ubASD_CLD="$ubASD_CLD_export"
+	
+	#_probe_prepare_abstractfs_appdir_AbstractSourceDirectory_prior
+	
+	
+	
+	
+	# CLD_none , CLD_independent , CLD_export
+	_set_abstractfs_disable_CLD
+	
+	# CLD_shared
+	#_set_abstractfs_enable_CLD
+	
+	_prepare_abstractfs_appdir "$@"
+	
+	
+	# CAUTION: May be invalid. Do not use or enable. For reference only.
+	#export ubADD_PRJ="$ubADD""$ubADD_PRJ_none_sub"
+	#export ubADD_PRJ="$ubADD""$ubADD_PRJ_independent_sub"
+	#export ubADD_PRJ="$ubADD""$ubADD_PRJ_shared_sub"
+	#export ubADD_PRJ="$ubADD""$ubADD_PRJ_export_sub"
+	#export ubADD_CLD="$ubADD""$ubADD_CLD_none_sub"
+	##export ubADD_CLD="$ubADD""$ubADD_CLD_independent_sub"
+	#export ubADD_CLD="$ubADD""$ubADD_CLD_shared_sub"
+	#export ubADD_CLD="$ubADD""$ubADD_CLD_export_sub"
+	
+	
+	#export ubAFS_PRJ="$ubADD""$ubADD_PRJ_none_sub"
+	#export ubAFS_PRJ="$ubADD""$ubADD_PRJ_independent_sub"
+	#export ubAFS_PRJ="$ubADD""$ubADD_PRJ_shared_sub"
+	export ubAFS_PRJ="$ubADD""$ubADD_PRJ_export_sub"
+	
+	#export ubAFS_CLD="$ubADD""$ubADD_CLD_none_sub"
+	#export ubAFS_CLD="$ubASD_CLD_independent"
+	#export ubAFS_CLD="$ubADD""$ubADD_CLD_shared_sub"
+	export ubAFS_CLD="$ubADD""$ubADD_CLD_export_sub"
+	
+	
+	#_probe_prepare_abstractfs_appdir_post
+}
+# MISUSE. Permissible, given rare requirement to ensure directories exist to perform common directory determination.
+_set_abstractfs_appdir_export() {
+	_prepare_abstractfs_appdir_export "$@"
+}
+
+
+
+
+
+
+# CAUTION: ConfigurationLookupDirectory, managed by "_appdir" functions, is NOT a global configuration registry. ONLY intended to support programs which may require *project-specific* configuration (eg. Eclipse).
+# WARNING: Input parameters must NOT include neighboring ConfigurationLookupDirectory, regardless of whether static ConfigurationLookupDirectory is used.
+# WARNING: All 'mkdir' operations using "$ubADD" or similar must take place *within* abstractfs, to avoid creating a folder conflicting with the required symlink.
+# Input
+# "$@"
+_set_abstractfs_AbstractSourceDirectory() {
+	# AbstractSourceDirectory
+	_set_abstractfs_disable_CLD
+	export ubASD=$(export afs_nofs_write="true" ; "$scriptAbsoluteLocation" _get_base_abstractfs "$@" "$ub_specimen")
+	_set_abstractfs_disable_CLD
+	export ubASD_name=$(basename $ubASD)
+	
+	# Should never be reached. Also, undesirable default.
+	[[ "$ubASD_name" == "" ]] && export ubASD_name=project
+	
+	
+	# No known production use.
+	export ubADD_CLD_none_sub=""
+	export ubADD_PRJ_none_sub=""
+	export ubASD_CLD_none_sub="$ubADD_CLD_none_sub"
+	export ubASD_CLD_none="$ubASD"
+	export ubASD_PRJ_none=""
+	export ubASD_PRJ_none="$ubASD""$ubASD_PRJ_none"
+	
+	# ApplicationSourceDirectory-ConfigurationLookupDirectory
+	# Project directory is *source* directory.
+	# ConfigurationLookupDirectory is *neighbor*, using absolute path *outside* abstractfs translation.
+	# CAUTION: Not compatible with applications requiring all paths translated by abstractfs.
+	# CAUTION: Invalid to combine "$ubADD" with "$ubADD_CLD_independent_sub" .
+	export ubADD_CLD_independent_sub=/../"$ubASD_name".cld
+	export ubADD_PRJ_independent_sub=""
+	export ubASD_CLD_independent_sub="$ubADD_CLD_independent_sub"
+	export ubASD_CLD_independent="$ubASD""$ubASD_CLD_independent_sub"
+	export ubASD_PRJ_independent_sub=""
+	export ubASD_PRJ_independent="$ubASD""$ubASD_PRJ_independent_sub"
+	
+	# ConfigurationLookupDirectory is *neighbor*, next to project directory, in *shared* abstractfs directory.
+	# DANGER: Strongly discouraged. May break use of "project.afs" with alternative layouts and vice versa.
+	export ubADD_CLD_shared_sub=/"$ubASD_name".cld
+	export ubADD_PRJ_shared_sub=/"$ubASD_name"
+	export ubASD_CLD_shared_sub=/.."$ubADD_CLD_shared_sub"
+	export ubASD_CLD_shared="$ubASD""$ubASD_CLD_shared_sub"
+	export ubASD_PRJ_shared_sub=""
+	export ubASD_PRJ_shared="$ubASD""$ubASD_PRJ_shared_sub"
+	
+	# Internal '_export' folder instead of neighboring ConfigurationLookupDirectory .
+	export ubADD_CLD_export_sub=/_export/afscld
+	export ubADD_PRJ_export_sub=""
+	export ubASD_CLD_export_sub="$ubADD_CLD_export_sub"
+	export ubASD_CLD_export="$ubASD""$ubASD_CLD_export_sub"
+	export ubASD_PRJ_export_sub="$ubASD_CLD_export_sub"
+	export ubASD_PRJ_export="$ubASD"
+}
+
+_set_abstractfs_enable_CLD() {
+	export ubAbstractFS_enable_CLD='true'
+}
+
+_set_abstractfs_disable_CLD() {
+	export ubAbstractFS_enable_CLD='false'
+	
+	# No known production use.
+	export ubAbstractFS_enable_CLDnone='false'
+	export ubAbstractFS_enable_CLDindependent='false'
+	export ubAbstractFS_enable_CLDshared='false'
+	export ubAbstractFS_enable_CLDexport='false'
+}
+
+_prepare_abstractfs_appdir() {
+	mkdir -p "$ubASD"
+	mkdir -p "$ubASD_CLD"
+	#_set_abstractfs_disable_CLD
+	export ubADD=$(export afs_nofs="true" ; "$scriptAbsoluteLocation" _get_abstractfs "$@" "$ub_specimen")
+	#_set_abstractfs_disable_CLD
+}
+
+
+
+
+
+
+
+
+
+
+
+_probe_prepare_abstractfs_appdir_AbstractSourceDirectory() {
+	_messagePlain_nominal '_probe_prepare_abstractfs_appdir_AbstractSourceDirectory'
+	_messagePlain_probe_var ubASD
+	_messagePlain_probe_var ubASD_name
+	
+	_messagePlain_probe_var ubASD_CLD_none_sub
+	_messagePlain_probe_var ubASD_CLD_none
+	
+	_messagePlain_probe_var ubASD_CLD_independent_sub
+	_messagePlain_probe_var ubASD_CLD_independent
+	
+	_messagePlain_probe_var ubASD_CLD_shared_sub
+	_messagePlain_probe_var ubASD_CLD_shared
+	
+	_messagePlain_probe_var ubASD_CLD_export_sub
+	_messagePlain_probe_var ubASD_CLD_export
+}
+
+_probe_prepare_abstractfs_appdir_AbstractSourceDirectory_prior() {
+	_messagePlain_nominal '_probe_prepare_abstractfs_appdir_AbstractSourceDirectory_prior'
+	_messagePlain_probe_var ubASD
+	_messagePlain_probe_var ubASD_PRJ
+	_messagePlain_probe_var ubASD_CLD
+}
+
+_probe_prepare_abstractfs_appdir_post() {
+	_messagePlain_nominal '_probe_prepare_abstractfs_appdir_post'
+	_messagePlain_probe_var ubADD
+	#_messagePlain_probe_var ubADD_PRJ
+	#_messagePlain_probe_var ubADD_CLD
+	_messagePlain_probe_var ubAFS_PRJ
+	_messagePlain_probe_var ubAFS_CLD
+}
+
+
+
+_probe_prepare_abstractfs_appdir() {
+	_probe_prepare_abstractfs_appdir_AbstractSourceDirectory
+	_probe_prepare_abstractfs_appdir_AbstractSourceDirectory_prior
+	_probe_prepare_abstractfs_appdir_post
+}
+
+
+_reset_abstractfs() {
+	export abstractfs=
+	export abstractfs_base=
+	export abstractfs_name=
+	export abstractfs_puid=
+	export abstractfs_projectafs=
+	export abstractfs_projectafs_dir=
+}
+
+_prohibit_rmlink_abstractfs() {
+	#mkdir -p "$abstractfs_lock"/"$abstractfs_name"
+	mkdir -p "$abstractfs_lock"/"$abstractfs_name"/"$abstractfs_puid"
+}
+
+_permit_rmlink_abstractfs() {
+	#mkdir -p "$abstractfs_lock"/"$abstractfs_name"
+	rmdir "$abstractfs_lock"/"$abstractfs_name"/"$abstractfs_puid" > /dev/null 2>&1
+}
+
+_wait_rmlink_abstractfs() {
+	! [[ -e "$abstractfs_lock"/"$abstractfs_name"_rmlink ]] && return 0
+	sleep 0.1
+	
+	! [[ -e "$abstractfs_lock"/"$abstractfs_name"_rmlink ]] && return 0
+	sleep 0.3
+	
+	! [[ -e "$abstractfs_lock"/"$abstractfs_name"_rmlink ]] && return 0
+	sleep 1
+	
+	! [[ -e "$abstractfs_lock"/"$abstractfs_name"_rmlink ]] && return 0
+	sleep 3
+	
+	! [[ -e "$abstractfs_lock"/"$abstractfs_name"_rmlink ]] && return 0
+	return 1
+}
+
+_rmlink_abstractfs() {
+	mkdir -p "$abstractfs_lock"
+	_permit_rmlink_abstractfs
+	
+	! _wait_rmlink_abstractfs && return 1
+	
+	echo > "$abstractfs_lock"/"$abstractfs_name"_rmlink
+	
+	rmdir "$abstractfs_lock"/"$abstractfs_name" >/dev/null 2>&1 && _rmlink "$abstractfs"
+	rmdir "$abstractfs_root" >/dev/null 2>&1
+	
+	rm "$abstractfs_lock"/"$abstractfs_name"_rmlink
+}
+
+_relink_abstractfs() {
+	! _wait_rmlink_abstractfs && return 1
+	
+	mkdir -p "$abstractfs_lock"
+	_prohibit_rmlink_abstractfs
+	
+	! _wait_rmlink_abstractfs && return 1
+	
+	_relink "$sharedHostProjectDir" "$sharedGuestProjectDir"
+}
+
+#Precaution. Should not be a requirement in any production use.
+_set_share_abstractfs_reset() {
+	export sharedHostProjectDir="$sharedHostProjectDirDefault"
+	export sharedGuestProjectDir="$sharedGuestProjectDirDefault"
+}
+
+# ATTENTION: Overload with "core.sh".
+_set_share_abstractfs() {
+	_set_share_abstractfs_reset
+	
+	# ATTENTION: Using absolute folder, may preserve apparent parent directory name at the expense of reducing likelihood of 8.3 compatibility.
+	#./ubiquitous_bash.sh _abstractfs ls -lad ./.
+	#/dev/shm/uk4u/randomid/.
+	#/dev/shm/uk4u/randomid/ubiquitous_bash
+	export sharedHostProjectDir="$abstractfs_base"
+	#export sharedHostProjectDir=$(_getAbsoluteFolder "$abstractfs_base")
+	
+	export sharedGuestProjectDir="$abstractfs"
+	
+	#Blank default. Resolves to lowest directory shared by "$PWD" and "$@" .
+	#export sharedHostProjectDir="$sharedHostProjectDirDefault"
+}
+
+_describe_abstractfs() {
+	local localFunctionEntryPWD
+	localFunctionEntryPWD="$PWD"
+	
+	local testAbstractfsBase
+	testAbstractfsBase="$abstractfs_base"
+	[[ "$1" != "" ]] && testAbstractfsBase=$(_getAbsoluteLocation "$1")
+	
+	basename "$testAbstractfsBase"
+	! cd "$testAbstractfsBase" >/dev/null 2>&1 && cd "$localFunctionEntryPWD" && return 1
+	git rev-parse --abbrev-ref HEAD 2>/dev/null
+	git remote show origin 2>/dev/null
+	
+	cd "$localFunctionEntryPWD"
+}
+
+_base_abstractfs() {
+	export abstractfs_base=
+	[[ "$@" != "" ]] && export abstractfs_base=$(_searchBaseDir "$@")
+	[[ "$abstractfs_base" == "" ]] && export abstractfs_base=$(_searchBaseDir "$@" "$virtUserPWD")
+}
+
+_findProjectAFS_procedure() {
+	[[ "$ub_findProjectAFS_maxheight" -gt "120" ]] && return 1
+	let ub_findProjectAFS_maxheight="$ub_findProjectAFS_maxheight"+1
+	export ub_findProjectAFS_maxheight
+	
+	if [[ -e "./project.afs" ]]
+	then
+		_getAbsoluteLocation "./project.afs"
+		export abstractfs_projectafs_dir=$(_getAbsoluteFolder "./project.afs")
+		return 0
+	fi
+	
+	[[ "$1" == "/" ]] && return 1
+	
+	! cd .. > /dev/null 2>&1 && return 1
+	
+	_findProjectAFS_procedure
+}
+
+#Recursively searches for directories containing "project.afs".
+_findProjectAFS() {
+	local localFunctionEntryPWD
+	localFunctionEntryPWD="$PWD"
+	
+	cd "$1"
+	
+	_findProjectAFS_procedure
+	
+	cd "$localFunctionEntryPWD"
+}
+
+_projectAFS_here() {
+	cat << CZXWXcRMTo8EmM8i4d
+#!/usr/bin/env bash
+
+export abstractfs_name="$abstractfs_name"
+CZXWXcRMTo8EmM8i4d
+}
+
+_write_projectAFS() {
+	local testAbstractfsBase
+	testAbstractfsBase="$abstractfs_base"
+	[[ "$1" != "" ]] && testAbstractfsBase=$(_getAbsoluteLocation "$1")
+	
+	( [[ "$nofs" == "true" ]] || [[ "$afs_nofs" == "true" ]] || [[ "$nofs_write" == "true" ]] || [[ "$afs_nofs_write" == "true" ]] ) && return 0
+	_projectAFS_here > "$testAbstractfsBase"/project.afs
+	chmod u+x "$testAbstractfsBase"/project.afs
+}
+
+# DANGER: Mandatory strict directory 8.3 compliance for this variable! Long subdirectory/filenames permitted thereafter.
+_default_name_abstractfs() {
+	#If "$abstractfs_name" is not saved to file, a consistent, compressed, naming scheme, is required.
+	if ( [[ "$nofs" == "true" ]] || [[ "$afs_nofs" == "true" ]] )
+	then
+		#echo $(basename "$abstractfs_base") | md5sum | head -c 8
+		_describe_abstractfs "$@" | md5sum | head -c 8
+		return
+	fi
+	
+	cat /dev/urandom 2> /dev/null | base64 2> /dev/null | tr -dc 'a-z' 2> /dev/null | head -c "1" 2> /dev/null
+	cat /dev/urandom 2> /dev/null | base64 2> /dev/null | tr -dc 'a-z0-9' 2> /dev/null | head -c "7" 2> /dev/null
+}
+
+#"$1" == "$abstractfs_base" || ""
+_name_abstractfs() {
+	export abstractfs_name=
+	
+	local testAbstractfsBase
+	testAbstractfsBase="$abstractfs_base"
+	[[ "$1" != "" ]] && testAbstractfsBase=$(_getAbsoluteLocation "$1")
+	
+	export abstractfs_projectafs=$(_findProjectAFS "$testAbstractfsBase")
+	[[ "$abstractfs_projectafs" != "" ]] && [[ -e "$abstractfs_projectafs" ]] && . "$abstractfs_projectafs" --noexec
+	
+	if [[ "$abstractfs_name" == "" ]]
+	then
+		export abstractfs_name=$(_default_name_abstractfs "$testAbstractfsBase")
+		if ( [[ "$nofs" == "true" ]] || [[ "$afs_nofs" == "true" ]] )
+		then
+			echo "$abstractfs_name"
+			return
+		fi
+		_write_projectAFS "$testAbstractfsBase"
+		export abstractfs_name=
+	fi
+	
+	export abstractfs_projectafs=$(_findProjectAFS "$testAbstractfsBase")
+	[[ "$abstractfs_projectafs" != "" ]] && [[ -e "$abstractfs_projectafs" ]] && . "$abstractfs_projectafs" --noexec
+	
+	( [[ "$nofs" == "true" ]] || [[ "$afs_nofs" == "true" ]] ) && [[ ! -e "$abstractfs_projectafs" ]] && return 1
+	[[ "$abstractfs_name" == "" ]] && return 1
+	
+	echo "$abstractfs_name"
+	return 0
+}
 
 _resetFakeHomeEnv_extra() {
 	true
@@ -2687,6 +4728,1073 @@ _query() {
 	
 	( cd "$qc" ; _queryClient _bin cat | _log_query "$queryTmp"/tx.log | ( cd "$qs" ; _queryServer _bin cat | _log_query "$queryTmp"/xc.log | ( cd "$qc" ; _queryClient _bin cat | _log_query "$queryTmp"/rx.log ; return "${PIPESTATUS[0]}" )))
 }
+
+_testGit() {
+	_wantGetDep git
+}
+
+#Ignores file modes, suitable for use with possibly broken filesystems like NTFS.
+_gitCompatible() {
+	git -c core.fileMode=false "$@"
+}
+
+_gitInfo() {
+	#Git Repository Information
+	export repoDir="$PWD"
+
+	export repoName=$(basename "$repoDir")
+	export bareRepoDir=../."$repoName".git
+	export bareRepoAbsoluteDir=$(_getAbsoluteLocation "$bareRepoDir")
+
+	#Set $repoHostName in user ".bashrc" or similar. May also set $repoPort including colon prefix.
+	[[ "$repoHostname" == "" ]] && export repoHostname=$(hostname -f)
+	
+	true
+}
+
+_gitRemote() {
+	_gitInfo
+	
+	if [[ -e "$bareRepoDir" ]]
+	then
+		_showGitRepoURI
+		return 0
+	fi
+	
+	if ! [[ -e "$repoDir"/.git ]]
+	then
+		return 1
+	fi
+	
+	if git config --get remote.origin.url > /dev/null 2>&1
+	then
+		echo -n "git clone --recursive "
+		git config --get remote.origin.url
+		return 0
+	fi
+	_gitBare
+}
+
+_gitNew() {
+	git init
+	git add .
+	git commit -a -m "first commit"
+}
+
+_gitImport() {
+	cd "$scriptFolder"
+	
+	mkdir -p "$1"
+	cd "$1"
+	shift
+	git clone "$@"
+	
+	cd "$scriptFolder"
+}
+
+_findGit_procedure() {
+	cd "$1"
+	shift
+	
+	if [[ -e "./.git" ]]
+	then
+		"$@"
+		return 0
+	fi
+	
+	find -L . -mindepth 1 -maxdepth 1 -type d -exec "$scriptAbsoluteLocation" _findGit_procedure '{}' "$@" \;
+}
+
+#Recursively searches for directories containing ".git".
+_findGit() {
+	if [[ -e "./.git" ]]
+	then
+		"$@"
+		return 0
+	fi
+	
+	find -L . -mindepth 1 -maxdepth 1 -type d -exec "$scriptAbsoluteLocation" _findGit_procedure '{}' "$@" \;
+}
+
+_gitPull() {
+	git pull
+	git submodule update --recursive
+}
+
+_gitCheck_sequence() {
+	echo '-----'
+	
+	local checkRealpath
+	checkRealpath=$(realpath .)
+	local checkBasename
+	checkBasename=$(basename "$checkRealpath")
+	
+	echo "$checkBasename"
+	
+	git status
+}
+
+_gitCheck() {
+	_findGit "$scriptAbsoluteLocation" _gitCheck_sequence
+}
+
+_gitPullRecursive_sequence() {
+	echo '-----'
+	
+	local checkRealpath
+	checkRealpath=$(realpath .)
+	local checkBasename
+	checkBasename=$(basename "$checkRealpath")
+	
+	echo "$checkBasename"
+	
+	"$scriptAbsoluteLocation" _gitPull
+}
+
+# DANGER
+#Updates all git repositories recursively.
+_gitPullRecursive() {
+	_findGit "$scriptAbsoluteLocation" _gitPullRecursive_sequence
+}
+
+# DANGER
+# Pushes all changes as a commit described as "Upstream."
+_gitUpstream() {
+	git add -A . ; git commit -a -m "Upstream." ; git push
+}
+_gitUp() {
+	_gitUpstream
+}
+
+# DANGER
+#Removes all but the .git folder from the working directory.
+#_gitFresh() {
+#	find . -not -path '\.\/\.git*' -delete
+#}
+
+
+#####Program
+
+_createBareGitRepo() {
+	mkdir -p "$bareRepoDir"
+	cd $bareRepoDir
+	
+	git --bare init
+	
+	echo "-----"
+}
+
+
+_setBareGitRepo() {
+	cd "$repoDir"
+	
+	git remote rm origin
+	git remote add origin "$bareRepoDir"
+	git push --set-upstream origin master
+	
+	echo "-----"
+}
+
+_showGitRepoURI() {
+	echo git clone --recursive ssh://"$USER"@"$repoHostname""$repoPort""$bareRepoAbsoluteDir" "$repoName"
+	
+	
+	#if [[ "$repoHostname" != "" ]]
+	#then
+	#	clear
+	#	echo ssh://"$USER"@"$repoHostname""$repoPort""$bareRepoAbsoluteDir"
+	#	sleep 15
+	#fi
+}
+
+_gitBareSequence() {
+	_gitInfo
+	
+	if [[ -e "$bareRepoDir" ]]
+	then
+		_showGitRepoURI
+		return 2
+	fi
+	
+	if ! [[ -e "$repoDir"/.git ]]
+	then
+		return 1
+	fi
+	
+	_createBareGitRepo
+	
+	_setBareGitRepo
+	
+	_showGitRepoURI
+	
+}
+
+_gitBare() {
+	
+	"$scriptAbsoluteLocation" _gitBareSequence
+	
+}
+
+
+
+_test_bup() {
+	! _wantDep bup && echo 'warn: no bup'
+	
+	! man tar | grep '\-\-one-file-system' > /dev/null 2>&1 && echo 'warn: tar does not support one-file-system' && return 1
+	! man tar | grep '\-\-xattrs' > /dev/null 2>&1 && echo 'warn: tar does not support xattrs'
+	! man tar | grep '\-\-acls' > /dev/null 2>&1 && echo 'warn: tar does not support acls'
+}
+
+_bupNew() {
+	export BUP_DIR="./.bup"
+	
+	[[ -e "$BUP_DIR" ]] && return 1
+	
+	bup init
+}
+
+_bupLog() {
+	export BUP_DIR="./.bup"
+	
+	[[ ! -e "$BUP_DIR" ]] && return 1
+	
+	git --git-dir=./.bup log
+}
+
+_bupList() {
+	export BUP_DIR="./.bup"
+	
+	[[ ! -e "$BUP_DIR" ]] && return 1
+	
+	if [[ "$1" == "" ]]
+	then
+		bup ls "HEAD"
+		return
+	fi
+	[[ "$1" != "" ]] && bup ls "$@"
+}
+
+_bupStore() {
+	export BUP_DIR="./.bup"
+	
+	[[ ! -e "$BUP_DIR" ]] && return 1
+	
+	! man tar | grep '\-\-one-file-system' > /dev/null 2>&1 && return 1
+	! man tar | grep '\-\-xattrs' > /dev/null 2>&1 && return 1
+	! man tar | grep '\-\-acls' > /dev/null 2>&1 && return 1
+	
+	if [[ "$1" == "" ]]
+	then
+		tar --one-file-system --xattrs --acls --exclude "$BUP_DIR" -cvf - . | bup split -n "HEAD" -vv
+		return
+	fi
+	[[ "$1" != "" ]] && tar --one-file-system --xattrs --acls --exclude "$BUP_DIR" -cvf - . | bup split -n "$@" -vv
+}
+
+_bupRetrieve() {
+	export BUP_DIR="./.bup"
+	
+	[[ ! -e "$BUP_DIR" ]] && return 1
+	
+	! man tar | grep '\-\-one-file-system' > /dev/null 2>&1 && return 1
+	! man tar | grep '\-\-xattrs' > /dev/null 2>&1 && return 1
+	! man tar | grep '\-\-acls' > /dev/null 2>&1 && return 1
+	
+	if [[ "$1" == "" ]]
+	then
+		bup join "HEAD" | tar --one-file-system --xattrs --acls -xf -
+		return
+	fi
+	[[ "$1" != "" ]] && bup join "$@" | tar --one-file-system --xattrs --acls -xf -
+}
+
+_testDistro() {
+	_wantGetDep sha256sum
+	_wantGetDep sha512sum
+	_wantGetDep axel
+}
+
+_kernelConfig_list_here() {
+	cat << CZXWXcRMTo8EmM8i4d
+
+
+
+CZXWXcRMTo8EmM8i4d
+}
+
+
+
+
+
+_kernelConfig_reject-comments() {
+	grep -v '^\#\|\#'
+}
+
+_kernelConfig_request() {
+	local current_kernelConfig_statement
+	current_kernelConfig_statement=$(cat "$kernelConfig_file" | _kernelConfig_reject-comments | grep "$1"'\=' | tr -dc 'a-zA-Z0-9\=\_')
+	
+	_messagePlain_request 'hazard: '"$1"': '"$current_kernelConfig_statement"
+}
+
+
+_kernelConfig_require-yes() {
+	cat "$kernelConfig_file" | _kernelConfig_reject-comments | grep "$1"'\=y' > /dev/null 2>&1 && return 0
+	return 1
+}
+
+_kernelConfig_require-module-or-yes() {
+	cat "$kernelConfig_file" | _kernelConfig_reject-comments | grep "$1"'\=m' > /dev/null 2>&1 && return 0
+	cat "$kernelConfig_file" | _kernelConfig_reject-comments | grep "$1"'\=y' > /dev/null 2>&1 && return 0
+	return 1
+}
+
+# DANGER: Currently assuming lack of an entry is equivalent to option set as '=n' with make menuconfig or similar.
+_kernelConfig_require-no() {
+	cat "$kernelConfig_file" | _kernelConfig_reject-comments | grep "$1"'\=m' > /dev/null 2>&1 && return 1
+	cat "$kernelConfig_file" | _kernelConfig_reject-comments | grep "$1"'\=y' > /dev/null 2>&1 && return 1
+	return 0
+}
+
+
+_kernelConfig_warn-y__() {
+	_kernelConfig_require-yes "$1" && return 0
+	_messagePlain_warn 'warn: not:    Y: '"$1"
+	export kernelConfig_warn='true'
+	return 1
+}
+
+_kernelConfig_warn-y_m() {
+	_kernelConfig_require-module-or-yes "$1" && return 0
+	_messagePlain_warn 'warn: not:  M/Y: '"$1"
+	export kernelConfig_warn='true'
+	return 1
+}
+
+_kernelConfig_warn-n__() {
+	_kernelConfig_require-no "$1" && return 0
+	_messagePlain_warn 'warn: not:    N: '"$1"
+	export kernelConfig_warn='true'
+	return 1
+}
+
+_kernelConfig_warn-any() {
+	_kernelConfig_warn-y_m "$1"
+	_kernelConfig_warn-n__ "$1"
+}
+
+_kernelConfig__bad-y__() {
+	_kernelConfig_require-yes "$1" && return 0
+	_messagePlain_bad 'bad: not:     Y: '"$1"
+	export kernelConfig_bad='true'
+	return 1
+}
+
+_kernelConfig__bad-y_m() {
+	_kernelConfig_require-module-or-yes "$1" && return 0
+	_messagePlain_bad 'bad: not:   M/Y: '"$1"
+	export kernelConfig_bad='true'
+	return 1
+}
+
+_kernelConfig__bad-n__() {
+	_kernelConfig_require-no "$1" && return 0
+	_messagePlain_bad 'bad: not:     N: '"$1"
+	export kernelConfig_bad='true'
+	return 1
+}
+
+_kernelConfig_require-tradeoff-legacy() {
+	_messagePlain_nominal 'kernelConfig: tradeoff-legacy'
+	_messagePlain_request 'Carefully evaluate '\''tradeoff-legacy'\'' for specific use cases.'
+	export kernelConfig_file="$1"
+	
+	_kernelConfig__bad-n__ LEGACY_VSYSCALL_EMULATE
+}
+
+# WARNING: Risk must be evaluated for specific use cases.
+# WARNING: Insecure.
+# Standalone simulators (eg. flight sim):
+# * May have hard real-time frame latency limits within 10% of the fastest avaialble from a commercially avaialble CPU.
+# * May be severely single-thread CPU constrained.
+# * May have real-time workloads exactly matching those suffering half performance due to security mitigations.
+# * May not require real-time security mitigations.
+# Disabling hardening may as much as double performance for some workloads.
+# https://www.phoronix.com/scan.php?page=article&item=linux-retpoline-benchmarks&num=2
+# https://www.phoronix.com/scan.php?page=article&item=linux-416early-spectremelt&num=4
+_kernelConfig_require-tradeoff-perform() {
+	_messagePlain_nominal 'kernelConfig: tradeoff-perform'
+	_messagePlain_request 'Carefully evaluate '\''tradeoff-perform'\'' for specific use cases.'
+	export kernelConfig_file="$1"
+	
+	_kernelConfig__bad-n__ CONFIG_RETPOLINE
+	_kernelConfig__bad-n__ CONFIG_PAGE_TABLE_ISOLATION
+	_kernelConfig__bad-n__ CONFIG_X86_SMAP
+	
+	_kernelConfig_warn-n__ AMD_MEM_ENCRYPT
+	
+	_kernelConfig__bad-y__ CONFIG_X86_INTEL_TSX_MODE_ON
+}
+
+# WARNING: Risk must be evaluated for specific use cases.
+# WARNING: BREAKS some high-performance real-time applicatons (eg. flight sim, VR, AR).
+# Standalone simulators (eg. flight sim):
+# * May have hard real-time frame latency limits within 10% of the fastest avaialble from a commercially avaialble CPU.
+# * May be severely single-thread CPU constrained.
+# * May have real-time workloads exactly matching those suffering half performance due to security mitigations.
+# * May not require real-time security mitigations.
+# Disabling hardening may as much as double performance for some workloads.
+# https://www.phoronix.com/scan.php?page=article&item=linux-retpoline-benchmarks&num=2
+# https://www.phoronix.com/scan.php?page=article&item=linux-416early-spectremelt&num=4
+_kernelConfig_require-tradeoff-harden() {
+	_messagePlain_nominal 'kernelConfig: tradeoff-harden'
+	_messagePlain_request 'Carefully evaluate '\''tradeoff-harden'\'' for specific use cases.'
+	export kernelConfig_file="$1"
+	
+	_kernelConfig__bad-y__ CONFIG_RETPOLINE
+	_kernelConfig__bad-y__ CONFIG_PAGE_TABLE_ISOLATION
+	_kernelConfig__bad-y__ CONFIG_X86_SMAP
+	
+	# Uncertain.
+	#_kernelConfig_warn-y__ AMD_MEM_ENCRYPT
+	
+	_kernelConfig__bad-y__ CONFIG_X86_INTEL_TSX_MODE_OFF
+}
+
+# ATTENTION: Override with 'ops.sh' or similar.
+_kernelConfig_require-tradeoff() {
+	_kernelConfig_require-tradeoff-legacy "$@"
+	
+	
+	[[ "$kernelConfig_tradeoff_perform" == "" ]] && export kernelConfig_tradeoff_perform='false'
+	
+	if [[ "$kernelConfig_tradeoff_perform" == 'true' ]]
+	then
+		_kernelConfig_require-tradeoff-perform "$@"
+		return
+	fi
+	
+	_kernelConfig_require-tradeoff-harden "$@"
+	return
+}
+
+# Based on kernel config documentation and Debian default config.
+_kernelConfig_require-virtualization-accessory() {
+	_messagePlain_nominal 'kernelConfig: virtualization-accessory'
+	export kernelConfig_file="$1"
+	
+	_kernelConfig_warn-y_m CONFIG_KVM
+	_kernelConfig_warn-y_m CONFIG_KVM_INTEL
+	_kernelConfig_warn-y_m CONFIG_KVM_AMD
+	
+	_kernelConfig_warn-y__ CONFIG_KVM_AMD_SEV
+	
+	_kernelConfig_warn-y_m CONFIG_VHOST_NET
+	_kernelConfig_warn-y_m CONFIG_VHOST_SCSI
+	_kernelConfig_warn-y_m CONFIG_VHOST_VSOCK
+	
+	_kernelConfig__bad-y_m DRM_VMWGFX
+	
+	_kernelConfig__bad-n__ CONFIG_VBOXGUEST
+	_kernelConfig__bad-n__ CONFIG_DRM_VBOXVIDEO
+	
+	_kernelConfig_warn-y__ VIRTIO_MENU
+	_kernelConfig_warn-y__ CONFIG_VIRTIO_PCI
+	_kernelConfig_warn-y__ CONFIG_VIRTIO_PCI_LEGACY
+	_kernelConfig__bad-y_m CONFIG_VIRTIO_BALLOON
+	_kernelConfig__bad-y_m CONFIG_VIRTIO_INPUT
+	_kernelConfig__bad-y_m CONFIG_VIRTIO_MMIO
+	_kernelConfig_warn-y__ CONFIG_VIRTIO_MMIO_CMDLINE_DEVICES
+	
+	_kernelConfig_warn-y_m CONFIG_DRM_VIRTIO_GPU
+	
+	# Uncertain. Apparently new feature.
+	_kernelConfig_warn-y_m CONFIG_VIRTIO_FS
+	
+	_kernelConfig_warn-y_m CONFIG_HYPERV
+	_kernelConfig_warn-y_m CONFIG_HYPERV_UTILS
+	_kernelConfig_warn-y_m CONFIG_HYPERV_BALLOON
+	
+	_kernelConfig_warn-y__ CONFIG_XEN_BALLOON
+	_kernelConfig_warn-y__ CONFIG_XEN_BALLOON_MEMORY_HOTPLUG
+	_kernelConfig_warn-y__ CONFIG_XEN_SCRUB_PAGES_DEFAULT
+	_kernelConfig__bad-y_m CONFIG_XEN_DEV_EVTCHN
+	_kernelConfig_warn-y__ CONFIG_XEN_BACKEND
+	_kernelConfig__bad-y_m CONFIG_XENFS
+	_kernelConfig_warn-y__ CONFIG_XEN_COMPAT_XENFS
+	_kernelConfig_warn-y__ CONFIG_XEN_SYS_HYPERVISOR
+	_kernelConfig__bad-y_m CONFIG_XEN_SYS_HYPERVISOR
+	_kernelConfig__bad-y_m CONFIG_XEN_GRANT_DEV_ALLOC
+	_kernelConfig__bad-y_m CONFIG_XEN_PCIDEV_BACKEND
+	_kernelConfig__bad-y_m CONFIG_XEN_SCSI_BACKEND
+	_kernelConfig__bad-y_m CONFIG_XEN_ACPI_PROCESSOR
+	_kernelConfig_warn-y__ CONFIG_XEN_MCE_LOG
+	_kernelConfig_warn-y__ CONFIG_XEN_SYMS
+	
+	_kernelConfig_warn-y__ CONFIG_DRM_XEN
+	
+	# Uncertain.
+	#_kernelConfig_warn-n__ CONFIG_XEN_SELFBALLOONING
+	#_kernelConfig_warn-n__ CONFIG_IOMMU_DEFAULT_PASSTHROUGH
+	#_kernelConfig_warn-n__ CONFIG_INTEL_IOMMU_DEFAULT_ON
+}
+
+# https://wiki.gentoo.org/wiki/VirtualBox
+_kernelConfig_require-virtualbox() {
+	_messagePlain_nominal 'kernelConfig: virtualbox'
+	export kernelConfig_file="$1"
+	
+	_kernelConfig__bad-y__ CONFIG_X86_SYSFB
+	
+	_kernelConfig__bad-y__ CONFIG_ATA
+	_kernelConfig__bad-y__ CONFIG_SATA_AHCI
+	_kernelConfig__bad-y__ CONFIG_ATA_SFF
+	_kernelConfig__bad-y__ CONFIG_ATA_BMDMA
+	_kernelConfig__bad-y__ CONFIG_ATA_PIIX
+	
+	_kernelConfig__bad-y__ CONFIG_NETDEVICES
+	_kernelConfig__bad-y__ CONFIG_ETHERNET
+	_kernelConfig__bad-y__ CONFIG_NET_VENDOR_INTEL
+	_kernelConfig__bad-y__ CONFIG_E1000
+	
+	_kernelConfig__bad-y__ CONFIG_INPUT_KEYBOARD
+	_kernelConfig__bad-y__ CONFIG_KEYBOARD_ATKBD
+	_kernelConfig__bad-y__ CONFIG_INPUT_MOUSE
+	_kernelConfig__bad-y__ CONFIG_MOUSE_PS2
+	
+	_kernelConfig__bad-y__ CONFIG_DRM
+	_kernelConfig__bad-y__ CONFIG_DRM_FBDEV_EMULATION
+	_kernelConfig__bad-y__ CONFIG_DRM_VIRTIO_GPU
+	
+	_kernelConfig__bad-y__ CONFIG_FB
+	_kernelConfig__bad-y__ CONFIG_FIRMWARE_EDID
+	_kernelConfig__bad-y__ CONFIG_FB_SIMPLE
+	
+	_kernelConfig__bad-y__ CONFIG_FRAMEBUFFER_CONSOLE
+	_kernelConfig__bad-y__ CONFIG_FRAMEBUFFER_CONSOLE_DETECT_PRIMARY
+	
+	_kernelConfig__bad-y__ CONFIG_SOUND
+	_kernelConfig__bad-y__ CONFIG_SND
+	_kernelConfig__bad-y__ CONFIG_SND_PCI
+	_kernelConfig__bad-y__ CONFIG_SND_INTEL8X0
+	
+	_kernelConfig__bad-y__ CONFIG_USB_SUPPORT
+	_kernelConfig__bad-y__ CONFIG_USB_XHCI_HCD
+	_kernelConfig__bad-y__ CONFIG_USB_EHCI_HCD
+}
+
+
+# https://wiki.gentoo.org/wiki/Handbook:AMD64/Full/Installation#Activating_required_options
+_kernelConfig_require-boot() {
+	_messagePlain_nominal 'kernelConfig: boot'
+	export kernelConfig_file="$1"
+	
+	_kernelConfig__bad-y__ CONFIG_FW_LOADER
+	#_kernelConfig__bad-y__ CONFIG_FIRMWARE_IN_KERNEL
+	
+	_kernelConfig__bad-y__ CONFIG_DEVTMPFS
+	_kernelConfig__bad-y__ CONFIG_DEVTMPFS_MOUNT
+	_kernelConfig__bad-y__ CONFIG_BLK_DEV_SD
+	
+	
+	_kernelConfig__bad-y__ CONFIG_EXT4_FS
+	_kernelConfig__bad-y__ CONFIG_EXT4_FS_POSIX_ACL
+	_kernelConfig__bad-y__ CONFIG_EXT4_FS_SECURITY
+	#_kernelConfig__bad-y__ CONFIG_EXT4_ENCRYPTION
+	
+	if ! _kernelConfig_warn-y__ CONFIG_EXT4_USE_FOR_EXT2 > /dev/null 2>&1
+	then
+		_kernelConfig__bad-y__ CONFIG_EXT2_FS
+		_kernelConfig__bad-y__ CONFIG_EXT3_FS
+		_kernelConfig__bad-y__ CONFIG_EXT3_FS_POSIX_ACL
+		_kernelConfig__bad-y__ CONFIG_EXT3_FS_SECURITY
+	else
+		_kernelConfig_warn-y__ CONFIG_EXT4_USE_FOR_EXT2
+	fi
+	
+	_kernelConfig__bad-y__ CONFIG_MSDOS_FS
+	_kernelConfig__bad-y__ CONFIG_VFAT_FS
+	
+	_kernelConfig__bad-y__ CONFIG_PROC_FS
+	_kernelConfig__bad-y__ CONFIG_TMPFS
+	
+	_kernelConfig__bad-y__ CONFIG_PPP
+	_kernelConfig__bad-y__ CONFIG_PPP_ASYNC
+	_kernelConfig__bad-y__ CONFIG_PPP_SYNC_TTY
+	
+	_kernelConfig__bad-y__ CONFIG_SMP
+	
+	# https://wiki.gentoo.org/wiki/Kernel/Gentoo_Kernel_Configuration_Guide
+	# 'Support for Host-side USB'
+	_kernelConfig__bad-y__ CONFIG_USB_SUPPORT
+	_kernelConfig__bad-y__ CONFIG_USB_XHCI_HCD
+	_kernelConfig__bad-y__ CONFIG_USB_EHCI_HCD
+	_kernelConfig__bad-y__ CONFIG_USB_OHCI_HCD
+	
+	_kernelConfig__bad-y__ CONFIG_HID
+	_kernelConfig__bad-y__ CONFIG_HID_GENERIC
+	_kernelConfig__bad-y__ CONFIG_HID_BATTERY_STRENGTH
+	_kernelConfig__bad-y__ CONFIG_USB_HID
+	
+	_kernelConfig__bad-y__ CONFIG_PARTITION_ADVANCED
+	_kernelConfig__bad-y__ CONFIG_EFI_PARTITION
+	
+	_kernelConfig__bad-y__ CONFIG_EFI
+	_kernelConfig__bad-y__ CONFIG_EFI_STUB
+	_kernelConfig__bad-y__ CONFIG_EFI_MIXED
+	
+	_kernelConfig__bad-y__ CONFIG_EFI_VARS
+}
+
+
+_kernelConfig_require-arch-x64() {
+	_messagePlain_nominal 'kernelConfig: arch-x64'
+	export kernelConfig_file="$1"
+	
+	# CRITICAL! Expected to accommodate modern CPUs.
+	_messagePlain_request 'request: -march=sandybridge -mtune=skylake'
+	_messagePlain_request 'export KCFLAGS="-O2 -march=sandybridge -mtune=skylake -pipe"'
+	_messagePlain_request 'export KCPPFLAGS="-O2 -march=sandybridge -mtune=skylake -pipe"'
+	
+	_kernelConfig_warn-n__ CONFIG_GENERIC_CPU
+	
+	_kernelConfig_request MCORE2
+	
+	_kernelConfig_warn-y__ CONFIG_X86_MCE
+	_kernelConfig_warn-y__ CONFIG_X86_MCE_INTEL
+	_kernelConfig_warn-y__ CONFIG_X86_MCE_AMD
+	
+	# Uncertain. May or may not improve performance.
+	_kernelConfig_warn-y__ CONFIG_INTEL_RDT
+	
+	# Maintenance may be easier with this enabled.
+	_kernelConfig_warn-y_m CONFIG_EFIVAR_FS
+	
+	# Presumably mixing entropy may be preferable.
+	_kernelConfig__bad-n__ CONFIG_RANDOM_TRUST_CPU
+	
+	
+	# If possible, it may be desirable to check clocksource defaults.
+	
+	_kernelConfig__bad-y__ X86_TSC
+	
+	_kernelConfig_warn-y__ HPET
+	_kernelConfig_warn-y__ HPET_EMULATE_RTC
+	_kernelConfig_warn-y__ HPET_MMAP
+	_kernelConfig_warn-y__ HPET_MMAP_DEFAULT
+	_kernelConfig_warn-y__ HPET_TIMER
+	
+	
+	_kernelConfig__bad-y__ CONFIG_IA32_EMULATION
+	_kernelConfig_warn-n__ IA32_AOUT
+	_kernelConfig__bad-y__ CONFIG_X86_X32
+	
+	_kernelConfig__bad-y__ CONFIG_BINFMT_ELF
+	_kernelConfig__bad-y_m CONFIG_BINFMT_MISC
+	
+	# May not have been optional under older kernel configurations.
+	_kernelConfig__bad-y__ CONFIG_BINFMT_SCRIPT
+}
+
+_kernelConfig_require-accessory() {
+	_messagePlain_nominal 'kernelConfig: accessory'
+	export kernelConfig_file="$1"
+	
+	# May be critical to 'ss' tool functionality typically expected by Ubiquitous Bash.
+	_kernelConfig_warn-y_m CONFIG_PACKET_DIAG
+	_kernelConfig_warn-y_m CONFIG_UNIX_DIAG
+	_kernelConfig_warn-y_m CONFIG_INET_DIAG
+	_kernelConfig_warn-y_m CONFIG_NETLINK_DIAG
+	
+	# Essential for a wide variety of platforms.
+	_kernelConfig_warn-y_m CONFIG_MOUSE_PS2_TRACKPOINT
+	
+	# Common and useful GPU features.
+	_kernelConfig_warn-y_m CONFIG_DRM_RADEON
+	_kernelConfig_warn-y_m CONFIG_DRM_AMDGPU
+	_kernelConfig_warn-y_m CONFIG_DRM_I915
+	_kernelConfig_warn-y_m CONFIG_DRM_VIA
+	_kernelConfig_warn-y_m CONFIG_DRM_NOUVEAU
+	
+	# Uncertain.
+	#_kernelConfig_warn-y__ CONFIG_IRQ_REMAP
+	
+	# TODO: Accessory features which may become interesting.
+	#ACPI_HMAT
+	#PCIE_BW
+	#ACRN_GUEST
+	#XILINX SDFEC
+}
+
+_kernelConfig_require-build() {
+	_messagePlain_nominal 'kernelConfig: build'
+	export kernelConfig_file="$1"
+	
+	# May cause failure if set incorrectly.
+	if ! cat "$kernelConfig_file" | grep 'CONFIG_SYSTEM_TRUSTED_KEYS\=\"\"' > /dev/null 2>&1 && ! cat "$kernelConfig_file" | grep -v 'CONFIG_SYSTEM_TRUSTED_KEYS' > /dev/null 2>&1
+	then
+		#_messagePlain_bad 'bad: not:    Y: '"$1"
+		 _messagePlain_bad 'bad: not:    _: 'CONFIG_SYSTEM_TRUSTED_KEYS
+	fi
+	
+}
+
+# ATTENTION: As desired, ignore, or override with 'ops.sh' or similar.
+# ATTENTION: Dependency of '_kernelConfig_require-latency' .
+_kernelConfig_require-latency_frequency() {
+	# High HZ rate (ie. HZ 1000) may be preferable for machines directly rendering simulator/VR graphics.
+	# Theoretically graphics VSYNC might prefer HZ 300 or similar, as a multiple of common graphics refresh rates.
+	# 25,~29.97,30,60=300 60,72=360 60,75=300 60,80=240 32,36,64,72=576
+	# Theoretically, a setting of 250 may be beneficial for virtualization where the host kernel may be 1000 .
+	# Typically values: 250,300,1000 .
+	# https://passthroughpo.st/config_hz-how-does-it-affect-kvm/
+	# https://github.com/vmprof/vmprof-python/issues/163
+	[[ "$kernelConfig_frequency" == "" ]] && export kernelConfig_frequency=300
+	
+	
+	if ! cat "$kernelConfig_file" | grep 'HZ='"$kernelConfig_frequency" > /dev/null 2>&1
+	then
+		#_messagePlain_bad  'bad: not:     Y: '"$1"
+		#_messagePlain_warn 'warn: not:    Y: '"$1"
+		 _messagePlain_bad 'bad: not:   '"$kernelConfig_frequency"': 'HZ
+	fi
+	_kernelConfig__bad-y__ HZ_"$kernelConfig_frequency"
+}
+
+_kernelConfig_require-latency() {
+	_messagePlain_nominal 'kernelConfig: latency'
+	export kernelConfig_file="$1"
+	
+	# Uncertain. Default off per Debian config.
+	_kernelConfig_warn-n__ CONFIG_X86_GENERIC
+	
+	# CRITICAL!
+	_kernelConfig__bad-y__ CPU_FREQ_DEFAULT_GOV_ONDEMAND
+	_kernelConfig__bad-y__ CONFIG_CPU_FREQ_GOV_ONDEMAND
+	
+	# CRITICAL!
+	# CONFIG_PREEMPT is significantly more stable and compatible with third party (eg. VirtualBox) modules.
+	# CONFIG_PREEMPT_RT is significantly less likely to incurr noticeable worst-case latency.
+	# Lack of both CONFIG_PREEMPT and CONFIG_PREEMPT_RT may incurr noticeable worst-case latency.
+	_kernelConfig_request CONFIG_PREEMPT
+	_kernelConfig_request CONFIG_PREEMPT_RT
+	if ! _kernelConfig__bad-y__ CONFIG_PREEMPT_RT > /dev/null 2>&1 && ! _kernelConfig__bad-y__ CONFIG_PREEMPT > /dev/null 2>&1 
+	then
+		_kernelConfig__bad-y__ CONFIG_PREEMPT
+		_kernelConfig__bad-y__ CONFIG_PREEMPT_RT
+	fi
+	
+	_kernelConfig_require-latency_frequency "$@"
+	
+	# Dynamic/Tickless kernel *might* be the cause of irregular display updates on some platforms.
+	[[ "$kernelConfig_tickless" == "" ]] && export kernelConfig_tickless='false'
+	if [[ "$kernelConfig_tickless" == 'true' ]]
+	then
+		#_kernelConfig__bad-n__ CONFIG_HZ_PERIODIC
+		#_kernelConfig__bad-y__ CONFIG_NO_HZ
+		#_kernelConfig__bad-y__ CONFIG_NO_HZ_COMMON
+		#_kernelConfig__bad-y__ CONFIG_NO_HZ_FULL
+		_kernelConfig__bad-y__ CONFIG_NO_HZ_IDLE
+		#_kernelConfig__bad-y__ CONFIG_RCU_FAST_NO_HZ
+	else
+		_kernelConfig__bad-y__ CONFIG_HZ_PERIODIC
+		_kernelConfig__bad-n__ CONFIG_NO_HZ
+		_kernelConfig__bad-n__ CONFIG_NO_HZ_COMMON
+		_kernelConfig__bad-n__ CONFIG_NO_HZ_FULL
+		_kernelConfig__bad-n__ CONFIG_NO_HZ_IDLE
+		_kernelConfig__bad-n__ CONFIG_RCU_FAST_NO_HZ
+		
+		_kernelConfig__bad-y__ CPU_IDLE_GOV_MENU
+	fi
+	
+	# Essential.
+	_kernelConfig__bad-y__ CONFIG_LATENCYTOP
+	
+	
+	# CRITICAL!
+	_kernelConfig__bad-y__ CONFIG_CGROUP_SCHED
+	_kernelConfig__bad-y__ FAIR_GROUP_SCHED
+	_kernelConfig__bad-y__ CONFIG_CFS_BANDWIDTH
+	
+	# CRITICAL!
+	# Expected to protect single-thread interactive applications from competing multi-thread workloads.
+	_kernelConfig__bad-y__ CONFIG_SCHED_AUTOGROUP
+	
+	
+	# CRITICAL!
+	# Default cannot be set currently.
+	_messagePlain_request 'request: Set '\''bfq'\'' as default IO scheduler (strongly recommended).'
+	#_kernelConfig__bad-y__ DEFAULT_IOSCHED
+	#_kernelConfig__bad-y__ DEFAULT_BFQ
+	
+	# CRITICAL!
+	# Expected to protect interactive applications from background IO.
+	# https://www.youtube.com/watch?v=ANfqNiJVoVE
+	_kernelConfig__bad-y__ CONFIG_IOSCHED_BFQ
+	_kernelConfig__bad-y__ CONFIG_BFQ_GROUP_IOSCHED
+	
+	
+	# Uncertain.
+	# https://forum.manjaro.org/t/please-enable-writeback-throttling-by-default-linux-4-10/18135/22
+	#_kernelConfig__bad-y__ BLK_WBT
+	#_kernelConfig__bad-y__ BLK_WBT_MQ
+	#_kernelConfig__bad-y__ BLK_WBT_SQ
+	
+	
+	# https://lwn.net/Articles/789304/
+	_kernelConfig__bad-y__ CONFIG_SPARSEMEM
+	
+	
+	_kernelConfig__bad-n__ CONFIG_REFCOUNT_FULL
+	_kernelConfig__bad-n__ CONFIG_DEBUG_NOTIFIERS
+	_kernelConfig_warn-n__ CONFIG_FTRACE
+	
+	_kernelConfig__bad-y__ CONFIG_CC_OPTIMIZE_FOR_PERFORMANCE
+	
+	# CRITICAL!
+	# Lightweight kernel compression theoretically may significantly accelerate startup from slow disks.
+	_kernelConfig__bad-y__ CONFIG_KERNEL_LZO
+	
+}
+
+_kernelConfig_require-memory() {
+	_messagePlain_nominal 'kernelConfig: memory'
+	export kernelConfig_file="$1"
+	
+	# Uncertain.
+	# https://fa.linux.kernel.narkive.com/CNnVwDlb/hack-bench-regression-with-config-slub-cpu-partial-disabled-info-only
+	_kernelConfig_warn-y__ CONFIG_SLUB_CPU_PARTIAL
+	
+	# Uncertain.
+	_kernelConfig_warn-y__ CONFIG_TRANSPARENT_HUGEPAGE
+	_kernelConfig_warn-y__ CONFIG_CLEANCACHE
+	_kernelConfig_warn-y__ CONFIG_FRONTSWAP
+	_kernelConfig_warn-y__ CONFIG_ZSWAP
+	
+	
+	_kernelConfig__bad-y__ CONFIG_COMPACTION
+	_kernelConfig_warn-y__ CONFIG_BALLOON_COMPACTION
+	
+	# Uncertain.
+	_kernelConfig_warn-y__ CONFIG_MEMORY_FAILURE
+	
+	# CRITICAL!
+	_kernelConfig_warn-y__ CONFIG_KSM
+}
+
+_kernelConfig_require-integration() {
+	_messagePlain_nominal 'kernelConfig: integration'
+	export kernelConfig_file="$1"
+	
+	_kernelConfig__bad-y_m CONFIG_FUSE_FS
+	_kernelConfig__bad-y_m CONFIG_CUSE
+	_kernelConfig__bad-y__ CONFIG_OVERLAY_FS
+	_kernelConfig__bad-y_m CONFIG_NTFS_FS
+	_kernelConfig_request CONFIG_NTFS_RW
+	_kernelConfig__bad-y__ CONFIG_MSDOS_FS
+	_kernelConfig__bad-y__ CONFIG_VFAT_FS
+	_kernelConfig__bad-y__ CONFIG_MSDOS_PARTITION
+	
+	# TODO: LiveCD UnionFS or similar boot requirements.
+	
+	# Gentoo specific. Start with "gentoo-sources" if possible.
+	_kernelConfig_warn-y__ CONFIG_GENTOO_LINUX
+	_kernelConfig_warn-y__ CONFIG_GENTOO_LINUX_UDEV
+	_kernelConfig_warn-y__ CONFIG_GENTOO_LINUX_PORTAGE
+	_kernelConfig_warn-y__ CONFIG_GENTOO_LINUX_INIT_SCRIPT
+	_kernelConfig_warn-y__ CONFIG_GENTOO_LINUX_INIT_SYSTEMD
+}
+
+# Recommended by docker ebuild during installation under Gentoo.
+_kernelConfig_require-investigation_docker() {
+	_messagePlain_nominal 'kernelConfig: investigation: docker'
+	export kernelConfig_file="$1"
+	
+	_kernelConfig_warn-y__ CONFIG_MEMCG_SWAP_ENABLED
+	_kernelConfig_warn-y__ CONFIG_CGROUP_HUGETLB
+	_kernelConfig_warn-y__ CONFIG_RT_GROUP_SCHED
+	
+	true
+}
+
+
+# ATTENTION: Insufficiently investigated stuff to think about. Unknown consequences.
+_kernelConfig_require-investigation() {
+	_messagePlain_nominal 'kernelConfig: investigation'
+	export kernelConfig_file="$1"
+	
+	_kernelConfig_warn-any ACPI_HMAT
+	_kernelConfig_warn-any PCIE_BW
+	
+	_kernelConfig_warn-any CONFIG_UCLAMP_TASK
+	
+	_kernelConfig_warn-any CPU_IDLE_GOV_TEO
+	
+	_kernelConfig_warn-any LOCK_EVENT_COUNTS
+	
+	
+	_kernelConfig_require-investigation_docker "$@"
+	_kernelConfig_require-investigation_prog "$@"
+	true
+}
+
+
+_kernelConfig_require-investigation_prog() {
+	_messagePlain_nominal 'kernelConfig: investigation: prog'
+	export kernelConfig_file="$1"
+	
+	true
+}
+
+
+
+
+
+
+_kernelConfig_request_build() {
+	_messagePlain_request 'request: make menuconfig'
+	
+	_messagePlain_request 'request: make -j $(nproc)'
+	
+	# WARNING: Building debian kernel packages from Gentoo may be complex.
+	#https://forums.gentoo.org/viewtopic-t-1096872-start-0.html
+	#_messagePlain_request 'emerge dpkg fakeroot bc kmod cpio ; touch /var/lib/dpkg/status'
+	
+	_messagePlain_request 'request: make deb-pkg -j $(nproc)'
+}
+
+
+# ATTENTION: As desired, ignore, or override with 'ops.sh' or similar.
+_kernelConfig_panel() {
+	_messageNormal 'kernelConfig: panel'
+	
+	[[ "$kernelConfig_tradeoff_perform" == "" ]] && export kernelConfig_tradeoff_perform='false'
+	[[ "$kernelConfig_frequency" == "" ]] && export kernelConfig_frequency=300
+	[[ "$kernelConfig_tickless" == "" ]] && export kernelConfig_tickless='false'
+	
+	_kernelConfig_require-tradeoff "$@"
+	
+	_kernelConfig_require-virtualization-accessory "$@"
+	
+	_kernelConfig_require-virtualbox "$@"
+	
+	_kernelConfig_require-boot "$@"
+	
+	_kernelConfig_require-arch-x64 "$@"
+	
+	_kernelConfig_require-accessory "$@"
+	
+	_kernelConfig_require-build "$@"
+	
+	_kernelConfig_require-latency "$@"
+	
+	_kernelConfig_require-memory "$@"
+	
+	_kernelConfig_require-integration "$@"
+	
+	_kernelConfig_require-investigation "$@"
+	
+	
+	_kernelConfig_request_build
+}
+
+# ATTENTION: As desired, ignore, or override with 'ops.sh' or similar.
+_kernelConfig_mobile() {
+	_messageNormal 'kernelConfig: mobile'
+	
+	[[ "$kernelConfig_tradeoff_perform" == "" ]] && export kernelConfig_tradeoff_perform='false'
+	[[ "$kernelConfig_frequency" == "" ]] && export kernelConfig_frequency=300
+	[[ "$kernelConfig_tickless" == "" ]] && export kernelConfig_tickless='true'
+	
+	_kernelConfig_require-tradeoff "$@"
+	
+	_kernelConfig_require-virtualization-accessory "$@"
+	
+	_kernelConfig_require-virtualbox "$@"
+	
+	_kernelConfig_require-boot "$@"
+	
+	_kernelConfig_require-arch-x64 "$@"
+	
+	_kernelConfig_require-accessory "$@"
+	
+	_kernelConfig_require-build "$@"
+	
+	_kernelConfig_require-latency "$@"
+	
+	_kernelConfig_require-memory "$@"
+	
+	_kernelConfig_require-integration "$@"
+	
+	_kernelConfig_require-investigation "$@"
+	
+	
+	_kernelConfig_request_build
+}
+
+# ATTENTION: As desired, ignore, or override with 'ops.sh' or similar.
+_kernelConfig_desktop() {
+	_messageNormal 'kernelConfig: desktop'
+	
+	[[ "$kernelConfig_tradeoff_perform" == "" ]] && export kernelConfig_tradeoff_perform='false'
+	[[ "$kernelConfig_frequency" == "" ]] && export kernelConfig_frequency=1000
+	[[ "$kernelConfig_tickless" == "" ]] && export kernelConfig_tickless='false'
+	
+	_kernelConfig_require-tradeoff "$@"
+	
+	_kernelConfig_require-virtualization-accessory "$@"
+	
+	_kernelConfig_require-virtualbox "$@"
+	
+	_kernelConfig_require-boot "$@"
+	
+	_kernelConfig_require-arch-x64 "$@"
+	
+	_kernelConfig_require-accessory "$@"
+	
+	_kernelConfig_require-build "$@"
+	
+	_kernelConfig_require-latency "$@"
+	
+	_kernelConfig_require-memory "$@"
+	
+	_kernelConfig_require-integration "$@"
+	
+	_kernelConfig_require-investigation "$@"
+	
+	
+	_kernelConfig_request_build
+}
+
+
+# "$1" == alternateRootPrefix
+_write_bfq() {
+	_messagePlain_nominal 'write_bfq: init'
+	
+	_mustGetSudo
+	
+	
+	_messagePlain_nominal 'write_bfq: write'
+	
+	sudo -n cat << 'CZXWXcRMTo8EmM8i4d' | sudo tee "$1"'/etc/modules-load.d/bfq-'"$ubiquitiousBashIDshort"'.conf' > /dev/null
+bfq
+
+CZXWXcRMTo8EmM8i4d
+
+
+	cat << 'CZXWXcRMTo8EmM8i4d' | sudo tee "$1"'/etc/udev/rules.d/60-scheduler-'"$ubiquitiousBashIDshort"'.rules' > /dev/null
+ACTION=="add|change", KERNEL=="sd*[!0-9]|sr*", ATTR{queue/scheduler}="bfq"
+ACTION=="add|change", KERNEL=="nvme[0-9]n[0-9]", ATTR{queue/scheduler}="bfq"
+
+CZXWXcRMTo8EmM8i4d
+
+	_messagePlain_good 'write_bfq: success'
+
+}
+
+
+
+
 
 _setupUbiquitous_here() {
 	cat << CZXWXcRMTo8EmM8i4d
@@ -3579,6 +6687,105 @@ export ub_anchor_autoupgrade=""
 export ub_anchor_autoupgrade
 
 
+
+#Machine information.
+
+if [[ -e "/proc/meminfo" ]]
+then
+	export hostMemoryTotal=$(cat /proc/meminfo | grep MemTotal | tr -cd '[[:digit:]]')
+	export hostMemoryAvailable=$(cat /proc/meminfo | grep MemAvailable | tr -cd '[[:digit:]]')
+	export hostMemoryQuantity="$hostMemoryTotal"
+else
+	export hostMemoryTotal="384000"
+	export hostMemoryAvailable="256000"
+	export hostMemoryQuantity="$hostMemoryTotal"
+fi
+
+export virtGuestUserDrop="ubvrtusr"
+export virtGuestUser="$virtGuestUserDrop"
+[[ "$HOST_USER_ID" == 0 ]] && export virtGuestUser="root"
+
+export globalVirtDir="$scriptLocal"/v
+export globalVirtFS="$globalVirtDir"/fs
+export globalVirtTmp="$globalVirtDir"/tmp
+
+export instancedVirtDir="$scriptAbsoluteFolder"/v_"$sessionid"
+export instancedVirtFS="$instancedVirtDir"/fs
+export instancedVirtTmp="$instancedVirtDir"/tmp
+
+export virtGuestHomeDrop=/home/"$virtGuestUserDrop"
+export virtGuestHome="$virtGuestHomeDrop"
+[[ "$HOST_USER_ID" == 0 ]] && export virtGuestHome=/root
+###export virtGuestHomeRef="$virtGuestHome".ref
+
+export instancedVirtHome="$instancedVirtFS""$virtGuestHome"
+###export instancedVirtHomeRef="$instancedVirtHome".ref
+
+export sharedHostProjectDirDefault=""
+export sharedGuestProjectDirDefault="$virtGuestHome"/project
+
+export sharedHostProjectDir="$sharedHostProjectDirDefault"
+export sharedGuestProjectDir="$sharedGuestProjectDirDefault"
+
+export instancedProjectDir="$instancedVirtHome"/project
+export instancedDownloadsDir="$instancedVirtHome"/Downloads
+
+export chrootDir="$globalVirtFS"
+export vboxRaw="$scriptLocal"/vmvdiraw.vmdk
+
+#Only globalFakeHome is persistent. All other default home directories are removed in some way by "_stop".
+export globalFakeHome="$scriptLocal"/h
+export instancedFakeHome="$scriptAbsoluteFolder"/h_"$sessionid"
+export shortFakeHome="$shortTmp"/h
+
+#Do not use directly as home directory. Append subdirectories.
+export arbitraryFakeHome="$shortTmp"/a
+
+#Default, override.
+# WARNING: Do not disable.
+export actualFakeHome="$instancedFakeHome"
+export fakeHomeEditLib="false"
+export keepFakeHome="true"
+
+#Automatically assigns appropriate memory quantities to nested virtual machines.
+_vars_vmMemoryAllocationDefault() {
+	export vmMemoryAllocationDefault=96
+	
+	
+	# Invalid.
+	[[ "$hostMemoryQuantity" -lt "64000" ]] && return 1
+	! [[ "$hostMemoryQuantity" -ge "64000" ]] && return 1
+	
+	
+	# Embedded host typical.
+	[[ "$hostMemoryQuantity" -lt "500000" ]] && export vmMemoryAllocationDefault=256 && return 1
+	
+	# Obsolete hardware or guest typical.
+	[[ "$hostMemoryQuantity" -lt "1256000" ]] && export vmMemoryAllocationDefault=512 && return 0
+	[[ "$hostMemoryQuantity" -lt "1768000" ]] && export vmMemoryAllocationDefault=1024 && return 0
+	[[ "$hostMemoryQuantity" -lt "6000000" ]] && export vmMemoryAllocationDefault=1512 && return 0
+	
+	# Modern host typical.
+	[[ "$hostMemoryQuantity" -lt "7000000" ]] && export vmMemoryAllocationDefault=2048 && return 0
+	[[ "$hostMemoryQuantity" -lt "18000000" ]] && export vmMemoryAllocationDefault=2560 && return 0
+	[[ "$hostMemoryQuantity" -lt "34000000" ]] && export vmMemoryAllocationDefault=3072 && return 0
+	
+	# Workstation typical.
+	[[ "$hostMemoryQuantity" -lt "72000000" ]] && export vmMemoryAllocationDefault=4096 && return 0
+	[[ "$hostMemoryQuantity" -lt "132000000" ]] && export vmMemoryAllocationDefault=4096 && return 0
+	
+	# Atypical host.
+	export vmMemoryAllocationDefault=4096 && return 0
+	
+	return 1
+}
+
+#Machine allocation defaults.
+_vars_vmMemoryAllocationDefault
+
+export hostToGuestDir="$instancedVirtDir"/htg
+export hostToGuestFiles="$hostToGuestDir"/files
+export hostToGuestISO="$instancedVirtDir"/htg/htg.iso 
 
 
 

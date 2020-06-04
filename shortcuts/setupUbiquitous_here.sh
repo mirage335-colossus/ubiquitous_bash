@@ -12,8 +12,11 @@ fi
 # Near-realtime priority may be acceptable, due to reliability of relevant Ubiquitous Bash functions.
 # WARNING: Do NOT prioritize highly enough to interfere with embedded hard realtime processes.
 
-
-export profileScriptLocation="$ubcoreUBdir"/ubiquitous_bash.sh
+# WARNING: Importing complete 'ubiquitous_bash.sh' may cause other scripts to call functions inappropriate for their needs during "_test" and "_setup" .
+# This may be acceptable if the user has already run "_setup" from the imported script .
+#export profileScriptLocation="$ubcoreUBdir"/ubiquitous_bash.sh
+export profileScriptLocation="$ubcoreUBdir"/ubcore.sh
+#export profileScriptLocation="$ubcoreUBdir"/lean.sh
 export profileScriptFolder="$ubcoreUBdir"
 [[ "\$scriptAbsoluteLocation" != "" ]] && . "\$scriptAbsoluteLocation" --parent _importShortcuts
 [[ "\$scriptAbsoluteLocation" == "" ]] && . "\$profileScriptLocation" --profile _importShortcuts
