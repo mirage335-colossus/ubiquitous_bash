@@ -193,7 +193,7 @@ _project() {
 	echo '#Enable search if "vm.img" and related files are missing.' >> ./_local/ops.sh
 	echo 'export ubVirtImageLocal="false"' >> ./_local/ops.sh
 	echo '' >> ./_local/ops.sh
-	echo '#export ub_anchor_autoupgrade="true"' >> ./_local/ops.sh
+	echo 'export ub_anchor_autoupgrade="true"' >> ./_local/ops.sh
 	echo '' >> ./_local/ops.sh
 	echo '#export ub_anchor_specificSoftwareName="experimental"' >> ./_local/ops.sh
 	echo '#export ub_anchor_user="true"' >> ./_local/ops.sh
