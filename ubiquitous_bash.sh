@@ -10526,12 +10526,12 @@ _closeChRoot_emergency() {
 	fi
 	
 	#Not called by systemd, AND instanced directories still mounted, do not globally halt all. (optional)
-	#[[ "$1" == "" ]] && find "$scriptAbsoluteFolder"/v_* -maxdepth 1 -type d > /dev/null && return 0
+	#[[ "$1" == "" ]] && find "$scriptAbsoluteFolder"/v_* -maxdepth 1 -type d | _condition_lines_zero && return 0
 	
 	#Not called by systemd, do not globally halt all.
 	[[ "$1" == "" ]] && return 0
 	
-	! _readLocked "$lock_open" && ! find "$scriptAbsoluteFolder"/v_*/fs -maxdepth 1 -type d && return 0
+	! _readLocked "$lock_open" && find "$scriptAbsoluteFolder"/v_*/fs -maxdepth 1 -type d | _condition_lines_zero && return 0
 	_readLocked "$lock_closing" && return 1
 	_readLocked "$lock_opening" && return 1
 	
