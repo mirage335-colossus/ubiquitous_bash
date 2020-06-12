@@ -2512,16 +2512,16 @@ _typeDep() {
 	# WARNING: Allows specification of entire path from root. *Strongly* prefer use of subpath matching, for increased portability.
 	[[ "$1" == '/'* ]] && [[ -e "$1" ]] && return 0
 	
-	[[ -e /lib/"$1" ]] && return 0
-	[[ -e /lib/x86_64-linux-gnu/"$1" ]] && return 0
-	[[ -e /lib64/"$1" ]] && return 0
-	[[ -e /lib64/x86_64-linux-gnu/"$1" ]] && return 0
-	[[ -e /usr/lib/"$1" ]] && return 0
-	[[ -e /usr/lib/x86_64-linux-gnu/"$1" ]] && return 0
-	[[ -e /usr/local/lib/"$1" ]] && return 0
-	[[ -e /usr/local/lib/x86_64-linux-gnu/"$1" ]] && return 0
-	[[ -e /usr/include/"$1" ]] && return 0
-	[[ -e /usr/local/include/"$1" ]] && return 0
+	[[ -e /lib/"$1" ]] && ! [[ -d /lib/"$1" ]] && return 0
+	[[ -e /lib/x86_64-linux-gnu/"$1" ]] && ! [[ -d /lib/x86_64-linux-gnu/"$1" ]] && return 0
+	[[ -e /lib64/"$1" ]] && ! [[ -d /lib64/"$1" ]] && return 0
+	[[ -e /lib64/x86_64-linux-gnu/"$1" ]] && ! [[ -d /lib64/x86_64-linux-gnu/"$1" ]] && return 0
+	[[ -e /usr/lib/"$1" ]] && ! [[ -d /usr/lib/"$1" ]] && return 0
+	[[ -e /usr/lib/x86_64-linux-gnu/"$1" ]] && ! [[ -d /usr/lib/x86_64-linux-gnu/"$1" ]] && return 0
+	[[ -e /usr/local/lib/"$1" ]] && ! [[ -d  /usr/local/lib/"$1" ]] && return 0
+	[[ -e /usr/local/lib/x86_64-linux-gnu/"$1" ]] && ! [[ -d /usr/local/lib/x86_64-linux-gnu/"$1" ]] && return 0
+	[[ -e /usr/include/"$1" ]] && ! [[ -d /usr/include/"$1" ]] && return 0
+	[[ -e /usr/local/include/"$1" ]] && ! [[ -d /usr/local/include/"$1" ]] && return 0
 	
 	if ! type "$1" >/dev/null 2>&1
 	then
