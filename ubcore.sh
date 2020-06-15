@@ -7536,6 +7536,8 @@ _test() {
 	
 	_getDep printf
 	
+	_getDep stat
+	
 	_getDep dd
 	
 	_getDep rm
