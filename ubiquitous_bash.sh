@@ -700,7 +700,7 @@ _safeRMR() {
 		return 1
 	fi
 	
-	#Blacklist.
+	#Denylist.
 	[[ "$1" == "/home" ]] && return 1
 	[[ "$1" == "/home/" ]] && return 1
 	[[ "$1" == "/home/$USER" ]] && return 1
@@ -714,7 +714,7 @@ _safeRMR() {
 	[[ "$1" == "$HOME" ]] && return 1
 	[[ "$1" == "$HOME/" ]] && return 1
 	
-	#Whitelist.
+	#Allowlist.
 	local safeToRM=false
 	
 	local safeScriptAbsoluteFolder
@@ -783,7 +783,7 @@ _safePath() {
 		return 1
 	fi
 	
-	#Blacklist.
+	#Denylist.
 	[[ "$1" == "/home" ]] && return 1
 	[[ "$1" == "/home/" ]] && return 1
 	[[ "$1" == "/home/$USER" ]] && return 1
@@ -797,7 +797,7 @@ _safePath() {
 	[[ "$1" == "$HOME" ]] && return 1
 	[[ "$1" == "$HOME/" ]] && return 1
 	
-	#Whitelist.
+	#Allowlist.
 	local safeToRM=false
 	
 	local safeScriptAbsoluteFolder
@@ -10635,7 +10635,7 @@ _mountChRoot_project() {
 		return 1
 	fi
 	
-	#Blacklist.
+	#Denylist.
 	[[ "$sharedHostProjectDir" == "/home" ]] && return 1
 	[[ "$sharedHostProjectDir" == "/home/" ]] && return 1
 	[[ "$sharedHostProjectDir" == "/home/$USER" ]] && return 1
@@ -10649,7 +10649,7 @@ _mountChRoot_project() {
 	[[ $(id -u) != 0 ]] && [[ "$sharedHostProjectDir" == "$HOME" ]] && return 1
 	[[ $(id -u) != 0 ]] && [[ "$sharedHostProjectDir" == "$HOME/" ]] && return 1
 	
-	#Whitelist.
+	#Allowlist.
 	local safeToMount=false
 	
 	local safeScriptAbsoluteFolder="$_getScriptAbsoluteFolder"

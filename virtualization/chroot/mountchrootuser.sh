@@ -47,7 +47,7 @@ _mountChRoot_project() {
 		return 1
 	fi
 	
-	#Blacklist.
+	#Denylist.
 	[[ "$sharedHostProjectDir" == "/home" ]] && return 1
 	[[ "$sharedHostProjectDir" == "/home/" ]] && return 1
 	[[ "$sharedHostProjectDir" == "/home/$USER" ]] && return 1
@@ -61,7 +61,7 @@ _mountChRoot_project() {
 	[[ $(id -u) != 0 ]] && [[ "$sharedHostProjectDir" == "$HOME" ]] && return 1
 	[[ $(id -u) != 0 ]] && [[ "$sharedHostProjectDir" == "$HOME/" ]] && return 1
 	
-	#Whitelist.
+	#Allowlist.
 	local safeToMount=false
 	
 	local safeScriptAbsoluteFolder="$_getScriptAbsoluteFolder"
