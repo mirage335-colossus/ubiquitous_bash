@@ -356,6 +356,7 @@ _compile_bash_utilities() {
 # WARNING: Do NOT deprecate java versions for 'security' reasons - this is intended ONLY to support applications which already normally require user or root permissions.
 _compile_bash_utilities_java() {
 	[[ "$enUb_java" == "true" ]] && includeScriptList+=( "special/java"/java.sh )
+#	[[ "$enUb_java" == "true" ]] && includeScriptList+=( "special/java"/javac.sh )
 }
 
 _compile_bash_utilities_virtualization() {

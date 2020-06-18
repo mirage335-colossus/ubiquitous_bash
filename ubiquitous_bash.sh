@@ -6611,7 +6611,7 @@ _stopwatch() {
 
 
 _set_java_arbitrary() {
-	export ubJava="$1"
+	export ubJava="$1""$ubJavac"
 }
 _check_java_arbitrary() {
 	type "$ubJava" > /dev/null 2>&1
@@ -6687,6 +6687,16 @@ _java_openjdk11_PATH() {
 	return 1
 }
 _java_openjdk11() {
+	export ubJavac=""
+	_java_openjdk11_debian "$@"
+	[[ "$?" == '0' ]] && return 0
+	_java_openjdk11_usrbin "$@"
+	[[ "$?" == '0' ]] && return 0
+	_java_openjdk11_PATH "$@"
+	[[ "$?" == '0' ]] && return 0
+}
+_javac_openjdk11() {
+	export ubJavac="c"
 	_java_openjdk11_debian "$@"
 	[[ "$?" == '0' ]] && return 0
 	_java_openjdk11_usrbin "$@"
@@ -6777,6 +6787,16 @@ _java_openjdk8_PATH() {
 	return 1
 }
 _java_openjdk8() {
+	export ubJavac=""
+	_java_openjdk8_debian "$@"
+	[[ "$?" == '0' ]] && return 0
+	_java_openjdk8_usrbin "$@"
+	[[ "$?" == '0' ]] && return 0
+	_java_openjdk8_PATH "$@"
+	[[ "$?" == '0' ]] && return 0
+}
+_javac_openjdk8() {
+	export ubJavac="c"
 	_java_openjdk8_debian "$@"
 	[[ "$?" == '0' ]] && return 0
 	_java_openjdk8_usrbin "$@"
@@ -6848,6 +6868,16 @@ _java_openjdkANY_PATH() {
 	return 1
 }
 _java_openjdkANY() {
+	export ubJavac=""
+	_java_openjdkANY_debian "$@"
+	[[ "$?" == '0' ]] && return 0
+	_java_openjdkANY_usrbin "$@"
+	[[ "$?" == '0' ]] && return 0
+	_java_openjdkANY_PATH "$@"
+	[[ "$?" == '0' ]] && return 0
+}
+_javac_openjdkANY() {
+	export ubJavac="c"
 	_java_openjdkANY_debian "$@"
 	[[ "$?" == '0' ]] && return 0
 	_java_openjdkANY_usrbin "$@"
@@ -6967,6 +6997,11 @@ _java_oraclejdk_ANY() {
 	[[ "$?" == '0' ]] && return 0
 }
 _java_oraclejdk() {
+	export ubJavac=""
+	_java_oraclejdk_ANY "$@"
+}
+_javac_oraclejdk() {
+	export ubJavac="c"
 	_java_oraclejdk_ANY "$@"
 }
 _set_java_oraclejdk_ANY() {
@@ -7032,6 +7067,15 @@ _java() {
 	#_java_oraclejdk "$@"
 }
 
+_javac() {
+	_javac_openjdk11 "$@"
+	_javac_openjdk8 "$@"
+	_javac_openjdkANY "$@"
+	
+	# DANGER: Oracle Java *strongly* discouraged. Support provided as rough example only.
+	#_javac_oraclejdk11 "$@"
+	#_javac_oraclejdk "$@"
+}
 
 
 #####Idle
@@ -22580,6 +22624,7 @@ _compile_bash_utilities() {
 # WARNING: Do NOT deprecate java versions for 'security' reasons - this is intended ONLY to support applications which already normally require user or root permissions.
 _compile_bash_utilities_java() {
 	[[ "$enUb_java" == "true" ]] && includeScriptList+=( "special/java"/java.sh )
+#	[[ "$enUb_java" == "true" ]] && includeScriptList+=( "special/java"/javac.sh )
 }
 
 _compile_bash_utilities_virtualization() {
