@@ -2432,6 +2432,15 @@ _preserveLog() {
 	cp "$logTmp"/* "$permaLog"/ > /dev/null 2>&1
 }
 
+_typeShare() {
+	_typeDep "$1" && return 0
+	
+	[[ -e /usr/share/"$1" ]] && ! [[ -d /usr/share/"$1" ]] && return 0
+	[[ -e /usr/local/share/"$1" ]] && ! [[ -d /usr/local/share/"$1" ]] && return 0
+	
+	return 1
+}
+
 _typeDep() {
 	
 	# WARNING: Allows specification of entire path from root. *Strongly* prefer use of subpath matching, for increased portability.
