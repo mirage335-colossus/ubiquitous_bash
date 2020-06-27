@@ -7854,7 +7854,7 @@ _package_subdir() {
 	#return 0
 	
 	mkdir -p "$safeTmp"/package/"$objectName"/
-	mv "$safeTmp"/package/. "$safeTmp"/package/"$objectName"/
+	( shopt -s dotglob ; mv "$safeTmp"/package/* "$safeTmp"/package/"$objectName"/ )
 }
 
 # WARNING Must define "_package_license" function in ops to include license files in package!
