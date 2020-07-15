@@ -10315,6 +10315,13 @@ _umountChRoot() {
 	_wait_umount "$absolute1"/dev/shm
 	_wait_umount "$absolute1"/dev/pts
 	
+	
+	if [[ -e "$absolute1"/proc/sys/fs/binfmt_misc ]] && mountpoint "$absolute1"/proc/sys/fs/binfmt_misc > /dev/null 2>&1
+	then
+		_wait_umount "$absolute1"/proc/sys/fs/binfmt_misc
+	fi
+	
+	
 	_wait_umount "$absolute1"/proc
 	_wait_umount "$absolute1"/sys
 	
