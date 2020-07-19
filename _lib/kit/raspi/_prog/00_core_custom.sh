@@ -1,4 +1,4 @@
-# ATTENTION: Configure/Override .
+# # ATTENTION: Configure/Override .
 
 
 
@@ -70,20 +70,63 @@ _custom_users_ssh() {
 }
 
 _custom_packages_debian() {
-	true
-	#return
+	sudo -n rm -f "$globalVirtFS"/var/lib/apt/lists/lock
+	sudo -n rm -f "$globalVirtFS"/var/lib/dpkg/lock
 	
+	sudo -n mkdir -p "$globalVirtFS"/etc/apt/sources.list.d
+	echo 'deb http://deb.debian.org/debian buster-backports main contrib' | sudo -n tee "$globalVirtFS"/etc/apt/sources.list.d/custom_backports.list > /dev/null 2>&1
 	
-	#_chroot apt-get update
+	sudo -n mkdir -p "$globalVirtFS"/etc/apt/sources.list.d
+	echo 'deb http://download.virtualbox.org/virtualbox/debian buster contrib' | sudo -n tee "$globalVirtFS"/etc/apt/sources.list.d/vbox.list > /dev/null 2>&1
+	
+	_chroot wget -q https://www.virtualbox.org/download/oracle_vbox_2016.asc -O- | _chroot apt-key add -
+	_chroot wget -q https://www.virtualbox.org/download/oracle_vbox.asc -O- | _chroot apt-key add -
+	
+	_chroot apt-get update
+	
+	_chroot apt-get install -y sudo
 	
 	# DANGER: Requires expanded image!
 	#_chroot apt-get upgrade -y
 	
-	_chroot apt-get install -y bc nmap autossh socat sshfs tor bup
+	if [[ -e "$scriptLib"/debian/packages/bup_0.29-3_amd64.deb ]]
+	then
+		sudo -n cp "$scriptLib"/debian/packages/bup_0.29-3_amd64.deb "$globalVirtFS"/
+		_chroot dpkg -i /bup_0.29-3_amd64.deb
+		_chroot rm -f /bup_0.29-3_amd64.deb
+		_chroot apt-get install -y -f
+	fi
+	
+	_chroot apt-get install -y bup
+	
+	_chroot apt-get install -y bc nmap autossh socat sshfs tor
+	_chroot apt-get install -y sockstat
 	
 	_chroot apt-get install -y tigervnc-viewer
 	_chroot apt-get install -y x11vnc
 	_chroot apt-get install -y tigervnc-standalone-server
+	
+	#_chroot apt-get install -y synergy quicksynergy
+	
+	_chroot apt-get install -y vim
+	
+	if _chroot bash -c '! dpkg --print-foreign-architectures | grep i386'
+	then
+		_chroot dpkg --add-architecture i386
+		_chroot apt-get update
+	fi
+	_chroot apt-get install -y wmctrl xprintidle okular libreoffice firefox-esr xournal kwrite netcat-openbsd iperf axel unionfs-fuse samba qemu qemu-system-x86 qemu-system-arm qemu-efi-arm qemu-efi-aarch64 qemu-user-static qemu-utils dosbox wine wine32 wine64 libwine libwine:i386 fonts-wine debootstrap xclip xinput gparted bup emacs xterm mesa-utils kde-standard
+	_chroot apt-get install -y chromium
+	_chroot apt-get install -y openjdk-11-jdk openjdk-11-jre
+	
+	_chroot apt-get install -y net-tools linux-image-amd64 wireless-tools rfkill
+	
+	# WARNING: Untested. May incorrectly remove supposedly 'old' kernel versions.
+	#_chroot apt-get autoremove -y
+	
+	#sudo -n rm -f "$globalVirtFS"/ubtest.sh > /dev/null 2>&1
+	#sudo -n cp "$scriptAbsoluteLocation" "$globalVirtFS"/ubtest.sh
+	#_chroot /ubtest.sh _test
 }
 
 _custom_packages_gentoo() {

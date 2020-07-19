@@ -11,7 +11,7 @@ _custom_set() {
 	#export custom_user="username"
 	
 	# DANGER: Extremely rare. Do NOT enable without a SPECIFIC reason.
-       export allow_multiple_reversePorts='true'
+      # export allow_multiple_reversePorts='true'
 }
 
 # ATTENTION: Configure (if necessary) .
@@ -53,7 +53,17 @@ _custom_packages() {
 # ATTENTION: Override (if necessary) .
 _custom_copy_directory() {
 	true
-	#_custom_rsync "$scriptLib"/'directory'/ "$globalVirtFS"/home/pi/core/'directory'/
+	#_custom_rsync "$scriptLib"/'directory'/ "$globalVirtFS"/home/"$custom_user"/core/'directory'/
+	
+	_custom_rsync "$scriptLib"/'core'/ "$globalVirtFS"/home/"$custom_user"/core/
+	
+	
+	
+	custom_rsync "$scriptLib"/'ubiquitous_bash'/ "$globalVirtFS"/home/"$custom_user"/core/'infrastructure/ubiquitous_bash'/ "$custom_user"
+	custom_rsync "$scriptLib"/'ubiquitous_bash'/ "$globalVirtFS"/home/"$custom_user"/core/'infrastructure/ubiquitous_bash'/ "$custom_user"
+	
+	_custom_rsync "$scriptLib"/'ubiquitous_bash'/ "$globalVirtFS"/root/core/'infrastructure/ubiquitous_bash'/ root
+	_chroot su root -c /bin/bash -c '/root/core/infrastructure/ubiquitous_bash/ubiquitous_bash.sh _setupUbiquitous_nonet'
 }
 
 # ATTENTION: Override (if necessary) .
@@ -152,5 +162,14 @@ _set_custom_cautossh-limited() {
 # ATTENTION: Configure (if necessary) .
 _custom_construct_crontab_prog() {
 	true
+	
+	#! grep '_custom_hook__crontab_prog' "$scriptLocal"/_custom/crontab > /dev/null 2>&1 && echo '# _custom_hook__crontab_prog' >> "$scriptLocal"/_custom/crontab
+	
+	#if sudo -n test -e "$globalVirtFS"/home/"$custom_user"/core/infrastructure/renice_daemon/ubiquitous_bash.sh
+	#then
+	#	echo '@reboot /home/'"$custom_user"'/core/infrastructure/renice_daemon/ubiquitous_bash.sh _unix_renice_execDaemon' | _custom_hook_crontab
+	#fi
+	
+	return 0
 }
 

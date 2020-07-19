@@ -60,21 +60,28 @@ _custom_construct_user_ssh() {
 # ATTENTION: Override (if necessary) .
 _custom_construct_crontab_prog() {
 	true
+	
+	#! grep '_custom_hook__crontab_prog' "$scriptLocal"/_custom/crontab > /dev/null 2>&1 && echo '# _custom_hook__crontab_prog' >> "$scriptLocal"/_custom/crontab
+	
+	#if sudo -n test -e "$globalVirtFS"/home/user/core/infrastructure/renice_daemon/ubiquitous_bash.sh
+	#then
+	#	echo '@reboot /home/'"$custom_user"'/core/infrastructure/renice_daemon/ubiquitous_bash.sh _unix_renice_execDaemon' | _custom_hook_crontab
+	#fi
 }
 
 _custom_construct_crontab() {
 	mkdir -p "$scriptLocal"/_custom
 	
+	_custom_construct_crontab_prog
 	[[ ! -e "$scriptLocal"/_custom/crontab ]] && return 1
 	! grep '_custom_hook_crontab' "$scriptLocal"/_custom/crontab > /dev/null 2>&1 && echo '# _custom_hook_crontab' >> "$scriptLocal"/_custom/crontab
-	
-	_custom_construct_crontab_prog
 	
 	_chroot crontab -u "$custom_user" -r
 	cat "$scriptLocal"/_custom/crontab | _chroot crontab -u "$custom_user" '-'
 }
 
 _custom_hook_crontab() {
+	mkdir -p "$scriptLocal"/_custom
 	cat - >> "$scriptLocal"/_custom/crontab
 }
 
