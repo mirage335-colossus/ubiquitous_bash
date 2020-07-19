@@ -59,8 +59,11 @@ _custom_copy_directory() {
 	
 	
 	
-	custom_rsync "$scriptLib"/'ubiquitous_bash'/ "$globalVirtFS"/home/"$custom_user"/core/'infrastructure/ubiquitous_bash'/ "$custom_user"
-	custom_rsync "$scriptLib"/'ubiquitous_bash'/ "$globalVirtFS"/home/"$custom_user"/core/'infrastructure/ubiquitous_bash'/ "$custom_user"
+	#_custom_rsync "$scriptLib"/'ubiquitous_bash'/ "$globalVirtFS"/home/"$custom_user"/core/'infrastructure/ubiquitous_bash'/ "$custom_user"
+	
+	
+	_custom_rsync "$scriptLib"/'ubiquitous_bash'/ "$globalVirtFS"/home/"$custom_user"/core/'infrastructure/ubiquitous_bash'/ "$custom_user"
+	_chroot su "$custom_user" -c /bin/bash -c '/home/"$custom_user"/core/infrastructure/ubiquitous_bash/ubiquitous_bash.sh _setupUbiquitous_nonet'
 	
 	_custom_rsync "$scriptLib"/'ubiquitous_bash'/ "$globalVirtFS"/root/core/'infrastructure/ubiquitous_bash'/ root
 	_chroot su root -c /bin/bash -c '/root/core/infrastructure/ubiquitous_bash/ubiquitous_bash.sh _setupUbiquitous_nonet'
