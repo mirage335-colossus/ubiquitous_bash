@@ -4540,6 +4540,20 @@ _write_projectAFS() {
 	testAbstractfsBase="$abstractfs_base"
 	[[ "$1" != "" ]] && testAbstractfsBase=$(_getAbsoluteLocation "$1")
 	
+	# ATTENTION: Hardcoded paths to prevent accidental creation of 'project.afs' file in user's home or similar directories
+	# Keep in mind even within a 'chroot' or similar virtualized environment, a 'project' directory would typically be used.
+	[[ "$testAbstractfsBase" == /home/"$USER" ]] && return 1
+	[[ "$testAbstractfsBase" == /home/"$USER"/ ]] && return 1
+	[[ "$testAbstractfsBase" == /root ]] && return 1
+	[[ "$testAbstractfsBase" == /root/ ]] && return 1
+	[[ "$testAbstractfsBase" == /tmp ]] && return 1
+	[[ "$testAbstractfsBase" == /tmp/ ]] && return 1
+	[[ "$testAbstractfsBase" == /dev ]] && return 1
+	[[ "$testAbstractfsBase" == /dev/ ]] && return 1
+	[[ "$testAbstractfsBase" == /dev/shm ]] && return 1
+	[[ "$testAbstractfsBase" == /dev/shm/ ]] && return 1
+	[[ "$testAbstractfsBase" == / ]] && return 1
+	
 	( [[ "$nofs" == "true" ]] || [[ "$afs_nofs" == "true" ]] || [[ "$nofs_write" == "true" ]] || [[ "$afs_nofs_write" == "true" ]] ) && return 0
 	_projectAFS_here > "$testAbstractfsBase"/project.afs
 	chmod u+x "$testAbstractfsBase"/project.afs
