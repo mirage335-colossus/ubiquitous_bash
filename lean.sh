@@ -4202,6 +4202,78 @@ _testarglength() {
 	_messagePASS
 }
 
+_uid_test() {
+	local current_uid_1
+	local current_uid_2
+	local current_uid_3
+	
+	current_uid_1=$(_uid)
+	current_uid_2=$(_uid)
+	current_uid_3_char=$(_uid 8 | wc -c)
+	
+	if [[ "$current_uid_1" == "" ]]
+	then
+		_messageFAIL
+		_stop 1
+	fi
+	
+	if [[ "$current_uid_2" == "" ]]
+	then
+		_messageFAIL
+		_stop 1
+	fi
+	
+	if [[ "$current_uid_1" == "$current_uid_2" ]]
+	then
+		_messageFAIL
+		_stop 1
+	fi
+	
+	if [[ "$current_uid_3_char" != "8" ]]
+	then
+		_messageFAIL
+		_stop 1
+	fi
+	
+	return 0
+}
+
+
+# Creating a function from within a function may be relied upon for some overrides.
+# Enumerating a function's text with 'typeset -f' may be relied upon by some 'here document' functions.
+_define_function_test() {
+	local current_uid_1
+	current_uid_1=$(_uid)
+	
+	local current_uid_2
+	current_uid_2=$(_uid)
+	
+	# https://stackoverflow.com/questions/7145337/bash-how-do-i-create-function-from-variable
+	eval "__$current_uid_1() { __$current_uid_2() { echo $ubiquitiousBashID; }; }"
+	
+	if [[ $(typeset -f __$current_uid_1 | wc -c) -lt 50 ]]
+	then
+		_messageFAIL
+		_stop 1
+	fi
+	
+	if [[ $(typeset -f __$current_uid_2 | wc -c) -gt 0 ]]
+	then
+		_messageFAIL
+		_stop 1
+	fi
+	
+	__$current_uid_1
+	
+	if [[ $(typeset -f __$current_uid_2 | wc -c) -lt 15 ]]
+	then
+		_messageFAIL
+		_stop 1
+	fi
+	
+	return 0
+}
+
 #_test_prog() {
 #	true
 #}
@@ -4262,6 +4334,13 @@ _test() {
 	fi
 	rm -f "$safeTmp"/working
 	rm -f "$safeTmp"/broken
+	
+	
+	
+	_uid_test
+	
+	_define_function_test
+	
 	
 	
 	# WARNING: Not tested by default, due to lack of use except where faults are tolerable, and slim possibility of useful embedded systems not able to pass.

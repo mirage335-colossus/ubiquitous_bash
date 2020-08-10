@@ -139,7 +139,101 @@ _projectAFS_here() {
 	cat << CZXWXcRMTo8EmM8i4d
 #!/usr/bin/env bash
 
+# $abstractfs_root/$abstractfs_name
+
 export abstractfs_name="$abstractfs_name"
+
+
+if [[ "\$1" != "--noexec" ]]
+then
+	
+#####
+CZXWXcRMTo8EmM8i4d
+
+
+	typeset -f _getScriptAbsoluteLocation
+	typeset -f _getScriptAbsoluteFolder
+	
+	
+	
+	typeset -f _checkBaseDirRemote_common_localOnly
+	typeset -f _checkBaseDirRemote_common_remoteOnly
+	
+	
+	
+	typeset -f _checkBaseDirRemote
+	
+	
+	
+	typeset -f _compat_realpath
+	typeset -f _compat_realpath_run
+	
+	typeset -f _getAbsoluteLocation
+	typeset -f _realpath_L_s
+	typeset -f _getAbsoluteFolder
+	
+	
+	typeset -f _findDir
+	
+	
+	
+	typeset -f _safeEcho_newline
+	
+	typeset -f _searchBaseDir
+	
+	
+	
+	typeset -f _checkBaseDirRemote
+	#_typeset -f _safeEcho_newline
+	typeset -f _safeEcho
+	
+	typeset -f _localDir
+	
+	
+	
+	#_typeset -f _safeEcho_newline
+	
+	
+	
+	#_typeset -f _safeEcho_newline
+	
+	typeset -f _slashBackToForward
+	
+	
+	
+	typeset -f _checkBaseDirRemote_app_localOnly
+	typeset -f _checkBaseDirRemote_app_remoteOnly
+	typeset -f _pathPartOf
+	typeset -f _realpath_L
+	
+	typeset -f _virtUser
+	
+	
+	
+	typeset -f _x11_clipboard_sendText
+	typeset -f _removeFilePrefix
+	
+
+cat << CZXWXcRMTo8EmM8i4d	
+	
+#####
+	cd "\$(_getScriptAbsoluteFolder)"
+	
+	
+	export standalone_abstractfs="$abstractfs_root"/"$abstractfs_name"
+	export standalone_abstractfs_base=\$(_getScriptAbsoluteFolder)
+	
+	
+	export sharedHostProjectDir="\$standalone_abstractfs_base"
+	export sharedGuestProjectDir="\$standalone_abstractfs"
+	
+	current_x11_clipboard=\$(xclip -out -selection clipboard)
+	current_x11_clipboard=\$(_removeFilePrefix "\$current_x11_clipboard")
+	_virtUser "\$current_x11_clipboard"
+	echo "\${processedArgs[@]}" | _x11_clipboard_sendText
+	
+fi
+
 CZXWXcRMTo8EmM8i4d
 }
 
