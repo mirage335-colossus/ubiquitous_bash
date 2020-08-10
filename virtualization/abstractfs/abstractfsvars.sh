@@ -144,6 +144,56 @@ _projectAFS_here() {
 export abstractfs_name="$abstractfs_name"
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 if [[ "\$1" != "--noexec" ]]
 then
 	
@@ -230,7 +280,7 @@ cat << CZXWXcRMTo8EmM8i4d
 	current_x11_clipboard=\$(xclip -out -selection clipboard)
 	current_x11_clipboard=\$(_removeFilePrefix "\$current_x11_clipboard")
 	_virtUser "\$current_x11_clipboard"
-	echo "\${processedArgs[@]}" | _x11_clipboard_sendText
+	_safeEcho "\${processedArgs[@]}" | _x11_clipboard_sendText
 	
 fi
 
