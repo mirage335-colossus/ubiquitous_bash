@@ -8554,6 +8554,10 @@ CZXWXcRMTo8EmM8i4d
 cat << CZXWXcRMTo8EmM8i4d	
 	
 #####
+	
+	
+#####
+	
 	cd "\$(_getScriptAbsoluteFolder)"
 	
 	
@@ -8566,9 +8570,20 @@ cat << CZXWXcRMTo8EmM8i4d
 	
 	current_x11_clipboard=\$(xclip -out -selection clipboard)
 	current_x11_clipboard=\$(_removeFilePrefix "\$current_x11_clipboard")
-	_virtUser "\$current_x11_clipboard"
-	_safeEcho "\${processedArgs[@]}" | _x11_clipboard_sendText
 	
+	# Replace ./../.. ... /../home/user/ ... with /home/"\$USER"/ .
+	#current_x11_clipboard=\${current_x11_clipboard/*\/home\//\/home\/}
+	#current_x11_clipboard=\$(_safeEcho "\$current_x11_clipboard" | sed 's/^\([\.\/]\)*home\//\/home\//')
+	#current_x11_clipboard=\$(_safeEcho "\$current_x11_clipboard" | sed 's/^\([\.\/]\)*home\/'"$USER"'/\/home\/'"$USER"'/')
+	#current_x11_clipboard=\$(_safeEcho "\$current_x11_clipboard" | sed 's/^\([\.\/]\)*home\/[a-zA-Z0-9_\-]*/\/home\/'"$USER"'/')
+	current_x11_clipboard=\$(_safeEcho "\$current_x11_clipboard" | sed 's/^\([\.\/]\)*home\/[^/]*/\/home\/'"$USER"'/')
+	
+	#if [[ -e "\${processedArgs[0]}" ]]
+	if [[ -e "\$current_x11_clipboard" ]]
+	then
+		_virtUser "\$current_x11_clipboard"
+		_safeEcho "\${processedArgs[0]}" | _x11_clipboard_sendText
+	fi
 fi
 
 CZXWXcRMTo8EmM8i4d
