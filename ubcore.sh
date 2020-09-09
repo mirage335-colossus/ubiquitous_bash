@@ -3200,22 +3200,26 @@ _here_systemd_shutdown_action() {
 
 cat << 'CZXWXcRMTo8EmM8i4d'
 [Unit]
-Description=$ubiquitiousBashID-_here_systemd_shutdown_action
-DefaultDependencies=no
-Before=shutdown.target reboot.target halt.target
-
-[Service]
-Type=oneshot
-RemainAfterExit=true
-ExecStart=/bin/true
 CZXWXcRMTo8EmM8i4d
 
-echo ExecStop="$scriptAbsoluteLocation" "$@"
+
+echo Description=$sessionid
 
 cat << 'CZXWXcRMTo8EmM8i4d'
 
+[Service]
+ExecStart=/bin/true
+CZXWXcRMTo8EmM8i4d
+
+echo ExecStop=\""$scriptAbsoluteLocation"\" "$@"
+
+cat << 'CZXWXcRMTo8EmM8i4d'
+Type=oneshot
+RemainAfterExit=true
+
 [Install]
 WantedBy=multi-user.target
+
 CZXWXcRMTo8EmM8i4d
 
 }
@@ -3224,22 +3228,26 @@ _here_systemd_shutdown() {
 
 cat << 'CZXWXcRMTo8EmM8i4d'
 [Unit]
-Description=$ubiquitiousBashID-_here_systemd_shutdown_action
-DefaultDependencies=no
-Before=shutdown.target reboot.target halt.target
-
-[Service]
-Type=oneshot
-RemainAfterExit=true
-ExecStart=/bin/true
 CZXWXcRMTo8EmM8i4d
 
-echo ExecStop="$scriptAbsoluteLocation" _remoteSigTERM "$safeTmp"/.pid "$sessionid"
+
+echo Description=$sessionid
 
 cat << 'CZXWXcRMTo8EmM8i4d'
 
+[Service]
+ExecStart=/bin/true
+CZXWXcRMTo8EmM8i4d
+
+echo ExecStop=\""$scriptAbsoluteLocation"\" "$@"
+
+cat << 'CZXWXcRMTo8EmM8i4d'
+Type=oneshot
+RemainAfterExit=true
+
 [Install]
 WantedBy=multi-user.target
+
 CZXWXcRMTo8EmM8i4d
 
 }
