@@ -12165,6 +12165,14 @@ _create_instance_vbox_storageattach_ide() {
 	! VBoxManage storageattach "$sessionid" --storagectl "IDE Controller" --port 0 --device 0 --type hdd --medium "$vboxInstanceDiskImage" --mtype "$vboxDiskMtype" && _messagePlain_bad 'fail: VBoxManage... attach vboxInstanceDiskImage= '"$vboxInstanceDiskImage"
 	
 	[[ -e "$hostToGuestISO" ]] && ! VBoxManage storageattach "$sessionid" --storagectl "IDE Controller" --port 1 --device 0 --type dvddrive --medium "$hostToGuestISO" && _messagePlain_bad 'fail: VBoxManage... attach hostToGuestISO= '"$hostToGuestISO"
+	
+	# Due to some EFI systems occasionally needing a Live bootloader image (ie. super grub2), it may be best to ensure disk is always booted preferentially if possible.
+	VBoxManage modifyvm "$sessionid" --boot1 disk
+	VBoxManage modifyvm "$sessionid" --boot2 floppy
+	VBoxManage modifyvm "$sessionid" --boot3 dvd
+	VBoxManage modifyvm "$sessionid" --boot4 none
+	
+	return 0
 }
 
 _create_instance_vbox_storageattach_sata() {
@@ -12180,6 +12188,14 @@ _create_instance_vbox_storageattach_sata() {
 	! VBoxManage storageattach "$sessionid" --storagectl "SATA Controller" --port 0 --device 0 --type hdd --medium "$vboxInstanceDiskImage" --mtype "$vboxDiskMtype" && _messagePlain_bad 'fail: VBoxManage... attach vboxInstanceDiskImage= '"$vboxInstanceDiskImage"
 	
 	[[ -e "$hostToGuestISO" ]] && ! VBoxManage storageattach "$sessionid" --storagectl "SATA Controller" --port 1 --device 0 --type dvddrive --medium "$hostToGuestISO" && _messagePlain_bad 'fail: VBoxManage... attach hostToGuestISO= '"$hostToGuestISO"
+	
+	# Due to some EFI systems occasionally needing a Live bootloader image (ie. super grub2), it may be best to ensure disk is always booted preferentially if possible.
+	VBoxManage modifyvm "$sessionid" --boot1 disk
+	VBoxManage modifyvm "$sessionid" --boot2 floppy
+	VBoxManage modifyvm "$sessionid" --boot3 dvd
+	VBoxManage modifyvm "$sessionid" --boot4 none
+	
+	return 0
 }
 
 _create_instance_vbox_storageattach() {
