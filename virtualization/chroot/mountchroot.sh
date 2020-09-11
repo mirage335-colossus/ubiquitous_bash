@@ -127,9 +127,17 @@ _readyChRoot() {
 }
 
 # ATTENTION: Override with "core.sh" or similar.
-# WARNING: Must return true to complete mount/umount procedure
+# WARNING: Must return true to complete mount/umount procedure.
 _mountChRoot_image_raspbian_prog() {
 	true
+	
+	#local current_imagedev
+	#current_imagedev=$(cat "$scriptLocal"/imagedev)
+	
+	#mkdir -p "$globalVirtFS"/../boot
+	#sudo -n mount "$current_imagedev"p1 "$globalVirtFS"/../boot
+	
+	return 0
 }
 
 _mountChRoot_image_raspbian() {
@@ -156,7 +164,10 @@ _mountChRoot_image_raspbian() {
 	sudo -n cp -n "$chrootDir"/etc/ld.so.preload "$chrootDir"/etc/ld.so.preload.orig
 	echo | sudo -n tee "$chrootDir"/etc/ld.so.preload > /dev/null 2>&1
 	
-	! _mountChRoot_image_raspbian_prog && _stop 1
+	
+	local chrootimagedev
+	chrootimagedev=$(cat "$safeTmp"/imagedev)
+	! _mountChRoot_image_raspbian_prog "$chrootimagedev" && _stop 1
 	
 	
 	return 0
@@ -170,6 +181,43 @@ _umountChRoot_directory_raspbian() {
 	
 	sudo -n cp "$chrootDir"/etc/ld.so.preload.orig "$chrootDir"/etc/ld.so.preload
 	
+}
+
+_mountChRoot_image_x64_efi() {
+	[[ "$ubVirtPlatform" != "x64-efi" ]] && return 1
+	[[ "$ubVirtImageEFI" == "" ]] && return 1
+	
+	local current_imagedev
+	current_imagedev=$(cat "$scriptLocal"/imagedev)
+	
+	_determine_rawFileRootPartition "$current_imagedev" > /dev/null 2>&1
+	
+	local loopdevfs
+	loopdevfs=$(sudo -n blkid -s TYPE -o value "$current_imagedev""$ubVirtImageEFI" | tr -dc 'a-zA-Z0-9')
+	
+	! [[ "$loopdevfs" == "vfat" ]] && _stop 1
+	
+	
+	mkdir -p "$globalVirtFS"/boot/efi
+	
+	sudo -n mount "$current_imagedev""$ubVirtImageEFI" "$globalVirtFS"/boot/efi
+	
+	return 0
+}
+
+# ATTENTION: Override with "core.sh" or similar.
+# WARNING: Must return true to complete mount/umount procedure.
+# By default attempts to mount EFI partition as specified by "$current_imagedev""$ubVirtImageEFI" .
+_mountChRoot_image_x64_prog() {
+	true
+	
+	if [[ "$ubVirtPlatform" == "x64-efi" ]]
+	then
+		_mountChRoot_image_x64_efi "$@"
+		return
+	fi
+	
+	return 0
 }
 
 # ATTENTION: Mounts image containing only root partiton.
@@ -190,6 +238,11 @@ _mountChRoot_image_x64() {
 	_mountChRoot "$chrootDir"
 	
 	_readyChRoot "$chrootDir" || _stop 1
+	
+	
+	local chrootimagedev
+	chrootimagedev=$(cat "$safeTmp"/imagedev)
+	! _mountChRoot_image_x64_prog "$chrootimagedev" && _stop 1
 	
 	return 0
 }
@@ -258,7 +311,7 @@ _umountChRoot_directory() {
 }
 
 # ATTENTION: Override with "core.sh" or similar.
-# WARNING: Must return true to complete mount/umount procedure
+# WARNING: Must return true to complete mount/umount procedure.
 _umountChRoot_image_prog() {
 	true
 }
@@ -271,6 +324,9 @@ _umountChRoot_image() {
 	! _umountChRoot_image_prog && return 1
 	
 	[[ -d "$globalVirtFS"/../boot ]] && mountpoint "$globalVirtFS"/../boot >/dev/null 2>&1 && sudo -n umount "$globalVirtFS"/../boot >/dev/null 2>&1
+	
+	[[ -d "$globalVirtFS"/boot ]] && mountpoint "$globalVirtFS"/boot >/dev/null 2>&1 && sudo -n umount "$globalVirtFS"/boot >/dev/null 2>&1
+	[[ -d "$globalVirtFS"/boot/efi ]] && mountpoint "$globalVirtFS"/boot/efi >/dev/null 2>&1 && sudo -n umount "$globalVirtFS"/boot/efi >/dev/null 2>&1
 	
 	
 	_umountImage "$chrootDir"

@@ -81,10 +81,12 @@ _determine_rawFileRootPartition() {
 	fi
 	
 	#Platform defaults.
+	export ubVirtImageEFI=""
 	export ubVirtImagePartition=""
 	[[ "$ubVirtPlatform" == "x64-bios" ]] && export ubVirtImagePartition=p1
-	[[ "$ubVirtPlatform" == "x64-efi" ]] && export ubVirtImagePartition=p3
+	[[ "$ubVirtPlatform" == "x64-efi" ]] && export ubVirtImagePartition=p3 && export ubVirtImageEFI=p2
 	[[ "$ubVirtPlatform" == "raspbian" ]] && export ubVirtImagePartition=p2
+	
 	
 	#Default.
 	# DANGER: Do NOT set blank.
