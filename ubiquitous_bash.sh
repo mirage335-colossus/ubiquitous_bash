@@ -10441,6 +10441,7 @@ _detect_deviceAsChRootImage() {
 _mountChRoot() {
 	_mustGetSudo
 	
+	[[ ! -e "$1" ]] && sleep 3
 	[[ ! -e "$1" ]] && return 1
 	
 	local absolute1
