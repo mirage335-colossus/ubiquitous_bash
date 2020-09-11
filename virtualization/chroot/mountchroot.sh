@@ -166,7 +166,7 @@ _mountChRoot_image_raspbian() {
 	
 	
 	local chrootimagedev
-	chrootimagedev=$(cat "$safeTmp"/imagedev)
+	chrootimagedev=$(cat "$scriptLocal"/imagedev)
 	! _mountChRoot_image_raspbian_prog "$chrootimagedev" && _stop 1
 	
 	
@@ -241,7 +241,7 @@ _mountChRoot_image_x64() {
 	
 	
 	local chrootimagedev
-	chrootimagedev=$(cat "$safeTmp"/imagedev)
+	chrootimagedev=$(cat "$scriptLocal"/imagedev)
 	! _mountChRoot_image_x64_prog "$chrootimagedev" && _stop 1
 	
 	return 0
@@ -319,15 +319,17 @@ _umountChRoot_image_prog() {
 _umountChRoot_image() {
 	_mustGetSudo || return 1
 	
+	# x64-efi (typical)
+	[[ -d "$globalVirtFS"/boot ]] && mountpoint "$globalVirtFS"/boot >/dev/null 2>&1 && sudo -n umount "$globalVirtFS"/boot >/dev/null 2>&1
+	[[ -d "$globalVirtFS"/boot/efi ]] && mountpoint "$globalVirtFS"/boot/efi >/dev/null 2>&1 && sudo -n umount "$globalVirtFS"/boot/efi >/dev/null 2>&1
+	
+	
 	! _umountChRoot_directory "$chrootDir" && return 1
 	
 	! _umountChRoot_image_prog && return 1
 	
+	# raspbian (typical)
 	[[ -d "$globalVirtFS"/../boot ]] && mountpoint "$globalVirtFS"/../boot >/dev/null 2>&1 && sudo -n umount "$globalVirtFS"/../boot >/dev/null 2>&1
-	
-	[[ -d "$globalVirtFS"/boot ]] && mountpoint "$globalVirtFS"/boot >/dev/null 2>&1 && sudo -n umount "$globalVirtFS"/boot >/dev/null 2>&1
-	[[ -d "$globalVirtFS"/boot/efi ]] && mountpoint "$globalVirtFS"/boot/efi >/dev/null 2>&1 && sudo -n umount "$globalVirtFS"/boot/efi >/dev/null 2>&1
-	
 	
 	_umountImage "$chrootDir"
 	
