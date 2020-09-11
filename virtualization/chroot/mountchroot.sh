@@ -18,8 +18,15 @@ _mountChRoot() {
 	local absolute1
 	absolute1=$(_getAbsoluteLocation "$1")
 	
+	[[ "$absolute1" == "" ]] && return 1
+	[[ "$absolute1" == "/" ]] && return 1
+	[[ ! -e "$absolute1" ]] && return 1
+	
 	_bindMountManager "/dev" "$absolute1"/dev
-	_bindMountManager "/proc" "$absolute1"/proc
+	
+	#_bindMountManager "/proc" "$absolute1"/proc
+	sudo -n mount -t proc none "$absolute1"/proc
+	
 	_bindMountManager "/sys" "$absolute1"/sys
 	
 	_bindMountManager "/dev/pts" "$absolute1"/dev/pts
