@@ -101,15 +101,30 @@ _umountChRoot() {
 	fi
 	
 	
-	#_wait_umount "$absolute1"/proc
+	sudo -n umount "$absolute1"/proc
 	_wait_umount "$absolute1"/sys
 	
 	_wait_umount "$absolute1"/tmp
 	
 	_wait_umount "$absolute1"/dev
 	
-	sleep 1
-	_wait_umount "$absolute1"/proc
+	if mountpoint "$absolute1"/proc > /dev/null 2>&1
+	then
+		sleep 3
+		if mountpoint "$absolute1"/proc > /dev/null 2>&1
+		then
+			sudo -n umount "$absolute1"/proc
+			if mountpoint "$absolute1"/proc > /dev/null 2>&1
+			then
+				sleep 3
+				if mountpoint "$absolute1"/proc > /dev/null 2>&1
+				then
+					sudo -n umount "$absolute1"/proc
+				fi
+			fi
+		fi
+		_wait_umount "$absolute1"/proc
+	fi
 	
 	# Full umount of chroot directory may be done by standard '_umountImage'.
 	#_wait_umount "$absolute1" >/dev/null 2>&1
