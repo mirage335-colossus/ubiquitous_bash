@@ -182,6 +182,8 @@ _loopImage_procedure_losetup() {
 	
 	sudo -n losetup -f -P --show "$1" > "$safeTmp"/imagedev 2> /dev/null || _stop 1
 	sudo -n partprobe > /dev/null 2>&1
+	sudo -n partprobe > /dev/null 2>&1
+	sleep 3
 	
 	cp -n "$safeTmp"/imagedev "$2" > /dev/null 2>&1 || _stop 1
 	return 0

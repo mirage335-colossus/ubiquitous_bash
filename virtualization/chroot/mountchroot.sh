@@ -110,13 +110,13 @@ _umountChRoot() {
 	
 	if mountpoint "$absolute1"/proc > /dev/null 2>&1
 	then
-		sleep 3
+		sleep 6
 		if mountpoint "$absolute1"/proc > /dev/null 2>&1
 		then
 			sudo -n umount "$absolute1"/proc
 			if mountpoint "$absolute1"/proc > /dev/null 2>&1
 			then
-				sleep 3
+				sleep 6
 				if mountpoint "$absolute1"/proc > /dev/null 2>&1
 				then
 					sudo -n umount "$absolute1"/proc
