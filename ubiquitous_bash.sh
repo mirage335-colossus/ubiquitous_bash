@@ -10736,6 +10736,12 @@ _umountChRoot_directory() {
 # WARNING: Must return true to complete mount/umount procedure.
 _umountChRoot_image_prog() {
 	true
+	
+	#[[ -d "$globalVirtFS"/../boot ]] && mountpoint "$globalVirtFS"/../boot >/dev/null 2>&1 && sudo -n umount "$globalVirtFS"/../boot >/dev/null 2>&1
+	
+	#[[ -d "$globalVirtFS"/boot ]] && mountpoint "$globalVirtFS"/boot >/dev/null 2>&1 && sudo -n umount "$globalVirtFS"/boot >/dev/null 2>&1
+	#[[ -d "$globalVirtFS"/boot/efi ]] && mountpoint "$globalVirtFS"/boot/efi >/dev/null 2>&1 && sudo -n umount "$globalVirtFS"/boot/efi >/dev/null 2>&1
+	
 }
 
 _umountChRoot_image() {
