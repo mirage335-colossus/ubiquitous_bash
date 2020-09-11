@@ -314,6 +314,9 @@ _mountImageFS_sequence() {
 	sudo -n mount "$current_imagepart" "$currentDestinationDir" || _stop 1
 	sleep 1
 	
+	! mountpoint "$currentDestinationDir" > /dev/null 2>&1 && sleep 3
+	! mountpoint "$currentDestinationDir" > /dev/null 2>&1 && sleep 6
+	! mountpoint "$currentDestinationDir" > /dev/null 2>&1 && sleep 9
 	mountpoint "$currentDestinationDir" > /dev/null 2>&1 || _stop 1
 	
 	_stop 0
