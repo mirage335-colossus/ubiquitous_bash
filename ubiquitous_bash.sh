@@ -9592,9 +9592,9 @@ _umountImage() {
 	#Uniquely, it is desirable to allow unmounting to proceed a little further if the filesystem was not mounted to begin with. Enables manual intervention.
 	
 	#Filesystem must be unmounted before proceeding.
-	_readyImage "$currentDestinationDir" && sleep 1
-	_readyImage "$currentDestinationDir" && sleep 3
-	_readyImage "$currentDestinationDir" && sleep 9
+	_readyImage "$currentDestinationDir" && sleep 1 && sudo -n umount "$currentDestinationDir" > /dev/null 2>&1
+	_readyImage "$currentDestinationDir" && sleep 3 && sudo -n umount "$currentDestinationDir" > /dev/null 2>&1
+	_readyImage "$currentDestinationDir" && sleep 9 && sudo -n umount "$currentDestinationDir" > /dev/null 2>&1
 	_readyImage "$currentDestinationDir" && return 1
 	
 	! _umountLoop && return 1
