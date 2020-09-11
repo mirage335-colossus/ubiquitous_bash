@@ -10516,12 +10516,15 @@ _umountChRoot() {
 	fi
 	
 	
-	_wait_umount "$absolute1"/proc
+	#_wait_umount "$absolute1"/proc
 	_wait_umount "$absolute1"/sys
 	
 	_wait_umount "$absolute1"/tmp
 	
 	_wait_umount "$absolute1"/dev
+	
+	sleep 1
+	_wait_umount "$absolute1"/proc
 	
 	# Full umount of chroot directory may be done by standard '_umountImage'.
 	#_wait_umount "$absolute1" >/dev/null 2>&1
