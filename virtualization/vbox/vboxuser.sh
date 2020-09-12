@@ -515,7 +515,13 @@ _edit_instance_vbox_sequence() {
 }
 
 _edit_instance_vbox() {
+	if [[ "$ub_keepInstance" == 'true' ]]
+	then
+		_edit_instance_vbox_sequence "$@"
+		return
+	fi
 	"$scriptAbsoluteLocation" _edit_instance_vbox_sequence "$@"
+	return
 }
 
 _editVBox() {
