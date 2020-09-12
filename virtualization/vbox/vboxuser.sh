@@ -464,8 +464,15 @@ _user_instance_vbox_sequence() {
 	_stop
 }
 
+# Keep instance should only be set by end-user functions which require overriding of internal functions.
 _user_instance_vbox() {
+	if [[ "$ub_keepInstance" == 'true' ]]
+	then
+		_user_instance_vbox_sequence "$@"
+		return
+	fi
 	"$scriptAbsoluteLocation" _user_instance_vbox_sequence "$@"
+	return
 }
 
 _userVBox() {
