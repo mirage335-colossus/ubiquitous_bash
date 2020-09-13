@@ -82,7 +82,16 @@ _integratedQemu_x64() {
 	
 	#https://superuser.com/questions/342719/how-to-boot-a-physical-windows-partition-with-qemu
 	#qemuUserArgs+=(-drive format=raw,file="$scriptLocal"/vm.img)
-	qemuUserArgs+=(-drive format=raw,file="$current_imagefilename")
+	#qemuUserArgs+=(-drive format=raw,file="$current_imagefilename")
+	if [[ "$ub_override_qemu_livecd" != '' ]]
+	then
+		qemuUserArgs+=(-drive file="$ub_override_qemu_livecd",media=cdrom)
+	elif false
+	then
+		true
+	else
+		qemuUserArgs+=(-drive format=raw,file="$current_imagefilename")
+	fi
 	
 	qemuUserArgs+=(-drive file="$hostToGuestISO",media=cdrom -boot c)
 	
@@ -214,6 +223,11 @@ _integratedQemu() {
 	fi
 	
 	#Default x64 .
+	if [[ "$ub_keepInstance" == 'true' ]]
+	then
+		_integratedQemu_x64 "$@"
+		return "$?"
+	fi
 	"$scriptAbsoluteLocation" _integratedQemu_x64 "$@"
 	return "$?"
 }
@@ -237,6 +251,11 @@ _userQemu() {
 	_findInfrastructure_virtImage ${FUNCNAME[0]} "$@"
 	[[ "$ubVirtImageLocal" == "false" ]] && return
 	
+	if [[ "$ub_keepInstance" == 'true' ]]
+	then
+		_userQemu_sequence "$@"
+		return
+	fi
 	"$scriptAbsoluteLocation" _userQemu_sequence "$@"
 }
 
@@ -270,5 +289,10 @@ _editQemu() {
 	_findInfrastructure_virtImage ${FUNCNAME[0]} "$@"
 	[[ "$ubVirtImageLocal" == "false" ]] && return
 	
+	if [[ "$ub_keepInstance" == 'true' ]]
+	then
+		_editQemu_sequence "$@"
+		return
+	fi
 	"$scriptAbsoluteLocation" _editQemu_sequence "$@"
 }

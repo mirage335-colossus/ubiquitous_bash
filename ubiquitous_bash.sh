@@ -11484,7 +11484,16 @@ _integratedQemu_x64() {
 	
 	#https://superuser.com/questions/342719/how-to-boot-a-physical-windows-partition-with-qemu
 	#qemuUserArgs+=(-drive format=raw,file="$scriptLocal"/vm.img)
-	qemuUserArgs+=(-drive format=raw,file="$current_imagefilename")
+	#qemuUserArgs+=(-drive format=raw,file="$current_imagefilename")
+	if [[ "$ub_override_qemu_livecd" != '' ]]
+	then
+		qemuUserArgs+=(-drive file="$ub_override_qemu_livecd",media=cdrom)
+	elif false
+	then
+		true
+	else
+		qemuUserArgs+=(-drive format=raw,file="$current_imagefilename")
+	fi
 	
 	qemuUserArgs+=(-drive file="$hostToGuestISO",media=cdrom -boot c)
 	
@@ -11616,6 +11625,11 @@ _integratedQemu() {
 	fi
 	
 	#Default x64 .
+	if [[ "$ub_keepInstance" == 'true' ]]
+	then
+		_integratedQemu_x64 "$@"
+		return "$?"
+	fi
 	"$scriptAbsoluteLocation" _integratedQemu_x64 "$@"
 	return "$?"
 }
@@ -11639,6 +11653,11 @@ _userQemu() {
 	_findInfrastructure_virtImage ${FUNCNAME[0]} "$@"
 	[[ "$ubVirtImageLocal" == "false" ]] && return
 	
+	if [[ "$ub_keepInstance" == 'true' ]]
+	then
+		_userQemu_sequence "$@"
+		return
+	fi
 	"$scriptAbsoluteLocation" _userQemu_sequence "$@"
 }
 
@@ -11672,6 +11691,11 @@ _editQemu() {
 	_findInfrastructure_virtImage ${FUNCNAME[0]} "$@"
 	[[ "$ubVirtImageLocal" == "false" ]] && return
 	
+	if [[ "$ub_keepInstance" == 'true' ]]
+	then
+		_editQemu_sequence "$@"
+		return
+	fi
 	"$scriptAbsoluteLocation" _editQemu_sequence "$@"
 }
 
@@ -12263,8 +12287,21 @@ _create_instance_vbox_storageattach_ide() {
 	[[ "$vboxDiskMtype" == "" ]] && export vboxDiskMtype="immutable"
 	_messagePlain_probe 'vboxDiskMtype= '"$vboxDiskMtype"
 	
-	_messagePlain_probe VBoxManage storageattach "$sessionid" --storagectl "IDE Controller" --port 0 --device 0 --type hdd --medium "$vboxInstanceDiskImage" --mtype "$vboxDiskMtype"
-	! VBoxManage storageattach "$sessionid" --storagectl "IDE Controller" --port 0 --device 0 --type hdd --medium "$vboxInstanceDiskImage" --mtype "$vboxDiskMtype" && _messagePlain_bad 'fail: VBoxManage... attach vboxInstanceDiskImage= '"$vboxInstanceDiskImage"
+	
+	
+	if [[ "$ub_override_vbox_livecd" != '' ]]
+	then
+		_messagePlain_probe VBoxManage storageattach "$sessionid" --storagectl "IDE Controller" --port 0 --device 0 --type dvddrive --medium "$ub_override_vbox_livecd"
+		! VBoxManage storageattach "$sessionid" --storagectl "IDE Controller" --port 0 --device 0 --type dvddrive --medium "$ub_override_vbox_livecd" && _messagePlain_bad 'fail: VBoxManage... attach vboxInstanceDiskImage= '"$vboxInstanceDiskImage"
+	elif false
+	then
+		true
+	else
+		_messagePlain_probe VBoxManage storageattach "$sessionid" --storagectl "IDE Controller" --port 0 --device 0 --type hdd --medium "$vboxInstanceDiskImage" --mtype "$vboxDiskMtype"
+		! VBoxManage storageattach "$sessionid" --storagectl "IDE Controller" --port 0 --device 0 --type hdd --medium "$vboxInstanceDiskImage" --mtype "$vboxDiskMtype" && _messagePlain_bad 'fail: VBoxManage... attach vboxInstanceDiskImage= '"$vboxInstanceDiskImage"
+	fi
+	
+	
 	
 	[[ -e "$hostToGuestISO" ]] && ! VBoxManage storageattach "$sessionid" --storagectl "IDE Controller" --port 1 --device 0 --type dvddrive --medium "$hostToGuestISO" && _messagePlain_bad 'fail: VBoxManage... attach hostToGuestISO= '"$hostToGuestISO"
 	
@@ -12286,8 +12323,23 @@ _create_instance_vbox_storageattach_sata() {
 	[[ "$vboxDiskMtype" == "" ]] && export vboxDiskMtype="immutable"
 	_messagePlain_probe 'vboxDiskMtype= '"$vboxDiskMtype"
 	
-	_messagePlain_probe VBoxManage storageattach "$sessionid" --storagectl "SATA Controller" --port 0 --device 0 --type hdd --medium "$vboxInstanceDiskImage" --mtype "$vboxDiskMtype"
-	! VBoxManage storageattach "$sessionid" --storagectl "SATA Controller" --port 0 --device 0 --type hdd --medium "$vboxInstanceDiskImage" --mtype "$vboxDiskMtype" && _messagePlain_bad 'fail: VBoxManage... attach vboxInstanceDiskImage= '"$vboxInstanceDiskImage"
+	
+	
+	
+	if [[ "$ub_override_vbox_livecd" != '' ]]
+	then
+		_messagePlain_probe VBoxManage storageattach "$sessionid" --storagectl "SATA Controller" --port 0 --device 0 --type dvddrive --medium "$ub_override_vbox_livecd"
+		! VBoxManage storageattach "$sessionid" --storagectl "SATA Controller" --port 0 --device 0 --type dvddrive --medium "$ub_override_vbox_livecd" && _messagePlain_bad 'fail: VBoxManage... attach vboxInstanceDiskImage= '"$vboxInstanceDiskImage"
+	elif false
+	then
+		true
+	else
+		_messagePlain_probe VBoxManage storageattach "$sessionid" --storagectl "SATA Controller" --port 0 --device 0 --type hdd --medium "$vboxInstanceDiskImage" --mtype "$vboxDiskMtype"
+		! VBoxManage storageattach "$sessionid" --storagectl "SATA Controller" --port 0 --device 0 --type hdd --medium "$vboxInstanceDiskImage" --mtype "$vboxDiskMtype" && _messagePlain_bad 'fail: VBoxManage... attach vboxInstanceDiskImage= '"$vboxInstanceDiskImage"
+	fi
+	
+	
+	
 	
 	[[ -e "$hostToGuestISO" ]] && ! VBoxManage storageattach "$sessionid" --storagectl "SATA Controller" --port 1 --device 0 --type dvddrive --medium "$hostToGuestISO" && _messagePlain_bad 'fail: VBoxManage... attach hostToGuestISO= '"$hostToGuestISO"
 	
