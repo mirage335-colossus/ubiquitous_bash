@@ -39,6 +39,9 @@ _testQEMU_x64-x64() {
 	_getDep qemu-img
 	
 	_getDep smbd
+	
+	_wantGetDep /usr/share/OVMF/OVMF_CODE.fd
+	_wantGetDep /usr/share/qemu/OVMF.fd
 }
 
 _qemu-system() {

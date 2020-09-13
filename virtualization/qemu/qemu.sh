@@ -102,9 +102,30 @@ _integratedQemu_x64() {
 	
 	qemuUserArgs+=(-net nic,model=rtl8139 -net user,restrict="$qemuUserArgs_netRestrict",smb="$sharedHostProjectDir")
 	
-	qemuArgs+=(-usbdevice tablet)
+	#qemuArgs+=(-usbdevice tablet)
+	qemuArgs+=(-device usb-tablet)
 	
-	qemuArgs+=(-vga cirrus)
+	# https://www.kraxel.org/blog/2019/09/display-devices-in-qemu/
+	[[ "$qemuOStype" == "" ]] && [[ "$vboxOStype" != "" ]] && qemuOStype="$vboxOStype"
+	if [[ "$qemuOStype" == 'Debian_64' ]] || [[ "$qemuOStype" == 'Gentoo_64' ]]
+	then
+		if [[ "$qemuNoGL" == 'true' ]]
+		then
+			qemuArgs+=(-device virtio-vga,virgl=on -display gl=off)
+		else
+			qemuArgs+=(-device virtio-vga,virgl=on -display gl=on)
+		fi
+	elif [[ "$qemuOStype" == 'Windows10_64' ]]
+	then
+		qemuArgs+=(-device qxl)
+	elif [[ "$qemuOStype" == 'WindowsXP' ]] || [[ "$qemuOStype" == 'legacy-obsolete' ]]
+	then
+		qemuArgs+=(-vga cirrus)
+	else
+		qemuArgs+=(-vga std)
+	fi
+	
+	
 	
 	[[ "$qemuArgs_audio" == "" ]] && qemuArgs+=(-device ich9-intel-hda -device hda-duplex)
 	
@@ -116,6 +137,29 @@ _integratedQemu_x64() {
 		qemuArgs+=(-machine accel=kvm)
 	else
 		_messagePlain_warn 'missing: kvm'
+	fi
+	
+	
+	# https://blog.matejc.com/blogs/myblog/playing-on-qemu
+	# https://www.kraxel.org/repos/jenkins/edk2/
+	# https://www.kraxel.org/repos/
+	# https://unix.stackexchange.com/questions/52996/how-to-boot-efi-kernel-using-qemu-kvm
+	# https://blog.hartwork.org/posts/get-qemu-to-boot-efi/
+	# https://www.kraxel.org/repos/jenkins/edk2/
+	# https://www.kraxel.org/repos/jenkins/edk2/edk2.git-ovmf-x64-0-20200515.1447.g317d84abe3.noarch.rpm
+	if [[ "$ubVirtPlatform" == "x64-efi" ]]
+	then
+		if [[ -e "$HOME"/core/installations/ovmf/OVMF_CODE-pure-efi.fd ]] && [[ -e "$HOME"/core/installations/ovmf/OVMF_VARS-pure-efi.fd ]]
+		then
+			qemuArgs+=(-drive if=pflash,format=raw,readonly,file="$HOME"/core/installations/ovmf/OVMF_CODE-pure-efi.fd -drive if=pflash,format=raw,file="$HOME"/core/installations/ovmf/OVMF_VARS-pure-efi.fd)
+		elif [[ -e /usr/share/OVMF/OVMF_CODE.fd ]]
+		then
+			qemuArgs+=(-bios /usr/share/OVMF/OVMF_CODE.fd)
+		else
+			# Bootloader is not declared as other than legacy bios type.
+			# Do nothing by default. Loading an EFI bootloader with CSM module may cause unwanted delay.
+			true
+		fi
 	fi
 	
 	qemuArgs+=("${qemuSpecialArgs[@]}" "${qemuUserArgs[@]}")
@@ -208,6 +252,12 @@ _integratedQemu() {
 	_loopImage_imagefilename > /dev/null 2>&1
 	
 	if [[ "$ubVirtPlatform" == "x64-bios" ]]
+	then
+		_integratedQemu_x64 "$@"
+		return "$?"
+	fi
+	
+	if [[ "$ubVirtPlatform" == "x64-efi" ]]
 	then
 		_integratedQemu_x64 "$@"
 		return "$?"
