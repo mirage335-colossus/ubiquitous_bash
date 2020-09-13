@@ -11458,6 +11458,8 @@ _integratedQemu_x64() {
 	#https://unix.stackexchange.com/questions/165554/shared-folder-between-qemu-windows-guest-and-linux-host
 	#https://linux.die.net/man/1/qemu-kvm
 	
+	qemuArgs+=(-usb)
+	
 	if _testQEMU_hostArch_x64_nested
 	then
 		_messagePlain_good 'supported: nested x64'
@@ -11516,9 +11518,9 @@ _integratedQemu_x64() {
 	then
 		if [[ "$qemuNoGL" == 'true' ]]
 		then
-			qemuArgs+=(-device virtio-vga,virgl=on -display gl=off)
+			qemuArgs+=(-device virtio-vga,virgl=on -display gtk,gl=off)
 		else
-			qemuArgs+=(-device virtio-vga,virgl=on -display gl=on)
+			qemuArgs+=(-device virtio-vga,virgl=on -display gtk,gl=on)
 		fi
 	elif [[ "$qemuOStype" == 'Windows10_64' ]]
 	then
