@@ -116,14 +116,22 @@ _java_openjdk8_check_filter() {
 }
 _java_openjdk8_debian_check() {
 	local current_java_path='/usr/lib/jvm/java-8-openjdk-amd64/bin/java'
+	if type "$current_java_path"
+	then
+		_set_java_arbitrary "$current_java_path"
+		#! "$current_java_path" -version 2>&1 | _java_openjdk8_check_filter > /dev/null 2>&1 && return 1
+		return 0
+	fi
 	
-	! type "$current_java_path" > /dev/null 2>&1 && return 1
+	local current_java_path='/usr/lib/jvm/adoptopenjdk-8-hotspot-amd64/bin/java'
+	if type "$current_java_path"
+	then
+		_set_java_arbitrary "$current_java_path"
+		#! "$current_java_path" -version 2>&1 | _java_openjdk8_check_filter > /dev/null 2>&1 && return 1
+		return 0
+	fi
 	
-	#! "$current_java_path" -version 2>&1 | _java_openjdk8_check_filter > /dev/null 2>&1 && return 1
-	
-	_set_java_arbitrary "$current_java_path"
-	
-	return 0
+	return 1
 }
 _java_openjdk8_debian() {
 	if _java_openjdk8_debian_check
