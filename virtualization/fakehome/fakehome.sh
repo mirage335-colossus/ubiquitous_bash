@@ -159,6 +159,9 @@ _fakeHome() {
 	
 	fakeHomeENVvars+=(LD_PRELOAD="$LD_PRELOAD")
 	
+	# https://github.com/prusa3d/PrusaSlicer/issues/3969
+	fakeHomeENVvars+=(USER="$USER")
+	
 	if type dbus-run-session > /dev/null 2>&1
 	then
 		fakeHomeENVvars+=(dbus-run-session)
