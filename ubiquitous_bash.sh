@@ -8941,13 +8941,69 @@ _fakeHome() {
 		fakeHomeENVvars+=(dbus-run-session)
 	fi
 	
+	fakeHomeENVvars+=(LD_PRELOAD="$LD_PRELOAD")
+	
 	#env -i DISPLAY="$DISPLAY" XAUTH="$XAUTH" XAUTHORITY="$XAUTHORITY" XSOCK="$XSOCK" XDG_SESSION_DESKTOP='KDE' XDG_CURRENT_DESKTOP='KDE' realHome="$realHome" keepFakeHome="$keepFakeHome" HOME="$HOME" setFakeHome="$setFakeHome" TERM="${TERM}" SHELL="${SHELL}" PATH="${PATH}" _JAVA_OPTIONS=${_JAVA_OPTIONS}scriptAbsoluteLocation="$scriptAbsoluteLocation" sessionid="$sessionid" scriptAbsoluteFolder="$scriptAbsoluteFolder" realSessionID="$realSessionID" realScriptAbsoluteLocation="$realScriptAbsoluteLocation" realScriptAbsoluteFolder="$realScriptAbsoluteFolder" dbus-run-session "$@"
 	##env -i DISPLAY="$DISPLAY" XAUTH="$XAUTH" XAUTHORITY="$XAUTHORITY" XSOCK="$XSOCK" XDG_SESSION_DESKTOP='KDE' XDG_CURRENT_DESKTOP='KDE' realHome="$realHome" keepFakeHome="$keepFakeHome" HOME="$HOME" setFakeHome="$setFakeHome" TERM="${TERM}" SHELL="${SHELL}" PATH="${PATH}" _JAVA_OPTIONS=${_JAVA_OPTIONS}scriptAbsoluteLocation="$scriptAbsoluteLocation" scriptAbsoluteFolder="$scriptAbsoluteFolder" dbus-run-session "$@"
 	##dbus-run-session "$@"
 	##"$@"
 	##. "$@"
-	env -i "${fakeHomeENVvars[@]}" "$@"
-	fakeHomeExitStatus=$?
+	#env -i "${fakeHomeENVvars[@]}" "$@"
+	#fakeHomeExitStatus=$?
+	
+	
+	
+	if [[ "$appImageExecutable" == "" ]]
+	then
+		[[ "$1" == *'.APPIMAGE' ]] && export appImageExecutable="$1"
+		[[ "$1" == *'.appimage' ]] && export appImageExecutable="$1"
+		[[ "$1" == *'.AppImage' ]] && export appImageExecutable="$1"
+	fi
+	if [[ "$appImageExecutable" != "" ]]
+	then
+		#mkdir -p "$appImageExecutable".home
+		#mkdir -p "$appImageExecutable".config
+		#"$appImageExecutable" --appimage-portable-home > /dev/null 2>&1
+		#"$appImageExecutable" --appimage-portable-config > /dev/null 2>&1
+		
+		export appImageExecutable_basename=$(basename "$appImageExecutable")
+		export appImageExecutable_actualFakeHome="$actualFakeHome"/"$appImageExecutable_basename"
+		
+		chmod u+rx "$appImageExecutable"
+		
+		#cp -r -L --preserve=all "$appImageExecutable" "$actualFakeHome"/
+		rsync -rLptgoD "$appImageExecutable" "$actualFakeHome"/
+		
+		chmod u+rx "$appImageExecutable_actualFakeHome"
+		
+		if [[ ! -d "$appImageExecutable_actualFakeHome".home ]] || [[ ! -d "$appImageExecutable_actualFakeHome".config ]]
+		then
+			mkdir -p "$appImageExecutable_actualFakeHome".home
+			mkdir -p "$appImageExecutable_actualFakeHome".config
+			"$appImageExecutable_actualFakeHome" --appimage-portable-home > /dev/null 2>&1
+			"$appImageExecutable_actualFakeHome" --appimage-portable-config > /dev/null 2>&1
+		fi
+		
+		
+		shift
+		
+		#_fakeHome "$appImageExecutable_actualFakeHome" "$@"
+		
+		if [[ "$1" != '--norunFakeHome' ]]
+		then
+			env -i "${fakeHomeENVvars[@]}" "$appImageExecutable_actualFakeHome" "$@"
+			fakeHomeExitStatus=$?
+		else
+			fakeHomeExitStatus='0'
+		fi
+	elif false
+	then
+		true
+	else
+		env -i "${fakeHomeENVvars[@]}" "$@"
+		fakeHomeExitStatus=$?
+	fi
+	
 	
 	#_unmakeFakeHome > /dev/null 2>&1
 	
