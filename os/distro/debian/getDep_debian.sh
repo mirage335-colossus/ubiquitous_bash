@@ -36,6 +36,8 @@ _apt-file() {
 
 
 _fetchDep_debianStretch_special() {
+	sudo -n apt-get -y update
+	
 # 	if [[ "$1" == *"java"* ]]
 # 	then
 # 		sudo -n apt-get install --install-recommends -y default-jdk default-jre
@@ -45,7 +47,7 @@ _fetchDep_debianStretch_special() {
 	if [[ "$1" == *"wine"* ]] && ! dpkg --print-foreign-architectures | grep i386 > /dev/null 2>&1
 	then
 		sudo -n dpkg --add-architecture i386
-		sudo -n apt-get update
+		sudo -n apt-get -y update
 		sudo -n apt-get install --install-recommends -y wine wine32 wine64 libwine libwine:i386 fonts-wine
 		return 0
 	fi
@@ -111,7 +113,7 @@ _fetchDep_debianStretch_special() {
 		wget -q https://www.virtualbox.org/download/oracle_vbox_2016.asc -O- | sudo -n apt-key add -
 		wget -q https://www.virtualbox.org/download/oracle_vbox.asc -O- | sudo -n apt-key add -
 		
-		sudo -n apt-get update
+		sudo -n apt-get -y update
 		sudo -n apt-get install --install-recommends -y dkms virtualbox-6.1
 		
 		echo "WARNING: Recommend manual system configuration after install. See https://www.virtualbox.org/wiki/Downloads ."
@@ -183,7 +185,7 @@ _fetchDep_debianStretch_special() {
 		
 		sudo -n add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/$(. /etc/os-release; echo "$ID") $(lsb_release -cs) stable"
 		
-		sudo -n apt-get update
+		sudo -n apt-get -y update
 		
 		sudo -n apt-get remove -y docker docker-engine docker.io docker-ce docker
 		sudo -n apt-get install --install-recommends -y docker-ce
@@ -204,7 +206,7 @@ _fetchDep_debianStretch_special() {
 		curl -L https://packagecloud.io/AtomEditor/atom/gpgkey | sudo -n apt-key add -
 		sudo -n sh -c 'echo "deb [arch=amd64] https://packagecloud.io/AtomEditor/atom/any/ any main" > /etc/apt/sources.list.d/atom.list'
 		
-		sudo -n apt-get update
+		sudo -n apt-get -y update
 		
 		sudo -n apt-get install --install-recommends -y atom
 		
@@ -240,7 +242,7 @@ _fetchDep_debianStretch_special() {
 		echo "Requires manual installation. See https://www.lulzbot.com/learn/tutorials/cura-lulzbot-edition-installation-debian ."
 cat << 'CZXWXcRMTo8EmM8i4d'
 wget -qO - https://download.alephobjects.com/ao/aodeb/aokey.pub | sudo -n apt-key add -
-sudo -n cp /etc/apt/sources.list /etc/apt/sources.list.bak && sudo -n sed -i '$a deb http://download.alephobjects.com/ao/aodeb jessie main' /etc/apt/sources.list && sudo -n apt-get update && sudo -n apt-get install cura-lulzbot
+sudo -n cp /etc/apt/sources.list /etc/apt/sources.list.bak && sudo -n sed -i '$a deb http://download.alephobjects.com/ao/aodeb jessie main' /etc/apt/sources.list && sudo -n apt-get -y update && sudo -n apt-get install cura-lulzbot
 CZXWXcRMTo8EmM8i4d
 		echo "(typical)"
 		_stop 1
@@ -350,6 +352,8 @@ _fetchDep_debianStretch() {
 
 
 _fetchDep_debianBuster_special() {
+	sudo -n apt-get -y update
+	
 # 	if [[ "$1" == *"java"* ]]
 # 	then
 # 		sudo -n apt-get install --install-recommends -y default-jdk default-jre
@@ -359,7 +363,7 @@ _fetchDep_debianBuster_special() {
 	if [[ "$1" == *"wine"* ]] && ! dpkg --print-foreign-architectures | grep i386 > /dev/null 2>&1
 	then
 		sudo -n dpkg --add-architecture i386
-		sudo -n apt-get update
+		sudo -n apt-get -y update
 		sudo -n apt-get install --install-recommends -y wine wine32 wine64 libwine libwine:i386 fonts-wine
 		return 0
 	fi
@@ -425,7 +429,7 @@ _fetchDep_debianBuster_special() {
 		wget -q https://www.virtualbox.org/download/oracle_vbox_2016.asc -O- | sudo -n apt-key add -
 		wget -q https://www.virtualbox.org/download/oracle_vbox.asc -O- | sudo -n apt-key add -
 		
-		sudo -n apt-get update
+		sudo -n apt-get -y update
 		sudo -n apt-get install --install-recommends -y dkms virtualbox-6.1
 		
 		echo "WARNING: Recommend manual system configuration after install. See https://www.virtualbox.org/wiki/Downloads ."
@@ -501,7 +505,7 @@ _fetchDep_debianBuster_special() {
 		
 		sudo -n add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/$(. /etc/os-release; echo "$ID") $(lsb_release -cs) stable"
 		
-		sudo -n apt-get update
+		sudo -n apt-get -y update
 		
 		sudo -n apt-get remove -y docker docker-engine docker.io docker-ce docker
 		sudo -n apt-get install --install-recommends -y docker-ce
@@ -522,7 +526,7 @@ _fetchDep_debianBuster_special() {
 		curl -L https://packagecloud.io/AtomEditor/atom/gpgkey | sudo -n apt-key add -
 		sudo -n sh -c 'echo "deb [arch=amd64] https://packagecloud.io/AtomEditor/atom/any/ any main" > /etc/apt/sources.list.d/atom.list'
 		
-		sudo -n apt-get update
+		sudo -n apt-get -y update
 		
 		sudo -n apt-get install --install-recommends -y atom
 		
@@ -558,7 +562,7 @@ _fetchDep_debianBuster_special() {
 		echo "Requires manual installation. See https://www.lulzbot.com/learn/tutorials/cura-lulzbot-edition-installation-debian ."
 cat << 'CZXWXcRMTo8EmM8i4d'
 wget -qO - https://download.alephobjects.com/ao/aodeb/aokey.pub | sudo -n apt-key add -
-sudo -n cp /etc/apt/sources.list /etc/apt/sources.list.bak && sudo -n sed -i '$a deb http://download.alephobjects.com/ao/aodeb jessie main' /etc/apt/sources.list && sudo -n apt-get update && sudo -n apt-get install cura-lulzbot
+sudo -n cp /etc/apt/sources.list /etc/apt/sources.list.bak && sudo -n sed -i '$a deb http://download.alephobjects.com/ao/aodeb jessie main' /etc/apt/sources.list && sudo -n apt-get -y update && sudo -n apt-get install cura-lulzbot
 CZXWXcRMTo8EmM8i4d
 		echo "(typical)"
 		_stop 1
