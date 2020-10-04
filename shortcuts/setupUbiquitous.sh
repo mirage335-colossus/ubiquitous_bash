@@ -37,8 +37,11 @@ _gitClone_ubiquitous() {
 
 _selfCloneUbiquitous() {
 	"$scriptBin"/.ubrgbin.sh _ubrgbin_cpA "$scriptBin" "$ubcoreUBdir"/ > /dev/null 2>&1
+	cp -a "$scriptAbsoluteLocation" "$ubcoreUBdir"/lean.sh
+	cp -a "$scriptAbsoluteLocation" "$ubcoreUBdir"/ubcore.sh
 	cp -a "$scriptAbsoluteFolder"/lean.sh "$ubcoreUBdir"/lean.sh > /dev/null 2>&1
 	cp -a "$scriptAbsoluteFolder"/lean.sh "$ubcoreUBdir"/ubcore.sh > /dev/null 2>&1
+	cp -a "$scriptAbsoluteFolder"/ubcore.sh "$ubcoreUBdir"/ubcore.sh > /dev/null 2>&1
 	cp -a "$scriptAbsoluteLocation" "$ubcoreUBdir"/ubiquitous_bash.sh
 }
 
