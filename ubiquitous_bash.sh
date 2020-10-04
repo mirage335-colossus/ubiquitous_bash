@@ -14253,6 +14253,7 @@ _gitNew() {
 	git init
 	git add .
 	git commit -a -m "first commit"
+	git branch -M main
 }
 
 _gitImport() {
@@ -14354,6 +14355,7 @@ _createBareGitRepo() {
 	cd $bareRepoDir
 	
 	git --bare init
+	git branch -M main
 	
 	echo "-----"
 }
@@ -14366,10 +14368,14 @@ _setBareGitRepo() {
 	git remote add origin "$bareRepoDir"
 	git push --set-upstream origin master
 	
+	# WARNING: TODO: Experimental, requires further testing. Use branch 'main' if extant.
+	git push --set-upstream origin main
+	
 	echo "-----"
 }
 
 _showGitRepoURI() {
+	echo git clone --recursive "$bareRepoAbsoluteDir" "$repoName"
 	echo git clone --recursive ssh://"$USER"@"$repoHostname""$repoPort""$bareRepoAbsoluteDir" "$repoName"
 	
 	

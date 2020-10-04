@@ -48,6 +48,7 @@ _gitNew() {
 	git init
 	git add .
 	git commit -a -m "first commit"
+	git branch -M main
 }
 
 _gitImport() {
