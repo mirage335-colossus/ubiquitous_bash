@@ -3325,6 +3325,11 @@ _compile_bash_deps() {
 		_deps_command
 		_deps_synergy
 		
+		# WARNING: Linux *kernel* admin assistance *only*. NOT any other UNIX like features.
+		# WARNING: Beware Linux shortcut specific dependency programs must not be required, or will break other operating systems!
+		# ie. _test_linux must not require Linux-only binaries
+		_deps_linux
+		
 		_deps_stopwatch
 		
 		return 0
