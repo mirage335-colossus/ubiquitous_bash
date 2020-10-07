@@ -513,6 +513,9 @@ _getAbsolute_criticalDep() {
 	#Known to succeed under BusyBox (OpenWRT), NetBSD, and common Linux variants. No known failure modes. Extra precaution.
 	! readlink -f . > /dev/null 2>&1 && return 1
 	
+	! echo 'qwerty123.git' | grep '\.git$' > /dev/null 2>&1 && return 1
+	echo 'qwerty1234git' | grep '\.git$' > /dev/null 2>&1 && return 1
+	
 	return 0
 }
 ! _getAbsolute_criticalDep && exit 1

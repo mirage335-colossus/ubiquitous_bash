@@ -144,6 +144,8 @@ _define_function_test() {
 #}
 
 _test() {
+	
+	
 	_messageNormal "Sanity..."
 	
 	! "$scriptAbsoluteLocation" _true && _messageFAIL && return 1
