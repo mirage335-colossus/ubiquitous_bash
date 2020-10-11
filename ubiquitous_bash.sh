@@ -3954,19 +3954,19 @@ _setup_ssh_operations() {
 		_setup_ssh_rmKey rev_cmd
 	fi
 	
-	if ! [[ -e "$scriptLocal"/ssh/id_rsa ]] && ! [[ -e "$sshLocalSSH"/id_rsa ]]
+	if ! [[ -e "$scriptLocal"/ssh/id_rsa ]] && ! [[ -e "$sshLocalSSH"/id_rsa ]] && ! [[ -e "$scriptLocal"/ssh/id_rsa.pub ]] && ! [[ -e "$sshLocalSSH"/id_rsa.pub ]]
 	then
 		ssh-keygen -b 4096 -t rsa -N "" -f "$scriptLocal"/ssh/id_rsa -C cautossh@"$netName"
 	fi
 	
 	#Less privileged key used by asset machines to establish persistent reverse tunnels ending at a gateway server.
-	if ! [[ -e "$scriptLocal"/ssh/rev_gate ]] && ! [[ -e "$sshLocalSSH"/rev_gate ]]
+	if ! [[ -e "$scriptLocal"/ssh/rev_gate ]] && ! [[ -e "$sshLocalSSH"/rev_gate ]] && ! [[ -e "$scriptLocal"/ssh/rev_gate.pub ]] && ! [[ -e "$sshLocalSSH"/rev_gate.pub ]]
 	then
 		ssh-keygen -b 4096 -t rsa -N "" -f "$scriptLocal"/ssh/rev_gate -C cautossh@"$netName"
 	fi
 	
 	#Less privileged key used by random machines to establish temporary reverse tunnels ending at a command machine.
-	if ! [[ -e "$scriptLocal"/ssh/rev_cmd ]] && ! [[ -e "$sshLocalSSH"/rev_cmd ]]
+	if ! [[ -e "$scriptLocal"/ssh/rev_cmd ]] && ! [[ -e "$sshLocalSSH"/rev_cmd ]] && ! [[ -e "$scriptLocal"/ssh/rev_cmd.pub ]] && ! [[ -e "$sshLocalSSH"/rev_cmd.pub ]]
 	then
 		ssh-keygen -b 4096 -t rsa -N "" -f "$scriptLocal"/ssh/rev_cmd -C cautossh@"$netName"
 	fi
