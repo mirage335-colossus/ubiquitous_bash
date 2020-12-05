@@ -119,7 +119,21 @@ _custom_packages_debian() {
 	_chroot apt-get install -y chromium
 	_chroot apt-get install -y openjdk-11-jdk openjdk-11-jre
 	
-	_chroot apt-get install -y net-tools linux-image-amd64 wireless-tools rfkill
+	# ATTENTION: ONLY uncomment if needed to ensure a kernel is installed AND custom kernel is not in use.
+	_chroot apt-get install -y linux-image-amd64
+	
+	_chroot apt-get install -y net-tools wireless-tools rfkill
+	
+	
+	# WARNING: Untested. May be old version of VirtualBox. May conflict with guest additions.
+	#_chroot apt-get install -y virtualbox-6.1
+	_chroot apt-get -d install -y virtualbox-6.1
+	
+	
+	# WARNING: Untested. May cause problems.
+	#_chroot apt-get install -y docker-ce
+	_chroot apt-get -d install -y docker-ce
+	
 	
 	# WARNING: Untested. May incorrectly remove supposedly 'old' kernel versions.
 	#_chroot apt-get autoremove -y
@@ -127,6 +141,10 @@ _custom_packages_debian() {
 	#sudo -n rm -f "$globalVirtFS"/ubtest.sh > /dev/null 2>&1
 	#sudo -n cp "$scriptAbsoluteLocation" "$globalVirtFS"/ubtest.sh
 	#_chroot /ubtest.sh _test
+	
+	_chroot apt-get install -y live-boot
+	
+	_chroot apt-get install -y xserver-xorg-video-all
 }
 
 _custom_packages_gentoo() {
@@ -290,6 +308,22 @@ _custom_copy_directory() {
 # ATTENTION: Override (if necessary) .
 _custom_prog() {
 	true
+	
+	# ATTENTION: Some of these commands may fail. This is normal.
+	_chroot usermod -a -G sudo "$custom_user"
+	_chroot usermod -a -G wheel "$custom_user"
+	_chroot usermod -a -G wireshark "$custom_user"
+	
+	_chroot usermod -a -G disk "$custom_user"
+	_chroot usermod -a -G dialout "$custom_user"
+	_chroot usermod -a -G lpadmin "$custom_user"
+	_chroot usermod -a -G scanner "$custom_user"
+	_chroot usermod -a -G vboxusers "$custom_user"
+	_chroot usermod -a -G docker "$custom_user"
+	
+	
+	sudo -n mkdir -p "$globalVirtFS"/boot/efi/EFI/BOOT/
+	sudo -n cp "$globalVirtFS"/boot/efi/EFI/debian/grubx64.efi "$globalVirtFS"/boot/efi/EFI/BOOT/bootx64.efi
 	
 	_custom_cautossh
 	
