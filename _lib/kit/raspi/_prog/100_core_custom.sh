@@ -151,6 +151,19 @@ _custom_packages_gentoo() {
 	true
 	#return
 	
+	#emerge-webrsync
+	#emerge --sync
+	#emerge --oneshot portage
+	#emerge --autounmask-write --changed-use --deep @world
+	#etc-update --automode -5
+	#emerge --changed-use --deep @world
+	#emerge @preserved-rebuild
+	
+	_chroot env emerge --update gdb
+	_chroot env emerge --update debugedit
+	
+	# WARNING: May or may not be a appropriate.
+	_chroot env USE="-vlc" emerge --update --changed-use phonon phonon-gstreamer
 	
 	_chroot emerge --update nmap
 	_chroot emerge --update wmctrl
@@ -167,9 +180,10 @@ _custom_packages_gentoo() {
 	_chroot emerge --update okular
 	_chroot emerge --update libreoffice
 	
-	_chroot emerge --update --autounmask-write firefox
-	_chroot etc-update --automode -5
-	_chroot emerge --update firefox
+	# WARNING: May cause lengthy rebuild.
+	#_chroot emerge --update --autounmask-write firefox
+	#_chroot etc-update --automode -5
+	#_chroot emerge --update firefox
 	
 	# WARNING: Chromium may attempt lengthy rebuild.
 	#_chroot emerge --update --autounmask-write chromium
@@ -178,6 +192,9 @@ _custom_packages_gentoo() {
 	
 	_chroot emerge --update xournal
 	_chroot emerge --update kwrite
+	
+	_chroot emerge --update qalculate-gtk
+	_chroot emerge --update vlc
 	
 	
 	#return
@@ -288,6 +305,8 @@ _custom_packages_gentoo() {
 	# Alternatively disable KDE bluetooth integration.
 	# https://wiki.gentoo.org/wiki/KDE/Troubleshooting
 	_chroot systemctl enable bluetooth
+	
+	_chroot emerge @preserved-rebuild
 }
 
 # ATTENTION: Override (if necessary) .
