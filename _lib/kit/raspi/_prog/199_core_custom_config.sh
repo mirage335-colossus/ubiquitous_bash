@@ -155,6 +155,17 @@ _custom_prog() {
 	_chroot usermod -a -G wheel "$custom_user"
 	_chroot usermod -a -G wireshark "$custom_user"
 	
+	_chroot usermod -a -G cdrom "$custom_user"
+	_chroot usermod -a -G floppy "$custom_user"
+	_chroot usermod -a -G audio "$custom_user"
+	_chroot usermod -a -G dip "$custom_user"
+	_chroot usermod -a -G video "$custom_user"
+	_chroot usermod -a -G plugdev "$custom_user"
+	_chroot usermod -a -G netdev "$custom_user"
+	_chroot usermod -a -G bluetooth "$custom_user"
+	_chroot usermod -a -G lpadmin "$custom_user"
+	_chroot usermod -a -G scanner "$custom_user"
+	
 	_chroot usermod -a -G disk "$custom_user"
 	_chroot usermod -a -G dialout "$custom_user"
 	_chroot usermod -a -G lpadmin "$custom_user"
@@ -170,6 +181,7 @@ _custom_prog() {
 	
 	_chroot cp -r /home/"$custom_user"/core/installations/kernel/_linux-firmware/. /lib/firmware/
 	
+	# Debian specific command.
 	_chroot update-initramfs -u
 	
 	
