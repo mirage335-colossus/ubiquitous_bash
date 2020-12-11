@@ -101,6 +101,7 @@ _custom_packages_debian() {
 	
 	_chroot apt-get install -y bc nmap autossh socat sshfs tor
 	_chroot apt-get install -y sockstat
+	_chroot apt-get install -y x11-xserver-utils
 	
 	_chroot apt-get install -y tigervnc-viewer
 	_chroot apt-get install -y x11vnc

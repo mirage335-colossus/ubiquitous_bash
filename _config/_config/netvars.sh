@@ -27,7 +27,7 @@ _offset_reversePorts() {
 
 # WARNING Must use unique netName!
 export netName=default
-export gatewayName=gw-"$netName"-"$netName"
+export gatewayName=gtw-"$netName"-"$netName"
 export LOCALSSHPORT=22
 
 
