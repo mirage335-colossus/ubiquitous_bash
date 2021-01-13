@@ -17261,7 +17261,7 @@ _anchor_configure() {
 	cat "$scriptAbsoluteFolder"/_anchor.tmp  | sed 's/^export anchorSourceDir\=.*$/export anchorSourceDir\=\"'"$objectName"'\"/g' > "$scriptAbsoluteFolder"/_anchor.tmp1
 	#perl -p -e 's/export anchorSourceDir=.*/export anchorSourceDir="$ENV{objectName}"/g' "$scriptAbsoluteFolder"/_anchor.tmp > "$scriptAbsoluteFolder"/_anchor.tmp1
 	
-	cat "$scriptAbsoluteFolder"/_anchor.tmp1 | sed 's/^SET \"MSWanchorSourceDir\=.*$/^SET \"MSWanchorSourceDir\=\"'"$objectName"'\"/g' > "$scriptAbsoluteFolder"/_anchor.tmp2
+	cat "$scriptAbsoluteFolder"/_anchor.tmp1 | sed 's/^SET \"MSWanchorSourceDir\=.*$/SET \"MSWanchorSourceDir\='"$objectName"'\"/g' > "$scriptAbsoluteFolder"/_anchor.tmp2
 	#perl -p -e 's/SET "MSWanchorSourceDir=.*/SET "MSWanchorSourceDir=$ENV{objectName}"/g' "$scriptAbsoluteFolder"/_anchor.tmp1 > "$scriptAbsoluteFolder"/_anchor.tmp2
 	
 	
@@ -20510,9 +20510,13 @@ _example_process_coordinates() {
 }
 
 # Intended to illustrate the basic logic flow. Uses global variables for some arguments - resetting these is MANDATORY .
+#No production use.
 _example_process_base() {
 	_start_metaengine_host
 	
+	# ATTENTION: 'Session-wide' metaengine directory, shared by all metaengine chains using same "$metaID" and "$sessionid" .
+	# _set_me_dir , _set_me_uid , _set_me_host
+	#No production use.
 	_set_me_type_base
 	
 	#_assign_me_coordinates aiX aiY aiZ biX biY biZ aoX aoY aoZ boX boY boZ
@@ -22437,7 +22441,7 @@ _offset_reversePorts() {
 
 # WARNING Must use unique netName!
 export netName=default
-export gatewayName=gw-"$netName"-"$netName"
+export gatewayName=gtw-"$netName"-"$netName"
 export LOCALSSHPORT=22
 
 

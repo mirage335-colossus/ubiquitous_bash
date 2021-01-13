@@ -26,7 +26,7 @@ fi
 
 # DANGER: Beware the MSW platform has historically been less stable, standalone, and/or reliable through the year 2020.
 
-
+# DANGER: Beware this must behave correctly under BOTH MSW and native UNIX platforms.
 
 
 
@@ -605,10 +605,10 @@ fi
 
 
 # ATTENTION: DANGER: Comment out in production use.
-_test() {
-	echo PASS-BASH
-}
-_test
+#_test() {
+#	echo PASS-BASH
+#}
+#_test
 
 
 
@@ -656,6 +656,7 @@ REM @echo batch
 REM @echo batch
 
 REM ATTENTION: WARNING: Do NOT uncomment without correcting and testing all file paths used by the MSW/cygwin/UNIX environment!
+REM DANGER: Beware this must behave correctly under BOTH MSW and native UNIX platforms.
 REM IF EXIST "C:\core\infrastructure\ubAnchorMSWselfReinterpret\ubcp.cmd" (
 REM "C:\core\infrastructure\ubAnchorMSWselfReinterpret\ubcp.cmd" "%~dp0%0" MSWselfReinterpret %*
 REM exit
@@ -679,35 +680,52 @@ REM Filename of 'cygwin-portable.cmd' or equivalent.
 REM NOT 'cygwin-portable.cmd' due to possible bug.
 SET ubcp_cmd_file=ubcp.cmd
 
-
-REM Default install of cygwin-portable.cmd' or equivalent.
-SET ubcp_cmd_path="%~dp0"_local\ubcp\"%ubcp_cmd_file%"
+SET "ubcp_cmd_dir=%~dp0_local\ubcp"
 
 REM Local install of cygwin-portable.cmd' or equivalent.
-IF NOT EXIST "%ubcp_cmd_path%" SET "ubcp_cmd_path=%~dp0"_local\ubcp\"%ubcp_cmd_file%"
-IF NOT EXIST "%ubcp_cmd_path%" SET "ubcp_cmd_path=%~dp0"_lib\ubcp\"%ubcp_cmd_file%"
-IF NOT EXIST "%ubcp_cmd_path%" SET "ubcp_cmd_path=%~dp0"ubcp\"%ubcp_cmd_file%"
+SET "ubcp_cmd_dir=%~dp0_local\ubcp"
+IF EXIST "%ubcp_cmd_dir%"\cygwin goto b1
+SET "ubcp_cmd_dir=%~dp0_lib\ubcp"
+IF EXIST "%ubcp_cmd_dir%"\cygwin goto b1
+SET "ubcp_cmd_dir=%~dp0ubcp"
+IF EXIST "%ubcp_cmd_dir%"\cygwin goto b1
 
 REM Local install of cygwin-portable.cmd' or equivalent, brought in by ubiquitous_bash submodule.
-REM WARNING: No known production use.
-IF NOT EXIST "%ubcp_cmd_path%" SET "ubcp_cmd_path=%~dp0"_lib\ubiquitous_bash\_local\ubcp\"%ubcp_cmd_file%"
-IF NOT EXIST "%ubcp_cmd_path%" SET "ubcp_cmd_path=%~dp0"_lib\ubiquitous_bash\_lib\ubcp\"%ubcp_cmd_file%"
-IF NOT EXIST "%ubcp_cmd_path%" SET "ubcp_cmd_path=%~dp0"_lib\ubiquitous_bash\ubcp\"%ubcp_cmd_file%"
+REM WARNING: No known production use..
+SET "ubcp_cmd_dir=%~dp0_lib\ubiquitous_bash\_local\ubcp"
+IF EXIST "%ubcp_cmd_dir%"\cygwin goto b1
+SET "ubcp_cmd_dir=%~dp0_lib\ubiquitous_bash\_lib\ubcp"
+IF EXIST "%ubcp_cmd_dir%"\cygwin goto b1
+SET "ubcp_cmd_dir=%~dp0_lib\ubiquitous_bash\ubcp"
+IF EXIST "%ubcp_cmd_dir%"\cygwin goto b1
 
 REM Global install of cygwin-portable.cmd' or equivalent.
-IF NOT EXIST "%ubcp_cmd_path%" SET "ubcp_cmd_path=C:\ubcp\%ubcp_cmd_file%"
-IF NOT EXIST "%ubcp_cmd_path%" SET "ubcp_cmd_path=C:\core\infrastructure\ubcp\%ubcp_cmd_file%"
+SET "ubcp_cmd_dir=C:\ubcp"
+IF EXIST "%ubcp_cmd_dir%"\cygwin goto b1
+SET "ubcp_cmd_dir=C:\core\infrastructure\ubcp"
+IF EXIST "%ubcp_cmd_dir%"\cygwin goto b1
 
-IF NOT EXIST "%ubcp_cmd_path%" SET "ubcp_cmd_path=C:\cp\%ubcp_cmd_file%"
-IF NOT EXIST "%ubcp_cmd_path%" SET "ubcp_cmd_path=C:\core\infrastructure\cp\%ubcp_cmd_file%"
+REM Global install of cygwin-portable.cmd' or equivalent.
+SET "ubcp_cmd_dir=C:\core\infrastructure\cp"
+IF EXIST "%ubcp_cmd_dir%"\cygwin goto b1
+SET "ubcp_cmd_dir=C:\cp"
+IF EXIST "%ubcp_cmd_dir%"\cygwin goto b1
+
+REM FAILURE
+IF NOT EXIST "%ubcp_cmd_dir%"\cygwin exit
+
+
+:b1
+SET "ubcp_cmd_path=%ubcp_cmd_dir%\%ubcp_cmd_file%"
+
+REM FAILURE
+IF NOT EXIST "%ubcp_cmd_path%" exit
 
 REM echo "%ubcp_cmd_path%"
 
-
-
-
-SET "MSWanchorScriptAbsoluteLocation=%~dp0%0"
-SET "MSWanchorScriptAbsoluteFolder=%~dp0"
+REM WARNING: No known production use.
+REM SET "MSWanchorScriptAbsoluteLocation=%~dp0%0"
+REM SET "MSWanchorScriptAbsoluteFolder=%~dp0"
 
 
 REM Does NOT include the '.bat' extension.
@@ -725,18 +743,66 @@ SET "MSWanchorSourcePath=%MSWanchorSourceDir%\%MSWanchorSource%"
 
 REM Due to the MSW tendency to use shortcuts instead of symlinks, and lack of "find" command,
 REM MSW Anchor (Batch Version) is strictly limited to finding the source script only if
-REM neighboring in the same directory or in direct subdirectory.
+REM neighboring in the same directory, in direct subdirectory, or in a few static default locations.
 REM WARNING: The direct subdirectory capability is intended for testing, and is not preferred for production use.
 
+REM Test all variables.
+REM echo "%~dp0%MSWanchorSource%"
+REM echo "%~dp0%MSWanchorSourcePath%"
+REM echo "C:\Program Files\%MSWanchorSourcePath%"
+REM echo "C:\Program Files (x86)\%MSWanchorSourcePath%"
+REM echo "%LOCALAPPDATA%\%MSWanchorSourcePath%"
+REM echo "C:\core\infrastructure\%MSWanchorSourcePath%"
+REM echo "C:\core\installations\%MSWanchorSourcePath%"
+
+REM Neighboring in the same directory.
 IF EXIST "%~dp0%MSWanchorSource%" (
 "%ubcp_cmd_path%" "%~dp0%MSWanchorSource%" "%MSWanchorName%" %*
 exit
 )
 
+REM Direct subdirectory.
 IF EXIST "%~dp0%MSWanchorSourcePath%" (
 "%ubcp_cmd_path%" "%~dp0%MSWanchorSourcePath%" "%MSWanchorName%" %*
 exit
 )
+
+
+REM Program Files .
+IF EXIST "C:\Program Files\%MSWanchorSourcePath%" (
+"%ubcp_cmd_path%" "C:\Program Files\%MSWanchorSourcePath%" "%MSWanchorName%" %*
+exit
+)
+
+REM Program Files (x86) .
+IF EXIST "C:\Program Files (x86)\%MSWanchorSourcePath%" (
+"%ubcp_cmd_path%" "C:\Program Files (x86)\%MSWanchorSourcePath%" "%MSWanchorName%" %*
+exit
+)
+
+
+REM TODO: Test - variable name.
+REM AppData (Local) .
+REM https://www.thewindowsclub.com/local-localnow-roaming-folders-windows-10/
+IF EXIST "%LOCALAPPDATA%\%MSWanchorSourcePath%" (
+"%ubcp_cmd_path%" "%LOCALAPPDATA%\%MSWanchorSourcePath%" "%MSWanchorName%" %*
+exit
+)
+
+
+REM core infrastructure .
+IF EXIST "C:\core\infrastructure\%MSWanchorSourcePath%" (
+"%ubcp_cmd_path%" "C:\core\infrastructure\%MSWanchorSourcePath%" "%MSWanchorName%" %*
+exit
+)
+
+
+REM core installations .
+IF EXIST "C:\core\installations\%MSWanchorSourcePath%" (
+"%ubcp_cmd_path%" "C:\core\installations\%MSWanchorSourcePath%" "%MSWanchorName%" %*
+exit
+)
+
 
 
 

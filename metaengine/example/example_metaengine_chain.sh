@@ -76,9 +76,13 @@ _example_process_coordinates() {
 }
 
 # Intended to illustrate the basic logic flow. Uses global variables for some arguments - resetting these is MANDATORY .
+#No production use.
 _example_process_base() {
 	_start_metaengine_host
 	
+	# ATTENTION: 'Session-wide' metaengine directory, shared by all metaengine chains using same "$metaID" and "$sessionid" .
+	# _set_me_dir , _set_me_uid , _set_me_host
+	#No production use.
 	_set_me_type_base
 	
 	#_assign_me_coordinates aiX aiY aiZ biX biY biZ aoX aoY aoZ boX boY boZ
