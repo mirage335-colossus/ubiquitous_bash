@@ -729,8 +729,9 @@ REM SET "MSWanchorScriptAbsoluteFolder=%~dp0"
 
 
 REM Does NOT include the '.bat' extension.
-SET "iMSWaN=%0"
-SET "MSWanchorName=%iMSWaN:~0,-4%"
+REM SET "iMSWaN=%0"
+REM SET "MSWanchorName=%iMSWaN:~0,-4%"
+SET "MSWanchorName=%~n0"
 
 REM Typically set automatically by '_anchor' function.
 SET "MSWanchorSourceDir=ubiquitous_bash"
