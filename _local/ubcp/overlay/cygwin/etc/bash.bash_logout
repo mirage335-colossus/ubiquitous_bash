@@ -13,6 +13,8 @@
 # with this software. 
 # If not, see <http://creativecommons.org/publicdomain/zero/1.0/>. 
 
+# Portions of this file may be part of Cygwin , and retain the associated copyright and LGPLv3 license.
+
 # base-files version 4.3-2
 
 # /etc/bash.bash_logout: executed by bash(1) when login shell exits.

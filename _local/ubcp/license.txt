@@ -1,4 +1,19 @@
+
+https://cygwin.com/index.html
+https://cygwin.com/licensing.html
+
+A portable installation of 'Cygwin' and associated software packages may be provided under subdirectories of this directory, or archive files, especially 'cygwin' , 'conemu' , 'package_ubcp-cygwinOnly.tar.gz' . These software packages should retain all their upstream copyright notices, with corresponding availablility of source code. Many , if not most of these software packages, are under GNU GPL copyright license. Additional copies of such licenses are included in this directory for reference.
+
+Symbolic links produced by such packages may be modified or replaced by the '_mitigate-ubcp' function of 'ubiquitous bash' . However, this procedure should not be expected to have modified the binaries themselves, which will still have been compiled from original, upstream, not modified, source code.
+
+Such a portable installation of 'Cygwin' should be regarded as similar to the 'ISO' images of typical Linux distributions (eg. Debian), with correspondingly typical access to all source code.
+
+A list of installed software packages and versions may be retrieved by the 'cygcheck -c' and/or 'cygcheck -s' commands .
+
+
 _
+
+https://github.com/vegardit/cygwin-portable-installer
 
 Unmodified upstream source code is kept in source directory "_upstream" . This should only be updated in sync with the modified scripts actually used by 'ubcp' .
 

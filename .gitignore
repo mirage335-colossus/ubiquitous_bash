@@ -50,6 +50,9 @@ _index
 
 package.tar.gz
 package_ubcp.tar.gz
+package_ubcp*.tar.gz
+package_ubcp-cygwinOnly.tar.gz
+package_ubcp-cygwinOnly*.tar.gz
 
 id_rsa
 pubring.kbx

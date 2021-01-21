@@ -1,0 +1,25 @@
+_bin _mitigate-ubcp
+_bin _package-cygwinOnly
+
+_bin _setup_ubcp
+
+
+uname -a | grep -i cygwin > /dev/null 2>&1
+
+./firefox.exe $(cygpath -w "/cygdrive/x/license.txt")
+
+#https://stackoverflow.com/questions/31192010/cygwin-binary-exec-format-error
+export ARCH = CYGNUS
+
+#https://superuser.com/questions/304541/how-to-install-new-packages-on-cygwin
+
+
+#https://stackoverflow.com/questions/4090301/root-user-sudo-equivalent-in-cygwin
+cygstart --action=runas "$@"
+
+#https://codingwithspike.wordpress.com/2012/08/02/making-a-truly-portable-cygwin-install-working-around-drive-letter-and-file-permission-issues/
+
+
+
+
+

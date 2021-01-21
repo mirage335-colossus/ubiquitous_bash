@@ -682,6 +682,283 @@ SET ubcp_cmd_file=ubcp.cmd
 
 SET "ubcp_cmd_dir=%~dp0_local\ubcp"
 
+REM A 'locally installed' 'cygwin' should be preferred over 'network drive'.
+REM Global install of cygwin-portable.cmd' or equivalent.
+REM SET "ubcp_cmd_dir=C:\core\infrastructure\ubcp"
+REM echo "%~dp0" | findstr /I /B /C:X:\\  > nul
+REM IF %ERRORLEVEL% EQU 0 (
+REM 	IF EXIST "%ubcp_cmd_dir%"\cygwin goto b1
+REM )
+
+REM A 'locally installed' 'cygwin' should be preferred over 'network drive'.
+REM Global install of cygwin-portable.cmd' or equivalent.
+SET "ubcp_cmd_dir=C:\core\infrastructure\ubcp"
+echo "%~dp0" | findstr /I /B /R "\"X:\\.*\"" > nul
+IF %ERRORLEVEL% EQU 0 (
+	IF EXIST "%ubcp_cmd_dir%"\cygwin goto b1
+)
+
+REM A 'locally installed' 'cygwin' should be preferred over 'network drive'.
+REM Global install of cygwin-portable.cmd' or equivalent.
+REM SET "ubcp_cmd_dir=C:\core\infrastructure\cp"
+REM echo "%~dp0" | findstr /I /B /C:X:\\  > nul
+REM IF %ERRORLEVEL% EQU 0 (
+REM 	IF EXIST "%ubcp_cmd_dir%"\cygwin goto b1
+REM )
+
+REM A 'locally installed' 'cygwin' should be preferred over 'network drive'.
+REM Global install of cygwin-portable.cmd' or equivalent.
+SET "ubcp_cmd_dir=C:\core\infrastructure\cp"
+echo "%~dp0" | findstr /I /B /R "\"X:\\.*\"" > nul
+IF %ERRORLEVEL% EQU 0 (
+	IF EXIST "%ubcp_cmd_dir%"\cygwin goto b1
+)
+
+
+REM ### Y:\
+REM CAUTION: Ubiquitous Bash is not intended to start directly from read-only directory !
+REM A 'locally installed' 'cygwin' should be preferred over 'ROM drive'.
+REM Global install of cygwin-portable.cmd' or equivalent.
+REM SET "ubcp_cmd_dir=C:\core\infrastructure\ubcp"
+REM echo "%~dp0" | findstr /I /B /C:Y:\\  > nul
+REM IF %ERRORLEVEL% EQU 0 (
+REM 	IF EXIST "%ubcp_cmd_dir%"\cygwin goto b1
+REM )
+
+REM A 'locally installed' 'cygwin' should be preferred over 'ROM drive'.
+REM Global install of cygwin-portable.cmd' or equivalent.
+SET "ubcp_cmd_dir=C:\core\infrastructure\ubcp"
+echo "%~dp0" | findstr /I /B /R "\"Y:\\.*\"" > nul
+IF %ERRORLEVEL% EQU 0 (
+	IF EXIST "%ubcp_cmd_dir%"\cygwin goto b1
+)
+
+REM A 'locally installed' 'cygwin' should be preferred over 'ROM drive'.
+REM Global install of cygwin-portable.cmd' or equivalent.
+REM SET "ubcp_cmd_dir=C:\core\infrastructure\cp"
+REM echo "%~dp0" | findstr /I /B /C:Y:\\  > nul
+REM IF %ERRORLEVEL% EQU 0 (
+REM 	IF EXIST "%ubcp_cmd_dir%"\cygwin goto b1
+REM )
+
+REM A 'locally installed' 'cygwin' should be preferred over 'ROM drive'.
+REM Global install of cygwin-portable.cmd' or equivalent.
+SET "ubcp_cmd_dir=C:\core\infrastructure\cp"
+echo "%~dp0" | findstr /I /B /R "\"Y:\\.*\"" > nul
+IF %ERRORLEVEL% EQU 0 (
+	IF EXIST "%ubcp_cmd_dir%"\cygwin goto b1
+)
+
+
+REM ### D:\
+REM CAUTION: Ubiquitous Bash is not intended to start directly from read-only directory !
+REM A 'locally installed' 'cygwin' should be preferred over 'ROM drive'.
+REM Global install of cygwin-portable.cmd' or equivalent.
+REM SET "ubcp_cmd_dir=C:\core\infrastructure\ubcp"
+REM echo "%~dp0" | findstr /I /B /C:D:\\  > nul
+REM IF %ERRORLEVEL% EQU 0 (
+REM 	IF EXIST "%ubcp_cmd_dir%"\cygwin goto b1
+REM )
+
+REM A 'locally installed' 'cygwin' should be preferred over 'ROM drive'.
+REM Global install of cygwin-portable.cmd' or equivalent.
+SET "ubcp_cmd_dir=C:\core\infrastructure\ubcp"
+echo "%~dp0" | findstr /I /B /R "\"D:\\.*\"" > nul
+IF %ERRORLEVEL% EQU 0 (
+	IF EXIST "%ubcp_cmd_dir%"\cygwin goto b1
+)
+
+REM A 'locally installed' 'cygwin' should be preferred over 'ROM drive'.
+REM Global install of cygwin-portable.cmd' or equivalent.
+REM SET "ubcp_cmd_dir=C:\core\infrastructure\cp"
+REM echo "%~dp0" | findstr /I /B /C:D:\\  > nul
+REM IF %ERRORLEVEL% EQU 0 (
+REM 	IF EXIST "%ubcp_cmd_dir%"\cygwin goto b1
+REM )
+
+REM A 'locally installed' 'cygwin' should be preferred over 'ROM drive'.
+REM Global install of cygwin-portable.cmd' or equivalent.
+SET "ubcp_cmd_dir=C:\core\infrastructure\cp"
+echo "%~dp0" | findstr /I /B /R "\"D:\\.*\"" > nul
+IF %ERRORLEVEL% EQU 0 (
+	IF EXIST "%ubcp_cmd_dir%"\cygwin goto b1
+)
+
+REM ### E:\
+REM CAUTION: Ubiquitous Bash is not intended to start directly from read-only directory !
+REM A 'locally installed' 'cygwin' should be preferred over 'ROM drive'.
+REM Global install of cygwin-portable.cmd' or equivalent.
+REM SET "ubcp_cmd_dir=C:\core\infrastructure\ubcp"
+REM echo "%~dp0" | findstr /I /B /C:E:\\  > nul
+REM IF %ERRORLEVEL% EQU 0 (
+REM 	IF EXIST "%ubcp_cmd_dir%"\cygwin goto b1
+REM )
+
+REM A 'locally installed' 'cygwin' should be preferred over 'ROM drive'.
+REM Global install of cygwin-portable.cmd' or equivalent.
+SET "ubcp_cmd_dir=C:\core\infrastructure\ubcp"
+echo "%~dp0" | findstr /I /B /R "\"E:\\.*\"" > nul
+IF %ERRORLEVEL% EQU 0 (
+	IF EXIST "%ubcp_cmd_dir%"\cygwin goto b1
+)
+
+REM A 'locally installed' 'cygwin' should be preferred over 'ROM drive'.
+REM Global install of cygwin-portable.cmd' or equivalent.
+REM SET "ubcp_cmd_dir=C:\core\infrastructure\cp"
+REM echo "%~dp0" | findstr /I /B /C:E:\\  > nul
+REM IF %ERRORLEVEL% EQU 0 (
+REM 	IF EXIST "%ubcp_cmd_dir%"\cygwin goto b1
+REM )
+
+REM A 'locally installed' 'cygwin' should be preferred over 'ROM drive'.
+REM Global install of cygwin-portable.cmd' or equivalent.
+SET "ubcp_cmd_dir=C:\core\infrastructure\cp"
+echo "%~dp0" | findstr /I /B /R "\"E:\\.*\"" > nul
+IF %ERRORLEVEL% EQU 0 (
+	IF EXIST "%ubcp_cmd_dir%"\cygwin goto b1
+)
+
+REM ### F:\
+REM CAUTION: Ubiquitous Bash is not intended to start directly from read-only directory !
+REM A 'locally installed' 'cygwin' should be preferred over 'ROM drive'.
+REM Global install of cygwin-portable.cmd' or equivalent.
+REM SET "ubcp_cmd_dir=C:\core\infrastructure\ubcp"
+REM echo "%~dp0" | findstr /I /B /C:E:\\  > nul
+REM IF %ERRORLEVEL% EQU 0 (
+REM 	IF EXIST "%ubcp_cmd_dir%"\cygwin goto b1
+REM )
+
+REM A 'locally installed' 'cygwin' should be preferred over 'ROM drive'.
+REM Global install of cygwin-portable.cmd' or equivalent.
+SET "ubcp_cmd_dir=C:\core\infrastructure\ubcp"
+echo "%~dp0" | findstr /I /B /R "\"E:\\.*\"" > nul
+IF %ERRORLEVEL% EQU 0 (
+	IF EXIST "%ubcp_cmd_dir%"\cygwin goto b1
+)
+
+REM A 'locally installed' 'cygwin' should be preferred over 'ROM drive'.
+REM Global install of cygwin-portable.cmd' or equivalent.
+REM SET "ubcp_cmd_dir=C:\core\infrastructure\cp"
+REM echo "%~dp0" | findstr /I /B /C:E:\\  > nul
+REM IF %ERRORLEVEL% EQU 0 (
+REM 	IF EXIST "%ubcp_cmd_dir%"\cygwin goto b1
+REM )
+
+REM A 'locally installed' 'cygwin' should be preferred over 'ROM drive'.
+REM Global install of cygwin-portable.cmd' or equivalent.
+SET "ubcp_cmd_dir=C:\core\infrastructure\cp"
+echo "%~dp0" | findstr /I /B /R "\"E:\\.*\"" > nul
+IF %ERRORLEVEL% EQU 0 (
+	IF EXIST "%ubcp_cmd_dir%"\cygwin goto b1
+)
+
+REM ### G:\
+REM CAUTION: Ubiquitous Bash is not intended to start directly from read-only directory !
+REM A 'locally installed' 'cygwin' should be preferred over 'ROM drive'.
+REM Global install of cygwin-portable.cmd' or equivalent.
+REM SET "ubcp_cmd_dir=C:\core\infrastructure\ubcp"
+REM echo "%~dp0" | findstr /I /B /C:G:\\  > nul
+REM IF %ERRORLEVEL% EQU 0 (
+REM 	IF EXIST "%ubcp_cmd_dir%"\cygwin goto b1
+REM )
+
+REM A 'locally installed' 'cygwin' should be preferred over 'ROM drive'.
+REM Global install of cygwin-portable.cmd' or equivalent.
+SET "ubcp_cmd_dir=C:\core\infrastructure\ubcp"
+echo "%~dp0" | findstr /I /B /R "\"G:\\.*\"" > nul
+IF %ERRORLEVEL% EQU 0 (
+	IF EXIST "%ubcp_cmd_dir%"\cygwin goto b1
+)
+
+REM A 'locally installed' 'cygwin' should be preferred over 'ROM drive'.
+REM Global install of cygwin-portable.cmd' or equivalent.
+REM SET "ubcp_cmd_dir=C:\core\infrastructure\cp"
+REM echo "%~dp0" | findstr /I /B /C:G:\\  > nul
+REM IF %ERRORLEVEL% EQU 0 (
+REM 	IF EXIST "%ubcp_cmd_dir%"\cygwin goto b1
+REM )
+
+REM A 'locally installed' 'cygwin' should be preferred over 'ROM drive'.
+REM Global install of cygwin-portable.cmd' or equivalent.
+SET "ubcp_cmd_dir=C:\core\infrastructure\cp"
+echo "%~dp0" | findstr /I /B /R "\"G:\\.*\"" > nul
+IF %ERRORLEVEL% EQU 0 (
+	IF EXIST "%ubcp_cmd_dir%"\cygwin goto b1
+)
+
+REM ### H:\
+REM CAUTION: Ubiquitous Bash is not intended to start directly from read-only directory !
+REM A 'locally installed' 'cygwin' should be preferred over 'ROM drive'.
+REM Global install of cygwin-portable.cmd' or equivalent.
+REM SET "ubcp_cmd_dir=C:\core\infrastructure\ubcp"
+REM echo "%~dp0" | findstr /I /B /C:H:\\  > nul
+REM IF %ERRORLEVEL% EQU 0 (
+REM 	IF EXIST "%ubcp_cmd_dir%"\cygwin goto b1
+REM )
+
+REM A 'locally installed' 'cygwin' should be preferred over 'ROM drive'.
+REM Global install of cygwin-portable.cmd' or equivalent.
+SET "ubcp_cmd_dir=C:\core\infrastructure\ubcp"
+echo "%~dp0" | findstr /I /B /R "\"H:\\.*\"" > nul
+IF %ERRORLEVEL% EQU 0 (
+	IF EXIST "%ubcp_cmd_dir%"\cygwin goto b1
+)
+
+REM A 'locally installed' 'cygwin' should be preferred over 'ROM drive'.
+REM Global install of cygwin-portable.cmd' or equivalent.
+REM SET "ubcp_cmd_dir=C:\core\infrastructure\cp"
+REM echo "%~dp0" | findstr /I /B /C:H:\\  > nul
+REM IF %ERRORLEVEL% EQU 0 (
+REM 	IF EXIST "%ubcp_cmd_dir%"\cygwin goto b1
+REM )
+
+REM A 'locally installed' 'cygwin' should be preferred over 'ROM drive'.
+REM Global install of cygwin-portable.cmd' or equivalent.
+SET "ubcp_cmd_dir=C:\core\infrastructure\cp"
+echo "%~dp0" | findstr /I /B /R "\"H:\\.*\"" > nul
+IF %ERRORLEVEL% EQU 0 (
+	IF EXIST "%ubcp_cmd_dir%"\cygwin goto b1
+)
+
+
+
+REM A 'locally installed' 'cygwin' should be preferred over 'network drive'.
+REM Global install of cygwin-portable.cmd' or equivalent.
+REM SET "ubcp_cmd_dir=C:\core\infrastructure\ubcp"
+REM echo "%~dp0" | findstr /I /B /C:Z:\\  > nul
+REM IF %ERRORLEVEL% EQU 0 (
+REM 	IF EXIST "%ubcp_cmd_dir%"\cygwin goto b1
+REM )
+
+REM A 'locally installed' 'cygwin' should be preferred over 'network drive'.
+REM Global install of cygwin-portable.cmd' or equivalent.
+SET "ubcp_cmd_dir=C:\core\infrastructure\ubcp"
+echo "%~dp0" | findstr /I /B /R "\"Z:\\.*\"" > nul
+IF %ERRORLEVEL% EQU 0 (
+	IF EXIST "%ubcp_cmd_dir%"\cygwin goto b1
+)
+
+REM A 'locally installed' 'cygwin' should be preferred over 'network drive'.
+REM Global install of cygwin-portable.cmd' or equivalent.
+REM SET "ubcp_cmd_dir=C:\core\infrastructure\cp"
+REM echo "%~dp0" | findstr /I /B /C:Z:\\  > nul
+REM IF %ERRORLEVEL% EQU 0 (
+REM 	IF EXIST "%ubcp_cmd_dir%"\cygwin goto b1
+REM )
+
+REM A 'locally installed' 'cygwin' should be preferred over 'network drive'.
+REM Global install of cygwin-portable.cmd' or equivalent.
+SET "ubcp_cmd_dir=C:\core\infrastructure\cp"
+echo "%~dp0" | findstr /I /B /R "\"Z:\\.*\"" > nul
+IF %ERRORLEVEL% EQU 0 (
+	IF EXIST "%ubcp_cmd_dir%"\cygwin goto b1
+)
+
+
+
+
+
+
 REM Local install of cygwin-portable.cmd' or equivalent.
 SET "ubcp_cmd_dir=%~dp0_local\ubcp"
 IF EXIST "%ubcp_cmd_dir%"\cygwin goto b1
@@ -736,8 +1013,12 @@ SET "MSWanchorName=%~n0"
 REM Typically set automatically by '_anchor' function.
 SET "MSWanchorSourceDir=ubiquitous_bash"
 
-REM SET "MSWanchorSource=ubiquitous_bash.sh"
 SET "MSWanchorSource=lean.sh"
+
+if not "%MSWanchorSourceDir%"=="ubiquitous_bash" (
+	SET "MSWanchorSource=ubiquitous_bash.sh"
+)
+REM SET "MSWanchorSource=ubiquitous_bash.sh"
 
 SET "MSWanchorSourcePath=%MSWanchorSourceDir%\%MSWanchorSource%"
 

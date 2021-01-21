@@ -10,22 +10,30 @@ If a global/user installation is desired, install to 'C:\core\infrastructure\ubc
 _
 Copying the contents of "overlay" to the 'ubcp' installation directory is recommended. Among other possible corrections, this will disable clearing the command prompt screen after script completion, useful for testing.
 
-_
-
-File '_test.bat' is an early multi-platform '_anchor' script, which is compatible with both MSW and UNIX hosts. Behavior will be incompatible and possibly simplified under MSW hosts.
-
 
 
 
 _
+
+Recommend commands...
+
+```
+_bin _mitigate-ubcp
+_bin _package-cygwinOnly
+
+_bin _setup_ubcp
+```
 
 # Known Issues
+
+* MSW network drive (or at least _userVBox implementation of it, _userQemu is known to be more compatible) may lack several necessary features - symlinks, correct permissions , etc . To workaround, create a 'package' '.tar.gz' file, and extract to a 'local' copy. Such a package may be created under MSW with the command '_bin _package-cygwinOnly' - which itself uses 'ubcp' . Additionally, mitigation of symlinks may allow somewhat better, though nevertheless imperfect, support for MSW network drive.
 
 * Cygwin startup may take an indeterminate amount of time - typically 3 seconds, perhaps 10 seconds under some documented conditions, or possibly indefinitely if an active directory query may be made. This may cause problems for MSW S3/S5 subscribers, due to the apparent need for 'Azure Active Directory'. Due to apparent lack of '/etc/passwd' and similar files, the portable cygwin installation may not be able to accommodate these users.
 
 * Interactive programs making frequent calls to shell scripts may perform orders of magnitude faster if they make these calls directly from *within* the cygwin environment, rather than launching the cygwin startup sequence with every call.
 
 * Bash scripts under MSW platform may be regarded as a reference implementation for reimplementation (if needed for performance reasons) under another at least equally portable statically compiled programming language - 'c', 'go', or similar. Such a reimplementation should nonetheless use a bash script for its build system, and should provide equivalents for all relevant variables (eg. "$scriptAbsoluteFolder", "$scriptAbsoluteLocation", "$binaryAbsoluteFolder", "$binaryAbsoluteLocation") .
+
 
 
 # Reference

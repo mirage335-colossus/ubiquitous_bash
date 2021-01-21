@@ -86,6 +86,8 @@ _messagePlain_bad() {
 	return 0
 }
 
+
+
 ##Parameters
 #"--shell", ""
 #"--profile"
@@ -97,7 +99,9 @@ ub_import_param=
 ub_import_script=
 ub_loginshell=
 
+# ATTENTION: Apparently (Portable) Cygwin Bash interprets correctly.
 [[ "${BASH_SOURCE[0]}" != "${0}" ]] && ub_import="true"
+
 ([[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]]) && ub_import_param="$1" && shift
 ([[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]]) && ub_loginshell="true"	#Importing ubiquitous bash into a login shell with "~/.bashrc" is the only known cause for "_getScriptAbsoluteLocation" to return a result such as "/bin/bash".
 [[ "$ub_import" == "true" ]] && ! [[ "$ub_loginshell" == "true" ]] && ub_import_script="true"
@@ -185,6 +189,14 @@ fi
 
 #Override, cygwin.
 
+# ATTENTION: Workaround - Cygwin Portable - change directory to current directory as detected by 'ubcp.cmd' .
+if [[ "$CWD" != "" ]] && [[ "$cygwin_CWD_onceOnly_done" != 'true' ]] && uname -a | grep -i cygwin > /dev/null 2>&1
+then
+	! cd "$CWD" && exit 1
+	export cygwin_CWD_onceOnly_done='true'
+fi
+
+
 # ATTENTION: User must launch "tmux" (no parameters) in a graphical Cygwin terminal.
 # Launches graphical application through "tmux new-window" if available.
 # https://superuser.com/questions/531787/starting-windows-gui-program-in-windows-through-cygwin-sshd-from-ssh-client
@@ -248,6 +260,332 @@ then
 		_workaround_cygwin_tmux '/cygdrive/c/Program Files (x86)/TigerVNC/vncviewer.exe' "$@"
 	}
 fi
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+_setup_ubcp_procedure() {
+	! uname -a | grep -i cygwin > /dev/null 2>&1 && _stop 1
+	
+	#cd "$scriptLocal"/
+	
+	mkdir -p /cygdrive/c/core/infrastructure/
+	cd /cygdrive/c/core/infrastructure/
+	
+	tar -xvf "$scriptLocal"/ubcp/package_ubcp-cygwinOnly.tar.gz
+	
+	cd "$outerPWD"
+}
+
+
+
+# CAUTION: Do NOT hook to '_setup' .
+# No production use. Developer feature.
+# Highly irregular accommodation for usage of 'ubiquitous_bash' through 'ubcp' (cygwin portable) compatibility layer through MSW network drive (especially '_userVBox' MSW guest network drive) .
+# WARNING: May require 'administrator' privileges under MSW. However, it may be better for this directory to be 'owned' by the 'primary' 'user' account. Particularly considering the VR/gaming/CAD software that remains 'exclusive' to MSW is 'legacy' software which for both licensing and technical reasons may be inherently incompatible with 'multi-user' access.
+_setup_ubcp() {
+	"$scriptAbsoluteLocation" _setup_ubcp_procedure "$@"
+}
+
+
+
+
+
+
+_mitigate-ubcp_rewrite_procedure() {
+	_messagePlain_nominal 'init: _mitigate-ubcp_rewrite_procedure'
+	
+	local currentRoot=$(_getAbsoluteLocation "$PWD")
+	
+	local currentLink="$1"
+	local currentLinkFile=$(basename "$1" )
+	local currentLinkFolder=$(dirname "$1")
+	currentLinkFolder=$(_getAbsoluteLocation "$currentLinkFolder")
+	
+	local currentLinkDirective=$(readlink "$1")
+	
+	
+	_messagePlain_probe_var currentRoot
+	_messagePlain_probe_var currentLink
+	_messagePlain_probe_var currentLinkFile
+	_messagePlain_probe_var currentLinkFolder
+	_messagePlain_probe_var currentLinkDirective
+	
+	[[ "$currentLinkDirective" == '/proc/'* ]] && return 0
+	[[ "$currentLinkDirective" == '/dev/'* ]] && return 0
+	
+	
+	
+	local currentRelativeRoot
+	local currentLinkFolder_eval
+	
+	local currentDots='..'
+	
+	local currentMatch=false
+	local currentIterations=0
+	
+	if [[ "$currentLinkFolder" == "$currentRoot" ]]
+	then
+		currentRelativeRoot='.'
+		currentMatch='true'
+	else
+		while [[ "$currentMatch" == 'false' ]] && [[ "$currentIterations" -lt 14 ]]
+		do
+			_messagePlain_probe "$currentLinkFolder"/"$currentDots"
+			currentLinkFolder_eval=$(_getAbsoluteLocation "$currentLinkFolder"/"$currentDots")
+			[[ "$currentLinkFolder_eval" == "$currentRoot" ]] && currentMatch='true'
+			
+			if [[ "$currentMatch" == 'true' ]]
+			then
+				currentRelativeRoot="$currentDots"
+			elif [[ "$currentMatch" == 'false' ]]
+			then
+				currentDots='../'"$currentDots"
+				let currentIterations="$currentIterations"+1
+			fi
+		done
+	fi
+	
+	
+	
+	
+	_messagePlain_probe_var currentRelativeRoot
+	
+	
+	local processedLinkDirective
+	
+	if [[ "$currentLinkDirective" == '/'* ]]
+	then
+		processedLinkDirective="$currentRelativeRoot""$currentLinkDirective"
+		
+	fi
+	
+	_messagePlain_probe_var processedLinkDirective
+	
+	
+	
+	if [[ "$currentLinkDirective" == '/'* ]]
+	then
+		cd "$currentLinkFolder"
+		
+		ls -l "$processedLinkDirective"
+		
+		
+		# ATTENTION: Forces scenario '2'!
+		# CAUTION: Three possible scenarios to consider.
+		# 2) Symlinks rewritten to '/bin'. Links now pointing to '/bin' should return files when retrieved through network drive, without this link.
+		# In any case, Cygwin will not be managing this directory .
+		if [[ "$mitigate_ubcp_modifySymlink" == 'true' ]]
+		then
+			if [[ "$currentLinkDirective" == '/usr/bin/'* ]]
+			then
+				processedLinkDirective="${processedLinkDirective/'/usr/bin/'/'/bin/'}"
+			fi
+		fi
+		
+		
+		
+		ln -sf "$processedLinkDirective" "$currentLinkFolder"/"$currentLinkFile"
+		
+		ls -ld "$currentLinkFolder"/"$currentLinkFile"
+		[[ -d "$currentLinkFolder"/"$currentLinkFile" ]] && ls -l "$currentLinkFolder"/"$currentLinkFile"
+		
+		#rm -f "$currentLink"
+		##currentLink=$(_getAbsoluteLocation "$currentLink)
+		##cd "$currentLinkFolder"
+		#ln -sf "$currentLinkDirective" "$currentLink"
+		# ... replace symlink with file if not also a symlink
+		
+		cd "$outerPWD"
+	fi
+	
+	# ATTENTION: Forces scenario '3'!
+	# CAUTION: Three possible scenarios to consider.
+	# 3) Symlinks replaced. No links, files only.
+	if [[ "$mitigate_ubcp_replaceSymlink" == 'true' ]]
+	then
+		cd "$currentLinkFolder"
+		
+		ls -ld "$currentLinkFolder"/"$currentLinkFile"
+		
+		
+		
+		_messagePlain_nominal 'directive: replace: true'
+		cp -L -R --preserve=all "$currentLinkFolder"/"$currentLinkFile" "$currentLinkFolder"/"$currentLinkFile".replace
+		rm -f "$currentLinkFolder"/"$currentLinkFile"
+		mv "$currentLinkFolder"/"$currentLinkFile".replace "$currentLinkFolder"/"$currentLinkFile"
+		
+		ls -ld "$currentLinkFolder"/"$currentLinkFile"
+		[[ -d "$currentLinkFolder"/"$currentLinkFile" ]] && ls -l "$currentLinkFolder"/"$currentLinkFile"
+		
+		cd "$outerPWD"
+	fi
+	
+	
+	
+	return 0
+}
+
+_mitigate-ubcp_rewrite() {
+	export safeToDeleteGit="true"
+	! _safePath "$1" && _stop 1
+	cd "$1"
+	
+	find "$2" -type l -exec "$scriptAbsoluteLocation" _mitigate-ubcp_rewrite_procedure {} \;
+	
+	return 0
+}
+
+
+
+
+_mitigate-ubcp_procedure() {
+	export safeToDeleteGit="true"
+	! _safePath "$1" && _stop 1
+	
+	# DANGER: REQUIRED for symbolic links to be valid as necessary during rewrite/replace algorithm.
+	ln -s "$1"/bin "$1"/usr/bin
+	
+	_mitigate-ubcp_rewrite "$1" "$1"/etc/alternatives
+	
+	_mitigate-ubcp_rewrite "$1" "$1"/bin
+	_mitigate-ubcp_rewrite "$1" "$1"/usr/share
+	_mitigate-ubcp_rewrite "$1" "$1"/usr/libexec
+	_mitigate-ubcp_rewrite "$1" "$1"/lib
+	_mitigate-ubcp_rewrite "$1" "$1"/etc/pki
+	_mitigate-ubcp_rewrite "$1" "$1"/etc/ssl
+	_mitigate-ubcp_rewrite "$1" "$1"/etc/crypto-policies
+	_mitigate-ubcp_rewrite "$1" "$1"/etc/mc
+	
+	_mitigate-ubcp_rewrite "$1" "$1"/opt
+	
+	
+	
+	
+	
+	# CAUTION: Three possible scenarios to consider.
+	# 1) Symlinks rewritten as is to '/usr/bin'. Links pointing to '/usr/bin' directory will not work through network drive unless this link remains.
+		# PREVENT - ' rm -f "$1"/usr/bin ' .
+		# Tested - known working ( _userVBox , _userQemu ) .
+	# 2) Symlinks rewritten to '/bin'. Links now pointing to '/bin' should return files when retrieved through network drive, without this link.
+		# ALLOW - ' rm -f "$1"/usr/bin ' .
+		# Tested - known working ( _userVBox , _userQemu ) .
+	# 3) Symlinks replaced. No links, files only.
+		# ALLOW - ' rm -f "$1"/usr/bin ' 
+		# Tested - known working ( _userVBox , _userQemu ) .
+	# In any case, Cygwin will not be managing this directory .
+	( [[ "$mitigate_ubcp_replaceSymlink" == 'true' ]] || [[ "$mitigate_ubcp_modifySymlink" == 'true' ]] ) && rm -f "$1"/usr/bin
+}
+
+
+
+
+_mitigate-ubcp_directory() {
+	mkdir -p "$safeTmp"/package/_local
+	
+	if [[ -e "$scriptLocal"/ubcp/cygwin ]]
+	then
+		_mitigate-ubcp_procedure "$scriptLocal"/ubcp/cygwin
+		return 0
+	fi
+# 	if [[ -e "$scriptLib"/ubcp/cygwin ]]
+# 	then
+# 		_mitigate-ubcp_procedure "$scriptLib"/ubcp/cygwin
+# 		return 0
+# 	fi
+# 	if [[ -e "$scriptAbsoluteFolder"/ubcp/cygwin ]]
+# 	then
+# 		_mitigate-ubcp_procedure "$scriptAbsoluteFolder"/ubcp/cygwin
+# 		return 0
+# 	fi
+	
+	
+	export mitigate_ubcp_replaceSymlink='false'
+	cd "$outerPWD"
+	_stop 1
+}
+
+_mitigate-ubcp() {
+	export mitigate_ubcp_modifySymlink='true'
+	export mitigate_ubcp_replaceSymlink='false'
+	_mitigate-ubcp_directory "$@"
+	
+	export mitigate_ubcp_replaceSymlink='true'
+	_mitigate-ubcp_directory "$@"
+}
+
+
+
+_package_procedure-cygwinOnly() {
+	_start
+	mkdir -p "$safeTmp"/package
+	
+	# WARNING: Largely due to presence of '.gitignore' files in 'ubcp' .
+	export safeToDeleteGit="true"
+	
+	rm -f "$scriptAbsoluteFolder"/package_ubcp-cygwinOnly.tar.gz
+	
+	if [[ "$ubPackage_enable_ubcp" == 'true' ]]
+	then
+		_package_ubcp_copy "$@"
+	fi
+	
+	cd "$safeTmp"/package/
+	_package_subdir
+	
+	# ATTENTION: Unusual. Expected to result in a package containing only 'ubcp' directory in the root.
+	cd "$safeTmp"/package/"$objectName"/_local
+	
+	tar -czvf "$scriptAbsoluteFolder"/package_ubcp-cygwinOnly.tar.gz .
+	
+	mkdir -p "$scriptLocal"/ubcp/
+	mv "$scriptAbsoluteFolder"/package_ubcp-cygwinOnly.tar.gz "$scriptLocal"/ubcp/
+	
+	_messagePlain_request 'request: review contents of _local/ubcp/cygwin/home and similar directories'
+	sleep 20
+	
+	cd "$outerPWD"
+	_stop
+}
+
+
+
+
+_package-cygwinOnly() {
+	export ubPackage_enable_ubcp='true'
+	"$scriptAbsoluteLocation" _package_procedure-cygwinOnly "$@"
+}
+_package-cygwin() {
+	_package-cygwinOnly "$@"
+}
+
+
+
 
 
 #####Utilities
@@ -504,11 +842,84 @@ _realpath_L_s() {
 }
 
 
+_cygwin_translation_rootFileParameter() {
+	if ! uname -a | grep -i cygwin > /dev/null 2>&1
+	then
+		echo "$0"
+		return 0
+	fi
+	
+	
+	local currentScriptLocation
+	currentScriptLocation="$0"
+	
+	# CAUTION: Lookup table is used to avoid pulling in any additional dependencies. Additionally, Cygwin apparently may ignore letter case of path .
+	
+	[[ "$currentScriptLocation" == 'A:'* ]] && currentScriptLocation=${currentScriptLocation/A\://cygdrive/a} && echo "$currentScriptLocation" && return 0
+	[[ "$currentScriptLocation" == 'B:'* ]] && currentScriptLocation=${currentScriptLocation/B\://cygdrive/b} && echo "$currentScriptLocation" && return 0
+	[[ "$currentScriptLocation" == 'C:'* ]] && currentScriptLocation=${currentScriptLocation/C\://cygdrive/c} && echo "$currentScriptLocation" && return 0
+	[[ "$currentScriptLocation" == 'D:'* ]] && currentScriptLocation=${currentScriptLocation/D\://cygdrive/d} && echo "$currentScriptLocation" && return 0
+	[[ "$currentScriptLocation" == 'E:'* ]] && currentScriptLocation=${currentScriptLocation/E\://cygdrive/e} && echo "$currentScriptLocation" && return 0
+	[[ "$currentScriptLocation" == 'F:'* ]] && currentScriptLocation=${currentScriptLocation/F\://cygdrive/f} && echo "$currentScriptLocation" && return 0
+	[[ "$currentScriptLocation" == 'G:'* ]] && currentScriptLocation=${currentScriptLocation/G\://cygdrive/g} && echo "$currentScriptLocation" && return 0
+	[[ "$currentScriptLocation" == 'H:'* ]] && currentScriptLocation=${currentScriptLocation/H\://cygdrive/h} && echo "$currentScriptLocation" && return 0
+	[[ "$currentScriptLocation" == 'I:'* ]] && currentScriptLocation=${currentScriptLocation/I\://cygdrive/i} && echo "$currentScriptLocation" && return 0
+	[[ "$currentScriptLocation" == 'J:'* ]] && currentScriptLocation=${currentScriptLocation/J\://cygdrive/j} && echo "$currentScriptLocation" && return 0
+	[[ "$currentScriptLocation" == 'K:'* ]] && currentScriptLocation=${currentScriptLocation/K\://cygdrive/k} && echo "$currentScriptLocation" && return 0
+	[[ "$currentScriptLocation" == 'L:'* ]] && currentScriptLocation=${currentScriptLocation/L\://cygdrive/l} && echo "$currentScriptLocation" && return 0
+	[[ "$currentScriptLocation" == 'M:'* ]] && currentScriptLocation=${currentScriptLocation/M\://cygdrive/m} && echo "$currentScriptLocation" && return 0
+	[[ "$currentScriptLocation" == 'N:'* ]] && currentScriptLocation=${currentScriptLocation/N\://cygdrive/n} && echo "$currentScriptLocation" && return 0
+	[[ "$currentScriptLocation" == 'O:'* ]] && currentScriptLocation=${currentScriptLocation/O\://cygdrive/o} && echo "$currentScriptLocation" && return 0
+	[[ "$currentScriptLocation" == 'P:'* ]] && currentScriptLocation=${currentScriptLocation/P\://cygdrive/p} && echo "$currentScriptLocation" && return 0
+	[[ "$currentScriptLocation" == 'Q:'* ]] && currentScriptLocation=${currentScriptLocation/Q\://cygdrive/q} && echo "$currentScriptLocation" && return 0
+	[[ "$currentScriptLocation" == 'R:'* ]] && currentScriptLocation=${currentScriptLocation/R\://cygdrive/r} && echo "$currentScriptLocation" && return 0
+	[[ "$currentScriptLocation" == 'S:'* ]] && currentScriptLocation=${currentScriptLocation/S\://cygdrive/s} && echo "$currentScriptLocation" && return 0
+	[[ "$currentScriptLocation" == 'T:'* ]] && currentScriptLocation=${currentScriptLocation/T\://cygdrive/t} && echo "$currentScriptLocation" && return 0
+	[[ "$currentScriptLocation" == 'U:'* ]] && currentScriptLocation=${currentScriptLocation/U\://cygdrive/u} && echo "$currentScriptLocation" && return 0
+	[[ "$currentScriptLocation" == 'V:'* ]] && currentScriptLocation=${currentScriptLocation/V\://cygdrive/v} && echo "$currentScriptLocation" && return 0
+	[[ "$currentScriptLocation" == 'W:'* ]] && currentScriptLocation=${currentScriptLocation/W\://cygdrive/w} && echo "$currentScriptLocation" && return 0
+	[[ "$currentScriptLocation" == 'X:'* ]] && currentScriptLocation=${currentScriptLocation/X\://cygdrive/x} && echo "$currentScriptLocation" && return 0
+	[[ "$currentScriptLocation" == 'Y:'* ]] && currentScriptLocation=${currentScriptLocation/Y\://cygdrive/y} && echo "$currentScriptLocation" && return 0
+	[[ "$currentScriptLocation" == 'Z:'* ]] && currentScriptLocation=${currentScriptLocation/Z\://cygdrive/z} && echo "$currentScriptLocation" && return 0
+	
+	[[ "$currentScriptLocation" == 'a:'* ]] && currentScriptLocation=${currentScriptLocation/a\://cygdrive/a} && echo "$currentScriptLocation" && return 0
+	[[ "$currentScriptLocation" == 'b:'* ]] && currentScriptLocation=${currentScriptLocation/b\://cygdrive/b} && echo "$currentScriptLocation" && return 0
+	[[ "$currentScriptLocation" == 'c:'* ]] && currentScriptLocation=${currentScriptLocation/c\://cygdrive/c} && echo "$currentScriptLocation" && return 0
+	[[ "$currentScriptLocation" == 'd:'* ]] && currentScriptLocation=${currentScriptLocation/d\://cygdrive/d} && echo "$currentScriptLocation" && return 0
+	[[ "$currentScriptLocation" == 'e:'* ]] && currentScriptLocation=${currentScriptLocation/e\://cygdrive/e} && echo "$currentScriptLocation" && return 0
+	[[ "$currentScriptLocation" == 'f:'* ]] && currentScriptLocation=${currentScriptLocation/f\://cygdrive/f} && echo "$currentScriptLocation" && return 0
+	[[ "$currentScriptLocation" == 'g:'* ]] && currentScriptLocation=${currentScriptLocation/g\://cygdrive/g} && echo "$currentScriptLocation" && return 0
+	[[ "$currentScriptLocation" == 'h:'* ]] && currentScriptLocation=${currentScriptLocation/h\://cygdrive/h} && echo "$currentScriptLocation" && return 0
+	[[ "$currentScriptLocation" == 'i:'* ]] && currentScriptLocation=${currentScriptLocation/i\://cygdrive/i} && echo "$currentScriptLocation" && return 0
+	[[ "$currentScriptLocation" == 'j:'* ]] && currentScriptLocation=${currentScriptLocation/j\://cygdrive/j} && echo "$currentScriptLocation" && return 0
+	[[ "$currentScriptLocation" == 'k:'* ]] && currentScriptLocation=${currentScriptLocation/k\://cygdrive/k} && echo "$currentScriptLocation" && return 0
+	[[ "$currentScriptLocation" == 'l:'* ]] && currentScriptLocation=${currentScriptLocation/l\://cygdrive/l} && echo "$currentScriptLocation" && return 0
+	[[ "$currentScriptLocation" == 'm:'* ]] && currentScriptLocation=${currentScriptLocation/m\://cygdrive/m} && echo "$currentScriptLocation" && return 0
+	[[ "$currentScriptLocation" == 'n:'* ]] && currentScriptLocation=${currentScriptLocation/n\://cygdrive/n} && echo "$currentScriptLocation" && return 0
+	[[ "$currentScriptLocation" == 'o:'* ]] && currentScriptLocation=${currentScriptLocation/o\://cygdrive/o} && echo "$currentScriptLocation" && return 0
+	[[ "$currentScriptLocation" == 'p:'* ]] && currentScriptLocation=${currentScriptLocation/p\://cygdrive/p} && echo "$currentScriptLocation" && return 0
+	[[ "$currentScriptLocation" == 'q:'* ]] && currentScriptLocation=${currentScriptLocation/q\://cygdrive/q} && echo "$currentScriptLocation" && return 0
+	[[ "$currentScriptLocation" == 'r:'* ]] && currentScriptLocation=${currentScriptLocation/r\://cygdrive/r} && echo "$currentScriptLocation" && return 0
+	[[ "$currentScriptLocation" == 's:'* ]] && currentScriptLocation=${currentScriptLocation/s\://cygdrive/s} && echo "$currentScriptLocation" && return 0
+	[[ "$currentScriptLocation" == 't:'* ]] && currentScriptLocation=${currentScriptLocation/t\://cygdrive/t} && echo "$currentScriptLocation" && return 0
+	[[ "$currentScriptLocation" == 'u:'* ]] && currentScriptLocation=${currentScriptLocation/u\://cygdrive/u} && echo "$currentScriptLocation" && return 0
+	[[ "$currentScriptLocation" == 'v:'* ]] && currentScriptLocation=${currentScriptLocation/v\://cygdrive/v} && echo "$currentScriptLocation" && return 0
+	[[ "$currentScriptLocation" == 'w:'* ]] && currentScriptLocation=${currentScriptLocation/w\://cygdrive/w} && echo "$currentScriptLocation" && return 0
+	[[ "$currentScriptLocation" == 'x:'* ]] && currentScriptLocation=${currentScriptLocation/x\://cygdrive/x} && echo "$currentScriptLocation" && return 0
+	[[ "$currentScriptLocation" == 'y:'* ]] && currentScriptLocation=${currentScriptLocation/y\://cygdrive/y} && echo "$currentScriptLocation" && return 0
+	[[ "$currentScriptLocation" == 'z:'* ]] && currentScriptLocation=${currentScriptLocation/z\://cygdrive/z} && echo "$currentScriptLocation" && return 0
+	
+	
+	echo "$currentScriptLocation" && return 0
+}
+
+
 #Critical prerequsites.
 _getAbsolute_criticalDep() {
 	#! type realpath > /dev/null 2>&1 && return 1
 	! type readlink > /dev/null 2>&1 && return 1
 	! type dirname > /dev/null 2>&1 && return 1
+	! type basename > /dev/null 2>&1 && return 1
 	
 	#Known to succeed under BusyBox (OpenWRT), NetBSD, and common Linux variants. No known failure modes. Extra precaution.
 	! readlink -f . > /dev/null 2>&1 && return 1
@@ -529,13 +940,18 @@ _getScriptAbsoluteLocation() {
 		return 1
 	fi
 	
+	local currentScriptLocation
+	currentScriptLocation="$0"
+	uname -a | grep -i cygwin > /dev/null 2>&1 && currentScriptLocation=$(_cygwin_translation_rootFileParameter)
+	
+	
 	local absoluteLocation
-	if [[ (-e $PWD\/$0) && ($0 != "") ]] && [[ "$0" != "/"* ]]
+	if [[ (-e $PWD\/$currentScriptLocation) && ($currentScriptLocation != "") ]] && [[ "$currentScriptLocation" != "/"* ]]
 	then
-		absoluteLocation="$PWD"\/"$0"
+		absoluteLocation="$PWD"\/"$currentScriptLocation"
 		absoluteLocation=$(_realpath_L_s "$absoluteLocation")
 	else
-		absoluteLocation=$(_realpath_L "$0")
+		absoluteLocation=$(_realpath_L "$currentScriptLocation")
 	fi
 	
 	if [[ -h "$absoluteLocation" ]]
