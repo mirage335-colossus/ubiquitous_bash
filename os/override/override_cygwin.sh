@@ -101,7 +101,25 @@ fi
 
 
 _setup_ubcp_procedure() {
+	_messagePlain_nominal 'init: _setup_ubcp_procedure'
 	! uname -a | grep -i cygwin > /dev/null 2>&1 && _stop 1
+	
+	export safeToDeleteGit="true"
+	if [[ -e /cygdrive/c/core/infrastructure/ubcp ]]
+	then
+		# DANGER: Not only does this use 'rm -rf' without sanity checking, the behavior is undefined if this ubcp installation has been used to start this script!
+		#[[ -e /cygdrive/c/core/infrastructure/ubcp ]] && rm -rf /cygdrive/c/core/infrastructure/ubcp
+		
+		_messageError 'FAIL: ubcp already installed locally and must be deleted prior to script!'
+		sleep 10
+		_stop 1
+		exit 1
+		return 1
+	fi
+	
+	
+	
+	
 	
 	#cd "$scriptLocal"/
 	
@@ -109,6 +127,9 @@ _setup_ubcp_procedure() {
 	cd /cygdrive/c/core/infrastructure/
 	
 	tar -xvf "$scriptLocal"/ubcp/package_ubcp-cygwinOnly.tar.gz
+	
+	_messagePlain_good 'done: _setup_ubcp_procedure'
+	sleep 10
 	
 	cd "$outerPWD"
 }

@@ -192,6 +192,8 @@ _test_readlink_f_sequence() {
 _test_readlink_f() {
 	if ! "$scriptAbsoluteLocation" _test_readlink_f_sequence
 	then
+		# May fail through MSW network drive provided by '_userVBox' .
+		uname -a | grep -i cygwin > /dev/null 2>&1 && echo 'warn: broken (cygwin): readlink -f' && return 1
 		echo 'fail: readlink -f'
 		_stop 1
 	fi

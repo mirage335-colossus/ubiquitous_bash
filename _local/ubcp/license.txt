@@ -21,3 +21,7 @@ Some files have been modified as required or to correct issues.
 * ubcp-cygwin-portable-installer.cmd
 * ubcp.cmd
 
+_
+
+Minor modifications of the 'cygwin' directory are kept under 'overlay' subdirectory . These may be under an upstream license or public domain. Such licensing terms will usually be noted in relevant files under 'overlay' subdirectory .
+

@@ -237,7 +237,7 @@ _test_sanity() {
 	then
 		_messageFAIL && _stop 1
 		#! uname -a | grep -i cygwin > /dev/null 2>&1 && _messageFAIL && _stop 1
-		#echo 'warn: broken: _test_embed - cygwin detected'
+		#echo 'warn: broken (cygwin): _test_embed - cygwin detected'
 	fi
 	
 	
@@ -250,7 +250,7 @@ _test_sanity() {
 	if ( flock 200; ! [[ -e "$safeTmp"/ready ]] ) 200>"$safeTmp"/flock
 	then
 		! uname -a | grep -i cygwin > /dev/null 2>&1 && _messageFAIL && _stop 1
-		echo 'warn: broken: flock - cygwin may not be able to use flock through MSW network drive'
+		echo 'warn: broken (cygwin): flock - cygwin may not be able to use flock through MSW network drive'
 		return 1
 	fi
 	rm -f "$safeTmp"/flock > /dev/null 2>&1
@@ -261,7 +261,7 @@ _test_sanity() {
 	if ! [[ -h "$safeTmp"/broken ]] || ! [[ -h "$safeTmp"/working ]] || [[ -e "$safeTmp"/broken ]] || ! [[ -e "$safeTmp"/working ]]
 	then
 		! uname -a | grep -i cygwin > /dev/null 2>&1 && _messageFAIL && _stop 1
-		echo 'warn: broken: flock - cygwin may not be able to use flock through MSW network drive'
+		echo 'warn: broken (cygwin): flock - cygwin may not be able to use flock through MSW network drive'
 		return 1
 	fi
 	rm -f "$safeTmp"/working
