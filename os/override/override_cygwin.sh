@@ -359,7 +359,9 @@ _package_procedure-cygwinOnly() {
 	# WARNING: Largely due to presence of '.gitignore' files in 'ubcp' .
 	export safeToDeleteGit="true"
 	
-	rm -f "$scriptAbsoluteFolder"/package_ubcp-cygwinOnly.tar.gz
+	rm -f "$scriptAbsoluteFolder"/package_ubcp-cygwinOnly.tar.gz > /dev/null 2>&1
+	rm -f "$scriptLocal"/package_ubcp-cygwinOnly.tar.gz > /dev/null 2>&1
+	rm -f "$scriptLocal"/ubcp/package_ubcp-cygwinOnly.tar.gz > /dev/null 2>&1
 	
 	if [[ "$ubPackage_enable_ubcp" == 'true' ]]
 	then
