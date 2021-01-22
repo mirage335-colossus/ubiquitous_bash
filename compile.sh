@@ -551,6 +551,7 @@ _mitigate-ubcp_directory() {
 	_stop 1
 }
 
+# ATTENTION: Override with 'ops' or similar.
 _mitigate-ubcp() {
 	export mitigate_ubcp_modifySymlink='true'
 	export mitigate_ubcp_replaceSymlink='false'
