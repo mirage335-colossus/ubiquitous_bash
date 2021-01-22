@@ -7,6 +7,8 @@ If a global/user installation is desired, install to 'C:\core\infrastructure\ubc
 
 
 
+
+
 _
 Copying the contents of "overlay" to the 'ubcp' installation directory is recommended. Among other possible corrections, this will disable clearing the command prompt screen after script completion, useful for testing.
 
@@ -23,6 +25,33 @@ _bin _package-cygwinOnly
 
 _bin _setup_ubcp
 ```
+
+
+# Alternatives
+
+Why not Windows Subsystem for Linux (WSL)?
+
+Maybe someday?
+
+* WSL intended for developers, or end user applications?
+* Native WSL and MSW applications launching programs of the other OS 'subsystem'?
+* VirtualBox/QEMU management of other 'Virtual Machines' from WSL script?
+* GPU/OpenCL acceleration?
+* IPC between WSL and native MSW applications?
+* Configuration and dependencies?
+* Inevitable differences between WSL installations?
+* File parameter translation?
+* Limitations of WSL 'flavor' of 'network' , '9p' , or perhaps emulated 'ext4' file system for symlinks, FIFO, etc?
+* Continued availability?
+* Stability of API/ABI for all of the above?
+
+Today.
+
+* Same executable 'anchor' file silently interpertable as both 'batch' and 'bash' scripts, and 'Cygwin Portable'.
+* No dependencies beyond the script's own directory, unless specifically desired and tested.
+* Automatic override to native MSW programs instead of UNIX/Cygwin programs, when available.
+* Native VirtualBox/QEMU is feasible to start and manage new Virtual Machines with most usual '_userVBox' and '_userQemu' features.
+
 
 # Known Issues
 

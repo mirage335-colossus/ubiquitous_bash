@@ -224,7 +224,7 @@ _prepare_metaengine() {
 _start_metaengine_host() {
 	_stop_metaengine_allow
 	
-	[[ -e "$scriptAbsoluteFolder""$tmpPrefix"/.e_"$sessionid" ]] && _messageError 'FAIL: safety: meta conflicts engine' && _stop 1
+	[[ -e "$tmpSelf""$tmpPrefix"/.e_"$sessionid" ]] && _messageError 'FAIL: safety: meta conflicts engine' && _stop 1
 	
 	_messageNormal 'init: _start_metaengine_host'
 	
@@ -240,7 +240,7 @@ _start_metaengine_host() {
 _start_metaengine() {
 	_stop_metaengine_prohibit
 	
-	[[ -e "$scriptAbsoluteFolder""$tmpPrefix"/.e_"$sessionid" ]] && _messageError 'FAIL: safety: meta conflicts engine' && _stop 1
+	[[ -e "$tmpSelf""$tmpPrefix"/.e_"$sessionid" ]] && _messageError 'FAIL: safety: meta conflicts engine' && _stop 1
 	
 	_messageNormal 'processor: '"$metaObjName"
 	_messagePlain_probe 'init: _start_metaengine'
@@ -444,7 +444,7 @@ _complete_me() {
 
 _terminateMetaProcessorAll_metaengine() {
 	local processListFile
-	processListFile="$scriptAbsoluteFolder"/.pidlist_m_$(_uid)
+	processListFile="$tmpSelf"/.pidlist_m_$(_uid)
 	
 	local currentPID
 	

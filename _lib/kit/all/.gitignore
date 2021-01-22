@@ -21,6 +21,11 @@ w_*/
 v_*/
 h_*/
 
+d_*
+d_*/
+_d_*
+_d_*/
+
 *_history
 
 vm.vdi
@@ -42,7 +47,15 @@ _index
 **/_wbottle/dosdevices
 **/_wbottle/drive_c/users
 
+*.tar
+*.zip
+*.iso
+
+package.tar.gz
 package_ubcp.tar.gz
+package_ubcp*.tar.gz
+package_ubcp-cygwinOnly.tar.gz
+package_ubcp-cygwinOnly*.tar.gz
 
 \#*\#
 *~

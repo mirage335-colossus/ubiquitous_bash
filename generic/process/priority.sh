@@ -164,7 +164,7 @@ _priority_zero_pid() {
 # WARNING: Untested.
 _priority_dispatch() {
 	local processListFile
-	processListFile="$scriptAbsoluteFolder"/.pidlist_$(_uid)
+	processListFile="$tmpSelf"/.pidlist_$(_uid)
 	
 	echo "$1" >> "$processListFile"
 	pgrep -P "$1" 2>/dev/null >> "$processListFile"
@@ -189,7 +189,7 @@ _priority_enumerate_pid() {
 
 _priority_enumerate_pattern() {
 	local processListFile
-	processListFile="$scriptAbsoluteFolder"/.pidlist_$(_uid)
+	processListFile="$tmpSelf"/.pidlist_$(_uid)
 	
 	echo -n >> "$processListFile"
 	
@@ -197,7 +197,7 @@ _priority_enumerate_pattern() {
 	
 	
 	local parentListFile
-	parentListFile="$scriptAbsoluteFolder"/.pidlist_$(_uid)
+	parentListFile="$tmpSelf"/.pidlist_$(_uid)
 	
 	echo -n >> "$parentListFile"
 	

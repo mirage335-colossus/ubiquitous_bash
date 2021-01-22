@@ -1175,6 +1175,8 @@ _safeRMR() {
 	
 	# WARNING: Allows removal of temporary folders created by current ubiquitous bash session only.
 	[[ "$sessionid" != "" ]] && [[ "$1" == *"$sessionid"* ]] && safeToRM="true"
+	[[ "$tmpSelf" != "" ]] && [[ "$sessionid" != "" ]] && [[ "$1" == *$(echo "$sessionid" | head -c 16)* ]] && safeToRM="true"
+	#[[ "$tmpSelf" != "" ]] && [[ "$1" == "$tmpSelf"* ]] && safeToRM="true"
 	
 	[[ "$safeToRM" == "false" ]] && return 1
 	
@@ -1258,6 +1260,8 @@ _safePath() {
 	
 	# WARNING: Allows removal of temporary folders created by current ubiquitous bash session only.
 	[[ "$sessionid" != "" ]] && [[ "$1" == *"$sessionid"* ]] && safeToRM="true"
+	[[ "$tmpSelf" != "" ]] && [[ "$sessionid" != "" ]] && [[ "$1" == *$(echo "$sessionid" | head -c 16)* ]] && safeToRM="true"
+	#[[ "$tmpSelf" != "" ]] && [[ "$1" == "$tmpSelf"* ]] && safeToRM="true"
 	
 	[[ "$safeToRM" == "false" ]] && return 1
 	
@@ -1390,7 +1394,7 @@ _timeout() { ( set +b; sleep "$1" & "${@:2}" & wait -n; r=$?; kill -9 `jobs -p`;
 
 _terminate() {
 	local processListFile
-	processListFile="$scriptAbsoluteFolder"/.pidlist_$(_uid)
+	processListFile="$tmpSelf"/.pidlist_$(_uid)
 	
 	local currentPID
 	
@@ -1409,7 +1413,7 @@ _terminateMetaHostAll() {
 	! ls -d -1 ./.m_*/.pid > /dev/null 2>&1 && return 0
 	
 	local processListFile
-	processListFile="$scriptAbsoluteFolder"/.pidlist_$(_uid)
+	processListFile="$tmpSelf"/.pidlist_$(_uid)
 	
 	local currentPID
 	
@@ -1446,7 +1450,7 @@ _terminateAll() {
 	_terminateMetaHostAll
 	
 	local processListFile
-	processListFile="$scriptAbsoluteFolder"/.pidlist_$(_uid)
+	processListFile="$tmpSelf"/.pidlist_$(_uid)
 	
 	local currentPID
 	
@@ -1749,7 +1753,7 @@ _priority_zero_pid() {
 # WARNING: Untested.
 _priority_dispatch() {
 	local processListFile
-	processListFile="$scriptAbsoluteFolder"/.pidlist_$(_uid)
+	processListFile="$tmpSelf"/.pidlist_$(_uid)
 	
 	echo "$1" >> "$processListFile"
 	pgrep -P "$1" 2>/dev/null >> "$processListFile"
@@ -1774,7 +1778,7 @@ _priority_enumerate_pid() {
 
 _priority_enumerate_pattern() {
 	local processListFile
-	processListFile="$scriptAbsoluteFolder"/.pidlist_$(_uid)
+	processListFile="$tmpSelf"/.pidlist_$(_uid)
 	
 	echo -n >> "$processListFile"
 	
@@ -1782,7 +1786,7 @@ _priority_enumerate_pattern() {
 	
 	
 	local parentListFile
-	parentListFile="$scriptAbsoluteFolder"/.pidlist_$(_uid)
+	parentListFile="$tmpSelf"/.pidlist_$(_uid)
 	
 	echo -n >> "$parentListFile"
 	
@@ -17899,7 +17903,7 @@ _unix_renice() {
 
 _unix_renice_critical() {
 	local processListFile
-	processListFile="$scriptAbsoluteFolder"/.pidlist_$(_uid)
+	processListFile="$tmpSelf"/.pidlist_$(_uid)
 	
 	_priority_enumerate_pattern "^ksysguard$" >> "$processListFile"
 	_priority_enumerate_pattern "^ksysguardd$" >> "$processListFile"
@@ -17935,7 +17939,7 @@ _unix_renice_critical() {
 
 _unix_renice_interactive() {
 	local processListFile
-	processListFile="$scriptAbsoluteFolder"/.pidlist_$(_uid)
+	processListFile="$tmpSelf"/.pidlist_$(_uid)
 	
 	_priority_enumerate_pattern "^kwin$" >> "$processListFile"
 	_priority_enumerate_pattern "^pager$" >> "$processListFile"
@@ -17961,7 +17965,7 @@ _unix_renice_interactive() {
 
 _unix_renice_app() {
 	local processListFile
-	processListFile="$scriptAbsoluteFolder"/.pidlist_$(_uid)
+	processListFile="$tmpSelf"/.pidlist_$(_uid)
 	
 	_priority_enumerate_pattern "^plasmashell$" >> "$processListFile"
 	
@@ -17998,7 +18002,7 @@ _unix_renice_app() {
 
 _unix_renice_idle() {
 	local processListFile
-	processListFile="$scriptAbsoluteFolder"/.pidlist_$(_uid)
+	processListFile="$tmpSelf"/.pidlist_$(_uid)
 	
 	_priority_enumerate_pattern "^packagekitd$" >> "$processListFile"
 	
@@ -18781,7 +18785,11 @@ _x220_vgaTablet() {
 #####Basic Variable Management
 
 #Reset prefixes.
-export tmpPrefix="" 
+export tmpPrefix=""
+export tmpSelf=""
+
+# ATTENTION: CAUTION: Should only be used by a single unusual Cygwin override. Must be reset if used for any other purpose.
+#export descriptiveSelf=""
 
 #####Global variables.
 #Fixed unique identifier for ubiquitious bash created global resources, such as bootdisc images to be automaticaly mounted by guests. Should NEVER be changed.
@@ -18838,13 +18846,48 @@ export outerPWD=$(_getAbsoluteLocation "$PWD")
 export initPWD="$PWD"
 intInitPWD="$PWD"
 
+
+
+
+# ATTENTION: CAUTION: Unusual Cygwin override to accommodate MSW network drive ( at least when provided by '_userVBox' ) !
+if [[ "$scriptAbsoluteFolder" == '/cygdrive/'* ]] && [[ -e /cygdrive ]] && uname -a | grep -i cygwin > /dev/null 2>&1 && [[ "$scriptAbsoluteFolder" != '/cygdrive/c'* ]] && [[ "$scriptAbsoluteFolder" != '/cygdrive/C'* ]]
+then
+	if [[ "$tmpSelf" == "" ]]
+	then
+		
+		export tmpMSW=$( cd "$LOCALAPPDATA" 2>/dev/null ; pwd )"/Temp"
+		[[ ! -e "$tmpMSW" ]] && export tmpMSW=$( cd "$LOCALAPPDATA" 2>/dev/null ; pwd )"/faketemp"
+		
+		if [[ "$tmpMSW" != "" ]]
+		then
+			export descriptiveSelf="$sessionid"
+			type md5sum > /dev/null 2>&1 && [[ "$scriptAbsoluteLocation" != '/bin/'* ]] && [[ "$scriptAbsoluteLocation" != '/usr/'* ]] && export descriptiveSelf=$(_getScriptAbsoluteLocation | md5sum | head -c 2)$(echo "$sessionid" | head -c 16)
+			export tmpSelf="$tmpMSW"/"$descriptiveSelf"
+			
+			[[ "$descriptiveSelf" == "" ]] && export tmpSelf="$tmpMSW"/"$sessionid"
+			true
+		fi
+		
+		( [[ "$tmpSelf" == "" ]] || [[ "$tmpMSW" == "" ]] ) && export tmpSelf=/tmp/"$sessionid"
+		true
+		
+	fi
+fi
+
+
+# CAUTION: 'Proper' UNIX platforms are expected to use "$scriptAbsoluteFolder" as "$tmpSelf" . Only by necessity may these variables be different.
+# CAUTION: If not blank, '$tmpSelf' must include first 16 digits of "$sessionid". Failure to do so may cause 'rmdir' collisions and prevent '_safeRMR' from allowing appropriate removal.
+# Virtualization and OS image modification functions in particular are not guaranteed to have been otherwise tested.
+[[ "$tmpSelf" == "" ]] && export tmpSelf="$scriptAbsoluteFolder"
+
 #Temporary directories.
-export safeTmp="$scriptAbsoluteFolder""$tmpPrefix"/w_"$sessionid"
-export scopeTmp="$scriptAbsoluteFolder""$tmpPrefix"/s_"$sessionid"
-export queryTmp="$scriptAbsoluteFolder""$tmpPrefix"/q_"$sessionid"
+export safeTmp="$tmpSelf""$tmpPrefix"/w_"$sessionid"
+export scopeTmp="$tmpSelf""$tmpPrefix"/s_"$sessionid"
+export queryTmp="$tmpSelf""$tmpPrefix"/q_"$sessionid"
 export logTmp="$safeTmp"/log
 #Solely for misbehaved applications called upon.
 export shortTmp=/tmp/w_"$sessionid"
+[[ "$tmpMSW" != "" ]] && export shortTmp="$tmpMSW"/w_"$sessionid"
 
 export scriptBin="$scriptAbsoluteFolder"/_bin
 export scriptBundle="$scriptAbsoluteFolder"/_bundle
@@ -18875,25 +18918,28 @@ export scriptTokens="$scriptLocal"/.tokens
 
 #Reboot Detection Token Storage
 # WARNING WIP. Not tested on all platforms. Requires a directory to be tmp/ram fs mounted. Worst case result is to preserve tokens across reboots.
+# WARNING: Does NOT work on Cygwin, files written to either '/tmp' or '/dev/shm' are persistent.
 #Fail-Safe
 export bootTmp="$scriptLocal"
 #Typical BSD
 [[ -d /tmp ]] && export bootTmp='/tmp'
 #Typical Linux
 [[ -d /dev/shm ]] && export bootTmp='/dev/shm'
+#Typical MSW - WARNING: Persistent!
+[[ "$tmpMSW" != "" ]] && export bootTmp="$tmpMSW"
 
 #Specialized temporary directories.
 
 #MetaEngine/Engine Tmp Defaults (example, no production use)
-#export metaTmp="$scriptAbsoluteFolder""$tmpPrefix"/.m_"$sessionid"
-#export engineTmp="$scriptAbsoluteFolder""$tmpPrefix"/.e_"$sessionid"
+#export metaTmp="$tmpSelf""$tmpPrefix"/.m_"$sessionid"
+#export engineTmp="$tmpSelf""$tmpPrefix"/.e_"$sessionid"
 
 # WARNING: Only one user per (virtual) machine. Requires _prepare_abstract . Not default.
 # DANGER: Mandatory strict directory 8.3 compliance for this variable! Long subdirectory/filenames permitted thereafter.
 # DANGER: Permitting multi-user access to this directory may cause unexpected behavior, including inconsitent file ownership.
 #Consistent absolute path abstraction.
 export abstractfs_root=/tmp/"$ubiquitiousBashIDnano"
-( [[ "$bootTmp" == '/dev/shm' ]] || [[ "$bootTmp" == '/tmp' ]] ) && export abstractfs_root="$bootTmp"/"$ubiquitiousBashIDnano"
+( [[ "$bootTmp" == '/dev/shm' ]] || [[ "$bootTmp" == '/tmp' ]] || [[ "$tmpMSW" != "" ]] ) && export abstractfs_root="$bootTmp"/"$ubiquitiousBashIDnano"
 export abstractfs_lock=/"$bootTmp"/"$ubiquitiousBashID"/afslock
 
 # Unusually, safeTmpSSH must not be interpreted by client, and therefore is single quoted.
@@ -19024,7 +19070,7 @@ export globalVirtDir="$scriptLocal"/v
 export globalVirtFS="$globalVirtDir"/fs
 export globalVirtTmp="$globalVirtDir"/tmp
 
-export instancedVirtDir="$scriptAbsoluteFolder"/v_"$sessionid"
+export instancedVirtDir="$tmpSelf"/v_"$sessionid"
 export instancedVirtFS="$instancedVirtDir"/fs
 export instancedVirtTmp="$instancedVirtDir"/tmp
 
@@ -19050,7 +19096,7 @@ export vboxRaw="$scriptLocal"/vmvdiraw.vmdk
 
 #Only globalFakeHome is persistent. All other default home directories are removed in some way by "_stop".
 export globalFakeHome="$scriptLocal"/h
-export instancedFakeHome="$scriptAbsoluteFolder"/h_"$sessionid"
+export instancedFakeHome="$tmpSelf"/h_"$sessionid"
 export shortFakeHome="$shortTmp"/h
 
 #Do not use directly as home directory. Append subdirectories.
@@ -19720,7 +19766,7 @@ export metaEmbed="true"
 	export metaBase="$metaBase"
 	export metaObjName="$metaObjName"
 	export metaTmp="$metaTmp"
-	#export metaTmp="$scriptAbsoluteFolder""$tmpPrefix"/.m_"$sessionid"
+	#export metaTmp="$$tmpSelf""$tmpPrefix"/.m_"$sessionid"
 	export metaProc="$metaProc"
 	# WARNING: Setting metaProc to a value not including sessionid disables automatic removal by default!
 	#export metaProc="$metaBase""$tmpPrefix"/.m_"$sessionid"
@@ -19838,13 +19884,13 @@ _set_me_host() {
 	
 	_tryExec "_set_me_host_prefix"
 	
-	export metaTmp="$scriptAbsoluteFolder""$metaPrefix"/.m_"$sessionid"
+	export metaTmp="$tmpSelf""$metaPrefix"/.m_"$sessionid"
 	
 	# WARNING: Setting metaProc to a value not including sessionid disables automatic removal by default!
 	# WARNING: Setting metaProc to a value not accepted by "_safeRMR" disables automatic removal by default!
-	export metaProc="$scriptAbsoluteFolder""$metaPrefix"/.m_"$sessionid"
+	export metaProc="$tmpSelf""$metaPrefix"/.m_"$sessionid"
 	[[ "$metaType" == "base" ]] && export metaProc="$metaBase""$metaPrefix"/.m_"$sessionid"
-	#[[ "$metaType" == "" ]] && export metaProc="$scriptAbsoluteFolder""$metaPrefix"/.m_"$sessionid"
+	#[[ "$metaType" == "" ]] && export metaProc="$tmpSelf""$metaPrefix"/.m_"$sessionid"
 }
 
 _reset_me_host() {
@@ -20643,7 +20689,7 @@ _prepare_metaengine() {
 _start_metaengine_host() {
 	_stop_metaengine_allow
 	
-	[[ -e "$scriptAbsoluteFolder""$tmpPrefix"/.e_"$sessionid" ]] && _messageError 'FAIL: safety: meta conflicts engine' && _stop 1
+	[[ -e "$tmpSelf""$tmpPrefix"/.e_"$sessionid" ]] && _messageError 'FAIL: safety: meta conflicts engine' && _stop 1
 	
 	_messageNormal 'init: _start_metaengine_host'
 	
@@ -20659,7 +20705,7 @@ _start_metaengine_host() {
 _start_metaengine() {
 	_stop_metaengine_prohibit
 	
-	[[ -e "$scriptAbsoluteFolder""$tmpPrefix"/.e_"$sessionid" ]] && _messageError 'FAIL: safety: meta conflicts engine' && _stop 1
+	[[ -e "$tmpSelf""$tmpPrefix"/.e_"$sessionid" ]] && _messageError 'FAIL: safety: meta conflicts engine' && _stop 1
 	
 	_messageNormal 'processor: '"$metaObjName"
 	_messagePlain_probe 'init: _start_metaengine'
@@ -20863,7 +20909,7 @@ _complete_me() {
 
 _terminateMetaProcessorAll_metaengine() {
 	local processListFile
-	processListFile="$scriptAbsoluteFolder"/.pidlist_m_$(_uid)
+	processListFile="$tmpSelf"/.pidlist_m_$(_uid)
 	
 	local currentPID
 	
@@ -21668,6 +21714,9 @@ _prepare() {
 	
 	! mkdir -p "$bootTmp" && exit 1
 	
+	# WARNING: No production use. Not guaranteed to be machine readable.
+	[[ "$tmpSelf" != "" ]] && echo "$tmpSelf" 2> /dev/null > "$scriptAbsoluteFolder"/__d_$(echo "$sessionid" | head -c 16)
+	
 	#_prepare_abstract
 	
 	_extra
@@ -21785,6 +21834,8 @@ _stop() {
 	#Optionally always try to remove any systemd shutdown hook.
 	#_tryExec _unhook_systemd_shutdown
 	
+	[[ "$tmpSelf" != "" ]] && [[ "$tmpSelf" != "/" ]] && [[ -e "$tmpSelf" ]] && rmdir "$tmpSelf" > /dev/null 2>&1
+	rm -f "$scriptAbsoluteFolder"/__d_$(echo "$sessionid" | head -c 16) > /dev/null 2>&1
 	
 	_stop_stty_echo
 	if [[ "$1" != "" ]]

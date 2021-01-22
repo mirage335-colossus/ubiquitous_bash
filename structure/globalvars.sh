@@ -53,13 +53,48 @@ export outerPWD=$(_getAbsoluteLocation "$PWD")
 export initPWD="$PWD"
 intInitPWD="$PWD"
 
+
+
+
+# ATTENTION: CAUTION: Unusual Cygwin override to accommodate MSW network drive ( at least when provided by '_userVBox' ) !
+if [[ "$scriptAbsoluteFolder" == '/cygdrive/'* ]] && [[ -e /cygdrive ]] && uname -a | grep -i cygwin > /dev/null 2>&1 && [[ "$scriptAbsoluteFolder" != '/cygdrive/c'* ]] && [[ "$scriptAbsoluteFolder" != '/cygdrive/C'* ]]
+then
+	if [[ "$tmpSelf" == "" ]]
+	then
+		
+		export tmpMSW=$( cd "$LOCALAPPDATA" 2>/dev/null ; pwd )"/Temp"
+		[[ ! -e "$tmpMSW" ]] && export tmpMSW=$( cd "$LOCALAPPDATA" 2>/dev/null ; pwd )"/faketemp"
+		
+		if [[ "$tmpMSW" != "" ]]
+		then
+			export descriptiveSelf="$sessionid"
+			type md5sum > /dev/null 2>&1 && [[ "$scriptAbsoluteLocation" != '/bin/'* ]] && [[ "$scriptAbsoluteLocation" != '/usr/'* ]] && export descriptiveSelf=$(_getScriptAbsoluteLocation | md5sum | head -c 2)$(echo "$sessionid" | head -c 16)
+			export tmpSelf="$tmpMSW"/"$descriptiveSelf"
+			
+			[[ "$descriptiveSelf" == "" ]] && export tmpSelf="$tmpMSW"/"$sessionid"
+			true
+		fi
+		
+		( [[ "$tmpSelf" == "" ]] || [[ "$tmpMSW" == "" ]] ) && export tmpSelf=/tmp/"$sessionid"
+		true
+		
+	fi
+fi
+
+
+# CAUTION: 'Proper' UNIX platforms are expected to use "$scriptAbsoluteFolder" as "$tmpSelf" . Only by necessity may these variables be different.
+# CAUTION: If not blank, '$tmpSelf' must include first 16 digits of "$sessionid". Failure to do so may cause 'rmdir' collisions and prevent '_safeRMR' from allowing appropriate removal.
+# Virtualization and OS image modification functions in particular are not guaranteed to have been otherwise tested.
+[[ "$tmpSelf" == "" ]] && export tmpSelf="$scriptAbsoluteFolder"
+
 #Temporary directories.
-export safeTmp="$scriptAbsoluteFolder""$tmpPrefix"/w_"$sessionid"
-export scopeTmp="$scriptAbsoluteFolder""$tmpPrefix"/s_"$sessionid"
-export queryTmp="$scriptAbsoluteFolder""$tmpPrefix"/q_"$sessionid"
+export safeTmp="$tmpSelf""$tmpPrefix"/w_"$sessionid"
+export scopeTmp="$tmpSelf""$tmpPrefix"/s_"$sessionid"
+export queryTmp="$tmpSelf""$tmpPrefix"/q_"$sessionid"
 export logTmp="$safeTmp"/log
 #Solely for misbehaved applications called upon.
 export shortTmp=/tmp/w_"$sessionid"
+[[ "$tmpMSW" != "" ]] && export shortTmp="$tmpMSW"/w_"$sessionid"
 
 export scriptBin="$scriptAbsoluteFolder"/_bin
 export scriptBundle="$scriptAbsoluteFolder"/_bundle
@@ -90,25 +125,28 @@ export scriptTokens="$scriptLocal"/.tokens
 
 #Reboot Detection Token Storage
 # WARNING WIP. Not tested on all platforms. Requires a directory to be tmp/ram fs mounted. Worst case result is to preserve tokens across reboots.
+# WARNING: Does NOT work on Cygwin, files written to either '/tmp' or '/dev/shm' are persistent.
 #Fail-Safe
 export bootTmp="$scriptLocal"
 #Typical BSD
 [[ -d /tmp ]] && export bootTmp='/tmp'
 #Typical Linux
 [[ -d /dev/shm ]] && export bootTmp='/dev/shm'
+#Typical MSW - WARNING: Persistent!
+[[ "$tmpMSW" != "" ]] && export bootTmp="$tmpMSW"
 
 #Specialized temporary directories.
 
 #MetaEngine/Engine Tmp Defaults (example, no production use)
-#export metaTmp="$scriptAbsoluteFolder""$tmpPrefix"/.m_"$sessionid"
-#export engineTmp="$scriptAbsoluteFolder""$tmpPrefix"/.e_"$sessionid"
+#export metaTmp="$tmpSelf""$tmpPrefix"/.m_"$sessionid"
+#export engineTmp="$tmpSelf""$tmpPrefix"/.e_"$sessionid"
 
 # WARNING: Only one user per (virtual) machine. Requires _prepare_abstract . Not default.
 # DANGER: Mandatory strict directory 8.3 compliance for this variable! Long subdirectory/filenames permitted thereafter.
 # DANGER: Permitting multi-user access to this directory may cause unexpected behavior, including inconsitent file ownership.
 #Consistent absolute path abstraction.
 export abstractfs_root=/tmp/"$ubiquitiousBashIDnano"
-( [[ "$bootTmp" == '/dev/shm' ]] || [[ "$bootTmp" == '/tmp' ]] ) && export abstractfs_root="$bootTmp"/"$ubiquitiousBashIDnano"
+( [[ "$bootTmp" == '/dev/shm' ]] || [[ "$bootTmp" == '/tmp' ]] || [[ "$tmpMSW" != "" ]] ) && export abstractfs_root="$bootTmp"/"$ubiquitiousBashIDnano"
 export abstractfs_lock=/"$bootTmp"/"$ubiquitiousBashID"/afslock
 
 # Unusually, safeTmpSSH must not be interpreted by client, and therefore is single quoted.

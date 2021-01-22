@@ -1,6 +1,6 @@
 _terminate() {
 	local processListFile
-	processListFile="$scriptAbsoluteFolder"/.pidlist_$(_uid)
+	processListFile="$tmpSelf"/.pidlist_$(_uid)
 	
 	local currentPID
 	
@@ -19,7 +19,7 @@ _terminateMetaHostAll() {
 	! ls -d -1 ./.m_*/.pid > /dev/null 2>&1 && return 0
 	
 	local processListFile
-	processListFile="$scriptAbsoluteFolder"/.pidlist_$(_uid)
+	processListFile="$tmpSelf"/.pidlist_$(_uid)
 	
 	local currentPID
 	
@@ -56,7 +56,7 @@ _terminateAll() {
 	_terminateMetaHostAll
 	
 	local processListFile
-	processListFile="$scriptAbsoluteFolder"/.pidlist_$(_uid)
+	processListFile="$tmpSelf"/.pidlist_$(_uid)
 	
 	local currentPID
 	

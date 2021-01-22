@@ -138,7 +138,7 @@ _unix_renice() {
 
 _unix_renice_critical() {
 	local processListFile
-	processListFile="$scriptAbsoluteFolder"/.pidlist_$(_uid)
+	processListFile="$tmpSelf"/.pidlist_$(_uid)
 	
 	_priority_enumerate_pattern "^ksysguard$" >> "$processListFile"
 	_priority_enumerate_pattern "^ksysguardd$" >> "$processListFile"
@@ -174,7 +174,7 @@ _unix_renice_critical() {
 
 _unix_renice_interactive() {
 	local processListFile
-	processListFile="$scriptAbsoluteFolder"/.pidlist_$(_uid)
+	processListFile="$tmpSelf"/.pidlist_$(_uid)
 	
 	_priority_enumerate_pattern "^kwin$" >> "$processListFile"
 	_priority_enumerate_pattern "^pager$" >> "$processListFile"
@@ -200,7 +200,7 @@ _unix_renice_interactive() {
 
 _unix_renice_app() {
 	local processListFile
-	processListFile="$scriptAbsoluteFolder"/.pidlist_$(_uid)
+	processListFile="$tmpSelf"/.pidlist_$(_uid)
 	
 	_priority_enumerate_pattern "^plasmashell$" >> "$processListFile"
 	
@@ -237,7 +237,7 @@ _unix_renice_app() {
 
 _unix_renice_idle() {
 	local processListFile
-	processListFile="$scriptAbsoluteFolder"/.pidlist_$(_uid)
+	processListFile="$tmpSelf"/.pidlist_$(_uid)
 	
 	_priority_enumerate_pattern "^packagekitd$" >> "$processListFile"
 	

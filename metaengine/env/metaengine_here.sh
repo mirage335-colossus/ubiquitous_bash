@@ -59,7 +59,7 @@ export metaEmbed="true"
 	export metaBase="$metaBase"
 	export metaObjName="$metaObjName"
 	export metaTmp="$metaTmp"
-	#export metaTmp="$scriptAbsoluteFolder""$tmpPrefix"/.m_"$sessionid"
+	#export metaTmp="$$tmpSelf""$tmpPrefix"/.m_"$sessionid"
 	export metaProc="$metaProc"
 	# WARNING: Setting metaProc to a value not including sessionid disables automatic removal by default!
 	#export metaProc="$metaBase""$tmpPrefix"/.m_"$sessionid"

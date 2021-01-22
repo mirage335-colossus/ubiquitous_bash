@@ -39,6 +39,9 @@ _prepare() {
 	
 	! mkdir -p "$bootTmp" && exit 1
 	
+	# WARNING: No production use. Not guaranteed to be machine readable.
+	[[ "$tmpSelf" != "" ]] && echo "$tmpSelf" 2> /dev/null > "$scriptAbsoluteFolder"/__d_$(echo "$sessionid" | head -c 16)
+	
 	#_prepare_abstract
 	
 	_extra
