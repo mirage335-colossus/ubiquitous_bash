@@ -53,6 +53,17 @@ Today.
 * Native VirtualBox/QEMU is feasible to start and manage new Virtual Machines with most usual '_userVBox' and '_userQemu' features.
 
 
+As stated by a comment to ZeroMQ's issue tracker...
+
+'Using WSL2 will work. cheers
+
+Does it requires to install wsl2 or dependency is natively available without install wsl2 ?
+
+It is an hard dependency :( not easy to manage with installer.'
+
+https://github.com/zeromq/libzmq/issues/153
+
+
 # Known Issues
 
 * MSW network drive (or at least _userVBox implementation of it, _userQemu is known to be more compatible) may lack several necessary features - symlinks, correct permissions , etc . To workaround, create a 'package' '.tar.gz' file, and extract to a 'local' copy. Such a package may be created under MSW with the command '_bin _package-cygwinOnly' - which itself uses 'ubcp' . Additionally, mitigation of symlinks may allow somewhat better, though nevertheless imperfect, support for MSW network drive.
