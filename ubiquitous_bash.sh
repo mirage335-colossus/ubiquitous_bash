@@ -15417,6 +15417,8 @@ _reset_KDE() {
 	then
 		kquitapp plasmashell ; sleep 3 ; plasmashell &
 	fi
+	disown -a -h -r
+	disown -a -r
 }
 
 # Also depends on '_labVBoxManage' and '_userVBoxManage' .
