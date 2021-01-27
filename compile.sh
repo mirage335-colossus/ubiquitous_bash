@@ -142,7 +142,13 @@ else	#FAIL, implies [[ "$ub_import" == "true" ]]
 fi
 
 #Override.
-# DANGER: Recursion hazard. Do not create overrides without checking that alternate exists.
+# DANGER: Recursion hazard. Do not create override alias/function without checking that alternate exists.
+
+
+# Workaround for very minor OS misconfiguration. Setting this variable at all may be undesirable however. Consider enabling and generating all locales with 'sudo dpkg-reconfigure locales' or similar .
+#[[ "$LC_ALL" == '' ]] && export LC_ALL="en_US.UTF-8"
+
+
 
 # WARNING: Only partially compatible.
 if ! type md5sum > /dev/null 2>&1 && type md5 > /dev/null 2>&1
