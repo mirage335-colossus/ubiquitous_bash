@@ -23,7 +23,7 @@ _me_page_tick_advance() {
 
 
 
-
+# TODO: Probably need to reset the tick difference periodically.
 _buffer_me_processor_page_tick() {
 	local measureTickA
 	local measureTickB
@@ -89,6 +89,7 @@ _buffer_me_processor_page_tick_write() {
 	rm -f "$bufferTick_file".tmp > /dev/null 2>&1
 }
 
+# TODO: Probably need to reset the tick difference periodically.
 _buffer_me_processor_page_clock() {
 	local measureDateA
 	local measureDateB
