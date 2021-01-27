@@ -8963,67 +8963,67 @@ then
 CZXWXcRMTo8EmM8i4d
 
 
-	typeset -f _getScriptAbsoluteLocation
-	typeset -f _getScriptAbsoluteFolder
+	declare -f _getScriptAbsoluteLocation
+	declare -f _getScriptAbsoluteFolder
 	
 	
 	
-	typeset -f _checkBaseDirRemote_common_localOnly
-	typeset -f _checkBaseDirRemote_common_remoteOnly
+	declare -f _checkBaseDirRemote_common_localOnly
+	declare -f _checkBaseDirRemote_common_remoteOnly
 	
 	
 	
-	typeset -f _checkBaseDirRemote
+	declare -f _checkBaseDirRemote
 	
 	
 	
-	typeset -f _compat_realpath
-	typeset -f _compat_realpath_run
+	declare -f _compat_realpath
+	declare -f _compat_realpath_run
 	
-	typeset -f _getAbsoluteLocation
-	typeset -f _realpath_L_s
-	typeset -f _getAbsoluteFolder
-	
-	
-	typeset -f _findDir
+	declare -f _getAbsoluteLocation
+	declare -f _realpath_L_s
+	declare -f _getAbsoluteFolder
 	
 	
-	
-	typeset -f _safeEcho_newline
-	
-	typeset -f _searchBaseDir
+	declare -f _findDir
 	
 	
 	
-	typeset -f _checkBaseDirRemote
-	#_typeset -f _safeEcho_newline
-	typeset -f _safeEcho
+	declare -f _safeEcho_newline
 	
-	typeset -f _localDir
+	declare -f _searchBaseDir
 	
 	
 	
-	#_typeset -f _safeEcho_newline
+	declare -f _checkBaseDirRemote
+	#_declare -f _safeEcho_newline
+	declare -f _safeEcho
+	
+	declare -f _localDir
 	
 	
 	
-	#_typeset -f _safeEcho_newline
-	
-	typeset -f _slashBackToForward
+	#_declare -f _safeEcho_newline
 	
 	
 	
-	typeset -f _checkBaseDirRemote_app_localOnly
-	typeset -f _checkBaseDirRemote_app_remoteOnly
-	typeset -f _pathPartOf
-	typeset -f _realpath_L
+	#_declare -f _safeEcho_newline
 	
-	typeset -f _virtUser
+	declare -f _slashBackToForward
 	
 	
 	
-	typeset -f _x11_clipboard_sendText
-	typeset -f _removeFilePrefix
+	declare -f _checkBaseDirRemote_app_localOnly
+	declare -f _checkBaseDirRemote_app_remoteOnly
+	declare -f _pathPartOf
+	declare -f _realpath_L
+	
+	declare -f _virtUser
+	
+	
+	
+	declare -f _x11_clipboard_sendText
+	declare -f _removeFilePrefix
 	
 
 cat << CZXWXcRMTo8EmM8i4d	
@@ -22302,7 +22302,7 @@ _uid_test() {
 
 
 # Creating a function from within a function may be relied upon for some overrides.
-# Enumerating a function's text with 'typeset -f' may be relied upon by some 'here document' functions.
+# Enumerating a function's text with 'declare -f' may be relied upon by some 'here document' functions.
 _define_function_test() {
 	local current_uid_1
 	current_uid_1=$(_uid)
@@ -22313,13 +22313,13 @@ _define_function_test() {
 	# https://stackoverflow.com/questions/7145337/bash-how-do-i-create-function-from-variable
 	eval "__$current_uid_1() { __$current_uid_2() { echo $ubiquitiousBashID; }; }"
 	
-	if [[ $(typeset -f __$current_uid_1 | wc -c) -lt 50 ]]
+	if [[ $(declare -f __$current_uid_1 | wc -c) -lt 50 ]]
 	then
 		_messageFAIL
 		_stop 1
 	fi
 	
-	if [[ $(typeset -f __$current_uid_2 | wc -c) -gt 0 ]]
+	if [[ $(declare -f __$current_uid_2 | wc -c) -gt 0 ]]
 	then
 		_messageFAIL
 		_stop 1
@@ -22327,7 +22327,7 @@ _define_function_test() {
 	
 	__$current_uid_1
 	
-	if [[ $(typeset -f __$current_uid_2 | wc -c) -lt 15 ]]
+	if [[ $(declare -f __$current_uid_2 | wc -c) -lt 15 ]]
 	then
 		_messageFAIL
 		_stop 1

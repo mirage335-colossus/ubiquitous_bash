@@ -201,67 +201,67 @@ then
 CZXWXcRMTo8EmM8i4d
 
 
-	typeset -f _getScriptAbsoluteLocation
-	typeset -f _getScriptAbsoluteFolder
+	declare -f _getScriptAbsoluteLocation
+	declare -f _getScriptAbsoluteFolder
 	
 	
 	
-	typeset -f _checkBaseDirRemote_common_localOnly
-	typeset -f _checkBaseDirRemote_common_remoteOnly
+	declare -f _checkBaseDirRemote_common_localOnly
+	declare -f _checkBaseDirRemote_common_remoteOnly
 	
 	
 	
-	typeset -f _checkBaseDirRemote
+	declare -f _checkBaseDirRemote
 	
 	
 	
-	typeset -f _compat_realpath
-	typeset -f _compat_realpath_run
+	declare -f _compat_realpath
+	declare -f _compat_realpath_run
 	
-	typeset -f _getAbsoluteLocation
-	typeset -f _realpath_L_s
-	typeset -f _getAbsoluteFolder
-	
-	
-	typeset -f _findDir
+	declare -f _getAbsoluteLocation
+	declare -f _realpath_L_s
+	declare -f _getAbsoluteFolder
 	
 	
-	
-	typeset -f _safeEcho_newline
-	
-	typeset -f _searchBaseDir
+	declare -f _findDir
 	
 	
 	
-	typeset -f _checkBaseDirRemote
-	#_typeset -f _safeEcho_newline
-	typeset -f _safeEcho
+	declare -f _safeEcho_newline
 	
-	typeset -f _localDir
+	declare -f _searchBaseDir
 	
 	
 	
-	#_typeset -f _safeEcho_newline
+	declare -f _checkBaseDirRemote
+	#_declare -f _safeEcho_newline
+	declare -f _safeEcho
+	
+	declare -f _localDir
 	
 	
 	
-	#_typeset -f _safeEcho_newline
-	
-	typeset -f _slashBackToForward
+	#_declare -f _safeEcho_newline
 	
 	
 	
-	typeset -f _checkBaseDirRemote_app_localOnly
-	typeset -f _checkBaseDirRemote_app_remoteOnly
-	typeset -f _pathPartOf
-	typeset -f _realpath_L
+	#_declare -f _safeEcho_newline
 	
-	typeset -f _virtUser
+	declare -f _slashBackToForward
 	
 	
 	
-	typeset -f _x11_clipboard_sendText
-	typeset -f _removeFilePrefix
+	declare -f _checkBaseDirRemote_app_localOnly
+	declare -f _checkBaseDirRemote_app_remoteOnly
+	declare -f _pathPartOf
+	declare -f _realpath_L
+	
+	declare -f _virtUser
+	
+	
+	
+	declare -f _x11_clipboard_sendText
+	declare -f _removeFilePrefix
 	
 
 cat << CZXWXcRMTo8EmM8i4d	

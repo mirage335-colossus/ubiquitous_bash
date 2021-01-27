@@ -4745,7 +4745,7 @@ _uid_test() {
 
 
 # Creating a function from within a function may be relied upon for some overrides.
-# Enumerating a function's text with 'typeset -f' may be relied upon by some 'here document' functions.
+# Enumerating a function's text with 'declare -f' may be relied upon by some 'here document' functions.
 _define_function_test() {
 	local current_uid_1
 	current_uid_1=$(_uid)
@@ -4756,13 +4756,13 @@ _define_function_test() {
 	# https://stackoverflow.com/questions/7145337/bash-how-do-i-create-function-from-variable
 	eval "__$current_uid_1() { __$current_uid_2() { echo $ubiquitiousBashID; }; }"
 	
-	if [[ $(typeset -f __$current_uid_1 | wc -c) -lt 50 ]]
+	if [[ $(declare -f __$current_uid_1 | wc -c) -lt 50 ]]
 	then
 		_messageFAIL
 		_stop 1
 	fi
 	
-	if [[ $(typeset -f __$current_uid_2 | wc -c) -gt 0 ]]
+	if [[ $(declare -f __$current_uid_2 | wc -c) -gt 0 ]]
 	then
 		_messageFAIL
 		_stop 1
@@ -4770,7 +4770,7 @@ _define_function_test() {
 	
 	__$current_uid_1
 	
-	if [[ $(typeset -f __$current_uid_2 | wc -c) -lt 15 ]]
+	if [[ $(declare -f __$current_uid_2 | wc -c) -lt 15 ]]
 	then
 		_messageFAIL
 		_stop 1

@@ -58,6 +58,8 @@ In most user environments, the latest git repository code will provide the stron
 * Thanks to "rocky" for workaround to bashdb/emacs issue - https://github.com/realgud/realgud/issues/205#issuecomment-354851601 .
 
 # Future Work
+* Ongoing evaluation of 'deprecated' , 'obsolete' , or otherwise less than known to be compatible with modern and future versions of "bash" .
+
 * Demonstrate backgrounding in _main as a means to launch multiple daemonized services under control of a single script instance.
 
 * Portable Cygwin installation for MSW hosts.
@@ -166,4 +168,6 @@ https://wiki.linuxfoundation.org/realtime/documentation/howto/tools/cpu-partitio
 https://en.wikipedia.org/wiki/Scene_graph
 
 https://github.com/PipelineAI/pipeline
+
+https://wiki.bash-hackers.org/scripting/obsolete
 
