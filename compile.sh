@@ -2500,13 +2500,23 @@ _killDaemon() {
 	return 0
 }
 
-_cmdDaemon() {
+_cmdDaemon_sequence() {
 	export isDaemon=true
 	
 	"$@" &
 	
+	local currentPID="$!"
+	
 	#Any PID which may be part of a daemon may be appended to this file.
-	echo "$!" | _prependDaemonPID
+	echo "$currentPID" | _prependDaemonPID
+	
+	wait "$currentPID"
+}
+
+_cmdDaemon() {
+	"$scriptAbsoluteLocation" _cmdDaemon_sequence "$@" &
+	disown -a -h -r
+	disown -a -r
 }
 
 #Executes self in background (ie. as daemon).

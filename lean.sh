@@ -2425,13 +2425,23 @@ _killDaemon() {
 	return 0
 }
 
-_cmdDaemon() {
+_cmdDaemon_sequence() {
 	export isDaemon=true
 	
 	"$@" &
 	
+	local currentPID="$!"
+	
 	#Any PID which may be part of a daemon may be appended to this file.
-	echo "$!" | _prependDaemonPID
+	echo "$currentPID" | _prependDaemonPID
+	
+	wait "$currentPID"
+}
+
+_cmdDaemon() {
+	"$scriptAbsoluteLocation" _cmdDaemon_sequence "$@" &
+	disown -a -h -r
+	disown -a -r
 }
 
 #Executes self in background (ie. as daemon).
@@ -4286,6 +4296,11 @@ _stop() {
 	[[ "$tmpSelf" != "" ]] && [[ "$tmpSelf" != "/" ]] && [[ -e "$tmpSelf" ]] && rmdir "$tmpSelf" > /dev/null 2>&1
 	rm -f "$scriptAbsoluteFolder"/__d_$(echo "$sessionid" | head -c 16) > /dev/null 2>&1
 	
+	
+	local currentStopJobs
+	currentStopJobs=$(jobs -p -r 2> /dev/null)
+	[[ "$currentStopJobs" != "" ]] && kill "$currentStopJobs" > /dev/null 2>&1
+	
 	_stop_stty_echo
 	if [[ "$1" != "" ]]
 	then
@@ -5090,7 +5105,7 @@ _test() {
 	
 	_tryExec "_test_channel"
 	
-	[[ -e /dev/urandom ]] || echo /dev/urandom missing _stop
+	! [[ -e /dev/urandom ]] && echo /dev/urandom missing && _stop 1
 	
 	_messagePASS
 	

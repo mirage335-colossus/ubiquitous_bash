@@ -70,7 +70,8 @@ _channel_host_fifo_sequence() {
 	#nohup "$scriptAbsoluteLocation" --embed _channel_fifo_sequence "$@" >/dev/null 2>&1 &
 	"$scriptAbsoluteLocation" --embed _channel_fifo_sequence "$@" >/dev/null 2>&1 &
 	#disown -h $!
-	disown -a -h
+	disown -a -h -r
+	disown -a -r
 }
 
 # example: dd if=$(./ubiquitous_bash.sh _channel_host_fifo _channel_fifo_example) of=/dev/null

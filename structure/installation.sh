@@ -444,7 +444,7 @@ _test() {
 	
 	_tryExec "_test_channel"
 	
-	[[ -e /dev/urandom ]] || echo /dev/urandom missing _stop
+	! [[ -e /dev/urandom ]] && echo /dev/urandom missing && _stop 1
 	
 	_messagePASS
 	

@@ -112,6 +112,11 @@ _stop() {
 	[[ "$tmpSelf" != "" ]] && [[ "$tmpSelf" != "/" ]] && [[ -e "$tmpSelf" ]] && rmdir "$tmpSelf" > /dev/null 2>&1
 	rm -f "$scriptAbsoluteFolder"/__d_$(echo "$sessionid" | head -c 16) > /dev/null 2>&1
 	
+	
+	local currentStopJobs
+	currentStopJobs=$(jobs -p -r 2> /dev/null)
+	[[ "$currentStopJobs" != "" ]] && kill "$currentStopJobs" > /dev/null 2>&1
+	
 	_stop_stty_echo
 	if [[ "$1" != "" ]]
 	then
