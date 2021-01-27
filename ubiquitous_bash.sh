@@ -1181,8 +1181,8 @@ _safeRMR() {
 	
 	# WARNING: Allows removal of temporary folders created by current ubiquitous bash session only.
 	[[ "$sessionid" != "" ]] && [[ "$1" == *"$sessionid"* ]] && safeToRM="true"
-	[[ "$tmpSelf" != "" ]] && [[ "$sessionid" != "" ]] && [[ "$1" == *$(echo "$sessionid" | head -c 16)* ]] && safeToRM="true"
-	#[[ "$tmpSelf" != "" ]] && [[ "$1" == "$tmpSelf"* ]] && safeToRM="true"
+	[[ "$tmpSelf" != "$safeScriptAbsoluteFolder" ]] && [[ "$sessionid" != "" ]] && [[ "$1" == *$(echo "$sessionid" | head -c 16)* ]] && safeToRM="true"
+	#[[ "$tmpSelf" != "$safeScriptAbsoluteFolder" ]] && [[ "$1" == "$tmpSelf"* ]] && safeToRM="true"
 	
 	[[ "$safeToRM" == "false" ]] && return 1
 	
@@ -1266,8 +1266,8 @@ _safePath() {
 	
 	# WARNING: Allows removal of temporary folders created by current ubiquitous bash session only.
 	[[ "$sessionid" != "" ]] && [[ "$1" == *"$sessionid"* ]] && safeToRM="true"
-	[[ "$tmpSelf" != "" ]] && [[ "$sessionid" != "" ]] && [[ "$1" == *$(echo "$sessionid" | head -c 16)* ]] && safeToRM="true"
-	#[[ "$tmpSelf" != "" ]] && [[ "$1" == "$tmpSelf"* ]] && safeToRM="true"
+	[[ "$tmpSelf" != "$safeScriptAbsoluteFolder" ]] && [[ "$sessionid" != "" ]] && [[ "$1" == *$(echo "$sessionid" | head -c 16)* ]] && safeToRM="true"
+	#[[ "$tmpSelf" != "$safeScriptAbsoluteFolder" ]] && [[ "$1" == "$tmpSelf"* ]] && safeToRM="true"
 	
 	[[ "$safeToRM" == "false" ]] && return 1
 	
@@ -21733,7 +21733,7 @@ _prepare() {
 	! mkdir -p "$bootTmp" && exit 1
 	
 	# WARNING: No production use. Not guaranteed to be machine readable.
-	[[ "$tmpSelf" != "" ]] && echo "$tmpSelf" 2> /dev/null > "$scriptAbsoluteFolder"/__d_$(echo "$sessionid" | head -c 16)
+	[[ "$tmpSelf" != "$scriptAbsoluteFolder" ]] && echo "$tmpSelf" 2> /dev/null > "$scriptAbsoluteFolder"/__d_$(echo "$sessionid" | head -c 16)
 	
 	#_prepare_abstract
 	
@@ -21852,7 +21852,7 @@ _stop() {
 	#Optionally always try to remove any systemd shutdown hook.
 	#_tryExec _unhook_systemd_shutdown
 	
-	[[ "$tmpSelf" != "" ]] && [[ "$tmpSelf" != "/" ]] && [[ -e "$tmpSelf" ]] && rmdir "$tmpSelf" > /dev/null 2>&1
+	[[ "$tmpSelf" != "$scriptAbsoluteFolder" ]] && [[ "$tmpSelf" != "/" ]] && [[ -e "$tmpSelf" ]] && rmdir "$tmpSelf" > /dev/null 2>&1
 	rm -f "$scriptAbsoluteFolder"/__d_$(echo "$sessionid" | head -c 16) > /dev/null 2>&1
 	
 	
