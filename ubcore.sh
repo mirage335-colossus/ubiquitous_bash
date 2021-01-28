@@ -8602,7 +8602,7 @@ _setupCommand_meta() {
 }
 
 _find_setupCommands() {
-	find -L "$scriptAbsoluteFolder" -not \( -path \*_arc\* -prune \) "$@"
+	find -L "$scriptAbsoluteFolder" -not \( -path \*_arc\* -prune \) -not \( -path \*/_local/ubcp/\* -prune \) "$@"
 }
 
 #Consider placing files like ' _vnc-machine-"$netName" ' in an "_index" folder for automatic installation.
