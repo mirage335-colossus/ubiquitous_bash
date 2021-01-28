@@ -72,7 +72,7 @@ _findGit_procedure() {
 		return 0
 	fi
 	
-	find -L . -mindepth 1 -maxdepth 1 -type d -exec "$scriptAbsoluteLocation" _findGit_procedure '{}' "$@" \;
+	find -L . -mindepth 1 -maxdepth 1 -not \( -path \*_arc\* -prune \) -not \( -path \*/_local/ubcp/\* -prune \) -type d -exec "$scriptAbsoluteLocation" _findGit_procedure '{}' "$@" \;
 }
 
 #Recursively searches for directories containing ".git".
@@ -83,7 +83,7 @@ _findGit() {
 		return 0
 	fi
 	
-	find -L . -mindepth 1 -maxdepth 1 -type d -exec "$scriptAbsoluteLocation" _findGit_procedure '{}' "$@" \;
+	find -L . -mindepth 1 -maxdepth 1 -not \( -path \*_arc\* -prune \) -not \( -path \*/_local/ubcp/\* -prune \) -type d -exec "$scriptAbsoluteLocation" _findGit_procedure '{}' "$@" \;
 }
 
 _gitPull() {
