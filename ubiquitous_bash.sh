@@ -10394,7 +10394,7 @@ CZXWXcRMTo8EmM8i4d
 
 _here_bootdisc_rootnix() {
 cat << 'CZXWXcRMTo8EmM8i4d'
-#!/bin/bash
+#!/usr/bin/env bash
 
 if [[ "$0" != "/media/bootdisc/rootnix.sh" ]] && [[ -e "/media/bootdisc" ]]
 then
@@ -22765,6 +22765,14 @@ _test() {
 	_messageNormal "Dependency checking..."
 	
 	## Check dependencies
+	
+	# WARNING: Although '#!/usr/bin/env bash' is used as header when possible, some high-speed 'heredoc' scripts may instead rely on '#!/bin/bash' or '#!/bin/dash' to ensure performance. For these important use cases, the typical '/bin/bash' and '/bin/dash' binary locations are required.
+	_getDep /bin/bash
+	! [[ -e /bin/bash ]] && echo '/bin/bash missing'
+	! [[ -x /bin/bash ]] && echo '/bin/bash nonexecutable'
+	_getDep /bin/dash
+	! [[ -e /bin/dash ]] && echo '/bin/dash missing'
+	! [[ -x /bin/dash ]] && echo '/bin/dash nonexecutable'
 	
 	#"generic/filesystem"/permissions.sh
 	_checkDep stat

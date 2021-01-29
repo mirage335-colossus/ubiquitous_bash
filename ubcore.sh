@@ -8614,6 +8614,14 @@ _test() {
 	
 	## Check dependencies
 	
+	# WARNING: Although '#!/usr/bin/env bash' is used as header when possible, some high-speed 'heredoc' scripts may instead rely on '#!/bin/bash' or '#!/bin/dash' to ensure performance. For these important use cases, the typical '/bin/bash' and '/bin/dash' binary locations are required.
+	_getDep /bin/bash
+	! [[ -e /bin/bash ]] && echo '/bin/bash missing'
+	! [[ -x /bin/bash ]] && echo '/bin/bash nonexecutable'
+	_getDep /bin/dash
+	! [[ -e /bin/dash ]] && echo '/bin/dash missing'
+	! [[ -x /bin/dash ]] && echo '/bin/dash nonexecutable'
+	
 	#"generic/filesystem"/permissions.sh
 	_checkDep stat
 	

@@ -17,7 +17,7 @@ CZXWXcRMTo8EmM8i4d
 
 _here_bootdisc_rootnix() {
 cat << 'CZXWXcRMTo8EmM8i4d'
-#!/bin/bash
+#!/usr/bin/env bash
 
 if [[ "$0" != "/media/bootdisc/rootnix.sh" ]] && [[ -e "/media/bootdisc" ]]
 then
