@@ -20,6 +20,7 @@ cygstart --action=runas "$@"
 #https://codingwithspike.wordpress.com/2012/08/02/making-a-truly-portable-cygwin-install-working-around-drive-letter-and-file-permission-issues/
 
 
-
+https://en.wikipedia.org/wiki/Shebang_(Unix)
+'python3 -c will be passed as one argument to /usr/bin/env, rather than two arguments. Cygwin also behaves this way.'
 
 
