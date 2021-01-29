@@ -102,6 +102,7 @@ https://en.wikipedia.org/wiki/Shared_memory
 
 
 http://compgroups.net/comp.linux.development.system/-dev-fanout-a-one-to-many-multi/2869739
+```
 	Fanout is a module that replicates its input out to all processes reading from it.
 	...
 	That is better to do in userspace using sockets or pipes.
@@ -117,16 +118,21 @@ http://compgroups.net/comp.linux.development.system/-dev-fanout-a-one-to-many-mu
 	Write an extended tee(1) which you can talk to and reconfigure on the
 	fly (over an AF_UNIX socket. say). There's still no need for nor
 	advantage in doing this in-kernel.
-
+```
 
 https://hackaday.io/project/279-sonomkr-noise-monitoring/log/86364-zeromq-vs-dbus-for-pub-sub-pattern
+```
 	Booom ! I was publishing messages on a tcp port.
+```
 
 https://www.ontrack.com/en-us/blog/how-long-do-ssds-really-last
+```
 	Samsung states that their Samsung SSD 850 PRO SATA, with a capacity of 128 GB, 256 GB, 512 or 1 TB,  is "built to handle 150 terabytes written (TBW), which equates to a 40 GB daily read/write workload over a ten-year period."  Samsung even promises that the product is "withstanding up to 600 terabytes written (TBW)."
+```
 
 
 https://svn.nmap.org/nmap/nmap-services
+```
 	6391...
 		unknown	6395/udp	0.000661
 		crystalenterprise	6401/tcp	0.000050	# Seagate Crystal Enterprise | boe-was
@@ -138,7 +144,7 @@ https://svn.nmap.org/nmap/nmap-services
 		proactivate	24678/tcp	0.000000	# Turbopower Proactivate
 		proactivate	24678/udp	0.000000	# Turbopower Proactivate
 		unknown	24679/udp	0.000654
-
+```
 
 
 
