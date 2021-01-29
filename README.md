@@ -60,9 +60,9 @@ In most user environments, the latest git repository code will provide the stron
 # Future Work
 * Ongoing evaluation of 'deprecated' , 'obsolete' , or otherwise less than known to be compatible with modern and future versions of "bash" .
 
-* Demonstrate backgrounding in _main as a means to launch multiple daemonized services under control of a single script instance.
+* Demonstrate ability to preserve less dependable SSDs (ie. typical SD Cards) by automatically detecting usable '/dev/shm' as "$metaDir" (derived from "$metaTmp") location.
 
-* Portable Cygwin installation for MSW hosts.
+* Demonstrate backgrounding in _main as a means to launch multiple daemonized services under control of a single script instance.
 
 * Self-contained SAMBA server would provide useful virtualization compatibility guarantees if tightly integrated. QEMU seems to already include a solution using similar methods.
 
