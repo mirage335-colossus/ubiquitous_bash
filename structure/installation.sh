@@ -5,8 +5,179 @@ _vector() {
 	_tryExec "_vector_virtUser"
 }
 
+
+
+
+# https://stackoverflow.com/questions/4774358/get-mtime-of-specific-file-using-bash
+_test_selfTime_sequence() {
+	_start
+	
+	local iterations
+	
+	local dateA
+	local dateB
+	local dateDelta
+	
+	
+	iterations=0
+	while [[ "$iterations" -lt 4 ]]
+	do
+		dateA=$(date +%s)
+		! "$scriptAbsoluteLocation" _true && _messageFAIL && _stop 1
+		"$scriptAbsoluteLocation" _false && _messageFAIL && _stop 1
+		dateB=$(date +%s)
+		
+		dateDelta=$(bc <<< "$dateB - $dateA")
+		#echo "$dateDelta"
+		
+		if [[ "$dateDelta" -lt 0 ]]
+		then
+			_messageFAIL
+			_stop 1
+		fi
+		
+		if [[ "$dateDelta" -gt 8 ]]
+		then
+			_messageFAIL
+			_stop 1
+		fi
+		
+		let iterations="$iterations + 1"
+	done
+	
+	_stop 0
+}
+
+_test_selfTime() {
+	"$scriptAbsoluteLocation" _test_selfTime_sequence "$@"
+}
+
+
+_test_bashTime_sequence() {
+	_start
+	
+	local iterations
+	
+	local dateA
+	local dateB
+	local dateDelta
+	
+	
+	iterations=0
+	while [[ "$iterations" -lt 4 ]]
+	do
+		dateA=$(date +%s)
+		! echo 'echo fake interactive' | bash -i > /dev/null 2>&1 && _messageFAIL && _stop 1
+		echo 'false' | bash -i > /dev/null 2>&1 && _messageFAIL && _stop 1
+		dateB=$(date +%s)
+		
+		dateDelta=$(bc <<< "$dateB - $dateA")
+		#echo "$dateDelta"
+		
+		if [[ "$dateDelta" -lt 0 ]]
+		then
+			_messageFAIL
+			_stop 1
+		fi
+		
+		if [[ "$dateDelta" -gt 8 ]]
+		then
+			_messageFAIL
+			_stop 1
+		fi
+		
+		let iterations="$iterations + 1"
+	done
+	
+	_stop 0
+}
+
+_test_bashTime() {
+	"$scriptAbsoluteLocation" _test_bashTime_sequence "$@"
+}
+
+
+# https://stackoverflow.com/questions/4774358/get-mtime-of-specific-file-using-bash
+_test_filemtime_sequence() {
+	_start
+	
+	local iterations
+	
+	local currentFileMtimeA
+	local currentFileMtimeB
+	local currentFileMtimeDelta
+	
+	
+	iterations=0
+	while [[ "$iterations" -lt 3 ]]
+	do
+		echo > "$safeTmp"/test_filemtime
+		currentFileMtimeA=$(stat -c %Y "$safeTmp"/test_filemtime)
+		sleep 2
+		touch "$safeTmp"/test_filemtime
+		currentFileMtimeB=$(stat -c %Y "$safeTmp"/test_filemtime)
+		
+		currentFileMtimeDelta=$(bc <<< "$currentFileMtimeB - $currentFileMtimeA")
+		#echo "$currentFileMtimeDelta"
+		
+		if [[ "$currentFileMtimeDelta" -lt 1 ]]
+		then
+			_messageFAIL
+			_stop 1
+		fi
+		
+		if [[ "$currentFileMtimeDelta" -gt 4 ]]
+		then
+			_messageFAIL
+			_stop 1
+		fi
+		
+		let iterations="$iterations + 1"
+	done
+	
+	
+	iterations=0
+	while [[ "$iterations" -lt 3 ]]
+	do
+		echo > "$safeTmp"/test_filemtime
+		currentFileMtimeA=$(stat -c %Y "$safeTmp"/test_filemtime)
+		sleep 2
+		echo 'x' >> "$safeTmp"/test_filemtime
+		currentFileMtimeB=$(stat -c %Y "$safeTmp"/test_filemtime)
+		
+		currentFileMtimeDelta=$(bc <<< "$currentFileMtimeB - $currentFileMtimeA")
+		#echo "$currentFileMtimeDelta"
+		
+		if [[ "$currentFileMtimeDelta" -lt 1 ]]
+		then
+			_messageFAIL
+			_stop 1
+		fi
+		
+		if [[ "$currentFileMtimeDelta" -gt 4 ]]
+		then
+			_messageFAIL
+			_stop 1
+		fi
+		
+		let iterations="$iterations + 1"
+	done
+	
+	_stop 0
+}
+
+_test_filemtime() {
+	"$scriptAbsoluteLocation" _test_filemtime_sequence "$@"
+}
+
+
 #Verifies the timeout and sleep commands work properly, with subsecond specifications.
 _timetest() {
+	
+	local iterations
+	local dateA
+	local dateB
+	local dateDelta
 	
 	iterations=0
 	while [[ "$iterations" -lt 10 ]]
@@ -59,13 +230,79 @@ _testarglength() {
 	if [[ "$testArgLength" -lt 131071 ]]
 	then
 		# Typical Cygwin. Marginal result at best.
-		[[ "$testArgLength" -ge 32000 ]] && uname -a | grep -i 'cygwin' > /dev/null 2>&1 && return 0
+		[[ "$testArgLength" -ge 32000 ]] && uname -a | grep -i 'cygwin' > /dev/null 2>&1 && _messagePASS && return 0
 		
 		_messageFAIL && _stop 1
 	fi
 	
 	_messagePASS
 }
+
+
+
+_variableLocalTestA_procedure() {
+	local currentLocalA
+	currentLocalA='false'
+	[[ "$currentGlobalA" != 'true' ]] && _stop 1
+	[[ "$currentLocalA" == '' ]] && _stop 1
+	[[ "$currentLocalA" != 'false' ]] && _stop 1
+	
+	
+	return 0
+}
+
+_variableLocalTestB_procedure() {
+	[[ "$currentGlobalA" != 'true' ]] && return 1
+	[[ "$currentLocalA" != '' ]] && return 1
+	[[ "$currentLocalA" == 'true' ]] && return 1
+	
+	return 0
+}
+
+_variableLocalTestC_procedure() {
+	[[ "$currentGlobalA" != '' ]] && _stop 1
+	[[ "$currentGlobalA" == 'true' ]] && _stop 1
+	
+	return 0
+}
+
+_variableLocalTest_sequence() {
+	_start
+	
+	export currentGlobalA='true'
+	
+	local currentLocalA
+	currentLocalA='true'
+	[[ "$currentLocalA" != 'true' ]] && _stop 1
+	! _variableLocalTestA_procedure && _stop 1
+	[[ "$currentLocalB" != '' ]] && _stop 1
+	[[ "$currentLocalB" == 'true' ]] && _stop 1
+	
+	_variableLocalTestB_procedure && _stop 1
+	! "$scriptAbsoluteLocation" _variableLocalTestB_procedure && _stop 1
+	
+	local currentGlobalA
+	! _variableLocalTestC_procedure && _stop 1
+	
+	export currentGlobalB='false'
+	local currentGlobalB='true'
+	[[ "$currentGlobalB" != 'true' ]] && _stop 1
+	
+	local currentLocalB='true'
+	[[ "$currentLocalB" != 'true' ]] && _stop 1
+	
+	_stop
+}
+
+
+_variableLocalTest() {
+	if "$scriptAbsoluteLocation" _variableLocalTest_sequence "$@"
+	then
+		return 0
+	fi
+	return 1
+}
+
 
 _uid_test() {
 	local current_uid_1
@@ -224,6 +461,8 @@ _test_sanity() {
 	
 	_define_function_test
 	
+	! _variableLocalTest && _messageFAIL && return 1
+	
 	
 	
 	# WARNING: Not tested by default, due to lack of use except where faults are tolerable, and slim possibility of useful embedded systems not able to pass.
@@ -294,6 +533,9 @@ _test() {
 	_messagePASS
 	
 	echo -n -e '\E[1;32;46m Timing...		\E[0m'
+	_test_selfTime
+	_test_bashTime
+	_test_filemtime
 	_timetest
 	
 	_messageNormal "Dependency checking..."
@@ -346,6 +588,7 @@ _test() {
 	_getDep printf
 	
 	_getDep stat
+	_getDep touch
 	
 	_getDep dd
 	
