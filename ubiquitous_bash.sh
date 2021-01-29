@@ -22244,7 +22244,7 @@ _test_selfTime_sequence() {
 	
 	
 	iterations=0
-	while [[ "$iterations" -lt 4 ]]
+	while [[ "$iterations" -lt 3 ]]
 	do
 		dateA=$(date +%s)
 		! "$scriptAbsoluteLocation" _true && _messageFAIL && _stop 1
@@ -22260,7 +22260,7 @@ _test_selfTime_sequence() {
 			_stop 1
 		fi
 		
-		if [[ "$dateDelta" -gt 8 ]]
+		if [[ "$dateDelta" -gt 14 ]]
 		then
 			_messageFAIL
 			_stop 1
@@ -22288,7 +22288,7 @@ _test_bashTime_sequence() {
 	
 	
 	iterations=0
-	while [[ "$iterations" -lt 4 ]]
+	while [[ "$iterations" -lt 3 ]]
 	do
 		dateA=$(date +%s)
 		! echo 'echo fake interactive' | bash -i > /dev/null 2>&1 && _messageFAIL && _stop 1
@@ -22304,7 +22304,7 @@ _test_bashTime_sequence() {
 			_stop 1
 		fi
 		
-		if [[ "$dateDelta" -gt 8 ]]
+		if [[ "$dateDelta" -gt 14 ]]
 		then
 			_messageFAIL
 			_stop 1
@@ -22350,7 +22350,7 @@ _test_filemtime_sequence() {
 			_stop 1
 		fi
 		
-		if [[ "$currentFileMtimeDelta" -gt 4 ]]
+		if [[ "$currentFileMtimeDelta" -gt 12 ]]
 		then
 			_messageFAIL
 			_stop 1
@@ -22378,7 +22378,7 @@ _test_filemtime_sequence() {
 			_stop 1
 		fi
 		
-		if [[ "$currentFileMtimeDelta" -gt 4 ]]
+		if [[ "$currentFileMtimeDelta" -gt 12 ]]
 		then
 			_messageFAIL
 			_stop 1
@@ -22386,6 +22386,33 @@ _test_filemtime_sequence() {
 		
 		let iterations="$iterations + 1"
 	done
+	
+	
+	iterations=0
+	while [[ "$iterations" -lt 3 ]]
+	do
+		if ! rm -f "$safeTmp"/test_filemtime
+		then
+			_messageFAIL
+			_stop 1
+		fi
+		echo > "$safeTmp"/test_filemtime
+		if ! find "$safeTmp"/ -type f -mmin 0.19 | grep test_filemtime > /dev/null 2>&1
+		then
+			_messageFAIL
+			_stop 1
+		fi
+		
+		sleep 16
+		if find "$safeTmp"/ -type f -mmin 0.19 | grep test_filemtime > /dev/null 2>&1
+		then
+			_messageFAIL
+			_stop 1
+		fi
+		
+		let iterations="$iterations + 1"
+	done
+	
 	
 	_stop 0
 }
@@ -22757,9 +22784,9 @@ _test() {
 	_messagePASS
 	
 	echo -n -e '\E[1;32;46m Timing...		\E[0m'
-	_test_selfTime
-	_test_bashTime
-	_test_filemtime
+	! _test_selfTime && echo '_test_selfTime broken' && _stop 1
+	! _test_bashTime && echo '_test_selfTime broken' && _stop 1
+	! _test_filemtime && echo '_test_selfTime broken' && _stop 1
 	_timetest
 	
 	_messageNormal "Dependency checking..."
@@ -22768,11 +22795,11 @@ _test() {
 	
 	# WARNING: Although '#!/usr/bin/env bash' is used as header when possible, some high-speed 'heredoc' scripts may instead rely on '#!/bin/bash' or '#!/bin/dash' to ensure performance. For these important use cases, the typical '/bin/bash' and '/bin/dash' binary locations are required.
 	_getDep /bin/bash
-	! [[ -e /bin/bash ]] && echo '/bin/bash missing'
-	! [[ -x /bin/bash ]] && echo '/bin/bash nonexecutable'
+	! [[ -e /bin/bash ]] && echo '/bin/bash missing' && _stop 1
+	! [[ -x /bin/bash ]] && echo '/bin/bash nonexecutable' && _stop 1
 	_getDep /bin/dash
-	! [[ -e /bin/dash ]] && echo '/bin/dash missing'
-	! [[ -x /bin/dash ]] && echo '/bin/dash nonexecutable'
+	! [[ -e /bin/dash ]] && echo '/bin/dash missing' && _stop 1
+	! [[ -x /bin/dash ]] && echo '/bin/dash nonexecutable' && _stop 1
 	
 	#"generic/filesystem"/permissions.sh
 	_checkDep stat
