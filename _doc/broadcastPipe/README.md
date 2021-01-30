@@ -190,4 +190,4 @@ https://en.wikipedia.org/wiki/I%C2%B2C
 https://electronics.stackexchange.com/questions/199256/i2c-multiple-master-collision
 
 
-
+https://pid.codes/1209/
