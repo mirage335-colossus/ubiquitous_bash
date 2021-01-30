@@ -361,10 +361,12 @@ _variableLocalTest_sequence() {
 	[[ "$currentLocalC" != 'true' ]] && _stop 1
 	
 	
+	local currentBashBinLocation
+	currentBashBinLocation=$(type -p bash)
 	[[ "$sessionid" == '' ]] &&  _stop 1
-	! env -i sessionid="$sessionid" bash -c '[[ "$sessionid" != "" ]]' && _stop 1
-	env -i sessionid="" bash -c '[[ "$sessionid" != "" ]]' && _stop 1
-	env -i bash -c '[[ "$sessionid" != "" ]]' && _stop 1
+	! env -i sessionid="$sessionid" "$currentBashBinLocation" -c '[[ "$sessionid" != "" ]]' && _stop 1
+	env -i sessionid="" "$currentBashBinLocation" -c '[[ "$sessionid" != "" ]]' && _stop 1
+	env -i "$currentBashBinLocation" -c '[[ "$sessionid" != "" ]]' && _stop 1
 	
 	_stop
 }
