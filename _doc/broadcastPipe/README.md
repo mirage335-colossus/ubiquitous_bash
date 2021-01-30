@@ -91,7 +91,7 @@ socat - tcp:localhost:1237
 ```
 
 
-# Speculation - Peripherial Identification
+# Speculation - Peripheral Identification
 
 Microcontroller, FPGA, and network devices, may not have a 'serial' interface with sufficient bandwidth to receive all messages. Such devices will be connected to a 'filter' program. Such a 'filter' program will either announce a FIFO pipe file, announce a character device (ie. /dev/tty'), packet filter traffic to/from shared bus with 'identifier string' as address, or forward all shared bus traffic to/from peripherial.
 
@@ -110,7 +110,7 @@ If 'filter' program announces character device (ie. /dev/tty), some precautions 
 ## 3 Filter program detects usable 'identifier string', repeatedly replies '0-CEASEIDENTIFIER-0' .
 
 * Or quits after reasonable time interval.
-* Peripherial may also quit/reset after reasonable time interval if '0-CEASEIDENTIFIER-0' is not received. Obvious, dedicated, LED (or similar) indicator strongly recommended.
+* Peripheral may also quit/reset after reasonable time interval if '0-CEASEIDENTIFIER-0' is not received. Obvious, dedicated, LED (or similar) indicator strongly recommended.
 
 ## 4 Filter program detects no traffic .
 
@@ -120,7 +120,7 @@ If 'filter' program announces character device (ie. /dev/tty), some precautions 
 
 * If 'coop' '0x00' (default dedicated port), filter program should announce a FIFO pipe file or character device (ie. /dev/tty) file for direct connection. Such announcement may be done at a remote point using packet filtering across a shared bus with 'identifier string' as address.
 * If 'coop' '0xFF' (packet filtered), filter program should send packetized traffic to a shared bus with 'identifier string' as address, assuming a 'host' program somewhere on the bus will understand this.
-* If 'coop' '0xAA' (highly unusual for 'Limited Bandwidth Peripherial'), filter program begins forwarding all shared bus traffic to/from peripherial.
+* If 'coop' '0xAA' (highly unusual for 'Limited Bandwidth Peripheral'), filter program begins forwarding all shared bus traffic to/from peripherial.
 
 
 
