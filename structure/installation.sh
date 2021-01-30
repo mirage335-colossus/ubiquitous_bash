@@ -360,6 +360,12 @@ _variableLocalTest_sequence() {
 	local currentLocalC='true'
 	[[ "$currentLocalC" != 'true' ]] && _stop 1
 	
+	
+	[[ "$sessionid" == '' ]] &&  _stop 1
+	! env -i sessionid="$sessionid" bash -c '[[ "$sessionid" != "" ]]' && _stop 1
+	env -i sessionid="" bash -c '[[ "$sessionid" != "" ]]' && _stop 1
+	env -i bash -c '[[ "$sessionid" != "" ]]' && _stop 1
+	
 	_stop
 }
 
