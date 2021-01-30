@@ -191,6 +191,29 @@ then
 fi
 
 
+
+
+# Only production use is Inter-Process Communication (IPC) loops which may be theoretically impossible to make fully deterministic under Operating Systems which do not have hard-real-time kernels and/or may serve an unlimited number of processes.
+_here_header_bash_or_dash() {
+	if [[ -e /bin/dash ]]
+		then
+		
+cat << 'CZXWXcRMTo8EmM8i4d'
+#!/bin/dash
+
+CZXWXcRMTo8EmM8i4d
+	
+	else
+	
+cat << 'CZXWXcRMTo8EmM8i4d'
+#!/usr/bin/env bash
+
+CZXWXcRMTo8EmM8i4d
+
+	fi
+}
+
+
 #Override (Program).
 
 #Override, cygwin.
