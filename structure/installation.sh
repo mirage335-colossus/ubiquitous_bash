@@ -306,6 +306,11 @@ _variableLocalTestA_procedure() {
 	[[ "$currentLocalA" == '' ]] && _stop 1
 	[[ "$currentLocalA" != 'false' ]] && _stop 1
 	
+	local currentLocalB
+	currentLocalB='true'
+	
+	currentNotLocalA='true'
+	
 	
 	return 0
 }
@@ -334,8 +339,10 @@ _variableLocalTest_sequence() {
 	currentLocalA='true'
 	[[ "$currentLocalA" != 'true' ]] && _stop 1
 	! _variableLocalTestA_procedure && _stop 1
+	[[ "$currentLocalA" != 'true' ]] && _stop 1
 	[[ "$currentLocalB" != '' ]] && _stop 1
 	[[ "$currentLocalB" == 'true' ]] && _stop 1
+	[[ "$currentNotLocalA" != 'true' ]] && _stop 1
 	
 	_variableLocalTestB_procedure && _stop 1
 	! "$scriptAbsoluteLocation" _variableLocalTestB_procedure && _stop 1
@@ -349,6 +356,9 @@ _variableLocalTest_sequence() {
 	
 	local currentLocalB='true'
 	[[ "$currentLocalB" != 'true' ]] && _stop 1
+	
+	local currentLocalC='true'
+	[[ "$currentLocalC" != 'true' ]] && _stop 1
 	
 	_stop
 }
