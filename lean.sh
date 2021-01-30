@@ -4841,9 +4841,41 @@ _test_filemtime_sequence() {
 			_messageFAIL
 			_stop 1
 		fi
+		if ! find "$safeTmp"/ -type f -mmin -0.19 | grep test_filemtime > /dev/null 2>&1
+		then
+			_messageFAIL
+			_stop 1
+		fi
 		
 		sleep 16
 		if find "$safeTmp"/ -type f -mmin 0.19 | grep test_filemtime > /dev/null 2>&1
+		then
+			_messageFAIL
+			_stop 1
+		fi
+		if find "$safeTmp"/ -type f -mmin -0.19 | grep test_filemtime > /dev/null 2>&1
+		then
+			_messageFAIL
+			_stop 1
+		fi
+		
+		if ! find "$safeTmp"/ -type f -mmin 1 | grep test_filemtime > /dev/null 2>&1
+		then
+			_messageFAIL
+			_stop 1
+		fi
+		if find "$safeTmp"/ -type f -mmin 2 | grep test_filemtime > /dev/null 2>&1
+		then
+			_messageFAIL
+			_stop 1
+		fi
+		
+		if ! find "$safeTmp"/ -type f -mmin -1 | grep test_filemtime > /dev/null 2>&1
+		then
+			_messageFAIL
+			_stop 1
+		fi
+		if ! find "$safeTmp"/ -type f -mmin -2700 | grep test_filemtime > /dev/null 2>&1
 		then
 			_messageFAIL
 			_stop 1
