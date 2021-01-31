@@ -4755,6 +4755,8 @@ _test_bashTime_sequence() {
 		dateA=$(date +%s)
 		! echo 'echo fake interactive' | bash -i > /dev/null 2>&1 && _messageFAIL && _stop 1
 		echo 'false' | bash -i > /dev/null 2>&1 && _messageFAIL && _stop 1
+		! echo 'echo fake interactive' | dash -i > /dev/null 2>&1 && _messageFAIL && _stop 1
+		echo 'false' | dash -i > /dev/null 2>&1 && _messageFAIL && _stop 1
 		dateB=$(date +%s)
 		
 		dateDelta=$(bc <<< "$dateB - $dateA")
@@ -4913,6 +4915,76 @@ _test_filemtime_sequence() {
 
 _test_filemtime() {
 	"$scriptAbsoluteLocation" _test_filemtime_sequence "$@"
+}
+
+
+_test_timeoutRead_slowByteRead() {
+	while head --bytes=1
+	do
+		sleep 9
+		#sleep 2
+	done
+}
+
+_test_timeoutRead_multiByteRead() {
+	while head --bytes=3
+	do
+		true
+	done
+}
+
+_test_timeoutRead_bashRead() {
+	# Inaccurate. Tests with random data ('/dev/urandom') seem to show errors.
+	local currentString
+	export IFS=
+	export LANG=C
+	export LC_ALL=C
+	#LANG=C IFS= read -r -d '' -n 1 currentString
+	while read -r -d '' -n 1 currentString
+	do
+		#[ "$currentString" ] && echo -n "$currentString" || echo
+		[ "$currentString" ] && printf '%b' "$currentString" || echo
+	done
+}
+
+_test_timeoutRead_read() {
+	local currentIterations
+	currentIterations=0
+	while _timeout 0.1 cat 2>/dev/null && true | ([[ "$currentIterations" -lt "$1" ]])
+	do
+		true | (sleep 6 ; echo -n x)
+		#true | (sleep 1 ; echo -n x)
+		let currentIterations="$currentIterations"' + 1'
+	done
+}
+
+_test_timeoutRead_procedure() {
+	
+	# Applying 'timeout' to 'echo' may have no effect (presumably due to immediately filling pipe buffer).
+	# Applying 'timeout' to 'slowByteRead' should be able to limit the number of input characters. A 8s timeout at 3s/b read rate should apparently interrupt '12345' at '123'.
+	# Applying timeout to '_test_timeoutRead_read' should immediately terminate all processes in the processing chain (presumably due to pipe close).
+	
+	#_timeout 75 echo '12345' | _timeout 26 _test_timeoutRead_slowByteRead | _timeout 75 _test_timeoutRead_multiByteRead | _timeout 75 _test_timeoutRead_bashRead | _timeout 75 _test_timeoutRead_read 6
+	
+	_timeout 75 echo '12345' | _timeout 75 _test_timeoutRead_multiByteRead | _timeout 26 _test_timeoutRead_slowByteRead | _timeout 75 _test_timeoutRead_bashRead | _timeout 75 _test_timeoutRead_read 6
+	
+	
+	true
+}
+
+_test_timeoutRead() {
+	#true | "$scriptAbsoluteLocation" _test_timeoutRead_procedure "$@" | cat
+	#return 0
+	
+	local currentString
+	currentString=$(true | "$scriptAbsoluteLocation" _test_timeoutRead_procedure "$@" | cat)
+	#echo "$currentString"
+	
+	[[ "$currentString" == "" ]] && _stop 1
+	[[ "$currentString" != "1xx2x3xxx" ]] && _stop 1
+	[[ $(echo -n "$currentString" | wc -c) != '9' ]] && _stop 1
+	
+	return 0
 }
 
 
@@ -5336,9 +5408,15 @@ _test() {
 	_messagePASS
 	
 	echo -n -e '\E[1;32;46m Timing...		\E[0m'
+	echo
+	echo -e '\E[0;36m Timing: _test_selfTime \E[0m'
 	! _test_selfTime && echo '_test_selfTime broken' && _stop 1
+	echo -e '\E[0;36m Timing: _test_bashTime \E[0m'
 	! _test_bashTime && echo '_test_selfTime broken' && _stop 1
+	echo -e '\E[0;36m Timing: _test_filemtime \E[0m'
 	! _test_filemtime && echo '_test_selfTime broken' && _stop 1
+	echo -e '\E[0;36m Timing: _test_timeoutRead \E[0m'
+	! _test_timeoutRead && echo '_test_timeoutRead broken' && _stop 1
 	_timetest
 	
 	_messageNormal "Dependency checking..."
