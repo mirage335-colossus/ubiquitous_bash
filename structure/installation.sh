@@ -315,7 +315,7 @@ _timetest() {
 	local nsDateDelta
 	
 	iterations=0
-	while [[ "$iterations" -lt 10 ]]
+	while [[ "$iterations" -lt 5 ]]
 	do
 		dateA=$(date +%s)
 		nsDateA=$(date +%s%N)
@@ -381,6 +381,77 @@ _timetest() {
 			_messageFAIL
 			_stop 1
 		fi
+		
+		
+		
+		
+		dateA=$(date +%s)
+		nsDateA=$(date +%s%N)
+		
+		sleep .1
+		sleep .1
+		sleep .1
+		sleep .1
+		sleep .1
+		sleep .1
+		
+		_timeout .1 sleep 10
+		_timeout .1 sleep 10
+		_timeout .1 sleep 10
+		_timeout .1 sleep 10
+		_timeout .1 sleep 10
+		_timeout .1 sleep 10
+		
+		dateB=$(date +%s)
+		nsDateB=$(date +%s%N)
+		
+		dateDelta=$(bc <<< "$dateB - $dateA")
+		nsDateDelta=$(bc <<< "$nsDateB - $nsDateA")
+		
+		if [[ "$dateDelta" -lt "1" ]]
+		then
+			_messageFAIL
+			_stop 1
+		fi
+		
+		if [[ "$dateDelta" -gt "5" ]]
+		then
+			_messageFAIL
+			_stop 1
+		fi
+		
+		if [[ $(echo -e -n "$nsDateDelta" | wc -c) != '10' ]]
+		then
+			_messageFAIL
+			_stop 1
+		fi
+		
+		if [[ "$nsDateDelta" -lt '1000000000' ]]
+		then
+			_messageFAIL
+			_stop 1
+		fi
+		
+		if [[ $(echo "$nsDateDelta" | cut -b1-4) -lt 1000 ]]
+		then
+			_messageFAIL
+			_stop 1
+		fi
+		
+		if [[ "$nsDateDelta" -gt '5000000000' ]]
+		then
+			_messageFAIL
+			_stop 1
+		fi
+		
+		if [[ $(echo "$nsDateDelta" | cut -b1-4) -gt 5000 ]]
+		then
+			_messageFAIL
+			_stop 1
+		fi
+		
+		
+		
 		
 		let iterations="$iterations + 1"
 	done
@@ -609,6 +680,27 @@ _test_embed() {
 }
 
 _test_sanity() {
+	#! [[ -2147483648 -lt 2147483647 ]] && _messageFAIL && return 1
+	#! [[ -2000000000 -lt 2000000000 ]] && _messageFAIL && return 1
+	! [[ -900000000 -le -900000000 ]] && _messageFAIL && return 1
+	! [[ 900000000 -le 900000000 ]] && _messageFAIL && return 1
+	! [[ -900000000 -lt 900000000 ]] && _messageFAIL && return 1
+	! [[ -900000000 -ge -900000000 ]] && _messageFAIL && return 1
+	! [[ 900000000 -ge 900000000 ]] && _messageFAIL && return 1
+	! [[ 900000000 -gt -900000000 ]] && _messageFAIL && return 1
+	! [[ -900000000 -lt -0 ]] && _messageFAIL && return 1
+	! [[ -900000000 -lt 0 ]] && _messageFAIL && return 1
+	! [[ 0 -lt 900000000 ]] && _messageFAIL && return 1
+	! [[ -0 -gt -900000000 ]] && _messageFAIL && return 1
+	! [[ 0 -gt -900000000 ]] && _messageFAIL && return 1
+	! [[ 0 -gt -900000000 ]] && _messageFAIL && return 1
+	! [[ 0 -le -0 ]] && _messageFAIL && return 1
+	! [[ -0 -le 0 ]] && _messageFAIL && return 1
+	! [[ 0 -ge -0 ]] && _messageFAIL && return 1
+	! [[ -0 -ge 0 ]] && _messageFAIL && return 1
+	
+	
+	
 	! "$scriptAbsoluteLocation" _true && _messageFAIL && return 1
 	"$scriptAbsoluteLocation" _false && _messageFAIL && return 1
 	
