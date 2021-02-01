@@ -5,6 +5,10 @@ Hardware bus may be as simple as a shared pair of wires with clients responsible
 
 As an example, a program should be able to create new program instances (eg. Klipper 3D printer firmware running in a Virtual Machine, simulated motors, etc) with unique names and emulated serial ports connected to this bus, thereafter being able to learn whether bootup was successful, what IP address had been assigned, and, possibly across another emulated serial port connected to a separate bus, communicate further (possibly interactive user-input to diagnose 3D printer firmware behavior).
 
+Beware, applications requiring >100KiB/s or <9s latency Inter-Process Communication (IPC) messaging should not be using a system-wide bus unless through a hard-realtime-OS with limited numbers of running processes!
+
+In practice, a typical UNIX/MSW computer with many more processors than processes and SSD storage can usually achieve <16ms latency at ~100% CPU and ~100% GPU load, barely sufficient to mostly maintain 60Hz frame rates with triple buffering. Usually, this is adequate for robotics (eg. 3D printer) control and interactive applications (eg. desktop environment, video playback, games, etc).
+
 _
 
 
