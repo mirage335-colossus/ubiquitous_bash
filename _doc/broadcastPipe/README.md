@@ -7,6 +7,8 @@ As an example, a program should be able to create new program instances (eg. Kli
 
 Beware, applications requiring >100KiB/s or <9s latency Inter-Process Communication (IPC) messaging should not be using a system-wide bus unless through a hard-realtime-OS with limited numbers of running processes!
 
+Instead, such a system-wide messaging bus should be used to announce another means - ideally perhaps thread-to-thread - of exchanging high-speed data.
+
 In practice, a typical UNIX/MSW computer with many more processors than processes and SSD storage can usually achieve <16ms latency at ~100% CPU and ~100% GPU load, barely sufficient to mostly maintain 60Hz frame rates with triple buffering. Usually, this is adequate for robotics (eg. 3D printer) control and interactive applications (eg. desktop environment, video playback, games, etc).
 
 _
