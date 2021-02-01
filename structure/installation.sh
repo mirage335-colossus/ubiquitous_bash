@@ -241,7 +241,8 @@ _test_timeoutRead_slowByteRead() {
 }
 
 _test_timeoutRead_multiByteRead() {
-	while head --bytes=3
+	#while head --bytes=3
+	while dd bs="3" count=1 2>/dev/null
 	do
 		true
 	done
