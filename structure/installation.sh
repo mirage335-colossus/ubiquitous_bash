@@ -316,7 +316,8 @@ _timetest() {
 	local nsDateDelta
 	
 	iterations=0
-	while [[ "$iterations" -lt 5 ]]
+	#while false && [[ "$iterations" -lt 3 ]]
+	while [[ "$iterations" -lt 3 ]]
 	do
 		dateA=$(date +%s)
 		nsDateA=$(date +%s%N)
@@ -365,23 +366,24 @@ _timetest() {
 			_stop 1
 		fi
 		
-		if [[ $(echo "$nsDateDelta" | cut -b1-4) -lt 1000 ]]
+		if [[ $(echo -e -n "$nsDateDelta" | cut -b1-4) -lt 1000 ]]
 		then
 			_messageFAIL
 			_stop 1
 		fi
 		
-		if [[ "$nsDateDelta" -gt '5000000000' ]]
+		if [[ $(echo -e -n "$nsDateDelta" | cut -b1-8) -gt '50000000' ]]
 		then
 			_messageFAIL
 			_stop 1
 		fi
 		
-		if [[ $(echo "$nsDateDelta" | cut -b1-4) -gt 5000 ]]
+		if [[ $(echo -e -n "$nsDateDelta" | cut -b1-4) -gt 5000 ]]
 		then
 			_messageFAIL
 			_stop 1
 		fi
+		
 		
 		
 		
@@ -389,19 +391,19 @@ _timetest() {
 		dateA=$(date +%s)
 		nsDateA=$(date +%s%N)
 		
-		sleep .1
-		sleep .1
-		sleep .1
-		sleep .1
-		sleep .1
-		sleep .1
+		sleep 0.123
+		sleep 0.123
+		sleep 0.123
+		sleep 0.123
+		sleep 0.123
+		sleep 0.123
 		
-		_timeout .1 sleep 10
-		_timeout .1 sleep 10
-		_timeout .1 sleep 10
-		_timeout .1 sleep 10
-		_timeout .1 sleep 10
-		_timeout .1 sleep 10
+		_timeout 0.123 sleep 10
+		_timeout 0.123 sleep 10
+		_timeout 0.123 sleep 10
+		_timeout 0.123 sleep 10
+		_timeout 0.123 sleep 10
+		_timeout 0.123 sleep 10
 		
 		dateB=$(date +%s)
 		nsDateB=$(date +%s%N)
@@ -433,19 +435,87 @@ _timetest() {
 			_stop 1
 		fi
 		
-		if [[ $(echo "$nsDateDelta" | cut -b1-4) -lt 1000 ]]
+		if [[ $(echo -e -n "$nsDateDelta" | cut -b1-4) -lt 1000 ]]
 		then
 			_messageFAIL
 			_stop 1
 		fi
 		
-		if [[ "$nsDateDelta" -gt '5000000000' ]]
+		if [[ $(echo -e -n "$nsDateDelta" | cut -b1-8) -gt '50000000' ]]
 		then
 			_messageFAIL
 			_stop 1
 		fi
 		
-		if [[ $(echo "$nsDateDelta" | cut -b1-4) -gt 5000 ]]
+		if [[ $(echo -e -n "$nsDateDelta" | cut -b1-4) -gt 5000 ]]
+		then
+			_messageFAIL
+			_stop 1
+		fi
+		
+		
+		
+		
+		dateA=$(date +%s)
+		nsDateA=$(date +%s%N)
+		
+		sleep .123
+		sleep .123
+		sleep .123
+		sleep .123
+		sleep .123
+		sleep .123
+		
+		_timeout .123 sleep 10
+		_timeout .123 sleep 10
+		_timeout .123 sleep 10
+		_timeout .123 sleep 10
+		_timeout .123 sleep 10
+		_timeout .123 sleep 10
+		
+		dateB=$(date +%s)
+		nsDateB=$(date +%s%N)
+		
+		dateDelta=$(bc <<< "$dateB - $dateA")
+		nsDateDelta=$(bc <<< "$nsDateB - $nsDateA")
+		
+		if [[ "$dateDelta" -lt "1" ]]
+		then
+			_messageFAIL
+			_stop 1
+		fi
+		
+		if [[ "$dateDelta" -gt "5" ]]
+		then
+			_messageFAIL
+			_stop 1
+		fi
+		
+		if [[ $(echo -e -n "$nsDateDelta" | wc -c) != '10' ]]
+		then
+			_messageFAIL
+			_stop 1
+		fi
+		
+		if [[ "$nsDateDelta" -lt '1000000000' ]]
+		then
+			_messageFAIL
+			_stop 1
+		fi
+		
+		if [[ $(echo -e -n "$nsDateDelta" | cut -b1-4) -lt 1000 ]]
+		then
+			_messageFAIL
+			_stop 1
+		fi
+		
+		if [[ $(echo -e -n "$nsDateDelta" | cut -b1-8) -gt '50000000' ]]
+		then
+			_messageFAIL
+			_stop 1
+		fi
+		
+		if [[ $(echo -e -n "$nsDateDelta" | cut -b1-4) -gt 5000 ]]
 		then
 			_messageFAIL
 			_stop 1
@@ -456,6 +526,110 @@ _timetest() {
 		
 		let iterations="$iterations + 1"
 	done
+	
+	
+	local nsDateC
+	local nsDateD
+	local nsDateDeltaA
+	local nsDateDeltaB
+	local msIterations
+	
+	if uname -a | grep -i 'cygwin' > /dev/null 2>&1
+	then
+		nsDateA=$(date +%s%N)
+		for msIterations in {1..100}
+		do
+			sleep 0.011
+		done
+		nsDateB=$(date +%s%N)
+		
+		#nsDateC=$(date +%s%N)
+		nsDateC="$nsDateB"
+		for msIterations in {1..100}
+		do
+			sleep 0.091
+		done
+		nsDateD=$(date +%s%N)
+		
+		nsDateDeltaA=$(bc <<< "$nsDateB - $nsDateA")
+		nsDateDeltaB=$(bc <<< "$nsDateD - $nsDateC")
+		nsDateDelta=$(bc <<< "$nsDateDeltaB - $nsDateDeltaA")
+		
+		#echo "$nsDateDelta"
+		
+		
+		
+		if [[ $(echo -e -n "$nsDateDelta" | cut -b1-8) -lt '10000000' ]]
+		then
+			_messageFAIL
+			_stop 1
+		fi
+		if [[ $(echo -e -n "$nsDateDelta" | cut -b1-8) -gt '640000000' ]]
+		then
+			_messageFAIL
+			_stop 1
+		fi
+		
+		if [[ $(echo -e -n "$nsDateDelta" | cut -b1-4) -lt '1000' ]]
+		then
+			_messageFAIL
+			_stop 1
+		fi
+		if [[ $(echo -e -n "$nsDateDelta" | cut -b1-4) -gt '64000' ]]
+		then
+			_messageFAIL
+			_stop 1
+		fi
+	else
+		nsDateA=$(date +%s%N)
+		for msIterations in {1..100}
+		do
+			sleep 0.001
+		done
+		nsDateB=$(date +%s%N)
+		
+		#nsDateC=$(date +%s%N)
+		nsDateC="$nsDateB"
+		for msIterations in {1..100}
+		do
+			sleep 0.009
+		done
+		nsDateD=$(date +%s%N)
+		
+		nsDateDeltaA=$(bc <<< "$nsDateB - $nsDateA")
+		nsDateDeltaB=$(bc <<< "$nsDateD - $nsDateC")
+		nsDateDelta=$(bc <<< "$nsDateDeltaB - $nsDateDeltaA")
+		
+		#echo "$nsDateDelta"
+		
+		
+		
+		if [[ $(echo -e -n "$nsDateDelta" | cut -b1-8) -lt '10000000' ]]
+		then
+			_messageFAIL
+			_stop 1
+		fi
+		if [[ $(echo -e -n "$nsDateDelta" | cut -b1-8) -gt '640000000' ]]
+		then
+			_messageFAIL
+			_stop 1
+		fi
+		
+		if [[ $(echo -e -n "$nsDateDelta" | cut -b1-4) -lt '1000' ]]
+		then
+			_messageFAIL
+			_stop 1
+		fi
+		if [[ $(echo -e -n "$nsDateDelta" | cut -b1-4) -gt '64000' ]]
+		then
+			_messageFAIL
+			_stop 1
+		fi
+	fi
+	
+	
+	
+	
 	_messagePASS
 	return 0
 }
@@ -683,6 +857,20 @@ _test_embed() {
 _test_sanity() {
 	#! [[ -2147483648 -lt 2147483647 ]] && _messageFAIL && return 1
 	#! [[ -2000000000 -lt 2000000000 ]] && _messageFAIL && return 1
+	
+	! [[ -1234567890 -le -1234567890 ]] && _messageFAIL && return 1
+	! [[ 1234567890 -le 1234567890 ]] && _messageFAIL && return 1
+	! [[ -1234567890 -lt 1234567890 ]] && _messageFAIL && return 1
+	! [[ -1234567890 -ge -1234567890 ]] && _messageFAIL && return 1
+	! [[ 1234567890 -ge 1234567890 ]] && _messageFAIL && return 1
+	! [[ 1234567890 -gt -1234567890 ]] && _messageFAIL && return 1
+	! [[ -1234567890 -lt -0 ]] && _messageFAIL && return 1
+	! [[ -1234567890 -lt 0 ]] && _messageFAIL && return 1
+	! [[ 0 -lt 1234567890 ]] && _messageFAIL && return 1
+	! [[ -0 -gt -1234567890 ]] && _messageFAIL && return 1
+	! [[ 0 -gt -1234567890 ]] && _messageFAIL && return 1
+	! [[ 0 -gt -1234567890 ]] && _messageFAIL && return 1
+	
 	! [[ -900000000 -le -900000000 ]] && _messageFAIL && return 1
 	! [[ 900000000 -le 900000000 ]] && _messageFAIL && return 1
 	! [[ -900000000 -lt 900000000 ]] && _messageFAIL && return 1
@@ -824,7 +1012,8 @@ _test() {
 	! _test_filemtime && echo '_test_selfTime broken' && _stop 1
 	echo -e '\E[0;36m Timing: _test_timeoutRead \E[0m'
 	! _test_timeoutRead && echo '_test_timeoutRead broken' && _stop 1
-	_timetest
+	echo -e '\E[0;36m Timing: _timetest \E[0m'
+	! _timetest && echo '_timetest broken' && _stop 1
 	
 	_messageNormal "Dependency checking..."
 	
