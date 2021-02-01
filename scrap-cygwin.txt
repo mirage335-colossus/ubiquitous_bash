@@ -24,3 +24,16 @@ https://en.wikipedia.org/wiki/Shebang_(Unix)
 'python3 -c will be passed as one argument to /usr/bin/env, rather than two arguments. Cygwin also behaves this way.'
 
 
+https://stackoverflow.com/questions/6811435/why-does-cygwin-execute-shell-commands-very-slowly
+time for i in {1..1000} ; do echo "Hello" ; done
+...
+Hello
+Hello
+
+real    0m0.584s
+user    0m0.031s
+sys     0m0.000s
+
+
+
+
