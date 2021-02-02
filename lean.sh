@@ -4324,7 +4324,8 @@ _stop() {
 	# https://stackoverflow.com/questions/360201/how-do-i-kill-background-processes-jobs-when-my-shell-script-exits
 	local currentStopJobs
 	currentStopJobs=$(jobs -p -r 2> /dev/null)
-	[[ "$currentStopJobs" != "" ]] && kill "$currentStopJobs" > /dev/null 2>&1
+	# WARNING: Although usually bad practice, it is useful for the spaces between PIDs to be interpreted in this case.
+	[[ "$currentStopJobs" != "" ]] && kill $currentStopJobs > /dev/null 2>&1
 	
 	_stop_stty_echo
 	if [[ "$1" != "" ]]
