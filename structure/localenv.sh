@@ -117,6 +117,7 @@ _stop() {
 	local currentStopJobs
 	currentStopJobs=$(jobs -p -r 2> /dev/null)
 	# WARNING: Although usually bad practice, it is useful for the spaces between PIDs to be interpreted in this case.
+	# DANGER: Apparently, it is possible for some not running background jobs to be included in the PID list.
 	[[ "$currentStopJobs" != "" ]] && kill $currentStopJobs > /dev/null 2>&1
 	
 	_stop_stty_echo
