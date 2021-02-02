@@ -9018,7 +9018,10 @@ _test_sanity() {
 	
 	echo 'true' > "$safeTmp"/shouldNotOverwrite
 	mv "$safeTmp"/doesNotExist "$safeTmp"/shouldNotOverwrite > /dev/null 2>&1 && _messageFAIL && return 1
+	echo > "$safeTmp"/replacement
+	mv -n "$safeTmp"/replacement "$safeTmp"/shouldNotOverwrite > /dev/null 2>&1
 	[[ $(cat "$safeTmp"/shouldNotOverwrite) != "true" ]] && _messageFAIL && return 1
+	rm -f "$safeTmp"/replacement > /dev/null 2>&1
 	rm -f "$safeTmp"/shouldNotOverwrite > /dev/null 2>&1
 	
 	
