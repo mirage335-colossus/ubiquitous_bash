@@ -6345,8 +6345,12 @@ then
 	trap 'excode=$?; _stop $excode; trap - EXIT; echo $excode' EXIT HUP QUIT PIPE 	# reset
 	trap 'excode=$?; trap "" EXIT; _stop $excode; echo $excode' EXIT HUP QUIT PIPE 	# ignore
 	
-	trap 'excode=$?; _stop_emergency $excode; trap - EXIT; echo $excode' INT TERM	# reset
-	trap 'excode=$?; trap "" EXIT; _stop_emergency $excode; echo $excode' INT TERM	# ignore
+	if [[ "$ub_trapSet_stop_emergency" != 'true' ]]
+	then
+		trap 'excode=$?; _stop_emergency $excode; trap - EXIT; echo $excode' INT TERM	# reset
+		trap 'excode=$?; trap "" EXIT; _stop_emergency $excode; echo $excode' INT TERM	# ignore
+		export ub_trapSet_stop_emergency='true'
+	fi
 fi
 
 # DANGER: NEVER intended to be set in an end user shell for ANY reason.
