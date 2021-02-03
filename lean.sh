@@ -4174,7 +4174,655 @@ export ub_anchor_autoupgrade
 
 
 
-#test
+# ATTENTION: EXAMPLE
+
+#_demand_broadcastPipe_page ./inputBufferDir ./outputBufferDir '100'
+#_terminate_broadcastPipe_page ./inputBufferDir
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# "$1" == inputBufferDir
+# "$2" == inputFilesPrefix
+# "$3" == maxTime (approximately how many milliseconds buffer should be checked for new data)
+# "$4" == maxBytes (IGNORED)
+# "$ub_force_limit_page_rate"
+#	'' == Write new pages as fast as buffers fill up. Readers may miss some pages. (Default. Strongly recommended.)
+#	'true' == Write only one page per "$maxTime" interval. WARNING: Writes may backlog indefinitely, breaking real-time messaging. (IGNORED by '_page_read')
+#	'false' == Write and read new pages continiously. WARNING: Read processes will consume 100% CPU. Readers may still miss some pages, although reads may happen faster than writes.
+_page_read() {
+	! mkdir -p "$1" && return 1
+	! [[ -e "$1" ]] && return 1
+	! [[ -d "$1" ]] && return 1
+	
+	local currentMaxTime
+	currentMaxTime="$3"
+	# 6/60Hz == 100ms , loop time ~ 35ms
+	# 0.1s desired minimum sleep
+	#[[ "$currentMaxTime" == "" ]] && currentMaxTime=175
+	[[ "$currentMaxTime" == "" ]] && currentMaxTime=100
+	
+	local currentMaxTime_seconds
+	currentMaxTime_seconds=$(bc <<< "$currentMaxTime * 0.001")
+	
+	
+	local measureTickA
+	local measureTickB
+	
+	while true
+	do
+		[[ "$ub_force_limit_page_rate" != 'false' ]] && sleep "$currentMaxTime_seconds"
+		
+		measureTickA=$(head -n 1 "$1"/"$2"tick 2>/dev/null)
+		[[ "$measureTickA" != '0' ]] && [[ "$measureTickA" != '1' ]] && [[ "$measureTickA" != '2' ]] && continue
+		
+		[[ "$measureTickB" == '' ]] && measureTickB='doNotMatch'
+		[[ "$measureTickA" == "$measureTickB" ]] && continue
+		
+		cat "$1"/"$2""$measureTickA" 2>/dev/null
+		
+		measureTickB="$measureTickA"
+	done
+}
+
+
+
+
+
+# "$1" == 'tickFile'
+_read_single() {
+	measureTickA=$(head -n 1 "$1" 2>/dev/null)
+	[[ "$measureTickA" != '0' ]] && [[ "$measureTickA" != '1' ]] && [[ "$measureTickA" != '2' ]] && return 0
+	
+	measureTickB=$(head -n 1  "$1"-prev-$sessionid 2>/dev/null)
+	
+	[[ "$measureTickB" == '' ]] && measureTickB='doNotMatch'
+	[[ "$measureTickA" == "$measureTickB" ]] && return 0
+	
+	currentExitStatus='0'
+	
+	cat ${1/-tick/}-"$measureTickA" 2>/dev/null
+	[[ "$?" != '0' ]] && currentExitStatus='1'
+	
+	cp "$1" "$1"-prev-$sessionid 2>/dev/null
+	[[ "$?" != '0' ]] && currentExitStatus='1'
+	
+	if [[ "$currentExitStatus" != '0' ]]
+	then
+		rm -f "$1" > /dev/null 2>&1
+		return "$currentExitStatus"
+	fi
+	
+	return 0
+}
+
+
+
+
+_reset_page_write() {
+	rm -f "$1"/temp > /dev/null 2>&1
+	rm -f "$1"/"$2"tick > /dev/null 2>&1
+	rm -f "$1"/"$2"0 > /dev/null 2>&1
+	rm -f "$1"/"$2"1 > /dev/null 2>&1
+	rm -f "$1"/"$2"2 > /dev/null 2>&1
+}
+
+# "$1" == outputBufferDir
+# "$2" == outputFilesPrefix
+# "$3" == maxTime (approximately how many milliseconds new data should be allowed to 'remain' in the buffer before writing out a new tick)
+# "$4" == maxBytes (how many bytes should be allowed to 'accumulate' in the buffer before writing out a new tick) (MAY BE IGNORED)
+# "$ub_force_limit_page_rate"
+#	'' == Write new pages as fast as buffers fill up. Readers may miss some pages. (Default. Strongly recommended.)
+#	'true' == Write only one page per "$maxTime" interval. WARNING: Writes may backlog indefinitely, breaking real-time messaging.
+#	'false' == Write and read new pages continiously. WARNING: Read processes will consume 100% CPU. Readers may still miss some pages, although reads may happen faster than writes. (IGNORED by '_page_write')
+_page_write() {
+	! mkdir -p "$1" && return 1
+	! [[ -e "$1" ]] && return 1
+	! [[ -d "$1" ]] && return 1
+	
+	
+	# https://stackoverflow.com/questions/13889659/read-a-file-by-bytes-in-bash
+	# https://www.cyberciti.biz/faq/linux-unix-read-one-character-atatime-while-loop/
+		# 'The way using `read -r -n1` for reading every character is wrong, it can’t handle multi-byte characters.'
+	#echo test | while IFS= read -r -n2 car;do [ "$car" ] && echo -n "$car" || echo ; sleep 1 ; done
+	
+	# Inaccurate. Tests with random data ('/dev/urandom') seem to show errors.
+# 	local currentString
+# 	export IFS=
+# 	export LANG=C
+# 	export LC_ALL=C
+# 	#LANG=C IFS= read -r -d '' -n 1 currentString
+# 	while read -r -d '' -n 1 currentString
+# 	do
+# 		#[ "$currentString" ] && echo -n "$currentString" || echo
+# 		[ "$currentString" ] && printf '%b' "$currentString" || echo
+# 	done
+	
+# 	# Accurate, albeit extremely slow.
+# 	while head --bytes=1
+# 	do
+# 		true
+# 	done
+	
+	
+	local currentMaxTime
+	local currentMaxBytes
+	currentMaxTime="$3"
+	currentMaxBytes="$4"
+	
+	# No production use. Some plausible reference statistics. In fact, packet length is not a consideration for an algorithm using 'cat' through '_timeout' .
+	# Plausible minimum packet length - >2bytes (length , data).
+	# Plausible typical packet length - >5bytes (header, length , data , CRC) (assuming length being a single byte a series of binary data would not waste much processing for many bytes).
+	# Plausible maximum empty packet length - >8bytes .
+	# 250000kb*0.5s*(0.125b/B) = 15625 (approximately 0.5s of data at 250000kb per page)
+	# 115200kb*0.5s*(0.125b/B) = 7200
+	# 115200kb*6s*(0.125b/B) = 86400 (approximately 6 seconds of data at 115200kb per page)
+	
+	# WARNING: Beware, applications requiring >100KiB/s or <9s latency Inter-Process Communication (IPC) messaging should not be using a system-wide bus unless through a hard-realtime-OS with limited process count !
+	# 45/60Hz == 750ms , loop time ~ 35ms
+	# ATTENTION: Page 'read' 'currentMaxTime' will typically need to be far less than 'write' 'currentMaxTime' .
+	# ATTENTION: Pages could in theory be set quite large without latency impact, however, the possibility of some read programs being slow to work with large files must be considered.
+	[[ "$currentMaxTime" == "" ]] && currentMaxTime=725
+	[[ "$currentMaxBytes" == "" ]] && currentMaxBytes=86400
+	
+	local currentMaxTime_seconds
+	currentMaxTime_seconds=$(bc <<< "$currentMaxTime * 0.001")
+	
+	
+	
+	local measureDateA
+	local measureDateB
+	local measureDateDifference
+	
+	measureDateA=$(date +%s%N | cut -b1-13)
+	
+	local currentTick
+	currentTick=
+	[[ -e "$1"/"$2"tick ]] && currentTick=$(head -c 1 "$1"/"$2"tick)
+	( [[ "$currentTick" == '0' ]] || [[ "$currentTick" == '1' ]] || [[ "$currentTick" == '2' ]] ) && let currentTick="$currentTick"+1
+	[[ "$currentTick" != '0' ]] && [[ "$currentTick" != '1' ]] && [[ "$currentTick" != '2' ]] && [[ "$currentTick" != '3' ]] && currentTick='0'
+	[[ "$currentTick" -ge '3' ]] && currentTick=0
+	local currentTempSize
+	currentTempSize='0'
+	rm -f "$1"/temp > /dev/null 2>&1
+	rm -f "$1"/"$2"tick > /dev/null 2>&1
+	rm -f "$1"/"$2"0 > /dev/null 2>&1
+	rm -f "$1"/"$2"1 > /dev/null 2>&1
+	rm -f "$1"/"$2"2 > /dev/null 2>&1
+	#while _timeout "$currentMaxTime_seconds" head --bytes="$currentMaxBytes" 2>/dev/null >> "$1"/temp
+	#while _timeout "$currentMaxTime_seconds" cat 2>/dev/null >> "$1"/temp
+	#while "$scriptAbsoluteLocation" _bin cat | _timeout "$currentMaxTime_seconds" dd bs="$currentMaxBytes" count=1 2>/dev/null >> "$1"/temp
+	#while _timeout "$currentMaxTime_seconds" ( ! dd bs="$currentMaxBytes" count=1 2>/dev/null >> "$1"/temp && rm -f "$1"/temp > /dev/null 2>&1 )
+	#while cat 2>/dev/null >> "$1"/temp
+	#while _timeout "$currentMaxTime_seconds" head --bytes="2" 2>/dev/null >> "$1"/temp
+	#while _timeout "$currentMaxTime_seconds" dd bs="$currentMaxBytes" count=1 2>/dev/null >> "$1"/temp
+	
+	#while cat 2>/dev/null >> "$1"/temp
+	while _timeout "$currentMaxTime_seconds" dd bs="$currentMaxBytes" count=1 2>/dev/null >> "$1"/temp
+	do
+		#true | cat "$1"/temp > /dev/tty
+		measureDateB=$(true | date +%s%N | cut -b1-13)
+		measureDateDifference=$(bc <<< "$measureDateB - $measureDateA")
+		
+		currentTempSize='0'
+		[[ -s "$1"/temp ]] && currentTempSize=$(true | stat -c%s "$1"/temp 2>/dev/null)
+		[[ "$currentTempSize" == "" ]] && currentTempSize='0'
+		#[[ -s "$1"/temp ]] && true | stat -c%s "$1"/temp > /dev/tty
+		#[[ "$rewrite" == 'true' ]] && [[ -s "$1"/temp ]] && true | stat -c%s "$1"/temp > /dev/tty
+		
+		#[[ "$currentTempSize" -gt "0" ]] && true | echo "$measureDateDifference" "$currentMaxTime" > /dev/tty
+		if [[ "$currentTempSize" -gt "0" ]] && ( [[ "$measureDateDifference" -ge "$currentMaxTime" ]] || [[ "$currentTempSize" -ge "$currentMaxBytes" ]] )
+		then
+			# ATTENTION: Optional 'page rate' limiting.
+			# If buffer was completely filled, then ' _timeout "$currentMaxTime_seconds" ' may not have completed. A delay may ensure '_page_read' has enough time to notice a tick, before new pages are written.
+			# No production use. Expected to be set only for benchmarking, diagnostics, etc.
+			# WARNING: Beware this is bad for real-time messaging. Much better to discard some flood data.
+			[[ "$ub_force_limit_page_rate" == 'true' ]] && [[ "$currentTempSize" -ge "$currentMaxBytes" ]] && sleep "$currentMaxTime_seconds"
+			
+			#rm -f "$1"/"$2""$currentTick" > /dev/null 2>&1
+			true | mv "$1"/temp "$1"/"$2""$currentTick"
+			true | echo -n "$currentTick" > "$1"/"$2"tick-temp
+			true | mv "$1"/"$2"tick-temp "$1"/"$2"tick
+			
+			measureDateA=$(true | date +%s%N | cut -b1-13)
+			#echo "$currentTick" > /dev/tty
+			let currentTick="$currentTick"+1
+		fi
+		
+		[[ "$currentTick" -ge '3' ]] && currentTick=0
+	done
+	
+	return 0
+}
+
+
+
+
+# "$1" == outputBufferDir
+# "$2" == outputFilesPrefix
+# "$3" == maxTime (approximately how many milliseconds new data should be allowed to 'remain' in the buffer before writing out a new tick)
+# DANGER: Any changes may unexpectedly break '_broadcastPipe' ! Takes standard input from 'script' run by 'find' 'exec' .
+_page_write_single() {
+	local currentTmpUID
+	currentTmpUID=$(_uid)
+	cat 2>/dev/null >> "$1"/t_"$currentTmpUID"
+	
+	if ! [[ -s "$1"/t_"$currentTmpUID" ]] || ! mv -n "$1"/t_"$currentTmpUID" "$1"/temp 2>/dev/null
+	then
+		rm -f "$1"/t_"$currentTmpUID" > /dev/null 2>&1
+		return 1
+	fi
+	
+	local currentTick
+	currentTick=
+	[[ -e "$1"/"$2"tick ]] && currentTick=$(head -c 1 "$1"/"$2"tick)
+	( [[ "$currentTick" == '0' ]] || [[ "$currentTick" == '1' ]] || [[ "$currentTick" == '2' ]] ) && let currentTick="$currentTick"+1
+	[[ "$currentTick" != '0' ]] && [[ "$currentTick" != '1' ]] && [[ "$currentTick" != '2' ]] && [[ "$currentTick" != '3' ]] && currentTick='0'
+	[[ "$currentTick" -ge '3' ]] && currentTick=0
+	
+	mv "$1"/temp "$1"/"$2""$currentTick"
+	echo -n "$currentTick" > "$1"/"$2"tick-temp
+	mv "$1"/"$2"tick-temp "$1"/"$2"tick
+	
+	
+	#rm -f "$1"/temp > /dev/null 2>&1
+	#rm -f "$1"/"$2"tick-temp > /dev/null 2>&1
+	return 0
+}
+
+_here_broadcastPipe_page_read_single() {
+	cat << CZXWXcRMTo8EmM8i4d
+#!/usr/bin/env bash
+
+CZXWXcRMTo8EmM8i4d
+	
+	declare -f _read_single
+	declare -f _broadcastPipe_page_read_single
+	
+	cat << CZXWXcRMTo8EmM8i4d
+_broadcastPipe_page_read_single "\$@"
+
+CZXWXcRMTo8EmM8i4d
+
+}
+
+
+
+
+# "$1" == inputBufferDir
+# "$2" == outputBufferDir
+# "$3" == maxTime (approximately how many milliseconds buffer should be checked for new data)
+# "$4" == maxBytes (how many bytes should be allowed to 'accumulate' in the buffer before writing out a new tick) (MAY BE IGNORED)
+# "$5" == maxTime (approximately how many milliseconds new data should be allowed to 'remain' in the buffer before writing out a new tick) (MAY BE IGNORED)
+_broadcastPipe_page_write() {
+	#true | _reset_page_write "$2" "out-" "$5" "$4"
+	
+	#export rewrite=true
+	# DANGER: Continiously piping through '_page_write' may be inherently less reliable than '_page_write_single' .
+	#_page_write "$2" "out-" "$5" "$4"
+	
+	_page_write_single "$2" "out-" "$5" "$4"
+	
+}
+
+
+_broadcastPipe_page_read_single() {
+	_read_single "$@"
+}
+
+
+# ATTENTION: Override with 'ops' or similar.
+_rm_broadcastPipe() {
+	
+	#[[ -e "$1" ]] && [[ "$1" != "" ]] && rm -f "$1"/* > /dev/null 2>&1
+	[[ -e "$1" ]] && [[ "$1" != "" ]] && find "$1" -mindepth 1 -maxdepth 1 -type f ! -name 'terminate' -delete > /dev/null 2>&1
+	[[ -e "$2" ]] && [[ "$2" != "" ]] && rm -f "$2"/* > /dev/null 2>&1
+	
+	[[ -e "$1" ]] && [[ "$1" != "" ]] && rm -f "$1"/*-tick-prev* > /dev/null 2>&1
+	
+	
+	return 0
+}
+
+
+
+
+# Reduce environment to perhaps improve performance.
+_env_broadcastPipe() {
+	env -i HOME="$HOME" TERM="${TERM}" SHELL="${SHELL}" PATH="${PATH}" PWD="$PWD" scriptAbsoluteLocation="$scriptAbsoluteLocation" scriptAbsoluteFolder="$scriptAbsoluteFolder" sessionid="$sessionid" LD_PRELOAD="$LD_PRELOAD" USER="$USER" ub_force_limit_page_rate="$ub_force_limit_page_rate" "$@"
+}
+
+
+# WARNING: Deletes all existing files (to 'clear the buffers').
+# WARNING: Must be running before any desired data is written to buffer - existing buffers are always discarded.
+# "$1" == inputBufferDir
+# "$2" == outputBufferDir
+# "$3" == maxTime (approximately how many milliseconds buffer should be checked for new data) (MAY ALSO BE USED IN PLACE OF "$5")
+# "$4" == maxBytes (how many bytes should be allowed to 'accumulate' in the buffer before writing out a new tick) (MAY BE IGNORED)
+# "$5" == maxTime (approximately how many milliseconds new data should be allowed to 'remain' in the buffer before writing out a new tick) (MAY BE IGNORED)
+_broadcastPipe_page_read() {
+	_start
+	
+	[[ "$1" == "" ]] && _stop 1
+	[[ "$1" == "/" ]] && _stop 1
+	[[ "$2" == "/" ]] && _stop 1
+	
+	local currentMaxTime
+	currentMaxTime="$3"
+	[[ "$currentMaxTime" == "" ]] && currentMaxTime=100
+	
+	local currentMaxTime_seconds
+	currentMaxTime_seconds=$(bc <<< "$currentMaxTime * 0.001")
+	
+	# Overriding the '_stop_prog' function in this context is absolutely not a problem - the '_broadcastPipe_page_read' function is normally already within a subprocess.
+	export current_broadcastPipe_inputBufferDir="$1"
+	export current_broadcastPipe_outputBufferDir="$2"
+	_stop_prog() {
+		_rm_broadcastPipe "$current_broadcastPipe_inputBufferDir" "$current_broadcastPipe_outputBufferDir"
+	}
+	
+	rm -f "$1"/reset > /dev/null 2>&1
+	rm -f "$1"/terminate > /dev/null 2>&1
+	#_rm_broadcastPipe "$@"
+	
+	_here_broadcastPipe_page_read_single "$@" > "$safeTmp"/broadcastPipe_page_read.sh
+	chmod u+x "$safeTmp"/broadcastPipe_page_read.sh
+	
+	echo > "$1"/listen
+	
+	while [[ ! -e "$1"/terminate ]]
+	do
+		# WARNING: Although sequential throughput may be important in some cases, a 'pair of wires' is fundamentally not a parallel device. Simultaneous writing to aggregator should only occur during (usually undesirable) collisions. Nevertheless, processing these collisions out of order is entirely reasonable.
+		# WARNING: Imposing limits on the number of inputs (eg. due to command line argument length limitations), below a few thousand, is strongly discouraged.
+		# https://serverfault.com/questions/193319/a-better-unix-find-with-parallel-processing
+		_env_broadcastPipe find "$1" -mindepth 1 -maxdepth 1 -mmin -0.1 -type f -name '*-tick' -exec "$safeTmp"/broadcastPipe_page_read.sh {} \; | _broadcastPipe_page_write "" "$2" "$3" "$4" "$5"
+		
+		# DANGER: Allowing this bus to run without any idle time may result in an immediately overwhelming processor load, if find loop is allowed to 'fork' new processes.
+		[[ "$ub_force_limit_page_rate" != 'false' ]] && sleep "$currentMaxTime_seconds"
+		#sleep "$currentMaxTime_seconds"
+	done
+	
+	# WARNING: Since only one program may successfully remove a single file, that mechanism should allow only one 'broadcastPipe' process to remain in the unlikely case multiple were somehow started.
+	[[ -e "$1"/terminate ]] && [[ -e "$1"/reset ]] && rm -f "$1"/reset > /dev/null 2>&1 && _broadcastPipe_page_read "$@"
+	
+	
+	_rm_broadcastPipe "$@"
+	_stop
+}
+
+
+
+
+
+
+
+
+_here_rmloop_broadcastPipe_page() {
+	_here_header_bash_or_dash "$@"
+	
+	declare -f _rmloop_broadcastPipe_page
+	
+	cat << CZXWXcRMTo8EmM8i4d
+_rmloop_broadcastPipe_page "\$@"
+
+CZXWXcRMTo8EmM8i4d
+
+}
+
+
+_rmloop_broadcastPipe_page() {
+	while true
+	do
+		rm -f "$1"/rmloop > /dev/null 2>&1
+		
+		#sleep 1
+		sleep 0.1
+	done
+	
+}
+
+
+_safePath_demand_broadcastPipe_page() {
+	! _safePath "$1" && _stop 1
+	return 0
+}
+
+# WARNING: Deletes all existing files (to 'clear the buffers').
+# "$1" == inputBufferDir
+# "$2" == outputBufferDir
+# "$3" == maxTime (approximately how many milliseconds new data should be allowed to 'remain' in the buffer before writing out a new tick)
+# "$4" == maxBytes (how many bytes should be allowed to 'accumulate' in the buffer before writing out a new tick)
+_demand_broadcastPipe_page_sequence() {
+	_start
+	
+	! mkdir -p "$1" && _stop 1
+	! mkdir -p "$2" && _stop 1
+	[[ "$1" == "" ]] && _stop 1
+	[[ "$1" == "/" ]] && _stop 1
+	[[ "$2" == "/" ]] && _stop 1
+	if ! _safePath_demand_broadcastPipe_page "$@"
+	then
+		_stop 1
+	fi
+	
+	_here_rmloop_broadcastPipe_page "$@" > "$safeTmp"/_rmloop_broadcastPipe_page
+	chmod u+x "$safeTmp"/_rmloop_broadcastPipe_page
+	
+	echo > "$1"/rmloop
+	
+	
+	_sleep_spinlock
+	
+	
+	! [[ -e "$1"/rmloop ]] && return 0
+	! mv "$1"/rmloop "$1"/rmloop.rm > /dev/null 2>&1 && return 0
+	! rm -f "$1"/rmloop.rm > /dev/null 2>&1 && return 0
+	
+	
+	_rm_broadcastPipe "$@"
+	"$safeTmp"/_rmloop_broadcastPipe_page "$@" &
+	#"$scriptAbsoluteLocation" _rmloop_broadcastPipe_page "$@" &
+	
+	
+	#"$scriptAbsoluteLocation" _broadcastPipe_page_read "$@" | _broadcastPipe_page_write "$@"
+	"$scriptAbsoluteLocation" _broadcastPipe_page_read "$@"
+	
+	# May not be necessary. Theoretically redundant.
+	local currentStopJobs
+	currentStopJobs=$(jobs -p -r 2> /dev/null)
+	[[ "$currentStopJobs" != "" ]] && kill "$currentStopJobs" > /dev/null 2>&1
+	
+	_stop
+}
+
+_demand_broadcastPipe_page() {
+	"$scriptAbsoluteLocation" _demand_broadcastPipe_page_sequence "$@" &
+	while [[ -e "$1"/rmloop ]] || [[ ! -e "$1"/listen ]]
+	do
+		sleep 0.1
+	done
+	[[ "$ub_force_limit_page_rate" == 'true' ]] && _sleep_spinlock
+	#[[ "$ub_force_limit_page_rate" == 'false' ]] && _sleep_spinlock
+	
+	disown -a -h -r
+	disown -a -r
+	
+	return 0
+}
+
+
+_terminate_broadcastPipe_page() {
+	echo > "$1"/terminate
+	_sleep_spinlock
+}
+
+# WARNING: No production use. Intended for end-user (interactive) only.
+# WARNING: Untested.
+# One possible benefit - a reset should happen much more quickly than a '_terminate ..." "_demand ..." cycle due to lack of spinlock sleep.
+_reset_broadcastPipe_page() {
+	echo > "$2"/reset
+	echo > "$1"/terminate
+}
+
+
+
+
+# WARNING: Not a valid example of intended or otherwise correct usage.
+# WARNING: Bus parameters are chosen to attempt synchronyous operation, which is usually highly undesirable!
+# System latency and bandwidth indirectly measured by this test. Inability to triple buffer through the "$safeTmp" filesystem at ~100KiB/s will return failure.
+_test_broadcastPipe_page-stream_sequence() {
+	_start
+	
+	export ub_force_limit_page_rate='true'
+	
+	_demand_broadcastPipe_page "$safeTmp"/inputBufferDir "$safeTmp"/outputBufferDir '100'
+	
+	#>&2 echo "read"
+	"$scriptAbsoluteLocation" _page_read "$safeTmp"/outputBufferDir 'out-' '175' > "$safeTmp"/rewrite &
+	
+	dd if=/dev/urandom of="$safeTmp"/testfill bs=1k count=2048 > /dev/null 2>&1
+	
+	#>&2 echo "write"
+	#_timeout 150 cat "$safeTmp"/testfill | pv | _timeout 30 "$scriptAbsoluteLocation" _page_write "$safeTmp"/inputBufferDir 'testfill-' '725' '86400'
+	_timeout 150 cat "$safeTmp"/testfill | _timeout 30 "$scriptAbsoluteLocation" _page_write "$safeTmp"/inputBufferDir 'testfill-' '725' '86400'
+	
+	#cat "$safeTmp"/testfill | _page_write_single "$safeTmp"/inputBufferDir 'testfill-' '725' '86400'
+	#_sleep_spinlock
+	
+	_terminate_broadcastPipe_page "$safeTmp"/inputBufferDir
+	
+	#(
+	#cd "$safeTmp"
+	#du -sh ./testfill ./rewrite
+	#md5sum ./testfill ./rewrite
+	#)
+	
+	! [[ -s "$safeTmp"/testfill ]] && _stop 1
+	! [[ -s "$safeTmp"/rewrite ]] && _stop 1
+	! diff "$safeTmp"/testfill "$safeTmp"/rewrite && _stop 1
+	
+	_stop
+}
+
+# WARNING: Not a valid example of intended or otherwise correct usage.
+# WARNING: Bus parameters are chosen to attempt synchronyous operation, which is usually highly undesirable!
+_test_broadcastPipe_page-single_sequence() {
+	_start
+	
+	export ub_force_limit_page_rate='true'
+	
+	_demand_broadcastPipe_page "$safeTmp"/inputBufferDir "$safeTmp"/outputBufferDir '100'
+	
+	#>&2 echo "read"
+	"$scriptAbsoluteLocation" _page_read "$safeTmp"/outputBufferDir 'out-' '175' > "$safeTmp"/rewrite &
+	
+	dd if=/dev/urandom of="$safeTmp"/testfill bs=1k count=512 > /dev/null 2>&1
+	
+	#>&2 echo "write"
+	#_timeout 150 cat "$safeTmp"/testfill | pv | _timeout 30 "$scriptAbsoluteLocation" _page_write "$safeTmp"/inputBufferDir 'testfill-' '725' '86400'
+	#_timeout 150 cat "$safeTmp"/testfill | _timeout 30 "$scriptAbsoluteLocation" _page_write "$safeTmp"/inputBufferDir 'testfill-' '725' '86400'
+	
+	cat "$safeTmp"/testfill | _page_write_single "$safeTmp"/inputBufferDir 'testfill-' '725' '86400'
+	_sleep_spinlock
+	
+	_terminate_broadcastPipe_page "$safeTmp"/inputBufferDir
+	
+	#(
+	#cd "$safeTmp"
+	#du -sh ./testfill ./rewrite
+	#md5sum ./testfill ./rewrite
+	#)
+	
+	! [[ -s "$safeTmp"/testfill ]] && _stop 1
+	! [[ -s "$safeTmp"/rewrite ]] && _stop 1
+	! diff "$safeTmp"/testfill "$safeTmp"/rewrite && _stop 1
+	
+	_stop
+}
+
+_test_broadcastPipe_page() {
+	#_getDep pv
+	
+	if ! "$scriptAbsoluteLocation" _test_broadcastPipe_page-stream_sequence "$@" 2> /dev/null
+	then
+		return 1
+	fi
+	if ! "$scriptAbsoluteLocation" _test_broadcastPipe_page-single_sequence "$@" 2> /dev/null
+	then
+		return 1
+	fi
+	return 0
+}
+
+
+
+
+# Under ideal conditions, small quantities of data may be continiously copied completely or identically (<10M).
+_benchmark_broadcastPipe_page() {
+	_start
+	
+	#Benchmarked at >100KiB/s .
+# 	export ub_force_limit_page_rate='true'
+# 	local current_Service_MaxTime=100
+# 	local current_Service_MaxBytes=86400
+# 	local current_Service_Write_MaxTime=725
+# 	local current_Read_MaxTime=175
+# 	local current_Write_MaxTime=725
+# 	local current_Write_MaxBytes=86400
+	
+	#Benchmarked at >2.0MiB/s .
+	export ub_force_limit_page_rate='false'
+	local current_Service_MaxTime=100
+	local current_Service_MaxBytes=86400
+	local current_Service_Write_MaxTime=725
+	local current_Read_MaxTime=175
+	local current_Write_MaxTime=725
+	local current_Write_MaxBytes=86400
+	
+	
+	
+	_demand_broadcastPipe_page "$safeTmp"/inputBufferDir "$safeTmp"/outputBufferDir "$current_Service_MaxTime" "$current_Service_MaxBytes" "$current_Service_Write_MaxTime"
+	
+	#>&2 echo "read"
+	"$scriptAbsoluteLocation" _page_read "$safeTmp"/outputBufferDir 'out-' "$current_Read_MaxTime" > "$safeTmp"/rewrite &
+	
+	dd if=/dev/urandom of="$safeTmp"/testfill bs=1M count=24 > /dev/null 2>&1
+	
+	#>&2 echo "write"
+	_timeout 150 cat "$safeTmp"/testfill | pv | _timeout 30 "$scriptAbsoluteLocation" _page_write "$safeTmp"/inputBufferDir 'testfill-' "$current_Write_MaxTime" "$current_Write_MaxBytes"
+	#_timeout 150 cat "$safeTmp"/testfill | _timeout 30 "$scriptAbsoluteLocation" _page_write "$safeTmp"/inputBufferDir 'testfill-' '725' '86400'
+	
+	#cat "$safeTmp"/testfill | _page_write_single "$safeTmp"/inputBufferDir 'testfill-' '725' '86400'
+	#_sleep_spinlock
+	
+	_terminate_broadcastPipe_page "$safeTmp"/inputBufferDir
+	
+	(
+	cd "$safeTmp"
+	du -sh ./testfill ./rewrite
+	md5sum ./testfill ./rewrite
+	)
+	
+	#! [[ -s "$safeTmp"/testfill ]] && _stop 1
+	#! [[ -s "$safeTmp"/rewrite ]] && _stop 1
+	#! diff "$safeTmp"/testfill "$safeTmp"/rewrite && _stop 1
+	
+	_stop
+}
+
+
+
 
 #####Local Environment Management (Resources)
 

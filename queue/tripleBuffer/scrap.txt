@@ -1,0 +1,72 @@
+# No production use.
+_here_broadcastPipe_page_write() {
+	cat << CZXWXcRMTo8EmM8i4d
+#!/usr/bin/env bash
+
+CZXWXcRMTo8EmM8i4d
+	
+	declare -f _page_write
+	declare -f _broadcastPipe_page_write
+	
+	cat << CZXWXcRMTo8EmM8i4d
+_broadcastPipe_page_write "\$@"
+
+CZXWXcRMTo8EmM8i4d
+
+}
+
+# No production use.
+_broadcastPipe_page_write_hereSequence() {
+	_start
+	
+	_here_broadcastPipe_page_write > "$safeTmp"/_broadcastPipe_page_write
+	chmod u+x "$safeTmp"/_broadcastPipe_page_write
+	
+	"$safeTmp"/_broadcastPipe_page_write "$@"
+	
+	_stop
+}
+
+
+# In this context, for unknown reasons, programs are only able to receive standard input only when not within a 'while true' loop or similar.
+_broadcastPipe_page_write() {
+	#true | _reset_page_write "$2" "out-" "$5" "$4"
+	
+	#export rewrite=true
+	# DANGER: Continiously piping through '_page_write' may be inherently less reliable than '_page_write_single' .
+	#_page_write "$2" "out-" "$5" "$4"
+	
+	_page_write_single "$2" "out-" "$5" "$4"
+	
+	
+	
+	# PASS
+	#cat 2>/dev/null >> "$2"/temp
+	
+	# FAIL
+	#while true
+	#do
+	#	cat 2>/dev/null >> "$2"/temp
+	#done
+	
+	# PASS
+	#true
+	#cat 2>/dev/null >> "$2"/temp
+	
+	# FAIL
+	#cat | while cat </dev/tty 2>/dev/null >> "$2"/temp || true
+	#do
+	#	true
+	#done
+	
+	# FAIL
+	#cat | cat </dev/tty 2>/dev/null >> "$2"/temp || true
+	
+	
+	
+	#true
+}
+
+
+
+
