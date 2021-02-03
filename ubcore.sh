@@ -214,6 +214,21 @@ CZXWXcRMTo8EmM8i4d
 }
 
 
+
+# Delay to attempt to avoid InterProcess-Communication (IPC) problems caused by typical UNIX/MSW Operating System kernel latency and/or large numbers of processes/threads.
+# Widely deployed Linux compatible hardware and software is able to run with various 'preemption' 'configured'/'patched' kernels. Detecting such kernels may allow reduction of this arbitrary delay.
+# CAUTION: Merely attempts to avoid a problem which may be inherently unavoidably unpredictable.
+_sleep_spinlock() {
+	# CAUTION: Spinlocks on the order of 8s are commonly observed with 'desktop' operating systems. Do NOT reduce this delay without thorough consideration! Theoretically, it may not be possible to determine whether the parent of a process is still running in less than spinlock time, only the existence of the parent process guarantees against PID rollover, and multiple spinlocks may occur between the necessary IPC events to determine any of the above.
+	# ATTENTION: Consider setting this to the worst-case acceptable latency for a system still considered 'responsive' (ie. a number of seconds greater than that which would cause a user or other 'watchdog' to forcibly reboot the system).
+	local currentWaitSpinlock
+	let currentWaitSpinlock="$RANDOM"%4
+	let currentWaitSpinlock="$currentWaitSpinlock"+12
+	sleep "$currentWaitSpinlock"
+}
+
+
+
 #Override (Program).
 
 #Override, cygwin.
@@ -6739,6 +6754,9 @@ _refresh_anchors_ubiquitous() {
 	cp -a "$scriptAbsoluteFolder"/_anchor.bat "$scriptAbsoluteFolder"/_bin.bat
 	
 	cp -a "$scriptAbsoluteFolder"/_anchor.bat "$scriptAbsoluteFolder"/_setup_ubcp.bat
+	
+	cp -a "$scriptAbsoluteFolder"/_anchor.bat "$scriptAbsoluteFolder"/_demand_broadcastPipe_page.bat
+	cp -a "$scriptAbsoluteFolder"/_anchor.bat "$scriptAbsoluteFolder"/_terminate_broadcastPipe_page.bat
 }
 
 # EXAMPLE ONLY.
@@ -7564,6 +7582,8 @@ export hostToGuestFiles="$hostToGuestDir"/files
 export hostToGuestISO="$instancedVirtDir"/htg/htg.iso 
 
 
+
+#test
 
 #####Local Environment Management (Resources)
 

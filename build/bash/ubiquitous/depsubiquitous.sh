@@ -261,6 +261,20 @@ _deps_linux() {
 	export enUb_linux="true"
 }
 
+#placeholder, define under "queue/build"
+# _deps_queue() {
+# 	# Message queue - 'broadcastPipe' , etc , underlying functions , '_read_page' , etc .
+# 	export enUb_queue="true"
+# 	
+# 	# Packet - any noise-tolerant 'format' .
+# 	# RESERVED variable name - synonymous with 'enUb_queue' .
+# 	#export enUb_packet="true"
+# 	
+# 	# Portal - a 'filter program' to make arrangements between embedded devices of various unique identities and/or devices (eg. 'xAxis400stepsMM' . )
+# 	# RESERVED variable name - synonymous with 'enUb_queue' .
+# 	#export enUb_portal="true"
+# }
+
 #placeholder, define under "metaengine/build"
 #_deps_metaengine() {
 #	_deps_notLean

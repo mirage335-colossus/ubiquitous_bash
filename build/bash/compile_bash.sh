@@ -29,6 +29,8 @@ _compile_bash_deps() {
 		_deps_distro
 		_deps_linux
 		
+		_deps_queue
+		
 		# _compile_bash_deps 'core'
 		return 0
 	fi
@@ -63,6 +65,7 @@ _compile_bash_deps() {
 		
 		_deps_channel
 		
+		_deps_queue
 		_deps_metaengine
 		
 		return 0
@@ -74,6 +77,7 @@ _compile_bash_deps() {
 		
 		_deps_channel
 		
+		_deps_queue
 		_deps_metaengine
 		
 		_deps_abstractfs
@@ -88,6 +92,7 @@ _compile_bash_deps() {
 		
 		_deps_channel
 		
+		_deps_queue
 		_deps_metaengine
 		
 		_deps_fakehome
@@ -127,6 +132,7 @@ _compile_bash_deps() {
 		
 		_deps_channel
 		
+		_deps_queue
 		_deps_metaengine
 		
 		_deps_git
@@ -193,6 +199,7 @@ _compile_bash_deps() {
 		
 		_deps_channel
 		
+		_deps_queue
 		_deps_metaengine
 		
 		_deps_git
@@ -682,9 +689,22 @@ _compile_bash_entry() {
 _compile_bash_extension() {
 	export includeScriptList
 	
+	[[ "$enUb_buildBashUbiquitous" == "true" ]] && includeScriptList+=( "queue/build"/deps_queue.sh )
+	[[ "$enUb_buildBashUbiquitous" == "true" ]] && includeScriptList+=( "queue/build"/compile_queue.sh )
+	
 	[[ "$enUb_buildBashUbiquitous" == "true" ]] && includeScriptList+=( "metaengine/build"/deps_meta.sh )
 	[[ "$enUb_buildBashUbiquitous" == "true" ]] && includeScriptList+=( "metaengine/build"/compile_meta.sh )
 }
+
+#placehoder, define under "queue/build"
+#_compile_bash_queue() {
+#	true
+#}
+
+#placeholder, define under "queue/build"
+#_compile_bash_vars_queue() {
+#	true
+#}
 
 #placehoder, define under "metaengine/build"
 #_compile_bash_metaengine() {
@@ -750,7 +770,11 @@ _compile_bash() {
 	
 	_compile_bash_hardware
 	
+	
+	_tryExec _compile_bash_queue
+	
 	_tryExec _compile_bash_metaengine
+	
 	
 	_compile_bash_vars_basic
 	_compile_bash_vars_basic_prog
@@ -767,7 +791,11 @@ _compile_bash() {
 	_compile_bash_vars_bundled
 	_compile_bash_vars_bundled_prog
 	
+	
+	_tryExec _compile_bash_vars_queue
+	
 	_tryExec _compile_bash_vars_metaengine
+	
 	
 	_compile_bash_buildin
 	_compile_bash_buildin_prog

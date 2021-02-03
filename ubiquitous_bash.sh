@@ -214,6 +214,21 @@ CZXWXcRMTo8EmM8i4d
 }
 
 
+
+# Delay to attempt to avoid InterProcess-Communication (IPC) problems caused by typical UNIX/MSW Operating System kernel latency and/or large numbers of processes/threads.
+# Widely deployed Linux compatible hardware and software is able to run with various 'preemption' 'configured'/'patched' kernels. Detecting such kernels may allow reduction of this arbitrary delay.
+# CAUTION: Merely attempts to avoid a problem which may be inherently unavoidably unpredictable.
+_sleep_spinlock() {
+	# CAUTION: Spinlocks on the order of 8s are commonly observed with 'desktop' operating systems. Do NOT reduce this delay without thorough consideration! Theoretically, it may not be possible to determine whether the parent of a process is still running in less than spinlock time, only the existence of the parent process guarantees against PID rollover, and multiple spinlocks may occur between the necessary IPC events to determine any of the above.
+	# ATTENTION: Consider setting this to the worst-case acceptable latency for a system still considered 'responsive' (ie. a number of seconds greater than that which would cause a user or other 'watchdog' to forcibly reboot the system).
+	local currentWaitSpinlock
+	let currentWaitSpinlock="$RANDOM"%4
+	let currentWaitSpinlock="$currentWaitSpinlock"+12
+	sleep "$currentWaitSpinlock"
+}
+
+
+
 #Override (Program).
 
 #Override, cygwin.
@@ -17637,6 +17652,9 @@ _refresh_anchors_ubiquitous() {
 	cp -a "$scriptAbsoluteFolder"/_anchor.bat "$scriptAbsoluteFolder"/_bin.bat
 	
 	cp -a "$scriptAbsoluteFolder"/_anchor.bat "$scriptAbsoluteFolder"/_setup_ubcp.bat
+	
+	cp -a "$scriptAbsoluteFolder"/_anchor.bat "$scriptAbsoluteFolder"/_demand_broadcastPipe_page.bat
+	cp -a "$scriptAbsoluteFolder"/_anchor.bat "$scriptAbsoluteFolder"/_terminate_broadcastPipe_page.bat
 }
 
 # EXAMPLE ONLY.
@@ -19595,6 +19613,8 @@ _prepare_docker() {
 }
 #_prepare_docker
 
+
+#test
 
 _test_metaengine_sequence() {
 	! _start_metaengine_host && _stop 1
@@ -23839,6 +23859,41 @@ export matchingOffsetPorts
 
 export keepKeys_SSH='true'
 
+# WARNING: In practice, at least some of 'queue' may be considered 'lean' functionality, to be included regardless of whether '_deps_queue' has been called through 'compile.sh' .
+_deps_queue() {
+	#_deps_notLean
+	#_deps_dev
+	
+	# Message queue - 'broadcastPipe' , etc , underlying functions , '_read_page' , etc .
+	export enUb_queue="true"
+	
+	# Packet - any noise-tolerant 'format' .
+	# RESERVED variable name - synonymous with 'enUb_queue' .
+	#export enUb_packet="true"
+	
+	# Portal - a 'filter program' to make arrangements between embedded devices of various unique identities and/or devices (eg. 'xAxis400stepsMM' . )
+	# RESERVED variable name - synonymous with 'enUb_queue' .
+	#export enUb_portal="true"
+}
+
+_compile_bash_queue() {
+	export includeScriptList
+	
+	#includeScriptList+=( "queue"/undefined.sh )
+}
+
+_compile_bash_vars_queue() {
+	export includeScriptList
+	
+	#[[ "$enUb_queue" == "true" ]] && 
+	#[[ "$enUb_packet" == "true" ]] && 
+	#[[ "$enUb_portal" == "true" ]] && 
+	
+	includeScriptList+=( "queue"/queue.sh )
+	
+	includeScriptList+=( "queue/tripleBuffer"/page_read.sh )
+}
+
 _deps_metaengine() {
 # 	#_deps_notLean
 	_deps_dev
@@ -24166,6 +24221,20 @@ _deps_linux() {
 	export enUb_linux="true"
 }
 
+#placeholder, define under "queue/build"
+# _deps_queue() {
+# 	# Message queue - 'broadcastPipe' , etc , underlying functions , '_read_page' , etc .
+# 	export enUb_queue="true"
+# 	
+# 	# Packet - any noise-tolerant 'format' .
+# 	# RESERVED variable name - synonymous with 'enUb_queue' .
+# 	#export enUb_packet="true"
+# 	
+# 	# Portal - a 'filter program' to make arrangements between embedded devices of various unique identities and/or devices (eg. 'xAxis400stepsMM' . )
+# 	# RESERVED variable name - synonymous with 'enUb_queue' .
+# 	#export enUb_portal="true"
+# }
+
 #placeholder, define under "metaengine/build"
 #_deps_metaengine() {
 #	_deps_notLean
@@ -24297,6 +24366,8 @@ _compile_bash_deps() {
 		_deps_distro
 		_deps_linux
 		
+		_deps_queue
+		
 		# _compile_bash_deps 'core'
 		return 0
 	fi
@@ -24331,6 +24402,7 @@ _compile_bash_deps() {
 		
 		_deps_channel
 		
+		_deps_queue
 		_deps_metaengine
 		
 		return 0
@@ -24342,6 +24414,7 @@ _compile_bash_deps() {
 		
 		_deps_channel
 		
+		_deps_queue
 		_deps_metaengine
 		
 		_deps_abstractfs
@@ -24356,6 +24429,7 @@ _compile_bash_deps() {
 		
 		_deps_channel
 		
+		_deps_queue
 		_deps_metaengine
 		
 		_deps_fakehome
@@ -24395,6 +24469,7 @@ _compile_bash_deps() {
 		
 		_deps_channel
 		
+		_deps_queue
 		_deps_metaengine
 		
 		_deps_git
@@ -24461,6 +24536,7 @@ _compile_bash_deps() {
 		
 		_deps_channel
 		
+		_deps_queue
 		_deps_metaengine
 		
 		_deps_git
@@ -24950,9 +25026,22 @@ _compile_bash_entry() {
 _compile_bash_extension() {
 	export includeScriptList
 	
+	[[ "$enUb_buildBashUbiquitous" == "true" ]] && includeScriptList+=( "queue/build"/deps_queue.sh )
+	[[ "$enUb_buildBashUbiquitous" == "true" ]] && includeScriptList+=( "queue/build"/compile_queue.sh )
+	
 	[[ "$enUb_buildBashUbiquitous" == "true" ]] && includeScriptList+=( "metaengine/build"/deps_meta.sh )
 	[[ "$enUb_buildBashUbiquitous" == "true" ]] && includeScriptList+=( "metaengine/build"/compile_meta.sh )
 }
+
+#placehoder, define under "queue/build"
+#_compile_bash_queue() {
+#	true
+#}
+
+#placeholder, define under "queue/build"
+#_compile_bash_vars_queue() {
+#	true
+#}
 
 #placehoder, define under "metaengine/build"
 #_compile_bash_metaengine() {
@@ -25018,7 +25107,11 @@ _compile_bash() {
 	
 	_compile_bash_hardware
 	
+	
+	_tryExec _compile_bash_queue
+	
 	_tryExec _compile_bash_metaengine
+	
 	
 	_compile_bash_vars_basic
 	_compile_bash_vars_basic_prog
@@ -25035,7 +25128,11 @@ _compile_bash() {
 	_compile_bash_vars_bundled
 	_compile_bash_vars_bundled_prog
 	
+	
+	_tryExec _compile_bash_vars_queue
+	
 	_tryExec _compile_bash_vars_metaengine
+	
 	
 	_compile_bash_buildin
 	_compile_bash_buildin_prog
