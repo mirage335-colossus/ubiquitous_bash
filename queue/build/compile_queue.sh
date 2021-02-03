@@ -27,7 +27,7 @@ _compile_bash_vars_queue() {
 	
 	
 	#[[ "$enUb_queue" == "true" ]] && includeScriptList+=( "queue/tripleBuffer"/benchmark_page.sh )
-	[[ "$enUb_queue" == "true" ]] && includeScriptList+=( "queue/tripleBuffer"/benchmark_page.sh )
+	includeScriptList+=( "queue/tripleBuffer"/benchmark_page.sh )
 	
 	
 	includeScriptList+=( "queue/tripleBuffer"/test_broadcastPipe_page.sh )

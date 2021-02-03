@@ -20,11 +20,14 @@ cygstart --action=runas "$@"
 #https://codingwithspike.wordpress.com/2012/08/02/making-a-truly-portable-cygwin-install-working-around-drive-letter-and-file-permission-issues/
 
 
-https://en.wikipedia.org/wiki/Shebang_(Unix)
+#https://en.wikipedia.org/wiki/Shebang_(Unix)
 'python3 -c will be passed as one argument to /usr/bin/env, rather than two arguments. Cygwin also behaves this way.'
 
 
-https://stackoverflow.com/questions/6811435/why-does-cygwin-execute-shell-commands-very-slowly
+#https://stackoverflow.com/questions/6811435/why-does-cygwin-execute-shell-commands-very-slowly
+#https://www.puttygen.com/windows-terminal-emulators
+# "conemu" does not apparently show a performance benefit with ... time for i in {1..1000} ; do echo "Hello" ; done
+# "mintty" does not apparently show any performance benefit with './lean.sh _benchmark_page'
 time for i in {1..1000} ; do echo "Hello" ; done
 ...
 Hello
@@ -33,6 +36,22 @@ Hello
 real    0m0.584s
 user    0m0.031s
 sys     0m0.000s
+
+
+
+
+
+
+
+# "conemu" fails here (lean.sh)
+[[ ! -e "$scriptAbsoluteLocation" ]] && _messagePlain_bad 'missing: scriptAbsoluteLocation= '"$scriptAbsoluteLocation" | _user_log-ub && exit 1
+[[ "$sessionid" == "" ]] && _messagePlain_bad 'missing: sessionid' | _user_log-ub && exit 1
+
+
+
+#https://unix.stackexchange.com/questions/482725/shell-is-it-possible-to-delay-a-command-without-using-sleep
+time for i in {1..10} ; do true ; coproc read -t 0.001 > /dev/null 2>&1 && wait "$!" > /dev/null 2>&1 || true > /dev/null 2>&1 ; done
+
 
 
 

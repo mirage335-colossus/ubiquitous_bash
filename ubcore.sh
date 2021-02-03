@@ -6752,6 +6752,7 @@ _refresh_anchors_ubiquitous() {
 	cp -a "$scriptAbsoluteFolder"/_anchor.bat "$scriptAbsoluteFolder"/_false.bat
 	
 	cp -a "$scriptAbsoluteFolder"/_anchor.bat "$scriptAbsoluteFolder"/_bin.bat
+	cp -a "$scriptAbsoluteFolder"/_anchor.bat "$scriptAbsoluteFolder"/_bash.bat
 	
 	cp -a "$scriptAbsoluteFolder"/_anchor.bat "$scriptAbsoluteFolder"/_setup_ubcp.bat
 	
@@ -10533,6 +10534,10 @@ fi
 #Wrapper function to launch arbitrary commands within the ubiquitous_bash environment, including its PATH with scriptBin.
 _bin() {
 	"$@"
+}
+#Mostly intended to launch bash prompt for MSW/Cygwin users.
+_bash() {
+	bash "$@"
 }
 
 #Launch internal functions as commands, and other commands, as root.

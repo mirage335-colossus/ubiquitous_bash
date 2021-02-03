@@ -108,6 +108,10 @@ fi
 _bin() {
 	"$@"
 }
+#Mostly intended to launch bash prompt for MSW/Cygwin users.
+_bash() {
+	bash "$@"
+}
 
 #Launch internal functions as commands, and other commands, as root.
 _sudo() {
