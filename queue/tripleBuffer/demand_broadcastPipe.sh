@@ -45,6 +45,7 @@ _demand_broadcastPipe_page_sequence() {
 	[[ "$2" == "/" ]] && _stop 1
 	if ! _safePath_demand_broadcastPipe_page "$@"
 	then
+		_terminate_broadcastPipe_page "$1"
 		_stop 1
 	fi
 	

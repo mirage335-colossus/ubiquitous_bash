@@ -1222,6 +1222,17 @@ _safeRMR() {
 	[[ "$tmpSelf" != "$safeScriptAbsoluteFolder" ]] && [[ "$sessionid" != "" ]] && [[ "$1" == *$(echo "$sessionid" | head -c 16)* ]] && safeToRM="true"
 	#[[ "$tmpSelf" != "$safeScriptAbsoluteFolder" ]] && [[ "$1" == "$tmpSelf"* ]] && safeToRM="true"
 	
+	# ATTENTION: CAUTION: Unusual Cygwin override to accommodate MSW network drive ( at least when provided by '_userVBox' ) !
+	# ATTENTION: Search for verbatim warning to find related workarounds!
+	if [[ "$scriptAbsoluteFolder" == '/cygdrive/'* ]] && [[ -e /cygdrive ]] && uname -a | grep -i cygwin > /dev/null 2>&1 && [[ "$scriptAbsoluteFolder" != '/cygdrive/c'* ]] && [[ "$scriptAbsoluteFolder" != '/cygdrive/C'* ]]
+	then
+		if [[ "$tmpSelf" != "$safeScriptAbsoluteFolder" ]] && [[ "$tmpSelf" != "" ]] && [[ "$tmpSelf" == "/cygdrive/"* ]] && [[ "$tmpSelf" == "$tmpMSW"* ]]
+		then
+			safeToRM="true"
+		fi
+	fi
+	
+	
 	[[ "$safeToRM" == "false" ]] && return 1
 	
 	#Safeguards/
@@ -1306,6 +1317,18 @@ _safePath() {
 	[[ "$sessionid" != "" ]] && [[ "$1" == *"$sessionid"* ]] && safeToRM="true"
 	[[ "$tmpSelf" != "$safeScriptAbsoluteFolder" ]] && [[ "$sessionid" != "" ]] && [[ "$1" == *$(echo "$sessionid" | head -c 16)* ]] && safeToRM="true"
 	#[[ "$tmpSelf" != "$safeScriptAbsoluteFolder" ]] && [[ "$1" == "$tmpSelf"* ]] && safeToRM="true"
+	
+	
+	# ATTENTION: CAUTION: Unusual Cygwin override to accommodate MSW network drive ( at least when provided by '_userVBox' ) !
+	# ATTENTION: Search for verbatim warning to find related workarounds!
+	if [[ "$scriptAbsoluteFolder" == '/cygdrive/'* ]] && [[ -e /cygdrive ]] && uname -a | grep -i cygwin > /dev/null 2>&1 && [[ "$scriptAbsoluteFolder" != '/cygdrive/c'* ]] && [[ "$scriptAbsoluteFolder" != '/cygdrive/C'* ]]
+	then
+		if [[ "$tmpSelf" != "$safeScriptAbsoluteFolder" ]] && [[ "$tmpSelf" != "" ]] && [[ "$tmpSelf" == "/cygdrive/"* ]] && [[ "$tmpSelf" == "$tmpMSW"* ]]
+		then
+			safeToRM="true"
+		fi
+	fi
+	
 	
 	[[ "$safeToRM" == "false" ]] && return 1
 	
@@ -7586,13 +7609,14 @@ export hostToGuestISO="$instancedVirtDir"/htg/htg.iso
 
 # ATTENTION: EXAMPLE
 
-#_demand_broadcastPipe_page ./inputBufferDir ./outputBufferDir '100'
-#_terminate_broadcastPipe_page ./inputBufferDir
+#_demand_broadcastPipe_page ./zzzInputBufferDir ./zzzOutputBufferDir '100'
+#_terminate_broadcastPipe_page ./zzzInputBufferDir
 
 
-
-
-
+# UNIX/MSW(/Cygwin) Compatible. Demand for service may be placed once or repeatedly on either UNIX/MSW host/guest across network drive.
+#./lean.sh _demand_broadcastPipe_page ./zzzInputBufferDir ./zzzOutputBufferDir '100'
+#./lean.sh _page_read ./zzzOutputBufferDir 'out-'
+#echo "$RANDOM" | ./lean.sh _page_write_single ./zzzInputBufferDir/ 'diag-'
 
 
 
@@ -8023,6 +8047,7 @@ _demand_broadcastPipe_page_sequence() {
 	[[ "$2" == "/" ]] && _stop 1
 	if ! _safePath_demand_broadcastPipe_page "$@"
 	then
+		_terminate_broadcastPipe_page "$1"
 		_stop 1
 	fi
 	
