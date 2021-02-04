@@ -61,6 +61,8 @@ _stop() {
 	
 	_tryExec "_stop_prog"
 	
+	_tryExec "_stop_queue_page"
+	
 	_preserveLog
 	
 	#Kill process responsible for initiating session. Not expected to be used normally, but an important fallback.

@@ -11,6 +11,8 @@ _compile_bash_vars_queue() {
 	#[[ "$enUb_packet" == "true" ]] && 
 	#[[ "$enUb_portal" == "true" ]] && 
 	
+	includeScriptList+=( "queue"/queue_vars.sh )
+	
 	includeScriptList+=( "queue"/queue.sh )
 	
 	includeScriptList+=( "queue/tripleBuffer"/page_read.sh )

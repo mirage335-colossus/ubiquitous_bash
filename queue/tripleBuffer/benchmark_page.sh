@@ -4,22 +4,12 @@
 _benchmark_page() {
 	_start
 	
-	#Benchmarked at >2.5MiB/s .
 	export ub_force_limit_page_rate='false'
-	local current_Read_MaxTime=175
-	local current_Write_MaxTime=725
-	local current_Write_MaxBytes=86400
-	
-	#Benchmarked at >6MiB/s .
-	#export ub_force_limit_page_rate='false'
-	#local current_Read_MaxTime=100
-	#local current_Write_MaxTime=725
-	#local current_Write_MaxBytes=1000000
-	
+	local current_Write_MaxBytes=864000
 	
 	
 	#dd if=/dev/urandom of="$safeTmp"/testfill bs=1k count=2048 > /dev/null 2>&1
-	dd if=/dev/urandom of="$safeTmp"/testfill bs=1M count=24 > /dev/null 2>&1
+	dd if=/dev/urandom of="$safeTmp"/testfill bs=1M count=4 > /dev/null 2>&1
 	
 	
 	#>&2 echo "read"

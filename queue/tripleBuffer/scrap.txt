@@ -92,3 +92,97 @@ _broadcastPipe_page_write() {
 
 
 
+# No production use. Some plausible reference statistics. In fact, packet length is not a consideration for an algorithm using 'cat' through '_timeout' .
+# Plausible minimum packet length - >2bytes (length , data).
+# Plausible typical packet length - >5bytes (header, length , data , CRC) (assuming length being a single byte a series of binary data would not waste much processing for many bytes).
+# Plausible maximum empty packet length - >8bytes .
+# 250000kb*0.5s*(0.125b/B) = 15625 (approximately 0.5s of data at 250000kb per page)
+# 115200kb*0.5s*(0.125b/B) = 7200
+# 115200kb*6s*(0.125b/B) = 86400 (approximately 6 seconds of data at 115200kb per page)
+
+# WARNING: Beware, applications requiring >100KiB/s or <9s latency Inter-Process Communication (IPC) messaging should not be using a system-wide bus unless through a hard-realtime-OS with limited process count !
+# 45/60Hz == 750ms , loop time ~ 35ms
+# ATTENTION: Page 'read' 'currentMaxTime' will typically need to be far less than 'write' 'currentMaxTime' .
+# ATTENTION: Pages could in theory be set quite large without latency impact, however, the possibility of some read programs being slow to work with large files must be considered.
+# 45/60Hz == 750ms , loop time ~ 35ms
+
+
+
+
+
+#(IGNORED)
+_default_page_read_maxBytes() {
+	local currentValue
+	currentValue=86400
+	_if_cygwin && currentValue=864000
+	echo "$currentValue"
+}
+
+# No production use. Allowing override parameters fall through to '_page_write' or similar is expected to be more useful.
+_broadcastPipe_page_read_maxBytes() {
+	local currentValue
+	currentValue=86400
+	_if_cygwin && currentValue=864000
+	echo "$currentValue"
+}
+
+# No production use. Allowing override parameters fall through to '_page_write' or similar is expected to be more useful.
+_broadcastPipe_page_read_maxTimeWrite() {
+	local currentValue
+	currentValue=725
+	#_if_cygwin && currentValue=2975
+	#_if_cygwin && currentValue=3725
+	_if_cygwin && currentValue=4475
+	echo "$currentValue"
+}
+
+
+#_if_cygwin && currentValue=2975
+#_if_cygwin && currentValue=3725
+#_if_cygwin && currentValue=4475
+#_if_cygwin && currentValue=5225
+#_if_cygwin && currentValue=5975
+#_if_cygwin && currentValue=7475
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#Benchmarked at >100KiB/s .
+# 	export ub_force_limit_page_rate='true'
+# 	local current_Service_MaxTime=100
+# 	local current_Service_MaxBytes=86400
+# 	local current_Service_Write_MaxTime=725
+# 	local current_Read_MaxTime=175
+# 	local current_Write_MaxTime=725
+# 	local current_Write_MaxBytes=86400
+	
+	#Benchmarked at >2.0MiB/s .
+	#export ub_force_limit_page_rate='false'
+	#local current_Service_MaxTime=100
+	#local current_Service_MaxBytes=86400
+	#local current_Service_Write_MaxTime=725
+	#local current_Read_MaxTime=175
+	#local current_Write_MaxTime=725
+	#local current_Write_MaxBytes=86400
+	
+	#Benchmarked at >15KiB/s .
+	export ub_force_limit_page_rate='true'
+	local current_Service_MaxTime=975
+	local current_Read_MaxTime=575
+	local current_Write_MaxTime=4475
+	local current_Write_MaxBytes=86400
+
+
+
+

@@ -80,6 +80,14 @@ _demand_broadcastPipe_page_sequence() {
 }
 
 _demand_broadcastPipe_page() {
+	
+	export current_broadcastPipe_inputBufferDir="$1"
+	export current_broadcastPipe_outputBufferDir="$2"
+	_stop_queue_page() {
+		_terminate_broadcastPipe_page "$current_broadcastPipe_inputBufferDir" 2> /dev/null
+		_rm_broadcastPipe "$current_broadcastPipe_inputBufferDir" "$current_broadcastPipe_outputBufferDir"
+	}
+	
 	"$scriptAbsoluteLocation" _demand_broadcastPipe_page_sequence "$@" &
 	while [[ -e "$1"/rmloop ]] || [[ ! -e "$1"/listen ]]
 	do

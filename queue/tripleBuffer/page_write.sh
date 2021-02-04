@@ -49,20 +49,9 @@ _page_write() {
 	currentMaxTime="$3"
 	currentMaxBytes="$4"
 	
-	# No production use. Some plausible reference statistics. In fact, packet length is not a consideration for an algorithm using 'cat' through '_timeout' .
-	# Plausible minimum packet length - >2bytes (length , data).
-	# Plausible typical packet length - >5bytes (header, length , data , CRC) (assuming length being a single byte a series of binary data would not waste much processing for many bytes).
-	# Plausible maximum empty packet length - >8bytes .
-	# 250000kb*0.5s*(0.125b/B) = 15625 (approximately 0.5s of data at 250000kb per page)
-	# 115200kb*0.5s*(0.125b/B) = 7200
-	# 115200kb*6s*(0.125b/B) = 86400 (approximately 6 seconds of data at 115200kb per page)
 	
-	# WARNING: Beware, applications requiring >100KiB/s or <9s latency Inter-Process Communication (IPC) messaging should not be using a system-wide bus unless through a hard-realtime-OS with limited process count !
-	# 45/60Hz == 750ms , loop time ~ 35ms
-	# ATTENTION: Page 'read' 'currentMaxTime' will typically need to be far less than 'write' 'currentMaxTime' .
-	# ATTENTION: Pages could in theory be set quite large without latency impact, however, the possibility of some read programs being slow to work with large files must be considered.
-	[[ "$currentMaxTime" == "" ]] && currentMaxTime=725
-	[[ "$currentMaxBytes" == "" ]] && currentMaxBytes=86400
+	[[ "$currentMaxTime" == "" ]] && currentMaxTime=$(_default_page_write_maxTime)
+	[[ "$currentMaxBytes" == "" ]] && currentMaxBytes=$(_default_page_write_maxBytes)
 	
 	local currentMaxTime_seconds
 	currentMaxTime_seconds=$(bc <<< "$currentMaxTime * 0.001")

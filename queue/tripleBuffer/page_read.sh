@@ -16,7 +16,7 @@ _page_read() {
 	# 6/60Hz == 100ms , loop time ~ 35ms
 	# 0.1s desired minimum sleep
 	#[[ "$currentMaxTime" == "" ]] && currentMaxTime=175
-	[[ "$currentMaxTime" == "" ]] && currentMaxTime=100
+	[[ "$currentMaxTime" == "" ]] && currentMaxTime=$(_default_page_read_maxTime)
 	
 	local currentMaxTime_seconds
 	currentMaxTime_seconds=$(bc <<< "$currentMaxTime * 0.001")
@@ -29,7 +29,7 @@ _page_read() {
 	do
 		[[ "$ub_force_limit_page_rate" != 'false' ]] && sleep "$currentMaxTime_seconds"
 		
-		measureTickA=$(head -n 1 "$1"/"$2"tick 2>/dev/null)
+		[[ -e "$1"/"$2"tick ]] && measureTickA=$(head -n 1 "$1"/"$2"tick 2>/dev/null)
 		[[ "$measureTickA" != '0' ]] && [[ "$measureTickA" != '1' ]] && [[ "$measureTickA" != '2' ]] && continue
 		
 		[[ "$measureTickB" == '' ]] && measureTickB='doNotMatch'

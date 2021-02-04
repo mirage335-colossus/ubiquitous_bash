@@ -49,7 +49,7 @@ _env_broadcastPipe() {
 # WARNING: Must be running before any desired data is written to buffer - existing buffers are always discarded.
 # "$1" == inputBufferDir
 # "$2" == outputBufferDir
-# "$3" == maxTime (approximately how many milliseconds buffer should be checked for new data) (MAY ALSO BE USED IN PLACE OF "$5")
+# "$3" == maxTime (approximately how many milliseconds buffer should be checked for new data) (MAY ALSO PARTIALLY OR FULLY DISPLACE VALUE OF "$5")
 # "$4" == maxBytes (how many bytes should be allowed to 'accumulate' in the buffer before writing out a new tick) (MAY BE IGNORED)
 # "$5" == maxTime (approximately how many milliseconds new data should be allowed to 'remain' in the buffer before writing out a new tick) (MAY BE IGNORED)
 _broadcastPipe_page_read() {
@@ -61,15 +61,15 @@ _broadcastPipe_page_read() {
 	
 	local currentMaxTime
 	currentMaxTime="$3"
-	[[ "$currentMaxTime" == "" ]] && currentMaxTime=100
+	[[ "$currentMaxTime" == "" ]] && currentMaxTime="$(_broadcastPipe_page_read_maxTime)"
 	
 	local currentMaxTime_seconds
 	currentMaxTime_seconds=$(bc <<< "$currentMaxTime * 0.001")
 	
-	# Overriding the '_stop_prog' function in this context is absolutely not a problem - the '_broadcastPipe_page_read' function is normally already within a subprocess.
 	export current_broadcastPipe_inputBufferDir="$1"
 	export current_broadcastPipe_outputBufferDir="$2"
-	_stop_prog() {
+	_stop_queue_page() {
+		_terminate_broadcastPipe_page "$current_broadcastPipe_inputBufferDir" 2> /dev/null
 		_rm_broadcastPipe "$current_broadcastPipe_inputBufferDir" "$current_broadcastPipe_outputBufferDir"
 	}
 	
@@ -87,7 +87,7 @@ _broadcastPipe_page_read() {
 		# WARNING: Although sequential throughput may be important in some cases, a 'pair of wires' is fundamentally not a parallel device. Simultaneous writing to aggregator should only occur during (usually undesirable) collisions. Nevertheless, processing these collisions out of order is entirely reasonable.
 		# WARNING: Imposing limits on the number of inputs (eg. due to command line argument length limitations), below a few thousand, is strongly discouraged.
 		# https://serverfault.com/questions/193319/a-better-unix-find-with-parallel-processing
-		_env_broadcastPipe find "$1" -mindepth 1 -maxdepth 1 -mmin -0.1 -type f -name '*-tick' -exec "$safeTmp"/broadcastPipe_page_read.sh {} \; | _broadcastPipe_page_write "" "$2" "$3" "$4" "$5"
+		_env_broadcastPipe find "$1" -mindepth 1 -maxdepth 1 -mmin -0.1 -type f -name '*-tick' -exec "$safeTmp"/broadcastPipe_page_read.sh {} \; 2> /dev/null | _broadcastPipe_page_write "" "$2" "$3" "$4" "$5" 2>/dev/null
 		
 		# DANGER: Allowing this bus to run without any idle time may result in an immediately overwhelming processor load, if find loop is allowed to 'fork' new processes.
 		[[ "$ub_force_limit_page_rate" != 'false' ]] && sleep "$currentMaxTime_seconds"
