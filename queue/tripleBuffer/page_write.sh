@@ -15,9 +15,20 @@ _reset_page_write() {
 #	'true' == Write only one page per "$maxTime" interval. WARNING: Writes may backlog indefinitely, breaking real-time messaging.
 #	'false' == Write and read new pages continiously. WARNING: Read processes will consume 100% CPU. Readers may still miss some pages, although reads may happen faster than writes. (IGNORED by '_page_write')
 _page_write() {
-	! mkdir -p "$1" && return 1
-	! [[ -e "$1" ]] && return 1
-	! [[ -d "$1" ]] && return 1
+	local outputBufferDir="$1"
+	if [[ "$outputBufferDir" == "" ]]
+	then
+		local current_demand_dir
+		current_demand_dir=$(_demand_dir_broadcastPipe_page)
+		[[ "$current_demand_dir" == "" ]] && _stop 1
+		
+		outputBufferDir="$current_demand_dir"/inputBufferDir
+	fi
+	
+	
+	! mkdir -p "$outputBufferDir" && return 1
+	! [[ -e "$outputBufferDir" ]] && return 1
+	! [[ -d "$outputBufferDir" ]] && return 1
 	
 	
 	# https://stackoverflow.com/questions/13889659/read-a-file-by-bytes-in-bash
@@ -66,37 +77,37 @@ _page_write() {
 	
 	local currentTick
 	currentTick=
-	[[ -e "$1"/"$2"tick ]] && currentTick=$(head -c 1 "$1"/"$2"tick)
+	[[ -e "$outputBufferDir"/"$2"tick ]] && currentTick=$(head -c 1 "$outputBufferDir"/"$2"tick)
 	( [[ "$currentTick" == '0' ]] || [[ "$currentTick" == '1' ]] || [[ "$currentTick" == '2' ]] ) && let currentTick="$currentTick"+1
 	[[ "$currentTick" != '0' ]] && [[ "$currentTick" != '1' ]] && [[ "$currentTick" != '2' ]] && [[ "$currentTick" != '3' ]] && currentTick='0'
 	[[ "$currentTick" -ge '3' ]] && currentTick=0
 	local currentTempSize
 	currentTempSize='0'
-	rm -f "$1"/temp > /dev/null 2>&1
-	rm -f "$1"/"$2"tick > /dev/null 2>&1
-	rm -f "$1"/"$2"0 > /dev/null 2>&1
-	rm -f "$1"/"$2"1 > /dev/null 2>&1
-	rm -f "$1"/"$2"2 > /dev/null 2>&1
-	#while _timeout "$currentMaxTime_seconds" head --bytes="$currentMaxBytes" 2>/dev/null >> "$1"/temp
-	#while _timeout "$currentMaxTime_seconds" cat 2>/dev/null >> "$1"/temp
-	#while "$scriptAbsoluteLocation" _bin cat | _timeout "$currentMaxTime_seconds" dd bs="$currentMaxBytes" count=1 2>/dev/null >> "$1"/temp
-	#while _timeout "$currentMaxTime_seconds" ( ! dd bs="$currentMaxBytes" count=1 2>/dev/null >> "$1"/temp && rm -f "$1"/temp > /dev/null 2>&1 )
-	#while cat 2>/dev/null >> "$1"/temp
-	#while _timeout "$currentMaxTime_seconds" head --bytes="2" 2>/dev/null >> "$1"/temp
-	#while _timeout "$currentMaxTime_seconds" dd bs="$currentMaxBytes" count=1 2>/dev/null >> "$1"/temp
+	rm -f "$outputBufferDir"/temp > /dev/null 2>&1
+	rm -f "$outputBufferDir"/"$2"tick > /dev/null 2>&1
+	rm -f "$outputBufferDir"/"$2"0 > /dev/null 2>&1
+	rm -f "$outputBufferDir"/"$2"1 > /dev/null 2>&1
+	rm -f "$outputBufferDir"/"$2"2 > /dev/null 2>&1
+	#while _timeout "$currentMaxTime_seconds" head --bytes="$currentMaxBytes" 2>/dev/null >> "$outputBufferDir"/temp
+	#while _timeout "$currentMaxTime_seconds" cat 2>/dev/null >> "$outputBufferDir"/temp
+	#while "$scriptAbsoluteLocation" _bin cat | _timeout "$currentMaxTime_seconds" dd bs="$currentMaxBytes" count=1 2>/dev/null >> "$outputBufferDir"/temp
+	#while _timeout "$currentMaxTime_seconds" ( ! dd bs="$currentMaxBytes" count=1 2>/dev/null >> "$outputBufferDir"/temp && rm -f "$outputBufferDir"/temp > /dev/null 2>&1 )
+	#while cat 2>/dev/null >> "$outputBufferDir"/temp
+	#while _timeout "$currentMaxTime_seconds" head --bytes="2" 2>/dev/null >> "$outputBufferDir"/temp
+	#while _timeout "$currentMaxTime_seconds" dd bs="$currentMaxBytes" count=1 2>/dev/null >> "$outputBufferDir"/temp
 	
-	#while cat 2>/dev/null >> "$1"/temp
-	while _timeout "$currentMaxTime_seconds" dd bs="$currentMaxBytes" count=1 2>/dev/null >> "$1"/temp
+	#while cat 2>/dev/null >> "$outputBufferDir"/temp
+	while _timeout "$currentMaxTime_seconds" dd bs="$currentMaxBytes" count=1 2>/dev/null >> "$outputBufferDir"/temp
 	do
-		#true | cat "$1"/temp > /dev/tty
+		#true | cat "$outputBufferDir"/temp > /dev/tty
 		measureDateB=$(true | date +%s%N | cut -b1-13)
 		measureDateDifference=$(bc <<< "$measureDateB - $measureDateA")
 		
 		currentTempSize='0'
-		[[ -s "$1"/temp ]] && currentTempSize=$(true | stat -c%s "$1"/temp 2>/dev/null)
+		[[ -s "$outputBufferDir"/temp ]] && currentTempSize=$(true | stat -c%s "$outputBufferDir"/temp 2>/dev/null)
 		[[ "$currentTempSize" == "" ]] && currentTempSize='0'
-		#[[ -s "$1"/temp ]] && true | stat -c%s "$1"/temp > /dev/tty
-		#[[ "$rewrite" == 'true' ]] && [[ -s "$1"/temp ]] && true | stat -c%s "$1"/temp > /dev/tty
+		#[[ -s "$outputBufferDir"/temp ]] && true | stat -c%s "$outputBufferDir"/temp > /dev/tty
+		#[[ "$rewrite" == 'true' ]] && [[ -s "$outputBufferDir"/temp ]] && true | stat -c%s "$outputBufferDir"/temp > /dev/tty
 		
 		#[[ "$currentTempSize" -gt "0" ]] && true | echo "$measureDateDifference" "$currentMaxTime" > /dev/tty
 		if [[ "$currentTempSize" -gt "0" ]] && ( [[ "$measureDateDifference" -ge "$currentMaxTime" ]] || [[ "$currentTempSize" -ge "$currentMaxBytes" ]] )
@@ -107,10 +118,10 @@ _page_write() {
 			# WARNING: Beware this is bad for real-time messaging. Much better to discard some flood data.
 			[[ "$ub_force_limit_page_rate" == 'true' ]] && [[ "$currentTempSize" -ge "$currentMaxBytes" ]] && sleep "$currentMaxTime_seconds"
 			
-			#rm -f "$1"/"$2""$currentTick" > /dev/null 2>&1
-			true | mv "$1"/temp "$1"/"$2""$currentTick"
-			true | echo -n "$currentTick" > "$1"/"$2"tick-temp
-			true | mv "$1"/"$2"tick-temp "$1"/"$2"tick
+			#rm -f "$outputBufferDir"/"$2""$currentTick" > /dev/null 2>&1
+			true | mv "$outputBufferDir"/temp "$outputBufferDir"/"$2""$currentTick"
+			true | echo -n "$currentTick" > "$outputBufferDir"/"$2"tick-temp
+			true | mv "$outputBufferDir"/"$2"tick-temp "$outputBufferDir"/"$2"tick
 			
 			measureDateA=$(true | date +%s%N | cut -b1-13)
 			#echo "$currentTick" > /dev/tty

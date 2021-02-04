@@ -4208,6 +4208,81 @@ export ub_anchor_autoupgrade
 
 
 
+_queue_descriptiveSelf() {
+	[[ ! -e "$scriptAbsoluteLocation" ]] && exit 1
+	
+	if type -p md5sum > /dev/null 2>&1
+	then
+		_getScriptAbsoluteLocation | md5sum | head -c 18
+		return 0
+	fi
+	if type -p sha512sum > /dev/null 2>&1
+	then
+		_getScriptAbsoluteLocation | sha512sum | head -c 18
+		return 0
+	fi
+	
+	
+	_stop 1
+}
+
+_prepare_demand_dir_queue() {
+	mkdir -p "$scriptLocal"/_queue
+}
+
+# ATTENTION: Override with 'ops' or similar.
+_demand_dir_broadcastPipe_page() {
+	_prepare_demand_dir_queue "$@"
+	
+	local currentDescriptiveSelf
+	currentDescriptiveSelf=$(_queue_descriptiveSelf)
+	[[ "$currentDescriptiveSelf" == "" ]] && _stop 1
+	
+	local currentLink
+	currentLink="$scriptLocal"/_queue/broadcastPipe_page_lnk
+	
+	local currentValue
+	currentValue="$scriptLocal"/_queue/broadcastPipe_page_dir
+	
+	if [[ -e '/dev/shm' ]] && ! _if_cygwin && type -p mount > /dev/null 2>&1 && mount | grep '/dev/shm' > /dev/null 2>&1
+	then
+		currentValue=/dev/shm/queue_"$currentDescriptiveSelf"/_local/_queue/broadcastPipe_page_dir
+		mkdir -p "$currentValue"
+		_relink "$currentValue" "$currentLink" > /dev/null 2>&1
+		echo "$currentValue"
+		return 0
+	fi
+	
+	_relink "$currentValue" "$currentLink" > /dev/null 2>&1
+	echo "$currentValue"
+	
+	return 0
+}
+
+
+_rm_dir_broadcastPipe_page() {
+	local currentDescriptiveSelf
+	currentDescriptiveSelf=$(_queue_descriptiveSelf)
+	[[ "$currentDescriptiveSelf" == "" ]] && _stop 1
+	
+	rm -f "$scriptLocal"/_queue/broadcastPipe_page_lnk > /dev/null 2>&1
+	
+	rmdir "$scriptLocal"/_queue/broadcastPipe_page_dir > /dev/null 2>&1
+	rmdir "$scriptLocal"/_queue > /dev/null 2>&1
+	
+	rmdir /dev/shm/queue_"$currentDescriptiveSelf"/_local/_queue/broadcastPipe_page_dir > /dev/null 2>&1
+	rmdir /dev/shm/queue_"$currentDescriptiveSelf"/_local/_queue > /dev/null 2>&1
+	rmdir /dev/shm/queue_"$currentDescriptiveSelf"/_local > /dev/null 2>&1
+	rmdir /dev/shm/queue_"$currentDescriptiveSelf" > /dev/null 2>&1
+	
+	return 0
+}
+
+
+
+
+
+
 _default_page_write_maxTime() {
 	local currentValue
 	currentValue=725
@@ -4255,18 +4330,6 @@ _broadcastPipe_page_read_maxTime() {
 
 
 
-# ATTENTION: EXAMPLE
-
-#_demand_broadcastPipe_page ./zzzInputBufferDir ./zzzOutputBufferDir '100'
-#_terminate_broadcastPipe_page ./zzzInputBufferDir
-
-
-# UNIX/MSW(/Cygwin) Compatible. Demand for service may be placed once or repeatedly on either UNIX/MSW host/guest across network drive.
-#./lean.sh _demand_broadcastPipe_page ./zzzInputBufferDir ./zzzOutputBufferDir '100'
-#./lean.sh _page_read ./zzzOutputBufferDir 'out-'
-#echo "$RANDOM" | ./lean.sh _page_write_single ./zzzInputBufferDir/ 'diag-'
-
-
 
 
 
@@ -4284,9 +4347,20 @@ _broadcastPipe_page_read_maxTime() {
 #	'true' == Write only one page per "$maxTime" interval. WARNING: Writes may backlog indefinitely, breaking real-time messaging. (IGNORED by '_page_read')
 #	'false' == Write and read new pages continiously. WARNING: Read processes will consume 100% CPU. Readers may still miss some pages, although reads may happen faster than writes.
 _page_read() {
-	! mkdir -p "$1" && return 1
-	! [[ -e "$1" ]] && return 1
-	! [[ -d "$1" ]] && return 1
+	local inputBufferDir="$1"
+	if [[ "$inputBufferDir" == "" ]]
+	then
+		local current_demand_dir
+		current_demand_dir=$(_demand_dir_broadcastPipe_page)
+		[[ "$current_demand_dir" == "" ]] && _stop 1
+		
+		inputBufferDir="$current_demand_dir"/outputBufferDir
+	fi
+	
+	
+	! mkdir -p "$inputBufferDir" && return 1
+	! [[ -e "$inputBufferDir" ]] && return 1
+	! [[ -d "$inputBufferDir" ]] && return 1
 	
 	local currentMaxTime
 	currentMaxTime="$3"
@@ -4306,13 +4380,13 @@ _page_read() {
 	do
 		[[ "$ub_force_limit_page_rate" != 'false' ]] && sleep "$currentMaxTime_seconds"
 		
-		[[ -e "$1"/"$2"tick ]] && measureTickA=$(head -n 1 "$1"/"$2"tick 2>/dev/null)
+		[[ -e "$inputBufferDir"/"$2"tick ]] && measureTickA=$(head -n 1 "$inputBufferDir"/"$2"tick 2>/dev/null)
 		[[ "$measureTickA" != '0' ]] && [[ "$measureTickA" != '1' ]] && [[ "$measureTickA" != '2' ]] && continue
 		
 		[[ "$measureTickB" == '' ]] && measureTickB='doNotMatch'
 		[[ "$measureTickA" == "$measureTickB" ]] && continue
 		
-		cat "$1"/"$2""$measureTickA" 2>/dev/null
+		cat "$inputBufferDir"/"$2""$measureTickA" 2>/dev/null
 		
 		measureTickB="$measureTickA"
 	done
@@ -4323,11 +4397,21 @@ _page_read() {
 
 
 # "$1" == 'tickFile'
-_read_single() {
-	measureTickA=$(head -n 1 "$1" 2>/dev/null)
+_page_read_single() {
+	local inputBufferDir="$1"
+	if [[ "$inputBufferDir" == "" ]]
+	then
+		local current_demand_dir
+		current_demand_dir=$(_demand_dir_broadcastPipe_page)
+		[[ "$current_demand_dir" == "" ]] && _stop 1
+		
+		inputBufferDir="$current_demand_dir"/outputBufferDir
+	fi
+	
+	measureTickA=$(head -n 1 "$inputBufferDir" 2>/dev/null)
 	[[ "$measureTickA" != '0' ]] && [[ "$measureTickA" != '1' ]] && [[ "$measureTickA" != '2' ]] && return 0
 	
-	measureTickB=$(head -n 1  "$1"-prev-$sessionid 2>/dev/null)
+	measureTickB=$(head -n 1  "$inputBufferDir"-prev-$sessionid 2>/dev/null)
 	
 	[[ "$measureTickB" == '' ]] && measureTickB='doNotMatch'
 	[[ "$measureTickA" == "$measureTickB" ]] && return 0
@@ -4337,12 +4421,12 @@ _read_single() {
 	cat ${1/-tick/}-"$measureTickA" 2>/dev/null
 	[[ "$?" != '0' ]] && currentExitStatus='1'
 	
-	cp "$1" "$1"-prev-$sessionid 2>/dev/null
+	cp "$inputBufferDir" "$inputBufferDir"-prev-$sessionid 2>/dev/null
 	[[ "$?" != '0' ]] && currentExitStatus='1'
 	
 	if [[ "$currentExitStatus" != '0' ]]
 	then
-		rm -f "$1" > /dev/null 2>&1
+		rm -f "$inputBufferDir" > /dev/null 2>&1
 		return "$currentExitStatus"
 	fi
 	
@@ -4369,9 +4453,20 @@ _reset_page_write() {
 #	'true' == Write only one page per "$maxTime" interval. WARNING: Writes may backlog indefinitely, breaking real-time messaging.
 #	'false' == Write and read new pages continiously. WARNING: Read processes will consume 100% CPU. Readers may still miss some pages, although reads may happen faster than writes. (IGNORED by '_page_write')
 _page_write() {
-	! mkdir -p "$1" && return 1
-	! [[ -e "$1" ]] && return 1
-	! [[ -d "$1" ]] && return 1
+	local outputBufferDir="$1"
+	if [[ "$outputBufferDir" == "" ]]
+	then
+		local current_demand_dir
+		current_demand_dir=$(_demand_dir_broadcastPipe_page)
+		[[ "$current_demand_dir" == "" ]] && _stop 1
+		
+		outputBufferDir="$current_demand_dir"/inputBufferDir
+	fi
+	
+	
+	! mkdir -p "$outputBufferDir" && return 1
+	! [[ -e "$outputBufferDir" ]] && return 1
+	! [[ -d "$outputBufferDir" ]] && return 1
 	
 	
 	# https://stackoverflow.com/questions/13889659/read-a-file-by-bytes-in-bash
@@ -4420,37 +4515,37 @@ _page_write() {
 	
 	local currentTick
 	currentTick=
-	[[ -e "$1"/"$2"tick ]] && currentTick=$(head -c 1 "$1"/"$2"tick)
+	[[ -e "$outputBufferDir"/"$2"tick ]] && currentTick=$(head -c 1 "$outputBufferDir"/"$2"tick)
 	( [[ "$currentTick" == '0' ]] || [[ "$currentTick" == '1' ]] || [[ "$currentTick" == '2' ]] ) && let currentTick="$currentTick"+1
 	[[ "$currentTick" != '0' ]] && [[ "$currentTick" != '1' ]] && [[ "$currentTick" != '2' ]] && [[ "$currentTick" != '3' ]] && currentTick='0'
 	[[ "$currentTick" -ge '3' ]] && currentTick=0
 	local currentTempSize
 	currentTempSize='0'
-	rm -f "$1"/temp > /dev/null 2>&1
-	rm -f "$1"/"$2"tick > /dev/null 2>&1
-	rm -f "$1"/"$2"0 > /dev/null 2>&1
-	rm -f "$1"/"$2"1 > /dev/null 2>&1
-	rm -f "$1"/"$2"2 > /dev/null 2>&1
-	#while _timeout "$currentMaxTime_seconds" head --bytes="$currentMaxBytes" 2>/dev/null >> "$1"/temp
-	#while _timeout "$currentMaxTime_seconds" cat 2>/dev/null >> "$1"/temp
-	#while "$scriptAbsoluteLocation" _bin cat | _timeout "$currentMaxTime_seconds" dd bs="$currentMaxBytes" count=1 2>/dev/null >> "$1"/temp
-	#while _timeout "$currentMaxTime_seconds" ( ! dd bs="$currentMaxBytes" count=1 2>/dev/null >> "$1"/temp && rm -f "$1"/temp > /dev/null 2>&1 )
-	#while cat 2>/dev/null >> "$1"/temp
-	#while _timeout "$currentMaxTime_seconds" head --bytes="2" 2>/dev/null >> "$1"/temp
-	#while _timeout "$currentMaxTime_seconds" dd bs="$currentMaxBytes" count=1 2>/dev/null >> "$1"/temp
+	rm -f "$outputBufferDir"/temp > /dev/null 2>&1
+	rm -f "$outputBufferDir"/"$2"tick > /dev/null 2>&1
+	rm -f "$outputBufferDir"/"$2"0 > /dev/null 2>&1
+	rm -f "$outputBufferDir"/"$2"1 > /dev/null 2>&1
+	rm -f "$outputBufferDir"/"$2"2 > /dev/null 2>&1
+	#while _timeout "$currentMaxTime_seconds" head --bytes="$currentMaxBytes" 2>/dev/null >> "$outputBufferDir"/temp
+	#while _timeout "$currentMaxTime_seconds" cat 2>/dev/null >> "$outputBufferDir"/temp
+	#while "$scriptAbsoluteLocation" _bin cat | _timeout "$currentMaxTime_seconds" dd bs="$currentMaxBytes" count=1 2>/dev/null >> "$outputBufferDir"/temp
+	#while _timeout "$currentMaxTime_seconds" ( ! dd bs="$currentMaxBytes" count=1 2>/dev/null >> "$outputBufferDir"/temp && rm -f "$outputBufferDir"/temp > /dev/null 2>&1 )
+	#while cat 2>/dev/null >> "$outputBufferDir"/temp
+	#while _timeout "$currentMaxTime_seconds" head --bytes="2" 2>/dev/null >> "$outputBufferDir"/temp
+	#while _timeout "$currentMaxTime_seconds" dd bs="$currentMaxBytes" count=1 2>/dev/null >> "$outputBufferDir"/temp
 	
-	#while cat 2>/dev/null >> "$1"/temp
-	while _timeout "$currentMaxTime_seconds" dd bs="$currentMaxBytes" count=1 2>/dev/null >> "$1"/temp
+	#while cat 2>/dev/null >> "$outputBufferDir"/temp
+	while _timeout "$currentMaxTime_seconds" dd bs="$currentMaxBytes" count=1 2>/dev/null >> "$outputBufferDir"/temp
 	do
-		#true | cat "$1"/temp > /dev/tty
+		#true | cat "$outputBufferDir"/temp > /dev/tty
 		measureDateB=$(true | date +%s%N | cut -b1-13)
 		measureDateDifference=$(bc <<< "$measureDateB - $measureDateA")
 		
 		currentTempSize='0'
-		[[ -s "$1"/temp ]] && currentTempSize=$(true | stat -c%s "$1"/temp 2>/dev/null)
+		[[ -s "$outputBufferDir"/temp ]] && currentTempSize=$(true | stat -c%s "$outputBufferDir"/temp 2>/dev/null)
 		[[ "$currentTempSize" == "" ]] && currentTempSize='0'
-		#[[ -s "$1"/temp ]] && true | stat -c%s "$1"/temp > /dev/tty
-		#[[ "$rewrite" == 'true' ]] && [[ -s "$1"/temp ]] && true | stat -c%s "$1"/temp > /dev/tty
+		#[[ -s "$outputBufferDir"/temp ]] && true | stat -c%s "$outputBufferDir"/temp > /dev/tty
+		#[[ "$rewrite" == 'true' ]] && [[ -s "$outputBufferDir"/temp ]] && true | stat -c%s "$outputBufferDir"/temp > /dev/tty
 		
 		#[[ "$currentTempSize" -gt "0" ]] && true | echo "$measureDateDifference" "$currentMaxTime" > /dev/tty
 		if [[ "$currentTempSize" -gt "0" ]] && ( [[ "$measureDateDifference" -ge "$currentMaxTime" ]] || [[ "$currentTempSize" -ge "$currentMaxBytes" ]] )
@@ -4461,10 +4556,10 @@ _page_write() {
 			# WARNING: Beware this is bad for real-time messaging. Much better to discard some flood data.
 			[[ "$ub_force_limit_page_rate" == 'true' ]] && [[ "$currentTempSize" -ge "$currentMaxBytes" ]] && sleep "$currentMaxTime_seconds"
 			
-			#rm -f "$1"/"$2""$currentTick" > /dev/null 2>&1
-			true | mv "$1"/temp "$1"/"$2""$currentTick"
-			true | echo -n "$currentTick" > "$1"/"$2"tick-temp
-			true | mv "$1"/"$2"tick-temp "$1"/"$2"tick
+			#rm -f "$outputBufferDir"/"$2""$currentTick" > /dev/null 2>&1
+			true | mv "$outputBufferDir"/temp "$outputBufferDir"/"$2""$currentTick"
+			true | echo -n "$currentTick" > "$outputBufferDir"/"$2"tick-temp
+			true | mv "$outputBufferDir"/"$2"tick-temp "$outputBufferDir"/"$2"tick
 			
 			measureDateA=$(true | date +%s%N | cut -b1-13)
 			#echo "$currentTick" > /dev/tty
@@ -4485,30 +4580,40 @@ _page_write() {
 # "$3" == maxTime (approximately how many milliseconds new data should be allowed to 'remain' in the buffer before writing out a new tick)
 # DANGER: Any changes may unexpectedly break '_broadcastPipe' ! Takes standard input from 'script' run by 'find' 'exec' .
 _page_write_single() {
+	local outputBufferDir="$1"
+	if [[ "$outputBufferDir" == "" ]]
+	then
+		local current_demand_dir
+		current_demand_dir=$(_demand_dir_broadcastPipe_page)
+		[[ "$current_demand_dir" == "" ]] && _stop 1
+		
+		outputBufferDir="$current_demand_dir"/inputBufferDir
+	fi
+	
 	local currentTmpUID
 	currentTmpUID=$(_uid)
-	cat 2>/dev/null >> "$1"/t_"$currentTmpUID"
+	cat 2>/dev/null >> "$outputBufferDir"/t_"$currentTmpUID"
 	
-	if ! [[ -s "$1"/t_"$currentTmpUID" ]] || ! mv -n "$1"/t_"$currentTmpUID" "$1"/temp 2>/dev/null
+	if ! [[ -s "$outputBufferDir"/t_"$currentTmpUID" ]] || ! mv -n "$outputBufferDir"/t_"$currentTmpUID" "$outputBufferDir"/temp 2>/dev/null
 	then
-		rm -f "$1"/t_"$currentTmpUID" > /dev/null 2>&1
+		rm -f "$outputBufferDir"/t_"$currentTmpUID" > /dev/null 2>&1
 		return 1
 	fi
 	
 	local currentTick
 	currentTick=
-	[[ -e "$1"/"$2"tick ]] && currentTick=$(head -c 1 "$1"/"$2"tick)
+	[[ -e "$outputBufferDir"/"$2"tick ]] && currentTick=$(head -c 1 "$outputBufferDir"/"$2"tick)
 	( [[ "$currentTick" == '0' ]] || [[ "$currentTick" == '1' ]] || [[ "$currentTick" == '2' ]] ) && let currentTick="$currentTick"+1
 	[[ "$currentTick" != '0' ]] && [[ "$currentTick" != '1' ]] && [[ "$currentTick" != '2' ]] && [[ "$currentTick" != '3' ]] && currentTick='0'
 	[[ "$currentTick" -ge '3' ]] && currentTick=0
 	
-	mv "$1"/temp "$1"/"$2""$currentTick"
-	echo -n "$currentTick" > "$1"/"$2"tick-temp
-	mv "$1"/"$2"tick-temp "$1"/"$2"tick
+	mv "$outputBufferDir"/temp "$outputBufferDir"/"$2""$currentTick"
+	echo -n "$currentTick" > "$outputBufferDir"/"$2"tick-temp
+	mv "$outputBufferDir"/"$2"tick-temp "$outputBufferDir"/"$2"tick
 	
 	
-	#rm -f "$1"/temp > /dev/null 2>&1
-	#rm -f "$1"/"$2"tick-temp > /dev/null 2>&1
+	#rm -f "$outputBufferDir"/temp > /dev/null 2>&1
+	#rm -f "$outputBufferDir"/"$2"tick-temp > /dev/null 2>&1
 	return 0
 }
 
@@ -4518,7 +4623,7 @@ _here_broadcastPipe_page_read_single() {
 
 CZXWXcRMTo8EmM8i4d
 	
-	declare -f _read_single
+	declare -f _page_read_single
 	declare -f _broadcastPipe_page_read_single
 	
 	cat << CZXWXcRMTo8EmM8i4d
@@ -4549,7 +4654,7 @@ _broadcastPipe_page_write() {
 
 
 _broadcastPipe_page_read_single() {
-	_read_single "$@"
+	_page_read_single "$@"
 }
 
 
@@ -4601,6 +4706,7 @@ _broadcastPipe_page_read() {
 	_stop_queue_page() {
 		_terminate_broadcastPipe_page "$current_broadcastPipe_inputBufferDir" 2> /dev/null
 		_rm_broadcastPipe "$current_broadcastPipe_inputBufferDir" "$current_broadcastPipe_outputBufferDir"
+		_rm_dir_broadcastPipe_page
 	}
 	
 	rm -f "$1"/reset > /dev/null 2>&1
@@ -4665,6 +4771,16 @@ _rmloop_broadcastPipe_page() {
 
 
 _safePath_demand_broadcastPipe_page() {
+	if [[ "$1" == "$scriptLocal"* ]] && ! _if_cygwin
+	then
+		return 0
+	fi
+	if [[ "$1" == '/dev/shm/'* ]] && ! _if_cygwin
+	then
+		return 0
+	fi
+	
+	
 	! _safePath "$1" && _stop 1
 	return 0
 }
@@ -4719,16 +4835,33 @@ _demand_broadcastPipe_page_sequence() {
 }
 
 _demand_broadcastPipe_page() {
+	local inputBufferDir="$1"
+	local outputBufferDir="$2"
+	shift
+	shift
 	
-	export current_broadcastPipe_inputBufferDir="$1"
-	export current_broadcastPipe_outputBufferDir="$2"
+	if [[ "$inputBufferDir" == "" ]] || [[ "$outputBufferDir" == "" ]]
+	then
+		local current_demand_dir
+		current_demand_dir=$(_demand_dir_broadcastPipe_page)
+		[[ "$current_demand_dir" == "" ]] && _stop 1
+		
+		inputBufferDir="$current_demand_dir"/inputBufferDir
+		outputBufferDir="$current_demand_dir"/outputBufferDir
+		
+	fi
+	
+	export current_broadcastPipe_inputBufferDir="$inputBufferDir"
+	export current_broadcastPipe_outputBufferDir="$outputBufferDir"
 	_stop_queue_page() {
 		_terminate_broadcastPipe_page "$current_broadcastPipe_inputBufferDir" 2> /dev/null
 		_rm_broadcastPipe "$current_broadcastPipe_inputBufferDir" "$current_broadcastPipe_outputBufferDir"
+		_rm_dir_broadcastPipe_page
 	}
 	
-	"$scriptAbsoluteLocation" _demand_broadcastPipe_page_sequence "$@" &
-	while [[ -e "$1"/rmloop ]] || [[ ! -e "$1"/listen ]]
+	
+	"$scriptAbsoluteLocation" _demand_broadcastPipe_page_sequence "$inputBufferDir" "$outputBufferDir" "$@" &
+	while [[ -e "$inputBufferDir"/rmloop ]] || [[ ! -e "$inputBufferDir"/listen ]]
 	do
 		sleep 0.1
 	done
@@ -4875,6 +5008,8 @@ _test_broadcastPipe_page-single_sequence() {
 }
 
 _test_broadcastPipe_page() {
+	_getDep md5sum
+	_getDep sha512sum
 	#_getDep pv
 	
 	if ! "$scriptAbsoluteLocation" _test_broadcastPipe_page-stream_sequence "$@" 2> /dev/null

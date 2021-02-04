@@ -90,16 +90,33 @@ _demand_broadcastPipe_page_sequence() {
 }
 
 _demand_broadcastPipe_page() {
+	local inputBufferDir="$1"
+	local outputBufferDir="$2"
+	shift
+	shift
 	
-	export current_broadcastPipe_inputBufferDir="$1"
-	export current_broadcastPipe_outputBufferDir="$2"
+	if [[ "$inputBufferDir" == "" ]] || [[ "$outputBufferDir" == "" ]]
+	then
+		local current_demand_dir
+		current_demand_dir=$(_demand_dir_broadcastPipe_page)
+		[[ "$current_demand_dir" == "" ]] && _stop 1
+		
+		inputBufferDir="$current_demand_dir"/inputBufferDir
+		outputBufferDir="$current_demand_dir"/outputBufferDir
+		
+	fi
+	
+	export current_broadcastPipe_inputBufferDir="$inputBufferDir"
+	export current_broadcastPipe_outputBufferDir="$outputBufferDir"
 	_stop_queue_page() {
 		_terminate_broadcastPipe_page "$current_broadcastPipe_inputBufferDir" 2> /dev/null
 		_rm_broadcastPipe "$current_broadcastPipe_inputBufferDir" "$current_broadcastPipe_outputBufferDir"
+		_rm_dir_broadcastPipe_page
 	}
 	
-	"$scriptAbsoluteLocation" _demand_broadcastPipe_page_sequence "$@" &
-	while [[ -e "$1"/rmloop ]] || [[ ! -e "$1"/listen ]]
+	
+	"$scriptAbsoluteLocation" _demand_broadcastPipe_page_sequence "$inputBufferDir" "$outputBufferDir" "$@" &
+	while [[ -e "$inputBufferDir"/rmloop ]] || [[ ! -e "$inputBufferDir"/listen ]]
 	do
 		sleep 0.1
 	done

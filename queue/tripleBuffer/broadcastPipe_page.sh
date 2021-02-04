@@ -19,7 +19,7 @@ _broadcastPipe_page_write() {
 
 
 _broadcastPipe_page_read_single() {
-	_read_single "$@"
+	_page_read_single "$@"
 }
 
 
@@ -71,6 +71,7 @@ _broadcastPipe_page_read() {
 	_stop_queue_page() {
 		_terminate_broadcastPipe_page "$current_broadcastPipe_inputBufferDir" 2> /dev/null
 		_rm_broadcastPipe "$current_broadcastPipe_inputBufferDir" "$current_broadcastPipe_outputBufferDir"
+		_rm_dir_broadcastPipe_page
 	}
 	
 	rm -f "$1"/reset > /dev/null 2>&1

@@ -12,6 +12,7 @@ _compile_bash_vars_queue() {
 	#[[ "$enUb_portal" == "true" ]] && 
 	
 	includeScriptList+=( "queue"/queue_vars.sh )
+	includeScriptList+=( "queue"/queue_vars_default.sh )
 	
 	includeScriptList+=( "queue"/queue.sh )
 	

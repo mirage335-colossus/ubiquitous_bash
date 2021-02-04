@@ -7,9 +7,20 @@
 #	'true' == Write only one page per "$maxTime" interval. WARNING: Writes may backlog indefinitely, breaking real-time messaging. (IGNORED by '_page_read')
 #	'false' == Write and read new pages continiously. WARNING: Read processes will consume 100% CPU. Readers may still miss some pages, although reads may happen faster than writes.
 _page_read() {
-	! mkdir -p "$1" && return 1
-	! [[ -e "$1" ]] && return 1
-	! [[ -d "$1" ]] && return 1
+	local inputBufferDir="$1"
+	if [[ "$inputBufferDir" == "" ]]
+	then
+		local current_demand_dir
+		current_demand_dir=$(_demand_dir_broadcastPipe_page)
+		[[ "$current_demand_dir" == "" ]] && _stop 1
+		
+		inputBufferDir="$current_demand_dir"/outputBufferDir
+	fi
+	
+	
+	! mkdir -p "$inputBufferDir" && return 1
+	! [[ -e "$inputBufferDir" ]] && return 1
+	! [[ -d "$inputBufferDir" ]] && return 1
 	
 	local currentMaxTime
 	currentMaxTime="$3"
@@ -29,13 +40,13 @@ _page_read() {
 	do
 		[[ "$ub_force_limit_page_rate" != 'false' ]] && sleep "$currentMaxTime_seconds"
 		
-		[[ -e "$1"/"$2"tick ]] && measureTickA=$(head -n 1 "$1"/"$2"tick 2>/dev/null)
+		[[ -e "$inputBufferDir"/"$2"tick ]] && measureTickA=$(head -n 1 "$inputBufferDir"/"$2"tick 2>/dev/null)
 		[[ "$measureTickA" != '0' ]] && [[ "$measureTickA" != '1' ]] && [[ "$measureTickA" != '2' ]] && continue
 		
 		[[ "$measureTickB" == '' ]] && measureTickB='doNotMatch'
 		[[ "$measureTickA" == "$measureTickB" ]] && continue
 		
-		cat "$1"/"$2""$measureTickA" 2>/dev/null
+		cat "$inputBufferDir"/"$2""$measureTickA" 2>/dev/null
 		
 		measureTickB="$measureTickA"
 	done

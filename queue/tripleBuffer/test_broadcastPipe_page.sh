@@ -84,6 +84,8 @@ _test_broadcastPipe_page-single_sequence() {
 }
 
 _test_broadcastPipe_page() {
+	_getDep md5sum
+	_getDep sha512sum
 	#_getDep pv
 	
 	if ! "$scriptAbsoluteLocation" _test_broadcastPipe_page-stream_sequence "$@" 2> /dev/null
