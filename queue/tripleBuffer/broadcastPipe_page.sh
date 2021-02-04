@@ -45,7 +45,7 @@ _env_broadcastPipe() {
 }
 
 
-# WARNING: Deletes all existing files (to 'clear the buffers').
+# WARNING: May delete all existing files (to 'clear the buffers').
 # WARNING: Must be running before any desired data is written to buffer - existing buffers are always discarded.
 # "$1" == inputBufferDir
 # "$2" == outputBufferDir
@@ -66,10 +66,13 @@ _broadcastPipe_page_read() {
 	local currentMaxTime_seconds
 	currentMaxTime_seconds=$(bc <<< "$currentMaxTime * 0.001")
 	
-	export current_broadcastPipe_inputBufferDir="$1"
-	export current_broadcastPipe_outputBufferDir="$2"
+	# May perhaps take effect when SIGTERM is received directly (eg. when SIGTERM may be sent to all processes) .
+	export current_broadcastPipe_inputBufferDir="$inputBufferDir"
+	export current_broadcastPipe_outputBufferDir="$outputBufferDir"
 	_stop_queue_page() {
-		_terminate_broadcastPipe_page "$current_broadcastPipe_inputBufferDir" 2> /dev/null
+		#_terminate_broadcastPipe_page "$current_broadcastPipe_inputBufferDir" 2> /dev/null
+		_terminate_broadcastPipe_fast "$current_broadcastPipe_inputBufferDir" 2> /dev/null
+		sleep 1
 		_rm_broadcastPipe "$current_broadcastPipe_inputBufferDir" "$current_broadcastPipe_outputBufferDir"
 		_rm_dir_broadcastPipe_page
 	}
@@ -88,7 +91,7 @@ _broadcastPipe_page_read() {
 		# WARNING: Although sequential throughput may be important in some cases, a 'pair of wires' is fundamentally not a parallel device. Simultaneous writing to aggregator should only occur during (usually undesirable) collisions. Nevertheless, processing these collisions out of order is entirely reasonable.
 		# WARNING: Imposing limits on the number of inputs (eg. due to command line argument length limitations), below a few thousand, is strongly discouraged.
 		# https://serverfault.com/questions/193319/a-better-unix-find-with-parallel-processing
-		_env_broadcastPipe find "$1" -mindepth 1 -maxdepth 1 -mmin -0.1 -type f -name '*-tick' -exec "$safeTmp"/broadcastPipe_page_read.sh {} \; 2> /dev/null | _broadcastPipe_page_write "" "$2" "$3" "$4" "$5" 2>/dev/null
+		_env_broadcastPipe find "$1" -mindepth 1 -maxdepth 1 -mmin -0.4 -type f -name '*-tick' -exec "$safeTmp"/broadcastPipe_page_read.sh {} \; | _broadcastPipe_page_write "" "$2" "$3" "$4" "$5" 2>/dev/null
 		
 		# DANGER: Allowing this bus to run without any idle time may result in an immediately overwhelming processor load, if find loop is allowed to 'fork' new processes.
 		[[ "$ub_force_limit_page_rate" != 'false' ]] && sleep "$currentMaxTime_seconds"
@@ -100,6 +103,7 @@ _broadcastPipe_page_read() {
 	
 	
 	_rm_broadcastPipe "$@"
+	_rm_dir_broadcastPipe_page
 	_stop
 }
 

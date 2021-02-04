@@ -103,16 +103,20 @@ _demand_broadcastPipe_page() {
 		
 		inputBufferDir="$current_demand_dir"/inputBufferDir
 		outputBufferDir="$current_demand_dir"/outputBufferDir
-		
+	elif [[ -e "$safeTmp" ]]
+	then
+		# DANGER: Without this hook, temporary "$safeTmp" directories may persist indefinitely!
+		# Only hook '_stop_queue_page' if called from within another 'sequence' (to cause termination of service when that 'sequence' terminates for any reason).
+		export current_broadcastPipe_inputBufferDir="$inputBufferDir"
+		export current_broadcastPipe_outputBufferDir="$outputBufferDir"
+		_stop_queue_page() {
+			_terminate_broadcastPipe_page "$current_broadcastPipe_inputBufferDir" 2> /dev/null
+			#_terminate_broadcastPipe_fast "$current_broadcastPipe_inputBufferDir" 2> /dev/null
+			#sleep 1
+			_rm_broadcastPipe "$current_broadcastPipe_inputBufferDir" "$current_broadcastPipe_outputBufferDir"
+			_rm_dir_broadcastPipe_page
+		}
 	fi
-	
-	export current_broadcastPipe_inputBufferDir="$inputBufferDir"
-	export current_broadcastPipe_outputBufferDir="$outputBufferDir"
-	_stop_queue_page() {
-		_terminate_broadcastPipe_page "$current_broadcastPipe_inputBufferDir" 2> /dev/null
-		_rm_broadcastPipe "$current_broadcastPipe_inputBufferDir" "$current_broadcastPipe_outputBufferDir"
-		_rm_dir_broadcastPipe_page
-	}
 	
 	
 	"$scriptAbsoluteLocation" _demand_broadcastPipe_page_sequence "$inputBufferDir" "$outputBufferDir" "$@" &
@@ -130,8 +134,27 @@ _demand_broadcastPipe_page() {
 }
 
 
+_terminate_broadcastPipe_fast() {
+	local inputBufferDir="$1"
+	
+	if [[ "$inputBufferDir" == "" ]]
+	then
+		local current_demand_dir
+		current_demand_dir=$(_demand_dir_broadcastPipe_page)
+		[[ "$current_demand_dir" == "" ]] && _stop 1
+		
+		inputBufferDir="$current_demand_dir"/inputBufferDir
+	fi
+	
+	[[ "$inputBufferDir" == "" ]] && return 1
+	[[ "$inputBufferDir" == "/" ]] && return 1
+	[[ ! -e "$inputBufferDir" ]] && return 1
+	
+	echo > "$inputBufferDir"/terminate
+}
+
 _terminate_broadcastPipe_page() {
-	echo > "$1"/terminate
+	_terminate_broadcastPipe_fast "$@"
 	_sleep_spinlock
 }
 
@@ -139,7 +162,22 @@ _terminate_broadcastPipe_page() {
 # WARNING: Untested.
 # One possible benefit - a reset should happen much more quickly than a '_terminate ..." "_demand ..." cycle due to lack of spinlock sleep.
 _reset_broadcastPipe_page() {
-	echo > "$2"/reset
-	echo > "$1"/terminate
+	local inputBufferDir="$1"
+	
+	if [[ "$inputBufferDir" == "" ]]
+	then
+		local current_demand_dir
+		current_demand_dir=$(_demand_dir_broadcastPipe_page)
+		[[ "$current_demand_dir" == "" ]] && _stop 1
+		
+		inputBufferDir="$current_demand_dir"/inputBufferDir
+	fi
+	
+	[[ "$inputBufferDir" == "" ]] && return 1
+	[[ "$inputBufferDir" == "/" ]] && return 1
+	[[ ! -e "$inputBufferDir" ]] && return 1
+	
+	echo > "$inputBufferDir"/reset
+	echo > "$inputBufferDir"/terminate
 }
 

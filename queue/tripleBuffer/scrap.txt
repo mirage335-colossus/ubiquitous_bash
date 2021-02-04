@@ -13,10 +13,14 @@
 #echo "$RANDOM" | ./lean.sh _page_write_single ./zzzInputBufferDir/ 'diag-'
 
 
+./_demand_broadcastPipe_page.bat
+
+while true ; do sleep 0.1 ; echo "$RANDOM" ; done | ./lean.sh _page_write
+
+./lean.sh _page_read
 
 
-
-
+./_terminate_broadcastPipe_page.bat
 
 
 
@@ -183,6 +187,38 @@ _broadcastPipe_page_read_maxTimeWrite() {
 	local current_Read_MaxTime=575
 	local current_Write_MaxTime=4475
 	local current_Write_MaxBytes=86400
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

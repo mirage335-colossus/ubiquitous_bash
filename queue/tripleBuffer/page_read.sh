@@ -8,13 +8,17 @@
 #	'false' == Write and read new pages continiously. WARNING: Read processes will consume 100% CPU. Readers may still miss some pages, although reads may happen faster than writes.
 _page_read() {
 	local inputBufferDir="$1"
-	if [[ "$inputBufferDir" == "" ]]
+	local inputFilesPrefix="$2"
+	if [[ "$inputBufferDir" == "" ]] || [[ "$inputBufferDir" == "" ]]
 	then
 		local current_demand_dir
 		current_demand_dir=$(_demand_dir_broadcastPipe_page)
 		[[ "$current_demand_dir" == "" ]] && _stop 1
 		
 		inputBufferDir="$current_demand_dir"/outputBufferDir
+		! mkdir -p "$inputBufferDir" && return 1
+		
+		[[ "$inputFilesPrefix" == "" ]] && inputFilesPrefix='out-'
 	fi
 	
 	
@@ -40,13 +44,13 @@ _page_read() {
 	do
 		[[ "$ub_force_limit_page_rate" != 'false' ]] && sleep "$currentMaxTime_seconds"
 		
-		[[ -e "$inputBufferDir"/"$2"tick ]] && measureTickA=$(head -n 1 "$inputBufferDir"/"$2"tick 2>/dev/null)
+		[[ -e "$inputBufferDir"/"$inputFilesPrefix"tick ]] && measureTickA=$(head -n 1 "$inputBufferDir"/"$inputFilesPrefix"tick 2>/dev/null)
 		[[ "$measureTickA" != '0' ]] && [[ "$measureTickA" != '1' ]] && [[ "$measureTickA" != '2' ]] && continue
 		
 		[[ "$measureTickB" == '' ]] && measureTickB='doNotMatch'
 		[[ "$measureTickA" == "$measureTickB" ]] && continue
 		
-		cat "$inputBufferDir"/"$2""$measureTickA" 2>/dev/null
+		cat "$inputBufferDir"/"$inputFilesPrefix""$measureTickA" 2>/dev/null
 		
 		measureTickB="$measureTickA"
 	done

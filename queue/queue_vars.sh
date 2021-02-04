@@ -1,15 +1,16 @@
 
 _queue_descriptiveSelf() {
-	[[ ! -e "$scriptAbsoluteLocation" ]] && exit 1
+	[[ ! -e "$scriptAbsoluteFolder" ]] && exit 1
+	[[ ! -d "$scriptAbsoluteFolder" ]] && exit 1
 	
 	if type -p md5sum > /dev/null 2>&1
 	then
-		_getScriptAbsoluteLocation | md5sum | head -c 18
+		_safeEcho "$scriptAbsoluteFolder" | md5sum | head -c 18
 		return 0
 	fi
 	if type -p sha512sum > /dev/null 2>&1
 	then
-		_getScriptAbsoluteLocation | sha512sum | head -c 18
+		_safeEcho "$scriptAbsoluteFolder" | sha512sum | head -c 18
 		return 0
 	fi
 	
