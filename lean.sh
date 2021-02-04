@@ -4211,12 +4211,7 @@ export ub_anchor_autoupgrade
 _default_page_write_maxTime() {
 	local currentValue
 	currentValue=725
-	#_if_cygwin && currentValue=2975
-	#_if_cygwin && currentValue=3725
 	_if_cygwin && currentValue=4475
-	#_if_cygwin && currentValue=5225
-	#_if_cygwin && currentValue=5975
-	#_if_cygwin && currentValue=7475
 	echo "$currentValue"
 }
 
@@ -6648,6 +6643,13 @@ _test() {
 	_tryExec "_test_channel"
 	
 	! [[ -e /dev/urandom ]] && echo /dev/urandom missing && _stop 1
+	
+	_messagePASS
+	
+	_messageNormal "Queue..."
+	
+	echo -e '\E[0;36m Queue: _test_broadcastPipe_page \E[0m'
+	! _test_broadcastPipe_page && echo '_test_broadcastPipe_page broken' && _stop 1
 	
 	_messagePASS
 	

@@ -26,6 +26,16 @@ _rmloop_broadcastPipe_page() {
 
 
 _safePath_demand_broadcastPipe_page() {
+	if [[ "$1" == "$scriptLocal"* ]] && ! _if_cygwin
+	then
+		return 0
+	fi
+	if [[ "$1" == '/dev/shm/'* ]] && ! _if_cygwin
+	then
+		return 0
+	fi
+	
+	
 	! _safePath "$1" && _stop 1
 	return 0
 }
