@@ -11,6 +11,7 @@
 #./lean.sh _demand_broadcastPipe_page ./zzzInputBufferDir ./zzzOutputBufferDir '100'
 #./lean.sh _page_read ./zzzOutputBufferDir 'out-'
 #echo "$RANDOM" | ./lean.sh _page_write_single ./zzzInputBufferDir/ 'diag-'
+#while true ; do sleep 0.3 ; echo "$RANDOM" ; done | ./lean.sh _page_write ./zzzInputBufferDir/ 'diag-'
 
 
 ./_demand_broadcastPipe_page.bat
