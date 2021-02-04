@@ -21,6 +21,7 @@ _page_write_single() {
 	currentTmpUID=$(_uid)
 	cat 2>/dev/null >> "$outputBufferDir"/t_"$currentTmpUID"
 	
+	
 	if ! [[ -s "$outputBufferDir"/t_"$currentTmpUID" ]] || ! mv -n "$outputBufferDir"/t_"$currentTmpUID" "$outputBufferDir"/temp 2>/dev/null
 	then
 		rm -f "$outputBufferDir"/t_"$currentTmpUID" > /dev/null 2>&1

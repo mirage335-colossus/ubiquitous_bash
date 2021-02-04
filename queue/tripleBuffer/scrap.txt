@@ -15,10 +15,13 @@
 
 ./_demand_broadcastPipe_page.bat
 
-while true ; do sleep 0.1 ; echo "$RANDOM" ; done | ./lean.sh _page_write
-
 ./lean.sh _page_read
+./lean.sh _page_read_single
+while true ; do ./lean.sh _page_read_single '' '' 'false' ; done
 
+echo "$RANDOM" | ./lean.sh _page_write_single
+echo "$RANDOM" | ./lean.sh _page_write
+while true ; do sleep 0.1 ; echo "$RANDOM" ; done | ./lean.sh _page_write
 
 ./_terminate_broadcastPipe_page.bat
 
@@ -201,7 +204,26 @@ _broadcastPipe_page_read_maxTimeWrite() {
 
 
 
+#_page_write_single() ...
+# 	if ! [[ -e "$safeTmp" ]]
+# 	then
+# 		export current_page_write_outputBufferDir="$outputBufferDir"
+# 		export current_page_write_currentTmpUID="$currentTmpUID"
+# 		_stop_queue_page() {
+# 			rm -f "$current_page_write_outputBufferDir"/t_"$current_page_write_currentTmpUID" > /dev/null 2>&1
+# 		}
+# 	fi
 
+
+#_page_read_single() ...
+# 	if ! [[ -e "$safeTmp" ]]
+# 	then
+# 		export current_page_write_inputTickFile="$inputTickFile"
+# 		export current_page_write_currentSession="$currentSession"
+# 		_stop_queue_page() {
+# 			rm -f "$current_page_write_inputTickFile"-prev-"$current_page_write_currentSession" > /dev/null 2>&1
+# 		}
+# 	fi
 
 
 

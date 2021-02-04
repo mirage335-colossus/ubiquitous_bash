@@ -34,6 +34,15 @@ _page_write() {
 	! [[ -e "$outputBufferDir" ]] && return 1
 	! [[ -d "$outputBufferDir" ]] && return 1
 	
+	if ! [[ -e "$safeTmp" ]]
+	then
+		export current_page_write_outputBufferDir="$outputBufferDir"
+		export current_page_write_sessionid="$sessionid"
+		_stop_queue_page() {
+			rm -f "$current_page_write_outputBufferDir"/t_"$current_page_write_sessionid" > /dev/null 2>&1
+		}
+	fi
+	
 	
 	# https://stackoverflow.com/questions/13889659/read-a-file-by-bytes-in-bash
 	# https://www.cyberciti.biz/faq/linux-unix-read-one-character-atatime-while-loop/

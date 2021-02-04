@@ -7810,34 +7810,48 @@ _page_read() {
 
 
 
-# "$1" == 'tickFile'
+# "$1" == "$inputTickFile"
+# "$2" == "$inputFilesPrefix"
+# "$3" == "sessionid" (optional)
 _page_read_single() {
 	local inputTickFile="$1"
 	local inputFilesPrefix="$2"
-	if [[ "$inputTickFile" == "" ]]
+	local currentSession="$3"
+	if [[ "$inputTickFile" == "" ]] && [[ "$inputFilesPrefix" == "" ]]
 	then
 		local current_demand_dir
 		current_demand_dir=$(_demand_dir_broadcastPipe_page)
 		[[ "$current_demand_dir" == "" ]] && _stop 1
 		
 		inputTickFile="$current_demand_dir"/outputBufferDir/out-tick
+		
+		[[ "$currentSession" == "" ]] && currentSession="single"
+		[[ "$currentSession" == "" ]] && currentSession="false"
 	fi
+	[[ "$currentSession" == "" ]] && currentSession="$sessionid"
+	
 	
 	measureTickA=$(head -n 1 "$inputTickFile" 2>/dev/null)
 	[[ "$measureTickA" != '0' ]] && [[ "$measureTickA" != '1' ]] && [[ "$measureTickA" != '2' ]] && return 0
 	
-	measureTickB=$(head -n 1  "$inputTickFile"-prev-$sessionid 2>/dev/null)
-	
-	[[ "$measureTickB" == '' ]] && measureTickB='doNotMatch'
-	[[ "$measureTickA" == "$measureTickB" ]] && return 0
+	if [[ "$currentSession" != 'false' ]]
+	then
+		measureTickB=$(head -n 1  "$inputTickFile"-prev-"$currentSession" 2>/dev/null)
+		
+		[[ "$measureTickB" == '' ]] && measureTickB='doNotMatch'
+		[[ "$measureTickA" == "$measureTickB" ]] && return 0
+	fi
 	
 	currentExitStatus='0'
 	
-	cat ${1/-tick/}-"$measureTickA" 2>/dev/null
+	cat ${inputTickFile/-tick/}-"$measureTickA" 2>/dev/null
 	[[ "$?" != '0' ]] && currentExitStatus='1'
 	
-	cp "$inputTickFile" "$inputTickFile"-prev-$sessionid 2>/dev/null
-	[[ "$?" != '0' ]] && currentExitStatus='1'
+	if [[ "$currentSession" != 'false' ]]
+	then
+		cp "$inputTickFile" "$inputTickFile"-prev-"$currentSession" 2>/dev/null
+		[[ "$?" != '0' ]] && currentExitStatus='1'
+	fi
 	
 	if [[ "$currentExitStatus" != '0' ]]
 	then
@@ -7886,6 +7900,15 @@ _page_write() {
 	! mkdir -p "$outputBufferDir" && return 1
 	! [[ -e "$outputBufferDir" ]] && return 1
 	! [[ -d "$outputBufferDir" ]] && return 1
+	
+	if ! [[ -e "$safeTmp" ]]
+	then
+		export current_page_write_outputBufferDir="$outputBufferDir"
+		export current_page_write_sessionid="$sessionid"
+		_stop_queue_page() {
+			rm -f "$current_page_write_outputBufferDir"/t_"$current_page_write_sessionid" > /dev/null 2>&1
+		}
+	fi
 	
 	
 	# https://stackoverflow.com/questions/13889659/read-a-file-by-bytes-in-bash
@@ -8016,6 +8039,7 @@ _page_write_single() {
 	local currentTmpUID
 	currentTmpUID=$(_uid)
 	cat 2>/dev/null >> "$outputBufferDir"/t_"$currentTmpUID"
+	
 	
 	if ! [[ -s "$outputBufferDir"/t_"$currentTmpUID" ]] || ! mv -n "$outputBufferDir"/t_"$currentTmpUID" "$outputBufferDir"/temp 2>/dev/null
 	then
@@ -8149,7 +8173,7 @@ _broadcastPipe_page_read() {
 		# WARNING: Although sequential throughput may be important in some cases, a 'pair of wires' is fundamentally not a parallel device. Simultaneous writing to aggregator should only occur during (usually undesirable) collisions. Nevertheless, processing these collisions out of order is entirely reasonable.
 		# WARNING: Imposing limits on the number of inputs (eg. due to command line argument length limitations), below a few thousand, is strongly discouraged.
 		# https://serverfault.com/questions/193319/a-better-unix-find-with-parallel-processing
-		_env_broadcastPipe find "$1" -mindepth 1 -maxdepth 1 -mmin -0.4 -type f -name '*-tick' -exec "$safeTmp"/broadcastPipe_page_read.sh {} \; | _broadcastPipe_page_write "" "$2" "$3" "$4" "$5" 2>/dev/null
+		_env_broadcastPipe find "$1" -mindepth 1 -maxdepth 1 -mmin -0.4 -type f -name '*-tick' -exec "$safeTmp"/broadcastPipe_page_read.sh {} \; 2> /dev/null | _broadcastPipe_page_write "" "$2" "$3" "$4" "$5" 2>/dev/null
 		
 		# DANGER: Allowing this bus to run without any idle time may result in an immediately overwhelming processor load, if find loop is allowed to 'fork' new processes.
 		[[ "$ub_force_limit_page_rate" != 'false' ]] && sleep "$currentMaxTime_seconds"
