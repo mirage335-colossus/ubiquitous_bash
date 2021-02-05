@@ -26029,11 +26029,11 @@ _compile_bash_entry() {
 _compile_bash_extension() {
 	export includeScriptList
 	
-	[[ "$enUb_buildBashUbiquitous" == "true" ]] && includeScriptList+=( "queue/build"/deps_queue.sh )
-	[[ "$enUb_buildBashUbiquitous" == "true" ]] && includeScriptList+=( "queue/build"/compile_queue.sh )
+	[[ "$enUb_buildBashUbiquitous" == "true" ]] && includeScriptList+=( "queue/__build"/deps_queue.sh )
+	[[ "$enUb_buildBashUbiquitous" == "true" ]] && includeScriptList+=( "queue/__build"/compile_queue.sh )
 	
-	[[ "$enUb_buildBashUbiquitous" == "true" ]] && includeScriptList+=( "metaengine/build"/deps_meta.sh )
-	[[ "$enUb_buildBashUbiquitous" == "true" ]] && includeScriptList+=( "metaengine/build"/compile_meta.sh )
+	[[ "$enUb_buildBashUbiquitous" == "true" ]] && includeScriptList+=( "metaengine/__build"/deps_meta.sh )
+	[[ "$enUb_buildBashUbiquitous" == "true" ]] && includeScriptList+=( "metaengine/__build"/compile_meta.sh )
 }
 
 #placehoder, define under "queue/build"

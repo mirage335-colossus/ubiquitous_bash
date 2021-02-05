@@ -1,0 +1,42 @@
+
+#https://stackoverflow.com/questions/42075387/check-whether-named-pipe-fifo-is-open-for-writing
+
+#https://unix.stackexchange.com/questions/278538/using-named-pipes-in-bash-created-in-a-c-program
+
+#https://en.wikipedia.org/wiki/Pipeline_(Unix)
+
+#https://stackoverflow.com/questions/36340599/how-does-shopt-s-lastpipe-affect-bash-script-behavior
+
+
+#https://github.com/KevinOConnor/klipper/blob/master/docs/FAQ.md#do-i-have-to-use-octoprint
+# 'Klipper creates a "virtual serial port" via the "/tmp/printer" file, and it emulates a classic 3d-printer serial interface via that file. In general, alternative software may work with Klipper as long as it can be configured to use "/tmp/printer" for the printer serial port.'
+
+
+
+cat /dev/urandom 2> /dev/null | base64 2> /dev/null | tr -dc 'a-zA-Z0-9' | while true ; do sleep 0.1 ; head -c 1 > out1 ; head -c 1 > out2 ; done
+
+cat /dev/urandom 2> /dev/null | base64 2> /dev/null | tr -dc 'a-zA-Z0-9' | while IFS= read -r -n1 char ; do sleep 0.1 ; echo -n $char ; done
+
+
+
+
+cat /dev/urandom 2> /dev/null | base64 2> /dev/null | tr -dc 'a-zA-Z0-9' | while IFS= read -r -n1 char ; do sleep 0.1 ; echo -n $char ; done | while 
+
+
+
+
+# Sends only one character to output at a time - pipe closes on every character.
+cat /dev/urandom 2> /dev/null | base64 2> /dev/null | tr -dc 'a-zA-Z0-9' | while IFS= read -r -n1 char ; do sleep 0.1 ; echo -n $char > out1 ; done
+
+
+
+#Pointless.
+cat /dev/urandom 2> /dev/null | base64 2> /dev/null | tr -dc 'a-zA-Z0-9' | while IFS= read -r -n1 char ; do sleep 0.1 ; echo -n $char ; done | cat > out1
+
+
+
+
+
+
+
+
