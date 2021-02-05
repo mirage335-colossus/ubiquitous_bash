@@ -7654,6 +7654,13 @@ _demand_dir_broadcastPipe_page() {
 	local currentValue
 	currentValue="$scriptLocal"/_queue/broadcastPipe_page_dir
 	
+	if [[ "$1" != "" ]]
+	then
+		mkdir -p "$currentValue"
+		_safeEcho "$currentValue"
+		return 0
+	fi
+	
 	if [[ -e '/dev/shm' ]] && ! _if_cygwin && type -p mount > /dev/null 2>&1 && mount | grep '/dev/shm' > /dev/null 2>&1
 	then
 		currentValue=/dev/shm/queue_"$currentDescriptiveSelf"/_local/_queue/broadcastPipe_page_dir
@@ -7692,60 +7699,6 @@ _rm_dir_broadcastPipe_page() {
 }
 
 
-
-
-
-
-
-# ATTENTION: Override with 'ops' or similar.
-_demand_dir_broadcastPipe_aggregatorStatic() {
-	_prepare_demand_dir_queue "$@"
-	
-	local currentDescriptiveSelf
-	currentDescriptiveSelf=$(_queue_descriptiveSelf)
-	[[ "$currentDescriptiveSelf" == "" ]] && _stop 1
-	
-	local currentLink
-	currentLink="$scriptLocal"/_queue/broadcastPipe_aggregatorStatic_lnk
-	
-	local currentValue
-	currentValue="$scriptLocal"/_queue/broadcastPipe_aggregatorStatic_dir
-	
-	if [[ -e '/dev/shm' ]] && ! _if_cygwin && type -p mount > /dev/null 2>&1 && mount | grep '/dev/shm' > /dev/null 2>&1
-	then
-		currentValue=/dev/shm/queue_"$currentDescriptiveSelf"/_local/_queue/broadcastPipe_aggregatorStatic_dir
-		mkdir -p "$currentValue"
-		_relink "$currentValue" "$currentLink" > /dev/null 2>&1
-		echo "$currentValue"
-		return 0
-	fi
-	
-	_relink "$currentValue" "$currentLink" > /dev/null 2>&1
-	echo "$currentValue"
-	
-	return 0
-}
-
-
-_rm_dir_broadcastPipe_aggregatorStatic () {
-	local currentDescriptiveSelf
-	currentDescriptiveSelf=$(_queue_descriptiveSelf)
-	[[ "$currentDescriptiveSelf" == "" ]] && _stop 1
-	
-	rm -f "$scriptLocal"/_queue/broadcastPipe_aggregatorStatic_lnk > /dev/null 2>&1
-	
-	rmdir "$scriptLocal"/_queue/broadcastPipe_aggregatorStatic_dir > /dev/null 2>&1
-	rmdir "$scriptLocal"/_queue > /dev/null 2>&1
-	
-	rmdir /dev/shm/queue_"$currentDescriptiveSelf"/_local/_queue/broadcastPipe_aggregatorStatic_dir/inputBufferDir > /dev/null 2>&1
-	rmdir /dev/shm/queue_"$currentDescriptiveSelf"/_local/_queue/broadcastPipe_aggregatorStatic_dir/outputBufferDir > /dev/null 2>&1
-	
-	rmdir /dev/shm/queue_"$currentDescriptiveSelf"/_local/_queue > /dev/null 2>&1
-	rmdir /dev/shm/queue_"$currentDescriptiveSelf"/_local > /dev/null 2>&1
-	rmdir /dev/shm/queue_"$currentDescriptiveSelf" > /dev/null 2>&1
-	
-	return 0
-}
 
 
 
@@ -7821,7 +7774,7 @@ _page_read() {
 	if [[ "$inputBufferDir" == "" ]] || [[ "$inputBufferDir" == "" ]]
 	then
 		local current_demand_dir
-		current_demand_dir=$(_demand_dir_broadcastPipe_page)
+		current_demand_dir=$(_demand_dir_broadcastPipe_page "$1")
 		[[ "$current_demand_dir" == "" ]] && _stop 1
 		
 		inputBufferDir="$current_demand_dir"/outputBufferDir
@@ -7879,7 +7832,7 @@ _page_read_single() {
 	if [[ "$inputTickFile" == "" ]] && [[ "$inputFilesPrefix" == "" ]]
 	then
 		local current_demand_dir
-		current_demand_dir=$(_demand_dir_broadcastPipe_page)
+		current_demand_dir=$(_demand_dir_broadcastPipe_page "$1")
 		[[ "$current_demand_dir" == "" ]] && _stop 1
 		
 		inputTickFile="$current_demand_dir"/outputBufferDir/out-tick
@@ -7946,7 +7899,7 @@ _page_write() {
 	if [[ "$outputBufferDir" == "" ]] || [[ "$outputFilesPrefix" == "" ]]
 	then
 		local current_demand_dir
-		current_demand_dir=$(_demand_dir_broadcastPipe_page)
+		current_demand_dir=$(_demand_dir_broadcastPipe_page "$1")
 		[[ "$current_demand_dir" == "" ]] && _stop 1
 		
 		outputBufferDir="$current_demand_dir"/inputBufferDir
@@ -8086,7 +8039,7 @@ _page_write_single() {
 	if [[ "$outputBufferDir" == "" ]] || [[ "$outputFilesPrefix" == "" ]]
 	then
 		local current_demand_dir
-		current_demand_dir=$(_demand_dir_broadcastPipe_page)
+		current_demand_dir=$(_demand_dir_broadcastPipe_page "$1")
 		[[ "$current_demand_dir" == "" ]] && _stop 1
 		
 		outputBufferDir="$current_demand_dir"/inputBufferDir
@@ -8201,7 +8154,7 @@ _broadcastPipe_page_read() {
 	[[ "$2" == "/" ]] && _stop 1
 	
 	local current_demand_dir
-	current_demand_dir=$(_demand_dir_broadcastPipe_page)
+	current_demand_dir=$(_demand_dir_broadcastPipe_page "$1")
 	
 	local currentMaxTime
 	currentMaxTime="$3"
@@ -8371,7 +8324,7 @@ _demand_broadcastPipe_page() {
 	if [[ "$inputBufferDir" == "" ]] || [[ "$outputBufferDir" == "" ]]
 	then
 		local current_demand_dir
-		current_demand_dir=$(_demand_dir_broadcastPipe_page)
+		current_demand_dir=$(_demand_dir_broadcastPipe_page "$1")
 		[[ "$current_demand_dir" == "" ]] && _stop 1
 		
 		inputBufferDir="$current_demand_dir"/inputBufferDir
@@ -8413,7 +8366,7 @@ _terminate_broadcastPipe_fast() {
 	if [[ "$inputBufferDir" == "" ]]
 	then
 		local current_demand_dir
-		current_demand_dir=$(_demand_dir_broadcastPipe_page)
+		current_demand_dir=$(_demand_dir_broadcastPipe_page "$1")
 		[[ "$current_demand_dir" == "" ]] && _stop 1
 		
 		inputBufferDir="$current_demand_dir"/inputBufferDir
@@ -8432,7 +8385,7 @@ _terminate_broadcastPipe_page() {
 	if [[ "$inputBufferDir" == "" ]]
 	then
 		local current_demand_dir
-		current_demand_dir=$(_demand_dir_broadcastPipe_page)
+		current_demand_dir=$(_demand_dir_broadcastPipe_page "$1")
 		[[ "$current_demand_dir" == "" ]] && _stop 1
 		
 		inputBufferDir="$current_demand_dir"/inputBufferDir
@@ -8454,7 +8407,7 @@ _reset_broadcastPipe_page() {
 	if [[ "$inputBufferDir" == "" ]]
 	then
 		local current_demand_dir
-		current_demand_dir=$(_demand_dir_broadcastPipe_page)
+		current_demand_dir=$(_demand_dir_broadcastPipe_page "$1")
 		[[ "$current_demand_dir" == "" ]] && _stop 1
 		
 		inputBufferDir="$current_demand_dir"/inputBufferDir

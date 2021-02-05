@@ -20,7 +20,7 @@ _page_write() {
 	if [[ "$outputBufferDir" == "" ]] || [[ "$outputFilesPrefix" == "" ]]
 	then
 		local current_demand_dir
-		current_demand_dir=$(_demand_dir_broadcastPipe_page)
+		current_demand_dir=$(_demand_dir_broadcastPipe_page "$1")
 		[[ "$current_demand_dir" == "" ]] && _stop 1
 		
 		outputBufferDir="$current_demand_dir"/inputBufferDir

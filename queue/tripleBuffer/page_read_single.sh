@@ -10,7 +10,7 @@ _page_read_single() {
 	if [[ "$inputTickFile" == "" ]] && [[ "$inputFilesPrefix" == "" ]]
 	then
 		local current_demand_dir
-		current_demand_dir=$(_demand_dir_broadcastPipe_page)
+		current_demand_dir=$(_demand_dir_broadcastPipe_page "$1")
 		[[ "$current_demand_dir" == "" ]] && _stop 1
 		
 		inputTickFile="$current_demand_dir"/outputBufferDir/out-tick

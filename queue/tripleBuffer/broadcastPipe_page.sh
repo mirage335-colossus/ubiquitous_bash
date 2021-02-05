@@ -60,7 +60,7 @@ _broadcastPipe_page_read() {
 	[[ "$2" == "/" ]] && _stop 1
 	
 	local current_demand_dir
-	current_demand_dir=$(_demand_dir_broadcastPipe_page)
+	current_demand_dir=$(_demand_dir_broadcastPipe_page "$1")
 	
 	local currentMaxTime
 	currentMaxTime="$3"
