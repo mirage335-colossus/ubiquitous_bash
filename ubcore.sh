@@ -7680,7 +7680,66 @@ _rm_dir_broadcastPipe_page() {
 	rmdir "$scriptLocal"/_queue/broadcastPipe_page_dir > /dev/null 2>&1
 	rmdir "$scriptLocal"/_queue > /dev/null 2>&1
 	
+	rmdir /dev/shm/queue_"$currentDescriptiveSelf"/_local/_queue/broadcastPipe_page_dir/inputBufferDir > /dev/null 2>&1
+	rmdir /dev/shm/queue_"$currentDescriptiveSelf"/_local/_queue/broadcastPipe_page_dir/outputBufferDir > /dev/null 2>&1
 	rmdir /dev/shm/queue_"$currentDescriptiveSelf"/_local/_queue/broadcastPipe_page_dir > /dev/null 2>&1
+	
+	rmdir /dev/shm/queue_"$currentDescriptiveSelf"/_local/_queue > /dev/null 2>&1
+	rmdir /dev/shm/queue_"$currentDescriptiveSelf"/_local > /dev/null 2>&1
+	rmdir /dev/shm/queue_"$currentDescriptiveSelf" > /dev/null 2>&1
+	
+	return 0
+}
+
+
+
+
+
+
+
+# ATTENTION: Override with 'ops' or similar.
+_demand_dir_broadcastPipe_aggregatorStatic() {
+	_prepare_demand_dir_queue "$@"
+	
+	local currentDescriptiveSelf
+	currentDescriptiveSelf=$(_queue_descriptiveSelf)
+	[[ "$currentDescriptiveSelf" == "" ]] && _stop 1
+	
+	local currentLink
+	currentLink="$scriptLocal"/_queue/broadcastPipe_aggregatorStatic_lnk
+	
+	local currentValue
+	currentValue="$scriptLocal"/_queue/broadcastPipe_aggregatorStatic_dir
+	
+	if [[ -e '/dev/shm' ]] && ! _if_cygwin && type -p mount > /dev/null 2>&1 && mount | grep '/dev/shm' > /dev/null 2>&1
+	then
+		currentValue=/dev/shm/queue_"$currentDescriptiveSelf"/_local/_queue/broadcastPipe_aggregatorStatic_dir
+		mkdir -p "$currentValue"
+		_relink "$currentValue" "$currentLink" > /dev/null 2>&1
+		echo "$currentValue"
+		return 0
+	fi
+	
+	_relink "$currentValue" "$currentLink" > /dev/null 2>&1
+	echo "$currentValue"
+	
+	return 0
+}
+
+
+_rm_dir_broadcastPipe_aggregatorStatic () {
+	local currentDescriptiveSelf
+	currentDescriptiveSelf=$(_queue_descriptiveSelf)
+	[[ "$currentDescriptiveSelf" == "" ]] && _stop 1
+	
+	rm -f "$scriptLocal"/_queue/broadcastPipe_aggregatorStatic_lnk > /dev/null 2>&1
+	
+	rmdir "$scriptLocal"/_queue/broadcastPipe_aggregatorStatic_dir > /dev/null 2>&1
+	rmdir "$scriptLocal"/_queue > /dev/null 2>&1
+	
+	rmdir /dev/shm/queue_"$currentDescriptiveSelf"/_local/_queue/broadcastPipe_aggregatorStatic_dir/inputBufferDir > /dev/null 2>&1
+	rmdir /dev/shm/queue_"$currentDescriptiveSelf"/_local/_queue/broadcastPipe_aggregatorStatic_dir/outputBufferDir > /dev/null 2>&1
+	
 	rmdir /dev/shm/queue_"$currentDescriptiveSelf"/_local/_queue > /dev/null 2>&1
 	rmdir /dev/shm/queue_"$currentDescriptiveSelf"/_local > /dev/null 2>&1
 	rmdir /dev/shm/queue_"$currentDescriptiveSelf" > /dev/null 2>&1
@@ -8141,6 +8200,9 @@ _broadcastPipe_page_read() {
 	[[ "$1" == "/" ]] && _stop 1
 	[[ "$2" == "/" ]] && _stop 1
 	
+	local current_demand_dir
+	current_demand_dir=$(_demand_dir_broadcastPipe_page)
+	
 	local currentMaxTime
 	currentMaxTime="$3"
 	[[ "$currentMaxTime" == "" ]] && currentMaxTime="$(_broadcastPipe_page_read_maxTime)"
@@ -8149,14 +8211,18 @@ _broadcastPipe_page_read() {
 	currentMaxTime_seconds=$(bc <<< "$currentMaxTime * 0.001")
 	
 	# May perhaps take effect when SIGTERM is received directly (eg. when SIGTERM may be sent to all processes) .
-	export current_broadcastPipe_inputBufferDir="$inputBufferDir"
-	export current_broadcastPipe_outputBufferDir="$outputBufferDir"
+	export current_broadcastPipe_inputBufferDir="$1"
+	export current_broadcastPipe_outputBufferDir="$2"
 	_stop_queue_page() {
 		#_terminate_broadcastPipe_page "$current_broadcastPipe_inputBufferDir" 2> /dev/null
 		_terminate_broadcastPipe_fast "$current_broadcastPipe_inputBufferDir" 2> /dev/null
 		sleep 1
 		_rm_broadcastPipe "$current_broadcastPipe_inputBufferDir" "$current_broadcastPipe_outputBufferDir"
-		_rm_dir_broadcastPipe_page
+		[[ "$1" == "$current_demand_dir"* ]] && [[ "$current_demand_dir" != "" ]] && _rm_dir_broadcastPipe_page
+		
+		_sleep_spinlock
+		rm -f "$1"/terminate > /dev/null 2>&1
+		[[ "$1" == "$current_demand_dir"* ]] && [[ "$current_demand_dir" != "" ]] && _rm_dir_broadcastPipe_page
 	}
 	
 	rm -f "$1"/reset > /dev/null 2>&1
@@ -8185,7 +8251,13 @@ _broadcastPipe_page_read() {
 	
 	
 	_rm_broadcastPipe "$@"
-	_rm_dir_broadcastPipe_page
+	rm -f "$1"/terminate > /dev/null 2>&1
+	[[ "$1" == "$current_demand_dir"* ]] && [[ "$current_demand_dir" != "" ]] && _rm_dir_broadcastPipe_page
+	
+	_sleep_spinlock
+	rm -f "$1"/terminate > /dev/null 2>&1
+	[[ "$1" == "$current_demand_dir"* ]] && [[ "$current_demand_dir" != "" ]] && _rm_dir_broadcastPipe_page
+	
 	_stop
 }
 
@@ -8282,6 +8354,11 @@ _demand_broadcastPipe_page_sequence() {
 	currentStopJobs=$(jobs -p -r 2> /dev/null)
 	[[ "$currentStopJobs" != "" ]] && kill "$currentStopJobs" > /dev/null 2>&1
 	
+	
+	_sleep_spinlock
+	rm -f "$1"/terminate > /dev/null 2>&1
+	[[ "$1" == "$current_demand_dir"* ]] && [[ "$current_demand_dir" != "" ]] && _rm_dir_broadcastPipe_page
+	
 	_stop
 }
 
@@ -8310,7 +8387,7 @@ _demand_broadcastPipe_page() {
 			#_terminate_broadcastPipe_fast "$current_broadcastPipe_inputBufferDir" 2> /dev/null
 			#sleep 1
 			_rm_broadcastPipe "$current_broadcastPipe_inputBufferDir" "$current_broadcastPipe_outputBufferDir"
-			_rm_dir_broadcastPipe_page
+			[[ "$inputBufferDir" == "$current_demand_dir"* ]] && [[ "$current_demand_dir" != "" ]] && _rm_dir_broadcastPipe_page
 		}
 	fi
 	
@@ -8350,8 +8427,22 @@ _terminate_broadcastPipe_fast() {
 }
 
 _terminate_broadcastPipe_page() {
+	local inputBufferDir="$1"
+	
+	if [[ "$inputBufferDir" == "" ]]
+	then
+		local current_demand_dir
+		current_demand_dir=$(_demand_dir_broadcastPipe_page)
+		[[ "$current_demand_dir" == "" ]] && _stop 1
+		
+		inputBufferDir="$current_demand_dir"/inputBufferDir
+	fi
+	
 	_terminate_broadcastPipe_fast "$@"
 	_sleep_spinlock
+	
+	rm -f "$inputBufferDir"/terminate > /dev/null 2>&1
+	[[ "$inputBufferDir" == "$current_demand_dir"* ]] && [[ "$current_demand_dir" != "" ]] && _rm_dir_broadcastPipe_page
 }
 
 # WARNING: No production use. Intended for end-user (interactive) only.
@@ -8551,6 +8642,8 @@ _benchmark_broadcastPipe_page() {
 	
 	_stop
 }
+
+
 
 
 

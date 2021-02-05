@@ -86,6 +86,11 @@ _demand_broadcastPipe_page_sequence() {
 	currentStopJobs=$(jobs -p -r 2> /dev/null)
 	[[ "$currentStopJobs" != "" ]] && kill "$currentStopJobs" > /dev/null 2>&1
 	
+	
+	_sleep_spinlock
+	rm -f "$1"/terminate > /dev/null 2>&1
+	[[ "$1" == "$current_demand_dir"* ]] && [[ "$current_demand_dir" != "" ]] && _rm_dir_broadcastPipe_page
+	
 	_stop
 }
 
@@ -114,7 +119,7 @@ _demand_broadcastPipe_page() {
 			#_terminate_broadcastPipe_fast "$current_broadcastPipe_inputBufferDir" 2> /dev/null
 			#sleep 1
 			_rm_broadcastPipe "$current_broadcastPipe_inputBufferDir" "$current_broadcastPipe_outputBufferDir"
-			_rm_dir_broadcastPipe_page
+			[[ "$inputBufferDir" == "$current_demand_dir"* ]] && [[ "$current_demand_dir" != "" ]] && _rm_dir_broadcastPipe_page
 		}
 	fi
 	
@@ -154,8 +159,22 @@ _terminate_broadcastPipe_fast() {
 }
 
 _terminate_broadcastPipe_page() {
+	local inputBufferDir="$1"
+	
+	if [[ "$inputBufferDir" == "" ]]
+	then
+		local current_demand_dir
+		current_demand_dir=$(_demand_dir_broadcastPipe_page)
+		[[ "$current_demand_dir" == "" ]] && _stop 1
+		
+		inputBufferDir="$current_demand_dir"/inputBufferDir
+	fi
+	
 	_terminate_broadcastPipe_fast "$@"
 	_sleep_spinlock
+	
+	rm -f "$inputBufferDir"/terminate > /dev/null 2>&1
+	[[ "$inputBufferDir" == "$current_demand_dir"* ]] && [[ "$current_demand_dir" != "" ]] && _rm_dir_broadcastPipe_page
 }
 
 # WARNING: No production use. Intended for end-user (interactive) only.

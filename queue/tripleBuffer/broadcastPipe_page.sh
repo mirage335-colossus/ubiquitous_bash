@@ -59,6 +59,9 @@ _broadcastPipe_page_read() {
 	[[ "$1" == "/" ]] && _stop 1
 	[[ "$2" == "/" ]] && _stop 1
 	
+	local current_demand_dir
+	current_demand_dir=$(_demand_dir_broadcastPipe_page)
+	
 	local currentMaxTime
 	currentMaxTime="$3"
 	[[ "$currentMaxTime" == "" ]] && currentMaxTime="$(_broadcastPipe_page_read_maxTime)"
@@ -67,14 +70,18 @@ _broadcastPipe_page_read() {
 	currentMaxTime_seconds=$(bc <<< "$currentMaxTime * 0.001")
 	
 	# May perhaps take effect when SIGTERM is received directly (eg. when SIGTERM may be sent to all processes) .
-	export current_broadcastPipe_inputBufferDir="$inputBufferDir"
-	export current_broadcastPipe_outputBufferDir="$outputBufferDir"
+	export current_broadcastPipe_inputBufferDir="$1"
+	export current_broadcastPipe_outputBufferDir="$2"
 	_stop_queue_page() {
 		#_terminate_broadcastPipe_page "$current_broadcastPipe_inputBufferDir" 2> /dev/null
 		_terminate_broadcastPipe_fast "$current_broadcastPipe_inputBufferDir" 2> /dev/null
 		sleep 1
 		_rm_broadcastPipe "$current_broadcastPipe_inputBufferDir" "$current_broadcastPipe_outputBufferDir"
-		_rm_dir_broadcastPipe_page
+		[[ "$1" == "$current_demand_dir"* ]] && [[ "$current_demand_dir" != "" ]] && _rm_dir_broadcastPipe_page
+		
+		_sleep_spinlock
+		rm -f "$1"/terminate > /dev/null 2>&1
+		[[ "$1" == "$current_demand_dir"* ]] && [[ "$current_demand_dir" != "" ]] && _rm_dir_broadcastPipe_page
 	}
 	
 	rm -f "$1"/reset > /dev/null 2>&1
@@ -103,7 +110,13 @@ _broadcastPipe_page_read() {
 	
 	
 	_rm_broadcastPipe "$@"
-	_rm_dir_broadcastPipe_page
+	rm -f "$1"/terminate > /dev/null 2>&1
+	[[ "$1" == "$current_demand_dir"* ]] && [[ "$current_demand_dir" != "" ]] && _rm_dir_broadcastPipe_page
+	
+	_sleep_spinlock
+	rm -f "$1"/terminate > /dev/null 2>&1
+	[[ "$1" == "$current_demand_dir"* ]] && [[ "$current_demand_dir" != "" ]] && _rm_dir_broadcastPipe_page
+	
 	_stop
 }
 

@@ -3462,6 +3462,8 @@ _compile_bash_vars_queue() {
 	
 	includeScriptList+=( "queue"/queue.sh )
 	
+	
+	
 	includeScriptList+=( "queue/tripleBuffer"/page_read.sh )
 	includeScriptList+=( "queue/tripleBuffer"/page_read_single.sh )
 	
@@ -3481,6 +3483,11 @@ _compile_bash_vars_queue() {
 	
 	includeScriptList+=( "queue/tripleBuffer"/test_broadcastPipe_page.sh )
 	includeScriptList+=( "queue/tripleBuffer"/benchmark_broadcastPipe_page.sh )
+	
+	
+	
+	includeScriptList+=( "queue/aggregator/static"/broadcastPipe_aggregatorStatic.sh )
+	
 	
 	
 	
