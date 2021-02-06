@@ -4362,6 +4362,7 @@ _broadcastPipe_page_read_maxTime() {
 _page_read() {
 	local inputBufferDir="$1"
 	local inputFilesPrefix="$2"
+	local service_inputBufferDir
 	if [[ "$inputBufferDir" == "" ]] || [[ "$inputBufferDir" == "" ]]
 	then
 		local current_demand_dir
@@ -4370,6 +4371,8 @@ _page_read() {
 		
 		inputBufferDir="$current_demand_dir"/outputBufferDir
 		! mkdir -p "$inputBufferDir" && return 1
+		
+		service_inputBufferDir="$current_demand_dir"/inputBufferDir
 		
 		[[ "$inputFilesPrefix" == "" ]] && inputFilesPrefix='out-'
 	fi
@@ -4395,6 +4398,12 @@ _page_read() {
 	
 	while true
 	do
+		if [[ "$service_inputBufferDir" != "" ]]
+		then
+			#[[ ! -d "$service_inputBufferDir" ]] && return 0
+			[[ -e "$service_inputBufferDir"/terminate ]] && return 0
+		fi
+		
 		[[ "$ub_force_limit_page_rate" != 'false' ]] && sleep "$currentMaxTime_seconds"
 		
 		[[ -e "$inputBufferDir"/"$inputFilesPrefix"tick ]] && measureTickA=$(head -n 1 "$inputBufferDir"/"$inputFilesPrefix"tick 2>/dev/null)
@@ -4582,6 +4591,9 @@ _page_write() {
 	#while cat 2>/dev/null >> "$outputBufferDir"/t_"$sessionid"
 	while _timeout "$currentMaxTime_seconds" dd bs="$currentMaxBytes" count=1 2>/dev/null >> "$outputBufferDir"/t_"$sessionid"
 	do
+		#[[ ! -d "$outputBufferDir" ]] && return 0
+		[[ -e "$outputBufferDir"/terminate ]] && return 0
+		
 		#true | cat "$outputBufferDir"/t_"$sessionid" > /dev/tty
 		measureDateB=$(true | date +%s%N | cut -b1-13)
 		measureDateDifference=$(bc <<< "$measureDateB - $measureDateA")
@@ -4937,10 +4949,14 @@ _demand_broadcastPipe_page() {
 	
 	
 	"$scriptAbsoluteLocation" _demand_broadcastPipe_page_sequence "$inputBufferDir" "$outputBufferDir" "$@" &
-	while [[ -e "$inputBufferDir"/rmloop ]] || [[ ! -e "$inputBufferDir"/listen ]]
+	while [[ -e "$inputBufferDir"/rmloop ]]
 	do
 		sleep 0.1
 	done
+	[[ ! -e "$inputBufferDir"/listen ]] && _sleep_spinlock
+	[[ ! -e "$inputBufferDir"/listen ]] && _sleep_spinlock
+	[[ ! -e "$inputBufferDir"/listen ]] && return 1
+	
 	[[ "$ub_force_limit_page_rate" == 'true' ]] && _sleep_spinlock
 	#[[ "$ub_force_limit_page_rate" == 'false' ]] && _sleep_spinlock
 	
@@ -4982,6 +4998,8 @@ _terminate_broadcastPipe_page() {
 		inputBufferDir="$current_demand_dir"/inputBufferDir
 	fi
 	
+	mkdir -p "$inputBufferDir"
+	
 	_terminate_broadcastPipe_fast "$@"
 	_sleep_spinlock
 	
@@ -5003,6 +5021,8 @@ _reset_broadcastPipe_page() {
 		
 		inputBufferDir="$current_demand_dir"/inputBufferDir
 	fi
+	
+	mkdir -p "$inputBufferDir"
 	
 	[[ "$inputBufferDir" == "" ]] && return 1
 	[[ "$inputBufferDir" == "/" ]] && return 1

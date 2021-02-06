@@ -112,6 +112,9 @@ _page_write() {
 	#while cat 2>/dev/null >> "$outputBufferDir"/t_"$sessionid"
 	while _timeout "$currentMaxTime_seconds" dd bs="$currentMaxBytes" count=1 2>/dev/null >> "$outputBufferDir"/t_"$sessionid"
 	do
+		#[[ ! -d "$outputBufferDir" ]] && return 0
+		[[ -e "$outputBufferDir"/terminate ]] && return 0
+		
 		#true | cat "$outputBufferDir"/t_"$sessionid" > /dev/tty
 		measureDateB=$(true | date +%s%N | cut -b1-13)
 		measureDateDifference=$(bc <<< "$measureDateB - $measureDateA")

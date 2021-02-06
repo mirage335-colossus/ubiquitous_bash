@@ -9,6 +9,7 @@
 _page_read() {
 	local inputBufferDir="$1"
 	local inputFilesPrefix="$2"
+	local service_inputBufferDir
 	if [[ "$inputBufferDir" == "" ]] || [[ "$inputBufferDir" == "" ]]
 	then
 		local current_demand_dir
@@ -17,6 +18,8 @@ _page_read() {
 		
 		inputBufferDir="$current_demand_dir"/outputBufferDir
 		! mkdir -p "$inputBufferDir" && return 1
+		
+		service_inputBufferDir="$current_demand_dir"/inputBufferDir
 		
 		[[ "$inputFilesPrefix" == "" ]] && inputFilesPrefix='out-'
 	fi
@@ -42,6 +45,12 @@ _page_read() {
 	
 	while true
 	do
+		if [[ "$service_inputBufferDir" != "" ]]
+		then
+			#[[ ! -d "$service_inputBufferDir" ]] && return 0
+			[[ -e "$service_inputBufferDir"/terminate ]] && return 0
+		fi
+		
 		[[ "$ub_force_limit_page_rate" != 'false' ]] && sleep "$currentMaxTime_seconds"
 		
 		[[ -e "$inputBufferDir"/"$inputFilesPrefix"tick ]] && measureTickA=$(head -n 1 "$inputBufferDir"/"$inputFilesPrefix"tick 2>/dev/null)

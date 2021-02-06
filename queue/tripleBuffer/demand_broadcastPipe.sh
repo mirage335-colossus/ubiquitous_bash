@@ -125,10 +125,14 @@ _demand_broadcastPipe_page() {
 	
 	
 	"$scriptAbsoluteLocation" _demand_broadcastPipe_page_sequence "$inputBufferDir" "$outputBufferDir" "$@" &
-	while [[ -e "$inputBufferDir"/rmloop ]] || [[ ! -e "$inputBufferDir"/listen ]]
+	while [[ -e "$inputBufferDir"/rmloop ]]
 	do
 		sleep 0.1
 	done
+	[[ ! -e "$inputBufferDir"/listen ]] && _sleep_spinlock
+	[[ ! -e "$inputBufferDir"/listen ]] && _sleep_spinlock
+	[[ ! -e "$inputBufferDir"/listen ]] && return 1
+	
 	[[ "$ub_force_limit_page_rate" == 'true' ]] && _sleep_spinlock
 	#[[ "$ub_force_limit_page_rate" == 'false' ]] && _sleep_spinlock
 	
@@ -170,6 +174,8 @@ _terminate_broadcastPipe_page() {
 		inputBufferDir="$current_demand_dir"/inputBufferDir
 	fi
 	
+	mkdir -p "$inputBufferDir"
+	
 	_terminate_broadcastPipe_fast "$@"
 	_sleep_spinlock
 	
@@ -191,6 +197,8 @@ _reset_broadcastPipe_page() {
 		
 		inputBufferDir="$current_demand_dir"/inputBufferDir
 	fi
+	
+	mkdir -p "$inputBufferDir"
 	
 	[[ "$inputBufferDir" == "" ]] && return 1
 	[[ "$inputBufferDir" == "/" ]] && return 1
