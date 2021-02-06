@@ -3474,7 +3474,7 @@ _compile_bash_vars_queue() {
 	includeScriptList+=( "queue/tripleBuffer"/broadcastPipe_page_here.sh )
 	includeScriptList+=( "queue/tripleBuffer"/broadcastPipe_page.sh )
 	
-	includeScriptList+=( "queue/tripleBuffer"/demand_broadcastPipe.sh )
+	includeScriptList+=( "queue/tripleBuffer"/demand_broadcastPipe_page.sh )
 	
 	
 	#[[ "$enUb_queue" == "true" ]] && includeScriptList+=( "queue/tripleBuffer"/benchmark_page.sh )
@@ -3487,7 +3487,7 @@ _compile_bash_vars_queue() {
 	
 	
 	includeScriptList+=( "queue/aggregator/static"/broadcastPipe_aggregatorStatic.sh )
-	
+	includeScriptList+=( "queue/aggregator/static"/demand_broadcastPipe_aggregatorStatic.sh )
 	
 	
 	

@@ -84,4 +84,60 @@ _rm_dir_broadcastPipe_page() {
 
 
 
+# ATTENTION: Override with 'ops' or similar.
+_demand_dir_broadcastPipe_aggregatorStatic() {
+	_prepare_demand_dir_queue "$@"
+	
+	local currentDescriptiveSelf
+	currentDescriptiveSelf=$(_queue_descriptiveSelf)
+	[[ "$currentDescriptiveSelf" == "" ]] && _stop 1
+	
+	local currentLink
+	currentLink="$scriptLocal"/_queue/broadcastPipe_aggregatorStatic_lnk
+	
+	local currentValue
+	currentValue="$scriptLocal"/_queue/broadcastPipe_aggregatorStatic_dir
+	
+	if [[ "$1" != "" ]]
+	then
+		mkdir -p "$currentValue"
+		_safeEcho "$currentValue"
+		return 0
+	fi
+	
+	if [[ -e '/dev/shm' ]] && ! _if_cygwin && type -p mount > /dev/null 2>&1 && mount | grep '/dev/shm' > /dev/null 2>&1
+	then
+		currentValue=/dev/shm/queue_"$currentDescriptiveSelf"/_local/_queue/broadcastPipe_aggregatorStatic_dir
+		mkdir -p "$currentValue"
+		_relink "$currentValue" "$currentLink" > /dev/null 2>&1
+		echo "$currentValue"
+		return 0
+	fi
+	
+	_relink "$currentValue" "$currentLink" > /dev/null 2>&1
+	echo "$currentValue"
+	
+	return 0
+}
 
+
+_rm_dir_broadcastPipe_aggregatorStatic() {
+	local currentDescriptiveSelf
+	currentDescriptiveSelf=$(_queue_descriptiveSelf)
+	[[ "$currentDescriptiveSelf" == "" ]] && _stop 1
+	
+	rm -f "$scriptLocal"/_queue/broadcastPipe_aggregatorStatic_lnk > /dev/null 2>&1
+	
+	rmdir "$scriptLocal"/_queue/broadcastPipe_aggregatorStatic_dir > /dev/null 2>&1
+	rmdir "$scriptLocal"/_queue > /dev/null 2>&1
+	
+	rmdir /dev/shm/queue_"$currentDescriptiveSelf"/_local/_queue/broadcastPipe_aggregatorStatic_dir/inputBufferDir > /dev/null 2>&1
+	rmdir /dev/shm/queue_"$currentDescriptiveSelf"/_local/_queue/broadcastPipe_aggregatorStatic_dir/outputBufferDir > /dev/null 2>&1
+	rmdir /dev/shm/queue_"$currentDescriptiveSelf"/_local/_queue/broadcastPipe_aggregatorStatic_dir > /dev/null 2>&1
+	
+	rmdir /dev/shm/queue_"$currentDescriptiveSelf"/_local/_queue > /dev/null 2>&1
+	rmdir /dev/shm/queue_"$currentDescriptiveSelf"/_local > /dev/null 2>&1
+	rmdir /dev/shm/queue_"$currentDescriptiveSelf" > /dev/null 2>&1
+	
+	return 0
+}
