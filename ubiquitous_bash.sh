@@ -20781,6 +20781,11 @@ _broadcastPipe_aggregatorStatic_read_procedure() {
 		[[ "$1" == "$current_demand_dir"* ]] && [[ "$current_demand_dir" != "" ]] && _rm_dir_broadcastPipe_aggregatorStatic
 	}
 	
+	
+	local currentIterations
+	
+	
+	
 	rm -f "$1"/reset > /dev/null 2>&1
 	rm -f "$1"/terminate > /dev/null 2>&1
 	_rm_broadcastPipe_aggregatorStatic "$@"
@@ -20793,8 +20798,6 @@ _broadcastPipe_aggregatorStatic_read_procedure() {
 	local currentOutputBufferCount_prev='0'
 	
 	local currentFile
-	
-	local currentIterations
 	
 	
 	local currentStopJobs
@@ -20828,6 +20831,19 @@ _broadcastPipe_aggregatorStatic_read_procedure() {
 				let currentIterations="$currentIterations"+1
 			done
 		done
+		
+		
+		# TODO: Testing.
+		# TODO: All related pipe read/write functions should always call '_reset' , due to possibility of SIGPIPE being ignored.
+		# TODO: Only continue sleeping while relevant ' "$1"/skip ' file does not exist.
+		rm -f "$1"/skip > /dev/null 2>&1
+		currentIterations='0'
+		while [[ ! -e "$1"/skip ]] && [[ "$currentIterations" -le 24 ]]
+		do
+			sleep 1
+			let currentIterations="$currentIterations"+1
+		done
+		#rm -f "$1"/skip > /dev/null 2>&1
 		
 		
 		# https://stackoverflow.com/questions/25906020/are-pid-files-still-flawed-when-doing-it-right/25933330
