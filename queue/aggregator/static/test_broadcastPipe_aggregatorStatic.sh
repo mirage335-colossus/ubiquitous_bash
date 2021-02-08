@@ -30,11 +30,11 @@ _test_broadcastPipe_aggregatorStatic_sequence() {
 	
 	_terminate_broadcastPipe_aggregatorStatic "$inputBufferDir"
 	
-	(
-	cd "$safeTmp"
-	du -sh ./testfill ./rewrite
-	md5sum ./testfill ./rewrite
-	)
+	#(
+	#cd "$safeTmp"
+	#du -sh ./testfill ./rewrite
+	#md5sum ./testfill ./rewrite
+	#)
 	
 	! [[ -s "$safeTmp"/testfill ]] && _stop 1
 	! [[ -s "$safeTmp"/rewrite ]] && _stop 1

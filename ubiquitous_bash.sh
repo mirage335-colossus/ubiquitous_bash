@@ -21336,11 +21336,11 @@ _test_broadcastPipe_aggregatorStatic_sequence() {
 	
 	_terminate_broadcastPipe_aggregatorStatic "$inputBufferDir"
 	
-	(
-	cd "$safeTmp"
-	du -sh ./testfill ./rewrite
-	md5sum ./testfill ./rewrite
-	)
+	#(
+	#cd "$safeTmp"
+	#du -sh ./testfill ./rewrite
+	#md5sum ./testfill ./rewrite
+	#)
 	
 	! [[ -s "$safeTmp"/testfill ]] && _stop 1
 	! [[ -s "$safeTmp"/rewrite ]] && _stop 1
@@ -25209,6 +25209,9 @@ _test() {
 	
 	echo -e '\E[0;36m Queue: _test_broadcastPipe_page \E[0m'
 	! _test_broadcastPipe_page && echo '_test_broadcastPipe_page broken' && _stop 1
+	
+	echo -e '\E[0;36m Queue: _test_broadcastPipe_aggregatorStatic \E[0m'
+	! _test_broadcastPipe_aggregatorStatic && echo '_test_broadcastPipe_aggregatorStatic broken' && _stop 1
 	
 	_messagePASS
 	

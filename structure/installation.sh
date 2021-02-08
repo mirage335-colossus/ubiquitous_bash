@@ -1184,6 +1184,9 @@ _test() {
 	echo -e '\E[0;36m Queue: _test_broadcastPipe_page \E[0m'
 	! _test_broadcastPipe_page && echo '_test_broadcastPipe_page broken' && _stop 1
 	
+	echo -e '\E[0;36m Queue: _test_broadcastPipe_aggregatorStatic \E[0m'
+	! _test_broadcastPipe_aggregatorStatic && echo '_test_broadcastPipe_aggregatorStatic broken' && _stop 1
+	
 	_messagePASS
 	
 	_messageNormal 'Vector...'
