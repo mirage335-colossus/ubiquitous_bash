@@ -24,7 +24,7 @@ _broadcastPipe_page_read_single() {
 
 
 # ATTENTION: Override with 'ops' or similar.
-_rm_broadcastPipe() {
+_rm_broadcastPipe_page() {
 	
 	#[[ -e "$1" ]] && [[ "$1" != "" ]] && rm -f "$1"/* > /dev/null 2>&1
 	[[ -e "$1" ]] && [[ "$1" != "" ]] && find "$1" -mindepth 1 -maxdepth 1 -type f ! -name 'terminate' -delete > /dev/null 2>&1
@@ -40,7 +40,7 @@ _rm_broadcastPipe() {
 
 
 # Reduce environment to perhaps improve performance.
-_env_broadcastPipe() {
+_env_broadcastPipe_page() {
 	env -i HOME="$HOME" TERM="${TERM}" SHELL="${SHELL}" PATH="${PATH}" PWD="$PWD" scriptAbsoluteLocation="$scriptAbsoluteLocation" scriptAbsoluteFolder="$scriptAbsoluteFolder" sessionid="$sessionid" LD_PRELOAD="$LD_PRELOAD" USER="$USER" ub_force_limit_page_rate="$ub_force_limit_page_rate" "$@"
 }
 
@@ -74,9 +74,9 @@ _broadcastPipe_page_read() {
 	export current_broadcastPipe_outputBufferDir="$2"
 	_stop_queue_page() {
 		#_terminate_broadcastPipe_page "$current_broadcastPipe_inputBufferDir" 2> /dev/null
-		_terminate_broadcastPipe_fast "$current_broadcastPipe_inputBufferDir" 2> /dev/null
+		_terminate_broadcastPipe_page_fast "$current_broadcastPipe_inputBufferDir" 2> /dev/null
 		sleep 1
-		_rm_broadcastPipe "$current_broadcastPipe_inputBufferDir" "$current_broadcastPipe_outputBufferDir"
+		_rm_broadcastPipe_page "$current_broadcastPipe_inputBufferDir" "$current_broadcastPipe_outputBufferDir"
 		[[ "$1" == "$current_demand_dir"* ]] && [[ "$current_demand_dir" != "" ]] && _rm_dir_broadcastPipe_page
 		
 		_sleep_spinlock
@@ -86,7 +86,7 @@ _broadcastPipe_page_read() {
 	
 	rm -f "$1"/reset > /dev/null 2>&1
 	rm -f "$1"/terminate > /dev/null 2>&1
-	#_rm_broadcastPipe "$@"
+	#_rm_broadcastPipe_page "$@"
 	
 	_here_broadcastPipe_page_read_single "$@" > "$safeTmp"/broadcastPipe_page_read.sh
 	chmod u+x "$safeTmp"/broadcastPipe_page_read.sh
@@ -98,7 +98,7 @@ _broadcastPipe_page_read() {
 		# WARNING: Although sequential throughput may be important in some cases, a 'pair of wires' is fundamentally not a parallel device. Simultaneous writing to aggregator should only occur during (usually undesirable) collisions. Nevertheless, processing these collisions out of order is entirely reasonable.
 		# WARNING: Imposing limits on the number of inputs (eg. due to command line argument length limitations), below a few thousand, is strongly discouraged.
 		# https://serverfault.com/questions/193319/a-better-unix-find-with-parallel-processing
-		_env_broadcastPipe find "$1" -mindepth 1 -maxdepth 1 -mmin -0.4 -type f -name '*-tick' -exec "$safeTmp"/broadcastPipe_page_read.sh {} \; 2> /dev/null | _broadcastPipe_page_write "" "$2" "$3" "$4" "$5" 2>/dev/null
+		_env_broadcastPipe_page find "$1" -mindepth 1 -maxdepth 1 -mmin -0.4 -type f -name '*-tick' -exec "$safeTmp"/broadcastPipe_page_read.sh {} \; 2> /dev/null | _broadcastPipe_page_write "" "$2" "$3" "$4" "$5" 2>/dev/null
 		
 		# DANGER: Allowing this bus to run without any idle time may result in an immediately overwhelming processor load, if find loop is allowed to 'fork' new processes.
 		[[ "$ub_force_limit_page_rate" != 'false' ]] && sleep "$currentMaxTime_seconds"
@@ -109,7 +109,7 @@ _broadcastPipe_page_read() {
 	[[ -e "$1"/terminate ]] && [[ -e "$1"/reset ]] && rm -f "$1"/reset > /dev/null 2>&1 && _broadcastPipe_page_read "$@"
 	
 	
-	_rm_broadcastPipe "$@"
+	_rm_broadcastPipe_page "$@"
 	rm -f "$1"/terminate > /dev/null 2>&1
 	[[ "$1" == "$current_demand_dir"* ]] && [[ "$current_demand_dir" != "" ]] && _rm_dir_broadcastPipe_page
 	

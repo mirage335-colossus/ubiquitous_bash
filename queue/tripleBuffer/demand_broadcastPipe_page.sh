@@ -73,7 +73,7 @@ _demand_broadcastPipe_page_sequence() {
 	! rm -f "$1"/rmloop.rm > /dev/null 2>&1 && return 0
 	
 	
-	_rm_broadcastPipe "$@"
+	_rm_broadcastPipe_page "$@"
 	"$safeTmp"/_rmloop_broadcastPipe_page "$@" &
 	#"$scriptAbsoluteLocation" _rmloop_broadcastPipe_page "$@" &
 	
@@ -116,9 +116,9 @@ _demand_broadcastPipe_page() {
 		export current_broadcastPipe_outputBufferDir="$outputBufferDir"
 		_stop_queue_page() {
 			_terminate_broadcastPipe_page "$current_broadcastPipe_inputBufferDir" 2> /dev/null
-			#_terminate_broadcastPipe_fast "$current_broadcastPipe_inputBufferDir" 2> /dev/null
+			#_terminate_broadcastPipe_page_fast "$current_broadcastPipe_inputBufferDir" 2> /dev/null
 			#sleep 1
-			_rm_broadcastPipe "$current_broadcastPipe_inputBufferDir" "$current_broadcastPipe_outputBufferDir"
+			_rm_broadcastPipe_page "$current_broadcastPipe_inputBufferDir" "$current_broadcastPipe_outputBufferDir"
 			[[ "$inputBufferDir" == "$current_demand_dir"* ]] && [[ "$current_demand_dir" != "" ]] && _rm_dir_broadcastPipe_page
 		}
 	fi
@@ -143,7 +143,7 @@ _demand_broadcastPipe_page() {
 }
 
 
-_terminate_broadcastPipe_fast() {
+_terminate_broadcastPipe_page_fast() {
 	local inputBufferDir="$1"
 	
 	if [[ "$inputBufferDir" == "" ]]
@@ -176,7 +176,7 @@ _terminate_broadcastPipe_page() {
 	
 	mkdir -p "$inputBufferDir"
 	
-	_terminate_broadcastPipe_fast "$@"
+	_terminate_broadcastPipe_page_fast "$@"
 	_sleep_spinlock
 	
 	rm -f "$inputBufferDir"/terminate > /dev/null 2>&1
