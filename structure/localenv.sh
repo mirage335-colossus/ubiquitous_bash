@@ -62,6 +62,7 @@ _stop() {
 	_tryExec "_stop_prog"
 	
 	_tryExec "_stop_queue_page"
+	_tryExec "_stop_queue_aggregatorStatic"
 	
 	_preserveLog
 	

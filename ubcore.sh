@@ -7816,377 +7816,16 @@ _broadcastPipe_page_read_maxTime() {
 
 
 
-# "$1" == inputBufferDir
-# "$2" == inputFilesPrefix
-# "$3" == maxTime (approximately how many milliseconds buffer should be checked for new data)
-# "$4" == maxBytes (IGNORED)
-# "$ub_force_limit_page_rate"
-#	'' == Write new pages as fast as buffers fill up. Readers may miss some pages. (Default. Strongly recommended.)
-#	'true' == Write only one page per "$maxTime" interval. WARNING: Writes may backlog indefinitely, breaking real-time messaging. (IGNORED by '_page_read')
-#	'false' == Write and read new pages continiously. WARNING: Read processes will consume 100% CPU. Readers may still miss some pages, although reads may happen faster than writes.
-_page_read() {
-	local inputBufferDir="$1"
-	local inputFilesPrefix="$2"
-	local service_inputBufferDir
-	if [[ "$inputBufferDir" == "" ]] || [[ "$inputBufferDir" == "" ]]
-	then
-		local current_demand_dir
-		current_demand_dir=$(_demand_dir_broadcastPipe_page "$1")
-		[[ "$current_demand_dir" == "" ]] && _stop 1
-		
-		inputBufferDir="$current_demand_dir"/outputBufferDir
-		! mkdir -p "$inputBufferDir" && return 1
-		
-		service_inputBufferDir="$current_demand_dir"/inputBufferDir
-		
-		[[ "$inputFilesPrefix" == "" ]] && inputFilesPrefix='out-'
-	fi
-	
-	
-	! mkdir -p "$inputBufferDir" && return 1
-	! [[ -e "$inputBufferDir" ]] && return 1
-	! [[ -d "$inputBufferDir" ]] && return 1
-	
-	local currentMaxTime
-	currentMaxTime="$3"
-	# 6/60Hz == 100ms , loop time ~ 35ms
-	# 0.1s desired minimum sleep
-	#[[ "$currentMaxTime" == "" ]] && currentMaxTime=175
-	[[ "$currentMaxTime" == "" ]] && currentMaxTime=$(_default_page_read_maxTime)
-	
-	local currentMaxTime_seconds
-	currentMaxTime_seconds=$(bc <<< "$currentMaxTime * 0.001")
-	
-	
-	local measureTickA
-	local measureTickB
-	
-	while true
-	do
-		if [[ "$service_inputBufferDir" != "" ]]
-		then
-			#[[ ! -d "$service_inputBufferDir" ]] && return 0
-			[[ -e "$service_inputBufferDir"/terminate ]] && return 0
-		fi
-		
-		[[ "$ub_force_limit_page_rate" != 'false' ]] && sleep "$currentMaxTime_seconds"
-		
-		[[ -e "$inputBufferDir"/"$inputFilesPrefix"tick ]] && measureTickA=$(head -n 1 "$inputBufferDir"/"$inputFilesPrefix"tick 2>/dev/null)
-		[[ "$measureTickA" != '0' ]] && [[ "$measureTickA" != '1' ]] && [[ "$measureTickA" != '2' ]] && continue
-		
-		[[ "$measureTickB" == '' ]] && measureTickB='doNotMatch'
-		[[ "$measureTickA" == "$measureTickB" ]] && continue
-		
-		cat "$inputBufferDir"/"$inputFilesPrefix""$measureTickA" 2>/dev/null
-		
-		measureTickB="$measureTickA"
-	done
+
+# Modify as required for MSW/Cygwin compatibility.
+_aggregator_fifo() {
+	mkfifo "$@"
 }
 
-
-
-
-
-# "$1" == "$inputTickFile"
-# "$2" == "$inputFilesPrefix"
-# "$3" == "sessionid" (optional)
-_page_read_single() {
-	local inputTickFile="$1"
-	local inputFilesPrefix="$2"
-	local currentSession="$3"
-	if [[ "$inputTickFile" == "" ]] && [[ "$inputFilesPrefix" == "" ]]
-	then
-		local current_demand_dir
-		current_demand_dir=$(_demand_dir_broadcastPipe_page "$1")
-		[[ "$current_demand_dir" == "" ]] && _stop 1
-		
-		inputTickFile="$current_demand_dir"/outputBufferDir/out-tick
-		
-		[[ "$currentSession" == "" ]] && currentSession="single"
-		[[ "$currentSession" == "" ]] && currentSession="false"
-	fi
-	[[ "$currentSession" == "" ]] && currentSession="$sessionid"
-	
-	
-	measureTickA=$(head -n 1 "$inputTickFile" 2>/dev/null)
-	[[ "$measureTickA" != '0' ]] && [[ "$measureTickA" != '1' ]] && [[ "$measureTickA" != '2' ]] && return 0
-	
-	if [[ "$currentSession" != 'false' ]]
-	then
-		measureTickB=$(head -n 1  "$inputTickFile"-prev-"$currentSession" 2>/dev/null)
-		
-		[[ "$measureTickB" == '' ]] && measureTickB='doNotMatch'
-		[[ "$measureTickA" == "$measureTickB" ]] && return 0
-	fi
-	
-	currentExitStatus='0'
-	
-	cat ${inputTickFile/-tick/}-"$measureTickA" 2>/dev/null
-	[[ "$?" != '0' ]] && currentExitStatus='1'
-	
-	if [[ "$currentSession" != 'false' ]]
-	then
-		cp "$inputTickFile" "$inputTickFile"-prev-"$currentSession" 2>/dev/null
-		[[ "$?" != '0' ]] && currentExitStatus='1'
-	fi
-	
-	if [[ "$currentExitStatus" != '0' ]]
-	then
-		rm -f "$inputTickFile" > /dev/null 2>&1
-		return "$currentExitStatus"
-	fi
-	
-	return 0
-}
-
-
-
-
-_reset_page_write() {
-	rm -f "$1"/temp > /dev/null 2>&1
-	rm -f "$1"/"$2"tick > /dev/null 2>&1
-	rm -f "$1"/"$2"0 > /dev/null 2>&1
-	rm -f "$1"/"$2"1 > /dev/null 2>&1
-	rm -f "$1"/"$2"2 > /dev/null 2>&1
-}
-
-# "$1" == outputBufferDir
-# "$2" == outputFilesPrefix
-# "$3" == maxTime (approximately how many milliseconds new data should be allowed to 'remain' in the buffer before writing out a new tick)
-# "$4" == maxBytes (how many bytes should be allowed to 'accumulate' in the buffer before writing out a new tick) (MAY BE IGNORED)
-# "$ub_force_limit_page_rate"
-#	'' == Write new pages as fast as buffers fill up. Readers may miss some pages. (Default. Strongly recommended.)
-#	'true' == Write only one page per "$maxTime" interval. WARNING: Writes may backlog indefinitely, breaking real-time messaging.
-#	'false' == Write and read new pages continiously. WARNING: Read processes will consume 100% CPU. Readers may still miss some pages, although reads may happen faster than writes. (IGNORED by '_page_write')
-_page_write() {
-	local outputBufferDir="$1"
-	local outputFilesPrefix="$2"
-	if [[ "$outputBufferDir" == "" ]] || [[ "$outputFilesPrefix" == "" ]]
-	then
-		local current_demand_dir
-		current_demand_dir=$(_demand_dir_broadcastPipe_page "$1")
-		[[ "$current_demand_dir" == "" ]] && _stop 1
-		
-		outputBufferDir="$current_demand_dir"/inputBufferDir
-		! mkdir -p "$outputBufferDir" && return 1
-		
-		[[ "$outputFilesPrefix" == "" ]] && outputFilesPrefix='stream-'
-	fi
-	
-	
-	! mkdir -p "$outputBufferDir" && return 1
-	! [[ -e "$outputBufferDir" ]] && return 1
-	! [[ -d "$outputBufferDir" ]] && return 1
-	
-	if ! [[ -e "$safeTmp" ]]
-	then
-		export current_page_write_outputBufferDir="$outputBufferDir"
-		export current_page_write_sessionid="$sessionid"
-		_stop_queue_page() {
-			rm -f "$current_page_write_outputBufferDir"/t_"$current_page_write_sessionid" > /dev/null 2>&1
-		}
-	fi
-	
-	
-	# https://stackoverflow.com/questions/13889659/read-a-file-by-bytes-in-bash
-	# https://www.cyberciti.biz/faq/linux-unix-read-one-character-atatime-while-loop/
-		# 'The way using `read -r -n1` for reading every character is wrong, it can’t handle multi-byte characters.'
-	#echo test | while IFS= read -r -n2 car;do [ "$car" ] && echo -n "$car" || echo ; sleep 1 ; done
-	
-	# Inaccurate. Tests with random data ('/dev/urandom') seem to show errors.
-# 	local currentString
-# 	export IFS=
-# 	export LANG=C
-# 	export LC_ALL=C
-# 	#LANG=C IFS= read -r -d '' -n 1 currentString
-# 	while read -r -d '' -n 1 currentString
-# 	do
-# 		#[ "$currentString" ] && echo -n "$currentString" || echo
-# 		[ "$currentString" ] && printf '%b' "$currentString" || echo
-# 	done
-	
-# 	# Accurate, albeit extremely slow.
-# 	while head --bytes=1
-# 	do
-# 		true
-# 	done
-	
-	
-	local currentMaxTime
-	local currentMaxBytes
-	currentMaxTime="$3"
-	currentMaxBytes="$4"
-	
-	
-	[[ "$currentMaxTime" == "" ]] && currentMaxTime=$(_default_page_write_maxTime)
-	[[ "$currentMaxBytes" == "" ]] && currentMaxBytes=$(_default_page_write_maxBytes)
-	
-	local currentMaxTime_seconds
-	currentMaxTime_seconds=$(bc <<< "$currentMaxTime * 0.001")
-	
-	
-	
-	local measureDateA
-	local measureDateB
-	local measureDateDifference
-	
-	measureDateA=$(date +%s%N | cut -b1-13)
-	
-	local currentTick
-	currentTick=
-	[[ -e "$outputBufferDir"/"$outputFilesPrefix"tick ]] && currentTick=$(head -c 1 "$outputBufferDir"/"$outputFilesPrefix"tick)
-	( [[ "$currentTick" == '0' ]] || [[ "$currentTick" == '1' ]] || [[ "$currentTick" == '2' ]] ) && let currentTick="$currentTick"+1
-	[[ "$currentTick" != '0' ]] && [[ "$currentTick" != '1' ]] && [[ "$currentTick" != '2' ]] && [[ "$currentTick" != '3' ]] && currentTick='0'
-	[[ "$currentTick" -ge '3' ]] && currentTick=0
-	local currentTempSize
-	currentTempSize='0'
-	rm -f "$outputBufferDir"/t_"$sessionid" > /dev/null 2>&1
-	rm -f "$outputBufferDir"/"$outputFilesPrefix"tick > /dev/null 2>&1
-	rm -f "$outputBufferDir"/"$outputFilesPrefix"0 > /dev/null 2>&1
-	rm -f "$outputBufferDir"/"$outputFilesPrefix"1 > /dev/null 2>&1
-	rm -f "$outputBufferDir"/"$outputFilesPrefix"2 > /dev/null 2>&1
-	#while _timeout "$currentMaxTime_seconds" head --bytes="$currentMaxBytes" 2>/dev/null >> "$outputBufferDir"/t_"$sessionid"
-	#while _timeout "$currentMaxTime_seconds" cat 2>/dev/null >> "$outputBufferDir"/t_"$sessionid"
-	#while "$scriptAbsoluteLocation" _bin cat | _timeout "$currentMaxTime_seconds" dd bs="$currentMaxBytes" count=1 2>/dev/null >> "$outputBufferDir"/t_"$sessionid"
-	#while _timeout "$currentMaxTime_seconds" ( ! dd bs="$currentMaxBytes" count=1 2>/dev/null >> "$outputBufferDir"/t_"$sessionid" && rm -f "$outputBufferDir"/t_"$sessionid" > /dev/null 2>&1 )
-	#while cat 2>/dev/null >> "$outputBufferDir"/t_"$sessionid"
-	#while _timeout "$currentMaxTime_seconds" head --bytes="2" 2>/dev/null >> "$outputBufferDir"/t_"$sessionid"
-	#while _timeout "$currentMaxTime_seconds" dd bs="$currentMaxBytes" count=1 2>/dev/null >> "$outputBufferDir"/t_"$sessionid"
-	
-	#while cat 2>/dev/null >> "$outputBufferDir"/t_"$sessionid"
-	while _timeout "$currentMaxTime_seconds" dd bs="$currentMaxBytes" count=1 2>/dev/null >> "$outputBufferDir"/t_"$sessionid"
-	do
-		#[[ ! -d "$outputBufferDir" ]] && return 0
-		[[ -e "$outputBufferDir"/terminate ]] && return 0
-		
-		#true | cat "$outputBufferDir"/t_"$sessionid" > /dev/tty
-		measureDateB=$(true | date +%s%N | cut -b1-13)
-		measureDateDifference=$(bc <<< "$measureDateB - $measureDateA")
-		
-		currentTempSize='0'
-		[[ -s "$outputBufferDir"/t_"$sessionid" ]] && currentTempSize=$(true | stat -c%s "$outputBufferDir"/t_"$sessionid" 2>/dev/null)
-		[[ "$currentTempSize" == "" ]] && currentTempSize='0'
-		#[[ -s "$outputBufferDir"/t_"$sessionid" ]] && true | stat -c%s "$outputBufferDir"/t_"$sessionid" > /dev/tty
-		#[[ "$rewrite" == 'true' ]] && [[ -s "$outputBufferDir"/t_"$sessionid" ]] && true | stat -c%s "$outputBufferDir"/t_"$sessionid" > /dev/tty
-		
-		#[[ "$currentTempSize" -gt "0" ]] && true | echo "$measureDateDifference" "$currentMaxTime" > /dev/tty
-		if [[ "$currentTempSize" -gt "0" ]] && ( [[ "$measureDateDifference" -ge "$currentMaxTime" ]] || [[ "$currentTempSize" -ge "$currentMaxBytes" ]] )
-		then
-			# ATTENTION: Optional 'page rate' limiting.
-			# If buffer was completely filled, then ' _timeout "$currentMaxTime_seconds" ' may not have completed. A delay may ensure '_page_read' has enough time to notice a tick, before new pages are written.
-			# No production use. Expected to be set only for benchmarking, diagnostics, etc.
-			# WARNING: Beware this is bad for real-time messaging. Much better to discard some flood data.
-			[[ "$ub_force_limit_page_rate" == 'true' ]] && [[ "$currentTempSize" -ge "$currentMaxBytes" ]] && sleep "$currentMaxTime_seconds"
-			
-			#rm -f "$outputBufferDir"/"$outputFilesPrefix""$currentTick" > /dev/null 2>&1
-			true | mv "$outputBufferDir"/t_"$sessionid" "$outputBufferDir"/"$outputFilesPrefix""$currentTick"
-			true | echo -n "$currentTick" > "$outputBufferDir"/"$outputFilesPrefix"tick-temp
-			true | mv "$outputBufferDir"/"$outputFilesPrefix"tick-temp "$outputBufferDir"/"$outputFilesPrefix"tick
-			
-			measureDateA=$(true | date +%s%N | cut -b1-13)
-			#echo "$currentTick" > /dev/tty
-			let currentTick="$currentTick"+1
-		fi
-		
-		[[ "$currentTick" -ge '3' ]] && currentTick=0
-	done
-	
-	return 0
-}
-
-
-
-
-# "$1" == outputBufferDir
-# "$2" == outputFilesPrefix
-# "$3" == maxTime (approximately how many milliseconds new data should be allowed to 'remain' in the buffer before writing out a new tick)
-# DANGER: Any changes may unexpectedly break '_broadcastPipe' ! Takes standard input from 'script' run by 'find' 'exec' .
-_page_write_single() {
-	local outputBufferDir="$1"
-	local outputFilesPrefix="$2"
-	if [[ "$outputBufferDir" == "" ]] || [[ "$outputFilesPrefix" == "" ]]
-	then
-		local current_demand_dir
-		current_demand_dir=$(_demand_dir_broadcastPipe_page "$1")
-		[[ "$current_demand_dir" == "" ]] && _stop 1
-		
-		outputBufferDir="$current_demand_dir"/inputBufferDir
-		! mkdir -p "$outputBufferDir" && return 1
-		
-		[[ "$outputFilesPrefix" == "" ]] && outputFilesPrefix='single-'
-	fi
-	
-	local currentTmpUID
-	currentTmpUID=$(_uid)
-	cat 2>/dev/null >> "$outputBufferDir"/t_"$currentTmpUID"
-	
-	
-	if ! [[ -s "$outputBufferDir"/t_"$currentTmpUID" ]] || ! mv -n "$outputBufferDir"/t_"$currentTmpUID" "$outputBufferDir"/temp 2>/dev/null
-	then
-		rm -f "$outputBufferDir"/t_"$currentTmpUID" > /dev/null 2>&1
-		return 1
-	fi
-	
-	local currentTick
-	currentTick=
-	[[ -e "$outputBufferDir"/"$outputFilesPrefix"tick ]] && currentTick=$(head -c 1 "$outputBufferDir"/"$outputFilesPrefix"tick)
-	( [[ "$currentTick" == '0' ]] || [[ "$currentTick" == '1' ]] || [[ "$currentTick" == '2' ]] ) && let currentTick="$currentTick"+1
-	[[ "$currentTick" != '0' ]] && [[ "$currentTick" != '1' ]] && [[ "$currentTick" != '2' ]] && [[ "$currentTick" != '3' ]] && currentTick='0'
-	[[ "$currentTick" -ge '3' ]] && currentTick=0
-	
-	mv "$outputBufferDir"/temp "$outputBufferDir"/"$outputFilesPrefix""$currentTick"
-	echo -n "$currentTick" > "$outputBufferDir"/"$outputFilesPrefix"tick-temp
-	mv "$outputBufferDir"/"$outputFilesPrefix"tick-temp "$outputBufferDir"/"$outputFilesPrefix"tick
-	
-	
-	#rm -f "$outputBufferDir"/temp > /dev/null 2>&1
-	#rm -f "$outputBufferDir"/"$outputFilesPrefix"tick-temp > /dev/null 2>&1
-	return 0
-}
-
-_here_broadcastPipe_page_read_single() {
-	cat << CZXWXcRMTo8EmM8i4d
-#!/usr/bin/env bash
-
-CZXWXcRMTo8EmM8i4d
-	
-	declare -f _page_read_single
-	declare -f _broadcastPipe_page_read_single
-	
-	cat << CZXWXcRMTo8EmM8i4d
-_broadcastPipe_page_read_single "\$@"
-
-CZXWXcRMTo8EmM8i4d
-
-}
-
-
-
-
-# "$1" == inputBufferDir
-# "$2" == outputBufferDir
-# "$3" == maxTime (approximately how many milliseconds buffer should be checked for new data)
-# "$4" == maxBytes (how many bytes should be allowed to 'accumulate' in the buffer before writing out a new tick) (MAY BE IGNORED)
-# "$5" == maxTime (approximately how many milliseconds new data should be allowed to 'remain' in the buffer before writing out a new tick) (MAY BE IGNORED)
-_broadcastPipe_page_write() {
-	#true | _reset_page_write "$2" "out-" "$5" "$4"
-	
-	#export rewrite=true
-	# DANGER: Continiously piping through '_page_write' may be inherently less reliable than '_page_write_single' .
-	#_page_write "$2" "out-" "$5" "$4"
-	
-	_page_write_single "$2" "out-" "$5" "$4"
-	
-}
-
-
-_broadcastPipe_page_read_single() {
-	_page_read_single "$@"
-}
 
 
 # ATTENTION: Override with 'ops' or similar.
-_rm_broadcastPipe() {
+_rm_broadcastPipe_aggregatorStatic() {
 	
 	#[[ -e "$1" ]] && [[ "$1" != "" ]] && rm -f "$1"/* > /dev/null 2>&1
 	[[ -e "$1" ]] && [[ "$1" != "" ]] && find "$1" -mindepth 1 -maxdepth 1 -type f ! -name 'terminate' -delete > /dev/null 2>&1
@@ -8200,84 +7839,145 @@ _rm_broadcastPipe() {
 
 
 
-
-# Reduce environment to perhaps improve performance.
-_env_broadcastPipe() {
-	env -i HOME="$HOME" TERM="${TERM}" SHELL="${SHELL}" PATH="${PATH}" PWD="$PWD" scriptAbsoluteLocation="$scriptAbsoluteLocation" scriptAbsoluteFolder="$scriptAbsoluteFolder" sessionid="$sessionid" LD_PRELOAD="$LD_PRELOAD" USER="$USER" ub_force_limit_page_rate="$ub_force_limit_page_rate" "$@"
+_jobs_terminate_aggregatorStatic_procedure() {
+	currentStopJobs=$(jobs -p -r 2> /dev/null)
+	# WARNING: Although usually bad practice, it is useful for the spaces between PIDs to be interpreted in this case.
+	# DANGER: Apparently, it is possible for some not running background jobs to be included in the PID list.
+	[[ "$currentStopJobs" != "" ]] && kill $currentStopJobs > /dev/null 2>&1
+	
+	currentIterations='0'
+	while [[ $(jobs -p -r) != "" ]] && [[ "$currentIterations" -lt '3' ]]
+	do
+		sleep 0.6
+		let currentIterations="$currentIterations"+1
+	done
+	currentStopJobs=$(jobs -p -r 2> /dev/null)
+	kill -KILL $currentStopJobs > /dev/null 2>&1
+	
+	currentIterations='0'
+	while [[ $(jobs -p -r) != "" ]] && [[ "$currentIterations" -lt '16' ]]
+	do
+		sleep 1
+		let currentIterations="$currentIterations"+1
+	done
 }
 
 
-# WARNING: May delete all existing files (to 'clear the buffers').
-# WARNING: Must be running before any desired data is written to buffer - existing buffers are always discarded.
-# "$1" == inputBufferDir
-# "$2" == outputBufferDir
-# "$3" == maxTime (approximately how many milliseconds buffer should be checked for new data) (MAY ALSO PARTIALLY OR FULLY DISPLACE VALUE OF "$5")
-# "$4" == maxBytes (how many bytes should be allowed to 'accumulate' in the buffer before writing out a new tick) (MAY BE IGNORED)
-# "$5" == maxTime (approximately how many milliseconds new data should be allowed to 'remain' in the buffer before writing out a new tick) (MAY BE IGNORED)
-_broadcastPipe_page_read() {
-	_start
-	
+
+_broadcastPipe_aggregatorStatic_read_procedure() {
 	[[ "$1" == "" ]] && _stop 1
 	[[ "$1" == "/" ]] && _stop 1
 	[[ "$2" == "/" ]] && _stop 1
 	
 	local current_demand_dir
-	current_demand_dir=$(_demand_dir_broadcastPipe_page "$1")
-	
-	local currentMaxTime
-	currentMaxTime="$3"
-	[[ "$currentMaxTime" == "" ]] && currentMaxTime="$(_broadcastPipe_page_read_maxTime)"
-	
-	local currentMaxTime_seconds
-	currentMaxTime_seconds=$(bc <<< "$currentMaxTime * 0.001")
+	current_demand_dir=$(_demand_dir_broadcastPipe_aggregatorStatic "$1")
 	
 	# May perhaps take effect when SIGTERM is received directly (eg. when SIGTERM may be sent to all processes) .
 	export current_broadcastPipe_inputBufferDir="$1"
 	export current_broadcastPipe_outputBufferDir="$2"
-	_stop_queue_page() {
-		#_terminate_broadcastPipe_page "$current_broadcastPipe_inputBufferDir" 2> /dev/null
+	_stop_queue_aggregatorStatic() {
+		#_terminate_broadcastPipe_aggregatorStatic "$current_broadcastPipe_inputBufferDir" 2> /dev/null
 		_terminate_broadcastPipe_fast "$current_broadcastPipe_inputBufferDir" 2> /dev/null
 		sleep 1
-		_rm_broadcastPipe "$current_broadcastPipe_inputBufferDir" "$current_broadcastPipe_outputBufferDir"
-		[[ "$1" == "$current_demand_dir"* ]] && [[ "$current_demand_dir" != "" ]] && _rm_dir_broadcastPipe_page
+		_rm_broadcastPipe_aggregatorStatic "$current_broadcastPipe_inputBufferDir" "$current_broadcastPipe_outputBufferDir"
+		[[ "$1" == "$current_demand_dir"* ]] && [[ "$current_demand_dir" != "" ]] && _rm_dir_broadcastPipe_aggregatorStatic
 		
 		_sleep_spinlock
 		rm -f "$1"/terminate > /dev/null 2>&1
-		[[ "$1" == "$current_demand_dir"* ]] && [[ "$current_demand_dir" != "" ]] && _rm_dir_broadcastPipe_page
+		[[ "$1" == "$current_demand_dir"* ]] && [[ "$current_demand_dir" != "" ]] && _rm_dir_broadcastPipe_aggregatorStatic
 	}
 	
 	rm -f "$1"/reset > /dev/null 2>&1
 	rm -f "$1"/terminate > /dev/null 2>&1
-	#_rm_broadcastPipe "$@"
-	
-	_here_broadcastPipe_page_read_single "$@" > "$safeTmp"/broadcastPipe_page_read.sh
-	chmod u+x "$safeTmp"/broadcastPipe_page_read.sh
+	#_rm_broadcastPipe_aggregatorStatic "$@"
 	
 	echo > "$1"/listen
 	
+	local currentInputBufferCount='0'
+	local currentInputBufferCount_prev='0'
+	local currentOutputBufferCount='0'
+	local currentOutputBufferCount_prev='0'
+	
+	local currentFile
+	
+	local currentIterations
+	
+	
+	local currentStopJobs
+	
+	
 	while [[ ! -e "$1"/terminate ]]
 	do
-		# WARNING: Although sequential throughput may be important in some cases, a 'pair of wires' is fundamentally not a parallel device. Simultaneous writing to aggregator should only occur during (usually undesirable) collisions. Nevertheless, processing these collisions out of order is entirely reasonable.
-		# WARNING: Imposing limits on the number of inputs (eg. due to command line argument length limitations), below a few thousand, is strongly discouraged.
-		# https://serverfault.com/questions/193319/a-better-unix-find-with-parallel-processing
-		_env_broadcastPipe find "$1" -mindepth 1 -maxdepth 1 -mmin -0.4 -type f -name '*-tick' -exec "$safeTmp"/broadcastPipe_page_read.sh {} \; 2> /dev/null | _broadcastPipe_page_write "" "$2" "$3" "$4" "$5" 2>/dev/null
+		while [[ "$currentInputBufferCount" == "$currentInputBufferCount_prev" ]] && [[ "$currentOutputBufferCount" == "$currentOutputBufferCount_prev" ]] && [[ ! -e "$1"/terminate ]]
+		do
+			currentInputBufferCount_prev="$currentInputBufferCount"
+			currentInputBufferCount=0
+			for currentFile in "$inputBufferDir"/??????????????????
+			do
+				[[ "$currentFile" != *'??????????????????' ]] && let currentInputBufferCount="$currentInputBufferCount"+1
+			done
+			
+			currentOutputBufferCount_prev="$currentOutputBufferCount"
+			currentOutputBufferCount=0
+			for currentFile in "$outputBufferDir"/??????????????????
+			do
+				[[ "$currentFile" != *'??????????????????' ]] && let currentOutputBufferCount="$currentInputBufferCount"+1
+			done
+			
+			# Iterations >1 may reduce CPU consumption with Cygwin/MSW , assuming file exists check is reasonably efficient.
+			currentIterations='0'
+			while [[ "$currentIterations" -lt '3' ]] && [[ ! -e "$1"/terminate ]]
+			do
+				sleep 6
+				let currentIterations="$currentIterations"+1
+			done
+		done
 		
-		# DANGER: Allowing this bus to run without any idle time may result in an immediately overwhelming processor load, if find loop is allowed to 'fork' new processes.
-		[[ "$ub_force_limit_page_rate" != 'false' ]] && sleep "$currentMaxTime_seconds"
-		#sleep "$currentMaxTime_seconds"
+		
+		# https://stackoverflow.com/questions/25906020/are-pid-files-still-flawed-when-doing-it-right/25933330
+		# https://stackoverflow.com/questions/360201/how-do-i-kill-background-processes-jobs-when-my-shell-script-exits
+		
+		
+		_jobs_terminate_aggregatorStatic_procedure
+		
+		
+		if [[ ! -e "$1"/terminate ]] && [[ -e "$inputBufferDir"/?????????????????? ]]
+		then
+			#https://unix.stackexchange.com/questions/139490/continuous-reading-from-named-pipe-cat-or-tail-f
+			#https://stackoverflow.com/questions/11185771/bash-script-to-iterate-files-in-directory-and-pattern-match-filenames
+			( for currentFile in "$inputBufferDir"/??????????????????
+			do
+				echo cat "$currentFile" > /dev/tty
+				[[ "$currentFile" != *'??????????????????' ]] && cat "$currentFile" 2>/dev/null &
+			done ) | tee "$outputBufferDir"/?????????????????? > /dev/null 2>&1 &
+		fi
 	done
 	
+	_jobs_terminate_aggregatorStatic_procedure
+	
 	# WARNING: Since only one program may successfully remove a single file, that mechanism should allow only one 'broadcastPipe' process to remain in the unlikely case multiple were somehow started.
-	[[ -e "$1"/terminate ]] && [[ -e "$1"/reset ]] && rm -f "$1"/reset > /dev/null 2>&1 && _broadcastPipe_page_read "$@"
+	[[ -e "$1"/terminate ]] && [[ -e "$1"/reset ]] && rm -f "$1"/reset > /dev/null 2>&1 && _broadcastPipe_aggregatorStatic_read_procedure "$@"
 	
 	
-	_rm_broadcastPipe "$@"
+	_rm_broadcastPipe_aggregatorStatic "$@"
 	rm -f "$1"/terminate > /dev/null 2>&1
-	[[ "$1" == "$current_demand_dir"* ]] && [[ "$current_demand_dir" != "" ]] && _rm_dir_broadcastPipe_page
+	[[ "$1" == "$current_demand_dir"* ]] && [[ "$current_demand_dir" != "" ]] && _rm_dir_broadcastPipe_aggregatorStatic
 	
 	_sleep_spinlock
 	rm -f "$1"/terminate > /dev/null 2>&1
-	[[ "$1" == "$current_demand_dir"* ]] && [[ "$current_demand_dir" != "" ]] && _rm_dir_broadcastPipe_page
+	[[ "$1" == "$current_demand_dir"* ]] && [[ "$current_demand_dir" != "" ]] && _rm_dir_broadcastPipe_aggregatorStatic
+}
+
+
+
+# WARNING: Any unconnected pipe will block all pipes.
+# WARNING: Any disconnection or new pipe will cause 'reset' of all pipes.
+# "$1" == inputBufferDir
+# "$2" == outputBufferDir
+_broadcastPipe_aggregatorStatic_read() {
+	_start
+	
+	_broadcastPipe_aggregatorStatic_read_procedure "$@"
 	
 	_stop
 }
@@ -8289,20 +7989,22 @@ _broadcastPipe_page_read() {
 
 
 
-_here_rmloop_broadcastPipe_page() {
+
+
+_here_rmloop_broadcastPipe_aggregatorStatic() {
 	_here_header_bash_or_dash "$@"
 	
-	declare -f _rmloop_broadcastPipe_page
+	declare -f _rmloop_broadcastPipe_aggregatorStatic
 	
 	cat << CZXWXcRMTo8EmM8i4d
-_rmloop_broadcastPipe_page "\$@"
+_rmloop_broadcastPipe_aggregatorStatic "\$@"
 
 CZXWXcRMTo8EmM8i4d
 
 }
 
 
-_rmloop_broadcastPipe_page() {
+_rmloop_broadcastPipe_aggregatorStatic() {
 	while true
 	do
 		rm -f "$1"/rmloop > /dev/null 2>&1
@@ -8314,7 +8016,7 @@ _rmloop_broadcastPipe_page() {
 }
 
 
-_safePath_demand_broadcastPipe_page() {
+_safePath_demand_broadcastPipe_aggregatorStatic() {
 	if [[ "$1" == "$scriptLocal"* ]] && ! _if_cygwin
 	then
 		return 0
@@ -8334,7 +8036,7 @@ _safePath_demand_broadcastPipe_page() {
 # "$2" == outputBufferDir
 # "$3" == maxTime (approximately how many milliseconds new data should be allowed to 'remain' in the buffer before writing out a new tick)
 # "$4" == maxBytes (how many bytes should be allowed to 'accumulate' in the buffer before writing out a new tick)
-_demand_broadcastPipe_page_sequence() {
+_demand_broadcastPipe_aggregatorStatic_sequence() {
 	_start
 	
 	! mkdir -p "$1" && _stop 1
@@ -8342,14 +8044,14 @@ _demand_broadcastPipe_page_sequence() {
 	[[ "$1" == "" ]] && _stop 1
 	[[ "$1" == "/" ]] && _stop 1
 	[[ "$2" == "/" ]] && _stop 1
-	if ! _safePath_demand_broadcastPipe_page "$@"
+	if ! _safePath_demand_broadcastPipe_aggregatorStatic "$@"
 	then
-		_terminate_broadcastPipe_page "$1"
+		_terminate_broadcastPipe_aggregatorStatic "$1"
 		_stop 1
 	fi
 	
-	_here_rmloop_broadcastPipe_page "$@" > "$safeTmp"/_rmloop_broadcastPipe_page
-	chmod u+x "$safeTmp"/_rmloop_broadcastPipe_page
+	_here_rmloop_broadcastPipe_aggregatorStatic "$@" > "$safeTmp"/_rmloop_broadcastPipe_aggregatorStatic
+	chmod u+x "$safeTmp"/_rmloop_broadcastPipe_aggregatorStatic
 	
 	echo > "$1"/rmloop
 	
@@ -8362,13 +8064,13 @@ _demand_broadcastPipe_page_sequence() {
 	! rm -f "$1"/rmloop.rm > /dev/null 2>&1 && return 0
 	
 	
-	_rm_broadcastPipe "$@"
-	"$safeTmp"/_rmloop_broadcastPipe_page "$@" &
-	#"$scriptAbsoluteLocation" _rmloop_broadcastPipe_page "$@" &
+	_rm_broadcastPipe_aggregatorStatic "$@"
+	"$safeTmp"/_rmloop_broadcastPipe_aggregatorStatic "$@" &
+	#"$scriptAbsoluteLocation" _rmloop_broadcastPipe_aggregatorStatic "$@" &
 	
 	
-	#"$scriptAbsoluteLocation" _broadcastPipe_page_read "$@" | _broadcastPipe_page_write "$@"
-	"$scriptAbsoluteLocation" _broadcastPipe_page_read "$@"
+	#"$scriptAbsoluteLocation" _broadcastPipe_aggregatorStatic_read "$@" | _broadcastPipe_aggregatorStatic_write "$@"
+	"$scriptAbsoluteLocation" _broadcastPipe_aggregatorStatic_read "$@"
 	
 	# May not be necessary. Theoretically redundant.
 	local currentStopJobs
@@ -8378,12 +8080,12 @@ _demand_broadcastPipe_page_sequence() {
 	
 	_sleep_spinlock
 	rm -f "$1"/terminate > /dev/null 2>&1
-	[[ "$1" == "$current_demand_dir"* ]] && [[ "$current_demand_dir" != "" ]] && _rm_dir_broadcastPipe_page
+	[[ "$1" == "$current_demand_dir"* ]] && [[ "$current_demand_dir" != "" ]] && _rm_dir_broadcastPipe_aggregatorStatic
 	
 	_stop
 }
 
-_demand_broadcastPipe_page() {
+_demand_broadcastPipe_aggregatorStatic() {
 	local inputBufferDir="$1"
 	local outputBufferDir="$2"
 	shift
@@ -8392,7 +8094,7 @@ _demand_broadcastPipe_page() {
 	if [[ "$inputBufferDir" == "" ]] || [[ "$outputBufferDir" == "" ]]
 	then
 		local current_demand_dir
-		current_demand_dir=$(_demand_dir_broadcastPipe_page "$1")
+		current_demand_dir=$(_demand_dir_broadcastPipe_aggregatorStatic "$1")
 		[[ "$current_demand_dir" == "" ]] && _stop 1
 		
 		inputBufferDir="$current_demand_dir"/inputBufferDir
@@ -8400,20 +8102,20 @@ _demand_broadcastPipe_page() {
 	elif [[ -e "$safeTmp" ]]
 	then
 		# DANGER: Without this hook, temporary "$safeTmp" directories may persist indefinitely!
-		# Only hook '_stop_queue_page' if called from within another 'sequence' (to cause termination of service when that 'sequence' terminates for any reason).
+		# Only hook '_stop_queue_aggregatorStatic' if called from within another 'sequence' (to cause termination of service when that 'sequence' terminates for any reason).
 		export current_broadcastPipe_inputBufferDir="$inputBufferDir"
 		export current_broadcastPipe_outputBufferDir="$outputBufferDir"
-		_stop_queue_page() {
-			_terminate_broadcastPipe_page "$current_broadcastPipe_inputBufferDir" 2> /dev/null
+		_stop_queue_aggregatorStatic() {
+			_terminate_broadcastPipe_aggregatorStatic "$current_broadcastPipe_inputBufferDir" 2> /dev/null
 			#_terminate_broadcastPipe_fast "$current_broadcastPipe_inputBufferDir" 2> /dev/null
 			#sleep 1
-			_rm_broadcastPipe "$current_broadcastPipe_inputBufferDir" "$current_broadcastPipe_outputBufferDir"
-			[[ "$inputBufferDir" == "$current_demand_dir"* ]] && [[ "$current_demand_dir" != "" ]] && _rm_dir_broadcastPipe_page
+			_rm_broadcastPipe_aggregatorStatic "$current_broadcastPipe_inputBufferDir" "$current_broadcastPipe_outputBufferDir"
+			[[ "$inputBufferDir" == "$current_demand_dir"* ]] && [[ "$current_demand_dir" != "" ]] && _rm_dir_broadcastPipe_aggregatorStatic
 		}
 	fi
 	
 	
-	"$scriptAbsoluteLocation" _demand_broadcastPipe_page_sequence "$inputBufferDir" "$outputBufferDir" "$@" &
+	"$scriptAbsoluteLocation" _demand_broadcastPipe_aggregatorStatic_sequence "$inputBufferDir" "$outputBufferDir" "$@" &
 	while [[ -e "$inputBufferDir"/rmloop ]]
 	do
 		sleep 0.1
@@ -8422,8 +8124,8 @@ _demand_broadcastPipe_page() {
 	[[ ! -e "$inputBufferDir"/listen ]] && _sleep_spinlock
 	[[ ! -e "$inputBufferDir"/listen ]] && return 1
 	
-	[[ "$ub_force_limit_page_rate" == 'true' ]] && _sleep_spinlock
-	#[[ "$ub_force_limit_page_rate" == 'false' ]] && _sleep_spinlock
+	[[ "$ub_force_limit_aggregatorStatic_rate" == 'true' ]] && _sleep_spinlock
+	#[[ "$ub_force_limit_aggregatorStatic_rate" == 'false' ]] && _sleep_spinlock
 	
 	disown -a -h -r
 	disown -a -r
@@ -8432,13 +8134,13 @@ _demand_broadcastPipe_page() {
 }
 
 
-_terminate_broadcastPipe_fast() {
+_terminate_broadcastPipe_aggregatorStatic_fast() {
 	local inputBufferDir="$1"
 	
 	if [[ "$inputBufferDir" == "" ]]
 	then
 		local current_demand_dir
-		current_demand_dir=$(_demand_dir_broadcastPipe_page "$1")
+		current_demand_dir=$(_demand_dir_broadcastPipe_aggregatorStatic "$1")
 		[[ "$current_demand_dir" == "" ]] && _stop 1
 		
 		inputBufferDir="$current_demand_dir"/inputBufferDir
@@ -8451,13 +8153,13 @@ _terminate_broadcastPipe_fast() {
 	echo > "$inputBufferDir"/terminate
 }
 
-_terminate_broadcastPipe_page() {
+_terminate_broadcastPipe_aggregatorStatic() {
 	local inputBufferDir="$1"
 	
 	if [[ "$inputBufferDir" == "" ]]
 	then
 		local current_demand_dir
-		current_demand_dir=$(_demand_dir_broadcastPipe_page "$1")
+		current_demand_dir=$(_demand_dir_broadcastPipe_aggregatorStatic "$1")
 		[[ "$current_demand_dir" == "" ]] && _stop 1
 		
 		inputBufferDir="$current_demand_dir"/inputBufferDir
@@ -8465,23 +8167,23 @@ _terminate_broadcastPipe_page() {
 	
 	mkdir -p "$inputBufferDir"
 	
-	_terminate_broadcastPipe_fast "$@"
+	_terminate_broadcastPipe_aggregatorStatic_fast "$@"
 	_sleep_spinlock
 	
 	rm -f "$inputBufferDir"/terminate > /dev/null 2>&1
-	[[ "$inputBufferDir" == "$current_demand_dir"* ]] && [[ "$current_demand_dir" != "" ]] && _rm_dir_broadcastPipe_page
+	[[ "$inputBufferDir" == "$current_demand_dir"* ]] && [[ "$current_demand_dir" != "" ]] && _rm_dir_broadcastPipe_aggregatorStatic
 }
 
 # WARNING: No production use. Intended for end-user (interactive) only.
 # WARNING: Untested.
 # One possible benefit - a reset should happen much more quickly than a '_terminate ..." "_demand ..." cycle due to lack of spinlock sleep.
-_reset_broadcastPipe_page() {
+_reset_broadcastPipe_aggregatorStatic() {
 	local inputBufferDir="$1"
 	
 	if [[ "$inputBufferDir" == "" ]]
 	then
 		local current_demand_dir
-		current_demand_dir=$(_demand_dir_broadcastPipe_page "$1")
+		current_demand_dir=$(_demand_dir_broadcastPipe_aggregatorStatic "$1")
 		[[ "$current_demand_dir" == "" ]] && _stop 1
 		
 		inputBufferDir="$current_demand_dir"/inputBufferDir
@@ -8498,187 +8200,8 @@ _reset_broadcastPipe_page() {
 }
 
 
-# Under ideal conditions, small quantities of data may be continiously copied completely or identically (<10M).
-#./ubiquitous_bash.sh _page_read ./outputBufferDir 'testfill-' "175" > ./rewrite
-#cat ./testfill | pv | ./ubiquitous_bash.sh _page_write ./outputBufferDir 'testfill-' "725" "86400"
-_benchmark_page() {
+_benchmark_broadcastPipe_aggregatorStatic() {
 	_start
-	
-	export ub_force_limit_page_rate='false'
-	local current_Write_MaxBytes=864000
-	
-	
-	#dd if=/dev/urandom of="$safeTmp"/testfill bs=1k count=2048 > /dev/null 2>&1
-	dd if=/dev/urandom of="$safeTmp"/testfill bs=1M count=4 > /dev/null 2>&1
-	
-	
-	#>&2 echo "read"
-	#_messagePlain_probe "$scriptAbsoluteLocation" _page_read "$safeTmp"/outputBufferDir 'testfill-' "$current_Read_MaxTime" \> "$safeTmp"/rewrite
-	"$scriptAbsoluteLocation" _page_read "$safeTmp"/outputBufferDir 'testfill-' "$current_Read_MaxTime" > "$safeTmp"/rewrite &
-	sleep 1
-	
-	#>&2 echo "write"
-	#_messagePlain_probe _timeout 150 cat "$safeTmp"/testfill \| pv \| _timeout 15 "$scriptAbsoluteLocation" _page_write "$safeTmp"/outputBufferDir 'testfill-' "$current_Write_MaxTime" "$current_Write_MaxBytes"
-	_timeout 150 cat "$safeTmp"/testfill | pv | _timeout 30 "$scriptAbsoluteLocation" _page_write "$safeTmp"/outputBufferDir 'testfill-' "$current_Write_MaxTime" "$current_Write_MaxBytes"
-	
-	(
-	cd "$safeTmp"
-	du -sh ./testfill ./rewrite
-	md5sum ./testfill ./rewrite
-	)
-	
-	_stop
-}
-
-
-
-
-# WARNING: Not a valid example of intended or otherwise correct usage.
-# WARNING: Bus parameters are chosen to attempt synchronyous operation, which is usually highly undesirable!
-# System latency and bandwidth indirectly measured by this test. Inability to triple buffer through the "$safeTmp" filesystem at expected rate (ie. ~15KiB/s) will return failure.
-_test_broadcastPipe_page-stream_sequence() {
-	_start
-	
-	#Benchmarked at >15KiB/s .
-	export ub_force_limit_page_rate='true'
-	local current_Service_MaxTime=975
-	local current_Read_MaxTime=575
-	local current_Write_MaxTime=4475
-	local current_Write_MaxBytes=86400
-	
-	_demand_broadcastPipe_page "$safeTmp"/inputBufferDir "$safeTmp"/outputBufferDir "$current_Service_MaxTime"
-	
-	#>&2 echo "read"
-	"$scriptAbsoluteLocation" _page_read "$safeTmp"/outputBufferDir 'out-' "$current_Read_MaxTime" > "$safeTmp"/rewrite &
-	
-	dd if=/dev/urandom of="$safeTmp"/testfill bs=1k count=288 > /dev/null 2>&1
-	
-	#>&2 echo "write"
-	#_timeout 150 cat "$safeTmp"/testfill | pv | _timeout 30 "$scriptAbsoluteLocation" _page_write "$safeTmp"/inputBufferDir 'testfill-' "$current_Write_MaxTime" "$current_Write_MaxBytes"
-	_timeout 150 cat "$safeTmp"/testfill | _timeout 30 "$scriptAbsoluteLocation" _page_write "$safeTmp"/inputBufferDir 'testfill-' "$current_Write_MaxTime" "$current_Write_MaxBytes"
-	
-	#cat "$safeTmp"/testfill | _page_write_single "$safeTmp"/inputBufferDir 'testfill-' "$current_Write_MaxTime" "$current_Write_MaxBytes"
-	#_sleep_spinlock
-	
-	_terminate_broadcastPipe_page "$safeTmp"/inputBufferDir
-	
-	#(
-	#cd "$safeTmp"
-	#du -sh ./testfill ./rewrite
-	#md5sum ./testfill ./rewrite
-	#)
-	
-	! [[ -s "$safeTmp"/testfill ]] && _stop 1
-	! [[ -s "$safeTmp"/rewrite ]] && _stop 1
-	! diff "$safeTmp"/testfill "$safeTmp"/rewrite && _stop 1
-	
-	_stop
-}
-
-# WARNING: Not a valid example of intended or otherwise correct usage.
-# WARNING: Bus parameters are chosen to attempt synchronyous operation, which is usually highly undesirable!
-_test_broadcastPipe_page-single_sequence() {
-	_start
-	
-	#Benchmarked at >15KiB/s .
-	export ub_force_limit_page_rate='true'
-	local current_Service_MaxTime=975
-	local current_Read_MaxTime=575
-	local current_Write_MaxTime=4475
-	local current_Write_MaxBytes=86400
-	
-	_demand_broadcastPipe_page "$safeTmp"/inputBufferDir "$safeTmp"/outputBufferDir "$current_Service_MaxTime"
-	
-	#>&2 echo "read"
-	"$scriptAbsoluteLocation" _page_read "$safeTmp"/outputBufferDir 'out-' "$current_Read_MaxTime" > "$safeTmp"/rewrite &
-	
-	dd if=/dev/urandom of="$safeTmp"/testfill bs=1k count=288 > /dev/null 2>&1
-	
-	#>&2 echo "write"
-	#_timeout 150 cat "$safeTmp"/testfill | pv | _timeout 30 "$scriptAbsoluteLocation" _page_write "$safeTmp"/inputBufferDir 'testfill-' "$current_Write_MaxTime" "$current_Write_MaxBytes"
-	#_timeout 150 cat "$safeTmp"/testfill | _timeout 30 "$scriptAbsoluteLocation" _page_write "$safeTmp"/inputBufferDir 'testfill-' "$current_Write_MaxTime" "$current_Write_MaxBytes"
-	
-	cat "$safeTmp"/testfill | _page_write_single "$safeTmp"/inputBufferDir 'testfill-' "$current_Write_MaxTime" "$current_Write_MaxBytes"
-	_sleep_spinlock
-	
-	_terminate_broadcastPipe_page "$safeTmp"/inputBufferDir
-	
-	#(
-	#cd "$safeTmp"
-	#du -sh ./testfill ./rewrite
-	#md5sum ./testfill ./rewrite
-	#)
-	
-	! [[ -s "$safeTmp"/testfill ]] && _stop 1
-	! [[ -s "$safeTmp"/rewrite ]] && _stop 1
-	! diff "$safeTmp"/testfill "$safeTmp"/rewrite && _stop 1
-	
-	_stop
-}
-
-_test_broadcastPipe_page() {
-	_getDep md5sum
-	_getDep sha512sum
-	#_getDep pv
-	
-	if ! "$scriptAbsoluteLocation" _test_broadcastPipe_page-stream_sequence "$@" 2> /dev/null
-	then
-		return 1
-	fi
-	if ! "$scriptAbsoluteLocation" _test_broadcastPipe_page-single_sequence "$@" 2> /dev/null
-	then
-		return 1
-	fi
-	return 0
-}
-
-
-
-
-# Under ideal conditions, small quantities of data may be continiously copied completely or identically (<10M).
-_benchmark_broadcastPipe_page() {
-	_start
-	
-	export ub_force_limit_page_rate='false'
-	local current_Write_MaxBytes=864000
-	
-	
-	_demand_broadcastPipe_page "$safeTmp"/inputBufferDir "$safeTmp"/outputBufferDir "$current_Service_MaxTime" "$current_Service_MaxBytes" "$current_Service_Write_MaxTime"
-	
-	#>&2 echo "read"
-	"$scriptAbsoluteLocation" _page_read "$safeTmp"/outputBufferDir 'out-' "$current_Read_MaxTime" > "$safeTmp"/rewrite &
-	
-	dd if=/dev/urandom of="$safeTmp"/testfill bs=1M count=4 > /dev/null 2>&1
-	
-	#>&2 echo "write"
-	_timeout 150 cat "$safeTmp"/testfill | pv | _timeout 30 "$scriptAbsoluteLocation" _page_write "$safeTmp"/inputBufferDir 'testfill-' "$current_Write_MaxTime" "$current_Write_MaxBytes"
-	#_timeout 150 cat "$safeTmp"/testfill | _timeout 30 "$scriptAbsoluteLocation" _page_write "$safeTmp"/inputBufferDir 'testfill-' '$current_Write_MaxTime' '$current_Write_MaxBytes'
-	
-	#cat "$safeTmp"/testfill | _page_write_single "$safeTmp"/inputBufferDir 'testfill-' '$current_Write_MaxTime' '$current_Write_MaxBytes'
-	#_sleep_spinlock
-	
-	_terminate_broadcastPipe_page "$safeTmp"/inputBufferDir
-	
-	(
-	cd "$safeTmp"
-	du -sh ./testfill ./rewrite
-	md5sum ./testfill ./rewrite
-	)
-	
-	#! [[ -s "$safeTmp"/testfill ]] && _stop 1
-	#! [[ -s "$safeTmp"/rewrite ]] && _stop 1
-	#! diff "$safeTmp"/testfill "$safeTmp"/rewrite && _stop 1
-	
-	_stop
-}
-
-
-
-
-
-_broadcastPipe_aggregatorStatic_read() {
-	_start
-	
 	
 	
 	
@@ -8800,6 +8323,7 @@ _stop() {
 	_tryExec "_stop_prog"
 	
 	_tryExec "_stop_queue_page"
+	_tryExec "_stop_queue_aggregatorStatic"
 	
 	_preserveLog
 	
