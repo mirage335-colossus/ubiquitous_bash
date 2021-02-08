@@ -181,6 +181,10 @@ _terminate_broadcastPipe_page() {
 	
 	rm -f "$inputBufferDir"/terminate > /dev/null 2>&1
 	[[ "$inputBufferDir" == "$current_demand_dir"* ]] && [[ "$current_demand_dir" != "" ]] && _rm_dir_broadcastPipe_page
+	
+	_sleep_spinlock
+	
+	return 0
 }
 
 # WARNING: No production use. Intended for end-user (interactive) only.

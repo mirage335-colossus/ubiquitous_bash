@@ -64,7 +64,7 @@ _broadcastPipe_aggregatorStatic_read_procedure() {
 	
 	rm -f "$1"/reset > /dev/null 2>&1
 	rm -f "$1"/terminate > /dev/null 2>&1
-	#_rm_broadcastPipe_aggregatorStatic "$@"
+	_rm_broadcastPipe_aggregatorStatic "$@"
 	
 	echo > "$1"/listen
 	
@@ -81,18 +81,20 @@ _broadcastPipe_aggregatorStatic_read_procedure() {
 	local currentStopJobs
 	
 	
-	while [[ ! -e "$1"/terminate ]]
+	while [[ ! -e "$1"/terminate ]] && [[ -d "$1" ]]
 	do
-		while [[ "$currentInputBufferCount" == "$currentInputBufferCount_prev" ]] && [[ "$currentOutputBufferCount" == "$currentOutputBufferCount_prev" ]] && [[ ! -e "$1"/terminate ]]
+		
+		currentInputBufferCount_prev="$currentInputBufferCount"
+		currentOutputBufferCount_prev="$currentOutputBufferCount"
+		while [[ $(jobs -p -r) != "" ]] && [[ "$currentInputBufferCount" == "$currentInputBufferCount_prev" ]] && [[ "$currentOutputBufferCount" == "$currentOutputBufferCount_prev" ]] && [[ ! -e "$1"/terminate ]] && [[ -d "$1" ]]
 		do
-			currentInputBufferCount_prev="$currentInputBufferCount"
+			
 			currentInputBufferCount=0
 			for currentFile in "$inputBufferDir"/??????????????????
 			do
 				[[ "$currentFile" != *'??????????????????' ]] && let currentInputBufferCount="$currentInputBufferCount"+1
 			done
 			
-			currentOutputBufferCount_prev="$currentOutputBufferCount"
 			currentOutputBufferCount=0
 			for currentFile in "$outputBufferDir"/??????????????????
 			do
@@ -101,7 +103,7 @@ _broadcastPipe_aggregatorStatic_read_procedure() {
 			
 			# Iterations >1 may reduce CPU consumption with Cygwin/MSW , assuming file exists check is reasonably efficient.
 			currentIterations='0'
-			while [[ "$currentIterations" -lt '3' ]] && [[ ! -e "$1"/terminate ]]
+			while [[ $(jobs -p -r) != "" ]] && [[ "$currentIterations" -lt '3' ]] && [[ "$currentInputBufferCount" == "$currentInputBufferCount_prev" ]] && [[ "$currentOutputBufferCount" == "$currentOutputBufferCount_prev" ]] && [[ ! -e "$1"/terminate ]] && [[ -d "$1" ]]
 			do
 				sleep 6
 				let currentIterations="$currentIterations"+1
@@ -116,8 +118,9 @@ _broadcastPipe_aggregatorStatic_read_procedure() {
 		_jobs_terminate_aggregatorStatic_procedure
 		
 		
-		if [[ ! -e "$1"/terminate ]] && [[ -e "$inputBufferDir"/?????????????????? ]]
+		if [[ ! -e "$1"/terminate ]] && [[ -d "$1" ]]
 		then
+			
 			#https://unix.stackexchange.com/questions/139490/continuous-reading-from-named-pipe-cat-or-tail-f
 			#https://stackoverflow.com/questions/11185771/bash-script-to-iterate-files-in-directory-and-pattern-match-filenames
 			( for currentFile in "$inputBufferDir"/??????????????????
@@ -125,6 +128,7 @@ _broadcastPipe_aggregatorStatic_read_procedure() {
 				[[ "$currentFile" != *'??????????????????' ]] && cat "$currentFile" 2>/dev/null &
 			done ) | tee "$outputBufferDir"/?????????????????? > /dev/null 2>&1 &
 		fi
+		
 	done
 	
 	_jobs_terminate_aggregatorStatic_procedure
@@ -140,6 +144,8 @@ _broadcastPipe_aggregatorStatic_read_procedure() {
 	_sleep_spinlock
 	rm -f "$1"/terminate > /dev/null 2>&1
 	[[ "$1" == "$current_demand_dir"* ]] && [[ "$current_demand_dir" != "" ]] && _rm_dir_broadcastPipe_aggregatorStatic
+	
+	return 0
 }
 
 
