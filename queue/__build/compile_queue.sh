@@ -42,9 +42,13 @@ _compile_bash_vars_queue() {
 	
 	includeScriptList+=( "queue/aggregator"/fifo_aggregator.sh )
 	
+	includeScriptList+=( "queue/aggregator"/aggregator_read.sh )
+	includeScriptList+=( "queue/aggregator"/aggregator_write.sh )
+	
 	includeScriptList+=( "queue/aggregator/static"/broadcastPipe_aggregatorStatic.sh )
 	includeScriptList+=( "queue/aggregator/static"/demand_broadcastPipe_aggregatorStatic.sh )
-	includeScriptList+=( "queue/aggregator/static"/benchmark_broadcastPipe_aggregatorStatic.sh )
 	
+	includeScriptList+=( "queue/aggregator/static"/test_broadcastPipe_aggregatorStatic.sh )
+	includeScriptList+=( "queue/aggregator/static"/benchmark_broadcastPipe_aggregatorStatic.sh )
 	
 }

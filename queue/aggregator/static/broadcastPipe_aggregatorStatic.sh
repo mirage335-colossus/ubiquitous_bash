@@ -83,6 +83,8 @@ _broadcastPipe_aggregatorStatic_read_procedure() {
 	
 	local currentStopJobs
 	
+	local currentIsEmptyOut
+	
 	
 	while [[ ! -e "$1"/terminate ]] && [[ -d "$1" ]]
 	do
@@ -114,17 +116,26 @@ _broadcastPipe_aggregatorStatic_read_procedure() {
 		done
 		
 		
-		# TODO: Testing.
-		# TODO: All related pipe read/write functions should always call '_reset' , due to possibility of SIGPIPE being ignored.
-		# TODO: Only continue sleeping while relevant ' "$1"/skip ' file does not exist.
 		rm -f "$1"/skip > /dev/null 2>&1
 		currentIterations='0'
-		while [[ ! -e "$1"/skip ]] && [[ "$currentIterations" -le 24 ]]
+		while [[ "$currentIterations" -le 4 ]] && [[ ! -e "$1"/skip ]] && [[ ! -e "$1"/terminate ]]
 		do
-			sleep 1
+			sleep 6
 			let currentIterations="$currentIterations"+1
 		done
 		#rm -f "$1"/skip > /dev/null 2>&1
+		
+		currentInputBufferCount=0
+		for currentFile in "$inputBufferDir"/??????????????????
+		do
+			[[ "$currentFile" != *'??????????????????' ]] && let currentInputBufferCount="$currentInputBufferCount"+1
+		done
+		
+		currentOutputBufferCount=0
+		for currentFile in "$outputBufferDir"/??????????????????
+		do
+			[[ "$currentFile" != *'??????????????????' ]] && let currentOutputBufferCount="$currentInputBufferCount"+1
+		done
 		
 		
 		# https://stackoverflow.com/questions/25906020/are-pid-files-still-flawed-when-doing-it-right/25933330
@@ -134,9 +145,16 @@ _broadcastPipe_aggregatorStatic_read_procedure() {
 		_jobs_terminate_aggregatorStatic_procedure
 		
 		
-		if [[ ! -e "$1"/terminate ]] && [[ -d "$1" ]]
+		# Although this may seem inefficient, the alternatives of calling external programs, filling variables, or setting 'shopt', may also be undesirable.
+		# https://www.cyberciti.biz/faq/linux-unix-shell-check-if-directory-empty/
+		currentIsEmptyOut='true'
+		for currentFile in "$outputBufferDir"/??????????????????
+		do
+			[[ "$currentFile" != *'??????????????????' ]] && currentIsEmptyOut='false' && break
+		done
+		
+		if [[ ! -e "$1"/terminate ]] && [[ -d "$1" ]] && [[ "$currentIsEmptyOut" == 'false' ]]
 		then
-			
 			#https://unix.stackexchange.com/questions/139490/continuous-reading-from-named-pipe-cat-or-tail-f
 			#https://stackoverflow.com/questions/11185771/bash-script-to-iterate-files-in-directory-and-pattern-match-filenames
 			( for currentFile in "$inputBufferDir"/??????????????????

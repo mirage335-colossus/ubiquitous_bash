@@ -187,9 +187,7 @@ _terminate_broadcastPipe_aggregatorStatic() {
 	return 0
 }
 
-# WARNING: No production use. Intended for end-user (interactive) only.
-# WARNING: Untested.
-# One possible benefit - a reset should happen much more quickly than a '_terminate ..." "_demand ..." cycle due to lack of spinlock sleep.
+
 _reset_broadcastPipe_aggregatorStatic() {
 	local inputBufferDir="$1"
 	
@@ -211,4 +209,28 @@ _reset_broadcastPipe_aggregatorStatic() {
 	echo > "$inputBufferDir"/reset
 	echo > "$inputBufferDir"/terminate
 }
+
+
+_skip_broadcastPipe_aggregatorStatic() {
+	local inputBufferDir="$1"
+	
+	if [[ "$inputBufferDir" == "" ]]
+	then
+		local current_demand_dir
+		current_demand_dir=$(_demand_dir_broadcastPipe_aggregatorStatic "$1")
+		[[ "$current_demand_dir" == "" ]] && _stop 1
+		
+		inputBufferDir="$current_demand_dir"/inputBufferDir
+	fi
+	
+	mkdir -p "$inputBufferDir"
+	
+	[[ "$inputBufferDir" == "" ]] && return 1
+	[[ "$inputBufferDir" == "/" ]] && return 1
+	[[ ! -e "$inputBufferDir" ]] && return 1
+	
+	echo > "$inputBufferDir"/skip
+}
+
+
 

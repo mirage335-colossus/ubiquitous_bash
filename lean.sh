@@ -5278,6 +5278,151 @@ _aggregator_fifo() {
 
 
 
+# TODO: Testing.
+# TODO: All related pipe read/write functions should always call '_reset' , due to possibility of SIGPIPE being ignored.
+# TODO: Only continue sleeping while relevant ' "$1"/skip ' file does not exist.
+
+# "$1" == inputBufferDir
+# "$2" == inputFilesPrefix (IGNORED)
+_aggregator_read_procedure() {
+	local inputBufferDir="$1"
+	local inputFilesPrefix="$2"
+	local service_inputBufferDir
+	#if [[ "$inputBufferDir" == "" ]] || [[ "$inputBufferDir" == "" ]]
+	if [[ "$inputBufferDir" == "" ]]
+	then
+		local current_demand_dir
+		current_demand_dir=$(_demand_dir_broadcastPipe_aggregatorStatic "$1")
+		[[ "$current_demand_dir" == "" ]] && _stop 1
+		
+		inputBufferDir="$current_demand_dir"/outputBufferDir
+		! mkdir -p "$inputBufferDir" && return 1
+		
+		service_inputBufferDir="$current_demand_dir"/inputBufferDir
+		
+		#[[ "$inputFilesPrefix" == "" ]] && inputFilesPrefix='out-'
+	fi
+	
+	# ATTENTION: IGNORE "$inputFilesPrefix" .
+	inputFilesPrefix=''
+	
+	
+	! mkdir -p "$inputBufferDir" && return 1
+	! [[ -e "$inputBufferDir" ]] && return 1
+	! [[ -d "$inputBufferDir" ]] && return 1
+	
+	
+	
+	
+	local currentFifo
+	currentFifo="$inputBufferDir"/"$inputFilesPrefix"$(_uid 18)
+	_aggregator_fifo "$currentFifo"
+	
+	
+	#if ! [[ -e "$safeTmp" ]]
+	#then
+		export current_aggregator_read_fifo="$currentFifo"
+		_stop_queue_aggregator() {
+			rm -f "$current_aggregator_read_fifo" > /dev/null 2>&1
+		}
+	#fi
+	
+	# WARNING: Removal of FIFO may not occur while not connected to both input and output. Apparently 'trap' does not work here.
+	# WARNING: May be incompatible with '_timeout' .
+	cat "$currentFifo"
+	
+	rm -f "$currentFifo" > /dev/null 2>&1
+	
+	return 0
+}
+
+
+
+_aggregator_read_sequence() {
+	_start
+	
+	_aggregator_read_procedure "$@"
+	
+	_stop
+}
+
+
+_aggregator_read() {
+	"$scriptAbsoluteLocation" _aggregator_read_sequence "$@"
+}
+
+
+
+
+# "$1" == outputBufferDir
+# "$2" == outputFilesPrefix (IGNORED)
+_aggregator_write_procedure() {
+	local outputBufferDir="$1"
+	local outputFilesPrefix="$2"
+	#if [[ "$outputBufferDir" == "" ]] || [[ "$outputFilesPrefix" == "" ]]
+	if [[ "$outputBufferDir" == "" ]]
+	then
+		local current_demand_dir
+		current_demand_dir=$(_demand_dir_broadcastPipe_aggregatorStatic "$1")
+		[[ "$current_demand_dir" == "" ]] && _stop 1
+		
+		outputBufferDir="$current_demand_dir"/inputBufferDir
+		! mkdir -p "$outputBufferDir" && return 1
+		
+		#[[ "$outputFilesPrefix" == "" ]] && outputFilesPrefix='stream-'
+	fi
+	
+	# ATTENTION: IGNORE "$outputFilesPrefix" .
+	outputFilesPrefix=''
+	
+	
+	! mkdir -p "$outputBufferDir" && return 1
+	! [[ -e "$outputBufferDir" ]] && return 1
+	! [[ -d "$outputBufferDir" ]] && return 1
+	
+	
+	
+	
+	local currentFifo
+	currentFifo="$outputBufferDir"/"$outputFilesPrefix"$(_uid 18)
+	_aggregator_fifo "$currentFifo"
+	
+	#if ! [[ -e "$safeTmp" ]]
+	#then
+		export current_aggregator_write_fifo="$currentFifo"
+		_stop_queue_aggregator() {
+			rm -f "$current_aggregator_write_fifo" > /dev/null 2>&1
+		}
+	#fi
+	
+	# WARNING: Removal of FIFO may not occur while not connected to both input and output. Apparently 'trap' does not work here.
+	# WARNING: May be incompatible with '_timeout' .
+	cat > "$currentFifo"
+	
+	rm -f "$currentFifo" > /dev/null 2>&1
+	
+	return 0
+}
+
+
+
+_aggregator_write_sequence() {
+	_start
+	
+	_aggregator_write_procedure "$@"
+	
+	_stop
+}
+
+
+_aggregator_write() {
+	"$scriptAbsoluteLocation" _aggregator_write_sequence "$@"
+}
+
+
+
+
+
 # ATTENTION: Override with 'ops' or similar.
 _rm_broadcastPipe_aggregatorStatic() {
 	
@@ -5362,6 +5507,8 @@ _broadcastPipe_aggregatorStatic_read_procedure() {
 	
 	local currentStopJobs
 	
+	local currentIsEmptyOut
+	
 	
 	while [[ ! -e "$1"/terminate ]] && [[ -d "$1" ]]
 	do
@@ -5393,17 +5540,26 @@ _broadcastPipe_aggregatorStatic_read_procedure() {
 		done
 		
 		
-		# TODO: Testing.
-		# TODO: All related pipe read/write functions should always call '_reset' , due to possibility of SIGPIPE being ignored.
-		# TODO: Only continue sleeping while relevant ' "$1"/skip ' file does not exist.
 		rm -f "$1"/skip > /dev/null 2>&1
 		currentIterations='0'
-		while [[ ! -e "$1"/skip ]] && [[ "$currentIterations" -le 24 ]]
+		while [[ "$currentIterations" -le 4 ]] && [[ ! -e "$1"/skip ]] && [[ ! -e "$1"/terminate ]]
 		do
-			sleep 1
+			sleep 6
 			let currentIterations="$currentIterations"+1
 		done
 		#rm -f "$1"/skip > /dev/null 2>&1
+		
+		currentInputBufferCount=0
+		for currentFile in "$inputBufferDir"/??????????????????
+		do
+			[[ "$currentFile" != *'??????????????????' ]] && let currentInputBufferCount="$currentInputBufferCount"+1
+		done
+		
+		currentOutputBufferCount=0
+		for currentFile in "$outputBufferDir"/??????????????????
+		do
+			[[ "$currentFile" != *'??????????????????' ]] && let currentOutputBufferCount="$currentInputBufferCount"+1
+		done
 		
 		
 		# https://stackoverflow.com/questions/25906020/are-pid-files-still-flawed-when-doing-it-right/25933330
@@ -5413,9 +5569,16 @@ _broadcastPipe_aggregatorStatic_read_procedure() {
 		_jobs_terminate_aggregatorStatic_procedure
 		
 		
-		if [[ ! -e "$1"/terminate ]] && [[ -d "$1" ]]
+		# Although this may seem inefficient, the alternatives of calling external programs, filling variables, or setting 'shopt', may also be undesirable.
+		# https://www.cyberciti.biz/faq/linux-unix-shell-check-if-directory-empty/
+		currentIsEmptyOut='true'
+		for currentFile in "$outputBufferDir"/??????????????????
+		do
+			[[ "$currentFile" != *'??????????????????' ]] && currentIsEmptyOut='false' && break
+		done
+		
+		if [[ ! -e "$1"/terminate ]] && [[ -d "$1" ]] && [[ "$currentIsEmptyOut" == 'false' ]]
 		then
-			
 			#https://unix.stackexchange.com/questions/139490/continuous-reading-from-named-pipe-cat-or-tail-f
 			#https://stackoverflow.com/questions/11185771/bash-script-to-iterate-files-in-directory-and-pattern-match-filenames
 			( for currentFile in "$inputBufferDir"/??????????????????
@@ -5653,9 +5816,7 @@ _terminate_broadcastPipe_aggregatorStatic() {
 	return 0
 }
 
-# WARNING: No production use. Intended for end-user (interactive) only.
-# WARNING: Untested.
-# One possible benefit - a reset should happen much more quickly than a '_terminate ..." "_demand ..." cycle due to lack of spinlock sleep.
+
 _reset_broadcastPipe_aggregatorStatic() {
 	local inputBufferDir="$1"
 	
@@ -5676,6 +5837,85 @@ _reset_broadcastPipe_aggregatorStatic() {
 	
 	echo > "$inputBufferDir"/reset
 	echo > "$inputBufferDir"/terminate
+}
+
+
+_skip_broadcastPipe_aggregatorStatic() {
+	local inputBufferDir="$1"
+	
+	if [[ "$inputBufferDir" == "" ]]
+	then
+		local current_demand_dir
+		current_demand_dir=$(_demand_dir_broadcastPipe_aggregatorStatic "$1")
+		[[ "$current_demand_dir" == "" ]] && _stop 1
+		
+		inputBufferDir="$current_demand_dir"/inputBufferDir
+	fi
+	
+	mkdir -p "$inputBufferDir"
+	
+	[[ "$inputBufferDir" == "" ]] && return 1
+	[[ "$inputBufferDir" == "/" ]] && return 1
+	[[ ! -e "$inputBufferDir" ]] && return 1
+	
+	echo > "$inputBufferDir"/skip
+}
+
+
+
+
+_test_broadcastPipe_aggregatorStatic_sequence() {
+	_start
+	
+	_start
+	
+	
+	export inputBufferDir="$safeTmp"/_i
+	export outputBufferDir="$safeTmp"/_o
+	
+	
+	_demand_broadcastPipe_aggregatorStatic "$inputBufferDir" "$outputBufferDir"
+	
+	
+	
+	
+	
+	
+	
+	dd if=/dev/urandom of="$safeTmp"/testfill bs=1k count=2048 > /dev/null 2>&1
+	
+	_aggregator_read "$outputBufferDir" > "$safeTmp"/rewrite &
+	#_reset_broadcastPipe_aggregatorStatic
+	
+	# WARNING: May be incompatible with '_timeout' .
+	cat "$safeTmp"/testfill | _aggregator_write "$inputBufferDir"
+	#_reset_broadcastPipe_aggregatorStatic
+	
+	_skip_broadcastPipe_aggregatorStatic "$inputBufferDir"
+	
+	
+	_terminate_broadcastPipe_aggregatorStatic "$inputBufferDir"
+	
+	(
+	cd "$safeTmp"
+	du -sh ./testfill ./rewrite
+	md5sum ./testfill ./rewrite
+	)
+	
+	! [[ -s "$safeTmp"/testfill ]] && _stop 1
+	! [[ -s "$safeTmp"/rewrite ]] && _stop 1
+	! diff "$safeTmp"/testfill "$safeTmp"/rewrite && _stop 1
+	
+	_stop
+}
+
+_test_broadcastPipe_aggregatorStatic() {
+	if ! "$scriptAbsoluteLocation" _test_broadcastPipe_aggregatorStatic_sequence "$@" 2> /dev/null
+	#if ! "$scriptAbsoluteLocation" _test_broadcastPipe_aggregatorStatic_sequence "$@"
+	then
+		return 1
+	fi
+	return 0
 }
 
 
