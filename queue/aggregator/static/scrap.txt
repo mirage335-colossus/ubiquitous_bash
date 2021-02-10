@@ -1,0 +1,65 @@
+
+
+# DANGER: Any action which changes the number of FIFO pipe files (eg. '_aggregator_read' , '_aggregator_write' , closing a pipe ) must be proceeded by all relevant subsequent commands (including '_skip'... ) within 24 seconds.
+# Ad-hoc in the 'network at a time' sense. Any added/removed pipes will require and/or force a reset of all connected pipes.
+# Ad-hoc 'device to existing network' capability is offered by the '_page' functions which use 'trippleBuffer' filesystem mechanisms.
+
+# CAUTION: Pipes may not disconnect (or terminate related programs and cause service to repeat) unless all programs writing to any of the related pipes have terminated. Apparently, '_aggregator_read' will terminate after a '_reset'... while '_aggregator_write' may not. Yet, '_aggregator_read' seems likely to leave unused FIFO pipe files to be deleted by service. Consider such behavior carefully when creating software using these features.
+
+
+# WARNING: Call of '_skip'... or '_reset'... may require '_sleep_spinlock' or suitable delay, as FIFO pipe files might not be created immediately by '_aggregator_read' or similar due to OS/kernel latency. Usually, '_reset' will at least remove previously connected pipe files from the filesystem as observed subsequently.
+# Directive 'reset' file will remain until after '_rm_broadcastPipe_aggregatorStatic' has been called, allowing this to be used as an indicator as to when '_aggregator_read' and similar may init.
+
+
+
+# UNIX/MSW(/Cygwin) Compatible.
+
+
+
+
+
+
+./lean.sh _demand_broadcastPipe_aggregatorStatic
+
+./lean.sh _aggregator_read
+
+./lean.sh _aggregator_write
+
+./lean.sh _skip_broadcastPipe_aggregatorStatic
+
+./lean.sh _reset_broadcastPipe_aggregatorStatic
+
+./lean.sh _terminate_broadcastPipe_aggregatorStatic
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -72,16 +72,18 @@ _broadcastPipe_page_read() {
 	# May perhaps take effect when SIGTERM is received directly (eg. when SIGTERM may be sent to all processes) .
 	export current_broadcastPipe_inputBufferDir="$1"
 	export current_broadcastPipe_outputBufferDir="$2"
+	export current_broadcastPipe_current_demand_dir="$current_demand_dir"
 	_stop_queue_page() {
 		#_terminate_broadcastPipe_page "$current_broadcastPipe_inputBufferDir" 2> /dev/null
 		_terminate_broadcastPipe_page_fast "$current_broadcastPipe_inputBufferDir" 2> /dev/null
 		sleep 1
 		_rm_broadcastPipe_page "$current_broadcastPipe_inputBufferDir" "$current_broadcastPipe_outputBufferDir"
-		[[ "$1" == "$current_demand_dir"* ]] && [[ "$current_demand_dir" != "" ]] && _rm_dir_broadcastPipe_page
+		[[ "$current_broadcastPipe_inputBufferDir" == "$current_broadcastPipe_current_demand_dir"* ]] && [[ "$current_broadcastPipe_current_demand_dir" != "" ]] && _rm_dir_broadcastPipe_page
 		
 		_sleep_spinlock
-		rm -f "$1"/terminate > /dev/null 2>&1
-		[[ "$1" == "$current_demand_dir"* ]] && [[ "$current_demand_dir" != "" ]] && _rm_dir_broadcastPipe_page
+		rm -f "$current_broadcastPipe_inputBufferDir"/reset > /dev/null 2>&1
+		rm -f "$current_broadcastPipe_inputBufferDir"/terminate > /dev/null 2>&1
+		[[ "$current_broadcastPipe_inputBufferDir" == "$current_broadcastPipe_current_demand_dir"* ]] && [[ "$current_broadcastPipe_current_demand_dir" != "" ]] && _rm_dir_broadcastPipe_page
 	}
 	
 	rm -f "$1"/reset > /dev/null 2>&1
@@ -106,8 +108,8 @@ _broadcastPipe_page_read() {
 	done
 	
 	# WARNING: Since only one program may successfully remove a single file, that mechanism should allow only one 'broadcastPipe' process to remain in the unlikely case multiple were somehow started.
-	[[ -e "$1"/terminate ]] && [[ -e "$1"/reset ]] && rm -f "$1"/reset > /dev/null 2>&1 && _broadcastPipe_page_read "$@"
-	
+	[[ -e "$1"/terminate ]] && [[ -e "$1"/reset ]] && rm "$1"/reset > /dev/null 2>&1 && _broadcastPipe_page_read "$@"
+	rm -f "$1"/reset > /dev/null 2>&1
 	
 	_rm_broadcastPipe_page "$@"
 	rm -f "$1"/terminate > /dev/null 2>&1

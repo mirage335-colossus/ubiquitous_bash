@@ -43,8 +43,6 @@ _safePath_demand_broadcastPipe_aggregatorStatic() {
 # WARNING: Deletes all existing files (to 'clear the buffers').
 # "$1" == inputBufferDir
 # "$2" == outputBufferDir
-# "$3" == maxTime (approximately how many milliseconds new data should be allowed to 'remain' in the buffer before writing out a new tick)
-# "$4" == maxBytes (how many bytes should be allowed to 'accumulate' in the buffer before writing out a new tick)
 _demand_broadcastPipe_aggregatorStatic_sequence() {
 	_start
 	
@@ -70,7 +68,11 @@ _demand_broadcastPipe_aggregatorStatic_sequence() {
 	
 	! [[ -e "$1"/rmloop ]] && return 0
 	! mv "$1"/rmloop "$1"/rmloop.rm > /dev/null 2>&1 && return 0
-	! rm -f "$1"/rmloop.rm > /dev/null 2>&1 && return 0
+	if ! rm "$1"/rmloop.rm > /dev/null 2>&1
+	then
+		rm -f "$1"/rmloop.rm > /dev/null 2>&1
+		return 0
+	fi
 	
 	
 	_rm_broadcastPipe_aggregatorStatic "$@"

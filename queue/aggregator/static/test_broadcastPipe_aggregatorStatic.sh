@@ -1,8 +1,6 @@
 _test_broadcastPipe_aggregatorStatic_sequence() {
 	_start
 	
-	_start
-	
 	
 	export inputBufferDir="$safeTmp"/_i
 	export outputBufferDir="$safeTmp"/_o

@@ -2217,6 +2217,11 @@ _messageWARN() {
 	return 0
 }
 
+# Demarcate *any* delay performed to allow 'InterProcess-Communication' connections (perhaps including at least some network or serial port servers).
+_messageDELAYipc() {
+	echo -e '\E[1;33;47m ''delay: InterProcess-Communication'' \E[0m'
+}
+
 
 _messageProcess() {
 	local processString

@@ -70,7 +70,11 @@ _demand_broadcastPipe_page_sequence() {
 	
 	! [[ -e "$1"/rmloop ]] && return 0
 	! mv "$1"/rmloop "$1"/rmloop.rm > /dev/null 2>&1 && return 0
-	! rm -f "$1"/rmloop.rm > /dev/null 2>&1 && return 0
+	if ! rm "$1"/rmloop.rm > /dev/null 2>&1
+	then
+		rm -f "$1"/rmloop.rm > /dev/null 2>&1
+		return 0
+	fi
 	
 	
 	_rm_broadcastPipe_page "$@"
