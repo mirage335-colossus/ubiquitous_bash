@@ -18,7 +18,7 @@ Besides blockchain applications themselves, database and development environment
 
 Need to connect multiple output files/pipes/buffers to another program with multiple input files/pipes/buffers? MetaEngine is an efficient framework to create such complex 'pipelines' .
 
-Need to share data from a program or serial device (eg. VR controllers, 3D printer motors, etc) with several other programs or devices, and maybe the existing 'HID' drivers are not flexible enough? Emulate a 'shared pair of wires' with 'queue', and send a packet.
+Need to share data from a program or serial device (eg. VR controllers, 3D printer motors, etc) with several other programs or devices, and maybe the existing 'HID' drivers are not flexible enough? Emulate a 'shared pair of wires' with 'queue', and send a packet. Both 'tripleBuffer' and automatic connection of multiple 'pipes' are available as backends.
 
 Compatible with UNIX/MSW(/Cygwin) . Portable on all platforms (including portable Cygwin installation) . Anchor '*.bat' 'shortcuts' are simultaneously executable as both 'batch' and "bash" scripts, comment characters being appropriately interpreted for each.
 
