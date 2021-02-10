@@ -5985,7 +5985,8 @@ _test_broadcastPipe_aggregatorStatic_sequence() {
 	export outputBufferDir="$safeTmp"/_o
 	
 	
-	_demand_broadcastPipe_aggregatorStatic "$inputBufferDir" "$outputBufferDir"
+	# > /dev/null 2>&1
+	_demand_broadcastPipe_aggregatorStatic "$inputBufferDir" "$outputBufferDir" > /dev/null 2>&1
 	
 	
 	
@@ -5999,12 +6000,15 @@ _test_broadcastPipe_aggregatorStatic_sequence() {
 	#_reset_broadcastPipe_aggregatorStatic
 	
 	# WARNING: May be incompatible with '_timeout' .
-	cat "$safeTmp"/testfill | _aggregator_write "$inputBufferDir"
+	cat "$safeTmp"/testfill | _aggregator_write "$inputBufferDir" &
 	#_reset_broadcastPipe_aggregatorStatic
 	
+	
+	_sleep_spinlock
 	_skip_broadcastPipe_aggregatorStatic "$inputBufferDir"
 	
-	
+	sleep 24
+	_sleep_spinlock
 	_terminate_broadcastPipe_aggregatorStatic "$inputBufferDir"
 	
 	#(

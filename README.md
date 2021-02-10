@@ -13,6 +13,59 @@ Continued integration of Ethereum, other blockchain related applications, and co
 
 Besides blockchain applications themselves, database and development environments are a relevant high priority. Graceful degradation from maximum-performance C objects (or similar) to a self-contained SQL server, to version controlled storage, and beyond, is needed to integrate information from diverse sources. Especially, this may be helpful to analyze simulated test cases of real network software interactions. Complete inspection and tracing of source code, from hardware upwards, is needed to create and assert absolutely optimized solutions more quickly.
 
+
+# MetaEngine and Queue
+
+Need to connect multiple output files/pipes/buffers to another program with multiple input files/pipes/buffers? MetaEngine is an efficient framework to create such complex 'pipelines' .
+
+Need to share data from a program or serial device (eg. VR controllers, 3D printer motors, etc) with several other programs or devices, and maybe the existing 'HID' drivers are not flexible enough? Emulate a 'shared pair of wires' with 'queue', and send a packet.
+
+Compatible with UNIX/MSW(/Cygwin) . Portable on all platforms (including portable Cygwin installation) . Anchor '*.bat' 'shortcuts' are simultaneously executable as both 'batch' and "bash" scripts, comment characters being appropriately interpreted for each.
+
+Run '_test.bat' on UNIX/MSW(/Cygwin) to fully test MetaEngine and Queue , among other things.
+
+
+
+
+Example MetaEngine code . Example commands included in 'README.md' .
+
+https://github.com/mirage335/metaBus/blob/main/README.md
+
+
+Example '_page' ( 'tripleBuffer' ) Inter-Process Communication. Example commands included in 'scrap.txt' . Tests included in 'ubiquitous_bash.sh' may be run with '_test.bat' or similar.
+
+https://github.com/mirage335/ubiquitous_bash/blob/master/queue/tripleBuffer/scrap.txt
+
+https://github.com/mirage335/ubiquitous_bash/blob/master/queue/tripleBuffer/test_broadcastPipe_page.sh
+
+
+Example '_page' ( 'tripleBuffer' ) Inter-Process Communication. Example commands included in 'scrap.txt' . Tests included in 'ubiquitous_bash.sh' may be run with '_test.bat' or similar.
+
+https://github.com/mirage335/ubiquitous_bash/blob/master/queue/aggregator/static/test_broadcastPipe_aggregatorStatic.sh
+
+https://github.com/mirage335/ubiquitous_bash/blob/master/queue/aggregator/static/scrap.txt
+
+
+Extremely rough consideration of Inter-Process Communication procedures .
+
+https://github.com/mirage335/ubiquitous_bash/blob/master/_doc/broadcastPipe/README.md
+
+
+
+## Future Work
+
+* MSW(/Cygwin) may benefit from reimplementations as simple 'C' programs, due to apparently relatively high CPU usage caused by "bash" script loops under Cygwin. Before this is done however, the "bash" implementations must be well tested in production use cases to the point of being stable enough to minimize wasted developer cycles maintaining compatibility between both codebases. Due to the absolute portability of "bash" implementation, and the generally more future relevant resources of UNIX, that should continue to be regarded as the 'reference' implementation. A precompiled binary may be usable.
+
+* MSW(/Cygwin) 'tripleBuffer' "bash" implementation may benefit from a simple 'C' program to create/read/write(/delete) files as shared memory files. A precompiled binary may be usable.
+
+* Dynamically reading/writing from/to multiple pipes/TCP/sockets (new pipes added/removed without resetting existing pipes) may be possible for a binary C program with multiple threads. Such a binary program must nevertheless be built by 'ubiquitous bash', provided with 'ubiquitous bash' ( _bin/ ) , and architecture overriden by 'ubiquitous bash' (ie. precompiled binaries for '-amd64' , '-armel' , etc , must be aliased by a single shell script function ).
+
+* Reference packetization implementation.
+
+* Reference peripherial identification implementation.
+
+
+
 # USAGE
 
 https://rawgit.com/mirage335/ubiquitous_bash/master/USAGE.html
