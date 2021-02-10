@@ -88,7 +88,9 @@ _ubvrtusrChRoot() {
 	###echo sudo -n cp -a "$globalVirtFS""$virtGuestHome"/. "$globalVirtFS""$virtGuestHomeRef"/
 	###_chroot chown "$virtGuestUser":"$virtGuestUser" "$virtGuestHomeRef" > /dev/null 2>&1
 	
-	rm -f "$globalVirtDir"/_ubvrtusr > /dev/null 2>&1 || return 1
+	#rm -f "$globalVirtDir"/_ubvrtusr > /dev/null 2>&1 || return 1
+	rm -f "$globalVirtDir"/_ubvrtusr > /dev/null 2>&1
+	[[ -e "$globalVirtDir"/_ubvrtusr ]] && return 1
 	
 	return 0
 }
@@ -172,7 +174,11 @@ _removeUserChRoot_sequence() {
 	
 	_rm_ubvrtusrChRoot
 	
-	rm -f "$globalVirtDir"/_ubvrtusr > /dev/null 2>&1 || return 1
+	#rm -f "$globalVirtDir"/_ubvrtusr > /dev/null 2>&1 || return 1
+	rm -f "$globalVirtDir"/_ubvrtusr > /dev/null 2>&1
+	[[ -e "$globalVirtDir"/_ubvrtusr ]] && return 1
+	
+	return 0
 }
 
 _removeUserChRoot() {

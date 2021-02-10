@@ -430,11 +430,15 @@ _close_sequence() {
 	
 	if [[ "$?" == "0" ]]
 	then
-		rm -f "$lock_open" || return 1
+		#rm -f "$lock_open" || return 1
+		rm -f "$lock_open"
+		[[ -e "$lock_open" ]] && return 1
 		
 		if [[ "$specialLock" != "" ]] && [[ -e "$specialLock" ]]
 		then
-			rm -f "$specialLock" || return 1
+			#rm -f "$specialLock" || return 1
+			rm -f "$specialLock"
+			[[ -e "$specialLock" ]] && return 1
 		fi
 		
 		rm -f "$lock_closing"

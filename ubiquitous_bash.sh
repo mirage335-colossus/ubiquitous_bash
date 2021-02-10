@@ -2373,7 +2373,8 @@ _discoverResource() {
 _rmlink() {
 	[[ "$1" == "/dev/null" ]] && return 1
 	
-	[[ -h "$1" ]] && rm -f "$1" && return 0
+	#[[ -h "$1" ]] && rm -f "$1" && return 0
+	[[ -h "$1" ]] && rm -f "$1" > /dev/null 2>&1
 	
 	! [[ -e "$1" ]] && return 0
 	
@@ -10118,7 +10119,9 @@ _unmountLoop_losetup() {
 		! [[ -e "$3" ]] || return 1
 		sudo -n partprobe > /dev/null 2>&1
 		
-		rm -f "$2" || return 1
+		#rm -f "$2" || return 1
+		rm -f "$2"
+		[[ -e "$2" ]] && return 1
 		return 0
 	fi
 	
@@ -10131,7 +10134,9 @@ _unmountLoop_losetup() {
 	sudo -n losetup -d "$1" > /dev/null 2>&1 || return 1
 	sudo -n partprobe > /dev/null 2>&1
 	
-	rm -f "$2" || return 1
+	#rm -f "$2" || return 1
+	rm -f "$2"
+	[[ -e "$2" ]] && return 1
 	return 0
 }
 
@@ -11513,7 +11518,9 @@ _closeChRoot_emergency() {
 	
 	_haltAllChRoot
 	
-	rm -f "$lock_emergency" || return 1
+	#rm -f "$lock_emergency" || return 1
+	rm -f "$lock_emergency"
+	[[ -e "$lock_emergency" ]] && return 1
 	
 	
 	local hookSessionid
@@ -11798,7 +11805,9 @@ _ubvrtusrChRoot() {
 	###echo sudo -n cp -a "$globalVirtFS""$virtGuestHome"/. "$globalVirtFS""$virtGuestHomeRef"/
 	###_chroot chown "$virtGuestUser":"$virtGuestUser" "$virtGuestHomeRef" > /dev/null 2>&1
 	
-	rm -f "$globalVirtDir"/_ubvrtusr > /dev/null 2>&1 || return 1
+	#rm -f "$globalVirtDir"/_ubvrtusr > /dev/null 2>&1 || return 1
+	rm -f "$globalVirtDir"/_ubvrtusr > /dev/null 2>&1
+	[[ -e "$globalVirtDir"/_ubvrtusr ]] && return 1
 	
 	return 0
 }
@@ -11882,7 +11891,11 @@ _removeUserChRoot_sequence() {
 	
 	_rm_ubvrtusrChRoot
 	
-	rm -f "$globalVirtDir"/_ubvrtusr > /dev/null 2>&1 || return 1
+	#rm -f "$globalVirtDir"/_ubvrtusr > /dev/null 2>&1 || return 1
+	rm -f "$globalVirtDir"/_ubvrtusr > /dev/null 2>&1
+	[[ -e "$globalVirtDir"/_ubvrtusr ]] && return 1
+	
+	return 0
 }
 
 _removeUserChRoot() {
@@ -24086,11 +24099,15 @@ _close_sequence() {
 	
 	if [[ "$?" == "0" ]]
 	then
-		rm -f "$lock_open" || return 1
+		#rm -f "$lock_open" || return 1
+		rm -f "$lock_open"
+		[[ -e "$lock_open" ]] && return 1
 		
 		if [[ "$specialLock" != "" ]] && [[ -e "$specialLock" ]]
 		then
-			rm -f "$specialLock" || return 1
+			#rm -f "$specialLock" || return 1
+			rm -f "$specialLock"
+			[[ -e "$specialLock" ]] && return 1
 		fi
 		
 		rm -f "$lock_closing"
@@ -24996,6 +25013,9 @@ _test_embed() {
 }
 
 _test_sanity() {
+	# Do NOT allow 'rm' to be a shell function alias to 'rm -i' or similar.
+	[[ $(type -p rm) == "" ]] && _messageFAIL && return 1
+	
 	#! [[ -2147483648 -lt 2147483647 ]] && _messageFAIL && return 1
 	#! [[ -2000000000 -lt 2000000000 ]] && _messageFAIL && return 1
 	
@@ -25051,6 +25071,7 @@ _test_sanity() {
 	
 	[[ ! -e "$safeTmp" ]] && _messageFAIL && return 1
 	
+	
 	local currentTestUID=$(_uid 245)
 	mkdir -p "$safeTmp"/"$currentTestUID"
 	echo > "$safeTmp"/"$currentTestUID"/"$currentTestUID"
@@ -25076,6 +25097,16 @@ _test_sanity() {
 	_define_function_test
 	
 	! _variableLocalTest && _messageFAIL && return 1
+	
+	
+	
+	mkdir -p "$safeTmp"/maydeletethisfolder
+	[[ ! -d "$safeTmp"/maydeletethisfolder ]] && return 1
+	echo > "$safeTmp"/maydeletethisfolder/maydeletethisfile
+	[[ ! -e "$safeTmp"/maydeletethisfolder/maydeletethisfile ]] && return 1
+	_safeRMR "$safeTmp"/maydeletethisfolder
+	[[ -e "$safeTmp"/maydeletethisfolder/maydeletethisfile ]] && return 1
+	[[ -e "$safeTmp"/maydeletethisfolder ]] && return 1
 	
 	
 	

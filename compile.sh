@@ -2373,7 +2373,8 @@ _discoverResource() {
 _rmlink() {
 	[[ "$1" == "/dev/null" ]] && return 1
 	
-	[[ -h "$1" ]] && rm -f "$1" && return 0
+	#[[ -h "$1" ]] && rm -f "$1" && return 0
+	[[ -h "$1" ]] && rm -f "$1" > /dev/null 2>&1
 	
 	! [[ -e "$1" ]] && return 0
 	

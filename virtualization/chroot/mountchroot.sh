@@ -468,7 +468,9 @@ _closeChRoot_emergency() {
 	
 	_haltAllChRoot
 	
-	rm -f "$lock_emergency" || return 1
+	#rm -f "$lock_emergency" || return 1
+	rm -f "$lock_emergency"
+	[[ -e "$lock_emergency" ]] && return 1
 	
 	
 	local hookSessionid

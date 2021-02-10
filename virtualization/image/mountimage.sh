@@ -352,7 +352,9 @@ _unmountLoop_losetup() {
 		! [[ -e "$3" ]] || return 1
 		sudo -n partprobe > /dev/null 2>&1
 		
-		rm -f "$2" || return 1
+		#rm -f "$2" || return 1
+		rm -f "$2"
+		[[ -e "$2" ]] && return 1
 		return 0
 	fi
 	
@@ -365,7 +367,9 @@ _unmountLoop_losetup() {
 	sudo -n losetup -d "$1" > /dev/null 2>&1 || return 1
 	sudo -n partprobe > /dev/null 2>&1
 	
-	rm -f "$2" || return 1
+	#rm -f "$2" || return 1
+	rm -f "$2"
+	[[ -e "$2" ]] && return 1
 	return 0
 }
 
