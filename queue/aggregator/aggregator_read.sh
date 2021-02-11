@@ -1,10 +1,6 @@
 
-# TODO: Testing.
-# TODO: All related pipe read/write functions should always call '_reset' , due to possibility of SIGPIPE being ignored.
-# TODO: Only continue sleeping while relevant ' "$1"/skip ' file does not exist.
-
 # "$1" == inputBufferDir
-# "$2" == inputFilesPrefix (IGNORED)
+# "$2" == inputFilesPrefix (MUST adhere to strictly blank or 18 alphanumeric characters!)
 _aggregator_read_procedure() {
 	local inputBufferDir="$1"
 	local inputFilesPrefix="$2"
@@ -24,8 +20,7 @@ _aggregator_read_procedure() {
 		#[[ "$inputFilesPrefix" == "" ]] && inputFilesPrefix='out-'
 	fi
 	
-	# ATTENTION: IGNORE "$inputFilesPrefix" .
-	inputFilesPrefix=''
+	[[ "$inputFilesPrefix" == "" ]] && inputFilesPrefix=$(_uid 18)
 	
 	
 	! mkdir -p "$inputBufferDir" && return 1
@@ -36,16 +31,19 @@ _aggregator_read_procedure() {
 	
 	
 	local currentFifo
-	currentFifo="$inputBufferDir"/"$inputFilesPrefix"$(_uid 18)
+	currentFifo="$inputBufferDir"/"$inputFilesPrefix"
 	_aggregator_fifo "$currentFifo"
 	
 	
 	#if ! [[ -e "$safeTmp" ]]
 	#then
-		export current_aggregator_read_fifo="$currentFifo"
-		_stop_queue_aggregator() {
-			rm -f "$current_aggregator_read_fifo" > /dev/null 2>&1
-		}
+		if [[ "$ub_nohook_current_aggregator_write_stop_queue_aggregator" != 'true' ]]
+		then
+			export current_aggregator_read_fifo="$currentFifo"
+			_stop_queue_aggregator() {
+				rm -f "$current_aggregator_read_fifo" > /dev/null 2>&1
+			}
+		fi
 	#fi
 	
 	# WARNING: Removal of FIFO may not occur while not connected to both input and output. Apparently 'trap' does not work here.

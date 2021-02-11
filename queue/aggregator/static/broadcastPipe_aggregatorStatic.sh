@@ -267,6 +267,8 @@ _broadcastPipe_aggregatorStatic_read_procedure() {
 	_jobs_terminate_aggregatorStatic_procedure "$currentPID"
 	
 	# WARNING: Since only one program may successfully remove a single file, that mechanism should allow only one 'broadcastPipe' process to remain in the unlikely case multiple were somehow started.
+	# https://rosettacode.org/wiki/Find_limit_of_recursion
+	# 'The Bash reference manual says No limit is placed on the number of recursive calls, nonetheless a segmentation fault occurs at 13777 (Bash v3.2.19 on 32bit GNU/Linux) '
 	[[ -e "$1"/terminate ]] && [[ -e "$1"/reset ]] && rm "$1"/reset > /dev/null 2>&1 && _broadcastPipe_aggregatorStatic_read_procedure "$@"
 	rm -f "$1"/reset > /dev/null 2>&1
 	

@@ -20930,12 +20930,8 @@ _aggregator_fifo() {
 
 
 
-# TODO: Testing.
-# TODO: All related pipe read/write functions should always call '_reset' , due to possibility of SIGPIPE being ignored.
-# TODO: Only continue sleeping while relevant ' "$1"/skip ' file does not exist.
-
 # "$1" == inputBufferDir
-# "$2" == inputFilesPrefix (IGNORED)
+# "$2" == inputFilesPrefix (MUST adhere to strictly blank or 18 alphanumeric characters!)
 _aggregator_read_procedure() {
 	local inputBufferDir="$1"
 	local inputFilesPrefix="$2"
@@ -20955,8 +20951,7 @@ _aggregator_read_procedure() {
 		#[[ "$inputFilesPrefix" == "" ]] && inputFilesPrefix='out-'
 	fi
 	
-	# ATTENTION: IGNORE "$inputFilesPrefix" .
-	inputFilesPrefix=''
+	[[ "$inputFilesPrefix" == "" ]] && inputFilesPrefix=$(_uid 18)
 	
 	
 	! mkdir -p "$inputBufferDir" && return 1
@@ -20967,16 +20962,19 @@ _aggregator_read_procedure() {
 	
 	
 	local currentFifo
-	currentFifo="$inputBufferDir"/"$inputFilesPrefix"$(_uid 18)
+	currentFifo="$inputBufferDir"/"$inputFilesPrefix"
 	_aggregator_fifo "$currentFifo"
 	
 	
 	#if ! [[ -e "$safeTmp" ]]
 	#then
-		export current_aggregator_read_fifo="$currentFifo"
-		_stop_queue_aggregator() {
-			rm -f "$current_aggregator_read_fifo" > /dev/null 2>&1
-		}
+		if [[ "$ub_nohook_current_aggregator_write_stop_queue_aggregator" != 'true' ]]
+		then
+			export current_aggregator_read_fifo="$currentFifo"
+			_stop_queue_aggregator() {
+				rm -f "$current_aggregator_read_fifo" > /dev/null 2>&1
+			}
+		fi
 	#fi
 	
 	# WARNING: Removal of FIFO may not occur while not connected to both input and output. Apparently 'trap' does not work here.
@@ -21006,8 +21004,62 @@ _aggregator_read() {
 
 
 
+# Intended to be called by users and programs which are only able to call one other program which must accept both standard input/output connections.
+# Specifically intended to be compatible with 'socat' .
+# "$1" == inputBufferDir (inverted - typically output of broadcastPipe)
+# "$2" == outputBufferDir (inverted - typically input of broadcastPipe)
+# "$4" == inputFilesPrefix (MUST adhere to strictly blank or 18 alphanumeric characters!)
+# "$4" == outputFilesPrefix (MUST adhere to strictly blank or 18 alphanumeric characters!)
+_aggregator_converse_procedure() {
+	local inputBufferDir="$1"
+	local outputBufferDir="$2"
+	if [[ "$inputBufferDir" == "" ]] || [[ "$outputBufferDir" == "" ]]
+	then
+		local current_demand_dir
+		current_demand_dir=$(_demand_dir_broadcastPipe_aggregator_converse "$1")
+		[[ "$current_demand_dir" == "" ]] && _stop 1
+		
+		inputBufferDir="$current_demand_dir"/outputBufferDir
+		outputBufferDir="$current_demand_dir"/inputBufferDir
+	fi
+	
+	local inputFilesPrefix="$3"
+	[[ "$inputFilesPrefix" == "" ]] && inputFilesPrefix=$(_uid 18)
+	
+	local outputFilesPrefix="$4"
+	[[ "$outputFilesPrefix" == "" ]] && outputFilesPrefix=$(_uid 18)
+	
+	# DANGER: Without this hook, temporary buffers may persist indefinitely!
+	# CAUTION: Reset may be necessitated - testing suggests this hook does not work.
+	export current_broadcastPipe_inputBufferDir="$inputBufferDir"
+	export current_broadcastPipe_outputBufferDir="$outputBufferDir"
+	export current_broadcastPipe_inputFilesPrefix="$inputFilesPrefix"
+	export current_broadcastPipe_outputFilesPrefix="$outputFilesPrefix"
+	_stop_queue_aggregator() {
+		rm -f "$current_broadcastPipe_inputBufferDir"/"$current_broadcastPipe_inputFilesPrefix" > /dev/null 2>&1
+		rm -f "$current_broadcastPipe_outputBufferDir"/"$current_broadcastPipe_outputFilesPrefix" > /dev/null 2>&1
+		_sleep_spinlock
+		rm -f "$current_broadcastPipe_inputBufferDir"/"$current_broadcastPipe_inputFilesPrefix" > /dev/null 2>&1
+		rm -f "$current_broadcastPipe_outputBufferDir"/"$current_broadcastPipe_outputFilesPrefix" > /dev/null 2>&1
+	}
+	export ub_nohook_current_aggregator_write_stop_queue_aggregator='true'
+	
+	#echo "$current_broadcastPipe_outputBufferDir"/"$current_broadcastPipe_outputFilesPrefix"
+	
+	_aggregator_read_procedure "$inputBufferDir" "$inputFilesPrefix" &
+	_aggregator_write "$outputBufferDir" "$outputFilesPrefix"
+}
+
+_aggregatorStatic_converse() {
+	_demand_dir_broadcastPipe_aggregator_converse() {
+		_demand_dir_broadcastPipe_aggregatorStatic "$@"
+	}
+	_aggregator_converse_procedure "$@"
+}
+
+
 # "$1" == outputBufferDir
-# "$2" == outputFilesPrefix (IGNORED)
+# "$2" == outputFilesPrefix (MUST adhere to strictly blank or 18 alphanumeric characters!)
 _aggregator_write_procedure() {
 	local outputBufferDir="$1"
 	local outputFilesPrefix="$2"
@@ -21024,8 +21076,7 @@ _aggregator_write_procedure() {
 		#[[ "$outputFilesPrefix" == "" ]] && outputFilesPrefix='stream-'
 	fi
 	
-	# ATTENTION: IGNORE "$outputFilesPrefix" .
-	outputFilesPrefix=''
+	[[ "$outputFilesPrefix" == "" ]] && outputFilesPrefix=$(_uid 18)
 	
 	
 	! mkdir -p "$outputBufferDir" && return 1
@@ -21036,15 +21087,18 @@ _aggregator_write_procedure() {
 	
 	
 	local currentFifo
-	currentFifo="$outputBufferDir"/"$outputFilesPrefix"$(_uid 18)
+	currentFifo="$outputBufferDir"/"$outputFilesPrefix"
 	_aggregator_fifo "$currentFifo"
 	
 	#if ! [[ -e "$safeTmp" ]]
 	#then
-		export current_aggregator_write_fifo="$currentFifo"
-		_stop_queue_aggregator() {
-			rm -f "$current_aggregator_write_fifo" > /dev/null 2>&1
-		}
+		if [[ "$ub_nohook_current_aggregator_write_stop_queue_aggregator" != 'true' ]]
+		then
+			export current_aggregator_write_fifo="$currentFifo"
+			_stop_queue_aggregator() {
+				rm -f "$current_aggregator_write_fifo" > /dev/null 2>&1
+			}
+		fi
 	#fi
 	
 	# WARNING: Removal of FIFO may not occur while not connected to both input and output. Apparently 'trap' does not work here.
@@ -21343,6 +21397,8 @@ _broadcastPipe_aggregatorStatic_read_procedure() {
 	_jobs_terminate_aggregatorStatic_procedure "$currentPID"
 	
 	# WARNING: Since only one program may successfully remove a single file, that mechanism should allow only one 'broadcastPipe' process to remain in the unlikely case multiple were somehow started.
+	# https://rosettacode.org/wiki/Find_limit_of_recursion
+	# 'The Bash reference manual says No limit is placed on the number of recursive calls, nonetheless a segmentation fault occurs at 13777 (Bash v3.2.19 on 32bit GNU/Linux) '
 	[[ -e "$1"/terminate ]] && [[ -e "$1"/reset ]] && rm "$1"/reset > /dev/null 2>&1 && _broadcastPipe_aggregatorStatic_read_procedure "$@"
 	rm -f "$1"/reset > /dev/null 2>&1
 	
