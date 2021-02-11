@@ -9511,15 +9511,16 @@ _benchmark_broadcastPipe_aggregatorStatic() {
 # https://blog.travismclarke.com/post/socat-tutorial/
 # https://fub2.github.io/powerful-socat/
 # https://jdimpson.livejournal.com/tag/socat
+#https://stackoverflow.com/questions/57299019/make-socat-open-port-only-on-localhost-interface
 _page_socket_tcp_server() {
 	_messagePlain_nominal '_page_socket_tcp_server: init: _demand_broadcastPipe_page'
 	_demand_broadcastPipe_page
 	
 	_messagePlain_nominal '_page_socket_tcp_server: socat'
-	#socat TCP-LISTEN:6391,reuseaddr,pf=ip4,fork EXEC:"$scriptAbsoluteLocation"' '"_page_converse"
-	#socat TCP-LISTEN:6391,reuseaddr,pf=ip4,fork SYSTEM:'echo $HOME; ls -la'
-	#socat TCP-LISTEN:6391,reuseaddr,pf=ip4,fork SYSTEM:\'\""$scriptAbsoluteLocation"\"\'' _page_converse'
-	socat TCP-LISTEN:6391,reuseaddr,pf=ip4,fork EXEC:\'\""$scriptAbsoluteLocation"\"\'' _page_converse'
+	#socat TCP-LISTEN:6391,reuseaddr,pf=ip4,fork,bind=127.0.0.1 EXEC:"$scriptAbsoluteLocation"' '"_page_converse"
+	#socat TCP-LISTEN:6391,reuseaddr,pf=ip4,fork,bind=127.0.0.1 SYSTEM:'echo $HOME; ls -la'
+	#socat TCP-LISTEN:6391,reuseaddr,pf=ip4,fork,bind=127.0.0.1 SYSTEM:\'\""$scriptAbsoluteLocation"\"\'' _page_converse'
+	socat TCP-LISTEN:6391,reuseaddr,pf=ip4,fork,bind=127.0.0.1 EXEC:\'\""$scriptAbsoluteLocation"\"\'' _page_converse'
 	
 	#_messagePlain_nominal '_page_socket_tcp_server: _terminate_broadcastPipe_page'
 	#_terminate_broadcastPipe_page
