@@ -19991,6 +19991,56 @@ _page_read_single() {
 
 
 
+# Intended to be called by users and programs which are only able to call one other program which must accept both standard input/output connections.
+# Specifically intended to be compatible with 'socat' .
+# "$1" == inputBufferDir (inverted - typically output of broadcastPipe)
+# "$2" == outputBufferDir (inverted - typically input of broadcastPipe)
+# "$4" == inputFilesPrefix
+# "$4" == outputFilesPrefix
+_page_converse() {
+	local inputBufferDir="$1"
+	local outputBufferDir="$2"
+	if [[ "$inputBufferDir" == "" ]] || [[ "$outputBufferDir" == "" ]]
+	then
+		local current_demand_dir
+		current_demand_dir=$(_demand_dir_broadcastPipe_page "$1")
+		[[ "$current_demand_dir" == "" ]] && _stop 1
+		
+		inputBufferDir="$current_demand_dir"/outputBufferDir
+		outputBufferDir="$current_demand_dir"/inputBufferDir
+	fi
+	
+	local inputFilesPrefix="$3"
+	[[ "$inputFilesPrefix" == "" ]] && inputFilesPrefix='out-'
+	
+	local outputFilesPrefix="$4"
+	#[[ "$outputFilesPrefix" == "" ]] && outputFilesPrefix='converse-'
+	#[[ "$outputFilesPrefix" == "" ]] && outputFilesPrefix=$(_uid 14)'-'
+	[[ "$outputFilesPrefix" == "" ]] && outputFilesPrefix=$(_uid 18)'-'
+	
+	
+	# DANGER: Without this hook, temporary buffers may persist indefinitely!
+	export current_page_write_sessionid="$sessionid"
+	export current_broadcastPipe_inputBufferDir="$inputBufferDir"
+	export current_broadcastPipe_outputBufferDir="$outputBufferDir"
+	export current_broadcastPipe_outputFilesPrefix="$outputFilesPrefix"
+	_stop_queue_page() {
+		rm -f "$current_broadcastPipe_outputBufferDir"/t_"$current_page_write_sessionid" > /dev/null 2>&1
+		rm -f "$current_broadcastPipe_outputBufferDir"/"$current_broadcastPipe_outputFilesPrefix"-tick > /dev/null 2>&1
+		_sleep_spinlock
+		rm -f "$current_broadcastPipe_outputBufferDir"/"$current_broadcastPipe_outputFilesPrefix"-tick > /dev/null 2>&1
+		rm -f "$current_broadcastPipe_outputBufferDir"/"$current_broadcastPipe_outputFilesPrefix"* > /dev/null 2>&1
+	}
+	export ub_nohook_current_page_write_stop_queue_page='true'
+	
+	#echo "$current_broadcastPipe_outputBufferDir"/"$current_broadcastPipe_outputFilesPrefix"
+	
+	_page_read "$inputBufferDir" "$inputFilesPrefix" &
+	_page_write "$outputBufferDir" "$outputFilesPrefix"
+}
+
+
+
 _reset_page_write() {
 	rm -f "$1"/temp > /dev/null 2>&1
 	rm -f "$1"/"$2"tick > /dev/null 2>&1
@@ -20027,7 +20077,7 @@ _page_write() {
 	! [[ -e "$outputBufferDir" ]] && return 1
 	! [[ -d "$outputBufferDir" ]] && return 1
 	
-	if ! [[ -e "$safeTmp" ]]
+	if [[ "$ub_nohook_current_page_write_stop_queue_page" != 'true' ]] && ! [[ -e "$safeTmp" ]]
 	then
 		export current_page_write_outputBufferDir="$outputBufferDir"
 		export current_page_write_sessionid="$sessionid"
@@ -21495,6 +21545,40 @@ _benchmark_broadcastPipe_aggregatorStatic() {
 	
 	_stop
 }
+
+# ATTENTION: Override with 'ops' or similar.
+# Lock (if at all) the socket, not the buffers.
+# Ports 6391 or alternatively 24671 preferred for one-per-machine IPC service with high-latency no-reset (ie. 'tripleBuffer' ) backend.
+# Consider the limited availability of TCP/UDP port numbers not occupied by some other known purpose.
+# TCP server intended for compatibility with platforms (ie. MSW/Cygwin) which may not have sufficient performance or flexibility to read/write (ie. 'tripleBuffer' ) backend directly.
+# https://blog.travismclarke.com/post/socat-tutorial/
+# https://fub2.github.io/powerful-socat/
+# https://jdimpson.livejournal.com/tag/socat
+_page_socket_tcp_server() {
+	_messagePlain_nominal '_page_socket_tcp_server: init: _demand_broadcastPipe_page'
+	_demand_broadcastPipe_page
+	
+	_messagePlain_nominal '_page_socket_tcp_server: socat'
+	#socat TCP-LISTEN:6391,reuseaddr,pf=ip4,fork EXEC:"$scriptAbsoluteLocation"' '"_page_converse"
+	#socat TCP-LISTEN:6391,reuseaddr,pf=ip4,fork SYSTEM:'echo $HOME; ls -la'
+	#socat TCP-LISTEN:6391,reuseaddr,pf=ip4,fork SYSTEM:\'\""$scriptAbsoluteLocation"\"\'' _page_converse'
+	socat TCP-LISTEN:6391,reuseaddr,pf=ip4,fork EXEC:\'\""$scriptAbsoluteLocation"\"\'' _page_converse'
+	
+	#_messagePlain_nominal '_page_socket_tcp_server: _terminate_broadcastPipe_page'
+	#_terminate_broadcastPipe_page
+}
+
+_page_socket_tcp_client() {
+	socat TCP:localhost:6391 -
+}
+
+
+
+
+
+
+
+
 
 _test_metaengine_sequence() {
 	! _start_metaengine_host && _stop 1
@@ -25839,6 +25923,11 @@ _compile_bash_vars_queue() {
 	
 	includeScriptList+=( "queue/aggregator/static"/test_broadcastPipe_aggregatorStatic.sh )
 	includeScriptList+=( "queue/aggregator/static"/benchmark_broadcastPipe_aggregatorStatic.sh )
+	
+	
+	
+	includeScriptList+=( "queue/zSocket"/page_socket_tcp.sh )
+	
 	
 }
 

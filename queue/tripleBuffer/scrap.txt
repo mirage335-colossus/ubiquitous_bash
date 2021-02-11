@@ -29,6 +29,30 @@ while true ; do sleep 0.1 ; echo "$RANDOM" ; done | ./lean.sh _page_write
 
 
 
+
+_page_socket_tcp_server
+
+_page_socket_tcp_client
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # No production use.
 _here_broadcastPipe_page_write() {
 	cat << CZXWXcRMTo8EmM8i4d
