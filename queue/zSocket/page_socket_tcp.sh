@@ -6,7 +6,7 @@
 # https://blog.travismclarke.com/post/socat-tutorial/
 # https://fub2.github.io/powerful-socat/
 # https://jdimpson.livejournal.com/tag/socat
-#https://stackoverflow.com/questions/57299019/make-socat-open-port-only-on-localhost-interface
+# https://stackoverflow.com/questions/57299019/make-socat-open-port-only-on-localhost-interface
 _page_socket_tcp_server() {
 	_messagePlain_nominal '_page_socket_tcp_server: init: _demand_broadcastPipe_page'
 	_demand_broadcastPipe_page
