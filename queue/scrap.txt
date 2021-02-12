@@ -1,0 +1,29 @@
+
+# https://www.youtube.com/watch?v=cEx0T0wWvzo
+
+
+./lean.sh _page_socket_tcp_server
+./lean.sh _aggregatorStatic_socket_tcp_server
+
+./lean.sh _page_socket_unix_server
+./lean.sh _aggregatorStatic_socket_unix_server
+
+./lean.sh _page_read | ./lean.sh _aggregatorStatic_write
+./lean.sh _aggregatorStatic_read | ./lean.sh _page_write
+
+
+
+
+
+./lean.sh _page_converse
+./lean.sh _aggregatorStatic_converse
+
+
+./lean.sh _page_socket_tcp_client
+./lean.sh _aggregatorStatic_socket_tcp_client
+
+
+./lean.sh _page_socket_unix_client
+./lean.sh _aggregatorStatic_socket_unix_client
+
+

@@ -30,16 +30,16 @@ while true ; do sleep 0.1 ; echo "$RANDOM" ; done | ./lean.sh _page_write
 
 
 
-_page_socket_tcp_server
+./lean.sh _page_socket_tcp_server
 
-_page_socket_tcp_client
-
-
+./lean.sh _page_socket_tcp_client
 
 
-_page_socket_unix_server
 
-_page_socket_unix_client
+
+./lean.sh _page_socket_unix_server
+
+./lean.sh _page_socket_unix_client
 
 
 
