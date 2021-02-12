@@ -37,14 +37,20 @@
 
 
 
+./lean.sh _aggregatorStatic_socket_tcp_server
+
+./lean.sh _aggregatorStatic_converse
+
+./lean.sh _aggregatorStatic_socket_tcp_client
 
 
 
 
+./lean.sh _aggregatorStatic_socket_unix_server
 
+./lean.sh _aggregatorStatic_converse
 
-
-
+./lean.sh _aggregatorStatic_socket_unix_client
 
 
 
