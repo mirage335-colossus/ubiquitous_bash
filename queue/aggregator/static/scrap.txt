@@ -25,13 +25,13 @@
 
 ./lean.sh _aggregator_write
 
-./lean.sh _skip_broadcastPipe_aggregatorStatic
+./lean.sh _aggregatorStatic_converse
+
+#./lean.sh _skip_broadcastPipe_aggregatorStatic
 
 ./lean.sh _reset_broadcastPipe_aggregatorStatic
 
 ./lean.sh _terminate_broadcastPipe_aggregatorStatic
-
-
 
 
 

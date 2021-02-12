@@ -223,7 +223,8 @@ _sleep_spinlock() {
 	# ATTENTION: Consider setting this to the worst-case acceptable latency for a system still considered 'responsive' (ie. a number of seconds greater than that which would cause a user or other 'watchdog' to forcibly reboot the system).
 	local currentWaitSpinlock
 	let currentWaitSpinlock="$RANDOM"%4
-	let currentWaitSpinlock="$currentWaitSpinlock"+12
+	#let currentWaitSpinlock="$currentWaitSpinlock"+12
+	let currentWaitSpinlock="$currentWaitSpinlock"+10
 	sleep "$currentWaitSpinlock"
 }
 
@@ -1446,6 +1447,45 @@ _command_safeBackup() {
 	return 0
 }
 
+
+
+
+# Equivalent to 'mv -n' with an error exit status if file cannot be overwritten.
+# https://unix.stackexchange.com/questions/248544/mv-move-file-only-if-destination-does-not-exist
+_moveconfirm() {
+	local currentExitStatusText
+	currentExitStatusText=$(mv -vn "$1" "$2" 2>/dev/null)
+	[[ "$currentExitStatusText" == "" ]] && return 1
+	return 0
+}
+
+
+_test_moveconfirm_procedure() {
+	echo > "$safeTmp"/mv_src
+	echo > "$safeTmp"/mv_dst
+	
+	_moveconfirm "$safeTmp"/mv_src "$safeTmp"/mv_dst && return 1
+	
+	rm -f "$safeTmp"/mv_dst
+	! _moveconfirm "$safeTmp"/mv_src "$safeTmp"/mv_dst && return 1
+	
+	return 0
+}
+
+_test_moveconfirm_sequence() {
+	_start
+	
+	if ! _test_moveconfirm_procedure "$@"
+	then
+		_stop 1
+	fi
+	
+	_stop
+}
+
+_test_moveconfirm() {
+	"$scriptAbsoluteLocation" _test_moveconfirm_sequence "$@"
+}
 
 
 _all_exist() {
@@ -20997,9 +21037,129 @@ _aggregator_read_sequence() {
 }
 
 
+# "$1" == inputBufferDir (inverted, client input, service output)
+# "$2" == outputBufferDir (OPTIONAL. inverted)
 _aggregator_read() {
-	"$scriptAbsoluteLocation" _aggregator_read_sequence "$@"
+	if ! _aggregatorStatic_delayIPC_EmptyOrWaitOrReset "$2" "$1"
+	then
+		return 1
+	fi
+	_aggregator_read_procedure "$2"
+	#"$scriptAbsoluteLocation" _aggregator_read_sequence "$2"
+	#"$scriptAbsoluteLocation" _aggregator_read_sequence "$@"
 }
+
+
+
+
+
+_aggregator_delayIPC_isEmpty() {
+	# Although this may seem inefficient, the alternatives of calling external programs, filling variables, or setting 'shopt', may also be undesirable.
+	# https://www.cyberciti.biz/faq/linux-unix-shell-check-if-directory-empty/
+	currentIsEmptyOut='true'
+	for currentFile in "$1"/??????????????????
+	do
+		[[ "$currentFile" != *'??????????????????' ]] && currentIsEmptyOut='false' && break
+	done
+	
+	[[ "$currentIsEmptyOut" == 'true' ]] && return 0
+	return 1
+}
+
+_aggregator_delayIPC_isReset() {
+	#&& [[ ! -e "$1"/reset ]] && [[ ! -e "$1"/terminate ]] && [[ ! -e "$1"/rmloop ]]
+	# && ! _aggregator_delayIPC_isEmpty "$2"
+	#[[ ! -e "$1"/attempt ]]
+	
+	if [[ -e "$1"/vaccancy ]] && _aggregator_delayIPC_isEmpty "$1" && _aggregator_delayIPC_isEmpty "$2"
+	then
+		return 0
+	fi
+	return 1
+}
+
+
+# May allow a new set of 'connections' to replace an existing (presumably broken) set of 'connections'.
+# May require >>24seconds delay to allow previous (invalid) 'delay: Inter-Process Communications' to expire.
+# WARNING: May not be compatible with '_skip_broadcastPipe_aggregatorStatic' .
+# "$1" == inputBufferDir
+# "$2" == outputBufferDir
+# ATTENTION: EXAMPLE
+#./lean.sh _aggregatorStatic_delayIPC_EmptyOrWaitOrReset && echo done && ./lean.sh _aggregator_write
+#/lean.sh _aggregatorStatic_delayIPC_EmptyOrWaitOrReset && echo done && ./lean.sh _aggregator_read
+_aggregator_delayIPC_EmptyOrWaitOrReset() {
+	local inputBufferDir="$1"
+	local outputBufferDir="$2"
+	
+	if [[ "$inputBufferDir" == "" ]] || [[ "$outputBufferDir" == "" ]]
+	then
+		local current_demand_dir
+		current_demand_dir=$(_demand_dir_broadcastPipe_aggregator_delayIPC_EmptyOrWaitOrReset "$1")
+		[[ "$current_demand_dir" == "" ]] && _stop 1
+		
+		# Not inverted. After all, this function will typically be called by other functions, and so uses the service convention.
+		inputBufferDir="$current_demand_dir"/inputBufferDir
+		outputBufferDir="$current_demand_dir"/outputBufferDir
+	fi
+	
+	
+	local currentIterations
+	
+	local currentFile
+	local currentIsEmptyBuffer
+	
+	
+	
+	# DANGER: CAUTION: Relies on several relatively marginal assumptions regarding '_broadcastPipe_aggregatorStatic_read_procedure' algorithm and OS/kernel latency.
+	
+	
+	# Expect 18seconds total sleep after all iterations and one attempt.
+	currentIterations='0'
+	currentAttempts='0'
+	while [[ "$currentIterations" -lt 6 ]] && [[ "$currentAttempts" -lt 3 ]] && ! _aggregator_delayIPC_isReset "$inputBufferDir" "$outputBufferDir"
+	do
+		sleep 3
+		let currentIterations="$currentIterations"+1
+		
+		if ! [[ "$currentIterations" -lt 6 ]]
+		then
+			if ! _aggregator_delayIPC_isReset "$inputBufferDir" "$outputBufferDir"
+			then
+				echo > "$inputBufferDir"/attempt.tmp
+				_moveconfirm "$inputBufferDir"/attempt.tmp "$inputBufferDir"/attempt && _reset_broadcastPipe_aggregatorStatic "$inputBufferDir"
+			fi
+			#sleep 3
+			currentIterations='0'
+			let currentAttempts="$currentAttempts"+1
+		fi
+	done
+	! _aggregator_delayIPC_isReset "$inputBufferDir" "$outputBufferDir" && return 1
+	
+	# Must be long enough to allow all waiting clients to 'see' the 'vaccancy' and 'empty' conditions, but not long enough to overrun the 'vaccancy' delay.
+	#sleep 3
+	#sleep 6
+	_sleep_spinlock
+	
+	#if _aggregator_delayIPC_isReset "$inputBufferDir" "$outputBufferDir"
+	#then
+		rm -f "$inputBufferDir"/attempt.tmp > /dev/null 2>&1
+		rm -f "$inputBufferDir"/attempt > /dev/null 2>&1
+	#fi
+	
+	return 0
+}
+
+_aggregatorStatic_delayIPC_EmptyOrWaitOrReset() {
+	_demand_dir_broadcastPipe_aggregator_delayIPC_EmptyOrWaitOrReset() {
+		_demand_dir_broadcastPipe_aggregatorStatic "$@"
+	}
+	if ! _aggregator_delayIPC_EmptyOrWaitOrReset "$@"
+	then
+		return 1
+	fi
+	return 0
+}
+
 
 
 
@@ -21047,14 +21207,26 @@ _aggregator_converse_procedure() {
 	#echo "$current_broadcastPipe_outputBufferDir"/"$current_broadcastPipe_outputFilesPrefix"
 	
 	_aggregator_read_procedure "$inputBufferDir" "$inputFilesPrefix" &
-	_aggregator_write "$outputBufferDir" "$outputFilesPrefix"
+	_aggregator_write_procedure "$outputBufferDir" "$outputFilesPrefix"
 }
 
-_aggregatorStatic_converse() {
+_aggregatorStatic_converse_noEmptyOrWaitOrReset() {
 	_demand_dir_broadcastPipe_aggregator_converse() {
 		_demand_dir_broadcastPipe_aggregatorStatic "$@"
 	}
 	_aggregator_converse_procedure "$@"
+}
+
+_aggregatorStatic_converse_EmptyOrWaitOrReset() {
+	if ! _aggregatorStatic_delayIPC_EmptyOrWaitOrReset "$2" "$1"
+	then
+		return 1
+	fi
+	_aggregatorStatic_converse_noEmptyOrWaitOrReset "$@"
+}
+
+_aggregatorStatic_converse() {
+	_aggregatorStatic_converse_EmptyOrWaitOrReset "$@"
 }
 
 
@@ -21121,8 +21293,16 @@ _aggregator_write_sequence() {
 }
 
 
+# "$1" == outputBufferDir (inverted, client output, service input)
+# "$2" == inputBufferDir (OPTIONAL. inverted)
 _aggregator_write() {
-	"$scriptAbsoluteLocation" _aggregator_write_sequence "$@"
+	if ! _aggregatorStatic_delayIPC_EmptyOrWaitOrReset "$1" "$2"
+	then
+		return 1
+	fi
+	_aggregator_write_procedure "$1"
+	#"$scriptAbsoluteLocation" _aggregator_write_sequence "$1"
+	#"$scriptAbsoluteLocation" _aggregator_write_sequence "$@"
 }
 
 
@@ -21135,7 +21315,7 @@ _rm_broadcastPipe_aggregatorStatic() {
 	! _safePath_demand_broadcastPipe_aggregatorStatic "$2" && return 1
 	
 	#[[ -e "$1" ]] && [[ "$1" != "" ]] && rm -f "$1"/* > /dev/null 2>&1
-	[[ -e "$1" ]] && [[ "$1" != "" ]] && find "$1" -mindepth 1 -maxdepth 1 \( -type f -o -type p -o -type l \) ! -name 'terminate' ! -name 'reset' -delete > /dev/null 2>&1
+	[[ -e "$1" ]] && [[ "$1" != "" ]] && find "$1" -mindepth 1 -maxdepth 1 \( -type f -o -type p -o -type l \) ! -name 'terminate' ! -name 'reset' ! -name 'attempt' -delete > /dev/null 2>&1
 	[[ -e "$2" ]] && [[ "$2" != "" ]] && rm -f "$2"/* > /dev/null 2>&1
 	
 	
@@ -21148,7 +21328,7 @@ _rm_broadcastPipe_aggregatorStatic_keepListen() {
 	! _safePath_demand_broadcastPipe_aggregatorStatic "$2" && return 1
 	
 	#[[ -e "$1" ]] && [[ "$1" != "" ]] && rm -f "$1"/* > /dev/null 2>&1
-	[[ -e "$1" ]] && [[ "$1" != "" ]] && find "$1" -mindepth 1 -maxdepth 1 \( -type f -o -type p -o -type l \) ! -name 'terminate' ! -name 'listen' -delete > /dev/null 2>&1
+	[[ -e "$1" ]] && [[ "$1" != "" ]] && find "$1" -mindepth 1 -maxdepth 1 \( -type f -o -type p -o -type l \) ! -name 'terminate' ! -name 'listen' ! -name 'attempt' -delete > /dev/null 2>&1
 	[[ -e "$2" ]] && [[ "$2" != "" ]] && rm -f "$2"/* > /dev/null 2>&1
 	
 	
@@ -21211,196 +21391,230 @@ _broadcastPipe_aggregatorStatic_read_procedure() {
 	}
 	
 	
-	local currentIterations
+	local currentTerminate='false'
 	
-	
-	
-	_rm_broadcastPipe_aggregatorStatic "$@"
-	rm -f "$1"/reset > /dev/null 2>&1
-	rm -f "$1"/terminate > /dev/null 2>&1
-	
-	echo > "$1"/listen
-	
-	local currentInputBufferCount='0'
-	local currentInputBufferCount_prev='0'
-	local currentOutputBufferCount='0'
-	local currentOutputBufferCount_prev='0'
-	
-	local currentFile
-	
-	
-	local currentStopJobs
-	
-	local currentIsEmptyOut
-	
-	local currentPID
-	
-	local noJobsTwice
-	
-	_messagePlain_nominal ' 0 : reached loop'
-	_messagePlain_probe "$1"
-	_messagePlain_probe "$2"
-	while [[ ! -e "$1"/terminate ]] && [[ -d "$1" ]]
+	while [[ ! -e "$1"/terminate ]] && [[ -d "$1" ]] && [[ "$currentTerminate" == 'false' ]]
 	do
-		_messagePlain_nominal ' 1 : loop'
 		
-		#rm -f "$1"/skip > /dev/null 2>&1
 		
-		currentInputBufferCount_prev="$currentInputBufferCount"
-		currentOutputBufferCount_prev="$currentOutputBufferCount"
-		#[[ $(jobs -p -r) != "" ]] && 
-		while [[ "$currentInputBufferCount" == "$currentInputBufferCount_prev" ]] && [[ "$currentOutputBufferCount" == "$currentOutputBufferCount_prev" ]] && [[ ! -e "$1"/terminate ]] && [[ -d "$1" ]]
+		
+		local currentIterations
+		
+		
+		_rm_broadcastPipe_aggregatorStatic "$@"
+		rm -f "$1"/reset > /dev/null 2>&1
+		rm -f "$1"/terminate > /dev/null 2>&1
+		
+		echo > "$1"/listen
+		echo > "$1"/vaccancy
+		echo > "$2"/vaccancy
+		
+		local currentInputBufferCount='0'
+		local currentInputBufferCount_prev='0'
+		local currentOutputBufferCount='0'
+		local currentOutputBufferCount_prev='0'
+		
+		local currentFile
+		
+		
+		local currentStopJobs
+		
+		local currentIsEmptyOut
+		
+		local currentPID
+		
+		local noJobsTwice
+		
+		_messagePlain_nominal ' 0 : reached loop'
+		_messagePlain_probe "$1"
+		_messagePlain_probe "$2"
+		while [[ ! -e "$1"/terminate ]] && [[ -d "$1" ]]
 		do
-			_messagePlain_nominal ' 2 : wait for change'
+			_messagePlain_nominal ' 1 : loop'
+			
+			#rm -f "$1"/skip > /dev/null 2>&1
+			
+			currentInputBufferCount_prev="$currentInputBufferCount"
+			currentOutputBufferCount_prev="$currentOutputBufferCount"
+			#[[ $(jobs -p -r) != "" ]] && 
+			while [[ "$currentInputBufferCount" == "$currentInputBufferCount_prev" ]] && [[ "$currentOutputBufferCount" == "$currentOutputBufferCount_prev" ]] && [[ ! -e "$1"/terminate ]] && [[ -d "$1" ]]
+			do
+				_messagePlain_nominal ' 2 : wait for change'
+				
+				currentInputBufferCount=0
+				for currentFile in "$1"/??????????????????
+				do
+					_messagePlain_nominal '11 : count: currentInputBufferCount= '"$currentInputBufferCount"
+					[[ "$currentFile" != *'??????????????????' ]] && let currentInputBufferCount="$currentInputBufferCount"+1
+				done
+				
+				currentOutputBufferCount=0
+				for currentFile in "$2"/??????????????????
+				do
+					_messagePlain_nominal '11 : count: currentOutputBufferCount= '"$currentOutputBufferCount"
+					[[ "$currentFile" != *'??????????????????' ]] && let currentOutputBufferCount="$currentOutputBufferCount"+1
+				done
+				
+				_messagePlain_probe_var currentInputBufferCount_prev
+				_messagePlain_probe_var currentOutputBufferCount_prev
+				_messagePlain_probe_var currentInputBufferCount
+				_messagePlain_probe_var currentOutputBufferCount
+				
+				if ( [[ "$currentInputBufferCount" -gt 0 ]] || [[ "$currentOutputBufferCount" -gt 0 ]] ) && [[ $(jobs -p -r) == "" ]] && [[ "$currentInputBufferCount" == "$currentInputBufferCount_prev" ]] && [[ "$currentOutputBufferCount" == "$currentOutputBufferCount_prev" ]] && [[ "$noJobsTwice" == 'true' ]]
+				then
+					_messagePlain_warn 'obscure: 2.1: change: no jobs 2x: remove: unused pipe files'
+					_rm_broadcastPipe_aggregatorStatic_keepListen "$@"
+					#rm -f "$1"/skip > /dev/null 2>&1
+					noJobsTwice='false'
+				elif ( [[ "$currentInputBufferCount" -gt 0 ]] || [[ "$currentOutputBufferCount" -gt 0 ]] ) && [[ $(jobs -p -r) == "" ]] && [[ "$currentInputBufferCount" == "$currentInputBufferCount_prev" ]] && [[ "$currentOutputBufferCount" == "$currentOutputBufferCount_prev" ]] && [[ "$noJobsTwice" != 'true' ]]
+				then
+					_messagePlain_warn 'obscure: 2.1: change: no jobs 1x: set: noJobsTwice'
+					noJobsTwice='true'
+				fi
+				
+				
+				# DANGER: Delay time > ~24seconds may result in unused/blocking FIFO pipes remaining (additional delay in remainder of loop is tolerable).
+				# Iterations >1 may reduce CPU consumption with Cygwin/MSW , assuming file exists check is reasonably efficient.
+				currentIterations='0'
+				while [[ "$currentIterations" -lt '3' ]] && [[ "$currentInputBufferCount" == "$currentInputBufferCount_prev" ]] && [[ "$currentOutputBufferCount" == "$currentOutputBufferCount_prev" ]] && [[ ! -e "$1"/terminate ]] && [[ -d "$1" ]]
+				do
+					# If pipes are already connected, maybe delay a while longer to reduce CPU consumption.
+					if [[ $(jobs -p -r) != "" ]]
+					then
+						_messagePlain_nominal '12 : idle: jobs: long delay'
+						sleep 6
+					fi
+					
+					# If pipes are not already connected, maybe delay a less, to improve interactivity.
+					if [[ $(jobs -p -r) == "" ]]
+					then
+						# DANGER: CAUTION: Any 'sleep' > 3seconds (9seconds total) may break '_aggregator_delayIPC_'... .
+						_messagePlain_nominal '12 : idle: no jobs: short delay'
+						sleep 3
+					fi
+					
+					let currentIterations="$currentIterations"+1
+				done
+			done
+			#_messagePlain_warn 'obscure:  3 : done: loop: detected: new pipe files: complicated procedure: suspected failability'
+			_messagePlain_good ' 3 : done: loop: detected: new pipe files'
+			
+			
+			# ATTENTION: delay: InterProcess-Communication
+			# CAUTION: Before reducing the delay (24 seconds recommended), consider that remote/peripherial may have latencies independent of any OS 'kernel', 'real-time' or otherwise!
+			echo -e '\E[1;33;47m ''13 : delay: InterProcess-Communication: 24 seconds'' \E[0m'
+			currentIterations='0'
+			while [[ "$currentIterations" -lt 4 ]] && [[ ! -e "$1"/skip ]] && [[ ! -e "$1"/terminate ]] && [[ -d "$1" ]] && [[ "$currentOutputBufferCount" -gt 0 ]]
+			#( [[ "$currentInputBufferCount" -gt 0 ]] || [[ "$currentOutputBufferCount" -gt 0 ]] )
+			do
+				if [[ "$currentIterations" == '0' ]]
+				then
+					echo > "$1"/vaccancy
+					echo > "$2"/vaccancy
+				fi
+				
+				#_messageDELAYipc
+				_messagePlain_probe '13 : delay: InterProcess-Communication: 6 second iteration'
+				#_messagePlain_probe '13 : delay: InterProcess-Communication: 6 second iteration: 24 seconds'
+				#_messagePlain_nominal '13 : delay: InterProcess-Communication: 6 second iteration: 24 seconds'
+				#echo -e '\E[1;33;47m ''13 : delay: InterProcess-Communication: 6 second iteration: 24 seconds'' \E[0m'
+				sleep 6
+				let currentIterations="$currentIterations"+1
+			done
+			if [[ ! -e "$1"/terminate ]] && [[ -d "$1" ]] && [[ "$currentOutputBufferCount" -gt 0 ]]
+			then
+				rm -f "$1"/vaccancy
+				rm -f "$2"/vaccancy
+				rm -f "$1"/attempt
+				rm -f "$2"/attempt
+			fi
+			rm "$1"/skip > /dev/null 2>&1 && _messagePlain_good 'good: skip'
+			rm -f "$1"/skip > /dev/null 2>&1
 			
 			currentInputBufferCount=0
 			for currentFile in "$1"/??????????????????
 			do
-				_messagePlain_nominal '11 : count: currentInputBufferCount= '"$currentInputBufferCount"
+				_messagePlain_nominal '14 : count: currentInputBufferCount= '"$currentInputBufferCount"
 				[[ "$currentFile" != *'??????????????????' ]] && let currentInputBufferCount="$currentInputBufferCount"+1
 			done
 			
 			currentOutputBufferCount=0
 			for currentFile in "$2"/??????????????????
 			do
-				_messagePlain_nominal '11 : count: currentOutputBufferCount= '"$currentOutputBufferCount"
+				_messagePlain_nominal '15 : count: currentOutputBufferCount= '"$currentOutputBufferCount"
 				[[ "$currentFile" != *'??????????????????' ]] && let currentOutputBufferCount="$currentOutputBufferCount"+1
 			done
 			
-			_messagePlain_probe_var currentInputBufferCount_prev
-			_messagePlain_probe_var currentOutputBufferCount_prev
+			
+			# https://stackoverflow.com/questions/25906020/are-pid-files-still-flawed-when-doing-it-right/25933330
+			# https://stackoverflow.com/questions/360201/how-do-i-kill-background-processes-jobs-when-my-shell-script-exits
+			
+			_messagePlain_nominal ' 4 : _jobs_terminate_aggregatorStatic_procedure'
+			_jobs_terminate_aggregatorStatic_procedure "$currentPID"
+			
+			_messagePlain_nominal ' 5 : detect: currentIsEmptyOut'
+			#currentIsEmptyOut='false'
+			# Although this may seem inefficient, the alternatives of calling external programs, filling variables, or setting 'shopt', may also be undesirable.
+			# https://www.cyberciti.biz/faq/linux-unix-shell-check-if-directory-empty/
+			currentIsEmptyOut='true'
+			for currentFile in "$2"/??????????????????
+			do
+				if [[ "$currentFile" != *'??????????????????' ]]
+				then
+					_messagePlain_good '16 : detected: output pipe file'
+					currentIsEmptyOut='false'
+					break
+				fi
+			done
+			_messagePlain_nominal ' 6 : decision'
 			_messagePlain_probe_var currentInputBufferCount
 			_messagePlain_probe_var currentOutputBufferCount
-			
-			if ( [[ "$currentInputBufferCount" -gt 0 ]] || [[ "$currentOutputBufferCount" -gt 0 ]] ) && [[ $(jobs -p -r) == "" ]] && [[ "$currentInputBufferCount" == "$currentInputBufferCount_prev" ]] && [[ "$currentOutputBufferCount" == "$currentOutputBufferCount_prev" ]] && [[ "$noJobsTwice" == 'true' ]]
+			[[ ! -e "$1"/terminate ]] && _messagePlain_probe ' 7.1: flag: missing: terminate'
+			[[ -d "$1" ]] && _messagePlain_probe ' 7.2: detect: present: input directory'
+			[[ "$currentIsEmptyOut" == 'false' ]] && _messagePlain_good ' 7.3: flag: detect: output pipe files'
+			if [[ ! -e "$1"/terminate ]] && [[ -d "$1" ]] && [[ "$currentIsEmptyOut" == 'false' ]] && [[ "$currentInputBufferCount" -gt 0 ]] && [[ "$currentOutputBufferCount" -gt 0 ]]
 			then
-				_messagePlain_warn 'obscure: 2.1: change: no jobs 2x: remove: unused pipe files'
-				_rm_broadcastPipe_aggregatorStatic_keepListen "$@"
+				_messagePlain_nominal ' 7 : ##### connect pipes #####'
+				#https://unix.stackexchange.com/questions/139490/continuous-reading-from-named-pipe-cat-or-tail-f
+				#https://stackoverflow.com/questions/11185771/bash-script-to-iterate-files-in-directory-and-pattern-match-filenames
+				(
+				for currentFile in "$1"/??????????????????
+				do
+					[[ "$currentFile" != *'??????????????????' ]] && cat "$currentFile" 2>/dev/null &
+				done
+				) | tee "$2"/?????????????????? > /dev/null 2>&1 &
+				currentPID="$!"
+				
 				#rm -f "$1"/skip > /dev/null 2>&1
-				noJobsTwice='false'
-			elif ( [[ "$currentInputBufferCount" -gt 0 ]] || [[ "$currentOutputBufferCount" -gt 0 ]] ) && [[ $(jobs -p -r) == "" ]] && [[ "$currentInputBufferCount" == "$currentInputBufferCount_prev" ]] && [[ "$currentOutputBufferCount" == "$currentOutputBufferCount_prev" ]] && [[ "$noJobsTwice" != 'true' ]]
-			then
-				_messagePlain_warn 'obscure: 2.1: change: no jobs 1x: set: noJobsTwice'
-				noJobsTwice='true'
 			fi
 			
+			_messagePlain_nominal ' 8 : repeat'
 			
-			# DANGER: Delay time > ~24seconds may result in unused/blocking FIFO pipes remaining (additional delay in remainder of loop is tolerable).
-			# Iterations >1 may reduce CPU consumption with Cygwin/MSW , assuming file exists check is reasonably efficient.
-			currentIterations='0'
-			while [[ "$currentIterations" -lt '3' ]] && [[ "$currentInputBufferCount" == "$currentInputBufferCount_prev" ]] && [[ "$currentOutputBufferCount" == "$currentOutputBufferCount_prev" ]] && [[ ! -e "$1"/terminate ]] && [[ -d "$1" ]]
-			do
-				# If pipes are already connected, maybe delay a while longer to reduce CPU consumption.
-				if [[ $(jobs -p -r) != "" ]]
-				then
-					_messagePlain_nominal '12 : idle: jobs: long delay'
-					sleep 6
-				fi
-				
-				# If pipes are not already connected, maybe delay a less, to improve interactivity.
-				if [[ $(jobs -p -r) == "" ]]
-				then
-					_messagePlain_nominal '12 : idle: no jobs: short delay'
-					sleep 3
-				fi
-				
-				let currentIterations="$currentIterations"+1
-			done
-		done
-		#_messagePlain_warn 'obscure:  3 : done: loop: detected: new pipe files: complicated procedure: suspected failability'
-		_messagePlain_good ' 3 : done: loop: detected: new pipe files'
-		
-		
-		# ATTENTION: delay: InterProcess-Communication
-		# CAUTION: Before reducing the delay (24 seconds recommended), consider that remote/peripherial may have latencies independent of any OS 'kernel', 'real-time' or otherwise!
-		echo -e '\E[1;33;47m ''13 : delay: InterProcess-Communication: 24 seconds'' \E[0m'
-		currentIterations='0'
-		while [[ "$currentIterations" -le 4 ]] && [[ ! -e "$1"/skip ]] && [[ ! -e "$1"/terminate ]] && [[ -d "$1" ]] && [[ "$currentOutputBufferCount" -gt 0 ]]
-		#( [[ "$currentInputBufferCount" -gt 0 ]] || [[ "$currentOutputBufferCount" -gt 0 ]] )
-		do
-			#_messageDELAYipc
-			_messagePlain_probe '13 : delay: InterProcess-Communication: 6 second iteration'
-			#_messagePlain_probe '13 : delay: InterProcess-Communication: 6 second iteration: 24 seconds'
-			#_messagePlain_nominal '13 : delay: InterProcess-Communication: 6 second iteration: 24 seconds'
-			#echo -e '\E[1;33;47m ''13 : delay: InterProcess-Communication: 6 second iteration: 24 seconds'' \E[0m'
-			sleep 6
-			let currentIterations="$currentIterations"+1
-		done
-		rm "$1"/skip > /dev/null 2>&1 && _messagePlain_good 'good: skip'
-		rm -f "$1"/skip > /dev/null 2>&1
-		
-		currentInputBufferCount=0
-		for currentFile in "$1"/??????????????????
-		do
-			_messagePlain_nominal '14 : count: currentInputBufferCount= '"$currentInputBufferCount"
-			[[ "$currentFile" != *'??????????????????' ]] && let currentInputBufferCount="$currentInputBufferCount"+1
+			# WARNING: Some processes within the subshell (ie. 'sleep' ) may allow the subshell to terminate rather than maintain a 'jobs' PID.
+			_messagePlain_probe 'jobs: '$(jobs -p -r)
 		done
 		
-		currentOutputBufferCount=0
-		for currentFile in "$2"/??????????????????
-		do
-			_messagePlain_nominal '15 : count: currentOutputBufferCount= '"$currentOutputBufferCount"
-			[[ "$currentFile" != *'??????????????????' ]] && let currentOutputBufferCount="$currentOutputBufferCount"+1
-		done
+		_messagePlain_nominal ' 9 : ##### terminate or reset #####'
 		
-		
-		# https://stackoverflow.com/questions/25906020/are-pid-files-still-flawed-when-doing-it-right/25933330
-		# https://stackoverflow.com/questions/360201/how-do-i-kill-background-processes-jobs-when-my-shell-script-exits
-		
-		_messagePlain_nominal ' 4 : _jobs_terminate_aggregatorStatic_procedure'
 		_jobs_terminate_aggregatorStatic_procedure "$currentPID"
 		
-		_messagePlain_nominal ' 5 : detect: currentIsEmptyOut'
-		#currentIsEmptyOut='false'
-		# Although this may seem inefficient, the alternatives of calling external programs, filling variables, or setting 'shopt', may also be undesirable.
-		# https://www.cyberciti.biz/faq/linux-unix-shell-check-if-directory-empty/
-		currentIsEmptyOut='true'
-		for currentFile in "$2"/??????????????????
-		do
-			if [[ "$currentFile" != *'??????????????????' ]]
-			then
-				_messagePlain_good '16 : detected: output pipe file'
-				currentIsEmptyOut='false'
-				break
-			fi
-		done
-		_messagePlain_nominal ' 6 : decision'
-		_messagePlain_probe_var currentInputBufferCount
-		_messagePlain_probe_var currentOutputBufferCount
-		[[ ! -e "$1"/terminate ]] && _messagePlain_probe ' 7.1: flag: missing: terminate'
-		[[ -d "$1" ]] && _messagePlain_probe ' 7.2: detect: present: input directory'
-		[[ "$currentIsEmptyOut" == 'false' ]] && _messagePlain_good ' 7.3: flag: detect: output pipe files'
-		if [[ ! -e "$1"/terminate ]] && [[ -d "$1" ]] && [[ "$currentIsEmptyOut" == 'false' ]] && [[ "$currentInputBufferCount" -gt 0 ]] && [[ "$currentOutputBufferCount" -gt 0 ]]
-		then
-			_messagePlain_nominal ' 7 : ##### connect pipes #####'
-			#https://unix.stackexchange.com/questions/139490/continuous-reading-from-named-pipe-cat-or-tail-f
-			#https://stackoverflow.com/questions/11185771/bash-script-to-iterate-files-in-directory-and-pattern-match-filenames
-			(
-			for currentFile in "$1"/??????????????????
-			do
-				[[ "$currentFile" != *'??????????????????' ]] && cat "$currentFile" 2>/dev/null &
-			done
-			) | tee "$2"/?????????????????? > /dev/null 2>&1 &
-			currentPID="$!"
-			
-			#rm -f "$1"/skip > /dev/null 2>&1
-		fi
 		
-		_messagePlain_nominal ' 8 : repeat'
+		# WARNING: Since only one program may successfully remove a single file, that mechanism should allow only one 'broadcastPipe' process to remain in the unlikely case multiple were somehow started.
+		currentTerminate='true'
+		[[ -e "$1"/terminate ]] && [[ -e "$1"/reset ]] && rm "$1"/reset > /dev/null 2>&1 && rm "$1"/terminate > /dev/null 2>&1 && rm -f "$1"/listen > /dev/null 2>&1 && currentTerminate='false'
+		rm -f "$1"/reset > /dev/null 2>&1
 		
-		# WARNING: Some processes within the subshell (ie. 'sleep' ) may allow the subshell to terminate rather than maintain a 'jobs' PID.
-		_messagePlain_probe 'jobs: '$(jobs -p -r)
+		# Recursive reset. Abandoned due to possibility of practical 'limit of recursion' with "bash" shell (and presumably similar as well) .
+		# https://rosettacode.org/wiki/Find_limit_of_recursion
+		# 'The Bash reference manual says No limit is placed on the number of recursive calls, nonetheless a segmentation fault occurs at 13777 (Bash v3.2.19 on 32bit GNU/Linux) '
+		#[[ -e "$1"/terminate ]] && [[ -e "$1"/reset ]] && rm "$1"/reset > /dev/null 2>&1 && _broadcastPipe_aggregatorStatic_read_procedure "$@"
+		#rm -f "$1"/reset > /dev/null 2>&1
+		
 	done
 	
-	_messagePlain_nominal ' 9 : ##### terminate or reset #####'
 	
-	_jobs_terminate_aggregatorStatic_procedure "$currentPID"
-	
-	# WARNING: Since only one program may successfully remove a single file, that mechanism should allow only one 'broadcastPipe' process to remain in the unlikely case multiple were somehow started.
-	# https://rosettacode.org/wiki/Find_limit_of_recursion
-	# 'The Bash reference manual says No limit is placed on the number of recursive calls, nonetheless a segmentation fault occurs at 13777 (Bash v3.2.19 on 32bit GNU/Linux) '
-	[[ -e "$1"/terminate ]] && [[ -e "$1"/reset ]] && rm "$1"/reset > /dev/null 2>&1 && _broadcastPipe_aggregatorStatic_read_procedure "$@"
 	rm -f "$1"/reset > /dev/null 2>&1
+	rm -f "$1"/terminate > /dev/null 2>&1
 	
 	_rm_broadcastPipe_aggregatorStatic "$@"
 	rm -f "$1"/reset > /dev/null 2>&1
@@ -21693,11 +21907,11 @@ _test_broadcastPipe_aggregatorStatic_sequence() {
 	
 	dd if=/dev/urandom of="$safeTmp"/testfill bs=1k count=2048 > /dev/null 2>&1
 	
-	_aggregator_read "$outputBufferDir" > "$safeTmp"/rewrite &
+	"$scriptAbsoluteLocation" _aggregator_read_procedure "$outputBufferDir" > "$safeTmp"/rewrite &
 	#_reset_broadcastPipe_aggregatorStatic
 	
 	# WARNING: May be incompatible with '_timeout' .
-	cat "$safeTmp"/testfill | _aggregator_write "$inputBufferDir" &
+	cat "$safeTmp"/testfill | "$scriptAbsoluteLocation"  _aggregator_write_procedure "$inputBufferDir" &
 	#_reset_broadcastPipe_aggregatorStatic
 	
 	
@@ -25418,6 +25632,8 @@ _test_sanity() {
 	
 	[[ ! -e "$safeTmp" ]] && _messageFAIL && return 1
 	
+	! _test_moveconfirm_procedure && _messageFAIL && return 1
+	
 	
 	local currentTestUID=$(_uid 245)
 	mkdir -p "$safeTmp"/"$currentTestUID"
@@ -26907,6 +27123,7 @@ _compile_bash_essential_utilities() {
 	includeScriptList+=( "labels"/utilitiesLabel.sh )
 	includeScriptList+=( "generic/filesystem"/absolutepaths.sh )
 	includeScriptList+=( "generic/filesystem"/safedelete.sh )
+	includeScriptList+=( "generic/filesystem"/moveconfirm.sh )
 	includeScriptList+=( "generic/filesystem"/allLogic.sh )
 	includeScriptList+=( "generic/process"/timeout.sh )
 	includeScriptList+=( "generic/process"/terminate.sh )

@@ -80,7 +80,8 @@ _sleep_spinlock() {
 	# ATTENTION: Consider setting this to the worst-case acceptable latency for a system still considered 'responsive' (ie. a number of seconds greater than that which would cause a user or other 'watchdog' to forcibly reboot the system).
 	local currentWaitSpinlock
 	let currentWaitSpinlock="$RANDOM"%4
-	let currentWaitSpinlock="$currentWaitSpinlock"+12
+	#let currentWaitSpinlock="$currentWaitSpinlock"+12
+	let currentWaitSpinlock="$currentWaitSpinlock"+10
 	sleep "$currentWaitSpinlock"
 }
 

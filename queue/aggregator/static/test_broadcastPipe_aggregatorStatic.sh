@@ -17,11 +17,11 @@ _test_broadcastPipe_aggregatorStatic_sequence() {
 	
 	dd if=/dev/urandom of="$safeTmp"/testfill bs=1k count=2048 > /dev/null 2>&1
 	
-	_aggregator_read "$outputBufferDir" > "$safeTmp"/rewrite &
+	"$scriptAbsoluteLocation" _aggregator_read_procedure "$outputBufferDir" > "$safeTmp"/rewrite &
 	#_reset_broadcastPipe_aggregatorStatic
 	
 	# WARNING: May be incompatible with '_timeout' .
-	cat "$safeTmp"/testfill | _aggregator_write "$inputBufferDir" &
+	cat "$safeTmp"/testfill | "$scriptAbsoluteLocation"  _aggregator_write_procedure "$inputBufferDir" &
 	#_reset_broadcastPipe_aggregatorStatic
 	
 	

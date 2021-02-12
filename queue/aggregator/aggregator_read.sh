@@ -66,8 +66,16 @@ _aggregator_read_sequence() {
 }
 
 
+# "$1" == inputBufferDir (inverted, client input, service output)
+# "$2" == outputBufferDir (OPTIONAL. inverted)
 _aggregator_read() {
-	"$scriptAbsoluteLocation" _aggregator_read_sequence "$@"
+	if ! _aggregatorStatic_delayIPC_EmptyOrWaitOrReset "$2" "$1"
+	then
+		return 1
+	fi
+	_aggregator_read_procedure "$2"
+	#"$scriptAbsoluteLocation" _aggregator_read_sequence "$2"
+	#"$scriptAbsoluteLocation" _aggregator_read_sequence "$@"
 }
 
 

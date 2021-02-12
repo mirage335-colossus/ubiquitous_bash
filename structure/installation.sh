@@ -913,6 +913,8 @@ _test_sanity() {
 	
 	[[ ! -e "$safeTmp" ]] && _messageFAIL && return 1
 	
+	! _test_moveconfirm_procedure && _messageFAIL && return 1
+	
 	
 	local currentTestUID=$(_uid 245)
 	mkdir -p "$safeTmp"/"$currentTestUID"

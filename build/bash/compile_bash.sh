@@ -270,6 +270,7 @@ _compile_bash_essential_utilities() {
 	includeScriptList+=( "labels"/utilitiesLabel.sh )
 	includeScriptList+=( "generic/filesystem"/absolutepaths.sh )
 	includeScriptList+=( "generic/filesystem"/safedelete.sh )
+	includeScriptList+=( "generic/filesystem"/moveconfirm.sh )
 	includeScriptList+=( "generic/filesystem"/allLogic.sh )
 	includeScriptList+=( "generic/process"/timeout.sh )
 	includeScriptList+=( "generic/process"/terminate.sh )
