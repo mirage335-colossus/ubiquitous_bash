@@ -9175,19 +9175,19 @@ _aggregatorStatic_converse_noEmptyOrWaitOrReset() {
 	_demand_dir_broadcastPipe_aggregator_converse() {
 		_demand_dir_broadcastPipe_aggregatorStatic "$@"
 	}
-	_aggregator_converse_procedure "$@"
+	_aggregator_converse_procedure "$@" 2> /dev/null
 }
 
 _aggregatorStatic_converse_EmptyOrWaitOrReset() {
-	if ! _aggregatorStatic_delayIPC_EmptyOrWaitOrReset "$1" "$2"
+	if ! _aggregatorStatic_delayIPC_EmptyOrWaitOrReset "$2" "$1" 2> /dev/null
 	then
 		return 1
 	fi
-	_aggregatorStatic_converse_noEmptyOrWaitOrReset "$@"
+	_aggregatorStatic_converse_noEmptyOrWaitOrReset "$@" 2> /dev/null
 }
 
 _aggregatorStatic_converse() {
-	_aggregatorStatic_converse_EmptyOrWaitOrReset "$@"
+	_aggregatorStatic_converse_EmptyOrWaitOrReset "$@" 2> /dev/null
 }
 
 
@@ -9248,13 +9248,13 @@ _aggregator_write_procedure() {
 _aggregator_write_sequence() {
 	_start
 	
-	_aggregator_write_procedure "$@"
+	_aggregator_write_procedure "$@" 2> /dev/null
 	
 	_stop
 }
 
 _aggregator_write() {
-	"$scriptAbsoluteLocation" _aggregator_write_sequence "$@"
+	"$scriptAbsoluteLocation" _aggregator_write_sequence "$@" 2> /dev/null
 }
 
 
@@ -9265,9 +9265,9 @@ _aggregatorStatic_write() {
 	then
 		return 1
 	fi
-	_aggregator_write_procedure "$1"
-	#"$scriptAbsoluteLocation" _aggregator_write_sequence "$1"
-	#"$scriptAbsoluteLocation" _aggregator_write_sequence "$@"
+	_aggregator_write_procedure "$1" 2> /dev/null
+	#"$scriptAbsoluteLocation" _aggregator_write_sequence "$1" 2> /dev/null
+	#"$scriptAbsoluteLocation" _aggregator_write_sequence "$@" 2> /dev/null
 }
 
 
@@ -9901,6 +9901,11 @@ _test_broadcastPipe_aggregatorStatic_sequence() {
 }
 
 
+_test_broadcastPipe_aggregatorStatic_delayIPC__aggregatorStatic_converse() {
+	true | _aggregatorStatic_converse "$1" "$2" > "$3"
+}
+
+
 _test_broadcastPipe_aggregatorStatic_delayIPC_sequence() {
 	_start
 	
@@ -9921,7 +9926,10 @@ _test_broadcastPipe_aggregatorStatic_delayIPC_sequence() {
 	dd if=/dev/urandom of="$safeTmp"/testfill bs=1k count=2048 > /dev/null 2>&1
 	
 	"$scriptAbsoluteLocation" _aggregatorStatic_read "$outputBufferDir" "$inputBufferDir" > "$safeTmp"/rewrite &
-	#"$scriptAbsoluteLocation" _aggregatorStatic_converse "$inputBufferDir" "$outputBufferDir" > "$safeTmp"/rewrite_converse &
+	
+	"$scriptAbsoluteLocation" _aggregatorStatic_converse "$outputBufferDir" "$inputBufferDir" > "$safeTmp"/rewrite_converse &
+ 	"$scriptAbsoluteLocation" _test_broadcastPipe_aggregatorStatic_delayIPC__aggregatorStatic_converse "$outputBufferDir" "$inputBufferDir" "$safeTmp"/rewrite_converse_subprocess &
+	
 	#_reset_broadcastPipe_aggregatorStatic
 	
 	# WARNING: May be incompatible with '_timeout' .
@@ -9932,19 +9940,19 @@ _test_broadcastPipe_aggregatorStatic_delayIPC_sequence() {
 	#_sleep_spinlock
 	#_skip_broadcastPipe_aggregatorStatic "$inputBufferDir"
 	
-	#sleep 18
-	#_sleep_spinlock
+	sleep 18
+	_sleep_spinlock
 	
 	sleep 24
 	_sleep_spinlock
 	
 	_terminate_broadcastPipe_aggregatorStatic "$inputBufferDir"
 	
-	(
-	cd "$safeTmp"
-	du -sh ./testfill ./rewrite ./rewrite_converse
-	md5sum ./testfill ./rewrite ./rewrite_converse
-	)
+	#(
+	#cd "$safeTmp"
+	#du -sh ./testfill ./rewrite ./rewrite_converse ./rewrite_converse_subprocess
+	#md5sum ./testfill ./rewrite ./rewrite_converse ./rewrite_converse_subprocess
+	#)
 	
 	! [[ -s "$safeTmp"/testfill ]] && _stop 1
 	! [[ -s "$safeTmp"/rewrite ]] && _stop 1
@@ -9957,6 +9965,11 @@ _test_broadcastPipe_aggregatorStatic_delayIPC_sequence() {
 
 _test_broadcastPipe_aggregatorStatic() {
 	if ! "$scriptAbsoluteLocation" _test_broadcastPipe_aggregatorStatic_sequence "$@" 2> /dev/null
+	#if ! "$scriptAbsoluteLocation" _test_broadcastPipe_aggregatorStatic_sequence "$@"
+	then
+		return 1
+	fi
+	if ! "$scriptAbsoluteLocation" _test_broadcastPipe_aggregatorStatic_delayIPC_sequence "$@" 2> /dev/null
 	#if ! "$scriptAbsoluteLocation" _test_broadcastPipe_aggregatorStatic_sequence "$@"
 	then
 		return 1

@@ -161,19 +161,19 @@ _aggregatorStatic_converse_noEmptyOrWaitOrReset() {
 	_demand_dir_broadcastPipe_aggregator_converse() {
 		_demand_dir_broadcastPipe_aggregatorStatic "$@"
 	}
-	_aggregator_converse_procedure "$@"
+	_aggregator_converse_procedure "$@" 2> /dev/null
 }
 
 _aggregatorStatic_converse_EmptyOrWaitOrReset() {
-	if ! _aggregatorStatic_delayIPC_EmptyOrWaitOrReset "$1" "$2"
+	if ! _aggregatorStatic_delayIPC_EmptyOrWaitOrReset "$2" "$1" 2> /dev/null
 	then
 		return 1
 	fi
-	_aggregatorStatic_converse_noEmptyOrWaitOrReset "$@"
+	_aggregatorStatic_converse_noEmptyOrWaitOrReset "$@" 2> /dev/null
 }
 
 _aggregatorStatic_converse() {
-	_aggregatorStatic_converse_EmptyOrWaitOrReset "$@"
+	_aggregatorStatic_converse_EmptyOrWaitOrReset "$@" 2> /dev/null
 }
 
 
@@ -234,13 +234,13 @@ _aggregator_write_procedure() {
 _aggregator_write_sequence() {
 	_start
 	
-	_aggregator_write_procedure "$@"
+	_aggregator_write_procedure "$@" 2> /dev/null
 	
 	_stop
 }
 
 _aggregator_write() {
-	"$scriptAbsoluteLocation" _aggregator_write_sequence "$@"
+	"$scriptAbsoluteLocation" _aggregator_write_sequence "$@" 2> /dev/null
 }
 
 
@@ -251,9 +251,9 @@ _aggregatorStatic_write() {
 	then
 		return 1
 	fi
-	_aggregator_write_procedure "$1"
-	#"$scriptAbsoluteLocation" _aggregator_write_sequence "$1"
-	#"$scriptAbsoluteLocation" _aggregator_write_sequence "$@"
+	_aggregator_write_procedure "$1" 2> /dev/null
+	#"$scriptAbsoluteLocation" _aggregator_write_sequence "$1" 2> /dev/null
+	#"$scriptAbsoluteLocation" _aggregator_write_sequence "$@" 2> /dev/null
 }
 
 

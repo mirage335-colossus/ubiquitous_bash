@@ -21,9 +21,9 @@
 
 ./lean.sh _demand_broadcastPipe_aggregatorStatic
 
-./lean.sh _aggregator_read
+./lean.sh _aggregatorStatic_read
 
-./lean.sh _aggregator_write
+./lean.sh _aggregatorStatic_write
 
 ./lean.sh _aggregatorStatic_converse
 
