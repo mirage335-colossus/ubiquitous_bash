@@ -7,7 +7,7 @@ _test_broadcastPipe_aggregatorStatic_sequence() {
 	
 	
 	# > /dev/null 2>&1
-	_demand_broadcastPipe_aggregatorStatic "$inputBufferDir" "$outputBufferDir" > /dev/null 2>&1
+	_demand_broadcastPipe_aggregatorStatic "$inputBufferDir" "$outputBufferDir" > "$safeTmp"/log/demand.log
 	
 	
 	
@@ -21,7 +21,7 @@ _test_broadcastPipe_aggregatorStatic_sequence() {
 	#_reset_broadcastPipe_aggregatorStatic
 	
 	# WARNING: May be incompatible with '_timeout' .
-	cat "$safeTmp"/testfill | "$scriptAbsoluteLocation"  _aggregator_write_procedure "$inputBufferDir" &
+	cat "$safeTmp"/testfill | "$scriptAbsoluteLocation" _aggregator_write_procedure "$inputBufferDir" &
 	#_reset_broadcastPipe_aggregatorStatic
 	
 	
@@ -41,6 +41,61 @@ _test_broadcastPipe_aggregatorStatic_sequence() {
 	! [[ -s "$safeTmp"/testfill ]] && _stop 1
 	! [[ -s "$safeTmp"/rewrite ]] && _stop 1
 	! diff "$safeTmp"/testfill "$safeTmp"/rewrite && _stop 1
+	
+	_stop
+}
+
+
+_test_broadcastPipe_aggregatorStatic_delayIPC_sequence() {
+	_start
+	
+	
+	export inputBufferDir="$safeTmp"/_i
+	export outputBufferDir="$safeTmp"/_o
+	
+	
+	# > /dev/null 2>&1
+	_demand_broadcastPipe_aggregatorStatic "$inputBufferDir" "$outputBufferDir" > "$safeTmp"/log/demand.log
+	_sleep_spinlock
+	
+	
+	
+	
+	
+	
+	dd if=/dev/urandom of="$safeTmp"/testfill bs=1k count=2048 > /dev/null 2>&1
+	
+	"$scriptAbsoluteLocation" _aggregatorStatic_read "$outputBufferDir" "$inputBufferDir" > "$safeTmp"/rewrite &
+	#"$scriptAbsoluteLocation" _aggregatorStatic_converse "$inputBufferDir" "$outputBufferDir" > "$safeTmp"/rewrite_converse &
+	#_reset_broadcastPipe_aggregatorStatic
+	
+	# WARNING: May be incompatible with '_timeout' .
+	cat "$safeTmp"/testfill | "$scriptAbsoluteLocation" _aggregatorStatic_write "$inputBufferDir" "$outputBufferDir"
+	#_reset_broadcastPipe_aggregatorStatic
+	
+	
+	#_sleep_spinlock
+	#_skip_broadcastPipe_aggregatorStatic "$inputBufferDir"
+	
+	#sleep 18
+	#_sleep_spinlock
+	
+	sleep 24
+	_sleep_spinlock
+	
+	_terminate_broadcastPipe_aggregatorStatic "$inputBufferDir"
+	
+	(
+	cd "$safeTmp"
+	du -sh ./testfill ./rewrite ./rewrite_converse
+	md5sum ./testfill ./rewrite ./rewrite_converse
+	)
+	
+	! [[ -s "$safeTmp"/testfill ]] && _stop 1
+	! [[ -s "$safeTmp"/rewrite ]] && _stop 1
+	! [[ -s "$safeTmp"/rewrite_converse ]] && _stop 1
+	! diff "$safeTmp"/testfill "$safeTmp"/rewrite && _stop 1
+	! diff "$safeTmp"/testfill "$safeTmp"/rewrite_converse && _stop 1
 	
 	_stop
 }

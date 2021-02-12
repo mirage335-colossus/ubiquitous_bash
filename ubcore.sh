@@ -8993,15 +8993,19 @@ _aggregator_read_sequence() {
 	_stop
 }
 
+_aggregator_read() {
+	"$scriptAbsoluteLocation" _aggregator_read_sequence "$@"
+}
+
 
 # "$1" == inputBufferDir (inverted, client input, service output)
 # "$2" == outputBufferDir (OPTIONAL. inverted)
-_aggregator_read() {
+_aggregatorStatic_read() {
 	if ! _aggregatorStatic_delayIPC_EmptyOrWaitOrReset "$2" "$1"
 	then
 		return 1
 	fi
-	_aggregator_read_procedure "$2"
+	_aggregator_read_procedure "$1"
 	#"$scriptAbsoluteLocation" _aggregator_read_sequence "$2"
 	#"$scriptAbsoluteLocation" _aggregator_read_sequence "$@"
 }
@@ -9110,7 +9114,7 @@ _aggregatorStatic_delayIPC_EmptyOrWaitOrReset() {
 	_demand_dir_broadcastPipe_aggregator_delayIPC_EmptyOrWaitOrReset() {
 		_demand_dir_broadcastPipe_aggregatorStatic "$@"
 	}
-	if ! _aggregator_delayIPC_EmptyOrWaitOrReset "$@"
+	if ! true | _aggregator_delayIPC_EmptyOrWaitOrReset "$@"
 	then
 		return 1
 	fi
@@ -9175,7 +9179,7 @@ _aggregatorStatic_converse_noEmptyOrWaitOrReset() {
 }
 
 _aggregatorStatic_converse_EmptyOrWaitOrReset() {
-	if ! _aggregatorStatic_delayIPC_EmptyOrWaitOrReset "$2" "$1"
+	if ! _aggregatorStatic_delayIPC_EmptyOrWaitOrReset "$1" "$2"
 	then
 		return 1
 	fi
@@ -9249,10 +9253,14 @@ _aggregator_write_sequence() {
 	_stop
 }
 
+_aggregator_write() {
+	"$scriptAbsoluteLocation" _aggregator_write_sequence "$@"
+}
+
 
 # "$1" == outputBufferDir (inverted, client output, service input)
 # "$2" == inputBufferDir (OPTIONAL. inverted)
-_aggregator_write() {
+_aggregatorStatic_write() {
 	if ! _aggregatorStatic_delayIPC_EmptyOrWaitOrReset "$1" "$2"
 	then
 		return 1
@@ -9854,7 +9862,7 @@ _test_broadcastPipe_aggregatorStatic_sequence() {
 	
 	
 	# > /dev/null 2>&1
-	_demand_broadcastPipe_aggregatorStatic "$inputBufferDir" "$outputBufferDir" > /dev/null 2>&1
+	_demand_broadcastPipe_aggregatorStatic "$inputBufferDir" "$outputBufferDir" > "$safeTmp"/log/demand.log
 	
 	
 	
@@ -9868,7 +9876,7 @@ _test_broadcastPipe_aggregatorStatic_sequence() {
 	#_reset_broadcastPipe_aggregatorStatic
 	
 	# WARNING: May be incompatible with '_timeout' .
-	cat "$safeTmp"/testfill | "$scriptAbsoluteLocation"  _aggregator_write_procedure "$inputBufferDir" &
+	cat "$safeTmp"/testfill | "$scriptAbsoluteLocation" _aggregator_write_procedure "$inputBufferDir" &
 	#_reset_broadcastPipe_aggregatorStatic
 	
 	
@@ -9888,6 +9896,61 @@ _test_broadcastPipe_aggregatorStatic_sequence() {
 	! [[ -s "$safeTmp"/testfill ]] && _stop 1
 	! [[ -s "$safeTmp"/rewrite ]] && _stop 1
 	! diff "$safeTmp"/testfill "$safeTmp"/rewrite && _stop 1
+	
+	_stop
+}
+
+
+_test_broadcastPipe_aggregatorStatic_delayIPC_sequence() {
+	_start
+	
+	
+	export inputBufferDir="$safeTmp"/_i
+	export outputBufferDir="$safeTmp"/_o
+	
+	
+	# > /dev/null 2>&1
+	_demand_broadcastPipe_aggregatorStatic "$inputBufferDir" "$outputBufferDir" > "$safeTmp"/log/demand.log
+	_sleep_spinlock
+	
+	
+	
+	
+	
+	
+	dd if=/dev/urandom of="$safeTmp"/testfill bs=1k count=2048 > /dev/null 2>&1
+	
+	"$scriptAbsoluteLocation" _aggregatorStatic_read "$outputBufferDir" "$inputBufferDir" > "$safeTmp"/rewrite &
+	#"$scriptAbsoluteLocation" _aggregatorStatic_converse "$inputBufferDir" "$outputBufferDir" > "$safeTmp"/rewrite_converse &
+	#_reset_broadcastPipe_aggregatorStatic
+	
+	# WARNING: May be incompatible with '_timeout' .
+	cat "$safeTmp"/testfill | "$scriptAbsoluteLocation" _aggregatorStatic_write "$inputBufferDir" "$outputBufferDir"
+	#_reset_broadcastPipe_aggregatorStatic
+	
+	
+	#_sleep_spinlock
+	#_skip_broadcastPipe_aggregatorStatic "$inputBufferDir"
+	
+	#sleep 18
+	#_sleep_spinlock
+	
+	sleep 24
+	_sleep_spinlock
+	
+	_terminate_broadcastPipe_aggregatorStatic "$inputBufferDir"
+	
+	(
+	cd "$safeTmp"
+	du -sh ./testfill ./rewrite ./rewrite_converse
+	md5sum ./testfill ./rewrite ./rewrite_converse
+	)
+	
+	! [[ -s "$safeTmp"/testfill ]] && _stop 1
+	! [[ -s "$safeTmp"/rewrite ]] && _stop 1
+	! [[ -s "$safeTmp"/rewrite_converse ]] && _stop 1
+	! diff "$safeTmp"/testfill "$safeTmp"/rewrite && _stop 1
+	! diff "$safeTmp"/testfill "$safeTmp"/rewrite_converse && _stop 1
 	
 	_stop
 }

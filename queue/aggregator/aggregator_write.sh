@@ -100,7 +100,7 @@ _aggregatorStatic_delayIPC_EmptyOrWaitOrReset() {
 	_demand_dir_broadcastPipe_aggregator_delayIPC_EmptyOrWaitOrReset() {
 		_demand_dir_broadcastPipe_aggregatorStatic "$@"
 	}
-	if ! _aggregator_delayIPC_EmptyOrWaitOrReset "$@"
+	if ! true | _aggregator_delayIPC_EmptyOrWaitOrReset "$@"
 	then
 		return 1
 	fi
@@ -165,7 +165,7 @@ _aggregatorStatic_converse_noEmptyOrWaitOrReset() {
 }
 
 _aggregatorStatic_converse_EmptyOrWaitOrReset() {
-	if ! _aggregatorStatic_delayIPC_EmptyOrWaitOrReset "$2" "$1"
+	if ! _aggregatorStatic_delayIPC_EmptyOrWaitOrReset "$1" "$2"
 	then
 		return 1
 	fi
@@ -239,10 +239,14 @@ _aggregator_write_sequence() {
 	_stop
 }
 
+_aggregator_write() {
+	"$scriptAbsoluteLocation" _aggregator_write_sequence "$@"
+}
+
 
 # "$1" == outputBufferDir (inverted, client output, service input)
 # "$2" == inputBufferDir (OPTIONAL. inverted)
-_aggregator_write() {
+_aggregatorStatic_write() {
 	if ! _aggregatorStatic_delayIPC_EmptyOrWaitOrReset "$1" "$2"
 	then
 		return 1
