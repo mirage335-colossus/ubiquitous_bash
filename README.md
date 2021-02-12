@@ -64,6 +64,10 @@ https://github.com/mirage335/ubiquitous_bash/blob/master/_doc/broadcastPipe/READ
 
 * Reference peripherial identification implementation.
 
+* Simple one-input-multiple-output shared memory 'tripleBuffer' channel to 'publish' high performance data streams (eg. VR compositor frames) by most recent page.
+
+
+
 
 
 # USAGE

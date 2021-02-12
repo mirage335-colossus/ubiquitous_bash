@@ -3543,6 +3543,7 @@ _compile_bash_vars_queue() {
 	includeScriptList+=( "queue/aggregator/static"/test_broadcastPipe_aggregatorStatic.sh )
 	includeScriptList+=( "queue/aggregator/static"/benchmark_broadcastPipe_aggregatorStatic.sh )
 	
+	[[ "$enUb_dev" == "true" ]] && includeScriptList+=( "queue/aggregator/static"/test_scope_aggregatorStatic.sh )
 	
 	
 	includeScriptList+=( "queue/zSocket"/page_socket_tcp.sh )

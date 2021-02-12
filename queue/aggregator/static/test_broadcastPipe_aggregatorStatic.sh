@@ -108,6 +108,7 @@ _test_broadcastPipe_aggregatorStatic_delayIPC_sequence() {
 	_stop
 }
 
+
 _test_broadcastPipe_aggregatorStatic() {
 	if ! "$scriptAbsoluteLocation" _test_broadcastPipe_aggregatorStatic_sequence "$@" 2> /dev/null
 	#if ! "$scriptAbsoluteLocation" _test_broadcastPipe_aggregatorStatic_sequence "$@"

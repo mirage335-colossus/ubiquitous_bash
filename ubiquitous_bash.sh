@@ -21139,10 +21139,13 @@ _aggregator_delayIPC_EmptyOrWaitOrReset() {
 	done
 	! _aggregator_delayIPC_isReset "$inputBufferDir" "$outputBufferDir" && return 1
 	
+	# WARNING: Delay must be <<24seconds .
 	# Must be long enough to allow all waiting clients to 'see' the 'vaccancy' and 'empty' conditions, but not long enough to overrun the 'vaccancy' delay.
+	# Delaying an entire '_sleep_spinlock' cycle may be undesirable in practice. Multiple clients will be connecting simultaneously, and external (or 'user') latencies may be much more likely than an extreme ~7seconds spinlock event from the kernel.
 	#sleep 3
-	#sleep 6
-	_sleep_spinlock
+	#sleep 5
+	sleep 7
+	#_sleep_spinlock
 	
 	#if _aggregator_delayIPC_isReset "$inputBufferDir" "$outputBufferDir"
 	#then
@@ -22006,6 +22009,7 @@ _test_broadcastPipe_aggregatorStatic_delayIPC_sequence() {
 	_stop
 }
 
+
 _test_broadcastPipe_aggregatorStatic() {
 	if ! "$scriptAbsoluteLocation" _test_broadcastPipe_aggregatorStatic_sequence "$@" 2> /dev/null
 	#if ! "$scriptAbsoluteLocation" _test_broadcastPipe_aggregatorStatic_sequence "$@"
@@ -22026,6 +22030,71 @@ _benchmark_broadcastPipe_aggregatorStatic() {
 	
 	
 	
+	
+	_stop
+}
+
+
+_aggregatorStatic_test_scope-konsole_tab-service() {
+	_demand_broadcastPipe_aggregatorStatic "$inputBufferDir" "$outputBufferDir"
+	while true
+	do
+		sleep 3
+	done
+}
+
+_aggregatorStatic_test_scope-konsole_tab-dirLoop() {
+	while true
+	do
+		echo '----------'
+		clear
+		ls -R
+		sleep 0.1
+	done
+}
+
+
+
+# ATTENTION: Experimental use intended. Provides a command line environment with temporary directories , functions , services , examples , etc .
+# Requires 'scope' which is NOT usually pulled in as a dependency of 'queue' .
+_aggregatorStatic_test_scope() {
+	_start
+	
+	export inputBufferDir="$safeTmp"/_i
+	export outputBufferDir="$safeTmp"/_o
+	
+	dd if=/dev/urandom of="$safeTmp"/testfill bs=1k count=2048 > /dev/null 2>&1
+	
+	
+	
+	
+	# ATTENTION: EXAMPLE. Consider experimenting with these commands.
+	
+	#_aggregatorStatic_read "$outputBufferDir" "$inputBufferDir"
+	
+	#_aggregatorStatic_converse "$outputBufferDir" "$inputBufferDir"
+ 	
+ 	#echo test | _aggregatorStatic_write "$inputBufferDir" "$outputBufferDir"
+ 	
+ 	
+ 	#_terminate_broadcastPipe_aggregatorStatic "$inputBufferDir"
+	
+	
+	
+	
+	cat << CZXWXcRMTo8EmM8i4d > "$safeTmp"/konsole_tabs
+#title: true;; command:  "$scriptAbsoluteLocation" --devenv _true
+title: _demand_broadcastPipe_aggregatorStatic;; command:  "$scriptAbsoluteLocation" --devenv _aggregatorStatic_test_scope-konsole_tab-service
+title: dirLoop;; command:  "$scriptAbsoluteLocation" --devenv _aggregatorStatic_test_scope-konsole_tab-dirLoop
+CZXWXcRMTo8EmM8i4d
+	
+	_scope_konsole "$safeTmp" --tabs-from-file "$safeTmp"/konsole_tabs
+	
+	#(
+	#cd "$safeTmp"
+	#du -sh ./testfill ./rewrite ./rewrite_converse ./rewrite_converse_subprocess
+	#md5sum ./testfill ./rewrite ./rewrite_converse ./rewrite_converse_subprocess
+	#)
 	
 	_stop
 }
@@ -26479,6 +26548,7 @@ _compile_bash_vars_queue() {
 	includeScriptList+=( "queue/aggregator/static"/test_broadcastPipe_aggregatorStatic.sh )
 	includeScriptList+=( "queue/aggregator/static"/benchmark_broadcastPipe_aggregatorStatic.sh )
 	
+	[[ "$enUb_dev" == "true" ]] && includeScriptList+=( "queue/aggregator/static"/test_scope_aggregatorStatic.sh )
 	
 	
 	includeScriptList+=( "queue/zSocket"/page_socket_tcp.sh )
