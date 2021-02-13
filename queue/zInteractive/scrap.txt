@@ -1,0 +1,41 @@
+
+
+# ./ubiquitous_bash.sh _demand_interactive_pipe
+
+# ./ubiquitous_bash.sh _interactive_client_pipe ./w_*/interactive_pipe_??????????????????
+
+./ubiquitous_bash.sh _interactive_pipe_konsole
+
+
+
+
+
+
+
+
+
+
+
+# https://unix.stackexchange.com/questions/229677/bash-interactive-mode-on-redirect
+
+# https://superuser.com/questions/1494557/interactive-shell-through-named-pipe
+#bash -i 0<"$1"/p0 1>"$1"/p1 2>"$1"/p2
+#bash -i -l 0<"$1"/p0 1>"$1"/p1 2>"$1"/p2 &
+#wait
+
+# https://stackoverflow.com/questions/11821378/what-does-bashno-job-control-in-this-shell-mean
+#set -m
+
+# https://serverfault.com/questions/368054/run-an-interactive-bash-subshell-with-initial-commands-without-returning-to-the
+#bash --init-file <(echo "echo test")
+#bash -c "ls;pwd;other commands;$SHELL"
+#( ls; pwd; exec $BASH; )
+
+#| tail -n +2
+#bash -l -i -s 0<"$1"/p0 1>"$1"/p1 2>"$1"/p2
+
+# https://wiki.networksecuritytoolkit.org/nstwiki/index.php/Console_Output_and_Serial_Terminals
+# https://unix.stackexchange.com/questions/297519/vim-in-gnome-terminal-says-output-is-not-to-a-terminal
+
+
+
