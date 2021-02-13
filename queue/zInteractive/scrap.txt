@@ -2,6 +2,9 @@
 
 # ./ubiquitous_bash.sh _demand_interactive_pipe
 
+# Some platforms (ie. MSW/Cygwin ) may require this instead of '_demand'... apparently due to 'tty' issues.
+#./ubiquitous_bash.sh _interactive_pipe_sequence
+
 # ./ubiquitous_bash.sh _interactive_client_pipe ./w_*/interactive_pipe_??????????????????
 
 ./ubiquitous_bash.sh _interactive_pipe_konsole
