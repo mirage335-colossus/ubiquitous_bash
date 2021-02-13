@@ -2,7 +2,7 @@
 
 # ./ubiquitous_bash.sh _demand_interactive_pipe
 
-# Some platforms (ie. MSW/Cygwin ) may require this instead of '_demand'... apparently due to 'tty' issues.
+# Some platforms (ie. MSW/Cygwin ) may require this instead of '_demand'... apparently due to 'tty' issues. Hosting 'demand' within a 'tmux' session may also be usable as a workaround, however, this has not been tested.
 #./ubiquitous_bash.sh _interactive_pipe_sequence
 
 # ./ubiquitous_bash.sh _interactive_client_pipe ./w_*/interactive_pipe_??????????????????
