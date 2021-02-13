@@ -1598,12 +1598,27 @@ _condition_lines_zero() {
 #Generates random alphanumeric characters, default length 18.
 _uid() {
 	local curentLengthUID
+	local currentIteration
+	currentIteration=0
 
 	currentLengthUID="18"
 	! [[ -z "$uidLengthPrefix" ]] && ! [[ "$uidLengthPrefix" -lt "18" ]] && currentLengthUID="$uidLengthPrefix"
 	! [[ -z "$1" ]] && currentLengthUID="$1"
 
-	cat /dev/urandom 2> /dev/null | base64 2> /dev/null | tr -dc 'a-zA-Z0-9' 2> /dev/null | head -c "$currentLengthUID" 2> /dev/null
+	if [[ -z "$uidLengthPrefix" ]] && [[ -z "$1" ]]
+	then
+		# https://stackoverflow.com/questions/32484504/using-random-to-generate-a-random-string-in-bash
+		# https://www.cyberciti.biz/faq/unix-linux-iterate-over-a-variable-range-of-numbers-in-bash/
+		chars=abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ
+		#for currentIteration in {1..$currentLengthUID} ; do
+		for (( currentIteration=1; currentIteration<="$currentLengthUID"; currentIteration++ )) ; do
+		echo -n "${chars:RANDOM%${#chars}:1}"
+		done
+		echo
+	else
+		cat /dev/urandom 2> /dev/null | base64 2> /dev/null | tr -dc 'a-zA-Z0-9' 2> /dev/null | head -c "$currentLengthUID" 2> /dev/null
+	fi
+	return 0
 }
 
 _compat_stat_c_run() {
@@ -3233,12 +3248,12 @@ then
 	export scriptAbsoluteFolder="$profileScriptFolder"
 	export sessionid=$(_uid)
 	_messagePlain_probe_expr 'profile: scriptAbsoluteLocation= '"$scriptAbsoluteLocation"'\n ''profile: scriptAbsoluteFolder= '"$scriptAbsoluteFolder"'\n ''profile: sessionid= '"$sessionid" | _user_log-ub
-elif ([[ "$ub_import_param" == "--parent" ]] || [[ "$ub_import_param" == "--embed" ]] || [[ "$ub_import_param" == "--return" ]] || [[ "$ub_import_param" == "--devenv" ]])  && [[ "$scriptAbsoluteLocation" != "" ]] && [[ "$scriptAbsoluteFolder" != "" ]] && [[ "$sessionid" != "" ]]
+elif ( [[ "$ub_import_param" == "--parent" ]] || [[ "$ub_import_param" == "--embed" ]] || [[ "$ub_import_param" == "--return" ]] || [[ "$ub_import_param" == "--devenv" ]] ) && [[ "$scriptAbsoluteLocation" != "" ]] && [[ "$scriptAbsoluteFolder" != "" ]] && [[ "$sessionid" != "" ]]
 then
 	ub_import=true
 	true #Do not override.
 	_messagePlain_probe_expr 'parent: scriptAbsoluteLocation= '"$scriptAbsoluteLocation"'\n ''parent: scriptAbsoluteFolder= '"$scriptAbsoluteFolder"'\n ''parent: sessionid= '"$sessionid" | _user_log-ub
-elif [[ "$ub_import_param" == "--call" ]] || [[ "$ub_import_param" == "--script" ]] || [[ "$ub_import_param" == "--bypass" ]] || [[ "$ub_import_param" == "--shell" ]] || ([[ "$ub_import" == "true" ]] && [[ "$ub_import_param" == "" ]])
+elif [[ "$ub_import_param" == "--call" ]] || [[ "$ub_import_param" == "--script" ]] || [[ "$ub_import_param" == "--bypass" ]] || [[ "$ub_import_param" == "--shell" ]] || ( [[ "$ub_import" == "true" ]] && [[ "$ub_import_param" == "" ]] )
 then
 	ub_import=true
 	export scriptAbsoluteLocation="$importScriptLocation"
@@ -3262,8 +3277,6 @@ fi
 [[ ! -e "$scriptAbsoluteLocation" ]] && _messagePlain_bad 'missing: scriptAbsoluteLocation= '"$scriptAbsoluteLocation" | _user_log-ub && exit 1
 [[ "$sessionid" == "" ]] && _messagePlain_bad 'missing: sessionid' | _user_log-ub && exit 1
 
-export lowsessionid=$(echo -n "$sessionid" | tr A-Z a-z )
-
 #Current directory for preservation.
 export outerPWD=$(_getAbsoluteLocation "$PWD")
 
@@ -3271,7 +3284,19 @@ export initPWD="$PWD"
 intInitPWD="$PWD"
 
 
+# DANGER: CAUTION: Undefined removal of (at least temporary) directories may be possible. Do NOT use without thorough consideration!
+# Only known use is setting the temporary directory of a subsequent background process through "$scriptAbsoluteLocation" .
+# EXAMPLE: _interactive_pipe() { ... }
+if [[ "$ub_force_sessionid" != "" ]]
+then
+	sessionid="$ub_force_sessionid"
+	[[ "$ub_force_sessionid_repeat" != 'true' ]] && export ub_force_sessionid=""
+fi
 
+
+_get_ub_globalVars_sessionDerived() {
+
+export lowsessionid=$(echo -n "$sessionid" | tr A-Z a-z )
 
 # ATTENTION: CAUTION: Unusual Cygwin override to accommodate MSW network drive ( at least when provided by '_userVBox' ) !
 if [[ "$scriptAbsoluteFolder" == '/cygdrive/'* ]] && [[ -e /cygdrive ]] && uname -a | grep -i cygwin > /dev/null 2>&1 && [[ "$scriptAbsoluteFolder" != '/cygdrive/c'* ]] && [[ "$scriptAbsoluteFolder" != '/cygdrive/C'* ]]
@@ -3312,6 +3337,14 @@ export logTmp="$safeTmp"/log
 #Solely for misbehaved applications called upon.
 export shortTmp=/tmp/w_"$sessionid"
 [[ "$tmpMSW" != "" ]] && export shortTmp="$tmpMSW"/w_"$sessionid"
+
+}
+_get_ub_globalVars_sessionDerived "$@"
+
+
+
+
+
 
 export scriptBin="$scriptAbsoluteFolder"/_bin
 export scriptBundle="$scriptAbsoluteFolder"/_bundle
@@ -3550,6 +3583,17 @@ _compile_bash_vars_queue() {
 	includeScriptList+=( "queue/zSocket"/page_socket_unix.sh )
 	includeScriptList+=( "queue/zSocket"/aggregatorStatic_socket_tcp.sh )
 	includeScriptList+=( "queue/zSocket"/aggregatorStatic_socket_unix.sh )
+	
+	
+	
+	
+	
+	
+	
+	
+	includeScriptList+=( "queue/zInteractive"/interactive.sh )
+	
+	
 }
 
 _deps_metaengine() {

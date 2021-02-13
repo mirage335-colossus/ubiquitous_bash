@@ -688,10 +688,53 @@ _variableLocalTestC_procedure() {
 _variableLocalTest_sequence() {
 	_start
 	
+	local currentSubshellTest1=$(
+		echo x
+	)
+	[[ "$currentSubshellTest1" != 'x' ]] && _stop 1
+	
+	local currentSubshellTest2
+	currentSubshellTest2=$(
+		echo x
+	)
+	[[ "$currentSubshellTest2" != 'x' ]] && _stop 1
+	
+	
+	echo $(
+		echo 1
+		echo 2
+	) | grep '1 2' > /dev/null || _stop 1
+	
+	! echo $(
+		echo 1
+		echo 2
+	) | grep '1 2' > /dev/null && _stop 1
+	
+	
 	export currentGlobalA='true'
 	
 	local currentLocalA
 	currentLocalA='true'
+	
+	( export currentSubshellTestA='true' )
+	[[ ! -z "$currentSubshellTestA" ]] && _stop 1
+	[[ "$currentSubshellTestA" != "" ]] && _stop 1
+	[[ "$currentSubshellTestA" != '' ]] && _stop 1
+	[[ "$currentSubshellTestA" == 'true' ]] && _stop 1
+	
+	( currentSubshellTestB='true' )
+	[[ "$currentSubshellTestB" != "" ]] && _stop 1
+	[[ "$currentSubshellTestB" == 'true' ]] && _stop 1
+	
+	( local currentSubshellTestC='true' )
+	[[ "$currentSubshellTestC" != "" ]] && _stop 1
+	[[ "$currentSubshellTestC" == 'true' ]] && _stop 1
+	
+	! ( echo true ) | grep 'true' > /dev/null && _stop 1
+	! ( echo "$currentGlobalA" ) | grep 'true' > /dev/null && _stop 1
+	! ( echo "$currentLocalA" ) | grep 'true' > /dev/null && _stop 1
+	( echo "$currentLocalB" ) | grep 'true' > /dev/null && _stop 1
+	
 	[[ "$currentLocalA" != 'true' ]] && _stop 1
 	! _variableLocalTestA_procedure && _stop 1
 	[[ "$currentLocalA" != 'true' ]] && _stop 1
@@ -710,6 +753,7 @@ _variableLocalTest_sequence() {
 	[[ "$currentGlobalB" != 'true' ]] && _stop 1
 	
 	local currentLocalB='true'
+	! ( echo "$currentLocalB" ) | grep 'true' > /dev/null && _stop 1
 	[[ "$currentLocalB" != 'true' ]] && _stop 1
 	
 	local currentLocalC='true'
@@ -1192,6 +1236,7 @@ _test() {
 	_tryExec "_test_channel"
 	
 	! [[ -e /dev/urandom ]] && echo /dev/urandom missing && _stop 1
+	[[ $(_timeout 3 cat /dev/urandom 2> /dev/null | _timeout 3 base64 2> /dev/null | _timeout 3 tr -dc 'a-zA-Z0-9' 2> /dev/null | _timeout 3 head -c 18 2> /dev/null) == "" ]] && echo /dev/urandom fail && _stop 1
 	
 	_messagePASS
 	

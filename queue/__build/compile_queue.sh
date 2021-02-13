@@ -58,4 +58,15 @@ _compile_bash_vars_queue() {
 	includeScriptList+=( "queue/zSocket"/page_socket_unix.sh )
 	includeScriptList+=( "queue/zSocket"/aggregatorStatic_socket_tcp.sh )
 	includeScriptList+=( "queue/zSocket"/aggregatorStatic_socket_unix.sh )
+	
+	
+	
+	
+	
+	
+	
+	
+	includeScriptList+=( "queue/zInteractive"/interactive.sh )
+	
+	
 }

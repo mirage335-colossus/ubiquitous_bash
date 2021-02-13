@@ -1598,12 +1598,27 @@ _condition_lines_zero() {
 #Generates random alphanumeric characters, default length 18.
 _uid() {
 	local curentLengthUID
+	local currentIteration
+	currentIteration=0
 
 	currentLengthUID="18"
 	! [[ -z "$uidLengthPrefix" ]] && ! [[ "$uidLengthPrefix" -lt "18" ]] && currentLengthUID="$uidLengthPrefix"
 	! [[ -z "$1" ]] && currentLengthUID="$1"
 
-	cat /dev/urandom 2> /dev/null | base64 2> /dev/null | tr -dc 'a-zA-Z0-9' 2> /dev/null | head -c "$currentLengthUID" 2> /dev/null
+	if [[ -z "$uidLengthPrefix" ]] && [[ -z "$1" ]]
+	then
+		# https://stackoverflow.com/questions/32484504/using-random-to-generate-a-random-string-in-bash
+		# https://www.cyberciti.biz/faq/unix-linux-iterate-over-a-variable-range-of-numbers-in-bash/
+		chars=abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ
+		#for currentIteration in {1..$currentLengthUID} ; do
+		for (( currentIteration=1; currentIteration<="$currentLengthUID"; currentIteration++ )) ; do
+		echo -n "${chars:RANDOM%${#chars}:1}"
+		done
+		echo
+	else
+		cat /dev/urandom 2> /dev/null | base64 2> /dev/null | tr -dc 'a-zA-Z0-9' 2> /dev/null | head -c "$currentLengthUID" 2> /dev/null
+	fi
+	return 0
 }
 
 _compat_stat_c_run() {
@@ -18961,12 +18976,12 @@ then
 	export scriptAbsoluteFolder="$profileScriptFolder"
 	export sessionid=$(_uid)
 	_messagePlain_probe_expr 'profile: scriptAbsoluteLocation= '"$scriptAbsoluteLocation"'\n ''profile: scriptAbsoluteFolder= '"$scriptAbsoluteFolder"'\n ''profile: sessionid= '"$sessionid" | _user_log-ub
-elif ([[ "$ub_import_param" == "--parent" ]] || [[ "$ub_import_param" == "--embed" ]] || [[ "$ub_import_param" == "--return" ]] || [[ "$ub_import_param" == "--devenv" ]])  && [[ "$scriptAbsoluteLocation" != "" ]] && [[ "$scriptAbsoluteFolder" != "" ]] && [[ "$sessionid" != "" ]]
+elif ( [[ "$ub_import_param" == "--parent" ]] || [[ "$ub_import_param" == "--embed" ]] || [[ "$ub_import_param" == "--return" ]] || [[ "$ub_import_param" == "--devenv" ]] ) && [[ "$scriptAbsoluteLocation" != "" ]] && [[ "$scriptAbsoluteFolder" != "" ]] && [[ "$sessionid" != "" ]]
 then
 	ub_import=true
 	true #Do not override.
 	_messagePlain_probe_expr 'parent: scriptAbsoluteLocation= '"$scriptAbsoluteLocation"'\n ''parent: scriptAbsoluteFolder= '"$scriptAbsoluteFolder"'\n ''parent: sessionid= '"$sessionid" | _user_log-ub
-elif [[ "$ub_import_param" == "--call" ]] || [[ "$ub_import_param" == "--script" ]] || [[ "$ub_import_param" == "--bypass" ]] || [[ "$ub_import_param" == "--shell" ]] || ([[ "$ub_import" == "true" ]] && [[ "$ub_import_param" == "" ]])
+elif [[ "$ub_import_param" == "--call" ]] || [[ "$ub_import_param" == "--script" ]] || [[ "$ub_import_param" == "--bypass" ]] || [[ "$ub_import_param" == "--shell" ]] || ( [[ "$ub_import" == "true" ]] && [[ "$ub_import_param" == "" ]] )
 then
 	ub_import=true
 	export scriptAbsoluteLocation="$importScriptLocation"
@@ -18990,8 +19005,6 @@ fi
 [[ ! -e "$scriptAbsoluteLocation" ]] && _messagePlain_bad 'missing: scriptAbsoluteLocation= '"$scriptAbsoluteLocation" | _user_log-ub && exit 1
 [[ "$sessionid" == "" ]] && _messagePlain_bad 'missing: sessionid' | _user_log-ub && exit 1
 
-export lowsessionid=$(echo -n "$sessionid" | tr A-Z a-z )
-
 #Current directory for preservation.
 export outerPWD=$(_getAbsoluteLocation "$PWD")
 
@@ -18999,7 +19012,19 @@ export initPWD="$PWD"
 intInitPWD="$PWD"
 
 
+# DANGER: CAUTION: Undefined removal of (at least temporary) directories may be possible. Do NOT use without thorough consideration!
+# Only known use is setting the temporary directory of a subsequent background process through "$scriptAbsoluteLocation" .
+# EXAMPLE: _interactive_pipe() { ... }
+if [[ "$ub_force_sessionid" != "" ]]
+then
+	sessionid="$ub_force_sessionid"
+	[[ "$ub_force_sessionid_repeat" != 'true' ]] && export ub_force_sessionid=""
+fi
 
+
+_get_ub_globalVars_sessionDerived() {
+
+export lowsessionid=$(echo -n "$sessionid" | tr A-Z a-z )
 
 # ATTENTION: CAUTION: Unusual Cygwin override to accommodate MSW network drive ( at least when provided by '_userVBox' ) !
 if [[ "$scriptAbsoluteFolder" == '/cygdrive/'* ]] && [[ -e /cygdrive ]] && uname -a | grep -i cygwin > /dev/null 2>&1 && [[ "$scriptAbsoluteFolder" != '/cygdrive/c'* ]] && [[ "$scriptAbsoluteFolder" != '/cygdrive/C'* ]]
@@ -19040,6 +19065,14 @@ export logTmp="$safeTmp"/log
 #Solely for misbehaved applications called upon.
 export shortTmp=/tmp/w_"$sessionid"
 [[ "$tmpMSW" != "" ]] && export shortTmp="$tmpMSW"/w_"$sessionid"
+
+}
+_get_ub_globalVars_sessionDerived "$@"
+
+
+
+
+
 
 export scriptBin="$scriptAbsoluteFolder"/_bin
 export scriptBundle="$scriptAbsoluteFolder"/_bundle
@@ -22442,6 +22475,139 @@ _aggregatorStatic_socket_unix_client() {
 
 
 
+
+_interactive_pipe_procedure() {
+	[[ ! -e "$1" ]] && return 1
+	[[ ! -d "$1" ]] && return 1
+	
+	local currentExitStatus=1
+	
+	_aggregator_fifo "$1"/p0
+	_aggregator_fifo "$1"/p1
+	_aggregator_fifo "$1"/p2
+	
+	
+	bash -s -l -i 0<"$1"/p0 1>"$1"/p1 2>"$1"/p2
+	currentExitStatus="$?"
+	
+	
+	rm -f "$1"/p0 > /dev/null 2>&1
+	rm -f "$1"/p1 > /dev/null 2>&1
+	rm -f "$1"/p2 > /dev/null 2>&1
+	rmdir "$1" > /dev/null 2>&1
+	
+	return "$currentExitStatus"
+}
+
+_interactive_pipe_sequence() {
+	local currentPipeUID=$(_uid)
+	[[ "$ub_force_interactive_pipe_id" != "" ]] && currentPipeUID="$ub_force_interactive_pipe_id"
+	local currentPipeDir="$safeTmp"/interactive_pipe_"$currentPipeUID"
+	#[[ "$ub_force_interactive_pipe_id" != "" ]] && currentPipeDir="$currentSub_safeTmp"/interactive_pipe_"$currentPipeUID"
+	_safeEcho_newline "$currentPipeDir"
+	
+	_start
+	
+	[[ ! -e "$safeTmp" ]] && return 1
+	[[ ! -d "$safeTmp" ]] && return 1
+	mkdir -p "$currentPipeDir"
+	[[ ! -e "$currentPipeDir" ]] && return 1
+	[[ ! -d "$currentPipeDir" ]] && return 1
+	
+	_interactive_pipe_procedure "$currentPipeDir"
+	
+	_stop
+}
+
+# CAUTION: Requires calling 'sequence' not to run "_stop" until terminal is no longer needed.
+# WARNING: Untested.
+_demand_interactive_pipe_procedure() {
+	true | "$scriptAbsoluteLocation" --devenv _interactive_pipe_sequence "$currentPipeDir" &
+	
+	disown -h "$!"
+	
+	sleep 7
+}
+
+# Intended to allow lower-latency access to internal commands, as well as their responses, such as through a 'physical' 'terminal emulator' . Especially including access to other 'queue' InterProcess-Communication procedures, and to procedures which communicate through such a bus.
+# In practice, this approach has limitations.
+# An error message will be displayed if the pipes are connected to after the 'parent' process has exited .
+# Keyboard interactive programs (eg. vim) are unusable.
+# Much 'noise' is present, likely requiring specialized text parsing of commands and responses, as would be expected of a more elaborate protocol.
+_demand_interactive_pipe() {
+	true | "$scriptAbsoluteLocation" _interactive_pipe_sequence &
+	
+	disown -h "$!"
+	
+	sleep 7
+}
+
+
+# ./ubiquitous_bash.sh _interactive_client_pipe ./w_*/interactive_pipe_??????????????????
+_interactive_client_pipe() {
+	[[ ! -e "$1"/p0 ]] && return 1
+	[[ ! -e "$1"/p1 ]] && return 1
+	#[[ ! -e "$1"/p2 ]] && return 1
+	cat "$1"/p1 & [[ -e "$1"/p2 ]] && cat "$1"/p2 >&2 & cat > "$1"/p0
+}
+
+
+_interactive_pipe_konsole() {
+	# Force 'known' sessionid and safeTmp of next "$scriptAbsoluteLocation" .
+	export ub_force_sessionid=$(_uid)
+	export ub_force_interactive_pipe_id=$(_uid)
+	local currentSub_safeTmp=$(
+		export sessionid="$ub_force_sessionid"
+		_get_ub_globalVars_sessionDerived
+		_safeEcho "$safeTmp"
+	)
+	
+	local currentPipeUID=$(_uid)
+	[[ "$ub_force_interactive_pipe_id" != "" ]] && currentPipeUID="$ub_force_interactive_pipe_id"
+	local currentPipeDir="$safeTmp"/interactive_pipe_"$currentPipeUID"
+	[[ "$ub_force_interactive_pipe_id" != "" ]] && currentPipeDir="$currentSub_safeTmp"/interactive_pipe_"$currentPipeUID"
+	_safeEcho_newline "$currentPipeDir" > /dev/null 2>&1
+	
+	
+	# demand ...
+	_demand_interactive_pipe > /dev/null 2>&1
+	
+	
+	# Connect to known pipe location.
+	set +m
+	konsole -e "$scriptAbsoluteLocation" _interactive_client_pipe "$currentPipeDir" > /dev/null 2>&1
+	#sleep 7
+	set -m
+}
+
+
+
+
+
+
+
+
+# TODO: An implementation using 'tmux' or 'GNU Screen' may be more capable.
+
+
+_test_interactive_tmux() {
+	_getDep tmux
+}
+
+_test_interactive_screen() {
+	_getDep screen
+}
+
+
+
+
+
+
+
+
+
+
+
 _test_metaengine_sequence() {
 	! _start_metaengine_host && _stop 1
 	! _stop_metaengine_allow && _stop 1
@@ -25792,10 +25958,53 @@ _variableLocalTestC_procedure() {
 _variableLocalTest_sequence() {
 	_start
 	
+	local currentSubshellTest1=$(
+		echo x
+	)
+	[[ "$currentSubshellTest1" != 'x' ]] && _stop 1
+	
+	local currentSubshellTest2
+	currentSubshellTest2=$(
+		echo x
+	)
+	[[ "$currentSubshellTest2" != 'x' ]] && _stop 1
+	
+	
+	echo $(
+		echo 1
+		echo 2
+	) | grep '1 2' > /dev/null || _stop 1
+	
+	! echo $(
+		echo 1
+		echo 2
+	) | grep '1 2' > /dev/null && _stop 1
+	
+	
 	export currentGlobalA='true'
 	
 	local currentLocalA
 	currentLocalA='true'
+	
+	( export currentSubshellTestA='true' )
+	[[ ! -z "$currentSubshellTestA" ]] && _stop 1
+	[[ "$currentSubshellTestA" != "" ]] && _stop 1
+	[[ "$currentSubshellTestA" != '' ]] && _stop 1
+	[[ "$currentSubshellTestA" == 'true' ]] && _stop 1
+	
+	( currentSubshellTestB='true' )
+	[[ "$currentSubshellTestB" != "" ]] && _stop 1
+	[[ "$currentSubshellTestB" == 'true' ]] && _stop 1
+	
+	( local currentSubshellTestC='true' )
+	[[ "$currentSubshellTestC" != "" ]] && _stop 1
+	[[ "$currentSubshellTestC" == 'true' ]] && _stop 1
+	
+	! ( echo true ) | grep 'true' > /dev/null && _stop 1
+	! ( echo "$currentGlobalA" ) | grep 'true' > /dev/null && _stop 1
+	! ( echo "$currentLocalA" ) | grep 'true' > /dev/null && _stop 1
+	( echo "$currentLocalB" ) | grep 'true' > /dev/null && _stop 1
+	
 	[[ "$currentLocalA" != 'true' ]] && _stop 1
 	! _variableLocalTestA_procedure && _stop 1
 	[[ "$currentLocalA" != 'true' ]] && _stop 1
@@ -25814,6 +26023,7 @@ _variableLocalTest_sequence() {
 	[[ "$currentGlobalB" != 'true' ]] && _stop 1
 	
 	local currentLocalB='true'
+	! ( echo "$currentLocalB" ) | grep 'true' > /dev/null && _stop 1
 	[[ "$currentLocalB" != 'true' ]] && _stop 1
 	
 	local currentLocalC='true'
@@ -26296,6 +26506,7 @@ _test() {
 	_tryExec "_test_channel"
 	
 	! [[ -e /dev/urandom ]] && echo /dev/urandom missing && _stop 1
+	[[ $(_timeout 3 cat /dev/urandom 2> /dev/null | _timeout 3 base64 2> /dev/null | _timeout 3 tr -dc 'a-zA-Z0-9' 2> /dev/null | _timeout 3 head -c 18 2> /dev/null) == "" ]] && echo /dev/urandom fail && _stop 1
 	
 	_messagePASS
 	
@@ -26795,6 +27006,17 @@ _compile_bash_vars_queue() {
 	includeScriptList+=( "queue/zSocket"/page_socket_unix.sh )
 	includeScriptList+=( "queue/zSocket"/aggregatorStatic_socket_tcp.sh )
 	includeScriptList+=( "queue/zSocket"/aggregatorStatic_socket_unix.sh )
+	
+	
+	
+	
+	
+	
+	
+	
+	includeScriptList+=( "queue/zInteractive"/interactive.sh )
+	
+	
 }
 
 _deps_metaengine() {
