@@ -3588,10 +3588,11 @@ _compile_bash_vars_queue() {
 	
 	
 	
-	
+	includeScriptList+=( "queue/zInteractive"/database.sh )
 	
 	
 	includeScriptList+=( "queue/zInteractive"/interactive.sh )
+	
 	
 	
 }
