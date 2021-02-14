@@ -1,5 +1,7 @@
 
 # Create Read Update Delete
+# "$scriptLocal"/ops-ubdb.sh
+
 
 _ubdb_get() {
 	true
@@ -26,6 +28,13 @@ _ubdb_set() {
 	
 	# Delete - Any variable set blank is simply removed. May be able to do this with 'grep -v' .
 	
+}
+
+
+_ubdb_rm() {
+	true
+	
+	# TODO: Delete database file.
 }
 
 
