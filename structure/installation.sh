@@ -1004,6 +1004,21 @@ _test_sanity() {
 	#echo 123 | grep -E '^\$[0-9]|^\.[0-9]' > /dev/null 2>&1 && _messageFAIL && return 1
 	
 	
+	local currentJobsList
+	currentJobsList=$(jobs -p -r)
+	
+	[[ "$currentJobsList" != "" ]] && return 1
+	
+	sleep 7 &
+	currentJobsList=$(jobs -p -r)
+	[[ "$currentJobsList" == "" ]] && return 1
+	
+	wait
+	currentJobsList=$(jobs -p -r)
+	[[ "$currentJobsList" != "" ]] && return 1
+	
+	
+	
 	
 	if ! _test_embed
 	then
