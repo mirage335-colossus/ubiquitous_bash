@@ -75,7 +75,7 @@ _img_to_vdi() {
 		#_messageNormal '_img_to_vdi: closemedium'
 		#_userVBoxManage closemedium "$scriptLocal"/vm-c.vdi
 		_messageNormal '_img_to_vdi: mv vm-c.vdi vm.vdi'
-		mv -n "$scriptLocal"/vm-c.vdi "$scriptLocal"/vm.vdi
+		_moveconfirm "$scriptLocal"/vm-c.vdi "$scriptLocal"/vm.vdi
 		_messageNormal '_img_to_vdi: setuuid'
 		VBoxManage internalcommands sethduuid "$scriptLocal"/vm.vdi $(_vdi_read_UUID)
 		_messagePlain_request 'request: rm '"$scriptLocal"/vm.img

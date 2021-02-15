@@ -11842,7 +11842,7 @@ _ubvrtusrChRoot() {
 	## Lock file. Not done with _waitFileCommands because there is nither an obvious means, nor an obviously catastrophically critical requirement, to independently check for completion of related useradd/mod/del operations.
 	_waitFile "$globalVirtDir"/_ubvrtusr || return 1
 	echo > "$globalVirtDir"/quicktmp
-	mv -n "$globalVirtDir"/quicktmp "$globalVirtDir"/_ubvrtusr > /dev/null 2>&1 || return 1
+	_moveconfirm "$globalVirtDir"/quicktmp "$globalVirtDir"/_ubvrtusr > /dev/null 2>&1 || return 1
 	
 	_chroot userdel -r "$virtGuestUser"
 	_rm_ubvrtusrChRoot
@@ -11938,7 +11938,7 @@ _removeUserChRoot_sequence() {
 	## Lock file. Not done with _waitFileCommands because there is nither an obvious means, nor an obviously catastrophically critical requirement, to independently check for completion of related useradd/mod/del operations.
 	_waitFile "$globalVirtDir"/_ubvrtusr || return 1
 	echo > "$globalVirtDir"/quicktmp
-	mv -n "$globalVirtDir"/quicktmp "$globalVirtDir"/_ubvrtusr > /dev/null 2>&1 || return 1
+	_moveconfirm "$globalVirtDir"/quicktmp "$globalVirtDir"/_ubvrtusr > /dev/null 2>&1 || return 1
 	
 	
 	_chroot userdel -r "$virtGuestUser" > /dev/null 2>&1
@@ -15642,7 +15642,7 @@ _img_to_vdi() {
 		#_messageNormal '_img_to_vdi: closemedium'
 		#_userVBoxManage closemedium "$scriptLocal"/vm-c.vdi
 		_messageNormal '_img_to_vdi: mv vm-c.vdi vm.vdi'
-		mv -n "$scriptLocal"/vm-c.vdi "$scriptLocal"/vm.vdi
+		_moveconfirm "$scriptLocal"/vm-c.vdi "$scriptLocal"/vm.vdi
 		_messageNormal '_img_to_vdi: setuuid'
 		VBoxManage internalcommands sethduuid "$scriptLocal"/vm.vdi $(_vdi_read_UUID)
 		_messagePlain_request 'request: rm '"$scriptLocal"/vm.img
@@ -20578,7 +20578,7 @@ _page_write_single() {
 	cat 2>/dev/null >> "$outputBufferDir"/t_"$currentTmpUID"
 	
 	
-	if ! [[ -s "$outputBufferDir"/t_"$currentTmpUID" ]] || ! mv -n "$outputBufferDir"/t_"$currentTmpUID" "$outputBufferDir"/temp 2>/dev/null
+	if ! [[ -s "$outputBufferDir"/t_"$currentTmpUID" ]] || ! _moveconfirm "$outputBufferDir"/t_"$currentTmpUID" "$outputBufferDir"/temp 2>/dev/null
 	then
 		rm -f "$outputBufferDir"/t_"$currentTmpUID" > /dev/null 2>&1
 		return 1

@@ -70,7 +70,7 @@ _ubvrtusrChRoot() {
 	## Lock file. Not done with _waitFileCommands because there is nither an obvious means, nor an obviously catastrophically critical requirement, to independently check for completion of related useradd/mod/del operations.
 	_waitFile "$globalVirtDir"/_ubvrtusr || return 1
 	echo > "$globalVirtDir"/quicktmp
-	mv -n "$globalVirtDir"/quicktmp "$globalVirtDir"/_ubvrtusr > /dev/null 2>&1 || return 1
+	_moveconfirm "$globalVirtDir"/quicktmp "$globalVirtDir"/_ubvrtusr > /dev/null 2>&1 || return 1
 	
 	_chroot userdel -r "$virtGuestUser"
 	_rm_ubvrtusrChRoot
@@ -166,7 +166,7 @@ _removeUserChRoot_sequence() {
 	## Lock file. Not done with _waitFileCommands because there is nither an obvious means, nor an obviously catastrophically critical requirement, to independently check for completion of related useradd/mod/del operations.
 	_waitFile "$globalVirtDir"/_ubvrtusr || return 1
 	echo > "$globalVirtDir"/quicktmp
-	mv -n "$globalVirtDir"/quicktmp "$globalVirtDir"/_ubvrtusr > /dev/null 2>&1 || return 1
+	_moveconfirm "$globalVirtDir"/quicktmp "$globalVirtDir"/_ubvrtusr > /dev/null 2>&1 || return 1
 	
 	
 	_chroot userdel -r "$virtGuestUser" > /dev/null 2>&1

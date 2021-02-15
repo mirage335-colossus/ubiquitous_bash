@@ -22,7 +22,7 @@ _page_write_single() {
 	cat 2>/dev/null >> "$outputBufferDir"/t_"$currentTmpUID"
 	
 	
-	if ! [[ -s "$outputBufferDir"/t_"$currentTmpUID" ]] || ! mv -n "$outputBufferDir"/t_"$currentTmpUID" "$outputBufferDir"/temp 2>/dev/null
+	if ! [[ -s "$outputBufferDir"/t_"$currentTmpUID" ]] || ! _moveconfirm "$outputBufferDir"/t_"$currentTmpUID" "$outputBufferDir"/temp 2>/dev/null
 	then
 		rm -f "$outputBufferDir"/t_"$currentTmpUID" > /dev/null 2>&1
 		return 1
