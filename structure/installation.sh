@@ -852,6 +852,30 @@ _define_function_test() {
 		_stop 1
 	fi
 	
+	# https://superuser.com/questions/154332/how-do-i-unset-or-get-rid-of-a-bash-function
+	unset -f __$current_uid_2
+	
+	if [[ $(declare -f __$current_uid_2 | wc -c) -gt 0 ]]
+	then
+		_messageFAIL
+		_stop 1
+	fi
+	
+	if [[ $(declare -f __$current_uid_1 | wc -c) -lt 50 ]]
+	then
+		_messageFAIL
+		_stop 1
+	fi
+	
+	unset -f __$current_uid_1
+	
+	if [[ $(declare -f __$current_uid_1 | wc -c) -gt 0 ]]
+	then
+		_messageFAIL
+		_stop 1
+	fi
+	
+	
 	return 0
 }
 
@@ -957,6 +981,11 @@ _test_sanity() {
 	
 	[[ ! -e "$safeTmp" ]] && _messageFAIL && return 1
 	
+	echo -e -n >> "$safeTmp"/empty
+	[[ ! -e "$safeTmp"/empty ]] && _messageFAIL && return 1
+	[[ $(cat "$safeTmp"/empty | wc -c) != '0' ]] && _messageFAIL && return 1
+	rm -f "$safeTmp"/empty > /dev/null 2>&1
+	
 	! _test_moveconfirm_procedure && _messageFAIL && return 1
 	
 	
@@ -981,6 +1010,11 @@ _test_sanity() {
 	
 	
 	_uid_test
+	
+	
+	! env | grep 'PATH' > /dev/null 2>&1 && _messageFAIL && return 1
+	! printenv | grep 'PATH' > /dev/null 2>&1 && _messageFAIL && return 1
+	
 	
 	_define_function_test
 	
@@ -1133,6 +1167,7 @@ _test() {
 	_getDep exit
 	
 	_getDep env
+	_getDep printenv
 	_getDep bash
 	_getDep echo
 	_getDep cat

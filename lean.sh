@@ -6962,40 +6962,254 @@ _aggregatorStatic_socket_unix_client() {
 # Create Read Update Delete
 # "$scriptLocal"/ops-ubdb.sh
 
+# Reads a file or directory.
+# Writes a file.
 
-_ubdb_get() {
-	true
-	# TODO: Iterate through "$@" array. Use env/declare/etc to output the usual 'name=value' .
+
+_db_list_var() {
+	( set -o posix ; set )
+	return
+	
+	#if type -p printenv > /dev/null 2>&1
+	#then
+		#printenv "$@"
+		#return
+	#elif type -p env > /dev/null 2>&1
+	#then
+		#env "$@"
+		#return
+	#fi
+	#return 1
 }
 
-_ubdb_enumerate() {
-	true
-	# TODO: 'env' or 'declare' stuff, etc
+_db_filter_characters() {
+	tr -d '(){}<>$:;&|#?!@%^*,`\t\\'
+}
+
+# "$1" == grepPattern
+_db_filter_identifier() {
+	grep '^ubdb_'"$ubiquitiousBashID"'_'"$1" | _db_filter_characters
+}
+
+_db_reinit() {
+	# https://stackoverflow.com/questions/13823706/capture-multiline-output-as-array-in-bash
+	local currentVarList
+	currentVarList=($(_db_list_var | cut -f1 -d\= | _db_filter_identifier "$1"))
+	
+	#local currentLine
+	#_db_list_var | cut -f1 -d\= | _db_filter_identifier "$1" | while IFS='' read -r currentLine || [[ -n "$currentLine" ]]; do
+		#_messagePlain_probe_var "$currentLine"
+		
+		
+		#_messagePlain_probe_cmd declare -x -g "$currentLine"=''
+		
+		#eval export "$currentLine"=''
+		#eval unset "$currentLine"
+		
+		#_messagePlain_probe_var "$currentLine"
+		
+		
+		
+		
+	#done | _db_filter_characters
+	
+	currentVarList+=("$currentLine")
+	for currentLine in "${currentVarList[@]}"
+	do
+		if ! [[ "$currentLine" == "" ]] && ! [[ "$currentLine" == "\$" ]]
+		then
+			#_messagePlain_probe "$currentLine"
+			
+			#_messagePlain_probe_var "$currentLine"
+			
+			declare -x -g "$currentLine"=''
+			eval export "$currentLine"=''
+			eval unset "$currentLine"
+			
+			#_messagePlain_probe_var "$currentLine"
+		fi
+	done
+	
+}
+
+
+# Internal use intended - called by '_db_write' .
+_demand_db() {
+	local current_db="$scriptLocal"/ops-db.sh
+	[[ "$ub_db_file" != "" ]] && current_db="$ub_db_file"
+	
+	! [[ -e "$current_db" ]] && echo -e -n '' >> "$current_db"
+	
+	# NOT VALID. Create directories (and files within) directly using mkdir/echo .
+	[[ -d "$current_db" ]] && return 1
+	
+	
+	
+	! [[ -e "$current_db" ]] && return 1
+	return 0
 }
 
 
 
-_ubdb_set() {
-	true
-	# TODO: Read in a list of variables. Call 'enumerate' (or similar) to write to a temporary (unique name) file. Move file when possible (up to a few seconds of waiting).
-		# If collision, retry, maybe recursively. Re-read both input variable list and current variable list.
+
+_db_importSource() {
+	# https://stackoverflow.com/questions/28783509/override-a-builtin-command-with-an-alias
 	
-	# Create - Any variable set in the input list will be enumerated and written out.
+	declare() {
+		builtin declare -g "$@"
+	}
 	
-	# Read - Other function.
 	
-	# Update - New list is read in after old list. Only the new values will be enumerated.
+	# https://unix.stackexchange.com/questions/160256/can-you-source-a-here-document
+	source <( cat "$1" | _db_filter_characters )
+	#. "$1"
 	
-	# Delete - Any variable set blank is simply removed. May be able to do this with 'grep -v' .
+	unset -f declare > /dev/null 2>&1
 	
+	return 0
 }
 
 
-_ubdb_rm() {
-	true
+
+
+_db_source() {
+	local current_db="$scriptLocal"/ops-db.sh
+	[[ "$ub_db_file" != "" ]] && current_db="$ub_db_file"
+	! [[ -e "$current_db" ]] && return 1
 	
-	# TODO: Delete database file.
+	if [[ -d "$current_db" ]]
+	then
+		# Not yet implemented.
+		return 1
+	else
+		_db_importSource "$current_db"
+	fi
 }
+
+# "$1" == grepPattern
+# "$ub_db_file"
+_db_enumerate() {
+	local currentLine
+	#local processedLine
+	#local currentVarName
+	#local processedVarName
+	
+	local currentLineValue
+	
+	_db_list_var | cut -f1 -d\= | _db_filter_identifier "$1" | while IFS='' read -r currentLine || [[ -n "$currentLine" ]]; do
+		currentLineValue=$(eval _safeEcho "\$"$currentLine"")
+		[[ "$currentLineValue" == "" ]] && continue
+		
+		#processedLine=$(declare -p "$currentLine")
+		
+		# ATTENTION: OPTIONAL - always export variables (recommended)
+		# 'declare -x' apparently causes value of variable to be dropped
+		export "$currentLine"
+		#declare -x "$currentLine"
+		
+		declare -p "$currentLine"
+	done | _db_filter_characters
+}
+
+
+
+
+
+_db_read() {
+	_db_reinit
+	_db_source
+	#_db_enumerate ""
+}
+
+
+_db_show() {
+	_db_read
+	_db_enumerate "$1"
+}
+
+
+
+_db_write_sequence() {
+	_start
+	
+	local current_db="$scriptLocal"/ops-db.sh
+	[[ "$ub_db_file" != "" ]] && current_db="$ub_db_file"
+	#! [[ -e "$current_db" ]] && return 1
+	
+	# INVALID.
+	[[ -d "$current_db" ]] && return 1
+	
+	
+	local currentEmptyUID=$(_uid)
+	
+	echo -e -n '' >> "$current_db"."$currentEmptyUID"
+	if ! _moveconfirm "$current_db"."$currentEmptyUID" "$current_db".lock
+	then
+		! rm "$current_db"."$currentEmptyUID" > /dev/null 2>&1 && _stop 255
+		rm -f "$current_db"."$currentEmptyUID" > /dev/null 2>&1
+		_stop 1
+	fi
+	
+	# Read in a list of variables.
+	_demand_db
+	_db_read
+	_db_importSource "$1"
+	
+	_db_enumerate | cat - > "$safeTmp"/db_input_replacement_tmp
+	
+	! _moveconfirm "$current_db" "$current_db".obsolete && _stop 1
+	! _moveconfirm "$safeTmp"/db_input_replacement_tmp "$current_db" && _stop 1
+	! rm "$current_db".obsolete && _stop 255
+	! rm "$current_db".lock > /dev/null 2>&1 && _stop 255
+	
+	_stop 0
+}
+
+
+# "$1" == db_input_file (recommended: "$safeTmp"/db_input )
+_db_write() {
+	# More than 50 repeats/recursions is extremely unreasonable under expected loads.
+	[[ "$ub_db_write_currentRecursive" -gt 50 ]] && return 1
+	[[ "$ub_db_write_currentRecursive" == "" ]] && export ub_db_write_currentRecursive='0'
+	
+	
+	if ! "$scriptAbsoluteLocation" _db_write_sequence "$1"
+	then
+		let ub_db_write_currentRecursive="$ub_db_write_currentRecursive"+1
+		local currentDelay
+		local currentDelayTenths
+		let currentDelay="$RANDOM"%3
+		let currentDelayTenths="$RANDOM"%10
+		#echo "$currentDelay"."$currentDelayTenths"
+		sleep "$currentDelay"."$currentDelayTenths"
+		
+		_db_write "$@"
+		
+		return 0
+	fi
+	
+	return 0
+}
+
+
+_db_rm() {
+	local current_db="$scriptLocal"/ops-db.sh
+	[[ "$ub_db_file" != "" ]] && current_db="$ub_db_file"
+	! [[ -e "$current_db" ]] && return 1
+	
+	if [[ -d "$current_db" ]]
+	then
+		# NOT VALID. Remove directories (and files within) directly using rmdir/_safeRMR/rm .
+		return 1
+	else
+		rm -f "$current_db" > /dev/null 2>&1
+		[[ -e "$current_db" ]] && return 1
+		return 0
+	fi
+	return 1
+}
+
+
 
 
 
@@ -8528,6 +8742,30 @@ _define_function_test() {
 		_stop 1
 	fi
 	
+	# https://superuser.com/questions/154332/how-do-i-unset-or-get-rid-of-a-bash-function
+	unset -f __$current_uid_2
+	
+	if [[ $(declare -f __$current_uid_2 | wc -c) -gt 0 ]]
+	then
+		_messageFAIL
+		_stop 1
+	fi
+	
+	if [[ $(declare -f __$current_uid_1 | wc -c) -lt 50 ]]
+	then
+		_messageFAIL
+		_stop 1
+	fi
+	
+	unset -f __$current_uid_1
+	
+	if [[ $(declare -f __$current_uid_1 | wc -c) -gt 0 ]]
+	then
+		_messageFAIL
+		_stop 1
+	fi
+	
+	
 	return 0
 }
 
@@ -8633,6 +8871,11 @@ _test_sanity() {
 	
 	[[ ! -e "$safeTmp" ]] && _messageFAIL && return 1
 	
+	echo -e -n >> "$safeTmp"/empty
+	[[ ! -e "$safeTmp"/empty ]] && _messageFAIL && return 1
+	[[ $(cat "$safeTmp"/empty | wc -c) != '0' ]] && _messageFAIL && return 1
+	rm -f "$safeTmp"/empty > /dev/null 2>&1
+	
 	! _test_moveconfirm_procedure && _messageFAIL && return 1
 	
 	
@@ -8657,6 +8900,11 @@ _test_sanity() {
 	
 	
 	_uid_test
+	
+	
+	! env | grep 'PATH' > /dev/null 2>&1 && _messageFAIL && return 1
+	! printenv | grep 'PATH' > /dev/null 2>&1 && _messageFAIL && return 1
+	
 	
 	_define_function_test
 	
@@ -8809,6 +9057,7 @@ _test() {
 	_getDep exit
 	
 	_getDep env
+	_getDep printenv
 	_getDep bash
 	_getDep echo
 	_getDep cat
