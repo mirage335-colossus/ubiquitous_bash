@@ -46,6 +46,16 @@ https://github.com/mirage335/ubiquitous_bash/blob/master/queue/aggregator/static
 https://github.com/mirage335/ubiquitous_bash/blob/master/queue/aggregator/static/scrap.txt
 
 
+Example 'interactive' (access to shell within context of "ubiquitous bash" script with access to internal functions, local variables, etc) Inter-Process Communication. Example commands included in 'scrap.txt' .
+
+https://github.com/mirage335/ubiquitous_bash/blob/master/queue/zInteractive/scrap.txt
+
+
+Example 'database' (shared environment variable storage) Inter-Process Communication. Example commands included in 'scrap.txt' .
+
+https://github.com/mirage335/ubiquitous_bash/blob/master/queue/zDatabase/scrap.txt
+
+
 Extremely rough consideration of Inter-Process Communication procedures .
 
 https://github.com/mirage335/ubiquitous_bash/blob/master/_doc/broadcastPipe/README.md
