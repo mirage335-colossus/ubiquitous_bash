@@ -13978,16 +13978,16 @@ _userDocker() {
 #####Shortcuts
 
 _visualPrompt_promptCommand() {
-[[ "$PS1_lineNumber" == "" ]] && export PS1_lineNumber='0'
+[[ "$PS1_lineNumber" == "" ]] && PS1_lineNumber='0'
 #echo "$PS1_lineNumber"
 let PS1_lineNumber="$PS1_lineNumber"+1
-export PS1_lineNumber
+#export PS1_lineNumber
 
-export PS1_lineNumberText="$PS1_lineNumber"
+PS1_lineNumberText="$PS1_lineNumber"
 if [[ "$PS1_lineNumber" == '1' ]]
 then
 	# https://unix.stackexchange.com/questions/266921/is-it-possible-to-use-ansi-color-escape-codes-in-bash-here-documents
-	export PS1_lineNumberText=$(echo -e -n '\E[1;36m'1'\E[0m')
+	PS1_lineNumberText=$(echo -e -n '\E[1;36m'1'\E[0m')
 fi
 }
 
@@ -17560,6 +17560,8 @@ CZXWXcRMTo8EmM8i4d
 
 _setupUbiquitous_here() {
 	cat << CZXWXcRMTo8EmM8i4d
+
+PS1_lineNumber=""
 
 if type sudo > /dev/null 2>&1 && groups | grep -E 'wheel|sudo' > /dev/null 2>&1
 then

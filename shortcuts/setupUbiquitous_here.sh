@@ -1,6 +1,8 @@
 _setupUbiquitous_here() {
 	cat << CZXWXcRMTo8EmM8i4d
 
+PS1_lineNumber=""
+
 if type sudo > /dev/null 2>&1 && groups | grep -E 'wheel|sudo' > /dev/null 2>&1
 then
 	# Greater or equal, '_priority_critical_pid_root' .
