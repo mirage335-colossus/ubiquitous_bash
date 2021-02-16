@@ -637,7 +637,8 @@ _package_procedure-cygwinOnly() {
 	_package_subdir
 	
 	# ATTENTION: Unusual. Expected to result in a package containing only 'ubcp' directory in the root.
-	cd "$safeTmp"/package/"$objectName"/_local
+	# WARNING: Having these subdirectories opened in MSW 'explorer' (file manager) may cause this directory to not exist.
+	! cd "$safeTmp"/package/"$objectName"/_local && _stop 1
 	
 	tar -czvf "$scriptAbsoluteFolder"/package_ubcp-cygwinOnly.tar.gz .
 	
