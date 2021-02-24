@@ -158,6 +158,7 @@ _loopImage_imagefilename() {
 	[[ -e "$scriptLocal"/vm-x64.img ]] && current_imagefilename="$scriptLocal"/vm-x64.img && export ubVirtPlatform=x64-bios
 	[[ -e "$scriptLocal"/vm.img ]] && current_imagefilename="$scriptLocal"/vm.img && export ubVirtPlatform=x64-bios
 	[[ "$ubVirtImageOverride" != "" ]] && current_imagefilename="$ubVirtImageOverride"
+	[[ "$ubVirtImageOverride_alternate" != "" ]] && current_imagefilename="$ubVirtImageOverride_alternate"
 	
 	
 	[[ "$ubVirtPlatform" == "" ]] && export ubVirtPlatform=x64-bios
@@ -176,7 +177,7 @@ _loopImage_procedure_losetup() {
 		echo "$1" > "$safeTmp"/imagedev
 		sudo -n partprobe > /dev/null 2>&1
 		
-		cp -n "$safeTmp"/imagedev "$2" > /dev/null 2>&1 || _stop 1
+		_moveconfirm "$safeTmp"/imagedev "$2" > /dev/null 2>&1 || _stop 1
 		return 0
 	fi
 	
@@ -185,7 +186,7 @@ _loopImage_procedure_losetup() {
 	sudo -n partprobe > /dev/null 2>&1
 	sleep 1
 	
-	cp -n "$safeTmp"/imagedev "$2" > /dev/null 2>&1 || _stop 1
+	_moveconfirm "$safeTmp"/imagedev "$2" > /dev/null 2>&1 || _stop 1
 	return 0
 }
 
