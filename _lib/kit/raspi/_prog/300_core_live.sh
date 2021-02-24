@@ -29,6 +29,10 @@ _test_live() {
 	_getDep grub/i386-pc/boot_hybrid.img
 	
 	
+	[[ -e '/sbin/fdisk' ]] && _getDep fdisk
+	[[ -e '/sbin/sfdisk' ]] && _getDep sfdisk
+	
+	
 	# Currently only Debian is supported as a build host.
 	_test_live_debianpackages
 	
@@ -164,7 +168,8 @@ _live() {
 
 _override_VBox-live() {
 	#export ub_keepInstance='true'
-	export ub_override_vbox_livecd="$scriptLocal"/vm-live.iso
+	export ub_override_vbox_livecd_more="$scriptLocal"/vm-live-more.iso
+	#export ub_override_vbox_livecd="$scriptLocal"/vm-live.iso
 }
 
 
@@ -180,11 +185,20 @@ _editVBoxLive() {
 	_editVBox "$@"
 }
 
+_persistentVBoxLive() {
+	_override_VBox-live
+	
+	_persistentVBox "$@"
+}
+
 
 _override_qemu-live() {
 	#export ub_keepInstance='true'
-	export ub_override_qemu_livecd="$scriptLocal"/vm-live.iso
+	export ub_override_qemu_livecd_more="$scriptLocal"/vm-live-more.iso
+	#export ub_override_qemu_livecd="$scriptLocal"/vm-live.iso
 }
+
+
 
 
 
@@ -200,5 +214,10 @@ _editQemuLive() {
 	_editQemu "$@"
 }
 
+_persistentQemuLive() {
+	_override_qemu-live
+	
+	_persistentQemu "$@"
+}
 
 

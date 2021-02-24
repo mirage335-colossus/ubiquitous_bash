@@ -127,9 +127,9 @@ _integratedQemu_x64() {
 	if [[ "$ub_override_qemu_livecd" != '' ]]
 	then
 		qemuUserArgs+=(-drive file="$ub_override_qemu_livecd",media=cdrom)
-	elif false
+	elif [[ "$ub_override_qemu_livecd_more" != '' ]]
 	then
-		true
+		qemuUserArgs+=(-drive format=raw,file="$ub_override_qemu_livecd_more")
 	else
 		qemuUserArgs+=(-drive format=raw,file="$current_imagefilename")
 	fi
@@ -370,4 +370,8 @@ _editQemu() {
 		return
 	fi
 	"$scriptAbsoluteLocation" _editQemu_sequence "$@"
+}
+
+_persistentQemu() {
+	_editQemu "$@"
 }

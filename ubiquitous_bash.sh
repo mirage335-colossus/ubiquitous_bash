@@ -12215,9 +12215,9 @@ _integratedQemu_x64() {
 	if [[ "$ub_override_qemu_livecd" != '' ]]
 	then
 		qemuUserArgs+=(-drive file="$ub_override_qemu_livecd",media=cdrom)
-	elif false
+	elif [[ "$ub_override_qemu_livecd_more" != '' ]]
 	then
-		true
+		qemuUserArgs+=(-drive format=raw,file="$ub_override_qemu_livecd_more")
 	else
 		qemuUserArgs+=(-drive format=raw,file="$current_imagefilename")
 	fi
@@ -12458,6 +12458,10 @@ _editQemu() {
 		return
 	fi
 	"$scriptAbsoluteLocation" _editQemu_sequence "$@"
+}
+
+_persistentQemu() {
+	_editQemu "$@"
 }
 
 _testVBox() {
@@ -13053,10 +13057,11 @@ _create_instance_vbox_storageattach_ide() {
 	if [[ "$ub_override_vbox_livecd" != '' ]]
 	then
 		_messagePlain_probe VBoxManage storageattach "$sessionid" --storagectl "IDE Controller" --port 0 --device 0 --type dvddrive --medium "$ub_override_vbox_livecd"
-		! VBoxManage storageattach "$sessionid" --storagectl "IDE Controller" --port 0 --device 0 --type dvddrive --medium "$ub_override_vbox_livecd" && _messagePlain_bad 'fail: VBoxManage... attach vboxInstanceDiskImage= '"$vboxInstanceDiskImage"
-	elif false
+		! VBoxManage storageattach "$sessionid" --storagectl "IDE Controller" --port 0 --device 0 --type dvddrive --medium "$ub_override_vbox_livecd" && _messagePlain_bad 'fail: VBoxManage... attach vboxInstanceDiskImage= '"$ub_override_vbox_livecd"
+	elif [[ "$ub_override_vbox_livecd_more" != '' ]]
 	then
-		true
+		_messagePlain_probe VBoxManage storageattach "$sessionid" --storagectl "IDE Controller" --port 0 --device 0 --type hdd --medium "$ub_override_vbox_livecd_more" --mtype "$vboxDiskMtype"
+		! VBoxManage storageattach "$sessionid" --storagectl "IDE Controller" --port 0 --device 0 --type hdd --medium "$ub_override_vbox_livecd_more" --mtype "$vboxDiskMtype" && _messagePlain_bad 'fail: VBoxManage... attach vboxInstanceDiskImage= '"$ub_override_vbox_livecd_more"
 	else
 		_messagePlain_probe VBoxManage storageattach "$sessionid" --storagectl "IDE Controller" --port 0 --device 0 --type hdd --medium "$vboxInstanceDiskImage" --mtype "$vboxDiskMtype"
 		! VBoxManage storageattach "$sessionid" --storagectl "IDE Controller" --port 0 --device 0 --type hdd --medium "$vboxInstanceDiskImage" --mtype "$vboxDiskMtype" && _messagePlain_bad 'fail: VBoxManage... attach vboxInstanceDiskImage= '"$vboxInstanceDiskImage"
@@ -13090,10 +13095,11 @@ _create_instance_vbox_storageattach_sata() {
 	if [[ "$ub_override_vbox_livecd" != '' ]]
 	then
 		_messagePlain_probe VBoxManage storageattach "$sessionid" --storagectl "SATA Controller" --port 0 --device 0 --type dvddrive --medium "$ub_override_vbox_livecd"
-		! VBoxManage storageattach "$sessionid" --storagectl "SATA Controller" --port 0 --device 0 --type dvddrive --medium "$ub_override_vbox_livecd" && _messagePlain_bad 'fail: VBoxManage... attach vboxInstanceDiskImage= '"$vboxInstanceDiskImage"
-	elif false
+		! VBoxManage storageattach "$sessionid" --storagectl "SATA Controller" --port 0 --device 0 --type dvddrive --medium "$ub_override_vbox_livecd" && _messagePlain_bad 'fail: VBoxManage... attach vboxInstanceDiskImage= '"$ub_override_vbox_livecd"
+	elif [[ "$ub_override_vbox_livecd_more" != '' ]]
 	then
-		true
+		_messagePlain_probe VBoxManage storageattach "$sessionid" --storagectl "SATA Controller" --port 0 --device 0 --type hdd --medium "$ub_override_vbox_livecd_more" --mtype "$vboxDiskMtype"
+		! VBoxManage storageattach "$sessionid" --storagectl "SATA Controller" --port 0 --device 0 --type hdd --medium "$ub_override_vbox_livecd_more" --mtype "$vboxDiskMtype" && _messagePlain_bad 'fail: VBoxManage... attach vboxInstanceDiskImage= '"$ub_override_vbox_livecd_more"
 	else
 		_messagePlain_probe VBoxManage storageattach "$sessionid" --storagectl "SATA Controller" --port 0 --device 0 --type hdd --medium "$vboxInstanceDiskImage" --mtype "$vboxDiskMtype"
 		! VBoxManage storageattach "$sessionid" --storagectl "SATA Controller" --port 0 --device 0 --type hdd --medium "$vboxInstanceDiskImage" --mtype "$vboxDiskMtype" && _messagePlain_bad 'fail: VBoxManage... attach vboxInstanceDiskImage= '"$vboxInstanceDiskImage"
@@ -13269,6 +13275,54 @@ _editVBox() {
 	
 	_messageNormal 'Begin: '"$@"
 	_edit_instance_vbox "$@"
+	_messageNormal 'End: '"$@"
+}
+
+
+
+
+_persistent_instance_vbox_sequence() {
+	_messageNormal '_persistent_instance_vbox_sequence: start'
+	_start
+	
+	_prepare_instance_vbox || _stop 1
+	
+	_messageNormal '_persistent_instance_vbox_sequence: Checking lock vBox_vdi= '"$vBox_vdi"
+	_readLocked "$vBox_vdi" && _messagePlain_bad 'lock: vBox_vdi= '"$vBox_vdi" && _stop 1
+	
+	export vboxDiskMtype="normal"
+	_messageNormal '_persistent_instance_vbox_sequence: Creating instance. '"$sessionid"
+	if ! _create_instance_vbox "$@"
+	then
+		_stop 1
+	fi
+	
+	_messageNormal '_persistent_instance_vbox_sequence: Launch: _vboxGUI '"$sessionid"
+	 _vboxGUI --startvm "$sessionid"
+	
+	_messageNormal '_persistent_instance_vbox_sequence: Removing instance. '"$sessionid"
+	_rm_instance_vbox
+	
+	_messageNormal '_persistent_instance_vbox_sequence: stop'
+	_stop
+}
+
+_persistent_instance_vbox() {
+	if [[ "$ub_keepInstance" == 'true' ]]
+	then
+		_persistent_instance_vbox_sequence "$@"
+		return
+	fi
+	"$scriptAbsoluteLocation" _persistent_instance_vbox_sequence "$@"
+	return
+}
+
+_persistentVBox() {
+	_findInfrastructure_virtImage ${FUNCNAME[0]} "$@"
+	[[ "$ubVirtImageLocal" == "false" ]] && return
+	
+	_messageNormal 'Begin: '"$@"
+	_persistent_instance_vbox "$@"
 	_messageNormal 'End: '"$@"
 }
 
