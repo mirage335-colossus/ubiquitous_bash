@@ -9981,6 +9981,7 @@ _loopImage_imagefilename() {
 	[[ -e "$scriptLocal"/vm-x64.img ]] && current_imagefilename="$scriptLocal"/vm-x64.img && export ubVirtPlatform=x64-bios
 	[[ -e "$scriptLocal"/vm.img ]] && current_imagefilename="$scriptLocal"/vm.img && export ubVirtPlatform=x64-bios
 	[[ "$ubVirtImageOverride" != "" ]] && current_imagefilename="$ubVirtImageOverride"
+	[[ "$ubVirtImageOverride_alternate" != "" ]] && current_imagefilename="$ubVirtImageOverride_alternate"
 	
 	
 	[[ "$ubVirtPlatform" == "" ]] && export ubVirtPlatform=x64-bios
@@ -9999,7 +10000,7 @@ _loopImage_procedure_losetup() {
 		echo "$1" > "$safeTmp"/imagedev
 		sudo -n partprobe > /dev/null 2>&1
 		
-		cp -n "$safeTmp"/imagedev "$2" > /dev/null 2>&1 || _stop 1
+		_moveconfirm "$safeTmp"/imagedev "$2" > /dev/null 2>&1 || _stop 1
 		return 0
 	fi
 	
@@ -10008,7 +10009,7 @@ _loopImage_procedure_losetup() {
 	sudo -n partprobe > /dev/null 2>&1
 	sleep 1
 	
-	cp -n "$safeTmp"/imagedev "$2" > /dev/null 2>&1 || _stop 1
+	_moveconfirm "$safeTmp"/imagedev "$2" > /dev/null 2>&1 || _stop 1
 	return 0
 }
 
@@ -12260,7 +12261,7 @@ _integratedQemu_x64() {
 	# https://blog.hartwork.org/posts/get-qemu-to-boot-efi/
 	# https://www.kraxel.org/repos/jenkins/edk2/
 	# https://www.kraxel.org/repos/jenkins/edk2/edk2.git-ovmf-x64-0-20200515.1447.g317d84abe3.noarch.rpm
-	if [[ "$ubVirtPlatform" == "x64-efi" ]] && [[ "$ub_override_qemu_livecd" == '' ]]
+	if [[ "$ubVirtPlatform" == "x64-efi" ]] && [[ "$ub_override_qemu_livecd" == '' ]] && [[ "$ub_override_qemu_livecd_more" == '' ]]
 	then
 		if [[ -e "$HOME"/core/installations/ovmf/OVMF_CODE-pure-efi.fd ]] && [[ -e "$HOME"/core/installations/ovmf/OVMF_VARS-pure-efi.fd ]]
 		then

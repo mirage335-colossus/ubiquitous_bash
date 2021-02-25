@@ -172,7 +172,7 @@ _integratedQemu_x64() {
 	# https://blog.hartwork.org/posts/get-qemu-to-boot-efi/
 	# https://www.kraxel.org/repos/jenkins/edk2/
 	# https://www.kraxel.org/repos/jenkins/edk2/edk2.git-ovmf-x64-0-20200515.1447.g317d84abe3.noarch.rpm
-	if [[ "$ubVirtPlatform" == "x64-efi" ]] && [[ "$ub_override_qemu_livecd" == '' ]]
+	if [[ "$ubVirtPlatform" == "x64-efi" ]] && [[ "$ub_override_qemu_livecd" == '' ]] && [[ "$ub_override_qemu_livecd_more" == '' ]]
 	then
 		if [[ -e "$HOME"/core/installations/ovmf/OVMF_CODE-pure-efi.fd ]] && [[ -e "$HOME"/core/installations/ovmf/OVMF_VARS-pure-efi.fd ]]
 		then
