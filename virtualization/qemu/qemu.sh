@@ -34,6 +34,7 @@ _integratedQemu_x64_display() {
 	
 	#qemuArgs+=(-device virtio-vga,virgl=on -display gtk,gl=on)
 	
+	#return 0
 	
 	
 	true
@@ -42,19 +43,27 @@ _integratedQemu_x64_display() {
 	
 	# https://www.kraxel.org/blog/2019/09/display-devices-in-qemu/
 	[[ "$qemuOStype" == "" ]] && [[ "$vboxOStype" != "" ]] && qemuOStype="$vboxOStype"
-	if [[ "$qemuOStype" == 'Debian_64' ]] || [[ "$qemuOStype" == 'Gentoo_64' ]]
+	if [[ "$ub_override_qemu_livecd" != '' ]] || [[ "$ub_override_qemu_livecd_more" != '' ]]
+	then
+		# DANGER: Beware not all "qemu" emulated "display" 'devices' seem to support 'hibernation' ('suspend to disk') !
+		# At least 'qxl-vga' is known to successfully resume .
+		# Assume 'livecd' is 'linux' .
+		#qemuArgs+=(-device qxl-vga -display gtk)
+		qemuArgs+=(-device qxl-vga)
+	elif [[ "$qemuOStype" == 'Debian_64' ]] || [[ "$qemuOStype" == 'Gentoo_64' ]]
 	then
 		# Not yet enabled (virtio-vga) by default for a few reasons.
 		# *) May need to specify 'gtk' or 'sdl' to enable OpenGL acceleration. If these backends are missing, qemu may fail.
 		# *) Some guest configurations (eg. LXDE and Linux 4.x instead of KDE/Plasma and Linux 5.x) may not continue updating guest display resize requests, ultimately causing guest to remain at low resolution (ie. 640x480) .
 		# *) Hardware graphics should only be necessary for a few specific applications (eg. FreeCAD, VR).
+		# *) Any use of 'virtio-vga' seems not to support 'linux' 'hibernation' ('suspend to disk') .
 		# https://github.com/mate-desktop/marco/issues/338
 		if [[ "$qemuNoGL" == 'true' ]]
 		then
-			qemuArgs+=(-device qxl)
+			qemuArgs+=(-device qxl-vga)
 			#qemuArgs+=(-device virtio-vga,virgl=on -display gtk,gl=off)
 		else
-			qemuArgs+=(-device qxl)
+			qemuArgs+=(-device qxl-vga)
 			#qemuArgs+=(-device virtio-vga,virgl=on -display gtk,gl=on)
 		fi
 	elif [[ "$qemuOStype" == 'Windows10_64' ]]
