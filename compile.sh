@@ -241,7 +241,7 @@ _____special_live_hibernate_rmmod_remainder-vbox_procedure() {
 _____special_live_hibernate_rmmod_remainder-vbox() {
 	local currentIterations
 	currentIterations=0
-	while [[ "$currentIterations" -lt 3 ]]
+	while [[ "$currentIterations" -lt 2 ]]
 	do
 		let currentIterations="$currentIterations + 1"
 		_____special_live_hibernate_rmmod_remainder-vbox_procedure "$@" > /dev/null 2>&1
@@ -254,65 +254,85 @@ _____special_live_hibernate_rmmod_remainder-vbox() {
 _____special_live_hibernate() {
 	! _mustGetSudo && exit 1
 	
+	local currentIterations
+	
 	sudo -n swapon /dev/disk/by-uuid/469457fc-293f-46ec-92da-27b5d0c36b17
 	
 	free -m
 	
-	sudo -n systemctl hibernate
-	
 	if sudo -n lsmod | grep vboxguest > /dev/null 2>&1
 	then
-		# Expected to result in longer delay if system is not idle.
-		local currentIterations
-		# 3.0s
-		currentIterations=0
-		while [[ "$currentIterations" -lt 6 ]]
-		do
-			let currentIterations="$currentIterations + 1"
-			sleep 0.5
-		done
-		# 1.0s (4.0s total)
-		currentIterations=0
-		while [[ "$currentIterations" -lt 10 ]]
-		do
-			let currentIterations="$currentIterations + 1"
-			sleep 0.1
-		done
-		# 0.15s (4.15s total)
-		currentIterations=0
-		while [[ "$currentIterations" -lt 15 ]]
-		do
-			let currentIterations="$currentIterations + 1"
-			sleep 0.01
-		done
-		
 		sudo -n pkill VBoxService
 		sudo -n pkill VBoxClient
-		sleep 2
+		
+		pgrep ^VBox && sleep 0.1 && pgrep ^VBox && sleep 0.3 && pgrep ^VBox && sleep 1
 		sudo -n pkill -KILL VBoxService
 		sudo -n pkill -KILL VBoxClient
 		
-		sleep 1
+		
+		pgrep ^VBox && sleep 0.3
+		sleep 0.05
 		sudo -n rmmod vboxsf
 		sudo -n rmmod vboxvideo
 		sudo -n rmmod vboxguest
 		_____special_live_hibernate_rmmod_remainder-vbox
 		
-		sleep 0.1
+		sleep 0.02
 		sudo -n rmmod vboxsf
 		sudo -n rmmod vboxvideo
 		sudo -n rmmod vboxguest
 		_____special_live_hibernate_rmmod_remainder-vbox
-		
+	fi
+	
+	sudo -n systemctl hibernate
+	
+	# Expected to result in longer delay if system is not idle.
+	# 1.0s
+	currentIterations=0
+	while [[ "$currentIterations" -lt 2 ]]
+	do
+		let currentIterations="$currentIterations + 1"
+		sleep 0.5
+	done
+	# 0.2s
+	currentIterations=0
+	while [[ "$currentIterations" -lt 2 ]]
+	do
+		let currentIterations="$currentIterations + 1"
 		sleep 0.1
+	done
+	# 0.02s
+	currentIterations=0
+	while [[ "$currentIterations" -lt 2 ]]
+	do
+		let currentIterations="$currentIterations + 1"
+		sleep 0.01
+	done
+	
+	# 3.0s
+	currentIterations=0
+	while [[ "$currentIterations" -lt 6 ]] && ( ! systemctl status hibernate.target | grep 'inactive (dead)' > /dev/null 2>&1 || sudo -n systemctl status hibernate.target | tail -n2 | head -n1 | grep ' Reached ' > /dev/null 2>&1 || sudo -n systemctl status hibernate.target | tail -n1 | grep ' Stopped ' > /dev/null 2>&1 )
+	do
+		let currentIterations="$currentIterations + 1"
+		sleep 0.5
+	done
+	
+	if sudo -n lsmod | grep vboxguest > /dev/null 2>&1
+	then
 		sudo -n modprobe vboxsf
 		sudo -n modprobe vboxvideo
 		sudo -n modprobe vboxguest
 		
-		sleep 1
+		sleep 0.1
 		sudo -n VBoxService --pidfile /var/run/vboxadd-service.sh
 		
-		sleep 3
+		# 0.8s
+		currentIterations=0
+		while [[ "$currentIterations" -lt 4 ]]
+		do
+			let currentIterations="$currentIterations + 1"
+			sleep 0.2
+		done
 		#sudo -n VBoxClient --vmsvga
 		#sudo -n VBoxClient --seamless
 		#sudo -n VBoxClient --draganddrop
@@ -322,6 +342,29 @@ _____special_live_hibernate() {
 	
 	disown -a -h -r
 	disown -a -r
+	
+	return 0
+}
+
+_____special_live_bulk_rw() {
+	! _mustGetSudo && exit 1
+	sudo -n mkdir -p /mnt/bulk
+	! mountpoint /mnt/bulk && sudo -n mount -o rw /dev/disk/by-uuid/f1edb7fb-13b1-4c97-91d2-baf50e6d65d8 /mnt/bulk
+	! mountpoint /mnt/bulk && exit 1
+	
+	sudo -n mount -o remount,rw /mnt/bulk
+	
+	return 0
+}
+
+# No production use. Not expected to be desirable. Any readonly files could be added, compressed, to the 'live' 'root' .
+_____special_live_bulk_ro() {
+	! _mustGetSudo && exit 1
+	sudo -n mkdir -p /mnt/bulk
+	! mountpoint /mnt/bulk && sudo -n mount -o ro /dev/disk/by-uuid/f1edb7fb-13b1-4c97-91d2-baf50e6d65d8 /mnt/bulk
+	! mountpoint /mnt/bulk && exit 1
+	
+	sudo -n mount -o remount,ro /mnt/bulk
 	
 	return 0
 }
@@ -351,7 +394,7 @@ _____special_live_dent_backup() {
 	
 	
 	sudo -n mkdir -p /mnt/bulk
-	! mountpoint /mnt/bulk && sudo -n mount -o ro /dev/disk/by-uuid/f1edb7fb-13b1-4c97-91d2-baf50e6d65d8
+	! mountpoint /mnt/bulk && sudo -n mount -o ro /dev/disk/by-uuid/f1edb7fb-13b1-4c97-91d2-baf50e6d65d8 /mnt/bulk
 	! mountpoint /mnt/bulk && exit 1
 	
 	
@@ -389,7 +432,7 @@ _____special_live_dent_restore() {
 	
 	
 	#sudo -n mkdir -p /mnt/bulk
-	#! mountpoint /mnt/bulk && sudo -n mount -o ro /dev/disk/by-uuid/f1edb7fb-13b1-4c97-91d2-baf50e6d65d8
+	#! mountpoint /mnt/bulk && sudo -n mount -o ro /dev/disk/by-uuid/f1edb7fb-13b1-4c97-91d2-baf50e6d65d8 /mnt/bulk
 	#! mountpoint /mnt/bulk && exit 1
 	#sudo -n mount -o remount,rw /mnt/bulk
 	
