@@ -13181,7 +13181,7 @@ _create_instance_vbox_storageattach() {
 _create_instance_vbox() {
 	
 	#Use existing VDI image if available.
-	if ! [[ -e "$scriptLocal"/vm.vdi ]]
+	if ! [[ -e "$scriptLocal"/vm.vdi ]] && [[ "$ub_override_vbox_livecd" == '' ]] && [[ "$ub_override_vbox_livecd_more" == '' ]]
 	then
 		# IMG file may be a device file. See 'virtualization/image/mountimage.sh' .
 		_messagePlain_nominal 'Missing VDI. Attempting to open IMG.'
@@ -13189,9 +13189,16 @@ _create_instance_vbox() {
 	fi
 	
 	_messagePlain_nominal 'Checking VDI or IMG availability.'
-	export vboxInstanceDiskImage="$scriptLocal"/vm.vdi
-	_readLocked "$lock_open" && vboxInstanceDiskImage="$vboxRaw"
-	! [[ -e "$vboxInstanceDiskImage" ]] && _messagePlain_bad 'missing: vboxInstanceDiskImage= '"$vboxInstanceDiskImage" && return 1
+	if [[ "$ub_override_vbox_livecd" == '' ]] && [[ "$ub_override_vbox_livecd_more" == '' ]]
+	then
+		export vboxInstanceDiskImage="$scriptLocal"/vm.vdi
+		_readLocked "$lock_open" && vboxInstanceDiskImage="$vboxRaw"
+		! [[ -e "$vboxInstanceDiskImage" ]] && _messagePlain_bad 'missing: vboxInstanceDiskImage= '"$vboxInstanceDiskImage" && return 1
+	elif [[ "$ub_override_vbox_livecd" != '' ]] || [[ "$ub_override_vbox_livecd_more" != '' ]]
+	then
+		[[ "$ub_override_vbox_livecd" != '' ]] && ! [[ -e "$ub_override_vbox_livecd" ]] && _messagePlain_bad 'missing: ub_override_vbox_livecd= '"$ub_override_vbox_livecd" && return 1
+		[[ "$ub_override_vbox_livecd_more" != '' ]] && ! [[ -e "$ub_override_vbox_livecd_more" ]] && _messagePlain_bad 'missing: ub_override_vbox_livecd_more= '"$ub_override_vbox_livecd_more" && return 1
+	fi
 	
 	_messagePlain_nominal 'Determining OS type.'
 	_set_instance_vbox_type
