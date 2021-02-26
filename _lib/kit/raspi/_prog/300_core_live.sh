@@ -193,6 +193,59 @@ _live_more_procedure() {
 	_messagePlain_nominal 'Attempt: _closeLoop'
 	! _closeLoop && _messageFAIL && _stop 1
 	
+	export ubVirtImageOverride_alternate=
+	
+	
+	
+	
+	
+	
+	
+	_messagePlain_nominal '_live_more_procedure: convert: vdi'
+	
+	
+	# ATTENTION: Delete 'vm-live-more.vdi.uuid' to force generation of new uuid .
+	local current_UUID
+	current_UUID=$(head -n1 "$scriptLocal"/vm-live-more.vdi.uuid 2>/dev/null | tr -dc 'a-zA-Z0-9\-')
+	
+	if [[ $(echo "$current_UUID" | wc -c) != 37 ]]
+	then
+		current_UUID=$(_getUUID)
+		rm -f "$scriptLocal"/vm-live-more.vdi.uuid > /dev/null 2>&1
+		echo "$current_UUID" > "$scriptLocal"/vm-live-more.vdi.uuid
+	fi
+	
+	
+	rm -f "$scriptLocal"/vm-live-more.vdi > /dev/null 2>&1
+	
+	! [[ -e "$scriptLocal"/vm-live-more.iso ]] && _messagePlain_bad 'fail: missing: in file' && return 1
+	[[ -e "$scriptLocal"/vm-live-more.vdi ]] && _messagePlain_request 'request: rm '"$scriptLocal"/vm-live-more.vdi && return 1
+	
+	_messagePlain_nominal '_img_to_vdi: convertdd'
+	if _userVBoxManage convertdd "$scriptLocal"/vm-live-more.iso "$scriptLocal"/vm-live-more-c.vdi --format VDI
+	then
+		#_messagePlain_nominal '_img_to_vdi: closemedium'
+		#_userVBoxManage closemedium "$scriptLocal"/vm-live-more-c.vdi
+		_messagePlain_nominal '_img_to_vdi: mv vm-live-more-c.vdi vm.vdi'
+		_moveconfirm "$scriptLocal"/vm-live-more-c.vdi "$scriptLocal"/vm-live-more.vdi
+		_messagePlain_nominal '_img_to_vdi: setuuid'
+		VBoxManage internalcommands sethduuid "$scriptLocal"/vm-live-more.vdi "$current_UUID"
+		#_messagePlain_request 'request: rm '"$scriptLocal"/vm-live-more.iso
+		_messagePlain_good 'End.'
+		return 0
+	else
+		_messageFAIL
+		_stop 1
+	fi
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	
 	_messageNormal '_live_more_procedure: done'
@@ -358,7 +411,8 @@ _live() {
 
 _override_VBox-live() {
 	#export ub_keepInstance='true'
-	export ub_override_vbox_livecd_more="$scriptLocal"/vm-live-more.iso
+	export ub_override_vbox_livecd_more="$scriptLocal"/vm-live-more.vdi
+	#export ub_override_vbox_livecd_more="$scriptLocal"/vm-live-more.iso
 	#export ub_override_vbox_livecd="$scriptLocal"/vm-live.iso
 }
 
