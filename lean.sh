@@ -229,16 +229,29 @@ _sleep_spinlock() {
 }
 
 
-_____special_hibernate_rmmod-vbox() {
+_____special_live_hibernate_rmmod_remainder-vbox_procedure() {
 	local currentLine
 	sudo -n lsmod | grep '^vbox.*$' | cut -f1 -d\  | while read currentLine
 	do
-		echo "$currentLine"
+		#echo "$currentLine"
+		sudo -n rmmod "$currentLine"
 	done
 }
 
+_____special_live_hibernate_rmmod_remainder-vbox() {
+	local currentIterations
+	currentIterations=0
+	while [[ "$currentIterations" -lt 3 ]]
+	do
+		let currentIterations="$currentIterations + 1"
+		_____special_live_hibernate_rmmod_remainder-vbox_procedure "$@" > /dev/null 2>&1
+	done
+	
+	_____special_live_hibernate_rmmod_remainder-vbox_procedure "$@"
+}
+
 # CAUTION: Do not alow similarity of this function name to other commonly used function names . Unintended tab completion could significantly and substantially impede user , particularly if 'disk' hibernation is not properly available .
-_____special_hibernate() {
+_____special_live_hibernate() {
 	! _mustGetSudo && exit 1
 	
 	sudo -n swapon /dev/disk/by-uuid/469457fc-293f-46ec-92da-27b5d0c36b17
@@ -283,12 +296,16 @@ _____special_hibernate() {
 		sudo -n rmmod vboxsf
 		sudo -n rmmod vboxvideo
 		sudo -n rmmod vboxguest
+		_____special_live_hibernate_rmmod_remainder-vbox
 		
 		sleep 0.1
 		sudo -n rmmod vboxsf
 		sudo -n rmmod vboxvideo
 		sudo -n rmmod vboxguest
+		_____special_live_hibernate_rmmod_remainder-vbox
+		
 		sleep 0.1
+		sudo -n modprobe vboxsf
 		sudo -n modprobe vboxvideo
 		sudo -n modprobe vboxguest
 		
@@ -296,6 +313,10 @@ _____special_hibernate() {
 		sudo -n VBoxService --pidfile /var/run/vboxadd-service.sh
 		
 		sleep 3
+		#sudo -n VBoxClient --vmsvga
+		#sudo -n VBoxClient --seamless
+		#sudo -n VBoxClient --draganddrop
+		#sudo -n VBoxClient --clipboard
 		sudo -n VBoxClient-all
 	fi
 	
@@ -307,7 +328,7 @@ _____special_hibernate() {
 
 # WARNING: Untested.
 # CAUTION: Do not alow similarity of this function name to other commonly used function names . Unintended tab completion could significantly and substantially impede user.
-_____special_dent_backup() {
+_____special_live_dent_backup() {
 	! _mustGetSudo && exit 1
 	
 	sudo -n mkdir -p /mnt/dent
@@ -355,7 +376,7 @@ _____special_dent_backup() {
 # WARNING: Untested.
 # CAUTION: Do not alow similarity of this function name to other commonly used function names . Unintended tab completion could significantly and substantially impede user.
 # WARNING: By default does not restore contents of '/mnt/bulk' assuming simultaneous use of persistent storage and hibernation backup is sufficiently unlikely and risky that a request to the user is preferable.
-_____special_dent_restore() {
+_____special_live_dent_restore() {
 	! _mustGetSudo && exit 1
 	
 	sudo -n mkdir -p /mnt/dent
