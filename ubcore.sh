@@ -3937,7 +3937,22 @@ _wantSudo() {
 
 #Returns a UUID in the form of xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
 _getUUID() {
-	cat /proc/sys/kernel/random/uuid
+	if [[ -e /proc/sys/kernel/random/uuid ]]
+	then
+		cat /proc/sys/kernel/random/uuid
+		return 0
+	fi
+	
+	
+	if type -p uuidgen > /dev/null 2>&1
+	then
+		uuidgen
+		return 0
+	fi
+	
+	# Failure. Intentionally adds extra characters to cause any tests of uuid output to fail.
+	_uid 40
+	return 1
 }
 alias getUUID=_getUUID
 
@@ -12332,6 +12347,10 @@ _test_sanity() {
 	
 	_uid_test
 	
+	[[ $(_getUUID | wc -c) != '37' ]] && _messageFAIL && return 1
+	
+	[[ $(_getUUID | cut -f1 -d\- | wc -c) != '9' ]] &&  _messageFAIL && return 1
+	
 	
 	! env | grep 'PATH' > /dev/null 2>&1 && _messageFAIL && return 1
 	! printenv | grep 'PATH' > /dev/null 2>&1 && _messageFAIL && return 1
@@ -12525,6 +12544,8 @@ _test() {
 	_getDep false
 	
 	_getDep diff
+	
+	_getDep uuidgen
 	
 	_test_readlink_f
 	

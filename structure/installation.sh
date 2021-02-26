@@ -1011,6 +1011,10 @@ _test_sanity() {
 	
 	_uid_test
 	
+	[[ $(_getUUID | wc -c) != '37' ]] && _messageFAIL && return 1
+	
+	[[ $(_getUUID | cut -f1 -d\- | wc -c) != '9' ]] &&  _messageFAIL && return 1
+	
 	
 	! env | grep 'PATH' > /dev/null 2>&1 && _messageFAIL && return 1
 	! printenv | grep 'PATH' > /dev/null 2>&1 && _messageFAIL && return 1
@@ -1204,6 +1208,8 @@ _test() {
 	_getDep false
 	
 	_getDep diff
+	
+	_getDep uuidgen
 	
 	_test_readlink_f
 	
