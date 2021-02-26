@@ -119,6 +119,9 @@ _sudo() {
 }
 
 _true() {
+	#"$scriptAbsoluteLocation" _false && return 1
+	#! "$scriptAbsoluteLocation" _bin true && return 1
+	#"$scriptAbsoluteLocation" _bin false && return 1
 	true
 }
 _false() {
