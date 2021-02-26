@@ -20,6 +20,8 @@ _test_live() {
 	
 	_getDep mkfs.vfat
 	
+	_getDep mkswap
+	
 	
 	_getDep mmd
 	_getDep mcopy
@@ -40,6 +42,177 @@ _test_live() {
 }
 
 
+
+
+_live_fdisk() {
+	if [[ -e '/sbin/fdisk' ]]
+	then
+		/sbin/fdisk "$@"
+		return
+	fi
+	fdisk "$@"
+	return
+}
+
+_live_sfdisk() {
+	if [[ -e '/sbin/sfdisk' ]]
+	then
+		/sbin/sfdisk "$@"
+		return
+	fi
+	sfdisk "$@"
+	return
+}
+
+
+
+_live_more_procedure() {
+	_messageNormal 'init: _live_more_procedure'
+	
+	#_start
+	
+	
+	[[ ! -e "$scriptLocal"/vm-live.iso ]] && _messageFAIL && _stop 1
+	
+	
+	
+	_messagePlain_nominal '_live_more_procedure: copy'
+	
+	rm -f "$scriptLocal"/vm-live-more.iso
+	
+	cp "$scriptLocal"/vm-live.iso "$scriptLocal"/vm-live-more.iso
+	
+	
+	
+	_messagePlain_nominal '_live_more_procedure: append'
+	
+	# 32 * 1000 MB to GiB == 29.8023224 GiB
+	# 29.8 GB to MiB == 28419 MiB
+	
+	# 1024 MiB to GiB == 1 GiB
+	# 1 GiB == 1073.74 MB
+	# 1024 MB + 64 MB == 1088 MB
+	
+	# 1088 * 12 + 32 == 13088 MB
+	
+	dd if=/dev/zero bs=1M count=13088 >> "$scriptLocal"/vm-live-more.iso
+	
+	
+	
+	_messagePlain_nominal '_live_more_procedure: partitions: add'
+	
+	#sudo -n parted --script "$scriptLocal"/vm-live-more.iso mklabel msdos
+	#sudo -n partprobe > /dev/null 2>&1
+	#sudo -n parted "$scriptLocal"/vm-live-more.iso --script -- mkpart primary 0% 100%
+	#sudo -n partprobe > /dev/null 2>&1
+	
+	# https://unix.stackexchange.com/questions/200582/scripteable-gpt-partitions-using-parted
+	
+	#sudo -n parted "$scriptLocal"/vm-live-more.iso --script -a optimal -- mkpart primary -12288MiB -8192MiB
+	#sudo -n parted "$scriptLocal"/vm-live-more.iso --script -a optimal -- mkpart primary -8192MiB -4096MiB
+	#sudo -n parted "$scriptLocal"/vm-live-more.iso --script -a optimal -- mkpart primary -4096MiB -0MiB
+	#sudo -n partprobe > /dev/null 2>&1
+	
+	
+	
+	# https://superuser.com/questions/332252/how-to-create-and-format-a-partition-using-a-bash-script
+	
+	! _live_sfdisk -l "$scriptLocal"/vm-live-more.iso | grep 'Sector size (logical/physical): 512 bytes / 512 bytes' > /dev/null 2>&1 && _stop 1
+	
+	rm -f "$safeTmp"/vm-live-more.iso.sfdisk
+	
+	#_live_sfdisk -d "$scriptLocal"/vm-live-more.iso > "$safeTmp"/vm-live-more.iso.sfdisk
+	#echo 'size=8G, type=83' >> "$safeTmp"/vm-live-more.iso.sfdisk
+	
+	#echo 'size=4G, type=83' >> "$safeTmp"/vm-live-more.iso.sfdisk
+	#echo 'size=5G, type=5' >> "$safeTmp"/vm-live-more.iso.sfdisk
+	#echo 'size=4G, type=85' >> "$safeTmp"/vm-live-more.iso.sfdisk
+	
+	#echo 'size=1G, type=85' >> "$safeTmp"/vm-live-more.iso.sfdisk
+	
+	
+	echo 'size=2G, type=83' >> "$safeTmp"/vm-live-more.iso.sfdisk
+	echo 'type=5' >> "$safeTmp"/vm-live-more.iso.sfdisk
+	echo 'size=4G, type=82' >> "$safeTmp"/vm-live-more.iso.sfdisk
+	echo 'size=6G, type=83' >> "$safeTmp"/vm-live-more.iso.sfdisk
+	
+	
+	# Tested , working .
+	#echo 'size=4G, type=82' >> "$safeTmp"/vm-live-more.iso.sfdisk
+	#echo 'size=6G, type=83' >> "$safeTmp"/vm-live-more.iso.sfdisk
+	
+	
+	cat "$safeTmp"/vm-live-more.iso.sfdisk | _live_sfdisk --append "$scriptLocal"/vm-live-more.iso
+	
+	! _live_sfdisk -l "$scriptLocal"/vm-live-more.iso | grep 'Sector size (logical/physical): 512 bytes / 512 bytes' > /dev/null 2>&1 && _stop 1
+	
+	
+	
+	
+	
+	
+	
+	_messagePlain_nominal '_live_more_procedure: filesystems: format'
+	
+	
+	
+	_messagePlain_nominal 'Attempt: _closeLoop'
+	! _closeLoop && _messageFAIL && _stop 1
+	
+	_messagePlain_nominal 'Attempt: _openLoop'
+	! [[ -e "$scriptLocal"/vm-live-more.iso ]] && _messageFAIL && _stop 1
+	export ubVirtImageOverride_alternate="$scriptLocal"/vm-live-more.iso
+	! _openLoop && _messageFAIL && _stop 1
+	
+	local current_imagedev
+	current_imagedev=$(cat "$scriptLocal"/imagedev)
+	
+	[[ "$current_imagedev" != '/dev/loop'* ]] && _messageFAIL && _stop 1
+	
+	
+	! _live_sfdisk -l "$current_imagedev" | grep 'Sector size (logical/physical): 512 bytes / 512 bytes' > /dev/null 2>&1 && _messageFAIL && _stop 1
+	
+	! _live_sfdisk -l "$current_imagedev" | grep "$current_imagedev"p3 | grep '4194304' > /dev/null 2>&1 && _messageFAIL && _stop 1
+	! _live_sfdisk -l "$current_imagedev" | grep "$current_imagedev"p5 | grep '8388608' > /dev/null 2>&1 && _messageFAIL && _stop 1
+	! _live_sfdisk -l "$current_imagedev" | grep "$current_imagedev"p6 | grep '12582912' > /dev/null 2>&1 && _messageFAIL && _stop 1
+	
+	! [[ -e "$current_imagedev"p6 ]] && _messageFAIL && _stop 1
+	
+	
+	sudo -n mkfs.ext4 -L 'bulk' -U 'f1edb7fb-13b1-4c97-91d2-baf50e6d65d8' "$current_imagedev"p3
+	sudo -n mkswap -L 'hint' -U '469457fc-293f-46ec-92da-27b5d0c36b17' "$current_imagedev"p5
+	sudo -n mkfs.ext4 -L 'dent' -U 'd82e3d89-3156-4484-bde2-ccc534ca440b' "$current_imagedev"p6
+	
+	
+	
+	#_live_sfdisk -l "$current_imagedev"
+	#ls -l "$current_imagedev"*
+	#sudo -n gparted "$current_imagedev" "$current_imagedev"p1 "$current_imagedev"p2 "$current_imagedev"p3 "$current_imagedev"p5 "$current_imagedev"p6
+	
+	
+	_messagePlain_nominal 'Attempt: _closeLoop'
+	! _closeLoop && _messageFAIL && _stop 1
+	
+	
+	
+	_messageNormal '_live_more_procedure: done'
+	
+	#_stop 0
+}
+
+_live_more_sequence() {
+	_start
+	
+	_live_more_procedure "$@"
+	
+	_stop 0
+}
+
+_live_more() {
+	"$scriptAbsoluteLocation" _live_more_sequence "$@"
+}
+
+
 _live_grub_here() {
 	cat <<'CZXWXcRMTo8EmM8i4d'
 
@@ -48,9 +221,16 @@ insmod all_video
 search --set=root --file /ROOT_TEXT
 
 set default="0"
-set timeout=1
+set timeout=2
 
 menuentry "Live" {
+    #linux /vmlinuz boot=live selinux=0 mem=3712M resume=UUID=469457fc-293f-46ec-92da-27b5d0c36b17
+    #linux /vmlinuz boot=live selinux=0 mem=3712M resume=PARTUUID=469457fc-293f-46ec-92da-27b5d0c36b17
+    linux /vmlinuz boot=live selinux=0 mem=3712M resume=/dev/sda5
+    initrd /initrd
+}
+
+menuentry "Live - ( hint: ignored: resume disabled )" {
     linux /vmlinuz boot=live selinux=0
     initrd /initrd
 }
@@ -67,6 +247,8 @@ CZXWXcRMTo8EmM8i4d
 # https://wiki.debian.org/InitramfsDebug
 # https://gist.github.com/avinash-oza/9791c4edd78a03540dc69d6fbf21bd9c
 _live() {
+	_messageNormal 'init: _live'
+	
 	_mustGetSudo || return 0
 	
 	
@@ -161,6 +343,14 @@ _live() {
 	
 	
 	mv "$safeTmp"/live.iso "$scriptLocal"/vm-live.iso
+	
+	
+	
+	
+	! _live_more && _stop 1
+	
+	
+	_messageNormal '_live: done'
 	
 	_stop 0
 }
