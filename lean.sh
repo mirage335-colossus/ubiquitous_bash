@@ -229,6 +229,13 @@ _sleep_spinlock() {
 }
 
 
+_____special_hibernate_rmmod-vbox() {
+	local currentLine
+	sudo -n lsmod | grep '^vbox.*$' | cut -f1 -d\  | while read currentLine
+	do
+		echo "$currentLine"
+	done
+}
 
 # CAUTION: Do not alow similarity of this function name to other commonly used function names . Unintended tab completion could significantly and substantially impede user , particularly if 'disk' hibernation is not properly available .
 _____special_hibernate() {
@@ -273,10 +280,12 @@ _____special_hibernate() {
 		sudo -n pkill -KILL VBoxClient
 		
 		sleep 1
+		sudo -n rmmod vboxsf
 		sudo -n rmmod vboxvideo
 		sudo -n rmmod vboxguest
 		
 		sleep 0.1
+		sudo -n rmmod vboxsf
 		sudo -n rmmod vboxvideo
 		sudo -n rmmod vboxguest
 		sleep 0.1
