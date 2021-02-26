@@ -12235,6 +12235,16 @@ _integratedQemu_x64() {
 	qemuUserArgs+=(-drive file="$hostToGuestISO",media=cdrom -boot c)
 	
 	[[ "$vmMemoryAllocation" == "" ]] && vmMemoryAllocation="$vmMemoryAllocationDefault"
+	
+	# Must have at least 4096MB for 'livecd' , unless even larger memory allocation has been configured .
+	if [[ "$ub_override_qemu_livecd" != '' ]] || [[ "$ub_override_qemu_livecd_more" != '' ]]
+	then
+		if [[ "$vmMemoryAllocation" -lt 4096 ]]
+		then
+			vmMemoryAllocation=4096
+		fi
+	fi
+	
 	qemuUserArgs+=(-m "$vmMemoryAllocation")
 	
 	[[ "$qemuUserArgs_netRestrict" == "" ]] && qemuUserArgs_netRestrict="n"
@@ -12941,6 +12951,16 @@ _set_instance_vbox_features() {
 	
 	# WARNING: Do not set "$vmMemoryAllocation" to a high number unless specifically required.
 	[[ "$vmMemoryAllocation" == "" ]] && vmMemoryAllocation="$vmMemoryAllocationDefault"
+	
+	# Must have at least 4096MB for 'livecd' , unless even larger memory allocation has been configured .
+	if [[ "$ub_override_qemu_livecd" != '' ]] || [[ "$ub_override_qemu_livecd_more" != '' ]]
+	then
+		if [[ "$vmMemoryAllocation" -lt 4096 ]]
+		then
+			vmMemoryAllocation=4096
+		fi
+	fi
+	
 	_messagePlain_probe 'vmMemoryAllocation= '"$vmMemoryAllocation"
 	
 	[[ "$vboxNic" == "" ]] && export vboxNic="nat"

@@ -146,6 +146,16 @@ _integratedQemu_x64() {
 	qemuUserArgs+=(-drive file="$hostToGuestISO",media=cdrom -boot c)
 	
 	[[ "$vmMemoryAllocation" == "" ]] && vmMemoryAllocation="$vmMemoryAllocationDefault"
+	
+	# Must have at least 4096MB for 'livecd' , unless even larger memory allocation has been configured .
+	if [[ "$ub_override_qemu_livecd" != '' ]] || [[ "$ub_override_qemu_livecd_more" != '' ]]
+	then
+		if [[ "$vmMemoryAllocation" -lt 4096 ]]
+		then
+			vmMemoryAllocation=4096
+		fi
+	fi
+	
 	qemuUserArgs+=(-m "$vmMemoryAllocation")
 	
 	[[ "$qemuUserArgs_netRestrict" == "" ]] && qemuUserArgs_netRestrict="n"
