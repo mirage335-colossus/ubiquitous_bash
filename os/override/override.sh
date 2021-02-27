@@ -305,9 +305,9 @@ _____special_live_dent_backup() {
 	then
 		sudo -n dd if=/dev/disk/by-uuid/469457fc-293f-46ec-92da-27b5d0c36b17 bs=1M | gzip --fast | sudo -n tee /mnt/dent/hint_bak.gz > /dev/null
 	else
-		sudo -n dd if=/dev/disk/by-uuid/469457fc-293f-46ec-92da-27b5d0c36b17 bs=1M | sudo -n tee /mnt/dent/hint_bak.gz > /dev/null
+		sudo -n dd if=/dev/disk/by-uuid/469457fc-293f-46ec-92da-27b5d0c36b17 bs=1M | sudo -n tee /mnt/dent/hint_bak > /dev/null
 	fi
-	
+	sync
 	
 	_messagePlain_nominal 'attempt: mount: ro: bulk'
 	sudo -n mkdir -p /mnt/bulk
@@ -350,7 +350,16 @@ _____special_live_dent_restore() {
 	
 	
 	_messagePlain_nominal 'attempt: copy: hint'
-	sudo -n gzip -c /mnt/dent/hint_bak.gz | sudo -n dd of=/dev/disk/by-uuid/469457fc-293f-46ec-92da-27b5d0c36b17 bs=1M
+	#sudo -n dd if=/dev/zero of=/dev/disk/by-uuid/469457fc-293f-46ec-92da-27b5d0c36b17 bs=1M
+	if type -p 'pigz' > /dev/null 2>&1 || type -p 'gzip' > /dev/null 2>&1
+	then
+		sudo -n gzip -d -c /mnt/dent/hint_bak.gz | sudo -n dd of=/dev/disk/by-uuid/469457fc-293f-46ec-92da-27b5d0c36b17 bs=1M
+	else
+		sudo cat /mnt/dent/hint_bak | sudo -n dd of=/dev/disk/by-uuid/469457fc-293f-46ec-92da-27b5d0c36b17 bs=1M
+	fi
+	sync
+	
+	
 	
 	
 	#_messagePlain_nominal 'attempt: mount: rw: bulk'
