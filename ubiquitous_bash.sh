@@ -292,11 +292,13 @@ _____special_live_hibernate() {
 	fi
 	
 	_messagePlain_nominal 'attempt: HIBERNATE'
+	sudo journalctl --rotate
+	sudo journalctl --vacuum-time=1s
 	sudo -n systemctl hibernate
 	
 	
 	# ~1.0s
-	sleep 1
+	sleep 1.1
 	currentIterations=0
 	while [[ "$currentIterations" -lt 3 ]]
 	do
