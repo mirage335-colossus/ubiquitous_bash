@@ -13277,7 +13277,7 @@ _set_instance_vbox_features() {
 	[[ "$vmMemoryAllocation" == "" ]] && vmMemoryAllocation="$vmMemoryAllocationDefault"
 	
 	# Must have at least 4096MB for 'livecd' , unless even larger memory allocation has been configured .
-	if [[ "$ub_override_qemu_livecd" != '' ]] || [[ "$ub_override_qemu_livecd_more" != '' ]]
+	if [[ "$ub_override_vbox_livecd" != '' ]] || [[ "$ub_override_vbox_livecd_more" != '' ]]
 	then
 		if [[ "$vmMemoryAllocation" -lt 4096 ]]
 		then
