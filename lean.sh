@@ -254,14 +254,21 @@ _____special_live_hibernate_rmmod_remainder-vbox() {
 _____special_live_hibernate() {
 	! _mustGetSudo && exit 1
 	
+	_messageNormal 'init: _____special_live_hibernate'
+	
 	local currentIterations
 	
+	_messagePlain_nominal 'attempt: swapon'
 	sudo -n swapon /dev/disk/by-uuid/469457fc-293f-46ec-92da-27b5d0c36b17
-	
 	free -m
 	
-	if sudo -n lsmod | grep vboxguest > /dev/null 2>&1
+	_messagePlain_nominal 'detect: vboxguest'
+	sudo -n lsmod | grep vboxguest > /dev/null 2>&1 && export ub_current_special_live_consider_vbox='true'
+	[[ "$ub_current_special_live_consider_vbox" == 'true' ]] && _messagePlain_good 'good: detected: vboxguest'
+	
+	if [[ "$ub_current_special_live_consider_vbox" == 'true' ]]
 	then
+		_messagePlain_nominal 'attempt: terminate: VBoxService , VBoxClient'
 		sudo -n pkill VBoxService
 		sudo -n pkill VBoxClient
 		
@@ -284,55 +291,82 @@ _____special_live_hibernate() {
 		_____special_live_hibernate_rmmod_remainder-vbox
 	fi
 	
+	_messagePlain_nominal 'attempt: HIBERNATE'
 	sudo -n systemctl hibernate
 	
-	# Expected to result in longer delay if system is not idle.
-	# 1.0s
+	
+	# ~1.0s
+	sleep 1
 	currentIterations=0
-	while [[ "$currentIterations" -lt 2 ]]
+	while [[ "$currentIterations" -lt 3 ]]
+	do
+		sudo -n systemctl status hibernate.target | tail -n2 | head -n1 | grep ' Reached ' > /dev/null 2>&1 && _messagePlain_probe 'Reached'
+		sudo -n systemctl status hibernate.target | tail -n1 | grep ' Stopped ' > /dev/null 2>&1 && _messagePlain_probe 'Stopped'
+		sudo -n systemctl status hibernate.target | grep 'inactive (dead)' > /dev/null 2>&1 && _messagePlain_probe 'inactive'
+		
+		
+		sudo -n systemctl status hibernate.target | tail -n2 | head -n1 | grep ' Reached ' > /dev/null 2>&1 &&
+		sudo -n systemctl status hibernate.target | tail -n1 | grep ' Stopped ' > /dev/null 2>&1 &&
+		sudo -n systemctl status hibernate.target | grep 'inactive (dead)' > /dev/null 2>&1 &&
+		break
+		
+		_messagePlain_good 'delay: resume'
+		
+		let currentIterations="$currentIterations + 1"
+		sleep 0.3
+	done
+	
+	_messagePlain_nominal 'delay: spinlock (optimistic)'
+	# Expected to result in longer delay if system is not idle.
+	# ~2s
+	currentIterations=0
+	while [[ "$currentIterations" -lt 6 ]]
 	do
 		let currentIterations="$currentIterations + 1"
-		sleep 0.5
+		sleep 0.3
 	done
-	# 0.2s
+	# 0.5s
 	currentIterations=0
-	while [[ "$currentIterations" -lt 2 ]]
+	while [[ "$currentIterations" -lt 5 ]]
 	do
 		let currentIterations="$currentIterations + 1"
 		sleep 0.1
 	done
-	# 0.02s
+	# 0.15s
 	currentIterations=0
-	while [[ "$currentIterations" -lt 2 ]]
+	while [[ "$currentIterations" -lt 15 ]]
 	do
 		let currentIterations="$currentIterations + 1"
 		sleep 0.01
 	done
 	
-	# 3.0s
-	currentIterations=0
-	while [[ "$currentIterations" -lt 6 ]] && ( ! systemctl status hibernate.target | grep 'inactive (dead)' > /dev/null 2>&1 || sudo -n systemctl status hibernate.target | tail -n2 | head -n1 | grep ' Reached ' > /dev/null 2>&1 || sudo -n systemctl status hibernate.target | tail -n1 | grep ' Stopped ' > /dev/null 2>&1 )
-	do
-		let currentIterations="$currentIterations + 1"
-		sleep 0.5
-	done
+	#_messagePlain_nominal 'delay: spinlock (arbitrary)'
+	#sleep 1
 	
-	if sudo -n lsmod | grep vboxguest > /dev/null 2>&1
+	#_messagePlain_nominal 'delay: spinlock (pessimistic)'
+	#_sleep_spinlock
+	
+	
+	if [[ "$ub_current_special_live_consider_vbox" == 'true' ]]
 	then
+		_messagePlain_nominal 'attempt: modprobe (vbox)'
 		sudo -n modprobe vboxsf
 		sudo -n modprobe vboxvideo
 		sudo -n modprobe vboxguest
 		
+		
 		sleep 0.1
+		_messagePlain_nominal 'attempt: VBoxService'
 		sudo -n VBoxService --pidfile /var/run/vboxadd-service.sh
 		
-		# 0.8s
+		# 0.3s
 		currentIterations=0
-		while [[ "$currentIterations" -lt 4 ]]
+		while [[ "$currentIterations" -lt 3 ]]
 		do
 			let currentIterations="$currentIterations + 1"
-			sleep 0.2
+			sleep 0.1
 		done
+		_messagePlain_nominal 'attempt: VBoxClient'
 		#sudo -n VBoxClient --vmsvga
 		#sudo -n VBoxClient --seamless
 		#sudo -n VBoxClient --draganddrop
@@ -343,29 +377,50 @@ _____special_live_hibernate() {
 	disown -a -h -r
 	disown -a -r
 	
+	_messageNormal 'done: _____special_live_hibernate'
 	return 0
 }
 
 _____special_live_bulk_rw() {
 	! _mustGetSudo && exit 1
-	sudo -n mkdir -p /mnt/bulk
-	! mountpoint /mnt/bulk && sudo -n mount -o rw /dev/disk/by-uuid/f1edb7fb-13b1-4c97-91d2-baf50e6d65d8 /mnt/bulk
-	! mountpoint /mnt/bulk && exit 1
+	_messageNormal 'init: _____special_live_bulk_rw'
 	
+	sudo -n mkdir -p /mnt/bulk
+	_messagePlain_nominal 'detect: mount: bulk'
+	if ! mountpoint /mnt/bulk
+	then
+		_messagePlain_nominal 'mount: rw: bulk'
+		sudo -n mount -o rw /dev/disk/by-uuid/f1edb7fb-13b1-4c97-91d2-baf50e6d65d8 /mnt/bulk
+	fi
+	
+	! mountpoint /mnt/bulk && _messagePlain_bad 'fail: detect: mount: bulk' && exit 1
+	
+	_messagePlain_nominal 'remount: rw: bulk'
 	sudo -n mount -o remount,rw /mnt/bulk
 	
+	_messageNormal 'done: _____special_live_bulk_rw'
 	return 0
 }
 
 # No production use. Not expected to be desirable. Any readonly files could be added, compressed, to the 'live' 'root' .
 _____special_live_bulk_ro() {
 	! _mustGetSudo && exit 1
-	sudo -n mkdir -p /mnt/bulk
-	! mountpoint /mnt/bulk && sudo -n mount -o ro /dev/disk/by-uuid/f1edb7fb-13b1-4c97-91d2-baf50e6d65d8 /mnt/bulk
-	! mountpoint /mnt/bulk && exit 1
+	_messageNormal 'init: _____special_live_bulk_ro'
 	
+	sudo -n mkdir -p /mnt/bulk
+	_messagePlain_nominal 'detect: mount: bulk'
+	if ! mountpoint /mnt/bulk
+	then
+		_messagePlain_nominal 'mount: ro: bulk'
+		sudo -n mount -o ro /dev/disk/by-uuid/f1edb7fb-13b1-4c97-91d2-baf50e6d65d8 /mnt/bulk
+	fi
+	
+	! mountpoint /mnt/bulk && _messagePlain_bad 'fail: detect: mount: bulk' && exit 1
+	
+	_messagePlain_nominal 'remount: ro: bulk'
 	sudo -n mount -o remount,ro /mnt/bulk
 	
+	_messageNormal 'done: _____special_live_bulk_ro'
 	return 0
 }
 
@@ -373,15 +428,16 @@ _____special_live_bulk_ro() {
 # CAUTION: Do not alow similarity of this function name to other commonly used function names . Unintended tab completion could significantly and substantially impede user.
 _____special_live_dent_backup() {
 	! _mustGetSudo && exit 1
+	_messageNormal 'init: _____special_live_dent_backup'
 	
+	_messagePlain_nominal 'attempt: mount: dent'
 	sudo -n mkdir -p /mnt/dent
 	! mountpoint /mnt/dent && sudo -n mount -o ro /dev/disk/by-uuid/d82e3d89-3156-4484-bde2-ccc534ca440b /mnt/dent
 	! mountpoint /mnt/dent && exit 1
 	
-	
 	sudo -n mount -o remount,rw /mnt/dent
 	
-	
+	_messagePlain_nominal 'attempt: copy: hint'
 	if type -p 'pigz' > /dev/null 2>&1
 	then
 		sudo -n dd if=/dev/disk/by-uuid/469457fc-293f-46ec-92da-27b5d0c36b17 bs=1M | pigz --fast > /mnt/dent/hint_bak.gz
@@ -393,11 +449,13 @@ _____special_live_dent_backup() {
 	fi
 	
 	
+	_messagePlain_nominal 'attempt: mount: ro: bulk'
 	sudo -n mkdir -p /mnt/bulk
 	! mountpoint /mnt/bulk && sudo -n mount -o ro /dev/disk/by-uuid/f1edb7fb-13b1-4c97-91d2-baf50e6d65d8 /mnt/bulk
 	! mountpoint /mnt/bulk && exit 1
 	
 	
+	_messagePlain_nominal 'attempt: copy: bulk'
 	sudo -n mkdir -p /mnt/dent/bulk_bak
 	[[ ! -e /mnt/dent/bulk_bak ]] && exit 1
 	[[ ! -d /mnt/dent/bulk_bak ]] && exit 1
@@ -406,13 +464,14 @@ _____special_live_dent_backup() {
 	
 	
 	
-	
+	_messagePlain_nominal 'attempt: umount: dent'
 	sudo -n mount -o remount,ro /mnt/dent
 	sync
 	
 	sudo -n umount /mnt/dent
 	sync
 	
+	_messageNormal 'done: _____special_live_dent_backup'
 	return 0
 }
 
@@ -421,22 +480,26 @@ _____special_live_dent_backup() {
 # WARNING: By default does not restore contents of '/mnt/bulk' assuming simultaneous use of persistent storage and hibernation backup is sufficiently unlikely and risky that a request to the user is preferable.
 _____special_live_dent_restore() {
 	! _mustGetSudo && exit 1
+	_messageNormal 'init: _____special_live_dent_restore'
 	
+	_messagePlain_nominal 'attempt: mount: dent'
 	sudo -n mkdir -p /mnt/dent
 	! mountpoint /mnt/dent && sudo -n mount -o ro /dev/disk/by-uuid/d82e3d89-3156-4484-bde2-ccc534ca440b /mnt/dent
 	! mountpoint /mnt/dent && exit 1
 	#sudo -n mount -o remount,ro /mnt/dent
 	
 	
+	_messagePlain_nominal 'attempt: copy: hint'
 	gzip -c /mnt/dent/hint_bak.gz | dd of=/dev/disk/by-uuid/469457fc-293f-46ec-92da-27b5d0c36b17 bs=1M
 	
 	
+	#_messagePlain_nominal 'attempt: mount: rw: bulk'
 	#sudo -n mkdir -p /mnt/bulk
 	#! mountpoint /mnt/bulk && sudo -n mount -o ro /dev/disk/by-uuid/f1edb7fb-13b1-4c97-91d2-baf50e6d65d8 /mnt/bulk
 	#! mountpoint /mnt/bulk && exit 1
 	#sudo -n mount -o remount,rw /mnt/bulk
 	
-	
+	#_messagePlain_nominal 'attempt: copy: bulk'
 	#sudo -n mkdir -p /mnt/dent/bulk_bak
 	#[[ ! -e /mnt/dent/bulk_bak ]] && exit 1
 	#[[ ! -d /mnt/dent/bulk_bak ]] && exit 1
@@ -445,7 +508,7 @@ _____special_live_dent_restore() {
 	
 	
 	
-	
+	_messagePlain_nominal 'attempt: umount: dent'
 	sudo -n mount -o remount,ro /mnt/dent
 	sync
 	sudo -n umount /mnt/dent
@@ -453,6 +516,7 @@ _____special_live_dent_restore() {
 	
 	_messagePlain_request 'request: consider restoring /mnt/bulk (not overwritten by default)'
 	
+	_messageNormal 'done: _____special_live_dent_restore'
 	return 0
 }
 
