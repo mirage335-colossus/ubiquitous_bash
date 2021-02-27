@@ -135,6 +135,7 @@ _____special_live_hibernate() {
 		
 		
 		pgrep ^VBox && sleep 0.3
+		_messagePlain_nominal 'attempt: rmmod (vbox)'
 		sleep 0.05
 		sudo -n rmmod vboxsf
 		sudo -n rmmod vboxvideo
@@ -299,12 +300,12 @@ _____special_live_dent_backup() {
 	_messagePlain_nominal 'attempt: copy: hint'
 	if type -p 'pigz' > /dev/null 2>&1
 	then
-		sudo -n dd if=/dev/disk/by-uuid/469457fc-293f-46ec-92da-27b5d0c36b17 bs=1M | pigz --fast > /mnt/dent/hint_bak.gz
+		sudo -n dd if=/dev/disk/by-uuid/469457fc-293f-46ec-92da-27b5d0c36b17 bs=1M | pigz --fast | sudo -n tee /mnt/dent/hint_bak.gz > /dev/null
 	elif type -p 'gzip' > /dev/null 2>&1
 	then
-		sudo -n dd if=/dev/disk/by-uuid/469457fc-293f-46ec-92da-27b5d0c36b17 bs=1M | gzip --fast > /mnt/dent/hint_bak.gz
+		sudo -n dd if=/dev/disk/by-uuid/469457fc-293f-46ec-92da-27b5d0c36b17 bs=1M | gzip --fast | sudo -n tee /mnt/dent/hint_bak.gz > /dev/null
 	else
-		sudo -n dd if=/dev/disk/by-uuid/469457fc-293f-46ec-92da-27b5d0c36b17 bs=1M > /mnt/dent/hint_bak
+		sudo -n dd if=/dev/disk/by-uuid/469457fc-293f-46ec-92da-27b5d0c36b17 bs=1M | sudo -n tee /mnt/dent/hint_bak.gz > /dev/null
 	fi
 	
 	
@@ -349,7 +350,7 @@ _____special_live_dent_restore() {
 	
 	
 	_messagePlain_nominal 'attempt: copy: hint'
-	gzip -c /mnt/dent/hint_bak.gz | dd of=/dev/disk/by-uuid/469457fc-293f-46ec-92da-27b5d0c36b17 bs=1M
+	sudo -n gzip -c /mnt/dent/hint_bak.gz | sudo -n dd of=/dev/disk/by-uuid/469457fc-293f-46ec-92da-27b5d0c36b17 bs=1M
 	
 	
 	#_messagePlain_nominal 'attempt: mount: rw: bulk'
