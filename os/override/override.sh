@@ -284,7 +284,8 @@ _____special_live_bulk_ro() {
 	return 0
 }
 
-# WARNING: Untested.
+
+# DANGER: Simultaneous use of any 'rw' mounted filesystem with any 'restored' hibernation file/partition is expected to result in extreme filesystem corruption! Take extra precautions to avoid this mistake!
 # CAUTION: Do not alow similarity of this function name to other commonly used function names . Unintended tab completion could significantly and substantially impede user.
 _____special_live_dent_backup() {
 	! _mustGetSudo && exit 1
@@ -335,7 +336,8 @@ _____special_live_dent_backup() {
 	return 0
 }
 
-# WARNING: Untested.
+
+# DANGER: Simultaneous use of any 'rw' mounted filesystem with any 'restored' hibernation file/partition is expected to result in extreme filesystem corruption! Take extra precautions to avoid this mistake!
 # CAUTION: Do not alow similarity of this function name to other commonly used function names . Unintended tab completion could significantly and substantially impede user.
 # WARNING: By default does not restore contents of '/mnt/bulk' assuming simultaneous use of persistent storage and hibernation backup is sufficiently unlikely and risky that a request to the user is preferable.
 _____special_live_dent_restore() {

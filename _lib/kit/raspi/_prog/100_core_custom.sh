@@ -144,6 +144,10 @@ _custom_packages_debian() {
 	#_chroot /ubtest.sh _test
 	
 	_chroot apt-get install -y live-boot
+	_chroot apt-get install -y pigz
+	
+	_chroot apt-get install -y falkon
+	_chroot apt-get install -y knoqueror
 	
 	_chroot apt-get install -y xserver-xorg-video-all
 }
