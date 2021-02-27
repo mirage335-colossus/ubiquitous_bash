@@ -185,6 +185,21 @@ _live_more_procedure() {
 	
 	
 	
+	# https://manpages.debian.org/testing/live-boot-doc/persistence.conf.5.en.html
+	 # WARNING: 'persistence.conf' ... 'root of its file system' ... 'Any such labeled volume must have such a file, or it will be ignored.'
+	mkdir -p "$safeTmp"/fsmount_temp/bulk
+	sudo -n mount "$current_imagedev"p3 "$safeTmp"/fsmount_temp/bulk
+	
+	_live_persistent_conf_here | sudo tee "$safeTmp"/fsmount_temp/bulk/persistence.conf > /dev/null
+	
+	sudo -n mkdir -p "$safeTmp"/fsmount_temp/bulk/persist/bulk
+	_live_persistent_conf_here | sudo tee "$safeTmp"/fsmount_temp/bulk/persist/persistence.conf > /dev/null
+	_live_persistent_conf_here | sudo tee "$safeTmp"/fsmount_temp/bulk/persist/bulk/persistence.conf > /dev/null
+	
+	
+	sudo -n umount "$safeTmp"/fsmount_temp/bulk
+	
+	
 	#_live_sfdisk -l "$current_imagedev"
 	#ls -l "$current_imagedev"*
 	#sudo -n gparted "$current_imagedev" "$current_imagedev"p1 "$current_imagedev"p2 "$current_imagedev"p3 "$current_imagedev"p5 "$current_imagedev"p6
@@ -266,6 +281,20 @@ _live_more() {
 }
 
 
+# https://manpages.debian.org/testing/live-boot-doc/persistence.conf.5.en.html
+ # WARNING: 'persistence.conf' ... 'root of its file system' ... 'Any such labeled volume must have such a file, or it will be ignored.'
+_live_persistent_conf_here() {
+	cat <<'CZXWXcRMTo8EmM8i4d'
+/ union
+#/home union
+CZXWXcRMTo8EmM8i4d
+}
+
+# https://manpages.debian.org/testing/live-boot-doc/live-boot.7.en.html
+# https://github.com/bugra9/persistent
+# https://manpages.debian.org/testing/live-boot-doc/persistence.conf.5.en.html
+ # WARNING: 'persistence.conf' ... 'root of its file system' ... 'Any such labeled volume must have such a file, or it will be ignored.'
+# config debug=1 noeject persistence persistence-path=/persist persistence-label=bulk persistence-storage=directory
 _live_grub_here() {
 	cat <<'CZXWXcRMTo8EmM8i4d'
 
@@ -274,19 +303,27 @@ insmod all_video
 search --set=root --file /ROOT_TEXT
 
 set default="0"
-set timeout=2
+#set default="1"
+#set default="2"
+set timeout=3
 
 menuentry "Live" {
-    #linux /vmlinuz boot=live selinux=0 mem=3712M resume=UUID=469457fc-293f-46ec-92da-27b5d0c36b17
-    #linux /vmlinuz boot=live selinux=0 mem=3712M resume=PARTUUID=469457fc-293f-46ec-92da-27b5d0c36b17
-    linux /vmlinuz boot=live selinux=0 mem=3712M resume=/dev/sda5
+    #linux /vmlinuz boot=live config debug=1 noeject nopersistence selinux=0 mem=3712M resume=UUID=469457fc-293f-46ec-92da-27b5d0c36b17
+    #linux /vmlinuz boot=live config debug=1 noeject nopersistence selinux=0 mem=3712M resume=PARTUUID=469457fc-293f-46ec-92da-27b5d0c36b17
+    linux /vmlinuz boot=live config debug=1 noeject nopersistence selinux=0 mem=3712M resume=/dev/sda5
+    initrd /initrd
+}
+
+menuentry "Live - ( persistence )" {
+    linux /vmlinuz boot=live config debug=1 noeject persistence persistence-path=/persist persistence-label=bulk persistence-storage=directory selinux=0 mem=3712M resume=/dev/sda5
     initrd /initrd
 }
 
 menuentry "Live - ( hint: ignored: resume disabled )" {
-    linux /vmlinuz boot=live selinux=0
+    linux /vmlinuz boot=live config debug=1 noeject nopersistence selinux=0
     initrd /initrd
 }
+
 CZXWXcRMTo8EmM8i4d
 }
 
