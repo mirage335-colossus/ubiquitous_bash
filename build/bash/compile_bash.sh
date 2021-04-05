@@ -832,6 +832,16 @@ _compile_bash() {
 	
 	chmod u+x "$progScript"
 	
+	
+	local current_ub_setScriptChecksum_header
+	local current_ub_setScriptChecksum_contents
+	
+	current_ub_setScriptChecksum_header=$(_ub_cksum_special_derivativeScripts_header)
+	current_ub_setScriptChecksum_contents=$(_ub_cksum_special_derivativeScripts_contents)
+	
+	sed -i 's/'#####uk4uPhB663kVcygT0q-UbiquitousBash-ScriptSelfModify-SetScriptChecksumHeader-UbiquitousBash-uk4uPhB663kVcygT0q#####'/'"$current_ub_setScriptChecksum_header"'/' "$progScript"
+	sed -i 's/'#####uk4uPhB663kVcygT0q-UbiquitousBash-ScriptSelfModify-SetScriptChecksumContents-UbiquitousBash-uk4uPhB663kVcygT0q#####'/'"$current_ub_setScriptChecksum_contents"'/' "$progScript"
+	
 	#if "$progScript" _test > ./compile.log 2>&1
 	#then
 	#	rm compile.log
