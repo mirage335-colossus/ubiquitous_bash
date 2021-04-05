@@ -35,6 +35,9 @@ _generate_bash() {
 	
 	chmod u+x "$progScript"
 	
+	
+	_ub_cksum_special_derivativeScripts_write "$progScript"
+	
 	# DANGER Do NOT remove.
 	exit 0
 }

@@ -1,5 +1,63 @@
 #!/usr/bin/env bash
 
+if [[ "$ub_setScriptChecksum" != "" ]]
+then
+	export ub_setScriptChecksum=
+fi
+
+_ub_cksum_special_derivativeScripts_header() {
+	local currentFile_cksum
+	if [[ "$1" == "" ]]
+	then
+		currentFile_cksum="$0"
+	else
+		currentFile_cksum="$1"
+	fi
+	
+	head -n 30 "$currentFile_cksum" | env CMD_ENV=xpg4 cksum | cut -f1 -d\  | tr -dc '0-9'
+}
+_ub_cksum_special_derivativeScripts_contents() {
+	local currentFile_cksum
+	if [[ "$1" == "" ]]
+	then
+		currentFile_cksum="$0"
+	else
+		currentFile_cksum="$1"
+	fi
+	
+	tail -n +45 "$currentFile_cksum" | env CMD_ENV=xpg4 cksum | cut -f1 -d\  | tr -dc '0-9'
+}
+##### CHECKSUM BOUNDARY - 30 lines
+
+#export ub_setScriptChecksum_disable='true'
+export ub_setScriptChecksum_header='1891409836'
+export ub_setScriptChecksum_contents='3746298002'
+
+# CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
+# WARNING: Performance may be crucial here.
+#[[ -e "$0" ]] && ! [[ -h "$0" ]] && [[ "$ub_setScriptChecksum" != "" ]]
+if [[ -e "$0" ]] && [[ "$ub_setScriptChecksum_header" != "" ]] && [[ "$ub_setScriptChecksum_contents" != "" ]] && [[ "$ub_setScriptChecksum_disable" != 'true' ]]
+then
+	[[ $(_ub_cksum_special_derivativeScripts_header) != "$ub_setScriptChecksum_header" ]] && exit 1
+	[[ $(_ub_cksum_special_derivativeScripts_contents) != "$ub_setScriptChecksum_contents" ]] && exit 1
+fi
+
+
+
+##### CHECKSUM BOUNDARY - 45 lines
+
+_ub_cksum_special_derivativeScripts_write() {
+	local current_ub_setScriptChecksum_header
+	local current_ub_setScriptChecksum_contents
+
+	current_ub_setScriptChecksum_header=$(_ub_cksum_special_derivativeScripts_header)
+	current_ub_setScriptChecksum_contents=$(_ub_cksum_special_derivativeScripts_contents)
+
+	sed -i 's/'#\####uk4uPhB663kVcygT0q-UbiquitousBash-ScriptSelfModify-SetScriptChecksumHeader-UbiquitousBash-uk4uPhB663kVcygT0q#####'/'"$current_ub_setScriptChecksum_header"'/' "$1"
+	sed -i 's/'#\####uk4uPhB663kVcygT0q-UbiquitousBash-ScriptSelfModify-SetScriptChecksumContents-UbiquitousBash-uk4uPhB663kVcygT0q#####'/'"$current_ub_setScriptChecksum_contents"'/' "$1"
+}
+
+
 #Universal debugging filesystem.
 _user_log-ub() {
 	# DANGER Do NOT create automatically, or reference any existing directory!
@@ -8238,8 +8296,28 @@ _preserveVar() {
 
 #####Installation
 
+_vector_line_cksum() {
+	[[ $(echo test | env CMD_ENV=xpg4 cksum | cut -f1 -d\  | tr -dc '0-9') != '935282863' ]] && echo 'broken cksum' && _messageFAIL && _stop 1
+	
+	[[ $(echo -e '1\n2\n3\n4\n5\n6\n7\n8\n9\n0' | tail -n +2 | env CMD_ENV=xpg4 cksum | cut -f1 -d\  | tr -dc '0-9') != '2409981071' ]] && _messageFAIL && _stop 1
+	[[ $(echo -e '1\n2\n3\n4\n5\n6\n7\n8\n9\n0' | tail -n +2 | wc -l | cut -f1 -d\  | tr -dc '0-9') != '9' ]] && _messageFAIL && _stop 1
+	
+	[[ $(echo -e '1\n2\n3\n4\n5\n6\n7\n8\n9\n0' | tail -n 2 | env CMD_ENV=xpg4 cksum | cut -f1 -d\  | tr -dc '0-9') != '763220757' ]] && _messageFAIL && _stop 1
+	[[ $(echo -e '1\n2\n3\n4\n5\n6\n7\n8\n9\n0' | tail -n 2 | wc -l | cut -f1 -d\  | tr -dc '0-9') != '2' ]] && _messageFAIL && _stop 1
+	
+	[[ $(echo -e '1\n2\n3\n4\n5\n6\n7\n8\n9\n0' | head -n 2 | env CMD_ENV=xpg4 cksum | cut -f1 -d\  | tr -dc '0-9') != '1864731933' ]] && _messageFAIL && _stop 1
+	[[ $(echo -e '1\n2\n3\n4\n5\n6\n7\n8\n9\n0' | head -n 2 | wc -l | cut -f1 -d\  | tr -dc '0-9') != '2' ]] && _messageFAIL && _stop 1
+	
+	[[ $(echo -e '1\n2\n3\n4\n5\n6\n7\n8\n9\n0' | head -n -2 | env CMD_ENV=xpg4 cksum | cut -f1 -d\  | tr -dc '0-9') != '3336706933' ]] && _messageFAIL && _stop 1
+	[[ $(echo -e '1\n2\n3\n4\n5\n6\n7\n8\n9\n0' | head -n -2 | wc -l | cut -f1 -d\  | tr -dc '0-9') != '8' ]] && _messageFAIL && _stop 1
+	
+	return 0
+}
 
 _vector() {
+	_tryExec "_vector_line_cksum"
+	
+	
 	_tryExec "_vector_virtUser"
 }
 
@@ -9383,6 +9461,8 @@ _test() {
 	
 	#"generic/filesystem"/permissions.sh
 	_checkDep stat
+	
+	_getDep cksum
 	
 	_getDep wget
 	_getDep grep
