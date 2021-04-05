@@ -833,7 +833,7 @@ _compile_bash() {
 	chmod u+x "$progScript"
 	
 	
-	_ub_cksum_special_derivativeScripts_write "$progScript"
+	_tryExecFull _ub_cksum_special_derivativeScripts_write "$progScript"
 	
 	#if "$progScript" _test > ./compile.log 2>&1
 	#then

@@ -30,6 +30,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 ##### CHECKSUM BOUNDARY - 30 lines
 
 #export ub_setScriptChecksum_disable='true'
+[[ -e "$0".nck ]] && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='#####uk4uPhB663kVcygT0q-UbiquitousBash-ScriptSelfModify-SetScriptChecksumHeader-UbiquitousBash-uk4uPhB663kVcygT0q#####'
 export ub_setScriptChecksum_contents='#####uk4uPhB663kVcygT0q-UbiquitousBash-ScriptSelfModify-SetScriptChecksumContents-UbiquitousBash-uk4uPhB663kVcygT0q#####'
 
@@ -41,19 +42,16 @@ then
 	[[ $(_ub_cksum_special_derivativeScripts_header) != "$ub_setScriptChecksum_header" ]] && exit 1
 	[[ $(_ub_cksum_special_derivativeScripts_contents) != "$ub_setScriptChecksum_contents" ]] && exit 1
 fi
-
-
-
 ##### CHECKSUM BOUNDARY - 45 lines
 
 _ub_cksum_special_derivativeScripts_write() {
 	local current_ub_setScriptChecksum_header
 	local current_ub_setScriptChecksum_contents
 
-	current_ub_setScriptChecksum_header=$(_ub_cksum_special_derivativeScripts_header)
-	current_ub_setScriptChecksum_contents=$(_ub_cksum_special_derivativeScripts_contents)
+	current_ub_setScriptChecksum_header=$(_ub_cksum_special_derivativeScripts_header "$1")
+	current_ub_setScriptChecksum_contents=$(_ub_cksum_special_derivativeScripts_contents "$1")
 
-	sed -i 's/'#\####uk4uPhB663kVcygT0q-UbiquitousBash-ScriptSelfModify-SetScriptChecksumHeader-UbiquitousBash-uk4uPhB663kVcygT0q#####'/'"$current_ub_setScriptChecksum_header"'/' "$1"
-	sed -i 's/'#\####uk4uPhB663kVcygT0q-UbiquitousBash-ScriptSelfModify-SetScriptChecksumContents-UbiquitousBash-uk4uPhB663kVcygT0q#####'/'"$current_ub_setScriptChecksum_contents"'/' "$1"
+	sed -i 's/'#'#'###uk4uPhB663kVcygT0q-UbiquitousBash-ScriptSelfModify-SetScriptChecksumHeader-UbiquitousBash-uk4uPhB663kVcygT0q#####'/'"$current_ub_setScriptChecksum_header"'/' "$1"
+	sed -i 's/'#'#'###uk4uPhB663kVcygT0q-UbiquitousBash-ScriptSelfModify-SetScriptChecksumContents-UbiquitousBash-uk4uPhB663kVcygT0q#####'/'"$current_ub_setScriptChecksum_contents"'/' "$1"
 }
 
