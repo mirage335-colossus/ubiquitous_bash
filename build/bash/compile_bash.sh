@@ -512,6 +512,9 @@ _compile_bash_shortcuts() {
 _compile_bash_shortcuts_setup() {
 	export includeScriptList
 	
+	includeScriptList+=( "shortcuts"/setupUbiquitous_accessories_here.sh )
+	includeScriptList+=( "shortcuts"/setupUbiquitous_accessories.sh )
+	
 	includeScriptList+=( "shortcuts"/setupUbiquitous_here.sh )
 	includeScriptList+=( "shortcuts"/setupUbiquitous.sh )
 }

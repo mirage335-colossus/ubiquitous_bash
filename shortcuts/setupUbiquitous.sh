@@ -82,6 +82,8 @@ _installUbiquitous() {
 }
 
 
+
+
 _setupUbiquitous() {
 	_messageNormal "init: setupUbiquitous"
 	local ubHome
@@ -90,6 +92,8 @@ _setupUbiquitous() {
 	
 	export ubcoreDir="$ubHome"/.ubcore
 	export ubcoreFile="$ubcoreDir"/.ubcorerc
+	
+	export ubcoreDir_accessories="$ubHome"/.ubcore/accessories
 	
 	export ubcoreUBdir="$ubcoreDir"/ubiquitous_bash
 	export ubcoreUBfile="$ubcoreDir"/ubiquitous_bash/ubiquitous_bash.sh
@@ -103,6 +107,9 @@ _setupUbiquitous() {
 	
 	mkdir -p "$ubcoreUBdir"
 	! [[ -e "$ubcoreUBdir" ]] && _messagePlain_bad 'missing: ubcoreUBdir= '"$ubcoreUBdir" && _messageFAIL && return 1
+	
+	mkdir -p "$ubcoreDir_accessories"
+	! [[ -e "$ubcoreDir_accessories" ]] && _messagePlain_bad 'missing: ubcoreUBdir_accessories= '"$ubcoreDir_accessories" && _messageFAIL && return 1
 	
 	
 	_messageNormal "install: setupUbiquitous"
@@ -126,8 +133,19 @@ _setupUbiquitous() {
 	! grep ubcore "$ubHome"/.bashrc > /dev/null 2>&1 && _messagePlain_bad 'missing: bashrc hook' && _messageFAIL && return 1
 	
 	
-	echo "Now import new functionality into current shell if not in current shell."
-	echo ". "'"'"$scriptAbsoluteLocation"'"' --profile _importShortcuts
+	
+	
+	_messageNormal "install: setupUbiquitous_accessories"
+	
+	_setupUbiquitous_accessories "$@"
+	
+	
+	_messageNormal "request: setupUbiquitous_accessories , setupUbiquitous"
+	
+	_setupUbiquitous_accessories_requests "$@"
+	
+	_messagePlain_request "Now import new functionality into current shell if not in current shell."
+	_messagePlain_request echo ". "'"'"$scriptAbsoluteLocation"'"' --profile _importShortcuts
 	
 	
 	return 0

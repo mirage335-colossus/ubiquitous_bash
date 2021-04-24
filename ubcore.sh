@@ -32,7 +32,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='1891409836'
-export ub_setScriptChecksum_contents='4193362417'
+export ub_setScriptChecksum_contents='3345475039'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -7030,6 +7030,107 @@ CZXWXcRMTo8EmM8i4d
 
 
 
+
+# ATTENTION: Override with 'ops.sh' , 'core.sh' , or similar.
+_setupUbiquitous_accessories_here-gnuoctave() {
+	cat << CZXWXcRMTo8EmM8i4d
+
+tera = 10^12
+giga = 10^9
+mega = 10^6
+kilo = 10^3
+
+bit = 1
+byte = 8
+
+terabit = tera
+gigabit = giga
+megabit = mega
+kilobit = kilo
+
+Tb = tera
+Gb = giga
+Mb = mega
+Kb = kilo
+
+terabyte = terabit * byte
+gigabyte = gigabit * byte
+megabyte = megabit * byte
+kilobyte = kilobit * byte
+
+TB = terabyte
+GB = gigabyte
+MB = megabyte
+KB = kilobyte
+
+
+pkg load symbolic
+
+syms a b c d e f g h i j k l m n o p q r s t u v w x y z
+
+
+unix("true")
+system("true")
+
+cd
+
+# Equivalent to Ctrl-L . 
+# https://stackoverflow.com/questions/11269571/how-to-clear-the-command-line-in-octave
+clc
+
+
+
+
+CZXWXcRMTo8EmM8i4d
+}
+
+
+_setupUbiquitous_accessories-gnuoctave() {
+	_messagePlain_nominal 'init: _setupUbiquitous_accessories-gnuoctave'
+	
+	mkdir -p "$ubcoreDir_accessories"/gnuoctave
+	
+	export ubcore_accessoriesFile_gnuoctave="$ubcoreDir_accessories"/gnuoctave/ubcorerc.m
+	export ubcore_accessoriesFile_gnuoctave_ubhome="$ubHome"/.ubcorerc-gnuoctave.m
+	
+	rm -f "$ubcore_accessoriesFile_gnuoctave"
+	rm -f "$ubcore_accessoriesFile_gnuoctave_ubhome"
+	ln -s "$ubcore_accessoriesFile_gnuoctave_ubhome" "$ubcore_accessoriesFile_gnuoctave"
+	
+	_setupUbiquitous_accessories_here-gnuoctave > "$ubcore_accessoriesFile_gnuoctave_ubhome"
+	
+	
+	if ! grep ubcore "$ubHome"/.octaverc > /dev/null 2>&1 && _messagePlain_probe 'octaverc'
+	then
+		# https://www.mathworks.com/matlabcentral/answers/194868-what-about-the-character
+		echo '%# ubcore' >> "$ubHome"/.octaverc
+		_safeEcho_newline run'("'"$ubcore_accessoriesFile_gnuoctave_ubhome"'")' >> "$ubHome"/.octaverc
+	fi
+	
+	return 0
+}
+
+
+_setupUbiquitous_accessories() {
+	
+	_setupUbiquitous_accessories-gnuoctave "$@"
+	
+	
+	return 0
+}
+
+
+_setupUbiquitous_accessories_requests() {
+	
+	# EXAMPLE .
+	#_messagePlain_request 'request: request'
+	
+	return 0
+}
+
+
+
+
 _setupUbiquitous_here() {
 	cat << CZXWXcRMTo8EmM8i4d
 
@@ -7154,6 +7255,8 @@ _installUbiquitous() {
 }
 
 
+
+
 _setupUbiquitous() {
 	_messageNormal "init: setupUbiquitous"
 	local ubHome
@@ -7162,6 +7265,8 @@ _setupUbiquitous() {
 	
 	export ubcoreDir="$ubHome"/.ubcore
 	export ubcoreFile="$ubcoreDir"/.ubcorerc
+	
+	export ubcoreDir_accessories="$ubHome"/.ubcore/accessories
 	
 	export ubcoreUBdir="$ubcoreDir"/ubiquitous_bash
 	export ubcoreUBfile="$ubcoreDir"/ubiquitous_bash/ubiquitous_bash.sh
@@ -7175,6 +7280,9 @@ _setupUbiquitous() {
 	
 	mkdir -p "$ubcoreUBdir"
 	! [[ -e "$ubcoreUBdir" ]] && _messagePlain_bad 'missing: ubcoreUBdir= '"$ubcoreUBdir" && _messageFAIL && return 1
+	
+	mkdir -p "$ubcoreDir_accessories"
+	! [[ -e "$ubcoreDir_accessories" ]] && _messagePlain_bad 'missing: ubcoreUBdir_accessories= '"$ubcoreDir_accessories" && _messageFAIL && return 1
 	
 	
 	_messageNormal "install: setupUbiquitous"
@@ -7198,8 +7306,19 @@ _setupUbiquitous() {
 	! grep ubcore "$ubHome"/.bashrc > /dev/null 2>&1 && _messagePlain_bad 'missing: bashrc hook' && _messageFAIL && return 1
 	
 	
-	echo "Now import new functionality into current shell if not in current shell."
-	echo ". "'"'"$scriptAbsoluteLocation"'"' --profile _importShortcuts
+	
+	
+	_messageNormal "install: setupUbiquitous_accessories"
+	
+	_setupUbiquitous_accessories "$@"
+	
+	
+	_messageNormal "request: setupUbiquitous_accessories , setupUbiquitous"
+	
+	_setupUbiquitous_accessories_requests "$@"
+	
+	_messagePlain_request "Now import new functionality into current shell if not in current shell."
+	_messagePlain_request echo ". "'"'"$scriptAbsoluteLocation"'"' --profile _importShortcuts
 	
 	
 	return 0
