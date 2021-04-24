@@ -1,21 +1,5 @@
 
-_test_devqalculate() {
-	_wantGetDep qalculate-gtk
-	_wantGetDep qalculate
-	
-	! _typeShare 'texmf/tex/latex/gnuplot/gnuplot.cfg' && _wantGetDep gnuplot-data
-	! _typeShare 'texmf/tex/latex/gnuplot/gnuplot.cfg' && echo 'warn: missing: gnuplot-data'
-	
-	#_wantGetDep gnuplot-data
-	#_wantGetDep gnuplot-x11
-	_wantGetDep gnuplot-qt
-	
-	_wantGetDep gnuplot
-	
-	! _typeDep qalculate-gtk && echo 'warn: missing: qalculate-gtk'
-	
-	return 0
-}
+
 
 
 # Interactive.
@@ -36,4 +20,38 @@ _qalculate_script() {
 	
 	cat "$currentFile" | _qalculate_pipe "$@"
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+_test_devqalculate() {
+	_wantGetDep qalculate-gtk
+	_wantGetDep qalculate
+	
+	! _typeShare 'texmf/tex/latex/gnuplot/gnuplot.cfg' && _wantGetDep gnuplot-data
+	! _typeShare 'texmf/tex/latex/gnuplot/gnuplot.cfg' && echo 'warn: missing: gnuplot-data'
+	
+	#_wantGetDep gnuplot-data
+	#_wantGetDep gnuplot-x11
+	_wantGetDep gnuplot-qt
+	
+	_wantGetDep gnuplot
+	
+	! _typeDep qalculate-gtk && echo 'warn: missing: qalculate-gtk'
+	
+	return 0
+}
+
 
