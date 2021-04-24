@@ -32,7 +32,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='1891409836'
-export ub_setScriptChecksum_contents='3345475039'
+export ub_setScriptChecksum_contents='1310814464'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -7035,54 +7035,80 @@ CZXWXcRMTo8EmM8i4d
 _setupUbiquitous_accessories_here-gnuoctave() {
 	cat << CZXWXcRMTo8EmM8i4d
 
-tera = 10^12
-giga = 10^9
-mega = 10^6
-kilo = 10^3
+%# https://stackoverflow.com/questions/8260619/how-can-i-suppress-the-output-of-a-command-in-octave
+%# oldpager = PAGER('/dev/null');
+%# oldpso = page_screen_output(1);
+%# oldpoi = page_output_immediately(1);
 
-bit = 1
-byte = 8
+tera = 10^12;
+giga = 10^9;
+mega = 10^6;
+kilo = 10^3;
 
-terabit = tera
-gigabit = giga
-megabit = mega
-kilobit = kilo
+bit = 1;
+byte = 8;
 
-Tb = tera
-Gb = giga
-Mb = mega
-Kb = kilo
+terabit = tera;
+gigabit = giga;
+megabit = mega;
+kilobit = kilo;
 
-terabyte = terabit * byte
-gigabyte = gigabit * byte
-megabyte = megabit * byte
-kilobyte = kilobit * byte
+Tb = tera;
+Gb = giga;
+Mb = mega;
+Kb = kilo;
 
-TB = terabyte
-GB = gigabyte
-MB = megabyte
-KB = kilobyte
+terabyte = terabit * byte;
+gigabyte = gigabit * byte;
+megabyte = megabit * byte;
+kilobyte = kilobit * byte;
 
-
-pkg load symbolic
-
-syms a b c d e f g h i j k l m n o p q r s t u v w x y z
-
-
-unix("true")
-system("true")
-
-cd
-
-# Equivalent to Ctrl-L . 
-# https://stackoverflow.com/questions/11269571/how-to-clear-the-command-line-in-octave
-clc
+TB = terabyte;
+GB = gigabyte;
+MB = megabyte;
+KB = kilobyte;
 
 
+pkg load symbolic;
 
+syms a b c d e f g h i j k l m n o p q r s t u v w x y z;
+
+
+unix("true");
+system("true");
+
+cd;
+
+%# Equivalent to Ctrl-L . 
+%# https://stackoverflow.com/questions/11269571/how-to-clear-the-command-line-in-octave
+clc;
+
+
+%# PAGER(oldpager);
+%# page_screen_output(oldpso);
+%# page_output_immediately(oldpoi);
 
 CZXWXcRMTo8EmM8i4d
 }
+
+
+_setupUbiquitous_accessories_here-gnuoctave_hook() {
+	cat << CZXWXcRMTo8EmM8i4d
+
+%# oldpager = PAGER('/dev/null');
+%# oldpso = page_screen_output(1);
+%# oldpoi = page_output_immediately(1);
+
+%# ubcore
+run("$ubcore_accessoriesFile_gnuoctave_ubhome")';
+
+%# PAGER(oldpager);
+%# page_screen_output(oldpso);
+%# page_output_immediately(oldpoi);
+
+CZXWXcRMTo8EmM8i4d
+}
+
 
 
 _setupUbiquitous_accessories-gnuoctave() {
@@ -7103,8 +7129,9 @@ _setupUbiquitous_accessories-gnuoctave() {
 	if ! grep ubcore "$ubHome"/.octaverc > /dev/null 2>&1 && _messagePlain_probe 'octaverc'
 	then
 		# https://www.mathworks.com/matlabcentral/answers/194868-what-about-the-character
-		echo '%# ubcore' >> "$ubHome"/.octaverc
-		_safeEcho_newline run'("'"$ubcore_accessoriesFile_gnuoctave_ubhome"'")' >> "$ubHome"/.octaverc
+		#echo '%# ubcore' >> "$ubHome"/.octaverc
+		#_safeEcho_newline run'("'"$ubcore_accessoriesFile_gnuoctave_ubhome"'")' >> "$ubHome"/.octaverc
+		_setupUbiquitous_accessories_here-gnuoctave_hook >> "$ubHome"/.octaverc
 	fi
 	
 	return 0
@@ -13123,6 +13150,12 @@ _test() {
 	_tryExec "_test_gparted"
 	
 	_tryExec "_test_synergy"
+	
+	
+	_tryExec "_test_devqalculate"
+	_tryExec "_test_devgnuoctave"
+	
+	
 	
 	_tryExec "_test_devatom"
 	_tryExec "_test_devemacs"

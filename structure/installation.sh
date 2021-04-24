@@ -1302,6 +1302,12 @@ _test() {
 	
 	_tryExec "_test_synergy"
 	
+	
+	_tryExec "_test_devqalculate"
+	_tryExec "_test_devgnuoctave"
+	
+	
+	
 	_tryExec "_test_devatom"
 	_tryExec "_test_devemacs"
 	_tryExec "_test_deveclipse"

@@ -16,8 +16,9 @@ _setupUbiquitous_accessories-gnuoctave() {
 	if ! grep ubcore "$ubHome"/.octaverc > /dev/null 2>&1 && _messagePlain_probe 'octaverc'
 	then
 		# https://www.mathworks.com/matlabcentral/answers/194868-what-about-the-character
-		echo '%# ubcore' >> "$ubHome"/.octaverc
-		_safeEcho_newline run'("'"$ubcore_accessoriesFile_gnuoctave_ubhome"'")' >> "$ubHome"/.octaverc
+		#echo '%# ubcore' >> "$ubHome"/.octaverc
+		#_safeEcho_newline run'("'"$ubcore_accessoriesFile_gnuoctave_ubhome"'")' >> "$ubHome"/.octaverc
+		_setupUbiquitous_accessories_here-gnuoctave_hook >> "$ubHome"/.octaverc
 	fi
 	
 	return 0

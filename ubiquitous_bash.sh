@@ -32,7 +32,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='1891409836'
-export ub_setScriptChecksum_contents='3959769054'
+export ub_setScriptChecksum_contents='1634112927'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -14502,6 +14502,52 @@ _findFunction() {
 	find . -not -path "./_local/*" -name '*.sh' -type f -size -1000k -exec grep -n "$@" '{}' /dev/null \;
 }
 
+
+_test_devqalculate() {
+	_wantGetDep qalculate-gtk
+	_wantGetDep qalculate
+	
+	! _typeShare 'texmf/tex/latex/gnuplot/gnuplot.cfg' && _wantGetDep gnuplot-data
+	! _typeShare 'texmf/tex/latex/gnuplot/gnuplot.cfg' && echo 'warn: missing: gnuplot-data'
+	
+	#_wantGetDep gnuplot-data
+	#_wantGetDep gnuplot-x11
+	_wantGetDep gnuplot-qt
+	
+	_wantGetDep gnuplot
+	
+	! _typeDep qalculate-gtk && echo 'warn: missing: qalculate-gtk'
+	
+	return 0
+}
+
+
+# Interactive.
+_qalculate() {
+	qalc "$@"
+}
+
+# ATTENTION: EXAMPLE: echo 'solve(x == y * 2, y)' | _qalculate_pipe
+_qalculate_pipe() {
+	qalc "$@"
+}
+
+# ATTENTION: _qalculate_script 'qalculate.m'
+# echo 'solve(x == y * 2, y)' > qalculate_script.m
+_qalculate_script() {
+	local currentFile="$1"
+	shift
+	
+	cat "$currentFile" | _qalculate_pipe "$@"
+}
+
+
+
+_test_devgnuoctave() {
+	_messagePlain_probe '_test_devgnuoctave'
+	true
+}
+
 _test_devemacs() {
 	_wantGetDep emacs
 	
@@ -18036,54 +18082,80 @@ CZXWXcRMTo8EmM8i4d
 _setupUbiquitous_accessories_here-gnuoctave() {
 	cat << CZXWXcRMTo8EmM8i4d
 
-tera = 10^12
-giga = 10^9
-mega = 10^6
-kilo = 10^3
+%# https://stackoverflow.com/questions/8260619/how-can-i-suppress-the-output-of-a-command-in-octave
+%# oldpager = PAGER('/dev/null');
+%# oldpso = page_screen_output(1);
+%# oldpoi = page_output_immediately(1);
 
-bit = 1
-byte = 8
+tera = 10^12;
+giga = 10^9;
+mega = 10^6;
+kilo = 10^3;
 
-terabit = tera
-gigabit = giga
-megabit = mega
-kilobit = kilo
+bit = 1;
+byte = 8;
 
-Tb = tera
-Gb = giga
-Mb = mega
-Kb = kilo
+terabit = tera;
+gigabit = giga;
+megabit = mega;
+kilobit = kilo;
 
-terabyte = terabit * byte
-gigabyte = gigabit * byte
-megabyte = megabit * byte
-kilobyte = kilobit * byte
+Tb = tera;
+Gb = giga;
+Mb = mega;
+Kb = kilo;
 
-TB = terabyte
-GB = gigabyte
-MB = megabyte
-KB = kilobyte
+terabyte = terabit * byte;
+gigabyte = gigabit * byte;
+megabyte = megabit * byte;
+kilobyte = kilobit * byte;
 
-
-pkg load symbolic
-
-syms a b c d e f g h i j k l m n o p q r s t u v w x y z
-
-
-unix("true")
-system("true")
-
-cd
-
-# Equivalent to Ctrl-L . 
-# https://stackoverflow.com/questions/11269571/how-to-clear-the-command-line-in-octave
-clc
+TB = terabyte;
+GB = gigabyte;
+MB = megabyte;
+KB = kilobyte;
 
 
+pkg load symbolic;
 
+syms a b c d e f g h i j k l m n o p q r s t u v w x y z;
+
+
+unix("true");
+system("true");
+
+cd;
+
+%# Equivalent to Ctrl-L . 
+%# https://stackoverflow.com/questions/11269571/how-to-clear-the-command-line-in-octave
+clc;
+
+
+%# PAGER(oldpager);
+%# page_screen_output(oldpso);
+%# page_output_immediately(oldpoi);
 
 CZXWXcRMTo8EmM8i4d
 }
+
+
+_setupUbiquitous_accessories_here-gnuoctave_hook() {
+	cat << CZXWXcRMTo8EmM8i4d
+
+%# oldpager = PAGER('/dev/null');
+%# oldpso = page_screen_output(1);
+%# oldpoi = page_output_immediately(1);
+
+%# ubcore
+run("$ubcore_accessoriesFile_gnuoctave_ubhome")';
+
+%# PAGER(oldpager);
+%# page_screen_output(oldpso);
+%# page_output_immediately(oldpoi);
+
+CZXWXcRMTo8EmM8i4d
+}
+
 
 
 _setupUbiquitous_accessories-gnuoctave() {
@@ -18104,8 +18176,9 @@ _setupUbiquitous_accessories-gnuoctave() {
 	if ! grep ubcore "$ubHome"/.octaverc > /dev/null 2>&1 && _messagePlain_probe 'octaverc'
 	then
 		# https://www.mathworks.com/matlabcentral/answers/194868-what-about-the-character
-		echo '%# ubcore' >> "$ubHome"/.octaverc
-		_safeEcho_newline run'("'"$ubcore_accessoriesFile_gnuoctave_ubhome"'")' >> "$ubHome"/.octaverc
+		#echo '%# ubcore' >> "$ubHome"/.octaverc
+		#_safeEcho_newline run'("'"$ubcore_accessoriesFile_gnuoctave_ubhome"'")' >> "$ubHome"/.octaverc
+		_setupUbiquitous_accessories_here-gnuoctave_hook >> "$ubHome"/.octaverc
 	fi
 	
 	return 0
@@ -27444,6 +27517,12 @@ _test() {
 	
 	_tryExec "_test_synergy"
 	
+	
+	_tryExec "_test_devqalculate"
+	_tryExec "_test_devgnuoctave"
+	
+	
+	
 	_tryExec "_test_devatom"
 	_tryExec "_test_devemacs"
 	_tryExec "_test_deveclipse"
@@ -28863,6 +28942,9 @@ _compile_bash_shortcuts() {
 	
 	#[[ "$enUb_dev_heavy" == "true" ]] && 
 	includeScriptList+=( "shortcuts/dev"/devsearch.sh )
+	
+	[[ "$enUb_fakehome" == "true" ]] && [[ "$enUb_dev_heavy" == "true" ]] && includeScriptList+=( "shortcuts/dev/app/calculators"/qalculate.sh )
+	[[ "$enUb_fakehome" == "true" ]] && [[ "$enUb_dev_heavy" == "true" ]] && includeScriptList+=( "shortcuts/dev/app/calculators"/gnuoctave.sh )
 	
 	[[ "$enUb_fakehome" == "true" ]] && [[ "$enUb_dev_heavy" == "true" ]] && includeScriptList+=( "shortcuts/dev/app"/devemacs.sh )
 	[[ "$enUb_fakehome" == "true" ]] && [[ "$enUb_dev_heavy" == "true" ]] && includeScriptList+=( "shortcuts/dev/app"/devatom.sh )
