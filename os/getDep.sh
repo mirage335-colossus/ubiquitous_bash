@@ -4,6 +4,34 @@ _typeShare() {
 	[[ -e /usr/share/"$1" ]] && ! [[ -d /usr/share/"$1" ]] && return 0
 	[[ -e /usr/local/share/"$1" ]] && ! [[ -d /usr/local/share/"$1" ]] && return 0
 	
+	[[ -d /usr/share/"$1" ]] && return 2
+	[[ -d /usr/local/share/"$1" ]] && return 2
+	
+	[[ "$1" == '/'* ]] && [[ -e "$1"* ]] && return 3
+	ls /usr/share/"$1"* > /dev/null 2>&1 && return 3
+	ls /usr/local/share/"$1"* > /dev/null 2>&1 && return 3
+	
+	return 1
+}
+
+_typeShare_dir_wildcard() {
+	local currentFunctionReturn
+	_typeShare "$@"
+	currentFunctionReturn="$?"
+	
+	[[ "$currentFunctionReturn" == '0' ]] && return 0
+	[[ "$currentFunctionReturn" == '2' ]] && return 0
+	[[ "$currentFunctionReturn" == '3' ]] && return 0
+	return 1
+}
+
+_typeShare_dir() {
+	local currentFunctionReturn
+	_typeShare "$@"
+	currentFunctionReturn="$?"
+	
+	[[ "$currentFunctionReturn" == '0' ]] && return 0
+	[[ "$currentFunctionReturn" == '2' ]] && return 0
 	return 1
 }
 

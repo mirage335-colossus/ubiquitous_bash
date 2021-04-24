@@ -943,6 +943,76 @@ _test_embed() {
 }
 
 _test_sanity() {
+	if (exit 0)
+	then
+		true
+	else
+		_messageFAIL && return 1
+	fi
+	if ! (exit 0)
+	then
+		_messageFAIL && return 1
+	fi
+	if (exit 1)
+	then
+		_messageFAIL && return 1
+	fi
+	if (exit 2)
+	then
+		_messageFAIL && return 1
+	fi
+	if (exit 3)
+	then
+		_messageFAIL && return 1
+	fi
+	if (exit 126)
+	then
+		_messageFAIL && return 1
+	fi
+	if (exit 127)
+	then
+		_messageFAIL && return 1
+	fi
+	if (exit 128)
+	then
+		_messageFAIL && return 1
+	fi
+	if (exit 129)
+	then
+		_messageFAIL && return 1
+	fi
+	if (exit 130)
+	then
+		_messageFAIL && return 1
+	fi
+	if (exit 131)
+	then
+		_messageFAIL && return 1
+	fi
+	if (exit 132)
+	then
+		_messageFAIL && return 1
+	fi
+	if (exit 255)
+	then
+		_messageFAIL && return 1
+	fi
+	
+	local currentSubReturnStatus
+	(exit 0)
+	currentSubReturnStatus="$?"
+	[[ "$currentSubReturnStatus" != '0' ]] && _messageFAIL && return 1
+	(exit 1)
+	currentSubReturnStatus="$?"
+	[[ "$currentSubReturnStatus" != '1' ]] && _messageFAIL && return 1
+	(exit 2)
+	currentSubReturnStatus="$?"
+	[[ "$currentSubReturnStatus" != '2' ]] && _messageFAIL && return 1
+	(exit 3)
+	currentSubReturnStatus="$?"
+	[[ "$currentSubReturnStatus" != '3' ]] && _messageFAIL && return 1
+	
+	
 	# Do NOT allow 'rm' to be a shell function alias to 'rm -i' or similar.
 	[[ $(type -p rm) == "" ]] && _messageFAIL && return 1
 	

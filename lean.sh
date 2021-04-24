@@ -32,7 +32,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='1891409836'
-export ub_setScriptChecksum_contents='2615556010'
+export ub_setScriptChecksum_contents='121267847'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -3403,6 +3403,34 @@ _typeShare() {
 	[[ -e /usr/share/"$1" ]] && ! [[ -d /usr/share/"$1" ]] && return 0
 	[[ -e /usr/local/share/"$1" ]] && ! [[ -d /usr/local/share/"$1" ]] && return 0
 	
+	[[ -d /usr/share/"$1" ]] && return 2
+	[[ -d /usr/local/share/"$1" ]] && return 2
+	
+	[[ "$1" == '/'* ]] && [[ -e "$1"* ]] && return 3
+	ls /usr/share/"$1"* > /dev/null 2>&1 && return 3
+	ls /usr/local/share/"$1"* > /dev/null 2>&1 && return 3
+	
+	return 1
+}
+
+_typeShare_dir_wildcard() {
+	local currentFunctionReturn
+	_typeShare "$@"
+	currentFunctionReturn="$?"
+	
+	[[ "$currentFunctionReturn" == '0' ]] && return 0
+	[[ "$currentFunctionReturn" == '2' ]] && return 0
+	[[ "$currentFunctionReturn" == '3' ]] && return 0
+	return 1
+}
+
+_typeShare_dir() {
+	local currentFunctionReturn
+	_typeShare "$@"
+	currentFunctionReturn="$?"
+	
+	[[ "$currentFunctionReturn" == '0' ]] && return 0
+	[[ "$currentFunctionReturn" == '2' ]] && return 0
 	return 1
 }
 
@@ -9383,6 +9411,76 @@ _test_embed() {
 }
 
 _test_sanity() {
+	if (exit 0)
+	then
+		true
+	else
+		_messageFAIL && return 1
+	fi
+	if ! (exit 0)
+	then
+		_messageFAIL && return 1
+	fi
+	if (exit 1)
+	then
+		_messageFAIL && return 1
+	fi
+	if (exit 2)
+	then
+		_messageFAIL && return 1
+	fi
+	if (exit 3)
+	then
+		_messageFAIL && return 1
+	fi
+	if (exit 126)
+	then
+		_messageFAIL && return 1
+	fi
+	if (exit 127)
+	then
+		_messageFAIL && return 1
+	fi
+	if (exit 128)
+	then
+		_messageFAIL && return 1
+	fi
+	if (exit 129)
+	then
+		_messageFAIL && return 1
+	fi
+	if (exit 130)
+	then
+		_messageFAIL && return 1
+	fi
+	if (exit 131)
+	then
+		_messageFAIL && return 1
+	fi
+	if (exit 132)
+	then
+		_messageFAIL && return 1
+	fi
+	if (exit 255)
+	then
+		_messageFAIL && return 1
+	fi
+	
+	local currentSubReturnStatus
+	(exit 0)
+	currentSubReturnStatus="$?"
+	[[ "$currentSubReturnStatus" != '0' ]] && _messageFAIL && return 1
+	(exit 1)
+	currentSubReturnStatus="$?"
+	[[ "$currentSubReturnStatus" != '1' ]] && _messageFAIL && return 1
+	(exit 2)
+	currentSubReturnStatus="$?"
+	[[ "$currentSubReturnStatus" != '2' ]] && _messageFAIL && return 1
+	(exit 3)
+	currentSubReturnStatus="$?"
+	[[ "$currentSubReturnStatus" != '3' ]] && _messageFAIL && return 1
+	
+	
 	# Do NOT allow 'rm' to be a shell function alias to 'rm -i' or similar.
 	[[ $(type -p rm) == "" ]] && _messageFAIL && return 1
 	

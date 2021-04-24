@@ -32,7 +32,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='1891409836'
-export ub_setScriptChecksum_contents='2572207043'
+export ub_setScriptChecksum_contents='201314552'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -3478,6 +3478,34 @@ _typeShare() {
 	[[ -e /usr/share/"$1" ]] && ! [[ -d /usr/share/"$1" ]] && return 0
 	[[ -e /usr/local/share/"$1" ]] && ! [[ -d /usr/local/share/"$1" ]] && return 0
 	
+	[[ -d /usr/share/"$1" ]] && return 2
+	[[ -d /usr/local/share/"$1" ]] && return 2
+	
+	[[ "$1" == '/'* ]] && [[ -e "$1"* ]] && return 3
+	ls /usr/share/"$1"* > /dev/null 2>&1 && return 3
+	ls /usr/local/share/"$1"* > /dev/null 2>&1 && return 3
+	
+	return 1
+}
+
+_typeShare_dir_wildcard() {
+	local currentFunctionReturn
+	_typeShare "$@"
+	currentFunctionReturn="$?"
+	
+	[[ "$currentFunctionReturn" == '0' ]] && return 0
+	[[ "$currentFunctionReturn" == '2' ]] && return 0
+	[[ "$currentFunctionReturn" == '3' ]] && return 0
+	return 1
+}
+
+_typeShare_dir() {
+	local currentFunctionReturn
+	_typeShare "$@"
+	currentFunctionReturn="$?"
+	
+	[[ "$currentFunctionReturn" == '0' ]] && return 0
+	[[ "$currentFunctionReturn" == '2' ]] && return 0
 	return 1
 }
 
