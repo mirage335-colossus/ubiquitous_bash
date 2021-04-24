@@ -32,7 +32,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='1891409836'
-export ub_setScriptChecksum_contents='3349938455'
+export ub_setScriptChecksum_contents='3664680993'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -14627,16 +14627,7 @@ _octave_filter-messages() {
 
 
 
-# ATTENTION: WARNING: Only tested with Debian Stable. May require rewrite to accommodate other distro (ie. Gentoo).
-_test_devgnuoctave_wantGetDep-octavePackage-debian() {
-	# If not Debian, then simply accept these pacakges may not be available.
-	! [[ -e /etc/issue ]] && cat /etc/issue | grep 'Debian' > /dev/null 2>&1 && return 0
-	
-	! _typeShare_dir_wildcard 'octave/packages/'"$1" && ! _typeShare_dir_wildcard 'octave/packages/'octave-"$1" && _wantGetDep octave-"$1"
-	#_wantGetDep octave-"$1"
-	
-	return 0
-}
+
 
 
 _test_devgnuoctave() {
@@ -14657,7 +14648,6 @@ _test_devgnuoctave() {
 	_wantGetDep 'x86_64-linux-gnu/qt5/plugins/cantor/backends/cantor_octavebackend.so'
 	
 	
-	
 	#if ! _wantGetDep dh_octave_check
 	#then
 		#! _typeShare 'dh-octave/install-pkg.m' && _wantGetDep dh-octave/install-pkg.m
@@ -14665,11 +14655,45 @@ _test_devgnuoctave() {
 	
 	
 	
+	_tryExec '_test_devgnuoctave-debian-x64'
 	
 	
+	
+	return 0
+}
+
+
+# ATTENTION: WARNING: Only tested with Debian Stable. May require rewrite to accommodate other distro (ie. Gentoo).
+_test_devgnuoctave_wantGetDep-octavePackage-debian-x64() {
 	# If not Debian, then simply accept these pacakges may not be available.
 	! [[ -e /etc/issue ]] && cat /etc/issue | grep 'Debian' > /dev/null 2>&1 && return 0
 	
+	# If not x64, then simply accept these pacakges may not be available.
+	local hostArch
+	hostArch=$(uname -m)
+	if [[ "$hostArch" != "x86_64" ]]
+	then
+		return 0
+	fi
+	
+	! _typeShare_dir_wildcard 'octave/packages/'"$1" && ! _typeShare_dir_wildcard 'octave/packages/'octave-"$1" && _wantGetDep octave-"$1"
+	#_wantGetDep octave-"$1"
+	
+	return 0
+}
+
+_test_devgnuoctave-debian-x64() {
+	# If not Debian, then simply accept these pacakges may not be available.
+	! [[ -e /etc/issue ]] && cat /etc/issue | grep 'Debian' > /dev/null 2>&1 && return 0
+	
+	
+	# If not x64, then simply accept these pacakges may not be available.
+	local hostArch
+	hostArch=$(uname -m)
+	if [[ "$hostArch" != "x86_64" ]]
+	then
+		return 0
+	fi
 	
 	
 	
@@ -14682,102 +14706,102 @@ _test_devgnuoctave() {
 	
 	_wantGetDep /usr/share/octave/site/m/bart/bart.m
 	
-	_test_devgnuoctave_wantGetDep-octavePackage-debian bim
+	_test_devgnuoctave_wantGetDep-octavePackage-debian-x64 bim
 	
 	_wantGetDep x86_64-linux-gnu/octave/site/oct/x86_64-pc-linux-gnu/biosig/mexSLOAD.mex
 	
-	_test_devgnuoctave_wantGetDep-octavePackage-debian bsltl
+	_test_devgnuoctave_wantGetDep-octavePackage-debian-x64 bsltl
 	
-	_test_devgnuoctave_wantGetDep-octavePackage-debian cgi
+	_test_devgnuoctave_wantGetDep-octavePackage-debian-x64 cgi
 	
-	_test_devgnuoctave_wantGetDep-octavePackage-debian control
+	_test_devgnuoctave_wantGetDep-octavePackage-debian-x64 control
 	
-	_test_devgnuoctave_wantGetDep-octavePackage-debian data-smoothing
+	_test_devgnuoctave_wantGetDep-octavePackage-debian-x64 data-smoothing
 	
-	_test_devgnuoctave_wantGetDep-octavePackage-debian dataframe
+	_test_devgnuoctave_wantGetDep-octavePackage-debian-x64 dataframe
 	
-	_test_devgnuoctave_wantGetDep-octavePackage-debian dicom
+	_test_devgnuoctave_wantGetDep-octavePackage-debian-x64 dicom
 	
-	_test_devgnuoctave_wantGetDep-octavePackage-debian divand
+	_test_devgnuoctave_wantGetDep-octavePackage-debian-x64 divand
 	
-	_test_devgnuoctave_wantGetDep-octavePackage-debian doctest
+	_test_devgnuoctave_wantGetDep-octavePackage-debian-x64 doctest
 	
-	_test_devgnuoctave_wantGetDep-octavePackage-debian econometrics
+	_test_devgnuoctave_wantGetDep-octavePackage-debian-x64 econometrics
 	
-	_test_devgnuoctave_wantGetDep-octavePackage-debian financial
+	_test_devgnuoctave_wantGetDep-octavePackage-debian-x64 financial
 	
-	_test_devgnuoctave_wantGetDep-octavePackage-debian fits
+	_test_devgnuoctave_wantGetDep-octavePackage-debian-x64 fits
 	
-	_test_devgnuoctave_wantGetDep-octavePackage-debian fpl
+	_test_devgnuoctave_wantGetDep-octavePackage-debian-x64 fpl
 	
-	_test_devgnuoctave_wantGetDep-octavePackage-debian fuzzy-logic-toolkit
+	_test_devgnuoctave_wantGetDep-octavePackage-debian-x64 fuzzy-logic-toolkit
 	
-	_test_devgnuoctave_wantGetDep-octavePackage-debian ga-
+	_test_devgnuoctave_wantGetDep-octavePackage-debian-x64 ga-
 	
 	_wantGetDep x86_64-linux-gnu/octave/site/oct/x86_64-pc-linux-gnu/gdf/gdf_reader.mex
 	
-	_test_devgnuoctave_wantGetDep-octavePackage-debian general
+	_test_devgnuoctave_wantGetDep-octavePackage-debian-x64 general
 	
-	_test_devgnuoctave_wantGetDep-octavePackage-debian geometry
+	_test_devgnuoctave_wantGetDep-octavePackage-debian-x64 geometry
 	
-	_test_devgnuoctave_wantGetDep-octavePackage-debian gsl
+	_test_devgnuoctave_wantGetDep-octavePackage-debian-x64 gsl
 	
-	_test_devgnuoctave_wantGetDep-octavePackage-debian image
+	_test_devgnuoctave_wantGetDep-octavePackage-debian-x64 image
 	
-	_test_devgnuoctave_wantGetDep-octavePackage-debian image-acquisition
+	_test_devgnuoctave_wantGetDep-octavePackage-debian-x64 image-acquisition
 	
-	_test_devgnuoctave_wantGetDep-octavePackage-debian instrument-control
+	_test_devgnuoctave_wantGetDep-octavePackage-debian-x64 instrument-control
 	
-	_test_devgnuoctave_wantGetDep-octavePackage-debian interval
+	_test_devgnuoctave_wantGetDep-octavePackage-debian-x64 interval
 	
-	_test_devgnuoctave_wantGetDep-octavePackage-debian io-
+	_test_devgnuoctave_wantGetDep-octavePackage-debian-x64 io-
 	
-	_test_devgnuoctave_wantGetDep-octavePackage-debian level-set
+	_test_devgnuoctave_wantGetDep-octavePackage-debian-x64 level-set
 	
-	_test_devgnuoctave_wantGetDep-octavePackage-debian linear-algebra
+	_test_devgnuoctave_wantGetDep-octavePackage-debian-x64 linear-algebra
 	
-	_test_devgnuoctave_wantGetDep-octavePackage-debian lssa
+	_test_devgnuoctave_wantGetDep-octavePackage-debian-x64 lssa
 	
-	_test_devgnuoctave_wantGetDep-octavePackage-debian ltfat
+	_test_devgnuoctave_wantGetDep-octavePackage-debian-x64 ltfat
 	
-	_test_devgnuoctave_wantGetDep-octavePackage-debian mapping
+	_test_devgnuoctave_wantGetDep-octavePackage-debian-x64 mapping
 	
-	_test_devgnuoctave_wantGetDep-octavePackage-debian miscellaneous
+	_test_devgnuoctave_wantGetDep-octavePackage-debian-x64 miscellaneous
 	
-	_test_devgnuoctave_wantGetDep-octavePackage-debian missing-functions
+	_test_devgnuoctave_wantGetDep-octavePackage-debian-x64 missing-functions
 	
-	_test_devgnuoctave_wantGetDep-octavePackage-debian mpi-
+	_test_devgnuoctave_wantGetDep-octavePackage-debian-x64 mpi-
 	
-	_test_devgnuoctave_wantGetDep-octavePackage-debian msh-
+	_test_devgnuoctave_wantGetDep-octavePackage-debian-x64 msh-
 	
-	_test_devgnuoctave_wantGetDep-octavePackage-debian mvn-
+	_test_devgnuoctave_wantGetDep-octavePackage-debian-x64 mvn-
 	
-	_test_devgnuoctave_wantGetDep-octavePackage-debian nan-
+	_test_devgnuoctave_wantGetDep-octavePackage-debian-x64 nan-
 	
-	_test_devgnuoctave_wantGetDep-octavePackage-debian ncarray
+	_test_devgnuoctave_wantGetDep-octavePackage-debian-x64 ncarray
 	
-	_test_devgnuoctave_wantGetDep-octavePackage-debian netcdf
+	_test_devgnuoctave_wantGetDep-octavePackage-debian-x64 netcdf
 	
 	_wantGetDep x86_64-linux-gnu/octave/site/oct/x86_64-pc-linux-gnu/nlopt/nlopt_optimize.oct
 	! _typeShare 'octave/site/m/nlopt/nlopt_optimize.m' && _wantGetDep octave-nlopt
 	
-	_test_devgnuoctave_wantGetDep-octavePackage-debian nurbs
+	_test_devgnuoctave_wantGetDep-octavePackage-debian-x64 nurbs
 	
-	_test_devgnuoctave_wantGetDep-octavePackage-debian netcdf
+	_test_devgnuoctave_wantGetDep-octavePackage-debian-x64 netcdf
 	
-	_test_devgnuoctave_wantGetDep-octavePackage-debian octclip
+	_test_devgnuoctave_wantGetDep-octavePackage-debian-x64 octclip
 	
-	_test_devgnuoctave_wantGetDep-octavePackage-debian octproj
+	_test_devgnuoctave_wantGetDep-octavePackage-debian-x64 octproj
 	
-	_test_devgnuoctave_wantGetDep-octavePackage-debian openems
+	_test_devgnuoctave_wantGetDep-octavePackage-debian-x64 openems
 	
-	_test_devgnuoctave_wantGetDep-octavePackage-debian optics
+	_test_devgnuoctave_wantGetDep-octavePackage-debian-x64 optics
 	
-	_test_devgnuoctave_wantGetDep-octavePackage-debian optim
+	_test_devgnuoctave_wantGetDep-octavePackage-debian-x64 optim
 	
-	_test_devgnuoctave_wantGetDep-octavePackage-debian optiminterp
+	_test_devgnuoctave_wantGetDep-octavePackage-debian-x64 optiminterp
 	
-	_test_devgnuoctave_wantGetDep-octavePackage-debian parallel
+	_test_devgnuoctave_wantGetDep-octavePackage-debian-x64 parallel
 	
 	_wantGetDep x86_64-linux-gnu/octave/site/oct/x86_64-pc-linux-gnu/pfstools/pfsread.oct
 	! _typeShare 'octave/site/m/pfstools/pfs_read_xyz.m' && _wantGetDep octave-pfstools
@@ -14787,59 +14811,48 @@ _test_devgnuoctave() {
 	
 	_wantGetDep psychtoolbox-3/PsychBasic/PsychPortAudio.mex
 	
-	_test_devgnuoctave_wantGetDep-octavePackage-debian quaternion
+	_test_devgnuoctave_wantGetDep-octavePackage-debian-x64 quaternion
 	
-	_test_devgnuoctave_wantGetDep-octavePackage-debian queueing
+	_test_devgnuoctave_wantGetDep-octavePackage-debian-x64 queueing
 	
-	_test_devgnuoctave_wantGetDep-octavePackage-debian secs1d
+	_test_devgnuoctave_wantGetDep-octavePackage-debian-x64 secs1d
 	
-	_test_devgnuoctave_wantGetDep-octavePackage-debian secs2d
+	_test_devgnuoctave_wantGetDep-octavePackage-debian-x64 secs2d
 	
-	_test_devgnuoctave_wantGetDep-octavePackage-debian secs3d
+	_test_devgnuoctave_wantGetDep-octavePackage-debian-x64 secs3d
 	
-	_test_devgnuoctave_wantGetDep-octavePackage-debian signal
+	_test_devgnuoctave_wantGetDep-octavePackage-debian-x64 signal
 	
-	_test_devgnuoctave_wantGetDep-octavePackage-debian sockets
+	_test_devgnuoctave_wantGetDep-octavePackage-debian-x64 sockets
 	
-	_test_devgnuoctave_wantGetDep-octavePackage-debian sparsersb
+	_test_devgnuoctave_wantGetDep-octavePackage-debian-x64 sparsersb
 	
-	_test_devgnuoctave_wantGetDep-octavePackage-debian specfun
+	_test_devgnuoctave_wantGetDep-octavePackage-debian-x64 specfun
 	
-	_test_devgnuoctave_wantGetDep-octavePackage-debian splines
+	_test_devgnuoctave_wantGetDep-octavePackage-debian-x64 splines
 	
-	_test_devgnuoctave_wantGetDep-octavePackage-debian statistics
+	_test_devgnuoctave_wantGetDep-octavePackage-debian-x64 statistics
 	
-	_test_devgnuoctave_wantGetDep-octavePackage-debian stk
+	_test_devgnuoctave_wantGetDep-octavePackage-debian-x64 stk
 	
-	_test_devgnuoctave_wantGetDep-octavePackage-debian strings
+	_test_devgnuoctave_wantGetDep-octavePackage-debian-x64 strings
 	
-	_test_devgnuoctave_wantGetDep-octavePackage-debian struct
+	_test_devgnuoctave_wantGetDep-octavePackage-debian-x64 struct
 	
-	_test_devgnuoctave_wantGetDep-octavePackage-debian symbolic
+	_test_devgnuoctave_wantGetDep-octavePackage-debian-x64 symbolic
 	
-	_test_devgnuoctave_wantGetDep-octavePackage-debian tsa
+	_test_devgnuoctave_wantGetDep-octavePackage-debian-x64 tsa
 	
-	_test_devgnuoctave_wantGetDep-octavePackage-debian vibes
+	_test_devgnuoctave_wantGetDep-octavePackage-debian-x64 vibes
 	
 	_wantGetDep x86_64-linux-gnu/octave/site/oct/x86_64-pc-linux-gnu/vlfeat/toolbox/vl_binsearch.mex
 	! _typeShare 'octave/site/m/vlfeat/toolbox/misc/vl_binsearch.m' && _wantGetDep octave-vlfeat
 	
-	_test_devgnuoctave_wantGetDep-octavePackage-debian vrml
+	_test_devgnuoctave_wantGetDep-octavePackage-debian-x64 vrml
 	
-	_test_devgnuoctave_wantGetDep-octavePackage-debian zenity
+	_test_devgnuoctave_wantGetDep-octavePackage-debian-x64 zenity
 	
-	_test_devgnuoctave_wantGetDep-octavePackage-debian zeromq
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+	_test_devgnuoctave_wantGetDep-octavePackage-debian-x64 zeromq
 	
 	
 	return 0
@@ -29311,7 +29324,8 @@ _compile_bash_shortcuts() {
 	includeScriptList+=( "shortcuts/dev"/devsearch.sh )
 	
 	[[ "$enUb_fakehome" == "true" ]] && [[ "$enUb_dev_heavy" == "true" ]] && includeScriptList+=( "shortcuts/dev/app/calculators"/qalculate.sh )
-	[[ "$enUb_fakehome" == "true" ]] && [[ "$enUb_dev_heavy" == "true" ]] && includeScriptList+=( "shortcuts/dev/app/calculators"/gnuoctave.sh )
+	( ( [[ "$enUb_fakehome" == "true" ]] && [[ "$enUb_dev_heavy" == "true" ]] ) || [[ "$enUb_metaengine" == "true" ]] ) && includeScriptList+=( "shortcuts/dev/app/calculators"/gnuoctave.sh )
+	( ( [[ "$enUb_fakehome" == "true" ]] && [[ "$enUb_dev_heavy" == "true" ]] ) || [[ "$enUb_metaengine" == "true" ]] ) && includeScriptList+=( "shortcuts/dev/app/calculators"/gnuoctave_extra.sh )
 	
 	[[ "$enUb_fakehome" == "true" ]] && [[ "$enUb_dev_heavy" == "true" ]] && includeScriptList+=( "shortcuts/dev/app"/devemacs.sh )
 	[[ "$enUb_fakehome" == "true" ]] && [[ "$enUb_dev_heavy" == "true" ]] && includeScriptList+=( "shortcuts/dev/app"/devatom.sh )
