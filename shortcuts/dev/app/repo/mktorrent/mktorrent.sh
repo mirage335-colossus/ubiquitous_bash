@@ -3,6 +3,7 @@
 #"$2" == dst (torrentName).torrent
 #"$3" == CSV Tracker URL List (full announce URL list comma delimited) (' <url>[,<url>]* ')
 #"$4" == CSV Web Seed URL List
+# ./ubiquitous_bash.sh _mktorrent ./ubiquitous_bash.sh torrentName 'https://example.com/tracker,https://example1.com/tracker' 'https://example.com/ubiquitous_bash.sh,https://example1.com/ubiquitous_bash.sh'
 _mktorrent_webseed() {
 	if [[ "$1" == "" ]]
 	then
