@@ -1389,6 +1389,8 @@ _test() {
 	
 	_tryExec "_test_mktorrent"
 	
+	_tryExec "_test_rclone"
+	
 	
 	
 	_tryExec "_test_metaengine"

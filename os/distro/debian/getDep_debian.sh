@@ -599,6 +599,13 @@ CZXWXcRMTo8EmM8i4d
 	fi
 	
 	
+	if [[ "$1" == "rclone" ]]
+	then
+		_tryExec '_test_rclone_upstream'
+		#_tryExec '_test_rclone_upstream_beta'
+	fi
+	
+	
 	return 1
 }
 

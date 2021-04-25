@@ -32,7 +32,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='1891409836'
-export ub_setScriptChecksum_contents='3608206552'
+export ub_setScriptChecksum_contents='2380610068'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -6706,6 +6706,13 @@ CZXWXcRMTo8EmM8i4d
 	fi
 	
 	
+	if [[ "$1" == "rclone" ]]
+	then
+		_tryExec '_test_rclone_upstream'
+		#_tryExec '_test_rclone_upstream_beta'
+	fi
+	
+	
 	return 1
 }
 
@@ -8879,6 +8886,7 @@ _bupRetrieve() {
 #"$2" == dst (torrentName).torrent
 #"$3" == CSV Tracker URL List (full announce URL list comma delimited) (' <url>[,<url>]* ')
 #"$4" == CSV Web Seed URL List
+# ./ubiquitous_bash.sh _mktorrent ./ubiquitous_bash.sh torrentName 'https://example.com/tracker,https://example1.com/tracker' 'https://example.com/ubiquitous_bash.sh,https://example1.com/ubiquitous_bash.sh'
 _mktorrent_webseed() {
 	if [[ "$1" == "" ]]
 	then
@@ -8944,6 +8952,78 @@ _test_mktorrent() {
 #blackblaze
 
 #rclone
+
+
+
+
+
+_rclone() {
+	mkdir -p "$scriptLocal"/rclone
+	[[ ! -e "$scriptLocal"/rclone ]] && return 1
+	[[ ! -d "$scriptLocal"/rclone ]] && return 1
+	
+	# WARNING: Changing '$HOME' may interfere with 'cautossh' , specifically function '_ssh' .
+	#env XDG_CONFIG_HOME="$scriptLocal"/rclone HOME="$scriptLocal"/rclone rclone --config="$scriptLocal"/rclone/rclone/rclone.conf "$@"
+	env XDG_CONFIG_HOME="$scriptLocal"/rclone rclone --config="$scriptLocal"/rclone/rclone/rclone.conf "$@"
+}
+
+
+
+
+
+
+
+
+
+
+# https://en.wikipedia.org/wiki/Rclone
+# https://par.nsf.gov/servlets/purl/10073416
+# https://www.chpc.utah.edu/documentation/software/rclone.php#eteooop
+
+# https://packages.debian.org/sid/rclone
+# https://rclone.org/downloads/
+
+# https://linuxaria.com/howto/how-to-install-a-single-package-from-debian-sid-or-debian-testing
+# https://askubuntu.com/questions/27362/how-to-only-install-updates-from-a-specific-repository
+
+# WARNING: Unlike the vast majority of other programs, 'cloud' API software may require frequent updates, due to the strong possibility of frequent breaking changes to what actually ammounts to an *ABI* (NOT an API) . Due to this severe irregularity, '_test_rclone' and similar functions must *always* attempt an upstream update if possible and available .
+	# https://par.nsf.gov/servlets/purl/10073416
+	# ' Navigating the Unexpected Realities of Big Data Transfers in a Cloud-based World '
+		# 'Because many of these tools are relatively new and are evolving rapidly they tend to be rather fragile. Consequently, one cannot assume they will actually work reliably in all situations.'
+
+# WARNING: Infinite loop risk, do not call '_wantGetDep rclone' within this function.
+_test_rclone_upstream_beta() {
+	! _wantSudo && return 1
+	
+	echo
+	curl https://rclone.org/install.sh | sudo bash -s beta
+	echo
+}
+
+# WARNING: Infinite loop risk, do not call '_wantGetDep rclone' within this function.
+_test_rclone_upstream() {
+	! _wantSudo && return 1
+	
+	echo
+	curl https://rclone.org/install.sh | sudo bash
+	echo
+}
+
+
+_test_rclone() {
+	_test_rclone_upstream "$@"
+	#_test_rclone_upstream_beta "$@"
+	
+	_wantSudo && _wantGetDep rclone
+	
+	! _typeDep rclone && echo 'warn: missing: rclone'
+	
+	return 0
+}
+
+
+
+
 
 _testDistro() {
 	_wantGetDep sha256sum
@@ -16041,6 +16121,8 @@ _test() {
 	
 	
 	_tryExec "_test_mktorrent"
+	
+	_tryExec "_test_rclone"
 	
 	
 	
