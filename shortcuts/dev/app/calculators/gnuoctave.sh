@@ -2,18 +2,21 @@
 
 
 _octave() {
-	octave --quiet --silent --no-window-system --no-gui "$@" | _octave_filter-messages
+	octave --quiet --silent --no-window-system --no-gui "$@"
+	# | _octave_filter-messages
 }
 
 # ATTENTION: EXAMPLE: echo 'solve(x == y * 2, y)' | _octave_pipe
 _octave_pipe() {
-	octave --quiet --silent --no-window-system --no-gui "$@" | _octave_filter-messages
+	octave --quiet --silent --no-window-system --no-gui "$@"
+	# | _octave_filter-messages
 }
 
 # ATTENTION: EXAMPLE: _octave_script 'qalculate.m'
 # echo 'solve(x == y * 2, y)' > qalculate_script.m
 _octave_script() {
-	octave --quiet --silent --no-window-system --no-gui "$@" | _octave_filter-messages
+	octave --quiet --silent --no-window-system --no-gui "$@"
+	# | _octave_filter-messages
 }
 
 
@@ -27,7 +30,8 @@ _octave_script() {
 
 
 _octave_filter-messages() {
-	grep -v 'Symbolic pkg .*1: Python communication link active, SymPy v'
+	#grep -v 'Symbolic pkg .*1: Python communication link active, SymPy v'
+	cat
 }
 
 

@@ -68,7 +68,7 @@ _setupUbiquitous_accessories_here-gnuoctave_hook() {
 %# oldpoi = page_output_immediately(1);
 
 %# ubcore
-run("$ubcore_accessoriesFile_gnuoctave_ubhome")';
+run("$ubcore_accessoriesFile_gnuoctave_ubhome");
 
 %# PAGER(oldpager);
 %# page_screen_output(oldpso);

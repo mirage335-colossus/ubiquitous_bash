@@ -58,8 +58,11 @@ _test_rclone_upstream() {
 
 
 _test_rclone() {
-	_test_rclone_upstream "$@"
-	#_test_rclone_upstream_beta "$@"
+	if [[ "$nonet" != "true" ]]
+	then
+		_test_rclone_upstream "$@"
+		#_test_rclone_upstream_beta "$@"
+	fi
 	
 	_wantSudo && _wantGetDep rclone
 	

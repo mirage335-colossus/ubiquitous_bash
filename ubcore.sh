@@ -32,7 +32,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='1891409836'
-export ub_setScriptChecksum_contents='2380610068'
+export ub_setScriptChecksum_contents='3729924698'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -9011,8 +9011,11 @@ _test_rclone_upstream() {
 
 
 _test_rclone() {
-	_test_rclone_upstream "$@"
-	#_test_rclone_upstream_beta "$@"
+	if [[ "$nonet" != "true" ]]
+	then
+		_test_rclone_upstream "$@"
+		#_test_rclone_upstream_beta "$@"
+	fi
 	
 	_wantSudo && _wantGetDep rclone
 	
@@ -9883,7 +9886,7 @@ _setupUbiquitous_accessories_here-gnuoctave_hook() {
 %# oldpoi = page_output_immediately(1);
 
 %# ubcore
-run("$ubcore_accessoriesFile_gnuoctave_ubhome")';
+run("$ubcore_accessoriesFile_gnuoctave_ubhome");
 
 %# PAGER(oldpager);
 %# page_screen_output(oldpso);
