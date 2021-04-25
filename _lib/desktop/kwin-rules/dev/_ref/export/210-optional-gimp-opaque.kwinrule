@@ -1,0 +1,13 @@
+[gimp - opaque]
+Description=gimp - opaque
+clientmachine=
+clientmachinematch=0
+opacityactive=100
+opacityactiverule=2
+opacityinactive=100
+opacityinactiverule=2
+title=GIMP
+titlematch=2
+wmclass=gimp
+wmclasscomplete=false
+wmclassmatch=2

@@ -1,0 +1,10 @@
+[size - vertical]
+Description=size - vertical
+size=960,1024
+sizerule=3
+title=Dolphin
+titlematch=2
+types=1
+wmclass=dolphin
+wmclasscomplete=false
+wmclassmatch=1

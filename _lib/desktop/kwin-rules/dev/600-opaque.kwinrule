@@ -1,0 +1,9 @@
+[opaque]
+Description=opaque
+opacityactive=100
+opacityactiverule=2
+opacityinactive=100
+opacityinactiverule=2
+wmclass=disabled
+wmclasscomplete=false
+wmclassmatch=0

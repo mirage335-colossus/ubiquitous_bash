@@ -64,9 +64,21 @@ _deps_bup() {
 	export enUb_bup="true"
 }
 
+_deps_repo() {
+	export enUb_repo="true"
+}
+
+_deps_cloud() {
+	_deps_repo
+	_deps_proxy
+	_deps_stopwatch
+	export enUb_cloud="true"
+}
+
 _deps_notLean() {
 	_deps_git
 	_deps_bup
+	_deps_repo
 	export enUb_notLean="true"
 }
 

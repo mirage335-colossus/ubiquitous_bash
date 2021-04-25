@@ -1,0 +1,14 @@
+[size - large]
+Description=size - large
+clientmachine=
+clientmachinematch=0
+size=1920,1064
+sizerule=3
+title=Mozilla Firefox
+titlematch=0
+types=1
+windowrole=disabled
+windowrolematch=0
+wmclass=.*irefox.*
+wmclasscomplete=false
+wmclassmatch=3

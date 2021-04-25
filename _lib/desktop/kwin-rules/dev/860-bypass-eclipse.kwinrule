@@ -1,0 +1,13 @@
+[bypass - Eclipse]
+Description=bypass - Eclipse
+clientmachine=localhost
+clientmachinematch=0
+position=2689,917
+positionrule=1
+size=205,280
+sizerule=1
+title=Eclipse
+titlematch=2
+wmclass=eclipse
+wmclasscomplete=false
+wmclassmatch=2

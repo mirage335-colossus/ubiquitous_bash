@@ -1,0 +1,21 @@
+[daemon - XTerm]
+Description=daemon - XTerm
+below=true
+belowrule=2
+blockcompositing=true
+blockcompositingrule=1
+clientmachine=
+clientmachinematch=0
+desktop=12
+desktoprule=2
+skippager=true
+skippagerrule=2
+skipswitcher=true
+skipswitcherrule=2
+skiptaskbar=true
+skiptaskbarrule=2
+title=ethminer
+titlematch=0
+wmclass=xterm
+wmclasscomplete=false
+wmclassmatch=1

@@ -19,6 +19,9 @@ _compile_bash_deps() {
 		_deps_git
 		_deps_bup
 		
+		_deps_repo
+		_deps_cloud
+		
 		_deps_abstractfs
 		
 		_deps_virt_translation
@@ -45,6 +48,9 @@ _compile_bash_deps() {
 		
 		_deps_git
 		_deps_bup
+		
+		_deps_repo
+		_deps_cloud
 		
 		_deps_command
 		_deps_synergy
@@ -137,6 +143,9 @@ _compile_bash_deps() {
 		
 		_deps_git
 		_deps_bup
+		_deps_repo
+		
+		_deps_cloud
 		
 		_deps_distro
 		
@@ -204,6 +213,9 @@ _compile_bash_deps() {
 		
 		_deps_git
 		_deps_bup
+		_deps_repo
+		
+		_deps_cloud
 		
 		_deps_distro
 		
@@ -448,9 +460,9 @@ _compile_bash_shortcuts() {
 	#[[ "$enUb_dev_heavy" == "true" ]] && 
 	includeScriptList+=( "shortcuts/dev"/devsearch.sh )
 	
-	[[ "$enUb_fakehome" == "true" ]] && [[ "$enUb_dev_heavy" == "true" ]] && includeScriptList+=( "shortcuts/dev/app/calculators"/qalculate.sh )
-	( ( [[ "$enUb_fakehome" == "true" ]] && [[ "$enUb_dev_heavy" == "true" ]] ) || [[ "$enUb_metaengine" == "true" ]] ) && includeScriptList+=( "shortcuts/dev/app/calculators"/gnuoctave.sh )
-	( ( [[ "$enUb_fakehome" == "true" ]] && [[ "$enUb_dev_heavy" == "true" ]] ) || [[ "$enUb_metaengine" == "true" ]] ) && includeScriptList+=( "shortcuts/dev/app/calculators"/gnuoctave_extra.sh )
+	( [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_metaengine" == "true" ]] ) && includeScriptList+=( "shortcuts/dev/app/calculators"/qalculate.sh )
+	( [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_metaengine" == "true" ]] ) && includeScriptList+=( "shortcuts/dev/app/calculators"/gnuoctave.sh )
+	( [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_metaengine" == "true" ]] ) && includeScriptList+=( "shortcuts/dev/app/calculators"/gnuoctave_extra.sh )
 	
 	[[ "$enUb_fakehome" == "true" ]] && [[ "$enUb_dev_heavy" == "true" ]] && includeScriptList+=( "shortcuts/dev/app"/devemacs.sh )
 	[[ "$enUb_fakehome" == "true" ]] && [[ "$enUb_dev_heavy" == "true" ]] && includeScriptList+=( "shortcuts/dev/app"/devatom.sh )
@@ -471,10 +483,28 @@ _compile_bash_shortcuts() {
 	# WARNING: Some apps may have specific dependencies (eg. fakeHome, abstractfs, eclipse, atom).
 	[[ "$enUb_dev" == "true" ]] && includeScriptList+=( "shortcuts/dev/scope"/devscope_app.sh )
 	
-	[[ "$enUb_git" == "true" ]] && includeScriptList+=( "shortcuts/git"/git.sh )
-	[[ "$enUb_git" == "true" ]] && includeScriptList+=( "shortcuts/git"/gitBare.sh )
+	( [[ "$enUb_repo" == "true" ]] && [[ "$enUb_git" == "true" ]] ) && includeScriptList+=( "shortcuts/git"/git.sh )
+	( [[ "$enUb_repo" == "true" ]] && [[ "$enUb_git" == "true" ]] ) && includeScriptList+=( "shortcuts/git"/gitBare.sh )
 	
 	[[ "$enUb_bup" == "true" ]] && includeScriptList+=( "shortcuts/bup"/bup.sh )
+	
+	
+	( [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_repo" == "true" ]] || [[ "$enUb_cloud" == "true" ]] ) && includeScriptList+=( "shortcuts/dev/app/repo/mktorrent"/mktorrent.sh )
+	
+	
+	( [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_cloud" == "true" ]] ) && includeScriptList+=( "shortcuts/cloud/service"/aws/aws.sh )
+	( [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_cloud" == "true" ]] ) && includeScriptList+=( "shortcuts/cloud/service"/google/google.sh )
+	( [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_cloud" == "true" ]] ) && includeScriptList+=( "shortcuts/cloud/service"/ibm/ibm.sh )
+	( [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_cloud" == "true" ]] ) && includeScriptList+=( "shortcuts/cloud/service"/oracle/oracle.sh )
+	( [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_cloud" == "true" ]] ) && includeScriptList+=( "shortcuts/cloud/service"/azure/azure.sh )
+	( [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_cloud" == "true" ]] ) && includeScriptList+=( "shortcuts/cloud/service"/digitalocean/digitalocean.sh )
+	( [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_cloud" == "true" ]] ) && includeScriptList+=( "shortcuts/cloud/service"/linode/linode.sh )
+	
+	( [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_cloud" == "true" ]] ) && includeScriptList+=( "shortcuts/cloud/storage"/aws/aws_s3_compatible.sh )
+	( [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_cloud" == "true" ]] ) && includeScriptList+=( "shortcuts/cloud/storage"/blackblaze/blackblaze.sh )
+	
+	( [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_cloud" == "true" ]] ) && includeScriptList+=( "shortcuts/cloud/bridge"/rclone/rclone.sh )
+	
 	
 	[[ "$enUb_image" == "true" ]] && includeScriptList+=( "shortcuts/mkboot"/here_mkboot.sh )
 	[[ "$enUb_image" == "true" ]] && includeScriptList+=( "shortcuts/mkboot"/mkboot.sh )

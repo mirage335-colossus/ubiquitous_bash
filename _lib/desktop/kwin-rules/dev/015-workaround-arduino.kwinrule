@@ -1,0 +1,15 @@
+[FORCE - arduino]
+Description=FORCE - arduino
+clientmachine=
+clientmachinematch=0
+ignoregeometry=true
+ignoregeometryrule=2
+placement=UnderMouse
+placementrule=2
+position=-2147483648,-2147483648
+positionrule=1
+title=Arduino
+titlematch=2
+wmclass=processing-app-base
+wmclasscomplete=false
+wmclassmatch=2

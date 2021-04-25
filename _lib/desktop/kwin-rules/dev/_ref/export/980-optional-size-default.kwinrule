@@ -1,0 +1,14 @@
+[size - default]
+Description=size - default
+maximizehoriz=false
+maximizehorizrule=3
+maximizevert=false
+maximizevertrule=3
+size=960,532
+sizerule=3
+types=1
+windowrole=disabled
+windowrolematch=0
+wmclass=
+wmclasscomplete=false
+wmclassmatch=0

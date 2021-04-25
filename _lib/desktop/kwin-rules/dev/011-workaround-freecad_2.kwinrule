@@ -1,0 +1,11 @@
+[Settings for freecad]
+Description=Settings for freecad
+above=true
+aboverule=2
+clientmachine=localhost
+clientmachinematch=0
+title=&Constraint Properties
+titlematch=2
+wmclass=freecad
+wmclasscomplete=false
+wmclassmatch=2

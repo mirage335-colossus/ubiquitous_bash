@@ -1,0 +1,21 @@
+[smplayer - opaque]
+Description=smplayer - opaque
+below=true
+belowrule=2
+minimize=false
+minimizerule=2
+opacityactive=100
+opacityactiverule=2
+opacityinactive=100
+opacityinactiverule=2
+skippager=true
+skippagerrule=2
+skipswitcher=true
+skipswitcherrule=2
+skiptaskbar=true
+skiptaskbarrule=2
+title=SMPlayer
+titlematch=2
+wmclass=smplayer
+wmclasscomplete=false
+wmclassmatch=1

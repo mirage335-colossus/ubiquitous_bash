@@ -32,7 +32,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='1891409836'
-export ub_setScriptChecksum_contents='3664680993'
+export ub_setScriptChecksum_contents='3339178034'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -15948,6 +15948,77 @@ _bupRetrieve() {
 	[[ "$1" != "" ]] && bup join "$@" | tar --one-file-system --xattrs --acls -xf -
 }
 
+
+#"$1" == src (file/dir)
+#"$2" == dst (torrentName).torrent
+#"$3" == CSV Tracker URL List (full announce URL list comma delimited) (' <url>[,<url>]* ')
+#"$4" == CSV Web Seed URL List
+_mktorrent_webseed() {
+	if [[ "$1" == "" ]]
+	then
+		_messagePlain_request '"$1" == src (file/dir)'
+		_messagePlain_request '"$2" == dst (torrentName).torrent'
+		_messagePlain_request '"$3" == CSV Tracker URL List (full announce URL list comma delimited) ('\'' <url>[,<url>]* '\'')'
+		_messagePlain_request '"$4" == CSV Web Seed URL List'
+		return 1
+	fi
+	
+	local currentSrc
+	currentSrc="$1"
+	local currentDst
+	currentDst="$2"
+	local currentTrackerCSV
+	currentTrackerCSV="$3"
+	local currentWebSeedCSV
+	currentWebSeedCSV="$4"
+	shift ; shift ; shift ; shift
+	
+	mktorrent -w "$currentWebSeedCSV" -a "$currentTrackerCSV" -d "$currentSrc" -n "$currentDst" "$@"
+}
+_mktorrent() {
+	_mktorrent_webseed "$@"
+}
+
+
+
+
+
+
+
+_test_mktorrent() {
+	# If not Debian, then simply accept these pacakges may not be available.
+	! [[ -e /etc/issue ]] && cat /etc/issue | grep 'Debian' > /dev/null 2>&1 && return 0
+	
+	_wantGetDep mktorrent
+	
+	#_getDep mktorrent
+}
+
+
+
+
+
+
+#aws
+
+#google
+
+#ibm
+
+#oracle
+
+#azure
+
+#digitalocean
+
+#linode
+
+#aws_s3_compatible
+
+#blackblaze
+
+#rclone
+
 _here_mkboot_grubcfg() {
 	
 	cat << 'CZXWXcRMTo8EmM8i4d'
@@ -27910,6 +27981,12 @@ _test() {
 	_tryExec "_test_ethereum"
 	_tryExec "_test_ethereum_parity"
 	
+	
+	
+	_tryExec "_test_mktorrent"
+	
+	
+	
 	_tryExec "_test_metaengine"
 	
 	_tryExec "_test_channel"
@@ -28559,9 +28636,21 @@ _deps_bup() {
 	export enUb_bup="true"
 }
 
+_deps_repo() {
+	export enUb_repo="true"
+}
+
+_deps_cloud() {
+	_deps_repo
+	_deps_proxy
+	_deps_stopwatch
+	export enUb_cloud="true"
+}
+
 _deps_notLean() {
 	_deps_git
 	_deps_bup
+	_deps_repo
 	export enUb_notLean="true"
 }
 
@@ -28894,6 +28983,9 @@ _compile_bash_deps() {
 		_deps_git
 		_deps_bup
 		
+		_deps_repo
+		_deps_cloud
+		
 		_deps_abstractfs
 		
 		_deps_virt_translation
@@ -28920,6 +29012,9 @@ _compile_bash_deps() {
 		
 		_deps_git
 		_deps_bup
+		
+		_deps_repo
+		_deps_cloud
 		
 		_deps_command
 		_deps_synergy
@@ -29012,6 +29107,9 @@ _compile_bash_deps() {
 		
 		_deps_git
 		_deps_bup
+		_deps_repo
+		
+		_deps_cloud
 		
 		_deps_distro
 		
@@ -29079,6 +29177,9 @@ _compile_bash_deps() {
 		
 		_deps_git
 		_deps_bup
+		_deps_repo
+		
+		_deps_cloud
 		
 		_deps_distro
 		
@@ -29323,9 +29424,9 @@ _compile_bash_shortcuts() {
 	#[[ "$enUb_dev_heavy" == "true" ]] && 
 	includeScriptList+=( "shortcuts/dev"/devsearch.sh )
 	
-	[[ "$enUb_fakehome" == "true" ]] && [[ "$enUb_dev_heavy" == "true" ]] && includeScriptList+=( "shortcuts/dev/app/calculators"/qalculate.sh )
-	( ( [[ "$enUb_fakehome" == "true" ]] && [[ "$enUb_dev_heavy" == "true" ]] ) || [[ "$enUb_metaengine" == "true" ]] ) && includeScriptList+=( "shortcuts/dev/app/calculators"/gnuoctave.sh )
-	( ( [[ "$enUb_fakehome" == "true" ]] && [[ "$enUb_dev_heavy" == "true" ]] ) || [[ "$enUb_metaengine" == "true" ]] ) && includeScriptList+=( "shortcuts/dev/app/calculators"/gnuoctave_extra.sh )
+	( [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_metaengine" == "true" ]] ) && includeScriptList+=( "shortcuts/dev/app/calculators"/qalculate.sh )
+	( [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_metaengine" == "true" ]] ) && includeScriptList+=( "shortcuts/dev/app/calculators"/gnuoctave.sh )
+	( [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_metaengine" == "true" ]] ) && includeScriptList+=( "shortcuts/dev/app/calculators"/gnuoctave_extra.sh )
 	
 	[[ "$enUb_fakehome" == "true" ]] && [[ "$enUb_dev_heavy" == "true" ]] && includeScriptList+=( "shortcuts/dev/app"/devemacs.sh )
 	[[ "$enUb_fakehome" == "true" ]] && [[ "$enUb_dev_heavy" == "true" ]] && includeScriptList+=( "shortcuts/dev/app"/devatom.sh )
@@ -29346,10 +29447,28 @@ _compile_bash_shortcuts() {
 	# WARNING: Some apps may have specific dependencies (eg. fakeHome, abstractfs, eclipse, atom).
 	[[ "$enUb_dev" == "true" ]] && includeScriptList+=( "shortcuts/dev/scope"/devscope_app.sh )
 	
-	[[ "$enUb_git" == "true" ]] && includeScriptList+=( "shortcuts/git"/git.sh )
-	[[ "$enUb_git" == "true" ]] && includeScriptList+=( "shortcuts/git"/gitBare.sh )
+	( [[ "$enUb_repo" == "true" ]] && [[ "$enUb_git" == "true" ]] ) && includeScriptList+=( "shortcuts/git"/git.sh )
+	( [[ "$enUb_repo" == "true" ]] && [[ "$enUb_git" == "true" ]] ) && includeScriptList+=( "shortcuts/git"/gitBare.sh )
 	
 	[[ "$enUb_bup" == "true" ]] && includeScriptList+=( "shortcuts/bup"/bup.sh )
+	
+	
+	( [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_repo" == "true" ]] || [[ "$enUb_cloud" == "true" ]] ) && includeScriptList+=( "shortcuts/dev/app/repo/mktorrent"/mktorrent.sh )
+	
+	
+	( [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_cloud" == "true" ]] ) && includeScriptList+=( "shortcuts/cloud/service"/aws/aws.sh )
+	( [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_cloud" == "true" ]] ) && includeScriptList+=( "shortcuts/cloud/service"/google/google.sh )
+	( [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_cloud" == "true" ]] ) && includeScriptList+=( "shortcuts/cloud/service"/ibm/ibm.sh )
+	( [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_cloud" == "true" ]] ) && includeScriptList+=( "shortcuts/cloud/service"/oracle/oracle.sh )
+	( [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_cloud" == "true" ]] ) && includeScriptList+=( "shortcuts/cloud/service"/azure/azure.sh )
+	( [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_cloud" == "true" ]] ) && includeScriptList+=( "shortcuts/cloud/service"/digitalocean/digitalocean.sh )
+	( [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_cloud" == "true" ]] ) && includeScriptList+=( "shortcuts/cloud/service"/linode/linode.sh )
+	
+	( [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_cloud" == "true" ]] ) && includeScriptList+=( "shortcuts/cloud/storage"/aws/aws_s3_compatible.sh )
+	( [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_cloud" == "true" ]] ) && includeScriptList+=( "shortcuts/cloud/storage"/blackblaze/blackblaze.sh )
+	
+	( [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_cloud" == "true" ]] ) && includeScriptList+=( "shortcuts/cloud/bridge"/rclone/rclone.sh )
+	
 	
 	[[ "$enUb_image" == "true" ]] && includeScriptList+=( "shortcuts/mkboot"/here_mkboot.sh )
 	[[ "$enUb_image" == "true" ]] && includeScriptList+=( "shortcuts/mkboot"/mkboot.sh )

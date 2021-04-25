@@ -1,0 +1,14 @@
+[tag - daemon - opaque]
+Description=tag - daemon - opaque
+below=true
+belowrule=1
+opacityactive=100
+opacityactiverule=2
+opacityinactive=100
+opacityinactiverule=2
+title=m58nOgWA
+titlematch=2
+types=1
+wmclass=
+wmclasscomplete=false
+wmclassmatch=0

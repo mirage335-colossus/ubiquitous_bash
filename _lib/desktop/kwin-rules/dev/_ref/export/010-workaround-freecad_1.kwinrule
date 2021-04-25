@@ -1,0 +1,16 @@
+[Settings for freecad]
+Description=Settings for freecad
+clientmachine=localhost
+clientmachinematch=0
+fpplevel=0
+fpplevelrule=2
+fsplevel=0
+fsplevelrule=2
+placement=NoPlacement
+placementrule=2
+title=FreeCAD\s
+titlematch=2
+types=1
+wmclass=freecad
+wmclasscomplete=false
+wmclassmatch=2

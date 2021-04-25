@@ -1,0 +1,16 @@
+[Settings for GNUelectric - Ineffective]
+Description=Settings for GNUelectric - Ineffective
+clientmachine=localhost
+clientmachinematch=0
+placement=UnderMouse
+placementrule=2
+position=-2147483648,-2147483648
+positionrule=4
+title=***NONE***
+titlematch=0
+types=1
+windowrole=disabled-thy7tirimav2sudnmw
+windowrolematch=1
+wmclass=com-sun-electric-launcher
+wmclasscomplete=true
+wmclassmatch=2

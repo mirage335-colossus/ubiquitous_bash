@@ -1385,6 +1385,12 @@ _test() {
 	_tryExec "_test_ethereum"
 	_tryExec "_test_ethereum_parity"
 	
+	
+	
+	_tryExec "_test_mktorrent"
+	
+	
+	
 	_tryExec "_test_metaengine"
 	
 	_tryExec "_test_channel"

@@ -1,0 +1,12 @@
+[Settings for GNU Octave - Ineffective]
+Description=Settings for GNU Octave - Ineffective
+clientmachine=localhost
+clientmachinematch=0
+placement=UnderMouse
+placementrule=2
+title=Octave
+titlematch=2
+types=1
+wmclass=octave-gui gnu octave
+wmclasscomplete=true
+wmclassmatch=2

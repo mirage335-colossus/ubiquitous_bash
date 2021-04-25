@@ -1,0 +1,16 @@
+[glass]
+Description=glass
+clientmachine=disabled
+clientmachinematch=0
+opacityactive=100
+opacityactiverule=2
+opacityinactive=85
+opacityinactiverule=2
+title=DISABLED
+titlematch=0
+types=953
+windowrole=disabled
+windowrolematch=0
+wmclass=disabled
+wmclasscomplete=false
+wmclassmatch=0

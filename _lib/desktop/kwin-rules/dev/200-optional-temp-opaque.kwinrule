@@ -1,0 +1,21 @@
+[temp - opaque]
+Description=temp - opaque
+below=true
+belowrule=2
+clientmachine=
+clientmachinematch=0
+opacityactive=100
+opacityactiverule=2
+opacityinactive=100
+opacityinactiverule=2
+skippager=true
+skippagerrule=2
+skipswitcher=true
+skipswitcherrule=2
+skiptaskbar=true
+skiptaskbarrule=2
+title=DISABLED - DISABLED
+titlematch=1
+wmclass=disabled - disabled
+wmclasscomplete=false
+wmclassmatch=1
