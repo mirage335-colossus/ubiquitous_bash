@@ -227,6 +227,9 @@ _custom_packages_debian() {
 	
 	
 	_chroot apt-get install -y mktorrent
+	
+	_chroot apt-get install -y curl
+	_chroot curl https://rclone.org/install.sh | _chroot bash -s beta
 }
 
 _custom_packages_gentoo() {
