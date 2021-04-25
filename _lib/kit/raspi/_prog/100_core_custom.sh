@@ -147,9 +147,86 @@ _custom_packages_debian() {
 	_chroot apt-get install -y pigz
 	
 	_chroot apt-get install -y falkon
-	_chroot apt-get install -y knoqueror
+	_chroot apt-get install -y konqueror
 	
 	_chroot apt-get install -y xserver-xorg-video-all
+	
+	_chroot apt-get install -y qalculate-gtk
+	
+	_chroot apt-get install -y octave
+	_chroot apt-get install -y octave-arduino
+	_chroot apt-get install -y octave-bart
+	_chroot apt-get install -y octave-bim
+	_chroot apt-get install -y octave-biosig
+	_chroot apt-get install -y octave-bsltl
+	_chroot apt-get install -y octave-cgi
+	_chroot apt-get install -y octave-communications
+	_chroot apt-get install -y octave-control
+	_chroot apt-get install -y octave-data-smoothing
+	_chroot apt-get install -y octave-dataframe
+	_chroot apt-get install -y octave-dicom
+	_chroot apt-get install -y octave-divand
+	_chroot apt-get install -y octave-econometrics
+	_chroot apt-get install -y octave-financial
+	_chroot apt-get install -y octave-fits
+	_chroot apt-get install -y octave-fuzzy-logic-toolkit
+	_chroot apt-get install -y octave-ga
+	_chroot apt-get install -y octave-gdf
+	_chroot apt-get install -y octave-geometry
+	_chroot apt-get install -y octave-gsl
+	_chroot apt-get install -y octave-image
+	_chroot apt-get install -y octave-image-acquisition
+	_chroot apt-get install -y octave-instrument-control
+	_chroot apt-get install -y octave-interval
+	_chroot apt-get install -y octave-io
+	_chroot apt-get install -y octave-level-set
+	_chroot apt-get install -y octave-linear-algebra
+	_chroot apt-get install -y octave-lssa
+	_chroot apt-get install -y octave-ltfat
+	_chroot apt-get install -y octave-mapping
+	_chroot apt-get install -y octave-miscellaneous
+	_chroot apt-get install -y octave-missing-functions
+	_chroot apt-get install -y octave-mpi
+	_chroot apt-get install -y octave-msh
+	_chroot apt-get install -y octave-mvn
+	_chroot apt-get install -y octave-nan
+	_chroot apt-get install -y octave-ncarry
+	_chroot apt-get install -y octave-netcdf
+	_chroot apt-get install -y octave-nlopt
+	_chroot apt-get install -y octave-nurbs
+	_chroot apt-get install -y octave-octclip
+	_chroot apt-get install -y octave-octproj
+	_chroot apt-get install -y octave-openems
+	_chroot apt-get install -y octave-optics
+	_chroot apt-get install -y octave-optim
+	_chroot apt-get install -y octave-optiminterp
+	_chroot apt-get install -y octave-parallel
+	_chroot apt-get install -y octave-pfstools
+	_chroot apt-get install -y octave-plplot
+	_chroot apt-get install -y octave-psychtoolbox-3
+	_chroot apt-get install -y octave-quarternion
+	_chroot apt-get install -y octave-queueing
+	_chroot apt-get install -y octave-secs1d
+	_chroot apt-get install -y octave-secs2d
+	_chroot apt-get install -y octave-secs3d
+	_chroot apt-get install -y octave-signal
+	_chroot apt-get install -y octave-sockets
+	_chroot apt-get install -y octave-sparsersb
+	_chroot apt-get install -y octave-specfun
+	_chroot apt-get install -y octave-splines
+	_chroot apt-get install -y octave-stk
+	_chroot apt-get install -y octave-strings
+	_chroot apt-get install -y octave-struct
+	_chroot apt-get install -y octave-symbolic
+	_chroot apt-get install -y octave-tsa
+	_chroot apt-get install -y octave-vibes
+	_chroot apt-get install -y octave-vlfeat
+	_chroot apt-get install -y octave-rml
+	_chroot apt-get install -y octave-zenity
+	_chroot apt-get install -y octave-zeromq
+	
+	
+	_chroot apt-get install -y mktorrent
 }
 
 _custom_packages_gentoo() {
@@ -199,6 +276,9 @@ _custom_packages_gentoo() {
 	_chroot emerge --update kwrite
 	
 	_chroot emerge --update qalculate-gtk
+	
+	_chroot emerge --update octave
+	
 	_chroot emerge --update vlc
 	
 	
