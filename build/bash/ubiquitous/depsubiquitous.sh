@@ -273,6 +273,10 @@ _deps_linux() {
 	export enUb_linux="true"
 }
 
+_deps_calculators() {
+	export enUb_calculators="true"
+}
+
 #placeholder, define under "queue/build"
 # _deps_queue() {
 # 	# Message queue - 'broadcastPipe' , etc , underlying functions , '_read_page' , etc .

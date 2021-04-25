@@ -32,6 +32,8 @@ _compile_bash_deps() {
 		_deps_distro
 		_deps_linux
 		
+		_deps_calculators
+		
 		_deps_queue
 		
 		# _compile_bash_deps 'core'
@@ -69,6 +71,8 @@ _compile_bash_deps() {
 	then
 		_deps_dev
 		
+		_deps_calculators
+		
 		_deps_channel
 		
 		_deps_queue
@@ -80,6 +84,8 @@ _compile_bash_deps() {
 	if [[ "$1" == "abstract" ]] || [[ "$1" == "abstractfs" ]]
 	then
 		_deps_dev
+		
+		_deps_calculators
 		
 		_deps_channel
 		
@@ -95,6 +101,8 @@ _compile_bash_deps() {
 	if [[ "$1" == "fakehome" ]]
 	then
 		_deps_dev
+		
+		_deps_calculators
 		
 		_deps_channel
 		
@@ -135,6 +143,8 @@ _compile_bash_deps() {
 		_deps_msw
 		_deps_fakehome
 		_deps_abstractfs
+		
+		_deps_calculators
 		
 		_deps_channel
 		
@@ -205,6 +215,8 @@ _compile_bash_deps() {
 		_deps_msw
 		_deps_fakehome
 		_deps_abstractfs
+		
+		_deps_calculators
 		
 		_deps_channel
 		
@@ -460,9 +472,9 @@ _compile_bash_shortcuts() {
 	#[[ "$enUb_dev_heavy" == "true" ]] && 
 	includeScriptList+=( "shortcuts/dev"/devsearch.sh )
 	
-	( [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_metaengine" == "true" ]] ) && includeScriptList+=( "shortcuts/dev/app/calculators"/qalculate.sh )
-	( [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_metaengine" == "true" ]] ) && includeScriptList+=( "shortcuts/dev/app/calculators"/gnuoctave.sh )
-	( [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_metaengine" == "true" ]] ) && includeScriptList+=( "shortcuts/dev/app/calculators"/gnuoctave_extra.sh )
+	( ( [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_metaengine" == "true" ]] ) || [[ "$enUb_calculators" == "true" ]] ) && includeScriptList+=( "shortcuts/dev/app/calculators"/qalculate.sh )
+	( ( [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_metaengine" == "true" ]] ) || [[ "$enUb_calculators" == "true" ]] ) && includeScriptList+=( "shortcuts/dev/app/calculators"/gnuoctave.sh )
+	( ( [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_metaengine" == "true" ]] ) || [[ "$enUb_calculators" == "true" ]] ) && includeScriptList+=( "shortcuts/dev/app/calculators"/gnuoctave_extra.sh )
 	
 	[[ "$enUb_fakehome" == "true" ]] && [[ "$enUb_dev_heavy" == "true" ]] && includeScriptList+=( "shortcuts/dev/app"/devemacs.sh )
 	[[ "$enUb_fakehome" == "true" ]] && [[ "$enUb_dev_heavy" == "true" ]] && includeScriptList+=( "shortcuts/dev/app"/devatom.sh )

@@ -32,7 +32,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='1891409836'
-export ub_setScriptChecksum_contents='4033314434'
+export ub_setScriptChecksum_contents='2922910655'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -4347,6 +4347,10 @@ _deps_linux() {
 	export enUb_linux="true"
 }
 
+_deps_calculators() {
+	export enUb_calculators="true"
+}
+
 #placeholder, define under "queue/build"
 # _deps_queue() {
 # 	# Message queue - 'broadcastPipe' , etc , underlying functions , '_read_page' , etc .
@@ -4498,6 +4502,8 @@ _compile_bash_deps() {
 		_deps_distro
 		_deps_linux
 		
+		_deps_calculators
+		
 		_deps_queue
 		
 		# _compile_bash_deps 'core'
@@ -4535,6 +4541,8 @@ _compile_bash_deps() {
 	then
 		_deps_dev
 		
+		_deps_calculators
+		
 		_deps_channel
 		
 		_deps_queue
@@ -4546,6 +4554,8 @@ _compile_bash_deps() {
 	if [[ "$1" == "abstract" ]] || [[ "$1" == "abstractfs" ]]
 	then
 		_deps_dev
+		
+		_deps_calculators
 		
 		_deps_channel
 		
@@ -4561,6 +4571,8 @@ _compile_bash_deps() {
 	if [[ "$1" == "fakehome" ]]
 	then
 		_deps_dev
+		
+		_deps_calculators
 		
 		_deps_channel
 		
@@ -4601,6 +4613,8 @@ _compile_bash_deps() {
 		_deps_msw
 		_deps_fakehome
 		_deps_abstractfs
+		
+		_deps_calculators
 		
 		_deps_channel
 		
@@ -4671,6 +4685,8 @@ _compile_bash_deps() {
 		_deps_msw
 		_deps_fakehome
 		_deps_abstractfs
+		
+		_deps_calculators
 		
 		_deps_channel
 		
@@ -4926,9 +4942,9 @@ _compile_bash_shortcuts() {
 	#[[ "$enUb_dev_heavy" == "true" ]] && 
 	includeScriptList+=( "shortcuts/dev"/devsearch.sh )
 	
-	( [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_metaengine" == "true" ]] ) && includeScriptList+=( "shortcuts/dev/app/calculators"/qalculate.sh )
-	( [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_metaengine" == "true" ]] ) && includeScriptList+=( "shortcuts/dev/app/calculators"/gnuoctave.sh )
-	( [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_metaengine" == "true" ]] ) && includeScriptList+=( "shortcuts/dev/app/calculators"/gnuoctave_extra.sh )
+	( ( [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_metaengine" == "true" ]] ) || [[ "$enUb_calculators" == "true" ]] ) && includeScriptList+=( "shortcuts/dev/app/calculators"/qalculate.sh )
+	( ( [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_metaengine" == "true" ]] ) || [[ "$enUb_calculators" == "true" ]] ) && includeScriptList+=( "shortcuts/dev/app/calculators"/gnuoctave.sh )
+	( ( [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_metaengine" == "true" ]] ) || [[ "$enUb_calculators" == "true" ]] ) && includeScriptList+=( "shortcuts/dev/app/calculators"/gnuoctave_extra.sh )
 	
 	[[ "$enUb_fakehome" == "true" ]] && [[ "$enUb_dev_heavy" == "true" ]] && includeScriptList+=( "shortcuts/dev/app"/devemacs.sh )
 	[[ "$enUb_fakehome" == "true" ]] && [[ "$enUb_dev_heavy" == "true" ]] && includeScriptList+=( "shortcuts/dev/app"/devatom.sh )
