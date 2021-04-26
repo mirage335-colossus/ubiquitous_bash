@@ -1,7 +1,13 @@
 
 
-
+_octave_interactive() {
+	octave --quiet --silent --no-window-system --no-gui "$@"
+}
 _octave() {
+	_octave_interactive "$@"
+}
+
+_octave_noninteractive() {
 	octave --quiet --silent --no-window-system --no-gui "$@" | _octave_filter-messages
 }
 
@@ -27,7 +33,7 @@ _octave_script() {
 
 
 _octave_filter-messages() {
-	grep -v 'Symbolic pkg .*1: Python communication link active, SymPy v'
+	grep -v 'Symbolic pkg .*1: Python communication link active, SymPy v' | grep -v '-----'
 	#cat
 }
 
