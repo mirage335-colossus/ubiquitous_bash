@@ -8,6 +8,7 @@ _setupUbiquitous_accessories_here-gnuoctave() {
 %# oldpso = page_screen_output(1);
 %# oldpoi = page_output_immediately(1);
 
+format long g;
 
 bit = 1;
 byte = bit * 8;
