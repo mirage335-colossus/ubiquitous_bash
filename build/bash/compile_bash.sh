@@ -46,6 +46,8 @@ _compile_bash_deps() {
 		_deps_proxy
 		_deps_proxy_special
 		
+		_deps_clog
+		
 		_deps_channel
 		
 		_deps_git
@@ -244,6 +246,8 @@ _compile_bash_deps() {
 		_deps_proxy
 		_deps_proxy_special
 		
+		_deps_clog
+		
 		_deps_stopwatch
 		
 		_deps_linux
@@ -363,6 +367,8 @@ _compile_bash_utilities() {
 	
 	[[ "$enUb_proxy" == "true" ]] && includeScriptList+=( "generic/net/proxy/proxyrouter"/here_proxyrouter.sh )
 	[[ "$enUb_proxy" == "true" ]] && includeScriptList+=( "generic/net/proxy/proxyrouter"/proxyrouter.sh )
+	
+	[[ "$enUb_clog" == "true" ]] && includeScriptList+=( "generic/net/clog"/clog.sh )
 	
 	includeScriptList+=( "generic"/showCommand.sh )
 	includeScriptList+=( "generic"/validaterequest.sh )

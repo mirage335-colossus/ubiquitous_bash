@@ -113,6 +113,10 @@ _deps_proxy_special() {
 	export enUb_proxy_special="true"
 }
 
+_deps_clog() {
+	export enUb_clog="true"
+}
+
 _deps_x11() {
 	_deps_build
 	_deps_notLean
