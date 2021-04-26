@@ -33,7 +33,7 @@ _octave_script() {
 
 
 _octave_filter-messages() {
-	grep -v 'Symbolic pkg .*1: Python communication link active, SymPy v' | grep -v '-----'
+	grep -v 'Symbolic pkg .*1: Python communication link active, SymPy v' | grep -v '_____'
 	#cat
 }
 
