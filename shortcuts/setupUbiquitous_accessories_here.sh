@@ -15,7 +15,7 @@ byte = bit * 8;
 kilo = 10^3;
 mega = kilo * 10^3;
 giga = mega * 10^3;
-tera = tera * 10^3;
+tera = giga * 10^3;
 
 kilobit = kilo * bit;
 megabit = mega * bit;
