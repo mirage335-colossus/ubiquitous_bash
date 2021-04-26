@@ -25,6 +25,7 @@ Tb = tera;
 Gb = giga;
 Mb = mega;
 Kb = kilo;
+kb = kilo;
 
 terabyte = terabit * byte;
 gigabyte = gigabit * byte;
@@ -35,6 +36,7 @@ TB = terabyte;
 GB = gigabyte;
 MB = megabyte;
 KB = kilobyte;
+kB = kilobyte;
 
 
 pkg load symbolic;
