@@ -32,7 +32,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='1891409836'
-export ub_setScriptChecksum_contents='1466164120'
+export ub_setScriptChecksum_contents='703774792'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -18601,35 +18601,62 @@ _setupUbiquitous_accessories_here-gnuoctave() {
 %# oldpso = page_screen_output(1);
 %# oldpoi = page_output_immediately(1);
 
-tera = 10^12;
-giga = 10^9;
-mega = 10^6;
-kilo = 10^3;
 
 bit = 1;
-byte = 8;
+byte = bit * 8;
 
-terabit = tera;
-gigabit = giga;
-megabit = mega;
-kilobit = kilo;
+kilo = 10^3;
+mega = kilo * 10^3;
+giga = mega * 10^3;
+tera = tera * 10^3;
 
-Tb = tera;
-Gb = giga;
-Mb = mega;
-Kb = kilo;
-kb = kilo;
+kilobit = kilo * bit;
+megabit = mega * bit;
+gigabit = giga * bit;
+terabit = tera * bit;
 
-terabyte = terabit * byte;
-gigabyte = gigabit * byte;
-megabyte = megabit * byte;
+kb = kilobit;
+Kb = kilobit;
+Mb = megabit;
+Gb = gigabit;
+Tb = terabit;
+
 kilobyte = kilobit * byte;
+megabyte = megabit * byte;
+gigabyte = gigabit * byte;
+terabyte = terabit * byte;
 
-TB = terabyte;
-GB = gigabyte;
-MB = megabyte;
-KB = kilobyte;
 kB = kilobyte;
+KB = kilobyte;
+MB = megabyte;
+GB = gigabyte;
+TB = terabyte;
+
+
+kibi = 1024;
+mebi = kibi * 1024;
+gibi = mebi * 1024;
+tebi = gibi * 1024;
+
+kibibit = kibi * bit;
+mebibit = mebi * bit;
+gibibit = gibi * bit;
+tebibit = tebi * bit;
+
+Kib = kibibit;
+Mib = mebibit;
+Gib = gibibit;
+Tib = tebibit;
+
+kibibyte = kibi * byte;
+mebibyte = mebi * byte;
+gibibyte = gibi * byte;
+tebibyte = tebi * byte;
+
+KiB = kibibyte;
+MiB = mebibyte;
+GiB = gibibyte;
+TiB = tebibyte;
 
 
 pkg load symbolic;
