@@ -32,7 +32,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='1891409836'
-export ub_setScriptChecksum_contents='329626566'
+export ub_setScriptChecksum_contents='1466164120'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -6476,6 +6476,47 @@ _find_route_ip() {
 
 
 #clog
+
+
+_clog_interface() {
+	# Upstream 'wondershaper' version beyond that from Debian (ie. 'stable') 10 .
+	#./wondershaper -a "$1" -u 10000 -d 10000
+	
+	# Debian (ie. 'stable') 10 .
+	#wondershaper [ interface ] [ downlink ] [ uplink ]
+	
+	sudo -n tc qdisc add dev "$1" root tbf rate 10mbit burst 256kbit latency 133ms
+}
+
+# ATTENTION: Override with 'core.sh' , 'netvars.sh' , or similar .
+# ATTENTION: Ideally should attempt to 'clog' all 'external' (ie. 'WiFi' or 'Ethernet') interfaces to some low value like 10Mbits/s or 2Mbits/s , to avoid unexpected bandwidth exhaustion or costs.
+# List interfaces with ' sudo -n ip addr show ' .
+# https://github.com/magnific0/wondershaper
+# https://netbeez.net/blog/how-to-use-the-linux-traffic-control/
+_clog() {
+	true
+	
+	_clog_interface eth0
+	_clog_interface eth1
+	_clog_interface eth2
+	_clog_interface eth3
+	
+	_clog_interface enp0s0
+	_clog_interface enp1s0
+	_clog_interface enp2s0
+	_clog_interface enp3s0
+}
+
+_clog_crontab() {
+	_mustGetSudo
+	echo '@reboot '"$scriptAbsoluteLocation"' _clog' | sudo -n crontab -
+}
+
+
+_test_clog() {
+	_getDep tc
+	_getDep wondershaper
+}
 
 #Run command and output to terminal with colorful formatting. Controlled variant of "bash -v".
 _showCommand() {
@@ -28082,6 +28123,9 @@ _test() {
 	_tryExec "_test_rclone"
 	
 	
+	
+	
+	_tryExec "_test_clog"
 	
 	_tryExec "_test_metaengine"
 	

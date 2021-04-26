@@ -1393,6 +1393,9 @@ _test() {
 	
 	
 	
+	
+	_tryExec "_test_clog"
+	
 	_tryExec "_test_metaengine"
 	
 	_tryExec "_test_channel"
