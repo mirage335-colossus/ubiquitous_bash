@@ -16,7 +16,7 @@ _octave_pipe() {
 	octave --quiet --silent --no-window-system --no-gui "$@" | _octave_filter-messages
 }
 
-# ATTENTION: EXAMPLE: _octave_script 'qalculate.m'
+# ATTENTION: EXAMPLE: _octave_script 'qalculate_script.m'
 # echo 'solve(x == y * 2, y)' > qalculate_script.m
 _octave_script() {
 	octave --quiet --silent --no-window-system --no-gui "$@" | _octave_filter-messages

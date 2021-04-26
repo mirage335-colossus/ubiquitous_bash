@@ -12,7 +12,7 @@ _qalculate_pipe() {
 	qalc "$@"
 }
 
-# ATTENTION: _qalculate_script 'qalculate.m'
+# ATTENTION: _qalculate_script 'qalculate_script.m'
 # echo 'solve(x == y * 2, y)' > qalculate_script.m
 _qalculate_script() {
 	local currentFile="$1"
