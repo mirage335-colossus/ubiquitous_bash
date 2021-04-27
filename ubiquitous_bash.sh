@@ -32,7 +32,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='1891409836'
-export ub_setScriptChecksum_contents='205357069'
+export ub_setScriptChecksum_contents='1786868656'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -16238,7 +16238,7 @@ _cloud_hook() {
 # WARNING: End user function. Do NOT call within scripts.
 # ATTENTION: TODO: Needs to be written out with 'declare -f' to '~/bin' and/or similar during '_setup_ssh' '_index' shortcut '_setup' and/or similar.
 _cloud_unhook() {
-	_messageNormal "init: _cloud_hook"
+	_messageNormal "init: _cloud_unhook"
 	local ubHome
 	ubHome="$HOME"
 	[[ "$1" != "" ]] && ubHome="$1"
@@ -16248,6 +16248,21 @@ _cloud_unhook() {
 	rm -f "$ubcoreDir"/cloudrc
 }
 
+_cloud_shell() {
+	#_cloudPrompt
+	
+	# https://unix.stackexchange.com/questions/428175/how-to-export-all-bash-functions-in-a-file-in-one-line
+	#set -a
+	##. "$scriptAbsoluteLocation" --parent _importShortcuts
+	#. "$scriptAbsoluteLocation" --profile _importShortcuts
+	#_cloud_set
+	#_cloudPrompt
+	#set +a
+	
+	# https://serverfault.com/questions/368054/run-an-interactive-bash-subshell-with-initial-commands-without-returning-to-the
+	#/usr/bin/env bash --init-file <(_safeEcho ". "\"$scriptAbsoluteLocation\"" --profile _importShortcuts ; _cloud_set ; _cloudPrompt")
+	/usr/bin/env bash --init-file <(_cloud_hook_here)
+}
 
 
 
@@ -16270,31 +16285,6 @@ _cloud_reset() {
 	_rclone_reset "$@"
 	
 	_visualPrompt
-}
-
-
-
-
-
-
-
-
-
-
-_cloud_shell() {
-	#_cloudPrompt
-	
-	# https://unix.stackexchange.com/questions/428175/how-to-export-all-bash-functions-in-a-file-in-one-line
-	#set -a
-	##. "$scriptAbsoluteLocation" --parent _importShortcuts
-	#. "$scriptAbsoluteLocation" --profile _importShortcuts
-	#_cloud_set
-	#_cloudPrompt
-	#set +a
-	
-	# https://serverfault.com/questions/368054/run-an-interactive-bash-subshell-with-initial-commands-without-returning-to-the
-	#/usr/bin/env bash --init-file <(_safeEcho ". "\"$scriptAbsoluteLocation\"" --profile _importShortcuts ; _cloud_set ; _cloudPrompt")
-	/usr/bin/env bash --init-file <(_cloud_hook_here)
 }
 
 
@@ -19844,6 +19834,26 @@ _parity_attach() {
 
 _setup_command_commands() {
 	_find_setupCommands -name '_synergy' -exec "$scriptAbsoluteLocation" _setupCommand '{}' \;
+	
+	_find_setupCommands -name '_cloud_shell' -exec "$scriptAbsoluteLocation" _setupCommand_meta '{}' \;
+	_find_setupCommands -name '_cloud_hook' -exec "$scriptAbsoluteLocation" _setupCommand_meta '{}' \;
+	
+	# WARNING: No production use. Not expected to be necessary in practice.
+	#_find_setupCommands -name '_cloud_unhook' -exec "$scriptAbsoluteLocation" _setupCommand_meta '{}' \;
+	
+	
+	if declare -f _cloud_unhook > /dev/null 2>&1 && declare -f _messageNormal > /dev/null 2>&1
+	then
+		mkdir -p "$HOME"/bin
+		! [[ -e "$HOME"/bin ]] && return 1
+		echo '#!/usr/bin/env bash' > "$HOME"/bin/_cloud_unhook."$sessionid"
+		declare -f _messageNormal >> "$HOME"/bin/_cloud_unhook."$sessionid"
+		declare -f _cloud_unhook >> "$HOME"/bin/_cloud_unhook."$sessionid"
+		echo '_cloud_unhook' >> "$HOME"/bin/_cloud_unhook."$sessionid"
+		chmod u+x "$HOME"/bin/_cloud_unhook."$sessionid"
+		mv "$HOME"/bin/_cloud_unhook."$sessionid" "$HOME"/bin/_cloud_unhook
+		chmod u+x "$HOME"/bin/_cloud_unhook
+	fi
 }
 
 _here_synergy_config() {
