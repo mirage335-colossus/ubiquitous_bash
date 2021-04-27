@@ -85,4 +85,6 @@ _cloud_shell() {
 
 
 
-
+_test_cloud() {
+	true
+}

@@ -790,6 +790,28 @@ _variableLocalTest_sequence() {
 	env -i sessionid="" "$currentBashBinLocation" -c '[[ "$sessionid" != "" ]]' && _stop 1
 	env -i "$currentBashBinLocation" -c '[[ "$sessionid" != "" ]]' && _stop 1
 	
+	
+	
+	local currentVariableFunctionText
+	
+	export UB_TEST_VARIABLE_FUNCTION_COMMAND='_variableFunction_variableLocalTest() { echo true; }'' ; _variableFunction_variableLocalTest'
+	currentVariableFunctionText=$(bash -c "$UB_TEST_VARIABLE_FUNCTION_COMMAND")
+	#currentVariableFunctionText=$($UB_TEST_VARIABLE_FUNCTION_COMMAND)
+	[[ "$currentVariableFunctionText" != "true" ]] && _messageFAIL && _stop 1
+	export UB_TEST_VARIABLE_FUNCTION_COMMAND=
+	unset UB_TEST_VARIABLE_FUNCTION_COMMAND
+	
+	_exportFunction_variableLocalTest() {
+		echo true
+	}
+	currentVariableFunctionText=$(bash -c '_exportFunction_variableLocalTest' 2>/dev/null)
+	[[ "$currentVariableFunctionText" != "" ]] && _messageFAIL && _stop 1
+	export -f _exportFunction_variableLocalTest
+	currentVariableFunctionText=$(bash -c '_exportFunction_variableLocalTest' 2>/dev/null)
+	[[ "$currentVariableFunctionText" != "true" ]] && _messageFAIL && _stop 1
+	unset _exportFunction_variableLocalTest
+	
+	
 	_stop
 }
 
@@ -1389,6 +1411,8 @@ _test() {
 	
 	_tryExec "_test_mktorrent"
 	
+	
+	_tryExec "_test_cloud"
 	_tryExec "_test_rclone"
 	
 	

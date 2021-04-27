@@ -32,7 +32,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='1891409836'
-export ub_setScriptChecksum_contents='811966986'
+export ub_setScriptChecksum_contents='2403741293'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -14528,6 +14528,7 @@ _userDocker() {
 
 #####Shortcuts
 
+# https://unix.stackexchange.com/questions/434409/make-a-bash-ps1-that-counts-streak-of-correct-commands
 _visualPrompt_promptCommand() {
 	[[ "$PS1_lineNumber" == "" ]] && PS1_lineNumber='0'
 	#echo "$PS1_lineNumber"
@@ -14555,11 +14556,14 @@ _visualPrompt() {
 	#Truncated, 40 columns.
 	#export PS1='\[\033[01;40m\]\[\033[01;36m\]\[\033[01;34m\]|\[\033[01;31m\]${?}:${debian_chroot:+($debian_chroot)}\[\033[01;33m\]\u\[\033[01;32m\]@\h\[\033[01;36m\]\[\033[01;34m\])\[\033[01;36m\]\[\033[01;34m\]-(\[\033[01;35m\]$(date +%H:%M:%S\.%d)\[\033[01;34m\])\[\033[01;36m\]|\[\033[00m\]\n\[\033[01;40m\]\[\033[01;36m\]\[\033[01;34m\]|\[\033[37m\][\w]\[\033[00m\]\n\[\033[01;36m\]\[\033[01;34m\]|\#) \[\033[36m\]>\[\033[00m\] '
 	
+	
 	# https://unix.stackexchange.com/questions/434409/make-a-bash-ps1-that-counts-streak-of-correct-commands
 	
-	#export PROMPT_COMMAND=_visualPrompt_promptCommand
+	export -f _visualPrompt_promptCommand
+	export PROMPT_COMMAND=_visualPrompt_promptCommand
 	
-	export PROMPT_COMMAND=$(declare -f _visualPrompt_promptCommand)' ; _visualPrompt_promptCommand'
+	#export PROMPT_COMMAND=$(declare -f _visualPrompt_promptCommand)' ; _visualPrompt_promptCommand'
+	
 	export PS1='\[\033[01;40m\]\[\033[01;36m\]\[\033[01;34m\]|\[\033[01;31m\]${?}:${debian_chroot:+($debian_chroot)}\[\033[01;33m\]\u\[\033[01;32m\]@\h\[\033[01;36m\]\[\033[01;34m\])\[\033[01;36m\]\[\033[01;34m\]-(\[\033[01;35m\]$(date +%H:%M:%S\.%d)\[\033[01;34m\])\[\033[01;36m\]|\[\033[00m\]\n\[\033[01;40m\]\[\033[01;36m\]\[\033[01;34m\]|\[\033[37m\][\w]\[\033[00m\]\n\[\033[01;36m\]\[\033[01;34m\]|$PS1_lineNumberText\[\033[01;34m\]) \[\033[36m\]>\[\033[00m\] '
 }
 
@@ -16296,7 +16300,9 @@ _cloud_shell() {
 
 
 
-
+_test_cloud() {
+	true
+}
 
 
 # ATTENTION: Override with 'ops.sh' or 'core.sh' or similar.
@@ -27709,6 +27715,28 @@ _variableLocalTest_sequence() {
 	env -i sessionid="" "$currentBashBinLocation" -c '[[ "$sessionid" != "" ]]' && _stop 1
 	env -i "$currentBashBinLocation" -c '[[ "$sessionid" != "" ]]' && _stop 1
 	
+	
+	
+	local currentVariableFunctionText
+	
+	export UB_TEST_VARIABLE_FUNCTION_COMMAND='_variableFunction_variableLocalTest() { echo true; }'' ; _variableFunction_variableLocalTest'
+	currentVariableFunctionText=$(bash -c "$UB_TEST_VARIABLE_FUNCTION_COMMAND")
+	#currentVariableFunctionText=$($UB_TEST_VARIABLE_FUNCTION_COMMAND)
+	[[ "$currentVariableFunctionText" != "true" ]] && _messageFAIL && _stop 1
+	export UB_TEST_VARIABLE_FUNCTION_COMMAND=
+	unset UB_TEST_VARIABLE_FUNCTION_COMMAND
+	
+	_exportFunction_variableLocalTest() {
+		echo true
+	}
+	currentVariableFunctionText=$(bash -c '_exportFunction_variableLocalTest' 2>/dev/null)
+	[[ "$currentVariableFunctionText" != "" ]] && _messageFAIL && _stop 1
+	export -f _exportFunction_variableLocalTest
+	currentVariableFunctionText=$(bash -c '_exportFunction_variableLocalTest' 2>/dev/null)
+	[[ "$currentVariableFunctionText" != "true" ]] && _messageFAIL && _stop 1
+	unset _exportFunction_variableLocalTest
+	
+	
 	_stop
 }
 
@@ -28308,6 +28336,8 @@ _test() {
 	
 	_tryExec "_test_mktorrent"
 	
+	
+	_tryExec "_test_cloud"
 	_tryExec "_test_rclone"
 	
 	
