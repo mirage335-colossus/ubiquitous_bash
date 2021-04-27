@@ -72,11 +72,13 @@ _cloud_shell() {
 	#set -a
 	##. "$scriptAbsoluteLocation" --parent _importShortcuts
 	#. "$scriptAbsoluteLocation" --profile _importShortcuts
+	#_cloud_set
 	#_cloudPrompt
 	#set +a
 	
 	# https://serverfault.com/questions/368054/run-an-interactive-bash-subshell-with-initial-commands-without-returning-to-the
-	/usr/bin/env bash --init-file <(_safeEcho ". "\"$scriptAbsoluteLocation\"" --profile _importShortcuts ; _cloud_set ; _cloudPrompt")
+	#/usr/bin/env bash --init-file <(_safeEcho ". "\"$scriptAbsoluteLocation\"" --profile _importShortcuts ; _cloud_set ; _cloudPrompt")
+	/usr/bin/env bash --init-file <(_cloud_hook_here)
 }
 
 
