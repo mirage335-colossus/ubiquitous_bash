@@ -145,7 +145,7 @@ _setupUbiquitous() {
 	_setupUbiquitous_accessories_requests "$@"
 	
 	_messagePlain_request "Now import new functionality into current shell if not in current shell."
-	_messagePlain_request echo ". "'"'"$scriptAbsoluteLocation"'"' --profile _importShortcuts
+	_messagePlain_request ". "'"'"$scriptAbsoluteLocation"'"' --profile _importShortcuts
 	
 	
 	return 0

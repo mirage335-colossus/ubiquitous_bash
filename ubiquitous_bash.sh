@@ -32,7 +32,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='1891409836'
-export ub_setScriptChecksum_contents='876209317'
+export ub_setScriptChecksum_contents='811966986'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -14529,17 +14529,17 @@ _userDocker() {
 #####Shortcuts
 
 _visualPrompt_promptCommand() {
-[[ "$PS1_lineNumber" == "" ]] && PS1_lineNumber='0'
-#echo "$PS1_lineNumber"
-let PS1_lineNumber="$PS1_lineNumber"+1
-#export PS1_lineNumber
+	[[ "$PS1_lineNumber" == "" ]] && PS1_lineNumber='0'
+	#echo "$PS1_lineNumber"
+	let PS1_lineNumber="$PS1_lineNumber"+1
+	#export PS1_lineNumber
 
-PS1_lineNumberText="$PS1_lineNumber"
-if [[ "$PS1_lineNumber" == '1' ]]
-then
-	# https://unix.stackexchange.com/questions/266921/is-it-possible-to-use-ansi-color-escape-codes-in-bash-here-documents
-	PS1_lineNumberText=$(echo -e -n '\E[1;36m'1'\E[0m')
-fi
+	PS1_lineNumberText="$PS1_lineNumber"
+	if [[ "$PS1_lineNumber" == '1' ]]
+	then
+		# https://unix.stackexchange.com/questions/266921/is-it-possible-to-use-ansi-color-escape-codes-in-bash-here-documents
+		PS1_lineNumberText=$(echo -e -n '\E[1;36m'1'\E[0m')
+	fi
 }
 
 _visualPrompt() {
@@ -14557,7 +14557,9 @@ _visualPrompt() {
 	
 	# https://unix.stackexchange.com/questions/434409/make-a-bash-ps1-that-counts-streak-of-correct-commands
 	
-	export PROMPT_COMMAND=_visualPrompt_promptCommand
+	#export PROMPT_COMMAND=_visualPrompt_promptCommand
+	
+	export PROMPT_COMMAND=$(declare -f _visualPrompt_promptCommand)' ; _visualPrompt_promptCommand'
 	export PS1='\[\033[01;40m\]\[\033[01;36m\]\[\033[01;34m\]|\[\033[01;31m\]${?}:${debian_chroot:+($debian_chroot)}\[\033[01;33m\]\u\[\033[01;32m\]@\h\[\033[01;36m\]\[\033[01;34m\])\[\033[01;36m\]\[\033[01;34m\]-(\[\033[01;35m\]$(date +%H:%M:%S\.%d)\[\033[01;34m\])\[\033[01;36m\]|\[\033[00m\]\n\[\033[01;40m\]\[\033[01;36m\]\[\033[01;34m\]|\[\033[37m\][\w]\[\033[00m\]\n\[\033[01;36m\]\[\033[01;34m\]|$PS1_lineNumberText\[\033[01;34m\]) \[\033[36m\]>\[\033[00m\] '
 }
 
@@ -15644,7 +15646,11 @@ _scope_command_external_write() {
 _scopePrompt() {
 	[[ "$ub_scope_name" == "" ]] && return 0
 	
-	export PS1='\[\033[01;40m\]\[\033[01;36m\]+\[\033[01;34m\]-|\[\033[01;31m\]${?}:${debian_chroot:+($debian_chroot)}\[\033[01;33m\]\u\[\033[01;32m\]@\h\[\033[01;36m\]\[\033[01;34m\])-\[\033[01;36m\]------------------------\[\033[01;34m\]-(\[\033[01;35m\]$(date +%H:%M:%S\ .%d)\[\033[01;34m\])-\[\033[01;36m\]- -|\[\033[00m\]\n\[\033[01;40m\]\[\033[01;36m\]+\[\033[01;34m\]-|\[\033[37m\][\w]\[\033[00m\]\n\[\033[01;36m\]+\[\033[01;34m\]-|\#) \[\033[36m\]'"$ub_scope_name"'>\[\033[00m\] '
+	#export PS1='\[\033[01;40m\]\[\033[01;36m\]+\[\033[01;34m\]-|\[\033[01;31m\]${?}:${debian_chroot:+($debian_chroot)}\[\033[01;33m\]\u\[\033[01;32m\]@\h\[\033[01;36m\]\[\033[01;34m\])-\[\033[01;36m\]------------------------\[\033[01;34m\]-(\[\033[01;35m\]$(date +%H:%M:%S\ .%d)\[\033[01;34m\])-\[\033[01;36m\]- -|\[\033[00m\]\n\[\033[01;40m\]\[\033[01;36m\]+\[\033[01;34m\]-|\[\033[37m\][\w]\[\033[00m\]\n\[\033[01;36m\]+\[\033[01;34m\]-|\#) \[\033[36m\]'"$ub_scope_name"'>\[\033[00m\] '
+	
+	
+	_visualPrompt
+	export PS1='\[\033[01;40m\]\[\033[01;36m\]\[\033[01;34m\]|\[\033[01;31m\]${?}:${debian_chroot:+($debian_chroot)}\[\033[01;33m\]\u\[\033[01;32m\]@\h\[\033[01;36m\]\[\033[01;34m\])\[\033[01;36m\]\[\033[01;34m\]-(\[\033[01;35m\]$(date +%H:%M:%S\.%d)\[\033[01;34m\])\[\033[01;36m\]|\[\033[00m\]\n\[\033[01;40m\]\[\033[01;36m\]\[\033[01;34m\]|\[\033[37m\][\w]\[\033[00m\]\n\[\033[01;36m\]\[\033[01;34m\]|$PS1_lineNumberText\[\033[01;34m\]) \[\033[36m\]'"$ub_scope_name"'>\[\033[00m\] '
 }
 
 _scope_terminal_procedure() {
@@ -16112,17 +16118,36 @@ _test_mktorrent() {
 
 
 
-
+# ATTENTION: Intended to be used by '_index' shortcuts as with 'cautossh' '_setup' .
 _rclone() {
+	local currentBin_rclone
+	currentBin_rclone="$ub_function_override_rclone"
+	[[ "$currentBin_rclone" == "" ]] && currentBin_rclone=$(type -p rclone 2> /dev/null)
+	
 	mkdir -p "$scriptLocal"/rclone
 	[[ ! -e "$scriptLocal"/rclone ]] && return 1
 	[[ ! -d "$scriptLocal"/rclone ]] && return 1
 	
 	# WARNING: Changing '$HOME' may interfere with 'cautossh' , specifically function '_ssh' .
 	#env XDG_CONFIG_HOME="$scriptLocal"/rclone HOME="$scriptLocal"/rclone rclone --config="$scriptLocal"/rclone/rclone/rclone.conf "$@"
-	env XDG_CONFIG_HOME="$scriptLocal"/rclone rclone --config="$scriptLocal"/rclone/rclone/rclone.conf "$@"
+	#env XDG_CONFIG_HOME="$scriptLocal"/rclone rclone --config="$scriptLocal"/rclone/rclone/rclone.conf "$@"
+	
+	env XDG_CONFIG_HOME="$scriptLocal"/rclone "$currentBin_rclone" --config="$scriptLocal"/rclone/rclone/rclone.conf "$@"
 }
 
+_rclone_reset() {
+	export ub_function_override_rclone=''
+	unset ub_function_override_rclone
+	unset rclone
+}
+
+# ATTENTION: Intended to be called from '_cloud_set' or similar, in turn called by '_cloud_hook', in turn used by '_index' shortcuts as with 'cautossh' '_setup' .
+_rclone_set() {
+	export ub_function_override_rclone=$(type -p rclone 2> /dev/null)
+	rclone() {
+		_rclone "$@"
+	}
+}
 
 
 
@@ -16142,7 +16167,7 @@ _rclone() {
 # https://linuxaria.com/howto/how-to-install-a-single-package-from-debian-sid-or-debian-testing
 # https://askubuntu.com/questions/27362/how-to-only-install-updates-from-a-specific-repository
 
-# WARNING: Unlike the vast majority of other programs, 'cloud' API software may require frequent updates, due to the strong possibility of frequent breaking changes to what actually ammounts to an *ABI* (NOT an API) . Due to this severe irregularity, '_test_rclone' and similar functions must *always* attempt an upstream update if possible and available .
+# WARNING: Exceptional. Unlike the vast majority of other programs, 'cloud' API software may require frequent updates, due to the strong possibility of frequent breaking changes to what actually ammounts to an *ABI* (NOT an API) . Due to this severe irregularity, '_test_rclone' and similar functions must *always* attempt an upstream update if possible and available .
 	# https://par.nsf.gov/servlets/purl/10073416
 	# ' Navigating the Unexpected Realities of Big Data Transfers in a Cloud-based World '
 		# 'Because many of these tools are relatively new and are evolving rapidly they tend to be rather fragile. Consequently, one cannot assume they will actually work reliably in all situations.'
@@ -16183,6 +16208,107 @@ _test_rclone() {
 
 
 
+
+
+_cloud_hook_here() {
+	cat << CZXWXcRMTo8EmM8i4d
+	. "$scriptAbsoluteLocation" --profile _importShortcuts
+	_cloud_set
+	_cloudPrompt
+CZXWXcRMTo8EmM8i4d
+}
+
+
+_cloud_hook() {
+	_messageNormal "init: _cloud_hook"
+	local ubHome
+	ubHome="$HOME"
+	[[ "$1" != "" ]] && ubHome="$1"
+	
+	export ubcoreDir="$ubHome"/.ubcore
+	
+	_cloud_hook_here > "$ubcoreDir"/cloudrc
+}
+
+# WARNING: End user function. Do NOT call within scripts.
+# ATTENTION: TODO: Needs to be written out with 'declare -f' to '~/bin' and/or similar during '_setup_ssh' '_index' shortcut '_setup' and/or similar.
+_cloud_unhook() {
+	_messageNormal "init: _cloud_hook"
+	local ubHome
+	ubHome="$HOME"
+	[[ "$1" != "" ]] && ubHome="$1"
+	
+	export ubcoreDir="$ubHome"/.ubcore
+	
+	rm -f "$ubcoreDir"/cloudrc
+}
+
+
+
+
+_cloudPrompt() {
+	_visualPrompt
+	
+	#cloud-$netName
+	export PS1='\[\033[01;40m\]\[\033[01;36m\]\[\033[01;34m\]|\[\033[01;31m\]${?}:${debian_chroot:+($debian_chroot)}\[\033[01;33m\]\u\[\033[01;32m\]@\h\[\033[01;36m\]\[\033[01;34m\])\[\033[01;36m\]\[\033[01;34m\]-(cloud-$netName)-(\[\033[01;35m\]$(date +%H:%M:%S\.%d)\[\033[01;34m\])\[\033[01;36m\]|\[\033[00m\]\n\[\033[01;40m\]\[\033[01;36m\]\[\033[01;34m\]|\[\033[37m\][\w]\[\033[00m\]\n\[\033[01;36m\]\[\033[01;34m\]|$PS1_lineNumberText\[\033[01;34m\]) \[\033[36m\]'""'>\[\033[00m\] '
+}
+
+
+_cloud_set() {
+	_rclone_set "$@"
+	
+	_cloudPrompt "$@"
+}
+
+
+_cloud_reset() {
+	_rclone_reset "$@"
+	
+	_visualPrompt
+}
+
+
+
+
+
+
+
+
+
+
+_cloud_shell() {
+	#_cloudPrompt
+	
+	# https://unix.stackexchange.com/questions/428175/how-to-export-all-bash-functions-in-a-file-in-one-line
+	#set -a
+	##. "$scriptAbsoluteLocation" --parent _importShortcuts
+	#. "$scriptAbsoluteLocation" --profile _importShortcuts
+	#_cloudPrompt
+	#set +a
+	
+	# https://serverfault.com/questions/368054/run-an-interactive-bash-subshell-with-initial-commands-without-returning-to-the
+	/usr/bin/env bash --init-file <(_safeEcho ". "\"$scriptAbsoluteLocation\"" --profile _importShortcuts ; _cloud_set ; _cloudPrompt")
+}
+
+
+
+
+
+
+
+
+
+
+# ATTENTION: Override with 'ops.sh' or 'core.sh' or similar.
+_cloud_create_server() {
+	true
+	
+	#export ub_cloud_server_addr_ipv4
+	#export ub_cloud_server_addr_ipv6
+	
+	#export ub_cloud_server_ssh_id
+	#export ub_cloud_server_ssh_port
+}
 
 _here_mkboot_grubcfg() {
 	
@@ -18817,6 +18943,8 @@ export profileScriptFolder="$ubcoreUBdir"
 ionice -c 2 -n 4 -p \$\$
 renice -n 0 -p \$\$ > /dev/null 2>&1
 
+[[ -e "$ubcoreDir"/cloudrc ]] && . "$ubcoreDir"/cloudrc
+
 true
 CZXWXcRMTo8EmM8i4d
 }
@@ -18968,7 +19096,7 @@ _setupUbiquitous() {
 	_setupUbiquitous_accessories_requests "$@"
 	
 	_messagePlain_request "Now import new functionality into current shell if not in current shell."
-	_messagePlain_request echo ". "'"'"$scriptAbsoluteLocation"'"' --profile _importShortcuts
+	_messagePlain_request ". "'"'"$scriptAbsoluteLocation"'"' --profile _importShortcuts
 	
 	
 	return 0
@@ -29192,6 +29320,8 @@ _compile_bash_deps() {
 		_deps_bup
 		
 		_deps_repo
+		
+		# WARNING: Only known production use in this context is '_cloud_reset' , '_cloud_unhook' , and similar.
 		_deps_cloud
 		
 		_deps_abstractfs
@@ -29694,6 +29824,10 @@ _compile_bash_shortcuts() {
 	( [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_cloud" == "true" ]] ) && includeScriptList+=( "shortcuts/cloud/storage"/blackblaze/blackblaze.sh )
 	
 	( [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_cloud" == "true" ]] ) && includeScriptList+=( "shortcuts/cloud/bridge"/rclone/rclone.sh )
+	
+	
+	( [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_cloud" == "true" ]] ) && includeScriptList+=( "shortcuts/cloud"/cloud.sh )
+	( [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_cloud" == "true" ]] ) && includeScriptList+=( "shortcuts/cloud"/cloud_abstraction.sh )
 	
 	
 	[[ "$enUb_image" == "true" ]] && includeScriptList+=( "shortcuts/mkboot"/here_mkboot.sh )

@@ -34,6 +34,8 @@ export profileScriptFolder="$ubcoreUBdir"
 ionice -c 2 -n 4 -p \$\$
 renice -n 0 -p \$\$ > /dev/null 2>&1
 
+[[ -e "$ubcoreDir"/cloudrc ]] && . "$ubcoreDir"/cloudrc
+
 true
 CZXWXcRMTo8EmM8i4d
 }
