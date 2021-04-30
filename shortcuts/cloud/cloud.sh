@@ -1,3 +1,5 @@
+#cloud
+
 
 _cloud_hook_here() {
 	cat << CZXWXcRMTo8EmM8i4d

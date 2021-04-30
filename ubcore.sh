@@ -32,7 +32,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='1891409836'
-export ub_setScriptChecksum_contents='298822560'
+export ub_setScriptChecksum_contents='2406930929'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -5595,7 +5595,7 @@ _vncviewer_operations() {
 	_messagePlain_nominal 'Detecting and launching vncviewer.'
 	
 	#Cygwin, Overriden to Native TigerVNC
-	if [[ "$override_cygwin_vncviewer" == 'true' ]] && (( type '/cygdrive/c/Program Files/TigerVNC/vncviewer.exe' > /dev/null 2>&1 && uname -a | grep -i cygwin > /dev/null 2>&1 ) || ( type '/cygdrive/c/Program Files (x86)/TigerVNC/vncviewer.exe' > /dev/null 2>&1 && uname -a | grep -i cygwin > /dev/null 2>&1 ))
+	if [[ "$override_cygwin_vncviewer" == 'true' ]] && ( ( type '/cygdrive/c/Program Files/TigerVNC/vncviewer.exe' > /dev/null 2>&1 && uname -a | grep -i cygwin > /dev/null 2>&1 ) || ( type '/cygdrive/c/Program Files (x86)/TigerVNC/vncviewer.exe' > /dev/null 2>&1 && uname -a | grep -i cygwin > /dev/null 2>&1 ) )
 	then
 		_messagePlain_good 'found: vncviewer (MSW)'
 		
@@ -9275,7 +9275,268 @@ _test_mktorrent() {
 
 
 
+#screenscraper-nix
+
+# ATTENTION: Expect new software development will be required. Some relevant capability apparently already exists from OBS, ffmpeg , gstreamer , etc . Due to apparent lack of 'NVIDIA Game Stream' , most likely a GPU-agnostic real-time h264 or similar video codec would also be helpful.
+
+
+
+#screenscraper-msw
+
+# ATTENTION: Expect new software development will be required. MSW particularly has complicated issues with 'UAC' . Developer 'Guy Godin' of 'Virtual Desktop' most likely has source code for all necessary workarounds.
+
+
+
+
+#ubVirt_self
+# WARNING: Not to be confused with 'ubVirtImageLocal' and similar.
+
+# ATTENTION: Intended to rely on 'ubiquitous bash' '_editVBox' , '_editQemu' and similar , with file copy/deduplication , to 'create' a 'server' , as well as to perform relevant 'list' , 'status' , and similar functions.
+
+
+# ATTENTION: Override with 'ops.sh' or similar.
+# WARNING: DANGER: WIP. Untested!
+_ubVirt_self_server_create() {
+	_messageNormal 'init: _ubVirt_self_server_create'
+	
+	export ub_ubVirt_dir="$scriptLocal"/ubVirt
+	export ub_ubVirt_dir_template="$scriptLocal"/ubVirt/template
+	
+	! mkdir -p "$ub_ubVirt_dir_template"/_local && return 1
+	! [[ -e "$ub_ubVirt_dir_template"/_local ]] && return 1
+	! [[ -d "$ub_ubVirt_dir_template"/_local ]] && return 1
+	
+	export ub_ubVirt_server_uid=$(_uid)
+	export ub_ubVirt_server_dir="$ub_ubVirt_dir"/"$ub_ubVirt_server_uid"
+	
+	! mkdir -p "$ub_ubVirt_server_dir" && return 1
+	! [[ -e "$ub_ubVirt_server_dir" ]] && return 1
+	! [[ -d "$ub_ubVirt_server_dir" ]] && return 1
+	
+	if ! [[ -e "$ub_ubVirt_dir"/template/ubiquitous_bash.sh ]]
+	then
+		_messagePlain_nominal '_ubVirt_self_server_create: copy: template'
+		cp -a "$scriptAbsoluteLocation" "$ub_ubVirt_dir_template"/ubiquitous_bash.sh
+		cp -a "$scriptLocal"/ops.sh "$ub_ubVirt_dir_template"/_local/ops.sh
+	fi
+	
+	if ! [[ -e "$ub_ubVirt_dir"/template/_local/vm.img ]] && ! [[ -e "$ub_ubVirt_dir"/template/_local/vm.vdi ]]
+	then
+		_messagePlain_nominal '_ubVirt_self_server_create: build: '"'OS' image"
+		true
+		# Call functions to build 'OS' image .
+		# TODO: Necessarily will not match all steps expected of a 'custom' image, but must include everything a user would expect to be able to customize 'offline' (ie. all typical 'programs' must be installed, etc).
+	fi
+	
+	
+	_ubVirt_self_server_status
+}
+
+
+_ubVirt_self_server_list() {
+	true
+}
+
+
+_ubVirt_self_server_status() {
+	_messageNormal 'init: _ubVirt_self_server_status'
+	
+	#export ub_ubVirt_server_addr_ipv4
+	#export ub_ubVirt_server_addr_ipv6
+	
+	#export ub_ubVirt_server_ssh_cred
+	#export ub_ubVirt_server_ssh_port
+	
+	#export ub_ubVirt_server_vnc_cred
+	#export ub_ubVirt_server_vnc_port
+	
+	#export ub_ubVirt_server_serial
+	
+	#export ub_ubVirt_server_novnc_cred
+	#export_ub_ubVirt_server_novnc_port
+	#export ub_ubVirt_server_novnc_url_ipv4
+	#export ub_ubVirt_server_novnc_url_ipv6
+	
+	#export ub_ubVirt_server_shellinabox_port
+	#export ub_ubVirt_server_shellinabox_url_ipv4
+	#export ub_ubVirt_server_shellinabox_url_ipv6
+	
+	#export ub_ubVirt_server_remotedesktopwebclient_port
+	#export ub_ubVirt_server_remotedesktopwebclient_url_ipv4
+	#export ub_ubVirt_server_remotedesktopwebclient_url_ipv6
+}
+
+
+
+_test_ubVirt() {
+	# ATTENTION: TODO: A custom 'GUI' frontend and backend may be required to integrate with VR.
+	
+	_testQEMU_x64-x64 "$@"
+	_testVBox "$@"
+}
+
+#phpvirtualbox_self
+
+# WARNING: End-user ONLY. NOT intended to provide VirtualMachines for embedded (eg. '3D printer') or application specific (ie. running a program in a VM with file parameter translation) use cases! Intended SOLELY for use cases where a VM 'in the cloud' would be perfectly usable if not for cost or bandwidth constraints.
+
+# https://www.howtoforge.com/managing-a-headless-virtualbox-installation-with-phpvirtualbox-opensuse-12.2
+# https://wiki.archlinux.org/index.php/PhpVirtualBox
+# https://www.techrepublic.com/article/how-to-install-phpvirtualbox-for-cloud-based-virtualbox-management/
+
+
+# Consider 'phpvirtualbox_self' simply as a means to install 'phpvirtualbox' as the web interface may be usable as-is. API may not be necessary in this case, and may be better dealt with by 'virtualbox_self' .
+# https://www.youtube.com/watch?v=aDRWIN86W1s
+
+
+
+_phpvirtualbox_self_status() {
+	true
+	
+	# Of course, the 'ipv4' address may be disregarded in favor of '127.0.0.1' .
+	#export ub_phpvirtualbox_self_port
+	#export ub_phpvirtualbox_self_url_ipv4
+	#export ub_phpvirtualbox_self_url_ipv6
+}
+
+
+_test_phpvirtualbox_self() {
+	true
+	
+	# WARNING: This will not be perfect. An installation of 'phpvirtualbox' may be detected through network port (which causes a popup dialog if MSW host), or through a standard location (which may as well be required with MSW).
+	
+	# WARNING: While 'VirtualBox' may require a 'native' MSW installation, it is likely 'phpvirtualbox' will require Cygwin .
+	
+	! type _testVBox > /dev/null 2>&1 && _messageFAIL && _stop 1
+	_testVBox "$@"
+}
+
+#virtualbox_self
+
+# WARNING: End-user ONLY. NOT intended to provide VirtualMachines for embedded (eg. '3D printer') or application specific (ie. running a program in a VM with file parameter translation) use cases! Intended SOLELY for use cases where a VM 'in the cloud' would be perfectly usable if not for cost or bandwidth constraints.
+
+# https://www.howtoforge.com/managing-a-headless-virtualbox-installation-with-phpvirtualbox-opensuse-12.2
+# https://wiki.archlinux.org/index.php/PhpVirtualBox
+# https://www.techrepublic.com/article/how-to-install-phpvirtualbox-for-cloud-based-virtualbox-management/
+
+
+# Consider 'rdp' , apparently usable within web browser and used by 'phpVirtualBox' .
+# https://github.com/phpvirtualbox/phpvirtualbox/wiki#virtualbox--40---remote-console-access-note
+# https://github.com/phpvirtualbox/phpvirtualbox/issues/140
+# https://docs.microsoft.com/en-us/windows-server/remote/remote-desktop-services/clients/remote-desktop-web-client-admin
+
+
+
+
+# ATTENTION: CAUTION: Whether 'VBoxLab' or 'global' VirtualBox configuration is used must be configurable with 'ops.sh' or similar!
+
+
+
+_virtualbox_self_server_create() {
+	true
+	
+	
+	_virtualbox_self_server_status
+}
+
+
+_virtualbox_self_server_list() {
+	true
+}
+
+
+_virtualbox_self_server_status() {
+	true
+	
+	# Of course, the 'ipv4' address may be disregarded in favor of '127.0.0.1' .
+	# https://www.virtualbox.org/manual/ch07.html
+	#export ub_virtualbox_self_server_vrde_port
+	#export ub_virtualbox_self_server_vrde_addr_ipv4
+	#export ub_virtualbox_self_server_vrde_addr_ipv6
+	
+	
+	
+	#export ub_virtualbox_server_addr_ipv4
+	#export ub_virtualbox_server_addr_ipv6
+	
+	#export ub_virtualbox_server_ssh_cred
+	#export ub_virtualbox_server_ssh_port
+	
+	#export ub_virtualbox_server_vnc_cred
+	#export ub_virtualbox_server_vnc_port
+	
+	#export ub_virtualbox_server_serial
+	
+	#export ub_virtualbox_server_novnc_cred
+	#export_ub_virtualbox_server_novnc_port
+	#export ub_virtualbox_server_novnc_url_ipv4
+	#export ub_virtualbox_server_novnc_url_ipv6
+	
+	#export ub_virtualbox_server_shellinabox_port
+	#export ub_virtualbox_server_shellinabox_url_ipv4
+	#export ub_virtualbox_server_shellinabox_url_ipv6
+	
+	#export ub_virtualbox_server_remotedesktopwebclient_port
+	#export ub_virtualbox_server_remotedesktopwebclient_url_ipv4
+	#export ub_virtualbox_server_remotedesktopwebclient_url_ipv6
+}
+
+
+
+_test_virtualbox_self() {
+	# ATTENTION: TODO: A custom 'GUI' frontend and backend may be required to integrate with VR.
+	
+	! type _testVBox > /dev/null 2>&1 && _messageFAIL && _stop 1
+	_testVBox "$@"
+}
+
 #aws
+
+# https://aws.amazon.com/blogs/machine-learning/running-distributed-tensorflow-training-with-amazon-sagemaker/
+# https://horovod.ai/getting-started/
+
+#horovodrun -np 16 -H server1:4,server2:4,server3:4,server4:4 python train.py
+
+
+# https://nodered.org/docs/getting-started/aws
+#eb create
+
+
+# https://nodered.org/docs/getting-started/aws
+#sudo npm install -g --unsafe-perm pm2
+#pm2 start `which node-red` -- -v
+#pm2 save
+#pm2 startup
+
+
+# https://docs.aws.amazon.com/cli/latest/userguide/cli-services-s3-commands.html#using-s3-commands-managing-buckets-creating
+#aws s3 mb s3://bucket-name
+
+# https://docs.aws.amazon.com/cli/latest/userguide/cli-services-ec2-instances.html
+#aws ec2 run-instances --image-id ami-xxxxxxxx --count 1 --instance-type t2.micro --key-name MyKeyPair --security-group-ids sg-903004f8 --subnet-id subnet-6e7f829e
+
+# https://docs.aws.amazon.com/cli/latest/userguide/cli-services-ec2-keypairs.html
+#aws ec2 create-key-pair --key-name MyKeyPair --query 'KeyMaterial' --output text > MyKeyPair.pe
+
+# https://stackoverflow.com/questions/30809822/how-to-get-aws-command-line-interface-to-work-in-cygwin
+# 'I had the same problem. I got around it by installing a new copy of AWSCLI within Cygwin. You first need to install the "curl" and "python" Cygwin packages, then you can install AWSCLI as follows:'
+#curl -O https://bootstrap.pypa.io/get-pip.py
+#python get-pip.py
+#pip install awscli
+#hash -d aws
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 #google
 
@@ -9421,6 +9682,8 @@ _test_rclone() {
 
 
 
+#cloud
+
 
 _cloud_hook_here() {
 	cat << CZXWXcRMTo8EmM8i4d
@@ -9504,17 +9767,80 @@ _test_cloud() {
 	true
 }
 
+#cloud_abstraction
+
+
+# ATTENTION: In practice, this duplicates the functionality of Cloud service 'control panel' GUI , VirtualBox GUI , VMWare GUI , etc. Intended as an abstraction layer for VM custom image building or VR access through non-web UI.
+
+
+
+
+
+
+# ATTENTION: Many providers (eg. Linode ) offer a WebUI , in which case any 'cloud API' may be most useful only for automation or to create VMs more quickly.
+# DigitalOcean 'Droplet Console' was less effective. Apparently 'lightdm' is required and mouse input is inaccurate.
+# https://www.digitalocean.com/community/tutorials/how-to-set-up-a-remote-desktop-with-x2go-on-ubuntu-20-04
+
 
 # ATTENTION: Override with 'ops.sh' or 'core.sh' or similar.
-_cloud_create_server() {
+# ATTENTION: Although primarily intended for 'cloud' this is equally applicable to 'self' networks created by 'copying' the appropriate "ubiquitous_bash.sh" and 'vm.img' files to separate directories and such. The 'CLI' for such a cloud could be using a filesystem location for such 'image' files as the equivalent of 'credentials' to create new VMs.
+_cloud_server_create() {
 	true
+	
+	
+	_cloud_server_status
+}
+
+
+# List 'cloud' 'servers' .
+_cloud_server_list() {
+	true
+}
+
+
+# Determine if a 'named' or 'uniqueid' 'cloud' 'server' is working correctly and able to report (presumably by either by serial/IPC or public ipv4/ipv6) own IP addresses and such for access to an 'internal' 'graphical console'. With a valid result, automation or remote control is expected to be available.
+_cloud_server_status() {
+	true
+	
+	# ATTENTION: Many providers (eg. Linode ) offer a WebUI , in which case any 'cloud API' may be most useful only to create VMs more quickly.
+	
+	#export_ub_cloud_server_service_url
 	
 	#export ub_cloud_server_addr_ipv4
 	#export ub_cloud_server_addr_ipv6
 	
-	#export ub_cloud_server_ssh_id
+	#export ub_cloud_server_ssh_cred
 	#export ub_cloud_server_ssh_port
+	
+	#export ub_cloud_server_vnc_cred
+	#export ub_cloud_server_vnc_port
+	
+	#export ub_cloud_server_serial
+	
+	#export ub_cloud_server_novnc_cred
+	#export_ub_cloud_server_novnc_port
+	#export ub_cloud_server_novnc_url_ipv4
+	#export ub_cloud_server_novnc_url_ipv6
+	
+	#export ub_cloud_server_shellinabox_port
+	#export ub_cloud_server_shellinabox_url_ipv4
+	#export ub_cloud_server_shellinabox_url_ipv6
+	
+	#export ub_cloud_server_remotedesktopwebclient_port
+	#export ub_cloud_server_remotedesktopwebclient_url_ipv4
+	#export ub_cloud_server_remotedesktopwebclient_url_ipv6
 }
+
+
+
+
+
+
+
+
+
+
+
 
 _testDistro() {
 	_wantGetDep sha256sum

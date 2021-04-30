@@ -64,7 +64,7 @@ _vncviewer_operations() {
 	_messagePlain_nominal 'Detecting and launching vncviewer.'
 	
 	#Cygwin, Overriden to Native TigerVNC
-	if [[ "$override_cygwin_vncviewer" == 'true' ]] && (( type '/cygdrive/c/Program Files/TigerVNC/vncviewer.exe' > /dev/null 2>&1 && uname -a | grep -i cygwin > /dev/null 2>&1 ) || ( type '/cygdrive/c/Program Files (x86)/TigerVNC/vncviewer.exe' > /dev/null 2>&1 && uname -a | grep -i cygwin > /dev/null 2>&1 ))
+	if [[ "$override_cygwin_vncviewer" == 'true' ]] && ( ( type '/cygdrive/c/Program Files/TigerVNC/vncviewer.exe' > /dev/null 2>&1 && uname -a | grep -i cygwin > /dev/null 2>&1 ) || ( type '/cygdrive/c/Program Files (x86)/TigerVNC/vncviewer.exe' > /dev/null 2>&1 && uname -a | grep -i cygwin > /dev/null 2>&1 ) )
 	then
 		_messagePlain_good 'found: vncviewer (MSW)'
 		

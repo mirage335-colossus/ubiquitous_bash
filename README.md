@@ -238,3 +238,26 @@ https://github.com/PipelineAI/pipeline
 
 https://wiki.bash-hackers.org/scripting/obsolete
 
+
+
+
+
+
+https://novnc.com/info.html
+https://novnc.com/screenshots.html
+https://docs.unrealengine.com/en-US/InteractiveExperiences/UMG/UserGuide/WidgetTypeReference/WebBrowser/index.html
+https://www.highfidelity.com/blog/vnc-in-vr-synchronized-virtual-desktops-49bc4fc428e7
+
+
+https://github.com/shellinabox/shellinabox
+
+https://uploadvr.com/virtc-virtual-desktop/
+
+
+https://docs.microsoft.com/en-us/windows-server/remote/remote-desktop-services/clients/remote-desktop-web-client-admin
+https://www.youtube.com/watch?v=NYEyyVDsapw
+
+
+
+
+
