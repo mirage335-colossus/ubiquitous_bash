@@ -76,6 +76,7 @@ _digitalocean_cloud_server_create_API--nyc3_s-1vcpu-1gb_ubuntu-20-04-x64() {
 # ATTENTION: Consider that Cloud services are STRICTLY intended as end-user functions - manual 'cleanup' of 'expensive' resources MUST be feasible!
 # "$@" == _functionName (must process JSON file - ie. loop through - jq '.droplets[0].id,.droplets[0].name' )
 # EXAMPLE: _digitalocean_cloud_self_server_list _digitalocean_cloud_self_server_dispose-filter 'temporaryBuild'
+# EXAMPLE: _digitalocean_cloud_self_server_list _digitalocean_cloud_self_server_status-filter 'workstation'
 _digitalocean_cloud_self_server_list() {
 	_messageNormal 'init: _digitalocean_cloud_self_server_list'
 	
@@ -207,13 +208,13 @@ _digitalocean_cloud_self_server_status() {
 	_digitalocean_cloud_cred
 	
 	
-	curl -X GET -H "Content-Type: application/json" -H "Authorization: Bearer $ub_digitalocean_TOKEN" "https://api.digitalocean.com/v2/droplets/$ub_digitalocean_cloud_server_uid" > "$cloudTmp"/reply
+	curl -X GET -H "Content-Type: application/json" -H "Authorization: Bearer $ub_digitalocean_TOKEN" "https://api.digitalocean.com/v2/droplets/$ub_digitalocean_cloud_server_uid" > "$cloudTmp"/reply_status
 	
 	
 	
 	
-	export ub_digitalocean_cloud_server_addr_ipv4=$(cat "$cloudTmp"/reply | jq '.droplet.networks.v4[0].ip_address' | tr -dc 'a-zA-Z0-9_-')
-	export ub_digitalocean_cloud_server_addr_ipv6=$(cat "$cloudTmp"/reply | jq '.droplet.networks.v6[0].ip_address' | tr -dc 'a-zA-Z0-9_-')
+	export ub_digitalocean_cloud_server_addr_ipv4=$(cat "$cloudTmp"/reply_status | jq '.droplet.networks.v4[0].ip_address' | tr -dc 'a-zA-Z0-9_-')
+	export ub_digitalocean_cloud_server_addr_ipv6=$(cat "$cloudTmp"/reply_status | jq '.droplet.networks.v6[0].ip_address' | tr -dc 'a-zA-Z0-9_-')
 	
 	
 	# ATTENTION: Ubiquitous Bash 'queue' 'database' may be an appropriate means to store sane default 'cred' values after '_server_create' . Also consider storing relevant files under "$scriptLocal" .
@@ -240,9 +241,11 @@ _digitalocean_cloud_self_server_status() {
 	export ub_digitalocean_cloud_server_remotedesktopwebclient_url_ipv6=https://"$ub_digitalocean_cloud_server_addr_ipv6":"$ub_digitalocean_cloud_server_remotedesktopwebclient_port"/remotedesktopwebclient/
 	
 	
-	
-	_digitalocean_cloud_cred_reset
-	_stop_cloud_tmp
+	if ! [[ -e "$cloudTmp"/reply ]]
+	then
+		_digitalocean_cloud_cred_reset
+		_stop_cloud_tmp
+	fi
 	
 	return 0
 }
