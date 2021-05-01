@@ -1,4 +1,5 @@
 #cloud_abstraction
+# ATTENTION: Override with 'ops.sh' or 'core.sh' or similar.
 
 
 # ATTENTION: In practice, this duplicates the functionality of Cloud service 'control panel' GUI , VirtualBox GUI , VMWare GUI , etc. Intended as an abstraction layer for VM custom image building or VR access through non-web UI.

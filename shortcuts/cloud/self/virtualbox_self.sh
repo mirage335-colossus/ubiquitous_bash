@@ -75,4 +75,6 @@ _test_virtualbox_self() {
 	
 	! type _testVBox > /dev/null 2>&1 && _messageFAIL && _stop 1
 	_testVBox "$@"
+	
+	return 0
 }

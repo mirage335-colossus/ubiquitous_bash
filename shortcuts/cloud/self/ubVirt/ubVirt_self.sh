@@ -39,7 +39,7 @@ _ubVirt_self_server_create() {
 	fi
 	
 	
-	_ubVirt_self_server_status
+	_ubVirt_self_server_status "$ub_ubVirt_server_uid"
 }
 
 
@@ -83,4 +83,6 @@ _test_ubVirt() {
 	
 	_testQEMU_x64-x64 "$@"
 	_testVBox "$@"
+	
+	return 0
 }

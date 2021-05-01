@@ -1,5 +1,36 @@
 #cloud
 
+# ATTENTION: Highly irregular means of keeping temporary data from cloud replies to API queries, due to the expected high probability of failures.
+_start_cloud_tmp() {
+	export ub_cloudTmp_id=$(_uid)
+	export ub_cloudTmp="$scriptLocal"/cloud/cloudTmp/"$cloudTmp_id"
+	
+	#mkdir -p "$scriptLocal"/cloud/cloudTmp
+	#! [[ -e "$scriptLocal"/cloud/cloudTmp ]] && _messageFAIL && _stop 1
+	#! [[ -d "$scriptLocal"/cloud/cloudTmp ]] && _messageFAIL && _stop 1
+	
+	mkdir -p "$ub_cloudTmp"
+	! [[ -e "$ub_cloudTmp" ]] && _messageFAIL && _stop 1
+	! [[ -d "$ub_cloudTmp" ]] && _messageFAIL && _stop 1
+	
+	echo '*' > "$scriptLocal"/cloud/cloudTmp/.gitignore
+	
+	return 0
+}
+# WARNING: Do NOT call from '_stop' !
+# WARNING: *Requires* variable "$ub_cloudTmp" to have been exported/set by '_start_cloud_tmp' !
+_stop_cloud_tmp() {
+	[[ "$cloudTmp" == "" ]] && return 1
+	! [[ -e "$cloudTmp" ]] && return 1
+	! [[ -d "$cloudTmp" ]] && return 1
+	
+	_safeRMR "$ub_cloudTmp" > /dev/null 2>&1
+	
+	return 0
+}
+
+
+
 
 _cloud_hook_here() {
 	cat << CZXWXcRMTo8EmM8i4d
@@ -80,5 +111,14 @@ _cloud_reset() {
 
 
 _test_cloud() {
-	true
+	
+	
+	_tryExec '_test_digitalocean_cloud'
+	
+	_tryExec '_test_ubVirt'
+	_tryExec '_test_phpvirtualbox_self'
+	_tryExec '_test_virtualbox_self'
+	
+	
+	return 0
 }
