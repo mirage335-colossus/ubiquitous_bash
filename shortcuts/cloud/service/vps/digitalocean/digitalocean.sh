@@ -49,7 +49,7 @@ _digitalocean_cloud_server_create() {
 		let currentIterations="$currentIterations + 1"
 		
 		_digitalocean_cloud_server_create_API--nyc3_s-1vcpu-1gb_ubuntu-20-04-x64 "$ub_digitalocean_cloud_server_name" > "$cloudTmp"/reply
-		export ub_digitalocean_cloud_server_uid=$(cat "$cloudTmp"/reply | jq '.droplet.'id | tr -dc 'a-zA-Z0-9_-.:')
+		export ub_digitalocean_cloud_server_uid=$(cat "$cloudTmp"/reply | jq '.droplet.'id | tr -dc 'a-zA-Z0-9.:_-')
 		
 		[[ "$ub_digitalocean_cloud_server_uid" == "" ]] && _messagePlain_warn 'attempt: _digitalocean_cloud_server_create: miss'
 	done
@@ -94,7 +94,7 @@ _digitalocean_cloud_self_server_list() {
 		let currentIterations="$currentIterations + 1"
 		
 		curl -X GET "https://api.digitalocean.com/v2/droplets" -H "Authorization: Bearer $ub_digitalocean_TOKEN" > "$cloudTmp"/reply
-		current_ub_digitalocean_cloud_server_uid=$(cat "$cloudTmp"/reply | jq '.droplets[0].id' | tr -dc 'a-zA-Z0-9_-.:')
+		current_ub_digitalocean_cloud_server_uid=$(cat "$cloudTmp"/reply | jq '.droplets[0].id' | tr -dc 'a-zA-Z0-9.:_-')
 		
 		[[ "$current_ub_digitalocean_cloud_server_uid" == "" ]] && _messagePlain_warn 'attempt: _digitalocean_cloud_self_server_list: miss'
 	done
@@ -148,8 +148,8 @@ _digitalocean_cloud_self_server_dispose-filter() {
 		export ub_digitalocean_cloud_server_uid=
 		export ub_digitalocean_cloud_server_name=
 		
-		ub_digitalocean_cloud_server_uid=$(cat "$cloudTmp"/reply | jq '.droplets['"$currentIterations"'].id' | tr -dc 'a-zA-Z0-9_-.:')
-		ub_digitalocean_cloud_server_name=$(cat "$cloudTmp"/reply | jq '.droplets['"$currentIterations"'].name' | tr -dc 'a-zA-Z0-9_-.:')
+		ub_digitalocean_cloud_server_uid=$(cat "$cloudTmp"/reply | jq '.droplets['"$currentIterations"'].id' | tr -dc 'a-zA-Z0-9.:_-')
+		ub_digitalocean_cloud_server_name=$(cat "$cloudTmp"/reply | jq '.droplets['"$currentIterations"'].name' | tr -dc 'a-zA-Z0-9.:_-')
 		let currentIterations="$currentIterations + 1"
 		
 		_messagePlain_probe_var ub_digitalocean_cloud_server_uid
@@ -186,8 +186,8 @@ _digitalocean_cloud_self_server_status-filter() {
 		export ub_digitalocean_cloud_server_uid=
 		export ub_digitalocean_cloud_server_name=
 		
-		ub_digitalocean_cloud_server_uid=$(cat "$cloudTmp"/reply | jq '.droplets['"$currentIterations"'].id' | tr -dc 'a-zA-Z0-9_-.:')
-		ub_digitalocean_cloud_server_name=$(cat "$cloudTmp"/reply | jq '.droplets['"$currentIterations"'].name' | tr -dc 'a-zA-Z0-9_-.:')
+		ub_digitalocean_cloud_server_uid=$(cat "$cloudTmp"/reply | jq '.droplets['"$currentIterations"'].id' | tr -dc 'a-zA-Z0-9.:_-')
+		ub_digitalocean_cloud_server_name=$(cat "$cloudTmp"/reply | jq '.droplets['"$currentIterations"'].name' | tr -dc 'a-zA-Z0-9.:_-')
 		let currentIterations="$currentIterations + 1"
 		
 		_messagePlain_probe_var ub_digitalocean_cloud_server_uid
@@ -213,8 +213,8 @@ _digitalocean_cloud_self_server_status() {
 	
 	
 	
-	export ub_digitalocean_cloud_server_addr_ipv4=$(cat "$cloudTmp"/reply_status | jq '.droplet.networks.v4[0].ip_address' | tr -dc 'a-zA-Z0-9_-.:')
-	export ub_digitalocean_cloud_server_addr_ipv6=$(cat "$cloudTmp"/reply_status | jq '.droplet.networks.v6[0].ip_address' | tr -dc 'a-zA-Z0-9_-.:')
+	export ub_digitalocean_cloud_server_addr_ipv4=$(cat "$cloudTmp"/reply_status | jq '.droplet.networks.v4[0].ip_address' | tr -dc 'a-zA-Z0-9.:_-')
+	export ub_digitalocean_cloud_server_addr_ipv6=$(cat "$cloudTmp"/reply_status | jq '.droplet.networks.v6[0].ip_address' | tr -dc 'a-zA-Z0-9.:_-')
 	
 	
 	# ATTENTION: Ubiquitous Bash 'queue' 'database' may be an appropriate means to store sane default 'cred' values after '_server_create' . Also consider storing relevant files under "$scriptLocal" .

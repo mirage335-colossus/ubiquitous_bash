@@ -32,7 +32,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='1891409836'
-export ub_setScriptChecksum_contents='1408100060'
+export ub_setScriptChecksum_contents='2440609692'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -16290,7 +16290,296 @@ _test_virtualbox_self() {
 	return 0
 }
 
+#libvirt_self
+
 #aws
+
+# ATTENTION: ATTENTION: Cloud VPS API wrapper 'de-facto' reference implementation is 'digitalocean' !
+# Obvious naming conventions and such are to be considered from that source first.
+
+
+# WARNING: DANGER: WIP, Untested .
+
+
+# https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-lifecycle.html
+# https://docs.aws.amazon.com/cli/latest/reference/ec2/run-instances.html
+
+
+
+# ATTENTION: Override with 'ops.sh' or 'core.sh' or similar.
+_aws_cloud_cred() {
+	_aws_set "$@"
+}
+_aws_cloud_cred_reset() {
+	_aws_reset "$@"
+}
+
+
+
+# ATTENTION: Override with 'ops.sh' or 'core.sh' or similar.
+# "$1" == ub_aws_cloud_server_name
+_aws_cloud_server_create() {
+	_messageNormal 'init: _aws_cloud_server_create'
+	
+	_start_cloud_tmp
+	
+	_aws_cloud_cred
+	
+	export ub_aws_cloud_server_name="$1"
+	[[ "$ub_aws_cloud_server_name" == "" ]] && export ub_aws_cloud_server_name=$(_uid)
+	
+	
+	_messagePlain_nominal 'attempt: _aws_cloud_server_create: Cloud Services API Request'
+	local currentIterations
+	currentIterations=0
+	export ub_aws_cloud_server_uid=
+	while [[ "$ub_aws_cloud_server_uid" == "" ]] && [[ "$currentIterations" -lt 3 ]]
+	do
+		let currentIterations="$currentIterations + 1"
+		
+		_aws_cloud_server_create_API--us-east_g5-standard-2_debian9 "$ub_aws_cloud_server_name" > "$cloudTmp"/reply
+		export ub_aws_cloud_server_uid=$(cat "$cloudTmp"/reply | grep -v 'PrivateDnsName' |  jq '.'Instances[].InstanceId | tr -dc 'a-zA-Z0-9.:_-')
+		_aws_cloud_server_name_API "$ub_aws_cloud_server_uid" "$ub_aws_cloud_server_name"
+		
+		[[ "$ub_aws_cloud_server_uid" == "" ]] && _messagePlain_warn 'attempt: _aws_cloud_server_create: miss'
+	done
+	[[ "$ub_aws_cloud_server_uid" == "" ]] && _messagePlain_bad 'attempt: _aws_cloud_server_create: fail' && _stop_cloud_tmp && _messageFAIL && _stop 1
+	_messagePlain_good  'attempt: _aws_cloud_server_create: pass'
+	
+	_stop_cloud_tmp
+	
+	
+	
+	_aws_cloud_server_status "$ub_aws_cloud_server_uid"
+	
+	_aws_cloud_cred_reset
+	
+	return 0
+}
+_aws_cloud_server_create_API--image_ami-xxxxxxxx() {
+	# https://docs.aws.amazon.com/cli/latest/userguide/cli-services-ec2-instances.html
+	#aws ec2 run-instances --image-id ami-xxxxxxxx --count 1 --instance-type t2.micro --key-name "$ubiquitiousBashIDshort" --security-group-ids sg-903004f8 --subnet-id subnet-6e7f829e
+	aws ec2 run-instances --image-id ami-xxxxxxxx --count 1 --instance-type t2.micro --key-name "$ubiquitiousBashIDshort" --security-group-ids sg-"$ubiquitiousBashIDshort" --subnet-id subnet-"$ubiquitiousBashIDshort"
+}
+_aws_cloud_server_name_API() {
+	aws ec2 create-tags --resources "$ub_aws_cloud_server_uid" --tags Key=Name,Value="$ub_aws_cloud_server_name"
+}
+
+
+
+# ATTENTION: Consider that Cloud services are STRICTLY intended as end-user functions - manual 'cleanup' of 'expensive' resources MUST be feasible!
+# "$@" == _functionName (must process JSON file - ie. loop through - jq '.data[0].id,.data[0].label' )
+# EXAMPLE: _aws_cloud_self_server_list _aws_cloud_self_server_dispose-filter 'temporaryBuild'
+# EXAMPLE: _aws_cloud_self_server_list _aws_cloud_self_server_status-filter 'workstation'
+_aws_cloud_self_server_list() {
+	_messageNormal 'init: _aws_cloud_self_server_list'
+	
+	_start_cloud_tmp
+	
+	_aws_cloud_cred
+	
+	_messagePlain_nominal 'attempt: _aws_cloud_self_server_list: Cloud Services API Request'
+	local currentIterations
+	currentIterations=0
+	local current_ub_aws_cloud_server_uid
+	current_ub_aws_cloud_server_uid=
+	while [[ "$current_ub_aws_cloud_server_uid" == "" ]] && [[ "$currentIterations" -lt 3 ]]
+	do
+		let currentIterations="$currentIterations + 1"
+		
+		# WARNING: WIP, Untested.
+		# https://serverfault.com/questions/578921/how-would-you-go-about-listing-instances-using-aws-cli-in-certain-vpc-with-the-t
+		#aws ec2 describe-instances --no-paginate --filters "Name=instance-type,Values=t2.micro" --query 'Reservations[*].Instances[*].{Instance:InstanceId,Tags[0]}' --output json > "$cloudTmp"/reply
+		#aws ec2 describe-instances --query 'Reservations[].Instances[].[InstanceId,Tags[?Key==`Name`].Value[]]' --output json > "$cloudTmp"/reply
+		aws ec2 describe-instances --no-paginate --query 'Reservations[].Instances[].{InstanceId,Tags[?Key==`Name`].Value[0]}' --output json > "$cloudTmp"/reply
+		current_ub_aws_cloud_server_uid=$(cat "$cloudTmp"/reply | jq '.[0].Instance' | tr -dc 'a-zA-Z0-9.:_-')
+		
+		[[ "$current_ub_aws_cloud_server_uid" == "" ]] && _messagePlain_warn 'attempt: _aws_cloud_self_server_list: miss'
+	done
+	[[ "$current_ub_aws_cloud_server_uid" == "" ]] && _messagePlain_bad 'attempt: _aws_cloud_self_server_list: fail' && _stop_cloud_tmp && _messageFAIL && _stop 1
+	_messagePlain_good  'attempt: _aws_cloud_self_server_list: pass'
+	
+	
+	"$@"
+	
+	
+	_messagePlain_request 'request: Please review CloudVM list for unnecessary expense.'
+	cat "$cloudTmp"/reply | jq '.[].Instance,.[].Tags'
+	_stop_cloud_tmp
+	_aws_cloud_cred_reset
+	
+	return 0
+}
+
+
+
+_aws_cloud_self_server_dispose-filter() {
+	_messageNormal 'init: _aws_cloud_self_server_dispose-filter: '"$@"
+	
+	# WARNING: To match 'all' consider '.*' instead of empty.
+	[[ "$1" == "" ]] && return 1
+	
+	
+	_messagePlain_nominal 'loop: _aws_cloud_self_server_dispose-filter'
+	local currentIterations
+	currentIterations=0
+	local currentIterations_inner
+	currentIterations_inner=0
+	export ub_aws_cloud_server_uid="$ubiquitiousBashIDnano"$(_uid 18)"$ubiquitiousBashIDnano"
+	export ub_aws_cloud_server_name="$ubiquitiousBashIDnano"$(_uid 18)"$ubiquitiousBashIDnano"
+	while [[ "$ub_aws_cloud_server_uid" != "null" ]] && [[ "$ub_aws_cloud_server_name" != "null" ]] && [[ "$ub_aws_cloud_server_uid" != "" ]] && [[ "$ub_aws_cloud_server_name" != "" ]] && [[ "$currentIterations" -lt 999 ]]
+	do
+		if _safeEcho "$ub_aws_cloud_server_name" | grep "$@"
+		then
+			currentIterations_inner=0
+			
+			# WARNING: Significant experimentation may be required.
+			# https://superuser.com/questions/272265/getting-curl-to-output-http-status-code
+			
+			#"$ub_aws_cloud_server_uid"
+			while ! aws ec2 terminate-instances --instance-ids "$ub_aws_cloud_server_uid" > /dev/null 2>&1 && [[ "$currentIterations_inner" -lt 3 ]]
+			do
+				let currentIterations_inner="$currentIterations_inner + 1"
+			done
+		fi
+		
+		export ub_aws_cloud_server_uid=
+		export ub_aws_cloud_server_name=
+		
+		# WARNING: May work as intended without properly filtering for 'Name' 'tag' .
+		ub_aws_cloud_server_uid=$(cat "$cloudTmp"/reply | jq '.['"$currentIterations"'].Instance' | tr -dc 'a-zA-Z0-9.:_-')
+		ub_aws_cloud_server_name=$(cat "$cloudTmp"/reply | jq '.['"$currentIterations"'].Tags' | tr -dc 'a-zA-Z0-9.:_-')
+		let currentIterations="$currentIterations + 1"
+		
+		_messagePlain_probe_var ub_aws_cloud_server_uid
+		_messagePlain_probe_var ub_aws_cloud_server_name
+		
+	done
+	_messagePlain_good  'done: _aws_cloud_self_server_dispose-filter'
+	
+	return 0
+}
+
+
+_aws_cloud_self_server_status-filter() {
+	_messageNormal 'init: _aws_cloud_self_server_status-filter: '"$@"
+	
+	# WARNING: To match 'all' consider '.*' instead of empty.
+	[[ "$1" == "" ]] && return 1
+	
+	
+	_messagePlain_nominal 'loop: _aws_cloud_self_server_status-filter'
+	local currentIterations
+	currentIterations=0
+	local currentIterations_inner
+	currentIterations_inner=0
+	export ub_aws_cloud_server_uid="$ubiquitiousBashIDnano"$(_uid 18)"$ubiquitiousBashIDnano"
+	export ub_aws_cloud_server_name="$ubiquitiousBashIDnano"$(_uid 18)"$ubiquitiousBashIDnano"
+	while [[ "$ub_aws_cloud_server_uid" != "null" ]] && [[ "$ub_aws_cloud_server_name" != "null" ]] && [[ "$ub_aws_cloud_server_uid" != "" ]] && [[ "$ub_aws_cloud_server_name" != "" ]] && [[ "$currentIterations" -lt 999 ]]
+	do
+		if _safeEcho "$ub_aws_cloud_server_name" | grep "$@"
+		then
+			_aws_cloud_self_server_status "$ub_aws_cloud_server_uid"
+		fi
+		
+		export ub_aws_cloud_server_uid=
+		export ub_aws_cloud_server_name=
+		
+		ub_aws_cloud_server_uid=$(cat "$cloudTmp"/reply | jq '.data['"$currentIterations"'].id' | tr -dc 'a-zA-Z0-9.:_-')
+		ub_aws_cloud_server_name=$(cat "$cloudTmp"/reply | jq '.data['"$currentIterations"'].label' | tr -dc 'a-zA-Z0-9.:_-')
+		let currentIterations="$currentIterations + 1"
+		
+		_messagePlain_probe_var ub_aws_cloud_server_uid
+		_messagePlain_probe_var ub_aws_cloud_server_name
+		
+	done
+	_messagePlain_good  'done: _aws_cloud_self_server_status-filter'
+	
+	return 0
+}
+
+
+_aws_cloud_self_server_status() {
+	_messageNormal 'init: _aws_cloud_self_server_status'
+	
+	_start_cloud_tmp
+	
+	_aws_cloud_cred
+	
+	# ATTENTION: NOTICE: Possibly an excellent means to obtain sample data for 'describe-instances' .
+	
+	aws ec2 describe-instances --instance-ids "$ub_aws_cloud_server_uid"
+	
+	
+	
+	# WARNING: WIP, Untested.
+	
+	
+	
+	#export ub_aws_cloud_server_addr_ipv4=$(cat "$cloudTmp"/reply_status | jq '.' | tr -dc 'a-zA-Z0-9.:_-')
+	#export ub_aws_cloud_server_addr_ipv6=$(cat "$cloudTmp"/reply_status | jq '.' | tr -dc 'a-zA-Z0-9.:_-')
+	
+	export ub_aws_cloud_server_addr_ipv4=
+	export ub_aws_cloud_server_addr_ipv6=
+	
+	
+	# ATTENTION: Ubiquitous Bash 'queue' 'database' may be an appropriate means to store sane default 'cred' values after '_server_create' . Also consider storing relevant files under "$scriptLocal" .
+	
+	export ub_aws_cloud_server_ssh_cred=
+	export ub_aws_cloud_server_ssh_port=
+	
+	export ub_aws_cloud_server_vnc_cred=
+	export ub_aws_cloud_server_vnc_port=
+	
+	export ub_aws_cloud_server_serial=
+	
+	export ub_aws_cloud_server_novnc_cred=
+	export ub_aws_cloud_server_novnc_port=
+	export ub_aws_cloud_server_novnc_url_ipv4=https://"$ub_aws_cloud_server_addr_ipv4":"$ub_aws_cloud_server_novnc_port"/novnc/
+	export ub_aws_cloud_server_novnc_url_ipv6=https://"$ub_aws_cloud_server_addr_ipv6":"$ub_aws_cloud_server_novnc_port"/novnc/
+	
+	export ub_aws_cloud_server_shellinabox_port=
+	export ub_aws_cloud_server_shellinabox_url_ipv4=https://"$ub_aws_cloud_server_addr_ipv4":"$ub_aws_cloud_server_shellinabox_port"/shellinabox/
+	export ub_aws_cloud_server_shellinabox_url_ipv6=https://"$ub_aws_cloud_server_addr_ipv6":"$ub_aws_cloud_server_shellinabox_port"/shellinabox/
+	
+	export ub_aws_cloud_server_remotedesktopwebclient_port=
+	export ub_aws_cloud_server_remotedesktopwebclient_url_ipv4=https://"$ub_aws_cloud_server_addr_ipv4":"$ub_aws_cloud_server_remotedesktopwebclient_port"/remotedesktopwebclient/
+	export ub_aws_cloud_server_remotedesktopwebclient_url_ipv6=https://"$ub_aws_cloud_server_addr_ipv6":"$ub_aws_cloud_server_remotedesktopwebclient_port"/remotedesktopwebclient/
+	
+	
+	
+	if ! [[ -e "$cloudTmp"/reply ]]
+	then
+		_aws_cloud_cred_reset
+		_stop_cloud_tmp
+	fi
+	
+	return 0
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -16305,7 +16594,7 @@ _aws() {
 	[[ ! -d "$scriptLocal"/cloud/aws/.aws ]] && return 1
 	
 	# WARNING: Not guaranteed.
-	_relink "$HOME"/.ssh "$scriptLocal"/cloud/aws/.aws
+	_relink "$HOME"/.ssh "$scriptLocal"/cloud/aws/.ssh
 	
 	# WARNING: Changing '$HOME' may interfere with 'cautossh' , specifically function '_ssh' .
 	
@@ -16387,15 +16676,6 @@ _aws_hook() {
 _aws_unhook() {
 	true
 }
-
-
-
-
-
-
-
-
-
 
 
 
@@ -16654,7 +16934,7 @@ _digitalocean_cloud_server_create() {
 		let currentIterations="$currentIterations + 1"
 		
 		_digitalocean_cloud_server_create_API--nyc3_s-1vcpu-1gb_ubuntu-20-04-x64 "$ub_digitalocean_cloud_server_name" > "$cloudTmp"/reply
-		export ub_digitalocean_cloud_server_uid=$(cat "$cloudTmp"/reply | jq '.droplet.'id | tr -dc 'a-zA-Z0-9_-.:')
+		export ub_digitalocean_cloud_server_uid=$(cat "$cloudTmp"/reply | jq '.droplet.'id | tr -dc 'a-zA-Z0-9.:_-')
 		
 		[[ "$ub_digitalocean_cloud_server_uid" == "" ]] && _messagePlain_warn 'attempt: _digitalocean_cloud_server_create: miss'
 	done
@@ -16699,7 +16979,7 @@ _digitalocean_cloud_self_server_list() {
 		let currentIterations="$currentIterations + 1"
 		
 		curl -X GET "https://api.digitalocean.com/v2/droplets" -H "Authorization: Bearer $ub_digitalocean_TOKEN" > "$cloudTmp"/reply
-		current_ub_digitalocean_cloud_server_uid=$(cat "$cloudTmp"/reply | jq '.droplets[0].id' | tr -dc 'a-zA-Z0-9_-.:')
+		current_ub_digitalocean_cloud_server_uid=$(cat "$cloudTmp"/reply | jq '.droplets[0].id' | tr -dc 'a-zA-Z0-9.:_-')
 		
 		[[ "$current_ub_digitalocean_cloud_server_uid" == "" ]] && _messagePlain_warn 'attempt: _digitalocean_cloud_self_server_list: miss'
 	done
@@ -16753,8 +17033,8 @@ _digitalocean_cloud_self_server_dispose-filter() {
 		export ub_digitalocean_cloud_server_uid=
 		export ub_digitalocean_cloud_server_name=
 		
-		ub_digitalocean_cloud_server_uid=$(cat "$cloudTmp"/reply | jq '.droplets['"$currentIterations"'].id' | tr -dc 'a-zA-Z0-9_-.:')
-		ub_digitalocean_cloud_server_name=$(cat "$cloudTmp"/reply | jq '.droplets['"$currentIterations"'].name' | tr -dc 'a-zA-Z0-9_-.:')
+		ub_digitalocean_cloud_server_uid=$(cat "$cloudTmp"/reply | jq '.droplets['"$currentIterations"'].id' | tr -dc 'a-zA-Z0-9.:_-')
+		ub_digitalocean_cloud_server_name=$(cat "$cloudTmp"/reply | jq '.droplets['"$currentIterations"'].name' | tr -dc 'a-zA-Z0-9.:_-')
 		let currentIterations="$currentIterations + 1"
 		
 		_messagePlain_probe_var ub_digitalocean_cloud_server_uid
@@ -16791,8 +17071,8 @@ _digitalocean_cloud_self_server_status-filter() {
 		export ub_digitalocean_cloud_server_uid=
 		export ub_digitalocean_cloud_server_name=
 		
-		ub_digitalocean_cloud_server_uid=$(cat "$cloudTmp"/reply | jq '.droplets['"$currentIterations"'].id' | tr -dc 'a-zA-Z0-9_-.:')
-		ub_digitalocean_cloud_server_name=$(cat "$cloudTmp"/reply | jq '.droplets['"$currentIterations"'].name' | tr -dc 'a-zA-Z0-9_-.:')
+		ub_digitalocean_cloud_server_uid=$(cat "$cloudTmp"/reply | jq '.droplets['"$currentIterations"'].id' | tr -dc 'a-zA-Z0-9.:_-')
+		ub_digitalocean_cloud_server_name=$(cat "$cloudTmp"/reply | jq '.droplets['"$currentIterations"'].name' | tr -dc 'a-zA-Z0-9.:_-')
 		let currentIterations="$currentIterations + 1"
 		
 		_messagePlain_probe_var ub_digitalocean_cloud_server_uid
@@ -16818,8 +17098,8 @@ _digitalocean_cloud_self_server_status() {
 	
 	
 	
-	export ub_digitalocean_cloud_server_addr_ipv4=$(cat "$cloudTmp"/reply_status | jq '.droplet.networks.v4[0].ip_address' | tr -dc 'a-zA-Z0-9_-.:')
-	export ub_digitalocean_cloud_server_addr_ipv6=$(cat "$cloudTmp"/reply_status | jq '.droplet.networks.v6[0].ip_address' | tr -dc 'a-zA-Z0-9_-.:')
+	export ub_digitalocean_cloud_server_addr_ipv4=$(cat "$cloudTmp"/reply_status | jq '.droplet.networks.v4[0].ip_address' | tr -dc 'a-zA-Z0-9.:_-')
+	export ub_digitalocean_cloud_server_addr_ipv6=$(cat "$cloudTmp"/reply_status | jq '.droplet.networks.v6[0].ip_address' | tr -dc 'a-zA-Z0-9.:_-')
 	
 	
 	# ATTENTION: Ubiquitous Bash 'queue' 'database' may be an appropriate means to store sane default 'cred' values after '_server_create' . Also consider storing relevant files under "$scriptLocal" .
@@ -16894,7 +17174,7 @@ _linode_cloud_cred_reset() {
 
 
 # ATTENTION: Override with 'ops.sh' or 'core.sh' or similar.
-# "$1" == ub_digitalocean_cloud_server_name
+# "$1" == ub_linode_cloud_server_name
 _linode_cloud_server_create() {
 	_messageNormal 'init: _linode_cloud_server_create'
 	
@@ -16915,7 +17195,7 @@ _linode_cloud_server_create() {
 		let currentIterations="$currentIterations + 1"
 		
 		_linode_cloud_server_create_API--us-east_g5-standard-2_debian9 "$ub_linode_cloud_server_name" > "$cloudTmp"/reply
-		export ub_linode_cloud_server_uid=$(cat "$cloudTmp"/reply | jq '.'id | tr -dc 'a-zA-Z0-9_-.:')
+		export ub_linode_cloud_server_uid=$(cat "$cloudTmp"/reply | jq '.'id | tr -dc 'a-zA-Z0-9.:_-')
 		
 		[[ "$ub_linode_cloud_server_uid" == "" ]] && _messagePlain_warn 'attempt: _linode_cloud_server_create: miss'
 	done
@@ -16961,7 +17241,7 @@ _linode_cloud_self_server_list() {
 		let currentIterations="$currentIterations + 1"
 		
 		curl -X GET "https://api.linode.com/v4/linode/instances" -H "Authorization: Bearer $ub_linode_TOKEN" > "$cloudTmp"/reply
-		current_ub_linode_cloud_server_uid=$(cat "$cloudTmp"/reply | jq '.data[0].id' | tr -dc 'a-zA-Z0-9_-.:')
+		current_ub_linode_cloud_server_uid=$(cat "$cloudTmp"/reply | jq '.data[0].id' | tr -dc 'a-zA-Z0-9.:_-')
 		
 		[[ "$current_ub_linode_cloud_server_uid" == "" ]] && _messagePlain_warn 'attempt: _linode_cloud_self_server_list: miss'
 	done
@@ -17014,8 +17294,8 @@ _linode_cloud_self_server_dispose-filter() {
 		export ub_linode_cloud_server_uid=
 		export ub_linode_cloud_server_name=
 		
-		ub_linode_cloud_server_uid=$(cat "$cloudTmp"/reply | jq '.data['"$currentIterations"'].id' | tr -dc 'a-zA-Z0-9_-.:')
-		ub_linode_cloud_server_name=$(cat "$cloudTmp"/reply | jq '.data['"$currentIterations"'].label' | tr -dc 'a-zA-Z0-9_-.:')
+		ub_linode_cloud_server_uid=$(cat "$cloudTmp"/reply | jq '.data['"$currentIterations"'].id' | tr -dc 'a-zA-Z0-9.:_-')
+		ub_linode_cloud_server_name=$(cat "$cloudTmp"/reply | jq '.data['"$currentIterations"'].label' | tr -dc 'a-zA-Z0-9.:_-')
 		let currentIterations="$currentIterations + 1"
 		
 		_messagePlain_probe_var ub_linode_cloud_server_uid
@@ -17052,8 +17332,8 @@ _linode_cloud_self_server_status-filter() {
 		export ub_linode_cloud_server_uid=
 		export ub_linode_cloud_server_name=
 		
-		ub_linode_cloud_server_uid=$(cat "$cloudTmp"/reply | jq '.data['"$currentIterations"'].id' | tr -dc 'a-zA-Z0-9_-.:')
-		ub_linode_cloud_server_name=$(cat "$cloudTmp"/reply | jq '.data['"$currentIterations"'].label' | tr -dc 'a-zA-Z0-9_-.:')
+		ub_linode_cloud_server_uid=$(cat "$cloudTmp"/reply | jq '.data['"$currentIterations"'].id' | tr -dc 'a-zA-Z0-9.:_-')
+		ub_linode_cloud_server_name=$(cat "$cloudTmp"/reply | jq '.data['"$currentIterations"'].label' | tr -dc 'a-zA-Z0-9.:_-')
 		let currentIterations="$currentIterations + 1"
 		
 		_messagePlain_probe_var ub_linode_cloud_server_uid
@@ -17079,8 +17359,8 @@ _linode_cloud_self_server_status() {
 	
 	
 	
-	export ub_linode_cloud_server_addr_ipv4=$(cat "$cloudTmp"/reply_status | jq '.ipv4[0]' | tr -dc 'a-zA-Z0-9_-.:')
-	export ub_linode_cloud_server_addr_ipv6=$(cat "$cloudTmp"/reply_status | jq '.ipv6' | tr -dc 'a-zA-Z0-9_-.:')
+	export ub_linode_cloud_server_addr_ipv4=$(cat "$cloudTmp"/reply_status | jq '.ipv4[0]' | tr -dc 'a-zA-Z0-9.:_-')
+	export ub_linode_cloud_server_addr_ipv6=$(cat "$cloudTmp"/reply_status | jq '.ipv6' | tr -dc 'a-zA-Z0-9.:_-')
 	
 	
 	# ATTENTION: Ubiquitous Bash 'queue' 'database' may be an appropriate means to store sane default 'cred' values after '_server_create' . Also consider storing relevant files under "$scriptLocal" .
@@ -17110,7 +17390,7 @@ _linode_cloud_self_server_status() {
 	
 	if ! [[ -e "$cloudTmp"/reply ]]
 	then
-		_digitalocean_cloud_cred_reset
+		_linode_cloud_cred_reset
 		_stop_cloud_tmp
 	fi
 	
@@ -17165,6 +17445,14 @@ _test_linode_cloud() {
 #aws_s3_compatible
 
 #blackblaze
+
+#apacheLibcloud
+
+# https://www.pixelite.co.nz/article/using-apache-libcloud-provision-cloud-servers/
+
+#nubo
+
+# https://pythonhosted.org/nubo/
 
 #rclone
 
@@ -17261,6 +17549,8 @@ _test_rclone() {
 
 
 
+
+#paramiko
 
 #cloud
 
@@ -17481,6 +17771,21 @@ _cloud_server_status() {
 
 
 
+
+#docker_build
+
+#cloudNativeBuildpack
+
+#debian_build
+
+# Intended to exemplify 'current best practices' building a 'template' Debian VM image simultaneously bootable under at least BIOS/UEFI, LiveISO/LiveUSB, userQemu/userVBox, userChRoot, userDocker . Must adhere to similar steps as documented under 'raspi' 'kit' , although 'x64' may be the typically intended architecture.
+
+
+
+
+#gentoo_build
+
+# Mostly intended only to build especially fast 'PanelVM' images, or more rarely images for programs with dependencies needing substantial modification of distribution available programs.
 
 _here_mkboot_grubcfg() {
 	
@@ -30199,6 +30504,11 @@ _deps_cloud() {
 	export enUb_cloud="true"
 }
 
+_deps_cloud_build() {
+	_deps_cloud
+	export enUb_cloud_build="true"
+}
+
 _deps_notLean() {
 	_deps_git
 	_deps_bup
@@ -30547,6 +30857,7 @@ _compile_bash_deps() {
 		
 		# WARNING: Only known production use in this context is '_cloud_reset' , '_cloud_unhook' , and similar.
 		_deps_cloud
+		_deps_cloud_build
 		
 		_deps_abstractfs
 		
@@ -30581,6 +30892,7 @@ _compile_bash_deps() {
 		
 		_deps_repo
 		_deps_cloud
+		_deps_cloud_build
 		
 		_deps_command
 		_deps_synergy
@@ -30684,6 +30996,7 @@ _compile_bash_deps() {
 		_deps_repo
 		
 		_deps_cloud
+		_deps_cloud_build
 		
 		_deps_distro
 		
@@ -30756,6 +31069,7 @@ _compile_bash_deps() {
 		_deps_repo
 		
 		_deps_cloud
+		_deps_cloud_build
 		
 		_deps_distro
 		
@@ -31042,6 +31356,7 @@ _compile_bash_shortcuts() {
 	( [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_cloud" == "true" ]] ) && includeScriptList+=( "shortcuts/cloud/self/ubVirt"/ubVirt_self.sh )
 	( [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_cloud" == "true" ]] ) && includeScriptList+=( "shortcuts/cloud/self"/phpvirtualbox_self.sh )
 	( [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_cloud" == "true" ]] ) && includeScriptList+=( "shortcuts/cloud/self"/virtualbox_self.sh )
+	( [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_cloud" == "true" ]] ) && includeScriptList+=( "shortcuts/cloud/self"/libvirt_self.sh )
 	
 	( [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_cloud" == "true" ]] ) && includeScriptList+=( "shortcuts/cloud/service"/aws/aws.sh )
 	( [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_cloud" == "true" ]] ) && includeScriptList+=( "shortcuts/cloud/service"/google/google.sh )
@@ -31055,11 +31370,20 @@ _compile_bash_shortcuts() {
 	( [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_cloud" == "true" ]] ) && includeScriptList+=( "shortcuts/cloud/storage"/aws/aws_s3_compatible.sh )
 	( [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_cloud" == "true" ]] ) && includeScriptList+=( "shortcuts/cloud/storage"/blackblaze/blackblaze.sh )
 	
+	
+	( [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_cloud" == "true" ]] ) && includeScriptList+=( "shortcuts/cloud/bridge"/apacheLibcloud/apacheLibcloud.sh )
+	( [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_cloud" == "true" ]] ) && includeScriptList+=( "shortcuts/cloud/bridge"/nubo/nubo.sh )
 	( [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_cloud" == "true" ]] ) && includeScriptList+=( "shortcuts/cloud/bridge"/rclone/rclone.sh )
+	( [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_cloud" == "true" ]] ) && includeScriptList+=( "shortcuts/cloud/bridge"/paramiko/paramiko.sh )
 	
 	
 	( [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_cloud" == "true" ]] ) && includeScriptList+=( "shortcuts/cloud"/cloud.sh )
 	( [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_cloud" == "true" ]] ) && includeScriptList+=( "shortcuts/cloud"/cloud_abstraction.sh )
+	
+	( [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_cloud_build" == "true" ]] ) && includeScriptList+=( "shortcuts/cloud-build"/docker/docker_build.sh )
+	( [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_cloud_build" == "true" ]] ) && includeScriptList+=( "shortcuts/cloud-build"/cloudNativeBuildpack/cloudNativeBuildpack_build.sh )
+	( [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_cloud_build" == "true" ]] ) && includeScriptList+=( "shortcuts/cloud-build"/_custom/debian/debian_build.sh )
+	( [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_cloud_build" == "true" ]] ) && includeScriptList+=( "shortcuts/cloud-build"/_custom/gentoo/gentoo_build.sh )
 	
 	
 	[[ "$enUb_image" == "true" ]] && includeScriptList+=( "shortcuts/mkboot"/here_mkboot.sh )

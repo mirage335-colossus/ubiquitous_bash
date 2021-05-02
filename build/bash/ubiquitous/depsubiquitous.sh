@@ -75,6 +75,11 @@ _deps_cloud() {
 	export enUb_cloud="true"
 }
 
+_deps_cloud_build() {
+	_deps_cloud
+	export enUb_cloud_build="true"
+}
+
 _deps_notLean() {
 	_deps_git
 	_deps_bup

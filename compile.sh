@@ -32,7 +32,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='1891409836'
-export ub_setScriptChecksum_contents='3654027396'
+export ub_setScriptChecksum_contents='4013046473'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -4151,6 +4151,11 @@ _deps_cloud() {
 	export enUb_cloud="true"
 }
 
+_deps_cloud_build() {
+	_deps_cloud
+	export enUb_cloud_build="true"
+}
+
 _deps_notLean() {
 	_deps_git
 	_deps_bup
@@ -4499,6 +4504,7 @@ _compile_bash_deps() {
 		
 		# WARNING: Only known production use in this context is '_cloud_reset' , '_cloud_unhook' , and similar.
 		_deps_cloud
+		_deps_cloud_build
 		
 		_deps_abstractfs
 		
@@ -4533,6 +4539,7 @@ _compile_bash_deps() {
 		
 		_deps_repo
 		_deps_cloud
+		_deps_cloud_build
 		
 		_deps_command
 		_deps_synergy
@@ -4636,6 +4643,7 @@ _compile_bash_deps() {
 		_deps_repo
 		
 		_deps_cloud
+		_deps_cloud_build
 		
 		_deps_distro
 		
@@ -4708,6 +4716,7 @@ _compile_bash_deps() {
 		_deps_repo
 		
 		_deps_cloud
+		_deps_cloud_build
 		
 		_deps_distro
 		
@@ -4994,6 +5003,7 @@ _compile_bash_shortcuts() {
 	( [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_cloud" == "true" ]] ) && includeScriptList+=( "shortcuts/cloud/self/ubVirt"/ubVirt_self.sh )
 	( [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_cloud" == "true" ]] ) && includeScriptList+=( "shortcuts/cloud/self"/phpvirtualbox_self.sh )
 	( [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_cloud" == "true" ]] ) && includeScriptList+=( "shortcuts/cloud/self"/virtualbox_self.sh )
+	( [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_cloud" == "true" ]] ) && includeScriptList+=( "shortcuts/cloud/self"/libvirt_self.sh )
 	
 	( [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_cloud" == "true" ]] ) && includeScriptList+=( "shortcuts/cloud/service"/aws/aws.sh )
 	( [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_cloud" == "true" ]] ) && includeScriptList+=( "shortcuts/cloud/service"/google/google.sh )
@@ -5007,11 +5017,20 @@ _compile_bash_shortcuts() {
 	( [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_cloud" == "true" ]] ) && includeScriptList+=( "shortcuts/cloud/storage"/aws/aws_s3_compatible.sh )
 	( [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_cloud" == "true" ]] ) && includeScriptList+=( "shortcuts/cloud/storage"/blackblaze/blackblaze.sh )
 	
+	
+	( [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_cloud" == "true" ]] ) && includeScriptList+=( "shortcuts/cloud/bridge"/apacheLibcloud/apacheLibcloud.sh )
+	( [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_cloud" == "true" ]] ) && includeScriptList+=( "shortcuts/cloud/bridge"/nubo/nubo.sh )
 	( [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_cloud" == "true" ]] ) && includeScriptList+=( "shortcuts/cloud/bridge"/rclone/rclone.sh )
+	( [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_cloud" == "true" ]] ) && includeScriptList+=( "shortcuts/cloud/bridge"/paramiko/paramiko.sh )
 	
 	
 	( [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_cloud" == "true" ]] ) && includeScriptList+=( "shortcuts/cloud"/cloud.sh )
 	( [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_cloud" == "true" ]] ) && includeScriptList+=( "shortcuts/cloud"/cloud_abstraction.sh )
+	
+	( [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_cloud_build" == "true" ]] ) && includeScriptList+=( "shortcuts/cloud-build"/docker/docker_build.sh )
+	( [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_cloud_build" == "true" ]] ) && includeScriptList+=( "shortcuts/cloud-build"/cloudNativeBuildpack/cloudNativeBuildpack_build.sh )
+	( [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_cloud_build" == "true" ]] ) && includeScriptList+=( "shortcuts/cloud-build"/_custom/debian/debian_build.sh )
+	( [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_cloud_build" == "true" ]] ) && includeScriptList+=( "shortcuts/cloud-build"/_custom/gentoo/gentoo_build.sh )
 	
 	
 	[[ "$enUb_image" == "true" ]] && includeScriptList+=( "shortcuts/mkboot"/here_mkboot.sh )

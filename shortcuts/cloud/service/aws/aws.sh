@@ -1,5 +1,292 @@
 #aws
 
+# ATTENTION: ATTENTION: Cloud VPS API wrapper 'de-facto' reference implementation is 'digitalocean' !
+# Obvious naming conventions and such are to be considered from that source first.
+
+
+# WARNING: DANGER: WIP, Untested .
+
+
+# https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-lifecycle.html
+# https://docs.aws.amazon.com/cli/latest/reference/ec2/run-instances.html
+
+
+
+# ATTENTION: Override with 'ops.sh' or 'core.sh' or similar.
+_aws_cloud_cred() {
+	_aws_set "$@"
+}
+_aws_cloud_cred_reset() {
+	_aws_reset "$@"
+}
+
+
+
+# ATTENTION: Override with 'ops.sh' or 'core.sh' or similar.
+# "$1" == ub_aws_cloud_server_name
+_aws_cloud_server_create() {
+	_messageNormal 'init: _aws_cloud_server_create'
+	
+	_start_cloud_tmp
+	
+	_aws_cloud_cred
+	
+	export ub_aws_cloud_server_name="$1"
+	[[ "$ub_aws_cloud_server_name" == "" ]] && export ub_aws_cloud_server_name=$(_uid)
+	
+	
+	_messagePlain_nominal 'attempt: _aws_cloud_server_create: Cloud Services API Request'
+	local currentIterations
+	currentIterations=0
+	export ub_aws_cloud_server_uid=
+	while [[ "$ub_aws_cloud_server_uid" == "" ]] && [[ "$currentIterations" -lt 3 ]]
+	do
+		let currentIterations="$currentIterations + 1"
+		
+		_aws_cloud_server_create_API--us-east_g5-standard-2_debian9 "$ub_aws_cloud_server_name" > "$cloudTmp"/reply
+		export ub_aws_cloud_server_uid=$(cat "$cloudTmp"/reply | grep -v 'PrivateDnsName' |  jq '.'Instances[].InstanceId | tr -dc 'a-zA-Z0-9.:_-')
+		_aws_cloud_server_name_API "$ub_aws_cloud_server_uid" "$ub_aws_cloud_server_name"
+		
+		[[ "$ub_aws_cloud_server_uid" == "" ]] && _messagePlain_warn 'attempt: _aws_cloud_server_create: miss'
+	done
+	[[ "$ub_aws_cloud_server_uid" == "" ]] && _messagePlain_bad 'attempt: _aws_cloud_server_create: fail' && _stop_cloud_tmp && _messageFAIL && _stop 1
+	_messagePlain_good  'attempt: _aws_cloud_server_create: pass'
+	
+	_stop_cloud_tmp
+	
+	
+	
+	_aws_cloud_server_status "$ub_aws_cloud_server_uid"
+	
+	_aws_cloud_cred_reset
+	
+	return 0
+}
+_aws_cloud_server_create_API--image_ami-xxxxxxxx() {
+	# https://docs.aws.amazon.com/cli/latest/userguide/cli-services-ec2-instances.html
+	#aws ec2 run-instances --image-id ami-xxxxxxxx --count 1 --instance-type t2.micro --key-name "$ubiquitiousBashIDshort" --security-group-ids sg-903004f8 --subnet-id subnet-6e7f829e
+	aws ec2 run-instances --image-id ami-xxxxxxxx --count 1 --instance-type t2.micro --key-name "$ubiquitiousBashIDshort" --security-group-ids sg-"$ubiquitiousBashIDshort" --subnet-id subnet-"$ubiquitiousBashIDshort"
+}
+_aws_cloud_server_name_API() {
+	aws ec2 create-tags --resources "$ub_aws_cloud_server_uid" --tags Key=Name,Value="$ub_aws_cloud_server_name"
+}
+
+
+
+# ATTENTION: Consider that Cloud services are STRICTLY intended as end-user functions - manual 'cleanup' of 'expensive' resources MUST be feasible!
+# "$@" == _functionName (must process JSON file - ie. loop through - jq '.data[0].id,.data[0].label' )
+# EXAMPLE: _aws_cloud_self_server_list _aws_cloud_self_server_dispose-filter 'temporaryBuild'
+# EXAMPLE: _aws_cloud_self_server_list _aws_cloud_self_server_status-filter 'workstation'
+_aws_cloud_self_server_list() {
+	_messageNormal 'init: _aws_cloud_self_server_list'
+	
+	_start_cloud_tmp
+	
+	_aws_cloud_cred
+	
+	_messagePlain_nominal 'attempt: _aws_cloud_self_server_list: Cloud Services API Request'
+	local currentIterations
+	currentIterations=0
+	local current_ub_aws_cloud_server_uid
+	current_ub_aws_cloud_server_uid=
+	while [[ "$current_ub_aws_cloud_server_uid" == "" ]] && [[ "$currentIterations" -lt 3 ]]
+	do
+		let currentIterations="$currentIterations + 1"
+		
+		# WARNING: WIP, Untested.
+		# https://serverfault.com/questions/578921/how-would-you-go-about-listing-instances-using-aws-cli-in-certain-vpc-with-the-t
+		#aws ec2 describe-instances --no-paginate --filters "Name=instance-type,Values=t2.micro" --query 'Reservations[*].Instances[*].{Instance:InstanceId,Tags[0]}' --output json > "$cloudTmp"/reply
+		#aws ec2 describe-instances --query 'Reservations[].Instances[].[InstanceId,Tags[?Key==`Name`].Value[]]' --output json > "$cloudTmp"/reply
+		aws ec2 describe-instances --no-paginate --query 'Reservations[].Instances[].{InstanceId,Tags[?Key==`Name`].Value[0]}' --output json > "$cloudTmp"/reply
+		current_ub_aws_cloud_server_uid=$(cat "$cloudTmp"/reply | jq '.[0].Instance' | tr -dc 'a-zA-Z0-9.:_-')
+		
+		[[ "$current_ub_aws_cloud_server_uid" == "" ]] && _messagePlain_warn 'attempt: _aws_cloud_self_server_list: miss'
+	done
+	[[ "$current_ub_aws_cloud_server_uid" == "" ]] && _messagePlain_bad 'attempt: _aws_cloud_self_server_list: fail' && _stop_cloud_tmp && _messageFAIL && _stop 1
+	_messagePlain_good  'attempt: _aws_cloud_self_server_list: pass'
+	
+	
+	"$@"
+	
+	
+	_messagePlain_request 'request: Please review CloudVM list for unnecessary expense.'
+	cat "$cloudTmp"/reply | jq '.[].Instance,.[].Tags'
+	_stop_cloud_tmp
+	_aws_cloud_cred_reset
+	
+	return 0
+}
+
+
+
+_aws_cloud_self_server_dispose-filter() {
+	_messageNormal 'init: _aws_cloud_self_server_dispose-filter: '"$@"
+	
+	# WARNING: To match 'all' consider '.*' instead of empty.
+	[[ "$1" == "" ]] && return 1
+	
+	
+	_messagePlain_nominal 'loop: _aws_cloud_self_server_dispose-filter'
+	local currentIterations
+	currentIterations=0
+	local currentIterations_inner
+	currentIterations_inner=0
+	export ub_aws_cloud_server_uid="$ubiquitiousBashIDnano"$(_uid 18)"$ubiquitiousBashIDnano"
+	export ub_aws_cloud_server_name="$ubiquitiousBashIDnano"$(_uid 18)"$ubiquitiousBashIDnano"
+	while [[ "$ub_aws_cloud_server_uid" != "null" ]] && [[ "$ub_aws_cloud_server_name" != "null" ]] && [[ "$ub_aws_cloud_server_uid" != "" ]] && [[ "$ub_aws_cloud_server_name" != "" ]] && [[ "$currentIterations" -lt 999 ]]
+	do
+		if _safeEcho "$ub_aws_cloud_server_name" | grep "$@"
+		then
+			currentIterations_inner=0
+			
+			# WARNING: Significant experimentation may be required.
+			# https://superuser.com/questions/272265/getting-curl-to-output-http-status-code
+			
+			#"$ub_aws_cloud_server_uid"
+			while ! aws ec2 terminate-instances --instance-ids "$ub_aws_cloud_server_uid" > /dev/null 2>&1 && [[ "$currentIterations_inner" -lt 3 ]]
+			do
+				let currentIterations_inner="$currentIterations_inner + 1"
+			done
+		fi
+		
+		export ub_aws_cloud_server_uid=
+		export ub_aws_cloud_server_name=
+		
+		# WARNING: May work as intended without properly filtering for 'Name' 'tag' .
+		ub_aws_cloud_server_uid=$(cat "$cloudTmp"/reply | jq '.['"$currentIterations"'].Instance' | tr -dc 'a-zA-Z0-9.:_-')
+		ub_aws_cloud_server_name=$(cat "$cloudTmp"/reply | jq '.['"$currentIterations"'].Tags' | tr -dc 'a-zA-Z0-9.:_-')
+		let currentIterations="$currentIterations + 1"
+		
+		_messagePlain_probe_var ub_aws_cloud_server_uid
+		_messagePlain_probe_var ub_aws_cloud_server_name
+		
+	done
+	_messagePlain_good  'done: _aws_cloud_self_server_dispose-filter'
+	
+	return 0
+}
+
+
+_aws_cloud_self_server_status-filter() {
+	_messageNormal 'init: _aws_cloud_self_server_status-filter: '"$@"
+	
+	# WARNING: To match 'all' consider '.*' instead of empty.
+	[[ "$1" == "" ]] && return 1
+	
+	
+	_messagePlain_nominal 'loop: _aws_cloud_self_server_status-filter'
+	local currentIterations
+	currentIterations=0
+	local currentIterations_inner
+	currentIterations_inner=0
+	export ub_aws_cloud_server_uid="$ubiquitiousBashIDnano"$(_uid 18)"$ubiquitiousBashIDnano"
+	export ub_aws_cloud_server_name="$ubiquitiousBashIDnano"$(_uid 18)"$ubiquitiousBashIDnano"
+	while [[ "$ub_aws_cloud_server_uid" != "null" ]] && [[ "$ub_aws_cloud_server_name" != "null" ]] && [[ "$ub_aws_cloud_server_uid" != "" ]] && [[ "$ub_aws_cloud_server_name" != "" ]] && [[ "$currentIterations" -lt 999 ]]
+	do
+		if _safeEcho "$ub_aws_cloud_server_name" | grep "$@"
+		then
+			_aws_cloud_self_server_status "$ub_aws_cloud_server_uid"
+		fi
+		
+		export ub_aws_cloud_server_uid=
+		export ub_aws_cloud_server_name=
+		
+		ub_aws_cloud_server_uid=$(cat "$cloudTmp"/reply | jq '.data['"$currentIterations"'].id' | tr -dc 'a-zA-Z0-9.:_-')
+		ub_aws_cloud_server_name=$(cat "$cloudTmp"/reply | jq '.data['"$currentIterations"'].label' | tr -dc 'a-zA-Z0-9.:_-')
+		let currentIterations="$currentIterations + 1"
+		
+		_messagePlain_probe_var ub_aws_cloud_server_uid
+		_messagePlain_probe_var ub_aws_cloud_server_name
+		
+	done
+	_messagePlain_good  'done: _aws_cloud_self_server_status-filter'
+	
+	return 0
+}
+
+
+_aws_cloud_self_server_status() {
+	_messageNormal 'init: _aws_cloud_self_server_status'
+	
+	_start_cloud_tmp
+	
+	_aws_cloud_cred
+	
+	# ATTENTION: NOTICE: Possibly an excellent means to obtain sample data for 'describe-instances' .
+	
+	aws ec2 describe-instances --instance-ids "$ub_aws_cloud_server_uid"
+	
+	
+	
+	# WARNING: WIP, Untested.
+	
+	
+	
+	#export ub_aws_cloud_server_addr_ipv4=$(cat "$cloudTmp"/reply_status | jq '.' | tr -dc 'a-zA-Z0-9.:_-')
+	#export ub_aws_cloud_server_addr_ipv6=$(cat "$cloudTmp"/reply_status | jq '.' | tr -dc 'a-zA-Z0-9.:_-')
+	
+	export ub_aws_cloud_server_addr_ipv4=
+	export ub_aws_cloud_server_addr_ipv6=
+	
+	
+	# ATTENTION: Ubiquitous Bash 'queue' 'database' may be an appropriate means to store sane default 'cred' values after '_server_create' . Also consider storing relevant files under "$scriptLocal" .
+	
+	export ub_aws_cloud_server_ssh_cred=
+	export ub_aws_cloud_server_ssh_port=
+	
+	export ub_aws_cloud_server_vnc_cred=
+	export ub_aws_cloud_server_vnc_port=
+	
+	export ub_aws_cloud_server_serial=
+	
+	export ub_aws_cloud_server_novnc_cred=
+	export ub_aws_cloud_server_novnc_port=
+	export ub_aws_cloud_server_novnc_url_ipv4=https://"$ub_aws_cloud_server_addr_ipv4":"$ub_aws_cloud_server_novnc_port"/novnc/
+	export ub_aws_cloud_server_novnc_url_ipv6=https://"$ub_aws_cloud_server_addr_ipv6":"$ub_aws_cloud_server_novnc_port"/novnc/
+	
+	export ub_aws_cloud_server_shellinabox_port=
+	export ub_aws_cloud_server_shellinabox_url_ipv4=https://"$ub_aws_cloud_server_addr_ipv4":"$ub_aws_cloud_server_shellinabox_port"/shellinabox/
+	export ub_aws_cloud_server_shellinabox_url_ipv6=https://"$ub_aws_cloud_server_addr_ipv6":"$ub_aws_cloud_server_shellinabox_port"/shellinabox/
+	
+	export ub_aws_cloud_server_remotedesktopwebclient_port=
+	export ub_aws_cloud_server_remotedesktopwebclient_url_ipv4=https://"$ub_aws_cloud_server_addr_ipv4":"$ub_aws_cloud_server_remotedesktopwebclient_port"/remotedesktopwebclient/
+	export ub_aws_cloud_server_remotedesktopwebclient_url_ipv6=https://"$ub_aws_cloud_server_addr_ipv6":"$ub_aws_cloud_server_remotedesktopwebclient_port"/remotedesktopwebclient/
+	
+	
+	
+	if ! [[ -e "$cloudTmp"/reply ]]
+	then
+		_aws_cloud_cred_reset
+		_stop_cloud_tmp
+	fi
+	
+	return 0
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 # ATTENTION: Intended to be used by '_index' shortcuts as with 'cautossh' '_setup' .
@@ -13,7 +300,7 @@ _aws() {
 	[[ ! -d "$scriptLocal"/cloud/aws/.aws ]] && return 1
 	
 	# WARNING: Not guaranteed.
-	_relink "$HOME"/.ssh "$scriptLocal"/cloud/aws/.aws
+	_relink "$HOME"/.ssh "$scriptLocal"/cloud/aws/.ssh
 	
 	# WARNING: Changing '$HOME' may interfere with 'cautossh' , specifically function '_ssh' .
 	
@@ -95,15 +382,6 @@ _aws_hook() {
 _aws_unhook() {
 	true
 }
-
-
-
-
-
-
-
-
-
 
 
 
