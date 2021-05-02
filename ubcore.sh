@@ -32,7 +32,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='1891409836'
-export ub_setScriptChecksum_contents='1758507480'
+export ub_setScriptChecksum_contents='2310858593'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -9540,12 +9540,12 @@ _aws_eb() {
 	currentBin_aws_eb="$ub_function_override_aws_eb"
 	[[ "$currentBin_aws_eb" == "" ]] && currentBin_aws_eb=$(type -p eb 2> /dev/null)
 	
-	if [[ "$PATH" != *'.pyenv/versions'* ]]
-	then
+	#if [[ "$PATH" != *'.pyenv/versions'* ]]
+	#then
 		local current_python_path_version
 		current_python_path_version=$("$currentBin_aws_eb" --version | sed 's/.*Python\ //g' | tr -dc 'a-zA-Z0-9.')
-		export PATH="$HOME/.pyenv/versions/$current_python_path_version/bin:$PATH"
-	fi
+		#export PATH="$HOME/.pyenv/versions/$current_python_path_version/bin:$PATH"
+	#fi
 	
 	
 	mkdir -p "$scriptLocal"/cloud/aws/.aws
@@ -9557,7 +9557,8 @@ _aws_eb() {
 	
 	# WARNING: Changing '$HOME' may interfere with 'cautossh' , specifically function '_ssh' .
 	
-	env AWS_PROFILE="$netName" AWS_CONFIG_FILE="$scriptLocal"/cloud/aws/.aws/config HOME="$scriptLocal"/cloud/aws "$currentBin_aws_eb" "$@"
+	# WARNING: Must interpret "$HOME" as is at this point and NOT after any "$HOME" override.
+	env PATH="$HOME/.pyenv/versions/$current_python_path_version/bin:$PATH" AWS_PROFILE="$netName" AWS_CONFIG_FILE="$scriptLocal"/cloud/aws/.aws/config HOME="$scriptLocal"/cloud/aws "$currentBin_aws_eb" "$@"
 }
 _eb() {
 	_aws_eb "$@"

@@ -41,12 +41,12 @@ _aws_eb() {
 	currentBin_aws_eb="$ub_function_override_aws_eb"
 	[[ "$currentBin_aws_eb" == "" ]] && currentBin_aws_eb=$(type -p eb 2> /dev/null)
 	
-	if [[ "$PATH" != *'.pyenv/versions'* ]]
-	then
+	#if [[ "$PATH" != *'.pyenv/versions'* ]]
+	#then
 		local current_python_path_version
 		current_python_path_version=$("$currentBin_aws_eb" --version | sed 's/.*Python\ //g' | tr -dc 'a-zA-Z0-9.')
-		export PATH="$HOME/.pyenv/versions/$current_python_path_version/bin:$PATH"
-	fi
+		#export PATH="$HOME/.pyenv/versions/$current_python_path_version/bin:$PATH"
+	#fi
 	
 	
 	mkdir -p "$scriptLocal"/cloud/aws/.aws
@@ -58,7 +58,8 @@ _aws_eb() {
 	
 	# WARNING: Changing '$HOME' may interfere with 'cautossh' , specifically function '_ssh' .
 	
-	env AWS_PROFILE="$netName" AWS_CONFIG_FILE="$scriptLocal"/cloud/aws/.aws/config HOME="$scriptLocal"/cloud/aws "$currentBin_aws_eb" "$@"
+	# WARNING: Must interpret "$HOME" as is at this point and NOT after any "$HOME" override.
+	env PATH="$HOME/.pyenv/versions/$current_python_path_version/bin:$PATH" AWS_PROFILE="$netName" AWS_CONFIG_FILE="$scriptLocal"/cloud/aws/.aws/config HOME="$scriptLocal"/cloud/aws "$currentBin_aws_eb" "$@"
 }
 _eb() {
 	_aws_eb "$@"
