@@ -40,7 +40,7 @@ _linode_cloud_server_create() {
 		let currentIterations="$currentIterations + 1"
 		
 		_linode_cloud_server_create_API--us-east_g5-standard-2_debian9 "$ub_linode_cloud_server_name" > "$cloudTmp"/reply
-		export ub_linode_cloud_server_uid=$(cat "$cloudTmp"/reply | jq '.'id | tr -dc 'a-zA-Z0-9_-')
+		export ub_linode_cloud_server_uid=$(cat "$cloudTmp"/reply | jq '.'id | tr -dc 'a-zA-Z0-9_-.:')
 		
 		[[ "$ub_linode_cloud_server_uid" == "" ]] && _messagePlain_warn 'attempt: _linode_cloud_server_create: miss'
 	done
@@ -86,7 +86,7 @@ _linode_cloud_self_server_list() {
 		let currentIterations="$currentIterations + 1"
 		
 		curl -X GET "https://api.linode.com/v4/linode/instances" -H "Authorization: Bearer $ub_linode_TOKEN" > "$cloudTmp"/reply
-		current_ub_linode_cloud_server_uid=$(cat "$cloudTmp"/reply | jq '.data[0].id' | tr -dc 'a-zA-Z0-9_-')
+		current_ub_linode_cloud_server_uid=$(cat "$cloudTmp"/reply | jq '.data[0].id' | tr -dc 'a-zA-Z0-9_-.:')
 		
 		[[ "$current_ub_linode_cloud_server_uid" == "" ]] && _messagePlain_warn 'attempt: _linode_cloud_self_server_list: miss'
 	done
@@ -139,8 +139,8 @@ _linode_cloud_self_server_dispose-filter() {
 		export ub_linode_cloud_server_uid=
 		export ub_linode_cloud_server_name=
 		
-		ub_linode_cloud_server_uid=$(cat "$cloudTmp"/reply | jq '.data['"$currentIterations"'].id' | tr -dc 'a-zA-Z0-9_-')
-		ub_linode_cloud_server_name=$(cat "$cloudTmp"/reply | jq '.data['"$currentIterations"'].label' | tr -dc 'a-zA-Z0-9_-')
+		ub_linode_cloud_server_uid=$(cat "$cloudTmp"/reply | jq '.data['"$currentIterations"'].id' | tr -dc 'a-zA-Z0-9_-.:')
+		ub_linode_cloud_server_name=$(cat "$cloudTmp"/reply | jq '.data['"$currentIterations"'].label' | tr -dc 'a-zA-Z0-9_-.:')
 		let currentIterations="$currentIterations + 1"
 		
 		_messagePlain_probe_var ub_linode_cloud_server_uid
@@ -177,8 +177,8 @@ _linode_cloud_self_server_status-filter() {
 		export ub_linode_cloud_server_uid=
 		export ub_linode_cloud_server_name=
 		
-		ub_linode_cloud_server_uid=$(cat "$cloudTmp"/reply | jq '.data['"$currentIterations"'].id' | tr -dc 'a-zA-Z0-9_-')
-		ub_linode_cloud_server_name=$(cat "$cloudTmp"/reply | jq '.data['"$currentIterations"'].label' | tr -dc 'a-zA-Z0-9_-')
+		ub_linode_cloud_server_uid=$(cat "$cloudTmp"/reply | jq '.data['"$currentIterations"'].id' | tr -dc 'a-zA-Z0-9_-.:')
+		ub_linode_cloud_server_name=$(cat "$cloudTmp"/reply | jq '.data['"$currentIterations"'].label' | tr -dc 'a-zA-Z0-9_-.:')
 		let currentIterations="$currentIterations + 1"
 		
 		_messagePlain_probe_var ub_linode_cloud_server_uid
@@ -204,8 +204,8 @@ _linode_cloud_self_server_status() {
 	
 	
 	
-	export ub_linode_cloud_server_addr_ipv4=$(cat "$cloudTmp"/reply_status | jq '.ipv4[0]' | tr -dc 'a-zA-Z0-9_-')
-	export ub_linode_cloud_server_addr_ipv6=$(cat "$cloudTmp"/reply_status | jq '.ipv6' | tr -dc 'a-zA-Z0-9_-')
+	export ub_linode_cloud_server_addr_ipv4=$(cat "$cloudTmp"/reply_status | jq '.ipv4[0]' | tr -dc 'a-zA-Z0-9_-.:')
+	export ub_linode_cloud_server_addr_ipv6=$(cat "$cloudTmp"/reply_status | jq '.ipv6' | tr -dc 'a-zA-Z0-9_-.:')
 	
 	
 	# ATTENTION: Ubiquitous Bash 'queue' 'database' may be an appropriate means to store sane default 'cred' values after '_server_create' . Also consider storing relevant files under "$scriptLocal" .

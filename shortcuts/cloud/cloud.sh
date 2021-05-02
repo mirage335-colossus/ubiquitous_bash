@@ -37,6 +37,7 @@ _cloud_hook_here() {
 	. "$scriptAbsoluteLocation" --profile _importShortcuts
 	_cloud_set
 	_cloudPrompt
+	
 CZXWXcRMTo8EmM8i4d
 }
 
@@ -50,6 +51,9 @@ _cloud_hook() {
 	export ubcoreDir="$ubHome"/.ubcore
 	
 	_cloud_hook_here > "$ubcoreDir"/cloudrc
+	
+	_tryExec '_aws_hook'
+	_tryExec '_google_hook'
 }
 
 # WARNING: End user function. Do NOT call within scripts.
@@ -63,6 +67,8 @@ _cloud_unhook() {
 	export ubcoreDir="$ubHome"/.ubcore
 	
 	rm -f "$ubcoreDir"/cloudrc
+	
+	_tryExec '_google_unhook'
 }
 
 _cloud_shell() {
@@ -94,12 +100,22 @@ _cloudPrompt() {
 _cloud_set() {
 	_rclone_set "$@"
 	
+	_aws_set "$@"
+	_aws_eb_set "$@"
+	
+	
+	
 	_cloudPrompt "$@"
 }
 
 
 _cloud_reset() {
 	_rclone_reset "$@"
+	
+	_aws_reset "$@"
+	_aws_eb_reset "$@"
+	
+	
 	
 	_visualPrompt
 }
@@ -114,6 +130,9 @@ _test_cloud() {
 	
 	
 	_tryExec '_test_digitalocean_cloud'
+	_tryExec '_test_linode_cloud'
+	
+	_tryExec '_test_aws'
 	
 	_tryExec '_test_ubVirt'
 	_tryExec '_test_phpvirtualbox_self'

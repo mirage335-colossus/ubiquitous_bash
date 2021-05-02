@@ -7,6 +7,14 @@ _test_build() {
 	_getDep g++
 	_getDep make
 	
+	
+	# libc6-dev
+	_getDep 'malloc.h'
+	_getDep 'memory.h'
+	_getDep 'stdio.h'
+	_getDep 'math.h'
+	
+	
 	_getDep cmake
 	
 	_getDep autoreconf
