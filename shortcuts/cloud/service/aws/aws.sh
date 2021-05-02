@@ -60,6 +60,9 @@ _aws_eb() {
 	
 	env AWS_PROFILE="$netName" AWS_CONFIG_FILE="$scriptLocal"/cloud/aws/.aws/config HOME="$scriptLocal"/cloud/aws "$currentBin_aws_eb" "$@"
 }
+_eb() {
+	_aws_eb "$@"
+}
 
 _aws_eb_reset() {
 	export ub_function_override_aws_eb=''
