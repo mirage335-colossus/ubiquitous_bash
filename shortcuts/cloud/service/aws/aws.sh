@@ -170,8 +170,9 @@ _test_aws_upstream_sequence() {
 	echo
 	
 	curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-	unzip awscliv2.zip
+	unzip -q awscliv2.zip
 	sudo -n ./aws/install
+	sudo -n ./aws/install --update
 	
 	echo
 	
@@ -249,11 +250,14 @@ _test_aws() {
 	_getDep 'wxglade'
 	
 	
+	_getDep 'unzip'
+	
+	
 	
 	
 	if [[ "$nonet" != "true" ]] && cat /etc/issue | grep 'Debian' > /dev/null 2>&1
 	then
-		_test_aws_upstream_sequence "$@"
+		"$scriptAbsoluteLocation" _test_aws_upstream_sequence "$@"
 	fi
 	
 	_wantSudo && _wantGetDep aws
