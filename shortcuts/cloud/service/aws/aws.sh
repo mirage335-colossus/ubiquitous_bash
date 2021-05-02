@@ -67,7 +67,7 @@ _aws_eb_reset() {
 	unset eb
 }
 
-_aws_eb_set_() {
+_aws_eb_set() {
 	if [[ "$PATH" != *'.ebcli-virtual-env/executables'* ]]
 	then
 		# WARNING: Must interpret "$HOME" as is at this point and NOT after any "$HOME" override.
