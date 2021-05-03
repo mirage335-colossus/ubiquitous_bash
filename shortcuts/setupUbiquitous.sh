@@ -126,7 +126,7 @@ _setupUbiquitous() {
 	ln -sf "$ubcoreUBfile" "$ubHome"/bin/_winecfghere
 	
 	_setupUbiquitous_here > "$ubcoreFile"
-	_setupUbiquitous_accessories_bashrc-cloud_bin >> "$ubcoreFile"
+	_setupUbiquitous_accessories_bashrc >> "$ubcoreFile"
 	! [[ -e "$ubcoreFile" ]] && _messagePlain_bad 'missing: ubcoreFile= '"$ubcoreFile" && _messageFAIL && return 1
 	
 	
