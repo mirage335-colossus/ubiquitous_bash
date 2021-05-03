@@ -79,8 +79,12 @@ _test_rclone_upstream() {
 _test_rclone() {
 	if [[ "$nonet" != "true" ]]
 	then
+		_messagePlain_request 'ignore: upstream progress ->'
+		
 		_test_rclone_upstream "$@"
 		#_test_rclone_upstream_beta "$@"
+		
+		_messagePlain_request 'ignore: <- upstream progress'
 	fi
 	
 	_wantSudo && _wantGetDep rclone

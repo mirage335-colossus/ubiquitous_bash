@@ -108,3 +108,27 @@ CZXWXcRMTo8EmM8i4d
 }
 
 
+
+
+_setupUbiquitous_accessories_here-cloud_bin() {
+	cat << CZXWXcRMTo8EmM8i4d
+
+if [[ "$PATH" != *'.ebcli-virtual-env/executables'* ]] && [[ -e "$HOME"/.ebcli-virtual-env/executables ]]
+then
+	# WARNING: Must interpret "$HOME" as is at this point and NOT after any "$HOME" override.
+	export PATH="$HOME"/.ebcli-virtual-env/executables:"$PATH"
+fi
+
+
+if [[ "$PATH" != *'.gcloud/google-cloud-sdk'* ]] && [[ -e "$HOME"/.gcloud/google-cloud-sdk/completion.bash.inc ]] && [[ -e "$HOME"/.gcloud/google-cloud-sdk/path.bash.inc ]]
+then
+	. "$HOME"/.gcloud/google-cloud-sdk/completion.bash.inc
+	. "$HOME"/.gcloud/google-cloud-sdk/path.bash.inc
+fi
+
+CZXWXcRMTo8EmM8i4d
+}
+
+
+
+

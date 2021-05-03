@@ -32,7 +32,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='1891409836'
-export ub_setScriptChecksum_contents='1261165444'
+export ub_setScriptChecksum_contents='1202639360'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -8409,6 +8409,520 @@ _name_abstractfs() {
 	return 0
 }
 
+_makeFakeHome_extra_layer0() {
+	_relink "$1"/.bashrc "$2"/.bashrc
+	_relink "$1"/.ubcore "$2"/.ubcore
+	
+	_relink "$1"/.Xauthority "$2"/.Xauthority
+	
+	_relink "$1"/.ssh "$2"/.ssh
+	_relink "$1"/.gitconfig "$2"/.gitconfig
+	
+	mkdir -p "$2"/.config
+}
+
+_makeFakeHome_extra_layer1() {
+	true
+}
+
+#"$1" == sourceHome
+#"$2" == destinationHome
+_makeFakeHome() {
+	[[ "$1" == "" ]] && return 1
+	! [[ -d "$1" ]] && return 1
+	
+	[[ "$2" == "" ]] && return 1
+	[[ "$2" == "/home/""$USER" ]] && return 1
+	! [[ -d "$2" ]] && return 1
+	
+	_relink "$1" "$2"/realHome
+	
+	_relink "$1"/Downloads "$2"/Downloads
+	
+	_relink "$1"/Desktop "$2"/Desktop
+	_relink "$1"/Documents "$2"/Documents
+	_relink "$1"/Music "$2"/Music
+	_relink "$1"/Pictures "$2"/Pictures
+	_relink "$1"/Public "$2"/Public
+	_relink "$1"/Templates "$2"/Templates
+	_relink "$1"/Videos "$2"/Videos
+	
+	_relink "$1"/bin "$2"/bin
+	
+	_relink "$1"/core "$2"/core
+	_relink "$1"/project "$2"/project
+	_relink "$1"/projects "$2"/projects
+	
+	
+	
+	_makeFakeHome_extra_layer0 "$@"
+	_makeFakeHome_extra_layer1 "$@"
+}
+
+_unmakeFakeHome_extra_layer0() {
+	_rmlink "$1"/.bashrc
+	_rmlink "$1"/.ubcore
+	
+	_rmlink "$1"/.Xauthority
+	
+	_rmlink "$1"/.ssh
+	_rmlink "$1"/.gitconfig
+	
+	rmdir "$1"/.config
+}
+
+_unmakeFakeHome_extra_layer1() {
+	true
+}
+
+#"$1" == destinationHome
+_unmakeFakeHome() {
+	[[ "$1" == "" ]] && return 1
+	[[ "$1" == "/home/""$USER" ]] && return 1
+	! [[ -d "$1" ]] && return 1
+	
+	_rmlink "$1"/realHome
+	
+	_rmlink "$1"/Downloads
+	
+	_rmlink "$1"/Desktop
+	_rmlink "$1"/Documents
+	_rmlink "$1"/Music
+	_rmlink "$1"/Pictures
+	_rmlink "$1"/Public
+	_rmlink "$1"/Templates
+	_rmlink "$1"/Videos
+	
+	_rmlink "$1"/bin
+	
+	_rmlink "$1"/core
+	_rmlink "$1"/project
+	_rmlink "$1"/projects
+	
+	
+	
+	_unmakeFakeHome_extra_layer0 "$@"
+	_unmakeFakeHome_extra_layer1 "$@"
+}
+
+_test_fakehome() {
+	_getDep mount
+	_getDep mountpoint
+	
+	_getDep rsync
+	
+	_wantGetDep dbus-run-session
+}
+
+#Example. Run similar code under "core.sh" before calling "_fakeHome", "_install_fakeHome", or similar, to set a specific type/location for fakeHome environment - global, instanced, or otherwise.
+_arbitrary_fakeHome_app() {
+	export actualFakeHome="$instancedFakeHome"
+	#export actualFakeHome="$shortFakeHome"
+	
+	#export actualFakeHome="$globalFakeHome"
+	#export actualFakeHome=""$arbitraryFakeHome"/arbitrary"
+}
+
+#"$1" == lib source path (eg. "$scriptLib"/app/.app)
+#"$2" == home destination path (eg. ".app")
+# WARNING: Locking mechanism not intended to be relied on.
+# WARNING: Return status success may not reflect successful link/copy.
+_link_fakeHome() {
+	mkdir -p "$1" > /dev/null 2>&1
+	mkdir -p "$actualFakeHome" > /dev/null 2>&1
+	mkdir -p "$globalFakeHome" > /dev/null 2>&1
+	
+	#If globalFakeHome symlinks are obsolete, subsequent _instance_internal operation may overwrite valid links with them. See _install_fakeHome .
+	rmdir "$globalFakeHome"/"$2" > /dev/null 2>&1
+	_relink "$1" "$globalFakeHome"/"$2"
+	
+	if [[ "$actualFakeHome" == "$globalFakeHome" ]] || [[ "$fakeHomeEditLib" == "true" ]]
+	then
+		rmdir "$actualFakeHome"/"$2" > /dev/null 2>&1
+		_relink "$1" "$actualFakeHome"/"$2"
+		return 0
+	fi
+	
+	#Actual files/directories will not be overwritten by symlinks when "$globalFakeHome" is copied to "$actualFakeHome". Remainder of this function dedicated to creating copies, before and instead of, symlinks.
+	
+	#rmdir "$actualFakeHome"/"$2" > /dev/null 2>&1
+	_rmlink "$actualFakeHome"/"$2"
+	
+	#Waits if copy is in progress, delaying program launch.
+	local lockWaitTimer
+	for (( lockWaitTimer = 0 ; lockWaitTimer <= 90 ; lockWaitTimer++ )); do
+		! [[ -e "$actualFakeHome"/"$2".lck ]] && break
+		sleep 0.3
+	done
+	
+	#Checks if copy has already been made.
+	[[ -e "$actualFakeHome"/"$2" ]] && return 0
+	
+	mkdir -p "$actualFakeHome"/"$2"
+	
+	#Copy file.
+	if ! [[ -d "$1" ]] && [[ -e "$1" ]]
+	then
+		rmdir "$actualFakeHome"/"$2" > /dev/null 2>&1
+		
+		echo > "$actualFakeHome"/"$2".lck
+		cp "$1" "$actualFakeHome"/"$2"
+		rm "$actualFakeHome"/"$2".lck
+		return 0
+	fi
+	
+	#Copy directory.
+	echo > "$actualFakeHome"/"$2".lck
+	_instance_internal "$1"/. "$actualFakeHome"/"$2"/
+	rm "$actualFakeHome"/"$2".lck
+	return 0
+}
+
+#Example. Override with "core.sh". Allows specific application configuration directories to reside outside of globalFakeHome, for organization, testing, and distribution.
+_install_fakeHome_app() {
+	#_link_fakeHome "$scriptLib"/app/.app ".app"
+	
+	true
+}
+
+#actualFakeHome
+_install_fakeHome() {
+	_install_fakeHome_app
+	
+	#Asterisk used where multiple global home folders are needed, following convention "$scriptLocal"/h_* . Used by webClient for _firefox_esr .
+	[[ "$actualFakeHome" == "$globalFakeHome"* ]] && return 0
+	
+	#Any globalFakeHome links created by "_link_fakeHome" are not to overwrite copies made to instancedFakeHome directories. Related errors emitted by "rsync" are normal, and therefore, silenced.
+	_instance_internal "$globalFakeHome"/. "$actualFakeHome"/ > /dev/null 2>&1
+}
+
+#Run before _fakeHome to use a ramdisk as home directory. Wrap within "_wantSudo" and ">/dev/null 2>&1" to use optionally. Especially helpful to limit SSD wear when dealing with moderately large (ie. ~2GB) fakeHome environments which must be instanced.
+_mountRAM_fakeHome() {
+	_mustGetSudo
+	mkdir -p "$actualFakeHome"
+	sudo -n mount -t ramfs ramfs "$actualFakeHome"
+	sudo -n chown "$USER":"$USER" "$actualFakeHome"
+	! mountpoint "$actualFakeHome" > /dev/null 2>&1 && _stop 1
+	return 0
+}
+
+_umountRAM_fakeHome() {
+	mkdir -p "$actualFakeHome"
+	sudo -n umount "$actualFakeHome"
+	mountpoint "$actualFakeHome" > /dev/null 2>&1 && _stop 1
+	return 0
+}
+
+_begin_fakeHome() {
+	# WARNING: Recursive fakeHome prohibited. Instead, start new script session, with new sessionid, and keepFakeHome=false. Do not workaround without a clear understanding why this may endanger your application.
+	_resetFakeHomeEnv
+	[[ "$setFakeHome" == "true" ]] && return 1
+	#_resetFakeHomeEnv_nokeep
+	
+	[[ "$realHome" == "" ]] && export realHome="$HOME"
+	
+	export HOME="$actualFakeHome"
+	export setFakeHome=true
+	
+	_prepareFakeHome > /dev/null 2>&1
+	
+	_install_fakeHome
+	
+	_makeFakeHome "$realHome" "$actualFakeHome"
+	
+	export fakeHomeEditLib="false"
+	
+	export realScriptAbsoluteLocation="$scriptAbsoluteLocation"
+	export realScriptAbsoluteFolder="$scriptAbsoluteFolder"
+	export realSessionID="$sessionid"
+}
+
+#actualFakeHome
+	#default: "$instancedFakeHome"
+	#"$globalFakeHome" || "$instancedFakeHome" || "$shortFakeHome" || "$arbitraryFakeHome"/arbitrary
+#keepFakeHome
+	#default: true
+	#"true" || "false"
+# ATTENTION: WARNING: Do not remove or modify functionality of GUI workarounds without extensive testing!
+_fakeHome() {
+	_begin_fakeHome "$@"
+	local fakeHomeExitStatus
+	
+	if ! _safeEcho_newline "$_JAVA_OPTIONS" | grep "$HOME" > /dev/null 2>&1
+	then
+		export _JAVA_OPTIONS=-Duser.home="$HOME"' '"$_JAVA_OPTIONS"
+	fi
+	
+	# WARNING: Obviously less reliable than directly stating variable assignments.
+	local fakeHomeENVvars
+	
+	fakeHomeENVvars+=(DISPLAY="$DISPLAY" XAUTH="$XAUTH" XAUTHORITY="$XAUTHORITY" XSOCK="$XSOCK" XDG_SESSION_DESKTOP="$XDG_SESSION_DESKTOP" XDG_CURRENT_DESKTOP="$XDG_SESSION_DESKTOP")
+	fakeHomeENVvars+=(realHome="$realHome" keepFakeHome="$keepFakeHome" HOME="$HOME" setFakeHome="$setFakeHome")
+	fakeHomeENVvars+=(TERM="${TERM}" SHELL="${SHELL}" PATH="${PATH}")
+	[[ "$ub_fakeHome_dropPWD" != 'true' ]] && fakeHomeENVvars+=(PWD="$PWD")
+	fakeHomeENVvars+=(_JAVA_OPTIONS="${_JAVA_OPTIONS}")
+	fakeHomeENVvars+=(scriptAbsoluteLocation="$scriptAbsoluteLocation" scriptAbsoluteFolder="$scriptAbsoluteFolder" realScriptAbsoluteLocation="$realScriptAbsoluteLocation" realScriptAbsoluteFolder="$realScriptAbsoluteFolder")
+	fakeHomeENVvars+=(sessionid="$sessionid" realSessionID="$realSessionID" )
+	
+	fakeHomeENVvars+=(LD_PRELOAD="$LD_PRELOAD")
+	
+	# https://github.com/prusa3d/PrusaSlicer/issues/3969
+	fakeHomeENVvars+=(USER="$USER")
+	
+	if type dbus-run-session > /dev/null 2>&1
+	then
+		fakeHomeENVvars+=(dbus-run-session)
+	fi
+	
+	#env -i DISPLAY="$DISPLAY" XAUTH="$XAUTH" XAUTHORITY="$XAUTHORITY" XSOCK="$XSOCK" XDG_SESSION_DESKTOP='KDE' XDG_CURRENT_DESKTOP='KDE' realHome="$realHome" keepFakeHome="$keepFakeHome" HOME="$HOME" setFakeHome="$setFakeHome" TERM="${TERM}" SHELL="${SHELL}" PATH="${PATH}" _JAVA_OPTIONS=${_JAVA_OPTIONS}scriptAbsoluteLocation="$scriptAbsoluteLocation" sessionid="$sessionid" scriptAbsoluteFolder="$scriptAbsoluteFolder" realSessionID="$realSessionID" realScriptAbsoluteLocation="$realScriptAbsoluteLocation" realScriptAbsoluteFolder="$realScriptAbsoluteFolder" dbus-run-session "$@"
+	##env -i DISPLAY="$DISPLAY" XAUTH="$XAUTH" XAUTHORITY="$XAUTHORITY" XSOCK="$XSOCK" XDG_SESSION_DESKTOP='KDE' XDG_CURRENT_DESKTOP='KDE' realHome="$realHome" keepFakeHome="$keepFakeHome" HOME="$HOME" setFakeHome="$setFakeHome" TERM="${TERM}" SHELL="${SHELL}" PATH="${PATH}" _JAVA_OPTIONS=${_JAVA_OPTIONS}scriptAbsoluteLocation="$scriptAbsoluteLocation" scriptAbsoluteFolder="$scriptAbsoluteFolder" dbus-run-session "$@"
+	##dbus-run-session "$@"
+	##"$@"
+	##. "$@"
+	#env -i "${fakeHomeENVvars[@]}" "$@"
+	#fakeHomeExitStatus=$?
+	
+	
+	
+	if [[ "$appImageExecutable" == "" ]]
+	then
+		[[ "$1" == *'.APPIMAGE' ]] && export appImageExecutable="$1"
+		[[ "$1" == *'.appimage' ]] && export appImageExecutable="$1"
+		[[ "$1" == *'.AppImage' ]] && export appImageExecutable="$1"
+	fi
+	if [[ "$appImageExecutable" != "" ]]
+	then
+		#mkdir -p "$appImageExecutable".home
+		#mkdir -p "$appImageExecutable".config
+		#"$appImageExecutable" --appimage-portable-home > /dev/null 2>&1
+		#"$appImageExecutable" --appimage-portable-config > /dev/null 2>&1
+		
+		export appImageExecutable_basename=$(basename "$appImageExecutable")
+		export appImageExecutable_actualFakeHome="$actualFakeHome"/"$appImageExecutable_basename"
+		
+		chmod u+rx "$appImageExecutable"
+		
+		#cp -r -L --preserve=all "$appImageExecutable" "$actualFakeHome"/
+		rsync -rLptgoD "$appImageExecutable" "$actualFakeHome"/
+		
+		chmod u+rx "$appImageExecutable_actualFakeHome"
+		
+		if [[ ! -d "$appImageExecutable_actualFakeHome".home ]] || [[ ! -d "$appImageExecutable_actualFakeHome".config ]]
+		then
+			mkdir -p "$appImageExecutable_actualFakeHome".home
+			mkdir -p "$appImageExecutable_actualFakeHome".config
+			"$appImageExecutable_actualFakeHome" --appimage-portable-home > /dev/null 2>&1
+			"$appImageExecutable_actualFakeHome" --appimage-portable-config > /dev/null 2>&1
+		fi
+		
+		
+		shift
+		
+		#_fakeHome "$appImageExecutable_actualFakeHome" "$@"
+		
+		if [[ "$1" != '--norunFakeHome' ]]
+		then
+			env -i "${fakeHomeENVvars[@]}" "$appImageExecutable_actualFakeHome" "$@"
+			fakeHomeExitStatus=$?
+		else
+			fakeHomeExitStatus='0'
+		fi
+	elif false
+	then
+		true
+	else
+		env -i "${fakeHomeENVvars[@]}" "$@"
+		fakeHomeExitStatus=$?
+	fi
+	
+	
+	#_unmakeFakeHome > /dev/null 2>&1
+	
+	_resetFakeHomeEnv_nokeep
+	
+	return "$fakeHomeExitStatus"
+}
+
+#Do NOT keep parent session under fakeHome environment. Do NOT regain parent session if "~/.ubcore/.ubcorerc" is imported (typically upon shell launch).
+# ATTENTION: WARNING: Do not remove or modify functionality of GUI workarounds without extensive testing!
+_fakeHome_specific() {
+	_begin_fakeHome "$@"
+	local fakeHomeExitStatus
+	
+	if ! _safeEcho_newline "$_JAVA_OPTIONS" | grep "$HOME" > /dev/null 2>&1
+	then
+		export _JAVA_OPTIONS=-Duser.home="$HOME"' '"$_JAVA_OPTIONS"
+	fi
+	
+	# WARNING: Obviously less reliable than directly stating variable assignments.
+	local fakeHomeENVvars
+	
+	fakeHomeENVvars+=(DISPLAY="$DISPLAY" XAUTH="$XAUTH" XAUTHORITY="$XAUTHORITY" XSOCK="$XSOCK" XDG_SESSION_DESKTOP="$XDG_SESSION_DESKTOP" XDG_CURRENT_DESKTOP="$XDG_SESSION_DESKTOP")
+	fakeHomeENVvars+=(realHome="$realHome" keepFakeHome="$keepFakeHome" HOME="$HOME" setFakeHome="$setFakeHome")
+	fakeHomeENVvars+=(TERM="${TERM}" SHELL="${SHELL}" PATH="${PATH}")
+	[[ "$ub_fakeHome_dropPWD" != 'true' ]] && fakeHomeENVvars+=(PWD="$PWD")
+	fakeHomeENVvars+=(_JAVA_OPTIONS="${_JAVA_OPTIONS}")
+	#fakeHomeENVvars+=(scriptAbsoluteLocation="$scriptAbsoluteLocation" scriptAbsoluteFolder="$scriptAbsoluteFolder"realScriptAbsoluteLocation="$realScriptAbsoluteLocation" realScriptAbsoluteFolder="$realScriptAbsoluteFolder")
+	#fakeHomeENVvars+=(sessionid="$sessionid" realSessionID="$realSessionID" )
+	
+	if type dbus-run-session > /dev/null 2>&1
+	then
+		fakeHomeENVvars+=(dbus-run-session)
+	fi
+	
+	##env -i DISPLAY="$DISPLAY" XAUTH="$XAUTH" XAUTHORITY="$XAUTHORITY" XSOCK="$XSOCK" XDG_SESSION_DESKTOP='KDE' XDG_CURRENT_DESKTOP='KDE' realHome="$realHome" keepFakeHome="$keepFakeHome" HOME="$HOME" setFakeHome="$setFakeHome" TERM="${TERM}" SHELL="${SHELL}" PATH="${PATH}" _JAVA_OPTIONS=${_JAVA_OPTIONS}scriptAbsoluteLocation="$scriptAbsoluteLocation" scriptAbsoluteFolder="$scriptAbsoluteFolder" realScriptAbsoluteLocation="$realScriptAbsoluteLocation" realScriptAbsoluteFolder="$realScriptAbsoluteFolder" dbus-run-session "$@"
+	#env -i DISPLAY="$DISPLAY" XAUTH="$XAUTH" XAUTHORITY="$XAUTHORITY" XSOCK="$XSOCK" XDG_SESSION_DESKTOP='KDE' XDG_CURRENT_DESKTOP='KDE' realHome="$realHome" keepFakeHome="$keepFakeHome" HOME="$HOME" setFakeHome="$setFakeHome" TERM="${TERM}" SHELL="${SHELL}" PATH="${PATH}" _JAVA_OPTIONS=${_JAVA_OPTIONS}dbus-run-session "$@"
+	##dbus-run-session "$@"
+	##"$@"
+	##. "$@"
+	env -i "${fakeHomeENVvars[@]}" "$@"
+	fakeHomeExitStatus=$?
+	
+	#_unmakeFakeHome > /dev/null 2>&1
+	
+	_resetFakeHomeEnv_nokeep
+	
+	return "$fakeHomeExitStatus"
+}
+
+#No workarounds, run in current shell.
+# WARNING: Not recommended. No production use. Do not launch GUI applications.
+_fakeHome_embedded() {
+	_begin_fakeHome "$@"
+	local fakeHomeExitStatus
+	
+	if ! _safeEcho_newline "$_JAVA_OPTIONS" | grep "$HOME" > /dev/null 2>&1
+	then
+		export _JAVA_OPTIONS=-Duser.home="$HOME"' '"$_JAVA_OPTIONS"
+	fi
+	
+	#env -i DISPLAY="$DISPLAY" XAUTH="$XAUTH" XAUTHORITY="$XAUTHORITY" XSOCK="$XSOCK" XDG_SESSION_DESKTOP='KDE' XDG_CURRENT_DESKTOP='KDE' realHome="$realHome" keepFakeHome="$keepFakeHome" HOME="$HOME" setFakeHome="$setFakeHome" TERM="${TERM}" SHELL="${SHELL}" PATH="${PATH}" _JAVA_OPTIONS=${_JAVA_OPTIONS}scriptAbsoluteLocation="$scriptAbsoluteLocation" scriptAbsoluteFolder="$scriptAbsoluteFolder" realScriptAbsoluteLocation="$realScriptAbsoluteLocation" realScriptAbsoluteFolder="$realScriptAbsoluteFolder" dbus-run-session "$@"
+	#env -i DISPLAY="$DISPLAY" XAUTH="$XAUTH" XAUTHORITY="$XAUTHORITY" XSOCK="$XSOCK" XDG_SESSION_DESKTOP='KDE' XDG_CURRENT_DESKTOP='KDE' realHome="$realHome" keepFakeHome="$keepFakeHome" HOME="$HOME" setFakeHome="$setFakeHome" TERM="${TERM}" SHELL="${SHELL}" PATH="${PATH}" _JAVA_OPTIONS=${_JAVA_OPTIONS}scriptAbsoluteLocation="$scriptAbsoluteLocation" scriptAbsoluteFolder="$scriptAbsoluteFolder" dbus-run-session "$@"
+	#dbus-run-session "$@"
+	#"$@"
+	. "$@"
+	fakeHomeExitStatus=$?
+	
+	#_unmakeFakeHome > /dev/null 2>&1
+	
+	_resetFakeHomeEnv_nokeep
+	
+	return "$fakeHomeExitStatus"
+}
+
+_fakeHome_() {
+	_fakeHome_embedded "$@"
+}
+
+
+
+
+
+_userFakeHome_procedure() {
+	export actualFakeHome="$instancedFakeHome"
+	export fakeHomeEditLib="false"
+	_fakeHome "$@"
+}
+
+_userFakeHome_sequence() {
+	_start
+	
+	_userFakeHome_procedure "$@"
+	
+	_stop $?
+}
+
+_userFakeHome() {
+	"$scriptAbsoluteLocation" _userFakeHome_sequence "$@"
+}
+
+_editFakeHome_procedure() {
+	export actualFakeHome="$globalFakeHome"
+	export fakeHomeEditLib="false"
+	_fakeHome "$@"
+}
+
+_editFakeHome_sequence() {
+	_start
+	
+	_editFakeHome_procedure "$@"
+	
+	_stop $?
+}
+
+_editFakeHome() {
+	"$scriptAbsoluteLocation" _editFakeHome_sequence "$@"
+}
+
+_userShortHome_procedure() {
+	export actualFakeHome="$shortFakeHome"
+	export fakeHomeEditLib="false"
+	_fakeHome "$@"
+}
+
+_userShortHome_sequence() {
+	_start
+	
+	_userShortHome_procedure "$@"
+	
+	_stop $?
+}
+
+_userShortHome() {
+	"$scriptAbsoluteLocation" _userShortHome_sequence "$@"
+}
+
+_editShortHome_procedure() {
+	export actualFakeHome="$shortFakeHome"
+	export fakeHomeEditLib="true"
+	_fakeHome "$@"
+}
+
+_editShortHome_sequence() {
+	_start
+	
+	_editShortHome_procedure "$@"
+	
+	_stop $?
+}
+
+# WARNING: Only allows persistent modifications to directories which have been linked by "_link_fakeHome" or similar.
+_editShortHome() {
+	"$scriptAbsoluteLocation" _editShortHome_sequence "$@"
+}
+
+_shortHome() {
+	_userShortHome "$@"
+}
+
+_memFakeHome_procedure() {
+	export actualFakeHome="$instancedFakeHome"
+	export fakeHomeEditLib="false"
+	
+	_mountRAM_fakeHome
+	
+	local fakeHomeExitStatus
+	
+	_fakeHome "$@"
+	fakeHomeExitStatus=$?
+	
+	_umountRAM_fakeHome
+	
+	return "$fakeHomeExitStatus"
+}
+
+_memFakeHome_sequence() {
+	_start
+	
+	_memFakeHome_procedure "$@"
+	
+	_stop $?
+}
+
+_memFakeHome() {
+	"$scriptAbsoluteLocation" _memFakeHome_sequence "$@"
+}
+
 _resetFakeHomeEnv_extra() {
 	true
 }
@@ -9955,6 +10469,11 @@ _test_aws_upstream_sequence() {
 	
 	echo
 	
+	sudo -n pip install --upgrade pip
+	sudo -n pip install aws-shell
+	
+	echo
+	
 	git clone https://github.com/aws/aws-elastic-beanstalk-cli-setup.git
 	./aws-elastic-beanstalk-cli-setup/scripts/bundled_installer
 	#sudo -n ./aws-elastic-beanstalk-cli-setup/scripts/bundled_installer
@@ -9973,6 +10492,7 @@ _test_aws_upstream_sequence() {
 	#sudo -n npm install -g --unsafe-perm node-red
 	#sudo -n npm install -g --unsafe-perm pm2
 	
+	#echo
 	
 	cd "$functionEntryPWD"
 	_stop
@@ -10032,17 +10552,35 @@ _test_aws() {
 	_getDep 'unzip'
 	
 	
+	_getDep 'python3'
+	_getDep 'pip'
+	
+	
 	
 	
 	if [[ "$nonet" != "true" ]] && cat /etc/issue | grep 'Debian' > /dev/null 2>&1
 	then
+		_messagePlain_request 'ignore: upstream progress ->'
 		"$scriptAbsoluteLocation" _test_aws_upstream_sequence "$@"
+		_messagePlain_request 'ignore: <- upstream progress'
 	fi
 	
 	_wantSudo && _wantGetDep aws
 	
 	! _typeDep aws && echo 'warn: missing: aws'
 	! _typeDep aws-shell && echo 'warn: missing: aws-shell'
+	
+	
+	if [[ "$PATH" != *'.ebcli-virtual-env/executables'* ]]
+	then
+		# WARNING: Must interpret "$HOME" as is at this point and NOT after any "$HOME" override.
+		export PATH="$HOME/.ebcli-virtual-env/executables:$PATH"
+	fi
+	
+	
+	! _typeDep eb && echo 'warn: missing: eb'
+	
+	
 	
 	return 0
 }
@@ -10051,6 +10589,120 @@ _test_aws() {
 
 
 #google
+
+# ATTENTION: ATTENTION: Cloud VPS API wrapper 'de-facto' reference implementation is 'digitalocean' !
+# Obvious naming conventions and such are to be considered from that source first.
+
+
+# WARNING: DANGER: WIP, Untested .
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+_gcloud() {
+	if [[ "$PATH" != *'.gcloud/google-cloud-sdk'* ]]
+	then
+		. "$HOME"/.gcloud/google-cloud-sdk/completion.bash.inc
+		. "$HOME"/.gcloud/google-cloud-sdk/path.bash.inc
+	fi
+	
+	local currentBin_gcloud
+	currentBin_gcloud="$ub_function_override_gcloud"
+	[[ "$currentBin_gcloud" == "" ]] && currentBin_gcloud=$(type -p gcloud 2> /dev/null)
+	
+	# WARNING: Not guaranteed.
+	_relink "$HOME"/.ssh "$scriptLocal"/cloud/gcloud/.ssh
+	
+	# WARNING: Changing '$HOME' may interfere with 'cautossh' , specifically function '_ssh' .
+	
+	
+	# CAUTION: Highly irregular.
+	
+	# https://cloud.google.com/sdk/docs/configurations
+	
+	[[ "$currentBin_gcloud" == "" ]] && return 1
+	[[ ! -e "$currentBin_gcloud" ]] && return 1
+	
+	_editFakeHome "$currentBin_gcloud" "$@"
+}
+
+_gcloud_reset() {
+	export ub_function_override_gcloud=''
+	unset ub_function_override_gcloud
+	unset gcloud
+}
+
+_gcloud_set() {
+	if [[ "$PATH" != *'.gcloud/google-cloud-sdk'* ]]
+	then
+		. "$HOME"/.gcloud/google-cloud-sdk/completion.bash.inc
+		. "$HOME"/.gcloud/google-cloud-sdk/path.bash.inc
+	fi
+	
+	export ub_function_override_gcloud=$(type -p gcloud 2> /dev/null)
+	gcloud() {
+		_gcloud "$@"
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# WARNING: Exceptional. Unlike the vast majority of other programs, 'cloud' API software may require frequent updates, due to the strong possibility of frequent breaking changes to what actually ammounts to an *ABI* (NOT an API) . Due to this severe irregularity, '_test_gcloud' and similar functions must *always* attempt an upstream update if possible and available .
+	# https://par.nsf.gov/servlets/purl/10073416
+	# ' Navigating the Unexpected Realities of Big Data Transfers in a Cloud-based World '
+		# 'Because many of these tools are relatively new and are evolving rapidly they tend to be rather fragile. Consequently, one cannot assume they will actually work reliably in all situations.'
+
+
+# ###
 
 # https://github.com/tensorflow/cloud#cluster-and-distribution-strategy-configuration
 # https://www.tensorflow.org/api_docs/python/tf/distribute/OneDeviceStrategy
@@ -10077,6 +10729,150 @@ _test_aws() {
 #gsutil mb -l $REGION gs://$BUCKET_NAME
 
 #gcloud auth configure-docker
+
+
+
+
+
+# https://cloud.google.com/sdk/docs/install
+# https://cloud.google.com/sdk/gcloud/reference/components/update
+
+# ###
+
+
+
+
+
+_test_gcloud_upstream_sequence() {
+	_start
+	local functionEntryPWD
+	functionEntryPWD="$PWD"
+	cd "$safeTmp"
+	
+	
+	_mustGetSudo
+	! _wantSudo && return 1
+	
+	
+	echo
+	
+	_gcloud components update
+	
+	echo
+	
+	cp "$scriptLocal"/upstream/google-cloud-sdk-338.0.0-linux-x86_64.tar.gz ./ > /dev/null 2>&1
+	
+	# ATTENTION: ATTENTION: WARNING: CAUTION: DANGER: High maintenance. Expect to break and manually update frequently!
+	local currentIterations
+	currentIterations=0
+	while [[ $(cksum google-cloud-sdk-338.0.0-linux-x86_64.tar.gz | env CMD_ENV=xpg4 cksum | cut -f1 -d\  | tr -dc '0-9' 2> /dev/null) != '3136626824' ]]
+	do
+		let currentIterations="$currentIterations + 1"
+		! [[ "$currentIterations" -lt 2 ]] && _stop 1
+		curl -O https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-338.0.0-linux-x86_64.tar.gz
+	done
+	
+	! tar -xpf google-cloud-sdk-338.0.0-linux-x86_64.tar.gz && _stop 1
+	
+	
+	# WARNING: CAUTION: DANGER: Highly irregular. Replaces entire directory in 'HOME' directory after making a temporary copy for user.
+	
+	
+	! [[ -e "$HOME" ]] && return 1
+	[[ "$HOME" == "" ]] && _stop 1
+	[[ "$HOME" == "/" ]] && _stop 1
+	[[ "$HOME" == "-"* ]] && _stop 1
+	
+	if ! mkdir -p "$HOME"/'.gcloud/google-cloud-sdk'
+	then
+		_stop 1
+	fi
+	
+	if ! _safeBackup "$HOME"/'.gcloud/google-cloud-sdk'
+	then
+		_stop 1
+	fi
+	
+	if ! mkdir -p "$HOME"/'.gcloud/google-cloud-sdk_bak'
+	then
+		_stop 1
+	fi
+	
+	if ! _safeBackup "$HOME"/'.gcloud/google-cloud-sdk_bak'
+	then
+		_stop 1
+	fi
+	
+	if ! _safeBackup "$safeTmp"/'google-cloud-sdk'
+	then
+		_stop 1
+	fi
+	
+	sudo -n rsync -ax --delete "$HOME"/'.gcloud/google-cloud-sdk'/. "$HOME"/'.gcloud/google-cloud-sdk_bak'/.
+	sudo -n rsync -ax --delete "$safeTmp"/'google-cloud-sdk'/. "$HOME"/'.gcloud/google-cloud-sdk'/.
+	
+	
+	cd "$HOME"/'.gcloud'/
+	
+	#export CLOUDSDK_ROOT_DIR="$HOME"/google-cloud-sdk
+	
+	./google-cloud-sdk/install.sh --help
+	
+	./google-cloud-sdk/install.sh --quiet --usage-reporting false --command-completion false --path-update false
+	
+	#./google-cloud-sdk/bin/gcloud init
+	
+	cd "$safeTmp"
+	
+	echo
+	
+	_gcloud config set disable_usage_reporting false
+	
+	echo
+	
+	_gcloud components update
+
+	echo
+	
+	
+	
+	cd "$functionEntryPWD"
+	_stop
+}
+
+
+
+
+
+
+_test_gcloud() {
+	_getDep 'python3'
+	_getDep 'pip'
+	
+	if [[ "$nonet" != "true" ]] && cat /etc/issue | grep 'Debian' > /dev/null 2>&1
+	then
+		_messagePlain_request 'ignore: upstream progress ->'
+		"$scriptAbsoluteLocation" _test_gcloud_upstream_sequence "$@"
+		_messagePlain_request 'ignore: <- upstream progress'
+	fi
+	
+	
+	if [[ "$PATH" != *'.gcloud/google-cloud-sdk'* ]]
+	then
+		. "$HOME"/.gcloud/google-cloud-sdk/completion.bash.inc
+		. "$HOME"/.gcloud/google-cloud-sdk/path.bash.inc
+	fi
+	
+	#_wantSudo && _wantGetDep gcloud
+	
+	
+	! _typeDep gcloud && echo 'warn: missing: gcloud'
+	
+	
+	
+	return 0
+}
+
 
 
 
@@ -10742,8 +11538,12 @@ _test_rclone_upstream() {
 _test_rclone() {
 	if [[ "$nonet" != "true" ]]
 	then
+		_messagePlain_request 'ignore: upstream progress ->'
+		
 		_test_rclone_upstream "$@"
 		#_test_rclone_upstream_beta "$@"
+		
+		_messagePlain_request 'ignore: <- upstream progress'
 	fi
 	
 	_wantSudo && _wantGetDep rclone
@@ -10864,6 +11664,8 @@ _cloud_set() {
 	_aws_set "$@"
 	_aws_eb_set "$@"
 	
+	_gcloud_set
+	
 	
 	
 	_cloudPrompt "$@"
@@ -10875,6 +11677,8 @@ _cloud_reset() {
 	
 	_aws_reset "$@"
 	_aws_eb_reset "$@"
+	
+	_gcloud_reset
 	
 	
 	
@@ -10894,6 +11698,7 @@ _test_cloud() {
 	_tryExec '_test_linode_cloud'
 	
 	_tryExec '_test_aws'
+	_tryExec '_test_gcloud'
 	
 	_tryExec '_test_ubVirt'
 	_tryExec '_test_phpvirtualbox_self'
@@ -11893,6 +12698,30 @@ CZXWXcRMTo8EmM8i4d
 
 
 
+
+_setupUbiquitous_accessories_here-cloud_bin() {
+	cat << CZXWXcRMTo8EmM8i4d
+
+if [[ "$PATH" != *'.ebcli-virtual-env/executables'* ]] && [[ -e "$HOME"/.ebcli-virtual-env/executables ]]
+then
+	# WARNING: Must interpret "$HOME" as is at this point and NOT after any "$HOME" override.
+	export PATH="$HOME"/.ebcli-virtual-env/executables:"$PATH"
+fi
+
+
+if [[ "$PATH" != *'.gcloud/google-cloud-sdk'* ]] && [[ -e "$HOME"/.gcloud/google-cloud-sdk/completion.bash.inc ]] && [[ -e "$HOME"/.gcloud/google-cloud-sdk/path.bash.inc ]]
+then
+	. "$HOME"/.gcloud/google-cloud-sdk/completion.bash.inc
+	. "$HOME"/.gcloud/google-cloud-sdk/path.bash.inc
+fi
+
+CZXWXcRMTo8EmM8i4d
+}
+
+
+
+
+
 _setupUbiquitous_accessories-gnuoctave() {
 	_messagePlain_nominal 'init: _setupUbiquitous_accessories-gnuoctave'
 	
@@ -11920,12 +12749,28 @@ _setupUbiquitous_accessories-gnuoctave() {
 }
 
 
+_setupUbiquitous_accessories_bashrc-cloud_bin() {
+	_messagePlain_nominal 'init: _setupUbiquitous_accessories-cloud_bin'
+	
+	_setupUbiquitous_accessories_here-cloud_bin
+	
+	echo 'true'
+	
+	return 0
+}
+
+
 _setupUbiquitous_accessories() {
 	
 	_setupUbiquitous_accessories-gnuoctave "$@"
 	
 	
+	
 	return 0
+}
+
+_setupUbiquitous_accessories_bashrc() {
+	_setupUbiquitous_accessories_bashrc-cloud_bin "$@"
 }
 
 
@@ -11979,6 +12824,7 @@ renice -n 0 -p \$\$ > /dev/null 2>&1
 [[ -e "$ubcoreDir"/cloudrc ]] && . "$ubcoreDir"/cloudrc
 
 true
+
 CZXWXcRMTo8EmM8i4d
 }
 
@@ -12110,6 +12956,7 @@ _setupUbiquitous() {
 	ln -sf "$ubcoreUBfile" "$ubHome"/bin/_winecfghere
 	
 	_setupUbiquitous_here > "$ubcoreFile"
+	_setupUbiquitous_accessories_bashrc-cloud_bin >> "$ubcoreFile"
 	! [[ -e "$ubcoreFile" ]] && _messagePlain_bad 'missing: ubcoreFile= '"$ubcoreFile" && _messageFAIL && return 1
 	
 	
@@ -13129,6 +13976,23 @@ _prepare_ssh() {
 }
 
 
+
+_prepareFakeHome() {
+	mkdir -p "$actualFakeHome"
+}
+
+_rm_instance_fakeHome() {
+	! [[ -e "$instancedFakeHome" ]] && return 0
+	
+	[[ -e "$instancedFakeHome" ]] && rmdir "$instancedFakeHome" > /dev/null 2>&1
+	
+	[[ -e "$instancedFakeHome" ]] && _unmakeFakeHome "$instancedFakeHome" > /dev/null 2>&1
+	
+	# DANGER Allows folders containing ".git" to be removed in all further shells inheriting this environment!
+	export safeToDeleteGit="true"
+	[[ -e "$instancedFakeHome" ]] && _safeRMR "$instancedFakeHome"
+	export safeToDeleteGit="false"
+}
 
 
 _queue_descriptiveSelf() {

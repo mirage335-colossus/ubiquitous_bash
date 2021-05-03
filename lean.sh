@@ -32,7 +32,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='1891409836'
-export ub_setScriptChecksum_contents='552717854'
+export ub_setScriptChecksum_contents='37623836'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -3868,6 +3868,30 @@ CZXWXcRMTo8EmM8i4d
 
 
 
+
+_setupUbiquitous_accessories_here-cloud_bin() {
+	cat << CZXWXcRMTo8EmM8i4d
+
+if [[ "$PATH" != *'.ebcli-virtual-env/executables'* ]] && [[ -e "$HOME"/.ebcli-virtual-env/executables ]]
+then
+	# WARNING: Must interpret "$HOME" as is at this point and NOT after any "$HOME" override.
+	export PATH="$HOME"/.ebcli-virtual-env/executables:"$PATH"
+fi
+
+
+if [[ "$PATH" != *'.gcloud/google-cloud-sdk'* ]] && [[ -e "$HOME"/.gcloud/google-cloud-sdk/completion.bash.inc ]] && [[ -e "$HOME"/.gcloud/google-cloud-sdk/path.bash.inc ]]
+then
+	. "$HOME"/.gcloud/google-cloud-sdk/completion.bash.inc
+	. "$HOME"/.gcloud/google-cloud-sdk/path.bash.inc
+fi
+
+CZXWXcRMTo8EmM8i4d
+}
+
+
+
+
+
 _setupUbiquitous_accessories-gnuoctave() {
 	_messagePlain_nominal 'init: _setupUbiquitous_accessories-gnuoctave'
 	
@@ -3895,12 +3919,28 @@ _setupUbiquitous_accessories-gnuoctave() {
 }
 
 
+_setupUbiquitous_accessories_bashrc-cloud_bin() {
+	_messagePlain_nominal 'init: _setupUbiquitous_accessories-cloud_bin'
+	
+	_setupUbiquitous_accessories_here-cloud_bin
+	
+	echo 'true'
+	
+	return 0
+}
+
+
 _setupUbiquitous_accessories() {
 	
 	_setupUbiquitous_accessories-gnuoctave "$@"
 	
 	
+	
 	return 0
+}
+
+_setupUbiquitous_accessories_bashrc() {
+	_setupUbiquitous_accessories_bashrc-cloud_bin "$@"
 }
 
 
@@ -3954,6 +3994,7 @@ renice -n 0 -p \$\$ > /dev/null 2>&1
 [[ -e "$ubcoreDir"/cloudrc ]] && . "$ubcoreDir"/cloudrc
 
 true
+
 CZXWXcRMTo8EmM8i4d
 }
 
@@ -4085,6 +4126,7 @@ _setupUbiquitous() {
 	ln -sf "$ubcoreUBfile" "$ubHome"/bin/_winecfghere
 	
 	_setupUbiquitous_here > "$ubcoreFile"
+	_setupUbiquitous_accessories_bashrc-cloud_bin >> "$ubcoreFile"
 	! [[ -e "$ubcoreFile" ]] && _messagePlain_bad 'missing: ubcoreFile= '"$ubcoreFile" && _messageFAIL && return 1
 	
 	

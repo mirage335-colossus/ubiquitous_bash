@@ -37,5 +37,6 @@ renice -n 0 -p \$\$ > /dev/null 2>&1
 [[ -e "$ubcoreDir"/cloudrc ]] && . "$ubcoreDir"/cloudrc
 
 true
+
 CZXWXcRMTo8EmM8i4d
 }

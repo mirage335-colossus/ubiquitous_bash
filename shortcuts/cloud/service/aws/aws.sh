@@ -454,6 +454,11 @@ _test_aws_upstream_sequence() {
 	
 	echo
 	
+	sudo -n pip install --upgrade pip
+	sudo -n pip install aws-shell
+	
+	echo
+	
 	git clone https://github.com/aws/aws-elastic-beanstalk-cli-setup.git
 	./aws-elastic-beanstalk-cli-setup/scripts/bundled_installer
 	#sudo -n ./aws-elastic-beanstalk-cli-setup/scripts/bundled_installer
@@ -472,6 +477,7 @@ _test_aws_upstream_sequence() {
 	#sudo -n npm install -g --unsafe-perm node-red
 	#sudo -n npm install -g --unsafe-perm pm2
 	
+	#echo
 	
 	cd "$functionEntryPWD"
 	_stop
@@ -531,17 +537,35 @@ _test_aws() {
 	_getDep 'unzip'
 	
 	
+	_getDep 'python3'
+	_getDep 'pip'
+	
+	
 	
 	
 	if [[ "$nonet" != "true" ]] && cat /etc/issue | grep 'Debian' > /dev/null 2>&1
 	then
+		_messagePlain_request 'ignore: upstream progress ->'
 		"$scriptAbsoluteLocation" _test_aws_upstream_sequence "$@"
+		_messagePlain_request 'ignore: <- upstream progress'
 	fi
 	
 	_wantSudo && _wantGetDep aws
 	
 	! _typeDep aws && echo 'warn: missing: aws'
 	! _typeDep aws-shell && echo 'warn: missing: aws-shell'
+	
+	
+	if [[ "$PATH" != *'.ebcli-virtual-env/executables'* ]]
+	then
+		# WARNING: Must interpret "$HOME" as is at this point and NOT after any "$HOME" override.
+		export PATH="$HOME/.ebcli-virtual-env/executables:$PATH"
+	fi
+	
+	
+	! _typeDep eb && echo 'warn: missing: eb'
+	
+	
 	
 	return 0
 }

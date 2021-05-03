@@ -103,6 +103,8 @@ _cloud_set() {
 	_aws_set "$@"
 	_aws_eb_set "$@"
 	
+	_gcloud_set
+	
 	
 	
 	_cloudPrompt "$@"
@@ -114,6 +116,8 @@ _cloud_reset() {
 	
 	_aws_reset "$@"
 	_aws_eb_reset "$@"
+	
+	_gcloud_reset
 	
 	
 	
@@ -133,6 +137,7 @@ _test_cloud() {
 	_tryExec '_test_linode_cloud'
 	
 	_tryExec '_test_aws'
+	_tryExec '_test_gcloud'
 	
 	_tryExec '_test_ubVirt'
 	_tryExec '_test_phpvirtualbox_self'

@@ -1,19 +1,19 @@
 
-_index
-_local/*
+#_index
+#_local/*
 
-id_rsa
-pubring.kbx
-pubring.kbx*
-trustdb.gpg
+#id_rsa
+#pubring.kbx
+#pubring.kbx*
+#trustdb.gpg
 
-_local/h
+#_local/h
 
-_local/id_rsa
-_local/id_rsa.pub
+#_local/id_rsa
+#_local/id_rsa.pub
 
-_local/tor/sshd/dd*/
-_local/tor/sshd/dd**/
+#_local/tor/sshd/dd*/
+#_local/tor/sshd/dd**/
 
 
 /ops

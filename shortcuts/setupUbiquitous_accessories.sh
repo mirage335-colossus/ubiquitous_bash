@@ -25,12 +25,28 @@ _setupUbiquitous_accessories-gnuoctave() {
 }
 
 
+_setupUbiquitous_accessories_bashrc-cloud_bin() {
+	_messagePlain_nominal 'init: _setupUbiquitous_accessories-cloud_bin'
+	
+	_setupUbiquitous_accessories_here-cloud_bin
+	
+	echo 'true'
+	
+	return 0
+}
+
+
 _setupUbiquitous_accessories() {
 	
 	_setupUbiquitous_accessories-gnuoctave "$@"
 	
 	
+	
 	return 0
+}
+
+_setupUbiquitous_accessories_bashrc() {
+	_setupUbiquitous_accessories_bashrc-cloud_bin "$@"
 }
 
 

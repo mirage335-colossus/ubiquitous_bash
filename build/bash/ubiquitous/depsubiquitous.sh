@@ -72,6 +72,9 @@ _deps_cloud() {
 	_deps_repo
 	_deps_proxy
 	_deps_stopwatch
+	
+	_deps_fakehome
+	
 	export enUb_cloud="true"
 }
 
