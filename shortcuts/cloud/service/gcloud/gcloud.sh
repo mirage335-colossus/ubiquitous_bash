@@ -8,6 +8,295 @@
 
 
 
+# https://cloud.google.com/compute/docs/instances/create-start-instance#gcloud
+
+
+# https://dev.to/0xbanana/automating-deploys-with-bash-scripting-and-google-cloud-sdk-4976
+
+
+
+
+
+
+
+
+
+# ATTENTION: Override with 'ops.sh' or 'core.sh' or similar.
+_gcloud_cloud_cred() {
+	_gcloud_set "$@"
+}
+_gcloud_cloud_cred_reset() {
+	_gcloud_reset "$@"
+}
+
+
+
+# ATTENTION: Override with 'ops.sh' or 'core.sh' or similar.
+# "$1" == ub_gcloud_cloud_server_name
+_gcloud_cloud_server_create() {
+	_messageNormal 'init: _gcloud_cloud_server_create'
+	
+	_start_cloud_tmp
+	
+	_gcloud_cloud_cred
+	
+	export ub_gcloud_cloud_server_name="$1"
+	[[ "$ub_gcloud_cloud_server_name" == "" ]] && export ub_gcloud_cloud_server_name=$(_uid)
+	
+	
+	_messagePlain_nominal 'attempt: _gcloud_cloud_server_create: Cloud Services API Request'
+	local currentIterations
+	currentIterations=0
+	export ub_gcloud_cloud_server_uid=
+	while [[ "$ub_gcloud_cloud_server_uid" == "" ]] && [[ "$currentIterations" -lt 3 ]]
+	do
+		let currentIterations="$currentIterations + 1"
+		
+		_gcloud_cloud_server_create_API--default "$ub_gcloud_cloud_server_name" > "$cloudTmp"/reply
+		
+		# WARNING: WIP, Untested.
+		if gcloud compute instances describe "$ub_gcloud_cloud_server_name" | grep "$ub_gcloud_cloud_server_name" > /dev/null 2>&1
+		then
+			export ub_gcloud_cloud_server_uid="$ub_gcloud_cloud_server_name"
+		fi
+		
+		[[ "$ub_gcloud_cloud_server_uid" == "" ]] && _messagePlain_warn 'attempt: _gcloud_cloud_server_create: miss'
+	done
+	[[ "$ub_gcloud_cloud_server_uid" == "" ]] && _messagePlain_bad 'attempt: _gcloud_cloud_server_create: fail' && _stop_cloud_tmp && _messageFAIL && _stop 1
+	_messagePlain_good  'attempt: _gcloud_cloud_server_create: pass'
+	
+	_stop_cloud_tmp
+	
+	
+	
+	
+	_gcloud_cloud_server_status "$ub_gcloud_cloud_server_uid"
+	
+	_gcloud_cloud_cred_reset
+	
+	return 0
+}
+_gcloud_cloud_server_create_API--default() {
+	# https://cloud.google.com/compute/docs/instances/create-start-instance#gcloud
+	gcloud compute instances create "$ub_gcloud_cloud_server_name" --image-family=debian-10 --image-project=debian-cloud --machine-type="N1 shared-core"
+}
+
+
+
+# ATTENTION: Consider that Cloud services are STRICTLY intended as end-user functions - manual 'cleanup' of 'expensive' resources MUST be feasible!
+# "$@" == _functionName (must process JSON file - ie. loop through - jq '.data[0].id,.data[0].label' )
+# EXAMPLE: _gcloud_cloud_self_server_list _gcloud_cloud_self_server_dispose-filter 'temporaryBuild'
+# EXAMPLE: _gcloud_cloud_self_server_list _gcloud_cloud_self_server_status-filter 'workstation'
+_gcloud_cloud_self_server_list() {
+	_messageNormal 'init: _gcloud_cloud_self_server_list'
+	
+	_start_cloud_tmp
+	
+	_gcloud_cloud_cred
+	
+	_messagePlain_nominal 'attempt: _gcloud_cloud_self_server_list: Cloud Services API Request'
+	local currentIterations
+	currentIterations=0
+	local current_ub_gcloud_cloud_server_uid
+	current_ub_gcloud_cloud_server_uid=
+	while [[ "$current_ub_gcloud_cloud_server_uid" == "" ]] && [[ "$currentIterations" -lt 3 ]]
+	do
+		let currentIterations="$currentIterations + 1"
+		
+		# WARNING: WIP, Untested.
+		# WARNING: TODO
+		
+		#curl -X GET "https://api.gcloud.com/v4/gcloud/instances" -H "Authorization: Bearer $ub_gcloud_TOKEN" > "$cloudTmp"/reply
+		#current_ub_gcloud_cloud_server_uid=$(cat "$cloudTmp"/reply | jq '.data[0].id' | tr -dc 'a-zA-Z0-9.:_-')
+		
+		[[ "$current_ub_gcloud_cloud_server_uid" == "" ]] && _messagePlain_warn 'attempt: _gcloud_cloud_self_server_list: miss'
+	done
+	[[ "$current_ub_gcloud_cloud_server_uid" == "" ]] && _messagePlain_bad 'attempt: _gcloud_cloud_self_server_list: fail' && _stop_cloud_tmp && _messageFAIL && _stop 1
+	_messagePlain_good  'attempt: _gcloud_cloud_self_server_list: pass'
+	
+	
+	"$@"
+	
+	
+	_messagePlain_request 'request: Please review CloudVM list for unnecessary expense.'
+	cat "$cloudTmp"/reply | jq '.data[].id,.data[].label'
+	_stop_cloud_tmp
+	_gcloud_cloud_cred_reset
+	
+	return 0
+}
+
+
+
+_gcloud_cloud_self_server_dispose-filter() {
+	_messageNormal 'init: _gcloud_cloud_self_server_dispose-filter: '"$@"
+	
+	# WARNING: To match 'all' consider '.*' instead of empty.
+	[[ "$1" == "" ]] && return 1
+	
+	
+	_messagePlain_nominal 'loop: _gcloud_cloud_self_server_dispose-filter'
+	local currentIterations
+	currentIterations=0
+	local currentIterations_inner
+	currentIterations_inner=0
+	export ub_gcloud_cloud_server_uid="$ubiquitiousBashIDnano"$(_uid 18)"$ubiquitiousBashIDnano"
+	export ub_gcloud_cloud_server_name="$ubiquitiousBashIDnano"$(_uid 18)"$ubiquitiousBashIDnano"
+	while [[ "$ub_gcloud_cloud_server_uid" != "null" ]] && [[ "$ub_gcloud_cloud_server_name" != "null" ]] && [[ "$ub_gcloud_cloud_server_uid" != "" ]] && [[ "$ub_gcloud_cloud_server_name" != "" ]] && [[ "$currentIterations" -lt 999 ]]
+	do
+		if _safeEcho "$ub_gcloud_cloud_server_name" | grep "$@"
+		then
+			currentIterations_inner=0
+			
+			# WARNING: Significant experimentation may be required.
+			# https://superuser.com/questions/272265/getting-curl-to-output-http-status-code
+			
+			# WARNING: WIP, Untested.
+			
+			while ! gcloud compute instances delete "$ub_gcloud_cloud_server_uid" > /dev/null 2>&1 && [[ "$currentIterations_inner" -lt 3 ]]
+			do
+				let currentIterations_inner="$currentIterations_inner + 1"
+			done
+		fi
+		
+		export ub_gcloud_cloud_server_uid=
+		export ub_gcloud_cloud_server_name=
+		
+		ub_gcloud_cloud_server_uid=$(cat "$cloudTmp"/reply | jq '.data['"$currentIterations"'].id' | tr -dc 'a-zA-Z0-9.:_-')
+		ub_gcloud_cloud_server_name=$(cat "$cloudTmp"/reply | jq '.data['"$currentIterations"'].label' | tr -dc 'a-zA-Z0-9.:_-')
+		let currentIterations="$currentIterations + 1"
+		
+		_messagePlain_probe_var ub_gcloud_cloud_server_uid
+		_messagePlain_probe_var ub_gcloud_cloud_server_name
+		
+	done
+	_messagePlain_good  'done: _gcloud_cloud_self_server_dispose-filter'
+	
+	return 0
+}
+
+
+_gcloud_cloud_self_server_status-filter() {
+	_messageNormal 'init: _gcloud_cloud_self_server_status-filter: '"$@"
+	
+	# WARNING: To match 'all' consider '.*' instead of empty.
+	[[ "$1" == "" ]] && return 1
+	
+	
+	_messagePlain_nominal 'loop: _gcloud_cloud_self_server_status-filter'
+	local currentIterations
+	currentIterations=0
+	local currentIterations_inner
+	currentIterations_inner=0
+	export ub_gcloud_cloud_server_uid="$ubiquitiousBashIDnano"$(_uid 18)"$ubiquitiousBashIDnano"
+	export ub_gcloud_cloud_server_name="$ubiquitiousBashIDnano"$(_uid 18)"$ubiquitiousBashIDnano"
+	while [[ "$ub_gcloud_cloud_server_uid" != "null" ]] && [[ "$ub_gcloud_cloud_server_name" != "null" ]] && [[ "$ub_gcloud_cloud_server_uid" != "" ]] && [[ "$ub_gcloud_cloud_server_name" != "" ]] && [[ "$currentIterations" -lt 999 ]]
+	do
+		if _safeEcho "$ub_gcloud_cloud_server_name" | grep "$@"
+		then
+			_gcloud_cloud_self_server_status "$ub_gcloud_cloud_server_uid"
+		fi
+		
+		export ub_gcloud_cloud_server_uid=
+		export ub_gcloud_cloud_server_name=
+		
+		ub_gcloud_cloud_server_uid=$(cat "$cloudTmp"/reply | jq '.data['"$currentIterations"'].id' | tr -dc 'a-zA-Z0-9.:_-')
+		ub_gcloud_cloud_server_name=$(cat "$cloudTmp"/reply | jq '.data['"$currentIterations"'].label' | tr -dc 'a-zA-Z0-9.:_-')
+		let currentIterations="$currentIterations + 1"
+		
+		_messagePlain_probe_var ub_gcloud_cloud_server_uid
+		_messagePlain_probe_var ub_gcloud_cloud_server_name
+		
+	done
+	_messagePlain_good  'done: _gcloud_cloud_self_server_status-filter'
+	
+	return 0
+}
+
+
+_gcloud_cloud_self_server_status() {
+	_messageNormal 'init: _gcloud_cloud_self_server_status'
+	
+	_start_cloud_tmp
+	
+	_gcloud_cloud_cred
+	
+	
+	# WARNING: WIP, Untested.
+	# WARNING: TODO
+	
+	#curl -X GET -H "Content-Type: application/json" -H "Authorization: Bearer $ub_gcloud_TOKEN" "https://api.gcloud.com/v4/gcloud/instances/$ub_gcloud_cloud_server_uid" > "$cloudTmp"/reply_status
+	
+	
+	
+	
+	export ub_gcloud_cloud_server_addr_ipv4=$(cat "$cloudTmp"/reply_status | jq '.ipv4[0]' | tr -dc 'a-zA-Z0-9.:_-')
+	export ub_gcloud_cloud_server_addr_ipv6=$(cat "$cloudTmp"/reply_status | jq '.ipv6' | tr -dc 'a-zA-Z0-9.:_-')
+	
+	
+	# ATTENTION: Ubiquitous Bash 'queue' 'database' may be an appropriate means to store sane default 'cred' values after '_server_create' . Also consider storing relevant files under "$scriptLocal" .
+	
+	export ub_gcloud_cloud_server_ssh_cred=
+	export ub_gcloud_cloud_server_ssh_port=
+	
+	export ub_gcloud_cloud_server_vnc_cred=
+	export ub_gcloud_cloud_server_vnc_port=
+	
+	export ub_gcloud_cloud_server_serial=
+	
+	export ub_gcloud_cloud_server_novnc_cred=
+	export ub_gcloud_cloud_server_novnc_port=
+	export ub_gcloud_cloud_server_novnc_url_ipv4=https://"$ub_gcloud_cloud_server_addr_ipv4":"$ub_gcloud_cloud_server_novnc_port"/novnc/
+	export ub_gcloud_cloud_server_novnc_url_ipv6=https://"$ub_gcloud_cloud_server_addr_ipv6":"$ub_gcloud_cloud_server_novnc_port"/novnc/
+	
+	export ub_gcloud_cloud_server_shellinabox_port=
+	export ub_gcloud_cloud_server_shellinabox_url_ipv4=https://"$ub_gcloud_cloud_server_addr_ipv4":"$ub_gcloud_cloud_server_shellinabox_port"/shellinabox/
+	export ub_gcloud_cloud_server_shellinabox_url_ipv6=https://"$ub_gcloud_cloud_server_addr_ipv6":"$ub_gcloud_cloud_server_shellinabox_port"/shellinabox/
+	
+	export ub_gcloud_cloud_server_remotedesktopwebclient_port=
+	export ub_gcloud_cloud_server_remotedesktopwebclient_url_ipv4=https://"$ub_gcloud_cloud_server_addr_ipv4":"$ub_gcloud_cloud_server_remotedesktopwebclient_port"/remotedesktopwebclient/
+	export ub_gcloud_cloud_server_remotedesktopwebclient_url_ipv6=https://"$ub_gcloud_cloud_server_addr_ipv6":"$ub_gcloud_cloud_server_remotedesktopwebclient_port"/remotedesktopwebclient/
+	
+	
+	
+	if ! [[ -e "$cloudTmp"/reply ]]
+	then
+		_gcloud_cloud_cred_reset
+		_stop_cloud_tmp
+	fi
+	
+	return 0
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

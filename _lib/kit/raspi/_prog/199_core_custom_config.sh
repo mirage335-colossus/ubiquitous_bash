@@ -171,6 +171,7 @@ _custom_prog() {
 	_chroot usermod -a -G lpadmin "$custom_user"
 	_chroot usermod -a -G scanner "$custom_user"
 	_chroot usermod -a -G vboxusers "$custom_user"
+	_chroot usermod -a -G libvirt "$custom_user"
 	_chroot usermod -a -G docker "$custom_user"
 	
 	

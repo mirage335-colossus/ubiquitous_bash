@@ -605,6 +605,25 @@ CZXWXcRMTo8EmM8i4d
 		#_tryExec '_test_rclone_upstream_beta'
 	fi
 	
+	if [[ "$1" == "terraform" ]]
+	then
+		curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo -n apt-key add -
+		sudo apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
+		sudo -n apt-get -y update
+		sudo -n apt-get install --install-recommends -y terraform
+	fi
+	
+	if [[ "$1" == "vagrant" ]]
+	then
+		#curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo -n apt-key add -
+		#sudo apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
+		#sudo -n apt-get -y update
+		
+		sudo -n apt-get install --install-recommends -y vagrant-libvirt
+		
+		sudo -n apt-get install --install-recommends -y vagrant
+	fi
+	
 	
 	return 1
 }

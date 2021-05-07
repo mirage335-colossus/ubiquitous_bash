@@ -32,7 +32,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='1891409836'
-export ub_setScriptChecksum_contents='1534462629'
+export ub_setScriptChecksum_contents='684281545'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -7401,6 +7401,25 @@ CZXWXcRMTo8EmM8i4d
 	then
 		_tryExec '_test_rclone_upstream'
 		#_tryExec '_test_rclone_upstream_beta'
+	fi
+	
+	if [[ "$1" == "terraform" ]]
+	then
+		curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo -n apt-key add -
+		sudo apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
+		sudo -n apt-get -y update
+		sudo -n apt-get install --install-recommends -y terraform
+	fi
+	
+	if [[ "$1" == "vagrant" ]]
+	then
+		#curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo -n apt-key add -
+		#sudo apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
+		#sudo -n apt-get -y update
+		
+		sudo -n apt-get install --install-recommends -y vagrant-libvirt
+		
+		sudo -n apt-get install --install-recommends -y vagrant
 	fi
 	
 	
@@ -16877,6 +16896,295 @@ _test_aws() {
 
 
 
+# https://cloud.google.com/compute/docs/instances/create-start-instance#gcloud
+
+
+# https://dev.to/0xbanana/automating-deploys-with-bash-scripting-and-google-cloud-sdk-4976
+
+
+
+
+
+
+
+
+
+# ATTENTION: Override with 'ops.sh' or 'core.sh' or similar.
+_gcloud_cloud_cred() {
+	_gcloud_set "$@"
+}
+_gcloud_cloud_cred_reset() {
+	_gcloud_reset "$@"
+}
+
+
+
+# ATTENTION: Override with 'ops.sh' or 'core.sh' or similar.
+# "$1" == ub_gcloud_cloud_server_name
+_gcloud_cloud_server_create() {
+	_messageNormal 'init: _gcloud_cloud_server_create'
+	
+	_start_cloud_tmp
+	
+	_gcloud_cloud_cred
+	
+	export ub_gcloud_cloud_server_name="$1"
+	[[ "$ub_gcloud_cloud_server_name" == "" ]] && export ub_gcloud_cloud_server_name=$(_uid)
+	
+	
+	_messagePlain_nominal 'attempt: _gcloud_cloud_server_create: Cloud Services API Request'
+	local currentIterations
+	currentIterations=0
+	export ub_gcloud_cloud_server_uid=
+	while [[ "$ub_gcloud_cloud_server_uid" == "" ]] && [[ "$currentIterations" -lt 3 ]]
+	do
+		let currentIterations="$currentIterations + 1"
+		
+		_gcloud_cloud_server_create_API--default "$ub_gcloud_cloud_server_name" > "$cloudTmp"/reply
+		
+		# WARNING: WIP, Untested.
+		if gcloud compute instances describe "$ub_gcloud_cloud_server_name" | grep "$ub_gcloud_cloud_server_name" > /dev/null 2>&1
+		then
+			export ub_gcloud_cloud_server_uid="$ub_gcloud_cloud_server_name"
+		fi
+		
+		[[ "$ub_gcloud_cloud_server_uid" == "" ]] && _messagePlain_warn 'attempt: _gcloud_cloud_server_create: miss'
+	done
+	[[ "$ub_gcloud_cloud_server_uid" == "" ]] && _messagePlain_bad 'attempt: _gcloud_cloud_server_create: fail' && _stop_cloud_tmp && _messageFAIL && _stop 1
+	_messagePlain_good  'attempt: _gcloud_cloud_server_create: pass'
+	
+	_stop_cloud_tmp
+	
+	
+	
+	
+	_gcloud_cloud_server_status "$ub_gcloud_cloud_server_uid"
+	
+	_gcloud_cloud_cred_reset
+	
+	return 0
+}
+_gcloud_cloud_server_create_API--default() {
+	# https://cloud.google.com/compute/docs/instances/create-start-instance#gcloud
+	gcloud compute instances create "$ub_gcloud_cloud_server_name" --image-family=debian-10 --image-project=debian-cloud --machine-type="N1 shared-core"
+}
+
+
+
+# ATTENTION: Consider that Cloud services are STRICTLY intended as end-user functions - manual 'cleanup' of 'expensive' resources MUST be feasible!
+# "$@" == _functionName (must process JSON file - ie. loop through - jq '.data[0].id,.data[0].label' )
+# EXAMPLE: _gcloud_cloud_self_server_list _gcloud_cloud_self_server_dispose-filter 'temporaryBuild'
+# EXAMPLE: _gcloud_cloud_self_server_list _gcloud_cloud_self_server_status-filter 'workstation'
+_gcloud_cloud_self_server_list() {
+	_messageNormal 'init: _gcloud_cloud_self_server_list'
+	
+	_start_cloud_tmp
+	
+	_gcloud_cloud_cred
+	
+	_messagePlain_nominal 'attempt: _gcloud_cloud_self_server_list: Cloud Services API Request'
+	local currentIterations
+	currentIterations=0
+	local current_ub_gcloud_cloud_server_uid
+	current_ub_gcloud_cloud_server_uid=
+	while [[ "$current_ub_gcloud_cloud_server_uid" == "" ]] && [[ "$currentIterations" -lt 3 ]]
+	do
+		let currentIterations="$currentIterations + 1"
+		
+		# WARNING: WIP, Untested.
+		# WARNING: TODO
+		
+		#curl -X GET "https://api.gcloud.com/v4/gcloud/instances" -H "Authorization: Bearer $ub_gcloud_TOKEN" > "$cloudTmp"/reply
+		#current_ub_gcloud_cloud_server_uid=$(cat "$cloudTmp"/reply | jq '.data[0].id' | tr -dc 'a-zA-Z0-9.:_-')
+		
+		[[ "$current_ub_gcloud_cloud_server_uid" == "" ]] && _messagePlain_warn 'attempt: _gcloud_cloud_self_server_list: miss'
+	done
+	[[ "$current_ub_gcloud_cloud_server_uid" == "" ]] && _messagePlain_bad 'attempt: _gcloud_cloud_self_server_list: fail' && _stop_cloud_tmp && _messageFAIL && _stop 1
+	_messagePlain_good  'attempt: _gcloud_cloud_self_server_list: pass'
+	
+	
+	"$@"
+	
+	
+	_messagePlain_request 'request: Please review CloudVM list for unnecessary expense.'
+	cat "$cloudTmp"/reply | jq '.data[].id,.data[].label'
+	_stop_cloud_tmp
+	_gcloud_cloud_cred_reset
+	
+	return 0
+}
+
+
+
+_gcloud_cloud_self_server_dispose-filter() {
+	_messageNormal 'init: _gcloud_cloud_self_server_dispose-filter: '"$@"
+	
+	# WARNING: To match 'all' consider '.*' instead of empty.
+	[[ "$1" == "" ]] && return 1
+	
+	
+	_messagePlain_nominal 'loop: _gcloud_cloud_self_server_dispose-filter'
+	local currentIterations
+	currentIterations=0
+	local currentIterations_inner
+	currentIterations_inner=0
+	export ub_gcloud_cloud_server_uid="$ubiquitiousBashIDnano"$(_uid 18)"$ubiquitiousBashIDnano"
+	export ub_gcloud_cloud_server_name="$ubiquitiousBashIDnano"$(_uid 18)"$ubiquitiousBashIDnano"
+	while [[ "$ub_gcloud_cloud_server_uid" != "null" ]] && [[ "$ub_gcloud_cloud_server_name" != "null" ]] && [[ "$ub_gcloud_cloud_server_uid" != "" ]] && [[ "$ub_gcloud_cloud_server_name" != "" ]] && [[ "$currentIterations" -lt 999 ]]
+	do
+		if _safeEcho "$ub_gcloud_cloud_server_name" | grep "$@"
+		then
+			currentIterations_inner=0
+			
+			# WARNING: Significant experimentation may be required.
+			# https://superuser.com/questions/272265/getting-curl-to-output-http-status-code
+			
+			# WARNING: WIP, Untested.
+			
+			while ! gcloud compute instances delete "$ub_gcloud_cloud_server_uid" > /dev/null 2>&1 && [[ "$currentIterations_inner" -lt 3 ]]
+			do
+				let currentIterations_inner="$currentIterations_inner + 1"
+			done
+		fi
+		
+		export ub_gcloud_cloud_server_uid=
+		export ub_gcloud_cloud_server_name=
+		
+		ub_gcloud_cloud_server_uid=$(cat "$cloudTmp"/reply | jq '.data['"$currentIterations"'].id' | tr -dc 'a-zA-Z0-9.:_-')
+		ub_gcloud_cloud_server_name=$(cat "$cloudTmp"/reply | jq '.data['"$currentIterations"'].label' | tr -dc 'a-zA-Z0-9.:_-')
+		let currentIterations="$currentIterations + 1"
+		
+		_messagePlain_probe_var ub_gcloud_cloud_server_uid
+		_messagePlain_probe_var ub_gcloud_cloud_server_name
+		
+	done
+	_messagePlain_good  'done: _gcloud_cloud_self_server_dispose-filter'
+	
+	return 0
+}
+
+
+_gcloud_cloud_self_server_status-filter() {
+	_messageNormal 'init: _gcloud_cloud_self_server_status-filter: '"$@"
+	
+	# WARNING: To match 'all' consider '.*' instead of empty.
+	[[ "$1" == "" ]] && return 1
+	
+	
+	_messagePlain_nominal 'loop: _gcloud_cloud_self_server_status-filter'
+	local currentIterations
+	currentIterations=0
+	local currentIterations_inner
+	currentIterations_inner=0
+	export ub_gcloud_cloud_server_uid="$ubiquitiousBashIDnano"$(_uid 18)"$ubiquitiousBashIDnano"
+	export ub_gcloud_cloud_server_name="$ubiquitiousBashIDnano"$(_uid 18)"$ubiquitiousBashIDnano"
+	while [[ "$ub_gcloud_cloud_server_uid" != "null" ]] && [[ "$ub_gcloud_cloud_server_name" != "null" ]] && [[ "$ub_gcloud_cloud_server_uid" != "" ]] && [[ "$ub_gcloud_cloud_server_name" != "" ]] && [[ "$currentIterations" -lt 999 ]]
+	do
+		if _safeEcho "$ub_gcloud_cloud_server_name" | grep "$@"
+		then
+			_gcloud_cloud_self_server_status "$ub_gcloud_cloud_server_uid"
+		fi
+		
+		export ub_gcloud_cloud_server_uid=
+		export ub_gcloud_cloud_server_name=
+		
+		ub_gcloud_cloud_server_uid=$(cat "$cloudTmp"/reply | jq '.data['"$currentIterations"'].id' | tr -dc 'a-zA-Z0-9.:_-')
+		ub_gcloud_cloud_server_name=$(cat "$cloudTmp"/reply | jq '.data['"$currentIterations"'].label' | tr -dc 'a-zA-Z0-9.:_-')
+		let currentIterations="$currentIterations + 1"
+		
+		_messagePlain_probe_var ub_gcloud_cloud_server_uid
+		_messagePlain_probe_var ub_gcloud_cloud_server_name
+		
+	done
+	_messagePlain_good  'done: _gcloud_cloud_self_server_status-filter'
+	
+	return 0
+}
+
+
+_gcloud_cloud_self_server_status() {
+	_messageNormal 'init: _gcloud_cloud_self_server_status'
+	
+	_start_cloud_tmp
+	
+	_gcloud_cloud_cred
+	
+	
+	# WARNING: WIP, Untested.
+	# WARNING: TODO
+	
+	#curl -X GET -H "Content-Type: application/json" -H "Authorization: Bearer $ub_gcloud_TOKEN" "https://api.gcloud.com/v4/gcloud/instances/$ub_gcloud_cloud_server_uid" > "$cloudTmp"/reply_status
+	
+	
+	
+	
+	export ub_gcloud_cloud_server_addr_ipv4=$(cat "$cloudTmp"/reply_status | jq '.ipv4[0]' | tr -dc 'a-zA-Z0-9.:_-')
+	export ub_gcloud_cloud_server_addr_ipv6=$(cat "$cloudTmp"/reply_status | jq '.ipv6' | tr -dc 'a-zA-Z0-9.:_-')
+	
+	
+	# ATTENTION: Ubiquitous Bash 'queue' 'database' may be an appropriate means to store sane default 'cred' values after '_server_create' . Also consider storing relevant files under "$scriptLocal" .
+	
+	export ub_gcloud_cloud_server_ssh_cred=
+	export ub_gcloud_cloud_server_ssh_port=
+	
+	export ub_gcloud_cloud_server_vnc_cred=
+	export ub_gcloud_cloud_server_vnc_port=
+	
+	export ub_gcloud_cloud_server_serial=
+	
+	export ub_gcloud_cloud_server_novnc_cred=
+	export ub_gcloud_cloud_server_novnc_port=
+	export ub_gcloud_cloud_server_novnc_url_ipv4=https://"$ub_gcloud_cloud_server_addr_ipv4":"$ub_gcloud_cloud_server_novnc_port"/novnc/
+	export ub_gcloud_cloud_server_novnc_url_ipv6=https://"$ub_gcloud_cloud_server_addr_ipv6":"$ub_gcloud_cloud_server_novnc_port"/novnc/
+	
+	export ub_gcloud_cloud_server_shellinabox_port=
+	export ub_gcloud_cloud_server_shellinabox_url_ipv4=https://"$ub_gcloud_cloud_server_addr_ipv4":"$ub_gcloud_cloud_server_shellinabox_port"/shellinabox/
+	export ub_gcloud_cloud_server_shellinabox_url_ipv6=https://"$ub_gcloud_cloud_server_addr_ipv6":"$ub_gcloud_cloud_server_shellinabox_port"/shellinabox/
+	
+	export ub_gcloud_cloud_server_remotedesktopwebclient_port=
+	export ub_gcloud_cloud_server_remotedesktopwebclient_url_ipv4=https://"$ub_gcloud_cloud_server_addr_ipv4":"$ub_gcloud_cloud_server_remotedesktopwebclient_port"/remotedesktopwebclient/
+	export ub_gcloud_cloud_server_remotedesktopwebclient_url_ipv6=https://"$ub_gcloud_cloud_server_addr_ipv6":"$ub_gcloud_cloud_server_remotedesktopwebclient_port"/remotedesktopwebclient/
+	
+	
+	
+	if ! [[ -e "$cloudTmp"/reply ]]
+	then
+		_gcloud_cloud_cred_reset
+		_stop_cloud_tmp
+	fi
+	
+	return 0
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -17838,6 +18146,32 @@ _test_rclone() {
 
 #paramiko
 
+#terraform
+
+# https://en.wikipedia.org/wiki/Terraform_(software)
+# https://www.terraform.io/docs/language/index.html
+# https://learn.hashicorp.com/tutorials/terraform/install-cli?in=terraform/aws-get-started
+
+
+
+
+_test_terraform() {
+	_wantGetDep gpg
+	_wantGetDep python3/dist-packages/softwareproperties/dbus/SoftwarePropertiesDBus.py
+	_wantGetDep curl
+	
+	_wantGetDep terraform
+	
+	#! _typeDep terraform && echo 'warn: missing: terraform'
+	if ! _typeDep terraform || ! terraform -help 2>/dev/null | grep 'terraform' > /dev/null 2>&1
+	then
+		echo 'warn: missing: terraform'
+		return 1
+	fi
+	
+	return 0
+}
+
 #cloud
 
 # ATTENTION: Highly irregular means of keeping temporary data from cloud replies to API queries, due to the expected high probability of failures.
@@ -18066,6 +18400,31 @@ _cloud_server_status() {
 #docker_build
 
 #cloudNativeBuildpack
+
+#vagrant_build
+
+# WARNING: DANGER: Always use '_custom' from '_lib/kit/raspi' in addition to any 'cloud' built data (or otherwise dependent on cloud to built data) to ensure adequate completeness.
+
+
+
+
+
+
+_test_vagrant_build() {
+	#sudo -n usermod --append --groups libvirt $USER
+	
+	_wantGetDep systemd/system/libvirtd.service
+	
+	#libvirt-daemon
+	_wantGetDep libvirt/libvirt-guests.sh
+	_wantGetDep libvirt/connection-driver/libvirt_driver_qemu.so
+	
+	#libvirt-clients
+	_wantGetDep virsh
+	
+	! _typeShare 'vagrant-plugins/plugins.d/vagrant-libvirt.json' && _wantGetDep 'vagrant-plugins/plugins.d/vagrant-libvirt.json'
+	_wantGetDep vagrant
+}
 
 #debian_build
 
@@ -30171,7 +30530,12 @@ _test() {
 	
 	
 	_tryExec "_test_cloud"
+	
 	_tryExec "_test_rclone"
+	_tryExec "_test_terraform"
+	
+	
+	_tryExec "_test_vagrant_build"
 	
 	
 	
@@ -31713,12 +32077,16 @@ _compile_bash_shortcuts() {
 	( [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_cloud" == "true" ]] ) && includeScriptList+=( "shortcuts/cloud/bridge"/rclone/rclone.sh )
 	( [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_cloud" == "true" ]] ) && includeScriptList+=( "shortcuts/cloud/bridge"/paramiko/paramiko.sh )
 	
+	( [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_cloud" == "true" ]] ) && includeScriptList+=( "shortcuts/cloud/bridge"/terraform/terraform.sh )
+	
 	
 	( [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_cloud" == "true" ]] ) && includeScriptList+=( "shortcuts/cloud"/cloud.sh )
 	( [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_cloud" == "true" ]] ) && includeScriptList+=( "shortcuts/cloud"/cloud_abstraction.sh )
 	
 	( [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_cloud_build" == "true" ]] ) && includeScriptList+=( "shortcuts/cloud-build"/docker/docker_build.sh )
 	( [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_cloud_build" == "true" ]] ) && includeScriptList+=( "shortcuts/cloud-build"/cloudNativeBuildpack/cloudNativeBuildpack_build.sh )
+	( [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_cloud" == "true" ]] ) && includeScriptList+=( "shortcuts/cloud-build"/vagrant/vagrant_build.sh )
+	
 	( [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_cloud_build" == "true" ]] ) && includeScriptList+=( "shortcuts/cloud-build"/_custom/debian/debian_build.sh )
 	( [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_cloud_build" == "true" ]] ) && includeScriptList+=( "shortcuts/cloud-build"/_custom/gentoo/gentoo_build.sh )
 	

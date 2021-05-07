@@ -260,4 +260,27 @@ https://www.youtube.com/watch?v=NYEyyVDsapw
 
 
 
+https://en.wikipedia.org/wiki/HashiCorp
+
+https://en.wikipedia.org/wiki/Terraform_(software)
+https://www.terraform.io/docs/language/index.html
+
+https://en.wikipedia.org/wiki/Vagrant_(software)
+
+https://learn.hashicorp.com/tutorials/packer/docker-get-started-provision
+
+
+
+
+
+
+
+https://wiki.debian.org/Vagrant
+	'Libvirt is a good provider for Vagrant because it's faster than VirtualBox and it's in the main repository.'
+
+
+
+
+
+
 

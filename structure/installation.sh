@@ -1413,7 +1413,12 @@ _test() {
 	
 	
 	_tryExec "_test_cloud"
+	
 	_tryExec "_test_rclone"
+	_tryExec "_test_terraform"
+	
+	
+	_tryExec "_test_vagrant_build"
 	
 	
 	
