@@ -18,13 +18,23 @@ format long g;
 %# https://octave.sourceforge.io/symbolic/overview.html
 nsolve = @vpasolve
 
-bit = 1;
-byte = bit * 8;
+deci = 10^-1;
+centi = 10^-2;
+milli = 10^-3;
+micro = 10^-6;
+nano =-10^-9;
+pico = 10^-12;
+femto = 10^-15;
+atto = 10^-18;
 
 kilo = 10^3;
 mega = kilo * 10^3;
 giga = mega * 10^3;
 tera = giga * 10^3;
+
+
+bit = 1;
+byte = bit * 8;
 
 kilobit = kilo * bit;
 megabit = mega * bit;
@@ -73,6 +83,20 @@ KiB = kibibyte;
 MiB = mebibyte;
 GiB = gibibyte;
 TiB = tebibyte;
+
+
+
+meter = 1;
+
+decimeter = deci * meter;
+centimeter = centi * meter;
+millimeter = milli * meter;
+micrometer = micro * meter;
+nanometer = nano * meter;
+picometer = pico * meter;
+femtometer = femto * meter;
+attometer = atto * meter;
+
 
 
 unix("true");

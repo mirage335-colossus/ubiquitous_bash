@@ -32,7 +32,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='1891409836'
-export ub_setScriptChecksum_contents='3181010657'
+export ub_setScriptChecksum_contents='1224628319'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -3777,13 +3777,23 @@ format long g;
 %# https://octave.sourceforge.io/symbolic/overview.html
 nsolve = @vpasolve
 
-bit = 1;
-byte = bit * 8;
+deci = 10^-1;
+centi = 10^-2;
+milli = 10^-3;
+micro = 10^-6;
+nano =-10^-9;
+pico = 10^-12;
+femto = 10^-15;
+atto = 10^-18;
 
 kilo = 10^3;
 mega = kilo * 10^3;
 giga = mega * 10^3;
 tera = giga * 10^3;
+
+
+bit = 1;
+byte = bit * 8;
 
 kilobit = kilo * bit;
 megabit = mega * bit;
@@ -3832,6 +3842,20 @@ KiB = kibibyte;
 MiB = mebibyte;
 GiB = gibibyte;
 TiB = tebibyte;
+
+
+
+meter = 1;
+
+decimeter = deci * meter;
+centimeter = centi * meter;
+millimeter = milli * meter;
+micrometer = micro * meter;
+nanometer = nano * meter;
+picometer = pico * meter;
+femtometer = femto * meter;
+attometer = atto * meter;
+
 
 
 unix("true");
