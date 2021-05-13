@@ -112,10 +112,10 @@ lightyear = lightsecond * 365 * 24 * 3600;
 
 hertz = 1;
 
-kilohertz = kilohertz * hertz;
-megahertz = megahertz * hertz;
-gigahertz = gigahertz * hertz;
-terahertz = terahertz * hertz;
+kilohertz = kilo * hertz;
+megahertz = mega * hertz;
+gigahertz = giga * hertz;
+terahertz = tera * hertz;
 
 kHz = kilohertz;
 KHz = kilohertz;
