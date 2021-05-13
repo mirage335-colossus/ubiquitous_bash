@@ -32,7 +32,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='1891409836'
-export ub_setScriptChecksum_contents='3188479810'
+export ub_setScriptChecksum_contents='2137018632'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -9052,11 +9052,18 @@ _qalculate_script() {
 
 
 
-
-
-
-
-
+_qalculate_solve() {
+	_safeEcho_newline solve"$@" | _qalculate_pipe
+}
+_solve() {
+	_qalculate_solve "$@"
+}
+solve() {
+	_qalculate_solve() "$@"
+}
+nsolve() {
+	_safeEcho_newline solve"$@" | _qalculate_pipe
+}
 
 
 
@@ -9101,8 +9108,8 @@ _octave_pipe() {
 	octave --quiet --silent --no-window-system --no-gui "$@" | _octave_filter-messages
 }
 
-# ATTENTION: EXAMPLE: _octave_script 'qalculate_script.m'
-# echo 'solve(x == y * 2, y)' > qalculate_script.m
+# ATTENTION: EXAMPLE: _octave_script 'octave_script.m'
+# echo 'solve(x == y * 2, y)' > octave_script.m
 _octave_script() {
 	octave --quiet --silent --no-window-system --no-gui "$@" | _octave_filter-messages
 }
@@ -9124,6 +9131,23 @@ _octave_filter-messages() {
 
 
 
+
+
+
+# solve '( y  == x * 2, x)'
+
+_octave_solve() {
+	_safeEcho_newline solve"$@" | _octave_pipe
+}
+#_solve() {
+#	_octave_solve "$@"
+#}
+#solve() {
+#	_octave_solve() "$@"
+#}
+#nsolve() {
+#	_safeEcho_newline nsolve"$@" | _octave_pipe
+#}
 
 
 

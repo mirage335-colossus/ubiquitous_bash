@@ -25,11 +25,18 @@ _qalculate_script() {
 
 
 
-
-
-
-
-
+_qalculate_solve() {
+	_safeEcho_newline solve"$@" | _qalculate_pipe
+}
+_solve() {
+	_qalculate_solve "$@"
+}
+solve() {
+	_qalculate_solve() "$@"
+}
+nsolve() {
+	_safeEcho_newline solve"$@" | _qalculate_pipe
+}
 
 
 

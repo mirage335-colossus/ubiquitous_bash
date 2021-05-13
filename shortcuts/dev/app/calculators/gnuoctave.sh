@@ -16,8 +16,8 @@ _octave_pipe() {
 	octave --quiet --silent --no-window-system --no-gui "$@" | _octave_filter-messages
 }
 
-# ATTENTION: EXAMPLE: _octave_script 'qalculate_script.m'
-# echo 'solve(x == y * 2, y)' > qalculate_script.m
+# ATTENTION: EXAMPLE: _octave_script 'octave_script.m'
+# echo 'solve(x == y * 2, y)' > octave_script.m
 _octave_script() {
 	octave --quiet --silent --no-window-system --no-gui "$@" | _octave_filter-messages
 }
@@ -39,6 +39,23 @@ _octave_filter-messages() {
 
 
 
+
+
+
+# solve '( y  == x * 2, x)'
+
+_octave_solve() {
+	_safeEcho_newline solve"$@" | _octave_pipe
+}
+#_solve() {
+#	_octave_solve "$@"
+#}
+#solve() {
+#	_octave_solve() "$@"
+#}
+#nsolve() {
+#	_safeEcho_newline nsolve"$@" | _octave_pipe
+#}
 
 
 
