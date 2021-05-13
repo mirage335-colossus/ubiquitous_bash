@@ -88,6 +88,10 @@ TiB = tebibyte;
 
 meter = 1;
 
+kilometer = kilo * meter;
+megameter = mega * meter;
+Megameter = megameter;
+
 decimeter = deci * meter;
 centimeter = centi * meter;
 millimeter = milli * meter;
@@ -97,6 +101,12 @@ picometer = pico * meter;
 femtometer = femto * meter;
 attometer = atto * meter;
 
+
+
+%# 1 * lightsecond ~= 300 * Mega * meter
+lightsecond = 299792458 * meter;
+
+lightyear = lightsecond * 365 * 24 * 3600;
 
 
 unix("true");
