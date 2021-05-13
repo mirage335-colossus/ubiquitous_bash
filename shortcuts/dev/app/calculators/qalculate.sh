@@ -4,7 +4,14 @@
 
 # Interactive.
 _qalculate() {
+	if [[ "$1" != "" ]]
+	then
+		_safeEcho_newline "$@" | qalc
+		return
+	fi
+	
 	qalc "$@"
+	return
 }
 
 # ATTENTION: EXAMPLE: echo 'solve(x == y * 2, y)' | _qalculate_pipe

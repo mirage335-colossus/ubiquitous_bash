@@ -4,7 +4,14 @@ _octave_interactive() {
 	octave --quiet --silent --no-window-system --no-gui "$@"
 }
 _octave() {
+	if [[ "$1" != "" ]]
+	then
+		_safeEcho_newline "$@" | octave --quiet --silent --no-window-system --no-gui
+		return
+	fi
+	
 	_octave_interactive "$@"
+	return
 }
 
 _octave_noninteractive() {

@@ -32,7 +32,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='1891409836'
-export ub_setScriptChecksum_contents='3603831995'
+export ub_setScriptChecksum_contents='1097164112'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -9031,7 +9031,14 @@ _findFunction() {
 
 # Interactive.
 _qalculate() {
+	if [[ "$1" != "" ]]
+	then
+		_safeEcho_newline "$@" | qalc
+		return
+	fi
+	
 	qalc "$@"
+	return
 }
 
 # ATTENTION: EXAMPLE: echo 'solve(x == y * 2, y)' | _qalculate_pipe
@@ -9096,7 +9103,14 @@ _octave_interactive() {
 	octave --quiet --silent --no-window-system --no-gui "$@"
 }
 _octave() {
+	if [[ "$1" != "" ]]
+	then
+		_safeEcho_newline "$@" | octave --quiet --silent --no-window-system --no-gui
+		return
+	fi
+	
 	_octave_interactive "$@"
+	return
 }
 
 _octave_noninteractive() {
