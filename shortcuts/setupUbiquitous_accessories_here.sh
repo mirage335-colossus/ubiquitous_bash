@@ -16,7 +16,7 @@ format long g;
 
 
 %# https://octave.sourceforge.io/symbolic/overview.html
-nsolve = @vpasolve
+nsolve = @vpasolve;
 
 deci = 10^-1;
 centi = 10^-2;
