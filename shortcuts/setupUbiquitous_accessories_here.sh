@@ -109,6 +109,22 @@ lightsecond = 299792458 * meter;
 lightyear = lightsecond * 365 * 24 * 3600;
 
 
+
+hertz = 1;
+
+kilohertz = kilohertz * hertz;
+megahertz = megahertz * hertz;
+gigahertz = gigahertz * hertz;
+terahertz = terahertz * hertz;
+
+kHz = kilohertz;
+KHz = kilohertz;
+MHz = megahertz;
+GHz = gigahertz;
+THz = terahertz;
+
+
+
 unix("true");
 system("true");
 
