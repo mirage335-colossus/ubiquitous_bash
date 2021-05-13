@@ -105,8 +105,10 @@ attometer = atto * meter;
 
 %# 1 * lightsecond ~= 300 * Mega * meter
 lightsecond = 299792458 * meter;
+lightSecond = lightsecond;
 
 lightyear = lightsecond * 365 * 24 * 3600;
+lightYear = lightyear;
 
 
 
