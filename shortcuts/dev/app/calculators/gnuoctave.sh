@@ -54,6 +54,9 @@ _octave_filter-messages() {
 _octave_solve() {
 	_safeEcho_newline solve"$@" | _octave_pipe
 }
+_octave_nsolve() {
+	_safeEcho_newline nsolve"$@" | _octave_pipe
+}
 #_solve() {
 #	_octave_solve "$@"
 #}
@@ -61,7 +64,7 @@ _octave_solve() {
 #	_octave_solve "$@"
 #}
 #nsolve() {
-#	_safeEcho_newline nsolve"$@" | _octave_pipe
+#	_octave_nsolve "$@"
 #}
 
 
