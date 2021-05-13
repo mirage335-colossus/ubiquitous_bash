@@ -51,7 +51,7 @@ _octave_solve() {
 #	_octave_solve "$@"
 #}
 #solve() {
-#	_octave_solve() "$@"
+#	_octave_solve "$@"
 #}
 #nsolve() {
 #	_safeEcho_newline nsolve"$@" | _octave_pipe

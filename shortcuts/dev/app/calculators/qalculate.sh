@@ -32,7 +32,7 @@ _solve() {
 	_qalculate_solve "$@"
 }
 solve() {
-	_qalculate_solve() "$@"
+	_qalculate_solve "$@"
 }
 nsolve() {
 	_safeEcho_newline solve"$@" | _qalculate_pipe
