@@ -9,10 +9,10 @@
 
 # Suggested parameters for experimental netcode.
 
-currentAbsFramesPerSecond=5
-currentRelFramesPerSecond=60
-currentAbsFrameBytesPerBone=27
-currentRelFrameBytesPerBone=2
+currentInstantFramesPerSecond=5
+currentIncrementFramesPerSecond=60
+currentInstantFrameBytesPerBone=27
+currentIncrementFrameBytesPerBone=2
 
 # Theoretically, >5 million players could share a single 10Gbits server/WiFi6 connection for real-time VR multiplayer.
 
@@ -33,32 +33,32 @@ currentByte=8
 
 
 # Severely degraded and highly compressed conection between just two players.
-currentBitsPerSecond=9600 ; currentBonesPerPlayer=4 ; currentRelFramesPerSecond=15 ; currentRelFrameBytesPerBone=2 ; currentAbsFramesPerSecond=2 ; currentAbsFrameBytesPerBone=12 ; currentByte=8 ; solve "("$currentBitsPerSecond" == (\"currentPlayers\" * "$currentBonesPerPlayer" * "$currentRelFramesPerSecond" * "$currentRelFrameBytesPerBone" * "$currentByte") + (\"currentPlayers\" * "$currentBonesPerPlayer" * "$currentAbsFramesPerSecond" * "$currentAbsFrameBytesPerBone" * "$currentByte"), \"currentPlayers\")"
+currentBitsPerSecond=9600 ; currentBonesPerPlayer=4 ; currentIncrementFramesPerSecond=15 ; currentIncrementFrameBytesPerBone=2 ; currentInstantFramesPerSecond=2 ; currentInstantFrameBytesPerBone=12 ; currentByte=8 ; solve "("$currentBitsPerSecond" == (\"currentPlayers\" * "$currentBonesPerPlayer" * "$currentIncrementFramesPerSecond" * "$currentIncrementFrameBytesPerBone" * "$currentByte") + (\"currentPlayers\" * "$currentBonesPerPlayer" * "$currentInstantFramesPerSecond" * "$currentInstantFrameBytesPerBone" * "$currentByte"), \"currentPlayers\")"
 # # solve(9600 = (("currentPlayers" * 4 * 30 * 2 * 8) + ("currentPlayers" * 4 * 3 * 33 * 8)), "currentPlayers") =
 # # 5.5555556
 
-currentBitsPerSecond=9600 ; currentBonesPerPlayer=4 ; currentRelFramesPerSecond=60 ; currentRelFrameBytesPerBone=2 ; currentAbsFramesPerSecond=5 ; currentAbsFrameBytesPerBone=27 ; currentByte=8 ; solve "("$currentBitsPerSecond" == (\"currentPlayers\" * "$currentBonesPerPlayer" * "$currentRelFramesPerSecond" * "$currentRelFrameBytesPerBone" * "$currentByte") + (\"currentPlayers\" * "$currentBonesPerPlayer" * "$currentAbsFramesPerSecond" * "$currentAbsFrameBytesPerBone" * "$currentByte"), \"currentPlayers\")"
+currentBitsPerSecond=9600 ; currentBonesPerPlayer=4 ; currentIncrementFramesPerSecond=60 ; currentIncrementFrameBytesPerBone=2 ; currentInstantFramesPerSecond=5 ; currentInstantFrameBytesPerBone=27 ; currentByte=8 ; solve "("$currentBitsPerSecond" == (\"currentPlayers\" * "$currentBonesPerPlayer" * "$currentIncrementFramesPerSecond" * "$currentIncrementFrameBytesPerBone" * "$currentByte") + (\"currentPlayers\" * "$currentBonesPerPlayer" * "$currentInstantFramesPerSecond" * "$currentInstantFrameBytesPerBone" * "$currentByte"), \"currentPlayers\")"
 # # solve(9600 = (("currentPlayers" * 4 * 30 * 2 * 8) + ("currentPlayers" * 4 * 3 * 33 * 8)), "currentPlayers") =
 # # 1.1764706
 
 # Group of ~8 players .
-currentBitsPerSecond=115200 ; currentBonesPerPlayer=4 ; currentRelFramesPerSecond=60 ; currentRelFrameBytesPerBone=2 ; currentAbsFramesPerSecond=5 ; currentAbsFrameBytesPerBone=27 ; currentByte=8 ; solve "("$currentBitsPerSecond" == (\"currentPlayers\" * "$currentBonesPerPlayer" * "$currentRelFramesPerSecond" * "$currentRelFrameBytesPerBone" * "$currentByte") + (\"currentPlayers\" * "$currentBonesPerPlayer" * "$currentAbsFramesPerSecond" * "$currentAbsFrameBytesPerBone" * "$currentByte"), \"currentPlayers\")"
+currentBitsPerSecond=115200 ; currentBonesPerPlayer=4 ; currentIncrementFramesPerSecond=60 ; currentIncrementFrameBytesPerBone=2 ; currentInstantFramesPerSecond=5 ; currentInstantFrameBytesPerBone=27 ; currentByte=8 ; solve "("$currentBitsPerSecond" == (\"currentPlayers\" * "$currentBonesPerPlayer" * "$currentIncrementFramesPerSecond" * "$currentIncrementFrameBytesPerBone" * "$currentByte") + (\"currentPlayers\" * "$currentBonesPerPlayer" * "$currentInstantFramesPerSecond" * "$currentInstantFrameBytesPerBone" * "$currentByte"), \"currentPlayers\")"
 # # 14.117647
 
 # 1Mbit/s
-currentBitsPerSecond='(1 * megabit / bit)' ; currentBonesPerPlayer=4 ; currentRelFramesPerSecond=60 ; currentRelFrameBytesPerBone=2 ; currentAbsFramesPerSecond=5 ; currentAbsFrameBytesPerBone=27 ; currentByte=8 ; _qalculate_nsolve "($currentBitsPerSecond == (x * $currentBonesPerPlayer * $currentRelFramesPerSecond * $currentRelFrameBytesPerBone * $currentByte) + (x * $currentBonesPerPlayer * $currentAbsFramesPerSecond * $currentAbsFrameBytesPerBone * $currentByte), x)"
+currentBitsPerSecond='(1 * megabit / bit)' ; currentBonesPerPlayer=4 ; currentIncrementFramesPerSecond=60 ; currentIncrementFrameBytesPerBone=2 ; currentInstantFramesPerSecond=5 ; currentInstantFrameBytesPerBone=27 ; currentByte=8 ; _qalculate_nsolve "($currentBitsPerSecond == (x * $currentBonesPerPlayer * $currentIncrementFramesPerSecond * $currentIncrementFrameBytesPerBone * $currentByte) + (x * $currentBonesPerPlayer * $currentInstantFramesPerSecond * $currentInstantFrameBytesPerBone * $currentByte), x)"
 # # 122.54902
 
 # 10Gbit/s
-currentBitsPerSecond='(10 * gigabit / bit)' ; currentBonesPerPlayer=4 ; currentRelFramesPerSecond=60 ; currentRelFrameBytesPerBone=2 ; currentAbsFramesPerSecond=5 ; currentAbsFrameBytesPerBone=27 ; currentByte=8 ; _octave_nsolve "($currentBitsPerSecond == (x * $currentBonesPerPlayer * $currentRelFramesPerSecond * $currentRelFrameBytesPerBone * $currentByte) + (x * $currentBonesPerPlayer * $currentAbsFramesPerSecond * $currentAbsFrameBytesPerBone * $currentByte), x)"
+currentBitsPerSecond='(10 * gigabit / bit)' ; currentBonesPerPlayer=4 ; currentIncrementFramesPerSecond=60 ; currentIncrementFrameBytesPerBone=2 ; currentInstantFramesPerSecond=5 ; currentInstantFrameBytesPerBone=27 ; currentByte=8 ; _octave_nsolve "($currentBitsPerSecond == (x * $currentBonesPerPlayer * $currentIncrementFramesPerSecond * $currentIncrementFrameBytesPerBone * $currentByte) + (x * $currentBonesPerPlayer * $currentInstantFramesPerSecond * $currentInstantFrameBytesPerBone * $currentByte), x)"
 # # 1225490.1960784313725490196078431
 
 # 10Gbit/s (severely degraded and highly compressed)
-currentBitsPerSecond='(10 * gigabit / bit)' ; currentBonesPerPlayer=4 ; currentRelFramesPerSecond=15 ; currentRelFrameBytesPerBone=2 ; currentAbsFramesPerSecond=2 ; currentAbsFrameBytesPerBone=12 ; currentByte=8 ; _octave_nsolve "($currentBitsPerSecond == (x * $currentBonesPerPlayer * $currentRelFramesPerSecond * $currentRelFrameBytesPerBone * $currentByte) + (x * $currentBonesPerPlayer * $currentAbsFramesPerSecond * $currentAbsFrameBytesPerBone * $currentByte), x)"
+currentBitsPerSecond='(10 * gigabit / bit)' ; currentBonesPerPlayer=4 ; currentIncrementFramesPerSecond=15 ; currentIncrementFrameBytesPerBone=2 ; currentInstantFramesPerSecond=2 ; currentInstantFrameBytesPerBone=12 ; currentByte=8 ; _octave_nsolve "($currentBitsPerSecond == (x * $currentBonesPerPlayer * $currentIncrementFramesPerSecond * $currentIncrementFrameBytesPerBone * $currentByte) + (x * $currentBonesPerPlayer * $currentInstantFramesPerSecond * $currentInstantFrameBytesPerBone * $currentByte), x)"
 # # 5787037.0370370370370370370370370
 
 # 10Gbit/s (worst case expected to remain tolerable for any purpose)
-currentBitsPerSecond='(10 * gigabit / bit)' ; currentBonesPerPlayer=4 ; currentRelFramesPerSecond=5 ; currentRelFrameBytesPerBone=2 ; currentAbsFramesPerSecond=1 ; currentAbsFrameBytesPerBone=12 ; currentByte=8 ; _octave_nsolve "($currentBitsPerSecond == (x * $currentBonesPerPlayer * $currentRelFramesPerSecond * $currentRelFrameBytesPerBone * $currentByte) + (x * $currentBonesPerPlayer * $currentAbsFramesPerSecond * $currentAbsFrameBytesPerBone * $currentByte), x)"
+currentBitsPerSecond='(10 * gigabit / bit)' ; currentBonesPerPlayer=4 ; currentIncrementFramesPerSecond=5 ; currentIncrementFrameBytesPerBone=2 ; currentInstantFramesPerSecond=1 ; currentInstantFrameBytesPerBone=12 ; currentByte=8 ; _octave_nsolve "($currentBitsPerSecond == (x * $currentBonesPerPlayer * $currentIncrementFramesPerSecond * $currentIncrementFrameBytesPerBone * $currentByte) + (x * $currentBonesPerPlayer * $currentInstantFramesPerSecond * $currentInstantFrameBytesPerBone * $currentByte), x)"
 # # 14204545.454545454545454545454545
 
 
@@ -138,7 +138,7 @@ currentLightYears=10^5 ; currentResolution=0.0001 ; _qalculate "0.18033688 * log
 
 currentByte=8
 
-currentBitsPerSecond=9600 ; currentBonesPerPlayer=4 ; currentRelFramesPerSecond=30 ; currentRelFrameBytesPerBone=2 ; currentAbsFramesPerSecond=3 ; currentAbsFrameBytesPerBone=33 ; currentByte=8 ; solve "("$currentBitsPerSecond" == (\"currentPlayers\" * "$currentBonesPerPlayer" * "$currentRelFramesPerSecond" * "$currentRelFrameBytesPerBone" * "$currentByte") + (\"currentPlayers\" * "$currentBonesPerPlayer" * "$currentAbsFramesPerSecond" * "$currentAbsFrameBytesPerBone" * "$currentByte"), \"currentPlayers\")"
+currentBitsPerSecond=9600 ; currentBonesPerPlayer=4 ; currentIncrementFramesPerSecond=30 ; currentIncrementFrameBytesPerBone=2 ; currentInstantFramesPerSecond=3 ; currentInstantFrameBytesPerBone=33 ; currentByte=8 ; solve "("$currentBitsPerSecond" == (\"currentPlayers\" * "$currentBonesPerPlayer" * "$currentIncrementFramesPerSecond" * "$currentIncrementFrameBytesPerBone" * "$currentByte") + (\"currentPlayers\" * "$currentBonesPerPlayer" * "$currentInstantFramesPerSecond" * "$currentInstantFrameBytesPerBone" * "$currentByte"), \"currentPlayers\")"
 # # solve(9600 = (("currentPlayers" * 4 * 30 * 2 * 8) + ("currentPlayers" * 4 * 3 * 33 * 8)), "currentPlayers") =
 # # 1.8867925
 
@@ -151,21 +151,21 @@ currentByte=8
 
 currentBitsPerSecond=9600
 currentBonesPerPlayer=4
-currentRelFramesPerSecond=30
-currentRelFrameBytesPerBone=2
-currentAbsFramesPerSecond=3
-currentAbsFrameBytesPerBone=33
+currentIncrementFramesPerSecond=30
+currentIncrementFrameBytesPerBone=2
+currentInstantFramesPerSecond=3
+currentInstantFrameBytesPerBone=33
 
 
 
-solve "("$currentBitsPerSecond" == (\"currentPlayers\" * "$currentBonesPerPlayer" * "$currentRelFramesPerSecond" * "$currentRelFrameBytesPerBone" * "$currentByte") + (\"currentPlayers\" * "$currentBonesPerPlayer" * "$currentAbsFramesPerSecond" * "$currentAbsFrameBytesPerBone" * "$currentByte"), \"currentPlayers\")"
+solve "("$currentBitsPerSecond" == (\"currentPlayers\" * "$currentBonesPerPlayer" * "$currentIncrementFramesPerSecond" * "$currentIncrementFrameBytesPerBone" * "$currentByte") + (\"currentPlayers\" * "$currentBonesPerPlayer" * "$currentInstantFramesPerSecond" * "$currentInstantFrameBytesPerBone" * "$currentByte"), \"currentPlayers\")"
 # # solve(9600 = (("currentPlayers" * 4 * 30 * 2 * 8) + ("currentPlayers" * 4 * 3 * 33 * 8)), "currentPlayers") =
 # # 1.8867925
 
-_qalculate_nsolve "("$currentBitsPerSecond" == (x * "$currentBonesPerPlayer" * "$currentRelFramesPerSecond" * "$currentRelFrameBytesPerBone" * "$currentByte") + (x * "$currentBonesPerPlayer" * "$currentAbsFramesPerSecond" * "$currentAbsFrameBytesPerBone" * "$currentByte"), x)"
+_qalculate_nsolve "("$currentBitsPerSecond" == (x * "$currentBonesPerPlayer" * "$currentIncrementFramesPerSecond" * "$currentIncrementFrameBytesPerBone" * "$currentByte") + (x * "$currentBonesPerPlayer" * "$currentInstantFramesPerSecond" * "$currentInstantFrameBytesPerBone" * "$currentByte"), x)"
 # # 1.8867925
 
-_octave_nsolve "("$currentBitsPerSecond" == (x * "$currentBonesPerPlayer" * "$currentRelFramesPerSecond" * "$currentRelFrameBytesPerBone" * "$currentByte") + (x * "$currentBonesPerPlayer" * "$currentAbsFramesPerSecond" * "$currentAbsFrameBytesPerBone" * "$currentByte"), x)"
+_octave_nsolve "("$currentBitsPerSecond" == (x * "$currentBonesPerPlayer" * "$currentIncrementFramesPerSecond" * "$currentIncrementFrameBytesPerBone" * "$currentByte") + (x * "$currentBonesPerPlayer" * "$currentInstantFramesPerSecond" * "$currentInstantFrameBytesPerBone" * "$currentByte"), x)"
 # # 1.8867924528301886792452830188679
 
 solve '(9600 == (x * 4 * 45 * 2 * 8) + (x * 4 * 2 * 33 * 8), x)'
