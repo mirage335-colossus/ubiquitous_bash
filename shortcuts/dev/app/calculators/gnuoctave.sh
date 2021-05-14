@@ -81,6 +81,19 @@ _octave_nsolve() {
 
 
 
+#_clc() {
+#	_octave "$@"
+#}
+#clc() {
+#	_octave "$@"
+#}
+#c() {
+#	_octave "$@"
+#}
+
+
+
+
 
 
 

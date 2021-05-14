@@ -69,6 +69,20 @@ nsolve() {
 
 
 
+_clc() {
+	_qalculate "$@"
+}
+clc() {
+	_qalculate "$@"
+}
+c() {
+	_qalculate "$@"
+}
+
+
+
+
+
 _test_devqalculate() {
 	_wantGetDep qalculate-gtk
 	_wantGetDep qalculate
