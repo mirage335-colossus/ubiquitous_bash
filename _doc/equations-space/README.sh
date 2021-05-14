@@ -168,7 +168,8 @@ _qalculate_nsolve "("$currentBitsPerSecond" == (x * "$currentBonesPerPlayer" * "
 _octave_nsolve "("$currentBitsPerSecond" == (x * "$currentBonesPerPlayer" * "$currentRelFramesPerSecond" * "$currentRelFrameBytesPerBone" * "$currentByte") + (x * "$currentBonesPerPlayer" * "$currentAbsFramesPerSecond" * "$currentAbsFrameBytesPerBone" * "$currentByte"), x)"
 # # 1.8867924528301886792452830188679
 
-solve(9600 == (x * 4 * 45 * 2 * 8) + (x * 4 * 2 * 33 * 8), x)
+solve '(9600 == (x * 4 * 45 * 2 * 8) + (x * 4 * 2 * 33 * 8), x)'
+# # 1.9230769
 
 
 
