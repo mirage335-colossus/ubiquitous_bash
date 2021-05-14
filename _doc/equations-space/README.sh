@@ -46,19 +46,19 @@ currentBitsPerSecond=115200 ; currentBonesPerPlayer=4 ; currentRelFramesPerSecon
 # # 14.117647
 
 # 1Mbit/s
-currentBitsPerSecond='(1 * megabit)' ; currentBonesPerPlayer=4 ; currentRelFramesPerSecond=60 ; currentRelFrameBytesPerBone=2 ; currentAbsFramesPerSecond=5 ; currentAbsFrameBytesPerBone=27 ; currentByte=8 ; _qalculate_nsolve "($currentBitsPerSecond == (x * $currentBonesPerPlayer * $currentRelFramesPerSecond * $currentRelFrameBytesPerBone * $currentByte) + (x * $currentBonesPerPlayer * $currentAbsFramesPerSecond * $currentAbsFrameBytesPerBone * $currentByte), x)"
+currentBitsPerSecond='(1 * megabit / bit)' ; currentBonesPerPlayer=4 ; currentRelFramesPerSecond=60 ; currentRelFrameBytesPerBone=2 ; currentAbsFramesPerSecond=5 ; currentAbsFrameBytesPerBone=27 ; currentByte=8 ; _qalculate_nsolve "($currentBitsPerSecond == (x * $currentBonesPerPlayer * $currentRelFramesPerSecond * $currentRelFrameBytesPerBone * $currentByte) + (x * $currentBonesPerPlayer * $currentAbsFramesPerSecond * $currentAbsFrameBytesPerBone * $currentByte), x)"
 # # 122.54902
 
 # 10Gbit/s
-currentBitsPerSecond='(10 * gigabit)' ; currentBonesPerPlayer=4 ; currentRelFramesPerSecond=60 ; currentRelFrameBytesPerBone=2 ; currentAbsFramesPerSecond=5 ; currentAbsFrameBytesPerBone=27 ; currentByte=8 ; _octave_nsolve "($currentBitsPerSecond == (x * $currentBonesPerPlayer * $currentRelFramesPerSecond * $currentRelFrameBytesPerBone * $currentByte) + (x * $currentBonesPerPlayer * $currentAbsFramesPerSecond * $currentAbsFrameBytesPerBone * $currentByte), x)"
+currentBitsPerSecond='(10 * gigabit / bit)' ; currentBonesPerPlayer=4 ; currentRelFramesPerSecond=60 ; currentRelFrameBytesPerBone=2 ; currentAbsFramesPerSecond=5 ; currentAbsFrameBytesPerBone=27 ; currentByte=8 ; _octave_nsolve "($currentBitsPerSecond == (x * $currentBonesPerPlayer * $currentRelFramesPerSecond * $currentRelFrameBytesPerBone * $currentByte) + (x * $currentBonesPerPlayer * $currentAbsFramesPerSecond * $currentAbsFrameBytesPerBone * $currentByte), x)"
 # # 1225490.1960784313725490196078431
 
 # 10Gbit/s (severely degraded and highly compressed)
-currentBitsPerSecond='(10 * gigabit)' ; currentBonesPerPlayer=4 ; currentRelFramesPerSecond=15 ; currentRelFrameBytesPerBone=2 ; currentAbsFramesPerSecond=2 ; currentAbsFrameBytesPerBone=12 ; currentByte=8 ; _octave_nsolve "($currentBitsPerSecond == (x * $currentBonesPerPlayer * $currentRelFramesPerSecond * $currentRelFrameBytesPerBone * $currentByte) + (x * $currentBonesPerPlayer * $currentAbsFramesPerSecond * $currentAbsFrameBytesPerBone * $currentByte), x)"
+currentBitsPerSecond='(10 * gigabit / bit)' ; currentBonesPerPlayer=4 ; currentRelFramesPerSecond=15 ; currentRelFrameBytesPerBone=2 ; currentAbsFramesPerSecond=2 ; currentAbsFrameBytesPerBone=12 ; currentByte=8 ; _octave_nsolve "($currentBitsPerSecond == (x * $currentBonesPerPlayer * $currentRelFramesPerSecond * $currentRelFrameBytesPerBone * $currentByte) + (x * $currentBonesPerPlayer * $currentAbsFramesPerSecond * $currentAbsFrameBytesPerBone * $currentByte), x)"
 # # 5787037.0370370370370370370370370
 
 # 10Gbit/s (worst case expected to remain tolerable for any purpose)
-currentBitsPerSecond='(10 * gigabit)' ; currentBonesPerPlayer=4 ; currentRelFramesPerSecond=5 ; currentRelFrameBytesPerBone=2 ; currentAbsFramesPerSecond=1 ; currentAbsFrameBytesPerBone=12 ; currentByte=8 ; _octave_nsolve "($currentBitsPerSecond == (x * $currentBonesPerPlayer * $currentRelFramesPerSecond * $currentRelFrameBytesPerBone * $currentByte) + (x * $currentBonesPerPlayer * $currentAbsFramesPerSecond * $currentAbsFrameBytesPerBone * $currentByte), x)"
+currentBitsPerSecond='(10 * gigabit / bit)' ; currentBonesPerPlayer=4 ; currentRelFramesPerSecond=5 ; currentRelFrameBytesPerBone=2 ; currentAbsFramesPerSecond=1 ; currentAbsFrameBytesPerBone=12 ; currentByte=8 ; _octave_nsolve "($currentBitsPerSecond == (x * $currentBonesPerPlayer * $currentRelFramesPerSecond * $currentRelFrameBytesPerBone * $currentByte) + (x * $currentBonesPerPlayer * $currentAbsFramesPerSecond * $currentAbsFrameBytesPerBone * $currentByte), x)"
 # # 14204545.454545454545454545454545
 
 
@@ -203,5 +203,46 @@ _octave "0.18033688 * log(((9.454255*10^15) * "$currentLightYears") / "$currentR
 #https://public.nrao.edu/ask/what-is-the-average-distance-between-stars-in-our-galaxy/
 
 #https://en.wikipedia.org/wiki/M60-UCD1
+
+
+
+
+
+
+
+# ### _Vector_
+
+return 0
+exit 1
+
+
+clear ; . ./README.sh
+
+5.5555556
+1.1764706
+14.117647
+122.54902
+1225490.1960784313725490196078431
+5787037.0370370370370370370370370
+14204545.454545454545454545454545
+8.2946997
+8.6696997
+5.9684946
+6.3434946
+3.9871691
+3.9871691
+10.370905
+1.8867925
+1.8867925
+1.8867925
+1.8867924528301886792452830188679
+1.9230769
+10.370905
+0.18033688 * ln((9.454255E15 "$currentLightYears") / "$currentResolution")
+10.370905
+10.37090475046755
+
+
+
 
 
