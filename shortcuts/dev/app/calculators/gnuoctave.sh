@@ -1,32 +1,42 @@
 
 
-_octave_interactive() {
-	octave --quiet --silent --no-window-system --no-gui "$@"
-}
-_octave() {
+_octave_terse() {
 	if [[ "$1" != "" ]]
 	then
-		_safeEcho_newline "$@" | octave --quiet --silent --no-window-system --no-gui
+		_safeEcho_newline "$@" | octave --quiet --silent --no-window-system --no-gui 2>/dev/null | _octave_filter-messages
 		return
 	fi
 	
-	_octave_interactive "$@"
+	octave --quiet --silent --no-window-system --no-gui 2>/dev/null | _octave_filter-messages
 	return
 }
 
-_octave_noninteractive() {
-	octave --quiet --silent --no-window-system --no-gui "$@" | _octave_filter-messages
+_octave() {
+	if [[ "$1" != "" ]]
+	then
+		_octave_terse "$@"
+		return
+	fi
+	
+	octave --quiet --silent --no-window-system --no-gui "$@"
+	return
 }
 
 # ATTENTION: EXAMPLE: echo 'solve(x == y * 2, y)' | _octave_pipe
 _octave_pipe() {
-	octave --quiet --silent --no-window-system --no-gui "$@" | _octave_filter-messages
+	_octave_terse "$@"
+	#octave --quiet --silent --no-window-system --no-gui "$@" 2>/dev/null | _octave_filter-messages
 }
 
 # ATTENTION: EXAMPLE: _octave_script 'octave_script.m'
 # echo 'solve(x == y * 2, y)' > octave_script.m
 _octave_script() {
-	octave --quiet --silent --no-window-system --no-gui "$@" | _octave_filter-messages
+	local currentFile="$1"
+	shift
+	
+	cat "$currentFile" | _octave_terse "$@"
+	
+	#octave --quiet --silent --no-window-system --no-gui "$@" 2>/dev/null | _octave_filter-messages
 }
 
 
@@ -40,7 +50,7 @@ _octave_script() {
 
 
 _octave_filter-messages() {
-	grep -v 'Symbolic pkg .*1: Python communication link active, SymPy v' | grep -v '_____'
+	grep -v 'Symbolic pkg .*1: Python communication link active, SymPy v' | grep -v '_____' | grep -v '^$' | sed 's/^ans = //'
 	#cat
 }
 

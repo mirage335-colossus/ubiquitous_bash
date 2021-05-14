@@ -2,11 +2,22 @@
 
 
 
+_qalculate_terse() {
+	if [[ "$1" != "" ]]
+	then
+		_safeEcho_newline "$@" | qalc -t | grep -v '^>\ ' | grep -v '^$' | sed 's/^  //'
+		return
+	fi
+	
+	qalc -t "$@" | grep -v '^>\ ' | grep -v '^$' | sed 's/^  //'
+	return
+}
+
 # Interactive.
 _qalculate() {
 	if [[ "$1" != "" ]]
 	then
-		_safeEcho_newline "$@" | qalc
+		_qalculate_terse "$@"
 		return
 	fi
 	
@@ -16,7 +27,7 @@ _qalculate() {
 
 # ATTENTION: EXAMPLE: echo 'solve(x == y * 2, y)' | _qalculate_pipe
 _qalculate_pipe() {
-	qalc "$@"
+	_qalculate_terse "$@"
 }
 
 # ATTENTION: _qalculate_script 'qalculate_script.m'
@@ -27,6 +38,11 @@ _qalculate_script() {
 	
 	cat "$currentFile" | _qalculate_pipe "$@"
 }
+
+
+
+
+
 
 
 
@@ -45,7 +61,7 @@ solve() {
 	_qalculate_solve "$@"
 }
 nsolve() {
-	_safeEcho_newline "$@"
+	_qalculate_solve "$@"
 }
 
 

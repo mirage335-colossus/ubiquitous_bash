@@ -32,7 +32,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='1891409836'
-export ub_setScriptChecksum_contents='2419234033'
+export ub_setScriptChecksum_contents='2667141592'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -14612,11 +14612,22 @@ _findFunction() {
 
 
 
+_qalculate_terse() {
+	if [[ "$1" != "" ]]
+	then
+		_safeEcho_newline "$@" | qalc -t | grep -v '^>\ ' | grep -v '^$' | sed 's/^  //'
+		return
+	fi
+	
+	qalc -t "$@" | grep -v '^>\ ' | grep -v '^$' | sed 's/^  //'
+	return
+}
+
 # Interactive.
 _qalculate() {
 	if [[ "$1" != "" ]]
 	then
-		_safeEcho_newline "$@" | qalc
+		_qalculate_terse "$@"
 		return
 	fi
 	
@@ -14626,7 +14637,7 @@ _qalculate() {
 
 # ATTENTION: EXAMPLE: echo 'solve(x == y * 2, y)' | _qalculate_pipe
 _qalculate_pipe() {
-	qalc "$@"
+	_qalculate_terse "$@"
 }
 
 # ATTENTION: _qalculate_script 'qalculate_script.m'
@@ -14637,6 +14648,11 @@ _qalculate_script() {
 	
 	cat "$currentFile" | _qalculate_pipe "$@"
 }
+
+
+
+
+
 
 
 
@@ -14655,7 +14671,7 @@ solve() {
 	_qalculate_solve "$@"
 }
 nsolve() {
-	_safeEcho_newline "$@"
+	_qalculate_solve "$@"
 }
 
 
@@ -14685,33 +14701,43 @@ _test_devqalculate() {
 
 
 
-_octave_interactive() {
-	octave --quiet --silent --no-window-system --no-gui "$@"
-}
-_octave() {
+_octave_terse() {
 	if [[ "$1" != "" ]]
 	then
-		_safeEcho_newline "$@" | octave --quiet --silent --no-window-system --no-gui
+		_safeEcho_newline "$@" | octave --quiet --silent --no-window-system --no-gui 2>/dev/null | _octave_filter-messages
 		return
 	fi
 	
-	_octave_interactive "$@"
+	octave --quiet --silent --no-window-system --no-gui 2>/dev/null | _octave_filter-messages
 	return
 }
 
-_octave_noninteractive() {
-	octave --quiet --silent --no-window-system --no-gui "$@" | _octave_filter-messages
+_octave() {
+	if [[ "$1" != "" ]]
+	then
+		_octave_terse "$@"
+		return
+	fi
+	
+	octave --quiet --silent --no-window-system --no-gui "$@"
+	return
 }
 
 # ATTENTION: EXAMPLE: echo 'solve(x == y * 2, y)' | _octave_pipe
 _octave_pipe() {
-	octave --quiet --silent --no-window-system --no-gui "$@" | _octave_filter-messages
+	_octave_terse "$@"
+	#octave --quiet --silent --no-window-system --no-gui "$@" 2>/dev/null | _octave_filter-messages
 }
 
 # ATTENTION: EXAMPLE: _octave_script 'octave_script.m'
 # echo 'solve(x == y * 2, y)' > octave_script.m
 _octave_script() {
-	octave --quiet --silent --no-window-system --no-gui "$@" | _octave_filter-messages
+	local currentFile="$1"
+	shift
+	
+	cat "$currentFile" | _octave_terse "$@"
+	
+	#octave --quiet --silent --no-window-system --no-gui "$@" 2>/dev/null | _octave_filter-messages
 }
 
 
@@ -14725,7 +14751,7 @@ _octave_script() {
 
 
 _octave_filter-messages() {
-	grep -v 'Symbolic pkg .*1: Python communication link active, SymPy v' | grep -v '_____'
+	grep -v 'Symbolic pkg .*1: Python communication link active, SymPy v' | grep -v '_____' | grep -v '^$' | sed 's/^ans = //'
 	#cat
 }
 
