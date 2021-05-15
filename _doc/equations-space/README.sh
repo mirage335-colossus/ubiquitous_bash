@@ -206,6 +206,20 @@ _octave "0.18033688 * log(((9.454255*10^15) * "$currentLightYears") / "$currentR
 
 
 
+#https://github.com/MFatihMAR/Game-Networking-Resources
+
+#https://github.com/networkprotocol/netcode
+#https://github.com/GlaireDaggers/Unity-Netcode.IO
+#https://github.com/RedpointGames/netcode.io-UE4
+
+
+#https://github.com/networkprotocol/yojimbo
+
+
+#http://www.nafonso.com/home/unreal-framework-network
+#https://developer.oculus.com/blog/networked-physics-in-virtual-reality-networking-a-stack-of-cubes-with-unity-and-physx/
+
+
 
 
 
