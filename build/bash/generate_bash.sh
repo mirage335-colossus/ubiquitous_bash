@@ -30,7 +30,11 @@ _generate_bash() {
 	
 	#Default command.
 	echo >> "$progScript"
+	echo '_generate_lean-python "$@"' >> "$progScript"
+	
+	echo >> "$progScript"
 	echo '_generate_compile_bash "$@"' >> "$progScript"
+	
 	echo 'exit 0' >> "$progScript"
 	
 	chmod u+x "$progScript"

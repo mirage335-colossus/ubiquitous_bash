@@ -110,7 +110,22 @@ _bin() {
 }
 #Mostly intended to launch bash prompt for MSW/Cygwin users.
 _bash() {
-	bash "$@"
+	if [[ "$1" == '-i' ]]
+	then
+		bash "$@"
+		return
+	fi
+	bash -i "$@"
+}
+
+#Mostly if not entirely intended for end user convenience.
+_python() {
+	if [[ -e "$scriptAbsoluteFolder"/lean.py ]]
+	then
+		"$scriptAbsoluteFolder"/lean.py '_python()'
+		return
+	fi
+	return 1
 }
 
 #Launch internal functions as commands, and other commands, as root.

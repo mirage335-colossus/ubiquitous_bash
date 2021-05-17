@@ -98,25 +98,109 @@ _user_log_template() {
 	return 0
 }
 
-_messageColors() {
-	echo -e '\E[1;37m 'white' \E[0m'
-	echo -e '\E[0;30m 'black' \E[0m'
-	echo -e '\E[0;34m 'blue' \E[0m'
-	echo -e '\E[1;34m 'blue_light' \E[0m'
-	echo -e '\E[0;32m 'green' \E[0m'
-	echo -e '\E[1;32m 'green_light' \E[0m'
-	echo -e '\E[0;36m 'cyan' \E[0m'
-	echo -e '\E[1;36m 'cyan_light' \E[0m'
-	echo -e '\E[0;31m 'red' \E[0m'
-	echo -e '\E[1;31m 'red_light' \E[0m'
-	echo -e '\E[0;35m 'purple' \E[0m'
-	echo -e '\E[1;35m 'purple_light' \E[0m'
-	echo -e '\E[0;33m 'brown' \E[0m'
-	echo -e '\E[1;33m 'yellow' \E[0m'
-	echo -e '\E[0;30m 'gray' \E[0m'
-	echo -e '\E[1;37m 'gray_light' \E[0m'
+# https://tldp.org/HOWTO/Bash-Prompt-HOWTO/x329.html
+_messageColors-common() {
+	echo -e '\E[1;37m ' \''\\E[1;37m'\' white \''\\E[0m'\' ' \E[0m'
+	echo -e '\E[0;30m ' \''\\E[0;30m'\' black \''\\E[0m'\' ' \E[0m'
+	
+	echo -e '\E[0;34m ' \''\\E[0;34m'\' blue \''\\E[0m'\' ' \E[0m'
+	echo -e '\E[1;34m ' \''\\E[1;34m'\' blue_light \''\\E[0m'\' ' \E[0m'
+	echo -e '\E[0;32m ' \''\\E[0;32m'\' green \''\\E[0m'\' ' \E[0m'
+	echo -e '\E[1;32m ' \''\\E[1;32m'\' green_light \''\\E[0m'\' ' \E[0m'
+	echo -e '\E[0;36m ' \''\\E[0;36m'\' cyan \''\\E[0m'\' ' \E[0m'
+	echo -e '\E[1;36m ' \''\\E[1;36m'\' cyan_light \''\\E[0m'\' ' \E[0m'
+	echo -e '\E[0;31m ' \''\\E[0;31m'\' red \''\\E[0m'\' ' \E[0m'
+	echo -e '\E[1;31m ' \''\\E[1;31m'\' red_light \''\\E[0m'\' ' \E[0m'
+	echo -e '\E[0;35m ' \''\\E[0;35m'\' purple \''\\E[0m'\' ' \E[0m'
+	echo -e '\E[1;35m ' \''\\E[1;35m'\' purple_light \''\\E[0m'\' ' \E[0m'
+	echo -e '\E[0;33m ' \''\\E[0;33m'\' brown \''\\E[0m'\' ' \E[0m'
+	echo -e '\E[1;33m ' \''\\E[1;33m'\' yellow \''\\E[0m'\' ' \E[0m'
+	
+	echo -e '\E[0;30m ' \''\\E[0;30m'\' gray \''\\E[0m'\' ' \E[0m'
+	echo -e '\E[1;37m ' \''\\E[1;37m'\' gray_light \''\\E[0m'\' ' \E[0m'
 	return 0
 }
+
+# https://dev.to/ifenna__/adding-colors-to-bash-scripts-48g4
+# Color		Foreground Code		Background Code
+# Black			30	40
+# Red			31	41
+# Green			32	42
+# Yellow		33	43
+# Blue			34	44
+# Magenta		35	45
+# Cyan			36	46
+# Light Gray		37	47
+# Gray			90	100
+# Light Red		91	101
+# Light Green		92	102
+# Light Yellow		93	103
+# Light Blue		94	104
+# Light Magenta		95	105
+# Light Cyan		96	106
+# White			97	107
+_messageColors-extra() {
+	local currentIterationA
+	local currentIterationB
+	
+	for (( currentIterationA=30; currentIterationA<="37"; currentIterationA++ )) ; do
+		echo -e '\033[0;'"$currentIterationA"'m ''\\033[0;'"$currentIterationA"'m 'message' \\033[0m'' \033[0m'
+		echo -e '\033[1;'"$currentIterationA"'m ''\\033[1;'"$currentIterationA"'m 'message' \\033[0m'' \033[0m'
+	done
+	
+	for (( currentIterationA=90; currentIterationA<="97"; currentIterationA++ )) ; do
+		echo -e '\033[0;'"$currentIterationA"'m ''\\033[0;'"$currentIterationA"'m 'message' \\033[0m'' \033[0m'
+		echo -e '\033[1;'"$currentIterationA"'m ''\\033[1;'"$currentIterationA"'m 'message' \\033[0m'' \033[0m'
+	done
+	
+	
+	
+	currentIterationB=37
+	for (( currentIterationA=40; currentIterationA<="46"; currentIterationA++ )) ; do
+		echo -e '\033[0;'"$currentIterationB"';'"$currentIterationA"'m ' '\\033[0;'"$currentIterationB"';'"$currentIterationA"'m ' message ' \\033[0m' ' \033[0m'
+	done
+	currentIterationA=47
+	currentIterationB=30
+	echo -e '\033[0;'"$currentIterationB"';'"$currentIterationA"'m ' '\\033[0;'"$currentIterationB"';'"$currentIterationA"'m ' message ' \\033[0m' ' \033[0m'
+	
+	currentIterationB=37
+	for (( currentIterationA=100; currentIterationA<="107"; currentIterationA++ )) ; do
+		echo -e '\033[0;'"$currentIterationB"';'"$currentIterationA"'m ' '\\033[0;'"$currentIterationB"';'"$currentIterationA"'m ' message ' \\033[0m' ' \033[0m'
+	done
+}
+
+_messageColors-all() {
+	local currentIterationA
+	local currentIterationB
+	
+	for (( currentIterationB=30; currentIterationB<="37"; currentIterationB++ )) ; do
+		for (( currentIterationA=40; currentIterationA<="47"; currentIterationA++ )) ; do
+			echo -e '\033[0;'"$currentIterationB"';'"$currentIterationA"'m ' '\\033[0;'"$currentIterationB"';'"$currentIterationA"'m ' message ' \\033[0m' ' \033[0m'
+			echo -e '\033[1;'"$currentIterationB"';'"$currentIterationA"'m ' '\\033[0;'"$currentIterationB"';'"$currentIterationA"'m ' message ' \\033[0m' ' \033[0m'
+		done
+	done
+	
+	for (( currentIterationB=90; currentIterationB<="97"; currentIterationB++ )) ; do
+		for (( currentIterationA=100; currentIterationA<="107"; currentIterationA++ )) ; do
+			echo -e '\033[0;'"$currentIterationB"';'"$currentIterationA"'m ' '\\033[0;'"$currentIterationB"';'"$currentIterationA"'m ' message ' \\033[0m' ' \033[0m'
+			echo -e '\033[1;'"$currentIterationB"';'"$currentIterationA"'m ' '\\033[0;'"$currentIterationB"';'"$currentIterationA"'m ' message ' \\033[0m' ' \033[0m'
+		done
+	done
+}
+
+_messageColors() {
+	clear
+	_messageColors-common "$@"
+	echo
+	echo '##########'
+	echo
+	_messageColors-extra "$@"
+	echo
+	echo '##########'
+	echo
+	_messageColors-all "$@"
+}
+
 
 #Purple. User must do something manually to proceed. NOT to be used for dependency installation requests - use probe, bad, and fail statements for that.
 _messagePlain_request() {

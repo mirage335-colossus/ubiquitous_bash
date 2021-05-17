@@ -35,11 +35,40 @@ _setupUbiquitous_accessories_bashrc-cloud_bin() {
 }
 
 
+
+_setupUbiquitous_accessories-python() {
+	_messagePlain_nominal 'init: _setupUbiquitous_accessories-python'
+	
+	mkdir -p "$ubcoreDir_accessories"/python
+	
+	export ubcore_accessoriesFile_python="$ubcoreDir_accessories"/python/ubcorerc_pythonrc.py
+	export ubcore_accessoriesFile_python_ubhome="$ubHome"/.ubcorerc_pythonrc.py
+	
+	rm -f "$ubcore_accessoriesFile_python"
+	rm -f "$ubcore_accessoriesFile_python_ubhome"
+	ln -s "$ubcore_accessoriesFile_python_ubhome" "$ubcore_accessoriesFile_python"
+	
+	_setupUbiquitous_accessories_here-python > "$ubcore_accessoriesFile_python_ubhome"
+	
+	
+	if ! grep ubcore "$ubHome"/.pythonrc > /dev/null 2>&1 && _messagePlain_probe 'pythonrc'
+	then
+		# https://www.mathworks.com/matlabcentral/answers/194868-what-about-the-character
+		#echo '%# ubcore' >> "$ubHome"/.pythonrc
+		#_safeEcho_newline run'("'"$ubcore_accessoriesFile_python_ubhome"'")' >> "$ubHome"/.pythonrc
+		_setupUbiquitous_accessories_here-python_hook >> "$ubHome"/.pythonrc
+	fi
+	
+	return 0
+}
+
+
+
 _setupUbiquitous_accessories() {
 	
 	_setupUbiquitous_accessories-gnuoctave "$@"
 	
-	
+	_setupUbiquitous_accessories-python "$@"
 	
 	return 0
 }
@@ -48,6 +77,8 @@ _setupUbiquitous_accessories_bashrc() {
 	#_messagePlain_nominal 'init: _setupUbiquitous_accessories_bashrc'
 	
 	_setupUbiquitous_accessories_bashrc-cloud_bin "$@"
+	
+	_setupUbiquitous_accessories_here-python_bashrc "$@"
 }
 
 

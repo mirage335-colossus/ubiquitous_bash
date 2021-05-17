@@ -1227,7 +1227,10 @@ _test() {
 	_testarglength
 	
 	_messageNormal "Absolute pathfinding..."
-	#_tryExec "_test_getAbsoluteLocation"
+	#if ! uname -a | grep -i cygwin > /dev/null 2>&1
+	#then
+		_tryExec "_test_getAbsoluteLocation"
+	#fi
 	_messagePASS
 	
 	echo -n -e '\E[1;32;46m Timing...		\E[0m'

@@ -32,7 +32,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='1891409836'
-export ub_setScriptChecksum_contents='2838468322'
+export ub_setScriptChecksum_contents='3376908582'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -2417,25 +2417,109 @@ _user_log_template() {
 	return 0
 }
 
-_messageColors() {
-	echo -e '\E[1;37m 'white' \E[0m'
-	echo -e '\E[0;30m 'black' \E[0m'
-	echo -e '\E[0;34m 'blue' \E[0m'
-	echo -e '\E[1;34m 'blue_light' \E[0m'
-	echo -e '\E[0;32m 'green' \E[0m'
-	echo -e '\E[1;32m 'green_light' \E[0m'
-	echo -e '\E[0;36m 'cyan' \E[0m'
-	echo -e '\E[1;36m 'cyan_light' \E[0m'
-	echo -e '\E[0;31m 'red' \E[0m'
-	echo -e '\E[1;31m 'red_light' \E[0m'
-	echo -e '\E[0;35m 'purple' \E[0m'
-	echo -e '\E[1;35m 'purple_light' \E[0m'
-	echo -e '\E[0;33m 'brown' \E[0m'
-	echo -e '\E[1;33m 'yellow' \E[0m'
-	echo -e '\E[0;30m 'gray' \E[0m'
-	echo -e '\E[1;37m 'gray_light' \E[0m'
+# https://tldp.org/HOWTO/Bash-Prompt-HOWTO/x329.html
+_messageColors-common() {
+	echo -e '\E[1;37m ' \''\\E[1;37m'\' white \''\\E[0m'\' ' \E[0m'
+	echo -e '\E[0;30m ' \''\\E[0;30m'\' black \''\\E[0m'\' ' \E[0m'
+	
+	echo -e '\E[0;34m ' \''\\E[0;34m'\' blue \''\\E[0m'\' ' \E[0m'
+	echo -e '\E[1;34m ' \''\\E[1;34m'\' blue_light \''\\E[0m'\' ' \E[0m'
+	echo -e '\E[0;32m ' \''\\E[0;32m'\' green \''\\E[0m'\' ' \E[0m'
+	echo -e '\E[1;32m ' \''\\E[1;32m'\' green_light \''\\E[0m'\' ' \E[0m'
+	echo -e '\E[0;36m ' \''\\E[0;36m'\' cyan \''\\E[0m'\' ' \E[0m'
+	echo -e '\E[1;36m ' \''\\E[1;36m'\' cyan_light \''\\E[0m'\' ' \E[0m'
+	echo -e '\E[0;31m ' \''\\E[0;31m'\' red \''\\E[0m'\' ' \E[0m'
+	echo -e '\E[1;31m ' \''\\E[1;31m'\' red_light \''\\E[0m'\' ' \E[0m'
+	echo -e '\E[0;35m ' \''\\E[0;35m'\' purple \''\\E[0m'\' ' \E[0m'
+	echo -e '\E[1;35m ' \''\\E[1;35m'\' purple_light \''\\E[0m'\' ' \E[0m'
+	echo -e '\E[0;33m ' \''\\E[0;33m'\' brown \''\\E[0m'\' ' \E[0m'
+	echo -e '\E[1;33m ' \''\\E[1;33m'\' yellow \''\\E[0m'\' ' \E[0m'
+	
+	echo -e '\E[0;30m ' \''\\E[0;30m'\' gray \''\\E[0m'\' ' \E[0m'
+	echo -e '\E[1;37m ' \''\\E[1;37m'\' gray_light \''\\E[0m'\' ' \E[0m'
 	return 0
 }
+
+# https://dev.to/ifenna__/adding-colors-to-bash-scripts-48g4
+# Color		Foreground Code		Background Code
+# Black			30	40
+# Red			31	41
+# Green			32	42
+# Yellow		33	43
+# Blue			34	44
+# Magenta		35	45
+# Cyan			36	46
+# Light Gray		37	47
+# Gray			90	100
+# Light Red		91	101
+# Light Green		92	102
+# Light Yellow		93	103
+# Light Blue		94	104
+# Light Magenta		95	105
+# Light Cyan		96	106
+# White			97	107
+_messageColors-extra() {
+	local currentIterationA
+	local currentIterationB
+	
+	for (( currentIterationA=30; currentIterationA<="37"; currentIterationA++ )) ; do
+		echo -e '\033[0;'"$currentIterationA"'m ''\\033[0;'"$currentIterationA"'m 'message' \\033[0m'' \033[0m'
+		echo -e '\033[1;'"$currentIterationA"'m ''\\033[1;'"$currentIterationA"'m 'message' \\033[0m'' \033[0m'
+	done
+	
+	for (( currentIterationA=90; currentIterationA<="97"; currentIterationA++ )) ; do
+		echo -e '\033[0;'"$currentIterationA"'m ''\\033[0;'"$currentIterationA"'m 'message' \\033[0m'' \033[0m'
+		echo -e '\033[1;'"$currentIterationA"'m ''\\033[1;'"$currentIterationA"'m 'message' \\033[0m'' \033[0m'
+	done
+	
+	
+	
+	currentIterationB=37
+	for (( currentIterationA=40; currentIterationA<="46"; currentIterationA++ )) ; do
+		echo -e '\033[0;'"$currentIterationB"';'"$currentIterationA"'m ' '\\033[0;'"$currentIterationB"';'"$currentIterationA"'m ' message ' \\033[0m' ' \033[0m'
+	done
+	currentIterationA=47
+	currentIterationB=30
+	echo -e '\033[0;'"$currentIterationB"';'"$currentIterationA"'m ' '\\033[0;'"$currentIterationB"';'"$currentIterationA"'m ' message ' \\033[0m' ' \033[0m'
+	
+	currentIterationB=37
+	for (( currentIterationA=100; currentIterationA<="107"; currentIterationA++ )) ; do
+		echo -e '\033[0;'"$currentIterationB"';'"$currentIterationA"'m ' '\\033[0;'"$currentIterationB"';'"$currentIterationA"'m ' message ' \\033[0m' ' \033[0m'
+	done
+}
+
+_messageColors-all() {
+	local currentIterationA
+	local currentIterationB
+	
+	for (( currentIterationB=30; currentIterationB<="37"; currentIterationB++ )) ; do
+		for (( currentIterationA=40; currentIterationA<="47"; currentIterationA++ )) ; do
+			echo -e '\033[0;'"$currentIterationB"';'"$currentIterationA"'m ' '\\033[0;'"$currentIterationB"';'"$currentIterationA"'m ' message ' \\033[0m' ' \033[0m'
+			echo -e '\033[1;'"$currentIterationB"';'"$currentIterationA"'m ' '\\033[0;'"$currentIterationB"';'"$currentIterationA"'m ' message ' \\033[0m' ' \033[0m'
+		done
+	done
+	
+	for (( currentIterationB=90; currentIterationB<="97"; currentIterationB++ )) ; do
+		for (( currentIterationA=100; currentIterationA<="107"; currentIterationA++ )) ; do
+			echo -e '\033[0;'"$currentIterationB"';'"$currentIterationA"'m ' '\\033[0;'"$currentIterationB"';'"$currentIterationA"'m ' message ' \\033[0m' ' \033[0m'
+			echo -e '\033[1;'"$currentIterationB"';'"$currentIterationA"'m ' '\\033[0;'"$currentIterationB"';'"$currentIterationA"'m ' message ' \\033[0m' ' \033[0m'
+		done
+	done
+}
+
+_messageColors() {
+	clear
+	_messageColors-common "$@"
+	echo
+	echo '##########'
+	echo
+	_messageColors-extra "$@"
+	echo
+	echo '##########'
+	echo
+	_messageColors-all "$@"
+}
+
 
 #Purple. User must do something manually to proceed. NOT to be used for dependency installation requests - use probe, bad, and fail statements for that.
 _messagePlain_request() {
@@ -3622,7 +3706,10 @@ _visualPrompt() {
 	export -f _visualPrompt_promptCommand
 	export PROMPT_COMMAND=_visualPrompt_promptCommand
 	
-	export PS1='\[\033[01;40m\]\[\033[01;36m\]\[\033[01;34m\]|\[\033[01;31m\]${?}:${debian_chroot:+($debian_chroot)}\[\033[01;33m\]\u\[\033[01;32m\]@\h\[\033[01;36m\]\[\033[01;34m\])\[\033[01;36m\]\[\033[01;34m\]-(\[\033[01;35m\]$(date +%H:%M:%S\.%d)\[\033[01;34m\])\[\033[01;36m\]|\[\033[00m\]\n\[\033[01;40m\]\[\033[01;36m\]\[\033[01;34m\]|\[\033[37m\][\w]\[\033[00m\]\n\[\033[01;36m\]\[\033[01;34m\]|$PS1_lineNumberText\[\033[01;34m\]) \[\033[36m\]>\[\033[00m\] '
+	#export PS1='\[\033[01;40m\]\[\033[01;36m\]\[\033[01;34m\]|\[\033[01;31m\]${?}:${debian_chroot:+($debian_chroot)}\[\033[01;33m\]\u\[\033[01;32m\]@\h\[\033[01;36m\]\[\033[01;34m\])\[\033[01;36m\]\[\033[01;34m\]-(\[\033[01;35m\]$(date +%H:%M:%S\.%d)\[\033[01;34m\])\[\033[01;36m\]|\[\033[00m\]\n\[\033[01;40m\]\[\033[01;36m\]\[\033[01;34m\]|\[\033[37m\][\w]\[\033[00m\]\n\[\033[01;36m\]\[\033[01;34m\]|$PS1_lineNumberText\[\033[01;34m\]) \[\033[36m\]>\[\033[00m\] '
+	
+	
+	export PS1='\[\033[01;40m\]\[\033[01;36m\]\[\033[01;34m\]|\[\033[01;31m\]${?}:${debian_chroot:+($debian_chroot)}\[\033[01;33m\]\u\[\033[01;32m\]@\h\[\033[01;36m\]\[\033[01;34m\])\[\033[01;36m\]\[\033[01;34m\]-'"$prompt_cloudNetName"'(\[\033[01;35m\]$(date +%H:%M:%S\.%d)\[\033[01;34m\])\[\033[01;36m\]|\[\033[00m\]\n\[\033[01;40m\]\[\033[01;36m\]\[\033[01;34m\]|\[\033[37m\][\w]\[\033[00m\]\n\[\033[01;36m\]\[\033[01;34m\]|$PS1_lineNumberText\[\033[01;34m\]) \[\033[36m\]'""'>\[\033[00m\] '
 }
 
 #https://stackoverflow.com/questions/15432156/display-filename-before-matching-line-grep
@@ -3947,6 +4034,77 @@ CZXWXcRMTo8EmM8i4d
 
 
 
+_setupUbiquitous_accessories_here-python() {
+	
+	_generate_lean-lib-python_here "$@"
+	
+} 
+
+_setupUbiquitous_accessories_here-python_hook() {
+	cat << CZXWXcRMTo8EmM8i4d
+
+# ATTENTION: Without either 'exec(exec(open()))' or 'execfile()' , 'from ubcorerc_pythonrc import *' must take effect!
+# If 'exec(exec(open()))' is substituted for 'from ubcorerc_pythonrc import *' then copying home directory files independent of '.ubcore' 
+import os
+if os.path.exists("$ubcore_accessoriesFile_python"):
+	import sys
+	import os
+	# https://stackoverflow.com/questions/2349991/how-to-import-other-python-files
+	sys.path.append(os.path.abspath("$ubcoreDir_accessories/python"))
+	from ubcorerc_pythonrc import *
+
+
+
+
+
+import sys
+# https://stackoverflow.com/questions/436198/what-is-an-alternative-to-execfile-in-python-3
+if sys.hexversion > 0x03000000:
+	exec('exec(open( "$ubcore_accessoriesFile_python_ubhome" ).read() )')
+else:
+	execfile("$ubcore_accessoriesFile_python_ubhome")
+
+
+
+
+CZXWXcRMTo8EmM8i4d
+}
+
+
+
+_setupUbiquitous_accessories_here-python_bashrc() {
+	cat << CZXWXcRMTo8EmM8i4d
+
+# Interactive bash shell will default to calling 'python3' while scripts invoking '#! /usr/bin/env python' or similar may still be given 'python2' equivalent.
+alias python=python3
+
+export PYTHONSTARTUP="$HOME"/.pythonrc
+
+CZXWXcRMTo8EmM8i4d
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 _setupUbiquitous_accessories-gnuoctave() {
 	_messagePlain_nominal 'init: _setupUbiquitous_accessories-gnuoctave'
 	
@@ -3984,11 +4142,40 @@ _setupUbiquitous_accessories_bashrc-cloud_bin() {
 }
 
 
+
+_setupUbiquitous_accessories-python() {
+	_messagePlain_nominal 'init: _setupUbiquitous_accessories-python'
+	
+	mkdir -p "$ubcoreDir_accessories"/python
+	
+	export ubcore_accessoriesFile_python="$ubcoreDir_accessories"/python/ubcorerc_pythonrc.py
+	export ubcore_accessoriesFile_python_ubhome="$ubHome"/.ubcorerc_pythonrc.py
+	
+	rm -f "$ubcore_accessoriesFile_python"
+	rm -f "$ubcore_accessoriesFile_python_ubhome"
+	ln -s "$ubcore_accessoriesFile_python_ubhome" "$ubcore_accessoriesFile_python"
+	
+	_setupUbiquitous_accessories_here-python > "$ubcore_accessoriesFile_python_ubhome"
+	
+	
+	if ! grep ubcore "$ubHome"/.pythonrc > /dev/null 2>&1 && _messagePlain_probe 'pythonrc'
+	then
+		# https://www.mathworks.com/matlabcentral/answers/194868-what-about-the-character
+		#echo '%# ubcore' >> "$ubHome"/.pythonrc
+		#_safeEcho_newline run'("'"$ubcore_accessoriesFile_python_ubhome"'")' >> "$ubHome"/.pythonrc
+		_setupUbiquitous_accessories_here-python_hook >> "$ubHome"/.pythonrc
+	fi
+	
+	return 0
+}
+
+
+
 _setupUbiquitous_accessories() {
 	
 	_setupUbiquitous_accessories-gnuoctave "$@"
 	
-	
+	_setupUbiquitous_accessories-python "$@"
 	
 	return 0
 }
@@ -3997,6 +4184,8 @@ _setupUbiquitous_accessories_bashrc() {
 	#_messagePlain_nominal 'init: _setupUbiquitous_accessories_bashrc'
 	
 	_setupUbiquitous_accessories_bashrc-cloud_bin "$@"
+	
+	_setupUbiquitous_accessories_here-python_bashrc "$@"
 }
 
 
@@ -4099,6 +4288,8 @@ _selfCloneUbiquitous() {
 	cp -a "$scriptAbsoluteFolder"/lean.sh "$ubcoreUBdir"/ubcore.sh > /dev/null 2>&1
 	cp -a "$scriptAbsoluteFolder"/ubcore.sh "$ubcoreUBdir"/ubcore.sh > /dev/null 2>&1
 	cp -a "$scriptAbsoluteLocation" "$ubcoreUBdir"/ubiquitous_bash.sh
+	
+	cp -a "$scriptAbsoluteFolder"/lean.py "$ubcoreUBdir"/lean.py > /dev/null 2>&1
 }
 
 _installUbiquitous() {
@@ -4151,6 +4342,8 @@ _setupUbiquitous() {
 	
 	export ubcoreDir_accessories="$ubHome"/.ubcore/accessories
 	
+	
+	# WARNING: Despite the name, do NOT point this to 'ubcore.sh' or similar. Full set of functions are expected from this file by some use cases!
 	export ubcoreUBdir="$ubcoreDir"/ubiquitous_bash
 	export ubcoreUBfile="$ubcoreDir"/ubiquitous_bash/ubiquitous_bash.sh
 	
@@ -9834,7 +10027,10 @@ _test() {
 	_testarglength
 	
 	_messageNormal "Absolute pathfinding..."
-	#_tryExec "_test_getAbsoluteLocation"
+	#if ! uname -a | grep -i cygwin > /dev/null 2>&1
+	#then
+		_tryExec "_test_getAbsoluteLocation"
+	#fi
 	_messagePASS
 	
 	echo -n -e '\E[1;32;46m Timing...		\E[0m'
@@ -10598,7 +10794,22 @@ _bin() {
 }
 #Mostly intended to launch bash prompt for MSW/Cygwin users.
 _bash() {
-	bash "$@"
+	if [[ "$1" == '-i' ]]
+	then
+		bash "$@"
+		return
+	fi
+	bash -i "$@"
+}
+
+#Mostly if not entirely intended for end user convenience.
+_python() {
+	if [[ -e "$scriptAbsoluteFolder"/lean.py ]]
+	then
+		"$scriptAbsoluteFolder"/lean.py '_python()'
+		return
+	fi
+	return 1
 }
 
 #Launch internal functions as commands, and other commands, as root.
