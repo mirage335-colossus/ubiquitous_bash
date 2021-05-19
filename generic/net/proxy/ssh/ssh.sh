@@ -445,7 +445,9 @@ _rsync_backup_local() {
 }
 
 _rsync() {
-	rsync -e "$scriptAbsoluteLocation"" _ssh" "$@"
+	#rsync -e "$scriptAbsoluteLocation"" _ssh" "$@"
+	#-e "$scriptAbsoluteLocation"" _ssh -T -c aes256-gcm@openssh.com -o Compression=no -x"
+	rsync --block-size=64000 --checksum-choice="md5" --skip-compress='7z/ace/avi/bz2/deb/gpg/gz/iso/jpeg/jpg/lz/lsma/lzo/mov/mp[34]/ogg/png/rar/rpm/rzip/tbz/tgz/tlz/txz/xz/z/zip'/img/vdi/ima/bloom/midx/idx/pack -e "$scriptAbsoluteLocation"" _ssh -T -o Compression=no -x" "$@"
 }
 
 _scp_command() {
