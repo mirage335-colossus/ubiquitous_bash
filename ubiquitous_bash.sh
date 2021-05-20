@@ -32,7 +32,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='1891409836'
-export ub_setScriptChecksum_contents='1219201990'
+export ub_setScriptChecksum_contents='505213134'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -1029,6 +1029,42 @@ _package-cygwinOnly() {
 _package-cygwin() {
 	_package-cygwinOnly "$@"
 }
+
+
+
+
+
+if _if_cygwin
+then
+	# WARNING: Since MSW/Cygwin is hardly suitable for mounting UNIX/tmpfs/ramfs/etc filesystems, 'mountpoint' 'safety checks' are merely disabled.
+	mountpoint() {
+		true
+	}
+	losetup() {
+		false
+	}
+	
+	tc() {
+		false
+	}
+	wondershaper() {
+		false
+	}
+fi
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -16286,7 +16322,7 @@ _mktorrent() {
 
 _test_mktorrent() {
 	# If not Debian, then simply accept these pacakges may not be available.
-	! [[ -e /etc/issue ]] && cat /etc/issue | grep 'Debian' > /dev/null 2>&1 && return 0
+	[[ -e /etc/issue ]] && cat /etc/issue | grep 'Debian' > /dev/null 2>&1 && return 0
 	
 	_wantGetDep mktorrent
 	
@@ -16427,6 +16463,19 @@ _phpvirtualbox_self_status() {
 _test_phpvirtualbox_self() {
 	true
 	
+	
+	
+	
+	
+	# ATTENTION: WARNING: TODO: TEMPORARY.
+	if _if_cygwin
+	then
+		if ! "$scriptAbsoluteLocation" _testVBox
+		then
+			echo 'warn: accepted: cygwin: missing: vbox'
+		fi
+	fi
+	
 	# WARNING: This will not be perfect. An installation of 'phpvirtualbox' may be detected through network port (which causes a popup dialog if MSW host), or through a standard location (which may as well be required with MSW).
 	
 	# WARNING: While 'VirtualBox' may require a 'native' MSW installation, it is likely 'phpvirtualbox' will require Cygwin .
@@ -16511,6 +16560,18 @@ _virtualbox_self_server_status() {
 
 _test_virtualbox_self() {
 	# ATTENTION: TODO: A custom 'GUI' frontend and backend may be required to integrate with VR.
+	
+	
+	
+	
+	# ATTENTION: WARNING: TODO: TEMPORARY.
+	if _if_cygwin
+	then
+		if ! "$scriptAbsoluteLocation" _testVBox
+		then
+			echo 'warn: accepted: cygwin: missing: vbox'
+		fi
+	fi
 	
 	! type _testVBox > /dev/null 2>&1 && _messageFAIL && _stop 1
 	_testVBox "$@"
@@ -17007,69 +17068,72 @@ _test_aws_upstream_sequence() {
 
 # ATTENTION: WARNING: Only tested with Debian Stable. May require rewrite to accommodate other distro (ie. Gentoo).
 _test_aws() {
-	# zlib1g-dev
-	_getDep 'zconf.h'
-	_getDep 'zlib.h'
-	_getDep 'pkgconfig/zlib.pc'
-	
-	# libssl-dev
-	_getDep 'openssl/ssl3.h'
-	_getDep 'openssl/aes.h'
-	_getDep 'pkgconfig/openssl.pc'
-	_getDep 'pkgconfig/libssl.pc'
-	_getDep 'pkgconfig/libcrypto.pc'
-	
-	# libncurses-dev
-	_getDep 'ncurses6-config'
-	_getDep 'ncursesw6-config'
-	_getDep 'ncurses5-config'
-	_getDep 'ncursesw5-config'
-	_getDep 'curses.h'
-	_getDep 'pkgconfig/ncurses.pc'
-	_getDep 'pkgconfig/ncursesw.pc'
-	
-	# libffi-dev
-	_getDep 'ffitarget.h'
-	_getDep 'pkgconfig/libffi.pc'
-	
-	# libsqlite3-dev
-	_getDep 'sqlite3.h'
-	_getDep 'sqlite3ext.h'
-	_getDep 'pkgconfig/sqlite3.pc'
-	
-	# libreadline-dev
-	_getDep 'readline/readline.h'
-	_getDep 'libreadline.so'
-	
-	# libbz2-dev
-	_getDep 'bzlib.h'
-	_getDep 'libbz2.so'
-	
-	
-	# python3-pypillowfight
-	_getDep 'python3/dist-packages/pillowfight/__init__.py'
-	
-	# python3-wxgtk4.0
-	_getDep 'python3/dist-packages/wx/__init__.py'
-	
-	# wxglade
-	_getDep 'wxglade'
-	
-	
-	_getDep 'unzip'
-	
-	
-	_getDep 'python3'
-	_getDep 'pip'
-	
-	
-	
-	
-	if [[ "$nonet" != "true" ]] && cat /etc/issue | grep 'Debian' > /dev/null 2>&1
+	if ! _if_cygwin
 	then
-		_messagePlain_request 'ignore: upstream progress ->'
-		"$scriptAbsoluteLocation" _test_aws_upstream_sequence "$@"
-		_messagePlain_request 'ignore: <- upstream progress'
+		# zlib1g-dev
+		_getDep 'zconf.h'
+		_getDep 'zlib.h'
+		_getDep 'pkgconfig/zlib.pc'
+		
+		# libssl-dev
+		_getDep 'openssl/ssl3.h'
+		_getDep 'openssl/aes.h'
+		_getDep 'pkgconfig/openssl.pc'
+		_getDep 'pkgconfig/libssl.pc'
+		_getDep 'pkgconfig/libcrypto.pc'
+		
+		# libncurses-dev
+		_getDep 'ncurses6-config'
+		_getDep 'ncursesw6-config'
+		_getDep 'ncurses5-config'
+		_getDep 'ncursesw5-config'
+		_getDep 'curses.h'
+		_getDep 'pkgconfig/ncurses.pc'
+		_getDep 'pkgconfig/ncursesw.pc'
+		
+		# libffi-dev
+		_getDep 'ffitarget.h'
+		_getDep 'pkgconfig/libffi.pc'
+		
+		# libsqlite3-dev
+		_getDep 'sqlite3.h'
+		_getDep 'sqlite3ext.h'
+		_getDep 'pkgconfig/sqlite3.pc'
+		
+		# libreadline-dev
+		_getDep 'readline/readline.h'
+		_getDep 'libreadline.so'
+		
+		# libbz2-dev
+		_getDep 'bzlib.h'
+		_getDep 'libbz2.so'
+		
+		
+		# python3-pypillowfight
+		_getDep 'python3/dist-packages/pillowfight/__init__.py'
+		
+		# python3-wxgtk4.0
+		_getDep 'python3/dist-packages/wx/__init__.py'
+		
+		# wxglade
+		_getDep 'wxglade'
+		
+		
+		_getDep 'unzip'
+		
+		
+		_getDep 'python3'
+		_getDep 'pip'
+		
+		
+		
+		
+		if [[ "$nonet" != "true" ]] && cat /etc/issue 2>/dev/null | grep 'Debian' > /dev/null 2>&1
+		then
+			_messagePlain_request 'ignore: upstream progress ->'
+			"$scriptAbsoluteLocation" _test_aws_upstream_sequence "$@"
+			_messagePlain_request 'ignore: <- upstream progress'
+		fi
 	fi
 	
 	_wantSudo && _wantGetDep aws
@@ -17645,7 +17709,7 @@ _test_gcloud() {
 	_getDep 'python3'
 	_getDep 'pip'
 	
-	if [[ "$nonet" != "true" ]] && cat /etc/issue | grep 'Debian' > /dev/null 2>&1
+	if [[ "$nonet" != "true" ]] && cat /etc/issue 2> /dev/null | grep 'Debian' > /dev/null 2>&1
 	then
 		_messagePlain_request 'ignore: upstream progress ->'
 		"$scriptAbsoluteLocation" _test_gcloud_upstream_sequence "$@"
@@ -17655,8 +17719,8 @@ _test_gcloud() {
 	
 	if [[ "$PATH" != *'.gcloud/google-cloud-sdk'* ]]
 	then
-		. "$HOME"/.gcloud/google-cloud-sdk/completion.bash.inc
-		. "$HOME"/.gcloud/google-cloud-sdk/path.bash.inc
+		[[ -e "$HOME"/.gcloud/google-cloud-sdk/completion.bash.inc ]] && . "$HOME"/.gcloud/google-cloud-sdk/completion.bash.inc
+		[[ -e "$HOME"/.gcloud/google-cloud-sdk/path.bash.inc ]] && . "$HOME"/.gcloud/google-cloud-sdk/path.bash.inc
 	fi
 	
 	#_wantSudo && _wantGetDep gcloud
@@ -21701,11 +21765,13 @@ _refresh_anchors_cautossh() {
 	cp -a "$scriptAbsoluteFolder"/_anchor "$scriptAbsoluteFolder"/_test
 	cp -a "$scriptAbsoluteFolder"/_anchor "$scriptAbsoluteFolder"/_setup
 	cp -a "$scriptAbsoluteFolder"/_anchor "$scriptAbsoluteFolder"/_bash
+	cp -a "$scriptAbsoluteFolder"/_anchor "$scriptAbsoluteFolder"/_bin
 	cp -a "$scriptAbsoluteFolder"/_anchor "$scriptAbsoluteFolder"/_grsync
 	
 	cp -a "$scriptAbsoluteFolder"/_anchor.bat "$scriptAbsoluteFolder"/_test.bat
 	cp -a "$scriptAbsoluteFolder"/_anchor.bat "$scriptAbsoluteFolder"/_setup.bat
 	cp -a "$scriptAbsoluteFolder"/_anchor.bat "$scriptAbsoluteFolder"/_bash.bat
+	cp -a "$scriptAbsoluteFolder"/_anchor.bat "$scriptAbsoluteFolder"/_bin.bat
 	cp -a "$scriptAbsoluteFolder"/_anchor.bat "$scriptAbsoluteFolder"/_grsync.bat
 }
 

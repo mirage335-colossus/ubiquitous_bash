@@ -73,6 +73,18 @@ _virtualbox_self_server_status() {
 _test_virtualbox_self() {
 	# ATTENTION: TODO: A custom 'GUI' frontend and backend may be required to integrate with VR.
 	
+	
+	
+	
+	# ATTENTION: WARNING: TODO: TEMPORARY.
+	if _if_cygwin
+	then
+		if ! "$scriptAbsoluteLocation" _testVBox
+		then
+			echo 'warn: accepted: cygwin: missing: vbox'
+		fi
+	fi
+	
 	! type _testVBox > /dev/null 2>&1 && _messageFAIL && _stop 1
 	_testVBox "$@"
 	

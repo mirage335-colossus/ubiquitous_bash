@@ -548,7 +548,7 @@ _test_gcloud() {
 	_getDep 'python3'
 	_getDep 'pip'
 	
-	if [[ "$nonet" != "true" ]] && cat /etc/issue | grep 'Debian' > /dev/null 2>&1
+	if [[ "$nonet" != "true" ]] && cat /etc/issue 2> /dev/null | grep 'Debian' > /dev/null 2>&1
 	then
 		_messagePlain_request 'ignore: upstream progress ->'
 		"$scriptAbsoluteLocation" _test_gcloud_upstream_sequence "$@"
@@ -558,8 +558,8 @@ _test_gcloud() {
 	
 	if [[ "$PATH" != *'.gcloud/google-cloud-sdk'* ]]
 	then
-		. "$HOME"/.gcloud/google-cloud-sdk/completion.bash.inc
-		. "$HOME"/.gcloud/google-cloud-sdk/path.bash.inc
+		[[ -e "$HOME"/.gcloud/google-cloud-sdk/completion.bash.inc ]] && . "$HOME"/.gcloud/google-cloud-sdk/completion.bash.inc
+		[[ -e "$HOME"/.gcloud/google-cloud-sdk/path.bash.inc ]] && . "$HOME"/.gcloud/google-cloud-sdk/path.bash.inc
 	fi
 	
 	#_wantSudo && _wantGetDep gcloud

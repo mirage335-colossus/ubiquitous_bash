@@ -485,69 +485,72 @@ _test_aws_upstream_sequence() {
 
 # ATTENTION: WARNING: Only tested with Debian Stable. May require rewrite to accommodate other distro (ie. Gentoo).
 _test_aws() {
-	# zlib1g-dev
-	_getDep 'zconf.h'
-	_getDep 'zlib.h'
-	_getDep 'pkgconfig/zlib.pc'
-	
-	# libssl-dev
-	_getDep 'openssl/ssl3.h'
-	_getDep 'openssl/aes.h'
-	_getDep 'pkgconfig/openssl.pc'
-	_getDep 'pkgconfig/libssl.pc'
-	_getDep 'pkgconfig/libcrypto.pc'
-	
-	# libncurses-dev
-	_getDep 'ncurses6-config'
-	_getDep 'ncursesw6-config'
-	_getDep 'ncurses5-config'
-	_getDep 'ncursesw5-config'
-	_getDep 'curses.h'
-	_getDep 'pkgconfig/ncurses.pc'
-	_getDep 'pkgconfig/ncursesw.pc'
-	
-	# libffi-dev
-	_getDep 'ffitarget.h'
-	_getDep 'pkgconfig/libffi.pc'
-	
-	# libsqlite3-dev
-	_getDep 'sqlite3.h'
-	_getDep 'sqlite3ext.h'
-	_getDep 'pkgconfig/sqlite3.pc'
-	
-	# libreadline-dev
-	_getDep 'readline/readline.h'
-	_getDep 'libreadline.so'
-	
-	# libbz2-dev
-	_getDep 'bzlib.h'
-	_getDep 'libbz2.so'
-	
-	
-	# python3-pypillowfight
-	_getDep 'python3/dist-packages/pillowfight/__init__.py'
-	
-	# python3-wxgtk4.0
-	_getDep 'python3/dist-packages/wx/__init__.py'
-	
-	# wxglade
-	_getDep 'wxglade'
-	
-	
-	_getDep 'unzip'
-	
-	
-	_getDep 'python3'
-	_getDep 'pip'
-	
-	
-	
-	
-	if [[ "$nonet" != "true" ]] && cat /etc/issue | grep 'Debian' > /dev/null 2>&1
+	if ! _if_cygwin
 	then
-		_messagePlain_request 'ignore: upstream progress ->'
-		"$scriptAbsoluteLocation" _test_aws_upstream_sequence "$@"
-		_messagePlain_request 'ignore: <- upstream progress'
+		# zlib1g-dev
+		_getDep 'zconf.h'
+		_getDep 'zlib.h'
+		_getDep 'pkgconfig/zlib.pc'
+		
+		# libssl-dev
+		_getDep 'openssl/ssl3.h'
+		_getDep 'openssl/aes.h'
+		_getDep 'pkgconfig/openssl.pc'
+		_getDep 'pkgconfig/libssl.pc'
+		_getDep 'pkgconfig/libcrypto.pc'
+		
+		# libncurses-dev
+		_getDep 'ncurses6-config'
+		_getDep 'ncursesw6-config'
+		_getDep 'ncurses5-config'
+		_getDep 'ncursesw5-config'
+		_getDep 'curses.h'
+		_getDep 'pkgconfig/ncurses.pc'
+		_getDep 'pkgconfig/ncursesw.pc'
+		
+		# libffi-dev
+		_getDep 'ffitarget.h'
+		_getDep 'pkgconfig/libffi.pc'
+		
+		# libsqlite3-dev
+		_getDep 'sqlite3.h'
+		_getDep 'sqlite3ext.h'
+		_getDep 'pkgconfig/sqlite3.pc'
+		
+		# libreadline-dev
+		_getDep 'readline/readline.h'
+		_getDep 'libreadline.so'
+		
+		# libbz2-dev
+		_getDep 'bzlib.h'
+		_getDep 'libbz2.so'
+		
+		
+		# python3-pypillowfight
+		_getDep 'python3/dist-packages/pillowfight/__init__.py'
+		
+		# python3-wxgtk4.0
+		_getDep 'python3/dist-packages/wx/__init__.py'
+		
+		# wxglade
+		_getDep 'wxglade'
+		
+		
+		_getDep 'unzip'
+		
+		
+		_getDep 'python3'
+		_getDep 'pip'
+		
+		
+		
+		
+		if [[ "$nonet" != "true" ]] && cat /etc/issue 2>/dev/null | grep 'Debian' > /dev/null 2>&1
+		then
+			_messagePlain_request 'ignore: upstream progress ->'
+			"$scriptAbsoluteLocation" _test_aws_upstream_sequence "$@"
+			_messagePlain_request 'ignore: <- upstream progress'
+		fi
 	fi
 	
 	_wantSudo && _wantGetDep aws

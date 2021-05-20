@@ -432,3 +432,39 @@ _package-cygwin() {
 
 
 
+
+if _if_cygwin
+then
+	# WARNING: Since MSW/Cygwin is hardly suitable for mounting UNIX/tmpfs/ramfs/etc filesystems, 'mountpoint' 'safety checks' are merely disabled.
+	mountpoint() {
+		true
+	}
+	losetup() {
+		false
+	}
+	
+	tc() {
+		false
+	}
+	wondershaper() {
+		false
+	}
+fi
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -25,6 +25,19 @@ _phpvirtualbox_self_status() {
 _test_phpvirtualbox_self() {
 	true
 	
+	
+	
+	
+	
+	# ATTENTION: WARNING: TODO: TEMPORARY.
+	if _if_cygwin
+	then
+		if ! "$scriptAbsoluteLocation" _testVBox
+		then
+			echo 'warn: accepted: cygwin: missing: vbox'
+		fi
+	fi
+	
 	# WARNING: This will not be perfect. An installation of 'phpvirtualbox' may be detected through network port (which causes a popup dialog if MSW host), or through a standard location (which may as well be required with MSW).
 	
 	# WARNING: While 'VirtualBox' may require a 'native' MSW installation, it is likely 'phpvirtualbox' will require Cygwin .
