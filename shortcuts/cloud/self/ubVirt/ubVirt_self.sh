@@ -81,8 +81,8 @@ _ubVirt_self_server_status() {
 _test_ubVirt() {
 	# ATTENTION: TODO: A custom 'GUI' frontend and backend may be required to integrate with VR.
 	
-	_testQEMU_x64-x64 "$@"
-	_testVBox "$@"
+	_tryExec _testQEMU_x64-x64
+	_tryExec _testVBox
 	
 	return 0
 }

@@ -184,7 +184,7 @@ _ssh_command() {
 	[[ "$currentBin_ssh" == "" ]] && currentBin_ssh=$(type -p ssh 2> /dev/null)
 	
 	
-	if currentBin_ssh -F "$sshDir"/config "$@"
+	if "$currentBin_ssh" -F "$sshDir"/config "$@"
 	then
 		return 0
 	fi

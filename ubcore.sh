@@ -32,7 +32,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='1891409836'
-export ub_setScriptChecksum_contents='2895697571'
+export ub_setScriptChecksum_contents='2594120903'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -3656,7 +3656,7 @@ _ssh_command() {
 	[[ "$currentBin_ssh" == "" ]] && currentBin_ssh=$(type -p ssh 2> /dev/null)
 	
 	
-	if currentBin_ssh -F "$sshDir"/config "$@"
+	if "$currentBin_ssh" -F "$sshDir"/config "$@"
 	then
 		return 0
 	fi
@@ -10115,8 +10115,8 @@ _ubVirt_self_server_status() {
 _test_ubVirt() {
 	# ATTENTION: TODO: A custom 'GUI' frontend and backend may be required to integrate with VR.
 	
-	_testQEMU_x64-x64 "$@"
-	_testVBox "$@"
+	_tryExec _testQEMU_x64-x64
+	_tryExec _testVBox
 	
 	return 0
 }

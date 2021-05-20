@@ -1016,7 +1016,9 @@ SET "MSWanchorSourceDir=ubiquitous_bash"
 SET "MSWanchorSource=lean.sh"
 
 if not "%MSWanchorSourceDir%"=="ubiquitous_bash" (
-	SET "MSWanchorSource=ubiquitous_bash.sh"
+	if "%MSWanchorSource%"=="lean.sh" (
+		SET "MSWanchorSource=ubiquitous_bash.sh"
+	)
 )
 REM SET "MSWanchorSource=ubiquitous_bash.sh"
 
