@@ -342,11 +342,11 @@ _anchor_configure() {
 	
 	if [[ "$scriptAbsoluteLocation" == *"cautossh" ]]
 	then
-		cat "$scriptAbsoluteFolder"/_anchor.tmp2  | sed 's/^export anchorSource\=.*$/export anchorSource\=\"'"$objectName"'\"/g' > "$scriptAbsoluteFolder"/_anchor.tmp3
-		#perl -p -e 's/export anchorSource=.*/export anchorSource="$ENV{objectName}"/g' "$scriptAbsoluteFolder"/_anchor.tmp2 > "$scriptAbsoluteFolder"/_anchor.tmp3
+		cat "$scriptAbsoluteFolder"/_anchor.tmp2  | sed 's/^export anchorSource\=.*$/export anchorSource\=\"'"cautossh"'\"/g' > "$scriptAbsoluteFolder"/_anchor.tmp3
+		#perl -p -e 's/export anchorSource=.*/export anchorSource="cautossh"/g' "$scriptAbsoluteFolder"/_anchor.tmp2 > "$scriptAbsoluteFolder"/_anchor.tmp3
 		
-		cat "$scriptAbsoluteFolder"/_anchor.tmp3 | sed 's/^SET \"MSWanchorSource\=.*$/SET \"MSWanchorSource\='"$objectName"'\"/g' > "$scriptAbsoluteFolder"/_anchor.tmp4
-		#perl -p -e 's/SET "MSWanchorSource=.*/SET "MSWanchorSource=$ENV{objectName}"/g' "$scriptAbsoluteFolder"/_anchor.tmp3 > "$scriptAbsoluteFolder"/_anchor.tmp4
+		cat "$scriptAbsoluteFolder"/_anchor.tmp3 | sed 's/^SET \"MSWanchorSource\=.*$/SET \"MSWanchorSource\='"cautossh"'\"/g' > "$scriptAbsoluteFolder"/_anchor.tmp4
+		#perl -p -e 's/SET "MSWanchorSource=.*/SET "MSWanchorSource=cautossh"/g' "$scriptAbsoluteFolder"/_anchor.tmp3 > "$scriptAbsoluteFolder"/_anchor.tmp4
 	else
 		cat "$scriptAbsoluteFolder"/_anchor.tmp2 > "$scriptAbsoluteFolder"/_anchor.tmp4
 	fi
