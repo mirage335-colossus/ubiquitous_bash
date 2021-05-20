@@ -32,7 +32,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='1891409836'
-export ub_setScriptChecksum_contents='1905387897'
+export ub_setScriptChecksum_contents='3418836288'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -4163,7 +4163,13 @@ _ssh_command() {
 		return 1
 	fi
 	
-	if ssh -F "$sshDir"/config "$@"
+	
+	local currentBin_ssh
+	currentBin_ssh="$ub_function_override_ssh"
+	[[ "$currentBin_ssh" == "" ]] && currentBin_ssh=$(type -p ssh 2> /dev/null)
+	
+	
+	if currentBin_ssh -F "$sshDir"/config "$@"
 	then
 		return 0
 	fi
@@ -4433,6 +4439,23 @@ _rsync() {
 	#rsync -e "$scriptAbsoluteLocation"" _ssh" "$@"
 	#-e "$scriptAbsoluteLocation"" _ssh -T -c aes256-gcm@openssh.com -o Compression=no -x"
 	rsync --block-size=64000 --checksum-choice="md5" --skip-compress='7z/ace/avi/bz2/deb/gpg/gz/iso/jpeg/jpg/lz/lsma/lzo/mov/mp[34]/ogg/png/rar/rpm/rzip/tbz/tgz/tlz/txz/xz/z/zip'/img/vdi/ima/bloom/midx/idx/pack -e "$scriptAbsoluteLocation"" _ssh -T -o Compression=no -x" "$@"
+}
+
+_grsync_procedure() {
+	export ub_function_override_ssh=$(type -p ssh 2> /dev/null)
+	ssh() {
+		_ssh "$@"
+	}
+	export ssh
+	
+	grsync "$@"
+	
+	export ub_function_override_ssh=''
+	unset ssh
+}
+
+_grsync() {
+	_editFakeHome "$scriptAbsoluteLocation" _grsync_procedure "$@"
 }
 
 _scp_command() {
@@ -21673,6 +21696,20 @@ _refresh_anchors_ubiquitous() {
 	cp -a "$scriptAbsoluteFolder"/_anchor.bat "$scriptAbsoluteFolder"/_terminate_broadcastPipe_page.bat
 }
 
+
+_refresh_anchors_cautossh() {
+	cp -a "$scriptAbsoluteFolder"/_anchor "$scriptAbsoluteFolder"/_test
+	cp -a "$scriptAbsoluteFolder"/_anchor "$scriptAbsoluteFolder"/_setup
+	cp -a "$scriptAbsoluteFolder"/_anchor "$scriptAbsoluteFolder"/_bash
+	cp -a "$scriptAbsoluteFolder"/_anchor "$scriptAbsoluteFolder"/_grsync
+	
+	cp -a "$scriptAbsoluteFolder"/_anchor "$scriptAbsoluteFolder"/_test.bat
+	cp -a "$scriptAbsoluteFolder"/_anchor "$scriptAbsoluteFolder"/_setup.bat
+	cp -a "$scriptAbsoluteFolder"/_anchor "$scriptAbsoluteFolder"/_bash.bat
+	cp -a "$scriptAbsoluteFolder"/_anchor "$scriptAbsoluteFolder"/_grsync.bat
+}
+
+
 # EXAMPLE ONLY.
 # _refresh_anchors() {
 # 	cp -a "$scriptAbsoluteFolder"/_anchor "$scriptAbsoluteFolder"/_true
@@ -21807,6 +21844,13 @@ _anchor() {
 	
 	[[ "$scriptAbsoluteFolder" == *"ubiquitous_bash" ]] && _refresh_anchors_ubiquitous
 	
+	if type "_refresh_anchors_cautossh" > /dev/null 2>&1 && [[ "$scriptAbsoluteLocation" == *"cautossh" ]]
+	then
+		_tryExec "_refresh_anchors_cautossh"
+		#return
+	fi
+	
+	
 	if type "_refresh_anchors" > /dev/null 2>&1
 	then
 		_tryExec "_refresh_anchors"
@@ -21835,6 +21879,8 @@ _anchor() {
 		#_tryExec "_associate_anchors_request"
 		##return
 	#fi
+	
+	
 	
 	return 0
 }

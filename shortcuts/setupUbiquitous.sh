@@ -208,6 +208,20 @@ _refresh_anchors_ubiquitous() {
 	cp -a "$scriptAbsoluteFolder"/_anchor.bat "$scriptAbsoluteFolder"/_terminate_broadcastPipe_page.bat
 }
 
+
+_refresh_anchors_cautossh() {
+	cp -a "$scriptAbsoluteFolder"/_anchor "$scriptAbsoluteFolder"/_test
+	cp -a "$scriptAbsoluteFolder"/_anchor "$scriptAbsoluteFolder"/_setup
+	cp -a "$scriptAbsoluteFolder"/_anchor "$scriptAbsoluteFolder"/_bash
+	cp -a "$scriptAbsoluteFolder"/_anchor "$scriptAbsoluteFolder"/_grsync
+	
+	cp -a "$scriptAbsoluteFolder"/_anchor "$scriptAbsoluteFolder"/_test.bat
+	cp -a "$scriptAbsoluteFolder"/_anchor "$scriptAbsoluteFolder"/_setup.bat
+	cp -a "$scriptAbsoluteFolder"/_anchor "$scriptAbsoluteFolder"/_bash.bat
+	cp -a "$scriptAbsoluteFolder"/_anchor "$scriptAbsoluteFolder"/_grsync.bat
+}
+
+
 # EXAMPLE ONLY.
 # _refresh_anchors() {
 # 	cp -a "$scriptAbsoluteFolder"/_anchor "$scriptAbsoluteFolder"/_true
@@ -342,6 +356,13 @@ _anchor() {
 	
 	[[ "$scriptAbsoluteFolder" == *"ubiquitous_bash" ]] && _refresh_anchors_ubiquitous
 	
+	if type "_refresh_anchors_cautossh" > /dev/null 2>&1 && [[ "$scriptAbsoluteLocation" == *"cautossh" ]]
+	then
+		_tryExec "_refresh_anchors_cautossh"
+		#return
+	fi
+	
+	
 	if type "_refresh_anchors" > /dev/null 2>&1
 	then
 		_tryExec "_refresh_anchors"
@@ -370,6 +391,8 @@ _anchor() {
 		#_tryExec "_associate_anchors_request"
 		##return
 	#fi
+	
+	
 	
 	return 0
 }
