@@ -79,9 +79,10 @@ _test_virtualbox_self() {
 	# ATTENTION: WARNING: TODO: TEMPORARY.
 	if _if_cygwin
 	then
-		if ! "$scriptAbsoluteLocation" _testVBox
+		if ! type _testVBox > /dev/null 2>&1 || ! "$scriptAbsoluteLocation" _testVBox
 		then
 			echo 'warn: accepted: cygwin: missing: vbox'
+			return 0
 		fi
 	fi
 	
