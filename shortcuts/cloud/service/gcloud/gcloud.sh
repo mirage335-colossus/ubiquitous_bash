@@ -455,7 +455,7 @@ _test_gcloud_upstream_sequence() {
 	
 	echo
 	
-	_gcloud components update
+	_gcloud --quiet components update
 	
 	echo
 	
@@ -525,11 +525,11 @@ _test_gcloud_upstream_sequence() {
 	
 	echo
 	
-	_gcloud config set disable_usage_reporting false
+	_gcloud --quiet config set disable_usage_reporting false
 	
 	echo
 	
-	_gcloud components update
+	_gcloud --quiet components update
 
 	echo
 	

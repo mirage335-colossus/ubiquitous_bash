@@ -32,7 +32,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='1891409836'
-export ub_setScriptChecksum_contents='3167255708'
+export ub_setScriptChecksum_contents='222213214'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -11273,7 +11273,7 @@ _test_gcloud_upstream_sequence() {
 	
 	echo
 	
-	_gcloud components update
+	_gcloud --quiet components update
 	
 	echo
 	
@@ -11343,11 +11343,11 @@ _test_gcloud_upstream_sequence() {
 	
 	echo
 	
-	_gcloud config set disable_usage_reporting false
+	_gcloud --quiet config set disable_usage_reporting false
 	
 	echo
 	
-	_gcloud components update
+	_gcloud --quiet components update
 
 	echo
 	
