@@ -32,7 +32,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='1891409836'
-export ub_setScriptChecksum_contents='1402509595'
+export ub_setScriptChecksum_contents='2681876983'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -4069,6 +4069,12 @@ _compile_bash_vars_queue() {
 	#[[ "$enUb_packet" == "true" ]] && 
 	#[[ "$enUb_portal" == "true" ]] && 
 	
+	
+	# ATTENTION: Only the test procedures are disabled if the 'queue' dependency is not declared. Due to the lengthy timing required to reliabily test the inherently unpredictability of any InterProcess-Communication with non-dedicated non-realtime software.
+	
+	
+	
+	
 	includeScriptList+=( "queue"/queue_vars.sh )
 	includeScriptList+=( "queue"/queue_vars_default.sh )
 	
@@ -4093,8 +4099,8 @@ _compile_bash_vars_queue() {
 	includeScriptList+=( "queue/tripleBuffer"/benchmark_page.sh )
 	
 	
-	includeScriptList+=( "queue/tripleBuffer"/test_broadcastPipe_page.sh )
-	includeScriptList+=( "queue/tripleBuffer"/benchmark_broadcastPipe_page.sh )
+	[[ "$enUb_queue" ]] && includeScriptList+=( "queue/tripleBuffer"/test_broadcastPipe_page.sh )
+	[[ "$enUb_queue" ]] && includeScriptList+=( "queue/tripleBuffer"/benchmark_broadcastPipe_page.sh )
 	
 	
 	
@@ -4106,10 +4112,10 @@ _compile_bash_vars_queue() {
 	includeScriptList+=( "queue/aggregator/static"/broadcastPipe_aggregatorStatic.sh )
 	includeScriptList+=( "queue/aggregator/static"/demand_broadcastPipe_aggregatorStatic.sh )
 	
-	includeScriptList+=( "queue/aggregator/static"/test_broadcastPipe_aggregatorStatic.sh )
-	includeScriptList+=( "queue/aggregator/static"/benchmark_broadcastPipe_aggregatorStatic.sh )
+	[[ "$enUb_queue" ]] && includeScriptList+=( "queue/aggregator/static"/test_broadcastPipe_aggregatorStatic.sh )
+	[[ "$enUb_queue" ]] && includeScriptList+=( "queue/aggregator/static"/benchmark_broadcastPipe_aggregatorStatic.sh )
 	
-	[[ "$enUb_dev" == "true" ]] && includeScriptList+=( "queue/aggregator/static"/test_scope_aggregatorStatic.sh )
+	( [[ "$enUb_queue" ]] || [[ "$enUb_dev" == "true" ]] ) && includeScriptList+=( "queue/aggregator/static"/test_scope_aggregatorStatic.sh )
 	
 	
 	includeScriptList+=( "queue/zSocket"/page_socket_tcp.sh )
@@ -4127,6 +4133,8 @@ _compile_bash_vars_queue() {
 	includeScriptList+=( "queue/zInteractive"/interactive.sh )
 	
 	
+	
+	[[ "$enUb_queue" ]] && includeScriptList+=( "queue"/test_queue.sh )
 	
 }
 
@@ -4616,6 +4624,8 @@ _compile_bash_deps() {
 		
 		#_deps_stopwatch
 		
+		_deps_queue
+		
 		return 0
 	fi
 	
@@ -4645,7 +4655,7 @@ _compile_bash_deps() {
 		
 		_deps_calculators
 		
-		_deps_queue
+		#_deps_queue
 		
 		# _compile_bash_deps 'core'
 		return 0
@@ -4703,7 +4713,7 @@ _compile_bash_deps() {
 		
 		_deps_channel
 		
-		_deps_queue
+		#_deps_queue
 		_deps_metaengine
 		
 		_deps_abstractfs
@@ -4720,7 +4730,7 @@ _compile_bash_deps() {
 		
 		_deps_channel
 		
-		_deps_queue
+		#_deps_queue
 		_deps_metaengine
 		
 		_deps_fakehome
@@ -4762,7 +4772,7 @@ _compile_bash_deps() {
 		
 		_deps_channel
 		
-		_deps_queue
+		#_deps_queue
 		_deps_metaengine
 		
 		_deps_git

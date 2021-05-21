@@ -8,6 +8,8 @@ _compile_bash_deps() {
 		
 		#_deps_stopwatch
 		
+		_deps_queue
+		
 		return 0
 	fi
 	
@@ -37,7 +39,7 @@ _compile_bash_deps() {
 		
 		_deps_calculators
 		
-		_deps_queue
+		#_deps_queue
 		
 		# _compile_bash_deps 'core'
 		return 0
@@ -95,7 +97,7 @@ _compile_bash_deps() {
 		
 		_deps_channel
 		
-		_deps_queue
+		#_deps_queue
 		_deps_metaengine
 		
 		_deps_abstractfs
@@ -112,7 +114,7 @@ _compile_bash_deps() {
 		
 		_deps_channel
 		
-		_deps_queue
+		#_deps_queue
 		_deps_metaengine
 		
 		_deps_fakehome
@@ -154,7 +156,7 @@ _compile_bash_deps() {
 		
 		_deps_channel
 		
-		_deps_queue
+		#_deps_queue
 		_deps_metaengine
 		
 		_deps_git

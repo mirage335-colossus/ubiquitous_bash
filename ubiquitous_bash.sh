@@ -32,7 +32,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='1891409836'
-export ub_setScriptChecksum_contents='3016656493'
+export ub_setScriptChecksum_contents='4202449172'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -24271,7 +24271,15 @@ _broadcastPipe_page_read_maxTime() {
 
 
 
-
+# ATTENTION: Only the test procedures are disabled if the 'queue' dependency is not declared. Due to the lengthy timing required to reliabily test the inherently unpredictability of any InterProcess-Communication with non-dedicated non-realtime software.
+unset _test_queue
+unset _test_selfTime
+unset _test_bashTime
+unset _test_filemtime
+unset _test_timeoutRead
+#unset _timetest
+unset _test_broadcastPipe_page
+unset _test_broadcastPipe_aggregatorStatic
 
 
 
@@ -26915,6 +26923,314 @@ _test_interactive_screen() {
 
 
 
+
+
+
+
+
+
+_test_queue() {
+	_getDep md5sum
+	_getDep sha512sum
+	
+	_getDep socat
+}
+
+
+
+# https://stackoverflow.com/questions/4774358/get-mtime-of-specific-file-using-bash
+_test_selfTime_sequence() {
+	_start
+	
+	local iterations
+	
+	local dateA
+	local dateB
+	local dateDelta
+	
+	
+	iterations=0
+	while [[ "$iterations" -lt 3 ]]
+	do
+		dateA=$(date +%s)
+		! "$scriptAbsoluteLocation" _true && _messageFAIL && _stop 1
+		"$scriptAbsoluteLocation" _false && _messageFAIL && _stop 1
+		dateB=$(date +%s)
+		
+		dateDelta=$(bc <<< "$dateB - $dateA")
+		#echo "$dateDelta"
+		
+		if [[ "$dateDelta" -lt 0 ]]
+		then
+			_messageFAIL
+			_stop 1
+		fi
+		
+		if [[ "$dateDelta" -gt 14 ]]
+		then
+			_messageFAIL
+			_stop 1
+		fi
+		
+		let iterations="$iterations + 1"
+	done
+	
+	_stop 0
+}
+
+_test_selfTime() {
+	"$scriptAbsoluteLocation" _test_selfTime_sequence "$@"
+}
+
+
+_test_bashTime_sequence() {
+	_start
+	
+	local iterations
+	
+	local dateA
+	local dateB
+	local dateDelta
+	
+	
+	iterations=0
+	while [[ "$iterations" -lt 3 ]]
+	do
+		dateA=$(date +%s)
+		! echo 'echo fake interactive' | bash -i > /dev/null 2>&1 && _messageFAIL && _stop 1
+		echo 'false' | bash -i > /dev/null 2>&1 && _messageFAIL && _stop 1
+		! echo 'echo fake interactive' | dash -i > /dev/null 2>&1 && _messageFAIL && _stop 1
+		echo 'false' | dash -i > /dev/null 2>&1 && _messageFAIL && _stop 1
+		dateB=$(date +%s)
+		
+		dateDelta=$(bc <<< "$dateB - $dateA")
+		#echo "$dateDelta"
+		
+		if [[ "$dateDelta" -lt 0 ]]
+		then
+			_messageFAIL
+			_stop 1
+		fi
+		
+		if [[ "$dateDelta" -gt 14 ]]
+		then
+			_messageFAIL
+			_stop 1
+		fi
+		
+		let iterations="$iterations + 1"
+	done
+	
+	_stop 0
+}
+
+_test_bashTime() {
+	"$scriptAbsoluteLocation" _test_bashTime_sequence "$@"
+}
+
+
+# https://stackoverflow.com/questions/4774358/get-mtime-of-specific-file-using-bash
+_test_filemtime_sequence() {
+	_start
+	
+	local iterations
+	
+	local currentFileMtimeA
+	local currentFileMtimeB
+	local currentFileMtimeDelta
+	
+	
+	iterations=0
+	while [[ "$iterations" -lt 3 ]]
+	do
+		echo > "$safeTmp"/test_filemtime
+		currentFileMtimeA=$(stat -c %Y "$safeTmp"/test_filemtime)
+		sleep 2
+		touch "$safeTmp"/test_filemtime
+		currentFileMtimeB=$(stat -c %Y "$safeTmp"/test_filemtime)
+		
+		currentFileMtimeDelta=$(bc <<< "$currentFileMtimeB - $currentFileMtimeA")
+		#echo "$currentFileMtimeDelta"
+		
+		if [[ "$currentFileMtimeDelta" -lt 1 ]]
+		then
+			_messageFAIL
+			_stop 1
+		fi
+		
+		if [[ "$currentFileMtimeDelta" -gt 12 ]]
+		then
+			_messageFAIL
+			_stop 1
+		fi
+		
+		let iterations="$iterations + 1"
+	done
+	
+	
+	iterations=0
+	while [[ "$iterations" -lt 3 ]]
+	do
+		echo > "$safeTmp"/test_filemtime
+		currentFileMtimeA=$(stat -c %Y "$safeTmp"/test_filemtime)
+		sleep 2
+		echo 'x' >> "$safeTmp"/test_filemtime
+		currentFileMtimeB=$(stat -c %Y "$safeTmp"/test_filemtime)
+		
+		currentFileMtimeDelta=$(bc <<< "$currentFileMtimeB - $currentFileMtimeA")
+		#echo "$currentFileMtimeDelta"
+		
+		if [[ "$currentFileMtimeDelta" -lt 1 ]]
+		then
+			_messageFAIL
+			_stop 1
+		fi
+		
+		if [[ "$currentFileMtimeDelta" -gt 12 ]]
+		then
+			_messageFAIL
+			_stop 1
+		fi
+		
+		let iterations="$iterations + 1"
+	done
+	
+	
+	iterations=0
+	while [[ "$iterations" -lt 3 ]]
+	do
+		if ! rm -f "$safeTmp"/test_filemtime
+		then
+			_messageFAIL
+			_stop 1
+		fi
+		echo > "$safeTmp"/test_filemtime
+		if ! find "$safeTmp"/ -type f -mmin 0.19 | grep test_filemtime > /dev/null 2>&1
+		then
+			_messageFAIL
+			_stop 1
+		fi
+		if ! find "$safeTmp"/ -type f -mmin -0.19 | grep test_filemtime > /dev/null 2>&1
+		then
+			_messageFAIL
+			_stop 1
+		fi
+		
+		sleep 16
+		if find "$safeTmp"/ -type f -mmin 0.19 | grep test_filemtime > /dev/null 2>&1
+		then
+			_messageFAIL
+			_stop 1
+		fi
+		if find "$safeTmp"/ -type f -mmin -0.19 | grep test_filemtime > /dev/null 2>&1
+		then
+			_messageFAIL
+			_stop 1
+		fi
+		
+		if ! find "$safeTmp"/ -type f -mmin 1 | grep test_filemtime > /dev/null 2>&1
+		then
+			_messageFAIL
+			_stop 1
+		fi
+		if find "$safeTmp"/ -type f -mmin 2 | grep test_filemtime > /dev/null 2>&1
+		then
+			_messageFAIL
+			_stop 1
+		fi
+		
+		if ! find "$safeTmp"/ -type f -mmin -1 | grep test_filemtime > /dev/null 2>&1
+		then
+			_messageFAIL
+			_stop 1
+		fi
+		if ! find "$safeTmp"/ -type f -mmin -2700 | grep test_filemtime > /dev/null 2>&1
+		then
+			_messageFAIL
+			_stop 1
+		fi
+		
+		let iterations="$iterations + 1"
+	done
+	
+	
+	_stop 0
+}
+
+_test_filemtime() {
+	"$scriptAbsoluteLocation" _test_filemtime_sequence "$@"
+}
+
+
+_test_timeoutRead_slowByteRead() {
+	while head --bytes=1
+	do
+		sleep 9
+		#sleep 2
+	done
+}
+
+_test_timeoutRead_multiByteRead() {
+	#while head --bytes=3
+	while dd bs="3" count=1 2>/dev/null
+	do
+		true
+	done
+}
+
+_test_timeoutRead_bashRead() {
+	# Inaccurate. Tests with random data ('/dev/urandom') seem to show errors.
+	local currentString
+	export IFS=
+	export LANG=C
+	export LC_ALL=C
+	#LANG=C IFS= read -r -d '' -n 1 currentString
+	while read -r -d '' -n 1 currentString
+	do
+		#[ "$currentString" ] && echo -n "$currentString" || echo
+		[ "$currentString" ] && printf '%b' "$currentString" || echo
+	done
+}
+
+_test_timeoutRead_read() {
+	local currentIterations
+	currentIterations=0
+	while _timeout 0.1 cat 2>/dev/null && true | ([[ "$currentIterations" -lt "$1" ]])
+	do
+		true | (sleep 6 ; echo -n x)
+		#true | (sleep 1 ; echo -n x)
+		let currentIterations="$currentIterations"' + 1'
+	done
+}
+
+_test_timeoutRead_procedure() {
+	
+	# Applying 'timeout' to 'echo' may have no effect (presumably due to immediately filling pipe buffer).
+	# Applying 'timeout' to 'slowByteRead' should be able to limit the number of input characters. A 8s timeout at 3s/b read rate should apparently interrupt '12345' at '123'.
+	# Applying timeout to '_test_timeoutRead_read' should immediately terminate all processes in the processing chain (presumably due to pipe close).
+	
+	#_timeout 75 echo '12345' | _timeout 26 _test_timeoutRead_slowByteRead | _timeout 75 _test_timeoutRead_multiByteRead | _timeout 75 _test_timeoutRead_bashRead | _timeout 75 _test_timeoutRead_read 6
+	
+	_timeout 75 echo '12345' | _timeout 75 _test_timeoutRead_multiByteRead | _timeout 26 _test_timeoutRead_slowByteRead | _timeout 75 _test_timeoutRead_bashRead | _timeout 75 _test_timeoutRead_read 6
+	
+	
+	true
+}
+
+_test_timeoutRead() {
+	#true | "$scriptAbsoluteLocation" _test_timeoutRead_procedure "$@" | cat
+	#return 0
+	
+	local currentString
+	currentString=$(true | "$scriptAbsoluteLocation" _test_timeoutRead_procedure "$@" | cat)
+	#echo "$currentString"
+	
+	[[ "$currentString" == "" ]] && _stop 1
+	[[ "$currentString" != "1xx2x3xxx" ]] && _stop 1
+	[[ $(echo -n "$currentString" | wc -c) != '9' ]] && _stop 1
+	
+	return 0
+}
 
 
 
@@ -29619,301 +29935,6 @@ _vector() {
 
 
 
-# https://stackoverflow.com/questions/4774358/get-mtime-of-specific-file-using-bash
-_test_selfTime_sequence() {
-	_start
-	
-	local iterations
-	
-	local dateA
-	local dateB
-	local dateDelta
-	
-	
-	iterations=0
-	while [[ "$iterations" -lt 3 ]]
-	do
-		dateA=$(date +%s)
-		! "$scriptAbsoluteLocation" _true && _messageFAIL && _stop 1
-		"$scriptAbsoluteLocation" _false && _messageFAIL && _stop 1
-		dateB=$(date +%s)
-		
-		dateDelta=$(bc <<< "$dateB - $dateA")
-		#echo "$dateDelta"
-		
-		if [[ "$dateDelta" -lt 0 ]]
-		then
-			_messageFAIL
-			_stop 1
-		fi
-		
-		if [[ "$dateDelta" -gt 14 ]]
-		then
-			_messageFAIL
-			_stop 1
-		fi
-		
-		let iterations="$iterations + 1"
-	done
-	
-	_stop 0
-}
-
-_test_selfTime() {
-	"$scriptAbsoluteLocation" _test_selfTime_sequence "$@"
-}
-
-
-_test_bashTime_sequence() {
-	_start
-	
-	local iterations
-	
-	local dateA
-	local dateB
-	local dateDelta
-	
-	
-	iterations=0
-	while [[ "$iterations" -lt 3 ]]
-	do
-		dateA=$(date +%s)
-		! echo 'echo fake interactive' | bash -i > /dev/null 2>&1 && _messageFAIL && _stop 1
-		echo 'false' | bash -i > /dev/null 2>&1 && _messageFAIL && _stop 1
-		! echo 'echo fake interactive' | dash -i > /dev/null 2>&1 && _messageFAIL && _stop 1
-		echo 'false' | dash -i > /dev/null 2>&1 && _messageFAIL && _stop 1
-		dateB=$(date +%s)
-		
-		dateDelta=$(bc <<< "$dateB - $dateA")
-		#echo "$dateDelta"
-		
-		if [[ "$dateDelta" -lt 0 ]]
-		then
-			_messageFAIL
-			_stop 1
-		fi
-		
-		if [[ "$dateDelta" -gt 14 ]]
-		then
-			_messageFAIL
-			_stop 1
-		fi
-		
-		let iterations="$iterations + 1"
-	done
-	
-	_stop 0
-}
-
-_test_bashTime() {
-	"$scriptAbsoluteLocation" _test_bashTime_sequence "$@"
-}
-
-
-# https://stackoverflow.com/questions/4774358/get-mtime-of-specific-file-using-bash
-_test_filemtime_sequence() {
-	_start
-	
-	local iterations
-	
-	local currentFileMtimeA
-	local currentFileMtimeB
-	local currentFileMtimeDelta
-	
-	
-	iterations=0
-	while [[ "$iterations" -lt 3 ]]
-	do
-		echo > "$safeTmp"/test_filemtime
-		currentFileMtimeA=$(stat -c %Y "$safeTmp"/test_filemtime)
-		sleep 2
-		touch "$safeTmp"/test_filemtime
-		currentFileMtimeB=$(stat -c %Y "$safeTmp"/test_filemtime)
-		
-		currentFileMtimeDelta=$(bc <<< "$currentFileMtimeB - $currentFileMtimeA")
-		#echo "$currentFileMtimeDelta"
-		
-		if [[ "$currentFileMtimeDelta" -lt 1 ]]
-		then
-			_messageFAIL
-			_stop 1
-		fi
-		
-		if [[ "$currentFileMtimeDelta" -gt 12 ]]
-		then
-			_messageFAIL
-			_stop 1
-		fi
-		
-		let iterations="$iterations + 1"
-	done
-	
-	
-	iterations=0
-	while [[ "$iterations" -lt 3 ]]
-	do
-		echo > "$safeTmp"/test_filemtime
-		currentFileMtimeA=$(stat -c %Y "$safeTmp"/test_filemtime)
-		sleep 2
-		echo 'x' >> "$safeTmp"/test_filemtime
-		currentFileMtimeB=$(stat -c %Y "$safeTmp"/test_filemtime)
-		
-		currentFileMtimeDelta=$(bc <<< "$currentFileMtimeB - $currentFileMtimeA")
-		#echo "$currentFileMtimeDelta"
-		
-		if [[ "$currentFileMtimeDelta" -lt 1 ]]
-		then
-			_messageFAIL
-			_stop 1
-		fi
-		
-		if [[ "$currentFileMtimeDelta" -gt 12 ]]
-		then
-			_messageFAIL
-			_stop 1
-		fi
-		
-		let iterations="$iterations + 1"
-	done
-	
-	
-	iterations=0
-	while [[ "$iterations" -lt 3 ]]
-	do
-		if ! rm -f "$safeTmp"/test_filemtime
-		then
-			_messageFAIL
-			_stop 1
-		fi
-		echo > "$safeTmp"/test_filemtime
-		if ! find "$safeTmp"/ -type f -mmin 0.19 | grep test_filemtime > /dev/null 2>&1
-		then
-			_messageFAIL
-			_stop 1
-		fi
-		if ! find "$safeTmp"/ -type f -mmin -0.19 | grep test_filemtime > /dev/null 2>&1
-		then
-			_messageFAIL
-			_stop 1
-		fi
-		
-		sleep 16
-		if find "$safeTmp"/ -type f -mmin 0.19 | grep test_filemtime > /dev/null 2>&1
-		then
-			_messageFAIL
-			_stop 1
-		fi
-		if find "$safeTmp"/ -type f -mmin -0.19 | grep test_filemtime > /dev/null 2>&1
-		then
-			_messageFAIL
-			_stop 1
-		fi
-		
-		if ! find "$safeTmp"/ -type f -mmin 1 | grep test_filemtime > /dev/null 2>&1
-		then
-			_messageFAIL
-			_stop 1
-		fi
-		if find "$safeTmp"/ -type f -mmin 2 | grep test_filemtime > /dev/null 2>&1
-		then
-			_messageFAIL
-			_stop 1
-		fi
-		
-		if ! find "$safeTmp"/ -type f -mmin -1 | grep test_filemtime > /dev/null 2>&1
-		then
-			_messageFAIL
-			_stop 1
-		fi
-		if ! find "$safeTmp"/ -type f -mmin -2700 | grep test_filemtime > /dev/null 2>&1
-		then
-			_messageFAIL
-			_stop 1
-		fi
-		
-		let iterations="$iterations + 1"
-	done
-	
-	
-	_stop 0
-}
-
-_test_filemtime() {
-	"$scriptAbsoluteLocation" _test_filemtime_sequence "$@"
-}
-
-
-_test_timeoutRead_slowByteRead() {
-	while head --bytes=1
-	do
-		sleep 9
-		#sleep 2
-	done
-}
-
-_test_timeoutRead_multiByteRead() {
-	#while head --bytes=3
-	while dd bs="3" count=1 2>/dev/null
-	do
-		true
-	done
-}
-
-_test_timeoutRead_bashRead() {
-	# Inaccurate. Tests with random data ('/dev/urandom') seem to show errors.
-	local currentString
-	export IFS=
-	export LANG=C
-	export LC_ALL=C
-	#LANG=C IFS= read -r -d '' -n 1 currentString
-	while read -r -d '' -n 1 currentString
-	do
-		#[ "$currentString" ] && echo -n "$currentString" || echo
-		[ "$currentString" ] && printf '%b' "$currentString" || echo
-	done
-}
-
-_test_timeoutRead_read() {
-	local currentIterations
-	currentIterations=0
-	while _timeout 0.1 cat 2>/dev/null && true | ([[ "$currentIterations" -lt "$1" ]])
-	do
-		true | (sleep 6 ; echo -n x)
-		#true | (sleep 1 ; echo -n x)
-		let currentIterations="$currentIterations"' + 1'
-	done
-}
-
-_test_timeoutRead_procedure() {
-	
-	# Applying 'timeout' to 'echo' may have no effect (presumably due to immediately filling pipe buffer).
-	# Applying 'timeout' to 'slowByteRead' should be able to limit the number of input characters. A 8s timeout at 3s/b read rate should apparently interrupt '12345' at '123'.
-	# Applying timeout to '_test_timeoutRead_read' should immediately terminate all processes in the processing chain (presumably due to pipe close).
-	
-	#_timeout 75 echo '12345' | _timeout 26 _test_timeoutRead_slowByteRead | _timeout 75 _test_timeoutRead_multiByteRead | _timeout 75 _test_timeoutRead_bashRead | _timeout 75 _test_timeoutRead_read 6
-	
-	_timeout 75 echo '12345' | _timeout 75 _test_timeoutRead_multiByteRead | _timeout 26 _test_timeoutRead_slowByteRead | _timeout 75 _test_timeoutRead_bashRead | _timeout 75 _test_timeoutRead_read 6
-	
-	
-	true
-}
-
-_test_timeoutRead() {
-	#true | "$scriptAbsoluteLocation" _test_timeoutRead_procedure "$@" | cat
-	#return 0
-	
-	local currentString
-	currentString=$(true | "$scriptAbsoluteLocation" _test_timeoutRead_procedure "$@" | cat)
-	#echo "$currentString"
-	
-	[[ "$currentString" == "" ]] && _stop 1
-	[[ "$currentString" != "1xx2x3xxx" ]] && _stop 1
-	[[ $(echo -n "$currentString" | wc -c) != '9' ]] && _stop 1
-	
-	return 0
-}
-
-
 #Verifies the timeout and sleep commands work properly, with subsecond specifications.
 _timetest() {
 	
@@ -30244,6 +30265,7 @@ _timetest() {
 	_messagePASS
 	return 0
 }
+
 
 _testarglength() {
 	local testArgLength
@@ -30824,18 +30846,39 @@ _test() {
 	#fi
 	_messagePASS
 	
-	echo -n -e '\E[1;32;46m Timing...		\E[0m'
-	echo
-	echo -e '\E[0;36m Timing: _test_selfTime \E[0m'
-	! _test_selfTime && echo '_test_selfTime broken' && _stop 1
-	echo -e '\E[0;36m Timing: _test_bashTime \E[0m'
-	! _test_bashTime && echo '_test_selfTime broken' && _stop 1
-	echo -e '\E[0;36m Timing: _test_filemtime \E[0m'
-	! _test_filemtime && echo '_test_selfTime broken' && _stop 1
-	echo -e '\E[0;36m Timing: _test_timeoutRead \E[0m'
-	! _test_timeoutRead && echo '_test_timeoutRead broken' && _stop 1
-	echo -e '\E[0;36m Timing: _timetest \E[0m'
-	! _timetest && echo '_timetest broken' && _stop 1
+	if type _timetest > /dev/null 2>&1
+	then
+		echo -n -e '\E[1;32;46m Timing...		\E[0m'
+		echo
+		
+		if type _test_selfTime > /dev/null 2>&1
+		then
+			echo -e '\E[0;36m Timing: _test_selfTime \E[0m'
+			! _test_selfTime && echo '_test_selfTime broken' && _stop 1
+		fi
+		
+		if type _test_bashTime > /dev/null 2>&1
+		then
+			echo -e '\E[0;36m Timing: _test_bashTime \E[0m'
+			! _test_bashTime && echo '_test_selfTime broken' && _stop 1
+		fi
+		
+		if type _test_filemtime > /dev/null 2>&1
+		then
+			echo -e '\E[0;36m Timing: _test_filemtime \E[0m'
+			! _test_filemtime && echo '_test_selfTime broken' && _stop 1
+		fi
+		
+		if type _test_timeoutRead > /dev/null 2>&1
+		then
+			echo -e '\E[0;36m Timing: _test_timeoutRead \E[0m'
+			! _test_timeoutRead && echo '_test_timeoutRead broken' && _stop 1
+		fi
+		
+		echo -e '\E[0;36m Timing: _timetest \E[0m'
+		! _timetest && echo '_timetest broken' && _stop 1
+	fi
+	
 	
 	_messageNormal "Dependency checking..."
 	
@@ -31028,15 +31071,20 @@ _test() {
 	
 	_messagePASS
 	
-	_messageNormal "Queue..."
-	
-	echo -e '\E[0;36m Queue: _test_broadcastPipe_page \E[0m'
-	! _test_broadcastPipe_page && echo '_test_broadcastPipe_page broken' && _stop 1
-	
-	echo -e '\E[0;36m Queue: _test_broadcastPipe_aggregatorStatic \E[0m'
-	! _test_broadcastPipe_aggregatorStatic && echo '_test_broadcastPipe_aggregatorStatic broken' && _stop 1
-	
-	_messagePASS
+	if type _test_queue > /dev/null 2>&1
+	then
+		_messageNormal "Queue..."
+		
+		_tryExec '_test_queue'
+		
+		echo -e '\E[0;36m Queue: _test_broadcastPipe_page \E[0m'
+		! _test_broadcastPipe_page && echo '_test_broadcastPipe_page broken' && _stop 1
+		
+		echo -e '\E[0;36m Queue: _test_broadcastPipe_aggregatorStatic \E[0m'
+		! _test_broadcastPipe_aggregatorStatic && echo '_test_broadcastPipe_aggregatorStatic broken' && _stop 1
+		
+		_messagePASS
+	fi
 	
 	_messageNormal 'Vector...'
 	_vector
@@ -31477,6 +31525,12 @@ _compile_bash_vars_queue() {
 	#[[ "$enUb_packet" == "true" ]] && 
 	#[[ "$enUb_portal" == "true" ]] && 
 	
+	
+	# ATTENTION: Only the test procedures are disabled if the 'queue' dependency is not declared. Due to the lengthy timing required to reliabily test the inherently unpredictability of any InterProcess-Communication with non-dedicated non-realtime software.
+	
+	
+	
+	
 	includeScriptList+=( "queue"/queue_vars.sh )
 	includeScriptList+=( "queue"/queue_vars_default.sh )
 	
@@ -31501,8 +31555,8 @@ _compile_bash_vars_queue() {
 	includeScriptList+=( "queue/tripleBuffer"/benchmark_page.sh )
 	
 	
-	includeScriptList+=( "queue/tripleBuffer"/test_broadcastPipe_page.sh )
-	includeScriptList+=( "queue/tripleBuffer"/benchmark_broadcastPipe_page.sh )
+	[[ "$enUb_queue" ]] && includeScriptList+=( "queue/tripleBuffer"/test_broadcastPipe_page.sh )
+	[[ "$enUb_queue" ]] && includeScriptList+=( "queue/tripleBuffer"/benchmark_broadcastPipe_page.sh )
 	
 	
 	
@@ -31514,10 +31568,10 @@ _compile_bash_vars_queue() {
 	includeScriptList+=( "queue/aggregator/static"/broadcastPipe_aggregatorStatic.sh )
 	includeScriptList+=( "queue/aggregator/static"/demand_broadcastPipe_aggregatorStatic.sh )
 	
-	includeScriptList+=( "queue/aggregator/static"/test_broadcastPipe_aggregatorStatic.sh )
-	includeScriptList+=( "queue/aggregator/static"/benchmark_broadcastPipe_aggregatorStatic.sh )
+	[[ "$enUb_queue" ]] && includeScriptList+=( "queue/aggregator/static"/test_broadcastPipe_aggregatorStatic.sh )
+	[[ "$enUb_queue" ]] && includeScriptList+=( "queue/aggregator/static"/benchmark_broadcastPipe_aggregatorStatic.sh )
 	
-	[[ "$enUb_dev" == "true" ]] && includeScriptList+=( "queue/aggregator/static"/test_scope_aggregatorStatic.sh )
+	( [[ "$enUb_queue" ]] || [[ "$enUb_dev" == "true" ]] ) && includeScriptList+=( "queue/aggregator/static"/test_scope_aggregatorStatic.sh )
 	
 	
 	includeScriptList+=( "queue/zSocket"/page_socket_tcp.sh )
@@ -31535,6 +31589,8 @@ _compile_bash_vars_queue() {
 	includeScriptList+=( "queue/zInteractive"/interactive.sh )
 	
 	
+	
+	[[ "$enUb_queue" ]] && includeScriptList+=( "queue"/test_queue.sh )
 	
 }
 
@@ -32024,6 +32080,8 @@ _compile_bash_deps() {
 		
 		#_deps_stopwatch
 		
+		_deps_queue
+		
 		return 0
 	fi
 	
@@ -32053,7 +32111,7 @@ _compile_bash_deps() {
 		
 		_deps_calculators
 		
-		_deps_queue
+		#_deps_queue
 		
 		# _compile_bash_deps 'core'
 		return 0
@@ -32111,7 +32169,7 @@ _compile_bash_deps() {
 		
 		_deps_channel
 		
-		_deps_queue
+		#_deps_queue
 		_deps_metaengine
 		
 		_deps_abstractfs
@@ -32128,7 +32186,7 @@ _compile_bash_deps() {
 		
 		_deps_channel
 		
-		_deps_queue
+		#_deps_queue
 		_deps_metaengine
 		
 		_deps_fakehome
@@ -32170,7 +32228,7 @@ _compile_bash_deps() {
 		
 		_deps_channel
 		
-		_deps_queue
+		#_deps_queue
 		_deps_metaengine
 		
 		_deps_git
