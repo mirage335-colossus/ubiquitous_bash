@@ -38,7 +38,7 @@ _mktorrent() {
 
 _test_mktorrent() {
 	# If not Debian, then simply accept these pacakges may not be available.
-	[[ -e /etc/issue ]] && cat /etc/issue | grep 'Debian' > /dev/null 2>&1 && return 0
+	[[ -e /etc/issue ]] && ! cat /etc/issue | grep 'Debian' > /dev/null 2>&1 && return 0
 	
 	_wantGetDep mktorrent
 	

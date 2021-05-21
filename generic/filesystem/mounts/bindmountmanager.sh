@@ -1,6 +1,14 @@
 _testBindMountManager() {
 	_getDep mount
 	_getDep umount
+	
+	if _if_cygwin
+	then
+		echo 'warn: accepted: cygwin: missing: mountpoint'
+		echo 'warn: accepted: cygwin: missing: mount: features'
+		return 0
+	fi
+	
 	_getDep mountpoint
 	
 	if ! mount --help | grep '\-\-bind' >/dev/null 2>&1

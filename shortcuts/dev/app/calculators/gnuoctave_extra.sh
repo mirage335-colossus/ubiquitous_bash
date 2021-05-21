@@ -2,7 +2,7 @@
 # ATTENTION: WARNING: Only tested with Debian Stable. May require rewrite to accommodate other distro (ie. Gentoo).
 _test_devgnuoctave_wantGetDep-octavePackage-debian-x64() {
 	# If not Debian, then simply accept these pacakges may not be available.
-	! [[ -e /etc/issue ]] && cat /etc/issue | grep 'Debian' > /dev/null 2>&1 && return 0
+	[[ -e /etc/issue ]] && ! cat /etc/issue | grep 'Debian' > /dev/null 2>&1 && return 0
 	
 	# If not x64, then simply accept these pacakges may not be available.
 	local hostArch
@@ -20,7 +20,7 @@ _test_devgnuoctave_wantGetDep-octavePackage-debian-x64() {
 
 _test_devgnuoctave-debian-x64() {
 	# If not Debian, then simply accept these pacakges may not be available.
-	! [[ -e /etc/issue ]] && cat /etc/issue | grep 'Debian' > /dev/null 2>&1 && return 0
+	[[ -e /etc/issue ]] && ! cat /etc/issue | grep 'Debian' > /dev/null 2>&1 && return 0
 	
 	
 	# If not x64, then simply accept these pacakges may not be available.
