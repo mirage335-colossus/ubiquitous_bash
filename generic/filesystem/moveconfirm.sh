@@ -18,6 +18,8 @@ _test_moveconfirm_procedure() {
 	rm -f "$safeTmp"/mv_dst
 	! _moveconfirm "$safeTmp"/mv_src "$safeTmp"/mv_dst && return 1
 	
+	rm -f "$safeTmp"/mv_dst
+	
 	return 0
 }
 

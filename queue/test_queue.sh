@@ -264,7 +264,7 @@ _test_timeoutRead_bashRead() {
 _test_timeoutRead_read() {
 	local currentIterations
 	currentIterations=0
-	while _timeout 0.1 cat 2>/dev/null && true | ([[ "$currentIterations" -lt "$1" ]])
+	while _timeout 0.1 cat 2>/dev/null && true | ( [[ "$currentIterations" -lt "$1" ]] )
 	do
 		true | (sleep 6 ; echo -n x)
 		#true | (sleep 1 ; echo -n x)

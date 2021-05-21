@@ -32,7 +32,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='1891409836'
-export ub_setScriptChecksum_contents='4183874751'
+export ub_setScriptChecksum_contents='3183655121'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -1872,6 +1872,8 @@ _test_moveconfirm_procedure() {
 	
 	rm -f "$safeTmp"/mv_dst
 	! _moveconfirm "$safeTmp"/mv_src "$safeTmp"/mv_dst && return 1
+	
+	rm -f "$safeTmp"/mv_dst
 	
 	return 0
 }
@@ -18835,6 +18837,59 @@ _test_embed() {
 	"$scriptAbsoluteLocation" _test_embed_sequence "$@"
 }
 
+_test_parallelFifo_procedure() {
+	mkfifo "$safeTmp"/parallel_fifo
+	cat "$safeTmp"/parallel_fifo > "$safeTmp"/parallel_fifo_out &
+	
+	local currentIterationsA
+	currentIterationsA=0
+	local currentIterationsB
+	currentIterationsB=0
+	
+	while [[ "$currentIterationsA" -lt "2" ]]
+	do
+		echo a
+		sleep 0.5
+		let currentIterationsA="$currentIterationsA"" + 1"
+	done | cat > "$safeTmp"/parallel_fifo &
+	
+	sleep 0.2
+	
+	while [[ "$currentIterationsB" -lt "2" ]]
+	do
+		echo b
+		sleep 0.5
+		let currentIterationsB="$currentIterationsB"" + 1"
+	done | cat > "$safeTmp"/parallel_fifo
+	
+	sleep 0.5
+	sleep 2.5
+	
+	
+	#echo $(cat "$safeTmp"/parallel_fifo_out | tr -dc 'a-zA-Z0-9' 2> /dev/null)
+	
+	# WARNING: Strongly discouraged! Strict test highly dependent on unpredictable InterProcess-Communication timing requiring >7s latency margins at each 'step'!
+	if _if_cygwin
+	then
+		[[ $(cat "$safeTmp"/parallel_fifo_out | tr -dc 'a-zA-Z0-9' 2> /dev/null) != "abab" ]] && _messageFAIL && return 1
+	fi
+	
+	[[ $(cat "$safeTmp"/parallel_fifo_out | tr -dc 'a-zA-Z0-9' | wc -c) != "4" ]] && _messageFAIL && return 1
+	
+	
+	rm -f "$safeTmp"/parallel_fifo
+	rm -f "$safeTmp"/parallel_fifo_out
+}
+
+# No production use.
+_test_parallelFifo_sequence() {
+	_start
+	
+	_test_parallelFifo_procedure "$@"
+	
+	_stop
+}
+
 _test_sanity() {
 	if (exit 0)
 	then
@@ -19077,12 +19132,17 @@ _test_sanity() {
 	
 	
 	
+	_tryExec _test_parallelFifo_procedure
+	
+	
 	return 0
 }
 
 
 
 _test() {
+	# ATTENTION: As part of sanity test, "$safeTmp" must not exist until '_start' is called from within '_test_sanity' .
+	#_start
 	_messageNormal "Sanity..."
 	_test_sanity && _messagePASS
 	

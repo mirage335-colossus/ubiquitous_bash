@@ -670,6 +670,59 @@ _test_embed() {
 	"$scriptAbsoluteLocation" _test_embed_sequence "$@"
 }
 
+_test_parallelFifo_procedure() {
+	mkfifo "$safeTmp"/parallel_fifo
+	cat "$safeTmp"/parallel_fifo > "$safeTmp"/parallel_fifo_out &
+	
+	local currentIterationsA
+	currentIterationsA=0
+	local currentIterationsB
+	currentIterationsB=0
+	
+	while [[ "$currentIterationsA" -lt "2" ]]
+	do
+		echo a
+		sleep 0.5
+		let currentIterationsA="$currentIterationsA"" + 1"
+	done | cat > "$safeTmp"/parallel_fifo &
+	
+	sleep 0.2
+	
+	while [[ "$currentIterationsB" -lt "2" ]]
+	do
+		echo b
+		sleep 0.5
+		let currentIterationsB="$currentIterationsB"" + 1"
+	done | cat > "$safeTmp"/parallel_fifo
+	
+	sleep 0.5
+	sleep 2.5
+	
+	
+	#echo $(cat "$safeTmp"/parallel_fifo_out | tr -dc 'a-zA-Z0-9' 2> /dev/null)
+	
+	# WARNING: Strongly discouraged! Strict test highly dependent on unpredictable InterProcess-Communication timing requiring >7s latency margins at each 'step'!
+	if _if_cygwin
+	then
+		[[ $(cat "$safeTmp"/parallel_fifo_out | tr -dc 'a-zA-Z0-9' 2> /dev/null) != "abab" ]] && _messageFAIL && return 1
+	fi
+	
+	[[ $(cat "$safeTmp"/parallel_fifo_out | tr -dc 'a-zA-Z0-9' | wc -c) != "4" ]] && _messageFAIL && return 1
+	
+	
+	rm -f "$safeTmp"/parallel_fifo
+	rm -f "$safeTmp"/parallel_fifo_out
+}
+
+# No production use.
+_test_parallelFifo_sequence() {
+	_start
+	
+	_test_parallelFifo_procedure "$@"
+	
+	_stop
+}
+
 _test_sanity() {
 	if (exit 0)
 	then
@@ -912,12 +965,17 @@ _test_sanity() {
 	
 	
 	
+	_tryExec _test_parallelFifo_procedure
+	
+	
 	return 0
 }
 
 
 
 _test() {
+	# ATTENTION: As part of sanity test, "$safeTmp" must not exist until '_start' is called from within '_test_sanity' .
+	#_start
 	_messageNormal "Sanity..."
 	_test_sanity && _messagePASS
 	
