@@ -67,30 +67,29 @@ _octave_solve() {
 _octave_nsolve() {
 	_safeEcho_newline nsolve"$@" | _octave_pipe
 }
-#_solve() {
-#	_octave_solve "$@"
-#}
-#solve() {
-#	_octave_solve "$@"
-#}
-#nsolve() {
-#	_octave_nsolve "$@"
-#}
 
+#if type -p octave > /dev/null 2>&1
+#then
+	#_solve() {
+		#_octave_solve "$@"
+	#}
+	#solve() {
+		#_octave_solve "$@"
+	#}
+	#nsolve() {
+		#_octave_nsolve "$@"
+	#}
 
-
-
-
-#_clc() {
-#	_octave "$@"
-#}
-#clc() {
-#	_octave "$@"
-#}
-#c() {
-#	_octave "$@"
-#}
-
+	#_clc() {
+		#_octave "$@"
+	#}
+	#clc() {
+		#_octave "$@"
+	#}
+	#c() {
+		#_octave "$@"
+	#}
+#fi
 
 
 

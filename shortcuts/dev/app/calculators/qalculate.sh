@@ -54,31 +54,29 @@ _qalculate_solve() {
 _qalculate_nsolve() {
 	_safeEcho_newline solve"$@" | _qalculate_pipe
 }
-_solve() {
-	_qalculate_solve "$@"
-}
-solve() {
-	_qalculate_solve "$@"
-}
-nsolve() {
-	_qalculate_solve "$@"
-}
 
+if type -p qalc > /dev/null 2>&1
+then
+	_solve() {
+		_qalculate_solve "$@"
+	}
+	solve() {
+		_qalculate_solve "$@"
+	}
+	nsolve() {
+		_qalculate_solve "$@"
+	}
 
-
-
-
-
-_clc() {
-	_qalculate "$@"
-}
-clc() {
-	_qalculate "$@"
-}
-c() {
-	_qalculate "$@"
-}
-
+	_clc() {
+		_qalculate "$@"
+	}
+	clc() {
+		_qalculate "$@"
+	}
+	c() {
+		_qalculate "$@"
+	}
+fi
 
 
 

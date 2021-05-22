@@ -32,7 +32,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='1891409836'
-export ub_setScriptChecksum_contents='3183655121'
+export ub_setScriptChecksum_contents='3455298929'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -9177,111 +9177,6 @@ _findFunction() {
 
 
 
-
-
-_qalculate_terse() {
-	if [[ "$1" != "" ]]
-	then
-		_safeEcho_newline "$@" | qalc -t | grep -v '^>\ ' | grep -v '^$' | sed 's/^  //'
-		return
-	fi
-	
-	qalc -t "$@" | grep -v '^>\ ' | grep -v '^$' | sed 's/^  //'
-	return
-}
-
-# Interactive.
-_qalculate() {
-	if [[ "$1" != "" ]]
-	then
-		_qalculate_terse "$@"
-		return
-	fi
-	
-	qalc "$@"
-	return
-}
-
-# ATTENTION: EXAMPLE: echo 'solve(x == y * 2, y)' | _qalculate_pipe
-_qalculate_pipe() {
-	_qalculate_terse "$@"
-}
-
-# ATTENTION: _qalculate_script 'qalculate_script.m'
-# echo 'solve(x == y * 2, y)' > qalculate_script.m
-_qalculate_script() {
-	local currentFile="$1"
-	shift
-	
-	cat "$currentFile" | _qalculate_pipe "$@"
-}
-
-
-
-
-
-
-
-
-
-
-_qalculate_solve() {
-	_safeEcho_newline solve"$@" | _qalculate_pipe
-}
-_qalculate_nsolve() {
-	_safeEcho_newline solve"$@" | _qalculate_pipe
-}
-_solve() {
-	_qalculate_solve "$@"
-}
-solve() {
-	_qalculate_solve "$@"
-}
-nsolve() {
-	_qalculate_solve "$@"
-}
-
-
-
-
-
-
-_clc() {
-	_qalculate "$@"
-}
-clc() {
-	_qalculate "$@"
-}
-c() {
-	_qalculate "$@"
-}
-
-
-
-
-
-_test_devqalculate() {
-	_wantGetDep qalculate-gtk
-	_wantGetDep qalculate
-	
-	! _typeShare 'texmf/tex/latex/gnuplot/gnuplot.cfg' && _wantGetDep gnuplot-data
-	! _typeShare 'texmf/tex/latex/gnuplot/gnuplot.cfg' && echo 'warn: missing: gnuplot-data'
-	
-	#_wantGetDep gnuplot-data
-	#_wantGetDep gnuplot-x11
-	_wantGetDep gnuplot-qt
-	
-	_wantGetDep gnuplot
-	
-	! _typeDep qalculate-gtk && echo 'warn: missing: qalculate-gtk'
-	
-	return 0
-}
-
-
-
-
-
 _octave_terse() {
 	if [[ "$1" != "" ]]
 	then
@@ -9349,30 +9244,29 @@ _octave_solve() {
 _octave_nsolve() {
 	_safeEcho_newline nsolve"$@" | _octave_pipe
 }
-#_solve() {
-#	_octave_solve "$@"
-#}
-#solve() {
-#	_octave_solve "$@"
-#}
-#nsolve() {
-#	_octave_nsolve "$@"
-#}
 
+#if type -p octave > /dev/null 2>&1
+#then
+	#_solve() {
+		#_octave_solve "$@"
+	#}
+	#solve() {
+		#_octave_solve "$@"
+	#}
+	#nsolve() {
+		#_octave_nsolve "$@"
+	#}
 
-
-
-
-#_clc() {
-#	_octave "$@"
-#}
-#clc() {
-#	_octave "$@"
-#}
-#c() {
-#	_octave "$@"
-#}
-
+	#_clc() {
+		#_octave "$@"
+	#}
+	#clc() {
+		#_octave "$@"
+	#}
+	#c() {
+		#_octave "$@"
+	#}
+#fi
 
 
 
@@ -9606,6 +9500,109 @@ _test_devgnuoctave-debian-x64() {
 	
 	return 0
 }
+
+
+
+
+
+_qalculate_terse() {
+	if [[ "$1" != "" ]]
+	then
+		_safeEcho_newline "$@" | qalc -t | grep -v '^>\ ' | grep -v '^$' | sed 's/^  //'
+		return
+	fi
+	
+	qalc -t "$@" | grep -v '^>\ ' | grep -v '^$' | sed 's/^  //'
+	return
+}
+
+# Interactive.
+_qalculate() {
+	if [[ "$1" != "" ]]
+	then
+		_qalculate_terse "$@"
+		return
+	fi
+	
+	qalc "$@"
+	return
+}
+
+# ATTENTION: EXAMPLE: echo 'solve(x == y * 2, y)' | _qalculate_pipe
+_qalculate_pipe() {
+	_qalculate_terse "$@"
+}
+
+# ATTENTION: _qalculate_script 'qalculate_script.m'
+# echo 'solve(x == y * 2, y)' > qalculate_script.m
+_qalculate_script() {
+	local currentFile="$1"
+	shift
+	
+	cat "$currentFile" | _qalculate_pipe "$@"
+}
+
+
+
+
+
+
+
+
+
+
+_qalculate_solve() {
+	_safeEcho_newline solve"$@" | _qalculate_pipe
+}
+_qalculate_nsolve() {
+	_safeEcho_newline solve"$@" | _qalculate_pipe
+}
+
+if type -p qalc > /dev/null 2>&1
+then
+	_solve() {
+		_qalculate_solve "$@"
+	}
+	solve() {
+		_qalculate_solve "$@"
+	}
+	nsolve() {
+		_qalculate_solve "$@"
+	}
+
+	_clc() {
+		_qalculate "$@"
+	}
+	clc() {
+		_qalculate "$@"
+	}
+	c() {
+		_qalculate "$@"
+	}
+fi
+
+
+
+
+_test_devqalculate() {
+	_wantGetDep qalculate-gtk
+	_wantGetDep qalculate
+	
+	! _typeShare 'texmf/tex/latex/gnuplot/gnuplot.cfg' && _wantGetDep gnuplot-data
+	! _typeShare 'texmf/tex/latex/gnuplot/gnuplot.cfg' && echo 'warn: missing: gnuplot-data'
+	
+	#_wantGetDep gnuplot-data
+	#_wantGetDep gnuplot-x11
+	_wantGetDep gnuplot-qt
+	
+	_wantGetDep gnuplot
+	
+	! _typeDep qalculate-gtk && echo 'warn: missing: qalculate-gtk'
+	
+	return 0
+}
+
+
 
 #Simulated client/server discussion testing.
 
