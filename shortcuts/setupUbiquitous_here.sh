@@ -1,6 +1,13 @@
 _setupUbiquitous_here() {
-	cat << CZXWXcRMTo8EmM8i4d
+# WARNING: What is otherwise considered bad practice may be accepted to reduce substantial MSW/Cygwin inconvenience .
+_if_cygwin && cat << CZXWXcRMTo8EmM8i4d
 
+[[ -e '/cygdrive' ]] && uname -a | grep -i cygwin > /dev/null 2>&1 && echo '.'
+
+CZXWXcRMTo8EmM8i4d
+
+
+	cat << CZXWXcRMTo8EmM8i4d
 PS1_lineNumber=""
 
 if type sudo > /dev/null 2>&1 && groups | grep -E 'wheel|sudo' > /dev/null 2>&1
@@ -39,4 +46,18 @@ renice -n 0 -p \$\$ > /dev/null 2>&1
 true
 
 CZXWXcRMTo8EmM8i4d
+
+
+# WARNING: What is otherwise considered bad practice may be accepted to reduce substantial MSW/Cygwin inconvenience .
+_if_cygwin && cat << CZXWXcRMTo8EmM8i4d
+
+if [[ -e '/cygdrive' ]] && uname -a | grep -i cygwin > /dev/null 2>&1
+then
+	echo '.'
+	clear
+fi
+
+CZXWXcRMTo8EmM8i4d
+
+
 }

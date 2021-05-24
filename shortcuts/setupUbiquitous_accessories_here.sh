@@ -8,15 +8,9 @@ _setupUbiquitous_accessories_here-gnuoctave() {
 %# oldpso = page_screen_output(1);
 %# oldpoi = page_output_immediately(1);
 
-pkg load symbolic;
-
-syms a b c d e f g h i j k l m n o p q r s t u v w x y z;
 
 format long g;
 
-
-%# https://octave.sourceforge.io/symbolic/overview.html
-nsolve = @vpasolve;
 
 deci = 10^-1;
 centi = 10^-2;
@@ -142,6 +136,20 @@ clc;
 %# page_output_immediately(oldpoi);
 
 CZXWXcRMTo8EmM8i4d
+
+
+	! _if_cygwin && cat << CZXWXcRMTo8EmM8i4d
+
+pkg load symbolic;
+
+syms a b c d e f g h i j k l m n o p q r s t u v w x y z;
+
+
+%# https://octave.sourceforge.io/symbolic/overview.html
+nsolve = @vpasolve;
+
+CZXWXcRMTo8EmM8i4d
+
 }
 
 

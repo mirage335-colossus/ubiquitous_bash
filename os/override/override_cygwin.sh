@@ -31,19 +31,6 @@ _workaround_cygwin_tmux() {
 	return "$?"
 }
 
-if ! type nmap > /dev/null 2>&1 && type '/cygdrive/c/Program Files/Nmap/nmap.exe' > /dev/null 2>&1
-then
-	nmap() {
-		'/cygdrive/c/Program Files/Nmap/nmap.exe' "$@"
-	}
-fi
-
-if ! type nmap > /dev/null 2>&1 && type '/cygdrive/c/Program Files (x86)/Nmap/nmap.exe' > /dev/null 2>&1
-then
-	nmap() {
-		'/cygdrive/c/Program Files (x86)/Nmap/nmap.exe' "$@"
-	}
-fi
 
 # DANGER: Severely differing functionality. Intended only to stand in for "ip addr show" and similar.
 if ! type ip > /dev/null 2>&1 && type 'ipconfig' > /dev/null 2>&1 && uname -a | grep -i cygwin > /dev/null 2>&1
@@ -60,26 +47,116 @@ then
 fi
 
 
-
-# WARNING: Native 'vncviewer.exe' is a GUI app, and cannot be launched directly from Cygwin SSH server.
-
-#if ! type vncviewer > /dev/null 2>&1 && type '/cygdrive/c/Program Files/TigerVNC/vncviewer.exe' > /dev/null 2>&1
-
-if type '/cygdrive/c/Program Files/TigerVNC/vncviewer.exe' > /dev/null 2>&1 && uname -a | grep -i cygwin > /dev/null 2>&1
+if _if_cygwin
 then
-	export override_cygwin_vncviewer='true'
-	vncviewer() {
-		_workaround_cygwin_tmux '/cygdrive/c/Program Files/TigerVNC/vncviewer.exe' "$@"
+	# WARNING: Since MSW/Cygwin is hardly suitable for mounting UNIX/tmpfs/ramfs/etc filesystems, 'mountpoint' 'safety checks' are merely disabled.
+	mountpoint() {
+		true
+	}
+	losetup() {
+		false
+	}
+	
+	tc() {
+		false
+	}
+	wondershaper() {
+		false
+	}
+	
+	ionice() {
+		false
 	}
 fi
 
-if type '/cygdrive/c/Program Files (x86)/TigerVNC/vncviewer.exe' > /dev/null 2>&1 && uname -a | grep -i cygwin > /dev/null 2>&1
+
+if _if_cygwin && type cygstart > /dev/null 2>&1
 then
-	export override_cygwin_vncviewer='true'
-	vncviewer() {
-		_workaround_cygwin_tmux '/cygdrive/c/Program Files (x86)/TigerVNC/vncviewer.exe' "$@"
+	sudo() {
+		[[ "$1" == "-n" ]] && shift
+		if type cygstart > /dev/null 2>&1
+		then
+			cygstart --action=runas "$@"
+			return
+		else
+			"$@"
+			return
+		fi
+		
+		return 1
 	}
 fi
+
+
+
+
+
+
+
+_discoverResource-cygwinNative-ProgramFiles() {
+	local currentBinary
+	currentBinary="$1"
+	
+	local currentExpectedSubdir
+	currentExpectedSubdir="$2"
+	
+	local forceNativeBinary
+	forceNativeBinary='false'
+	
+	[[ "$3" != "true" ]] && type "$currentBinary" > /dev/null 2>&1 && return 0
+	
+	local forceWorkaroundPrefix
+	forceWorkaroundPrefix="$4"
+	
+	local currentDriveLetter
+	for currentDriveLetter in {c..w}
+	do
+		if ! type "$currentBinary" > /dev/null 2>&1 && type '/cygdrive/'"$currentDriveLetter"'/Program Files/'"$currentExpectedSubdir"'/'"$currentBinary".exe > /dev/null 2>&1
+		then
+			eval $currentBinary'() { '"$forceWorkaroundPrefix"'/cygdrive/"'"$currentDriveLetter"'"/"'"Program Files"'"/"'"$currentExpectedSubdir"'"/"'"$currentBinary"'".exe "$@" ; }'
+			false
+		fi
+		
+		if ! type "$currentBinary" > /dev/null 2>&1 && type '/cygdrive/'"$currentDriveLetter"'/Program Files (x86)/'"$currentExpectedSubdir"'/'"$currentBinary".exe > /dev/null 2>&1
+		then
+			eval $currentBinary'() { '"$forceWorkaroundPrefix"'/cygdrive/"'"$currentDriveLetter"'"/"'"Program Files (x86)"'"/"'"$currentExpectedSubdir"'"/"'"$currentBinary"'".exe "$@" ; }'
+		fi
+		type "$currentBinary" > /dev/null 2>&1 && return 0
+	done
+	
+	return 1
+}
+
+
+
+
+
+if [[ -e /cygdrive ]] && _if_cygwin
+then
+	_discoverResource-cygwinNative-ProgramFiles 'nmap' 'Nmap' false
+	
+	# WARNING: Native 'vncviewer.exe' is a GUI app, and cannot be launched directly from Cygwin SSH server.
+	_discoverResource-cygwinNative-ProgramFiles 'vncviewer' 'TigerVNC' false '_workaround_cygwin_tmux '
+	
+	
+	_discoverResource-cygwinNative-ProgramFiles 'qalc' 'Qalculate' false
+	
+	
+	
+	
+	
+	
+	# export ubiquitiousBashID=uk4uPhB663kVcygT0q
+	unset currentDriveLetter_cygwin_uk4uPhB663kVcygT0q
+	for currentDriveLetter_cygwin_uk4uPhB663kVcygT0q in {w..c}
+	do
+		[[ -e /cygdrive/$currentDriveLetter_cygwin_uk4uPhB663kVcygT0q ]] && [[ -e /cygdrive/$currentDriveLetter_cygwin_uk4uPhB663kVcygT0q/ops-cygwin.sh ]] && . /cygdrive/$currentDriveLetter_cygwin_uk4uPhB663kVcygT0q/ops-cygwin.sh
+	done
+	unset currentDriveLetter_cygwin_uk4uPhB663kVcygT0q
+fi
+
+
+
 
 
 
@@ -428,28 +505,6 @@ _package-cygwinOnly() {
 _package-cygwin() {
 	_package-cygwinOnly "$@"
 }
-
-
-
-
-
-if _if_cygwin
-then
-	# WARNING: Since MSW/Cygwin is hardly suitable for mounting UNIX/tmpfs/ramfs/etc filesystems, 'mountpoint' 'safety checks' are merely disabled.
-	mountpoint() {
-		true
-	}
-	losetup() {
-		false
-	}
-	
-	tc() {
-		false
-	}
-	wondershaper() {
-		false
-	}
-fi
 
 
 

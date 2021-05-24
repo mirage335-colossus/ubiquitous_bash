@@ -20,13 +20,28 @@ REM copy missing directories/files from 'X:\' to ' C:\core\infrastructure\lean '
 
 REM may need to run these commands from local disk with no spaces (ie. ' C:\core\infrastructure\lean ' instead of network mount
 REM will need to copy 'ubcp' dir to '_local/ubcp'
+REM best done from a '_bash.bat' shell due to undesirable clearing of screen after command exit from 'cmd'
 
-_bin _mitigate-ubcp
-_bin _package-cygwinOnly
+./lean.sh _mitigate-ubcp
+./lean.sh _package-cygwinOnly
 
 
 REM copy resulting 'ubcp' installation to ' C:\core\infrastructure\ubcp ' .
 _bin _setup_ubcp
+
+
+_bin _setupUbiquitous_noNet
+
+
+
+
+
+
+
+
+
+
+_
 
 
 uname -a | grep -i cygwin > /dev/null 2>&1

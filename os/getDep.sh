@@ -64,6 +64,9 @@ _typeDep() {
 _wantDep() {
 	_typeDep "$1" && return 0
 	
+	# Expect already root if 'MSW/Cygwin' and obstructive popup dialog if 'sudo' is called through 'MSW/Cygwin' .
+	_if_cygwin && return 1
+	
 	_wantSudo && sudo -n "$scriptAbsoluteLocation" _typeDep "$1" && return 0
 	
 	return 1

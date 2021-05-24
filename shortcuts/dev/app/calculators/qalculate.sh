@@ -3,13 +3,19 @@
 
 
 _qalculate_terse() {
+	# https://stackoverflow.com/questions/17998978/removing-colors-from-output
+	#sed -r "s/\x1B\[([0-9]{1,3}(;[0-9]{1,2})?)?[mGK]//g"
+	
+	# https://stackoverflow.com/questions/4233159/grep-regex-whitespace-behavior
+	#grep -v '^\s*$'
+	
 	if [[ "$1" != "" ]]
 	then
-		_safeEcho_newline "$@" | qalc -t | grep -v '^>\ ' | grep -v '^$' | sed 's/^  //'
+		_safeEcho_newline "$@" | qalc -t | grep -v '^>\ ' | grep -v '^$' | sed 's/^  //' | grep -v '^\s*$' | sed -r "s/\x1B\[([0-9]{1,3}(;[0-9]{1,2})?)?[mGK]//g"
 		return
 	fi
 	
-	qalc -t "$@" | grep -v '^>\ ' | grep -v '^$' | sed 's/^  //'
+	qalc -t "$@" | grep -v '^>\ ' | grep -v '^$' | sed 's/^  //' | grep -v '^\s*$' | sed -r "s/\x1B\[([0-9]{1,3}(;[0-9]{1,2})?)?[mGK]//g"
 	return
 }
 

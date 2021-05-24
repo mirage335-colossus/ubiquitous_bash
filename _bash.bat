@@ -1020,9 +1020,31 @@ if not "%MSWanchorSourceDir%"=="ubiquitous_bash" (
 		SET "MSWanchorSource=ubiquitous_bash.sh"
 	)
 )
+
+if "%MSWanchorSource%"=="lean.sh" (
+	if "%MSWanchorName%"=="_bash" (
+		SET "MSWanchorSource=ubcore.sh"
+	)
+	if "%MSWanchorName%"=="_setupUbiquitous" (
+		SET "MSWanchorSource=ubiquitous_bash.sh"
+	)
+	if "%MSWanchorName%"=="_setupUbiquitous_nonet" (
+		SET "MSWanchorSource=ubiquitous_bash.sh"
+	)
+)
+
 REM SET "MSWanchorSource=ubiquitous_bash.sh"
 
 SET "MSWanchorSourcePath=%MSWanchorSourceDir%\%MSWanchorSource%"
+
+
+
+
+REM WARNING: What is otherwise considered bad practice may be accepted to reduce substantial MSW/Cygwin inconvenience .
+if "%MSWanchorName%"=="_bash" (
+	echo .
+)
+
 
 
 REM Due to the MSW tendency to use shortcuts instead of symlinks, and lack of "find" command,

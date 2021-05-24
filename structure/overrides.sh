@@ -110,12 +110,46 @@ _bin() {
 }
 #Mostly intended to launch bash prompt for MSW/Cygwin users.
 _bash() {
-	if [[ "$1" == '-i' ]]
+	local currentIsCygwin
+	currentIsCygwin='false'
+	[[ -e '/cygdrive' ]] && uname -a | grep -i cygwin > /dev/null 2>&1 && _if_cygwin && currentIsCygwin='true'
+	
+	# WARNING: What is otherwise considered bad practice may be accepted to reduce substantial MSW/Cygwin inconvenience .
+	[[ "$currentIsCygwin" == 'true' ]] && echo '.'
+	
+	
+	_visualPrompt
+	[[ "$ub_scope_name" != "" ]] && _scopePrompt
+	
+	
+	[[ "$1" == '-i' ]] && shift
+	
+	
+	
+	if [[ "$currentIsCygwin" == 'true' ]] && grep ubcore "$HOME"/.bashrc > /dev/null 2>&1 && [[ "$scriptAbsoluteLocation" == *"lean.sh" ]]
 	then
-		bash "$@"
+		export sessionid=""
+		export scriptAbsoluteFolder=""
+		export scriptAbsoluteLocation=""
+		bash -i "$@"
+		return
+	elif  [[ "$currentIsCygwin" == 'true' ]] && grep ubcore "$HOME"/.bashrc > /dev/null 2>&1 && [[ "$scriptAbsoluteLocation" != *"lean.sh" ]]
+	then
+		bash -i "$@"
+		return
+	elif [[ "$currentIsCygwin" == 'true' ]] && ! grep ubcore "$HOME"/.bashrc > /dev/null 2>&1
+	then
+		bash --norc -i "$@"
+		return
+	else
+		bash -i "$@"
 		return
 	fi
+	
 	bash -i "$@"
+	return
+	
+	return 1
 }
 
 #Mostly if not entirely intended for end user convenience.

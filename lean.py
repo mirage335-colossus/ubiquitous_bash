@@ -293,14 +293,17 @@ def _bin(currentArguments = [''], currentPrint = False, current_ubiquitous_bash 
 # ATTENTION: Only intended for indirect calls.
 # https://stackoverflow.com/questions/5067604/determine-function-name-from-within-that-function-without-using-traceback
 #	'there aren't enough important use cases given'
+# https://www.tutorialspoint.com/How-can-I-remove-the-ANSI-escape-sequences-from-a-string-in-python
+# https://docs.python.org/3/library/re.html
+#return _bin(currentCommand + currentArguments + currentString, currentPrint)[0]
+#return re.sub(r'(\x9B|\x1B\[)[0-?]*[ -\/]*[@-~]', '', _bin(currentCommand + currentArguments + currentString, currentPrint)[0])
 def _bin_stringAfterArgs(currentString = [], currentArguments = [], currentPrint = False, currentCommand = ['_false']):
 	currentString = [currentString] if isinstance(currentString, str) else currentString
 	currentArguments = [currentArguments] if isinstance(currentArguments, str) else currentArguments
 	if currentPrint:
 		return _bin(currentCommand + currentArguments + currentString, currentPrint)
 	else:
-		return _bin(currentCommand + currentArguments + currentString, currentPrint)[0]
-
+		return re.sub(r'\n', '', re.sub(r'(\x9B|\x1B\[)[0-?]*[ -\/]*[@-~]', '', _bin(currentCommand + currentArguments + currentString, currentPrint)[0]))
 
 #def _bash(currentArguments = [''], currentPrint = True, current_ubiquitous_bash = "ubiquitous_bash.sh"):
 #	_bin(['/bin/bash', '-i'])
