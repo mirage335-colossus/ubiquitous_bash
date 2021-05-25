@@ -1,4 +1,10 @@
 _testCreateFS() {
+	if _if_cygwin
+	then
+		echo 'warn: accepted: cygwin: missing: mount: mkfs'
+		return 0
+	fi
+	
 	_mustGetSudo
 	
 	_getDep mkfs
@@ -6,6 +12,12 @@ _testCreateFS() {
 }
 
 _testCreatePartition() {
+	if _if_cygwin
+	then
+		echo 'warn: accepted: cygwin: missing: mount: parted'
+		return 0
+	fi
+	
 	_mustGetSudo
 	
 	_getDep parted
