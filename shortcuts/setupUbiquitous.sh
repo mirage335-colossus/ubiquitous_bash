@@ -90,6 +90,10 @@ _installUbiquitous() {
 
 _setupUbiquitous() {
 	_messageNormal "init: setupUbiquitous"
+	
+	_if_cygwin && _setup_ubiquitousBash_cygwin_procedure
+	
+	
 	local ubHome
 	ubHome="$HOME"
 	[[ "$1" != "" ]] && ubHome="$1"
@@ -205,6 +209,7 @@ _refresh_anchors_ubiquitous() {
 	cp -a "$scriptAbsoluteFolder"/_anchor.bat "$scriptAbsoluteFolder"/_bash.bat
 	
 	cp -a "$scriptAbsoluteFolder"/_anchor.bat "$scriptAbsoluteFolder"/_setup_ubcp.bat
+	cp -a "$scriptAbsoluteFolder"/_anchor.bat "$scriptAbsoluteFolder"/_setup_ubiquitousBash_cygwin.bat
 	
 	cp -a "$scriptAbsoluteFolder"/_anchor.bat "$scriptAbsoluteFolder"/_setupUbiquitous.bat
 	cp -a "$scriptAbsoluteFolder"/_anchor.bat "$scriptAbsoluteFolder"/_setupUbiquitous_nonet.bat

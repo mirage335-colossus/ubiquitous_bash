@@ -32,7 +32,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='1891409836'
-export ub_setScriptChecksum_contents='2525362717'
+export ub_setScriptChecksum_contents='2915712676'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -671,13 +671,47 @@ then
 fi
 
 
+# https://stackoverflow.com/questions/4090301/root-user-sudo-equivalent-in-cygwin
+_sudo_cygwin_sequence() {
+	_start
+	
+	# 'If already admin, just run the command in-line.'
+	# 'This works on my Win10 machine; dunno about others.'
+	if id -G | grep -q ' 544 '
+	then
+		"$@"
+		_stop "$?"
+	fi
+	
+	# 'cygstart/runas doesn't handle arguments with spaces correctly so create'
+	# 'a script that will do so properly.'
+	echo "#!/bin/bash" >> "$safeTmp"/cygwin_sudo_temp.sh
+	echo "export PATH=\"$PATH\"" >> "$safeTmp"/cygwin_sudo_temp.sh
+	
+	
+	_safeEcho_newline "$@" >> "$safeTmp"/cygwin_sudo_temp.sh
+	
+
+	# 'Do it as Administrator.'
+	#cygstart --action=runas "$scriptAbsoluteFolder"/_bin.bat bash
+	cygstart --action=runas "$scriptAbsoluteFolder"/_bin.bat "$safeTmp"/cygwin_sudo_temp.sh
+	
+	_stop "$?"
+}
+_sudo_cygwin() {
+	"$scriptAbsoluteLocation" _sudo_cygwin_sequence "$@"
+}
+
+# CAUTION: BROKEN !
 if _if_cygwin && type cygstart > /dev/null 2>&1
 then
 	sudo() {
 		[[ "$1" == "-n" ]] && shift
 		if type cygstart > /dev/null 2>&1
 		then
-			cygstart --action=runas "$@"
+			_sudo_cygwin "$@"
+			#cygstart --action=runas "$@"
+			#"$@"
 			return
 		else
 			"$@"
@@ -779,9 +813,139 @@ fi
 
 
 
+_setup_ubiquitousBash_cygwin_procedure_root() {
+	local cygwinMSWdesktopDir
+	local cygwinMSWmenuDir
+	
+	cygwinMSWdesktopDir=$(cygpath -u -a -A -D)
+	cygwinMSWmenuDir=$(cygpath -u -a -A -P)
+	
+	mkdir -p "$cygwinMSWdesktopDir"
+	mkdir -p "$cygwinMSWmenuDir"/ubiquitous_bash
+	
+	cp "$scriptAbsoluteFolder"/_bash.bat "$cygwinMSWdesktopDir"/
+	cp "$scriptAbsoluteFolder"/_bash.bat "$cygwinMSWmenuDir"/ubiquitous_bash/
+	
+	
+	cygwinMSWdesktopDir=$(cygpath -u -a -D)
+	cygwinMSWmenuDir=$(cygpath -u -a -P)
+	
+	chown -R "$USER":"$USER" "$currentCygdriveC_equivalent"/core/infrastructure/ubiquitous_bash > /dev/null 2>&1
+	chown -R "$USER":None "$currentCygdriveC_equivalent"/core/infrastructure/ubiquitous_bash
+	
+	chown "$USER":"$USER" "$cygwinMSWdesktopDir"/_bash.bat > /dev/null 2>&1
+	chown "$USER":None "$cygwinMSWdesktopDir"/_bash.bat
+	chown -R "$USER":"$USER" "$cygwinMSWmenuDir"/ubiquitous_bash/ > /dev/null 2>&1
+	chown -R "$USER":None "$cygwinMSWmenuDir"/ubiquitous_bash/
+}
+
+_setup_ubiquitousBash_cygwin_procedure() {
+	[[ "$scriptAbsoluteFolder" != '/cygdrive'* ]] && _stop 1
+	
+	_messagePlain_nominal 'init: _setup_ubiquitousBash_cygwin'
+	
+	local currentCygdriveC_equivalent
+	currentCygdriveC_equivalent=$(cygpath -S | sed 's/\/Windows\/System32//g')
+	
+	mkdir -p "$currentCygdriveC_equivalent"/core/infrastructure/ubiquitous_bash
+	cd "$currentCygdriveC_equivalent"/core/infrastructure/ubiquitous_bash
+	
+	cp "$scriptAbsoluteFolder"/ubiquitous_bash.sh "$currentCygdriveC_equivalent"/core/infrastructure/ubiquitous_bash/
+	cp "$scriptAbsoluteFolder"/lean.sh "$currentCygdriveC_equivalent"/core/infrastructure/ubiquitous_bash/
+	cp "$scriptAbsoluteFolder"/ubcore.sh "$currentCygdriveC_equivalent"/core/infrastructure/ubiquitous_bash/
+	
+	cp "$scriptAbsoluteFolder"/lean.py "$currentCygdriveC_equivalent"/core/infrastructure/ubiquitous_bash/
+	
+	#cp "$scriptAbsoluteFolder"/_bash "$currentCygdriveC_equivalent"/core/infrastructure/ubiquitous_bash/
+	cp "$scriptAbsoluteFolder"/_bash.bat "$currentCygdriveC_equivalent"/core/infrastructure/ubiquitous_bash/
+	
+	#cp "$scriptAbsoluteFolder"/_bin "$currentCygdriveC_equivalent"/core/infrastructure/ubiquitous_bash/
+	cp "$scriptAbsoluteFolder"/_bin.bat "$currentCygdriveC_equivalent"/core/infrastructure/ubiquitous_bash/
+	
+	cp "$scriptAbsoluteFolder"/_test "$currentCygdriveC_equivalent"/core/infrastructure/ubiquitous_bash/
+	cp "$scriptAbsoluteFolder"/_test.bat "$currentCygdriveC_equivalent"/core/infrastructure/ubiquitous_bash/
+	
+	cp "$scriptAbsoluteFolder"/_true "$currentCygdriveC_equivalent"/core/infrastructure/ubiquitous_bash/
+	cp "$scriptAbsoluteFolder"/_true.bat "$currentCygdriveC_equivalent"/core/infrastructure/ubiquitous_bash/
+	
+	cp "$scriptAbsoluteFolder"/_false "$currentCygdriveC_equivalent"/core/infrastructure/ubiquitous_bash/
+	cp "$scriptAbsoluteFolder"/_false.bat "$currentCygdriveC_equivalent"/core/infrastructure/ubiquitous_bash/
+	
+	cp "$scriptAbsoluteFolder"/_anchor "$currentCygdriveC_equivalent"/core/infrastructure/ubiquitous_bash/
+	cp "$scriptAbsoluteFolder"/_anchor.bat "$currentCygdriveC_equivalent"/core/infrastructure/ubiquitous_bash/
+	cp "$scriptAbsoluteFolder"/_setup_ubcp.bat "$currentCygdriveC_equivalent"/core/infrastructure/ubiquitous_bash/
+	
+	
+	
+	mkdir -p "$currentCygdriveC_equivalent"/core/infrastructure/ubiquitous_bash/_local/ubcp
+	
+	cp -a "$scriptLocal"/ubcp/_upstream "$currentCygdriveC_equivalent"/core/infrastructure/ubiquitous_bash/_local/ubcp/
+	cp -a "$scriptLocal"/ubcp/overlay "$currentCygdriveC_equivalent"/core/infrastructure/ubiquitous_bash/_local/ubcp/
+	
+	cp "$scriptLocal"/ubcp/.gitignore "$currentCygdriveC_equivalent"/core/infrastructure/ubiquitous_bash/_local/ubcp/
+	
+	cp "$scriptLocal"/ubcp/agpl-3.0.txt "$currentCygdriveC_equivalent"/core/infrastructure/ubiquitous_bash/_local/ubcp/
+	
+	cp "$scriptLocal"/ubcp/cygwin-portable.cmd "$currentCygdriveC_equivalent"/core/infrastructure/ubiquitous_bash/_local/ubcp/
+	cp "$scriptLocal"/ubcp/cygwin-portable-updater.cmd "$currentCygdriveC_equivalent"/core/infrastructure/ubiquitous_bash/_local/ubcp/
+	
+	cp "$scriptLocal"/ubcp/gpl-2.0.txt "$currentCygdriveC_equivalent"/core/infrastructure/ubiquitous_bash/_local/ubcp/
+	cp "$scriptLocal"/ubcp/gpl-3.0.txt "$currentCygdriveC_equivalent"/core/infrastructure/ubiquitous_bash/_local/ubcp/
+	cp "$scriptLocal"/ubcp/license.txt "$currentCygdriveC_equivalent"/core/infrastructure/ubiquitous_bash/_local/ubcp/
+	
+	cp "$scriptLocal"/ubcp/README.md "$currentCygdriveC_equivalent"/core/infrastructure/ubiquitous_bash/_local/ubcp/
+	
+	cp "$scriptLocal"/ubcp/ubcp.cmd "$currentCygdriveC_equivalent"/core/infrastructure/ubiquitous_bash/_local/ubcp/
+	cp "$scriptLocal"/ubcp/ubcp_rename-to-enable.cmd "$currentCygdriveC_equivalent"/core/infrastructure/ubiquitous_bash/_local/ubcp/
+	cp "$scriptLocal"/ubcp/ubcp-cygwin-portable-installer.cmd "$currentCygdriveC_equivalent"/core/infrastructure/ubiquitous_bash/_local/ubcp/
+	
+	
+	
+	
+	cygwinMSWdesktopDir=$(cygpath -u -a -A -D)
+	cygwinMSWmenuDir=$(cygpath -u -a -A -P)
+	
+	mkdir -p "$cygwinMSWdesktopDir"
+	mkdir -p "$cygwinMSWmenuDir"/ubiquitous_bash
+	
+	cp "$scriptAbsoluteFolder"/_bash.bat "$cygwinMSWdesktopDir"/
+	cp "$scriptAbsoluteFolder"/_bash.bat "$cygwinMSWmenuDir"/ubiquitous_bash/
+	
+	
+	
+	local cygwinMSWdesktopDir
+	local cygwinMSWmenuDir
+	cygwinMSWdesktopDir=$(cygpath -u -a -D)
+	cygwinMSWmenuDir=$(cygpath -u -a -P)
+	
+	mkdir -p "$cygwinMSWdesktopDir"
+	mkdir -p "$cygwinMSWmenuDir"/ubiquitous_bash
+	
+	cp "$scriptAbsoluteFolder"/_bash.bat "$cygwinMSWdesktopDir"/
+	cp "$scriptAbsoluteFolder"/_bash.bat "$cygwinMSWmenuDir"/ubiquitous_bash/
+	
+	
+	
+	chown -R "$USER":"$USER" "$currentCygdriveC_equivalent"/core/infrastructure/ubiquitous_bash > /dev/null 2>&1
+	chown -R "$USER":None "$currentCygdriveC_equivalent"/core/infrastructure/ubiquitous_bash
+	
+	chown "$USER":"$USER" "$cygwinMSWdesktopDir"/_bash.bat > /dev/null 2>&1
+	chown "$USER":None "$cygwinMSWdesktopDir"/_bash.bat
+	chown -R "$USER":"$USER" "$cygwinMSWmenuDir"/ubiquitous_bash/ > /dev/null 2>&1
+	chown -R "$USER":None "$cygwinMSWmenuDir"/ubiquitous_bash/
+	
+	
+	#sudo -n "$scriptAbsoluteLocation" _setup_ubiquitousBash_cygwin_procedure_root "$@"
+	
+	
+	_messagePlain_good 'done: _setup_ubiquitousBash_cygwin: lean'
+	sleep 1
+}
 
 
-
+_setup_ubiquitousBash_cygwin() {
+	"$scriptAbsoluteLocation" _setup_ubiquitousBash_cygwin "$@"
+}
 
 
 
@@ -791,11 +955,16 @@ _setup_ubcp_procedure() {
 	_messagePlain_nominal 'init: _setup_ubcp_procedure'
 	! uname -a | grep -i cygwin > /dev/null 2>&1 && _stop 1
 	
+	tskill ssh-pageant > /dev/null 2>&1
+	
+	local currentCygdriveC_equivalent
+	currentCygdriveC_equivalent=$(cygpath -S | sed 's/\/Windows\/System32//g')
+	
 	export safeToDeleteGit="true"
-	if [[ -e /cygdrive/c/core/infrastructure/ubcp ]]
+	if [[ -e "$currentCygdriveC_equivalent"/core/infrastructure/ubcp ]]
 	then
 		# DANGER: Not only does this use 'rm -rf' without sanity checking, the behavior is undefined if this ubcp installation has been used to start this script!
-		#[[ -e /cygdrive/c/core/infrastructure/ubcp ]] && rm -rf /cygdrive/c/core/infrastructure/ubcp
+		#[[ -e "$currentCygdriveC_equivalent"/core/infrastructure/ubcp ]] && rm -rf "$currentCygdriveC_equivalent"/core/infrastructure/ubcp
 		
 		_messageError 'FAIL: ubcp already installed locally and must be deleted prior to script!'
 		sleep 10
@@ -810,12 +979,12 @@ _setup_ubcp_procedure() {
 	
 	#cd "$scriptLocal"/
 	
-	mkdir -p /cygdrive/c/core/infrastructure/
-	cd /cygdrive/c/core/infrastructure/
+	mkdir -p "$currentCygdriveC_equivalent"/core/infrastructure/
+	cd "$currentCygdriveC_equivalent"/core/infrastructure/
 	
 	tar -xvf "$scriptLocal"/ubcp/package_ubcp-cygwinOnly.tar.gz
 	
-	_messagePlain_good 'done: _setup_ubcp_procedure'
+	_messagePlain_good 'done: _setup_ubcp_procedure: ubcp'
 	sleep 10
 	
 	cd "$outerPWD"
@@ -829,6 +998,7 @@ _setup_ubcp_procedure() {
 # WARNING: May require 'administrator' privileges under MSW. However, it may be better for this directory to be 'owned' by the 'primary' 'user' account. Particularly considering the VR/gaming/CAD software that remains 'exclusive' to MSW is 'legacy' software which for both licensing and technical reasons may be inherently incompatible with 'multi-user' access.
 _setup_ubcp() {
 	"$scriptAbsoluteLocation" _setup_ubcp_procedure "$@"
+	"$scriptAbsoluteLocation" _setup_ubiquitousBash_cygwin "$@"
 }
 
 
@@ -4505,6 +4675,10 @@ _installUbiquitous() {
 
 _setupUbiquitous() {
 	_messageNormal "init: setupUbiquitous"
+	
+	_if_cygwin && _setup_ubiquitousBash_cygwin_procedure
+	
+	
 	local ubHome
 	ubHome="$HOME"
 	[[ "$1" != "" ]] && ubHome="$1"
@@ -4620,6 +4794,7 @@ _refresh_anchors_ubiquitous() {
 	cp -a "$scriptAbsoluteFolder"/_anchor.bat "$scriptAbsoluteFolder"/_bash.bat
 	
 	cp -a "$scriptAbsoluteFolder"/_anchor.bat "$scriptAbsoluteFolder"/_setup_ubcp.bat
+	cp -a "$scriptAbsoluteFolder"/_anchor.bat "$scriptAbsoluteFolder"/_setup_ubiquitousBash_cygwin.bat
 	
 	cp -a "$scriptAbsoluteFolder"/_anchor.bat "$scriptAbsoluteFolder"/_setupUbiquitous.bat
 	cp -a "$scriptAbsoluteFolder"/_anchor.bat "$scriptAbsoluteFolder"/_setupUbiquitous_nonet.bat
