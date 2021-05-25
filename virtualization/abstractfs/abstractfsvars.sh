@@ -93,7 +93,8 @@ _describe_abstractfs() {
 	basename "$testAbstractfsBase"
 	! cd "$testAbstractfsBase" >/dev/null 2>&1 && cd "$localFunctionEntryPWD" && return 1
 	git rev-parse --abbrev-ref HEAD 2>/dev/null
-	git remote show origin 2>/dev/null
+	#git remote show origin 2>/dev/null
+	git config --get remote.origin.url
 	
 	cd "$localFunctionEntryPWD"
 }

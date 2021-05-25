@@ -32,7 +32,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='1891409836'
-export ub_setScriptChecksum_contents='622566692'
+export ub_setScriptChecksum_contents='4150673324'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -3202,10 +3202,11 @@ _testFindPort() {
 	! _wantGetDep ss
 	! _wantGetDep sockstat
 	
-	# WARNING: Cygwin port range detection not yet implemented.
+	# WARNING: Not yet relying exclusively on 'netstat' - recommend continuing to install 'nmap' for Cygwin port range detection (and also for _waitPort) .
 	if uname -a | grep -i cygwin > /dev/null 2>&1
 	then
-		! type nmap > /dev/null 2>&1 && echo "missing socket detection" && _stop 1
+		! type nmap > /dev/null 2>&1 && echo "missing socket detection: nmap" && _stop 1
+		! type netstat | grep cygdrive > /dev/null 2>&1 && echo "missing socket detection: netstat" && _stop 1
 		return 0
 	fi
 	
@@ -3247,7 +3248,17 @@ _checkPort_local() {
 		return $?
 	fi
 	
-	if uname -a | grep -i cygwin > /dev/null 2>&1
+	if uname -a | grep -i cygwin > /dev/null 2>&1 && type netstat > /dev/null 2>&1 && type netstat | grep cygdrive > /dev/null 2>&1
+	then
+		#nmap --host-timeout 0.1 -Pn localhost -p "$1" 2> /dev/null | grep open > /dev/null 2>&1
+		
+		# https://www.maketecheasier.com/check-ports-in-use-windows10/
+		#netstat -a | grep 'TCP\|UDP' | cut -f 1-7 -d\
+		netstat -a -n -q | grep 'TCP\|UDP' | cut -f 1-8 -d\  | grep ':'"$1" > /dev/null 2>&1
+		return $?
+	fi
+	
+	if type nmap
 	then
 		nmap --host-timeout 0.1 -Pn localhost -p "$1" 2> /dev/null | grep open > /dev/null 2>&1
 		return $?
@@ -7141,6 +7152,9 @@ alias mustBeRoot=_mustBeRoot
 
 #Determines if sudo is usable by scripts.
 _mustGetSudo() {
+	# WARNING: What is otherwise considered bad practice may be accepted to reduce substantial MSW/Cygwin inconvenience .
+	_if_cygwin && return 0
+	
 	local rootAvailable
 	rootAvailable=false
 	
@@ -7155,6 +7169,9 @@ _mustGetSudo() {
 
 #Determines if sudo is usable by scripts. Will not exit on failure.
 _wantSudo() {
+	# WARNING: What is otherwise considered bad practice may be accepted to reduce substantial MSW/Cygwin inconvenience .
+	_if_cygwin && return 0
+	
 	local rootAvailable
 	rootAvailable=false
 	
@@ -8353,7 +8370,8 @@ _describe_abstractfs() {
 	basename "$testAbstractfsBase"
 	! cd "$testAbstractfsBase" >/dev/null 2>&1 && cd "$localFunctionEntryPWD" && return 1
 	git rev-parse --abbrev-ref HEAD 2>/dev/null
-	git remote show origin 2>/dev/null
+	#git remote show origin 2>/dev/null
+	git config --get remote.origin.url
 	
 	cd "$localFunctionEntryPWD"
 }
@@ -9652,6 +9670,8 @@ _test_devqalculate() {
 	_wantGetDep qalculate-gtk
 	_wantGetDep qalculate
 	
+	_wantGetDep qalc
+	
 	! _typeShare 'texmf/tex/latex/gnuplot/gnuplot.cfg' && _wantGetDep gnuplot-data
 	! _typeShare 'texmf/tex/latex/gnuplot/gnuplot.cfg' && echo 'warn: missing: gnuplot-data'
 	
@@ -10130,242 +10150,6 @@ _test_mktorrent() {
 
 
 
-
-#ubVirt_self
-# WARNING: Not to be confused with 'ubVirtImageLocal' and similar.
-
-# ATTENTION: Intended to rely on 'ubiquitous bash' '_editVBox' , '_editQemu' and similar , with file copy/deduplication , to 'create' a 'server' , as well as to perform relevant 'list' , 'status' , and similar functions.
-
-
-# ATTENTION: Override with 'ops.sh' or similar.
-# WARNING: DANGER: WIP. Untested!
-_ubVirt_self_server_create() {
-	_messageNormal 'init: _ubVirt_self_server_create'
-	
-	export ub_ubVirt_dir="$scriptLocal"/ubVirt
-	export ub_ubVirt_dir_template="$scriptLocal"/ubVirt/template
-	
-	! mkdir -p "$ub_ubVirt_dir_template"/_local && return 1
-	! [[ -e "$ub_ubVirt_dir_template"/_local ]] && return 1
-	! [[ -d "$ub_ubVirt_dir_template"/_local ]] && return 1
-	
-	export ub_ubVirt_server_uid=$(_uid)
-	export ub_ubVirt_server_dir="$ub_ubVirt_dir"/"$ub_ubVirt_server_uid"
-	
-	! mkdir -p "$ub_ubVirt_server_dir" && return 1
-	! [[ -e "$ub_ubVirt_server_dir" ]] && return 1
-	! [[ -d "$ub_ubVirt_server_dir" ]] && return 1
-	
-	if ! [[ -e "$ub_ubVirt_dir"/template/ubiquitous_bash.sh ]]
-	then
-		_messagePlain_nominal '_ubVirt_self_server_create: copy: template'
-		cp -a "$scriptAbsoluteLocation" "$ub_ubVirt_dir_template"/ubiquitous_bash.sh
-		cp -a "$scriptLocal"/ops.sh "$ub_ubVirt_dir_template"/_local/ops.sh
-	fi
-	
-	if ! [[ -e "$ub_ubVirt_dir"/template/_local/vm.img ]] && ! [[ -e "$ub_ubVirt_dir"/template/_local/vm.vdi ]]
-	then
-		_messagePlain_nominal '_ubVirt_self_server_create: build: '"'OS' image"
-		true
-		# Call functions to build 'OS' image .
-		# TODO: Necessarily will not match all steps expected of a 'custom' image, but must include everything a user would expect to be able to customize 'offline' (ie. all typical 'programs' must be installed, etc).
-	fi
-	
-	
-	_ubVirt_self_server_status "$ub_ubVirt_server_uid"
-}
-
-
-_ubVirt_self_server_list() {
-	true
-}
-
-
-_ubVirt_self_server_status() {
-	_messageNormal 'init: _ubVirt_self_server_status'
-	
-	#export ub_ubVirt_server_addr_ipv4
-	#export ub_ubVirt_server_addr_ipv6
-	
-	#export ub_ubVirt_server_ssh_cred
-	#export ub_ubVirt_server_ssh_port
-	
-	#export ub_ubVirt_server_vnc_cred
-	#export ub_ubVirt_server_vnc_port
-	
-	#export ub_ubVirt_server_serial
-	
-	#export ub_ubVirt_server_novnc_cred
-	#export_ub_ubVirt_server_novnc_port
-	#export ub_ubVirt_server_novnc_url_ipv4
-	#export ub_ubVirt_server_novnc_url_ipv6
-	
-	#export ub_ubVirt_server_shellinabox_port
-	#export ub_ubVirt_server_shellinabox_url_ipv4
-	#export ub_ubVirt_server_shellinabox_url_ipv6
-	
-	#export ub_ubVirt_server_remotedesktopwebclient_port
-	#export ub_ubVirt_server_remotedesktopwebclient_url_ipv4
-	#export ub_ubVirt_server_remotedesktopwebclient_url_ipv6
-}
-
-
-
-_test_ubVirt() {
-	# ATTENTION: TODO: A custom 'GUI' frontend and backend may be required to integrate with VR.
-	
-	_tryExec _testQEMU_x64-x64
-	_tryExec _testVBox
-	
-	return 0
-}
-
-#phpvirtualbox_self
-
-# WARNING: End-user ONLY. NOT intended to provide VirtualMachines for embedded (eg. '3D printer') or application specific (ie. running a program in a VM with file parameter translation) use cases! Intended SOLELY for use cases where a VM 'in the cloud' would be perfectly usable if not for cost or bandwidth constraints.
-
-# https://www.howtoforge.com/managing-a-headless-virtualbox-installation-with-phpvirtualbox-opensuse-12.2
-# https://wiki.archlinux.org/index.php/PhpVirtualBox
-# https://www.techrepublic.com/article/how-to-install-phpvirtualbox-for-cloud-based-virtualbox-management/
-
-
-# Consider 'phpvirtualbox_self' simply as a means to install 'phpvirtualbox' as the web interface may be usable as-is. API may not be necessary in this case, and may be better dealt with by 'virtualbox_self' .
-# https://www.youtube.com/watch?v=aDRWIN86W1s
-
-
-
-_phpvirtualbox_self_status() {
-	true
-	
-	# Of course, the 'ipv4' address may be disregarded in favor of '127.0.0.1' .
-	#export ub_phpvirtualbox_self_port
-	#export ub_phpvirtualbox_self_url_ipv4
-	#export ub_phpvirtualbox_self_url_ipv6
-}
-
-
-_test_phpvirtualbox_self() {
-	true
-	
-	
-	
-	
-	
-	# ATTENTION: WARNING: TODO: TEMPORARY.
-	if _if_cygwin
-	then
-		if ! type _testVBox > /dev/null 2>&1 || ! "$scriptAbsoluteLocation" _testVBox
-		then
-			echo 'warn: accepted: cygwin: missing: vbox'
-			return 0
-		fi
-	fi
-	
-	# WARNING: This will not be perfect. An installation of 'phpvirtualbox' may be detected through network port (which causes a popup dialog if MSW host), or through a standard location (which may as well be required with MSW).
-	
-	# WARNING: While 'VirtualBox' may require a 'native' MSW installation, it is likely 'phpvirtualbox' will require Cygwin .
-	
-	! type _testVBox > /dev/null 2>&1 && _messageFAIL && _stop 1
-	_testVBox "$@"
-	
-	return 0
-}
-
-#virtualbox_self
-
-# WARNING: End-user ONLY. NOT intended to provide VirtualMachines for embedded (eg. '3D printer') or application specific (ie. running a program in a VM with file parameter translation) use cases! Intended SOLELY for use cases where a VM 'in the cloud' would be perfectly usable if not for cost or bandwidth constraints.
-
-# https://www.howtoforge.com/managing-a-headless-virtualbox-installation-with-phpvirtualbox-opensuse-12.2
-# https://wiki.archlinux.org/index.php/PhpVirtualBox
-# https://www.techrepublic.com/article/how-to-install-phpvirtualbox-for-cloud-based-virtualbox-management/
-
-
-# Consider 'rdp' , apparently usable within web browser and used by 'phpVirtualBox' .
-# https://github.com/phpvirtualbox/phpvirtualbox/wiki#virtualbox--40---remote-console-access-note
-# https://github.com/phpvirtualbox/phpvirtualbox/issues/140
-# https://docs.microsoft.com/en-us/windows-server/remote/remote-desktop-services/clients/remote-desktop-web-client-admin
-
-
-
-
-# ATTENTION: CAUTION: Whether 'VBoxLab' or 'global' VirtualBox configuration is used must be configurable with 'ops.sh' or similar!
-
-
-
-_virtualbox_self_server_create() {
-	true
-	
-	
-	_virtualbox_self_server_status
-}
-
-
-_virtualbox_self_server_list() {
-	true
-}
-
-
-_virtualbox_self_server_status() {
-	true
-	
-	# Of course, the 'ipv4' address may be disregarded in favor of '127.0.0.1' .
-	# https://www.virtualbox.org/manual/ch07.html
-	#export ub_virtualbox_self_server_vrde_port
-	#export ub_virtualbox_self_server_vrde_addr_ipv4
-	#export ub_virtualbox_self_server_vrde_addr_ipv6
-	
-	
-	
-	#export ub_virtualbox_server_addr_ipv4
-	#export ub_virtualbox_server_addr_ipv6
-	
-	#export ub_virtualbox_server_ssh_cred
-	#export ub_virtualbox_server_ssh_port
-	
-	#export ub_virtualbox_server_vnc_cred
-	#export ub_virtualbox_server_vnc_port
-	
-	#export ub_virtualbox_server_serial
-	
-	#export ub_virtualbox_server_novnc_cred
-	#export_ub_virtualbox_server_novnc_port
-	#export ub_virtualbox_server_novnc_url_ipv4
-	#export ub_virtualbox_server_novnc_url_ipv6
-	
-	#export ub_virtualbox_server_shellinabox_port
-	#export ub_virtualbox_server_shellinabox_url_ipv4
-	#export ub_virtualbox_server_shellinabox_url_ipv6
-	
-	#export ub_virtualbox_server_remotedesktopwebclient_port
-	#export ub_virtualbox_server_remotedesktopwebclient_url_ipv4
-	#export ub_virtualbox_server_remotedesktopwebclient_url_ipv6
-}
-
-
-
-_test_virtualbox_self() {
-	# ATTENTION: TODO: A custom 'GUI' frontend and backend may be required to integrate with VR.
-	
-	
-	
-	
-	# ATTENTION: WARNING: TODO: TEMPORARY.
-	if _if_cygwin
-	then
-		if ! type _testVBox > /dev/null 2>&1 || ! "$scriptAbsoluteLocation" _testVBox
-		then
-			echo 'warn: accepted: cygwin: missing: vbox'
-			return 0
-		fi
-	fi
-	
-	! type _testVBox > /dev/null 2>&1 && _messageFAIL && _stop 1
-	_testVBox "$@"
-	
-	return 0
-}
-
-#libvirt_self
 
 #aws
 
@@ -12122,6 +11906,10 @@ _rclone() {
 	#env XDG_CONFIG_HOME="$scriptLocal"/rclone HOME="$scriptLocal"/rclone rclone --config="$scriptLocal"/rclone/rclone/rclone.conf "$@"
 	#env XDG_CONFIG_HOME="$scriptLocal"/rclone rclone --config="$scriptLocal"/rclone/rclone/rclone.conf "$@"
 	
+	# https://forum.rclone.org/t/how-to-change-rclone-config-location-windows/13073
+	#export RCLONE_CONFIG="$scriptLocal"/rclone/rclone/rclone.conf
+	#env RCLONE_CONFIG="$scriptLocal"/rclone/rclone/rclone.conf XDG_CONFIG_HOME="$scriptLocal"/rclone "$currentBin_rclone" --config="$scriptLocal"/rclone/rclone/rclone.conf "$@"
+	
 	env XDG_CONFIG_HOME="$scriptLocal"/rclone "$currentBin_rclone" --config="$scriptLocal"/rclone/rclone/rclone.conf "$@"
 }
 
@@ -12182,7 +11970,7 @@ _test_rclone_upstream() {
 
 
 _test_rclone() {
-	if [[ "$nonet" != "true" ]]
+	if [[ "$nonet" != "true" ]] && ! _if_cygwin
 	then
 		_messagePlain_request 'ignore: upstream progress ->'
 		
@@ -12458,10 +12246,6 @@ _cloud_server_status() {
 
 
 
-#docker_build
-
-#cloudNativeBuildpack
-
 #vagrant_build
 
 # WARNING: DANGER: Always use '_custom' from '_lib/kit/raspi' in addition to any 'cloud' built data (or otherwise dependent on cloud to built data) to ensure adequate completeness.
@@ -12486,17 +12270,6 @@ _test_vagrant_build() {
 	! _typeShare 'vagrant-plugins/plugins.d/vagrant-libvirt.json' && _wantGetDep 'vagrant-plugins/plugins.d/vagrant-libvirt.json'
 	_wantGetDep vagrant
 }
-
-#debian_build
-
-# Intended to exemplify 'current best practices' building a 'template' Debian VM image simultaneously bootable under at least BIOS/UEFI, LiveISO/LiveUSB, userQemu/userVBox, userChRoot, userDocker . Must adhere to similar steps as documented under 'raspi' 'kit' , although 'x64' may be the typically intended architecture.
-
-
-
-
-#gentoo_build
-
-# Mostly intended only to build especially fast 'PanelVM' images, or more rarely images for programs with dependencies needing substantial modification of distribution available programs.
 
 _testDistro() {
 	_wantGetDep sha256sum
@@ -13650,11 +13423,32 @@ _setupUbiquitous_accessories_requests() {
 
 
 
-_setupUbiquitous_here() {
-# WARNING: What is otherwise considered bad practice may be accepted to reduce substantial MSW/Cygwin inconvenience .
-_if_cygwin && cat << CZXWXcRMTo8EmM8i4d
 
-[[ -e '/cygdrive' ]] && uname -a | grep -i cygwin > /dev/null 2>&1 && echo '.'
+
+_setupUbiquitous_here() {
+	! uname -a | grep -i cygwin > /dev/null 2>&1 && cat << CZXWXcRMTo8EmM8i4d
+
+if type sudo > /dev/null 2>&1 && groups | grep -E 'wheel|sudo' > /dev/null 2>&1 && ! uname -a | grep -i cygwin > /dev/null 2>&1
+then
+	# Greater or equal, '_priority_critical_pid_root' .
+	sudo -n renice -n -15 -p \$\$ > /dev/null 2>&1
+	sudo -n ionice -c 2 -n 2 -p \$\$ > /dev/null 2>&1
+fi
+
+# ^
+# Ensures admin user shell startup, including Ubiquitous Bash, is relatively quick under heavy system load.
+# Near-realtime priority may be acceptable, due to reliability of relevant Ubiquitous Bash functions.
+# WARNING: Do NOT prioritize highly enough to interfere with embedded hard realtime processes.
+
+CZXWXcRMTo8EmM8i4d
+
+
+	# WARNING: What is otherwise considered bad practice may be accepted to reduce substantial MSW/Cygwin inconvenience .
+	_if_cygwin && cat << CZXWXcRMTo8EmM8i4d
+
+[[ -e '/cygdrive' ]] && uname -a | grep -i cygwin > /dev/null 2>&1 && echo -n '.'
+
+[[ "\$profileScriptLocation" == "" ]] && export profileScriptLocation_new='true'
 
 CZXWXcRMTo8EmM8i4d
 
@@ -13662,16 +13456,6 @@ CZXWXcRMTo8EmM8i4d
 	cat << CZXWXcRMTo8EmM8i4d
 PS1_lineNumber=""
 
-if type sudo > /dev/null 2>&1 && groups | grep -E 'wheel|sudo' > /dev/null 2>&1
-then
-	# Greater or equal, '_priority_critical_pid_root' .
-	sudo -n renice -n -15 -p \$\$ > /dev/null 2>&1
-	sudo -n ionice -c 2 -n 2 -p \$\$ > /dev/null 2>&1
-fi
-# ^
-# Ensures admin user shell startup, including Ubiquitous Bash, is relatively quick under heavy system load.
-# Near-realtime priority may be acceptable, due to reliability of relevant Ubiquitous Bash functions.
-# WARNING: Do NOT prioritize highly enough to interfere with embedded hard realtime processes.
 
 # WARNING: Importing complete 'ubiquitous_bash.sh' may cause other scripts to call functions inappropriate for their needs during "_test" and "_setup" .
 # This may be acceptable if the user has already run "_setup" from the imported script .
@@ -13700,17 +13484,34 @@ true
 CZXWXcRMTo8EmM8i4d
 
 
-# WARNING: What is otherwise considered bad practice may be accepted to reduce substantial MSW/Cygwin inconvenience .
-_if_cygwin && cat << CZXWXcRMTo8EmM8i4d
+	# WARNING: What is otherwise considered bad practice may be accepted to reduce substantial MSW/Cygwin inconvenience .
+	_if_cygwin && cat << CZXWXcRMTo8EmM8i4d
 
 if [[ -e '/cygdrive' ]] && uname -a | grep -i cygwin > /dev/null 2>&1
 then
-	echo '.'
-	clear
+	#echo -n '.'
+	#clear
+	
+	# https://stackoverflow.com/questions/238073/how-to-add-a-progress-bar-to-a-shell-script
+	echo -e -n '.\r'
+	
+	if [[ "\$profileScriptLocation_new" == 'true' ]]
+	then
+		export profileScriptLocation_new=''
+		unset profileScriptLocation_new
+		
+		sleep 0.1
+		echo '.'
+		sleep 0.1
+		echo '.'
+		sleep 0.1
+		clear
+	fi
 fi
 
-CZXWXcRMTo8EmM8i4d
+true
 
+CZXWXcRMTo8EmM8i4d
 
 }
 
@@ -14601,7 +14402,7 @@ export bootTmp="$scriptLocal"
 #Consistent absolute path abstraction.
 export abstractfs_root=/tmp/"$ubiquitiousBashIDnano"
 ( [[ "$bootTmp" == '/dev/shm' ]] || [[ "$bootTmp" == '/tmp' ]] || [[ "$tmpMSW" != "" ]] ) && export abstractfs_root="$bootTmp"/"$ubiquitiousBashIDnano"
-export abstractfs_lock=/"$bootTmp"/"$ubiquitiousBashID"/afslock
+export abstractfs_lock="$bootTmp"/"$ubiquitiousBashID"/afslock
 
 # Unusually, safeTmpSSH must not be interpreted by client, and therefore is single quoted.
 # TODO Test safeTmpSSH variants including spaces in path.
@@ -17735,18 +17536,38 @@ _prepare_abstract() {
 	! mkdir -p "$abstractfs_root" && exit 1
 	chmod 0700 "$abstractfs_root" > /dev/null 2>&1
 	! chmod 700 "$abstractfs_root" && exit 1
-	if ! chown "$USER":"$USER" "$abstractfs_root" > /dev/null 2>&1
+	
+	if _if_cygwin
 	then
-		! /sbin/chown "$USER" "$abstractfs_root" && exit 1
+		if ! chown "$USER":None "$abstractfs_root" > /dev/null 2>&1
+		then
+			! chown "$USER" "$abstractfs_root" && exit 1
+		fi
+	else
+		if ! chown "$USER":"$USER" "$abstractfs_root" > /dev/null 2>&1
+		then
+			! /sbin/chown "$USER" "$abstractfs_root" && exit 1
+		fi
 	fi
+	
+	
 	
 	
 	! mkdir -p "$abstractfs_lock" && exit 1
 	chmod 0700 "$abstractfs_lock" > /dev/null 2>&1
 	! chmod 700 "$abstractfs_lock" && exit 1
-	if ! chown "$USER":"$USER" "$abstractfs_lock" > /dev/null 2>&1
+	
+	if _if_cygwin
 	then
-		! /sbin/chown "$USER" "$abstractfs_root" && exit 1
+		if ! chown "$USER":None "$abstractfs_lock" > /dev/null 2>&1
+		then
+			! chown "$USER" "$abstractfs_lock" && exit 1
+		fi
+	else
+		if ! chown "$USER":"$USER" "$abstractfs_lock" > /dev/null 2>&1
+		then
+			! /sbin/chown "$USER" "$abstractfs_lock" && exit 1
+		fi
 	fi
 }
 
@@ -20633,7 +20454,7 @@ _bash() {
 	[[ -e '/cygdrive' ]] && uname -a | grep -i cygwin > /dev/null 2>&1 && _if_cygwin && currentIsCygwin='true'
 	
 	# WARNING: What is otherwise considered bad practice may be accepted to reduce substantial MSW/Cygwin inconvenience .
-	[[ "$currentIsCygwin" == 'true' ]] && echo '.'
+	[[ "$currentIsCygwin" == 'true' ]] && echo -n '.'
 	
 	
 	_visualPrompt

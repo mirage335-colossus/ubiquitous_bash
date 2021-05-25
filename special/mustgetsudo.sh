@@ -1,5 +1,8 @@
 #Determines if sudo is usable by scripts.
 _mustGetSudo() {
+	# WARNING: What is otherwise considered bad practice may be accepted to reduce substantial MSW/Cygwin inconvenience .
+	_if_cygwin && return 0
+	
 	local rootAvailable
 	rootAvailable=false
 	
@@ -14,6 +17,9 @@ _mustGetSudo() {
 
 #Determines if sudo is usable by scripts. Will not exit on failure.
 _wantSudo() {
+	# WARNING: What is otherwise considered bad practice may be accepted to reduce substantial MSW/Cygwin inconvenience .
+	_if_cygwin && return 0
+	
 	local rootAvailable
 	rootAvailable=false
 	

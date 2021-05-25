@@ -25,7 +25,8 @@ _compile_bash_deps() {
 		
 		# WARNING: Only known production use in this context is '_cloud_reset' , '_cloud_unhook' , and similar.
 		_deps_cloud
-		_deps_cloud_build
+		#_deps_cloud_self
+		#_deps_cloud_build
 		
 		_deps_abstractfs
 		
@@ -60,6 +61,7 @@ _compile_bash_deps() {
 		
 		_deps_repo
 		_deps_cloud
+		_deps_cloud_self
 		_deps_cloud_build
 		
 		_deps_command
@@ -164,6 +166,7 @@ _compile_bash_deps() {
 		_deps_repo
 		
 		_deps_cloud
+		_deps_cloud_self
 		_deps_cloud_build
 		
 		_deps_distro
@@ -237,6 +240,7 @@ _compile_bash_deps() {
 		_deps_repo
 		
 		_deps_cloud
+		_deps_cloud_self
 		_deps_cloud_build
 		
 		_deps_distro
@@ -522,10 +526,10 @@ _compile_bash_shortcuts() {
 	( [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_cloud" == "true" ]] ) && includeScriptList+=( "shortcuts/cloud/self/screenScraper"/screenScraper-nix.sh )
 	( [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_cloud" == "true" ]] ) && includeScriptList+=( "shortcuts/cloud/self/screenScraper"/screenScraper-msw.sh )
 	
-	( [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_cloud" == "true" ]] ) && includeScriptList+=( "shortcuts/cloud/self/ubVirt"/ubVirt_self.sh )
-	( [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_cloud" == "true" ]] ) && includeScriptList+=( "shortcuts/cloud/self"/phpvirtualbox_self.sh )
-	( [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_cloud" == "true" ]] ) && includeScriptList+=( "shortcuts/cloud/self"/virtualbox_self.sh )
-	( [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_cloud" == "true" ]] ) && includeScriptList+=( "shortcuts/cloud/self"/libvirt_self.sh )
+	( [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_cloud_self" == "true" ]] ) && includeScriptList+=( "shortcuts/cloud/self/ubVirt"/ubVirt_self.sh )
+	( [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_cloud_self" == "true" ]] ) && includeScriptList+=( "shortcuts/cloud/self"/phpvirtualbox_self.sh )
+	( [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_cloud_self" == "true" ]] ) && includeScriptList+=( "shortcuts/cloud/self"/virtualbox_self.sh )
+	( [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_cloud_self" == "true" ]] ) && includeScriptList+=( "shortcuts/cloud/self"/libvirt_self.sh )
 	
 	( [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_cloud" == "true" ]] ) && includeScriptList+=( "shortcuts/cloud/service"/aws/aws.sh )
 	( [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_cloud" == "true" ]] ) && includeScriptList+=( "shortcuts/cloud/service"/gcloud/gcloud.sh )

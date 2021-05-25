@@ -17,6 +17,10 @@ _rclone() {
 	#env XDG_CONFIG_HOME="$scriptLocal"/rclone HOME="$scriptLocal"/rclone rclone --config="$scriptLocal"/rclone/rclone/rclone.conf "$@"
 	#env XDG_CONFIG_HOME="$scriptLocal"/rclone rclone --config="$scriptLocal"/rclone/rclone/rclone.conf "$@"
 	
+	# https://forum.rclone.org/t/how-to-change-rclone-config-location-windows/13073
+	#export RCLONE_CONFIG="$scriptLocal"/rclone/rclone/rclone.conf
+	#env RCLONE_CONFIG="$scriptLocal"/rclone/rclone/rclone.conf XDG_CONFIG_HOME="$scriptLocal"/rclone "$currentBin_rclone" --config="$scriptLocal"/rclone/rclone/rclone.conf "$@"
+	
 	env XDG_CONFIG_HOME="$scriptLocal"/rclone "$currentBin_rclone" --config="$scriptLocal"/rclone/rclone/rclone.conf "$@"
 }
 
@@ -77,7 +81,7 @@ _test_rclone_upstream() {
 
 
 _test_rclone() {
-	if [[ "$nonet" != "true" ]]
+	if [[ "$nonet" != "true" ]] && ! _if_cygwin
 	then
 		_messagePlain_request 'ignore: upstream progress ->'
 		

@@ -1042,7 +1042,10 @@ SET "MSWanchorSourcePath=%MSWanchorSourceDir%\%MSWanchorSource%"
 
 REM WARNING: What is otherwise considered bad practice may be accepted to reduce substantial MSW/Cygwin inconvenience .
 if "%MSWanchorName%"=="_bash" (
-	echo .
+	REM echo .
+	
+	REM https://stackoverflow.com/questions/7105433/windows-batch-echo-without-new-line
+	echo|set /p="."
 )
 
 

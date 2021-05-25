@@ -32,7 +32,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='1891409836'
-export ub_setScriptChecksum_contents='1109934450'
+export ub_setScriptChecksum_contents='3617790695'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -3487,10 +3487,11 @@ _testFindPort() {
 	! _wantGetDep ss
 	! _wantGetDep sockstat
 	
-	# WARNING: Cygwin port range detection not yet implemented.
+	# WARNING: Not yet relying exclusively on 'netstat' - recommend continuing to install 'nmap' for Cygwin port range detection (and also for _waitPort) .
 	if uname -a | grep -i cygwin > /dev/null 2>&1
 	then
-		! type nmap > /dev/null 2>&1 && echo "missing socket detection" && _stop 1
+		! type nmap > /dev/null 2>&1 && echo "missing socket detection: nmap" && _stop 1
+		! type netstat | grep cygdrive > /dev/null 2>&1 && echo "missing socket detection: netstat" && _stop 1
 		return 0
 	fi
 	
@@ -3532,7 +3533,17 @@ _checkPort_local() {
 		return $?
 	fi
 	
-	if uname -a | grep -i cygwin > /dev/null 2>&1
+	if uname -a | grep -i cygwin > /dev/null 2>&1 && type netstat > /dev/null 2>&1 && type netstat | grep cygdrive > /dev/null 2>&1
+	then
+		#nmap --host-timeout 0.1 -Pn localhost -p "$1" 2> /dev/null | grep open > /dev/null 2>&1
+		
+		# https://www.maketecheasier.com/check-ports-in-use-windows10/
+		#netstat -a | grep 'TCP\|UDP' | cut -f 1-7 -d\
+		netstat -a -n -q | grep 'TCP\|UDP' | cut -f 1-8 -d\  | grep ':'"$1" > /dev/null 2>&1
+		return $?
+	fi
+	
+	if type nmap
 	then
 		nmap --host-timeout 0.1 -Pn localhost -p "$1" 2> /dev/null | grep open > /dev/null 2>&1
 		return $?
@@ -7838,6 +7849,9 @@ alias mustBeRoot=_mustBeRoot
 
 #Determines if sudo is usable by scripts.
 _mustGetSudo() {
+	# WARNING: What is otherwise considered bad practice may be accepted to reduce substantial MSW/Cygwin inconvenience .
+	_if_cygwin && return 0
+	
 	local rootAvailable
 	rootAvailable=false
 	
@@ -7852,6 +7866,9 @@ _mustGetSudo() {
 
 #Determines if sudo is usable by scripts. Will not exit on failure.
 _wantSudo() {
+	# WARNING: What is otherwise considered bad practice may be accepted to reduce substantial MSW/Cygwin inconvenience .
+	_if_cygwin && return 0
+	
 	local rootAvailable
 	rootAvailable=false
 	
@@ -9699,7 +9716,8 @@ _describe_abstractfs() {
 	basename "$testAbstractfsBase"
 	! cd "$testAbstractfsBase" >/dev/null 2>&1 && cd "$localFunctionEntryPWD" && return 1
 	git rev-parse --abbrev-ref HEAD 2>/dev/null
-	git remote show origin 2>/dev/null
+	#git remote show origin 2>/dev/null
+	git config --get remote.origin.url
 	
 	cd "$localFunctionEntryPWD"
 }
@@ -15243,6 +15261,8 @@ _test_devqalculate() {
 	_wantGetDep qalculate-gtk
 	_wantGetDep qalculate
 	
+	_wantGetDep qalc
+	
 	! _typeShare 'texmf/tex/latex/gnuplot/gnuplot.cfg' && _wantGetDep gnuplot-data
 	! _typeShare 'texmf/tex/latex/gnuplot/gnuplot.cfg' && echo 'warn: missing: gnuplot-data'
 	
@@ -18409,6 +18429,10 @@ _rclone() {
 	#env XDG_CONFIG_HOME="$scriptLocal"/rclone HOME="$scriptLocal"/rclone rclone --config="$scriptLocal"/rclone/rclone/rclone.conf "$@"
 	#env XDG_CONFIG_HOME="$scriptLocal"/rclone rclone --config="$scriptLocal"/rclone/rclone/rclone.conf "$@"
 	
+	# https://forum.rclone.org/t/how-to-change-rclone-config-location-windows/13073
+	#export RCLONE_CONFIG="$scriptLocal"/rclone/rclone/rclone.conf
+	#env RCLONE_CONFIG="$scriptLocal"/rclone/rclone/rclone.conf XDG_CONFIG_HOME="$scriptLocal"/rclone "$currentBin_rclone" --config="$scriptLocal"/rclone/rclone/rclone.conf "$@"
+	
 	env XDG_CONFIG_HOME="$scriptLocal"/rclone "$currentBin_rclone" --config="$scriptLocal"/rclone/rclone/rclone.conf "$@"
 }
 
@@ -18469,7 +18493,7 @@ _test_rclone_upstream() {
 
 
 _test_rclone() {
-	if [[ "$nonet" != "true" ]]
+	if [[ "$nonet" != "true" ]] && ! _if_cygwin
 	then
 		_messagePlain_request 'ignore: upstream progress ->'
 		
@@ -21588,11 +21612,32 @@ _setupUbiquitous_accessories_requests() {
 
 
 
-_setupUbiquitous_here() {
-# WARNING: What is otherwise considered bad practice may be accepted to reduce substantial MSW/Cygwin inconvenience .
-_if_cygwin && cat << CZXWXcRMTo8EmM8i4d
 
-[[ -e '/cygdrive' ]] && uname -a | grep -i cygwin > /dev/null 2>&1 && echo '.'
+
+_setupUbiquitous_here() {
+	! uname -a | grep -i cygwin > /dev/null 2>&1 && cat << CZXWXcRMTo8EmM8i4d
+
+if type sudo > /dev/null 2>&1 && groups | grep -E 'wheel|sudo' > /dev/null 2>&1 && ! uname -a | grep -i cygwin > /dev/null 2>&1
+then
+	# Greater or equal, '_priority_critical_pid_root' .
+	sudo -n renice -n -15 -p \$\$ > /dev/null 2>&1
+	sudo -n ionice -c 2 -n 2 -p \$\$ > /dev/null 2>&1
+fi
+
+# ^
+# Ensures admin user shell startup, including Ubiquitous Bash, is relatively quick under heavy system load.
+# Near-realtime priority may be acceptable, due to reliability of relevant Ubiquitous Bash functions.
+# WARNING: Do NOT prioritize highly enough to interfere with embedded hard realtime processes.
+
+CZXWXcRMTo8EmM8i4d
+
+
+	# WARNING: What is otherwise considered bad practice may be accepted to reduce substantial MSW/Cygwin inconvenience .
+	_if_cygwin && cat << CZXWXcRMTo8EmM8i4d
+
+[[ -e '/cygdrive' ]] && uname -a | grep -i cygwin > /dev/null 2>&1 && echo -n '.'
+
+[[ "\$profileScriptLocation" == "" ]] && export profileScriptLocation_new='true'
 
 CZXWXcRMTo8EmM8i4d
 
@@ -21600,16 +21645,6 @@ CZXWXcRMTo8EmM8i4d
 	cat << CZXWXcRMTo8EmM8i4d
 PS1_lineNumber=""
 
-if type sudo > /dev/null 2>&1 && groups | grep -E 'wheel|sudo' > /dev/null 2>&1
-then
-	# Greater or equal, '_priority_critical_pid_root' .
-	sudo -n renice -n -15 -p \$\$ > /dev/null 2>&1
-	sudo -n ionice -c 2 -n 2 -p \$\$ > /dev/null 2>&1
-fi
-# ^
-# Ensures admin user shell startup, including Ubiquitous Bash, is relatively quick under heavy system load.
-# Near-realtime priority may be acceptable, due to reliability of relevant Ubiquitous Bash functions.
-# WARNING: Do NOT prioritize highly enough to interfere with embedded hard realtime processes.
 
 # WARNING: Importing complete 'ubiquitous_bash.sh' may cause other scripts to call functions inappropriate for their needs during "_test" and "_setup" .
 # This may be acceptable if the user has already run "_setup" from the imported script .
@@ -21638,17 +21673,34 @@ true
 CZXWXcRMTo8EmM8i4d
 
 
-# WARNING: What is otherwise considered bad practice may be accepted to reduce substantial MSW/Cygwin inconvenience .
-_if_cygwin && cat << CZXWXcRMTo8EmM8i4d
+	# WARNING: What is otherwise considered bad practice may be accepted to reduce substantial MSW/Cygwin inconvenience .
+	_if_cygwin && cat << CZXWXcRMTo8EmM8i4d
 
 if [[ -e '/cygdrive' ]] && uname -a | grep -i cygwin > /dev/null 2>&1
 then
-	echo '.'
-	clear
+	#echo -n '.'
+	#clear
+	
+	# https://stackoverflow.com/questions/238073/how-to-add-a-progress-bar-to-a-shell-script
+	echo -e -n '.\r'
+	
+	if [[ "\$profileScriptLocation_new" == 'true' ]]
+	then
+		export profileScriptLocation_new=''
+		unset profileScriptLocation_new
+		
+		sleep 0.1
+		echo '.'
+		sleep 0.1
+		echo '.'
+		sleep 0.1
+		clear
+	fi
 fi
 
-CZXWXcRMTo8EmM8i4d
+true
 
+CZXWXcRMTo8EmM8i4d
 
 }
 
@@ -23289,7 +23341,7 @@ export bootTmp="$scriptLocal"
 #Consistent absolute path abstraction.
 export abstractfs_root=/tmp/"$ubiquitiousBashIDnano"
 ( [[ "$bootTmp" == '/dev/shm' ]] || [[ "$bootTmp" == '/tmp' ]] || [[ "$tmpMSW" != "" ]] ) && export abstractfs_root="$bootTmp"/"$ubiquitiousBashIDnano"
-export abstractfs_lock=/"$bootTmp"/"$ubiquitiousBashID"/afslock
+export abstractfs_lock="$bootTmp"/"$ubiquitiousBashID"/afslock
 
 # Unusually, safeTmpSSH must not be interpreted by client, and therefore is single quoted.
 # TODO Test safeTmpSSH variants including spaces in path.
@@ -29489,18 +29541,38 @@ _prepare_abstract() {
 	! mkdir -p "$abstractfs_root" && exit 1
 	chmod 0700 "$abstractfs_root" > /dev/null 2>&1
 	! chmod 700 "$abstractfs_root" && exit 1
-	if ! chown "$USER":"$USER" "$abstractfs_root" > /dev/null 2>&1
+	
+	if _if_cygwin
 	then
-		! /sbin/chown "$USER" "$abstractfs_root" && exit 1
+		if ! chown "$USER":None "$abstractfs_root" > /dev/null 2>&1
+		then
+			! chown "$USER" "$abstractfs_root" && exit 1
+		fi
+	else
+		if ! chown "$USER":"$USER" "$abstractfs_root" > /dev/null 2>&1
+		then
+			! /sbin/chown "$USER" "$abstractfs_root" && exit 1
+		fi
 	fi
+	
+	
 	
 	
 	! mkdir -p "$abstractfs_lock" && exit 1
 	chmod 0700 "$abstractfs_lock" > /dev/null 2>&1
 	! chmod 700 "$abstractfs_lock" && exit 1
-	if ! chown "$USER":"$USER" "$abstractfs_lock" > /dev/null 2>&1
+	
+	if _if_cygwin
 	then
-		! /sbin/chown "$USER" "$abstractfs_root" && exit 1
+		if ! chown "$USER":None "$abstractfs_lock" > /dev/null 2>&1
+		then
+			! chown "$USER" "$abstractfs_lock" && exit 1
+		fi
+	else
+		if ! chown "$USER":"$USER" "$abstractfs_lock" > /dev/null 2>&1
+		then
+			! /sbin/chown "$USER" "$abstractfs_lock" && exit 1
+		fi
 	fi
 }
 
@@ -31905,6 +31977,11 @@ _deps_cloud() {
 	export enUb_cloud="true"
 }
 
+_deps_cloud_self() {
+	_deps_cloud
+	export enUb_cloud_self="true"
+}
+
 _deps_cloud_build() {
 	_deps_cloud
 	export enUb_cloud_build="true"
@@ -32264,7 +32341,8 @@ _compile_bash_deps() {
 		
 		# WARNING: Only known production use in this context is '_cloud_reset' , '_cloud_unhook' , and similar.
 		_deps_cloud
-		_deps_cloud_build
+		#_deps_cloud_self
+		#_deps_cloud_build
 		
 		_deps_abstractfs
 		
@@ -32299,6 +32377,7 @@ _compile_bash_deps() {
 		
 		_deps_repo
 		_deps_cloud
+		_deps_cloud_self
 		_deps_cloud_build
 		
 		_deps_command
@@ -32403,6 +32482,7 @@ _compile_bash_deps() {
 		_deps_repo
 		
 		_deps_cloud
+		_deps_cloud_self
 		_deps_cloud_build
 		
 		_deps_distro
@@ -32476,6 +32556,7 @@ _compile_bash_deps() {
 		_deps_repo
 		
 		_deps_cloud
+		_deps_cloud_self
 		_deps_cloud_build
 		
 		_deps_distro
@@ -32761,10 +32842,10 @@ _compile_bash_shortcuts() {
 	( [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_cloud" == "true" ]] ) && includeScriptList+=( "shortcuts/cloud/self/screenScraper"/screenScraper-nix.sh )
 	( [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_cloud" == "true" ]] ) && includeScriptList+=( "shortcuts/cloud/self/screenScraper"/screenScraper-msw.sh )
 	
-	( [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_cloud" == "true" ]] ) && includeScriptList+=( "shortcuts/cloud/self/ubVirt"/ubVirt_self.sh )
-	( [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_cloud" == "true" ]] ) && includeScriptList+=( "shortcuts/cloud/self"/phpvirtualbox_self.sh )
-	( [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_cloud" == "true" ]] ) && includeScriptList+=( "shortcuts/cloud/self"/virtualbox_self.sh )
-	( [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_cloud" == "true" ]] ) && includeScriptList+=( "shortcuts/cloud/self"/libvirt_self.sh )
+	( [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_cloud_self" == "true" ]] ) && includeScriptList+=( "shortcuts/cloud/self/ubVirt"/ubVirt_self.sh )
+	( [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_cloud_self" == "true" ]] ) && includeScriptList+=( "shortcuts/cloud/self"/phpvirtualbox_self.sh )
+	( [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_cloud_self" == "true" ]] ) && includeScriptList+=( "shortcuts/cloud/self"/virtualbox_self.sh )
+	( [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_cloud_self" == "true" ]] ) && includeScriptList+=( "shortcuts/cloud/self"/libvirt_self.sh )
 	
 	( [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_cloud" == "true" ]] ) && includeScriptList+=( "shortcuts/cloud/service"/aws/aws.sh )
 	( [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_cloud" == "true" ]] ) && includeScriptList+=( "shortcuts/cloud/service"/gcloud/gcloud.sh )
@@ -34010,7 +34091,7 @@ _bash() {
 	[[ -e '/cygdrive' ]] && uname -a | grep -i cygwin > /dev/null 2>&1 && _if_cygwin && currentIsCygwin='true'
 	
 	# WARNING: What is otherwise considered bad practice may be accepted to reduce substantial MSW/Cygwin inconvenience .
-	[[ "$currentIsCygwin" == 'true' ]] && echo '.'
+	[[ "$currentIsCygwin" == 'true' ]] && echo -n '.'
 	
 	
 	_visualPrompt

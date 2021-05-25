@@ -91,6 +91,8 @@ _test_devqalculate() {
 	_wantGetDep qalculate-gtk
 	_wantGetDep qalculate
 	
+	_wantGetDep qalc
+	
 	! _typeShare 'texmf/tex/latex/gnuplot/gnuplot.cfg' && _wantGetDep gnuplot-data
 	! _typeShare 'texmf/tex/latex/gnuplot/gnuplot.cfg' && echo 'warn: missing: gnuplot-data'
 	

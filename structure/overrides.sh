@@ -115,7 +115,7 @@ _bash() {
 	[[ -e '/cygdrive' ]] && uname -a | grep -i cygwin > /dev/null 2>&1 && _if_cygwin && currentIsCygwin='true'
 	
 	# WARNING: What is otherwise considered bad practice may be accepted to reduce substantial MSW/Cygwin inconvenience .
-	[[ "$currentIsCygwin" == 'true' ]] && echo '.'
+	[[ "$currentIsCygwin" == 'true' ]] && echo -n '.'
 	
 	
 	_visualPrompt

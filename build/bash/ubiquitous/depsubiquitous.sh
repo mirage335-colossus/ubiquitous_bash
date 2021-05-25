@@ -78,6 +78,11 @@ _deps_cloud() {
 	export enUb_cloud="true"
 }
 
+_deps_cloud_self() {
+	_deps_cloud
+	export enUb_cloud_self="true"
+}
+
 _deps_cloud_build() {
 	_deps_cloud
 	export enUb_cloud_build="true"

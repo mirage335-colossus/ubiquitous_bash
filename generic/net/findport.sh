@@ -9,10 +9,11 @@ _testFindPort() {
 	! _wantGetDep ss
 	! _wantGetDep sockstat
 	
-	# WARNING: Cygwin port range detection not yet implemented.
+	# WARNING: Not yet relying exclusively on 'netstat' - recommend continuing to install 'nmap' for Cygwin port range detection (and also for _waitPort) .
 	if uname -a | grep -i cygwin > /dev/null 2>&1
 	then
-		! type nmap > /dev/null 2>&1 && echo "missing socket detection" && _stop 1
+		! type nmap > /dev/null 2>&1 && echo "missing socket detection: nmap" && _stop 1
+		! type netstat | grep cygdrive > /dev/null 2>&1 && echo "missing socket detection: netstat" && _stop 1
 		return 0
 	fi
 	
@@ -54,7 +55,17 @@ _checkPort_local() {
 		return $?
 	fi
 	
-	if uname -a | grep -i cygwin > /dev/null 2>&1
+	if uname -a | grep -i cygwin > /dev/null 2>&1 && type netstat > /dev/null 2>&1 && type netstat | grep cygdrive > /dev/null 2>&1
+	then
+		#nmap --host-timeout 0.1 -Pn localhost -p "$1" 2> /dev/null | grep open > /dev/null 2>&1
+		
+		# https://www.maketecheasier.com/check-ports-in-use-windows10/
+		#netstat -a | grep 'TCP\|UDP' | cut -f 1-7 -d\
+		netstat -a -n -q | grep 'TCP\|UDP' | cut -f 1-8 -d\  | grep ':'"$1" > /dev/null 2>&1
+		return $?
+	fi
+	
+	if type nmap
 	then
 		nmap --host-timeout 0.1 -Pn localhost -p "$1" 2> /dev/null | grep open > /dev/null 2>&1
 		return $?

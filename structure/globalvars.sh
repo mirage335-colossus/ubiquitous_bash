@@ -165,7 +165,7 @@ export bootTmp="$scriptLocal"
 #Consistent absolute path abstraction.
 export abstractfs_root=/tmp/"$ubiquitiousBashIDnano"
 ( [[ "$bootTmp" == '/dev/shm' ]] || [[ "$bootTmp" == '/tmp' ]] || [[ "$tmpMSW" != "" ]] ) && export abstractfs_root="$bootTmp"/"$ubiquitiousBashIDnano"
-export abstractfs_lock=/"$bootTmp"/"$ubiquitiousBashID"/afslock
+export abstractfs_lock="$bootTmp"/"$ubiquitiousBashID"/afslock
 
 # Unusually, safeTmpSSH must not be interpreted by client, and therefore is single quoted.
 # TODO Test safeTmpSSH variants including spaces in path.
