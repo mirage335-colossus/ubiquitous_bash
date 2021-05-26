@@ -361,6 +361,22 @@ _check_anchor() {
 	done
 }
 
+#_safeEcho_anchor "$anchorScriptAbsoluteFolder" | tr -dc 'a-zA-Z0-9.:_-'
+_safeEcho_anchor() {
+	printf '%s' "$1"
+	shift
+	
+	[[ "$@" == "" ]] && return 0
+	
+	local currentArg
+	for currentArg in "$@"
+	do
+		printf '%s' " "
+		printf '%s' "$currentArg"
+	done
+	return 0
+}
+
 _launch_anchor() {
 	_messagePlain_nominal 'anchorName='"$anchorName" | _user_log_anchor
 
@@ -374,6 +390,55 @@ _launch_anchor() {
 	
 	local recursionExec
 	local anchorParent
+	
+	# WARNING: What is otherwise considered bad practice may be accepted to reduce substantial MSW/Cygwin inconvenience .
+	
+	if [[ "$anchorScriptAbsoluteFolder" == '/cygdrive/'* ]]
+	then
+		local currentDriveLetter
+		for currentDriveLetter in {a..z}
+		do
+			if [[ "$anchorScriptAbsoluteFolder" == '/cygdrive/'"$currentDriveLetter" ]]
+			then
+				recursionExec="$anchorScriptAbsoluteFolder"/"$anchorSource"
+				if _recursion_guard "$recursionExec"
+				then
+					[[ "$ub_import" != "true" ]] && _messagePlain_good 'self: '"$recursionExec" "$anchorName" "$@" | _user_log_anchor
+						if [[ "$ub_import" != "true" ]]
+						then
+							"$recursionExec" "$anchorName" "$@"
+							exit $?
+						fi
+					
+					[[ "$ub_import" == "true" ]] && _messagePlain_good 'self: '"$recursionExec" "$ub_import_param" "$anchorName" "$@" | _user_log_anchor
+						[[ "$ub_import" == "true" ]] && "$recursionExec" "$ub_import_param" "$anchorName" "$@"
+					
+					exit $?
+				fi
+			fi
+		done
+	fi
+	
+	if [[ "$anchorScriptAbsoluteFolder" == '/home/user/project' ]] || [[ "$anchorScriptAbsoluteFolder" == /tmp/"$ubiquitiousBashIDnano" ]]
+	then
+		recursionExec="$anchorScriptAbsoluteFolder"/"$anchorSource"
+		if _recursion_guard "$recursionExec"
+		then
+			[[ "$ub_import" != "true" ]] && _messagePlain_good 'self: '"$recursionExec" "$anchorName" "$@" | _user_log_anchor
+				if [[ "$ub_import" != "true" ]]
+				then
+					"$recursionExec" "$anchorName" "$@"
+					exit $?
+				fi
+			
+			[[ "$ub_import" == "true" ]] && _messagePlain_good 'self: '"$recursionExec" "$ub_import_param" "$anchorName" "$@" | _user_log_anchor
+				[[ "$ub_import" == "true" ]] && "$recursionExec" "$ub_import_param" "$anchorName" "$@"
+			
+			exit $?
+		fi
+	fi
+	
+	
 	
 	recursionExec="$anchorScriptAbsoluteFolder"/../"$anchorSourcePath"
 	if _recursion_guard "$recursionExec"
