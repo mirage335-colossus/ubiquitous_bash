@@ -509,9 +509,9 @@ CZXWXcRMTo8EmM8i4d
 
 
 _generate_lean-python_prog() {
-	! [[ "$objectName" == "ubiquitous_bash" ]] && return 1
+	[[ "$objectName" == "ubiquitous_bash" ]] && return 0
 	
-	return 0
+	return 1
 }
 
 _generate_lean-python() {
