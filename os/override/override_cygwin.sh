@@ -1,5 +1,23 @@
 #Override, cygwin.
 
+
+# WARNING: What is otherwise considered bad practice may be accepted to reduce substantial MSW/Cygwin inconvenience .
+#/usr/local/bin:/usr/bin:/cygdrive/c/WINDOWS/system32:/cygdrive/c/WINDOWS:/usr/bin:/usr/lib/lapack:/cygdrive/x:/cygdrive/x/_bin:/cygdrive/x/_bundle:/opt/ansible/bin:/opt/nodejs/current:/opt/testssl:/home/root/bin
+#/cygdrive/c/WINDOWS/system32:/cygdrive/c/WINDOWS:/usr/bin:/usr/lib/lapack:/cygdrive/x:/cygdrive/x/_bin:/cygdrive/x/_bundle:/opt/ansible/bin:/opt/nodejs/current:/opt/testssl:/home/root/bin
+if [[ "$PATH" == "/cygdrive"* ]] || ( [[ "$PATH" == *"/cygdrive"* ]] && [[ "$PATH" != *"/usr/local/bin"* ]] )
+then
+	if [[ "$PATH" == "/cygdrive"* ]]
+	then
+		export PATH=/usr/local/bin:/usr/bin:/bin:"$PATH"
+	fi
+	
+	[[ "$PATH" != *"/usr/local/bin"* ]] && export PATH=/usr/local/bin:"$PATH"
+	[[ "$PATH" != *"/usr/bin"* ]] && export PATH=/usr/bin:"$PATH"
+	[[ "$PATH" != *"/bin:"* ]] && export PATH=/bin:"$PATH"
+fi
+
+
+
 # WARNING: Multiple reasons to instead consider direct detection by other commands -  ' uname -a | grep -i cygwin > /dev/null 2>&1 ' , ' [[ -e '/cygdrive' ]] ' , etc .
 _if_cygwin() {
 	if uname -a | grep -i cygwin > /dev/null 2>&1

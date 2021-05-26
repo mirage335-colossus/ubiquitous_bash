@@ -668,6 +668,47 @@ REM )
 
 REM Ubiquitous Bash Cygwin Portable - Anchor (Batch Version)
 
+if "%~1"=="ubAnchorSelfTestOnly" (
+	echo PASS-BATCH
+	exit
+)
+
+
+REM CAUTION: BROKEN! Attemtps to reset Cygwin 'environment variables' to prevent incorrect rewriting of '$PATH' variable. Apparently inadequate.
+
+if NOT "%OLD_ANCHOR_PATH%" == "" (
+	set "PATH=%OLD_ANCHOR_PATH%"
+	set "OLD_ANCHOR_PATH="
+)
+
+if "%OLD_ANCHOR_PATH%" == "" (
+	set "OLD_ANCHOR_PATH=%PATH%"
+)
+
+set "CYGWIN_PATH="
+set "ORIGINAL_PATH="
+set "CYGWIN_DRIVE="
+set "cygwin_CWD_onceOnly_done="
+set "CYGWIN="
+set "ProgramData="
+set "CYGWIN_ROOT="
+set "HOMEPATH="
+
+
+set "CYGWIN_USEWINPATH="
+
+set "HOME="
+set "HOMEDRIVE="
+set "HOMEPATH="
+set "INFOPATH="
+set "LANG="
+set "PWD="
+set "SHELL="
+set "_="
+
+REM set "CYGWIN_USEWINPATH=1"
+REM set "CYGWIN_NOWINPATH=1"
+REM set "CYGWIN_NOWINPATH=addwinpath"
 
 
 
@@ -987,6 +1028,50 @@ SET "ubcp_cmd_dir=C:\core\infrastructure\cp"
 IF EXIST "%ubcp_cmd_dir%"\cygwin goto b1
 SET "ubcp_cmd_dir=C:\cp"
 IF EXIST "%ubcp_cmd_dir%"\cygwin goto b1
+
+
+SET "ubcp_cmd_dir=D:\core\infrastructure\ubcp"
+IF EXIST "%ubcp_cmd_dir%"\cygwin goto b1
+SET "ubcp_cmd_dir=E:\core\infrastructure\ubcp"
+IF EXIST "%ubcp_cmd_dir%"\cygwin goto b1
+SET "ubcp_cmd_dir=F:\core\infrastructure\ubcp"
+IF EXIST "%ubcp_cmd_dir%"\cygwin goto b1
+SET "ubcp_cmd_dir=G:\core\infrastructure\ubcp"
+IF EXIST "%ubcp_cmd_dir%"\cygwin goto b1
+SET "ubcp_cmd_dir=H:\core\infrastructure\ubcp"
+IF EXIST "%ubcp_cmd_dir%"\cygwin goto b1
+SET "ubcp_cmd_dir=I:\core\infrastructure\ubcp"
+IF EXIST "%ubcp_cmd_dir%"\cygwin goto b1
+SET "ubcp_cmd_dir=J:\core\infrastructure\ubcp"
+IF EXIST "%ubcp_cmd_dir%"\cygwin goto b1
+SET "ubcp_cmd_dir=K:\core\infrastructure\ubcp"
+IF EXIST "%ubcp_cmd_dir%"\cygwin goto b1
+SET "ubcp_cmd_dir=L:\core\infrastructure\ubcp"
+IF EXIST "%ubcp_cmd_dir%"\cygwin goto b1
+SET "ubcp_cmd_dir=M:\core\infrastructure\ubcp"
+IF EXIST "%ubcp_cmd_dir%"\cygwin goto b1
+SET "ubcp_cmd_dir=N:\core\infrastructure\ubcp"
+IF EXIST "%ubcp_cmd_dir%"\cygwin goto b1
+SET "ubcp_cmd_dir=O:\core\infrastructure\ubcp"
+IF EXIST "%ubcp_cmd_dir%"\cygwin goto b1
+SET "ubcp_cmd_dir=P:\core\infrastructure\ubcp"
+IF EXIST "%ubcp_cmd_dir%"\cygwin goto b1
+SET "ubcp_cmd_dir=Q:\core\infrastructure\ubcp"
+IF EXIST "%ubcp_cmd_dir%"\cygwin goto b1
+SET "ubcp_cmd_dir=R:\core\infrastructure\ubcp"
+IF EXIST "%ubcp_cmd_dir%"\cygwin goto b1
+SET "ubcp_cmd_dir=S:\core\infrastructure\ubcp"
+IF EXIST "%ubcp_cmd_dir%"\cygwin goto b1
+SET "ubcp_cmd_dir=T:\core\infrastructure\ubcp"
+IF EXIST "%ubcp_cmd_dir%"\cygwin goto b1
+SET "ubcp_cmd_dir=U:\core\infrastructure\ubcp"
+IF EXIST "%ubcp_cmd_dir%"\cygwin goto b1
+SET "ubcp_cmd_dir=V:\core\infrastructure\ubcp"
+IF EXIST "%ubcp_cmd_dir%"\cygwin goto b1
+SET "ubcp_cmd_dir=W:\core\infrastructure\ubcp"
+IF EXIST "%ubcp_cmd_dir%"\cygwin goto b1
+
+
 
 REM FAILURE
 IF NOT EXIST "%ubcp_cmd_dir%"\cygwin exit
