@@ -508,10 +508,14 @@ CZXWXcRMTo8EmM8i4d
 
 
 
-
+_generate_lean-python_prog() {
+	! [[ "$objectName" == "ubiquitous_bash" ]] && return 1
+	
+	return 0
+}
 
 _generate_lean-python() {
-	! [[ "$objectName" == "ubiquitous_bash" ]] && return 0
+	! _generate_lean-python_prog && return 0
 	
 	echo '#!/usr/bin/env python3' > "$scriptAbsoluteFolder"/lean.py
 	
