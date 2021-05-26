@@ -749,6 +749,13 @@ _compile_bash_selfHost() {
 	
 	
 	#####Generate/Compile
+	if ( [[ "$enUb_buildBashUbiquitous" == "true" ]] || [[ "$enUb_notLean" == "true" ]] || [[ "$enUb_dev" == "true" ]] || [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_metaengine" == "true" ]] || [[ "$enUb_calculators" == "true" ]] )
+	then
+		includeScriptList+=( "build/python"/python_lean_here.sh )
+		includeScriptList+=( "build/python"/python_lean_here_prog.sh )
+	fi
+	
+	
 	includeScriptList+=( "build/bash/ubiquitous"/discoverubiquitious.sh )
 	#[[ "$enUb_buildBashUbiquitous" == "true" ]] && includeScriptList+=( "build/bash/ubiquitous"/discoverubiquitious.sh )
 	[[ "$enUb_buildBashUbiquitous" == "true" ]] && includeScriptList+=( "build/bash/ubiquitous"/depsubiquitous.sh )
@@ -758,8 +765,6 @@ _compile_bash_selfHost() {
 	
 	[[ "$enUb_buildBashUbiquitous" == "true" ]] && includeScriptList+=( "build/bash"/compile_bash.sh )
 	[[ "$enUb_buildBashUbiquitous" == "true" ]] && includeScriptList+=( "build/bash"/compile_bash_prog.sh )
-	
-	( [[ "$enUb_buildBashUbiquitous" == "true" ]] || [[ "$enUb_notLean" == "true" ]] || [[ "$enUb_dev" == "true" ]] || [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_metaengine" == "true" ]] || [[ "$enUb_calculators" == "true" ]] ) && includeScriptList+=( "build/python"/python_lean_here.sh )
 }
 
 _compile_bash_overrides() {
