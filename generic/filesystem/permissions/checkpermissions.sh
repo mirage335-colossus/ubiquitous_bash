@@ -32,7 +32,7 @@ _permissions_directory_checkForPath() {
 	[[ "$scriptAbsoluteFolder" == /var/run/media/"$USER"* ]] && [[ -e /var/run/media/"$USER" ]] && currentParameter=/var/run/media/"$USER"
 	[[ "$scriptAbsoluteFolder" == /run/"$USER"* ]] && [[ -e /run/"$USER" ]] && currentParameter=/run/"$USER"
 	
-	local permissions_readout=$(_compat_stat_c_run "%a" "$1")
+	local permissions_readout=$(_compat_stat_c_run "%a" "$currentParameter")
 	
 	local permissions_user
 	local permissions_group
@@ -52,8 +52,8 @@ _permissions_directory_checkForPath() {
 	local permissions_uid
 	local permissions_gid
 	
-	permissions_uid=$(_compat_stat_c_run "%u" "$1")
-	permissions_gid=$(_compat_stat_c_run "%g" "$1")
+	permissions_uid=$(_compat_stat_c_run "%u" "$currentParameter")
+	permissions_gid=$(_compat_stat_c_run "%g" "$currentParameter")
 	
 	#Normally these variables are available through ubiqutious bash, but this permissions check may be needed earlier in that global variables setting process.
 	local permissions_host_uid

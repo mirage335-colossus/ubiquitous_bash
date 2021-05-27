@@ -128,7 +128,16 @@ _setupUbiquitous() {
 	
 	
 	_messageNormal "hook: setupUbiquitous"
-	! _permissions_ubiquitous_repo "$ubcoreUBdir" && _messagePlain_bad 'permissions: ubcoreUBdir = '"$ubcoreUBdir" && _messageFAIL && return 1
+	if ! _permissions_ubiquitous_repo "$ubcoreUBdir" && _messagePlain_bad 'permissions: ubcoreUBdir = '"$ubcoreUBdir"
+	then
+		if ! _if_cygwin
+		then
+			_messageFAIL
+			return 1
+		else
+			echo 'warn: accepted: cygwin: permissions'
+		fi
+	fi
 	
 	mkdir -p "$ubHome"/bin/
 	ln -sf "$ubcoreUBfile" "$ubHome"/bin/ubiquitous_bash.sh
