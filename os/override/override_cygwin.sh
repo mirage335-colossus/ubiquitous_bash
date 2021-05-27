@@ -176,6 +176,19 @@ _discoverResource-cygwinNative-ProgramFiles() {
 		type "$currentBinary" > /dev/null 2>&1 && return 0
 	done
 	
+	
+	if ! type "$currentBinary" > /dev/null 2>&1 && type '/cygdrive/'c'/core/installations/'"$currentExpectedSubdir"'/'"$currentBinary".exe > /dev/null 2>&1
+	then
+		eval $currentBinary'() { '"$forceWorkaroundPrefix"'/cygdrive/"'c'"/"'"core/installations"'"/"'"$currentExpectedSubdir"'"/"'"$currentBinary"'".exe "$@" ; }'
+	fi
+	type "$currentBinary" > /dev/null 2>&1 && return 0
+	
+	if ! type "$currentBinary" > /dev/null 2>&1 && type '/cygdrive/'c'/core/installations/'"$currentExpectedSubdir"'/'"$currentBinary".exe > /dev/null 2>&1
+	then
+		eval $currentBinary'() { '"$forceWorkaroundPrefix"'/cygdrive/"'c'"/"'"core/installations"'"/"'"$currentExpectedSubdir"'"/"'"$currentBinary"'".exe "$@" ; }'
+	fi
+	type "$currentBinary" > /dev/null 2>&1 && return 0
+	
 	return 1
 }
 
