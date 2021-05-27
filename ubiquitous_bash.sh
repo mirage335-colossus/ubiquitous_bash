@@ -32,7 +32,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='1891409836'
-export ub_setScriptChecksum_contents='1205146342'
+export ub_setScriptChecksum_contents='478483055'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -1027,7 +1027,14 @@ _setup_ubcp_procedure() {
 # No production use. Developer feature.
 # Highly irregular accommodation for usage of 'ubiquitous_bash' through 'ubcp' (cygwin portable) compatibility layer through MSW network drive (especially '_userVBox' MSW guest network drive) .
 # WARNING: May require 'administrator' privileges under MSW. However, it may be better for this directory to be 'owned' by the 'primary' 'user' account. Particularly considering the VR/gaming/CAD software that remains 'exclusive' to MSW is 'legacy' software which for both licensing and technical reasons may be inherently incompatible with 'multi-user' access.
+# WARNING: MSW 'administrator' 'privileges' may break 'ubcp' .
 _setup_ubcp() {
+	# WARNING: May break if 'mitigation' has not been applied!
+	if ! [[ -e "$scriptLocal"/ubcp/package_ubcp-cygwinOnly.tar.gz ]] && [[ -e "$scriptLocal"/ubcp/cygwin ]]
+	then
+		"$scriptAbsoluteLocation" _package_procedure-cygwinOnly "$@"
+	fi
+	
 	"$scriptAbsoluteLocation" _setup_ubcp_procedure "$@"
 	"$scriptAbsoluteLocation" _setup_ubiquitousBash_cygwin "$@"
 }
@@ -30988,21 +30995,21 @@ _test_parallelFifo_procedure() {
 	while [[ "$currentIterationsA" -lt "2" ]]
 	do
 		echo a
-		sleep 0.5
+		sleep 1
 		let currentIterationsA="$currentIterationsA"" + 1"
 	done | cat > "$safeTmp"/parallel_fifo &
 	
-	sleep 0.2
+	sleep 0.4
 	
 	while [[ "$currentIterationsB" -lt "2" ]]
 	do
 		echo b
-		sleep 0.5
+		sleep 1
 		let currentIterationsB="$currentIterationsB"" + 1"
 	done | cat > "$safeTmp"/parallel_fifo
 	
-	sleep 0.5
-	sleep 2.5
+	sleep 1
+	sleep 7
 	
 	
 	#echo $(cat "$safeTmp"/parallel_fifo_out | tr -dc 'a-zA-Z0-9' 2> /dev/null)
@@ -31706,39 +31713,60 @@ _package_prog() {
 }
 
 
+_package_ubcp_copy_copy() {
+	#cp -a "$1" "$2"
+	if [[ "$ubPackage_enable_ubcp" != 'true' ]]
+	then
+		rsync -av --progress --exclude "/ubcp/conemu" --exclude "/ubcp/cygwin" --exclude "/ubcp/package_ubcp-cygwinOnly.tar.gz" "$1" "$2"
+	else
+		rsync -av --progress --exclude "/ubcp/package_ubcp-cygwinOnly.tar.gz" "$1" "$2"
+	fi
+	
+	
+	rm -f "$safeTmp"/package/_local/package_ubcp-cygwinOnly.tar.gz
+	rm -f "$safeTmp"/package/_local/ubcp/package_ubcp-cygwinOnly.tar.gz
+	
+	return 0
+}
+
 _package_ubcp_copy() {
 	mkdir -p "$safeTmp"/package/_local
 	
 	if [[ -e "$scriptLocal"/ubcp ]]
 	then
-		cp -a "$scriptLocal"/ubcp "$safeTmp"/package/_local/
+		_package_ubcp_copy_copy "$scriptLocal"/ubcp "$safeTmp"/package/_local/
 		return 0
 	fi
 	if [[ -e "$scriptLib"/ubcp ]]
 	then
-		cp -a "$scriptLib"/ubcp "$safeTmp"/package/_local/
+		_package_ubcp_copy_copy "$scriptLib"/ubcp "$safeTmp"/package/_local/
+		rm -f "$safeTmp"/package/_local/ubcp/package_ubcp-cygwinOnly.tar.gz
 		return 0
 	fi
 	if [[ -e "$scriptAbsoluteFolder"/ubcp ]]
 	then
-		cp -a "$scriptAbsoluteFolder"/ubcp "$safeTmp"/package/_local/
+		_package_ubcp_copy_copy "$scriptAbsoluteFolder"/ubcp "$safeTmp"/package/_local/
+		rm -f "$safeTmp"/package/_local/ubcp/package_ubcp-cygwinOnly.tar.gz
 		return 0
 	fi
 	
 	
 	if [[ -e "$scriptLib"/ubiquitous_bash/_local/ubcp ]]
 	then
-		cp -a "$scriptLib"/ubiquitous_bash/_local/ubcp "$safeTmp"/package/_local/
+		_package_ubcp_copy_copy "$scriptLib"/ubiquitous_bash/_local/ubcp "$safeTmp"/package/_local/
+		rm -f "$safeTmp"/package/_local/ubcp/package_ubcp-cygwinOnly.tar.gz
 		return 0
 	fi
 	if [[ -e "$scriptLib"/ubiquitous_bash/_lib/ubcp ]]
 	then
-		cp -a "$scriptLib"/ubiquitous_bash/_lib/ubcp "$safeTmp"/package/_local/
+		_package_ubcp_copy_copy "$scriptLib"/ubiquitous_bash/_lib/ubcp "$safeTmp"/package/_local/
+		rm -f "$safeTmp"/package/_local/ubcp/package_ubcp-cygwinOnly.tar.gz
 		return 0
 	fi
 	if [[ -e "$scriptLib"/ubiquitous_bash/ubcp ]]
 	then
-		cp -a "$scriptLib"/ubiquitous_bash/ubcp "$safeTmp"/package/_local/
+		_package_ubcp_copy_copy "$scriptLib"/ubiquitous_bash/ubcp "$safeTmp"/package/_local/
+		rm -f "$safeTmp"/package/_local/ubcp/package_ubcp-cygwinOnly.tar.gz
 		return 0
 	fi
 	
@@ -31771,6 +31799,7 @@ _package_procedure() {
 	_tryExec "_package_cautossh"
 	
 	#cp -a "$scriptAbsoluteFolder"/.git "$safeTmp"/package/ > /dev/null 2>&1
+	cp "$scriptAbsoluteFolder"/.gitignore "$safeTmp"/package/ > /dev/null 2>&1
 	cp "$scriptAbsoluteFolder"/.gitmodules "$safeTmp"/package/ > /dev/null 2>&1
 	
 	cp "$scriptAbsoluteFolder"/COPYING "$safeTmp"/package/ > /dev/null 2>&1
@@ -31795,6 +31824,7 @@ _package_procedure() {
 	
 	cp "$scriptAbsoluteFolder"/_* "$safeTmp"/package/
 	cp "$scriptAbsoluteFolder"/*.sh "$safeTmp"/package/
+	cp "$scriptAbsoluteFolder"/*.py "$safeTmp"/package/
 	
 	cp -a "$scriptLocal"/ops "$safeTmp"/package/
 	cp -a "$scriptLocal"/ops.sh "$safeTmp"/package/
@@ -31808,9 +31838,25 @@ _package_procedure() {
 	cp -a "$scriptAbsoluteFolder"/README.md "$safeTmp"/package/
 	cp -a "$scriptAbsoluteFolder"/USAGE.html "$safeTmp"/package/
 	
-	if [[ "$ubPackage_enable_ubcp" == 'true' ]]
+	
+	cp -a "$scriptAbsoluteFolder"/_config "$safeTmp"/package/
+	
+	cp "$scriptAbsoluteFolder"/fork "$safeTmp"/package/
+	
+	
+	rm -f "$safeTmp"/package/devtask* > /dev/null 2>&1
+	
+	
+	#if [[ "$ubPackage_enable_ubcp" == 'true' ]]
+	#then
+		#_package_ubcp_copy "$@"
+	#fi
+	
+	_package_ubcp_copy "$@"
+	if [[ "$ubPackage_enable_ubcp" != 'true' ]]
 	then
-		_package_ubcp_copy "$@"
+		_safeRMR "$safeTmp"/package/_local/ubcp/conemu
+		_safeRMR "$safeTmp"/package/_local/ubcp/cygwin
 	fi
 	
 	cd "$safeTmp"/package/

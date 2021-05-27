@@ -426,7 +426,14 @@ _setup_ubcp_procedure() {
 # No production use. Developer feature.
 # Highly irregular accommodation for usage of 'ubiquitous_bash' through 'ubcp' (cygwin portable) compatibility layer through MSW network drive (especially '_userVBox' MSW guest network drive) .
 # WARNING: May require 'administrator' privileges under MSW. However, it may be better for this directory to be 'owned' by the 'primary' 'user' account. Particularly considering the VR/gaming/CAD software that remains 'exclusive' to MSW is 'legacy' software which for both licensing and technical reasons may be inherently incompatible with 'multi-user' access.
+# WARNING: MSW 'administrator' 'privileges' may break 'ubcp' .
 _setup_ubcp() {
+	# WARNING: May break if 'mitigation' has not been applied!
+	if ! [[ -e "$scriptLocal"/ubcp/package_ubcp-cygwinOnly.tar.gz ]] && [[ -e "$scriptLocal"/ubcp/cygwin ]]
+	then
+		"$scriptAbsoluteLocation" _package_procedure-cygwinOnly "$@"
+	fi
+	
 	"$scriptAbsoluteLocation" _setup_ubcp_procedure "$@"
 	"$scriptAbsoluteLocation" _setup_ubiquitousBash_cygwin "$@"
 }
