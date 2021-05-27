@@ -1113,6 +1113,9 @@ _test() {
 	
 	_getDep uuidgen
 	
+	_getDep bc
+	_getDep xxd
+	
 	_test_readlink_f
 	
 	_tryExec "_test_package"
