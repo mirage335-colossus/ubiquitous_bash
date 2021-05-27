@@ -1528,6 +1528,10 @@ _package_procedure() {
 	
 	cp -a "$scriptAbsoluteFolder"/_config "$safeTmp"/package/
 	
+	
+	cp -a "$scriptAbsoluteFolder"/_bin "$safeTmp"/package/
+	
+	
 	cp "$scriptAbsoluteFolder"/fork "$safeTmp"/package/
 	
 	
