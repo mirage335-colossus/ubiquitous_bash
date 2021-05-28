@@ -863,12 +863,21 @@ _test_sanity() {
 	
 	_start
 	
+	
 	[[ ! -e "$safeTmp" ]] && _messageFAIL && return 1
+	
+	[[ $( cd "$safeTmp" 2>/dev/null ; ls *doNotMatch* 2>/dev/null | wc -c) != "0" ]] && _messageFAIL && return 1
+	[[ $( cd "$safeTmp" 2>/dev/null ; ls -A *doNotMatch* 2>/dev/null | wc -c) != "0" ]] && _messageFAIL && return 1
 	
 	echo -e -n >> "$safeTmp"/empty
 	[[ ! -e "$safeTmp"/empty ]] && _messageFAIL && return 1
 	[[ $(cat "$safeTmp"/empty | wc -c) != '0' ]] && _messageFAIL && return 1
+	
+	[[ $( cd "$safeTmp" 2>/dev/null ; ls *empty* 2>/dev/null | wc -c) == "0" ]] && _messageFAIL && return 1
+	[[ $( cd "$safeTmp" 2>/dev/null ; ls -A *empty* 2>/dev/null | wc -c) == "0" ]] && _messageFAIL && return 1
+	
 	rm -f "$safeTmp"/empty > /dev/null 2>&1
+	
 	
 	! _test_moveconfirm_procedure && _messageFAIL && return 1
 	
