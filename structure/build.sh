@@ -1,3 +1,9 @@
+_build_nonet_default() {
+	_installation_nonet_default
+	
+	return 0
+}
+
 _test_build_prog() {
 	true
 }
@@ -68,6 +74,8 @@ _build_prog() {
 }
 
 _build() {
+	_build_nonet_default
+	
 	"$scriptAbsoluteLocation" _buildSequence
 	
 	_build_prog

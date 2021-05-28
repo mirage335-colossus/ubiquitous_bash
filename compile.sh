@@ -32,7 +32,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='1891409836'
-export ub_setScriptChecksum_contents='2037227430'
+export ub_setScriptChecksum_contents='2885325134'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -1013,7 +1013,8 @@ _setup_ubcp_procedure() {
 	mkdir -p "$currentCygdriveC_equivalent"/core/infrastructure/
 	cd "$currentCygdriveC_equivalent"/core/infrastructure/
 	
-	tar -xvf "$scriptLocal"/ubcp/package_ubcp-cygwinOnly.tar.gz
+	#tar -xvf "$scriptLocal"/ubcp/package_ubcp-cygwinOnly.tar.gz
+	tar -xvf "$scriptLocal"/ubcp/package_ubcp-cygwinOnly.tar.xz
 	
 	_messagePlain_good 'done: _setup_ubcp_procedure: ubcp'
 	sleep 10
@@ -1030,7 +1031,7 @@ _setup_ubcp_procedure() {
 # WARNING: MSW 'administrator' 'privileges' may break 'ubcp' .
 _setup_ubcp() {
 	# WARNING: May break if 'mitigation' has not been applied!
-	if ! [[ -e "$scriptLocal"/ubcp/package_ubcp-cygwinOnly.tar.gz ]] && [[ -e "$scriptLocal"/ubcp/cygwin ]]
+	if ! [[ -e "$scriptLocal"/ubcp/package_ubcp-cygwinOnly.tar.gz ]] && ! [[ -e "$scriptLocal"/ubcp/package_ubcp-cygwinOnly.tar.xz ]] && [[ -e "$scriptLocal"/ubcp/cygwin ]]
 	then
 		"$scriptAbsoluteLocation" _package_procedure-cygwinOnly "$@"
 	fi
@@ -1280,6 +1281,10 @@ _package_procedure-cygwinOnly() {
 	rm -f "$scriptLocal"/package_ubcp-cygwinOnly.tar.gz > /dev/null 2>&1
 	rm -f "$scriptLocal"/ubcp/package_ubcp-cygwinOnly.tar.gz > /dev/null 2>&1
 	
+	rm -f "$scriptAbsoluteFolder"/package_ubcp-cygwinOnly.tar.xz > /dev/null 2>&1
+	rm -f "$scriptLocal"/package_ubcp-cygwinOnly.tar.xz > /dev/null 2>&1
+	rm -f "$scriptLocal"/ubcp/package_ubcp-cygwinOnly.tar.xz > /dev/null 2>&1
+	
 	if [[ "$ubPackage_enable_ubcp" == 'true' ]]
 	then
 		_package_ubcp_copy "$@"
@@ -1292,10 +1297,12 @@ _package_procedure-cygwinOnly() {
 	# WARNING: Having these subdirectories opened in MSW 'explorer' (file manager) may cause this directory to not exist.
 	! cd "$safeTmp"/package/"$objectName"/_local && _stop 1
 	
-	tar -czvf "$scriptAbsoluteFolder"/package_ubcp-cygwinOnly.tar.gz .
+	#tar -czvf "$scriptAbsoluteFolder"/package_ubcp-cygwinOnly.tar.gz .
+	env XZ_OPT=-5 tar -cJvf "$scriptAbsoluteFolder"/package_ubcp-cygwinOnly.tar.xz .
 	
 	mkdir -p "$scriptLocal"/ubcp/
-	mv "$scriptAbsoluteFolder"/package_ubcp-cygwinOnly.tar.gz "$scriptLocal"/ubcp/
+	mv "$scriptAbsoluteFolder"/package_ubcp-cygwinOnly.tar.gz "$scriptLocal"/ubcp/ > /dev/null 2>&1
+	mv "$scriptAbsoluteFolder"/package_ubcp-cygwinOnly.tar.xz "$scriptLocal"/ubcp/
 	
 	_messagePlain_request 'request: review contents of _local/ubcp/cygwin/home and similar directories'
 	sleep 20

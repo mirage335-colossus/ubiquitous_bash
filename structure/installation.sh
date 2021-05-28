@@ -1,5 +1,18 @@
 #####Installation
 
+_installation_nonet_default() {
+	if [[ "$nonet" != 'false' ]]
+	then
+		[[ "$scriptAbsoluteFolder" == /media/"$USER"* ]] && [[ -e /media/"$USER" ]] && export nonet='true'
+		[[ "$scriptAbsoluteFolder" == /mnt/"$USER"* ]] && [[ -e /mnt/"$USER" ]] && export nonet='true'
+		[[ "$scriptAbsoluteFolder" == /var/run/media/"$USER"* ]] && [[ -e /var/run/media/"$USER" ]] && export nonet='true'
+		[[ "$scriptAbsoluteFolder" == /run/"$USER"* ]] && [[ -e /run/"$USER" ]] && currentParameter=/run/"$USER" && export nonet='true'
+		[[ "$scriptAbsoluteFolder" == "/cygdrive"* ]] && [[ -e /cygdrive ]] && export nonet='true'
+	fi
+	
+	return 0
+}
+
 _vector_line_cksum() {
 	[[ $(echo test | env CMD_ENV=xpg4 cksum | cut -f1 -d\  | tr -dc '0-9') != '935282863' ]] && echo 'broken cksum' && _messageFAIL && _stop 1
 	
@@ -974,6 +987,8 @@ _test_sanity() {
 
 
 _test() {
+	_installation_nonet_default
+	
 	# ATTENTION: As part of sanity test, "$safeTmp" must not exist until '_start' is called from within '_test_sanity' .
 	#_start
 	_messageNormal "Sanity..."
@@ -1352,6 +1367,8 @@ _setup_anchor() {
 }
 
 _setup() {
+	_installation_nonet_default
+	
 	_start
 	
 	"$scriptAbsoluteLocation" _test || _stop 1
@@ -1393,6 +1410,8 @@ _setup_local() {
 _test_package() {
 	_getDep tar
 	_getDep gzip
+	
+	_getDep xz
 }
 
 _package_prog() {
@@ -1404,9 +1423,9 @@ _package_ubcp_copy_copy() {
 	#cp -a "$1" "$2"
 	if [[ "$ubPackage_enable_ubcp" != 'true' ]]
 	then
-		rsync -av --progress --exclude "/ubcp/conemu" --exclude "/ubcp/cygwin" --exclude "/ubcp/package_ubcp-cygwinOnly.tar.gz" "$1" "$2"
+		rsync -av --progress --exclude "/ubcp/conemu" --exclude "/ubcp/cygwin" --exclude "/ubcp/package_ubcp-cygwinOnly.tar.gz" --exclude "/ubcp/package_ubcp-cygwinOnly.tar.xz" "$1" "$2"
 	else
-		rsync -av --progress --exclude "/ubcp/package_ubcp-cygwinOnly.tar.gz" "$1" "$2"
+		rsync -av --progress --exclude "/ubcp/package_ubcp-cygwinOnly.tar.gz" --exclude "/ubcp/package_ubcp-cygwinOnly.tar.xz" "$1" "$2"
 	fi
 	
 	
@@ -1553,8 +1572,11 @@ _package_procedure() {
 	cd "$safeTmp"/package/
 	_package_subdir
 	
-	! [[ "$ubPackage_enable_ubcp" == 'true' ]] && tar -czvf "$scriptAbsoluteFolder"/package.tar.gz .
-	[[ "$ubPackage_enable_ubcp" == 'true' ]] && tar -czvf "$scriptAbsoluteFolder"/package_ubcp.tar.gz .
+	#! [[ "$ubPackage_enable_ubcp" == 'true' ]] && env GZIP=-9 tar -czvf "$scriptAbsoluteFolder"/package.tar.gz .
+	! [[ "$ubPackage_enable_ubcp" == 'true' ]] && env XZ_OPT=-e9 tar -cJvf "$scriptAbsoluteFolder"/package.tar.xz .
+	#[[ "$ubPackage_enable_ubcp" == 'true' ]] && env GZIP=-9 tar -czvf "$scriptAbsoluteFolder"/package_ubcp.tar.gz .
+	#[[ "$ubPackage_enable_ubcp" == 'true' ]] && env XZ_OPT=-e9 tar -cJvf "$scriptAbsoluteFolder"/package_ubcp.tar.xz .
+	[[ "$ubPackage_enable_ubcp" == 'true' ]] && env XZ_OPT=-5 tar -cJvf "$scriptAbsoluteFolder"/package_ubcp.tar.xz .
 	
 	if [[ "$ubPackage_enable_ubcp" == 'true' ]]
 	then

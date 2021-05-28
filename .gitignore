@@ -55,11 +55,11 @@ _index
 *.zip
 *.iso
 
-package.tar.gz
-package_ubcp.tar.gz
-package_ubcp*.tar.gz
-package_ubcp-cygwinOnly.tar.gz
-package_ubcp-cygwinOnly*.tar.gz
+package.tar.*
+package_ubcp.tar.*
+package_ubcp*.tar.*
+package_ubcp-cygwinOnly.tar.*
+package_ubcp-cygwinOnly*.tar.*
 
 id_rsa
 pubring.kbx
