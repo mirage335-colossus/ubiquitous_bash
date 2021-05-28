@@ -440,7 +440,7 @@ _setup_ubcp() {
 	fi
 	
 	"$scriptAbsoluteLocation" _setup_ubcp_procedure "$@"
-	"$scriptAbsoluteLocation" _setup_ubiquitousBash_cygwin "$@"
+	"$scriptAbsoluteLocation" _setup_ubiquitousBash_cygwin_procedure "$@"
 }
 
 

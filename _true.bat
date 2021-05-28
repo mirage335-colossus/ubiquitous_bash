@@ -1181,6 +1181,9 @@ if "%MSWanchorSource%"=="lean.sh" (
 	if "%MSWanchorName%"=="_setupUbiquitous_nonet" (
 		SET "MSWanchorSource=ubiquitous_bash.sh"
 	)
+	REM if "%MSWanchorName%"=="_setup_ubcp" (
+	REM 	SET "MSWanchorSource=ubiquitous_bash.sh"
+	REM )
 )
 
 REM SET "MSWanchorSource=ubiquitous_bash.sh"
