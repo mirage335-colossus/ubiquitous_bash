@@ -32,7 +32,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='1891409836'
-export ub_setScriptChecksum_contents='69365725'
+export ub_setScriptChecksum_contents='3851325262'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -743,10 +743,7 @@ fi
 
 
 
-
-
-
-_discoverResource-cygwinNative-ProgramFiles() {
+_discoverResource-cygwinNative-ProgramFiles-declaration-ProgramFiles() {
 	local currentBinary
 	currentBinary="$1"
 	
@@ -761,81 +758,105 @@ _discoverResource-cygwinNative-ProgramFiles() {
 	local forceWorkaroundPrefix
 	forceWorkaroundPrefix="$4"
 	
+	if ! type "$currentBinary" > /dev/null 2>&1 && type '/cygdrive/'"$currentDriveLetter_cygwin_uk4uPhB663kVcygT0q"'/Program Files/'"$currentExpectedSubdir"'/'"$currentBinary".exe > /dev/null 2>&1
+	then
+		eval $currentBinary'() { '"$forceWorkaroundPrefix"'/cygdrive/"'"$currentDriveLetter_cygwin_uk4uPhB663kVcygT0q"'"/"'"Program Files"'"/"'"$currentExpectedSubdir"'"/"'"$currentBinary"'".exe "$@" ; }'
+		false
+	fi
+	
+	if ! type "$currentBinary" > /dev/null 2>&1 && type '/cygdrive/'"$currentDriveLetter_cygwin_uk4uPhB663kVcygT0q"'/Program Files (x86)/'"$currentExpectedSubdir"'/'"$currentBinary".exe > /dev/null 2>&1
+	then
+		eval $currentBinary'() { '"$forceWorkaroundPrefix"'/cygdrive/"'"$currentDriveLetter_cygwin_uk4uPhB663kVcygT0q"'"/"'"Program Files (x86)"'"/"'"$currentExpectedSubdir"'"/"'"$currentBinary"'".exe "$@" ; }'
+	fi
+	type "$currentBinary" > /dev/null 2>&1 && export -f "$currentBinary" > /dev/null 2>&1 && return 0
+	return 1
+}
+
+_discoverResource-cygwinNative-ProgramFiles-declaration-core() {
+	local currentBinary
+	currentBinary="$1"
+	
+	local currentExpectedSubdir
+	currentExpectedSubdir="$2"
+	
+	local forceNativeBinary
+	forceNativeBinary='false'
+	
+	[[ "$3" != "true" ]] && type "$currentBinary" > /dev/null 2>&1 && return 0
+	
+	local forceWorkaroundPrefix
+	forceWorkaroundPrefix="$4"
+	
+	if ! type "$currentBinary" > /dev/null 2>&1 && type '/cygdrive/'c'/core/installations/'"$currentExpectedSubdir"'/'"$currentBinary".exe > /dev/null 2>&1
+	then
+		eval $currentBinary'() { '"$forceWorkaroundPrefix"'/cygdrive/"'c'"/"'"core/installations"'"/"'"$currentExpectedSubdir"'"/"'"$currentBinary"'".exe "$@" ; }'
+	fi
+	type "$currentBinary" > /dev/null 2>&1 && return 0
+	
+	if ! type "$currentBinary" > /dev/null 2>&1 && type '/cygdrive/'c'/core/installations/'"$currentExpectedSubdir"'/'"$currentBinary".exe > /dev/null 2>&1
+	then
+		eval $currentBinary'() { '"$forceWorkaroundPrefix"'/cygdrive/"'c'"/"'"core/installations"'"/"'"$currentExpectedSubdir"'"/"'"$currentBinary"'".exe "$@" ; }'
+	fi
+	type "$currentBinary" > /dev/null 2>&1 && export -f "$currentBinary" > /dev/null 2>&1 && return 0
+	return 1
+}
+
+_discoverResource-cygwinNative-ProgramFiles() {
+	local currentBinary
+	currentBinary="$1"
+	[[ "$3" != "true" ]] && type "$currentBinary" > /dev/null 2>&1 && return 0
+	
 	# ATTENTION: Configure: 'c..w' (aka. 'w..c') .
-	local currentDriveLetter
-	for currentDriveLetter in {c..c}
+	unset currentDriveLetter_cygwin_uk4uPhB663kVcygT0q_cygwin_uk4uPhB663kVcygT0q
+	for currentDriveLetter_cygwin_uk4uPhB663kVcygT0q in {c..w}
 	do
-		if ! type "$currentBinary" > /dev/null 2>&1 && type '/cygdrive/'"$currentDriveLetter"'/Program Files/'"$currentExpectedSubdir"'/'"$currentBinary".exe > /dev/null 2>&1
-		then
-			eval $currentBinary'() { '"$forceWorkaroundPrefix"'/cygdrive/"'"$currentDriveLetter"'"/"'"Program Files"'"/"'"$currentExpectedSubdir"'"/"'"$currentBinary"'".exe "$@" ; }'
-			false
-		fi
-		
-		if ! type "$currentBinary" > /dev/null 2>&1 && type '/cygdrive/'"$currentDriveLetter"'/Program Files (x86)/'"$currentExpectedSubdir"'/'"$currentBinary".exe > /dev/null 2>&1
-		then
-			eval $currentBinary'() { '"$forceWorkaroundPrefix"'/cygdrive/"'"$currentDriveLetter"'"/"'"Program Files (x86)"'"/"'"$currentExpectedSubdir"'"/"'"$currentBinary"'".exe "$@" ; }'
-		fi
-		type "$currentBinary" > /dev/null 2>&1 && return 0
+		_discoverResource-cygwinNative-ProgramFiles-declaration-ProgramFiles "$@"
 	done
 	
+	_discoverResource-cygwinNative-ProgramFiles-declaration-core "$@"
 	
-	if ! type "$currentBinary" > /dev/null 2>&1 && type '/cygdrive/'c'/core/installations/'"$currentExpectedSubdir"'/'"$currentBinary".exe > /dev/null 2>&1
-	then
-		eval $currentBinary'() { '"$forceWorkaroundPrefix"'/cygdrive/"'c'"/"'"core/installations"'"/"'"$currentExpectedSubdir"'"/"'"$currentBinary"'".exe "$@" ; }'
-	fi
-	type "$currentBinary" > /dev/null 2>&1 && return 0
-	
-	if ! type "$currentBinary" > /dev/null 2>&1 && type '/cygdrive/'c'/core/installations/'"$currentExpectedSubdir"'/'"$currentBinary".exe > /dev/null 2>&1
-	then
-		eval $currentBinary'() { '"$forceWorkaroundPrefix"'/cygdrive/"'c'"/"'"core/installations"'"/"'"$currentExpectedSubdir"'"/"'"$currentBinary"'".exe "$@" ; }'
-	fi
-	type "$currentBinary" > /dev/null 2>&1 && return 0
-	
+	type "$currentBinary" > /dev/null 2>&1 && export -f "$currentBinary" > /dev/null 2>&1 && return 0
 	return 1
 }
 
 
 
-
-
 if [[ -e /cygdrive ]] && _if_cygwin
 then
-	_discoverResource-cygwinNative-ProgramFiles 'nmap' 'Nmap' false
+	# WARNING: Reduces incidents of extremely slow storage attachment from breaking "_test_selfTime", "_test_broadcastPipe_page", etc, at risks of not recognizing newly installed 'native' programs for up to 20minutes .
+	export cygwinOverride_measureDateB=$(date +%s%N | cut -b1-13)
+	[[ "$cygwinOverride_measureDateA" == "" ]] && export cygwinOverride_measureDateA=$(bc <<< "$cygwinOverride_measureDateB - 900000000" | tr -dc '0-9')
 	
-	# WARNING: Native 'vncviewer.exe' is a GUI app, and cannot be launched directly from Cygwin SSH server.
-	_discoverResource-cygwinNative-ProgramFiles 'vncviewer' 'TigerVNC' false '_workaround_cygwin_tmux '
-	
-	
-	_discoverResource-cygwinNative-ProgramFiles 'qalc' 'Qalculate' false
-	
-	
-	
-	[[ -e "$scriptAbsoluteFolder"/ops-cygwin.sh ]] && . "$scriptAbsoluteFolder"/ops-cygwin.sh
-	
-	# ATTENTION: Configure: 'w..c' (aka. 'c..w') .
-	# export ubiquitiousBashID=uk4uPhB663kVcygT0q
-	unset currentDriveLetter_cygwin_uk4uPhB663kVcygT0q
-	for currentDriveLetter_cygwin_uk4uPhB663kVcygT0q in {c..c}
-	do
-		[[ -e /cygdrive/$currentDriveLetter_cygwin_uk4uPhB663kVcygT0q ]] && [[ -e /cygdrive/$currentDriveLetter_cygwin_uk4uPhB663kVcygT0q/ops-cygwin.sh ]] && . /cygdrive/$currentDriveLetter_cygwin_uk4uPhB663kVcygT0q/ops-cygwin.sh
-	done
-	unset currentDriveLetter_cygwin_uk4uPhB663kVcygT0q
+	# WARNING: Experiment without checking checksum to ensure functions are exported correctly!
+	if [[ $(bc <<< "$cygwinOverride_measureDateB - $cygwinOverride_measureDateA" | tr -dc '0-9') -gt 1200000 ]] || [[ "$ub_setScriptChecksum_contents_cygwinOverride" != "$ub_setScriptChecksum_contents" ]]
+	then
+		export cygwinOverride_measureDateA=$(date +%s%N | cut -b1-13)
+		export ub_setScriptChecksum_contents_cygwinOverride="$ub_setScriptChecksum_contents"
+		
+		_discoverResource-cygwinNative-ProgramFiles 'nmap' 'Nmap' false
+		
+		# WARNING: Native 'vncviewer.exe' is a GUI app, and cannot be launched directly from Cygwin SSH server.
+		_discoverResource-cygwinNative-ProgramFiles 'vncviewer' 'TigerVNC' false '_workaround_cygwin_tmux '
+		
+		_discoverResource-cygwinNative-ProgramFiles 'qalc' 'Qalculate' false
+		
+		
+		
+		[[ -e "$scriptAbsoluteFolder"/ops-cygwin.sh ]] && . "$scriptAbsoluteFolder"/ops-cygwin.sh
+		
+		
+		# WARNING: Looping through {w..c} completely may impose delays sufficient to break "_test_selfTime", "_test_broadcastPipe_page", etc, if extremely slow storage is attached.
+		# ATTENTION: Configure: 'w..c' (aka. 'c..w') .
+		# export ubiquitiousBashID=uk4uPhB663kVcygT0q
+		unset currentDriveLetter_cygwin_uk4uPhB663kVcygT0q
+		for currentDriveLetter_cygwin_uk4uPhB663kVcygT0q in {w..c}
+		do
+			# WARNING: May require export of functions!
+			[[ -e /cygdrive/$currentDriveLetter_cygwin_uk4uPhB663kVcygT0q ]] && [[ -e /cygdrive/$currentDriveLetter_cygwin_uk4uPhB663kVcygT0q/ops-cygwin.sh ]] && . /cygdrive/$currentDriveLetter_cygwin_uk4uPhB663kVcygT0q/ops-cygwin.sh
+		done
+		unset currentDriveLetter_cygwin_uk4uPhB663kVcygT0q
+	fi
 fi
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
