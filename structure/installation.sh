@@ -1596,6 +1596,8 @@ _package_procedure() {
 	
 	
 	rm -f "$safeTmp"/package/devtask* > /dev/null 2>&1
+	rm -f "$safeTmp"/package/__d_* > /dev/null 2>&1
+	rm -f "$safeTmp"/package/_d_* > /dev/null 2>&1
 	
 	
 	#if [[ "$ubPackage_enable_ubcp" == 'true' ]]
