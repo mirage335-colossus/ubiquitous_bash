@@ -32,7 +32,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='1891409836'
-export ub_setScriptChecksum_contents='2067267357'
+export ub_setScriptChecksum_contents='64358699'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -787,15 +787,18 @@ _discoverResource-cygwinNative-ProgramFiles-declaration-core() {
 	local forceWorkaroundPrefix
 	forceWorkaroundPrefix="$4"
 	
-	if ! type "$currentBinary" > /dev/null 2>&1 && type '/cygdrive/'c'/core/installations/'"$currentExpectedSubdir"'/'"$currentBinary".exe > /dev/null 2>&1
+	local currentCygdriveC_equivalent
+	currentCygdriveC_equivalent=$(cygpath -S | sed 's/\/Windows\/System32//g' | sed 's/^\/cygdrive\///')
+	
+	if ! type "$currentBinary" > /dev/null 2>&1 && type '/cygdrive/'"$currentCygdriveC_equivalent"'/core/installations/'"$currentExpectedSubdir"'/'"$currentBinary".exe > /dev/null 2>&1
 	then
-		eval $currentBinary'() { '"$forceWorkaroundPrefix"'/cygdrive/"'c'"/"'"core/installations"'"/"'"$currentExpectedSubdir"'"/"'"$currentBinary"'".exe "$@" ; }'
+		eval $currentBinary'() { '"$forceWorkaroundPrefix"'/cygdrive/"'"$currentCygdriveC_equivalent"'"/"'"core/installations"'"/"'"$currentExpectedSubdir"'"/"'"$currentBinary"'".exe "$@" ; }'
 	fi
 	type "$currentBinary" > /dev/null 2>&1 && return 0
 	
-	if ! type "$currentBinary" > /dev/null 2>&1 && type '/cygdrive/'c'/core/installations/'"$currentExpectedSubdir"'/'"$currentBinary".exe > /dev/null 2>&1
+	if ! type "$currentBinary" > /dev/null 2>&1 && type '/cygdrive/'"$currentCygdriveC_equivalent"'/core/installations/'"$currentExpectedSubdir"'/'"$currentBinary".exe > /dev/null 2>&1
 	then
-		eval $currentBinary'() { '"$forceWorkaroundPrefix"'/cygdrive/"'c'"/"'"core/installations"'"/"'"$currentExpectedSubdir"'"/"'"$currentBinary"'".exe "$@" ; }'
+		eval $currentBinary'() { '"$forceWorkaroundPrefix"'/cygdrive/"'"$currentCygdriveC_equivalent"'"/"'"core/installations"'"/"'"$currentExpectedSubdir"'"/"'"$currentBinary"'".exe "$@" ; }'
 	fi
 	type "$currentBinary" > /dev/null 2>&1 && export -f "$currentBinary" > /dev/null 2>&1 && return 0
 	return 1
@@ -806,8 +809,15 @@ _discoverResource-cygwinNative-ProgramFiles() {
 	currentBinary="$1"
 	[[ "$3" != "true" ]] && type "$currentBinary" > /dev/null 2>&1 && return 0
 	
+	local currentCygdriveC_equivalent
+	currentCygdriveC_equivalent=$(cygpath -S | sed 's/\/Windows\/System32//g' | sed 's/^\/cygdrive\///')
+	unset currentDriveLetter_cygwin_uk4uPhB663kVcygT0q
+	export currentDriveLetter_cygwin_uk4uPhB663kVcygT0q="$currentCygdriveC_equivalent"
+	_discoverResource-cygwinNative-ProgramFiles-declaration-ProgramFiles "$@"
+	
+	
 	# ATTENTION: Configure: 'c..w' (aka. 'w..c') .
-	unset currentDriveLetter_cygwin_uk4uPhB663kVcygT0q_cygwin_uk4uPhB663kVcygT0q
+	unset currentDriveLetter_cygwin_uk4uPhB663kVcygT0q
 	for currentDriveLetter_cygwin_uk4uPhB663kVcygT0q in {c..w}
 	do
 		_discoverResource-cygwinNative-ProgramFiles-declaration-ProgramFiles "$@"
@@ -819,6 +829,19 @@ _discoverResource-cygwinNative-ProgramFiles() {
 	return 1
 }
 
+
+_ops_cygwinOverride_allDisks() {
+	# DANGER: Calling a script from every connected Cygwin/MSW drive arguably causes obvious problems, although any device or network directly connected to any MSW machine inevitably entails such risks.
+	# WARNING: Looping through {w..c} completely may impose delays sufficient to break "_test_selfTime", "_test_broadcastPipe_page", etc, if extremely slow storage is attached.
+	# ATTENTION: Configure: 'w..c' (aka. 'c..w') .
+	unset currentDriveLetter_cygwin_uk4uPhB663kVcygT0q
+	for currentDriveLetter_cygwin_uk4uPhB663kVcygT0q in {w..c}
+	do
+		# WARNING: May require export of functions!
+		[[ -e /cygdrive/$currentDriveLetter_cygwin_uk4uPhB663kVcygT0q ]] && [[ -e /cygdrive/$currentDriveLetter_cygwin_uk4uPhB663kVcygT0q/ops-cygwin.sh ]] && . /cygdrive/$currentDriveLetter_cygwin_uk4uPhB663kVcygT0q/ops-cygwin.sh
+	done
+	unset currentDriveLetter_cygwin_uk4uPhB663kVcygT0q
+}
 
 
 if [[ -e /cygdrive ]] && _if_cygwin
@@ -841,19 +864,16 @@ then
 		_discoverResource-cygwinNative-ProgramFiles 'qalc' 'Qalculate' false
 		
 		
-		
+		# WARNING: CAUTION: DANGER: UNIX EOL *MANDATORY* !
 		[[ -e "$scriptAbsoluteFolder"/ops-cygwin.sh ]] && . "$scriptAbsoluteFolder"/ops-cygwin.sh
 		
-		
-		# WARNING: Looping through {w..c} completely may impose delays sufficient to break "_test_selfTime", "_test_broadcastPipe_page", etc, if extremely slow storage is attached.
-		# ATTENTION: Configure: 'w..c' (aka. 'c..w') .
 		# export ubiquitiousBashID=uk4uPhB663kVcygT0q
 		unset currentDriveLetter_cygwin_uk4uPhB663kVcygT0q
-		for currentDriveLetter_cygwin_uk4uPhB663kVcygT0q in {w..c}
-		do
-			# WARNING: May require export of functions!
-			[[ -e /cygdrive/$currentDriveLetter_cygwin_uk4uPhB663kVcygT0q ]] && [[ -e /cygdrive/$currentDriveLetter_cygwin_uk4uPhB663kVcygT0q/ops-cygwin.sh ]] && . /cygdrive/$currentDriveLetter_cygwin_uk4uPhB663kVcygT0q/ops-cygwin.sh
-		done
+		export currentDriveLetter_cygwin_uk4uPhB663kVcygT0q=$(cygpath -S | sed 's/\/Windows\/System32//g' | sed 's/^\/cygdrive\///')
+		[[ -e /cygdrive/$currentDriveLetter_cygwin_uk4uPhB663kVcygT0q ]] && [[ -e /cygdrive/$currentDriveLetter_cygwin_uk4uPhB663kVcygT0q/ops-cygwin.sh ]] && . /cygdrive/$currentDriveLetter_cygwin_uk4uPhB663kVcygT0q/ops-cygwin.sh
+		
+		#_ops_cygwinOverride_allDisks "$@"
+		
 		unset currentDriveLetter_cygwin_uk4uPhB663kVcygT0q
 	fi
 fi
@@ -19217,6 +19237,7 @@ _test_sanity() {
 	
 	_start
 	
+	
 	[[ ! -e "$safeTmp" ]] && _messageFAIL && return 1
 	
 	[[ $( cd "$safeTmp" 2>/dev/null ; ls *doNotMatch* 2>/dev/null | wc -c) != "0" ]] && _messageFAIL && return 1
@@ -19230,7 +19251,6 @@ _test_sanity() {
 	[[ $( cd "$safeTmp" 2>/dev/null ; ls -A *empty* 2>/dev/null | wc -c) == "0" ]] && _messageFAIL && return 1
 	
 	rm -f "$safeTmp"/empty > /dev/null 2>&1
-	
 	
 	
 	! _test_moveconfirm_procedure && _messageFAIL && return 1
