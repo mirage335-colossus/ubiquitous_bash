@@ -160,8 +160,9 @@ _discoverResource-cygwinNative-ProgramFiles() {
 	local forceWorkaroundPrefix
 	forceWorkaroundPrefix="$4"
 	
+	# ATTENTION: Configure: 'c..w' (aka. 'w..c') .
 	local currentDriveLetter
-	for currentDriveLetter in {c..w}
+	for currentDriveLetter in {c..c}
 	do
 		if ! type "$currentBinary" > /dev/null 2>&1 && type '/cygdrive/'"$currentDriveLetter"'/Program Files/'"$currentExpectedSubdir"'/'"$currentBinary".exe > /dev/null 2>&1
 		then
@@ -208,12 +209,12 @@ then
 	
 	
 	
+	[[ -e "$scriptAbsoluteFolder"/ops-cygwin.sh ]] && . "$scriptAbsoluteFolder"/ops-cygwin.sh
 	
-	
-	
+	# ATTENTION: Configure: 'w..c' (aka. 'c..w') .
 	# export ubiquitiousBashID=uk4uPhB663kVcygT0q
 	unset currentDriveLetter_cygwin_uk4uPhB663kVcygT0q
-	for currentDriveLetter_cygwin_uk4uPhB663kVcygT0q in {w..c}
+	for currentDriveLetter_cygwin_uk4uPhB663kVcygT0q in {c..c}
 	do
 		[[ -e /cygdrive/$currentDriveLetter_cygwin_uk4uPhB663kVcygT0q ]] && [[ -e /cygdrive/$currentDriveLetter_cygwin_uk4uPhB663kVcygT0q/ops-cygwin.sh ]] && . /cygdrive/$currentDriveLetter_cygwin_uk4uPhB663kVcygT0q/ops-cygwin.sh
 	done

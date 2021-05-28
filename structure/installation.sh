@@ -1017,10 +1017,20 @@ _test() {
 		echo -n -e '\E[1;32;46m Timing...		\E[0m'
 		echo
 		
+		# DANGER: Even under MSW/Cygwin, should ONLY fail IF extremely slow storage is attached.
 		if type _test_selfTime > /dev/null 2>&1
 		then
 			echo -e '\E[0;36m Timing: _test_selfTime \E[0m'
-			! _test_selfTime && echo '_test_selfTime broken' && _stop 1
+			if ! _test_selfTime
+			then
+				if _if_cygwin
+				then
+					echo 'warn: accepted: cygwin: _test_selfTime broken'
+				else
+					echo '_test_selfTime broken'
+					_stop 1
+				fi
+			fi
 		fi
 		
 		if type _test_bashTime > /dev/null 2>&1
@@ -1246,11 +1256,33 @@ _test() {
 		
 		_tryExec '_test_queue'
 		
+		# DANGER: Even under MSW/Cygwin, should ONLY fail IF extremely slow storage is attached.
 		echo -e '\E[0;36m Queue: _test_broadcastPipe_page \E[0m'
-		! _test_broadcastPipe_page && echo '_test_broadcastPipe_page broken' && _stop 1
+		if ! _test_broadcastPipe_page
+		then
+			if _if_cygwin
+			then
+				echo 'warn: accepted: cygwin: _test_broadcastPipe_page broken'
+			else
+				echo '_test_broadcastPipe_page broken'
+				_stop 1
+			fi
+		fi
 		
+		# DANGER: Even under MSW/Cygwin, should ONLY fail IF extremely slow storage is attached.
 		echo -e '\E[0;36m Queue: _test_broadcastPipe_aggregatorStatic \E[0m'
-		! _test_broadcastPipe_aggregatorStatic && echo '_test_broadcastPipe_aggregatorStatic broken' && _stop 1
+		if ! _test_broadcastPipe_aggregatorStatic
+		then
+			if _if_cygwin
+			then
+				#echo 'warn: accepted: cygwin: _test_broadcastPipe_aggregatorStatic broken'
+				echo '_test_broadcastPipe_aggregatorStatic broken'
+				_stop 1
+			else
+				echo '_test_broadcastPipe_aggregatorStatic broken'
+				_stop 1
+			fi
+		fi
 		
 		_messagePASS
 	fi

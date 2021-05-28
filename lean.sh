@@ -32,7 +32,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='1891409836'
-export ub_setScriptChecksum_contents='2442274898'
+export ub_setScriptChecksum_contents='3148845595'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -761,8 +761,9 @@ _discoverResource-cygwinNative-ProgramFiles() {
 	local forceWorkaroundPrefix
 	forceWorkaroundPrefix="$4"
 	
+	# ATTENTION: Configure: 'c..w' (aka. 'w..c') .
 	local currentDriveLetter
-	for currentDriveLetter in {c..w}
+	for currentDriveLetter in {c..c}
 	do
 		if ! type "$currentBinary" > /dev/null 2>&1 && type '/cygdrive/'"$currentDriveLetter"'/Program Files/'"$currentExpectedSubdir"'/'"$currentBinary".exe > /dev/null 2>&1
 		then
@@ -809,12 +810,12 @@ then
 	
 	
 	
+	[[ -e "$scriptAbsoluteFolder"/ops-cygwin.sh ]] && . "$scriptAbsoluteFolder"/ops-cygwin.sh
 	
-	
-	
+	# ATTENTION: Configure: 'w..c' (aka. 'c..w') .
 	# export ubiquitiousBashID=uk4uPhB663kVcygT0q
 	unset currentDriveLetter_cygwin_uk4uPhB663kVcygT0q
-	for currentDriveLetter_cygwin_uk4uPhB663kVcygT0q in {w..c}
+	for currentDriveLetter_cygwin_uk4uPhB663kVcygT0q in {c..c}
 	do
 		[[ -e /cygdrive/$currentDriveLetter_cygwin_uk4uPhB663kVcygT0q ]] && [[ -e /cygdrive/$currentDriveLetter_cygwin_uk4uPhB663kVcygT0q/ops-cygwin.sh ]] && . /cygdrive/$currentDriveLetter_cygwin_uk4uPhB663kVcygT0q/ops-cygwin.sh
 	done
@@ -10679,10 +10680,20 @@ _test() {
 		echo -n -e '\E[1;32;46m Timing...		\E[0m'
 		echo
 		
+		# DANGER: Even under MSW/Cygwin, should ONLY fail IF extremely slow storage is attached.
 		if type _test_selfTime > /dev/null 2>&1
 		then
 			echo -e '\E[0;36m Timing: _test_selfTime \E[0m'
-			! _test_selfTime && echo '_test_selfTime broken' && _stop 1
+			if ! _test_selfTime
+			then
+				if _if_cygwin
+				then
+					echo 'warn: accepted: cygwin: _test_selfTime broken'
+				else
+					echo '_test_selfTime broken'
+					_stop 1
+				fi
+			fi
 		fi
 		
 		if type _test_bashTime > /dev/null 2>&1
@@ -10908,11 +10919,33 @@ _test() {
 		
 		_tryExec '_test_queue'
 		
+		# DANGER: Even under MSW/Cygwin, should ONLY fail IF extremely slow storage is attached.
 		echo -e '\E[0;36m Queue: _test_broadcastPipe_page \E[0m'
-		! _test_broadcastPipe_page && echo '_test_broadcastPipe_page broken' && _stop 1
+		if ! _test_broadcastPipe_page
+		then
+			if _if_cygwin
+			then
+				echo 'warn: accepted: cygwin: _test_broadcastPipe_page broken'
+			else
+				echo '_test_broadcastPipe_page broken'
+				_stop 1
+			fi
+		fi
 		
+		# DANGER: Even under MSW/Cygwin, should ONLY fail IF extremely slow storage is attached.
 		echo -e '\E[0;36m Queue: _test_broadcastPipe_aggregatorStatic \E[0m'
-		! _test_broadcastPipe_aggregatorStatic && echo '_test_broadcastPipe_aggregatorStatic broken' && _stop 1
+		if ! _test_broadcastPipe_aggregatorStatic
+		then
+			if _if_cygwin
+			then
+				#echo 'warn: accepted: cygwin: _test_broadcastPipe_aggregatorStatic broken'
+				echo '_test_broadcastPipe_aggregatorStatic broken'
+				_stop 1
+			else
+				echo '_test_broadcastPipe_aggregatorStatic broken'
+				_stop 1
+			fi
+		fi
 		
 		_messagePASS
 	fi
