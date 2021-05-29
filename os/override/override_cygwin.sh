@@ -146,28 +146,31 @@ _discoverResource-cygwinNative-ProgramFiles-declaration-ProgramFiles() {
 	local currentBinary
 	currentBinary="$1"
 	
+	local currentBinary_functionName
+	currentBinary_functionName=$(echo "$1" | tr -dc 'a-zA-Z0-9')
+	
 	local currentExpectedSubdir
 	currentExpectedSubdir="$2"
 	
 	local forceNativeBinary
 	forceNativeBinary='false'
 	
-	[[ "$3" != "true" ]] && type "$currentBinary" > /dev/null 2>&1 && return 0
+	[[ "$3" != "true" ]] && type "$currentBinary_functionName" > /dev/null 2>&1 && return 0
 	
 	local forceWorkaroundPrefix
 	forceWorkaroundPrefix="$4"
 	
-	if ! type "$currentBinary" > /dev/null 2>&1 && type '/cygdrive/'"$currentDriveLetter_cygwin_uk4uPhB663kVcygT0q"'/Program Files/'"$currentExpectedSubdir"'/'"$currentBinary".exe > /dev/null 2>&1
+	if ! type "$currentBinary_functionName" > /dev/null 2>&1 && type '/cygdrive/'"$currentDriveLetter_cygwin_uk4uPhB663kVcygT0q"'/Program Files/'"$currentExpectedSubdir"'/'"$currentBinary".exe > /dev/null 2>&1
 	then
-		eval $currentBinary'() { '"$forceWorkaroundPrefix"'/cygdrive/"'"$currentDriveLetter_cygwin_uk4uPhB663kVcygT0q"'"/"'"Program Files"'"/"'"$currentExpectedSubdir"'"/"'"$currentBinary"'".exe "$@" ; }'
+		eval $currentBinary_functionName'() { '"$forceWorkaroundPrefix"'/cygdrive/"'"$currentDriveLetter_cygwin_uk4uPhB663kVcygT0q"'"/"'"Program Files"'"/"'"$currentExpectedSubdir"'"/"'"$currentBinary"'".exe "$@" ; }'
 		false
 	fi
 	
-	if ! type "$currentBinary" > /dev/null 2>&1 && type '/cygdrive/'"$currentDriveLetter_cygwin_uk4uPhB663kVcygT0q"'/Program Files (x86)/'"$currentExpectedSubdir"'/'"$currentBinary".exe > /dev/null 2>&1
+	if ! type "$currentBinary_functionName" > /dev/null 2>&1 && type '/cygdrive/'"$currentDriveLetter_cygwin_uk4uPhB663kVcygT0q"'/Program Files (x86)/'"$currentExpectedSubdir"'/'"$currentBinary".exe > /dev/null 2>&1
 	then
-		eval $currentBinary'() { '"$forceWorkaroundPrefix"'/cygdrive/"'"$currentDriveLetter_cygwin_uk4uPhB663kVcygT0q"'"/"'"Program Files (x86)"'"/"'"$currentExpectedSubdir"'"/"'"$currentBinary"'".exe "$@" ; }'
+		eval $currentBinary_functionName'() { '"$forceWorkaroundPrefix"'/cygdrive/"'"$currentDriveLetter_cygwin_uk4uPhB663kVcygT0q"'"/"'"Program Files (x86)"'"/"'"$currentExpectedSubdir"'"/"'"$currentBinary"'".exe "$@" ; }'
 	fi
-	type "$currentBinary" > /dev/null 2>&1 && export -f "$currentBinary" > /dev/null 2>&1 && return 0
+	type "$currentBinary_functionName" > /dev/null 2>&1 && export -f "$currentBinary" > /dev/null 2>&1 && return 0
 	return 1
 }
 
@@ -175,13 +178,16 @@ _discoverResource-cygwinNative-ProgramFiles-declaration-core() {
 	local currentBinary
 	currentBinary="$1"
 	
+	local currentBinary_functionName
+	currentBinary_functionName=$(echo "$1" | tr -dc 'a-zA-Z0-9')
+	
 	local currentExpectedSubdir
 	currentExpectedSubdir="$2"
 	
 	local forceNativeBinary
 	forceNativeBinary='false'
 	
-	[[ "$3" != "true" ]] && type "$currentBinary" > /dev/null 2>&1 && return 0
+	[[ "$3" != "true" ]] && type "$currentBinary_functionName" > /dev/null 2>&1 && return 0
 	
 	local forceWorkaroundPrefix
 	forceWorkaroundPrefix="$4"
@@ -189,24 +195,26 @@ _discoverResource-cygwinNative-ProgramFiles-declaration-core() {
 	local currentCygdriveC_equivalent
 	currentCygdriveC_equivalent=$(cygpath -S | sed 's/\/Windows\/System32//g' | sed 's/^\/cygdrive\///')
 	
-	if ! type "$currentBinary" > /dev/null 2>&1 && type '/cygdrive/'"$currentCygdriveC_equivalent"'/core/installations/'"$currentExpectedSubdir"'/'"$currentBinary".exe > /dev/null 2>&1
+	if ! type "$currentBinary_functionName" > /dev/null 2>&1 && type '/cygdrive/'"$currentCygdriveC_equivalent"'/core/installations/'"$currentExpectedSubdir"'/'"$currentBinary".exe > /dev/null 2>&1
 	then
-		eval $currentBinary'() { '"$forceWorkaroundPrefix"'/cygdrive/"'"$currentCygdriveC_equivalent"'"/"'"core/installations"'"/"'"$currentExpectedSubdir"'"/"'"$currentBinary"'".exe "$@" ; }'
+		eval $currentBinary_functionName'() { '"$forceWorkaroundPrefix"'/cygdrive/"'"$currentCygdriveC_equivalent"'"/"'"core/installations"'"/"'"$currentExpectedSubdir"'"/"'"$currentBinary"'".exe "$@" ; }'
 	fi
-	type "$currentBinary" > /dev/null 2>&1 && return 0
+	type "$currentBinary_functionName" > /dev/null 2>&1 && return 0
 	
-	if ! type "$currentBinary" > /dev/null 2>&1 && type '/cygdrive/'"$currentCygdriveC_equivalent"'/core/installations/'"$currentExpectedSubdir"'/'"$currentBinary".exe > /dev/null 2>&1
+	if ! type "$currentBinary_functionName" > /dev/null 2>&1 && type '/cygdrive/'"$currentCygdriveC_equivalent"'/core/installations/'"$currentExpectedSubdir"'/'"$currentBinary".exe > /dev/null 2>&1
 	then
-		eval $currentBinary'() { '"$forceWorkaroundPrefix"'/cygdrive/"'"$currentCygdriveC_equivalent"'"/"'"core/installations"'"/"'"$currentExpectedSubdir"'"/"'"$currentBinary"'".exe "$@" ; }'
+		eval $currentBinary_functionName'() { '"$forceWorkaroundPrefix"'/cygdrive/"'"$currentCygdriveC_equivalent"'"/"'"core/installations"'"/"'"$currentExpectedSubdir"'"/"'"$currentBinary"'".exe "$@" ; }'
 	fi
-	type "$currentBinary" > /dev/null 2>&1 && export -f "$currentBinary" > /dev/null 2>&1 && return 0
+	type "$currentBinary_functionName" > /dev/null 2>&1 && export -f "$currentBinary" > /dev/null 2>&1 && return 0
 	return 1
 }
 
 _discoverResource-cygwinNative-ProgramFiles() {
 	local currentBinary
 	currentBinary="$1"
-	[[ "$3" != "true" ]] && type "$currentBinary" > /dev/null 2>&1 && return 0
+	local currentBinary_functionName
+	currentBinary_functionName=$(echo "$1" | tr -dc 'a-zA-Z0-9')
+	[[ "$3" != "true" ]] && type "$currentBinary_functionName" > /dev/null 2>&1 && return 0
 	
 	local currentCygdriveC_equivalent
 	currentCygdriveC_equivalent=$(cygpath -S | sed 's/\/Windows\/System32//g' | sed 's/^\/cygdrive\///')
@@ -224,7 +232,7 @@ _discoverResource-cygwinNative-ProgramFiles() {
 	
 	_discoverResource-cygwinNative-ProgramFiles-declaration-core "$@"
 	
-	type "$currentBinary" > /dev/null 2>&1 && export -f "$currentBinary" > /dev/null 2>&1 && return 0
+	type "$currentBinary_functionName" > /dev/null 2>&1 && export -f "$currentBinary_functionName" > /dev/null 2>&1 && return 0
 	return 1
 }
 
