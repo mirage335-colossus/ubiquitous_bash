@@ -280,7 +280,7 @@ https://wiki.debian.org/Vagrant
 
 
 
-
+https://unix.stackexchange.com/questions/297792/how-complex-can-a-program-be-written-in-pure-bash
 
 
 
