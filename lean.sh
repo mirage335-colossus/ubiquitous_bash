@@ -32,7 +32,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='1891409836'
-export ub_setScriptChecksum_contents='274224802'
+export ub_setScriptChecksum_contents='2881607035'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -4869,8 +4869,11 @@ _setupUbiquitous() {
 	
 	if ! _if_cygwin
 	then
+		# WARNING: End user file association. Do NOT call within scripts.
+		# WARNING: Necessarily relies on a 'deprecated' 'field code' with the 'Exec key' of a 'Desktop Entry' file association.
+		# https://specifications.freedesktop.org/desktop-entry-spec/desktop-entry-spec-latest.html
 		_messagePlain_request 'association: *.bat'
-		echo 'konsole -e (open in graphical terminal emulator from file manager)'
+		echo 'konsole --workdir %d -e /bin/bash %f (open in graphical terminal emulator from file manager)'
 		echo 'bash'
 	fi
 	return 0
@@ -4878,7 +4881,7 @@ _setupUbiquitous() {
 	_messagePlain_request "Now import new functionality into current shell if not in current shell."
 	_messagePlain_request ". "'"'"$scriptAbsoluteLocation"'"' --profile _importShortcuts
 	
-	
+	sleep 3
 	return 0
 }
 
@@ -11128,8 +11131,11 @@ _setupCommands() {
 _setup_anchor() {
 	if ! _if_cygwin && [[ "$objectName" == "ubiquitous_bash" ]]
 	then
+		# WARNING: End user file association. Do NOT call within scripts.
+		# WARNING: Necessarily relies on a 'deprecated' 'field code' with the 'Exec key' of a 'Desktop Entry' file association.
+		# https://specifications.freedesktop.org/desktop-entry-spec/desktop-entry-spec-latest.html
 		_messagePlain_request 'association: *.bat'
-		echo 'konsole -e (open in graphical terminal emulator from file manager)'
+		echo 'konsole --workdir %d -e /bin/bash %f (open in graphical terminal emulator from file manager)'
 		echo 'bash'
 	fi
 	

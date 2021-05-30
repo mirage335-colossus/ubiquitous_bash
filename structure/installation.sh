@@ -1402,8 +1402,11 @@ _setupCommands() {
 _setup_anchor() {
 	if ! _if_cygwin && [[ "$objectName" == "ubiquitous_bash" ]]
 	then
+		# WARNING: End user file association. Do NOT call within scripts.
+		# WARNING: Necessarily relies on a 'deprecated' 'field code' with the 'Exec key' of a 'Desktop Entry' file association.
+		# https://specifications.freedesktop.org/desktop-entry-spec/desktop-entry-spec-latest.html
 		_messagePlain_request 'association: *.bat'
-		echo 'konsole -e (open in graphical terminal emulator from file manager)'
+		echo 'konsole --workdir %d -e /bin/bash %f (open in graphical terminal emulator from file manager)'
 		echo 'bash'
 	fi
 	
