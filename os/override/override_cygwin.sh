@@ -427,7 +427,7 @@ _setup_ubiquitousBash_cygwin_procedure() {
 
 
 _setup_ubiquitousBash_cygwin() {
-	"$scriptAbsoluteLocation" _setup_ubiquitousBash_cygwin_procedure_root "$@"
+	"$scriptAbsoluteLocation" _setup_ubiquitousBash_cygwin_procedure "$@"
 }
 
 
