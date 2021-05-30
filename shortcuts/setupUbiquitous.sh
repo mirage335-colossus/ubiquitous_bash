@@ -173,7 +173,6 @@ _setupUbiquitous() {
 		echo 'konsole --workdir %d -e /bin/bash %f (open in graphical terminal emulator from file manager)'
 		echo 'bash'
 	fi
-	return 0
 	
 	_messagePlain_request "Now import new functionality into current shell if not in current shell."
 	_messagePlain_request ". "'"'"$scriptAbsoluteLocation"'"' --profile _importShortcuts
