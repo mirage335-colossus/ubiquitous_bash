@@ -32,7 +32,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='1891409836'
-export ub_setScriptChecksum_contents='43780645'
+export ub_setScriptChecksum_contents='3550705679'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -13969,6 +13969,14 @@ _setupUbiquitous() {
 	
 	_setupUbiquitous_accessories_requests "$@"
 	
+	if ! _if_cygwin
+	then
+		_messagePlain_request 'association: *.bat'
+		echo 'konsole -e (open in graphical terminal emulator from file manager)'
+		echo 'bash'
+	fi
+	return 0
+	
 	_messagePlain_request "Now import new functionality into current shell if not in current shell."
 	_messagePlain_request ". "'"'"$scriptAbsoluteLocation"'"' --profile _importShortcuts
 	
@@ -19764,7 +19772,7 @@ _setupCommand_meta() {
 }
 
 _find_setupCommands() {
-	find -L "$scriptAbsoluteFolder" -not \( -path \*_arc\* -prune \) -not \( -path \*/_local/ubcp/\* -prune \) "$@"
+	find -L "$scriptAbsoluteFolder" -not \( -path \*_arc\* -prune \) -not \( -path \*__disk\* -prune \) -not \( -path \*/_local/h/\* -prune \) -not \( -path \*/_local/fs/\* -prune \) -not \( -path \*/_local/ubcp/\* -prune \) "$@"
 }
 
 #Consider placing files like ' _vnc-machine-"$netName" ' in an "_index" folder for automatic installation.
@@ -19785,6 +19793,13 @@ _setupCommands() {
 
 
 _setup_anchor() {
+	if ! _if_cygwin && [[ "$objectName" == "ubiquitous_bash" ]]
+	then
+		_messagePlain_request 'association: *.bat'
+		echo 'konsole -e (open in graphical terminal emulator from file manager)'
+		echo 'bash'
+	fi
+	
 	if type "_associate_anchors_request" > /dev/null 2>&1
 	then
 		_tryExec "_associate_anchors_request"

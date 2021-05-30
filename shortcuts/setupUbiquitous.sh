@@ -164,6 +164,14 @@ _setupUbiquitous() {
 	
 	_setupUbiquitous_accessories_requests "$@"
 	
+	if ! _if_cygwin
+	then
+		_messagePlain_request 'association: *.bat'
+		echo 'konsole -e (open in graphical terminal emulator from file manager)'
+		echo 'bash'
+	fi
+	return 0
+	
 	_messagePlain_request "Now import new functionality into current shell if not in current shell."
 	_messagePlain_request ". "'"'"$scriptAbsoluteLocation"'"' --profile _importShortcuts
 	

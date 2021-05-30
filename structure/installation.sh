@@ -1379,7 +1379,7 @@ _setupCommand_meta() {
 }
 
 _find_setupCommands() {
-	find -L "$scriptAbsoluteFolder" -not \( -path \*_arc\* -prune \) -not \( -path \*/_local/ubcp/\* -prune \) "$@"
+	find -L "$scriptAbsoluteFolder" -not \( -path \*_arc\* -prune \) -not \( -path \*__disk\* -prune \) -not \( -path \*/_local/h/\* -prune \) -not \( -path \*/_local/fs/\* -prune \) -not \( -path \*/_local/ubcp/\* -prune \) "$@"
 }
 
 #Consider placing files like ' _vnc-machine-"$netName" ' in an "_index" folder for automatic installation.
@@ -1400,6 +1400,13 @@ _setupCommands() {
 
 
 _setup_anchor() {
+	if ! _if_cygwin && [[ "$objectName" == "ubiquitous_bash" ]]
+	then
+		_messagePlain_request 'association: *.bat'
+		echo 'konsole -e (open in graphical terminal emulator from file manager)'
+		echo 'bash'
+	fi
+	
 	if type "_associate_anchors_request" > /dev/null 2>&1
 	then
 		_tryExec "_associate_anchors_request"
