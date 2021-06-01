@@ -21,8 +21,27 @@ CZXWXcRMTo8EmM8i4d
 }
 
 
-
-
+# WARNING: Only a small fraction of the tablet area may be mapped regardless of using this command or not - there is no workaround for that here.
+# At least 'h1060p' tablet may be affected. Results have been inconsistent - may work on some machines (perhaps single-monitor) but not others (perhaps multimonitor).
+# ATTENTION: Connecting tablet to a VM may be a useful workaround.
+# ATTENTION: Correct tablet 'Area' may be approximately 50800x31750 ( not 32767x32767 ) .
+# KDE Graphics Tablet configuration under 'system settings' is known to work for screen remapping purposes after 'registration' (to whatever extent the tablet area is utilized anyway).
+# _tablet_map_primary() {
+# 	local currentPrimaryMonitor
+# 	currentPrimaryMonitor=$(xrandr --listactivemonitors | cut -f 3 -d\ | grep -v '^\w*$' | grep \* | head -n1 | tr -dc 'a-zA-Z0-9.:_-')
+# 	
+# 	local currentLine
+# 	#xsetwacom --list devices | cut -f1 | while read currentLine
+# 	while read currentLine
+# 	do
+# 		#xsetwacom --set "$currentLine" "MapToOutput" "$currentPrimaryMonitor"
+# 		xsetwacom --set "$currentLine" "MapToOutput" 1920x1080+0+0
+# 		xsetwacom --set "$currentLine" "Mode" "Absolute"
+# 		xsetwacom --set "$currentLine" "Suppress" "0"
+# 		xsetwacom --set "$currentLine" "Mode" Absolute
+# 		xsetwacom --set "$currentLine" "Area" 0 0 32767 32767
+# 	done <<<$(xsetwacom --list devices | cut -f1)
+# }
 
 
 
@@ -31,6 +50,12 @@ CZXWXcRMTo8EmM8i4d
 _test_h1060p() {
 	sudo -n mkdir -p /etc/X11/xorg.conf.d
 	_h1060p_xorg_here | sudo -n tee /etc/X11/xorg.conf.d/70-wacom-h1060p > /dev/null
+	
+	
+	_wantGetDep 'libxcb-xinput.so.0'
+	
+	_wantGetDep 'kde_wacom_tabletfinder'
+	
 	
 	
 	
