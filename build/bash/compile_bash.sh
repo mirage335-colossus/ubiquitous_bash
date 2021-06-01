@@ -178,6 +178,7 @@ _compile_bash_deps() {
 		
 		#_deps_hardware
 		#_deps_x220t
+		#_deps_peripherial
 		
 		#_deps_user
 		
@@ -252,6 +253,7 @@ _compile_bash_deps() {
 		
 		_deps_hardware
 		_deps_x220t
+		_deps_peripherial
 		
 		_deps_user
 		
@@ -640,6 +642,8 @@ _compile_bash_user() {
 
 _compile_bash_hardware() {
 	[[ "$enUb_hardware" == "true" ]] && [[ "$enUb_x220t" == "true" ]] && includeScriptList+=( "hardware/x220t"/x220_display.sh )
+	
+	[[ "$enUb_hardware" == "true" ]] && [[ "$enUb_peripherial" == "true" ]] && includeScriptList+=( "hardware/peripherial/h1060p"/h1060p.sh )
 }
 
 _compile_bash_vars_basic() {

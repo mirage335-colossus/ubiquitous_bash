@@ -32,7 +32,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='1891409836'
-export ub_setScriptChecksum_contents='2840876785'
+export ub_setScriptChecksum_contents='3316670708'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -5156,18 +5156,33 @@ _findUbiquitous() {
 _init_deps() {
 	export enUb_set="true"
 	
+	export enUb_dev=""
+	export enUb_dev_heavy=""
+	
+	export enUb_mount=""
+	
 	export enUb_machineinfo=""
 	export enUb_git=""
 	export enUb_bup=""
+	export enUb_repo=""
+	export enUb_cloud=""
+	export enUb_cloud_self=""
+	export enUb_cloud_build=""
 	export enUb_notLean=""
+	export enUb_distro=""
 	export enUb_build=""
+	export enUb_buildBash=""
 	export enUb_os_x11=""
 	export enUb_proxy=""
 	export enUb_proxy_special=""
+	export enUb_clog=""
 	export enUb_x11=""
 	export enUb_blockchain=""
+	export enUb_java=""
 	export enUb_image=""
 	export enUb_virt=""
+	export enUb_virt_thick=""
+	export enUb_virt_translation=""
 	export enUb_ChRoot=""
 	export enUb_QEMU=""
 	export enUb_vbox=""
@@ -5185,12 +5200,19 @@ _init_deps() {
 	
 	export enUb_hardware=""
 	export enUb_enUb_x220t=""
+	export enUb_enUb_peripherial=""
 	
 	export enUb_user=""
+	
+	export enUb_channel=""
 	
 	export enUb_metaengine=""
 	
 	export enUb_stopwatch=""
+	
+	export enUb_linux=""
+	
+	export enUb_calculators=""
 }
 
 _deps_dev() {
@@ -5423,6 +5445,12 @@ _deps_x220t() {
 	_deps_notLean
 	_deps_hardware
 	export enUb_x220t="true"
+}
+
+_deps_peripherial() {
+	_deps_notLean
+	_deps_hardware
+	export enUb_peripherial="true"
 }
 
 _deps_user() {
@@ -5750,6 +5778,7 @@ _compile_bash_deps() {
 		
 		#_deps_hardware
 		#_deps_x220t
+		#_deps_peripherial
 		
 		#_deps_user
 		
@@ -5824,6 +5853,7 @@ _compile_bash_deps() {
 		
 		_deps_hardware
 		_deps_x220t
+		_deps_peripherial
 		
 		_deps_user
 		
@@ -6212,6 +6242,8 @@ _compile_bash_user() {
 
 _compile_bash_hardware() {
 	[[ "$enUb_hardware" == "true" ]] && [[ "$enUb_x220t" == "true" ]] && includeScriptList+=( "hardware/x220t"/x220_display.sh )
+	
+	[[ "$enUb_hardware" == "true" ]] && [[ "$enUb_peripherial" == "true" ]] && includeScriptList+=( "hardware/peripherial/h1060p"/h1060p.sh )
 }
 
 _compile_bash_vars_basic() {
