@@ -1150,6 +1150,8 @@ _test() {
 	_getDep bc
 	_getDep xxd
 	
+	_getDep yes
+	
 	_test_readlink_f
 	
 	_tryExec "_test_package"
@@ -1228,6 +1230,10 @@ _test() {
 	_tryExec "_test_devatom"
 	_tryExec "_test_devemacs"
 	_tryExec "_test_deveclipse"
+	
+	
+	_tryExec "_test_h1060p"
+	
 	
 	_tryExec "_test_ethereum"
 	_tryExec "_test_ethereum_parity"

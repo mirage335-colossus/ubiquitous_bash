@@ -32,7 +32,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='1891409836'
-export ub_setScriptChecksum_contents='1992018507'
+export ub_setScriptChecksum_contents='3577114868'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -7913,6 +7913,8 @@ CZXWXcRMTo8EmM8i4d
 	then
 		_tryExec '_test_rclone_upstream'
 		#_tryExec '_test_rclone_upstream_beta'
+		
+		return 0
 	fi
 	
 	if [[ "$1" == "terraform" ]]
@@ -7921,6 +7923,8 @@ CZXWXcRMTo8EmM8i4d
 		sudo apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
 		sudo -n apt-get -y update
 		sudo -n apt-get install --install-recommends -y terraform
+		
+		return 0
 	fi
 	
 	if [[ "$1" == "vagrant" ]]
@@ -7932,6 +7936,28 @@ CZXWXcRMTo8EmM8i4d
 		sudo -n apt-get install --install-recommends -y vagrant-libvirt
 		
 		sudo -n apt-get install --install-recommends -y vagrant
+		
+		return 0
+	fi
+	
+	if [[ "$1" == "digimend-debug" ]] || [[ "$1" == 'udev/rules.d/90-digimend.rules' ]] || [[ "$1" == 'X11/xorg.conf.d/50-digimend.conf' ]]
+	then
+		if ! _wantDep digimend-debug && [[ -e /etc/issue ]] && cat /etc/issue | grep 'Debian' > /dev/null 2>&1
+		then
+			if [[ -e "$HOME"/core/installations/digimend-dkms/digimend-dkms_10_all.deb ]]
+			then
+				yes | sudo -n dpkg -i "$HOME"/core/installations/digimend-dkms/digimend-dkms_10_all.deb
+			fi
+			
+			sudo -n apt-get install --install-recommends -y digimend-dkms
+			
+			curl -L "https://github.com/DIGImend/digimend-kernel-drivers/releases/download/v10/digimend-dkms_10_all.deb" -o "$safeTmp"/"digimend-dkms_10_all.deb"
+			yes | sudo -n dpkg -i "$safeTmp"/"digimend-dkms_10_all.deb"
+			sudo -n apt-get install --install-recommends -y -f
+			sudo rm -f "$safeTmp"/"digimend-dkms_10_all.deb"
+		fi
+		
+		return 0
 	fi
 	
 	
@@ -23489,7 +23515,57 @@ _x220_vgaTablet() {
 	_x220_tablet_S180
 }
 
-#h1060p
+_h1060p_xorg_here() {
+	cat << CZXWXcRMTo8EmM8i4d
+
+# https://blog.simos.info/how-to-setup-the-huion-430p-drawing-tablet-on-ubuntu-20-04/
+# Huion H430P drawing tablet
+# Huion Inspiroy H1060P
+# 256c:006d
+Section "InputClass"
+	#Identifier "Huion H430P drawing tablet"
+	Identifier "Huion drawing tablet"
+	MatchProduct "HUION"
+        MatchUSBID "256c:*"
+	MatchDevicePath "/dev/input/event*"
+	Driver "wacom"
+	# https://github.com/DIGImend/digimend-kernel-drivers
+	# /usr/share/X11/xorg.conf.d/50-digimend.conf (digimend-dkms)
+	#Option "Suppress" "0"
+EndSection
+
+CZXWXcRMTo8EmM8i4d
+}
+
+
+
+
+
+
+
+
+
+_test_h1060p() {
+	sudo -n mkdir -p /etc/X11/xorg.conf.d
+	_h1060p_xorg_here | sudo -n tee /etc/X11/xorg.conf.d/70-wacom-h1060p > /dev/null
+	
+	
+	
+	_wantGetDep digimend-debug
+	
+	_wantGetDep 'udev/rules.d/90-digimend.rules'
+	
+	# '/usr/share'
+	#_wantGetDep 'X11/xorg.conf.d/50-digimend.conf'
+	
+	
+	if ! _wantDep digimend-debug
+	then
+		_messagePlain_request 'request: user please install: digimend-dkms_10 (or newer)'
+	fi
+	
+	return 0
+}
 
 #####Basic Variable Management
 
@@ -31572,6 +31648,8 @@ _test() {
 	_getDep bc
 	_getDep xxd
 	
+	_getDep yes
+	
 	_test_readlink_f
 	
 	_tryExec "_test_package"
@@ -31650,6 +31728,10 @@ _test() {
 	_tryExec "_test_devatom"
 	_tryExec "_test_devemacs"
 	_tryExec "_test_deveclipse"
+	
+	
+	_tryExec "_test_h1060p"
+	
 	
 	_tryExec "_test_ethereum"
 	_tryExec "_test_ethereum_parity"

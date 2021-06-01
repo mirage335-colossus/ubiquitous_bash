@@ -603,6 +603,8 @@ CZXWXcRMTo8EmM8i4d
 	then
 		_tryExec '_test_rclone_upstream'
 		#_tryExec '_test_rclone_upstream_beta'
+		
+		return 0
 	fi
 	
 	if [[ "$1" == "terraform" ]]
@@ -611,6 +613,8 @@ CZXWXcRMTo8EmM8i4d
 		sudo apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
 		sudo -n apt-get -y update
 		sudo -n apt-get install --install-recommends -y terraform
+		
+		return 0
 	fi
 	
 	if [[ "$1" == "vagrant" ]]
@@ -622,6 +626,28 @@ CZXWXcRMTo8EmM8i4d
 		sudo -n apt-get install --install-recommends -y vagrant-libvirt
 		
 		sudo -n apt-get install --install-recommends -y vagrant
+		
+		return 0
+	fi
+	
+	if [[ "$1" == "digimend-debug" ]] || [[ "$1" == 'udev/rules.d/90-digimend.rules' ]] || [[ "$1" == 'X11/xorg.conf.d/50-digimend.conf' ]]
+	then
+		if ! _wantDep digimend-debug && [[ -e /etc/issue ]] && cat /etc/issue | grep 'Debian' > /dev/null 2>&1
+		then
+			if [[ -e "$HOME"/core/installations/digimend-dkms/digimend-dkms_10_all.deb ]]
+			then
+				yes | sudo -n dpkg -i "$HOME"/core/installations/digimend-dkms/digimend-dkms_10_all.deb
+			fi
+			
+			sudo -n apt-get install --install-recommends -y digimend-dkms
+			
+			curl -L "https://github.com/DIGImend/digimend-kernel-drivers/releases/download/v10/digimend-dkms_10_all.deb" -o "$safeTmp"/"digimend-dkms_10_all.deb"
+			yes | sudo -n dpkg -i "$safeTmp"/"digimend-dkms_10_all.deb"
+			sudo -n apt-get install --install-recommends -y -f
+			sudo rm -f "$safeTmp"/"digimend-dkms_10_all.deb"
+		fi
+		
+		return 0
 	fi
 	
 	
