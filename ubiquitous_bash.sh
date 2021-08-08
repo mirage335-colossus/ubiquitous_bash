@@ -32,7 +32,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='1891409836'
-export ub_setScriptChecksum_contents='551245488'
+export ub_setScriptChecksum_contents='180416358'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -8109,27 +8109,27 @@ CZXWXcRMTo8EmM8i4d
 }
 
 _hook_systemd_shutdown() {
-	[[ -e /etc/systemd/system/"$sessionid".service ]] && return 0
+	[[ -e /etc/systemd/system/"$sessionid""$sessionid""$sessionid""$sessionid".service ]] && return 0
 	
 	! _wantSudo && return 1
 	
 	! [[ -e /etc/systemd/system ]] && return 0
 	
-	_here_systemd_shutdown | sudo -n tee /etc/systemd/system/"$sessionid".service > /dev/null
-	sudo -n systemctl enable "$sessionid".service 2>&1 | sudo -n tee -a "$permaLog"/gsysd.log > /dev/null 2>&1
-	sudo -n systemctl start "$sessionid".service 2>&1 | sudo -n tee -a "$permaLog"/gsysd.log > /dev/null 2>&1
+	_here_systemd_shutdown | sudo -n tee /etc/systemd/system/"$sessionid""$sessionid""$sessionid""$sessionid".service > /dev/null
+	sudo -n systemctl enable "$sessionid""$sessionid""$sessionid""$sessionid".service 2>&1 | sudo -n tee -a "$permaLog"/gsysd.log > /dev/null 2>&1
+	sudo -n systemctl start "$sessionid""$sessionid""$sessionid""$sessionid".service 2>&1 | sudo -n tee -a "$permaLog"/gsysd.log > /dev/null 2>&1
 }
 
 _hook_systemd_shutdown_action() {
-	[[ -e /etc/systemd/system/"$sessionid".service ]] && return 0
+	[[ -e /etc/systemd/system/"$sessionid""$sessionid""$sessionid""$sessionid".service ]] && return 0
 	
 	! _wantSudo && return 1
 	
 	! [[ -e /etc/systemd/system ]] && return 0
 	
-	_here_systemd_shutdown_action "$@" | sudo -n tee /etc/systemd/system/"$sessionid".service > /dev/null
-	sudo -n systemctl enable "$sessionid".service 2>&1 | sudo -n tee -a "$permaLog"/gsysd.log > /dev/null 2>&1
-	sudo -n systemctl start "$sessionid".service 2>&1 | sudo -n tee -a "$permaLog"/gsysd.log > /dev/null 2>&1
+	_here_systemd_shutdown_action "$@" | sudo -n tee /etc/systemd/system/"$sessionid""$sessionid""$sessionid""$sessionid".service > /dev/null
+	sudo -n systemctl enable "$sessionid""$sessionid""$sessionid""$sessionid".service 2>&1 | sudo -n tee -a "$permaLog"/gsysd.log > /dev/null 2>&1
+	sudo -n systemctl start "$sessionid""$sessionid""$sessionid""$sessionid".service 2>&1 | sudo -n tee -a "$permaLog"/gsysd.log > /dev/null 2>&1
 	
 }
 
@@ -8139,7 +8139,7 @@ _unhook_systemd_shutdown() {
 	hookSessionid="$sessionid"
 	[[ "$1" != "" ]] && hookSessionid="$1"
 	
-	[[ ! -e /etc/systemd/system/"$hookSessionid".service ]] && return 0
+	[[ ! -e /etc/systemd/system/"$hookSessionid""$hookSessionid""$hookSessionid""$hookSessionid".service ]] && return 0
 	
 	! _wantSudo && return 1
 	
@@ -8148,8 +8148,8 @@ _unhook_systemd_shutdown() {
 	[[ "$SYSTEMCTLDISABLE" == "true" ]] && echo SYSTEMCTLDISABLE | sudo -n tee -a "$permaLog"/gsysd.log > /dev/null 2>&1 && return 0
 	export SYSTEMCTLDISABLE=true
 	
-	sudo -n systemctl disable "$hookSessionid".service 2>&1 | sudo -n tee -a "$permaLog"/gsysd.log > /dev/null 2>&1
-	sudo -n rm -f /etc/systemd/system/"$hookSessionid".service 2>&1 | sudo -n tee -a "$permaLog"/gsysd.log > /dev/null 2>&1
+	sudo -n systemctl disable "$hookSessionid""$hookSessionid""$hookSessionid""$hookSessionid".service 2>&1 | sudo -n tee -a "$permaLog"/gsysd.log > /dev/null 2>&1
+	sudo -n rm -f /etc/systemd/system/"$hookSessionid""$hookSessionid""$hookSessionid""$hookSessionid".service 2>&1 | sudo -n tee -a "$permaLog"/gsysd.log > /dev/null 2>&1
 }
 
 #Determines if user is root. If yes, then continue. If not, exits after printing error message.
@@ -22765,6 +22765,17 @@ _unix_renice_idle() {
 
 
 
+# WARNING: End user function. Do NOT call within scripts.
+# No production use.
+# DANGER: Removes all 'service' files with the correct number of characters. In practice, no non-temporary service is known to meet this criteria.
+_systemd_cleanup() {
+	# DANGER: Obsolete, more likely to cause unintended deletion. Will be disabled eventually.
+	sudo -n rm -f ??????????????????.service
+	
+	# WARNING: Relies on a >72char filename.
+	sudo -n rm -f ????????????????????????????????????????????????????????????????????????.service
+}
+
 _findPort_opsauto_blockchain() {
 	if ! _findPort 63800 63850 "$@" >> "$scriptLocal"/opsauto
 	then
@@ -34109,6 +34120,7 @@ _compile_bash_shortcuts_os() {
 	export includeScriptList
 	
 	includeScriptList+=( "shortcuts/os/unix/nice"/renice.sh )
+	includeScriptList+=( "shortcuts/os/unix/systemd"/systemd_cleanup.sh )
 }
 
 _compile_bash_bundled() {

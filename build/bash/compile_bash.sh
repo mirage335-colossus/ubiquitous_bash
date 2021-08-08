@@ -616,6 +616,7 @@ _compile_bash_shortcuts_os() {
 	export includeScriptList
 	
 	includeScriptList+=( "shortcuts/os/unix/nice"/renice.sh )
+	includeScriptList+=( "shortcuts/os/unix/systemd"/systemd_cleanup.sh )
 }
 
 _compile_bash_bundled() {
