@@ -32,7 +32,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='1891409836'
-export ub_setScriptChecksum_contents='3763235264'
+export ub_setScriptChecksum_contents='804339904'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -10446,6 +10446,28 @@ _test_mktorrent() {
 	
 	#_getDep mktorrent
 }
+
+
+
+
+
+
+
+# DANGER: Of course the 'dd' command can cause severe data loss. Be careful. Maybe use 'type -p' to see function code for reference instead of calling directly.
+
+
+_dd_user() {
+	dd "$@" oflag=direct conv=fdatasync status=progress
+}
+_dd() {
+	sudo -n "$scriptAbsoluteLocation" _dd_user "$@"
+}
+
+_dropCache() {
+	sync ; echo 3 | sudo -n tee /proc/sys/vm/drop_caches
+}
+
+
 
 
 

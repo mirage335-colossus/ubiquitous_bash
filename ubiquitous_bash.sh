@@ -32,7 +32,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='1891409836'
-export ub_setScriptChecksum_contents='1172198834'
+export ub_setScriptChecksum_contents='244102461'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -16751,6 +16751,28 @@ _test_mktorrent() {
 
 
 
+
+# DANGER: Of course the 'dd' command can cause severe data loss. Be careful. Maybe use 'type -p' to see function code for reference instead of calling directly.
+
+
+_dd_user() {
+	dd "$@" oflag=direct conv=fdatasync status=progress
+}
+_dd() {
+	sudo -n "$scriptAbsoluteLocation" _dd_user "$@"
+}
+
+_dropCache() {
+	sync ; echo 3 | sudo -n tee /proc/sys/vm/drop_caches
+}
+
+
+
+
+
+
+
+
 #screenscraper-nix
 
 # ATTENTION: Expect new software development will be required. Some relevant capability apparently already exists from OBS, ffmpeg , gstreamer , etc . Due to apparent lack of 'NVIDIA Game Stream' , most likely a GPU-agnostic real-time h264 or similar video codec would also be helpful.
@@ -20791,28 +20813,6 @@ _gparted_sequence() {
 _gparted() {
 	"$scriptAbsoluteLocation" _gparted_sequence
 }
-
-
-# DANGER: Of course the 'dd' command can cause severe data loss. Be careful. Maybe use 'type -p' to see function code for reference instead of calling directly.
-
-
-_dd_user() {
-	dd "$@" oflag=direct conv=fdatasync status=progress
-}
-_dd() {
-	sudo -n "$scriptAbsoluteLocation" _dd_user "$@"
-}
-
-_dropCache() {
-	sync ; echo 3 | sudo -n tee /proc/sys/vm/drop_caches
-}
-
-
-
-
-
-
-
 
 _kernelConfig_list_here() {
 	cat << CZXWXcRMTo8EmM8i4d
@@ -34049,6 +34049,7 @@ _compile_bash_shortcuts() {
 	
 	
 	( [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_repo" == "true" ]] || [[ "$enUb_cloud" == "true" ]] ) && includeScriptList+=( "shortcuts/dev/app/repo/mktorrent"/mktorrent.sh )
+	( [[ "$enUb_notLean" == "true" ]] || [[ "$enUb_dev" == "true" ]] || [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_image" == "true" ]] || [[ "$enUb_repo" == "true" ]] || [[ "$enUb_cloud" == "true" ]] ) && includeScriptList+=( "shortcuts/dev/app/repo/disk"/dd.sh )
 	
 	
 	( [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_cloud" == "true" ]] ) && includeScriptList+=( "shortcuts/cloud/self/screenScraper"/screenScraper-nix.sh )
@@ -34119,8 +34120,6 @@ _compile_bash_shortcuts() {
 	[[ "$enUb_docker" == "true" ]] && includeScriptList+=( "shortcuts/docker"/dockercontainer.sh )
 	
 	[[ "$enUb_image" == "true" ]] && includeScriptList+=( "shortcuts/image"/gparted.sh )
-	
-	( [[ "$enUb_dev" == "true" ]] || [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_image" == "true" ]] ) && includeScriptList+=( "shortcuts/image"/dd.sh )
 	
 	
 	[[ "$enUb_linux" == "true" ]] && includeScriptList+=( "shortcuts/linux"/kernelConfig_here.sh )
