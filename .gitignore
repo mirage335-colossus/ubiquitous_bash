@@ -61,6 +61,8 @@ package_ubcp*.tar.*
 package_ubcp-cygwinOnly.tar.*
 package_ubcp-cygwinOnly*.tar.*
 
+package_kit.tar.*
+
 id_rsa
 pubring.kbx
 pubring.kbx*

@@ -95,6 +95,8 @@ package_ubcp*.tar.*
 package_ubcp-cygwinOnly.tar.*
 package_ubcp-cygwinOnly*.tar.*
 
+package_kit.tar.*
+
 \#*\#
 *~
 *.bak
