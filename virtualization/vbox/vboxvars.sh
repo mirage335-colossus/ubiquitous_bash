@@ -83,7 +83,7 @@ _prepare_vbox() {
 	#Atomically ensure symlink between full and short home directory paths is up to date.
 	local oldLinkPath
 	oldLinkPath=$(readlink "$VBOX_USER_HOME_short")
-	[[ "$oldLinkPath" != "$VBOX_USER_HOME_local" ]] && ln -sf "$VBOX_USER_HOME_local" "$VBOX_USER_HOME_short" > /dev/null 2>&1
+	[[ "$oldLinkPath" != "$VBOX_USER_HOME_local" ]] && ln -sf -n "$VBOX_USER_HOME_local" "$VBOX_USER_HOME_short" > /dev/null 2>&1
 	oldLinkPath=$(readlink "$VBOX_USER_HOME_short")
 	[[ "$oldLinkPath" != "$VBOX_USER_HOME_local" ]] && _messagePlain_bad 'fail: symlink VBOX_USER_HOME_local to VBOX_USER_HOME_short' && return 1
 	
