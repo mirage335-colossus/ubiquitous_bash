@@ -74,7 +74,8 @@ _mountVBox_raw_sequence() {
 	
 	
 	_messagePlain_nominal 'stop: _mountVBox_raw_sequence'
-	_safeRMR "$instancedVirtDir" || _stop 1
+	#_safeRMR "$instancedVirtDir" || _stop 1
+	_rm_instance_vbox || _stop 1
 	_stop 0
 }
 
