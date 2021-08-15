@@ -61,6 +61,9 @@ package_ubcp*.tar.*
 package_ubcp-cygwinOnly.tar.*
 package_ubcp-cygwinOnly*.tar.*
 
+package_*.tar.*
+package_tmp.tar.*
+package_full.tar.*
 package_kit.tar.*
 
 id_rsa
