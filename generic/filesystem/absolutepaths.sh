@@ -352,7 +352,7 @@ _getScriptAbsoluteLocation() {
 	
 	local currentScriptLocation
 	currentScriptLocation="$0"
-	uname -a | grep -i cygwin > /dev/null 2>&1 && currentScriptLocation=$(_cygwin_translation_rootFileParameter)
+	uname -a | grep -i cygwin > /dev/null 2>&1 && type _cygwin_translation_rootFileParameter > /dev/null 2>&1 && currentScriptLocation=$(_cygwin_translation_rootFileParameter)
 	
 	
 	local absoluteLocation
