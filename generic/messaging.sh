@@ -295,9 +295,9 @@ _color_begin_Error() {
 	[[ "$current_scriptedIllustrator_markup" == "" ]] && echo -e -n '\E[1;33;41m '
 }
 _color_begin_DELAYipc() {
-	#b2b2b2
 	#ffff54
-	[[ "$current_scriptedIllustrator_markup" == "html" ]] && echo -e -n '<span style="color:#b2b2b2;background-color:#ffff54;">'
+	#b2b2b2
+	[[ "$current_scriptedIllustrator_markup" == "html" ]] && echo -e -n '<span style="color:#ffff54;background-color:#b2b2b2;">'
 	[[ "$current_scriptedIllustrator_markup" == "" ]] && echo -e -n '\E[1;33;47m '
 }
 
