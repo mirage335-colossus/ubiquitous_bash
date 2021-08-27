@@ -32,7 +32,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='1891409836'
-export ub_setScriptChecksum_contents='2803563120'
+export ub_setScriptChecksum_contents='771384822'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -2921,6 +2921,23 @@ _messageColors() {
 }
 
 
+_color_demo() {
+	_messagePlain_request "$ubiquitiousBashID"
+	_messagePlain_nominal "$ubiquitiousBashID"
+	_messagePlain_probe "$ubiquitiousBashID"
+	_messagePlain_probe_expr "$ubiquitiousBashID"
+	_messagePlain_probe_var ubiquitiousBashID
+	_messagePlain_good "$ubiquitiousBashID"
+	_messagePlain_warn "$ubiquitiousBashID"
+	_messagePlain_bad "$ubiquitiousBashID"
+	_messagePlain_probe_cmd echo "$ubiquitiousBashID"
+	_messagePlain_probe_quoteAddDouble echo "$ubiquitiousBashID"
+	_messagePlain_probe_quoteAddSingle echo "$ubiquitiousBashID"
+	_messageNormal "$ubiquitiousBashID"
+	_messageError "$ubiquitiousBashID"
+	_messageDELAYipc "$ubiquitiousBashID"
+	_messageProcess "$ubiquitiousBashID"
+}
 _color_end() {
 	[[ "$current_scriptedIllustrator_markup" == "html" ]] && echo -e -n '</span>'
 	[[ "$current_scriptedIllustrator_markup" == "" ]] && echo -e -n ' \E[0m'
@@ -2980,23 +2997,7 @@ _color_begin_DELAYipc() {
 	[[ "$current_scriptedIllustrator_markup" == "html" ]] && echo -e -n '<span style="color:#b2b2b2;background-color:#ffff54;">'
 	[[ "$current_scriptedIllustrator_markup" == "" ]] && echo -e -n '\E[1;33;47m '
 }
-_color_demo() {
-	_messagePlain_request "$ubiquitiousBashID"
-	_messagePlain_nominal "$ubiquitiousBashID"
-	_messagePlain_probe "$ubiquitiousBashID"
-	_messagePlain_probe_expr "$ubiquitiousBashID"
-	_messagePlain_probe_var ubiquitiousBashID
-	_messagePlain_good "$ubiquitiousBashID"
-	_messagePlain_warn "$ubiquitiousBashID"
-	_messagePlain_bad "$ubiquitiousBashID"
-	_messagePlain_probe_cmd echo "$ubiquitiousBashID"
-	_messagePlain_probe_quoteAddDouble echo "$ubiquitiousBashID"
-	_messagePlain_probe_quoteAddSingle echo "$ubiquitiousBashID"
-	_messageNormal "$ubiquitiousBashID"
-	_messageError "$ubiquitiousBashID"
-	_messageDELAYipc "$ubiquitiousBashID"
-	_messageProcess "$ubiquitiousBashID"
-}
+
 
 
 #Purple. User must do something manually to proceed. NOT to be used for dependency installation requests - use probe, bad, and fail statements for that.

@@ -224,6 +224,23 @@ _messageColors() {
 }
 
 
+_color_demo() {
+	_messagePlain_request "$ubiquitiousBashID"
+	_messagePlain_nominal "$ubiquitiousBashID"
+	_messagePlain_probe "$ubiquitiousBashID"
+	_messagePlain_probe_expr "$ubiquitiousBashID"
+	_messagePlain_probe_var ubiquitiousBashID
+	_messagePlain_good "$ubiquitiousBashID"
+	_messagePlain_warn "$ubiquitiousBashID"
+	_messagePlain_bad "$ubiquitiousBashID"
+	_messagePlain_probe_cmd echo "$ubiquitiousBashID"
+	_messagePlain_probe_quoteAddDouble echo "$ubiquitiousBashID"
+	_messagePlain_probe_quoteAddSingle echo "$ubiquitiousBashID"
+	_messageNormal "$ubiquitiousBashID"
+	_messageError "$ubiquitiousBashID"
+	_messageDELAYipc "$ubiquitiousBashID"
+	_messageProcess "$ubiquitiousBashID"
+}
 _color_end() {
 	[[ "$current_scriptedIllustrator_markup" == "html" ]] && echo -e -n '</span>'
 	[[ "$current_scriptedIllustrator_markup" == "" ]] && echo -e -n ' \E[0m'
@@ -283,23 +300,7 @@ _color_begin_DELAYipc() {
 	[[ "$current_scriptedIllustrator_markup" == "html" ]] && echo -e -n '<span style="color:#b2b2b2;background-color:#ffff54;">'
 	[[ "$current_scriptedIllustrator_markup" == "" ]] && echo -e -n '\E[1;33;47m '
 }
-_color_demo() {
-	_messagePlain_request "$ubiquitiousBashID"
-	_messagePlain_nominal "$ubiquitiousBashID"
-	_messagePlain_probe "$ubiquitiousBashID"
-	_messagePlain_probe_expr "$ubiquitiousBashID"
-	_messagePlain_probe_var ubiquitiousBashID
-	_messagePlain_good "$ubiquitiousBashID"
-	_messagePlain_warn "$ubiquitiousBashID"
-	_messagePlain_bad "$ubiquitiousBashID"
-	_messagePlain_probe_cmd echo "$ubiquitiousBashID"
-	_messagePlain_probe_quoteAddDouble echo "$ubiquitiousBashID"
-	_messagePlain_probe_quoteAddSingle echo "$ubiquitiousBashID"
-	_messageNormal "$ubiquitiousBashID"
-	_messageError "$ubiquitiousBashID"
-	_messageDELAYipc "$ubiquitiousBashID"
-	_messageProcess "$ubiquitiousBashID"
-}
+
 
 
 #Purple. User must do something manually to proceed. NOT to be used for dependency installation requests - use probe, bad, and fail statements for that.
