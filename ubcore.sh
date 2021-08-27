@@ -32,7 +32,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='1891409836'
-export ub_setScriptChecksum_contents='388987943'
+export ub_setScriptChecksum_contents='3503797357'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -2720,7 +2720,7 @@ _safeEcho_newline() {
 _safeEcho_quoteAddSingle() {
 	# https://tldp.org/LDP/Bash-Beginners-Guide/html/sect_09_07.html
 	while (( "$#" )); do
-		_safeEcho "'""$1""'"' '
+		_safeEcho ' '"'""$1""'"
 		shift
 	done
 }
@@ -2730,7 +2730,7 @@ _safeEcho_quoteAddDouble() {
 	
 	local currentCommandStringPunctuated
 	local currentCommandStringParameter
-	for currentCommandStringParameter in "$@"; do 
+	for currentCommandStringParameter in "$@"; do
 		currentCommandStringParameter="${currentCommandStringParameter//\\/\\\\}"
 		currentCommandStringPunctuated="$currentCommandStringPunctuated \"${currentCommandStringParameter//\"/\\\"}\""
 	done
@@ -2921,11 +2921,89 @@ _messageColors() {
 }
 
 
+_color_end() {
+	[[ "$current_scriptedIllustrator_markup" == "html" ]] && echo -e -n '</span>'
+	[[ "$current_scriptedIllustrator_markup" == "" ]] && echo -e -n ' \E[0m'
+}
+
+_color_begin_request() {
+	#b218b2
+	#848484
+	[[ "$current_scriptedIllustrator_markup" == "html" ]] && echo -e -n '<span style="color:#b218b2;background-color:#848484;">'
+	[[ "$current_scriptedIllustrator_markup" == "" ]] && echo -e -n '\E[0;35m '
+}
+_color_begin_nominal() {
+	#18b2b2
+	#848484
+	[[ "$current_scriptedIllustrator_markup" == "html" ]] && echo -e -n '<span style="color:#18b2b2;background-color:#848484;">'
+	[[ "$current_scriptedIllustrator_markup" == "" ]] && echo -e -n '\E[0;36m '
+}
+_color_begin_probe() {
+	#1818b2
+	#848484
+	[[ "$current_scriptedIllustrator_markup" == "html" ]] && echo -e -n '<span style="color:#1818b2;background-color:#848484;">'
+	[[ "$current_scriptedIllustrator_markup" == "" ]] && echo -e -n '\E[0;34m '
+}
+_color_begin_good() {
+	#17ae17
+	#848484
+	[[ "$current_scriptedIllustrator_markup" == "html" ]] && echo -e -n '<span style="color:#17ae17;background-color:#848484;">'
+	[[ "$current_scriptedIllustrator_markup" == "" ]] && echo -e -n '\E[0;32m '
+}
+_color_begin_warn() {
+	#ffff54
+	#848484
+	[[ "$current_scriptedIllustrator_markup" == "html" ]] && echo -e -n '<span style="color:#ffff54;background-color:#848484;">'
+	[[ "$current_scriptedIllustrator_markup" == "" ]] && echo -e -n '\E[1;33m '
+}
+_color_begin_bad() {
+	#b21818
+	#848484
+	[[ "$current_scriptedIllustrator_markup" == "html" ]] && echo -e -n '<span style="color:#b21818;background-color:#848484;">'
+	[[ "$current_scriptedIllustrator_markup" == "" ]] && echo -e -n '\E[0;31m '
+}
+_color_begin_Normal() {
+	#54ff54
+	#18b2b2
+	[[ "$current_scriptedIllustrator_markup" == "html" ]] && echo -e -n '<span style="color:#54ff54;background-color:#18b2b2;">'
+	[[ "$current_scriptedIllustrator_markup" == "" ]] && echo -e -n '\E[1;32;46m '
+}
+_color_begin_Error() {
+	#ffff54
+	#b21818
+	[[ "$current_scriptedIllustrator_markup" == "html" ]] && echo -e -n '<span style="color:#ffff54;background-color:#b21818;">'
+	[[ "$current_scriptedIllustrator_markup" == "" ]] && echo -e -n '\E[1;33;41m '
+}
+_color_begin_DELAYipc() {
+	#b2b2b2
+	#ffff54
+	[[ "$current_scriptedIllustrator_markup" == "html" ]] && echo -e -n '<span style="color:#b2b2b2;background-color:#ffff54;">'
+	[[ "$current_scriptedIllustrator_markup" == "" ]] && echo -e -n '\E[1;33;47m '
+}
+_color_demo() {
+	_messagePlain_request "$ubiquitiousBashID"
+	_messagePlain_nominal "$ubiquitiousBashID"
+	_messagePlain_probe "$ubiquitiousBashID"
+	_messagePlain_probe_expr "$ubiquitiousBashID"
+	_messagePlain_probe_var ubiquitiousBashID
+	_messagePlain_good "$ubiquitiousBashID"
+	_messagePlain_warn "$ubiquitiousBashID"
+	_messagePlain_bad "$ubiquitiousBashID"
+	_messagePlain_probe_cmd echo "$ubiquitiousBashID"
+	_messagePlain_probe_quoteAddDouble echo "$ubiquitiousBashID"
+	_messagePlain_probe_quoteAddSingle echo "$ubiquitiousBashID"
+	_messageNormal "$ubiquitiousBashID"
+	_messageError "$ubiquitiousBashID"
+	_messageDELAYipc "$ubiquitiousBashID"
+	_messageProcess "$ubiquitiousBashID"
+}
+
+
 #Purple. User must do something manually to proceed. NOT to be used for dependency installation requests - use probe, bad, and fail statements for that.
 _messagePlain_request() {
-	echo -e -n '\E[0;35m '
+	_color_begin_request
 	echo -n "$@"
-	echo -e -n ' \E[0m'
+	_color_end
 	echo
 	return 0
 }
@@ -2933,9 +3011,9 @@ _messagePlain_request() {
 #Cyan. Harmless status messages.
 #"generic/ubiquitousheader.sh"
 _messagePlain_nominal() {
-	echo -e -n '\E[0;36m '
+	_color_begin_nominal
 	echo -n "$@"
-	echo -e -n ' \E[0m'
+	_color_end
 	echo
 	return 0
 }
@@ -2943,9 +3021,9 @@ _messagePlain_nominal() {
 #Blue. Diagnostic instrumentation.
 #"generic/ubiquitousheader.sh"
 _messagePlain_probe() {
-	echo -e -n '\E[0;34m '
+	_color_begin_probe
 	echo -n "$@"
-	echo -e -n ' \E[0m'
+	_color_end
 	echo
 	return 0
 }
@@ -2953,9 +3031,9 @@ _messagePlain_probe() {
 #Blue. Diagnostic instrumentation.
 #"generic/ubiquitousheader.sh"
 _messagePlain_probe_expr() {
-	echo -e -n '\E[0;34m '
+	_color_begin_probe
 	echo -e -n "$@"
-	echo -e -n ' \E[0m'
+	_color_end
 	echo
 	return 0
 }
@@ -2963,13 +3041,13 @@ _messagePlain_probe_expr() {
 #Blue. Diagnostic instrumentation.
 #"generic/ubiquitousheader.sh"
 _messagePlain_probe_var() {
-	echo -e -n '\E[0;34m '
+	_color_begin_probe
 	
 	echo -n "$1"'= '
 	
 	eval echo -e -n \$"$1"
 	
-	echo -e -n ' \E[0m'
+	_color_end
 	echo
 	return 0
 }
@@ -2980,9 +3058,9 @@ _messageVar() {
 #Green. Working as expected.
 #"generic/ubiquitousheader.sh"
 _messagePlain_good() {
-	echo -e -n '\E[0;32m '
+	_color_begin_good
 	echo -n "$@"
-	echo -e -n ' \E[0m'
+	_color_end
 	echo
 	return 0
 }
@@ -2990,18 +3068,18 @@ _messagePlain_good() {
 #Yellow. May or may not be a problem.
 #"generic/ubiquitousheader.sh"
 _messagePlain_warn() {
-	echo -e -n '\E[1;33m '
+	_color_begin_warn
 	echo -n "$@"
-	echo -e -n ' \E[0m'
+	_color_end
 	echo
 	return 0
 }
 
 #Red. Will result in missing functionality, reduced performance, etc, but not necessarily program failure overall.
 _messagePlain_bad() {
-	echo -e -n '\E[0;31m '
+	_color_begin_bad
 	echo -n "$@"
-	echo -e -n ' \E[0m'
+	_color_end
 	echo
 	return 0
 }
@@ -3010,11 +3088,11 @@ _messagePlain_bad() {
 #Prints "$@" and runs "$@".
 # WARNING: Use with care.
 _messagePlain_probe_cmd() {
-	echo -e -n '\E[0;34m '
+	_color_begin_probe
 	
 	_safeEcho "$@"
 	
-	echo -e -n ' \E[0m'
+	_color_end
 	echo
 	
 	"$@"
@@ -3028,11 +3106,11 @@ _messageCMD() {
 #Blue. Diagnostic instrumentation.
 #Prints "$@" with quotes around every parameter.
 _messagePlain_probe_quoteAddDouble() {
-	echo -e -n '\E[0;34m '
+	_color_begin_probe
 	
 	_safeEcho_quoteAddDouble "$@"
 	
-	echo -e -n ' \E[0m'
+	_color_end
 	echo
 	
 	return
@@ -3044,11 +3122,11 @@ _messagePlain_probe_quoteAdd() {
 #Blue. Diagnostic instrumentation.
 #Prints "$@" with single quotes around every parameter.
 _messagePlain_probe_quoteAddSingle() {
-	echo -e -n '\E[0;34m '
+	_color_begin_probe
 	
 	_safeEcho_quoteAddSingle "$@"
 	
-	echo -e -n ' \E[0m'
+	_color_end
 	echo
 	
 	return
@@ -3071,18 +3149,18 @@ _messageCMD_quoteAdd() {
 
 #Demarcate major steps.
 _messageNormal() {
-	echo -e -n '\E[1;32;46m '
+	_color_begin_Normal
 	echo -n "$@"
-	echo -e -n ' \E[0m'
+	_color_end
 	echo
 	return 0
 }
 
 #Demarcate major failures.
 _messageError() {
-	echo -e -n '\E[1;33;41m '
+	_color_begin_Error
 	echo -n "$@"
-	echo -e -n ' \E[0m'
+	_color_end
 	echo
 	return 0
 }
@@ -3131,7 +3209,10 @@ _messageWARN() {
 
 # Demarcate *any* delay performed to allow 'InterProcess-Communication' connections (perhaps including at least some network or serial port servers).
 _messageDELAYipc() {
-	echo -e '\E[1;33;47m ''delay: InterProcess-Communication'' \E[0m'
+	_color_begin_DELAYipc
+	echo -e -n 'delay: InterProcess-Communication'
+	_color_end
+	echo
 }
 
 
@@ -3150,11 +3231,11 @@ _messageProcess() {
 	
 	[[ "$processStringLength" -gt "38" ]] && _messageNormal "$processString" && return 0
 	
-	echo -e -n '\E[1;32;46m '
+	_color_begin_Normal
 	
 	echo -n "$processString"
 	
-	echo -e -n '\E[0m'
+	_color_end
 	
 	while [[ "$currentIteration" -lt "$padLength" ]]
 	do
