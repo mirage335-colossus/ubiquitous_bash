@@ -1093,6 +1093,8 @@ _test() {
 	
 	_getDep wc
 	
+	_getDep fold
+	
 	
 	! _compat_realpath && ! _wantGetDep realpath && echo 'realpath missing'
 	_getDep readlink

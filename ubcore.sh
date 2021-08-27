@@ -32,7 +32,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='1891409836'
-export ub_setScriptChecksum_contents='3359438355'
+export ub_setScriptChecksum_contents='388987943'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -2717,6 +2717,28 @@ _safeEcho_newline() {
 	printf '\n'
 }
 
+_safeEcho_quoteAddSingle() {
+	# https://tldp.org/LDP/Bash-Beginners-Guide/html/sect_09_07.html
+	while (( "$#" )); do
+		_safeEcho "'""$1""'"' '
+		shift
+	done
+}
+
+_safeEcho_quoteAddDouble() {
+	#https://stackoverflow.com/questions/1668649/how-to-keep-quotes-in-bash-arguments
+	
+	local currentCommandStringPunctuated
+	local currentCommandStringParameter
+	for currentCommandStringParameter in "$@"; do 
+		currentCommandStringParameter="${currentCommandStringParameter//\\/\\\\}"
+		currentCommandStringPunctuated="$currentCommandStringPunctuated \"${currentCommandStringParameter//\"/\\\"}\""
+	done
+	
+	_safeEcho "$currentCommandStringPunctuated"
+}
+
+
 #Universal debugging filesystem.
 #End user function.
 _user_log() {
@@ -3005,21 +3027,26 @@ _messageCMD() {
 
 #Blue. Diagnostic instrumentation.
 #Prints "$@" with quotes around every parameter.
-_messagePlain_probe_quoteAdd() {
-	
-	#https://stackoverflow.com/questions/1668649/how-to-keep-quotes-in-bash-arguments
-	
-	local currentCommandStringPunctuated
-	local currentCommandStringParameter
-	for currentCommandStringParameter in "$@"; do 
-		currentCommandStringParameter="${currentCommandStringParameter//\\/\\\\}"
-		currentCommandStringPunctuated="$currentCommandStringPunctuated \"${currentCommandStringParameter//\"/\\\"}\""
-	done
-	#_messagePlain_probe "$currentCommandStringPunctuated"
-	
+_messagePlain_probe_quoteAddDouble() {
 	echo -e -n '\E[0;34m '
 	
-	_safeEcho "$currentCommandStringPunctuated"
+	_safeEcho_quoteAddDouble "$@"
+	
+	echo -e -n ' \E[0m'
+	echo
+	
+	return
+}
+_messagePlain_probe_quoteAdd() {
+	_messagePlain_probe_quoteAddDouble "$@"
+}
+
+#Blue. Diagnostic instrumentation.
+#Prints "$@" with single quotes around every parameter.
+_messagePlain_probe_quoteAddSingle() {
+	echo -e -n '\E[0;34m '
+	
+	_safeEcho_quoteAddSingle "$@"
 	
 	echo -e -n ' \E[0m'
 	echo
@@ -19546,6 +19573,8 @@ _test() {
 	_getDep tail
 	
 	_getDep wc
+	
+	_getDep fold
 	
 	
 	! _compat_realpath && ! _wantGetDep realpath && echo 'realpath missing'

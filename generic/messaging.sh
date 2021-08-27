@@ -20,6 +20,28 @@ _safeEcho_newline() {
 	printf '\n'
 }
 
+_safeEcho_quoteAddSingle() {
+	# https://tldp.org/LDP/Bash-Beginners-Guide/html/sect_09_07.html
+	while (( "$#" )); do
+		_safeEcho "'""$1""'"' '
+		shift
+	done
+}
+
+_safeEcho_quoteAddDouble() {
+	#https://stackoverflow.com/questions/1668649/how-to-keep-quotes-in-bash-arguments
+	
+	local currentCommandStringPunctuated
+	local currentCommandStringParameter
+	for currentCommandStringParameter in "$@"; do 
+		currentCommandStringParameter="${currentCommandStringParameter//\\/\\\\}"
+		currentCommandStringPunctuated="$currentCommandStringPunctuated \"${currentCommandStringParameter//\"/\\\"}\""
+	done
+	
+	_safeEcho "$currentCommandStringPunctuated"
+}
+
+
 #Universal debugging filesystem.
 #End user function.
 _user_log() {
@@ -308,21 +330,26 @@ _messageCMD() {
 
 #Blue. Diagnostic instrumentation.
 #Prints "$@" with quotes around every parameter.
-_messagePlain_probe_quoteAdd() {
-	
-	#https://stackoverflow.com/questions/1668649/how-to-keep-quotes-in-bash-arguments
-	
-	local currentCommandStringPunctuated
-	local currentCommandStringParameter
-	for currentCommandStringParameter in "$@"; do 
-		currentCommandStringParameter="${currentCommandStringParameter//\\/\\\\}"
-		currentCommandStringPunctuated="$currentCommandStringPunctuated \"${currentCommandStringParameter//\"/\\\"}\""
-	done
-	#_messagePlain_probe "$currentCommandStringPunctuated"
-	
+_messagePlain_probe_quoteAddDouble() {
 	echo -e -n '\E[0;34m '
 	
-	_safeEcho "$currentCommandStringPunctuated"
+	_safeEcho_quoteAddDouble "$@"
+	
+	echo -e -n ' \E[0m'
+	echo
+	
+	return
+}
+_messagePlain_probe_quoteAdd() {
+	_messagePlain_probe_quoteAddDouble "$@"
+}
+
+#Blue. Diagnostic instrumentation.
+#Prints "$@" with single quotes around every parameter.
+_messagePlain_probe_quoteAddSingle() {
+	echo -e -n '\E[0;34m '
+	
+	_safeEcho_quoteAddSingle "$@"
 	
 	echo -e -n ' \E[0m'
 	echo
