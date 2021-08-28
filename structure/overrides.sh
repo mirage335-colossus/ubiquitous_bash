@@ -159,6 +159,11 @@ _python() {
 		"$scriptAbsoluteFolder"/lean.py '_python()'
 		return
 	fi
+	if type -p 'lean.py' > /dev/null 2>&1
+	then
+		lean.py '_python()'
+		return
+	fi
 	return 1
 }
 
