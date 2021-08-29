@@ -1091,6 +1091,8 @@ _test() {
 	_getDep head
 	_getDep tail
 	
+	_getDep seq
+	
 	_getDep wc
 	
 	_getDep fold
