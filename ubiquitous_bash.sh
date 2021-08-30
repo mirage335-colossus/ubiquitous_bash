@@ -32,7 +32,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='1891409836'
-export ub_setScriptChecksum_contents='1837745430'
+export ub_setScriptChecksum_contents='1270597769'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -20932,7 +20932,7 @@ _gparted() {
 # Do NOT write to filesystems.
 # Prefer 1/2^5MiB (0.03125MiB) (2^15byte) (32768byte) intervals .
 #  Good compressibility, one number per 16 2048b sectors, one number per 64 512b sectors, at least one number per 34816b=17*2048b track, thirty-two numbers per MiB .
-#./experiment.sh _pattern_recovery_write /dev/disk/by-id/usb-FUJITSU_MC?3230??-?_????????????-0\:0
+#_pattern_recovery_write /dev/disk/by-id/usb-FUJITSU_MC?3?30??-?_????????????-0\:0
 _pattern_recovery_write() {
 	local currentBlockSize
 	currentBlockSize="$3"
@@ -20955,7 +20955,7 @@ _pattern_recovery_write() {
 	
 	_pattern_recovery_last "$1" "$2" "$3"
 }
-#./experiment.sh _pattern_recovery_skip /dev/disk/by-id/usb-FUJITSU_MC?3230??-?_????????????-0\:0 18000
+#_pattern_recovery_skip /dev/disk/by-id/usb-FUJITSU_MC?3?30??-?_????????????-0\:0 18000
 _pattern_recovery_skip() {
 	local currentBlockSize
 	currentBlockSize="$3"
@@ -20964,7 +20964,7 @@ _pattern_recovery_skip() {
 	sudo -n dd if="$1" bs="$currentBlockSize" skip="$2" count=1 2>/dev/null | head --bytes=16
 	echo
 }
-#./experiment.sh _pattern_recovery_last /dev/disk/by-id/usb-FUJITSU_MC?3230??-?_????????????-0\:0
+#_pattern_recovery_last /dev/disk/by-id/usb-FUJITSU_MC?3?30??-?_????????????-0\:0
 _pattern_recovery_last() {
 	local currentBlockSize
 	currentBlockSize="$3"
@@ -20993,30 +20993,30 @@ _pattern_recovery_last() {
 }
 
 
-#./experiment.sh _pattern_recovery_write-32768 /dev/disk/by-id/usb-FUJITSU_MC?3230??-?_????????????-0\:0
+#_pattern_recovery_write-32768 /dev/disk/by-id/usb-FUJITSU_MC?3?30??-?_????????????-0\:0
 _pattern_recovery_write-32768() {
 	_pattern_recovery_write "$1" "$2" 32768
 }
-#./experiment.sh _pattern_recovery_skip-32768 /dev/disk/by-id/usb-FUJITSU_MC?3230??-?_????????????-0\:0 18000
+#_pattern_recovery_skip-32768 /dev/disk/by-id/usb-FUJITSU_MC?3?30??-?_????????????-0\:0 18000
 _pattern_recovery_skip-32768() {
 	_pattern_recovery_skip "$1" "$2" 32768
 }
-#./experiment.sh _pattern_recovery_last-32768 /dev/disk/by-id/usb-FUJITSU_MC?3230??-?_????????????-0\:0
+#_pattern_recovery_last-32768 /dev/disk/by-id/usb-FUJITSU_MC?3?30??-?_????????????-0\:0
 _pattern_recovery_last-32768() {
 	_pattern_recovery_last "$1" "$2" 32768
 }
 
 
 # CAUTION: Strongly discouraged!
-#./experiment.sh _pattern_recovery_write-65536 /dev/disk/by-id/usb-FUJITSU_MC?3230??-?_????????????-0\:0
+#_pattern_recovery_write-65536 /dev/disk/by-id/usb-FUJITSU_MC?3?30??-?_????????????-0\:0
 _pattern_recovery_write-65536() {
 	_pattern_recovery_write "$1" "$2" 65536
 }
-#./experiment.sh _pattern_recovery_skip-65536 /dev/disk/by-id/usb-FUJITSU_MC?3230??-?_????????????-0\:0 9000
+#_pattern_recovery_skip-65536 /dev/disk/by-id/usb-FUJITSU_MC?3?30??-?_????????????-0\:0 9000
 _pattern_recovery_skip-65536() {
 	_pattern_recovery_skip "$1" "$2" 65536
 }
-#./experiment.sh _pattern_recovery_last-65536 /dev/disk/by-id/usb-FUJITSU_MC?3230??-?_????????????-0\:0
+#_pattern_recovery_last-65536 /dev/disk/by-id/usb-FUJITSU_MC?3?30??-?_????????????-0\:0
 _pattern_recovery_last-65536() {
 	_pattern_recovery_last "$1" "$2" 65536
 }
@@ -21032,7 +21032,7 @@ _pattern_recovery_last-65536() {
 # CAUTION: Strongly discouraged!
 # No production use.
 # While this works, it may not be very efficient, possibly due to the apparent 'entire track' writing behavior of at least some optical discs - with 65536 being close to the size of a track this will rewrite much of the entire disc. Usually it is desirable to fill the disc completely anyway for compressibility.
-#./experiment.sh _pattern_recovery_write_sparse_65536 /dev/disk/by-id/usb-FUJITSU_MC?3230??-?_????????????-0\:0
+#_pattern_recovery_write_sparse_65536 /dev/disk/by-id/usb-FUJITSU_MC?3?30??-?_????????????-0\:0
 # _pattern_recovery_write_sparse_65536() {
 # 	local currentNumber
 # 	local currentLimit
