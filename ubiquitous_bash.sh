@@ -32,7 +32,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='1891409836'
-export ub_setScriptChecksum_contents='1120926353'
+export ub_setScriptChecksum_contents='1534928833'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -20946,9 +20946,9 @@ _pattern_recovery_write() {
 	[[ "$currentTotal" == "" ]] && currentTotal=1000000000001111
 	
 	seq --separator="$(local currentIteration; while [[ "$currentIteration" -lt "$currentSequenceFillBytes" ]]; do echo -n 20 ; let currentIteration=currentIteration+1; done | xxd -r -p)" --equal-width 0 1 1000000000001111 | tr -d '\n' | dd of="$1" count="$currentTotal" bs=1M iflag=fullblock oflag=direct conv=fdatasync status=progress
-	sudo -n dd if="$1" bs="$currentBlockSize" skip=0 count=1 2>/dev/null | head --bytes=16
+	sudo -n dd if="$1" bs="$currentBlockSize" skip=0 count=1 2>/dev/null | head --bytes=16 | tr -dc '0-9 '
 	echo
-	sudo -n dd if="$1" bs="$currentBlockSize" skip=1 count=1 2>/dev/null | head --bytes=16
+	sudo -n dd if="$1" bs="$currentBlockSize" skip=1 count=1 2>/dev/null | head --bytes=16 | tr -dc '0-9 '
 	echo
 	echo
 	
@@ -20960,7 +20960,7 @@ _pattern_recovery_skip() {
 	currentBlockSize="$3"
 	[[ "$currentBlockSize" == "" ]] && currentBlockSize=32768
 	
-	sudo -n dd if="$1" bs="$currentBlockSize" skip="$2" count=1 2>/dev/null | head --bytes=16
+	sudo -n dd if="$1" bs="$currentBlockSize" skip="$2" count=1 2>/dev/null | head --bytes=16 | tr -dc '0-9 '
 	echo
 }
 #_pattern_recovery_last /dev/disk/by-id/usb-FUJITSU_MC?3?30??-?_????????????-0\:0
@@ -20978,14 +20978,14 @@ _pattern_recovery_last() {
 	
 	currentLastBlock=$(bc <<< "$currentLastByte / $currentBlockSize")
 	echo "$currentLastBlock"'= '
-	sudo -n dd if="$1" bs="$currentBlockSize" skip="$currentLastBlock" count=1 2>/dev/null | head --bytes=16
+	sudo -n dd if="$1" bs="$currentBlockSize" skip="$currentLastBlock" count=1 2>/dev/null | head --bytes=16 | tr -dc '0-9 '
 	echo
 	echo 'wc -c $(... '"$currentLastBlock"')= '$(sudo -n dd if="$1" bs="$currentBlockSize" skip="$currentLastBlock" count=1 2>/dev/null | wc -c)
 	echo
 	
 	currentLastBlock=$(bc <<< "$currentLastByte / $currentBlockSize - 1")
 	echo "$currentLastBlock"'= '
-	sudo -n dd if="$1" bs="$currentBlockSize" skip="$currentLastBlock" count=1 2>/dev/null | head --bytes=16
+	sudo -n dd if="$1" bs="$currentBlockSize" skip="$currentLastBlock" count=1 2>/dev/null | head --bytes=16 | tr -dc '0-9 '
 	echo
 	echo 'wc -c $(... '"$currentLastBlock"')= '$(sudo -n dd if="$1" bs="$currentBlockSize" skip="$currentLastBlock" count=1 2>/dev/null | wc -c)
 	echo
@@ -21049,9 +21049,9 @@ _pattern_recovery_last-65536() {
 # 		[[ $(bc <<< "$currentNumber % 50") == 0 ]] && echo "$currentNumber" 2>&1
 # 	done
 # 	echo
-# 	sudo -n dd if="$1" bs=65536 skip=0 count=1 2>/dev/null | head --bytes=16
+# 	sudo -n dd if="$1" bs=65536 skip=0 count=1 2>/dev/null | head --bytes=16 | tr -dc '0-9 '
 # 	echo
-# 	sudo -n dd if="$1" bs=65536 skip=1 count=1 2>/dev/null | head --bytes=16
+# 	sudo -n dd if="$1" bs=65536 skip=1 count=1 2>/dev/null | head --bytes=16 | tr -dc '0-9 '
 # 	echo
 # }
 

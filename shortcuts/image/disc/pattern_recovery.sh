@@ -20,9 +20,9 @@ _pattern_recovery_write() {
 	[[ "$currentTotal" == "" ]] && currentTotal=1000000000001111
 	
 	seq --separator="$(local currentIteration; while [[ "$currentIteration" -lt "$currentSequenceFillBytes" ]]; do echo -n 20 ; let currentIteration=currentIteration+1; done | xxd -r -p)" --equal-width 0 1 1000000000001111 | tr -d '\n' | dd of="$1" count="$currentTotal" bs=1M iflag=fullblock oflag=direct conv=fdatasync status=progress
-	sudo -n dd if="$1" bs="$currentBlockSize" skip=0 count=1 2>/dev/null | head --bytes=16
+	sudo -n dd if="$1" bs="$currentBlockSize" skip=0 count=1 2>/dev/null | head --bytes=16 | tr -dc '0-9 '
 	echo
-	sudo -n dd if="$1" bs="$currentBlockSize" skip=1 count=1 2>/dev/null | head --bytes=16
+	sudo -n dd if="$1" bs="$currentBlockSize" skip=1 count=1 2>/dev/null | head --bytes=16 | tr -dc '0-9 '
 	echo
 	echo
 	
@@ -34,7 +34,7 @@ _pattern_recovery_skip() {
 	currentBlockSize="$3"
 	[[ "$currentBlockSize" == "" ]] && currentBlockSize=32768
 	
-	sudo -n dd if="$1" bs="$currentBlockSize" skip="$2" count=1 2>/dev/null | head --bytes=16
+	sudo -n dd if="$1" bs="$currentBlockSize" skip="$2" count=1 2>/dev/null | head --bytes=16 | tr -dc '0-9 '
 	echo
 }
 #_pattern_recovery_last /dev/disk/by-id/usb-FUJITSU_MC?3?30??-?_????????????-0\:0
@@ -52,14 +52,14 @@ _pattern_recovery_last() {
 	
 	currentLastBlock=$(bc <<< "$currentLastByte / $currentBlockSize")
 	echo "$currentLastBlock"'= '
-	sudo -n dd if="$1" bs="$currentBlockSize" skip="$currentLastBlock" count=1 2>/dev/null | head --bytes=16
+	sudo -n dd if="$1" bs="$currentBlockSize" skip="$currentLastBlock" count=1 2>/dev/null | head --bytes=16 | tr -dc '0-9 '
 	echo
 	echo 'wc -c $(... '"$currentLastBlock"')= '$(sudo -n dd if="$1" bs="$currentBlockSize" skip="$currentLastBlock" count=1 2>/dev/null | wc -c)
 	echo
 	
 	currentLastBlock=$(bc <<< "$currentLastByte / $currentBlockSize - 1")
 	echo "$currentLastBlock"'= '
-	sudo -n dd if="$1" bs="$currentBlockSize" skip="$currentLastBlock" count=1 2>/dev/null | head --bytes=16
+	sudo -n dd if="$1" bs="$currentBlockSize" skip="$currentLastBlock" count=1 2>/dev/null | head --bytes=16 | tr -dc '0-9 '
 	echo
 	echo 'wc -c $(... '"$currentLastBlock"')= '$(sudo -n dd if="$1" bs="$currentBlockSize" skip="$currentLastBlock" count=1 2>/dev/null | wc -c)
 	echo
@@ -123,9 +123,9 @@ _pattern_recovery_last-65536() {
 # 		[[ $(bc <<< "$currentNumber % 50") == 0 ]] && echo "$currentNumber" 2>&1
 # 	done
 # 	echo
-# 	sudo -n dd if="$1" bs=65536 skip=0 count=1 2>/dev/null | head --bytes=16
+# 	sudo -n dd if="$1" bs=65536 skip=0 count=1 2>/dev/null | head --bytes=16 | tr -dc '0-9 '
 # 	echo
-# 	sudo -n dd if="$1" bs=65536 skip=1 count=1 2>/dev/null | head --bytes=16
+# 	sudo -n dd if="$1" bs=65536 skip=1 count=1 2>/dev/null | head --bytes=16 | tr -dc '0-9 '
 # 	echo
 # }
 
