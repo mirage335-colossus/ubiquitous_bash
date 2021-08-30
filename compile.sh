@@ -32,7 +32,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='1891409836'
-export ub_setScriptChecksum_contents='311900556'
+export ub_setScriptChecksum_contents='1648574572'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -5444,6 +5444,10 @@ _deps_image() {
 	export enUb_image="true"
 }
 
+_deps_disc() {
+	export enUb_disc="true"
+}
+
 _deps_virt_thick() {
 	_deps_distro
 	_deps_build
@@ -5751,6 +5755,8 @@ _compile_bash_deps() {
 		
 		#_deps_queue
 		
+		_deps_disc
+		
 		# _compile_bash_deps 'core'
 		return 0
 	fi
@@ -5901,6 +5907,8 @@ _compile_bash_deps() {
 		
 		_deps_stopwatch
 		
+		_deps_disc
+		
 		_deps_build
 		
 		_deps_build_bash
@@ -5974,6 +5982,8 @@ _compile_bash_deps() {
 		_deps_stopwatch
 		
 		_deps_linux
+		
+		_deps_disc
 		
 		_deps_build
 		
@@ -6303,6 +6313,8 @@ _compile_bash_shortcuts() {
 	[[ "$enUb_docker" == "true" ]] && includeScriptList+=( "shortcuts/docker"/dockercontainer.sh )
 	
 	[[ "$enUb_image" == "true" ]] && includeScriptList+=( "shortcuts/image"/gparted.sh )
+	
+	( [[ "$enUb_image" == "true" ]] || [[ "$enUb_disc" == "true" ]] ) && includeScriptList+=( "shortcuts/image/disc"/pattern_recovery.sh )
 	
 	
 	[[ "$enUb_linux" == "true" ]] && includeScriptList+=( "shortcuts/linux"/kernelConfig_here.sh )

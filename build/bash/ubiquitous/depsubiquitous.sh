@@ -180,6 +180,10 @@ _deps_image() {
 	export enUb_image="true"
 }
 
+_deps_disc() {
+	export enUb_disc="true"
+}
+
 _deps_virt_thick() {
 	_deps_distro
 	_deps_build

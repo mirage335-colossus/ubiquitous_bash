@@ -42,6 +42,8 @@ _compile_bash_deps() {
 		
 		#_deps_queue
 		
+		_deps_disc
+		
 		# _compile_bash_deps 'core'
 		return 0
 	fi
@@ -192,6 +194,8 @@ _compile_bash_deps() {
 		
 		_deps_stopwatch
 		
+		_deps_disc
+		
 		_deps_build
 		
 		_deps_build_bash
@@ -265,6 +269,8 @@ _compile_bash_deps() {
 		_deps_stopwatch
 		
 		_deps_linux
+		
+		_deps_disc
 		
 		_deps_build
 		
@@ -594,6 +600,8 @@ _compile_bash_shortcuts() {
 	[[ "$enUb_docker" == "true" ]] && includeScriptList+=( "shortcuts/docker"/dockercontainer.sh )
 	
 	[[ "$enUb_image" == "true" ]] && includeScriptList+=( "shortcuts/image"/gparted.sh )
+	
+	( [[ "$enUb_image" == "true" ]] || [[ "$enUb_disc" == "true" ]] ) && includeScriptList+=( "shortcuts/image/disc"/pattern_recovery.sh )
 	
 	
 	[[ "$enUb_linux" == "true" ]] && includeScriptList+=( "shortcuts/linux"/kernelConfig_here.sh )
