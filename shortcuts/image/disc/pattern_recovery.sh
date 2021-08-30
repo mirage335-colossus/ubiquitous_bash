@@ -15,7 +15,6 @@ _pattern_recovery_write() {
 	local currentSequenceFillBytes
 	let currentSequenceFillBytes=currentBlockSize-16
 	
-	# No production use. Expect only experimental use.
 	local currentTotal
 	currentTotal="$2"
 	[[ "$currentTotal" == "" ]] && currentTotal=1000000000001111
