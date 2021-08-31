@@ -43,7 +43,6 @@ _vector() {
 
 #Verifies the timeout and sleep commands work properly, with subsecond specifications.
 _timetest() {
-	
 	local iterations
 	local dateA
 	local dateB
@@ -1133,6 +1132,7 @@ _test() {
 	_getDep touch
 	
 	_getDep dd
+	_wantGetDep blockdev
 	
 	_getDep rm
 	
