@@ -1257,6 +1257,8 @@ _test() {
 	
 	
 	
+	_tryExec "_test_kernelConfig"
+	
 	
 	_tryExec "_test_clog"
 	

@@ -13,6 +13,11 @@ _test_build() {
 	_getDep g++
 	_getDep make
 	
+	#_getDep pahole
+	
+	#_getDep lz4
+	#_getDep lz4c
+	
 	
 	# libc6-dev
 	_getDep 'malloc.h'

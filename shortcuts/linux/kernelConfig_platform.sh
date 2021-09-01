@@ -1,3 +1,12 @@
+
+_test_kernelConfig() {
+	_getDep pahole
+	
+	_getDep lz4
+	_getDep lz4c
+}
+
+
 _kernelConfig_request_build() {
 	_messagePlain_request 'request: make menuconfig'
 	
@@ -41,6 +50,10 @@ _kernelConfig_panel() {
 	
 	_kernelConfig_require-investigation "$@"
 	
+	_kernelConfig_require-convenience "$@"
+	
+	_kernelConfig_require-special "$@"
+	
 	
 	_kernelConfig_request_build
 }
@@ -75,6 +88,10 @@ _kernelConfig_mobile() {
 	
 	_kernelConfig_require-investigation "$@"
 	
+	_kernelConfig_require-convenience "$@"
+	
+	_kernelConfig_require-special "$@"
+	
 	
 	_kernelConfig_request_build
 }
@@ -108,6 +125,10 @@ _kernelConfig_desktop() {
 	_kernelConfig_require-integration "$@"
 	
 	_kernelConfig_require-investigation "$@"
+	
+	_kernelConfig_require-convenience "$@"
+	
+	_kernelConfig_require-special "$@"
 	
 	
 	_kernelConfig_request_build

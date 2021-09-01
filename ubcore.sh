@@ -32,7 +32,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='1891409836'
-export ub_setScriptChecksum_contents='349198765'
+export ub_setScriptChecksum_contents='3822392687'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -12980,7 +12980,11 @@ _kernelConfig_require-tradeoff-perform() {
 	
 	_kernelConfig_warn-n__ AMD_MEM_ENCRYPT
 	
-	_kernelConfig__bad-y__ CONFIG_X86_INTEL_TSX_MODE_ON
+	_kernelConfig_warn-y__ CONFIG_X86_INTEL_TSX_MODE_ON
+	_kernelConfig__bad-y__ CONFIG_X86_INTEL_TSX_MODE_AUTO
+	
+	
+	_kernelConfig__bad-n__ CONFIG_SLAB_FREELIST_HARDENED
 }
 
 # WARNING: Risk must be evaluated for specific use cases.
@@ -13005,7 +13009,11 @@ _kernelConfig_require-tradeoff-harden() {
 	# Uncertain.
 	#_kernelConfig_warn-y__ AMD_MEM_ENCRYPT
 	
-	_kernelConfig__bad-y__ CONFIG_X86_INTEL_TSX_MODE_OFF
+	_kernelConfig_warn-y__ CONFIG_X86_INTEL_TSX_MODE_OFF
+	_kernelConfig__bad-y__ CONFIG_X86_INTEL_TSX_MODE_AUTO
+	
+	
+	_kernelConfig_warn-y__ CONFIG_SLAB_FREELIST_HARDENED
 }
 
 # ATTENTION: Override with 'ops.sh' or similar.
@@ -13159,8 +13167,16 @@ _kernelConfig_require-boot() {
 		_kernelConfig_warn-y__ CONFIG_EXT4_USE_FOR_EXT2
 	fi
 	
+	_kernelConfig__bad-y__ CONFIG_BTRFS_FS
+	
 	_kernelConfig__bad-y__ CONFIG_MSDOS_FS
 	_kernelConfig__bad-y__ CONFIG_VFAT_FS
+	
+	# Precautionary to assure reasonable behavior with any LiveCD/LiveUSB filesystem arrangements that may be used in the future.
+	# Module has probably been entirely adequate in the past for LiveCD/LiveUSB as well as mounting such filesystems later.
+	_kernelConfig__bad-y__ CONFIG_OVERLAY_FS
+	_kernelConfig__bad-y__ CONFIG_ISO9660_FS
+	_kernelConfig__bad-y__ CONFIG_UDF_FS
 	
 	_kernelConfig__bad-y__ CONFIG_PROC_FS
 	_kernelConfig__bad-y__ CONFIG_TMPFS
@@ -13177,6 +13193,8 @@ _kernelConfig_require-boot() {
 	_kernelConfig__bad-y__ CONFIG_USB_XHCI_HCD
 	_kernelConfig__bad-y__ CONFIG_USB_EHCI_HCD
 	_kernelConfig__bad-y__ CONFIG_USB_OHCI_HCD
+	
+	_kernelConfig__bad-y__ USB_OHCI_HCD_PCI
 	
 	_kernelConfig__bad-y__ CONFIG_HID
 	_kernelConfig__bad-y__ CONFIG_HID_GENERIC
@@ -13204,7 +13222,7 @@ _kernelConfig_require-arch-x64() {
 	_messagePlain_request 'export KCPPFLAGS="-O2 -march=sandybridge -mtune=skylake -pipe"'
 	
 	_kernelConfig_warn-n__ CONFIG_GENERIC_CPU
-	
+# 	
 	_kernelConfig_request MCORE2
 	
 	_kernelConfig_warn-y__ CONFIG_X86_MCE
@@ -13212,7 +13230,8 @@ _kernelConfig_require-arch-x64() {
 	_kernelConfig_warn-y__ CONFIG_X86_MCE_AMD
 	
 	# Uncertain. May or may not improve performance.
-	_kernelConfig_warn-y__ CONFIG_INTEL_RDT
+	# Seems missing in newer kernel 'menuconfig' .
+	#_kernelConfig_warn-y__ CONFIG_INTEL_RDT
 	
 	# Maintenance may be easier with this enabled.
 	_kernelConfig_warn-y_m CONFIG_EFIVAR_FS
@@ -13260,8 +13279,10 @@ _kernelConfig_require-accessory() {
 	_kernelConfig_warn-y_m CONFIG_DRM_RADEON
 	_kernelConfig_warn-y_m CONFIG_DRM_AMDGPU
 	_kernelConfig_warn-y_m CONFIG_DRM_I915
-	_kernelConfig_warn-y_m CONFIG_DRM_VIA
 	_kernelConfig_warn-y_m CONFIG_DRM_NOUVEAU
+	
+	# Rarely appropriate and reportedly 'dangerous'.
+	#_kernelConfig_warn-y_m CONFIG_DRM_VIA
 	
 	# Uncertain.
 	#_kernelConfig_warn-y__ CONFIG_IRQ_REMAP
@@ -13284,6 +13305,15 @@ _kernelConfig_require-build() {
 		 _messagePlain_bad 'bad: not:    _: 'CONFIG_SYSTEM_TRUSTED_KEYS
 	fi
 	
+	# May cause failure if set incorrectly.
+	#! _kernelConfig__bad-n__ CONFIG_SYSTEM_TRUSTED_KEYRING
+	#! _kernelConfig__bad-n__ CONFIG_SYSTEM_TRUSTED_KEYRING && _messagePlain_request ' request: ''scripts/config --set-str SYSTEM_TRUSTED_KEYS ""'
+	
+	
+	# May require a version of 'pahole' not available from Debian Stable.
+	_kernelConfig__bad-n__ CONFIG_DEBUG_INFO_BTF
+	
+	#_messagePlain_request ' request: ''scripts/config --set-str SYSTEM_TRUSTED_KEYS ""'
 }
 
 # ATTENTION: As desired, ignore, or override with 'ops.sh' or similar.
@@ -13316,8 +13346,12 @@ _kernelConfig_require-latency() {
 	_kernelConfig_warn-n__ CONFIG_X86_GENERIC
 	
 	# CRITICAL!
-	_kernelConfig__bad-y__ CPU_FREQ_DEFAULT_GOV_ONDEMAND
+	# https://www.reddit.com/r/linux_gaming/comments/mp2eqv/if_you_dont_like_schedutil_and_what_its_doing/
+	#  'Ondemand is similar'
+	_kernelConfig_warn-y__ CPU_FREQ_DEFAULT_GOV_ONDEMAND
 	_kernelConfig__bad-y__ CONFIG_CPU_FREQ_GOV_ONDEMAND
+	_kernelConfig__bad-y__ CPU_FREQ_DEFAULT_GOV_SCHEDUTIL
+	_kernelConfig__bad-y__ CONFIG_CPU_FREQ_GOV_SCHEDUTIL
 	
 	# CRITICAL!
 	# CONFIG_PREEMPT is significantly more stable and compatible with third party (eg. VirtualBox) modules.
@@ -13400,7 +13434,7 @@ _kernelConfig_require-latency() {
 	
 	# CRITICAL!
 	# Lightweight kernel compression theoretically may significantly accelerate startup from slow disks.
-	_kernelConfig__bad-y__ CONFIG_KERNEL_LZO
+	_kernelConfig__bad-y__ CONFIG_KERNEL_LZ4
 	
 }
 
@@ -13436,11 +13470,17 @@ _kernelConfig_require-integration() {
 	_kernelConfig__bad-y_m CONFIG_FUSE_FS
 	_kernelConfig__bad-y_m CONFIG_CUSE
 	_kernelConfig__bad-y__ CONFIG_OVERLAY_FS
+	_kernelConfig__bad-y__ CONFIG_ISO9660_FS
+	_kernelConfig__bad-y__ CONFIG_UDF_FS
 	_kernelConfig__bad-y_m CONFIG_NTFS_FS
 	_kernelConfig_request CONFIG_NTFS_RW
 	_kernelConfig__bad-y__ CONFIG_MSDOS_FS
 	_kernelConfig__bad-y__ CONFIG_VFAT_FS
 	_kernelConfig__bad-y__ CONFIG_MSDOS_PARTITION
+	
+	
+	_kernelConfig__bad-y__ CONFIG_BTRFS_FS
+	_kernelConfig__bad-y_m CONFIG_NILFS2_FS
 	
 	# TODO: LiveCD UnionFS or similar boot requirements.
 	
@@ -13457,7 +13497,10 @@ _kernelConfig_require-investigation_docker() {
 	_messagePlain_nominal 'kernelConfig: investigation: docker'
 	export kernelConfig_file="$1"
 	
-	_kernelConfig_warn-y__ CONFIG_MEMCG_SWAP_ENABLED
+	# Apparently, 'CONFIG_MEMCG_SWAP_ENABLED' missing from recent 'menuconfig' .
+	#_kernelConfig_warn-y__ CONFIG_MEMCG_SWAP_ENABLED
+	_kernelConfig_warn-y__ CONFIG_MEMCG_SWAP
+	
 	_kernelConfig_warn-y__ CONFIG_CGROUP_HUGETLB
 	_kernelConfig_warn-y__ CONFIG_RT_GROUP_SCHED
 	
@@ -13471,7 +13514,9 @@ _kernelConfig_require-investigation() {
 	export kernelConfig_file="$1"
 	
 	_kernelConfig_warn-any ACPI_HMAT
-	_kernelConfig_warn-any PCIE_BW
+	
+	# Apparently, 'PCIE_BW' missing from recent 'menuconfig' .
+	#_kernelConfig_warn-any PCIE_BW
 	
 	_kernelConfig_warn-any CONFIG_UCLAMP_TASK
 	
@@ -13495,7 +13540,58 @@ _kernelConfig_require-investigation_prog() {
 
 
 
+_kernelConfig_require-convenience() {
+	_messagePlain_nominal 'kernelConfig: convenience'
+	export kernelConfig_file="$1"
+	
+	_kernelConfig__bad-y__ CONFIG_IKCONFIG
+	_kernelConfig__bad-y__ CONFIG_IKCONFIG_PROC
+	
+	true
+}
 
+_kernelConfig_require-special() {
+	_messagePlain_nominal 'kernelConfig: special'
+	export kernelConfig_file="$1"
+	
+	_kernelConfig__bad-y__ CONFIG_CRYPTO_JITTERENTROPY
+	
+	#/dev/hwrng
+	_kernelConfig__bad-y__ CONFIG_HW_RANDOM
+	_kernelConfig__bad-y__ CONFIG_HW_RANDOM_INTEL
+	_kernelConfig__bad-y__ CONFIG_HW_RANDOM_AMD
+	_kernelConfig__bad-y__ CONFIG_HW_RANDOM_VIA
+	_kernelConfig__bad-y_m HW_RANDOM_VIRTIO
+	_kernelConfig__bad-y__ CONFIG_HW_RANDOM_TPM
+	
+	
+	true
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+_test_kernelConfig() {
+	_getDep pahole
+	
+	_getDep lz4
+	_getDep lz4c
+}
 
 
 _kernelConfig_request_build() {
@@ -13541,6 +13637,10 @@ _kernelConfig_panel() {
 	
 	_kernelConfig_require-investigation "$@"
 	
+	_kernelConfig_require-convenience "$@"
+	
+	_kernelConfig_require-special "$@"
+	
 	
 	_kernelConfig_request_build
 }
@@ -13575,6 +13675,10 @@ _kernelConfig_mobile() {
 	
 	_kernelConfig_require-investigation "$@"
 	
+	_kernelConfig_require-convenience "$@"
+	
+	_kernelConfig_require-special "$@"
+	
 	
 	_kernelConfig_request_build
 }
@@ -13608,6 +13712,10 @@ _kernelConfig_desktop() {
 	_kernelConfig_require-integration "$@"
 	
 	_kernelConfig_require-investigation "$@"
+	
+	_kernelConfig_require-convenience "$@"
+	
+	_kernelConfig_require-special "$@"
 	
 	
 	_kernelConfig_request_build
@@ -18745,7 +18853,6 @@ _vector() {
 
 #Verifies the timeout and sleep commands work properly, with subsecond specifications.
 _timetest() {
-	
 	local iterations
 	local dateA
 	local dateB
@@ -19959,6 +20066,8 @@ _test() {
 	_tryExec "_test_vagrant_build"
 	
 	
+	
+	_tryExec "_test_kernelConfig"
 	
 	
 	_tryExec "_test_clog"
