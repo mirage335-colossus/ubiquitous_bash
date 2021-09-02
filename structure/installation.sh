@@ -427,7 +427,7 @@ _variableLocalTest_sequence() {
 	_start
 	
 	variableLocalTest_currentSubFunction() {
-		if ! [[ "$currentSubFunctionTest" == "true" ]]
+		if ! [[ "$currentSubFunctionTest" == "true" ]] || ! [[ $(echo "$currentSubFunctionTest") == "true" ]]
 		then
 			_stop 1
 			return 1
