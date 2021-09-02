@@ -32,7 +32,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='1891409836'
-export ub_setScriptChecksum_contents='1417001539'
+export ub_setScriptChecksum_contents='1225576578'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -20859,6 +20859,13 @@ _dockerRun() {
 
 _test_gparted() {
 	_wantGetDep gparted
+	
+	_wantGetDep blkid
+	_wantGetDep blockdev
+	
+	_wantGetDep fdisk
+	_wantGetDep gdisk
+	_wantGetDep sgdisk
 }
 
 _gparted_sequence() {
@@ -31343,6 +31350,19 @@ _variableLocalTestC_procedure() {
 
 _variableLocalTest_sequence() {
 	_start
+	
+	variableLocalTest_currentSubFunction() {
+		if ! [[ "$currentSubFunctionTest" == "true" ]]
+		then
+			_stop 1
+			return 1
+		fi
+		return 0
+	}
+	local currentSubFunctionTest
+	currentSubFunctionTest='true'
+	! variableLocalTest_currentSubFunction && _stop 1
+	
 	
 	local currentSubshellTest1=$(
 		echo x

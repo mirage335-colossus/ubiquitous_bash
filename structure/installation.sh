@@ -426,6 +426,19 @@ _variableLocalTestC_procedure() {
 _variableLocalTest_sequence() {
 	_start
 	
+	variableLocalTest_currentSubFunction() {
+		if ! [[ "$currentSubFunctionTest" == "true" ]]
+		then
+			_stop 1
+			return 1
+		fi
+		return 0
+	}
+	local currentSubFunctionTest
+	currentSubFunctionTest='true'
+	! variableLocalTest_currentSubFunction && _stop 1
+	
+	
 	local currentSubshellTest1=$(
 		echo x
 	)

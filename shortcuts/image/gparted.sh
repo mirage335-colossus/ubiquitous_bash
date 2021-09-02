@@ -1,5 +1,12 @@
 _test_gparted() {
 	_wantGetDep gparted
+	
+	_wantGetDep blkid
+	_wantGetDep blockdev
+	
+	_wantGetDep fdisk
+	_wantGetDep gdisk
+	_wantGetDep sgdisk
 }
 
 _gparted_sequence() {
