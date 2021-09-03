@@ -545,6 +545,7 @@ _variableLocalTest_sequence() {
 	
 	_currentFunctionDefinitionTest() { echo false; }
 	true && _currentFunctionDefinitionTest() { echo true; }
+	false && _currentFunctionDefinitionTest() { echo false; }
 	[[ $(_currentFunctionDefinitionTest) != "true" ]] && _messageFAIL && _stop 1
 	unset _currentFunctionDefinitionTest
 	
