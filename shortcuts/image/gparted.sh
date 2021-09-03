@@ -7,6 +7,14 @@ _test_gparted() {
 	_wantGetDep fdisk
 	_wantGetDep gdisk
 	_wantGetDep sgdisk
+	
+	_wantGetDep blkdiscard
+	
+	_wantGetDep mkfs.ext2
+	_wantGetDep mkfs.ext4
+	
+	_wantGetDep mkfs.nilfs2
+	_wantGetDep mkfs.btrfs
 }
 
 _gparted_sequence() {
