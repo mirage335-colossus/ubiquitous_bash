@@ -543,6 +543,11 @@ _variableLocalTest_sequence() {
 	unset _exportFunction_variableLocalTest
 	
 	
+	_currentFunctionDefinitionTest() { echo false; }
+	true && _currentFunctionDefinitionTest() { echo true; }
+	[[ $(_currentFunctionDefinitionTest) != "true" ]] && _messageFAIL && _stop 1
+	unset _currentFunctionDefinitionTest
+	
 	_stop
 }
 
