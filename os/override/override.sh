@@ -150,8 +150,8 @@ _____special_live_hibernate() {
 	fi
 	
 	_messagePlain_nominal 'attempt: HIBERNATE'
-	sudo journalctl --rotate
-	sudo journalctl --vacuum-time=1s
+	sudo -n journalctl --rotate
+	sudo -n journalctl --vacuum-time=1s
 	sudo -n systemctl hibernate
 	
 	
