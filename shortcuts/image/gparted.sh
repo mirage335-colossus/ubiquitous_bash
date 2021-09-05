@@ -15,6 +15,16 @@ _test_gparted() {
 	
 	_wantGetDep mkfs.nilfs2
 	_wantGetDep mkfs.btrfs
+	
+	
+	_wantGetDep mkudffs
+	! _wantGetDep genisoimage && _wantGetDep mkisofs
+	if ! type mkisofs > /dev/null 2>&1 && ! type genisoimage > /dev/null 2>&1
+	then
+		echo 'want mkisofs or genisoimage'
+	fi
+	_wantGetDep dvd+rw-format
+	_wantGetDep growisofs
 }
 
 _gparted_sequence() {

@@ -53,6 +53,8 @@ _echoArgsBootdisc_UNIX() {
 
 
 _testVirtBootdisc() {
+	! _wantGetDep genisoimage && _wantGetDep mkisofs
+	
 	if ! type mkisofs > /dev/null 2>&1 && ! type genisoimage > /dev/null 2>&1
 	then
 		echo 'need mkisofs or genisoimage'

@@ -32,7 +32,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='1891409836'
-export ub_setScriptChecksum_contents='147042294'
+export ub_setScriptChecksum_contents='798285743'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -11848,6 +11848,8 @@ _echoArgsBootdisc_UNIX() {
 
 
 _testVirtBootdisc() {
+	! _wantGetDep genisoimage && _wantGetDep mkisofs
+	
 	if ! type mkisofs > /dev/null 2>&1 && ! type genisoimage > /dev/null 2>&1
 	then
 		echo 'need mkisofs or genisoimage'
@@ -20874,6 +20876,16 @@ _test_gparted() {
 	
 	_wantGetDep mkfs.nilfs2
 	_wantGetDep mkfs.btrfs
+	
+	
+	_wantGetDep mkudffs
+	! _wantGetDep genisoimage && _wantGetDep mkisofs
+	if ! type mkisofs > /dev/null 2>&1 && ! type genisoimage > /dev/null 2>&1
+	then
+		echo 'want mkisofs or genisoimage'
+	fi
+	_wantGetDep dvd+rw-format
+	_wantGetDep growisofs
 }
 
 _gparted_sequence() {
