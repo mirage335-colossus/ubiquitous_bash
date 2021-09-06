@@ -304,6 +304,12 @@ _kernelConfig_require-boot() {
 	_kernelConfig__bad-y__ CONFIG_ISO9660_FS
 	_kernelConfig__bad-y__ CONFIG_UDF_FS
 	
+	# https://www.kernel.org/doc/html/latest/cdrom/packet-writing.html
+	# 'packet support in the block device section'
+	# 'pktcdvd driver makes the disc appear as a regular block device with a 2KB block size'
+	# Although the module is apparently 'deprecated', it is available with Linux kernel 5.10 , and thus should remain usable at least through ~2026 .
+	_kernelConfig__bad-y_m CONFIG_CDROM_PKTCDVD
+	
 	_kernelConfig__bad-y__ CONFIG_PROC_FS
 	_kernelConfig__bad-y__ CONFIG_TMPFS
 	
