@@ -9,7 +9,7 @@ _visualPrompt_promptCommand() {
 	if [[ "$PS1_lineNumber" == '1' ]]
 	then
 		# https://unix.stackexchange.com/questions/266921/is-it-possible-to-use-ansi-color-escape-codes-in-bash-here-documents
-		PS1_lineNumberText=$(echo -e -n '\E[1;36m'1'\E[0m')
+		PS1_lineNumberText=$(echo -e -n '\E[1;36m'1)
 	fi
 }
 
