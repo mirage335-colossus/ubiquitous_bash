@@ -308,6 +308,8 @@ _kernelConfig_require-boot() {
 	# 'packet support in the block device section'
 	# 'pktcdvd driver makes the disc appear as a regular block device with a 2KB block size'
 	# Although the module is apparently 'deprecated', it is available with Linux kernel 5.10 , and thus should remain usable at least through ~2026 .
+	# https://wiki.archlinux.org/title/Optical_disc_drive
+	# Many 'optical discs' apparently can be used directly as block devices by such programs as 'gparted' and 'dd'.
 	_kernelConfig__bad-y_m CONFIG_CDROM_PKTCDVD
 	
 	_kernelConfig__bad-y__ CONFIG_PROC_FS

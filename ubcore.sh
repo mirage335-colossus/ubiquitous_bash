@@ -32,7 +32,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='1891409836'
-export ub_setScriptChecksum_contents='1294319595'
+export ub_setScriptChecksum_contents='3161165738'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -13188,6 +13188,8 @@ _kernelConfig_require-boot() {
 	# 'packet support in the block device section'
 	# 'pktcdvd driver makes the disc appear as a regular block device with a 2KB block size'
 	# Although the module is apparently 'deprecated', it is available with Linux kernel 5.10 , and thus should remain usable at least through ~2026 .
+	# https://wiki.archlinux.org/title/Optical_disc_drive
+	# Many 'optical discs' apparently can be used directly as block devices by such programs as 'gparted' and 'dd'.
 	_kernelConfig__bad-y_m CONFIG_CDROM_PKTCDVD
 	
 	_kernelConfig__bad-y__ CONFIG_PROC_FS
