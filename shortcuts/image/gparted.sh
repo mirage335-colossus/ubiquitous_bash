@@ -29,6 +29,11 @@ _test_gparted() {
 	# https://www.kernel.org/doc/html/latest/cdrom/packet-writing.html
 	# pktcdvd driver makes the disc appear as a regular block device with a 2KB block size
 	_wantGetDep pktsetup
+	
+	_wantGetDep partprobe
+	_wantGetDep kpartx
+	
+	_wantGetDep dmsetup
 }
 
 _gparted_sequence() {
