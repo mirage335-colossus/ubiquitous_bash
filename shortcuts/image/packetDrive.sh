@@ -70,7 +70,7 @@ _packetDrive_remove() {
 	_packetDrive_remove_procedure "$@"
 	
 	! [[ -e /dev/mapper/uk4uPhB663kVcygT0q_packetDrive ]] && _messagePlain_good 'good: dmsetup: remove: '/dev/mapper/uk4uPhB663kVcygT0q_packetDrive
-	[[ -e /dev/mapper/uk4uPhB663kVcygT0q_packetDrive ]] && _messagePlain_good 'fail: dmsetup: remove: '/dev/mapper/uk4uPhB663kVcygT0q_packetDrive
+	[[ -e /dev/mapper/uk4uPhB663kVcygT0q_packetDrive ]] && _messagePlain_bad 'fail: dmsetup: remove: '/dev/mapper/uk4uPhB663kVcygT0q_packetDrive
 	
 	sleep 3
 	! [[ -e /dev/mapper/uk4uPhB663kVcygT0q_packetDrive ]]
@@ -93,7 +93,7 @@ _packetDrive() {
 	ls -A -1 /dev/mapper/uk4uPhB663kVcygT0q_packetDrive*
 	
 	[[ -e /dev/mapper/uk4uPhB663kVcygT0q_packetDrive ]] && _messagePlain_good 'good: dmsetup: create: '/dev/mapper/uk4uPhB663kVcygT0q_packetDrive
-	! [[ -e /dev/mapper/uk4uPhB663kVcygT0q_packetDrive ]] && _messagePlain_good 'fail: dmsetup: create: '/dev/mapper/uk4uPhB663kVcygT0q_packetDrive
+	! [[ -e /dev/mapper/uk4uPhB663kVcygT0q_packetDrive ]] && _messagePlain_bad 'fail: dmsetup: create: '/dev/mapper/uk4uPhB663kVcygT0q_packetDrive
 	
 	sleep 3
 	[[ -e /dev/mapper/uk4uPhB663kVcygT0q_packetDrive ]]
