@@ -62,9 +62,12 @@ _check_driveDeviceFile_packetDrive() {
 }
 
 
-_packetDrive_remove() {
+_packetDrive_remove_procedure() {
 	sudo -n dmsetup remove /dev/mapper/uk4uPhB663kVcygT0q_packetDrive? > /dev/null 2>&1
 	sudo -n dmsetup remove /dev/mapper/uk4uPhB663kVcygT0q_packetDrive > /dev/null 2>&1
+}
+_packetDrive_remove() {
+	_packetDrive_remove_procedure "$@"
 	
 	! [[ -e /dev/mapper/uk4uPhB663kVcygT0q_packetDrive ]] && _messagePlain_good 'good: dmsetup: remove: '/dev/mapper/uk4uPhB663kVcygT0q_packetDrive
 	[[ -e /dev/mapper/uk4uPhB663kVcygT0q_packetDrive ]] && _messagePlain_good 'fail: dmsetup: remove: '/dev/mapper/uk4uPhB663kVcygT0q_packetDrive
@@ -78,7 +81,7 @@ _packetDrive() {
 	currentDrive=$(_find_packetDrive)
 	_check_driveDeviceFile_packetDrive "$currentDrive"
 	
-	_packetDrive_remove
+	_packetDrive_remove_procedure
 	
 	local currentDriveLinearSize
 	currentDriveLinearSize=$(sudo -n blockdev --getsz "$currentDrive")
@@ -102,7 +105,7 @@ _packetDrive_format_bdre() {
 	currentDrive=$(_find_packetDrive)
 	_check_driveDeviceFile_packetDrive "$currentDrive"
 	
-	_packetDrive_remove
+	_packetDrive_remove_procedure
 	
 	
 	sudo -n dvd+rw-format "$currentDrive" -force -ssa=default
