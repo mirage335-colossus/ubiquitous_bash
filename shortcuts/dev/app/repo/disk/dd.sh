@@ -10,6 +10,7 @@ _dd() {
 }
 
 _dropCache() {
+	echo 3 | sudo -n tee /proc/sys/vm/drop_caches
 	sync ; echo 3 | sudo -n tee /proc/sys/vm/drop_caches
 }
 
