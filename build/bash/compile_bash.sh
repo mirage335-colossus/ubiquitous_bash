@@ -600,6 +600,7 @@ _compile_bash_shortcuts() {
 	[[ "$enUb_docker" == "true" ]] && includeScriptList+=( "shortcuts/docker"/dockercontainer.sh )
 	
 	[[ "$enUb_image" == "true" ]] && includeScriptList+=( "shortcuts/image"/gparted.sh )
+	( [[ "$enUb_image" == "true" ]] || [[ "$enUb_disc" == "true" ]] ) && includeScriptList+=( "shortcuts/image"/packetDrive.sh )
 	
 	( [[ "$enUb_image" == "true" ]] || [[ "$enUb_disc" == "true" ]] ) && includeScriptList+=( "shortcuts/image/disc"/pattern_recovery.sh )
 	

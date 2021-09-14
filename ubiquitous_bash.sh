@@ -32,7 +32,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='1891409836'
-export ub_setScriptChecksum_contents='2258445881'
+export ub_setScriptChecksum_contents='570522021'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -20967,6 +20967,112 @@ _gparted() {
 }
 
 
+_test_packetDrive() {
+	_wantGetDep blockdev
+	
+	_wantGetDep dvd+rw-format
+	_wantGetDep growisofs
+	
+	# https://www.kernel.org/doc/html/latest/cdrom/packet-writing.html
+	# pktcdvd driver makes the disc appear as a regular block device with a 2KB block size
+	_wantGetDep pktsetup
+	
+	_wantGetDep partprobe
+	_wantGetDep kpartx
+	
+	_wantGetDep realpath
+	_wantGetDep dmsetup
+}
+
+
+
+
+_packetDrive_criticalDep() {
+	! sudo -n which dvd+rw-format > /dev/null && exit 1
+	! which realpath > /dev/null && exit 1
+	
+	! sudo -n which dmsetup > /dev/null && exit 1
+	
+	return 0
+}
+
+
+_find_packetDrive() {
+	! _packetDrive_criticalDep && exit 1
+	
+	[[ -e /dev/cdrom ]] && realpath /dev/cdrom && return 0
+	[[ -e /dev/cdrw ]] && realpath /dev/cdrw && return 0
+	[[ -e /dev/dvd ]] && realpath /dev/dvd && return 0
+	[[ -e /dev/sr0 ]] && echo /dev/sr0 && return 0
+	[[ -e /dev/sr1 ]] && echo /dev/sr1 && return 0
+	
+	return 1
+}
+
+
+
+
+
+_check_driveDeviceFile_packetDrive() {
+	! [[ -e "$1" ]] && echo 'FAIL: missing: drive' && exit 1
+	
+	if ! sudo -n dd if="$1" of=/dev/null bs=1k count=1 > /dev/null 2>&1
+	then
+		echo 'FAIL: drive cannot read any removable media (may be empty)' && exit 1
+	fi
+	
+	if findmnt "$1" > /dev/null 2>&1 || findmnt "$1"-part1 > /dev/null 2>&1  || findmnt "$1"-part2 > /dev/null 2>&1 || findmnt "$1"-part3 > /dev/null 2>&1 || findmnt "$1"1 > /dev/null 2>&1 || findmnt "$1"2 > /dev/null 2>&1 || findmnt "$1"3 > /dev/null 2>&1
+	then
+		echo 'FAIL: safety: detect: mountpoint' && exit 1
+	fi
+	
+	return 0
+}
+
+
+_packetDrive_remove() {
+	sudo -n dmsetup remove /dev/mapper/uk4uPhB663kVcygT0q_packetDrive? > /dev/null 2>&1
+	sudo -n dmsetup remove /dev/mapper/uk4uPhB663kVcygT0q_packetDrive > /dev/null 2>&1
+}
+
+_packetDrive() {
+	local currentDrive
+	currentDrive=$(_find_packetDrive)
+	_check_driveDeviceFile_packetDrive "$currentDrive"
+	
+	_packetDrive_remove
+	
+	local currentDriveLinearSize
+	currentDriveLinearSize=$(sudo -n blockdev --getsz "$currentDrive")
+	sudo -n dmsetup create uk4uPhB663kVcygT0q_packetDrive --table '0 '"$currentDriveLinearSize"' linear '"$currentDrive"' 0'
+	
+	#ls -A -1 /dev/mapper/uk4uPhB663kVcygT0q_packetDrive
+}
+
+
+_packetDrive_format_bdre() {
+	local currentDrive
+	currentDrive=$(_find_packetDrive)
+	_check_driveDeviceFile_packetDrive "$currentDrive"
+	
+	_packetDrive_remove
+	
+	
+	sudo -n dvd+rw-format "$currentDrive" -force -ssa=default
+	
+	# Apparently resets back to 'ssa=default' anyway.
+	#sudo -n dvd+rw-format "$currentDrive" -force=full
+	#sudo -n dvd+rw-format "$currentDrive" -force=full -blank=full
+	
+	#sudo -n dvd+rw-format "$currentDrive" -force -ssa=none
+	
+	return
+}
+_packetDrive_format() {
+	_packetDrive_format_bdre "$@"
+}
+
+
 
 
 
@@ -34567,6 +34673,7 @@ _compile_bash_shortcuts() {
 	[[ "$enUb_docker" == "true" ]] && includeScriptList+=( "shortcuts/docker"/dockercontainer.sh )
 	
 	[[ "$enUb_image" == "true" ]] && includeScriptList+=( "shortcuts/image"/gparted.sh )
+	( [[ "$enUb_image" == "true" ]] || [[ "$enUb_disc" == "true" ]] ) && includeScriptList+=( "shortcuts/image"/packetDrive.sh )
 	
 	( [[ "$enUb_image" == "true" ]] || [[ "$enUb_disc" == "true" ]] ) && includeScriptList+=( "shortcuts/image/disc"/pattern_recovery.sh )
 	
