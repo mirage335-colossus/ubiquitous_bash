@@ -1240,7 +1240,7 @@ _test() {
 	
 	_tryExec "_test_virtLocal_X11"
 	
-	_tryExec "_test_packetDrive"
+	_tryExec "_test_packetDriveDevice"
 	_tryExec "_test_gparted"
 	
 	_tryExec "_test_synergy"

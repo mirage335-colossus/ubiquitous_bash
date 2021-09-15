@@ -1,5 +1,5 @@
 
-_test_packetDrive() {
+_test_packetDriveDevice() {
 	_wantGetDep blockdev
 	
 	_wantGetDep dvd+rw-format
@@ -19,7 +19,7 @@ _test_packetDrive() {
 
 
 
-_packetDrive_criticalDep() {
+_packetDriveDevice_criticalDep() {
 	! sudo -n which dvd+rw-format > /dev/null && exit 1
 	! which realpath > /dev/null && exit 1
 	
@@ -29,8 +29,8 @@ _packetDrive_criticalDep() {
 }
 
 
-_find_packetDrive() {
-	! _packetDrive_criticalDep && exit 1
+_find_packetDriveDevice() {
+	! _packetDriveDevice_criticalDep && exit 1
 	
 	[[ -e /dev/cdrom ]] && realpath /dev/cdrom && return 0
 	[[ -e /dev/cdrw ]] && realpath /dev/cdrw && return 0
@@ -45,7 +45,7 @@ _find_packetDrive() {
 
 
 
-_check_driveDeviceFile_packetDrive() {
+_check_driveDeviceFile_packetDriveDevice() {
 	! [[ -e "$1" ]] && echo 'FAIL: missing: drive' && exit 1
 	
 	if ! sudo -n dd if="$1" of=/dev/null bs=1k count=1 > /dev/null 2>&1
@@ -62,51 +62,51 @@ _check_driveDeviceFile_packetDrive() {
 }
 
 
-_packetDrive_remove_procedure() {
-	sudo -n dmsetup remove /dev/mapper/uk4uPhB663kVcygT0q_packetDrive? > /dev/null 2>&1
-	sudo -n dmsetup remove /dev/mapper/uk4uPhB663kVcygT0q_packetDrive?? > /dev/null 2>&1
-	sudo -n dmsetup remove /dev/mapper/uk4uPhB663kVcygT0q_packetDrive > /dev/null 2>&1
+_packetDriveDevice_remove_procedure() {
+	sudo -n dmsetup remove /dev/mapper/uk4uPhB663kVcygT0q_packetDriveDevice? > /dev/null 2>&1
+	sudo -n dmsetup remove /dev/mapper/uk4uPhB663kVcygT0q_packetDriveDevice?? > /dev/null 2>&1
+	sudo -n dmsetup remove /dev/mapper/uk4uPhB663kVcygT0q_packetDriveDevice > /dev/null 2>&1
 }
-_packetDrive_remove() {
-	_packetDrive_remove_procedure "$@"
+_packetDriveDevice_remove() {
+	_packetDriveDevice_remove_procedure "$@"
 	
-	! [[ -e /dev/mapper/uk4uPhB663kVcygT0q_packetDrive ]] && _messagePlain_good 'good: dmsetup: remove: '/dev/mapper/uk4uPhB663kVcygT0q_packetDrive
-	[[ -e /dev/mapper/uk4uPhB663kVcygT0q_packetDrive ]] && _messagePlain_bad 'fail: dmsetup: remove: '/dev/mapper/uk4uPhB663kVcygT0q_packetDrive
+	! [[ -e /dev/mapper/uk4uPhB663kVcygT0q_packetDriveDevice ]] && _messagePlain_good 'good: dmsetup: remove: '/dev/mapper/uk4uPhB663kVcygT0q_packetDriveDevice
+	[[ -e /dev/mapper/uk4uPhB663kVcygT0q_packetDriveDevice ]] && _messagePlain_bad 'fail: dmsetup: remove: '/dev/mapper/uk4uPhB663kVcygT0q_packetDriveDevice
 	
 	sleep 3
-	! [[ -e /dev/mapper/uk4uPhB663kVcygT0q_packetDrive ]]
+	! [[ -e /dev/mapper/uk4uPhB663kVcygT0q_packetDriveDevice ]]
 }
 
-_packetDrive() {
+_packetDriveDevice() {
 	local currentDrive
-	currentDrive=$(_find_packetDrive)
-	_check_driveDeviceFile_packetDrive "$currentDrive"
+	currentDrive=$(_find_packetDriveDevice)
+	_check_driveDeviceFile_packetDriveDevice "$currentDrive"
 	
-	_packetDrive_remove_procedure
+	_packetDriveDevice_remove_procedure
 	
 	local currentDriveLinearSize
 	currentDriveLinearSize=$(sudo -n blockdev --getsz "$currentDrive")
-	sudo -n dmsetup create uk4uPhB663kVcygT0q_packetDrive --table '0 '"$currentDriveLinearSize"' linear '"$currentDrive"' 0'
+	sudo -n dmsetup create uk4uPhB663kVcygT0q_packetDriveDevice --table '0 '"$currentDriveLinearSize"' linear '"$currentDrive"' 0'
 	
 	sudo -n partprobe
-	sudo -n kpartx -a "/dev/mapper/uk4uPhB663kVcygT0q_packetDrive"
+	sudo -n kpartx -a "/dev/mapper/uk4uPhB663kVcygT0q_packetDriveDevice"
 	
-	ls -A -1 /dev/mapper/uk4uPhB663kVcygT0q_packetDrive*
+	ls -A -1 /dev/mapper/uk4uPhB663kVcygT0q_packetDriveDevice*
 	
-	[[ -e /dev/mapper/uk4uPhB663kVcygT0q_packetDrive ]] && _messagePlain_good 'good: dmsetup: create: '/dev/mapper/uk4uPhB663kVcygT0q_packetDrive
-	! [[ -e /dev/mapper/uk4uPhB663kVcygT0q_packetDrive ]] && _messagePlain_bad 'fail: dmsetup: create: '/dev/mapper/uk4uPhB663kVcygT0q_packetDrive
+	[[ -e /dev/mapper/uk4uPhB663kVcygT0q_packetDriveDevice ]] && _messagePlain_good 'good: dmsetup: create: '/dev/mapper/uk4uPhB663kVcygT0q_packetDriveDevice
+	! [[ -e /dev/mapper/uk4uPhB663kVcygT0q_packetDriveDevice ]] && _messagePlain_bad 'fail: dmsetup: create: '/dev/mapper/uk4uPhB663kVcygT0q_packetDriveDevice
 	
 	sleep 3
-	[[ -e /dev/mapper/uk4uPhB663kVcygT0q_packetDrive ]]
+	[[ -e /dev/mapper/uk4uPhB663kVcygT0q_packetDriveDevice ]]
 }
 
 
-_packetDrive_format_bdre() {
+_packetDriveDevice_format_bdre() {
 	local currentDrive
-	currentDrive=$(_find_packetDrive)
-	_check_driveDeviceFile_packetDrive "$currentDrive"
+	currentDrive=$(_find_packetDriveDevice)
+	_check_driveDeviceFile_packetDriveDevice "$currentDrive"
 	
-	_packetDrive_remove_procedure
+	_packetDriveDevice_remove_procedure
 	
 	
 	sudo -n dvd+rw-format "$currentDrive" -force -ssa=default
@@ -120,6 +120,6 @@ _packetDrive_format_bdre() {
 	sleep 20
 	return
 }
-_packetDrive_format() {
-	_packetDrive_format_bdre "$@"
+_packetDriveDevice_format() {
+	_packetDriveDevice_format_bdre "$@"
 }
