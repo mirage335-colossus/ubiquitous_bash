@@ -64,6 +64,7 @@ _check_driveDeviceFile_packetDrive() {
 
 _packetDrive_remove_procedure() {
 	sudo -n dmsetup remove /dev/mapper/uk4uPhB663kVcygT0q_packetDrive? > /dev/null 2>&1
+	sudo -n dmsetup remove /dev/mapper/uk4uPhB663kVcygT0q_packetDrive?? > /dev/null 2>&1
 	sudo -n dmsetup remove /dev/mapper/uk4uPhB663kVcygT0q_packetDrive > /dev/null 2>&1
 }
 _packetDrive_remove() {
