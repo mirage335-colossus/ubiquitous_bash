@@ -29,7 +29,7 @@ _packetDriveDevice_criticalDep() {
 }
 
 
-_find_packetDriveDevice() {
+_find_packetDrive() {
 	! _packetDriveDevice_criticalDep && exit 1
 	
 	[[ -e /dev/cdrom ]] && realpath /dev/cdrom && return 0
@@ -79,7 +79,7 @@ _packetDriveDevice_remove() {
 
 _packetDriveDevice() {
 	local currentDrive
-	currentDrive=$(_find_packetDriveDevice)
+	currentDrive=$(_find_packetDrive)
 	_check_driveDeviceFile_packetDriveDevice "$currentDrive"
 	
 	_packetDriveDevice_remove_procedure
@@ -103,7 +103,7 @@ _packetDriveDevice() {
 
 _packetDriveDevice_format_bdre() {
 	local currentDrive
-	currentDrive=$(_find_packetDriveDevice)
+	currentDrive=$(_find_packetDrive)
 	_check_driveDeviceFile_packetDriveDevice "$currentDrive"
 	
 	_packetDriveDevice_remove_procedure
