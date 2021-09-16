@@ -32,7 +32,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='1891409836'
-export ub_setScriptChecksum_contents='1589324470'
+export ub_setScriptChecksum_contents='1634887185'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -2324,28 +2324,29 @@ _condition_lines_zero() {
 	return 1
 }
 
-#Generates random alphanumeric characters, default length 18.
+#Generates semi-random alphanumeric characters, default length 18.
 _uid() {
 	local curentLengthUID
 	local currentIteration
 	currentIteration=0
-
+	
 	currentLengthUID="18"
 	! [[ -z "$uidLengthPrefix" ]] && ! [[ "$uidLengthPrefix" -lt "18" ]] && currentLengthUID="$uidLengthPrefix"
 	! [[ -z "$1" ]] && currentLengthUID="$1"
-
+	
 	if [[ -z "$uidLengthPrefix" ]] && [[ -z "$1" ]]
 	then
 		# https://stackoverflow.com/questions/32484504/using-random-to-generate-a-random-string-in-bash
 		# https://www.cyberciti.biz/faq/unix-linux-iterate-over-a-variable-range-of-numbers-in-bash/
-		chars=abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ
+		#chars=abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ
+		chars=bgjktwxyz23679BGJKTVWXYZ
 		#for currentIteration in {1..$currentLengthUID} ; do
 		for (( currentIteration=1; currentIteration<="$currentLengthUID"; currentIteration++ )) ; do
 		echo -n "${chars:RANDOM%${#chars}:1}"
 		done
 		echo
 	else
-		cat /dev/urandom 2> /dev/null | base64 2> /dev/null | tr -dc 'a-zA-Z0-9' 2> /dev/null | head -c "$currentLengthUID" 2> /dev/null
+		cat /dev/urandom 2> /dev/null | base64 2> /dev/null | tr -dc 'a-zA-Z0-9' 2> /dev/null | tr -d 'acdefhilmnopqrsuvACDEFHILMNOPQRSU14580' | head -c "$currentLengthUID" 2> /dev/null
 	fi
 	return 0
 }
