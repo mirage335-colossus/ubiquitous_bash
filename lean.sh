@@ -32,7 +32,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='1891409836'
-export ub_setScriptChecksum_contents='584514081'
+export ub_setScriptChecksum_contents='1671890254'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -690,6 +690,7 @@ fi
 
 
 # https://stackoverflow.com/questions/4090301/root-user-sudo-equivalent-in-cygwin
+# https://superuser.com/questions/812018/run-a-command-in-another-cygwin-window-and-not-exit
 _sudo_cygwin_sequence() {
 	_start
 	
@@ -709,10 +710,18 @@ _sudo_cygwin_sequence() {
 	
 	_safeEcho_newline "$@" >> "$safeTmp"/cygwin_sudo_temp.sh
 	
+	echo 'echo > "'"$safeTmp"'"/sequenceDone_'"$ubiquitiousBashID" >> "$safeTmp"/cygwin_sudo_temp.sh
+	
 
 	# 'Do it as Administrator.'
 	#cygstart --action=runas "$scriptAbsoluteFolder"/_bin.bat bash
 	cygstart --action=runas "$scriptAbsoluteFolder"/_bin.bat "$safeTmp"/cygwin_sudo_temp.sh
+	
+	
+	while ! [[ -e "$safeTmp"/sequenceDone_"$ubiquitiousBashID" ]]
+	do
+		sleep 3
+	done
 	
 	_stop "$?"
 }
