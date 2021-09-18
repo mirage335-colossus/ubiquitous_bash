@@ -33,6 +33,8 @@ _test_gparted() {
 	_wantGetDep partprobe
 	_wantGetDep kpartx
 	
+	_wantGetDep udevadm
+	
 	_wantGetDep dmsetup
 }
 

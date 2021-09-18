@@ -12,6 +12,8 @@ _test_packetDriveDevice() {
 	_wantGetDep partprobe
 	_wantGetDep kpartx
 	
+	_wantGetDep udevadm
+	
 	_wantGetDep realpath
 	_wantGetDep dmsetup
 }
