@@ -272,7 +272,9 @@ _filter_highestPath() {
 _recursion_guard() {
 	! [[ -e "$1" ]] && return 1
 	
-	! type "$1" >/dev/null 2>&1 && return 1
+	! [[ -s "$1" ]] && return 1
+	! head --bytes=1 "$1" > /dev/null 2>&1 && return 1
+	#! type "$1" >/dev/null 2>&1 && return 1
 	
 	local launchGuardScriptAbsoluteLocation
 	launchGuardScriptAbsoluteLocation=$(_getScriptAbsoluteLocation)
@@ -315,7 +317,7 @@ _findAnchor() {
 	anchorCurrentSearchDir="$1"
 	shift
 	
-	find -P "$anchorCurrentSearchDir" -not \( -path \*.git\* -prune \) -not \( -path \*_arc\* -prune \) -not \( -path \*_buried\* -prune \) -not \( -path \*_lib\* -prune \) -not \( -path \*_local\* -prune \) -not \( -path \*_local/_index\* -prune \) -not \( -path \*_local/h\* -prune \) -not \( -path \*h_\*/\* -prune \) -not \( -path \*w_\*/\* -prune \) "$@"
+	find -P "$anchorCurrentSearchDir" -not \( -path \*.git\* -prune \) -not \( -path \*_arc\* -prune \) -not \( -path \*_buried\* -prune \) -not \( -path \*_lib\* -prune \) -not \( -path \*_local\* -prune \) -not \( -path \*_local/_index\* -prune \) -not \( -path \*_local/h\* -prune \) -not \( -path \*h_\*/\* -prune \) -not \( -path \*w_\*/\* -prune \) -not \( -path \*../disk\* -prune \) -not \( -path \*../ssh\* -prune \) "$@"
 }
 
 #Recursively searches for directories.
@@ -403,15 +405,15 @@ _launch_anchor() {
 				recursionExec="$anchorScriptAbsoluteFolder"/"$anchorSource"
 				if _recursion_guard "$recursionExec"
 				then
-					[[ "$ub_import" != "true" ]] && _messagePlain_good 'self: '"$recursionExec" "$anchorName" "$@" | _user_log_anchor
+					[[ "$ub_import" != "true" ]] && _messagePlain_good 'self: 'bash "$recursionExec" "$anchorName" "$@" | _user_log_anchor
 						if [[ "$ub_import" != "true" ]]
 						then
-							"$recursionExec" "$anchorName" "$@"
+							bash "$recursionExec" "$anchorName" "$@"
 							exit $?
 						fi
 					
-					[[ "$ub_import" == "true" ]] && _messagePlain_good 'self: '"$recursionExec" "$ub_import_param" "$anchorName" "$@" | _user_log_anchor
-						[[ "$ub_import" == "true" ]] && "$recursionExec" "$ub_import_param" "$anchorName" "$@"
+					[[ "$ub_import" == "true" ]] && _messagePlain_good 'self: 'bash "$recursionExec" "$ub_import_param" "$anchorName" "$@" | _user_log_anchor
+						[[ "$ub_import" == "true" ]] && bash "$recursionExec" "$ub_import_param" "$anchorName" "$@"
 					
 					exit $?
 				fi
@@ -424,34 +426,33 @@ _launch_anchor() {
 		recursionExec="$anchorScriptAbsoluteFolder"/"$anchorSource"
 		if _recursion_guard "$recursionExec"
 		then
-			[[ "$ub_import" != "true" ]] && _messagePlain_good 'self: '"$recursionExec" "$anchorName" "$@" | _user_log_anchor
+			[[ "$ub_import" != "true" ]] && _messagePlain_good 'self: 'bash "$recursionExec" "$anchorName" "$@" | _user_log_anchor
 				if [[ "$ub_import" != "true" ]]
 				then
-					"$recursionExec" "$anchorName" "$@"
+					bash "$recursionExec" "$anchorName" "$@"
 					exit $?
 				fi
 			
-			[[ "$ub_import" == "true" ]] && _messagePlain_good 'self: '"$recursionExec" "$ub_import_param" "$anchorName" "$@" | _user_log_anchor
-				[[ "$ub_import" == "true" ]] && "$recursionExec" "$ub_import_param" "$anchorName" "$@"
+			[[ "$ub_import" == "true" ]] && _messagePlain_good 'self: 'bash "$recursionExec" "$ub_import_param" "$anchorName" "$@" | _user_log_anchor
+				[[ "$ub_import" == "true" ]] && bash "$recursionExec" "$ub_import_param" "$anchorName" "$@"
 			
 			exit $?
 		fi
 	fi
 	
 	
-	
 	recursionExec="$anchorScriptAbsoluteFolder"/../"$anchorSourcePath"
 	if _recursion_guard "$recursionExec"
 	then
-		[[ "$ub_import" != "true" ]] && _messagePlain_good 'self: '"$recursionExec" "$anchorName" "$@" | _user_log_anchor
+		[[ "$ub_import" != "true" ]] && _messagePlain_good 'self: 'bash "$recursionExec" "$anchorName" "$@" | _user_log_anchor
 			if [[ "$ub_import" != "true" ]]
 			then
-				"$recursionExec" "$anchorName" "$@"
+				bash "$recursionExec" "$anchorName" "$@"
 				exit $?
 			fi
 		
-		[[ "$ub_import" == "true" ]] && _messagePlain_good 'self: '"$recursionExec" "$ub_import_param" "$anchorName" "$@" | _user_log_anchor
-			[[ "$ub_import" == "true" ]] && "$recursionExec" "$ub_import_param" "$anchorName" "$@"
+		[[ "$ub_import" == "true" ]] && _messagePlain_good 'self: 'bash "$recursionExec" "$ub_import_param" "$anchorName" "$@" | _user_log_anchor
+			[[ "$ub_import" == "true" ]] && bash "$recursionExec" "$ub_import_param" "$anchorName" "$@"
 		
 		exit $?
 	fi
@@ -460,15 +461,15 @@ _launch_anchor() {
 	recursionExec="$anchorScriptAbsoluteFolder"/../../"$anchorSourcePath"
 	if _recursion_guard "$recursionExec"
 	then
-		[[ "$ub_import" != "true" ]] && _messagePlain_good 'self: '"$recursionExec" "$anchorName" "$@" | _user_log_anchor
+		[[ "$ub_import" != "true" ]] && _messagePlain_good 'self: 'bash "$recursionExec" "$anchorName" "$@" | _user_log_anchor
 			if [[ "$ub_import" != "true" ]]
 			then
-				"$recursionExec" "$anchorName" "$@"
+				bash "$recursionExec" "$anchorName" "$@"
 				exit $?
 			fi
 		
-		[[ "$ub_import" == "true" ]] && _messagePlain_good 'self: '"$recursionExec" "$ub_import_param" "$anchorName" "$@" | _user_log_anchor
-			[[ "$ub_import" == "true" ]] && "$recursionExec" "$ub_import_param" "$anchorName" "$@"
+		[[ "$ub_import" == "true" ]] && _messagePlain_good 'self: 'bash "$recursionExec" "$ub_import_param" "$anchorName" "$@" | _user_log_anchor
+			[[ "$ub_import" == "true" ]] && bash "$recursionExec" "$ub_import_param" "$anchorName" "$@"
 		
 		exit $?
 	fi
@@ -478,21 +479,21 @@ _launch_anchor() {
 	then
 		if [[ "$anchorDestination" == *"ubiquitous_bash.sh" ]]
 		then
-			_messagePlain_good 'launch: '"$anchorDestination" "$ub_import_param" "$anchorName" "$@" | _user_log_anchor
+			_messagePlain_good 'launch: 'bash "$anchorDestination" "$ub_import_param" "$anchorName" "$@" | _user_log_anchor
 			if [[ "$ub_import" != "true" ]]
 			then
-				"$anchorDestination" "$anchorName" "$@"
+				bash "$anchorDestination" "$anchorName" "$@"
 				exit $?
 			fi
 			
-			[[ "$ub_import" == "true" ]] && "$anchorDestination" "$ub_import_param" "$anchorName" "$@"
+			[[ "$ub_import" == "true" ]] && bash "$anchorDestination" "$ub_import_param" "$anchorName" "$@"
 			exit $?
 		fi
-		_messagePlain_good 'launch: '"$anchorDestination" "$ub_import_param" "$@" | _user_log_anchor
-		[[ "$ub_import" != "true" ]] && "$anchorDestination" "$@"
+		_messagePlain_good 'launch: 'bash "$anchorDestination" "$ub_import_param" "$@" | _user_log_anchor
+		[[ "$ub_import" != "true" ]] && bash "$anchorDestination" "$@"
 		[[ "$ub_import" != "true" ]] && exit $?
 		
-		[[ "$ub_import" == "true" ]] && "$anchorDestination" "$ub_import_param" "$@"
+		[[ "$ub_import" == "true" ]] && bash "$anchorDestination" "$ub_import_param" "$@"
 		exit $?
 	fi
 	
@@ -505,11 +506,11 @@ _launch_anchor() {
 		if [[ "$anchorDestination" != "" ]]
 		then
 			_messagePlain_probe 'anchorDestination='"$anchorDestination" | _user_log_anchor
-			_messagePlain_good 'launch: '"$anchorDestination" "$ub_import_param" "$@" | _user_log_anchor
-			[[ "$ub_import" != "true" ]] && "$anchorDestination" "$@"
+			_messagePlain_good 'launch: 'bash "$anchorDestination" "$ub_import_param" "$@" | _user_log_anchor
+			[[ "$ub_import" != "true" ]] && bash "$anchorDestination" "$@"
 			[[ "$ub_import" != "true" ]] && exit $?
 			
-			[[ "$ub_import" == "true" ]] && "$anchorDestination" "$ub_import_param" "$anchorName" "$@"
+			[[ "$ub_import" == "true" ]] && bash "$anchorDestination" "$ub_import_param" "$anchorName" "$@"
 			exit $?
 		fi
 	fi
@@ -517,120 +518,120 @@ _launch_anchor() {
 	recursionExec="$HOME"/core/infrastructure/vm/"$anchorSourcePath"
 	if _recursion_guard "$recursionExec"
 	then
-		[[ "$ub_import" != "true" ]] && _messagePlain_good 'launch: '"$recursionExec" "$anchorName" "$@" | _user_log_anchor
+		[[ "$ub_import" != "true" ]] && _messagePlain_good 'launch: 'bash "$recursionExec" "$anchorName" "$@" | _user_log_anchor
 			if [[ "$ub_import" != "true" ]]
 			then
-				"$recursionExec" "$anchorName" "$@"
+				bash "$recursionExec" "$anchorName" "$@"
 				exit $?
 			fi
 		
-		[[ "$ub_import" == "true" ]] && _messagePlain_good 'launch: '"$recursionExec" "$ub_import_param" "$anchorName" "$@" | _user_log_anchor
-			[[ "$ub_import" == "true" ]] && "$recursionExec" "$ub_import_param" "$anchorName" "$@"
+		[[ "$ub_import" == "true" ]] && _messagePlain_good 'launch: 'bash "$recursionExec" "$ub_import_param" "$anchorName" "$@" | _user_log_anchor
+			[[ "$ub_import" == "true" ]] && bash "$recursionExec" "$ub_import_param" "$anchorName" "$@"
 		exit $?
 	fi
 
 	recursionExec="$HOME"/core/extra/infrastructure/vm/"$anchorSourcePath"
 	if _recursion_guard "$recursionExec"
 	then
-		[[ "$ub_import" != "true" ]] && _messagePlain_good 'launch: '"$recursionExec" "$anchorName" "$@" | _user_log_anchor
+		[[ "$ub_import" != "true" ]] && _messagePlain_good 'launch: 'bash "$recursionExec" "$anchorName" "$@" | _user_log_anchor
 			if [[ "$ub_import" != "true" ]]
 			then
-				"$recursionExec" "$anchorName" "$@"
+				bash "$recursionExec" "$anchorName" "$@"
 				exit $?
 			fi
 		
-		[[ "$ub_import" == "true" ]] && _messagePlain_good 'launch: '"$recursionExec" "$ub_import_param" "$anchorName" "$@" | _user_log_anchor
-			[[ "$ub_import" == "true" ]] && "$recursionExec" "$ub_import_param" "$anchorName" "$@"
+		[[ "$ub_import" == "true" ]] && _messagePlain_good 'launch: 'bash "$recursionExec" "$ub_import_param" "$anchorName" "$@" | _user_log_anchor
+			[[ "$ub_import" == "true" ]] && bash "$recursionExec" "$ub_import_param" "$anchorName" "$@"
 		exit $?
 	fi
 	
 	recursionExec="$HOME"/core/installations/"$anchorSourcePath"
 	if _recursion_guard "$recursionExec"
 	then
-		[[ "$ub_import" != "true" ]] && _messagePlain_good 'launch: '"$recursionExec" "$anchorName" "$@" | _user_log_anchor
+		[[ "$ub_import" != "true" ]] && _messagePlain_good 'launch: 'bash "$recursionExec" "$anchorName" "$@" | _user_log_anchor
 			if [[ "$ub_import" != "true" ]]
 			then
-				"$recursionExec" "$anchorName" "$@"
+				bash "$recursionExec" "$anchorName" "$@"
 				exit $?
 			fi
 		
-		[[ "$ub_import" == "true" ]] && _messagePlain_good 'launch: '"$recursionExec" "$ub_import_param" "$anchorName" "$@" | _user_log_anchor
-			[[ "$ub_import" == "true" ]] && "$recursionExec" "$ub_import_param" "$anchorName" "$@"
+		[[ "$ub_import" == "true" ]] && _messagePlain_good 'launch: 'bash "$recursionExec" "$ub_import_param" "$anchorName" "$@" | _user_log_anchor
+			[[ "$ub_import" == "true" ]] && bash "$recursionExec" "$ub_import_param" "$anchorName" "$@"
 		exit $?
 	fi
 
 	recursionExec="$HOME"/core/extra/installations/"$anchorSourcePath"
 	if _recursion_guard "$recursionExec"
 	then
-		[[ "$ub_import" != "true" ]] && _messagePlain_good 'launch: '"$recursionExec" "$anchorName" "$@" | _user_log_anchor
+		[[ "$ub_import" != "true" ]] && _messagePlain_good 'launch: 'bash "$recursionExec" "$anchorName" "$@" | _user_log_anchor
 			if [[ "$ub_import" != "true" ]]
 			then
-				"$recursionExec" "$anchorName" "$@"
+				bash "$recursionExec" "$anchorName" "$@"
 				exit $?
 			fi
 		
-		[[ "$ub_import" == "true" ]] && _messagePlain_good 'launch: '"$recursionExec" "$ub_import_param" "$anchorName" "$@" | _user_log_anchor
-			[[ "$ub_import" == "true" ]] && "$recursionExec" "$ub_import_param" "$anchorName" "$@"
+		[[ "$ub_import" == "true" ]] && _messagePlain_good 'launch: 'bash "$recursionExec" "$ub_import_param" "$anchorName" "$@" | _user_log_anchor
+			[[ "$ub_import" == "true" ]] && bash "$recursionExec" "$ub_import_param" "$anchorName" "$@"
 		exit $?
 	fi
 
 	recursionExec="$HOME"/core/lab/"$anchorEntity""$anchorLabName"/_index/"$anchorName"
 	if _recursion_guard "$recursionExec"
 	then
-		[[ "$ub_import" != "true" ]] && _messagePlain_good 'reference: '"$recursionExec" "$@" | _user_log_anchor
+		[[ "$ub_import" != "true" ]] && _messagePlain_good 'reference: 'bash "$recursionExec" "$@" | _user_log_anchor
 			if [[ "$ub_import" != "true" ]]
 			then
-				"$recursionExec" "$@"
+				bash "$recursionExec" "$@"
 				exit $?
 			fi
 		
-		[[ "$ub_import" == "true" ]] && _messagePlain_good 'reference: '"$recursionExec" "$ub_import_param" "$@" | _user_log_anchor
-			[[ "$ub_import" == "true" ]] && "$recursionExec" "$ub_import_param" "$@"
+		[[ "$ub_import" == "true" ]] && _messagePlain_good 'reference: 'bash "$recursionExec" "$ub_import_param" "$@" | _user_log_anchor
+			[[ "$ub_import" == "true" ]] && bash "$recursionExec" "$ub_import_param" "$@"
 		exit $?
 	fi
 
 	recursionExec="$HOME"/core/extra/lab/"$anchorEntity""$anchorLabName"/_index/"$anchorName"
 	if _recursion_guard "$recursionExec"
 	then
-		[[ "$ub_import" != "true" ]] && _messagePlain_good 'reference: '"$recursionExec" "$@" | _user_log_anchor
+		[[ "$ub_import" != "true" ]] && _messagePlain_good 'reference: 'bash "$recursionExec" "$@" | _user_log_anchor
 			if [[ "$ub_import" != "true" ]]
 			then
-				"$recursionExec" "$@"
+				bash "$recursionExec" "$@"
 				exit $?
 			fi
 		
-		[[ "$ub_import" == "true" ]] && _messagePlain_good 'reference: '"$recursionExec" "$ub_import_param" "$@" | _user_log_anchor
-			[[ "$ub_import" == "true" ]] && "$recursionExec" "$ub_import_param" "$@"
+		[[ "$ub_import" == "true" ]] && _messagePlain_good 'reference: 'bash "$recursionExec" "$ub_import_param" "$@" | _user_log_anchor
+			[[ "$ub_import" == "true" ]] && bash "$recursionExec" "$ub_import_param" "$@"
 		exit $?
 	fi
 
 	recursionExec="$HOME"/core/lab/"$anchorEntity""$anchorLabNameAlt"/_index/"$anchorName"
 	if _recursion_guard "$recursionExec"
 	then
-		[[ "$ub_import" != "true" ]] && _messagePlain_good 'reference: '"$recursionExec" "$@" | _user_log_anchor
+		[[ "$ub_import" != "true" ]] && _messagePlain_good 'reference: 'bash "$recursionExec" "$@" | _user_log_anchor
 			if [[ "$ub_import" != "true" ]]
 			then
-				"$recursionExec" "$@"
+				bash "$recursionExec" "$@"
 				exit $?
 			fi
 		
-		[[ "$ub_import" == "true" ]] && _messagePlain_good 'reference: '"$recursionExec" "$ub_import_param" "$@" | _user_log_anchor
-			[[ "$ub_import" == "true" ]] && "$recursionExec" "$ub_import_param" "$@"
+		[[ "$ub_import" == "true" ]] && _messagePlain_good 'reference: 'bash "$recursionExec" "$ub_import_param" "$@" | _user_log_anchor
+			[[ "$ub_import" == "true" ]] && bash "$recursionExec" "$ub_import_param" "$@"
 		exit $?
 	fi
 
 	recursionExec="$HOME"/core/extra/lab/"$anchorEntity""$anchorLabNameAlt"/_index/"$anchorName"
 	if _recursion_guard "$recursionExec"
 	then
-		[[ "$ub_import" != "true" ]] && _messagePlain_good 'reference: '"$recursionExec" "$@" | _user_log_anchor
+		[[ "$ub_import" != "true" ]] && _messagePlain_good 'reference: 'bash "$recursionExec" "$@" | _user_log_anchor
 			if [[ "$ub_import" != "true" ]]
 			then
-				"$recursionExec" "$@"
+				bash "$recursionExec" "$@"
 				exit $?
 			fi
 		
-		[[ "$ub_import" == "true" ]] && _messagePlain_good 'reference: '"$recursionExec" "$ub_import_param" "$@" | _user_log_anchor
-			[[ "$ub_import" == "true" ]] && "$recursionExec" "$ub_import_param" "$@"
+		[[ "$ub_import" == "true" ]] && _messagePlain_good 'reference: 'bash "$recursionExec" "$ub_import_param" "$@" | _user_log_anchor
+			[[ "$ub_import" == "true" ]] && bash "$recursionExec" "$ub_import_param" "$@"
 		exit $?
 	fi
 	_messagePlain_bad 'missing: '"$anchorSource" | _user_log_anchor

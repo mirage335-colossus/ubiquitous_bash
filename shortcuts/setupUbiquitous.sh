@@ -170,8 +170,8 @@ _setupUbiquitous() {
 		# WARNING: Necessarily relies on a 'deprecated' 'field code' with the 'Exec key' of a 'Desktop Entry' file association.
 		# https://specifications.freedesktop.org/desktop-entry-spec/desktop-entry-spec-latest.html
 		_messagePlain_request 'association: *.bat'
-		echo 'konsole --workdir %d -e /bin/bash %f (open in graphical terminal emulator from file manager)'
-		echo 'bash'
+		echo 'konsole --workdir %d -e /bin/bash %f (open in graphical terminal emulator from file manager) (preferred)'
+		echo "bash ('Advanced Options -> Run in terminal')"
 	fi
 	
 	_messagePlain_request "Now import new functionality into current shell if not in current shell."
