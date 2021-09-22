@@ -129,7 +129,7 @@ _sudo_cygwin_sequence() {
 	
 	if [[ "$scriptAbsoluteFolder" == "/cygdrive/c"* ]]
 	then
-		# WARNING: May be untested.
+		# WARNING: May be untested, or (especially under interactive shell) may call obsolete code.
 		cygstart --action=runas "$scriptAbsoluteFolder"/_bin.bat "$safeTmp"/cygwin_sudo_temp.sh
 	else
 		cygstart --action=runas "$safeTmp"/_bin.bat "$safeTmp"/cygwin_sudo_temp.sh
