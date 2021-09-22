@@ -32,7 +32,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='1891409836'
-export ub_setScriptChecksum_contents='468770079'
+export ub_setScriptChecksum_contents='816525345'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -689,6 +689,9 @@ then
 fi
 
 
+# CAUTION: Fragile, at best.
+# DANGER: MSW apparently does not necessarily allow 'Administrator' access to all network 'drives'. Workaround copying of obvious files is limited.
+# WARNING: Most likely, after significant delay, will 'prompt' the user with a very much obstructive, and not securing very much, dialog box.
 # https://stackoverflow.com/questions/4090301/root-user-sudo-equivalent-in-cygwin
 # https://superuser.com/questions/812018/run-a-command-in-another-cygwin-window-and-not-exit
 _sudo_cygwin_sequence() {
@@ -708,14 +711,30 @@ _sudo_cygwin_sequence() {
 	echo "export PATH=\"$PATH\"" >> "$safeTmp"/cygwin_sudo_temp.sh
 	
 	
-	_safeEcho_newline "$@" >> "$safeTmp"/cygwin_sudo_temp.sh
-	
+	_safeEcho_newline "$safeTmp"/_bin.bat "$@" >> "$safeTmp"/cygwin_sudo_temp.sh
 	echo 'echo > "'"$safeTmp"'"/sequenceDone_'"$ubiquitiousBashID" >> "$safeTmp"/cygwin_sudo_temp.sh
+	echo 'sleep 3' >> "$safeTmp"/cygwin_sudo_temp.sh
+	chmod u+x "$safeTmp"/cygwin_sudo_temp.sh
+	
+	
+	
+	cp "$scriptAbsoluteLocation" "$safeTmp"/
+	chmod u+x "$safeTmp"/$(basename "$scriptAbsoluteLocation")
+	
+	cp "$scriptAbsoluteFolder"/_bin.bat "$safeTmp"/_bin.bat
+	chmod u+x "$safeTmp"/_bin.bat
 	
 
 	# 'Do it as Administrator.'
 	#cygstart --action=runas "$scriptAbsoluteFolder"/_bin.bat bash
-	cygstart --action=runas "$scriptAbsoluteFolder"/_bin.bat "$safeTmp"/cygwin_sudo_temp.sh
+	
+	if [[ "$scriptAbsoluteFolder" == "/cygdrive/c"* ]]
+	then
+		# WARNING: May be untested.
+		cygstart --action=runas "$scriptAbsoluteFolder"/_bin.bat "$safeTmp"/cygwin_sudo_temp.sh
+	else
+		cygstart --action=runas "$safeTmp"/_bin.bat "$safeTmp"/cygwin_sudo_temp.sh
+	fi
 	
 	
 	while ! [[ -e "$safeTmp"/sequenceDone_"$ubiquitiousBashID" ]]

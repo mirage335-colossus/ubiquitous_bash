@@ -88,6 +88,9 @@ then
 fi
 
 
+# CAUTION: Fragile, at best.
+# DANGER: MSW apparently does not necessarily allow 'Administrator' access to all network 'drives'. Workaround copying of obvious files is limited.
+# WARNING: Most likely, after significant delay, will 'prompt' the user with a very much obstructive, and not securing very much, dialog box.
 # https://stackoverflow.com/questions/4090301/root-user-sudo-equivalent-in-cygwin
 # https://superuser.com/questions/812018/run-a-command-in-another-cygwin-window-and-not-exit
 _sudo_cygwin_sequence() {
@@ -107,14 +110,30 @@ _sudo_cygwin_sequence() {
 	echo "export PATH=\"$PATH\"" >> "$safeTmp"/cygwin_sudo_temp.sh
 	
 	
-	_safeEcho_newline "$@" >> "$safeTmp"/cygwin_sudo_temp.sh
-	
+	_safeEcho_newline "$safeTmp"/_bin.bat "$@" >> "$safeTmp"/cygwin_sudo_temp.sh
 	echo 'echo > "'"$safeTmp"'"/sequenceDone_'"$ubiquitiousBashID" >> "$safeTmp"/cygwin_sudo_temp.sh
+	echo 'sleep 3' >> "$safeTmp"/cygwin_sudo_temp.sh
+	chmod u+x "$safeTmp"/cygwin_sudo_temp.sh
+	
+	
+	
+	cp "$scriptAbsoluteLocation" "$safeTmp"/
+	chmod u+x "$safeTmp"/$(basename "$scriptAbsoluteLocation")
+	
+	cp "$scriptAbsoluteFolder"/_bin.bat "$safeTmp"/_bin.bat
+	chmod u+x "$safeTmp"/_bin.bat
 	
 
 	# 'Do it as Administrator.'
 	#cygstart --action=runas "$scriptAbsoluteFolder"/_bin.bat bash
-	cygstart --action=runas "$scriptAbsoluteFolder"/_bin.bat "$safeTmp"/cygwin_sudo_temp.sh
+	
+	if [[ "$scriptAbsoluteFolder" == "/cygdrive/c"* ]]
+	then
+		# WARNING: May be untested.
+		cygstart --action=runas "$scriptAbsoluteFolder"/_bin.bat "$safeTmp"/cygwin_sudo_temp.sh
+	else
+		cygstart --action=runas "$safeTmp"/_bin.bat "$safeTmp"/cygwin_sudo_temp.sh
+	fi
 	
 	
 	while ! [[ -e "$safeTmp"/sequenceDone_"$ubiquitiousBashID" ]]
