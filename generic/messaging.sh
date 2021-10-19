@@ -225,21 +225,21 @@ _messageColors() {
 
 
 _color_demo() {
-	_messagePlain_request "$ubiquitiousBashID"
-	_messagePlain_nominal "$ubiquitiousBashID"
-	_messagePlain_probe "$ubiquitiousBashID"
-	_messagePlain_probe_expr "$ubiquitiousBashID"
-	_messagePlain_probe_var ubiquitiousBashID
-	_messagePlain_good "$ubiquitiousBashID"
-	_messagePlain_warn "$ubiquitiousBashID"
-	_messagePlain_bad "$ubiquitiousBashID"
-	_messagePlain_probe_cmd echo "$ubiquitiousBashID"
-	_messagePlain_probe_quoteAddDouble echo "$ubiquitiousBashID"
-	_messagePlain_probe_quoteAddSingle echo "$ubiquitiousBashID"
-	_messageNormal "$ubiquitiousBashID"
-	_messageError "$ubiquitiousBashID"
-	_messageDELAYipc "$ubiquitiousBashID"
-	_messageProcess "$ubiquitiousBashID"
+	_messagePlain_request _color_demo
+	_messagePlain_nominal _color_demo
+	_messagePlain_probe _color_demo
+	_messagePlain_probe_expr _color_demo
+	_messagePlain_probe_var ubiquitiousBashIDshort
+	_messagePlain_good _color_demo
+	_messagePlain_warn _color_demo
+	_messagePlain_bad _color_demo
+	_messagePlain_probe_cmd echo _color_demo
+	_messagePlain_probe_quoteAddDouble echo _color_demo
+	_messagePlain_probe_quoteAddSingle echo _color_demo
+	_messageNormal _color_demo
+	_messageError _color_demo
+	_messageDELAYipc _color_demo
+	_messageProcess _color_demo
 }
 _color_end() {
 	[[ "$current_scriptedIllustrator_markup" == "html" ]] && echo -e -n '</span>'
