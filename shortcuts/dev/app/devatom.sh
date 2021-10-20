@@ -111,6 +111,7 @@ _atom_tmp_sequence() {
 
 _atom_tmp() {
 	"$scriptAbsoluteLocation" _atom_tmp_sequence "$@"  > /dev/null 2>&1 &
+	wait
 }
 
 _atom() {
