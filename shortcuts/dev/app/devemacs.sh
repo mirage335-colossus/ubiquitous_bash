@@ -8,17 +8,26 @@ _test_devemacs() {
 }
 
 _set_emacsFakeHomeSource() {
-	if [[ ! -e "$scriptLib"/app/emacs/home ]]
+	#if [[ ! -e "$scriptLib"/app/emacs/home ]]
+	#then
+		#_messageError 'missing: '"$scriptLib"'/app/emacs/home'
+		#_messageFAIL
+		#_stop 1
+	#fi
+	
+	if [[ ! -e "$scriptBundle"/app/emacs/home ]]
 	then
-		_messageError 'missing: '"$scriptLib"'/app/emacs/home'
+		_messageError 'missing: '"$scriptBundle"'/app/emacs/home'
 		_messageFAIL
 		_stop 1
 	fi
 	
-	export emacsFakeHomeSource="$scriptLib"/app/emacs/home
+	#export emacsFakeHomeSource="$scriptLib"/app/emacs/home
+	export emacsFakeHomeSource="$scriptBundle"/app/emacs/home
 	if ! [[ -e "$emacsFakeHomeSource" ]]
 	then
-		export emacsFakeHomeSource="$scriptLib"/ubiquitous_bash/_lib/app/emacs/home
+		#export emacsFakeHomeSource="$scriptLib"/ubiquitous_bash/_lib/app/emacs/home
+		export emacsFakeHomeSource="$scriptLib"/ubiquitous_bash/_bundle/app/emacs/home
 	fi
 }
 
