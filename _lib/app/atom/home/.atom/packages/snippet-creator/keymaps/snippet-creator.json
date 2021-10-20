@@ -1,8 +1,0 @@
-{
-  "atom-workspace": {
-    "ctrl-shift-i": "snippet-creator:create"
-  },
-  ".snippet-creator": {
-    "escape": "snippet-creator:close"
-  }
-}

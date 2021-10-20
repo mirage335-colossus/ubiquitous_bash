@@ -1,3 +1,0 @@
-add tab icon to button
-default btn name for web page should be page title
-fix tab dragging

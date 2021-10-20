@@ -1,5 +1,0 @@
-{
-	"test:terminal-commands": "echo \"${file}=firstFile, ${files} allFiles, ${dir} firstDir, ${project} - firstProject\"",
-	"ub:compile": "${project}/compile.sh \nsleep 1\nexit"
-}
-
