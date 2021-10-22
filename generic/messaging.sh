@@ -242,62 +242,62 @@ _color_demo() {
 	_messageProcess _color_demo
 }
 _color_end() {
-	[[ "$current_scriptedIllustrator_markup" == "html" ]] && [[ "$current_scriptedIllustrator_markup" == "mediawiki" ]] && echo -e -n '</span>'
+	( [[ "$current_scriptedIllustrator_markup" == "html" ]] || [[ "$current_scriptedIllustrator_markup" == "mediawiki" ]] ) && echo -e -n '</span>'
 	[[ "$current_scriptedIllustrator_markup" == "" ]] && echo -e -n ' \E[0m'
 }
 
 _color_begin_request() {
 	#b218b2
 	#848484
-	[[ "$current_scriptedIllustrator_markup" == "html" ]] && [[ "$current_scriptedIllustrator_markup" == "mediawiki" ]] && echo -e -n '<span style="color:#b218b2;background-color:#848484;"> '
+	( [[ "$current_scriptedIllustrator_markup" == "html" ]] || [[ "$current_scriptedIllustrator_markup" == "mediawiki" ]] ) && echo -e -n '<span style="color:#b218b2;background-color:#848484;"> '
 	[[ "$current_scriptedIllustrator_markup" == "" ]] && echo -e -n '\E[0;35m '
 }
 _color_begin_nominal() {
 	#18b2b2
 	#848484
-	[[ "$current_scriptedIllustrator_markup" == "html" ]] && [[ "$current_scriptedIllustrator_markup" == "mediawiki" ]] && echo -e -n '<span style="color:#18b2b2;background-color:#848484;"> '
+	( [[ "$current_scriptedIllustrator_markup" == "html" ]] || [[ "$current_scriptedIllustrator_markup" == "mediawiki" ]] ) && echo -e -n '<span style="color:#18b2b2;background-color:#848484;"> '
 	[[ "$current_scriptedIllustrator_markup" == "" ]] && echo -e -n '\E[0;36m '
 }
 _color_begin_probe() {
 	#1818b2
 	#848484
-	[[ "$current_scriptedIllustrator_markup" == "html" ]] && [[ "$current_scriptedIllustrator_markup" == "mediawiki" ]] && echo -e -n '<span style="color:#1818b2;background-color:#848484;"> '
+	( [[ "$current_scriptedIllustrator_markup" == "html" ]] || [[ "$current_scriptedIllustrator_markup" == "mediawiki" ]] ) && echo -e -n '<span style="color:#1818b2;background-color:#848484;"> '
 	[[ "$current_scriptedIllustrator_markup" == "" ]] && echo -e -n '\E[0;34m '
 }
 _color_begin_good() {
 	#17ae17
 	#848484
-	[[ "$current_scriptedIllustrator_markup" == "html" ]] && [[ "$current_scriptedIllustrator_markup" == "mediawiki" ]] && echo -e -n '<span style="color:#17ae17;background-color:#848484;"> '
+	( [[ "$current_scriptedIllustrator_markup" == "html" ]] || [[ "$current_scriptedIllustrator_markup" == "mediawiki" ]] ) && echo -e -n '<span style="color:#17ae17;background-color:#848484;"> '
 	[[ "$current_scriptedIllustrator_markup" == "" ]] && echo -e -n '\E[0;32m '
 }
 _color_begin_warn() {
 	#ffff54
 	#848484
-	[[ "$current_scriptedIllustrator_markup" == "html" ]] && [[ "$current_scriptedIllustrator_markup" == "mediawiki" ]] && echo -e -n '<span style="color:#ffff54;background-color:#848484;"> '
+	( [[ "$current_scriptedIllustrator_markup" == "html" ]] || [[ "$current_scriptedIllustrator_markup" == "mediawiki" ]] ) && echo -e -n '<span style="color:#ffff54;background-color:#848484;"> '
 	[[ "$current_scriptedIllustrator_markup" == "" ]] && echo -e -n '\E[1;33m '
 }
 _color_begin_bad() {
 	#b21818
 	#848484
-	[[ "$current_scriptedIllustrator_markup" == "html" ]] && [[ "$current_scriptedIllustrator_markup" == "mediawiki" ]] && echo -e -n '<span style="color:#b21818;background-color:#848484;"> '
+	( [[ "$current_scriptedIllustrator_markup" == "html" ]] || [[ "$current_scriptedIllustrator_markup" == "mediawiki" ]] ) && echo -e -n '<span style="color:#b21818;background-color:#848484;"> '
 	[[ "$current_scriptedIllustrator_markup" == "" ]] && echo -e -n '\E[0;31m '
 }
 _color_begin_Normal() {
 	#54ff54
 	#18b2b2
-	[[ "$current_scriptedIllustrator_markup" == "html" ]] && [[ "$current_scriptedIllustrator_markup" == "mediawiki" ]] && echo -e -n '<span style="color:#54ff54;background-color:#18b2b2;"> '
+	( [[ "$current_scriptedIllustrator_markup" == "html" ]] || [[ "$current_scriptedIllustrator_markup" == "mediawiki" ]] ) && echo -e -n '<span style="color:#54ff54;background-color:#18b2b2;"> '
 	[[ "$current_scriptedIllustrator_markup" == "" ]] && echo -e -n '\E[1;32;46m '
 }
 _color_begin_Error() {
 	#ffff54
 	#b21818
-	[[ "$current_scriptedIllustrator_markup" == "html" ]] && [[ "$current_scriptedIllustrator_markup" == "mediawiki" ]] && echo -e -n '<span style="color:#ffff54;background-color:#b21818;"> '
+	( [[ "$current_scriptedIllustrator_markup" == "html" ]] || [[ "$current_scriptedIllustrator_markup" == "mediawiki" ]] ) && echo -e -n '<span style="color:#ffff54;background-color:#b21818;"> '
 	[[ "$current_scriptedIllustrator_markup" == "" ]] && echo -e -n '\E[1;33;41m '
 }
 _color_begin_DELAYipc() {
 	#ffff54
 	#b2b2b2
-	[[ "$current_scriptedIllustrator_markup" == "html" ]] && [[ "$current_scriptedIllustrator_markup" == "mediawiki" ]] && echo -e -n '<span style="color:#ffff54;background-color:#b2b2b2;"> '
+	( [[ "$current_scriptedIllustrator_markup" == "html" ]] || [[ "$current_scriptedIllustrator_markup" == "mediawiki" ]] ) && echo -e -n '<span style="color:#ffff54;background-color:#b2b2b2;"> '
 	[[ "$current_scriptedIllustrator_markup" == "" ]] && echo -e -n '\E[1;33;47m '
 }
 
