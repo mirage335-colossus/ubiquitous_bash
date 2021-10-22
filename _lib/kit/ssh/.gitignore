@@ -16,6 +16,9 @@
 #_local/tor/sshd/dd**/
 
 
+_bundle/
+
+
 /ops
 
 _arc/

@@ -7,6 +7,13 @@ For new applications and shell feature extension, provides directory containment
 "While bind mounts are dependent on the directory structure of the host machine, volumes are completely managed by Docker."
 - https://docs.docker.com/engine/admin/volumes/volumes/
 
+
+# Bundle
+
+Larger files (eg. emacs configuration, blockchain) are not included with 'ubiquitous bash' directly, or as a submodule. If needed, 'clone' to '_bundle' directory (which is ignored).
+git clone --depth 1 --recursive git@github.com:mirage335/ubiquitous_bash_bundle.git _bundle
+
+
 # Blockchain
 
 Continued integration of Ethereum, other blockchain related applications, and command shortcuts, into the Ubiquitous Bash framework, is expected to improve scalability and portability, especially when integrating these resources with other applications. A single software package, portable as a single directory of files, without full virtualization, could integrate functionality from Ethereum, Bitcoin, other blockchains such as IOTA, and miners, as well as applications like GPG, Bittorrent, and Tor, along with clients to services like AWS, GitHub, DropBox, and generic SSH. One use case may be to include isolating different proof-of-work, or reputation schemes, to temporary, private, or reputation based currencies to be recorded in bulk as large balance transfers to Ethereum. Scalability could thereby improve to integrate Ethereum functionality with real-time applications, embedded hardware, and industrial systems such as 3D printers.
