@@ -27,6 +27,10 @@ _safeEcho_quoteAddSingle() {
 		shift
 	done
 }
+_safeEcho_quoteAddSingle_newline() {
+	_safeEcho_quoteAddSingle "$@"
+	printf '\n'
+}
 
 _safeEcho_quoteAddDouble() {
 	#https://stackoverflow.com/questions/1668649/how-to-keep-quotes-in-bash-arguments
@@ -39,6 +43,10 @@ _safeEcho_quoteAddDouble() {
 	done
 	
 	_safeEcho "$currentCommandStringPunctuated"
+}
+_safeEcho_quoteAddDouble_newline() {
+	_safeEcho_quoteAddDouble "$@"
+	printf '\n'
 }
 
 
