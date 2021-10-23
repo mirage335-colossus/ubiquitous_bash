@@ -352,7 +352,7 @@ _anchor_autoupgrade() {
 	
 	_findUbiquitous
 	
-	[[ -e "$ubiquitiousLibDir"/_anchor ]] && cp -a "$ubiquitiousLibDir"/_anchor "$scriptAbsoluteFolder"/_anchor
+	[[ -e "$ubiquitousLibDir"/_anchor ]] && cp -a "$ubiquitousLibDir"/_anchor "$scriptAbsoluteFolder"/_anchor
 }
 
 _anchor_configure() {

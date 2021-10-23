@@ -609,7 +609,7 @@ _define_function_test() {
 	current_uid_2=$(_uid)
 	
 	# https://stackoverflow.com/questions/7145337/bash-how-do-i-create-function-from-variable
-	eval "__$current_uid_1() { __$current_uid_2() { echo $ubiquitiousBashID; }; }"
+	eval "__$current_uid_1() { __$current_uid_2() { echo $ubiquitousBashID; }; }"
 	
 	if [[ $(declare -f __$current_uid_1 | wc -c) -lt 50 ]]
 	then

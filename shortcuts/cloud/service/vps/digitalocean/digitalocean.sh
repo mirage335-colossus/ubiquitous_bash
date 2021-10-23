@@ -127,8 +127,8 @@ _digitalocean_cloud_self_server_dispose-filter() {
 	currentIterations=0
 	local currentIterations_inner
 	currentIterations_inner=0
-	export ub_digitalocean_cloud_server_uid="$ubiquitiousBashIDnano"$(_uid 18)"$ubiquitiousBashIDnano"
-	export ub_digitalocean_cloud_server_name="$ubiquitiousBashIDnano"$(_uid 18)"$ubiquitiousBashIDnano"
+	export ub_digitalocean_cloud_server_uid="$ubiquitousBashIDnano"$(_uid 18)"$ubiquitousBashIDnano"
+	export ub_digitalocean_cloud_server_name="$ubiquitousBashIDnano"$(_uid 18)"$ubiquitousBashIDnano"
 	while [[ "$ub_digitalocean_cloud_server_uid" != "null" ]] && [[ "$ub_digitalocean_cloud_server_name" != "null" ]] && [[ "$ub_digitalocean_cloud_server_uid" != "" ]] && [[ "$ub_digitalocean_cloud_server_name" != "" ]] && [[ "$currentIterations" -lt 999 ]]
 	do
 		if _safeEcho "$ub_digitalocean_cloud_server_name" | grep "$@"
@@ -174,8 +174,8 @@ _digitalocean_cloud_self_server_status-filter() {
 	currentIterations=0
 	local currentIterations_inner
 	currentIterations_inner=0
-	export ub_digitalocean_cloud_server_uid="$ubiquitiousBashIDnano"$(_uid 18)"$ubiquitiousBashIDnano"
-	export ub_digitalocean_cloud_server_name="$ubiquitiousBashIDnano"$(_uid 18)"$ubiquitiousBashIDnano"
+	export ub_digitalocean_cloud_server_uid="$ubiquitousBashIDnano"$(_uid 18)"$ubiquitousBashIDnano"
+	export ub_digitalocean_cloud_server_name="$ubiquitousBashIDnano"$(_uid 18)"$ubiquitousBashIDnano"
 	while [[ "$ub_digitalocean_cloud_server_uid" != "null" ]] && [[ "$ub_digitalocean_cloud_server_name" != "null" ]] && [[ "$ub_digitalocean_cloud_server_uid" != "" ]] && [[ "$ub_digitalocean_cloud_server_name" != "" ]] && [[ "$currentIterations" -lt 999 ]]
 	do
 		if _safeEcho "$ub_digitalocean_cloud_server_name" | grep "$@"

@@ -1,8 +1,11 @@
 #####Global variables.
-#Fixed unique identifier for ubiquitious bash created global resources, such as bootdisc images to be automaticaly mounted by guests. Should NEVER be changed.
+#Fixed unique identifier for ubiquitous bash created global resources, such as bootdisc images to be automaticaly mounted by guests. Should NEVER be changed.
 export ubiquitiousBashIDnano=uk4u
 export ubiquitiousBashIDshort="$ubiquitiousBashIDnano"PhB6
 export ubiquitiousBashID="$ubiquitiousBashIDshort"63kVcygT0q
+export ubiquitousBashIDnano=uk4u
+export ubiquitousBashIDshort="$ubiquitousBashIDnano"PhB6
+export ubiquitousBashID="$ubiquitousBashIDshort"63kVcygT0q
 
 ##Parameters
 #"--shell", ""
@@ -163,9 +166,9 @@ export bootTmp="$scriptLocal"
 # DANGER: Mandatory strict directory 8.3 compliance for this variable! Long subdirectory/filenames permitted thereafter.
 # DANGER: Permitting multi-user access to this directory may cause unexpected behavior, including inconsitent file ownership.
 #Consistent absolute path abstraction.
-export abstractfs_root=/tmp/"$ubiquitiousBashIDnano"
-( [[ "$bootTmp" == '/dev/shm' ]] || [[ "$bootTmp" == '/tmp' ]] || [[ "$tmpMSW" != "" ]] ) && export abstractfs_root="$bootTmp"/"$ubiquitiousBashIDnano"
-export abstractfs_lock="$bootTmp"/"$ubiquitiousBashID"/afslock
+export abstractfs_root=/tmp/"$ubiquitousBashIDnano"
+( [[ "$bootTmp" == '/dev/shm' ]] || [[ "$bootTmp" == '/tmp' ]] || [[ "$tmpMSW" != "" ]] ) && export abstractfs_root="$bootTmp"/"$ubiquitousBashIDnano"
+export abstractfs_lock="$bootTmp"/"$ubiquitousBashID"/afslock
 
 # Unusually, safeTmpSSH must not be interpreted by client, and therefore is single quoted.
 # TODO Test safeTmpSSH variants including spaces in path.

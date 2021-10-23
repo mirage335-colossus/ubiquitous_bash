@@ -237,7 +237,7 @@ _color_demo() {
 	_messagePlain_nominal _color_demo
 	_messagePlain_probe _color_demo
 	_messagePlain_probe_expr _color_demo
-	_messagePlain_probe_var ubiquitiousBashIDshort
+	_messagePlain_probe_var ubiquitousBashIDshort
 	_messagePlain_good _color_demo
 	_messagePlain_warn _color_demo
 	_messagePlain_bad _color_demo

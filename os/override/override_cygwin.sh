@@ -111,7 +111,7 @@ _sudo_cygwin_sequence() {
 	
 	
 	_safeEcho_newline "$safeTmp"/_bin.bat "$@" >> "$safeTmp"/cygwin_sudo_temp.sh
-	echo 'echo > "'"$safeTmp"'"/sequenceDone_'"$ubiquitiousBashID" >> "$safeTmp"/cygwin_sudo_temp.sh
+	echo 'echo > "'"$safeTmp"'"/sequenceDone_'"$ubiquitousBashID" >> "$safeTmp"/cygwin_sudo_temp.sh
 	echo 'sleep 3' >> "$safeTmp"/cygwin_sudo_temp.sh
 	chmod u+x "$safeTmp"/cygwin_sudo_temp.sh
 	
@@ -136,7 +136,7 @@ _sudo_cygwin_sequence() {
 	fi
 	
 	
-	while ! [[ -e "$safeTmp"/sequenceDone_"$ubiquitiousBashID" ]]
+	while ! [[ -e "$safeTmp"/sequenceDone_"$ubiquitousBashID" ]]
 	do
 		sleep 3
 	done
@@ -302,7 +302,7 @@ then
 		# WARNING: CAUTION: DANGER: UNIX EOL *MANDATORY* !
 		[[ -e "$scriptAbsoluteFolder"/ops-cygwin.sh ]] && . "$scriptAbsoluteFolder"/ops-cygwin.sh
 		
-		# export ubiquitiousBashID=uk4uPhB663kVcygT0q
+		# export ubiquitousBashID=uk4uPhB663kVcygT0q
 		unset currentDriveLetter_cygwin_uk4uPhB663kVcygT0q
 		export currentDriveLetter_cygwin_uk4uPhB663kVcygT0q=$(cygpath -S | sed 's/\/Windows\/System32//g' | sed 's/^\/cygdrive\///')
 		[[ -e /cygdrive/$currentDriveLetter_cygwin_uk4uPhB663kVcygT0q ]] && [[ -e /cygdrive/$currentDriveLetter_cygwin_uk4uPhB663kVcygT0q/ops-cygwin.sh ]] && . /cygdrive/$currentDriveLetter_cygwin_uk4uPhB663kVcygT0q/ops-cygwin.sh

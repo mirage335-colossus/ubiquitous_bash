@@ -32,7 +32,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='1891409836'
-export ub_setScriptChecksum_contents='3307563311'
+export ub_setScriptChecksum_contents='1417037944'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -712,7 +712,7 @@ _sudo_cygwin_sequence() {
 	
 	
 	_safeEcho_newline "$safeTmp"/_bin.bat "$@" >> "$safeTmp"/cygwin_sudo_temp.sh
-	echo 'echo > "'"$safeTmp"'"/sequenceDone_'"$ubiquitiousBashID" >> "$safeTmp"/cygwin_sudo_temp.sh
+	echo 'echo > "'"$safeTmp"'"/sequenceDone_'"$ubiquitousBashID" >> "$safeTmp"/cygwin_sudo_temp.sh
 	echo 'sleep 3' >> "$safeTmp"/cygwin_sudo_temp.sh
 	chmod u+x "$safeTmp"/cygwin_sudo_temp.sh
 	
@@ -737,7 +737,7 @@ _sudo_cygwin_sequence() {
 	fi
 	
 	
-	while ! [[ -e "$safeTmp"/sequenceDone_"$ubiquitiousBashID" ]]
+	while ! [[ -e "$safeTmp"/sequenceDone_"$ubiquitousBashID" ]]
 	do
 		sleep 3
 	done
@@ -903,7 +903,7 @@ then
 		# WARNING: CAUTION: DANGER: UNIX EOL *MANDATORY* !
 		[[ -e "$scriptAbsoluteFolder"/ops-cygwin.sh ]] && . "$scriptAbsoluteFolder"/ops-cygwin.sh
 		
-		# export ubiquitiousBashID=uk4uPhB663kVcygT0q
+		# export ubiquitousBashID=uk4uPhB663kVcygT0q
 		unset currentDriveLetter_cygwin_uk4uPhB663kVcygT0q
 		export currentDriveLetter_cygwin_uk4uPhB663kVcygT0q=$(cygpath -S | sed 's/\/Windows\/System32//g' | sed 's/^\/cygdrive\///')
 		[[ -e /cygdrive/$currentDriveLetter_cygwin_uk4uPhB663kVcygT0q ]] && [[ -e /cygdrive/$currentDriveLetter_cygwin_uk4uPhB663kVcygT0q/ops-cygwin.sh ]] && . /cygdrive/$currentDriveLetter_cygwin_uk4uPhB663kVcygT0q/ops-cygwin.sh
@@ -2963,7 +2963,7 @@ _color_demo() {
 	_messagePlain_nominal _color_demo
 	_messagePlain_probe _color_demo
 	_messagePlain_probe_expr _color_demo
-	_messagePlain_probe_var ubiquitiousBashIDshort
+	_messagePlain_probe_var ubiquitousBashIDshort
 	_messagePlain_good _color_demo
 	_messagePlain_warn _color_demo
 	_messagePlain_bad _color_demo
@@ -3320,14 +3320,14 @@ _includeScript() {
 	
 	_includeFile "$progDir"/"$includeScriptFilename" && return 0
 	
-	_includeFile "$ubiquitiousLibDir"/"$includeScriptSubdirectory"/"$includeScriptFilename" && return 0
+	_includeFile "$ubiquitousLibDir"/"$includeScriptSubdirectory"/"$includeScriptFilename" && return 0
 	
-	_includeFile "$ubiquitiousLibDir"/"$includeScriptFilename" && return 0
+	_includeFile "$ubiquitousLibDir"/"$includeScriptFilename" && return 0
 	
 	#[[ "$configBaseDir" == "" ]] && configBaseDir="_config"
 	[[ "$configBaseDir" == "" ]] && configBaseDir=$(basename "$configDir")
 	
-	_includeFile "$ubiquitiousLibDir"/"$configBaseDir"/"$includeScriptFilename" && return 0
+	_includeFile "$ubiquitousLibDir"/"$configBaseDir"/"$includeScriptFilename" && return 0
 	
 	return 1
 }
@@ -5542,15 +5542,15 @@ _setup_ssh_operations() {
 	mkdir -p "$scriptLocal"/ssh
 	
 	! [[ -e "$sshBase" ]] && mkdir -p "$sshBase" && chmod 700 "$sshBase"
-	! [[ -e "$sshBase"/"$ubiquitiousBashID" ]] && mkdir -p "$sshBase"/"$ubiquitiousBashID" && chmod 700 "$sshBase"/"$ubiquitiousBashID"
+	! [[ -e "$sshBase"/"$ubiquitousBashID" ]] && mkdir -p "$sshBase"/"$ubiquitousBashID" && chmod 700 "$sshBase"/"$ubiquitousBashID"
 	! [[ -e "$sshDir" ]] && mkdir -p "$sshDir" && chmod 700 "$sshDir"
 	! [[ -e "$sshLocal" ]] && mkdir -p "$sshLocal" && chmod 700 "$sshLocal"
 	! [[ -e "$sshLocalSSH" ]] && mkdir -p "$sshLocalSSH" && chmod 700 "$sshLocalSSH"
 	
-	#! grep "$ubiquitiousBashID" "$sshBase"/config > /dev/null 2>&1 && echo 'Include "'"$sshUbiquitous"'/config"' >> "$sshBase"/config
+	#! grep "$ubiquitousBashID" "$sshBase"/config > /dev/null 2>&1 && echo 'Include "'"$sshUbiquitous"'/config"' >> "$sshBase"/config
 	
 	#Prepend include directive. Mitigates the risk of falling under an existing config directive (eg. Host/Match). Carries the relatively insignificant risk of a non-atomic operation.
-	if ! grep "$ubiquitiousBashID" "$sshBase"/config > /dev/null 2>&1 && [[ ! -e "$sshBase"/config.tmp ]]
+	if ! grep "$ubiquitousBashID" "$sshBase"/config > /dev/null 2>&1 && [[ ! -e "$sshBase"/config.tmp ]]
 	then
 		echo -n >> "$sshBase"/config
 		echo 'Include "'"$sshUbiquitous"'/config"' >> "$sshBase"/config.tmp
@@ -11915,7 +11915,7 @@ _mkisofs() {
 }
 
 _writeBootdisc() {
-	_mkisofs -V "$ubiquitiousBashID" -volset "$ubiquitiousBashID" -sysid "$ubiquitiousBashID" -R -uid 0 -gid 0 -dir-mode 0555 -file-mode 0555 -new-dir-mode 0555 -J -hfs -o "$hostToGuestISO" "$hostToGuestFiles"
+	_mkisofs -V "$ubiquitousBashID" -volset "$ubiquitousBashID" -sysid "$ubiquitousBashID" -R -uid 0 -gid 0 -dir-mode 0555 -file-mode 0555 -new-dir-mode 0555 -J -hfs -o "$hostToGuestISO" "$hostToGuestFiles"
 }
 
 _setShareMSW_app() {
@@ -12034,7 +12034,7 @@ _commandBootdisc() {
 	[[ "$flagShareRoot" != "true" ]] && export flagShareRoot="false"
 	[[ "$flagShareRoot" != "true" ]] && export flagShareApp="true"
 	
-	#Include ubiquitious_bash itself.
+	#Include ubiquitous_bash itself.
 	cp "$scriptAbsoluteLocation" "$hostToGuestFiles"/
 	"$scriptBin"/.ubrgbin.sh _ubrgbin_cpA "$scriptBin" "$hostToGuestFiles"/_bin
 	
@@ -17254,8 +17254,8 @@ _aws_cloud_server_create() {
 }
 _aws_cloud_server_create_API--image_ami-xxxxxxxx() {
 	# https://docs.aws.amazon.com/cli/latest/userguide/cli-services-ec2-instances.html
-	#aws ec2 run-instances --image-id ami-xxxxxxxx --count 1 --instance-type t2.micro --key-name "$ubiquitiousBashIDshort" --security-group-ids sg-903004f8 --subnet-id subnet-6e7f829e
-	aws ec2 run-instances --image-id ami-xxxxxxxx --count 1 --instance-type t2.micro --key-name "$ubiquitiousBashIDshort" --security-group-ids sg-"$ubiquitiousBashIDshort" --subnet-id subnet-"$ubiquitiousBashIDshort"
+	#aws ec2 run-instances --image-id ami-xxxxxxxx --count 1 --instance-type t2.micro --key-name "$ubiquitousBashIDshort" --security-group-ids sg-903004f8 --subnet-id subnet-6e7f829e
+	aws ec2 run-instances --image-id ami-xxxxxxxx --count 1 --instance-type t2.micro --key-name "$ubiquitousBashIDshort" --security-group-ids sg-"$ubiquitousBashIDshort" --subnet-id subnet-"$ubiquitousBashIDshort"
 }
 _aws_cloud_server_name_API() {
 	aws ec2 create-tags --resources "$ub_aws_cloud_server_uid" --tags Key=Name,Value="$ub_aws_cloud_server_name"
@@ -17321,8 +17321,8 @@ _aws_cloud_self_server_dispose-filter() {
 	currentIterations=0
 	local currentIterations_inner
 	currentIterations_inner=0
-	export ub_aws_cloud_server_uid="$ubiquitiousBashIDnano"$(_uid 18)"$ubiquitiousBashIDnano"
-	export ub_aws_cloud_server_name="$ubiquitiousBashIDnano"$(_uid 18)"$ubiquitiousBashIDnano"
+	export ub_aws_cloud_server_uid="$ubiquitousBashIDnano"$(_uid 18)"$ubiquitousBashIDnano"
+	export ub_aws_cloud_server_name="$ubiquitousBashIDnano"$(_uid 18)"$ubiquitousBashIDnano"
 	while [[ "$ub_aws_cloud_server_uid" != "null" ]] && [[ "$ub_aws_cloud_server_name" != "null" ]] && [[ "$ub_aws_cloud_server_uid" != "" ]] && [[ "$ub_aws_cloud_server_name" != "" ]] && [[ "$currentIterations" -lt 999 ]]
 	do
 		if _safeEcho "$ub_aws_cloud_server_name" | grep "$@"
@@ -17369,8 +17369,8 @@ _aws_cloud_self_server_status-filter() {
 	currentIterations=0
 	local currentIterations_inner
 	currentIterations_inner=0
-	export ub_aws_cloud_server_uid="$ubiquitiousBashIDnano"$(_uid 18)"$ubiquitiousBashIDnano"
-	export ub_aws_cloud_server_name="$ubiquitiousBashIDnano"$(_uid 18)"$ubiquitiousBashIDnano"
+	export ub_aws_cloud_server_uid="$ubiquitousBashIDnano"$(_uid 18)"$ubiquitousBashIDnano"
+	export ub_aws_cloud_server_name="$ubiquitousBashIDnano"$(_uid 18)"$ubiquitousBashIDnano"
 	while [[ "$ub_aws_cloud_server_uid" != "null" ]] && [[ "$ub_aws_cloud_server_name" != "null" ]] && [[ "$ub_aws_cloud_server_uid" != "" ]] && [[ "$ub_aws_cloud_server_name" != "" ]] && [[ "$currentIterations" -lt 999 ]]
 	do
 		if _safeEcho "$ub_aws_cloud_server_name" | grep "$@"
@@ -17908,8 +17908,8 @@ _gcloud_cloud_self_server_dispose-filter() {
 	currentIterations=0
 	local currentIterations_inner
 	currentIterations_inner=0
-	export ub_gcloud_cloud_server_uid="$ubiquitiousBashIDnano"$(_uid 18)"$ubiquitiousBashIDnano"
-	export ub_gcloud_cloud_server_name="$ubiquitiousBashIDnano"$(_uid 18)"$ubiquitiousBashIDnano"
+	export ub_gcloud_cloud_server_uid="$ubiquitousBashIDnano"$(_uid 18)"$ubiquitousBashIDnano"
+	export ub_gcloud_cloud_server_name="$ubiquitousBashIDnano"$(_uid 18)"$ubiquitousBashIDnano"
 	while [[ "$ub_gcloud_cloud_server_uid" != "null" ]] && [[ "$ub_gcloud_cloud_server_name" != "null" ]] && [[ "$ub_gcloud_cloud_server_uid" != "" ]] && [[ "$ub_gcloud_cloud_server_name" != "" ]] && [[ "$currentIterations" -lt 999 ]]
 	do
 		if _safeEcho "$ub_gcloud_cloud_server_name" | grep "$@"
@@ -17956,8 +17956,8 @@ _gcloud_cloud_self_server_status-filter() {
 	currentIterations=0
 	local currentIterations_inner
 	currentIterations_inner=0
-	export ub_gcloud_cloud_server_uid="$ubiquitiousBashIDnano"$(_uid 18)"$ubiquitiousBashIDnano"
-	export ub_gcloud_cloud_server_name="$ubiquitiousBashIDnano"$(_uid 18)"$ubiquitiousBashIDnano"
+	export ub_gcloud_cloud_server_uid="$ubiquitousBashIDnano"$(_uid 18)"$ubiquitousBashIDnano"
+	export ub_gcloud_cloud_server_name="$ubiquitousBashIDnano"$(_uid 18)"$ubiquitousBashIDnano"
 	while [[ "$ub_gcloud_cloud_server_uid" != "null" ]] && [[ "$ub_gcloud_cloud_server_name" != "null" ]] && [[ "$ub_gcloud_cloud_server_uid" != "" ]] && [[ "$ub_gcloud_cloud_server_name" != "" ]] && [[ "$currentIterations" -lt 999 ]]
 	do
 		if _safeEcho "$ub_gcloud_cloud_server_name" | grep "$@"
@@ -18482,8 +18482,8 @@ _digitalocean_cloud_self_server_dispose-filter() {
 	currentIterations=0
 	local currentIterations_inner
 	currentIterations_inner=0
-	export ub_digitalocean_cloud_server_uid="$ubiquitiousBashIDnano"$(_uid 18)"$ubiquitiousBashIDnano"
-	export ub_digitalocean_cloud_server_name="$ubiquitiousBashIDnano"$(_uid 18)"$ubiquitiousBashIDnano"
+	export ub_digitalocean_cloud_server_uid="$ubiquitousBashIDnano"$(_uid 18)"$ubiquitousBashIDnano"
+	export ub_digitalocean_cloud_server_name="$ubiquitousBashIDnano"$(_uid 18)"$ubiquitousBashIDnano"
 	while [[ "$ub_digitalocean_cloud_server_uid" != "null" ]] && [[ "$ub_digitalocean_cloud_server_name" != "null" ]] && [[ "$ub_digitalocean_cloud_server_uid" != "" ]] && [[ "$ub_digitalocean_cloud_server_name" != "" ]] && [[ "$currentIterations" -lt 999 ]]
 	do
 		if _safeEcho "$ub_digitalocean_cloud_server_name" | grep "$@"
@@ -18529,8 +18529,8 @@ _digitalocean_cloud_self_server_status-filter() {
 	currentIterations=0
 	local currentIterations_inner
 	currentIterations_inner=0
-	export ub_digitalocean_cloud_server_uid="$ubiquitiousBashIDnano"$(_uid 18)"$ubiquitiousBashIDnano"
-	export ub_digitalocean_cloud_server_name="$ubiquitiousBashIDnano"$(_uid 18)"$ubiquitiousBashIDnano"
+	export ub_digitalocean_cloud_server_uid="$ubiquitousBashIDnano"$(_uid 18)"$ubiquitousBashIDnano"
+	export ub_digitalocean_cloud_server_name="$ubiquitousBashIDnano"$(_uid 18)"$ubiquitousBashIDnano"
 	while [[ "$ub_digitalocean_cloud_server_uid" != "null" ]] && [[ "$ub_digitalocean_cloud_server_name" != "null" ]] && [[ "$ub_digitalocean_cloud_server_uid" != "" ]] && [[ "$ub_digitalocean_cloud_server_name" != "" ]] && [[ "$currentIterations" -lt 999 ]]
 	do
 		if _safeEcho "$ub_digitalocean_cloud_server_name" | grep "$@"
@@ -18744,8 +18744,8 @@ _linode_cloud_self_server_dispose-filter() {
 	currentIterations=0
 	local currentIterations_inner
 	currentIterations_inner=0
-	export ub_linode_cloud_server_uid="$ubiquitiousBashIDnano"$(_uid 18)"$ubiquitiousBashIDnano"
-	export ub_linode_cloud_server_name="$ubiquitiousBashIDnano"$(_uid 18)"$ubiquitiousBashIDnano"
+	export ub_linode_cloud_server_uid="$ubiquitousBashIDnano"$(_uid 18)"$ubiquitousBashIDnano"
+	export ub_linode_cloud_server_name="$ubiquitousBashIDnano"$(_uid 18)"$ubiquitousBashIDnano"
 	while [[ "$ub_linode_cloud_server_uid" != "null" ]] && [[ "$ub_linode_cloud_server_name" != "null" ]] && [[ "$ub_linode_cloud_server_uid" != "" ]] && [[ "$ub_linode_cloud_server_name" != "" ]] && [[ "$currentIterations" -lt 999 ]]
 	do
 		if _safeEcho "$ub_linode_cloud_server_name" | grep "$@"
@@ -18790,8 +18790,8 @@ _linode_cloud_self_server_status-filter() {
 	currentIterations=0
 	local currentIterations_inner
 	currentIterations_inner=0
-	export ub_linode_cloud_server_uid="$ubiquitiousBashIDnano"$(_uid 18)"$ubiquitiousBashIDnano"
-	export ub_linode_cloud_server_name="$ubiquitiousBashIDnano"$(_uid 18)"$ubiquitiousBashIDnano"
+	export ub_linode_cloud_server_uid="$ubiquitousBashIDnano"$(_uid 18)"$ubiquitousBashIDnano"
+	export ub_linode_cloud_server_name="$ubiquitousBashIDnano"$(_uid 18)"$ubiquitousBashIDnano"
 	while [[ "$ub_linode_cloud_server_uid" != "null" ]] && [[ "$ub_linode_cloud_server_name" != "null" ]] && [[ "$ub_linode_cloud_server_uid" != "" ]] && [[ "$ub_linode_cloud_server_name" != "" ]] && [[ "$currentIterations" -lt 999 ]]
 	do
 		if _safeEcho "$ub_linode_cloud_server_name" | grep "$@"
@@ -22161,13 +22161,13 @@ _write_bfq() {
 	
 	_messagePlain_nominal 'write_bfq: write'
 	
-	sudo -n cat << 'CZXWXcRMTo8EmM8i4d' | sudo tee "$1"'/etc/modules-load.d/bfq-'"$ubiquitiousBashIDshort"'.conf' > /dev/null
+	sudo -n cat << 'CZXWXcRMTo8EmM8i4d' | sudo tee "$1"'/etc/modules-load.d/bfq-'"$ubiquitousBashIDshort"'.conf' > /dev/null
 bfq
 
 CZXWXcRMTo8EmM8i4d
 
 
-	cat << 'CZXWXcRMTo8EmM8i4d' | sudo tee "$1"'/etc/udev/rules.d/60-scheduler-'"$ubiquitiousBashIDshort"'.rules' > /dev/null
+	cat << 'CZXWXcRMTo8EmM8i4d' | sudo tee "$1"'/etc/udev/rules.d/60-scheduler-'"$ubiquitousBashIDshort"'.rules' > /dev/null
 ACTION=="add|change", KERNEL=="sd*[!0-9]|sr*", ATTR{queue/scheduler}="bfq"
 ACTION=="add|change", KERNEL=="nvme[0-9]n[0-9]", ATTR{queue/scheduler}="bfq"
 
@@ -22991,7 +22991,7 @@ _anchor_autoupgrade() {
 	
 	_findUbiquitous
 	
-	[[ -e "$ubiquitiousLibDir"/_anchor ]] && cp -a "$ubiquitiousLibDir"/_anchor "$scriptAbsoluteFolder"/_anchor
+	[[ -e "$ubiquitousLibDir"/_anchor ]] && cp -a "$ubiquitousLibDir"/_anchor "$scriptAbsoluteFolder"/_anchor
 }
 
 _anchor_configure() {
@@ -24225,10 +24225,13 @@ export tmpSelf=""
 #export descriptiveSelf=""
 
 #####Global variables.
-#Fixed unique identifier for ubiquitious bash created global resources, such as bootdisc images to be automaticaly mounted by guests. Should NEVER be changed.
+#Fixed unique identifier for ubiquitous bash created global resources, such as bootdisc images to be automaticaly mounted by guests. Should NEVER be changed.
 export ubiquitiousBashIDnano=uk4u
 export ubiquitiousBashIDshort="$ubiquitiousBashIDnano"PhB6
 export ubiquitiousBashID="$ubiquitiousBashIDshort"63kVcygT0q
+export ubiquitousBashIDnano=uk4u
+export ubiquitousBashIDshort="$ubiquitousBashIDnano"PhB6
+export ubiquitousBashID="$ubiquitousBashIDshort"63kVcygT0q
 
 ##Parameters
 #"--shell", ""
@@ -24389,9 +24392,9 @@ export bootTmp="$scriptLocal"
 # DANGER: Mandatory strict directory 8.3 compliance for this variable! Long subdirectory/filenames permitted thereafter.
 # DANGER: Permitting multi-user access to this directory may cause unexpected behavior, including inconsitent file ownership.
 #Consistent absolute path abstraction.
-export abstractfs_root=/tmp/"$ubiquitiousBashIDnano"
-( [[ "$bootTmp" == '/dev/shm' ]] || [[ "$bootTmp" == '/tmp' ]] || [[ "$tmpMSW" != "" ]] ) && export abstractfs_root="$bootTmp"/"$ubiquitiousBashIDnano"
-export abstractfs_lock="$bootTmp"/"$ubiquitiousBashID"/afslock
+export abstractfs_root=/tmp/"$ubiquitousBashIDnano"
+( [[ "$bootTmp" == '/dev/shm' ]] || [[ "$bootTmp" == '/tmp' ]] || [[ "$tmpMSW" != "" ]] ) && export abstractfs_root="$bootTmp"/"$ubiquitousBashIDnano"
+export abstractfs_lock="$bootTmp"/"$ubiquitousBashID"/afslock
 
 # Unusually, safeTmpSSH must not be interpreted by client, and therefore is single quoted.
 # TODO Test safeTmpSSH variants including spaces in path.
@@ -24694,7 +24697,8 @@ export keepKeys_SSH=true
 _prepare_ssh() {
 	[[ "$sshHomeBase" == "" ]] && export sshHomeBase="$HOME"/.ssh
 	[[ "$sshBase" == "" ]] && export sshBase="$sshHomeBase"
-	export sshUbiquitous="$sshBase"/"$ubiquitiousBashID"
+	export sshUbiquitous="$sshBase"/"$ubiquitousBashID"
+	export sshUbiquitious="$sshUbiquitous"
 	export sshDir="$sshUbiquitous"/"$netName"
 	export sshLocal="$sshDir"/_local
 	export sshLocalSSH="$sshLocal"/ssh
@@ -27779,7 +27783,7 @@ _db_filter_characters() {
 
 # "$1" == grepPattern
 _db_filter_identifier() {
-	grep '^ubdb_'"$ubiquitiousBashID"'_'"$1" | _db_filter_characters
+	grep '^ubdb_'"$ubiquitousBashID"'_'"$1" | _db_filter_characters
 }
 
 _db_reinit() {
@@ -31760,7 +31764,7 @@ _define_function_test() {
 	current_uid_2=$(_uid)
 	
 	# https://stackoverflow.com/questions/7145337/bash-how-do-i-create-function-from-variable
-	eval "__$current_uid_1() { __$current_uid_2() { echo $ubiquitiousBashID; }; }"
+	eval "__$current_uid_1() { __$current_uid_2() { echo $ubiquitousBashID; }; }"
 	
 	if [[ $(declare -f __$current_uid_1 | wc -c) -lt 50 ]]
 	then
@@ -33675,7 +33679,8 @@ _generate_lean-python() {
 
 
 _findUbiquitous() {
-	export ubiquitiousLibDir="$scriptAbsoluteFolder"
+	export ubiquitousLibDir="$scriptAbsoluteFolder"
+	export ubiquitiousLibDir="$ubiquitousLibDir"
 	
 	local scriptBasename=$(basename "$scriptAbsoluteFolder")
 	if [[ "$scriptBasename" == "ubiquitous_bash" ]]
@@ -33683,16 +33688,18 @@ _findUbiquitous() {
 		return 0
 	fi
 	
-	if [[ -e "$ubiquitiousLibDir"/_lib/ubiquitous_bash ]]
+	if [[ -e "$ubiquitousLibDir"/_lib/ubiquitous_bash ]]
 	then
-		export ubiquitiousLibDir="$ubiquitiousLibDir"/_lib/ubiquitous_bash
+		export ubiquitousLibDir="$ubiquitousLibDir"/_lib/ubiquitous_bash
+		export ubiquitiousLibDir="$ubiquitousLibDir"
 		return 0
 	fi
 	
-	local ubiquitiousLibDirDiscovery=$(find ./_lib -maxdepth 3 -type d -name 'ubiquitous_bash' | head -n 1)
-	if [[ "$ubiquitiousLibDirDiscovery" != "" ]] && [[ -e "$ubiquitiousLibDirDiscovery" ]]
+	local ubiquitousLibDirDiscovery=$(find ./_lib -maxdepth 3 -type d -name 'ubiquitous_bash' | head -n 1)
+	if [[ "$ubiquitousLibDirDiscovery" != "" ]] && [[ -e "$ubiquitousLibDirDiscovery" ]]
 	then
-		export ubiquitiousLibDir="$ubiquitiousLibDirDiscovery"
+		export ubiquitousLibDir="$ubiquitousLibDirDiscovery"
+		export ubiquitiousLibDir="$ubiquitousLibDir"
 		return 0
 	fi
 	
@@ -34125,7 +34132,7 @@ _generate_compile_bash() {
 
 # #No production use. Unmaintained, obsolete. Never used literally. Preserved as an example command set to build the otherwise self-hosted generate/compile script manually (ie. bootstrapping).
 # _bootstrap_bash_basic() {
-# 	cat "generic"/minimalheader.sh "labels"/utilitiesLabel.sh "generic/filesystem"/absolutepaths.sh "generic/filesystem"/safedelete.sh "generic/process"/timeout.sh "generic"/uid.sh "generic/filesystem/permissions"/checkpermissions.sh "build/bash"/include.sh "structure"/globalvars.sh "build/bash/ubiquitous"/discoverubiquitious.sh "build/bash/ubiquitous"/depsubiquitous.sh "build/bash"/generate.sh "build/bash"/compile.sh "structure"/overrides.sh > ./compile.sh
+# 	cat "generic"/minimalheader.sh "labels"/utilitiesLabel.sh "generic/filesystem"/absolutepaths.sh "generic/filesystem"/safedelete.sh "generic/process"/timeout.sh "generic"/uid.sh "generic/filesystem/permissions"/checkpermissions.sh "build/bash"/include.sh "structure"/globalvars.sh "build/bash/ubiquitous"/discoverubiquitous.sh "build/bash/ubiquitous"/depsubiquitous.sh "build/bash"/generate.sh "build/bash"/compile.sh "structure"/overrides.sh > ./compile.sh
 # 	echo >> ./compile.sh
 # 	echo _generate_compile_bash >> ./compile.sh
 # 	chmod u+x ./compile.sh
@@ -34922,8 +34929,8 @@ _compile_bash_selfHost() {
 	fi
 	
 	
-	includeScriptList+=( "build/bash/ubiquitous"/discoverubiquitious.sh )
-	#[[ "$enUb_buildBashUbiquitous" == "true" ]] && includeScriptList+=( "build/bash/ubiquitous"/discoverubiquitious.sh )
+	includeScriptList+=( "build/bash/ubiquitous"/discoverubiquitous.sh )
+	#[[ "$enUb_buildBashUbiquitous" == "true" ]] && includeScriptList+=( "build/bash/ubiquitous"/discoverubiquitous.sh )
 	[[ "$enUb_buildBashUbiquitous" == "true" ]] && includeScriptList+=( "build/bash/ubiquitous"/depsubiquitous.sh )
 	[[ "$enUb_buildBashUbiquitous" == "true" ]] && includeScriptList+=( deps.sh )
 	[[ "$enUb_buildBashUbiquitous" == "true" ]] && includeScriptList+=( "build/bash"/generate_bash.sh )

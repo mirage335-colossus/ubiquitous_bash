@@ -28,7 +28,7 @@ _db_filter_characters() {
 
 # "$1" == grepPattern
 _db_filter_identifier() {
-	grep '^ubdb_'"$ubiquitiousBashID"'_'"$1" | _db_filter_characters
+	grep '^ubdb_'"$ubiquitousBashID"'_'"$1" | _db_filter_characters
 }
 
 _db_reinit() {

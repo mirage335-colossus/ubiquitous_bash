@@ -93,7 +93,8 @@ export keepKeys_SSH=true
 _prepare_ssh() {
 	[[ "$sshHomeBase" == "" ]] && export sshHomeBase="$HOME"/.ssh
 	[[ "$sshBase" == "" ]] && export sshBase="$sshHomeBase"
-	export sshUbiquitous="$sshBase"/"$ubiquitiousBashID"
+	export sshUbiquitous="$sshBase"/"$ubiquitousBashID"
+	export sshUbiquitious="$sshUbiquitous"
 	export sshDir="$sshUbiquitous"/"$netName"
 	export sshLocal="$sshDir"/_local
 	export sshLocalSSH="$sshLocal"/ssh

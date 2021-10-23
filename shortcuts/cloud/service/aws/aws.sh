@@ -64,8 +64,8 @@ _aws_cloud_server_create() {
 }
 _aws_cloud_server_create_API--image_ami-xxxxxxxx() {
 	# https://docs.aws.amazon.com/cli/latest/userguide/cli-services-ec2-instances.html
-	#aws ec2 run-instances --image-id ami-xxxxxxxx --count 1 --instance-type t2.micro --key-name "$ubiquitiousBashIDshort" --security-group-ids sg-903004f8 --subnet-id subnet-6e7f829e
-	aws ec2 run-instances --image-id ami-xxxxxxxx --count 1 --instance-type t2.micro --key-name "$ubiquitiousBashIDshort" --security-group-ids sg-"$ubiquitiousBashIDshort" --subnet-id subnet-"$ubiquitiousBashIDshort"
+	#aws ec2 run-instances --image-id ami-xxxxxxxx --count 1 --instance-type t2.micro --key-name "$ubiquitousBashIDshort" --security-group-ids sg-903004f8 --subnet-id subnet-6e7f829e
+	aws ec2 run-instances --image-id ami-xxxxxxxx --count 1 --instance-type t2.micro --key-name "$ubiquitousBashIDshort" --security-group-ids sg-"$ubiquitousBashIDshort" --subnet-id subnet-"$ubiquitousBashIDshort"
 }
 _aws_cloud_server_name_API() {
 	aws ec2 create-tags --resources "$ub_aws_cloud_server_uid" --tags Key=Name,Value="$ub_aws_cloud_server_name"
@@ -131,8 +131,8 @@ _aws_cloud_self_server_dispose-filter() {
 	currentIterations=0
 	local currentIterations_inner
 	currentIterations_inner=0
-	export ub_aws_cloud_server_uid="$ubiquitiousBashIDnano"$(_uid 18)"$ubiquitiousBashIDnano"
-	export ub_aws_cloud_server_name="$ubiquitiousBashIDnano"$(_uid 18)"$ubiquitiousBashIDnano"
+	export ub_aws_cloud_server_uid="$ubiquitousBashIDnano"$(_uid 18)"$ubiquitousBashIDnano"
+	export ub_aws_cloud_server_name="$ubiquitousBashIDnano"$(_uid 18)"$ubiquitousBashIDnano"
 	while [[ "$ub_aws_cloud_server_uid" != "null" ]] && [[ "$ub_aws_cloud_server_name" != "null" ]] && [[ "$ub_aws_cloud_server_uid" != "" ]] && [[ "$ub_aws_cloud_server_name" != "" ]] && [[ "$currentIterations" -lt 999 ]]
 	do
 		if _safeEcho "$ub_aws_cloud_server_name" | grep "$@"
@@ -179,8 +179,8 @@ _aws_cloud_self_server_status-filter() {
 	currentIterations=0
 	local currentIterations_inner
 	currentIterations_inner=0
-	export ub_aws_cloud_server_uid="$ubiquitiousBashIDnano"$(_uid 18)"$ubiquitiousBashIDnano"
-	export ub_aws_cloud_server_name="$ubiquitiousBashIDnano"$(_uid 18)"$ubiquitiousBashIDnano"
+	export ub_aws_cloud_server_uid="$ubiquitousBashIDnano"$(_uid 18)"$ubiquitousBashIDnano"
+	export ub_aws_cloud_server_name="$ubiquitousBashIDnano"$(_uid 18)"$ubiquitousBashIDnano"
 	while [[ "$ub_aws_cloud_server_uid" != "null" ]] && [[ "$ub_aws_cloud_server_name" != "null" ]] && [[ "$ub_aws_cloud_server_uid" != "" ]] && [[ "$ub_aws_cloud_server_name" != "" ]] && [[ "$currentIterations" -lt 999 ]]
 	do
 		if _safeEcho "$ub_aws_cloud_server_name" | grep "$@"

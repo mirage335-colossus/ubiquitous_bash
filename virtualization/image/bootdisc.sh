@@ -83,7 +83,7 @@ _mkisofs() {
 }
 
 _writeBootdisc() {
-	_mkisofs -V "$ubiquitiousBashID" -volset "$ubiquitiousBashID" -sysid "$ubiquitiousBashID" -R -uid 0 -gid 0 -dir-mode 0555 -file-mode 0555 -new-dir-mode 0555 -J -hfs -o "$hostToGuestISO" "$hostToGuestFiles"
+	_mkisofs -V "$ubiquitousBashID" -volset "$ubiquitousBashID" -sysid "$ubiquitousBashID" -R -uid 0 -gid 0 -dir-mode 0555 -file-mode 0555 -new-dir-mode 0555 -J -hfs -o "$hostToGuestISO" "$hostToGuestFiles"
 }
 
 _setShareMSW_app() {
@@ -202,7 +202,7 @@ _commandBootdisc() {
 	[[ "$flagShareRoot" != "true" ]] && export flagShareRoot="false"
 	[[ "$flagShareRoot" != "true" ]] && export flagShareApp="true"
 	
-	#Include ubiquitious_bash itself.
+	#Include ubiquitous_bash itself.
 	cp "$scriptAbsoluteLocation" "$hostToGuestFiles"/
 	"$scriptBin"/.ubrgbin.sh _ubrgbin_cpA "$scriptBin" "$hostToGuestFiles"/_bin
 	
