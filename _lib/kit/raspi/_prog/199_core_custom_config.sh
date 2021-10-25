@@ -221,8 +221,8 @@ CZXWXcRMTo8EmM8i4d
 	
 	
 	# Write only to new image.
-	[[ -e "$globalVirtFS"/../boot/"$ubiquitiousBashIDshort" ]] && return 1
-	echo | sudo -n tee "$globalVirtFS"/../boot/"$ubiquitiousBashIDshort"
+	[[ -e "$globalVirtFS"/../boot/"$ubiquitousBashIDshort" ]] && return 1
+	echo | sudo -n tee "$globalVirtFS"/../boot/"$ubiquitousBashIDshort"
 	
 	cat << CZXWXcRMTo8EmM8i4d | sudo -n tee -a "$globalVirtFS"/../boot/config.txt > /dev/null 2>&1
 
