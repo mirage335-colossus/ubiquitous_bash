@@ -95,28 +95,28 @@ _project() {
 	[[ "$2" != "" ]] && projectFolder="$2"/"$projectName"
 	#[[ "$projectFolder" == './' ]] && projectFolder="$2"
 	
-
+	
 	#All content in this folder not owned by other authors is intended to be public domain. Other copyright notices may be provided as templates. See license.txt for details.
-
+	
 	mkdir -p "$projectFolder"
 	cd "$projectFolder"
-
+	
 	mkdir ./_lib
 	mkdir ./_prog
-
+	
 	git init
-
+	
 	git submodule add --depth 1 git@github.com:mirage335/ubiquitous_bash.git ./_lib/ubiquitous_bash 
 	cd ./_lib/ubiquitous_bash ; git fetch --shallow-exclude=v3.109 ; git reset --hard
 	cd "$workingDir"/"$projectName"
-
+	
 	#Parent derivative of ubiquitous_bash.
 	#cd ./_lib/parent
 	#git submodule update --shallow-exclude=v3.109 --init ./_lib/ubiquitous_bash
 	#cd "$projectFolder"
-
+	
 	#git submodule update --init --recursive
-
+	
 	cp ./_lib/ubiquitous_bash/ubiquitous_bash.sh ./
 	cp ./_lib/ubiquitous_bash/compile.sh ./
 	cp ./_lib/ubiquitous_bash/license.txt.gpl ./license.txt
@@ -137,11 +137,11 @@ _project() {
 	
 	cp ./_lib/ubiquitous_bash/gpl-3.0.txt ./gpl-3.0.txt
 	#cp ./_lib/ubiquitous_bash/agpl-3.0.txt ./agpl-3.0.txt
-
+	
 	find . -maxdepth 1 -type f -exec sed -i s/projectProjectName_replaceMe/"$projectName"/g '{}' \;
 	find . -maxdepth 1 -type f -exec sed -i s/projectDeveloperName_replaceMe/"$devName"/g '{}' \;
 	find . -maxdepth 1 -type f -exec sed -i s/projectYEAR_replaceMe/$(date +%Y)/g '{}' \;
-
+	
 	##### Binary Executables
 	mkdir -p ./_bin
 	cp -a ./_lib/ubiquitous_bash/_bin/. ./_bin
@@ -149,39 +149,39 @@ _project() {
 	#cp -a ./_lib/ubiquitous_bash/_lib/. ./_lib
 	mkdir -p ./_bundle
 	cp -a ./_lib/ubiquitous_bash/_bundle/. ./_bundle
-
+	
 	##### Hardcoded Configuration
 	mkdir -p ./_config
 	cp -a ./_lib/ubiquitous_bash/_config/. ./_config
-
+	
 	##### Commonly customized scripts.
-
+	
 	#cp ./_lib/ubiquitous_bash/generic/process/daemon.sh
-
+	
 	#cp ./_lib/ubiquitous_bash/structure/localfs.sh ./_prog/
-
+	
 	#cp ./_lib/ubiquitous_bash/structure/localenv.sh ./_prog/
-
+	
 	#cp ./_lib/ubiquitous_bash/structure/installation.sh ./_prog/
-
+	
 	##### Parent Derivative Scripts
 	#mkdir -p ./_prog
 	#cp -a ./_lib/parent/_prog/. ./_prog
-
+	
 	##### Dedicated program scripts.
-
+	
 	echo -n >> ./_prog/specglobalvars.sh
-
+	
 	echo '##### Core' >> ./_prog/core.sh
 	echo '' >> ./_prog/core.sh
 	
 	echo > ./_prog/installation_prog.sh
-
+	
 	cp ./_lib/ubiquitous_bash/structure/program.sh ./_prog/
-
+	
 	cp ./_lib/ubiquitous_bash/build/bash/compile_bash_prog.sh ./_prog/
 	cp ./_lib/ubiquitous_bash/build/bash/generate_bash_prog.sh ./_prog/
-
+	
 	cp ./_lib/ubiquitous_bash/os/override/override_prog.sh ./_prog/
 	
 	##### Anchors
@@ -193,15 +193,15 @@ _project() {
 	##### Kits (all, default)
 	
 	cp -r ./_lib/ubiquitous_bash/_lib/kit/all/. ./
-
+	
 	##### Runtime Configuration
-
+	
 	#mkdir -p ./_local/ssh
 	#cp -d --preserve=all ./_lib/ubiquitous_bash/_lib/ssh/ops ./_local/ssh/ops
-
+	
 	#Parent derivative of ubiquitous_bash.
 	#cp -d --preserve=all ./_lib/parent/_lib/ubiquitous_bash/_lib/ssh/ops ./_local/ssh/ops
-
+	
 	#cp -a ./_lib/coreautossh/_local ./
 	
 	
@@ -216,7 +216,7 @@ _project() {
 	echo '' >> ./_local/ops.sh
 	
 	./compile.sh
-
+	
 	git add -A .
 	git commit -a -m "first commit"
 	
