@@ -121,15 +121,26 @@ _project() {
 	cp ./_lib/ubiquitous_bash/compile.sh ./
 	cp ./_lib/ubiquitous_bash/license.txt.gpl ./license.txt
 	#cp ./_lib/ubiquitous_bash/license.txt.agpl ./license.txt
+	
 	cp ./_lib/ubiquitous_bash/README.md.template.gpl ./README.md
 	#cp ./_lib/ubiquitous_bash/README.md.template.agpl ./README.md
+	
+	cp ./_lib/ubiquitous_bash/README_template_gpl.sh ./README.sh
+	#cp ./_lib/ubiquitous_bash/README_template_agpl.sh ./README.sh
+	
+	#cp ./_lib/ubiquitous_bash/README_template_gpl.html ./README.html
+	#cp ./_lib/ubiquitous_bash/README_template_gpl.pdf ./README.pdf
+	#cp ./_lib/ubiquitous_bash/README_template_gpl.md ./README.md
+	#cp ./_lib/ubiquitous_bash/README_template_agpl.html ./README.html
+	#cp ./_lib/ubiquitous_bash/README_template_agpl.pdf ./README.pdf
+	#cp ./_lib/ubiquitous_bash/README_template_agpl.md ./README.md
 	
 	cp ./_lib/ubiquitous_bash/gpl-3.0.txt ./gpl-3.0.txt
 	#cp ./_lib/ubiquitous_bash/agpl-3.0.txt ./agpl-3.0.txt
 
-	find . -maxdepth 1 -type f -exec sed -i s/Project/"$projectName"/g '{}' \;
-	find . -maxdepth 1 -type f -exec sed -i s/DeveloperName/"$devName"/g '{}' \;
-	find . -maxdepth 1 -type f -exec sed -i s/YEAR/$(date +%Y)/g '{}' \;
+	find . -maxdepth 1 -type f -exec sed -i s/projectProjectName_replaceMe/"$projectName"/g '{}' \;
+	find . -maxdepth 1 -type f -exec sed -i s/projectDeveloperName_replaceMe/"$devName"/g '{}' \;
+	find . -maxdepth 1 -type f -exec sed -i s/projectYEAR_replaceMe/$(date +%Y)/g '{}' \;
 
 	##### Binary Executables
 	mkdir -p ./_bin

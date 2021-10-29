@@ -1628,6 +1628,11 @@ _package_procedure() {
 	cp -a "$scriptAbsoluteFolder"/README.md "$safeTmp"/package/
 	cp -a "$scriptAbsoluteFolder"/USAGE.html "$safeTmp"/package/
 	
+	cp -a "$scriptAbsoluteFolder"/README.sh "$safeTmp"/package/
+	cp -a "$scriptAbsoluteFolder"/README.html "$safeTmp"/package/
+	cp -a "$scriptAbsoluteFolder"/README.pdf "$safeTmp"/package/
+	cp -a "$scriptAbsoluteFolder"/README.md "$safeTmp"/package/
+	
 	
 	cp -a "$scriptAbsoluteFolder"/_config "$safeTmp"/package/
 	
