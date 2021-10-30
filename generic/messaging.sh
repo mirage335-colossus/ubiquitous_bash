@@ -272,6 +272,12 @@ _color_begin_probe() {
 	( [[ "$current_scriptedIllustrator_markup" == "html" ]] || [[ "$current_scriptedIllustrator_markup" == "mediawiki" ]] ) && echo -e -n '<span style="color:#1818b2;background-color:#848484;"> '
 	[[ "$current_scriptedIllustrator_markup" == "" ]] && echo -e -n '\E[0;34m '
 }
+_color_begin_probe_noindent() {
+	#1818b2
+	#848484
+	( [[ "$current_scriptedIllustrator_markup" == "html" ]] || [[ "$current_scriptedIllustrator_markup" == "mediawiki" ]] ) && echo -e -n '<span style="color:#1818b2;background-color:#848484;">'
+	[[ "$current_scriptedIllustrator_markup" == "" ]] && echo -e -n '\E[0;34m'
+}
 _color_begin_good() {
 	#17ae17
 	#848484
@@ -334,6 +340,15 @@ _messagePlain_nominal() {
 #"generic/ubiquitousheader.sh"
 _messagePlain_probe() {
 	_color_begin_probe
+	#_color_begin_probe_noindent
+	echo -n "$@"
+	_color_end
+	echo
+	return 0
+}
+_messagePlain_probe_noindent() {
+	#_color_begin_probe
+	_color_begin_probe_noindent
 	echo -n "$@"
 	_color_end
 	echo
