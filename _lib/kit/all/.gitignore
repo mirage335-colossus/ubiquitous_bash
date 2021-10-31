@@ -17,6 +17,7 @@ _local/tor/sshd/dd**/
 
 
 _bundle/
+lean_compressed.sh
 
 
 /ops
