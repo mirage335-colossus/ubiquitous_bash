@@ -1,6 +1,6 @@
 # WARNING Must use unique netName!
 export netName=default
-export gatewayName=gw-"$netName"
+export gatewayName=gw-"$netName"-"$netName"
 export LOCALSSHPORT=22
 
 #Network Defaults
