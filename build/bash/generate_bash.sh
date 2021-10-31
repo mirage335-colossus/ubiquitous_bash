@@ -145,6 +145,7 @@ _generate_compile_bash-lean_compressed() {
 	echo "$current_internal_CompressedScript"\' >> "$scriptAbsoluteFolder"/lean_compressed.sh
 	echo 'current_internal_compressedScript_headerFunctions='\' >> "$scriptAbsoluteFolder"/lean_compressed.sh
 	echo "$current_internal_compressedScript_headerFunctions"\' >> "$scriptAbsoluteFolder"/lean_compressed.sh
+	echo '! echo "$current_internal_compressedScript_headerFunctions" | base64 -d | xz -d > /dev/null && exit 1' >> "$scriptAbsoluteFolder"/lean_compressed.sh
 	echo 'source <(echo "$current_internal_compressedScript_headerFunctions" | base64 -d | xz -d)' >> "$scriptAbsoluteFolder"/lean_compressed.sh
 	cat << 'CZXWXcRMTo8EmM8i4d' >> "$scriptAbsoluteFolder"/lean_compressed.sh
 export importScriptLocation=$(_getScriptAbsoluteLocation)
@@ -158,19 +159,20 @@ export importScriptFolder=$(_getScriptAbsoluteFolder)
 ! _getAbsolute_criticalDep && exit 1
 CZXWXcRMTo8EmM8i4d
 	
+	echo '! _compressed_criticalDep && exit 1' >> "$scriptAbsoluteFolder"/lean_compressed.sh
+	
 	echo '! echo "$current_internal_CompressedScript" | base64 -d | xz -d > /dev/null && exit 1' >> "$scriptAbsoluteFolder"/lean_compressed.sh
-	echo 'source <(echo "$current_internal_CompressedScript" | base64 -d | xz -d) --call' >> "$scriptAbsoluteFolder"/lean_compressed.sh
-	#echo 'source <(echo "$current_internal_CompressedScript" | base64 -d | xz -d) --bypass' >> "$scriptAbsoluteFolder"/lean_compressed.sh
+	#echo 'source <(echo "$current_internal_CompressedScript" | base64 -d | xz -d) --call' >> "$scriptAbsoluteFolder"/lean_compressed.sh
+	echo 'source <(echo "$current_internal_CompressedScript" | base64 -d | xz -d) --bypass "$@"' >> "$scriptAbsoluteFolder"/lean_compressed.sh
 	
 	echo 'unset current_internal_CompressedScript ; unset current_internal_CompressedScript_cksum ; unset current_internal_CompressedScript_bytes' >> "$scriptAbsoluteFolder"/lean_compressed.sh
 	echo 'export ub_setScriptChecksum_disable=' >> "$scriptAbsoluteFolder"/lean_compressed.sh
 	echo 'unset ub_setScriptChecksum_disable' >> "$scriptAbsoluteFolder"/lean_compressed.sh
 	
+	echo 'true' >> "$scriptAbsoluteFolder"/lean_compressed.sh
+	
 	echo '# https://github.com/mirage335/ubiquitous_bash' >> "$scriptAbsoluteFolder"/lean_compressed.sh
 	echo '#_compressedScript_uk4uPhB663kVcygT0q_compressedScript_uk4uPhB663kVcygT0q_compressedScript_uk4uPhB663kVcygT0q_compressedScript' >> "$scriptAbsoluteFolder"/lean_compressed.sh
-	
-	echo '! _compressed_criticalDep && exit 1' >> "$scriptAbsoluteFolder"/lean_compressed.sh
-	echo 'true' >> "$scriptAbsoluteFolder"/lean_compressed.sh
 	
 	unset current_internal_CompressedScript ; unset current_internal_CompressedScript_cksum ; unset current_internal_CompressedScript_bytes
 	
