@@ -210,7 +210,7 @@ CZXWXcRMTo8EmM8i4d
 	echo >> "$scriptAbsoluteFolder"/lean_compressed.sh
 	echo >> "$scriptAbsoluteFolder"/lean_compressed.sh
 	
-	echo '[[ "$1" == '_'* ]] && "$@"' >> "$scriptAbsoluteFolder"/lean_compressed.sh
+	echo '[[ "$1" == '"'"_"'"'* ]] && type "$1" > /dev/null 2>&1 && "$@"' >> "$scriptAbsoluteFolder"/lean_compressed.sh
 	echo >> "$scriptAbsoluteFolder"/lean_compressed.sh
 	
 	chmod u+x "$scriptAbsoluteFolder"/lean_compressed.sh
