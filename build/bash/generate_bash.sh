@@ -177,7 +177,6 @@ CZXWXcRMTo8EmM8i4d
 	unset current_internal_CompressedScript ; unset current_internal_CompressedScript_cksum ; unset current_internal_CompressedScript_bytes
 	
 	
-	
 	echo >> "$scriptAbsoluteFolder"/lean_compressed.sh
 	echo >> "$scriptAbsoluteFolder"/lean_compressed.sh
 	echo >> "$scriptAbsoluteFolder"/lean_compressed.sh
@@ -192,8 +191,27 @@ CZXWXcRMTo8EmM8i4d
 	echo >> "$scriptAbsoluteFolder"/lean_compressed.sh
 	echo >> "$scriptAbsoluteFolder"/lean_compressed.sh
 	echo >> "$scriptAbsoluteFolder"/lean_compressed.sh
+	echo >> "$scriptAbsoluteFolder"/lean_compressed.sh
+	echo >> "$scriptAbsoluteFolder"/lean_compressed.sh
+	echo >> "$scriptAbsoluteFolder"/lean_compressed.sh
+	echo >> "$scriptAbsoluteFolder"/lean_compressed.sh
+	echo >> "$scriptAbsoluteFolder"/lean_compressed.sh
+	echo >> "$scriptAbsoluteFolder"/lean_compressed.sh
+	echo >> "$scriptAbsoluteFolder"/lean_compressed.sh
+	echo >> "$scriptAbsoluteFolder"/lean_compressed.sh
+	echo >> "$scriptAbsoluteFolder"/lean_compressed.sh
+	echo >> "$scriptAbsoluteFolder"/lean_compressed.sh
+	echo >> "$scriptAbsoluteFolder"/lean_compressed.sh
+	echo >> "$scriptAbsoluteFolder"/lean_compressed.sh
+	echo >> "$scriptAbsoluteFolder"/lean_compressed.sh
+	echo >> "$scriptAbsoluteFolder"/lean_compressed.sh
+	echo >> "$scriptAbsoluteFolder"/lean_compressed.sh
+	echo >> "$scriptAbsoluteFolder"/lean_compressed.sh
+	echo >> "$scriptAbsoluteFolder"/lean_compressed.sh
+	echo >> "$scriptAbsoluteFolder"/lean_compressed.sh
 	
-	
+	echo '[[ "$1" == '_'* ]] && "$@"' >> "$scriptAbsoluteFolder"/lean_compressed.sh
+	echo >> "$scriptAbsoluteFolder"/lean_compressed.sh
 	
 	chmod u+x "$scriptAbsoluteFolder"/lean_compressed.sh
 	

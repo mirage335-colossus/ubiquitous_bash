@@ -32,7 +32,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='1891409836'
-export ub_setScriptChecksum_contents='942437298'
+export ub_setScriptChecksum_contents='4046635462'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -5849,7 +5849,6 @@ CZXWXcRMTo8EmM8i4d
 	unset current_internal_CompressedScript ; unset current_internal_CompressedScript_cksum ; unset current_internal_CompressedScript_bytes
 	
 	
-	
 	echo >> "$scriptAbsoluteFolder"/lean_compressed.sh
 	echo >> "$scriptAbsoluteFolder"/lean_compressed.sh
 	echo >> "$scriptAbsoluteFolder"/lean_compressed.sh
@@ -5864,8 +5863,27 @@ CZXWXcRMTo8EmM8i4d
 	echo >> "$scriptAbsoluteFolder"/lean_compressed.sh
 	echo >> "$scriptAbsoluteFolder"/lean_compressed.sh
 	echo >> "$scriptAbsoluteFolder"/lean_compressed.sh
+	echo >> "$scriptAbsoluteFolder"/lean_compressed.sh
+	echo >> "$scriptAbsoluteFolder"/lean_compressed.sh
+	echo >> "$scriptAbsoluteFolder"/lean_compressed.sh
+	echo >> "$scriptAbsoluteFolder"/lean_compressed.sh
+	echo >> "$scriptAbsoluteFolder"/lean_compressed.sh
+	echo >> "$scriptAbsoluteFolder"/lean_compressed.sh
+	echo >> "$scriptAbsoluteFolder"/lean_compressed.sh
+	echo >> "$scriptAbsoluteFolder"/lean_compressed.sh
+	echo >> "$scriptAbsoluteFolder"/lean_compressed.sh
+	echo >> "$scriptAbsoluteFolder"/lean_compressed.sh
+	echo >> "$scriptAbsoluteFolder"/lean_compressed.sh
+	echo >> "$scriptAbsoluteFolder"/lean_compressed.sh
+	echo >> "$scriptAbsoluteFolder"/lean_compressed.sh
+	echo >> "$scriptAbsoluteFolder"/lean_compressed.sh
+	echo >> "$scriptAbsoluteFolder"/lean_compressed.sh
+	echo >> "$scriptAbsoluteFolder"/lean_compressed.sh
+	echo >> "$scriptAbsoluteFolder"/lean_compressed.sh
+	echo >> "$scriptAbsoluteFolder"/lean_compressed.sh
 	
-	
+	echo '[[ "$1" == '_'* ]] && "$@"' >> "$scriptAbsoluteFolder"/lean_compressed.sh
+	echo >> "$scriptAbsoluteFolder"/lean_compressed.sh
 	
 	chmod u+x "$scriptAbsoluteFolder"/lean_compressed.sh
 	
@@ -7237,7 +7255,7 @@ then
 	# NOTICE Launch internal functions as commands.
 	#if [[ "$1" != "" ]] && [[ "$1" != "-"* ]] && [[ ! -e "$1" ]]
 	#if [[ "$1" == '_'* ]] || [[ "$1" == "true" ]] || [[ "$1" == "false" ]]
-	if [[ "$1" == '_'* ]]
+	if [[ "$1" == '_'* ]] && type "$1" > /dev/null 2>&1
 	then
 		"$@"
 		internalFunctionExitStatus="$?"

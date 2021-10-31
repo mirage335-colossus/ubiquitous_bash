@@ -225,7 +225,7 @@ then
 	# NOTICE Launch internal functions as commands.
 	#if [[ "$1" != "" ]] && [[ "$1" != "-"* ]] && [[ ! -e "$1" ]]
 	#if [[ "$1" == '_'* ]] || [[ "$1" == "true" ]] || [[ "$1" == "false" ]]
-	if [[ "$1" == '_'* ]]
+	if [[ "$1" == '_'* ]] && type "$1" > /dev/null 2>&1
 	then
 		"$@"
 		internalFunctionExitStatus="$?"
