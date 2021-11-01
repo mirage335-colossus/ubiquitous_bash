@@ -966,7 +966,7 @@ if false; then true; # -->
 <!--
 fi
 _t '
-scriptedIllustrator_markup_uk4uPhB663kVcygT0q --><!-- # --><pre style="margin-top: 0px;margin-bottom: 0px;white-space: pre-wrap;">v3.112
+scriptedIllustrator_markup_uk4uPhB663kVcygT0q --><!-- # --><pre style="margin-top: 0px;margin-bottom: 0px;white-space: pre-wrap;">v3.113
 
 Semantic versioning is applied. Major version numbers (v2.x) indicate a 
 compatible API. Minor numbers indicate the current feature set has been 
