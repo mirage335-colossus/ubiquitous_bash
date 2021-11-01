@@ -32,7 +32,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='1891409836'
-export ub_setScriptChecksum_contents='1878885230'
+export ub_setScriptChecksum_contents='4010274083'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -28623,34 +28623,22 @@ _me_header_here() {
 	cat << CZXWXcRMTo8EmM8i4d
 #!/usr/bin/env bash
 
-#Green. Working as expected.
-_messagePlain_good() {
-	echo -e -n '\E[0;32m '
-	echo -n "\$@"
-	echo -e -n ' \E[0m'
-	echo
-	return 0
-}
-
-#Yellow. May or may not be a problem.
-_messagePlain_warn() {
-	echo -e -n '\E[1;33m '
-	echo -n "\$@"
-	echo -e -n ' \E[0m'
-	echo
-	return 0
-}
-
-#Red. Will result in missing functionality, reduced performance, etc, but not necessarily program failure overall.
-_messagePlain_bad() {
-	echo -e -n '\E[0;31m '
-	echo -n "\$@"
-	echo -e -n ' \E[0m'
-	echo
-	return 0
-}
+#_messagePlain_good
+#_messagePlain_warn
+#_messagePlain_bad
 
 CZXWXcRMTo8EmM8i4d
+	
+	declare -f _color_begin_good
+	declare -f _color_begin_warn
+	declare -f _color_begin_bad
+	declare -f _color_end
+	declare -f _messagePlain_good
+	declare -f _messagePlain_warn
+	declare -f _messagePlain_bad
+	
+	echo
+	echo
 }
 
 _me_var_here_script() {

@@ -2,34 +2,22 @@ _me_header_here() {
 	cat << CZXWXcRMTo8EmM8i4d
 #!/usr/bin/env bash
 
-#Green. Working as expected.
-_messagePlain_good() {
-	echo -e -n '\E[0;32m '
-	echo -n "\$@"
-	echo -e -n ' \E[0m'
-	echo
-	return 0
-}
-
-#Yellow. May or may not be a problem.
-_messagePlain_warn() {
-	echo -e -n '\E[1;33m '
-	echo -n "\$@"
-	echo -e -n ' \E[0m'
-	echo
-	return 0
-}
-
-#Red. Will result in missing functionality, reduced performance, etc, but not necessarily program failure overall.
-_messagePlain_bad() {
-	echo -e -n '\E[0;31m '
-	echo -n "\$@"
-	echo -e -n ' \E[0m'
-	echo
-	return 0
-}
+#_messagePlain_good
+#_messagePlain_warn
+#_messagePlain_bad
 
 CZXWXcRMTo8EmM8i4d
+	
+	declare -f _color_begin_good
+	declare -f _color_begin_warn
+	declare -f _color_begin_bad
+	declare -f _color_end
+	declare -f _messagePlain_good
+	declare -f _messagePlain_warn
+	declare -f _messagePlain_bad
+	
+	echo
+	echo
 }
 
 _me_var_here_script() {
