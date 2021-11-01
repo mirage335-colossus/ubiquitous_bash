@@ -119,7 +119,7 @@ _heading2 'Situational Awareness Command-Line Bash and Python Prompts'
 _t '(pictured right)'
 _picture 'zImage_commandPrompt.png' '485px'
 _ _picture 'zImage_commandPrompt.png' '45%'
-_paragraph_begin [
+_ _paragraph_begin [
 _heading2 'Linux Application Virtualization'
 _cells_begin
 _cells_row_begin
@@ -130,13 +130,14 @@ _cells_row_end
 _cells_end
 _ _image 'zImage_userQemu_command_nix.png' '450px'
 _ _image 'zImage_userQemu_command_nix.png' '45%'
-_t ' '
-_image 'zImage_userQemu_window_nix.png' '450px'
+_ _t ' '
+_ _image 'zImage_userQemu_window_nix.png' '450px'
 _ _image 'zImage_userQemu_window_nix.png' '45%'
-_paragraph_end ]
-_paragraph_begin [
+_image 'zImage_userQemu_window_nix.png' '275px'
+_ _paragraph_end ]
+_ _paragraph_begin [
 _heading2 'MSW Application Virtualization'
-_picture 'zImage_queue_experiment.jpg' '485px'
+_ _picture 'zImage_queue_experiment.jpg' '485px'
 _cells_begin
 _cells_row_begin
 _cells_speck_begin '485px'
@@ -145,11 +146,16 @@ _cells_speck_end
 _cells_row_end
 _cells_end
 _ _image 'zImage_userVBox_command_MSW.png' '450px'
-_t ' '
-_image 'zImage_userVBox_window_MSW.png' '450px'
+_ _t ' '
+_ _image 'zImage_userVBox_window_MSW.png' '450px'
+_image 'zImage_userVBox_window_MSW.png' '275px'
+_ _paragraph_end ]
+_ _paragraph_begin [
+_picture 'zImage_queue_experiment.jpg' '485px'
 _heading2 'Queue Inter-Process Communication'
-_t '(pictured right, above)'
-_paragraph_end ]
+_ _t '(pictured right, above)'
+_t '(pictured right)'
+_ _paragraph_end ]
 _
 _
 _ _page
@@ -157,6 +163,15 @@ _ _paragraph_begin [
 _ _heading2 'Queue Inter-Process Communication'
 _ _image 'zImage_queue_experiment_rotated.jpg' '65%'
 _ _paragraph_end ]
+_heading2 '_test-shell'
+_cells_begin
+_cells_row_begin
+_cells_speck_begin '460px'
+_i 'cd' '"$scriptAbsoluteFolder"'
+_e_ './ubiquitous_bash.sh' '_test-shell' '2>/dev/null'
+_cells_speck_end
+_cells_row_end
+_cells_end
 _t '
 
 

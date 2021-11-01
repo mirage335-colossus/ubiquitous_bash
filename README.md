@@ -200,11 +200,7 @@ if false; then true; # -->
 <!--
 fi
  '_' '_picture' 'zImage_commandPrompt.png' '45%'
- '_paragraph_begin' '['
-if false; then true; # -->
-<!-- # --><p>
-<!--
-fi
+ '_' '_paragraph_begin' '['
  '_heading2' 'Linux Application Virtualization'
 if false; then true; # -->
 <!-- # --><h2>Linux Application Virtualization</h2>
@@ -249,36 +245,22 @@ if false; then true; # -->
 fi
  '_' '_image' 'zImage_userQemu_command_nix.png' '450px'
  '_' '_image' 'zImage_userQemu_command_nix.png' '45%'
-_t '
-scriptedIllustrator_markup_uk4uPhB663kVcygT0q --><!-- # --><pre style="margin-top: 0px;margin-bottom: 0px;white-space: pre-wrap;"> 
-<!-- # --></pre><!-- scriptedIllustrator_markup_uk4uPhB663kVcygT0q
-'
- '_image' 'zImage_userQemu_window_nix.png' '450px'
-if false; then true; # -->
-<!-- # --><img width="450px" src="zImage_userQemu_window_nix.png" style="margin: 0 0 0 15px;border: 5px solid transparent;">
-<!--
-fi
+ '_' '_t' ' '
+ '_' '_image' 'zImage_userQemu_window_nix.png' '450px'
  '_' '_image' 'zImage_userQemu_window_nix.png' '45%'
- '_paragraph_end' ']'
+ '_image' 'zImage_userQemu_window_nix.png' '275px'
 if false; then true; # -->
-<!-- # --></p>
+<!-- # --><img width="275px" src="zImage_userQemu_window_nix.png" style="margin: 0 0 0 15px;border: 5px solid transparent;">
 <!--
 fi
- '_paragraph_begin' '['
-if false; then true; # -->
-<!-- # --><p>
-<!--
-fi
+ '_' '_paragraph_end' ']'
+ '_' '_paragraph_begin' '['
  '_heading2' 'MSW Application Virtualization'
 if false; then true; # -->
 <!-- # --><h2>MSW Application Virtualization</h2>
 <!--
 fi
- '_picture' 'zImage_queue_experiment.jpg' '485px'
-if false; then true; # -->
-<!-- # --><img width="485px" src="zImage_queue_experiment.jpg" style="float: right;margin: 0 0 0 15px;border: 5px solid transparent;">
-<!--
-fi
+ '_' '_picture' 'zImage_queue_experiment.jpg' '485px'
  '_cells_begin'
 if false; then true; # -->
 <!-- # --><table width="0%" style="empty-cells: show; border-spacing: 0px; border: 1px solid black; margin-top: 0px; vertical-align: top;">
@@ -317,13 +299,18 @@ if false; then true; # -->
 <!--
 fi
  '_' '_image' 'zImage_userVBox_command_MSW.png' '450px'
-_t '
-scriptedIllustrator_markup_uk4uPhB663kVcygT0q --><!-- # --><pre style="margin-top: 0px;margin-bottom: 0px;white-space: pre-wrap;"> 
-<!-- # --></pre><!-- scriptedIllustrator_markup_uk4uPhB663kVcygT0q
-'
- '_image' 'zImage_userVBox_window_MSW.png' '450px'
+ '_' '_t' ' '
+ '_' '_image' 'zImage_userVBox_window_MSW.png' '450px'
+ '_image' 'zImage_userVBox_window_MSW.png' '275px'
 if false; then true; # -->
-<!-- # --><img width="450px" src="zImage_userVBox_window_MSW.png" style="margin: 0 0 0 15px;border: 5px solid transparent;">
+<!-- # --><img width="275px" src="zImage_userVBox_window_MSW.png" style="margin: 0 0 0 15px;border: 5px solid transparent;">
+<!--
+fi
+ '_' '_paragraph_end' ']'
+ '_' '_paragraph_begin' '['
+ '_picture' 'zImage_queue_experiment.jpg' '485px'
+if false; then true; # -->
+<!-- # --><img width="485px" src="zImage_queue_experiment.jpg" style="float: right;margin: 0 0 0 15px;border: 5px solid transparent;">
 <!--
 fi
  '_heading2' 'Queue Inter-Process Communication'
@@ -331,16 +318,13 @@ if false; then true; # -->
 <!-- # --><h2>Queue Inter-Process Communication</h2>
 <!--
 fi
+ '_' '_t' '(pictured right, above)'
 _t '
 scriptedIllustrator_markup_uk4uPhB663kVcygT0q --><!-- # --><pre style="margin-top: 0px;margin-bottom: 0px;white-space: pre-wrap;">
-(pictured right, above)
+(pictured right)
 <!-- # --></pre><!-- scriptedIllustrator_markup_uk4uPhB663kVcygT0q
 '
- '_paragraph_end' ']'
-if false; then true; # -->
-<!-- # --></p>
-<!--
-fi
+ '_' '_paragraph_end' ']'
  '_'
  '_'
  '_' '_page'
@@ -348,6 +332,60 @@ fi
  '_' '_heading2' 'Queue Inter-Process Communication'
  '_' '_image' 'zImage_queue_experiment_rotated.jpg' '65%'
  '_' '_paragraph_end' ']'
+ '_heading2' '_test-shell'
+if false; then true; # -->
+<!-- # --><h2>_test-shell</h2>
+<!--
+fi
+ '_cells_begin'
+if false; then true; # -->
+<!-- # --><table width="0%" style="empty-cells: show; border-spacing: 0px; border: 1px solid black; margin-top: 0px; vertical-align: top;">
+<!--
+fi
+ '_cells_row_begin'
+if false; then true; # -->
+<!-- # --><tr>
+<!--
+fi
+ '_cells_speck_begin' '460px'
+if false; then true; # -->
+<!-- # --><td width="460px" colspan="1" style="border-spacing: 0px; border: 1px solid black; margin-top: 0px; vertical-align: top;">
+<!--
+fi
+ '_i' 'cd' '"$scriptAbsoluteFolder"'
+if false; then true; # -->
+<!--
+fi
+ '_e_' './ubiquitous_bash.sh' '_test-shell' '2>/dev/null'
+if false; then true; # -->
+<!-- # --><pre style="-webkit-print-color-adjust: exact;background-color:#848484;margin-top: 0px;margin-bottom: 0px;white-space: pre-wrap;">
+<!-- # --><span style="color:#1818b2;background-color:#848484;">  './ubiquitous_bash.sh' '_test-shell' '2>/dev/null'</span>
+<!-- # --># <span style="color:#54ff54;background-color:#18b2b2;"> Sanity...</span>
+<!-- # --># <span style="color:#54ff54;background-color:#18b2b2;"> PASS</span>
+<!-- # --># <span style="color:#54ff54;background-color:#18b2b2;"> Permissions...</span>
+<!-- # --># <span style="color:#54ff54;background-color:#18b2b2;"> PASS</span>
+<!-- # --># <span style="color:#54ff54;background-color:#18b2b2;"> Argument length...</span>
+<!-- # --># <span style="color:#54ff54;background-color:#18b2b2;"> PASS</span>
+<!-- # --># <span style="color:#54ff54;background-color:#18b2b2;"> Absolute pathfinding...</span>
+<!-- # --># <span style="color:#54ff54;background-color:#18b2b2;"> PASS</span>
+<!-- # --></pre>
+<!--
+fi
+ '_cells_speck_end'
+if false; then true; # -->
+<!-- # --></td>
+<!--
+fi
+ '_cells_row_end'
+if false; then true; # -->
+<!-- # --></tr>
+<!--
+fi
+ '_cells_end'
+if false; then true; # -->
+<!-- # --></table>
+<!--
+fi
 _t '
 scriptedIllustrator_markup_uk4uPhB663kVcygT0q --><!-- # --><pre style="margin-top: 0px;margin-bottom: 0px;white-space: pre-wrap;">
 
