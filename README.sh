@@ -151,8 +151,8 @@ _ _image 'zImage_userVBox_window_MSW.png' '450px'
 _image 'zImage_userVBox_window_MSW.png' '275px'
 _ _paragraph_end ]
 _ _paragraph_begin [
-_picture 'zImage_queue_experiment.jpg' '485px'
 _heading2 'Queue Inter-Process Communication'
+_picture 'zImage_queue_experiment.jpg' '485px'
 _ _t '(pictured right, above)'
 _t '(pictured right)'
 _ _paragraph_end ]
