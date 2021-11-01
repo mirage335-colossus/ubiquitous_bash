@@ -107,7 +107,7 @@ _project() {
 	git init
 	
 	git submodule add --depth 1 git@github.com:mirage335/ubiquitous_bash.git ./_lib/ubiquitous_bash 
-	cd ./_lib/ubiquitous_bash ; git fetch --shallow-exclude=v3.109 ; git reset --hard
+	cd ./_lib/ubiquitous_bash ; git fetch --shallow-exclude=v3.111 ; git reset --hard
 	cd "$workingDir"/"$projectName"
 	
 	#Parent derivative of ubiquitous_bash.

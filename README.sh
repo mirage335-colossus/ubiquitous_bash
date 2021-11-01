@@ -328,7 +328,7 @@ _t '
 '
 _page
 _heading1 'Version'
-_t 'v3.111
+_t 'v3.112
 
 Semantic versioning is applied. Major version numbers (v2.x) indicate a compatible API. Minor numbers indicate the current feature set has been tested for usability. Any git commits not tagged with a version number may be technically considered unstable development code. New functions present in git commits may be experimental.
 
