@@ -55,6 +55,7 @@ _document_main() {
 #b
 # NOTICE: DOCUMENT
 #__HEADER_uk4uPhB663kVcygT0q_HEADER__
+_t ' '
 _t 'Ubiquitous Bash (public domain, no copyright, CC0)
 Multiplatform structured programming middleware.
 
