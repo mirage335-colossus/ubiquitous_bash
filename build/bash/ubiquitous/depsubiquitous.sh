@@ -4,6 +4,8 @@ _init_deps() {
 	export enUb_dev=""
 	export enUb_dev_heavy=""
 	
+	export enUb_cloud_heavy=""
+	
 	export enUb_mount=""
 	
 	export enUb_machineinfo=""
@@ -67,6 +69,11 @@ _deps_dev() {
 _deps_dev_heavy() {
 	_deps_notLean
 	export enUb_dev_heavy="true"
+}
+
+_deps_cloud_heavy() {
+	_deps_notLean
+	export enUb_cloud_heavy="true"
 }
 
 _deps_mount() {
