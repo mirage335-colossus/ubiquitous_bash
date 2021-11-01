@@ -142,3 +142,64 @@ _gitUp() {
 #	find . -not -path '\.\/\.git*' -delete
 #}
 
+
+
+
+
+
+
+
+# DANGER: CAUTION: WARNING: Calls '_git_shallow'.
+_git_shallow-ubiquitous() {
+	[[ "$1" != "true" ]] && exit 1
+	
+	_git_shallow 'git@github.com:mirage335/ubiquitous_bash.git' '_lib/ubiquitous_bash'
+}
+
+# DANGER: Not robust. May damage repository and/or submodules, as well as any history not remotely available, causing *severe* data loss.
+# CAUTION: Intended only for developers to correct a rare mistake of adding a non-shallow git submodule. No production use.
+# WARNING: Submodule path must NOT have trailing or preceeding slash!
+# "$1" == uri (eg. git@github.com:mirage335/ubiquitous_bash.git)
+# "$2" == path/to/submodule (eg. '_lib/ubiquitous_bash')
+_git_shallow() {
+	[[ "$1" == "" ]] && exit 1
+	[[ "$2" == "" ]] && exit 1
+	! [[ -e "$2" ]] && exit 1
+	! [[ -e "$scriptAbsoluteFolder"/"$2" ]] && exit 1
+	cd "$scriptAbsoluteFolder"
+	! [[ -e "$2" ]] && exit 1
+	! [[ -e "$scriptAbsoluteFolder"/"$2" ]] && exit 1
+	
+	
+	! [[ -e "$scriptAbsoluteFolder"/.gitmodules ]] && exit 1
+	! [[ -e "$scriptAbsoluteFolder"/.git/config ]] && exit 1
+	
+	_start
+	
+	# https://gist.github.com/myusuf3/7f645819ded92bda6677
+	
+	# Remove the submodule entry from .git/config
+	git submodule deinit -f "$2"
+
+	# Remove the submodule directory from the superproject's .git/modules directory
+	#rm -rf .git/modules/"$2"
+	export safeToDeleteGit="true"
+	_safeRMR "$scriptAbsoluteFolder"/.git/modules/"$2"
+
+	# Remove the entry in .gitmodules and remove the submodule directory located at path/to/submodule
+	git rm -f "$2"
+	
+	git commit -m "WIP."
+	
+	
+	# https://stackoverflow.com/questions/2144406/how-to-make-shallow-git-submodules
+	
+	git submodule add --depth 1 "$1" "$2"
+	
+	git config -f .gitmodules submodule."$2".shallow true
+	
+	_messagePlain_request git commit -a -m "Draft."
+	_messagePlain_request git push
+	
+	_stop
+}
