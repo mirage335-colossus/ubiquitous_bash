@@ -62,9 +62,12 @@ _compile_bash_deps() {
 		_deps_bup
 		
 		_deps_repo
-		_deps_cloud
-		_deps_cloud_self
-		_deps_cloud_build
+		
+		# WARNING: Although 'cloud' may be relevant to 'cautossh', not included for now, to avoid remotely pulling client software.
+		# ATTENTION: Override with 'ops.sh', 'core.sh', or similar.
+		#_deps_cloud
+		#_deps_cloud_self
+		#_deps_cloud_build
 		
 		_deps_command
 		_deps_synergy
@@ -167,9 +170,9 @@ _compile_bash_deps() {
 		_deps_bup
 		_deps_repo
 		
-		_deps_cloud
-		_deps_cloud_self
-		_deps_cloud_build
+		#_deps_cloud
+		#_deps_cloud_self
+		#_deps_cloud_build
 		
 		_deps_distro
 		
