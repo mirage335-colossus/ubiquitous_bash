@@ -32,7 +32,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='1891409836'
-export ub_setScriptChecksum_contents='3072662747'
+export ub_setScriptChecksum_contents='30258995'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -5758,11 +5758,13 @@ _generate_compile_bash() {
 	
 	[[ "$objectName" == "ubiquitous_bash" ]] && _generate_compile_bash-compressed_procedure lean
 	[[ "$objectName" == "ubiquitous_bash" ]] && _generate_compile_bash-compressed_procedure ubcore
-	[[ "$objectName" == "ubiquitous_bash" ]] && _generate_compile_bash-compressed_procedure ubiquitous_bash
-	
 	[[ "$objectName" == "ubiquitous_bash" ]] && _generate_compile_bash-compressed_procedure core_monolithic
 	rm -f "$scriptAbsoluteFolder"/core_monolithic.sh
 	#mv "$scriptAbsoluteFolder"/core_monolithic_compressed.sh "$scriptAbsoluteFolder"/core_compressed.sh
+	
+	
+	[[ "$objectName" == "ubiquitous_bash" ]] && _generate_compile_bash-compressed_procedure ubiquitous_bash
+	
 	
 	_generate_compile_bash_prog
 	
@@ -5824,13 +5826,19 @@ _generate_compile_bash-compressed_procedure() {
 	
 	
 	
-	
-	#
-	#local current_internal_CompressedScript
-	current_internal_CompressedScript=$(cat "$scriptAbsoluteFolder"/"$1".sh | grep -v '^_main "$@"$' | sed 's/^_main "$@"$//' | xz -z -e9 -C crc64 --threads=1 | base64 -w 156 | fold -w 156 -s)
-	
+	# Comment filter may incorrectly remove comments within here documents, as with '#!/bin/dash' from '_here_header_bash_or_dash()' .
 	# https://unix.stackexchange.com/questions/157328/how-can-i-remove-all-comments-from-a-file
-	#current_internal_CompressedScript=$(cat "$scriptAbsoluteFolder"/"$1".sh | grep -o '^[^#]*' | grep -v '^_main "$@"$' | sed 's/^_main "$@"$//' | xz -z -e9 -C crc64 --threads=1 | base64 -w 156 | fold -w 156 -s)
+	#grep -o '^[^#]*'
+	#sed '/^[[:blank:]]*#/d;s/#.*//''
+	#shfmt -mn foo.sh
+	# https://stackoverflow.com/questions/3349156/general-utility-to-remove-strip-all-comments-from-source-code-in-various-languag
+	#cloc --strip-comments=small
+	#--use-sloccount
+	
+	#local current_internal_CompressedScript
+	#current_internal_CompressedScript=$(cat "$scriptAbsoluteFolder"/"$1".sh | grep -v '^_main "$@"$' | sed 's/^_main "$@"$//' | xz -z -e9 -C crc64 --threads=1 | base64 -w 156 | fold -w 156 -s)
+	
+	current_internal_CompressedScript=$(cat "$scriptAbsoluteFolder"/"$1".sh | grep -v '^_main "$@"$' | sed 's/^_main "$@"$//' | sed '/^[[:blank:]]*#/d;s/#.*//' | xz -z -e9 -C crc64 --threads=1 | base64 -w 156 | fold -w 156 -s)
 	
 	#local current_internal_CompressedScript_cksum
 	current_internal_CompressedScript_cksum=$(echo "$current_internal_CompressedScript" | env CMD_ENV=xpg4 cksum | cut -f1 -d\  | tr -dc '0-9')
@@ -5866,11 +5874,7 @@ CZXWXcRMTo8EmM8i4d
 	#echo 'source <(echo "$current_internal_CompressedScript" | base64 -d | xz -d) --call' >> "$scriptAbsoluteFolder"/"$1"_compressed.sh
 	#echo 'source <(echo "$current_internal_CompressedScript" | base64 -d | xz -d) --bypass "$@"' >> "$scriptAbsoluteFolder"/"$1"_compressed.sh
 cat << 'CZXWXcRMTo8EmM8i4d' >> "$scriptAbsoluteFolder"/"$1"_compressed.sh
-
-if false
-then
-	true
-elif [[ "$1" == "--embed" ]]
+if [[ "$1" == "--embed" ]]
 then
 	source <(echo "$current_internal_CompressedScript" | base64 -d | xz -d) "$@"
 	exit "$?"
@@ -5880,9 +5884,6 @@ then
 else
 	source <(echo "$current_internal_CompressedScript" | base64 -d | xz -d) --bypass "$@"
 fi
-
-
-
 CZXWXcRMTo8EmM8i4d
 	
 	echo 'unset current_internal_CompressedScript ; unset current_internal_CompressedScript_cksum ; unset current_internal_CompressedScript_bytes' >> "$scriptAbsoluteFolder"/"$1"_compressed.sh
