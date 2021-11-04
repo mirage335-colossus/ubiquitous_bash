@@ -680,12 +680,15 @@ _test_embed_sequence() {
 	#echo $ub_import_param
 	
 	# CAUTION: Profoundly unexpected to have called '_test' or similar functions after importing into a current shell in any way.
-	[[ "$ub_import" == 'true' ]] && return 1
-	[[ "$ub_import" != '' ]] && return 1
-	[[ "$ub_import_param" != '' ]] && return 1
-	
+	if ( [[ "$current_internal_CompressedScript" == "" ]] && [[ "$current_internal_CompressedScript" == "" ]] && [[ "$current_internal_CompressedScript_bytes" == "" ]] ) || ( ( [[ "$ub_import_param" != "--embed" ]] ) && [[ "$ub_import_param" != "--bypass" ]] && [[ "$ub_import_param" != "--call" ]] )
+	then
+		[[ "$ub_import" == 'true' ]] && _messageFAIL && _stop 1
+		[[ "$ub_import" != '' ]] && _messageFAIL && _stop 1
+		[[ "$ub_import_param" != '' ]] && _messageFAIL && _stop 1
+	fi
 	
 	! "$safeTmp"/.embed.sh _true && _stop 1
+	
 	"$safeTmp"/.embed.sh _false && _stop 1
 	
 	
@@ -867,9 +870,12 @@ _test_sanity() {
 	"$scriptAbsoluteLocation" _false && _messageFAIL && return 1
 	
 	# CAUTION: Profoundly unexpected to have called '_test' or similar functions after importing into a current shell in any way.
-	[[ "$ub_import" == 'true' ]] && _messageFAIL && _stop 1
-	[[ "$ub_import" != '' ]] && _messageFAIL && _stop 1
-	[[ "$ub_import_param" != '' ]] && _messageFAIL && _stop 1
+	if ( [[ "$current_internal_CompressedScript" == "" ]] && [[ "$current_internal_CompressedScript" == "" ]] && [[ "$current_internal_CompressedScript_bytes" == "" ]] ) || ( ( [[ "$ub_import_param" != "--embed" ]] ) && [[ "$ub_import_param" != "--bypass" ]] && [[ "$ub_import_param" != "--call" ]] )
+	then
+		[[ "$ub_import" == 'true' ]] && _messageFAIL && _stop 1
+		[[ "$ub_import" != '' ]] && _messageFAIL && _stop 1
+		[[ "$ub_import_param" != '' ]] && _messageFAIL && _stop 1
+	fi
 	
 	local santiySessionID_length
 	santiySessionID_length=$(echo -n "$sessionid" | wc -c | tr -dc '0-9')

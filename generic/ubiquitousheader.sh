@@ -91,11 +91,22 @@ _messagePlain_bad() {
 #"--profile"
 #"--parent", "--embed", "--return", "--devenv"
 #"--call", "--script" "--bypass"
-
+#if [[ "$ub_import" != "" ]]
+#then
+	#[[ "$ub_import" != "" ]] && export ub_import="" && unset ub_import
+	
+	#[[ "$importScriptLocation" != "" ]] && export importScriptLocation= && unset importScriptLocation
+	#[[ "$importScriptFolder" != "" ]] && export importScriptFolder= && unset importScriptFolder
+#fi
+#[[ "$ub_import" != "" ]] && export ub_import="" && unset ub_import
+#[[ "$ub_import_param" != "" ]] && export ub_import_param="" && unset ub_import_param
+#[[ "$ub_import_script" != "" ]] && export ub_import_script="" && unset ub_import_script
+#[[ "$ub_loginshell" != "" ]] && export ub_loginshell="" && unset ub_loginshell
 ub_import=
 ub_import_param=
 ub_import_script=
 ub_loginshell=
+
 
 # ATTENTION: Apparently (Portable) Cygwin Bash interprets correctly.
 [[ "${BASH_SOURCE[0]}" != "${0}" ]] && ub_import="true"

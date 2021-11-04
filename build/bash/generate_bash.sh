@@ -61,10 +61,18 @@ _generate_compile_bash() {
 	"$scriptAbsoluteFolder"/compile.sh _compile_bash
 	
 	[[ "$objectName" == "ubiquitous_bash" ]] && "$scriptAbsoluteFolder"/compile.sh _compile_bash lean lean.sh
-	[[ "$objectName" == "ubiquitous_bash" ]] && _generate_compile_bash-lean_compressed
+	[[ "$objectName" == "ubiquitous_bash" ]] && "$scriptAbsoluteFolder"/compile.sh _compile_bash core core_monolithic.sh
 	[[ "$objectName" == "ubiquitous_bash" ]] && "$scriptAbsoluteFolder"/compile.sh _compile_bash ubcore ubcore.sh
 	
 	[[ "$1" != "" ]] && "$scriptAbsoluteFolder"/compile.sh _compile_bash "$@"
+	
+	[[ "$objectName" == "ubiquitous_bash" ]] && _generate_compile_bash-compressed_procedure lean
+	[[ "$objectName" == "ubiquitous_bash" ]] && _generate_compile_bash-compressed_procedure ubcore
+	[[ "$objectName" == "ubiquitous_bash" ]] && _generate_compile_bash-compressed_procedure ubiquitous_bash
+	
+	[[ "$objectName" == "ubiquitous_bash" ]] && _generate_compile_bash-compressed_procedure core_monolithic
+	rm -f "$scriptAbsoluteFolder"/core_monolithic.sh
+	#mv "$scriptAbsoluteFolder"/core_monolithic_compressed.sh "$scriptAbsoluteFolder"/core_compressed.sh
 	
 	_generate_compile_bash_prog
 	
@@ -85,9 +93,8 @@ _generate_compile_bash() {
 
 
 
-
-_generate_compile_bash-lean_compressed() {
-	echo "#!/usr/bin/env bash" > "$scriptAbsoluteFolder"/lean_compressed.sh
+_generate_compile_bash-compressed_procedure() {
+	echo "#!/usr/bin/env bash" > "$scriptAbsoluteFolder"/"$1"_compressed.sh
 	
 	_compressed_criticalDep() {
 		! _getAbsolute_criticalDep && exit 1
@@ -109,7 +116,7 @@ _generate_compile_bash-lean_compressed() {
 		return 0
 	}
 	
-	_compress_lean_declare_headerFunctions() {
+	_compress_declare_headerFunctions() {
 	declare -f _realpath_L
 	declare -f _realpath_L_s
 	declare -f _cygwin_translation_rootFileParameter
@@ -123,31 +130,35 @@ _generate_compile_bash-lean_compressed() {
 	
 	
 	#local current_internal_compressedScript_headerFunctions
-	current_internal_compressedScript_headerFunctions=$(_compress_lean_declare_headerFunctions | xz -z -e9 -C crc64 --threads=1 | base64 -w 156 | fold -w 156 -s)
+	current_internal_compressedScript_headerFunctions=$(_compress_declare_headerFunctions | xz -z -e9 -C crc64 --threads=1 | base64 -w 156 | fold -w 156 -s)
 	
 	
 	
 	
-	
+	#
 	#local current_internal_CompressedScript
-	current_internal_CompressedScript=$(cat "$scriptAbsoluteFolder"/lean.sh | grep -v '^_main "$@"$' | sed 's/^_main "$@"$//' | xz -z -e9 -C crc64 --threads=1 | base64 -w 156 | fold -w 156 -s)
+	current_internal_CompressedScript=$(cat "$scriptAbsoluteFolder"/"$1".sh | grep -v '^_main "$@"$' | sed 's/^_main "$@"$//' | xz -z -e9 -C crc64 --threads=1 | base64 -w 156 | fold -w 156 -s)
+	
+	# https://unix.stackexchange.com/questions/157328/how-can-i-remove-all-comments-from-a-file
+	#current_internal_CompressedScript=$(cat "$scriptAbsoluteFolder"/"$1".sh | grep -o '^[^#]*' | grep -v '^_main "$@"$' | sed 's/^_main "$@"$//' | xz -z -e9 -C crc64 --threads=1 | base64 -w 156 | fold -w 156 -s)
+	
 	#local current_internal_CompressedScript_cksum
 	current_internal_CompressedScript_cksum=$(echo "$current_internal_CompressedScript" | env CMD_ENV=xpg4 cksum | cut -f1 -d\  | tr -dc '0-9')
 	#local current_internal_CompressedScript_bytes
 	current_internal_CompressedScript_bytes=$(echo "$current_internal_CompressedScript" | wc -c | tr -dc '0-9')
 	
-	echo '#_compressedScript_uk4uPhB663kVcygT0q_compressedScript_uk4uPhB663kVcygT0q_compressedScript_uk4uPhB663kVcygT0q_compressedScript' >> "$scriptAbsoluteFolder"/lean_compressed.sh
-	echo 'export ub_setScriptChecksum_disable="true"' >> "$scriptAbsoluteFolder"/lean_compressed.sh
+	echo '#_compressedScript_uk4uPhB663kVcygT0q_compressedScript_uk4uPhB663kVcygT0q_compressedScript_uk4uPhB663kVcygT0q_compressedScript' >> "$scriptAbsoluteFolder"/"$1"_compressed.sh
+	echo 'export ub_setScriptChecksum_disable="true"' >> "$scriptAbsoluteFolder"/"$1"_compressed.sh
 	
-	echo 'current_internal_CompressedScript_bytes='\'"$current_internal_CompressedScript_bytes"\' >> "$scriptAbsoluteFolder"/lean_compressed.sh
-	echo 'current_internal_CompressedScript_cksum='\'"$current_internal_CompressedScript_cksum"\' >> "$scriptAbsoluteFolder"/lean_compressed.sh
-	echo 'current_internal_CompressedScript='\' >> "$scriptAbsoluteFolder"/lean_compressed.sh
-	echo "$current_internal_CompressedScript"\' >> "$scriptAbsoluteFolder"/lean_compressed.sh
-	echo 'current_internal_compressedScript_headerFunctions='\' >> "$scriptAbsoluteFolder"/lean_compressed.sh
-	echo "$current_internal_compressedScript_headerFunctions"\' >> "$scriptAbsoluteFolder"/lean_compressed.sh
-	echo '! echo "$current_internal_compressedScript_headerFunctions" | base64 -d | xz -d > /dev/null && exit 1' >> "$scriptAbsoluteFolder"/lean_compressed.sh
-	echo 'source <(echo "$current_internal_compressedScript_headerFunctions" | base64 -d | xz -d)' >> "$scriptAbsoluteFolder"/lean_compressed.sh
-	cat << 'CZXWXcRMTo8EmM8i4d' >> "$scriptAbsoluteFolder"/lean_compressed.sh
+	echo 'current_internal_CompressedScript_bytes='\'"$current_internal_CompressedScript_bytes"\' >> "$scriptAbsoluteFolder"/"$1"_compressed.sh
+	echo 'current_internal_CompressedScript_cksum='\'"$current_internal_CompressedScript_cksum"\' >> "$scriptAbsoluteFolder"/"$1"_compressed.sh
+	echo 'current_internal_CompressedScript='\' >> "$scriptAbsoluteFolder"/"$1"_compressed.sh
+	echo "$current_internal_CompressedScript"\' >> "$scriptAbsoluteFolder"/"$1"_compressed.sh
+	echo 'current_internal_compressedScript_headerFunctions='\' >> "$scriptAbsoluteFolder"/"$1"_compressed.sh
+	echo "$current_internal_compressedScript_headerFunctions"\' >> "$scriptAbsoluteFolder"/"$1"_compressed.sh
+	echo '! echo "$current_internal_compressedScript_headerFunctions" | base64 -d | xz -d > /dev/null && exit 1' >> "$scriptAbsoluteFolder"/"$1"_compressed.sh
+	echo 'source <(echo "$current_internal_compressedScript_headerFunctions" | base64 -d | xz -d)' >> "$scriptAbsoluteFolder"/"$1"_compressed.sh
+	cat << 'CZXWXcRMTo8EmM8i4d' >> "$scriptAbsoluteFolder"/"$1"_compressed.sh
 export importScriptLocation=$(_getScriptAbsoluteLocation)
 export importScriptFolder=$(_getScriptAbsoluteFolder)
 ! type readlink > /dev/null 2>&1 && exit 1;
@@ -159,61 +170,80 @@ export importScriptFolder=$(_getScriptAbsoluteFolder)
 ! _getAbsolute_criticalDep && exit 1
 CZXWXcRMTo8EmM8i4d
 	
-	echo '! _compressed_criticalDep && exit 1' >> "$scriptAbsoluteFolder"/lean_compressed.sh
+	echo '! _compressed_criticalDep && exit 1' >> "$scriptAbsoluteFolder"/"$1"_compressed.sh
 	
-	echo '! echo "$current_internal_CompressedScript" | base64 -d | xz -d > /dev/null && exit 1' >> "$scriptAbsoluteFolder"/lean_compressed.sh
-	#echo 'source <(echo "$current_internal_CompressedScript" | base64 -d | xz -d) --call' >> "$scriptAbsoluteFolder"/lean_compressed.sh
-	echo 'source <(echo "$current_internal_CompressedScript" | base64 -d | xz -d) --bypass "$@"' >> "$scriptAbsoluteFolder"/lean_compressed.sh
+	echo '! echo "$current_internal_CompressedScript" | base64 -d | xz -d > /dev/null && exit 1' >> "$scriptAbsoluteFolder"/"$1"_compressed.sh
+	#echo 'source <(echo "$current_internal_CompressedScript" | base64 -d | xz -d) --call' >> "$scriptAbsoluteFolder"/"$1"_compressed.sh
+	#echo 'source <(echo "$current_internal_CompressedScript" | base64 -d | xz -d) --bypass "$@"' >> "$scriptAbsoluteFolder"/"$1"_compressed.sh
+cat << 'CZXWXcRMTo8EmM8i4d' >> "$scriptAbsoluteFolder"/"$1"_compressed.sh
+
+if false
+then
+	true
+elif [[ "$1" == "--embed" ]]
+then
+	source <(echo "$current_internal_CompressedScript" | base64 -d | xz -d) "$@"
+	exit "$?"
+elif [[ "$1" == "--profile" ]] || [[ "$1" == "--parent" ]]
+then
+	source <(echo "$current_internal_CompressedScript" | base64 -d | xz -d) "$@"
+else
+	source <(echo "$current_internal_CompressedScript" | base64 -d | xz -d) --bypass "$@"
+fi
+
+
+
+CZXWXcRMTo8EmM8i4d
 	
-	echo 'unset current_internal_CompressedScript ; unset current_internal_CompressedScript_cksum ; unset current_internal_CompressedScript_bytes' >> "$scriptAbsoluteFolder"/lean_compressed.sh
-	echo 'export ub_setScriptChecksum_disable=' >> "$scriptAbsoluteFolder"/lean_compressed.sh
-	echo 'unset ub_setScriptChecksum_disable' >> "$scriptAbsoluteFolder"/lean_compressed.sh
+	echo 'unset current_internal_CompressedScript ; unset current_internal_CompressedScript_cksum ; unset current_internal_CompressedScript_bytes' >> "$scriptAbsoluteFolder"/"$1"_compressed.sh
+	echo 'export ub_setScriptChecksum_disable=' >> "$scriptAbsoluteFolder"/"$1"_compressed.sh
+	echo 'unset ub_setScriptChecksum_disable' >> "$scriptAbsoluteFolder"/"$1"_compressed.sh
 	
-	echo 'true' >> "$scriptAbsoluteFolder"/lean_compressed.sh
+	echo 'true' >> "$scriptAbsoluteFolder"/"$1"_compressed.sh
 	
-	echo '# https://github.com/mirage335/ubiquitous_bash' >> "$scriptAbsoluteFolder"/lean_compressed.sh
-	echo '#_compressedScript_uk4uPhB663kVcygT0q_compressedScript_uk4uPhB663kVcygT0q_compressedScript_uk4uPhB663kVcygT0q_compressedScript' >> "$scriptAbsoluteFolder"/lean_compressed.sh
+	echo '# https://github.com/mirage335/ubiquitous_bash' >> "$scriptAbsoluteFolder"/"$1"_compressed.sh
+	echo '#_compressedScript_uk4uPhB663kVcygT0q_compressedScript_uk4uPhB663kVcygT0q_compressedScript_uk4uPhB663kVcygT0q_compressedScript' >> "$scriptAbsoluteFolder"/"$1"_compressed.sh
 	
 	unset current_internal_CompressedScript ; unset current_internal_CompressedScript_cksum ; unset current_internal_CompressedScript_bytes
 	
 	
-	echo >> "$scriptAbsoluteFolder"/lean_compressed.sh
-	echo >> "$scriptAbsoluteFolder"/lean_compressed.sh
-	echo >> "$scriptAbsoluteFolder"/lean_compressed.sh
-	echo >> "$scriptAbsoluteFolder"/lean_compressed.sh
-	echo >> "$scriptAbsoluteFolder"/lean_compressed.sh
-	echo >> "$scriptAbsoluteFolder"/lean_compressed.sh
-	echo '#####Entry' >> "$scriptAbsoluteFolder"/lean_compressed.sh
-	echo '# ###' >> "$scriptAbsoluteFolder"/lean_compressed.sh
-	echo >> "$scriptAbsoluteFolder"/lean_compressed.sh
-	echo >> "$scriptAbsoluteFolder"/lean_compressed.sh
-	echo >> "$scriptAbsoluteFolder"/lean_compressed.sh
-	echo >> "$scriptAbsoluteFolder"/lean_compressed.sh
-	echo >> "$scriptAbsoluteFolder"/lean_compressed.sh
-	echo >> "$scriptAbsoluteFolder"/lean_compressed.sh
-	echo >> "$scriptAbsoluteFolder"/lean_compressed.sh
-	echo >> "$scriptAbsoluteFolder"/lean_compressed.sh
-	echo >> "$scriptAbsoluteFolder"/lean_compressed.sh
-	echo >> "$scriptAbsoluteFolder"/lean_compressed.sh
-	echo >> "$scriptAbsoluteFolder"/lean_compressed.sh
-	echo >> "$scriptAbsoluteFolder"/lean_compressed.sh
-	echo >> "$scriptAbsoluteFolder"/lean_compressed.sh
-	echo >> "$scriptAbsoluteFolder"/lean_compressed.sh
-	echo >> "$scriptAbsoluteFolder"/lean_compressed.sh
-	echo >> "$scriptAbsoluteFolder"/lean_compressed.sh
-	echo >> "$scriptAbsoluteFolder"/lean_compressed.sh
-	echo >> "$scriptAbsoluteFolder"/lean_compressed.sh
-	echo >> "$scriptAbsoluteFolder"/lean_compressed.sh
-	echo >> "$scriptAbsoluteFolder"/lean_compressed.sh
-	echo >> "$scriptAbsoluteFolder"/lean_compressed.sh
-	echo >> "$scriptAbsoluteFolder"/lean_compressed.sh
-	echo >> "$scriptAbsoluteFolder"/lean_compressed.sh
-	echo >> "$scriptAbsoluteFolder"/lean_compressed.sh
+	echo >> "$scriptAbsoluteFolder"/"$1"_compressed.sh
+	echo >> "$scriptAbsoluteFolder"/"$1"_compressed.sh
+	echo >> "$scriptAbsoluteFolder"/"$1"_compressed.sh
+	echo >> "$scriptAbsoluteFolder"/"$1"_compressed.sh
+	echo >> "$scriptAbsoluteFolder"/"$1"_compressed.sh
+	echo >> "$scriptAbsoluteFolder"/"$1"_compressed.sh
+	echo '#####Entry' >> "$scriptAbsoluteFolder"/"$1"_compressed.sh
+	echo '# ###' >> "$scriptAbsoluteFolder"/"$1"_compressed.sh
+	echo >> "$scriptAbsoluteFolder"/"$1"_compressed.sh
+	echo >> "$scriptAbsoluteFolder"/"$1"_compressed.sh
+	echo >> "$scriptAbsoluteFolder"/"$1"_compressed.sh
+	echo >> "$scriptAbsoluteFolder"/"$1"_compressed.sh
+	echo >> "$scriptAbsoluteFolder"/"$1"_compressed.sh
+	echo >> "$scriptAbsoluteFolder"/"$1"_compressed.sh
+	echo >> "$scriptAbsoluteFolder"/"$1"_compressed.sh
+	echo >> "$scriptAbsoluteFolder"/"$1"_compressed.sh
+	echo >> "$scriptAbsoluteFolder"/"$1"_compressed.sh
+	echo >> "$scriptAbsoluteFolder"/"$1"_compressed.sh
+	echo >> "$scriptAbsoluteFolder"/"$1"_compressed.sh
+	echo >> "$scriptAbsoluteFolder"/"$1"_compressed.sh
+	echo >> "$scriptAbsoluteFolder"/"$1"_compressed.sh
+	echo >> "$scriptAbsoluteFolder"/"$1"_compressed.sh
+	echo >> "$scriptAbsoluteFolder"/"$1"_compressed.sh
+	echo >> "$scriptAbsoluteFolder"/"$1"_compressed.sh
+	echo >> "$scriptAbsoluteFolder"/"$1"_compressed.sh
+	echo >> "$scriptAbsoluteFolder"/"$1"_compressed.sh
+	echo >> "$scriptAbsoluteFolder"/"$1"_compressed.sh
+	echo >> "$scriptAbsoluteFolder"/"$1"_compressed.sh
+	echo >> "$scriptAbsoluteFolder"/"$1"_compressed.sh
+	echo >> "$scriptAbsoluteFolder"/"$1"_compressed.sh
+	echo >> "$scriptAbsoluteFolder"/"$1"_compressed.sh
+	echo >> "$scriptAbsoluteFolder"/"$1"_compressed.sh
 	
-	echo '[[ "$1" == '"'"_"'"'* ]] && type "$1" > /dev/null 2>&1 && "$@"' >> "$scriptAbsoluteFolder"/lean_compressed.sh
-	echo >> "$scriptAbsoluteFolder"/lean_compressed.sh
+	echo '[[ "$1" == '"'"_"'"'* ]] && type "$1" > /dev/null 2>&1 && "$@"' >> "$scriptAbsoluteFolder"/"$1"_compressed.sh
+	echo >> "$scriptAbsoluteFolder"/"$1"_compressed.sh
 	
-	chmod u+x "$scriptAbsoluteFolder"/lean_compressed.sh
+	chmod u+x "$scriptAbsoluteFolder"/"$1"_compressed.sh
 	
 }
 

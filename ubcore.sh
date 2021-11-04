@@ -32,7 +32,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='1891409836'
-export ub_setScriptChecksum_contents='3895684712'
+export ub_setScriptChecksum_contents='3555974601'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -149,11 +149,22 @@ _messagePlain_bad() {
 #"--profile"
 #"--parent", "--embed", "--return", "--devenv"
 #"--call", "--script" "--bypass"
-
+#if [[ "$ub_import" != "" ]]
+#then
+	#[[ "$ub_import" != "" ]] && export ub_import="" && unset ub_import
+	
+	#[[ "$importScriptLocation" != "" ]] && export importScriptLocation= && unset importScriptLocation
+	#[[ "$importScriptFolder" != "" ]] && export importScriptFolder= && unset importScriptFolder
+#fi
+#[[ "$ub_import" != "" ]] && export ub_import="" && unset ub_import
+#[[ "$ub_import_param" != "" ]] && export ub_import_param="" && unset ub_import_param
+#[[ "$ub_import_script" != "" ]] && export ub_import_script="" && unset ub_import_script
+#[[ "$ub_loginshell" != "" ]] && export ub_loginshell="" && unset ub_loginshell
 ub_import=
 ub_import_param=
 ub_import_script=
 ub_loginshell=
+
 
 # ATTENTION: Apparently (Portable) Cygwin Bash interprets correctly.
 [[ "${BASH_SOURCE[0]}" != "${0}" ]] && ub_import="true"
@@ -14553,6 +14564,9 @@ _installUbiquitous() {
 		[[ -e "$scriptAbsoluteFolder"/ubcore.sh ]] && rm -f "$ubcoreUBdir"/ubcore.sh > /dev/null 2>&1
 		[[ -e "$scriptAbsoluteFolder"/ubiquitous_bash.sh ]] && rm -f "$ubcoreUBdir"/ubiquitous_bash.sh > /dev/null 2>&1
 		[[ -e "$scriptAbsoluteFolder"/lean_compressed.sh ]] && rm -f "$ubcoreUBdir"/lean_compressed.sh > /dev/null 2>&1
+		[[ -e "$scriptAbsoluteFolder"/core_compressed.sh ]] && rm -f "$ubcoreUBdir"/core_compressed.sh > /dev/null 2>&1
+		[[ -e "$scriptAbsoluteFolder"/ubcore_compressed.sh ]] && rm -f "$ubcoreUBdir"/ubcore_compressed.sh > /dev/null 2>&1
+		[[ -e "$scriptAbsoluteFolder"/ubiquitous_bash_compressed.sh ]] && rm -f "$ubcoreUBdir"/ubiquitous_bash_compressed.sh > /dev/null 2>&1
 		[[ -e "$scriptAbsoluteFolder"/lean.py ]] && rm -f "$ubcoreUBdir"/lean.py > /dev/null 2>&1
 		git reset --hard
 		git pull "$scriptAbsoluteFolder"
@@ -19779,12 +19793,15 @@ _test_embed_sequence() {
 	#echo $ub_import_param
 	
 	# CAUTION: Profoundly unexpected to have called '_test' or similar functions after importing into a current shell in any way.
-	[[ "$ub_import" == 'true' ]] && return 1
-	[[ "$ub_import" != '' ]] && return 1
-	[[ "$ub_import_param" != '' ]] && return 1
-	
+	if ( [[ "$current_internal_CompressedScript" == "" ]] && [[ "$current_internal_CompressedScript" == "" ]] && [[ "$current_internal_CompressedScript_bytes" == "" ]] ) || ( ( [[ "$ub_import_param" != "--embed" ]] ) && [[ "$ub_import_param" != "--bypass" ]] && [[ "$ub_import_param" != "--call" ]] )
+	then
+		[[ "$ub_import" == 'true' ]] && _messageFAIL && _stop 1
+		[[ "$ub_import" != '' ]] && _messageFAIL && _stop 1
+		[[ "$ub_import_param" != '' ]] && _messageFAIL && _stop 1
+	fi
 	
 	! "$safeTmp"/.embed.sh _true && _stop 1
+	
 	"$safeTmp"/.embed.sh _false && _stop 1
 	
 	
@@ -19966,9 +19983,12 @@ _test_sanity() {
 	"$scriptAbsoluteLocation" _false && _messageFAIL && return 1
 	
 	# CAUTION: Profoundly unexpected to have called '_test' or similar functions after importing into a current shell in any way.
-	[[ "$ub_import" == 'true' ]] && _messageFAIL && _stop 1
-	[[ "$ub_import" != '' ]] && _messageFAIL && _stop 1
-	[[ "$ub_import_param" != '' ]] && _messageFAIL && _stop 1
+	if ( [[ "$current_internal_CompressedScript" == "" ]] && [[ "$current_internal_CompressedScript" == "" ]] && [[ "$current_internal_CompressedScript_bytes" == "" ]] ) || ( ( [[ "$ub_import_param" != "--embed" ]] ) && [[ "$ub_import_param" != "--bypass" ]] && [[ "$ub_import_param" != "--call" ]] )
+	then
+		[[ "$ub_import" == 'true' ]] && _messageFAIL && _stop 1
+		[[ "$ub_import" != '' ]] && _messageFAIL && _stop 1
+		[[ "$ub_import_param" != '' ]] && _messageFAIL && _stop 1
+	fi
 	
 	local santiySessionID_length
 	santiySessionID_length=$(echo -n "$sessionid" | wc -c | tr -dc '0-9')

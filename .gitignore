@@ -1,6 +1,11 @@
 
 _bundle/
 lean_compressed.sh
+ubcore_compressed.sh
+core_compressed.sh
+core_monolithic.sh
+core_monolithic_compressed.sh
+ubiquitous_bash_compressed.sh
 
 /ops
 
