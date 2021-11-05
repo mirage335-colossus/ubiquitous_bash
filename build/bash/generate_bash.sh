@@ -202,6 +202,8 @@ CZXWXcRMTo8EmM8i4d
 	echo '! _compressed_criticalDep && exit 1' >> "$scriptAbsoluteFolder"/"$1"_compressed.sh
 	
 	echo '! echo "$current_internal_CompressedScript" | base64 -d | xz -d > /dev/null && exit 1' >> "$scriptAbsoluteFolder"/"$1"_compressed.sh
+	#echo 'source <(echo "$current_internal_CompressedScript" | base64 -d | xz -d) --compressed "$@"' >> "$scriptAbsoluteFolder"/"$1"_compressed.sh
+	#echo 'source <(echo "$current_internal_CompressedScript" | base64 -d | xz -d) --script' >> "$scriptAbsoluteFolder"/"$1"_compressed.sh
 	#echo 'source <(echo "$current_internal_CompressedScript" | base64 -d | xz -d) --call' >> "$scriptAbsoluteFolder"/"$1"_compressed.sh
 	#echo 'source <(echo "$current_internal_CompressedScript" | base64 -d | xz -d) --bypass "$@"' >> "$scriptAbsoluteFolder"/"$1"_compressed.sh
 cat << 'CZXWXcRMTo8EmM8i4d' >> "$scriptAbsoluteFolder"/"$1"_compressed.sh
@@ -213,7 +215,12 @@ elif [[ "$1" == "--profile" ]] || [[ "$1" == "--parent" ]]
 then
 	source <(echo "$current_internal_CompressedScript" | base64 -d | xz -d) "$@"
 else
-	source <(echo "$current_internal_CompressedScript" | base64 -d | xz -d) --bypass "$@"
+	source <(echo "$current_internal_CompressedScript" | base64 -d | xz -d) --compressed "$@"
+fi
+if [[ "$ub_import" == "true" ]] && ! ( [[ "$ub_import_param" == "--bypass" ]] ) || [[ "$ub_import_param" == "--compressed" ]] || [[ "$ub_import_param" == "--parent" ]] || [[ "$ub_import_param" == "--profile" ]]
+then
+	return 0 > /dev/null 2>&1
+	exit 0
 fi
 CZXWXcRMTo8EmM8i4d
 	
@@ -262,7 +269,23 @@ CZXWXcRMTo8EmM8i4d
 	echo >> "$scriptAbsoluteFolder"/"$1"_compressed.sh
 	echo >> "$scriptAbsoluteFolder"/"$1"_compressed.sh
 	
-	echo '[[ "$1" == '"'"_"'"'* ]] && type "$1" > /dev/null 2>&1 && "$@"' >> "$scriptAbsoluteFolder"/"$1"_compressed.sh
+	# TODO: ' ./ubiquitous_bash_compressed.sh _bin bash -i ' fails if '_main' is enabled
+	# TODO: Maybe "$ub_import_param" is not set in this context?
+	#echo '[[ "$1" == '"'"_"'"'* ]] && type "$1" > /dev/null 2>&1 && "$@"' >> "$scriptAbsoluteFolder"/"$1"_compressed.sh
+	
+	cat << 'CZXWXcRMTo8EmM8i4d' >> "$scriptAbsoluteFolder"/"$1"_compressed.sh
+if [[ "$1" == '_'* ]] && type "$1" > /dev/null 2>&1
+then
+	"$@"
+	internalFunctionExitStatus="$?"
+	return "$internalFunctionExitStatus" > /dev/null 2>&1
+	exit "$internalFunctionExitStatus"
+fi
+if [[ "$1" != '_'* ]]
+then
+	_main "$@"
+fi
+CZXWXcRMTo8EmM8i4d
 	echo >> "$scriptAbsoluteFolder"/"$1"_compressed.sh
 	
 	chmod u+x "$scriptAbsoluteFolder"/"$1"_compressed.sh

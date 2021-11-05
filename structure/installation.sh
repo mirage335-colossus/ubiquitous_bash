@@ -680,7 +680,7 @@ _test_embed_sequence() {
 	#echo $ub_import_param
 	
 	# CAUTION: Profoundly unexpected to have called '_test' or similar functions after importing into a current shell in any way.
-	if ( [[ "$current_internal_CompressedScript" == "" ]] && [[ "$current_internal_CompressedScript" == "" ]] && [[ "$current_internal_CompressedScript_bytes" == "" ]] ) || ( ( [[ "$ub_import_param" != "--embed" ]] ) && [[ "$ub_import_param" != "--bypass" ]] && [[ "$ub_import_param" != "--call" ]] )
+	if ( [[ "$current_internal_CompressedScript" == "" ]] && [[ "$current_internal_CompressedScript_cksum" == "" ]] && [[ "$current_internal_CompressedScript_bytes" == "" ]] ) || ( ( [[ "$ub_import_param" != "--embed" ]] ) && [[ "$ub_import_param" != "--bypass" ]] && [[ "$ub_import_param" != "--call" ]] && [[ "$ub_import_param" != "--script" ]] && [[ "$ub_import_param" != "--compressed" ]] )
 	then
 		[[ "$ub_import" == 'true' ]] && _messageFAIL && _stop 1
 		[[ "$ub_import" != '' ]] && _messageFAIL && _stop 1
@@ -870,7 +870,7 @@ _test_sanity() {
 	"$scriptAbsoluteLocation" _false && _messageFAIL && return 1
 	
 	# CAUTION: Profoundly unexpected to have called '_test' or similar functions after importing into a current shell in any way.
-	if ( [[ "$current_internal_CompressedScript" == "" ]] && [[ "$current_internal_CompressedScript" == "" ]] && [[ "$current_internal_CompressedScript_bytes" == "" ]] ) || ( ( [[ "$ub_import_param" != "--embed" ]] ) && [[ "$ub_import_param" != "--bypass" ]] && [[ "$ub_import_param" != "--call" ]] )
+	if ( [[ "$current_internal_CompressedScript" == "" ]] && [[ "$current_internal_CompressedScript_cksum" == "" ]] && [[ "$current_internal_CompressedScript_bytes" == "" ]] ) || ( ( [[ "$ub_import_param" != "--embed" ]] ) && [[ "$ub_import_param" != "--bypass" ]] && [[ "$ub_import_param" != "--call" ]] && [[ "$ub_import_param" != "--script" ]] && [[ "$ub_import_param" != "--compressed" ]] )
 	then
 		[[ "$ub_import" == 'true' ]] && _messageFAIL && _stop 1
 		[[ "$ub_import" != '' ]] && _messageFAIL && _stop 1

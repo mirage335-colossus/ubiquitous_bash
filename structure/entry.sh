@@ -8,9 +8,14 @@
 
 
 
-if [[ "$1" == '_'* ]]
+if [[ "$1" == '_'* ]] && type "$1" > /dev/null 2>&1
 then
 	"$@"
-	exit "$?"
+	internalFunctionExitStatus="$?"
+	return "$internalFunctionExitStatus" > /dev/null 2>&1
+	exit "$internalFunctionExitStatus"
 fi
-_main "$@"
+if [[ "$1" != '_'* ]]
+then
+	_main "$@"
+fi
