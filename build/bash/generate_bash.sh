@@ -61,16 +61,20 @@ _generate_compile_bash() {
 	"$scriptAbsoluteFolder"/compile.sh _compile_bash
 	
 	[[ "$objectName" == "ubiquitous_bash" ]] && "$scriptAbsoluteFolder"/compile.sh _compile_bash lean lean.sh
-	[[ "$objectName" == "ubiquitous_bash" ]] && "$scriptAbsoluteFolder"/compile.sh _compile_bash core core_monolithic.sh
+	#[[ "$objectName" == "ubiquitous_bash" ]] && "$scriptAbsoluteFolder"/compile.sh _compile_bash core core_monolithic.sh
+	[[ "$objectName" == "ubiquitous_bash" ]] && "$scriptAbsoluteFolder"/compile.sh _compile_bash monolithic monolithic.sh
 	[[ "$objectName" == "ubiquitous_bash" ]] && "$scriptAbsoluteFolder"/compile.sh _compile_bash ubcore ubcore.sh
 	
 	[[ "$1" != "" ]] && "$scriptAbsoluteFolder"/compile.sh _compile_bash "$@"
 	
 	[[ "$objectName" == "ubiquitous_bash" ]] && _generate_compile_bash-compressed_procedure lean
 	[[ "$objectName" == "ubiquitous_bash" ]] && _generate_compile_bash-compressed_procedure ubcore
-	[[ "$objectName" == "ubiquitous_bash" ]] && _generate_compile_bash-compressed_procedure core_monolithic
-	rm -f "$scriptAbsoluteFolder"/core_monolithic.sh
-	#mv "$scriptAbsoluteFolder"/core_monolithic_compressed.sh "$scriptAbsoluteFolder"/core_compressed.sh
+	#[[ "$objectName" == "ubiquitous_bash" ]] && _generate_compile_bash-compressed_procedure core_monolithic
+	#rm -f "$scriptAbsoluteFolder"/core_monolithic.sh
+	##mv "$scriptAbsoluteFolder"/core_monolithic_compressed.sh "$scriptAbsoluteFolder"/core_compressed.sh
+	[[ "$objectName" == "ubiquitous_bash" ]] && _generate_compile_bash-compressed_procedure monolithic
+	rm -f "$scriptAbsoluteFolder"/monolithic.sh
+	#mv "$scriptAbsoluteFolder"/monolithic_compressed.sh "$scriptAbsoluteFolder"/compressed.sh
 	
 	
 	[[ "$objectName" == "ubiquitous_bash" ]] && _generate_compile_bash-compressed_procedure ubiquitous_bash
@@ -273,7 +277,28 @@ CZXWXcRMTo8EmM8i4d
 	# TODO: Maybe "$ub_import_param" is not set in this context?
 	#echo '[[ "$1" == '"'"_"'"'* ]] && type "$1" > /dev/null 2>&1 && "$@"' >> "$scriptAbsoluteFolder"/"$1"_compressed.sh
 	
+	# Disable dependency for 'gosu' binaries only if definitely necessary and if function is otherwise defined.
+	#_test_Gosu() {
+		#true
+	#}
 	cat << 'CZXWXcRMTo8EmM8i4d' >> "$scriptAbsoluteFolder"/"$1"_compressed.sh
+_test_prog() {
+	true
+}
+_main() {
+	#local current_deleteScriptLocal
+	#current_deleteScriptLocal="false"
+	
+	_start
+	
+	_collect
+	
+	_enter "$@"
+	
+	_stop
+	
+	#[[ "$current_deleteScriptLocal" == "true" ]] && rmdir "$scriptLocal"
+}
 if [[ "$1" == '_'* ]] && type "$1" > /dev/null 2>&1
 then
 	"$@"
