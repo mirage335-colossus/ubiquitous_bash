@@ -151,7 +151,7 @@ _compile_bash_deps() {
 		_deps_image
 		
 		_deps_virt
-		_deps_virt_thick
+		#_deps_virt_thick
 		
 		#_deps_chroot
 		_deps_qemu

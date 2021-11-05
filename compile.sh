@@ -32,7 +32,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='1891409836'
-export ub_setScriptChecksum_contents='1260886290'
+export ub_setScriptChecksum_contents='3194603465'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -5559,14 +5559,20 @@ _deps_chroot() {
 _deps_qemu() {
 	_deps_notLean
 	_deps_virt
-	_deps_virt_thick
+	#_deps_virt_thick
+		_deps_distro
+		_deps_build
+		_deps_image
 	export enUb_QEMU="true"
 }
 
 _deps_vbox() {
 	_deps_notLean
 	_deps_virt
-	_deps_virt_thick
+	#_deps_virt_thick
+		_deps_distro
+		_deps_build
+		_deps_image
 	export enUb_vbox="true"
 }
 
@@ -5592,7 +5598,10 @@ _deps_dosbox() {
 _deps_msw() {
 	_deps_notLean
 	_deps_virt
-	_deps_virt_thick
+	#_deps_virt_thick
+		_deps_distro
+		_deps_build
+		_deps_image
 	_deps_qemu
 	_deps_vbox
 	_deps_wine
@@ -5904,7 +5913,9 @@ cat << 'CZXWXcRMTo8EmM8i4d' >> "$scriptAbsoluteFolder"/"$1"_compressed.sh
 if [[ "$1" == "--embed" ]]
 then
 	source <(echo "$current_internal_CompressedScript" | base64 -d | xz -d) "$@"
-	exit "$?"
+	internalFunctionExitStatus="$?"
+	return "$internalFunctionExitStatus" > /dev/null 2>&1
+	exit "$internalFunctionExitStatus"
 elif [[ "$1" == "--profile" ]] || [[ "$1" == "--parent" ]]
 then
 	source <(echo "$current_internal_CompressedScript" | base64 -d | xz -d) "$@"
@@ -6194,7 +6205,7 @@ _compile_bash_deps() {
 		_deps_image
 		
 		_deps_virt
-		_deps_virt_thick
+		#_deps_virt_thick
 		
 		#_deps_chroot
 		_deps_qemu

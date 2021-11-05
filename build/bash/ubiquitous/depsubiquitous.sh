@@ -226,14 +226,20 @@ _deps_chroot() {
 _deps_qemu() {
 	_deps_notLean
 	_deps_virt
-	_deps_virt_thick
+	#_deps_virt_thick
+		_deps_distro
+		_deps_build
+		_deps_image
 	export enUb_QEMU="true"
 }
 
 _deps_vbox() {
 	_deps_notLean
 	_deps_virt
-	_deps_virt_thick
+	#_deps_virt_thick
+		_deps_distro
+		_deps_build
+		_deps_image
 	export enUb_vbox="true"
 }
 
@@ -259,7 +265,10 @@ _deps_dosbox() {
 _deps_msw() {
 	_deps_notLean
 	_deps_virt
-	_deps_virt_thick
+	#_deps_virt_thick
+		_deps_distro
+		_deps_build
+		_deps_image
 	_deps_qemu
 	_deps_vbox
 	_deps_wine

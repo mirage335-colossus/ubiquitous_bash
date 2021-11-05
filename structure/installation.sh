@@ -670,7 +670,9 @@ _test_embed_procedure-embed() {
 	[[ "$ub_import" == '' ]] && return 1
 	[[ "$ub_import_param" != '--embed' ]] && return 1
 	
-	return 0
+	#_stop 0
+	#return 0
+	true
 }
 
 _test_embed_sequence() {
@@ -690,8 +692,6 @@ _test_embed_sequence() {
 	! "$safeTmp"/.embed.sh _true && _stop 1
 	
 	"$safeTmp"/.embed.sh _false && _stop 1
-	
-	
 	
 	! "$safeTmp"/.embed.sh _test_embed_procedure-embed && _stop 1
 	
