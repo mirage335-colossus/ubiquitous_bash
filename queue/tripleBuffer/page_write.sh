@@ -96,7 +96,7 @@ _page_write() {
 	
 	# https://stackoverflow.com/questions/13889659/read-a-file-by-bytes-in-bash
 	# https://www.cyberciti.biz/faq/linux-unix-read-one-character-atatime-while-loop/
-		# 'The way using `read -r -n1` for reading every character is wrong, it can’t handle multi-byte characters.'
+		# 'The way using `read -r -n1` for reading every character is wrong, it can't handle multi-byte characters.'
 	#echo test | while IFS= read -r -n2 car;do [ "$car" ] && echo -n "$car" || echo ; sleep 1 ; done
 	
 	# Inaccurate. Tests with random data ('/dev/urandom') seem to show errors.

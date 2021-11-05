@@ -1184,6 +1184,7 @@ _test() {
 	
 	_getDep bc
 	_getDep xxd
+	_getDep od
 	
 	_getDep yes
 	

@@ -20,6 +20,8 @@ _ubrgbin_cpA() {
 	cp -a "$1"/hello "$2"
 	cp -a "$1"/MAKEDEV "$2"
 	
+	[[ -e "$1"/b85 ]] && cp -a "$1"/b85 "$2"
+	
 	cp -a "$1"/.ubrgbin.sh "$2"
 }
 

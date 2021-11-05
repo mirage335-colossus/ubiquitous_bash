@@ -115,6 +115,7 @@ package_kit.tar.*
 *.kate-swp
 
 nohup.out
+awkvars.out
 
 *.log
 *.ldb

@@ -6,7 +6,7 @@
 #"$scriptAbsoluteLocation" _setup
 
 
+
+
+[[ "$1" == '_'* ]] && "$@"
 _main "$@"
-
-[[ "$1" == '_'* ]] && type "$1" > /dev/null 2>&1 && "$@"
-

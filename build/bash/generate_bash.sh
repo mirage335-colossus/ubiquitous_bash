@@ -96,6 +96,23 @@ _generate_compile_bash() {
 
 
 _generate_compile_bash-compressed_procedure() {
+	# If a "base85"/"ascii85" implementation were widely available at all possibly relevant 'environments', then compressed scripts could possibly be ~5% smaller.
+	# WARNING: Do NOT attempt 'yEnc', apparently NOT 'utf8' text editor compatible.
+	# https://en.wikipedia.org/wiki/Ascii85
+	# https://en.wikipedia.org/wiki/Binary-to-text_encoding
+	# https://sites.google.com/site/dannychouinard/Home/unix-linux-trinkets/little-utilities/base64-and-base85-encoding-awk-scripts
+	#  'if you plan on running these on Solaris, use the /usr/xpg4/bin versions of awk'
+	#  https://sites.google.com/site/dannychouinard/Home
+	#   'Everything is open source, either public domain or GPL V2.'
+	#  Experiments may have found input character corruption apparently with few but significant binary symbols.
+	# https://metacpan.org/pod/Math::Base85
+	# https://stackoverflow.com/questions/51821351/how-do-i-use-m-flag-to-load-a-perl-module-using-its-relative-path-from-command
+	#uudeview
+	#local current_textBinaryEncoder
+	#current_textBinaryEncoder=""
+	#current_textBinaryEncoder="$2"
+	#sed -i 'N;s/\n//'
+	
 	echo "#!/usr/bin/env bash" > "$scriptAbsoluteFolder"/"$1"_compressed.sh
 	
 	_compressed_criticalDep() {
@@ -136,7 +153,8 @@ _generate_compile_bash-compressed_procedure() {
 	
 	
 	
-	# Comment filter may incorrectly remove comments within here documents, as with '#!/bin/dash' from '_here_header_bash_or_dash()' .
+	# Comment filter seems to greatly improve compressibility, possibly due to comments being much less compressible than code.
+	# WARNING: Comment filter may incorrectly remove comments within here documents, as with '#!/bin/dash' from '_here_header_bash_or_dash()' . Interleaved code using different comment characters (eg. 'batch' files interpretable as 'bash', 'scriptedIllustrator', etc) will fail. Diagnostic/debugging/etc comments may also be removed.
 	# https://unix.stackexchange.com/questions/157328/how-can-i-remove-all-comments-from-a-file
 	#grep -o '^[^#]*'
 	#sed '/^[[:blank:]]*#/d;s/#.*//''
@@ -144,11 +162,14 @@ _generate_compile_bash-compressed_procedure() {
 	# https://stackoverflow.com/questions/3349156/general-utility-to-remove-strip-all-comments-from-source-code-in-various-languag
 	#cloc --strip-comments=small
 	#--use-sloccount
+	#grep -v '^'"[[:space:]]"'#'
+	#grep -v '^#' | grep -v '^'"[[:space:]]"'#'
+	#grep -v '^#[^!]' | grep -v '^'"[[:space:]]"'#[^!]'
 	
-	#local current_internal_CompressedScript
+	local current_internal_CompressedScript
 	#current_internal_CompressedScript=$(cat "$scriptAbsoluteFolder"/"$1".sh | grep -v '^_main "$@"$' | sed 's/^_main "$@"$//' | xz -z -e9 -C crc64 --threads=1 | base64 -w 156 | fold -w 156 -s)
 	
-	current_internal_CompressedScript=$(cat "$scriptAbsoluteFolder"/"$1".sh | grep -v '^_main "$@"$' | sed 's/^_main "$@"$//' | xz -z -e9 -C crc64 --threads=1 | base64 -w 156 | fold -w 156 -s)
+	current_internal_CompressedScript=$(cat "$scriptAbsoluteFolder"/"$1".sh | grep -v '^_main "$@"$' | sed 's/^_main "$@"$//' | grep -v '^#[^!]' | grep -v '^'"[[:space:]]"'#[^!]' | xz -z -e9 -C crc64 --threads=1 | base64 -w 156 | fold -w 156 -s)
 	
 	#local current_internal_CompressedScript_cksum
 	current_internal_CompressedScript_cksum=$(echo "$current_internal_CompressedScript" | env CMD_ENV=xpg4 cksum | cut -f1 -d\  | tr -dc '0-9')

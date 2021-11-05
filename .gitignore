@@ -87,6 +87,7 @@ trustdb.gpg
 *.kate-swp
 
 nohup.out
+awkvars.out
 
 *.log
 *.ldb

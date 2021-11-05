@@ -32,7 +32,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='1891409836'
-export ub_setScriptChecksum_contents='3555974601'
+export ub_setScriptChecksum_contents='4055331462'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -3763,7 +3763,7 @@ _findPort() {
 	lower_port="$1"
 	upper_port="$2"
 	
-	#Non public ports are between 49152-65535 (2^15 + 2^14 to 2^16 − 1).
+	#Non public ports are between 49152-65535 (2^15 + 2^14 to 2^16 - 1).
 	#Convention is to assign ports 55000-65499 and 50025-53999 to specialized servers.
 	#read lower_port upper_port < /proc/sys/net/ipv4/ip_local_port_range
 	[[ "$lower_port" == "" ]] && lower_port=54000
@@ -9397,7 +9397,13 @@ _fakeHome() {
 	# https://github.com/prusa3d/PrusaSlicer/issues/3969
 	fakeHomeENVvars+=(USER="$USER")
 	
-	if type dbus-run-session > /dev/null 2>&1
+	
+	#fakeHomeENVvars+=( SSH_AUTH_SOCK="$SSH_AUTH_SOCK" SSH_AGENT_PID="$SSH_AGENT_PID" GPG_AGENT_INFO="$GPG_AGENT_INFO" )
+	fakeHomeENVvars+=(SESSION_MANAGER="$SESSION_MANAGER" WINDOWID="$WINDOWID" QT_ACCESSIBILITY="$QT_ACCESSIBILITY" COLORTERM="$COLORTERM" XDG_SESSION_PATH="$XDG_SESSION_PATH" LANGUAGE="$LANGUAGE"  SHELL_SESSION_ID="$SHELL_SESSION_ID" DESKTOP_SESSION="$DESKTOP_SESSION" XCURSOR_SIZE="$XCURSOR_SIZE" GTK_MODULES="$GTK_MODULES" XDG_SEAT="$XDG_SEAT" XDG_SESSION_DESKTOP="$XDG_SESSION_DESKTOP" XDG_SESSION_TYPE="$XDG_SESSION_TYPE" XDG_CURRENT_DESKTOP="$XDG_CURRENT_DESKTOP" KONSOLE_DBUS_SERVICE="$KONSOLE_DBUS_SERVICE" PYTHONSTARTUP="$PYTHONSTARTUP" KONSOLE_DBUS_SESSION="$KONSOLE_DBUS_SESSION" PROFILEHOME="$PROFILEHOME" TMPDIR="$TMPDIR" XDG_SEAT_PATH="$XDG_SEAT_PATH" KDE_SESSION_UID="$KDE_SESSION_UID" XDG_SESSION_CLASS="$XDG_SESSION_CLASS" COLORFGBG="$COLORFGBG" KDE_SESSION_VERSION="$KDE_SESSION_VERSION" SHLVL="$SHLVL" LC_MEASUREMENT="$LC_MEASUREMENT" XDG_VTNR="$XDG_VTNR" XDG_SESSION_ID="$XDG_SESSION_ID" GS_LIB="$GS_LIB" XDG_RUNTIME_DIR="$XDG_RUNTIME_DIR" LC_TIME="$LC_TIME" QT_AUTO_SCREEN_SCALE_FACTOR="$QT_AUTO_SCREEN_SCALE_FACTOR" XCURSOR_THEME="$XCURSOR_THEME" KDE_FULL_SESSION="$KDE_FULL_SESSION" KONSOLE_PROFILE_NAME="$KONSOLE_PROFILE_NAME" DBUS_SESSION_BUS_ADDRESS="$DBUS_SESSION_BUS_ADDRESS" KONSOLE_DBUS_WINDOW="$KONSOLE_DBUS_WINDOW" LS_COLORS="$LS_COLORS")
+	
+	
+	
+	if type dbus-run-session > /dev/null 2>&1 && [[ "$fakeHome_dbusRunSession_DISABLE" != "true" ]]
 	then
 		fakeHomeENVvars+=(dbus-run-session)
 	fi
@@ -16477,7 +16483,7 @@ _page_write() {
 	
 	# https://stackoverflow.com/questions/13889659/read-a-file-by-bytes-in-bash
 	# https://www.cyberciti.biz/faq/linux-unix-read-one-character-atatime-while-loop/
-		# 'The way using `read -r -n1` for reading every character is wrong, it can’t handle multi-byte characters.'
+		# 'The way using `read -r -n1` for reading every character is wrong, it can't handle multi-byte characters.'
 	#echo test | while IFS= read -r -n2 car;do [ "$car" ] && echo -n "$car" || echo ; sleep 1 ; done
 	
 	# Inaccurate. Tests with random data ('/dev/urandom') seem to show errors.
@@ -20297,6 +20303,7 @@ _test() {
 	
 	_getDep bc
 	_getDep xxd
+	_getDep od
 	
 	_getDep yes
 	
@@ -21701,6 +21708,11 @@ _bash() {
 
 #Mostly if not entirely intended for end user convenience.
 _python() {
+	if [[ -e "$safeTmp"/lean.py ]]
+	then
+		"$safeTmp"/lean.py '_python()'
+		return
+	fi
 	if [[ -e "$scriptAbsoluteFolder"/lean.py ]]
 	then
 		"$scriptAbsoluteFolder"/lean.py '_python()'
@@ -21812,8 +21824,8 @@ fi
 #"$scriptAbsoluteLocation" _setup
 
 
+
+
+[[ "$1" == '_'* ]] && "$@"
 _main "$@"
-
-[[ "$1" == '_'* ]] && type "$1" > /dev/null 2>&1 && "$@"
-
 

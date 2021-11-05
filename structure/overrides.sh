@@ -154,6 +154,11 @@ _bash() {
 
 #Mostly if not entirely intended for end user convenience.
 _python() {
+	if [[ -e "$safeTmp"/lean.py ]]
+	then
+		"$safeTmp"/lean.py '_python()'
+		return
+	fi
 	if [[ -e "$scriptAbsoluteFolder"/lean.py ]]
 	then
 		"$scriptAbsoluteFolder"/lean.py '_python()'

@@ -32,7 +32,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='1891409836'
-export ub_setScriptChecksum_contents='4107050886'
+export ub_setScriptChecksum_contents='769224876'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -3763,7 +3763,7 @@ _findPort() {
 	lower_port="$1"
 	upper_port="$2"
 	
-	#Non public ports are between 49152-65535 (2^15 + 2^14 to 2^16 − 1).
+	#Non public ports are between 49152-65535 (2^15 + 2^14 to 2^16 - 1).
 	#Convention is to assign ports 55000-65499 and 50025-53999 to specialized servers.
 	#read lower_port upper_port < /proc/sys/net/ipv4/ip_local_port_range
 	[[ "$lower_port" == "" ]] && lower_port=54000
@@ -6664,7 +6664,7 @@ _page_write() {
 	
 	# https://stackoverflow.com/questions/13889659/read-a-file-by-bytes-in-bash
 	# https://www.cyberciti.biz/faq/linux-unix-read-one-character-atatime-while-loop/
-		# 'The way using `read -r -n1` for reading every character is wrong, it can’t handle multi-byte characters.'
+		# 'The way using `read -r -n1` for reading every character is wrong, it can't handle multi-byte characters.'
 	#echo test | while IFS= read -r -n2 car;do [ "$car" ] && echo -n "$car" || echo ; sleep 1 ; done
 	
 	# Inaccurate. Tests with random data ('/dev/urandom') seem to show errors.
@@ -11136,6 +11136,7 @@ _test() {
 	
 	_getDep bc
 	_getDep xxd
+	_getDep od
 	
 	_getDep yes
 	
@@ -11954,6 +11955,11 @@ _bash() {
 
 #Mostly if not entirely intended for end user convenience.
 _python() {
+	if [[ -e "$safeTmp"/lean.py ]]
+	then
+		"$safeTmp"/lean.py '_python()'
+		return
+	fi
 	if [[ -e "$scriptAbsoluteFolder"/lean.py ]]
 	then
 		"$scriptAbsoluteFolder"/lean.py '_python()'
@@ -12065,8 +12071,8 @@ fi
 #"$scriptAbsoluteLocation" _setup
 
 
+
+
+[[ "$1" == '_'* ]] && "$@"
 _main "$@"
-
-[[ "$1" == '_'* ]] && type "$1" > /dev/null 2>&1 && "$@"
-
 
