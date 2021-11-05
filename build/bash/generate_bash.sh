@@ -222,6 +222,10 @@ then
 	source <(echo "$current_internal_CompressedScript" | base64 -d | xz -d) "$@"
 else
 	source <(echo "$current_internal_CompressedScript" | base64 -d | xz -d) --compressed "$@"
+	ub_import=
+	ub_import_param=
+	ub_import_script=
+	ub_loginshell=
 fi
 if [[ "$ub_import" == "true" ]] && ! ( [[ "$ub_import_param" == "--bypass" ]] ) || [[ "$ub_import_param" == "--compressed" ]] || [[ "$ub_import_param" == "--parent" ]] || [[ "$ub_import_param" == "--profile" ]]
 then
