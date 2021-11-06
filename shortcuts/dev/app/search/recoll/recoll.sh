@@ -45,7 +45,7 @@ _recoll_procedure() {
 	
 	( ! [[ -e "$current_configDir_search_recoll"/recoll.conf ]] || ! [[ -s "$current_configDir_search_recoll"/recoll.conf ]] ) && cat << CZXWXcRMTo8EmM8i4d >> "$current_configDir_search_recoll"/recoll.conf
 topdirs = $current_abstractDir_search
-skippedPaths = $current_abstractDir_search/w_*
+skippedPaths = $current_abstractDir_search/w_* $current_abstractDir_search/_local $current_abstractDir_search/core
 skippedNames+ = *.kate-swp .embed .pid .recoll .search .sessionid _recoll \
 project.afs recoll recoll_config search
 CZXWXcRMTo8EmM8i4d
