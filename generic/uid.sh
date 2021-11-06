@@ -24,3 +24,14 @@ _uid() {
 	fi
 	return 0
 }
+
+# WARNING: Reduces uniqueness, irreversible. Multiple input characters result in same output character.
+_filter_random() {
+	tr 'a-z' 'bgjktwxyz''bgjktwxyz''bgjktwxyz' | tr 'A-Z' 'BGJKTVWXYZ''BGJKTVWXYZ''BGJKTVWXYZ' | tr '0-9' '23679''23679''23679' | tr -dc 'bgjktwxyz23679BGJKTVWXYZ'
+}
+
+# WARNING: Reduces uniqueness, irreversible. Multiple input characters result in same output character.
+# WARNING: Not recommended for short strings (ie. not recommended for '8.3' compatibility ).
+_filter_hex() {
+	tr 'a-z' 'bcdf''bcdf''bcdf''bcdf''bcdf''bcdf''bcdf''bcdf' | tr 'A-Z' 'BCDF''BCDF''BCDF''BCDF''BCDF''BCDF''BCDF''BCDF' | tr '0-9' '23679''23679''23679' | tr -dc 'bcdf23679BCDF'
+}

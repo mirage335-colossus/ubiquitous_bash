@@ -32,7 +32,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='1891409836'
-export ub_setScriptChecksum_contents='138960149'
+export ub_setScriptChecksum_contents='4182160611'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -2388,6 +2388,17 @@ _uid() {
 		cat /dev/urandom 2> /dev/null | base64 2> /dev/null | tr -dc 'a-zA-Z0-9' 2> /dev/null | tr -d 'acdefhilmnopqrsuvACDEFHILMNOPQRSU14580' | head -c "$currentLengthUID" 2> /dev/null
 	fi
 	return 0
+}
+
+# WARNING: Reduces uniqueness, irreversible. Multiple input characters result in same output character.
+_filter_random() {
+	tr 'a-z' 'bgjktwxyz''bgjktwxyz''bgjktwxyz' | tr 'A-Z' 'BGJKTVWXYZ''BGJKTVWXYZ''BGJKTVWXYZ' | tr '0-9' '23679''23679''23679' | tr -dc 'bgjktwxyz23679BGJKTVWXYZ'
+}
+
+# WARNING: Reduces uniqueness, irreversible. Multiple input characters result in same output character.
+# WARNING: Not recommended for short strings (ie. not recommended for '8.3' compatibility ).
+_filter_hex() {
+	tr 'a-z' 'bcdf''bcdf''bcdf''bcdf''bcdf''bcdf''bcdf''bcdf' | tr 'A-Z' 'BCDF''BCDF''BCDF''BCDF''BCDF''BCDF''BCDF''BCDF' | tr '0-9' '23679''23679''23679' | tr -dc 'bcdf23679BCDF'
 }
 
 _compat_stat_c_run() {
@@ -9572,7 +9583,11 @@ _test_abstractfs() {
 
 # WARNING: First parameter, "$1" , must always be non-translated program to run or specialized abstractfs command.
 # Specifically do not attempt _abstractfs "$scriptAbsoluteLocation" or similar.
-# "$scriptAbsoluteLocation" _fakeHome "$scriptAbsoluteLocation" _abstractfs bash
+#"$scriptAbsoluteLocation" _fakeHome "$scriptAbsoluteLocation" _abstractfs bash
+# DANGER: Consistent directory naming.
+# Force creation of 'project.afs' .
+#export afs_nofs='false'
+#export ubAbstractFS_enable_projectafs_dir='true'
 _abstractfs() {
 	#Nesting prohibited. Not fully tested.
 	# WARNING: May cause infinite recursion symlinks.
@@ -10442,12 +10457,13 @@ _default_name_abstractfs() {
 	if ( [[ "$nofs" == "true" ]] || [[ "$afs_nofs" == "true" ]] )
 	then
 		#echo $(basename "$abstractfs_base") | md5sum | head -c 8
-		_describe_abstractfs "$@" | md5sum | head -c 8
+		_describe_abstractfs "$@" | md5sum | _filter_random | head -c 8
 		return
 	fi
 	
-	cat /dev/urandom 2> /dev/null | base64 2> /dev/null | tr -dc 'a-z' 2> /dev/null | head -c "1" 2> /dev/null
-	cat /dev/urandom 2> /dev/null | base64 2> /dev/null | tr -dc 'a-z0-9' 2> /dev/null | head -c "7" 2> /dev/null
+	cat /dev/urandom 2> /dev/null | base64 2> /dev/null | tr -dc 'a-z' 2> /dev/null | head -c "1" | _filter_random 2> /dev/null
+	#cat /dev/urandom 2> /dev/null | base64 2> /dev/null | tr -dc 'a-z0-9' 2> /dev/null | head -c "7"  | _filter_random 2> /dev/null
+	_uid 7
 }
 
 #"$1" == "$abstractfs_base" || ""
@@ -17030,6 +17046,105 @@ _dropCache() {
 
 
 
+
+
+# recoll
+
+_test_recoll() {
+	_getDep recoll
+	
+	_getDep recollindex
+	_getDep recollq
+	_getDep xadump
+}
+
+
+
+
+
+_set_recoll() {
+	_messagePlain_nominal 'init: _set_recoll'
+	_set_search "$@"
+	
+	# DANGER: Consistent directory naming.
+	# Force creation of 'project.afs' .
+	export afs_nofs='false'
+	export ubAbstractFS_enable_projectafs_dir='true'
+	
+	_messagePlain_nominal "set: recoll"
+	export current_configDir_search_recoll="$current_configDir_search"/recoll_config
+	_messagePlain_probe_var current_configDir_search_recoll
+}
+
+_prepare_recoll() {
+	_messagePlain_nominal 'init: _prepare_recoll'
+	#_set_search "$@"
+	_set_recoll "$@"
+	
+	
+	_messagePlain_nominal '_prepare_recoll: dir'
+	#"$scriptAbsoluteLocation" _abstractfs _messagePlain_probe_cmd mkdir -p "$current_configDir_search_recoll"
+	_messagePlain_probe_cmd mkdir -p "$current_configDir_search_recoll"
+}
+
+
+_recoll_procedure() {
+	_messageNormal '_recoll: program'
+	cd "$current_projectDir_search"
+	#"$scriptAbsoluteLocation" _abstractfs bash
+	
+	( ! [[ -e "$current_configDir_search_recoll"/recoll.conf ]] || ! [[ -s "$current_configDir_search_recoll"/recoll.conf ]] ) && cat << CZXWXcRMTo8EmM8i4d >> "$current_configDir_search_recoll"/recoll.conf
+topdirs = $current_abstractDir_search
+skippedPaths = $current_abstractDir_search/w_*
+skippedNames+ = *.kate-swp .embed .pid .recoll .search .sessionid _recoll \
+project.afs recoll recoll_config search
+CZXWXcRMTo8EmM8i4d
+	
+	( ! [[ -e "$current_configDir_search_recoll"/mimeview ]] || ! [[ -s "$current_configDir_search_recoll"/mimeview ]] ) && cat << 'CZXWXcRMTo8EmM8i4d' >> "$current_configDir_search_recoll"/mimeview
+xallexcepts- = application/pdf application/postscript application/x-dvi
+xallexcepts+ = text/html
+[view]
+text/html = chromium  %f
+CZXWXcRMTo8EmM8i4d
+	
+	
+	# https://www.lesbonscomptes.com/recoll/pages/custom.html#_alternating_result_backgrounds
+	# https://www.lesbonscomptes.com/recoll/pages/custom.html#_zooming_the_paragraph_font_size
+	# must set 'background: #ffffff;' or similar - otherwise results may nearly be undreadable
+	_messagePlain_request 'request: Some project specific configuration of '"'recoll'"'may be necessary.'
+	_messagePlain_request 'request: topdirs = '"$current_abstractDir_search"''
+	_messagePlain_request 'request: skippedPaths = '"$current_abstractDir_search"'/w_*'
+	_messagePlain_request 'request: skippedNames+ =
+project.afs
+recoll_config
+.search
+.recoll
+search
+recoll
+_recoll
+*.kate-swp
+
+.embed.sh
+.pid
+.sessionid'
+	_messagePlain_request 'request: mimeview:
+xallexcepts- = application/pdf application/postscript application/x-dvi
+xallexcepts+ = text/html text/x-shellscript
+[view]
+text/x-shellscript = kwrite
+text/html = chromium %f'
+	_messagePlain_request 'request: <table class="respar" style="background: #ffffff;">'
+	"$scriptAbsoluteLocation" _abstractfs recoll -c "$current_configDir_search_recoll"
+}
+_recoll() {
+	_messageNormal 'Begin: _recoll'
+	_prepare_search
+	_prepare_recoll
+	
+	_recoll_procedure "$@"
+	
+	_messageNormal 'End: _recoll'
+}
 
 
 #screenscraper-nix
@@ -32516,6 +32631,8 @@ _test() {
 	
 	_tryExec "_test_virtLocal_X11"
 	
+	_tryExec "_test_search"
+	
 	_tryExec "_test_packetDriveDevice"
 	_tryExec "_test_gparted"
 	
@@ -33848,6 +33965,7 @@ _init_deps() {
 	export enUb_git=""
 	export enUb_bup=""
 	export enUb_repo=""
+	export enUb_search=""
 	export enUb_cloud=""
 	export enUb_cloud_self=""
 	export enUb_cloud_build=""
@@ -33863,6 +33981,7 @@ _init_deps() {
 	export enUb_blockchain=""
 	export enUb_java=""
 	export enUb_image=""
+	export enUb_disc=""
 	export enUb_virt=""
 	export enUb_virt_thick=""
 	export enUb_virt_translation=""
@@ -33931,6 +34050,17 @@ _deps_bup() {
 
 _deps_repo() {
 	export enUb_repo="true"
+}
+
+_deps_search() {
+	_deps_abstractfs
+	
+	_deps_git
+	_deps_bup
+	
+	_deps_x11
+	
+	export enUb_search="true"
 }
 
 _deps_cloud() {
@@ -34494,6 +34624,7 @@ _test_prog() {
 	true
 }
 _main() {
+	#_start
 	_start scriptLocal_mkdir_disable
 	
 	_collect
@@ -34502,11 +34633,14 @@ _main() {
 	
 	_stop
 }
-current_deleteScriptLocal="false"
-[[ ! -e "$scriptLocal" ]] && current_deleteScriptLocal="true"
-_stop_prog() {
-	[[ "$current_deleteScriptLocal" == "true" ]] && rmdir "$scriptLocal" > /dev/null 2>&1
-}
+if [[ "$1" == '_test' ]]
+then
+	current_deleteScriptLocal="false"
+	[[ ! -e "$scriptLocal" ]] && current_deleteScriptLocal="true"
+	_stop_prog() {
+		[[ "$current_deleteScriptLocal" == "true" ]] && rmdir "$scriptLocal" > /dev/null 2>&1
+	}
+fi
 if [[ "$1" == '_'* ]] && type "$1" > /dev/null 2>&1
 then
 	"$@"
@@ -34583,6 +34717,8 @@ _compile_bash_deps() {
 		_deps_bup
 		
 		_deps_repo
+		
+		_deps_search
 		
 		# WARNING: Only known production use in this context is '_cloud_reset' , '_cloud_unhook' , and similar.
 		_deps_cloud
@@ -34735,6 +34871,8 @@ _compile_bash_deps() {
 		_deps_bup
 		_deps_repo
 		
+		_deps_search
+		
 		#_deps_cloud
 		#_deps_cloud_self
 		#_deps_cloud_build
@@ -34816,6 +34954,8 @@ _compile_bash_deps() {
 		_deps_bup
 		_deps_repo
 		
+		_deps_search
+		
 		#_deps_cloud
 		#_deps_cloud_self
 		#_deps_cloud_build
@@ -34896,6 +35036,8 @@ _compile_bash_deps() {
 		_deps_git
 		_deps_bup
 		_deps_repo
+		
+		_deps_search
 		
 		_deps_cloud
 		_deps_cloud_self
@@ -35183,6 +35325,10 @@ _compile_bash_shortcuts() {
 	
 	( [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_repo" == "true" ]] || [[ "$enUb_cloud" == "true" ]] ) && includeScriptList+=( "shortcuts/dev/app/repo/mktorrent"/mktorrent.sh )
 	( [[ "$enUb_notLean" == "true" ]] || [[ "$enUb_dev" == "true" ]] || [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_image" == "true" ]] || [[ "$enUb_repo" == "true" ]] || [[ "$enUb_cloud" == "true" ]] ) && includeScriptList+=( "shortcuts/dev/app/repo/disk"/dd.sh )
+	
+	
+	( [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_search" == "true" ]] ) && includeScriptList+=( "shortcuts/dev/app/search/recoll"/search.sh )
+	( [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_search" == "true" ]] ) && includeScriptList+=( "shortcuts/dev/app/search/recoll"/recoll.sh )
 	
 	
 	( [[ "$enUb_cloud_heavy" == "true" ]] || [[ "$enUb_cloud" == "true" ]] ) && includeScriptList+=( "shortcuts/cloud/self/screenScraper"/screenScraper-nix.sh )

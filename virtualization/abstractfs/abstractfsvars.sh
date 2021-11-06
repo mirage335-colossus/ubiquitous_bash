@@ -333,12 +333,13 @@ _default_name_abstractfs() {
 	if ( [[ "$nofs" == "true" ]] || [[ "$afs_nofs" == "true" ]] )
 	then
 		#echo $(basename "$abstractfs_base") | md5sum | head -c 8
-		_describe_abstractfs "$@" | md5sum | head -c 8
+		_describe_abstractfs "$@" | md5sum | _filter_random | head -c 8
 		return
 	fi
 	
-	cat /dev/urandom 2> /dev/null | base64 2> /dev/null | tr -dc 'a-z' 2> /dev/null | head -c "1" 2> /dev/null
-	cat /dev/urandom 2> /dev/null | base64 2> /dev/null | tr -dc 'a-z0-9' 2> /dev/null | head -c "7" 2> /dev/null
+	cat /dev/urandom 2> /dev/null | base64 2> /dev/null | tr -dc 'a-z' 2> /dev/null | head -c "1" | _filter_random 2> /dev/null
+	#cat /dev/urandom 2> /dev/null | base64 2> /dev/null | tr -dc 'a-z0-9' 2> /dev/null | head -c "7"  | _filter_random 2> /dev/null
+	_uid 7
 }
 
 #"$1" == "$abstractfs_base" || ""

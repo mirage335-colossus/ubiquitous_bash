@@ -12,6 +12,7 @@ _init_deps() {
 	export enUb_git=""
 	export enUb_bup=""
 	export enUb_repo=""
+	export enUb_search=""
 	export enUb_cloud=""
 	export enUb_cloud_self=""
 	export enUb_cloud_build=""
@@ -27,6 +28,7 @@ _init_deps() {
 	export enUb_blockchain=""
 	export enUb_java=""
 	export enUb_image=""
+	export enUb_disc=""
 	export enUb_virt=""
 	export enUb_virt_thick=""
 	export enUb_virt_translation=""
@@ -95,6 +97,17 @@ _deps_bup() {
 
 _deps_repo() {
 	export enUb_repo="true"
+}
+
+_deps_search() {
+	_deps_abstractfs
+	
+	_deps_git
+	_deps_bup
+	
+	_deps_x11
+	
+	export enUb_search="true"
 }
 
 _deps_cloud() {

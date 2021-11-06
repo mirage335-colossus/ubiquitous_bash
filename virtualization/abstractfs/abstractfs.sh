@@ -17,7 +17,11 @@ _test_abstractfs() {
 
 # WARNING: First parameter, "$1" , must always be non-translated program to run or specialized abstractfs command.
 # Specifically do not attempt _abstractfs "$scriptAbsoluteLocation" or similar.
-# "$scriptAbsoluteLocation" _fakeHome "$scriptAbsoluteLocation" _abstractfs bash
+#"$scriptAbsoluteLocation" _fakeHome "$scriptAbsoluteLocation" _abstractfs bash
+# DANGER: Consistent directory naming.
+# Force creation of 'project.afs' .
+#export afs_nofs='false'
+#export ubAbstractFS_enable_projectafs_dir='true'
 _abstractfs() {
 	#Nesting prohibited. Not fully tested.
 	# WARNING: May cause infinite recursion symlinks.

@@ -292,6 +292,7 @@ _test_prog() {
 	true
 }
 _main() {
+	#_start
 	_start scriptLocal_mkdir_disable
 	
 	_collect
@@ -300,11 +301,14 @@ _main() {
 	
 	_stop
 }
-current_deleteScriptLocal="false"
-[[ ! -e "$scriptLocal" ]] && current_deleteScriptLocal="true"
-_stop_prog() {
-	[[ "$current_deleteScriptLocal" == "true" ]] && rmdir "$scriptLocal" > /dev/null 2>&1
-}
+if [[ "$1" == '_test' ]]
+then
+	current_deleteScriptLocal="false"
+	[[ ! -e "$scriptLocal" ]] && current_deleteScriptLocal="true"
+	_stop_prog() {
+		[[ "$current_deleteScriptLocal" == "true" ]] && rmdir "$scriptLocal" > /dev/null 2>&1
+	}
+fi
 if [[ "$1" == '_'* ]] && type "$1" > /dev/null 2>&1
 then
 	"$@"

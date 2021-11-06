@@ -32,7 +32,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='1891409836'
-export ub_setScriptChecksum_contents='908493221'
+export ub_setScriptChecksum_contents='1160158579'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -2388,6 +2388,17 @@ _uid() {
 		cat /dev/urandom 2> /dev/null | base64 2> /dev/null | tr -dc 'a-zA-Z0-9' 2> /dev/null | tr -d 'acdefhilmnopqrsuvACDEFHILMNOPQRSU14580' | head -c "$currentLengthUID" 2> /dev/null
 	fi
 	return 0
+}
+
+# WARNING: Reduces uniqueness, irreversible. Multiple input characters result in same output character.
+_filter_random() {
+	tr 'a-z' 'bgjktwxyz''bgjktwxyz''bgjktwxyz' | tr 'A-Z' 'BGJKTVWXYZ''BGJKTVWXYZ''BGJKTVWXYZ' | tr '0-9' '23679''23679''23679' | tr -dc 'bgjktwxyz23679BGJKTVWXYZ'
+}
+
+# WARNING: Reduces uniqueness, irreversible. Multiple input characters result in same output character.
+# WARNING: Not recommended for short strings (ie. not recommended for '8.3' compatibility ).
+_filter_hex() {
+	tr 'a-z' 'bcdf''bcdf''bcdf''bcdf''bcdf''bcdf''bcdf''bcdf' | tr 'A-Z' 'BCDF''BCDF''BCDF''BCDF''BCDF''BCDF''BCDF''BCDF' | tr '0-9' '23679''23679''23679' | tr -dc 'bcdf23679BCDF'
 }
 
 _compat_stat_c_run() {
@@ -8226,7 +8237,11 @@ _test_abstractfs() {
 
 # WARNING: First parameter, "$1" , must always be non-translated program to run or specialized abstractfs command.
 # Specifically do not attempt _abstractfs "$scriptAbsoluteLocation" or similar.
-# "$scriptAbsoluteLocation" _fakeHome "$scriptAbsoluteLocation" _abstractfs bash
+#"$scriptAbsoluteLocation" _fakeHome "$scriptAbsoluteLocation" _abstractfs bash
+# DANGER: Consistent directory naming.
+# Force creation of 'project.afs' .
+#export afs_nofs='false'
+#export ubAbstractFS_enable_projectafs_dir='true'
 _abstractfs() {
 	#Nesting prohibited. Not fully tested.
 	# WARNING: May cause infinite recursion symlinks.
@@ -9096,12 +9111,13 @@ _default_name_abstractfs() {
 	if ( [[ "$nofs" == "true" ]] || [[ "$afs_nofs" == "true" ]] )
 	then
 		#echo $(basename "$abstractfs_base") | md5sum | head -c 8
-		_describe_abstractfs "$@" | md5sum | head -c 8
+		_describe_abstractfs "$@" | md5sum | _filter_random | head -c 8
 		return
 	fi
 	
-	cat /dev/urandom 2> /dev/null | base64 2> /dev/null | tr -dc 'a-z' 2> /dev/null | head -c "1" 2> /dev/null
-	cat /dev/urandom 2> /dev/null | base64 2> /dev/null | tr -dc 'a-z0-9' 2> /dev/null | head -c "7" 2> /dev/null
+	cat /dev/urandom 2> /dev/null | base64 2> /dev/null | tr -dc 'a-z' 2> /dev/null | head -c "1" | _filter_random 2> /dev/null
+	#cat /dev/urandom 2> /dev/null | base64 2> /dev/null | tr -dc 'a-z0-9' 2> /dev/null | head -c "7"  | _filter_random 2> /dev/null
+	_uid 7
 }
 
 #"$1" == "$abstractfs_base" || ""
@@ -10718,6 +10734,105 @@ _dropCache() {
 
 
 
+
+
+# recoll
+
+_test_recoll() {
+	_getDep recoll
+	
+	_getDep recollindex
+	_getDep recollq
+	_getDep xadump
+}
+
+
+
+
+
+_set_recoll() {
+	_messagePlain_nominal 'init: _set_recoll'
+	_set_search "$@"
+	
+	# DANGER: Consistent directory naming.
+	# Force creation of 'project.afs' .
+	export afs_nofs='false'
+	export ubAbstractFS_enable_projectafs_dir='true'
+	
+	_messagePlain_nominal "set: recoll"
+	export current_configDir_search_recoll="$current_configDir_search"/recoll_config
+	_messagePlain_probe_var current_configDir_search_recoll
+}
+
+_prepare_recoll() {
+	_messagePlain_nominal 'init: _prepare_recoll'
+	#_set_search "$@"
+	_set_recoll "$@"
+	
+	
+	_messagePlain_nominal '_prepare_recoll: dir'
+	#"$scriptAbsoluteLocation" _abstractfs _messagePlain_probe_cmd mkdir -p "$current_configDir_search_recoll"
+	_messagePlain_probe_cmd mkdir -p "$current_configDir_search_recoll"
+}
+
+
+_recoll_procedure() {
+	_messageNormal '_recoll: program'
+	cd "$current_projectDir_search"
+	#"$scriptAbsoluteLocation" _abstractfs bash
+	
+	( ! [[ -e "$current_configDir_search_recoll"/recoll.conf ]] || ! [[ -s "$current_configDir_search_recoll"/recoll.conf ]] ) && cat << CZXWXcRMTo8EmM8i4d >> "$current_configDir_search_recoll"/recoll.conf
+topdirs = $current_abstractDir_search
+skippedPaths = $current_abstractDir_search/w_*
+skippedNames+ = *.kate-swp .embed .pid .recoll .search .sessionid _recoll \
+project.afs recoll recoll_config search
+CZXWXcRMTo8EmM8i4d
+	
+	( ! [[ -e "$current_configDir_search_recoll"/mimeview ]] || ! [[ -s "$current_configDir_search_recoll"/mimeview ]] ) && cat << 'CZXWXcRMTo8EmM8i4d' >> "$current_configDir_search_recoll"/mimeview
+xallexcepts- = application/pdf application/postscript application/x-dvi
+xallexcepts+ = text/html
+[view]
+text/html = chromium  %f
+CZXWXcRMTo8EmM8i4d
+	
+	
+	# https://www.lesbonscomptes.com/recoll/pages/custom.html#_alternating_result_backgrounds
+	# https://www.lesbonscomptes.com/recoll/pages/custom.html#_zooming_the_paragraph_font_size
+	# must set 'background: #ffffff;' or similar - otherwise results may nearly be undreadable
+	_messagePlain_request 'request: Some project specific configuration of '"'recoll'"'may be necessary.'
+	_messagePlain_request 'request: topdirs = '"$current_abstractDir_search"''
+	_messagePlain_request 'request: skippedPaths = '"$current_abstractDir_search"'/w_*'
+	_messagePlain_request 'request: skippedNames+ =
+project.afs
+recoll_config
+.search
+.recoll
+search
+recoll
+_recoll
+*.kate-swp
+
+.embed.sh
+.pid
+.sessionid'
+	_messagePlain_request 'request: mimeview:
+xallexcepts- = application/pdf application/postscript application/x-dvi
+xallexcepts+ = text/html text/x-shellscript
+[view]
+text/x-shellscript = kwrite
+text/html = chromium %f'
+	_messagePlain_request 'request: <table class="respar" style="background: #ffffff;">'
+	"$scriptAbsoluteLocation" _abstractfs recoll -c "$current_configDir_search_recoll"
+}
+_recoll() {
+	_messageNormal 'Begin: _recoll'
+	_prepare_search
+	_prepare_recoll
+	
+	_recoll_procedure "$@"
+	
+	_messageNormal 'End: _recoll'
+}
 
 
 #screenscraper-nix
@@ -12857,6 +12972,54 @@ _testDistro() {
 	_wantGetDep sha256sum
 	_wantGetDep sha512sum
 	_wantGetDep axel
+}
+
+_testX11() {
+	_wantGetDep xclip
+	
+	_wantGetDep xinput
+}
+
+_report_xi() {
+	_messagePlain_probe "$xi_devID"
+	_messagePlain_probe "$xi_state"
+	_messagePlain_probe "$xi_propNumber"
+} 
+
+_x11_clipboard_sendText() {
+	xclip -selection clipboard
+	#xclip -selection primary
+	#xclip -selection secondary
+}
+
+_x11_clipboard_getImage() {
+	xclip -selection clipboard -t image/png -o -
+}
+
+_x11_clipboard_getImage_base64() {
+	_x11_clipboard_getImage | base64 -w0
+}
+
+_x11_clipboard_getImage_HTML() {
+	echo -e -n '<img src="data:image/png;base64,'
+	_x11_clipboard_getImage_base64
+	echo -e -n '" />'
+}
+
+_x11_clipboard_imageToHTML() {
+	_x11_clipboard_getImage_HTML | _x11_clipboard_sendText
+}
+
+[[ "$DISPLAY" != "" ]] && alias _clipImageHTML=_x11_clipboard_imageToHTML
+
+#KDE can lockup for many reasons, including xrandr, xsetwacom operations. Resetting the driving applications can be an effective workaround to improve reliability.
+_reset_KDE() {
+	if pgrep plasmashell
+	then
+		kquitapp plasmashell ; sleep 3 ; plasmashell &
+	fi
+	disown -a -h -r
+	disown -a -r
 }
 
 
@@ -18558,6 +18721,173 @@ _test_interactive_screen() {
 
 
 
+_buildHello() {
+	local helloSourceCode
+	helloSourceCode="$scriptAbsoluteFolder"/generic/hello/hello.c
+	! [[ -e "$helloSourceCode" ]] && helloSourceCode="$scriptLib"/ubiquitous_bash/generic/hello/hello.c
+	
+	mkdir -p "$scriptBin"
+	gcc -o "$scriptBin"/hello -static -nostartfiles "$helloSourceCode"
+}
+
+#####Idle
+
+_idle() {
+	_start
+	
+	_checkDep getIdle
+	
+	_daemonStatus && _stop 1
+	
+	#Default 20 minutes.
+	[[ "$idleMax" == "" ]] && export idleMax=1200000
+	[[ "$idleMin" == "" ]] && export idleMin=60000
+	
+	while true
+	do
+		sleep 5
+		
+		idleTime=$("$scriptBin"/getIdle)
+		
+		if [[ "$idleTime" -lt "$idleMin" ]] && _daemonStatus
+		then
+			true
+			_killDaemon	#Comment out if unnecessary.
+		fi
+		
+		
+		if [[ "$idleTime" -gt "$idleMax" ]] && ! _daemonStatus
+		then
+			_execDaemon
+			while ! _daemonStatus
+			do
+				sleep 5
+			done
+		fi
+		
+		
+		
+	done
+	
+	_stop
+}
+
+_test_buildIdle() {
+	_getDep "X11/extensions/scrnsaver.h"
+}
+
+_testBuiltIdle() {
+	
+	_checkDep getIdle
+	
+	idleTime=$("$scriptBin"/getIdle)
+	
+	if ! echo "$idleTime" | grep '^[0-9]*$' >/dev/null 2>&1
+	then
+		echo getIdle invalid response
+		_stop 1
+	fi
+	
+}
+
+_buildIdle() {
+	local idleSourceCode
+	idleSourceCode="$scriptAbsoluteFolder"/generic/process/getIdle.c
+	! [[ -e "$idleSourceCode" ]] && idleSourceCode="$scriptLib"/ubiquitous_bash/generic/process/getIdle.c
+	
+	mkdir -p "$scriptBin"
+	gcc -o "$scriptBin"/getIdle "$idleSourceCode" -lXss -lX11
+	
+}
+
+_build_nonet_default() {
+	_installation_nonet_default
+	
+	return 0
+}
+
+_test_build_prog() {
+	true
+}
+
+_test_build() {
+	_getDep gcc
+	_getDep g++
+	_getDep make
+	
+	#_getDep pahole
+	
+	#_getDep lz4
+	#_getDep lz4c
+	
+	
+	# libc6-dev
+	_getDep 'malloc.h'
+	_getDep 'memory.h'
+	_getDep 'stdio.h'
+	_getDep 'math.h'
+	
+	
+	_getDep cmake
+	
+	_getDep autoreconf
+	_getDep autoconf
+	_getDep automake
+	
+	_getDep libtool
+	
+	_getDep makeinfo
+	
+	_getDep pkg-config
+	
+	_tryExec _test_buildGoSu
+	
+	_tryExec _test_buildIdle
+	
+	_tryExec _test_bashdb
+	
+	_tryExec _test_ethereum_build
+	_tryExec _test_ethereum_parity_build
+	
+	_tryExec _test_build_prog
+}
+alias _testBuild=_test_build
+
+_buildSequence() {
+	_start scriptLocal_mkdir_disable
+	
+	echo -e '\E[1;32;46m Binary compiling...	\E[0m'
+	
+	_tryExec _buildHello
+	
+	_tryExec _buildIdle
+	_tryExec _buildGosu
+	
+	_tryExec _build_geth
+	_tryExec _build_ethereum_parity
+	
+	_tryExec _buildChRoot
+	_tryExec _buildQEMU
+	
+	_tryExec _buildExtra
+	
+	echo "     ...DONE"
+	
+	_stop
+}
+
+_build_prog() {
+	true
+}
+
+_build() {
+	_build_nonet_default
+	
+	"$scriptAbsoluteLocation" _buildSequence
+	
+	_build_prog
+}
+
 #####Local Environment Management (Resources)
 
 #_prepare_prog() {
@@ -20371,6 +20701,8 @@ _test() {
 	_tryExec "_testX11"
 	
 	_tryExec "_test_virtLocal_X11"
+	
+	_tryExec "_test_search"
 	
 	_tryExec "_test_packetDriveDevice"
 	_tryExec "_test_gparted"

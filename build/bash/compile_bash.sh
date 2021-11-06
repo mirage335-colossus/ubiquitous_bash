@@ -23,6 +23,8 @@ _compile_bash_deps() {
 		
 		_deps_repo
 		
+		_deps_search
+		
 		# WARNING: Only known production use in this context is '_cloud_reset' , '_cloud_unhook' , and similar.
 		_deps_cloud
 		#_deps_cloud_self
@@ -174,6 +176,8 @@ _compile_bash_deps() {
 		_deps_bup
 		_deps_repo
 		
+		_deps_search
+		
 		#_deps_cloud
 		#_deps_cloud_self
 		#_deps_cloud_build
@@ -255,6 +259,8 @@ _compile_bash_deps() {
 		_deps_bup
 		_deps_repo
 		
+		_deps_search
+		
 		#_deps_cloud
 		#_deps_cloud_self
 		#_deps_cloud_build
@@ -335,6 +341,8 @@ _compile_bash_deps() {
 		_deps_git
 		_deps_bup
 		_deps_repo
+		
+		_deps_search
 		
 		_deps_cloud
 		_deps_cloud_self
@@ -622,6 +630,10 @@ _compile_bash_shortcuts() {
 	
 	( [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_repo" == "true" ]] || [[ "$enUb_cloud" == "true" ]] ) && includeScriptList+=( "shortcuts/dev/app/repo/mktorrent"/mktorrent.sh )
 	( [[ "$enUb_notLean" == "true" ]] || [[ "$enUb_dev" == "true" ]] || [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_image" == "true" ]] || [[ "$enUb_repo" == "true" ]] || [[ "$enUb_cloud" == "true" ]] ) && includeScriptList+=( "shortcuts/dev/app/repo/disk"/dd.sh )
+	
+	
+	( [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_search" == "true" ]] ) && includeScriptList+=( "shortcuts/dev/app/search/recoll"/search.sh )
+	( [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_search" == "true" ]] ) && includeScriptList+=( "shortcuts/dev/app/search/recoll"/recoll.sh )
 	
 	
 	( [[ "$enUb_cloud_heavy" == "true" ]] || [[ "$enUb_cloud" == "true" ]] ) && includeScriptList+=( "shortcuts/cloud/self/screenScraper"/screenScraper-nix.sh )
