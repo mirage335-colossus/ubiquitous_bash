@@ -55,7 +55,7 @@ _prepare() {
 	
 	! mkdir -p "$logTmp" && exit 1
 	
-	! mkdir -p "$scriptLocal" && exit 1
+	[[ "$*" != *scriptLocal_mkdir_disable* ]] && ! mkdir -p "$scriptLocal" && exit 1
 	
 	! mkdir -p "$bootTmp" && exit 1
 	

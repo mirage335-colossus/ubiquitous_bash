@@ -221,7 +221,7 @@ _upgradeUbiquitous() {
 }
 
 _resetUbiquitous_sequence() {
-	_start
+	_start scriptLocal_mkdir_disable
 	
 	[[ ! -e "$HOME"/.bashrc ]] && return 0
 	cp "$HOME"/.bashrc "$HOME"/.bashrc.bak

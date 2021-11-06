@@ -17,7 +17,7 @@ _start_stty_echo() {
 _start() {
 	_start_stty_echo
 	
-	_prepare
+	_prepare "$@"
 	
 	#touch "$varStore"
 	#. "$varStore"

@@ -9,7 +9,7 @@ _test_queue() {
 
 # https://stackoverflow.com/questions/4774358/get-mtime-of-specific-file-using-bash
 _test_selfTime_sequence() {
-	_start
+	_start scriptLocal_mkdir_disable
 	
 	local iterations
 	
@@ -53,7 +53,7 @@ _test_selfTime() {
 
 
 _test_bashTime_sequence() {
-	_start
+	_start scriptLocal_mkdir_disable
 	
 	local iterations
 	
@@ -100,7 +100,7 @@ _test_bashTime() {
 
 # https://stackoverflow.com/questions/4774358/get-mtime-of-specific-file-using-bash
 _test_filemtime_sequence() {
-	_start
+	_start scriptLocal_mkdir_disable
 	
 	local iterations
 	

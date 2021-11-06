@@ -1,5 +1,5 @@
 _test_getAbsoluteLocation_sequence() {
-	_start
+	_start scriptLocal_mkdir_disable
 	
 	local testScriptLocation_actual
 	local testScriptLocation
@@ -88,7 +88,7 @@ _test_getAbsoluteLocation() {
 
 #https://unix.stackexchange.com/questions/293892/realpath-l-vs-p
 _test_realpath_L_s_sequence() {
-	_start
+	_start scriptLocal_mkdir_disable
 	local functionEntryPWD
 	functionEntryPWD="$PWD"
 	
@@ -168,7 +168,7 @@ _test_realpath() {
 }
 
 _test_readlink_f_sequence() {
-	_start
+	_start scriptLocal_mkdir_disable
 	
 	echo > "$safeTmp"/realFile
 	ln -s "$safeTmp"/realFile "$safeTmp"/linkA

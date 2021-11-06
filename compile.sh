@@ -32,7 +32,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='1891409836'
-export ub_setScriptChecksum_contents='3023566791'
+export ub_setScriptChecksum_contents='3858178118'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -169,8 +169,7 @@ ub_loginshell=
 # ATTENTION: Apparently (Portable) Cygwin Bash interprets correctly.
 [[ "${BASH_SOURCE[0]}" != "${0}" ]] && ub_import="true"
 
-( [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] ) && ub_import_param="$1" && shift
-[[ "$1" == '--compressed' ]] && ub_import_param="$1" && shift
+( [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] ) && ub_import_param="$1" && shift
 ( [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && ub_loginshell="true"	#Importing ubiquitous bash into a login shell with "~/.bashrc" is the only known cause for "_getScriptAbsoluteLocation" to return a result such as "/bin/bash".
 [[ "$ub_import" == "true" ]] && ! [[ "$ub_loginshell" == "true" ]] && ub_import_script="true"
 
@@ -1436,7 +1435,7 @@ _package-cygwin() {
 #####Utilities
 
 _test_getAbsoluteLocation_sequence() {
-	_start
+	_start scriptLocal_mkdir_disable
 	
 	local testScriptLocation_actual
 	local testScriptLocation
@@ -1525,7 +1524,7 @@ _test_getAbsoluteLocation() {
 
 #https://unix.stackexchange.com/questions/293892/realpath-l-vs-p
 _test_realpath_L_s_sequence() {
-	_start
+	_start scriptLocal_mkdir_disable
 	local functionEntryPWD
 	functionEntryPWD="$PWD"
 	
@@ -1605,7 +1604,7 @@ _test_realpath() {
 }
 
 _test_readlink_f_sequence() {
-	_start
+	_start scriptLocal_mkdir_disable
 	
 	echo > "$safeTmp"/realFile
 	ln -s "$safeTmp"/realFile "$safeTmp"/linkA
@@ -5992,18 +5991,18 @@ _test_prog() {
 	true
 }
 _main() {
-	#local current_deleteScriptLocal
-	#current_deleteScriptLocal="false"
-	
-	_start
+	_start scriptLocal_mkdir_disable
 	
 	_collect
 	
 	_enter "$@"
 	
 	_stop
-	
-	#[[ "$current_deleteScriptLocal" == "true" ]] && rmdir "$scriptLocal"
+}
+current_deleteScriptLocal="false"
+[[ ! -e "$scriptLocal" ]] && current_deleteScriptLocal="true"
+_stop_prog() {
+	[[ "$current_deleteScriptLocal" == "true" ]] && rmdir "$scriptLocal" > /dev/null 2>&1
 }
 if [[ "$1" == '_'* ]] && type "$1" > /dev/null 2>&1
 then

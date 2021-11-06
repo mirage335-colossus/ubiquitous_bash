@@ -32,7 +32,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='1891409836'
-export ub_setScriptChecksum_contents='502590530'
+export ub_setScriptChecksum_contents='138960149'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -169,8 +169,7 @@ ub_loginshell=
 # ATTENTION: Apparently (Portable) Cygwin Bash interprets correctly.
 [[ "${BASH_SOURCE[0]}" != "${0}" ]] && ub_import="true"
 
-( [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] ) && ub_import_param="$1" && shift
-[[ "$1" == '--compressed' ]] && ub_import_param="$1" && shift
+( [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] ) && ub_import_param="$1" && shift
 ( [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && ub_loginshell="true"	#Importing ubiquitous bash into a login shell with "~/.bashrc" is the only known cause for "_getScriptAbsoluteLocation" to return a result such as "/bin/bash".
 [[ "$ub_import" == "true" ]] && ! [[ "$ub_loginshell" == "true" ]] && ub_import_script="true"
 
@@ -1436,7 +1435,7 @@ _package-cygwin() {
 #####Utilities
 
 _test_getAbsoluteLocation_sequence() {
-	_start
+	_start scriptLocal_mkdir_disable
 	
 	local testScriptLocation_actual
 	local testScriptLocation
@@ -1525,7 +1524,7 @@ _test_getAbsoluteLocation() {
 
 #https://unix.stackexchange.com/questions/293892/realpath-l-vs-p
 _test_realpath_L_s_sequence() {
-	_start
+	_start scriptLocal_mkdir_disable
 	local functionEntryPWD
 	functionEntryPWD="$PWD"
 	
@@ -1605,7 +1604,7 @@ _test_realpath() {
 }
 
 _test_readlink_f_sequence() {
-	_start
+	_start scriptLocal_mkdir_disable
 	
 	echo > "$safeTmp"/realFile
 	ln -s "$safeTmp"/realFile "$safeTmp"/linkA
@@ -22954,7 +22953,7 @@ _upgradeUbiquitous() {
 }
 
 _resetUbiquitous_sequence() {
-	_start
+	_start scriptLocal_mkdir_disable
 	
 	[[ ! -e "$HOME"/.bashrc ]] && return 0
 	cp "$HOME"/.bashrc "$HOME"/.bashrc.bak
@@ -28276,7 +28275,7 @@ _test_queue() {
 
 # https://stackoverflow.com/questions/4774358/get-mtime-of-specific-file-using-bash
 _test_selfTime_sequence() {
-	_start
+	_start scriptLocal_mkdir_disable
 	
 	local iterations
 	
@@ -28320,7 +28319,7 @@ _test_selfTime() {
 
 
 _test_bashTime_sequence() {
-	_start
+	_start scriptLocal_mkdir_disable
 	
 	local iterations
 	
@@ -28367,7 +28366,7 @@ _test_bashTime() {
 
 # https://stackoverflow.com/questions/4774358/get-mtime-of-specific-file-using-bash
 _test_filemtime_sequence() {
-	_start
+	_start scriptLocal_mkdir_disable
 	
 	local iterations
 	
@@ -30669,7 +30668,7 @@ _test_build() {
 alias _testBuild=_test_build
 
 _buildSequence() {
-	_start
+	_start scriptLocal_mkdir_disable
 	
 	echo -e '\E[1;32;46m Binary compiling...	\E[0m'
 	
@@ -30760,7 +30759,7 @@ _prepare() {
 	
 	! mkdir -p "$logTmp" && exit 1
 	
-	! mkdir -p "$scriptLocal" && exit 1
+	[[ "$*" != *scriptLocal_mkdir_disable* ]] && ! mkdir -p "$scriptLocal" && exit 1
 	
 	! mkdir -p "$bootTmp" && exit 1
 	
@@ -30792,7 +30791,7 @@ _start_stty_echo() {
 _start() {
 	_start_stty_echo
 	
-	_prepare
+	_prepare "$@"
 	
 	#touch "$varStore"
 	#. "$varStore"
@@ -31688,7 +31687,7 @@ _variableLocalTestC_procedure() {
 }
 
 _variableLocalTest_sequence() {
-	_start
+	_start scriptLocal_mkdir_disable
 	
 	variableLocalTest_currentSubFunction() {
 		if ! [[ "$currentSubFunctionTest" == "true" ]] || ! [[ $(echo "$currentSubFunctionTest") == "true" ]]
@@ -31940,7 +31939,7 @@ _test_embed_procedure-embed() {
 }
 
 _test_embed_sequence() {
-	_start
+	_start scriptLocal_mkdir_disable
 	
 	#echo $ub_import
 	#echo $ub_import_param
@@ -32014,7 +32013,7 @@ _test_parallelFifo_procedure() {
 
 # No production use.
 _test_parallelFifo_sequence() {
-	_start
+	_start scriptLocal_mkdir_disable
 	
 	_test_parallelFifo_procedure "$@"
 	
@@ -32149,7 +32148,7 @@ _test_sanity() {
 	
 	[[ -e "$safeTmp" ]] && _messageFAIL && return 1
 	
-	_start
+	_start scriptLocal_mkdir_disable
 	
 	
 	[[ ! -e "$safeTmp" ]] && _messageFAIL && return 1
@@ -32286,8 +32285,8 @@ _test_sanity() {
 _test-shell() {
 	_installation_nonet_default
 	
-	# ATTENTION: As part of sanity test, "$safeTmp" must not exist until '_start' is called from within '_test_sanity' .
-	#_start
+	# ATTENTION: As part of sanity test, "$safeTmp" must not exist until '_start scriptLocal_mkdir_disable' is called from within '_test_sanity' .
+	#_start scriptLocal_mkdir_disable
 	_messageNormal "Sanity..."
 	_test_sanity && _messagePASS
 	
@@ -32611,6 +32610,7 @@ _test() {
 	
 	_tryExec "_test_prog"
 	
+	
 	_stop
 }
 
@@ -32619,7 +32619,7 @@ _test() {
 #}
 
 _testBuilt() {
-	_start
+	_start scriptLocal_mkdir_disable
 	
 	_messageProcess "Binary checking"
 	
@@ -32729,7 +32729,7 @@ _setup_anchor() {
 _setup() {
 	_installation_nonet_default
 	
-	_start
+	_start scriptLocal_mkdir_disable
 	
 	"$scriptAbsoluteLocation" _test || _stop 1
 	
@@ -32853,7 +32853,7 @@ _package_subdir() {
 
 # WARNING Must define "_package_license" function in ops to include license files in package!
 _package_procedure() {
-	_start
+	_start scriptLocal_mkdir_disable
 	mkdir -p "$safeTmp"/package
 	
 	# WARNING: Largely due to presence of '.gitignore' files in 'ubcp' .
@@ -34494,18 +34494,18 @@ _test_prog() {
 	true
 }
 _main() {
-	#local current_deleteScriptLocal
-	#current_deleteScriptLocal="false"
-	
-	_start
+	_start scriptLocal_mkdir_disable
 	
 	_collect
 	
 	_enter "$@"
 	
 	_stop
-	
-	#[[ "$current_deleteScriptLocal" == "true" ]] && rmdir "$scriptLocal"
+}
+current_deleteScriptLocal="false"
+[[ ! -e "$scriptLocal" ]] && current_deleteScriptLocal="true"
+_stop_prog() {
+	[[ "$current_deleteScriptLocal" == "true" ]] && rmdir "$scriptLocal" > /dev/null 2>&1
 }
 if [[ "$1" == '_'* ]] && type "$1" > /dev/null 2>&1
 then

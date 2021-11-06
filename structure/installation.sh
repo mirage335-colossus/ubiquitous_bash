@@ -424,7 +424,7 @@ _variableLocalTestC_procedure() {
 }
 
 _variableLocalTest_sequence() {
-	_start
+	_start scriptLocal_mkdir_disable
 	
 	variableLocalTest_currentSubFunction() {
 		if ! [[ "$currentSubFunctionTest" == "true" ]] || ! [[ $(echo "$currentSubFunctionTest") == "true" ]]
@@ -676,7 +676,7 @@ _test_embed_procedure-embed() {
 }
 
 _test_embed_sequence() {
-	_start
+	_start scriptLocal_mkdir_disable
 	
 	#echo $ub_import
 	#echo $ub_import_param
@@ -750,7 +750,7 @@ _test_parallelFifo_procedure() {
 
 # No production use.
 _test_parallelFifo_sequence() {
-	_start
+	_start scriptLocal_mkdir_disable
 	
 	_test_parallelFifo_procedure "$@"
 	
@@ -885,7 +885,7 @@ _test_sanity() {
 	
 	[[ -e "$safeTmp" ]] && _messageFAIL && return 1
 	
-	_start
+	_start scriptLocal_mkdir_disable
 	
 	
 	[[ ! -e "$safeTmp" ]] && _messageFAIL && return 1
@@ -1022,8 +1022,8 @@ _test_sanity() {
 _test-shell() {
 	_installation_nonet_default
 	
-	# ATTENTION: As part of sanity test, "$safeTmp" must not exist until '_start' is called from within '_test_sanity' .
-	#_start
+	# ATTENTION: As part of sanity test, "$safeTmp" must not exist until '_start scriptLocal_mkdir_disable' is called from within '_test_sanity' .
+	#_start scriptLocal_mkdir_disable
 	_messageNormal "Sanity..."
 	_test_sanity && _messagePASS
 	
@@ -1347,6 +1347,7 @@ _test() {
 	
 	_tryExec "_test_prog"
 	
+	
 	_stop
 }
 
@@ -1355,7 +1356,7 @@ _test() {
 #}
 
 _testBuilt() {
-	_start
+	_start scriptLocal_mkdir_disable
 	
 	_messageProcess "Binary checking"
 	
@@ -1465,7 +1466,7 @@ _setup_anchor() {
 _setup() {
 	_installation_nonet_default
 	
-	_start
+	_start scriptLocal_mkdir_disable
 	
 	"$scriptAbsoluteLocation" _test || _stop 1
 	
@@ -1589,7 +1590,7 @@ _package_subdir() {
 
 # WARNING Must define "_package_license" function in ops to include license files in package!
 _package_procedure() {
-	_start
+	_start scriptLocal_mkdir_disable
 	mkdir -p "$safeTmp"/package
 	
 	# WARNING: Largely due to presence of '.gitignore' files in 'ubcp' .

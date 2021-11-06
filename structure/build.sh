@@ -52,7 +52,7 @@ _test_build() {
 alias _testBuild=_test_build
 
 _buildSequence() {
-	_start
+	_start scriptLocal_mkdir_disable
 	
 	echo -e '\E[1;32;46m Binary compiling...	\E[0m'
 	
