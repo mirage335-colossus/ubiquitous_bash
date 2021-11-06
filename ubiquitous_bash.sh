@@ -32,7 +32,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='1891409836'
-export ub_setScriptChecksum_contents='4182160611'
+export ub_setScriptChecksum_contents='3481081993'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -17047,6 +17047,53 @@ _dropCache() {
 
 
 
+
+_test_search() {
+	_tryExec "_test_recoll"
+}
+
+# ATTENTION: Override with 'ops.sh' or similar.
+_set_search_prog() {
+	true
+	#export current_configDir_search="$scriptLocal"/search
+	#export current_configDir_search="$current_projectDir_search"/.search
+}
+
+_set_search() {
+	_messagePlain_nominal 'init: _set_search'
+	
+	# DANGER: Consistent directory naming.
+	# Force creation of 'project.afs' .
+	export afs_nofs='false'
+	export ubAbstractFS_enable_projectafs_dir='true'
+	
+	_reset_abstractfs
+	"$scriptAbsoluteLocation" _messagePlain_probe_cmd _findProjectAFS .
+	_reset_abstractfs
+	
+	_messagePlain_probe_cmd _abstractfs ls -d ./.
+	_messagePlain_probe_var abstractfs
+	
+	_messagePlain_nominal "set: search"
+	export current_abstractDir_search="$abstractfs"
+	export current_projectDir_search="$abstractfs_projectafs_dir"
+	_messagePlain_probe_var current_projectDir_search
+	#export current_configDir_search="$scriptLocal"/search
+	export current_configDir_search="$current_projectDir_search"/.search
+	_set_search_prog "$@"
+	_messagePlain_probe_var current_configDir_search
+	
+	_reset_abstractfs
+}
+
+_prepare_search() {
+	_messagePlain_nominal 'init: _prepare_search'
+	_set_search "$@"
+	
+	_messagePlain_nominal '_prepare_search: dir'
+	#"$scriptAbsoluteLocation" _abstractfs _messagePlain_probe_cmd mkdir -p "$current_configDir_search"
+	_messagePlain_probe_cmd mkdir -p "$current_configDir_search"
+}
 
 # recoll
 
@@ -35327,7 +35374,7 @@ _compile_bash_shortcuts() {
 	( [[ "$enUb_notLean" == "true" ]] || [[ "$enUb_dev" == "true" ]] || [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_image" == "true" ]] || [[ "$enUb_repo" == "true" ]] || [[ "$enUb_cloud" == "true" ]] ) && includeScriptList+=( "shortcuts/dev/app/repo/disk"/dd.sh )
 	
 	
-	( [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_search" == "true" ]] ) && includeScriptList+=( "shortcuts/dev/app/search/recoll"/search.sh )
+	( [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_search" == "true" ]] ) && includeScriptList+=( "shortcuts/dev/app/search"/search.sh )
 	( [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_search" == "true" ]] ) && includeScriptList+=( "shortcuts/dev/app/search/recoll"/recoll.sh )
 	
 	
