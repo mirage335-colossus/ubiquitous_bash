@@ -42,7 +42,8 @@ _local/ssh/log/
 
 
 !_local/ubcp
-
+.search
+search/
 
 
 .c_*

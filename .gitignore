@@ -54,6 +54,8 @@ _buried
 
 _local/*
 !_local/ubcp
+.search/
+search/
 
 _index
 
