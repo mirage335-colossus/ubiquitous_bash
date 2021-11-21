@@ -802,6 +802,9 @@ _declareFunctions_markup_terminal() {
 	declare -f _set_markup_terminal_exportFunctions
 	
 	
+	# WARNING: Most functions would be declared twice, substantially increasing 'current_internal_CompressedFunctions_bytes' .
+	return 0
+	
 	declare -f _e
 	declare -f _e-terminal
 	
