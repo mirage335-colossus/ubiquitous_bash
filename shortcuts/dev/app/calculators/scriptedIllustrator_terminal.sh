@@ -161,35 +161,47 @@ _set_markup_terminal() {
 			_cells_speck_end-terminal "$@"
 		}
 		#export -f _cells_speck_end
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
+		
+		
+		
+		
+		_markup_asciidoc_disable_begin() {
+			export currentFunctionName="${FUNCNAME[0]}"
+			_markup_asciidoc_disable_begin-terminal "$@"
+		}
+		#export -f _markup_asciidoc_disable_begin
+		
+		_markup_asciidoc_disable_end() {
+			export currentFunctionName="${FUNCNAME[0]}"
+			_markup_asciidoc_disable_end-terminal "$@"
+		}
+		#export -f _markup_asciidoc_disable_end
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
 		
 		# Echo command with commented (shell prepending '#' ) output.
 		_e-terminal() {
@@ -656,6 +668,14 @@ _set_markup_terminal() {
 		
 		
 		
+		_markup_asciidoc_disable_begin-terminal() {
+			true
+		}
+		_markup_asciidoc_disable_end-terminal() {
+			true
+		}
+		
+		
 		
 		
 		_fold-terminal() {
@@ -683,7 +703,10 @@ _set_markup_terminal() {
 			
 			#| sed "s/\&#92;/\\\/"
 		}
-		
+	fi
+	
+	if [[ "$current_scriptedIllustrator_markup" == "" ]] && [[ "$current_scriptedIllustrator_markup_markdown" == "" ]] && [[ "$workaround_noInterpret_begin" == "" ]] && [[ "$workaround_noInterpret_end" == "" ]] && [[ "$workaround_comment_shell_line" == "" ]]
+	then
 		_shellCommentLines() {
 			local currentString
 			
@@ -713,17 +736,6 @@ _set_markup_terminal() {
 			# Do not add newline if not already present.
 			#sed 's/^.*'"$flag__NOT_shell"'.*$//g'
 		}
-		
-		
-		
-		
-		_markup_asciidoc_disable_begin() {
-			false
-		}
-		_markup_asciidoc_disable_end() {
-			false
-		}
-		
 	fi
 	
 }
@@ -732,6 +744,9 @@ _set_markup_terminal
 
 _set_markup_terminal_exportFunctions() {
 	_set_markup_terminal "$@"
+	
+	#export current_scriptedIllustrator_markup='terminal'
+	export current_scriptedIllustrator_markup=''
 	
 	export -f _e
 	
@@ -777,6 +792,98 @@ _set_markup_terminal_exportFunctions() {
 	export -f _cells_row_end
 	export -f _cells_speck_begin
 	export -f _cells_speck_end
+	
+	export -f _markup_asciidoc_disable_begin
+	export -f _markup_asciidoc_disable_end
 }
 
+_declareFunctions_markup_terminal() {
+	declare -f _set_markup_terminal
+	declare -f _set_markup_terminal_exportFunctions
+	
+	
+	declare -f _e
+	declare -f _e-terminal
+	
+	declare -f _e_
+	declare -f _e_-terminal
+	
+	declare -f _o
+	declare -f _o-terminal
+	
+	declare -f _o_
+	declare -f _o_-terminal
+	
+	declare -f _i
+	declare -f _i-terminal
+	
+	declare -f _v
+	declare -f _v-terminal
+	
+	declare -f _t
+	declare -f _t-terminal
+	
+	declare -f _r
+	declare -f _r-terminal
+	
+	declare -f _
+	declare -f _h
+	declare -f _h-terminal
+	
+	
+	
+	
+	
+	
+	declare -f _heading1
+	declare -f _heading1-terminal
+	declare -f _heading2
+	declare -f _heading2-terminal
+	declare -f _heading3
+	declare -f _heading3-terminal
+	declare -f _heading4
+	declare -f _heading4-terminal
+	declare -f _heading5
+	declare -f _heading5-terminal
+	declare -f _heading6
+	declare -f _heading6-terminal
+	
+	declare -f _page
+	declare -f _page-terminal
+	
+	declare -f _paragraph_begin
+	declare -f _paragraph_begin-terminal
+	declare -f _paragraph_end
+	declare -f _paragraph_end-terminal
+	
+	declare -f _picture
+	declare -f _picture-terminal
+	declare -f _image
+	declare -f _image-terminal
+	
+	declare -f _cells_begin
+	declare -f _cells_begin-terminal
+	declare -f _cells_end
+	declare -f _cells_end-terminal
+	declare -f _cells_row_begin
+	declare -f _cells_row_begin-terminal
+	declare -f _cells_row_end
+	declare -f _cells_row_end-terminal
+	declare -f _cells_speck_begin
+	declare -f _cells_speck_begin-terminal
+	declare -f _cells_speck_end
+	declare -f _cells_speck_end-terminal
+	
+	
+	declare -f _markup_asciidoc_disable_begin
+	declare -f _markup_asciidoc_disable_begin-terminal
+	declare -f _markup_asciidoc_disable_end
+	declare -f _markup_asciidoc_disable_end-terminal
+	
+	
+	declare -f _fold-terminal
+	
+	
+	declare -f _workaround_preformattedCharacters-terminal
+}
 
