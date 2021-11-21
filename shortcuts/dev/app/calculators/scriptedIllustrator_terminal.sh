@@ -186,8 +186,9 @@ _set_markup_terminal() {
 		
 		
 		
-		
-		
+		export markup_terminal_cmd_begin='\033[0;37;100m'
+		export markup_terminal_cmd_end='\033[0m'
+		#export markup_terminal_cmd_end=' \E[0m'
 		
 		
 		
@@ -210,12 +211,12 @@ _set_markup_terminal() {
 			
 			
 			#echo "$interpret__terminal_NOT_shell__begin"
-			#echo "$markup_terminal_cmd_begin"
+			#echo -e -n "$markup_terminal_cmd_begin"
 			
-			_messagePlain_probe_quoteAddSingle "$@" | cat
+			_messagePlain_probe_quoteAddSingle "$@" | cat | _markup_terminal_cmd
 			"$@" | _shellCommentLines | cat
 			
-			#echo "$markup_terminal_cmd_begin"
+			#echo -e -n "$markup_terminal_cmd_end"
 			#echo "$interpret__terminal_NOT_shell__end"
 		}
 		
@@ -225,17 +226,17 @@ _set_markup_terminal() {
 			
 			
 			#echo "$interpret__terminal_NOT_shell__begin"
-			#echo "$markup_terminal_cmd_begin"
+			#echo -e -n "$markup_terminal_cmd_begin"
 			
 			local current_miniSessionID=$(_uid 8)
 			
 			_messagePlain_probe_quoteAddSingle "$@" | cat
 			
 			eval "$@" > "$bootTmp"/"$current_miniSessionID"."${ubiquitousBashIDnano:0:3}"
-			cat "$bootTmp"/"$current_miniSessionID"."${ubiquitousBashIDnano:0:3}" | _shellCommentLines | cat
+			cat "$bootTmp"/"$current_miniSessionID"."${ubiquitousBashIDnano:0:3}" | _shellCommentLines | cat | _markup_terminal_cmd
 			rm -f "$bootTmp"/"$current_miniSessionID"."${ubiquitousBashIDnano:0:3}" > /dev/null 2>&1
 			
-			#echo "$markup_terminal_cmd_begin"
+			#echo -e -n "$markup_terminal_cmd_end"
 			#echo "$interpret__terminal_NOT_shell__end"
 		}
 		
@@ -246,7 +247,8 @@ _set_markup_terminal() {
 			
 			
 			#echo "$interpret__terminal_NOT_shell__begin"
-			#echo "$markup_terminal_cmd_begin"
+			#echo -e -n "$markup_terminal_cmd_begin"
+			#echo -e -n ' \033[0;37;100m '
 			
 			local current_miniSessionID=$(_uid 8)
 			
@@ -255,9 +257,10 @@ _set_markup_terminal() {
 			
 			# | _shellCommentLines
 			
-			"$@" | _workaround_preformattedCharacters-terminal | cat
+			"$@" | _workaround_preformattedCharacters-terminal | cat | _markup_terminal_cmd
 			
-			#echo "$markup_terminal_cmd_begin"
+			#echo -e -n ' \033[0m '
+			#echo -e -n "$markup_terminal_cmd_end"
 			#echo "$interpret__terminal_NOT_shell__end"
 		}
 		
@@ -268,7 +271,7 @@ _set_markup_terminal() {
 			
 			
 			#echo "$interpret__terminal_NOT_shell__begin"
-			#echo "$markup_terminal_cmd_begin"
+			#echo -e -n "$markup_terminal_cmd_begin"
 			
 			local current_miniSessionID=$(_uid 8)
 			
@@ -278,10 +281,10 @@ _set_markup_terminal() {
 			# | _shellCommentLines
 			
 			eval "$@" > "$bootTmp"/"$current_miniSessionID"."${ubiquitousBashIDnano:0:3}"
-			cat "$bootTmp"/"$current_miniSessionID"."${ubiquitousBashIDnano:0:3}" | _workaround_preformattedCharacters-terminal | cat
+			cat "$bootTmp"/"$current_miniSessionID"."${ubiquitousBashIDnano:0:3}" | _workaround_preformattedCharacters-terminal | cat | _markup_terminal_cmd
 			rm -f "$bootTmp"/"$current_miniSessionID"."${ubiquitousBashIDnano:0:3}" > /dev/null 2>&1
 			
-			#echo "$markup_terminal_cmd_begin"
+			#echo -e -n "$markup_terminal_cmd_end"
 			#echo "$interpret__terminal_NOT_shell__end"
 		}
 		
@@ -336,7 +339,7 @@ _set_markup_terminal() {
 			[[ "$1" == "" ]] && return 0
 			
 			#_t-terminal #_safeEcho_newline _t "'"
-			_safeEcho _t "'"
+			#_t-terminal _safeEcho _t "'"
 			#echo -n "$flag__NOT_shell $comment_terminal_end""$markup_terminal_pre_begin"
 			
 			
@@ -361,7 +364,7 @@ _set_markup_terminal() {
 			_safeEcho "$@" | sed 's/^mediawiki_noLineBreak --><nowiki>//' | sed 's/^mediawiki_noLineBreak --><pre style="margin-top: 0px;margin-bottom: 0px;white-space: pre-wrap;">//' | _filter__scriptedIllustrator_markup | _fold-terminal | _workaround_preformattedCharacters-terminal
 			
 			#echo "$markup_terminal_pre_end""$comment_terminal_begin $flag__NOT_shell"
-			_safeEcho_newline "'"
+			#_t-terminal _safeEcho_newline "'"
 		}
 		
 		
@@ -370,9 +373,9 @@ _set_markup_terminal() {
 			# No parameters (no input) is meaningless and nothing can be done with that.
 			[[ "$1" == "" ]] && return 0
 			
-			#_t-terminal #_safeEcho_newline _r "'"
+			#_r-terminal #_safeEcho_newline _r "'"
 			_safeEcho _r "'"
-			echo -n "$flag__NOT_shell $comment_terminal_end"
+			#echo -n "$flag__NOT_shell $comment_terminal_end"
 			
 			
 			local currentLine
@@ -394,7 +397,7 @@ _set_markup_terminal() {
 			_safeEcho "$@" | sed 's/^mediawiki_noLineBreak -->//' | _filter__scriptedIllustrator_markup | _workaround_preformattedCharacters-terminal
 			
 			
-			echo "$comment_terminal_begin $flag__NOT_shell"
+			#echo "$comment_terminal_begin $flag__NOT_shell"
 			_safeEcho_newline "'"
 		}
 		
@@ -702,6 +705,17 @@ _set_markup_terminal() {
 			
 			
 			#| sed "s/\&#92;/\\\/"
+		}
+		
+		
+		_markup_terminal_cmd() {
+			local currentString
+			
+			while read -r currentString
+			do
+				[ "$currentString" ] && printf '%b' "$markup_terminal_cmd_begin""$currentString""$markup_terminal_cmd_end"
+				echo
+			done
 		}
 	fi
 	
