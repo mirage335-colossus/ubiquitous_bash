@@ -1,9 +1,9 @@
 
-# Demonstrates low bandwidth (9600bits), high framerate (60Hz), high resolution (0.25um), galactic scale (2.00ly diameter 8000 stars), high player count (>>122 players) netcode is simultaneously achievable.
+# Demonstrates low bandwidth (9600bits), high framerate (60Hz), high resolution (25um), galactic scale (2.00ly diameter 8000 stars), high player count (>>122 players) netcode is simultaneously achievable.
 
-# 27byte 'Complete' 2.00ly Diameter 0.25um Resolution Address
+# 27byte 'Complete' 2.00ly Diameter 25um Resolution Address
 # 20byte 'Galactic' 2.00ly Diameter 10m Resolution Address
-# 12byte 'Instance' 100km Diameter 0.25um Resolution Address
+# 12byte 'Instance' 100km Diameter 25um Resolution Address
 
 
 
