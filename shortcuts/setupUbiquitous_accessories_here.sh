@@ -29,6 +29,7 @@ tera = giga * 10^3;
 
 bit = 1;
 byte = bit * 8;
+Byte = bit * 8;
 
 kilobit = kilo * bit;
 megabit = mega * bit;
@@ -41,16 +42,21 @@ Mb = megabit;
 Gb = gigabit;
 Tb = terabit;
 
-kilobyte = kilobit * byte;
-megabyte = megabit * byte;
-gigabyte = gigabit * byte;
-terabyte = terabit * byte;
+kiloByte = kilobit * Byte;
+megaByte = megabit * Byte;
+gigaByte = gigabit * Byte;
+teraByte = terabit * Byte;
 
-kB = kilobyte;
-KB = kilobyte;
-MB = megabyte;
-GB = gigabyte;
-TB = terabyte;
+kilobyte = kilobit * Byte;
+megabyte = megabit * Byte;
+gigabyte = gigabit * Byte;
+terabyte = terabit * Byte;
+
+kB = kiloByte;
+KB = kiloByte;
+MB = megaByte;
+GB = gigaByte;
+TB = teraByte;
 
 
 kibi = 1024;
@@ -68,15 +74,20 @@ Mib = mebibit;
 Gib = gibibit;
 Tib = tebibit;
 
-kibibyte = kibi * byte;
-mebibyte = mebi * byte;
-gibibyte = gibi * byte;
-tebibyte = tebi * byte;
+kibiByte = kibi * Byte;
+mebiByte = mebi * Byte;
+gibiByte = gibi * Byte;
+tebiByte = tebi * Byte;
 
-KiB = kibibyte;
-MiB = mebibyte;
-GiB = gibibyte;
-TiB = tebibyte;
+kibibyte = kibi * Byte;
+mebibyte = mebi * Byte;
+gibibyte = gibi * Byte;
+tebibyte = tebi * Byte;
+
+KiB = kibiByte;
+MiB = mebiByte;
+GiB = gibiByte;
+TiB = tebiByte;
 
 
 

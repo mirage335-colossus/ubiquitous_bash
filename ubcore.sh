@@ -32,7 +32,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='1891409836'
-export ub_setScriptChecksum_contents='3531460123'
+export ub_setScriptChecksum_contents='3409229911'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -15172,6 +15172,7 @@ tera = giga * 10^3;
 
 bit = 1;
 byte = bit * 8;
+Byte = bit * 8;
 
 kilobit = kilo * bit;
 megabit = mega * bit;
@@ -15184,16 +15185,21 @@ Mb = megabit;
 Gb = gigabit;
 Tb = terabit;
 
-kilobyte = kilobit * byte;
-megabyte = megabit * byte;
-gigabyte = gigabit * byte;
-terabyte = terabit * byte;
+kiloByte = kilobit * Byte;
+megaByte = megabit * Byte;
+gigaByte = gigabit * Byte;
+teraByte = terabit * Byte;
 
-kB = kilobyte;
-KB = kilobyte;
-MB = megabyte;
-GB = gigabyte;
-TB = terabyte;
+kilobyte = kilobit * Byte;
+megabyte = megabit * Byte;
+gigabyte = gigabit * Byte;
+terabyte = terabit * Byte;
+
+kB = kiloByte;
+KB = kiloByte;
+MB = megaByte;
+GB = gigaByte;
+TB = teraByte;
 
 
 kibi = 1024;
@@ -15211,15 +15217,20 @@ Mib = mebibit;
 Gib = gibibit;
 Tib = tebibit;
 
-kibibyte = kibi * byte;
-mebibyte = mebi * byte;
-gibibyte = gibi * byte;
-tebibyte = tebi * byte;
+kibiByte = kibi * Byte;
+mebiByte = mebi * Byte;
+gibiByte = gibi * Byte;
+tebiByte = tebi * Byte;
 
-KiB = kibibyte;
-MiB = mebibyte;
-GiB = gibibyte;
-TiB = tebibyte;
+kibibyte = kibi * Byte;
+mebibyte = mebi * Byte;
+gibibyte = gibi * Byte;
+tebibyte = tebi * Byte;
+
+KiB = kibiByte;
+MiB = mebiByte;
+GiB = gibiByte;
+TiB = tebiByte;
 
 
 
