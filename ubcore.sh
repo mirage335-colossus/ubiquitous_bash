@@ -32,7 +32,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='1891409836'
-export ub_setScriptChecksum_contents='3409229911'
+export ub_setScriptChecksum_contents='1317605446'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -10620,7 +10620,7 @@ _set_markup_terminal() {
 		
 		_heading1-terminal() {
 			#_safeEcho_quoteAddSingle "$currentFunctionName" "$@"
-			#_safeEcho_newline
+			_safeEcho_newline
 			
 			
 			#echo "$interpret__terminal_NOT_shell__begin"
@@ -10631,7 +10631,7 @@ _set_markup_terminal() {
 		}
 		_heading2-terminal() {
 			#_safeEcho_quoteAddSingle "$currentFunctionName" "$@"
-			#_safeEcho_newline
+			_safeEcho_newline
 			
 			
 			#echo "$interpret__terminal_NOT_shell__begin"
@@ -10642,7 +10642,7 @@ _set_markup_terminal() {
 		}
 		_heading3-terminal() {
 			#_safeEcho_quoteAddSingle "$currentFunctionName" "$@"
-			#_safeEcho_newline
+			_safeEcho_newline
 			
 			
 			#echo "$interpret__terminal_NOT_shell__begin"
@@ -10653,7 +10653,7 @@ _set_markup_terminal() {
 		}
 		_heading4-terminal() {
 			#_safeEcho_quoteAddSingle "$currentFunctionName" "$@"
-			#_safeEcho_newline
+			_safeEcho_newline
 			
 			
 			#echo "$interpret__terminal_NOT_shell__begin"
@@ -10664,7 +10664,7 @@ _set_markup_terminal() {
 		}
 		_heading5-terminal() {
 			#_safeEcho_quoteAddSingle "$currentFunctionName" "$@"
-			#_safeEcho_newline
+			_safeEcho_newline
 			
 			
 			#echo "$interpret__terminal_NOT_shell__begin"
@@ -10675,7 +10675,7 @@ _set_markup_terminal() {
 		}
 		_heading6-terminal() {
 			#_safeEcho_quoteAddSingle "$currentFunctionName" "$@"
-			#_safeEcho_newline
+			_safeEcho_newline
 			
 			
 			#echo "$interpret__terminal_NOT_shell__begin"
@@ -10692,8 +10692,9 @@ _set_markup_terminal() {
 		#text page (experiment)
 		#</p>
 		_page-terminal() {
-			_safeEcho_quoteAddSingle "$currentFunctionName" "$@"
 			_safeEcho_newline
+			_safeEcho_quoteAddSingle "$currentFunctionName" "$@"
+			#_safeEcho_newline
 			
 			
 			#echo "$interpret__terminal_NOT_shell__begin"

@@ -416,7 +416,7 @@ _set_markup_terminal() {
 		
 		_heading1-terminal() {
 			#_safeEcho_quoteAddSingle "$currentFunctionName" "$@"
-			#_safeEcho_newline
+			_safeEcho_newline
 			
 			
 			#echo "$interpret__terminal_NOT_shell__begin"
@@ -427,7 +427,7 @@ _set_markup_terminal() {
 		}
 		_heading2-terminal() {
 			#_safeEcho_quoteAddSingle "$currentFunctionName" "$@"
-			#_safeEcho_newline
+			_safeEcho_newline
 			
 			
 			#echo "$interpret__terminal_NOT_shell__begin"
@@ -438,7 +438,7 @@ _set_markup_terminal() {
 		}
 		_heading3-terminal() {
 			#_safeEcho_quoteAddSingle "$currentFunctionName" "$@"
-			#_safeEcho_newline
+			_safeEcho_newline
 			
 			
 			#echo "$interpret__terminal_NOT_shell__begin"
@@ -449,7 +449,7 @@ _set_markup_terminal() {
 		}
 		_heading4-terminal() {
 			#_safeEcho_quoteAddSingle "$currentFunctionName" "$@"
-			#_safeEcho_newline
+			_safeEcho_newline
 			
 			
 			#echo "$interpret__terminal_NOT_shell__begin"
@@ -460,7 +460,7 @@ _set_markup_terminal() {
 		}
 		_heading5-terminal() {
 			#_safeEcho_quoteAddSingle "$currentFunctionName" "$@"
-			#_safeEcho_newline
+			_safeEcho_newline
 			
 			
 			#echo "$interpret__terminal_NOT_shell__begin"
@@ -471,7 +471,7 @@ _set_markup_terminal() {
 		}
 		_heading6-terminal() {
 			#_safeEcho_quoteAddSingle "$currentFunctionName" "$@"
-			#_safeEcho_newline
+			_safeEcho_newline
 			
 			
 			#echo "$interpret__terminal_NOT_shell__begin"
@@ -488,8 +488,9 @@ _set_markup_terminal() {
 		#text page (experiment)
 		#</p>
 		_page-terminal() {
-			_safeEcho_quoteAddSingle "$currentFunctionName" "$@"
 			_safeEcho_newline
+			_safeEcho_quoteAddSingle "$currentFunctionName" "$@"
+			#_safeEcho_newline
 			
 			
 			#echo "$interpret__terminal_NOT_shell__begin"
