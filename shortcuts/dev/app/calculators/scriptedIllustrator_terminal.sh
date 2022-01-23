@@ -495,8 +495,9 @@ _set_markup_terminal() {
 			
 			#echo "$interpret__terminal_NOT_shell__begin"
 			
-			_safeEcho_newline 'PageBreak -H-H-H-H- PageBreak -H-H-H-H- PageBreak -H-H-H-H- PageBreak -H-H-H-H- PageBreak
-		' | cat
+			_safeEcho_newline 'PageBreak -H-H-H-H- PageBreak -H-H-H-H- PageBreak -H-H-H-H- PageBreak -H-H-H-H- PageBreak' | cat
+			
+			_safeEcho_newline
 			
 			#_safeEcho_newline '<p style="page-break-after: always;">&nbsp;</p>' | cat
 			#_safeEcho_newline '<p style="page-break-before: always;">&nbsp;</p>' | cat
