@@ -40,6 +40,7 @@ export profileScriptLocation="$ubcoreUBdir"/ubcore.sh
 export profileScriptFolder="$ubcoreUBdir"
 [[ "\$scriptAbsoluteLocation" != "" ]] && . "\$scriptAbsoluteLocation" --parent _importShortcuts
 [[ "\$scriptAbsoluteLocation" == "" ]] && . "\$profileScriptLocation" --profile _importShortcuts
+[[ "\$ub_setScriptChecksum_disable" == 'true' ]] && export ub_setScriptChecksum_disable='true'
 
 
 # Returns priority to normal.
