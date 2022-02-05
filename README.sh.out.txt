@@ -57,14 +57,17 @@ Much more functionality exists than listed here. At approximately ~1500 function
 
 
 
- '_page'
-PageBreak -H-H-H-H- PageBreak -H-H-H-H- PageBreak -H-H-H-H- PageBreak -H-H-H-H- PageBreak
-		
+
+ '_page'PageBreak -H-H-H-H- PageBreak -H-H-H-H- PageBreak -H-H-H-H- PageBreak -H-H-H-H- PageBreak
+
+
 _ Demonstrations _
+
 __ Situational Awareness Command-Line Bash and Python Prompts __
 
 (pictured right)
  '_picture' 'zImage_commandPrompt.png' '485px'
+
 __ Linux Application Virtualization __
  '_cells_begin'
  '_cells_row_begin'
@@ -74,6 +77,7 @@ __ Linux Application Virtualization __
  '_cells_row_end'
  '_cells_end'
  '_image' 'zImage_userQemu_window_nix.png' '275px'
+
 __ MSW Application Virtualization __
  '_cells_begin'
  '_cells_row_begin'
@@ -83,10 +87,12 @@ __ MSW Application Virtualization __
  '_cells_row_end'
  '_cells_end'
  '_image' 'zImage_userVBox_window_MSW.png' '275px'
+
 __ Queue Inter-Process Communication __
  '_picture' 'zImage_queue_experiment.jpg' '485px'
 
 (pictured right)
+
 __ _test-shell __
  '_cells_begin'
  '_cells_row_begin'
@@ -106,48 +112,64 @@ __ _test-shell __
 
 
 
- '_page'
-PageBreak -H-H-H-H- PageBreak -H-H-H-H- PageBreak -H-H-H-H- PageBreak -H-H-H-H- PageBreak
-		
+
+ '_page'PageBreak -H-H-H-H- PageBreak -H-H-H-H- PageBreak -H-H-H-H- PageBreak -H-H-H-H- PageBreak
+
+
 _ Examples _
+
 __ DIRECTORIES, MODULAR __
+
 ___ BOM_designer ___
 
 Hierarchical text-based Bill-of-Materials. Finds all all files with extensions &#39;.lbom.csv&#39;, &#39;.lbom.txt&#39;, &#39;*.lbom&#39; . Compiles a consolidated list.
+
 ___ gEDA_designer ___
 
 Designer. Extensively automates integration and manufacturing specification files (eg. PDF, CAD model, &#39;gerber&#39;, PCB photolithography masks, etc).
+
 ___ scriptedIllustrator ___
 
 From shell script to interleaved self-modifying shell script and markup of &#39;html&#39;, &#39;pdf&#39;, &#39;mediawiki&#39;, &#39;markdown&#39;, etc.
 https://github.com/mirage335/scriptedIllustrator
+
 __ OPERATING SYSTEM and VIRTUALIZATION __
+
 ___ arduinoUbiquitous ___
 
 Both &#39;_abstractfs&#39; and &#39;_fakeHome&#39; contain &#39;Arduino&#39;, related programs, and libraries, to create firmware projects with portability comparable to "makefile" or "cmake" projects. External debug tool interfaces (eg. &#39;gdb&#39;, &#39;ddd&#39;) are also integrated.
 https://github.com/mirage335/arduinoUbiquitous
+
 ___ webClient ___
 
 Forces browser profile portability and multi-instance through &#39;_fakeHome&#39;.
 https://github.com/mirage335/webClient
+
 ___ freecad-assembly2 ___
 
 FreeCAD assembly2 and a2plus module portability through &#39;_fakeHome&#39;.
 https://github.com/mirage335/freecad-assembly2
+
 ___ kit-raspi ___
 
 RasPi and x64 bootable OS, LiveISO, LiveUSB building and customization mostly through &#39;_chroot&#39;, &#39;cp -a&#39;, &#39;rsync&#39; .
 https://github.com/mirage335/ubiquitous_bash/tree/master/_lib/kit/raspi
+
 __ INTER-PROCESS COMMUNICATION __
+
 ___ metaBus ___
 
 Reference implementation illustrating connecting multiple programs through &#39;MetaEngine&#39; .
 https://github.com/mirage335/metaBus
+
 __ DEV __
+
 ___ pcb-ioAutorouter ___
 
 Compiles and contains installation of &#39;pcb&#39; with patch for &#39;autorouter&#39; compatibility.
+
 __ REMOTE __
+
 ___ CoreAutoSSH ___
 
 Remote logical network configuration . Automatic SSH multi-path and multi-hop.
@@ -155,9 +177,10 @@ https://github.com/mirage335/CoreAutoSSH
 
 
 
- '_page'
-PageBreak -H-H-H-H- PageBreak -H-H-H-H- PageBreak -H-H-H-H- PageBreak -H-H-H-H- PageBreak
-		
+
+ '_page'PageBreak -H-H-H-H- PageBreak -H-H-H-H- PageBreak -H-H-H-H- PageBreak -H-H-H-H- PageBreak
+
+
 _ Usage _
 
 [0;37;100m[0;34m./ubiquitous_bash.sh[0m
@@ -169,6 +192,7 @@ _ Usage _
 Projects using Ubiquitous Bash as a git submodule can be created by &#39;fork&#39; script. Examples of common modifications to such projects are available at &#39;_lib/kit&#39; directory. Project name, and developer name, must be set by editing &#39;fork&#39; script appropriately.
 [0;37;100m[0;34m# Move &#39;fork&#39; to a different directory and edit appropriately.[0m
 [0;37;100m./fork [0m[0m
+
 
 __ Python __
 
@@ -192,6 +216,7 @@ __ Python __
 
 
 
+
 __ Support __
 
 Ubiquitous Bash is supported on an *urgent basis*, nominally *immediate*, due to long established dependability and uses. Any support request will be attended to ASAP. Please do not hesitate to contact maintainer "mirage335" by any means.
@@ -201,9 +226,10 @@ Bug reports, feature requests, forks, and especially pull requests, are highly w
 
 
 
- '_page'
-PageBreak -H-H-H-H- PageBreak -H-H-H-H- PageBreak -H-H-H-H- PageBreak -H-H-H-H- PageBreak
-		
+
+ '_page'PageBreak -H-H-H-H- PageBreak -H-H-H-H- PageBreak -H-H-H-H- PageBreak -H-H-H-H- PageBreak
+
+
 _ Design _
 
 
@@ -211,6 +237,7 @@ Entry points for developers are described here. To understand Ubiquitous Bash, o
 [0;37;100m[0;34m_findFunction() {[0m
 [0;37;100mfind . -not -path "./_local/*" -name &#39;*.sh&#39; -type f -size -3000k -exec grep -n "$@" &#39;{}&#39; /dev/null \;[0m
 [0;37;100m} [0m[0m
+
 
 __ DIRECTORIES __
 
@@ -245,6 +272,7 @@ New "sessionid" is commonly obtained to separate temporary directories. Temporar
 
 [0;37;100m"$scriptAbsoluteLocation" _userFakeHome /bin/true || _stop 1 [0m[0m
 
+
 __ MODULAR __
 
 
@@ -273,15 +301,17 @@ Any function name with &#39;_&#39; as first character, can be called externally 
 
 
 
- '_page'
-PageBreak -H-H-H-H- PageBreak -H-H-H-H- PageBreak -H-H-H-H- PageBreak -H-H-H-H- PageBreak
-		
+
+ '_page'PageBreak -H-H-H-H- PageBreak -H-H-H-H- PageBreak -H-H-H-H- PageBreak -H-H-H-H- PageBreak
+
+
 _ Version _
 v3.113
 
 Semantic versioning is applied. Major version numbers (v2.x) indicate a compatible API. Minor numbers indicate the current feature set has been tested for usability. Any git commits not tagged with a version number may be technically considered unstable development code. New functions present in git commits may be experimental.
 
 In most user environments, the latest git repository code will provide the strongest reliability guarantees. Extra safety checks are occasionally added as possible edge cases are discovered.
+
 
 
 
@@ -292,9 +322,10 @@ _ Conventions _
 
 
 
- '_page'
-PageBreak -H-H-H-H- PageBreak -H-H-H-H- PageBreak -H-H-H-H- PageBreak -H-H-H-H- PageBreak
-		
+
+ '_page'PageBreak -H-H-H-H- PageBreak -H-H-H-H- PageBreak -H-H-H-H- PageBreak -H-H-H-H- PageBreak
+
+
 _ Safety _
 
 *) DANGER: Do NOT &#39;open&#39; &#39;loopback&#39; backends (eg. _openImage, _openChRoot, _openVBoxRaw ) as read/write (ie. &#39;edit&#39; instead of &#39;user&#39;) if reboot has occurred while open. Wrong &#39;loopback&#39; &#39;device&#39; may be overwritten. All &#39;loopback&#39; backends are intended ONLY for developers or for building &#39;operating system images&#39;. End-user activity should never cause a call to a loopback device, even indirectly.
@@ -344,9 +375,10 @@ _ Safety _
 
 
 
- '_page'
-PageBreak -H-H-H-H- PageBreak -H-H-H-H- PageBreak -H-H-H-H- PageBreak -H-H-H-H- PageBreak
-		
+
+ '_page'PageBreak -H-H-H-H- PageBreak -H-H-H-H- PageBreak -H-H-H-H- PageBreak -H-H-H-H- PageBreak
+
+
 _ Future Work _
 
 *) Voice commands using Pocket Sphinx and limited vocabulary. Specifically NOT a &#39;digital assistant&#39;.
@@ -410,9 +442,10 @@ _ Future Work _
 
 
 
- '_page'
-PageBreak -H-H-H-H- PageBreak -H-H-H-H- PageBreak -H-H-H-H- PageBreak -H-H-H-H- PageBreak
-		
+
+ '_page'PageBreak -H-H-H-H- PageBreak -H-H-H-H- PageBreak -H-H-H-H- PageBreak -H-H-H-H- PageBreak
+
+
 _ Known Issues _
 
 *) Typical TCP/IP and related software cannot be configured for resilience under packet corruption, heavy packet loss, multi-second latency, or address/ap roaming. SSH in particular may fail erratically due to packet corruption. A proxy handling these issues through named pipes and tcpwrappers may not be possible, nor may it be feasible to workaround such SSH failures. Best to upload "$scriptAbsoluteLocation" and call entire function at server side with only one remote SSH command.
@@ -434,9 +467,10 @@ https://stackoverflow.com/questions/28643392/bash-scripting-permanent-pipe
 *) An error has been thrown to standard error upon shutdown in some rare cases. Preventative measures are now believed to be effective, however, as the error is intermittent, bug reports are encouraged. Without sufficiently concise and relevant information, this may not be resolvable.
 	realpath: .../ubiquitous_bash/w_.../.ssh/.../cautossh: No such file or directory
 	find: &#39;.../ubiquitous_bash/w_.../.ssh/.../w_...&#39;: No such file or directory
- '_page'
-PageBreak -H-H-H-H- PageBreak -H-H-H-H- PageBreak -H-H-H-H- PageBreak -H-H-H-H- PageBreak
-		
+
+ '_page'PageBreak -H-H-H-H- PageBreak -H-H-H-H- PageBreak -H-H-H-H- PageBreak -H-H-H-H- PageBreak
+
+
 _ Reference _
 
 
@@ -502,13 +536,15 @@ https://docs.docker.com/engine/admin/volumes/volumes/
 
 
 
- '_page'
-PageBreak -H-H-H-H- PageBreak -H-H-H-H- PageBreak -H-H-H-H- PageBreak -H-H-H-H- PageBreak
-		
+
+ '_page'PageBreak -H-H-H-H- PageBreak -H-H-H-H- PageBreak -H-H-H-H- PageBreak -H-H-H-H- PageBreak
+
+
 _ Credit _
 
 
 *) Thanks to "rocky" for workaround to bashdb/emacs issue - https://github.com/realgud/realgud/issues/205#issuecomment-354851601 .
+
 
 
 
@@ -527,11 +563,13 @@ _ Included Works _
 
 
 
+
 _ Bundle _
 
 
 Larger files (eg. emacs configuration, blockchain) are not included with &#39;ubiquitous bash&#39; directly, or as a submodule. If needed, &#39;clone&#39; to &#39;_bundle&#39; directory (which is ignored).
 git clone --depth 1 --recursive git@github.com:mirage335/ubiquitous_bash_bundle.git _bundle
+
 
 
 
