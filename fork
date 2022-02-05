@@ -110,7 +110,7 @@ _project() {
 	cd ./_lib/ubiquitous_bash ; git fetch --shallow-exclude=v3.112 ; git reset --hard
 	cd "$workingDir"/"$projectName"
 	
-	git config -f .gitmodules submodules._lib/ubiquitous_bash.shallow true
+	git config -f .gitmodules submodule._lib/ubiquitous_bash.shallow true
 	
 	#Parent derivative of ubiquitous_bash.
 	#cd ./_lib/parent
