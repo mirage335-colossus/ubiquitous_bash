@@ -1188,6 +1188,16 @@ _test() {
 	
 	_getDep yes
 	
+	
+	
+	_getDep perl
+	_getDep python
+	
+	
+	_tryExec "_test_haskell"
+	
+	
+	
 	_test_readlink_f
 	
 	_tryExec "_test_package"
