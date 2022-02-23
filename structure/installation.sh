@@ -1191,9 +1191,9 @@ _test() {
 	
 	
 	_getDep perl
-	_getDep python
 	
 	
+	_tryExec "_test_python"
 	_tryExec "_test_haskell"
 	
 	

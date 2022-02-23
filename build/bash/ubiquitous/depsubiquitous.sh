@@ -61,6 +61,9 @@ _init_deps() {
 	
 	export enUb_linux=""
 	
+	export enUb_python=""
+	export enUb_haskell=""
+	
 	export enUb_calculators=""
 }
 
@@ -349,6 +352,13 @@ _deps_stopwatch() {
 # ie. _test_linux must not require Linux-only binaries
 _deps_linux() {
 	export enUb_linux="true"
+}
+
+_deps_python() {
+	export enUb_python="true"
+}
+_deps_haskell() {
+	export enUb_haskell="true"
 }
 
 _deps_calculators() {

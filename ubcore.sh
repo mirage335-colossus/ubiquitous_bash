@@ -32,7 +32,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='1891409836'
-export ub_setScriptChecksum_contents='21913129'
+export ub_setScriptChecksum_contents='4144632695'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -7713,6 +7713,31 @@ _stopwatch() {
 	measureDateB=$(date +%s%N | cut -b1-13)
 
 	bc <<< "$measureDateB - $measureDateA"
+}
+
+
+_test_python() {
+	_getDep python
+}
+
+
+
+_test_haskell() {
+	if [[ -e /etc/issue ]] && cat /etc/issue | grep 'Debian' > /dev/null 2>&1
+	then
+		_wantGetDep '/usr/share/doc/haskell-platform/README.Debian'
+	fi
+
+	_wantGetDep alex
+	_wantGetDep cabal
+	_wantGetDep happy
+	_wantGetDep HsColour
+	_wantGetDep hscolour
+
+	_wantGetDep ghc
+	_wantGetDep ghci
+	! type -p 'ghc' && echo 'warn: missing: ghc'
+	! type -p 'ghci' && echo 'warn: missing: ghci'
 }
 
 
@@ -21608,9 +21633,9 @@ _test() {
 	
 	
 	_getDep perl
-	_getDep python
 	
 	
+	_tryExec "_test_python"
 	_tryExec "_test_haskell"
 	
 	

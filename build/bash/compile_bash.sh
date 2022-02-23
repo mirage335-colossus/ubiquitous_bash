@@ -40,6 +40,9 @@ _compile_bash_deps() {
 		_deps_distro
 		_deps_linux
 		
+		_deps_python
+		_deps_haskell
+		
 		_deps_calculators
 		
 		#_deps_queue
@@ -88,6 +91,9 @@ _compile_bash_deps() {
 	then
 		_deps_dev
 		
+		_deps_python
+		_deps_haskell
+		
 		_deps_calculators
 		
 		_deps_channel
@@ -101,6 +107,9 @@ _compile_bash_deps() {
 	if [[ "$1" == "abstract" ]] || [[ "$1" == "abstractfs" ]]
 	then
 		_deps_dev
+		
+		_deps_python
+		_deps_haskell
 		
 		_deps_calculators
 		
@@ -118,6 +127,9 @@ _compile_bash_deps() {
 	if [[ "$1" == "fakehome" ]]
 	then
 		_deps_dev
+		
+		_deps_python
+		_deps_haskell
 		
 		_deps_calculators
 		
@@ -164,6 +176,9 @@ _compile_bash_deps() {
 		_deps_msw
 		_deps_fakehome
 		_deps_abstractfs
+		
+		_deps_python
+		_deps_haskell
 		
 		_deps_calculators
 		
@@ -248,6 +263,9 @@ _compile_bash_deps() {
 		_deps_fakehome
 		_deps_abstractfs
 		
+		_deps_python
+		_deps_haskell
+		
 		_deps_calculators
 		
 		_deps_channel
@@ -330,6 +348,9 @@ _compile_bash_deps() {
 		_deps_msw
 		_deps_fakehome
 		_deps_abstractfs
+		
+		_deps_python
+		_deps_haskell
 		
 		_deps_calculators
 		
@@ -520,6 +541,13 @@ _compile_bash_utilities() {
 _compile_bash_utilities_java() {
 	[[ "$enUb_java" == "true" ]] && includeScriptList+=( "special/java"/java.sh )
 #	[[ "$enUb_java" == "true" ]] && includeScriptList+=( "special/java"/javac.sh )
+}
+
+_compile_bash_utilities_python() {
+	[[ "$enUb_python" == "true" ]] && includeScriptList+=( "build/python"/python.sh )
+}
+_compile_bash_utilities_haskell() {
+	[[ "$enUb_haskell" == "true" ]] && includeScriptList+=( "build/haskell"/haskell.sh )
 }
 
 _compile_bash_utilities_virtualization() {
@@ -973,6 +1001,8 @@ _compile_bash() {
 	_compile_bash_utilities
 	_compile_bash_utilities_prog
 	_compile_bash_utilities_java
+	_compile_bash_utilities_python
+	_compile_bash_utilities_haskell
 	_compile_bash_utilities_virtualization
 	_compile_bash_utilities_virtualization_prog
 	

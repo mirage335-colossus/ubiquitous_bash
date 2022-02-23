@@ -191,7 +191,7 @@ _wantGetDep hscolour
 
 _wantGetDep ghc
 _wantGetDep ghci
-! type -p &#39;ghc&#39; && echo &#39;warn: missing: ghci&#39;
+! type -p &#39;ghc&#39; && echo &#39;warn: missing: ghc&#39;
 ! type -p &#39;ghci&#39; && echo &#39;warn: missing: ghci&#39;
 
 _tryExec "_test_haskell"
