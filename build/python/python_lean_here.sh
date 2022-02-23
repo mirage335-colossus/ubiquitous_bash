@@ -411,6 +411,13 @@ sys.ps2 = "\x01\033[0;96m\x02|...\x01\033[0m\x02 "
 
 #_python()
 
+CZXWXcRMTo8EmM8i4d
+}
+
+
+_generate_lean-overrides-python_here() {
+	cat << 'CZXWXcRMTo8EmM8i4d'
+
 # WARNING: Strongly discouraged example.
 # (strongly prefer to inherit a single os.environ['scriptAbsoluteFolder'] environment variable from being called by an 'ubiquitous_bash' script)
 #exec(open(_getScriptAbsoluteFolder()+'/lean.py').read())

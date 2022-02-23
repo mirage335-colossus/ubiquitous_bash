@@ -409,6 +409,7 @@ sys.ps2 = "\x01\033[0;96m\x02|...\x01\033[0m\x02 "
 
 #_python()
 
+
 # WARNING: Strongly discouraged example.
 # (strongly prefer to inherit a single os.environ['scriptAbsoluteFolder'] environment variable from being called by an 'ubiquitous_bash' script)
 #exec(open(_getScriptAbsoluteFolder()+'/lean.py').read())
@@ -462,3 +463,4 @@ if len(sys.argv) > 1:
 
 
 _main()
+

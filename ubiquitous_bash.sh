@@ -32,7 +32,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='1891409836'
-export ub_setScriptChecksum_contents='3979110762'
+export ub_setScriptChecksum_contents='1697707532'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -34725,14 +34725,7 @@ class ubPythonPS1(object):
 sys.ps1 = ubPythonPS1()
 sys.ps2 = "\x01\033[0;96m\x02|...\x01\033[0m\x02 "
 
-
-
-
 #_python()
-
-
-
-
 
 CZXWXcRMTo8EmM8i4d
 }
@@ -34741,6 +34734,9 @@ CZXWXcRMTo8EmM8i4d
 _generate_lean-overrides-python_here() {
 	cat << 'CZXWXcRMTo8EmM8i4d'
 
+# WARNING: Strongly discouraged example.
+# (strongly prefer to inherit a single os.environ['scriptAbsoluteFolder'] environment variable from being called by an 'ubiquitous_bash' script)
+#exec(open(_getScriptAbsoluteFolder()+'/lean.py').read())
 
 
 
@@ -34749,37 +34745,21 @@ _generate_lean-overrides-python_here() {
 
 
 
+
+
+
+# ATTENTION: NOTICE: Environment variables from 'ubiquitous_bash' can be used to import other python scripts.
+#exec(open(os.environ['scriptAbsoluteFolder']+'/lean.py').read())
 
 #################################################
-# ATTENTION: Add '_prog' script code here!
-
-
-
-
-
-
+# ATTENTION: NOTICE: Add '_prog' script code here!
 
 def _main():
 	pass
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# ATTENTION: Add '_prog' script code here!
+# ATTENTION: NOTICE: Add '_prog' script code here!
 #################################################
 
 
@@ -34789,9 +34769,10 @@ if sys.hexversion > 0x03000000:
 
 import sys
 import string
-#./lean.py "_python(c('1 + 2'))"
+#./lean.py "_python(c('1 + 2'))" #FAIL
+#python3 ./lean.py "_print(c('1 + 2'))"
+#python2 ./lean.py "print(c('1 + 2'))"
 #./lean.py "_print(c('1 + 2'))"
-#./lean.py "print(c('1 + 2'))"
 # https://www.tutorialspoint.com/python/python_command_line_arguments.htm
 # https://www.programiz.com/python-programming/methods/built-in/exec
 # https://www.geeksforgeeks.org/python-program-to-convert-a-list-to-string/
@@ -34805,18 +34786,7 @@ if len(sys.argv) > 1:
 		exec( sys.argv[1] )
 
 
-
-
-
-
-
-
-
-
-
 _main()
-
-
 
 CZXWXcRMTo8EmM8i4d
 }
