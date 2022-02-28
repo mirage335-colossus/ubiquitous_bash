@@ -13,6 +13,6 @@ _test_haskell() {
 
 	_wantGetDep ghc
 	_wantGetDep ghci
-	! type -p 'ghc' && echo 'warn: missing: ghc'
-	! type -p 'ghci' && echo 'warn: missing: ghci'
+	! type -p 'ghc' > /dev/null 2>&1 && echo 'warn: missing: ghc'
+	! type -p 'ghci' > /dev/null 2>&1 && echo 'warn: missing: ghci'
 }
