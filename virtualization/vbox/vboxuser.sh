@@ -118,6 +118,13 @@ _set_instance_vbox_cores() {
 	
 	export vboxCPUs=1
 	
+	# Single-threaded host with guest 'efi', 'Windows10_64', 'Windows11_64', are all not plausible. Minimum dual-CPU requirement of MSW11 as default.
+	# ATTENTION: For guests benefitting from single core performance only, force such non-default by exporting 'vboxCPUs' with 'ops' or similar.
+	if [[ "$ubVirtPlatform" == *'efi' ]] || [[ "$ubVirtPlatformOverride" == *'efi' ]] || [[ "$vboxOStype" == "Win"*"10"* ]] || [[ "$vboxOStype" == "Win"*"11"* ]]
+	then
+		export vboxCPUs=2
+	fi
+	
 	local hostCoreCount
 	local hostThreadCount
 	local hostThreadAllowance

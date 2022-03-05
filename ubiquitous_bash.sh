@@ -32,7 +32,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='1891409836'
-export ub_setScriptChecksum_contents='3379538885'
+export ub_setScriptChecksum_contents='849192253'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -14112,6 +14112,13 @@ _set_instance_vbox_cores() {
 	[[ "$vboxCPUs" != "" ]] && _messagePlain_warn 'warn: configured: force: vboxCPUs= '"$vboxCPUs" && return 0
 	
 	export vboxCPUs=1
+	
+	# Single-threaded host with guest 'efi', 'Windows10_64', 'Windows11_64', are all not plausible. Minimum dual-CPU requirement of MSW11 as default.
+	# ATTENTION: For guests benefitting from single core performance only, force such non-default by exporting 'vboxCPUs' with 'ops' or similar.
+	if [[ "$ubVirtPlatform" == *'efi' ]] || [[ "$ubVirtPlatformOverride" == *'efi' ]] || [[ "$vboxOStype" == "Win"*"10"* ]] || [[ "$vboxOStype" == "Win"*"11"* ]]
+	then
+		export vboxCPUs=2
+	fi
 	
 	local hostCoreCount
 	local hostThreadCount
