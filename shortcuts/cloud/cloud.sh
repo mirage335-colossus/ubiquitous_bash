@@ -34,10 +34,10 @@ _stop_cloud_tmp() {
 
 _cloud_hook_here() {
 	cat << CZXWXcRMTo8EmM8i4d
-	. "$scriptAbsoluteLocation" --profile _importShortcuts
-	_cloud_set
-	_cloudPrompt
-	
+. "$scriptAbsoluteLocation" --profile _importShortcuts
+_cloud_set
+_cloudPrompt
+
 CZXWXcRMTo8EmM8i4d
 }
 

@@ -32,7 +32,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='1891409836'
-export ub_setScriptChecksum_contents='226441795'
+export ub_setScriptChecksum_contents='3379538885'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -14071,6 +14071,17 @@ _set_instance_vbox_type() {
 	#[[ "$vboxOStype" == "" ]] && export vboxOStype=Windows2003
 	#[[ "$vboxOStype" == "" ]] && export vboxOStype=WindowsXP
 	#[[ "$vboxOStype" == "" ]] && export vboxOStype=Windows10_64
+	#[[ "$vboxOStype" == "" ]] && export vboxOStype=Windows11_64
+	
+	# WARNING: Temporary. VBox may not yet know what MSW 10 is yet.
+	[[ "$vboxOStype" == "Windows11_64" ]] && vboxOStype="Windows10_64"
+	
+	if [[ "$ubVirtPlatformOverride" == "" ]]
+	then
+		[[ "$vboxOStype" == "Win"*"10"* ]] && export ubVirtPlatformOverride="x64-efi"
+		[[ "$vboxOStype" == "Win"*"11"* ]] && export ubVirtPlatformOverride="x64-efi"
+	fi
+	
 	
 	[[ "$vboxOStype" == "" ]] && _readLocked "$lock_open" && export vboxOStype=Debian_64
 	[[ "$vboxOStype" == "" ]] && export vboxOStype=WindowsXP
@@ -14205,7 +14216,7 @@ _set_instance_vbox_cores() {
 }
 
 _set_instance_vbox_features() {
-	#VBoxManage modifyvm "$sessionid" --boot1 disk --biosbootmenu disabled --bioslogofadein off --bioslogofadeout off --bioslogodisplaytime 5 --vram 128 --memory 1512 --nic1 nat --nictype1 "82543GC" --clipboard bidirectional --accelerate3d off --accelerate2dvideo off --vrde off --audio pulse --usb on --cpus 1 --ioapic off --acpi on --pae off --chipset piix3
+	#VBoxManage modifyvm "$sessionid" --boot1 disk --biosbootmenu disabled --bioslogofadein off --bioslogofadeout off --bioslogodisplaytime 5 --vram 256 --memory 1512 --nic1 nat --nictype1 "82543GC" --clipboard bidirectional --accelerate3d off --accelerate2dvideo off --vrde off --audio pulse --usb on --cpus 1 --ioapic off --acpi on --pae off --chipset piix3
 	
 	! _set_instance_vbox_cores && return 1
 	
@@ -14236,17 +14247,19 @@ _set_instance_vbox_features() {
 	vboxNictype="82543GC"
 	[[ "$vboxOStype" == *"Win"*"7"* ]] && vboxNictype="82540EM"
 	[[ "$vboxOStype" == *"Win"*"10"* ]] && vboxNictype="82540EM"
+	[[ "$vboxOStype" == *"Win"*"11"* ]] && vboxNictype="82540EM"
 	_messagePlain_probe 'vboxNictype= '"$vboxNictype"
 	
 	local vboxAudioController
 	vboxAudioController="ac97"
 	[[ "$vboxOStype" == *"Win"*"7"* ]] && vboxAudioController="hda"
 	[[ "$vboxOStype" == *"Win"*"10"* ]] && vboxAudioController="hda"
+	[[ "$vboxOStype" == *"Win"*"11"* ]] && vboxAudioController="hda"
 	_messagePlain_probe 'vboxAudioController= '"$vboxAudioController"
 	
 	_messagePlain_nominal "Setting VBox VM features."
 	
-	if ! _messagePlain_probe_cmd VBoxManage modifyvm "$sessionid" --biosbootmenu disabled --bioslogofadein off --bioslogofadeout off --bioslogodisplaytime 1 --vram 128 --memory "$vmMemoryAllocation" --nic1 "$vboxNic" --nictype1 "$vboxNictype" --accelerate3d off --accelerate2dvideo off --vrde off --audio null --audioin off --audioout on --usb on --cpus "$vboxCPUs" --ioapic on --acpi on --pae on --chipset "$vboxChipset" --audiocontroller="$vboxAudioController"
+	if ! _messagePlain_probe_cmd VBoxManage modifyvm "$sessionid" --biosbootmenu disabled --bioslogofadein off --bioslogofadeout off --bioslogodisplaytime 1 --vram 256 --memory "$vmMemoryAllocation" --nic1 "$vboxNic" --nictype1 "$vboxNictype" --accelerate3d off --accelerate2dvideo off --vrde off --audio null --audioin off --audioout on --usb on --cpus "$vboxCPUs" --ioapic on --acpi on --pae on --chipset "$vboxChipset" --audiocontroller="$vboxAudioController"
 	then
 		_messagePlain_bad 'fail: VBoxManage'
 		return 1
@@ -14275,7 +14288,7 @@ _set_instance_vbox_features() {
 	fi
 	
 	# Assuming x64 hosts served by VBox will have at least 'Intel HD Graphics 3000' (as found on X220 laptop/tablet) equivalent. Lesser hardware not recommended.
-	if [[ "$vboxOStype" == *"Win"*"10"* ]] && [[ "$vboxCPUs" -ge "2" ]]
+	if ( [[ "$vboxOStype" == *"Win"*"10"* ]] || [[ "$vboxOStype" == *"Win"*"11"* ]] ) && [[ "$vboxCPUs" -ge "2" ]]
 	then
 		_messagePlain_probe VBoxManage modifyvm "$sessionid" --graphicscontroller vboxsvga --accelerate3d on --accelerate2dvideo on
 		if ! VBoxManage modifyvm "$sessionid" --graphicscontroller vboxsvga --accelerate3d on --accelerate2dvideo on
@@ -14411,8 +14424,9 @@ _create_instance_vbox_storageattach_sata() {
 
 _create_instance_vbox_storageattach() {
 	# IDE Controller found to have some problems with at least Gentoo_64 EFI guests.
-	# WARNING: Do NOT change without consideration for legacy VMs.
-	if [[ "$ubVirtPlatformOverride" == *'efi' ]] || ( [[ "$vboxOStype" != "" ]] && [[ "$vboxOStype" != *"Debian"* ]] && [[ "$vboxOStype" != *"Win"*"XP"* ]] && [[ "$vboxOStype" != *"Win"*"10"* ]] && [[ "$vboxOStype" != *"Win"* ]] )
+	# WARNING: Do NOT change without consideration for legacy VMs. Although, legacy software seems on the way out anyway now.
+	#[[ "$vboxOStype" != *"Debian"* ]] && [[ "$vboxOStype" != *"Win"*"10"* ]] && [[ "$vboxOStype" != *"Win"* ]]
+	if [[ "$ubVirtPlatform" == *'efi' ]] || [[ "$ubVirtPlatformOverride" == *'efi' ]] || ( [[ "$vboxOStype" != "" ]] && [[ "$vboxOStype" != *"Win"*"XP"* ]] )
 	then
 		_create_instance_vbox_storageattach_sata
 		return
@@ -14451,7 +14465,7 @@ _create_instance_vbox() {
 	! _set_instance_vbox_features && _messageError 'FAIL' && return 1
 	
 	
-	if [[ "$ubVirtPlatformOverride" == *'efi' ]]
+	if [[ "$ubVirtPlatform" == *'efi' ]] || [[ "$ubVirtPlatformOverride" == *'efi' ]]
 	then
 		VBoxManage modifyvm "$sessionid" --firmware efi64
 	else
@@ -20281,10 +20295,10 @@ _stop_cloud_tmp() {
 
 _cloud_hook_here() {
 	cat << CZXWXcRMTo8EmM8i4d
-	. "$scriptAbsoluteLocation" --profile _importShortcuts
-	_cloud_set
-	_cloudPrompt
-	
+. "$scriptAbsoluteLocation" --profile _importShortcuts
+_cloud_set
+_cloudPrompt
+
 CZXWXcRMTo8EmM8i4d
 }
 
