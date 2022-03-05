@@ -78,8 +78,7 @@ _set_instance_vbox_type() {
 	#[[ "$vboxOStype" == "" ]] && export vboxOStype=Windows10_64
 	#[[ "$vboxOStype" == "" ]] && export vboxOStype=Windows11_64
 	
-	# WARNING: Temporary. VBox may not yet know what MSW 10 is yet.
-	[[ "$vboxOStype" == "Windows11_64" ]] && vboxOStype="Windows10_64"
+	#[[ "$vboxOStype" == "Windows11_64" ]] && vboxOStype="Windows10_64"
 	
 	if [[ "$ubVirtPlatformOverride" == "" ]]
 	then
