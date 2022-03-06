@@ -32,7 +32,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='1891409836'
-export ub_setScriptChecksum_contents='2574242633'
+export ub_setScriptChecksum_contents='2365508055'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -13416,7 +13416,8 @@ _integratedQemu_x64_display() {
 		fi
 	elif [[ "$qemuOStype" == 'Windows10_64' ]] || [[ "$qemuOStype" == 'Windows11_64' ]]
 	then
-		qemuArgs+=(-device qxl)
+		#qemuArgs+=(-device qxl)
+		qemuArgs+=(-device qxl-vga)
 	elif [[ "$qemuOStype" == 'WindowsXP' ]] || [[ "$qemuOStype" == 'legacy-obsolete' ]]
 	then
 		qemuArgs+=(-vga cirrus)
@@ -13427,6 +13428,8 @@ _integratedQemu_x64_display() {
 
 _integratedQemu_x64() {
 	_messagePlain_nominal 'init: _integratedQemu_x64'
+	
+	[[ "$qemuOStype" == "" ]] && [[ "$vboxOStype" != "" ]] && qemuOStype="$vboxOStype"
 	
 	
 	local current_imagefilename
@@ -13461,7 +13464,7 @@ _integratedQemu_x64() {
 		# https://bugzilla.redhat.com/show_bug.cgi?id=1565179
 		
 		# ATTENTION: Overload "demandNestKVM" with "ops" or similar.
-		if [[ "$demandNestKVM" == 'true' ]] #|| ( ! [[ "$virtOStype" == 'MSW'* ]] && ! [[ "$virtOStype" == 'Windows'* ]] && ! [[ "$vboxOStype" == 'Windows'* ]] )
+		if [[ "$demandNestKVM" == 'true' ]] #|| ( ! [[ "$virtOStype" == 'MSW'* ]] && ! [[ "$virtOStype" == 'Windows'* ]] && ! [[ "$qemuOStype" == 'Windows'* ]] )
 		then
 			[[ "$demandNestKVM" == 'true' ]] && _messagePlain_warn 'force: nested x64'
 			_messagePlain_warn 'warn: set: nested x64'
@@ -13482,7 +13485,7 @@ _integratedQemu_x64() {
 	else
 		# Single-threaded host with guest 'efi', 'Windows10_64', 'Windows11_64', are all not plausible. Minimum dual-CPU requirement of MSW11 as default.
 		# ATTENTION: For guests benefitting from single core performance only, force such non-default by exporting 'vboxCPUs' with 'ops' or similar.
-		if [[ "$ubVirtPlatform" == *'efi' ]] || [[ "$ubVirtPlatformOverride" == *'efi' ]] || [[ "$vboxOStype" == "Win"*"10"* ]] || [[ "$vboxOStype" == "Win"*"11"* ]]
+		if [[ "$ubVirtPlatform" == *'efi' ]] || [[ "$ubVirtPlatformOverride" == *'efi' ]] || [[ "$qemuOStype" == "Win"*"10"* ]] || [[ "$qemuOStype" == "Win"*"11"* ]]
 		then
 			qemuArgs+=(-smp 2)
 		fi
@@ -13515,7 +13518,7 @@ _integratedQemu_x64() {
 	fi
 	
 	#[[ "$ubVirtPlatform" == *'efi' ]] || [[ "$ubVirtPlatformOverride" == *'efi' ]]
-	if [[ "$vmMemoryAllocation" -lt 8704 ]] && ( [[ "$vboxOStype" == "Win"*"10"* ]] || [[ "$vboxOStype" == "Win"*"11"* ]] )
+	if [[ "$vmMemoryAllocation" -lt 8704 ]] && ( [[ "$qemuOStype" == "Win"*"10"* ]] || [[ "$qemuOStype" == "Win"*"11"* ]] )
 	then
 		vmMemoryAllocation=8704
 	fi
@@ -13555,7 +13558,7 @@ _integratedQemu_x64() {
 	# https://blog.hartwork.org/posts/get-qemu-to-boot-efi/
 	# https://www.kraxel.org/repos/jenkins/edk2/
 	# https://www.kraxel.org/repos/jenkins/edk2/edk2.git-ovmf-x64-0-20200515.1447.g317d84abe3.noarch.rpm
-	if ( [[ "$ubVirtPlatform" == "x64-efi" ]] || [[ "$vboxOStype" == "Win"*"10"* ]] || [[ "$vboxOStype" == "Win"*"11"* ]] ) && [[ "$ub_override_qemu_livecd" == '' ]] && [[ "$ub_override_qemu_livecd_more" == '' ]]
+	if ( [[ "$ubVirtPlatform" == "x64-efi" ]] || [[ "$qemuOStype" == "Win"*"10"* ]] || [[ "$qemuOStype" == "Win"*"11"* ]] ) && [[ "$ub_override_qemu_livecd" == '' ]] && [[ "$ub_override_qemu_livecd_more" == '' ]]
 	then
 		if [[ -e "$HOME"/core/installations/ovmf/OVMF_CODE-pure-efi.fd ]] && [[ -e "$HOME"/core/installations/ovmf/OVMF_VARS-pure-efi.fd ]]
 		then
