@@ -68,6 +68,8 @@ _integratedQemu_x64_display() {
 		fi
 	elif [[ "$qemuOStype" == 'Windows10_64' ]] || [[ "$qemuOStype" == 'Windows11_64' ]]
 	then
+		# WARNING: MSW11 may require 256MB VRAM. How this may be set by qemu is not obvious.
+		# https://blogs.oracle.com/virtualization/post/install-microsoft-windows-11-on-virtualbox
 		#qemuArgs+=(-device qxl)
 		qemuArgs+=(-device qxl-vga)
 	elif [[ "$qemuOStype" == 'WindowsXP' ]] || [[ "$qemuOStype" == 'legacy-obsolete' ]]
