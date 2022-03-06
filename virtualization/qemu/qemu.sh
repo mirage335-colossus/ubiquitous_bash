@@ -127,8 +127,18 @@ _integratedQemu_x64() {
 	fi
 	
 	local hostThreadCount=$(cat /proc/cpuinfo | grep MHz | wc -l | tr -dc '0-9')
-	[[ "$hostThreadCount" -ge "4" ]] && [[ "$hostThreadCount" -lt "8" ]] && _messagePlain_probe 'cpu: >4' && qemuArgs+=(-smp 4)
-	[[ "$hostThreadCount" -ge "8" ]] && _messagePlain_probe 'cpu: >6' && qemuArgs+=(-smp 6)
+	if [[ "$hostThreadCount" -ge "4" ]] || [[ "$hostThreadCount" -ge "8" ]]
+	then
+		[[ "$hostThreadCount" -ge "4" ]] && [[ "$hostThreadCount" -lt "8" ]] && _messagePlain_probe 'cpu: >4' && qemuArgs+=(-smp 4)
+		[[ "$hostThreadCount" -ge "8" ]] && _messagePlain_probe 'cpu: >6' && qemuArgs+=(-smp 6)
+	else
+		# Single-threaded host with guest 'efi', 'Windows10_64', 'Windows11_64', are all not plausible. Minimum dual-CPU requirement of MSW11 as default.
+		# ATTENTION: For guests benefitting from single core performance only, force such non-default by exporting 'vboxCPUs' with 'ops' or similar.
+		if [[ "$ubVirtPlatform" == *'efi' ]] || [[ "$ubVirtPlatformOverride" == *'efi' ]] || [[ "$vboxOStype" == "Win"*"10"* ]] || [[ "$vboxOStype" == "Win"*"11"* ]]
+		then
+			qemuArgs+=(-smp 2)
+		fi
+	fi
 	
 	#https://superuser.com/questions/342719/how-to-boot-a-physical-windows-partition-with-qemu
 	#qemuUserArgs+=(-drive format=raw,file="$scriptLocal"/vm.img)
@@ -154,6 +164,12 @@ _integratedQemu_x64() {
 		then
 			vmMemoryAllocation=4096
 		fi
+	fi
+	
+	#[[ "$ubVirtPlatform" == *'efi' ]] || [[ "$ubVirtPlatformOverride" == *'efi' ]]
+	if [[ "$vmMemoryAllocation" -lt 8704 ]] && ( [[ "$vboxOStype" == "Win"*"10"* ]] || [[ "$vboxOStype" == "Win"*"11"* ]] )
+	then
+		vmMemoryAllocation=8704
 	fi
 	
 	qemuUserArgs+=(-m "$vmMemoryAllocation")
@@ -191,7 +207,7 @@ _integratedQemu_x64() {
 	# https://blog.hartwork.org/posts/get-qemu-to-boot-efi/
 	# https://www.kraxel.org/repos/jenkins/edk2/
 	# https://www.kraxel.org/repos/jenkins/edk2/edk2.git-ovmf-x64-0-20200515.1447.g317d84abe3.noarch.rpm
-	if [[ "$ubVirtPlatform" == "x64-efi" ]] && [[ "$ub_override_qemu_livecd" == '' ]] && [[ "$ub_override_qemu_livecd_more" == '' ]]
+	if ( [[ "$ubVirtPlatform" == "x64-efi" ]] || [[ "$vboxOStype" == "Win"*"10"* ]] || [[ "$vboxOStype" == "Win"*"11"* ]] ) && [[ "$ub_override_qemu_livecd" == '' ]] && [[ "$ub_override_qemu_livecd_more" == '' ]]
 	then
 		if [[ -e "$HOME"/core/installations/ovmf/OVMF_CODE-pure-efi.fd ]] && [[ -e "$HOME"/core/installations/ovmf/OVMF_VARS-pure-efi.fd ]]
 		then

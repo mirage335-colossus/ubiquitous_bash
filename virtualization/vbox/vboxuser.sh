@@ -243,8 +243,8 @@ _set_instance_vbox_features() {
 		fi
 	fi
 	
-	
-	if [[ "$vmMemoryAllocation" -lt 8704 ]] && ( [[ "$ubVirtPlatform" == *'efi' ]] || [[ "$ubVirtPlatformOverride" == *'efi' ]] || [[ "$vboxOStype" == "Win"*"10"* ]] || [[ "$vboxOStype" == "Win"*"11"* ]] )
+	#[[ "$ubVirtPlatform" == *'efi' ]] || [[ "$ubVirtPlatformOverride" == *'efi' ]]
+	if [[ "$vmMemoryAllocation" -lt 8704 ]] && ( [[ "$vboxOStype" == "Win"*"10"* ]] || [[ "$vboxOStype" == "Win"*"11"* ]] )
 	then
 		vmMemoryAllocation=8704
 	fi

@@ -79,3 +79,12 @@ _vars_vmMemoryAllocationDefault() {
 
 #Machine allocation defaults.
 _vars_vmMemoryAllocationDefault
+
+
+# ATTENTION: Forces 'x64-efi' if 'Windows11' or similar is declared as 'vboxOStype'.
+if [[ "$ubVirtPlatformOverride" == "" ]]
+then
+	[[ "$vboxOStype" == "Win"*"10"* ]] && export ubVirtPlatformOverride="x64-efi"
+	[[ "$vboxOStype" == "Win"*"11"* ]] && export ubVirtPlatformOverride="x64-efi"
+fi
+
