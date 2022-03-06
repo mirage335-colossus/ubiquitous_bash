@@ -66,7 +66,7 @@ _integratedQemu_x64_display() {
 			qemuArgs+=(-device qxl-vga)
 			#qemuArgs+=(-device virtio-vga,virgl=on -display gtk,gl=on)
 		fi
-	elif [[ "$qemuOStype" == 'Windows10_64' ]]
+	elif [[ "$qemuOStype" == 'Windows10_64' ]] || [[ "$qemuOStype" == 'Windows11_64' ]]
 	then
 		qemuArgs+=(-device qxl)
 	elif [[ "$qemuOStype" == 'WindowsXP' ]] || [[ "$qemuOStype" == 'legacy-obsolete' ]]

@@ -32,7 +32,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='1891409836'
-export ub_setScriptChecksum_contents='2193831234'
+export ub_setScriptChecksum_contents='2574242633'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -13414,7 +13414,7 @@ _integratedQemu_x64_display() {
 			qemuArgs+=(-device qxl-vga)
 			#qemuArgs+=(-device virtio-vga,virgl=on -display gtk,gl=on)
 		fi
-	elif [[ "$qemuOStype" == 'Windows10_64' ]]
+	elif [[ "$qemuOStype" == 'Windows10_64' ]] || [[ "$qemuOStype" == 'Windows11_64' ]]
 	then
 		qemuArgs+=(-device qxl)
 	elif [[ "$qemuOStype" == 'WindowsXP' ]] || [[ "$qemuOStype" == 'legacy-obsolete' ]]
