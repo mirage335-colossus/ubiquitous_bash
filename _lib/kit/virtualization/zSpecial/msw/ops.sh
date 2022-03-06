@@ -6,6 +6,7 @@
 # WARNING: Virtual Machine MSW11 (and MS10) graphics driver compatibility may require installing some drivers.
 # https://www.reddit.com/r/kvm/comments/8h15b1/windows_10_guest_best_video_driver/
 # https://www.spice-space.org/download/windows/spice-guest-tools/spice-guest-tools-latest.exe
+# https://www.windowscentral.com/how-convert-mbr-disk-gpt-move-bios-uefi-windows-10
 
 
 export ubVirtPlatformOverride="x64-efi"
