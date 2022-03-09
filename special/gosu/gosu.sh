@@ -86,6 +86,9 @@ _verifyGosu() {
 }
 
 _testGosu() {
+	_getDep gpg
+	_getDep dirmngr
+	
 	if ! _verifyGosu > /dev/null 2>&1
 	then
 		echo 'need valid gosu'
