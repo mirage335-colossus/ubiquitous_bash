@@ -32,7 +32,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='1891409836'
-export ub_setScriptChecksum_contents='833644708'
+export ub_setScriptChecksum_contents='1430155669'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -6831,7 +6831,7 @@ _apt-file() {
 
 
 
-_fetchDep_debianStretch_special() {
+_fetchDep_debianBullseye_special() {
 	sudo -n apt-get -y update
 	
 # 	if [[ "$1" == *"java"* ]]
@@ -6900,7 +6900,7 @@ _fetchDep_debianStretch_special() {
 	if [[ "$1" == "VirtualBox" ]] || [[ "$1" == "VBoxSDL" ]] || [[ "$1" == "VBoxManage" ]] || [[ "$1" == "VBoxHeadless" ]]
 	then
 		sudo -n mkdir -p /etc/apt/sources.list.d
-		echo 'deb http://download.virtualbox.org/virtualbox/debian stretch contrib' | sudo -n tee /etc/apt/sources.list.d/vbox.list > /dev/null 2>&1
+		echo 'deb http://download.virtualbox.org/virtualbox/debian bullseye contrib' | sudo -n tee /etc/apt/sources.list.d/vbox.list > /dev/null 2>&1
 		
 		"$scriptAbsoluteLocation" _getDep wget
 		! _wantDep wget && return 1
@@ -6969,6 +6969,10 @@ _fetchDep_debianStretch_special() {
 	
 	if [[ "$1" == "docker" ]]
 	then
+		sudo -n update-alternatives --set iptables /usr/sbin/iptables-legacy
+		sudo -n update-alternatives --set ip6tables /usr/sbin/ip6tables-legacy
+		#sudo -n systemctl restart docker
+		
 		sudo -n apt-get install --install-recommends -y apt-transport-https ca-certificates curl gnupg2 software-properties-common
 		
 		"$scriptAbsoluteLocation" _getDep curl
@@ -7075,17 +7079,69 @@ CZXWXcRMTo8EmM8i4d
 	fi
 	
 	
+	if [[ "$1" == "rclone" ]]
+	then
+		_tryExec '_test_rclone_upstream'
+		#_tryExec '_test_rclone_upstream_beta'
+		
+		return 0
+	fi
+	
+	if [[ "$1" == "terraform" ]]
+	then
+		curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo -n apt-key add -
+		sudo apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
+		sudo -n apt-get -y update
+		sudo -n apt-get install --install-recommends -y terraform
+		
+		return 0
+	fi
+	
+	if [[ "$1" == "vagrant" ]]
+	then
+		#curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo -n apt-key add -
+		#sudo apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
+		#sudo -n apt-get -y update
+		
+		sudo -n apt-get install --install-recommends -y vagrant-libvirt
+		
+		sudo -n apt-get install --install-recommends -y vagrant
+		
+		return 0
+	fi
+	
+	if [[ "$1" == "digimend-debug" ]] || [[ "$1" == 'udev/rules.d/90-digimend.rules' ]] || [[ "$1" == 'X11/xorg.conf.d/50-digimend.conf' ]]
+	then
+		if ! _wantDep digimend-debug && [[ -e /etc/issue ]] && cat /etc/issue | grep 'Debian' > /dev/null 2>&1
+		then
+			if [[ -e "$HOME"/core/installations/digimend-dkms/digimend-dkms_10_all.deb ]]
+			then
+				yes | sudo -n dpkg -i "$HOME"/core/installations/digimend-dkms/digimend-dkms_10_all.deb
+			fi
+			
+			sudo -n apt-get install --install-recommends -y digimend-dkms
+			
+			curl -L "https://github.com/DIGImend/digimend-kernel-drivers/releases/download/v10/digimend-dkms_10_all.deb" -o "$safeTmp"/"digimend-dkms_10_all.deb"
+			yes | sudo -n dpkg -i "$safeTmp"/"digimend-dkms_10_all.deb"
+			sudo -n apt-get install --install-recommends -y -f
+			sudo rm -f "$safeTmp"/"digimend-dkms_10_all.deb"
+		fi
+		
+		return 0
+	fi
+	
+	
 	return 1
 }
 
-_fetchDep_debianStretch_sequence() {
+_fetchDep_debianBullseye_sequence() {
 	_start
 	
 	_mustGetSudo
 	
 	_wantDep "$1" && _stop 0
 	
-	_fetchDep_debianStretch_special "$@" && _wantDep "$1" && _stop 0
+	_fetchDep_debianBullseye_special "$@" && _wantDep "$1" && _stop 0
 	
 	sudo -n apt-get install --install-recommends -y "$1" && _wantDep "$1" && _stop 0
 	
@@ -7123,10 +7179,10 @@ _fetchDep_debianStretch_sequence() {
 	_stop 1
 }
 
-_fetchDep_debianStretch() {
+_fetchDep_debianBullseye() {
 	#Run up to 2 times. On rare occasion, cache will become unusable again by apt-find before an installation can be completed. Overall, apt-find is the single weakest link in the system.
-	"$scriptAbsoluteLocation" _fetchDep_debianStretch_sequence "$@"
-	"$scriptAbsoluteLocation" _fetchDep_debianStretch_sequence "$@"
+	"$scriptAbsoluteLocation" _fetchDep_debianBullseye_sequence "$@"
+	"$scriptAbsoluteLocation" _fetchDep_debianBullseye_sequence "$@"
 }
 
 
@@ -7519,14 +7575,22 @@ _fetchDep_debianBuster() {
 
 _fetchDep_debian() {
 	
+	# WARNING: Obsolete. Disabled.
+	#if [[ -e /etc/debian_version ]] && cat /etc/debian_version | head -c 1 | grep 9 > /dev/null 2>&1
+	#then
+		#_fetchDep_debianStretch "$@"
+		#return
+	#fi
+	
 	# WARNING: Obsolete. Declining support. Eventual removal expected approximately one year after two Debian stable releases.
-	if [[ -e /etc/debian_version ]] && cat /etc/debian_version | head -c 1 | grep 9 > /dev/null 2>&1
+	if [[ -e /etc/debian_version ]] && cat /etc/debian_version | head -c 2 | grep 10 > /dev/null 2>&1
 	then
-		_fetchDep_debianStretch "$@"
+		_fetchDep_debianBuster "$@"
 		return
 	fi
 	
-	if [[ -e /etc/debian_version ]] && cat /etc/debian_version | head -c 2 | grep 10 > /dev/null 2>&1
+	
+	if [[ -e /etc/debian_version ]] && cat /etc/debian_version | head -c 2 | grep 11 > /dev/null 2>&1
 	then
 		_fetchDep_debianBuster "$@"
 		return
