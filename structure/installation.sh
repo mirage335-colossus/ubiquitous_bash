@@ -1051,7 +1051,7 @@ _test() {
 	_test-shell "$@"
 	_installation_nonet_default
 	
-	if type _timetest > /dev/null 2>&1
+	if type _timetest > /dev/null 2>&1 && [[ "$devfast" != 'true' ]]
 	then
 		echo -n -e '\E[1;32;46m Timing...		\E[0m'
 		echo
@@ -1316,7 +1316,7 @@ _test() {
 	
 	_messagePASS
 	
-	if type _test_queue > /dev/null 2>&1
+	if type _test_queue > /dev/null 2>&1 && [[ "$devfast" != 'true' ]]
 	then
 		_messageNormal "Queue..."
 		
