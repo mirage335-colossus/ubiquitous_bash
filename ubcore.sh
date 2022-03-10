@@ -32,7 +32,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='1891409836'
-export ub_setScriptChecksum_contents='1042581303'
+export ub_setScriptChecksum_contents='1054047672'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -7126,6 +7126,13 @@ CZXWXcRMTo8EmM8i4d
 			sudo -n apt-get install --install-recommends -y -f
 			sudo rm -f "$safeTmp"/"digimend-dkms_10_all.deb"
 		fi
+		
+		return 0
+	fi
+	
+	if [[ "$1" == "openssl/ssl.h" ]] || [[ "$1" == "include/openssl/ssl.h" ]] || [[ "$1" == "/usr/include/openssl/ssl.h" ]]
+	then
+		sudo -n apt-get install --install-recommends -y libssl-dev
 		
 		return 0
 	fi

@@ -334,6 +334,13 @@ CZXWXcRMTo8EmM8i4d
 		return 0
 	fi
 	
+	if [[ "$1" == "openssl/ssl.h" ]] || [[ "$1" == "include/openssl/ssl.h" ]] || [[ "$1" == "/usr/include/openssl/ssl.h" ]]
+	then
+		sudo -n apt-get install --install-recommends -y libssl-dev
+		
+		return 0
+	fi
+	
 	
 	return 1
 }
