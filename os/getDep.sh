@@ -85,9 +85,14 @@ _mustGetDep() {
 }
 
 _fetchDep_distro() {
-	if [[ -e /etc/issue ]] && cat /etc/issue | grep 'Debian' > /dev/null 2>&1
+	if [[ -e /etc/issue ]] && cat /etc/issue | grep 'Debian\|Raspbian' > /dev/null 2>&1
 	then
 		_tryExecFull _fetchDep_debian "$@"
+		return
+	fi
+	if [[ -e /etc/issue ]] && cat /etc/issue | grep 'Ubuntu' > /dev/null 2>&1
+	then
+		_tryExecFull _fetchDep_ubuntu "$@"
 		return
 	fi
 	return 1

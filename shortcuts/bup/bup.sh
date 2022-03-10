@@ -1,6 +1,14 @@
 _test_bup() {
+	# Forced removal of 'python2' caused some apparent disruption.
 	#! _wantDep bup && echo 'warn: no bup'
-	! _wantGetDep bup && echo 'warn: no bup'
+	#! _wantGetDep bup && echo 'warn: no bup'
+	if [[ -e /etc/issue ]] && cat /etc/issue | grep 'Ubuntu' | grep '20.04' > /dev/null 2>&1
+	then
+		! _typeDep bup && sudo -n apt-get install --install-recommends -y bup
+	else
+		_wantGetDep bup
+		#_wantGetDep qalculate
+	fi
 	
 	! man tar | grep '\-\-one-file-system' > /dev/null 2>&1 && echo 'warn: tar does not support one-file-system' && return 1
 	! man tar | grep '\-\-xattrs' > /dev/null 2>&1 && echo 'warn: tar does not support xattrs'

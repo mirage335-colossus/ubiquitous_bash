@@ -2,6 +2,16 @@
 # DANGER: Recursion hazard. Do not create override alias/function without checking that alternate exists.
 
 
+# Seems Ubuntu 20 used an 'alias' for 'python', which may not be usable by shell scripts.
+if ! type python > /dev/null 2>&1 && type python3 > /dev/null 2>&1
+then
+	python() {
+		python3 "$@"
+	}
+fi
+
+
+
 # Workaround for very minor OS misconfiguration. Setting this variable at all may be undesirable however. Consider enabling and generating all locales with 'sudo dpkg-reconfigure locales' or similar .
 #[[ "$LC_ALL" == '' ]] && export LC_ALL="en_US.UTF-8"
 
