@@ -1,5 +1,5 @@
 _testVBox() {
-	if [[ -e /etc/issue ]] && cat /etc/issue | grep 'Debian' > /dev/null 2>&1
+	if ( [[ -e /etc/issue ]] && cat /etc/issue | grep 'Debian' > /dev/null 2>&1 ) || ( [[ -e /etc/issue ]] && cat /etc/issue | grep 'Ubuntu' > /dev/null 2>&1 )
 	then
 		if ! dpkg -l | grep linux-headers-$(uname -r) > /dev/null 2>&1
 		then

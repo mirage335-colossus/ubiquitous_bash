@@ -121,7 +121,7 @@ _test_devgnuoctave() {
 	
 	
 	
-	_tryExec '_test_devgnuoctave-debian-x64'
+	_tryExec '_test_devgnuoctave-extra'
 	
 	
 	

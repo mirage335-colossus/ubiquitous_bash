@@ -40,8 +40,8 @@ _test_devgnuoctave_wantGetDep-octavePackage-debian-x64-special-debianBullseye() 
 
 # ATTENTION: WARNING: Only tested with Debian Stable. May require rewrite to accommodate other distro (ie. Gentoo).
 _test_devgnuoctave_wantGetDep-octavePackage-debian-x64() {
-	# If not Debian, then simply accept these pacakges may not be available.
-	[[ -e /etc/issue ]] && ! cat /etc/issue | grep 'Debian' > /dev/null 2>&1 && return 0
+	## If not Debian, then simply accept these pacakges may not be available.
+	#[[ -e /etc/issue ]] && ! cat /etc/issue | grep 'Debian' > /dev/null 2>&1 && return 0
 	
 	# If not x64, then simply accept these pacakges may not be available.
 	local hostArch
@@ -67,13 +67,16 @@ _test_devgnuoctave_wantGetDep-octavePackage-debian-x64() {
 }
 
 _test_devgnuoctave-debian-x64() {
-	# If not Debian, then simply accept these pacakges may not be available.
-	[[ -e /etc/issue ]] && ! cat /etc/issue | grep 'Debian' > /dev/null 2>&1 && return 0
-	
-	
-	# If not x64, then simply accept these pacakges may not be available.
 	local hostArch
 	hostArch=$(uname -m)
+	
+	
+	# If not Debian, then simply accept these pacakges may not be available.
+	# Experimentally, some Debian-like distributions may be allowed to attempt to such more complete octave package installation.
+	# \|Ubuntu
+	[[ -e /etc/issue ]] && ! cat /etc/issue | grep 'Debian' > /dev/null 2>&1 && return 0
+	
+	# If not x64, then simply accept these pacakges may not be available.
 	if [[ "$hostArch" != "x86_64" ]]
 	then
 		return 0
@@ -245,3 +248,22 @@ _test_devgnuoctave-debian-x64() {
 	
 	return 0
 }
+
+_test_devgnuoctave-extra() {
+	local hostArch
+	hostArch=$(uname -m)
+	
+	if [[ "$hostArch" != "x86_64" ]] && [[ -e /etc/issue ]] && ! cat /etc/issue | grep 'Ubuntu' > /dev/null 2>&1
+	then
+		_test_devgnuoctave_wantGetDep-octavePackage-internal symbolic
+		_test_devgnuoctave_wantGetDep-octavePackage-debian-x64 quaternion
+		_test_devgnuoctave_wantGetDep-octavePackage-debian-x64 vrml
+		_test_devgnuoctave_wantGetDep-octavePackage-debian-x64 zeromq
+	fi
+	
+	_test_devgnuoctave-debian-x64
+}
+
+
+
+
