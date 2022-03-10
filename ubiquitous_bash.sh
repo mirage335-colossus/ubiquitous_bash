@@ -32,7 +32,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='1891409836'
-export ub_setScriptChecksum_contents='4000523291'
+export ub_setScriptChecksum_contents='2068936330'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -7830,6 +7830,22 @@ CZXWXcRMTo8EmM8i4d
 	if [[ "$1" == "openssl/ssl.h" ]] || [[ "$1" == "include/openssl/ssl.h" ]] || [[ "$1" == "/usr/include/openssl/ssl.h" ]]
 	then
 		sudo -n apt-get install --install-recommends -y libssl-dev
+		
+		return 0
+	fi
+	
+	if [[ "$1" == "sqlite3.h" ]] || [[ "$1" == "sqlite3ext.h" ]] || [[ "$1" == "pkgconfig/sqlite3.pc" ]]
+	then
+		sudo -n apt-get install --install-recommends -y libsqlite3-dev
+		
+		return 0
+	fi
+	
+	if [[ "$1" == "qalculate-gtk" ]]
+	then
+		sudo -n apt-get install --install-recommends -y qalculate-gtk
+		
+		! _wantDep 'qalculate-gtk' && echo 'warn: missing: qalculate-gtk'
 		
 		return 0
 	fi
@@ -15648,6 +15664,45 @@ _test_devgnuoctave() {
 }
 
 
+_test_devgnuoctave_wantGetDep-octavePackage-internal() {
+	if [[ "$1" == "symbolic" ]]
+	then
+		_wantGetDep 'python3/dist-packages/sympy/__init__.py'
+		_wantGetDep 'python3/dist-packages/isympy.py'
+		
+		"$scriptAbsoluteLocation" _octave pkg list | grep symbolic > /dev/null && return 0
+		
+		_wantGetDep octave-symbolic
+		"$scriptAbsoluteLocation" _octave pkg install -forge symbolic
+		return 0
+	fi
+	
+	
+	return 1
+}
+
+
+
+_test_devgnuoctave_wantGetDep-octavePackage-debian-x64-special-debianBullseye() {
+	! [[ -e /etc/issue ]] && return 1
+	! cat /etc/issue | grep 'Debian' > /dev/null 2>&1 && return 1
+	! [[ -e /etc/debian_version ]] && return 1
+	! cat /etc/debian_version | head -c 2 | grep 11 > /dev/null 2>&1 && return 1
+	
+	
+	if [[ "$1" == "symbolic" ]]
+	then
+		_test_devgnuoctave_wantGetDep-octavePackage-internal "$@"
+		return
+	fi
+	
+	return 1
+}
+
+
+
+
+
 # ATTENTION: WARNING: Only tested with Debian Stable. May require rewrite to accommodate other distro (ie. Gentoo).
 _test_devgnuoctave_wantGetDep-octavePackage-debian-x64() {
 	# If not Debian, then simply accept these pacakges may not be available.
@@ -15661,7 +15716,16 @@ _test_devgnuoctave_wantGetDep-octavePackage-debian-x64() {
 		return 0
 	fi
 	
-	! _typeShare_dir_wildcard 'octave/packages/'"$1" && ! _typeShare_dir_wildcard 'octave/packages/'octave-"$1" && _wantGetDep octave-"$1"
+	if _test_devgnuoctave_wantGetDep-octavePackage-debian-x64-special-debianBullseye "$@"
+	then
+		return 0
+	fi
+	
+	local currentPackageSuffix
+	currentPackageSuffix=$(echo "$1" | sed 's/-$//')
+	
+	! _typeShare_dir_wildcard 'octave/packages/'"$1" && ! _typeShare_dir_wildcard 'octave/packages/'"$1" && _wantGetDep octave-"$currentPackageSuffix"
+	! _typeShare_dir_wildcard 'octave/packages/'"$1" && ! _typeShare_dir_wildcard 'octave/packages/'octave-"$1" && _wantGetDep octave-"$currentPackageSuffix"
 	#_wantGetDep octave-"$1"
 	
 	return 0
@@ -15767,8 +15831,12 @@ _test_devgnuoctave-debian-x64() {
 	
 	_test_devgnuoctave_wantGetDep-octavePackage-debian-x64 netcdf
 	
-	_wantGetDep x86_64-linux-gnu/octave/site/oct/x86_64-pc-linux-gnu/nlopt/nlopt_optimize.oct
-	! _typeShare 'octave/site/m/nlopt/nlopt_optimize.m' && _wantGetDep octave-nlopt
+	if ! _typeDep 'x86_64-linux-gnu/octave/site/oct/x86_64-pc-linux-gnu/nlopt_optimize.oct' && ! _typeDep 'x86_64-linux-gnu/octave/site/oct/x86_64-pc-linux-gnu/nlopt/nlopt_optimize.oct'
+	then
+		_wantGetDep x86_64-linux-gnu/octave/site/oct/x86_64-pc-linux-gnu/nlopt_optimize.oct
+		_wantGetDep x86_64-linux-gnu/octave/site/oct/x86_64-pc-linux-gnu/nlopt/nlopt_optimize.oct
+	fi
+	! _typeShare 'octave/site/m/nlopt/nlopt_optimize.m' && ! _typeShare '/usr/share/octave/site/m/nlopt_minimize.m' && _wantGetDep octave-nlopt
 	
 	_test_devgnuoctave_wantGetDep-octavePackage-debian-x64 nurbs
 	
@@ -15788,11 +15856,11 @@ _test_devgnuoctave-debian-x64() {
 	
 	_test_devgnuoctave_wantGetDep-octavePackage-debian-x64 parallel
 	
-	_wantGetDep x86_64-linux-gnu/octave/site/oct/x86_64-pc-linux-gnu/pfstools/pfsread.oct
-	! _typeShare 'octave/site/m/pfstools/pfs_read_xyz.m' && _wantGetDep octave-pfstools
+	#_wantGetDep x86_64-linux-gnu/octave/site/oct/x86_64-pc-linux-gnu/pfstools/pfsread.oct
+	#! _typeShare 'octave/site/m/pfstools/pfs_read_xyz.m' && _wantGetDep octave-pfstools
 	
-	_wantGetDep x86_64-linux-gnu/octave/site/oct/api-v52/x86_64-pc-linux-gnu/plplot_octave.oct
-	! _typeShare 'plplot_octave/mesh.m' && _wantGetDep octave-plplot
+	#_wantGetDep x86_64-linux-gnu/octave/site/oct/api-v52/x86_64-pc-linux-gnu/plplot_octave.oct
+	#! _typeShare 'plplot_octave/mesh.m' && _wantGetDep octave-plplot
 	
 	_wantGetDep psychtoolbox-3/PsychBasic/PsychPortAudio.mex
 	
@@ -15933,8 +16001,16 @@ fi
 
 
 _test_devqalculate() {
-	_wantGetDep qalculate-gtk
-	#_wantGetDep qalculate
+	# Debian Bullseye (stable) apparently does not include 'qualculate-gtk'.
+	# GUI may be installed from binaries provided elsewhere, although the '_qalculate' , '_clc' , and 'c' , functions do not require this.
+	# https://qalculate.github.io/downloads.html
+	if [[ -e /etc/debian_version ]] && cat /etc/debian_version | head -c 2 | grep 11 > /dev/null 2>&1
+	then
+		! _typeDep qalculate-gtk && sudo -n apt-get install --install-recommends -y qalculate-gtk
+	else
+		_wantGetDep qalculate-gtk
+		#_wantGetDep qalculate
+	fi
 	
 	_wantGetDep qalc
 	
@@ -17963,7 +18039,8 @@ _gitBare() {
 
 
 _test_bup() {
-	! _wantDep bup && echo 'warn: no bup'
+	#! _wantDep bup && echo 'warn: no bup'
+	! _wantGetDep bup && echo 'warn: no bup'
 	
 	! man tar | grep '\-\-one-file-system' > /dev/null 2>&1 && echo 'warn: tar does not support one-file-system' && return 1
 	! man tar | grep '\-\-xattrs' > /dev/null 2>&1 && echo 'warn: tar does not support xattrs'
