@@ -341,6 +341,22 @@ CZXWXcRMTo8EmM8i4d
 		return 0
 	fi
 	
+	if [[ "$1" == "sqlite3.h" ]] || [[ "$1" == "sqlite3ext.h" ]] || [[ "$1" == "pkgconfig/sqlite3.pc" ]]
+	then
+		sudo -n apt-get install --install-recommends -y libsqlite3-dev
+		
+		return 0
+	fi
+	
+	if [[ "$1" == "qalculate-gtk" ]]
+	then
+		sudo -n apt-get install --install-recommends -y qalculate-gtk
+		
+		! _wantDep 'qalculate-gtk' && echo 'warn: missing: qalculate-gtk'
+		
+		return 0
+	fi
+	
 	
 	return 1
 }

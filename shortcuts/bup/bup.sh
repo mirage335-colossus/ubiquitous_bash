@@ -1,5 +1,6 @@
 _test_bup() {
-	! _wantDep bup && echo 'warn: no bup'
+	#! _wantDep bup && echo 'warn: no bup'
+	! _wantGetDep bup && echo 'warn: no bup'
 	
 	! man tar | grep '\-\-one-file-system' > /dev/null 2>&1 && echo 'warn: tar does not support one-file-system' && return 1
 	! man tar | grep '\-\-xattrs' > /dev/null 2>&1 && echo 'warn: tar does not support xattrs'

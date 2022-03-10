@@ -88,8 +88,16 @@ fi
 
 
 _test_devqalculate() {
-	_wantGetDep qalculate-gtk
-	#_wantGetDep qalculate
+	# Debian Bullseye (stable) apparently does not include 'qualculate-gtk'.
+	# GUI may be installed from binaries provided elsewhere, although the '_qalculate' , '_clc' , and 'c' , functions do not require this.
+	# https://qalculate.github.io/downloads.html
+	if [[ -e /etc/debian_version ]] && cat /etc/debian_version | head -c 2 | grep 11 > /dev/null 2>&1
+	then
+		! _typeDep qalculate-gtk && sudo -n apt-get install --install-recommends -y qalculate-gtk
+	else
+		_wantGetDep qalculate-gtk
+		#_wantGetDep qalculate
+	fi
 	
 	_wantGetDep qalc
 	
