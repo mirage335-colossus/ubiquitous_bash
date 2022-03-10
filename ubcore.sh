@@ -32,7 +32,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='1891409836'
-export ub_setScriptChecksum_contents='1054047672'
+export ub_setScriptChecksum_contents='2318864251'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -10278,12 +10278,17 @@ fi
 
 _test_devqalculate() {
 	_wantGetDep qalculate-gtk
-	_wantGetDep qalculate
+	#_wantGetDep qalculate
 	
 	_wantGetDep qalc
 	
-	! _typeShare 'texmf/tex/latex/gnuplot/gnuplot.cfg' && _wantGetDep gnuplot-data
-	! _typeShare 'texmf/tex/latex/gnuplot/gnuplot.cfg' && echo 'warn: missing: gnuplot-data'
+	if ! _typeShare 'texmf/tex/latex/gnuplot/gnuplot.cfg' && ! _typeShare 'texmf/tex/gnuplot.cfg'
+	then
+		! _wantGetDep 'texmf/tex/latex/gnuplot/gnuplot.cfg' && ! _wantGetDep 'texmf/tex/gnuplot.cfg' && ! _wantGetDep gnuplot-data
+	fi
+	
+	
+	! _typeShare 'texmf/tex/latex/gnuplot/gnuplot.cfg' && ! _typeShare 'texmf/tex/gnuplot.cfg' && echo 'warn: missing: gnuplot-data'
 	
 	#_wantGetDep gnuplot-data
 	#_wantGetDep gnuplot-x11
@@ -12347,6 +12352,8 @@ _test_aws_upstream_sequence() {
 	_mustGetSudo
 	! _wantSudo && return 1
 	
+	_getDep virtualenv
+	
 	echo
 	
 	curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
@@ -12362,8 +12369,10 @@ _test_aws_upstream_sequence() {
 	echo
 	
 	git clone https://github.com/aws/aws-elastic-beanstalk-cli-setup.git
-	./aws-elastic-beanstalk-cli-setup/scripts/bundled_installer
+	#./aws-elastic-beanstalk-cli-setup/scripts/bundled_installer
 	#sudo -n ./aws-elastic-beanstalk-cli-setup/scripts/bundled_installer
+	python3 ./aws-elastic-beanstalk-cli-setup/scripts/ebcli_installer.py
+	
 	export safeToDeleteGit="true"
 	_safeRMR "$safeTmp"/aws-elastic-beanstalk-cli-setup
 	export safeToDeleteGit=
@@ -12821,6 +12830,7 @@ _gcloud() {
 	[[ "$currentBin_gcloud" == "" ]] && currentBin_gcloud=$(type -p gcloud 2> /dev/null)
 	
 	# WARNING: Not guaranteed.
+	#mkdir -p "$scriptLocal"/cloud/gcloud/
 	_relink "$HOME"/.ssh "$scriptLocal"/cloud/gcloud/.ssh
 	
 	# WARNING: Changing '$HOME' may interfere with 'cautossh' , specifically function '_ssh' .
@@ -13902,14 +13912,28 @@ _cloud_reset() {
 
 
 
+# ATTENTION: Override with 'core.sh', 'ops', or similar!
+# Software which specifically may rely upon a recent feature of cloud services software (eg. aws, gcloud) should force this to instead always return 'true' .
+_test_cloud_updateInterval() {
+	! find "$HOME"/.ubcore/.retest-cloud -type f -mtime -9 | grep '.retest-cloud' > /dev/null 2>&1
+	
+	#return 0
+	return
+}
+
 _test_cloud() {
-	
-	
 	_tryExec '_test_digitalocean_cloud'
 	_tryExec '_test_linode_cloud'
 	
-	_tryExec '_test_aws'
-	_tryExec '_test_gcloud'
+	
+	if _test_cloud_updateInterval
+	then
+		rm -f "$HOME"/.ubcore/.retest-cloud > /dev/null 2>&1
+		touch "$HOME"/.ubcore/.retest-cloud
+		date +%s > "$HOME"/.ubcore/.retest-cloud
+		_tryExec '_test_aws'
+		_tryExec '_test_gcloud'
+	fi
 	
 	_tryExec '_test_ubVirt'
 	_tryExec '_test_phpvirtualbox_self'
@@ -21790,7 +21814,10 @@ _test() {
 	_tryExec "_test_packetDriveDevice"
 	_tryExec "_test_gparted"
 	
-	_tryExec "_test_synergy"
+	# WARNING: Disabled by default. Newer FLOSS (ie. 'barrier'), seems to have displaced the older 'synergy' software.
+	# ATTENTION: Override with 'ops' or similar.
+	# More portable computing (ie. better laptops) and hardware (eg. mechanical) USB switches are also displacing the usefulness of such keyboard/mouse sharing software.
+	#_tryExec "_test_synergy"
 	
 	
 	_tryExec "_test_devqalculate"
