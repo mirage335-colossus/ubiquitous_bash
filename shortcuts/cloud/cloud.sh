@@ -19,7 +19,7 @@ sshf() {
 	done
 	
 	
-	ssh -R "$currentHostname" > /dev/null 2>&1
+	ssh-keygen -R "$currentHostname" > /dev/null 2>&1
 	ssh -o "StrictHostKeyChecking no" "$@"
 }
 
