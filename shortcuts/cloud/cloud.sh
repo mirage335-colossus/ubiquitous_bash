@@ -132,14 +132,28 @@ _cloud_reset() {
 
 
 
+# ATTENTION: Override with 'core.sh', 'ops', or similar!
+# Software which specifically may rely upon a recent feature of cloud services software (eg. aws, gcloud) should force this to instead always return 'true' .
+_test_cloud_updateInterval() {
+	! find "$HOME"/.ubcore/.retest-cloud -type f -mtime -9 | grep '.retest-cloud' > /dev/null 2>&1
+	
+	#return 0
+	return
+}
+
 _test_cloud() {
-	
-	
 	_tryExec '_test_digitalocean_cloud'
 	_tryExec '_test_linode_cloud'
 	
-	_tryExec '_test_aws'
-	_tryExec '_test_gcloud'
+	
+	if _test_cloud_updateInterval
+	then
+		rm -f "$HOME"/.ubcore/.retest-cloud > /dev/null 2>&1
+		touch "$HOME"/.ubcore/.retest-cloud
+		date +%s > "$HOME"/.ubcore/.retest-cloud
+		_tryExec '_test_aws'
+		_tryExec '_test_gcloud'
+	fi
 	
 	_tryExec '_test_ubVirt'
 	_tryExec '_test_phpvirtualbox_self'

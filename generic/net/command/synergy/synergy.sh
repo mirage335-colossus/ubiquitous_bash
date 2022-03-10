@@ -2,7 +2,7 @@ _test_synergy() {
 	"$scriptAbsoluteLocation" _getDep synergy
 	"$scriptAbsoluteLocation" _getDep synergyc
 	"$scriptAbsoluteLocation" _getDep synergys
-	#_getDep quicksynergy
+	##_getDep quicksynergy
 }
 
 _synergy_ssh() {

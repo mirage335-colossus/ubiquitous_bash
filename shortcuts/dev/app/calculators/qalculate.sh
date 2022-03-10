@@ -89,12 +89,17 @@ fi
 
 _test_devqalculate() {
 	_wantGetDep qalculate-gtk
-	_wantGetDep qalculate
+	#_wantGetDep qalculate
 	
 	_wantGetDep qalc
 	
-	! _typeShare 'texmf/tex/latex/gnuplot/gnuplot.cfg' && _wantGetDep gnuplot-data
-	! _typeShare 'texmf/tex/latex/gnuplot/gnuplot.cfg' && echo 'warn: missing: gnuplot-data'
+	if ! _typeShare 'texmf/tex/latex/gnuplot/gnuplot.cfg' && ! _typeShare 'texmf/tex/gnuplot.cfg'
+	then
+		! _wantGetDep 'texmf/tex/latex/gnuplot/gnuplot.cfg' && ! _wantGetDep 'texmf/tex/gnuplot.cfg' && ! _wantGetDep gnuplot-data
+	fi
+	
+	
+	! _typeShare 'texmf/tex/latex/gnuplot/gnuplot.cfg' && ! _typeShare 'texmf/tex/gnuplot.cfg' && echo 'warn: missing: gnuplot-data'
 	
 	#_wantGetDep gnuplot-data
 	#_wantGetDep gnuplot-x11

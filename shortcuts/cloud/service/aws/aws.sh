@@ -445,6 +445,8 @@ _test_aws_upstream_sequence() {
 	_mustGetSudo
 	! _wantSudo && return 1
 	
+	_getDep virtualenv
+	
 	echo
 	
 	curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
@@ -460,8 +462,10 @@ _test_aws_upstream_sequence() {
 	echo
 	
 	git clone https://github.com/aws/aws-elastic-beanstalk-cli-setup.git
-	./aws-elastic-beanstalk-cli-setup/scripts/bundled_installer
+	#./aws-elastic-beanstalk-cli-setup/scripts/bundled_installer
 	#sudo -n ./aws-elastic-beanstalk-cli-setup/scripts/bundled_installer
+	python3 ./aws-elastic-beanstalk-cli-setup/scripts/ebcli_installer.py
+	
 	export safeToDeleteGit="true"
 	_safeRMR "$safeTmp"/aws-elastic-beanstalk-cli-setup
 	export safeToDeleteGit=

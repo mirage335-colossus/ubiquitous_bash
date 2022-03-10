@@ -341,6 +341,7 @@ _gcloud() {
 	[[ "$currentBin_gcloud" == "" ]] && currentBin_gcloud=$(type -p gcloud 2> /dev/null)
 	
 	# WARNING: Not guaranteed.
+	#mkdir -p "$scriptLocal"/cloud/gcloud/
 	_relink "$HOME"/.ssh "$scriptLocal"/cloud/gcloud/.ssh
 	
 	# WARNING: Changing '$HOME' may interfere with 'cautossh' , specifically function '_ssh' .

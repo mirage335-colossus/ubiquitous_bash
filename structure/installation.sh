@@ -1268,7 +1268,10 @@ _test() {
 	_tryExec "_test_packetDriveDevice"
 	_tryExec "_test_gparted"
 	
-	_tryExec "_test_synergy"
+	# WARNING: Disabled by default. Newer FLOSS (ie. 'barrier'), seems to have displaced the older 'synergy' software.
+	# ATTENTION: Override with 'ops' or similar.
+	# More portable computing (ie. better laptops) and hardware (eg. mechanical) USB switches are also displacing the usefulness of such keyboard/mouse sharing software.
+	#_tryExec "_test_synergy"
 	
 	
 	_tryExec "_test_devqalculate"
