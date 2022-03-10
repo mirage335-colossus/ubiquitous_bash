@@ -1051,6 +1051,24 @@ _test() {
 	_test-shell "$@"
 	_installation_nonet_default
 	
+	if ! _typeDep sudo && [[ "$UID" == "0" ]]
+	then
+		if _typeDep 'apt-get'
+		then
+			apt-get -y install sudo
+		fi
+	fi
+	#! _typeDep sudo && _stop 1
+	
+	if ! _typeDep bc
+	then
+		if _typeDep 'apt-get'
+		then
+			sudo -n apt-get -y install bc
+		fi
+	fi
+	! _typeDep bc && _stop 1
+	
 	if type _timetest > /dev/null 2>&1 && [[ "$devfast" != 'true' ]]
 	then
 		echo -n -e '\E[1;32;46m Timing...		\E[0m'

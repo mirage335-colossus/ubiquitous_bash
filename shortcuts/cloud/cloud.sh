@@ -1,5 +1,29 @@
 #cloud
 
+
+#SSH, Force. Forcibly deletes old host key. Useful after 'rebuilding' a VPS using the same IP address, etc.
+# DANGER: Obiously, this is for brief cloud experiments with newly constructed computers for which security is either unimportant or all relavant other conditions are known.
+sshf() {
+	local currentUser
+	local currentHostname
+	
+	local currentArg
+	for currentArg in "$@"
+	do
+		if [[ "$currentArg" == *"@"* ]]
+		then
+			currentUser=$(_safeEcho_newline "$currentArg" | cut -f 1 -d\@)
+			currentHostname=$(_safeEcho_newline "$currentArg" | cut -f 2 -d\@)
+			break
+		fi
+	done
+	
+	
+	ssh -R "$currentHostname" > /dev/null 2>&1
+	ssh -o "StrictHostKeyChecking no" "$@"
+}
+
+
 # ATTENTION: Highly irregular means of keeping temporary data from cloud replies to API queries, due to the expected high probability of failures.
 _start_cloud_tmp() {
 	export ub_cloudTmp_id=$(_uid)

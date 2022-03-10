@@ -1,6 +1,7 @@
 
 _test_kernelConfig() {
-	_getDep pahole
+	#_getDep pahole
+	_wantGetDep pahole
 	
 	_getDep lz4
 	_getDep lz4c

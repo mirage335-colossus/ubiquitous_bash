@@ -32,7 +32,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='1891409836'
-export ub_setScriptChecksum_contents='2295362342'
+export ub_setScriptChecksum_contents='2064415566'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -13862,6 +13862,30 @@ _test_terraform() {
 
 #cloud
 
+
+#SSH, Force. Forcibly deletes old host key. Useful after 'rebuilding' a VPS using the same IP address, etc.
+# DANGER: Obiously, this is for brief cloud experiments with newly constructed computers for which security is either unimportant or all relavant other conditions are known.
+sshf() {
+	local currentUser
+	local currentHostname
+	
+	local currentArg
+	for currentArg in "$@"
+	do
+		if [[ "$currentArg" == *"@"* ]]
+		then
+			currentUser=$(_safeEcho_newline "$currentArg" | cut -f 1 -d\@)
+			currentHostname=$(_safeEcho_newline "$currentArg" | cut -f 2 -d\@)
+			break
+		fi
+	done
+	
+	
+	ssh -R "$currentHostname" > /dev/null 2>&1
+	ssh -o "StrictHostKeyChecking no" "$@"
+}
+
+
 # ATTENTION: Highly irregular means of keeping temporary data from cloud replies to API queries, due to the expected high probability of failures.
 _start_cloud_tmp() {
 	export ub_cloudTmp_id=$(_uid)
@@ -15181,7 +15205,8 @@ _kernelConfig_require-special() {
 
 
 _test_kernelConfig() {
-	_getDep pahole
+	#_getDep pahole
+	_wantGetDep pahole
 	
 	_getDep lz4
 	_getDep lz4c
@@ -21678,6 +21703,24 @@ _test-shell() {
 _test() {
 	_test-shell "$@"
 	_installation_nonet_default
+	
+	if ! _typeDep sudo && [[ "$UID" == "0" ]]
+	then
+		if _typeDep 'apt-get'
+		then
+			apt-get -y install sudo
+		fi
+	fi
+	#! _typeDep sudo && _stop 1
+	
+	if ! _typeDep bc
+	then
+		if _typeDep 'apt-get'
+		then
+			sudo -n apt-get -y install bc
+		fi
+	fi
+	! _typeDep bc && _stop 1
 	
 	if type _timetest > /dev/null 2>&1 && [[ "$devfast" != 'true' ]]
 	then
