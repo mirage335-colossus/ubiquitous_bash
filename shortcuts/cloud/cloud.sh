@@ -135,7 +135,7 @@ _cloud_reset() {
 # ATTENTION: Override with 'core.sh', 'ops', or similar!
 # Software which specifically may rely upon a recent feature of cloud services software (eg. aws, gcloud) should force this to instead always return 'true' .
 _test_cloud_updateInterval() {
-	! find "$HOME"/.ubcore/.retest-cloud -type f -mtime -9 | grep '.retest-cloud' > /dev/null 2>&1
+	! find "$HOME"/.ubcore/.retest-cloud"$1" -type f -mtime -9 2>/dev/null | grep '.retest-cloud' > /dev/null 2>&1
 	
 	#return 0
 	return

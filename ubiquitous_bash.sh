@@ -32,7 +32,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='1891409836'
-export ub_setScriptChecksum_contents='2791134043'
+export ub_setScriptChecksum_contents='4000523291'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -20327,6 +20327,11 @@ _test_rclone_upstream() {
 
 
 _test_rclone() {
+	! _test_cloud_updateInterval '-rclone' && return 0
+	rm -f "$HOME"/.ubcore/.retest-cloud'-rclone' > /dev/null 2>&1
+	touch "$HOME"/.ubcore/.retest-cloud'-rclone'
+	date +%s > "$HOME"/.ubcore/.retest-cloud'-rclone'
+	
 	if [[ "$nonet" != "true" ]] && ! _if_cygwin
 	then
 		_messagePlain_request 'ignore: upstream progress ->'
@@ -20513,7 +20518,7 @@ _cloud_reset() {
 # ATTENTION: Override with 'core.sh', 'ops', or similar!
 # Software which specifically may rely upon a recent feature of cloud services software (eg. aws, gcloud) should force this to instead always return 'true' .
 _test_cloud_updateInterval() {
-	! find "$HOME"/.ubcore/.retest-cloud -type f -mtime -9 | grep '.retest-cloud' > /dev/null 2>&1
+	! find "$HOME"/.ubcore/.retest-cloud"$1" -type f -mtime -9 2>/dev/null | grep '.retest-cloud' > /dev/null 2>&1
 	
 	#return 0
 	return

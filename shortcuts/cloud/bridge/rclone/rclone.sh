@@ -81,6 +81,11 @@ _test_rclone_upstream() {
 
 
 _test_rclone() {
+	! _test_cloud_updateInterval '-rclone' && return 0
+	rm -f "$HOME"/.ubcore/.retest-cloud'-rclone' > /dev/null 2>&1
+	touch "$HOME"/.ubcore/.retest-cloud'-rclone'
+	date +%s > "$HOME"/.ubcore/.retest-cloud'-rclone'
+	
 	if [[ "$nonet" != "true" ]] && ! _if_cygwin
 	then
 		_messagePlain_request 'ignore: upstream progress ->'
