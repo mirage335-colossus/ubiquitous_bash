@@ -796,7 +796,7 @@ _fetchDep_debian() {
 	
 	if [[ -e /etc/debian_version ]] && cat /etc/debian_version | head -c 2 | grep 11 > /dev/null 2>&1
 	then
-		_fetchDep_debianBuster "$@"
+		_fetchDep_debianBullseye "$@"
 		return
 	fi
 	
