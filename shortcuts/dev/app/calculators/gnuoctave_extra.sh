@@ -253,7 +253,7 @@ _test_devgnuoctave-extra() {
 	local hostArch
 	hostArch=$(uname -m)
 	
-	if [[ "$hostArch" == "x86_64" ]] && [[ -e /etc/issue ]] && ! cat /etc/issue | grep 'Ubuntu' > /dev/null 2>&1
+	if [[ "$hostArch" == "x86_64" ]] && [[ -e /etc/issue ]] && cat /etc/issue | grep 'Ubuntu' > /dev/null 2>&1
 	then
 		_test_devgnuoctave_wantGetDep-octavePackage-internal symbolic
 		_test_devgnuoctave_wantGetDep-octavePackage-debian-x64 quaternion
