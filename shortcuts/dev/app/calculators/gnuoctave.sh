@@ -50,7 +50,7 @@ _octave_script() {
 
 
 _octave_filter-messages() {
-	grep -v 'Symbolic pkg .*1: Python communication link active, SymPy v' | grep -v '_____' | grep -v '^$' | sed 's/^ans = //' | sed 's/^(sym) //'
+	grep -v 'Symbolic pkg .*: Python communication link active, SymPy v' | grep -v '_____' | grep -v '^$' | sed 's/^ans = //' | sed 's/^(sym) //'
 	#cat
 }
 
