@@ -17,9 +17,20 @@ sshf() {
 			break
 		fi
 	done
+	if [[ "$currentHostname" == "" ]]
+	then
+		for currentArg in "$@"
+		do
+			if [[ "$currentArg" != "-"* ]]
+			then
+				currentHostname=$(_safeEcho_newline "$currentArg" | cut -f 2 -d\@)
+				break
+			fi
+		done
+	fi
 	
 	
-	ssh-keygen -R "$currentHostname" > /dev/null 2>&1
+	[[ "$currentHostname" != "" ]] && ssh-keygen -R "$currentHostname" > /dev/null 2>&1
 	ssh -o "StrictHostKeyChecking no" "$@"
 }
 
