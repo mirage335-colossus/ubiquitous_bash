@@ -534,6 +534,10 @@ https://docs.docker.com/engine/admin/volumes/volumes/
 	&#39;While bind mounts are dependent on the directory structure of the host machine, volumes are completely managed by Docker.&#39;
 
 
+https://winaero.com/pin-a-batch-file-to-the-start-menu-or-taskbar-in-windows-10/
+	&#39; cmd /c "full path to your batch file" &#39;
+
+
 
 
 
