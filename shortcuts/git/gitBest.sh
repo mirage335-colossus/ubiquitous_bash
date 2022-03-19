@@ -14,7 +14,7 @@ _gitBest_detect_github_procedure() {
 		fi
 		
 		local currentSSHoutput
-		if currentSSHoutput=$(ssh -o StrictHostKeyChecking=no -o Compression=yes -o ConnectionAttempts=3 -o ServerAliveInterval=6 -o ServerAliveCountMax=9 -o ConnectTimeout=18 -o PubkeyAuthentication=yes -o PasswordAuthentication=no git@github.com 2>&1 ; true) && _safeEcho_newline "$currentSSHoutput" | grep 'successfully authenticated'
+		if currentSSHoutput=$(ssh -o StrictHostKeyChecking=no -o Compression=yes -o ConnectionAttempts=3 -o ServerAliveInterval=6 -o ServerAliveCountMax=9 -o ConnectTimeout="$netTimeout" -o PubkeyAuthentication=yes -o PasswordAuthentication=no git@github.com 2>&1 ; true) && _safeEcho_newline "$currentSSHoutput" | grep 'successfully authenticated'
 		then
 			export current_gitBest_source_GitHub="github_ssh"
 			return
@@ -167,6 +167,17 @@ _gitBest() {
 	_gitBest_detect "$@"
 	
 	"$scriptAbsoluteLocation" _gitBest_sequence "$@"
+}
+
+
+_test_getBest() {
+	_wantGetDep stty
+	_wantGetDep ssh
+	
+	_wantGetDep git
+	
+	_wantGetDep nmap
+	#_wantGetDep curl
 }
 
 

@@ -7,6 +7,7 @@ _ssh_criticalDep() {
 
 _testProxySSH() {
 	_getDep ssh
+	_getDep stty
 	
 	if [[ -L /usr/local/bin/ssh ]] && ls -l /usr/local/bin/ssh | grep firejail > /dev/null 2>&1
 	then
