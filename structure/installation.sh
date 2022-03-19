@@ -1225,6 +1225,10 @@ _test() {
 	_tryExec "_testFindPort"
 	_tryExec "_test_waitport"
 	
+	
+	_tryExec "_test_gitBest"
+	
+	
 	_tryExec "_testProxySSH"
 	
 	_tryExec "_testAutoSSH"

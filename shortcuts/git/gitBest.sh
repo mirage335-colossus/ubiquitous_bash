@@ -170,7 +170,7 @@ _gitBest() {
 }
 
 
-_test_getBest() {
+_test_gitBest() {
 	_wantGetDep stty
 	_wantGetDep ssh
 	
