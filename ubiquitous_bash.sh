@@ -32,7 +32,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='1891409836'
-export ub_setScriptChecksum_contents='1299017883'
+export ub_setScriptChecksum_contents='909231385'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -18584,14 +18584,16 @@ _gitBest_override_github-github_https() {
 _gitBest_override_github() {
 	_messagePlain_nominal 'init: _gitBest_override_github'
 	
+	cat "$realHome"/.gitconfig >> "$HOME"/.gitconfig
+	
 	if [[ "$current_gitBest_source_GitHub" == "github_core" ]]
 	then
-		_gitBest_override_github-github_core >> "$HOME"/.gitconfig
+		_gitBest_override_github-github_core
 	fi
 	
 	if [[ "$current_gitBest_source_GitHub" == "github_https" ]]
 	then
-		_gitBest_override_github-github_https >> "$HOME"/.gitconfig
+		_gitBest_override_github-github_https
 	fi
 	
 	if [[ "$current_gitBest_source_GitHub" == "github_ssh" ]]

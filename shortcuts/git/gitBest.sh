@@ -94,14 +94,16 @@ _gitBest_override_github-github_https() {
 _gitBest_override_github() {
 	_messagePlain_nominal 'init: _gitBest_override_github'
 	
+	cat "$realHome"/.gitconfig >> "$HOME"/.gitconfig
+	
 	if [[ "$current_gitBest_source_GitHub" == "github_core" ]]
 	then
-		_gitBest_override_github-github_core >> "$HOME"/.gitconfig
+		_gitBest_override_github-github_core
 	fi
 	
 	if [[ "$current_gitBest_source_GitHub" == "github_https" ]]
 	then
-		_gitBest_override_github-github_https >> "$HOME"/.gitconfig
+		_gitBest_override_github-github_https
 	fi
 	
 	if [[ "$current_gitBest_source_GitHub" == "github_ssh" ]]
