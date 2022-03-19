@@ -30,11 +30,13 @@ _importShortcuts() {
 }
 
 _gitPull_ubiquitous() {
-	git pull
+	#git pull
+	_gitBest pull
 }
 
 _gitClone_ubiquitous() {
-	git clone --depth 1 git@github.com:mirage335/ubiquitous_bash.git
+	#git clone --depth 1 git@github.com:mirage335/ubiquitous_bash.git
+	_gitBest clone --depth 1 git@github.com:mirage335/ubiquitous_bash.git
 }
 
 _selfCloneUbiquitous() {
@@ -59,11 +61,14 @@ _installUbiquitous() {
 	_messagePlain_nominal 'attempt: git pull'
 	if [[ "$nonet" != "true" ]] && type git > /dev/null 2>&1
 	then
+		_gitBest_detect
 		
 		local ub_gitPullStatus
-		git pull
+		#git pull
+		_gitBest pull
 		ub_gitPullStatus="$?"
-		[[ "$ub_gitPullStatus" != 0 ]] && git pull && ub_gitPullStatus="$?"
+		#[[ "$ub_gitPullStatus" != 0 ]] && git pull && ub_gitPullStatus="$?"
+		[[ "$ub_gitPullStatus" != 0 ]] && _gitBest pull && ub_gitPullStatus="$?"
 		! cd "$localFunctionEntryPWD" && return 1
 		
 		[[ "$ub_gitPullStatus" == "0" ]] && _messagePlain_good 'pass: git pull' && cd "$localFunctionEntryPWD" && return 0
@@ -92,8 +97,10 @@ _installUbiquitous() {
 		[[ -e "$scriptAbsoluteFolder"/ubcore_compressed.sh ]] && rm -f "$ubcoreUBdir"/ubcore_compressed.sh > /dev/null 2>&1
 		[[ -e "$scriptAbsoluteFolder"/ubiquitous_bash_compressed.sh ]] && rm -f "$ubcoreUBdir"/ubiquitous_bash_compressed.sh > /dev/null 2>&1
 		[[ -e "$scriptAbsoluteFolder"/lean.py ]] && rm -f "$ubcoreUBdir"/lean.py > /dev/null 2>&1
-		git reset --hard
-		git pull "$scriptAbsoluteFolder"
+		#git reset --hard
+		#git pull "$scriptAbsoluteFolder"
+		_gitBest pull "$scriptAbsoluteFolder"
+		_gitBest reset --hard
 		ub_gitPullStatus="$?"
 		! cd "$localFunctionEntryPWD" && return 1
 		

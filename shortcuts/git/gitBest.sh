@@ -158,7 +158,7 @@ _gitBest_sequence() {
 	git "$@"
 	
 	
-	_stop
+	_stop "$?"
 }
 
 _gitBest() {
