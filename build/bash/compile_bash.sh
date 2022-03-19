@@ -899,11 +899,12 @@ _compile_bash_selfHost() {
 	
 	
 	#####Generate/Compile
-	if ( [[ "$enUb_buildBashUbiquitous" == "true" ]] || [[ "$enUb_notLean" == "true" ]] || [[ "$enUb_dev" == "true" ]] || [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_cloud_heavy" == "true" ]] || [[ "$enUb_cloud" == "true" ]] || [[ "$enUb_cloud_self" == "true" ]] || [[ "$enUb_cloud_build" == "true" ]] || [[ "$enUb_metaengine" == "true" ]] || [[ "$enUb_calculators" == "true" ]] )
-	then
+	#if ( [[ "$enUb_buildBashUbiquitous" == "true" ]] || [[ "$enUb_notLean" == "true" ]] || [[ "$enUb_dev" == "true" ]] || [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_cloud_heavy" == "true" ]] || [[ "$enUb_cloud" == "true" ]] || [[ "$enUb_cloud_self" == "true" ]] || [[ "$enUb_cloud_build" == "true" ]] || [[ "$enUb_metaengine" == "true" ]] || [[ "$enUb_calculators" == "true" ]] )
+	#then
+		# '_setupUbiquitous', '_setupUbiquitous_accessories_here-python'
 		includeScriptList+=( "build/python"/python_lean_here.sh )
 		includeScriptList+=( "build/python"/python_lean_here_prog.sh )
-	fi
+	#fi
 	
 	
 	includeScriptList+=( "build/bash/ubiquitous"/discoverubiquitous.sh )
