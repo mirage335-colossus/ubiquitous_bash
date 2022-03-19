@@ -30,7 +30,7 @@ _checkPort_ipv4() {
 }
 
 _checkPort_sequence() {
-	_start
+	_start scriptLocal_mkdir_disable
 	
 	local currentEchoStatus
 	currentEchoStatus=$(stty --file=/dev/tty -g 2>/dev/null)

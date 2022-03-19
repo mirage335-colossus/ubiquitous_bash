@@ -129,7 +129,7 @@ _gitBest_override_github() {
 _gitBest_sequence() {
 	_messagePlain_nominal 'init: _gitBest_sequence'
 	
-	_start
+	_start scriptLocal_mkdir_disable
 	
 	export realHome="$HOME"
 	export HOME="$safeTmp"/special_fakeHome
