@@ -21,7 +21,8 @@ _gitBest_detect_github_procedure() {
 		fi
 		_safeEcho_newline "$currentSSHoutput"
 		
-		if _checkPort github.com 443
+		#if _checkPort github.com 443
+		if wget -qO- https://github.com > /dev/null
 		then
 			export current_gitBest_source_GitHub="github_https"
 			return
@@ -178,6 +179,7 @@ _test_gitBest() {
 	
 	_wantGetDep nmap
 	#_wantGetDep curl
+	#_wantGetDep wget
 }
 
 
