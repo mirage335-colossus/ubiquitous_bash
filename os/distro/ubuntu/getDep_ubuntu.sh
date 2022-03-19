@@ -385,6 +385,8 @@ _fetchDep_ubuntuFocalFossa_sequence() {
 }
 
 _fetchDep_ubuntuFocalFossa() {
+	export DEBIAN_FRONTEND=noninteractive
+	
 	#Run up to 2 times. On rare occasion, cache will become unusable again by apt-find before an installation can be completed. Overall, apt-find is the single weakest link in the system.
 	"$scriptAbsoluteLocation" _fetchDep_ubuntuFocalFossa_sequence "$@"
 	"$scriptAbsoluteLocation" _fetchDep_ubuntuFocalFossa_sequence "$@"

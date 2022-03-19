@@ -357,6 +357,15 @@ CZXWXcRMTo8EmM8i4d
 		return 0
 	fi
 	
+	if [[ "$1" == "nc" ]]
+	then
+		sudo -n apt-get install --install-recommends -y netcat-openbsd
+		
+		! _wantDep 'nc' && echo 'warn: missing: nc'
+		
+		return 0
+	fi
+	
 	
 	return 1
 }
@@ -407,6 +416,8 @@ _fetchDep_debianBullseye_sequence() {
 }
 
 _fetchDep_debianBullseye() {
+	export DEBIAN_FRONTEND=noninteractive
+	
 	#Run up to 2 times. On rare occasion, cache will become unusable again by apt-find before an installation can be completed. Overall, apt-find is the single weakest link in the system.
 	"$scriptAbsoluteLocation" _fetchDep_debianBullseye_sequence "$@"
 	"$scriptAbsoluteLocation" _fetchDep_debianBullseye_sequence "$@"
@@ -779,6 +790,8 @@ _fetchDep_debianBuster_sequence() {
 }
 
 _fetchDep_debianBuster() {
+	export DEBIAN_FRONTEND=noninteractive
+	
 	#Run up to 2 times. On rare occasion, cache will become unusable again by apt-find before an installation can be completed. Overall, apt-find is the single weakest link in the system.
 	"$scriptAbsoluteLocation" _fetchDep_debianBuster_sequence "$@"
 	"$scriptAbsoluteLocation" _fetchDep_debianBuster_sequence "$@"
