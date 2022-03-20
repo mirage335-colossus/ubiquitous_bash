@@ -32,7 +32,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='1891409836'
-export ub_setScriptChecksum_contents='1630442331'
+export ub_setScriptChecksum_contents='295661474'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -7591,7 +7591,7 @@ _fetchDep_debianBullseye_special() {
 		return 0
 	fi
 	
-	if [[ "$1" == "qemu-arm-static" ]] || [[ "$1" == "qemu-armeb-static" ]]
+	if [[ "$1" == "qemu-arm-static" ]] || [[ "$1" == "qemu-armeb-static" ]] || [[ "$1" == "update-binfmts" ]]
 	then
 		sudo -n env DEBIAN_FRONTEND=noninteractive apt-get install --install-recommends -y qemu qemu-user-static binfmt-support
 		#update-binfmts --display
@@ -8397,7 +8397,7 @@ _fetchDep_ubuntuFocalFossa_special() {
 		return 0
 	fi
 	
-	if [[ "$1" == "qemu-arm-static" ]] || [[ "$1" == "qemu-armeb-static" ]]
+	if [[ "$1" == "qemu-arm-static" ]] || [[ "$1" == "qemu-armeb-static" ]] || [[ "$1" == "update-binfmts" ]]
 	then
 		sudo -n env DEBIAN_FRONTEND=noninteractive apt-get install --install-recommends -y qemu qemu-user-static binfmt-support
 		#update-binfmts --display
@@ -13798,10 +13798,16 @@ _testQEMU_x64-raspi() {
 	_getDep qemu-system-arm
 	_getDep qemu-system-aarch64
 	
+	
 	_mustGetSudo
 	
 	! _testQEMU_hostArch_x64-raspi && echo "warn: not checking x64 translation" && return 0
 	
+	#\|Raspbian
+	if [[ -e /etc/issue ]] && cat /etc/issue | grep 'Debian\|Ubuntu' > /dev/null 2>&1
+	then
+		_getDep update-binfmts
+	fi
 	
 	
 	

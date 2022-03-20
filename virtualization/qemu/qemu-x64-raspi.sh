@@ -19,10 +19,16 @@ _testQEMU_x64-raspi() {
 	_getDep qemu-system-arm
 	_getDep qemu-system-aarch64
 	
+	
 	_mustGetSudo
 	
 	! _testQEMU_hostArch_x64-raspi && echo "warn: not checking x64 translation" && return 0
 	
+	#\|Raspbian
+	if [[ -e /etc/issue ]] && cat /etc/issue | grep 'Debian\|Ubuntu' > /dev/null 2>&1
+	then
+		_getDep update-binfmts
+	fi
 	
 	
 	
