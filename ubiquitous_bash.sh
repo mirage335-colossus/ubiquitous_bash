@@ -32,7 +32,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='1891409836'
-export ub_setScriptChecksum_contents='2363048602'
+export ub_setScriptChecksum_contents='858917946'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -10069,8 +10069,13 @@ _test_virtLocal_X11() {
 	return 0
 }
 
+
 # TODO: Expansion needed.
-_vector_virtUser() {
+_vector_virtUser_sequence() {
+	local functionEntryPWD
+	functionEntryPWD="$PWD"
+	cd
+	
 	export sharedHostProjectDir=
 	export sharedGuestProjectDir=/home/user/project
 	_virtUser /tmp
@@ -10104,6 +10109,12 @@ _vector_virtUser() {
 	#_safeEcho_newline "${processedArgs[0]}"
 	[[ "${processedArgs[0]}" != '-e' ]] && echo 'fail: _vector_virtUser' && _messageFAIL
 	
+	cd "$functionEntryPWD"
+	return 0
+}
+_vector_virtUser() {
+	"$scriptAbsoluteLocation" _vector_virtUser_sequence "$@"
+	[[ "$?" != "0" ]] && _stop 1
 	
 	return 0
 }

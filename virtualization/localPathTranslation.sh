@@ -240,8 +240,13 @@ _test_virtLocal_X11() {
 	return 0
 }
 
+
 # TODO: Expansion needed.
-_vector_virtUser() {
+_vector_virtUser_sequence() {
+	local functionEntryPWD
+	functionEntryPWD="$PWD"
+	cd
+	
 	export sharedHostProjectDir=
 	export sharedGuestProjectDir=/home/user/project
 	_virtUser /tmp
@@ -275,6 +280,12 @@ _vector_virtUser() {
 	#_safeEcho_newline "${processedArgs[0]}"
 	[[ "${processedArgs[0]}" != '-e' ]] && echo 'fail: _vector_virtUser' && _messageFAIL
 	
+	cd "$functionEntryPWD"
+	return 0
+}
+_vector_virtUser() {
+	"$scriptAbsoluteLocation" _vector_virtUser_sequence "$@"
+	[[ "$?" != "0" ]] && _stop 1
 	
 	return 0
 }
