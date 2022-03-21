@@ -522,6 +522,9 @@ _compile_bash_utilities() {
 	[[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "os/distro/debian"/getDep_debian.sh )
 	[[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "os/distro/ubuntu"/getDep_ubuntu.sh )
 	
+	[[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "os/distro"/getMost.sh )
+	
+	
 	[[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "os/unix/systemd"/here_systemd.sh )
 	[[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "os/unix/systemd"/hook_systemd.sh )
 	
