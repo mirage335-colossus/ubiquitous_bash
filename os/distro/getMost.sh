@@ -18,8 +18,8 @@
 
 _getMost_debian11_aptSources() {
 	# May be an image copied while dpkg was locked. Especially if 'chroot'.
-	_getMost_backend /var/lib/apt/lists/lock
-	_getMost_backend /var/lib/dpkg/lock
+	_getMost_backend rm -f /var/lib/apt/lists/lock
+	_getMost_backend rm -f /var/lib/dpkg/lock
 	
 	
 	_getMost_backend mkdir -p /etc/apt/sources.list.d
