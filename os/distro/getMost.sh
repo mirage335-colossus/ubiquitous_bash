@@ -23,8 +23,9 @@ _getMost_debian11_aptSources() {
 	
 	
 	_getMost_backend mkdir -p /etc/apt/sources.list.d
-	echo 'deb http://deb.debian.org/debian bullseye-backports main contrib' | _getMost_backend tee /etc/apt/sources.list.d/custom_backports.list
-	echo 'deb http://download.virtualbox.org/virtualbox/debian bullseye contrib' | _getMost_backend tee /etc/apt/sources.list.d/vbox.list > /dev/null 2>&1
+	echo 'deb http://deb.debian.org/debian bullseye-backports main contrib' | _getMost_backend tee /etc/apt/sources.list.d/ub_backports.list
+	echo 'deb http://download.virtualbox.org/virtualbox/debian bullseye contrib' | _getMost_backend tee /etc/apt/sources.list.d/ub_vbox.list > /dev/null 2>&1
+	echo 'deb [arch=amd64] https://download.docker.com/linux/debian bullseye stable' | _getMost_backend tee /etc/apt/sources.list.d/ub_docker.list > /dev/null 2>&1
 	
 	_getMost_backend wget -q https://www.virtualbox.org/download/oracle_vbox_2016.asc -O- | _getMost_backend apt-key add -
 	_getMost_backend wget -q https://www.virtualbox.org/download/oracle_vbox.asc -O- | _getMost_backend apt-key add -
@@ -246,7 +247,10 @@ _getMost_debian11() {
 	_test_getMost_backend "$@"
 	
 	
+	_getMost_debian11_aptSources "$@"
+	
 	_getMost_debian11_install "$@"
+	
 	
 	_messagePlain_probe 'end: _getMost_debian11_install'
 }
