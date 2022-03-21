@@ -32,7 +32,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='1891409836'
-export ub_setScriptChecksum_contents='3543504318'
+export ub_setScriptChecksum_contents='328567875'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -8355,11 +8355,9 @@ _getMost_debian11_install() {
 	_getMost_debian11_special_late
 }
 
-
-
 # ATTENTION: End user function.
 _getMost_debian11() {
-	_messagePlain_probe 'begin: _getMost_debian11_install'
+	_messagePlain_probe 'begin: _getMost_debian11'
 	
 	#https://askubuntu.com/questions/876240/how-to-automate-setting-up-of-keyboard-configuration-package
 	#apt-get install -y debconf-utils
@@ -8374,8 +8372,56 @@ _getMost_debian11() {
 	_getMost_debian11_install "$@"
 	
 	
-	_messagePlain_probe 'end: _getMost_debian11_install'
+	_messagePlain_probe 'end: _getMost_debian11'
 }
+
+
+
+
+
+_getMost_ubuntu20_aptSources() {
+	# May be an image copied while dpkg was locked. Especially if 'chroot'.
+	_getMost_backend rm -f /var/lib/apt/lists/lock
+	_getMost_backend rm -f /var/lib/dpkg/lock
+	
+	
+	_getMost_backend mkdir -p /etc/apt/sources.list.d
+	echo 'deb http://download.virtualbox.org/virtualbox/debian focal contrib' | _getMost_backend tee /etc/apt/sources.list.d/ub_vbox.list > /dev/null 2>&1
+	echo 'deb [arch=amd64] https://download.docker.com/linux/debian focal stable' | _getMost_backend tee /etc/apt/sources.list.d/ub_docker.list > /dev/null 2>&1
+	
+	_getMost_backend wget -q https://www.virtualbox.org/download/oracle_vbox_2016.asc -O- | _getMost_backend apt-key add -
+	_getMost_backend wget -q https://www.virtualbox.org/download/oracle_vbox.asc -O- | _getMost_backend apt-key add -
+}
+_getMost_ubuntu20_install() {
+	_getMost_debian11_install "$@"
+	
+	_getMost_backend_aptGetInstall tasksel
+	_getMost_backend_aptGetInstall kde-plasma-desktop
+	
+	_getMost_backend tasksel install "ubuntu-desktop"
+}
+
+# ATTENTION: End user function.
+_getMost_ubuntu20() {
+	_messagePlain_probe 'begin: _getMost_ubuntu20'
+	
+	#https://askubuntu.com/questions/876240/how-to-automate-setting-up-of-keyboard-configuration-package
+	#apt-get install -y debconf-utils
+	export DEBIAN_FRONTEND=noninteractive
+	
+	_set_getMost_backend "$@"
+	_test_getMost_backend "$@"
+	
+	
+	_getMost_ubuntu20_aptSources "$@"
+	
+	_getMost_ubuntu20_install "$@"
+	
+	
+	_messagePlain_probe 'end: _getMost_ubuntu20'
+}
+
+
 
 
 
