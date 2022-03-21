@@ -6,11 +6,7 @@
 
 
 
-# ATTENTION: Override with 'ops.sh' or similar.
-#if ! type -f _getMost_backend > /dev/null 2>&1 || ! type -f _getMost_backend_fileExists > /dev/null 2>&1 || ! type -f _getMost_backend_aptGetInstall > /dev/null 2>&1
-#then
-	#_set_getMost_backend
-#fi
+
 
 
 
@@ -26,8 +22,6 @@ _getMost_debian11_aptSources() {
 	
 	_getMost_backend wget -q https://www.virtualbox.org/download/oracle_vbox_2016.asc -O- | _getMost_backend apt-key add -
 	_getMost_backend wget -q https://www.virtualbox.org/download/oracle_vbox.asc -O- | _getMost_backend apt-key add -
-	
-	
 }
 
 _getMost_debian11_special_early() {
@@ -217,6 +211,7 @@ _getMost_debian11() {
 	export DEBIAN_FRONTEND=noninteractive
 	
 	_set_getMost_backend "$@"
+	_test_getMost_backend "$@"
 	
 	
 	_getMost_debian11_install "$@"
@@ -308,6 +303,12 @@ _set_getMost_backend() {
 	_set_getMost_backend_debian "$@"
 }
 
+# WARNING: Do NOT call from '_test' or similar.
+_test_getMost_backend() {
+	_getMost_backend false && _messagePlain_bad 'fail: incorrect: _getMost_backend false' && _messageFAIL && _stop 1
+	! _getMost_backend true && _messagePlain_bad 'fail: incorrect: _getMost_backend true' && _messageFAIL && _stop 1
+}
+
 
 # WARNING: No production use. Installation commands may be called through 'chroot' or 'ssh' , expected as such not reasonably able to detect the OS distribution . User is expected to instead call the correct function with the correct configuration.
 _getMost() {
@@ -333,4 +334,10 @@ _getMost() {
 
 
 
-
+# ATTENTION: Override with 'ops.sh' or similar.
+#./ubiquitous_bash.sh _getMost_backend true
+#./ubiquitous_bash.sh _getMost_backend false
+if [[ "$ub_import" != "true" ]] && [[ "$objectName" == "ubiquitous_bash" ]] && ! type -f _getMost_backend > /dev/null 2>&1 || ! type -f _getMost_backend_fileExists > /dev/null 2>&1 || ! type -f _getMost_backend_aptGetInstall > /dev/null 2>&1
+then
+	_set_getMost_backend
+fi
