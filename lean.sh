@@ -32,7 +32,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='1891409836'
-export ub_setScriptChecksum_contents='3539844274'
+export ub_setScriptChecksum_contents='3148968064'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -3338,6 +3338,70 @@ _mustcarry() {
 	return
 }
 
+#Determines if user is root. If yes, then continue. If not, exits after printing error message.
+_mustBeRoot() {
+if [[ $(id -u) != 0 ]]; then 
+	echo "This must be run as root!"
+	exit
+fi
+}
+alias mustBeRoot=_mustBeRoot
+
+#Determines if sudo is usable by scripts.
+_mustGetSudo() {
+	# WARNING: What is otherwise considered bad practice may be accepted to reduce substantial MSW/Cygwin inconvenience .
+	_if_cygwin && return 0
+	
+	local rootAvailable
+	rootAvailable=false
+	
+	rootAvailable=$(sudo -n echo true)
+	
+	#[[ $(id -u) == 0 ]] && rootAvailable=true
+	
+	! [[ "$rootAvailable" == "true" ]] && exit 1
+	
+	return 0
+}
+
+#Determines if sudo is usable by scripts. Will not exit on failure.
+_wantSudo() {
+	# WARNING: What is otherwise considered bad practice may be accepted to reduce substantial MSW/Cygwin inconvenience .
+	_if_cygwin && return 0
+	
+	local rootAvailable
+	rootAvailable=false
+	
+	rootAvailable=$(sudo -n echo true 2> /dev/null)
+	
+	#[[ $(id -u) == 0 ]] && rootAvailable=true
+	
+	! [[ "$rootAvailable" == "true" ]] && return 1
+	
+	return 0
+}
+
+#Returns a UUID in the form of xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+_getUUID() {
+	if [[ -e /proc/sys/kernel/random/uuid ]]
+	then
+		cat /proc/sys/kernel/random/uuid
+		return 0
+	fi
+	
+	
+	if type -p uuidgen > /dev/null 2>&1
+	then
+		uuidgen
+		return 0
+	fi
+	
+	# Failure. Intentionally adds extra characters to cause any tests of uuid output to fail.
+	_uid 40
+	return 1
+}
+alias getUUID=_getUUID
+
 #Gets filename extension, specifically any last three characters in given string.
 #"$1" == filename
 _getExt() {
@@ -4179,70 +4243,6 @@ _getDep() {
 	
 	_mustGetDep "$@"
 }
-
-#Determines if user is root. If yes, then continue. If not, exits after printing error message.
-_mustBeRoot() {
-if [[ $(id -u) != 0 ]]; then 
-	echo "This must be run as root!"
-	exit
-fi
-}
-alias mustBeRoot=_mustBeRoot
-
-#Determines if sudo is usable by scripts.
-_mustGetSudo() {
-	# WARNING: What is otherwise considered bad practice may be accepted to reduce substantial MSW/Cygwin inconvenience .
-	_if_cygwin && return 0
-	
-	local rootAvailable
-	rootAvailable=false
-	
-	rootAvailable=$(sudo -n echo true)
-	
-	#[[ $(id -u) == 0 ]] && rootAvailable=true
-	
-	! [[ "$rootAvailable" == "true" ]] && exit 1
-	
-	return 0
-}
-
-#Determines if sudo is usable by scripts. Will not exit on failure.
-_wantSudo() {
-	# WARNING: What is otherwise considered bad practice may be accepted to reduce substantial MSW/Cygwin inconvenience .
-	_if_cygwin && return 0
-	
-	local rootAvailable
-	rootAvailable=false
-	
-	rootAvailable=$(sudo -n echo true 2> /dev/null)
-	
-	#[[ $(id -u) == 0 ]] && rootAvailable=true
-	
-	! [[ "$rootAvailable" == "true" ]] && return 1
-	
-	return 0
-}
-
-#Returns a UUID in the form of xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
-_getUUID() {
-	if [[ -e /proc/sys/kernel/random/uuid ]]
-	then
-		cat /proc/sys/kernel/random/uuid
-		return 0
-	fi
-	
-	
-	if type -p uuidgen > /dev/null 2>&1
-	then
-		uuidgen
-		return 0
-	fi
-	
-	# Failure. Intentionally adds extra characters to cause any tests of uuid output to fail.
-	_uid 40
-	return 1
-}
-alias getUUID=_getUUID
 
 _resetFakeHomeEnv_extra() {
 	true

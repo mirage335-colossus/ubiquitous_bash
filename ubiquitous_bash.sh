@@ -32,7 +32,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='1891409836'
-export ub_setScriptChecksum_contents='3081199238'
+export ub_setScriptChecksum_contents='2455962811'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -3412,6 +3412,70 @@ _includeScripts() {
 	
 	#return 1
 #}
+
+#Determines if user is root. If yes, then continue. If not, exits after printing error message.
+_mustBeRoot() {
+if [[ $(id -u) != 0 ]]; then 
+	echo "This must be run as root!"
+	exit
+fi
+}
+alias mustBeRoot=_mustBeRoot
+
+#Determines if sudo is usable by scripts.
+_mustGetSudo() {
+	# WARNING: What is otherwise considered bad practice may be accepted to reduce substantial MSW/Cygwin inconvenience .
+	_if_cygwin && return 0
+	
+	local rootAvailable
+	rootAvailable=false
+	
+	rootAvailable=$(sudo -n echo true)
+	
+	#[[ $(id -u) == 0 ]] && rootAvailable=true
+	
+	! [[ "$rootAvailable" == "true" ]] && exit 1
+	
+	return 0
+}
+
+#Determines if sudo is usable by scripts. Will not exit on failure.
+_wantSudo() {
+	# WARNING: What is otherwise considered bad practice may be accepted to reduce substantial MSW/Cygwin inconvenience .
+	_if_cygwin && return 0
+	
+	local rootAvailable
+	rootAvailable=false
+	
+	rootAvailable=$(sudo -n echo true 2> /dev/null)
+	
+	#[[ $(id -u) == 0 ]] && rootAvailable=true
+	
+	! [[ "$rootAvailable" == "true" ]] && return 1
+	
+	return 0
+}
+
+#Returns a UUID in the form of xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+_getUUID() {
+	if [[ -e /proc/sys/kernel/random/uuid ]]
+	then
+		cat /proc/sys/kernel/random/uuid
+		return 0
+	fi
+	
+	
+	if type -p uuidgen > /dev/null 2>&1
+	then
+		uuidgen
+		return 0
+	fi
+	
+	# Failure. Intentionally adds extra characters to cause any tests of uuid output to fail.
+	_uid 40
+	return 1
+}
+alias getUUID=_getUUID
 
 #Gets filename extension, specifically any last three characters in given string.
 #"$1" == filename
@@ -8757,6 +8821,17 @@ _fetchDep_ubuntu() {
 # WARNING: Untested!
 # Especially needed, testing with chroot and ssh backends.
 
+# ATTENTION: Expected use case is to attempt installation of dependencies and user software, once, before using '_test'. Not every command is expected to succeed.
+
+
+
+# ATTENTION: Override with 'ops.sh' or similar.
+#if ! type -f _getMost_backend > /dev/null 2>&1 || ! type -f _getMost_backend_fileExists > /dev/null 2>&1 || ! type -f _getMost_backend_aptGetInstall > /dev/null 2>&1
+#then
+	#_set_getMost_backend
+#fi
+
+
 
 _getMost_debian11_aptSources() {
 	# May be an image copied while dpkg was locked. Especially if 'chroot'.
@@ -8800,6 +8875,10 @@ _getMost_debian11_install() {
 	_getMost_debian11_special_early
 	
 	
+	
+	
+	_getMost_backend_aptGetInstall sudo
+	
 	if _getMost_backend_fileExists "/bup_0.29-3_amd64.deb"
 	then
 		_getMost_backend dpkg -i "/bup_0.29-3_amd64.deb"
@@ -8807,8 +8886,139 @@ _getMost_debian11_install() {
 		_getMost_backend env DEBIAN_FRONTEND=noninteractive apt-get install -y -f
 	fi
 	
+	_getMost_backend_aptGetInstall bup
 	
-	_getMost_backend_aptGetInstall sudo
+	_getMost_backend_aptGetInstall bc nmap autossh socat sshfs tor
+	_getMost_backend_aptGetInstall sockstat
+	_getMost_backend_aptGetInstall x11-xserver-utils
+	
+	_getMost_backend_aptGetInstall tigervnc-viewer
+	_getMost_backend_aptGetInstall x11vnc
+	_getMost_backend_aptGetInstall tigervnc-standalone-server
+	
+	#_getMost_backend_aptGetInstall synergy quicksynergy
+	
+	_getMost_backend_aptGetInstall vim
+	
+	if _getMost_backend bash -c '! dpkg --print-foreign-architectures | grep i386'
+	then
+		_getMost_backend dpkg --add-architecture i386
+		_getMost_backend apt-get update
+	fi
+	_getMost_backend_aptGetInstall wmctrl xprintidle okular libreoffice firefox-esr xournal kwrite netcat-openbsd iperf axel unionfs-fuse samba qemu qemu-system-x86 qemu-system-arm qemu-efi-arm qemu-efi-aarch64 qemu-user-static qemu-utils dosbox wine wine32 wine64 libwine libwine:i386 fonts-wine debootstrap xclip xinput gparted bup emacs xterm mesa-utils kde-standard
+	_getMost_backend_aptGetInstall chromium
+	_getMost_backend_aptGetInstall openjdk-11-jdk openjdk-11-jre
+	
+	# ATTENTION: ONLY uncomment if needed to ensure a kernel is installed AND custom kernel is not in use.
+	_getMost_backend_aptGetInstall linux-image-amd64
+	
+	_getMost_backend_aptGetInstall net-tools wireless-tools rfkill
+	
+	
+	# WARNING: Untested. May be old version of VirtualBox. May conflict with guest additions.
+	#_getMost_backend_aptGetInstall virtualbox-6.1
+	_getMost_backend apt-get -d install -y virtualbox-6.1
+	
+	
+	# WARNING: Untested. May cause problems.
+	#_getMost_backend_aptGetInstall docker-ce
+	_getMost_backend apt-get -d install -y docker-ce
+	
+	
+	# WARNING: Untested. May incorrectly remove supposedly 'old' kernel versions.
+	#_getMost_backend apt-get autoremove -y
+	
+	
+	# WARNING: Strongly discouraged here.
+	#sudo -n rm -f "$globalVirtFS"/ubtest.sh > /dev/null 2>&1
+	#sudo -n cp "$scriptAbsoluteLocation" "$globalVirtFS"/ubtest.sh
+	#_getMost_backend /ubtest.sh _test
+	
+	
+	_getMost_backend_aptGetInstall live-boot
+	_getMost_backend_aptGetInstall pigz
+	
+	_getMost_backend_aptGetInstall falkon
+	_getMost_backend_aptGetInstall konqueror
+	
+	_getMost_backend_aptGetInstall xserver-xorg-video-all
+	
+	_getMost_backend_aptGetInstall qalculate-gtk
+	
+	_getMost_backend_aptGetInstall octave
+	_getMost_backend_aptGetInstall octave-arduino
+	_getMost_backend_aptGetInstall octave-bart
+	_getMost_backend_aptGetInstall octave-bim
+	_getMost_backend_aptGetInstall octave-biosig
+	_getMost_backend_aptGetInstall octave-bsltl
+	_getMost_backend_aptGetInstall octave-cgi
+	_getMost_backend_aptGetInstall octave-communications
+	_getMost_backend_aptGetInstall octave-control
+	_getMost_backend_aptGetInstall octave-data-smoothing
+	_getMost_backend_aptGetInstall octave-dataframe
+	_getMost_backend_aptGetInstall octave-dicom
+	_getMost_backend_aptGetInstall octave-divand
+	_getMost_backend_aptGetInstall octave-econometrics
+	_getMost_backend_aptGetInstall octave-financial
+	_getMost_backend_aptGetInstall octave-fits
+	_getMost_backend_aptGetInstall octave-fuzzy-logic-toolkit
+	_getMost_backend_aptGetInstall octave-ga
+	_getMost_backend_aptGetInstall octave-gdf
+	_getMost_backend_aptGetInstall octave-geometry
+	_getMost_backend_aptGetInstall octave-gsl
+	_getMost_backend_aptGetInstall octave-image
+	_getMost_backend_aptGetInstall octave-image-acquisition
+	_getMost_backend_aptGetInstall octave-instrument-control
+	_getMost_backend_aptGetInstall octave-interval
+	_getMost_backend_aptGetInstall octave-io
+	_getMost_backend_aptGetInstall octave-level-set
+	_getMost_backend_aptGetInstall octave-linear-algebra
+	_getMost_backend_aptGetInstall octave-lssa
+	_getMost_backend_aptGetInstall octave-ltfat
+	_getMost_backend_aptGetInstall octave-mapping
+	_getMost_backend_aptGetInstall octave-miscellaneous
+	_getMost_backend_aptGetInstall octave-missing-functions
+	_getMost_backend_aptGetInstall octave-mpi
+	_getMost_backend_aptGetInstall octave-msh
+	_getMost_backend_aptGetInstall octave-mvn
+	_getMost_backend_aptGetInstall octave-nan
+	_getMost_backend_aptGetInstall octave-ncarry
+	_getMost_backend_aptGetInstall octave-netcdf
+	_getMost_backend_aptGetInstall octave-nlopt
+	_getMost_backend_aptGetInstall octave-nurbs
+	_getMost_backend_aptGetInstall octave-octclip
+	_getMost_backend_aptGetInstall octave-octproj
+	_getMost_backend_aptGetInstall octave-openems
+	_getMost_backend_aptGetInstall octave-optics
+	_getMost_backend_aptGetInstall octave-optim
+	_getMost_backend_aptGetInstall octave-optiminterp
+	_getMost_backend_aptGetInstall octave-parallel
+	_getMost_backend_aptGetInstall octave-pfstools
+	_getMost_backend_aptGetInstall octave-plplot
+	_getMost_backend_aptGetInstall octave-psychtoolbox-3
+	_getMost_backend_aptGetInstall octave-quarternion
+	_getMost_backend_aptGetInstall octave-queueing
+	_getMost_backend_aptGetInstall octave-secs1d
+	_getMost_backend_aptGetInstall octave-secs2d
+	_getMost_backend_aptGetInstall octave-secs3d
+	_getMost_backend_aptGetInstall octave-signal
+	_getMost_backend_aptGetInstall octave-sockets
+	_getMost_backend_aptGetInstall octave-sparsersb
+	_getMost_backend_aptGetInstall octave-specfun
+	_getMost_backend_aptGetInstall octave-splines
+	_getMost_backend_aptGetInstall octave-stk
+	_getMost_backend_aptGetInstall octave-strings
+	_getMost_backend_aptGetInstall octave-struct
+	_getMost_backend_aptGetInstall octave-symbolic
+	_getMost_backend_aptGetInstall octave-tsa
+	_getMost_backend_aptGetInstall octave-vibes
+	_getMost_backend_aptGetInstall octave-vlfeat
+	_getMost_backend_aptGetInstall octave-rml
+	_getMost_backend_aptGetInstall octave-zenity
+	_getMost_backend_aptGetInstall octave-zeromq
+	
+	
+	_getMost_backend_aptGetInstall mktorrent
 	
 	
 	
@@ -8827,12 +9037,6 @@ _getMost_debian11() {
 	
 	_set_getMost_backend "$@"
 	
-	_getMost_backend_aptGetInstall() {
-		_messagePlain_probe _getMost_backend env DEBIAN_FRONTEND=noninteractive apt-get install --install-recommends -y "$@"
-		_getMost_backend env DEBIAN_FRONTEND=noninteractive apt-get install --install-recommends -y "$@"
-	}
-	export -f _getMost_backend_aptGetInstall
-	
 	
 	_getMost_debian11_install "$@"
 	
@@ -8842,9 +9046,13 @@ _getMost_debian11() {
 
 
 
-
-
-
+_set_getMost_backend_debian() {
+	_getMost_backend_aptGetInstall() {
+		_messagePlain_probe _getMost_backend env DEBIAN_FRONTEND=noninteractive apt-get install --install-recommends -y "$@"
+		_getMost_backend env DEBIAN_FRONTEND=noninteractive apt-get install --install-recommends -y "$@"
+	}
+	export -f _getMost_backend_aptGetInstall
+}
 _set_getMost_backend_command() {
 	[[ "$getMost_backend" == "" ]] && export getMost_backend="direct"
 	#[[ "$getMost_backend" == "" ]] && export getMost_backend="chroot"
@@ -8915,7 +9123,10 @@ _set_getMost_backend_fileExists() {
 _set_getMost_backend() {
 	_set_getMost_backend_command "$@"
 	_set_getMost_backend_fileExists "$@"
+	
+	_set_getMost_backend_debian "$@"
 }
+
 
 # WARNING: No production use. Installation commands may be called through 'chroot' or 'ssh' , expected as such not reasonably able to detect the OS distribution . User is expected to instead call the correct function with the correct configuration.
 _getMost() {
@@ -8931,6 +9142,15 @@ _getMost() {
 	fi
 	return 1
 }
+
+
+
+
+
+
+
+
+
 
 
 
@@ -9036,70 +9256,6 @@ _unhook_systemd_shutdown() {
 	sudo -n systemctl disable "$hookSessionid""$hookSessionid""$hookSessionid""$hookSessionid".service 2>&1 | sudo -n tee -a "$permaLog"/gsysd.log > /dev/null 2>&1
 	sudo -n rm -f /etc/systemd/system/"$hookSessionid""$hookSessionid""$hookSessionid""$hookSessionid".service 2>&1 | sudo -n tee -a "$permaLog"/gsysd.log > /dev/null 2>&1
 }
-
-#Determines if user is root. If yes, then continue. If not, exits after printing error message.
-_mustBeRoot() {
-if [[ $(id -u) != 0 ]]; then 
-	echo "This must be run as root!"
-	exit
-fi
-}
-alias mustBeRoot=_mustBeRoot
-
-#Determines if sudo is usable by scripts.
-_mustGetSudo() {
-	# WARNING: What is otherwise considered bad practice may be accepted to reduce substantial MSW/Cygwin inconvenience .
-	_if_cygwin && return 0
-	
-	local rootAvailable
-	rootAvailable=false
-	
-	rootAvailable=$(sudo -n echo true)
-	
-	#[[ $(id -u) == 0 ]] && rootAvailable=true
-	
-	! [[ "$rootAvailable" == "true" ]] && exit 1
-	
-	return 0
-}
-
-#Determines if sudo is usable by scripts. Will not exit on failure.
-_wantSudo() {
-	# WARNING: What is otherwise considered bad practice may be accepted to reduce substantial MSW/Cygwin inconvenience .
-	_if_cygwin && return 0
-	
-	local rootAvailable
-	rootAvailable=false
-	
-	rootAvailable=$(sudo -n echo true 2> /dev/null)
-	
-	#[[ $(id -u) == 0 ]] && rootAvailable=true
-	
-	! [[ "$rootAvailable" == "true" ]] && return 1
-	
-	return 0
-}
-
-#Returns a UUID in the form of xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
-_getUUID() {
-	if [[ -e /proc/sys/kernel/random/uuid ]]
-	then
-		cat /proc/sys/kernel/random/uuid
-		return 0
-	fi
-	
-	
-	if type -p uuidgen > /dev/null 2>&1
-	then
-		uuidgen
-		return 0
-	fi
-	
-	# Failure. Intentionally adds extra characters to cause any tests of uuid output to fail.
-	_uid 40
-	return 1
-}
-alias getUUID=_getUUID
 
 _test_bashdb() {
 	#_getDep ddd
@@ -37320,6 +37476,12 @@ _compile_bash_utilities() {
 	export includeScriptList
 	
 	#####Utilities
+	includeScriptList+=( "special"/mustberoot.sh )
+	includeScriptList+=( "special"/mustgetsudo.sh )
+	
+	includeScriptList+=( "special"/uuid.sh )
+	
+	
 	includeScriptList+=( "generic/filesystem"/getext.sh )
 	
 	includeScriptList+=( "generic/filesystem"/finddir.sh )
@@ -37383,10 +37545,7 @@ _compile_bash_utilities() {
 	[[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "os/unix/systemd"/here_systemd.sh )
 	[[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "os/unix/systemd"/hook_systemd.sh )
 	
-	includeScriptList+=( "special"/mustberoot.sh )
-	includeScriptList+=( "special"/mustgetsudo.sh )
 	
-	includeScriptList+=( "special"/uuid.sh )
 	
 	[[ "$enUb_dev_heavy" == "true" ]] && includeScriptList+=( "instrumentation"/bashdb/bashdb.sh )
 	( [[ "$enUb_notLean" == "true" ]] || [[ "$enUb_stopwatch" == "true" ]] ) && includeScriptList+=( "instrumentation"/profiling/stopwatch.sh )

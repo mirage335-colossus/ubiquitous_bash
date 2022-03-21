@@ -465,6 +465,12 @@ _compile_bash_utilities() {
 	export includeScriptList
 	
 	#####Utilities
+	includeScriptList+=( "special"/mustberoot.sh )
+	includeScriptList+=( "special"/mustgetsudo.sh )
+	
+	includeScriptList+=( "special"/uuid.sh )
+	
+	
 	includeScriptList+=( "generic/filesystem"/getext.sh )
 	
 	includeScriptList+=( "generic/filesystem"/finddir.sh )
@@ -528,10 +534,7 @@ _compile_bash_utilities() {
 	[[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "os/unix/systemd"/here_systemd.sh )
 	[[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "os/unix/systemd"/hook_systemd.sh )
 	
-	includeScriptList+=( "special"/mustberoot.sh )
-	includeScriptList+=( "special"/mustgetsudo.sh )
 	
-	includeScriptList+=( "special"/uuid.sh )
 	
 	[[ "$enUb_dev_heavy" == "true" ]] && includeScriptList+=( "instrumentation"/bashdb/bashdb.sh )
 	( [[ "$enUb_notLean" == "true" ]] || [[ "$enUb_stopwatch" == "true" ]] ) && includeScriptList+=( "instrumentation"/profiling/stopwatch.sh )
