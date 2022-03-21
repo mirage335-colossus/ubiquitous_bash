@@ -24,7 +24,9 @@ _getMost_debian11_special_early() {
 }
 
 _getMost_debian11_special_late() {
-	_getMost_backend _getMost_backend_aptGetInstall -y curl
+	_getMost_backend_aptGetInstall curl
+	
+	_messagePlain_probe 'install: rclone'
 	_getMost_backend curl https://rclone.org/install.sh | _getMost_backend bash -s beta
 }
 
@@ -36,19 +38,14 @@ _getMost_debian11_install() {
 		#_rsync -axvz --rsync-path='mkdir -p '"'"$currentDestinationDirPath"'"' ; rsync' --delete "$1" "$2"
 	
 	
-	
-	true
-	
-	# TODO: Remote files such as '/bup_0.29-3_amd64.deb' or similar must be detected if the backend is 'chroot' or 'ssh'.
-	
-	
+	_messagePlain_probe 'apt-get update'
 	_getMost_backend apt-get update
 	
 	
 	_getMost_debian11_special_early
 	
 	
-	if _set_getMost_backend_fileExists "/bup_0.29-3_amd64.deb"
+	if _getMost_backend_fileExists "/bup_0.29-3_amd64.deb"
 	then
 		_getMost_backend dpkg -i "/bup_0.29-3_amd64.deb"
 		_getMost_backend rm -f /bup_0.29-3_amd64.deb
@@ -60,7 +57,6 @@ _getMost_debian11_install() {
 	
 	
 	
-	
 	_getMost_debian11_special_late
 }
 
@@ -68,6 +64,8 @@ _getMost_debian11_install() {
 
 
 _getMost_debian11() {
+	_messagePlain_probe 'begin: _getMost_debian11_install'
+	
 	#https://askubuntu.com/questions/876240/how-to-automate-setting-up-of-keyboard-configuration-package
 	#apt-get install -y debconf-utils
 	export DEBIAN_FRONTEND=noninteractive
@@ -75,11 +73,15 @@ _getMost_debian11() {
 	_set_getMost_backend "$@"
 	
 	_getMost_backend_aptGetInstall() {
+		_messagePlain_probe _getMost_backend env DEBIAN_FRONTEND=noninteractive apt-get install --install-recommends -y "$@"
 		_getMost_backend env DEBIAN_FRONTEND=noninteractive apt-get install --install-recommends -y "$@"
 	}
+	export -f _getMost_backend_aptGetInstall
 	
 	
 	_getMost_debian11_install "$@"
+	
+	_messagePlain_probe 'end: _getMost_debian11_install'
 }
 
 
