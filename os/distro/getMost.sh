@@ -6,6 +6,12 @@
 
 
 
+# ATTENTION: Examples. Copy relevant files to automatically enable such installations (file existence will be detected).
+	#[[ "$getMost_backend" == "chroot" ]]
+		#sudo -n cp "$scriptLib"/debian/packages/bup_0.29-3_amd64.deb "$globalVirtFS"/
+	#[[ "$getMost_backend" == "ssh" ]]
+		#_rsync -axvz --rsync-path='mkdir -p '"'"$currentDestinationDirPath"'"' ; rsync' --delete "$1" "$2"
+
 
 
 
@@ -36,13 +42,6 @@ _getMost_debian11_special_late() {
 }
 
 _getMost_debian11_install() {
-	# ATTENTION: Examples. Copy relevant files to automatically enable such installations (file existence will be detected).
-	#[[ "$getMost_backend" == "chroot" ]]
-		#sudo -n cp "$scriptLib"/debian/packages/bup_0.29-3_amd64.deb "$globalVirtFS"/
-	#[[ "$getMost_backend" == "ssh" ]]
-		#_rsync -axvz --rsync-path='mkdir -p '"'"$currentDestinationDirPath"'"' ; rsync' --delete "$1" "$2"
-	
-	
 	_messagePlain_probe 'apt-get update'
 	_getMost_backend apt-get update
 	

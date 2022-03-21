@@ -32,7 +32,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='1891409836'
-export ub_setScriptChecksum_contents='1611085669'
+export ub_setScriptChecksum_contents='474458843'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -8128,6 +8128,12 @@ _fetchDep_ubuntu() {
 
 
 
+# ATTENTION: Examples. Copy relevant files to automatically enable such installations (file existence will be detected).
+	#[[ "$getMost_backend" == "chroot" ]]
+		#sudo -n cp "$scriptLib"/debian/packages/bup_0.29-3_amd64.deb "$globalVirtFS"/
+	#[[ "$getMost_backend" == "ssh" ]]
+		#_rsync -axvz --rsync-path='mkdir -p '"'"$currentDestinationDirPath"'"' ; rsync' --delete "$1" "$2"
+
 
 
 
@@ -8158,13 +8164,6 @@ _getMost_debian11_special_late() {
 }
 
 _getMost_debian11_install() {
-	# ATTENTION: Examples. Copy relevant files to automatically enable such installations (file existence will be detected).
-	#[[ "$getMost_backend" == "chroot" ]]
-		#sudo -n cp "$scriptLib"/debian/packages/bup_0.29-3_amd64.deb "$globalVirtFS"/
-	#[[ "$getMost_backend" == "ssh" ]]
-		#_rsync -axvz --rsync-path='mkdir -p '"'"$currentDestinationDirPath"'"' ; rsync' --delete "$1" "$2"
-	
-	
 	_messagePlain_probe 'apt-get update'
 	_getMost_backend apt-get update
 	
@@ -8175,6 +8174,18 @@ _getMost_debian11_install() {
 	
 	
 	_getMost_backend_aptGetInstall sudo
+	_getMost_backend_aptGetInstall gpg
+	_getMost_backend_aptGetInstall --reinstall wget
+	
+	
+	_messagePlain_probe 'apt-get update'
+	_getMost_backend apt-get update
+	
+	# DANGER: Requires expanded (raspi) image (ie. raspi image is too small by default)!
+	# May be able to resize with some combination of 'dd' and 'gparted' , possibly '_gparted' . May be untested.
+	#_messagePlain_probe 'apt-get upgrade'
+	#_getMost_backend apt-get upgrade
+	
 	
 	if _getMost_backend_fileExists "/bup_0.29-3_amd64.deb"
 	then
@@ -8185,9 +8196,12 @@ _getMost_debian11_install() {
 	
 	_getMost_backend_aptGetInstall bup
 	
+	_getMost_backend_aptGetInstall bc autossh nmap socat sockstat rsync net-tools
 	_getMost_backend_aptGetInstall bc nmap autossh socat sshfs tor
 	_getMost_backend_aptGetInstall sockstat
 	_getMost_backend_aptGetInstall x11-xserver-utils
+	
+	_getMost_backend_aptGetInstall uuid-runtime
 	
 	_getMost_backend_aptGetInstall tigervnc-viewer
 	_getMost_backend_aptGetInstall x11vnc
@@ -8241,6 +8255,7 @@ _getMost_debian11_install() {
 	_getMost_backend_aptGetInstall xserver-xorg-video-all
 	
 	_getMost_backend_aptGetInstall qalculate-gtk
+	_getMost_backend_aptGetInstall qalc
 	
 	_getMost_backend_aptGetInstall octave
 	_getMost_backend_aptGetInstall octave-arduino
@@ -8316,6 +8331,23 @@ _getMost_debian11_install() {
 	
 	
 	_getMost_backend_aptGetInstall mktorrent
+	_getMost_backend_aptGetInstall curl
+	_getMost_backend_aptGetInstall gdisk
+	_getMost_backend_aptGetInstall kate
+	_getMost_backend_aptGetInstall kde-config-tablet
+	_getMost_backend_aptGetInstall kwrite
+	_getMost_backend_aptGetInstall lz4
+	_getMost_backend_aptGetInstall mawk
+	_getMost_backend_aptGetInstall nano
+	_getMost_backend_aptGetInstall nilfs-tools
+	
+	_getMost_backend_aptGetInstall recoll
+	_getMost_backend_aptGetInstall sed
+	_getMost_backend_aptGetInstall texinfo
+	_getMost_backend_aptGetInstall udftools
+	_getMost_backend_aptGetInstall wondershaper
+	_getMost_backend_aptGetInstall sddm
+	_getMost_backend_aptGetInstall task-kde-desktop
 	
 	
 	
