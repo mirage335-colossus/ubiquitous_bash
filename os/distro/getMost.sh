@@ -53,6 +53,18 @@ _getMost_debian11_install() {
 	
 	
 	_getMost_backend_aptGetInstall sudo
+	_getMost_backend_aptGetInstall gpg
+	_getMost_backend_aptGetInstall --reinstall wget
+	
+	
+	_messagePlain_probe 'apt-get update'
+	_getMost_backend apt-get update
+	
+	# DANGER: Requires expanded (raspi) image (ie. raspi image is too small by default)!
+	# May be able to resize with some combination of 'dd' and 'gparted' , possibly '_gparted' . May be untested.
+	#_messagePlain_probe 'apt-get upgrade'
+	#_getMost_backend apt-get upgrade
+	
 	
 	if _getMost_backend_fileExists "/bup_0.29-3_amd64.deb"
 	then
@@ -63,9 +75,12 @@ _getMost_debian11_install() {
 	
 	_getMost_backend_aptGetInstall bup
 	
+	_getMost_backend_aptGetInstall bc autossh nmap socat sockstat rsync net-tools
 	_getMost_backend_aptGetInstall bc nmap autossh socat sshfs tor
 	_getMost_backend_aptGetInstall sockstat
 	_getMost_backend_aptGetInstall x11-xserver-utils
+	
+	_getMost_backend_aptGetInstall uuid-runtime
 	
 	_getMost_backend_aptGetInstall tigervnc-viewer
 	_getMost_backend_aptGetInstall x11vnc
@@ -119,6 +134,7 @@ _getMost_debian11_install() {
 	_getMost_backend_aptGetInstall xserver-xorg-video-all
 	
 	_getMost_backend_aptGetInstall qalculate-gtk
+	_getMost_backend_aptGetInstall qalc
 	
 	_getMost_backend_aptGetInstall octave
 	_getMost_backend_aptGetInstall octave-arduino
@@ -194,6 +210,23 @@ _getMost_debian11_install() {
 	
 	
 	_getMost_backend_aptGetInstall mktorrent
+	_getMost_backend_aptGetInstall curl
+	_getMost_backend_aptGetInstall gdisk
+	_getMost_backend_aptGetInstall kate
+	_getMost_backend_aptGetInstall kde-config-tablet
+	_getMost_backend_aptGetInstall kwrite
+	_getMost_backend_aptGetInstall lz4
+	_getMost_backend_aptGetInstall mawk
+	_getMost_backend_aptGetInstall nano
+	_getMost_backend_aptGetInstall nilfs-tools
+	
+	_getMost_backend_aptGetInstall recoll
+	_getMost_backend_aptGetInstall sed
+	_getMost_backend_aptGetInstall texinfo
+	_getMost_backend_aptGetInstall udftools
+	_getMost_backend_aptGetInstall wondershaper
+	_getMost_backend_aptGetInstall sddm
+	_getMost_backend_aptGetInstall task-kde-desktop
 	
 	
 	
