@@ -24,11 +24,11 @@ _wait_debianInstall() {
 	local currentIteration_continuing
 	currentIteration=0
 	currentIteration_continuing=99999
-	while [[ "$currentIteration" -lt 600 ]] && [[ "$currentIteration_continuing" == 99999 ]] ; do
+	while [[ "$currentIteration" -lt 900 ]] && [[ "$currentIteration_continuing" == 99999 ]] ; do
 		_messagePlain_probe 'wait: install: debian'
 		
 		currentIteration_continuing=0
-		while [[ "$currentIteration_continuing" -lt 150 ]] ; do
+		while [[ "$currentIteration_continuing" -lt 300 ]] ; do
 			sleep 0.1
 			echo 'busy: '"$currentIteration_continuing"
 			let currentIteration_continuing="$currentIteration_continuing"+1
