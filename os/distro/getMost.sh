@@ -304,7 +304,8 @@ _getMost_ubuntu20_install() {
 	_getMost_backend_aptGetInstall tasksel
 	_getMost_backend_aptGetInstall kde-plasma-desktop
 	
-	_getMost_backend tasksel install "ubuntu-desktop"
+	_getMost_backend tasksel --new-install install "ubuntu-desktop"
+	_wait_debianInstall
 }
 
 # ATTENTION: End user function.
