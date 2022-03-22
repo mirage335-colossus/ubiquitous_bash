@@ -24,7 +24,7 @@ _wait_debianInstall() {
 	local currentIteration_continuing
 	currentIteration=0
 	currentIteration_continuing=99999
-	while [[ "$currentIteration" -lt 200 ]] && [[ "$currentIteration_continuing" == 99999 ]] ; do
+	while [[ "$currentIteration" -lt 600 ]] && [[ "$currentIteration_continuing" == 99999 ]] ; do
 		_messagePlain_probe 'wait: install: debian'
 		
 		currentIteration_continuing=0
