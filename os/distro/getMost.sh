@@ -13,7 +13,17 @@
 		#_rsync -axvz --rsync-path='mkdir -p '"'"$currentDestinationDirPath"'"' ; rsync' --delete "$1" "$2"
 
 
-
+_wait_debianInstall() {
+	# https://blog.sinjakli.co.uk/2021/10/25/waiting-for-apt-locks-without-the-hacky-bash-scripts/
+	local currentIteration
+	currentIteration=0
+	while [[ "$currentIteration" -lt 180 ]] && ( fuser /var/lib/dpkg/lock-frontend >/dev/null 2>&1 || ( type -p sudo > /dev/null 2>&1 && sudo -n fuser /var/lib/dpkg/lock-frontend >/dev/null 2>&1 ) ) ; do
+		_messagePlain_probe 'wait: install: debian'
+		sleep 1
+		let currentIteration="$currentIteration"+1
+	done
+	sleep 1
+}
 
 
 _getMost_debian11_aptSources() {
