@@ -13,14 +13,32 @@
 		#_rsync -axvz --rsync-path='mkdir -p '"'"$currentDestinationDirPath"'"' ; rsync' --delete "$1" "$2"
 
 
+# Workaround to prevent 'tasksel' from going to 'background' locking subsequent other 'apt-get' and similar commands.
+# Nevertheless, using any 'tasksel' commands only at the end of any script is preferable.
 _wait_debianInstall() {
+	# Loop expected much slower than 0.1s/iteration, expect reasonable CPU and such ~0.3s/iteration.
+	# If CPU and such are faster, than both this loop and any debian install program to detect, are both expected to change timing comparably, so adjustments are expected NOT necessary.
+	
 	# https://blog.sinjakli.co.uk/2021/10/25/waiting-for-apt-locks-without-the-hacky-bash-scripts/
 	local currentIteration
+	local currentIteration_continuing
 	currentIteration=0
-	while [[ "$currentIteration" -lt 180 ]] && ( fuser /var/lib/dpkg/lock-frontend >/dev/null 2>&1 || ( type -p sudo > /dev/null 2>&1 && sudo -n fuser /var/lib/dpkg/lock-frontend >/dev/null 2>&1 ) ) ; do
+	currentIteration_continuing=99999
+	while [[ "$currentIteration" -lt 200 ]] && [[ "$currentIteration_continuing" == 99999 ]] ; do
 		_messagePlain_probe 'wait: install: debian'
-		sleep 1
-		let currentIteration="$currentIteration"+1
+		
+		currentIteration_continuing=0
+		while [[ "$currentIteration_continuing" -lt 150 ]] ; do
+			sleep 0.1
+			echo 'busy: '"$currentIteration_continuing"
+			let currentIteration_continuing="$currentIteration_continuing"+1
+			if pgrep "^tasksel$" || pgrep "^apt-get$" || pgrep "^dpkg$" || ( fuser /var/lib/dpkg/lock-frontend >/dev/null 2>&1 || ( type -p sudo > /dev/null 2>&1 && sudo -n fuser /var/lib/dpkg/lock-frontend >/dev/null 2>&1 ) )
+			then
+				currentIteration_continuing=99999
+			fi
+			let currentIteration="$currentIteration"+1
+		done
+		echo 'wait: '"$currentIteration"
 	done
 	sleep 1
 }
