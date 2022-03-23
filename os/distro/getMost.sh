@@ -13,6 +13,24 @@
 		#_rsync -axvz --rsync-path='mkdir -p '"'"$currentDestinationDirPath"'"' ; rsync' --delete "$1" "$2"
 
 
+
+
+
+
+
+_install_debian11() {
+	! "$scriptAbsoluteLocation" _mustGetSudo && _messageError 'FAIL: _mustGetSudo' && _stop 1
+	_messageFAIL
+	
+	"$scriptAbsoluteLocation" _setupUbiquitous
+	"$scriptAbsoluteLocation" _getMost_debian11
+	"$scriptAbsoluteLocation" _test
+}
+
+
+
+
+
 # Workaround to prevent 'tasksel' from going to 'background' locking subsequent other 'apt-get' and similar commands.
 # Nevertheless, using any 'tasksel' commands only at the end of any script is preferable.
 _wait_debianInstall() {
