@@ -131,6 +131,9 @@ _getMost_debian11_install() {
 	_getMost_backend_aptGetInstall tigervnc-viewer
 	_getMost_backend_aptGetInstall x11vnc
 	_getMost_backend_aptGetInstall tigervnc-standalone-server
+	_getMost_backend_aptGetInstall tigervnc-scraping-server
+	
+	_getMost_backend_aptGetInstall iperf3
 	
 	#_getMost_backend_aptGetInstall synergy quicksynergy
 	
