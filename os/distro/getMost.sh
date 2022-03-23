@@ -19,8 +19,8 @@
 
 
 _install_debian11() {
-	! "$scriptAbsoluteLocation" _mustGetSudo && _messageError 'FAIL: _mustGetSudo' && _stop 1
-	_messageFAIL
+	! "$scriptAbsoluteLocation" _mustGetSudo && _messageError 'FAIL: _mustGetSudo' && return 1
+	_mustGetSudo
 	
 	"$scriptAbsoluteLocation" _setupUbiquitous
 	"$scriptAbsoluteLocation" _getMost_debian11
