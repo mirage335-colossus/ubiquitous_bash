@@ -271,6 +271,14 @@ _getMost_debian11_install() {
 	_getMost_backend_aptGetInstall nano
 	_getMost_backend_aptGetInstall nilfs-tools
 	
+	_getMost_backend_aptGetInstall build-essential
+	_getMost_backend_aptGetInstall bison
+	_getMost_backend_aptGetInstall libelf-dev
+	_getMost_backend_aptGetInstall elfutils
+	
+	_getMost_backend_aptGetInstall librecode0
+	_getMost_backend_aptGetInstall wkhtmltopdf
+	
 	_getMost_backend_aptGetInstall recoll
 	_getMost_backend_aptGetInstall sed
 	_getMost_backend_aptGetInstall texinfo

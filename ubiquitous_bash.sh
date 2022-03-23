@@ -32,7 +32,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='1891409836'
-export ub_setScriptChecksum_contents='2558508463'
+export ub_setScriptChecksum_contents='1457713573'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -9089,6 +9089,14 @@ _getMost_debian11_install() {
 	_getMost_backend_aptGetInstall mawk
 	_getMost_backend_aptGetInstall nano
 	_getMost_backend_aptGetInstall nilfs-tools
+	
+	_getMost_backend_aptGetInstall build-essential
+	_getMost_backend_aptGetInstall bison
+	_getMost_backend_aptGetInstall libelf-dev
+	_getMost_backend_aptGetInstall elfutils
+	
+	_getMost_backend_aptGetInstall librecode0
+	_getMost_backend_aptGetInstall wkhtmltopdf
 	
 	_getMost_backend_aptGetInstall recoll
 	_getMost_backend_aptGetInstall sed
