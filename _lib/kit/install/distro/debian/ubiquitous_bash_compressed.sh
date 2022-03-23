@@ -1054,6 +1054,9 @@ true
 
 
 _enter() {
+	! "$scriptAbsoluteLocation" _mustGetSudo && _messageError 'FAIL: _mustGetSudo' && _stop 1
+	_messageFAIL
+	
 	"$scriptAbsoluteLocation" _setupUbiquitous
 	"$scriptAbsoluteLocation" _getMost_debian11
 	"$scriptAbsoluteLocation" _test
