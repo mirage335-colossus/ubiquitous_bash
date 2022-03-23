@@ -25,6 +25,8 @@ _install_debian11() {
 	"$scriptAbsoluteLocation" _setupUbiquitous
 	"$scriptAbsoluteLocation" _getMost_debian11
 	"$scriptAbsoluteLocation" _test
+	
+	sudo -n env DEBIAN_FRONTEND=noninteractive apt-get --install-recommends -y upgrade
 }
 
 
