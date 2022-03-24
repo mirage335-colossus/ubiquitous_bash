@@ -292,7 +292,7 @@ _getMost_debian11_install() {
 	_getMost_backend_aptGetInstall pstoedit
 	_getMost_backend_aptGetInstall pdftk
 	
-	
+	_getMost_backend_aptGetInstall sysbench
 	
 	
 	_getMost_debian11_special_late
