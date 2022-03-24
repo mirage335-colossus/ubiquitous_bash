@@ -288,6 +288,12 @@ _getMost_debian11_install() {
 	_getMost_backend_aptGetInstall task-kde-desktop
 	
 	
+	_getMost_backend_aptGetInstall kdiff3
+	_getMost_backend_aptGetInstall pstoedit
+	_getMost_backend_aptGetInstall pdftk
+	
+	
+	
 	
 	_getMost_debian11_special_late
 }
