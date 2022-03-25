@@ -294,6 +294,8 @@ _getMost_debian11_install() {
 	
 	_getMost_backend_aptGetInstall sysbench
 	
+	_getMost_backend_aptGetInstall libssl-dev
+	
 	
 	_getMost_debian11_special_late
 }
