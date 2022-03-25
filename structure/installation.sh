@@ -1327,6 +1327,10 @@ _test() {
 	
 	
 	
+	_tryExec "_test_rclone_limited"
+	
+	
+	
 	_tryExec "_test_kernelConfig"
 	
 	

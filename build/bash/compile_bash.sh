@@ -699,6 +699,8 @@ _compile_bash_shortcuts() {
 	( [[ "$enUb_cloud_heavy" == "true" ]] || [[ "$enUb_cloud" == "true" ]] ) && includeScriptList+=( "shortcuts/cloud/bridge"/rclone/rclone.sh )
 	( [[ "$enUb_cloud_heavy" == "true" ]] || [[ "$enUb_cloud" == "true" ]] ) && includeScriptList+=( "shortcuts/cloud/bridge"/paramiko/paramiko.sh )
 	
+	includeScriptList+=( "shortcuts/cloud/bridge"/rclone/rclone_limited.sh )
+	
 	( [[ "$enUb_cloud_heavy" == "true" ]] || [[ "$enUb_cloud" == "true" ]] ) && includeScriptList+=( "shortcuts/cloud/bridge"/terraform/terraform.sh )
 	
 	
