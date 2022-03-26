@@ -372,9 +372,10 @@ _getMost_ubuntu20() {
 
 
 
-
+# ATTENTION: Override with 'ops.sh' or similar .
 _set_getMost_backend_debian() {
 	_getMost_backend_aptGetInstall() {
+		# --no-upgrade
 		_messagePlain_probe _getMost_backend env DEBIAN_FRONTEND=noninteractive apt-get install --install-recommends -y "$@"
 		_getMost_backend env DEBIAN_FRONTEND=noninteractive apt-get install --install-recommends -y "$@"
 	}
