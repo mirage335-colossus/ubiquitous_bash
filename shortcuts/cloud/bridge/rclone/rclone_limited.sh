@@ -2,9 +2,27 @@
 # May transfer large files out of cloud CI services, or may copy files into cloud or CI services for installation.
 
 
-_rclone_limited_sequence() {
+_set_rclone_limited_file() {
 	export rclone_limited_file="$scriptLocal"/rclone_limited/rclone.conf
 	! [[ -e "$rclone_limited_file" ]] && export rclone_limited_file=/rclone.conf
+}
+
+_rclone_limited_sequence() {
+	_set_rclone_limited_file
+	if ! [[ -e "$rclone_limited_file" ]] && [[ "$rclone_limited_conf_base64" != "" ]]
+	then
+		if ! [[ -e /rclone.conf ]]
+		then
+			echo "$rclone_limited_conf_base64" | base64 -d | sudo -n tee /rclone.conf > /dev/null
+		fi
+		
+		if ! [[ -e "$scriptLocal"/rclone_limited/rclone.conf ]]
+		then
+			mkdir -p "$scriptLocal"/rclone_limited
+			echo "$rclone_limited_conf_base64" | base64 -d > "$scriptLocal"/rclone_limited/rclone.conf > /dev/null
+		fi
+	fi
+	_set_rclone_limited_file
 	! [[ -e "$rclone_limited_file" ]] && _messageError 'FAIL: rclone_limited_file' && _stop 1
 	
 	
