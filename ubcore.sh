@@ -32,7 +32,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='1891409836'
-export ub_setScriptChecksum_contents='3903872745'
+export ub_setScriptChecksum_contents='393024273'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -15014,8 +15014,7 @@ _set_rclone_limited_file() {
 	export rclone_limited_file="$scriptLocal"/rclone_limited/rclone.conf
 	! [[ -e "$rclone_limited_file" ]] && export rclone_limited_file=/rclone.conf
 }
-
-_rclone_limited_sequence() {
+_prepare_rclone_limited_file() {
 	_set_rclone_limited_file
 	if ! [[ -e "$rclone_limited_file" ]] && [[ "$rclone_limited_conf_base64" != "" ]]
 	then
@@ -15032,7 +15031,11 @@ _rclone_limited_sequence() {
 	fi
 	_set_rclone_limited_file
 	! [[ -e "$rclone_limited_file" ]] && _messageError 'FAIL: rclone_limited_file' && _stop 1
-	
+	return 0
+}
+
+_rclone_limited_sequence() {
+	_prepare_rclone_limited_file
 	
 	export ub_function_override_rclone=''
 	unset ub_function_override_rclone

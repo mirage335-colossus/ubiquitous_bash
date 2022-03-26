@@ -6,8 +6,7 @@ _set_rclone_limited_file() {
 	export rclone_limited_file="$scriptLocal"/rclone_limited/rclone.conf
 	! [[ -e "$rclone_limited_file" ]] && export rclone_limited_file=/rclone.conf
 }
-
-_rclone_limited_sequence() {
+_prepare_rclone_limited_file() {
 	_set_rclone_limited_file
 	if ! [[ -e "$rclone_limited_file" ]] && [[ "$rclone_limited_conf_base64" != "" ]]
 	then
@@ -24,7 +23,11 @@ _rclone_limited_sequence() {
 	fi
 	_set_rclone_limited_file
 	! [[ -e "$rclone_limited_file" ]] && _messageError 'FAIL: rclone_limited_file' && _stop 1
-	
+	return 0
+}
+
+_rclone_limited_sequence() {
+	_prepare_rclone_limited_file
 	
 	export ub_function_override_rclone=''
 	unset ub_function_override_rclone
