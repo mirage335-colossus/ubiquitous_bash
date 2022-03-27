@@ -32,7 +32,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='1891409836'
-export ub_setScriptChecksum_contents='468879020'
+export ub_setScriptChecksum_contents='3820444287'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -5798,6 +5798,16 @@ _generate_compile_bash() {
 	[[ "$objectName" == "ubiquitous_bash" ]] && _generate_compile_bash-compressed_procedure ubiquitous_bash
 	
 	
+	
+	[[ "$objectName" == "ubiquitous_bash" ]] && "$scriptAbsoluteFolder"/compile.sh _compile_bash rotten rotten.sh
+	[[ "$objectName" == "ubiquitous_bash" ]] && _generate_compile_bash-compressed_procedure rotten
+	#mv -f "$scriptAbsoluteFolder"/rotten_compressed.sh "$scriptAbsoluteFolder"/rotten.sh
+	
+	[[ "$objectName" == "ubiquitous_bash" ]] && "$scriptAbsoluteFolder"/compile.sh _compile_bash rotten_test rotten_test.sh
+	[[ "$objectName" == "ubiquitous_bash" ]] && _generate_compile_bash-compressed_procedure rotten_test
+	mv -f "$scriptAbsoluteFolder"/rotten_test_compressed.sh "$scriptAbsoluteFolder"/rotten_test.sh
+	
+	
 	_generate_compile_bash_prog
 	
 	# DANGER Do NOT remove.
@@ -6081,6 +6091,9 @@ _generate_compile_bash_prog() {
 
 #Default is to include all, or run a specified configuration. For this reason, it will be more typical to override this entire function, rather than append any additional code.
 _compile_bash_deps() {
+	[[ "$1" == "rotten" ]] && return 0
+	[[ "$1" == "rotten"* ]] && return 0
+	
 	if [[ "$1" == "lean" ]]
 	then
 		#_deps_git
@@ -7083,91 +7096,203 @@ _compile_bash() {
 	
 	export includeScriptList
 	
-	_compile_bash_header
-	_compile_bash_header_prog
-	_compile_bash_header_program
-	_compile_bash_header_program_prog
+	if [[ "$1" != "rotten" ]] && [[ "$1" != "rotten"* ]]
+	then
+		_compile_bash_header
+		_compile_bash_header_prog
+		_compile_bash_header_program
+		_compile_bash_header_program_prog
+		
+		_compile_bash_essential_utilities
+		_compile_bash_essential_utilities_prog
+		_compile_bash_utilities
+		_compile_bash_utilities_prog
+		_compile_bash_utilities_java
+		_compile_bash_utilities_python
+		_compile_bash_utilities_haskell
+		_compile_bash_utilities_virtualization
+		_compile_bash_utilities_virtualization_prog
+		
+		_compile_bash_shortcuts
+		_compile_bash_shortcuts_prog
+		_compile_bash_shortcuts_setup
+		_compile_bash_shortcuts_setup_prog
+		
+		_compile_bash_shortcuts_os
+		
+		_compile_bash_bundled
+		_compile_bash_bundled_prog
+		
+		_compile_bash_command
+		
+		_compile_bash_user
+		
+		_compile_bash_hardware
+		
+		
+		_tryExec _compile_bash_queue
+		
+		_tryExec _compile_bash_metaengine
+		
+		
+		_compile_bash_vars_basic
+		_compile_bash_vars_basic_prog
+		_compile_bash_vars_global
+		_compile_bash_vars_global_prog
+		_compile_bash_vars_spec
+		_compile_bash_vars_spec_prog
+		
+		_compile_bash_vars_shortcuts
+		_compile_bash_vars_shortcuts_prog
+		
+		_compile_bash_vars_virtualization
+		_compile_bash_vars_virtualization_prog
+		_compile_bash_vars_bundled
+		_compile_bash_vars_bundled_prog
+		
+		
+		_tryExec _compile_bash_vars_queue
+		
+		_tryExec _compile_bash_vars_metaengine
+		
+		
+		_compile_bash_buildin
+		_compile_bash_buildin_prog
+		
+		
+		_compile_bash_environment
+		_compile_bash_environment_prog
+		
+		_compile_bash_installation
+		_compile_bash_installation_prog
+		
+		_compile_bash_program
+		_compile_bash_program_prog
+		
+		
+		_compile_bash_config
+		_compile_bash_config_prog
+		
+		_compile_bash_extension
+		_compile_bash_selfHost
+		_compile_bash_selfHost_prog
+		
+		
+		_compile_bash_overrides
+		_compile_bash_overrides_prog
+		
+		_compile_bash_entry
+		_compile_bash_entry_prog
+	else
+		includeScriptList+=( "generic"/rottenheader.sh )
+		#includeScriptList+=( "generic"/minimalheader.sh )
+		#includeScriptList+=( "generic"/ubiquitousheader.sh )
+		
+		#includeScriptList+=( "os/override"/override.sh )
+		#includeScriptList+=( "os/override"/override_prog.sh )
+		
+		#includeScriptList+=( "os/override"/override_cygwin.sh )
+		
+		
+		
+		#####Essential Utilities
+		#includeScriptList+=( "labels"/utilitiesLabel.sh )
+		includeScriptList+=( "generic/filesystem"/absolutepaths.sh )
+		includeScriptList+=( "generic/filesystem"/safedelete.sh )
+		includeScriptList+=( "generic/filesystem"/moveconfirm.sh )
+		includeScriptList+=( "generic/filesystem"/allLogic.sh )
+		includeScriptList+=( "generic/process"/timeout.sh )
+		#includeScriptList+=( "generic/process"/terminate.sh )
+		includeScriptList+=( "generic"/condition.sh )
+		includeScriptList+=( "generic"/uid.sh )
+		includeScriptList+=( "generic/filesystem/permissions"/checkpermissions.sh )
+		#includeScriptList+=( "generic"/findInfrastructure.sh )
+		includeScriptList+=( "generic"/gather.sh )
+		
+		#includeScriptList+=( "generic/filesystem"/internal.sh )
+		
+		#includeScriptList+=( "generic"/messaging.sh )
+		
+		includeScriptList+=( "generic"/config/mustcarry.sh )
+		
+		
+		
+		
+		
+		
+		
+		#####Utilities
+		includeScriptList+=( "special"/mustberoot.sh )
+		includeScriptList+=( "special"/mustgetsudo.sh )
+		
+		includeScriptList+=( "special"/uuid.sh )
+		
+		includeScriptList+=( "generic/process"/embed_here.sh )
+		includeScriptList+=( "generic/process"/embed.sh )
+		
+		includeScriptList+=( "generic/net"/fetch.sh )
+		
+		includeScriptList+=( "generic"/showCommand.sh )
+		includeScriptList+=( "generic"/validaterequest.sh )
+		
+		includeScriptList+=( "generic"/preserveLog.sh )
+		
+		
+		#( [[ "$enUb_notLean" == "true" ]] || [[ "$enUb_stopwatch" == "true" ]] ) && 
+			#includeScriptList+=( "instrumentation"/profiling/stopwatch.sh )
+		
+		
+		#####Basic Variable Management
+		#includeScriptList+=( "labels"/basicvarLabel.sh )
+		
+		
+		includeScriptList+=( "structure"/resetvars.sh )
 	
-	_compile_bash_essential_utilities
-	_compile_bash_essential_utilities_prog
-	_compile_bash_utilities
-	_compile_bash_utilities_prog
-	_compile_bash_utilities_java
-	_compile_bash_utilities_python
-	_compile_bash_utilities_haskell
-	_compile_bash_utilities_virtualization
-	_compile_bash_utilities_virtualization_prog
-	
-	_compile_bash_shortcuts
-	_compile_bash_shortcuts_prog
-	_compile_bash_shortcuts_setup
-	_compile_bash_shortcuts_setup_prog
-	
-	_compile_bash_shortcuts_os
-	
-	_compile_bash_bundled
-	_compile_bash_bundled_prog
-	
-	_compile_bash_command
-	
-	_compile_bash_user
-	
-	_compile_bash_hardware
-	
-	
-	_tryExec _compile_bash_queue
-	
-	_tryExec _compile_bash_metaengine
-	
-	
-	_compile_bash_vars_basic
-	_compile_bash_vars_basic_prog
-	_compile_bash_vars_global
-	_compile_bash_vars_global_prog
-	_compile_bash_vars_spec
-	_compile_bash_vars_spec_prog
-	
-	_compile_bash_vars_shortcuts
-	_compile_bash_vars_shortcuts_prog
-	
-	_compile_bash_vars_virtualization
-	_compile_bash_vars_virtualization_prog
-	_compile_bash_vars_bundled
-	_compile_bash_vars_bundled_prog
+		#Optional, rarely used, intended for overload.
+		includeScriptList+=( "structure"/prefixvars.sh )
+		
+		#####Global variables.
+		includeScriptList+=( "structure"/globalvars.sh )
+		
+		
+		includeScriptList+=( "structure"/specglobalvars.sh )
+		
+		
+		includeScriptList+=( "shortcuts/git"/gitVars.sh )
+		
+		
+		
+		includeScriptList+=( "structure"/localfs.sh )
+		
+		includeScriptList+=( "structure"/localenv.sh )
+		includeScriptList+=( "structure"/localenv_prog.sh )
+		
+		
+		if [[ "$1" == "rotten_test" ]]
+		then
+			includeScriptList+=( "structure"/installation.sh )
+			includeScriptList+=( "structure"/installation_prog.sh )
+		fi
+		
+		#includeScriptList+=( "structure"/program.sh )
+		
+		
+		
+		#####Hardcoded
+		#includeScriptList+=( "_config"/netvars.sh )
+		
+		
+		
+		includeScriptList+=( "structure"/overrides.sh )
+		
+		includeScriptList+=( "structure"/overrides_disable.sh )
+		
+		
+		
+		includeScriptList+=( "structure"/entry.sh )
+	fi
 	
 	
-	_tryExec _compile_bash_vars_queue
-	
-	_tryExec _compile_bash_vars_metaengine
-	
-	
-	_compile_bash_buildin
-	_compile_bash_buildin_prog
-	
-	
-	_compile_bash_environment
-	_compile_bash_environment_prog
-	
-	_compile_bash_installation
-	_compile_bash_installation_prog
-	
-	_compile_bash_program
-	_compile_bash_program_prog
-	
-	
-	_compile_bash_config
-	_compile_bash_config_prog
-	
-	_compile_bash_extension
-	_compile_bash_selfHost
-	_compile_bash_selfHost_prog
-	
-	
-	_compile_bash_overrides
-	_compile_bash_overrides_prog
-	
-	_compile_bash_entry
-	_compile_bash_entry_prog
 	
 	
 	

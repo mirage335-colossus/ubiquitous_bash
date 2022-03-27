@@ -80,6 +80,16 @@ _generate_compile_bash() {
 	[[ "$objectName" == "ubiquitous_bash" ]] && _generate_compile_bash-compressed_procedure ubiquitous_bash
 	
 	
+	
+	[[ "$objectName" == "ubiquitous_bash" ]] && "$scriptAbsoluteFolder"/compile.sh _compile_bash rotten rotten.sh
+	[[ "$objectName" == "ubiquitous_bash" ]] && _generate_compile_bash-compressed_procedure rotten
+	#mv -f "$scriptAbsoluteFolder"/rotten_compressed.sh "$scriptAbsoluteFolder"/rotten.sh
+	
+	[[ "$objectName" == "ubiquitous_bash" ]] && "$scriptAbsoluteFolder"/compile.sh _compile_bash rotten_test rotten_test.sh
+	[[ "$objectName" == "ubiquitous_bash" ]] && _generate_compile_bash-compressed_procedure rotten_test
+	mv -f "$scriptAbsoluteFolder"/rotten_test_compressed.sh "$scriptAbsoluteFolder"/rotten_test.sh
+	
+	
 	_generate_compile_bash_prog
 	
 	# DANGER Do NOT remove.
