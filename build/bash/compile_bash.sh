@@ -1105,7 +1105,7 @@ _compile_bash() {
 		
 		
 		#####Essential Utilities
-		#includeScriptList+=( "labels"/utilitiesLabel.sh )
+		includeScriptList+=( "labels"/utilitiesLabel.sh )
 		includeScriptList+=( "generic/filesystem"/absolutepaths.sh )
 		includeScriptList+=( "generic/filesystem"/safedelete.sh )
 		includeScriptList+=( "generic/filesystem"/moveconfirm.sh )
@@ -1148,11 +1148,21 @@ _compile_bash() {
 		
 		
 		#( [[ "$enUb_notLean" == "true" ]] || [[ "$enUb_stopwatch" == "true" ]] ) && 
-			#includeScriptList+=( "instrumentation"/profiling/stopwatch.sh )
+			includeScriptList+=( "instrumentation"/profiling/stopwatch.sh )
+		
+		
+		
+		
+		#####Shortcuts
+		includeScriptList+=( "labels"/shortcutsLabel.sh )
+		
+		includeScriptList+=( "shortcuts/prompt"/visualPrompt.sh )
+		
+		
 		
 		
 		#####Basic Variable Management
-		#includeScriptList+=( "labels"/basicvarLabel.sh )
+		includeScriptList+=( "labels"/basicvarLabel.sh )
 		
 		
 		includeScriptList+=( "structure"/resetvars.sh )

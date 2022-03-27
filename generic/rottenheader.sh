@@ -1,8 +1,18 @@
 #!/usr/bin/env bash
 
 
+# Rotten.
+_test() { false; }
+_setup() { false; }
+_typeDep() { true; }
+_getDep() { true; }
+_wantGetDep() { true; }
+_if_cygwin() { false; }
+_user_log-ub() { false; }
 
 
+
+#### from messaging.sh
 
 
 _color_demo() {
@@ -315,14 +325,6 @@ _messageProcess() {
 	
 	return 0
 }
-
-
-
-
-
-
-
-#### from messaging.sh
 
 
 

@@ -32,7 +32,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='1891409836'
-export ub_setScriptChecksum_contents='2203005867'
+export ub_setScriptChecksum_contents='3159339255'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -7196,7 +7196,7 @@ _compile_bash() {
 		
 		
 		#####Essential Utilities
-		#includeScriptList+=( "labels"/utilitiesLabel.sh )
+		includeScriptList+=( "labels"/utilitiesLabel.sh )
 		includeScriptList+=( "generic/filesystem"/absolutepaths.sh )
 		includeScriptList+=( "generic/filesystem"/safedelete.sh )
 		includeScriptList+=( "generic/filesystem"/moveconfirm.sh )
@@ -7239,11 +7239,21 @@ _compile_bash() {
 		
 		
 		#( [[ "$enUb_notLean" == "true" ]] || [[ "$enUb_stopwatch" == "true" ]] ) && 
-			#includeScriptList+=( "instrumentation"/profiling/stopwatch.sh )
+			includeScriptList+=( "instrumentation"/profiling/stopwatch.sh )
+		
+		
+		
+		
+		#####Shortcuts
+		includeScriptList+=( "labels"/shortcutsLabel.sh )
+		
+		includeScriptList+=( "shortcuts/prompt"/visualPrompt.sh )
+		
+		
 		
 		
 		#####Basic Variable Management
-		#includeScriptList+=( "labels"/basicvarLabel.sh )
+		includeScriptList+=( "labels"/basicvarLabel.sh )
 		
 		
 		includeScriptList+=( "structure"/resetvars.sh )
