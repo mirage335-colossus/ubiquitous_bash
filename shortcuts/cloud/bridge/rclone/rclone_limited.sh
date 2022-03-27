@@ -7,6 +7,11 @@ _set_rclone_limited_file() {
 	! [[ -e "$rclone_limited_file" ]] && export rclone_limited_file=/rclone.conf
 }
 _prepare_rclone_limited_file() {
+	if type RCLONE_LIMITED_CONF_BASE64 > /dev/null 2>&1
+	then
+		export rclone_limited_conf_base64=$(RCLONE_LIMITED_CONF_BASE64)
+	fi
+	
 	_set_rclone_limited_file
 	if ! [[ -e "$rclone_limited_file" ]] && [[ "$rclone_limited_conf_base64" != "" ]]
 	then
