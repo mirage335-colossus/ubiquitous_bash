@@ -8,6 +8,9 @@ core_monolithic_compressed.sh
 monolithic_compressed.sh
 ubiquitous_bash_compressed.sh
 
+rotten_test_compressed.sh
+rotten_test.sh
+
 /ops
 
 .pidlist*
