@@ -297,7 +297,7 @@ CZXWXcRMTo8EmM8i4d
 			fi
 			
 			curl -L "https://github.com/DIGImend/digimend-kernel-drivers/releases/download/v10/digimend-dkms_10_all.deb" -o "$safeTmp"/"digimend-dkms_10_all.deb"
-			if ! yes | sudo -n dpkg -i "$HOME"/core/installations/digimend-dkms/digimend-dkms_10_all.deb
+			if ! yes | sudo -n dpkg -i "$safeTmp"/"digimend-dkms_10_all.deb"
 			then
 				sudo -n env DEBIAN_FRONTEND=noninteractive apt-get remove -y digimend-dkms
 			fi
