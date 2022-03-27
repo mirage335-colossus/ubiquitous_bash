@@ -56,8 +56,8 @@ _test_h1060p() {
 	
 	_wantGetDep 'kde_wacom_tabletfinder'
 	
-	
-	
+	# ChRoot for building useful images should not include such unusual kernel headers or source, and would not be affected.
+	ls -1 /usr/src/ | grep -i azure > /dev/null && return 0
 	
 	_wantGetDep digimend-debug
 	
