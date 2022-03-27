@@ -285,14 +285,26 @@ CZXWXcRMTo8EmM8i4d
 		then
 			if [[ -e "$HOME"/core/installations/digimend-dkms/digimend-dkms_10_all.deb ]]
 			then
-				yes | sudo -n dpkg -i "$HOME"/core/installations/digimend-dkms/digimend-dkms_10_all.deb
+				if ! yes | sudo -n dpkg -i "$HOME"/core/installations/digimend-dkms/digimend-dkms_10_all.deb
+				then
+					sudo -n env DEBIAN_FRONTEND=noninteractive apt-get remove -y digimend-dkms
+				fi
 			fi
 			
-			sudo -n env DEBIAN_FRONTEND=noninteractive apt-get install --install-recommends -y digimend-dkms
+			if ! sudo -n env DEBIAN_FRONTEND=noninteractive apt-get install --install-recommends -y digimend-dkms
+			then
+				sudo -n env DEBIAN_FRONTEND=noninteractive apt-get remove -y digimend-dkms
+			fi
 			
 			curl -L "https://github.com/DIGImend/digimend-kernel-drivers/releases/download/v10/digimend-dkms_10_all.deb" -o "$safeTmp"/"digimend-dkms_10_all.deb"
-			yes | sudo -n dpkg -i "$safeTmp"/"digimend-dkms_10_all.deb"
-			sudo -n env DEBIAN_FRONTEND=noninteractive apt-get install --install-recommends -y -f
+			if ! yes | sudo -n dpkg -i "$HOME"/core/installations/digimend-dkms/digimend-dkms_10_all.deb
+			then
+				sudo -n env DEBIAN_FRONTEND=noninteractive apt-get remove -y digimend-dkms
+			fi
+			if ! sudo -n env DEBIAN_FRONTEND=noninteractive apt-get install --install-recommends -y digimend-dkms
+			then
+				sudo -n env DEBIAN_FRONTEND=noninteractive apt-get remove -y digimend-dkms
+			fi
 			sudo rm -f "$safeTmp"/"digimend-dkms_10_all.deb"
 		fi
 		

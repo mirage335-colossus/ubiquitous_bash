@@ -1,7 +1,6 @@
 
 # May transfer large files out of cloud CI services, or may copy files into cloud or CI services for installation.
 
-
 _set_rclone_limited_file() {
 	export rclone_limited_file="$scriptLocal"/rclone_limited/rclone.conf
 	! [[ -e "$rclone_limited_file" ]] && export rclone_limited_file=/rclone.conf
@@ -27,7 +26,16 @@ _prepare_rclone_limited_file() {
 		fi
 	fi
 	_set_rclone_limited_file
-	! [[ -e "$rclone_limited_file" ]] && _messageError 'FAIL: rclone_limited_file' && _stop 1
+	if ! [[ -e "$rclone_limited_file" ]]
+	then
+		_messageError 'FAIL: missing: rclone_limited_file'
+		_stop 1
+	fi
+	if ! [[ -s "$rclone_limited_file" ]]
+	then
+		_messageError 'FAIL: empty: rclone_limited_file'
+		_stop 1
+	fi
 	return 0
 }
 

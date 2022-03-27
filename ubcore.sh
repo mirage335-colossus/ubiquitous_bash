@@ -32,7 +32,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='1891409836'
-export ub_setScriptChecksum_contents='1631640077'
+export ub_setScriptChecksum_contents='4278502067'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -8002,14 +8002,26 @@ CZXWXcRMTo8EmM8i4d
 		then
 			if [[ -e "$HOME"/core/installations/digimend-dkms/digimend-dkms_10_all.deb ]]
 			then
-				yes | sudo -n dpkg -i "$HOME"/core/installations/digimend-dkms/digimend-dkms_10_all.deb
+				if ! yes | sudo -n dpkg -i "$HOME"/core/installations/digimend-dkms/digimend-dkms_10_all.deb
+				then
+					sudo -n env DEBIAN_FRONTEND=noninteractive apt-get remove -y digimend-dkms
+				fi
 			fi
 			
-			sudo -n env DEBIAN_FRONTEND=noninteractive apt-get install --install-recommends -y digimend-dkms
+			if ! sudo -n env DEBIAN_FRONTEND=noninteractive apt-get install --install-recommends -y digimend-dkms
+			then
+				sudo -n env DEBIAN_FRONTEND=noninteractive apt-get remove -y digimend-dkms
+			fi
 			
 			curl -L "https://github.com/DIGImend/digimend-kernel-drivers/releases/download/v10/digimend-dkms_10_all.deb" -o "$safeTmp"/"digimend-dkms_10_all.deb"
-			yes | sudo -n dpkg -i "$safeTmp"/"digimend-dkms_10_all.deb"
-			sudo -n env DEBIAN_FRONTEND=noninteractive apt-get install --install-recommends -y -f
+			if ! yes | sudo -n dpkg -i "$HOME"/core/installations/digimend-dkms/digimend-dkms_10_all.deb
+			then
+				sudo -n env DEBIAN_FRONTEND=noninteractive apt-get remove -y digimend-dkms
+			fi
+			if ! sudo -n env DEBIAN_FRONTEND=noninteractive apt-get install --install-recommends -y digimend-dkms
+			then
+				sudo -n env DEBIAN_FRONTEND=noninteractive apt-get remove -y digimend-dkms
+			fi
 			sudo rm -f "$safeTmp"/"digimend-dkms_10_all.deb"
 		fi
 		
@@ -15009,7 +15021,6 @@ _test_rclone() {
 
 # May transfer large files out of cloud CI services, or may copy files into cloud or CI services for installation.
 
-
 _set_rclone_limited_file() {
 	export rclone_limited_file="$scriptLocal"/rclone_limited/rclone.conf
 	! [[ -e "$rclone_limited_file" ]] && export rclone_limited_file=/rclone.conf
@@ -15035,7 +15046,16 @@ _prepare_rclone_limited_file() {
 		fi
 	fi
 	_set_rclone_limited_file
-	! [[ -e "$rclone_limited_file" ]] && _messageError 'FAIL: rclone_limited_file' && _stop 1
+	if ! [[ -e "$rclone_limited_file" ]]
+	then
+		_messageError 'FAIL: missing: rclone_limited_file'
+		_stop 1
+	fi
+	if ! [[ -s "$rclone_limited_file" ]]
+	then
+		_messageError 'FAIL: empty: rclone_limited_file'
+		_stop 1
+	fi
 	return 0
 }
 
