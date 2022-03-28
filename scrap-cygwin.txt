@@ -9,6 +9,9 @@ cd ./_local/ubcp
 # Use _bash.bat to open a Cygwin/MSW terminal, as this seems not to close.
 
 
+# Run '_setupUbiquitous' in some way.
+
+
 # Untested. May require 'run as'.
 _bin _mitigate-ubcp
 _bin _package-cygwinOnly

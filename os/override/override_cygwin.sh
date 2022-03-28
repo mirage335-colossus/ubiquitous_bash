@@ -150,7 +150,7 @@ _sudo_cygwin() {
 # CAUTION: BROKEN !
 if _if_cygwin && type cygstart > /dev/null 2>&1
 then
-	sudo() {
+	sudo_cygwin() {
 		[[ "$1" == "-n" ]] && shift
 		if type cygstart > /dev/null 2>&1
 		then
