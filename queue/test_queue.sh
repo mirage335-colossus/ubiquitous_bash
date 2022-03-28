@@ -295,8 +295,11 @@ _test_timeoutRead() {
 	#echo "$currentString"
 	
 	[[ "$currentString" == "" ]] && _stop 1
-	[[ "$currentString" != "1xx2x3xxx" ]] && _stop 1
-	[[ $(echo -n "$currentString" | wc -c) != '9' ]] && _stop 1
+	[[ "$currentString" != "1xx2x3xxx" ]] && ! _if_cygwin && _stop 1
+	[[ $(echo -n "$currentString" | wc -c) != '9' ]] && ! _if_cygwin && _stop 1
+	
+	_if_cygwin && [[ "$currentString" != "1x"* ]] && _stop 1
+	_if_cygwin && [[ $(echo -n "$currentString" | wc -c) -lt '2' ]] && _stop 1
 	
 	return 0
 }

@@ -1,4 +1,23 @@
 
+# Rough description, not exact commands.
+
+git clone --recursive --depth 1 <ubiquitousBashURL>
+
+cd ./_local/ubcp
+./ubcp-cygwin-portable-installer
+
+# Use _bash.bat to open a Cygwin/MSW terminal, as this seems not to close.
+
+
+# Untested. May require 'run as'.
+_bin _mitigate-ubcp
+_bin _package-cygwinOnly
+_bin_setup_ubcp
+
+
+
+-
+
 cd C:
 cd \core\infrastructure
 mkdir lean
