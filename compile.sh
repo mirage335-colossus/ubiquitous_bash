@@ -32,7 +32,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='1891409836'
-export ub_setScriptChecksum_contents='2228131880'
+export ub_setScriptChecksum_contents='2801775549'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -170,7 +170,7 @@ ub_loginshell=
 [[ "${BASH_SOURCE[0]}" != "${0}" ]] && ub_import="true"
 
 ( [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] ) && ub_import_param="$1" && shift
-( [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] || [[ "$0" == "-bash" ]] ) && ub_loginshell="true"	#Importing ubiquitous bash into a login shell with "~/.bashrc" is the only known cause for "_getScriptAbsoluteLocation" to return a result such as "/bin/bash".
+( [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && ub_loginshell="true"	#Importing ubiquitous bash into a login shell with "~/.bashrc" is the only known cause for "_getScriptAbsoluteLocation" to return a result such as "/bin/bash".
 [[ "$ub_import" == "true" ]] && ! [[ "$ub_loginshell" == "true" ]] && ub_import_script="true"
 
 _messagePlain_probe_expr '$0= '"$0"'\n ''$1= '"$1"'\n ''ub_import= '"$ub_import"'\n ''ub_import_param= '"$ub_import_param"'\n ''ub_import_script= '"$ub_import_script"'\n ''ub_loginshell= '"$ub_loginshell" | _user_log-ub
@@ -5933,6 +5933,7 @@ export importScriptFolder=$(_getScriptAbsoluteFolder)
 ! type dirname > /dev/null 2>&1 && exit 1;
 ! type basename > /dev/null 2>&1 && exit 1;
 ! readlink -f . > /dev/null 2>&1 && exit 1;
+[[ "$1" == "--profile" ]] && ( [[ rotten == "rotten"* ]] || [[ rotten == "rotten" ]] ) && export ub_import="true" && export importScriptLocation="$profileScriptLocation" && export importScriptFolder="$profileScriptFolder"
 [[ "$importScriptLocation" == "" ]] && exit 1
 [[ "$importScriptFolder" == "" ]] && exit 1
 ! _getAbsolute_criticalDep && exit 1
@@ -5964,8 +5965,13 @@ else
 fi
 if [[ "$ub_import" == "true" ]] && ! ( [[ "$ub_import_param" == "--bypass" ]] ) || [[ "$ub_import_param" == "--compressed" ]] || [[ "$ub_import_param" == "--parent" ]] || [[ "$ub_import_param" == "--profile" ]]
 then
-	return 0 > /dev/null 2>&1
-	exit 0
+CZXWXcRMTo8EmM8i4d
+	echo '	if [[ "$ubiquitousBashID" != "" ]] || [[ -e "$HOME"/.ubcore ]] || ( [[ '"$1"' != "rotten"* ]] || [[ '"$1"' != "rotten" ]] )' >> "$scriptAbsoluteFolder"/"$1"_compressed.sh
+cat << 'CZXWXcRMTo8EmM8i4d' >> "$scriptAbsoluteFolder"/"$1"_compressed.sh
+	then
+		return 0 > /dev/null 2>&1
+		exit 0
+	fi
 fi
 CZXWXcRMTo8EmM8i4d
 	
