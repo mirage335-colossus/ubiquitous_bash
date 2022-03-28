@@ -32,7 +32,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='1891409836'
-export ub_setScriptChecksum_contents='1782824280'
+export ub_setScriptChecksum_contents='1159418917'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -1598,7 +1598,7 @@ _test_realpath_L_s_sequence() {
 _test_realpath_L_s() {
 	#Optional safety check. Nonconformant realpath solution should be caught by synthetic test cases.
 	#_compat_realpath
-	#! [[ -e "$compat_realpath_bin" ]] && [[ "$compat_realpath_bin" != "" ]] && echo 'crit: missing: realpath' && _stop 1
+	#  ! [[ -e "$compat_realpath_bin" ]] && [[ "$compat_realpath_bin" != "" ]] && echo 'crit: missing: realpath' && _stop 1
 	
 	"$scriptAbsoluteLocation" _test_realpath_L_s_sequence "$@"
 	[[ "$?" != "0" ]] && _stop 1
@@ -1772,7 +1772,7 @@ _cygwin_translation_rootFileParameter() {
 
 #Critical prerequsites.
 _getAbsolute_criticalDep() {
-	#! type realpath > /dev/null 2>&1 && return 1
+	#  ! type realpath > /dev/null 2>&1 && return 1
 	! type readlink > /dev/null 2>&1 && return 1
 	! type dirname > /dev/null 2>&1 && return 1
 	! type basename > /dev/null 2>&1 && return 1
@@ -2025,7 +2025,7 @@ _safeRMR() {
 	[[ "$safeToDeleteGit" != "true" ]] && [[ -d "$1" ]] && [[ -e "$1" ]] && find "$1" 2>/dev/null | grep -i '\.git$' >/dev/null 2>&1 && return 1
 	
 	#Validate necessary tools were available for path building and checks.
-	#! type realpath > /dev/null 2>&1 && return 1
+	#  ! type realpath > /dev/null 2>&1 && return 1
 	! type readlink > /dev/null 2>&1 && return 1
 	! type dirname > /dev/null 2>&1 && return 1
 	! type basename > /dev/null 2>&1 && return 1
@@ -2122,7 +2122,7 @@ _safePath() {
 	[[ "$safeToDeleteGit" != "true" ]] && [[ -d "$1" ]] && [[ -e "$1" ]] && find "$1" 2>/dev/null | grep -i '\.git$' >/dev/null 2>&1 && return 1
 	
 	#Validate necessary tools were available for path building and checks.
-	#! type realpath > /dev/null 2>&1 && return 1
+	#  ! type realpath > /dev/null 2>&1 && return 1
 	! type readlink > /dev/null 2>&1 && return 1
 	! type dirname > /dev/null 2>&1 && return 1
 	! type basename > /dev/null 2>&1 && return 1
@@ -2215,7 +2215,7 @@ _command_safeBackup() {
 	[[ "$1" == "$HOME" ]] && return 1
 	[[ "$1" == "$HOME/" ]] && return 1
 	
-	#! type realpath > /dev/null 2>&1 && return 1
+	#  ! type realpath > /dev/null 2>&1 && return 1
 	! type readlink > /dev/null 2>&1 && return 1
 	! type dirname > /dev/null 2>&1 && return 1
 	! type basename > /dev/null 2>&1 && return 1
@@ -2498,7 +2498,7 @@ _permissions_ubiquitous_repo() {
 
 _test_permissions_ubiquitous-cygwin() {
 	! _if_cygwin && _stop 1
-	#! _if_cygwin && _stop "$1"
+	#  ! _if_cygwin && _stop "$1"
 	
 	_if_cygwin && echo 'warn: accepted: cygwin: permissions' && return 0
 }
@@ -4707,6 +4707,21 @@ _test_rclone_limited() {
 
 
 
+_importShortcuts() {
+	_tryExec "_resetFakeHomeEnv"
+	
+	if ! [[ "$PATH" == *":""$HOME""/bin"* ]] && ! [[ "$PATH" == "$HOME""/bin"* ]] && [[ -e "$HOME"/bin ]] && [[ -d "$HOME"/bin ]]
+	then
+		export PATH="$PATH":"$HOME"/bin
+	fi
+	
+	_tryExec "_visualPrompt"
+	
+	_tryExec "_scopePrompt"
+	
+	return 0
+}
+
 
 # ATTENTION: Override with 'ops.sh' , 'core.sh' , or similar.
 _setupUbiquitous_accessories_here-gnuoctave() {
@@ -5189,21 +5204,6 @@ _configureOps() {
 
 _resetOps() {
 	rm "$scriptAbsoluteFolder"/ops
-}
-
-_importShortcuts() {
-	_tryExec "_resetFakeHomeEnv"
-	
-	if ! [[ "$PATH" == *":""$HOME""/bin"* ]] && ! [[ "$PATH" == "$HOME""/bin"* ]] && [[ -e "$HOME"/bin ]] && [[ -d "$HOME"/bin ]]
-	then
-		export PATH="$PATH":"$HOME"/bin
-	fi
-	
-	_tryExec "_visualPrompt"
-	
-	_tryExec "_scopePrompt"
-	
-	return 0
 }
 
 _gitPull_ubiquitous() {
@@ -12886,7 +12886,7 @@ _sudo() {
 
 _true() {
 	#"$scriptAbsoluteLocation" _false && return 1
-	#! "$scriptAbsoluteLocation" _bin true && return 1
+	#  ! "$scriptAbsoluteLocation" _bin true && return 1
 	#"$scriptAbsoluteLocation" _bin false && return 1
 	true
 }

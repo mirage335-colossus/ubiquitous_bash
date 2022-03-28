@@ -9,6 +9,8 @@ _getDep() { true; }
 _wantGetDep() { true; }
 _if_cygwin() { false; }
 _user_log-ub() { false; }
+_collect() { false; }
+_enter() { false; }
 
 
 

@@ -761,6 +761,8 @@ _compile_bash_shortcuts() {
 _compile_bash_shortcuts_setup() {
 	export includeScriptList
 	
+	includeScriptList+=( "shortcuts"/importShortcuts.sh )
+	
 	includeScriptList+=( "shortcuts"/setupUbiquitous_accessories_here.sh )
 	includeScriptList+=( "shortcuts"/setupUbiquitous_accessories.sh )
 	
@@ -1155,6 +1157,8 @@ _compile_bash() {
 		
 		#####Shortcuts
 		includeScriptList+=( "labels"/shortcutsLabel.sh )
+		
+		includeScriptList+=( "shortcuts"/importShortcuts.sh )
 		
 		includeScriptList+=( "shortcuts/prompt"/visualPrompt.sh )
 		

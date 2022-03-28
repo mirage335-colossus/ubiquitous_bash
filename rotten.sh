@@ -9,6 +9,8 @@ _getDep() { true; }
 _wantGetDep() { true; }
 _if_cygwin() { false; }
 _user_log-ub() { false; }
+_collect() { false; }
+_enter() { false; }
 
 
 
@@ -613,7 +615,7 @@ _test_realpath_L_s_sequence() {
 _test_realpath_L_s() {
 	#Optional safety check. Nonconformant realpath solution should be caught by synthetic test cases.
 	#_compat_realpath
-	#! [[ -e "$compat_realpath_bin" ]] && [[ "$compat_realpath_bin" != "" ]] && echo 'crit: missing: realpath' && _stop 1
+	#  ! [[ -e "$compat_realpath_bin" ]] && [[ "$compat_realpath_bin" != "" ]] && echo 'crit: missing: realpath' && _stop 1
 	
 	"$scriptAbsoluteLocation" _test_realpath_L_s_sequence "$@"
 	[[ "$?" != "0" ]] && _stop 1
@@ -787,7 +789,7 @@ _cygwin_translation_rootFileParameter() {
 
 #Critical prerequsites.
 _getAbsolute_criticalDep() {
-	#! type realpath > /dev/null 2>&1 && return 1
+	#  ! type realpath > /dev/null 2>&1 && return 1
 	! type readlink > /dev/null 2>&1 && return 1
 	! type dirname > /dev/null 2>&1 && return 1
 	! type basename > /dev/null 2>&1 && return 1
@@ -1040,7 +1042,7 @@ _safeRMR() {
 	[[ "$safeToDeleteGit" != "true" ]] && [[ -d "$1" ]] && [[ -e "$1" ]] && find "$1" 2>/dev/null | grep -i '\.git$' >/dev/null 2>&1 && return 1
 	
 	#Validate necessary tools were available for path building and checks.
-	#! type realpath > /dev/null 2>&1 && return 1
+	#  ! type realpath > /dev/null 2>&1 && return 1
 	! type readlink > /dev/null 2>&1 && return 1
 	! type dirname > /dev/null 2>&1 && return 1
 	! type basename > /dev/null 2>&1 && return 1
@@ -1137,7 +1139,7 @@ _safePath() {
 	[[ "$safeToDeleteGit" != "true" ]] && [[ -d "$1" ]] && [[ -e "$1" ]] && find "$1" 2>/dev/null | grep -i '\.git$' >/dev/null 2>&1 && return 1
 	
 	#Validate necessary tools were available for path building and checks.
-	#! type realpath > /dev/null 2>&1 && return 1
+	#  ! type realpath > /dev/null 2>&1 && return 1
 	! type readlink > /dev/null 2>&1 && return 1
 	! type dirname > /dev/null 2>&1 && return 1
 	! type basename > /dev/null 2>&1 && return 1
@@ -1230,7 +1232,7 @@ _command_safeBackup() {
 	[[ "$1" == "$HOME" ]] && return 1
 	[[ "$1" == "$HOME/" ]] && return 1
 	
-	#! type realpath > /dev/null 2>&1 && return 1
+	#  ! type realpath > /dev/null 2>&1 && return 1
 	! type readlink > /dev/null 2>&1 && return 1
 	! type dirname > /dev/null 2>&1 && return 1
 	! type basename > /dev/null 2>&1 && return 1
@@ -1434,7 +1436,7 @@ _permissions_ubiquitous_repo() {
 
 _test_permissions_ubiquitous-cygwin() {
 	! _if_cygwin && _stop 1
-	#! _if_cygwin && _stop "$1"
+	#  ! _if_cygwin && _stop "$1"
 	
 	_if_cygwin && echo 'warn: accepted: cygwin: permissions' && return 0
 }
@@ -1612,6 +1614,21 @@ _stopwatch() {
 }
 
 #####Shortcuts
+
+_importShortcuts() {
+	_tryExec "_resetFakeHomeEnv"
+	
+	if ! [[ "$PATH" == *":""$HOME""/bin"* ]] && ! [[ "$PATH" == "$HOME""/bin"* ]] && [[ -e "$HOME"/bin ]] && [[ -d "$HOME"/bin ]]
+	then
+		export PATH="$PATH":"$HOME"/bin
+	fi
+	
+	_tryExec "_visualPrompt"
+	
+	_tryExec "_scopePrompt"
+	
+	return 0
+}
 
 # https://unix.stackexchange.com/questions/434409/make-a-bash-ps1-that-counts-streak-of-correct-commands
 _visualPrompt_promptCommand() {
@@ -2699,7 +2716,7 @@ _sudo() {
 
 _true() {
 	#"$scriptAbsoluteLocation" _false && return 1
-	#! "$scriptAbsoluteLocation" _bin true && return 1
+	#  ! "$scriptAbsoluteLocation" _bin true && return 1
 	#"$scriptAbsoluteLocation" _bin false && return 1
 	true
 }

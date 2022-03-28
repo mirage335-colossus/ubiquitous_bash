@@ -14,21 +14,6 @@ _resetOps() {
 	rm "$scriptAbsoluteFolder"/ops
 }
 
-_importShortcuts() {
-	_tryExec "_resetFakeHomeEnv"
-	
-	if ! [[ "$PATH" == *":""$HOME""/bin"* ]] && ! [[ "$PATH" == "$HOME""/bin"* ]] && [[ -e "$HOME"/bin ]] && [[ -d "$HOME"/bin ]]
-	then
-		export PATH="$PATH":"$HOME"/bin
-	fi
-	
-	_tryExec "_visualPrompt"
-	
-	_tryExec "_scopePrompt"
-	
-	return 0
-}
-
 _gitPull_ubiquitous() {
 	#git pull
 	_gitBest pull
