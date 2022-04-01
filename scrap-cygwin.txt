@@ -7,6 +7,8 @@ python3
 
 # Rough description, not exact commands.
 
+# Install git for windows . Also, nmap, qalculate, may be useful.
+
 git clone --recursive --depth 1 <ubiquitousBashURL>
 
 cd ./_local/ubcp
@@ -18,10 +20,20 @@ cd ./_local/ubcp
 # Run '_setupUbiquitous' in some way.
 
 
-# Untested. May require 'run as'.
+# '_bin' with no '.bat' extension seems to be usable in CMD shell after 'setupUbiquitous'
+
 _bin _mitigate-ubcp
 _bin _package-cygwinOnly
 _bin _setup_ubcp
+
+
+# Mitigate is very slow, approximately 7 hours.
+
+
+# Shortcut '_bash.bat' is installed by '_setupUbiquitous' regardless of whether 'core' installation is available. Request should be issued that user not attempt to use such resources until '_setup_ubcp' complete .
+
+
+
 
 
 

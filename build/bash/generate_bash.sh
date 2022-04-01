@@ -215,7 +215,9 @@ export importScriptFolder=$(_getScriptAbsoluteFolder)
 ! type dirname > /dev/null 2>&1 && exit 1;
 ! type basename > /dev/null 2>&1 && exit 1;
 ! readlink -f . > /dev/null 2>&1 && exit 1;
-[[ "$1" == "--profile" ]] && ( [[ rotten == "rotten"* ]] || [[ rotten == "rotten" ]] ) && export ub_import="true" && export importScriptLocation="$profileScriptLocation" && export importScriptFolder="$profileScriptFolder"
+CZXWXcRMTo8EmM8i4d
+	echo '[[ "$1" == "--profile" ]] && ( [[ '"$1"' == "rotten"* ]] || [[ '"$1"' == "rotten" ]] ) && export ub_import="true" && export importScriptLocation="$profileScriptLocation" && export importScriptFolder="$profileScriptFolder"' >> "$scriptAbsoluteFolder"/"$1"_compressed.sh
+	cat << 'CZXWXcRMTo8EmM8i4d' >> "$scriptAbsoluteFolder"/"$1"_compressed.sh
 [[ "$importScriptLocation" == "" ]] && exit 1
 [[ "$importScriptFolder" == "" ]] && exit 1
 ! _getAbsolute_criticalDep && exit 1
