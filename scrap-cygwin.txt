@@ -1,4 +1,10 @@
 
+# Packages that may be added .
+
+wkhtmltopdf
+python3
+
+
 # Rough description, not exact commands.
 
 git clone --recursive --depth 1 <ubiquitousBashURL>
@@ -15,7 +21,7 @@ cd ./_local/ubcp
 # Untested. May require 'run as'.
 _bin _mitigate-ubcp
 _bin _package-cygwinOnly
-_bin_setup_ubcp
+_bin _setup_ubcp
 
 
 
