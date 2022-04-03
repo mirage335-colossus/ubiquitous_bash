@@ -95,7 +95,7 @@ CZXWXcRMTo8EmM8i4d
 _setupUbiquitous_bashProfile_here() {
 	! uname -a | grep -i cygwin > /dev/null 2>&1 && cat << CZXWXcRMTo8EmM8i4d
 
-if [[ -e "$HOME"/.bashrc ]] && [[ "$ubiquitousBashID" == "" ]]
+if [[ -e "$HOME"/.bashrc ]] && [[ "\$ubiquitousBashID" == "" ]]
 then
 	source "$HOME"/.bashrc
 fi
