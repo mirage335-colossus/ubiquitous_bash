@@ -172,6 +172,12 @@ _setupUbiquitous() {
 	! grep ubcore "$ubHome"/.bashrc > /dev/null 2>&1 && _messagePlain_bad 'missing: bashrc hook' && _messageFAIL && return 1
 	
 	
+	if [[ ! -e "$HOME"/.bash_profile ]] || ! grep '\.bashrc' "$HOME"/.bash_profile > /dev/null 2>&1
+	then
+		_setupUbiquitous_bashProfile_here >> "$HOME"/.bash_profile
+	fi
+	
+	
 	
 	
 	_messageNormal "install: setupUbiquitous_accessories"
