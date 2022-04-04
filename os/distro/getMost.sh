@@ -26,7 +26,8 @@ _install_debian11() {
 	"$scriptAbsoluteLocation" _getMost_debian11
 	"$scriptAbsoluteLocation" _test
 	
-	sudo -n env DEBIAN_FRONTEND=noninteractive apt-get --install-recommends -y upgrade
+	#sudo -n env DEBIAN_FRONTEND=noninteractive apt-get --install-recommends -y upgrade
+	sudo -n env DEBIAN_FRONTEND=noninteractive apt-get -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" --install-recommends -y upgrade
 }
 
 
