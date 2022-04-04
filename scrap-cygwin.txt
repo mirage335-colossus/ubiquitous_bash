@@ -18,6 +18,7 @@ git clone --recursive --depth 1 <ubiquitousBashURL>
 
 cd ./_local/ubcp
 ./ubcp-cygwin-portable-installer
+cp ubcp_rename-to-enable.cmd ubcp.cmd
 
 # Use _bash.bat to open a Cygwin/MSW terminal, as this seems not to close.
 
