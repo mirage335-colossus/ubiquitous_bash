@@ -1207,6 +1207,9 @@ _test() {
 	_getDep yes
 	
 	
+	_getDep xargs
+	
+	
 	
 	_getDep perl
 	
