@@ -32,7 +32,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='1891409836'
-export ub_setScriptChecksum_contents='1440991680'
+export ub_setScriptChecksum_contents='1248934995'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -8902,9 +8902,17 @@ _getMost_debian11_aptSources() {
 	
 	
 	_getMost_backend mkdir -p /etc/apt/sources.list.d
-	echo 'deb http://deb.debian.org/debian bullseye-backports main contrib' | _getMost_backend tee /etc/apt/sources.list.d/ub_backports.list > /dev/null 2>&1
-	echo 'deb http://download.virtualbox.org/virtualbox/debian bullseye contrib' | _getMost_backend tee /etc/apt/sources.list.d/ub_vbox.list > /dev/null 2>&1
-	echo 'deb [arch=amd64] https://download.docker.com/linux/debian bullseye stable' | _getMost_backend tee /etc/apt/sources.list.d/ub_docker.list > /dev/null 2>&1
+	if !  [[ -e /etc/issue ]] && cat /etc/issue | grep 'Ubuntu' > /dev/null 2>&1
+	then
+		echo 'deb http://deb.debian.org/debian bullseye-backports main contrib' | _getMost_backend tee /etc/apt/sources.list.d/ub_backports.list > /dev/null 2>&1
+		echo 'deb http://download.virtualbox.org/virtualbox/debian bullseye contrib' | _getMost_backend tee /etc/apt/sources.list.d/ub_vbox.list > /dev/null 2>&1
+		echo 'deb [arch=amd64] https://download.docker.com/linux/debian bullseye stable' | _getMost_backend tee /etc/apt/sources.list.d/ub_docker.list > /dev/null 2>&1
+	elif [[ -e /etc/issue ]] && cat /etc/issue | grep 'Ubuntu' | grep '20.04' > /dev/null 2>&1
+	then
+		true
+		#echo 'deb http://download.virtualbox.org/virtualbox/debian focal contrib' | _getMost_backend tee /etc/apt/sources.list.d/ub_vbox.list > /dev/null 2>&1
+		#sudo -n add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/$(. /etc/os-release; echo "$ID") $(lsb_release -cs) stable"
+	fi
 	
 	_getMost_backend wget -q https://www.virtualbox.org/download/oracle_vbox_2016.asc -O- | _getMost_backend apt-key add -
 	_getMost_backend wget -q https://www.virtualbox.org/download/oracle_vbox.asc -O- | _getMost_backend apt-key add -
@@ -8987,14 +8995,17 @@ _getMost_debian11_install() {
 	_getMost_backend_aptGetInstall net-tools wireless-tools rfkill
 	
 	
-	# WARNING: Untested. May be old version of VirtualBox. May conflict with guest additions.
-	#_getMost_backend_aptGetInstall virtualbox-6.1
-	_getMost_backend apt-get -d install -y virtualbox-6.1
-	
-	
-	# WARNING: Untested. May cause problems.
-	#_getMost_backend_aptGetInstall docker-ce
-	_getMost_backend apt-get -d install -y docker-ce
+	if !  [[ -e /etc/issue ]] && cat /etc/issue | grep 'Ubuntu' > /dev/null 2>&1
+	then
+		# WARNING: Untested. May be old version of VirtualBox. May conflict with guest additions.
+		#_getMost_backend_aptGetInstall virtualbox-6.1
+		_getMost_backend apt-get -d install -y virtualbox-6.1
+		
+		
+		# WARNING: Untested. May cause problems.
+		#_getMost_backend_aptGetInstall docker-ce
+		_getMost_backend apt-get -d install -y docker-ce
+	fi
 	
 	
 	# WARNING: Untested. May incorrectly remove supposedly 'old' kernel versions.
@@ -9171,6 +9182,15 @@ _getMost_ubuntu20_aptSources() {
 _getMost_ubuntu20_install() {
 	_getMost_debian11_install "$@"
 	
+	# WARNING: Untested. May be old version of VirtualBox. May conflict with guest additions.
+	#_getMost_backend_aptGetInstall virtualbox-6.1
+	_getMost_backend apt-get -d install -y virtualbox-6.1
+	
+	
+	# WARNING: Untested. May cause problems.
+	#_getMost_backend_aptGetInstall docker-ce
+	_getMost_backend apt-get -d install -y docker-ce
+	
 	_getMost_backend_aptGetInstall tasksel
 	_getMost_backend_aptGetInstall kde-plasma-desktop
 	
@@ -9182,6 +9202,9 @@ _getMost_ubuntu20_install() {
 # ATTENTION: End user function.
 _getMost_ubuntu20() {
 	_messagePlain_probe 'begin: _getMost_ubuntu20'
+	
+	echo 'Dpkg::Options {"--force-confold"};' | sudo tee /etc/apt/apt.conf.d/50unattended-replaceconfig-ub > /dev/null
+	
 	
 	#https://askubuntu.com/questions/876240/how-to-automate-setting-up-of-keyboard-configuration-package
 	#apt-get install -y debconf-utils
