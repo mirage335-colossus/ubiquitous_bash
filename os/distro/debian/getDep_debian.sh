@@ -416,6 +416,10 @@ _fetchDep_debianBullseye_sequence() {
 }
 
 _fetchDep_debianBullseye() {
+	# https://askubuntu.com/questions/104899/make-apt-get-or-aptitude-run-with-y-but-not-prompt-for-replacement-of-configu
+	echo 'Dpkg::Options {"--force-confdef"};' | sudo tee /etc/apt/apt.conf.d/50unattended-replaceconfig-ub > /dev/null
+	echo 'Dpkg::Options {"--force-confold"};' | sudo tee -a /etc/apt/apt.conf.d/50unattended-replaceconfig-ub > /dev/null
+	
 	export DEBIAN_FRONTEND=noninteractive
 	
 	#Run up to 2 times. On rare occasion, cache will become unusable again by apt-find before an installation can be completed. Overall, apt-find is the single weakest link in the system.
@@ -790,6 +794,10 @@ _fetchDep_debianBuster_sequence() {
 }
 
 _fetchDep_debianBuster() {
+	# https://askubuntu.com/questions/104899/make-apt-get-or-aptitude-run-with-y-but-not-prompt-for-replacement-of-configu
+	echo 'Dpkg::Options {"--force-confdef"};' | sudo tee /etc/apt/apt.conf.d/50unattended-replaceconfig-ub > /dev/null
+	echo 'Dpkg::Options {"--force-confold"};' | sudo tee -a /etc/apt/apt.conf.d/50unattended-replaceconfig-ub > /dev/null
+	
 	export DEBIAN_FRONTEND=noninteractive
 	
 	#Run up to 2 times. On rare occasion, cache will become unusable again by apt-find before an installation can be completed. Overall, apt-find is the single weakest link in the system.

@@ -315,6 +315,10 @@ _getMost_debian11_install() {
 _getMost_debian11() {
 	_messagePlain_probe 'begin: _getMost_debian11'
 	
+	# https://askubuntu.com/questions/104899/make-apt-get-or-aptitude-run-with-y-but-not-prompt-for-replacement-of-configu
+	echo 'Dpkg::Options {"--force-confdef"};' | sudo tee /etc/apt/apt.conf.d/50unattended-replaceconfig-ub > /dev/null
+	echo 'Dpkg::Options {"--force-confold"};' | sudo tee -a /etc/apt/apt.conf.d/50unattended-replaceconfig-ub > /dev/null
+	
 	#https://askubuntu.com/questions/876240/how-to-automate-setting-up-of-keyboard-configuration-package
 	#apt-get install -y debconf-utils
 	export DEBIAN_FRONTEND=noninteractive
@@ -372,7 +376,9 @@ _getMost_ubuntu20_install() {
 _getMost_ubuntu20() {
 	_messagePlain_probe 'begin: _getMost_ubuntu20'
 	
-	echo 'Dpkg::Options {"--force-confold"};' | sudo tee /etc/apt/apt.conf.d/50unattended-replaceconfig-ub > /dev/null
+	# https://askubuntu.com/questions/104899/make-apt-get-or-aptitude-run-with-y-but-not-prompt-for-replacement-of-configu
+	echo 'Dpkg::Options {"--force-confdef"};' | sudo tee /etc/apt/apt.conf.d/50unattended-replaceconfig-ub > /dev/null
+	echo 'Dpkg::Options {"--force-confold"};' | sudo tee -a /etc/apt/apt.conf.d/50unattended-replaceconfig-ub > /dev/null
 	
 	
 	#https://askubuntu.com/questions/876240/how-to-automate-setting-up-of-keyboard-configuration-package
@@ -396,12 +402,23 @@ _getMost_ubuntu20() {
 
 
 # ATTENTION: Override with 'ops.sh' or similar .
+# https://askubuntu.com/questions/104899/make-apt-get-or-aptitude-run-with-y-but-not-prompt-for-replacement-of-configu
 _set_getMost_backend_debian() {
 	_getMost_backend_aptGetInstall() {
 		# --no-upgrade
-		_messagePlain_probe _getMost_backend env DEBIAN_FRONTEND=noninteractive apt-get install --install-recommends -y "$@"
-		_getMost_backend env DEBIAN_FRONTEND=noninteractive apt-get install --install-recommends -y "$@"
+		_messagePlain_probe _getMost_backend env DEBIAN_FRONTEND=noninteractive apt-get -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install --install-recommends -y "$@"
+		_getMost_backend env DEBIAN_FRONTEND=noninteractive apt-get -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install --install-recommends -y "$@"
 	}
+	
+	#if [[ -e /etc/issue ]] && cat /etc/issue | grep 'Ubuntu' > /dev/null 2>&1
+	#then
+		#_getMost_backend_aptGetInstall() {
+		## --no-upgrade
+			#_messagePlain_probe _getMost_backend env DEBIAN_FRONTEND=noninteractive apt-get -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install --install-recommends -y "$@"
+			#_getMost_backend env DEBIAN_FRONTEND=noninteractive apt-get -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install --install-recommends -y "$@"
+		#}
+	#fi
+	
 	export -f _getMost_backend_aptGetInstall
 }
 _set_getMost_backend_command() {

@@ -32,7 +32,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='1891409836'
-export ub_setScriptChecksum_contents='1248934995'
+export ub_setScriptChecksum_contents='3177547712'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -7989,6 +7989,10 @@ _fetchDep_debianBullseye_sequence() {
 }
 
 _fetchDep_debianBullseye() {
+	# https://askubuntu.com/questions/104899/make-apt-get-or-aptitude-run-with-y-but-not-prompt-for-replacement-of-configu
+	echo 'Dpkg::Options {"--force-confdef"};' | sudo tee /etc/apt/apt.conf.d/50unattended-replaceconfig-ub > /dev/null
+	echo 'Dpkg::Options {"--force-confold"};' | sudo tee -a /etc/apt/apt.conf.d/50unattended-replaceconfig-ub > /dev/null
+	
 	export DEBIAN_FRONTEND=noninteractive
 	
 	#Run up to 2 times. On rare occasion, cache will become unusable again by apt-find before an installation can be completed. Overall, apt-find is the single weakest link in the system.
@@ -8363,6 +8367,10 @@ _fetchDep_debianBuster_sequence() {
 }
 
 _fetchDep_debianBuster() {
+	# https://askubuntu.com/questions/104899/make-apt-get-or-aptitude-run-with-y-but-not-prompt-for-replacement-of-configu
+	echo 'Dpkg::Options {"--force-confdef"};' | sudo tee /etc/apt/apt.conf.d/50unattended-replaceconfig-ub > /dev/null
+	echo 'Dpkg::Options {"--force-confold"};' | sudo tee -a /etc/apt/apt.conf.d/50unattended-replaceconfig-ub > /dev/null
+	
 	export DEBIAN_FRONTEND=noninteractive
 	
 	#Run up to 2 times. On rare occasion, cache will become unusable again by apt-find before an installation can be completed. Overall, apt-find is the single weakest link in the system.
@@ -8811,6 +8819,10 @@ _fetchDep_ubuntuFocalFossa_sequence() {
 }
 
 _fetchDep_ubuntuFocalFossa() {
+	# https://askubuntu.com/questions/104899/make-apt-get-or-aptitude-run-with-y-but-not-prompt-for-replacement-of-configu
+	echo 'Dpkg::Options {"--force-confdef"};' | sudo tee /etc/apt/apt.conf.d/50unattended-replaceconfig-ub > /dev/null
+	echo 'Dpkg::Options {"--force-confold"};' | sudo tee -a /etc/apt/apt.conf.d/50unattended-replaceconfig-ub > /dev/null
+	
 	export DEBIAN_FRONTEND=noninteractive
 	
 	#Run up to 2 times. On rare occasion, cache will become unusable again by apt-find before an installation can be completed. Overall, apt-find is the single weakest link in the system.
@@ -9146,6 +9158,10 @@ _getMost_debian11_install() {
 _getMost_debian11() {
 	_messagePlain_probe 'begin: _getMost_debian11'
 	
+	# https://askubuntu.com/questions/104899/make-apt-get-or-aptitude-run-with-y-but-not-prompt-for-replacement-of-configu
+	echo 'Dpkg::Options {"--force-confdef"};' | sudo tee /etc/apt/apt.conf.d/50unattended-replaceconfig-ub > /dev/null
+	echo 'Dpkg::Options {"--force-confold"};' | sudo tee -a /etc/apt/apt.conf.d/50unattended-replaceconfig-ub > /dev/null
+	
 	#https://askubuntu.com/questions/876240/how-to-automate-setting-up-of-keyboard-configuration-package
 	#apt-get install -y debconf-utils
 	export DEBIAN_FRONTEND=noninteractive
@@ -9203,7 +9219,9 @@ _getMost_ubuntu20_install() {
 _getMost_ubuntu20() {
 	_messagePlain_probe 'begin: _getMost_ubuntu20'
 	
-	echo 'Dpkg::Options {"--force-confold"};' | sudo tee /etc/apt/apt.conf.d/50unattended-replaceconfig-ub > /dev/null
+	# https://askubuntu.com/questions/104899/make-apt-get-or-aptitude-run-with-y-but-not-prompt-for-replacement-of-configu
+	echo 'Dpkg::Options {"--force-confdef"};' | sudo tee /etc/apt/apt.conf.d/50unattended-replaceconfig-ub > /dev/null
+	echo 'Dpkg::Options {"--force-confold"};' | sudo tee -a /etc/apt/apt.conf.d/50unattended-replaceconfig-ub > /dev/null
 	
 	
 	#https://askubuntu.com/questions/876240/how-to-automate-setting-up-of-keyboard-configuration-package
@@ -9227,12 +9245,23 @@ _getMost_ubuntu20() {
 
 
 # ATTENTION: Override with 'ops.sh' or similar .
+# https://askubuntu.com/questions/104899/make-apt-get-or-aptitude-run-with-y-but-not-prompt-for-replacement-of-configu
 _set_getMost_backend_debian() {
 	_getMost_backend_aptGetInstall() {
 		# --no-upgrade
-		_messagePlain_probe _getMost_backend env DEBIAN_FRONTEND=noninteractive apt-get install --install-recommends -y "$@"
-		_getMost_backend env DEBIAN_FRONTEND=noninteractive apt-get install --install-recommends -y "$@"
+		_messagePlain_probe _getMost_backend env DEBIAN_FRONTEND=noninteractive apt-get -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install --install-recommends -y "$@"
+		_getMost_backend env DEBIAN_FRONTEND=noninteractive apt-get -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install --install-recommends -y "$@"
 	}
+	
+	#if [[ -e /etc/issue ]] && cat /etc/issue | grep 'Ubuntu' > /dev/null 2>&1
+	#then
+		#_getMost_backend_aptGetInstall() {
+		## --no-upgrade
+			#_messagePlain_probe _getMost_backend env DEBIAN_FRONTEND=noninteractive apt-get -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install --install-recommends -y "$@"
+			#_getMost_backend env DEBIAN_FRONTEND=noninteractive apt-get -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install --install-recommends -y "$@"
+		#}
+	#fi
+	
 	export -f _getMost_backend_aptGetInstall
 }
 _set_getMost_backend_command() {
