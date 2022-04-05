@@ -65,9 +65,11 @@
 
 
 # https://stackoverflow.com/questions/1215260/how-to-redirect-the-output-of-a-powershell-to-a-file-during-its-execution
+# https://serverfault.com/questions/336121/how-to-ignore-an-error-in-powershell-and-let-it-continue
 $ErrorActionPreference="SilentlyContinue"
 Stop-Transcript | out-null
 $ErrorActionPreference = "Continue"
+rm C:\output.txt
 Start-Transcript -path C:\output.txt -append
 
 cd ~
@@ -111,7 +113,7 @@ user = user
 pass = pass
 
 ' | cmd /c MORE /P > C:\rclone.conf
-dos2unix
+dos2unix C:\rclone.conf
 
 
 
@@ -147,6 +149,7 @@ echo 'end: mitigate-ubcp'
 cd ..
 
 rclone --progress --config="/rclone.conf" copy ./ubiquitous_bash/_local/ubcp/package_ubcp-cygwinOnly.tar.xz mega:/zSpecial/dump/
+rclone --progress --config="/rclone.conf" copy /output.txt mega:/zSpecial/dump/
 
 
 
