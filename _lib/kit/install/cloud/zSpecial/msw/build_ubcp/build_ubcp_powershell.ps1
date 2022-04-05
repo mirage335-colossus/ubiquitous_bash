@@ -47,7 +47,7 @@
 # https://github.com/microsoft/WSL/issues/6301#issuecomment-858816891
 #  'WSL was created to support inner development loop scenarios. The Windows Desktop SKUs (where WSL 2 is supported) are recommended SKUs for these scenarios.'
 #  'Telling customers that want to use WSL2 on a Server to use Desktop SKUs just strikes me as an incredibly tone deaf move by Microsoft. Why even have WSL1 on Windows Server at that point?'
-#   In other words, MS obviously does not wish to allow well-integrated UNIX/Linux to 
+#   In other words, MS obviously does not wish to allow inclusion of well-integrated UNIX/Linux in end-user applications or in development tools.
 #Install-Module DockerMsftProvider -Force
 #Install-Package Docker -ProviderName DockerMsftProvider -Force
 
@@ -62,6 +62,15 @@
 
 # https://docs.microsoft.com/en-us/answers/questions/442463/error-when-enabling-wsl2-in-azure-vm.html
 #  'You'll need to choose an Azure VM size that is capable of nested virtualization, check for the SKU Family with Hyper-threaded and capable of running nested virtualization:'
+
+
+cd ~
+date > wasHere.log
+pwd >> wasHere.log
+cat wasHere.log
+date > /wasHere.log
+ls / >> /wasHere.log
+cat wasHere.log
 
 
 
