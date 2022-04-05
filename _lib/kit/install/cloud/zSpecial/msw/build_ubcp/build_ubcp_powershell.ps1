@@ -64,6 +64,12 @@
 #  'You'll need to choose an Azure VM size that is capable of nested virtualization, check for the SKU Family with Hyper-threaded and capable of running nested virtualization:'
 
 
+# https://stackoverflow.com/questions/1215260/how-to-redirect-the-output-of-a-powershell-to-a-file-during-its-execution
+$ErrorActionPreference="SilentlyContinue"
+Stop-Transcript | out-null
+$ErrorActionPreference = "Continue"
+Start-Transcript -path C:\output.txt -append
+
 cd ~
 date > wasHere.log
 pwd >> wasHere.log
@@ -146,6 +152,7 @@ rclone --progress --config="/rclone.conf" copy ./ubiquitous_bash/_local/ubcp/pac
 
 
 
+Stop-Transcript
 
 Stop-Computer -ComputerName localhost
 
