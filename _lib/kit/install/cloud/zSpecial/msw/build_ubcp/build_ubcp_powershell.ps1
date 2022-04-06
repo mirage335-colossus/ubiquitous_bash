@@ -85,6 +85,7 @@ rm /output.log
 Start-Transcript -path /output.log -append
 
 tskill ssh-pageant
+Start-Sleep -s 5
 
 rm /*.log
 rm /*.tar.xz
@@ -142,9 +143,22 @@ choco install advancedrun -y
 
 
 echo 'begin: git clone --recursive --depth 1 https://github.com/mirage335/ubiquitous_bash.git'
+
 tskill ssh-pageant
+
+# https://lazyadmin.nl/powershell/start-sleep/
+Start-Sleep -s 15
 Remove-Item -Recurse -Force ./ubiquitous_bash
+Start-Sleep -s 5
+Remove-Item -Recurse -Force ./ubiquitous_bash
+Remove-Item -Recurse -Force ./ubiquitous_bash
+Remove-Item -Recurse -Force ./ubiquitous_bash
+Remove-Item -Recurse -Force ./ubiquitous_bash
+Remove-Item -Recurse -Force ./ubiquitous_bash
+
 cmd /c "C:\Program Files\Git\bin\git.exe" clone --recursive --depth 1 https://github.com/mirage335/ubiquitous_bash.git
+
+
 
 
 echo 'begin: .\ubcp-cygwin-portable-installer'
@@ -152,7 +166,7 @@ mkdir ubiquitous_bash
 mkdir ./ubiquitous_bash/_local
 mkdir ./ubiquitous_bash/_local/ubcp
 cd ./ubiquitous_bash/_local/ubcp
-.\ubcp-cygwin-portable-installer
+.\ubcp-cygwin-portable-installer | tee /ubcp-cygwin-portable-installer.log
 cp ubcp_rename-to-enable.cmd ubcp.cmd
 
 
@@ -188,6 +202,7 @@ rclone --progress --config="/rclone.conf" copy /package_ubcp-cygwinOnly-noMitiga
 rclone --progress --config="/rclone.conf" copy /package_ubcp-cygwinOnly.tar.xz mega:/zSpecial/dump/
 rclone --progress --config="/rclone.conf" copy /_mitigate-ubcp.log mega:/zSpecial/dump/
 rclone --progress --config="/rclone.conf" copy /_setupUbiquitous.log mega:/zSpecial/dump/
+rclone --progress --config="/rclone.conf" copy /ubcp-cygwin-portable-installer.log mega:/zSpecial/dump/
 rclone --progress --config="/rclone.conf" copy /output.log mega:/zSpecial/dump/
 
 
