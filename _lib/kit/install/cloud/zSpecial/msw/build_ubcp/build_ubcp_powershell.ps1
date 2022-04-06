@@ -84,6 +84,8 @@ $ErrorActionPreference = "Continue"
 rm /output.log
 Start-Transcript -path /output.log -append
 
+tskill ssh-pageant
+
 rm /*.log
 rm /*.tar.xz
 
@@ -140,6 +142,7 @@ choco install advancedrun -y
 
 
 echo 'begin: git clone --recursive --depth 1 https://github.com/mirage335/ubiquitous_bash.git'
+tskill ssh-pageant
 Remove-Item -Recurse -Force ./ubiquitous_bash
 cmd /c "C:\Program Files\Git\bin\git.exe" clone --recursive --depth 1 https://github.com/mirage335/ubiquitous_bash.git
 
@@ -162,7 +165,7 @@ cmd /c .\_setupUbiquitous.bat | tee /_setupUbiquitous.log
 
 echo 'begin: _package-cygwinOnly'
 ./_bin _package-cygwinOnly
-mv ./ubiquitous_bash/_local/ubcp/package_ubcp-cygwinOnly.tar.xz /package_ubcp-cygwinOnly-noMitigation.tar.xz
+mv ./_local/ubcp/package_ubcp-cygwinOnly.tar.xz /package_ubcp-cygwinOnly-noMitigation.tar.xz
 
 
 echo 'begin: _mitigate-ubcp'
