@@ -3,7 +3,15 @@
 
 # WARNING: Persistent MSW is *strongly discouraged* for such a native MSW (ie. 'CMD', 'PowerShell') script.
 # WARNING: Script may change directory relative to directories which may not exist if some commands fail, causing uncontrolled filesystem damage.
+# DANGER: Due to unavailability of '_safeRMR', 'rm -r' may be used directly without any safety!
 
+# ATTENTION: To view output or imprecisely measure ongoing progress.
+# https://stackoverflow.com/questions/4426442/unix-tail-equivalent-command-in-windows-powershell
+# https://shellgeek.com/powershell-count-lines-in-file-and-words/
+#Get-Content -Path "/output.txt" -Wait
+#Get-Content -Path /output.txt | Measure-Object -Line -Word -Character
+#Get-Content -Path "/_mitigate-ubcp.log" -Wait
+#Get-Content -Path /_mitigate-ubcp.log | Measure-Object -Line -Word -Character
 
 
 # https://docs.microsoft.com/en-us/azure/virtual-machines/extensions/custom-script-windows
@@ -72,6 +80,9 @@ $ErrorActionPreference = "Continue"
 rm C:\output.txt
 Start-Transcript -path C:\output.txt -append
 
+rm /*.log
+rm /*.tar.xz
+
 cd ~
 date > wasHere.log
 pwd >> wasHere.log
@@ -117,10 +128,12 @@ dos2unix C:\rclone.conf
 
 
 
-
+echo 'begin: git clone --recursive --depth 1 https://github.com/mirage335/ubiquitous_bash.git'
+rm -r ./ubiquitous_bash
 cmd /c "C:\Program Files\Git\bin\git.exe" clone --recursive --depth 1 https://github.com/mirage335/ubiquitous_bash.git
 
 
+echo 'begin: .\ubcp-cygwin-portable-installer'
 mkdir ubiquitous_bash
 mkdir ./ubiquitous_bash/_local
 mkdir ./ubiquitous_bash/_local/ubcp
@@ -132,27 +145,41 @@ cp ubcp_rename-to-enable.cmd ubcp.cmd
 cd ../..
 
 
-cmd /c .\_setupUbiquitous.bat
+echo 'begin: _setupUbiquitous'
+cmd /c .\_setupUbiquitous.bat | tee /_setupUbiquitous.log
 
 
-echo 'begin: mitigate-ubcp'
-#./_bin _mitigate-ubcp | tee _mitigate-ubcp.log
-./_bin _mitigate-ubcp > _mitigate-ubcp.log
-echo 'end: mitigate-ubcp'
+echo 'begin: _package-cygwinOnly'
+./_bin _package-cygwinOnly
+mv ./ubiquitous_bash/_local/ubcp/package_ubcp-cygwinOnly.tar.xz /package_ubcp-cygwinOnly-noMitigation.tar.xz
 
+
+echo 'begin: _mitigate-ubcp'
+#./_bin _mitigate-ubcp | tee /_mitigate-ubcp.log
+./_bin _mitigate-ubcp > /_mitigate-ubcp.log
+echo 'end: _mitigate-ubcp'
+
+echo 'begin: _package-cygwinOnly'
 ./_bin _package-cygwinOnly
 
+echo 'begin: _setup_ubcp'
 ./_bin _setup_ubcp
 
 
 
 cd ..
 
-rclone --progress --config="/rclone.conf" copy ./ubiquitous_bash/_local/ubcp/package_ubcp-cygwinOnly.tar.xz mega:/zSpecial/dump/
+mv ./ubiquitous_bash/_local/ubcp/package_ubcp-cygwinOnly.tar.xz /package_ubcp-cygwinOnly.tar.xz
+rclone --progress --config="/rclone.conf" copy /package_ubcp-cygwinOnly-noMitigation.tar.xz mega:/zSpecial/dump/
+rclone --progress --config="/rclone.conf" copy /package_ubcp-cygwinOnly.tar.xz mega:/zSpecial/dump/
+rclone --progress --config="/rclone.conf" copy /_mitigate-ubcp.log mega:/zSpecial/dump/
+rclone --progress --config="/rclone.conf" copy /_setupUbiquitous.log mega:/zSpecial/dump/
 rclone --progress --config="/rclone.conf" copy /output.txt mega:/zSpecial/dump/
 
 
 
+echo 'statistics: _mitigate-ubcp.log'
+Get-Content -Path /_mitigate-ubcp.log | Measure-Object -Line -Word -Character
 
 
 Stop-Transcript
