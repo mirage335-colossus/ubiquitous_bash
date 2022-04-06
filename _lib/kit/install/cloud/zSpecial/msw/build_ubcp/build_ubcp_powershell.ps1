@@ -8,11 +8,15 @@
 # ATTENTION: To view output or imprecisely measure ongoing progress.
 # https://stackoverflow.com/questions/4426442/unix-tail-equivalent-command-in-windows-powershell
 # https://shellgeek.com/powershell-count-lines-in-file-and-words/
-#Get-Content -Path "/output.txt" -Wait
-#Get-Content -Path /output.txt | Measure-Object -Line -Word -Character
+#Get-Content -Path "/output.log" -Wait
+#Get-Content -Path /output.log | Measure-Object -Line -Word -Character
 #Get-Content -Path "/_mitigate-ubcp.log" -Wait
 #Get-Content -Path /_mitigate-ubcp.log | Measure-Object -Line -Word -Character
 
+# https://www.winhelponline.com/blog/run-program-as-system-localsystem-account-windows/#advancedrun
+#  ...
+# AdvancedRun.exe /EXEFilename "C:\WINDOWS\system32\WindowsPowerShell\v1.0\powershell.exe" /RunAs 4 /Run
+# cd ../../config/systemprofile
 
 # https://docs.microsoft.com/en-us/azure/virtual-machines/extensions/custom-script-windows
 #  'Go to your classic VM resource. Select Extensions under Settings.' 'Select + Add. In the list of resources, select Custom Script Extension.'
@@ -77,8 +81,8 @@
 $ErrorActionPreference="SilentlyContinue"
 Stop-Transcript | out-null
 $ErrorActionPreference = "Continue"
-rm C:\output.txt
-Start-Transcript -path C:\output.txt -append
+rm /output.log
+Start-Transcript -path /output.log -append
 
 rm /*.log
 rm /*.tar.xz
@@ -123,13 +127,20 @@ type = type
 user = user
 pass = pass
 
-' | cmd /c MORE /P > C:\rclone.conf
+' | cmd /c MORE /P > /rclone.conf
 dos2unix C:\rclone.conf
+
+
+# May only be required to get permissions of 'SYSTEM' user for diagnostics.
+#choco install nircmd -y
+#choco install psexec -y
+choco install advancedrun -y
+
 
 
 
 echo 'begin: git clone --recursive --depth 1 https://github.com/mirage335/ubiquitous_bash.git'
-rm -r ./ubiquitous_bash
+Remove-Item -Recurse -Force ./ubiquitous_bash
 cmd /c "C:\Program Files\Git\bin\git.exe" clone --recursive --depth 1 https://github.com/mirage335/ubiquitous_bash.git
 
 
@@ -174,7 +185,7 @@ rclone --progress --config="/rclone.conf" copy /package_ubcp-cygwinOnly-noMitiga
 rclone --progress --config="/rclone.conf" copy /package_ubcp-cygwinOnly.tar.xz mega:/zSpecial/dump/
 rclone --progress --config="/rclone.conf" copy /_mitigate-ubcp.log mega:/zSpecial/dump/
 rclone --progress --config="/rclone.conf" copy /_setupUbiquitous.log mega:/zSpecial/dump/
-rclone --progress --config="/rclone.conf" copy /output.txt mega:/zSpecial/dump/
+rclone --progress --config="/rclone.conf" copy /output.log mega:/zSpecial/dump/
 
 
 
