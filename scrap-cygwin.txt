@@ -1,6 +1,5 @@
 
-TODO: Use '_getBest' for 'C:\core\infrastructure\ubiquitous_bash' .
-
+# See build_ubcp_powershell.ps1 .
 
 -
 
