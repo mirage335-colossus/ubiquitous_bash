@@ -135,6 +135,7 @@ $ErrorActionPreference = "Continue"
 Start-Transcript -path /output.log -append
 cd '~/'
 
+# WARNING: May not be necessary or desirable. May reduce build time.
 Set-MpPreference -DisableRealtimeMonitoring $true
 
 tskill ssh-pageant

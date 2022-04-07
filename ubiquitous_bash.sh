@@ -1353,6 +1353,8 @@ _mitigate-ubcp_rewrite_sequence() {
 	
 	
 	# WARNING: Diagnostic output will be corrupted by parallelism.
+	# ATTENTION: Expect as much as 4x as many CPU threads may be saturated due to MSW (MSW, NOT Cygwin) inefficiencies.
+	# Or only 2x if CPU has leading single-thread (ie. per-thread) performance and MSW inefficiencies have been reduced.
 	# Expect done in as little as 15 minutes.
 	# https://serverfault.com/questions/193319/a-better-unix-find-with-parallel-processing
 	# https://stackoverflow.com/questions/11003418/calling-shell-functions-with-xargs
