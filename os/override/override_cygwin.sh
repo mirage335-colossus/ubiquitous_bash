@@ -540,6 +540,7 @@ _setup_ubcp() {
 
 _mitigate-ubcp_rewrite_procedure() {
 	_messagePlain_nominal 'init: _mitigate-ubcp_rewrite_procedure'
+	[[ "$currentPWD" != "" ]] && cd "$currentPWD"
 	
 	local currentRoot=$(_getAbsoluteLocation "$PWD")
 	
@@ -694,6 +695,7 @@ _mitigate-ubcp_rewrite_sequence() {
 	
 	
 	# WARNING: May be slow (multiple hours).
+	unset currentPWD
 	#find "$2" -type l -exec "$scriptAbsoluteLocation" _mitigate-ubcp_rewrite_procedure '{}' \;
 	
 	
@@ -702,6 +704,9 @@ _mitigate-ubcp_rewrite_sequence() {
 	# Since only the shell knows how to run shell functions, you have to run a shell to run a function.
 	# export -f dosomething
 	# find . -exec bash -c 'dosomething "$0"' {} \;
+	unset currentPWD
+	export currentPWD="$PWD"
+	#export currentPWD="$1"
 	unset currentFile
 	export -f "_mitigate-ubcp_rewrite_procedure"
 	export -f "_messagePlain_nominal"
