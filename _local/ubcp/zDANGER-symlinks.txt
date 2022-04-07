@@ -1,0 +1,18 @@
+
+Cygwin, if privileged, may create 'native' MSW symlinks by default. Package compression/decompression software for MSW may not commonly support this (although packages created within Cygwin such as 'cygwinOnly' packages *do*), effectively adding another cause of subtle, severe, deficiencies.
+
+To possibly create more reliable packages of portable Cygwin/MSW filesystems, *always* change all occurrences of
+'set CYGWIN=nodosfilewarning' or similar
+to (or similar)
+set "CYGWIN=winsymlinks:lnk nodosfilewarning"
+.
+
+Also interesting may be 'winsymlinks:sys' .
+
+https://cygwin.com/cygwin-ug-net/using-cygwinenv.html
+
+-
+
+find . -not -path "./_local/*" -name '*.cmd' -type f -size -3000k -exec grep -n 'set CYGWIN=' '{}' /dev/null \; | grep -v 'winsymlinks:lnk
+
+

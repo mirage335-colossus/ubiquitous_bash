@@ -11,7 +11,7 @@ set "PATH=%CYGWIN_PATH%"
 
 set "ALLUSERSPROFILE=%CYGWIN_ROOT%\.ProgramData"
 set "ProgramData=%ALLUSERSPROFILE%"
-set CYGWIN=nodosfilewarning
+set "CYGWIN=winsymlinks:lnk nodosfilewarning"
 
 set "USERNAME=root"
 set "HOME=/home/%USERNAME%"

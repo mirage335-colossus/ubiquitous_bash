@@ -1,5 +1,54 @@
 
-# /bin/PowerShell?
+# / bin / PowerShell ?
+
+
+
+# ATTENTION: NOTICE: CAUTION: DANGER: Symlinks are *very* tricky with MSW.
+# https://www.cygwin.com/cygwin-ug-net/using-effectively.html
+#  ' By default, Cygwin does not create symlinks as .lnk files, but there's an option to do that, see the section called "The CYGWIN environment variable". '
+#  ' Unfortunately, this means that the usual Unix way of creating and using symlinks does not work with native Windows shortcuts. '
+# https://superuser.com/questions/1164618/compress-symbolic-links-on-windows-10
+# https://superuser.com/questions/1114114/how-to-create-a-filefolder-in-windows
+# https://cygwin.com/cygwin-ug-net/using.html
+#  CYGWIN=winsymlinks:lnk
+
+
+
+
+
+# ATTENTION: NOTICE: Single-User only is expected. Multi-User MSW may work, but must never be a developer priority.
+# For purposes which an MSW 'Desktop' would be necessary (eg. legacy proprietary game engines, flight sim, VR, VirtualBox, etc), Multi-User MSW may already be expected to fail.
+# For purposes of development, for which genuine Multi-User (ie. 'sudo') would be expected, *use a Linux VM* and compile for MSW native only if necessary (ie. MSW native compatibility only for users of legacy proprietary game engines).
+# Anything installed to '/core/infrastructure' or similar is expected Single-User only.
+
+
+
+# WARNING: Tends to convert any symlinks to files, and may rely on this continuing to cause sufficiently similar results with future versions of MSW, 7z, etc.
+# Real symlinks, may require privileges to create.
+# Possible installation (rough example) of 'ubcp' from package through PowerShell/batch/etc (discouraged) .
+# https://superuser.com/questions/1465200/symbolic-link-issue-extracting-tarball-on-windows
+# git clone --recursive --depth 1 https://github.com/mirage335/ubiquitous_bash.git
+#  #(or extract 'ubiquitous_bash' from package if git fails)
+# cd ubiquitous_bash/_local
+# Expand-7Zip ./package_ubcp-cygwinOnly.tar.xz ./
+# Expand-7Zip ./package_ubcp-cygwinOnly.tar ./
+# rm package_ubcp-cygwinOnly.tar
+# mv package_ubcp-cygwinOnly.tar.xz ./ubcp/
+# cd ../..
+# ./_setup_ubcp
+#  #(unnecessary if portable 'ubcp' within '_local' without installation everywhere is sufficient)
+
+# CAUTION: DANGER: Package 'noMitigation' is only usable if extracted from *within* Cygwin/MSW (which may not be possible for 'bootstrapping). Do NOT extract 'noMitigation' with MSW for end-user applications. Do NOT use 'noMitigation' through network filesystems. Severe yet subtle issues WILL occur (eg. possible 'wget' GnuTLS failure).
+# CAUTION: DANGER: Apparently MSW may not have a way to accurately extract relative symlinks (though Cygwin obviously does).
+# PowerShell 'tar' command in particular is known to very inappropriately convert '../etc/...' to effectively '/cygdrive/c/etc/...' .
+# https://unix.stackexchange.com/questions/600282/preserve-file-permissions-and-symlinks-in-archive-with-7-zip
+# (ie. do NOT use ' tar -xf ./package_ubcp-cygwinOnly-noMitigation.tar ./ ' under PowerShell )
+# 7Zip is known to also cause wget and curl failres due to different but unknown deficiencies
+# (ie. do NOT use ' Expand-7Zip ./package_ubcp-cygwinOnly-noMitigation.tar ./ '
+
+
+
+
 
 # WARNING: Persistent MSW is *strongly discouraged* for such a native MSW (ie. 'CMD', 'PowerShell') script.
 # WARNING: Script may change directory relative to directories which may not exist if some commands fail, causing uncontrolled filesystem damage.
@@ -8,6 +57,7 @@
 # ATTENTION: To view output or imprecisely measure ongoing progress.
 # https://stackoverflow.com/questions/4426442/unix-tail-equivalent-command-in-windows-powershell
 # https://shellgeek.com/powershell-count-lines-in-file-and-words/
+# Expect approximately '62657' lines for done "/_mitigate-ubcp.log" .
 #Get-Content -Path "/output.log" -Wait
 #Get-Content -Path /output.log | Measure-Object -Line -Word -Character
 #Get-Content -Path "/_mitigate-ubcp.log" -Wait
@@ -83,14 +133,17 @@ Stop-Transcript | out-null
 $ErrorActionPreference = "Continue"
 rm /output.log
 Start-Transcript -path /output.log -append
+cd '~/'
 
 tskill ssh-pageant
 Start-Sleep -s 5
 
 rm /*.log
 rm /*.tar.xz
+rm /*.zip
+rm /*.7z
 
-cd ~
+cd '~/'
 date > wasHere.log
 pwd >> wasHere.log
 cat wasHere.log
@@ -122,6 +175,22 @@ Add-PoshGitToProfile -AllHosts
 Import-Module posh-git
 
 cmd /c "C:\Program Files\Git\bin\git.exe" config --global core.autocrlf input
+
+
+# Install 7zip for XZ, 7Z, ZIP, etc.
+choco install 7zip.install -y
+
+# Install tested xz extractor command.
+# https://superuser.com/questions/1506991/download-and-extract-archive-using-powershell
+Install-Module -Name 7Zip4Powershell -Force -SkipPublisherCheck
+Import-Module -Name 7Zip4Powershell
+# Expand-7Zip ./package_ubcp-cygwinOnly.tar.xz ./
+# tar -xf ./package_ubcp-cygwinOnly.tar
+
+# (untested) Install xz backend for 'tar -xf' command.
+# https://stackoverflow.com/questions/42545028/open-xz-file-from-the-command-line-in-windows-10
+# https://tukaani.org/xz/
+
 
 choco install rclone -y
 
@@ -171,6 +240,7 @@ cp ubcp_rename-to-enable.cmd ubcp.cmd
 
 
 cd ../..
+cd '~/ubiquitous_bash'
 
 
 echo 'begin: _setupUbiquitous'
@@ -189,31 +259,78 @@ echo 'end: _mitigate-ubcp'
 
 echo 'begin: _package-cygwinOnly'
 ./_bin _package-cygwinOnly
+#mv ./ubiquitous_bash/_local/ubcp/package_ubcp-cygwinOnly.tar.xz /package_ubcp-cygwinOnly.tar.xz
+cp ./ubiquitous_bash/_local/ubcp/package_ubcp-cygwinOnly.tar.xz /package_ubcp-cygwinOnly.tar.xz
 
 echo 'begin: _setup_ubcp'
-./_bin _setup_ubcp
-
-
+#./_bin _setup_ubcp | tee /_setup_ubcp.log
+cmd /c .\_setup_ubcp.bat | tee /_setup_ubcp.log
 
 cd ..
+cd '~/'
 
-mv ./ubiquitous_bash/_local/ubcp/package_ubcp-cygwinOnly.tar.xz /package_ubcp-cygwinOnly.tar.xz
+
+
+echo 'begin: MSWpackage'
+
+# https://www.sans.org/blog/powershell-7-zip-module-versus-compress-archive-with-encryption/
+
+# MSW portable package to run './_setup_ubcp.bat' .
+#Get-ChildItem -Path ./ubiquitous_bash -Recurse | Compress-Archive -DestinationPath /ubiquitous_bash-msw.zip
+#7z -y a -tzip /package_ubiquitous_bash-msw.zip ./ubiquitous_bash
+7z -y a -t7z /package_ubiquitous_bash-msw.7z ./ubiquitous_bash | tee /package_ubiquitous_bash-msw.log
+
+# MSW core package. Extract to '/core/infrastructure/' . Run '/core/infrastructure/_setupUbiquitous.bat' after extracting.
+#7z -y a -tzip /package_ubcp-core.zip /core/infrastructure/ubcp /core/infrastructure/ubiquitous_bash
+7z -y a -t7z /package_ubcp-core.7z /core/infrastructure/ubcp /core/infrastructure/ubiquitous_bash | tee /package_ubcp-core.log
+
+
+rm -f ./ubiquitous_bash/_local/ubcp/package_ubcp-cygwinOnly.tar.xz
+#7z -y a -tzip /package_ubiquitous_bash-msw-rotten.zip ./ubiquitous_bash
+7z -y a -t7z /package_ubiquitous_bash-msw-rotten.7z ./ubiquitous_bash | tee /package_ubiquitous_bash-msw-rotten.log
+
+
+
+echo 'begin: _test-lean'
+cmd /c ubiquitous_bash\_test.bat | tee /_test-lean.log
+
+
+echo 'begin: rclone'
 rclone --progress --config="/rclone.conf" copy /package_ubcp-cygwinOnly-noMitigation.tar.xz mega:/zSpecial/dump/
+
 rclone --progress --config="/rclone.conf" copy /package_ubcp-cygwinOnly.tar.xz mega:/zSpecial/dump/
+
 rclone --progress --config="/rclone.conf" copy /_mitigate-ubcp.log mega:/zSpecial/dump/
 rclone --progress --config="/rclone.conf" copy /_setupUbiquitous.log mega:/zSpecial/dump/
 rclone --progress --config="/rclone.conf" copy /ubcp-cygwin-portable-installer.log mega:/zSpecial/dump/
+rclone --progress --config="/rclone.conf" copy /_test-lean.log mega:/zSpecial/dump/
 rclone --progress --config="/rclone.conf" copy /output.log mega:/zSpecial/dump/
 
 
+rclone --progress --config="/rclone.conf" copy /package_ubiquitous_bash-msw.7z mega:/zSpecial/dump/
+rclone --progress --config="/rclone.conf" copy /package_ubiquitous_bash-msw.log mega:/zSpecial/dump/
+
+rclone --progress --config="/rclone.conf" copy /package_ubcp-core.7z mega:/zSpecial/dump/
+rclone --progress --config="/rclone.conf" copy /package_ubcp-core.log mega:/zSpecial/dump/
+
+
+rclone --progress --config="/rclone.conf" copy /package_ubiquitous_bash-msw-rotten.7z mega:/zSpecial/dump/
+rclone --progress --config="/rclone.conf" copy /package_ubiquitous_bash-msw-rotten.log mega:/zSpecial/dump/
+
+
+
+date
 
 echo 'statistics: _mitigate-ubcp.log'
 Get-Content -Path /_mitigate-ubcp.log | Measure-Object -Line -Word -Character
 
 
-Stop-Transcript
 
 Stop-Computer -ComputerName localhost
+
+Stop-Transcript
+
+
 
 
 

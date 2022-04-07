@@ -32,7 +32,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='1891409836'
-export ub_setScriptChecksum_contents='686900514'
+export ub_setScriptChecksum_contents='1482992478'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -657,6 +657,13 @@ then
 fi
 
 
+# Forces Cygwin symlinks to best compatibility. Should be set by default elsewhere. Use sparingly only if necessary (eg. _setup_ubcp) .
+_force_cygwin_symlinks() {
+	! _if_cygwin && return 0
+	[[ "$CYGWIN" != *"winsymlinks:lnk"* ]] && export CYGWIN="winsymlinks:lnk ""$CYGWIN"
+}
+
+
 # ATTENTION: User must launch "tmux" (no parameters) in a graphical Cygwin terminal.
 # Launches graphical application through "tmux new-window" if available.
 # https://superuser.com/questions/531787/starting-windows-gui-program-in-windows-through-cygwin-sshd-from-ssh-client
@@ -1005,6 +1012,8 @@ _setup_ubiquitousBash_cygwin_procedure() {
 	cp "$scriptAbsoluteFolder"/_anchor.bat "$currentCygdriveC_equivalent"/core/infrastructure/ubiquitous_bash/
 	cp "$scriptAbsoluteFolder"/_setup_ubcp.bat "$currentCygdriveC_equivalent"/core/infrastructure/ubiquitous_bash/
 	
+	cp "$scriptAbsoluteFolder"/_setupUbiquitous.bat "$currentCygdriveC_equivalent"/core/infrastructure/ubiquitous_bash/
+	
 	
 	cp "$scriptAbsoluteFolder"/package.tar.xz "$currentCygdriveC_equivalent"/core/infrastructure/ubiquitous_bash/
 	
@@ -1134,6 +1143,8 @@ _setup_ubcp_procedure() {
 # WARNING: May require 'administrator' privileges under MSW. However, it may be better for this directory to be 'owned' by the 'primary' 'user' account. Particularly considering the VR/gaming/CAD software that remains 'exclusive' to MSW is 'legacy' software which for both licensing and technical reasons may be inherently incompatible with 'multi-user' access.
 # WARNING: MSW 'administrator' 'privileges' may break 'ubcp' .
 _setup_ubcp() {
+	_force_cygwin_symlinks
+	
 	# WARNING: May break if 'mitigation' has not been applied!
 	if ! [[ -e "$scriptLocal"/ubcp/package_ubcp-cygwinOnly.tar.gz ]] && ! [[ -e "$scriptLocal"/ubcp/package_ubcp-cygwinOnly.tar.xz ]] && [[ -e "$scriptLocal"/ubcp/cygwin ]]
 	then
@@ -1283,14 +1294,62 @@ _mitigate-ubcp_rewrite_procedure() {
 	return 0
 }
 
-_mitigate-ubcp_rewrite() {
+_mitigate-ubcp_rewrite_parallel() {
+	local currentArg
+	for currentArg in "$@"
+	do
+		true
+		
+		_mitigate-ubcp_rewrite_procedure "$currentArg"
+		
+		# WARNING: May be untested.
+		#_mitigate-ubcp_rewrite_procedure "$currentArg" &
+		
+		#/bin/echo "$currentArg" > /dev/tty
+	done
+}
+
+_mitigate-ubcp_rewrite_sequence() {
 	export safeToDeleteGit="true"
 	! _safePath "$1" && _stop 1
 	cd "$1"
 	
-	find "$2" -type l -exec "$scriptAbsoluteLocation" _mitigate-ubcp_rewrite_procedure '{}' \;
+	
+	# WARNING: May be slow (multiple hours).
+	#find "$2" -type l -exec "$scriptAbsoluteLocation" _mitigate-ubcp_rewrite_procedure '{}' \;
+	
+	
+	# WARNING: May be untested.
+	# https://stackoverflow.com/questions/4321456/find-exec-a-shell-function-in-linux
+	# Since only the shell knows how to run shell functions, you have to run a shell to run a function.
+	# export -f dosomething
+	# find . -exec bash -c 'dosomething "$0"' {} \;
+	export -f "_mitigate-ubcp_rewrite_procedure"
+	export -f "_messagePlain_nominal"
+	export -f "_color_begin_nominal"
+	export -f "_color_end"
+	export -f "_getAbsoluteLocation"
+	export -f "_realpath_L_s"
+	export -f "_realpath_L"
+	export -f "_compat_realpath_run"
+	export -f "_compat_realpath"
+	export -f "_messagePlain_probe_var"
+	export -f "_color_begin_probe"
+	export -f "_messagePlain_probe"
+	find "$2" -type l -exec bash -c "_mitigate-ubcp_rewrite_procedure" {} \;
+	
+	
+	# WARNING: May be untested.
+	# https://serverfault.com/questions/193319/a-better-unix-find-with-parallel-processing
+	# https://stackoverflow.com/questions/11003418/calling-shell-functions-with-xargs
+	export -f "_mitigate-ubcp_rewrite_parallel"
+	#find "$2" -type l -print0 | xargs -0 -n 1 -P 4 -I {} bash -c '_mitigate-ubcp_rewrite_parallel "$@"' _ {}
 	
 	return 0
+}
+
+_mitigate-ubcp_rewrite() {
+	"$scriptAbsoluteLocation" _mitigate-ubcp_rewrite_sequence "$@"
 }
 
 
@@ -12728,6 +12787,7 @@ _gitBare() {
 
 
 _gitBest_detect_github_procedure() {
+	[[ "$current_gitBest_source_GitHub" == "FAIL" ]] && export current_gitBest_source_GitHub=""
 	[[ "$current_gitBest_source_GitHub" != "" ]] && return
 	
 	_messagePlain_nominal 'init: _gitBest_detect_github_procedure'
@@ -17297,6 +17357,7 @@ _installUbiquitous() {
 _setupUbiquitous() {
 	_messageNormal "init: setupUbiquitous"
 	
+	_force_cygwin_symlinks
 	_if_cygwin && _setup_ubiquitousBash_cygwin_procedure
 	
 	
@@ -23639,6 +23700,9 @@ _package_subdir() {
 _package_procedure() {
 	_start scriptLocal_mkdir_disable
 	mkdir -p "$safeTmp"/package
+	
+	# May not have any effect - Cygwin symlinks should be transparent to 'tar' and similar.
+	_force_cygwin_symlinks
 	
 	# WARNING: Largely due to presence of '.gitignore' files in 'ubcp' .
 	export safeToDeleteGit="true"

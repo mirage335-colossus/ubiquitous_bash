@@ -494,7 +494,7 @@ echo Creating launcher [%Start_cmd%]...
   echo.
   echo set "ALLUSERSPROFILE=%%CYGWIN_ROOT%%\.ProgramData"
   echo set "ProgramData=%%ALLUSERSPROFILE%%"
-  echo set CYGWIN=nodosfilewarning
+  echo set "CYGWIN=winsymlinks:lnk nodosfilewarning"
   echo.
   echo set "USERNAME=%CYGWIN_USERNAME%"
   echo set "HOME=/home/%%USERNAME%%"

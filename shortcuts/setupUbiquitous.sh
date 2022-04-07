@@ -110,6 +110,7 @@ _installUbiquitous() {
 _setupUbiquitous() {
 	_messageNormal "init: setupUbiquitous"
 	
+	_force_cygwin_symlinks
 	_if_cygwin && _setup_ubiquitousBash_cygwin_procedure
 	
 	

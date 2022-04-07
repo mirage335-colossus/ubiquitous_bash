@@ -1,5 +1,6 @@
 
 _gitBest_detect_github_procedure() {
+	[[ "$current_gitBest_source_GitHub" == "FAIL" ]] && export current_gitBest_source_GitHub=""
 	[[ "$current_gitBest_source_GitHub" != "" ]] && return
 	
 	_messagePlain_nominal 'init: _gitBest_detect_github_procedure'

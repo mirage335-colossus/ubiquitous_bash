@@ -1,13 +1,11 @@
 
 # See build_ubcp_powershell.ps1 .
 
+# Symbolic links are correctly packaged *within* Cygwin (as with 'cygwinOnly' packages), and can be extracted correctly *within* Cygwin. MSW package compression/decompression software (eg. 'tar' from PowerShell, MSW 'zip', 7zip) may NOT commonly support symlinks, causing subtle, severe, deficiencies. Also, Cygwin has a very interesting root filesystem of unusual relative symbolic links by default.
+
+# CAUTION: DANGER: Many workarounds and mitigations for Cygwin/MSW symbolic link issues are subtly, severely, necessary . Build and test 'ubcp' packages carefully to avoid and detect such deficiencies, especially with regard to avoiding any functionality that might change in future versions of MSW and third-party software.
+
 -
-
-# Packages that may be added .
-
-wkhtmltopdf
-python3
-
 
 # Rough description, not exact commands.
 

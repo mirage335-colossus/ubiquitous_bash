@@ -1637,6 +1637,9 @@ _package_procedure() {
 	_start scriptLocal_mkdir_disable
 	mkdir -p "$safeTmp"/package
 	
+	# May not have any effect - Cygwin symlinks should be transparent to 'tar' and similar.
+	_force_cygwin_symlinks
+	
 	# WARNING: Largely due to presence of '.gitignore' files in 'ubcp' .
 	export safeToDeleteGit="true"
 	
