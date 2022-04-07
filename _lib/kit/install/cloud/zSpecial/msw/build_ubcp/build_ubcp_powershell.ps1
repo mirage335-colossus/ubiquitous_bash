@@ -255,6 +255,7 @@ mv ./_local/ubcp/package_ubcp-cygwinOnly.tar.xz /package_ubcp-cygwinOnly-noMitig
 echo 'begin: _mitigate-ubcp'
 ./_bin _mitigate-ubcp | tee /_mitigate-ubcp.log
 #./_bin _mitigate-ubcp > /_mitigate-ubcp.log
+./_bin _color_end
 echo 'end: _mitigate-ubcp'
 
 echo 'begin: _package-cygwinOnly'

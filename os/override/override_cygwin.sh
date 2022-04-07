@@ -673,6 +673,7 @@ _mitigate-ubcp_rewrite_procedure() {
 	return 0
 }
 
+# WARNING: May be untested.
 _mitigate-ubcp_rewrite_parallel() {
 	local currentArg
 	for currentArg in "$@"
@@ -728,7 +729,9 @@ _mitigate-ubcp_rewrite_sequence() {
 	##find "$2" -type l -exec bash -c '_mitigate-ubcp_rewrite_procedure "$1"' _ {} \;
 	
 	
-	# WARNING: May be untested.
+	
+	# WARNING: Diagnostic output will be corrupted by parallelism.
+	# Expect done in as little as 15 minutes.
 	# https://serverfault.com/questions/193319/a-better-unix-find-with-parallel-processing
 	# https://stackoverflow.com/questions/11003418/calling-shell-functions-with-xargs
 	export -f "_mitigate-ubcp_rewrite_parallel"
