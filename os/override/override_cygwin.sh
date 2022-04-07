@@ -720,7 +720,7 @@ _mitigate-ubcp_rewrite_sequence() {
 	export -f "_messagePlain_probe_var"
 	export -f "_color_begin_probe"
 	export -f "_messagePlain_probe"
-	find . -print0 | while IFS= read -r -d '' currentFile; do _mitigate-ubcp_rewrite_procedure "$currentFile"; done
+	find "$2" -print0 | while IFS= read -r -d '' currentFile; do _mitigate-ubcp_rewrite_procedure "$currentFile"; done
 	
 	
 	

@@ -129,9 +129,9 @@
 # https://stackoverflow.com/questions/1215260/how-to-redirect-the-output-of-a-powershell-to-a-file-during-its-execution
 # https://serverfault.com/questions/336121/how-to-ignore-an-error-in-powershell-and-let-it-continue
 $ErrorActionPreference="SilentlyContinue"
+rm /output.log
 Stop-Transcript | out-null
 $ErrorActionPreference = "Continue"
-rm /output.log
 Start-Transcript -path /output.log -append
 cd '~/'
 
