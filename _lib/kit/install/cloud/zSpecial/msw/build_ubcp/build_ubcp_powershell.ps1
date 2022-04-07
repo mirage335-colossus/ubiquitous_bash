@@ -135,6 +135,8 @@ $ErrorActionPreference = "Continue"
 Start-Transcript -path /output.log -append
 cd '~/'
 
+Set-MpPreference -DisableRealtimeMonitoring $true
+
 tskill ssh-pageant
 Start-Sleep -s 5
 
@@ -158,10 +160,12 @@ Set-ExecutionPolicy Bypass -Scope Process -Force; iex ((New-Object System.Net.We
 
 # Install Software
 choco install git -y
-choco install nmap -y
 choco install qalculate -y
 
 choco install dos2unix -y
+
+# May fail to install nmap through Azure Custom Script extension, possibly due to System account not having GUI for AutoHotKey automation.
+#choco install nmap -y
 
 # https://www.reddit.com/r/PowerShell/comments/ofrsue/unattended_nuget_installation/
 Install-PackageProvider -Name NuGet -Force -Scope AllUsers -ForceBootstrap
