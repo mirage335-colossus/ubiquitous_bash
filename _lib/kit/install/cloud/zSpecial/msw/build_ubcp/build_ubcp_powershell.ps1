@@ -286,10 +286,10 @@ echo 'begin: MSWpackage'
 7z -y a -t7z /package_ubcp-core.7z /core/infrastructure/ubcp /core/infrastructure/ubiquitous_bash | tee /package_ubcp-core.log
 
 
-rm ./ubiquitous_bash/_local/ubcp/package_ubcp-cygwinOnly.tar.xz
+mv ./ubiquitous_bash/_local/ubcp/package_ubcp-cygwinOnly.tar.xz ./
 #7z -y a -tzip /package_ubiquitous_bash-msw-rotten.zip ./ubiquitous_bash
 7z -y a -t7z /package_ubiquitous_bash-msw-rotten.7z ./ubiquitous_bash | tee /package_ubiquitous_bash-msw-rotten.log
-
+mv ./package_ubcp-cygwinOnly.tar.xz ./ubiquitous_bash/_local/ubcp/
 
 
 echo 'begin: _test-lean'
