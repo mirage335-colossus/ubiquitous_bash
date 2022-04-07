@@ -702,6 +702,7 @@ _mitigate-ubcp_rewrite_sequence() {
 	# Since only the shell knows how to run shell functions, you have to run a shell to run a function.
 	# export -f dosomething
 	# find . -exec bash -c 'dosomething "$0"' {} \;
+	unset currentFile
 	export -f "_mitigate-ubcp_rewrite_procedure"
 	export -f "_messagePlain_nominal"
 	export -f "_color_begin_nominal"
@@ -714,7 +715,12 @@ _mitigate-ubcp_rewrite_sequence() {
 	export -f "_messagePlain_probe_var"
 	export -f "_color_begin_probe"
 	export -f "_messagePlain_probe"
-	find "$2" -type l -exec bash -c "_mitigate-ubcp_rewrite_procedure" {} \;
+	find . -print0 | while IFS= read -r -d '' currentFile; do _mitigate-ubcp_rewrite_procedure "$currentFile"; done
+	
+	
+	
+	# WARNING: May be untested.
+	#find "$2" -type l -exec bash -c '_mitigate-ubcp_rewrite_procedure "$1"' _ {} \;
 	
 	
 	# WARNING: May be untested.

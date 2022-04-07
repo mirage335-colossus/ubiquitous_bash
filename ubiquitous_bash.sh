@@ -32,7 +32,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='1891409836'
-export ub_setScriptChecksum_contents='2724429003'
+export ub_setScriptChecksum_contents='1615156756'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -1324,6 +1324,7 @@ _mitigate-ubcp_rewrite_sequence() {
 	# Since only the shell knows how to run shell functions, you have to run a shell to run a function.
 	# export -f dosomething
 	# find . -exec bash -c 'dosomething "$0"' {} \;
+	unset currentFile
 	export -f "_mitigate-ubcp_rewrite_procedure"
 	export -f "_messagePlain_nominal"
 	export -f "_color_begin_nominal"
@@ -1336,7 +1337,12 @@ _mitigate-ubcp_rewrite_sequence() {
 	export -f "_messagePlain_probe_var"
 	export -f "_color_begin_probe"
 	export -f "_messagePlain_probe"
-	find "$2" -type l -exec bash -c "_mitigate-ubcp_rewrite_procedure" {} \;
+	find . -print0 | while IFS= read -r -d '' currentFile; do _mitigate-ubcp_rewrite_procedure "$currentFile"; done
+	
+	
+	
+	# WARNING: May be untested.
+	#find "$2" -type l -exec bash -c '_mitigate-ubcp_rewrite_procedure "$1"' _ {} \;
 	
 	
 	# WARNING: May be untested.

@@ -1,6 +1,6 @@
 
 # / bin / PowerShell ?
-
+# powershell -ExecutionPolicy Bypass -File build_ubcp_powershell.ps1
 
 
 # ATTENTION: NOTICE: CAUTION: DANGER: Symlinks are *very* tricky with MSW.
@@ -247,7 +247,7 @@ echo 'begin: _setupUbiquitous'
 cmd /c .\_setupUbiquitous.bat | tee /_setupUbiquitous.log
 
 
-echo 'begin: _package-cygwinOnly'
+echo 'begin: _package-cygwinOnly (noMitigation)'
 ./_bin _package-cygwinOnly
 mv ./_local/ubcp/package_ubcp-cygwinOnly.tar.xz /package_ubcp-cygwinOnly-noMitigation.tar.xz
 
