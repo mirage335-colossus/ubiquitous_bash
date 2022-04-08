@@ -81,6 +81,8 @@ jobs:
         run: |
           .\_setupUbiquitous | tee /_setupUbiquitous.log
           .\_setupUbiquitous
+          .\_bin echo test
+          cmd /c ".\_bin.bat echo test"
       # https://adamtheautomator.com/powershell-get-disk-space/
       - name: statement! ls
         shell: pwsh
@@ -95,6 +97,7 @@ jobs:
         shell: pwsh
       - name: statement! _setupUbiquitous
         run: |
+          Get-Content -Path /_setupUbiquitous.log | Measure-Object -Line -Word -Character
           cat /_setupUbiquitous.log
         shell: pwsh
       - name: statement! statistics! _mitigate-ubcp
