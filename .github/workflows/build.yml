@@ -1,0 +1,45 @@
+
+# WARNING: May be untested .
+
+name: build
+on:
+  workflow_dispatch:
+  # https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#schedule
+  schedule:
+    #- cron: '5 1 * * 6'
+    #- cron: '5 1 * * 2,4'
+    #- cron: '5 1 * * 2'
+    - cron: '5 1 * * 4'
+
+# https://docs.github.com/en/actions/using-jobs/using-concurrency
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+# https://svrooij.io/2021/08/17/github-actions-secret-file/
+jobs:
+  build_ubcp:
+    runs-on: windows-latest # Code should run on any platform, change accordingly
+    steps:
+      #- uses: actions/checkout@v2
+      - name: write! secrets
+        id: secret-file1
+        run: |
+          $secretFile = Join-Path -Path $env:RUNNER_TEMP -ChildPath "/rclone.conf";
+          $encodedBytes = [System.Convert]::FromBase64String($env:SECRET_DATA1);
+          Set-Content $secretFile -Value $encodedBytes -AsByteStream;
+          $secretFileHash = Get-FileHash $secretFile;
+          Write-Output "::set-output name=SECRET_FILE::$secretFile";
+          Write-Output "::set-output name=SECRET_FILE_HASH::$($secretFileHash.Hash)";
+          Write-Output "Secret file $secretFile has hash $($secretFileHash.Hash)";
+          echo $SECRET_FILE_HASH
+        shell: pwsh
+        env:
+          rclone_limited_conf_base64: ${{ secrets.rclone_limited_conf_base64 }}
+
+
+
+
+
+
+
