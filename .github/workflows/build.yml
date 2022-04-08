@@ -41,17 +41,34 @@ jobs:
           rclone_limited_conf_base64: ${{ secrets.rclone_limited_conf_base64 }}
       - name: statement! ls
         run: |
-          ls;
-          ls /
+          Get-CimInstance -ClassName Win32_LogicalDisk | Select-Object -Property DeviceID,@{'Name' = 'FreeSpace (GB)'; Expression= { [int]($_.FreeSpace / 1GB) }}
+          ls /;
+          ls
+      #- name: build_ubcp_powershell
+        #run: |
+          #./_lib/kit/install/cloud/zSpecial/msw/build_ubcp/build_ubcp_powershell.ps1
+        #shell: pwsh
+      # _lib/kit/install/cloud/zSpecial/msw/build_ubcp/build_ubcp_powershell.ps1
+      - name: _getMinimal_cloud
         shell: pwsh
-      - name: build_ubcp_powershell
+        timeout-minutes: 180
         run: |
-          ./_lib/kit/install/cloud/zSpecial/msw/build_ubcp/build_ubcp_powershell.ps1
-        shell: pwsh
+          $ErrorActionPreference="SilentlyContinue"
+          $ErrorActionPreference = "Continue"
+          Set-MpPreference -DisableRealtimeMonitoring $true
+          date > /wasHere.log
+          pwd >> /wasHere.log
+          cat /wasHere.log
+          choco install qalculate -y
+          choco install dos2unix -y
+          choco install nmap -y
+          cmd /c "C:\Program Files\Git\bin\git.exe" config --global core.autocrlf input
+          choco install 7zip.install -y
       - name: statement! ls
         run: |
-          ls;
-          ls /
+          Get-CimInstance -ClassName Win32_LogicalDisk | Select-Object -Property DeviceID,@{'Name' = 'FreeSpace (GB)'; Expression= { [int]($_.FreeSpace / 1GB) }}
+          ls /;
+          ls
         shell: pwsh
       - name: statement! ubcp-cygwin-portable-installer
         run: |

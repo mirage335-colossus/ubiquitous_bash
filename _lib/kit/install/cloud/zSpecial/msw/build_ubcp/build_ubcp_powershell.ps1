@@ -152,8 +152,6 @@ rm /*.7z
 cd '~/'
 date > wasHere.log
 pwd >> wasHere.log
-cat wasHere.log
-date > /wasHere.log
 ls / >> /wasHere.log
 cat wasHere.log
 
