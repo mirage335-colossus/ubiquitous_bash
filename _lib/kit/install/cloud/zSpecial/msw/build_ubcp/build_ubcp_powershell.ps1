@@ -2,6 +2,9 @@
 # / bin / PowerShell ?
 # powershell -ExecutionPolicy Bypass -File build_ubcp_powershell.ps1
 
+# Script as of 2022-04-07 has been compatible as a custom script extension for 'provisioning' an Azure VM in the cloud, resulting in a build created and uploaded.
+
+
 
 # ATTENTION: NOTICE: CAUTION: DANGER: Symlinks are *very* tricky with MSW.
 # https://www.cygwin.com/cygwin-ug-net/using-effectively.html
@@ -161,6 +164,9 @@ Set-ExecutionPolicy Bypass -Scope Process -Force; iex ((New-Object System.Net.We
 
 # Install Software
 choco install git -y
+
+choco install rebootblocker -y
+
 choco install qalculate -y
 
 choco install dos2unix -y
@@ -199,13 +205,29 @@ Import-Module -Name 7Zip4Powershell
 
 choco install rclone -y
 
-echo '[mega]
+
+# ATTENTION: NOTICE: equivalent:   write: secrets
+# https://debug.to/1411/how-to-check-if-file-not-exists-in-powershell
+# https://adamtheautomator.com/powershell-check-if-file-exists/
+echo 'write: secrets'
+$currentFilePath = 'c:\rclone.conf'
+if(-not(Test-path $currentFilePath -PathType leaf))
+ {
+    # if the file doesn't exist do something
+    echo '[mega]
 type = type
 user = user
 pass = pass
 
 ' | cmd /c MORE /P > /rclone.conf
-dos2unix C:\rclone.conf
+    dos2unix C:\rclone.conf
+ }
+else
+{
+    # if file exists do something
+    echo "exists: /rclone.conf"
+}
+
 
 
 # May only be required to get permissions of 'SYSTEM' user for diagnostics.
@@ -265,8 +287,8 @@ echo 'end: _mitigate-ubcp'
 
 echo 'begin: _package-cygwinOnly'
 ./_bin _package-cygwinOnly
-#mv ./ubiquitous_bash/_local/ubcp/package_ubcp-cygwinOnly.tar.xz /package_ubcp-cygwinOnly.tar.xz
-cp ./ubiquitous_bash/_local/ubcp/package_ubcp-cygwinOnly.tar.xz /package_ubcp-cygwinOnly.tar.xz
+#mv ./_local/ubcp/package_ubcp-cygwinOnly.tar.xz /package_ubcp-cygwinOnly.tar.xz
+cp ./_local/ubcp/package_ubcp-cygwinOnly.tar.xz /package_ubcp-cygwinOnly.tar.xz
 
 echo 'begin: _setup_ubcp'
 #./_bin _setup_ubcp | tee /_setup_ubcp.log
@@ -331,8 +353,8 @@ echo 'statistics: _mitigate-ubcp.log'
 Get-Content -Path /_mitigate-ubcp.log | Measure-Object -Line -Word -Character
 
 
-
-Stop-Computer -ComputerName localhost
+# https://www.petenetlive.com/KB/Article/0001374
+Stop-Computer -ComputerName localhost -force
 
 Stop-Transcript
 
