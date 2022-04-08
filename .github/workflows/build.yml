@@ -62,6 +62,7 @@ jobs:
           choco install 7zip.install -y
       - uses: actions/checkout@v2
       - name: statement! ls
+        shell: pwsh
         run: |
           ls /
           ls
@@ -79,14 +80,15 @@ jobs:
         timeout-minutes: 180
         run: |
           .\_setupUbiquitous | tee /_setupUbiquitous.log
+          .\_setupUbiquitous
       # https://adamtheautomator.com/powershell-get-disk-space/
       - name: statement! ls
+        shell: pwsh
         run: |
           ls /
           ls
           Get-CimInstance -ClassName Win32_LogicalDisk | Select-Object -Property DeviceID,@{'Name' = 'FreeSpace (GB)'
           Expression= { [int]($_.FreeSpace / 1GB) }}
-        shell: pwsh
       - name: statement! ubcp-cygwin-portable-installer
         run: |
           cat /ubcp-cygwin-portable-installer.log
