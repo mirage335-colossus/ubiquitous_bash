@@ -41,7 +41,7 @@ jobs:
           rclone_limited_conf_base64: ${{ secrets.rclone_limited_conf_base64 }}
       - name: statement! ls
         run: |
-          Get-CimInstance -ClassName Win32_LogicalDisk | Select-Object -Property DeviceID,@{'Name' = 'FreeSpace (GB)'; Expression= { [int]($_.FreeSpace / 1GB) }}
+          Get-CimInstance -ClassName Win32_LogicalDisk | Select-Object -Property DeviceID,@{'Name' = 'FreeSpace (GB)'; Expression= { [int]($_.FreeSpace / 1GB) }};
           ls /;
           ls
       #- name: build_ubcp_powershell
@@ -53,20 +53,32 @@ jobs:
         shell: pwsh
         timeout-minutes: 180
         run: |
-          $ErrorActionPreference="SilentlyContinue"
-          $ErrorActionPreference = "Continue"
-          Set-MpPreference -DisableRealtimeMonitoring $true
-          date > /wasHere.log
-          pwd >> /wasHere.log
-          cat /wasHere.log
-          choco install qalculate -y
-          choco install dos2unix -y
-          choco install nmap -y
-          cmd /c "C:\Program Files\Git\bin\git.exe" config --global core.autocrlf input
+          $ErrorActionPreference="SilentlyContinue";
+          $ErrorActionPreference = "Continue";
+          Set-MpPreference -DisableRealtimeMonitoring $true;
+          date > /wasHere.log;
+          pwd >> /wasHere.log;
+          cat /wasHere.log;
+          choco install qalculate -y;
+          choco install dos2unix -y;
+          choco install nmap -y;
+          cmd /c "C:\Program Files\Git\bin\git.exe" config --global core.autocrlf input;
           choco install 7zip.install -y
+      - name: ubcp-cygwin-portable-installer
+        shell: pwsh
+        timeout-minutes: 180
+        run: |
+          cd ./_local/ubcp;
+          .\ubcp-cygwin-portable-installer | tee /ubcp-cygwin-portable-installer.log;
+          cp ubcp_rename-to-enable.cmd ubcp.cmd
+      - name: _setupUbiquitous
+        shell: pwsh
+        timeout-minutes: 180
+        run: |
+          cmd /c .\_setupUbiquitous.bat | tee /_setupUbiquitous.log
       - name: statement! ls
         run: |
-          Get-CimInstance -ClassName Win32_LogicalDisk | Select-Object -Property DeviceID,@{'Name' = 'FreeSpace (GB)'; Expression= { [int]($_.FreeSpace / 1GB) }}
+          Get-CimInstance -ClassName Win32_LogicalDisk | Select-Object -Property DeviceID,@{'Name' = 'FreeSpace (GB)'; Expression= { [int]($_.FreeSpace / 1GB) }};
           ls /;
           ls
         shell: pwsh
