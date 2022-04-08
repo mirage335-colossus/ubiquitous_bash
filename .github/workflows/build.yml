@@ -39,6 +39,10 @@ jobs:
         shell: pwsh
         env:
           rclone_limited_conf_base64: ${{ secrets.rclone_limited_conf_base64 }}
+      - name: statement! ls
+        run: |
+          ls
+        shell: pwsh
       - name: statement! test-lean.log
         run: |
           cat /_test-lean.log
