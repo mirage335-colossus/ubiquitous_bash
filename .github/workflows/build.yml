@@ -23,28 +23,53 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       # https://svrooij.io/2021/08/17/github-actions-secret-file/
+      #$secretFileHash = Get-FileHash $secretFile;
+      #Write-Output "::set-output name=SECRET_FILE::$secretFile";
+      #Write-Output "::set-output name=SECRET_FILE_HASH::$($secretFileHash.Hash)";
+      #Write-Output "Secret file $secretFile has hash $($secretFileHash.Hash)";
+      #Get-Content -Path $secretFile | Measure-Object -Line -Word -Character;
+      #echo $secretFile;
+      #echo $($secretFileHash.Hash)
       - name: write! secrets
         id: secret-file1
         run: |
           $secretFile = "/rclone.conf";
           $encodedBytes = [System.Convert]::FromBase64String($env:rclone_limited_conf_base64);
-          Set-Content $secretFile -Value $encodedBytes -AsByteStream;
-          $secretFileHash = Get-FileHash $secretFile;
-          Write-Output "::set-output name=SECRET_FILE::$secretFile";
-          Write-Output "::set-output name=SECRET_FILE_HASH::$($secretFileHash.Hash)";
-          Write-Output "Secret file $secretFile has hash $($secretFileHash.Hash)";
-          Get-Content -Path $secretFile | Measure-Object -Line -Word -Character;
-          echo $secretFile;
-          echo $($secretFileHash.Hash)
+          Set-Content $secretFile -Value $encodedBytes -AsByteStream
         shell: pwsh
         env:
           rclone_limited_conf_base64: ${{ secrets.rclone_limited_conf_base64 }}
       - name: statement! ls
         run: |
           ls;
-          ls /rclone.conf
+          ls /
         shell: pwsh
-      - name: statement! test-lean.log
+      - name: build_ubcp_powershell
+        run: |
+          ./_lib/kit/install/cloud/zSpecial/msw/build_ubcp/build_ubcp_powershell.ps1
+        shell: pwsh
+      - name: statement! ls
+        run: |
+          ls;
+          ls /
+        shell: pwsh
+      - name: statement! ubcp-cygwin-portable-installer
+        run: |
+          cat /ubcp-cygwin-portable-installer.log
+        shell: pwsh
+      - name: statement! _setupUbiquitous
+        run: |
+          cat /_setupUbiquitous.log
+        shell: pwsh
+      - name: statement! statistics! _mitigate-ubcp
+        run: |
+          Get-Content -Path /_mitigate-ubcp.log | Measure-Object -Line -Word -Character
+        shell: pwsh
+      - name: statement! package_ubiquitous_bash-msw
+        run: |
+          cat /package_ubiquitous_bash-msw.log
+        shell: pwsh
+      - name: statement! test-lean
         run: |
           cat /_test-lean.log
         shell: pwsh
