@@ -32,7 +32,9 @@ jobs:
           Write-Output "::set-output name=SECRET_FILE::$secretFile";
           Write-Output "::set-output name=SECRET_FILE_HASH::$($secretFileHash.Hash)";
           Write-Output "Secret file $secretFile has hash $($secretFileHash.Hash)";
-          echo $SECRET_FILE_HASH
+          Get-Content -Path $secretFile | Measure-Object -Line -Word -Character
+          echo $secretFile
+          echo $SECRET_FILE_HASH;
         shell: pwsh
         env:
           rclone_limited_conf_base64: ${{ secrets.rclone_limited_conf_base64 }}
