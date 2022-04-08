@@ -21,7 +21,6 @@ jobs:
   build_ubcp:
     runs-on: windows-latest # Code should run on any platform, change accordingly
     steps:
-      - uses: actions/checkout@v2
       # https://svrooij.io/2021/08/17/github-actions-secret-file/
       #$secretFileHash = Get-FileHash $secretFile;
       #Write-Output "::set-output name=SECRET_FILE::$secretFile";
@@ -33,17 +32,13 @@ jobs:
       - name: write! secrets
         id: secret-file1
         run: |
-          $secretFile = "/rclone.conf";
-          $encodedBytes = [System.Convert]::FromBase64String($env:rclone_limited_conf_base64);
+          $secretFile = "/rclone.conf"
+          $encodedBytes = [System.Convert]::FromBase64String($env:rclone_limited_conf_base64)
           Set-Content $secretFile -Value $encodedBytes -AsByteStream
         shell: pwsh
         env:
           rclone_limited_conf_base64: ${{ secrets.rclone_limited_conf_base64 }}
-      - name: statement! ls
-        run: |
-          Get-CimInstance -ClassName Win32_LogicalDisk | Select-Object -Property DeviceID,@{'Name' = 'FreeSpace (GB)'; Expression= { [int]($_.FreeSpace / 1GB) }};
-          ls /;
-          ls
+      # https://adamtheautomator.com/powershell-get-disk-space/
       #- name: build_ubcp_powershell
         #run: |
           #./_lib/kit/install/cloud/zSpecial/msw/build_ubcp/build_ubcp_powershell.ps1
@@ -53,34 +48,46 @@ jobs:
         shell: pwsh
         timeout-minutes: 180
         run: |
-          $ErrorActionPreference="SilentlyContinue";
-          $ErrorActionPreference = "Continue";
-          Set-MpPreference -DisableRealtimeMonitoring $true;
-          date > /wasHere.log;
-          pwd >> /wasHere.log;
-          cat /wasHere.log;
-          choco install qalculate -y;
-          choco install dos2unix -y;
-          choco install nmap -y;
-          cmd /c "C:\Program Files\Git\bin\git.exe" config --global core.autocrlf input;
+          $ErrorActionPreference="SilentlyContinue"
+          $ErrorActionPreference = "Continue"
+          Set-MpPreference -DisableRealtimeMonitoring $true
+          date > /wasHere.log
+          pwd >> /wasHere.log
+          cat /wasHere.log
+          choco install qalculate -y
+          choco install dos2unix -y
+          choco install nmap -y
+          git config --global core.autocrlf input
+          git config --global core.eol lf
+          git config core.autocrlf false
+          git config core.eol lf
           choco install 7zip.install -y
+      - uses: actions/checkout@v2
+      - name: statement! ls
+        run: |
+          ls /
+          ls
+          Get-CimInstance -ClassName Win32_LogicalDisk | Select-Object -Property DeviceID,@{'Name' = 'FreeSpace (GB)'
+          Expression= { [int]($_.FreeSpace / 1GB) }}
       - name: ubcp-cygwin-portable-installer
         shell: pwsh
         timeout-minutes: 180
         run: |
-          cd ./_local/ubcp;
-          .\ubcp-cygwin-portable-installer | tee /ubcp-cygwin-portable-installer.log;
+          cd ./_local/ubcp
+          .\ubcp-cygwin-portable-installer | tee /ubcp-cygwin-portable-installer.log
           cp ubcp_rename-to-enable.cmd ubcp.cmd
       - name: _setupUbiquitous
         shell: pwsh
         timeout-minutes: 180
         run: |
           cmd /c .\_setupUbiquitous.bat | tee /_setupUbiquitous.log
+      # https://adamtheautomator.com/powershell-get-disk-space/
       - name: statement! ls
         run: |
-          Get-CimInstance -ClassName Win32_LogicalDisk | Select-Object -Property DeviceID,@{'Name' = 'FreeSpace (GB)'; Expression= { [int]($_.FreeSpace / 1GB) }};
-          ls /;
+          ls /
           ls
+          Get-CimInstance -ClassName Win32_LogicalDisk | Select-Object -Property DeviceID,@{'Name' = 'FreeSpace (GB)'
+          Expression= { [int]($_.FreeSpace / 1GB) }}
         shell: pwsh
       - name: statement! ubcp-cygwin-portable-installer
         run: |

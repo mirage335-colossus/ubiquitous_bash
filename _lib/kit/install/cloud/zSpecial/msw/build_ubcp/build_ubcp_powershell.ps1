@@ -184,6 +184,7 @@ Add-PoshGitToProfile -AllHosts
 Import-Module posh-git
 
 cmd /c "C:\Program Files\Git\bin\git.exe" config --global core.autocrlf input
+cmd /c "C:\Program Files\Git\bin\git.exe" config --global core.eol lf
 
 
 # Install 7zip for XZ, 7Z, ZIP, etc.
