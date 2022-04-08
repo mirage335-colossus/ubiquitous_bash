@@ -25,8 +25,8 @@ jobs:
       - name: write! secrets
         id: secret-file1
         run: |
-          $secretFile = Join-Path -Path $env:RUNNER_TEMP -ChildPath "/rclone.conf";
-          $encodedBytes = [System.Convert]::FromBase64String($env:SECRET_DATA1);
+          $secretFile = "/rclone.conf";
+          $encodedBytes = [System.Convert]::FromBase64String($env:rclone_limited_conf_base64);
           Set-Content $secretFile -Value $encodedBytes -AsByteStream;
           $secretFileHash = Get-FileHash $secretFile;
           Write-Output "::set-output name=SECRET_FILE::$secretFile";
