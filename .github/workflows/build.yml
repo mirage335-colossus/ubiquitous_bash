@@ -78,7 +78,7 @@ jobs:
         shell: pwsh
         timeout-minutes: 180
         run: |
-          powershell ".\_setupUbiquitous | tee /_setupUbiquitous.log"
+          .\_setupUbiquitous | tee /_setupUbiquitous.log
       # https://adamtheautomator.com/powershell-get-disk-space/
       - name: statement! ls
         run: |
