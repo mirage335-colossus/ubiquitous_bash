@@ -362,7 +362,7 @@ _setup_ubiquitousBash_cygwin_procedure() {
 	local currentCygdriveC_equivalent
 	currentCygdriveC_equivalent="$1"
 	[[ "$currentCygdriveC_equivalent" == "" ]] && currentCygdriveC_equivalent=$(cygpath -S | sed 's/\/Windows\/System32//g')
-	[[ "$1" == "/" ]] && currentCygdriveC_equivalent=""
+	[[ "$1" == "/" ]] && currentCygdriveC_equivalent=$(echo "$PWD" | sed 's/\(\/cygdrive\/[a-zA-Z]*\).*/\1/')
 	
 	mkdir -p "$currentCygdriveC_equivalent"/core/infrastructure/ubiquitous_bash
 	cd "$currentCygdriveC_equivalent"/core/infrastructure/ubiquitous_bash
@@ -484,7 +484,7 @@ _setup_ubcp_procedure() {
 	local currentCygdriveC_equivalent
 	currentCygdriveC_equivalent="$1"
 	[[ "$currentCygdriveC_equivalent" == "" ]] && currentCygdriveC_equivalent=$(cygpath -S | sed 's/\/Windows\/System32//g')
-	[[ "$1" == "/" ]] && currentCygdriveC_equivalent=""
+	[[ "$1" == "/" ]] && currentCygdriveC_equivalent=$(echo "$PWD" | sed 's/\(\/cygdrive\/[a-zA-Z]*\).*/\1/')
 	
 	export safeToDeleteGit="true"
 	if [[ -e "$currentCygdriveC_equivalent"/core/infrastructure/ubcp ]]
