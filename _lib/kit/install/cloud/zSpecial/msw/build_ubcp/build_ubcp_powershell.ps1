@@ -3,6 +3,7 @@
 # powershell -ExecutionPolicy Bypass -File build_ubcp_powershell.ps1
 
 # Script as of 2022-04-07 has been compatible as a custom script extension for 'provisioning' an Azure VM in the cloud, resulting in a build created and uploaded.
+# More recently tested commands may be at '.github/workflows/'
 # At least some changes since may change correct syntax for some commands.
 #  *) Batch files may now use 'goto end' or 'goto :eof' instead of 'exit' .
 

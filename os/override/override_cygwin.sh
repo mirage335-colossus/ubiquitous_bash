@@ -360,7 +360,9 @@ _setup_ubiquitousBash_cygwin_procedure() {
 	_messagePlain_nominal 'init: _setup_ubiquitousBash_cygwin'
 	
 	local currentCygdriveC_equivalent
-	currentCygdriveC_equivalent=$(cygpath -S | sed 's/\/Windows\/System32//g')
+	currentCygdriveC_equivalent="$1"
+	[[ "$currentCygdriveC_equivalent" == "" ]] && currentCygdriveC_equivalent=$(cygpath -S | sed 's/\/Windows\/System32//g')
+	[[ "$1" == "/" ]] && currentCygdriveC_equivalent=""
 	
 	mkdir -p "$currentCygdriveC_equivalent"/core/infrastructure/ubiquitous_bash
 	cd "$currentCygdriveC_equivalent"/core/infrastructure/ubiquitous_bash
@@ -480,7 +482,9 @@ _setup_ubcp_procedure() {
 	tskill ssh-pageant > /dev/null 2>&1
 	
 	local currentCygdriveC_equivalent
-	currentCygdriveC_equivalent=$(cygpath -S | sed 's/\/Windows\/System32//g')
+	currentCygdriveC_equivalent="$1"
+	[[ "$currentCygdriveC_equivalent" == "" ]] && currentCygdriveC_equivalent=$(cygpath -S | sed 's/\/Windows\/System32//g')
+	[[ "$1" == "/" ]] && currentCygdriveC_equivalent=""
 	
 	export safeToDeleteGit="true"
 	if [[ -e "$currentCygdriveC_equivalent"/core/infrastructure/ubcp ]]
@@ -516,7 +520,7 @@ _setup_ubcp_procedure() {
 
 
 # CAUTION: Do NOT hook to '_setup' .
-# No production use. Developer feature.
+# WARNING: ATTENTION: NOTICE: No production use. Developer feature.
 # Highly irregular accommodation for usage of 'ubiquitous_bash' through 'ubcp' (cygwin portable) compatibility layer through MSW network drive (especially '_userVBox' MSW guest network drive) .
 # WARNING: May require 'administrator' privileges under MSW. However, it may be better for this directory to be 'owned' by the 'primary' 'user' account. Particularly considering the VR/gaming/CAD software that remains 'exclusive' to MSW is 'legacy' software which for both licensing and technical reasons may be inherently incompatible with 'multi-user' access.
 # WARNING: MSW 'administrator' 'privileges' may break 'ubcp' .
@@ -526,11 +530,11 @@ _setup_ubcp() {
 	# WARNING: May break if 'mitigation' has not been applied!
 	if ! [[ -e "$scriptLocal"/ubcp/package_ubcp-cygwinOnly.tar.gz ]] && ! [[ -e "$scriptLocal"/ubcp/package_ubcp-cygwinOnly.tar.xz ]] && [[ -e "$scriptLocal"/ubcp/cygwin ]]
 	then
-		"$scriptAbsoluteLocation" _package_procedure-cygwinOnly "$@"
+		"$scriptAbsoluteLocation" _package_procedure-cygwinOnly
 	fi
 	
-	"$scriptAbsoluteLocation" _setup_ubcp_procedure "$@"
-	"$scriptAbsoluteLocation" _setup_ubiquitousBash_cygwin_procedure "$@"
+	"$scriptAbsoluteLocation" _setup_ubcp_procedure "$1"
+	"$scriptAbsoluteLocation" _setup_ubiquitousBash_cygwin_procedure "$1"
 }
 
 

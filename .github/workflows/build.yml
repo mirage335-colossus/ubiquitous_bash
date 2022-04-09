@@ -70,22 +70,121 @@ jobs:
           Expression= { [int]($_.FreeSpace / 1GB) }}
       - name: ubcp-cygwin-portable-installer
         shell: pwsh
-        timeout-minutes: 180
+        timeout-minutes: 240
         run: |
           cd ./_local/ubcp
           .\ubcp-cygwin-portable-installer | tee /ubcp-cygwin-portable-installer.log
+          rclone --progress --config="/rclone.conf" copy /ubcp-cygwin-portable-installer.log distLLC_build_ubcp:/
           cp ubcp_rename-to-enable.cmd ubcp.cmd
+      - name: statement! ubcp-cygwin-portable-installer
+        run: |
+          cat /ubcp-cygwin-portable-installer.log
+        shell: pwsh
       - name: _disable_fileBlocking
         shell: pwsh
-        timeout-minutes: 180
+        timeout-minutes: 240
         run: |
           mv _local/ubcp/cygwin/bin/ssh-pageant.exe _local/ubcp/cygwin/bin/ssh-pageant.disabled
           cp _local/ubcp/cygwin/bin/true.exe _local/ubcp/cygwin/bin/ssh-pageant.exe
       - name: _setupUbiquitous
         shell: pwsh
-        timeout-minutes: 180
+        timeout-minutes: 240
         run: |
           .\_setupUbiquitous | tee /_setupUbiquitous.log
+          rclone --progress --config="/rclone.conf" copy /_setupUbiquitous.log distLLC_build_ubcp:/
+      - name: statement! _setupUbiquitous
+        run: |
+          Get-Content -Path /_setupUbiquitous.log | Measure-Object -Line -Word -Character
+          cat /_setupUbiquitous.log
+        shell: pwsh
+      - name: _test-lean
+        shell: pwsh
+        timeout-minutes: 240
+        run: |
+          .\_test | tee /_test-lean.log
+          rclone --progress --config="/rclone.conf" copy /_test-lean.log distLLC_build_ubcp:/
+      - name: statement! test-lean
+        run: |
+          cat /_test-lean.log
+        shell: pwsh
+      - name: _package-cygwinOnly noMitigation
+        shell: pwsh
+        timeout-minutes: 240
+        run: |
+          ./_bin _package-cygwinOnly
+          mv ./_local/ubcp/package_ubcp-cygwinOnly.tar.xz /package_ubcp-cygwinOnly-noMitigation.tar.xz
+          rclone --progress --config="/rclone.conf" copy /package_ubcp-cygwinOnly-noMitigation.tar.xz distLLC_build_ubcp:/
+          rm /package_ubcp-cygwinOnly-noMitigation.tar.xz
+      - name: _mitigate-ubcp
+        shell: pwsh
+        timeout-minutes: 240
+        run: |
+          ./_bin _mitigate-ubcp | tee /_mitigate-ubcp.log
+          ./_bin _color_end
+          rclone --progress --config="/rclone.conf" copy /_mitigate-ubcp.log distLLC_build_ubcp:/
+      - name: statement! statistics! _mitigate-ubcp
+        run: |
+          Get-Content -Path /_mitigate-ubcp.log | Measure-Object -Line -Word -Character
+        shell: pwsh
+      - name: _package-cygwinOnly
+        shell: pwsh
+        timeout-minutes: 240
+        run: |
+          ./_bin _package-cygwinOnly
+          rclone --progress --config="/rclone.conf" copy ./_local/ubcp/package_ubcp-cygwinOnly.tar.xz distLLC_build_ubcp:/
+      - name: _MSWpackage package_ubiquitous_bash-msw
+        shell: pwsh
+        timeout-minutes: 240
+        run: |
+          cd ..
+          7z -y a -t7z /package_ubiquitous_bash-msw.7z ./ubiquitous_bash | tee /package_ubiquitous_bash-msw.log
+          rclone --progress --config="/rclone.conf" copy /package_ubiquitous_bash-msw.log distLLC_build_ubcp:/
+          rclone --progress --config="/rclone.conf" copy /package_ubiquitous_bash-msw.7z distLLC_build_ubcp:/
+          rm /package_ubiquitous_bash-msw.7z
+      - name: statement! package_ubiquitous_bash-msw
+        run: |
+          cat /package_ubiquitous_bash-msw.log
+        shell: pwsh
+      - name: statement! ls
+        shell: pwsh
+        run: |
+          ls /
+          ls
+          Get-CimInstance -ClassName Win32_LogicalDisk | Select-Object -Property DeviceID,@{'Name' = 'FreeSpace (GB)'
+          Expression= { [int]($_.FreeSpace / 1GB) }}
+      - name: _setup_ubcp
+        shell: pwsh
+        timeout-minutes: 240
+        run: |
+          ./_bin _setup_ubcp / | tee /_setup_ubcp.log
+      - name: statement! ls
+        shell: pwsh
+        run: |
+          ls /
+          ls
+          Get-CimInstance -ClassName Win32_LogicalDisk | Select-Object -Property DeviceID,@{'Name' = 'FreeSpace (GB)'
+          Expression= { [int]($_.FreeSpace / 1GB) }}
+      - name: _MSWpackage package_ubcp-core
+        shell: pwsh
+        timeout-minutes: 240
+        run: |
+          cd ..
+          7z -y a -t7z /package_ubcp-core.7z /core/infrastructure/ubcp /core/infrastructure/ubiquitous_bash | tee /package_ubcp-core.log
+          rclone --progress --config="/rclone.conf" copy /package_ubcp-core.log distLLC_build_ubcp:/
+          rclone --progress --config="/rclone.conf" copy /package_ubcp-core.7z distLLC_build_ubcp:/
+          rm /package_ubcp-core.7z
+          Remove-Item -Recurse -Force /core/infrastructure/ubcp
+          Remove-Item -Recurse -Force /core/infrastructure/ubiquitous_bash
+      - name: _MSWpackage package_ubiquitous_bash-msw-rotten
+        shell: pwsh
+        timeout-minutes: 240
+        run: |
+          cd ..
+          rm ./ubiquitous_bash/_local/ubcp/package_ubcp-cygwinOnly.tar.xz
+          7z -y a -t7z /package_ubiquitous_bash-msw-rotten.7z ./ubiquitous_bash | tee /package_ubiquitous_bash-msw-rotten.log
+          rclone --progress --config="/rclone.conf" copy /package_ubiquitous_bash-msw-rotten.log distLLC_build_ubcp:/
+          rclone --progress --config="/rclone.conf" copy /package_ubiquitous_bash-msw-rotten.7z distLLC_build_ubcp:/
+          rm /package_ubiquitous_bash-msw-rotten.7z
       # https://adamtheautomator.com/powershell-get-disk-space/
       - name: statement! ls
         shell: pwsh
@@ -94,27 +193,6 @@ jobs:
           ls
           Get-CimInstance -ClassName Win32_LogicalDisk | Select-Object -Property DeviceID,@{'Name' = 'FreeSpace (GB)'
           Expression= { [int]($_.FreeSpace / 1GB) }}
-      - name: statement! ubcp-cygwin-portable-installer
-        run: |
-          cat /ubcp-cygwin-portable-installer.log
-        shell: pwsh
-      - name: statement! _setupUbiquitous
-        run: |
-          Get-Content -Path /_setupUbiquitous.log | Measure-Object -Line -Word -Character
-          cat /_setupUbiquitous.log
-        shell: pwsh
-      - name: statement! statistics! _mitigate-ubcp
-        run: |
-          Get-Content -Path /_mitigate-ubcp.log | Measure-Object -Line -Word -Character
-        shell: pwsh
-      - name: statement! package_ubiquitous_bash-msw
-        run: |
-          cat /package_ubiquitous_bash-msw.log
-        shell: pwsh
-      - name: statement! test-lean
-        run: |
-          cat /_test-lean.log
-        shell: pwsh
 
 
 
