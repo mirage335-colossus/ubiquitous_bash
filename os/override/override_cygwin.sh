@@ -272,8 +272,10 @@ _discoverResource-cygwinNative-ProgramFiles() {
 	[[ "$3" != "true" ]] && type "$currentBinary_functionName" > /dev/null 2>&1 && return 0
 	
 	# ATTENTION: Configure: 'c..w' (aka. 'w..c') .
+	# WARNING: Program Files at drive letters other than 'c' may not be supported now or ever. Especially other than 'c,d,e'.
 	unset currentDriveLetter_cygwin_uk4uPhB663kVcygT0q
-	for currentDriveLetter_cygwin_uk4uPhB663kVcygT0q in {c..w}
+	#for currentDriveLetter_cygwin_uk4uPhB663kVcygT0q in {c..w}
+	for currentDriveLetter_cygwin_uk4uPhB663kVcygT0q in {c..f}
 	do
 		_discoverResource-cygwinNative-ProgramFiles-declaration-ProgramFiles "$@"
 		[[ "$3" != "true" ]] && type "$currentBinary_functionName" > /dev/null 2>&1 && return 0
@@ -314,9 +316,6 @@ then
 		
 		_discoverResource-cygwinNative-ProgramFiles 'nmap' 'Nmap' false
 		
-		# WARNING: Native 'vncviewer.exe' is a GUI app, and cannot be launched directly from Cygwin SSH server.
-		_discoverResource-cygwinNative-ProgramFiles 'vncviewer' 'TigerVNC' false '_workaround_cygwin_tmux '
-		
 		_discoverResource-cygwinNative-ProgramFiles 'qalc' 'Qalculate' false
 		
 		
@@ -334,7 +333,11 @@ then
 		
 		
 		
+		# CAUTION: Performance - such '_discoverResource' functions are time consuming . If reasonable, instead call only from functions as necessary (eg. as part of '_userVBox') .
 		
+		
+		# WARNING: Native 'vncviewer.exe' is a GUI app, and cannot be launched directly from Cygwin SSH server.
+		_discoverResource-cygwinNative-ProgramFiles 'vncviewer' 'TigerVNC' false '_workaround_cygwin_tmux '
 		
 		_discoverResource-cygwinNative-ProgramFiles 'kate' 'Kate/bin' false
 	fi
