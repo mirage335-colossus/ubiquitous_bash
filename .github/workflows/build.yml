@@ -75,14 +75,17 @@ jobs:
           cd ./_local/ubcp
           .\ubcp-cygwin-portable-installer | tee /ubcp-cygwin-portable-installer.log
           cp ubcp_rename-to-enable.cmd ubcp.cmd
+      - name: _disable_fileBlocking
+        shell: pwsh
+        timeout-minutes: 180
+        run: |
+          mv _local/ubcp/cygwin/bin/ssh-pageant.exe _local/ubcp/cygwin/bin/ssh-pageant.disabled
+          cp _local/ubcp/cygwin/bin/true.exe _local/ubcp/cygwin/bin/ssh-pageant.exe
       - name: _setupUbiquitous
         shell: pwsh
         timeout-minutes: 180
         run: |
           .\_setupUbiquitous | tee /_setupUbiquitous.log
-          .\_setupUbiquitous
-          .\_bin echo test
-          cmd /c ".\_bin.bat echo test"
       # https://adamtheautomator.com/powershell-get-disk-space/
       - name: statement! ls
         shell: pwsh

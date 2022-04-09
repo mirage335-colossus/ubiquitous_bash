@@ -3,6 +3,8 @@
 # powershell -ExecutionPolicy Bypass -File build_ubcp_powershell.ps1
 
 # Script as of 2022-04-07 has been compatible as a custom script extension for 'provisioning' an Azure VM in the cloud, resulting in a build created and uploaded.
+# At least some changes since may change correct syntax for some commands.
+#  *) Batch files may now use 'goto end' or 'goto :eof' instead of 'exit' .
 
 
 
@@ -269,8 +271,13 @@ cd ../..
 cd '~/ubiquitous_bash'
 
 
+echo 'begin: _disable_fileBlocking'
+mv '_local/ubcp/cygwin/bin/ssh-pageant.exe' '_local/ubcp/cygwin/bin/ssh-pageant.disabled'
+cp _local/ubcp/cygwin/bin/true.exe _local/ubcp/cygwin/bin/ssh-pageant.exe
+
+
 echo 'begin: _setupUbiquitous'
-cmd /c .\_setupUbiquitous.bat | tee /_setupUbiquitous.log
+.\_setupUbiquitous | tee /_setupUbiquitous.log
 
 
 echo 'begin: _package-cygwinOnly (noMitigation)'
