@@ -8,6 +8,7 @@ set "CYGWIN_PATH=%SystemRoot%\system32;%SystemRoot%;%CYGWIN_ROOT%\bin"
 for /f "tokens=*" %%i in ('where adb.exe 2^>NUL') do set "CYGWIN_PATH=%CYGWIN_PATH%;%%i\.."
 for /f "tokens=*" %%i in ('where docker.exe 2^>NUL') do set "CYGWIN_PATH=%CYGWIN_PATH%;%%i\.."
 set "PATH=%CYGWIN_PATH%"
+set "MSWEXTPATH=%PATH%"
 
 set "ALLUSERSPROFILE=%CYGWIN_ROOT%\.ProgramData"
 set "ProgramData=%ALLUSERSPROFILE%"

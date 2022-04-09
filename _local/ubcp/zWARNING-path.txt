@@ -1,0 +1,11 @@
+
+Upstream 'cygwin portable' may not include path from MSW for performance reasons.
+
+Adding ';%PATH%' to 'set PATH' in 'ubcp_rename-to-enable.cmd' may improve usability, especially for developers.
+
+Better is to set 'MSWEXTPATH=%PATH%' in 'ubcp_rename-to-enable.cmd', so this can be used only for interactive shells and only appended after preferable Cygwin (ie. ~/bin) PATH .
+
+
+
+
+
