@@ -60,6 +60,7 @@ jobs:
           git config --global core.autocrlf input
           git config --global core.eol lf
           choco install 7zip.install -y
+          choco install rclone -y
       - uses: actions/checkout@v2
       - name: statement! ls
         shell: pwsh
