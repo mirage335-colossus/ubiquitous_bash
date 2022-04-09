@@ -725,7 +725,7 @@ REM ATTENTION: WARNING: Do NOT uncomment without correcting and testing all file
 REM DANGER: Beware this must behave correctly under BOTH MSW and native UNIX platforms.
 REM IF EXIST "C:\core\infrastructure\ubAnchorMSWselfReinterpret\ubcp.cmd" (
 REM "C:\core\infrastructure\ubAnchorMSWselfReinterpret\ubcp.cmd" "%~dp0%0" MSWselfReinterpret %*
-REM goto :eof
+REM goto end
 REM REM exit
 REM )
 
@@ -737,7 +737,7 @@ REM Ubiquitous Bash Cygwin Portable - Anchor (Batch Version)
 
 if "%~1"=="ubAnchorSelfTestOnly" (
 	echo PASS-BATCH
-	goto :eof
+	goto end
 REM exit
 )
 
@@ -1142,7 +1142,7 @@ IF EXIST "%ubcp_cmd_dir%"\cygwin goto b1
 
 
 REM FAILURE
-IF NOT EXIST "%ubcp_cmd_dir%"\cygwin goto :eof
+IF NOT EXIST "%ubcp_cmd_dir%"\cygwin goto end
 REM exit
 
 
@@ -1150,7 +1150,7 @@ REM exit
 SET "ubcp_cmd_path=%ubcp_cmd_dir%\%ubcp_cmd_file%"
 
 REM FAILURE
-IF NOT EXIST "%ubcp_cmd_path%" goto :eof
+IF NOT EXIST "%ubcp_cmd_path%" goto end
 REM exit
 
 REM echo "%ubcp_cmd_path%"
@@ -1225,14 +1225,14 @@ REM echo "C:\core\installations\%MSWanchorSourcePath%"
 REM Neighboring in the same directory.
 IF EXIST "%~dp0%MSWanchorSource%" (
 "%ubcp_cmd_path%" "%~dp0%MSWanchorSource%" "%MSWanchorName%" %*
-goto :eof
+goto end
 REM exit
 )
 
 REM Direct subdirectory.
 IF EXIST "%~dp0%MSWanchorSourcePath%" (
 "%ubcp_cmd_path%" "%~dp0%MSWanchorSourcePath%" "%MSWanchorName%" %*
-goto :eof
+goto end
 REM exit
 )
 
@@ -1240,14 +1240,14 @@ REM exit
 REM Program Files .
 IF EXIST "C:\Program Files\%MSWanchorSourcePath%" (
 "%ubcp_cmd_path%" "C:\Program Files\%MSWanchorSourcePath%" "%MSWanchorName%" %*
-goto :eof
+goto end
 REM exit
 )
 
 REM Program Files (x86) .
 IF EXIST "C:\Program Files (x86)\%MSWanchorSourcePath%" (
 "%ubcp_cmd_path%" "C:\Program Files (x86)\%MSWanchorSourcePath%" "%MSWanchorName%" %*
-goto :eof
+goto end
 REM exit
 )
 
@@ -1257,7 +1257,7 @@ REM AppData (Local) .
 REM https://www.thewindowsclub.com/local-localnow-roaming-folders-windows-10/
 IF EXIST "%LOCALAPPDATA%\%MSWanchorSourcePath%" (
 "%ubcp_cmd_path%" "%LOCALAPPDATA%\%MSWanchorSourcePath%" "%MSWanchorName%" %*
-goto :eof
+goto end
 REM exit
 )
 
@@ -1265,7 +1265,7 @@ REM exit
 REM core infrastructure .
 IF EXIST "C:\core\infrastructure\%MSWanchorSourcePath%" (
 "%ubcp_cmd_path%" "C:\core\infrastructure\%MSWanchorSourcePath%" "%MSWanchorName%" %*
-goto :eof
+goto end
 REM exit
 )
 
@@ -1273,7 +1273,7 @@ REM exit
 REM core installations .
 IF EXIST "C:\core\installations\%MSWanchorSourcePath%" (
 "%ubcp_cmd_path%" "C:\core\installations\%MSWanchorSourcePath%" "%MSWanchorName%" %*
-goto :eof
+goto end
 REM exit
 )
 
@@ -1284,12 +1284,15 @@ REM ATTENTION: DANGER: Comment out in production use.
 REM echo PASS-BATCH
 REM IF EXIST "C:\core\infrastructure\ubAnchorMSWselfReinterpret\ubcp.cmd" (
 REM "C:\core\infrastructure\ubAnchorMSWselfReinterpret\ubcp.cmd" "%~dp0%0" ubAnchorSelfTestOnly
-REM goto :eof
+REM goto end
 REM REM exit
 REM )
 
 
 exit
 
+
 REM # https://devblogs.microsoft.com/oldnewthing/20120802-00/?p=6973
+REM # https://www.computerhope.com/goto.htm
+
 :end
