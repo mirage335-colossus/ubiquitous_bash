@@ -301,7 +301,7 @@ _ops_cygwinOverride_allDisks() {
 }
 
 # WARNING: What is otherwise considered bad practice may be accepted to reduce substantial MSW/Cygwin inconvenience .
-[[ "$profileScriptLocation_new" == 'true' ]] && echo -n '-'
+[[ "$profileScriptLocation_new" == 'true' ]] && echo -n '.'
 
 if [[ -e /cygdrive ]] && _if_cygwin
 then
@@ -347,7 +347,7 @@ then
 fi
 
 # WARNING: What is otherwise considered bad practice may be accepted to reduce substantial MSW/Cygwin inconvenience .
-[[ "$profileScriptLocation_new" == 'true' ]] && echo -n '-'
+[[ "$profileScriptLocation_new" == 'true' ]] && echo -n '.'
 
 
 
