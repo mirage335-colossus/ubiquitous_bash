@@ -104,6 +104,15 @@ jobs:
         run: |
           .\_test | tee /_test-lean.log
           rclone --progress --config="/rclone.conf" copy /_test-lean.log distLLC_build_ubcp:/
+          $SEL = cat /_test-lean.log | Select-String -Pattern 'PASS -CaseSensitive -SimpleMatch
+          if ($SEL -ne $null)
+          {
+          cat /bin/false/pwsh
+          }
+          else
+          {
+          echo true | Out-Null
+          }
       - name: statement! test-lean
         run: |
           cat /_test-lean.log
