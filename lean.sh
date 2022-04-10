@@ -32,7 +32,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='1891409836'
-export ub_setScriptChecksum_contents='831206927'
+export ub_setScriptChecksum_contents='3738420820'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -4351,6 +4351,19 @@ _getDep() {
 	_fetchDep_distro "$@"
 	
 	_mustGetDep "$@"
+}
+
+_stopwatch() {
+	local measureDateA
+	local measureDateB
+	
+	measureDateA=$(date +%s%N | cut -b1-13)
+
+	"$@"
+
+	measureDateB=$(date +%s%N | cut -b1-13)
+
+	bc <<< "$measureDateB - $measureDateA"
 }
 
 _resetFakeHomeEnv_extra() {
@@ -11428,11 +11441,17 @@ _test-shell-cygwin() {
 	
 	
 	local currentScriptTime
-	if [[ -e "$scriptAbsoluteFolder"/ubiquitous_bash.sh ]]
+	if type _stopwatch > /dev/null 2>&1
 	then
-		currentScriptTime=$(_timeout 45 _stopwatch "$scriptAbsoluteFolder"/ubiquitous_bash.sh _true 2>/dev/null | tr -dc '0-9')
+		if [[ -e "$scriptAbsoluteFolder"/ubiquitous_bash.sh ]]
+		then
+			currentScriptTime=$(_timeout 45 _stopwatch "$scriptAbsoluteFolder"/ubiquitous_bash.sh _true 2>/dev/null | tr -dc '0-9')
+		else
+			currentScriptTime=$(_timeout 45 _stopwatch "$scriptAbsoluteLocation" _true 2>/dev/null | tr -dc '0-9')
+		fi
 	else
-		currentScriptTime=$(_timeout 45 _stopwatch "$scriptAbsoluteLocation" _true 2>/dev/null | tr -dc '0-9')
+		# If '_stopwatch' is not available, assume this is not an issue.
+		currentScriptTime="2000"
 	fi
 	
 	# Unusual, broken, non-desktop, etc user/login/account/etc configuration in MSW, might cause prohibitively long Cygwin delays.
@@ -11512,7 +11531,7 @@ _test-shell() {
 	#then
 		_tryExec "_test_getAbsoluteLocation"
 	#fi
-	
+	_messagePASS
 	
 	
 	if _if_cygwin
@@ -11521,7 +11540,7 @@ _test-shell() {
 	fi
 	
 	
-	_messagePASS
+	
 }
 
 _test() {

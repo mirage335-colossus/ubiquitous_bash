@@ -9,7 +9,7 @@ _compile_bash_deps() {
 		
 		#_deps_virt_translation
 		
-		#_deps_stopwatch
+		_deps_stopwatch
 		
 		_deps_queue
 		
@@ -103,6 +103,8 @@ _compile_bash_deps() {
 		
 		_deps_queue
 		_deps_metaengine
+		
+		_deps_stopwatch
 		
 		return 0
 	fi

@@ -1024,11 +1024,17 @@ _test-shell-cygwin() {
 	
 	
 	local currentScriptTime
-	if [[ -e "$scriptAbsoluteFolder"/ubiquitous_bash.sh ]]
+	if type _stopwatch > /dev/null 2>&1
 	then
-		currentScriptTime=$(_timeout 45 _stopwatch "$scriptAbsoluteFolder"/ubiquitous_bash.sh _true 2>/dev/null | tr -dc '0-9')
+		if [[ -e "$scriptAbsoluteFolder"/ubiquitous_bash.sh ]]
+		then
+			currentScriptTime=$(_timeout 45 _stopwatch "$scriptAbsoluteFolder"/ubiquitous_bash.sh _true 2>/dev/null | tr -dc '0-9')
+		else
+			currentScriptTime=$(_timeout 45 _stopwatch "$scriptAbsoluteLocation" _true 2>/dev/null | tr -dc '0-9')
+		fi
 	else
-		currentScriptTime=$(_timeout 45 _stopwatch "$scriptAbsoluteLocation" _true 2>/dev/null | tr -dc '0-9')
+		# If '_stopwatch' is not available, assume this is not an issue.
+		currentScriptTime="2000"
 	fi
 	
 	# Unusual, broken, non-desktop, etc user/login/account/etc configuration in MSW, might cause prohibitively long Cygwin delays.
@@ -1108,7 +1114,7 @@ _test-shell() {
 	#then
 		_tryExec "_test_getAbsoluteLocation"
 	#fi
-	
+	_messagePASS
 	
 	
 	if _if_cygwin
@@ -1117,7 +1123,7 @@ _test-shell() {
 	fi
 	
 	
-	_messagePASS
+	
 }
 
 _test() {
