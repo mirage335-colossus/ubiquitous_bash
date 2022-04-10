@@ -99,7 +99,15 @@ QgGi6nBnxhDESgC1fQ6p4D6w2joYaBQzVX0ShFGEK+bvZ6VjUbYJlLF4gx2eezXDlEClVs6t/VpATWVe
 6Q2uqurIYFG/4bzAesrLfJaMbHC5QEx2yRFLlLaXzwYBqGzW1kQN1LZUOdFDF746w4C4eMXwHmuiAdpwV2muM75Gv4UeLCX8pXZlUOuUnruNLaDG9Tq1m+cWA1lXHyWJ4wB4kyv4KtgYXHsQL1t6bC8gD9ly
 TvtNA8FiEDaU4PeofKVcYpu+2JSbjM6pr/bbQKOmEr2szDpnOSz/0dZivx9HodtgWaii7I0ZRCSi9eNbuNfa+H7BpKNBHwAAADfa2eLaotFaAAH2BohWAACvFwLPscRn+wIAAAAABFla'
 ! echo "$current_internal_compressedScript_headerFunctions" | base64 -d | xz -d > /dev/null && exit 1
-source <(echo "$current_internal_compressedScript_headerFunctions" | base64 -d | xz -d)
+if [[ -e /cygdrive ]] && uname -a | grep -i cygwin > /dev/null 2>&1
+then
+	export tmpMSW_compressed=$( cd "$LOCALAPPDATA" 2>/dev/null ; pwd )"/Temp"/uk4u_"$RANDOM""$RANDOM""$RANDOM".sh
+	echo "$current_internal_compressedScript_headerFunctions" | base64 -d | xz -d > "$tmpMSW_compressed"
+	source "$tmpMSW_compressed"
+	rm -f "$tmpMSW_compressed"
+else
+	source <(echo "$current_internal_compressedScript_headerFunctions" | base64 -d | xz -d)
+fi
 export importScriptLocation=$(_getScriptAbsoluteLocation)
 export importScriptFolder=$(_getScriptAbsoluteFolder)
 ! type readlink > /dev/null 2>&1 && exit 1;
@@ -122,7 +130,14 @@ elif [[ "$1" == "--profile" ]] || [[ "$1" == "--parent" ]]
 then
 	source <(echo "$current_internal_CompressedScript" | base64 -d | xz -d) "$@"
 else
-	source <(echo "$current_internal_CompressedScript" | base64 -d | xz -d) --compressed "$@"
+	if [[ -e /cygdrive ]] && uname -a | grep -i cygwin > /dev/null 2>&1
+	then
+		echo "$current_internal_CompressedScript" | base64 -d | xz -d > "$tmpMSW_compressed"
+		source "$tmpMSW_compressed"
+		rm -f "$tmpMSW_compressed"
+	else
+		source <(echo "$current_internal_CompressedScript" | base64 -d | xz -d) --compressed "$@"
+	fi
 	ub_import=
 	ub_import_param=
 	ub_import_script=

@@ -207,7 +207,18 @@ _generate_compile_bash-compressed_procedure() {
 	echo 'current_internal_compressedScript_headerFunctions='\' >> "$scriptAbsoluteFolder"/"$1"_compressed.sh
 	echo "$current_internal_compressedScript_headerFunctions"\' >> "$scriptAbsoluteFolder"/"$1"_compressed.sh
 	echo '! echo "$current_internal_compressedScript_headerFunctions" | base64 -d | xz -d > /dev/null && exit 1' >> "$scriptAbsoluteFolder"/"$1"_compressed.sh
-	echo 'source <(echo "$current_internal_compressedScript_headerFunctions" | base64 -d | xz -d)' >> "$scriptAbsoluteFolder"/"$1"_compressed.sh
+	#echo 'source <(echo "$current_internal_compressedScript_headerFunctions" | base64 -d | xz -d)' >> "$scriptAbsoluteFolder"/"$1"_compressed.sh
+	cat << 'CZXWXcRMTo8EmM8i4d' >> "$scriptAbsoluteFolder"/"$1"_compressed.sh
+if [[ -e /cygdrive ]] && uname -a | grep -i cygwin > /dev/null 2>&1
+then
+	export tmpMSW_compressed=$( cd "$LOCALAPPDATA" 2>/dev/null ; pwd )"/Temp"/uk4u_"$RANDOM""$RANDOM""$RANDOM".sh
+	echo "$current_internal_compressedScript_headerFunctions" | base64 -d | xz -d > "$tmpMSW_compressed"
+	source "$tmpMSW_compressed"
+	rm -f "$tmpMSW_compressed"
+else
+	source <(echo "$current_internal_compressedScript_headerFunctions" | base64 -d | xz -d)
+fi
+CZXWXcRMTo8EmM8i4d
 	cat << 'CZXWXcRMTo8EmM8i4d' >> "$scriptAbsoluteFolder"/"$1"_compressed.sh
 export importScriptLocation=$(_getScriptAbsoluteLocation)
 export importScriptFolder=$(_getScriptAbsoluteFolder)
@@ -241,7 +252,14 @@ elif [[ "$1" == "--profile" ]] || [[ "$1" == "--parent" ]]
 then
 	source <(echo "$current_internal_CompressedScript" | base64 -d | xz -d) "$@"
 else
-	source <(echo "$current_internal_CompressedScript" | base64 -d | xz -d) --compressed "$@"
+	if [[ -e /cygdrive ]] && uname -a | grep -i cygwin > /dev/null 2>&1
+	then
+		echo "$current_internal_CompressedScript" | base64 -d | xz -d > "$tmpMSW_compressed"
+		source "$tmpMSW_compressed"
+		rm -f "$tmpMSW_compressed"
+	else
+		source <(echo "$current_internal_CompressedScript" | base64 -d | xz -d) --compressed "$@"
+	fi
 	ub_import=
 	ub_import_param=
 	ub_import_script=

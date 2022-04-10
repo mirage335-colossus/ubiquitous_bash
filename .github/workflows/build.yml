@@ -1,6 +1,4 @@
 
-# WARNING: May be untested .
-
 name: build
 on:
   workflow_dispatch:
@@ -19,7 +17,7 @@ concurrency:
 # https://svrooij.io/2021/08/17/github-actions-secret-file/
 jobs:
   build_ubcp:
-    runs-on: windows-latest # Code should run on any platform, change accordingly
+    runs-on: windows-latest
     steps:
       # https://svrooij.io/2021/08/17/github-actions-secret-file/
       #$secretFileHash = Get-FileHash $secretFile;
