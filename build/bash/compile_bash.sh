@@ -125,6 +125,8 @@ _compile_bash_deps() {
 		
 		_deps_abstractfs
 		
+		_deps_stopwatch
+		
 		return 0
 	fi
 	
@@ -145,6 +147,8 @@ _compile_bash_deps() {
 		
 		_deps_fakehome
 		_deps_abstractfs
+		
+		_deps_stopwatch
 		
 		return 0
 	fi
