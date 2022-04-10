@@ -56,7 +56,7 @@ jobs:
           mkdir /core
           mkdir /core/infrastructure
           cd /core/infrastructure
-          rclone --progress --config ./rclone.conf copy distLLC_release_ro:ubcp/package_ubcp-core.7z ./
+          rclone --progress --config /rclone.conf copy distLLC_release_ro:ubcp/package_ubcp-core.7z ./
           7z -y x ./package_ubcp-core.7z | tee /_getCore_ubcp.log
       - uses: actions/checkout@v2
       - name: statement! ls
