@@ -110,6 +110,12 @@ _installUbiquitous() {
 _setupUbiquitous() {
 	_messageNormal "init: setupUbiquitous"
 	
+	if _if_cygwin
+	then
+		git config --global core.autocrlf input
+		git config --global core.eol lf
+	fi
+	
 	_force_cygwin_symlinks
 	_if_cygwin && _setup_ubiquitousBash_cygwin_procedure
 	
