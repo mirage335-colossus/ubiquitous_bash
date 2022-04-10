@@ -9,6 +9,8 @@ _if_cygwin() {
 	return 1
 }
 
+# WARNING: What is otherwise considered bad practice may be accepted to reduce substantial MSW/Cygwin inconvenience .
+[[ "\$profileScriptLocation_new" == 'true' ]] && echo -n '+'
 
 
 # WARNING: What is otherwise considered bad practice may be accepted to reduce substantial MSW/Cygwin inconvenience .
@@ -924,5 +926,6 @@ _package-cygwin() {
 
 
 
-
+# WARNING: What is otherwise considered bad practice may be accepted to reduce substantial MSW/Cygwin inconvenience .
+[[ "\$profileScriptLocation_new" == 'true' ]] && echo -n '+'
 
