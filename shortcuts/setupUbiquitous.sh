@@ -112,8 +112,9 @@ _setupUbiquitous() {
 	
 	if _if_cygwin
 	then
-		git config --global core.autocrlf input
-		git config --global core.eol lf
+		echo 'detected: cygwin'
+		_messagePlain_probe_cmd git config --global core.autocrlf input
+		_messagePlain_probe_cmd git config --global core.eol lf
 	fi
 	
 	_force_cygwin_symlinks
