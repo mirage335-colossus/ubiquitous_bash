@@ -1074,7 +1074,7 @@ _test-shell-cygwin() {
 	
 	local currentPathCount
 	currentPathCount=$(echo "$MSWEXTPATH" | grep -o ';\|:' | wc -l | tr -dc '0-9')
-	if [[ "$currentPathCount" -gt 50 ]]
+	if [[ "$currentPathCount" -gt 50 ]] && [[ "$CI" == "" ]]
 	then
 		echo 'fail: count: MSWEXTPATH: '"$currentPathCount"
 		_messageFAIL
