@@ -41,6 +41,7 @@ _compile_bash_deps() {
 		
 		
 		_deps_distro
+		_deps_getMinimal
 		_deps_linux
 		
 		_deps_python
@@ -207,6 +208,7 @@ _compile_bash_deps() {
 		#_deps_cloud_build
 		
 		_deps_distro
+		_deps_getMinimal
 		
 		#_deps_blockchain
 		
@@ -293,6 +295,7 @@ _compile_bash_deps() {
 		#_deps_cloud_build
 		
 		_deps_distro
+		_deps_getMinimal
 		
 		#_deps_blockchain
 		
@@ -379,6 +382,7 @@ _compile_bash_deps() {
 		_deps_cloud_build
 		
 		_deps_distro
+		_deps_getMinimal
 		
 		_deps_blockchain
 		
@@ -538,6 +542,8 @@ _compile_bash_utilities() {
 	[[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "os/distro/ubuntu"/getDep_ubuntu.sh )
 	
 	[[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "os/distro"/getMost.sh )
+	
+	[[ "$enUb_getMinimal" == "true" ]] && includeScriptList+=( "os/distro"/getMinimal.sh )
 	
 	
 	[[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "os/unix/systemd"/here_systemd.sh )

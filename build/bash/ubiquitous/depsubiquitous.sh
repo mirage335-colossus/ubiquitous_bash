@@ -144,6 +144,10 @@ _deps_distro() {
 	export enUb_distro="true"
 }
 
+_deps_getMinimal() {
+	export enUb_getMinimal="true"
+}
+
 _deps_build() {
 	export enUb_build="true"
 }
