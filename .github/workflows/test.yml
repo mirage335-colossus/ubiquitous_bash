@@ -25,13 +25,18 @@ jobs:
     steps:
       - name: _getCore_ub
         shell: bash
-        timeout-minutes: 180
+        timeout-minutes: 90
         run: |
           mkdir -p ~/core/infrastructure
           cd ~/core/infrastructure
           git clone --depth 1 --recursive https://github.com/mirage335/ubiquitous_bash.git
           cd ubiquitous_bash
           ./_setupUbiquitous.bat
+      - name: _getMinimal_cloud
+        shell: bash
+        run: |
+          ./ubiquitous_bash.sh _getMinimal_cloud
+        timeout-minutes: 90
       - name: write! secrets
         shell: bash
         run: |
@@ -47,7 +52,7 @@ jobs:
         timeout-minutes: 90
       - name: _compile
         shell: bash
-        timeout-minutes: 240
+        timeout-minutes: 90
         run: |
           ./_bin ./compile.sh | sudo -n tee /_compile-cygwin.log
           ./_bin ./compile.sh
