@@ -32,11 +32,6 @@ jobs:
           git clone --depth 1 --recursive https://github.com/mirage335/ubiquitous_bash.git
           cd ubiquitous_bash
           ./_setupUbiquitous.bat
-      - name: _getMinimal_cloud
-        shell: bash
-        run: |
-          ./ubiquitous_bash.sh _getMinimal_cloud
-        timeout-minutes: 90
       - name: write! secrets
         shell: bash
         run: |
@@ -45,6 +40,11 @@ jobs:
           rclone_limited_conf_base64: ${{ secrets.rclone_limited_conf_base64 }}
         timeout-minutes: 5
       - uses: actions/checkout@v2
+      - name: _getMinimal_cloud
+        shell: bash
+        run: |
+          ./ubiquitous_bash.sh _getMinimal_cloud
+        timeout-minutes: 90
       - name: test-lean
         shell: bash
         run: |
