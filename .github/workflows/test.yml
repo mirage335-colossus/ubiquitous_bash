@@ -34,10 +34,10 @@ jobs:
           ./_setupUbiquitous.bat
       - name: write! secrets
         shell: bash
-        env:
-          rclone_limited_conf_base64: ${{ secrets.rclone_limited_conf_base64 }}
         run: |
           ~/core/infrastructure/ubiquitous_bash/ubiquitous_bash.sh _prepare_rclone_limited_file
+        env:
+          rclone_limited_conf_base64: ${{ secrets.rclone_limited_conf_base64 }}
         timeout-minutes: 5
       - uses: actions/checkout@v2
       - name: test-lean
@@ -57,6 +57,13 @@ jobs:
         run: |
           ./lean_compressed.sh _test | sudo -n tee /_test-lean-compressed.log
         timeout-minutes: 90
+      - name: Setup tmate session
+        if: ${{ failure() }}
+        uses: mxschmitt/action-tmate@v3
+        # ssh -i <path-to-key> <tmate-connection-string>
+        with:
+          limit-access-to-actor: true
+        timeout-minutes: 25
   # Other 'ubcp' tests must be essentially identical.
   test_ubcp_release_mswLatest:
     runs-on: windows-latest
