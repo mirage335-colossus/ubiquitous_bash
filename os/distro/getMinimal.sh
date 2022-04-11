@@ -163,9 +163,10 @@ _getMinimal_cloud() {
 	#_getMost_backend apt-get upgrade
 	
 	
-	export devfast="true"
-	"$scriptAbsoluteLocation" _test
-	export devfast=
-	unset devfast
+	# ATTENTION: Enable. Disabled by default to avoid testing for all dependencies of *complete* 'ubiquitous_bash' .
+	#export devfast="true"
+	#"$scriptAbsoluteLocation" _test
+	#export devfast=
+	#unset devfast
 }
 
