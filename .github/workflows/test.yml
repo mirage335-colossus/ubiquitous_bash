@@ -59,9 +59,9 @@ jobs:
         shell: bash
         timeout-minutes: 90
         run: |
-          ./_bin ./compile.sh | sudo -n tee /_compile-cygwin.log
-          ./_bin ./compile.sh
-          ./_bin ./compile.sh
+          ./_bin.bat ./compile.sh | sudo -n tee /_compile-cygwin.log
+          ./_bin.bat ./compile.sh
+          ./_bin.bat ./compile.sh
       - name: test-lean-compressed
         shell: bash
         run: |
@@ -141,14 +141,14 @@ jobs:
         shell: pwsh
         timeout-minutes: 240
         run: |
-          ./_bin ./compile.sh | tee /_compile-cygwin.log
-          ./_bin ./compile.sh
-          ./_bin ./compile.sh
+          ./_bin.bat ./compile.sh | tee /_compile-cygwin.log
+          ./_bin.bat ./compile.sh
+          ./_bin.bat ./compile.sh
       - name: _test-lean-compressed
         shell: pwsh
         timeout-minutes: 240
         run: |
-          ./_bin ./lean_compressed.sh _test | tee /_test-lean-compressed.log
+          ./_bin.bat ./lean_compressed.sh _test | tee /_test-lean-compressed.log
           $SEL = cat /_test-lean-compressed.log | Select-String -Pattern 'FAIL' -CaseSensitive -SimpleMatch
           if ($SEL -ne $null)
           {
@@ -224,14 +224,14 @@ jobs:
         shell: pwsh
         timeout-minutes: 240
         run: |
-          ./_bin ./compile.sh | tee /_compile-cygwin.log
-          ./_bin ./compile.sh
-          ./_bin ./compile.sh
+          ./_bin.bat ./compile.sh | tee /_compile-cygwin.log
+          ./_bin.bat ./compile.sh
+          ./_bin.bat ./compile.sh
       - name: _test-lean-compressed
         shell: pwsh
         timeout-minutes: 240
         run: |
-          ./_bin ./lean_compressed.sh _test | tee /_test-lean-compressed.log
+          ./_bin.bat ./lean_compressed.sh _test | tee /_test-lean-compressed.log
           $SEL = cat /_test-lean-compressed.log | Select-String -Pattern 'FAIL' -CaseSensitive -SimpleMatch
           if ($SEL -ne $null)
           {
@@ -307,14 +307,14 @@ jobs:
         shell: pwsh
         timeout-minutes: 240
         run: |
-          ./_bin ./compile.sh | tee /_compile-cygwin.log
-          ./_bin ./compile.sh
-          ./_bin ./compile.sh
+          ./_bin.bat ./compile.sh | tee /_compile-cygwin.log
+          ./_bin.bat ./compile.sh
+          ./_bin.bat ./compile.sh
       - name: _test-lean-compressed
         shell: pwsh
         timeout-minutes: 240
         run: |
-          ./_bin ./lean_compressed.sh _test | tee /_test-lean-compressed.log
+          ./_bin.bat ./lean_compressed.sh _test | tee /_test-lean-compressed.log
           $SEL = cat /_test-lean-compressed.log | Select-String -Pattern 'FAIL' -CaseSensitive -SimpleMatch
           if ($SEL -ne $null)
           {
