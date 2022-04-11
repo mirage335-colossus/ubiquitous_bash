@@ -177,7 +177,7 @@ jobs:
         timeout-minutes: 240
         run: |
           cd ..
-          7z -y a -t7z /package_ubcp-core.7z /core/infrastructure/ubcp /core/infrastructure/ubiquitous_bash | tee /package_ubcp-core.log
+          7z -y a -t7z /package_ubcp-core.7z /core/infrastructure/ubcp /core/infrastructure/ubiquitous_bash /_bash.bat | tee /package_ubcp-core.log
           rclone --progress --config="/rclone.conf" copy /package_ubcp-core.log distLLC_build_ubcp:/
           rclone --progress --config="/rclone.conf" copy /package_ubcp-core.7z distLLC_build_ubcp:/
           rm /package_ubcp-core.7z

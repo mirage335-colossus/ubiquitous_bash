@@ -489,6 +489,11 @@ _setup_ubiquitousBash_cygwin_procedure() {
 	#sudo -n "$scriptAbsoluteLocation" _setup_ubiquitousBash_cygwin_procedure_root "$@"
 	
 	
+	# ATTENTION: NOTICE: Any installer for developers which relies on unpacking directories to '/core/infrastructure' must also add this to '/' .
+	# Having '_bash.bat' at '/' normally allows developers to get a bash prompt from both 'CMD' and 'PowerShell' terminal windows by '/_bash' command.
+	cp "$scriptAbsoluteFolder"/_bash.bat "$currentCygdriveC_equivalent"/
+	
+	
 	_messagePlain_good 'done: _setup_ubiquitousBash_cygwin: lean'
 	sleep 1
 }
