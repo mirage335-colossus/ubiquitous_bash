@@ -32,7 +32,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='1891409836'
-export ub_setScriptChecksum_contents='4141615360'
+export ub_setScriptChecksum_contents='4201340832'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -11104,30 +11104,21 @@ _test_embed_sequence() {
 	
 	#echo $ub_import
 	#echo $ub_import_param
-	echo test1
+	
 	# CAUTION: Profoundly unexpected to have called '_test' or similar functions after importing into a current shell in any way.
 	if ( [[ "$current_internal_CompressedScript" == "" ]] && [[ "$current_internal_CompressedScript_cksum" == "" ]] && [[ "$current_internal_CompressedScript_bytes" == "" ]] ) || ( ( [[ "$ub_import_param" != "--embed" ]] ) && [[ "$ub_import_param" != "--bypass" ]] && [[ "$ub_import_param" != "--call" ]] && [[ "$ub_import_param" != "--script" ]] && [[ "$ub_import_param" != "--compressed" ]] )
 	then
-		echo "$ub_import"
-		echo "$ub_import_param"
-		echo test2
 		[[ "$ub_import" == 'true' ]] && _messageFAIL && _stop 1
-		echo test3
 		[[ "$ub_import" != '' ]] && _messageFAIL && _stop 1
-		echo test4
 		[[ "$ub_import_param" != '' ]] && _messageFAIL && _stop 1
 	fi
 	
-	echo test5
 	! "$safeTmp"/.embed.sh _true && _stop 1
 	
-	echo test6
 	"$safeTmp"/.embed.sh _false && _stop 1
 	
-	echo test7
 	! "$safeTmp"/.embed.sh _test_embed_procedure-embed && _stop 1
 	
-	echo test8
 	! . "$safeTmp"/.embed.sh _test_embed_procedure-embed && _stop 1
 	
 	_stop
