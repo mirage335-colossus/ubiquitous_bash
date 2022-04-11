@@ -272,7 +272,6 @@ CZXWXcRMTo8EmM8i4d
 CZXWXcRMTo8EmM8i4d
 	
 	cat << 'CZXWXcRMTo8EmM8i4d' >> "$scriptAbsoluteFolder"/"$1"_compressed.sh
-	internalFunctionExitStatus="$?"
 	return "$internalFunctionExitStatus" > /dev/null 2>&1
 	exit "$internalFunctionExitStatus"
 elif [[ "$1" == "--profile" ]] || [[ "$1" == "--parent" ]]

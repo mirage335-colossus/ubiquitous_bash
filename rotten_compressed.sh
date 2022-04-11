@@ -116,6 +116,7 @@ if [[ "$1" == "--embed" ]]
 then
 	source <(echo "$current_internal_CompressedScript" | base64 -d | xz -d) "$@"
 	internalFunctionExitStatus="$?"
+	internalFunctionExitStatus="$?"
 	return "$internalFunctionExitStatus" > /dev/null 2>&1
 	exit "$internalFunctionExitStatus"
 elif [[ "$1" == "--profile" ]] || [[ "$1" == "--parent" ]]
