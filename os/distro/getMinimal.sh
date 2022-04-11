@@ -70,6 +70,8 @@ _getMinimal_cloud() {
 	_getMost_backend_aptGetInstall sockstat
 	_getMost_backend_aptGetInstall liblinear4 liblua5.3-0 lua-lpeg nmap nmap-common
 	
+	_getMost_backend_aptGetInstall socat
+	
 	#_getMost_backend_aptGetInstall octave
 	#_getMost_backend_aptGetInstall octave-arduino
 	#_getMost_backend_aptGetInstall octave-bart

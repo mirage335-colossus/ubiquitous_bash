@@ -13,9 +13,9 @@ on:
     - cron: '5 1 * * 5'
 
 # https://docs.github.com/en/actions/using-jobs/using-concurrency
-#concurrency:
-  #group: ${{ github.workflow }}-${{ github.ref }}
-  #cancel-in-progress: true
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   test_latest:
@@ -161,89 +161,6 @@ jobs:
   test_ubcp_dump_mswLatest:
     runs-on: windows-latest
     #runs-on: windows-2022
-    #runs-on: windows-2019
-    steps:
-      - name: write! secrets
-        id: secret-file1
-        run: |
-          $secretFile = "/rclone.conf"
-          $encodedBytes = [System.Convert]::FromBase64String($env:rclone_limited_conf_base64)
-          Set-Content $secretFile -Value $encodedBytes -AsByteStream
-        shell: pwsh
-        env:
-          rclone_limited_conf_base64: ${{ secrets.rclone_limited_conf_base64 }}
-      - name: _getMinimal_cloud
-        shell: pwsh
-        timeout-minutes: 180
-        run: |
-          $ErrorActionPreference="SilentlyContinue"
-          $ErrorActionPreference = "Continue"
-          Set-MpPreference -DisableRealtimeMonitoring $true
-          date > /wasHere.log
-          pwd >> /wasHere.log
-          cat /wasHere.log
-          choco install qalculate -y
-          choco install dos2unix -y
-          choco install nmap -y
-          git config --global core.autocrlf input
-          git config --global core.eol lf
-          choco install 7zip.install -y
-          choco install rclone -y
-      - name: _getCore_ubcp
-        shell: pwsh
-        timeout-minutes: 180
-        run: |
-          mkdir /core
-          mkdir /core/infrastructure
-          cd /core/infrastructure
-          rclone --progress --config /rclone.conf copy distLLC_build_ubcp:package_ubcp-core.7z ./
-          7z -y x ./package_ubcp-core.7z | tee /_getCore_ubcp.log
-      - uses: actions/checkout@v2
-      - name: statement! ls
-        shell: pwsh
-        run: |
-          ls /
-          ls
-          Get-CimInstance -ClassName Win32_LogicalDisk | Select-Object -Property DeviceID,@{'Name' = 'FreeSpace (GB)'
-          Expression= { [int]($_.FreeSpace / 1GB) }}
-      - name: _test-lean
-        shell: pwsh
-        timeout-minutes: 240
-        run: |
-          ./_test | tee /_test-lean.log
-          $SEL = cat /_test-lean.log | Select-String -Pattern 'FAIL' -CaseSensitive -SimpleMatch
-          if ($SEL -ne $null)
-          {
-          cat /bin/false/pwsh
-          }
-          else
-          {
-          echo true | Out-Null
-          }
-      - name: _compile-cygwin
-        shell: pwsh
-        timeout-minutes: 240
-        run: |
-          ./_bin ./compile.sh | tee /_compile-cygwin.log
-          ./_bin ./compile.sh
-          ./_bin ./compile.sh
-      - name: _test-lean-compressed
-        shell: pwsh
-        timeout-minutes: 240
-        run: |
-          ./_bin ./lean_compressed.sh _test | tee /_test-lean-compressed.log
-          $SEL = cat /_test-lean-compressed.log | Select-String -Pattern 'FAIL' -CaseSensitive -SimpleMatch
-          if ($SEL -ne $null)
-          {
-          cat /bin/false/pwsh
-          }
-          else
-          {
-          echo true | Out-Null
-          }
-  test_ubcp_dump_msw2022:
-    #runs-on: windows-latest
-    runs-on: windows-2022
     #runs-on: windows-2019
     steps:
       - name: write! secrets
