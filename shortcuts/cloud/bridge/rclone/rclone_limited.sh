@@ -22,7 +22,7 @@ _prepare_rclone_limited_file() {
 		if ! [[ -e "$scriptLocal"/rclone_limited/rclone.conf ]]
 		then
 			mkdir -p "$scriptLocal"/rclone_limited
-			echo "$rclone_limited_conf_base64" | base64 -d > "$scriptLocal"/rclone_limited/rclone.conf > /dev/null
+			echo "$rclone_limited_conf_base64" | base64 -d > "$scriptLocal"/rclone_limited/rclone.conf
 		fi
 	fi
 	_set_rclone_limited_file
