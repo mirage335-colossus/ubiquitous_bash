@@ -166,6 +166,7 @@ _here_rottenScript_bash_declareFunctions() {
 	declare -f _custom_construct_permissions_user
 	declare -f _custom_construct_user
 	declare -f _custom
+	declare -f _install_and_run_package
 	declare -f _install_and_run
 	declare -f _run
 	declare -f _test_prog

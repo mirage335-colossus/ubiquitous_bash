@@ -21,6 +21,8 @@ _qalculate_terse() {
 
 # Interactive.
 _qalculate() {
+	mkdir -p .config/qalculate
+	
 	if [[ "$1" != "" ]]
 	then
 		_qalculate_terse "$@"
