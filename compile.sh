@@ -32,7 +32,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='1891409836'
-export ub_setScriptChecksum_contents='3981255782'
+export ub_setScriptChecksum_contents='2287193885'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -5942,6 +5942,7 @@ _generate_compile_bash() {
 # ATTENTION: WARNING: CAUTION: Do NOT oversimplify! Keep in mind this seemingly 'spaghetti code' logic has in fact been thoroughly tested for safety, and is complex due to an extraordinary combination of preventive inheritance checks, workarounds, and compressed code. Compressed scripts are already a workaround for purely arbitrary limitations (eg. cloud init script size limits). This stuff goes as far as ensuring the compressed scripts can be included through '.bashrc' without any possibility of interfering with other 'ubiquitous bash' scripts.
 # WARNING: Unfortunately, this really is necessarily as complicated as it looks. A text editor which highlights a currently selected text fragment elsewhere, may help 'browse' the code, such as double-clicking the 'source' word and comparing other occurrences. Removing code which specifically optimizes what does not appear in the especially small 'rotten' script may also help make the code a bit easier to understand.
 # WARNING: Keep in mind some logical conditions here may yet have no production use, but are thoroughly expected to have a production use in the future. Other logic may have an existing use which only becomes obvious if some of the software using 'ubiquitous bash' is tested. Particularly, '_scope', 'arduinoUbiquitous', '_setupUbiquitous', etc. MSW also causes significant issues. Building automatic tests for such issues may require a network of Virtual Machines, and testing strictly interactive (ie. '_bash', 'bash -i', etc) shells, all of which may also require software development of the relevant toolchain first.
+# _request_visualPrompt
 _generate_compile_bash-compressed_procedure() {
 	# If a "base85"/"ascii85" implementation were widely available at all possibly relevant 'environments', then compressed scripts could possibly be ~5% smaller.
 	# WARNING: Do NOT attempt 'yEnc', apparently NOT 'utf8' text editor compatible.
