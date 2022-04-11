@@ -24,14 +24,14 @@ jobs:
     #runs-on: ubuntu-18.04
     steps:
       - name: _getCore_ub
-          shell: bash
-          timeout-minutes: 180
-          run: |
-            mkdir -p ~/core/infrastructure
-            cd ~/core/infrastructure
-            git clone --depth 1 --recursive https://github.com/mirage335/ubiquitous_bash.git
-            cd ubiquitous_bash
-            ./_setupUbiquitous.bat
+        shell: bash
+        timeout-minutes: 180
+        run: |
+          mkdir -p ~/core/infrastructure
+          cd ~/core/infrastructure
+          git clone --depth 1 --recursive https://github.com/mirage335/ubiquitous_bash.git
+          cd ubiquitous_bash
+          ./_setupUbiquitous.bat
       - name: write! secrets
         shell: bash
         env:
