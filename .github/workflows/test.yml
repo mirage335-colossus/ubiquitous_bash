@@ -73,7 +73,7 @@ jobs:
         # ssh -i <path-to-key> <tmate-connection-string>
         with:
           limit-access-to-actor: true
-        timeout-minutes: 25
+        timeout-minutes: 45
   # Other 'ubcp' tests must be essentially identical.
   test_ubcp_release_mswLatest:
     runs-on: windows-latest
