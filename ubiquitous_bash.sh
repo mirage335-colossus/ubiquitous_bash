@@ -32,7 +32,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='1891409836'
-export ub_setScriptChecksum_contents='2421236755'
+export ub_setScriptChecksum_contents='141311183'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -34986,21 +34986,28 @@ _test_embed_sequence() {
 	
 	#echo $ub_import
 	#echo $ub_import_param
-	
+	echo test1
 	# CAUTION: Profoundly unexpected to have called '_test' or similar functions after importing into a current shell in any way.
 	if ( [[ "$current_internal_CompressedScript" == "" ]] && [[ "$current_internal_CompressedScript_cksum" == "" ]] && [[ "$current_internal_CompressedScript_bytes" == "" ]] ) || ( ( [[ "$ub_import_param" != "--embed" ]] ) && [[ "$ub_import_param" != "--bypass" ]] && [[ "$ub_import_param" != "--call" ]] && [[ "$ub_import_param" != "--script" ]] && [[ "$ub_import_param" != "--compressed" ]] )
 	then
+		echo test2
 		[[ "$ub_import" == 'true' ]] && _messageFAIL && _stop 1
+		echo test3
 		[[ "$ub_import" != '' ]] && _messageFAIL && _stop 1
+		echo test4
 		[[ "$ub_import_param" != '' ]] && _messageFAIL && _stop 1
 	fi
 	
+	echo test5
 	! "$safeTmp"/.embed.sh _true && _stop 1
 	
+	echo test6
 	"$safeTmp"/.embed.sh _false && _stop 1
 	
+	echo test7
 	! "$safeTmp"/.embed.sh _test_embed_procedure-embed && _stop 1
 	
+	echo test8
 	! . "$safeTmp"/.embed.sh _test_embed_procedure-embed && _stop 1
 	
 	_stop
@@ -35171,7 +35178,7 @@ _test_sanity() {
 	! [[ -0 -ge 0 ]] && _messageFAIL && return 1
 	
 	
-	echo test1
+	
 	! "$scriptAbsoluteLocation" _true && _messageFAIL && return 1
 	"$scriptAbsoluteLocation" _false && _messageFAIL && return 1
 	
@@ -35182,7 +35189,7 @@ _test_sanity() {
 		[[ "$ub_import" != '' ]] && _messageFAIL && _stop 1
 		[[ "$ub_import_param" != '' ]] && _messageFAIL && _stop 1
 	fi
-	echo test2
+	
 	local santiySessionID_length
 	santiySessionID_length=$(echo -n "$sessionid" | wc -c | tr -dc '0-9')
 	
@@ -35192,7 +35199,7 @@ _test_sanity() {
 	[[ -e "$safeTmp" ]] && _messageFAIL && return 1
 	
 	_start scriptLocal_mkdir_disable
-	echo test3
+	
 	
 	[[ ! -e "$safeTmp" ]] && _messageFAIL && return 1
 	
@@ -35208,9 +35215,9 @@ _test_sanity() {
 	
 	rm -f "$safeTmp"/empty > /dev/null 2>&1
 	
-	echo test4
+	
 	! _test_moveconfirm_procedure && _messageFAIL && return 1
-	echo test5
+	
 	
 	local currentTestUID=$(_uid 245)
 	mkdir -p "$safeTmp"/"$currentTestUID"
@@ -35231,9 +35238,9 @@ _test_sanity() {
 	rm -f "$safeTmp"/replacement > /dev/null 2>&1
 	rm -f "$safeTmp"/shouldNotOverwrite > /dev/null 2>&1
 	
-	echo test6
+	
 	_uid_test
-	echo test7
+	
 	[[ $(_getUUID | wc -c) != '37' ]] && _messageFAIL && return 1
 	
 	[[ $(_getUUID | cut -f1 -d\- | wc -c) != '9' ]] &&  _messageFAIL && return 1
@@ -35244,9 +35251,9 @@ _test_sanity() {
 	
 	
 	_define_function_test
-	echo test8
+	
 	! _variableLocalTest && _messageFAIL && return 1
-	echo test9
+	
 	
 	
 	mkdir -p "$safeTmp"/maydeletethisfolder
@@ -35280,14 +35287,14 @@ _test_sanity() {
 	
 	
 	
-	echo test10
+	
 	if ! _test_embed
 	then
 		_messageFAIL && _stop 1
 		#! uname -a | grep -i cygwin > /dev/null 2>&1 && _messageFAIL && _stop 1
 		#echo 'warn: broken (cygwin): _test_embed - cygwin detected'
 	fi
-	echo test11
+	
 	
 	
 	
@@ -35315,10 +35322,10 @@ _test_sanity() {
 	rm -f "$safeTmp"/working
 	rm -f "$safeTmp"/broken
 	
-	echo test12
+	
 	
 	_tryExec _test_parallelFifo_procedure
-	echo test13
+	
 	
 	return 0
 }

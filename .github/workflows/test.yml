@@ -118,6 +118,7 @@ jobs:
           cd /core/infrastructure
           rclone --progress --config /rclone.conf copy distLLC_release_ro:ubcp/package_ubcp-core.7z ./
           7z -y x ./package_ubcp-core.7z | tee /_getCore_ubcp.log
+          rm ./package_ubcp-core.7z
       - uses: actions/checkout@v2
       - name: statement! ls
         shell: pwsh
