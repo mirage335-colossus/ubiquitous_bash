@@ -256,15 +256,18 @@ CZXWXcRMTo8EmM8i4d
 
 	[[ "$1" == "rotten" ]] && cat << 'CZXWXcRMTo8EmM8i4d' >> "$scriptAbsoluteFolder"/"$1"_compressed.sh
 	source <(echo "$current_internal_CompressedScript" | base64 -d | xz -d) "$@"
+	internalFunctionExitStatus="$?"
 CZXWXcRMTo8EmM8i4d
 	[[ "$1" != "rotten" ]] && cat << 'CZXWXcRMTo8EmM8i4d' >> "$scriptAbsoluteFolder"/"$1"_compressed.sh
 	if [[ -e /cygdrive ]] && uname -a | grep -i cygwin > /dev/null 2>&1
 	then
 		echo "$current_internal_CompressedScript" | base64 -d | xz -d > "$tmpMSW_compressed"
 		source "$tmpMSW_compressed" "$@"
+		internalFunctionExitStatus="$?"
 		rm -f "$tmpMSW_compressed"
 	else
 		source <(echo "$current_internal_CompressedScript" | base64 -d | xz -d) "$@"
+		internalFunctionExitStatus="$?"
 	fi
 CZXWXcRMTo8EmM8i4d
 	
