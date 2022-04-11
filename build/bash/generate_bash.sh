@@ -108,7 +108,9 @@ _generate_compile_bash() {
 
 
 
-
+# ATTENTION: WARNING: CAUTION: Do NOT oversimplify! Keep in mind this seemingly 'spaghetti code' logic has in fact been thoroughly tested for safety, and is complex due to an extraordinary combination of preventive inheritance checks, workarounds, and compressed code. Compressed scripts are already a workaround for purely arbitrary limitations (eg. cloud init script size limits). This stuff goes as far as ensuring the compressed scripts can be included through '.bashrc' without any possibility of interfering with other 'ubiquitous bash' scripts.
+# WARNING: Unfortunately, this really is necessarily as complicated as it looks. A text editor which highlights a currently selected text fragment elsewhere, may help 'browse' the code, such as double-clicking the 'source' word and comparing other occurrences. Removing code which specifically optimizes what does not appear in the especially small 'rotten' script may also help make the code a bit easier to understand.
+# WARNING: Keep in mind some logical conditions here may yet have no production use, but are thoroughly expected to have a production use in the future. Other logic may have an existing use which only becomes obvious if some of the software using 'ubiquitous bash' is tested. Particularly, '_scope', 'arduinoUbiquitous', '_setupUbiquitous', etc. MSW also causes significant issues. Building automatic tests for such issues may require a network of Virtual Machines, and testing strictly interactive (ie. '_bash', 'bash -i', etc) shells, all of which may also require software development of the relevant toolchain first.
 _generate_compile_bash-compressed_procedure() {
 	# If a "base85"/"ascii85" implementation were widely available at all possibly relevant 'environments', then compressed scripts could possibly be ~5% smaller.
 	# WARNING: Do NOT attempt 'yEnc', apparently NOT 'utf8' text editor compatible.
@@ -208,7 +210,8 @@ _generate_compile_bash-compressed_procedure() {
 	echo "$current_internal_compressedScript_headerFunctions"\' >> "$scriptAbsoluteFolder"/"$1"_compressed.sh
 	echo '! echo "$current_internal_compressedScript_headerFunctions" | base64 -d | xz -d > /dev/null && exit 1' >> "$scriptAbsoluteFolder"/"$1"_compressed.sh
 	#echo 'source <(echo "$current_internal_compressedScript_headerFunctions" | base64 -d | xz -d)' >> "$scriptAbsoluteFolder"/"$1"_compressed.sh
-	cat << 'CZXWXcRMTo8EmM8i4d' >> "$scriptAbsoluteFolder"/"$1"_compressed.sh
+	
+	[[ "$1" != "rotten" ]] && cat << 'CZXWXcRMTo8EmM8i4d' >> "$scriptAbsoluteFolder"/"$1"_compressed.sh
 if [[ -e /cygdrive ]] && uname -a | grep -i cygwin > /dev/null 2>&1
 then
 	export tmpMSW_compressed=$( cd "$LOCALAPPDATA" 2>/dev/null ; pwd )"/Temp"/uk4u_"$RANDOM""$RANDOM""$RANDOM".sh
@@ -219,6 +222,10 @@ else
 	source <(echo "$current_internal_compressedScript_headerFunctions" | base64 -d | xz -d)
 fi
 CZXWXcRMTo8EmM8i4d
+	[[ "$1" == "rotten" ]] && cat << 'CZXWXcRMTo8EmM8i4d' >> "$scriptAbsoluteFolder"/"$1"_compressed.sh
+	source <(echo "$current_internal_compressedScript_headerFunctions" | base64 -d | xz -d)
+CZXWXcRMTo8EmM8i4d
+	
 	cat << 'CZXWXcRMTo8EmM8i4d' >> "$scriptAbsoluteFolder"/"$1"_compressed.sh
 export importScriptLocation=$(_getScriptAbsoluteLocation)
 export importScriptFolder=$(_getScriptAbsoluteFolder)
@@ -244,14 +251,52 @@ CZXWXcRMTo8EmM8i4d
 cat << 'CZXWXcRMTo8EmM8i4d' >> "$scriptAbsoluteFolder"/"$1"_compressed.sh
 if [[ "$1" == "--embed" ]]
 then
+CZXWXcRMTo8EmM8i4d
+
+	[[ "$1" == "rotten" ]] && cat << 'CZXWXcRMTo8EmM8i4d' >> "$scriptAbsoluteFolder"/"$1"_compressed.sh
 	source <(echo "$current_internal_CompressedScript" | base64 -d | xz -d) "$@"
+CZXWXcRMTo8EmM8i4d
+	[[ "$1" != "rotten" ]] && cat << 'CZXWXcRMTo8EmM8i4d' >> "$scriptAbsoluteFolder"/"$1"_compressed.sh
+	if [[ -e /cygdrive ]] && uname -a | grep -i cygwin > /dev/null 2>&1
+	then
+		echo "$current_internal_CompressedScript" | base64 -d | xz -d > "$tmpMSW_compressed"
+		source "$tmpMSW_compressed" "$@"
+		rm -f "$tmpMSW_compressed"
+	else
+		source <(echo "$current_internal_CompressedScript" | base64 -d | xz -d) "$@"
+	fi
+CZXWXcRMTo8EmM8i4d
+	
+	cat << 'CZXWXcRMTo8EmM8i4d' >> "$scriptAbsoluteFolder"/"$1"_compressed.sh
 	internalFunctionExitStatus="$?"
 	return "$internalFunctionExitStatus" > /dev/null 2>&1
 	exit "$internalFunctionExitStatus"
 elif [[ "$1" == "--profile" ]] || [[ "$1" == "--parent" ]]
 then
+CZXWXcRMTo8EmM8i4d
+	
+	[[ "$1" == "rotten" ]] && cat << 'CZXWXcRMTo8EmM8i4d' >> "$scriptAbsoluteFolder"/"$1"_compressed.sh
 	source <(echo "$current_internal_CompressedScript" | base64 -d | xz -d) "$@"
+CZXWXcRMTo8EmM8i4d
+	[[ "$1" != "rotten" ]] && cat << 'CZXWXcRMTo8EmM8i4d' >> "$scriptAbsoluteFolder"/"$1"_compressed.sh
+	if [[ -e /cygdrive ]] && uname -a | grep -i cygwin > /dev/null 2>&1
+	then
+		echo "$current_internal_CompressedScript" | base64 -d | xz -d > "$tmpMSW_compressed"
+		source "$tmpMSW_compressed" "$@"
+		rm -f "$tmpMSW_compressed"
+	else
+		source <(echo "$current_internal_CompressedScript" | base64 -d | xz -d) "$@"
+	fi
+CZXWXcRMTo8EmM8i4d
+
+	cat << 'CZXWXcRMTo8EmM8i4d' >> "$scriptAbsoluteFolder"/"$1"_compressed.sh
 else
+CZXWXcRMTo8EmM8i4d
+	
+	[[ "$1" == "rotten" ]] && cat << 'CZXWXcRMTo8EmM8i4d' >> "$scriptAbsoluteFolder"/"$1"_compressed.sh
+	source <(echo "$current_internal_CompressedScript" | base64 -d | xz -d) --compressed "$@"
+CZXWXcRMTo8EmM8i4d
+	[[ "$1" != "rotten" ]] && cat << 'CZXWXcRMTo8EmM8i4d' >> "$scriptAbsoluteFolder"/"$1"_compressed.sh
 	if [[ -e /cygdrive ]] && uname -a | grep -i cygwin > /dev/null 2>&1
 	then
 		echo "$current_internal_CompressedScript" | base64 -d | xz -d > "$tmpMSW_compressed"
@@ -260,6 +305,9 @@ else
 	else
 		source <(echo "$current_internal_CompressedScript" | base64 -d | xz -d) --compressed "$@"
 	fi
+CZXWXcRMTo8EmM8i4d
+	
+	cat << 'CZXWXcRMTo8EmM8i4d' >> "$scriptAbsoluteFolder"/"$1"_compressed.sh
 	ub_import=
 	ub_import_param=
 	ub_import_script=
