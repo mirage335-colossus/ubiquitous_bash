@@ -37,7 +37,7 @@ jobs:
         env:
           rclone_limited_conf_base64: ${{ secrets.rclone_limited_conf_base64 }}
         run: |
-          ~/core/infrastructure/ubiquitous_bash.sh _prepare_rclone_limited_file
+          ~/core/infrastructure/ubiquitous_bash/ubiquitous_bash.sh _prepare_rclone_limited_file
         timeout-minutes: 5
       - uses: actions/checkout@v2
       - name: test-lean
