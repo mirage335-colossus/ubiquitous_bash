@@ -680,28 +680,21 @@ _test_embed_sequence() {
 	
 	#echo $ub_import
 	#echo $ub_import_param
-	echo test1
+	
 	# CAUTION: Profoundly unexpected to have called '_test' or similar functions after importing into a current shell in any way.
 	if ( [[ "$current_internal_CompressedScript" == "" ]] && [[ "$current_internal_CompressedScript_cksum" == "" ]] && [[ "$current_internal_CompressedScript_bytes" == "" ]] ) || ( ( [[ "$ub_import_param" != "--embed" ]] ) && [[ "$ub_import_param" != "--bypass" ]] && [[ "$ub_import_param" != "--call" ]] && [[ "$ub_import_param" != "--script" ]] && [[ "$ub_import_param" != "--compressed" ]] )
 	then
-		echo test2
 		[[ "$ub_import" == 'true' ]] && _messageFAIL && _stop 1
-		echo test3
 		[[ "$ub_import" != '' ]] && _messageFAIL && _stop 1
-		echo test4
 		[[ "$ub_import_param" != '' ]] && _messageFAIL && _stop 1
 	fi
 	
-	echo test5
 	! "$safeTmp"/.embed.sh _true && _stop 1
 	
-	echo test6
 	"$safeTmp"/.embed.sh _false && _stop 1
 	
-	echo test7
 	! "$safeTmp"/.embed.sh _test_embed_procedure-embed && _stop 1
 	
-	echo test8
 	! . "$safeTmp"/.embed.sh _test_embed_procedure-embed && _stop 1
 	
 	_stop

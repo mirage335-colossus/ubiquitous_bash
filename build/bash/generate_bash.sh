@@ -301,7 +301,7 @@ CZXWXcRMTo8EmM8i4d
 	if [[ -e /cygdrive ]] && uname -a | grep -i cygwin > /dev/null 2>&1
 	then
 		echo "$current_internal_CompressedScript" | base64 -d | xz -d > "$tmpMSW_compressed"
-		source "$tmpMSW_compressed"
+		source "$tmpMSW_compressed" --compressed "$@"
 		rm -f "$tmpMSW_compressed"
 	else
 		source <(echo "$current_internal_CompressedScript" | base64 -d | xz -d) --compressed "$@"
