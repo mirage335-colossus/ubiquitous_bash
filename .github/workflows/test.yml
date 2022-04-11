@@ -32,6 +32,11 @@ jobs:
           git clone --depth 1 --recursive https://github.com/mirage335/ubiquitous_bash.git
           cd ubiquitous_bash
           ./_setupUbiquitous.bat
+      - name: _getMinimal_cloud
+        shell: bash
+        run: |
+          ~/core/infrastructure/ubiquitous_bash/ubiquitous_bash.sh _getMinimal_cloud
+        timeout-minutes: 90
       - name: write! secrets
         shell: bash
         run: |
