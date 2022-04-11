@@ -13,6 +13,13 @@ _prepare_abstract() {
 	chmod 0700 "$abstractfs_root" > /dev/null 2>&1
 	! chmod 700 "$abstractfs_root" && exit 1
 	
+	if [[ "$CI" != "" ]] && ! type chown > /dev/null 2>&1
+	then
+		chown() {
+			true
+		}
+	fi
+	
 	if _if_cygwin
 	then
 		if ! chown "$USER":None "$abstractfs_root" > /dev/null 2>&1
