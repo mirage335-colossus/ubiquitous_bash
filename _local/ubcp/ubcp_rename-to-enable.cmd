@@ -58,18 +58,10 @@ if "!arg1!" == "" (
 	REM If '_bash' was called through 'ubcp.cmd' instead of through a bash script, and there were no other parameters, this is a call for interactive bash, and since this is 'ubcp', '_setupUbiquitous' should already have been a step during package creation, which will cause script import. Not importing script twice will improve performance substantially.
 	if "%~2%" == "_bash" (
 		if "%~3%" == "" (
+			bash "%CYGWIN_ROOT%\portable-init.sh"
 			bash --login -i
 		) else (
-			REM TODO: Calling from same shell may improve performance.
 			bash "%CYGWIN_ROOT%\portable-init.sh"
-			
-			REM Faster, but may not set environment variables and such.
-			REM bash -- %*
-			
-			REM Parameters may not be interpreted correctly.
-			REM bash --login -c %*
-			
-			REM Better chance of correctly interpreting parameters.
 			bash --login -- %*
 		)
 	) else (
