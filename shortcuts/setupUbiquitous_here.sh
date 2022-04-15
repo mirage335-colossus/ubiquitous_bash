@@ -63,9 +63,9 @@ CZXWXcRMTo8EmM8i4d
 	# WARNING: What is otherwise considered bad practice may be accepted to reduce substantial MSW/Cygwin inconvenience .
 	_if_cygwin && cat << CZXWXcRMTo8EmM8i4d
 
-if [[ "$HOME" == "/home/root" ]] && [[ ! -e /home/"$USER" ]]
+if [[ "\$HOME" == "/home/root" ]] && [[ ! -e /home/"\$USER" ]]
 then
-	ln -s --no-target-directory "/home/root" /home/"$USER" > /dev/null 2>&1
+	ln -s --no-target-directory "/home/root" /home/"\$USER" > /dev/null 2>&1
 fi
 
 if [[ -e '/cygdrive' ]] && uname -a | grep -i cygwin > /dev/null 2>&1
