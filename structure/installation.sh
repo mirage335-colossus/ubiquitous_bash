@@ -1317,6 +1317,11 @@ _test() {
 	_getDep perl
 	
 	
+	# WARNING: Avoid if possible.
+	# Not needed by 'ubiquitous_bash' itself up to at least commit 51ba42ed50b24a0e6eca749e8db7bee5c52cce47 .
+	_wantGetDep expect
+	
+	
 	_tryExec "_test_python"
 	_tryExec "_test_haskell"
 	
