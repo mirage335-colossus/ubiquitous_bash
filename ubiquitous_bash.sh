@@ -32,7 +32,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='1891409836'
-export ub_setScriptChecksum_contents='3223956981'
+export ub_setScriptChecksum_contents='1547747967'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -9280,8 +9280,13 @@ _getMost_debian11_install() {
 	_getMost_backend_aptGetInstall libssl-dev
 	
 	
+	_getMost_backend_aptGetInstall cpio
+	
+	
 	_getMost_backend_aptGetInstall pv
 	_getMost_backend_aptGetInstall expect
+	
+	_getMost_backend_aptGetInstall libgtk2.0-0
 	
 	
 	_getMost_debian11_special_late
@@ -9671,6 +9676,12 @@ _getMinimal_cloud() {
 	
 	
 	_getMost_backend_aptGetInstall cpio
+	
+	
+	_getMost_backend_aptGetInstall pv
+	_getMost_backend_aptGetInstall expect
+	
+	_getMost_backend_aptGetInstall libgtk2.0-0
 	
 	
 	# May not be useful for anything, may cause delay or fail .

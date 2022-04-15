@@ -309,6 +309,9 @@ _getMost_debian11_install() {
 	_getMost_backend_aptGetInstall libssl-dev
 	
 	
+	_getMost_backend_aptGetInstall cpio
+	
+	
 	_getMost_backend_aptGetInstall pv
 	_getMost_backend_aptGetInstall expect
 	

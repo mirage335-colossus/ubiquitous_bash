@@ -161,6 +161,12 @@ _getMinimal_cloud() {
 	_getMost_backend_aptGetInstall cpio
 	
 	
+	_getMost_backend_aptGetInstall pv
+	_getMost_backend_aptGetInstall expect
+	
+	_getMost_backend_aptGetInstall libgtk2.0-0
+	
+	
 	# May not be useful for anything, may cause delay or fail .
 	#_getMost_backend apt-get upgrade
 	
