@@ -203,6 +203,39 @@ fi
 
 
 
+# Calls MSW native programs from Cygwin/MSW with file parameter translation.
+#_userMSW kate /etc/fstab
+_userMSW() {
+	if ! _if_cygwin || ! type cygpath > /dev/null 2>&1
+	then
+		"$@"
+		return
+	fi
+	
+	
+	local currentArg
+	local currentResult
+	processedArgs=()
+	for currentArg in "$@"
+	do
+		if [[ -e "$currentArg" ]]
+		then
+			currentResult=$(cygpath -w "$currentArg")
+		else
+			currentResult="$currentArg"
+		fi
+		
+		processedArgs+=("$currentResult")
+	done
+	
+	
+	"${processedArgs[@]}"
+}
+
+
+
+
+
 _discoverResource-cygwinNative-ProgramFiles-declaration-ProgramFiles() {
 	local currentBinary
 	currentBinary="$1"
@@ -301,6 +334,21 @@ _discoverResource-cygwinNative-ProgramFiles() {
 }
 
 
+#_at_userMSW_discoverResource-cygwinNative-ProgramFiles VBoxManage Oracle/VirtualBox false
+_at_userMSW_discoverResource-cygwinNative-ProgramFiles() {
+	_discoverResource-cygwinNative-ProgramFiles "$1" "$2" "$3"
+	
+	! type "$1" > /dev/null 2>&1 && return 1
+	
+	
+	# https://stackoverflow.com/questions/1203583/how-do-i-rename-a-bash-function
+	eval orig_"$(declare -f ""$1"")"
+	
+	
+	eval "$1"'() { _userMSW orig_'"$1"' "$@" }'
+}
+
+
 _ops_cygwinOverride_allDisks() {
 	# DANGER: Calling a script from every connected Cygwin/MSW drive arguably causes obvious problems, although any device or network directly connected to any MSW machine inevitably entails such risks.
 	# WARNING: Looping through {w..c} completely may impose delays sufficient to break "_test_selfTime", "_test_broadcastPipe_page", etc, if extremely slow storage is attached.
@@ -357,6 +405,12 @@ then
 		_discoverResource-cygwinNative-ProgramFiles 'vncviewer' 'TigerVNC' false '_workaround_cygwin_tmux '
 		
 		_discoverResource-cygwinNative-ProgramFiles 'kate' 'Kate/bin' false
+		
+		
+		
+		
+		
+		
 	fi
 fi
 
@@ -365,36 +419,6 @@ fi
 
 
 
-
-
-
-# Calls MSW native programs from Cygwin/MSW with file parameter translation.
-_userMSW() {
-	if ! _if_cygwin || ! type cygpath > /dev/null 2>&1
-	then
-		"$@"
-		return
-	fi
-	
-	
-	local currentArg
-	local currentResult
-	processedArgs=()
-	for currentArg in "$@"
-	do
-		if [[ -e "$currentArg" ]]
-		then
-			currentResult=$(cygpath -w "$currentArg")
-		else
-			currentResult="$currentArg"
-		fi
-		
-		processedArgs+=("$currentResult")
-	done
-	
-	
-	"${processedArgs[@]}"
-}
 
 
 
