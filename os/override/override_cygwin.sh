@@ -368,6 +368,36 @@ fi
 
 
 
+# Calls MSW native programs from Cygwin/MSW with file parameter translation.
+_userMSW() {
+	if ! _if_cygwin || ! type cygpath > /dev/null 2>&1
+	then
+		"$@"
+		return
+	fi
+	
+	
+	local currentArg
+	local currentResult
+	processedArgs=()
+	for currentArg in "$@"
+	do
+		if [[ -e "$currentArg" ]]
+		then
+			currentResult=$(cygpath -w "$currentArg")
+		else
+			currentResult="$currentArg"
+		fi
+		
+		processedArgs+=("$currentResult")
+	done
+	
+	
+	"${processedArgs[@]}"
+}
+
+
+
 
 _setup_ubiquitousBash_cygwin_procedure_root() {
 	local cygwinMSWdesktopDir
