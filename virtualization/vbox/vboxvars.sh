@@ -112,28 +112,7 @@ _override_bin_vbox() {
 		return 0
 	fi
 	
-	
-	_discoverResource-cygwinNative-ProgramFiles VBoxManage Oracle/VirtualBox false
-	
-	# https://stackoverflow.com/questions/1203583/how-do-i-rename-a-bash-function
-	eval orig_"$(declare -f VBoxManage)"
-	
-	VBoxManage() {
-		_userMSW orig_VBoxManage "$@"
-	}
-	
-	
-	
-	_discoverResource-cygwinNative-ProgramFiles VBoxHeadless Oracle/VirtualBox false
-	
-	# https://stackoverflow.com/questions/1203583/how-do-i-rename-a-bash-function
-	eval orig_"$(declare -f VBoxHeadless)"
-	
-	VBoxHeadless() {
-		_userMSW orig_VBoxManage "$@"
-	}
-	
-	
+	_at_userMSW_probeCmd_discoverResource-cygwinNative-ProgramFiles VBoxManage Oracle/VirtualBox false
 }
 
 

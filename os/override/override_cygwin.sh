@@ -334,6 +334,69 @@ _discoverResource-cygwinNative-ProgramFiles() {
 }
 
 
+_set_at_userMSW_discoverResource-cygwinNative-ProgramFiles() {
+	export functionEntry_USERPROFILE="$USERPROFILE"
+	export functionEntry_HOMEDRIVE="$HOMEDRIVE"
+	export functionEntry_HOMEPATH="$HOMEPATH"
+	
+	# https://docs.oracle.com/en/virtualization/virtualbox/6.0/admin/vboxconfigdata.html
+	#  'Windows: $HOME/.VirtualBox.'
+	# https://en.wikipedia.org/wiki/Home_directory
+	# %USERPROFILE%
+	# %HOMEDRIVE%%HOMEPATH%
+	# echo $USERPROFILE
+	# export USERPROFILE="$USERPROFILE"'\Downloads'
+	# cmd
+	# echo %USERPROFILE%
+	
+	if [[ "$HOME" != "/root" ]] && [[ "$HOME" != "/home/root" ]] && [[ "$HOME" != "/home/""$USER" ]]
+	then
+		export USERPROFILE=$(cygpath -w "$HOME")
+		export HOMEDRIVE=$(echo "$USERPROFILE" | head -c 2)
+		export HOMEPATH=$(echo "$USERPROFILE" | tail -c +3)
+	fi
+	
+	export functionEntry_vBox_vdi="$vBox_vdi"
+	export functionEntry_vBoxInstanceDir="$vBoxInstanceDir"
+	export functionEntry_VBOX_ID_FILE="$VBOX_ID_FILE"
+	export functionEntry_VBOX_USER_HOME="$VBOX_USER_HOME"
+	export functionEntry_VBOX_USER_HOME_local="$VBOX_USER_HOME_local"
+	export functionEntry_VBOX_USER_HOME_short="$VBOX_USER_HOME_short"
+	export functionEntry_VBOX_IPC_SOCKETID="$VBOX_IPC_SOCKETID"
+	export functionEntry_VBoxXPCOMIPCD_PIDfile="$VBoxXPCOMIPCD_PIDfile"
+	
+	[[ -e "$vBox_vdi" ]] && export vBox_vdi=$(cygpath -w "$vBox_vdi")
+	[[ -e "$vBoxInstanceDir" ]] && export vBoxInstanceDir=$(cygpath -w "$vBoxInstanceDir")
+	[[ -e "$VBOX_ID_FILE" ]] && export VBOX_ID_FILE=$(cygpath -w "$VBOX_ID_FILE")
+	[[ -e "$VBOX_USER_HOME" ]] && export VBOX_USER_HOME=$(cygpath -w "$VBOX_USER_HOME")
+	[[ -e "$VBOX_USER_HOME_local" ]] && export VBOX_USER_HOME_local=$(cygpath -w "$VBOX_USER_HOME_local")
+	[[ -e "$VBOX_USER_HOME_short" ]] && export VBOX_USER_HOME_short=$(cygpath -w "$VBOX_USER_HOME_short")
+	[[ -e "$VBOX_IPC_SOCKETID" ]] && export VBOX_IPC_SOCKETID=$(cygpath -w "$VBOX_IPC_SOCKETID")
+	[[ -e "$VBoxXPCOMIPCD_PIDfile" ]] && export VBoxXPCOMIPCD_PIDfile=$(cygpath -w "$VBoxXPCOMIPCD_PIDfile")
+}
+
+_setFunctionEntry_at_userMSW_discoverResource-cygwinNative-ProgramFiles() {
+	export USERPROFILE="$functionEntry_USERPROFILE"
+	export HOMEDRIVE="$functionEntry_HOMEDRIVE"
+	export HOMEPATH="$functionEntry_HOMEPATH"
+	
+	export vBox_vdi="$functionEntry_vBox_vdi"
+	export vBoxInstanceDir="$functionEntry_vBoxInstanceDir"
+	export VBOX_ID_FILE="$functionEntry_VBOX_ID_FILE"
+	export VBOX_USER_HOME="$functionEntry_VBOX_USER_HOME"
+	export VBOX_USER_HOME_local="$functionEntry_VBOX_USER_HOME_local"
+	export VBOX_USER_HOME_short="$functionEntry_VBOX_USER_HOME_short"
+	export VBOX_IPC_SOCKETID="$functionEntry_VBOX_IPC_SOCKETID"
+	export VBoxXPCOMIPCD_PIDfile="$functionEntry_VBoxXPCOMIPCD_PIDfile"
+}
+
+_prepare_at_userMSW_discoverResource-cygwinNative-ProgramFiles() {
+	mkdir -p "$HOME"
+	
+	_set_at_userMSW_discoverResource-cygwinNative-ProgramFiles "$@"
+}
+
+
 #_at_userMSW_discoverResource-cygwinNative-ProgramFiles VBoxManage Oracle/VirtualBox false
 _at_userMSW_discoverResource-cygwinNative-ProgramFiles() {
 	_discoverResource-cygwinNative-ProgramFiles "$1" "$2" "$3"
@@ -344,8 +407,24 @@ _at_userMSW_discoverResource-cygwinNative-ProgramFiles() {
 	# https://stackoverflow.com/questions/1203583/how-do-i-rename-a-bash-function
 	eval orig_"$(declare -f ""$1"")"
 	
+	unset "$1"
+	eval "$1"'() { _prepare_at_userMSW_discoverResource-cygwinNative-ProgramFiles ; _userMSW orig_'"$1"' "$@" ; _setFunctionEntry_at_userMSW_discoverResource-cygwinNative-ProgramFiles ; }'
+}
+
+#_at_userMSW_probeCmd_discoverResource-cygwinNative-ProgramFiles 'kate' 'Kate/bin' false
+#_at_userMSW_probeCmd_discoverResource-cygwinNative-ProgramFiles VBoxManage Oracle/VirtualBox false
+_at_userMSW_probeCmd_discoverResource-cygwinNative-ProgramFiles() {
+	_discoverResource-cygwinNative-ProgramFiles "$1" "$2" "$3"
 	
-	eval "$1"'() { _userMSW orig_'"$1"' "$@" }'
+	! type "$1" > /dev/null 2>&1 && return 1
+	
+	
+	# https://stackoverflow.com/questions/1203583/how-do-i-rename-a-bash-function
+	eval orig_"$(declare -f ""$1"")"
+	
+	unset "$1"
+	eval "$1"'() { _prepare_at_userMSW_discoverResource-cygwinNative-ProgramFiles ; _userMSW _messagePlain_probe_cmd orig_'"$1"' "$@" ; _setFunctionEntry_at_userMSW_discoverResource-cygwinNative-ProgramFiles ; }'
+	eval "$1"'() { "$scriptAbsoluteLocation" _userMSW _messagePlain_probe_cmd orig_'"$1"' "$@" ; }'
 }
 
 
