@@ -356,6 +356,13 @@ _set_at_userMSW_discoverResource-cygwinNative-ProgramFiles() {
 		export HOMEPATH=$(echo "$USERPROFILE" | tail -c +3)
 	fi
 	
+	if [[ "$USERPROFILE" == "$functionEntry_USERPROFILE" ]] && [[ "$VBOX_USER_HOME_short" != "" ]]
+	then
+		export USERPROFILE=$(cygpath -w "$VBOX_USER_HOME_short")
+		export HOMEDRIVE=$(echo "$VBOX_USER_HOME_short" | head -c 2)
+		export HOMEPATH=$(echo "$VBOX_USER_HOME_short" | tail -c +3)
+	fi
+	
 	export functionEntry_VBOXID="$VBOXID"
 	export functionEntry_vBox_vdi="$vBox_vdi"
 	export functionEntry_vBoxInstanceDir="$vBoxInstanceDir"
