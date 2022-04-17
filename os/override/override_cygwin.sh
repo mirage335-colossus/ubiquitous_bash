@@ -405,12 +405,13 @@ _at_userMSW_discoverResource-cygwinNative-ProgramFiles() {
 	_at_userMSW_probeCmd_discoverResource-cygwinNative-ProgramFiles "$@"
 }
 
+# WARNING: Output of 'probe' messages may interfere if program (eg. VBoxManage) output is expected not to include such messages.
 #_at_userMSW_probeCmd_discoverResource-cygwinNative-ProgramFiles 'kate' 'Kate/bin' false
 #_at_userMSW_probeCmd_discoverResource-cygwinNative-ProgramFiles VBoxManage Oracle/VirtualBox false
 _at_userMSW_probeCmd_discoverResource-cygwinNative-ProgramFiles() {
 	if declare -f orig_"$1" > /dev/null 2>&1
 	then
-		_messagePlain_probe 'exists: override'
+		_messagePlain_probe 'exists: override: '"$1"
 		return 0
 	fi
 	
