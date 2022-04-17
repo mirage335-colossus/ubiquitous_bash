@@ -218,7 +218,7 @@ _userMSW() {
 	processedArgs=()
 	for currentArg in "$@"
 	do
-		if [[ -e "$currentArg" ]]
+		if [[ -e "$currentArg" ]] || [[ "$currentArg" == "/cygdrive/"* ]] || [[ "$currentArg" == "/home/"* ]] || [[ "$currentArg" == "/root/"* ]]
 		then
 			currentResult=$(cygpath -w "$currentArg")
 		else
