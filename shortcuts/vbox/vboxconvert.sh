@@ -5,11 +5,14 @@ _test_vboxconvert() {
 
 #No production use.
 _vdi_get_UUID() {
+	_override_bin_vbox > /dev/null 2>&1
 	_userVBoxManage showhdinfo "$scriptLocal"/vm.vdi | grep ^UUID | cut -f2- -d\  | tr -dc 'a-zA-Z0-9\-'
 }
 
 #No production use.
 _vdi_write_UUID() {
+	_override_bin_vbox
+	
 	_vdi_get_UUID > "$scriptLocal"/vm.vdi.uuid.quicktmp
 	
 	if [[ -e "$scriptLocal"/vm.vdi.uuid ]] && ! diff "$scriptLocal"/vm.vdi.uuid.quicktmp "$scriptLocal"/vm.vdi.uuid > /dev/null 2>&1
@@ -25,6 +28,8 @@ _vdi_write_UUID() {
 
 #No production use.
 _vdi_read_UUID() {
+	#_override_bin_vbox
+	
 	local current_UUID
 	current_UUID=$(cat "$scriptLocal"/vm.vdi.uuid 2>/dev/null | tr -dc 'a-zA-Z0-9\-')
 	
@@ -36,6 +41,8 @@ _vdi_read_UUID() {
 
 _vdi_to_img() {
 	_messageNormal '_vdi_to_img: init'
+	_override_bin_vbox
+	
 	! [[ -e "$scriptLocal"/vm.vdi ]] && _messagePlain_bad 'fail: missing: in file' && return 1
 	[[ -e "$scriptLocal"/vm.img ]] && _messagePlain_request 'request: rm '"$scriptLocal"/vm.img && return 1
 	
@@ -68,6 +75,7 @@ _img_to_vdi() {
 	_messageNormal '_img_to_vdi: init'
 	! [[ -e "$scriptLocal"/vm.img ]] && _messagePlain_bad 'fail: missing: in file' && return 1
 	[[ -e "$scriptLocal"/vm.vdi ]] && _messagePlain_request 'request: rm '"$scriptLocal"/vm.vdi && return 1
+	_override_bin_vbox
 	
 	_messageNormal '_img_to_vdi: convertdd'
 	if _userVBoxManage convertdd "$scriptLocal"/vm.img "$scriptLocal"/vm-c.vdi --format VDI

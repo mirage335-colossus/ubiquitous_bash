@@ -408,6 +408,13 @@ _at_userMSW_discoverResource-cygwinNative-ProgramFiles() {
 #_at_userMSW_probeCmd_discoverResource-cygwinNative-ProgramFiles 'kate' 'Kate/bin' false
 #_at_userMSW_probeCmd_discoverResource-cygwinNative-ProgramFiles VBoxManage Oracle/VirtualBox false
 _at_userMSW_probeCmd_discoverResource-cygwinNative-ProgramFiles() {
+	if [[ $(eval 'echo $'"$1"'_at') == '_at_userMSW_probeCmd_discoverResource-cygwinNative-ProgramFiles' ]]
+	then
+		_messagePlain_probe 'exists: override'
+		return 0
+	fi
+	export "$1"_at='_at_userMSW_probeCmd_discoverResource-cygwinNative-ProgramFiles'
+	
 	_discoverResource-cygwinNative-ProgramFiles "$1" "$2" "$3"
 	
 	! type "$1" > /dev/null 2>&1 && return 1

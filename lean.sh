@@ -32,7 +32,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='1891409836'
-export ub_setScriptChecksum_contents='3300415464'
+export ub_setScriptChecksum_contents='788904175'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -1030,6 +1030,13 @@ _at_userMSW_discoverResource-cygwinNative-ProgramFiles() {
 #_at_userMSW_probeCmd_discoverResource-cygwinNative-ProgramFiles 'kate' 'Kate/bin' false
 #_at_userMSW_probeCmd_discoverResource-cygwinNative-ProgramFiles VBoxManage Oracle/VirtualBox false
 _at_userMSW_probeCmd_discoverResource-cygwinNative-ProgramFiles() {
+	if [[ $(eval 'echo $'"$1"'_at') == '_at_userMSW_probeCmd_discoverResource-cygwinNative-ProgramFiles' ]]
+	then
+		_messagePlain_probe 'exists: override'
+		return 0
+	fi
+	export "$1"_at='_at_userMSW_probeCmd_discoverResource-cygwinNative-ProgramFiles'
+	
 	_discoverResource-cygwinNative-ProgramFiles "$1" "$2" "$3"
 	
 	! type "$1" > /dev/null 2>&1 && return 1
