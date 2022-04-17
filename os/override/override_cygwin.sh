@@ -483,13 +483,13 @@ then
 		# WARNING: Native 'vncviewer.exe' is a GUI app, and cannot be launched directly from Cygwin SSH server.
 		_discoverResource-cygwinNative-ProgramFiles 'vncviewer' 'TigerVNC' false '_workaround_cygwin_tmux '
 		
-		_discoverResource-cygwinNative-ProgramFiles 'kate' 'Kate/bin' false
+		#_discoverResource-cygwinNative-ProgramFiles 'kate' 'Kate/bin' false
 		
 		
 		
 		
 		
-		
+		_at_userMSW_probeCmd_discoverResource-cygwinNative-ProgramFiles 'kate' 'Kate/bin' false > /dev/null 2>&1
 	fi
 fi
 
