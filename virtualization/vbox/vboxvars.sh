@@ -139,6 +139,7 @@ _VirtualBox_env_VBOX_USER_HOME_short_sequence() {
 _VirtualBox_env_VBOX_USER_HOME_short() {
 	if _if_cygwin
 	then
+		# WARNING: Cygwin/MSW HOME directory redirection may be disabled for future versions of 'ubiquitous bash'.
 		_VirtualBox_env_VBOX_USER_HOME_short_sequence "$@"
 		return
 	fi
@@ -162,6 +163,7 @@ _VBoxManage_env_VBOX_USER_HOME_short_sequence() {
 _VBoxManage_env_VBOX_USER_HOME_short() {
 	if _if_cygwin
 	then
+		# WARNING: Cygwin/MSW HOME directory redirection may be disabled for future versions of 'ubiquitous bash'.
 		_VBoxManage_env_VBOX_USER_HOME_short_sequence "$@"
 		return
 	fi
