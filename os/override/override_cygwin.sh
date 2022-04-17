@@ -399,16 +399,7 @@ _prepare_at_userMSW_discoverResource-cygwinNative-ProgramFiles() {
 
 #_at_userMSW_discoverResource-cygwinNative-ProgramFiles VBoxManage Oracle/VirtualBox false
 _at_userMSW_discoverResource-cygwinNative-ProgramFiles() {
-	_discoverResource-cygwinNative-ProgramFiles "$1" "$2" "$3"
-	
-	! type "$1" > /dev/null 2>&1 && return 1
-	
-	
-	# https://stackoverflow.com/questions/1203583/how-do-i-rename-a-bash-function
-	eval orig_"$(declare -f ""$1"")"
-	
-	unset "$1"
-	eval "$1"'() { _prepare_at_userMSW_discoverResource-cygwinNative-ProgramFiles ; _userMSW orig_'"$1"' "$@" ; _setFunctionEntry_at_userMSW_discoverResource-cygwinNative-ProgramFiles ; }'
+	_at_userMSW_probeCmd_discoverResource-cygwinNative-ProgramFiles "$@"
 }
 
 #_at_userMSW_probeCmd_discoverResource-cygwinNative-ProgramFiles 'kate' 'Kate/bin' false
@@ -424,7 +415,6 @@ _at_userMSW_probeCmd_discoverResource-cygwinNative-ProgramFiles() {
 	
 	unset "$1"
 	eval "$1"'() { _prepare_at_userMSW_discoverResource-cygwinNative-ProgramFiles ; _userMSW _messagePlain_probe_cmd orig_'"$1"' "$@" ; _setFunctionEntry_at_userMSW_discoverResource-cygwinNative-ProgramFiles ; }'
-	eval "$1"'() { "$scriptAbsoluteLocation" _userMSW _messagePlain_probe_cmd orig_'"$1"' "$@" ; }'
 }
 
 

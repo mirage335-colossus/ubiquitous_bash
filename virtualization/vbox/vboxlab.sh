@@ -35,7 +35,7 @@ _launch_lab_vbox_sequence() {
 	#Better practice may be to instead programmatically construct the raw image virtual machines before opening VBoxLab environment.
 	#_openVBoxRaw
 	
-	env HOME="$VBOX_USER_HOME_short" VirtualBox "$@"
+	_VirtualBox_env_VBOX_USER_HOME_short "$@"
 	
 	_wait_lab_vbox
 	
@@ -59,7 +59,7 @@ _launch_lab_vbox_manage_sequence() {
 	#Better practice may be to instead programmatically construct the raw image virtual machines before opening VBoxLab environment.
 	#_openVBoxRaw
 	
-	env HOME="$VBOX_USER_HOME_short" VBoxManage "$@"
+	_VBoxManage_env_VBOX_USER_HOME_short "$@"
 	
 	_wait_lab_vbox
 	

@@ -32,7 +32,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='1891409836'
-export ub_setScriptChecksum_contents='3031612528'
+export ub_setScriptChecksum_contents='2353677568'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -1021,16 +1021,7 @@ _prepare_at_userMSW_discoverResource-cygwinNative-ProgramFiles() {
 
 #_at_userMSW_discoverResource-cygwinNative-ProgramFiles VBoxManage Oracle/VirtualBox false
 _at_userMSW_discoverResource-cygwinNative-ProgramFiles() {
-	_discoverResource-cygwinNative-ProgramFiles "$1" "$2" "$3"
-	
-	! type "$1" > /dev/null 2>&1 && return 1
-	
-	
-	# https://stackoverflow.com/questions/1203583/how-do-i-rename-a-bash-function
-	eval orig_"$(declare -f ""$1"")"
-	
-	unset "$1"
-	eval "$1"'() { _prepare_at_userMSW_discoverResource-cygwinNative-ProgramFiles ; _userMSW orig_'"$1"' "$@" ; _setFunctionEntry_at_userMSW_discoverResource-cygwinNative-ProgramFiles ; }'
+	_at_userMSW_probeCmd_discoverResource-cygwinNative-ProgramFiles "$@"
 }
 
 #_at_userMSW_probeCmd_discoverResource-cygwinNative-ProgramFiles 'kate' 'Kate/bin' false
@@ -1046,7 +1037,6 @@ _at_userMSW_probeCmd_discoverResource-cygwinNative-ProgramFiles() {
 	
 	unset "$1"
 	eval "$1"'() { _prepare_at_userMSW_discoverResource-cygwinNative-ProgramFiles ; _userMSW _messagePlain_probe_cmd orig_'"$1"' "$@" ; _setFunctionEntry_at_userMSW_discoverResource-cygwinNative-ProgramFiles ; }'
-	eval "$1"'() { "$scriptAbsoluteLocation" _userMSW _messagePlain_probe_cmd orig_'"$1"' "$@" ; }'
 }
 
 
@@ -15532,7 +15522,7 @@ _launch_lab_vbox_sequence() {
 	#Better practice may be to instead programmatically construct the raw image virtual machines before opening VBoxLab environment.
 	#_openVBoxRaw
 	
-	env HOME="$VBOX_USER_HOME_short" VirtualBox "$@"
+	_VirtualBox_env_VBOX_USER_HOME_short "$@"
 	
 	_wait_lab_vbox
 	
@@ -15556,7 +15546,7 @@ _launch_lab_vbox_manage_sequence() {
 	#Better practice may be to instead programmatically construct the raw image virtual machines before opening VBoxLab environment.
 	#_openVBoxRaw
 	
-	env HOME="$VBOX_USER_HOME_short" VBoxManage "$@"
+	_VBoxManage_env_VBOX_USER_HOME_short "$@"
 	
 	_wait_lab_vbox
 	
@@ -16166,7 +16156,7 @@ _edit_instance_vbox_sequence() {
 	
 	_createLocked "$vBox_vdi" || return 1
 	
-	env HOME="$VBOX_USER_HOME_short" VirtualBox
+	_VirtualBox_env_VBOX_USER_HOME_short
 	
 	_wait_instance_vbox
 	
@@ -16258,7 +16248,7 @@ _launch_user_vbox_manage_sequence() {
 	
 	_createLocked "$vBox_vdi" || return 1
 	
-	env HOME="$VBOX_USER_HOME_short" VBoxManage "$@"
+	_VBoxManage_env_VBOX_USER_HOME_short "$@"
 	
 	_wait_instance_vbox
 	
@@ -28154,32 +28144,68 @@ _prepare_lab_vbox() {
 
 
 
-
-
 _override_bin_vbox() {
 	if ! _if_cygwin
 	then
 		return 0
 	fi
 	
+	_at_userMSW_probeCmd_discoverResource-cygwinNative-ProgramFiles VirtualBox Oracle/VirtualBox false
 	_at_userMSW_probeCmd_discoverResource-cygwinNative-ProgramFiles VBoxManage Oracle/VirtualBox false
+	
+	_at_userMSW_probeCmd_discoverResource-cygwinNative-ProgramFiles VBoxHeadless Oracle/VirtualBox false
+	_at_userMSW_probeCmd_discoverResource-cygwinNative-ProgramFiles VBoxSDL Oracle/VirtualBox false
+	
+	_at_userMSW_probeCmd_discoverResource-cygwinNative-ProgramFiles VirtualBoxVM Oracle/VirtualBox false
 }
 
 
 
+_VirtualBox_env_VBOX_USER_HOME_short_sequence() {
+	export functionEntry_HOME="$HOME"
+	
+	local currentExitStatus
+	
+	export HOME="$VBOX_USER_HOME_short"
+	VirtualBox "$@"
+	currentExitStatus="$?"
+	
+	export HOME="$functionEntry_HOME"
+	return "$currentExitStatus"
+}
+_VirtualBox_env_VBOX_USER_HOME_short() {
+	if _if_cygwin
+	then
+		_VirtualBox_env_VBOX_USER_HOME_short_sequence "$@"
+		return
+	fi
+	
+	"$scriptAbsoluteLocation" _VirtualBox_env_VBOX_USER_HOME_short_sequence "$@"
+	return
+}
 
-
-
-
-
-
-
-
-
-
-
-
-
+_VBoxManage_env_VBOX_USER_HOME_short_sequence() {
+	export functionEntry_HOME="$HOME"
+	
+	local currentExitStatus
+	
+	export HOME="$VBOX_USER_HOME_short"
+	VBoxManage "$@"
+	currentExitStatus="$?"
+	
+	export HOME="$functionEntry_HOME"
+	return "$currentExitStatus"
+}
+_VBoxManage_env_VBOX_USER_HOME_short() {
+	if _if_cygwin
+	then
+		_VBoxManage_env_VBOX_USER_HOME_short_sequence "$@"
+		return
+	fi
+	
+	"$scriptAbsoluteLocation" _VBoxManage_env_VBOX_USER_HOME_short_sequence "$@"
+	return
+}
 
 
 

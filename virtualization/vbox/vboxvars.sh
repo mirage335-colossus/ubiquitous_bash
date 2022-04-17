@@ -104,31 +104,67 @@ _prepare_lab_vbox() {
 
 
 
-
-
 _override_bin_vbox() {
 	if ! _if_cygwin
 	then
 		return 0
 	fi
 	
+	_at_userMSW_probeCmd_discoverResource-cygwinNative-ProgramFiles VirtualBox Oracle/VirtualBox false
 	_at_userMSW_probeCmd_discoverResource-cygwinNative-ProgramFiles VBoxManage Oracle/VirtualBox false
+	
+	_at_userMSW_probeCmd_discoverResource-cygwinNative-ProgramFiles VBoxHeadless Oracle/VirtualBox false
+	_at_userMSW_probeCmd_discoverResource-cygwinNative-ProgramFiles VBoxSDL Oracle/VirtualBox false
+	
+	_at_userMSW_probeCmd_discoverResource-cygwinNative-ProgramFiles VirtualBoxVM Oracle/VirtualBox false
 }
 
 
 
+_VirtualBox_env_VBOX_USER_HOME_short_sequence() {
+	export functionEntry_HOME="$HOME"
+	
+	local currentExitStatus
+	
+	export HOME="$VBOX_USER_HOME_short"
+	VirtualBox "$@"
+	currentExitStatus="$?"
+	
+	export HOME="$functionEntry_HOME"
+	return "$currentExitStatus"
+}
+_VirtualBox_env_VBOX_USER_HOME_short() {
+	if _if_cygwin
+	then
+		_VirtualBox_env_VBOX_USER_HOME_short_sequence "$@"
+		return
+	fi
+	
+	"$scriptAbsoluteLocation" _VirtualBox_env_VBOX_USER_HOME_short_sequence "$@"
+	return
+}
 
-
-
-
-
-
-
-
-
-
-
-
-
+_VBoxManage_env_VBOX_USER_HOME_short_sequence() {
+	export functionEntry_HOME="$HOME"
+	
+	local currentExitStatus
+	
+	export HOME="$VBOX_USER_HOME_short"
+	VBoxManage "$@"
+	currentExitStatus="$?"
+	
+	export HOME="$functionEntry_HOME"
+	return "$currentExitStatus"
+}
+_VBoxManage_env_VBOX_USER_HOME_short() {
+	if _if_cygwin
+	then
+		_VBoxManage_env_VBOX_USER_HOME_short_sequence "$@"
+		return
+	fi
+	
+	"$scriptAbsoluteLocation" _VBoxManage_env_VBOX_USER_HOME_short_sequence "$@"
+	return
+}
 
 

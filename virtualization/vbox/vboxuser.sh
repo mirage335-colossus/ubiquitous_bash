@@ -574,7 +574,7 @@ _edit_instance_vbox_sequence() {
 	
 	_createLocked "$vBox_vdi" || return 1
 	
-	env HOME="$VBOX_USER_HOME_short" VirtualBox
+	_VirtualBox_env_VBOX_USER_HOME_short
 	
 	_wait_instance_vbox
 	
@@ -666,7 +666,7 @@ _launch_user_vbox_manage_sequence() {
 	
 	_createLocked "$vBox_vdi" || return 1
 	
-	env HOME="$VBOX_USER_HOME_short" VBoxManage "$@"
+	_VBoxManage_env_VBOX_USER_HOME_short "$@"
 	
 	_wait_instance_vbox
 	
