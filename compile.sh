@@ -32,7 +32,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='1891409836'
-export ub_setScriptChecksum_contents='2858135316'
+export ub_setScriptChecksum_contents='466433295'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -978,6 +978,7 @@ _set_at_userMSW_discoverResource-cygwinNative-ProgramFiles() {
 		export HOMEPATH=$(echo "$USERPROFILE" | tail -c +3)
 	fi
 	
+	export functionEntry_VBOXID="$VBOXID"
 	export functionEntry_vBox_vdi="$vBox_vdi"
 	export functionEntry_vBoxInstanceDir="$vBoxInstanceDir"
 	export functionEntry_VBOX_ID_FILE="$VBOX_ID_FILE"
@@ -987,6 +988,7 @@ _set_at_userMSW_discoverResource-cygwinNative-ProgramFiles() {
 	export functionEntry_VBOX_IPC_SOCKETID="$VBOX_IPC_SOCKETID"
 	export functionEntry_VBoxXPCOMIPCD_PIDfile="$VBoxXPCOMIPCD_PIDfile"
 	
+	[[ -e "$VBOXID" ]] && export VBOXID=$(cygpath -w "$VBOXID")
 	[[ -e "$vBox_vdi" ]] && export vBox_vdi=$(cygpath -w "$vBox_vdi")
 	[[ -e "$vBoxInstanceDir" ]] && export vBoxInstanceDir=$(cygpath -w "$vBoxInstanceDir")
 	[[ -e "$VBOX_ID_FILE" ]] && export VBOX_ID_FILE=$(cygpath -w "$VBOX_ID_FILE")
@@ -1002,6 +1004,7 @@ _setFunctionEntry_at_userMSW_discoverResource-cygwinNative-ProgramFiles() {
 	export HOMEDRIVE="$functionEntry_HOMEDRIVE"
 	export HOMEPATH="$functionEntry_HOMEPATH"
 	
+	export VBOXID="$functionEntry_VBOXID"
 	export vBox_vdi="$functionEntry_vBox_vdi"
 	export vBoxInstanceDir="$functionEntry_vBoxInstanceDir"
 	export VBOX_ID_FILE="$functionEntry_VBOX_ID_FILE"

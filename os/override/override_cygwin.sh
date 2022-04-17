@@ -356,6 +356,7 @@ _set_at_userMSW_discoverResource-cygwinNative-ProgramFiles() {
 		export HOMEPATH=$(echo "$USERPROFILE" | tail -c +3)
 	fi
 	
+	export functionEntry_VBOXID="$VBOXID"
 	export functionEntry_vBox_vdi="$vBox_vdi"
 	export functionEntry_vBoxInstanceDir="$vBoxInstanceDir"
 	export functionEntry_VBOX_ID_FILE="$VBOX_ID_FILE"
@@ -365,6 +366,7 @@ _set_at_userMSW_discoverResource-cygwinNative-ProgramFiles() {
 	export functionEntry_VBOX_IPC_SOCKETID="$VBOX_IPC_SOCKETID"
 	export functionEntry_VBoxXPCOMIPCD_PIDfile="$VBoxXPCOMIPCD_PIDfile"
 	
+	[[ -e "$VBOXID" ]] && export VBOXID=$(cygpath -w "$VBOXID")
 	[[ -e "$vBox_vdi" ]] && export vBox_vdi=$(cygpath -w "$vBox_vdi")
 	[[ -e "$vBoxInstanceDir" ]] && export vBoxInstanceDir=$(cygpath -w "$vBoxInstanceDir")
 	[[ -e "$VBOX_ID_FILE" ]] && export VBOX_ID_FILE=$(cygpath -w "$VBOX_ID_FILE")
@@ -380,6 +382,7 @@ _setFunctionEntry_at_userMSW_discoverResource-cygwinNative-ProgramFiles() {
 	export HOMEDRIVE="$functionEntry_HOMEDRIVE"
 	export HOMEPATH="$functionEntry_HOMEPATH"
 	
+	export VBOXID="$functionEntry_VBOXID"
 	export vBox_vdi="$functionEntry_vBox_vdi"
 	export vBoxInstanceDir="$functionEntry_vBoxInstanceDir"
 	export VBOX_ID_FILE="$functionEntry_VBOX_ID_FILE"

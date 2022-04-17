@@ -87,6 +87,9 @@ _prepare_vbox() {
 	oldLinkPath=$(readlink "$VBOX_USER_HOME_short")
 	[[ "$oldLinkPath" != "$VBOX_USER_HOME_local" ]] && _messagePlain_bad 'fail: symlink VBOX_USER_HOME_local to VBOX_USER_HOME_short' && return 1
 	
+	
+	_override_bin_vbox "$@"
+	
 	return 0
 }
 
