@@ -178,9 +178,9 @@ _ _page
 _heading2 'VM - Create and Multiplatform'
 _t 'Virtualization commands (at least &#39;_userVBox&#39;, &#39;_editVBox) may be usable from both GNU/Linux and Cygwin/MSW hosts. Cygwin/MSW hosts should be sufficient for end-user applications under narrow conditions, though such functionality may be more robust and complete from GNU/Linux hosts. Developers using MSW (ie. for VR software reasons) are strongly encouraged to use GNU/Linux guest with nested virtualization as a GNU/Linux host and workstation. At least VMWare Workstation installed at a MSW host can provide nested virtualization compatible with a guest installation of VirtualBox.'
 _o '_messagePlain_probe' 'export vmSize=24576'
-_o '_messagePlain_probe' '_createRawImage'
-_o '_messagePlain_probe' '_img_to_vdi'
-_o '_messagePlain_probe' '_userVBox'
+_o '_messagePlain_probe' './_bin.bat ./ubiquitous_bash.sh _createRawImage'
+_o '_messagePlain_probe' './_bin.bat ./ubiquitous_bash.sh _img_to_vdi'
+_o '_messagePlain_probe' './_bin.bat ./ubiquitous_bash.sh _userVBox'
 _ _t '
 
 
