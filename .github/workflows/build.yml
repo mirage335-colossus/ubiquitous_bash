@@ -48,7 +48,7 @@ jobs:
         run: |
           $ErrorActionPreference="SilentlyContinue"
           $ErrorActionPreference = "Continue"
-          Set-MpPreference -DisableRealtimeMonitoring $true
+          #Set-MpPreference -DisableRealtimeMonitoring $true
           date > /wasHere.log
           pwd >> /wasHere.log
           cat /wasHere.log
