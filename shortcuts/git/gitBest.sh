@@ -84,6 +84,7 @@ _gitBest_override_github-github_core() {
 	_gitBest_override_config_insteadOf-core SigBlockly-mod
 	_gitBest_override_config_insteadOf-core stepperTester
 	_gitBest_override_config_insteadOf-core TazIntermediate
+	_gitBest_override_config_insteadOf-core translate2geda
 	_gitBest_override_config_insteadOf-core webClient
 	_gitBest_override_config_insteadOf-core zipTiePanel
 }
