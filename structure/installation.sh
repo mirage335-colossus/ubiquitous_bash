@@ -549,6 +549,27 @@ _variableLocalTest_sequence() {
 	[[ $(_currentFunctionDefinitionTest) != "true" ]] && _messageFAIL && _stop 1
 	unset _currentFunctionDefinitionTest
 	
+	
+	local doubleLocalDefinitionA
+	doubleLocalDefinitionA=1
+	local doubleLocalDefinitionA
+	doubleLocalDefinitionA=2
+	[[ "$doubleLocalDefinitionA" != "2" ]] && _messageFAIL && _stop 1
+	local doubleLocalDefinitionA=3
+	[[ "$doubleLocalDefinitionA" != "3" ]] && _messageFAIL && _stop 1
+	local doubleLocalDefinitionA
+	doubleLocalDefinitionA=4
+	[[ "$doubleLocalDefinitionA" != "4" ]] && _messageFAIL && _stop 1
+	export doubleLocalDefinitionA=5
+	[[ "$doubleLocalDefinitionA" != "5" ]] && _messageFAIL && _stop 1
+	local doubleLocalDefinitionA=6
+	[[ "$doubleLocalDefinitionA" != "6" ]] && _messageFAIL && _stop 1
+	doubleLocalDefinitionA=7
+	[[ "$doubleLocalDefinitionA" != "7" ]] && _messageFAIL && _stop 1
+	local doubleLocalDefinitionA=8
+	[[ "$doubleLocalDefinitionA" != "8" ]] && _messageFAIL && _stop 1
+	
+	
 	_stop
 }
 
