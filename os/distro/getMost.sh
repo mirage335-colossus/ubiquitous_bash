@@ -72,6 +72,7 @@ _getMost_debian11_aptSources() {
 	
 	
 	_getMost_backend_aptGetInstall wget
+	_getMost_backend_aptGetInstall gpg
 	
 	
 	_getMost_backend mkdir -p /etc/apt/sources.list.d
@@ -365,6 +366,7 @@ _getMost_ubuntu20_aptSources() {
 	
 	
 	_getMost_backend_aptGetInstall wget
+	_getMost_backend_aptGetInstall gpg
 	
 	
 	_getMost_backend mkdir -p /etc/apt/sources.list.d
