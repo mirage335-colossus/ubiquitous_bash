@@ -568,6 +568,8 @@ _variableLocalTest_sequence() {
 	[[ "$doubleLocalDefinitionA" != "7" ]] && _messageFAIL && _stop 1
 	local doubleLocalDefinitionA=8
 	[[ "$doubleLocalDefinitionA" != "8" ]] && _messageFAIL && _stop 1
+	unset doubleLocalDefinitionA
+	[[ "$doubleLocalDefinitionA" != "" ]] && _messageFAIL && _stop 1
 	
 	
 	_stop
