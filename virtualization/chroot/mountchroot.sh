@@ -226,7 +226,7 @@ _mountChRoot_image_x64_efi() {
 	! [[ "$loopdevfs" == "vfat" ]] && _stop 1
 	
 	
-	mkdir -p "$globalVirtFS"/boot/efi
+	sudo -n mkdir -p "$globalVirtFS"/boot/efi
 	
 	sudo -n mount "$current_imagedev""$ubVirtImageEFI" "$globalVirtFS"/boot/efi
 	
