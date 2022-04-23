@@ -328,6 +328,10 @@ _getMost_debian11_install() {
 	_getMost_backend_aptGetInstall libgtk2.0-0
 	
 	
+	
+	_getMost_backend_aptGetInstall iputils-ping
+	
+	
 	_getMost_debian11_special_late
 }
 
