@@ -339,7 +339,7 @@ _enter() {
 	
 	
 	
-	( [[ "$profileScriptLocation" != "" ]] || [[ "$ub_import" == "true" ]] ) && return 0
+	( [[ "$profileScriptLocation" != "" ]] || [[ "$ub_import" == "true" ]] || env | grep -i '^kde\|kde$' > /dev/null 2>&1 || [[ "$XDG_SESSION_DESKTOP" != "" ]] || [[ "$XDG_CURRENT_DESKTOP" != "" ]] ) && return 0
 	
 	_messageError 'if you see this in an INTERACTIVE TERMINAL then CEASE NOW!!!'
 	_messagePlain_warn 'WARNING: will drastically reconfigure OS/userspace'
