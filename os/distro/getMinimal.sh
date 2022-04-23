@@ -167,6 +167,9 @@ _getMinimal_cloud() {
 	_getMost_backend_aptGetInstall libgtk2.0-0
 	
 	
+	_getMost_backend_aptGetInstall debootstrap
+	
+	
 	# May not be useful for anything, may cause delay or fail .
 	#_getMost_backend apt-get upgrade
 	
