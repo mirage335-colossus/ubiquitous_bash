@@ -611,6 +611,21 @@ _install_and_run() {
 	echo '@reboot cd '/home/"$custom_user"'/ ; '/home/"$custom_user"'/rottenScript.sh _run' | sudo -u user bash -c "crontab -"
 	
 	
+	if [[ -e /etc/issue ]] && ( cat /etc/issue | grep 'Ubuntu' | grep '20.04' > /dev/null 2>&1 || cat /etc/issue | grep 'Ubuntu' > /dev/null 2>&1 )
+	then
+		# https://itsfoss.com/install-kde-on-ubuntu/
+		sudo apt install kde-full
+		# OR
+		#sudo apt install kde-standard
+		
+		# https://askubuntu.com/questions/1114525/reconfigure-the-display-manager-non-interactively
+		echo "/usr/bin/sddm" > /etc/X11/default-display-manager
+		DEBIAN_FRONTEND=noninteractive DEBCONF_NONINTERACTIVE_SEEN=true dpkg-reconfigure sddm
+		echo set shared/default-x-display-manager sddm | debconf-communicate
+		
+		sudo -n systemctl stop gdm3
+	fi
+	
 	sudo -n systemctl start sddm
 	
 	
