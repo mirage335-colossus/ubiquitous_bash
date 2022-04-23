@@ -172,10 +172,12 @@ _setupUbiquitous() {
 	ln -sf "$ubcoreUBfile" "$ubHome"/bin/_winecfghere
 	
 	echo '#!/bin/bash
-"$HOME"/bin/ubiquitous_bash.sh _vncf' > "$ubHome"/bin/vncf
+"$HOME"/bin/ubiquitous_bash.sh _vncf "$@"' > "$ubHome"/bin/vncf
+	chmod u+x "$ubHome"/bin/vncf
 	
 	echo '#!/bin/bash
-"$HOME"/bin/ubiquitous_bash.sh _sshf' > "$ubHome"/bin/sshf
+"$HOME"/bin/ubiquitous_bash.sh _sshf "$@"' > "$ubHome"/bin/sshf
+	chmod u+x "$ubHome"/bin/vncf
 	
 	
 	
