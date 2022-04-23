@@ -387,17 +387,17 @@ _custom_construct_permissions_user() {
 	local current_user_uid
 	current_user_uid=$(sudo -n id -u "$1" 2>/dev/null)
 	
-	_messagePlain_probe 'chown '"$current_user_uid":"$current_user_uid" "$globalVirtFS"/home/"$1"
+	_messagePlain_probe 'chown '"$current_user_uid":"$current_user_uid" /home/"$1"
 	
 	if [[ "$1" == "root" ]] || [[ "$current_user_uid" == '0' ]]
 	then
-		sudo -n chmod 700 "$globalVirtFS"/root
-		sudo -n chown -R "$current_user_uid":"$current_user_uid" "$globalVirtFS"/root
+		sudo -n chmod 700 /root
+		sudo -n chown -R "$current_user_uid":"$current_user_uid" /root
 		return
 	fi
 	
-	sudo -n chmod 700 "$globalVirtFS"/home/"$1"
-	sudo -n chown -R "$current_user_uid":"$current_user_uid" "$globalVirtFS"/home/"$1"
+	sudo -n chmod 700 /home/"$1"
+	sudo -n chown -R "$current_user_uid":"$current_user_uid" /home/"$1"
 }
 
 # "$1" == username
@@ -437,6 +437,14 @@ _custom() {
 	fi
 	
 	_custom_write_sudoers
+	
+	mkdir -p /etc/sddm.conf.d
+	echo '[Autologin]
+User=user
+Session=plasma
+Relogin=true
+' > /etc/sddm.conf.d/autologin.conf
+	
 	
 	#US/Eastern
 	sudo -n timedatectl set-timezone US/Eastern
