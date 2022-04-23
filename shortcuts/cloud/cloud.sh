@@ -45,7 +45,7 @@ _vncf() {
 	[[ ! -e "$currentScript" ]] && currentScript="$scriptAbsoluteLocation"
 	[[ ! -e "$currentScript" ]] && exit 1
 	
-	"$currentScript" sshf "$@" echo true
+	"$currentScript" _sshf "$@" echo true
 	"$currentScript" _vnc "$@"
 }
 vncf() {
