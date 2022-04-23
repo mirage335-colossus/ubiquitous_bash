@@ -32,7 +32,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='1891409836'
-export ub_setScriptChecksum_contents='281602205'
+export ub_setScriptChecksum_contents='3049981457'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -22267,7 +22267,7 @@ _test_terraform() {
 #cloud
 
 
-#SSH, Force. Forcibly deletes old host key. Useful after 'rebuilding' a VPS using the same IP address, etc.
+# SSH, Force. Forcibly deletes old host key. Useful after 'rebuilding' a VPS using the same IP address, etc.
 # DANGER: Obiously, this is for brief cloud experiments with newly constructed computers for which security is either unimportant or all relavant other conditions are known.
 sshf() {
 	local currentUser
@@ -22298,6 +22298,18 @@ sshf() {
 	
 	[[ "$currentHostname" != "" ]] && ssh-keygen -R "$currentHostname" > /dev/null 2>&1
 	ssh -o "StrictHostKeyChecking no" "$@"
+}
+
+# VNC, through SSH, usually to server's actual display output, force. Expect this to work with Debian Buster x64, Raspbian, etc, as of 2022 .
+# May not be tested with Wayland (x11vnc equivalent may be necessary).
+vncf() {
+	local currentScript
+	currentScript="$scriptAbsoluteFolder"/ubiquitous_bash.sh
+	[[ ! -e "$currentScript" ]] && currentScript="$scriptAbsoluteLocation"
+	[[ ! -e "$currentScript" ]] && exit 1
+	
+	sshf "$@" echo true
+	"$currentScript" _vnc "$@"
 }
 
 

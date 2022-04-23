@@ -1,7 +1,7 @@
 #cloud
 
 
-#SSH, Force. Forcibly deletes old host key. Useful after 'rebuilding' a VPS using the same IP address, etc.
+# SSH, Force. Forcibly deletes old host key. Useful after 'rebuilding' a VPS using the same IP address, etc.
 # DANGER: Obiously, this is for brief cloud experiments with newly constructed computers for which security is either unimportant or all relavant other conditions are known.
 sshf() {
 	local currentUser
@@ -32,6 +32,18 @@ sshf() {
 	
 	[[ "$currentHostname" != "" ]] && ssh-keygen -R "$currentHostname" > /dev/null 2>&1
 	ssh -o "StrictHostKeyChecking no" "$@"
+}
+
+# VNC, through SSH, usually to server's actual display output, force. Expect this to work with Debian Buster x64, Raspbian, etc, as of 2022 .
+# May not be tested with Wayland (x11vnc equivalent may be necessary).
+vncf() {
+	local currentScript
+	currentScript="$scriptAbsoluteFolder"/ubiquitous_bash.sh
+	[[ ! -e "$currentScript" ]] && currentScript="$scriptAbsoluteLocation"
+	[[ ! -e "$currentScript" ]] && exit 1
+	
+	sshf "$@" echo true
+	"$currentScript" _vnc "$@"
 }
 
 
