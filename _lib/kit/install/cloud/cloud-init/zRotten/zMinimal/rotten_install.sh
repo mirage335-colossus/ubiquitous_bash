@@ -590,7 +590,7 @@ _install_and_run() {
 	# ATTENTION: Optional. Attempts '_getMost' and '_test' from full 'ubiquitous_bash.sh' from upstream.
 	echo '________________________________________'
 	sudo -u root INSTANCE_ID="$INSTANCE_ID" sh -c "cd ; /root/bin/ubiquitous_bash.sh _getMost_debian11 2>&1"
-	sudo -u root INSTANCE_ID="$INSTANCE_ID" sh -c "cd ; /root/bin/ubiquitous_bash.sh _test 2>&1" > /var/log/ubiquitous_bash-test
+	sudo -u root INSTANCE_ID="$INSTANCE_ID" sh -c "cd ; /root/bin/ubiquitous_bash.sh _test 2>&1" | tee /var/log/ubiquitous_bash-test
 	sudo -n env DEBIAN_FRONTEND=noninteractive apt-get -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" -y upgrade
 	
 	sudo -u user bash -c "cd ; mkdir -p "/home/"$custom_user""/Downloads"
@@ -609,6 +609,9 @@ _install_and_run() {
 	
 	
 	echo '@reboot cd '/home/"$custom_user"'/ ; '/home/"$custom_user"'/rottenScript.sh _run' | sudo -u user bash -c "crontab -"
+	
+	
+	sudo -n systemctl start sddm
 	
 	
 	mv -f /etc/motd.bak /etc/motd
