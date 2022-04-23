@@ -31,6 +31,10 @@ _testQEMU_x64-raspi() {
 	fi
 	
 	
+	sudo -n systemctl status binfmt-support 2>&1 | head -n 2 | grep -i 'chroot' > /dev/null && return 0
+	systemctl status binfmt-support 2>&1 | head -n 2 | grep -i 'chroot' > /dev/null && return 0
+	
+	
 	
 	if ! sudo -n cat /proc/sys/fs/binfmt_misc/* 2> /dev/null | grep qemu | grep 'arm$\|arm-static$\|arm-binfmt-P$\|arm-binfmt' > /dev/null 2>&1
 	then
@@ -43,6 +47,8 @@ _testQEMU_x64-raspi() {
 		echo 'binfmts does not mention qemu-armeb'
 		[[ "$INSTANCE_ID" == "" ]] && _stop 1
 	fi
+	
+	return 0
 }
 
 
