@@ -51,6 +51,11 @@ jobs:
         run: |
           ./ubiquitous_bash.sh _getMinimal_cloud
         timeout-minutes: 90
+      - name: type-rclone
+        shell: bash
+        run: |
+          type rclone
+        timeout-minutes: 90
       - name: test-lean
         shell: bash
         run: |

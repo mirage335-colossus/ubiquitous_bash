@@ -32,7 +32,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='1891409836'
-export ub_setScriptChecksum_contents='2638680254'
+export ub_setScriptChecksum_contents='2271035050'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -9220,7 +9220,8 @@ _getMost_debian11_special_late() {
 	_getMost_backend_aptGetInstall curl
 	
 	_messagePlain_probe 'install: rclone'
-	_getMost_backend curl https://rclone.org/install.sh | _getMost_backend bash -s beta
+	#_getMost_backend curl https://rclone.org/install.sh | _getMost_backend bash -s beta
+	_getMost_backend curl https://rclone.org/install.sh | _getMost_backend bash
 }
 
 _getMost_debian11_install() {
@@ -9738,7 +9739,12 @@ _getMinimal_cloud() {
 	_getMost_backend_aptGetInstall curl
 	
 	_messagePlain_probe 'install: rclone'
-	_getMost_backend curl https://rclone.org/install.sh | _getMost_backend bash -s beta
+	#_getMost_backend curl https://rclone.org/install.sh | _getMost_backend bash -s beta
+	_getMost_backend curl https://rclone.org/install.sh | _getMost_backend bash
+	
+	# Apparently Github Actions does not have IPv6.
+	# https://github.com/actions/virtual-environments/issues/668#issuecomment-624080758
+	[[ "$CI" != "" ]] && _getMost_backend curl https://rclone.org/install.sh | _getMost_backend bash
 	
 	
 	

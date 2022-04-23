@@ -63,7 +63,12 @@ _getMinimal_cloud() {
 	_getMost_backend_aptGetInstall curl
 	
 	_messagePlain_probe 'install: rclone'
-	_getMost_backend curl https://rclone.org/install.sh | _getMost_backend bash -s beta
+	#_getMost_backend curl https://rclone.org/install.sh | _getMost_backend bash -s beta
+	_getMost_backend curl https://rclone.org/install.sh | _getMost_backend bash
+	
+	# Apparently Github Actions does not have IPv6.
+	# https://github.com/actions/virtual-environments/issues/668#issuecomment-624080758
+	[[ "$CI" != "" ]] && _getMost_backend curl https://rclone.org/install.sh | _getMost_backend bash
 	
 	
 	

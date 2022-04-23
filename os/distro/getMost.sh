@@ -105,7 +105,8 @@ _getMost_debian11_special_late() {
 	_getMost_backend_aptGetInstall curl
 	
 	_messagePlain_probe 'install: rclone'
-	_getMost_backend curl https://rclone.org/install.sh | _getMost_backend bash -s beta
+	#_getMost_backend curl https://rclone.org/install.sh | _getMost_backend bash -s beta
+	_getMost_backend curl https://rclone.org/install.sh | _getMost_backend bash
 }
 
 _getMost_debian11_install() {
