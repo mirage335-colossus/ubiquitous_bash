@@ -16,6 +16,9 @@ _x11vnc_operations() {
 	[[ "$x11vnc_scale" != "" ]] && x11vncArgs+=(-scale "$x11vnc_scale")
 	[[ "$x11vnc_scale_cursor" != "" ]] && x11vncArgs+=(-cursor arrow -scale_cursor "$x11vnc_scale_cursor")
 	
+	_messagePlain_probe sudo -n loginctl unlock-sessions
+	sudo -n loginctl unlock-sessions
+	
 	_messagePlain_nominal 'Detecting and launching x11vnc.'
 	#x11vnc
 	if type x11vnc >/dev/null 2>&1
