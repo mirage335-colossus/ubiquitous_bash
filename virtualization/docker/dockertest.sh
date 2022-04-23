@@ -50,16 +50,6 @@ _test_docker() {
 	#	_stop 1
 	#fi
 	
-	_permitDocker docker import "$scriptBin"/"dockerHello".tar "ubdockerhello" --change 'CMD ["/hello"]' > /dev/null 2>&1
-	if ! _permitDocker docker run "ubdockerhello" 2>&1 | grep 'hello world' > /dev/null 2>&1
-	then
-		echo 'failed ubdockerhello'
-		echo 'request: may require iptables legacy'
-		echo 'sudo -n update-alternatives --set iptables /usr/sbin/iptables-legacy'
-		echo 'sudo -n update-alternatives --set ip6tables /usr/sbin/ip6tables-legacy'
-		_stop 1
-	fi
-	
 	if ! _discoverResource moby/contrib/mkimage.sh > /dev/null 2>&1 && ! _discoverResource docker/contrib/mkimage.sh
 	#if true
 	then
@@ -72,6 +62,21 @@ _test_docker() {
 	then
 		echo
 		echo 'some base images cannot be created without hello'
+	fi
+	
+	
+	
+	sudo -n systemctl status docker 2>&1 | head -n 2 | grep -i 'chroot' > /dev/null && return 0
+	systemctl status docker 2>&1 | head -n 2 | grep -i 'chroot' > /dev/null && return 0
+	
+	_permitDocker docker import "$scriptBin"/"dockerHello".tar "ubdockerhello" --change 'CMD ["/hello"]' > /dev/null 2>&1
+	if ! _permitDocker docker run "ubdockerhello" 2>&1 | grep 'hello world' > /dev/null 2>&1
+	then
+		echo 'failed ubdockerhello'
+		echo 'request: may require iptables legacy'
+		echo 'sudo -n update-alternatives --set iptables /usr/sbin/iptables-legacy'
+		echo 'sudo -n update-alternatives --set ip6tables /usr/sbin/ip6tables-legacy'
+		_stop 1
 	fi
 }
 

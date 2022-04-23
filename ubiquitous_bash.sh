@@ -32,7 +32,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='1891409836'
-export ub_setScriptChecksum_contents='603203380'
+export ub_setScriptChecksum_contents='2638680254'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -16894,16 +16894,6 @@ _test_docker() {
 	#	_stop 1
 	#fi
 	
-	_permitDocker docker import "$scriptBin"/"dockerHello".tar "ubdockerhello" --change 'CMD ["/hello"]' > /dev/null 2>&1
-	if ! _permitDocker docker run "ubdockerhello" 2>&1 | grep 'hello world' > /dev/null 2>&1
-	then
-		echo 'failed ubdockerhello'
-		echo 'request: may require iptables legacy'
-		echo 'sudo -n update-alternatives --set iptables /usr/sbin/iptables-legacy'
-		echo 'sudo -n update-alternatives --set ip6tables /usr/sbin/ip6tables-legacy'
-		_stop 1
-	fi
-	
 	if ! _discoverResource moby/contrib/mkimage.sh > /dev/null 2>&1 && ! _discoverResource docker/contrib/mkimage.sh
 	#if true
 	then
@@ -16916,6 +16906,21 @@ _test_docker() {
 	then
 		echo
 		echo 'some base images cannot be created without hello'
+	fi
+	
+	
+	
+	sudo -n systemctl status docker 2>&1 | head -n 2 | grep -i 'chroot' > /dev/null && return 0
+	systemctl status docker 2>&1 | head -n 2 | grep -i 'chroot' > /dev/null && return 0
+	
+	_permitDocker docker import "$scriptBin"/"dockerHello".tar "ubdockerhello" --change 'CMD ["/hello"]' > /dev/null 2>&1
+	if ! _permitDocker docker run "ubdockerhello" 2>&1 | grep 'hello world' > /dev/null 2>&1
+	then
+		echo 'failed ubdockerhello'
+		echo 'request: may require iptables legacy'
+		echo 'sudo -n update-alternatives --set iptables /usr/sbin/iptables-legacy'
+		echo 'sudo -n update-alternatives --set ip6tables /usr/sbin/ip6tables-legacy'
+		_stop 1
 	fi
 }
 
