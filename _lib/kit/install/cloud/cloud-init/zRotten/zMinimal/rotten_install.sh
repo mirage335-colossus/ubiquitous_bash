@@ -614,7 +614,7 @@ _install_and_run() {
 	if [[ -e /etc/issue ]] && ( cat /etc/issue | grep 'Ubuntu' | grep '20.04' > /dev/null 2>&1 || cat /etc/issue | grep 'Ubuntu' > /dev/null 2>&1 )
 	then
 		# https://itsfoss.com/install-kde-on-ubuntu/
-		sudo apt install kde-full
+		_install_and_run_package kde-full
 		# OR
 		#sudo apt install kde-standard
 		
