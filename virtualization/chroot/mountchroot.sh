@@ -70,7 +70,12 @@ _mountChRoot() {
 	then
 		sudo -n cp -n "$absolute1"/etc/resolv.conf "$absolute1"/etc/resolv.conf.guest.bak
 		sudo -n mv -n "$absolute1"/etc/resolv.conf "$absolute1"/etc/resolv.conf.guest
-		sudo -n cp -n /etc/resolv.conf "$absolute1"/etc/resolv.conf.host
+		
+		#if [[ ! -e "$absolute1"/etc/resolv.conf.host ]]
+		#then
+			sudo -n cp -n -L /etc/resolv.conf "$absolute1"/etc/resolv.conf.host
+			#sudo -n cat /etc/resolv.conf | sudo tee "$absolute1"/etc/resolv.conf.host > /dev/null 2>&1
+		#fi
 		
 		sudo -n mv -f "$absolute1"/etc/resolv.conf.host "$absolute1"/etc/resolv.conf
 	fi
