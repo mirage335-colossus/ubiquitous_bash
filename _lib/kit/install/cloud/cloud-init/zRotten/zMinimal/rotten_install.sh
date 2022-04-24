@@ -534,8 +534,8 @@ _install_and_run_package() {
 	fi
 }
 
-_install_and_run() {
-	_messageNormal 'init: rotten: _install_and_run'
+_install() {
+	_messageNormal 'init: rotten: _install'
 	
 	! _mustBeRoot && exit 1
 	
@@ -545,7 +545,7 @@ _install_and_run() {
 	
 	touch /etc/motd
 	cp -n /etc/motd /etc/motd.bak
-	echo "rotten! WARNING! _install_and_run! imminent! reboot may occur!" >> /etc/motd
+	echo "rotten! WARNING! _install! imminent! reboot may occur!" >> /etc/motd
 	
 	_custom
 	
@@ -634,6 +634,11 @@ _install_and_run() {
 	wall 'rotten: build complete'
 	#sudo -n reboot
 	echo '________________________________________'
+	#sudo -u user bash -c "cd ; cd example ; "/home/"$custom_user""/rottenScript.sh _run"
+}
+_install_and_run() {
+	_messageNormal 'init: rotten: _install_and_run'
+	_install "$@"
 	#sudo -u user bash -c "cd ; cd example ; "/home/"$custom_user""/rottenScript.sh _run"
 }
 
