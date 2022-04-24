@@ -32,7 +32,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='1891409836'
-export ub_setScriptChecksum_contents='434174625'
+export ub_setScriptChecksum_contents='2010637020'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -14032,6 +14032,16 @@ _mountChRoot() {
 		sudo -n rm -f "$absolute1"/etc/resolv.conf > /dev/null 2>&1
 	fi
 	
+	
+	if [[ -e "$absolute1"/etc/resolv.conf ]] && [[ ! -e "$absolute1"/etc/resolv.conf.host ]] && [[ -e /etc/resolv.conf ]]
+	then
+		sudo -n cp -n "$absolute1"/etc/resolv.conf "$absolute1"/etc/resolv.conf.guest.bak
+		sudo -n mv -n "$absolute1"/etc/resolv.conf "$absolute1"/etc/resolv.conf.guest
+		sudo -n cp -n /etc/resolv.conf "$absolute1"/etc/resolv.conf.host
+		
+		sudo -n mf -f "$absolute1"/etc/resolv.conf.host "$absolute1"/etc/resolv.conf
+	fi
+	
 	if ! grep '8\.8\.8\.8' "$absolute1"/etc/resolv.conf > /dev/null 2>&1
 	then
 		echo 'nameserver 8.8.8.8' | sudo -n tee -a "$absolute1"/etc/resolv.conf > /dev/null 2>&1
@@ -14053,6 +14063,13 @@ _umountChRoot() {
 	
 	local absolute1
 	absolute1=$(_getAbsoluteLocation "$1")
+	
+	# && [[ -e "$absolute1"/etc/resolv.conf ]]
+	if [[ -e "$absolute1"/etc/resolv.conf.guest ]] && [[ ! -e "$absolute1"/etc/resolv.conf.host ]]
+	then
+		sudo -n mv -f "$absolute1"/etc/resolv.conf.guest "$absolute1"/etc/resolv.conf
+	fi
+	
 	
 	_wait_umount "$absolute1"/home/"$virtGuestUser"/project >/dev/null 2>&1
 	_wait_umount "$absolute1"/home/"$virtGuestUser" >/dev/null 2>&1

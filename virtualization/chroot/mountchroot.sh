@@ -65,6 +65,16 @@ _mountChRoot() {
 		sudo -n rm -f "$absolute1"/etc/resolv.conf > /dev/null 2>&1
 	fi
 	
+	
+	if [[ -e "$absolute1"/etc/resolv.conf ]] && [[ ! -e "$absolute1"/etc/resolv.conf.host ]] && [[ -e /etc/resolv.conf ]]
+	then
+		sudo -n cp -n "$absolute1"/etc/resolv.conf "$absolute1"/etc/resolv.conf.guest.bak
+		sudo -n mv -n "$absolute1"/etc/resolv.conf "$absolute1"/etc/resolv.conf.guest
+		sudo -n cp -n /etc/resolv.conf "$absolute1"/etc/resolv.conf.host
+		
+		sudo -n mf -f "$absolute1"/etc/resolv.conf.host "$absolute1"/etc/resolv.conf
+	fi
+	
 	if ! grep '8\.8\.8\.8' "$absolute1"/etc/resolv.conf > /dev/null 2>&1
 	then
 		echo 'nameserver 8.8.8.8' | sudo -n tee -a "$absolute1"/etc/resolv.conf > /dev/null 2>&1
@@ -86,6 +96,13 @@ _umountChRoot() {
 	
 	local absolute1
 	absolute1=$(_getAbsoluteLocation "$1")
+	
+	# && [[ -e "$absolute1"/etc/resolv.conf ]]
+	if [[ -e "$absolute1"/etc/resolv.conf.guest ]] && [[ ! -e "$absolute1"/etc/resolv.conf.host ]]
+	then
+		sudo -n mv -f "$absolute1"/etc/resolv.conf.guest "$absolute1"/etc/resolv.conf
+	fi
+	
 	
 	_wait_umount "$absolute1"/home/"$virtGuestUser"/project >/dev/null 2>&1
 	_wait_umount "$absolute1"/home/"$virtGuestUser" >/dev/null 2>&1
