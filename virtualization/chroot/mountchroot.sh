@@ -72,7 +72,7 @@ _mountChRoot() {
 		sudo -n mv -n "$absolute1"/etc/resolv.conf "$absolute1"/etc/resolv.conf.guest
 		sudo -n cp -n /etc/resolv.conf "$absolute1"/etc/resolv.conf.host
 		
-		sudo -n mf -f "$absolute1"/etc/resolv.conf.host "$absolute1"/etc/resolv.conf
+		sudo -n mv -f "$absolute1"/etc/resolv.conf.host "$absolute1"/etc/resolv.conf
 	fi
 	
 	if ! grep '8\.8\.8\.8' "$absolute1"/etc/resolv.conf > /dev/null 2>&1
