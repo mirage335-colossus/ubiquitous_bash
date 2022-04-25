@@ -174,6 +174,8 @@ _getMinimal_cloud() {
 	
 	_getMost_backend_aptGetInstall debootstrap
 	
+	_getMost_backend_aptGetInstall qemu-system-x86
+	
 	
 	# May not be useful for anything, may cause delay or fail .
 	#_getMost_backend apt-get upgrade

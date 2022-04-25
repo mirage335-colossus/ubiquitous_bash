@@ -165,7 +165,16 @@ _getMost_debian11_install() {
 		_getMost_backend dpkg --add-architecture i386
 		_getMost_backend apt-get update
 	fi
-	_getMost_backend_aptGetInstall wmctrl xprintidle okular libreoffice firefox-esr xournal kwrite netcat-openbsd iperf axel unionfs-fuse samba qemu qemu-system-x86 qemu-system-arm qemu-efi-arm qemu-efi-aarch64 qemu-user-static qemu-utils dosbox wine wine32 wine64 libwine libwine:i386 fonts-wine debootstrap xclip xinput gparted bup emacs xterm mesa-utils kde-standard
+	_getMost_backend_aptGetInstall wmctrl xprintidle
+	_getMost_backend_aptGetInstall okular libreoffice firefox-esr xournal kwrite netcat-openbsd iperf axel unionfs-fuse samba
+	_getMost_backend_aptGetInstall qemu
+	_getMost_backend_aptGetInstall qemu-system-x86
+	_getMost_backend_aptGetInstall qemu-system-arm
+	_getMost_backend_aptGetInstall qemu-efi-arm qemu-efi-aarch64 qemu-user-static qemu-utils
+	_getMost_backend_aptGetInstall dosbox
+	_getMost_backend_aptGetInstall wine wine32 wine64 libwine libwine:i386 fonts-wine
+	_getMost_backend_aptGetInstall debootstrap xclip xinput gparted bup emacs xterm mesa-utils
+	_getMost_backend_aptGetInstall kde-standard
 	_getMost_backend_aptGetInstall chromium
 	_getMost_backend_aptGetInstall openjdk-11-jdk openjdk-11-jre
 	
