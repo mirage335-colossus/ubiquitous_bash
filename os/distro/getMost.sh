@@ -343,6 +343,8 @@ _getMost_debian11_install() {
 	
 	_getMost_backend_aptGetInstall synaptic
 	
+	_getMost_backend_aptGetInstall cifs-utils
+	
 	
 	_getMost_debian11_special_late
 }

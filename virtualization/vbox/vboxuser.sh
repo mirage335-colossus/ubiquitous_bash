@@ -289,30 +289,32 @@ _set_instance_vbox_features() {
 	#Testing shows this may not be the case, and 3D acceleration reportedly requires vmsvga.
 	if [[ "$vboxOStype" == *"Debian"* ]] || [[ "$vboxOStype" == *"Gentoo"* ]]
 	then
+		# ATTENTION: Nested virtualization through VMWare Workstation host, seems incompatable with 'accelerate3d on', result may be black screen with cursor.
+		# ATTENTION: WARNING: VirtaulBox 'accelerate3d' may be disabled by default, if not already, if more incompatibilities are found. Explicitly declare with 'ops.sh' if 'accelerate3d' is actually necessary.
 		# Assuming x64 hosts served by VBox will have at least 'Intel HD Graphics 3000' (as found on X220 laptop/tablet) equivalent. Lesser hardware not recommended.
-		if [[ "$vboxCPUs" -ge "2" ]]
-		then
-			if ! _messagePlain_probe_cmd VBoxManage modifyvm "$sessionid" --graphicscontroller vmsvga --accelerate3d on --accelerate2dvideo off
-			then
-				_messagePlain_warn 'warn: fail: VBoxManage: --graphicscontroller vmsvga --accelerate3d on --accelerate2dvideo off'
-			fi
-		else
+		#if [[ "$vboxCPUs" -ge "2" ]] && ! lspci | grep -i vmware && ! lspci | grep -i virtualbox && ! cat /proc/cpuinfo | grep -i model | grep -i qemu && ! sudo -n lspci | grep -i vmware && ! sudo -n lspci | grep -i virtualbox
+		#then
+			#if ! _messagePlain_probe_cmd VBoxManage modifyvm "$sessionid" --graphicscontroller vmsvga --accelerate3d on --accelerate2dvideo off
+			#then
+				#_messagePlain_warn 'warn: fail: VBoxManage: --graphicscontroller vmsvga --accelerate3d on --accelerate2dvideo off'
+			#fi
+		#else
 			if ! _messagePlain_probe_cmd VBoxManage modifyvm "$sessionid" --graphicscontroller vmsvga --accelerate3d off --accelerate2dvideo off
 			then
 				_messagePlain_warn 'warn: fail: VBoxManage: --graphicscontroller vboxsvga --accelerate3d off --accelerate2dvideo off'
 			fi
-		fi
+		#fi
 	fi
 	
 	# Assuming x64 hosts served by VBox will have at least 'Intel HD Graphics 3000' (as found on X220 laptop/tablet) equivalent. Lesser hardware not recommended.
-	if ( [[ "$vboxOStype" == *"Win"*"10"* ]] || [[ "$vboxOStype" == *"Win"*"11"* ]] ) && [[ "$vboxCPUs" -ge "2" ]]
-	then
-		_messagePlain_probe VBoxManage modifyvm "$sessionid" --graphicscontroller vboxsvga --accelerate3d on --accelerate2dvideo on
-		if ! VBoxManage modifyvm "$sessionid" --graphicscontroller vboxsvga --accelerate3d on --accelerate2dvideo on
-		then
-			_messagePlain_warn 'warn: fail: VBoxManage: --graphicscontroller vboxsvga --accelerate3d on --accelerate2dvideo on'
-		fi
-	fi
+	#if ( [[ "$vboxOStype" == *"Win"*"10"* ]] || [[ "$vboxOStype" == *"Win"*"11"* ]] ) && [[ "$vboxCPUs" -ge "2" ]] && ! lspci | grep -i vmware && ! lspci | grep -i virtualbox && ! cat /proc/cpuinfo | grep -i model | grep -i qemu && ! sudo -n lspci | grep -i vmware && ! sudo -n lspci | grep -i virtualbox
+	#then
+		#_messagePlain_probe VBoxManage modifyvm "$sessionid" --graphicscontroller vboxsvga --accelerate3d on --accelerate2dvideo on
+		#if ! VBoxManage modifyvm "$sessionid" --graphicscontroller vboxsvga --accelerate3d on --accelerate2dvideo on
+		#then
+			#_messagePlain_warn 'warn: fail: VBoxManage: --graphicscontroller vboxsvga --accelerate3d on --accelerate2dvideo on'
+		#fi
+	#fi
 	
 	return 0
 	
