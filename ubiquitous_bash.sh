@@ -32,7 +32,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='1891409836'
-export ub_setScriptChecksum_contents='78505674'
+export ub_setScriptChecksum_contents='4178002797'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -15984,7 +15984,7 @@ _set_instance_vbox_features() {
 	if [[ "$vboxOStype" == *"Debian"* ]] || [[ "$vboxOStype" == *"Gentoo"* ]]
 	then
 		# ATTENTION: Nested virtualization through VMWare Workstation host, seems incompatable with 'accelerate3d on', result may be black screen with cursor.
-		# ATTENTION: WARNING: VirtaulBox 'accelerate3d' may be disabled by default, if not already, if more incompatibilities are found. Explicitly declare with 'ops.sh' if 'accelerate3d' is actually necessary.
+		# ATTENTION: WARNING: VirtualBox 'accelerate3d' may be disabled by default, if not already, if more incompatibilities are found. Explicitly declare with 'ops.sh' if 'accelerate3d' is actually necessary.
 		# Assuming x64 hosts served by VBox will have at least 'Intel HD Graphics 3000' (as found on X220 laptop/tablet) equivalent. Lesser hardware not recommended.
 		#if [[ "$vboxCPUs" -ge "2" ]] && ! lspci | grep -i vmware && ! lspci | grep -i virtualbox && ! cat /proc/cpuinfo | grep -i model | grep -i qemu && ! sudo -n lspci | grep -i vmware && ! sudo -n lspci | grep -i virtualbox
 		#then
