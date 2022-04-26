@@ -32,7 +32,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='1891409836'
-export ub_setScriptChecksum_contents='1511385723'
+export ub_setScriptChecksum_contents='1229285096'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -8767,6 +8767,11 @@ _getMost_debian11_install() {
 	_getMost_backend_aptGetInstall cifs-utils
 	
 	
+	
+	_getMost_backend_aptGetInstall pavucontrol
+	_getMost_backend_aptGetInstall filelight
+	
+	
 	_getMost_debian11_special_late
 }
 
@@ -16052,9 +16057,14 @@ _x11_clipboard_imageToHTML() {
 
 #KDE can lockup for many reasons, including xrandr, xsetwacom operations. Resetting the driving applications can be an effective workaround to improve reliability.
 _reset_KDE() {
+	#kquitapp plasmashell ; sleep 0.5 ; pkill plasmashell ; sleep 0.1 ; pkill -KILL plasmashell ; sleep 0.1 ; plasmashell & exit
+	
 	if pgrep plasmashell
 	then
-		kquitapp plasmashell ; sleep 3 ; plasmashell &
+		#kquitapp plasmashell ; sleep 3 ; plasmashell &
+		kquitapp plasmashell ; sleep 0.5 ; pkill plasmashell ; sleep 0.1 ; pkill -KILL plasmashell ; sleep 0.1
+		
+		plasmashell &
 	fi
 	disown -a -h -r
 	disown -a -r
