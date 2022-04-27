@@ -370,6 +370,15 @@ _custom_kde() {
 }
 
 _custom_core() {
+	[[ "$custom_user" == "" ]] && export custom_user="user"
+	
+	if ! [[ -e /home/"$custom_user"/core ]]
+	then
+		# Unpacking 'core' from outside a raw image file, rather than 'wget' inside chroot, may reduce disk space requirements for that raw image file, by ~8GB.
+		#wget ...
+		true
+	fi
+	
 	true
 }
 
