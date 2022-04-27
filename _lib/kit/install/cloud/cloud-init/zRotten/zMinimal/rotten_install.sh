@@ -162,6 +162,7 @@ _here_rottenScript_bash_declareFunctions() {
 	declare -f _here_rottenScript_cloudConfig
 	declare -f _write_rottenScript_cloudConfig
 	declare -f _enter
+	declare -f _custom_bootOnce
 	declare -f _custom_write_sudoers
 	declare -f _custom_construct_permissions_user
 	declare -f _custom_construct_user
