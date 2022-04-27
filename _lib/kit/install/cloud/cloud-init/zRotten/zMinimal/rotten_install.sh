@@ -381,7 +381,8 @@ _custom_bootOnce() {
 	if ! type _here_bootdisc_statup_xdg > /dev/null 2>&1
 	then
 		_here_bootdisc_statup_xdg() {
-			cat << 'CZXWXcRMTo8EmM8i4d'
+		
+			echo '
 [Desktop Entry]
 Comment=
 Exec=/media/bootdisc/cmd.sh
@@ -394,7 +395,8 @@ StartupNotify=false
 Terminal=false
 TerminalOptions=
 Type=Application
-CZXWXcRMTo8EmM8i4d
+'
+		
 		}
 	fi
 	
@@ -412,9 +414,11 @@ CZXWXcRMTo8EmM8i4d
 	
 	( sudo -n crontab -l ; echo '@reboot /media/bootdisc/rootnix.sh > /var/log/rootnix.log 2>&1' ) | sudo -n crontab '-'
 	
-	( sudo -n crontab -l ; echo '@reboot /home/user/.ubcore/ubiquitous_bash/lean.sh _unix_renice_execDaemon > /var/log/_unix_renice_execDaemon.log' | crontab - ) | sudo -n crontab '-'
+	echo '@reboot cd /home/'"$custom_user"'/.ubcore/ubiquitous_bash/lean.sh _unix_renice_execDaemon' | sudo -n -u user bash -c "crontab -"
 }
-
+_experiment() {
+	declare -f _custom_bootOnce
+}
 
 
 # ATTENTION: Override (rarely, if necessary) .
@@ -631,8 +635,8 @@ _install() {
 	sudo -n chown "user:user" "/home/""$custom_user""/ubiquitous_bash.sh"
 	sudo -n chmod "755" "/home/""$custom_user""/ubiquitous_bash.sh"
 	sudo -n chown "$custom_user":"$custom_user" "/home/""$custom_user""/ubiquitous_bash.sh"
-	#sudo -u user "/home/""$custom_user""/ubiquitous_bash.sh" _setupUbiquitous
-	sudo -u user sh -c "cd ; ""/home/""$custom_user""/ubiquitous_bash.sh"" _setupUbiquitous 2>&1"
+	#sudo -n -u user "/home/""$custom_user""/ubiquitous_bash.sh" _setupUbiquitous
+	sudo -n -u user sh -c "cd ; ""/home/""$custom_user""/ubiquitous_bash.sh"" _setupUbiquitous 2>&1"
 	
 	sudo -n cp ./ubiquitous_bash.sh /root
 	sudo -n chown "user:user" /root"/ubiquitous_bash.sh"
@@ -649,18 +653,18 @@ _install() {
 	sudo -u root INSTANCE_ID="$INSTANCE_ID" sh -c "cd ; /root/bin/ubiquitous_bash.sh _test 2>&1" | tee /var/log/ubiquitous_bash-test
 	sudo -n env DEBIAN_FRONTEND=noninteractive apt-get -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" -y upgrade
 	
-	sudo -u user bash -c "cd ; mkdir -p "/home/"$custom_user""/Downloads"
+	sudo -n -u user bash -c "cd ; mkdir -p "/home/"$custom_user""/Downloads"
 	
 	
 	
 	echo '________________________________________'
 	sleep 20
-	#sudo -u user bash -c "cd ; mkdir -p "/home/"$custom_user""/Downloads"
-	#sudo -u user bash -c "cd ; cd /home/"$custom_user"/Downloads ; wget https://example.com"
-	#sudo -u user bash -c "cd ; mkdir -p /home/"$custom_user"/example"
-	#sudo -u user bash -c "cd ; cd example ; tar zxf "/home/"$custom_user""/Downloads/example.tar.gz"
+	#sudo -n -u user bash -c "cd ; mkdir -p "/home/"$custom_user""/Downloads"
+	#sudo -n -u user bash -c "cd ; cd /home/"$custom_user"/Downloads ; wget https://example.com"
+	#sudo -n -u user bash -c "cd ; mkdir -p /home/"$custom_user"/example"
+	#sudo -n -u user bash -c "cd ; cd example ; tar zxf "/home/"$custom_user""/Downloads/example.tar.gz"
 	
-	#sudo -u user bash -c "cd ; cd example ; ./example.sh --config"
+	#sudo -n -u user bash -c "cd ; cd example ; ./example.sh --config"
 	
 	
 	_custom_bootOnce "$@"
@@ -671,7 +675,7 @@ _install() {
 	echo '________________________________________'
 	#sleep 20
 	
-	echo '@reboot cd '/home/"$custom_user"'/ ; '/home/"$custom_user"'/rottenScript.sh _run' | sudo -u user bash -c "crontab -"
+	echo '@reboot cd '/home/"$custom_user"'/ ; '/home/"$custom_user"'/rottenScript.sh _run' | sudo -n -u user bash -c "crontab -"
 	
 	
 	if [[ -e /etc/issue ]] && ( cat /etc/issue | grep 'Ubuntu' | grep '20.04' > /dev/null 2>&1 || cat /etc/issue | grep 'Ubuntu' > /dev/null 2>&1 )
@@ -697,12 +701,12 @@ _install() {
 	wall 'rotten: build complete'
 	#sudo -n reboot
 	echo '________________________________________'
-	#sudo -u user bash -c "cd ; cd example ; "/home/"$custom_user""/rottenScript.sh _run"
+	#sudo -n -u user bash -c "cd ; cd example ; "/home/"$custom_user""/rottenScript.sh _run"
 }
 _install_and_run() {
 	_messageNormal 'init: rotten: _install_and_run'
 	_install "$@"
-	#sudo -u user bash -c "cd ; cd example ; "/home/"$custom_user""/rottenScript.sh _run"
+	#sudo -n -u user bash -c "cd ; cd example ; "/home/"$custom_user""/rottenScript.sh _run"
 }
 
 
@@ -711,8 +715,8 @@ _run() {
 	
 	_mustGetSudo
 	
-	#sudo -u user bash -c "cd ; cd example ; "/home/"$custom_user""/rottenScript.sh _test"
-	#sudo -u user bash -c "cd ; cd example ; ./example.sh --run"
+	#sudo -n -u user bash -c "cd ; cd example ; "/home/"$custom_user""/rottenScript.sh _test"
+	#sudo -n -u user bash -c "cd ; cd example ; ./example.sh --run"
 }
 
 
