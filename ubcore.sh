@@ -32,7 +32,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='1891409836'
-export ub_setScriptChecksum_contents='1229285096'
+export ub_setScriptChecksum_contents='1395186914'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -15733,7 +15733,7 @@ _vncf() {
 	
 	# 'root' user default
 	# Purpose is to access the GUI console (usually available through display manager as 'root' or through desktop session as 'user').
-	if [[ "$2" == "" ]] && [[ "$3" == "" ]] && [[ "$4" == "" ]] && [[ "$5" == "" ]]
+	if [[ "$1" != *"@"* ]] && [[ "$2" == "" ]] && [[ "$3" == "" ]] && [[ "$4" == "" ]] && [[ "$5" == "" ]]
 	then
 		"$currentScript" _sshf root@"$1" echo true
 		"$currentScript" _vnc root@"$1"

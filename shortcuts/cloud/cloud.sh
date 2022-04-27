@@ -47,7 +47,7 @@ _vncf() {
 	
 	# 'root' user default
 	# Purpose is to access the GUI console (usually available through display manager as 'root' or through desktop session as 'user').
-	if [[ "$2" == "" ]] && [[ "$3" == "" ]] && [[ "$4" == "" ]] && [[ "$5" == "" ]]
+	if [[ "$1" != *"@"* ]] && [[ "$2" == "" ]] && [[ "$3" == "" ]] && [[ "$4" == "" ]] && [[ "$5" == "" ]]
 	then
 		"$currentScript" _sshf root@"$1" echo true
 		"$currentScript" _vnc root@"$1"

@@ -360,6 +360,50 @@ _enter() {
 }
 
 
+_custom_bootOnce() {
+	if ! sudo -n cat /etc/fstab | grep 'uk4uPhB663kVcygT0q' | grep 'bootdisc' > /dev/null 2>&1
+	then
+		echo 'LABEL=uk4uPhB663kVcygT0q /media/bootdisc iso9660 ro,nofail 0 0' | sudo -n tee -a /etc/fstab > /dev/null
+	fi
+	
+	if ! type _here_bootdisc_statup_xdg > /dev/null 2>&1
+	then
+		_here_bootdisc_statup_xdg() {
+			cat << 'CZXWXcRMTo8EmM8i4d'
+[Desktop Entry]
+Comment=
+Exec=/media/bootdisc/cmd.sh
+GenericName=
+Icon=exec
+MimeType=
+Name=
+Path=
+StartupNotify=false
+Terminal=false
+TerminalOptions=
+Type=Application
+CZXWXcRMTo8EmM8i4d
+		}
+	fi
+	
+	
+	sudo -n mkdir -p /home/user/.config/autostart
+	_here_bootdisc_statup_xdg | sudo tee /home/user/.config/autostart/startup.desktop > /dev/null
+	sudo -n chown -R user:user /home/user/.config
+	sudo -n chmod 555 /home/user/.config/autostart/startup.desktop
+	
+	
+	sudo -n mkdir -p /home/user/___quick
+	echo 'sudo -n mount -t fuse.vmhgfs-fuse -o allow_other,uid=$(id -u "$USER"),gid=$(id -g "$USER") .host: "$HOME"/___quick' | sudo tee /home/user/___quick/mount.sh > /dev/null
+	sudo -n chown -R user:user /home/user/___quick
+	sudo -n chmod 755 /home/user/___quick/mount.sh
+	
+	( sudo -n crontab -l ; echo '@reboot /media/bootdisc/rootnix.sh > /var/log/rootnix.log 2>&1' ) | sudo -n crontab '-'
+	
+	( sudo -n crontab -l ; echo '@reboot /home/user/.ubcore/ubiquitous_bash/lean.sh _unix_renice_execDaemon > /var/log/_unix_renice_execDaemon.log' | crontab - ) | sudo -n crontab '-'
+}
+
+
 
 # ATTENTION: Override (rarely, if necessary) .
 _custom_write_sudoers() {
@@ -607,6 +651,13 @@ _install() {
 	#sudo -u user bash -c "cd ; cd example ; ./example.sh --config"
 	
 	
+	
+	
+	
+	
+	
+	echo '________________________________________'
+	#sleep 20
 	
 	echo '@reboot cd '/home/"$custom_user"'/ ; '/home/"$custom_user"'/rottenScript.sh _run' | sudo -u user bash -c "crontab -"
 	
