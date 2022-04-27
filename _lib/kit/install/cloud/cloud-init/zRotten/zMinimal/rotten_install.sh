@@ -401,16 +401,16 @@ Type=Application
 	fi
 	
 	
-	sudo -n mkdir -p /home/user/.config/autostart
-	_here_bootdisc_statup_xdg | sudo tee /home/user/.config/autostart/startup.desktop > /dev/null
-	sudo -n chown -R user:user /home/user/.config
-	sudo -n chmod 555 /home/user/.config/autostart/startup.desktop
+	sudo -n mkdir -p /home/"$custom_user"/.config/autostart
+	_here_bootdisc_statup_xdg | sudo tee /home/"$custom_user"/.config/autostart/startup.desktop > /dev/null
+	sudo -n chown -R user:user /home/"$custom_user"/.config
+	sudo -n chmod 555 /home/"$custom_user"/.config/autostart/startup.desktop
 	
 	
-	sudo -n mkdir -p /home/user/___quick
-	echo 'sudo -n mount -t fuse.vmhgfs-fuse -o allow_other,uid=$(id -u "$USER"),gid=$(id -g "$USER") .host: "$HOME"/___quick' | sudo tee /home/user/___quick/mount.sh > /dev/null
-	sudo -n chown -R user:user /home/user/___quick
-	sudo -n chmod 755 /home/user/___quick/mount.sh
+	sudo -n mkdir -p /home/"$custom_user"/___quick
+	echo 'sudo -n mount -t fuse.vmhgfs-fuse -o allow_other,uid=$(id -u "$USER"),gid=$(id -g "$USER") .host: "$HOME"/___quick' | sudo tee /home/"$custom_user"/___quick/mount.sh > /dev/null
+	sudo -n chown -R user:user /home/"$custom_user"/___quick
+	sudo -n chmod 755 /home/"$custom_user"/___quick/mount.sh
 	
 	( sudo -n crontab -l ; echo '@reboot /media/bootdisc/rootnix.sh > /var/log/rootnix.log 2>&1' ) | sudo -n crontab '-'
 	
