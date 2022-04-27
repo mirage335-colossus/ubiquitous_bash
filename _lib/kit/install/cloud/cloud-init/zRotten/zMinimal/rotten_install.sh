@@ -163,6 +163,8 @@ _here_rottenScript_bash_declareFunctions() {
 	declare -f _write_rottenScript_cloudConfig
 	declare -f _enter
 	declare -f _custom_bootOnce
+	declare -f _custom_kde
+	declare -f _custom_core
 	declare -f _custom_write_sudoers
 	declare -f _custom_construct_permissions_user
 	declare -f _custom_construct_user
@@ -360,6 +362,15 @@ _enter() {
 	_install_and_run "$@"
 }
 
+
+
+_custom_kde() {
+	true
+}
+
+_custom_core() {
+	true
+}
 
 _custom_bootOnce() {
 	if ! sudo -n cat /etc/fstab | grep 'uk4uPhB663kVcygT0q' | grep 'bootdisc' > /dev/null 2>&1
