@@ -162,14 +162,15 @@ _here_rottenScript_bash_declareFunctions() {
 	declare -f _here_rottenScript_cloudConfig
 	declare -f _write_rottenScript_cloudConfig
 	declare -f _enter
-	declare -f _custom_bootOnce
-	declare -f _custom_kde
 	declare -f _custom_core
+	declare -f _custom_kde
+	declare -f _custom_bootOnce
 	declare -f _custom_write_sudoers
 	declare -f _custom_construct_permissions_user
 	declare -f _custom_construct_user
 	declare -f _custom
 	declare -f _install_and_run_package
+	declare -f _install
 	declare -f _install_and_run
 	declare -f _run
 	declare -f _test_prog
