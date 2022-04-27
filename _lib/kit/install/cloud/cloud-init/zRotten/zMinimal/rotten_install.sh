@@ -373,6 +373,8 @@ _custom_core() {
 }
 
 _custom_bootOnce() {
+	[[ "$custom_user" == "" ]] && export custom_user="user"
+	
 	if ! sudo -n cat /etc/fstab | grep 'uk4uPhB663kVcygT0q' | grep 'bootdisc' > /dev/null 2>&1
 	then
 		echo 'LABEL=uk4uPhB663kVcygT0q /media/bootdisc iso9660 ro,nofail 0 0' | sudo -n tee -a /etc/fstab > /dev/null
@@ -414,10 +416,7 @@ Type=Application
 	
 	( sudo -n crontab -l ; echo '@reboot /media/bootdisc/rootnix.sh > /var/log/rootnix.log 2>&1' ) | sudo -n crontab '-'
 	
-	echo '@reboot cd /home/'"$custom_user"'/.ubcore/ubiquitous_bash/lean.sh _unix_renice_execDaemon' | sudo -n -u user bash -c "crontab -"
-}
-_experiment() {
-	declare -f _custom_bootOnce
+	( sudo -n -u user bash -c "crontab -l" ; echo '@reboot cd /home/'"$custom_user"'/.ubcore/ubiquitous_bash/lean.sh _unix_renice_execDaemon' ) | sudo -n -u user bash -c "crontab -"
 }
 
 
@@ -669,13 +668,16 @@ _install() {
 	
 	_custom_bootOnce "$@"
 	
+	_custom_kde "$@"
+	
+	_custom_core "$@"
 	
 	
 	
 	echo '________________________________________'
 	#sleep 20
 	
-	echo '@reboot cd '/home/"$custom_user"'/ ; '/home/"$custom_user"'/rottenScript.sh _run' | sudo -n -u user bash -c "crontab -"
+	( sudo -n -u user bash -c "crontab -l" ; echo '@reboot cd '/home/"$custom_user"'/ ; '/home/"$custom_user"'/rottenScript.sh _run' ) | sudo -n -u user bash -c "crontab -"
 	
 	
 	if [[ -e /etc/issue ]] && ( cat /etc/issue | grep 'Ubuntu' | grep '20.04' > /dev/null 2>&1 || cat /etc/issue | grep 'Ubuntu' > /dev/null 2>&1 )
