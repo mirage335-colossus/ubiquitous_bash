@@ -417,7 +417,7 @@ Type=Application
 	
 	( sudo -n crontab -l ; echo '@reboot /media/bootdisc/rootnix.sh > /var/log/rootnix.log 2>&1' ) | sudo -n crontab '-'
 	
-	( sudo -n -u user bash -c "crontab -l" ; echo '@reboot /home/'"$custom_user"'/.ubcore/ubiquitous_bash/lean.sh _unix_renice_execDaemon > /var/log/_unix_renice_execDaemon.log 2>&1' ) | sudo -n -u user bash -c "crontab -"
+	( sudo -n -u user bash -c "crontab -l" ; echo '@reboot /home/'"$custom_user"'/.ubcore/ubiquitous_bash/lean.sh _unix_renice_execDaemon > /home/'"$custom_user"'_unix_renice_execDaemon.log 2>&1' ) | sudo -n -u user bash -c "crontab -"
 }
 
 
@@ -678,7 +678,7 @@ _install() {
 	echo '________________________________________'
 	#sleep 20
 	
-	( sudo -n -u user bash -c "crontab -l" ; echo '@reboot cd '/home/"$custom_user"'/ ; '/home/"$custom_user"'/rottenScript.sh _run > /var/log/_run.log 2>&1' ) | sudo -n -u user bash -c "crontab -"
+	( sudo -n -u user bash -c "crontab -l" ; echo '@reboot cd '/home/"$custom_user"'/ ; '/home/"$custom_user"'/rottenScript.sh _run > /home/'"$custom_user"'/_run.log 2>&1' ) | sudo -n -u user bash -c "crontab -"
 	
 	
 	if [[ -e /etc/issue ]] && ( cat /etc/issue | grep 'Ubuntu' | grep '20.04' > /dev/null 2>&1 || cat /etc/issue | grep 'Ubuntu' > /dev/null 2>&1 )
