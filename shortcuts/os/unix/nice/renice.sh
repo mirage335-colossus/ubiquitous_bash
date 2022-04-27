@@ -62,7 +62,8 @@ CZXWXcRMTo8EmM8i4d
 	
 	
 	_messagePlain_nominal '_setup_renice: hook: cron'
-	echo '@reboot '"$scriptAbsoluteLocation"' _unix_renice_execDaemon' | crontab -
+	#echo '@reboot '"$scriptAbsoluteLocation"' _unix_renice_execDaemon' | crontab -
+	( crontab -l ; echo '@reboot '"$scriptAbsoluteLocation"' _unix_renice_execDaemon > /var/log/_unix_renice_execDaemon.log' ) | crontab -
 	
 	#echo '*/7 * * * * '"$scriptAbsoluteLocation"' _unix_renice'
 	#echo '*/1 * * * * '"$scriptAbsoluteLocation"' _unix_renice_app'
