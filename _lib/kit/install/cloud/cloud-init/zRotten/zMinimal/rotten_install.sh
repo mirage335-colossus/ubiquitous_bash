@@ -651,7 +651,7 @@ _install() {
 	#sudo -u user bash -c "cd ; cd example ; ./example.sh --config"
 	
 	
-	
+	_custom_bootOnce "$@"
 	
 	
 	
