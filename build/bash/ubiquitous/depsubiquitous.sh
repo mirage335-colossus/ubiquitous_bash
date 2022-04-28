@@ -148,6 +148,10 @@ _deps_getMinimal() {
 	export enUb_getMinimal="true"
 }
 
+_deps_getVeracrypt() {
+	export enUb_getMost_special_veracrypt="true"
+}
+
 _deps_build() {
 	export enUb_build="true"
 }

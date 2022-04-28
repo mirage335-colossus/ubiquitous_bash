@@ -336,9 +336,26 @@ _getMost_debian11_install() {
 	
 	_getMost_backend_aptGetInstall libgtk2.0-0
 	
+	_getMost_backend_aptGetInstall libwxgtk3.0-gtk3-0v5
+	
+	_getMost_backend_aptGetInstall nilfs-tools
+	
+	_getMost_backend_aptGetInstall wipe
+	
+	_getMost_backend_aptGetInstall udftools
+	
 	
 	
 	_getMost_backend_aptGetInstall iputils-ping
+	
+	_getMost_backend_aptGetInstall btrfs-tools
+	_getMost_backend_aptGetInstall zstd
+	_getMost_backend_aptGetInstall btrfs-tools
+	_getMost_backend_aptGetInstall btrfs-progs
+	_getMost_backend_aptGetInstall btrfs-compsize
+	_getMost_backend_aptGetInstall zstd
+	
+	
 	
 	
 	_getMost_backend_aptGetInstall synaptic

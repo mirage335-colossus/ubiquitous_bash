@@ -42,6 +42,7 @@ _compile_bash_deps() {
 		
 		_deps_distro
 		_deps_getMinimal
+		_deps_getVeracrypt
 		_deps_linux
 		
 		_deps_python
@@ -80,6 +81,8 @@ _compile_bash_deps() {
 		
 		_deps_command
 		_deps_synergy
+		
+		_deps_getVeracrypt
 		
 		# WARNING: Linux *kernel* admin assistance *only*. NOT any other UNIX like features.
 		# WARNING: Beware Linux shortcut specific dependency programs must not be required, or will break other operating systems!
@@ -209,6 +212,7 @@ _compile_bash_deps() {
 		
 		_deps_distro
 		_deps_getMinimal
+		_deps_getVeracrypt
 		
 		#_deps_blockchain
 		
@@ -296,6 +300,7 @@ _compile_bash_deps() {
 		
 		_deps_distro
 		_deps_getMinimal
+		_deps_getVeracrypt
 		
 		#_deps_blockchain
 		
@@ -383,6 +388,7 @@ _compile_bash_deps() {
 		
 		_deps_distro
 		_deps_getMinimal
+		_deps_getVeracrypt
 		
 		_deps_blockchain
 		
@@ -544,6 +550,11 @@ _compile_bash_utilities() {
 	[[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "os/distro"/getMost.sh )
 	
 	[[ "$enUb_getMinimal" == "true" ]] && includeScriptList+=( "os/distro"/getMinimal.sh )
+	
+	( [[ "$enUb_notLean" == "true" ]] || [[ "$enUb_getMinimal" == "true" ]] ) && includeScriptList+=( "os/distro"/getMost_special.sh )
+	( [[ "$enUb_notLean" == "true" ]] || [[ "$enUb_getMinimal" == "true" ]] ) && includeScriptList+=( "os/distro"/getMinimal_special.sh )
+	
+	( [[ "$enUb_notLean" == "true" ]] || [[ "$enUb_getMinimal" == "true" ]] || [[ "$enUb_getMost_special_veracrypt" == "true" ]] ) && includeScriptList+=( "os/distro"/getMost_special_veracrypt.sh )
 	
 	
 	[[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "os/unix/systemd"/here_systemd.sh )

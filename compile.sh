@@ -32,7 +32,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='1891409836'
-export ub_setScriptChecksum_contents='628186479'
+export ub_setScriptChecksum_contents='160233673'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -5749,6 +5749,10 @@ _deps_getMinimal() {
 	export enUb_getMinimal="true"
 }
 
+_deps_getVeracrypt() {
+	export enUb_getMost_special_veracrypt="true"
+}
+
 _deps_build() {
 	export enUb_build="true"
 }
@@ -6493,6 +6497,7 @@ _compile_bash_deps() {
 		
 		_deps_distro
 		_deps_getMinimal
+		_deps_getVeracrypt
 		_deps_linux
 		
 		_deps_python
@@ -6531,6 +6536,8 @@ _compile_bash_deps() {
 		
 		_deps_command
 		_deps_synergy
+		
+		_deps_getVeracrypt
 		
 		# WARNING: Linux *kernel* admin assistance *only*. NOT any other UNIX like features.
 		# WARNING: Beware Linux shortcut specific dependency programs must not be required, or will break other operating systems!
@@ -6660,6 +6667,7 @@ _compile_bash_deps() {
 		
 		_deps_distro
 		_deps_getMinimal
+		_deps_getVeracrypt
 		
 		#_deps_blockchain
 		
@@ -6747,6 +6755,7 @@ _compile_bash_deps() {
 		
 		_deps_distro
 		_deps_getMinimal
+		_deps_getVeracrypt
 		
 		#_deps_blockchain
 		
@@ -6834,6 +6843,7 @@ _compile_bash_deps() {
 		
 		_deps_distro
 		_deps_getMinimal
+		_deps_getVeracrypt
 		
 		_deps_blockchain
 		
@@ -6995,6 +7005,11 @@ _compile_bash_utilities() {
 	[[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "os/distro"/getMost.sh )
 	
 	[[ "$enUb_getMinimal" == "true" ]] && includeScriptList+=( "os/distro"/getMinimal.sh )
+	
+	( [[ "$enUb_notLean" == "true" ]] || [[ "$enUb_getMinimal" == "true" ]] ) && includeScriptList+=( "os/distro"/getMost_special.sh )
+	( [[ "$enUb_notLean" == "true" ]] || [[ "$enUb_getMinimal" == "true" ]] ) && includeScriptList+=( "os/distro"/getMinimal_special.sh )
+	
+	( [[ "$enUb_notLean" == "true" ]] || [[ "$enUb_getMinimal" == "true" ]] || [[ "$enUb_getMost_special_veracrypt" == "true" ]] ) && includeScriptList+=( "os/distro"/getMost_special_veracrypt.sh )
 	
 	
 	[[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "os/unix/systemd"/here_systemd.sh )
