@@ -181,6 +181,9 @@ _getMinimal_cloud() {
 	#_getMost_backend apt-get upgrade
 	
 	
+	_getMost_backend apt-get -y clean
+	
+	
 	# ATTENTION: Enable. Disabled by default to avoid testing for all dependencies of *complete* 'ubiquitous_bash' .
 	#export devfast="true"
 	#"$scriptAbsoluteLocation" _test
