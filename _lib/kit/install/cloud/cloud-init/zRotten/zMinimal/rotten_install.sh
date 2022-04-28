@@ -705,6 +705,8 @@ _install() {
 		sudo -n systemctl stop gdm3
 	fi
 	
+	sudo -n apt-get -y clean
+	
 	sudo -n systemctl start sddm
 	
 	
