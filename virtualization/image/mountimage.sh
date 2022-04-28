@@ -260,8 +260,10 @@ _loopFull() {
 # ATTENTION: Override with 'ops' or similar.
 # DANGER: Allowing types other than 'ext4' (eg. fat), may allow mounting of filesystems other than an UNIX-like userspace root.
 _mountImageFS_procedure_blkid_fstype() {
-	! [[ "$1" == "ext4" ]] && _stop 1
-	return 0
+	[[ "$1" == "ext4" ]] && return 0
+	[[ "$1" == "btrfs" ]] && return 0
+	
+	_stop 1
 }
 
 # "$1" == imagedev
