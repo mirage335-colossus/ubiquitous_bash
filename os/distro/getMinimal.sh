@@ -186,8 +186,8 @@ _getMinimal_cloud() {
 	
 	
 	
-	_getMost_backend_aptGetInstall btrfs-tools
-	_getMost_backend_aptGetInstall zstd
+	_getMost_backend_aptGetInstall iputils-ping
+	
 	_getMost_backend_aptGetInstall btrfs-tools
 	_getMost_backend_aptGetInstall btrfs-progs
 	_getMost_backend_aptGetInstall btrfs-compsize
