@@ -636,6 +636,7 @@ _install() {
 	./ubiquitous_bash.sh _false && echo 'missing: ubiquitous_bash.sh' && exit 1
 	#"$scriptAbsoluteLocation" _setupUbiquitous
 	#"$scriptAbsoluteLocation" _getMost_debian11
+	#"$scriptAbsoluteLocation" _get_veracrypt
 	#"$scriptAbsoluteLocation" _test
 	
 	_install_and_run_package git
@@ -659,6 +660,7 @@ _install() {
 	# ATTENTION: Optional. Attempts '_getMost' and '_test' from full 'ubiquitous_bash.sh' from upstream.
 	echo '________________________________________'
 	sudo -u root INSTANCE_ID="$INSTANCE_ID" sh -c "cd ; /root/bin/ubiquitous_bash.sh _getMost_debian11 2>&1"
+	sudo -u root INSTANCE_ID="$INSTANCE_ID" sh -c "cd ; /root/bin/ubiquitous_bash.sh _get_veracrypt 2>&1"
 	sudo -u root INSTANCE_ID="$INSTANCE_ID" sh -c "cd ; /root/bin/ubiquitous_bash.sh _test 2>&1" | tee /var/log/ubiquitous_bash-test
 	sudo -n env DEBIAN_FRONTEND=noninteractive apt-get -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" -y upgrade
 	

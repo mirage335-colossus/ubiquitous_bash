@@ -24,6 +24,7 @@ _install_debian11() {
 	
 	"$scriptAbsoluteLocation" _setupUbiquitous
 	"$scriptAbsoluteLocation" _getMost_debian11
+	type _get_veracrypt > /dev/null 2>&1 && "$scriptAbsoluteLocation" _get_veracrypt
 	"$scriptAbsoluteLocation" _test
 	
 	#sudo -n env DEBIAN_FRONTEND=noninteractive apt-get --install-recommends -y upgrade

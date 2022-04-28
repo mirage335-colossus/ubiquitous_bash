@@ -181,6 +181,21 @@ _getMinimal_cloud() {
 	#_getMost_backend apt-get upgrade
 	
 	
+	_getMost_backend_aptGetInstall iputils-ping
+	
+	_getMost_backend_aptGetInstall btrfs-tools
+	_getMost_backend_aptGetInstall zstd
+	_getMost_backend_aptGetInstall btrfs-tools
+	_getMost_backend_aptGetInstall btrfs-progs
+	_getMost_backend_aptGetInstall btrfs-compsize
+	_getMost_backend_aptGetInstall zstd
+	
+	_getMost_backend_aptGetInstall cifs-utils
+	
+	
+	type _get_veracrypt > /dev/null 2>&1 && "$scriptAbsoluteLocation" _get_veracrypt
+	
+	
 	_getMost_backend apt-get -y clean
 	
 	
@@ -189,5 +204,8 @@ _getMinimal_cloud() {
 	#"$scriptAbsoluteLocation" _test
 	#export devfast=
 	#unset devfast
+	
+	
+	
 }
 
