@@ -171,17 +171,20 @@ _getMinimal_cloud() {
 	
 	_getMost_backend_aptGetInstall libgtk2.0-0
 	
+	_getMost_backend_aptGetInstall libwxgtk3.0-gtk3-0v5
+	
+	_getMost_backend_aptGetInstall wipe
+	
+	_getMost_backend_aptGetInstall udftools
+	
 	
 	_getMost_backend_aptGetInstall debootstrap
 	
 	_getMost_backend_aptGetInstall qemu-system-x86
 	
-	
-	# May not be useful for anything, may cause delay or fail .
-	#_getMost_backend apt-get upgrade
+	_getMost_backend_aptGetInstall cifs-utils
 	
 	
-	_getMost_backend_aptGetInstall iputils-ping
 	
 	_getMost_backend_aptGetInstall btrfs-tools
 	_getMost_backend_aptGetInstall zstd
@@ -190,7 +193,53 @@ _getMinimal_cloud() {
 	_getMost_backend_aptGetInstall btrfs-compsize
 	_getMost_backend_aptGetInstall zstd
 	
-	_getMost_backend_aptGetInstall cifs-utils
+	_getMost_backend_aptGetInstall zlib1g
+	
+	_getMost_backend_aptGetInstall nilfs-tools
+	
+	
+	
+	# md5sum , sha512sum
+	_getMost_backend_aptGetInstall coreutils
+	
+	_getMost_backend_aptGetInstall python3
+	
+	# blkdiscard
+	_getMost_backend_aptGetInstall util-linux
+	
+	# sg_format
+	_getMost_backend_aptGetInstall sg3-utils
+	
+	_getMost_backend_aptGetInstall kpartx
+	
+	_getMost_backend_aptGetInstall openssl
+	
+	_getMost_backend_aptGetInstall growisofs
+	
+	_getMost_backend_aptGetInstall udev
+	
+	_getMost_backend_aptGetInstall gdisk
+	
+	_getMost_backend_aptGetInstall cryptsetup
+	
+	_getMost_backend_aptGetInstall util-linux
+	
+	_getMost_backend_aptGetInstall parted
+	
+	_getMost_backend_aptGetInstall bc
+	
+	_getMost_backend_aptGetInstall e2fsprogs
+	
+	_getMost_backend_aptGetInstall xz-utils
+	
+	_getMost_backend_aptGetInstall libreadline8
+	
+	
+	
+	# May not be useful for anything, may cause delay or fail .
+	#_getMost_backend apt-get upgrade
+	
+	
 	
 	
 	type _get_veracrypt > /dev/null 2>&1 && "$scriptAbsoluteLocation" _get_veracrypt

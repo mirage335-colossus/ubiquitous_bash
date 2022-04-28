@@ -32,7 +32,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='1891409836'
-export ub_setScriptChecksum_contents='1263919357'
+export ub_setScriptChecksum_contents='600104321'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -9159,6 +9159,7 @@ _install_debian11() {
 	
 	"$scriptAbsoluteLocation" _setupUbiquitous
 	"$scriptAbsoluteLocation" _getMost_debian11
+	type _get_veracrypt > /dev/null 2>&1 && "$scriptAbsoluteLocation" _get_veracrypt
 	"$scriptAbsoluteLocation" _test
 	
 	#sudo -n env DEBIAN_FRONTEND=noninteractive apt-get --install-recommends -y upgrade
@@ -9473,8 +9474,6 @@ _getMost_debian11_install() {
 	
 	_getMost_backend_aptGetInstall libwxgtk3.0-gtk3-0v5
 	
-	_getMost_backend_aptGetInstall nilfs-tools
-	
 	_getMost_backend_aptGetInstall wipe
 	
 	_getMost_backend_aptGetInstall udftools
@@ -9490,6 +9489,46 @@ _getMost_debian11_install() {
 	_getMost_backend_aptGetInstall btrfs-compsize
 	_getMost_backend_aptGetInstall zstd
 	
+	_getMost_backend_aptGetInstall zlib1g
+	
+	_getMost_backend_aptGetInstall nilfs-tools
+	
+	
+	
+	# md5sum , sha512sum
+	_getMost_backend_aptGetInstall coreutils
+	
+	_getMost_backend_aptGetInstall python3
+	
+	# blkdiscard
+	_getMost_backend_aptGetInstall util-linux
+	
+	# sg_format
+	_getMost_backend_aptGetInstall sg3-utils
+	
+	_getMost_backend_aptGetInstall kpartx
+	
+	_getMost_backend_aptGetInstall openssl
+	
+	_getMost_backend_aptGetInstall growisofs
+	
+	_getMost_backend_aptGetInstall udev
+	
+	_getMost_backend_aptGetInstall gdisk
+	
+	_getMost_backend_aptGetInstall cryptsetup
+	
+	_getMost_backend_aptGetInstall util-linux
+	
+	_getMost_backend_aptGetInstall parted
+	
+	_getMost_backend_aptGetInstall bc
+	
+	_getMost_backend_aptGetInstall e2fsprogs
+	
+	_getMost_backend_aptGetInstall xz-utils
+	
+	_getMost_backend_aptGetInstall libreadline8
 	
 	
 	
@@ -9909,14 +9948,78 @@ _getMinimal_cloud() {
 	
 	_getMost_backend_aptGetInstall libgtk2.0-0
 	
+	_getMost_backend_aptGetInstall libwxgtk3.0-gtk3-0v5
+	
+	_getMost_backend_aptGetInstall wipe
+	
+	_getMost_backend_aptGetInstall udftools
+	
 	
 	_getMost_backend_aptGetInstall debootstrap
 	
 	_getMost_backend_aptGetInstall qemu-system-x86
 	
+	_getMost_backend_aptGetInstall cifs-utils
+	
+	
+	
+	_getMost_backend_aptGetInstall btrfs-tools
+	_getMost_backend_aptGetInstall zstd
+	_getMost_backend_aptGetInstall btrfs-tools
+	_getMost_backend_aptGetInstall btrfs-progs
+	_getMost_backend_aptGetInstall btrfs-compsize
+	_getMost_backend_aptGetInstall zstd
+	
+	_getMost_backend_aptGetInstall zlib1g
+	
+	_getMost_backend_aptGetInstall nilfs-tools
+	
+	
+	
+	# md5sum , sha512sum
+	_getMost_backend_aptGetInstall coreutils
+	
+	_getMost_backend_aptGetInstall python3
+	
+	# blkdiscard
+	_getMost_backend_aptGetInstall util-linux
+	
+	# sg_format
+	_getMost_backend_aptGetInstall sg3-utils
+	
+	_getMost_backend_aptGetInstall kpartx
+	
+	_getMost_backend_aptGetInstall openssl
+	
+	_getMost_backend_aptGetInstall growisofs
+	
+	_getMost_backend_aptGetInstall udev
+	
+	_getMost_backend_aptGetInstall gdisk
+	
+	_getMost_backend_aptGetInstall cryptsetup
+	
+	_getMost_backend_aptGetInstall util-linux
+	
+	_getMost_backend_aptGetInstall parted
+	
+	_getMost_backend_aptGetInstall bc
+	
+	_getMost_backend_aptGetInstall e2fsprogs
+	
+	_getMost_backend_aptGetInstall xz-utils
+	
+	_getMost_backend_aptGetInstall libreadline8
+	
+	
 	
 	# May not be useful for anything, may cause delay or fail .
 	#_getMost_backend apt-get upgrade
+	
+	
+	
+	
+	type _get_veracrypt > /dev/null 2>&1 && "$scriptAbsoluteLocation" _get_veracrypt
 	
 	
 	_getMost_backend apt-get -y clean
@@ -9927,6 +10030,9 @@ _getMinimal_cloud() {
 	#"$scriptAbsoluteLocation" _test
 	#export devfast=
 	#unset devfast
+	
+	
+	
 }
 
 
