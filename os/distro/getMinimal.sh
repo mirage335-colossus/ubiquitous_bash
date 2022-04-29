@@ -235,6 +235,9 @@ _getMinimal_cloud() {
 	_getMost_backend_aptGetInstall libreadline8
 	
 	
+	_getMost_backend_aptGetInstall iotop
+	
+	
 	
 	# May not be useful for anything, may cause delay or fail .
 	#_getMost_backend apt-get upgrade
