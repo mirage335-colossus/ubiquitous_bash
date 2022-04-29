@@ -314,10 +314,10 @@ _mountImageFS_sequence() {
 	_mountImageFS_procedure_blkid "$current_imagedev" "$current_imagepart" "$currentDestinationDir" || _stop 1
 	
 	local loopdevfs
-	loopdevfs=$(sudo -n blkid -s TYPE -o value "$2" | tr -dc 'a-zA-Z0-9')
+	loopdevfs=$(sudo -n blkid -s TYPE -o value "$current_imagepart" | tr -dc 'a-zA-Z0-9')
 	
 	
-	if [[ "$loopdevfs" == "btrfs" ]]
+	if [[ "$loopdevfs" == "btrfs" ]] && [[ "$ub_disable_fs_compression" != "true" ]]
 	then
 		sudo -n mount -o compress=zstd:9 "$current_imagepart" "$currentDestinationDir" || _stop 1
 	else
