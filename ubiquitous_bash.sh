@@ -32,7 +32,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='1891409836'
-export ub_setScriptChecksum_contents='1299465429'
+export ub_setScriptChecksum_contents='418079348'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -23376,13 +23376,26 @@ _x11_clipboard_imageToHTML() {
 _reset_KDE() {
 	#kquitapp plasmashell ; sleep 0.5 ; pkill plasmashell ; sleep 0.1 ; pkill -KILL plasmashell ; sleep 0.1 ; plasmashell & exit
 	
-	if pgrep plasmashell
-	then
+	#if pgrep plasmashell
+	#then
 		#kquitapp plasmashell ; sleep 3 ; plasmashell &
-		kquitapp plasmashell ; sleep 0.5 ; pkill plasmashell ; sleep 0.1 ; pkill -KILL plasmashell ; sleep 0.1
+		if type kquitapp > /dev/null 2>&1
+		then
+			kquitapp plasmashell
+		else
+			pkill plasmashell
+			killall plasmashell
+		fi
+		sleep 0.5
+		pkill plasmashell
+		killall plasmashell
+		sleep 0.1
+		pkill -KILL plasmashell
+		killall plasmashell
+		sleep 0.1
 		
 		plasmashell &
-	fi
+	#fi
 	disown -a -h -r
 	disown -a -r
 }
