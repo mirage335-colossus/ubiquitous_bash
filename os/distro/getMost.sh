@@ -409,6 +409,21 @@ _getMost_debian11_install() {
 	_getMost_backend_aptGetInstall obs-studio
 	
 	
+	
+	_getMost_backend_aptGetInstall lepton-eda
+	_getMost_backend_aptGetInstall pcb
+	_getMost_backend_aptGetInstall pcb-rnd
+	_getMost_backend_aptGetInstall gerbv
+	_getMost_backend_aptGetInstall electronics-pcb
+	_getMost_backend_aptGetInstall pcb2gcode
+	
+	_getMost_backend_aptGetInstall kicad
+	
+	_getMost_backend_aptGetInstall electric
+	
+	_getMost_backend_aptGetInstall freecad
+	
+	
 	_getMost_debian11_special_late
 }
 
