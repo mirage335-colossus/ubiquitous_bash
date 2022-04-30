@@ -365,8 +365,31 @@ _enter() {
 
 
 
+_custom_kde_sequence() {
+	cd "$HOME"
+	
+	local currentBackupDir
+	currentBackupDir="$HOME"/.kde.bak/$(_uid)
+	mkdir -p "$currentBackupDir"
+	
+	# ATTENTION: NOTICE: Usually, this is a redistributable product of Soaring Distributions LLC .
+	[[ -e /package_kde.tar.xz ]] && cp /package_kde.tar.xz "$HOME"/
+	if ! [[ -e package_kde.tar.xz ]]
+	then
+		wget https://github.com/soaringDistributions/ubDistBuild/raw/main/_lib/custom/package_kde.tar.xz
+		
+		mv "$HOME"/.config "$currentBackupDir"/.config
+		mv "$HOME"/.kde "$currentBackupDir"/.kde
+		mv "$HOME"/.local "$currentBackupDir"/.local
+		
+		tar xvf package_kde.tar.xz
+	fi
+}
+
 _custom_kde() {
-	true
+	[[ "$custom_user" == "" ]] && export custom_user="user"
+	
+	sudo -n -u "$custom_user" "$scriptAbsoluteLocation" _custom_kde_sequence "$@"
 }
 
 _custom_core() {
@@ -666,6 +689,7 @@ _install() {
 	sudo -n env DEBIAN_FRONTEND=noninteractive apt-get -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" -y upgrade
 	
 	sudo -n -u user bash -c "cd ; mkdir -p "/home/"$custom_user""/Downloads"
+	sudo -n -u user bash -c "cd ; mkdir -p "/home/"$custom_user""/project/_random/_buried"
 	
 	
 	
