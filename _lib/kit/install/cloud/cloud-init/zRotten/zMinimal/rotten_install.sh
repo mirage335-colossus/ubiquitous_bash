@@ -367,33 +367,43 @@ _enter() {
 
 
 _custom_kde_sequence() {
+	_messageNormal 'init: _custom_kde_sequence'
+	
+	_messagePlain_probe_var HOME
 	cd "$HOME"
 	
 	local currentBackupDir
 	currentBackupDir="$HOME"/.kde.bak/$(_uid)
+	
+	_messagePlain_probe_var currentBackupDir
 	mkdir -p "$currentBackupDir"
 	
 	# ATTENTION: NOTICE: Usually, this is a redistributable product of Soaring Distributions LLC .
 	[[ -e /package_kde.tar.xz ]] && cp /package_kde.tar.xz "$HOME"/
 	if ! [[ -e package_kde.tar.xz ]]
 	then
-		wget https://github.com/soaringDistributions/ubDistBuild/raw/main/_lib/custom/package_kde.tar.xz
+		_messagePlain_probe_cmd wget https://github.com/soaringDistributions/ubDistBuild/raw/main/_lib/custom/package_kde.tar.xz
 	fi
 	
-	mv "$HOME"/.config "$currentBackupDir"/.config
-	mv "$HOME"/.kde "$currentBackupDir"/.kde
-	mv "$HOME"/.local "$currentBackupDir"/.local
+	_messagePlain_probe_cmd mv "$HOME"/.config "$currentBackupDir"/.config
+	_messagePlain_probe_cmd mv "$HOME"/.kde "$currentBackupDir"/.kde
+	_messagePlain_probe_cmd mv "$HOME"/.local "$currentBackupDir"/.local
 	
-	tar xvf package_kde.tar.xz
+	_messagePlain_probe_cmd tar xvf package_kde.tar.xz
 }
 
 _custom_kde() {
+	_messageNormal 'init: _custom_kde'
+	
 	[[ "$custom_user" == "" ]] && export custom_user="user"
+	_messagePlain_probe_var custom_user
 	
 	sudo -n -u "$custom_user" "$scriptAbsoluteLocation" _custom_kde_sequence "$@"
 }
 
 _custom_core() {
+	_messageNormal 'init: _custom_core'
+	
 	[[ "$custom_user" == "" ]] && export custom_user="user"
 	
 	if ! [[ -e /home/"$custom_user"/core ]]
@@ -407,6 +417,8 @@ _custom_core() {
 }
 
 _custom_bootOnce() {
+	_messageNormal 'init: _custom_bootOnce'
+	
 	[[ "$custom_user" == "" ]] && export custom_user="user"
 	
 	if ! sudo -n cat /etc/fstab | grep 'uk4uPhB663kVcygT0q' | grep 'bootdisc' > /dev/null 2>&1
