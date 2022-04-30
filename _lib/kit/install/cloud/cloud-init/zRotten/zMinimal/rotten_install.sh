@@ -420,8 +420,8 @@ Type=Application
 	
 	
 	sudo -n mkdir -p /home/"$custom_user"/___quick
-	echo '#!/bin/bash' | sudo tee /home/"$custom_user"/___quick/mount.sh > /dev/null
-	echo 'sudo -n mount -t fuse.vmhgfs-fuse -o allow_other,uid=$(id -u "$USER"),gid=$(id -g "$USER") .host: "$HOME"/___quick' | sudo tee -a /home/"$custom_user"/___quick/mount.sh > /dev/null
+	echo '#!/bin/bash' | sudo -n tee /home/"$custom_user"/___quick/mount.sh > /dev/null
+	echo 'sudo -n mount -t fuse.vmhgfs-fuse -o allow_other,uid=$(id -u "$USER"),gid=$(id -g "$USER") .host: "$HOME"/___quick' | sudo -n tee -a /home/"$custom_user"/___quick/mount.sh > /dev/null
 	sudo -n chown -R user:user /home/"$custom_user"/___quick
 	sudo -n chmod 755 /home/"$custom_user"/___quick/mount.sh
 	
