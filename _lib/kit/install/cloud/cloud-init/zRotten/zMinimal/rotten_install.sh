@@ -377,13 +377,13 @@ _custom_kde_sequence() {
 	if ! [[ -e package_kde.tar.xz ]]
 	then
 		wget https://github.com/soaringDistributions/ubDistBuild/raw/main/_lib/custom/package_kde.tar.xz
-		
-		mv "$HOME"/.config "$currentBackupDir"/.config
-		mv "$HOME"/.kde "$currentBackupDir"/.kde
-		mv "$HOME"/.local "$currentBackupDir"/.local
-		
-		tar xvf package_kde.tar.xz
 	fi
+	
+	mv "$HOME"/.config "$currentBackupDir"/.config
+	mv "$HOME"/.kde "$currentBackupDir"/.kde
+	mv "$HOME"/.local "$currentBackupDir"/.local
+	
+	tar xvf package_kde.tar.xz
 }
 
 _custom_kde() {
