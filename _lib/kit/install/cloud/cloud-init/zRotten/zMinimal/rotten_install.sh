@@ -412,7 +412,7 @@ _custom_kde_drop() {
 	sudo -n chmod 700 "$currentHOME"/rotten_"$ubiquitousBashID".sh
 	
 	local currentExitStatus
-	sudo -n -u "$custom_user" "$currentHOME"/rotten_"$ubiquitousBashID".sh _custom_kde_sequence "$@"
+	sudo -n -u "$custom_user" "$currentHOME"/rotten_"$ubiquitousBashID".sh _custom_kde "$@"
 	currentExitStatus="$?"
 	
 	sudo -n rm -f "$currentHOME"/rotten_"$ubiquitousBashID".sh
