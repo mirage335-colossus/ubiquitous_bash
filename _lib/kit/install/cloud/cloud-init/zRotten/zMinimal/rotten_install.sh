@@ -163,6 +163,7 @@ _here_rottenScript_bash_declareFunctions() {
 	declare -f _write_rottenScript_cloudConfig
 	declare -f _enter
 	declare -f _custom_core
+	declare -f _custom_kde_sequence
 	declare -f _custom_kde
 	declare -f _custom_bootOnce
 	declare -f _custom_write_sudoers
