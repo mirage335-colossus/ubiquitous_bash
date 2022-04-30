@@ -162,9 +162,9 @@ _here_rottenScript_bash_declareFunctions() {
 	declare -f _here_rottenScript_cloudConfig
 	declare -f _write_rottenScript_cloudConfig
 	declare -f _enter
-	declare -f _custom_core
-	declare -f _custom_kde_sequence
+	declare -f _custom_core_drop
 	declare -f _custom_kde
+	declare -f _custom_kde_drop
 	declare -f _custom_bootOnce
 	declare -f _custom_write_sudoers
 	declare -f _custom_construct_permissions_user
@@ -365,9 +365,9 @@ _enter() {
 }
 
 
-
-_custom_kde_sequence() {
-	_messageNormal 'init: _custom_kde_sequence'
+# ATTENTION: End user function.
+_custom_kde() {
+	_messageNormal 'init: _custom_kde'
 	
 	_messagePlain_probe_var HOME
 	cd "$HOME"
@@ -392,16 +392,36 @@ _custom_kde_sequence() {
 	_messagePlain_probe_cmd tar xvf package_kde.tar.xz
 }
 
-_custom_kde() {
-	_messageNormal 'init: _custom_kde'
+_custom_kde_drop() {
+	_messageNormal 'init: _custom_kde_drop'
 	
 	[[ "$custom_user" == "" ]] && export custom_user="user"
 	_messagePlain_probe_var custom_user
 	
-	sudo -n -u "$custom_user" "$scriptAbsoluteLocation" _custom_kde_sequence "$@"
+	# DANGER: Requires "$scriptAbsoluteLocation" effectively, at least temporarily, readable and executable, by "$custom_user" (possibly bad for cloud-init, rclone, etc).
+	local currentHOME
+	currentHOME=$(sudo -n -u "$custom_user" bash -c 'echo $HOME')
+	if [[ ! -e "$currentHOME" ]]
+	then
+		_messageFAIL
+		_stop 1
+		exit 1
+	fi
+	sudo -n cp "$scriptAbsoluteLocation" "$currentHOME"/rotten_"$ubiquitousBashID".sh
+	sudo -n chown "$custom_user":"$custom_user" "$currentHOME"/rotten_"$ubiquitousBashID".sh
+	sudo -n chmod 700 "$currentHOME"/rotten_"$ubiquitousBashID".sh
+	
+	local currentExitStatus
+	sudo -n -u "$custom_user" "$currentHOME"/rotten_"$ubiquitousBashID".sh _custom_kde_sequence "$@"
+	currentExitStatus="$?"
+	
+	sudo -n rm -f "$currentHOME"/rotten_"$ubiquitousBashID".sh
+	
+	return "$currentExitStatus"
 }
 
-_custom_core() {
+# ATTENTION: End user function.
+_custom_core_drop() {
 	_messageNormal 'init: _custom_core'
 	
 	[[ "$custom_user" == "" ]] && export custom_user="user"
@@ -660,7 +680,7 @@ _install() {
 	
 	sudo -n cp "$scriptAbsoluteLocation" /home/"$custom_user"/rottenScript.sh
 	sudo -n chown "user:user" "/home/""$custom_user""/rottenScript.sh"
-	sudo -n chmod "755" "/home/""$custom_user""/rottenScript.sh"
+	sudo -n chmod "700" "/home/""$custom_user""/rottenScript.sh"
 	
 	
 	
@@ -718,16 +738,23 @@ _install() {
 	
 	_custom_bootOnce "$@"
 	
-	_custom_kde "$@"
+	_custom_kde_drop "$@"
 	
-	_custom_core "$@"
+	_custom_core_drop "$@"
 	
 	
 	
 	echo '________________________________________'
 	#sleep 20
 	
-	( sudo -n -u user bash -c "crontab -l" ; echo '@reboot cd '/home/"$custom_user"'/ ; '/home/"$custom_user"'/rottenScript.sh _run > /home/'"$custom_user"'/_run.log 2>&1' ) | sudo -n -u user bash -c "crontab -"
+	#( sudo -n -u user bash -c "crontab -l" ; echo '@reboot cd '/home/"$custom_user"'/ ; '/home/"$custom_user"'/rottenScript.sh _run > /home/'"$custom_user"'/_run.log 2>&1' ) | sudo -n -u user bash -c "crontab -"
+	
+	[[ ! -e /root/rottenScript.sh ]] && sudo -n cp "$scriptAbsoluteLocation" /root/rottenScript.sh
+	sudo -n chmod 700 /root/rottenScript.sh
+	( sudo -n crontab -l ; echo '@reboot /root/rottenScript.sh _run > /var/log/run.log 2>&1' ) | sudo -n crontab '-'
+	sudo -n ln -s /var/log/run.log /root/run.log
+	
+	sudo -n chmod 700 "$scriptAbsoluteLocation"
 	
 	
 	if [[ -e /etc/issue ]] && ( cat /etc/issue | grep 'Ubuntu' | grep '20.04' > /dev/null 2>&1 || cat /etc/issue | grep 'Ubuntu' > /dev/null 2>&1 )
@@ -735,7 +762,8 @@ _install() {
 		# https://itsfoss.com/install-kde-on-ubuntu/
 		_install_and_run_package kde-full
 		# OR
-		#sudo apt install kde-standard
+		#_install_and_run_package kde-standard
+		#sudo -n apt install kde-standard
 		
 		# https://askubuntu.com/questions/1114525/reconfigure-the-display-manager-non-interactively
 		echo "/usr/bin/sddm" > /etc/X11/default-display-manager
@@ -749,6 +777,11 @@ _install() {
 	
 	sudo -n systemctl start sddm
 	
+	
+	# ATTENTION: DANGER: If necessary, delete !
+	#sudo -n rm -f /home/user/rottenScript.sh
+	
+	sudo -n chmod 700 "$scriptAbsoluteLocation"
 	
 	mv -f /etc/motd.bak /etc/motd
 	uptime
@@ -767,9 +800,14 @@ _install_and_run() {
 _run() {
 	_messageNormal 'init: rotten: _run'
 	
+	##cd /home/user
 	_mustGetSudo
+	_mustBeRoot
 	
-	#sudo -n -u user bash -c "cd ; cd example ; "/home/"$custom_user""/rottenScript.sh _test"
+	# ATTENTION: DANGER: If necessary, delete !
+	#sudo -n rm -f /home/user/rottenScript.sh
+	
+	#sudo -n -u user bash -c "cd ; cd example ; /home/user/rottenScript.sh _test"
 	#sudo -n -u user bash -c "cd ; cd example ; ./example.sh --run"
 }
 
