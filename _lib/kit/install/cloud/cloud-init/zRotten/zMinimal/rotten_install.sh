@@ -166,6 +166,7 @@ _here_rottenScript_bash_declareFunctions() {
 	declare -f _custom_kde
 	declare -f _custom_kde_drop
 	declare -f _custom_bootOnce
+	declare -f _custom_write_sshdConfig
 	declare -f _custom_write_sudoers
 	declare -f _custom_construct_permissions_user
 	declare -f _custom_construct_user
@@ -486,6 +487,39 @@ Type=Application
 	( sudo -n -u user bash -c "crontab -l" ; echo '@reboot /home/'"$custom_user"'/.ubcore/ubiquitous_bash/lean.sh _unix_renice_execDaemon > /home/'"$custom_user"/'_unix_renice_execDaemon.log 2>&1' ) | sudo -n -u user bash -c "crontab -"
 }
 
+_custom_write_sshdConfig() {
+	_messageNormal 'init: rotten: _custom_write_sshdConfig'
+	
+	sudo -n mkdir -p /etc/ssh
+	
+	echo '
+Include /etc/ssh/sshd_config.d/*.conf
+
+PermitRootLogin prohibit-password
+
+ChallengeResponseAuthentication no
+
+# If you just want the PAM account and session checks to run without
+# PAM authentication, then enable this but set PasswordAuthentication
+# and ChallengeResponseAuthentication to  no .
+UsePAM yes
+
+X11Forwarding yes
+
+PrintMotd no
+
+AcceptEnv LANG LC_*
+
+Subsystem sftp	/usr/lib/openssh/sftp-server
+
+PasswordAuthentication no
+
+AllowUsers root user
+' | sudo -n tee /etc/ssh/sshd_config > /dev/null
+	
+	
+	
+}
 
 # ATTENTION: Override (rarely, if necessary) .
 _custom_write_sudoers() {
@@ -561,6 +595,8 @@ _custom() {
 		sudo -n swapon /swapfile
 		echo '/swapfile swap swap defaults 0 0' | sudo -n tee -a /etc/fstab
 	fi
+	
+	_custom_write_sshdConfig
 	
 	_custom_write_sudoers
 	
