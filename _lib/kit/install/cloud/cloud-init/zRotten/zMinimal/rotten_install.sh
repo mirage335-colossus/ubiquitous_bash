@@ -434,13 +434,22 @@ _custom_core_fetch() {
 	#mkdir -p "$HOME"/core
 	cd "$HOME"
 	
+	if [[ -e "$HOME"/core/infrastructure ]] || [[ -e "$HOME"/core/installations ]] || [[ -e "$HOME"/ubDistFetch ]]
+	then
+		_messagePlain_bad 'fail: exists: core: do not attempt upgrade of existing directories with this script'
+		_messageFAIL
+		_stop 1
+		exit 1
+	fi
 	
 	
-	git clone --recursive git@github.com:soaringDistributions/ubDistFetch.git
+	#git clone --recursive git@github.com:soaringDistributions/ubDistFetch.git
+	git clone https://github.com/soaringDistributions/ubDistFetch.git
 	
 	cd "$HOME"/ubDistFetch
+	
 	"$HOME"/ubDistFetch/_ubDistFetch.bat
-	mv "$HOME"/ubDistFetch/_lib/core "$HOME"/ubDistFetch/
+	mv "$HOME"/ubDistFetch/_lib/core "$HOME"/
 }
 
 
