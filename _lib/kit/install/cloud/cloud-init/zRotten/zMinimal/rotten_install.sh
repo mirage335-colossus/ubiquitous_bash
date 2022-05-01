@@ -421,20 +421,65 @@ _custom_kde_drop() {
 	return "$currentExitStatus"
 }
 
+
+
 # ATTENTION: End user function.
-_custom_core_drop() {
+_custom_core() {
 	_messageNormal 'init: _custom_core'
 	
-	[[ "$custom_user" == "" ]] && export custom_user="user"
+	_messagePlain_probe_var HOME
+	cd "$HOME"
 	
-	if ! [[ -e /home/"$custom_user"/core ]]
+	if [[ -e "$HOME"/core/infrastructure ]] || [[ -e "$HOME"/core/infrastructure ]]
 	then
-		# Unpacking 'core' from outside a raw image file, rather than 'wget' inside chroot, may reduce disk space requirements for that raw image file, by ~8GB.
-		#wget ...
-		true
+		_messagePlain_bad 'fail: exists: core: do not attempt upgrade of existing directories with this script'
+		_messageFAIL
+		_stop 1
+		exit 1
 	fi
 	
-	true
+	
+	
+	# ATTENTION: NOTICE: Usually, this is a redistributable product of Soaring Distributions LLC .
+	[[ -e /core.tar.xz ]] && cp /core.tar.xz "$HOME"/
+	if ! [[ -e core.tar.xz ]]
+	then
+		_messagePlain_probe_cmd wget --user u298813-sub7 --password wnEtWtT9UDyJiCGw https://u298813-sub7.your-storagebox.de/ubDistFetch/core.tar.xz
+	fi
+	
+	if ! _messagePlain_probe_cmd tar xvf core.tar.xz
+	then
+		_messageFAIL
+	fi
+	return 0
+}
+
+_custom_core_drop() {
+	_messageNormal 'init: _custom_core_drop'
+	
+	[[ "$custom_user" == "" ]] && export custom_user="user"
+	_messagePlain_probe_var custom_user
+	
+	# DANGER: Requires "$scriptAbsoluteLocation" effectively, at least temporarily, readable and executable, by "$custom_user" (possibly bad for cloud-init, rclone, etc).
+	local currentHOME
+	currentHOME=$(sudo -n -u "$custom_user" bash -c 'echo $HOME')
+	if [[ ! -e "$currentHOME" ]]
+	then
+		_messageFAIL
+		_stop 1
+		exit 1
+	fi
+	sudo -n cp "$scriptAbsoluteLocation" "$currentHOME"/rotten_"$ubiquitousBashID".sh
+	sudo -n chown "$custom_user":"$custom_user" "$currentHOME"/rotten_"$ubiquitousBashID".sh
+	sudo -n chmod 700 "$currentHOME"/rotten_"$ubiquitousBashID".sh
+	
+	local currentExitStatus
+	sudo -n -u "$custom_user" "$currentHOME"/rotten_"$ubiquitousBashID".sh _custom_core "$@"
+	currentExitStatus="$?"
+	
+	sudo -n rm -f "$currentHOME"/rotten_"$ubiquitousBashID".sh
+	
+	return "$currentExitStatus"
 }
 
 _custom_bootOnce() {
@@ -789,7 +834,7 @@ _install() {
 	
 	_custom_kde_drop "$@"
 	
-	_custom_core_drop "$@"
+	#_custom_core_drop "$@"
 	
 	
 	
