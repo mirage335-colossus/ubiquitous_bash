@@ -629,7 +629,7 @@ Relogin=true
 	
 	# If blank root password, set random password.
 	# https://serverfault.com/questions/240957/how-find-user-with-empty-password-in-linux
-	if sudo -n getent shadow | grep 'root:\$' | cut -d':' -f 2 | grep '\w' -c -m 1 > /dev/null
+	if ! sudo -n getent shadow | grep 'root:\$' | cut -d':' -f 2 | grep '\w' -c -m 1 > /dev/null
 	then
 		echo "$custom_user"':'$(_uid 12) | sudo -n chpasswd
 		echo "$custom_user"':'$(_uid 32) | sudo -n chpasswd
