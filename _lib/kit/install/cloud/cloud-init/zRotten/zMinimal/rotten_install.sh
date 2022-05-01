@@ -615,18 +615,31 @@ Relogin=true
 	sudo -n localectl set-locale LANG=en_US.UTF-8
 	localectl --no-convert set-x11-keymap us pc104
 	
-	
+	# https://lwn.net/Articles/283572/
+	wget -o /dev/null  -O - "http://www.random.org/integers/?num=48&min=0&max=255&col=4&base=16&format=plain&md=new" | sudo tee /dev/random | head -c 2
+	[[ -e /dev/hwrng ]] && sudo -n head -c 256 /dev/hwrng | sudo tee -a /dev/random > /dev/null
+	head -c 24 /dev/random | sudo tee -a /dev/random > /dev/null
 	
 	_custom_construct_user root
 	# WARNING: Sets random password, intentionally, to lockout password login. SSH key or similar *required*.
 	# ATTENTION: Override (if necessary).
 	#echo 'root:'$(_uid 12) | sudo -n chpasswd
+	#echo 'root:'$(_uid 32) | sudo -n chpasswd
 	sudo -n usermod -s /bin/bash root
+	
+	# If blank root password, set random password.
+	# https://serverfault.com/questions/240957/how-find-user-with-empty-password-in-linux
+	if sudo -n getent shadow | grep 'root:\$' | cut -d':' -f 2 | grep '\w' -c -m 1 > /dev/null
+	then
+		echo "$custom_user"':'$(_uid 12) | sudo -n chpasswd
+		echo "$custom_user"':'$(_uid 32) | sudo -n chpasswd
+	fi
 	
 	_custom_construct_user "$custom_user"
 	# ATTENTION: Override (if necessary).
 	# WARNING: Sets random password, intentionally, to lockout password login. SSH key or similar *required*.
 	echo "$custom_user"':'$(_uid 12) | sudo -n chpasswd
+	echo "$custom_user"':'$(_uid 32) | sudo -n chpasswd
 	sudo -n usermod -s /bin/bash "$custom_user"
 	
 	
@@ -839,6 +852,30 @@ _run() {
 	##cd /home/user
 	_mustGetSudo
 	_mustBeRoot
+	
+	
+	if [[ -e /regenerate ]]
+	then
+		sudo -n rm -f /root/.ssh/authorized_keys
+		sudo -n rm -f /home/user/.ssh/authorized_keys
+		
+		
+		echo 'root:'$(_uid 12) | sudo -n chpasswd
+		echo 'root:'$(_uid 32) | sudo -n chpasswd
+		
+		echo 'user:'$(_uid 12) | sudo -n chpasswd
+		echo 'user:'$(_uid 32) | sudo -n chpasswd
+		
+		
+		# https://forums.raspberrypi.com/viewtopic.php?t=125345
+		sudo -n rm -f /etc/ssh/ssh_host*
+		sudo -n ssh-keygen -A
+		
+		
+		sudo -n rm -f /regenerate
+	fi
+	
+	
 	
 	# ATTENTION: DANGER: If necessary, delete !
 	#sudo -n rm -f /home/user/rottenScript.sh
