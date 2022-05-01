@@ -429,11 +429,11 @@ _custom_core() {
 	_messageNormal 'init: _custom_core'
 	
 	_messagePlain_probe_var HOME
-	mkdir -p "$HOME"/core
-	cd "$HOME"/core
+	#mkdir -p "$HOME"/core
+	cd "$HOME"
 	
 	
-	if [[ -e "$HOME"/core/infrastructure ]] || [[ -e "$HOME"/core/infrastructure ]]
+	if [[ -e "$HOME"/core/infrastructure ]] || [[ -e "$HOME"/core/installations ]]
 	then
 		_messagePlain_bad 'fail: exists: core: do not attempt upgrade of existing directories with this script'
 		_messageFAIL
@@ -444,8 +444,8 @@ _custom_core() {
 	
 	
 	# ATTENTION: NOTICE: Usually, this is a redistributable product of Soaring Distributions LLC .
-	[[ -e /core.tar.xz ]] && cp /core.tar.xz "$HOME"/core/
-	if ! [[ -e "$HOME"/core/core.tar.xz ]]
+	[[ -e /core.tar.xz ]] && cp /core.tar.xz "$HOME"/
+	if ! [[ -e "$HOME"/core.tar.xz ]]
 	then
 		_messagePlain_probe_cmd wget --user u298813-sub7 --password wnEtWtT9UDyJiCGw https://u298813-sub7.your-storagebox.de/ubDistFetch/core.tar.xz
 	fi
