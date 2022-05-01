@@ -162,6 +162,7 @@ _here_rottenScript_bash_declareFunctions() {
 	declare -f _here_rottenScript_cloudConfig
 	declare -f _write_rottenScript_cloudConfig
 	declare -f _enter
+	declare -f _custom_core
 	declare -f _custom_core_drop
 	declare -f _custom_kde
 	declare -f _custom_kde_drop
@@ -428,7 +429,9 @@ _custom_core() {
 	_messageNormal 'init: _custom_core'
 	
 	_messagePlain_probe_var HOME
-	cd "$HOME"
+	mkdir -p "$HOME"/core
+	cd "$HOME"/core
+	
 	
 	if [[ -e "$HOME"/core/infrastructure ]] || [[ -e "$HOME"/core/infrastructure ]]
 	then
@@ -441,8 +444,8 @@ _custom_core() {
 	
 	
 	# ATTENTION: NOTICE: Usually, this is a redistributable product of Soaring Distributions LLC .
-	[[ -e /core.tar.xz ]] && cp /core.tar.xz "$HOME"/
-	if ! [[ -e core.tar.xz ]]
+	[[ -e /core.tar.xz ]] && cp /core.tar.xz "$HOME"/core/
+	if ! [[ -e "$HOME"/core/core.tar.xz ]]
 	then
 		_messagePlain_probe_cmd wget --user u298813-sub7 --password wnEtWtT9UDyJiCGw https://u298813-sub7.your-storagebox.de/ubDistFetch/core.tar.xz
 	fi
