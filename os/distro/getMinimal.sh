@@ -235,6 +235,11 @@ _getMinimal_cloud() {
 	_getMost_backend_aptGetInstall libreadline8
 	
 	
+	_getMost_backend_aptGetInstall mkisofs
+	_getMost_backend_aptGetInstall genisoimage
+	
+	
+	
 	_getMost_backend_aptGetInstall iotop
 	
 	
