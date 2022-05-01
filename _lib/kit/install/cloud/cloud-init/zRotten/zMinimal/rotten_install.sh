@@ -162,6 +162,7 @@ _here_rottenScript_bash_declareFunctions() {
 	declare -f _here_rottenScript_cloudConfig
 	declare -f _write_rottenScript_cloudConfig
 	declare -f _enter
+	declare -f _custom_core_fetch
 	declare -f _custom_core
 	declare -f _custom_core_drop
 	declare -f _custom_kde
@@ -374,6 +375,8 @@ _custom_kde() {
 	_messagePlain_probe_var HOME
 	cd "$HOME"
 	
+	git config --global pull.rebase false
+	
 	local currentBackupDir
 	currentBackupDir="$HOME"/.kde.bak/$(_uid)
 	
@@ -422,6 +425,23 @@ _custom_kde_drop() {
 	return "$currentExitStatus"
 }
 
+
+# ATTENTION: End user function.
+_custom_core_fetch() {
+	_messageNormal 'init: _custom_core'
+	
+	_messagePlain_probe_var HOME
+	#mkdir -p "$HOME"/core
+	cd "$HOME"
+	
+	
+	
+	git clone --recursive git@github.com:soaringDistributions/ubDistFetch.git
+	
+	cd "$HOME"/ubDistFetch
+	"$HOME"/ubDistFetch/_ubDistFetch.bat
+	mv "$HOME"/ubDistFetch/_lib/core "$HOME"/ubDistFetch/
+}
 
 
 # ATTENTION: End user function.
@@ -821,6 +841,7 @@ _install() {
 	sudo -n -u user bash -c "cd ; mkdir -p "/home/"$custom_user""/Downloads"
 	sudo -n -u user bash -c "cd ; mkdir -p "/home/"$custom_user""/project/_random/_buried"
 	
+	sudo -n -u user bash -c "git config --global pull.rebase false"
 	
 	
 	echo '________________________________________'
