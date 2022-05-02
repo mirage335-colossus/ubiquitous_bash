@@ -465,9 +465,9 @@ _custom_core() {
 	if [[ -e "$HOME"/core/infrastructure ]] || [[ -e "$HOME"/core/installations ]]
 	then
 		_messagePlain_warn 'warn: exists: core: do not attempt upgrade of existing directories with this script'
-		return 1
-		_stop 1
-		exit 1
+		#return 1
+		#_stop 1
+		#exit 1
 	else
 		# ATTENTION: NOTICE: Usually, this is a redistributable product of Soaring Distributions LLC .
 		if [[ -e /core.tar.xz ]]
