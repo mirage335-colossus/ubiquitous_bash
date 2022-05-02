@@ -538,7 +538,7 @@ _custom_kernel_sequence() {
 	sudo -n rm -f linux-mainline-amd64-debian.tar.gz
 	sudo -n rm -f /linux-mainline-amd64-debian.tar.gz
 	
-	if [[ ! -e /linux-mainline-amd64-debian.tar.gz ]]
+	if [[ ! -e /linux-lts-amd64-debian.tar.gz ]]
 	then
 		wget --user u298813-sub7 --password wnEtWtT9UDyJiCGw 'https://u298813-sub7.your-storagebox.de/mirage335KernelBuild/linux-lts-amd64-debian.tar.gz'
 	else
@@ -550,7 +550,7 @@ _custom_kernel_sequence() {
 	sudo -n rm -f linux-lts-amd64-debian.tar.gz
 	sudo -n rm -f /linux-lts-amd64-debian.tar.gz
 	
-	cd ..
+	cd "$functionEntryPWD"
 	rmdir tmp_kernel
 	
 	# https://www.tecmint.com/remove-old-kernel-in-debian-and-ubuntu/
