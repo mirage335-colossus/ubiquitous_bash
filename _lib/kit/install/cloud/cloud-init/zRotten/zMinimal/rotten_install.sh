@@ -389,7 +389,7 @@ _custom_kde() {
 	[[ -e /package_kde.tar.xz ]] && cp /package_kde.tar.xz "$HOME"/
 	if ! [[ -e package_kde.tar.xz ]]
 	then
-		_messagePlain_probe_cmd wget https://github.com/soaringDistributions/ubDistBuild/raw/main/_lib/custom/package_kde.tar.xz
+		_messagePlain_probe_cmd wget 'https://github.com/soaringDistributions/ubDistBuild/raw/main/_lib/custom/package_kde.tar.xz'
 	fi
 	
 	_messagePlain_probe_cmd mv "$HOME"/.config "$currentBackupDir"/.config
@@ -478,7 +478,7 @@ _custom_core() {
 			tar xvf core.tar.xz
 		else
 			_messagePlain_probe 'wget | pv | xz -d | tar xv'
-			wget -qO- --user u298813-sub7 --password wnEtWtT9UDyJiCGw https://u298813-sub7.your-storagebox.de/ubDistFetch/core.tar.xz | pv | xz -d | tar xv --overwrite
+			wget -qO- --user u298813-sub7 --password wnEtWtT9UDyJiCGw 'https://u298813-sub7.your-storagebox.de/ubDistFetch/core.tar.xz' | pv | xz -d | tar xv --overwrite
 			[[ "$?" != "0" ]] && _messageFAIL
 		fi
 	fi
@@ -514,6 +514,48 @@ _custom_core_drop() {
 	sudo -n rm -f "$currentHOME"/rotten_"$ubiquitousBashID".sh
 	
 	return "$currentExitStatus"
+}
+
+
+_custom_kernel_sequence() {
+	local functionEntryPWD
+	functionEntryPWD="$PWD"
+	
+	mkdir -p tmp_kernel
+	cd tmp_kernel
+	
+	if [[ ! -e /linux-mainline-amd64-debian.tar.gz ]]
+	then
+		wget --user u298813-sub7 --password wnEtWtT9UDyJiCGw 'https://u298813-sub7.your-storagebox.de/mirage335KernelBuild/linux-mainline-amd64-debian.tar.gz'
+	else
+		cp -f /linux-mainline-amd64-debian.tar.gz ./
+	fi
+	tar xf linux-mainline-amd64-debian.tar.gz
+	sudo -n dpkg -i *.deb
+	sudo -n rm -f .config linux-* statement.sh.out.txt
+	
+	if [[ ! -e /linux-mainline-amd64-debian.tar.gz ]]
+	then
+		wget --user u298813-sub7 --password wnEtWtT9UDyJiCGw 'https://u298813-sub7.your-storagebox.de/mirage335KernelBuild/linux-lts-amd64-debian.tar.gz'
+	else
+		cp -f /linux-lts-amd64-debian.tar.gz ./
+	fi
+	tar xf linux-lts-amd64-debian.tar.gz
+	sudo -n dpkg -i *.deb
+	sudo -n rm -f .config linux-* statement.sh.out.txt
+	
+	cd ..
+	rmdir tmp_kernel
+	sudo -n rm -f linux-mainline-amd64-debian.tar.gz
+	sudo -n rm -f linux-lts-amd64-debian.tar.gz
+	
+	# https://www.tecmint.com/remove-old-kernel-in-debian-and-ubuntu/
+	sudo -n purge-old-kernels --keep 2
+	
+	cd "$functionEntryPWD"
+}
+_custom_kernel() {
+	"$scriptAbsoluteLocation" _custom_kernel_sequence "$@"
 }
 
 _custom_bootOnce() {
@@ -824,7 +866,7 @@ _install() {
 	
 	
 	# ATTENTION: Optional. Attempts to install full 'ubiquitous_bash.sh' from upstream.
-	[[ ! -e ./ubiquitous_bash.sh ]] && wget https://raw.githubusercontent.com/mirage335/ubiquitous_bash/master/ubiquitous_bash.sh
+	[[ ! -e ./ubiquitous_bash.sh ]] && wget 'https://raw.githubusercontent.com/mirage335/ubiquitous_bash/master/ubiquitous_bash.sh'
 	if [[ "$?" == "0" ]] && [[ -e /ubiquitous_bash.sh ]]
 	then
 		#rm -f ./ubiquitous_bash.sh > /dev/null 2>&1

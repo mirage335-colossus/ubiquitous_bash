@@ -9,6 +9,7 @@
 
 wget https://bit.ly/rotInsSh
 chmod u+x rotInsSh
+./rotInSSh _custom_kernel
 ./rotInsSh _install_and_run
 
 # optional
