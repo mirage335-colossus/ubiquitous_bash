@@ -519,6 +519,9 @@ _custom_bootOnce() {
 	
 	[[ "$custom_user" == "" ]] && export custom_user="user"
 	
+	
+	_messageNormal '_custom_bootOnce: bootdisc'
+	
 	if ! sudo -n cat /etc/fstab | grep 'uk4uPhB663kVcygT0q' | grep 'bootdisc' > /dev/null 2>&1
 	then
 		echo 'LABEL=uk4uPhB663kVcygT0q /media/bootdisc iso9660 ro,nofail 0 0' | sudo -n tee -a /etc/fstab > /dev/null
@@ -562,6 +565,12 @@ Type=Application
 	( sudo -n crontab -l ; echo '@reboot /media/bootdisc/rootnix.sh > /var/log/rootnix.log 2>&1' ) | sudo -n crontab '-'
 	
 	( sudo -n -u user bash -c "crontab -l" ; echo '@reboot /home/'"$custom_user"'/.ubcore/ubiquitous_bash/lean.sh _unix_renice_execDaemon > /home/'"$custom_user"/'_unix_renice_execDaemon.log 2>&1' ) | sudo -n -u user bash -c "crontab -"
+	
+	
+	
+	_messageNormal '_custom_bootOnce: /sbin/vboxconfig'
+	
+	sudo -n /sbin/vboxconfig
 }
 
 _custom_write_sshdConfig() {

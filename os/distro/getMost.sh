@@ -185,6 +185,10 @@ _getMost_debian11_install() {
 	_getMost_backend_aptGetInstall net-tools wireless-tools rfkill
 	
 	
+	# https://docs.oracle.com/en/virtualization/virtualbox/6.0/user/install-linux-host.html
+	echo 'virtualbox virtualbox/module-compilation-allowed boolean true
+	virtualbox virtualbox/delete-old-modules boolean true' | sudo -n debconf-set-selections
+	
 	if false && !  [[ -e /etc/issue ]] && cat /etc/issue | grep 'Ubuntu' > /dev/null 2>&1
 	then
 		# WARNING: Untested. May be old version of VirtualBox. May conflict with guest additions.
