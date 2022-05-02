@@ -409,6 +409,11 @@ _getMost_debian11_install() {
 	
 	
 	
+	# purge-old-kernels
+	_getMost_backend_aptGetInstall byobu
+	
+	
+	
 	_getMost_backend_aptGetInstall iotop
 	
 	_getMost_backend_aptGetInstall pavucontrol

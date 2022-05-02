@@ -239,6 +239,10 @@ _getMinimal_cloud() {
 	_getMost_backend_aptGetInstall genisoimage
 	
 	
+	# purge-old-kernels
+	_getMost_backend_aptGetInstall byobu
+	
+	
 	
 	_getMost_backend_aptGetInstall iotop
 	
