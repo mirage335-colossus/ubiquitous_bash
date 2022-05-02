@@ -523,8 +523,14 @@ _custom_kernel_sequence() {
 	local functionEntryPWD
 	functionEntryPWD="$PWD"
 	
+	sudo -n rm -f tmp_kernel/lts/*
+	sudo -n rm -f tmp_kernel/mainline/*
+	sudo -n rmdir tmp_kernel/lts
+	sudo -n rmdir tmp_kernel/mainline
+	sudo -n rmdir tmp_kernel
 	mkdir -p tmp_kernel
 	cd tmp_kernel
+	
 	
 	if [[ ! -e /linux-mainline-amd64-debian.tar.gz ]]
 	then
@@ -533,9 +539,9 @@ _custom_kernel_sequence() {
 		cp -f /linux-mainline-amd64-debian.tar.gz ./
 	fi
 	tar xf linux-mainline-amd64-debian.tar.gz
-	sudo -n dpkg -i *.deb
-	sudo -n rm -f .config linux-* statement.sh.out.txt
-	sudo -n rm -f linux-mainline-amd64-debian.tar.gz
+	sudo -n dpkg -i ./mainline/*.deb
+	sudo -n rm -f ./mainline/.config ./mainline/linux-* ./mainline/statement.sh.out.txt
+	sudo -n rm -f ./mainline/linux-mainline-amd64-debian.tar.gz
 	sudo -n rm -f /linux-mainline-amd64-debian.tar.gz
 	
 	if [[ ! -e /linux-lts-amd64-debian.tar.gz ]]
@@ -545,9 +551,9 @@ _custom_kernel_sequence() {
 		cp -f /linux-lts-amd64-debian.tar.gz ./
 	fi
 	tar xf linux-lts-amd64-debian.tar.gz
-	sudo -n dpkg -i *.deb
-	sudo -n rm -f .config linux-* statement.sh.out.txt
-	sudo -n rm -f linux-lts-amd64-debian.tar.gz
+	sudo -n dpkg -i ./lts/*.deb
+	sudo -n rm -f ./lts/.config ./lts/linux-* ./lts/statement.sh.out.txt
+	sudo -n rm -f ./lts/linux-lts-amd64-debian.tar.gz
 	sudo -n rm -f /linux-lts-amd64-debian.tar.gz
 	
 	cd "$functionEntryPWD"
