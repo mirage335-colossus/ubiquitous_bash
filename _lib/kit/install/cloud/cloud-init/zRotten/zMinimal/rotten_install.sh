@@ -464,25 +464,25 @@ _custom_core() {
 	
 	if [[ -e "$HOME"/core/infrastructure ]] || [[ -e "$HOME"/core/installations ]]
 	then
-		_messagePlain_bad 'fail: exists: core: do not attempt upgrade of existing directories with this script'
-		_messageFAIL
+		_messagePlain_warn 'warn: exists: core: do not attempt upgrade of existing directories with this script'
+		return 1
 		_stop 1
 		exit 1
+	else
+		# ATTENTION: NOTICE: Usually, this is a redistributable product of Soaring Distributions LLC .
+		if [[ -e /core.tar.xz ]]
+		then
+			mv -f /core.tar.xz "$HOME"/
+			tar xvf core.tar.xz
+		else
+			_messagePlain_probe 'wget | pv | xz -d | tar xv'
+			wget -qO- --user u298813-sub7 --password wnEtWtT9UDyJiCGw https://u298813-sub7.your-storagebox.de/ubDistFetch/core.tar.xz | pv | xz -d | tar xv --overwrite
+			[[ "$?" != "0" ]] && _messageFAIL
+		fi
 	fi
 	
+	[[ -e "$HOME"/core/infrastructure ]] && [[ -e "$HOME"/core/installations ]] && _messagePlain_good 'good: exists: core/infrastructure'
 	
-	
-	# ATTENTION: NOTICE: Usually, this is a redistributable product of Soaring Distributions LLC .
-	[[ -e /core.tar.xz ]] && cp /core.tar.xz "$HOME"/
-	if ! [[ -e "$HOME"/core.tar.xz ]]
-	then
-		_messagePlain_probe_cmd wget --user u298813-sub7 --password wnEtWtT9UDyJiCGw https://u298813-sub7.your-storagebox.de/ubDistFetch/core.tar.xz
-	fi
-	
-	if ! _messagePlain_probe_cmd tar xvf core.tar.xz
-	then
-		_messageFAIL
-	fi
 	return 0
 }
 
