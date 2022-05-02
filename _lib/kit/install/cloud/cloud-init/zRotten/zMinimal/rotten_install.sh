@@ -327,6 +327,7 @@ runcmd:
   - [ apt-get, -y, install, xz-utils ]
   - echo '----------------------------------------'
   - sudo -u root bash -c "cd ; /root/rottenScript.sh _install_and_run"
+  - sudo -u root bash -c "cd ; /root/rottenScript.sh _custom_core_drop"
 
 
 CZXWXcRMTo8EmM8i4d
@@ -365,6 +366,7 @@ _enter() {
 	# ATTENTION: Uncomment if copying this script directly instead of as 'cloud init' derivative.
 	( [[ "$profileScriptLocation" != "" ]] || [[ "$ub_import" == "true" ]] ) && return 0
 	_install_and_run "$@"
+	_custom_core_drop "$@"
 }
 
 
