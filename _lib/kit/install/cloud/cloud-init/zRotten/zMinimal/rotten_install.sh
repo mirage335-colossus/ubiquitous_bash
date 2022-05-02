@@ -167,6 +167,8 @@ _here_rottenScript_bash_declareFunctions() {
 	declare -f _custom_core_drop
 	declare -f _custom_kde
 	declare -f _custom_kde_drop
+	declare -f _custom_kernel_sequence
+	declare -f _custom_kernel
 	declare -f _custom_bootOnce
 	declare -f _custom_write_sshdConfig
 	declare -f _custom_write_sudoers
