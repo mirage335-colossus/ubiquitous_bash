@@ -533,6 +533,8 @@ _custom_kernel_sequence() {
 	tar xf linux-mainline-amd64-debian.tar.gz
 	sudo -n dpkg -i *.deb
 	sudo -n rm -f .config linux-* statement.sh.out.txt
+	sudo -n rm -f linux-mainline-amd64-debian.tar.gz
+	sudo -n rm -f /linux-mainline-amd64-debian.tar.gz
 	
 	if [[ ! -e /linux-mainline-amd64-debian.tar.gz ]]
 	then
@@ -543,11 +545,11 @@ _custom_kernel_sequence() {
 	tar xf linux-lts-amd64-debian.tar.gz
 	sudo -n dpkg -i *.deb
 	sudo -n rm -f .config linux-* statement.sh.out.txt
+	sudo -n rm -f linux-lts-amd64-debian.tar.gz
+	sudo -n rm -f /linux-lts-amd64-debian.tar.gz
 	
 	cd ..
 	rmdir tmp_kernel
-	sudo -n rm -f linux-mainline-amd64-debian.tar.gz
-	sudo -n rm -f linux-lts-amd64-debian.tar.gz
 	
 	# https://www.tecmint.com/remove-old-kernel-in-debian-and-ubuntu/
 	sudo -n purge-old-kernels --keep 2
