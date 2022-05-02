@@ -823,6 +823,11 @@ _install() {
 	
 	# ATTENTION: Optional. Attempts to install full 'ubiquitous_bash.sh' from upstream.
 	[[ ! -e ./ubiquitous_bash.sh ]] && wget https://raw.githubusercontent.com/mirage335/ubiquitous_bash/master/ubiquitous_bash.sh
+	if [[ "$?" == "0" ]] && [[ -e /ubiquitous_bash.sh ]]
+	then
+		#rm -f ./ubiquitous_bash.sh > /dev/null 2>&1
+		cp -f /ubiquitous_bash.sh ./ubiquitous_bash.sh
+	fi
 	chmod 755 ubiquitous_bash.sh
 	! ./ubiquitous_bash.sh _true && echo 'missing: ubiquitous_bash.sh' && exit 1
 	./ubiquitous_bash.sh _false && echo 'missing: ubiquitous_bash.sh' && exit 1
