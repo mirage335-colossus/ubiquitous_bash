@@ -32,7 +32,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='1891409836'
-export ub_setScriptChecksum_contents='2299728649'
+export ub_setScriptChecksum_contents='2938995621'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -8834,6 +8834,13 @@ _getMost_debian11_install() {
 	_getMost_backend_aptGetInstall byobu
 	
 	
+	_messagePlain_probe _getMost_backend curl croc
+	if ! _getMost_backend type croc > /dev/null 2>&1
+	then
+		_getMost_backend curl https://getcroc.schollz.com | _getMost_backend bash
+	fi
+	
+	
 	
 	_getMost_backend_aptGetInstall iotop
 	
@@ -9332,6 +9339,14 @@ _getMinimal_cloud() {
 	
 	# purge-old-kernels
 	_getMost_backend_aptGetInstall byobu
+	
+	
+	
+	_messagePlain_probe _getMost_backend curl croc
+	if ! _getMost_backend type croc > /dev/null 2>&1
+	then
+		_getMost_backend curl https://getcroc.schollz.com | _getMost_backend bash
+	fi
 	
 	
 	
@@ -15724,6 +15739,59 @@ _test_linode_cloud() {
 #aws_s3_compatible
 
 #blackblaze
+
+
+# WARNING: Infinite loop risk, do not call '_wantGetDep croc' within this function.
+_test_croc_upstream() {
+	! _wantSudo && return 1
+	
+	echo
+	curl https://getcroc.schollz.com | bash
+	echo
+}
+
+
+# https://github.com/schollz/croc
+_test_croc() {
+	! _test_cloud_updateInterval '-croc' && return 0
+	rm -f "$HOME"/.ubcore/.retest-cloud'-croc' > /dev/null 2>&1
+	touch "$HOME"/.ubcore/.retest-cloud'-croc'
+	date +%s > "$HOME"/.ubcore/.retest-cloud'-croc'
+	
+	if [[ "$nonet" != "true" ]] && ! _if_cygwin
+	then
+		_messagePlain_request 'ignore: upstream progress ->'
+		
+		_test_croc_upstream "$@"
+		#_test_croc_upstream_beta "$@"
+		
+		_messagePlain_request 'ignore: <- upstream progress'
+	fi
+	
+	_wantSudo && _wantGetDep croc
+	
+	! _typeDep croc && echo 'warn: missing: croc'
+	
+	return 0
+}
+
+_mustHaveCroc() {
+	# https://github.com/schollz/croc
+	if ! type croc > /dev/null 2>&1
+	then
+		curl https://getcroc.schollz.com | bash > /dev/null 2>&1
+	fi
+	
+	! type croc > /dev/null 2>&1 && _stop 1
+}
+
+# WARNING: No production use. Prefer '_mustHaveCroc' .
+_croc() {
+	_mustHaveCroc
+	
+	croc "$@"
+}
+
 
 #apacheLibcloud
 
@@ -24302,6 +24370,8 @@ _test() {
 	_tryExec "_test_cloud"
 	
 	_tryExec "_test_rclone"
+	_tryExec "_test_croc"
+	
 	_tryExec "_test_terraform"
 	
 	

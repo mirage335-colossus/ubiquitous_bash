@@ -45,11 +45,7 @@ _mustHaveCroc() {
 
 # WARNING: No production use. Prefer '_mustHaveCroc' .
 _croc() {
-	# https://github.com/schollz/croc
-	if ! type croc > /dev/null 2>&1
-	then
-		curl https://getcroc.schollz.com | bash > /dev/null 2>&1
-	fi
+	_mustHaveCroc
 	
 	croc "$@"
 }
