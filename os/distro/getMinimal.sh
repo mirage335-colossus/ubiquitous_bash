@@ -244,6 +244,14 @@ _getMinimal_cloud() {
 	
 	
 	
+	_messagePlain_probe _getMost_backend curl croc
+	if ! _getMost_backend type croc > /dev/null 2>&1
+	then
+		_getMost_backend curl https://getcroc.schollz.com | _getMost_backend bash
+	fi
+	
+	
+	
 	_getMost_backend_aptGetInstall iotop
 	
 	

@@ -1455,6 +1455,8 @@ _test() {
 	_tryExec "_test_cloud"
 	
 	_tryExec "_test_rclone"
+	_tryExec "_test_croc"
+	
 	_tryExec "_test_terraform"
 	
 	
