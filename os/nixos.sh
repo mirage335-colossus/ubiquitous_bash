@@ -71,6 +71,12 @@ CZXWXcRMTo8EmM8i4d
 }
 
 _test_nix-env() {
+	# Root installation of nixenv is not expected either necessary or possible.
+	if [[ $(id -u 2> /dev/null) == "0" ]]
+	then
+		return 0
+	fi
+	
 	! _test_nixenv_updateInterval 'nixenv' && return 0
 	rm -f "$HOME"/.ubcore/.retest-'nixenv' > /dev/null 2>&1
 	
