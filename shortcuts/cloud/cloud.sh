@@ -115,6 +115,7 @@ _cloud_hook() {
 	
 	_tryExec '_aws_hook'
 	_tryExec '_google_hook'
+	return 0
 }
 
 # WARNING: End user function. Do NOT call within scripts.
