@@ -32,7 +32,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='1891409836'
-export ub_setScriptChecksum_contents='4180557424'
+export ub_setScriptChecksum_contents='606847270'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -9541,6 +9541,38 @@ _test_nixenv_updateInterval() {
 	return
 }
 
+_test_nix-env_sequence() {
+	local functionEntryPWD
+	functionEntryPWD="$PWD"
+	_start
+	
+	_mustHave_nixos
+	
+	cd "$safeTmp"
+	
+	# https://ariya.io/2016/06/isolated-development-environment-using-nix
+	cat << 'CZXWXcRMTo8EmM8i4d' > ./default.nix
+with import <nixpkgs> {};
+stdenv.mkDerivation rec {
+  name = "env";
+  env = buildEnv { name = name; paths = buildInputs; };
+  buildInputs = [
+    hello
+  ];
+}
+CZXWXcRMTo8EmM8i4d
+	
+	! nix-shell --run hello | grep -i 'hello' > /dev/null && echo 'fail: nix-shell: hello' && _stop 1
+	! nix-shell --run true && echo 'fail: nix-shell: true' && _stop 1
+	nix-shell --run false && echo 'fail: nix-shell: false' && _stop 1
+	[[ $(nix-shell --run 'type hello' | tr -dc 'a-zA-Z0-9/ ') == $(type hello | tr -dc 'a-zA-Z0-9/ ') ]] && echo 'fail: nix-shell: type: hello' && _stop 1
+	[[ $(nix-shell --run 'type -P true' | tr -dc 'a-zA-Z0-9/ ') == $(type -P true | tr -dc 'a-zA-Z0-9/ ') ]] && echo 'fail: nix-shell: type: true' && _stop 1
+	[[ $(nix-shell --run 'type -P false' | tr -dc 'a-zA-Z0-9/ ') == $(type -P false | tr -dc 'a-zA-Z0-9/ ') ]] && echo 'fail: nix-shell: type: false' && _stop 1
+	
+	cd "$functionEntryPWD"
+	_stop
+}
+
 _test_nix-env() {
 	! _test_nixenv_updateInterval 'nixenv' && return 0
 	rm -f "$HOME"/.ubcore/.retest-'nixenv' > /dev/null 2>&1
@@ -9555,6 +9587,8 @@ _test_nix-env() {
 		_messagePlain_request 'ignore: <- upstream progress'
 	fi
 	
+	_mustHave_nixos
+	
 	_wantSudo && _wantGetDep nix-env
 	
 	
@@ -9563,9 +9597,14 @@ _test_nix-env() {
 	! _typeDep nix-shell && echo 'fail: missing: nix-shell' && _messageFAIL
 	
 	
-	! nix-shell true && echo 'fail: nix-shell: true' && _messageFAIL
-	
-	! nix-shell false && echo 'fail: nix-shell: false' && _messageFAIL
+	if ! "$scriptAbsoluteLocation" _test_nix-env_sequence "$@"
+	then
+		_messageFAIL
+		_stop 1
+		return 1
+	fi
+	#! nix-shell true && echo 'fail: nix-shell: true' && _messageFAIL
+	#! nix-shell false && echo 'fail: nix-shell: false' && _messageFAIL
 	
 	
 	
@@ -9576,12 +9615,15 @@ _test_nix-env() {
 }
 
 _mustHave_nixos() {
+	[[ -e "$HOME"/.nix-profile/etc/profile.d/nix.sh ]] && . "$HOME"/.nix-profile/etc/profile.d/nix.sh
+	
 	if ! type nix-env > /dev/null 2>&1
 	then
 		_test_nix-env_upstream > /dev/null 2>&1
 	fi
 	
 	! type nix-env > /dev/null 2>&1 && _stop 1
+	
 	return 0
 }
 
@@ -9590,6 +9632,14 @@ _nix-env() {
 	_mustHave_nixos
 	
 	nix-env "$@"
+}
+
+
+_nix-shell() {
+	_mustHave_nixos
+	
+	# https://forum.holochain.org/t/how-to-load-your-bash-profile-into-nix-shell/2070
+	nix-shell --command '. ~/.bashrc; return'
 }
 
 
@@ -11787,6 +11837,9 @@ _visualPrompt() {
 	
 	
 	export PS1='\[\033[01;40m\]\[\033[01;36m\]\[\033[01;34m\]|\[\033[01;31m\]${?}:${debian_chroot:+($debian_chroot)}\[\033[01;33m\]\u\[\033[01;32m\]@\h\[\033[01;36m\]\[\033[01;34m\])\[\033[01;36m\]\[\033[01;34m\]-'"$prompt_cloudNetName"'(\[\033[01;35m\]$(date +%H:%M:%S\.%d)\[\033[01;34m\])\[\033[01;36m\]|\[\033[00m\]\n\[\033[01;40m\]\[\033[01;36m\]\[\033[01;34m\]|\[\033[37m\][\w]\[\033[00m\]\n\[\033[01;36m\]\[\033[01;34m\]|$([[ "$PS1_lineNumber" == "1" ]] && echo -e -n '"'"'\[\033[01;36m\]'"'"'$PS1_lineNumber || echo -e -n $PS1_lineNumber)\[\033[01;34m\]) \[\033[36m\]'""'>\[\033[00m\] '
+	
+	SHELL=/nix/store/d60gkg5dkw4y5kc055n4m0xyvcjz65im-bash-interactive-5.1-p16/bin/bash
+	[[ "$SHELL" == *"/nix/store/"*"/bin/bash"* ]] && export PS1='nixShell'"$PS1"
 }
 
 
