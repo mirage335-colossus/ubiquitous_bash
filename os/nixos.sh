@@ -128,4 +128,25 @@ _nix-shell() {
 	# https://forum.holochain.org/t/how-to-load-your-bash-profile-into-nix-shell/2070
 	nix-shell --command '. ~/.bashrc; return'
 }
+_nix() {
+	_nix-shell "$@"
+}
+_nixShell() {
+	_nix-shell "$@"
+}
+_ns() {
+	_nix-shell "$@"
+}
+nixshell() {
+	_nix-shell "$@"
+}
+nixShell() {
+	_nix-shell "$@"
+}
+ns() {
+	_nix-shell "$@"
+}
+
+
+
 

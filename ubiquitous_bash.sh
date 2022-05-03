@@ -32,7 +32,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='1891409836'
-export ub_setScriptChecksum_contents='1678778008'
+export ub_setScriptChecksum_contents='3564047479'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -10360,6 +10360,27 @@ _nix-shell() {
 	# https://forum.holochain.org/t/how-to-load-your-bash-profile-into-nix-shell/2070
 	nix-shell --command '. ~/.bashrc; return'
 }
+_nix() {
+	_nix-shell "$@"
+}
+_nixShell() {
+	_nix-shell "$@"
+}
+_ns() {
+	_nix-shell "$@"
+}
+nixshell() {
+	_nix-shell "$@"
+}
+nixShell() {
+	_nix-shell "$@"
+}
+ns() {
+	_nix-shell "$@"
+}
+
+
+
 
 
 #https://unix.stackexchange.com/questions/39226/how-to-run-a-script-with-systemd-right-before-shutdown
