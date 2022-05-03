@@ -557,10 +557,16 @@ _custom_kernel_sequence() {
 	sudo -n rm -f /linux-lts-amd64-debian.tar.gz
 	
 	cd "$functionEntryPWD"
+	sudo -n rm -f tmp_kernel/lts/*
+	sudo -n rm -f tmp_kernel/mainline/*
+	sudo -n rmdir tmp_kernel/lts
+	sudo -n rmdir tmp_kernel/mainline
+	sudo -n rmdir tmp_kernel
 	rmdir tmp_kernel
 	
+	# May not be effective as of 2022-05-02, and may not be desirable.
 	# https://www.tecmint.com/remove-old-kernel-in-debian-and-ubuntu/
-	sudo -n purge-old-kernels --keep 2
+	#sudo -n purge-old-kernels --keep 2
 	
 	cd "$functionEntryPWD"
 }
