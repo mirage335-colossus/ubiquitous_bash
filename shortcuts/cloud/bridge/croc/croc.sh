@@ -41,6 +41,7 @@ _mustHaveCroc() {
 	fi
 	
 	! type croc > /dev/null 2>&1 && _stop 1
+	return 0
 }
 
 # WARNING: No production use. Prefer '_mustHaveCroc' .
