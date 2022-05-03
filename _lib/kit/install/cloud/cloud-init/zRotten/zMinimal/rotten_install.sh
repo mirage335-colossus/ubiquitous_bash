@@ -919,6 +919,7 @@ _install() {
 	sudo -u root INSTANCE_ID="$INSTANCE_ID" sh -c "cd ; /root/bin/ubiquitous_bash.sh _getMost_debian11 2>&1"
 	sudo -u root INSTANCE_ID="$INSTANCE_ID" sh -c "cd ; /root/bin/ubiquitous_bash.sh _get_veracrypt 2>&1"
 	sudo -u root INSTANCE_ID="$INSTANCE_ID" sh -c "cd ; /root/bin/ubiquitous_bash.sh _test 2>&1" | tee /var/log/ubiquitous_bash-test
+	[[ ${PIPESTATUS[0]} != "0" ]] && _messageFAIL
 	sudo -n env DEBIAN_FRONTEND=noninteractive apt-get -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" -y upgrade
 	
 	sudo -n -u user bash -c "cd ; mkdir -p "/home/"$custom_user""/Downloads"

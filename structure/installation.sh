@@ -780,6 +780,267 @@ _test_parallelFifo_sequence() {
 	_stop
 }
 
+_test_pipe_true() {
+	true | tee /dev/null 2>&1
+}
+
+# Apparently, shell script functions and conditions default to pipefail or pipestatus, although "$scriptAbsoluteLocation" is able to use the exit status instead.
+_test_pipe_false() {
+	false | tee /dev/null 2>&1
+}
+_test_pipe_false_condition() {
+	#false | tee /dev/null 2>&1 && return 0
+	false | echo stuff | grep stuff > /dev/null 2>&1 && return 0
+	return 1
+}
+_test_pipe_false_condition_special() {
+	false | tee /dev/null
+	[[ "$?" == "0" ]] && return 0
+	return 1
+}
+
+# Expect return true (ie. 0).
+_test_pipefail_forcePlus_true_sequence() {
+	set +o pipefail
+	true | tee /dev/null 2>&1
+}
+_test_pipefail_forcePlus_true() {
+	"$scriptAbsoluteLocation" _test_pipefail_forcePlus_true_sequence "$@"
+}
+
+# Expect return true (ie. 0).
+_test_pipefail_forcePlus_false_sequence() {
+	set +o pipefail
+	false | tee /dev/null 2>&1
+}
+_test_pipefail_forcePlus_false() {
+	"$scriptAbsoluteLocation" _test_pipefail_forcePlus_false_sequence "$@"
+}
+
+# Expect return true (ie. 0).
+_test_pipefail_forceMinus_true_sequence() {
+	set -o pipefail
+	true | tee /dev/null 2>&1
+}
+_test_pipefail_forceMinus_true() {
+	"$scriptAbsoluteLocation" _test_pipefail_forceMinus_true_sequence "$@"
+}
+
+# Expect return false (ie. 1).
+_test_pipefail_forceMinus_false_sequence() {
+	set -o pipefail
+	false | tee /dev/null 2>&1
+}
+_test_pipefail_forceMinus_false() {
+	"$scriptAbsoluteLocation" _test_pipefail_forceMinus_false_sequence "$@"
+}
+
+# https://stackoverflow.com/questions/6871859/piping-command-output-to-tee-but-also-save-exit-code-of-command
+_test_pipestatus_true() {
+	true | tee /dev/null 2>&1
+	return ${PIPESTATUS[0]}
+}
+
+_test_pipestatus_false() {
+	false | tee /dev/null 2>&1
+	return ${PIPESTATUS[0]}
+}
+
+# ATTENTION: NOTICE: Regard this as a relatively definitive specification of known bash pipe 'exit status', 'pipestatus', 'pipefail', defaults and inheritance.
+# WARNING: If 'bash' software interpreter uses same code paths (eg. for shell functions and subshells) do not assume this will always remain the case. Test and consider specifically and explicitly.
+_test_pipefail_sequence_sequence() {
+	if ! _test_pipefail_forcePlus_true || ! _test_pipefail_forcePlus_false || ! _test_pipefail_forceMinus_true_sequence || _test_pipefail_forceMinus_false_sequence
+	then
+		echo 'fail: pipefail'
+		_stop 1
+		return 1
+	fi
+	
+	# NOTICE: Will FAIL if 'set -o pipefail' applies to script commands !
+	if ! _test_pipestatus_true || _test_pipestatus_false || ! "$scriptAbsoluteLocation" _test_pipestatus_true || "$scriptAbsoluteLocation" _test_pipestatus_false
+	then
+		echo 'fail: pipestatus'
+		_stop 1
+		return 1
+	fi
+	
+	
+	
+	# ATTENTION: Apparently, "$scriptAbsoluteLocation" is able to correctly retrieve the expected (ie. 0, true) exit status of both '_test_pipe_true' and '_test_pipe_false', although calling these functions directly results in the unexpected use of pipestatus, pipefail, or similar, etc.
+	# CAUTION: While such defaults may seem slightly undesirable for shell scripts, there may be some benefit to command prompt use (especailly when functions are called from an interactive shell through such as ubiquitous_bash.sh _true , etc), UNIX pipe input programs (eg. cat /file) rarely if ever fail when a grep match would occur, and best practice of using a condition (ie. [[ -e /file ]]) before such pipes already avoids severe issues in shell script usage.
+	# CAUTION: Ensure all pipe exit status, pipe status, and pipe fail, default behavior remains *strictly* as-is.
+	
+	
+	
+	# ATTENTION: ! _test_pipe_false ... would return true if consistent with behavior when called by "$scriptAbsoluteLocation"
+	_test_pipe_false
+	[[ "$?" == "0" ]] && echo 'fail: _test_pipe_false' && _stop 1 && return 1
+	if _test_pipe_false
+	then
+		echo 'fail: _test_pipe_false'
+		_stop 1
+		return 1
+	fi
+	
+	# ATTENTION: ! _test_pipe_false ... does return true if called by "$scriptAbsoluteLocation"
+	! "$scriptAbsoluteLocation" _test_pipe_false
+	[[ "$?" == "0" ]] && echo 'fail: ! "$scriptAbsoluteLocation" _test_pipe_false' && _stop 1 && return 1
+	if ! "$scriptAbsoluteLocation" _test_pipe_false
+	then
+		echo 'fail: if: ! "$scriptAbsoluteLocation" _test_pipe_false'
+		_stop 1
+		return 1
+	fi
+	
+	_test_pipe_false_condition
+	[[ "$?" == "0" ]] && echo 'fail: _test_pipe_false_condition' && _stop 1 && return 1
+	if _test_pipe_false_condition
+	then
+		echo 'fail: if: _test_pipe_false_condition'
+		_stop 1
+		return 1
+	fi
+	
+	! "$scriptAbsoluteLocation" _test_pipe_false_condition
+	[[ "$?" == "0" ]] && echo 'fail: ! "$scriptAbsoluteLocation" _test_pipe_false_condition' && _stop 1 && return 1
+	if _test_pipe_false_condition
+	then
+		echo 'fail: if: ! "$scriptAbsoluteLocation" _test_pipe_false_condition'
+		_stop 1
+		return 1
+	fi
+	
+	
+	_test_pipe_false_condition_special
+	[[ "$?" == "0" ]] && echo 'fail: _test_pipe_false_condition_special' && _stop 1 && return 1
+	if _test_pipe_false_condition_special
+	then
+		echo 'fail: if: _test_pipe_false_condition_special'
+		_stop 1
+		return 1
+	fi
+	
+	! "$scriptAbsoluteLocation" _test_pipe_false_condition_special
+	[[ "$?" == "0" ]] && echo 'fail: ! "$scriptAbsoluteLocation" _test_pipe_false_condition_special' && _stop 1 && return 1
+	if ! "$scriptAbsoluteLocation" _test_pipe_false_condition_special
+	then
+		echo 'fail: if: ! "$scriptAbsoluteLocation" _test_pipe_false_condition_special'
+		_stop 1
+		return 1
+	fi
+	
+	"$scriptAbsoluteLocation" _test_pipe_false_condition_special
+	[[ "$?" != "0" ]] && echo 'fail: "$scriptAbsoluteLocation" _test_pipe_false_condition_special' && _stop 1 && return 1
+	if "$scriptAbsoluteLocation" _test_pipe_false_condition_special
+	then
+		true
+	else
+		echo 'fail: if: "$scriptAbsoluteLocation" _test_pipe_false_condition_special'
+		_stop 1
+		return 1
+	fi
+	
+	
+	#! _test_pipe_true || ! _test_pipe_false || ! "$scriptAbsoluteLocation" _test_pipe_true || ! "$scriptAbsoluteLocation" _test_pipe_false
+	#! _test_pipe_false
+	if ! _test_pipe_true || ! "$scriptAbsoluteLocation" _test_pipe_true || ! "$scriptAbsoluteLocation" _test_pipe_false
+	then
+		echo 'fail: if: pipe: value'
+		_stop 1
+		return 1
+	fi
+	
+	set +o pipefail
+	# NOTICE: Will FAIL if 'set -o pipefail' applies to script commands !
+	if ! _test_pipestatus_true || _test_pipestatus_false || ! "$scriptAbsoluteLocation" _test_pipestatus_true || "$scriptAbsoluteLocation" _test_pipestatus_false
+	then
+		echo 'fail: pipestatus'
+		_stop 1
+		return 1
+	fi
+	if ( true | tee /dev/null 2>&1 )
+	then
+		true
+	else
+		echo 'fail: if: pipe: pipefail: plus: subshell: true'
+		_stop 1
+		return 1
+	fi
+	if ( false | tee /dev/null 2>&1 )
+	then
+		true
+	else
+		echo 'fail: if: pipe: pipefail: plus: subshell: false'
+		_stop 1
+		return 1
+	fi
+	if ! "$scriptAbsoluteLocation" _test_pipe_true || ! "$scriptAbsoluteLocation" _test_pipe_false
+	then
+		echo 'fail: if: pipe: pipefail: plus'
+		_stop 1
+		return 1
+	fi
+	
+	set -o pipefail
+	# NOTICE: Will FAIL if 'set -o pipefail' applies to script commands !
+	if ! _test_pipestatus_true || _test_pipestatus_false || ! "$scriptAbsoluteLocation" _test_pipestatus_true || "$scriptAbsoluteLocation" _test_pipestatus_false
+	then
+		echo 'fail: pipestatus'
+		_stop 1
+		return 1
+	fi
+	if ( true | tee /dev/null 2>&1 )
+	then
+		true
+	else
+		echo 'fail: if: pipe: pipefail: minus: subshell: true'
+		_stop 1
+		return 1
+	fi
+	# ATTENTION: Seems this actually is sensitive to 'set -o pipefail' .
+	if ( false | tee /dev/null 2>&1 )
+	then
+		echo 'fail: if: pipe: pipefail: minus: subshell: false'
+		_stop 1
+		return 1
+	else
+		true
+	fi
+	if ! "$scriptAbsoluteLocation" _test_pipe_true || ! "$scriptAbsoluteLocation" _test_pipe_false
+	then
+		echo 'fail: if: pipe: pipefail: minus'
+		_stop 1
+		return 1
+	fi
+	return 0
+}
+_test_pipefail_sequence() {
+	! "$scriptAbsoluteLocation" _test_pipefail_sequence_sequence "$@" && return 1
+	
+	set +o pipefail
+	! "$scriptAbsoluteLocation" _test_pipefail_sequence_sequence "$@" && return 1
+	
+	set -o pipefail
+	! "$scriptAbsoluteLocation" _test_pipefail_sequence_sequence "$@" && return 1
+	
+	return 0
+}
+_test_pipefail() {
+	if ! "$scriptAbsoluteLocation" _test_pipefail_sequence "$@"
+	then
+		_messageFAIL
+		_stop 1
+		return 1
+	fi
+	"$scriptAbsoluteLocation" _test_pipefail_sequence "$@"
+	if [[ "$?" != "0" ]]
+	then
+		_messageFAIL
+		_stop 1
+		return 1
+	fi
+}
+
 _test_sanity() {
 	if (exit 0)
 	then
@@ -853,6 +1114,12 @@ _test_sanity() {
 	
 	# Do NOT allow 'rm' to be a shell function alias to 'rm -i' or similar.
 	[[ $(type -p rm) == "" ]] && _messageFAIL && return 1
+	
+	
+	! _test_pipefail && _messageFAIL && return 1
+	
+	
+	
 	
 	#! [[ -2147483648 -lt 2147483647 ]] && _messageFAIL && return 1
 	#! [[ -2000000000 -lt 2000000000 ]] && _messageFAIL && return 1
