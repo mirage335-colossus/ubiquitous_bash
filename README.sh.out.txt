@@ -219,6 +219,22 @@ __ Python __
 [0;37;100mexit() [0m[0m
 
 
+__ NixOS (nix-shell) __
+
+[0;37;100m[0;34mns [0m[0m
+
+Automatic installation through _test , _getMinimal , etc, for GNU/Linux, etc. Shortcut functions for &#39;nix-shell&#39; , etc .
+
+
+__ rclone, croc __
+
+[0;37;100m[0;34mrclone [0m[0m
+[0;37;100m[0;34mcroc [0m[0m
+
+Automatic installation through _test , _getMinimal , etc, for GNU/Linux, etc. Normally usable through Cygwin/MSW if in path (ie. if installed by &#39;chocolatey&#39;).
+
+
+
 
 
 

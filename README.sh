@@ -256,6 +256,23 @@ exit()
 exit
 exit()'
 _paragraph_end
+
+
+_heading2 'NixOS (nix-shell)'
+_paragraph_begin
+_o _messagePlain_probe_noindent 'ns'
+_t 'Automatic installation through _test , _getMinimal , etc, for GNU/Linux, etc. Shortcut functions for &#39;nix-shell&#39; , etc .'
+_paragraph_end
+
+_heading2 'rclone, croc'
+_paragraph_begin
+_o _messagePlain_probe_noindent 'rclone'
+_o _messagePlain_probe_noindent 'croc'
+_t 'Automatic installation through _test , _getMinimal , etc, for GNU/Linux, etc. Normally usable through Cygwin/MSW if in path (ie. if installed by &#39;chocolatey&#39;).'
+_paragraph_end
+
+
+_paragraph_begin
 _t '
 
 

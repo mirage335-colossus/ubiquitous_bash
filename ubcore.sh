@@ -32,7 +32,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='1891409836'
-export ub_setScriptChecksum_contents='3624652467'
+export ub_setScriptChecksum_contents='3676558317'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -9515,6 +9515,9 @@ expect eof' > "$safeTmp"/veracrypt.exp
 
 # WARNING: Infinite loop risk, do not call '_wantGetDep nix-env' within this function.
 _test_nix-env_upstream() {
+	# WARNING: May be untested. Do NOT attempt upstream install for NixOS distribution.
+	[[ -e /etc/issue ]] && ! cat /etc/issue | grep 'Debian\|Raspbian\|Ubuntu' > /dev/null 2>&1 && type nix-env && return 0
+	
 	! _wantSudo && return 1
 	
 	# https://ariya.io/2020/05/nix-package-manager-on-ubuntu-or-debian
@@ -9523,6 +9526,14 @@ _test_nix-env_upstream() {
 	#     WSL is NOT expected fully compatible with Ubiquitous Bash . MS commitment to WSL end-user usability, or so much as WSL having any better functionality than Cygwin, Qemu, VirtualBox, etc, is not obvious.
 	# https://github.com/microsoft/WSL/issues/6301
 	
+	
+	# Prefer to develop software not to expect multi-user features from nix. Expected not normally necessary.
+	# https://nixos.org/download.html
+	#  'Harder to uninstall'
+	# https://nixos.org/manual/nix/stable/installation/multi-user.html
+	#  'unprivileged users' ... 'pre-built binaries'
+	# https://nixos.wiki/wiki/Nix
+	#  'remove further hidden dependencies' ... 'access to the network' ... 'inter process communication is isolated on Linux'
 	# https://ariya.io/2020/05/nix-package-manager-on-ubuntu-or-debian
 	echo
 	sh <(curl -L https://nixos.org/nix/install) --no-daemon
