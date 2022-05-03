@@ -248,6 +248,23 @@ CZXWXcRMTo8EmM8i4d
 	fi
 	
 	
+	if [[ "$1" == "nix-env" ]]
+	then
+		_tryExec '_test_nix-env_upstream'
+		#_tryExec '_test_nix-env_upstream_beta'
+		
+		return 0
+	fi
+	
+	
+	if [[ "$1" == "croc" ]]
+	then
+		_tryExec '_test_croc_upstream'
+		#_tryExec '_test_croc_upstream_beta'
+		
+		return 0
+	fi
+	
 	if [[ "$1" == "rclone" ]]
 	then
 		_tryExec '_test_rclone_upstream'
@@ -255,6 +272,7 @@ CZXWXcRMTo8EmM8i4d
 		
 		return 0
 	fi
+	
 	
 	if [[ "$1" == "terraform" ]]
 	then

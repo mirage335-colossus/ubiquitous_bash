@@ -37,7 +37,7 @@ _mustHaveCroc() {
 	# https://github.com/schollz/croc
 	if ! type croc > /dev/null 2>&1
 	then
-		curl https://getcroc.schollz.com | bash > /dev/null 2>&1
+		_test_croc_upstream > /dev/null 2>&1
 	fi
 	
 	! type croc > /dev/null 2>&1 && _stop 1
