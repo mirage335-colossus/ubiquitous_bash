@@ -126,7 +126,7 @@ _nix-shell() {
 	_mustHave_nixos
 	
 	# https://forum.holochain.org/t/how-to-load-your-bash-profile-into-nix-shell/2070
-	nix-shell --command '. ~/.bashrc; return'
+	nix-shell --command '. ~/.bashrc; return' "$@"
 }
 _nix() {
 	_nix-shell "$@"
