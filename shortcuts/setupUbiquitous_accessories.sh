@@ -64,6 +64,7 @@ _setupUbiquitous_accessories-python() {
 
 
 
+
 _setupUbiquitous_accessories() {
 	
 	_setupUbiquitous_accessories-gnuoctave "$@"
@@ -79,6 +80,8 @@ _setupUbiquitous_accessories_bashrc() {
 	_setupUbiquitous_accessories_bashrc-cloud_bin "$@"
 	
 	_setupUbiquitous_accessories_here-python_bashrc "$@"
+	
+	_setupUbiquitous_accessories_here-nixenv-bashrc "$@"
 }
 
 

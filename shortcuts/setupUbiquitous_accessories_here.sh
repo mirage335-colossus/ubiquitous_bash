@@ -259,7 +259,13 @@ CZXWXcRMTo8EmM8i4d
 
 
 
+_setupUbiquitous_accessories_here-nixenv-bashrc() {
+	cat << CZXWXcRMTo8EmM8i4d
 
+[[ -e "$HOME"/.nix-profile/etc/profile.d/nix.sh ]] && . "$HOME"/.nix-profile/etc/profile.d/nix.sh
+
+CZXWXcRMTo8EmM8i4d
+}
 
 
 

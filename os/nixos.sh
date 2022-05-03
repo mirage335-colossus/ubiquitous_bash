@@ -101,6 +101,7 @@ _test_nix-env() {
 }
 
 _mustHave_nixos() {
+	#_setupUbiquitous_accessories_here-nixenv-bashrc
 	[[ -e "$HOME"/.nix-profile/etc/profile.d/nix.sh ]] && . "$HOME"/.nix-profile/etc/profile.d/nix.sh
 	
 	if ! type nix-env > /dev/null 2>&1
