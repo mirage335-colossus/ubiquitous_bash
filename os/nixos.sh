@@ -62,7 +62,7 @@ CZXWXcRMTo8EmM8i4d
 	! nix-shell --run hello | grep -i 'hello' > /dev/null && echo 'fail: nix-shell: hello' && _stop 1
 	! nix-shell --run true && echo 'fail: nix-shell: true' && _stop 1
 	nix-shell --run false && echo 'fail: nix-shell: false' && _stop 1
-	[[ $(nix-shell --run 'type hello' | tr -dc 'a-zA-Z0-9/ ') == $(type hello | tr -dc 'a-zA-Z0-9/ ') ]] && echo 'fail: nix-shell: type: hello' && _stop 1
+	[[ $(nix-shell --run 'type hello' | tr -dc 'a-zA-Z0-9/ ') == $(type hello | tr -dc 'a-zA-Z0-9/ ' 2>/dev/null) ]] && echo 'fail: nix-shell: type: hello' && _stop 1
 	[[ $(nix-shell --run 'type -P true' | tr -dc 'a-zA-Z0-9/ ') == $(type -P true | tr -dc 'a-zA-Z0-9/ ') ]] && echo 'fail: nix-shell: type: true' && _stop 1
 	[[ $(nix-shell --run 'type -P false' | tr -dc 'a-zA-Z0-9/ ') == $(type -P false | tr -dc 'a-zA-Z0-9/ ') ]] && echo 'fail: nix-shell: type: false' && _stop 1
 	
@@ -70,6 +70,11 @@ CZXWXcRMTo8EmM8i4d
 	_stop
 }
 
+
+_test_nix-env_enter() {
+	cd "$HOME"
+	_test_nix-env "$@"
+}
 _test_nix-env() {
 	# Cygwin implies other package managers (ie. 'chocolatey').
 	_if_cygwin && return 0
@@ -88,7 +93,7 @@ _test_nix-env() {
 		currentScript="$scriptAbsoluteLocation"
 		[[ -e /home/"$currentUser"/ubiquitous_bash.sh ]] && currentScript=/home/"$currentUser"/ubiquitous_bash.sh
 		
-		[[ -e /home/"$currentUser" ]] && [[ $(sudo -n -u "$currentUser" id -u | tr -dc '0-9') != "0" ]] && sudo -n -u "$currentUser" "$currentScript" _test_nix-env
+		[[ -e /home/"$currentUser" ]] && [[ $(sudo -n -u "$currentUser" id -u | tr -dc '0-9') != "0" ]] && sudo -n -u "$currentUser" "$currentScript" _test_nix-env_enter
 		return
 	fi
 	
