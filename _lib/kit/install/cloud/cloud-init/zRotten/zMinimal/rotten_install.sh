@@ -918,9 +918,9 @@ _install() {
 		
 		# ATTENTION: Optional. Attempts '_getMost' and '_test' from full 'ubiquitous_bash.sh' from upstream.
 		echo '________________________________________'
-		sudo -n -u user INSTANCE_ID="$INSTANCE_ID" sh -c "cd ; /user/bin/ubiquitous_bash.sh _getMost_debian11 2>&1"
-		sudo -n -u user INSTANCE_ID="$INSTANCE_ID" sh -c "cd ; /user/bin/ubiquitous_bash.sh _get_veracrypt 2>&1"
-		sudo -n -u user INSTANCE_ID="$INSTANCE_ID" sh -c "cd ; /user/bin/ubiquitous_bash.sh _test 2>&1" | tee /var/log/ubiquitous_bash-test
+		sudo -n -u user INSTANCE_ID="$INSTANCE_ID" sh -c "cd ; /home/user/bin/ubiquitous_bash.sh _getMost_debian11 2>&1"
+		sudo -n -u user INSTANCE_ID="$INSTANCE_ID" sh -c "cd ; /home/user/bin/ubiquitous_bash.sh _get_veracrypt 2>&1"
+		sudo -n -u user INSTANCE_ID="$INSTANCE_ID" sh -c "cd ; /home/user/bin/ubiquitous_bash.sh _test 2>&1" | tee /var/log/ubiquitous_bash-test
 		[[ ${PIPESTATUS[0]} != "0" ]] && _messageFAIL
 	fi
 	
