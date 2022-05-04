@@ -900,14 +900,14 @@ _install() {
 		
 		_install_and_run_package git
 		
-		sudo -n cp ./ubiquitous_bash.sh /home/"$custom_user"
+		sudo -n cp -f ./ubiquitous_bash.sh /home/"$custom_user"
 		sudo -n chown "user:user" "/home/""$custom_user""/ubiquitous_bash.sh"
 		sudo -n chmod "755" "/home/""$custom_user""/ubiquitous_bash.sh"
 		sudo -n chown "$custom_user":"$custom_user" "/home/""$custom_user""/ubiquitous_bash.sh"
 		#sudo -n -u user "/home/""$custom_user""/ubiquitous_bash.sh" _setupUbiquitous
 		sudo -n -u user sh -c "cd ; ""/home/""$custom_user""/ubiquitous_bash.sh"" _setupUbiquitous 2>&1"
 		
-		sudo -n cp ./ubiquitous_bash.sh /root
+		sudo -n cp -f ./ubiquitous_bash.sh /root
 		sudo -n chown "user:user" /root"/ubiquitous_bash.sh"
 		sudo -n chmod "755" /root"/ubiquitous_bash.sh"
 		sudo -n chown root:root /root"/ubiquitous_bash.sh"

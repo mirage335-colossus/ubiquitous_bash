@@ -83,7 +83,12 @@ _test_nix-env() {
 		local currentUser
 		currentUser="$custom_user"
 		[[ "$currentUser" == "" ]] && currentUser="user"
-		[[ -e /home/"$currentUser" ]] && [[ $(sudo -n -u "$currentUser" id -u | tr -dc '0-9') != "0" ]] && sudo -n -u "$currentUser" "$scriptAbsoluteLocation" _test_nix-env
+		
+		local currentScript
+		currentScript="$scriptAbsoluteLocation"
+		[[ -e /home/"$currentUser"/ubiquitous_bash.sh ]] && currentScript=/home/"$currentUser"/ubiquitous_bash.sh
+		
+		[[ -e /home/"$currentUser" ]] && [[ $(sudo -n -u "$currentUser" id -u | tr -dc '0-9') != "0" ]] && sudo -n -u "$currentUser" "$currentScript" _test_nix-env
 		return
 	fi
 	
