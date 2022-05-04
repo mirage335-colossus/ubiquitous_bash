@@ -328,8 +328,8 @@ runcmd:
   - [ apt-get, -y, install, git, sudo ]
   - [ apt-get, -y, install, xz-utils ]
   - echo '----------------------------------------'
-  - sudo -u root bash -c "cd ; /root/rottenScript.sh _install_and_run"
-  - sudo -u root bash -c "cd ; /root/rottenScript.sh _custom_core_drop"
+  - sudo -n -u root bash -c "cd ; /root/rottenScript.sh _install_and_run"
+  - sudo -n -u root bash -c "cd ; /root/rottenScript.sh _custom_core_drop"
 
 
 CZXWXcRMTo8EmM8i4d
@@ -911,16 +911,16 @@ _install() {
 		sudo -n chown "user:user" /root"/ubiquitous_bash.sh"
 		sudo -n chmod "755" /root"/ubiquitous_bash.sh"
 		sudo -n chown root:root /root"/ubiquitous_bash.sh"
-		#sudo -u root /root"/ubiquitous_bash.sh" _setupUbiquitous
-		sudo -u root sh -c "cd ; /root/ubiquitous_bash.sh _setupUbiquitous 2>&1"
+		#sudo -n -u root /root"/ubiquitous_bash.sh" _setupUbiquitous
+		sudo -n -u root sh -c "cd ; /root/ubiquitous_bash.sh _setupUbiquitous 2>&1"
 		
 		
 		
 		# ATTENTION: Optional. Attempts '_getMost' and '_test' from full 'ubiquitous_bash.sh' from upstream.
 		echo '________________________________________'
-		sudo -u root INSTANCE_ID="$INSTANCE_ID" sh -c "cd ; /root/bin/ubiquitous_bash.sh _getMost_debian11 2>&1"
-		sudo -u root INSTANCE_ID="$INSTANCE_ID" sh -c "cd ; /root/bin/ubiquitous_bash.sh _get_veracrypt 2>&1"
-		sudo -u root INSTANCE_ID="$INSTANCE_ID" sh -c "cd ; /root/bin/ubiquitous_bash.sh _test 2>&1" | tee /var/log/ubiquitous_bash-test
+		sudo -n -u root INSTANCE_ID="$INSTANCE_ID" sh -c "cd ; /root/bin/ubiquitous_bash.sh _getMost_debian11 2>&1"
+		sudo -n -u root INSTANCE_ID="$INSTANCE_ID" sh -c "cd ; /root/bin/ubiquitous_bash.sh _get_veracrypt 2>&1"
+		sudo -n -u root INSTANCE_ID="$INSTANCE_ID" sh -c "cd ; /root/bin/ubiquitous_bash.sh _test 2>&1" | tee /var/log/ubiquitous_bash-test
 		[[ ${PIPESTATUS[0]} != "0" ]] && _messageFAIL
 	fi
 	

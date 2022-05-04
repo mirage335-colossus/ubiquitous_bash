@@ -71,10 +71,20 @@ CZXWXcRMTo8EmM8i4d
 }
 
 _test_nix-env() {
+	# Cygwin implies other package managers (ie. 'chocolatey').
+	_if_cygwin && return 0
+	
 	# Root installation of nixenv is not expected either necessary or possible.
 	if [[ $(id -u 2> /dev/null) == "0" ]]
 	then
-		return 0
+		local sudoAvailable
+		sudoAvailable=false
+		
+		local currentUser
+		currentUser="$custom_user"
+		[[ "$currentUser" == "" ]] && currentUser="user"
+		[[ -e /home/"$currentUser" ]] && [[ $(sudo -n -u "$currentUser" id -u | tr -dc '0-9') != "0" ]] && sudo -n -u "$currentUser" "$scriptAbsoluteLocation" _test_nix-env
+		return
 	fi
 	
 	! _test_nixenv_updateInterval 'nixenv' && return 0
