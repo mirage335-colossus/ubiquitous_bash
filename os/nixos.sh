@@ -76,7 +76,7 @@ _test_nix-env_enter() {
 	_test_nix-env "$@"
 }
 _test_nix-env() {
-	# Cygwin implies other package managers (ie. 'chocolatey').
+	# Cygwin implies other package managers (ie. 'chocolatey'), NOT nix .
 	_if_cygwin && return 0
 	
 	# Root installation of nixenv is not expected either necessary or possible.
@@ -84,6 +84,7 @@ _test_nix-env() {
 	then
 		local sudoAvailable
 		sudoAvailable=false
+		sudoAvailable=$(sudo -n echo true 2> /dev/null)
 		
 		local currentUser
 		currentUser="$custom_user"
@@ -93,7 +94,7 @@ _test_nix-env() {
 		currentScript="$scriptAbsoluteLocation"
 		[[ -e /home/"$currentUser"/ubiquitous_bash.sh ]] && currentScript=/home/"$currentUser"/ubiquitous_bash.sh
 		
-		[[ -e /home/"$currentUser" ]] && [[ $(sudo -n -u "$currentUser" id -u | tr -dc '0-9') != "0" ]] && sudo -n -u "$currentUser" "$currentScript" _test_nix-env_enter
+		[[ -e /home/"$currentUser" ]] && [[ "$sudoAvailable" == "true" ]] && [[ $(sudo -n -u "$currentUser" id -u | tr -dc '0-9') != "0" ]] && sudo -n -u "$currentUser" "$currentScript" _test_nix-env_enter
 		return
 	fi
 	
