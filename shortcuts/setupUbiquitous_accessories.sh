@@ -79,9 +79,14 @@ _setupUbiquitous_accessories_bashrc() {
 	
 	_setupUbiquitous_accessories_bashrc-cloud_bin "$@"
 	
+	_setupUbiquitous_accessories_here-nixenv-bashrc "$@"
+	
+	#echo true
+	
+	# WARNING: Python must remain last. Failure to hook python is a failure that must show as an error exit status from the users profile (a red "1" on the first line of first visual prompt command prompt).
 	_setupUbiquitous_accessories_here-python_bashrc "$@"
 	
-	_setupUbiquitous_accessories_here-nixenv-bashrc "$@"
+	#echo true
 }
 
 
