@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-[[ "$PATH" != *"/usr/local/bin"* ]] && export PATH=/usr/local/bin:"$PATH"
-[[ "$PATH" != *"/usr/bin"* ]] && export PATH=/usr/bin:"$PATH"
-[[ "$PATH" != *"/bin:"* ]] && export PATH=/bin:"$PATH"
+[[ "$PATH" != *"/usr/local/bin"* ]] && [[ -e "/usr/local/bin" ]] && export PATH=/usr/local/bin:"$PATH"
+[[ "$PATH" != *"/usr/bin"* ]] && [[ -e "/usr/bin" ]] && export PATH=/usr/bin:"$PATH"
+[[ "$PATH" != *"/bin:"* ]] && [[ -e "/bin" ]] && export PATH=/bin:"$PATH"
 
 if [[ "$ub_setScriptChecksum" != "" ]]
 then
@@ -35,7 +35,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
-export ub_setScriptChecksum_header='2283303528'
+export ub_setScriptChecksum_header='2591634041'
 export ub_setScriptChecksum_contents='187682778'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
