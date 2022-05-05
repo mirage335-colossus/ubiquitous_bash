@@ -1,6 +1,34 @@
 #cloud
 
 
+_sshnokey_sequence() {
+	local functionEntryPWD
+	functionEntryPWD="$PWD"
+	_start
+	
+	mkdir -p "$bootTmp"/.sshnokey_"$sessionid"
+	chmod 0700 "$bootTmp"/.sshnokey_"$sessionid"
+	
+	cd "$bootTmp"/.sshnokey_"$sessionid"/
+	ssh-keygen -b 4096 -t rsa -N "" -f "$bootTmp"/.sshnokey_"$sessionid"/id_rsa_nologin_bogus -C nologin@bogus
+	rm -f "$bootTmp"/.sshnokey_"$sessionid"/id_rsa_nologin_bogus
+	cat "$bootTmp"/.sshnokey_"$sessionid"/id_rsa_nologin_bogus.pub
+	
+	_safeRMR "$bootTmp"/.sshnokey_"$sessionid"
+	
+	
+	cd "$functionEntryPWD"
+	_stop
+}
+
+_sshnokey() {
+	_sshnokey_sequence "$@"
+}
+sshnokey() {
+	_sshnokey "$@"
+}
+
+
 # SSH, Force. Forcibly deletes old host key. Useful after 'rebuilding' a VPS using the same IP address, etc.
 # DANGER: Obiously, this is for brief cloud experiments with newly constructed computers for which security is either unimportant or all relavant other conditions are known.
 _sshf() {

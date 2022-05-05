@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='489588845'
+export ub_setScriptChecksum_contents='2644137271'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -22956,6 +22956,34 @@ _test_terraform() {
 }
 
 #cloud
+
+
+_sshnokey_sequence() {
+	local functionEntryPWD
+	functionEntryPWD="$PWD"
+	_start
+	
+	mkdir -p "$bootTmp"/.sshnokey_"$sessionid"
+	chmod 0700 "$bootTmp"/.sshnokey_"$sessionid"
+	
+	cd "$bootTmp"/.sshnokey_"$sessionid"/
+	ssh-keygen -b 4096 -t rsa -N "" -f "$bootTmp"/.sshnokey_"$sessionid"/id_rsa_nologin_bogus -C nologin@bogus
+	rm -f "$bootTmp"/.sshnokey_"$sessionid"/id_rsa_nologin_bogus
+	cat "$bootTmp"/.sshnokey_"$sessionid"/id_rsa_nologin_bogus.pub
+	
+	_safeRMR "$bootTmp"/.sshnokey_"$sessionid"
+	
+	
+	cd "$functionEntryPWD"
+	_stop
+}
+
+_sshnokey() {
+	_sshnokey_sequence "$@"
+}
+sshnokey() {
+	_sshnokey "$@"
+}
 
 
 # SSH, Force. Forcibly deletes old host key. Useful after 'rebuilding' a VPS using the same IP address, etc.
