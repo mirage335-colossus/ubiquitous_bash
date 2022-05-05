@@ -743,9 +743,9 @@ if false; then true; # -->
 <!-- # --></p>
 <!--
 fi
- '_heading2' 'rclone, croc'
+ '_heading2' 'rclone, croc, sshf, vncf'
 if false; then true; # -->
-<!-- # --><h2>rclone, croc</h2>
+<!-- # --><h2>rclone, croc, sshf, vncf</h2>
 <!--
 fi
  '_paragraph_begin'
@@ -772,6 +772,30 @@ scriptedIllustrator_markup_uk4uPhB663kVcygT0q --><!-- # --><pre style="margin-to
 Automatic installation through _test , _getMinimal , etc, for GNU/Linux, 
 etc. Normally usable through Cygwin/MSW if in path (ie. if installed by 
 &#39;chocolatey&#39;).
+
+<!-- # --></pre><!-- scriptedIllustrator_markup_uk4uPhB663kVcygT0q
+'
+ '_o' '_messagePlain_probe_noindent' 'sshf user@IPaddr'
+if false; then true; # -->
+<!-- # --><pre style="-webkit-print-color-adjust: exact;background-color:#848484;margin-top: 0px;margin-bottom: 0px;white-space: pre-wrap;">
+<!-- # --><span style="color:#1818b2;background-color:#848484;">sshf user@IPaddr</span>
+<!-- # --></pre>
+<!--
+fi
+ '_o' '_messagePlain_probe_noindent' 'vncf IPaddr'
+if false; then true; # -->
+<!-- # --><pre style="-webkit-print-color-adjust: exact;background-color:#848484;margin-top: 0px;margin-bottom: 0px;white-space: pre-wrap;">
+<!-- # --><span style="color:#1818b2;background-color:#848484;">vncf IPaddr</span>
+<!-- # --></pre>
+<!--
+fi
+_t '
+scriptedIllustrator_markup_uk4uPhB663kVcygT0q --><!-- # --><pre style="margin-top: 0px;margin-bottom: 0px;white-space: pre-wrap;">
+Force remote access - vncf in particular will attempt root (ie. display 
+manager GUI) by default, or user session. Especially compatible with 
+&#39;rotten_install&#39; cloud init scripts, and can connect to cloud 
+Server/VPS by reused IP address and SSH public key. Cygwin/MSW users must 
+install native vncviewer from &#39;TigerVNC&#39; installer package .
 <!-- # --></pre><!-- scriptedIllustrator_markup_uk4uPhB663kVcygT0q
 '
  '_paragraph_end'

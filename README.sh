@@ -264,11 +264,16 @@ _o _messagePlain_probe_noindent 'ns'
 _t 'Automatic installation through _test , _getMinimal , etc, for GNU/Linux, etc. Shortcut functions for &#39;nix-shell&#39; , etc .'
 _paragraph_end
 
-_heading2 'rclone, croc'
+_heading2 'rclone, croc, sshf, vncf'
 _paragraph_begin
 _o _messagePlain_probe_noindent 'rclone'
 _o _messagePlain_probe_noindent 'croc'
-_t 'Automatic installation through _test , _getMinimal , etc, for GNU/Linux, etc. Normally usable through Cygwin/MSW if in path (ie. if installed by &#39;chocolatey&#39;).'
+_t 'Automatic installation through _test , _getMinimal , etc, for GNU/Linux, etc. Normally usable through Cygwin/MSW if in path (ie. if installed by &#39;chocolatey&#39;).
+
+'
+_o _messagePlain_probe_noindent 'sshf user@IPaddr'
+_o _messagePlain_probe_noindent 'vncf IPaddr'
+_t 'Force remote access - vncf in particular will attempt root (ie. display manager GUI) by default, or user session. Especially compatible with &#39;rotten_install&#39; cloud init scripts, and can connect to cloud Server/VPS by reused IP address and SSH public key. Cygwin/MSW users must install native vncviewer from &#39;TigerVNC&#39; installer package .'
 _paragraph_end
 
 

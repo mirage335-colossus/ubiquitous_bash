@@ -226,12 +226,17 @@ __ NixOS (nix-shell) __
 Automatic installation through _test , _getMinimal , etc, for GNU/Linux, etc. Shortcut functions for &#39;nix-shell&#39; , etc .
 
 
-__ rclone, croc __
+__ rclone, croc, sshf, vncf __
 
 [0;37;100m[0;34mrclone [0m[0m
 [0;37;100m[0;34mcroc [0m[0m
 
 Automatic installation through _test , _getMinimal , etc, for GNU/Linux, etc. Normally usable through Cygwin/MSW if in path (ie. if installed by &#39;chocolatey&#39;).
+
+[0;37;100m[0;34msshf user@IPaddr [0m[0m
+[0;37;100m[0;34mvncf IPaddr [0m[0m
+
+Force remote access - vncf in particular will attempt root (ie. display manager GUI) by default, or user session. Especially compatible with &#39;rotten_install&#39; cloud init scripts, and can connect to cloud Server/VPS by reused IP address and SSH public key. Cygwin/MSW users must install native vncviewer from &#39;TigerVNC&#39; installer package .
 
 
 
