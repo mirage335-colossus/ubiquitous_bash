@@ -131,6 +131,9 @@ _generate_compile_bash-compressed_procedure() {
 	#sed -i 'N;s/\n//'
 	
 	echo "#!/usr/bin/env bash" > "$scriptAbsoluteFolder"/"$1"_compressed.sh
+	echo '[[ "$PATH" != *"/usr/local/bin"* ]] && [[ -e "/usr/local/bin" ]] && export PATH=/usr/local/bin:"$PATH"
+[[ "$PATH" != *"/usr/bin"* ]] && [[ -e "/usr/bin" ]] && export PATH=/usr/bin:"$PATH"
+[[ "$PATH" != *"/bin:"* ]] && [[ -e "/bin" ]] && export PATH=/bin:"$PATH"' >> "$scriptAbsoluteFolder"/"$1"_compressed.sh
 	
 	_compressed_criticalDep() {
 		! _getAbsolute_criticalDep && exit 1
