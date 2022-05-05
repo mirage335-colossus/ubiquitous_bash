@@ -728,7 +728,6 @@ _custom() {
 	export custom_user="user"
 	
 	
-	# At least a minimal amount of memory or swap. Mostly a workaround for very few Ubuntu packages not installing otherwise.
 	# Such use of swap has been found to not necessarily cause any significant delay, at least if the storage is SSD.
 	local current_hostMemoryTotal
 	if [[ -e "/proc/meminfo" ]]
