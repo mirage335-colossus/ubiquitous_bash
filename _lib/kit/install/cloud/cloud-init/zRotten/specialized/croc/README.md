@@ -1,5 +1,5 @@
 
-Paste one of these three scripts as 'user data' (or similar) to a cloud provider. A 'croc' relay will run on port 9009 within approximately two minutes, and will also run after reboot if necessary. No login necessary.
+Paste one of these three scripts as 'user data' (or similar) to a cloud provider, Debian, Ubuntu, or similar server OS. A 'croc' relay will run on port 9009 within approximately two minutes, and will also run after reboot if necessary. No login necessary.
 
 
 croc --relay '<IPv4_Address>' --relay6 '<IPv6_Address>' send ./file
