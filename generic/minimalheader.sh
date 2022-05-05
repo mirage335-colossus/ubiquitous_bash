@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+[[ "$PATH" != *"/usr/local/bin"* ]] && export PATH=/usr/local/bin:"$PATH"
+[[ "$PATH" != *"/usr/bin"* ]] && export PATH=/usr/bin:"$PATH"
+[[ "$PATH" != *"/bin:"* ]] && export PATH=/bin:"$PATH"
+
 if [[ "$ub_setScriptChecksum" != "" ]]
 then
 	export ub_setScriptChecksum=
