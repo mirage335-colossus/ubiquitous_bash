@@ -500,6 +500,8 @@ then
 		
 		_at_userMSW_probeCmd_discoverResource-cygwinNative-ProgramFiles 'kate' 'Kate/bin' false > /dev/null 2>&1
 	fi
+	
+	export override_cygwin_vncviewer="true"
 fi
 
 # WARNING: What is otherwise considered bad practice may be accepted to reduce substantial MSW/Cygwin inconvenience .

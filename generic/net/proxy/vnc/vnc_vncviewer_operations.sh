@@ -2,21 +2,26 @@ _vncviewer_operations() {
 	_messagePlain_nominal 'init: _vncviewer_operations'
 	
 	local msw_vncPasswdFile
-	msw_vncPasswdFile=$(_slashBackToForward "$vncPasswdFile")
-	msw_vncPasswdFile='C:\cygwin64'"$vncPasswdFile"
+	#msw_vncPasswdFile=$(_slashBackToForward "$vncPasswdFile")
+	#msw_vncPasswdFile='C:\cygwin64'"$vncPasswdFile"
+	msw_vncPasswdFile=$(cygpath -w "$vncPasswdFile")
 	
 	local current_vncPasswdFile
 	current_vncPasswdFile="$vncPasswdFile"
 	
-	[[ "$override_cygwin_vncviewer" == 'true' ]] && type '/cygdrive/c/Program Files/TigerVNC/vncviewer.exe' > /dev/null 2>&1 && uname -a | grep -i cygwin > /dev/null 2>&1 && current_vncPasswdFile="$msw_vncPasswdFile"
-	[[ "$override_cygwin_vncviewer" == 'true' ]] && type '/cygdrive/c/Program Files (x86)/TigerVNC/vncviewer.exe' > /dev/null 2>&1 && uname -a | grep -i cygwin > /dev/null 2>&1 && current_vncPasswdFile="$msw_vncPasswdFile"
 	
 	
+	# WARNING: May be untested.
 	#Typically set in '~/.bashrc' for *unusual* machines which have problems using vncviewer under X11.
 	#https://steamcommunity.com/app/382110/discussions/0/1741101364304281184/
 	if [[ "$vncviewer_manual" == 'true' ]]
 	then
 		_messagePlain_good 'assume: vncviewer (TigerVNC)'
+		
+		
+		[[ "$override_cygwin_vncviewer" == 'true' ]] && type '/cygdrive/c/Program Files/TigerVNC/vncviewer.exe' > /dev/null 2>&1 && uname -a | grep -i cygwin > /dev/null 2>&1 && current_vncPasswdFile="$msw_vncPasswdFile"
+		[[ "$override_cygwin_vncviewer" == 'true' ]] && type '/cygdrive/c/Program Files (x86)/TigerVNC/vncviewer.exe' > /dev/null 2>&1 && uname -a | grep -i cygwin > /dev/null 2>&1 && current_vncPasswdFile="$msw_vncPasswdFile"
+		
 		
 		[[ "$vncviewer_startFull" == "true" ]] && vncviewerArgs+=(-FullScreen)
 		
@@ -64,7 +69,7 @@ _vncviewer_operations() {
 	_messagePlain_nominal 'Detecting and launching vncviewer.'
 	
 	#Cygwin, Overriden to Native TigerVNC
-	if [[ "$override_cygwin_vncviewer" == 'true' ]] && ( ( type '/cygdrive/c/Program Files/TigerVNC/vncviewer.exe' > /dev/null 2>&1 && uname -a | grep -i cygwin > /dev/null 2>&1 ) || ( type '/cygdrive/c/Program Files (x86)/TigerVNC/vncviewer.exe' > /dev/null 2>&1 && uname -a | grep -i cygwin > /dev/null 2>&1 ) )
+	if [[ "$override_cygwin_vncviewer" == 'true' ]] || ( ( type '/cygdrive/c/Program Files/TigerVNC/vncviewer.exe' > /dev/null 2>&1 && uname -a | grep -i cygwin > /dev/null 2>&1 ) || ( type '/cygdrive/c/Program Files (x86)/TigerVNC/vncviewer.exe' > /dev/null 2>&1 && uname -a | grep -i cygwin > /dev/null 2>&1 ) )
 	then
 		_messagePlain_good 'found: vncviewer (MSW)'
 		
@@ -86,7 +91,8 @@ _vncviewer_operations() {
 		
 		#tmux new-window bash -c '"/cygdrive/c/Program Files (x86)/TigerVNC/vncviewer.exe" -DotWhenNoCursor -passwd "'$current_vncPasswdFile'" localhost:"'$vncPort'" > ~/.sshtmp/vncerr 2>&1'
 		
-		if ! vncviewer -DotWhenNoCursor -passwd "$current_vncPasswdFile" localhost:"$vncPort" "${vncviewerArgs[@]}" "$@"
+		_messagePlain_probe _userMSW vncviewer -DotWhenNoCursor -passwd "$current_vncPasswdFile" localhost:"$vncPort" "${vncviewerArgs[@]}" "$@"
+		if ! _userMSW vncviewer -DotWhenNoCursor -passwd "$current_vncPasswdFile" localhost:"$vncPort" "${vncviewerArgs[@]}" "$@"
 		then
 			_messagePlain_bad 'fail: vncviewer'
 			stty echo > /dev/null 2>&1
