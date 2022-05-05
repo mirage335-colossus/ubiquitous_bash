@@ -153,64 +153,542 @@ true
 
 
 #####Entry
-#compressedFunctions_uk4uPhB663kVcygT0q
-current_internal_CompressedFunctions_bytes="7613"
-current_internal_CompressedFunctions_cksum="3205886710"
-current_internal_CompressedFunctions="
-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"
-! echo "$current_internal_CompressedFunctions" | base64 -d | xz -d > /dev/null && exit 1
-source <( echo "$current_internal_CompressedFunctions" | base64 -d | xz -d )
-unset current_internal_CompressedFunctions ; unset current_internal_CompressedFunctions_cksum ; unset current_internal_CompressedFunctions_bytes
-#compressedFunctions_uk4uPhB663kVcygT0q
+# ###
 
+
+
+_here_rottenScript_bash_declareFunctions() {
+	declare -f _here_rottenScript_bash_declareFunctions
+	declare -f _here_rottenScript_bash_compressedFunctions
+	declare -f _here_rottenScript_bash
+	declare -f _write_rottenScript_bash
+	declare -f _indent_base64
+	declare -f _here_rottenScript_cloudConfig
+	declare -f _write_rottenScript_cloudConfig
+	declare -f _enter
+	declare -f _custom_write_sshdConfig
+	declare -f _custom_write_sudoers
+	declare -f _custom_construct_permissions_user
+	declare -f _custom_construct_user
+	declare -f _custom
+	declare -f _install_and_run_package
+	declare -f _install
+	declare -f _install_and_run
+	declare -f _run
+	declare -f _test_prog
+	declare -f _main
+}
+
+_here_rottenScript_bash_compressedFunctions() {
+	local current_internal_CompressedFunctions
+	current_internal_CompressedFunctions=$(_here_rottenScript_bash_declareFunctions | xz -z -e9 -C crc64 --threads=1 | base64 -w 156 | fold -w 156 -s)
+	local current_internal_CompressedFunctions_cksum
+	current_internal_CompressedFunctions_cksum=$(echo "$current_internal_CompressedFunctions" | env CMD_ENV=xpg4 cksum | cut -f1 -d\  | tr -dc '0-9')
+	local current_internal_CompressedFunctions_bytes
+	current_internal_CompressedFunctions_bytes=$(echo "$current_internal_CompressedFunctions" | wc -c | tr -dc '0-9')
+	
+	echo '#compressedFunctions_uk4uPhB663kVcygT0q'
+	
+	echo 'current_internal_CompressedFunctions_bytes='\""$current_internal_CompressedFunctions_bytes"\"
+	echo 'current_internal_CompressedFunctions_cksum='\""$current_internal_CompressedFunctions_cksum"\"
+	echo 'current_internal_CompressedFunctions='\"
+	echo "$current_internal_CompressedFunctions"\"
+	echo '! echo "$current_internal_CompressedFunctions" | base64 -d | xz -d > /dev/null && exit 1'
+	
+	echo 'source <( echo "$current_internal_CompressedFunctions" | base64 -d | xz -d )'
+	#echo 'eval "$( echo "$current_internal_CompressedFunctions" | base64 -d | xz -d )"'
+	
+	echo 'unset current_internal_CompressedFunctions ; unset current_internal_CompressedFunctions_cksum ; unset current_internal_CompressedFunctions_bytes'
+	
+	echo '#compressedFunctions_uk4uPhB663kVcygT0q'
+	echo
+}
+
+
+_here_rottenScript_bash() {
+	local currentAttachmentLine
+	
+	currentAttachmentLine=`awk '/^#####Entry/ {print NR + 1; exit 0; }' "$scriptAbsoluteLocation"`
+	let currentAttachmentLine="$currentAttachmentLine - 1"
+	head -n$currentAttachmentLine "$scriptAbsoluteLocation"
+	#echo $currentAttachmentLine
+	
+	
+	
+	
+	
+	_here_rottenScript_bash_compressedFunctions
+	
+	
+	
+	
+	
+	currentAttachmentLine=`awk '/^#__FOOTER_uk4uPhB663kVcygT0q_FOOTER__/ {print NR + 1; exit 0; }' "$scriptAbsoluteLocation"`
+	#let currentAttachmentLine="$currentAttachmentLine - 1"
+	tail -n+$currentAttachmentLine "$scriptAbsoluteLocation"
+	#echo $currentAttachmentLine
+}
+
+_write_rottenScript_bash() {
+	_messageNormal 'init: rotten: _write_rottenScript_cloudConfig'
+	
+	_here_rottenScript_bash "$scriptAbsoluteLocation" > "$scriptAbsoluteFolder"/rotten_install_compressed.sh
+	chmod u+x "$scriptAbsoluteFolder"/rotten_install_compressed.sh
+}
+
+
+_indent_base64() {
+	local currentLine
+	while read -r currentLine
+	do
+		_safeEcho_newline '    '"$currentLine"
+	done
+}
+
+_here_rottenScript_cloudConfig() {
+	cat << 'CZXWXcRMTo8EmM8i4d'
+#cloud-config
+
+groups:
+  - users
+  - wireshark
+  - cdrom
+  - floppy
+  - audio
+  - dip
+  - video
+  - plugdev
+  - netdev
+  - bluetooth
+  - lpadmin
+  - scanner
+  - disk
+  - dialout
+  - vboxusers
+  - libvirt
+  - docker
+
+packages:
+  - sudo
+  - git
+  - xz-utils
+
+users:
+  - default
+  - name: user
+    gecos: user
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    primary_group: user
+    groups: users, sudo, wheel, wireshark, cdrom, floppy, audio, dip, video, plugdev, netdev, bluetooth, lpadmin, scanner, disk, dialout, vboxusers, libvirt, docker
+    lock_passwd: true
+    shell: /bin/bash
+
+timezone: US/Eastern
+locale: en_US.UTF-8
+locale_configfile: /etc/default/locale
+
+swap:
+    filename: /swapfile
+    size: 1610612736
+
+#hostname: hostname
+ssh_pwauth: false
+#disable_root: true
+
+
+write_files:
+- encoding: gzip
+  content: !!binary |
+CZXWXcRMTo8EmM8i4d
+	
+	# | base64 -d | xz -d
+	#base64 -w 0 | tr -d '\n'
+	#cat "$scriptAbsoluteLocation" | xz -z -e9 -C crc64 --threads=1 | base64 -w 156 | fold -w 156 -s >> "$scriptAbsoluteLocation".xz.base64
+	cat "$scriptAbsoluteLocation" | gzip -v9 2>/dev/null | base64 -w 156 | fold -w 156 -s | _indent_base64
+	
+	
+	cat << 'CZXWXcRMTo8EmM8i4d'
+  path: /root/rottenScript.sh
+  permissions: '0755'
+
+
+
+runcmd:
+  - localectl --no-convert set-x11-keymap us pc104
+  - [ mkdir, -p, "/etc/skel/.ssh" ]
+  - cat "/root/.ssh/authorized_keys" >> /etc/skel/.ssh/authorized_keys
+  - [ mkdir, -p, "/home/user/.ssh" ]
+  - cat "/root/.ssh/authorized_keys" >> /home/user/.ssh/authorized_keys
+  - [ chown, "-R", "user:user", /home/user]
+  - [ apt-get, -y, update ]
+  - [ apt-get, -y, install, git, sudo ]
+  - [ apt-get, -y, install, xz-utils ]
+  - echo '----------------------------------------'
+  - sudo -n -u root bash -c "cd ; /root/rottenScript.sh _install_and_run"
+
+
+CZXWXcRMTo8EmM8i4d
+}
+_write_rottenScript_cloudConfig() {
+	_messageNormal 'init: rotten: _write_rottenScript_cloudConfig'
+	
+	_here_rottenScript_cloudConfig "$scriptAbsoluteLocation" > "$scriptAbsoluteFolder"/cloud-config.cfg
+}
+
+
+_enter() {
+	_messageNormal 'init: rotten: _enter'
+	
+	_write_rottenScript_cloudConfig "$@"
+	
+	_write_rottenScript_bash "$@"
+	
+	
+	
+	( [[ "$profileScriptLocation" != "" ]] || [[ "$ub_import" == "true" ]] || env | grep -i '^kde\|kde$' > /dev/null 2>&1 || [[ "$XDG_SESSION_DESKTOP" != "" ]] || [[ "$XDG_CURRENT_DESKTOP" != "" ]] ) && return 0
+	
+	_messageError 'if you see this in an INTERACTIVE TERMINAL then CEASE NOW!!!'
+	_messagePlain_warn 'WARNING: will drastically reconfigure OS/userspace'
+	echo 'NOT for computers with existing users!'
+	echo 'Ctrl+c repeatedly to cancel!'
+	
+	echo 'wait: 25seconds: Ctrl+c repeatedly to cancel NOW!!!'
+	local currentIteration
+	for currentIteration in $(seq 1 25)
+	do
+		sleep 1
+	done
+	_messagePlain_warn 'NOT cancelled!'
+	
+	# ATTENTION: Uncomment if copying this script directly instead of as 'cloud init' derivative.
+	( [[ "$profileScriptLocation" != "" ]] || [[ "$ub_import" == "true" ]] ) && return 0
+	_install_and_run "$@"
+	_custom_core_drop "$@"
+}
+
+
+_custom_write_sshdConfig() {
+	_messageNormal 'init: rotten: _custom_write_sshdConfig'
+	
+	sudo -n mkdir -p /etc/ssh
+	
+	echo '
+Include /etc/ssh/sshd_config.d/*.conf
+
+PermitRootLogin prohibit-password
+
+ChallengeResponseAuthentication no
+
+# If you just want the PAM account and session checks to run without
+# PAM authentication, then enable this but set PasswordAuthentication
+# and ChallengeResponseAuthentication to  no .
+UsePAM yes
+
+X11Forwarding yes
+
+PrintMotd no
+
+AcceptEnv LANG LC_*
+
+Subsystem sftp	/usr/lib/openssh/sftp-server
+
+PasswordAuthentication no
+
+AllowUsers root user
+' | sudo -n tee /etc/ssh/sshd_config > /dev/null
+	
+	
+	
+}
+
+# ATTENTION: Override (rarely, if necessary) .
+_custom_write_sudoers() {
+	_messageNormal 'init: rotten: _custom_write_sudoers'
+	cat << CZXWXcRMTo8EmM8i4d | sudo -n tee -a /etc/sudoers > /dev/null
+#_____
+#Defaults	env_reset
+#Defaults	mail_badpass
+#Defaults	secure_path="/root/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+root	ALL=(ALL:ALL) ALL
+#user   ALL=(ALL:ALL) NOPASSWD: ALL
+#pi ALL=(ALL:ALL) NOPASSWD: ALL
+
+$custom_user ALL=(ALL:ALL) NOPASSWD: ALL
+
+%sudo   ALL=(ALL:ALL) NOPASSWD: ALL
+%wheel   ALL=(ALL:ALL) NOPASSWD: ALL
+#%sudo	ALL=(ALL:ALL) ALL
+
+CZXWXcRMTo8EmM8i4d
+}
+
+_custom_construct_permissions_user() {
+	_messageNormal 'init: rotten: _custom_construct_permissions_user'
+	local current_user_uid
+	current_user_uid=$(sudo -n id -u "$1" 2>/dev/null)
+	
+	_messagePlain_probe 'chown '"$current_user_uid":"$current_user_uid" /home/"$1"
+	
+	if [[ "$1" == "root" ]] || [[ "$current_user_uid" == '0' ]]
+	then
+		sudo -n chmod 700 /root
+		sudo -n chown -R "$current_user_uid":"$current_user_uid" /root
+		return
+	fi
+	
+	sudo -n chmod 700 /home/"$1"
+	sudo -n chown -R "$current_user_uid":"$current_user_uid" /home/"$1"
+}
+
+# "$1" == username
+_custom_construct_user() {
+	_messageNormal 'init: rotten: _custom_construct_user'
+	
+	_messagePlain_probe 'user= '"$1"
+	! sudo -n id -u "$1" > /dev/null 2>&1 && sudo -n useradd -m "$1"
+	! sudo -n id -u "$1" > /dev/null 2>&1 && _messageError 'FAIL: User NOT included!' && _stop 1
+	
+	_custom_construct_permissions_user "$1"
+}
+
+_custom() {
+	_messageNormal 'init: rotten: _custom'
+	true
+	
+	export custom_user="user"
+	
+	
+	# Such minimal use of swap has been found to not necessarily cause any significant delay, at least if the storage is SSD.
+	local current_hostMemoryTotal
+	if [[ -e "/proc/meminfo" ]]
+	then
+		current_hostMemoryTotal=$(cat /proc/meminfo | grep MemTotal | tr -cd '[[:digit:]]')
+	else
+		current_hostMemoryTotal="128000"
+	fi
+	if [[ "$current_hostMemoryTotal" -lt "2512000" ]] && [[ ! -e /swapfile ]]
+	then
+		sudo -n dd if=/dev/zero of=/swapfile bs=1M count=1536
+		sudo -n chmod 0600 /swapfile
+		sudo -n mkswap /swapfile
+		sudo -n swapon /swapfile
+		echo '/swapfile swap swap defaults 0 0' | sudo -n tee -a /etc/fstab
+	fi
+	
+	_custom_write_sshdConfig
+	
+	_custom_write_sudoers
+	
+	
+	#US/Eastern
+	sudo -n timedatectl set-timezone US/Eastern
+	#en_US.UTF-8
+	sudo -n update-locale LANG=en_US.UTF-8 LANGUAGE
+	sudo -n localectl set-locale LANG=en_US.UTF-8
+	localectl --no-convert set-x11-keymap us pc104
+	
+	_custom_construct_user root
+	# WARNING: Sets random password, intentionally, to lockout password login. SSH key or similar *required*.
+	# ATTENTION: Override (if necessary).
+	#echo 'root:'$(_uid 12) | sudo -n chpasswd
+	#echo 'root:'$(_uid 32) | sudo -n chpasswd
+	sudo -n usermod -s /bin/bash root
+	
+	# If blank root password, set random password.
+	# https://serverfault.com/questions/240957/how-find-user-with-empty-password-in-linux
+	if ! sudo -n getent shadow | grep 'root:\$' | cut -d':' -f 2 | grep '\w' -c -m 1 > /dev/null
+	then
+		echo "$custom_user"':'$(_uid 12) | sudo -n chpasswd
+		echo "$custom_user"':'$(_uid 32) | sudo -n chpasswd
+	fi
+	
+	_custom_construct_user "$custom_user"
+	# ATTENTION: Override (if necessary).
+	# WARNING: Sets random password, intentionally, to lockout password login. SSH key or similar *required*.
+	echo "$custom_user"':'$(_uid 12) | sudo -n chpasswd
+	echo "$custom_user"':'$(_uid 32) | sudo -n chpasswd
+	sudo -n usermod -s /bin/bash "$custom_user"
+	
+	
+	groupadd users
+	groupadd wireshark
+	groupadd cdrom
+	groupadd floppy
+	groupadd audio
+	groupadd dip
+	groupadd video
+	groupadd plugdev
+	groupadd netdev
+	groupadd bluetooth
+	groupadd lpadmin
+	groupadd scanner
+	groupadd disk
+	groupadd dialout
+	groupadd vboxusers
+	groupadd libvirt
+	groupadd docker
+	
+	
+	# ATTENTION: Some of these commands may fail. This is normal.
+	sudo -n usermod -a -G sudo "$custom_user"
+	sudo -n usermod -a -G wheel "$custom_user"
+	sudo -n usermod -a -G wireshark "$custom_user"
+	
+	sudo -n usermod -a -G users "$custom_user"
+	
+	sudo -n usermod -a -G cdrom "$custom_user"
+	sudo -n usermod -a -G floppy "$custom_user"
+	sudo -n usermod -a -G audio "$custom_user"
+	sudo -n usermod -a -G dip "$custom_user"
+	sudo -n usermod -a -G video "$custom_user"
+	sudo -n usermod -a -G plugdev "$custom_user"
+	sudo -n usermod -a -G netdev "$custom_user"
+	sudo -n usermod -a -G bluetooth "$custom_user"
+	sudo -n usermod -a -G lpadmin "$custom_user"
+	sudo -n usermod -a -G scanner "$custom_user"
+	
+	sudo -n usermod -a -G disk "$custom_user"
+	sudo -n usermod -a -G dialout "$custom_user"
+	sudo -n usermod -a -G lpadmin "$custom_user"
+	sudo -n usermod -a -G scanner "$custom_user"
+	sudo -n usermod -a -G vboxusers "$custom_user"
+	sudo -n usermod -a -G libvirt "$custom_user"
+	sudo -n usermod -a -G docker "$custom_user"
+	
+	
+	
+	
+	
+	mkdir -p "/etc/skel/.ssh"
+	cat "/root/.ssh/authorized_keys" >> /etc/skel/.ssh/authorized_keys
+	mkdir -p /home/"$custom_user""/.ssh"
+	cat "/root/.ssh/authorized_keys" >> /home/"$custom_user"/.ssh/authorized_keys
+}
+
+
+_install_and_run_package() {
+	if ( [[ -e /etc/issue ]] && cat /etc/issue | grep 'Debian\|Raspbian' > /dev/null 2>&1 ) || ( [[ -e /etc/issue ]] && cat /etc/issue | grep 'Ubuntu' > /dev/null 2>&1 )
+	then
+		sudo -n apt-get -y update
+		sudo -n apt-get -y install "$@"
+		apt-get -y update
+		apt-get -y install "$@"
+	fi
+}
+
+_install() {
+	_messageNormal 'init: rotten: _install'
+	
+	! _mustBeRoot && exit 1
+	
+	! type -p sudo && _install_and_run_package sudo
+	_install_and_run_package git
+	! _mustGetSudo && exit 1
+	
+	
+	touch /etc/motd
+	cp -n /etc/motd /etc/motd.bak
+	echo "rotten! WARNING! _install! imminent! reboot may occur!" >> /etc/motd
+	
+	_custom
+	
+	
+	_sep
+	
+	sudo -n cp "$scriptAbsoluteLocation" /home/"$custom_user"/rottenScript.sh
+	sudo -n chown "user:user" "/home/""$custom_user""/rottenScript.sh"
+	sudo -n chmod "700" "/home/""$custom_user""/rottenScript.sh"
+	
+	
+	
+	
+	
+	
+	_sep
+	
+	sudo -n env DEBIAN_FRONTEND=noninteractive apt-get -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" -y upgrade
+	
+	sudo -n -u user bash -c "cd ; mkdir -p "/home/"$custom_user""/Downloads"
+	sudo -n -u user bash -c "cd ; mkdir -p "/home/"$custom_user""/project/_random/_buried"
+	
+	sudo -n -u user bash -c "git config --global pull.rebase false"
+	
+	
+	_sep
+	sleep 20
+	#sudo -n -u user bash -c "cd ; mkdir -p "/home/"$custom_user""/Downloads"
+	#sudo -n -u user bash -c "cd ; cd /home/"$custom_user"/Downloads ; wget https://example.com"
+	#sudo -n -u user bash -c "cd ; mkdir -p /home/"$custom_user"/example"
+	#sudo -n -u user bash -c "cd ; tar zxf "/home/"$custom_user""/Downloads/example.tar.gz"
+	
+	#sudo -n -u user bash -c "cd ; ./example.sh --config"
+	
+	
+	
+	
+	
+	_sep
+	#sleep 20
+	
+	( sudo -n -u user bash -c "crontab -l" ; echo '@reboot cd '/home/"$custom_user"'/ ; '/home/"$custom_user"'/rottenScript.sh _run > /home/'"$custom_user"'/_run.log 2>&1' ) | sudo -n -u user bash -c "crontab -"
+	
+	
+	
+	
+	curl https://getcroc.schollz.com | bash
+	
+	
+	
+	
+	# ATTENTION: DANGER: If necessary, delete !
+	#sudo -n rm -f /home/user/rottenScript.sh
+	
+	sudo -n chmod 700 "$scriptAbsoluteLocation"
+	
+	mv -f /etc/motd.bak /etc/motd
+	uptime
+	wall 'rotten: build complete'
+	#sudo -n reboot
+	_sep
+	#sudo -n -u user bash -c "cd ; "/home/"$custom_user""/rottenScript.sh _run"
+}
+_install_and_run() {
+	_messageNormal 'init: rotten: _install_and_run'
+	_install "$@"
+	sudo -n -u user bash -c "cd ; "/home/"$custom_user""/rottenScript.sh _run"
+}
+
+
+_run() {
+	_messageNormal 'init: rotten: _run'
+	
+	cd
+	
+	croc relay
+}
+
+
+
+
+
+
+_test_prog() {
+	true
+}
+_main() {
+	_messageNormal 'init: rotten: _main'
+	
+	#_start
+	_start scriptLocal_mkdir_disable
+	
+	_collect
+	
+	_enter "$@"
+	
+	_stop
+}
+
+#__FOOTER_uk4uPhB663kVcygT0q_FOOTER__
 if [[ "$1" == '_test' ]]
 then
 	current_deleteScriptLocal="false"

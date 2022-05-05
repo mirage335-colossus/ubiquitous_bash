@@ -864,6 +864,7 @@ _install() {
 	! _mustBeRoot && exit 1
 	
 	! type -p sudo && _install_and_run_package sudo
+	_install_and_run_package git
 	! _mustGetSudo && exit 1
 	
 	
