@@ -1,15 +1,4 @@
 
-
-xset r on (3 times)
-
-
-apt-cyg tigervnc-server
-
-
-type _vncviewer_operations | grep userMSW
-
--
-
 # ATTENTION: NOTICE: See .github/workflows/build.yml , _lib/kit/install/cloud/zSpecial/msw/build_ubcp/build_ubcp_powershell.ps1 .
 
 # Symbolic links are correctly packaged *within* Cygwin (as with 'cygwinOnly' packages), and can be extracted correctly *within* Cygwin. MSW package compression/decompression software (eg. 'tar' from PowerShell, MSW 'zip', 7zip) may NOT commonly support symlinks, causing subtle, severe, deficiencies. Also, Cygwin has a very interesting root filesystem of unusual relative symbolic links by default.
