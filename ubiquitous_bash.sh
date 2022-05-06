@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='2644137271'
+export ub_setScriptChecksum_contents='4169814427'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -9623,6 +9623,27 @@ _getMost_debian11_install() {
 	_getMost_backend_aptGetInstall byobu
 	
 	
+	
+	
+	_getMost_backend_aptGetInstall xorriso
+	_getMost_backend_aptGetInstall squashfs-tools
+	_getMost_backend_aptGetInstall grub-pc-bin
+	_getMost_backend_aptGetInstall grub-efi-amd64-bin
+	_getMost_backend_aptGetInstall mtools
+	_getMost_backend_aptGetInstall mksquashfs
+	_getMost_backend_aptGetInstall grub-mkstandalone
+	_getMost_backend_aptGetInstall mkfs.vfat
+	_getMost_backend_aptGetInstall mkswap
+	_getMost_backend_aptGetInstall mmd
+	_getMost_backend_aptGetInstall mcopy
+	_getMost_backend_aptGetInstall fdisk
+	_getMost_backend_aptGetInstall mkswap
+	
+	
+	
+	
+	
+	
 	_messagePlain_probe _getMost_backend curl croc
 	if ! _getMost_backend type croc > /dev/null 2>&1
 	then
@@ -10128,6 +10149,27 @@ _getMinimal_cloud() {
 	
 	# purge-old-kernels
 	_getMost_backend_aptGetInstall byobu
+	
+	
+	
+	
+	
+	_getMost_backend_aptGetInstall xorriso
+	_getMost_backend_aptGetInstall squashfs-tools
+	_getMost_backend_aptGetInstall grub-pc-bin
+	_getMost_backend_aptGetInstall grub-efi-amd64-bin
+	_getMost_backend_aptGetInstall mtools
+	_getMost_backend_aptGetInstall mksquashfs
+	_getMost_backend_aptGetInstall grub-mkstandalone
+	_getMost_backend_aptGetInstall mkfs.vfat
+	_getMost_backend_aptGetInstall mkswap
+	_getMost_backend_aptGetInstall mmd
+	_getMost_backend_aptGetInstall mcopy
+	_getMost_backend_aptGetInstall fdisk
+	_getMost_backend_aptGetInstall mkswap
+	
+	
+	
 	
 	
 	

@@ -343,17 +343,17 @@ _live() {
 	
 	
 	
+	# WARNING: If the root filesystem has compressed, this would be absurd. Also not expected to affect iso image and such. Better to leave raw image compression to customization of the raw image.
+	#_messagePlain_nominal 'Attempt: _openChRoot'
+	#! _openChRoot && _messageFAIL && _stop 1
 	
-	_messagePlain_nominal 'Attempt: _openChRoot'
-	! _openChRoot && _messageFAIL && _stop 1
+	#_messagePlain_nominal 'Compression: zero blanking'
 	
-	_messagePlain_nominal 'Compression: zero blanking'
+	#sudo -n dd if=/dev/zero of="$globalVirtFS"/zero.del bs=8M
+	#sudo -n rm -f "$globalVirtFS"/zero.del
 	
-	sudo -n dd if=/dev/zero of="$globalVirtFS"/zero.del bs=8M
-	sudo -n rm -f "$globalVirtFS"/zero.del
-	
-	_messagePlain_nominal 'Attempt: _closeChRoot'
-	! _closeChRoot && _messageFAIL && _stop 1
+	#_messagePlain_nominal 'Attempt: _closeChRoot'
+	#! _closeChRoot && _messageFAIL && _stop 1
 	
 	
 	

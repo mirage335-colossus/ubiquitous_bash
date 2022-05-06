@@ -413,6 +413,27 @@ _getMost_debian11_install() {
 	_getMost_backend_aptGetInstall byobu
 	
 	
+	
+	
+	_getMost_backend_aptGetInstall xorriso
+	_getMost_backend_aptGetInstall squashfs-tools
+	_getMost_backend_aptGetInstall grub-pc-bin
+	_getMost_backend_aptGetInstall grub-efi-amd64-bin
+	_getMost_backend_aptGetInstall mtools
+	_getMost_backend_aptGetInstall mksquashfs
+	_getMost_backend_aptGetInstall grub-mkstandalone
+	_getMost_backend_aptGetInstall mkfs.vfat
+	_getMost_backend_aptGetInstall mkswap
+	_getMost_backend_aptGetInstall mmd
+	_getMost_backend_aptGetInstall mcopy
+	_getMost_backend_aptGetInstall fdisk
+	_getMost_backend_aptGetInstall mkswap
+	
+	
+	
+	
+	
+	
 	_messagePlain_probe _getMost_backend curl croc
 	if ! _getMost_backend type croc > /dev/null 2>&1
 	then
