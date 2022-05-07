@@ -1,3 +1,9 @@
+
+WARNING: At least parly OBSOLETE . Much has been copied to upstream 'ubiquitous bash', improved, and some other code may have become part of 'ubDistBuild', also may be improved.
+
+Nonetheless, this 'kit' remains an example illustrating how to modify *existing* raspi, BIOS, VM, etc, images.
+
+
 # Usage
 
 Requires specific files to be installed in specific locations. See "_doc" for brief specifications.

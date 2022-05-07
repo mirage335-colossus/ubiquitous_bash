@@ -38,6 +38,10 @@ _test_live() {
 	# Currently only Debian is supported as a build host.
 	_test_live_debianpackages
 	
+	
+	#_getDep VBoxManage
+	_getDep qemu-img
+	
 	return 0
 }
 
@@ -243,6 +247,20 @@ _live_more_procedure() {
 	
 	
 	
+	_messageNormal '_live_more_procedure: done'
+	
+	#_stop 0
+}
+_live_more_sequence() {
+	_start
+	
+	_live_more_procedure "$@"
+	
+	_stop 0
+}
+
+
+_live_more_convert_vdi() {
 	_messagePlain_nominal '_live_more_procedure: convert: vdi'
 	
 	
@@ -279,28 +297,58 @@ _live_more_procedure() {
 		_messageFAIL
 		_stop 1
 	fi
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	_messageNormal '_live_more_procedure: done'
-	
-	#_stop 0
 }
-_live_more_sequence() {
-	_start
+
+_live_more_convert_vmdk() {
+	_messagePlain_nominal '_live_more_procedure: convert: vmdk'
 	
-	_live_more_procedure "$@"
 	
-	_stop 0
+	# ATTENTION: Delete 'vm-live-more.vmdk.uuid' to force generation of new uuid .
+	local current_UUID
+	current_UUID=$(head -n1 "$scriptLocal"/vm-live-more.vmdk.uuid 2>/dev/null | tr -dc 'a-zA-Z0-9\-')
+	
+	if [[ $(echo "$current_UUID" | wc -c) != 37 ]]
+	then
+		current_UUID=$(_getUUID)
+		rm -f "$scriptLocal"/vm-live-more.vmdk.uuid > /dev/null 2>&1
+		echo "$current_UUID" > "$scriptLocal"/vm-live-more.vmdk.uuid
+	fi
+	
+	
+	rm -f "$scriptLocal"/vm-live-more.vmdk > /dev/null 2>&1
+	
+	! [[ -e "$scriptLocal"/vm-live-more.iso ]] && _messagePlain_bad 'fail: missing: in file' && return 1
+	[[ -e "$scriptLocal"/vm-live-more.vmdk ]] && _messagePlain_request 'request: rm '"$scriptLocal"/vm-live-more.vmdk && return 1
+	
+	_messagePlain_nominal '_img_to_vmdk: convertdd'
+	
+	
+	# https://stackoverflow.com/questions/454899/how-to-convert-flat-raw-disk-image-to-vmdk-for-virtualbox-or-vmplayer
+	if _userVBoxManage convertdd "$scriptLocal"/vm-live-more.iso "$scriptLocal"/vm-live-more-c.vmdk --format VMDK
+	#if qemu-img convert -O vmdk "$scriptLocal"/vm-live-more.iso "$scriptLocal"/vm-live-more-c.vmdk
+	then
+		#_messagePlain_nominal '_img_to_vmdk: closemedium'
+		#_userVBoxManage closemedium "$scriptLocal"/vm-live-more-c.vmdk
+		_messagePlain_nominal '_img_to_vmdk: mv vm-live-more-c.vmdk vm.vmdk'
+		_moveconfirm "$scriptLocal"/vm-live-more-c.vmdk "$scriptLocal"/vm-live-more.vmdk
+		_messagePlain_nominal '_img_to_vmdk: setuuid'
+		
+		
+		#VBoxManage internalcommands sethduuid "$scriptLocal"/vm-live-more.vmdk "$current_UUID"
+		VBoxManage internalcommands sethduuid "$scriptLocal"/vm-live-more.vmdk "$current_UUID"
+		
+		
+		#_messagePlain_request 'request: rm '"$scriptLocal"/vm-live-more.iso
+		_messagePlain_good 'End.'
+		return 0
+	else
+		_messageFAIL
+		_stop 1
+	fi
 }
+
+
+
 
 
 # Extra features for the exceptional situation of storing multiple hibernation states, as would be available through 'suspend/snapshot' features of VirtualBox, VMWare, etc, but for computers which do not have such features.
