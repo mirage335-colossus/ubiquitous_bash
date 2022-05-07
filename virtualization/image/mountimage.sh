@@ -84,7 +84,17 @@ _determine_rawFileRootPartition() {
 	export ubVirtImageEFI=""
 	export ubVirtImagePartition=""
 	
-	[[ "$ubVirtPlatform" == "x64-bios" ]] && export ubVirtImagePartition=p1
+	#[[ "$ubVirtPlatform" == "x64-bios" ]] && export ubVirtImagePartition=p1
+	if [[ "$ubVirtPlatform" == "x64-bios" ]]
+	then
+		export ubVirtImageBIOS=
+		export ubVirtImageEFI=
+		#export ubVirtImageNTFS=
+		#export ubVirtImageRecovery=
+		#export ubVirtImageSwap=
+		export ubVirtImageBoot=
+		export ubVirtImagePartition=p1
+	fi
 	
 	if [[ "$ubVirtPlatform" == "x64-efi" ]]
 	then
@@ -98,7 +108,17 @@ _determine_rawFileRootPartition() {
 		export ubVirtImagePartition=p5
 	fi
 	
-	[[ "$ubVirtPlatform" == "raspbian" ]] && export ubVirtImagePartition=p2
+	#[[ "$ubVirtPlatform" == "raspbian" ]] && export ubVirtImagePartition=p2
+	if [[ "$ubVirtPlatform" == "raspbian" ]]
+	then
+		export ubVirtImageBIOS=
+		export ubVirtImageEFI=
+		#export ubVirtImageNTFS=
+		#export ubVirtImageRecovery=
+		#export ubVirtImageSwap=
+		# ### export ubVirtImageBoot=
+		export ubVirtImagePartition=p2
+	fi
 	
 	
 	#Default.
