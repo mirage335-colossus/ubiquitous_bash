@@ -263,7 +263,7 @@ _mountChRoot_image_x64_efi() {
 	if [[ "$ubVirtImageBoot" != "" ]]
 	then
 		sudo -n mkdir -p "$globalVirtFS"/boot
-		if ! sudo -n mount "$current_imagedev""$ubVirtImageBoot" "$globalVirtFS"/boot/efi
+		if ! sudo -n mount "$current_imagedev""$ubVirtImageBoot" "$globalVirtFS"/boot
 		then
 			_stop 1
 		fi
