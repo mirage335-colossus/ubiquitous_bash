@@ -270,6 +270,8 @@ _mountChRoot_image_x64_prog() {
 	#export ubVirtImageBoot=p4
 	#export ubVirtImagePartition=p5
 	
+	local current_imagedev
+	current_imagedev=$(cat "$scriptLocal"/imagedev)
 	
 	if [[ "$ubVirtImageBoot" != "" ]]
 	then
