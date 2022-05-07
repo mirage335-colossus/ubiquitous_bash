@@ -399,3 +399,96 @@ _createVMfstab() {
 
 
 
+
+
+_vm_convert_vdi() {
+	_messagePlain_nominal '_vm_convert_vdi: convert: vdi'
+	
+	
+	# ATTENTION: Delete 'vm.vdi.uuid' to force generation of new uuid .
+	local current_UUID
+	current_UUID=$(head -n1 "$scriptLocal"/vm.vdi.uuid 2>/dev/null | tr -dc 'a-zA-Z0-9\-')
+	
+	if [[ $(echo "$current_UUID" | wc -c) != 37 ]]
+	then
+		current_UUID=$(_getUUID)
+		rm -f "$scriptLocal"/vm.vdi.uuid > /dev/null 2>&1
+		echo "$current_UUID" > "$scriptLocal"/vm.vdi.uuid
+	fi
+	
+	
+	rm -f "$scriptLocal"/vm.vdi > /dev/null 2>&1
+	
+	! [[ -e "$scriptLocal"/vm.img ]] && _messagePlain_bad 'fail: missing: in file' && return 1
+	[[ -e "$scriptLocal"/vm.vdi ]] && _messagePlain_request 'request: rm '"$scriptLocal"/vm.vdi && return 1
+	
+	_messagePlain_nominal '_img_to_vdi: convertdd'
+	if _userVBoxManage convertdd "$scriptLocal"/vm.img "$scriptLocal"/vm-c.vdi --format VDI
+	then
+		#_messagePlain_nominal '_img_to_vdi: closemedium'
+		#_userVBoxManage closemedium "$scriptLocal"/vm-c.vdi
+		_messagePlain_nominal '_img_to_vdi: mv vm-c.vdi vm.vdi'
+		_moveconfirm "$scriptLocal"/vm-c.vdi "$scriptLocal"/vm.vdi
+		_messagePlain_nominal '_img_to_vdi: setuuid'
+		VBoxManage internalcommands sethduuid "$scriptLocal"/vm.vdi "$current_UUID"
+		#_messagePlain_request 'request: rm '"$scriptLocal"/vm.img
+		_messagePlain_good 'End.'
+		return 0
+	else
+		_messageFAIL
+		_stop 1
+	fi
+}
+
+_vm_convert_vmdk() {
+	_messagePlain_nominal '_vm_convert_vmdk: convert: vmdk'
+	
+	
+	# ATTENTION: Delete 'vm.vmdk.uuid' to force generation of new uuid .
+	local current_UUID
+	current_UUID=$(head -n1 "$scriptLocal"/vm.vmdk.uuid 2>/dev/null | tr -dc 'a-zA-Z0-9\-')
+	
+	if [[ $(echo "$current_UUID" | wc -c) != 37 ]]
+	then
+		current_UUID=$(_getUUID)
+		rm -f "$scriptLocal"/vm.vmdk.uuid > /dev/null 2>&1
+		echo "$current_UUID" > "$scriptLocal"/vm.vmdk.uuid
+	fi
+	
+	
+	rm -f "$scriptLocal"/vm.vmdk > /dev/null 2>&1
+	
+	! [[ -e "$scriptLocal"/vm.img ]] && _messagePlain_bad 'fail: missing: in file' && return 1
+	[[ -e "$scriptLocal"/vm.vmdk ]] && _messagePlain_request 'request: rm '"$scriptLocal"/vm.vmdk && return 1
+	
+	_messagePlain_nominal '_img_to_vmdk: convertdd'
+	
+	
+	# https://stackoverflow.com/questions/454899/how-to-convert-flat-raw-disk-image-to-vmdk-for-virtualbox-or-vmplayer
+	if _userVBoxManage convertdd "$scriptLocal"/vm.img "$scriptLocal"/vm-c.vmdk --format VMDK
+	#if qemu-img convert -O vmdk "$scriptLocal"/vm.img "$scriptLocal"/vm-c.vmdk
+	then
+		#_messagePlain_nominal '_img_to_vmdk: closemedium'
+		#_userVBoxManage closemedium "$scriptLocal"/vm-c.vmdk
+		_messagePlain_nominal '_img_to_vmdk: mv vm-c.vmdk vm.vmdk'
+		_moveconfirm "$scriptLocal"/vm-c.vmdk "$scriptLocal"/vm.vmdk
+		_messagePlain_nominal '_img_to_vmdk: setuuid'
+		
+		
+		#VBoxManage internalcommands sethduuid "$scriptLocal"/vm.vmdk "$current_UUID"
+		VBoxManage internalcommands sethduuid "$scriptLocal"/vm.vmdk "$current_UUID"
+		
+		
+		#_messagePlain_request 'request: rm '"$scriptLocal"/vm.img
+		_messagePlain_good 'End.'
+		return 0
+	else
+		_messageFAIL
+		_stop 1
+	fi
+}
+
+
+
+
+

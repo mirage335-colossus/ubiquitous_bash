@@ -261,7 +261,7 @@ _live_more_sequence() {
 
 
 _live_more_convert_vdi() {
-	_messagePlain_nominal '_live_more_procedure: convert: vdi'
+	_messagePlain_nominal '_live_more_convert_vdi: convert: vdi'
 	
 	
 	# ATTENTION: Delete 'vm-live-more.vdi.uuid' to force generation of new uuid .
@@ -300,7 +300,7 @@ _live_more_convert_vdi() {
 }
 
 _live_more_convert_vmdk() {
-	_messagePlain_nominal '_live_more_procedure: convert: vmdk'
+	_messagePlain_nominal '_live_more_convert_vmdk: convert: vmdk'
 	
 	
 	# ATTENTION: Delete 'vm-live-more.vmdk.uuid' to force generation of new uuid .

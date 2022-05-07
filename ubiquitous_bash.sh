@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='134156604'
+export ub_setScriptChecksum_contents='3108319203'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -15950,6 +15950,99 @@ _createVMfstab() {
 
 
 
+_vm_convert_vdi() {
+	_messagePlain_nominal '_vm_convert_vdi: convert: vdi'
+	
+	
+	# ATTENTION: Delete 'vm.vdi.uuid' to force generation of new uuid .
+	local current_UUID
+	current_UUID=$(head -n1 "$scriptLocal"/vm.vdi.uuid 2>/dev/null | tr -dc 'a-zA-Z0-9\-')
+	
+	if [[ $(echo "$current_UUID" | wc -c) != 37 ]]
+	then
+		current_UUID=$(_getUUID)
+		rm -f "$scriptLocal"/vm.vdi.uuid > /dev/null 2>&1
+		echo "$current_UUID" > "$scriptLocal"/vm.vdi.uuid
+	fi
+	
+	
+	rm -f "$scriptLocal"/vm.vdi > /dev/null 2>&1
+	
+	! [[ -e "$scriptLocal"/vm.img ]] && _messagePlain_bad 'fail: missing: in file' && return 1
+	[[ -e "$scriptLocal"/vm.vdi ]] && _messagePlain_request 'request: rm '"$scriptLocal"/vm.vdi && return 1
+	
+	_messagePlain_nominal '_img_to_vdi: convertdd'
+	if _userVBoxManage convertdd "$scriptLocal"/vm.img "$scriptLocal"/vm-c.vdi --format VDI
+	then
+		#_messagePlain_nominal '_img_to_vdi: closemedium'
+		#_userVBoxManage closemedium "$scriptLocal"/vm-c.vdi
+		_messagePlain_nominal '_img_to_vdi: mv vm-c.vdi vm.vdi'
+		_moveconfirm "$scriptLocal"/vm-c.vdi "$scriptLocal"/vm.vdi
+		_messagePlain_nominal '_img_to_vdi: setuuid'
+		VBoxManage internalcommands sethduuid "$scriptLocal"/vm.vdi "$current_UUID"
+		#_messagePlain_request 'request: rm '"$scriptLocal"/vm.img
+		_messagePlain_good 'End.'
+		return 0
+	else
+		_messageFAIL
+		_stop 1
+	fi
+}
+
+_vm_convert_vmdk() {
+	_messagePlain_nominal '_vm_convert_vmdk: convert: vmdk'
+	
+	
+	# ATTENTION: Delete 'vm.vmdk.uuid' to force generation of new uuid .
+	local current_UUID
+	current_UUID=$(head -n1 "$scriptLocal"/vm.vmdk.uuid 2>/dev/null | tr -dc 'a-zA-Z0-9\-')
+	
+	if [[ $(echo "$current_UUID" | wc -c) != 37 ]]
+	then
+		current_UUID=$(_getUUID)
+		rm -f "$scriptLocal"/vm.vmdk.uuid > /dev/null 2>&1
+		echo "$current_UUID" > "$scriptLocal"/vm.vmdk.uuid
+	fi
+	
+	
+	rm -f "$scriptLocal"/vm.vmdk > /dev/null 2>&1
+	
+	! [[ -e "$scriptLocal"/vm.img ]] && _messagePlain_bad 'fail: missing: in file' && return 1
+	[[ -e "$scriptLocal"/vm.vmdk ]] && _messagePlain_request 'request: rm '"$scriptLocal"/vm.vmdk && return 1
+	
+	_messagePlain_nominal '_img_to_vmdk: convertdd'
+	
+	
+	# https://stackoverflow.com/questions/454899/how-to-convert-flat-raw-disk-image-to-vmdk-for-virtualbox-or-vmplayer
+	if _userVBoxManage convertdd "$scriptLocal"/vm.img "$scriptLocal"/vm-c.vmdk --format VMDK
+	#if qemu-img convert -O vmdk "$scriptLocal"/vm.img "$scriptLocal"/vm-c.vmdk
+	then
+		#_messagePlain_nominal '_img_to_vmdk: closemedium'
+		#_userVBoxManage closemedium "$scriptLocal"/vm-c.vmdk
+		_messagePlain_nominal '_img_to_vmdk: mv vm-c.vmdk vm.vmdk'
+		_moveconfirm "$scriptLocal"/vm-c.vmdk "$scriptLocal"/vm.vmdk
+		_messagePlain_nominal '_img_to_vmdk: setuuid'
+		
+		
+		#VBoxManage internalcommands sethduuid "$scriptLocal"/vm.vmdk "$current_UUID"
+		VBoxManage internalcommands sethduuid "$scriptLocal"/vm.vmdk "$current_UUID"
+		
+		
+		#_messagePlain_request 'request: rm '"$scriptLocal"/vm.img
+		_messagePlain_good 'End.'
+		return 0
+	else
+		_messageFAIL
+		_stop 1
+	fi
+}
+
+
+
+
+
+
+
 _test_live_debianpackages() {
 	! dpkg-query -W grub-pc-bin > /dev/null 2>&1 && echo 'warn: missing: grub-pc-bin'
 	! dpkg-query -W grub-efi-amd64-bin > /dev/null 2>&1 && echo 'warn: missing: grub-efi-amd64-bin'
@@ -16212,7 +16305,7 @@ _live_more_sequence() {
 
 
 _live_more_convert_vdi() {
-	_messagePlain_nominal '_live_more_procedure: convert: vdi'
+	_messagePlain_nominal '_live_more_convert_vdi: convert: vdi'
 	
 	
 	# ATTENTION: Delete 'vm-live-more.vdi.uuid' to force generation of new uuid .
@@ -16251,7 +16344,7 @@ _live_more_convert_vdi() {
 }
 
 _live_more_convert_vmdk() {
-	_messagePlain_nominal '_live_more_procedure: convert: vmdk'
+	_messagePlain_nominal '_live_more_convert_vmdk: convert: vmdk'
 	
 	
 	# ATTENTION: Delete 'vm-live-more.vmdk.uuid' to force generation of new uuid .
