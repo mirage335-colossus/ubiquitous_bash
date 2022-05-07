@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='1102203471'
+export ub_setScriptChecksum_contents='3366386732'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -15546,6 +15546,1011 @@ _dropChRoot() {
 	###true
 	
 ###}
+
+
+
+# Creates a raw VM image. Default Hybrid/UEFI partitioning and formatting.
+# ATTENTION: Override, if necessary.
+_createVMimage() {
+	_messageNormal '##### _createVMimage'
+	
+	mkdir -p "$scriptLocal"
+	
+	
+	export vmImageFile="$scriptLocal"/vm.img
+	[[ -e "$vmImageFile" ]] && _messagePlain_good 'exists: '"$vmImageFile" && return 0
+	[[ -e "$scriptLocal"/vm.img ]] && _messagePlain_good 'exists: '"$vmImageFile" && return 0
+	
+	[[ -e "$lock_open" ]]  && _messagePlain_bad 'bad: locked!' && _messageFAIL && _stop 1
+	[[ -e "$scriptLocal"/l_o ]]  && _messagePlain_bad 'bad: locked!' && _messageFAIL && _stop 1
+	
+	! [[ $(df --block-size=1000000000 --output=avail "$scriptLocal" | tr -dc '0-9') -gt "25" ]] && _messageFAIL && _stop 1
+	
+	
+	
+	local imagedev
+	
+	_open
+	
+	export vmImageFile="$scriptLocal"/vm.img
+	[[ -e "$vmImageFile" ]] && _messagePlain_bad 'exists: '"$vmImageFile" && _messageFAIL && _stop 1
+	
+	
+	_messageNormal 'create: vm.img'
+	
+	export vmSize=23296
+	_createRawImage
+	
+	
+	_messageNormal 'partition: vm.img'
+	sudo -n parted --script "$vmImageFile" 'mklabel gpt'
+	
+	# Unusual.
+	#   EFI, Image/Root.
+	# Former default, only preferable if disk is strictly spinning CAV and many more bits per second with beginning tracks.
+	#   Swap, EFI, Image/Root.
+	# Compromise. May have better compatibility, may reduce CLV (and zoned CAV) speed changes from slowest tracks at beginning of some optical discs.
+	#   EFI, Swap, Image/Root.
+	# Expect <8MiB usage of EFI parition FAT32 filesystem, ~28GiB usage of Image/Root partition ext4 filesystem.
+	# 512MiB EFI, 5120MiB Swap, remainder Image/Root
+	# https://www.compuhoy.com/what-is-difference-between-bios-and-efi/
+	#  'Does EFI partition have to be first?' 'UEFI does not impose a restriction on the number or location of System Partitions that can exist on a system. (Version 2.5, p. 540.) As a practical matter, putting the ESP first is advisable because this location is unlikely to be impacted by partition moving and resizing operations.'
+	# http://blog.arainho.me/grub/gpt/arch-linux/2016/01/14/grub-on-gpt-partition.html
+	#  'at the first 2GB of the disk with toggle bios_grub used for booting'
+	
+	# CAUTION: *As DEFAULT*, must match other definitions (eg. _set_ubDistBuild , 'core.sh' , 'ops.sh' , ubiquitous_bash , etc) .
+	# NTFS, Recovery, partitions should not have set values in any other functions. Never used - documentation only.
+	# Swap, partition should only have set values in this and fstab functions. Never used elsewhere.
+	# x64-bios , raspbian , x64-efi
+	export ubVirtImage_doNotOverride="true"
+	export ubVirtPlatformOverride='x64-efi'
+	export ubVirtImageBIOS=p1
+	export ubVirtImageEFI=p2
+	export ubVirtImageNTFS=
+	export ubVirtImageRecovery=
+	export ubVirtImageSwap=p3
+	export ubVirtImageBoot=p4
+	export ubVirtImagePartition=p5
+	
+	
+	
+	
+	# ATTENTION: NOTICE: Larger EFI partition may be more compatible. Larger Swap partition may be more useful for hibernation.
+	
+	# BIOS
+	sudo -n parted --script "$vmImageFile" 'mkpart primary ext2 1 2'
+	sudo -n parted --script "$vmImageFile" 'set 1 bios_grub on'
+	
+	
+	# EFI
+	#sudo -n parted --script "$vmImageFile" 'mkpart EFI fat32 '"2"'MiB '"514"'MiB'
+	sudo -n parted --script "$vmImageFile" 'mkpart EFI fat32 '"2"'MiB '"74"'MiB'
+	sudo -n parted --script "$vmImageFile" 'set 2 msftdata on'
+	sudo -n parted --script "$vmImageFile" 'set 2 boot on'
+	sudo -n parted --script "$vmImageFile" 'set 2 esp on'
+	
+	
+	# Swap
+	#sudo -n parted --script "$vmImageFile" 'mkpart primary '"514"'MiB '"5633"'MiB'
+	#sudo -n parted --script "$vmImageFile" 'mkpart primary '"514"'MiB '"3073"'MiB'
+	sudo -n parted --script "$vmImageFile" 'mkpart primary '"74"'MiB '"98"'MiB'
+	
+	
+	# Boot
+	sudo -n parted --script "$vmImageFile" 'mkpart primary '"98"'MiB '"610"'MiB'
+	
+	
+	# Root
+	sudo -n parted --script "$vmImageFile" 'mkpart primary '"610"'MiB '"23295"'MiB'
+	
+	
+	
+	
+	sudo -n parted --script "$vmImageFile" 'unit MiB print'
+	
+	
+	_close
+	
+	
+	# Format partitions .
+	_messageNormal 'format: vm.img'
+	#"$scriptAbsoluteLocation" _loopImage_sequence || _stop 1
+	! "$scriptAbsoluteLocation" _openLoop && _messagePlain_bad 'fail: _openLoop' && _messageFAIL
+	
+	mkdir -p "$globalVirtFS"
+	"$scriptAbsoluteLocation" _checkForMounts "$globalVirtFS" && _messagePlain_bad 'bad: mounted: globalVirtFS' && _messageFAIL && _stop 1
+	#local imagedev
+	imagedev=$(cat "$scriptLocal"/imagedev)
+	
+	local imagepart
+	local loopdevfs
+	
+	# Compression from btrfs may free up ~8GB . Some performance degradation may result if files with many random writes (eg. COW VM images) are used with btrfs .
+	# https://www.phoronix.com/scan.php?page=article&item=btrfs-zstd-compress&num=4
+	# https://btrfs.wiki.kernel.org/index.php/Compression
+	# https://unix.stackexchange.com/questions/394973/why-would-i-want-to-disable-copy-on-write-while-creating-qemu-images
+	# https://gist.github.com/niflostancu/03810a8167edc533b1712551d4f90a14
+	
+	# WARNING: Compression/btrfs of boot partition may cause BIOS compatibility issues.
+	imagepart="$imagedev""$ubVirtImageBoot"
+	loopdevfs=$(sudo -n blkid -s TYPE -o value "$imagepart" | tr -dc 'a-zA-Z0-9')
+	[[ "$loopdevfs" == "ext4" ]] && _stop 1
+	sudo -n mkfs.ext4 -e remount-ro -E lazy_itable_init=0,lazy_journal_init=0 -m 0 "$imagepart" || _stop 1
+	#sudo -n mkfs.btrfs --checksum xxhash -M -d single "$imagepart" || _stop 1
+	
+	imagepart="$imagedev""$ubVirtImageEFI"
+	loopdevfs=$(sudo -n blkid -s TYPE -o value "$imagepart" | tr -dc 'a-zA-Z0-9')
+	[[ "$loopdevfs" == "ext4" ]] && _stop 1
+	sudo -n mkfs.vfat -F 32 -n EFI "$imagepart" || _stop 1
+	
+	imagepart="$imagedev""$ubVirtImagePartition"
+	loopdevfs=$(sudo -n blkid -s TYPE -o value "$imagepart" | tr -dc 'a-zA-Z0-9')
+	[[ "$loopdevfs" == "ext4" ]] && _stop 1
+	#sudo -n mkfs.ext4 -e remount-ro -E lazy_itable_init=0,lazy_journal_init=0 -m 0 "$imagepart" || _stop 1
+	sudo -n mkfs.btrfs --checksum xxhash -M -d single "$imagepart" || _stop 1
+	
+	imagepart="$imagedev""$ubVirtImageSwap"
+	loopdevfs=$(sudo -n blkid -s TYPE -o value "$imagepart" | tr -dc 'a-zA-Z0-9')
+	[[ "$loopdevfs" == "ext4" ]] && _stop 1
+	sudo -n mkswap "$imagepart" || _stop 1
+	
+	#"$scriptAbsoluteLocation" _umountImage || _stop 1
+	! "$scriptAbsoluteLocation" _closeLoop && _messagePlain_bad 'fail: _closeLoop' && _messageFAIL
+	return 0
+}
+# WARNING: No production use. No use as-is. Hybrid/UEFI is default.
+_convertVMimage_sequence() {
+	_messageNormal '_convertVMimage_sequence'
+	
+	_messagePlain_nominal '_convertVMimage_sequence: start'
+	_start
+	mkdir -p "$safeTmp"/rootfs
+	
+	local imagedev
+	
+	
+	# ATTENTION: Override if necessary (ie. with 'ops.sh' from an existing image).
+	export ubVirtImage_doNotOverride="true"
+	export ubVirtPlatformOverride='x64-efi'
+	export ubVirtImageBIOS=
+	export ubVirtImageEFI=p1
+	export ubVirtImageNTFS=
+	export ubVirtImageRecovery=
+	export ubVirtImageSwap=p2
+	export ubVirtImageBoot=
+	export ubVirtImagePartition=p3
+	
+	
+	_messagePlain_nominal '_convertVMimage_sequence: copy: out'
+	! "$scriptAbsoluteLocation" _openImage && _messagePlain_bad 'fail: _openImage' && _messageFAIL
+	imagedev=$(cat "$scriptLocal"/imagedev)
+	if [[ "$ubVirtImageBoot" != "" ]]
+	then
+		sudo -n mkdir -p "$globalVirtFS"/boot
+		sudo -n mount "$imagedev""$ubVirtImageBoot" "$globalVirtFS"/boot
+	fi
+	if [[ "$ubVirtImageEFI" != "" ]]
+	then
+		sudo -n mkdir -p "$globalVirtFS"/boot/efi
+		sudo -n mount "$imagedev""$ubVirtImageEFI" "$globalVirtFS"/boot/efi
+	fi
+	
+	sudo -n rsync -ax "$globalVirtFS"/. "$safeTmp"/rootfs/.
+	
+	sudo -n umount "$globalVirtFS"/boot/efi > /dev/null 2>&1
+	sudo -n umount "$globalVirtFS"/boot > /dev/null 2>&1
+	! "$scriptAbsoluteLocation" _closeImage && _messagePlain_bad 'fail: _closeImage' && _messageFAIL
+	
+	
+	rm -f "$scriptLocal"/vm.img
+	_createVMimage
+	export ubVirtImage_doNotOverride="true"
+	
+	
+	_messagePlain_nominal '_convertVMimage_sequence: copy: in'
+	! "$scriptAbsoluteLocation" _openImage && _messagePlain_bad 'fail: _openImage' && _messageFAIL
+	imagedev=$(cat "$scriptLocal"/imagedev)
+	if [[ "$ubVirtImageBoot" != "" ]]
+	then
+		sudo -n mkdir -p "$globalVirtFS"/boot
+		sudo -n mount "$imagedev""$ubVirtImageBoot" "$globalVirtFS"/boot
+	fi
+	if [[ "$ubVirtImageEFI" != "" ]]
+	then
+		sudo -n mkdir -p "$globalVirtFS"/boot/efi
+		sudo -n mount "$imagedev""$ubVirtImageEFI" "$globalVirtFS"/boot/efi
+	fi
+	
+	sudo -n rsync -ax "$safeTmp"/rootfs/. "$globalVirtFS"/.
+	
+	sudo -n umount "$globalVirtFS"/boot/efi > /dev/null 2>&1
+	sudo -n umount "$globalVirtFS"/boot > /dev/null 2>&1
+	! "$scriptAbsoluteLocation" _closeImage && _messagePlain_bad 'fail: _closeImage' && _messageFAIL
+	
+	
+	
+	_createVMbootloader-bios
+	_createVMbootloader-efi
+	
+	
+	_messagePlain_nominal '_convertVMimage_sequence: stop'
+	export safeToDeleteGit="true"
+	if ! _safePath "$safeTmp"/rootfs
+	then
+		_stop 1
+		exit 1
+		return 1
+	fi
+	#sudo -n rm -rf "$safeTmp"/rootfs
+	sudo -n chown -R "$USER":"$USER" "$safeTmp"/rootfs
+	_safeRMR "$safeTmp"/rootfs
+	_stop
+}
+_convertVMimage() {
+	"$scriptAbsoluteLocation" _convertVMimage_sequence "$@"
+}
+
+
+# Creates a raw VM image. UEFI partitioning and formatting (expected possibility of eventual MSW dual-boot compatibility).
+_createVMimage-efi() {
+	false
+}
+
+
+# Creates a raw VM image. BIOS partitioning and formatting (legacy compatibility, possibly with some cloud providers).
+_createVMimage-bios() {
+	false
+}
+
+
+
+
+
+_createVMbootloader-bios() {
+	_messageNormal '##### _createVMbootloader-bios'
+	
+	! "$scriptAbsoluteLocation" _openChRoot && _messagePlain_bad 'fail: _openChRoot' && _messageFAIL
+	local imagedev
+	imagedev=$(cat "$scriptLocal"/imagedev)
+	
+	_createVMfstab
+	
+	
+	_messagePlain_nominal 'chroot: grub-install: bios'
+	
+	# WARNING: Apparently, any use of BIOS bootloader either needs at least a 'BIOS boot partition' to share with EFI, or needs a dedicated '/boot' for 'btrfs' compression.
+	# https://bbs.archlinux.org/viewtopic.php?id=251059
+	#  'btrfs' 'zstd compression' 'properly installing the bootloader to a dedicated partitioning designed and maintained for that purpose'
+	# https://unix.stackexchange.com/questions/273329/can-i-install-grub2-on-a-flash-drive-to-boot-both-bios-and-uefi
+	#  'precondition for this to work is that you use GPT partitioning and that you have an BIOS boot partition (1 MiB is enough).'
+	# https://en.wikipedia.org/wiki/BIOS_boot_partition
+	#_chroot grub2-install --modules=part_msdos --target=i386-pc "$imagedev"
+	
+	
+	_messagePlain_probe_cmd _chroot grub-install --modules=part_msdos --target=i386-pc "$imagedev"
+	_messagePlain_probe_cmd _chroot grub-install --force --modules=part_msdos --target=i386-pc "$imagedev""$ubVirtImageEFI"
+	
+	
+	_messagePlain_nominal 'chroot: update-grub'
+	_chroot update-grub
+	
+	_messagePlain_nominal 'chroot: update-initramfs'
+	_chroot update-initramfs -u
+	
+	
+	
+	
+	! "$scriptAbsoluteLocation" _closeChRoot && _messagePlain_bad 'fail: _closeChRoot' && _messageFAIL
+	return 0
+}
+
+_createVMbootloader-efi() {
+	_messageNormal '##### _createVMbootloader-efi'
+	
+	! "$scriptAbsoluteLocation" _openChRoot && _messagePlain_bad 'fail: _openChRoot' && _messageFAIL
+	local imagedev
+	imagedev=$(cat "$scriptLocal"/imagedev)
+	
+	_createVMfstab
+	
+	
+	_messagePlain_nominal 'chroot: grub-install: efi'
+	
+	# https://unix.stackexchange.com/questions/273329/can-i-install-grub2-on-a-flash-drive-to-boot-both-bios-and-uefi
+	#  'precondition for this to work is that you use GPT partitioning and that you have an BIOS boot partition (1 MiB is enough).'
+	# https://en.wikipedia.org/wiki/BIOS_boot_partition
+	# https://askubuntu.com/questions/705055/gpt-detected-please-create-a-bios-boot-partition
+	#  'must be located at the start of a GPT disk, and have a "bios_grub" flag' 'Size: 1MB.'
+	#_chroot grub2-install --modules=part_msdos --target=i386-pc "$imagedev"
+	
+	
+	_messagePlain_probe_cmd _chroot grub-install --boot-directory=/boot --root-directory=/ --modules=part_msdos --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=debian --recheck --no-nvram --removable "$imagedev"
+	_messagePlain_probe_cmd _chroot grub-install --boot-directory=/boot --root-directory=/ --modules=part_msdos --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=debian --recheck --no-nvram --removable "$imagedev""$ubVirtImageEFI"
+	
+	_messagePlain_probe_cmd _chroot grub-install --boot-directory=/boot --root-directory=/ --modules=part_msdos --target=x86_64-efi --efi-directory=/boot/efi --recheck "$imagedev"
+	
+	#sudo -n mkdir -p "$globalVirtFS"/boot/efi/EFI/BOOT/
+	#sudo -n cp "$globalVirtFS"/boot/efi/EFI/debian/grubx64.efi "$globalVirtFS"/boot/efi/EFI/BOOT/bootx64.efi
+	
+	
+	_messagePlain_nominal 'chroot: update-grub'
+	_chroot update-grub
+	
+	_messagePlain_nominal 'chroot: update-initramfs'
+	_chroot update-initramfs -u
+	
+	
+	
+	
+	! "$scriptAbsoluteLocation" _closeChRoot && _messagePlain_bad 'fail: _closeChRoot' && _messageFAIL
+	return 0
+}
+
+
+
+
+
+
+
+
+_createVMfstab() {
+	_messageNormal 'os: globalVirtFS: write: fs: _createVMfstab'
+	
+	
+	local imagedev
+	imagedev=$(cat "$scriptLocal"/imagedev)
+	
+	[[ ! -e "$imagedev" ]] && _messageFAIL
+	
+	sudo -n mkdir -p "$globalVirtFS"/media/bootdisc
+	sudo -n chmod 755 "$globalVirtFS"/media/bootdisc
+	
+	
+	# https://gist.github.com/varqox/42e213b6b2dde2b636ef#edit-fstab-file
+	
+	local ubVirtImagePartition_UUID
+	ubVirtImagePartition_UUID=$(sudo -n blkid -s UUID -o value "$imagedev""$ubVirtImagePartition" | tr -dc 'a-zA-Z0-9\-')
+	
+	#echo 'UUID='"$ubVirtImagePartition_UUID"' / ext4 errors=remount-ro 0 1' | sudo -n tee "$globalVirtFS"/etc/fstab
+	echo 'UUID='"$ubVirtImagePartition_UUID"' / btrfs defaults,compress=zstd:1 0 1' | sudo -n tee "$globalVirtFS"/etc/fstab
+	
+	
+	# initramfs-update, from chroot, may not enable hibernation/resume... may be device specific
+	
+	if [[ "$ubVirtImageSwap" != "" ]]
+	then
+		local ubVirtImageSwap_UUID
+		ubVirtImageSwap_UUID=$(sudo -n blkid -s UUID -o value "$imagedev""$ubVirtImageSwap" | tr -dc 'a-zA-Z0-9\-')
+	fi
+	
+	echo '#UUID='"$ubVirtImageSwap_UUID"' swap swap defaults 0 0' | sudo -n tee -a "$globalVirtFS"/etc/fstab
+	
+	
+	if [[ "$ubVirtImageEFI" != "" ]]
+	then
+		local ubVirtImageEFI_UUID
+		ubVirtImageEFI_UUID=$(sudo -n blkid -s UUID -o value "$imagedev""$ubVirtImageEFI" | tr -dc 'a-zA-Z0-9\-')
+	fi
+	
+	echo 'UUID='"$ubVirtImageEFI_UUID"' /boot/efi vfat umask=0077 0 1' | sudo -n tee -a "$globalVirtFS"/etc/fstab
+	
+	
+	if ! sudo -n cat "$globalVirtFS"/etc/fstab | grep 'uk4uPhB663kVcygT0q' | grep 'bootdisc' > /dev/null 2>&1
+	then
+		echo 'LABEL=uk4uPhB663kVcygT0q /media/bootdisc iso9660 ro,nofail 0 0' | sudo -n tee -a "$globalVirtFS"/etc/fstab
+	fi
+	
+	return 0
+}
+
+
+
+
+
+
+
+
+_test_live_debianpackages() {
+	! dpkg-query -W grub-pc-bin > /dev/null 2>&1 && echo 'warn: missing: grub-pc-bin'
+	! dpkg-query -W grub-efi-amd64-bin > /dev/null 2>&1 && echo 'warn: missing: grub-efi-amd64-bin'
+	
+	return 0
+}
+
+_test_live() {
+	_getDep debootstrap
+	#_getDep squashfs-tools
+	_getDep xorriso
+	#_getDep grub-pc-bin
+	#_getDep grub-efi-amd64-bin
+	_getDep mtools
+	
+	
+	_getDep mksquashfs
+	_getDep grub-mkstandalone
+	
+	_getDep mkfs.vfat
+	
+	_getDep mkswap
+	
+	
+	_getDep mmd
+	_getDep mcopy
+	
+	
+	_getDep grub/i386-pc/cdboot.img
+	_getDep grub/i386-pc/boot_hybrid.img
+	
+	
+	[[ -e '/sbin/fdisk' ]] && _getDep fdisk
+	[[ -e '/sbin/sfdisk' ]] && _getDep sfdisk
+	
+	
+	# Currently only Debian is supported as a build host.
+	_test_live_debianpackages
+	
+	return 0
+}
+
+
+
+
+_live_fdisk() {
+	if [[ -e '/sbin/fdisk' ]]
+	then
+		/sbin/fdisk "$@"
+		return
+	fi
+	fdisk "$@"
+	return
+}
+
+_live_sfdisk() {
+	if [[ -e '/sbin/sfdisk' ]]
+	then
+		/sbin/sfdisk "$@"
+		return
+	fi
+	sfdisk "$@"
+	return
+}
+
+
+
+
+
+
+
+
+
+# https://manpages.debian.org/testing/live-boot-doc/persistence.conf.5.en.html
+ # WARNING: 'persistence.conf' ... 'root of its file system' ... 'Any such labeled volume must have such a file, or it will be ignored.'
+_live_persistent_conf_here() {
+	cat <<'CZXWXcRMTo8EmM8i4d'
+/ union
+#/home union
+CZXWXcRMTo8EmM8i4d
+}
+
+_live_more_copy() {
+	_messagePlain_nominal '_live_more_copy'
+	
+	rm -f "$scriptLocal"/vm-live-more.iso
+	
+	cp "$scriptLocal"/vm-live.iso "$scriptLocal"/vm-live-more.iso
+}
+
+_live_more_move() {
+	_messagePlain_nominal '_live_more_move'
+	
+	rm -f "$scriptLocal"/vm-live-more.iso
+	
+	mv "$scriptLocal"/vm-live.iso "$scriptLocal"/vm-live-more.iso
+}
+
+_live_more_procedure() {
+	_messageNormal 'init: _live_more_procedure'
+	
+	#_start
+	
+	
+	[[ ! -e "$scriptLocal"/vm-live-more.iso ]] && _messageFAIL && _stop 1
+	
+	
+	
+	
+	
+	
+	
+	_messagePlain_nominal '_live_more_procedure: append'
+	
+	# 32 * 1000 MB to GiB == 29.8023224 GiB
+	# 29.8 GB to MiB == 28419 MiB
+	
+	# 1024 MiB to GiB == 1 GiB
+	# 1 GiB == 1073.74 MB
+	# 1024 MB + 64 MB == 1088 MB
+	
+	# 1088 * 12 + 32 == 13088 MB
+	
+	dd if=/dev/zero bs=1M count=13088 >> "$scriptLocal"/vm-live-more.iso
+	
+	
+	
+	_messagePlain_nominal '_live_more_procedure: partitions: add'
+	
+	#sudo -n parted --script "$scriptLocal"/vm-live-more.iso mklabel msdos
+	#sudo -n partprobe > /dev/null 2>&1
+	#sudo -n parted "$scriptLocal"/vm-live-more.iso --script -- mkpart primary 0% 100%
+	#sudo -n partprobe > /dev/null 2>&1
+	
+	# https://unix.stackexchange.com/questions/200582/scripteable-gpt-partitions-using-parted
+	
+	#sudo -n parted "$scriptLocal"/vm-live-more.iso --script -a optimal -- mkpart primary -12288MiB -8192MiB
+	#sudo -n parted "$scriptLocal"/vm-live-more.iso --script -a optimal -- mkpart primary -8192MiB -4096MiB
+	#sudo -n parted "$scriptLocal"/vm-live-more.iso --script -a optimal -- mkpart primary -4096MiB -0MiB
+	#sudo -n partprobe > /dev/null 2>&1
+	
+	
+	
+	# https://superuser.com/questions/332252/how-to-create-and-format-a-partition-using-a-bash-script
+	
+	! _live_sfdisk -l "$scriptLocal"/vm-live-more.iso | grep 'Sector size (logical/physical): 512 bytes / 512 bytes' > /dev/null 2>&1 && _stop 1
+	
+	rm -f "$safeTmp"/vm-live-more.iso.sfdisk
+	
+	#_live_sfdisk -d "$scriptLocal"/vm-live-more.iso > "$safeTmp"/vm-live-more.iso.sfdisk
+	#echo 'size=8G, type=83' >> "$safeTmp"/vm-live-more.iso.sfdisk
+	
+	#echo 'size=4G, type=83' >> "$safeTmp"/vm-live-more.iso.sfdisk
+	#echo 'size=5G, type=5' >> "$safeTmp"/vm-live-more.iso.sfdisk
+	#echo 'size=4G, type=85' >> "$safeTmp"/vm-live-more.iso.sfdisk
+	
+	#echo 'size=1G, type=85' >> "$safeTmp"/vm-live-more.iso.sfdisk
+	
+	
+	echo 'size=2G, type=83' >> "$safeTmp"/vm-live-more.iso.sfdisk
+	echo 'type=5' >> "$safeTmp"/vm-live-more.iso.sfdisk
+	echo 'size=4G, type=82' >> "$safeTmp"/vm-live-more.iso.sfdisk
+	echo 'size=6G, type=83' >> "$safeTmp"/vm-live-more.iso.sfdisk
+	
+	
+	# Tested , working .
+	#echo 'size=4G, type=82' >> "$safeTmp"/vm-live-more.iso.sfdisk
+	#echo 'size=6G, type=83' >> "$safeTmp"/vm-live-more.iso.sfdisk
+	
+	
+	cat "$safeTmp"/vm-live-more.iso.sfdisk | _live_sfdisk --append "$scriptLocal"/vm-live-more.iso
+	
+	! _live_sfdisk -l "$scriptLocal"/vm-live-more.iso | grep 'Sector size (logical/physical): 512 bytes / 512 bytes' > /dev/null 2>&1 && _stop 1
+	
+	
+	
+	
+	
+	
+	
+	_messagePlain_nominal '_live_more_procedure: filesystems: format'
+	
+	
+	
+	_messagePlain_nominal 'Attempt: _closeLoop'
+	! _closeLoop && _messageFAIL && _stop 1
+	
+	_messagePlain_nominal 'Attempt: _openLoop'
+	! [[ -e "$scriptLocal"/vm-live-more.iso ]] && _messageFAIL && _stop 1
+	export ubVirtImageOverride_alternate="$scriptLocal"/vm-live-more.iso
+	! _openLoop && _messageFAIL && _stop 1
+	
+	local current_imagedev
+	current_imagedev=$(cat "$scriptLocal"/imagedev)
+	
+	[[ "$current_imagedev" != '/dev/loop'* ]] && _messageFAIL && _stop 1
+	
+	
+	! _live_sfdisk -l "$current_imagedev" | grep 'Sector size (logical/physical): 512 bytes / 512 bytes' > /dev/null 2>&1 && _messageFAIL && _stop 1
+	
+	! _live_sfdisk -l "$current_imagedev" | grep "$current_imagedev"p3 | grep '4194304' > /dev/null 2>&1 && _messageFAIL && _stop 1
+	! _live_sfdisk -l "$current_imagedev" | grep "$current_imagedev"p5 | grep '8388608' > /dev/null 2>&1 && _messageFAIL && _stop 1
+	! _live_sfdisk -l "$current_imagedev" | grep "$current_imagedev"p6 | grep '12582912' > /dev/null 2>&1 && _messageFAIL && _stop 1
+	
+	! [[ -e "$current_imagedev"p6 ]] && _messageFAIL && _stop 1
+	
+	
+	sudo -n mkfs.ext4 -L 'bulk' -U 'f1edb7fb-13b1-4c97-91d2-baf50e6d65d8' "$current_imagedev"p3
+	sudo -n mkswap -L 'hint' -U '469457fc-293f-46ec-92da-27b5d0c36b17' "$current_imagedev"p5
+	sudo -n mkfs.ext4 -L 'dent' -U 'd82e3d89-3156-4484-bde2-ccc534ca440b' "$current_imagedev"p6
+	
+	
+	
+	# https://manpages.debian.org/testing/live-boot-doc/persistence.conf.5.en.html
+	 # WARNING: 'persistence.conf' ... 'root of its file system' ... 'Any such labeled volume must have such a file, or it will be ignored.'
+	mkdir -p "$safeTmp"/fsmount_temp/bulk
+	sudo -n mount "$current_imagedev"p3 "$safeTmp"/fsmount_temp/bulk
+	
+	_live_persistent_conf_here | sudo tee "$safeTmp"/fsmount_temp/bulk/persistence.conf > /dev/null
+	
+	sudo -n mkdir -p "$safeTmp"/fsmount_temp/bulk/persist/bulk
+	_live_persistent_conf_here | sudo tee "$safeTmp"/fsmount_temp/bulk/persist/persistence.conf > /dev/null
+	_live_persistent_conf_here | sudo tee "$safeTmp"/fsmount_temp/bulk/persist/bulk/persistence.conf > /dev/null
+	
+	
+	sudo -n umount "$safeTmp"/fsmount_temp/bulk
+	
+	
+	#_live_sfdisk -l "$current_imagedev"
+	#ls -l "$current_imagedev"*
+	#sudo -n gparted "$current_imagedev" "$current_imagedev"p1 "$current_imagedev"p2 "$current_imagedev"p3 "$current_imagedev"p5 "$current_imagedev"p6
+	
+	
+	_messagePlain_nominal 'Attempt: _closeLoop'
+	! _closeLoop && _messageFAIL && _stop 1
+	
+	export ubVirtImageOverride_alternate=
+	
+	
+	
+	
+	
+	
+	
+	_messagePlain_nominal '_live_more_procedure: convert: vdi'
+	
+	
+	# ATTENTION: Delete 'vm-live-more.vdi.uuid' to force generation of new uuid .
+	local current_UUID
+	current_UUID=$(head -n1 "$scriptLocal"/vm-live-more.vdi.uuid 2>/dev/null | tr -dc 'a-zA-Z0-9\-')
+	
+	if [[ $(echo "$current_UUID" | wc -c) != 37 ]]
+	then
+		current_UUID=$(_getUUID)
+		rm -f "$scriptLocal"/vm-live-more.vdi.uuid > /dev/null 2>&1
+		echo "$current_UUID" > "$scriptLocal"/vm-live-more.vdi.uuid
+	fi
+	
+	
+	rm -f "$scriptLocal"/vm-live-more.vdi > /dev/null 2>&1
+	
+	! [[ -e "$scriptLocal"/vm-live-more.iso ]] && _messagePlain_bad 'fail: missing: in file' && return 1
+	[[ -e "$scriptLocal"/vm-live-more.vdi ]] && _messagePlain_request 'request: rm '"$scriptLocal"/vm-live-more.vdi && return 1
+	
+	_messagePlain_nominal '_img_to_vdi: convertdd'
+	if _userVBoxManage convertdd "$scriptLocal"/vm-live-more.iso "$scriptLocal"/vm-live-more-c.vdi --format VDI
+	then
+		#_messagePlain_nominal '_img_to_vdi: closemedium'
+		#_userVBoxManage closemedium "$scriptLocal"/vm-live-more-c.vdi
+		_messagePlain_nominal '_img_to_vdi: mv vm-live-more-c.vdi vm.vdi'
+		_moveconfirm "$scriptLocal"/vm-live-more-c.vdi "$scriptLocal"/vm-live-more.vdi
+		_messagePlain_nominal '_img_to_vdi: setuuid'
+		VBoxManage internalcommands sethduuid "$scriptLocal"/vm-live-more.vdi "$current_UUID"
+		#_messagePlain_request 'request: rm '"$scriptLocal"/vm-live-more.iso
+		_messagePlain_good 'End.'
+		return 0
+	else
+		_messageFAIL
+		_stop 1
+	fi
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	_messageNormal '_live_more_procedure: done'
+	
+	#_stop 0
+}
+_live_more_sequence() {
+	_start
+	
+	_live_more_procedure "$@"
+	
+	_stop 0
+}
+
+
+# Extra features for the exceptional situation of storing multiple hibernation states, as would be available through 'suspend/snapshot' features of VirtualBox, VMWare, etc, but for computers which do not have such features.
+# End users should not normally be expected to use 'live-more.iso' as a disk image for a personal workstation computer.
+# NOTICE: Such features may not be completely automatic.
+# Only iso filesystem will show to 'sudo gparted /dev/sda' . As usual, do NOT rely on '/dev/sda' (may become instead eg. '/dev/sdb').
+#sudo gparted /dev/sda1 /dev/sda2 /dev/sda3 /dev/sda4 /dev/sda5 ...
+#sudo swapon /dev/sda5
+#sudo mount /dev/sda6 /mnt/dent
+# Hibernate, Reboot/Ignore, ...
+#sudo dd if=/dev/sda5 of=/mnt/dent bs=1M status=progress
+#_bupStore ...
+_live_more() {
+	_live_more_copy "$@"
+	#_live_more_move "$@"
+	"$scriptAbsoluteLocation" _live_more_sequence "$@"
+}
+
+
+
+
+
+
+
+
+# https://manpages.debian.org/testing/live-boot-doc/live-boot.7.en.html
+# https://github.com/bugra9/persistent
+# https://manpages.debian.org/testing/live-boot-doc/persistence.conf.5.en.html
+ # WARNING: 'persistence.conf' ... 'root of its file system' ... 'Any such labeled volume must have such a file, or it will be ignored.'
+# config debug=1 noeject persistence persistence-path=/persist persistence-label=bulk persistence-storage=directory
+_live_grub_here() {
+	cat <<'CZXWXcRMTo8EmM8i4d'
+
+insmod all_video
+
+search --set=root --file /ROOT_TEXT
+
+set default="0"
+#set default="1"
+#set default="2"
+set timeout=3
+
+menuentry "Live" {
+    #linux /vmlinuz boot=live config debug=1 noeject nopersistence selinux=0 mem=3712M resume=UUID=469457fc-293f-46ec-92da-27b5d0c36b17
+    #linux /vmlinuz boot=live config debug=1 noeject nopersistence selinux=0 mem=3712M resume=PARTUUID=469457fc-293f-46ec-92da-27b5d0c36b17
+    linux /vmlinuz boot=live config debug=1 noeject nopersistence selinux=0 mem=3712M resume=/dev/sda5
+    initrd /initrd
+}
+
+menuentry "Live - ( persistence )" {
+    linux /vmlinuz boot=live config debug=1 noeject persistence persistence-path=/persist persistence-label=bulk persistence-storage=directory selinux=0 mem=3712M resume=/dev/sda5
+    initrd /initrd
+}
+
+menuentry "Live - ( hint: ignored: resume disabled )" {
+    linux /vmlinuz boot=live config debug=1 noeject nopersistence selinux=0
+    initrd /initrd
+}
+
+CZXWXcRMTo8EmM8i4d
+}
+
+
+# https://willhaley.com/blog/custom-debian-live-environment-grub-only/
+# https://web.archive.org/web/*/https://willhaley.com/blog/custom-debian-live-environment-grub-only/*
+# https://itnext.io/how-to-create-a-custom-ubuntu-live-from-scratch-dd3b3f213f81
+# https://manpages.debian.org/jessie/initramfs-tools/initramfs-tools.8.en.html
+# http://www.opopop.net/booting_linux_from_a_loop_file_system/
+# https://forums.gentoo.org/viewtopic-t-931250-start-0.html
+# https://wiki.debian.org/InitramfsDebug
+# https://gist.github.com/avinash-oza/9791c4edd78a03540dc69d6fbf21bd9c
+_live_sequence_in() {
+	_messageNormal 'init: _live'
+	
+	_mustGetSudo || return 0
+	
+	
+	
+	# WARNING: If the root filesystem has compressed, this would be absurd. Also not expected to affect iso image and such. Better to leave raw image compression to customization of the raw image.
+	#_messagePlain_nominal 'Attempt: _openChRoot'
+	#! _openChRoot && _messageFAIL && _stop 1
+	
+	#_messagePlain_nominal 'Compression: zero blanking'
+	
+	#sudo -n dd if=/dev/zero of="$globalVirtFS"/zero.del bs=8M
+	#sudo -n rm -f "$globalVirtFS"/zero.del
+	
+	#_messagePlain_nominal 'Attempt: _closeChRoot'
+	#! _closeChRoot && _messageFAIL && _stop 1
+	
+	
+	
+	
+	
+	_start
+	
+	cd "$safeTmp"
+	
+	[[ -e "$scriptLocal"/livefs ]] && _safeRMR "$scriptLocal"/livefs
+	[[ -e "$scriptLocal"/livefs ]] && _messageFAIL
+	
+	mkdir -p "$scriptLocal"/livefs
+	[[ ! -e "$scriptLocal"/livefs ]] && _messageFAIL
+	
+	
+	_messagePlain_nominal 'Attempt: _openImage'
+	! _openImage && _messageFAIL && _stop 1
+	imagedev=$(cat "$scriptLocal"/imagedev)
+	if [[ "$ubVirtImageBoot" != "" ]]
+	then
+		sudo -n mkdir -p "$globalVirtFS"/boot
+		sudo -n mount "$imagedev""$ubVirtImageBoot" "$globalVirtFS"/boot
+	fi
+	if [[ "$ubVirtImageEFI" != "" ]]
+	then
+		sudo -n mkdir -p "$globalVirtFS"/boot/efi
+		sudo -n mount "$imagedev""$ubVirtImageEFI" "$globalVirtFS"/boot/efi
+	fi
+	
+	#/DEBIAN_CUSTOM
+	#/ROOT_TEXT
+	
+	
+	#LIVE_BOOT/chroot
+	#"$globalVirtFS"
+	
+	#LIVE_BOOT/scratch
+	#"$scriptLocal"/livefs/partial
+	
+	#LIVE_BOOT/image
+	#"$scriptLocal"/livefs/image
+	
+	
+	mkdir -p "$scriptLocal"/livefs/partial
+	mkdir -p "$scriptLocal"/livefs/image/live
+	
+	# TODO: Consider LZO compression and such.
+	# TODO: May need to install live-boot , firmware-amd-graphics
+	#sudo -n mksquashfs "$globalVirtFS" "$scriptLocal"/livefs/image/live/filesystem.squashfs -no-xattrs -noI -noD -noF -noX -comp lzo -Xalgorithm lzo1x_1 -e boot -e etc/fstab
+	sudo -n mksquashfs "$globalVirtFS" "$scriptLocal"/livefs/image/live/filesystem.squashfs -no-xattrs -noI -noX -comp lzo -Xalgorithm lzo1x_1 -e boot -e etc/fstab
+	
+	local currentFilesList
+	
+	
+	# ATTENTION: Configure, remove extra vmlinuz/initrd files, or accept possibility of matching an undesired kernel version.
+	#currentFilesList=( "$globalVirtFS"/boot/vmlinuz-* )
+	
+	# Usually, +1 will be highest version mainline, +2 will be lts, +3 will be much older from distribution.
+	currentFilesList=$(ls -A -1 "$globalVirtFS"/boot/vmlinuz-* | sort -r -V | tail -n+1 | head -n1)
+	#currentFilesList=$(ls -A -1 "$globalVirtFS"/boot/vmlinuz-* | sort -r -V | tail -n+2 | head -n1)
+	#currentFilesList=$(ls -A -1 "$globalVirtFS"/boot/vmlinuz-* | sort -r -V | tail -n+3 | head -n1)
+	
+	cp "${currentFilesList[0]}" "$scriptLocal"/livefs/image/vmlinuz
+	
+	
+	#currentFilesList=( "$globalVirtFS"/boot/initrd.img-* )
+	
+	currentFilesList=$(ls -A -1 "$globalVirtFS"/boot/initrd.img-* | sort -r -V | tail -n+1 | head -n1)
+	#currentFilesList=$(ls -A -1 "$globalVirtFS"/boot/initrd.img-* | sort -r -V | tail -n+2 | head -n1)
+	#currentFilesList=$(ls -A -1 "$globalVirtFS"/boot/initrd.img-* | sort -r -V | tail -n+3 | head -n1)
+	
+	cp "${currentFilesList[0]}" "$scriptLocal"/livefs/image/initrd
+	
+	
+	_live_grub_here > "$scriptLocal"/livefs/partial/grub.cfg
+	touch "$scriptLocal"/livefs/image/ROOT_TEXT
+	
+	_messagePlain_nominal 'Attempt: _closeImage'
+	sudo -n umount "$globalVirtFS"/boot/efi > /dev/null 2>&1
+	sudo -n umount "$globalVirtFS"/boot > /dev/null 2>&1
+	! _closeImage && _messageFAIL && _stop 1
+	
+	
+	
+	
+	
+	
+	
+	
+	grub-mkstandalone --format=x86_64-efi --output="$scriptLocal"/livefs/partial/bootx64.efi --locales="" --fonts="" "boot/grub/grub.cfg="$scriptLocal"/livefs/partial/grub.cfg"
+	
+	
+	cd "$scriptLocal"/livefs/partial
+	dd if=/dev/zero of="$scriptLocal"/livefs/partial/efiboot.img bs=1M count=10
+	"$(sudo -n bash -c 'type -p mkfs.vfat' || echo /sbin/mkfs.vfat)" "$scriptLocal"/livefs/partial/efiboot.img
+	mmd -i "$scriptLocal"/livefs/partial/efiboot.img efi efi/boot
+	mcopy -i "$scriptLocal"/livefs/partial/efiboot.img "$scriptLocal"/livefs/partial/bootx64.efi ::efi/boot/
+	cd "$scriptLocal"/livefs
+	
+	
+	
+	grub-mkstandalone --format=i386-pc --output="$scriptLocal"/livefs/partial/core.img --install-modules="linux normal iso9660 biosdisk memdisk search tar ls" --modules="linux normal iso9660 biosdisk search" --locales="" --fonts="" "boot/grub/grub.cfg="$scriptLocal"/livefs/partial/grub.cfg"
+	
+	
+	cat /usr/lib/grub/i386-pc/cdboot.img "$scriptLocal"/livefs/partial/core.img > "$scriptLocal"/livefs/partial/bios.img
+	
+	
+	
+	
+	
+	
+	
+	_stop 0
+}
+_live_sequence_out() {
+	[[ ! -e "$scriptLocal"/livefs ]] && _messageFAIL
+	_start
+	
+	
+	xorriso -as mkisofs -iso-level 3 -full-iso9660-filenames -volid "ROOT_TEXT" -eltorito-boot boot/grub/bios.img -no-emul-boot -boot-load-size 4 -boot-info-table --eltorito-catalog boot/grub/boot.cat --grub2-boot-info --grub2-mbr /usr/lib/grub/i386-pc/boot_hybrid.img -eltorito-alt-boot -e EFI/efiboot.img -no-emul-boot -append_partition 2 0xef "$scriptLocal"/livefs/partial/efiboot.img -output "$safeTmp"/live.iso -graft-points "$scriptLocal"/livefs/image /boot/grub/bios.img="$scriptLocal"/livefs/partial/bios.img /EFI/efiboot.img="$scriptLocal"/livefs/partial/efiboot.img
+	
+	
+	mv "$safeTmp"/live.iso "$scriptLocal"/vm-live.iso
+	
+	
+	
+	
+	_messageNormal '_live: done'
+	
+	_stop 0
+}
+_live() {
+	if ! "$scriptAbsoluteLocation" _live_sequence_in "$@"
+	then
+		_stop 1
+	fi
+	
+	#rm -f "$scriptLocal"/vm.img
+	
+	if ! "$scriptAbsoluteLocation" _live_sequence_out "$@"
+	then
+		_stop 1
+	fi
+	
+	_safeRMR "$scriptLocal"/livefs
+	
+	
+	#! _live_more && _stop 1
+	
+	#return 0
+}
+
+
+_override_VBox-live() {
+	#export ub_keepInstance='true'
+	export ub_override_vbox_livecd_more="$scriptLocal"/vm-live-more.vdi
+	#export ub_override_vbox_livecd_more="$scriptLocal"/vm-live-more.iso
+	#export ub_override_vbox_livecd="$scriptLocal"/vm-live.iso
+}
+
+
+_userVBoxLive() {
+	_override_VBox-live
+	
+	_userVBox "$@"
+}
+
+_editVBoxLive() {
+	_override_VBox-live
+	
+	_editVBox "$@"
+}
+
+_persistentVBoxLive() {
+	_override_VBox-live
+	
+	_persistentVBox "$@"
+}
+
+
+_override_qemu-live() {
+	#export ub_keepInstance='true'
+	export ub_override_qemu_livecd_more="$scriptLocal"/vm-live-more.iso
+	#export ub_override_qemu_livecd="$scriptLocal"/vm-live.iso
+}
+
+
+
+
+
+_userQemuLive() {
+	_override_qemu-live
+	
+	_userQemu "$@"
+}
+
+_editQemuLive() {
+	_override_qemu-live
+	
+	_editQemu "$@"
+}
+
+_persistentQemuLive() {
+	_override_qemu-live
+	
+	_persistentQemu "$@"
+}
+
+
 
 
 #Ensures dependencies are met for raspi-on-raspi virtualization.
@@ -37150,6 +38155,8 @@ _test() {
 	
 	_tryExec "_testVirtBootdisc"
 	
+	_tryExec "_test_live"
+	
 	_tryExec "_testExtra"
 	
 	_tryExec "_testGit"
@@ -38714,6 +39721,13 @@ _deps_chroot() {
 	export enUb_ChRoot="true"
 }
 
+_deps_bios() {
+	_deps_notLean
+	_deps_virt
+	_deps_virt_thick
+	export enUb_bios="true"
+}
+
 _deps_qemu() {
 	_deps_notLean
 	_deps_virt
@@ -39505,6 +40519,7 @@ _compile_bash_deps() {
 		#_deps_virt_thick
 		
 		#_deps_chroot
+		#_deps_bios
 		_deps_qemu
 		_deps_vbox
 		#_deps_docker
@@ -39593,6 +40608,7 @@ _compile_bash_deps() {
 		_deps_virt_thick
 		
 		_deps_chroot
+		_deps_bios
 		_deps_qemu
 		_deps_vbox
 		#_deps_docker
@@ -39681,6 +40697,7 @@ _compile_bash_deps() {
 		_deps_virt_thick
 		
 		_deps_chroot
+		_deps_bios
 		_deps_qemu
 		_deps_vbox
 		_deps_docker
@@ -39952,6 +40969,9 @@ _compile_bash_utilities_virtualization() {
 	[[ "$enUb_ChRoot" == "true" ]] && includeScriptList+=( "virtualization/chroot"/mountchrootuser.sh )
 	[[ "$enUb_ChRoot" == "true" ]] && includeScriptList+=( "virtualization/chroot"/userchroot.sh )
 	[[ "$enUb_ChRoot" == "true" ]] && includeScriptList+=( "virtualization/chroot"/dropchroot.sh )
+	
+	[[ "$enUb_bios" == "true" ]] && includeScriptList+=( "virtualization/bios"/createvm.sh )
+	[[ "$enUb_bios" == "true" ]] && includeScriptList+=( "virtualization/bios"/live.sh )
 	
 	[[ "$enUb_QEMU" == "true" ]] && includeScriptList+=( "virtualization/qemu"/qemu-raspi-raspi.sh )
 	[[ "$enUb_QEMU" == "true" ]] && includeScriptList+=( "virtualization/qemu"/qemu-x64-raspi.sh )

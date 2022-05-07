@@ -598,7 +598,7 @@ _custom_bootOnce() {
 			echo '
 [Desktop Entry]
 Comment=
-Exec=/media/bootdisc/cmd.sh
+Exec=sudo -n mount -t iso9660 -o ro,nofail LABEL=uk4uPhB663kVcygT0q /media/bootdisc ; /media/bootdisc/cmd.sh
 GenericName=
 Icon=exec
 MimeType=

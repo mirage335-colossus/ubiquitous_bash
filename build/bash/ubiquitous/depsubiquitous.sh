@@ -247,6 +247,13 @@ _deps_chroot() {
 	export enUb_ChRoot="true"
 }
 
+_deps_bios() {
+	_deps_notLean
+	_deps_virt
+	_deps_virt_thick
+	export enUb_bios="true"
+}
+
 _deps_qemu() {
 	_deps_notLean
 	_deps_virt

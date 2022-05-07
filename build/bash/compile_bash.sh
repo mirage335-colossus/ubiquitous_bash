@@ -181,6 +181,7 @@ _compile_bash_deps() {
 		#_deps_virt_thick
 		
 		#_deps_chroot
+		#_deps_bios
 		_deps_qemu
 		_deps_vbox
 		#_deps_docker
@@ -269,6 +270,7 @@ _compile_bash_deps() {
 		_deps_virt_thick
 		
 		_deps_chroot
+		_deps_bios
 		_deps_qemu
 		_deps_vbox
 		#_deps_docker
@@ -357,6 +359,7 @@ _compile_bash_deps() {
 		_deps_virt_thick
 		
 		_deps_chroot
+		_deps_bios
 		_deps_qemu
 		_deps_vbox
 		_deps_docker
@@ -628,6 +631,9 @@ _compile_bash_utilities_virtualization() {
 	[[ "$enUb_ChRoot" == "true" ]] && includeScriptList+=( "virtualization/chroot"/mountchrootuser.sh )
 	[[ "$enUb_ChRoot" == "true" ]] && includeScriptList+=( "virtualization/chroot"/userchroot.sh )
 	[[ "$enUb_ChRoot" == "true" ]] && includeScriptList+=( "virtualization/chroot"/dropchroot.sh )
+	
+	[[ "$enUb_bios" == "true" ]] && includeScriptList+=( "virtualization/bios"/createvm.sh )
+	[[ "$enUb_bios" == "true" ]] && includeScriptList+=( "virtualization/bios"/live.sh )
 	
 	[[ "$enUb_QEMU" == "true" ]] && includeScriptList+=( "virtualization/qemu"/qemu-raspi-raspi.sh )
 	[[ "$enUb_QEMU" == "true" ]] && includeScriptList+=( "virtualization/qemu"/qemu-x64-raspi.sh )

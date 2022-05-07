@@ -1677,6 +1677,8 @@ _test() {
 	
 	_tryExec "_testVirtBootdisc"
 	
+	_tryExec "_test_live"
+	
 	_tryExec "_testExtra"
 	
 	_tryExec "_testGit"
