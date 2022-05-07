@@ -248,6 +248,28 @@ _mountChRoot_image_x64_efi() {
 	! [[ "$loopdevfs" == "vfat" ]] && _stop 1
 	
 	
+	
+	
+	
+	#export ubVirtPlatformOverride='x64-efi'
+	#export ubVirtImageBIOS=p1
+	#export ubVirtImageEFI=p2
+	#export ubVirtImageNTFS=
+	#export ubVirtImageRecovery=
+	#export ubVirtImageSwap=p3
+	#export ubVirtImageBoot=p4
+	#export ubVirtImagePartition=p5
+	
+	if [[ "$ubVirtImageBoot" != "" ]]
+	then
+		sudo -n mkdir -p "$globalVirtFS"/boot
+		if ! sudo -n mount "$current_imagedev""$ubVirtImageBoot" "$globalVirtFS"/boot/efi
+		then
+			_stop 1
+		fi
+	fi
+	
+	
 	sudo -n mkdir -p "$globalVirtFS"/boot/efi
 	
 	sudo -n mount "$current_imagedev""$ubVirtImageEFI" "$globalVirtFS"/boot/efi

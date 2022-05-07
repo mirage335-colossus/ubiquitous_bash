@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='4169814427'
+export ub_setScriptChecksum_contents='2731675616'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -13362,8 +13362,21 @@ _determine_rawFileRootPartition() {
 	#Platform defaults.
 	export ubVirtImageEFI=""
 	export ubVirtImagePartition=""
+	
 	[[ "$ubVirtPlatform" == "x64-bios" ]] && export ubVirtImagePartition=p1
-	[[ "$ubVirtPlatform" == "x64-efi" ]] && export ubVirtImagePartition=p3 && export ubVirtImageEFI=p2
+	
+	if [[ "$ubVirtPlatform" == "x64-efi" ]]
+	then
+		#export ubVirtImagePartition=p3 && export ubVirtImageEFI=p2
+		export ubVirtImageBIOS=p1
+		export ubVirtImageEFI=p2
+		#export ubVirtImageNTFS=
+		#export ubVirtImageRecovery=
+		#export ubVirtImageSwap=p3
+		export ubVirtImageBoot=p4
+		export ubVirtImagePartition=p5
+	fi
+	
 	[[ "$ubVirtPlatform" == "raspbian" ]] && export ubVirtImagePartition=p2
 	
 	
@@ -14835,6 +14848,28 @@ _mountChRoot_image_x64_efi() {
 	loopdevfs=$(sudo -n blkid -s TYPE -o value "$current_imagedev""$ubVirtImageEFI" | tr -dc 'a-zA-Z0-9')
 	
 	! [[ "$loopdevfs" == "vfat" ]] && _stop 1
+	
+	
+	
+	
+	
+	#export ubVirtPlatformOverride='x64-efi'
+	#export ubVirtImageBIOS=p1
+	#export ubVirtImageEFI=p2
+	#export ubVirtImageNTFS=
+	#export ubVirtImageRecovery=
+	#export ubVirtImageSwap=p3
+	#export ubVirtImageBoot=p4
+	#export ubVirtImagePartition=p5
+	
+	if [[ "$ubVirtImageBoot" != "" ]]
+	then
+		sudo -n mkdir -p "$globalVirtFS"/boot
+		if ! sudo -n mount "$current_imagedev""$ubVirtImageBoot" "$globalVirtFS"/boot/efi
+		then
+			_stop 1
+		fi
+	fi
 	
 	
 	sudo -n mkdir -p "$globalVirtFS"/boot/efi
