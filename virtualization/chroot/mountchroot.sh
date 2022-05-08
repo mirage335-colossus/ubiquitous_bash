@@ -90,6 +90,12 @@ _mountChRoot() {
 		echo 'nameserver 2001:4860:4860::8888' | sudo -n tee -a "$absolute1"/etc/resolv.conf > /dev/null 2>&1
 	fi
 	
+	
+	if ! grep 'deleteme_chrootHost_hostname' "$absolute1"/etc/resolv.conf > /dev/null 2>&1
+	then
+		echo '127.0.0.1 '"$HOSTNAME"' deleteme_chrootHost_hostname' | sudo -n tee -a "$absolute1"/etc/hosts > /dev/null 2>&1
+	fi
+	
 	return 0
 }
 
@@ -106,6 +112,13 @@ _umountChRoot() {
 	if [[ -e "$absolute1"/etc/resolv.conf.guest ]] && [[ ! -e "$absolute1"/etc/resolv.conf.host ]]
 	then
 		sudo -n mv -f "$absolute1"/etc/resolv.conf.guest "$absolute1"/etc/resolv.conf
+	fi
+	
+	
+	if grep 'deleteme_chrootHost_hostname' "$absolute1"/etc/resolv.conf > /dev/null 2>&1
+	then
+		sudo -n grep -v 'deleteme_chrootHost_hostname' "$absolute1"/etc/hosts | sudo -n tee "$absolute1"/etc/hosts.guest > /dev/null 2>&1
+		sudo -n mv -f "$absolute1"/etc/hosts.guest "$absolute1"/etc/hosts
 	fi
 	
 	

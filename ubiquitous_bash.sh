@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='603395022'
+export ub_setScriptChecksum_contents='4000244829'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -14712,6 +14712,12 @@ _mountChRoot() {
 		echo 'nameserver 2001:4860:4860::8888' | sudo -n tee -a "$absolute1"/etc/resolv.conf > /dev/null 2>&1
 	fi
 	
+	
+	if ! grep 'deleteme_chrootHost_hostname' "$absolute1"/etc/resolv.conf > /dev/null 2>&1
+	then
+		echo '127.0.0.1 '"$HOSTNAME"' deleteme_chrootHost_hostname' | sudo -n tee -a "$absolute1"/etc/hosts > /dev/null 2>&1
+	fi
+	
 	return 0
 }
 
@@ -14728,6 +14734,13 @@ _umountChRoot() {
 	if [[ -e "$absolute1"/etc/resolv.conf.guest ]] && [[ ! -e "$absolute1"/etc/resolv.conf.host ]]
 	then
 		sudo -n mv -f "$absolute1"/etc/resolv.conf.guest "$absolute1"/etc/resolv.conf
+	fi
+	
+	
+	if grep 'deleteme_chrootHost_hostname' "$absolute1"/etc/resolv.conf > /dev/null 2>&1
+	then
+		sudo -n grep -v 'deleteme_chrootHost_hostname' "$absolute1"/etc/hosts | sudo -n tee "$absolute1"/etc/hosts.guest > /dev/null 2>&1
+		sudo -n mv -f "$absolute1"/etc/hosts.guest "$absolute1"/etc/hosts
 	fi
 	
 	
@@ -15169,7 +15182,7 @@ _chroot() {
 	
 	local chrootExitStatus
 	
-	sudo -n env -i HOME="/root" TERM="${TERM}" SHELL="/bin/bash" PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" DISPLAY="$DISPLAY" XSOCK="$XSOCK" XAUTH="$XAUTH" localPWD="$localPWD" hostArch=$(uname -m) virtSharedUser="$virtGuestUser" $(sudo -n bash -c "type -p chroot") "$chrootDir" "$@"
+	sudo -n env -i HOME="/root" TERM="${TERM}" SHELL="/bin/bash" PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" DISPLAY="$DISPLAY" XSOCK="$XSOCK" XAUTH="$XAUTH" localPWD="$localPWD" hostArch=$(uname -m) virtSharedUser="$virtGuestUser" chrootName="chrt" $(sudo -n bash -c "type -p chroot") "$chrootDir" "$@"
 	
 	chrootExitStatus="$?"
 	
@@ -18878,6 +18891,17 @@ _visualPrompt_promptCommand() {
 }
 
 _visualPrompt() {
+	local currentHostname
+	currentHostname="$HOSTNAME"
+	
+	[[ -e /etc/hostname ]] && export currentHostname=$(cat /etc/hostname)
+	
+	
+	local currentChroot
+	currentChroot=
+	[[ "$chrootName" != "" ]] && currentChRoot="$chrootName"
+	
+	
 	#+%H:%M:%S\ %Y-%m-%d\ Q%q
 	#+%H:%M:%S\ %b\ %d,\ %y
 
@@ -18912,7 +18936,9 @@ _visualPrompt() {
 		export prompt_nixShell=""
 	fi
 	
-	export PS1='\[\033[01;40m\]\[\033[01;36m\]\[\033[01;34m\]|\[\033[01;31m\]${?}:${debian_chroot:+($debian_chroot)}\[\033[01;33m\]\u\[\033[01;32m\]@\h\[\033[01;36m\]\[\033[01;34m\])\[\033[01;36m\]\[\033[01;34m\]-'"$prompt_cloudNetName"'(\[\033[01;35m\]$(date +%H:%M:%S\.%d)\[\033[01;34m\])\[\033[01;36m\]|\[\033[00m\]'"$prompt_nixShell"'\n\[\033[01;40m\]\[\033[01;36m\]\[\033[01;34m\]|\[\033[37m\][\w]\[\033[00m\]\n\[\033[01;36m\]\[\033[01;34m\]|$([[ "$PS1_lineNumber" == "1" ]] && echo -e -n '"'"'\[\033[01;36m\]'"'"'$PS1_lineNumber || echo -e -n $PS1_lineNumber)\[\033[01;34m\]) \[\033[36m\]'""'>\[\033[00m\] '
+	#export PS1='\[\033[01;40m\]\[\033[01;36m\]\[\033[01;34m\]|\[\033[01;31m\]${?}:${debian_chroot:+($debian_chroot)}\[\033[01;33m\]\u\[\033[01;32m\]@\h\[\033[01;36m\]\[\033[01;34m\])\[\033[01;36m\]\[\033[01;34m\]-'"$prompt_cloudNetName"'(\[\033[01;35m\]$(date +%H:%M:%S\.%d)\[\033[01;34m\])\[\033[01;36m\]|\[\033[00m\]'"$prompt_nixShell"'\n\[\033[01;40m\]\[\033[01;36m\]\[\033[01;34m\]|\[\033[37m\][\w]\[\033[00m\]\n\[\033[01;36m\]\[\033[01;34m\]|$([[ "$PS1_lineNumber" == "1" ]] && echo -e -n '"'"'\[\033[01;36m\]'"'"'$PS1_lineNumber || echo -e -n $PS1_lineNumber)\[\033[01;34m\]) \[\033[36m\]'""'>\[\033[00m\] '
+	
+	export PS1='\[\033[01;40m\]\[\033[01;36m\]\[\033[01;34m\]|\[\033[01;31m\]${?}:${currentChroot:+($currentChroot)}\[\033[01;33m\]\u\[\033[01;32m\]@'"$currentHostname"'\[\033[01;36m\]\[\033[01;34m\])\[\033[01;36m\]\[\033[01;34m\]-'"$prompt_cloudNetName"'(\[\033[01;35m\]$(date +%H:%M:%S\.%d)\[\033[01;34m\])\[\033[01;36m\]|\[\033[00m\]'"$prompt_nixShell"'\n\[\033[01;40m\]\[\033[01;36m\]\[\033[01;34m\]|\[\033[37m\][\w]\[\033[00m\]\n\[\033[01;36m\]\[\033[01;34m\]|$([[ "$PS1_lineNumber" == "1" ]] && echo -e -n '"'"'\[\033[01;36m\]'"'"'$PS1_lineNumber || echo -e -n $PS1_lineNumber)\[\033[01;34m\]) \[\033[36m\]'""'>\[\033[00m\] '
 	
 	#export PS1="$prompt_nixShell""$PS1"
 }
