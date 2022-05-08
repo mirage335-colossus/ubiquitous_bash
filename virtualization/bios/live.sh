@@ -51,20 +51,20 @@ _test_live() {
 _live_fdisk() {
 	if [[ -e '/sbin/fdisk' ]]
 	then
-		/sbin/fdisk "$@"
+		sudo -n /sbin/fdisk "$@"
 		return
 	fi
-	fdisk "$@"
+	sudo -n fdisk "$@"
 	return
 }
 
 _live_sfdisk() {
 	if [[ -e '/sbin/sfdisk' ]]
 	then
-		/sbin/sfdisk "$@"
+		sudo -n /sbin/sfdisk "$@"
 		return
 	fi
-	sfdisk "$@"
+	sudo -n sfdisk "$@"
 	return
 }
 
