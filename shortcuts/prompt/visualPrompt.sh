@@ -23,9 +23,8 @@ _visualPrompt() {
 	[[ -e /etc/hostname ]] && export currentHostname=$(cat /etc/hostname)
 	
 	
-	local currentChroot
-	currentChroot=
-	[[ "$chrootName" != "" ]] && currentChRoot="$chrootName"
+	export currentChroot=
+	[[ "$chrootName" != "" ]] && export currentChRoot="$chrootName"
 	
 	
 	#+%H:%M:%S\ %Y-%m-%d\ Q%q
