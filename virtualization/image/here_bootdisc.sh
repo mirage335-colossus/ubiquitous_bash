@@ -1,4 +1,4 @@
-_here_bootdisc_statup_xdg() {
+_here_bootdisc_startup_xdg() {
 cat << 'CZXWXcRMTo8EmM8i4d'
 [Desktop Entry]
 Comment=

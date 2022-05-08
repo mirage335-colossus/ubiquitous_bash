@@ -591,9 +591,9 @@ _custom_bootOnce() {
 		echo 'LABEL=uk4uPhB663kVcygT0q /media/bootdisc iso9660 ro,nofail 0 0' | sudo -n tee -a /etc/fstab > /dev/null
 	fi
 	
-	if ! type _here_bootdisc_statup_xdg > /dev/null 2>&1
+	if ! type _here_bootdisc_startup_xdg > /dev/null 2>&1
 	then
-		_here_bootdisc_statup_xdg() {
+		_here_bootdisc_startup_xdg() {
 		
 			echo '
 [Desktop Entry]
@@ -615,7 +615,7 @@ Type=Application
 	
 	
 	sudo -n mkdir -p /home/"$custom_user"/.config/autostart
-	_here_bootdisc_statup_xdg | sudo tee /home/"$custom_user"/.config/autostart/startup.desktop > /dev/null
+	_here_bootdisc_startup_xdg | sudo tee /home/"$custom_user"/.config/autostart/startup.desktop > /dev/null
 	sudo -n chown -R user:user /home/"$custom_user"/.config
 	sudo -n chmod 555 /home/"$custom_user"/.config/autostart/startup.desktop
 	

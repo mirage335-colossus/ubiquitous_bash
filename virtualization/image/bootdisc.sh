@@ -179,7 +179,7 @@ _createHTG_UNIX() {
 	#"$sharedHostProjectDir"
 	#"${processedArgs[@]}"
 	
-	_here_bootdisc_statup_xdg >> "$hostToGuestFiles"/startup.desktop
+	_here_bootdisc_startup_xdg >> "$hostToGuestFiles"/startup.desktop
 	
 	_here_bootdisc_rootnix >> "$hostToGuestFiles"/rootnix.sh
 	
