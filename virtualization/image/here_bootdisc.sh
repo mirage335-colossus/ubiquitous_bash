@@ -2,7 +2,7 @@ _here_bootdisc_statup_xdg() {
 cat << 'CZXWXcRMTo8EmM8i4d'
 [Desktop Entry]
 Comment=
-Exec=/media/bootdisc/cmd.sh
+Exec=sudo -n mount -t iso9660 -o ro,nofail LABEL=uk4uPhB663kVcygT0q /media/bootdisc ; sudo -n /media/bootdisc/rootnix.sh ; /media/bootdisc/cmd.sh
 GenericName=
 Icon=exec
 MimeType=

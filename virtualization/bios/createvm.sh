@@ -377,6 +377,15 @@ _createVMfstab() {
 	echo '#UUID='"$ubVirtImageSwap_UUID"' swap swap defaults 0 0' | sudo -n tee -a "$globalVirtFS"/etc/fstab
 	
 	
+	if [[ "$ubVirtImageBoot" != "" ]]
+	then
+		local ubVirtImageBoot_UUID
+		ubVirtImageBoot_UUID=$(sudo -n blkid -s UUID -o value "$imagedev""$ubVirtImageBoot" | tr -dc 'a-zA-Z0-9\-')
+	fi
+	
+	echo 'UUID='"$ubVirtImageBoot_UUID"' /boot ext2 defaults 0 1' | sudo -n tee -a "$globalVirtFS"/etc/fstab
+	
+	
 	if [[ "$ubVirtImageEFI" != "" ]]
 	then
 		local ubVirtImageEFI_UUID

@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='167471098'
+export ub_setScriptChecksum_contents='536373710'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -14029,7 +14029,7 @@ _here_bootdisc_statup_xdg() {
 cat << 'CZXWXcRMTo8EmM8i4d'
 [Desktop Entry]
 Comment=
-Exec=/media/bootdisc/cmd.sh
+Exec=sudo -n mount -t iso9660 -o ro,nofail LABEL=uk4uPhB663kVcygT0q /media/bootdisc ; sudo -n /media/bootdisc/rootnix.sh ; /media/bootdisc/cmd.sh
 GenericName=
 Icon=exec
 MimeType=
@@ -15924,6 +15924,15 @@ _createVMfstab() {
 	fi
 	
 	echo '#UUID='"$ubVirtImageSwap_UUID"' swap swap defaults 0 0' | sudo -n tee -a "$globalVirtFS"/etc/fstab
+	
+	
+	if [[ "$ubVirtImageBoot" != "" ]]
+	then
+		local ubVirtImageBoot_UUID
+		ubVirtImageBoot_UUID=$(sudo -n blkid -s UUID -o value "$imagedev""$ubVirtImageBoot" | tr -dc 'a-zA-Z0-9\-')
+	fi
+	
+	echo 'UUID='"$ubVirtImageBoot_UUID"' /boot ext2 defaults 0 1' | sudo -n tee -a "$globalVirtFS"/etc/fstab
 	
 	
 	if [[ "$ubVirtImageEFI" != "" ]]
