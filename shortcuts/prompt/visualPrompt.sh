@@ -24,7 +24,7 @@ _visualPrompt() {
 	
 	
 	export currentChroot=
-	[[ "$chrootName" != "" ]] && export currentChRoot="$chrootName"
+	[[ "$chrootName" != "" ]] && export currentChroot="$chrootName"
 	
 	
 	#+%H:%M:%S\ %Y-%m-%d\ Q%q
