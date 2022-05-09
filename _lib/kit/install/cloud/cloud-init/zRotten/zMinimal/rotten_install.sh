@@ -403,6 +403,10 @@ _custom_kde() {
 	_messagePlain_probe_cmd mv "$HOME"/.local "$currentBackupDir"/.local
 	
 	_messagePlain_probe_cmd tar xvf package_kde.tar.xz
+	
+	
+	mkdir -p "$HOME"/.config/autostart
+	_messagePlain_probe_cmd cp "$currentBackupDir"/.config/autostart/* "$HOME"/.config/autostart/
 }
 
 _custom_kde_drop() {
