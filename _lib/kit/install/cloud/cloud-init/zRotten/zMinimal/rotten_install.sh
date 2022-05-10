@@ -401,6 +401,7 @@ _custom_kde() {
 	_messagePlain_probe_cmd mv "$HOME"/.config "$currentBackupDir"/.config
 	_messagePlain_probe_cmd mv "$HOME"/.kde "$currentBackupDir"/.kde
 	_messagePlain_probe_cmd mv "$HOME"/.local "$currentBackupDir"/.local
+	_messagePlain_probe_cmd mv "$HOME"/.xournal "$currentBackupDir"/.xournal
 	
 	_messagePlain_probe_cmd tar xvf package_kde.tar.xz
 	
