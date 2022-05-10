@@ -70,6 +70,10 @@ _getMinimal_cloud() {
 	# https://github.com/actions/virtual-environments/issues/668#issuecomment-624080758
 	[[ "$CI" != "" ]] && _getMost_backend curl -4 https://rclone.org/install.sh | _getMost_backend bash
 	
+	if ! _getMost_backend type rclone > /dev/null 2>&1
+	then
+		_getMost_backend_aptGetInstall rclone
+	fi
 	
 	
 	_getMost_backend_aptGetInstall sockstat
@@ -269,6 +273,7 @@ _getMinimal_cloud() {
 	if ! _getMost_backend type croc > /dev/null 2>&1
 	then
 		_getMost_backend curl https://getcroc.schollz.com | _getMost_backend bash
+		[[ "$CI" != "" ]] && _getMost_backend curl -4 | _getMost_backend bash
 	fi
 	
 	
