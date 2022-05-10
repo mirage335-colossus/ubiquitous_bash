@@ -465,6 +465,10 @@ _getMost_debian11_install() {
 	_getMost_backend_aptGetInstall freecad
 	
 	
+	
+	_getMost_backend apt-get remove --autoremove -y plasma-discover
+	
+	
 	_getMost_debian11_special_late
 }
 
@@ -488,6 +492,9 @@ _getMost_debian11() {
 	_getMost_debian11_aptSources "$@"
 	
 	_getMost_debian11_install "$@"
+	
+	
+	_getMost_backend apt-get remove --autoremove -y plasma-discover
 	
 	
 	_messagePlain_probe 'end: _getMost_debian11'
@@ -554,6 +561,9 @@ _getMost_ubuntu20() {
 	_getMost_ubuntu20_aptSources "$@"
 	
 	_getMost_ubuntu20_install "$@"
+	
+	
+	_getMost_backend apt-get remove --autoremove -y plasma-discover
 	
 	
 	_messagePlain_probe 'end: _getMost_ubuntu20'

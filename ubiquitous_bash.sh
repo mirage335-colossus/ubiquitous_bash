@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='1914239451'
+export ub_setScriptChecksum_contents='1127297273'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -9675,6 +9675,10 @@ _getMost_debian11_install() {
 	_getMost_backend_aptGetInstall freecad
 	
 	
+	
+	_getMost_backend apt-get remove --autoremove -y plasma-discover
+	
+	
 	_getMost_debian11_special_late
 }
 
@@ -9698,6 +9702,9 @@ _getMost_debian11() {
 	_getMost_debian11_aptSources "$@"
 	
 	_getMost_debian11_install "$@"
+	
+	
+	_getMost_backend apt-get remove --autoremove -y plasma-discover
 	
 	
 	_messagePlain_probe 'end: _getMost_debian11'
@@ -9764,6 +9771,9 @@ _getMost_ubuntu20() {
 	_getMost_ubuntu20_aptSources "$@"
 	
 	_getMost_ubuntu20_install "$@"
+	
+	
+	_getMost_backend apt-get remove --autoremove -y plasma-discover
 	
 	
 	_messagePlain_probe 'end: _getMost_ubuntu20'
@@ -10193,6 +10203,9 @@ _getMinimal_cloud() {
 	
 	type _get_veracrypt > /dev/null 2>&1 && "$scriptAbsoluteLocation" _get_veracrypt
 	
+	
+	
+	_getMost_backend apt-get remove --autoremove -y plasma-discover
 	
 	_getMost_backend apt-get -y clean
 	
@@ -16455,9 +16468,9 @@ insmod all_video
 
 search --set=root --file /ROOT_TEXT
 
-set default="0"
+#set default="0"
 #set default="1"
-#set default="2"
+set default="2"
 set timeout=3
 
 menuentry "Live" {
@@ -16472,7 +16485,7 @@ menuentry "Live - ( persistence )" {
     initrd /initrd
 }
 
-menuentry "Live - ( hint: ignored: resume disabled )" {
+menuentry "Live - ( hint: ignored: resume disabled ) ( mem: all )" {
     linux /vmlinuz boot=live config debug=1 noeject nopersistence selinux=0
     initrd /initrd
 }

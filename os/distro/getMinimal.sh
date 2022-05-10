@@ -286,6 +286,9 @@ _getMinimal_cloud() {
 	type _get_veracrypt > /dev/null 2>&1 && "$scriptAbsoluteLocation" _get_veracrypt
 	
 	
+	
+	_getMost_backend apt-get remove --autoremove -y plasma-discover
+	
 	_getMost_backend apt-get -y clean
 	
 	

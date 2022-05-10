@@ -389,9 +389,9 @@ insmod all_video
 
 search --set=root --file /ROOT_TEXT
 
-set default="0"
+#set default="0"
 #set default="1"
-#set default="2"
+set default="2"
 set timeout=3
 
 menuentry "Live" {
@@ -406,7 +406,7 @@ menuentry "Live - ( persistence )" {
     initrd /initrd
 }
 
-menuentry "Live - ( hint: ignored: resume disabled )" {
+menuentry "Live - ( hint: ignored: resume disabled ) ( mem: all )" {
     linux /vmlinuz boot=live config debug=1 noeject nopersistence selinux=0
     initrd /initrd
 }
