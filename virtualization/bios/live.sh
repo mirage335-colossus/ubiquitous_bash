@@ -377,6 +377,9 @@ _live_more() {
 # https://manpages.debian.org/testing/live-boot-doc/live-boot.7.en.html
 # https://github.com/bugra9/persistent
 # https://manpages.debian.org/testing/live-boot-doc/persistence.conf.5.en.html
+# https://www.freedesktop.org/software/systemd/man/systemd-gpt-auto-generator.html
+#  systemd.gpt_auto=false 
+#  rd.systemd.gpt_auto=false
  # WARNING: 'persistence.conf' ... 'root of its file system' ... 'Any such labeled volume must have such a file, or it will be ignored.'
 # config debug=1 noeject persistence persistence-path=/persist persistence-label=bulk persistence-storage=directory
 _live_grub_here() {
