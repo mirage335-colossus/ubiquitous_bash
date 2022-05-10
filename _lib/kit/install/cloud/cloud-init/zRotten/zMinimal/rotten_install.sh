@@ -1013,8 +1013,8 @@ _install_and_run() {
 }
 
 
-_run() {
-	_messageNormal 'init: rotten: _run'
+_regenerate() {
+	_messageNormal 'init: rotten: _regenerate'
 	
 	##cd /home/user
 	_mustGetSudo
@@ -1041,7 +1041,19 @@ _run() {
 		
 		sudo -n rm -f /regenerate
 	fi
+}
+
+_run() {
+	_messageNormal 'init: rotten: _run'
 	
+	##cd /home/user
+	_mustGetSudo
+	_mustBeRoot
+	
+	if [[ -e /regenerate ]]
+	then
+		_regenerate "$@"
+	fi
 	
 	
 	# ATTENTION: DANGER: If necessary, delete !
