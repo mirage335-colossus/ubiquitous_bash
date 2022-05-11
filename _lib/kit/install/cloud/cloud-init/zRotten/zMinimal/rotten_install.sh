@@ -182,6 +182,8 @@ _here_rottenScript_bash_declareFunctions() {
 	declare -f _install_and_run_package
 	declare -f _install
 	declare -f _install_and_run
+	declare -f _regenerate_docker
+	declare -f _regenerate
 	declare -f _run
 	declare -f _test_prog
 	declare -f _main
@@ -1016,6 +1018,24 @@ _install_and_run() {
 }
 
 
+
+_regenerate_docker() {
+	local currentDelay
+	currentDelay="$1"
+	[[ "$currentDelay" == "" ]] && currentDelay=1
+	
+	if ! sudo -n systemctl status docker | grep 'active (running)' || sudo -n systemctl status docker | grep 'code=exited, status=1/FAILURE'
+	then
+		sudo -n rmdir /var/lib/docker/runtimes
+		sudo -n systemctl stop docker
+		sudo -n rmdir /var/lib/docker/runtimes
+		sleep "$currentDelay"
+		sudo -n rmdir /var/lib/docker/runtimes
+		sudo -n systemctl start docker
+	fi
+	return 0
+}
+
 _regenerate() {
 	_messageNormal 'init: rotten: _regenerate'
 	
@@ -1044,6 +1064,14 @@ _regenerate() {
 		
 		sudo -n rm -f /regenerate
 	fi
+	
+	_regenerate_docker 1
+	! sudo -n systemctl status docker | grep 'active (running)' && _regenerate_docker 3
+	! sudo -n systemctl status docker | grep 'active (running)' && _regenerate_docker 9
+	! sudo -n systemctl status docker | grep 'active (running)' && _regenerate_docker 27
+	
+	
+	return 0
 }
 
 _run() {
