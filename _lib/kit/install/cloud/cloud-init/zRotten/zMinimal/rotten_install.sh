@@ -1060,9 +1060,6 @@ _regenerate() {
 		# https://forums.raspberrypi.com/viewtopic.php?t=125345
 		sudo -n rm -f /etc/ssh/ssh_host*
 		sudo -n ssh-keygen -A
-		
-		
-		sudo -n rm -f /regenerate
 	fi
 	
 	_regenerate_docker 1
@@ -1070,6 +1067,8 @@ _regenerate() {
 	! sudo -n systemctl status docker | grep 'active (running)' && _regenerate_docker 9
 	! sudo -n systemctl status docker | grep 'active (running)' && _regenerate_docker 27
 	
+	
+	sudo -n rm -f /regenerate > /dev/null
 	
 	return 0
 }
