@@ -359,6 +359,8 @@ _createVMfstab() {
 	
 	# https://gist.github.com/varqox/42e213b6b2dde2b636ef#edit-fstab-file
 	
+	#btrfs rescue zero-log /dev/sda5
+	
 	local ubVirtImagePartition_UUID
 	ubVirtImagePartition_UUID=$(sudo -n blkid -s UUID -o value "$imagedev""$ubVirtImagePartition" | tr -dc 'a-zA-Z0-9\-')
 	
