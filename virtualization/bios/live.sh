@@ -392,7 +392,7 @@ search --set=root --file /ROOT_TEXT
 #set default="0"
 #set default="1"
 set default="2"
-set timeout=3
+set timeout=1
 
 menuentry "Live" {
     #linux /vmlinuz boot=live config debug=1 noeject nopersistence selinux=0 mem=3712M resume=UUID=469457fc-293f-46ec-92da-27b5d0c36b17

@@ -1080,6 +1080,10 @@ _run() {
 	_mustGetSudo
 	_mustBeRoot
 	
+	# May ensure at least some Virtual Terminals have already run '/bin/bash', '~/.bashrc', etc, thus more quickly usable if overwhelmed (eg. by swapping).
+	systemctl start getty@tty2
+	systemctl start getty@tty3
+	
 	if [[ -e /regenerate ]]
 	then
 		_regenerate "$@"
