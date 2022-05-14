@@ -1044,7 +1044,7 @@ _test_pipefail() {
 # WARNING: Not necessarily tested by default, due to lack of use except where faults are tolerable, and slim possibility of useful embedded systems not able to pass.
 _test_grep() {
 	# If not known distribution/OS, do NOT test. Some embedded systems not able to pass may be nevertheless useful.
-	! [[ -e /etc/issue ]] && cat /etc/issue | grep 'Debian\|Raspbian\|Ubuntu' > /dev/null 2>&1 && return 0
+	! ( [[ -e /etc/issue ]] && cat /etc/issue | grep 'Debian\|Raspbian\|Ubuntu' > /dev/null 2>&1 ) && ! _if_cygwin && return 0
 	
 	
 	
