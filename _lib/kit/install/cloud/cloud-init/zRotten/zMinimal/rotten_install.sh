@@ -686,6 +686,10 @@ _custom_write_sudoers() {
 #Defaults	env_reset
 #Defaults	mail_badpass
 #Defaults	secure_path="/root/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+
+Defaults  env_keep += "currentChroot"
+Defaults  env_keep += "chrootName"
+
 root	ALL=(ALL:ALL) ALL
 #user   ALL=(ALL:ALL) NOPASSWD: ALL
 #pi ALL=(ALL:ALL) NOPASSWD: ALL
