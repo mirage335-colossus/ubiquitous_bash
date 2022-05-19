@@ -757,6 +757,9 @@ _custom() {
 	fi
 	
 	_custom_write_sshdConfig
+	_install_and_run_package ssh
+	_install_and_run_package openssh-server
+	_install_and_run_package openssh-client
 	
 	_custom_write_sudoers
 	
