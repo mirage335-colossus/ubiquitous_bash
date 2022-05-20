@@ -872,7 +872,7 @@ Relogin=true
 	_install_and_run_package cloud-guest-utils
 	_install_and_run_package cloud-image-utils
 	
-	
+	_install_and_run_package qemu-guest-agent
 }
 
 
