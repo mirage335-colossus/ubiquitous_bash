@@ -873,6 +873,10 @@ Relogin=true
 	_install_and_run_package cloud-image-utils
 	
 	_install_and_run_package qemu-guest-agent
+	
+	# https://docs.hetzner.com/cloud/networks/server-configuration/
+	curl https://packages.hetzner.com/hcloud/deb/hc-utils_0.0.4-1_all.deb -o /tmp/hc-utils_0.0.4-1_all.deb -s
+	env DEBIAN_FRONTEND=noninteractive apt-get -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install --install-recommends /tmp/hc-utils_0.0.4-1_all.deb
 }
 
 
