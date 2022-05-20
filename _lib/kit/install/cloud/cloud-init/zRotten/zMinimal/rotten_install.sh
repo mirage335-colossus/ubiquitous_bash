@@ -672,6 +672,9 @@ Subsystem sftp	/usr/lib/openssh/sftp-server
 PasswordAuthentication no
 
 AllowUsers root user
+
+# https://serverfault.com/questions/434896/ssh-one-authorized-keys-for-multiple-service-accounts
+AuthorizedKeysFile  .ssh/authorized_keys /etc/ssh/authorized_keys
 ' | sudo -n tee /etc/ssh/sshd_config > /dev/null
 	
 	
@@ -859,6 +862,16 @@ Relogin=true
 	cat "/root/.ssh/authorized_keys" >> /etc/skel/.ssh/authorized_keys
 	mkdir -p /home/"$custom_user""/.ssh"
 	cat "/root/.ssh/authorized_keys" >> /home/"$custom_user"/.ssh/authorized_keys
+	
+	
+	_install_and_run_package cloud-init
+	_install_and_run_package cloud-initramfs-growroot
+	
+	_install_and_run_package cloud-utils
+	_install_and_run_package cloud-guest-utils
+	_install_and_run_package cloud-image-utils
+	
+	
 }
 
 
@@ -1053,8 +1066,10 @@ _regenerate() {
 	
 	if [[ -e /regenerate ]]
 	then
-		sudo -n rm -f /root/.ssh/authorized_keys
-		sudo -n rm -f /home/user/.ssh/authorized_keys
+		# WARNING: DANGER: MUST enable if image build may result in any added 'authorized_keys'.
+		#sudo -n rm -f /root/.ssh/authorized_keys
+		#sudo -n rm -f /home/user/.ssh/authorized_keys
+		#sudo -n rm -f /etc/ssh/authorized_keys
 		
 		
 		echo 'root:'$(_uid 12) | sudo -n chpasswd
@@ -1068,6 +1083,10 @@ _regenerate() {
 		sudo -n rm -f /etc/ssh/ssh_host*
 		sudo -n ssh-keygen -A
 	fi
+	
+	sudo -n rm -f /etc/ssh/authorized_keys > /dev/null 2>&1
+	sudo -n cp -f /root/.ssh/authorized_keys /etc/ssh/authorized_keys
+	sudo -n chmod 644 /etc/ssh/authorized_keys
 	
 	_regenerate_docker 1
 	! sudo -n systemctl status docker | grep 'active (running)' && _regenerate_docker 3
