@@ -875,13 +875,14 @@ Relogin=true
 }
 
 
+# https://serverfault.com/questions/259226/automatically-keep-current-version-of-config-files-when-apt-get-install
 _install_and_run_package() {
 	if ( [[ -e /etc/issue ]] && cat /etc/issue | grep 'Debian\|Raspbian' > /dev/null 2>&1 ) || ( [[ -e /etc/issue ]] && cat /etc/issue | grep 'Ubuntu' > /dev/null 2>&1 )
 	then
 		sudo -n apt-get -y update
-		sudo -n apt-get -y install "$@"
+		sudo -n env DEBIAN_FRONTEND=noninteractive apt-get -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install --install-recommends "$@"
 		apt-get -y update
-		apt-get -y install "$@"
+		env DEBIAN_FRONTEND=noninteractive apt-get -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install --install-recommends "$@"
 	fi
 }
 
