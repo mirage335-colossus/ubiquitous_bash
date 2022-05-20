@@ -1085,10 +1085,6 @@ _regenerate() {
 		sudo -n ssh-keygen -A
 	fi
 	
-	sudo -n rm -f /etc/ssh/authorized_keys > /dev/null 2>&1
-	sudo -n cp -f /root/.ssh/authorized_keys /etc/ssh/authorized_keys
-	sudo -n chmod 644 /etc/ssh/authorized_keys
-	
 	_regenerate_docker 1
 	! sudo -n systemctl status docker | grep 'active (running)' && _regenerate_docker 3
 	! sudo -n systemctl status docker | grep 'active (running)' && _regenerate_docker 9
@@ -1115,6 +1111,9 @@ _run() {
 	then
 		_regenerate "$@"
 	fi
+	sudo -n rm -f /etc/ssh/authorized_keys > /dev/null 2>&1
+	sudo -n cp -f /root/.ssh/authorized_keys /etc/ssh/authorized_keys
+	sudo -n chmod 644 /etc/ssh/authorized_keys
 	
 	
 	# ATTENTION: DANGER: If necessary, delete !
