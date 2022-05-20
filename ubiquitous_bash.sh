@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='2510248251'
+export ub_setScriptChecksum_contents='900902379'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -15960,7 +15960,8 @@ _createVMfstab() {
 	ubVirtImagePartition_UUID=$(sudo -n blkid -s UUID -o value "$imagedev""$ubVirtImagePartition" | tr -dc 'a-zA-Z0-9\-')
 	
 	#echo 'UUID='"$ubVirtImagePartition_UUID"' / ext4 errors=remount-ro 0 1' | sudo -n tee "$globalVirtFS"/etc/fstab
-	echo 'UUID='"$ubVirtImagePartition_UUID"' / btrfs defaults,compress=zstd:1,notreelog 0 1' | sudo -n tee "$globalVirtFS"/etc/fstab
+	#echo 'UUID='"$ubVirtImagePartition_UUID"' / btrfs defaults,compress=zstd:1,notreelog 0 1' | sudo -n tee "$globalVirtFS"/etc/fstab
+	echo 'UUID='"$ubVirtImagePartition_UUID"' / btrfs defaults,compress=zstd:1,notreelog,discard 0 1' | sudo -n tee "$globalVirtFS"/etc/fstab
 	
 	
 	# initramfs-update, from chroot, may not enable hibernation/resume... may be device specific

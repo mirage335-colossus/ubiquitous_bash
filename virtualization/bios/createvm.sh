@@ -365,7 +365,8 @@ _createVMfstab() {
 	ubVirtImagePartition_UUID=$(sudo -n blkid -s UUID -o value "$imagedev""$ubVirtImagePartition" | tr -dc 'a-zA-Z0-9\-')
 	
 	#echo 'UUID='"$ubVirtImagePartition_UUID"' / ext4 errors=remount-ro 0 1' | sudo -n tee "$globalVirtFS"/etc/fstab
-	echo 'UUID='"$ubVirtImagePartition_UUID"' / btrfs defaults,compress=zstd:1,notreelog 0 1' | sudo -n tee "$globalVirtFS"/etc/fstab
+	#echo 'UUID='"$ubVirtImagePartition_UUID"' / btrfs defaults,compress=zstd:1,notreelog 0 1' | sudo -n tee "$globalVirtFS"/etc/fstab
+	echo 'UUID='"$ubVirtImagePartition_UUID"' / btrfs defaults,compress=zstd:1,notreelog,discard 0 1' | sudo -n tee "$globalVirtFS"/etc/fstab
 	
 	
 	# initramfs-update, from chroot, may not enable hibernation/resume... may be device specific
