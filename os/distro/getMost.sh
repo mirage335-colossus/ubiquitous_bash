@@ -134,6 +134,9 @@ _getMost_debian11_install() {
 	#_getMost_backend apt-get upgrade
 	
 	
+	_getMost_backend_aptGetInstall locales-all
+	
+	
 	if _getMost_backend_fileExists "/bup_0.29-3_amd64.deb"
 	then
 		_getMost_backend dpkg -i "/bup_0.29-3_amd64.deb"

@@ -775,6 +775,7 @@ Relogin=true
 	
 	
 	#US/Eastern
+	_install_and_run_package locales-all
 	sudo -n timedatectl set-timezone US/Eastern
 	#en_US.UTF-8
 	sudo -n update-locale LANG=en_US.UTF-8 LANGUAGE
