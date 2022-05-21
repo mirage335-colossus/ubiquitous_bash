@@ -170,7 +170,18 @@ _getMost_debian11_install() {
 		_getMost_backend apt-get update
 	fi
 	_getMost_backend_aptGetInstall wmctrl xprintidle
-	_getMost_backend_aptGetInstall okular libreoffice firefox-esr xournal kwrite netcat-openbsd iperf axel unionfs-fuse samba
+	
+	_getMost_backend_aptGetInstall okular
+	_getMost_backend_aptGetInstall libreoffice
+	_getMost_backend_aptGetInstall firefox-esr
+	_getMost_backend_aptGetInstall xournal
+	_getMost_backend_aptGetInstall kwrite
+	_getMost_backend_aptGetInstall netcat-openbsd
+	_getMost_backend_aptGetInstall iperf
+	_getMost_backend_aptGetInstall axel
+	_getMost_backend_aptGetInstall unionfs-fuse
+	_getMost_backend_aptGetInstall samba
+	
 	_getMost_backend_aptGetInstall qemu
 	_getMost_backend_aptGetInstall qemu-system-x86
 	_getMost_backend_aptGetInstall qemu-system-arm

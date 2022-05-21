@@ -426,12 +426,25 @@ _fetchDep_ubuntuFocalFossa() {
 	"$scriptAbsoluteLocation" _fetchDep_ubuntuFocalFossa_sequence "$@"
 }
 
+# WARNING: Workarounds may be by exception only (more dist/OS version specific workarounds for other dist/OS such as Debian).
 _fetchDep_ubuntu() {
 	if [[ -e /etc/issue ]] && cat /etc/issue | grep 'Ubuntu' | grep '20.04' > /dev/null 2>&1
 	then
 		_fetchDep_ubuntuFocalFossa "$@"
 		return
 	fi
+	
+	if [[ -e /etc/issue ]] && cat /etc/issue | grep 'Ubuntu' | grep '21.10' > /dev/null 2>&1
+	then
+		_fetchDep_ubuntuFocalFossa "$@"
+		return
+	fi
+	if [[ -e /etc/issue ]] && cat /etc/issue | grep 'Ubuntu' | grep '22.04' > /dev/null 2>&1
+	then
+		_fetchDep_ubuntuFocalFossa "$@"
+		return
+	fi
+	
 	
 	return 1
 }

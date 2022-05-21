@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='1798215185'
+export ub_setScriptChecksum_contents='1363157799'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -8488,12 +8488,25 @@ _fetchDep_ubuntuFocalFossa() {
 	"$scriptAbsoluteLocation" _fetchDep_ubuntuFocalFossa_sequence "$@"
 }
 
+# WARNING: Workarounds may be by exception only (more dist/OS version specific workarounds for other dist/OS such as Debian).
 _fetchDep_ubuntu() {
 	if [[ -e /etc/issue ]] && cat /etc/issue | grep 'Ubuntu' | grep '20.04' > /dev/null 2>&1
 	then
 		_fetchDep_ubuntuFocalFossa "$@"
 		return
 	fi
+	
+	if [[ -e /etc/issue ]] && cat /etc/issue | grep 'Ubuntu' | grep '21.10' > /dev/null 2>&1
+	then
+		_fetchDep_ubuntuFocalFossa "$@"
+		return
+	fi
+	if [[ -e /etc/issue ]] && cat /etc/issue | grep 'Ubuntu' | grep '22.04' > /dev/null 2>&1
+	then
+		_fetchDep_ubuntuFocalFossa "$@"
+		return
+	fi
+	
 	
 	return 1
 }
@@ -8671,7 +8684,18 @@ _getMost_debian11_install() {
 		_getMost_backend apt-get update
 	fi
 	_getMost_backend_aptGetInstall wmctrl xprintidle
-	_getMost_backend_aptGetInstall okular libreoffice firefox-esr xournal kwrite netcat-openbsd iperf axel unionfs-fuse samba
+	
+	_getMost_backend_aptGetInstall okular
+	_getMost_backend_aptGetInstall libreoffice
+	_getMost_backend_aptGetInstall firefox-esr
+	_getMost_backend_aptGetInstall xournal
+	_getMost_backend_aptGetInstall kwrite
+	_getMost_backend_aptGetInstall netcat-openbsd
+	_getMost_backend_aptGetInstall iperf
+	_getMost_backend_aptGetInstall axel
+	_getMost_backend_aptGetInstall unionfs-fuse
+	_getMost_backend_aptGetInstall samba
+	
 	_getMost_backend_aptGetInstall qemu
 	_getMost_backend_aptGetInstall qemu-system-x86
 	_getMost_backend_aptGetInstall qemu-system-arm
