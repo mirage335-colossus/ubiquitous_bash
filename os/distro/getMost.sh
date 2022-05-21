@@ -544,24 +544,26 @@ _getMost_debian11() {
 
 
 
-_getMost_ubuntu20_aptSources() {
-	# May be an image copied while dpkg was locked. Especially if 'chroot'.
-	_getMost_backend rm -f /var/lib/apt/lists/lock
-	_getMost_backend rm -f /var/lib/dpkg/lock
+_getMost_ubuntu22_aptSources() {
+	## May be an image copied while dpkg was locked. Especially if 'chroot'.
+	#_getMost_backend rm -f /var/lib/apt/lists/lock
+	#_getMost_backend rm -f /var/lib/dpkg/lock
 	
 	
-	_getMost_backend_aptGetInstall wget
-	_getMost_backend_aptGetInstall gpg
+	#_getMost_backend_aptGetInstall wget
+	#_getMost_backend_aptGetInstall gpg
 	
 	
-	_getMost_backend mkdir -p /etc/apt/sources.list.d
-	echo 'deb http://download.virtualbox.org/virtualbox/debian focal contrib' | _getMost_backend tee /etc/apt/sources.list.d/ub_vbox.list > /dev/null 2>&1
-	echo 'deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable' | _getMost_backend tee /etc/apt/sources.list.d/ub_docker.list > /dev/null 2>&1
+	#_getMost_backend mkdir -p /etc/apt/sources.list.d
+	#echo 'deb http://download.virtualbox.org/virtualbox/debian focal contrib' | _getMost_backend tee /etc/apt/sources.list.d/ub_vbox.list > /dev/null 2>&1
+	#echo 'deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable' | _getMost_backend tee /etc/apt/sources.list.d/ub_docker.list > /dev/null 2>&1
 	
-	_getMost_backend wget -q https://www.virtualbox.org/download/oracle_vbox_2016.asc -O- | _getMost_backend apt-key add -
-	_getMost_backend wget -q https://www.virtualbox.org/download/oracle_vbox.asc -O- | _getMost_backend apt-key add -
+	#_getMost_backend wget -q https://www.virtualbox.org/download/oracle_vbox_2016.asc -O- | _getMost_backend apt-key add -
+	#_getMost_backend wget -q https://www.virtualbox.org/download/oracle_vbox.asc -O- | _getMost_backend apt-key add -
+	
+	_getMost_debian11_aptSources "$@"
 }
-_getMost_ubuntu20_install() {
+_getMost_ubuntu22_install() {
 	_getMost_debian11_install "$@"
 	
 	# WARNING: Untested. May be old version of VirtualBox. May conflict with guest additions.
@@ -582,8 +584,8 @@ _getMost_ubuntu20_install() {
 }
 
 # ATTENTION: End user function.
-_getMost_ubuntu20() {
-	_messagePlain_probe 'begin: _getMost_ubuntu20'
+_getMost_ubuntu22() {
+	_messagePlain_probe 'begin: _getMost_ubuntu22'
 	
 	_set_getMost_backend "$@"
 	_set_getMost_backend_debian "$@"
@@ -598,15 +600,15 @@ _getMost_ubuntu20() {
 	export DEBIAN_FRONTEND=noninteractive
 	
 	
-	_getMost_ubuntu20_aptSources "$@"
+	_getMost_ubuntu22_aptSources "$@"
 	
-	_getMost_ubuntu20_install "$@"
+	_getMost_ubuntu22_install "$@"
 	
 	
 	_getMost_backend apt-get remove --autoremove -y plasma-discover
 	
 	
-	_messagePlain_probe 'end: _getMost_ubuntu20'
+	_messagePlain_probe 'end: _getMost_ubuntu22'
 }
 
 
@@ -723,7 +725,7 @@ _getMost() {
 	fi
 	if [[ -e /etc/issue ]] && cat /etc/issue | grep 'Ubuntu' > /dev/null 2>&1
 	then
-		_tryExecFull _getMost_ubuntu20 "$@"
+		_tryExecFull _getMost_ubuntu22 "$@"
 		return
 	fi
 	return 1
