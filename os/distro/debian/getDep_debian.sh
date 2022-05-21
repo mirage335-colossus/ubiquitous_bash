@@ -104,7 +104,7 @@ _fetchDep_debianBullseye_special() {
 	if [[ "$1" == "VirtualBox" ]] || [[ "$1" == "VBoxSDL" ]] || [[ "$1" == "VBoxManage" ]] || [[ "$1" == "VBoxHeadless" ]]
 	then
 		sudo -n mkdir -p /etc/apt/sources.list.d
-		echo 'deb http://download.virtualbox.org/virtualbox/debian bullseye contrib' | sudo -n tee /etc/apt/sources.list.d/ub_vbox.list > /dev/null 2>&1
+		echo 'deb [arch=amd64] http://download.virtualbox.org/virtualbox/debian bullseye contrib' | sudo -n tee /etc/apt/sources.list.d/ub_vbox.list > /dev/null 2>&1
 		
 		"$scriptAbsoluteLocation" _getDep wget
 		! _wantDep wget && return 1
@@ -541,7 +541,7 @@ _fetchDep_debianBuster_special() {
 	if [[ "$1" == "VirtualBox" ]] || [[ "$1" == "VBoxSDL" ]] || [[ "$1" == "VBoxManage" ]] || [[ "$1" == "VBoxHeadless" ]]
 	then
 		sudo -n mkdir -p /etc/apt/sources.list.d
-		echo 'deb http://download.virtualbox.org/virtualbox/debian buster contrib' | sudo -n tee /etc/apt/sources.list.d/ub_vbox.list > /dev/null 2>&1
+		echo 'deb [arch=amd64] http://download.virtualbox.org/virtualbox/debian buster contrib' | sudo -n tee /etc/apt/sources.list.d/ub_vbox.list > /dev/null 2>&1
 		
 		"$scriptAbsoluteLocation" _getDep wget
 		! _wantDep wget && return 1
