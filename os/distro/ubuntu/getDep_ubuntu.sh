@@ -167,7 +167,7 @@ _fetchDep_ubuntuFocalFossa_special() {
 		aptKeyFingerprint=$(sudo -n apt-key fingerprint 0EBFCD88 2> /dev/null)
 		[[ "$aptKeyFingerprint" == "" ]] && return 1
 		
-		sudo -n add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/$(. /etc/os-release; echo "$ID") $(lsb_release -cs) stable"
+		sudo -n add-apt-repository -y "deb [arch=amd64] https://download.docker.com/linux/$(. /etc/os-release; echo "$ID") $(lsb_release -cs) stable"
 		
 		sudo -n env DEBIAN_FRONTEND=noninteractive apt-get -y update
 		
