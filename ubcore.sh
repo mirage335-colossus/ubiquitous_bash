@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='3733895075'
+export ub_setScriptChecksum_contents='3852355005'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -25402,6 +25402,15 @@ _package_ubcp_copy_copy() {
 	return 0
 }
 
+# ATTENTION: Override with 'ops.sh' or similar.
+_package_ubcp_copy_prog() {
+	false
+	
+	cd "$outerPWD"
+	return 1
+	_stop 1
+}
+
 _package_ubcp_copy() {
 	mkdir -p "$safeTmp"/package/_local
 	
@@ -25442,6 +25451,8 @@ _package_ubcp_copy() {
 		rm -f "$safeTmp"/package/_local/ubcp/package_ubcp-cygwinOnly.tar.gz
 		return 0
 	fi
+	
+	_package_ubcp_copy_prog
 	
 	
 	cd "$outerPWD"

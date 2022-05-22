@@ -2024,6 +2024,15 @@ _package_ubcp_copy_copy() {
 	return 0
 }
 
+# ATTENTION: Override with 'ops.sh' or similar.
+_package_ubcp_copy_prog() {
+	false
+	
+	cd "$outerPWD"
+	return 1
+	_stop 1
+}
+
 _package_ubcp_copy() {
 	mkdir -p "$safeTmp"/package/_local
 	
@@ -2064,6 +2073,8 @@ _package_ubcp_copy() {
 		rm -f "$safeTmp"/package/_local/ubcp/package_ubcp-cygwinOnly.tar.gz
 		return 0
 	fi
+	
+	_package_ubcp_copy_prog
 	
 	
 	cd "$outerPWD"
