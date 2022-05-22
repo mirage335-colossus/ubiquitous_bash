@@ -2075,7 +2075,10 @@ _package_ubcp_copy() {
 	fi
 	
 	# ATTENTION: Override with 'installation_prog.sh' or similar.
-	_package_ubcp_copy_prog
+	if _package_ubcp_copy_prog
+	then
+		return 0
+	fi
 	
 	
 	cd "$outerPWD"
