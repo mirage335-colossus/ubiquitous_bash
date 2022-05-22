@@ -652,6 +652,9 @@ _custom_write_sshdConfig() {
 	echo '
 Include /etc/ssh/sshd_config.d/*.conf
 
+#Port 22
+#Protocol 2
+
 PermitRootLogin prohibit-password
 
 ChallengeResponseAuthentication no
@@ -675,6 +678,29 @@ AllowUsers root user
 
 # https://serverfault.com/questions/434896/ssh-one-authorized-keys-for-multiple-service-accounts
 AuthorizedKeysFile  .ssh/authorized_keys /etc/ssh/authorized_keys
+
+
+##ClientAliveInterval 6
+##ClientAliveCountMax 9
+
+#ClientAliveInterval 3
+#ClientAliveCountMax 3
+
+#GatewayPorts clientspecified
+
+#Match user user
+	##AllowTcpForwarding yes
+	#AllowTcpForwarding no
+	#PermitOpen localhost:*
+	#PermitOpen 127.0.0.1:*
+	#PermitOpen ::1:*
+	#PermitOpen *:22
+	#PermitListen *
+	#X11Forwarding no
+	#AllowAgentForwarding no
+	#ForceCommand    /bin/false
+	##ChrootDirectory /sshchroot
+
 ' | sudo -n tee /etc/ssh/sshd_config > /dev/null
 	
 	
