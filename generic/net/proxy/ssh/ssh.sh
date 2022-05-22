@@ -1137,7 +1137,8 @@ _package_cautossh() {
 	mkdir -p ./_local
 	rsync -av --progress --exclude "_arc" ./_index/ "$safeTmp"/package/_index/
 	
-	mkdir -p ./_local
+	#mkdir -p ./_local
+	mkdir -p "$safeTmp"/package/_local
 	cp -a ./_local/ssh "$safeTmp"/package/_local/
 	cp -a ./_local/tor "$safeTmp"/package/_local/
 	
