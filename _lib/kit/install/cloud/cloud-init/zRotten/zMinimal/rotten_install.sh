@@ -888,7 +888,7 @@ Relogin=true
 	mkdir -p "/etc/skel/.ssh"
 	cat "/root/.ssh/authorized_keys" >> /etc/skel/.ssh/authorized_keys
 	mkdir -p /home/"$custom_user""/.ssh"
-	chown user:user /home/"$custom_user""/.ssh"
+	chown "$custom_user":"$custom_user" /home/"$custom_user""/.ssh"
 	cat "/root/.ssh/authorized_keys" >> /home/"$custom_user"/.ssh/authorized_keys
 	
 	
