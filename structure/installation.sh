@@ -2024,7 +2024,7 @@ _package_ubcp_copy_copy() {
 	return 0
 }
 
-# ATTENTION: Override with 'ops.sh' or similar.
+# ATTENTION: Override with 'installation_prog.sh' or similar.
 _package_ubcp_copy_prog() {
 	false
 	
@@ -2074,6 +2074,7 @@ _package_ubcp_copy() {
 		return 0
 	fi
 	
+	# ATTENTION: Override with 'installation_prog.sh' or similar.
 	_package_ubcp_copy_prog
 	
 	

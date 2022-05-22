@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='4085324910'
+export ub_setScriptChecksum_contents='1738823148'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -38777,7 +38777,7 @@ _package_ubcp_copy_copy() {
 	return 0
 }
 
-# ATTENTION: Override with 'ops.sh' or similar.
+# ATTENTION: Override with 'installation_prog.sh' or similar.
 _package_ubcp_copy_prog() {
 	false
 	
@@ -38827,6 +38827,7 @@ _package_ubcp_copy() {
 		return 0
 	fi
 	
+	# ATTENTION: Override with 'installation_prog.sh' or similar.
 	_package_ubcp_copy_prog
 	
 	
