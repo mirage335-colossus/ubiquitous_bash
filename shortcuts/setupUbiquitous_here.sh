@@ -15,6 +15,13 @@ fi
 # Near-realtime priority may be acceptable, due to reliability of relevant Ubiquitous Bash functions.
 # WARNING: Do NOT prioritize highly enough to interfere with embedded hard realtime processes.
 
+# Not known or expected to cause significant issues. Not known to affect 'ubiquitous_bash' bash scripts, may affect the separate python 'lean.py' script.
+if [[ "\$USER" == "" ]]
+then
+	[[ "\$UID" == "0" ]] && export USER="root"
+	[[ "\$USER" == "" ]] && export USER=$(id -u -n 2>/dev/null)
+fi
+
 CZXWXcRMTo8EmM8i4d
 
 
