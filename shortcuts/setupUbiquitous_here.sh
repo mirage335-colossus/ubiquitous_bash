@@ -19,7 +19,7 @@ fi
 if [[ "\$USER" == "" ]]
 then
 	[[ "\$UID" == "0" ]] && export USER="root"
-	[[ "\$USER" == "" ]] && export USER=$(id -u -n 2>/dev/null)
+	[[ "\$USER" == "" ]] && export USER=\$(id -u -n 2>/dev/null)
 fi
 
 CZXWXcRMTo8EmM8i4d
