@@ -188,6 +188,9 @@ _fetchDep_debianBullseye_special() {
 		
 		sudo -n env DEBIAN_FRONTEND=noninteractive apt-get install --install-recommends -y apt-transport-https ca-certificates curl gnupg2 software-properties-common
 		
+		# Sometimes may be useful as a workaround for docker 'overlay2' 'storage-driver' .
+		sudo -n env DEBIAN_FRONTEND=noninteractive apt-get install --install-recommends -y fuse-overlayfs
+		
 		"$scriptAbsoluteLocation" _getDep curl
 		! _wantDep curl && return 1
 		
@@ -615,6 +618,9 @@ _fetchDep_debianBuster_special() {
 		#sudo -n systemctl restart docker
 		
 		sudo -n env DEBIAN_FRONTEND=noninteractive apt-get install --install-recommends -y apt-transport-https ca-certificates curl gnupg2 software-properties-common
+		
+		# Sometimes may be useful as a workaround for docker 'overlay2' 'storage-driver' .
+		sudo -n env DEBIAN_FRONTEND=noninteractive apt-get install --install-recommends -y fuse-overlayfs
 		
 		"$scriptAbsoluteLocation" _getDep curl
 		! _wantDep curl && return 1

@@ -445,6 +445,10 @@ _getMost_debian11_install() {
 	_getMost_backend_aptGetInstall cifs-utils
 	
 	
+	# Sometimes may be useful as a workaround for docker 'overlay2' 'storage-driver' .
+	_getMost_backend_aptGetInstall fuse-overlayfs
+	
+	
 	
 	# purge-old-kernels
 	_getMost_backend_aptGetInstall byobu
