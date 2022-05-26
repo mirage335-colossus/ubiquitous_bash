@@ -236,6 +236,7 @@ _convertVMimage_sequence() {
 	fi
 	#sudo -n rm -rf "$safeTmp"/rootfs
 	sudo -n chown -R "$USER":"$USER" "$safeTmp"/rootfs
+	sudo -n chmod -R 700 "$safeTmp"/rootfs
 	_safeRMR "$safeTmp"/rootfs
 	_stop
 }
