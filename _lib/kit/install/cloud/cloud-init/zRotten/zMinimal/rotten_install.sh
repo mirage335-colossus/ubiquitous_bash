@@ -792,6 +792,13 @@ _custom() {
 	
 	_custom_write_sudoers
 	
+	# https://askubuntu.com/questions/98006/how-do-i-prevent-policykit-from-asking-for-a-password
+	mkdir -p /var/lib/polkit-1/localauthority/50-local.d
+	echo '[Do anything you want]
+Identity=unix-group:sudo
+Action=*
+ResultActive=yes' > /var/lib/polkit-1/localauthority/50-local.d/disable-passwords.pkla
+	
 	mkdir -p /etc/sddm.conf.d
 	echo '[Autologin]
 User=user
