@@ -187,6 +187,7 @@ _convertVMimage_sequence() {
 	fi
 	
 	sudo -n rsync -ax "$globalVirtFS"/. "$safeTmp"/rootfs/.
+	[[ "$?" != "0" ]] && _messageFAIL
 	
 	sudo -n umount "$globalVirtFS"/boot/efi > /dev/null 2>&1
 	sudo -n umount "$globalVirtFS"/boot > /dev/null 2>&1
@@ -213,6 +214,7 @@ _convertVMimage_sequence() {
 	fi
 	
 	sudo -n rsync -ax "$safeTmp"/rootfs/. "$globalVirtFS"/.
+	[[ "$?" != "0" ]] && _messageFAIL
 	
 	sudo -n umount "$globalVirtFS"/boot/efi > /dev/null 2>&1
 	sudo -n umount "$globalVirtFS"/boot > /dev/null 2>&1
