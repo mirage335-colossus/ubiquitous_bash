@@ -1054,6 +1054,24 @@ _install() {
 	
 	sudo -n apt-get remove --autoremove -y plasma-discover
 	
+	
+	
+	# https://askubuntu.com/questions/98006/how-do-i-prevent-policykit-from-asking-for-a-password
+	mkdir -p /var/lib/polkit-1/localauthority/50-local.d
+	echo '[Do anything you want]
+Identity=unix-group:sudo
+Action=*
+ResultActive=yes' > /var/lib/polkit-1/localauthority/50-local.d/disable-passwords.pkla
+	
+	# Default 'overlay2' storage driver apparently may fail from liveISO/liveUSB .
+	# https://docs.docker.com/storage/storagedriver/overlayfs-driver/
+	mkdir -p "$globalVirtFS"/etc/docker/daemon.json
+	echo '{
+	"storage-driver": "fuse-overlayfs"
+}' > "$globalVirtFS"/etc/docker/daemon.json
+	
+	
+	
 	sudo -n apt-get -y clean
 	
 	sudo -n systemctl start sddm
