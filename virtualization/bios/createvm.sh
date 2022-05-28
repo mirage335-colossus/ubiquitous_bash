@@ -150,6 +150,7 @@ _createVMimage() {
 	return 0
 }
 # WARNING: No production use. No use as-is. Hybrid/UEFI is default.
+# WARNING: May necessitate 'update-grub' within 'qemu' or similar to remove incorrecly detected running kernel from menu.
 _convertVMimage_sequence() {
 	_messageNormal '_convertVMimage_sequence'
 	
@@ -163,13 +164,13 @@ _convertVMimage_sequence() {
 	# ATTENTION: Override if necessary (ie. with 'ops.sh' from an existing image).
 	export ubVirtImage_doNotOverride="true"
 	export ubVirtPlatformOverride='x64-efi'
-	export ubVirtImageBIOS=
-	export ubVirtImageEFI=p1
+	export ubVirtImageBIOS=p1
+	export ubVirtImageEFI=p2
 	export ubVirtImageNTFS=
 	export ubVirtImageRecovery=
-	export ubVirtImageSwap=p2
-	export ubVirtImageBoot=
-	export ubVirtImagePartition=p3
+	export ubVirtImageSwap=p3
+	export ubVirtImageBoot=p4
+	export ubVirtImagePartition=p5
 	
 	
 	_messagePlain_nominal '_convertVMimage_sequence: copy: out'
@@ -186,8 +187,15 @@ _convertVMimage_sequence() {
 		sudo -n mount "$imagedev""$ubVirtImageEFI" "$globalVirtFS"/boot/efi
 	fi
 	
+	
 	sudo -n rsync -ax "$globalVirtFS"/. "$safeTmp"/rootfs/.
 	[[ "$?" != "0" ]] && _messageFAIL
+	
+	sudo -n rsync -ax "$globalVirtFS"/boot/. "$safeTmp"/rootfs/boot/.
+	[[ "$?" != "0" ]] && _messageFAIL
+	sudo -n rsync -ax "$globalVirtFS"/boot/efi/. "$safeTmp"/rootfs/boot/efi/.
+	[[ "$?" != "0" ]] && _messageFAIL
+	
 	
 	sudo -n umount "$globalVirtFS"/boot/efi > /dev/null 2>&1
 	sudo -n umount "$globalVirtFS"/boot > /dev/null 2>&1
@@ -213,8 +221,15 @@ _convertVMimage_sequence() {
 		sudo -n mount "$imagedev""$ubVirtImageEFI" "$globalVirtFS"/boot/efi
 	fi
 	
+	
 	sudo -n rsync -ax "$safeTmp"/rootfs/. "$globalVirtFS"/.
 	[[ "$?" != "0" ]] && _messageFAIL
+	
+	sudo -n rsync -ax "$safeTmp"/rootfs/boot/. "$globalVirtFS"/boot/.
+	[[ "$?" != "0" ]] && _messageFAIL
+	sudo -n rsync -ax "$safeTmp"/rootfs/boot/efi/. "$globalVirtFS"/boot/efi/.
+	[[ "$?" != "0" ]] && _messageFAIL
+	
 	
 	sudo -n umount "$globalVirtFS"/boot/efi > /dev/null 2>&1
 	sudo -n umount "$globalVirtFS"/boot > /dev/null 2>&1

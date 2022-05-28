@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='3742223890'
+export ub_setScriptChecksum_contents='1817332601'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -8943,6 +8943,9 @@ _fetchDep_ubuntuFocalFossa_special() {
 		
 		sudo -n env DEBIAN_FRONTEND=noninteractive apt-get install --install-recommends -y apt-transport-https ca-certificates curl gnupg2 software-properties-common
 		
+		# Sometimes may be useful as a workaround for docker 'overlay2' 'storage-driver' .
+		sudo -n env DEBIAN_FRONTEND=noninteractive apt-get install --install-recommends -y fuse-overlayfs
+		
 		"$scriptAbsoluteLocation" _getDep curl
 		! _wantDep curl && return 1
 		
@@ -9466,6 +9469,8 @@ _getMost_debian11_install() {
 	_getMost_backend_aptGetInstall kde-standard
 	_getMost_backend_aptGetInstall chromium
 	_getMost_backend_aptGetInstall openjdk-11-jdk openjdk-11-jre
+	
+	_getMost_backend_aptGetInstall open-vm-tools-desktop
 	
 	# ATTENTION: ONLY uncomment if needed to ensure a kernel is installed AND custom kernel is not in use.
 	_getMost_backend_aptGetInstall linux-image-amd64
@@ -15817,6 +15822,7 @@ _createVMimage() {
 	return 0
 }
 # WARNING: No production use. No use as-is. Hybrid/UEFI is default.
+# WARNING: May necessitate 'update-grub' within 'qemu' or similar to remove incorrecly detected running kernel from menu.
 _convertVMimage_sequence() {
 	_messageNormal '_convertVMimage_sequence'
 	
@@ -15830,13 +15836,13 @@ _convertVMimage_sequence() {
 	# ATTENTION: Override if necessary (ie. with 'ops.sh' from an existing image).
 	export ubVirtImage_doNotOverride="true"
 	export ubVirtPlatformOverride='x64-efi'
-	export ubVirtImageBIOS=
-	export ubVirtImageEFI=p1
+	export ubVirtImageBIOS=p1
+	export ubVirtImageEFI=p2
 	export ubVirtImageNTFS=
 	export ubVirtImageRecovery=
-	export ubVirtImageSwap=p2
-	export ubVirtImageBoot=
-	export ubVirtImagePartition=p3
+	export ubVirtImageSwap=p3
+	export ubVirtImageBoot=p4
+	export ubVirtImagePartition=p5
 	
 	
 	_messagePlain_nominal '_convertVMimage_sequence: copy: out'
@@ -15853,8 +15859,15 @@ _convertVMimage_sequence() {
 		sudo -n mount "$imagedev""$ubVirtImageEFI" "$globalVirtFS"/boot/efi
 	fi
 	
+	
 	sudo -n rsync -ax "$globalVirtFS"/. "$safeTmp"/rootfs/.
 	[[ "$?" != "0" ]] && _messageFAIL
+	
+	sudo -n rsync -ax "$globalVirtFS"/boot/. "$safeTmp"/rootfs/boot/.
+	[[ "$?" != "0" ]] && _messageFAIL
+	sudo -n rsync -ax "$globalVirtFS"/boot/efi/. "$safeTmp"/rootfs/boot/efi/.
+	[[ "$?" != "0" ]] && _messageFAIL
+	
 	
 	sudo -n umount "$globalVirtFS"/boot/efi > /dev/null 2>&1
 	sudo -n umount "$globalVirtFS"/boot > /dev/null 2>&1
@@ -15880,8 +15893,15 @@ _convertVMimage_sequence() {
 		sudo -n mount "$imagedev""$ubVirtImageEFI" "$globalVirtFS"/boot/efi
 	fi
 	
+	
 	sudo -n rsync -ax "$safeTmp"/rootfs/. "$globalVirtFS"/.
 	[[ "$?" != "0" ]] && _messageFAIL
+	
+	sudo -n rsync -ax "$safeTmp"/rootfs/boot/. "$globalVirtFS"/boot/.
+	[[ "$?" != "0" ]] && _messageFAIL
+	sudo -n rsync -ax "$safeTmp"/rootfs/boot/efi/. "$globalVirtFS"/boot/efi/.
+	[[ "$?" != "0" ]] && _messageFAIL
+	
 	
 	sudo -n umount "$globalVirtFS"/boot/efi > /dev/null 2>&1
 	sudo -n umount "$globalVirtFS"/boot > /dev/null 2>&1
@@ -28903,6 +28923,10 @@ _unix_renice_idle() {
 	# WARNING: Probably unnecessary and counterproductive. May risk halting important compile jobs.
 	#_priority_enumerate_pattern "^cc1$" >> "$processListFile"
 	#_priority_enumerate_pattern "^cc1plus$" >> "$processListFile"
+	
+	#_priority_enumerate_pattern "^tar$" >> "$processListFile"
+	#_priority_enumerate_pattern "^xz$" >> "$processListFile"
+	#_priority_enumerate_pattern "^kcompactd0$" >> "$processListFile"
 	
 	
 	local currentPID

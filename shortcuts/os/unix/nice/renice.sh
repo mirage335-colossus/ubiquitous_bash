@@ -275,6 +275,10 @@ _unix_renice_idle() {
 	#_priority_enumerate_pattern "^cc1$" >> "$processListFile"
 	#_priority_enumerate_pattern "^cc1plus$" >> "$processListFile"
 	
+	#_priority_enumerate_pattern "^tar$" >> "$processListFile"
+	#_priority_enumerate_pattern "^xz$" >> "$processListFile"
+	#_priority_enumerate_pattern "^kcompactd0$" >> "$processListFile"
+	
 	
 	local currentPID
 	

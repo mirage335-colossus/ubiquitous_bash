@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='955363566'
+export ub_setScriptChecksum_contents='420909354'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -6327,6 +6327,10 @@ _unix_renice_idle() {
 	# WARNING: Probably unnecessary and counterproductive. May risk halting important compile jobs.
 	#_priority_enumerate_pattern "^cc1$" >> "$processListFile"
 	#_priority_enumerate_pattern "^cc1plus$" >> "$processListFile"
+	
+	#_priority_enumerate_pattern "^tar$" >> "$processListFile"
+	#_priority_enumerate_pattern "^xz$" >> "$processListFile"
+	#_priority_enumerate_pattern "^kcompactd0$" >> "$processListFile"
 	
 	
 	local currentPID

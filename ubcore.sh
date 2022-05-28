@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='3493814906'
+export ub_setScriptChecksum_contents='2575355467'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -8225,6 +8225,9 @@ _fetchDep_ubuntuFocalFossa_special() {
 		
 		sudo -n env DEBIAN_FRONTEND=noninteractive apt-get install --install-recommends -y apt-transport-https ca-certificates curl gnupg2 software-properties-common
 		
+		# Sometimes may be useful as a workaround for docker 'overlay2' 'storage-driver' .
+		sudo -n env DEBIAN_FRONTEND=noninteractive apt-get install --install-recommends -y fuse-overlayfs
+		
 		"$scriptAbsoluteLocation" _getDep curl
 		! _wantDep curl && return 1
 		
@@ -8748,6 +8751,8 @@ _getMost_debian11_install() {
 	_getMost_backend_aptGetInstall kde-standard
 	_getMost_backend_aptGetInstall chromium
 	_getMost_backend_aptGetInstall openjdk-11-jdk openjdk-11-jre
+	
+	_getMost_backend_aptGetInstall open-vm-tools-desktop
 	
 	# ATTENTION: ONLY uncomment if needed to ensure a kernel is installed AND custom kernel is not in use.
 	_getMost_backend_aptGetInstall linux-image-amd64
@@ -19327,6 +19332,10 @@ _unix_renice_idle() {
 	# WARNING: Probably unnecessary and counterproductive. May risk halting important compile jobs.
 	#_priority_enumerate_pattern "^cc1$" >> "$processListFile"
 	#_priority_enumerate_pattern "^cc1plus$" >> "$processListFile"
+	
+	#_priority_enumerate_pattern "^tar$" >> "$processListFile"
+	#_priority_enumerate_pattern "^xz$" >> "$processListFile"
+	#_priority_enumerate_pattern "^kcompactd0$" >> "$processListFile"
 	
 	
 	local currentPID
