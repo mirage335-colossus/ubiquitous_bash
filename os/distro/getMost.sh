@@ -242,7 +242,7 @@ _getMost_debian11_install() {
 	#_getMost_backend_aptGetInstall virtualbox-guest-x11
 	
 	_getMost_backend wget -qO- 'https://download.virtualbox.org/virtualbox/6.1.34/VBoxGuestAdditions_6.1.34.iso' | _getMost_backend tee /VBoxGuestAdditions.iso > /dev/null
-	_getMost_backend 7z x /VBoxGuestAdditions.iso -o/VBoxGuestAdditions
+	_getMost_backend 7z x /VBoxGuestAdditions.iso -o/VBoxGuestAdditions -aoa -y
 	_getMost_backend rm -f /VBoxGuestAdditions.iso
 	_getMost_backend chmod u+x /VBoxGuestAdditions/VBoxLinuxAdditions.run
 	_getMost_backend /VBoxGuestAdditions/VBoxLinuxAdditions.run
