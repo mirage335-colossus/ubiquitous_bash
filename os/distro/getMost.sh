@@ -246,6 +246,8 @@ _getMost_debian11_install() {
 	_getMost_backend rm -f /VBoxGuestAdditions.iso
 	_getMost_backend chmod u+x /VBoxGuestAdditions/VBoxLinuxAdditions.run
 	_getMost_backend /VBoxGuestAdditions/VBoxLinuxAdditions.run
+	_getMost_backend /sbin/rcvboxadd quicksetup all
+	_getMost_backend /sbin/rcvboxadd setup
 	
 	
 	# https://docs.oracle.com/en/virtualization/virtualbox/6.0/user/install-linux-host.html
