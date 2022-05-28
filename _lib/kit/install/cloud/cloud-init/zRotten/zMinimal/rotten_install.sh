@@ -858,6 +858,7 @@ Relogin=true
 	groupadd disk
 	groupadd dialout
 	groupadd vboxusers
+	groupadd vboxsf
 	groupadd libvirt
 	groupadd docker
 	
@@ -885,6 +886,7 @@ Relogin=true
 	sudo -n usermod -a -G lpadmin "$custom_user"
 	sudo -n usermod -a -G scanner "$custom_user"
 	sudo -n usermod -a -G vboxusers "$custom_user"
+	sudo -n usermod -a -G vboxsf "$custom_user"
 	sudo -n usermod -a -G libvirt "$custom_user"
 	sudo -n usermod -a -G docker "$custom_user"
 	
