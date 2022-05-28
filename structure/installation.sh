@@ -1397,12 +1397,12 @@ _test-shell-cygwin() {
 		echo 'fail: blank: currentScriptTime'
 		_messageFAIL
 	fi
-	if [[ "$currentScriptTime" -gt '9500' ]]
+	if ( [[ "$currentScriptTime" -gt '9500' ]] && [[ "$CI" == "" ]] ) || [[ "$currentScriptTime" -gt '20000' ]]
 	then
 		echo 'fail: slow: currentScriptTime: '"$currentScriptTime"
 		_messageFAIL
 	fi
-	if [[ "$currentScriptTime" -gt '3500' ]]
+	if [[ "$currentScriptTime" -gt '4500' ]]
 	then
 		echo 'warn: slow: currentScriptTime: '"$currentScriptTime"
 		_messagePlain_request 'request: obtain a CPU with better single-thread performance, disable HyperThreading, disable EfficiencyCores, and/or reduce MSW OS installed functionality'
