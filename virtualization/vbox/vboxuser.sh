@@ -62,11 +62,11 @@ _workaround_VirtualBoxVM() {
 }
 
 _vboxGUI() {
-	#_workaround_VirtualBoxVM "$@"
+	_workaround_VirtualBoxVM "$@"
 	
 	#VirtualBoxVM "$@"
 	#VirtualBox "$@"
-	VBoxSDL "$@"
+	#VBoxSDL "$@"
 }
 
 
