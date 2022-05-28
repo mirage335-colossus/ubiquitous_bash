@@ -507,6 +507,7 @@ _create_instance_vbox() {
 
 	#Suppress annoying warnings.
 	! VBoxManage setextradata global GUI/SuppressMessages "remindAboutAutoCapture,remindAboutMouseIntegration,remindAboutMouseIntegrationOn,showRuntimeError.warning.HostAudioNotResponding,remindAboutGoingSeamless,remindAboutInputCapture,remindAboutGoingFullscreen,remindAboutMouseIntegrationOff,confirmGoingSeamless,confirmInputCapture,remindAboutPausedVMInput,confirmVMReset,confirmGoingFullscreen,remindAboutWrongColorDepth" && _messagePlain_warn 'fail: VBoxManage... suppress messages'
+	! VBoxManage setextradata global GUI/SuppressMessages "Update" && _messagePlain_warn 'fail: VBoxManage... suppress messages... Update'
 	
 	_set_instance_vbox_features_app_post
 	

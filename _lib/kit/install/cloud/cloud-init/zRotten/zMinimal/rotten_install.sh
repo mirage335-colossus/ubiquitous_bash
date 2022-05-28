@@ -1071,6 +1071,11 @@ ResultActive=yes' > /var/lib/polkit-1/localauthority/50-local.d/disable-password
 }' > "$globalVirtFS"/etc/docker/daemon.json
 	
 	
+	# https://en.wiktionary.org/wiki/poke_the_bear
+	# https://forums.virtualbox.org/viewtopic.php?t=25797
+	sudo -n VBoxManage setextradata global GUI/SuppressMessages "Update"
+	sudo -n -u user VBoxManage setextradata global GUI/SuppressMessages "Update"
+	
 	
 	sudo -n apt-get -y clean
 	
