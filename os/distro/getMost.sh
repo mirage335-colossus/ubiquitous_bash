@@ -230,6 +230,7 @@ _getMost_debian11_install() {
 	
 	if [[ "$chrootName" == "" ]] && [[ "$getMost_backend" != "chroot" ]] && [[ "$CI" == "" ]]
 	then
+		_getMost_backend_aptGetInstall build-essential
 		_getMost_backend_aptGetInstall linux-headers-$(uname -r)
 	fi
 	
