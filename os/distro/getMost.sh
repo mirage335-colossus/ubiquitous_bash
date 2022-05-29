@@ -267,6 +267,7 @@ _getMost_debian11_install() {
 	fi
 	
 	
+	# WARNING: If VirtualBox was not installed by now (eg. due to 'if false' comment block or wrong distribution), this must be called later.
 	# https://en.wiktionary.org/wiki/poke_the_bear
 	# https://forums.virtualbox.org/viewtopic.php?t=25797
 	_getMost_backend VBoxManage setextradata global GUI/SuppressMessages "Update"
