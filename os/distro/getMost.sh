@@ -238,6 +238,8 @@ _getMost_debian11_install() {
 	
 	_getMost_backend_aptGetInstall net-tools wireless-tools rfkill
 	
+	_getMost_backend_aptGetInstall dmidecode
+	
 	
 	_getMost_backend_aptGetInstall p7zip
 	_getMost_backend_aptGetInstall p7zip-full
@@ -250,13 +252,29 @@ _getMost_debian11_install() {
 	#_getMost_backend_aptGetInstall virtualbox-guest-x11
 	
 	
+	
+	
 	_getMost_backend wget -qO- 'https://download.virtualbox.org/virtualbox/6.1.34/VBoxGuestAdditions_6.1.34.iso' | _getMost_backend tee /VBoxGuestAdditions.iso > /dev/null
 	_getMost_backend 7z x /VBoxGuestAdditions.iso -o/VBoxGuestAdditions -aoa -y
 	_getMost_backend rm -f /VBoxGuestAdditions.iso
 	_getMost_backend chmod u+x /VBoxGuestAdditions/VBoxLinuxAdditions.run
+	
+	
+	# From '/var/log/vboxadd-*' , 'shared folder support module' 'modprobe vboxguest failed'
+	# Due to 'rcvboxadd setup' and/or 'rcvboxadd quicksetup all' apparently ceasing to build subsequent modules (ie. 'vboxsf') after any error (ie. due to 'modprobe' failing unless VirtualBox virtual hardware is present).
+	_getMost_backend mv -n /sbin/modprobe /sbin/modprobe.real
+	_getMost_backend ln -s /bin/true /sbin/modprobe
+	
 	_getMost_backend /VBoxGuestAdditions/VBoxLinuxAdditions.run
 	_getMost_backend /sbin/rcvboxadd quicksetup all
 	_getMost_backend /sbin/rcvboxadd setup
+	_getMost_backend /sbin/rcvboxadd quicksetup all
+	_getMost_backend /sbin/rcvboxadd setup
+	
+	_getMost_backend rm -f /sbin/modprobe
+	_getMost_backend mv -f /sbin/modprobe.real /sbin/modprobe
+	
+	
 	
 	
 	# https://docs.oracle.com/en/virtualization/virtualbox/6.0/user/install-linux-host.html

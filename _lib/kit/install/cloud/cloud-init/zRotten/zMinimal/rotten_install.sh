@@ -1078,6 +1078,8 @@ ResultActive=yes' > /var/lib/polkit-1/localauthority/50-local.d/disable-password
 	sudo -n VBoxManage setextradata global GUI/SuppressMessages "Update"
 	sudo -n -u user VBoxManage setextradata global GUI/SuppressMessages "Update"
 	
+	# May be important for '_userVBox' and such if only 'real' "$HOME" directory configuration is respected. Annoying in any case.
+	VBoxManage setextradata global GUI/SuppressMessages "remindAboutAutoCapture,remindAboutMouseIntegration,remindAboutMouseIntegrationOn,showRuntimeError.warning.HostAudioNotResponding,remindAboutGoingSeamless,remindAboutInputCapture,remindAboutGoingFullscreen,remindAboutMouseIntegrationOff,confirmGoingSeamless,confirmInputCapture,remindAboutPausedVMInput,confirmVMReset,confirmGoingFullscreen,remindAboutWrongColorDepth"
 	
 	sudo -n apt-get -y clean
 	

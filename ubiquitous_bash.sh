@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='3430284328'
+export ub_setScriptChecksum_contents='323658148'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -9492,6 +9492,8 @@ _getMost_debian11_install() {
 	
 	_getMost_backend_aptGetInstall net-tools wireless-tools rfkill
 	
+	_getMost_backend_aptGetInstall dmidecode
+	
 	
 	_getMost_backend_aptGetInstall p7zip
 	_getMost_backend_aptGetInstall p7zip-full
@@ -9504,13 +9506,29 @@ _getMost_debian11_install() {
 	#_getMost_backend_aptGetInstall virtualbox-guest-x11
 	
 	
+	
+	
 	_getMost_backend wget -qO- 'https://download.virtualbox.org/virtualbox/6.1.34/VBoxGuestAdditions_6.1.34.iso' | _getMost_backend tee /VBoxGuestAdditions.iso > /dev/null
 	_getMost_backend 7z x /VBoxGuestAdditions.iso -o/VBoxGuestAdditions -aoa -y
 	_getMost_backend rm -f /VBoxGuestAdditions.iso
 	_getMost_backend chmod u+x /VBoxGuestAdditions/VBoxLinuxAdditions.run
+	
+	
+	# From '/var/log/vboxadd-*' , 'shared folder support module' 'modprobe vboxguest failed'
+	# Due to 'rcvboxadd setup' and/or 'rcvboxadd quicksetup all' apparently ceasing to build subsequent modules (ie. 'vboxsf') after any error (ie. due to 'modprobe' failing unless VirtualBox virtual hardware is present).
+	_getMost_backend mv -n /sbin/modprobe /sbin/modprobe.real
+	_getMost_backend ln -s /bin/true /sbin/modprobe
+	
 	_getMost_backend /VBoxGuestAdditions/VBoxLinuxAdditions.run
 	_getMost_backend /sbin/rcvboxadd quicksetup all
 	_getMost_backend /sbin/rcvboxadd setup
+	_getMost_backend /sbin/rcvboxadd quicksetup all
+	_getMost_backend /sbin/rcvboxadd setup
+	
+	_getMost_backend rm -f /sbin/modprobe
+	_getMost_backend mv -f /sbin/modprobe.real /sbin/modprobe
+	
+	
 	
 	
 	# https://docs.oracle.com/en/virtualization/virtualbox/6.0/user/install-linux-host.html
@@ -14198,6 +14216,15 @@ _here_bootdisc_rootnix() {
 cat << 'CZXWXcRMTo8EmM8i4d'
 #!/usr/bin/env bash
 
+# https://www.howtogeek.com/803839/how-to-let-linux-scripts-detect-theyre-running-in-virtual-machines/
+# WARNING: Must be root!
+if [[ $(dmidecode -s system-product-name) == "VirtualBox" ]] && ! lsmod | grep vboxsf > /dev/null
+then
+	#! lsmod | grep vboxsf > /dev/null && /sbin/rcvboxadd cleanup
+	#/sbin/rcvboxadd quicksetup
+	/sbin/rcvboxadd setup
+fi
+
 if [[ "$0" != "/media/bootdisc/rootnix.sh" ]] && [[ -e "/media/bootdisc" ]]
 then
 	for iteration in `seq 1 25`;
@@ -18189,7 +18216,19 @@ _create_instance_vbox() {
 
 	#Suppress annoying warnings.
 	! VBoxManage setextradata global GUI/SuppressMessages "remindAboutAutoCapture,remindAboutMouseIntegration,remindAboutMouseIntegrationOn,showRuntimeError.warning.HostAudioNotResponding,remindAboutGoingSeamless,remindAboutInputCapture,remindAboutGoingFullscreen,remindAboutMouseIntegrationOff,confirmGoingSeamless,confirmInputCapture,remindAboutPausedVMInput,confirmVMReset,confirmGoingFullscreen,remindAboutWrongColorDepth" && _messagePlain_warn 'fail: VBoxManage... suppress messages'
+	
 	! VBoxManage setextradata global GUI/SuppressMessages "Update" && _messagePlain_warn 'fail: VBoxManage... suppress messages... Update'
+	
+	
+	# WARNING: Some of these annoying warnings have apparently not been disabled effectively, possibly due to 'real' "$HOME" directory configuration, or specific versions of VirtualBox .
+	
+	# From source code.
+	# remindAboutAutoCapture,remindAboutMouseIntegrationOn,remindAboutMouseIntegrationOn
+	
+	# https://askubuntu.com/questions/763107/how-do-i-permanently-disable-notifications-about-auto-capture-keyboard-and-mouse
+	# confirmInputCapture,remindAboutAutoCapture,remindAboutMouseIntegrationOff,remindAboutMouseIntegrationOn,remindAboutWrongColorDepth
+	
+	
 	
 	_set_instance_vbox_features_app_post
 	

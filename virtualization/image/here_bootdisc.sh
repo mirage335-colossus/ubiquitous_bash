@@ -19,6 +19,15 @@ _here_bootdisc_rootnix() {
 cat << 'CZXWXcRMTo8EmM8i4d'
 #!/usr/bin/env bash
 
+# https://www.howtogeek.com/803839/how-to-let-linux-scripts-detect-theyre-running-in-virtual-machines/
+# WARNING: Must be root!
+if [[ $(dmidecode -s system-product-name) == "VirtualBox" ]] && ! lsmod | grep vboxsf > /dev/null
+then
+	#! lsmod | grep vboxsf > /dev/null && /sbin/rcvboxadd cleanup
+	#/sbin/rcvboxadd quicksetup
+	/sbin/rcvboxadd setup
+fi
+
 if [[ "$0" != "/media/bootdisc/rootnix.sh" ]] && [[ -e "/media/bootdisc" ]]
 then
 	for iteration in `seq 1 25`;

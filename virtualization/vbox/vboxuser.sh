@@ -507,7 +507,19 @@ _create_instance_vbox() {
 
 	#Suppress annoying warnings.
 	! VBoxManage setextradata global GUI/SuppressMessages "remindAboutAutoCapture,remindAboutMouseIntegration,remindAboutMouseIntegrationOn,showRuntimeError.warning.HostAudioNotResponding,remindAboutGoingSeamless,remindAboutInputCapture,remindAboutGoingFullscreen,remindAboutMouseIntegrationOff,confirmGoingSeamless,confirmInputCapture,remindAboutPausedVMInput,confirmVMReset,confirmGoingFullscreen,remindAboutWrongColorDepth" && _messagePlain_warn 'fail: VBoxManage... suppress messages'
+	
 	! VBoxManage setextradata global GUI/SuppressMessages "Update" && _messagePlain_warn 'fail: VBoxManage... suppress messages... Update'
+	
+	
+	# WARNING: Some of these annoying warnings have apparently not been disabled effectively, possibly due to 'real' "$HOME" directory configuration, or specific versions of VirtualBox .
+	
+	# From source code.
+	# remindAboutAutoCapture,remindAboutMouseIntegrationOn,remindAboutMouseIntegrationOn
+	
+	# https://askubuntu.com/questions/763107/how-do-i-permanently-disable-notifications-about-auto-capture-keyboard-and-mouse
+	# confirmInputCapture,remindAboutAutoCapture,remindAboutMouseIntegrationOff,remindAboutMouseIntegrationOn,remindAboutWrongColorDepth
+	
+	
 	
 	_set_instance_vbox_features_app_post
 	
