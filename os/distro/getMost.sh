@@ -228,6 +228,11 @@ _getMost_debian11_install() {
 	# ATTENTION: ONLY change (eg. to 'remove') if needed to ensure a kernel is installed AND custom kernel is not in use.
 	_getMost_backend_aptGetInstall linux-image-amd64
 	
+	if [[ "$chrootName" == "" ]] && [[ "$getMost_backend" != "chroot" ]] && [[ "$CI" == "" ]]
+	then
+		_getMost_backend_aptGetInstall linux-headers-$(uname -r)
+	fi
+	
 	_getMost_backend_aptGetInstall net-tools wireless-tools rfkill
 	
 	
@@ -240,6 +245,7 @@ _getMost_debian11_install() {
 	
 	#_getMost_backend_aptGetInstall virtualbox-guest-utils
 	#_getMost_backend_aptGetInstall virtualbox-guest-x11
+	
 	
 	_getMost_backend wget -qO- 'https://download.virtualbox.org/virtualbox/6.1.34/VBoxGuestAdditions_6.1.34.iso' | _getMost_backend tee /VBoxGuestAdditions.iso > /dev/null
 	_getMost_backend 7z x /VBoxGuestAdditions.iso -o/VBoxGuestAdditions -aoa -y
