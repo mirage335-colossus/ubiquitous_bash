@@ -225,12 +225,14 @@ _getMost_debian11_install() {
 	_getMost_backend_aptGetInstall chromium
 	_getMost_backend_aptGetInstall openjdk-11-jdk openjdk-11-jre
 	
+	
+	_getMost_backend_aptGetInstall build-essential
+	
 	# ATTENTION: ONLY change (eg. to 'remove') if needed to ensure a kernel is installed AND custom kernel is not in use.
 	_getMost_backend_aptGetInstall linux-image-amd64
 	
 	if [[ "$chrootName" == "" ]] && [[ "$getMost_backend" != "chroot" ]] && [[ "$CI" == "" ]]
 	then
-		_getMost_backend_aptGetInstall build-essential
 		_getMost_backend_aptGetInstall linux-headers-$(uname -r)
 	fi
 	
