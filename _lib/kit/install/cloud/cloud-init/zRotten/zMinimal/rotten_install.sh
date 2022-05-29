@@ -1067,7 +1067,7 @@ ResultActive=yes' > /var/lib/polkit-1/localauthority/50-local.d/disable-password
 	
 	# Default 'overlay2' storage driver apparently may fail from liveISO/liveUSB .
 	# https://docs.docker.com/storage/storagedriver/overlayfs-driver/
-	mkdir -p "$globalVirtFS"/etc/docker/daemon.json
+	mkdir -p "$globalVirtFS"/etc/docker
 	echo '{
 	"storage-driver": "fuse-overlayfs"
 }' > "$globalVirtFS"/etc/docker/daemon.json
