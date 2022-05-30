@@ -269,7 +269,7 @@ _getMost_debian11_install() {
 	_getMost_backend /sbin/rcvboxadd quicksetup all
 	_getMost_backend /sbin/rcvboxadd setup
 	_getMost_backend /sbin/rcvboxadd quicksetup all
-	_getMost_backend /sbin/rcvboxadd setup
+	#_getMost_backend /sbin/rcvboxadd setup
 	
 	_getMost_backend rm -f /sbin/modprobe
 	_getMost_backend mv -f /sbin/modprobe.real /sbin/modprobe
