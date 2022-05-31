@@ -21,7 +21,7 @@ _qalculate_terse() {
 
 # Interactive.
 _qalculate() {
-	mkdir -p .config/qalculate
+	mkdir -p "$HOME"/.config/qalculate
 	
 	if [[ "$1" != "" ]]
 	then
