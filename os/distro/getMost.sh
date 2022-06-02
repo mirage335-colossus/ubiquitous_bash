@@ -550,6 +550,10 @@ _getMost_debian11_install() {
 	_getMost_backend_aptGetInstall latencytop
 	
 	
+	_getMost_backend_aptGetInstall lsof
+	
+	
+	
 	_getMost_backend_aptGetInstall pavucontrol
 	_getMost_backend_aptGetInstall filelight
 	
