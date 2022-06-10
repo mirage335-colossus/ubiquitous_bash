@@ -403,8 +403,10 @@ AllowUsers root user
 
 # ATTENTION: Override (rarely, if necessary) .
 _custom_write_sudoers() {
+	_mustBeRoot
+	
 	_messageNormal 'init: rotten: _custom_write_sudoers'
-	cat << CZXWXcRMTo8EmM8i4d | sudo -n tee -a /etc/sudoers > /dev/null
+	cat << CZXWXcRMTo8EmM8i4d | tee -a /etc/sudoers > /dev/null
 #_____
 #Defaults	env_reset
 #Defaults	mail_badpass
@@ -477,7 +479,6 @@ _custom() {
 	
 	_custom_write_sshdConfig
 	
-	_custom_write_sudoers
 	
 	
 	#US/Eastern
@@ -490,16 +491,16 @@ _custom() {
 	_custom_construct_user root
 	# WARNING: Sets random password, intentionally, to lockout password login. SSH key or similar *required*.
 	# ATTENTION: Override (if necessary).
-	#echo 'root:'$(_uid 12) | sudo -n chpasswd
-	#echo 'root:'$(_uid 32) | sudo -n chpasswd
+	echo 'root:'$(_uid 12) | sudo -n chpasswd
+	echo 'root:'$(_uid 32) | sudo -n chpasswd
 	sudo -n usermod -s /bin/bash root
 	
 	# If blank root password, set random password.
 	# https://serverfault.com/questions/240957/how-find-user-with-empty-password-in-linux
 	if ! sudo -n getent shadow | grep 'root:\$' | cut -d':' -f 2 | grep '\w' -c -m 1 > /dev/null
 	then
-		echo "$custom_user"':'$(_uid 12) | sudo -n chpasswd
-		echo "$custom_user"':'$(_uid 32) | sudo -n chpasswd
+		echo root':'$(_uid 12) | sudo -n chpasswd
+		echo root':'$(_uid 32) | sudo -n chpasswd
 	fi
 	
 	_custom_construct_user "$custom_user"
@@ -583,6 +584,9 @@ _install() {
 	
 	! type -p sudo && _install_and_run_package sudo
 	_install_and_run_package git
+	
+	_custom_write_sudoers
+	
 	! _mustGetSudo && exit 1
 	
 	
