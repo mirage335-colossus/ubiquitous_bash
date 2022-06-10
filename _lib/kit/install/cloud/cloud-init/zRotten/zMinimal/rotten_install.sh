@@ -930,6 +930,8 @@ _install() {
 	
 	! _mustBeRoot && exit 1
 	
+	export custom_user="user"
+	
 	! type -p sudo && _install_and_run_package sudo
 	_install_and_run_package git
 	
