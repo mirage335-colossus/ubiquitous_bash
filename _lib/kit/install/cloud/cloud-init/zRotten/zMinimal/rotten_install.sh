@@ -930,6 +930,13 @@ _install() {
 	
 	! _mustBeRoot && exit 1
 	
+	usermod -e -1 root
+	if chage -l root | grep 'must be changed'
+	then
+		echo 'root:'$(_uid 12) | sudo -n chpasswd
+		echo 'root:'$(_uid 32) | sudo -n chpasswd
+	fi
+	
 	export custom_user="user"
 	
 	! type -p sudo && _install_and_run_package sudo
