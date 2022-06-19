@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='1809166013'
+export ub_setScriptChecksum_contents='1021206300'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -14733,6 +14733,7 @@ _listprocChRoot() {
 	absolute1=$(_getAbsoluteLocation "$1")
 	PROCS=""
 	local currentProcess
+	# CAUTION: Rarely necessary. Avoid relying on this if possible.
 	for currentProcess in `ps -o pid -A`; do
 		if [ "`sudo -n readlink /proc/$currentProcess/root`" = "$absolute1" ]; then
 			PROCS="$PROCS"" ""$currentProcess"

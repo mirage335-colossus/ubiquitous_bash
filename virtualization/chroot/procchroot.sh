@@ -6,6 +6,7 @@ _listprocChRoot() {
 	absolute1=$(_getAbsoluteLocation "$1")
 	PROCS=""
 	local currentProcess
+	# CAUTION: Rarely necessary. Avoid relying on this if possible.
 	for currentProcess in `ps -o pid -A`; do
 		if [ "`sudo -n readlink /proc/$currentProcess/root`" = "$absolute1" ]; then
 			PROCS="$PROCS"" ""$currentProcess"
