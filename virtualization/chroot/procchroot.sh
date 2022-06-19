@@ -22,36 +22,36 @@ _killprocChRoot() {
 	local chrootKillDir
 	chrootKillDir="$2"
 	
-	chrootprocs=$(_listprocChRoot "$2")
-	[[ "$chrootprocs" == "" ]] && return 0
-	sudo -n kill -"$chrootKillSignal" "$chrootprocs" >/dev/null 2>&1
+	chrootprocs=( $(_listprocChRoot "$2") )
+	[[ "${chrootprocs[0]}" == "" ]] && return 0
+	sudo -n kill -"$chrootKillSignal" "${chrootprocs[@]}" >/dev/null
 	sleep 0.1
 	
-	chrootprocs=$(_listprocChRoot "$2")
-	[[ "$chrootprocs" == "" ]] && return 0
-	sudo -n kill -"$chrootKillSignal" "$chrootprocs" >/dev/null 2>&1
+	chrootprocs=( $(_listprocChRoot "$2") )
+	[[ "${chrootprocs[0]}" == "" ]] && return 0
+	sudo -n kill -"$chrootKillSignal" "${chrootprocs[@]}" >/dev/null
 	sleep 0.3
 	
 	[[ "$EMERGENCYSHUTDOWN" == "true" ]] && return 1
 	
-	chrootprocs=$(_listprocChRoot "$2")
-	[[ "$chrootprocs" == "" ]] && return 0
-	sudo -n kill -"$chrootKillSignal" "$chrootprocs" >/dev/null 2>&1
+	chrootprocs=( $(_listprocChRoot "$2") )
+	[[ "${chrootprocs[0]}" == "" ]] && return 0
+	sudo -n kill -"$chrootKillSignal" "${chrootprocs[@]}" >/dev/null
 	sleep 1
 	
-	chrootprocs=$(_listprocChRoot "$2")
-	[[ "$chrootprocs" == "" ]] && return 0
-	sudo -n kill -"$chrootKillSignal" "$chrootprocs" >/dev/null 2>&1
+	chrootprocs=( $(_listprocChRoot "$2") )
+	[[ "${chrootprocs[0]}" == "" ]] && return 0
+	sudo -n kill -"$chrootKillSignal" "${chrootprocs[@]}" >/dev/null
 	sleep 3
 	
-	chrootprocs=$(_listprocChRoot "$2")
-	[[ "$chrootprocs" == "" ]] && return 0
-	sudo -n kill -"$chrootKillSignal" "$chrootprocs" >/dev/null 2>&1
+	chrootprocs=( $(_listprocChRoot "$2") )
+	[[ "${chrootprocs[0]}" == "" ]] && return 0
+	sudo -n kill -"$chrootKillSignal" "${chrootprocs[@]}" >/dev/null
 	sleep 9
 	
-	#chrootprocs=$(_listprocChRoot "$2")
-	#[[ "$chrootprocs" == "" ]] && return 0
-	#sudo -n kill -"$chrootKillSignal" "$chrootprocs" >/dev/null 2>&1
+	#chrootprocs=( $(_listprocChRoot "$2") )
+	#[[ "${chrootprocs[0]}" == "" ]] && return 0
+	#sudo -n kill -"$chrootKillSignal" "${chrootprocs[@]}" >/dev/null 2>&1
 	#sleep 18
 }
 
