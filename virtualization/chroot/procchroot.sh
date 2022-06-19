@@ -7,7 +7,7 @@ _listprocChRoot() {
 	PROCS=""
 	local currentProcess
 	for currentProcess in `ps -o pid -A`; do
-		if [ "`readlink /proc/$currentProcess/root`" = "$absolute1" ]; then
+		if [ "`sudo -n readlink /proc/$currentProcess/root`" = "$absolute1" ]; then
 			PROCS="$PROCS"" ""$currentProcess"
 		fi
 	done
