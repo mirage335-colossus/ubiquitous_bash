@@ -214,6 +214,8 @@ _getMost_debian11_install() {
 	_getMost_backend_aptGetInstall unionfs-fuse
 	_getMost_backend_aptGetInstall samba
 	
+	_getMost_backend_aptGetInstall aria2
+	
 	_getMost_backend_aptGetInstall qemu
 	_getMost_backend_aptGetInstall qemu-system-x86
 	_getMost_backend_aptGetInstall qemu-system-arm
