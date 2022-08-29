@@ -23,32 +23,41 @@ _test_docker() {
 	_checkDep gosu-amd64
 	_checkDep gosu-i386
 	
-	#https://docs.docker.com/engine/installation/linux/docker-ce/debian/#install-using-the-repository
-	#https://wiki.archlinux.org/index.php/Docker#Installation
-	#sudo -n usermod -a -G docker "$USER"
 	
-	_getDep /sbin/losetup
-	if ! [[ -e "/dev/loop-control" ]] || ! [[ -e "/sbin/losetup" ]]
+	if ! _if_cygwin
 	then
-		echo 'may be missing loopback interface'
-		_stop 1
+		
+		#https://docs.docker.com/engine/installation/linux/docker-ce/debian/#install-using-the-repository
+		#https://wiki.archlinux.org/index.php/Docker#Installation
+		#sudo -n usermod -a -G docker "$USER"
+		
+		_getDep /sbin/losetup
+		if ! [[ -e "/dev/loop-control" ]] || ! [[ -e "/sbin/losetup" ]]
+		then
+			echo 'may be missing loopback interface'
+			_stop 1
+		fi
+		
+		_getDep docker
+		
+		local dockerPermission
+		dockerPermission=$(_permitDocker echo true 2> /dev/null)
+		if [[ "$dockerPermission" != "true" ]]
+		then
+			echo 'no permissions to run docker'
+			_stop 1
+		fi
+		
+		
+		#if ! _permitDocker docker run hello-world 2>&1 | grep 'Hello from Docker' > /dev/null 2>&1
+		#then
+		#	echo 'failed docker hello world'
+		#	_stop 1
+		#fi
+		
 	fi
 	
-	_getDep docker
 	
-	local dockerPermission
-	dockerPermission=$(_permitDocker echo true 2> /dev/null)
-	if [[ "$dockerPermission" != "true" ]]
-	then
-		echo 'no permissions to run docker'
-		_stop 1
-	fi
-	
-	#if ! _permitDocker docker run hello-world 2>&1 | grep 'Hello from Docker' > /dev/null 2>&1
-	#then
-	#	echo 'failed docker hello world'
-	#	_stop 1
-	#fi
 	
 	if ! _discoverResource moby/contrib/mkimage.sh > /dev/null 2>&1 && ! _discoverResource docker/contrib/mkimage.sh
 	#if true
@@ -66,6 +75,11 @@ _test_docker() {
 	
 	
 	
+	if _if_cygwin
+	then
+		return 0
+	fi
+	
 	sudo -n systemctl status docker 2>&1 | head -n 2 | grep -i 'chroot' > /dev/null && return 0
 	systemctl status docker 2>&1 | head -n 2 | grep -i 'chroot' > /dev/null && return 0
 	
@@ -78,5 +92,6 @@ _test_docker() {
 		echo 'sudo -n update-alternatives --set ip6tables /usr/sbin/ip6tables-legacy'
 		_stop 1
 	fi
+	
 }
 
