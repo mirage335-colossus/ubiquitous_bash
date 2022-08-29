@@ -97,7 +97,7 @@ _synergys_terminate() {
 		#kill -KILL $(cat "$synergyPIDfile")
 		rm "$synergyPIDfile"
 		
-		pgrep "^synergy$" && _messagePlain_warn 'found: synergy process'
+		pgrep ^synergy$ && _messagePlain_warn 'found: synergy process'
 		
 		return 0
 	fi
@@ -122,7 +122,7 @@ _synergyc_terminate() {
 		#kill -KILL $(cat "$synergyPIDfile")
 		rm "$synergyPIDfile"
 		
-		pgrep "^synergyc$" && _messagePlain_warn 'found: synergyc process'
+		pgrep ^synergyc$ && _messagePlain_warn 'found: synergyc process'
 		
 		return 0
 	fi
