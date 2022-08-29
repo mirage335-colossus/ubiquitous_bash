@@ -1,4 +1,6 @@
 _test_ethereum_parity() {
+	_if_cygwin && return 0
+	
 	_getDep gcc
 	_getDep g++
 	

@@ -1,5 +1,7 @@
 _test_ethereum() {
-
+	
+	_if_cygwin && return 0
+	
 	_getDep xterm
 	
 	#OpenGL/OpenCL runtime dependency for mining.
