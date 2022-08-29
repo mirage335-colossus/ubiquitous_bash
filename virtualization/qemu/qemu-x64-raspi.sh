@@ -42,7 +42,7 @@ _testQEMU_x64-raspi() {
 		[[ "$INSTANCE_ID" == "" ]] && _stop 1
 	fi
 	
-	if ! sudo -n cat /proc/sys/fs/binfmt_misc/* 2> /dev/null | grep qemu | grep 'armeb$\|armeb-static$\|armeb-binfmt-P$\|armeb-binfmt' > /dev/null 2>&1
+	if ! sudo -n cat /proc/sys/fs/binfmt_misc/* 2> /dev/null | grep qemu | grep 'armeb$\|armeb-static$\|armeb-binfmt-P$\|armeb-binfmt' > /dev/null 2>&1 && ! _if_cygwin
 	then
 		echo 'binfmts does not mention qemu-armeb'
 		[[ "$INSTANCE_ID" == "" ]] && _stop 1
