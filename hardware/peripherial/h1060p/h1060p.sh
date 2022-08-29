@@ -67,7 +67,7 @@ _test_h1060p() {
 	#_wantGetDep 'X11/xorg.conf.d/50-digimend.conf'
 	
 	
-	if ! _wantDep digimend-debug
+	if ! _wantDep digimend-debug && ! _if_cygwin
 	then
 		_messagePlain_request 'request: user please install: digimend-dkms_10 (or newer)'
 	fi
