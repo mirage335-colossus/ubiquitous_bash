@@ -33,7 +33,7 @@ then
 	if [[ $(echo "$MSWEXTPATH" | grep -o ';\|:' | wc -l | tr -dc '0-9') -le 32 ]] && [[ $(echo "$PATH" | grep -o ':' | wc -l | tr -dc '0-9') -le 32 ]]
 	then
 		export convertedMSWEXTPATH=$(cygpath -p "$MSWEXTPATH")
-		export PATH="$PATH":"$convertedMSWEXTPATH"
+		export PATH=/usr/bin:"$convertedMSWEXTPATH":"$PATH"
 	fi
 fi
 

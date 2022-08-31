@@ -53,7 +53,8 @@ _get_reversePorts() {
 
 	local testHostname
 	testHostname="$1"
-	[[ "$testHostname" == "" ]] && testHostname=$(hostname -s)
+	[[ "$testHostname" == "" ]] && testHostname=$(hostname -s 2>/dev/null)
+	_if_cygwin && testHostname=$(hostname 2>/dev/null)
 
 	if [[ "$testHostname" == 'hostnameA' ]] || [[ "$testHostname" == 'hostnameB' ]] || [[ "$testHostname" == '*' ]]
 	then
