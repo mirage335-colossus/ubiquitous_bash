@@ -1004,6 +1004,7 @@ _install() {
 		sudo -n -u user INSTANCE_ID="$INSTANCE_ID" sh -c "cd ; /home/user/bin/ubiquitous_bash.sh _getMost_debian11 2>&1"
 		sudo -n -u user INSTANCE_ID="$INSTANCE_ID" sh -c "cd ; /home/user/bin/ubiquitous_bash.sh _get_veracrypt 2>&1"
 		sudo -n -u user INSTANCE_ID="$INSTANCE_ID" sh -c "cd ; /home/user/bin/ubiquitous_bash.sh _test 2>&1" | tee /var/log/ubiquitous_bash-test
+		sudo -n -u user INSTANCE_ID="$INSTANCE_ID" sh -c "cd ; /home/user/bin/ubiquitous_bash.sh _get_from_nix 2>&1" | tee /var/log/ubiquitous_bash-get_from_nix
 		[[ ${PIPESTATUS[0]} != "0" ]] && _messageFAIL
 	fi
 	
