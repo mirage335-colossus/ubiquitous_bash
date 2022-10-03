@@ -78,9 +78,10 @@ then
 	# WARNING: Mostly intended as apparent MSW/Cygwin workaround. May cause incorrectly written equations with inappropriate non-numeric output to pass regression tests.
 	_clc() {
 		# https://www.cyberciti.biz/faq/linux-unix-bash-check-interactive-shell/
-		if ! [ -z "$PS1" ]
+		if [ -z "$PS1" ]
 		then
 			_qalculate "$@" | tr -dc '0-9.'
+			return
 		fi
 		
 		_qalculate "$@"
