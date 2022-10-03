@@ -80,7 +80,7 @@ then
 		# https://www.cyberciti.biz/faq/linux-unix-bash-check-interactive-shell/
 		if ! [ -z "$PS1" ]
 		then
-			_qalculate "$@" | tr -dc '0-9'
+			_qalculate "$@" | tr -dc '0-9.'
 		fi
 		
 		_qalculate "$@"
@@ -93,7 +93,7 @@ then
 	}
 	
 	_num() {
-		_clc "$@" | tr -dc '0-9'
+		_clc "$@" | tr -dc '0-9.'
 	}
 fi
 

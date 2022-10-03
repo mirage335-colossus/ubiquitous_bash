@@ -85,7 +85,7 @@ then
 		# https://www.cyberciti.biz/faq/linux-unix-bash-check-interactive-shell/
 		if ! [ -z "$PS1" ]
 		then
-			_octave "$@" | tr -dc '0-9'
+			_octave "$@" | tr -dc '0-9.'
 		fi
 		
 		_octave "$@"
@@ -98,7 +98,7 @@ then
 	}
 	
 	_num() {
-		_clc "$@" | tr -dc '0-9'
+		_clc "$@" | tr -dc '0-9.'
 	}
 fi
 
