@@ -80,7 +80,14 @@ then
 		_octave_nsolve "$@"
 	}
 
+	# WARNING: Mostly intended as apparent MSW/Cygwin workaround. May cause incorrectly written equations with inappropriate non-numeric output to pass regression tests.
 	_clc() {
+		# https://www.cyberciti.biz/faq/linux-unix-bash-check-interactive-shell/
+		if ! [ -z "$PS1" ]
+		then
+			_octave "$@" | tr -dc '0-9'
+		fi
+		
 		_octave "$@"
 	}
 	clc() {
@@ -88,6 +95,10 @@ then
 	}
 	c() {
 		_octave "$@"
+	}
+	
+	_num() {
+		_clc "$@" | tr -dc '0-9'
 	}
 fi
 
