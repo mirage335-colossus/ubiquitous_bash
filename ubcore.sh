@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='3558837650'
+export ub_setScriptChecksum_contents='3137430557'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -18207,7 +18207,15 @@ _importShortcuts() {
 	
 	if ! [[ "$PATH" == *":""$HOME""/bin"* ]] && ! [[ "$PATH" == "$HOME""/bin"* ]] && [[ -e "$HOME"/bin ]] && [[ -d "$HOME"/bin ]]
 	then
-		export PATH="$PATH":"$HOME"/bin
+		#export PATH="$PATH":"$HOME"/bin
+		
+		# CAUTION: Dubious workaround to prevent '/usr/local/bin/ubiquitous_bash.sh' , or '/usr/local/bin' , from overriding later program versions in '~/bin' .
+		if [[ $( ( export PATH="$PATH":"$HOME"/bin ; type -p ubiquitous_bash.sh ) ) == "/usr/local/bin/ubiquitous_bash.sh" ]]
+		then
+			export PATH="$HOME"/bin:"$PATH"
+		else
+			export PATH="$PATH":"$HOME"/bin
+		fi
 	fi
 	
 	_tryExec "_visualPrompt"
@@ -24056,6 +24064,28 @@ _variableLocalTest_sequence() {
 	( local currentSubshellTestC='true' )
 	[[ "$currentSubshellTestC" != "" ]] && _stop 1
 	[[ "$currentSubshellTestC" == 'true' ]] && _stop 1
+	
+	
+	export currentGlobalSubshellTest="true"
+	if [[ $( ( echo "$currentGlobalSubshellTest" ) ) != "true" ]]
+	then
+		_stop 1
+	fi
+	if [[ $( ( export currentGlobalSubshellTest="false" ; echo "$currentGlobalSubshellTest" ) ) != "false" ]]
+	then
+		_stop 1
+	else
+		true
+	fi
+	if [[ $( ( echo "$currentGlobalSubshellTest" ) ) != "true" ]]
+	then
+		_stop 1
+	fi
+	if [[ "$currentGlobalSubshellTest" != "true" ]]
+	then
+		_stop 1
+	fi
+	
 	
 	! ( echo true ) | grep 'true' > /dev/null && _stop 1
 	! ( echo "$currentGlobalA" ) | grep 'true' > /dev/null && _stop 1

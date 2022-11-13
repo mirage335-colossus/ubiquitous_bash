@@ -481,6 +481,28 @@ _variableLocalTest_sequence() {
 	[[ "$currentSubshellTestC" != "" ]] && _stop 1
 	[[ "$currentSubshellTestC" == 'true' ]] && _stop 1
 	
+	
+	export currentGlobalSubshellTest="true"
+	if [[ $( ( echo "$currentGlobalSubshellTest" ) ) != "true" ]]
+	then
+		_stop 1
+	fi
+	if [[ $( ( export currentGlobalSubshellTest="false" ; echo "$currentGlobalSubshellTest" ) ) != "false" ]]
+	then
+		_stop 1
+	else
+		true
+	fi
+	if [[ $( ( echo "$currentGlobalSubshellTest" ) ) != "true" ]]
+	then
+		_stop 1
+	fi
+	if [[ "$currentGlobalSubshellTest" != "true" ]]
+	then
+		_stop 1
+	fi
+	
+	
 	! ( echo true ) | grep 'true' > /dev/null && _stop 1
 	! ( echo "$currentGlobalA" ) | grep 'true' > /dev/null && _stop 1
 	! ( echo "$currentLocalA" ) | grep 'true' > /dev/null && _stop 1
