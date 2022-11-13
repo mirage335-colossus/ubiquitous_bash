@@ -1416,12 +1416,26 @@ _test-shell-cygwin() {
 		echo 'fail: count: PATH: '"$currentPathCount"
 		_messageFAIL
 	fi
-	if [[ "$currentPathCount" -gt 32 ]]
+	if [[ "$currentPathCount" -gt 44 ]]
 	then
 		echo 'warn: count: PATH: '"$currentPathCount"
 		echo 'warn: MSWEXTPATH may be ignored'
 		_messagePlain_request 'request: reduce the length of PATH variable'
 	fi
+	
+	if [[ "$currentPathCount" -gt 32 ]]
+	then
+		echo 'warn: count: PATH: '"$currentPathCount"
+		echo 'warn: MSWEXTPATH exceeds preferred 32'
+		_messagePlain_request 'request: reduce the length of PATH variable'
+	fi
+	if [[ "$currentPathCount" -gt 34 ]]
+	then
+		echo 'warn: count: PATH: '"$currentPathCount"
+		echo 'warn: MSWEXTPATH exceeds preferred 34'
+		_messagePlain_request 'request: reduce the length of PATH variable'
+	fi
+	
 	
 	
 	local currentPathCount
@@ -1431,12 +1445,27 @@ _test-shell-cygwin() {
 		echo 'fail: count: MSWEXTPATH: '"$currentPathCount"
 		_messageFAIL
 	fi
-	if [[ "$currentPathCount" -gt 32 ]]
+	if [[ "$currentPathCount" -gt 44 ]]
 	then
 		echo 'warn: count: MSWEXTPATH: '"$currentPathCount"
 		echo 'warn: MSWEXTPATH may be ignored by default'
 		_messagePlain_request 'request: reduce the length of PATH variable'
 	fi
+	
+	
+	if [[ "$currentPathCount" -gt 32 ]]
+	then
+		echo 'warn: count: MSWEXTPATH: '"$currentPathCount"
+		echo 'warn: MSWEXTPATH exceeds preferred 32'
+		_messagePlain_request 'request: reduce the length of PATH variable'
+	fi
+	if [[ "$currentPathCount" -gt 34 ]]
+	then
+		echo 'warn: count: MSWEXTPATH: '"$currentPathCount"
+		echo 'warn: MSWEXTPATH exceeds preferred 34'
+		_messagePlain_request 'request: reduce the length of PATH variable'
+	fi
+	
 	
 	
 	# Although use case specific (eg. flight sim with usual desktop applications installed) test cases may be necessary for MSW, to avoid ambiguity in expectations that every test includes an explicit PASS statement, a call to '_messagePASS' is still given.

@@ -119,6 +119,12 @@ _test_devqalculate() {
 	
 	! _typeDep qalculate-gtk && echo 'warn: missing: qalculate-gtk'
 	
+	
+	if [[ $(qalc -v | cut -f1 -d\. | tr -dc '0-9') -le "3" ]]
+	then
+		echo 'warn: bad: unacceptable qalc version!'
+	fi
+	
 	return 0
 }
 

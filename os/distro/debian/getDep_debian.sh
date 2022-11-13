@@ -381,8 +381,18 @@ CZXWXcRMTo8EmM8i4d
 	if [[ "$1" == "qalculate-gtk" ]]
 	then
 		sudo -n env DEBIAN_FRONTEND=noninteractive apt-get install --install-recommends -y qalculate-gtk
+		sudo -n env DEBIAN_FRONTEND=noninteractive apt-get install --install-recommends -y -t bullseye-backports qalc
 		
 		! _wantDep 'qalculate-gtk' && echo 'warn: missing: qalculate-gtk'
+		
+		return 0
+	fi
+	
+	if [[ "$1" == "qalc" ]]
+	then
+		sudo -n env DEBIAN_FRONTEND=noninteractive apt-get install --install-recommends -y -t bullseye-backports qalc
+		
+		! _wantDep 'qalc' && echo 'warn: missing: qalc'
 		
 		return 0
 	fi

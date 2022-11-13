@@ -324,6 +324,11 @@ _getMost_debian11_install() {
 	_getMost_backend_aptGetInstall qalculate-gtk
 	_getMost_backend_aptGetInstall qalc
 	
+	# CAUTION: Workaround. Debian defaults to an obsolete version of qalc which is unusable.
+	_getMost_backend_aptGetInstall -t bullseye-backports qalc
+	
+	
+	
 	_getMost_backend_aptGetInstall octave
 	_getMost_backend_aptGetInstall octave-arduino
 	_getMost_backend_aptGetInstall octave-bart
