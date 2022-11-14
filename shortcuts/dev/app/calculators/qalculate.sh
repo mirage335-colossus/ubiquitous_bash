@@ -75,12 +75,12 @@ then
 		_qalculate_solve "$@"
 	}
 
-	# WARNING: Mostly intended as apparent MSW/Cygwin workaround. May cause incorrectly written equations with inappropriate non-numeric output to pass regression tests.
+	# WARNING: Mostly intended as apparent MSW/Cygwin workaround. May cause incorrectly written equations with inappropriate non-numeric output to pass regression tests (ie. same wrong output may still be wrong output).
 	_clc() {
 		# https://www.cyberciti.biz/faq/linux-unix-bash-check-interactive-shell/
 		if [ -z "$PS1" ]
 		then
-			_qalculate "$@" | tr -dc '0-9.'
+			_qalculate "$@" | tr -dc 'E0-9.\n'
 			return
 		fi
 		
@@ -94,7 +94,7 @@ then
 	}
 	
 	_num() {
-		_clc "$@" | tr -dc '0-9.'
+		_clc "$@" | tr -dc 'E0-9.\n'
 	}
 fi
 
