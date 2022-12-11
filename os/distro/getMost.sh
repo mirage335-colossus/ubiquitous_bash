@@ -445,6 +445,8 @@ _getMost_debian11_install() {
 	_getMost_backend_aptGetInstall pv
 	_getMost_backend_aptGetInstall expect
 	
+	_getMost_backend_aptGetInstall libfuse2
+	
 	_getMost_backend_aptGetInstall libgtk2.0-0
 	
 	_getMost_backend_aptGetInstall libwxgtk3.0-gtk3-0v5
