@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='621343293'
+export ub_setScriptChecksum_contents='650585675'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -10453,11 +10453,13 @@ _get_from_nix-user() {
 	
 	
 	#_custom_installDeb /root/core/installations/Wire.deb
-	_getMost_backend sudo -n -u "$currentUser" /bin/bash -i -c 'nix-env -iA nixpkgs.wire-desktop'
+	_getMost_backend sudo -n -u "$currentUser" /bin/bash -l -c 'nix-env -iA nixpkgs.wire-desktop'
 	_getMost_backend sudo -n -u "$currentUser" xdg-desktop-menu install /home/user/.nix-profile/share/applications/wire-desktop.desktop
 	_getMost_backend sudo -n -u "$currentUser" cp -a /home/user/.nix-profile/share/icons /home/user/.local/share/
 	
-	_getMost_backend sudo -n -u "$currentUser" /bin/bash -i -c 'nix-env -iA nixpkgs.geda'
+	sleep 3
+	
+	_getMost_backend sudo -n -u "$currentUser" /bin/bash -l -c 'nix-env -iA nixpkgs.geda'
 	_getMost_backend sudo -n -u "$currentUser" xdg-desktop-menu install /home/user/.nix-profile/share/applications/geda-gschem.desktop
 	_getMost_backend sudo -n -u "$currentUser" xdg-desktop-menu install /home/user/.nix-profile/share/applications/geda-gattrib.desktop
 	_getMost_backend sudo -n -u "$currentUser" cp -a /home/user/.nix-profile/share/icons /home/user/.local/share/
