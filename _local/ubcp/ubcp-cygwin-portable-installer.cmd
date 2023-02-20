@@ -476,7 +476,7 @@ echo Creating [%Init_sh%]...
     echo fi
   )
 ) >"%Init_sh%" || goto :fail
-"%CYGWIN_ROOT%\bin\dos2unix" "%Init_sh%" || goto :fail
+"%CYGWIN_ROOT%\bin\dos2unix.exe" "%Init_sh%" || goto :fail
 
 set "Start_cmd=%INSTALL_ROOT%cygwin-portable.cmd"
 echo Creating launcher [%Start_cmd%]...
@@ -694,7 +694,7 @@ if "%INSTALL_BASH_FUNK%" == "yes" (
   ) >>"%Bashrc_sh%" || goto :fail
 )
 
-"%CYGWIN_ROOT%\bin\dos2unix" "%Bashrc_sh%" || goto :fail
+"%CYGWIN_ROOT%\bin\dos2unix.exe" "%Bashrc_sh%" || goto :fail
 
 :: execute custom commands after installation
 set "custom_tasks_file=%INSTALL_ROOT%cygwin-portable-installer-post-tasks.cmd"
