@@ -14,28 +14,12 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+# https://github.com/softprops/action-gh-release
 # https://svrooij.io/2021/08/17/github-actions-secret-file/
 jobs:
   build_ubcp:
     runs-on: windows-latest
     steps:
-      # https://svrooij.io/2021/08/17/github-actions-secret-file/
-      #$secretFileHash = Get-FileHash $secretFile;
-      #Write-Output "::set-output name=SECRET_FILE::$secretFile";
-      #Write-Output "::set-output name=SECRET_FILE_HASH::$($secretFileHash.Hash)";
-      #Write-Output "Secret file $secretFile has hash $($secretFileHash.Hash)";
-      #Get-Content -Path $secretFile | Measure-Object -Line -Word -Character;
-      #echo $secretFile;
-      #echo $($secretFileHash.Hash)
-      - name: write! secrets
-        id: secret-file1
-        run: |
-          $secretFile = "/rclone.conf"
-          $encodedBytes = [System.Convert]::FromBase64String($env:rclone_limited_conf_base64)
-          Set-Content $secretFile -Value $encodedBytes -AsByteStream
-        shell: pwsh
-        env:
-          rclone_limited_conf_base64: ${{ secrets.rclone_limited_conf_base64 }}
       # https://adamtheautomator.com/powershell-get-disk-space/
       #- name: build_ubcp_powershell
         #run: |
@@ -73,8 +57,12 @@ jobs:
         run: |
           cd ./_local/ubcp
           .\ubcp-cygwin-portable-installer | tee /ubcp-cygwin-portable-installer.log
-          rclone --progress --config="/rclone.conf" copy /ubcp-cygwin-portable-installer.log distLLC_build_ubcp:/
+          #rclone --progress --config="/rclone.conf" copy /ubcp-cygwin-portable-installer.log distLLC_build_ubcp:/
           cp ubcp_rename-to-enable.cmd ubcp.cmd
+      - name: release! ubcp-cygwin-portable-installer
+        uses: softprops/action-gh-release@v1
+        files: |
+            /ubcp-cygwin-portable-installer.log
       - name: statement! ubcp-cygwin-portable-installer
         run: |
           cat /ubcp-cygwin-portable-installer.log
@@ -90,7 +78,11 @@ jobs:
         timeout-minutes: 240
         run: |
           .\_setupUbiquitous | tee /_setupUbiquitous.log
-          rclone --progress --config="/rclone.conf" copy /_setupUbiquitous.log distLLC_build_ubcp:/
+          #rclone --progress --config="/rclone.conf" copy /_setupUbiquitous.log distLLC_build_ubcp:/
+      - name: release! _setupUbiquitous.log
+        uses: softprops/action-gh-release@v1
+        files: |
+            /_setupUbiquitous.log
       - name: statement! _setupUbiquitous
         run: |
           Get-Content -Path /_setupUbiquitous.log | Measure-Object -Line -Word -Character
