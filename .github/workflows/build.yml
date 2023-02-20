@@ -57,9 +57,8 @@ jobs:
         run: |
           cd ./_local/ubcp
           .\ubcp-cygwin-portable-installer | tee /ubcp-cygwin-portable-installer.log
-          #rclone --progress --config="/rclone.conf" copy /ubcp-cygwin-portable-installer.log distLLC_build_ubcp:/
           cp ubcp_rename-to-enable.cmd ubcp.cmd
-      - name: release! ubcp-cygwin-portable-installer
+      - name: release! ubcp-cygwin-portable-installer.log
         uses: softprops/action-gh-release@v1
         with:
           files: |
@@ -79,7 +78,6 @@ jobs:
         timeout-minutes: 240
         run: |
           .\_setupUbiquitous | tee /_setupUbiquitous.log
-          #rclone --progress --config="/rclone.conf" copy /_setupUbiquitous.log distLLC_build_ubcp:/
       - name: release! _setupUbiquitous.log
         uses: softprops/action-gh-release@v1
         with:
