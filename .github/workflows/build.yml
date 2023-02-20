@@ -61,7 +61,8 @@ jobs:
           cp ubcp_rename-to-enable.cmd ubcp.cmd
       - name: release! ubcp-cygwin-portable-installer
         uses: softprops/action-gh-release@v1
-        files: |
+        with: |
+          files: |
             /ubcp-cygwin-portable-installer.log
       - name: statement! ubcp-cygwin-portable-installer
         run: |
@@ -81,7 +82,8 @@ jobs:
           #rclone --progress --config="/rclone.conf" copy /_setupUbiquitous.log distLLC_build_ubcp:/
       - name: release! _setupUbiquitous.log
         uses: softprops/action-gh-release@v1
-        files: |
+        with:
+          files: |
             /_setupUbiquitous.log
       - name: statement! _setupUbiquitous
         run: |
