@@ -58,6 +58,7 @@ jobs:
           cd ./_local/ubcp
           .\ubcp-cygwin-portable-installer | tee /ubcp-cygwin-portable-installer.log
           cp ubcp_rename-to-enable.cmd ubcp.cmd
+        continue-on-error: true
       - name: release! ubcp-cygwin-portable-installer.log
         uses: softprops/action-gh-release@v1
         with:
