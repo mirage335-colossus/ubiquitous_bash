@@ -9,13 +9,13 @@ _gitBest_detect_github_procedure() {
 	then
 		_messagePlain_request 'performance: export current_gitBest_source_GitHub=$("'"$scriptAbsoluteLocation"'" _gitBest_detect_github_sequence | tail -n1)'
 		
-		if [[ -e "$HOME"/core ]]
+		if [[ -e "$HOME"/core ]] && [[ "$gitBestNoCore" != "true" ]]
 		then
 			export current_gitBest_source_GitHub="github_core"
 		fi
 		
 		local currentSSHoutput
-		if currentSSHoutput=$(ssh -o StrictHostKeyChecking=no -o Compression=yes -o ConnectionAttempts=3 -o ServerAliveInterval=6 -o ServerAliveCountMax=9 -o ConnectTimeout="$netTimeout" -o PubkeyAuthentication=yes -o PasswordAuthentication=no git@github.com 2>&1 ; true) && _safeEcho_newline "$currentSSHoutput" | grep 'successfully authenticated'
+		if ( [[ -e "$HOME"/.ssh/id_rsa ]] || [[ -e "$HOME"/.ssh/config ]] || ( [[ ! -e "$HOME"/.ssh/id_ed25519_sk ]] && [[ ! -e "$HOME"/.ssh/ecdsa-sk ]] ) ) && currentSSHoutput=$(ssh -o StrictHostKeyChecking=no -o Compression=yes -o ConnectionAttempts=3 -o ServerAliveInterval=6 -o ServerAliveCountMax=9 -o ConnectTimeout="$netTimeout" -o PubkeyAuthentication=yes -o PasswordAuthentication=no git@github.com 2>&1 ; true) && _safeEcho_newline "$currentSSHoutput" | grep 'successfully authenticated'
 		then
 			export current_gitBest_source_GitHub="github_ssh"
 			return

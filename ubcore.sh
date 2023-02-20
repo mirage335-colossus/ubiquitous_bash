@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='4075780574'
+export ub_setScriptChecksum_contents='761638675'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -1091,6 +1091,11 @@ then
 	then
 		export cygwinOverride_measureDateA=$(date +%s%N | cut -b1-13)
 		export ub_setScriptChecksum_contents_cygwinOverride="$ub_setScriptChecksum_contents"
+		
+		
+		_discoverResource-cygwinNative-ProgramFiles 'ykman' 'Yubico/YubiKey Manager' false
+		
+		
 		
 		_discoverResource-cygwinNative-ProgramFiles 'nmap' 'Nmap' false
 		
@@ -14147,13 +14152,13 @@ _gitBest_detect_github_procedure() {
 	then
 		_messagePlain_request 'performance: export current_gitBest_source_GitHub=$("'"$scriptAbsoluteLocation"'" _gitBest_detect_github_sequence | tail -n1)'
 		
-		if [[ -e "$HOME"/core ]]
+		if [[ -e "$HOME"/core ]] && [[ "$gitBestNoCore" != "true" ]]
 		then
 			export current_gitBest_source_GitHub="github_core"
 		fi
 		
 		local currentSSHoutput
-		if currentSSHoutput=$(ssh -o StrictHostKeyChecking=no -o Compression=yes -o ConnectionAttempts=3 -o ServerAliveInterval=6 -o ServerAliveCountMax=9 -o ConnectTimeout="$netTimeout" -o PubkeyAuthentication=yes -o PasswordAuthentication=no git@github.com 2>&1 ; true) && _safeEcho_newline "$currentSSHoutput" | grep 'successfully authenticated'
+		if ( [[ -e "$HOME"/.ssh/id_rsa ]] || [[ -e "$HOME"/.ssh/config ]] || ( [[ ! -e "$HOME"/.ssh/id_ed25519_sk ]] && [[ ! -e "$HOME"/.ssh/ecdsa-sk ]] ) ) && currentSSHoutput=$(ssh -o StrictHostKeyChecking=no -o Compression=yes -o ConnectionAttempts=3 -o ServerAliveInterval=6 -o ServerAliveCountMax=9 -o ConnectTimeout="$netTimeout" -o PubkeyAuthentication=yes -o PasswordAuthentication=no git@github.com 2>&1 ; true) && _safeEcho_newline "$currentSSHoutput" | grep 'successfully authenticated'
 		then
 			export current_gitBest_source_GitHub="github_ssh"
 			return

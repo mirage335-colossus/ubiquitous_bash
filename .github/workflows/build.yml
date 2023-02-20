@@ -14,6 +14,8 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+
+# https://github.com/ncipollo/release-action
 # https://github.com/softprops/action-gh-release
 # https://svrooij.io/2021/08/17/github-actions-secret-file/
 jobs:

@@ -466,6 +466,11 @@ then
 		export cygwinOverride_measureDateA=$(date +%s%N | cut -b1-13)
 		export ub_setScriptChecksum_contents_cygwinOverride="$ub_setScriptChecksum_contents"
 		
+		
+		_discoverResource-cygwinNative-ProgramFiles 'ykman' 'Yubico/YubiKey Manager' false
+		
+		
+		
 		_discoverResource-cygwinNative-ProgramFiles 'nmap' 'Nmap' false
 		
 		_discoverResource-cygwinNative-ProgramFiles 'qalc' 'Qalculate' false
