@@ -549,6 +549,7 @@ echo Creating launcher [%Start_cmd%]...
 :: launching Bash once to initialize user home dir
 call "%Start_cmd%" whoami
 
+mkdir "%INSTALL_ROOT%conemu"
 set "conemu_config=%INSTALL_ROOT%conemu\ConEmu.xml"
 if "%INSTALL_CONEMU%" == "yes" (
   (
