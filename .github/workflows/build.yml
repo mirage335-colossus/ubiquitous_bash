@@ -104,7 +104,6 @@ jobs:
         timeout-minutes: 240
         run: |
           .\_test | tee /_test-lean.log
-          rclone --progress --config="/rclone.conf" copy /_test-lean.log distLLC_build_ubcp:/
           $SEL = cat /_test-lean.log | Select-String -Pattern 'FAIL' -CaseSensitive -SimpleMatch
           if ($SEL -ne $null)
           {
@@ -114,6 +113,12 @@ jobs:
           {
           echo true | Out-Null
           }
+      - name: release! _test-lean.log
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: build
+          files: |
+            /_test-lean.log
       - name: statement! test-lean
         run: |
           cat /_test-lean.log
@@ -124,7 +129,16 @@ jobs:
         run: |
           ./_bin _package-cygwinOnly
           mv ./_local/ubcp/package_ubcp-cygwinOnly.tar.xz /package_ubcp-cygwinOnly-noMitigation.tar.xz
-          rclone --progress --config="/rclone.conf" copy /package_ubcp-cygwinOnly-noMitigation.tar.xz distLLC_build_ubcp:/
+      - name: release! package_ubcp-cygwinOnly-noMitigation.tar.xz
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: build
+          files: |
+            /package_ubcp-cygwinOnly-noMitigation.tar.xz
+      - name: rm - _package-cygwinOnly noMitigation
+        shell: pwsh
+        timeout-minutes: 240
+        run: |
           rm /package_ubcp-cygwinOnly-noMitigation.tar.xz
       - name: _mitigate-ubcp
         shell: pwsh
@@ -132,7 +146,12 @@ jobs:
         run: |
           ./_bin _mitigate-ubcp | tee /_mitigate-ubcp.log
           ./_bin _color_end
-          rclone --progress --config="/rclone.conf" copy /_mitigate-ubcp.log distLLC_build_ubcp:/
+      - name: release! _mitigate-ubcp.log
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: build
+          files: |
+            /_mitigate-ubcp.log
       - name: statement! statistics! _mitigate-ubcp
         run: |
           Get-Content -Path /_mitigate-ubcp.log | Measure-Object -Line -Word -Character
@@ -142,15 +161,29 @@ jobs:
         timeout-minutes: 240
         run: |
           ./_bin _package-cygwinOnly
-          rclone --progress --config="/rclone.conf" copy ./_local/ubcp/package_ubcp-cygwinOnly.tar.xz distLLC_build_ubcp:/
+      - name: release! package_ubcp-cygwinOnly.tar.xz
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: build
+          files: |
+            ./_local/ubcp/package_ubcp-cygwinOnly.tar.xz
       - name: _MSWpackage package_ubiquitous_bash-msw
         shell: pwsh
         timeout-minutes: 240
         run: |
           cd ..
           7z -y a -t7z /package_ubiquitous_bash-msw.7z ./ubiquitous_bash | tee /package_ubiquitous_bash-msw.log
-          rclone --progress --config="/rclone.conf" copy /package_ubiquitous_bash-msw.log distLLC_build_ubcp:/
-          rclone --progress --config="/rclone.conf" copy /package_ubiquitous_bash-msw.7z distLLC_build_ubcp:/
+      - name: release! _MSWpackage package_ubiquitous_bash-msw
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: build
+          files: |
+            /package_ubiquitous_bash-msw.log
+            /package_ubiquitous_bash-msw.7z
+      - name: rm - _MSWpackage package_ubiquitous_bash-msw
+        shell: pwsh
+        timeout-minutes: 240
+        run: |
           rm /package_ubiquitous_bash-msw.7z
       - name: statement! package_ubiquitous_bash-msw
         run: |
@@ -181,8 +214,17 @@ jobs:
         run: |
           cd ..
           7z -y a -t7z /package_ubcp-core.7z /core/infrastructure/ubcp /core/infrastructure/ubiquitous_bash /_bash.bat | tee /package_ubcp-core.log
-          rclone --progress --config="/rclone.conf" copy /package_ubcp-core.log distLLC_build_ubcp:/
-          rclone --progress --config="/rclone.conf" copy /package_ubcp-core.7z distLLC_build_ubcp:/
+      - name: release! _MSWpackage package_ubcp-core
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: build
+          files: |
+            /package_ubcp-core.log
+            /package_ubcp-core.7z
+      - name: rm - _MSWpackage package_ubcp-core
+        shell: pwsh
+        timeout-minutes: 240
+        run: |
           rm /package_ubcp-core.7z
           Remove-Item -Recurse -Force /core/infrastructure/ubcp
           Remove-Item -Recurse -Force /core/infrastructure/ubiquitous_bash
@@ -193,8 +235,17 @@ jobs:
           cd ..
           rm ./ubiquitous_bash/_local/ubcp/package_ubcp-cygwinOnly.tar.xz
           7z -y a -t7z /package_ubiquitous_bash-msw-rotten.7z ./ubiquitous_bash | tee /package_ubiquitous_bash-msw-rotten.log
-          rclone --progress --config="/rclone.conf" copy /package_ubiquitous_bash-msw-rotten.log distLLC_build_ubcp:/
-          rclone --progress --config="/rclone.conf" copy /package_ubiquitous_bash-msw-rotten.7z distLLC_build_ubcp:/
+      - name: release! _MSWpackage package_ubiquitous_bash-msw-rotten
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: build
+          files: |
+            /package_ubiquitous_bash-msw-rotten.log
+            /package_ubiquitous_bash-msw-rotten.7z
+      - name: rm - _MSWpackage package_ubiquitous_bash-msw-rotten
+        shell: pwsh
+        timeout-minutes: 240
+        run: |
           rm /package_ubiquitous_bash-msw-rotten.7z
       # https://adamtheautomator.com/powershell-get-disk-space/
       - name: statement! ls
