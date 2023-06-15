@@ -788,7 +788,8 @@ REM set OneDriveConsumer=
 
 REM set PATH=C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\Program Files (x86)\Common Files\Oracle\Java\javapath;C:\Program Files (x86)\VMware\VMware Workstation\bin\;C:\Program Files\Microsoft MPI\Bin\;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files (x86)\WinMerge;C:\ProgramData\chocolatey\bin;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0\;C:\WINDOWS\System32\OpenSSH\;C:\Program Files (x86)\Windows Kits\8.1\Windows Performance Toolkit\;C:\Program Files\Git\cmd;C:\Users\mirage335\AppData\Local\Microsoft\WindowsApps;C:\Program Files (x86)\Nmap;C:\Users\mirage335\AppData\Local\Programs\Microsoft VS Code\bin
 REM set PATH=
-set "PATH=%MSWEXTPATH%"
+REM set "PATH=%MSWEXTPATH%"
+IF NOT "%MSWEXTPATH%" == "" set "PATH=%MSWEXTPATH%"
 
 
 
