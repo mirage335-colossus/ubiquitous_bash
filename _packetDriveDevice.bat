@@ -735,6 +735,231 @@ REM )
 
 REM Ubiquitous Bash Cygwin Portable - Anchor (Batch Version)
 
+
+
+
+
+
+
+REM Retrieve value of such variables with: set BASH_FUNC__visualPrompt_promptCommand%%
+REM set BASH_FUNC__visualPrompt_promptCommand%%=
+set AUTOSSH_FIRST_POLL=
+set AUTOSSH_GATETIME=
+set AUTOSSH_POLL=
+set BASH_FUNC__visualPrompt_promptCommand%%=
+setx BASH_FUNC__visualPrompt_promptCommand%% "BASH_FUNC__visualPrompt_promptCommand%%" > nul 2>&1
+set CHROME_CRASHPAD_PIPE_NAME=
+set COLORTERM=
+REM set COMMONPROGRAMFILES=
+REM set COMPUTERNAME=
+REM set COMSPEC=
+
+REM set CWD=
+set ChocolateyInstall=
+set ChocolateyLastPathUpdate=
+REM set CommonProgramFiles(x86)=
+set CommonProgramW6432=
+REM set DriverData=
+set EMBEDDED=
+set EXECIGNORE=
+set GIT_ASKPASS=
+set GROUP=
+set HOSTNAME=
+set HOST_GROUP_ID=
+set HOST_USER_ID=
+REM set LOCALAPPDATA=
+set LOCALLISTENPORT=
+set LOCALSSHPORT=
+REM set LOGONSERVER=
+REM set MSMPI_BENCHMARKS=
+REM set MSMPI_BIN=
+REM set MSWEXTPATH=
+set MSWanchorName=
+set MSWanchorSource=
+set MSWanchorSourceDir=
+set MSWanchorSourcePath=
+REM set NUMBER_OF_PROCESSORS=
+set OLDPWD=
+set OLD_ANCHOR_PATH=
+set ORIGINAL_XDG_CURRENT_DESKTOP=
+REM set OS=
+REM set OneDrive=
+REM set OneDriveConsumer=
+
+REM set PATH=C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\Program Files (x86)\Common Files\Oracle\Java\javapath;C:\Program Files (x86)\VMware\VMware Workstation\bin\;C:\Program Files\Microsoft MPI\Bin\;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files (x86)\WinMerge;C:\ProgramData\chocolatey\bin;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0\;C:\WINDOWS\System32\OpenSSH\;C:\Program Files (x86)\Windows Kits\8.1\Windows Performance Toolkit\;C:\Program Files\Git\cmd;C:\Users\mirage335\AppData\Local\Microsoft\WindowsApps;C:\Program Files (x86)\Nmap;C:\Users\mirage335\AppData\Local\Programs\Microsoft VS Code\bin
+REM set PATH=
+set "PATH=%MSWEXTPATH%"
+
+
+
+REM set PATHEXT=
+REM set PRINTER=
+REM set PROCESSOR_ARCHITECTURE=
+REM set PROCESSOR_IDENTIFIER=
+REM set PROCESSOR_LEVEL=
+REM set PROCESSOR_REVISION=
+REM set PROFILEREAD=
+REM set PROGRAMFILES=
+REM set PROMPT=
+set PROMPT_COMMAND=
+REM set PS1=
+set PSModulePath=
+REM set PUBLIC=
+set PYTHONHOME=
+set PYTHONSTARTUP=
+REM set ProgramFiles(x86)=
+REM set ProgramW6432=
+set SHLVL=
+REM set SYSTEMDRIVE=
+REM set SYSTEMROOT=
+REM set TEMP=
+set TERM=
+set TERM_PROGRAM=
+set TERM_PROGRAM_VERSION=
+REM set TMP=
+REM set TZ=
+REM set USER=
+REM set USERDOMAIN=
+REM set USERDOMAIN_ROAMINGPROFILE=
+REM set USERNAME=
+REM set USERPROFILE=
+set VBOX_MSI_INSTALL_PATH=
+REM set VSCODE_GIT_ASKPASS_EXTRA_ARGS=
+REM set VSCODE_GIT_ASKPASS_MAIN=
+REM set VSCODE_GIT_ASKPASS_NODE=
+REM set VSCODE_GIT_IPC_HANDLE=
+REM set VSCODE_INJECTION=
+REM set WINDIR=
+set abstractfs_lock=
+set abstractfs_root=
+set actualFakeHome=
+set arbitraryFakeHome=
+set arg1=
+
+
+set bootTmp=
+set chrootDir=
+set comment_shell_line=
+set convertedMSWEXTPATH=
+set currentDriveLetter_cygwin_uk4uPhB663kVcygT0q=
+
+
+REM exit /b
+REM goto :eof
+
+
+
+set cygwinOverride_measureDateA=
+set cygwinOverride_measureDateB=
+set daemonPidFile=
+set fakeHomeEditLib=
+set flag__NOT_shell=
+set gatewayName=
+set globalArcDir=
+set globalArcFS=
+set globalArcTmp=
+set globalBuildDir=
+set globalBuildFS=
+set globalBuildTmp=
+set globalFakeHome=
+set globalVirtDir=
+set globalVirtFS=
+set globalVirtTmp=
+set hostMemoryQuantity=
+set hostMemoryTotal=
+set hostToGuestDir=
+set hostToGuestFiles=
+set hostToGuestISO=
+
+
+set importLog=
+set initPWD=
+set instancedDownloadsDir=
+set instancedFakeHome=
+set instancedProjectDir=
+set instancedVirtDir=
+set instancedVirtFS=
+set instancedVirtHome=
+set instancedVirtTmp=
+set keepFakeHome=
+set keepKeys_SSH=
+set lock_closed=
+set lock_closing=
+set lock_emergency=
+set lock_instance=
+set lock_instancing=
+set lock_loop_image=
+set lock_open=
+set lock_open_chroot=
+set lock_open_docker=
+set lock_open_image=
+set lock_open_qemu=
+set lock_open_vbox=
+set lock_opening=
+set lock_pathlock=
+set lock_quicktmp=
+set logTmp=
+set lowsessionid=
+set markup_terminal_cmd_begin=
+set markup_terminal_cmd_end=
+set matchingEMBEDDED=
+set netName=
+set netTimeout=
+set objectDir=
+set objectName=
+set outerPWD=
+set override_cygwin_vncviewer=
+set permaLog=
+set pidFile=
+set profileScriptFolder=
+set profileScriptLocation=
+set queryTmp=
+set safeTmp=
+set safeTmpSSH=
+set scopeTmp=
+set scriptAbsoluteFolder=
+set scriptAbsoluteLocation=
+set scriptBin=
+set scriptBundle=
+set scriptLib=
+set scriptLocal=
+set scriptTokens=
+set sessionid=
+set sharedGuestProjectDir=
+set sharedGuestProjectDirDefault=
+set shortFakeHome=
+set shortTmp=
+set tmpSelf=
+set uPID=
+set ubVirtImageLocal=
+set ub_setScriptChecksum_contents=
+set ub_setScriptChecksum_contents_cygwinOverride=
+set ub_setScriptChecksum_header=
+set ubcp_cmd_dir=
+set ubcp_cmd_file=
+set ubcp_cmd_path=
+set ubiquitiousBashID=
+set ubiquitiousBashIDnano=
+set ubiquitiousBashIDshort=
+set ubiquitousBashID=
+set ubiquitousBashIDnano=
+set ubiquitousBashIDshort=
+set vboxRaw=
+set virtGuestHome=
+set virtGuestHomeDrop=
+set virtGuestUser=
+set virtGuestUserDrop=
+set vmMemoryAllocationDefault=
+set vncPasswdFile=
+
+
+
+
+
+
+
+
+
 if "%~1"=="ubAnchorSelfTestOnly" (
 	echo PASS-BATCH
 	goto end
