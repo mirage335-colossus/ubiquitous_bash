@@ -22,7 +22,7 @@ jobs:
   build_ubcp:
     runs-on: windows-latest
     steps:
-      - uses: dev-drprasad/delete-tag-and-release
+      - uses: dev-drprasad/delete-tag-and-release@v1.0
         with:
             tag_name: build #(required) tag name to delete 
             delete_release: true #(optional) default: true 
