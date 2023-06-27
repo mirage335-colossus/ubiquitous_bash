@@ -53,13 +53,17 @@ jobs:
         with:
           fetch-depth: 0  # we need fetch-depth: 0 to fetch all tags
 
-
+      - name: Set up GitHub CLI
+        run: gh auth login --with-token <<< "${{ secrets.GITHUB_TOKEN }}"
 
       - name: Fetch release data
         id: fetch_release_data
         run: |
           RELEASE_DATA=$(gh release view build --json body -q '.body')
           echo "::set-output name=release_body::$(echo "$RELEASE_DATA")"
+
+          RELEASE_ID=$(gh api repos/${{ github.repository }}/releases/tags/build -q .id)
+          echo "::set-output name=release_id::$(echo "$RELEASE_ID")"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -70,6 +74,7 @@ jobs:
           git push https://${{ secrets.GITHUB_TOKEN }}@github.com/mirage335/ubiquitous_bash.git internal
           git push --delete https://${{ secrets.GITHUB_TOKEN }}@github.com/mirage335/ubiquitous_bash.git build
           gh release edit build --title "internal" --notes "${{ steps.fetch_release_data.outputs.release_body }}"
+          gh api repos/${{ github.repository }}/releases/${{ steps.fetch_release_data.outputs.release_id }} -X PATCH -F tag_name=internal
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
