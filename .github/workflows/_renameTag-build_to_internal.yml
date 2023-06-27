@@ -81,8 +81,6 @@ jobs:
 
           RELEASE_ID=$(gh api repos/${{ github.repository }}/releases/tags/build -q .id)
           echo "::set-output name=release_id::$(echo "$RELEASE_ID")"
-        env:
-          GH_TOKEN: ${{ secrets.TOKEN_UB }}
 
       - name: Update release
         run: |
@@ -94,7 +92,5 @@ jobs:
           git push --delete https://${{ secrets.TOKEN_UB }}@github.com/mirage335/ubiquitous_bash.git build
           gh release edit build --title "internal" --notes "${{ steps.fetch_release_data.outputs.release_body }}"
           gh api repos/${{ github.repository }}/releases/${{ steps.fetch_release_data.outputs.release_id }} -X PATCH -F tag_name=internal
-        env:
-          GH_TOKEN: ${{ secrets.TOKEN_UB }}
 
 
