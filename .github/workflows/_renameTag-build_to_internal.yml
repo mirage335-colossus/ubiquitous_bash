@@ -14,6 +14,10 @@
 
 name: _renameTag-build_to_internal
 
+permissions:
+  actions: write
+  workflows: write
+
 on:
   workflow_dispatch:
     #inputs:
