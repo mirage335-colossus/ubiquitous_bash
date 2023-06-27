@@ -19,7 +19,7 @@ name: _renameTag-build_to_internal
 permissions:
   actions: write
   checks: read
-  contents: read
+  contents: write
   deployments: read
   issues: read
   packages: read
