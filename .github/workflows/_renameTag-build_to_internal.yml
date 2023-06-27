@@ -9,7 +9,7 @@
 # 'Please provide a github actions YML script to copy a git release name to another name.'
 # 'Google search seems to indicate 'gh' is already preinstalled with all github runners.'
 
-name: renameTag-build_to_internal
+name: _renameTag-build_to_internal
 
 on:
   workflow_dispatch:
