@@ -67,8 +67,8 @@ jobs:
         run: |
           git tag internal build
           git tag -d build
-          git push https://${{ secrets.GITHUB_TOKEN }}@github.com/<owner>/<repo>.git internal
-          git push --delete https://${{ secrets.GITHUB_TOKEN }}@github.com/<owner>/<repo>.git build
+          git push https://${{ secrets.GITHUB_TOKEN }}@github.com/mirage335/ubiquitous_bash.git internal
+          git push --delete https://${{ secrets.GITHUB_TOKEN }}@github.com/mirage335/ubiquitous_bash.git build
           gh release edit build --title "internal" --notes "${{ steps.fetch_release_data.outputs.release_body }}"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
