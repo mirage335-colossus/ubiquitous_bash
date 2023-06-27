@@ -40,11 +40,11 @@ jobs:
         id: date
         run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
 
-      - uses: dev-drprasad/delete-tag-and-release@v1.0
-        with:
-            tag_name: internal-${{ steps.date.outputs.date }} #(required) tag name to delete 
-            github_token: ${{ secrets.GITHUB_TOKEN }}
-            delete_release: true #(optional) default: true 
+      #- uses: dev-drprasad/delete-tag-and-release@v1.0
+        #with:
+            #tag_name: internal-${{ steps.date.outputs.date }} #(required) tag name to delete 
+            #github_token: ${{ secrets.GITHUB_TOKEN }}
+            #delete_release: true #(optional) default: true 
 
 
 
