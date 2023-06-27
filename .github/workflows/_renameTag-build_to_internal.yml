@@ -5,11 +5,6 @@
 
 
 # ATTRIBUTION-AI - Largely attributable to ChatGPT GPT-4 2023-06-26 .
-# 'Please provide code to run the git tag and git push commands in a Github Actions YML script using the privileges of secrets.GITHUB_TOKEN .'
-# 'Will git automatically use the 'GITHUB_TOKEN' environment variable by default? Is this actually built into mainline versions of the git software?'
-# 'Please provide a github actions YML script to copy a git release name to another name.'
-# 'Google search seems to indicate 'gh' is already preinstalled with all github runners.'
-# ...
 
 
 name: _renameTag-build_to_internal
@@ -76,16 +71,6 @@ jobs:
 
           # Find the tag name for the release by its name
           tag_name=$(echo "$releases" | jq -r '.[] | select(.name == "internal") | .tag_name' | cat)
-          
-          # Edit the release using its tag name
-          if [[ "$tag_name" != "" ]]
-          then
-            gh release delete "$tag_name" --confirm
-          fi
-
-
-          # Find the tag name for the release by its name
-          tag_name=$(echo "$releases" | jq -r ".[] | select(.name == \"internal-$(date +'%Y-%m-%d')\") | .tag_name" | cat)
           
           # Edit the release using its tag name
           if [[ "$tag_name" != "" ]]

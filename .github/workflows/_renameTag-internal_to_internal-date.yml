@@ -1,18 +1,31 @@
 
-# Intended to designate an build (eg. of 'ubcp') as a historic example.
+# Intended to designate an build (eg. of 'ubcp')that was found of sufficient quality for internal inclusion with other projects as a historic example.
 # If compatible or successful as documented (eg. specific features tested) or expected (ie. all essential features tested), the next step would be to tag as 'certified' with a date.
 
 
 # ATTRIBUTION-AI - Largely attributable to ChatGPT GPT-4 2023-06-26 .
-# 'Please provide code to run the git tag and git push commands in a Github Actions YML script using the privileges of secrets.GITHUB_TOKEN .'
-# 'Will git automatically use the 'GITHUB_TOKEN' environment variable by default? Is this actually built into mainline versions of the git software?'
-# 'Please provide a github actions YML script to copy a git release name to another name.'
-# 'Google search seems to indicate 'gh' is already preinstalled with all github runners.'
-# ...
+
+
 
 
 name: _renameTag-internal_to_internal-date
 
+
+# https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#permissions
+permissions:
+  actions: write
+  checks: read
+  contents: write
+  deployments: read
+  issues: read
+  packages: read
+  pull-requests: read
+  repository-projects: read
+  security-events: none
+  statuses: read
+
+
+  
 on:
   workflow_dispatch:
     #inputs:
@@ -28,22 +41,6 @@ jobs:
   copy-release:
     runs-on: ubuntu-latest
     steps:
-      
-      - uses: dev-drprasad/delete-tag-and-release@v1.0
-        with:
-            tag_name: internal-date #(required) tag name to delete 
-            github_token: ${{ secrets.GITHUB_TOKEN }}
-            delete_release: true #(optional) default: true 
-
-      - name: Get current date
-        id: date
-        run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
-
-      - uses: dev-drprasad/delete-tag-and-release@v1.0
-        with:
-            tag_name: internal-date-${{ steps.date.outputs.date }} #(required) tag name to delete 
-            github_token: ${{ secrets.GITHUB_TOKEN }}
-            delete_release: true #(optional) default: true 
 
 
 
@@ -52,23 +49,43 @@ jobs:
         with:
           fetch-depth: 0  # we need fetch-depth: 0 to fetch all tags
 
-
-
-      - name: Fetch release data
-        id: fetch_release_data
-        run: |
-          RELEASE_DATA=$(gh release view internal --json body -q '.body')
-          echo "::set-output name=release_body::$(echo "$RELEASE_DATA")"
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Update release
         run: |
-          git tag internal-$(date +'%Y-%m-%d') internal
-          git tag -d internal
-          git push https://${{ secrets.GITHUB_TOKEN }}@github.com/mirage335/ubiquitous_bash.git internal-$(date +'%Y-%m-%d')
-          git push --delete https://${{ secrets.GITHUB_TOKEN }}@github.com/mirage335/ubiquitous_bash.git internal
-          gh release edit build --title "internal"-$(date +'%Y-%m-%d') --notes "${{ steps.fetch_release_data.outputs.release_body }}"
+          _safeEcho ()
+          {
+              printf '%s' "$1";
+              shift;
+              [[ "$@" == "" ]] && return 0;
+              local currentArg;
+              for currentArg in "$@";
+              do
+                  printf '%s' " ";
+                  printf '%s' "$currentArg";
+              done;
+              return 0
+          }
+          
+          
+          # Fetch all releases
+          releases=$(gh api repos/mirage335/ubiquitous_bash/releases)
+
+
+          # Find the tag name for the release by its name
+          tag_name=$(echo "$releases" | jq -r ".[] | select(.name == \"internal-$(date +'%Y-%m-%d')\") | .tag_name" | cat)
+          
+          # Edit the release using its tag name
+          if [[ "$tag_name" != "" ]]
+          then
+            gh release delete "$tag_name" --confirm
+          fi
+
+          
+          # Find the tag name for the release by its name
+          tag_name=$(echo "$releases" | jq -r '.[] | select(.name == "internal") | .tag_name')
+          body=$(echo "$releases" | jq -r '.[] | select(.name == "internal") | .body' | tr -dc 'a-zA-Z0-9.:\=\_\-/%+\ \n')
+          
+          # Edit the release using its tag name
+          _safeEcho "$body" | gh release edit "$tag_name" --title "internal"-$(date +'%Y-%m-%d') --notes -
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
