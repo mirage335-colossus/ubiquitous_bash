@@ -26,10 +26,7 @@ jobs:
   copy-release:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-        with:
-          fetch-depth: 0  # we need fetch-depth: 0 to fetch all tags
+      
 
 
       - name: Get current date
@@ -41,6 +38,13 @@ jobs:
             tag_name: internal-${{ steps.date.outputs.date }} #(required) tag name to delete 
             github_token: ${{ secrets.GITHUB_TOKEN }}
             delete_release: true #(optional) default: true 
+
+
+
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0  # we need fetch-depth: 0 to fetch all tags
 
 
       - name: Fetch release data
