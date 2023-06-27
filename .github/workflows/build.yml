@@ -26,10 +26,10 @@ jobs:
         id: date
         #run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
         run: |
-         echo "{date}={$(date +'%Y-%m-%d')}" >> $GITHUB_STATE
+         echo "{date}={$(date +'%Y-%m-%d')}" >> $GITHUB_OUTPUT
       - uses: dev-drprasad/delete-tag-and-release@v1.0
         with:
-            tag_name: build-${{ env.date }} #(required) tag name to delete 
+            tag_name: build-${{ steps.date.outputs.date }} #(required) tag name to delete 
             github_token: ${{ secrets.GITHUB_TOKEN }}
             delete_release: true #(optional) default: true 
       # https://adamtheautomator.com/powershell-get-disk-space/
@@ -47,7 +47,7 @@ jobs:
       - name: release! deleteme
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: build-${{ env.date }}
+          tag_name: build-${{ steps.date.outputs.date }}
           name: build
           files: |
             /deleteme
@@ -87,7 +87,7 @@ jobs:
       - name: release! ubcp-cygwin-portable-installer.log
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: build-${{ env.date }}
+          tag_name: build-${{ steps.date.outputs.date }}
           name: build
           files: |
             /ubcp-cygwin-portable-installer.log
@@ -109,7 +109,7 @@ jobs:
       - name: release! _setupUbiquitous.log
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: build-${{ env.date }}
+          tag_name: build-${{ steps.date.outputs.date }}
           name: build
           files: |
             /_setupUbiquitous.log
@@ -135,7 +135,7 @@ jobs:
       - name: release! _test-lean.log
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: build-${{ env.date }}
+          tag_name: build-${{ steps.date.outputs.date }}
           name: build
           files: |
             /_test-lean.log
@@ -152,7 +152,7 @@ jobs:
       - name: release! package_ubcp-cygwinOnly-noMitigation.tar.xz
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: build-${{ env.date }}
+          tag_name: build-${{ steps.date.outputs.date }}
           name: build
           files: |
             /package_ubcp-cygwinOnly-noMitigation.tar.xz
@@ -170,7 +170,7 @@ jobs:
       - name: release! _mitigate-ubcp.log
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: build-${{ env.date }}
+          tag_name: build-${{ steps.date.outputs.date }}
           name: build
           files: |
             /_mitigate-ubcp.log
@@ -186,7 +186,7 @@ jobs:
       - name: release! package_ubcp-cygwinOnly.tar.xz
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: build-${{ env.date }}
+          tag_name: build-${{ steps.date.outputs.date }}
           name: build
           files: |
             ./_local/ubcp/package_ubcp-cygwinOnly.tar.xz
@@ -199,7 +199,7 @@ jobs:
       - name: release! _MSWpackage package_ubiquitous_bash-msw
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: build-${{ env.date }}
+          tag_name: build-${{ steps.date.outputs.date }}
           name: build
           files: |
             /package_ubiquitous_bash-msw.log
@@ -241,7 +241,7 @@ jobs:
       - name: release! _MSWpackage package_ubcp-core
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: build-${{ env.date }}
+          tag_name: build-${{ steps.date.outputs.date }}
           name: build
           files: |
             /package_ubcp-core.log
@@ -263,7 +263,7 @@ jobs:
       - name: release! _MSWpackage package_ubiquitous_bash-msw-rotten
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: build-${{ env.date }}
+          tag_name: build-${{ steps.date.outputs.date }}
           name: build
           files: |
             /package_ubiquitous_bash-msw-rotten.log
