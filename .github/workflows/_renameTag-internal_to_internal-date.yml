@@ -1,6 +1,5 @@
 
-# Intended to designate a build (eg. of 'ubcp') as suitable for internal integration with a larger project (eg. 'ubdist') .
-# Before designating a new build internal, consider renaming an existing internal designated build to 'internal-YYYY-MM-DD' by the 'renameTag-build_to_internal' Github Actions workflow.
+# Intended to designate an build (eg. of 'ubcp') as a historic example.
 # If compatible or successful as documented (eg. specific features tested) or expected (ie. all essential features tested), the next step would be to tag as 'certified' with a date.
 
 
@@ -12,7 +11,7 @@
 # ...
 
 
-name: _renameTag-build_to_internal
+name: _renameTag-internal_to_internal-date
 
 on:
   workflow_dispatch:
@@ -32,7 +31,7 @@ jobs:
       
       - uses: dev-drprasad/delete-tag-and-release@v1.0
         with:
-            tag_name: internal #(required) tag name to delete 
+            tag_name: internal-date #(required) tag name to delete 
             github_token: ${{ secrets.GITHUB_TOKEN }}
             delete_release: true #(optional) default: true 
 
@@ -42,7 +41,7 @@ jobs:
 
       - uses: dev-drprasad/delete-tag-and-release@v1.0
         with:
-            tag_name: internal-${{ steps.date.outputs.date }} #(required) tag name to delete 
+            tag_name: internal-date-${{ steps.date.outputs.date }} #(required) tag name to delete 
             github_token: ${{ secrets.GITHUB_TOKEN }}
             delete_release: true #(optional) default: true 
 
@@ -58,21 +57,21 @@ jobs:
       - name: Fetch release data
         id: fetch_release_data
         run: |
-          RELEASE_DATA=$(gh release view build --json body -q '.body')
+          RELEASE_DATA=$(gh release view internal --json body -q '.body')
           echo "::set-output name=release_body::$(echo "$RELEASE_DATA")"
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Update release
-        run: |
-          gh release edit build --title "internal" --notes "${{ steps.fetch_release_data.outputs.release_body }}"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 #      - name: Update release
 #        run: |
-#          gh release edit build --title "internal"-$(date +%Y-%m-%d) --notes "${{ steps.fetch_release_data.outputs.release_body }}"
+#          gh release edit internal --title "internal" --notes "${{ steps.fetch_release_data.outputs.release_body }}"
 #        env:
 #          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Update release
+        run: |
+          gh release edit internal --title "internal"-$(date +%Y-%m-%d) --notes "${{ steps.fetch_release_data.outputs.release_body }}"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 
