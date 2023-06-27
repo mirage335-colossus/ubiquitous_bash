@@ -45,32 +45,6 @@ jobs:
   copy-release:
     runs-on: ubuntu-latest
     steps:
-      
-      - uses: dev-drprasad/delete-tag-and-release@v1.0
-        continue-on-error: true
-        with:
-            tag_name: internal #(required) tag name to delete 
-            github_token: ${{ secrets.GITHUB_TOKEN }}
-            delete_release: true #(optional) default: true 
-
-      - uses: liudonghua123/delete-release-action@v1
-        with:
-          release_name: 'internal'
-
-      - name: Get current date
-        id: date
-        run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
-
-      - uses: dev-drprasad/delete-tag-and-release@v1.0
-        continue-on-error: true
-        with:
-            tag_name: internal-${{ steps.date.outputs.date }} #(required) tag name to delete 
-            github_token: ${{ secrets.GITHUB_TOKEN }}
-            delete_release: true #(optional) default: true 
-
-      - uses: liudonghua123/delete-release-action@v1
-        with:
-          release_name: 'internal-${{ steps.date.outputs.date }}'
 
 
 
@@ -81,15 +55,51 @@ jobs:
 
       - name: Update release
         run: |
+          _safeEcho ()
+          {
+              printf '%s' "$1";
+              shift;
+              [[ "$@" == "" ]] && return 0;
+              local currentArg;
+              for currentArg in "$@";
+              do
+                  printf '%s' " ";
+                  printf '%s' "$currentArg";
+              done;
+              return 0
+          }
+          
+          
           # Fetch all releases
           releases=$(gh api repos/:mirage335/:ubiquitous_bash/releases)
+
+
+          # Find the tag name for the release by its name
+          tag_name=$(echo "$releases" | jq -r '.[] | select(.name == "internal") | .tag_name' | cat)
+          
+          # Edit the release using its tag name
+          if [[ "$tag_name" != "" ]]
+          then
+            gh release delete "$tag_name" --confirm
+          fi
+
+
+          # Find the tag name for the release by its name
+          tag_name=$(echo "$releases" | jq -r '.[] | select(.name == "internal"-$(date +'%Y-%m-%d')) | .tag_name' | cat)
+          
+          # Edit the release using its tag name
+          if [[ "$tag_name" != "" ]]
+          then
+            gh release delete "$tag_name" --confirm
+          fi
+
           
           # Find the tag name for the release by its name
           tag_name=$(echo "$releases" | jq -r '.[] | select(.name == "build") | .tag_name')
-          body=$(echo "$releases" | jq -r '.[] | select(.name == "your_release_name") | .body')
+          body=$(echo "$releases" | jq -r '.[] | select(.name == "your_release_name") | .body' | tr -dc 'a-zA-Z0-9.:\=\_\-/%+\ \n')
           
           # Edit the release using its tag name
-          echo "your_release_notes" | gh release edit "$tag_name" --title "internal" --notes -
+          _safeEcho "$body" | gh release edit "$tag_name" --title "internal" --notes -
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
