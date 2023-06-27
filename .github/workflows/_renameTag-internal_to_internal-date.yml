@@ -62,15 +62,13 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-#      - name: Update release
-#        run: |
-#          gh release edit internal --title "internal" --notes "${{ steps.fetch_release_data.outputs.release_body }}"
-#        env:
-#          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Update release
         run: |
-          gh release edit internal --title "internal"-$(date +%Y-%m-%d) --notes "${{ steps.fetch_release_data.outputs.release_body }}"
+          git tag internal-$(date +'%Y-%m-%d') internal
+          git tag -d internal
+          git push https://${{ secrets.GITHUB_TOKEN }}@github.com/mirage335/ubiquitous_bash.git internal-$(date +'%Y-%m-%d')
+          git push --delete https://${{ secrets.GITHUB_TOKEN }}@github.com/mirage335/ubiquitous_bash.git internal
+          gh release edit build --title "internal"-$(date +'%Y-%m-%d') --notes "${{ steps.fetch_release_data.outputs.release_body }}"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
