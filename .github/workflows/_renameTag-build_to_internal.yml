@@ -71,7 +71,7 @@ jobs:
           
           
           # Fetch all releases
-          releases=$(gh api repos/:mirage335/:ubiquitous_bash/releases)
+          releases=$(gh api repos/mirage335/ubiquitous_bash/releases)
 
 
           # Find the tag name for the release by its name
