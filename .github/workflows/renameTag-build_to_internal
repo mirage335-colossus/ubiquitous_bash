@@ -1,0 +1,53 @@
+
+# Intended to designate a build (eg. of 'ubcp') as suitable for internal integration with a larger project (eg. 'ubdist') .
+# If compatible or successful as documented (eg. specific features tested) or expected (ie. all essential features tested), the next step would be to tag as 'certified' with a date.
+
+
+# ATTRIBUTION-AI - Largely attributable to ChatGPT GPT-4 2023-06-26 .
+# 'Please provide code to run the git tag and git push commands in a Github Actions YML script using the privileges of secrets.GITHUB_TOKEN .'
+# 'Will git automatically use the 'GITHUB_TOKEN' environment variable by default? Is this actually built into mainline versions of the git software?'
+
+name: renameTag-build_to_internal
+
+on:
+  workflow_dispatch:
+
+jobs:
+  tag-and-push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+          # we need fetch-depth: 0 to fetch all tags
+
+      - name: Create and Push Tag
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"
+
+          export current_TAG_NAME=internal
+          
+          git tag "$current_TAG_NAME" build
+          #git tag -d build
+          git push https://${{ secrets.GITHUB_TOKEN }}@github.com/mirage335/ubiquitous_bash.git "$current_TAG_NAME"
+          
+
+
+
+          export current_TAG_NAME=internal-$(date +%Y-%m-%d)
+
+          git tag "$current_TAG_NAME" build
+          #git tag -d build
+          git push https://${{ secrets.GITHUB_TOKEN }}@github.com/mirage335/ubiquitous_bash.git "$current_TAG_NAME"
+
+
+
+
+          #git tag -d build
+
+
+
