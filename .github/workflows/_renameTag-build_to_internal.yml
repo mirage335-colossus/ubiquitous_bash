@@ -27,6 +27,7 @@ permissions:
   repository-projects: read
   security-events: none
   statuses: read
+  workflows: write
 
 
   
