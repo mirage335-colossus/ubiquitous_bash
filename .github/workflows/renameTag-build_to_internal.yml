@@ -27,7 +27,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       
-
+      - uses: dev-drprasad/delete-tag-and-release@v1.0
+        with:
+            tag_name: internal #(required) tag name to delete 
+            github_token: ${{ secrets.GITHUB_TOKEN }}
+            delete_release: true #(optional) default: true 
 
       - name: Get current date
         id: date
