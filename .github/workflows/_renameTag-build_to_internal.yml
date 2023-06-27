@@ -71,7 +71,7 @@ jobs:
           fetch-depth: 0  # we need fetch-depth: 0 to fetch all tags
 
       #- name: Set up GitHub CLI
-        #run: gh auth login --with-token <<< "${{ secrets.GITHUB_TOKEN }}"
+        #run: gh auth login --with-token <<< "${{ secrets.TOKEN_UB }}"
 
       - name: Fetch release data
         id: fetch_release_data
@@ -82,7 +82,7 @@ jobs:
           RELEASE_ID=$(gh api repos/${{ github.repository }}/releases/tags/build -q .id)
           echo "::set-output name=release_id::$(echo "$RELEASE_ID")"
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.TOKEN_UB }}
 
       - name: Update release
         run: |
@@ -90,11 +90,11 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git tag internal build
           git tag -d build
-          git push https://${{ secrets.GITHUB_TOKEN }}@github.com/mirage335/ubiquitous_bash.git internal
-          git push --delete https://${{ secrets.GITHUB_TOKEN }}@github.com/mirage335/ubiquitous_bash.git build
+          git push https://${{ secrets.TOKEN_UB }}@github.com/mirage335/ubiquitous_bash.git internal
+          git push --delete https://${{ secrets.TOKEN_UB }}@github.com/mirage335/ubiquitous_bash.git build
           gh release edit build --title "internal" --notes "${{ steps.fetch_release_data.outputs.release_body }}"
           gh api repos/${{ github.repository }}/releases/${{ steps.fetch_release_data.outputs.release_id }} -X PATCH -F tag_name=internal
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.TOKEN_UB }}
 
 
