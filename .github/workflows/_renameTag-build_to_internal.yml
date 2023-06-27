@@ -60,6 +60,17 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+
+
+      - name: Create new release
+        run: |
+          #gh release create ${{ github.event.inputs.target_tag }} --title "${{ steps.fetch_release_data.outputs.release_name }}" --notes "${{ steps.fetch_release_data.outputs.release_body }}"
+          gh release create internal --title "internal" --notes "${{ steps.fetch_release_data.outputs.release_body }}"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+
+
       - name: Create new release
         run: |
           #gh release create ${{ github.event.inputs.target_tag }} --title "${{ steps.fetch_release_data.outputs.release_name }}" --notes "${{ steps.fetch_release_data.outputs.release_body }}"
