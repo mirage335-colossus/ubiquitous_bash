@@ -35,6 +35,7 @@ jobs:
     steps:
       
       - uses: dev-drprasad/delete-tag-and-release@v1.0
+        continue-on-error: true
         with:
             tag_name: internal #(required) tag name to delete 
             github_token: ${{ secrets.GITHUB_TOKEN }}
