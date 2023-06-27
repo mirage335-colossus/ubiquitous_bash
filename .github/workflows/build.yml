@@ -24,7 +24,7 @@ jobs:
     steps:
       - name: Set the tag
         id: date
-        run: echo "date=$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
+        run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
       - uses: dev-drprasad/delete-tag-and-release@v1.0
         with:
             tag_name: build-${{ steps.date.outputs.date }} #(required) tag name to delete 
