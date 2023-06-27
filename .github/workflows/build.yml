@@ -40,7 +40,7 @@ jobs:
         shell: pwsh
         timeout-minutes: 240
         run: |
-          echo | tee /deleteme
+          echo deleteme | tee /deleteme
         #continue-on-error: true
       - name: release! deleteme
         uses: softprops/action-gh-release@v1
