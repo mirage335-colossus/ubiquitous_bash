@@ -76,7 +76,7 @@ jobs:
           # Edit the release using its tag name
           if [[ "$tag_name" != "" ]]
           then
-            gh release delete "$tag_name" --confirm
+            gh release delete "$tag_name" --yes
           fi
 
           
