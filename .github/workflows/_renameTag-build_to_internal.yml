@@ -88,7 +88,7 @@ jobs:
         run: |
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git config --global user.name "github-actions[bot]"
-          git tag internal build
+          git tag -f internal build
           git tag -d build
           git push https://${{ secrets.TOKEN_UB }}@github.com/mirage335/ubiquitous_bash.git internal
           git push --delete https://${{ secrets.TOKEN_UB }}@github.com/mirage335/ubiquitous_bash.git build
