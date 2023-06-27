@@ -8,6 +8,8 @@
 # 'Will git automatically use the 'GITHUB_TOKEN' environment variable by default? Is this actually built into mainline versions of the git software?'
 # 'Please provide a github actions YML script to copy a git release name to another name.'
 # 'Google search seems to indicate 'gh' is already preinstalled with all github runners.'
+# ...
+
 
 name: _renameTag-build_to_internal
 
@@ -51,33 +53,25 @@ jobs:
           fetch-depth: 0  # we need fetch-depth: 0 to fetch all tags
 
 
+
       - name: Fetch release data
         id: fetch_release_data
         run: |
-          RELEASE_DATA=$(gh release view build --json name,body -q '.name + "\n" + .body')
-          echo "::set-output name=release_name::$(echo "$RELEASE_DATA" | head -n 1)"
-          echo "::set-output name=release_body::$(echo "$RELEASE_DATA" | tail -n 1)"
+          RELEASE_DATA=$(gh release view build --json body -q '.body')
+          echo "::set-output name=release_body::$(echo "$RELEASE_DATA")"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-
-
-      - name: Create new release
+      - name: Update release
         run: |
-          #gh release create ${{ github.event.inputs.target_tag }} --title "${{ steps.fetch_release_data.outputs.release_name }}" --notes "${{ steps.fetch_release_data.outputs.release_body }}"
-          gh release create internal --title "internal" --notes "${{ steps.fetch_release_data.outputs.release_body }}"
+          gh release edit build --title "internal" --notes "${{ steps.fetch_release_data.outputs.release_body }}"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-
-
-      - name: Create new release
+      - name: Update release
         run: |
-          #gh release create ${{ github.event.inputs.target_tag }} --title "${{ steps.fetch_release_data.outputs.release_name }}" --notes "${{ steps.fetch_release_data.outputs.release_body }}"
-          gh release create internal-$(date +%Y-%m-%d) --title "internal"-$(date +%Y-%m-%d) --notes "${{ steps.fetch_release_data.outputs.release_body }}"
+          gh release edit build --title "internal"-$(date +%Y-%m-%d) --notes "${{ steps.fetch_release_data.outputs.release_body }}"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-
 
 
