@@ -122,7 +122,12 @@ jobs:
           mkdir /core
           mkdir /core/infrastructure
           cd /core/infrastructure
-          rclone --progress --config /rclone.conf copy distLLC_release_ro:ubcp/package_ubcp-core.7z ./
+          #rclone --progress --config /rclone.conf copy distLLC_release_ro:ubcp/package_ubcp-core.7z ./
+
+          # ATTRIBUTION-AI
+          #curl -L -o /package_ubcp-core.7z $(curl -s "https://api.github.com/repos/mirage335/ubiquitous_bash/releases/latest" | jq -r ".assets[] | select(.name == \"package_ubcp-core.7z\") | .browser_download_url")
+          curl -L -o package_ubcp-core.7z $(curl -s "https://api.github.com/repos/mirage335/ubiquitous_bash/releases" | jq -r ".[] | select(.name == \"build\") | .assets[] | select(.name == \"package_ubcp-core.7z\") | .browser_download_url")
+
           7z -y x ./package_ubcp-core.7z | tee /_getCore_ubcp.log
           rm ./package_ubcp-core.7z
       - uses: actions/checkout@v2
@@ -204,8 +209,13 @@ jobs:
           mkdir /core
           mkdir /core/infrastructure
           cd /core/infrastructure
-          sleep 120
-          rclone --progress --config /rclone.conf copy distLLC_build_ubcp:package_ubcp-core.7z ./
+          
+          #sleep 120
+          #rclone --progress --config /rclone.conf copy distLLC_build_ubcp:package_ubcp-core.7z ./
+
+          #curl -L -o /package_ubcp-core.7z $(curl -s "https://api.github.com/repos/mirage335/ubiquitous_bash/releases/latest" | jq -r ".assets[] | select(.name == \"package_ubcp-core.7z\") | .browser_download_url")
+          curl -L -o package_ubcp-core.7z $(curl -s "https://api.github.com/repos/mirage335/ubiquitous_bash/releases" | jq -r ".[] | select(.name == \"build\") | .assets[] | select(.name == \"package_ubcp-core.7z\") | .browser_download_url")
+
           7z -y x ./package_ubcp-core.7z | tee /_getCore_ubcp.log
           rm ./package_ubcp-core.7z
       - uses: actions/checkout@v2
@@ -287,8 +297,13 @@ jobs:
           mkdir /core
           mkdir /core/infrastructure
           cd /core/infrastructure
-          sleep 240
-          rclone --progress --config /rclone.conf copy distLLC_build_ubcp:package_ubcp-core.7z ./
+
+          #sleep 240
+          #rclone --progress --config /rclone.conf copy distLLC_build_ubcp:package_ubcp-core.7z ./
+
+          #curl -L -o /package_ubcp-core.7z $(curl -s "https://api.github.com/repos/mirage335/ubiquitous_bash/releases/latest" | jq -r ".assets[] | select(.name == \"package_ubcp-core.7z\") | .browser_download_url")
+          curl -L -o package_ubcp-core.7z $(curl -s "https://api.github.com/repos/mirage335/ubiquitous_bash/releases" | jq -r ".[] | select(.name == \"build\") | .assets[] | select(.name == \"package_ubcp-core.7z\") | .browser_download_url")
+
           7z -y x ./package_ubcp-core.7z | tee /_getCore_ubcp.log
           rm ./package_ubcp-core.7z
       - uses: actions/checkout@v2
