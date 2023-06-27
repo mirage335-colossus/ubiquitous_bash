@@ -50,7 +50,7 @@ jobs:
         continue-on-error: true
         with:
             tag_name: internal #(required) tag name to delete 
-            github_token: ${{ secrets.GITHUB_TOKEN }}
+            github_token: ${{ secrets.TOKEN_UB }}
             delete_release: true #(optional) default: true 
 
       - name: Get current date
@@ -60,7 +60,7 @@ jobs:
       #- uses: dev-drprasad/delete-tag-and-release@v1.0
         #with:
             #tag_name: internal-${{ steps.date.outputs.date }} #(required) tag name to delete 
-            #github_token: ${{ secrets.GITHUB_TOKEN }}
+            #github_token: ${{ secrets.TOKEN_UB }}
             #delete_release: true #(optional) default: true 
 
 
@@ -81,6 +81,8 @@ jobs:
 
           RELEASE_ID=$(gh api repos/${{ github.repository }}/releases/tags/build -q .id)
           echo "::set-output name=release_id::$(echo "$RELEASE_ID")"
+        env:
+          GH_TOKEN: ${{ secrets.TOKEN_UB }}
 
       - name: Update release
         run: |
@@ -92,5 +94,7 @@ jobs:
           git push --delete https://${{ secrets.TOKEN_UB }}@github.com/mirage335/ubiquitous_bash.git build
           gh release edit build --title "internal" --notes "${{ steps.fetch_release_data.outputs.release_body }}"
           gh api repos/${{ github.repository }}/releases/${{ steps.fetch_release_data.outputs.release_id }} -X PATCH -F tag_name=internal
+        env:
+          GH_TOKEN: ${{ secrets.TOKEN_UB }}
 
 
