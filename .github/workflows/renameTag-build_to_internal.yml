@@ -6,48 +6,59 @@
 # ATTRIBUTION-AI - Largely attributable to ChatGPT GPT-4 2023-06-26 .
 # 'Please provide code to run the git tag and git push commands in a Github Actions YML script using the privileges of secrets.GITHUB_TOKEN .'
 # 'Will git automatically use the 'GITHUB_TOKEN' environment variable by default? Is this actually built into mainline versions of the git software?'
+# 'Please provide a github actions YML script to copy a git release name to another name.'
+# 'Google search seems to indicate 'gh' is already preinstalled with all github runners.'
 
 name: renameTag-build_to_internal
 
 on:
   workflow_dispatch:
+    #inputs:
+      #source_tag:
+        #description: 'Source Tag'
+        #required: true
+      #target_tag:
+        #description: 'Target Tag'
+        #required: true
+        
 
 jobs:
-  tag-and-push:
+  copy-release:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
         with:
-          fetch-depth: 0
-          # we need fetch-depth: 0 to fetch all tags
+          fetch-depth: 0  # we need fetch-depth: 0 to fetch all tags
 
-      - name: Create and Push Tag
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Get current date
+        id: date
+        run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
+
+      - uses: dev-drprasad/delete-tag-and-release@v1.0
+        with:
+            tag_name: internal-${{ steps.date.outputs.date }} #(required) tag name to delete 
+            github_token: ${{ secrets.GITHUB_TOKEN }}
+            delete_release: true #(optional) default: true 
+
+
+      - name: Fetch release data
+        id: fetch_release_data
         run: |
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git config --global user.name "github-actions[bot]"
+          RELEASE_DATA=$(gh release view build --json name,body -q '.name + "\n" + .body')
+          echo "::set-output name=release_name::$(echo "$RELEASE_DATA" | head -n 1)"
+          echo "::set-output name=release_body::$(echo "$RELEASE_DATA" | tail -n 1)"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-          export current_TAG_NAME=internal
-          
-          git tag "$current_TAG_NAME" build
-          #git tag -d build
-          git push https://${{ secrets.GITHUB_TOKEN }}@github.com/mirage335/ubiquitous_bash.git "$current_TAG_NAME"
-          
+      - name: Create new release
+        run: |
+          #gh release create ${{ github.event.inputs.target_tag }} --title "${{ steps.fetch_release_data.outputs.release_name }}" --notes "${{ steps.fetch_release_data.outputs.release_body }}"
+          gh release create internal-$(date +%Y-%m-%d) --title "internal"-$(date +%Y-%m-%d) --notes "${{ steps.fetch_release_data.outputs.release_body }}"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-
-
-          export current_TAG_NAME=internal-$(date +%Y-%m-%d)
-
-          git tag "$current_TAG_NAME" build
-          #git tag -d build
-          git push https://${{ secrets.GITHUB_TOKEN }}@github.com/mirage335/ubiquitous_bash.git "$current_TAG_NAME"
-
-
-
-
-          #git tag -d build
 
 
 
