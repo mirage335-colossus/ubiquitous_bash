@@ -1,6 +1,9 @@
 
 _kernelConfig_reject-comments() {
-	grep -v '^\#\|\#'
+	#grep -v '^\#\|\#'
+	
+	# Preferred for Cygwin.
+	grep -v '^#\|#'
 }
 
 _kernelConfig_request() {
