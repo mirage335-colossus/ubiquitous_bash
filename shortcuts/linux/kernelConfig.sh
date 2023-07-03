@@ -105,17 +105,29 @@ _kernelConfig_require-tradeoff-perform() {
 	
 	_kernelConfig__bad-n__ CONFIG_RETPOLINE
 	_kernelConfig__bad-n__ CONFIG_PAGE_TABLE_ISOLATION
-	_kernelConfig__bad-n__ CONFIG_X86_SMAP
 	
-	_kernelConfig_warn-n__ AMD_MEM_ENCRYPT
+	# May have been removed from upstream.
+	#_kernelConfig__bad-n__ CONFIG_X86_SMAP
 	
-	_kernelConfig_warn-y__ CONFIG_X86_INTEL_TSX_MODE_ON
-	_kernelConfig__bad-y__ CONFIG_X86_INTEL_TSX_MODE_AUTO
+	_kernelConfig_warn-n__ CONFIG_X86_INTEL_TSX_MODE_OFF
+	_kernelConfig_warn-n__ CONFIG_X86_INTEL_TSX_MODE_AUTO
+	_kernelConfig__bad-y__ CONFIG_X86_INTEL_TSX_MODE_ON
 	
 	
 	_kernelConfig__bad-n__ CONFIG_SLAB_FREELIST_HARDENED
+	
+	# Uncertain.
+	_kernelConfig__bad-__n CONFIG_X86_SGX
+	_kernelConfig__bad-__n CONFIG_INTEL_TDX_GUEST
+	_kernelConfig__bad-__n CONFIG_X86_SGX_kVM
+	_kernelConfig__bad-__n CONFIG_KVM_AMD_SEV
+	
+	
+	_kernelConfig__bad-__n CONFIG_RANDOMIZE_BASE
+	_kernelConfig__bad-__n CONFIG_RANDOMIZE_MEMORY
 }
 
+# May become increasing tolerable and preferable for the vast majority of use cases.
 # WARNING: Risk must be evaluated for specific use cases.
 # WARNING: BREAKS some high-performance real-time applicatons (eg. flight sim, VR, AR).
 # Standalone simulators (eg. flight sim):
@@ -133,16 +145,36 @@ _kernelConfig_require-tradeoff-harden() {
 	
 	_kernelConfig__bad-y__ CONFIG_RETPOLINE
 	_kernelConfig__bad-y__ CONFIG_PAGE_TABLE_ISOLATION
-	_kernelConfig__bad-y__ CONFIG_X86_SMAP
 	
-	# Uncertain.
-	#_kernelConfig_warn-y__ AMD_MEM_ENCRYPT
+	_kernelConfig__bad-y__ CONFIG_RETHUNK
+	_kernelConfig__bad-y__ CONFIG_CPU_UNRET_ENTRY
+	_kernelConfig__bad-y__ CONFIG_CPU_IBPB_ENTRY
+	_kernelConfig__bad-y__ CONFIG_CPU_IBRS_ENTRY
+	_kernelConfig__bad-y__ CONFIG_SLS
 	
-	_kernelConfig_warn-y__ CONFIG_X86_INTEL_TSX_MODE_OFF
-	_kernelConfig__bad-y__ CONFIG_X86_INTEL_TSX_MODE_AUTO
+	# May have been removed from upstream.
+	#_kernelConfig__bad-y__ CONFIG_X86_SMAP
+	
+	# Uncertain. VM guest should be tested.
+	_kernelConfig_warn-y__ AMD_MEM_ENCRYPT
+	_kernelConfig_warn-y__ CONFIG_AMD_MEM_ENCRYPT_ACTIVE_BY_DEFAULT
+	
+	_kernelConfig_warn-n__ CONFIG_X86_INTEL_TSX_MODE_ON
+	_kernelConfig_warn-n__ CONFIG_X86_INTEL_TSX_MODE_AUTO
+	_kernelConfig__bad-y__ CONFIG_X86_INTEL_TSX_MODE_OFF
 	
 	
 	_kernelConfig_warn-y__ CONFIG_SLAB_FREELIST_HARDENED
+	
+	# Uncertain.
+	_kernelConfig_warn-y__ CONFIG_X86_SGX
+	_kernelConfig_warn-y__ CONFIG_INTEL_TDX_GUEST
+	_kernelConfig_warn-y__ CONFIG_X86_SGX_kVM
+	_kernelConfig_warn-y__ CONFIG_KVM_AMD_SEV
+	
+	
+	_kernelConfig__bad-y__ CONFIG_RANDOMIZE_BASE
+	_kernelConfig__bad-y__ CONFIG_RANDOMIZE_MEMORY
 }
 
 # ATTENTION: Override with 'ops.sh' or similar.
@@ -185,6 +217,8 @@ _kernelConfig_require-virtualization-accessory() {
 	_kernelConfig_warn-y__ VIRTIO_MENU
 	_kernelConfig_warn-y__ CONFIG_VIRTIO_PCI
 	_kernelConfig_warn-y__ CONFIG_VIRTIO_PCI_LEGACY
+	_kernelConfig_warn-y__ CONFIG_VIRTIO_PCI_LIB
+	_kernelConfig_warn-y__ CONFIG_VIRTIO_PCI_LIB_LEGACY
 	_kernelConfig__bad-y_m CONFIG_VIRTIO_BALLOON
 	_kernelConfig__bad-y_m CONFIG_VIRTIO_INPUT
 	_kernelConfig__bad-y_m CONFIG_VIRTIO_MMIO
@@ -228,7 +262,8 @@ _kernelConfig_require-virtualbox() {
 	_messagePlain_nominal 'kernelConfig: virtualbox'
 	export kernelConfig_file="$1"
 	
-	_kernelConfig__bad-y__ CONFIG_X86_SYSFB
+	#_kernelConfig__bad-y__ CONFIG_X86_SYSFB
+	_kernelConfig__bad-y__ CONFIG_SYSFB
 	
 	_kernelConfig__bad-y__ CONFIG_ATA
 	_kernelConfig__bad-y__ CONFIG_SATA_AHCI
@@ -262,6 +297,7 @@ _kernelConfig_require-virtualbox() {
 	_kernelConfig__bad-y__ CONFIG_SND_PCI
 	_kernelConfig__bad-y__ CONFIG_SND_INTEL8X0
 	
+	_kernelConfig__bad-y__ CONFIG_USB
 	_kernelConfig__bad-y__ CONFIG_USB_SUPPORT
 	_kernelConfig__bad-y__ CONFIG_USB_XHCI_HCD
 	_kernelConfig__bad-y__ CONFIG_USB_EHCI_HCD
@@ -333,6 +369,8 @@ _kernelConfig_require-boot() {
 	
 	_kernelConfig__bad-y__ USB_OHCI_HCD_PCI
 	
+	_kernelConfig__bad-y__ USB_UHCI_HCD
+	
 	_kernelConfig__bad-y__ CONFIG_HID
 	_kernelConfig__bad-y__ CONFIG_HID_GENERIC
 	_kernelConfig__bad-y__ CONFIG_HID_BATTERY_STRENGTH
@@ -345,7 +383,9 @@ _kernelConfig_require-boot() {
 	_kernelConfig__bad-y__ CONFIG_EFI_STUB
 	_kernelConfig__bad-y__ CONFIG_EFI_MIXED
 	
-	_kernelConfig__bad-y__ CONFIG_EFI_VARS
+	# Seems 'EFI_VARS' has disappeared from recent kernel versions.
+	#_kernelConfig__bad-y__ CONFIG_EFI_VARS
+	_kernelConfig__bad-y__ CONFIG_EFIVAR_FS
 }
 
 
@@ -371,7 +411,7 @@ _kernelConfig_require-arch-x64() {
 	#_kernelConfig_warn-y__ CONFIG_INTEL_RDT
 	
 	# Maintenance may be easier with this enabled.
-	_kernelConfig_warn-y_m CONFIG_EFIVAR_FS
+	_kernelConfig_warn-y__ CONFIG_EFIVAR_FS
 	
 	# Presumably mixing entropy may be preferable.
 	_kernelConfig__bad-n__ CONFIG_RANDOM_TRUST_CPU
@@ -390,7 +430,7 @@ _kernelConfig_require-arch-x64() {
 	
 	_kernelConfig__bad-y__ CONFIG_IA32_EMULATION
 	_kernelConfig_warn-n__ IA32_AOUT
-	_kernelConfig__bad-y__ CONFIG_X86_X32
+	_kernelConfig__bad-y__ CONFIG_X86_X32_ABI
 	
 	_kernelConfig__bad-y__ CONFIG_BINFMT_ELF
 	_kernelConfig__bad-y_m CONFIG_BINFMT_MISC
@@ -539,17 +579,24 @@ _kernelConfig_require-latency() {
 	_kernelConfig__bad-y__ CONFIG_SCHED_AUTOGROUP
 	
 	
-	# CRITICAL!
-	# Default cannot be set currently.
-	_messagePlain_request 'request: Set '\''bfq'\'' as default IO scheduler (strongly recommended).'
-	#_kernelConfig__bad-y__ DEFAULT_IOSCHED
-	#_kernelConfig__bad-y__ DEFAULT_BFQ
 	
-	# CRITICAL!
-	# Expected to protect interactive applications from background IO.
-	# https://www.youtube.com/watch?v=ANfqNiJVoVE
-	_kernelConfig__bad-y__ CONFIG_IOSCHED_BFQ
-	_kernelConfig__bad-y__ CONFIG_BFQ_GROUP_IOSCHED
+	
+	# Newer information suggests BFQ may have worst case latency issues.
+	# https://bugzilla.redhat.com/show_bug.cgi?id=1851783
+	## CRITICAL!
+	## Default cannot be set currently.
+	#_messagePlain_request 'request: Set '\''bfq'\'' as default IO scheduler (strongly recommended).'
+	##_kernelConfig__bad-y__ DEFAULT_IOSCHED
+	##_kernelConfig__bad-y__ DEFAULT_BFQ
+	
+	## CRITICAL!
+	## Expected to protect interactive applications from background IO.
+	## https://www.youtube.com/watch?v=ANfqNiJVoVE
+	#_kernelConfig__bad-y__ CONFIG_IOSCHED_BFQ
+	#_kernelConfig__bad-y__ CONFIG_BFQ_GROUP_IOSCHED
+	
+	
+	
 	
 	
 	# Uncertain.
@@ -585,7 +632,7 @@ _kernelConfig_require-memory() {
 	
 	# Uncertain.
 	_kernelConfig_warn-y__ CONFIG_TRANSPARENT_HUGEPAGE
-	_kernelConfig_warn-y__ CONFIG_CLEANCACHE
+	#_kernelConfig_warn-y__ CONFIG_CLEANCACHE
 	_kernelConfig_warn-y__ CONFIG_FRONTSWAP
 	_kernelConfig_warn-y__ CONFIG_ZSWAP
 	
@@ -636,7 +683,8 @@ _kernelConfig_require-investigation_docker() {
 	
 	# Apparently, 'CONFIG_MEMCG_SWAP_ENABLED' missing from recent 'menuconfig' .
 	#_kernelConfig_warn-y__ CONFIG_MEMCG_SWAP_ENABLED
-	_kernelConfig_warn-y__ CONFIG_MEMCG_SWAP
+	#_kernelConfig_warn-y__ CONFIG_MEMCG_SWAP
+	_kernelConfig_warn-y__ CONFIG_MEMCG
 	
 	_kernelConfig_warn-y__ CONFIG_CGROUP_HUGETLB
 	_kernelConfig_warn-y__ CONFIG_RT_GROUP_SCHED

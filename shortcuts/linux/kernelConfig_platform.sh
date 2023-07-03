@@ -21,6 +21,7 @@ _kernelConfig_request_build() {
 }
 
 
+# NOTICE: Usually, 'desktop' will be preferable.
 # ATTENTION: As desired, ignore, or override with 'ops.sh' or similar.
 _kernelConfig_panel() {
 	_messageNormal 'kernelConfig: panel'
@@ -59,6 +60,7 @@ _kernelConfig_panel() {
 	_kernelConfig_request_build
 }
 
+# NOTICE: Usually, 'desktop' will be preferable.
 # ATTENTION: As desired, ignore, or override with 'ops.sh' or similar.
 _kernelConfig_mobile() {
 	_messageNormal 'kernelConfig: mobile'
@@ -97,6 +99,7 @@ _kernelConfig_mobile() {
 	_kernelConfig_request_build
 }
 
+# NOTICE: Recommended! Most 'mobile' and 'panel' use cases will not benefit enough from power efficiency, reduced CPU cycles, or performance.
 # ATTENTION: As desired, ignore, or override with 'ops.sh' or similar.
 _kernelConfig_desktop() {
 	_messageNormal 'kernelConfig: desktop'
