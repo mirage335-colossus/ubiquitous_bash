@@ -89,6 +89,7 @@ _gitBest_override_github-github_core() {
 	_gitBest_override_config_insteadOf-core zipTiePanel
 }
 _gitBest_override_github-github_https() {
+	# && [[ "$1" == "push" ]]
 	if [[ "$INPUT_GITHUB_TOKEN" == "" ]]
 	then
 		git config --global url."https://github.com/".insteadOf git@github.com:
@@ -112,7 +113,7 @@ _gitBest_override_github() {
 	
 	if [[ "$current_gitBest_source_GitHub" == "github_https" ]]
 	then
-		_gitBest_override_github-github_https
+		_gitBest_override_github-github_https "$@"
 	fi
 	
 	if [[ "$current_gitBest_source_GitHub" == "github_ssh" ]]
@@ -148,7 +149,7 @@ _gitBest_sequence() {
 	_messagePlain_probe_var HOME
 	
 	
-	_gitBest_override_github
+	_gitBest_override_github "$@"
 	
 	if ! [[ -e "$HOME"/.gitconfig ]]
 	then
