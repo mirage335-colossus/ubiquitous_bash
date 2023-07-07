@@ -71,7 +71,7 @@ jobs:
 
 
           # Find the tag name for the release by its name
-          tag_name=$(echo "$releases" | jq -r ".[] | select(.name == \"internal-$(date +'%Y-%m-%d')\") | .tag_name" | cat)
+          tag_name=$(echo "$releases" | jq -r ".[] | select(.name == \"internal\") | .tag_name" | cat)
           
           # Edit the release using its tag name
           if [[ "$tag_name" != "" ]]
