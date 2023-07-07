@@ -95,7 +95,7 @@ _gitBest_override_github-github_https() {
 		git config --global url."https://github.com/".insteadOf git@github.com:
 	elif [[ "$INPUT_GITHUB_TOKEN" != "" ]]
 	then
-		git config --global url."https://""$INPUT_GITHUB_TOKEN""@github.com/".insteadOf git@github.com
+		git config --global url."https://""$INPUT_GITHUB_TOKEN""@github.com/".insteadOf git@github.com:
 	fi
 }
 
