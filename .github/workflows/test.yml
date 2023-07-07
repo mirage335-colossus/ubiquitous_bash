@@ -38,13 +38,13 @@ jobs:
         run: |
           ~/core/infrastructure/ubiquitous_bash/ubiquitous_bash.sh _getMinimal_cloud
         timeout-minutes: 90
-      - name: write! secrets
-        shell: bash
-        run: |
-          ~/core/infrastructure/ubiquitous_bash/ubiquitous_bash.sh _prepare_rclone_limited_file
-        env:
-          rclone_limited_conf_base64: ${{ secrets.rclone_limited_conf_base64 }}
-        timeout-minutes: 5
+      #- name: write! secrets
+        #shell: bash
+        #run: |
+          #~/core/infrastructure/ubiquitous_bash/ubiquitous_bash.sh _prepare_rclone_limited_file
+        #env:
+          #rclone_limited_conf_base64: ${{ secrets.rclone_limited_conf_base64 }}
+        #timeout-minutes: 5
       - uses: actions/checkout@v2
       - name: _getMinimal_cloud
         shell: bash
@@ -89,15 +89,15 @@ jobs:
     #runs-on: windows-2022
     #runs-on: windows-2019
     steps:
-      - name: write! secrets
-        id: secret-file1
-        run: |
-          $secretFile = "/rclone.conf"
-          $encodedBytes = [System.Convert]::FromBase64String($env:rclone_limited_conf_base64)
-          Set-Content $secretFile -Value $encodedBytes -AsByteStream
-        shell: pwsh
-        env:
-          rclone_limited_conf_base64: ${{ secrets.rclone_limited_conf_base64 }}
+      #- name: write! secrets
+        #id: secret-file1
+        #run: |
+          #$secretFile = "/rclone.conf"
+          #$encodedBytes = [System.Convert]::FromBase64String($env:rclone_limited_conf_base64)
+          #Set-Content $secretFile -Value $encodedBytes -AsByteStream
+        #shell: pwsh
+        #env:
+          #rclone_limited_conf_base64: ${{ secrets.rclone_limited_conf_base64 }}
       - name: _getMinimal_cloud
         shell: pwsh
         timeout-minutes: 180
@@ -131,7 +131,8 @@ jobs:
           $releases = Invoke-RestMethod -Uri "https://api.github.com/repos/mirage335/ubiquitous_bash/releases"
           $specificRelease = $releases | Where-Object {$_.name -eq "internal"}
           $asset = $specificRelease.assets | Where-Object {$_.name -eq "package_ubcp-core.7z"}
-          Invoke-WebRequest -Uri $asset.browser_download_url -OutFile ./package_ubcp-core.7z
+          #Invoke-WebRequest -Uri $asset.browser_download_url -OutFile ./package_ubcp-core.7z
+          Invoke-WebRequest -Uri $asset.browser_download_url -Headers @{Authorization = "Bearer $env:GITHUB_TOKEN"} -OutFile ./package_ubcp-core.7z
 
           7z -y x ./package_ubcp-core.7z | tee /_getCore_ubcp.log
           rm ./package_ubcp-core.7z
@@ -181,15 +182,15 @@ jobs:
     #runs-on: windows-2022
     #runs-on: windows-2019
     steps:
-      - name: write! secrets
-        id: secret-file1
-        run: |
-          $secretFile = "/rclone.conf"
-          $encodedBytes = [System.Convert]::FromBase64String($env:rclone_limited_conf_base64)
-          Set-Content $secretFile -Value $encodedBytes -AsByteStream
-        shell: pwsh
-        env:
-          rclone_limited_conf_base64: ${{ secrets.rclone_limited_conf_base64 }}
+      #- name: write! secrets
+        #id: secret-file1
+        #run: |
+          #$secretFile = "/rclone.conf"
+          #$encodedBytes = [System.Convert]::FromBase64String($env:rclone_limited_conf_base64)
+          #Set-Content $secretFile -Value $encodedBytes -AsByteStream
+        #shell: pwsh
+        #env:
+          #rclone_limited_conf_base64: ${{ secrets.rclone_limited_conf_base64 }}
       - name: _getMinimal_cloud
         shell: pwsh
         timeout-minutes: 180
@@ -221,7 +222,9 @@ jobs:
           #curl -L -o package_ubcp-core.7z $(curl -s "https://api.github.com/repos/mirage335/ubiquitous_bash/releases/latest" | jq -r ".assets[] | select(.name == \"package_ubcp-core.7z\") | .browser_download_url")
           #curl -L -o package_ubcp-core.7z $(curl -s "https://api.github.com/repos/mirage335/ubiquitous_bash/releases" | jq -r ".[] | select(.name == \"build\") | .assets[] | select(.name == \"package_ubcp-core.7z\") | .browser_download_url")
 
-          Invoke-WebRequest -Uri ((Invoke-RestMethod -Uri "https://api.github.com/repos/mirage335/ubiquitous_bash/releases/latest").assets | Where-Object {$_.name -eq "package_ubcp-core.7z"}).browser_download_url -OutFile ./package_ubcp-core.7z
+          #Invoke-WebRequest -Uri ((Invoke-RestMethod -Uri "https://api.github.com/repos/mirage335/ubiquitous_bash/releases/latest").assets | Where-Object {$_.name -eq "package_ubcp-core.7z"}).browser_download_url -OutFile ./package_ubcp-core.7z
+
+          Invoke-WebRequest -Uri ((Invoke-RestMethod -Uri "https://api.github.com/repos/mirage335/ubiquitous_bash/releases/latest" -Headers @{Authorization = "Bearer $env:GITHUB_TOKEN"}).assets | Where-Object {$_.name -eq "package_ubcp-core.7z"}).browser_download_url -OutFile ./package_ubcp-core.7z
 
           7z -y x ./package_ubcp-core.7z | tee /_getCore_ubcp.log
           rm ./package_ubcp-core.7z
@@ -271,15 +274,15 @@ jobs:
     #runs-on: windows-2022
     runs-on: windows-2019
     steps:
-      - name: write! secrets
-        id: secret-file1
-        run: |
-          $secretFile = "/rclone.conf"
-          $encodedBytes = [System.Convert]::FromBase64String($env:rclone_limited_conf_base64)
-          Set-Content $secretFile -Value $encodedBytes -AsByteStream
-        shell: pwsh
-        env:
-          rclone_limited_conf_base64: ${{ secrets.rclone_limited_conf_base64 }}
+      #- name: write! secrets
+        #id: secret-file1
+        #run: |
+          #$secretFile = "/rclone.conf"
+          #$encodedBytes = [System.Convert]::FromBase64String($env:rclone_limited_conf_base64)
+          #Set-Content $secretFile -Value $encodedBytes -AsByteStream
+        #shell: pwsh
+        #env:
+          #rclone_limited_conf_base64: ${{ secrets.rclone_limited_conf_base64 }}
       - name: _getMinimal_cloud
         shell: pwsh
         timeout-minutes: 180
@@ -311,7 +314,9 @@ jobs:
           #curl -L -o package_ubcp-core.7z $(curl -s "https://api.github.com/repos/mirage335/ubiquitous_bash/releases/latest" | jq -r ".assets[] | select(.name == \"package_ubcp-core.7z\") | .browser_download_url")
           #curl -L -o package_ubcp-core.7z $(curl -s "https://api.github.com/repos/mirage335/ubiquitous_bash/releases" | jq -r ".[] | select(.name == \"build\") | .assets[] | select(.name == \"package_ubcp-core.7z\") | .browser_download_url")
 
-          Invoke-WebRequest -Uri ((Invoke-RestMethod -Uri "https://api.github.com/repos/mirage335/ubiquitous_bash/releases/latest").assets | Where-Object {$_.name -eq "package_ubcp-core.7z"}).browser_download_url -OutFile ./package_ubcp-core.7z
+          #Invoke-WebRequest -Uri ((Invoke-RestMethod -Uri "https://api.github.com/repos/mirage335/ubiquitous_bash/releases/latest").assets | Where-Object {$_.name -eq "package_ubcp-core.7z"}).browser_download_url -OutFile ./package_ubcp-core.7z
+
+          Invoke-WebRequest -Uri ((Invoke-RestMethod -Uri "https://api.github.com/repos/mirage335/ubiquitous_bash/releases/latest" -Headers @{Authorization = "Bearer $env:GITHUB_TOKEN"}).assets | Where-Object {$_.name -eq "package_ubcp-core.7z"}).browser_download_url -OutFile ./package_ubcp-core.7z
 
           7z -y x ./package_ubcp-core.7z | tee /_getCore_ubcp.log
           rm ./package_ubcp-core.7z
