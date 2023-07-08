@@ -6,8 +6,6 @@
 # ATTRIBUTION-AI - Largely attributable to ChatGPT GPT-4 2023-06-26 .
 
 
-
-
 name: _renameTag-internal_to_internal-date
 
 
@@ -71,7 +69,7 @@ jobs:
 
 
           # Find the tag name for the release by its name
-          tag_name=$(echo "$releases" | jq -r ".[] | select(.name == \"internal\") | .tag_name" | cat | head -n 1)
+          tag_name=$(echo "$releases" | jq -r '.[] | select(.name == "internal") | .tag_name' | sed 's/\\n//g' | head -n 1)
           
           # Edit the release using its tag name
           if [[ "$tag_name" != "" ]]
@@ -81,12 +79,22 @@ jobs:
 
           
           # Find the tag name for the release by its name
-          tag_name=$(echo "$releases" | jq -r '.[] | select(.name == "internal") | .tag_name')
-          body=$(echo "$releases" | jq -r '.[] | select(.name == "internal") | .body' | tr -dc 'a-zA-Z0-9.:\=\_\-/%+\ \n')
+          body=$(echo "$releases" | jq -r '.[] | select(.tag_name == "$tag_name") | .body' | tr -dc 'a-zA-Z0-9.:\=\_\-/%+\ \n')
           
           # Edit the release using its tag name
           _safeEcho "$body" | gh release edit "$tag_name" --title "internal"-$(date +'%Y-%m-%d') --notes -
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+
+
+
+
+
+
+
+
+
+
 
 
