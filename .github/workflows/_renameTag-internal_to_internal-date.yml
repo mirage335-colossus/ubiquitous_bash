@@ -69,7 +69,7 @@ jobs:
 
 
           # Find the tag name for the release by its name
-          tag_name=$(echo "$releases" | jq -r '.[] | select(.name == "internal") | .tag_name' | sed 's/\\n//g' | head -n 1)
+          tag_name=$(echo "$releases" | jq -r '.[] | select(.name == "internal") | .tag_name' | sed 's/\\n//g' | sort -n -r | head -n 1)
 
           
           # Find the tag name for the release by its name
