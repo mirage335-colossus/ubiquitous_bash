@@ -197,7 +197,9 @@ _integratedQemu_x64() {
 	# https://github.com/elisa-tech/meta-elisa/issues/23
 	# https://wiki.qemu.org/ChangeLog/6.0
 	# qemuArgs+=(-show-cursor)
-	if [[ $(_qemu_system_x86_64 -version | grep version | sed 's/.*version\ //' | sed 's/\ .*//' | cut -f1 -d\. | tr -dc '0-9') -lt "6" ]]
+	local current_qemu_version_cursor
+	current_qemu_version_cursor=$(_qemu_system_x86_64 -version | grep version | sed 's/.*version\ //' | sed 's/\ .*//' | cut -f1 -d\. | tr -dc '0-9')
+	if [[ "$current_qemu_version_cursor" -lt "6" ]] && [[ "$current_qemu_version_cursor" != "" ]]
 	then
 		qemuArgs+=(-show-cursor)
 	fi
