@@ -26,6 +26,7 @@ jobs:
   build_guard:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v2
       - uses: dev-drprasad/delete-tag-and-release@v1.0
         with:
             tag_name: build-${{ github.run_id }}-${{ github.run_attempt }} #(required) tag name to delete 
@@ -35,6 +36,7 @@ jobs:
     needs: [build_guard]
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v2
       - name: compile
         shell: bash
         timeout-minutes: 10
