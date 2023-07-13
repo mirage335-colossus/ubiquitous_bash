@@ -57,6 +57,9 @@ CZXWXcRMTo8EmM8i4d
 
 
 _vnchost-setup() {
+	_set_getMost_backend
+	
+	_getMost_backend apt-get update
 	
 	_getMost_backend_aptGetInstall xserver-xorg-video-dummy
 	_getMost_backend_aptGetInstall sddm
@@ -70,6 +73,10 @@ _vnchost-setup() {
 	_getMost_backend_aptGetInstall tigervnc-scraping-server
 	
 	
+	_getMost_backend_aptGetInstall novnc
+	_getMost_backend_aptGetInstall websockify
+	
+	
 	
 	#_vnchost-setup-sddm
 	
@@ -81,11 +88,11 @@ _vnchost-setup() {
 _vnchost_sequence() {
 	#_mustBeRoot
 	
-	sudo -n systemctl start sddm
-	systemctl start sddm
-	sudo -n service sddm start
-	service sddm start
-	service sddm status
+	#sudo -n systemctl start sddm
+	#systemctl start sddm
+	#sudo -n service sddm start
+	#service sddm start
+	#service sddm status
 	
 	_findPort_vnc() {
 		currentPort=51001

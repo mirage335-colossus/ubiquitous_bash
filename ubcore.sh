@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='1469426129'
+export ub_setScriptChecksum_contents='3401436456'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -6874,6 +6874,9 @@ CZXWXcRMTo8EmM8i4d
 
 
 _vnchost-setup() {
+	_set_getMost_backend
+	
+	_getMost_backend apt-get update
 	
 	_getMost_backend_aptGetInstall xserver-xorg-video-dummy
 	_getMost_backend_aptGetInstall sddm
@@ -6887,6 +6890,10 @@ _vnchost-setup() {
 	_getMost_backend_aptGetInstall tigervnc-scraping-server
 	
 	
+	_getMost_backend_aptGetInstall novnc
+	_getMost_backend_aptGetInstall websockify
+	
+	
 	
 	#_vnchost-setup-sddm
 	
@@ -6898,11 +6905,11 @@ _vnchost-setup() {
 _vnchost_sequence() {
 	#_mustBeRoot
 	
-	sudo -n systemctl start sddm
-	systemctl start sddm
-	sudo -n service sddm start
-	service sddm start
-	service sddm status
+	#sudo -n systemctl start sddm
+	#systemctl start sddm
+	#sudo -n service sddm start
+	#service sddm start
+	#service sddm status
 	
 	_findPort_vnc() {
 		currentPort=51001
