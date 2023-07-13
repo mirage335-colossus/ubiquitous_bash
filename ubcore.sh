@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='2340731812'
+export ub_setScriptChecksum_contents='1469426129'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -6816,16 +6816,14 @@ _x11vnc_operations() {
 }
 
 
-_vnchost-setup() {
+
+_vnchost-custom_kde() {
+	"$scriptLib"/kit/install/cloud/cloud-init/zRotten/zMinimal/rotten_install.sh _custom_kde
 	
-	_getMost_backend_aptGetInstall xserver-xorg-video-dummy
-	_getMost_backend_aptGetInstall sddm
-	
-	_getMost_backend_aptGetInstall tigervnc-viewer
-	#_getMost_backend_aptGetInstall x11vnc
-	_getMost_backend_aptGetInstall tigervnc-standalone-server
-	_getMost_backend_aptGetInstall tigervnc-scraping-server
-	
+}
+
+
+_vnchost-setup-sddm() {
 	sudo -n mv /etc/X11/xorg.conf /etc/X11/xorg.conf.bak_$(uid _8)
 	cat << 'CZXWXcRMTo8EmM8i4d' | sudo -n tee /etc/X11/xorg.conf
 Section "Device"
@@ -6853,7 +6851,8 @@ Section "Screen"
 EndSection
 CZXWXcRMTo8EmM8i4d
 
-	cat << 'CZXWXcRMTo8EmM8i4d' | sudo -n tee -a /etc/pam.d/sddm
+
+	cat << 'CZXWXcRMTo8EmM8i4d' | sudo -n tee -a /etc/pam.conf
 
 auth        sufficient  pam_succeed_if.so user ingroup nopasswdlogin
 auth        include     system-login
@@ -6863,6 +6862,8 @@ CZXWXcRMTo8EmM8i4d
 	sudo -n usermod -a -G nopasswdlogin user
 	sudo -n usermod -a -G nopasswdlogin codespace
 	
+	
+	
 	sudo -n systemctl restart sddm
 	systemctl restart sddm
 	sudo -n service sddm restart
@@ -6871,42 +6872,98 @@ CZXWXcRMTo8EmM8i4d
 }
 
 
+
+_vnchost-setup() {
+	
+	_getMost_backend_aptGetInstall xserver-xorg-video-dummy
+	_getMost_backend_aptGetInstall sddm
+	
+	_getMost_backend_aptGetInstall plasma-desktop
+	_getMost_backend_aptGetInstall lxde-core
+	
+	_getMost_backend_aptGetInstall tigervnc-viewer
+	#_getMost_backend_aptGetInstall x11vnc
+	_getMost_backend_aptGetInstall tigervnc-standalone-server
+	_getMost_backend_aptGetInstall tigervnc-scraping-server
+	
+	
+	
+	#_vnchost-setup-sddm
+	
+	
+	true
+}
+
+
 _vnchost_sequence() {
-	_mustBeRoot
+	#_mustBeRoot
 	
 	sudo -n systemctl start sddm
 	systemctl start sddm
 	sudo -n service sddm start
 	service sddm start
 	service sddm status
-
+	
 	_findPort_vnc() {
 		currentPort=51001
 		echo "$currentPort"
 	}
-
+	
+	_prepare_vnc() {
+		
+		echo > "$vncPasswdFile".pln
+		chmod 600 "$vncPasswdFile".pln
+		_uid 8 > "$vncPasswdFile".pln
+		
+		export vncPort=$(_findPort_vnc)
+		
+		export vncPIDfile="$safeTmp"/.vncpid
+		export vncPIDfile_local="$safeTmp"/.vncpid
+		
+	}
+	
 	_start
-
+	
 	_prepare_vnc
-
+	
 	_vncpasswd
-
+	
 	_report_vncpasswd
-
+	
 	_messagePlain_request '____________________________________________________________'
 	_messagePlain_request 'echo -n '$(cat "$vncPasswdFile".pln)' | _vncviewer localhost::'$(_findPort_vnc)
 	_messagePlain_request '____________________________________________________________'
+	_messagePlain_request 'http://127.0.0.1:51002/vnc.html?password='$(cat "$vncPasswdFile".pln)
+	_messagePlain_request '____________________________________________________________'
+	_messagePlain_request 'VSCode VNC Extension is fast and convenient.'
+	_messagePlain_request 'localhost:51001   password: '$(cat "$vncPasswdFile".pln)
+	_messagePlain_request '____________________________________________________________'
+	_messagePlain_request 'KDE: Consider '"'"_vnchost-custom_kde"'"' for a preconfigured desktop UI.'
 	sleep 1
+	
+	
+	
+	
+	
+	#_x11vnc_operations
+	
 
-
-	_x11vnc_operations
-
+	websockify -D --web=/usr/share/novnc/ --cert=/home/debian/novnc.pem 51002 localhost:51001
+	_vncserver_operations
+	#novnc --listen 51002 --vnc localhost:51001
+	
+	sleep 18000
+	
 	_stop
 }
 
 _vnchost() {
-	_mustGetSudo
-	sudo -n "$scriptAbsoluteLocation" _vnchost_sequence
+	#_mustGetSudo
+	#sudo -n "$scriptAbsoluteLocation" _vnchost_sequence
+	
+	#export desktopEnvironmentLaunch="startlxde"
+	export desktopEnvironmentLaunch="startplasma-x11"
+	"$scriptAbsoluteLocation" _vnchost_sequence
 }
 
 
