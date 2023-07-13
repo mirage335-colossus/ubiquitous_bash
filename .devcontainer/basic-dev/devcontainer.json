@@ -7,7 +7,7 @@
     "features": {
         "ghcr.io/devcontainers/features/github-cli:1": {}
     },
-    "postCreateCommand": "wget 'https://raw.githubusercontent.com/mirage335/ubiquitous_bash/master/ubiquitous_bash.sh' ; ./ubiquitous_bash.sh _setupUbiquitous",
+    "postCreateCommand": "wget 'https://raw.githubusercontent.com/mirage335/ubiquitous_bash/master/ubiquitous_bash.sh' ; ./ubiquitous_bash.sh _setupUbiquitous"
 }
 
 
