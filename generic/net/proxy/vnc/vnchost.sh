@@ -130,7 +130,7 @@ _vnchost_sequence() {
 	_messagePlain_request 'ubcp CLI (fast and convenient)'
 	_messagePlain_request 'echo -n '$(cat "$vncPasswdFile".pln)' | _vncviewer localhost::'"$vncPort"
 	_messagePlain_request '____________________________________________________________'
-	_messagePlain_request 'Through Browser Port Forward'
+	_messagePlain_request 'Through Browser Port Forward (may be slow)'
 	_messagePlain_request 'http://127.0.0.1:'"$vncPort_novnc"'/vnc.html?password='$(cat "$vncPasswdFile".pln)
 	_messagePlain_request '____________________________________________________________'
 	_messagePlain_request 'VSCode VNC Extension (fast and convenient)'
