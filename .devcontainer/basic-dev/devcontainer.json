@@ -3,6 +3,9 @@
     "name": "ubiquitous_bash-codespace-basic-dev",
     "build": {
         "dockerfile": "Dockerfile"
+    },
+    "features": {
+        "ghcr.io/devcontainers/features/github-cli:1": {}
     }
 }
 
