@@ -1,17 +1,9 @@
 
-
-
 {
+    "name": "ubiquitous_bash-codespace-basic-dev",
     "build": {
-        // Path is relataive to the devcontainer.json file.
         "dockerfile": "Dockerfile"
-    },
-    "features": {
-        "ghcr.io/devcontainers/features/common-utils:2": {
-          "version": "latest"
-        }
     }
 }
-
 
 
