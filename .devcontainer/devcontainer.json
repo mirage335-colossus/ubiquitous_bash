@@ -1,0 +1,14 @@
+
+{
+    "name": "ubiquitous_bash-codespace-basic-dev",
+    "build": {
+        "dockerfile": "Dockerfile"
+    },
+    "features": {
+        "ghcr.io/devcontainers/features/github-cli:1": {}
+    },
+    "postCreateCommand": "wget 'https://raw.githubusercontent.com/mirage335/ubiquitous_bash/master/ubiquitous_bash.sh' ; ./ubiquitous_bash.sh _setupUbiquitous ; ./ubiquitous_bash.sh _vnchost-setup",
+    "forwardPorts": [51001, 51002]
+}
+
+
