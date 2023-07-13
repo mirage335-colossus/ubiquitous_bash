@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='1237603936'
+export ub_setScriptChecksum_contents='820329307'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -5525,7 +5525,8 @@ _prepare_ssh_fifo() {
 }
 
 _vnc_ssh() {
-	"$scriptAbsoluteLocation" _ssh -C -c aes256-gcm@openssh.com -m hmac-sha1 -o ConnectionAttempts=2 -o ServerAliveInterval=5 -o ServerAliveCountMax=5 -o ExitOnForwardFailure=yes "$@" 
+	#-c aes256-gcm@openssh.com -m hmac-sha1
+	"$scriptAbsoluteLocation" _ssh -C -o ConnectionAttempts=2 -o ServerAliveInterval=5 -o ServerAliveCountMax=5 -o ExitOnForwardFailure=yes "$@" 
 }
 
 _findPort_vnc() {
@@ -29734,6 +29735,11 @@ _here_synergy_config() {
 	true
 }
 
+
+# DANGER: Strongly discourage any use of 'synergy' or any similar software.
+
+
+
 _test_synergy() {
 	"$scriptAbsoluteLocation" _getDep synergy
 	"$scriptAbsoluteLocation" _getDep synergyc
@@ -29741,8 +29747,10 @@ _test_synergy() {
 	##_getDep quicksynergy
 }
 
+# DANGER: Strongly discourage any use of 'synergy' or any similar software.
 _synergy_ssh() {
-	"$scriptAbsoluteLocation" _ssh -C -c aes256-gcm@openssh.com -m hmac-sha1 -o ConnectionAttempts=2 -o ServerAliveInterval=5 -o ServerAliveCountMax=5 -o ExitOnForwardFailure=yes "$@" 
+	#-c aes256-gcm@openssh.com -m hmac-sha1
+	"$scriptAbsoluteLocation" _ssh -C -o ConnectionAttempts=2 -o ServerAliveInterval=5 -o ServerAliveCountMax=5 -o ExitOnForwardFailure=yes "$@" 
 }
 
 _findPort_synergy() {

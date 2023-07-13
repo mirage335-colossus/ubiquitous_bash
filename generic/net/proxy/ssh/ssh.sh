@@ -561,7 +561,8 @@ _prepare_ssh_fifo() {
 }
 
 _vnc_ssh() {
-	"$scriptAbsoluteLocation" _ssh -C -c aes256-gcm@openssh.com -m hmac-sha1 -o ConnectionAttempts=2 -o ServerAliveInterval=5 -o ServerAliveCountMax=5 -o ExitOnForwardFailure=yes "$@" 
+	#-c aes256-gcm@openssh.com -m hmac-sha1
+	"$scriptAbsoluteLocation" _ssh -C -o ConnectionAttempts=2 -o ServerAliveInterval=5 -o ServerAliveCountMax=5 -o ExitOnForwardFailure=yes "$@" 
 }
 
 _findPort_vnc() {

@@ -1,3 +1,8 @@
+
+# DANGER: Strongly discourage any use of 'synergy' or any similar software.
+
+
+
 _test_synergy() {
 	"$scriptAbsoluteLocation" _getDep synergy
 	"$scriptAbsoluteLocation" _getDep synergyc
@@ -5,8 +10,10 @@ _test_synergy() {
 	##_getDep quicksynergy
 }
 
+# DANGER: Strongly discourage any use of 'synergy' or any similar software.
 _synergy_ssh() {
-	"$scriptAbsoluteLocation" _ssh -C -c aes256-gcm@openssh.com -m hmac-sha1 -o ConnectionAttempts=2 -o ServerAliveInterval=5 -o ServerAliveCountMax=5 -o ExitOnForwardFailure=yes "$@" 
+	#-c aes256-gcm@openssh.com -m hmac-sha1
+	"$scriptAbsoluteLocation" _ssh -C -o ConnectionAttempts=2 -o ServerAliveInterval=5 -o ServerAliveCountMax=5 -o ExitOnForwardFailure=yes "$@" 
 }
 
 _findPort_synergy() {
