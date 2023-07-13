@@ -2,8 +2,9 @@ _vncserver_operations() {
 	_messagePlain_nominal 'init: _vncserver_operations'
 	
 	#[[ "$desktopEnvironmentLaunch" == "" ]] && desktopEnvironmentLaunch="true"
-	[[ "$desktopEnvironmentLaunch" == "" ]] && desktopEnvironmentLaunch="startlxde"
-	[[ "$desktopEnvironmentGeometry" == "" ]] && desktopEnvironmentGeometry='1920x1080'
+	#[[ "$desktopEnvironmentLaunch" == "" ]] && desktopEnvironmentLaunch="startlxde"
+	[[ "$desktopEnvironmentLaunch" == "" ]] && desktopEnvironmentLaunch="startplasma-x11"
+	[[ "$desktopEnvironmentGeometry" == "" ]] && desktopEnvironmentGeometry='1920x1200'
 	
 	_messagePlain_nominal 'Searching for unused X11 display.'
 	local vncDisplay

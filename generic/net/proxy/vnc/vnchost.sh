@@ -29,7 +29,7 @@ Section "Screen"
     DefaultDepth 24
     SubSection "Display"
     Depth 24
-    Modes "1920x1080"
+    Modes "1920x1200"
     EndSubSection
 EndSection
 CZXWXcRMTo8EmM8i4d
@@ -99,6 +99,11 @@ _vnchost_sequence() {
 		echo "$currentPort"
 	}
 	
+	_findPort_novnc() {
+		currentPort_novnc=51002
+		echo "$currentPort_novnc"
+	}
+	
 	_prepare_vnc() {
 		
 		echo > "$vncPasswdFile".pln
@@ -106,6 +111,7 @@ _vnchost_sequence() {
 		_uid 8 > "$vncPasswdFile".pln
 		
 		export vncPort=$(_findPort_vnc)
+		export vncPort_novnc=$(_findPort_novnc)
 		
 		export vncPIDfile="$safeTmp"/.vncpid
 		export vncPIDfile_local="$safeTmp"/.vncpid
@@ -121,14 +127,19 @@ _vnchost_sequence() {
 	_report_vncpasswd
 	
 	_messagePlain_request '____________________________________________________________'
-	_messagePlain_request 'echo -n '$(cat "$vncPasswdFile".pln)' | _vncviewer localhost::'$(_findPort_vnc)
+	_messagePlain_request 'ubcp CLI (fast and convenient)'
+	_messagePlain_request 'echo -n '$(cat "$vncPasswdFile".pln)' | _vncviewer localhost::'"$vncPort"
 	_messagePlain_request '____________________________________________________________'
-	_messagePlain_request 'http://127.0.0.1:51002/vnc.html?password='$(cat "$vncPasswdFile".pln)
+	_messagePlain_request 'Through Browser Port Forward'
+	_messagePlain_request 'http://127.0.0.1:'"$vncPort_novnc"'/vnc.html?password='$(cat "$vncPasswdFile".pln)
 	_messagePlain_request '____________________________________________________________'
-	_messagePlain_request 'VSCode VNC Extension is fast and convenient.'
-	_messagePlain_request 'localhost:51001   password: '$(cat "$vncPasswdFile".pln)
+	_messagePlain_request 'VSCode VNC Extension (fast and convenient)'
+	_messagePlain_request 'localhost:'"$vncPort"'   password: '$(cat "$vncPasswdFile".pln)
 	_messagePlain_request '____________________________________________________________'
-	_messagePlain_request 'KDE: Consider '"'"_vnchost-custom_kde"'"' for a preconfigured desktop UI.'
+	_messagePlain_request 'Through GitHub WebUI (may be slow)'
+	_messagePlain_request 'https://'"$CODESPACE_NAME"'-'"$vncPort_novnc"'.preview.app.github.dev/vnc.html?password='$(cat "$vncPasswdFile".pln)
+	_messagePlain_request '____________________________________________________________'
+	_messagePlain_request 'KDE: Consider '"'"'_vnchost-custom_kde'"'"' for a preconfigured desktop UI.'
 	sleep 1
 	
 	
@@ -138,9 +149,9 @@ _vnchost_sequence() {
 	#_x11vnc_operations
 	
 
-	websockify -D --web=/usr/share/novnc/ --cert=/home/debian/novnc.pem 51002 localhost:51001
+	websockify -D --web=/usr/share/novnc/ --cert=/home/debian/novnc.pem "$vncPort_novnc" localhost:"$vncPort"
 	_vncserver_operations
-	#novnc --listen 51002 --vnc localhost:51001
+	#novnc --listen "$vncPort_novnc" --vnc localhost:"$vncPort"
 	
 	sleep 18000
 	
