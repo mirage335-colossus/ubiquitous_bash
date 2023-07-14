@@ -1233,7 +1233,7 @@ _compile_bash() {
 			includeScriptList+=( "structure"/installation_prog.sh )
 		fi
 		
-		if [[ "$1" == "rotten_test-extendedInterface" ]] || [[ "$1" == "rotten_test-extendedInterface"* ]] || [[ "$1" == "rotten_test-"*"-MSW" ]] || [[ "$1" == "rotten_test-"*"-MSW"* ]]
+		if [[ "$1" == "rotten_test-extendedInterface" ]] || [[ "$1" == "rotten"*"-extendedInterface"* ]] || [[ "$1" == "rotten_test-"*"-MSW" ]] || [[ "$1" == "rotten_test-"*"-MSW"* ]]
 		then
 			includeScriptList+=( "structure"/program.sh )
 			_compile_bash_program
