@@ -1235,7 +1235,10 @@ _compile_bash() {
 		
 		if [[ "$1" == "rotten_test-extendedInterface" ]] || [[ "$1" == "rotten"*"-extendedInterface"* ]] || [[ "$1" == "rotten_test-"*"-MSW" ]] || [[ "$1" == "rotten_test-"*"-MSW"* ]]
 		then
+			# ATTENTION: May split anchor functions to 'setupUbiquitous-anchor.sh' .
 			includeScriptList+=( "shortcuts"/setupUbiquitous.sh )
+			#_compile_bash_shortcuts_setup
+			
 			includeScriptList+=( "structure"/program.sh )
 			_compile_bash_program
 			_compile_bash_program_prog
