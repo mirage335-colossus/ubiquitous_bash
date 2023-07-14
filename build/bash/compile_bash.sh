@@ -1227,7 +1227,7 @@ _compile_bash() {
 		includeScriptList+=( "structure"/localenv_prog.sh )
 		
 		
-		if [[ "$1" == "rotten_test" ]]
+		if [[ "$1" == "rotten_test" ]] || [[ "$1" == "rotten_test"* ]]
 		then
 			includeScriptList+=( "structure"/installation.sh )
 			includeScriptList+=( "structure"/installation_prog.sh )
