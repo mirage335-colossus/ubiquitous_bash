@@ -54,20 +54,20 @@ jobs:
           #rclone_limited_conf_base64: ${{ secrets.rclone_limited_conf_base64 }}
         #timeout-minutes: 5
       - uses: actions/checkout@v2
-      # DANGER: Discouraged !
-      - name: Setup upterm session
-        #if: ${{ failure() }}
-        uses: lhotari/action-upterm@v1
-        with:
-          ## limits ssh access and adds the ssh public key for the user which triggered the workflow
-          limit-access-to-actor: true
-          ## limits ssh access and adds the ssh public keys of the listed GitHub users
-          # DANGER: Discouraged. Prefer 'limit-access-to-actor' instead.
-          #limit-access-to-users: githubuser1,githubuser2
-        timeout-minutes: 320
-        # DANGER: Discouraged !
-        #env:
-          #GH_TOKEN: ${{ github.token }}
+#      # DANGER: Discouraged !
+#      - name: Setup upterm session
+#        #if: ${{ failure() }}
+#        uses: lhotari/action-upterm@v1
+#        with:
+#          ## limits ssh access and adds the ssh public key for the user which triggered the workflow
+#          limit-access-to-actor: true
+#          ## limits ssh access and adds the ssh public keys of the listed GitHub users
+#          # DANGER: Discouraged. Prefer 'limit-access-to-actor' instead.
+#          #limit-access-to-users: githubuser1,githubuser2
+#        timeout-minutes: 320
+#        # DANGER: Discouraged !
+#        #env:
+#          #GH_TOKEN: ${{ github.token }}
 
 
 
