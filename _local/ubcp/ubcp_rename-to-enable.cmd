@@ -4,7 +4,7 @@ set "CWD=%cd%"
 set CYGWIN_DRIVE=%~d0
 set "CYGWIN_ROOT=%~dp0cygwin"
 
-set "CYGWIN_PATH=%SystemRoot%\system32;%SystemRoot%;%CYGWIN_ROOT%\bin"
+set "CYGWIN_PATH=%CYGWIN_ROOT%\bin;%SystemRoot%\system32;%SystemRoot%"
 for /f "tokens=*" %%i in ('where adb.exe 2^>NUL') do set "CYGWIN_PATH=%CYGWIN_PATH%;%%i\.."
 for /f "tokens=*" %%i in ('where docker.exe 2^>NUL') do set "CYGWIN_PATH=%CYGWIN_PATH%;%%i\.."
 set "MSWEXTPATH=%PATH%"
