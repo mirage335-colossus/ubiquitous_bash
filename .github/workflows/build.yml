@@ -130,7 +130,7 @@ jobs:
         shell: pwsh
         timeout-minutes: 240
         run: |
-          Remove-Item -Recurse -Force _local/ubcp/package_ubcp-core/ubcp/cygwin/.pkg-cache
+          Remove-Item -Recurse -Force _local/ubcp/cygwin/.pkg-cache
       - name: _setupUbiquitous
         shell: pwsh
         timeout-minutes: 240
