@@ -126,6 +126,11 @@ jobs:
         run: |
           mv _local/ubcp/cygwin/bin/ssh-pageant.exe _local/ubcp/cygwin/bin/ssh-pageant.disabled
           cp _local/ubcp/cygwin/bin/true.exe _local/ubcp/cygwin/bin/ssh-pageant.exe
+      - name: _delete_cache
+        shell: pwsh
+        timeout-minutes: 240
+        run: |
+          Remove-Item -Recurse -Force _local/ubcp/package_ubcp-core/ubcp/cygwin/.pkg-cache
       - name: _setupUbiquitous
         shell: pwsh
         timeout-minutes: 240
