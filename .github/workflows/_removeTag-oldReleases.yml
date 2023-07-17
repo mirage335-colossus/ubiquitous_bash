@@ -1,0 +1,55 @@
+
+name: _removeTag-oldRelease
+
+
+# https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#permissions
+permissions:
+  actions: write
+  checks: read
+  contents: write
+  deployments: read
+  issues: read
+  packages: read
+  pull-requests: read
+  repository-projects: read
+  security-events: none
+  statuses: read
+
+
+  
+on:
+  workflow_dispatch:
+    #inputs:
+      #source_tag:
+        #description: 'Source Tag'
+        #required: true
+      #target_tag:
+        #description: 'Target Tag'
+        #required: true
+        
+
+jobs:
+  copy-release:
+    runs-on: ubuntu-latest
+    steps:
+
+
+
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0  # we need fetch-depth: 0 to fetch all tags
+
+      
+      - uses: dev-drprasad/delete-older-releases@v0.2.0
+        with:
+          #repo: <owner>/<repoName> # defaults to current repo
+          keep_latest: 10
+          delete_tags: true
+          #delete_tag_pattern: "build"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+
+
+
