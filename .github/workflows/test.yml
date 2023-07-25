@@ -128,11 +128,16 @@ jobs:
           #curl -L -o package_ubcp-core.7z $(curl -s "https://api.github.com/repos/mirage335/ubiquitous_bash/releases/latest" | jq -r ".assets[] | select(.name == \"package_ubcp-core.7z\") | .browser_download_url")
           #curl -L -o package_ubcp-core.7z $(curl -s "https://api.github.com/repos/mirage335/ubiquitous_bash/releases" | jq -r ".[] | select(.name == \"internal\") | .assets[] | select(.name == \"package_ubcp-core.7z\") | .browser_download_url")
 
-          $releases = Invoke-RestMethod -Uri "https://api.github.com/repos/mirage335/ubiquitous_bash/releases"
-          $specificRelease = $releases | Where-Object {$_.name -eq "internal"}
-          $asset = $specificRelease.assets | Where-Object {$_.name -eq "package_ubcp-core.7z"}
+
+          #$releases = Invoke-RestMethod -Uri "https://api.github.com/repos/mirage335/ubiquitous_bash/releases"
+          #$asset = $releases | Where-Object {$_.name -eq "internal"} | 
+          #Select-Object -ExpandProperty assets | Where-Object {$_.name -eq "package_ubcp-core.7z"} |
+          #Sort-Object -Property {$_.browser_download_url -replace '\D+(\d+)-\d+$', '$1'} -Descending | 
+          #Select-Object -First 1
           #Invoke-WebRequest -Uri $asset.browser_download_url -OutFile ./package_ubcp-core.7z
-          Invoke-WebRequest -Uri $asset.browser_download_url -Headers @{Authorization = "Bearer ${{ secrets.GITHUB_TOKEN }}" } -OutFile ./package_ubcp-core.7z
+
+          #Invoke-WebRequest -Uri ((Invoke-RestMethod -Uri "https://api.github.com/repos/mirage335/ubiquitous_bash/releases" | Where-Object {$_.name -eq "internal"} | ForEach-Object { $_.assets } | Where-Object {$_.name -eq "package_ubcp-core.7z"} | Sort-Object -Property {$_.browser_download_url -replace '\D+(\d+)-\d+$', '$1'} -Descending | Select-Object -First 1).browser_download_url) -OutFile ./package_ubcp-core.7z
+          Invoke-WebRequest -Uri ((Invoke-RestMethod -Uri "https://api.github.com/repos/mirage335/ubiquitous_bash/releases" -Headers @{Authorization = "Bearer ${{ secrets.GITHUB_TOKEN }}" | Where-Object {$_.name -eq "internal"} | ForEach-Object { $_.assets } | Where-Object {$_.name -eq "package_ubcp-core.7z"} | Sort-Object -Property {$_.browser_download_url -replace '\D+(\d+)-\d+$', '$1'} -Descending | Select-Object -First 1).browser_download_url) -OutFile ./package_ubcp-core.7z
 
           7z -y x ./package_ubcp-core.7z | tee /_getCore_ubcp.log
           rm ./package_ubcp-core.7z
