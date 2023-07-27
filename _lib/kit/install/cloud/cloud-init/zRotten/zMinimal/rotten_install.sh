@@ -546,7 +546,7 @@ _custom_kernel_sequence() {
 	
 	if [[ ! -e /linux-mainline-amd64-debian.tar.gz ]]
 	then
-		wget --user u298813-sub7 --password wnEtWtT9UDyJiCGw 'https://u298813-sub7.your-storagebox.de/mirage335KernelBuild/linux-mainline-amd64-debian.tar.gz'
+		curl -L -o linux-mainline-amd64-debian.tar.gz $(curl -s "https://api.github.com/repos/soaringDistributions/mirage335KernelBuild/releases" | jq -r ".[] | select(.name == \"internal\") | .assets[] | select(.name == \"linux-mainline-amd64-debian.tar.gz\") | .browser_download_url")
 	else
 		cp -f /linux-mainline-amd64-debian.tar.gz ./
 	fi
@@ -558,7 +558,7 @@ _custom_kernel_sequence() {
 	
 	if [[ ! -e /linux-lts-amd64-debian.tar.gz ]]
 	then
-		wget --user u298813-sub7 --password wnEtWtT9UDyJiCGw 'https://u298813-sub7.your-storagebox.de/mirage335KernelBuild/linux-lts-amd64-debian.tar.gz'
+		curl -L -o linux-lts-amd64-debian.tar.gz $(curl -s "https://api.github.com/repos/soaringDistributions/mirage335KernelBuild/releases" | jq -r ".[] | select(.name == \"internal\") | .assets[] | select(.name == \"linux-lts-amd64-debian.tar.gz\") | .browser_download_url")
 	else
 		cp -f /linux-lts-amd64-debian.tar.gz ./
 	fi
