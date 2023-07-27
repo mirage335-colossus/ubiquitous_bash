@@ -1,6 +1,6 @@
 
 {
-    "name": "ubiquitous_bash-codespace-basic-dev",
+    "name": "ubiquitous_bash-codespace-basic-dev-vnchost",
     "build": {
         "dockerfile": "Dockerfile"
     },
