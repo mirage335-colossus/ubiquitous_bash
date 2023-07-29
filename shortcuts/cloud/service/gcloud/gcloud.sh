@@ -473,7 +473,8 @@ _test_gcloud_upstream_sequence() {
 		curl -O https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-440.0.0-linux-x86_64.tar.gz
 	done
 	
-	! tar -xpf google-cloud-sdk-338.0.0-linux-x86_64.tar.gz && _stop 1
+	#! tar -xpf google-cloud-sdk-338.0.0-linux-x86_64.tar.gz && _stop 1
+	! tar -xpf google-cloud-sdk-440.0.0-linux-x86_64.tar.gz && _stop 1
 	
 	
 	# WARNING: CAUTION: DANGER: Highly irregular. Replaces entire directory in 'HOME' directory after making a temporary copy for user.
