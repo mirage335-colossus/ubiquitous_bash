@@ -492,7 +492,10 @@ _custom_core() {
 			tar xvf core.tar.xz
 		else
 			_messagePlain_probe 'wget | pv | xz -d | tar xv'
-			wget -qO- --user u298813-sub7 --password wnEtWtT9UDyJiCGw 'https://u298813-sub7.your-storagebox.de/ubDistFetch/core.tar.xz' | pv | xz -d | tar xv --overwrite
+			# ATTENTION: WARNING: Depends on prebuilt package. Performing the fetch internally may be better for reliability and other reasons.
+			# (ie. prefer _custom_core_fetch)
+			#wget -qO- 'https://example.com/ubDistFetch/core.tar.xz' | pv | xz -d | tar xv --overwrite
+			false
 			[[ "$?" != "0" ]] && _messageFAIL
 		fi
 	fi
@@ -522,7 +525,8 @@ _custom_core_drop() {
 	sudo -n chmod 700 "$currentHOME"/rotten_"$ubiquitousBashID".sh
 	
 	local currentExitStatus
-	sudo -n -u "$custom_user" "$currentHOME"/rotten_"$ubiquitousBashID".sh _custom_core "$@"
+	#sudo -n -u "$custom_user" "$currentHOME"/rotten_"$ubiquitousBashID".sh _custom_core "$@"
+	sudo -n -u "$custom_user" "$currentHOME"/rotten_"$ubiquitousBashID".sh _custom_core_fetch "$@"
 	currentExitStatus="$?"
 	
 	sudo -n rm -f "$currentHOME"/rotten_"$ubiquitousBashID".sh
