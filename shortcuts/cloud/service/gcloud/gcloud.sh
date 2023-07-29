@@ -465,11 +465,12 @@ _test_gcloud_upstream_sequence() {
 	# ATTENTION: ATTENTION: WARNING: CAUTION: DANGER: High maintenance. Expect to break and manually update frequently!
 	local currentIterations
 	currentIterations=0
-	while [[ $(cksum google-cloud-sdk-338.0.0-linux-x86_64.tar.gz | env CMD_ENV=xpg4 cksum | cut -f1 -d\  | tr -dc '0-9' 2> /dev/null) != '3136626824' ]]
+	#while [[ $(cksum google-cloud-sdk-338.0.0-linux-x86_64.tar.gz | env CMD_ENV=xpg4 cksum | cut -f1 -d\  | tr -dc '0-9' 2> /dev/null) != '3136626824' ]]
+	while [[ $(cksum google-cloud-sdk-440.0.0-linux-x86_64.tar.gz | env CMD_ENV=xpg4 cksum | cut -f1 -d\  | tr -dc '0-9' 2> /dev/null) != '1909877958' ]]
 	do
 		let currentIterations="$currentIterations + 1"
 		! [[ "$currentIterations" -lt 2 ]] && _stop 1
-		curl -O https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-338.0.0-linux-x86_64.tar.gz
+		curl -O https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-440.0.0-linux-x86_64.tar.gz
 	done
 	
 	! tar -xpf google-cloud-sdk-338.0.0-linux-x86_64.tar.gz && _stop 1
