@@ -547,6 +547,7 @@ _custom_kernel_sequence() {
 	mkdir -p tmp_kernel
 	cd tmp_kernel
 	
+	env DEBIAN_FRONTEND=noninteractive sudo -n apt-get -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install --install-recommends curl jq
 	
 	if [[ ! -e /linux-mainline-amd64-debian.tar.gz ]]
 	then
