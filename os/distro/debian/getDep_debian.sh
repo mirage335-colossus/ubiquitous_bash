@@ -326,7 +326,7 @@ CZXWXcRMTo8EmM8i4d
 	if [[ "$1" == "terraform" ]]
 	then
 		curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo -n apt-key add -
-		sudo -n apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
+		sudo -n apt-add-repository -y "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
 		sudo -n env DEBIAN_FRONTEND=noninteractive apt-get -y update
 		sudo -n env DEBIAN_FRONTEND=noninteractive apt-get install --install-recommends -y terraform
 		
@@ -336,7 +336,7 @@ CZXWXcRMTo8EmM8i4d
 	if [[ "$1" == "vagrant" ]]
 	then
 		#curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo -n apt-key add -
-		#sudo -n apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
+		#sudo -n apt-add-repository -y "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
 		#sudo -n env DEBIAN_FRONTEND=noninteractive apt-get -y update
 		
 		sudo -n env DEBIAN_FRONTEND=noninteractive apt-get install --install-recommends -y vagrant-libvirt
@@ -817,7 +817,7 @@ CZXWXcRMTo8EmM8i4d
 	if [[ "$1" == "terraform" ]]
 	then
 		curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo -n apt-key add -
-		sudo -n apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
+		sudo -n apt-add-repository -y "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
 		sudo -n env DEBIAN_FRONTEND=noninteractive apt-get -y update
 		sudo -n env DEBIAN_FRONTEND=noninteractive apt-get install --install-recommends -y terraform
 		
@@ -827,7 +827,7 @@ CZXWXcRMTo8EmM8i4d
 	if [[ "$1" == "vagrant" ]]
 	then
 		#curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo -n apt-key add -
-		#sudo -n apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
+		#sudo -n apt-add-repository -y "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
 		#sudo -n env DEBIAN_FRONTEND=noninteractive apt-get -y update
 		
 		sudo -n env DEBIAN_FRONTEND=noninteractive apt-get install --install-recommends -y vagrant-libvirt
@@ -1258,7 +1258,7 @@ CZXWXcRMTo8EmM8i4d
 	if [[ "$1" == "terraform" ]]
 	then
 		curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo -n apt-key add -
-		sudo -n apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
+		sudo -n apt-add-repository -y "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
 		sudo -n env DEBIAN_FRONTEND=noninteractive apt-get -y update
 		sudo -n env DEBIAN_FRONTEND=noninteractive apt-get install --install-recommends -y terraform
 		
@@ -1268,7 +1268,7 @@ CZXWXcRMTo8EmM8i4d
 	if [[ "$1" == "vagrant" ]]
 	then
 		#curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo -n apt-key add -
-		#sudo -n apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
+		#sudo -n apt-add-repository -y "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
 		#sudo -n env DEBIAN_FRONTEND=noninteractive apt-get -y update
 		
 		sudo -n env DEBIAN_FRONTEND=noninteractive apt-get install --install-recommends -y vagrant-libvirt
