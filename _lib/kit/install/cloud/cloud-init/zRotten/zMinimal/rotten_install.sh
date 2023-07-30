@@ -551,7 +551,8 @@ _custom_kernel_sequence() {
 	
 	if [[ ! -e /linux-mainline-amd64-debian.tar.gz ]]
 	then
-		curl -L -o linux-mainline-amd64-debian.tar.gz $(curl -s "https://api.github.com/repos/soaringDistributions/mirage335KernelBuild/releases" | jq -r ".[] | select(.name == \"internal\") | .assets[] | select(.name == \"linux-mainline-amd64-debian.tar.gz\") | .browser_download_url")
+		_wget_githubRelease_internal "soaringDistributions/mirage335KernelBuild" "linux-mainline-amd64-debian.tar.gz"
+		#curl -L -o linux-mainline-amd64-debian.tar.gz $(curl -s "https://api.github.com/repos/soaringDistributions/mirage335KernelBuild/releases" | jq -r ".[] | select(.name == \"internal\") | .assets[] | select(.name == \"linux-mainline-amd64-debian.tar.gz\") | .browser_download_url" | sort -n -r | head -n 1)
 	else
 		cp -f /linux-mainline-amd64-debian.tar.gz ./
 	fi
@@ -563,7 +564,8 @@ _custom_kernel_sequence() {
 	
 	if [[ ! -e /linux-lts-amd64-debian.tar.gz ]]
 	then
-		curl -L -o linux-lts-amd64-debian.tar.gz $(curl -s "https://api.github.com/repos/soaringDistributions/mirage335KernelBuild/releases" | jq -r ".[] | select(.name == \"internal\") | .assets[] | select(.name == \"linux-lts-amd64-debian.tar.gz\") | .browser_download_url")
+		_wget_githubRelease_internal "soaringDistributions/mirage335KernelBuild" "linux-lts-amd64-debian.tar.gz"
+		#curl -L -o linux-lts-amd64-debian.tar.gz $(curl -s "https://api.github.com/repos/soaringDistributions/mirage335KernelBuild/releases" | jq -r ".[] | select(.name == \"internal\") | .assets[] | select(.name == \"linux-lts-amd64-debian.tar.gz\") | .browser_download_url" | sort -n -r | head -n 1)
 	else
 		cp -f /linux-lts-amd64-debian.tar.gz ./
 	fi
