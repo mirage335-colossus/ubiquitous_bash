@@ -242,7 +242,7 @@ _discoverResource-cygwinNative-ProgramFiles-declaration-ProgramFiles() {
 	currentBinary="$1"
 	
 	local currentBinary_functionName
-	currentBinary_functionName=$(echo "$1" | tr -dc 'a-zA-Z0-9')
+	currentBinary_functionName=$(echo "$1" | tr -dc 'a-zA-Z0-9\-_')
 	
 	local currentExpectedSubdir
 	currentExpectedSubdir="$2"
@@ -274,7 +274,7 @@ _discoverResource-cygwinNative-ProgramFiles-declaration-core() {
 	currentBinary="$1"
 	
 	local currentBinary_functionName
-	currentBinary_functionName=$(echo "$1" | tr -dc 'a-zA-Z0-9')
+	currentBinary_functionName=$(echo "$1" | tr -dc 'a-zA-Z0-9\-_')
 	
 	local currentExpectedSubdir
 	currentExpectedSubdir="$2"
@@ -308,7 +308,7 @@ _discoverResource-cygwinNative-ProgramFiles() {
 	local currentBinary
 	currentBinary="$1"
 	local currentBinary_functionName
-	currentBinary_functionName=$(echo "$1" | tr -dc 'a-zA-Z0-9')
+	currentBinary_functionName=$(echo "$1" | tr -dc 'a-zA-Z0-9\-_')
 	[[ "$3" != "true" ]] && type "$currentBinary_functionName" > /dev/null 2>&1 && return 0
 	
 	local currentCygdriveC_equivalent
