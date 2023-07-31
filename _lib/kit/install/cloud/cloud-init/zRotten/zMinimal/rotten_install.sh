@@ -467,6 +467,8 @@ _custom_core_fetch() {
 	
 	"$HOME"/ubDistFetch/_ubDistFetch.bat
 	mv "$HOME"/ubDistFetch/_lib/core "$HOME"/
+	[[ -e "$HOME"/ubDistFetch/_lib/FAIL ]] && _messagePlain_bad 'fail: _ubDistFetch' && return 1
+	return 0
 }
 
 
@@ -487,6 +489,7 @@ _custom_core() {
 		#exit 1
 	else
 		# ATTENTION: NOTICE: Usually, this is a redistributable product of Soaring Distributions LLC .
+		# No longer preferred for reliability and other reasons. May be useful if already available locally.
 		if [[ -e /core.tar.xz ]]
 		then
 			mv -f /core.tar.xz "$HOME"/
@@ -526,9 +529,14 @@ _custom_core_drop() {
 	sudo -n chmod 700 "$currentHOME"/rotten_"$ubiquitousBashID".sh
 	
 	local currentExitStatus
-	#sudo -n -u "$custom_user" "$currentHOME"/rotten_"$ubiquitousBashID".sh _custom_core "$@"
-	sudo -n -u "$custom_user" "$currentHOME"/rotten_"$ubiquitousBashID".sh _custom_core_fetch "$@"
-	currentExitStatus="$?"
+	if [[ -e /core.tar.xz ]]
+	then
+		sudo -n -u "$custom_user" "$currentHOME"/rotten_"$ubiquitousBashID".sh _custom_core "$@"
+		currentExitStatus="$?"
+	else
+		sudo -n -u "$custom_user" "$currentHOME"/rotten_"$ubiquitousBashID".sh _custom_core_fetch "$@"
+		currentExitStatus="$?"
+	fi
 	
 	sudo -n rm -f "$currentHOME"/rotten_"$ubiquitousBashID".sh
 	
