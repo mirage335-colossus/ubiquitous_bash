@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='3026508096'
+export ub_setScriptChecksum_contents='2441611432'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -5030,7 +5030,7 @@ _wget_githubRelease-URL() {
 
 _wget_githubRelease() {
 	local currentURL=$(_wget_githubRelease_internal-URL "$@")
-	_messagePlain_probe curl -L -o "$3" "$currentURL"
+	_messagePlain_probe curl -L -o "$3" "$currentURL" >&2
 	curl -L -o "$3" "$currentURL"
 	[[ ! -e "$3" ]] && _messagePlain_bad 'missing: '"$1"' '"$2"' '"$3" && return 1
 	return 0
@@ -5043,16 +5043,16 @@ _wget_githubRelease_join-stdout() {
 	local currentIteration
 
 	currentIteration=0
-	for currentIteration in $(seq -f "%02g" 0 11)
+	for currentIteration in $(seq -f "%02g" 0 32)
 	do
 		currentURL=$(_wget_githubRelease-URL "$1" "$2" "$3"".part""$currentIteration")
 		[[ "$currentURL" == "" ]] && break
 		[[ "$currentURL" != "" ]] && currentURL_array+=( "$currentURL" )
 	done
 	
-	_messagePlain_probe curl -L --write-out stdout "${currentURL_array[@]}"
+	_messagePlain_probe curl -L --write-out stdout "${currentURL_array[@]}" >&2
 
-	curl -L --write-out stdout "$currentURL"
+	curl -L --write-out stdout "${currentURL_array[@]}"
 }
 
 _wget_githubRelease_join() {

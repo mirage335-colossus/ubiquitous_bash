@@ -1759,7 +1759,7 @@ _wget_githubRelease-URL() {
 
 _wget_githubRelease() {
 	local currentURL=$(_wget_githubRelease_internal-URL "$@")
-	_messagePlain_probe curl -L -o "$3" "$currentURL"
+	_messagePlain_probe curl -L -o "$3" "$currentURL" >&2
 	curl -L -o "$3" "$currentURL"
 	[[ ! -e "$3" ]] && _messagePlain_bad 'missing: '"$1"' '"$2"' '"$3" && return 1
 	return 0
@@ -1772,16 +1772,16 @@ _wget_githubRelease_join-stdout() {
 	local currentIteration
 
 	currentIteration=0
-	for currentIteration in $(seq -f "%02g" 0 11)
+	for currentIteration in $(seq -f "%02g" 0 32)
 	do
 		currentURL=$(_wget_githubRelease-URL "$1" "$2" "$3"".part""$currentIteration")
 		[[ "$currentURL" == "" ]] && break
 		[[ "$currentURL" != "" ]] && currentURL_array+=( "$currentURL" )
 	done
 	
-	_messagePlain_probe curl -L --write-out stdout "${currentURL_array[@]}"
+	_messagePlain_probe curl -L --write-out stdout "${currentURL_array[@]}" >&2
 
-	curl -L --write-out stdout "$currentURL"
+	curl -L --write-out stdout "${currentURL_array[@]}"
 }
 
 _wget_githubRelease_join() {
