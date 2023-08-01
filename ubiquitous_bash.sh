@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='2538946592'
+export ub_setScriptChecksum_contents='4256570291'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -22893,17 +22893,47 @@ _test_gitBest() {
 
 
 
+_wget_githubRelease-URL() {
+	if [[ "$2" != "" ]]
+	then
+		if [[ "$GH_TOKEN" == "" ]]
+		then
+			curl -s "https://api.github.com/repos/""$1""/releases" | jq -r ".[] | select(.name == \"""$2""\") | .assets[] | select(.name == \"""$3""\") | .browser_download_url" | sort -n -r | head -n 1
+		else
+			curl -H "Authorization: Bearer $GH_TOKEN" -s "https://api.github.com/repos/""$1""/releases" | jq -r ".[] | select(.name == \"""$2""\") | .assets[] | select(.name == \"""$3""\") | .browser_download_url" | sort -n -r | head -n 1
+		fi
+		return
+	else
+		if [[ "$GH_TOKEN" == "" ]]
+		then
+			curl -s "https://api.github.com/repos/""$1""/releases/latest" | jq -r ".assets[] | select(.name == \"""$3""\") | .browser_download_url" | sort -n -r | head -n 1
+		else
+			curl -H "Authorization: Bearer $GH_TOKEN" -s "https://api.github.com/repos/""$1""/releases/latest" | jq -r ".assets[] | select(.name == \"""$3""\") | .browser_download_url" | sort -n -r | head -n 1
+		fi
+		return
+	fi
+}
+
+_wget_githubRelease() {
+	local currentURL=$(_wget_githubRelease_internal-URL "$@")
+	_messagePlain_probe curl -L -o "$3" "$currentURL"
+	curl -L -o "$3" "$currentURL"
+	[[ ! -e "$3" ]] && _messagePlain_bad 'missing: '"$1"' '"$2"' '"$3" && return 1
+	return 0
+}
+
+
 _wget_githubRelease_internal-URL() {
-	curl -s "https://api.github.com/repos/""$1""/releases" | jq -r ".[] | select(.name == \"internal\") | .assets[] | select(.name == \""$2"\") | .browser_download_url" | sort -n -r | head -n 1
+	_wget_githubRelease-URL "$1" "internal" "$2"
 }
 
 _wget_githubRelease_internal() {
-	local currentURL=$(_wget_githubRelease_internal-URL "$@")
-	_messagePlain_probe curl -L -o "$2" "$currentURL"
-	curl -L -o "$2" "$currentURL"
-	[[ ! -e "$2" ]] && _messagePlain_bad 'missing: '"$1"' '"$2" && return 1
-	return 0
+	_wget_githubRelease "$1" "internal" "$2"
 }
+
+
+
+
 
 _test_bup() {
 	# Forced removal of 'python2' caused some apparent disruption.
