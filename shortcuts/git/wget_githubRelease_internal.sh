@@ -37,6 +37,33 @@ _wget_githubRelease() {
 }
 
 
+_wget_githubRelease_join-stdout() {
+	local currentReleaseLabel
+	currentReleaseLabel="$2"
+	[[ "$currentReleaseLabel" == "" ]] && currentReleaseLabel="internal"
+
+	local currentURL
+	local currentURL_array
+	local currentIteration
+
+	currentIteration=0
+	for currentIteration in $(seq -f "%02g" 0 11)
+	do
+		currentURL=$(_wget_githubRelease-URL "$1" "$currentReleaseLabel" "$3"".part""$currentIteration")
+		[[ "$currentURL" == "" ]] && break
+		[[ "$currentURL" != "" ]] && currentURL_array+=( "$currentURL" )
+	done
+	
+	_messagePlain_probe curl -L --write-out stdout "${currentURL_array[@]}"
+
+	curl -L --write-out stdout "$currentURL"
+}
+
+_wget_githubRelease_join() {
+	_wget_githubRelease_join-stdout "$@" > "$3"
+}
+
+
 _wget_githubRelease_internal-URL() {
 	_wget_githubRelease-URL "$1" "internal" "$2"
 }
