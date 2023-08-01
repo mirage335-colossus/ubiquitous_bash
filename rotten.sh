@@ -1788,9 +1788,9 @@ _wget_githubRelease_join-stdout() {
 		[[ "$currentURL" != "" ]] && currentURL_array+=( "$currentURL" )
 	done
 	
-	_messagePlain_probe curl -L --write-out stderr -o - "${currentURL_array[@]}" >&2
+	_messagePlain_probe curl -L "${currentURL_array[@]}" >&2
 
-	curl -L --write-out stderr -o "${currentURL_array[@]}"
+	curl -L "${currentURL_array[@]}"
 }
 
 _wget_githubRelease_join() {
