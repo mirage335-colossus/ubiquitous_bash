@@ -998,7 +998,7 @@ _install() {
 		! ./ubiquitous_bash.sh _true && echo 'missing: ubiquitous_bash.sh' && exit 1
 		./ubiquitous_bash.sh _false && echo 'missing: ubiquitous_bash.sh' && exit 1
 		#"$scriptAbsoluteLocation" _setupUbiquitous
-		#"$scriptAbsoluteLocation" _getMost_debian12
+		#"$scriptAbsoluteLocation" _getMost
 		#"$scriptAbsoluteLocation" _get_veracrypt
 		#"$scriptAbsoluteLocation" _test
 		
@@ -1022,7 +1022,7 @@ _install() {
 		
 		# ATTENTION: Optional. Attempts '_getMost' and '_test' from full 'ubiquitous_bash.sh' from upstream.
 		_sep
-		sudo -n -u user INSTANCE_ID="$INSTANCE_ID" sh -c "cd ; /home/user/bin/ubiquitous_bash.sh _getMost_debian12 2>&1"
+		sudo -n -u user INSTANCE_ID="$INSTANCE_ID" sh -c "cd ; /home/user/bin/ubiquitous_bash.sh _getMost 2>&1"
 		sudo -n -u user INSTANCE_ID="$INSTANCE_ID" sh -c "cd ; /home/user/bin/ubiquitous_bash.sh _get_veracrypt 2>&1"
 		sudo -n -u user INSTANCE_ID="$INSTANCE_ID" sh -c "cd ; /home/user/bin/ubiquitous_bash.sh _test 2>&1" | tee /var/log/ubiquitous_bash-test
 		sudo -n -u user INSTANCE_ID="$INSTANCE_ID" sh -c "cd ; /home/user/bin/ubiquitous_bash.sh _get_from_nix 2>&1" | tee /var/log/ubiquitous_bash-get_from_nix
