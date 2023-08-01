@@ -162,13 +162,13 @@ true
 
 
 _here_rottenScript_bash_declareFunctions() {
-	declare -f _here_rottenScript_bash_declareFunctions
-	declare -f _here_rottenScript_bash_compressedFunctions
-	declare -f _here_rottenScript_bash
-	declare -f _write_rottenScript_bash
-	declare -f _indent_base64
-	declare -f _here_rottenScript_cloudConfig
-	declare -f _write_rottenScript_cloudConfig
+	#declare -f _here_rottenScript_bash_declareFunctions
+	#declare -f _here_rottenScript_bash_compressedFunctions
+	#declare -f _here_rottenScript_bash
+	#declare -f _write_rottenScript_bash
+	#declare -f _indent_base64
+	#declare -f _here_rottenScript_cloudConfig
+	#declare -f _write_rottenScript_cloudConfig
 	declare -f _enter
 	declare -f _custom_core_fetch
 	declare -f _custom_core
@@ -244,7 +244,7 @@ _here_rottenScript_bash() {
 }
 
 _write_rottenScript_bash() {
-	_messageNormal 'init: rotten: _write_rottenScript_cloudConfig'
+	_messageNormal 'init: rotten: _write_rottenScript_bash'
 	
 	_here_rottenScript_bash "$scriptAbsoluteLocation" > "$scriptAbsoluteFolder"/rotten_install_compressed.sh
 	chmod u+x "$scriptAbsoluteFolder"/rotten_install_compressed.sh
@@ -315,10 +315,39 @@ write_files:
   content: !!binary |
 CZXWXcRMTo8EmM8i4d
 	
+	# Experiment only.
 	# | base64 -d | xz -d
 	#base64 -w 0 | tr -d '\n'
 	#cat "$scriptAbsoluteLocation" | xz -z -e9 -C crc64 --threads=1 | base64 -w 156 | fold -w 156 -s >> "$scriptAbsoluteLocation".xz.base64
-	cat "$scriptAbsoluteLocation" | gzip -v9 2>/dev/null | base64 -w 156 | fold -w 156 -s | _indent_base64
+	
+	# Larger size, more inherently complete.
+	#cat "$scriptAbsoluteLocation" | gzip -v9 2>/dev/null | base64 -w 156 | fold -w 156 -s | _indent_base64
+
+	(
+		
+		local currentAttachmentLine
+		
+		currentAttachmentLine=`awk '/^#####Entry/ {print NR + 1; exit 0; }' "$scriptAbsoluteLocation"`
+		let currentAttachmentLine="$currentAttachmentLine - 1"
+		head -n$currentAttachmentLine "$scriptAbsoluteLocation"
+		#echo $currentAttachmentLine
+		
+		
+		
+		
+		# ATTENTION: Oddly, having the XZ compressed functions, through base64, then wrapped by gzip, is about 500bytes smaller than gzip only. Consider any possible tradeoffs carefully.
+		_here_rottenScript_bash_declareFunctions
+		#_here_rottenScript_bash_compressedFunctions
+		
+		
+		
+		
+		currentAttachmentLine=`awk '/^#__FOOTER_uk4uPhB663kVcygT0q_FOOTER__/ {print NR + 1; exit 0; }' "$scriptAbsoluteLocation"`
+		#let currentAttachmentLine="$currentAttachmentLine - 1"
+		tail -n+$currentAttachmentLine "$scriptAbsoluteLocation"
+		#echo $currentAttachmentLine
+
+	) | gzip -v9 2>/dev/null | base64 -w 156 | fold -w 156 -s | _indent_base64
 	
 	
 	cat << 'CZXWXcRMTo8EmM8i4d'
@@ -354,9 +383,9 @@ _write_rottenScript_cloudConfig() {
 _enter() {
 	_messageNormal 'init: rotten: _enter'
 	
-	_write_rottenScript_cloudConfig "$@"
+	type _write_rottenScript_cloudConfig > /dev/null 2>&1 && _write_rottenScript_cloudConfig "$@"
 	
-	_write_rottenScript_bash "$@"
+	type _write_rottenScript_bash > /dev/null 2>&1 && _write_rottenScript_bash "$@"
 	
 	
 	
