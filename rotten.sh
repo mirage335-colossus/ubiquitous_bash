@@ -1767,10 +1767,6 @@ _wget_githubRelease() {
 
 
 _wget_githubRelease_join-stdout() {
-	local currentReleaseLabel
-	currentReleaseLabel="$2"
-	[[ "$currentReleaseLabel" == "" ]] && currentReleaseLabel="internal"
-
 	local currentURL
 	local currentURL_array
 	local currentIteration
@@ -1778,7 +1774,7 @@ _wget_githubRelease_join-stdout() {
 	currentIteration=0
 	for currentIteration in $(seq -f "%02g" 0 11)
 	do
-		currentURL=$(_wget_githubRelease-URL "$1" "$currentReleaseLabel" "$3"".part""$currentIteration")
+		currentURL=$(_wget_githubRelease-URL "$1" "$2" "$3"".part""$currentIteration")
 		[[ "$currentURL" == "" ]] && break
 		[[ "$currentURL" != "" ]] && currentURL_array+=( "$currentURL" )
 	done
