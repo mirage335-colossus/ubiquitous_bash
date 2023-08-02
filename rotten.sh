@@ -1761,7 +1761,7 @@ _wget_githubRelease-URL() {
 }
 
 _wget_githubRelease() {
-	local currentURL=$(_wget_githubRelease_internal-URL "$@")
+	local currentURL=$(_wget_githubRelease-URL "$@")
 	_messagePlain_probe curl -L -o "$3" "$currentURL" >&2
 	curl -L -o "$3" "$currentURL"
 	[[ ! -e "$3" ]] && _messagePlain_bad 'missing: '"$1"' '"$2"' '"$3" && return 1
@@ -1769,7 +1769,7 @@ _wget_githubRelease() {
 }
 
 _wget_githubRelease-stdout() {
-	local currentURL=$(_wget_githubRelease_internal-URL "$@")
+	local currentURL=$(_wget_githubRelease-URL "$@")
 	_messagePlain_probe curl -L -o - "$currentURL" >&2
 	curl -L -o - "$currentURL"
 }
