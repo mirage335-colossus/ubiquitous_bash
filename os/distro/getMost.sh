@@ -847,6 +847,8 @@ _getMost_ubuntu22-VBoxManage() {
 	
 	_getMost_backend apt-get remove --autoremove -y plasma-discover
 	
+	_getMost_backend apt-get -y clean
+	
 	
 	_messagePlain_probe 'end: _getMost_ubuntu22-VBoxManage'
 }

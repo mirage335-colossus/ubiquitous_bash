@@ -311,6 +311,6 @@ _getMinimal_cloud() {
 	#unset devfast
 	
 	
-	
+	return 0
 }
 
