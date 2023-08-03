@@ -214,6 +214,9 @@ _getMost_debian12_install() {
 	
 	# CAUTION: Workaround. Debian defaults to an obsolete version of qalc which is unusable.
 	_getMost_backend_aptGetInstall -t bookworm-backports qalc
+
+	
+	_getMost_backend apt-get -d install -y virtualbox-7.0
 }
 
 _getMost_debian11_install() {
