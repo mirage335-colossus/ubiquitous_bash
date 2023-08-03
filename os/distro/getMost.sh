@@ -822,7 +822,34 @@ _getMost_ubuntu22() {
 	_messagePlain_probe 'end: _getMost_ubuntu22'
 }
 
-
+# ATTENTION: Cloud 'end user' function.
+_getMost_ubuntu22-VBoxManage() {
+	_messagePlain_probe 'begin: _getMost_ubuntu22-VBoxManage'
+	
+	_set_getMost_backend "$@"
+	_set_getMost_backend_debian "$@"
+	_test_getMost_backend "$@"
+	
+	# https://askubuntu.com/questions/104899/make-apt-get-or-aptitude-run-with-y-but-not-prompt-for-replacement-of-configu
+	echo 'Dpkg::Options {"--force-confdef"};' | _getMost_backend tee /etc/apt/apt.conf.d/50unattended-replaceconfig-ub > /dev/null
+	echo 'Dpkg::Options {"--force-confold"};' | _getMost_backend tee -a /etc/apt/apt.conf.d/50unattended-replaceconfig-ub > /dev/null
+	
+	#https://askubuntu.com/questions/876240/how-to-automate-setting-up-of-keyboard-configuration-package
+	#apt-get install -y debconf-utils
+	export DEBIAN_FRONTEND=noninteractive
+	
+	
+	_getMost_ubuntu22_aptSources "$@"
+	
+	#_getMost_ubuntu22_install "$@"
+	#_getMost_backend apt-get -d install -y virtualbox-6.1
+	_getMost_backend apt-get -d install -y virtualbox-7.0
+	
+	_getMost_backend apt-get remove --autoremove -y plasma-discover
+	
+	
+	_messagePlain_probe 'end: _getMost_ubuntu22-VBoxManage'
+}
 
 
 
