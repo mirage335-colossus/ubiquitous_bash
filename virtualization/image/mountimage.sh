@@ -352,7 +352,12 @@ _mountImageFS_sequence() {
 	
 	if [[ "$loopdevfs" == "btrfs" ]] && [[ "$ub_disable_fs_compression" != "true" ]]
 	then
-		sudo -n mount -o compress=zstd:9 "$current_imagepart" "$currentDestinationDir" || _stop 1
+		if [[ "$skimfast" == "true" ]]
+		then
+			sudo -n mount -o compress=zstd:9 "$current_imagepart" "$currentDestinationDir" || _stop 1
+		else
+			sudo -n mount -o compress=zstd:2 "$current_imagepart" "$currentDestinationDir" || _stop 1
+		fi
 	else
 		sudo -n mount "$current_imagepart" "$currentDestinationDir" || _stop 1
 	fi
