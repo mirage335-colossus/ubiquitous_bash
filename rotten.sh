@@ -1778,19 +1778,25 @@ _wget_githubRelease-stdout() {
 _wget_githubRelease_join-stdout() {
 	local currentURL
 	local currentURL_array
-	local currentIteration
 
-	currentIteration=0
+	local currentIterationcurrentIteration=0
 	for currentIteration in $(seq -f "%02g" 0 32)
 	do
 		currentURL=$(_wget_githubRelease-URL "$1" "$2" "$3"".part""$currentIteration")
 		[[ "$currentURL" == "" ]] && break
 		[[ "$currentURL" != "" ]] && currentURL_array+=( "$currentURL" )
 	done
-	
-	_messagePlain_probe curl -L "${currentURL_array[@]}" >&2
 
-	curl -L "${currentURL_array[@]}"
+	# https://unix.stackexchange.com/questions/412868/bash-reverse-an-array
+	local currentValue
+	for currentValue in "${currentURL_array[@]}"
+	do
+		currentURL_array_reversed=("$currentValue" "${currentURL_array_reversed[@]}")
+	done
+	
+	_messagePlain_probe curl -L "${currentURL_array_reversed[@]}" >&2
+
+	curl -L "${currentURL_array_reversed[@]}"
 }
 
 _wget_githubRelease_join() {
