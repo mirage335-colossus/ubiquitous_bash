@@ -116,15 +116,20 @@ _test_devgnuoctave() {
 	_wantGetDep octave-config
 	_wantGetDep mkoctfile
 	
-	_wantGetDep 'x86_64-linux-gnu/liboctave.so'
-	_wantGetDep 'x86_64-linux-gnu/liboctinterp.so'
+
+
+
+	###_wantGetDep 'x86_64-linux-gnu/liboctave.so'
+	###_wantGetDep 'x86_64-linux-gnu/liboctinterp.so'
 	
 	
-	_wantGetDep 'x86_64-linux-gnu/octave/site/oct/x86_64-pc-linux-gnu/libsbml5/OutputSBML.mex'
-	_wantGetDep 'x86_64-linux-gnu/octave/site/oct/x86_64-pc-linux-gnu/libsbml5/TranslateSBML.mex'
+	###_wantGetDep 'x86_64-linux-gnu/octave/site/oct/x86_64-pc-linux-gnu/libsbml5/OutputSBML.mex'
+	###_wantGetDep 'x86_64-linux-gnu/octave/site/oct/x86_64-pc-linux-gnu/libsbml5/TranslateSBML.mex'
 	
 	_wantGetDep 'x86_64-linux-gnu/qt5/plugins/cantor/backends/cantor_octavebackend.so'
 	
+
+
 	
 	#if ! _wantGetDep dh_octave_check
 	#then

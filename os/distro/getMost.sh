@@ -215,6 +215,15 @@ _getMost_debian12_install() {
 	# CAUTION: Workaround. Debian defaults to an obsolete version of qalc which is unusable.
 	_getMost_backend_aptGetInstall -t bookworm-backports qalc
 
+
+
+	# ATTENTION: SEVERE: Cause for concern. Absence of this is not properly detected by '_getDep python', '_getDep /usr/bin/python'  .
+	_getMost_backend_aptGetInstall python-is-python3
+
+
+	# May be useful for WSL2 .
+	_getMost_backend_aptGetInstall usbip
+
 	
 	_getMost_backend apt-get -d install -y virtualbox-7.0
 }
@@ -435,11 +444,11 @@ _getMost_debian11_install() {
 	_getMost_backend_aptGetInstall octave-level-set
 	_getMost_backend_aptGetInstall octave-linear-algebra
 	_getMost_backend_aptGetInstall octave-lssa
-	_getMost_backend_aptGetInstall octave-ltfat
+	#_getMost_backend_aptGetInstall octave-ltfat
 	_getMost_backend_aptGetInstall octave-mapping
 	_getMost_backend_aptGetInstall octave-miscellaneous
 	_getMost_backend_aptGetInstall octave-missing-functions
-	_getMost_backend_aptGetInstall octave-mpi
+	#_getMost_backend_aptGetInstall octave-mpi
 	_getMost_backend_aptGetInstall octave-msh
 	_getMost_backend_aptGetInstall octave-mvn
 	_getMost_backend_aptGetInstall octave-nan

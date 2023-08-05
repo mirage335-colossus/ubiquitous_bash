@@ -322,7 +322,9 @@ _aws_set() {
 }
 
 
-
+# CAUTION: Discouraged. No production use. Historical installation failure.
+# https://github.com/aws/aws-cli/issues/8036#issuecomment-1638544754
+#  SEVERE - 'We do not recommend installing an older version of PyYAML as PyYAML version 5.3.1 is associated with CVE-2020-14343 that was fixed in version 5.4.'
 _aws_eb() {
 	local currentBin_aws_eb
 	currentBin_aws_eb="$ub_function_override_aws_eb"
@@ -348,16 +350,25 @@ _aws_eb() {
 	# WARNING: Must interpret "$HOME" as is at this point and NOT after any "$HOME" override.
 	env PATH="$HOME/.pyenv/versions/$current_python_path_version/bin:$PATH" AWS_PROFILE="$netName" AWS_CONFIG_FILE="$scriptLocal"/cloud/aws/.aws/config HOME="$scriptLocal"/cloud/aws "$currentBin_aws_eb" "$@"
 }
+# CAUTION: Discouraged. No production use. Historical installation failure.
+# https://github.com/aws/aws-cli/issues/8036#issuecomment-1638544754
+#  SEVERE - 'We do not recommend installing an older version of PyYAML as PyYAML version 5.3.1 is associated with CVE-2020-14343 that was fixed in version 5.4.'
 _eb() {
 	_aws_eb "$@"
 }
 
+# CAUTION: Discouraged. No production use. Historical installation failure.
+# https://github.com/aws/aws-cli/issues/8036#issuecomment-1638544754
+#  SEVERE - 'We do not recommend installing an older version of PyYAML as PyYAML version 5.3.1 is associated with CVE-2020-14343 that was fixed in version 5.4.'
 _aws_eb_reset() {
 	export ub_function_override_aws_eb=''
 	unset ub_function_override_aws_eb
 	unset eb
 }
 
+# CAUTION: Discouraged. No production use. Historical installation failure.
+# https://github.com/aws/aws-cli/issues/8036#issuecomment-1638544754
+#  SEVERE - 'We do not recommend installing an older version of PyYAML as PyYAML version 5.3.1 is associated with CVE-2020-14343 that was fixed in version 5.4.'
 _aws_eb_set() {
 	if [[ "$PATH" != *'.ebcli-virtual-env/executables'* ]]
 	then
@@ -456,8 +467,19 @@ _test_aws_upstream_sequence() {
 	
 	echo
 	
+	# CAUTION: Discouraged. No production use. Historical installation failure.
+	# WARNING: Apparently there are upstream issues due to upstream python dependency breakage.
+	# https://github.com/aws/aws-elastic-beanstalk-cli-setup/issues/148#issuecomment-1649387220
+	# https://github.com/aws/aws-cli/issues/8036#issuecomment-1638544754
+	#  SEVERE - 'We do not recommend installing an older version of PyYAML as PyYAML version 5.3.1 is associated with CVE-2020-14343 that was fixed in version 5.4.'
+	# ATTENTION: Disabled by default.
+	if false
+	then
+
 	sudo -n pip install --upgrade pip
 	sudo -n pip install aws-shell
+	#sudo -n pip install --break-system-packages aws-shell
+	#sudo -n pip install --break-system-packages --upgrade aws-shell
 	
 	echo
 	
@@ -482,7 +504,10 @@ _test_aws_upstream_sequence() {
 	#sudo -n npm install -g --unsafe-perm pm2
 	
 	#echo
+
+	fi
 	
+	sudo chown -R "$USER":"$USER" "$safeTmp"
 	cd "$functionEntryPWD"
 	_stop
 }

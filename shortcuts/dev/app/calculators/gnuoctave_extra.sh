@@ -33,6 +33,21 @@ _test_devgnuoctave_wantGetDep-octavePackage-debian-x64-special-debianBullseye() 
 	
 	return 1
 }
+_test_devgnuoctave_wantGetDep-octavePackage-debian-x64-special-debianBookworm() {
+	! [[ -e /etc/issue ]] && return 1
+	! cat /etc/issue | grep 'Debian' > /dev/null 2>&1 && return 1
+	! [[ -e /etc/debian_version ]] && return 1
+	! cat /etc/debian_version | head -c 2 | grep 12 > /dev/null 2>&1 && return 1
+	
+	
+	if [[ "$1" == "symbolic" ]]
+	then
+		_test_devgnuoctave_wantGetDep-octavePackage-internal "$@"
+		return
+	fi
+	
+	return 1
+}
 
 
 
@@ -55,13 +70,17 @@ _test_devgnuoctave_wantGetDep-octavePackage-debian-x64() {
 	then
 		return 0
 	fi
+	if _test_devgnuoctave_wantGetDep-octavePackage-debian-x64-special-debianBookworm "$@"
+	then
+		return 0
+	fi
 	
 	local currentPackageSuffix
 	currentPackageSuffix=$(echo "$1" | sed 's/-$//')
 	
 	! _typeShare_dir_wildcard 'octave/packages/'"$1" && ! _typeShare_dir_wildcard 'octave/packages/'"$1" && _wantGetDep octave-"$currentPackageSuffix"
 	! _typeShare_dir_wildcard 'octave/packages/'"$1" && ! _typeShare_dir_wildcard 'octave/packages/'octave-"$1" && _wantGetDep octave-"$currentPackageSuffix"
-	#_wantGetDep octave-"$1"
+	_wantGetDep octave-"$1"
 	
 	return 0
 }
@@ -149,7 +168,7 @@ _test_devgnuoctave-debian-x64() {
 	
 	_test_devgnuoctave_wantGetDep-octavePackage-debian-x64 lssa
 	
-	_test_devgnuoctave_wantGetDep-octavePackage-debian-x64 ltfat
+	#_test_devgnuoctave_wantGetDep-octavePackage-debian-x64 ltfat
 	
 	_test_devgnuoctave_wantGetDep-octavePackage-debian-x64 mapping
 	
@@ -157,7 +176,7 @@ _test_devgnuoctave-debian-x64() {
 	
 	_test_devgnuoctave_wantGetDep-octavePackage-debian-x64 missing-functions
 	
-	_test_devgnuoctave_wantGetDep-octavePackage-debian-x64 mpi-
+	#_test_devgnuoctave_wantGetDep-octavePackage-debian-x64 mpi-
 	
 	_test_devgnuoctave_wantGetDep-octavePackage-debian-x64 msh-
 	
