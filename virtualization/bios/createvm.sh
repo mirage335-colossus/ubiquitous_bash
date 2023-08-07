@@ -434,6 +434,7 @@ _createVMfstab() {
 _vm_convert_vdi() {
 	_messagePlain_nominal '_vm_convert_vdi: convert: vdi'
 	
+	_override_bin_vbox
 	
 	# ATTENTION: Delete 'vm.vdi.uuid' to force generation of new uuid .
 	local current_UUID
@@ -473,6 +474,7 @@ _vm_convert_vdi() {
 _vm_convert_vmdk() {
 	_messagePlain_nominal '_vm_convert_vmdk: convert: vmdk'
 	
+	_override_bin_vbox
 	
 	# ATTENTION: Delete 'vm.vmdk.uuid' to force generation of new uuid .
 	local current_UUID
@@ -517,6 +519,48 @@ _vm_convert_vmdk() {
 		_stop 1
 	fi
 }
+
+
+_vm_convert_vhd() {
+	_messagePlain_nominal '_vm_convert_vhd: convert: vhd'
+	
+	_override_bin_vbox
+	
+	# ATTENTION: Delete 'vm.vhd.uuid' to force generation of new uuid .
+	local current_UUID
+	current_UUID=$(head -n1 "$scriptLocal"/vm.vhd.uuid 2>/dev/null | tr -dc 'a-zA-Z0-9\-')
+	
+	if [[ $(echo "$current_UUID" | wc -c) != 37 ]]
+	then
+		current_UUID=$(_getUUID)
+		rm -f "$scriptLocal"/vm.vhd.uuid > /dev/null 2>&1
+		echo "$current_UUID" > "$scriptLocal"/vm.vhd.uuid
+	fi
+	
+	
+	rm -f "$scriptLocal"/vm.vhd > /dev/null 2>&1
+	
+	! [[ -e "$scriptLocal"/vm.img ]] && _messagePlain_bad 'fail: missing: in file' && return 1
+	[[ -e "$scriptLocal"/vm.vhd ]] && _messagePlain_request 'request: rm '"$scriptLocal"/vm.vhd && return 1
+	
+	_messagePlain_nominal '_img_to_vhd: convertdd'
+	if _userVBoxManage convertdd "$scriptLocal"/vm.img "$scriptLocal"/vm-c.vhd --format VHD
+	then
+		#_messagePlain_nominal '_img_to_vhd: closemedium'
+		#_userVBoxManage closemedium "$scriptLocal"/vm-c.vhd
+		_messagePlain_nominal '_img_to_vhd: mv vm-c.vhd vm.vhd'
+		_moveconfirm "$scriptLocal"/vm-c.vhd "$scriptLocal"/vm.vhd
+		_messagePlain_nominal '_img_to_vhd: setuuid'
+		VBoxManage internalcommands sethduuid "$scriptLocal"/vm.vhd "$current_UUID"
+		#_messagePlain_request 'request: rm '"$scriptLocal"/vm.img
+		_messagePlain_good 'End.'
+		return 0
+	else
+		_messageFAIL
+		_stop 1
+	fi
+}
+
 
 
 
