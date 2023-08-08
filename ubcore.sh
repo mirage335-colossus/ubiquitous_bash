@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='2470014282'
+export ub_setScriptChecksum_contents='1143778066'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -12829,56 +12829,6 @@ _write_msw_qt5ct() {
 
 
 
-_set_msw_qt5ct() {
-    ! _if_cygwin && return 1
-
-    export QT_QPA_PLATFORMTHEME=qt5ct
-    if [[ "$WSLENV" != "QT_QPA_PLATFORMTHEME" ]] && [[ "$WSLENV" != "QT_QPA_PLATFORMTHEME"* ]] && [[ "$WSLENV" != *"QT_QPA_PLATFORMTHEME" ]] && [[ "$WSLENV" != *"QT_QPA_PLATFORMTHEME"* ]]
-    then
-        export WSLENV="$WSLENV:QT_QPA_PLATFORMTHEME"
-    fi
-    return 0
-}
-
-
-# wsl printenv | grep QT_QPA_PLATFORMTHEME
-# ATTENTION: Will also unset QT_QPA_PLATFORMTHEME if appropriate (and for this reason absolutely should be hooked by 'Linux' shells).
-# Strongly recommend writing the ' export QT_QPA_PLATFORMTHEME=qt5ct ' or equivalent statement to ' /etc/environment.d/ub_wsl2_qt5ct.sh ' , '/etc/environment.d/90ub_wsl2_qt5ct.conf' , or similarly effective non-login non-interactive shell startup script.
-#  Unfortunately, '/etc/environment.d' is usually ignored by (eg. Debian) Linux distributions, to the point that variables declared by files provided by installed packages are not exported to any apparent environment.
-#  Alternatives attempted include:
-#  /etc/security/pam_env.conf
-#  ~/.bashrc
-#  ~/.bash_profile
-#  ~/.profile
-_set_qt5ct() {
-    ! uname -a | grep -i 'microsoft' > /dev/null 2>&1 && return 1
-    ! uname -a | grep -i 'WSL2' > /dev/null 2>&1 && return 1
-
-    if [[ "$DISPLAY" != ":0" ]]
-    then
-        export QT_QPA_PLATFORMTHEME=
-        unset QT_QPA_PLATFORMTHEME
-    fi
-    
-    _write_wsl_qt5ct_conf "$@"
-
-
-    export QT_QPA_PLATFORMTHEME=qt5ct
-
-    return 0
-}
-
-
-# WARNING: Experimental. Installer use only. May cause issues with applications running natively from the MSW side.
-_write_msw_qt5ct() {
-    _messagePlain_request 'request: if the value of system variable WSLENV is important to you, the previous value is noted here'
-    _messagePlain_probe_var WSLENV
-    
-    setx QT_QPA_PLATFORMTHEME qt5ct /m
-    setx WSLENV QT_QPA_PLATFORMTHEME /m
-}
-
-
 _wsl_desktop() {
     (
         _messageNormal "init: _wsl_desktop"
@@ -12926,15 +12876,23 @@ ldesk() {
 
 
 _test_wsl2_internal() {
-    _getDep 'xclip'
+    _if_cygwin && return 0
 
-    _getDep 'tclsh'
-    _getDep 'wish'
+    if ! _if_cygwin
+    then
+        _getDep 'xclip'
 
-    _getDep Xephyr
+        _getDep 'tclsh'
+        _getDep 'wish'
 
-    _wantGetDep dbus-run-session
-    _wantGetDep startplasma-x11
+        _getDep Xephyr
+
+        _wantGetDep dbus-run-session
+        _wantGetDep startplasma-x11
+
+        return
+    fi
+    return 1
 }
 #####Shortcuts
 
