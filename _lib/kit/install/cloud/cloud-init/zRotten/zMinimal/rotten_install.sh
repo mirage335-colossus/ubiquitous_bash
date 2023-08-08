@@ -1079,8 +1079,21 @@ _install() {
 	#sudo -n -u user bash -c "cd ; cd example ; tar zxf "/home/"$custom_user""/Downloads/example.tar.gz"
 	
 	#sudo -n -u user bash -c "cd ; cd example ; ./example.sh --config"
+
+	_sep
 	
+
+	sudo -n -u user INSTANCE_ID="$INSTANCE_ID" sh -c "cd ; /home/user/bin/ubiquitous_bash.sh _write_wsl_qt5ct_conf 2>&1"
+
+
+	_sep
+
+	sudo -n -u root sh -c "cd ; /root/ubiquitous_bash.sh _here_wsl_conf" | tee /etc/wsl.conf > /dev/null
+	
+	_sep
+	sudo -n -u user INSTANCE_ID="$INSTANCE_ID" sh -c "cd ; /home/user/bin/ubiquitous_bash.sh _write_wsl_qt5ct_conf 2>&1"
 	_custom_kde_drop "$@"
+	sudo -n -u user INSTANCE_ID="$INSTANCE_ID" sh -c "cd ; /home/user/bin/ubiquitous_bash.sh _write_wsl_qt5ct_conf 2>&1"
 	
 	_custom_bootOnce "$@"
 	

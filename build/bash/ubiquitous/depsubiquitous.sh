@@ -43,6 +43,8 @@ _init_deps() {
 	export enUb_abstractfs=""
 	export enUb_buildBash=""
 	export enUb_buildBashUbiquitous=""
+
+	export enUb_virt_translation_gui=""
 	
 	export enUb_command=""
 	export enUb_synergy=""
@@ -317,6 +319,12 @@ _deps_abstractfs() {
 	_deps_bup
 	_deps_virt
 	export enUb_abstractfs="true"
+}
+
+_deps_virt_translation_gui() {
+	_deps_virt_translation
+	
+	export enUb_virt_translation_gui="true"
 }
 
 _deps_command() {

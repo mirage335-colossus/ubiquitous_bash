@@ -254,11 +254,10 @@ then
 		return 1
 	}
 	sudoc() {
+		[[ "$1" == "-n" ]] && return 1
 		sudo_cygwin "$@"
 	}
-	sudo() {
-		sudo_cygwin "$@"
-	}
+	alias sudo=sudoc
 fi
 
 

@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='168897133'
+export ub_setScriptChecksum_contents='2470014282'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -895,11 +895,10 @@ then
 		return 1
 	}
 	sudoc() {
+		[[ "$1" == "-n" ]] && return 1
 		sudo_cygwin "$@"
 	}
-	sudo() {
-		sudo_cygwin "$@"
-	}
+	alias sudo=sudoc
 fi
 
 
@@ -9232,6 +9231,9 @@ _getMost_debian11_install() {
 	_getMost_backend_aptGetInstall axel
 	_getMost_backend_aptGetInstall unionfs-fuse
 	_getMost_backend_aptGetInstall samba
+
+	_getMost_backend_aptGetInstall gimp
+	_getMost_backend_aptGetInstall gimp-data-extras
 	
 	_getMost_backend_aptGetInstall aria2
 	
@@ -9629,6 +9631,18 @@ _getMost_debian11_install() {
 	
 	_getMost_backend_aptGetInstall freecad
 	
+	
+
+	_getMost_backend_aptGetInstall xclip
+
+	_getMost_backend_aptGetInstall tcl
+	_getMost_backend_aptGetInstall tk
+
+	_getMost_backend_aptGetInstall xserver-xephyr
+
+
+	_getMost_backend_aptGetInstall qt5-style-plugins
+	_getMost_backend_aptGetInstall qt5ct
 	
 	
 	_getMost_backend apt-get remove --autoremove -y plasma-discover
@@ -12719,6 +12733,209 @@ _resetFakeHomeEnv() {
 	_resetFakeHomeEnv_nokeep
 } 
 
+
+_here_wsl_conf() {
+    cat << 'CZXWXcRMTo8EmM8i4d'
+
+[boot]
+systemd = true
+command = /bin/bash -c 'systemctl stop sddm ; rm -f /root/_rootGrab.sh ; ( rm /home/user/___quick/mount.sh ; rmdir /home/user/___quick ; ( [[ ! -e /home/user/___quick ]] && ln -s /mnt/c/q /home/user/___quick ) ; rm -f /home/user/___quick/q )'
+
+[user]
+default = user
+
+[wsl2]
+nestedVirtualization=true
+
+
+CZXWXcRMTo8EmM8i4d
+}
+
+
+
+
+
+
+
+
+
+_here_wsl_qt5ct_conf() {
+    cat << 'CZXWXcRMTo8EmM8i4d'
+
+[Appearance]
+color_scheme_path=/usr/share/qt5ct/colors/airy.conf
+custom_palette=false
+icon_theme=breeze-dark
+standard_dialogs=default
+style=Breeze
+
+[Interface]
+activate_item_on_single_click=1
+buttonbox_layout=0
+cursor_flash_time=1000
+dialog_buttons_have_icons=1
+double_click_interval=400
+gui_effects=@Invalid()
+keyboard_scheme=2
+menus_have_icons=true
+show_shortcuts_in_context_menus=true
+stylesheets=@Invalid()
+toolbutton_style=4
+underline_shortcut=1
+wheel_scroll_lines=3
+
+[Troubleshooting]
+force_raster_widgets=1
+ignored_applications=@Invalid()
+
+CZXWXcRMTo8EmM8i4d
+}
+
+_write_wsl_qt5ct_conf() {
+    if [[ "$HOME" == "/root" ]] || [[ $(id -u) == 0 ]]
+    then
+        _messagePlain_bad 'bad: root'
+        _messageFAIL
+    fi
+
+    local currentHome
+    currentHome="$HOME"
+    [[ "$currentHome" == "/root" ]] && currentHome="/home/user"
+    [[ "$1" != "" ]] && currentHome="$1"
+
+    [[ -e "$currentHome"/.config/qt5ct/qt5ct.conf ]] && return 0
+    
+    mkdir -p "$currentHome"/.config/qt5ct
+    mkdir -p "$currentHome"/.config/qt5ct/colors
+    mkdir -p "$currentHome"/.config/qt5ct/qss
+    
+    _here_wsl_qt5ct_conf > "$currentHome"/.config/qt5ct/qt5ct.conf
+
+    [[ -e "$currentHome"/.config/qt5ct/qt5ct.conf ]] && return 0
+
+    return 1
+}
+
+# WARNING: Experimental. Installer use only. May cause issues with applications running natively from the MSW side. Fortunately, it seems QT_QPA_PLATFORMTHEME is ignored if qt5ct is not present, as expected in the case of 'native' QT MSW applications.
+_write_msw_qt5ct() {
+    _messagePlain_request 'request: If the value of system variable WSLENV is important to you, the previous value is noted here.'
+    _messagePlain_probe_var WSLENV
+    
+    setx QT_QPA_PLATFORMTHEME qt5ct /m
+    setx WSLENV QT_QPA_PLATFORMTHEME /m
+}
+
+
+
+
+
+_set_msw_qt5ct() {
+    ! _if_cygwin && return 1
+
+    export QT_QPA_PLATFORMTHEME=qt5ct
+    if [[ "$WSLENV" != "QT_QPA_PLATFORMTHEME" ]] && [[ "$WSLENV" != "QT_QPA_PLATFORMTHEME"* ]] && [[ "$WSLENV" != *"QT_QPA_PLATFORMTHEME" ]] && [[ "$WSLENV" != *"QT_QPA_PLATFORMTHEME"* ]]
+    then
+        export WSLENV="$WSLENV:QT_QPA_PLATFORMTHEME"
+    fi
+    return 0
+}
+
+
+# wsl printenv | grep QT_QPA_PLATFORMTHEME
+# ATTENTION: Will also unset QT_QPA_PLATFORMTHEME if appropriate (and for this reason absolutely should be hooked by 'Linux' shells).
+# Strongly recommend writing the ' export QT_QPA_PLATFORMTHEME=qt5ct ' or equivalent statement to ' /etc/environment.d/ub_wsl2_qt5ct.sh ' , '/etc/environment.d/90ub_wsl2_qt5ct.conf' , or similarly effective non-login non-interactive shell startup script.
+#  Unfortunately, '/etc/environment.d' is usually ignored by (eg. Debian) Linux distributions, to the point that variables declared by files provided by installed packages are not exported to any apparent environment.
+#  Alternatives attempted include:
+#  /etc/security/pam_env.conf
+#  ~/.bashrc
+#  ~/.bash_profile
+#  ~/.profile
+_set_qt5ct() {
+    ! uname -a | grep -i 'microsoft' > /dev/null 2>&1 && return 1
+    ! uname -a | grep -i 'WSL2' > /dev/null 2>&1 && return 1
+
+    if [[ "$DISPLAY" != ":0" ]]
+    then
+        export QT_QPA_PLATFORMTHEME=
+        unset QT_QPA_PLATFORMTHEME
+    fi
+    
+    _write_wsl_qt5ct_conf "$@"
+
+
+    export QT_QPA_PLATFORMTHEME=qt5ct
+
+    return 0
+}
+
+
+# WARNING: Experimental. Installer use only. May cause issues with applications running natively from the MSW side.
+_write_msw_qt5ct() {
+    _messagePlain_request 'request: if the value of system variable WSLENV is important to you, the previous value is noted here'
+    _messagePlain_probe_var WSLENV
+    
+    setx QT_QPA_PLATFORMTHEME qt5ct /m
+    setx WSLENV QT_QPA_PLATFORMTHEME /m
+}
+
+
+_wsl_desktop() {
+    (
+        _messageNormal "init: _wsl_desktop"
+
+        export QT_QPA_PLATFORMTHEME=
+        unset QT_QPA_PLATFORMTHEME
+        _set_qt5ct
+
+        
+        # https://stackoverflow.com/questions/12153552/how-high-do-x11-display-numbers-go
+        # https://en.wikipedia.org/wiki/List_of_TCP_and_UDP_port_numbers
+        _messagePlain_nominal 'Searching for unused X11 display.'
+        local xephyrDisplay
+        local xephyrDisplayValid
+        xephyrDisplayValid="false"
+        for (( xephyrDisplay = 20 ; xephyrDisplay <= 60 ; xephyrDisplay++ ))
+        do
+            ! [[ -e /tmp/.X"$xephyrDisplay"-lock ]] && ! [[ -e /tmp/.X11-unix/X"$xephyrDisplay" ]] && xephyrDisplayValid="true" && _messagePlain_good 'found: unused X11 display= '"$xephyrDisplay" && break
+        done
+
+        _messagePlain_nominal 'Xephyr.'
+        local xephyrResolution
+        xephyrResolution="1600x1200"
+        [[ "$1" != "" ]] && xephyrResolution="$1"
+        if type -p dbus-run-session > /dev/null 2>&1 && type -p startplasma-x11 > /dev/null 2>&1
+        then
+            ( Xephyr -screen "$xephyrResolution" :"$xephyrDisplay" & ( export DISPLAY=:"$xephyrDisplay" ; "$HOME"/core/installations/xclipsync/xclipsync & dbus-run-session startplasma-x11 2>/dev/null ) )
+            return 0
+        fi
+        _messagePlain_bad 'bad: missing: GUI'
+        _messageFAIL
+
+        return 0
+    )
+}
+ldesk() {
+    _wsl_desktop "$@"
+}
+
+
+
+
+
+
+
+
+_test_wsl2_internal() {
+    _getDep 'xclip'
+
+    _getDep 'tclsh'
+    _getDep 'wish'
+
+    _getDep Xephyr
+
+    _wantGetDep dbus-run-session
+    _wantGetDep startplasma-x11
+}
 #####Shortcuts
 
 # https://unix.stackexchange.com/questions/434409/make-a-bash-ps1-that-counts-streak-of-correct-commands
@@ -12788,11 +13005,14 @@ _visualPrompt() {
 	
 	
 	
-	if ! _if_cygwin
+	if _if_cygwin
 	then
-		export PS1='\[\033[01;40m\]\[\033[01;36m\]\[\033[01;34m\]|\[\033[01;31m\]${?}:${currentChroot:+($currentChroot)}\[\033[01;33m\]\u\[\033[01;32m\]@'"$currentHostname"'\[\033[01;36m\]\[\033[01;34m\])\[\033[01;36m\]\[\033[01;34m\]-'"$prompt_cloudNetName"'(\[\033[01;35m\]$(date +%H:%M:%S\.%d)\[\033[01;34m\])\[\033[01;36m\]|\[\033[00m\]'"$prompt_nixShell"'\n\[\033[01;40m\]\[\033[01;36m\]\[\033[01;34m\]|\[\033[37m\][\w]\[\033[00m\]\n\[\033[01;36m\]\[\033[01;34m\]|$([[ "$PS1_lineNumber" == "1" ]] && echo -e -n '"'"'\[\033[01;36m\]'"'"'$PS1_lineNumber || echo -e -n $PS1_lineNumber)\[\033[01;34m\]) \[\033[36m\]'""'>\[\033[00m\] '
-	else
 		export PS1='\[\033[01;40m\]\[\033[01;36m\]\[\033[01;34m\]|\[\033[01;31m\]${?}:${currentChroot:+($currentChroot)}\[\033[01;33m\]\u\[\033[01;32m\]@'"$currentHostname"'\[\033[01;36m\]\[\033[01;34m\])\[\033[01;36m\]\[\033[01;34m\]-'"$prompt_cloudNetName"'(\[\033[01;35m\]$(date +%H:%M:%S\.%d)\[\033[01;34m\])\[\033[01;36m\]|\[\033[00m\]'"$prompt_nixShell"'\n\[\033[01;40m\]\[\033[01;36m\]\[\033[01;34m\]\[\033[37m\]\w\[\033[00m\]\n\[\033[01;36m\]\[\033[01;34m\]|$([[ "$PS1_lineNumber" == "1" ]] && echo -e -n '"'"'\[\033[01;36m\]'"'"'$PS1_lineNumber || echo -e -n $PS1_lineNumber)\[\033[01;34m\]) \[\033[36m\]'""'>\[\033[00m\] '
+	elif ( uname -a | grep -i 'microsoft' > /dev/null 2>&1 || uname -a | grep -i 'WSL2' > /dev/null 2>&1 )
+	then
+		export PS1='\[\033[01;40m\]\[\033[01;36m\]\[\033[01;34m\]|\[\033[01;31m\]${?}:${currentChroot:+($currentChroot)}\[\033[01;33m\]\u\[\033[01;32m\]@'"$currentHostname"-wsl2'\[\033[01;36m\]\[\033[01;34m\])\[\033[01;36m\]\[\033[01;34m\]-'"$prompt_cloudNetName"'(\[\033[01;35m\]$(date +%H:%M:%S\.%d)\[\033[01;34m\])\[\033[01;36m\]|\[\033[00m\]'"$prompt_nixShell"'\n\[\033[01;40m\]\[\033[01;36m\]\[\033[01;34m\]\[\033[37m\]\w\[\033[00m\]\n\[\033[01;36m\]\[\033[01;34m\]|$([[ "$PS1_lineNumber" == "1" ]] && echo -e -n '"'"'\[\033[01;36m\]'"'"'$PS1_lineNumber || echo -e -n $PS1_lineNumber)\[\033[01;34m\]) \[\033[36m\]'""'>\[\033[00m\] '
+	else
+		export PS1='\[\033[01;40m\]\[\033[01;36m\]\[\033[01;34m\]|\[\033[01;31m\]${?}:${currentChroot:+($currentChroot)}\[\033[01;33m\]\u\[\033[01;32m\]@'"$currentHostname"'\[\033[01;36m\]\[\033[01;34m\])\[\033[01;36m\]\[\033[01;34m\]-'"$prompt_cloudNetName"'(\[\033[01;35m\]$(date +%H:%M:%S\.%d)\[\033[01;34m\])\[\033[01;36m\]|\[\033[00m\]'"$prompt_nixShell"'\n\[\033[01;40m\]\[\033[01;36m\]\[\033[01;34m\]|\[\033[37m\][\w]\[\033[00m\]\n\[\033[01;36m\]\[\033[01;34m\]|$([[ "$PS1_lineNumber" == "1" ]] && echo -e -n '"'"'\[\033[01;36m\]'"'"'$PS1_lineNumber || echo -e -n $PS1_lineNumber)\[\033[01;34m\]) \[\033[36m\]'""'>\[\033[00m\] '	
 	fi
 	
 	#export PS1="$prompt_nixShell""$PS1"
@@ -20821,6 +21041,52 @@ _prepare_ssh() {
 
 
 
+_set_msw_qt5ct() {
+    ! _if_cygwin && return 1
+
+    [[ "$QT_QPA_PLATFORMTHEME" != "qt5ct" ]] && export QT_QPA_PLATFORMTHEME=qt5ct
+    if [[ "$WSLENV" != "QT_QPA_PLATFORMTHEME" ]] && [[ "$WSLENV" != "QT_QPA_PLATFORMTHEME"* ]] && [[ "$WSLENV" != *"QT_QPA_PLATFORMTHEME" ]] && [[ "$WSLENV" != *"QT_QPA_PLATFORMTHEME"* ]]
+    then
+        export WSLENV="$WSLENV:QT_QPA_PLATFORMTHEME"
+    fi
+    return 0
+}
+
+
+# wsl printenv | grep QT_QPA_PLATFORMTHEME
+# ATTENTION: Will also unset QT_QPA_PLATFORMTHEME if appropriate (and for this reason absolutely should be hooked by 'Linux' shells).
+# Strongly recommend writing the ' export QT_QPA_PLATFORMTHEME=qt5ct ' or equivalent statement to ' /etc/environment.d/ub_wsl2_qt5ct.sh ' , '/etc/environment.d/90ub_wsl2_qt5ct.conf' , or similarly effective non-login non-interactive shell startup script.
+#  Unfortunately, '/etc/environment.d' is usually ignored by (eg. Debian) Linux distributions, to the point that variables declared by files provided by installed packages are not exported to any apparent environment.
+#  Alternatives attempted include:
+#  /etc/security/pam_env.conf
+#  ~/.bashrc
+#  ~/.bash_profile
+#  ~/.profile
+_set_qt5ct() {
+    ! uname -a | grep -i 'microsoft' > /dev/null 2>&1 && return 1
+    ! uname -a | grep -i 'WSL2' > /dev/null 2>&1 && return 1
+
+    if [[ "$DISPLAY" != ":0" ]]
+    then
+        export QT_QPA_PLATFORMTHEME=
+        unset QT_QPA_PLATFORMTHEME
+    fi
+    
+    _write_wsl_qt5ct_conf "$@"
+
+
+    export QT_QPA_PLATFORMTHEME=qt5ct
+
+    return 0
+}
+
+! _set_msw_qt5ct && _set_qt5ct
+
+
+
+
+
+
 _prepareFakeHome() {
 	mkdir -p "$actualFakeHome"
 }
@@ -26151,6 +26417,10 @@ _test() {
 	
 	_tryExec "_test_packetDriveDevice"
 	_tryExec "_test_gparted"
+
+
+	_tryExec "_test_wsl2_internal"
+
 	
 	# WARNING: Disabled by default. Newer FLOSS (ie. 'barrier'), seems to have displaced the older 'synergy' software.
 	# ATTENTION: Override with 'ops' or similar.

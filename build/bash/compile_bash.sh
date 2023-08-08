@@ -36,6 +36,8 @@ _compile_bash_deps() {
 		_deps_abstractfs
 		
 		_deps_virt_translation
+
+		_deps_virt_translation_gui
 		
 		_deps_stopwatch
 		
@@ -179,6 +181,8 @@ _compile_bash_deps() {
 		
 		_deps_virt
 		#_deps_virt_thick
+
+		#_deps_virt_translation_gui
 		
 		#_deps_chroot
 		#_deps_bios
@@ -268,6 +272,8 @@ _compile_bash_deps() {
 		
 		_deps_virt
 		_deps_virt_thick
+
+		_deps_virt_translation_gui
 		
 		_deps_chroot
 		_deps_bios
@@ -357,6 +363,8 @@ _compile_bash_deps() {
 		
 		_deps_virt
 		_deps_virt_thick
+
+		_deps_virt_translation_gui
 		
 		_deps_chroot
 		_deps_bios
@@ -656,6 +664,17 @@ _compile_bash_utilities_virtualization() {
 	[[ "$enUb_docker" == "true" ]] && includeScriptList+=( "virtualization/docker"/dockertest.sh )
 	[[ "$enUb_docker" == "true" ]] && includeScriptList+=( "virtualization/docker"/dockerchecks.sh )
 	[[ "$enUb_docker" == "true" ]] && includeScriptList+=( "virtualization/docker"/dockeruser.sh )
+
+
+	if ( [[ "$enUb_notLean" == "true" ]] || [[ "$enUb_image" == "true" ]] || [[ "$enUb_docker" == "true" ]] || [[ "$enUb_virt" == "true" ]] || [[ "$enUb_virt_thick" == "true" ]] || [[ "$enUb_virt_translation" == "true" ]] || [[ "$enUb_virt_translation_gui" == "true" ]] )
+	then
+		includeScriptList+=( "virtualization/wsl2"/here_wsl2.sh )
+		includeScriptList+=( "virtualization/wsl2"/wsl2_internal.sh )
+
+		includeScriptList+=( "virtualization/wsl2"/here_wsl2_gui.sh )
+	fi
+
+	( [[ "$enUb_virt_translation_gui" == "true" ]] ) && includeScriptList+=( "virtualization/wsl2"/wsl2_gui_internal.sh )
 }
 
 # WARNING: Shortcuts must NOT cause _stop/exit failures in _test/_setup procedures!
@@ -872,6 +891,11 @@ _compile_bash_vars_spec() {
 	[[ "$enUb_virt" == "true" ]] && includeScriptList+=( "virtualization"/image/imagevars.sh )
 	
 	[[ "$enUb_proxy" == "true" ]] && includeScriptList+=( "generic/net/proxy/ssh"/sshvars.sh )
+
+	if ( [[ "$enUb_notLean" == "true" ]] || [[ "$enUb_image" == "true" ]] || [[ "$enUb_docker" == "true" ]] || [[ "$enUb_virt" == "true" ]] || [[ "$enUb_virt_thick" == "true" ]] || [[ "$enUb_virt_translation" == "true" ]] || [[ "$enUb_virt_translation_gui" == "true" ]] )
+	then
+		includeScriptList+=( "virtualization"/wsl2vars.sh )
+	fi
 	
 	
 	includeScriptList+=( "structure"/specglobalvars.sh )

@@ -299,6 +299,9 @@ _getMost_debian11_install() {
 	_getMost_backend_aptGetInstall axel
 	_getMost_backend_aptGetInstall unionfs-fuse
 	_getMost_backend_aptGetInstall samba
+
+	_getMost_backend_aptGetInstall gimp
+	_getMost_backend_aptGetInstall gimp-data-extras
 	
 	_getMost_backend_aptGetInstall aria2
 	
@@ -696,6 +699,18 @@ _getMost_debian11_install() {
 	
 	_getMost_backend_aptGetInstall freecad
 	
+	
+
+	_getMost_backend_aptGetInstall xclip
+
+	_getMost_backend_aptGetInstall tcl
+	_getMost_backend_aptGetInstall tk
+
+	_getMost_backend_aptGetInstall xserver-xephyr
+
+
+	_getMost_backend_aptGetInstall qt5-style-plugins
+	_getMost_backend_aptGetInstall qt5ct
 	
 	
 	_getMost_backend apt-get remove --autoremove -y plasma-discover
