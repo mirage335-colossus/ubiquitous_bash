@@ -668,6 +668,9 @@ _compile_bash_utilities_virtualization() {
 
 	if ( [[ "$enUb_notLean" == "true" ]] || [[ "$enUb_image" == "true" ]] || [[ "$enUb_docker" == "true" ]] || [[ "$enUb_virt" == "true" ]] || [[ "$enUb_virt_thick" == "true" ]] || [[ "$enUb_virt_translation" == "true" ]] || [[ "$enUb_virt_translation_gui" == "true" ]] )
 	then
+		includeScriptList+=( "virtualization/wsl2"/wsl2.sh )
+		includeScriptList+=( "virtualization/wsl2"/wsl2_setup.sh )
+		
 		includeScriptList+=( "virtualization/wsl2"/here_wsl2.sh )
 		includeScriptList+=( "virtualization/wsl2"/wsl2_internal.sh )
 

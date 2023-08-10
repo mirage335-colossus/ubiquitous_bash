@@ -1,4 +1,13 @@
 
+_here_wsl_config() {
+    cat << 'CZXWXcRMTo8EmM8i4d'
+[wsl2]
+memory=999GB
+
+CZXWXcRMTo8EmM8i4d
+}
+
+
 _here_wsl_conf() {
     cat << 'CZXWXcRMTo8EmM8i4d'
 

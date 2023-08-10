@@ -364,6 +364,8 @@ _getMost_debian11_install() {
 	_getMost_backend /sbin/rcvboxadd setup
 	_getMost_backend /sbin/rcvboxadd quicksetup all
 	#_getMost_backend /sbin/rcvboxadd setup
+
+	_getMost_backend /sbin/rcvboxadd quicksetup $(_getMost_backend cat /boot/grub/grub.cfg 2>/dev/null | awk -F\' '/menuentry / {print $2}' | grep -v "Advanced options" | grep 'Linux [0-9]' | sed 's/ (.*//' | awk '{print $NF}' | head -n1)
 	
 	_getMost_backend rm -f /sbin/modprobe
 	_getMost_backend mv -f /sbin/modprobe.real /sbin/modprobe
@@ -990,6 +992,7 @@ _getMost() {
 	if [[ -e /etc/issue ]] && cat /etc/issue | grep 'Debian\|Raspbian' > /dev/null 2>&1 && [[ -e /etc/debian_version ]] && cat /etc/debian_version | head -c 2 | grep 12 > /dev/null 2>&1
 	then
 		_tryExecFull _getMost_debian12 "$@"
+		return
 	elif [[ -e /etc/issue ]] && cat /etc/issue | grep 'Debian\|Raspbian' > /dev/null 2>&1
 	then
 		_tryExecFull _getMost_debian11 "$@"
