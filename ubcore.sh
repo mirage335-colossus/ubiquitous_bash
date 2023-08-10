@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='563955812'
+export ub_setScriptChecksum_contents='4288908523'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -12789,41 +12789,6 @@ _setup_wsl() {
     _setup_wsl2 "$@"
 }
 
-# End user function .
-_setup_vm-wsl2_sequence() {
-    _start
-    local functionEntryPWD
-    functionEntryPWD="$PWD"
-
-    ! _if_cygwin && _messagePlain_bad 'fail: Cygwin/MSW only' && _stop 1
-
-    if [[ -e "$scriptLocal"/package_rootfs.tar.flx ]] && [[ ! -e "$scriptLocal"/package_rootfs.tar ]]
-    then
-        cat "$scriptLocal"/package_rootfs.tar.flx | lz4 -d -c > "$scriptLocal"/package_rootfs.tar
-        rm -f "$scriptLocal"/package_rootfs.tar.flx
-    fi
-
-    [[ ! -e "$scriptLocal"/package_rootfs.tar ]] && _messagePlain_bad 'bad: missing: package_rootfs.tar' && _messageFAIL && _stop 1
-
-
-    mkdir -p '/cygdrive/c/core/infrastructure/ubdist_wsl'
-    _userMSW _messagePlain_probe wsl --import ubdist '/cygdrive/c/core/infrastructure/ubdist_wsl' "$scriptLocal"/package_rootfs.tar --version 2
-    _userMSW wsl --import ubdist '/cygdrive/c/core/infrastructure/ubdist_wsl' "$scriptLocal"/package_rootfs.tar --version 2
-
-    _messagePlain_probe wsl --set-default ubdist
-    wsl --set-default ubdist
-
-    #wsl --unregister ubdist
-
-    cd "$functionEntryPWD"
-    _stop
-}
-_setup_vm-wsl2() {
-    "$scriptAbsoluteLocation" _setup_vm-wsl2_sequence "$@"
-}
-_setup_vm-wsl() {
-    _setup_vm-wsl2 "$@"
-}
 
 
 
