@@ -153,9 +153,10 @@ then
 		"$currentBin_wsl" "$@"
 		return
 	}
-	l() {
-		_wsl "$@"
-	}
+	#l() {
+		#_wsl "$@"
+	#}
+	alias l='_wsl'
 fi
 
 
