@@ -912,6 +912,7 @@ Relogin=true
 	groupadd vboxsf
 	groupadd libvirt
 	groupadd docker
+	groupadd kvm
 	
 	
 	# ATTENTION: Some of these commands may fail. This is normal.
@@ -940,6 +941,8 @@ Relogin=true
 	sudo -n usermod -a -G vboxsf "$custom_user"
 	sudo -n usermod -a -G libvirt "$custom_user"
 	sudo -n usermod -a -G docker "$custom_user"
+	
+	sudo -n usermod -a -G kvm "$custom_user"
 	
 	
 	
