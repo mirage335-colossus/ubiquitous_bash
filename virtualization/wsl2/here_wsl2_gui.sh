@@ -34,8 +34,7 @@ CZXWXcRMTo8EmM8i4d
 _write_wsl_qt5ct_conf() {
     if [[ "$HOME" == "/root" ]] || [[ $(id -u) == 0 ]]
     then
-        _messagePlain_bad 'bad: root'
-        _messageFAIL
+        return 1
     fi
 
     local currentHome
