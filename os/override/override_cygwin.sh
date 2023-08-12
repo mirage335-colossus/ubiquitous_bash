@@ -578,6 +578,10 @@ then
 	fi
 	
 	export override_cygwin_vncviewer="true"
+
+	kwrite() {
+		kate -n "$@"
+	}
 fi
 
 # WARNING: What is otherwise considered bad practice may be accepted to reduce substantial MSW/Cygwin inconvenience .
