@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='474914382'
+export ub_setScriptChecksum_contents='171577515'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -225,10 +225,14 @@ then
 fi
 
 
-
+# WARNING: May conflict with 'export LANG=C' or similar.
 # Workaround for very minor OS misconfiguration. Setting this variable at all may be undesirable however. Consider enabling and generating all locales with 'sudo dpkg-reconfigure locales' or similar .
 #[[ "$LC_ALL" == '' ]] && export LC_ALL="en_US.UTF-8"
 
+# WARNING: Do NOT use 'ubKeep_LANG' unless necessary!
+# nix-shell --run "locale -a" -p bash
+#  C   C.utf8   POSIX
+[[ "$ubKeep_LANG" != "true" ]] && [[ "$LANG" != "C" ]] && export LANG="C"
 
 
 # WARNING: Only partially compatible.
@@ -1295,6 +1299,7 @@ _setup_ubiquitousBash_cygwin_procedure() {
 	cp "$scriptAbsoluteFolder"/_setup_ubcp.bat "$currentCygdriveC_equivalent"/core/infrastructure/ubiquitous_bash/
 	
 	cp "$scriptAbsoluteFolder"/_setupUbiquitous.bat "$currentCygdriveC_equivalent"/core/infrastructure/ubiquitous_bash/
+	cp "$scriptAbsoluteFolder"/_setupUbiquitous_nonet.bat "$currentCygdriveC_equivalent"/core/infrastructure/ubiquitous_bash/
 	
 	cp "$scriptAbsoluteFolder"/fork "$currentCygdriveC_equivalent"/core/infrastructure/ubiquitous_bash/
 	
@@ -10295,21 +10300,51 @@ _get_from_nix-user() {
 		current_getMost_backend_wasSet="false"
 	fi
 	
+	# . "$HOME"/.nix-profile/etc/profile.d/nix.sh
+
+
+
+	#_nix_update
+	_getMost_backend sudo -n -u "$currentUser" /bin/bash -l -c 'nix-channel --list'
+	_getMost_backend sudo -n -u "$currentUser" /bin/bash -l -c 'nix-channel --update'
+
 	
 	#_custom_installDeb /root/core/installations/Wire.deb
 	_getMost_backend sudo -n -u "$currentUser" /bin/bash -l -c 'nix-env -iA nixpkgs.wire-desktop'
-	_getMost_backend sudo -n -u "$currentUser" xdg-desktop-menu install /home/user/.nix-profile/share/applications/wire-desktop.desktop
-	_getMost_backend sudo -n -u "$currentUser" cp -a /home/user/.nix-profile/share/icons /home/user/.local/share/
+	_getMost_backend sudo -n -u "$currentUser" /bin/bash -l -c 'xdg-desktop-menu install "$HOME"/.nix-profile/share/applications/wire-desktop.desktop'
+	_getMost_backend sudo -n -u "$currentUser" cp -a /home/"$currentUser"/.nix-profile/share/icons /home/"$currentUser"/.local/share/
 	
 	sleep 3
 	
-	_getMost_backend sudo -n -u "$currentUser" /bin/bash -l -c 'nix-env -iA nixpkgs.geda'
-	_getMost_backend sudo -n -u "$currentUser" xdg-desktop-menu install /home/user/.nix-profile/share/applications/geda-gschem.desktop
-	_getMost_backend sudo -n -u "$currentUser" xdg-desktop-menu install /home/user/.nix-profile/share/applications/geda-gattrib.desktop
-	_getMost_backend sudo -n -u "$currentUser" cp -a /home/user/.nix-profile/share/icons /home/user/.local/share/
+	#nix-env --uninstall geda
+	#export NIXPKGS_ALLOW_INSECURE=1
+	# Note: For `nix shell`, `nix build`, `nix develop` or any other Nix 2.4+ (Flake) command, `--impure` must be passed in order to read this environment variable.
+	
+	# WARNING: ERROR from gschem when installed by nix as of 2023-08-11 .
+	
+#(process:109925): Gtk-WARNING **: 17:53:57.226: Locale not supported by C library.
+        #Using the fallback 'C' locale.
+#Backtrace:
+           #1 (apply-smob/1 #<catch-closure 7f7085b29340>)
+           #0 (apply-smob/1 #<catch-closure 7f7085b39740>)
+
+#ERROR: In procedure apply-smob/1:
+#In procedure setlocale: Invalid argument
+
+	# ATTENTION: NOTICE: ERROR from gschem has RESOLUTION .
+	#  export LANG=C
+	#  https://bbs.archlinux.org/viewtopic.php?id=23505
+
+
+	_getMost_backend sudo -n -u "$currentUser" /bin/bash -l -c 'export NIXPKGS_ALLOW_INSECURE=1 ; nix-env -iA nixpkgs.geda'
+	_getMost_backend sudo -n -u "$currentUser" /bin/bash -l -c 'xdg-desktop-menu install "$HOME"/.nix-profile/share/applications/geda-gschem.desktop'
+	_getMost_backend sudo -n -u "$currentUser" /bin/bash -l -c 'xdg-desktop-menu install "$HOME"/.nix-profile/share/applications/geda-gattrib.desktop'
+	_getMost_backend sudo -n -u "$currentUser" cp -a /home/"$currentUser"/.nix-profile/share/icons /home/"$currentUser"/.local/share/
 	
 	[[ "$current_getMost_backend_wasSet" == "false" ]] && unset _getMost_backend
-	
+
+
+
 	return 0
 }
 
@@ -10592,7 +10627,12 @@ ns() {
 }
 
 
-
+_nix_update() {
+	[[ -e "$HOME"/.nix-profile/etc/profile.d/nix.sh ]] && . "$HOME"/.nix-profile/etc/profile.d/nix.sh
+	
+	nix-channel --list
+	nix-channel --update
+}
 
 
 #https://unix.stackexchange.com/questions/39226/how-to-run-a-script-with-systemd-right-before-shutdown
@@ -12763,8 +12803,8 @@ _setup_wsl2_procedure() {
     
     _messageNormal 'init: _setup_wsl2'
     
-    _messagePlain_nominal 'setup: write: _write_msw_qt5ct'
-    _write_msw_qt5ct
+    _messagePlain_nominal 'setup: write: _write_msw_WSLENV'
+    _write_msw_WSLENV
 
     _messagePlain_nominal 'setup: write: _write_msw_wslconfig'
     _write_wslconfig
@@ -12887,14 +12927,36 @@ _write_wsl_qt5ct_conf() {
     return 1
 }
 
+
+
 # WARNING: Experimental. Installer use only. May cause issues with applications running natively from the MSW side. Fortunately, it seems QT_QPA_PLATFORMTHEME is ignored if qt5ct is not present, as expected in the case of 'native' QT MSW applications.
 _write_msw_qt5ct() {
+    setx QT_QPA_PLATFORMTHEME qt5ct /m
+}
+
+# https://www.ibm.com/docs/en/sva/7.0.0?topic=SSPREK_7.0.0/com.ibm.isam.doc_80/ameb_audit_guide/concept/con_lang_var_win.htm
+# Seems 'LANG=C' would also be a normal setting for MSW .
+# nix-shell --run "locale -a" -p bash
+#  C   C.utf8   POSIX
+_write_msw_LANG() {
+    setx LANG C /m
+}
+
+
+_write_msw_WSLENV() {
     _messagePlain_request 'request: If the value of system variable WSLENV is important to you, the previous value is noted here.'
     _messagePlain_probe_var WSLENV
     
-    setx QT_QPA_PLATFORMTHEME qt5ct /m
-    setx WSLENV QT_QPA_PLATFORMTHEME /m
+    _write_msw_qt5ct
+    #setx WSLENV QT_QPA_PLATFORMTHEME /m
+
+    _write_msw_LANG
+    #setx WSLENV LANG /m
+
+    setx WSLENV LANG:QT_QPA_PLATFORMTHEME /m
 }
+
+
 
 
 
@@ -12907,6 +12969,11 @@ _wsl_desktop() {
         export QT_QPA_PLATFORMTHEME=
         unset QT_QPA_PLATFORMTHEME
         _set_qt5ct
+
+        
+        # nix-shell --run "locale -a" -p bash
+        #  C   C.utf8   POSIX
+        export LANG="C"
 
         
         # https://stackoverflow.com/questions/12153552/how-high-do-x11-display-numbers-go
@@ -19659,6 +19726,11 @@ fi
 # Near-realtime priority may be acceptable, due to reliability of relevant Ubiquitous Bash functions.
 # WARNING: Do NOT prioritize highly enough to interfere with embedded hard realtime processes.
 
+# WARNING: Do NOT use 'ubKeep_LANG' unless necessary!
+# nix-shell --run "locale -a" -p bash
+#  C   C.utf8   POSIX
+[[ "\$ubKeep_LANG" != "true" ]] && [[ "\$LANG" != "C" ]] && export LANG="C"
+
 # Not known or expected to cause significant issues. Not known to affect 'ubiquitous_bash' bash scripts, may affect the separate python 'lean.py' script.
 if [[ "\$USER" == "" ]]
 then
@@ -21071,8 +21143,6 @@ _prepare_ssh() {
 
 
 _set_msw_qt5ct() {
-    ! _if_cygwin && return 1
-
     [[ "$QT_QPA_PLATFORMTHEME" != "qt5ct" ]] && export QT_QPA_PLATFORMTHEME=qt5ct
     if [[ "$WSLENV" != "QT_QPA_PLATFORMTHEME" ]] && [[ "$WSLENV" != "QT_QPA_PLATFORMTHEME"* ]] && [[ "$WSLENV" != *"QT_QPA_PLATFORMTHEME" ]] && [[ "$WSLENV" != *"QT_QPA_PLATFORMTHEME"* ]]
     then
@@ -21080,7 +21150,6 @@ _set_msw_qt5ct() {
     fi
     return 0
 }
-
 
 # wsl printenv | grep QT_QPA_PLATFORMTHEME
 # ATTENTION: Will also unset QT_QPA_PLATFORMTHEME if appropriate (and for this reason absolutely should be hooked by 'Linux' shells).
@@ -21092,9 +21161,6 @@ _set_msw_qt5ct() {
 #  ~/.bash_profile
 #  ~/.profile
 _set_qt5ct() {
-    ! uname -a | grep -i 'microsoft' > /dev/null 2>&1 && return 1
-    ! uname -a | grep -i 'WSL2' > /dev/null 2>&1 && return 1
-
     if [[ "$DISPLAY" != ":0" ]]
     then
         export QT_QPA_PLATFORMTHEME=
@@ -21109,7 +21175,49 @@ _set_qt5ct() {
     return 0
 }
 
-! _set_msw_qt5ct && _set_qt5ct
+
+_set_msw_lang() {
+    [[ "$LANG" != "C" ]] && export LANG=C
+    if [[ "$WSLENV" != "LANG" ]] && [[ "$WSLENV" != "LANG"* ]] && [[ "$WSLENV" != *"LANG" ]] && [[ "$WSLENV" != *"LANG"* ]]
+    then
+        export WSLENV="$WSLENV:LANG"
+    fi
+    return 0
+}
+
+_set_lang-forWSL() {
+    [[ "$LANG" != "C" ]] && export LANG="C"
+    return 0
+}
+
+
+
+
+
+_set_msw_wsl() {
+    ! _if_cygwin && return 1
+
+    _set_msw_lang
+    _set_msw_qt5ct
+
+    return 0
+}
+
+_set_wsl() {
+    ! uname -a | grep -i 'microsoft' > /dev/null 2>&1 && return 1
+    ! uname -a | grep -i 'WSL2' > /dev/null 2>&1 && return 1
+
+    _set_lang-forWSL
+    _set_qt5ct
+
+    return 0
+}
+
+
+
+! _set_msw_wsl && _set_wsl
+
+
 
 
 
@@ -27737,6 +27845,13 @@ then
 		. "$scriptLocal"/ssh/opsauto
 	fi
 fi
+
+#wsl '~/.ubcore/ubiquitous_bash/ubiquitous_bash.sh' '_wrap' kwrite './gpl-3.0.txt'
+_wrap() {
+	[[ "$LANG" != "C" ]] && export LANG=C
+	. "$HOME"/.ubcore/.ubcorerc
+	"$@"
+}
 
 #Wrapper function to launch arbitrary commands within the ubiquitous_bash environment, including its PATH with scriptBin.
 _bin() {

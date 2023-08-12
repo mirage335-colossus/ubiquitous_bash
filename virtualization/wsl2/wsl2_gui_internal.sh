@@ -11,6 +11,11 @@ _wsl_desktop() {
         _set_qt5ct
 
         
+        # nix-shell --run "locale -a" -p bash
+        #  C   C.utf8   POSIX
+        export LANG="C"
+
+        
         # https://stackoverflow.com/questions/12153552/how-high-do-x11-display-numbers-go
         # https://en.wikipedia.org/wiki/List_of_TCP_and_UDP_port_numbers
         _messagePlain_nominal 'Searching for unused X11 display.'

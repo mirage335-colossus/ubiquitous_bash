@@ -2784,6 +2784,13 @@ then
 	fi
 fi
 
+#wsl '~/.ubcore/ubiquitous_bash/ubiquitous_bash.sh' '_wrap' kwrite './gpl-3.0.txt'
+_wrap() {
+	[[ "$LANG" != "C" ]] && export LANG=C
+	. "$HOME"/.ubcore/.ubcorerc
+	"$@"
+}
+
 #Wrapper function to launch arbitrary commands within the ubiquitous_bash environment, including its PATH with scriptBin.
 _bin() {
 	"$@"

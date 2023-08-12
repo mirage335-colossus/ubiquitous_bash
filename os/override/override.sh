@@ -11,10 +11,14 @@ then
 fi
 
 
-
+# WARNING: May conflict with 'export LANG=C' or similar.
 # Workaround for very minor OS misconfiguration. Setting this variable at all may be undesirable however. Consider enabling and generating all locales with 'sudo dpkg-reconfigure locales' or similar .
 #[[ "$LC_ALL" == '' ]] && export LC_ALL="en_US.UTF-8"
 
+# WARNING: Do NOT use 'ubKeep_LANG' unless necessary!
+# nix-shell --run "locale -a" -p bash
+#  C   C.utf8   POSIX
+[[ "$ubKeep_LANG" != "true" ]] && [[ "$LANG" != "C" ]] && export LANG="C"
 
 
 # WARNING: Only partially compatible.

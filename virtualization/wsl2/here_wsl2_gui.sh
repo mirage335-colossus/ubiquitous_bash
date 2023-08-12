@@ -55,11 +55,33 @@ _write_wsl_qt5ct_conf() {
     return 1
 }
 
+
+
 # WARNING: Experimental. Installer use only. May cause issues with applications running natively from the MSW side. Fortunately, it seems QT_QPA_PLATFORMTHEME is ignored if qt5ct is not present, as expected in the case of 'native' QT MSW applications.
 _write_msw_qt5ct() {
+    setx QT_QPA_PLATFORMTHEME qt5ct /m
+}
+
+# https://www.ibm.com/docs/en/sva/7.0.0?topic=SSPREK_7.0.0/com.ibm.isam.doc_80/ameb_audit_guide/concept/con_lang_var_win.htm
+# Seems 'LANG=C' would also be a normal setting for MSW .
+# nix-shell --run "locale -a" -p bash
+#  C   C.utf8   POSIX
+_write_msw_LANG() {
+    setx LANG C /m
+}
+
+
+_write_msw_WSLENV() {
     _messagePlain_request 'request: If the value of system variable WSLENV is important to you, the previous value is noted here.'
     _messagePlain_probe_var WSLENV
     
-    setx QT_QPA_PLATFORMTHEME qt5ct /m
-    setx WSLENV QT_QPA_PLATFORMTHEME /m
+    _write_msw_qt5ct
+    #setx WSLENV QT_QPA_PLATFORMTHEME /m
+
+    _write_msw_LANG
+    #setx WSLENV LANG /m
+
+    setx WSLENV LANG:QT_QPA_PLATFORMTHEME /m
 }
+
+

@@ -186,5 +186,10 @@ ns() {
 }
 
 
-
+_nix_update() {
+	[[ -e "$HOME"/.nix-profile/etc/profile.d/nix.sh ]] && . "$HOME"/.nix-profile/etc/profile.d/nix.sh
+	
+	nix-channel --list
+	nix-channel --update
+}
 

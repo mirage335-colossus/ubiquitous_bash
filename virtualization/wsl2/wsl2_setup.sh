@@ -6,8 +6,8 @@ _setup_wsl2_procedure() {
     
     _messageNormal 'init: _setup_wsl2'
     
-    _messagePlain_nominal 'setup: write: _write_msw_qt5ct'
-    _write_msw_qt5ct
+    _messagePlain_nominal 'setup: write: _write_msw_WSLENV'
+    _write_msw_WSLENV
 
     _messagePlain_nominal 'setup: write: _write_msw_wslconfig'
     _write_wslconfig

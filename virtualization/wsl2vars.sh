@@ -1,8 +1,6 @@
 
 
 _set_msw_qt5ct() {
-    ! _if_cygwin && return 1
-
     [[ "$QT_QPA_PLATFORMTHEME" != "qt5ct" ]] && export QT_QPA_PLATFORMTHEME=qt5ct
     if [[ "$WSLENV" != "QT_QPA_PLATFORMTHEME" ]] && [[ "$WSLENV" != "QT_QPA_PLATFORMTHEME"* ]] && [[ "$WSLENV" != *"QT_QPA_PLATFORMTHEME" ]] && [[ "$WSLENV" != *"QT_QPA_PLATFORMTHEME"* ]]
     then
@@ -10,7 +8,6 @@ _set_msw_qt5ct() {
     fi
     return 0
 }
-
 
 # wsl printenv | grep QT_QPA_PLATFORMTHEME
 # ATTENTION: Will also unset QT_QPA_PLATFORMTHEME if appropriate (and for this reason absolutely should be hooked by 'Linux' shells).
@@ -22,9 +19,6 @@ _set_msw_qt5ct() {
 #  ~/.bash_profile
 #  ~/.profile
 _set_qt5ct() {
-    ! uname -a | grep -i 'microsoft' > /dev/null 2>&1 && return 1
-    ! uname -a | grep -i 'WSL2' > /dev/null 2>&1 && return 1
-
     if [[ "$DISPLAY" != ":0" ]]
     then
         export QT_QPA_PLATFORMTHEME=
@@ -39,7 +33,49 @@ _set_qt5ct() {
     return 0
 }
 
-! _set_msw_qt5ct && _set_qt5ct
+
+_set_msw_lang() {
+    [[ "$LANG" != "C" ]] && export LANG=C
+    if [[ "$WSLENV" != "LANG" ]] && [[ "$WSLENV" != "LANG"* ]] && [[ "$WSLENV" != *"LANG" ]] && [[ "$WSLENV" != *"LANG"* ]]
+    then
+        export WSLENV="$WSLENV:LANG"
+    fi
+    return 0
+}
+
+_set_lang-forWSL() {
+    [[ "$LANG" != "C" ]] && export LANG="C"
+    return 0
+}
+
+
+
+
+
+_set_msw_wsl() {
+    ! _if_cygwin && return 1
+
+    _set_msw_lang
+    _set_msw_qt5ct
+
+    return 0
+}
+
+_set_wsl() {
+    ! uname -a | grep -i 'microsoft' > /dev/null 2>&1 && return 1
+    ! uname -a | grep -i 'WSL2' > /dev/null 2>&1 && return 1
+
+    _set_lang-forWSL
+    _set_qt5ct
+
+    return 0
+}
+
+
+
+! _set_msw_wsl && _set_wsl
+
+
 
 
 
