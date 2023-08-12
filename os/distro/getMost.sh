@@ -290,6 +290,24 @@ _getMost_debian11_install() {
 		_getMost_backend apt-get update
 	fi
 	_getMost_backend_aptGetInstall wmctrl xprintidle
+
+
+	_getMost_backend_aptGetInstall gnulib
+
+	_getMost_backend_aptGetInstall libtool
+
+	_getMost_backend_aptGetInstall libgtk2.0-dev
+
+	_getMost_backend_aptGetInstall libxss-dev
+	_getMost_backend_aptGetInstall intltool
+	_getMost_backend_aptGetInstall libgts-dev
+	_getMost_backend_aptGetInstall libdbus-1-dev
+	_getMost_backend_aptGetInstall libglu1-mesa-dev
+	_getMost_backend_aptGetInstall libgtkglext1-dev
+	_getMost_backend_aptGetInstall libgd-dev
+
+	_getMost_backend_aptGetInstall libxcb-screensaver0-dev
+
 	
 	_getMost_backend_aptGetInstall okular
 	_getMost_backend_aptGetInstall libreoffice
@@ -716,6 +734,10 @@ _getMost_debian11_install() {
 
 	_getMost_backend_aptGetInstall qt5-style-plugins
 	_getMost_backend_aptGetInstall qt5ct
+
+
+
+
 	
 	
 	_getMost_backend apt-get remove --autoremove -y plasma-discover
