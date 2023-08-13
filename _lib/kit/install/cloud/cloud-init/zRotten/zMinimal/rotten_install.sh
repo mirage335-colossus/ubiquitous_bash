@@ -443,7 +443,15 @@ _custom_kde() {
 	
 	
 	mkdir -p "$HOME"/.config/autostart
-	_messagePlain_probe_cmd cp "$currentBackupDir"/.config/autostart/* "$HOME"/.config/autostart/
+	_messagePlain_probe_cmd cp "$currentBackupDir"/.config/autostart/. "$HOME"/.config/autostart/
+
+	mkdir -p "$HOME"/.local/share/applications
+	_messagePlain_probe_cmd cp --preserve=all "$currentBackupDir"/.local/share/applications/. "$HOME"/.local/share/applications/.
+	_messagePlain_probe_cmd cp --preserve=all "$currentBackupDir"/.local/share/applications/. "$HOME"/.local/share/applications/.
+	_messagePlain_probe_cmd cp --preserve=all "$currentBackupDir"/.local/share/icons "$HOME"/.local/share/icons
+
+	mkdir -p "$HOME"/.local
+	_messagePlain_probe_cmd cp -a "$currentBackupDir"/.local/state "$HOME"/.local/state
 }
 
 _custom_kde_drop() {
@@ -1032,6 +1040,13 @@ _install() {
 		chmod 755 ubiquitous_bash.sh
 		! ./ubiquitous_bash.sh _true && echo 'missing: ubiquitous_bash.sh' && exit 1
 		./ubiquitous_bash.sh _false && echo 'missing: ubiquitous_bash.sh' && exit 1
+
+		_sep
+		sudo -n -u user INSTANCE_ID="$INSTANCE_ID" sh -c "cd ; /home/user/bin/ubiquitous_bash.sh _write_wsl_qt5ct_conf 2>&1"
+		_custom_kde_drop "$@"
+		sudo -n -u user INSTANCE_ID="$INSTANCE_ID" sh -c "cd ; /home/user/bin/ubiquitous_bash.sh _write_wsl_qt5ct_conf 2>&1"
+		_sep
+		
 		#"$scriptAbsoluteLocation" _setupUbiquitous
 		#"$scriptAbsoluteLocation" _getMost
 		#"$scriptAbsoluteLocation" _get_veracrypt
@@ -1094,10 +1109,11 @@ _install() {
 	sudo -n -u root sh -c "cd ; /root/ubiquitous_bash.sh _here_wsl_conf" | tee /etc/wsl.conf > /dev/null
 	
 	_sep
-	sudo -n -u user INSTANCE_ID="$INSTANCE_ID" sh -c "cd ; /home/user/bin/ubiquitous_bash.sh _write_wsl_qt5ct_conf 2>&1"
-	_custom_kde_drop "$@"
-	sudo -n -u user INSTANCE_ID="$INSTANCE_ID" sh -c "cd ; /home/user/bin/ubiquitous_bash.sh _write_wsl_qt5ct_conf 2>&1"
+	#sudo -n -u user INSTANCE_ID="$INSTANCE_ID" sh -c "cd ; /home/user/bin/ubiquitous_bash.sh _write_wsl_qt5ct_conf 2>&1"
+	#_custom_kde_drop "$@"
+	#sudo -n -u user INSTANCE_ID="$INSTANCE_ID" sh -c "cd ; /home/user/bin/ubiquitous_bash.sh _write_wsl_qt5ct_conf 2>&1"
 	
+	_sep
 	_custom_bootOnce "$@"
 	
 	#_custom_kde_drop "$@"
