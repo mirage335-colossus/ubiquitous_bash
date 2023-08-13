@@ -109,6 +109,30 @@ fi
 _wrap() {
 	[[ "$LANG" != "C" ]] && export LANG=C
 	. "$HOME"/.ubcore/.ubcorerc
+	
+	if uname -a | grep -i 'microsoft' > /dev/null 2>&1 && uname -a | grep -i 'WSL2' > /dev/null 2>&1
+	then
+		local currentArg
+		local currentResult
+		processedArgs=()
+		for currentArg in "$@"
+		do
+			currentResult=$(wslpath -u "$currentArg")
+			if [[ -e "$currentResult" ]]
+			then
+				true
+			else
+				currentResult="$currentArg"
+			fi
+			
+			processedArgs+=("$currentResult")
+		done
+		
+		
+		"${processedArgs[@]}"
+		return
+	fi
+	
 	"$@"
 }
 
