@@ -270,6 +270,8 @@ _getMost_debian11_install() {
 	_getMost_backend_aptGetInstall bc nmap autossh socat sshfs tor
 	_getMost_backend_aptGetInstall sockstat
 	_getMost_backend_aptGetInstall x11-xserver-utils
+
+	_getMost_backend_aptGetInstall liblinear4 liblua5.3-0 lua-lpeg nmap nmap-common
 	
 	_getMost_backend_aptGetInstall uuid-runtime
 	
@@ -343,6 +345,9 @@ _getMost_debian11_install() {
 	_getMost_backend_aptGetInstall libncurses-dev
 	_getMost_backend_aptGetInstall autoconf
 	_getMost_backend_aptGetInstall libudev-dev
+
+	_getMost_backend_aptGetInstall dwarves
+	_getMost_backend_aptGetInstall pahole
 	
 	# ATTENTION: ONLY change (eg. to 'remove') if needed to ensure a kernel is installed AND custom kernel is not in use.
 	_getMost_backend_aptGetInstall linux-image-amd64
@@ -534,6 +539,13 @@ _getMost_debian11_install() {
 	_getMost_backend_aptGetInstall bison
 	_getMost_backend_aptGetInstall libelf-dev
 	_getMost_backend_aptGetInstall elfutils
+	
+	_getMost_backend_aptGetInstall patch
+	
+	_getMost_backend_aptGetInstall tar
+	_getMost_backend_aptGetInstall xz
+	_getMost_backend_aptGetInstall gzip
+	_getMost_backend_aptGetInstall bzip2
 	
 	_getMost_backend_aptGetInstall librecode0
 	_getMost_backend_aptGetInstall wkhtmltopdf

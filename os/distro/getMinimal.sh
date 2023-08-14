@@ -163,6 +163,7 @@ _getMinimal_cloud() {
 	_getMost_backend_aptGetInstall axel
 	
 	_getMost_backend_aptGetInstall dwarves
+	_getMost_backend_aptGetInstall pahole
 	
 	
 	_getMost_backend_aptGetInstall rsync
