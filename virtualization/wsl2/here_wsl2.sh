@@ -3,8 +3,14 @@ _here_wsl_config() {
     cat << 'CZXWXcRMTo8EmM8i4d'
 [wsl2]
 memory=999GB
-
 CZXWXcRMTo8EmM8i4d
+
+    if [[ -e /cygdrive/c/core/infrastructure/ubdist-kernel/ubdist-kernel ]]
+    then
+        kernel=C:\\core\\infrastructure\\ubdist-kernel\\ubdist-kernel
+    fi
+
+    echo
 }
 
 
