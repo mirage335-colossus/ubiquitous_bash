@@ -338,6 +338,11 @@ _getMost_debian11_install() {
 	
 	
 	_getMost_backend_aptGetInstall build-essential
+	_getMost_backend_aptGetInstall flex
+	_getMost_backend_aptGetInstall libelf-dev
+	_getMost_backend_aptGetInstall libncurses-dev
+	_getMost_backend_aptGetInstall autoconf
+	_getMost_backend_aptGetInstall libudev-dev
 	
 	# ATTENTION: ONLY change (eg. to 'remove') if needed to ensure a kernel is installed AND custom kernel is not in use.
 	_getMost_backend_aptGetInstall linux-image-amd64
