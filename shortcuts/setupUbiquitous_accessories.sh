@@ -70,6 +70,8 @@ _setupUbiquitous_accessories() {
 	_setupUbiquitous_accessories-gnuoctave "$@"
 	
 	_setupUbiquitous_accessories-python "$@"
+
+	git config --global checkout.workers -1
 	
 	return 0
 }
