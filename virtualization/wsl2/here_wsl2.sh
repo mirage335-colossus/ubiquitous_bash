@@ -7,7 +7,7 @@ CZXWXcRMTo8EmM8i4d
 
     if [[ -e /cygdrive/c/core/infrastructure/ubdist-kernel/ubdist-kernel ]] && [[ "$1" != "ub_ignore_kernel_wsl" ]]
     then
-        kernel=C:\\core\\infrastructure\\ubdist-kernel\\ubdist-kernel
+        echo 'kernel=C:\\core\\infrastructure\\ubdist-kernel\\ubdist-kernel'
     fi
 
     echo
