@@ -643,6 +643,12 @@ _getMost_debian11_install() {
 	_getMost_backend_aptGetInstall synaptic
 	
 	_getMost_backend_aptGetInstall cifs-utils
+
+
+	_getMost_backend_aptGetInstall debhelper
+	
+	_getMost_backend_aptGetInstall p7zip
+	_getMost_backend_aptGetInstall nsis
 	
 	
 	# Sometimes may be useful as a workaround for docker 'overlay2' 'storage-driver' .

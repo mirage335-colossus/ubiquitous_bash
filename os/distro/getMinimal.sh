@@ -198,7 +198,9 @@ _getMinimal_cloud() {
 
 	_getMost_backend_aptGetInstall debhelper
 	
-	
+	_getMost_backend_aptGetInstall p7zip
+	_getMost_backend_aptGetInstall nsis
+
 	
 	_getMost_backend_aptGetInstall iputils-ping
 	
