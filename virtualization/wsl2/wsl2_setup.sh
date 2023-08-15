@@ -10,7 +10,7 @@ _setup_wsl2_procedure() {
     _write_msw_WSLENV
 
     _messagePlain_nominal 'setup: write: _write_msw_wslconfig'
-    _write_wslconfig
+    _write_wslconfig "ub_ignore_kernel_wsl"
 
     _messagePlain_nominal 'setup: wsl2'
     

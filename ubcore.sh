@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='1719671452'
+export ub_setScriptChecksum_contents='2229320121'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -12832,7 +12832,7 @@ _write_wslconfig() {
     ! _if_cygwin && _messagePlain_bad 'fail: Cygwin/MSW only' && return 1
     if _if_cygwin
     then
-        _here_wsl_config > "$USERPROFILE"/.wslconfig
+        _here_wsl_config "$1" > "$USERPROFILE"/.wslconfig
         return
     fi
 }
@@ -12851,7 +12851,7 @@ _setup_wsl2_procedure() {
     _write_msw_WSLENV
 
     _messagePlain_nominal 'setup: write: _write_msw_wslconfig'
-    _write_wslconfig
+    _write_wslconfig "ub_ignore_kernel_wsl"
 
     _messagePlain_nominal 'setup: wsl2'
     
@@ -12887,7 +12887,7 @@ _here_wsl_config() {
 memory=999GB
 CZXWXcRMTo8EmM8i4d
 
-    if [[ -e /cygdrive/c/core/infrastructure/ubdist-kernel/ubdist-kernel ]]
+    if [[ -e /cygdrive/c/core/infrastructure/ubdist-kernel/ubdist-kernel ]] && [[ "$1" != "ub_ignore_kernel_wsl" ]]
     then
         kernel=C:\\core\\infrastructure\\ubdist-kernel\\ubdist-kernel
     fi
