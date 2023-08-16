@@ -297,6 +297,7 @@ _getMost_debian11_install() {
 	_getMost_backend_aptGetInstall gnulib
 
 	_getMost_backend_aptGetInstall libtool
+	_getMost_backend_aptGetInstall libtool-bin
 
 	_getMost_backend_aptGetInstall libgtk2.0-dev
 
@@ -309,6 +310,8 @@ _getMost_debian11_install() {
 	_getMost_backend_aptGetInstall libgd-dev
 
 	_getMost_backend_aptGetInstall libxcb-screensaver0-dev
+
+	_getMost_backend_aptGetInstall desktop-file-utils
 
 	
 	_getMost_backend_aptGetInstall okular
@@ -348,6 +351,8 @@ _getMost_debian11_install() {
 
 	_getMost_backend_aptGetInstall dwarves
 	_getMost_backend_aptGetInstall pahole
+
+	_getMost_backend_aptGetInstall cmake
 	
 	# ATTENTION: ONLY change (eg. to 'remove') if needed to ensure a kernel is installed AND custom kernel is not in use.
 	_getMost_backend_aptGetInstall linux-image-amd64
