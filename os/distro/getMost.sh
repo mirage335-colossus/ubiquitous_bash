@@ -361,6 +361,21 @@ _getMost_debian11_install() {
 	_getMost_backend_aptGetInstall pahole
 
 	_getMost_backend_aptGetInstall cmake
+
+
+	_getMost_backend_aptGetInstall libusb-dev
+	_getMost_backend_aptGetInstall avrdude
+	_getMost_backend_aptGetInstall gcc-avr
+	_getMost_backend_aptGetInstall binutils-avr
+	_getMost_backend_aptGetInstall avr-libc
+	_getMost_backend_aptGetInstall stm32flash
+	_getMost_backend_aptGetInstall dfu-util
+	_getMost_backend_aptGetInstall libnewlib-arm-none-eabi
+	_getMost_backend_aptGetInstall gcc-arm-none-eabi
+	_getMost_backend_aptGetInstall binutils-arm-none-eabi
+	_getMost_backend_aptGetInstall libusb-1.0
+
+
 	
 	# ATTENTION: ONLY change (eg. to 'remove') if needed to ensure a kernel is installed AND custom kernel is not in use.
 	_getMost_backend_aptGetInstall linux-image-amd64

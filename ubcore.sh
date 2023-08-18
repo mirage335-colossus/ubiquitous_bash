@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='603425559'
+export ub_setScriptChecksum_contents='1883666879'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -9303,6 +9303,21 @@ _getMost_debian11_install() {
 	_getMost_backend_aptGetInstall pahole
 
 	_getMost_backend_aptGetInstall cmake
+
+
+	_getMost_backend_aptGetInstall libusb-dev
+	_getMost_backend_aptGetInstall avrdude
+	_getMost_backend_aptGetInstall gcc-avr
+	_getMost_backend_aptGetInstall binutils-avr
+	_getMost_backend_aptGetInstall avr-libc
+	_getMost_backend_aptGetInstall stm32flash
+	_getMost_backend_aptGetInstall dfu-util
+	_getMost_backend_aptGetInstall libnewlib-arm-none-eabi
+	_getMost_backend_aptGetInstall gcc-arm-none-eabi
+	_getMost_backend_aptGetInstall binutils-arm-none-eabi
+	_getMost_backend_aptGetInstall libusb-1.0
+
+
 	
 	# ATTENTION: ONLY change (eg. to 'remove') if needed to ensure a kernel is installed AND custom kernel is not in use.
 	_getMost_backend_aptGetInstall linux-image-amd64
