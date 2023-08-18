@@ -64,6 +64,19 @@ _setupUbiquitous_accessories-python() {
 
 
 
+_setupUbiquitous_accessories-git() {
+	git config --global checkout.workers -1
+	
+	git config --global pull.rebase false
+
+	git config --global core.autocrlf input
+	git config --global core.eol lf
+
+	git config --global init.defaultBranch main
+}
+
+
+
 
 _setupUbiquitous_accessories() {
 	
@@ -71,7 +84,7 @@ _setupUbiquitous_accessories() {
 	
 	_setupUbiquitous_accessories-python "$@"
 
-	git config --global checkout.workers -1
+	_setupUbiquitous_accessories-git "$@"
 	
 	return 0
 }
