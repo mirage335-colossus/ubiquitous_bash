@@ -264,6 +264,8 @@ _getMost_debian11_install() {
 		_getMost_backend env DEBIAN_FRONTEND=noninteractive apt-get install -y -f
 	fi
 	
+	_getMost_backend_aptGetInstall git
+
 	_getMost_backend_aptGetInstall bup
 	
 	_getMost_backend_aptGetInstall bc autossh nmap socat sockstat rsync net-tools
@@ -410,6 +412,16 @@ _getMost_debian11_install() {
 	_getMost_backend_aptGetInstall libusb-1.0-doc
 	_getMost_backend_aptGetInstall pkg-config
 	#_getMost_backend_aptGetInstall dfu-util
+	
+	_getMost_backend_aptGetInstall crudini
+	_getMost_backend_aptGetInstall bsdutils
+	_getMost_backend_aptGetInstall findutils
+	_getMost_backend_aptGetInstall v4l-utils
+	_getMost_backend_aptGetInstall libevent-dev
+	_getMost_backend_aptGetInstall libjpeg-dev
+	_getMost_backend_aptGetInstall libbsd-dev
+
+	_getMost_backend_aptGetInstall libusb-1.0
 
 
 	
