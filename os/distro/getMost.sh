@@ -340,6 +340,14 @@ _getMost_debian11_install() {
 	_getMost_backend_aptGetInstall kde-standard
 	_getMost_backend_aptGetInstall chromium
 	_getMost_backend_aptGetInstall openjdk-11-jdk openjdk-11-jre
+
+
+	_getMost_backend_aptGetInstall vainfo
+	_getMost_backend_aptGetInstall mesa-va-drivers
+	_getMost_backend_aptGetInstall ffmpeg
+	_getMost_backend_aptGetInstall gstreamer1.0-tools
+
+	_getMost_backend_aptGetInstall xvfb
 	
 	
 	_getMost_backend_aptGetInstall build-essential

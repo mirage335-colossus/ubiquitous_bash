@@ -68,6 +68,8 @@ _set_wsl() {
     _set_lang-forWSL
     _set_qt5ct
 
+    [[ "$LIBVA_DRIVER_NAME" != "d3d12" ]] && export LIBVA_DRIVER_NAME=d3d12
+
     return 0
 }
 
