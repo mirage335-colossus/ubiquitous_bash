@@ -725,6 +725,8 @@ _getMost_debian11_install() {
 	
 	_getMost_backend_aptGetInstall p7zip
 	_getMost_backend_aptGetInstall nsis
+
+	_getMost_backend_aptGetInstall dos2unix
 	
 	
 	# Sometimes may be useful as a workaround for docker 'overlay2' 'storage-driver' .
