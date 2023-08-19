@@ -194,6 +194,8 @@ _getMinimal_cloud() {
 	_getMost_backend_aptGetInstall qemu-system-x86
 	
 	_getMost_backend_aptGetInstall cifs-utils
+	
+	_getMost_backend_aptGetInstall dos2unix
 
 
 	_getMost_backend_aptGetInstall debhelper
