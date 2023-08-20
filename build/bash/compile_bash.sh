@@ -41,6 +41,7 @@ _compile_bash_deps() {
 		
 		_deps_stopwatch
 		
+		_deps_github
 		
 		_deps_distro
 		_deps_getMinimal
@@ -214,6 +215,8 @@ _compile_bash_deps() {
 		#_deps_cloud
 		#_deps_cloud_self
 		#_deps_cloud_build
+
+		_deps_github
 		
 		_deps_distro
 		_deps_getMinimal
@@ -305,6 +308,8 @@ _compile_bash_deps() {
 		#_deps_cloud
 		#_deps_cloud_self
 		#_deps_cloud_build
+
+		_deps_github
 		
 		_deps_distro
 		_deps_getMinimal
@@ -396,6 +401,8 @@ _compile_bash_deps() {
 		_deps_cloud
 		_deps_cloud_self
 		_deps_cloud_build
+
+		_deps_github
 		
 		_deps_distro
 		_deps_getMinimal
@@ -717,6 +724,8 @@ _compile_bash_shortcuts() {
 	
 	# WARNING: Some apps may have specific dependencies (eg. fakeHome, abstractfs, eclipse, atom).
 	[[ "$enUb_dev" == "true" ]] && includeScriptList+=( "shortcuts/dev/scope"/devscope_app.sh )
+
+	( [[ "$enUb_github" == "true" ]] || [[ "$enUb_notLean" == "true" ]] || [[ "$enUb_cloud" == "true" ]] || [[ "$enUb_cloud_heavy" == "true" ]] || [[ "$enUb_cloud_self" == "true" ]] ) && includeScriptList+=( "shortcuts/github"/github_removeHTTPS.sh )
 	
 	( [[ "$enUb_repo" == "true" ]] && [[ "$enUb_git" == "true" ]] ) && includeScriptList+=( "shortcuts/git"/git.sh )
 	( [[ "$enUb_repo" == "true" ]] && [[ "$enUb_git" == "true" ]] ) && includeScriptList+=( "shortcuts/git"/gitBare.sh )

@@ -142,6 +142,10 @@ _deps_notLean() {
 	export enUb_notLean="true"
 }
 
+_deps_github() {
+	export enUb_github="true"
+}
+
 _deps_distro() {
 	export enUb_distro="true"
 }
