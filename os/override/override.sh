@@ -63,8 +63,8 @@ fi
 
 
 # ATTENTION: Highly irregular. Workaround due to gsch2pcb installed by nix package manager not searching for installed footprints.
-if [[ "$NIX_PROFILES" != "" ]]
-then
+#if [[ "$NIX_PROFILES" != "" ]]
+#then
 	if [[ -e "$HOME"/.nix-profile/bin/gsch2pcb ]] && [[ -e /usr/local/share/pcb/newlib ]] && [[ -e /usr/local/lib/pcb_lib ]]
 	then
 		gsch2pcb() {
@@ -76,7 +76,7 @@ then
 			"$HOME"/.nix-profile/bin/gsch2pcb --elements-dir /usr/share/pcb/pcblib-newlib "$@"
 		}
 	fi
-fi
+#fi
 
 
 # Only production use is Inter-Process Communication (IPC) loops which may be theoretically impossible to make fully deterministic under Operating Systems which do not have hard-real-time kernels and/or may serve an unlimited number of processes.
