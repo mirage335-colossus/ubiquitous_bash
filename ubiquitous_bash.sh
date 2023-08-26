@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='833860884'
+export ub_setScriptChecksum_contents='4220642696'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -17634,6 +17634,27 @@ _live_sequence_in() {
 	_start
 	
 	cd "$safeTmp"
+
+	_messagePlain_nominal 'Attempt: _openChRoot'
+	! "$scriptAbsoluteLocation" _openChRoot && _messagePlain_bad 'fail: _openChRoot' && _messageFAIL
+
+	_chroot systemctl disable nfs-blkmap
+	_chroot systemctl disable nfs-idmapd
+	_chroot systemctl disable nfs-mountd
+	_chroot systemctl disable nfs-server
+	_chroot systemctl disable nfsdcld
+
+	#_chroot systemctl disable ssh
+	#_chroot systemctl disable sshd
+
+	_chroot systemctl disable exim4
+
+	_messagePlain_nominal 'Attempt: _closeChRoot'
+	#sudo -n umount "$globalVirtFS"/boot/efi > /dev/null 2>&1
+	#sudo -n umount "$globalVirtFS"/boot > /dev/null 2>&1
+	! "$scriptAbsoluteLocation" _closeChRoot && _messagePlain_bad 'fail: _closeChRoot' && _messageFAIL
+
+
 	
 	[[ -e "$scriptLocal"/livefs ]] && _safeRMR "$scriptLocal"/livefs
 	[[ -e "$scriptLocal"/livefs ]] && _messageFAIL
@@ -17676,7 +17697,42 @@ _live_sequence_in() {
 	# TODO: Consider LZO compression and such.
 	# TODO: May need to install live-boot , firmware-amd-graphics
 	#sudo -n mksquashfs "$globalVirtFS" "$scriptLocal"/livefs/image/live/filesystem.squashfs -no-xattrs -noI -noD -noF -noX -comp lzo -Xalgorithm lzo1x_1 -e boot -e etc/fstab
-	sudo -n mksquashfs "$globalVirtFS" "$scriptLocal"/livefs/image/live/filesystem.squashfs -no-xattrs -noI -noX -comp lzo -Xalgorithm lzo1x_1 -e boot -e etc/fstab
+	#sudo -n mksquashfs "$globalVirtFS" "$scriptLocal"/livefs/image/live/filesystem.squashfs -b  -no-xattrs -noI -noX -comp lzo -Xalgorithm lzo1x_1 -e boot -e etc/fstab
+
+
+
+
+	mkdir -p "$safeTmp"/root001
+	sudo -n cp -a "$globalVirtFS"/home  "$safeTmp"/root001/
+
+	mkdir -p "$safeTmp"/recycle
+	sudo -n mv -f "$safeTmp"/root001/home/user/* "$safeTmp"/recycle/
+	sudo -n mv -f "$safeTmp"/recycle/core "$safeTmp"/root001/home/user/
+	sudo -n chown "$USER":"$USER" "$safeTmp"/recycle
+	_safeRMR "$safeTmp"/recycle
+
+	mkdir -p "$safeTmp"/recycle
+	sudo -n mv -f "$safeTmp"/root001/home/* "$safeTmp"/recycle/
+	sudo -n mv -f "$safeTmp"/recycle/user "$safeTmp"/root001/home/
+	sudo -n chown "$USER":"$USER" "$safeTmp"/recycle
+	_safeRMR "$safeTmp"/recycle
+
+	_messagePlain_probe_cmd ls -ld "$safeTmp"/root001
+	_messagePlain_probe_cmd ls -ld "$safeTmp"/root001/home
+	_messagePlain_probe_cmd ls -ld "$safeTmp"/root001/home/user
+	_messagePlain_probe_cmd ls -ld "$safeTmp"/root001/home/user/core
+	_messagePlain_probe_cmd ls -l "$safeTmp"/root001/home/user/core/
+
+	sudo -n mksquashfs "$safeTmp"/root001 "$scriptLocal"/livefs/image/live/filesystem.squashfs -b 80K -no-xattrs -noI -noX -comp lzo -Xalgorithm lzo1x_1 -e boot -e etc/fstab
+	sudo -n chown "$USER":"$USER" "$safeTmp"/root001
+	_safeRMR "$safeTmp"/root001
+
+
+	# https://github.com/openwrt/openwrt/issues/9974
+	# http://neoscientists.org/~tmueller/binsort/
+	sudo -n mksquashfs "$globalVirtFS" "$scriptLocal"/livefs/image/live/filesystem.squashfs -b 160K -no-xattrs -noI -noX -comp lzo -Xalgorithm lzo1x_1 -e home/user/core -e boot -e etc/fstab
+
+
 	
 	local currentFilesList
 	
@@ -17712,7 +17768,24 @@ _live_sequence_in() {
 	
 	
 	
-	
+	_messagePlain_nominal 'Attempt: _openChRoot'
+	! "$scriptAbsoluteLocation" _openChRoot && _messagePlain_bad 'fail: _openChRoot' && _messageFAIL
+
+	_chroot systemctl enable nfs-blkmap
+	_chroot systemctl enable nfs-idmapd
+	_chroot systemctl enable nfs-mountd
+	_chroot systemctl enable nfs-server
+	_chroot systemctl enable nfsdcld
+
+	#_chroot systemctl enable ssh
+	#_chroot systemctl enable sshd
+
+	_chroot systemctl enable exim4
+
+	_messagePlain_nominal 'Attempt: _closeChRoot'
+	#sudo -n umount "$globalVirtFS"/boot/efi > /dev/null 2>&1
+	#sudo -n umount "$globalVirtFS"/boot > /dev/null 2>&1
+	! "$scriptAbsoluteLocation" _closeChRoot && _messagePlain_bad 'fail: _closeChRoot' && _messageFAIL
 	
 	
 	
