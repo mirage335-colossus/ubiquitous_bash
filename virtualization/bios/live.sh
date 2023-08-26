@@ -551,11 +551,15 @@ _live_sequence_in() {
 
 	mkdir -p "$safeTmp"/root001
 	sudo -n cp -a "$globalVirtFS"/home  "$safeTmp"/root001/
+	_messagePlain_probe_cmd ls -l "$safeTmp"/root001/home/user/core/
+	_messagePlain_probe_cmd du -sh "$safeTmp"/root001/home
 	sudo -n mksquashfs "$safeTmp"/root001 "$scriptLocal"/livefs/image/live/filesystem.squashfs -b 262144 -no-xattrs -noI -noX -comp lzo -Xalgorithm lzo1x_1 -e boot -e etc/fstab
+	du -sh "$scriptLocal"/livefs/image/live/filesystem.squashfs
 	sudo -n chown "$USER":"$USER" "$safeTmp"/root001
 	_safeRMR "$safeTmp"/root001
 
 	sudo -n mksquashfs "$globalVirtFS" "$scriptLocal"/livefs/image/live/filesystem.squashfs -b 262144 -no-xattrs -noI -noX -comp lzo -Xalgorithm lzo1x_1 -e home -e boot -e etc/fstab
+	du -sh "$scriptLocal"/livefs/image/live/filesystem.squashfs
 
 
 
