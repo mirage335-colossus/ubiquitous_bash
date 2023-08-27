@@ -537,10 +537,21 @@ DefaultTasksMax=12' | sudo -n tee "$globalVirtFS"/etc/systemd/system.conf > /dev
 	_chroot update-initramfs -u -k all
 
 
+
+	# Solely to provide more information to convert 'vm-live.iso' back to 'vm.img' offline from only a Live BD-ROM disc .
+	mkdir -p "$safeTmp"/root002
+	sudo -n cp -a "$globalVirtFS"/boot  "$safeTmp"/root002/boot-copy
+	sudo -n cp -a "$globalVirtFS"/etc/fstab  "$safeTmp"/root002/fstab-copy
+
+
+
 	_messagePlain_nominal 'Attempt: _closeChRoot'
 	#sudo -n umount "$globalVirtFS"/boot/efi > /dev/null 2>&1
 	#sudo -n umount "$globalVirtFS"/boot > /dev/null 2>&1
 	! "$scriptAbsoluteLocation" _closeChRoot && _messagePlain_bad 'fail: _closeChRoot' && _messageFAIL
+
+
+
 
 
 	
@@ -621,6 +632,12 @@ DefaultTasksMax=12' | sudo -n tee "$globalVirtFS"/etc/systemd/system.conf > /dev
 	#sudo -n mksquashfs "$globalVirtFS" "$scriptLocal"/livefs/image/live/filesystem.squashfs -b 262144 -no-xattrs -noI -noX -comp lzo -Xalgorithm lzo1x_1 -e home/user/core -e boot -e etc/fstab
 
 
+
+	# Solely to provide more information to convert 'vm-live.iso' back to 'vm.img' offline from only a Live BD-ROM disc .
+	sudo -n mksquashfs "$safeTmp"/root002 "$scriptLocal"/livefs/image/live/filesystem.squashfs -b 262144 -no-xattrs -noI -noX -comp lzo -Xalgorithm lzo1x_1 -e boot -e etc/fstab
+	du -sh "$scriptLocal"/livefs/image/live/filesystem.squashfs
+	sudo -n chown "$USER":"$USER" "$safeTmp"/root002
+	_safeRMR "$safeTmp"/root002
 
 	mkdir -p "$safeTmp"/root001
 	sudo -n cp -a "$globalVirtFS"/home  "$safeTmp"/root001/

@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='1624839668'
+export ub_setScriptChecksum_contents='3516691727'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -10092,6 +10092,8 @@ _getMost_debian11_install() {
 	then
 		_getMost_backend_aptGetInstall linux-headers-$(uname -r)
 	fi
+
+	_getMost_backend_aptGetInstall initramfs-tools
 	
 	_getMost_backend_aptGetInstall net-tools wireless-tools rfkill
 	
@@ -10384,6 +10386,7 @@ _getMost_debian11_install() {
 	_getMost_backend_aptGetInstall debhelper
 	
 	_getMost_backend_aptGetInstall p7zip
+	_getMost_backend_aptGetInstall p7zip-full
 	_getMost_backend_aptGetInstall nsis
 
 	_getMost_backend_aptGetInstall dos2unix
@@ -17722,10 +17725,21 @@ DefaultTasksMax=12' | sudo -n tee "$globalVirtFS"/etc/systemd/system.conf > /dev
 	_chroot update-initramfs -u -k all
 
 
+
+	# Solely to provide more information to convert 'vm-live.iso' back to 'vm.img' offline from only a Live BD-ROM disc .
+	mkdir -p "$safeTmp"/root002
+	sudo -n cp -a "$globalVirtFS"/boot  "$safeTmp"/root002/boot-copy
+	sudo -n cp -a "$globalVirtFS"/etc/fstab  "$safeTmp"/root002/fstab-copy
+
+
+
 	_messagePlain_nominal 'Attempt: _closeChRoot'
 	#sudo -n umount "$globalVirtFS"/boot/efi > /dev/null 2>&1
 	#sudo -n umount "$globalVirtFS"/boot > /dev/null 2>&1
 	! "$scriptAbsoluteLocation" _closeChRoot && _messagePlain_bad 'fail: _closeChRoot' && _messageFAIL
+
+
+
 
 
 	
@@ -17806,6 +17820,12 @@ DefaultTasksMax=12' | sudo -n tee "$globalVirtFS"/etc/systemd/system.conf > /dev
 	#sudo -n mksquashfs "$globalVirtFS" "$scriptLocal"/livefs/image/live/filesystem.squashfs -b 262144 -no-xattrs -noI -noX -comp lzo -Xalgorithm lzo1x_1 -e home/user/core -e boot -e etc/fstab
 
 
+
+	# Solely to provide more information to convert 'vm-live.iso' back to 'vm.img' offline from only a Live BD-ROM disc .
+	sudo -n mksquashfs "$safeTmp"/root002 "$scriptLocal"/livefs/image/live/filesystem.squashfs -b 262144 -no-xattrs -noI -noX -comp lzo -Xalgorithm lzo1x_1 -e boot -e etc/fstab
+	du -sh "$scriptLocal"/livefs/image/live/filesystem.squashfs
+	sudo -n chown "$USER":"$USER" "$safeTmp"/root002
+	_safeRMR "$safeTmp"/root002
 
 	mkdir -p "$safeTmp"/root001
 	sudo -n cp -a "$globalVirtFS"/home  "$safeTmp"/root001/

@@ -432,6 +432,8 @@ _getMost_debian11_install() {
 	then
 		_getMost_backend_aptGetInstall linux-headers-$(uname -r)
 	fi
+
+	_getMost_backend_aptGetInstall initramfs-tools
 	
 	_getMost_backend_aptGetInstall net-tools wireless-tools rfkill
 	
@@ -724,6 +726,7 @@ _getMost_debian11_install() {
 	_getMost_backend_aptGetInstall debhelper
 	
 	_getMost_backend_aptGetInstall p7zip
+	_getMost_backend_aptGetInstall p7zip-full
 	_getMost_backend_aptGetInstall nsis
 
 	_getMost_backend_aptGetInstall dos2unix
