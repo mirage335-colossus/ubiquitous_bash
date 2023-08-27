@@ -512,16 +512,16 @@ _live_sequence_in() {
 	_messagePlain_nominal 'Attempt: _openChRoot'
 	! "$scriptAbsoluteLocation" _openChRoot && _messagePlain_bad 'fail: _openChRoot' && _messageFAIL
 
-	#_chroot systemctl disable nfs-blkmap
-	#_chroot systemctl disable nfs-idmapd
-	#_chroot systemctl disable nfs-mountd
-	#_chroot systemctl disable nfs-server
-	#_chroot systemctl disable nfsdcld
+	##_chroot systemctl disable nfs-blkmap
+	##_chroot systemctl disable nfs-idmapd
+	##_chroot systemctl disable nfs-mountd
+	##_chroot systemctl disable nfs-server
+	##_chroot systemctl disable nfsdcld
 
-	#_chroot systemctl disable ssh
-	#_chroot systemctl disable sshd
+	##_chroot systemctl disable ssh
+	##_chroot systemctl disable sshd
 
-	_chroot systemctl disable exim4
+	#_chroot systemctl disable exim4
 
 
 	_live_preload_here | sudo -n tee "$globalVirtFS"/usr/share/initramfs-tools/scripts/init-bottom/preload_run > /dev/null
