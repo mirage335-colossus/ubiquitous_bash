@@ -392,34 +392,34 @@ esac
 
 
 
-echo "_____ preload: /usr/lib -maxdepth 9 -iname '*.so*'"
-find /usr/lib -maxdepth 9 -type f -iname '*.so*' -exec cat {} > /dev/null \;
+echo "_____ preload: /root/usr/lib -maxdepth 9 -iname '*.so*'"
+find /root/usr/lib -maxdepth 9 -type f -iname '*.so*' -exec cat {} > /dev/null \;
 
 
-echo '_____ preload: /var'
-find /var -type f -exec cat {} > /dev/null \;
+echo '_____ preload: /root/var'
+find /root/var -type f -exec cat {} > /dev/null \;
 
 
-echo '_____ preload: /usr/lib/modules'
-find /usr/lib/modules -type f -exec cat {} > /dev/null \;
+echo '_____ preload: /root/usr/lib/modules'
+find /root/usr/lib/modules -type f -exec cat {} > /dev/null \;
 
-echo '_____ preload: /boot'
-find /boot -type f -exec cat {} > /dev/null \;
+echo '_____ preload: /root/boot'
+find /root/boot -type f -exec cat {} > /dev/null \;
 
-echo '_____ preload: /usr/lib/systemd'
-find /usr/lib/systemd -type f -exec cat {} > /dev/null \;
+echo '_____ preload: /root/usr/lib/systemd'
+find /root/usr/lib/systemd -type f -exec cat {} > /dev/null \;
 
-echo '_____ preload: /usr/bin'
-find /usr/bin -type f -exec cat {} > /dev/null \;
+echo '_____ preload: /root/usr/bin'
+find /root/usr/bin -type f -exec cat {} > /dev/null \;
 
-echo '_____ preload: /bin'
-find /bin -type f -exec cat {} > /dev/null \;
+echo '_____ preload: /root/bin'
+find /root/bin -type f -exec cat {} > /dev/null \;
 
-echo '_____ preload: /sbin'
-find /sbin -type f -exec cat {} > /dev/null \;
+echo '_____ preload: /root/sbin'
+find /root/sbin -type f -exec cat {} > /dev/null \;
 
-echo '_____ preload: /etc'
-find /etc -type f -exec cat {} > /dev/null \;
+echo '_____ preload: /root/etc'
+find /root/etc -type f -exec cat {} > /dev/null \;
 
 
 CZXWXcRMTo8EmM8i4d
@@ -524,7 +524,7 @@ _live_sequence_in() {
 
 	sudo -n mv -n "$globalVirtFS"/etc/systemd/system.conf "$globalVirtFS"/etc/systemd/system.conf.orig
 	echo '[Manager]
-DefaultTasksMax=1' | sudo -n tee "$globalVirtFS"/etc/systemd/system.conf > /dev/null
+DefaultTasksMax=12' | sudo -n tee "$globalVirtFS"/etc/systemd/system.conf > /dev/null
 
 
 	_chroot update-initramfs -u -k all

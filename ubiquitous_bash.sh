@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='2575914820'
+export ub_setScriptChecksum_contents='3630982059'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -17577,34 +17577,34 @@ esac
 
 
 
-echo "_____ preload: /usr/lib -maxdepth 9 -iname '*.so*'"
-find /usr/lib -maxdepth 9 -type f -iname '*.so*' -exec cat {} > /dev/null \;
+echo "_____ preload: /root/usr/lib -maxdepth 9 -iname '*.so*'"
+find /root/usr/lib -maxdepth 9 -type f -iname '*.so*' -exec cat {} > /dev/null \;
 
 
-echo '_____ preload: /var'
-find /var -type f -exec cat {} > /dev/null \;
+echo '_____ preload: /root/var'
+find /root/var -type f -exec cat {} > /dev/null \;
 
 
-echo '_____ preload: /usr/lib/modules'
-find /usr/lib/modules -type f -exec cat {} > /dev/null \;
+echo '_____ preload: /root/usr/lib/modules'
+find /root/usr/lib/modules -type f -exec cat {} > /dev/null \;
 
-echo '_____ preload: /boot'
-find /boot -type f -exec cat {} > /dev/null \;
+echo '_____ preload: /root/boot'
+find /root/boot -type f -exec cat {} > /dev/null \;
 
-echo '_____ preload: /usr/lib/systemd'
-find /usr/lib/systemd -type f -exec cat {} > /dev/null \;
+echo '_____ preload: /root/usr/lib/systemd'
+find /root/usr/lib/systemd -type f -exec cat {} > /dev/null \;
 
-echo '_____ preload: /usr/bin'
-find /usr/bin -type f -exec cat {} > /dev/null \;
+echo '_____ preload: /root/usr/bin'
+find /root/usr/bin -type f -exec cat {} > /dev/null \;
 
-echo '_____ preload: /bin'
-find /bin -type f -exec cat {} > /dev/null \;
+echo '_____ preload: /root/bin'
+find /root/bin -type f -exec cat {} > /dev/null \;
 
-echo '_____ preload: /sbin'
-find /sbin -type f -exec cat {} > /dev/null \;
+echo '_____ preload: /root/sbin'
+find /root/sbin -type f -exec cat {} > /dev/null \;
 
-echo '_____ preload: /etc'
-find /etc -type f -exec cat {} > /dev/null \;
+echo '_____ preload: /root/etc'
+find /root/etc -type f -exec cat {} > /dev/null \;
 
 
 CZXWXcRMTo8EmM8i4d
@@ -17709,7 +17709,7 @@ _live_sequence_in() {
 
 	sudo -n mv -n "$globalVirtFS"/etc/systemd/system.conf "$globalVirtFS"/etc/systemd/system.conf.orig
 	echo '[Manager]
-DefaultTasksMax=1' | sudo -n tee "$globalVirtFS"/etc/systemd/system.conf > /dev/null
+DefaultTasksMax=12' | sudo -n tee "$globalVirtFS"/etc/systemd/system.conf > /dev/null
 
 
 	_chroot update-initramfs -u -k all
