@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='3630982059'
+export ub_setScriptChecksum_contents='1624839668'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -17576,9 +17576,16 @@ esac
 
 
 
-
 echo "_____ preload: /root/usr/lib -maxdepth 9 -iname '*.so*'"
 find /root/usr/lib -maxdepth 9 -type f -iname '*.so*' -exec cat {} > /dev/null \;
+
+
+echo "_____ preload: /root/home -not core"
+find /root/home -not \( -path \/home/\*/core\* -prune \) -type f -exec cat {} > /dev/null \;
+
+
+echo "_____ preload: /root/root"
+find /root/root -type f -exec cat {} > /dev/null \;
 
 
 echo '_____ preload: /root/var'

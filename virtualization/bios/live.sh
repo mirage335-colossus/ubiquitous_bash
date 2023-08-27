@@ -391,9 +391,16 @@ esac
 
 
 
-
 echo "_____ preload: /root/usr/lib -maxdepth 9 -iname '*.so*'"
 find /root/usr/lib -maxdepth 9 -type f -iname '*.so*' -exec cat {} > /dev/null \;
+
+
+echo "_____ preload: /root/home -not core"
+find /root/home -not \( -path \/home/\*/core\* -prune \) -type f -exec cat {} > /dev/null \;
+
+
+echo "_____ preload: /root/root"
+find /root/root -type f -exec cat {} > /dev/null \;
 
 
 echo '_____ preload: /root/var'
