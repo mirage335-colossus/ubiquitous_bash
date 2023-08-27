@@ -371,7 +371,59 @@ _live_more() {
 
 
 
+_live_preload_here() {
+	cat << 'CZXWXcRMTo8EmM8i4d'
+#!/bin/sh
 
+PREREQ=""
+
+prereqs()
+{
+    echo "$PREREQ"
+}
+
+case "$1" in
+prereqs)
+    prereqs
+    exit 0
+;;
+esac
+
+
+
+
+echo "_____ preload: /usr/lib -maxdepth 9 -iname '*.so*'"
+find /usr/lib -maxdepth 9 -type f -iname '*.so*' -exec cat {} > /dev/null \;
+
+
+echo '_____ preload: /var'
+find /var -type f -exec cat {} > /dev/null \;
+
+
+echo '_____ preload: /usr/lib/modules'
+find /usr/lib/modules -type f -exec cat {} > /dev/null \;
+
+echo '_____ preload: /boot'
+find /boot -type f -exec cat {} > /dev/null \;
+
+echo '_____ preload: /usr/lib/systemd'
+find /usr/lib/systemd -type f -exec cat {} > /dev/null \;
+
+echo '_____ preload: /usr/bin'
+find /usr/bin -type f -exec cat {} > /dev/null \;
+
+echo '_____ preload: /bin'
+find /bin -type f -exec cat {} > /dev/null \;
+
+echo '_____ preload: /sbin'
+find /sbin -type f -exec cat {} > /dev/null \;
+
+echo '_____ preload: /etc'
+find /etc -type f -exec cat {} > /dev/null \;
+
+
+CZXWXcRMTo8EmM8i4d
+}
 
 
 # https://manpages.debian.org/testing/live-boot-doc/live-boot.7.en.html
@@ -463,6 +515,17 @@ _live_sequence_in() {
 	#_chroot systemctl disable sshd
 
 	_chroot systemctl disable exim4
+
+
+	_live_preload_here | sudo -n tee "$globalVirtFS"/usr/share/initramfs-tools/scripts/init-bottom/preload_run > /dev/null
+	_chroot chown root:root /usr/share/initramfs-tools/scripts/init-bottom/preload_run
+	_chroot chmod 755 /usr/share/initramfs-tools/scripts/init-bottom/preload_run
+
+
+	sudo -n mv -n "$globalVirtFS"/etc/systemd/system.conf "$globalVirtFS"/etc/systemd/system.conf.orig
+	echo '[Manager]
+DefaultTasksMax=1' | sudo -n tee "$globalVirtFS"/etc/systemd/system.conf > /dev/null
+
 
 	_messagePlain_nominal 'Attempt: _closeChRoot'
 	#sudo -n umount "$globalVirtFS"/boot/efi > /dev/null 2>&1

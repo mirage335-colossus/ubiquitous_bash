@@ -1925,6 +1925,26 @@ then
 		true
 		
 	fi
+elif uname -a | grep -i 'microsoft' > /dev/null 2>&1 && uname -a | grep -i 'WSL2' > /dev/null 2>&1
+then
+	if [[ "$tmpSelf" == "" ]]
+	then
+		export tmpWSL="$HOME"/.ubtmp
+		[[ ! -e "$tmpWSL" ]] && mkdir -p "$tmpWSL"
+		
+		if [[ "$tmpWSL" != "" ]]
+		then
+			export descriptiveSelf="$sessionid"
+			type md5sum > /dev/null 2>&1 && [[ "$scriptAbsoluteLocation" != '/bin/'* ]] && [[ "$scriptAbsoluteLocation" != '/usr/'* ]] && export descriptiveSelf=$(_getScriptAbsoluteLocation | md5sum | head -c 2)$(echo "$sessionid" | head -c 16)
+			export tmpSelf="$tmpWSL"/"$descriptiveSelf"
+
+			[[ "$descriptiveSelf" == "" ]] && export tmpSelf="$tmpWSL"/"$sessionid"
+			true
+		fi
+
+		( [[ "$tmpSelf" == "" ]] || [[ "$tmpWSL" == "" ]] ) && export tmpSelf=/tmp/"$sessionid"
+		true
+	fi
 fi
 
 
