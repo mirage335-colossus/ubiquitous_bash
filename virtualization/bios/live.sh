@@ -527,6 +527,9 @@ _live_sequence_in() {
 DefaultTasksMax=1' | sudo -n tee "$globalVirtFS"/etc/systemd/system.conf > /dev/null
 
 
+	_chroot update-initramfs -u -k all
+
+
 	_messagePlain_nominal 'Attempt: _closeChRoot'
 	#sudo -n umount "$globalVirtFS"/boot/efi > /dev/null 2>&1
 	#sudo -n umount "$globalVirtFS"/boot > /dev/null 2>&1
