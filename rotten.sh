@@ -1046,6 +1046,11 @@ _safeRMR() {
 			safeToRM="true"
 		fi
 	fi
+
+	if [[ "$1" == "$HOME"/.ubtmp/* ]] && [[ -e "$HOME"/.ubtmp ]] && uname -a | grep -i 'microsoft' > /dev/null 2>&1 && uname -a | grep -i 'WSL2' > /dev/null 2>&1
+	then
+		safeToRM="true"
+	fi
 	
 	
 	[[ "$safeToRM" == "false" ]] && return 1
