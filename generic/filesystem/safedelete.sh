@@ -61,25 +61,18 @@ _safeRMR() {
 	fi
 	
 	#Denylist.
-	# WARNING: Although an exception is made for WSL, due to missing features from the '/mnt/c', etc, filesystem, for removing temporary directories, this is NOT a 'safe path'.
-	# DANGER: Do NOT add this exception to '_safePath' or similar functions!
-	if [[ "$1" == "$HOME"/.ubtmp/* ]] && [[ -e "$HOME"/.ubtmp ]] && uname -a | grep -i 'microsoft' > /dev/null 2>&1 && uname -a | grep -i 'WSL2' > /dev/null 2>&1
-	then
-		true
-	else
-		[[ "$1" == "/home" ]] && return 1
-		[[ "$1" == "/home/" ]] && return 1
-		[[ "$1" == "/home/$USER" ]] && return 1
-		[[ "$1" == "/home/$USER/" ]] && return 1
-		[[ "$1" == "/$USER" ]] && return 1
-		[[ "$1" == "/$USER/" ]] && return 1
-		
-		[[ "$1" == "/tmp" ]] && return 1
-		[[ "$1" == "/tmp/" ]] && return 1
-		
-		[[ "$1" == "$HOME" ]] && return 1
-		[[ "$1" == "$HOME/" ]] && return 1
-	fi
+	[[ "$1" == "/home" ]] && return 1
+	[[ "$1" == "/home/" ]] && return 1
+	[[ "$1" == "/home/$USER" ]] && return 1
+	[[ "$1" == "/home/$USER/" ]] && return 1
+	[[ "$1" == "/$USER" ]] && return 1
+	[[ "$1" == "/$USER/" ]] && return 1
+	
+	[[ "$1" == "/tmp" ]] && return 1
+	[[ "$1" == "/tmp/" ]] && return 1
+	
+	[[ "$1" == "$HOME" ]] && return 1
+	[[ "$1" == "$HOME/" ]] && return 1
 	
 	#Allowlist.
 	local safeToRM=false
@@ -110,9 +103,10 @@ _safeRMR() {
 		fi
 	fi
 
-	if [[ "$1" == "$HOME"/.ubtmp/* ]] && [[ -e "$HOME"/.ubtmp ]] && uname -a | grep -i 'microsoft' > /dev/null 2>&1 && uname -a | grep -i 'WSL2' > /dev/null 2>&1
+	if [[ -e "$HOME"/.ubtmp ]] && uname -a | grep -i 'microsoft' > /dev/null 2>&1 && uname -a | grep -i 'WSL2' > /dev/null 2>&1
 	then
-		safeToRM="true"
+		[[ "$1" == "$HOME"/.ubtmp/* ]] && safeToRM="true"
+		[[ "$1" == "./"* ]] && [[ "$PWD" == "$HOME"/.ubtmp* ]] && safeToRM="true"
 	fi
 	
 	
@@ -210,6 +204,12 @@ _safePath() {
 		then
 			safeToRM="true"
 		fi
+	fi
+
+	if [[ -e "$HOME"/.ubtmp ]] && uname -a | grep -i 'microsoft' > /dev/null 2>&1 && uname -a | grep -i 'WSL2' > /dev/null 2>&1
+	then
+		[[ "$1" == "$HOME"/.ubtmp/* ]] && safeToRM="true"
+		[[ "$1" == "./"* ]] && [[ "$PWD" == "$HOME"/.ubtmp* ]] && safeToRM="true"
 	fi
 	
 	

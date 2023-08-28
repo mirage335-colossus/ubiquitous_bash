@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='1104904360'
+export ub_setScriptChecksum_contents='2791621202'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -2354,25 +2354,18 @@ _safeRMR() {
 	fi
 	
 	#Denylist.
-	# WARNING: Although an exception is made for WSL, due to missing features from the '/mnt/c', etc, filesystem, for removing temporary directories, this is NOT a 'safe path'.
-	# DANGER: Do NOT add this exception to '_safePath' or similar functions!
-	if [[ "$1" == "$HOME"/.ubtmp/* ]] && [[ -e "$HOME"/.ubtmp ]] && uname -a | grep -i 'microsoft' > /dev/null 2>&1 && uname -a | grep -i 'WSL2' > /dev/null 2>&1
-	then
-		true
-	else
-		[[ "$1" == "/home" ]] && return 1
-		[[ "$1" == "/home/" ]] && return 1
-		[[ "$1" == "/home/$USER" ]] && return 1
-		[[ "$1" == "/home/$USER/" ]] && return 1
-		[[ "$1" == "/$USER" ]] && return 1
-		[[ "$1" == "/$USER/" ]] && return 1
-		
-		[[ "$1" == "/tmp" ]] && return 1
-		[[ "$1" == "/tmp/" ]] && return 1
-		
-		[[ "$1" == "$HOME" ]] && return 1
-		[[ "$1" == "$HOME/" ]] && return 1
-	fi
+	[[ "$1" == "/home" ]] && return 1
+	[[ "$1" == "/home/" ]] && return 1
+	[[ "$1" == "/home/$USER" ]] && return 1
+	[[ "$1" == "/home/$USER/" ]] && return 1
+	[[ "$1" == "/$USER" ]] && return 1
+	[[ "$1" == "/$USER/" ]] && return 1
+	
+	[[ "$1" == "/tmp" ]] && return 1
+	[[ "$1" == "/tmp/" ]] && return 1
+	
+	[[ "$1" == "$HOME" ]] && return 1
+	[[ "$1" == "$HOME/" ]] && return 1
 	
 	#Allowlist.
 	local safeToRM=false
@@ -2403,9 +2396,10 @@ _safeRMR() {
 		fi
 	fi
 
-	if [[ "$1" == "$HOME"/.ubtmp/* ]] && [[ -e "$HOME"/.ubtmp ]] && uname -a | grep -i 'microsoft' > /dev/null 2>&1 && uname -a | grep -i 'WSL2' > /dev/null 2>&1
+	if [[ -e "$HOME"/.ubtmp ]] && uname -a | grep -i 'microsoft' > /dev/null 2>&1 && uname -a | grep -i 'WSL2' > /dev/null 2>&1
 	then
-		safeToRM="true"
+		[[ "$1" == "$HOME"/.ubtmp/* ]] && safeToRM="true"
+		[[ "$1" == "./"* ]] && [[ "$PWD" == "$HOME"/.ubtmp* ]] && safeToRM="true"
 	fi
 	
 	
@@ -2503,6 +2497,12 @@ _safePath() {
 		then
 			safeToRM="true"
 		fi
+	fi
+
+	if [[ -e "$HOME"/.ubtmp ]] && uname -a | grep -i 'microsoft' > /dev/null 2>&1 && uname -a | grep -i 'WSL2' > /dev/null 2>&1
+	then
+		[[ "$1" == "$HOME"/.ubtmp/* ]] && safeToRM="true"
+		[[ "$1" == "./"* ]] && [[ "$PWD" == "$HOME"/.ubtmp* ]] && safeToRM="true"
 	fi
 	
 	
@@ -17728,10 +17728,10 @@ _live_sequence_in() {
 	_chroot chown root:root /usr/share/initramfs-tools/scripts/init-bottom/preload_run
 	_chroot chmod 755 /usr/share/initramfs-tools/scripts/init-bottom/preload_run
 
-
+	# Apparent repeated success with 'DefaultTasksMax=12' . In one case, some services - SMART and NetworkManager - may have failed to start within timeouts. Consider reducing iteratively.
 	sudo -n mv -n "$globalVirtFS"/etc/systemd/system.conf "$globalVirtFS"/etc/systemd/system.conf.orig
 	echo '[Manager]
-DefaultTasksMax=12' | sudo -n tee "$globalVirtFS"/etc/systemd/system.conf > /dev/null
+DefaultTasksMax=10' | sudo -n tee "$globalVirtFS"/etc/systemd/system.conf > /dev/null
 
 
 	_chroot update-initramfs -u -k all
@@ -17808,13 +17808,13 @@ DefaultTasksMax=12' | sudo -n tee "$globalVirtFS"/etc/systemd/system.conf > /dev
 	#mkdir -p "$safeTmp"/recycle
 	#sudo -n mv -f "$safeTmp"/root001/home/user/* "$safeTmp"/recycle/
 	#sudo -n mv -f "$safeTmp"/recycle/core "$safeTmp"/root001/home/user/
-	#sudo -n chown "$USER":"$USER" "$safeTmp"/recycle
+	#sudo -n chown -R "$USER":"$USER" "$safeTmp"/recycle
 	#_safeRMR "$safeTmp"/recycle
 
 	#mkdir -p "$safeTmp"/recycle
 	#sudo -n mv -f "$safeTmp"/root001/home/* "$safeTmp"/recycle/
 	#sudo -n mv -f "$safeTmp"/recycle/user "$safeTmp"/root001/home/
-	#sudo -n chown "$USER":"$USER" "$safeTmp"/recycle
+	#sudo -n chown -R "$USER":"$USER" "$safeTmp"/recycle
 	#_safeRMR "$safeTmp"/recycle
 
 	#_messagePlain_probe_cmd ls -ld "$safeTmp"/root001
@@ -17824,7 +17824,7 @@ DefaultTasksMax=12' | sudo -n tee "$globalVirtFS"/etc/systemd/system.conf > /dev
 	#_messagePlain_probe_cmd ls -l "$safeTmp"/root001/home/user/core/
 
 	#sudo -n mksquashfs "$safeTmp"/root001 "$scriptLocal"/livefs/image/live/filesystem.squashfs -b 65536 -no-xattrs -noI -noX -comp lzo -Xalgorithm lzo1x_1 -e boot -e etc/fstab
-	#sudo -n chown "$USER":"$USER" "$safeTmp"/root001
+	#sudo -n chown -R "$USER":"$USER" "$safeTmp"/root001
 	#_safeRMR "$safeTmp"/root001
 
 
@@ -17837,7 +17837,7 @@ DefaultTasksMax=12' | sudo -n tee "$globalVirtFS"/etc/systemd/system.conf > /dev
 	# Solely to provide more information to convert 'vm-live.iso' back to 'vm.img' offline from only a Live BD-ROM disc .
 	sudo -n mksquashfs "$safeTmp"/root002 "$scriptLocal"/livefs/image/live/filesystem.squashfs -b 262144 -no-xattrs -noI -noX -comp lzo -Xalgorithm lzo1x_1 -e boot -e etc/fstab
 	du -sh "$scriptLocal"/livefs/image/live/filesystem.squashfs
-	sudo -n chown "$USER":"$USER" "$safeTmp"/root002
+	sudo -n chown -R "$USER":"$USER" "$safeTmp"/root002
 	export safeToDeleteGit="true"
 	_safeRMR "$safeTmp"/root002
 
@@ -17847,7 +17847,7 @@ DefaultTasksMax=12' | sudo -n tee "$globalVirtFS"/etc/systemd/system.conf > /dev
 	_messagePlain_probe_cmd du -sh "$safeTmp"/root001/home
 	sudo -n mksquashfs "$safeTmp"/root001 "$scriptLocal"/livefs/image/live/filesystem.squashfs -b 262144 -no-xattrs -noI -noX -comp lzo -Xalgorithm lzo1x_1 -e boot -e etc/fstab
 	du -sh "$scriptLocal"/livefs/image/live/filesystem.squashfs
-	sudo -n chown "$USER":"$USER" "$safeTmp"/root001
+	sudo -n chown -R "$USER":"$USER" "$safeTmp"/root001
 	export safeToDeleteGit="true"
 	_safeRMR "$safeTmp"/root001
 
