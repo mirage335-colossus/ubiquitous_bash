@@ -540,7 +540,8 @@ DefaultTasksMax=12' | sudo -n tee "$globalVirtFS"/etc/systemd/system.conf > /dev
 
 	# Solely to provide more information to convert 'vm-live.iso' back to 'vm.img' offline from only a Live BD-ROM disc .
 	mkdir -p "$safeTmp"/root002
-	sudo -n cp -a "$globalVirtFS"/boot  "$safeTmp"/root002/boot-copy
+	#sudo -n cp -a "$globalVirtFS"/boot "$safeTmp"/root002/boot-copy
+	sudo -n rsync -a --progress --exclude "lost+found" "$globalVirtFS"/boot "$safeTmp"/root002/boot-copy
 	sudo -n cp -a "$globalVirtFS"/etc/fstab  "$safeTmp"/root002/fstab-copy
 
 
@@ -554,7 +555,7 @@ DefaultTasksMax=12' | sudo -n tee "$globalVirtFS"/etc/systemd/system.conf > /dev
 
 
 
-	
+	export safeToDeleteGit="true"
 	[[ -e "$scriptLocal"/livefs ]] && _safeRMR "$scriptLocal"/livefs
 	[[ -e "$scriptLocal"/livefs ]] && _messageFAIL
 	
@@ -637,6 +638,7 @@ DefaultTasksMax=12' | sudo -n tee "$globalVirtFS"/etc/systemd/system.conf > /dev
 	sudo -n mksquashfs "$safeTmp"/root002 "$scriptLocal"/livefs/image/live/filesystem.squashfs -b 262144 -no-xattrs -noI -noX -comp lzo -Xalgorithm lzo1x_1 -e boot -e etc/fstab
 	du -sh "$scriptLocal"/livefs/image/live/filesystem.squashfs
 	sudo -n chown "$USER":"$USER" "$safeTmp"/root002
+	export safeToDeleteGit="true"
 	_safeRMR "$safeTmp"/root002
 
 	mkdir -p "$safeTmp"/root001
@@ -646,6 +648,7 @@ DefaultTasksMax=12' | sudo -n tee "$globalVirtFS"/etc/systemd/system.conf > /dev
 	sudo -n mksquashfs "$safeTmp"/root001 "$scriptLocal"/livefs/image/live/filesystem.squashfs -b 262144 -no-xattrs -noI -noX -comp lzo -Xalgorithm lzo1x_1 -e boot -e etc/fstab
 	du -sh "$scriptLocal"/livefs/image/live/filesystem.squashfs
 	sudo -n chown "$USER":"$USER" "$safeTmp"/root001
+	export safeToDeleteGit="true"
 	_safeRMR "$safeTmp"/root001
 
 	sudo -n mksquashfs "$globalVirtFS" "$scriptLocal"/livefs/image/live/filesystem.squashfs -b 262144 -no-xattrs -noI -noX -comp lzo -Xalgorithm lzo1x_1 -e home -e boot -e etc/fstab
@@ -771,6 +774,7 @@ _live() {
 		_stop 1
 	fi
 	
+	export safeToDeleteGit="true"
 	_safeRMR "$scriptLocal"/livefs
 	
 	
