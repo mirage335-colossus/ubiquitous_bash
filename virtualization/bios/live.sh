@@ -390,13 +390,23 @@ prereqs)
 esac
 
 
+echo "_____ preload: /root/home -not core -not .nix -not .gcloud"
+find /root/home -not \( -path \/home/\*/core\* -prune \) -not \( -path \/home/\*/.nix\* -prune \) -not \( -path \/home/\*/.gcloud\* -prune \) -type f -exec cat {} > /dev/null \;
+find /root/home/klipper -type f -exec cat {} > /dev/null \;
+find /root/home/moonraker -type f -exec cat {} > /dev/null \;
+find /root/home/moonraker-env -type f -exec cat {} > /dev/null \;
+find /root/home/mainsail -type f -exec cat {} > /dev/null \;
+
 
 echo "_____ preload: /root/usr/lib -maxdepth 9 -iname '*.so*'"
 find /root/usr/lib -maxdepth 9 -type f -iname '*.so*' -exec cat {} > /dev/null \;
 
 
-echo "_____ preload: /root/home -not core"
-find /root/home -not \( -path \/home/\*/core\* -prune \) -type f -exec cat {} > /dev/null \;
+echo "_____ preload: /root/home -not core -not .nix -not .gcloud"
+find /root/home/.config -type f -exec cat {} > /dev/null \;
+find /root/home/.kde -type f -exec cat {} > /dev/null \;
+find /root/home/.ubcore -type f -exec cat {} > /dev/null \;
+find /root/home -maxdepth 1 -type f -exec cat {} > /dev/null \;
 
 
 echo "_____ preload: /root/root"
@@ -528,10 +538,13 @@ _live_sequence_in() {
 	_chroot chown root:root /usr/share/initramfs-tools/scripts/init-bottom/preload_run
 	_chroot chmod 755 /usr/share/initramfs-tools/scripts/init-bottom/preload_run
 
-	# Apparent repeated success with 'DefaultTasksMax=12' . In one case, some services - SMART and NetworkManager - may have failed to start within timeouts. Consider reducing iteratively.
+	# Apparent repeated success with 'DefaultTasksMax=12' . In one case, some services - SMART and NetworkManager - may have failed to start within timeouts. Some have certainly been close to timeout.
+	# Consider reducing below 12 iteratively.
+	# Alternatively, this may need to increase. Cron jobs may otherwise fail with such error message as 'fork retry resource temporarily unavailable' .
+	# Uncertain whether 'DefaultTasksMax' limits only the number of systemd services started simuntaneously, or also the number of threads total prior to interactive shell.
 	sudo -n mv -n "$globalVirtFS"/etc/systemd/system.conf "$globalVirtFS"/etc/systemd/system.conf.orig
 	echo '[Manager]
-DefaultTasksMax=10' | sudo -n tee "$globalVirtFS"/etc/systemd/system.conf > /dev/null
+DefaultTasksMax=24' | sudo -n tee "$globalVirtFS"/etc/systemd/system.conf > /dev/null
 
 
 	_chroot update-initramfs -u -k all
