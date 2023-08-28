@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='311538325'
+export ub_setScriptChecksum_contents='2788487843'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -2354,18 +2354,25 @@ _safeRMR() {
 	fi
 	
 	#Denylist.
-	[[ "$1" == "/home" ]] && return 1
-	[[ "$1" == "/home/" ]] && return 1
-	[[ "$1" == "/home/$USER" ]] && return 1
-	[[ "$1" == "/home/$USER/" ]] && return 1
-	[[ "$1" == "/$USER" ]] && return 1
-	[[ "$1" == "/$USER/" ]] && return 1
-	
-	[[ "$1" == "/tmp" ]] && return 1
-	[[ "$1" == "/tmp/" ]] && return 1
-	
-	[[ "$1" == "$HOME" ]] && return 1
-	[[ "$1" == "$HOME/" ]] && return 1
+	# WARNING: Although an exception is made for WSL, due to missing features from the '/mnt/c', etc, filesystem, for removing temporary directories, this is NOT a 'safe path'.
+	# DANGER: Do NOT add this exception to '_safePath' or similar functions!
+	if [[ "$1" == "$HOME"/.ubtmp/* ]] && [[ -e "$HOME"/.ubtmp ]] && uname -a | grep -i 'microsoft' > /dev/null 2>&1 && uname -a | grep -i 'WSL2' > /dev/null 2>&1
+	then
+		true
+	else
+		[[ "$1" == "/home" ]] && return 1
+		[[ "$1" == "/home/" ]] && return 1
+		[[ "$1" == "/home/$USER" ]] && return 1
+		[[ "$1" == "/home/$USER/" ]] && return 1
+		[[ "$1" == "/$USER" ]] && return 1
+		[[ "$1" == "/$USER/" ]] && return 1
+		
+		[[ "$1" == "/tmp" ]] && return 1
+		[[ "$1" == "/tmp/" ]] && return 1
+		
+		[[ "$1" == "$HOME" ]] && return 1
+		[[ "$1" == "$HOME/" ]] && return 1
+	fi
 	
 	#Allowlist.
 	local safeToRM=false

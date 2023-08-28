@@ -61,18 +61,25 @@ _safeRMR() {
 	fi
 	
 	#Denylist.
-	[[ "$1" == "/home" ]] && return 1
-	[[ "$1" == "/home/" ]] && return 1
-	[[ "$1" == "/home/$USER" ]] && return 1
-	[[ "$1" == "/home/$USER/" ]] && return 1
-	[[ "$1" == "/$USER" ]] && return 1
-	[[ "$1" == "/$USER/" ]] && return 1
-	
-	[[ "$1" == "/tmp" ]] && return 1
-	[[ "$1" == "/tmp/" ]] && return 1
-	
-	[[ "$1" == "$HOME" ]] && return 1
-	[[ "$1" == "$HOME/" ]] && return 1
+	# WARNING: Although an exception is made for WSL, due to missing features from the '/mnt/c', etc, filesystem, for removing temporary directories, this is NOT a 'safe path'.
+	# DANGER: Do NOT add this exception to '_safePath' or similar functions!
+	if [[ "$1" == "$HOME"/.ubtmp/* ]] && [[ -e "$HOME"/.ubtmp ]] && uname -a | grep -i 'microsoft' > /dev/null 2>&1 && uname -a | grep -i 'WSL2' > /dev/null 2>&1
+	then
+		true
+	else
+		[[ "$1" == "/home" ]] && return 1
+		[[ "$1" == "/home/" ]] && return 1
+		[[ "$1" == "/home/$USER" ]] && return 1
+		[[ "$1" == "/home/$USER/" ]] && return 1
+		[[ "$1" == "/$USER" ]] && return 1
+		[[ "$1" == "/$USER/" ]] && return 1
+		
+		[[ "$1" == "/tmp" ]] && return 1
+		[[ "$1" == "/tmp/" ]] && return 1
+		
+		[[ "$1" == "$HOME" ]] && return 1
+		[[ "$1" == "$HOME/" ]] && return 1
+	fi
 	
 	#Allowlist.
 	local safeToRM=false
