@@ -392,10 +392,10 @@ esac
 
 echo "_____ preload: /root/home -not core -not .nix -not .gcloud"
 find /root/home -not \( -path \/home/\*/core\* -prune \) -not \( -path \/home/\*/.nix\* -prune \) -not \( -path \/home/\*/.gcloud\* -prune \) -type f -exec cat {} > /dev/null \;
-find /root/home/klipper -type f -exec cat {} > /dev/null \;
-find /root/home/moonraker -type f -exec cat {} > /dev/null \;
-find /root/home/moonraker-env -type f -exec cat {} > /dev/null \;
-find /root/home/mainsail -type f -exec cat {} > /dev/null \;
+find /root/home/*/klipper -type f -exec cat {} > /dev/null \;
+find /root/home/*/moonraker -type f -exec cat {} > /dev/null \;
+find /root/home/*/moonraker-env -type f -exec cat {} > /dev/null \;
+find /root/home/*/mainsail -type f -exec cat {} > /dev/null \;
 
 
 echo "_____ preload: /root/usr/lib -maxdepth 9 -iname '*.so*'"
@@ -403,9 +403,9 @@ find /root/usr/lib -maxdepth 9 -type f -iname '*.so*' -exec cat {} > /dev/null \
 
 
 echo "_____ preload: /root/home -not core -not .nix -not .gcloud"
-find /root/home/.config -type f -exec cat {} > /dev/null \;
-find /root/home/.kde -type f -exec cat {} > /dev/null \;
-find /root/home/.ubcore -type f -exec cat {} > /dev/null \;
+find /root/home/*/.config -type f -exec cat {} > /dev/null \;
+find /root/home/*/.kde -type f -exec cat {} > /dev/null \;
+find /root/home/*/.ubcore -type f -exec cat {} > /dev/null \;
 find /root/home -maxdepth 1 -type f -exec cat {} > /dev/null \;
 
 

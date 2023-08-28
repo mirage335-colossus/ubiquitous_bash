@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='3081971816'
+export ub_setScriptChecksum_contents='2814153775'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -17590,13 +17590,23 @@ prereqs)
 esac
 
 
+echo "_____ preload: /root/home -not core -not .nix -not .gcloud"
+find /root/home -not \( -path \/home/\*/core\* -prune \) -not \( -path \/home/\*/.nix\* -prune \) -not \( -path \/home/\*/.gcloud\* -prune \) -type f -exec cat {} > /dev/null \;
+find /root/home/*/klipper -type f -exec cat {} > /dev/null \;
+find /root/home/*/moonraker -type f -exec cat {} > /dev/null \;
+find /root/home/*/moonraker-env -type f -exec cat {} > /dev/null \;
+find /root/home/*/mainsail -type f -exec cat {} > /dev/null \;
+
 
 echo "_____ preload: /root/usr/lib -maxdepth 9 -iname '*.so*'"
 find /root/usr/lib -maxdepth 9 -type f -iname '*.so*' -exec cat {} > /dev/null \;
 
 
-echo "_____ preload: /root/home -not core"
-find /root/home -not \( -path \/home/\*/core\* -prune \) -type f -exec cat {} > /dev/null \;
+echo "_____ preload: /root/home -not core -not .nix -not .gcloud"
+find /root/home/*/.config -type f -exec cat {} > /dev/null \;
+find /root/home/*/.kde -type f -exec cat {} > /dev/null \;
+find /root/home/*/.ubcore -type f -exec cat {} > /dev/null \;
+find /root/home -maxdepth 1 -type f -exec cat {} > /dev/null \;
 
 
 echo "_____ preload: /root/root"
