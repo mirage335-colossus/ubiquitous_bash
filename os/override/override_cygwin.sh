@@ -1133,7 +1133,7 @@ _package_procedure-cygwinOnly() {
 	! cd "$safeTmp"/package/"$objectName"/_local && _stop 1
 	
 	#tar -czvf "$scriptAbsoluteFolder"/package_ubcp-cygwinOnly.tar.gz .
-	env XZ_OPT=-5 tar -cJvf "$scriptAbsoluteFolder"/package_ubcp-cygwinOnly.tar.xz .
+	env XZ_OPT="-5 -T0" tar -cJvf "$scriptAbsoluteFolder"/package_ubcp-cygwinOnly.tar.xz .
 	
 	mkdir -p "$scriptLocal"/ubcp/
 	mv "$scriptAbsoluteFolder"/package_ubcp-cygwinOnly.tar.gz "$scriptLocal"/ubcp/ > /dev/null 2>&1

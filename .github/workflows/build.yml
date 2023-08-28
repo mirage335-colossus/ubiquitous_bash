@@ -2,6 +2,10 @@
 name: build
 on:
   workflow_dispatch:
+    inputs:
+      devfast:
+        type: boolean
+        default: true
   # https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#schedule
   schedule:
     ##- cron: '5 1 * * 6'
@@ -152,6 +156,7 @@ jobs:
         shell: pwsh
         timeout-minutes: 240
         run: |
+          Set-Item -Path Env:devfast -Value ("${{ inputs.devfast }}")
           .\_test | tee /_test-lean.log
           $SEL = cat /_test-lean.log | Select-String -Pattern 'FAIL' -CaseSensitive -SimpleMatch
           if ($SEL -ne $null)
