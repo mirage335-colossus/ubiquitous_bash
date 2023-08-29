@@ -39,27 +39,6 @@ jobs:
             #tag_name: build-${{ github.run_id }}-${{ github.run_attempt }} #(required) tag name to delete 
             #github_token: ${{ secrets.GITHUB_TOKEN }}
             #delete_release: true #(optional) default: true 
-  build_compressed:
-    #needs: [build_guard]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: compile
-        shell: bash
-        timeout-minutes: 10
-        run: |
-          ./compile.sh
-      - name: release! compile
-        uses: softprops/action-gh-release@v1
-        with:
-          tag_name: build-${{ github.run_id }}-${{ github.run_attempt }}
-          name: build
-          files: |
-            ./lean_compressed.sh
-            ./monolithic_compressed.sh
-            ./rotten_compressed.sh
-            ./ubcore_compressed.sh
-            ./ubiquitous_bash_compressed.sh
   build_ubcp:
     #needs: [build_guard, build_compressed]
     runs-on: windows-latest
@@ -99,7 +78,7 @@ jobs:
           git config --global core.autocrlf input
           git config --global core.eol lf
           choco install 7zip.install -y
-          choco install rclone -y
+          #choco install rclone -y
       - uses: actions/checkout@v2
       - name: statement! ls
         shell: pwsh
@@ -297,6 +276,8 @@ jobs:
           Get-CimInstance -ClassName Win32_LogicalDisk | Select-Object -Property DeviceID,@{'Name' = 'FreeSpace (GB)'
           Expression= { [int]($_.FreeSpace / 1GB) }}
       
+      # WARNING: Very unusual . Elsewhere, '_test' is also necessarily used to cause '_getDep' and similar. Do NOT move '_test' to the end of other build scripts.
+      # Building 'ubcp' from Cygwin/MSW is very much a special case, for which '_test' would be all of, relatively slow, less consequential, and less likely to fail.
       - name: _test-lean
         shell: pwsh
         timeout-minutes: 240
@@ -326,6 +307,29 @@ jobs:
 
 
 
+
+
+  build_compressed:
+    #needs: [build_guard]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: compile
+        shell: bash
+        timeout-minutes: 10
+        run: |
+          ./compile.sh
+      - name: release! compile
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: build-${{ github.run_id }}-${{ github.run_attempt }}
+          name: build
+          files: |
+            ./lean_compressed.sh
+            ./monolithic_compressed.sh
+            ./rotten_compressed.sh
+            ./ubcore_compressed.sh
+            ./ubiquitous_bash_compressed.sh
 
 
 
