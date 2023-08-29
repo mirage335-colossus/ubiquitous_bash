@@ -96,7 +96,7 @@ _createVMimage() {
 	
 	# Root
 	# WARNING: Adjust vmSize to match +1MiB .
-	# Try to keep this <23841MiB-256MiB-1MiB ( ie. <23584MiB ) (exactly 25000000000Bytes is 23841MiB ) . 
+	# Try to keep this <23841MiB-256MiB-1MiB ( ie. <23584MiB ) (exactly 25000000000Bytes is 23841MiB ) . In practice, compression will obviate this issue, and the Live ISO may be more complete (ie. including 'accessories') for recovery purposes .
 	# https://www.mail-archive.com/kde-bugs-dist@kde.org/msg618604.html
 	#  '25025315816 bytes'   ...   'difference between the available space at the start and at the end is exactly 256M'
 	# http://fy.chalmers.se/~appro/linux/DVD+RW/Blu-ray/
