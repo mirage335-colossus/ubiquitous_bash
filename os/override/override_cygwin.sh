@@ -788,7 +788,8 @@ _setup_ubcp_procedure() {
 	then
 		cat "$scriptLocal"/ubcp/package_ubcp-cygwinOnly.tar.flx | lz4 -d -c | tar -xvf -
 	else
-		cat "$scriptLocal"/ubcp/package_ubcp-cygwinOnly.tar.flx | lz4 -d -c | tar -xf -
+		#cat "$scriptLocal"/ubcp/package_ubcp-cygwinOnly.tar.flx | lz4 -d -c | tar -xf -
+		tar -xf "$scriptLocal"/ubcp/package_ubcp-cygwinOnly.tar.flx
 	fi
 	
 	_messagePlain_good 'done: _setup_ubcp_procedure: ubcp'
@@ -1169,7 +1170,8 @@ _package_procedure-cygwinOnly() {
 	then
 		tar -cvf - . | lz4 -z --fast=1 - "$scriptAbsoluteFolder"/package_ubcp-cygwinOnly.tar.flx
 	else
-		tar -cf - . | lz4 -z --fast=1 - "$scriptAbsoluteFolder"/package_ubcp-cygwinOnly.tar.flx
+		#tar -cf - . | lz4 -z --fast=1 - "$scriptAbsoluteFolder"/package_ubcp-cygwinOnly.tar.flx
+		tar -cf "$scriptAbsoluteFolder"/package_ubcp-cygwinOnly.tar.flx .
 	fi
 	
 	mkdir -p "$scriptLocal"/ubcp/
