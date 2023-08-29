@@ -6,6 +6,9 @@ on:
       devfast:
         type: boolean
         default: true
+      skimfast:
+        type: boolean
+        default: true
   # https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#schedule
   schedule:
     ##- cron: '5 1 * * 6'
@@ -152,32 +155,6 @@ jobs:
           Get-Content -Path /_setupUbiquitous.log | Measure-Object -Line -Word -Character
           cat /_setupUbiquitous.log
         shell: pwsh
-      - name: _test-lean
-        shell: pwsh
-        timeout-minutes: 240
-        run: |
-          Set-Item -Path Env:devfast -Value ("${{ inputs.devfast }}")
-          .\_test | tee /_test-lean.log
-          $SEL = cat /_test-lean.log | Select-String -Pattern 'FAIL' -CaseSensitive -SimpleMatch
-          if ($SEL -ne $null)
-          {
-          cat /bin/false/pwsh
-          }
-          else
-          {
-          echo true | Out-Null
-          }
-      - name: release! _test-lean.log
-        uses: softprops/action-gh-release@v1
-        with:
-          tag_name: build-${{ github.run_id }}-${{ github.run_attempt }}
-          name: build
-          files: |
-            /_test-lean.log
-      - name: statement! test-lean
-        run: |
-          cat /_test-lean.log
-        shell: pwsh
       #- name: _package-cygwinOnly noMitigation
         #shell: pwsh
         #timeout-minutes: 240
@@ -200,6 +177,7 @@ jobs:
         shell: pwsh
         timeout-minutes: 240
         run: |
+          Set-Item -Path Env:skimfast -Value ("${{ inputs.skimfast }}")
           ./_bin _mitigate-ubcp | tee /_mitigate-ubcp.log
           ./_bin _color_end
       - name: release! _mitigate-ubcp.log
@@ -217,6 +195,7 @@ jobs:
         shell: pwsh
         timeout-minutes: 240
         run: |
+          Set-Item -Path Env:skimfast -Value ("${{ inputs.skimfast }}")
           ./_bin _package-cygwinOnly
       #- name: release! package_ubcp-cygwinOnly.tar.xz
         #uses: softprops/action-gh-release@v1
@@ -259,6 +238,7 @@ jobs:
         shell: pwsh
         timeout-minutes: 240
         run: |
+          Set-Item -Path Env:skimfast -Value ("${{ inputs.skimfast }}")
           ./_bin _setup_ubcp / | tee /_setup_ubcp.log
       - name: statement! ls
         shell: pwsh
@@ -316,6 +296,33 @@ jobs:
           ls
           Get-CimInstance -ClassName Win32_LogicalDisk | Select-Object -Property DeviceID,@{'Name' = 'FreeSpace (GB)'
           Expression= { [int]($_.FreeSpace / 1GB) }}
+      
+      - name: _test-lean
+        shell: pwsh
+        timeout-minutes: 240
+        run: |
+          Set-Item -Path Env:devfast -Value ("${{ inputs.devfast }}")
+          .\_test | tee /_test-lean.log
+          $SEL = cat /_test-lean.log | Select-String -Pattern 'FAIL' -CaseSensitive -SimpleMatch
+          if ($SEL -ne $null)
+          {
+          cat /bin/false/pwsh
+          }
+          else
+          {
+          echo true | Out-Null
+          }
+      - name: release! _test-lean.log
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: build-${{ github.run_id }}-${{ github.run_attempt }}
+          name: build
+          files: |
+            /_test-lean.log
+      - name: statement! test-lean
+        run: |
+          cat /_test-lean.log
+        shell: pwsh
 
 
 

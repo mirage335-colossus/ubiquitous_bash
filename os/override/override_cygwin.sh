@@ -784,7 +784,12 @@ _setup_ubcp_procedure() {
 	#tar -xvf "$scriptLocal"/ubcp/package_ubcp-cygwinOnly.tar.gz
 	#tar -xvf "$scriptLocal"/ubcp/package_ubcp-cygwinOnly.tar.xz
 
-	cat "$scriptLocal"/ubcp/package_ubcp-cygwinOnly.tar.flx | lz4 -d -c | tar -xvf
+	if [[ "$skimfast" != "true" ]]
+	then
+		cat "$scriptLocal"/ubcp/package_ubcp-cygwinOnly.tar.flx | lz4 -d -c | tar -xvf -
+	else
+		cat "$scriptLocal"/ubcp/package_ubcp-cygwinOnly.tar.flx | lz4 -d -c | tar -xf -
+	fi
 	
 	_messagePlain_good 'done: _setup_ubcp_procedure: ubcp'
 	sleep 10
@@ -821,7 +826,7 @@ _setup_ubcp() {
 
 
 _mitigate-ubcp_rewrite_procedure() {
-	_messagePlain_nominal 'init: _mitigate-ubcp_rewrite_procedure'
+	[[ "$skimfast" != "true" ]] && _messagePlain_nominal 'init: _mitigate-ubcp_rewrite_procedure'
 	[[ "$currentPWD" != "" ]] && cd "$currentPWD"
 	local currentRoot=$(_getAbsoluteLocation "$PWD")
 	
@@ -833,11 +838,11 @@ _mitigate-ubcp_rewrite_procedure() {
 	local currentLinkDirective=$(readlink "$1")
 	
 	
-	_messagePlain_probe_var currentRoot
-	_messagePlain_probe_var currentLink
-	_messagePlain_probe_var currentLinkFile
-	_messagePlain_probe_var currentLinkFolder
-	_messagePlain_probe_var currentLinkDirective
+	[[ "$skimfast" != "true" ]] && _messagePlain_probe_var currentRoot
+	[[ "$skimfast" != "true" ]] && _messagePlain_probe_var currentLink
+	[[ "$skimfast" != "true" ]] && _messagePlain_probe_var currentLinkFile
+	[[ "$skimfast" != "true" ]] && _messagePlain_probe_var currentLinkFolder
+	[[ "$skimfast" != "true" ]] && _messagePlain_probe_var currentLinkDirective
 	
 	[[ "$currentLinkDirective" == '/proc/'* ]] && return 0
 	[[ "$currentLinkDirective" == '/dev/'* ]] && return 0
@@ -859,7 +864,7 @@ _mitigate-ubcp_rewrite_procedure() {
 	else
 		while [[ "$currentMatch" == 'false' ]] && [[ "$currentIterations" -lt 14 ]]
 		do
-			_messagePlain_probe "$currentLinkFolder"/"$currentDots"
+			[[ "$skimfast" != "true" ]] && _messagePlain_probe "$currentLinkFolder"/"$currentDots"
 			currentLinkFolder_eval=$(_getAbsoluteLocation "$currentLinkFolder"/"$currentDots")
 			[[ "$currentLinkFolder_eval" == "$currentRoot" ]] && currentMatch='true'
 			
@@ -877,7 +882,7 @@ _mitigate-ubcp_rewrite_procedure() {
 	
 	
 	
-	_messagePlain_probe_var currentRelativeRoot
+	[[ "$skimfast" != "true" ]] && _messagePlain_probe_var currentRelativeRoot
 	
 	
 	local processedLinkDirective
@@ -888,7 +893,7 @@ _mitigate-ubcp_rewrite_procedure() {
 		
 	fi
 	
-	_messagePlain_probe_var processedLinkDirective
+	[[ "$skimfast" != "true" ]] && _messagePlain_probe_var processedLinkDirective
 	
 	
 	
@@ -896,7 +901,7 @@ _mitigate-ubcp_rewrite_procedure() {
 	then
 		cd "$currentLinkFolder"
 		
-		ls -l "$processedLinkDirective"
+		[[ "$skimfast" != "true" ]] && ls -l "$processedLinkDirective"
 		
 		
 		# ATTENTION: Forces scenario '2'!
@@ -915,8 +920,8 @@ _mitigate-ubcp_rewrite_procedure() {
 		
 		ln -sf "$processedLinkDirective" "$currentLinkFolder"/"$currentLinkFile"
 		
-		ls -ld "$currentLinkFolder"/"$currentLinkFile"
-		[[ -d "$currentLinkFolder"/"$currentLinkFile" ]] && ls -l "$currentLinkFolder"/"$currentLinkFile"
+		[[ "$skimfast" != "true" ]] && ls -ld "$currentLinkFolder"/"$currentLinkFile"
+		[[ "$skimfast" != "true" ]] && [[ -d "$currentLinkFolder"/"$currentLinkFile" ]] && ls -l "$currentLinkFolder"/"$currentLinkFile"
 		
 		#rm -f "$currentLink"
 		##currentLink=$(_getAbsoluteLocation "$currentLink)
@@ -934,17 +939,17 @@ _mitigate-ubcp_rewrite_procedure() {
 	then
 		cd "$currentLinkFolder"
 		
-		ls -ld "$currentLinkFolder"/"$currentLinkFile"
+		[[ "$skimfast" != "true" ]] && ls -ld "$currentLinkFolder"/"$currentLinkFile"
 		
 		
 		
-		_messagePlain_nominal 'directive: replace: true'
+		[[ "$skimfast" != "true" ]] && _messagePlain_nominal 'directive: replace: true'
 		cp -L -R --preserve=all "$currentLinkFolder"/"$currentLinkFile" "$currentLinkFolder"/"$currentLinkFile".replace
 		rm -f "$currentLinkFolder"/"$currentLinkFile"
 		mv "$currentLinkFolder"/"$currentLinkFile".replace "$currentLinkFolder"/"$currentLinkFile"
 		
-		ls -ld "$currentLinkFolder"/"$currentLinkFile"
-		[[ -d "$currentLinkFolder"/"$currentLinkFile" ]] && ls -l "$currentLinkFolder"/"$currentLinkFile"
+		[[ "$skimfast" != "true" ]] && ls -ld "$currentLinkFolder"/"$currentLinkFile"
+		[[ "$skimfast" != "true" ]] && [[ -d "$currentLinkFolder"/"$currentLinkFile" ]] && ls -l "$currentLinkFolder"/"$currentLinkFile"
 		
 		cd "$outerPWD"
 	fi
@@ -1028,7 +1033,7 @@ _mitigate-ubcp_rewrite_sequence() {
 	# https://serverfault.com/questions/193319/a-better-unix-find-with-parallel-processing
 	# https://stackoverflow.com/questions/11003418/calling-shell-functions-with-xargs
 	export -f "_mitigate-ubcp_rewrite_parallel"
-	find "$2" -type l -print0 | xargs -0 -x -s 4096 -L 6 -P 4 bash -c '_mitigate-ubcp_rewrite_parallel "$@"' _
+	find "$2" -type l -print0 | xargs -0 -x -s 4096 -L 16 -P 6 bash -c '_mitigate-ubcp_rewrite_parallel "$@"' _
 	#find "$2" -type l -print0 | xargs -0 -n 1 -P 4 -I {} bash -c '_mitigate-ubcp_rewrite_parallel "$@"' _ {}
 	#find "$2" -type l -print0 | xargs -0 -n 1 -P 4 -I {} bash -c '_mitigate-ubcp_rewrite_procedure "$@"' _ {}
 	
@@ -1159,7 +1164,13 @@ _package_procedure-cygwinOnly() {
 	#env XZ_OPT="-5 -T0" tar -cJvf "$scriptAbsoluteFolder"/package_ubcp-cygwinOnly.tar.xz .
 	#env XZ_OPT="-0 -T0" tar -cJvf "$scriptAbsoluteFolder"/package_ubcp-cygwinOnly.tar.xz .
 	#tar -cvf "$scriptAbsoluteFolder"/package_ubcp-cygwinOnly.tar .
-	tar -cvf - . | lz4 -z --fast=1 - "$scriptAbsoluteFolder"/package_ubcp-cygwinOnly.tar.flx
+
+	if [[ "$skimfast" != "true" ]]
+	then
+		tar -cvf - . | lz4 -z --fast=1 - "$scriptAbsoluteFolder"/package_ubcp-cygwinOnly.tar.flx
+	else
+		tar -cf - . | lz4 -z --fast=1 - "$scriptAbsoluteFolder"/package_ubcp-cygwinOnly.tar.flx
+	fi
 	
 	mkdir -p "$scriptLocal"/ubcp/
 	mv "$scriptAbsoluteFolder"/package_ubcp-cygwinOnly.tar.gz "$scriptLocal"/ubcp/ > /dev/null 2>&1
