@@ -49,11 +49,11 @@ jobs:
           #./_lib/kit/install/cloud/zSpecial/msw/build_ubcp/build_ubcp_powershell.ps1
         #shell: pwsh
       # _lib/kit/install/cloud/zSpecial/msw/build_ubcp/build_ubcp_powershell.ps1
-      - name: deleteme
-        shell: pwsh
-        timeout-minutes: 240
-        run: |
-          echo deleteme | tee /deleteme
+      #- name: deleteme
+        #shell: pwsh
+        #timeout-minutes: 240
+        #run: |
+          #echo deleteme | tee /deleteme
         #continue-on-error: true
       #- name: release! deleteme
         #uses: softprops/action-gh-release@v1
@@ -81,6 +81,7 @@ jobs:
           #choco install rclone -y
       - uses: actions/checkout@v2
       - name: statement! ls
+        if: ${{ github.event.inputs.skimfast != 'true' }}
         shell: pwsh
         run: |
           ls /
@@ -103,6 +104,7 @@ jobs:
           files: |
             /ubcp-cygwin-portable-installer.log
       - name: statement! ubcp-cygwin-portable-installer
+        if: ${{ github.event.inputs.skimfast != 'true' }}
         run: |
           cat /ubcp-cygwin-portable-installer.log
         shell: pwsh
@@ -130,6 +132,7 @@ jobs:
           files: |
             /_setupUbiquitous.log
       - name: statement! _setupUbiquitous
+        if: ${{ github.event.inputs.skimfast != 'true' }}
         run: |
           Get-Content -Path /_setupUbiquitous.log | Measure-Object -Line -Word -Character
           cat /_setupUbiquitous.log
@@ -167,6 +170,7 @@ jobs:
           files: |
             /_mitigate-ubcp.log
       - name: statement! statistics! _mitigate-ubcp
+        if: ${{ github.event.inputs.skimfast != 'true' }}
         run: |
           Get-Content -Path /_mitigate-ubcp.log | Measure-Object -Line -Word -Character
         shell: pwsh
@@ -207,6 +211,7 @@ jobs:
           #cat /package_ubiquitous_bash-msw.log
         #shell: pwsh
       - name: statement! ls
+        if: ${{ github.event.inputs.skimfast != 'true' }}
         shell: pwsh
         run: |
           ls /
@@ -220,6 +225,7 @@ jobs:
           Set-Item -Path Env:skimfast -Value ("${{ inputs.skimfast }}")
           ./_bin _setup_ubcp / | tee /_setup_ubcp.log
       - name: statement! ls
+        if: ${{ github.event.inputs.skimfast != 'true' }}
         shell: pwsh
         run: |
           ls /
@@ -277,6 +283,7 @@ jobs:
           #rm /package_ubiquitous_bash-msw-rotten.7z
       # https://adamtheautomator.com/powershell-get-disk-space/
       - name: statement! ls
+        if: ${{ github.event.inputs.skimfast != 'true' }}
         shell: pwsh
         run: |
           ls /
