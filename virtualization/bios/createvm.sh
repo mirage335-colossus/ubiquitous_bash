@@ -29,7 +29,7 @@ _createVMimage() {
 	
 	_messageNormal 'create: vm.img'
 	
-	export vmSize=23296
+	export vmSize=26880
 	_createRawImage
 	
 	
@@ -74,26 +74,55 @@ _createVMimage() {
 	
 	
 	# EFI
-	#sudo -n parted --script "$vmImageFile" 'mkpart EFI fat32 '"2"'MiB '"514"'MiB'
-	sudo -n parted --script "$vmImageFile" 'mkpart EFI fat32 '"2"'MiB '"74"'MiB'
+	##sudo -n parted --script "$vmImageFile" 'mkpart EFI fat32 '"2"'MiB '"514"'MiB'
+	#sudo -n parted --script "$vmImageFile" 'mkpart EFI fat32 '"2"'MiB '"74"'MiB'
+	sudo -n parted --script "$vmImageFile" 'mkpart EFI fat32 '"2"'MiB '"42"'MiB'
 	sudo -n parted --script "$vmImageFile" 'set 2 msftdata on'
 	sudo -n parted --script "$vmImageFile" 'set 2 boot on'
 	sudo -n parted --script "$vmImageFile" 'set 2 esp on'
 	
 	
 	# Swap
-	#sudo -n parted --script "$vmImageFile" 'mkpart primary '"514"'MiB '"5633"'MiB'
-	#sudo -n parted --script "$vmImageFile" 'mkpart primary '"514"'MiB '"3073"'MiB'
-	sudo -n parted --script "$vmImageFile" 'mkpart primary '"74"'MiB '"98"'MiB'
+	##sudo -n parted --script "$vmImageFile" 'mkpart primary '"514"'MiB '"5633"'MiB'
+	##sudo -n parted --script "$vmImageFile" 'mkpart primary '"514"'MiB '"3073"'MiB'
+	#sudo -n parted --script "$vmImageFile" 'mkpart primary '"74"'MiB '"98"'MiB'
+	sudo -n parted --script "$vmImageFile" 'mkpart primary '"42"'MiB '"44"'MiB'
 	
 	
 	# Boot
-	sudo -n parted --script "$vmImageFile" 'mkpart primary '"98"'MiB '"610"'MiB'
+	#sudo -n parted --script "$vmImageFile" 'mkpart primary '"98"'MiB '"610"'MiB'
+	sudo -n parted --script "$vmImageFile" 'mkpart primary '"44"'MiB '"384"'MiB'
 	
 	
 	# Root
-	sudo -n parted --script "$vmImageFile" 'mkpart primary '"610"'MiB '"23295"'MiB'
-	
+	# WARNING: Adjust vmSize to match +1MiB .
+	# Try to keep this <23841MiB-256MiB-1MiB ( ie. <23584MiB ) (exactly 25000000000Bytes is 23841MiB ) . 
+	# https://www.mail-archive.com/kde-bugs-dist@kde.org/msg618604.html
+	#  '25025315816 bytes'   ...   'difference between the available space at the start and at the end is exactly 256M'
+	# http://fy.chalmers.se/~appro/linux/DVD+RW/Blu-ray/
+	#  '256MB'
+	# https://forum.blu-ray.com/showthread.php?t=76407
+	# https://forum.imgburn.com/topic/23120-overburn-or-truncate-for-blu-rays/
+	# Try to keep this <23GiB-1MiB . Prefer to fit two copies within 46GiB ( eg. 23296MiB == 22.75GiB ) .
+	# Try to keep this <28GiB-1MiB . Prefer to fit at least 18GiB (compressed rootfs tar, squashfs, etc) plus this 28GiB .
+	# Expect 25.75GiB may suffice ( ie. 22.75GiB+5GiB-2GiB ) (assuming 22.75GiB may have been sufficient by ~5GiB until another ~5GiB was added, and from there ~2GiB may have already been freed by other changes) .
+	# Expect 27.75GiB may suffice ( ie. 22.75GiB+5GiB-2GiB ) (assuming 22.75GiB may have been sufficient by ~5GiB until another ~5GiB was added) .
+
+	# Tested successfully.
+	# 22.75GiB-1MiB
+	#sudo -n parted --script "$vmImageFile" 'mkpart primary '"610"'MiB '"23295"'MiB'
+
+	# 22.95GiB-1MiB
+	##sudo -n parted --script "$vmImageFile" 'mkpart primary '"384"'MiB '"23499"'MiB'
+
+	# 23841MiB-256MiB-1MiB -2MiB
+	#sudo -n parted --script "$vmImageFile" 'mkpart primary '"384"'MiB '"23582"'MiB'
+
+	# 25.95GiB-1MiB
+	#sudo -n parted --script "$vmImageFile" 'mkpart primary '"384"'MiB '"26571"'MiB'
+
+	# 26.25GiB-1MiB
+	sudo -n parted --script "$vmImageFile" 'mkpart primary '"384"'MiB '"26879"'MiB'
 	
 	
 	

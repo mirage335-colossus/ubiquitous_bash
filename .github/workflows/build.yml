@@ -73,13 +73,13 @@ jobs:
         run: |
           echo deleteme | tee /deleteme
         #continue-on-error: true
-      - name: release! deleteme
-        uses: softprops/action-gh-release@v1
-        with:
-          tag_name: build-${{ github.run_id }}-${{ github.run_attempt }}
-          name: build
-          files: |
-            /deleteme
+      #- name: release! deleteme
+        #uses: softprops/action-gh-release@v1
+        #with:
+          #tag_name: build-${{ github.run_id }}-${{ github.run_attempt }}
+          #name: build
+          #files: |
+            #/deleteme
       - name: _getMinimal_cloud
         shell: pwsh
         timeout-minutes: 180
@@ -178,24 +178,24 @@ jobs:
         run: |
           cat /_test-lean.log
         shell: pwsh
-      - name: _package-cygwinOnly noMitigation
-        shell: pwsh
-        timeout-minutes: 240
-        run: |
-          ./_bin _package-cygwinOnly
-          mv ./_local/ubcp/package_ubcp-cygwinOnly.tar.xz /package_ubcp-cygwinOnly-noMitigation.tar.xz
-      - name: release! package_ubcp-cygwinOnly-noMitigation.tar.xz
-        uses: softprops/action-gh-release@v1
-        with:
-          tag_name: build-${{ github.run_id }}-${{ github.run_attempt }}
-          name: build
-          files: |
-            /package_ubcp-cygwinOnly-noMitigation.tar.xz
-      - name: rm - _package-cygwinOnly noMitigation
-        shell: pwsh
-        timeout-minutes: 240
-        run: |
-          rm /package_ubcp-cygwinOnly-noMitigation.tar.xz
+      #- name: _package-cygwinOnly noMitigation
+        #shell: pwsh
+        #timeout-minutes: 240
+        #run: |
+          #./_bin _package-cygwinOnly
+          #mv ./_local/ubcp/package_ubcp-cygwinOnly.tar.xz /package_ubcp-cygwinOnly-noMitigation.tar.xz
+      #- name: release! package_ubcp-cygwinOnly-noMitigation.tar.xz
+        #uses: softprops/action-gh-release@v1
+        #with:
+          #tag_name: build-${{ github.run_id }}-${{ github.run_attempt }}
+          #name: build
+          #files: |
+            #/package_ubcp-cygwinOnly-noMitigation.tar.xz
+      #- name: rm - _package-cygwinOnly noMitigation
+        #shell: pwsh
+        #timeout-minutes: 240
+        #run: |
+          #rm /package_ubcp-cygwinOnly-noMitigation.tar.xz
       - name: _mitigate-ubcp
         shell: pwsh
         timeout-minutes: 240
@@ -213,41 +213,41 @@ jobs:
         run: |
           Get-Content -Path /_mitigate-ubcp.log | Measure-Object -Line -Word -Character
         shell: pwsh
-      - name: _package-cygwinOnly
-        shell: pwsh
-        timeout-minutes: 240
-        run: |
-          ./_bin _package-cygwinOnly
-      - name: release! package_ubcp-cygwinOnly.tar.xz
-        uses: softprops/action-gh-release@v1
-        with:
-          tag_name: build-${{ github.run_id }}-${{ github.run_attempt }}
-          name: build
-          files: |
-            ./_local/ubcp/package_ubcp-cygwinOnly.tar.xz
-      - name: _MSWpackage package_ubiquitous_bash-msw
-        shell: pwsh
-        timeout-minutes: 240
-        run: |
-          cd ..
-          7z -y a -t7z /package_ubiquitous_bash-msw.7z ./ubiquitous_bash | tee /package_ubiquitous_bash-msw.log
-      - name: release! _MSWpackage package_ubiquitous_bash-msw
-        uses: softprops/action-gh-release@v1
-        with:
-          tag_name: build-${{ github.run_id }}-${{ github.run_attempt }}
-          name: build
-          files: |
-            /package_ubiquitous_bash-msw.log
-            /package_ubiquitous_bash-msw.7z
-      - name: rm - _MSWpackage package_ubiquitous_bash-msw
-        shell: pwsh
-        timeout-minutes: 240
-        run: |
-          rm /package_ubiquitous_bash-msw.7z
-      - name: statement! package_ubiquitous_bash-msw
-        run: |
-          cat /package_ubiquitous_bash-msw.log
-        shell: pwsh
+      #- name: _package-cygwinOnly
+        #shell: pwsh
+        #timeout-minutes: 240
+        #run: |
+          #./_bin _package-cygwinOnly
+      #- name: release! package_ubcp-cygwinOnly.tar.xz
+        #uses: softprops/action-gh-release@v1
+        #with:
+          #tag_name: build-${{ github.run_id }}-${{ github.run_attempt }}
+          #name: build
+          #files: |
+            #./_local/ubcp/package_ubcp-cygwinOnly.tar.xz
+      #- name: _MSWpackage package_ubiquitous_bash-msw
+        #shell: pwsh
+        #timeout-minutes: 240
+        #run: |
+          #cd ..
+          #7z -y a -t7z /package_ubiquitous_bash-msw.7z ./ubiquitous_bash | tee /package_ubiquitous_bash-msw.log
+      #- name: release! _MSWpackage package_ubiquitous_bash-msw
+        #uses: softprops/action-gh-release@v1
+        #with:
+          #tag_name: build-${{ github.run_id }}-${{ github.run_attempt }}
+          #name: build
+          #files: |
+            #/package_ubiquitous_bash-msw.log
+            #/package_ubiquitous_bash-msw.7z
+      #- name: rm - _MSWpackage package_ubiquitous_bash-msw
+        #shell: pwsh
+        #timeout-minutes: 240
+        #run: |
+          #rm /package_ubiquitous_bash-msw.7z
+      #- name: statement! package_ubiquitous_bash-msw
+        #run: |
+          #cat /package_ubiquitous_bash-msw.log
+        #shell: pwsh
       - name: statement! ls
         shell: pwsh
         run: |
@@ -288,26 +288,26 @@ jobs:
           rm /package_ubcp-core.7z
           Remove-Item -Recurse -Force /core/infrastructure/ubcp
           Remove-Item -Recurse -Force /core/infrastructure/ubiquitous_bash
-      - name: _MSWpackage package_ubiquitous_bash-msw-rotten
-        shell: pwsh
-        timeout-minutes: 240
-        run: |
-          cd ..
-          rm ./ubiquitous_bash/_local/ubcp/package_ubcp-cygwinOnly.tar.xz
-          7z -y a -t7z /package_ubiquitous_bash-msw-rotten.7z ./ubiquitous_bash | tee /package_ubiquitous_bash-msw-rotten.log
-      - name: release! _MSWpackage package_ubiquitous_bash-msw-rotten
-        uses: softprops/action-gh-release@v1
-        with:
-          tag_name: build-${{ github.run_id }}-${{ github.run_attempt }}
-          name: build
-          files: |
-            /package_ubiquitous_bash-msw-rotten.log
-            /package_ubiquitous_bash-msw-rotten.7z
-      - name: rm - _MSWpackage package_ubiquitous_bash-msw-rotten
-        shell: pwsh
-        timeout-minutes: 240
-        run: |
-          rm /package_ubiquitous_bash-msw-rotten.7z
+      #- name: _MSWpackage package_ubiquitous_bash-msw-rotten
+        #shell: pwsh
+        #timeout-minutes: 240
+        #run: |
+          #cd ..
+          #rm ./ubiquitous_bash/_local/ubcp/package_ubcp-cygwinOnly.tar.xz
+          #7z -y a -t7z /package_ubiquitous_bash-msw-rotten.7z ./ubiquitous_bash | tee /package_ubiquitous_bash-msw-rotten.log
+      #- name: release! _MSWpackage package_ubiquitous_bash-msw-rotten
+        #uses: softprops/action-gh-release@v1
+        #with:
+          #tag_name: build-${{ github.run_id }}-${{ github.run_attempt }}
+          #name: build
+          #files: |
+            #/package_ubiquitous_bash-msw-rotten.log
+            #/package_ubiquitous_bash-msw-rotten.7z
+      #- name: rm - _MSWpackage package_ubiquitous_bash-msw-rotten
+        #shell: pwsh
+        #timeout-minutes: 240
+        #run: |
+          #rm /package_ubiquitous_bash-msw-rotten.7z
       # https://adamtheautomator.com/powershell-get-disk-space/
       - name: statement! ls
         shell: pwsh

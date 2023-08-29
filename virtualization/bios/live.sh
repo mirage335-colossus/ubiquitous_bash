@@ -655,11 +655,21 @@ DefaultTasksMax=24' | sudo -n tee "$globalVirtFS"/etc/systemd/system.conf > /dev
 	_safeRMR "$safeTmp"/root002
 
 	mkdir -p "$safeTmp"/root001
-	sudo -n cp -a "$globalVirtFS"/home  "$safeTmp"/root001/
+	sudo -n mkdir -p "$safeTmp"/root001/home
+	#sudo -n cp -a "$globalVirtFS"/home "$safeTmp"/root001/
+	sudo -n mount --bind "$globalVirtFS"/home "$safeTmp"/root001/home
+	_messagePlain_probe_cmd mountpoint "$safeTmp"/root001/home
 	_messagePlain_probe_cmd ls -l "$safeTmp"/root001/home/user/core/
 	_messagePlain_probe_cmd du -sh "$safeTmp"/root001/home
 	sudo -n mksquashfs "$safeTmp"/root001 "$scriptLocal"/livefs/image/live/filesystem.squashfs -b 262144 -no-xattrs -noI -noX -comp lzo -Xalgorithm lzo1x_1 -e boot -e etc/fstab
 	du -sh "$scriptLocal"/livefs/image/live/filesystem.squashfs
+	sudo -n umount "$safeTmp"/root001/home
+	if mountpoint "$safeTmp"/root001/home
+	then
+		_messageFAIL
+		_stop 1
+		return 1
+	fi
 	sudo -n chown -R "$USER":"$USER" "$safeTmp"/root001
 	export safeToDeleteGit="true"
 	_safeRMR "$safeTmp"/root001
