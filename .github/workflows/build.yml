@@ -72,9 +72,9 @@ jobs:
           date > /wasHere.log
           pwd >> /wasHere.log
           cat /wasHere.log
-          choco install qalculate -y
+          #choco install qalculate -y
           choco install dos2unix -y
-          choco install nmap -y
+          #choco install nmap -y
           git config --global core.autocrlf input
           git config --global core.eol lf
           choco install 7zip.install -y
@@ -226,12 +226,20 @@ jobs:
           ls
           Get-CimInstance -ClassName Win32_LogicalDisk | Select-Object -Property DeviceID,@{'Name' = 'FreeSpace (GB)'
           Expression= { [int]($_.FreeSpace / 1GB) }}
-      - name: _MSWpackage package_ubcp-core
+      - name: _MSWpackage package_ubcp-core - skimfast
+        if: ${{ github.event.inputs.skimfast == 'true' }}
         shell: pwsh
         timeout-minutes: 240
         run: |
           cd ..
-          7z -y a -t7z /package_ubcp-core.7z /core/infrastructure/ubcp /core/infrastructure/ubiquitous_bash /_bash.bat | tee /package_ubcp-core.log
+          7z -y a -t7z -m0=lzma2 -mt=6 -mx=9 /package_ubcp-core.7z /core/infrastructure/ubcp /core/infrastructure/ubiquitous_bash /_bash.bat | tee /package_ubcp-core.log
+      - name: _MSWpackage package_ubcp-core
+        if: ${{ github.event.inputs.skimfast != 'true' }}
+        shell: pwsh
+        timeout-minutes: 240
+        run: |
+          cd ..
+          7z -y a -t7z -m0=lzma2 -mt=6 ${{ github.event.inputs.skimfast == 'true' && '-mx=1' || github.event.inputs.skimfast != 'true' && '-mx=9' }}/package_ubcp-core.7z /core/infrastructure/ubcp /core/infrastructure/ubiquitous_bash /_bash.bat | tee /package_ubcp-core.log
       - name: release! _MSWpackage package_ubcp-core
         uses: softprops/action-gh-release@v1
         with:
