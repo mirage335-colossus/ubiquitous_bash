@@ -41,8 +41,8 @@ _local/ssh/log/
 
 
 
-
-!_local/ubcp
+_local/ubcp
+#!_local/ubcp
 .search
 search/
 
