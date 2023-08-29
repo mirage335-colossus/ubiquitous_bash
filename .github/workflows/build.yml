@@ -27,17 +27,17 @@ concurrency:
 # https://github.com/softprops/action-gh-release
 # https://svrooij.io/2021/08/17/github-actions-secret-file/
 jobs:
-  build_guard:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: dev-drprasad/delete-tag-and-release@v1.0
-        with:
-            tag_name: build-${{ github.run_id }}-${{ github.run_attempt }} #(required) tag name to delete 
-            github_token: ${{ secrets.GITHUB_TOKEN }}
-            delete_release: true #(optional) default: true 
+  #build_guard:
+    #runs-on: ubuntu-latest
+    #steps:
+      #- uses: actions/checkout@v2
+      #- uses: dev-drprasad/delete-tag-and-release@v1.0
+        #with:
+            #tag_name: build-${{ github.run_id }}-${{ github.run_attempt }} #(required) tag name to delete 
+            #github_token: ${{ secrets.GITHUB_TOKEN }}
+            #delete_release: true #(optional) default: true 
   build_compressed:
-    needs: [build_guard]
+    #needs: [build_guard]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -58,7 +58,7 @@ jobs:
             ./ubcore_compressed.sh
             ./ubiquitous_bash_compressed.sh
   build_ubcp:
-    needs: [build_guard, build_compressed]
+    #needs: [build_guard, build_compressed]
     runs-on: windows-latest
     steps:
       # https://adamtheautomator.com/powershell-get-disk-space/
@@ -213,11 +213,11 @@ jobs:
         run: |
           Get-Content -Path /_mitigate-ubcp.log | Measure-Object -Line -Word -Character
         shell: pwsh
-      #- name: _package-cygwinOnly
-        #shell: pwsh
-        #timeout-minutes: 240
-        #run: |
-          #./_bin _package-cygwinOnly
+      - name: _package-cygwinOnly
+        shell: pwsh
+        timeout-minutes: 240
+        run: |
+          ./_bin _package-cygwinOnly
       #- name: release! package_ubcp-cygwinOnly.tar.xz
         #uses: softprops/action-gh-release@v1
         #with:
