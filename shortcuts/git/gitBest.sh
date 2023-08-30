@@ -186,7 +186,7 @@ _test_gitBest() {
 	
 	_wantGetDep git
 	
-	_wantGetDep nmap
+	#_wantGetDep nmap
 	#_wantGetDep curl
 	#_wantGetDep wget
 }

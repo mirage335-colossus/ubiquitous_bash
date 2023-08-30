@@ -1873,6 +1873,8 @@ _ssh_latency() {
 
 # Checks common ports.
 _ssh_common_internal_procedure() {
+	_discoverResource-cygwinNative-nmap
+	
 	_messagePlain_nominal 'nmap: IPv4'
 	ssh "$@" nmap localhost -p 22,80,443
 	
@@ -1882,6 +1884,8 @@ _ssh_common_internal_procedure() {
 
 
 _ssh_common_external_public_procedure() {
+	_discoverResource-cygwinNative-nmap
+
 	_messagePlain_nominal 'nmap: public IPv4'
 	nmap "$remotePublicIPv4" -p 22,80,443
 	
@@ -1890,6 +1894,8 @@ _ssh_common_external_public_procedure() {
 }
 
 _ssh_common_external_route_procedure() {
+	_discoverResource-cygwinNative-nmap
+	
 	_messagePlain_nominal 'nmap: route IPv4'
 	nmap "$remoteRouteIPv4" -p 22,80,443
 	

@@ -21,12 +21,13 @@ _testProxyRouter_sequence() {
 _testProxyRouter() {
 	_getDep socat
 	
-	_getDep nmap
-	
 	_getDep curl
 	
 	# WARNING: Cygwin does not pass netcat tests.
 	uname -a | grep -i cygwin > /dev/null 2>&1 && return 0
+
+	_discoverResource-cygwinNative-nmap
+	_getDep nmap
 	
 	# WARNING: Do not rely on 'netcat' functionality. Relatively non-portable. Prefer "socat" .
 	_getDep nc
