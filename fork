@@ -539,7 +539,8 @@ _project() {
 	
 	_gitBest init
 	
-	_gitBest submodule add --depth 1 git@github.com:mirage335/ubiquitous_bash.git ./_lib/ubiquitous_bash 
+	#_gitBest submodule add --depth 1 git@github.com:mirage335/ubiquitous_bash.git ./_lib/ubiquitous_bash
+	_gitBest submodule add --depth 1 git@github.com:mirage335-colossus/ubiquitous_bash.git ./_lib/ubiquitous_bash
 	cd ./_lib/ubiquitous_bash ; _gitBest fetch --shallow-exclude=v3.112 ; _gitBest reset --hard
 	cd "$workingDir"/"$projectName"
 	

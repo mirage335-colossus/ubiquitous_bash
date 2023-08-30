@@ -59,6 +59,7 @@ jobs:
       - name: test-lean
         shell: bash
         run: |
+          export devfast="true"
           ./lean.sh _test | sudo -n tee /_test-lean.log
         timeout-minutes: 90
       - name: _compile
@@ -157,6 +158,7 @@ jobs:
         shell: pwsh
         timeout-minutes: 240
         run: |
+          Set-Item -Path Env:devfast -Value ("true")
           ./_test | tee /_test-lean.log
           $SEL = cat /_test-lean.log | Select-String -Pattern 'FAIL' -CaseSensitive -SimpleMatch
           if ($SEL -ne $null)
