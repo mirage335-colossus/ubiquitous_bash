@@ -9,6 +9,13 @@ on:
       skimfast:
         type: boolean
         default: true
+      runnerNameMSW:
+        required: false
+        default: windows-latest-m
+        type: choice
+        options:
+        - windows-latest
+        - windows-latest-m
   # https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#schedule
   schedule:
     ##- cron: '5 1 * * 6'
@@ -41,7 +48,7 @@ jobs:
             #delete_release: true #(optional) default: true 
   build_ubcp:
     #needs: [build_guard, build_compressed]
-    runs-on: windows-latest
+    runs-on: ${{ github.event.inputs.runnerNameMSW == '' && 'windows-latest' || github.event.inputs.runnerNameMSW }}
     steps:
       # https://adamtheautomator.com/powershell-get-disk-space/
       #- name: build_ubcp_powershell
