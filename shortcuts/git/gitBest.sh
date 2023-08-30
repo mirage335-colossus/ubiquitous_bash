@@ -58,14 +58,32 @@ _gitBest_detect() {
 _gitBest_override_config_insteadOf-core() {
 	git config --global url."file://""$realHome""/core/infrastructure/""$1".insteadOf git@github.com:mirage335/"$1".git git@github.com:mirage335/"$1"
 }
+_gitBest_override_config_insteadOf-core--colossus() {
+	git config --global url."file://""$realHome""/core/infrastructure/""$1".insteadOf git@github.com:mirage335-colossus/"$1".git git@github.com:mirage335-colossus/"$1"
+}
+_gitBest_override_config_insteadOf-core--gizmos() {
+	git config --global url."file://""$realHome""/core/infrastructure/""$1".insteadOf git@github.com:mirage335-gizmos/"$1".git git@github.com:mirage335-gizmos/"$1"
+}
+_gitBest_override_config_insteadOf-core--distllc() {
+	git config --global url."file://""$realHome""/core/infrastructure/""$1".insteadOf git@github.com:soaringDistributions/"$1".git git@github.com:soaringDistributions/"$1"
+}
 
 
 _gitBest_override_github-github_core() {
-	_gitBest_override_config_insteadOf-core ubiquitous_bash
-	_gitBest_override_config_insteadOf-core extendedInterface
+	_gitBest_override_config_insteadOf-core--colossus ubiquitous_bash
+	_gitBest_override_config_insteadOf-core--colossus extendedInterface
+
+	_gitBest_override_config_insteadOf-core--gizmos flightDeck
+	_gitBest_override_config_insteadOf-core--gizmos kinematicBase-large
+
+	_gitBest_override_config_insteadOf-core--distllc ubDistBuild
+	_gitBest_override_config_insteadOf-core--distllc ubDistFetch
+	
+	_gitBest_override_config_insteadOf-core mirage335_documents
+	_gitBest_override_config_insteadOf-core mirage335GizmoScience
+
 	_gitBest_override_config_insteadOf-core scriptedIllustrator
 	_gitBest_override_config_insteadOf-core arduinoUbiquitous
-	_gitBest_override_config_insteadOf-core mirage335_documents
 	
 	_gitBest_override_config_insteadOf-core BOM_designer
 	_gitBest_override_config_insteadOf-core CoreAutoSSH
