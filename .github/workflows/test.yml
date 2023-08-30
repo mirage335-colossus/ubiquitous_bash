@@ -30,7 +30,7 @@ jobs:
         run: |
           mkdir -p ~/core/infrastructure
           cd ~/core/infrastructure
-          git clone --depth 1 --recursive https://github.com/mirage335/ubiquitous_bash.git
+          git clone --depth 1 --recursive https://github.com/mirage335-colossus/ubiquitous_bash.git
           cd ubiquitous_bash
           ./_setupUbiquitous.bat
       - name: _getMinimal_cloud
@@ -126,11 +126,11 @@ jobs:
           #rclone --progress --config /rclone.conf copy distLLC_release_ro:ubcp/package_ubcp-core.7z ./
 
           # ATTRIBUTION-AI
-          #curl -L -o package_ubcp-core.7z $(curl -s "https://api.github.com/repos/mirage335/ubiquitous_bash/releases/latest" | jq -r ".assets[] | select(.name == \"package_ubcp-core.7z\") | .browser_download_url")
-          #curl -L -o package_ubcp-core.7z $(curl -s "https://api.github.com/repos/mirage335/ubiquitous_bash/releases" | jq -r ".[] | select(.name == \"internal\") | .assets[] | select(.name == \"package_ubcp-core.7z\") | .browser_download_url")
+          #curl -L -o package_ubcp-core.7z $(curl -s "https://api.github.com/repos/mirage335-colossus/ubiquitous_bash/releases/latest" | jq -r ".assets[] | select(.name == \"package_ubcp-core.7z\") | .browser_download_url")
+          #curl -L -o package_ubcp-core.7z $(curl -s "https://api.github.com/repos/mirage335-colossus/ubiquitous_bash/releases" | jq -r ".[] | select(.name == \"internal\") | .assets[] | select(.name == \"package_ubcp-core.7z\") | .browser_download_url")
 
 
-          #$releases = Invoke-RestMethod -Uri "https://api.github.com/repos/mirage335/ubiquitous_bash/releases"
+          #$releases = Invoke-RestMethod -Uri "https://api.github.com/repos/mirage335-colossus/ubiquitous_bash/releases"
           #$asset = $releases | Where-Object {$_.name -eq "internal"} | 
           #Select-Object -ExpandProperty assets | Where-Object {$_.name -eq "package_ubcp-core.7z"} |
           #Sort-Object -Property {$_.browser_download_url -replace '\D+(\d+)-\d+$', '$1'} -Descending | 
@@ -138,11 +138,11 @@ jobs:
           #Invoke-WebRequest -Uri $asset.browser_download_url -OutFile ./package_ubcp-core.7z
 
           # ATTRIBUTION - SEVERE - GPT-3.5 from ChatGPT was able to provide a correct answer whereas GPT-4 and Github Copilot chat were NOT .
-          #Invoke-WebRequest -Uri ((Invoke-RestMethod -Uri "https://api.github.com/repos/mirage335/ubiquitous_bash/releases" | Where-Object {$_.name -eq "internal"} | ForEach-Object { $_.assets } | Where-Object {$_.name -eq "package_ubcp-core.7z"} | Sort-Object -Property {$_.browser_download_url -replace '\D+(\d+)-\d+$', '$1'} -Descending | Select-Object -First 1).browser_download_url) -OutFile ./package_ubcp-core.7z
-          #Invoke-WebRequest -Uri ((Invoke-RestMethod -Uri "https://api.github.com/repos/mirage335/ubiquitous_bash/releases" -Headers @{Authorization = "Bearer ${{ secrets.GITHUB_TOKEN }}" } | Where-Object {$_.name -eq "internal"} | ForEach-Object { $_.assets } | Where-Object {$_.name -eq "package_ubcp-core.7z"} | Sort-Object -Property {$_.browser_download_url -replace '\D+(\d+)-\d+$', '$1'} -Descending | Select-Object -First 1).browser_download_url) -OutFile ./package_ubcp-core.7z
-          #(Invoke-RestMethod -Uri "https://api.github.com/repos/mirage335/ubiquitous_bash/releases") | Where-Object { $_.name -eq "internal" }
-          #Invoke-WebRequest -Uri (((Invoke-RestMethod -Uri "https://api.github.com/repos/mirage335/ubiquitous_bash/releases") | Where-Object { $_.name -eq "internal" } | ForEach-Object { $_.assets } | Where-Object {$_.name -eq "package_ubcp-core.7z"} | Sort-Object -Property {$_.browser_download_url -replace '\D+(\d+)-\d+$', '$1'} -Descending | Select-Object -First 1).browser_download_url) -OutFile ./package_ubcp-core.7z
-          Invoke-WebRequest -Uri (((Invoke-RestMethod -Uri "https://api.github.com/repos/mirage335/ubiquitous_bash/releases" -Headers @{Authorization = "Bearer ${{ secrets.GITHUB_TOKEN }}" }) | Where-Object { $_.name -eq "internal" } | ForEach-Object { $_.assets } | Where-Object {$_.name -eq "package_ubcp-core.7z"} | Sort-Object -Property {$_.browser_download_url -replace '\D+(\d+)-\d+$', '$1'} -Descending | Select-Object -First 1).browser_download_url) -OutFile ./package_ubcp-core.7z
+          #Invoke-WebRequest -Uri ((Invoke-RestMethod -Uri "https://api.github.com/repos/mirage335-colossus/ubiquitous_bash/releases" | Where-Object {$_.name -eq "internal"} | ForEach-Object { $_.assets } | Where-Object {$_.name -eq "package_ubcp-core.7z"} | Sort-Object -Property {$_.browser_download_url -replace '\D+(\d+)-\d+$', '$1'} -Descending | Select-Object -First 1).browser_download_url) -OutFile ./package_ubcp-core.7z
+          #Invoke-WebRequest -Uri ((Invoke-RestMethod -Uri "https://api.github.com/repos/mirage335-colossus/ubiquitous_bash/releases" -Headers @{Authorization = "Bearer ${{ secrets.GITHUB_TOKEN }}" } | Where-Object {$_.name -eq "internal"} | ForEach-Object { $_.assets } | Where-Object {$_.name -eq "package_ubcp-core.7z"} | Sort-Object -Property {$_.browser_download_url -replace '\D+(\d+)-\d+$', '$1'} -Descending | Select-Object -First 1).browser_download_url) -OutFile ./package_ubcp-core.7z
+          #(Invoke-RestMethod -Uri "https://api.github.com/repos/mirage335-colossus/ubiquitous_bash/releases") | Where-Object { $_.name -eq "internal" }
+          #Invoke-WebRequest -Uri (((Invoke-RestMethod -Uri "https://api.github.com/repos/mirage335-colossus/ubiquitous_bash/releases") | Where-Object { $_.name -eq "internal" } | ForEach-Object { $_.assets } | Where-Object {$_.name -eq "package_ubcp-core.7z"} | Sort-Object -Property {$_.browser_download_url -replace '\D+(\d+)-\d+$', '$1'} -Descending | Select-Object -First 1).browser_download_url) -OutFile ./package_ubcp-core.7z
+          Invoke-WebRequest -Uri (((Invoke-RestMethod -Uri "https://api.github.com/repos/mirage335-colossus/ubiquitous_bash/releases" -Headers @{Authorization = "Bearer ${{ secrets.GITHUB_TOKEN }}" }) | Where-Object { $_.name -eq "internal" } | ForEach-Object { $_.assets } | Where-Object {$_.name -eq "package_ubcp-core.7z"} | Sort-Object -Property {$_.browser_download_url -replace '\D+(\d+)-\d+$', '$1'} -Descending | Select-Object -First 1).browser_download_url) -OutFile ./package_ubcp-core.7z
 
           7z -y x ./package_ubcp-core.7z | tee /_getCore_ubcp.log
           rm ./package_ubcp-core.7z
@@ -230,12 +230,12 @@ jobs:
           #sleep 120
           #rclone --progress --config /rclone.conf copy distLLC_build_ubcp:package_ubcp-core.7z ./
 
-          #curl -L -o package_ubcp-core.7z $(curl -s "https://api.github.com/repos/mirage335/ubiquitous_bash/releases/latest" | jq -r ".assets[] | select(.name == \"package_ubcp-core.7z\") | .browser_download_url")
-          #curl -L -o package_ubcp-core.7z $(curl -s "https://api.github.com/repos/mirage335/ubiquitous_bash/releases" | jq -r ".[] | select(.name == \"build\") | .assets[] | select(.name == \"package_ubcp-core.7z\") | .browser_download_url")
+          #curl -L -o package_ubcp-core.7z $(curl -s "https://api.github.com/repos/mirage335-colossus/ubiquitous_bash/releases/latest" | jq -r ".assets[] | select(.name == \"package_ubcp-core.7z\") | .browser_download_url")
+          #curl -L -o package_ubcp-core.7z $(curl -s "https://api.github.com/repos/mirage335-colossus/ubiquitous_bash/releases" | jq -r ".[] | select(.name == \"build\") | .assets[] | select(.name == \"package_ubcp-core.7z\") | .browser_download_url")
 
-          #Invoke-WebRequest -Uri ((Invoke-RestMethod -Uri "https://api.github.com/repos/mirage335/ubiquitous_bash/releases/latest").assets | Where-Object {$_.name -eq "package_ubcp-core.7z"}).browser_download_url -OutFile ./package_ubcp-core.7z
+          #Invoke-WebRequest -Uri ((Invoke-RestMethod -Uri "https://api.github.com/repos/mirage335-colossus/ubiquitous_bash/releases/latest").assets | Where-Object {$_.name -eq "package_ubcp-core.7z"}).browser_download_url -OutFile ./package_ubcp-core.7z
 
-          Invoke-WebRequest -Uri ((Invoke-RestMethod -Uri "https://api.github.com/repos/mirage335/ubiquitous_bash/releases/latest" -Headers @{Authorization = "Bearer ${{ secrets.GITHUB_TOKEN }}" }).assets | Where-Object {$_.name -eq "package_ubcp-core.7z"}).browser_download_url -OutFile ./package_ubcp-core.7z
+          Invoke-WebRequest -Uri ((Invoke-RestMethod -Uri "https://api.github.com/repos/mirage335-colossus/ubiquitous_bash/releases/latest" -Headers @{Authorization = "Bearer ${{ secrets.GITHUB_TOKEN }}" }).assets | Where-Object {$_.name -eq "package_ubcp-core.7z"}).browser_download_url -OutFile ./package_ubcp-core.7z
 
           7z -y x ./package_ubcp-core.7z | tee /_getCore_ubcp.log
           rm ./package_ubcp-core.7z
@@ -324,12 +324,12 @@ jobs:
           #sleep 240
           #rclone --progress --config /rclone.conf copy distLLC_build_ubcp:package_ubcp-core.7z ./
 
-          #curl -L -o package_ubcp-core.7z $(curl -s "https://api.github.com/repos/mirage335/ubiquitous_bash/releases/latest" | jq -r ".assets[] | select(.name == \"package_ubcp-core.7z\") | .browser_download_url")
-          #curl -L -o package_ubcp-core.7z $(curl -s "https://api.github.com/repos/mirage335/ubiquitous_bash/releases" | jq -r ".[] | select(.name == \"build\") | .assets[] | select(.name == \"package_ubcp-core.7z\") | .browser_download_url")
+          #curl -L -o package_ubcp-core.7z $(curl -s "https://api.github.com/repos/mirage335-colossus/ubiquitous_bash/releases/latest" | jq -r ".assets[] | select(.name == \"package_ubcp-core.7z\") | .browser_download_url")
+          #curl -L -o package_ubcp-core.7z $(curl -s "https://api.github.com/repos/mirage335-colossus/ubiquitous_bash/releases" | jq -r ".[] | select(.name == \"build\") | .assets[] | select(.name == \"package_ubcp-core.7z\") | .browser_download_url")
 
-          #Invoke-WebRequest -Uri ((Invoke-RestMethod -Uri "https://api.github.com/repos/mirage335/ubiquitous_bash/releases/latest").assets | Where-Object {$_.name -eq "package_ubcp-core.7z"}).browser_download_url -OutFile ./package_ubcp-core.7z
+          #Invoke-WebRequest -Uri ((Invoke-RestMethod -Uri "https://api.github.com/repos/mirage335-colossus/ubiquitous_bash/releases/latest").assets | Where-Object {$_.name -eq "package_ubcp-core.7z"}).browser_download_url -OutFile ./package_ubcp-core.7z
 
-          Invoke-WebRequest -Uri ((Invoke-RestMethod -Uri "https://api.github.com/repos/mirage335/ubiquitous_bash/releases/latest" -Headers @{Authorization = "Bearer ${{ secrets.GITHUB_TOKEN }}" }).assets | Where-Object {$_.name -eq "package_ubcp-core.7z"}).browser_download_url -OutFile ./package_ubcp-core.7z
+          Invoke-WebRequest -Uri ((Invoke-RestMethod -Uri "https://api.github.com/repos/mirage335-colossus/ubiquitous_bash/releases/latest" -Headers @{Authorization = "Bearer ${{ secrets.GITHUB_TOKEN }}" }).assets | Where-Object {$_.name -eq "package_ubcp-core.7z"}).browser_download_url -OutFile ./package_ubcp-core.7z
 
           7z -y x ./package_ubcp-core.7z | tee /_getCore_ubcp.log
           rm ./package_ubcp-core.7z
