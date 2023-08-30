@@ -245,7 +245,7 @@ jobs:
         timeout-minutes: 240
         run: |
           cd ..
-          7z -y a -t7z -m0=lzma2 -mmt=6 ${{ github.event.inputs.skimfast == 'true' && '-mx=1' || github.event.inputs.skimfast != 'true' && '-mx=9' }}/package_ubcp-core.7z /core/infrastructure/ubcp /core/infrastructure/ubiquitous_bash /_bash.bat | tee /package_ubcp-core.log
+          7z -y a -t7z -m0=lzma2 -mmt=6 ${{ github.event.inputs.skimfast == 'true' && '-mx=1' || github.event.inputs.skimfast != 'true' && '-mx=9' }} /package_ubcp-core.7z /core/infrastructure/ubcp /core/infrastructure/ubiquitous_bash /_bash.bat | tee /package_ubcp-core.log
       - name: release! _MSWpackage package_ubcp-core
         uses: softprops/action-gh-release@v1
         with:
