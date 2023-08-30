@@ -11,11 +11,11 @@ on:
         default: true
       runnerNameMSW:
         required: false
-        default: windows-latest-m
+        default: windows-latest-l
         type: choice
         options:
         - windows-latest
-        - windows-latest-m
+        - windows-latest-l
   # https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#schedule
   schedule:
     ##- cron: '5 1 * * 6'
