@@ -729,6 +729,9 @@ _compile_bash_shortcuts() {
 	
 	( [[ "$enUb_repo" == "true" ]] && [[ "$enUb_git" == "true" ]] ) && includeScriptList+=( "shortcuts/git"/git.sh )
 	( [[ "$enUb_repo" == "true" ]] && [[ "$enUb_git" == "true" ]] ) && includeScriptList+=( "shortcuts/git"/gitBare.sh )
+
+	includeScriptList+=( "shortcuts/git"/gitMad.sh )
+
 	includeScriptList+=( "shortcuts/git"/gitBest.sh )
 	includeScriptList+=( "shortcuts/git"/wget_githubRelease_internal.sh )
 	
