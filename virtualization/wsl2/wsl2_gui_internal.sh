@@ -3,8 +3,16 @@
 
 
 _wsl_desktop() {
+    local functionEntryPWD
+    functionEntryPWD="$PWD"
+
     (
         _messageNormal "init: _wsl_desktop"
+        if [[ "$PWD" == "/mnt/"?"/WINDOWS/system32" ]] || [[ "$PWD" == "/mnt/"?"/Windows/system32" ]] || [[ "$PWD" == "/mnt/"?"/windows/system32" ]]
+        then
+            _messagePlain_probe 'reject: /mnt/'?'/WINDOWS/system32'
+            _messagePlain_probe_cmd cd
+        fi
 
         export QT_QPA_PLATFORMTHEME=
         unset QT_QPA_PLATFORMTHEME
@@ -36,12 +44,15 @@ _wsl_desktop() {
         then
             ( Xephyr -screen "$xephyrResolution" :"$xephyrDisplay" & ( export DISPLAY=:"$xephyrDisplay" ; "$HOME"/core/installations/xclipsync/xclipsync & dbus-run-session startplasma-x11 2>/dev/null ) )
             return 0
+            cd "$functionEntryPWD"
         fi
         _messagePlain_bad 'bad: missing: GUI'
         _messageFAIL
-
-        return 0
+        _stop 1
+        return 1
     )
+
+    cd "$functionEntryPWD"
 }
 ldesk() {
     _wsl_desktop "$@"
