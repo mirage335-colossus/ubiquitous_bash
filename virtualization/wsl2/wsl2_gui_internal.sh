@@ -1,10 +1,16 @@
 
 
 
-_wsl_desktop-wait_wmctrl() {
+_wsl_desktop-waitUp_wmctrl() {
     while [[ $(wmctrl -d 2>/dev/null | wc -l) -lt 1 ]]
     do
         sleep 0.2
+    done
+}
+_wsl_desktop-waitDown_wmctrl() {
+    while [[ $(wmctrl -d 2>/dev/null | wc -l) -gt 1 ]]
+    do
+        sleep 0.4
     done
 }
 _wsl_desktop() {
@@ -48,9 +54,10 @@ _wsl_desktop() {
         shift
         if type -p dbus-run-session > /dev/null 2>&1 && type -p startplasma-x11 > /dev/null 2>&1
         then
-            export -f _wsl_desktop-wait_wmctrl
+            export -f _wsl_desktop-waitUp_wmctrl
+            export -f _wsl_desktop-waitDown_wmctrl
             export -f _set_qt5ct
-            ( Xephyr -screen "$xephyrResolution" :"$xephyrDisplay" & ( export DISPLAY=:"$xephyrDisplay" ; "$HOME"/core/installations/xclipsync/xclipsync & dbus-run-session startplasma-x11 2>/dev/null & sleep 0.1 ; _wsl_desktop-wait_wmctrl ; sleep 3 ; _set_qt5ct ; export LANG="C" ; "$@" ) )
+            ( Xephyr -screen "$xephyrResolution" :"$xephyrDisplay" & ( export DISPLAY=:"$xephyrDisplay" ; "$HOME"/core/installations/xclipsync/xclipsync & dbus-run-session startplasma-x11 2>/dev/null & sleep 0.1 ; _wsl_desktop-waitUp_wmctrl ; sleep 3 ; _set_qt5ct ; export LANG="C" ; "$@" ; _wsl_desktop-waitDown_wmctrl ) )
             return 0
             cd "$functionEntryPWD"
         fi
