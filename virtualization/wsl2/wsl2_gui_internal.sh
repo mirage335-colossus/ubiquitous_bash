@@ -41,11 +41,20 @@ _wsl_desktop() {
         local xephyrDisplay
         local xephyrDisplayValid
         xephyrDisplayValid="false"
-        # RESERVED - 53-79 (or greater) for PanelBoard
-        for (( xephyrDisplay = 13 ; xephyrDisplay <= 52 ; xephyrDisplay++ ))
-        do
-            ! [[ -e /tmp/.X"$xephyrDisplay"-lock ]] && ! [[ -e /tmp/.X11-unix/X"$xephyrDisplay" ]] && xephyrDisplayValid="true" && _messagePlain_good 'found: unused X11 display= '"$xephyrDisplay" && break
-        done
+        
+        if [[ "$2" == *"panel.sh" ]]
+        then
+            for (( xephyrDisplay = 53 ; xephyrDisplay <= 79 ; xephyrDisplay++ ))
+            do
+                ! [[ -e /tmp/.X"$xephyrDisplay"-lock ]] && ! [[ -e /tmp/.X11-unix/X"$xephyrDisplay" ]] && xephyrDisplayValid="true" && _messagePlain_good 'found: unused X11 display= '"$xephyrDisplay" && break
+            done
+        else
+            # RESERVED - 53-79 (or greater) for PanelBoard
+            for (( xephyrDisplay = 13 ; xephyrDisplay <= 52 ; xephyrDisplay++ ))
+            do
+                ! [[ -e /tmp/.X"$xephyrDisplay"-lock ]] && ! [[ -e /tmp/.X11-unix/X"$xephyrDisplay" ]] && xephyrDisplayValid="true" && _messagePlain_good 'found: unused X11 display= '"$xephyrDisplay" && break
+            done
+        fi
 
         _messagePlain_nominal 'Xephyr.'
         local xephyrResolution
