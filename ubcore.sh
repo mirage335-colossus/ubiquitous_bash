@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='2458930089'
+export ub_setScriptChecksum_contents='45204196'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -13216,7 +13216,12 @@ _write_msw_WSLENV() {
 
 
 
-
+_wsl_desktop-wait_wmctrl() {
+    while [[ $(wmctrl -d 2>/dev/null | wc -l) -lt 1 ]]
+    do
+        sleep 0.2
+    done
+}
 _wsl_desktop() {
     local functionEntryPWD
     functionEntryPWD="$PWD"
@@ -13255,9 +13260,11 @@ _wsl_desktop() {
         local xephyrResolution
         xephyrResolution="1600x1200"
         [[ "$1" != "" ]] && xephyrResolution="$1"
+        shift
         if type -p dbus-run-session > /dev/null 2>&1 && type -p startplasma-x11 > /dev/null 2>&1
         then
-            ( Xephyr -screen "$xephyrResolution" :"$xephyrDisplay" & ( export DISPLAY=:"$xephyrDisplay" ; "$HOME"/core/installations/xclipsync/xclipsync & dbus-run-session startplasma-x11 2>/dev/null ) )
+            export -f _wsl_desktop-wait_wmctrl
+            ( Xephyr -screen "$xephyrResolution" :"$xephyrDisplay" & ( export DISPLAY=:"$xephyrDisplay" ; "$HOME"/core/installations/xclipsync/xclipsync & dbus-run-session startplasma-x11 2>/dev/null & sleep 0.1 ; _wsl_desktop-wait_wmctrl ; sleep 3 ; "$@" ) )
             return 0
             cd "$functionEntryPWD"
         fi

@@ -1,7 +1,12 @@
 
 
 
-
+_wsl_desktop-wait_wmctrl() {
+    while [[ $(wmctrl -d 2>/dev/null | wc -l) -lt 1 ]]
+    do
+        sleep 0.2
+    done
+}
 _wsl_desktop() {
     local functionEntryPWD
     functionEntryPWD="$PWD"
@@ -40,9 +45,11 @@ _wsl_desktop() {
         local xephyrResolution
         xephyrResolution="1600x1200"
         [[ "$1" != "" ]] && xephyrResolution="$1"
+        shift
         if type -p dbus-run-session > /dev/null 2>&1 && type -p startplasma-x11 > /dev/null 2>&1
         then
-            ( Xephyr -screen "$xephyrResolution" :"$xephyrDisplay" & ( export DISPLAY=:"$xephyrDisplay" ; "$HOME"/core/installations/xclipsync/xclipsync & dbus-run-session startplasma-x11 2>/dev/null ) )
+            export -f _wsl_desktop-wait_wmctrl
+            ( Xephyr -screen "$xephyrResolution" :"$xephyrDisplay" & ( export DISPLAY=:"$xephyrDisplay" ; "$HOME"/core/installations/xclipsync/xclipsync & dbus-run-session startplasma-x11 2>/dev/null & sleep 0.1 ; _wsl_desktop-wait_wmctrl ; sleep 3 ; "$@" ) )
             return 0
             cd "$functionEntryPWD"
         fi
