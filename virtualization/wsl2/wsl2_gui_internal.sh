@@ -42,7 +42,7 @@ _wsl_desktop() {
         local xephyrDisplayValid
         xephyrDisplayValid="false"
         
-        if [[ "$2" == *"panel.sh" ]]
+        if [[ "$2" == *"panel.sh" ]] || [[ "$2" == *"panel"*".sh" ]] || [[ "$2" == *"panel"*".bat" ]]
         then
             for (( xephyrDisplay = 53 ; xephyrDisplay <= 79 ; xephyrDisplay++ ))
             do
@@ -66,7 +66,7 @@ _wsl_desktop() {
             export -f _wsl_desktop-waitUp_wmctrl
             export -f _wsl_desktop-waitDown_wmctrl
             export -f _set_qt5ct
-            ( Xephyr -screen "$xephyrResolution" :"$xephyrDisplay" & ( export DISPLAY=:"$xephyrDisplay" ; "$HOME"/core/installations/xclipsync/xclipsync & dbus-run-session startplasma-x11 2>/dev/null & sleep 0.1 ; _wsl_desktop-waitUp_wmctrl ; sleep 3 ; _set_qt5ct ; export LANG="C" ; "$@" ; _wsl_desktop-waitDown_wmctrl ) )
+            ( Xephyr -screen "$xephyrResolution" :"$xephyrDisplay" & ( export DISPLAY=:"$xephyrDisplay" ; "$HOME"/core/installations/xclipsync/xclipsync & dbus-run-session startplasma-x11 2>/dev/null & sleep 0.1 ; _wsl_desktop-waitUp_wmctrl ; sleep 3 ; _set_qt5ct ; export LANG="C" ; "$@" ; _wsl_desktop-waitDown_wmctrl ; currentStopJobs=$(jobs -p -r 2> /dev/null) ; [[ "$displayStopJobs" != "" ]] && kill $displayStopJobs > /dev/null 2>&1 ) )
             return 0
             cd "$functionEntryPWD"
         fi
