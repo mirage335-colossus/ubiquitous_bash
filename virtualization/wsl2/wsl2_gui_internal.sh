@@ -44,12 +44,13 @@ _wsl_desktop() {
         _messagePlain_nominal 'Xephyr.'
         local xephyrResolution
         xephyrResolution="1600x1200"
-        [[ "$1" != "" ]] && xephyrResolution="$1"
+        [[ "$1" == *"x"* ]] && xephyrResolution="$1"
         shift
         if type -p dbus-run-session > /dev/null 2>&1 && type -p startplasma-x11 > /dev/null 2>&1
         then
             export -f _wsl_desktop-wait_wmctrl
-            ( Xephyr -screen "$xephyrResolution" :"$xephyrDisplay" & ( export DISPLAY=:"$xephyrDisplay" ; "$HOME"/core/installations/xclipsync/xclipsync & dbus-run-session startplasma-x11 2>/dev/null & sleep 0.1 ; _wsl_desktop-wait_wmctrl ; sleep 3 ; "$@" ) )
+            export -f _set_qt5ct
+            ( Xephyr -screen "$xephyrResolution" :"$xephyrDisplay" & ( export DISPLAY=:"$xephyrDisplay" ; "$HOME"/core/installations/xclipsync/xclipsync & dbus-run-session startplasma-x11 2>/dev/null & sleep 0.1 ; _wsl_desktop-wait_wmctrl ; sleep 3 ; _set_qt5ct ; export LANG="C" ; "$@" ) )
             return 0
             cd "$functionEntryPWD"
         fi
