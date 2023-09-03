@@ -99,23 +99,6 @@ jobs:
         #shell: pwsh
         #env:
           #rclone_limited_conf_base64: ${{ secrets.rclone_limited_conf_base64 }}
-      - name: _getMinimal_cloud
-        shell: pwsh
-        timeout-minutes: 180
-        run: |
-          $ErrorActionPreference="SilentlyContinue"
-          $ErrorActionPreference = "Continue"
-          Set-MpPreference -DisableRealtimeMonitoring $true
-          date > /wasHere.log
-          pwd >> /wasHere.log
-          cat /wasHere.log
-          choco install qalculate -y
-          choco install dos2unix -y
-          choco install nmap -y
-          git config --global core.autocrlf input
-          git config --global core.eol lf
-          choco install 7zip.install -y
-          choco install rclone -y
       - name: _getCore_ubcp
         shell: pwsh
         timeout-minutes: 180
@@ -146,6 +129,23 @@ jobs:
 
           7z -y x ./package_ubcp-core.7z | tee /_getCore_ubcp.log
           rm ./package_ubcp-core.7z
+      - name: _getMinimal_cloud
+        shell: pwsh
+        timeout-minutes: 180
+        run: |
+          $ErrorActionPreference="SilentlyContinue"
+          $ErrorActionPreference = "Continue"
+          Set-MpPreference -DisableRealtimeMonitoring $true
+          date > /wasHere.log
+          pwd >> /wasHere.log
+          cat /wasHere.log
+          choco install qalculate -y
+          choco install dos2unix -y
+          choco install nmap -y
+          git config --global core.autocrlf input
+          git config --global core.eol lf
+          choco install 7zip.install -y
+          choco install rclone -y
       - uses: actions/checkout@v2
       - name: statement! ls
         shell: pwsh
@@ -202,23 +202,6 @@ jobs:
         #shell: pwsh
         #env:
           #rclone_limited_conf_base64: ${{ secrets.rclone_limited_conf_base64 }}
-      - name: _getMinimal_cloud
-        shell: pwsh
-        timeout-minutes: 180
-        run: |
-          $ErrorActionPreference="SilentlyContinue"
-          $ErrorActionPreference = "Continue"
-          Set-MpPreference -DisableRealtimeMonitoring $true
-          date > /wasHere.log
-          pwd >> /wasHere.log
-          cat /wasHere.log
-          choco install qalculate -y
-          choco install dos2unix -y
-          choco install nmap -y
-          git config --global core.autocrlf input
-          git config --global core.eol lf
-          choco install 7zip.install -y
-          choco install rclone -y
       - name: _getCore_ubcp
         shell: pwsh
         timeout-minutes: 180
@@ -239,6 +222,23 @@ jobs:
 
           7z -y x ./package_ubcp-core.7z | tee /_getCore_ubcp.log
           rm ./package_ubcp-core.7z
+      - name: _getMinimal_cloud
+        shell: pwsh
+        timeout-minutes: 180
+        run: |
+          $ErrorActionPreference="SilentlyContinue"
+          $ErrorActionPreference = "Continue"
+          Set-MpPreference -DisableRealtimeMonitoring $true
+          date > /wasHere.log
+          pwd >> /wasHere.log
+          cat /wasHere.log
+          choco install qalculate -y
+          choco install dos2unix -y
+          choco install nmap -y
+          git config --global core.autocrlf input
+          git config --global core.eol lf
+          choco install 7zip.install -y
+          choco install rclone -y
       - uses: actions/checkout@v2
       - name: statement! ls
         shell: pwsh
@@ -296,23 +296,6 @@ jobs:
         #shell: pwsh
         #env:
           #rclone_limited_conf_base64: ${{ secrets.rclone_limited_conf_base64 }}
-      - name: _getMinimal_cloud
-        shell: pwsh
-        timeout-minutes: 180
-        run: |
-          $ErrorActionPreference="SilentlyContinue"
-          $ErrorActionPreference = "Continue"
-          Set-MpPreference -DisableRealtimeMonitoring $true
-          date > /wasHere.log
-          pwd >> /wasHere.log
-          cat /wasHere.log
-          choco install qalculate -y
-          choco install dos2unix -y
-          choco install nmap -y
-          git config --global core.autocrlf input
-          git config --global core.eol lf
-          choco install 7zip.install -y
-          choco install rclone -y
       - name: _getCore_ubcp
         shell: pwsh
         timeout-minutes: 180
@@ -333,6 +316,23 @@ jobs:
 
           7z -y x ./package_ubcp-core.7z | tee /_getCore_ubcp.log
           rm ./package_ubcp-core.7z
+      - name: _getMinimal_cloud
+        shell: pwsh
+        timeout-minutes: 180
+        run: |
+          $ErrorActionPreference="SilentlyContinue"
+          $ErrorActionPreference = "Continue"
+          Set-MpPreference -DisableRealtimeMonitoring $true
+          date > /wasHere.log
+          pwd >> /wasHere.log
+          cat /wasHere.log
+          choco install qalculate -y
+          choco install dos2unix -y
+          choco install nmap -y
+          git config --global core.autocrlf input
+          git config --global core.eol lf
+          choco install 7zip.install -y
+          choco install rclone -y
       - uses: actions/checkout@v2
       - name: statement! ls
         shell: pwsh
