@@ -27,7 +27,7 @@ _wsl_desktop() {
 
         export QT_QPA_PLATFORMTHEME=
         unset QT_QPA_PLATFORMTHEME
-        _set_qt5ct
+        #_set_qt5ct
 
         
         # nix-shell --run "locale -a" -p bash
@@ -66,7 +66,16 @@ _wsl_desktop() {
             export -f _wsl_desktop-waitUp_wmctrl
             export -f _wsl_desktop-waitDown_wmctrl
             export -f _set_qt5ct
-            ( Xephyr -screen "$xephyrResolution" :"$xephyrDisplay" & ( export DISPLAY=:"$xephyrDisplay" ; "$HOME"/core/installations/xclipsync/xclipsync & dbus-run-session startplasma-x11 2>/dev/null & sleep 0.1 ; _wsl_desktop-waitUp_wmctrl ; sleep 3 ; _set_qt5ct ; export LANG="C" ; "$@" ; _wsl_desktop-waitDown_wmctrl ; currentStopJobs=$(jobs -p -r 2> /dev/null) ; [[ "$displayStopJobs" != "" ]] && kill $displayStopJobs > /dev/null 2>&1 ) )
+            
+            #if [[ "$descriptiveSelf" != ""]]
+            #then
+                #export currentPlasmaSession="$HOME"/.ubtmp/plasmaSession-"$descriptiveSelf"
+            #else
+                export currentPlasmaSession="$HOME"/.ubtmp/plasmaSession-"$sessionid"
+            #fi
+
+            #_set_qt5ct
+            ( Xephyr -screen "$xephyrResolution" :"$xephyrDisplay" & ( export DISPLAY=:"$xephyrDisplay" ; export QT_QPA_PLATFORMTHEME= ; unset QT_QPA_PLATFORMTHEME ; export $(dbus-launch) ; "$HOME"/core/installations/xclipsync/xclipsync & dbus-run-session startplasma-x11 2>/dev/null & sleep 0.1 ; _wsl_desktop-waitUp_wmctrl ; sleep 3 ; export LANG="C" ; "$@" ; _wsl_desktop-waitDown_wmctrl ; currentStopJobs=$(jobs -p -r 2> /dev/null) ; [[ "$displayStopJobs" != "" ]] && kill $displayStopJobs > /dev/null 2>&1 ) )
             return 0
             cd "$functionEntryPWD"
         fi
