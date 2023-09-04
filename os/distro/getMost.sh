@@ -296,6 +296,9 @@ _getMost_debian11_install() {
 	_getMost_backend_aptGetInstall wmctrl xprintidle
 
 
+	_getMost_backend_aptGetInstall dbus-x11
+
+
 	_getMost_backend_aptGetInstall gnulib
 
 	_getMost_backend_aptGetInstall libtool

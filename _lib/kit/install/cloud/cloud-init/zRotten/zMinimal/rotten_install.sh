@@ -682,11 +682,13 @@ Type=Application
 	
 	sudo -n mkdir -p /home/"$custom_user"/.config/autostart
 	sudo -n mkdir -p /home/"$custom_user"/.config/plasma-workspace/env
-	#_here_bootdisc_startup_xdg | sudo tee /home/"$custom_user"/.config/autostart/startup.desktop > /dev/null
-	echo "#!/usr/bin/env bash" | sudo -n tee /home/"$custom_user"/.config/plasma-workspace/env/startup.sh > /dev/null
-	_here_bootdisc_startup_xdg | grep Exec | sed 's/^Exec=//' | sed 's/$/ \&/' | sudo -n tee -a /home/"$custom_user"/.config/plasma-workspace/env/startup.sh > /dev/null
+	#_here_bootdisc_startup_xdg | sudo -n tee /home/"$custom_user"/.config/autostart/startup.desktop > /dev/null
+	_here_bootdisc_startup_xdg | sudo -n tee /etc/xdg/autostart/startup.desktop > /dev/null
+	#echo "#!/usr/bin/env bash" | sudo -n tee /home/"$custom_user"/.config/plasma-workspace/env/startup.sh > /dev/null
+	# | grep Exec | sed 's/^Exec=//' | sed 's/$/ \&/' | sudo -n tee -a /home/"$custom_user"/.config/plasma-workspace/env/startup.sh > /dev/null
 	sudo -n chown -R user:user /home/"$custom_user"/.config
 	sudo -n chmod 555 /home/"$custom_user"/.config/autostart/startup.desktop
+	sudo -n chmod 755 /etc/xdg/autostart/startup.desktop
 	sudo -n chmod 755 /home/"$custom_user"/.config/plasma-workspace/env/startup.sh
 	
 	

@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='2194557122'
+export ub_setScriptChecksum_contents='3081543930'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -10036,6 +10036,9 @@ _getMost_debian11_install() {
 		_getMost_backend apt-get update
 	fi
 	_getMost_backend_aptGetInstall wmctrl xprintidle
+
+
+	_getMost_backend_aptGetInstall dbus-x11
 
 
 	_getMost_backend_aptGetInstall gnulib
@@ -20555,6 +20558,61 @@ _wsl_desktop-waitDown_wmctrl() {
         sleep 0.4
     done
 }
+_here_wsl_desktop_startup_script() {
+    cat << CZXWXcRMTo8EmM8i4d
+#!/usr/bin/env bash
+export DBUS_SESSION_BUS_ADDRESS="$DBUS_SESSION_BUS_ADDRESS"
+export DBUS_SESSION_BUS_PID="$DBUS_SESSION_BUS_PID"
+export DBUS_SESSION_BUS_WINDOWID="$DBUS_SESSION_BUS_WINDOWID"
+export QT_QPA_PLATFORMTHEME= ; unset QT_QPA_PLATFORMTHEME ; export LANG="C"
+export DESKTOP_SESSION=plasma
+#bash "$scriptAbsoluteLocation" _wsl_desktop-waitUp_wmctrl ; sleep 0.6
+export LANG="C"
+CZXWXcRMTo8EmM8i4d
+
+#dbus-run-session
+_safeEcho_newline 'exec '"$@"' &'
+
+    cat << CZXWXcRMTo8EmM8i4d
+#disown -h $!
+disown
+disown -a -h -r
+disown -a -r
+rm -f "$HOME"/.config/plasma-workspace/env/tmp_wsl_desktop.sh
+rm -f "$HOME"/.config/tmp_wsl_desktop.sh
+sudo -n rm -f /etc/xdg/autostart/tmp_wsl_desktop.desktop
+#bash "$scriptAbsoluteLocation" _wsl_desktop-waitDown_wmctrl
+#currentStopJobs=\$(jobs -p -r 2> /dev/null) ; [[ "\$displayStopJobs" != "" ]] && kill \$displayStopJobs > /dev/null 2>&1
+CZXWXcRMTo8EmM8i4d
+}
+_wsl_desktop_startup_plasmaWorkspaceEnv_write() {
+    mkdir -p "$HOME"/.config/plasma-workspace/env/
+    _here_wsl_desktop_startup_script "$@" > "$HOME"/.config/plasma-workspace/env/tmp_wsl_desktop.sh
+    chmod u+x "$HOME"/.config/plasma-workspace/env/tmp_wsl_desktop.sh
+}
+_here_wsl_desktop_startup_xdg() {
+    cat << CZXWXcRMTo8EmM8i4d
+[Desktop Entry]
+Comment=
+Exec="$HOME"/.config/tmp_wsl_desktop.sh
+GenericName=
+Icon=exec
+MimeType=
+Name=
+Path=
+StartupNotify=false
+Terminal=false
+TerminalOptions=
+Type=Application
+CZXWXcRMTo8EmM8i4d
+}
+_wsl_desktop_startup_xdg_write() {
+    mkdir -p "$HOME"/.config/
+    _here_wsl_desktop_startup_script "$@" > "$HOME"/.config/tmp_wsl_desktop.sh
+    chmod u+x "$HOME"/.config/tmp_wsl_desktop.sh
+
+    _here_wsl_desktop_startup_xdg | sudo -n tee /etc/xdg/autostart/tmp_wsl_desktop.desktop > /dev/null
+}
 _wsl_desktop() {
     local functionEntryPWD
     functionEntryPWD="$PWD"
@@ -20635,38 +20693,23 @@ _wsl_desktop() {
 
                     export $(dbus-launch)
 
-                    #echo '#!/usr/bin/env sh' | tee "$HOME"/.config/plasma-workspace/env/tmp_wsl_desktop.sh > /dev/null
-                    #echo 'export DBUS_SESSION_BUS_ADDRESS="'$DBUS_SESSION_BUS_ADDRESS'"' | tee -a "$HOME"/.config/plasma-workspace/env/tmp_wsl_desktop.sh > /dev/null
-                    #echo 'export DBUS_SESSION_BUS_PID="'$DBUS_SESSION_BUS_PID'"' | tee -a "$HOME"/.config/plasma-workspace/env/tmp_wsl_desktop.sh > /dev/null
-                    #echo 'export DBUS_SESSION_BUS_WINDOWID="'$DBUS_SESSION_BUS_WINDOWID'"' | tee -a "$HOME"/.config/plasma-workspace/env/tmp_wsl_desktop.sh > /dev/null
-                    #echo 'export QT_QPA_PLATFORMTHEME= ; unset QT_QPA_PLATFORMTHEME ; export LANG="C"' | tee -a "$HOME"/.config/plasma-workspace/env/tmp_wsl_desktop.sh > /dev/null
-                    #echo 'export DESKTOP_SESSION=plasma' | tee -a "$HOME"/.config/plasma-workspace/env/tmp_wsl_desktop.sh > /dev/null
-                    ##echo 'bash "'"$scriptAbsoluteLocation"'"'' _wsl_desktop-waitUp_wmctrl ; sleep 3 ; export LANG="C"' | tee -a "$HOME"/.config/plasma-workspace/env/tmp_wsl_desktop.sh > /dev/null
-                    ##dbus-run-session
-                    #_safeEcho_newline ' '"$@"' &' | tee -a "$HOME"/.config/plasma-workspace/env/tmp_wsl_desktop.sh > /dev/null
-                    ##echo 'disown -h $!' | tee -a "$HOME"/.config/plasma-workspace/env/tmp_wsl_desktop.sh > /dev/null
-                    #echo 'disown' | tee -a "$HOME"/.config/plasma-workspace/env/tmp_wsl_desktop.sh > /dev/null
-                    #echo 'disown -a -h -r' | tee -a "$HOME"/.config/plasma-workspace/env/tmp_wsl_desktop.sh > /dev/null
-                    #echo 'disown -a -r' | tee -a "$HOME"/.config/plasma-workspace/env/tmp_wsl_desktop.sh > /dev/null
-                    ##echo 'bash "'"$scriptAbsoluteLocation"'"''_wsl_desktop-waitDown_wmctrl' | tee -a "$HOME"/.config/plasma-workspace/env/tmp_wsl_desktop.sh > /dev/null
-                    ##echo 'currentStopJobs=$(jobs -p -r 2> /dev/null) ; [[ "$displayStopJobs" != "" ]] && kill $displayStopJobs > /dev/null 2>&1' | tee -a "$HOME"/.config/plasma-workspace/env/tmp_wsl_desktop.sh > /dev/null
-                    #echo 'rm -f "$HOME"/.config/plasma-workspace/env/tmp_wsl_desktop.sh' | tee -a "$HOME"/.config/plasma-workspace/env/tmp_wsl_desktop.sh > /dev/null
-                    #chmod u+x "$HOME"/.config/plasma-workspace/env/tmp_wsl_desktop.sh
-
                     "$HOME"/core/installations/xclipsync/xclipsync &
                     disown
                     disown -a -h -r
                     disown -a -r
 
-                    #dbus-run-session 
-                    exec startplasma-x11 &
+                    #_wsl_desktop_startup_plasmaWorkspaceEnv_write "$@"
+                    _wsl_desktop_startup_xdg_write "$@"
+
+                    ##dbus-run-session 
+                    exec startplasma-x11 > /dev/null 2>&1 &
 
 
-                    sleep 0.1
-                    _wsl_desktop-waitUp_wmctrl
-                    #sleep 3
+                    #sleep 0.1
+                    #_wsl_desktop-waitUp_wmctrl
+                    ##sleep 3
 
-                    exec "$@" &
+                    #exec "$@" > /dev/null 2>&1 &
 
                     echo '---------------------------------------------'
                     wait
