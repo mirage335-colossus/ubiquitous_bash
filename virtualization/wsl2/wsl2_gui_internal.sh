@@ -61,7 +61,7 @@ _wsl_desktop() {
         xephyrResolution="1600x1200"
         [[ "$1" == *"x"* ]] && xephyrResolution="$1"
         shift
-        if type -p dbus-run-session > /dev/null 2>&1 && type -p startplasma-x11 > /dev/null 2>&1
+        if type -p dbus-launch > /dev/null 2>&1 && type -p dbus-run-session > /dev/null 2>&1 && type -p startplasma-x11 > /dev/null 2>&1
         then
             export -f _wsl_desktop-waitUp_wmctrl
             export -f _wsl_desktop-waitDown_wmctrl
@@ -71,11 +71,74 @@ _wsl_desktop() {
             #then
                 #export currentPlasmaSession="$HOME"/.ubtmp/plasmaSession-"$descriptiveSelf"
             #else
-                export currentPlasmaSession="$HOME"/.ubtmp/plasmaSession-"$sessionid"
+                #export currentPlasmaSession="$HOME"/.ubtmp/plasmaSession-"$sessionid"
             #fi
 
             #_set_qt5ct
-            ( Xephyr -screen "$xephyrResolution" :"$xephyrDisplay" & ( export DISPLAY=:"$xephyrDisplay" ; export QT_QPA_PLATFORMTHEME= ; unset QT_QPA_PLATFORMTHEME ; export $(dbus-launch) ; "$HOME"/core/installations/xclipsync/xclipsync & dbus-run-session startplasma-x11 2>/dev/null & sleep 0.1 ; _wsl_desktop-waitUp_wmctrl ; sleep 3 ; export LANG="C" ; "$@" ; _wsl_desktop-waitDown_wmctrl ; currentStopJobs=$(jobs -p -r 2> /dev/null) ; [[ "$displayStopJobs" != "" ]] && kill $displayStopJobs > /dev/null 2>&1 ) )
+            #"$@"
+            
+            (
+                Xephyr -screen "$xephyrResolution" :"$xephyrDisplay" &#disown -h $!
+                disown
+                disown -a -h -r
+                disown -a -r
+                (
+
+                    export DISPLAY=:"$xephyrDisplay"
+                    export QT_QPA_PLATFORMTHEME=
+                    unset QT_QPA_PLATFORMTHEME
+                    export LANG="C"
+
+                    export DESKTOP_SESSION=plasma
+
+                    export $(dbus-launch)
+
+                    #echo '#!/usr/bin/env sh' | tee "$HOME"/.config/plasma-workspace/env/tmp_wsl_desktop.sh > /dev/null
+                    #echo 'export DBUS_SESSION_BUS_ADDRESS="'$DBUS_SESSION_BUS_ADDRESS'"' | tee -a "$HOME"/.config/plasma-workspace/env/tmp_wsl_desktop.sh > /dev/null
+                    #echo 'export DBUS_SESSION_BUS_PID="'$DBUS_SESSION_BUS_PID'"' | tee -a "$HOME"/.config/plasma-workspace/env/tmp_wsl_desktop.sh > /dev/null
+                    #echo 'export DBUS_SESSION_BUS_WINDOWID="'$DBUS_SESSION_BUS_WINDOWID'"' | tee -a "$HOME"/.config/plasma-workspace/env/tmp_wsl_desktop.sh > /dev/null
+                    #echo 'export QT_QPA_PLATFORMTHEME= ; unset QT_QPA_PLATFORMTHEME ; export LANG="C"' | tee -a "$HOME"/.config/plasma-workspace/env/tmp_wsl_desktop.sh > /dev/null
+                    #echo 'export DESKTOP_SESSION=plasma' | tee -a "$HOME"/.config/plasma-workspace/env/tmp_wsl_desktop.sh > /dev/null
+                    ##echo 'bash "'"$scriptAbsoluteLocation"'"'' _wsl_desktop-waitUp_wmctrl ; sleep 3 ; export LANG="C"' | tee -a "$HOME"/.config/plasma-workspace/env/tmp_wsl_desktop.sh > /dev/null
+                    ##dbus-run-session
+                    #_safeEcho_newline ' '"$@"' &' | tee -a "$HOME"/.config/plasma-workspace/env/tmp_wsl_desktop.sh > /dev/null
+                    ##echo 'disown -h $!' | tee -a "$HOME"/.config/plasma-workspace/env/tmp_wsl_desktop.sh > /dev/null
+                    #echo 'disown' | tee -a "$HOME"/.config/plasma-workspace/env/tmp_wsl_desktop.sh > /dev/null
+                    #echo 'disown -a -h -r' | tee -a "$HOME"/.config/plasma-workspace/env/tmp_wsl_desktop.sh > /dev/null
+                    #echo 'disown -a -r' | tee -a "$HOME"/.config/plasma-workspace/env/tmp_wsl_desktop.sh > /dev/null
+                    ##echo 'bash "'"$scriptAbsoluteLocation"'"''_wsl_desktop-waitDown_wmctrl' | tee -a "$HOME"/.config/plasma-workspace/env/tmp_wsl_desktop.sh > /dev/null
+                    ##echo 'currentStopJobs=$(jobs -p -r 2> /dev/null) ; [[ "$displayStopJobs" != "" ]] && kill $displayStopJobs > /dev/null 2>&1' | tee -a "$HOME"/.config/plasma-workspace/env/tmp_wsl_desktop.sh > /dev/null
+                    #echo 'rm -f "$HOME"/.config/plasma-workspace/env/tmp_wsl_desktop.sh' | tee -a "$HOME"/.config/plasma-workspace/env/tmp_wsl_desktop.sh > /dev/null
+                    #chmod u+x "$HOME"/.config/plasma-workspace/env/tmp_wsl_desktop.sh
+
+                    "$HOME"/core/installations/xclipsync/xclipsync &
+                    disown
+                    disown -a -h -r
+                    disown -a -r
+
+                    #dbus-run-session 
+                    exec startplasma-x11 &
+
+
+                    sleep 0.1
+                    _wsl_desktop-waitUp_wmctrl
+                    #sleep 3
+
+                    exec "$@" &
+
+                    echo '---------------------------------------------'
+                    wait
+                    echo '+++++++++++++++++++++++++++++++++++++++++++++'
+                    
+                    export LANG="C"
+                    
+                    #_wsl_desktop-waitDown_wmctrl ; currentStopJobs=$(jobs -p -r 2> /dev/null) ; [[ "$displayStopJobs" != "" ]] && kill $displayStopJobs > /dev/null 2>&1
+
+                )
+
+                wait
+            )
+            #_wsl_desktop-waitDown_wmctrl ; currentStopJobs=$(jobs -p -r 2> /dev/null) ; [[ "$displayStopJobs" != "" ]] && kill $displayStopJobs > /dev/null 2>&1
             return 0
             cd "$functionEntryPWD"
         fi

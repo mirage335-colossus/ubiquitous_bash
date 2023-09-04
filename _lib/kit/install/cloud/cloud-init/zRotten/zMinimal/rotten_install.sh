@@ -684,7 +684,7 @@ Type=Application
 	sudo -n mkdir -p /home/"$custom_user"/.config/plasma-workspace/env
 	#_here_bootdisc_startup_xdg | sudo tee /home/"$custom_user"/.config/autostart/startup.desktop > /dev/null
 	echo "#!/usr/bin/env bash" | sudo -n tee /home/"$custom_user"/.config/plasma-workspace/env/startup.sh > /dev/null
-	_here_bootdisc_startup_xdg | grep Exec | sed 's/^Exec=//' | sudo -n tee -a /home/"$custom_user"/.config/plasma-workspace/env/startup.sh > /dev/null
+	_here_bootdisc_startup_xdg | grep Exec | sed 's/^Exec=//' | sed 's/$/ \&/' | sudo -n tee -a /home/"$custom_user"/.config/plasma-workspace/env/startup.sh > /dev/null
 	sudo -n chown -R user:user /home/"$custom_user"/.config
 	sudo -n chmod 555 /home/"$custom_user"/.config/autostart/startup.desktop
 	sudo -n chmod 755 /home/"$custom_user"/.config/plasma-workspace/env/startup.sh

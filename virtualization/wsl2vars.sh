@@ -19,16 +19,15 @@ _set_msw_qt5ct() {
 #  ~/.bash_profile
 #  ~/.profile
 _set_qt5ct() {
-    if [[ "$DISPLAY" != ":0" ]]
+    if [[ "$DISPLAY" == ":0" ]]
     then
+        export QT_QPA_PLATFORMTHEME=qt5ct
+    else
         export QT_QPA_PLATFORMTHEME=
         unset QT_QPA_PLATFORMTHEME
     fi
     
     _write_wsl_qt5ct_conf "$@"
-
-
-    export QT_QPA_PLATFORMTHEME=qt5ct
 
     return 0
 }
