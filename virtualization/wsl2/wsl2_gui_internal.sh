@@ -101,7 +101,7 @@ _wsl_desktop() {
                     #echo 'export DESKTOP_SESSION=plasma' | tee -a "$HOME"/.config/plasma-workspace/env/tmp_wsl_desktop.sh > /dev/null
                     ##echo 'bash "'"$scriptAbsoluteLocation"'"'' _wsl_desktop-waitUp_wmctrl ; sleep 3 ; export LANG="C"' | tee -a "$HOME"/.config/plasma-workspace/env/tmp_wsl_desktop.sh > /dev/null
                     ##dbus-run-session
-                    #_safeEcho_newline ' '"$@"' &' | tee -a "$HOME"/.config/plasma-workspace/env/tmp_wsl_desktop.sh > /dev/null
+                    #_safeEcho_newline 'exec '"$@"' &' | tee -a "$HOME"/.config/plasma-workspace/env/tmp_wsl_desktop.sh > /dev/null
                     ##echo 'disown -h $!' | tee -a "$HOME"/.config/plasma-workspace/env/tmp_wsl_desktop.sh > /dev/null
                     #echo 'disown' | tee -a "$HOME"/.config/plasma-workspace/env/tmp_wsl_desktop.sh > /dev/null
                     #echo 'disown -a -h -r' | tee -a "$HOME"/.config/plasma-workspace/env/tmp_wsl_desktop.sh > /dev/null
