@@ -49,7 +49,7 @@ _here_wsl_desktop_startup_xdg() {
     cat << CZXWXcRMTo8EmM8i4d
 [Desktop Entry]
 Comment=
-Exec="$HOME"/.config/tmp_wsl_desktop.sh
+Exec="$HOME"/.config/tmp_wsl_desktop.sh > /dev/null
 GenericName=
 Icon=exec
 MimeType=
