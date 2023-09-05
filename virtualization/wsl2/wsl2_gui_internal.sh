@@ -33,9 +33,10 @@ _safeEcho_newline 'exec '"$@"' &'
 disown
 disown -a -h -r
 disown -a -r
-rm -f "$HOME"/.config/plasma-workspace/env/tmp_wsl_desktop.sh
-rm -f "$HOME"/.config/tmp_wsl_desktop.sh
+rm -f "\$HOME"/.config/plasma-workspace/env/tmp_wsl_desktop.sh
+rm -f "\$HOME"/.config/tmp_wsl_desktop.sh
 sudo -n rm -f /etc/xdg/autostart/tmp_wsl_desktop.desktop
+rm -f "\$HOME"/.config/systemd/user/tmp_wsl_desktop.service
 #bash "$scriptAbsoluteLocation" _wsl_desktop-waitDown_wmctrl
 #currentStopJobs=\$(jobs -p -r 2> /dev/null) ; [[ "\$displayStopJobs" != "" ]] && kill \$displayStopJobs > /dev/null 2>&1
 CZXWXcRMTo8EmM8i4d
@@ -67,6 +68,33 @@ _wsl_desktop_startup_xdg_write() {
     chmod u+x "$HOME"/.config/tmp_wsl_desktop.sh
 
     _here_wsl_desktop_startup_xdg | sudo -n tee /etc/xdg/autostart/tmp_wsl_desktop.desktop > /dev/null
+}
+# https://bbs.archlinux.org/viewtopic.php?id=279740
+_here_wsl_desktop_startup_systemd() {
+    cat << CZXWXcRMTo8EmM8i4d
+[Unit]
+After=xdg-desktop-autostart.target
+
+[Install]
+WantedBy=xdg-desktop-autostart.target
+
+[Service]
+Type=oneshot
+ExecStart="$HOME"/.config/tmp_wsl_desktop.sh
+CZXWXcRMTo8EmM8i4d
+}
+_wsl_desktop_startup_systemd_write() {
+    mkdir -p "$HOME"/.config/
+    _here_wsl_desktop_startup_script "$@" > "$HOME"/.config/tmp_wsl_desktop.sh
+    chmod u+x "$HOME"/.config/tmp_wsl_desktop.sh
+    
+    mkdir -p "$HOME"/.config/systemd/user/
+    _here_wsl_desktop_startup_systemd | sudo -n tee "$HOME"/.config/systemd/user/tmp_wsl_desktop.service > /dev/null
+
+    systemctl --user stop tmp_wsl_desktop
+    systemctl --user daemon-reload
+    systemctl --user enable tmp_wsl_desktop
+    systemctl --user enable tmp_wsl_desktop.service
 }
 _wsl_desktop() {
     local functionEntryPWD
@@ -155,6 +183,7 @@ _wsl_desktop() {
 
                     #_wsl_desktop_startup_plasmaWorkspaceEnv_write "$@"
                     _wsl_desktop_startup_xdg_write "$@"
+                    #_wsl_desktop_startup_systemd_write "$@"
 
                     ##dbus-run-session 
                     exec startplasma-x11 > /dev/null 2>&1 &
