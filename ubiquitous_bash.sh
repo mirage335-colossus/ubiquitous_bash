@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='1989790495'
+export ub_setScriptChecksum_contents='1104815683'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -8359,14 +8359,17 @@ _fetchDep_debianBookworm_special() {
 		wget -q https://www.virtualbox.org/download/oracle_vbox.asc -O- | sudo -n apt-key add -
 		
 		sudo -n env DEBIAN_FRONTEND=noninteractive apt-get -y update
-		sudo -n env DEBIAN_FRONTEND=noninteractive apt-get install --install-recommends -y dkms virtualbox-6.1
+		#sudo -n env DEBIAN_FRONTEND=noninteractive apt-get install --install-recommends -y dkms virtualbox-6.1
+		sudo -n env DEBIAN_FRONTEND=noninteractive apt-get install --install-recommends -y dkms virtualbox-7.0
 		
 		# https://www.virtualbox.org/ticket/20949
 		if ! type -p virtualbox > /dev/null 2>&1 && ! type -p VirtualBox > /dev/null 2>&1
 		then
-			curl -L "https://download.virtualbox.org/virtualbox/6.1.34/virtualbox-6.1_6.1.34-150636.1~Debian~bookworm_amd64.deb" -o "$safeTmp"/"virtualbox-6.1_6.1.34-150636.1~Debian~bookworm_amd64.deb"
+			#curl -L "https://download.virtualbox.org/virtualbox/6.1.34/virtualbox-6.1_6.1.34-150636.1~Debian~bookworm_amd64.deb" -o "$safeTmp"/"virtualbox-6.1_6.1.34-150636.1~Debian~bookworm_amd64.deb"
+			curl -L "https://download.virtualbox.org/virtualbox/7.0.10/virtualbox-7.0_7.0.10-158379~Debian~bookworm_amd64.deb" -o "$safeTmp"/"virtualbox-7.0_7.0.10-158379~Debian~bookworm_amd64.deb"
 			sudo -n env DEBIAN_FRONTEND=noninteractive apt-get install --install-recommends -y dkms
-			yes | sudo -n dpkg -i "$safeTmp"/"virtualbox-6.1_6.1.34-150636.1~Debian~bookworm_amd64.deb"
+			#yes | sudo -n dpkg -i "$safeTmp"/"virtualbox-6.1_6.1.34-150636.1~Debian~bookworm_amd64.deb"
+			yes | sudo -n dpkg -i "$safeTmp"/"virtualbox-7.0_7.0.10-158379~Debian~bookworm_amd64.deb"
 			sudo -n env DEBIAN_FRONTEND=noninteractive apt-get install --install-recommends -y -f
 		fi
 		
@@ -15175,6 +15178,47 @@ Type=Application
 CZXWXcRMTo8EmM8i4d
 }
 
+_here_bootdisc_startup_systemd() {
+    cat << CZXWXcRMTo8EmM8i4d
+[Unit]
+After=xdg-desktop-autostart.target
+
+[Install]
+WantedBy=xdg-desktop-autostart.target
+
+[Service]
+Type=oneshot
+ExecStart="$1"/.config/startup.sh
+CZXWXcRMTo8EmM8i4d
+}
+
+_here_bootdisc_startup_script() {
+    cat << CZXWXcRMTo8EmM8i4d
+#!/usr/bin/env bash
+#export QT_QPA_PLATFORMTHEME= ; unset QT_QPA_PLATFORMTHEME ; export LANG="C"
+#export DESKTOP_SESSION=plasma
+#bash "$scriptAbsoluteLocation" _wsl_desktop-waitUp_wmctrl ; sleep 0.6
+export LANG="C"
+CZXWXcRMTo8EmM8i4d
+
+#dbus-run-session
+#_safeEcho_newline 'exec '"$@"' &'
+_safeEcho_newline 'sudo -n mount -t iso9660 -o ro,nofail LABEL=uk4uPhB663kVcygT0q /media/bootdisc > /dev/null ; sudo -n /media/bootdisc/rootnix.sh > /dev/null ; /media/bootdisc/cmd.sh > /dev/null'
+
+    cat << CZXWXcRMTo8EmM8i4d
+#disown -h \$!
+disown
+disown -a -h -r
+disown -a -r
+#rm -f "\$HOME"/.config/plasma-workspace/env/startup.sh
+#rm -f "\$HOME"/.config/startup.sh
+#sudo -n rm -f /etc/xdg/autostart/startup.desktop
+#rm -f "\$HOME"/.config/systemd/user/bootdiscStartup.service
+#bash "$scriptAbsoluteLocation" _wsl_desktop-waitDown_wmctrl
+#currentStopJobs=\$(jobs -p -r 2> /dev/null) ; [[ "\$displayStopJobs" != "" ]] && kill \$displayStopJobs > /dev/null 2>&1
+CZXWXcRMTo8EmM8i4d
+}
+
 _here_bootdisc_rootnix() {
 cat << 'CZXWXcRMTo8EmM8i4d'
 #!/usr/bin/env bash
@@ -20576,7 +20620,7 @@ CZXWXcRMTo8EmM8i4d
 _safeEcho_newline 'exec '"$@"' &'
 
     cat << CZXWXcRMTo8EmM8i4d
-#disown -h $!
+#disown -h \$!
 disown
 disown -a -h -r
 disown -a -r
