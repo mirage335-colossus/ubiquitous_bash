@@ -27,6 +27,8 @@ default = user
 [wsl2]
 nestedVirtualization=true
 
+[automount]
+options = "metadata"
 
 CZXWXcRMTo8EmM8i4d
 }
