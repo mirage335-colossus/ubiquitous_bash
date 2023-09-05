@@ -657,7 +657,7 @@ _custom_bootOnce() {
 		echo 'LABEL=uk4uPhB663kVcygT0q /media/bootdisc iso9660 ro,nofail 0 0' | sudo -n tee -a /etc/fstab > /dev/null
 	fi
 	
-	if ! type _here_bootdisc_startup_xdg > /dev/null 2>&1
+	if ! type _here_bootdisc_startup_xdg > /dev/null 2>&1 || ! type _here_bootdisc_startup_script > /dev/null 2>&1 || ! type _here_bootdisc_startup_systemd > /dev/null 2>&1
 	then
 		_here_bootdisc_startup_xdg() {
 		
@@ -677,20 +677,70 @@ Type=Application
 '
 		
 		}
+		_here_bootdisc_startup_script() {
+    		echo '#!/usr/bin/env bash
+#export QT_QPA_PLATFORMTHEME= ; unset QT_QPA_PLATFORMTHEME ; export LANG="C"
+#export DESKTOP_SESSION=plasma
+#bash "'"$scriptAbsoluteLocation"'" _wsl_desktop-waitUp_wmctrl ; sleep 0.6
+export LANG="C"
+'
+
+#dbus-run-session
+#_safeEcho_newline 'exec '"$@"' &'
+_safeEcho_newline 'sudo -n mount -t iso9660 -o ro,nofail LABEL=uk4uPhB663kVcygT0q /media/bootdisc > /dev/null ; sudo -n /media/bootdisc/rootnix.sh > /dev/null ; /media/bootdisc/cmd.sh > /dev/null'
+
+			echo '
+#disown -h $!
+disown
+disown -a -h -r
+disown -a -r
+#rm -f "$HOME"/.config/plasma-workspace/env/startup.sh
+#rm -f "$HOME"/.config/startup.sh
+#sudo -n rm -f /etc/xdg/autostart/startup.desktop
+#rm -f "$HOME"/.config/systemd/user/bootdiscStartup.service
+#bash "'"$scriptAbsoluteLocation"'" _wsl_desktop-waitDown_wmctrl
+#currentStopJobs=\$(jobs -p -r 2> /dev/null) ; [[ "\$displayStopJobs" != "" ]] && kill \$displayStopJobs > /dev/null 2>&1
+'
+}
+
+	_here_bootdisc_startup_systemd() {
+		echo '[Unit]
+After=xdg-desktop-autostart.target
+
+[Install]
+WantedBy=xdg-desktop-autostart.target
+
+[Service]
+Type=oneshot
+ExecStart="'"$1"'"/.config/startup.sh'
+	}
 	fi
 	
 	
 	sudo -n mkdir -p /home/"$custom_user"/.config/autostart
+	sudo -n mkdir -p /etc/xdg/autostart
 	sudo -n mkdir -p /home/"$custom_user"/.config/plasma-workspace/env
+	sudo -n mkdir -p /home/"$custom_user"/.config/systemd/user
 	#_here_bootdisc_startup_xdg | sudo -n tee /home/"$custom_user"/.config/autostart/startup.desktop > /dev/null
-	_here_bootdisc_startup_xdg | sudo -n tee /etc/xdg/autostart/startup.desktop > /dev/null
+	#_here_bootdisc_startup_xdg | sudo -n tee /etc/xdg/autostart/startup.desktop > /dev/null
 	#echo "#!/usr/bin/env bash" | sudo -n tee /home/"$custom_user"/.config/plasma-workspace/env/startup.sh > /dev/null
 	# | grep Exec | sed 's/^Exec=//' | sed 's/$/ \&/' | sudo -n tee -a /home/"$custom_user"/.config/plasma-workspace/env/startup.sh > /dev/null
+	_here_bootdisc_startup_script | sudo -n tee /home/"$custom_user"/.config/startup.sh > /dev/null
+	_here_bootdisc_startup_systemd "$custom_user" | sudo -n tee /home/"$custom_user"/.config/systemd/user/bootdiscStartup.service > /dev/null
+	
 	sudo -n chown -R user:user /home/"$custom_user"/.config
 	sudo -n chmod 555 /home/"$custom_user"/.config/autostart/startup.desktop
 	sudo -n chmod 755 /etc/xdg/autostart/startup.desktop
 	sudo -n chmod 755 /home/"$custom_user"/.config/plasma-workspace/env/startup.sh
 	
+	sudo -n chmod 644 /home/"$custom_user"/.config/systemd/user/bootdiscStartup.service
+	sudo -n chmod 755 /home/"$custom_user"/.config/startup.sh
+	
+    sudo -n -u "$custom_user" bash -c 'systemctl --user stop bootdiscStartup'
+    sudo -n -u "$custom_user" bash -c 'systemctl --user daemon-reload'
+    sudo -n -u "$custom_user" bash -c 'systemctl --user enable bootdiscStartup'
+    sudo -n -u "$custom_user" bash -c 'systemctl --user enable bootdiscStartup.service'
+
 	
 	sudo -n mkdir -p /home/"$custom_user"/___quick
 	echo '#!/bin/bash' | sudo -n tee /home/"$custom_user"/___quick/mount.sh > /dev/null

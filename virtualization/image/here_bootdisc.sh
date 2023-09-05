@@ -15,6 +15,47 @@ Type=Application
 CZXWXcRMTo8EmM8i4d
 }
 
+_here_bootdisc_startup_systemd() {
+    cat << CZXWXcRMTo8EmM8i4d
+[Unit]
+After=xdg-desktop-autostart.target
+
+[Install]
+WantedBy=xdg-desktop-autostart.target
+
+[Service]
+Type=oneshot
+ExecStart="$1"/.config/startup.sh
+CZXWXcRMTo8EmM8i4d
+}
+
+_here_bootdisc_startup_script() {
+    cat << CZXWXcRMTo8EmM8i4d
+#!/usr/bin/env bash
+#export QT_QPA_PLATFORMTHEME= ; unset QT_QPA_PLATFORMTHEME ; export LANG="C"
+#export DESKTOP_SESSION=plasma
+#bash "$scriptAbsoluteLocation" _wsl_desktop-waitUp_wmctrl ; sleep 0.6
+export LANG="C"
+CZXWXcRMTo8EmM8i4d
+
+#dbus-run-session
+#_safeEcho_newline 'exec '"$@"' &'
+_safeEcho_newline 'sudo -n mount -t iso9660 -o ro,nofail LABEL=uk4uPhB663kVcygT0q /media/bootdisc > /dev/null ; sudo -n /media/bootdisc/rootnix.sh > /dev/null ; /media/bootdisc/cmd.sh > /dev/null'
+
+    cat << CZXWXcRMTo8EmM8i4d
+#disown -h \$!
+disown
+disown -a -h -r
+disown -a -r
+#rm -f "\$HOME"/.config/plasma-workspace/env/startup.sh
+#rm -f "\$HOME"/.config/startup.sh
+#sudo -n rm -f /etc/xdg/autostart/startup.desktop
+#rm -f "\$HOME"/.config/systemd/user/bootdiscStartup.service
+#bash "$scriptAbsoluteLocation" _wsl_desktop-waitDown_wmctrl
+#currentStopJobs=\$(jobs -p -r 2> /dev/null) ; [[ "\$displayStopJobs" != "" ]] && kill \$displayStopJobs > /dev/null 2>&1
+CZXWXcRMTo8EmM8i4d
+}
+
 _here_bootdisc_rootnix() {
 cat << 'CZXWXcRMTo8EmM8i4d'
 #!/usr/bin/env bash

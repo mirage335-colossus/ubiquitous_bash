@@ -29,7 +29,7 @@ CZXWXcRMTo8EmM8i4d
 _safeEcho_newline 'exec '"$@"' &'
 
     cat << CZXWXcRMTo8EmM8i4d
-#disown -h $!
+#disown -h \$!
 disown
 disown -a -h -r
 disown -a -r
