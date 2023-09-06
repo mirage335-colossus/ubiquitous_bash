@@ -198,6 +198,9 @@ _getMinimal_cloud() {
 	_getMost_backend_aptGetInstall dos2unix
 
 
+	_getMost_backend_aptGetInstall xxd
+
+
 	_getMost_backend_aptGetInstall debhelper
 	
 	_getMost_backend_aptGetInstall p7zip
