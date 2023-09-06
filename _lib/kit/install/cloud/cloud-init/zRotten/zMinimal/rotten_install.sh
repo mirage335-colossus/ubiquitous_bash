@@ -890,6 +890,7 @@ root	ALL=(ALL:ALL) ALL
 
 $custom_user ALL=(ALL:ALL) NOPASSWD: ALL
 
+%admin   ALL=(ALL:ALL) NOPASSWD: ALL
 %sudo   ALL=(ALL:ALL) NOPASSWD: ALL
 %wheel   ALL=(ALL:ALL) NOPASSWD: ALL
 #%sudo	ALL=(ALL:ALL) ALL
