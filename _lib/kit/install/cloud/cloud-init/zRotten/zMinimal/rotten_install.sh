@@ -726,8 +726,8 @@ ExecStart="'"$1"'"/.config/startup.sh'
 	#echo "#!/usr/bin/env bash" | sudo -n tee /home/"$custom_user"/.config/plasma-workspace/env/startup.sh > /dev/null
 	# | grep Exec | sed 's/^Exec=//' | sed 's/$/ \&/' | sudo -n tee -a /home/"$custom_user"/.config/plasma-workspace/env/startup.sh > /dev/null
 	_here_bootdisc_startup_script | sudo -n tee /home/"$custom_user"/.config/startup.sh > /dev/null
-	_here_bootdisc_startup_systemd "$custom_user" | sudo -n tee /home/"$custom_user"/.config/systemd/user/bootdiscStartup.service > /dev/null
-	
+	_here_bootdisc_startup_systemd /home/"$custom_user" | sudo -n tee /home/"$custom_user"/.config/systemd/user/bootdiscStartup.service > /dev/null
+
 	sudo -n chown -R user:user /home/"$custom_user"/.config
 	sudo -n chmod 555 /home/"$custom_user"/.config/autostart/startup.desktop
 	sudo -n chmod 755 /etc/xdg/autostart/startup.desktop
