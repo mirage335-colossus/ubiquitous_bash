@@ -873,6 +873,22 @@ _getMost_debian12() {
 	_getMost_debian12_aptSources "$@"
 	
 	_getMost_debian12_install "$@"
+
+
+
+	_here_opensslConfig_legacy | _getMost_backend tee /etc/ssl/openssl_legacy.cnf > /dev/null 2>&1
+
+    if ! _getMost_backend grep 'openssl_legacy' /etc/ssl/openssl.cnf > /dev/null 2>&1
+    then
+        _getMost_backend cp -f /etc/ssl/openssl.cnf /etc/ssl/openssl.cnf.orig
+        echo '
+
+
+.include = /etc/ssl/openssl_legacy.cnf
+
+' | _getMost_backend cat /etc/ssl/openssl.cnf.orig - | _getMost_backend tee /etc/ssl/openssl.cnf > /dev/null 2>&1
+    fi
+	
 	
 	
 	_getMost_backend apt-get remove --autoremove -y plasma-discover
