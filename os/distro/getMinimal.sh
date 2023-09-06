@@ -322,7 +322,7 @@ _getMinimal_cloud() {
 	#unset devfast
 
 
-
+	_messagePlain_probe _custom_splice_opensslConfig
 	_here_opensslConfig_legacy | _getMost_backend tee /etc/ssl/openssl_legacy.cnf > /dev/null 2>&1
 
     if ! _getMost_backend grep 'openssl_legacy' /etc/ssl/openssl.cnf > /dev/null 2>&1
