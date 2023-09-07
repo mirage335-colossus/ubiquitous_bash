@@ -2,6 +2,23 @@
 # WARNING: May be untested .
 
 name: test
+
+
+# https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#permissions
+permissions:
+  actions: none
+  checks: none
+  contents: read
+  deployments: none
+  issues: none
+  packages: none
+  pull-requests: none
+  repository-projects: none
+  security-events: none
+  statuses: none
+
+
+
 on:
   push:
   workflow_dispatch:
@@ -74,13 +91,6 @@ jobs:
         run: |
           ./lean_compressed.sh _test | sudo -n tee /_test-lean-compressed.log
         timeout-minutes: 90
-      - name: Setup tmate session
-        if: ${{ failure() }}
-        uses: mxschmitt/action-tmate@v3
-        # ssh -i <path-to-key> <tmate-connection-string>
-        with:
-          limit-access-to-actor: true
-        timeout-minutes: 25
   # Other 'ubcp' tests must be essentially identical.
   # sleep 120
   # rclone --progress --config /rclone.conf copy distLLC_release_ro:ubcp/package_ubcp-core.7z ./
