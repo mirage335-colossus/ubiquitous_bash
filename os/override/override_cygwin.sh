@@ -761,7 +761,7 @@ _report_setup_ubcp() {
 	[[ "$currentCygdriveC_equivalent" == "" ]] && currentCygdriveC_equivalent=$(cygpath -S | sed 's/\/Windows\/System32//g')
 	[[ "$1" == "/" ]] && currentCygdriveC_equivalent=$(echo "$PWD" | sed 's/\(\/cygdrive\/[a-zA-Z]*\).*/\1/')
 
-	find /bin/ /usr/bin/ /sbin/ /usr/sbin/ | sudo -n tee "$currentCygdriveC_equivalent"/core/infrastructure/ubcp-binReport > /dev/null
+	find /bin/ /usr/bin/ /sbin/ /usr/sbin/ | tee "$currentCygdriveC_equivalent"/core/infrastructure/ubcp-binReport > /dev/null
 }
 
 
