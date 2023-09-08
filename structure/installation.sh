@@ -383,7 +383,13 @@ _testarglength() {
 	then
 		# Typical Cygwin. Marginal result at best.
 		[[ "$testArgLength" -ge 32000 ]] && uname -a | grep -i 'cygwin' > /dev/null 2>&1 && _messagePASS && return 0
-		_if_cygwin && echo "$testArgLength"
+		if _if_cygwin
+		then
+			# Unfortunately, as of 2023-09-07 , apparently Cygwin has removed the 'ARG_MAX' definition from the provided 'getconf' .
+			# Due to the narrower use case of Cygwin/MSW (as opposed to GNU/Linux) - not expecting to compile gEDA for Cygwin anytime soon - it will be more of a concern if other binaries in 'ubcp' cease to exist because newer versions of Cygwin packages upstream were failing to compile as a result. Hopefully, Cygwin itself has adequate testing to prevent release of such breakage.
+			#echo "$testArgLength"
+			return 0
+		fi
 		
 		_messageFAIL && _stop 1
 	fi

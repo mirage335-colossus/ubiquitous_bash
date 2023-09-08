@@ -27,7 +27,7 @@ on:
         default: true
       runnerNameMSW:
         required: false
-        default: windows-latest-h
+        default: windows-latest-l
         type: choice
         options:
         - windows-latest

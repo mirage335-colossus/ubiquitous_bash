@@ -1054,6 +1054,7 @@ _mitigate-ubcp_rewrite_sequence() {
 _mitigate-ubcp_rewrite() {
 	"$scriptAbsoluteLocation" _mitigate-ubcp_rewrite_sequence "$@"
 
+	# CAUTION: This may not catch mitigate failure . The actual issue with 'getconf' was removal of the 'ARG_MAX' value , which was not caused by mitigate failure .
 	if [[ ! -e /usr/bin/getconf ]]
 	then
 		_messagePlain_bad 'missing: bad: /usr/bin/getconf'
