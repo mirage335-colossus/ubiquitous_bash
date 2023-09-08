@@ -383,6 +383,7 @@ _testarglength() {
 	then
 		# Typical Cygwin. Marginal result at best.
 		[[ "$testArgLength" -ge 32000 ]] && uname -a | grep -i 'cygwin' > /dev/null 2>&1 && _messagePASS && return 0
+		_if_cygwin && echo "$testArgLength"
 		
 		_messageFAIL && _stop 1
 	fi
