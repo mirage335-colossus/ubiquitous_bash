@@ -1044,7 +1044,7 @@ _mitigate-ubcp_rewrite_sequence() {
 	# https://serverfault.com/questions/193319/a-better-unix-find-with-parallel-processing
 	# https://stackoverflow.com/questions/11003418/calling-shell-functions-with-xargs
 	export -f "_mitigate-ubcp_rewrite_parallel"
-	find "$2" -type l -print0 | xargs -0 -x -s 4096 -L 12 -P $(nproc) bash -c '_mitigate-ubcp_rewrite_parallel "$@"' _
+	find "$2" -type l -print0 | xargs -0 -x -s 4096 -L 6 -P $(nproc) bash -c '_mitigate-ubcp_rewrite_parallel "$@"' _
 	#find "$2" -type l -print0 | xargs -0 -n 1 -P 4 -I {} bash -c '_mitigate-ubcp_rewrite_parallel "$@"' _ {}
 	#find "$2" -type l -print0 | xargs -0 -n 1 -P 4 -I {} bash -c '_mitigate-ubcp_rewrite_procedure "$@"' _ {}
 	
@@ -1053,6 +1053,16 @@ _mitigate-ubcp_rewrite_sequence() {
 
 _mitigate-ubcp_rewrite() {
 	"$scriptAbsoluteLocation" _mitigate-ubcp_rewrite_sequence "$@"
+
+	if [[ ! -e /usr/bin/getconf ]]
+	then
+		_messagePlain_bad 'missing: bad: /usr/bin/getconf'
+		echo 'Usually, this is a symlink, if missing, indicative of failed symlink mitigation due to xargs parameter length or parallelism failure.'
+		_messageFAIL
+		_stop 1
+		return 1
+	fi
+	return 0
 }
 
 
