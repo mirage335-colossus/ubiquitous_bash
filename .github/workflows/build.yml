@@ -354,12 +354,12 @@ jobs:
         shell: bash
         run: |
           # Get the list of releases
-          RELEASES=$(curl -s -H "Authorization: token $GH_TOKEN" https://api.github.com/repos/soaringDistributions/ubDistBuild/releases)
+          RELEASES=$(curl -s -H "Authorization: token $GH_TOKEN" https://api.github.com/repos/mirage335Colossus/ubiquitous_bash/releases)
 
           # Loop through each release
           for RELEASE in $(echo "$RELEASES" | jq -r '.[].tag_name' | sort --reverse); do
             # Download the binReport file for this release
-            curl -s -H "Authorization: token $GH_TOKEN" -L -o "ubcp-binReport-$RELEASE" "https://github.com/soaringDistributions/ubDistBuild/releases/download/$RELEASE/ubcp-binReport"
+            curl -s -H "Authorization: token $GH_TOKEN" -L -o "ubcp-binReport-$RELEASE" "https://github.com/mirage335Colossus/ubiquitous_bash/releases/download/$RELEASE/ubcp-binReport"
 
             # Compare the list of binaries in this release to the current release
             if [ "$RELEASE" != "$currentReleaseTag" ]; then
