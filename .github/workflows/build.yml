@@ -278,6 +278,7 @@ jobs:
           files: |
             /package_ubcp-core.log
             /package_ubcp-core.7z
+            /core/infrastructure/ubcp-binReport
       - name: rm - _MSWpackage package_ubcp-core
         shell: pwsh
         timeout-minutes: 240
@@ -343,6 +344,57 @@ jobs:
         run: |
           cat /_test-lean.log
         shell: pwsh
+
+
+  analysis_ubcp:
+    needs: [build_ubcp]
+    runs-on: ubuntu-latest
+    steps:
+      - name: analysis! missing-binaries
+        shell: bash
+        run: |
+          # Get the list of releases
+          RELEASES=$(curl -s -H "Authorization: token $GH_TOKEN" https://api.github.com/repos/soaringDistributions/ubDistBuild/releases)
+
+          # Loop through each release
+          for RELEASE in $(echo "$RELEASES" | jq -r '.[].tag_name' | sort --reverse); do
+            # Download the binReport file for this release
+            curl -s -H "Authorization: token $GH_TOKEN" -L -o "ubcp-binReport-$RELEASE" "https://github.com/soaringDistributions/ubDistBuild/releases/download/$RELEASE/ubcp-binReport"
+
+            # Compare the list of binaries in this release to the current release
+            if [ "$RELEASE" != "$currentReleaseTag" ]; then
+              echo | tee -a ./missing-ubcp-binReport
+              echo "Binaries (filesystem) in $RELEASE but not in currentRelease $currentReleaseTag:" | tee -a ./missing-ubcp-binReport
+              comm -23 <(sort "ubcp-binReport-$RELEASE") <(sort "ubcp-binReport-$currentReleaseTag") | tee -a ./missing-ubcp-binReport
+            fi
+          done
+        env:
+          currentReleaseTag: build-${{ github.run_id }}-${{ github.run_attempt }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: release! _test-lean.log
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: build-${{ github.run_id }}-${{ github.run_attempt }}
+          name: build
+          files: |
+            /missing-ubcp-binReport
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

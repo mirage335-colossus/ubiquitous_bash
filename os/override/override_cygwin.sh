@@ -755,7 +755,14 @@ _setup_ubiquitousBash_cygwin() {
 }
 
 
+_report_setup_ubcp() {
+	local currentCygdriveC_equivalent
+	currentCygdriveC_equivalent="$1"
+	[[ "$currentCygdriveC_equivalent" == "" ]] && currentCygdriveC_equivalent=$(cygpath -S | sed 's/\/Windows\/System32//g')
+	[[ "$1" == "/" ]] && currentCygdriveC_equivalent=$(echo "$PWD" | sed 's/\(\/cygdrive\/[a-zA-Z]*\).*/\1/')
 
+	find /bin/ /usr/bin/ /sbin/ /usr/sbin/ | sudo -n tee "$currentCygdriveC_equivalent"/core/infrastructure/ubcp-binReport > /dev/null
+}
 
 
 _setup_ubcp_procedure() {
@@ -829,6 +836,8 @@ _setup_ubcp() {
 	
 	"$scriptAbsoluteLocation" _setup_ubcp_procedure "$1"
 	"$scriptAbsoluteLocation" _setup_ubiquitousBash_cygwin_procedure "$1"
+
+	"$scriptAbsoluteLocation" _report_setup_ubcp "$1"
 }
 
 
