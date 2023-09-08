@@ -29,7 +29,7 @@ _createVMimage() {
 	
 	_messageNormal 'create: vm.img'
 	
-	export vmSize=26880
+	export vmSize=26572
 	_createRawImage
 	
 	
@@ -119,10 +119,11 @@ _createVMimage() {
 	#sudo -n parted --script "$vmImageFile" 'mkpart primary '"384"'MiB '"23582"'MiB'
 
 	# 25.95GiB-1MiB
-	#sudo -n parted --script "$vmImageFile" 'mkpart primary '"384"'MiB '"26571"'MiB'
+	sudo -n parted --script "$vmImageFile" 'mkpart primary '"384"'MiB '"26571"'MiB'
 
+	# Tested successfully.
 	# 26.25GiB-1MiB
-	sudo -n parted --script "$vmImageFile" 'mkpart primary '"384"'MiB '"26879"'MiB'
+	#sudo -n parted --script "$vmImageFile" 'mkpart primary '"384"'MiB '"26879"'MiB'
 	
 	
 	

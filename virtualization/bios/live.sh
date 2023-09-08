@@ -648,20 +648,40 @@ DefaultTasksMax=24' | sudo -n tee "$globalVirtFS"/etc/systemd/system.conf > /dev
 
 
 	# Solely to provide more information to convert 'vm-live.iso' back to 'vm.img' offline from only a Live BD-ROM disc .
-	sudo -n mksquashfs "$safeTmp"/root002 "$scriptLocal"/livefs/image/live/filesystem.squashfs -b 262144 -no-xattrs -noI -noX -comp lzo -Xalgorithm lzo1x_1 -e boot -e etc/fstab
+	_messagePlain_nominal 'mksquashfs: root002: boot-copy , fstab-copy'
+	_messagePlain_probe_cmd df -h
+	if ! _messagePlain_probe_cmd sudo -n mksquashfs "$safeTmp"/root002 "$scriptLocal"/livefs/image/live/filesystem.squashfs -b 262144 -no-xattrs -noI -noX -comp lzo -Xalgorithm lzo1x_1 -e boot -e etc/fstab
+	then
+		_messageFAIL
+		_stop 1
+		return 1
+	fi
 	du -sh "$scriptLocal"/livefs/image/live/filesystem.squashfs
 	sudo -n chown -R "$USER":"$USER" "$safeTmp"/root002
 	export safeToDeleteGit="true"
 	_safeRMR "$safeTmp"/root002
+	if [[ -e "$safeTmp"/root002 ]]
+	then
+		_messageFAIL
+		_stop 1
+		return 1
+	fi
 
 	mkdir -p "$safeTmp"/root001
 	sudo -n mkdir -p "$safeTmp"/root001/home
 	#sudo -n cp -a "$globalVirtFS"/home "$safeTmp"/root001/
 	sudo -n mount --bind "$globalVirtFS"/home "$safeTmp"/root001/home
 	_messagePlain_probe_cmd mountpoint "$safeTmp"/root001/home
-	_messagePlain_probe_cmd ls -l "$safeTmp"/root001/home/user/core/
-	_messagePlain_probe_cmd du -sh "$safeTmp"/root001/home
-	sudo -n mksquashfs "$safeTmp"/root001 "$scriptLocal"/livefs/image/live/filesystem.squashfs -b 262144 -no-xattrs -noI -noX -comp lzo -Xalgorithm lzo1x_1 -e boot -e etc/fstab
+	_messagePlain_probe_cmd sudo -n ls -l "$safeTmp"/root001/home/user/core/
+	_messagePlain_probe_cmd sudo -n du -sh "$safeTmp"/root001/home
+	_messagePlain_nominal 'mksquashfs: root001: home'
+	_messagePlain_probe_cmd df -h
+	if ! _messagePlain_probe_cmd sudo -n mksquashfs "$safeTmp"/root001 "$scriptLocal"/livefs/image/live/filesystem.squashfs -b 262144 -no-xattrs -noI -noX -comp lzo -Xalgorithm lzo1x_1 -e boot -e etc/fstab
+	then
+		_messageFAIL
+		_stop 1
+		return 1
+	fi
 	du -sh "$scriptLocal"/livefs/image/live/filesystem.squashfs
 	sudo -n umount "$safeTmp"/root001/home
 	if mountpoint "$safeTmp"/root001/home
@@ -673,8 +693,21 @@ DefaultTasksMax=24' | sudo -n tee "$globalVirtFS"/etc/systemd/system.conf > /dev
 	sudo -n chown -R "$USER":"$USER" "$safeTmp"/root001
 	export safeToDeleteGit="true"
 	_safeRMR "$safeTmp"/root001
+	if [[ -e "$safeTmp"/root001 ]]
+	then
+		_messageFAIL
+		_stop 1
+		return 1
+	fi
 
-	sudo -n mksquashfs "$globalVirtFS" "$scriptLocal"/livefs/image/live/filesystem.squashfs -b 262144 -no-xattrs -noI -noX -comp lzo -Xalgorithm lzo1x_1 -e home -e boot -e etc/fstab
+	_messagePlain_nominal 'mksquashfs: globalVirtFS'
+	_messagePlain_probe_cmd df -h
+	if ! _messagePlain_probe_cmd sudo -n mksquashfs "$globalVirtFS" "$scriptLocal"/livefs/image/live/filesystem.squashfs -b 262144 -no-xattrs -noI -noX -comp lzo -Xalgorithm lzo1x_1 -e home -e boot -e etc/fstab
+	then
+		_messageFAIL
+		_stop 1
+		return 1
+	fi
 	du -sh "$scriptLocal"/livefs/image/live/filesystem.squashfs
 
 
