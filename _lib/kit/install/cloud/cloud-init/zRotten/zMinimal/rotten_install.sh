@@ -1265,7 +1265,7 @@ _install() {
 	sudo -n -u user bash -c "cd ; mkdir -p "/home/"$custom_user""/Downloads"
 	sudo -n -u user bash -c "cd ; mkdir -p "/home/"$custom_user""/project/_random/_buried"
 
-	sudo -n ln -s /mnt /cygdrive
+	[[ ! -e /cygdrive ]] && sudo -n ln -s /mnt /cygdrive
 	
 	sudo -n -u user bash -c "git config --global pull.rebase false"
 	
