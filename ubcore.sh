@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='279842184'
+export ub_setScriptChecksum_contents='3147375950'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -13522,6 +13522,9 @@ _wsl_desktop() {
                     disown -a -h -r
                     disown -a -r
 
+                    # https://www.reddit.com/r/archlinux/comments/ves6mh/kde_autostart_mostly_no_longer_working/
+                    ##kwriteconfig5 --file startkderc --group General --key systemdBoot false
+                    ##kwriteconfig5 --file startkderc --group General --key systemdBoot true
                     #_wsl_desktop_startup_plasmaWorkspaceEnv_write "$@"
                     _wsl_desktop_startup_xdg_write "$@"
                     #_wsl_desktop_startup_systemd_write "$@"

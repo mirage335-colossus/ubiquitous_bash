@@ -181,6 +181,11 @@ _wsl_desktop() {
                     disown -a -h -r
                     disown -a -r
 
+                    # https://blog.davidedmundson.co.uk/blog/plasma-and-the-systemd-startup/
+                    # https://bbs.archlinux.org/viewtopic.php?id=279740
+                    # https://www.reddit.com/r/archlinux/comments/ves6mh/kde_autostart_mostly_no_longer_working/
+                    ##kwriteconfig5 --file startkderc --group General --key systemdBoot false
+                    ##kwriteconfig5 --file startkderc --group General --key systemdBoot true
                     #_wsl_desktop_startup_plasmaWorkspaceEnv_write "$@"
                     _wsl_desktop_startup_xdg_write "$@"
                     #_wsl_desktop_startup_systemd_write "$@"

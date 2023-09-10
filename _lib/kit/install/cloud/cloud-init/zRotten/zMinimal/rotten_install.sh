@@ -1297,10 +1297,13 @@ _install() {
 	_sep
 	_custom_bootOnce "$@"
 	
+	# Would have been necessitated by...
+	#wsl -d ubdist sudo -n rm -rf /home/user/.local/share/kactivitymanagerd/resources/*
+	# However, while that may reduce some CPU usage defect, at least the 'favorites' menu is deleted as well.
 	#_sep
 	#_custom_kde_drop "$@"
-	_sep
-	_custom_kde-limited "$@"
+	#_sep
+	#_custom_kde-limited "$@"
 	
 	#_custom_core_drop "$@"
 	
