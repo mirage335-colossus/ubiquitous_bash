@@ -490,6 +490,7 @@ _custom_kde_drop() {
 
 
 # ATTENTION: End user function.
+#cp /mnt/c/core/infrastructure/ubDistBuild/_lib/ubiquitous_bash/_lib/kit/install/cloud/cloud-init/zRotten/zMinimal/rotten_install.sh ./ ; chmod u+x rotten_install.sh ; ./rotten_install.sh _custom_kde-limited
 _custom_kde-limited() {
 	_messageNormal 'init: _custom_kde-limited'
 	
@@ -511,7 +512,8 @@ _custom_kde-limited() {
 	
 	mkdir -p "$HOME"/.local/share/kactivitymanagerd/resources
 	mkdir -p "$currentBackupDir"/.local/share/kactivitymanagerd/resources
-	_messagePlain_probe_cmd mv -f "$HOME"/.local/share/kactivitymanagerd/resources/{.,}* "$currentBackupDir"/.local/share/kactivitymanagerd/resources/
+	_messagePlain_probe_cmd mv -f "$HOME"/.local/share/kactivitymanagerd/resources/* "$currentBackupDir"/.local/share/kactivitymanagerd/resources/
+	_messagePlain_probe_cmd mv -f "$HOME"/.local/share/kactivitymanagerd/resources/.* "$currentBackupDir"/.local/share/kactivitymanagerd/resources/
 	
 	mkdir -p "$HOME"/package_kde
 	cd "$HOME"/package_kde
@@ -519,7 +521,8 @@ _custom_kde-limited() {
 	
 	
 	mkdir -p "$HOME"/.local/share/kactivitymanagerd/resources
-	_messagePlain_probe_cmd cp ./.local/share/kactivitymanagerd/resources/{.,}* "$HOME"/.local/share/kactivitymanagerd/resources/{.,}*
+	_messagePlain_probe_cmd cp -a "$HOME"/package_kde/.local/share/kactivitymanagerd/resources/* "$HOME"/.local/share/kactivitymanagerd/resources/
+	_messagePlain_probe_cmd cp -a "$HOME"/package_kde/.local/share/kactivitymanagerd/resources/.* "$HOME"/.local/share/kactivitymanagerd/resources/
 
 	mv -f "$HOME"/package_kde "$currentBackupDir"/
 }
