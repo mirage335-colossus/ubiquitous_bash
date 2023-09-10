@@ -515,7 +515,7 @@ _custom_kde-limited() {
 	
 	mkdir -p "$HOME"/package_kde
 	cd "$HOME"/package_kde
-	_messagePlain_probe_cmd tar xvf package_kde.tar.xz
+	_messagePlain_probe_cmd tar xvf "$HOME"/package_kde.tar.xz
 	
 	
 	mkdir -p "$HOME"/.local/share/kactivitymanagerd/resources
