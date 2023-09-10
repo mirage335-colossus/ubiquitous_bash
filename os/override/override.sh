@@ -11,6 +11,9 @@ then
 fi
 
 
+
+# ATTENTION: NOTICE: https://nixos.wiki/wiki/Locales
+
 # WARNING: May conflict with 'export LANG=C' or similar.
 # Workaround for very minor OS misconfiguration. Setting this variable at all may be undesirable however. Consider enabling and generating all locales with 'sudo dpkg-reconfigure locales' or similar .
 #[[ "$LC_ALL" == '' ]] && export LC_ALL="en_US.UTF-8"
