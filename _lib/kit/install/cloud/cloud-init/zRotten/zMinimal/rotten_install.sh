@@ -178,6 +178,8 @@ _here_rottenScript_bash_declareFunctions() {
 	declare -f _custom_core_drop
 	declare -f _custom_kde
 	declare -f _custom_kde_drop
+	declare -f _custom_kde-limited
+	declare -f _custom_kde_drop-limited
 	declare -f _custom_kernel_sequence
 	declare -f _custom_kernel
 	declare -f _custom_bootOnce
@@ -479,6 +481,70 @@ _custom_kde_drop() {
 	
 	local currentExitStatus
 	sudo -n -u "$custom_user" "$currentHOME"/rotten_"$ubiquitousBashID".sh _custom_kde "$@"
+	currentExitStatus="$?"
+	
+	sudo -n rm -f "$currentHOME"/rotten_"$ubiquitousBashID".sh
+	
+	return "$currentExitStatus"
+}
+
+
+# ATTENTION: End user function.
+_custom_kde-limited() {
+	_messageNormal 'init: _custom_kde-limited'
+	
+	_messagePlain_probe_var HOME
+	cd "$HOME"
+	
+	local currentBackupDir
+	currentBackupDir="$HOME"/.kde-limited.bak/$(_uid)
+	
+	_messagePlain_probe_var currentBackupDir
+	mkdir -p "$currentBackupDir"
+	
+	# ATTENTION: NOTICE: Usually, this is a redistributable product of Soaring Distributions LLC .
+	[[ -e /package_kde.tar.xz ]] && cp /package_kde.tar.xz "$HOME"/
+	if ! [[ -e package_kde.tar.xz ]]
+	then
+		_messagePlain_probe_cmd wget 'https://github.com/soaringDistributions/ubDistBuild/raw/main/_lib/custom/package_kde.tar.xz'
+	fi
+	
+	mkdir -p "$HOME"/.local/share/kactivitymanagerd/resources
+	mkdir -p "$currentBackupDir"/.local/share/kactivitymanagerd/resources
+	_messagePlain_probe_cmd mv -f "$HOME"/.local/share/kactivitymanagerd/resources/{.,}* "$currentBackupDir"/.local/share/kactivitymanagerd/resources/
+	
+	mkdir -p "$HOME"/package_kde
+	cd "$HOME"/package_kde
+	_messagePlain_probe_cmd tar xvf package_kde.tar.xz
+	
+	
+	mkdir -p "$HOME"/.local/share/kactivitymanagerd/resources
+	_messagePlain_probe_cmd cp ./.local/share/kactivitymanagerd/resources/{.,}* "$HOME"/.local/share/kactivitymanagerd/resources/{.,}*
+
+	mv -f "$HOME"/package_kde "$currentBackupDir"/
+}
+
+_custom_kde_drop-limited() {
+	_messageNormal 'init: _custom_kde_drop-limited'
+	
+	[[ "$custom_user" == "" ]] && export custom_user="user"
+	_messagePlain_probe_var custom_user
+	
+	# DANGER: Requires "$scriptAbsoluteLocation" effectively, at least temporarily, readable and executable, by "$custom_user" (possibly bad for cloud-init, rclone, etc).
+	local currentHOME
+	currentHOME=$(sudo -n -u "$custom_user" bash -c 'echo $HOME')
+	if [[ ! -e "$currentHOME" ]]
+	then
+		_messageFAIL
+		_stop 1
+		exit 1
+	fi
+	sudo -n cp "$scriptAbsoluteLocation" "$currentHOME"/rotten_"$ubiquitousBashID".sh
+	sudo -n chown "$custom_user":"$custom_user" "$currentHOME"/rotten_"$ubiquitousBashID".sh
+	sudo -n chmod 700 "$currentHOME"/rotten_"$ubiquitousBashID".sh
+	
+	local currentExitStatus
+	sudo -n -u "$custom_user" "$currentHOME"/rotten_"$ubiquitousBashID".sh _custom_kde-limited "$@"
 	currentExitStatus="$?"
 	
 	sudo -n rm -f "$currentHOME"/rotten_"$ubiquitousBashID".sh
@@ -1226,7 +1292,10 @@ _install() {
 	_sep
 	_custom_bootOnce "$@"
 	
+	#_sep
 	#_custom_kde_drop "$@"
+	_sep
+	_custom_kde-limited "$@"
 	
 	#_custom_core_drop "$@"
 	
