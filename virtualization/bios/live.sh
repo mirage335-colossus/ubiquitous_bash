@@ -769,7 +769,7 @@ DefaultTasksMax=24' | sudo -n tee "$globalVirtFS"/etc/systemd/system.conf > /dev
 	_chroot systemctl enable exim4
 
 
-	sudo rm -f "$globalVirtFS"/usr/share/initramfs-tools/scripts/init-bottom/preload_run
+	sudo -n rm -f "$globalVirtFS"/usr/share/initramfs-tools/scripts/init-bottom/preload_run
 
 	[[ -e "$globalVirtFS"/etc/systemd/system.conf.orig ]] && sudo -n mv -f "$globalVirtFS"/etc/systemd/system.conf.orig "$globalVirtFS"/etc/systemd/system.conf
 
