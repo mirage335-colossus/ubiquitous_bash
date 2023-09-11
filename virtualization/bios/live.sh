@@ -768,6 +768,14 @@ DefaultTasksMax=24' | sudo -n tee "$globalVirtFS"/etc/systemd/system.conf > /dev
 
 	_chroot systemctl enable exim4
 
+
+	sudo rm -f "$globalVirtFS"/usr/share/initramfs-tools/scripts/init-bottom/preload_run
+
+	[[ -e "$globalVirtFS"/etc/systemd/system.conf.orig ]] && sudo -n mv -f "$globalVirtFS"/etc/systemd/system.conf.orig "$globalVirtFS"/etc/systemd/system.conf
+
+
+	_chroot update-initramfs -u -k all
+
 	_messagePlain_nominal 'Attempt: _closeChRoot'
 	#sudo -n umount "$globalVirtFS"/boot/efi > /dev/null 2>&1
 	#sudo -n umount "$globalVirtFS"/boot > /dev/null 2>&1
