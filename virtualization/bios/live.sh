@@ -484,6 +484,35 @@ CZXWXcRMTo8EmM8i4d
 }
 
 
+_write_revert_live() {
+	_messagePlain_nominal 'Attempt: _openChRoot'
+	! "$scriptAbsoluteLocation" _openChRoot && _messagePlain_bad 'fail: _openChRoot' && _messageFAIL
+
+	#_chroot systemctl enable nfs-blkmap
+	#_chroot systemctl enable nfs-idmapd
+	#_chroot systemctl enable nfs-mountd
+	#_chroot systemctl enable nfs-server
+	#_chroot systemctl enable nfsdcld
+
+	#_chroot systemctl enable ssh
+	#_chroot systemctl enable sshd
+
+	_chroot systemctl enable exim4
+
+
+	sudo -n rm -f "$globalVirtFS"/usr/share/initramfs-tools/scripts/init-bottom/preload_run
+
+	[[ -e "$globalVirtFS"/etc/systemd/system.conf.orig ]] && sudo -n mv -f "$globalVirtFS"/etc/systemd/system.conf.orig "$globalVirtFS"/etc/systemd/system.conf
+
+
+	_chroot update-initramfs -u -k all
+
+	_messagePlain_nominal 'Attempt: _closeChRoot'
+	#sudo -n umount "$globalVirtFS"/boot/efi > /dev/null 2>&1
+	#sudo -n umount "$globalVirtFS"/boot > /dev/null 2>&1
+	! "$scriptAbsoluteLocation" _closeChRoot && _messagePlain_bad 'fail: _closeChRoot' && _messageFAIL
+}
+
 # https://willhaley.com/blog/custom-debian-live-environment-grub-only/
 # https://web.archive.org/web/*/https://willhaley.com/blog/custom-debian-live-environment-grub-only/*
 # https://itnext.io/how-to-create-a-custom-ubuntu-live-from-scratch-dd3b3f213f81
@@ -754,32 +783,7 @@ DefaultTasksMax=24' | sudo -n tee "$globalVirtFS"/etc/systemd/system.conf > /dev
 	
 	
 	
-	_messagePlain_nominal 'Attempt: _openChRoot'
-	! "$scriptAbsoluteLocation" _openChRoot && _messagePlain_bad 'fail: _openChRoot' && _messageFAIL
-
-	#_chroot systemctl enable nfs-blkmap
-	#_chroot systemctl enable nfs-idmapd
-	#_chroot systemctl enable nfs-mountd
-	#_chroot systemctl enable nfs-server
-	#_chroot systemctl enable nfsdcld
-
-	#_chroot systemctl enable ssh
-	#_chroot systemctl enable sshd
-
-	_chroot systemctl enable exim4
-
-
-	sudo -n rm -f "$globalVirtFS"/usr/share/initramfs-tools/scripts/init-bottom/preload_run
-
-	[[ -e "$globalVirtFS"/etc/systemd/system.conf.orig ]] && sudo -n mv -f "$globalVirtFS"/etc/systemd/system.conf.orig "$globalVirtFS"/etc/systemd/system.conf
-
-
-	_chroot update-initramfs -u -k all
-
-	_messagePlain_nominal 'Attempt: _closeChRoot'
-	#sudo -n umount "$globalVirtFS"/boot/efi > /dev/null 2>&1
-	#sudo -n umount "$globalVirtFS"/boot > /dev/null 2>&1
-	! "$scriptAbsoluteLocation" _closeChRoot && _messagePlain_bad 'fail: _closeChRoot' && _messageFAIL
+	_write_revert_live
 	
 	
 	

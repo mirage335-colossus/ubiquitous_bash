@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='31528168'
+export ub_setScriptChecksum_contents='2398575522'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -17949,6 +17949,35 @@ CZXWXcRMTo8EmM8i4d
 }
 
 
+_write_revert_live() {
+	_messagePlain_nominal 'Attempt: _openChRoot'
+	! "$scriptAbsoluteLocation" _openChRoot && _messagePlain_bad 'fail: _openChRoot' && _messageFAIL
+
+	#_chroot systemctl enable nfs-blkmap
+	#_chroot systemctl enable nfs-idmapd
+	#_chroot systemctl enable nfs-mountd
+	#_chroot systemctl enable nfs-server
+	#_chroot systemctl enable nfsdcld
+
+	#_chroot systemctl enable ssh
+	#_chroot systemctl enable sshd
+
+	_chroot systemctl enable exim4
+
+
+	sudo -n rm -f "$globalVirtFS"/usr/share/initramfs-tools/scripts/init-bottom/preload_run
+
+	[[ -e "$globalVirtFS"/etc/systemd/system.conf.orig ]] && sudo -n mv -f "$globalVirtFS"/etc/systemd/system.conf.orig "$globalVirtFS"/etc/systemd/system.conf
+
+
+	_chroot update-initramfs -u -k all
+
+	_messagePlain_nominal 'Attempt: _closeChRoot'
+	#sudo -n umount "$globalVirtFS"/boot/efi > /dev/null 2>&1
+	#sudo -n umount "$globalVirtFS"/boot > /dev/null 2>&1
+	! "$scriptAbsoluteLocation" _closeChRoot && _messagePlain_bad 'fail: _closeChRoot' && _messageFAIL
+}
+
 # https://willhaley.com/blog/custom-debian-live-environment-grub-only/
 # https://web.archive.org/web/*/https://willhaley.com/blog/custom-debian-live-environment-grub-only/*
 # https://itnext.io/how-to-create-a-custom-ubuntu-live-from-scratch-dd3b3f213f81
@@ -18219,32 +18248,7 @@ DefaultTasksMax=24' | sudo -n tee "$globalVirtFS"/etc/systemd/system.conf > /dev
 	
 	
 	
-	_messagePlain_nominal 'Attempt: _openChRoot'
-	! "$scriptAbsoluteLocation" _openChRoot && _messagePlain_bad 'fail: _openChRoot' && _messageFAIL
-
-	#_chroot systemctl enable nfs-blkmap
-	#_chroot systemctl enable nfs-idmapd
-	#_chroot systemctl enable nfs-mountd
-	#_chroot systemctl enable nfs-server
-	#_chroot systemctl enable nfsdcld
-
-	#_chroot systemctl enable ssh
-	#_chroot systemctl enable sshd
-
-	_chroot systemctl enable exim4
-
-
-	sudo -n rm -f "$globalVirtFS"/usr/share/initramfs-tools/scripts/init-bottom/preload_run
-
-	[[ -e "$globalVirtFS"/etc/systemd/system.conf.orig ]] && sudo -n mv -f "$globalVirtFS"/etc/systemd/system.conf.orig "$globalVirtFS"/etc/systemd/system.conf
-
-
-	_chroot update-initramfs -u -k all
-
-	_messagePlain_nominal 'Attempt: _closeChRoot'
-	#sudo -n umount "$globalVirtFS"/boot/efi > /dev/null 2>&1
-	#sudo -n umount "$globalVirtFS"/boot > /dev/null 2>&1
-	! "$scriptAbsoluteLocation" _closeChRoot && _messagePlain_bad 'fail: _closeChRoot' && _messageFAIL
+	_write_revert_live
 	
 	
 	
