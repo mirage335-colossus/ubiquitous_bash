@@ -1342,7 +1342,7 @@ _install() {
 	
 	# https://forum.manjaro.org/t/high-cpu-usage-from-plasmashell-kactivitymanagerd/114305
 	# DANGER: Unusual. Uses 'rm -rf' directly. Presumed ONLY during dist/OS install .
-	sudo -n rm -rf /home/"$custom_user"/.local/share/kactivitymanagerd/resources/*
+	#sudo -n rm -rf /home/"$custom_user"/.local/share/kactivitymanagerd/resources/*
 	
 	
 	# https://askubuntu.com/questions/98006/how-do-i-prevent-policykit-from-asking-for-a-password
