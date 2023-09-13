@@ -97,6 +97,7 @@ then
 	if [[ "$tmpSelf" == "" ]]
 	then
 		export tmpWSL="$HOME"/.ubtmp
+		[[ "$realHome" != "" ]] && export tmpWSL="$realHome"/.ubtmp
 		[[ ! -e "$tmpWSL" ]] && mkdir -p "$tmpWSL"
 		
 		if [[ "$tmpWSL" != "" ]]
