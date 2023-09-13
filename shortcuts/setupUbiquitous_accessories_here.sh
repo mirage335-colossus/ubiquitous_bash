@@ -264,6 +264,14 @@ _setupUbiquitous_accessories_here-nixenv-bashrc() {
 
 [[ -e "$HOME"/.nix-profile/etc/profile.d/nix.sh ]] && . "$HOME"/.nix-profile/etc/profile.d/nix.sh
 
+# WARNING: Binaries from Nix should not be prepended to Debian PATH, as they may be incompatible with other Debian software (eg. incorrect Python version).
+# Scripts that need to rely preferentially on Nix binaries should detect this situation, defining and calling an appropriate wrapper function.
+if [[ "\$PATH" == *"nix-profile/bin"* ]]
+then
+	export PATH=$(echo \$PATH | sed 's|:'"$HOME"'/.nix-profile/bin||g;s|'"$HOME"'/.nix-profile/bin:||g')
+	export PATH="\$PATH":"$HOME"/.nix-profile/bin
+fi
+
 CZXWXcRMTo8EmM8i4d
 }
 
