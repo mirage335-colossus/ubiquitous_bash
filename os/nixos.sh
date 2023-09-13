@@ -145,6 +145,8 @@ _mustHave_nixos() {
 	if ! type nix-env > /dev/null 2>&1
 	then
 		_test_nix-env_upstream > /dev/null 2>&1
+		[[ -e "$HOME"/.nix-profile/etc/profile.d/nix.sh ]] && . "$HOME"/.nix-profile/etc/profile.d/nix.sh
+		! type nix-env > /dev/null 2>&1 && _stop 1
 	fi
 	
 	! type nix-env > /dev/null 2>&1 && _stop 1
