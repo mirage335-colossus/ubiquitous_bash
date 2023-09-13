@@ -268,7 +268,7 @@ _setupUbiquitous_accessories_here-nixenv-bashrc() {
 # Scripts that need to rely preferentially on Nix binaries should detect this situation, defining and calling an appropriate wrapper function.
 if [[ "\$PATH" == *"nix-profile/bin"* ]]
 then
-	export PATH=$(echo \$PATH | sed 's|:'"$HOME"'/.nix-profile/bin||g;s|'"$HOME"'/.nix-profile/bin:||g')
+	export PATH=\$(echo "\$PATH" | sed 's|:'"$HOME"'/.nix-profile/bin||g;s|'"$HOME"'/.nix-profile/bin:||g')
 	export PATH="\$PATH":"$HOME"/.nix-profile/bin
 fi
 
