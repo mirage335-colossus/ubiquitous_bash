@@ -427,6 +427,15 @@ _getMost_debian11_install() {
 	_getMost_backend_aptGetInstall libusb-1.0
 
 
+
+	_getMost_backend_aptGetInstall ddd
+	_getMost_backend_aptGetInstall gdb
+	_getMost_backend_aptGetInstall libbabeltrace1
+	_getMost_backend_aptGetInstall libc6-dbg
+	_getMost_backend_aptGetInstall libsource-highlight-common
+	_getMost_backend_aptGetInstall libsource-highlight4v5
+
+
 	
 	# ATTENTION: ONLY change (eg. to 'remove') if needed to ensure a kernel is installed AND custom kernel is not in use.
 	_getMost_backend_aptGetInstall linux-image-amd64
