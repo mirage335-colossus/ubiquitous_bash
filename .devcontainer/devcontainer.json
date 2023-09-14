@@ -22,7 +22,8 @@
                 "pull_requests": "none",
                 "repository_projects": "none",
                 "security_events": "none",
-                "statuses": "none"
+                "statuses": "none",
+                "metadata": "read"
               }
             }
           }
