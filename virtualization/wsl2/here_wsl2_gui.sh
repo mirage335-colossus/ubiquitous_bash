@@ -71,6 +71,15 @@ _write_msw_LANG() {
 }
 
 
+# KDE Plasma, FreeCAD, etc, may not be usable without usable OpenGL .
+# https://github.com/microsoft/wslg/wiki/GPU-selection-in-WSLg
+_write_msw_discreteGPU() {
+    #glxinfo -B | grep -i intel > /dev/null 2>&1 && setx MESA_D3D12_DEFAULT_ADAPTER_NAME NVIDIA /m
+    
+    "$(cygpath -S)"/wbem/wmic.exe path win32_VideoController get name | grep -i 'intel' > /dev/null 2>&1 && "$(cygpath -S)"/wbem/wmic.exe path win32_VideoController get name | grep -i 'nvidia' > /dev/null 2>&1 && setx MESA_D3D12_DEFAULT_ADAPTER_NAME NVIDIA /m
+}
+
+
 _write_msw_WSLENV() {
     _messagePlain_request 'request: If the value of system variable WSLENV is important to you, the previous value is noted here.'
     _messagePlain_probe_var WSLENV
@@ -81,7 +90,7 @@ _write_msw_WSLENV() {
     _write_msw_LANG
     #setx WSLENV LANG /m
 
-    setx WSLENV LANG:QT_QPA_PLATFORMTHEME /m
+    setx WSLENV LANG:QT_QPA_PLATFORMTHEME:MESA_D3D12_DEFAULT_ADAPTER_NAME /m
 }
 
 

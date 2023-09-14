@@ -103,8 +103,9 @@ _wsl_desktop() {
     (
         _messageNormal "init: _wsl_desktop"
 
+        # KDE Plasma may not be usable without usable OpenGL .
         # https://github.com/microsoft/wslg/wiki/GPU-selection-in-WSLg
-        glxinfo -B | grep -i intel > /dev/null 2>&1 && export MESA_D3D12_DEFAULT_ADAPTER_NAME=NVIDIA
+        _set_discreteGPU-forWSL
 
         if [[ "$PWD" == "/mnt/"?"/WINDOWS/system32" ]] || [[ "$PWD" == "/mnt/"?"/Windows/system32" ]] || [[ "$PWD" == "/mnt/"?"/windows/system32" ]]
         then

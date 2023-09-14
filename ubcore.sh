@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='2440712987'
+export ub_setScriptChecksum_contents='1588018440'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -13336,6 +13336,15 @@ _write_msw_LANG() {
 }
 
 
+# KDE Plasma, FreeCAD, etc, may not be usable without usable OpenGL .
+# https://github.com/microsoft/wslg/wiki/GPU-selection-in-WSLg
+_write_msw_discreteGPU() {
+    #glxinfo -B | grep -i intel > /dev/null 2>&1 && setx MESA_D3D12_DEFAULT_ADAPTER_NAME NVIDIA /m
+    
+    "$(cygpath -S)"/wbem/wmic.exe path win32_VideoController get name | grep -i 'intel' > /dev/null 2>&1 && "$(cygpath -S)"/wbem/wmic.exe path win32_VideoController get name | grep -i 'nvidia' > /dev/null 2>&1 && setx MESA_D3D12_DEFAULT_ADAPTER_NAME NVIDIA /m
+}
+
+
 _write_msw_WSLENV() {
     _messagePlain_request 'request: If the value of system variable WSLENV is important to you, the previous value is noted here.'
     _messagePlain_probe_var WSLENV
@@ -13346,7 +13355,7 @@ _write_msw_WSLENV() {
     _write_msw_LANG
     #setx WSLENV LANG /m
 
-    setx WSLENV LANG:QT_QPA_PLATFORMTHEME /m
+    setx WSLENV LANG:QT_QPA_PLATFORMTHEME:MESA_D3D12_DEFAULT_ADAPTER_NAME /m
 }
 
 
@@ -13456,8 +13465,9 @@ _wsl_desktop() {
     (
         _messageNormal "init: _wsl_desktop"
 
+        # KDE Plasma may not be usable without usable OpenGL .
         # https://github.com/microsoft/wslg/wiki/GPU-selection-in-WSLg
-        glxinfo -B | grep -i intel > /dev/null 2>&1 && export MESA_D3D12_DEFAULT_ADAPTER_NAME=NVIDIA
+        _set_discreteGPU-forWSL
 
         if [[ "$PWD" == "/mnt/"?"/WINDOWS/system32" ]] || [[ "$PWD" == "/mnt/"?"/Windows/system32" ]] || [[ "$PWD" == "/mnt/"?"/windows/system32" ]]
         then
@@ -21888,7 +21898,10 @@ _set_lang-forWSL() {
 }
 
 
-
+_set_discreteGPU-forWSL() {
+    [[ "$MESA_D3D12_DEFAULT_ADAPTER_NAME" != "" ]] && return 0
+    glxinfo -B | grep -i intel > /dev/null 2>&1 && export MESA_D3D12_DEFAULT_ADAPTER_NAME=NVIDIA
+}
 
 
 _set_msw_wsl() {
@@ -21908,6 +21921,8 @@ _set_wsl() {
     _set_qt5ct
 
     [[ "$LIBVA_DRIVER_NAME" != "d3d12" ]] && export LIBVA_DRIVER_NAME=d3d12
+
+    _set_discreteGPU-forWSL
 
     return 0
 }
