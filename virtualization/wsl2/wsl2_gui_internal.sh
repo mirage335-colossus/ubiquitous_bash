@@ -102,6 +102,10 @@ _wsl_desktop() {
 
     (
         _messageNormal "init: _wsl_desktop"
+
+        # https://github.com/microsoft/wslg/wiki/GPU-selection-in-WSLg
+        glxinfo -B | grep -i intel > /dev/null 2>&1 && export MESA_D3D12_DEFAULT_ADAPTER_NAME=NVIDIA
+
         if [[ "$PWD" == "/mnt/"?"/WINDOWS/system32" ]] || [[ "$PWD" == "/mnt/"?"/Windows/system32" ]] || [[ "$PWD" == "/mnt/"?"/windows/system32" ]]
         then
             _messagePlain_probe 'reject: /mnt/'?'/WINDOWS/system32'
