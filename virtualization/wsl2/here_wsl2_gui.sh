@@ -90,6 +90,9 @@ _write_msw_WSLENV() {
     _write_msw_LANG
     #setx WSLENV LANG /m
 
+    _write_msw_discreteGPU
+    #setx MESA_D3D12_DEFAULT_ADAPTER_NAME NVIDIA /m
+
     setx WSLENV LANG:QT_QPA_PLATFORMTHEME:MESA_D3D12_DEFAULT_ADAPTER_NAME /m
 }
 
