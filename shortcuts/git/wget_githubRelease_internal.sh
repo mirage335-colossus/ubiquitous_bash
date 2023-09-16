@@ -70,6 +70,7 @@ _wget_githubRelease_join-stdout() {
 	then
 		local currentAxelTmpFile
 		currentAxelTmpFile="$scriptAbsoluteFolder"/.m_axelTmp_$(_uid 14)
+
 		local currentAxelPID
 		
 		( [[ "$FORCE_AXEL" == "true" ]] || [[ "$FORCE_AXEL" == "" ]] ) && FORCE_AXEL="48"
@@ -77,11 +78,38 @@ _wget_githubRelease_join-stdout() {
 		axel -a -n "$FORCE_AXEL" -o "$currentAxelTmpFile" "${currentURL_array_reversed[@]}" >&2 &
 		currentAxelPID="$!"
 
-		tail --pid="$currentAxelPID" -f "$currentAxelTmpFile"
+		local currentIteration
+		while [[ "$currentIteration" -le 32 ]] && [[ ! -e "$currentAxelTmpFile" ]]
+		do
+			sleep 2
+			let currentIteration="$currentIteration"+1
+		done
 
-		wait "$currentAxelPID"
+		if [[ -e "$currentAxelTmpFile" ]]
+		then
+			tail --pid="$currentAxelPID" -c 100000000000 -f "$currentAxelTmpFile"
+			wait "$currentAxelPID"
+		else
+			_messagePlain_bad 'missing: "$currentAxelTmpFile"'
+			kill -TERM "$currentAxelPID" > /dev/null 2>&1
+			kill -TERM "$currentAxelPID" > /dev/null 2>&1
+			sleep 3
+			kill -TERM "$currentAxelPID" > /dev/null 2>&1
+			sleep 3
+			kill -TERM "$currentAxelPID" > /dev/null 2>&1
+			kill -KILL "$currentAxelPID" > /dev/null 2>&1
+			return 1
+		fi
+
+		if ! [[ -e "$currentAxelTmpFile" ]]
+		then
+			return 1
+		fi
+
+		rm -f "$currentAxelTmpFile"
+		rm -f "$currentAxelTmpFile".st
 		
-		return
+		return 0
 	else
 		_messagePlain_probe curl -L "${currentURL_array_reversed[@]}" >&2
 		curl -L "${currentURL_array_reversed[@]}"

@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='882826531'
+export ub_setScriptChecksum_contents='2393923061'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -24165,6 +24165,7 @@ _wget_githubRelease_join-stdout() {
 	then
 		local currentAxelTmpFile
 		currentAxelTmpFile="$scriptAbsoluteFolder"/.m_axelTmp_$(_uid 14)
+
 		local currentAxelPID
 		
 		( [[ "$FORCE_AXEL" == "true" ]] || [[ "$FORCE_AXEL" == "" ]] ) && FORCE_AXEL="48"
@@ -24172,11 +24173,38 @@ _wget_githubRelease_join-stdout() {
 		axel -a -n "$FORCE_AXEL" -o "$currentAxelTmpFile" "${currentURL_array_reversed[@]}" >&2 &
 		currentAxelPID="$!"
 
-		tail --pid="$currentAxelPID" -f "$currentAxelTmpFile"
+		local currentIteration
+		while [[ "$currentIteration" -le 32 ]] && [[ ! -e "$currentAxelTmpFile" ]]
+		do
+			sleep 2
+			let currentIteration="$currentIteration"+1
+		done
 
-		wait "$currentAxelPID"
+		if [[ -e "$currentAxelTmpFile" ]]
+		then
+			tail --pid="$currentAxelPID" -c 100000000000 -f "$currentAxelTmpFile"
+			wait "$currentAxelPID"
+		else
+			_messagePlain_bad 'missing: "$currentAxelTmpFile"'
+			kill -TERM "$currentAxelPID" > /dev/null 2>&1
+			kill -TERM "$currentAxelPID" > /dev/null 2>&1
+			sleep 3
+			kill -TERM "$currentAxelPID" > /dev/null 2>&1
+			sleep 3
+			kill -TERM "$currentAxelPID" > /dev/null 2>&1
+			kill -KILL "$currentAxelPID" > /dev/null 2>&1
+			return 1
+		fi
+
+		if ! [[ -e "$currentAxelTmpFile" ]]
+		then
+			return 1
+		fi
+
+		rm -f "$currentAxelTmpFile"
+		rm -f "$currentAxelTmpFile".st
 		
-		return
+		return 0
 	else
 		_messagePlain_probe curl -L "${currentURL_array_reversed[@]}" >&2
 		curl -L "${currentURL_array_reversed[@]}"
