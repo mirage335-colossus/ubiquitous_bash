@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='112416559'
+export ub_setScriptChecksum_contents='3061107166'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -24177,8 +24177,20 @@ _wget_githubRelease_join-stdout() {
 		for currentValue in "${currentURL_array_reversed[@]}"
 		do
 			rm -f "$currentAxelTmpFile".tmp
-			_messagePlain_probe axel -a -n "$FORCE_AXEL" -o "$currentAxelTmpFile".tmp "$currentValue" >&2
-			axel -a -n "$FORCE_AXEL" -o "$currentAxelTmpFile".tmp "$currentValue" >&2
+			
+			
+			#_messagePlain_probe axel -a -n "$FORCE_AXEL" -o "$currentAxelTmpFile".tmp "$currentValue" >&2
+			#axel -a -n "$FORCE_AXEL" -o "$currentAxelTmpFile".tmp "$currentValue" >&2
+			if [[ "$GH_TOKEN" == "" ]]
+			then
+				_messagePlain_probe axel -a -n "$FORCE_AXEL" -o "$currentAxelTmpFile".tmp "$currentValue" >&2
+				axel -a -n "$FORCE_AXEL" -o "$currentAxelTmpFile".tmp "$currentValue" >&2
+			else
+				_messagePlain_probe axel -a -n "$FORCE_AXEL" -H '"Authorization: Bearer $GH_TOKEN"' -o "$currentAxelTmpFile".tmp "$currentValue" >&2
+				axel -a -n "$FORCE_AXEL" -H "Authorization: Bearer $GH_TOKEN" -o "$currentAxelTmpFile".tmp "$currentValue" >&2
+			fi
+			
+			
 			_messagePlain_probe dd if="$currentAxelTmpFile".tmp bs=1M status=progress' >> '"$currentAxelTmpFile" >&2
 			dd if="$currentAxelTmpFile".tmp bs=1M status=progress >> "$currentAxelTmpFile"
 			let currentIteration=currentIteration+1
@@ -24220,8 +24232,14 @@ _wget_githubRelease_join-stdout() {
 		
 		return 0
 	else
-		_messagePlain_probe curl -L "${currentURL_array_reversed[@]}" >&2
-		curl -L "${currentURL_array_reversed[@]}"
+		if [[ "$GH_TOKEN" == "" ]]
+		then
+			_messagePlain_probe curl -L "${currentURL_array_reversed[@]}" >&2
+			curl -L "${currentURL_array_reversed[@]}"
+		else
+			_messagePlain_probe curl -H '"Authorization: Bearer $GH_TOKEN"' -L "${currentURL_array_reversed[@]}" >&2
+			curl -H "Authorization: Bearer $GH_TOKEN" -L "${currentURL_array_reversed[@]}"
+		fi
 		return
 	fi
 }

@@ -82,8 +82,20 @@ _wget_githubRelease_join-stdout() {
 		for currentValue in "${currentURL_array_reversed[@]}"
 		do
 			rm -f "$currentAxelTmpFile".tmp
-			_messagePlain_probe axel -a -n "$FORCE_AXEL" -o "$currentAxelTmpFile".tmp "$currentValue" >&2
-			axel -a -n "$FORCE_AXEL" -o "$currentAxelTmpFile".tmp "$currentValue" >&2
+			
+			
+			#_messagePlain_probe axel -a -n "$FORCE_AXEL" -o "$currentAxelTmpFile".tmp "$currentValue" >&2
+			#axel -a -n "$FORCE_AXEL" -o "$currentAxelTmpFile".tmp "$currentValue" >&2
+			if [[ "$GH_TOKEN" == "" ]]
+			then
+				_messagePlain_probe axel -a -n "$FORCE_AXEL" -o "$currentAxelTmpFile".tmp "$currentValue" >&2
+				axel -a -n "$FORCE_AXEL" -o "$currentAxelTmpFile".tmp "$currentValue" >&2
+			else
+				_messagePlain_probe axel -a -n "$FORCE_AXEL" -H '"Authorization: Bearer $GH_TOKEN"' -o "$currentAxelTmpFile".tmp "$currentValue" >&2
+				axel -a -n "$FORCE_AXEL" -H "Authorization: Bearer $GH_TOKEN" -o "$currentAxelTmpFile".tmp "$currentValue" >&2
+			fi
+			
+			
 			_messagePlain_probe dd if="$currentAxelTmpFile".tmp bs=1M status=progress' >> '"$currentAxelTmpFile" >&2
 			dd if="$currentAxelTmpFile".tmp bs=1M status=progress >> "$currentAxelTmpFile"
 			let currentIteration=currentIteration+1
@@ -125,8 +137,14 @@ _wget_githubRelease_join-stdout() {
 		
 		return 0
 	else
-		_messagePlain_probe curl -L "${currentURL_array_reversed[@]}" >&2
-		curl -L "${currentURL_array_reversed[@]}"
+		if [[ "$GH_TOKEN" == "" ]]
+		then
+			_messagePlain_probe curl -L "${currentURL_array_reversed[@]}" >&2
+			curl -L "${currentURL_array_reversed[@]}"
+		else
+			_messagePlain_probe curl -H '"Authorization: Bearer $GH_TOKEN"' -L "${currentURL_array_reversed[@]}" >&2
+			curl -H "Authorization: Bearer $GH_TOKEN" -L "${currentURL_array_reversed[@]}"
+		fi
 		return
 	fi
 }
