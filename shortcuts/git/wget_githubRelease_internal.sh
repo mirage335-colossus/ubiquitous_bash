@@ -84,7 +84,8 @@ _wget_githubRelease_join-stdout() {
 			rm -f "$currentAxelTmpFile".tmp
 			_messagePlain_probe axel -a -n "$FORCE_AXEL" -o "$currentAxelTmpFile".tmp "$currentValue" >&2
 			axel -a -n "$FORCE_AXEL" -o "$currentAxelTmpFile".tmp "$currentValue" >&2
-			cat "$currentAxelTmpFile".tmp >> "$currentAxelTmpFile"
+			_messagePlain_probe dd if="$currentAxelTmpFile".tmp bs=1M status=progress' >> '"$currentAxelTmpFile" >&2
+			dd if="$currentAxelTmpFile".tmp bs=1M status=progress >> "$currentAxelTmpFile"
 			let currentIteration=currentIteration+1
 		done
 
