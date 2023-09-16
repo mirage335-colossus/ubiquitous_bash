@@ -166,6 +166,7 @@ _wsl_desktop() {
             #"$@"
             
             (
+                _timeout 0.3 xmessage -timeout 1 "splash-ldesk: init: Xephyr"
                 Xephyr -screen "$xephyrResolution" :"$xephyrDisplay" &#disown -h $!
                 disown
                 disown -a -h -r
@@ -179,8 +180,10 @@ _wsl_desktop() {
 
                     export DESKTOP_SESSION=plasma
 
+                    _timeout 0.3 xmessage -timeout 1 "splash-ldesk: init: dbus-launch"
                     export $(dbus-launch)
 
+                    _timeout 0.3 xmessage -timeout 1 "splash-ldesk: init: xclipsync"
                     "$HOME"/core/installations/xclipsync/xclipsync &
                     disown
                     disown -a -h -r
@@ -195,7 +198,8 @@ _wsl_desktop() {
                     _wsl_desktop_startup_xdg_write "$@"
                     #_wsl_desktop_startup_systemd_write "$@"
 
-                    ##dbus-run-session 
+                    ##dbus-run-session
+                    _timeout 0.3 xmessage -timeout 1 "splash-ldesk: init: startplasma-x11"
                     exec startplasma-x11 > /dev/null 2>&1 &
 
 

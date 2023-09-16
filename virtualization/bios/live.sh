@@ -391,53 +391,68 @@ esac
 
 if type dd > /dev/null 2>&1
 then
+	progressFeed() {
+		! dd of=/dev/null bs=1M count=1 && return 0
+
+		! dd of=/dev/null bs=1M count=9 && return 0
+		echo x1 10MB
+		
+		! dd of=/dev/null bs=1M count=90 && return 0
+		echo x1 100MB
+		
+		while dd of=/dev/null bs=1M count=100
+		do
+			echo "x1 100MB"
+		done
+	}
+
 	echo "_____ preload: /root/home -not core -not .nix -not .gcloud"
-	find /root/home -not \( -path \/home/\*/core\* -prune \) -not \( -path \/home/\*/.nix\* -prune \) -not \( -path \/home/\*/.gcloud\* -prune \) -type f -exec dd if={} bs=16384 2>/dev/null \; | dd of=/dev/null bs=16384 status=progress
-	find /root/home/*/klipper -type f -exec dd if={} bs=16384 2>/dev/null \; | dd of=/dev/null bs=16384 status=progress
-	find /root/home/*/moonraker -type f -exec dd if={} bs=16384 2>/dev/null \; | dd of=/dev/null bs=16384 status=progress
-	find /root/home/*/moonraker-env -type f -exec dd if={} bs=16384 2>/dev/null \; | dd of=/dev/null bs=16384 status=progress
-	find /root/home/*/mainsail -type f -exec dd if={} bs=16384 2>/dev/null \; | dd of=/dev/null bs=16384 status=progress
+	find /root/home -not \( -path \/home/\*/core\* -prune \) -not \( -path \/home/\*/.nix\* -prune \) -not \( -path \/home/\*/.gcloud\* -prune \) -type f -exec dd if={} bs=16384 2>/dev/null \; | progressFeed
+	find /root/home/*/klipper -type f -exec dd if={} bs=16384 2>/dev/null \; | progressFeed
+	find /root/home/*/moonraker -type f -exec dd if={} bs=16384 2>/dev/null \; | progressFeed
+	find /root/home/*/moonraker-env -type f -exec dd if={} bs=16384 2>/dev/null \; | progressFeed
+	find /root/home/*/mainsail -type f -exec dd if={} bs=16384 2>/dev/null \; | progressFeed
 
 
 	echo "_____ preload: /root/usr/lib -maxdepth 9 -iname '*.so*'"
-	find /root/usr/lib -maxdepth 9 -type f -iname '*.so*' -exec dd if={} bs=16384 2>/dev/null \; | dd of=/dev/null bs=16384 status=progress
+	find /root/usr/lib -maxdepth 9 -type f -iname '*.so*' -exec dd if={} bs=16384 2>/dev/null \; | progressFeed
 
 
 	echo "_____ preload: /root/home -not core -not .nix -not .gcloud"
-	find /root/home/*/.config -type f -exec dd if={} bs=16384 2>/dev/null \; | dd of=/dev/null bs=16384 status=progress
-	find /root/home/*/.kde -type f -exec dd if={} bs=16384 2>/dev/null \; | dd of=/dev/null bs=16384 status=progress
-	find /root/home/*/.ubcore -type f -exec dd if={} bs=16384 2>/dev/null \; | dd of=/dev/null bs=16384 status=progress
-	find /root/home -maxdepth 1 -type f -exec dd if={} bs=16384 2>/dev/null \; | dd of=/dev/null bs=16384 status=progress
+	find /root/home/*/.config -type f -exec dd if={} bs=16384 2>/dev/null \; | progressFeed
+	find /root/home/*/.kde -type f -exec dd if={} bs=16384 2>/dev/null \; | progressFeed
+	find /root/home/*/.ubcore -type f -exec dd if={} bs=16384 2>/dev/null \; | progressFeed
+	find /root/home -maxdepth 1 -type f -exec dd if={} bs=16384 2>/dev/null \; | progressFeed
 
 
 	echo "_____ preload: /root/root"
-	find /root/root -type f -exec dd if={} bs=16384 2>/dev/null \; | dd of=/dev/null bs=16384 status=progress
+	find /root/root -type f -exec dd if={} bs=16384 2>/dev/null \; | progressFeed
 
 
 	echo '_____ preload: /root/var'
-	find /root/var -type f -exec dd if={} bs=16384 2>/dev/null \; | dd of=/dev/null bs=16384 status=progress
+	find /root/var -type f -exec dd if={} bs=16384 2>/dev/null \; | progressFeed
 
 
 	echo '_____ preload: /root/usr/lib/modules'
-	find /root/usr/lib/modules -type f -exec dd if={} bs=16384 2>/dev/null \; | dd of=/dev/null bs=16384 status=progress
+	find /root/usr/lib/modules -type f -exec dd if={} bs=16384 2>/dev/null \; | progressFeed
 
 	echo '_____ preload: /root/boot'
-	find /root/boot -type f -exec dd if={} bs=16384 2>/dev/null \; | dd of=/dev/null bs=16384 status=progress
+	find /root/boot -type f -exec dd if={} bs=16384 2>/dev/null \; | progressFeed
 
 	echo '_____ preload: /root/usr/lib/systemd'
-	find /root/usr/lib/systemd -type f -exec dd if={} bs=16384 2>/dev/null \; | dd of=/dev/null bs=16384 status=progress
+	find /root/usr/lib/systemd -type f -exec dd if={} bs=16384 2>/dev/null \; | progressFeed
 
 	echo '_____ preload: /root/usr/bin'
-	find /root/usr/bin -type f -exec dd if={} bs=16384 2>/dev/null \; | dd of=/dev/null bs=16384 status=progress
+	find /root/usr/bin -type f -exec dd if={} bs=16384 2>/dev/null \; | progressFeed
 
 	echo '_____ preload: /root/bin'
-	find /root/bin -type f -exec dd if={} bs=16384 2>/dev/null \; | dd of=/dev/null bs=16384 status=progress
+	find /root/bin -type f -exec dd if={} bs=16384 2>/dev/null \; | progressFeed
 
 	echo '_____ preload: /root/sbin'
-	find /root/sbin -type f -exec dd if={} bs=16384 2>/dev/null \; | dd of=/dev/null bs=16384 status=progress
+	find /root/sbin -type f -exec dd if={} bs=16384 2>/dev/null \; | progressFeed
 
 	echo '_____ preload: /root/etc'
-	find /root/etc -type f -exec dd if={} bs=16384 2>/dev/null \; | dd of=/dev/null bs=16384 status=progress
+	find /root/etc -type f -exec dd if={} bs=16384 2>/dev/null \; | progressFeed
 else
 	echo "_____ preload: /root/home -not core -not .nix -not .gcloud"
 	find /root/home -not \( -path \/home/\*/core\* -prune \) -not \( -path \/home/\*/.nix\* -prune \) -not \( -path \/home/\*/.gcloud\* -prune \) -type f -exec cat {} > /dev/null \;
