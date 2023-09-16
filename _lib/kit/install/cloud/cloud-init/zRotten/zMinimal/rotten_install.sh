@@ -1258,7 +1258,7 @@ _install() {
 		# May change order to preceed '_test' .
 		#sudo -n -u user INSTANCE_ID="$INSTANCE_ID" sh -c "cd ; /home/user/bin/ubiquitous_bash.sh _mustHave_nixos 2>&1" | tee /var/log/ubiquitous_bash-_mustHave_nixos
 		sudo -n -u user INSTANCE_ID="$INSTANCE_ID" sh -c "cd ; /home/user/bin/ubiquitous_bash.sh _get_from_nix 2>&1" | tee /var/log/ubiquitous_bash-get_from_nix
-		
+
 		[[ ${PIPESTATUS[0]} != "0" ]] && _messageFAIL
 	fi
 	
@@ -1417,6 +1417,14 @@ _regenerate_docker() {
 _regenerate() {
 	_messageNormal 'init: rotten: _regenerate'
 	
+	local currentWait
+	currentWait=0
+	while ! sudo -n true && [[ "$currentWait" -lt 180 ]]
+	do
+		sleep 1
+		let currentWait="$currentWait"+1
+	done
+
 	##cd /home/user
 	_mustGetSudo
 	_mustBeRoot

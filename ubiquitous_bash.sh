@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='2050421313'
+export ub_setScriptChecksum_contents='2147555622'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -17866,55 +17866,104 @@ prereqs)
 ;;
 esac
 
-
-echo "_____ preload: /root/home -not core -not .nix -not .gcloud"
-find /root/home -not \( -path \/home/\*/core\* -prune \) -not \( -path \/home/\*/.nix\* -prune \) -not \( -path \/home/\*/.gcloud\* -prune \) -type f -exec cat {} > /dev/null \;
-find /root/home/*/klipper -type f -exec cat {} > /dev/null \;
-find /root/home/*/moonraker -type f -exec cat {} > /dev/null \;
-find /root/home/*/moonraker-env -type f -exec cat {} > /dev/null \;
-find /root/home/*/mainsail -type f -exec cat {} > /dev/null \;
-
-
-echo "_____ preload: /root/usr/lib -maxdepth 9 -iname '*.so*'"
-find /root/usr/lib -maxdepth 9 -type f -iname '*.so*' -exec cat {} > /dev/null \;
+if type dd > /dev/null 2>&1
+then
+	echo "_____ preload: /root/home -not core -not .nix -not .gcloud"
+	find /root/home -not \( -path \/home/\*/core\* -prune \) -not \( -path \/home/\*/.nix\* -prune \) -not \( -path \/home/\*/.gcloud\* -prune \) -type f -exec dd if={} bs=16384 2>/dev/null \; | dd of=/dev/null bs=16384 status=progress
+	find /root/home/*/klipper -type f -exec dd if={} bs=16384 2>/dev/null \; | dd of=/dev/null bs=16384 status=progress
+	find /root/home/*/moonraker -type f -exec dd if={} bs=16384 2>/dev/null \; | dd of=/dev/null bs=16384 status=progress
+	find /root/home/*/moonraker-env -type f -exec dd if={} bs=16384 2>/dev/null \; | dd of=/dev/null bs=16384 status=progress
+	find /root/home/*/mainsail -type f -exec dd if={} bs=16384 2>/dev/null \; | dd of=/dev/null bs=16384 status=progress
 
 
-echo "_____ preload: /root/home -not core -not .nix -not .gcloud"
-find /root/home/*/.config -type f -exec cat {} > /dev/null \;
-find /root/home/*/.kde -type f -exec cat {} > /dev/null \;
-find /root/home/*/.ubcore -type f -exec cat {} > /dev/null \;
-find /root/home -maxdepth 1 -type f -exec cat {} > /dev/null \;
+	echo "_____ preload: /root/usr/lib -maxdepth 9 -iname '*.so*'"
+	find /root/usr/lib -maxdepth 9 -type f -iname '*.so*' -exec dd if={} bs=16384 2>/dev/null \; | dd of=/dev/null bs=16384 status=progress
 
 
-echo "_____ preload: /root/root"
-find /root/root -type f -exec cat {} > /dev/null \;
+	echo "_____ preload: /root/home -not core -not .nix -not .gcloud"
+	find /root/home/*/.config -type f -exec dd if={} bs=16384 2>/dev/null \; | dd of=/dev/null bs=16384 status=progress
+	find /root/home/*/.kde -type f -exec dd if={} bs=16384 2>/dev/null \; | dd of=/dev/null bs=16384 status=progress
+	find /root/home/*/.ubcore -type f -exec dd if={} bs=16384 2>/dev/null \; | dd of=/dev/null bs=16384 status=progress
+	find /root/home -maxdepth 1 -type f -exec dd if={} bs=16384 2>/dev/null \; | dd of=/dev/null bs=16384 status=progress
 
 
-echo '_____ preload: /root/var'
-find /root/var -type f -exec cat {} > /dev/null \;
+	echo "_____ preload: /root/root"
+	find /root/root -type f -exec dd if={} bs=16384 2>/dev/null \; | dd of=/dev/null bs=16384 status=progress
 
 
-echo '_____ preload: /root/usr/lib/modules'
-find /root/usr/lib/modules -type f -exec cat {} > /dev/null \;
+	echo '_____ preload: /root/var'
+	find /root/var -type f -exec dd if={} bs=16384 2>/dev/null \; | dd of=/dev/null bs=16384 status=progress
 
-echo '_____ preload: /root/boot'
-find /root/boot -type f -exec cat {} > /dev/null \;
 
-echo '_____ preload: /root/usr/lib/systemd'
-find /root/usr/lib/systemd -type f -exec cat {} > /dev/null \;
+	echo '_____ preload: /root/usr/lib/modules'
+	find /root/usr/lib/modules -type f -exec dd if={} bs=16384 2>/dev/null \; | dd of=/dev/null bs=16384 status=progress
 
-echo '_____ preload: /root/usr/bin'
-find /root/usr/bin -type f -exec cat {} > /dev/null \;
+	echo '_____ preload: /root/boot'
+	find /root/boot -type f -exec dd if={} bs=16384 2>/dev/null \; | dd of=/dev/null bs=16384 status=progress
 
-echo '_____ preload: /root/bin'
-find /root/bin -type f -exec cat {} > /dev/null \;
+	echo '_____ preload: /root/usr/lib/systemd'
+	find /root/usr/lib/systemd -type f -exec dd if={} bs=16384 2>/dev/null \; | dd of=/dev/null bs=16384 status=progress
 
-echo '_____ preload: /root/sbin'
-find /root/sbin -type f -exec cat {} > /dev/null \;
+	echo '_____ preload: /root/usr/bin'
+	find /root/usr/bin -type f -exec dd if={} bs=16384 2>/dev/null \; | dd of=/dev/null bs=16384 status=progress
 
-echo '_____ preload: /root/etc'
-find /root/etc -type f -exec cat {} > /dev/null \;
+	echo '_____ preload: /root/bin'
+	find /root/bin -type f -exec dd if={} bs=16384 2>/dev/null \; | dd of=/dev/null bs=16384 status=progress
 
+	echo '_____ preload: /root/sbin'
+	find /root/sbin -type f -exec dd if={} bs=16384 2>/dev/null \; | dd of=/dev/null bs=16384 status=progress
+
+	echo '_____ preload: /root/etc'
+	find /root/etc -type f -exec dd if={} bs=16384 2>/dev/null \; | dd of=/dev/null bs=16384 status=progress
+else
+	echo "_____ preload: /root/home -not core -not .nix -not .gcloud"
+	find /root/home -not \( -path \/home/\*/core\* -prune \) -not \( -path \/home/\*/.nix\* -prune \) -not \( -path \/home/\*/.gcloud\* -prune \) -type f -exec cat {} > /dev/null \;
+	find /root/home/*/klipper -type f -exec cat {} > /dev/null \;
+	find /root/home/*/moonraker -type f -exec cat {} > /dev/null \;
+	find /root/home/*/moonraker-env -type f -exec cat {} > /dev/null \;
+	find /root/home/*/mainsail -type f -exec cat {} > /dev/null \;
+
+
+	echo "_____ preload: /root/usr/lib -maxdepth 9 -iname '*.so*'"
+	find /root/usr/lib -maxdepth 9 -type f -iname '*.so*' -exec cat {} > /dev/null \;
+
+
+	echo "_____ preload: /root/home -not core -not .nix -not .gcloud"
+	find /root/home/*/.config -type f -exec cat {} > /dev/null \;
+	find /root/home/*/.kde -type f -exec cat {} > /dev/null \;
+	find /root/home/*/.ubcore -type f -exec cat {} > /dev/null \;
+	find /root/home -maxdepth 1 -type f -exec cat {} > /dev/null \;
+
+
+	echo "_____ preload: /root/root"
+	find /root/root -type f -exec cat {} > /dev/null \;
+
+
+	echo '_____ preload: /root/var'
+	find /root/var -type f -exec cat {} > /dev/null \;
+
+
+	echo '_____ preload: /root/usr/lib/modules'
+	find /root/usr/lib/modules -type f -exec cat {} > /dev/null \;
+
+	echo '_____ preload: /root/boot'
+	find /root/boot -type f -exec cat {} > /dev/null \;
+
+	echo '_____ preload: /root/usr/lib/systemd'
+	find /root/usr/lib/systemd -type f -exec cat {} > /dev/null \;
+
+	echo '_____ preload: /root/usr/bin'
+	find /root/usr/bin -type f -exec cat {} > /dev/null \;
+
+	echo '_____ preload: /root/bin'
+	find /root/bin -type f -exec cat {} > /dev/null \;
+
+	echo '_____ preload: /root/sbin'
+	find /root/sbin -type f -exec cat {} > /dev/null \;
+
+	echo '_____ preload: /root/etc'
+	find /root/etc -type f -exec cat {} > /dev/null \;
+fi
 
 CZXWXcRMTo8EmM8i4d
 }
