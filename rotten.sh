@@ -1809,14 +1809,28 @@ _wget_githubRelease_join-stdout() {
 		currentURL_array_reversed=("$currentValue" "${currentURL_array_reversed[@]}")
 	done
 	
-	_messagePlain_probe curl -L "${currentURL_array_reversed[@]}" >&2
-
-	curl -L "${currentURL_array_reversed[@]}"
+	# CAUTION: Do NOT use unless willing to degrade network traffic collision backoff algorithms. Unusual defaults, very aggressive, intended for load-balanced multi-WAN with at least 3 WANs .
+	if [[ "$FORCE_AXEL" != "" ]]
+	then
+		( [[ "$FORCE_AXEL" == "true" ]] || [[ "$FORCE_AXEL" == "" ]] ) && FORCE_AXEL="48"
+		_messagePlain_probe axel -a -n "$FORCE_AXEL" -o "$3" "${currentURL_array_reversed[@]}" >&2
+		axel -a -n "$FORCE_AXEL" -o "$3" "${currentURL_array_reversed[@]}"
+		return
+	else
+		_messagePlain_probe curl -L "${currentURL_array_reversed[@]}" >&2
+		curl -L "${currentURL_array_reversed[@]}"
+		return
+	fi
 }
 
 _wget_githubRelease_join() {
 	_messagePlain_probe _wget_githubRelease_join-stdout "$@" '>' "$3" >&2
-	_wget_githubRelease_join-stdout "$@" > "$3"
+	if [[ "$FORCE_AXEL" != "" ]]
+	then
+		_wget_githubRelease_join-stdout "$@"
+	else
+		_wget_githubRelease_join-stdout "$@" > "$3"
+	fi
 	[[ ! -e "$3" ]] && _messagePlain_bad 'missing: '"$1"' '"$2"' '"$3" && return 1
 	return 0
 }

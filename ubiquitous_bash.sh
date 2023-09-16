@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='2147555622'
+export ub_setScriptChecksum_contents='3727249008'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -17868,53 +17868,68 @@ esac
 
 if type dd > /dev/null 2>&1
 then
+	progressFeed() {
+		! dd of=/dev/null bs=1M count=1 && return 0
+
+		! dd of=/dev/null bs=1M count=9 && return 0
+		echo x1 10MB
+		
+		! dd of=/dev/null bs=1M count=90 && return 0
+		echo x1 100MB
+		
+		while dd of=/dev/null bs=1M count=100
+		do
+			echo "x1 100MB"
+		done
+	}
+
 	echo "_____ preload: /root/home -not core -not .nix -not .gcloud"
-	find /root/home -not \( -path \/home/\*/core\* -prune \) -not \( -path \/home/\*/.nix\* -prune \) -not \( -path \/home/\*/.gcloud\* -prune \) -type f -exec dd if={} bs=16384 2>/dev/null \; | dd of=/dev/null bs=16384 status=progress
-	find /root/home/*/klipper -type f -exec dd if={} bs=16384 2>/dev/null \; | dd of=/dev/null bs=16384 status=progress
-	find /root/home/*/moonraker -type f -exec dd if={} bs=16384 2>/dev/null \; | dd of=/dev/null bs=16384 status=progress
-	find /root/home/*/moonraker-env -type f -exec dd if={} bs=16384 2>/dev/null \; | dd of=/dev/null bs=16384 status=progress
-	find /root/home/*/mainsail -type f -exec dd if={} bs=16384 2>/dev/null \; | dd of=/dev/null bs=16384 status=progress
+	find /root/home -not \( -path \/home/\*/core\* -prune \) -not \( -path \/home/\*/.nix\* -prune \) -not \( -path \/home/\*/.gcloud\* -prune \) -type f -exec dd if={} bs=16384 2>/dev/null \; | progressFeed
+	find /root/home/*/klipper -type f -exec dd if={} bs=16384 2>/dev/null \; | progressFeed
+	find /root/home/*/moonraker -type f -exec dd if={} bs=16384 2>/dev/null \; | progressFeed
+	find /root/home/*/moonraker-env -type f -exec dd if={} bs=16384 2>/dev/null \; | progressFeed
+	find /root/home/*/mainsail -type f -exec dd if={} bs=16384 2>/dev/null \; | progressFeed
 
 
 	echo "_____ preload: /root/usr/lib -maxdepth 9 -iname '*.so*'"
-	find /root/usr/lib -maxdepth 9 -type f -iname '*.so*' -exec dd if={} bs=16384 2>/dev/null \; | dd of=/dev/null bs=16384 status=progress
+	find /root/usr/lib -maxdepth 9 -type f -iname '*.so*' -exec dd if={} bs=16384 2>/dev/null \; | progressFeed
 
 
 	echo "_____ preload: /root/home -not core -not .nix -not .gcloud"
-	find /root/home/*/.config -type f -exec dd if={} bs=16384 2>/dev/null \; | dd of=/dev/null bs=16384 status=progress
-	find /root/home/*/.kde -type f -exec dd if={} bs=16384 2>/dev/null \; | dd of=/dev/null bs=16384 status=progress
-	find /root/home/*/.ubcore -type f -exec dd if={} bs=16384 2>/dev/null \; | dd of=/dev/null bs=16384 status=progress
-	find /root/home -maxdepth 1 -type f -exec dd if={} bs=16384 2>/dev/null \; | dd of=/dev/null bs=16384 status=progress
+	find /root/home/*/.config -type f -exec dd if={} bs=16384 2>/dev/null \; | progressFeed
+	find /root/home/*/.kde -type f -exec dd if={} bs=16384 2>/dev/null \; | progressFeed
+	find /root/home/*/.ubcore -type f -exec dd if={} bs=16384 2>/dev/null \; | progressFeed
+	find /root/home -maxdepth 1 -type f -exec dd if={} bs=16384 2>/dev/null \; | progressFeed
 
 
 	echo "_____ preload: /root/root"
-	find /root/root -type f -exec dd if={} bs=16384 2>/dev/null \; | dd of=/dev/null bs=16384 status=progress
+	find /root/root -type f -exec dd if={} bs=16384 2>/dev/null \; | progressFeed
 
 
 	echo '_____ preload: /root/var'
-	find /root/var -type f -exec dd if={} bs=16384 2>/dev/null \; | dd of=/dev/null bs=16384 status=progress
+	find /root/var -type f -exec dd if={} bs=16384 2>/dev/null \; | progressFeed
 
 
 	echo '_____ preload: /root/usr/lib/modules'
-	find /root/usr/lib/modules -type f -exec dd if={} bs=16384 2>/dev/null \; | dd of=/dev/null bs=16384 status=progress
+	find /root/usr/lib/modules -type f -exec dd if={} bs=16384 2>/dev/null \; | progressFeed
 
 	echo '_____ preload: /root/boot'
-	find /root/boot -type f -exec dd if={} bs=16384 2>/dev/null \; | dd of=/dev/null bs=16384 status=progress
+	find /root/boot -type f -exec dd if={} bs=16384 2>/dev/null \; | progressFeed
 
 	echo '_____ preload: /root/usr/lib/systemd'
-	find /root/usr/lib/systemd -type f -exec dd if={} bs=16384 2>/dev/null \; | dd of=/dev/null bs=16384 status=progress
+	find /root/usr/lib/systemd -type f -exec dd if={} bs=16384 2>/dev/null \; | progressFeed
 
 	echo '_____ preload: /root/usr/bin'
-	find /root/usr/bin -type f -exec dd if={} bs=16384 2>/dev/null \; | dd of=/dev/null bs=16384 status=progress
+	find /root/usr/bin -type f -exec dd if={} bs=16384 2>/dev/null \; | progressFeed
 
 	echo '_____ preload: /root/bin'
-	find /root/bin -type f -exec dd if={} bs=16384 2>/dev/null \; | dd of=/dev/null bs=16384 status=progress
+	find /root/bin -type f -exec dd if={} bs=16384 2>/dev/null \; | progressFeed
 
 	echo '_____ preload: /root/sbin'
-	find /root/sbin -type f -exec dd if={} bs=16384 2>/dev/null \; | dd of=/dev/null bs=16384 status=progress
+	find /root/sbin -type f -exec dd if={} bs=16384 2>/dev/null \; | progressFeed
 
 	echo '_____ preload: /root/etc'
-	find /root/etc -type f -exec dd if={} bs=16384 2>/dev/null \; | dd of=/dev/null bs=16384 status=progress
+	find /root/etc -type f -exec dd if={} bs=16384 2>/dev/null \; | progressFeed
 else
 	echo "_____ preload: /root/home -not core -not .nix -not .gcloud"
 	find /root/home -not \( -path \/home/\*/core\* -prune \) -not \( -path \/home/\*/.nix\* -prune \) -not \( -path \/home/\*/.gcloud\* -prune \) -type f -exec cat {} > /dev/null \;
@@ -21005,6 +21020,7 @@ _wsl_desktop() {
             #"$@"
             
             (
+                _timeout 0.3 xmessage -timeout 1 "splash-ldesk: init: Xephyr"
                 Xephyr -screen "$xephyrResolution" :"$xephyrDisplay" &#disown -h $!
                 disown
                 disown -a -h -r
@@ -21018,8 +21034,10 @@ _wsl_desktop() {
 
                     export DESKTOP_SESSION=plasma
 
+                    _timeout 0.3 xmessage -timeout 1 "splash-ldesk: init: dbus-launch"
                     export $(dbus-launch)
 
+                    _timeout 0.3 xmessage -timeout 1 "splash-ldesk: init: xclipsync"
                     "$HOME"/core/installations/xclipsync/xclipsync &
                     disown
                     disown -a -h -r
@@ -21034,7 +21052,8 @@ _wsl_desktop() {
                     _wsl_desktop_startup_xdg_write "$@"
                     #_wsl_desktop_startup_systemd_write "$@"
 
-                    ##dbus-run-session 
+                    ##dbus-run-session
+                    _timeout 0.3 xmessage -timeout 1 "splash-ldesk: init: startplasma-x11"
                     exec startplasma-x11 > /dev/null 2>&1 &
 
 
@@ -24141,14 +24160,28 @@ _wget_githubRelease_join-stdout() {
 		currentURL_array_reversed=("$currentValue" "${currentURL_array_reversed[@]}")
 	done
 	
-	_messagePlain_probe curl -L "${currentURL_array_reversed[@]}" >&2
-
-	curl -L "${currentURL_array_reversed[@]}"
+	# CAUTION: Do NOT use unless willing to degrade network traffic collision backoff algorithms. Unusual defaults, very aggressive, intended for load-balanced multi-WAN with at least 3 WANs .
+	if [[ "$FORCE_AXEL" != "" ]]
+	then
+		( [[ "$FORCE_AXEL" == "true" ]] || [[ "$FORCE_AXEL" == "" ]] ) && FORCE_AXEL="48"
+		_messagePlain_probe axel -a -n "$FORCE_AXEL" -o "$3" "${currentURL_array_reversed[@]}" >&2
+		axel -a -n "$FORCE_AXEL" -o "$3" "${currentURL_array_reversed[@]}"
+		return
+	else
+		_messagePlain_probe curl -L "${currentURL_array_reversed[@]}" >&2
+		curl -L "${currentURL_array_reversed[@]}"
+		return
+	fi
 }
 
 _wget_githubRelease_join() {
 	_messagePlain_probe _wget_githubRelease_join-stdout "$@" '>' "$3" >&2
-	_wget_githubRelease_join-stdout "$@" > "$3"
+	if [[ "$FORCE_AXEL" != "" ]]
+	then
+		_wget_githubRelease_join-stdout "$@"
+	else
+		_wget_githubRelease_join-stdout "$@" > "$3"
+	fi
 	[[ ! -e "$3" ]] && _messagePlain_bad 'missing: '"$1"' '"$2"' '"$3" && return 1
 	return 0
 }
