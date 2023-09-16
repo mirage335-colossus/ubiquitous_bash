@@ -124,6 +124,15 @@ _stop() {
 	
 	[[ "$tmpSelf" != "$scriptAbsoluteFolder" ]] && [[ "$tmpSelf" != "/" ]] && [[ -e "$tmpSelf" ]] && rmdir "$tmpSelf" > /dev/null 2>&1
 	rm -f "$scriptAbsoluteFolder"/__d_$(echo "$sessionid" | head -c 16) > /dev/null 2>&1
+
+	#currentAxelTmpFile="$scriptAbsoluteFolder"/.m_axelTmp_$(_uid 14)
+	if [[ "$currentAxelTmpFile" != "" ]]
+	then
+		rm -f "$currentAxelTmpFile" > /dev/null 2>&1
+		rm -f "$currentAxelTmpFile".st > /dev/null 2>&1
+		rm -f "$currentAxelTmpFile".tmp > /dev/null 2>&1
+		rm -f "$currentAxelTmpFile".tmp.st > /dev/null 2>&1
+	fi
 	
 	_stop_stty_echo
 	if [[ "$1" != "" ]]

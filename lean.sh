@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='2893893118'
+export ub_setScriptChecksum_contents='415057059'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -5291,48 +5291,61 @@ _wget_githubRelease_join-stdout() {
 		currentURL_array_reversed=("$currentValue" "${currentURL_array_reversed[@]}")
 	done
 	
-	# CAUTION: Do NOT use unless willing to degrade network traffic collision backoff algorithms. Unusual defaults, very aggressive, intended for load-balanced multi-WAN with at least 3 WANs .
+	# CAUTION: Do NOT use unless reasonable to degrade network traffic collision backoff algorithms. Unusual defaults, very aggressive, intended for load-balanced multi-WAN with at least 3 WANs .
 	if [[ "$FORCE_AXEL" != "" ]]
 	then
-		local currentAxelTmpFile
-		currentAxelTmpFile="$scriptAbsoluteFolder"/.m_axelTmp_$(_uid 14)
+		#local currentAxelTmpFile
+		#currentAxelTmpFile="$scriptAbsoluteFolder"/.m_axelTmp_$(_uid 14)
+		export currentAxelTmpFile="$scriptAbsoluteFolder"/.m_axelTmp_$(_uid 14)
 
-		local currentAxelPID
+		#local currentAxelPID
 		
 		( [[ "$FORCE_AXEL" == "true" ]] || [[ "$FORCE_AXEL" == "" ]] ) && FORCE_AXEL="48"
-		_messagePlain_probe axel -a -n "$FORCE_AXEL" -o "$currentAxelTmpFile" "${currentURL_array_reversed[@]}" >&2
-		axel -a -n "$FORCE_AXEL" -o "$currentAxelTmpFile" "${currentURL_array_reversed[@]}" >&2 &
-		currentAxelPID="$!"
-
-		local currentIteration
-		while [[ "$currentIteration" -le 32 ]] && [[ ! -e "$currentAxelTmpFile" ]]
+		#_messagePlain_probe axel -a -n "$FORCE_AXEL" -o "$currentAxelTmpFile" "${currentURL_array_reversed[@]}" >&2
+		#axel -a -n "$FORCE_AXEL" -o "$currentAxelTmpFile" "${currentURL_array_reversed[@]}" >&2 &
+		#currentAxelPID="$!"
+		
+		for currentValue in "${currentURL_array_reversed[@]}"
 		do
-			sleep 2
-			let currentIteration="$currentIteration"+1
+			rm -f "$currentAxelTmpFile".tmp
+			_messagePlain_probe axel -a -n "$FORCE_AXEL" -o "$currentAxelTmpFile".tmp "$currentValue" >&2
+			axel -a -n "$FORCE_AXEL" -o "$currentAxelTmpFile".tmp "$currentValue" >&2
+			cat "$currentAxelTmpFile".tmp >> "$currentAxelTmpFile"
+			let currentIteration=currentIteration+1
 		done
 
-		if [[ -e "$currentAxelTmpFile" ]]
-		then
-			tail --pid="$currentAxelPID" -c 100000000000 -f "$currentAxelTmpFile"
-			wait "$currentAxelPID"
-		else
-			_messagePlain_bad 'missing: "$currentAxelTmpFile"'
-			kill -TERM "$currentAxelPID" > /dev/null 2>&1
-			kill -TERM "$currentAxelPID" > /dev/null 2>&1
-			sleep 3
-			kill -TERM "$currentAxelPID" > /dev/null 2>&1
-			sleep 3
-			kill -TERM "$currentAxelPID" > /dev/null 2>&1
-			kill -KILL "$currentAxelPID" > /dev/null 2>&1
-			return 1
-		fi
+		#while [[ "$currentIteration" -le 16 ]] && [[ ! -e "$currentAxelTmpFile" ]]
+		#do
+			#sleep 2 > /dev/null 2>&1
+			#let currentIteration="$currentIteration"+1
+		#done
+
+		#if [[ -e "$currentAxelTmpFile" ]]
+		#then
+			#tail --pid="$currentAxelPID" -c 100000000000 -f "$currentAxelTmpFile"
+			#wait "$currentAxelPID"
+		#else
+			#_messagePlain_bad 'missing: "$currentAxelTmpFile"' >&2
+			#kill -TERM "$currentAxelPID" > /dev/null 2>&1
+			#kill -TERM "$currentAxelPID" > /dev/null 2>&1
+			#sleep 3
+			#kill -TERM "$currentAxelPID" > /dev/null 2>&1
+			#sleep 3
+			#kill -TERM "$currentAxelPID" > /dev/null 2>&1
+			#kill -KILL "$currentAxelPID" > /dev/null 2>&1
+			#return 1
+		#fi
 
 		if ! [[ -e "$currentAxelTmpFile" ]]
 		then
 			return 1
 		fi
 
+		cat "$currentAxelTmpFile"
+
 		rm -f "$currentAxelTmpFile"
+		rm -f "$currentAxelTmpFile".tmp
+		rm -f "$currentAxelTmpFile".tmp.st
 		rm -f "$currentAxelTmpFile".st
 		
 		return 0
@@ -10769,6 +10782,15 @@ _stop() {
 	
 	[[ "$tmpSelf" != "$scriptAbsoluteFolder" ]] && [[ "$tmpSelf" != "/" ]] && [[ -e "$tmpSelf" ]] && rmdir "$tmpSelf" > /dev/null 2>&1
 	rm -f "$scriptAbsoluteFolder"/__d_$(echo "$sessionid" | head -c 16) > /dev/null 2>&1
+
+	#currentAxelTmpFile="$scriptAbsoluteFolder"/.m_axelTmp_$(_uid 14)
+	if [[ "$currentAxelTmpFile" != "" ]]
+	then
+		rm -f "$currentAxelTmpFile" > /dev/null 2>&1
+		rm -f "$currentAxelTmpFile".st > /dev/null 2>&1
+		rm -f "$currentAxelTmpFile".tmp > /dev/null 2>&1
+		rm -f "$currentAxelTmpFile".tmp.st > /dev/null 2>&1
+	fi
 	
 	_stop_stty_echo
 	if [[ "$1" != "" ]]
