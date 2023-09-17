@@ -50,7 +50,8 @@ _wget_githubRelease_join-stdout() {
 	local currentURL
 	local currentURL_array
 
-	local currentIterationcurrentIteration=0
+	local currentIteration
+	currentIteration=0
 	for currentIteration in $(seq -f "%02g" 0 32)
 	do
 		currentURL=$(_wget_githubRelease-URL "$1" "$2" "$3"".part""$currentIteration")
@@ -78,28 +79,131 @@ _wget_githubRelease_join-stdout() {
 		#_messagePlain_probe axel -a -n "$FORCE_AXEL" -o "$currentAxelTmpFile" "${currentURL_array_reversed[@]}" >&2
 		#axel -a -n "$FORCE_AXEL" -o "$currentAxelTmpFile" "${currentURL_array_reversed[@]}" >&2 &
 		#currentAxelPID="$!"
-		
-		for currentValue in "${currentURL_array_reversed[@]}"
+
+
+		local current_usable_ipv4
+		current_usable_ipv4="false"
+		#if _timeout 8 aria2c -o "$currentAxelTmpFile" --disable-ipv6 --allow-overwrite=true --auto-file-renaming=false --file-allocation=none --timeout=6 "${currentURL_array_reversed[0]}" >&2
+		#then
+			#current_usable_ipv4="true"
+		#fi
+		if [[ "$GH_TOKEN" == "" ]]
+		then
+			if _timeout 8 wget -4 -O - "${currentURL_array_reversed[0]}" > /dev/null
+			then
+				current_usable_ipv4="true"
+			fi
+		else
+			if _timeout 8 wget -4 -O - --header="Authorization: Bearer $GH_TOKEN" "${currentURL_array_reversed[0]}" > /dev/null
+			then
+				current_usable_ipv4="true"
+			fi
+		fi
+
+		local current_usable_ipv6
+		current_usable_ipv6="false"
+		if [[ "$GH_TOKEN" == "" ]]
+		then
+			if _timeout 8 wget -6 -O - "${currentURL_array_reversed[0]}" > /dev/null
+			then
+				current_usable_ipv6="true"
+			fi
+		else
+			if _timeout 8 wget -6 -O - --header="Authorization: Bearer $GH_TOKEN" "${currentURL_array_reversed[0]}" > /dev/null
+			then
+				current_usable_ipv6="true"
+			fi
+		fi
+
+		local currentPID_1
+		local currentPID_2
+		currentIteration=0
+		local currentIterationNext1
+		let currentIterationNext1=currentIteration+1
+		while [[ "${currentURL_array_reversed[$currentIteration]}" != "" ]] || [[ "${currentURL_array_reversed[$currentIterationNext1]}" != "" ]]
 		do
+			rm -f "$currentAxelTmpFile"
+			rm -f "$currentAxelTmpFile".aria2
 			rm -f "$currentAxelTmpFile".tmp
-			
-			
-			#_messagePlain_probe axel -a -n "$FORCE_AXEL" -o "$currentAxelTmpFile".tmp "$currentValue" >&2
-			#axel -a -n "$FORCE_AXEL" -o "$currentAxelTmpFile".tmp "$currentValue" >&2
+			rm -f "$currentAxelTmpFile".tmp.st
+			rm -f "$currentAxelTmpFile".tmp.aria2
+			rm -f "$currentAxelTmpFile".tmp1
+			rm -f "$currentAxelTmpFile".tmp1.st
+			rm -f "$currentAxelTmpFile".tmp1.aria2
+			rm -f "$currentAxelTmpFile".tmp2
+			rm -f "$currentAxelTmpFile".tmp2.st
+			rm -f "$currentAxelTmpFile".tmp2.aria2
+
+			# Download preferring from IPv6 address .
 			if [[ "$GH_TOKEN" == "" ]]
 			then
-				_messagePlain_probe axel -a -n "$FORCE_AXEL" -o "$currentAxelTmpFile".tmp "$currentValue" >&2
-				axel -a -n "$FORCE_AXEL" -o "$currentAxelTmpFile".tmp "$currentValue" >&2
+				_messagePlain_probe aria2c -x "$FORCE_AXEL" -o "$currentAxelTmpFile".tmp1 "${currentURL_array_reversed[$currentIteration]}" >&2
+				aria2c -x "$FORCE_AXEL" -o "$currentAxelTmpFile".tmp1 "${currentURL_array_reversed[$currentIteration]}" >&2 &
+				currentPID_1="$!"
 			else
-				_messagePlain_probe axel -a -n "$FORCE_AXEL" -H '"Authorization: Bearer $GH_TOKEN"' -o "$currentAxelTmpFile".tmp "$currentValue" >&2
-				axel -a -n "$FORCE_AXEL" -H "Authorization: Bearer $GH_TOKEN" -o "$currentAxelTmpFile".tmp "$currentValue" >&2
+				_messagePlain_probe aria2c -x "$FORCE_AXEL" -o "$currentAxelTmpFile".tmp1 --header="Authorization: Bearer $GH_TOKEN" "${currentURL_array_reversed[$currentIteration]}" >&2
+				aria2c -x "$FORCE_AXEL" -o "$currentAxelTmpFile".tmp1 --header="Authorization: Bearer $GH_TOKEN" "${currentURL_array_reversed[$currentIteration]}" >&2 &
+				currentPID_1="$!"
+			fi
+
+			# Download preferring from IPv4 address.
+			#--disable-ipv6
+			if [[ "$current_usable_ipv4" == "true" ]]
+			then
+				if [[ "$GH_TOKEN" == "" ]]
+				then
+					_messagePlain_probe aria2c -x "$FORCE_AXEL" -o "$currentAxelTmpFile".tmp2 --disable-ipv6 "${currentURL_array_reversed[$currentIterationNext1]}" >&2
+					aria2c -x "$FORCE_AXEL" -o "$currentAxelTmpFile".tmp2 --disable-ipv6 "${currentURL_array_reversed[$currentIterationNext1]}" >&2 &
+					currentPID_2="$!"
+				else
+					_messagePlain_probe aria2c -x "$FORCE_AXEL" -o "$currentAxelTmpFile".tmp2 --disable-ipv6 --header="Authorization: Bearer $GH_TOKEN" "${currentURL_array_reversed[$currentIterationNext1]}" >&2
+					aria2c -x "$FORCE_AXEL" -o "$currentAxelTmpFile".tmp2 --disable-ipv6 --header="Authorization: Bearer $GH_TOKEN" "${currentURL_array_reversed[$currentIterationNext1]}" >&2 &
+					currentPID_2="$!"
+				fi
+			else
+				if [[ "$GH_TOKEN" == "" ]]
+				then
+					_messagePlain_probe aria2c -x "$FORCE_AXEL" -o "$currentAxelTmpFile".tmp2 "${currentURL_array_reversed[$currentIterationNext1]}" >&2
+					aria2c -x "$FORCE_AXEL" -o "$currentAxelTmpFile".tmp2 "${currentURL_array_reversed[$currentIterationNext1]}" >&2 &
+					currentPID_2="$!"
+				else
+					_messagePlainProbe aria2c -x "$FORCE_AXEL" -o "$currentAxelTmpFile".tmp2 --header="Authorization: Bearer $GH_TOKEN" "${currentURL_array_reversed[$currentIterationNext1]}" >&2
+					aria2c -x "$FORCE_AXEL" -o "$currentAxelTmpFile".tmp2 --header="Authorization: Bearer $GH_TOKEN" "${currentURL_array_reversed[$currentIterationNext1]}" >&2 &
+					currentPID_2="$!"
+				fi
 			fi
 			
-			
-			_messagePlain_probe dd if="$currentAxelTmpFile".tmp bs=1M status=progress' >> '"$currentAxelTmpFile" >&2
-			dd if="$currentAxelTmpFile".tmp bs=1M status=progress >> "$currentAxelTmpFile"
-			let currentIteration=currentIteration+1
+
+			wait "$currentPID_1"
+			wait "$currentPID_2"
+			wait
+
+			let currentIteration=currentIteration+2
+			let currentIterationNext1=currentIteration+1
 		done
+		
+
+		#for currentValue in "${currentURL_array_reversed[@]}"
+		#do
+			#rm -f "$currentAxelTmpFile".tmp
+			
+			
+			##_messagePlain_probe axel -a -n "$FORCE_AXEL" -o "$currentAxelTmpFile".tmp "$currentValue" >&2
+			##axel -a -n "$FORCE_AXEL" -o "$currentAxelTmpFile".tmp "$currentValue" >&2
+			#if [[ "$GH_TOKEN" == "" ]]
+			#then
+				#_messagePlain_probe axel -a -n "$FORCE_AXEL" -o "$currentAxelTmpFile".tmp "$currentValue" >&2
+				#axel -a -n "$FORCE_AXEL" -o "$currentAxelTmpFile".tmp "$currentValue" >&2
+			#else
+				#_messagePlain_probe axel -a -n "$FORCE_AXEL" -H '"Authorization: Bearer $GH_TOKEN"' -o "$currentAxelTmpFile".tmp "$currentValue" >&2
+				#axel -a -n "$FORCE_AXEL" -H "Authorization: Bearer $GH_TOKEN" -o "$currentAxelTmpFile".tmp "$currentValue" >&2
+			#fi
+			
+			
+			#_messagePlain_probe dd if="$currentAxelTmpFile".tmp bs=1M status=progress' >> '"$currentAxelTmpFile" >&2
+			#dd if="$currentAxelTmpFile".tmp bs=1M status=progress >> "$currentAxelTmpFile"
+			#let currentIteration=currentIteration+1
+		#done
 
 		#while [[ "$currentIteration" -le 16 ]] && [[ ! -e "$currentAxelTmpFile" ]]
 		#do

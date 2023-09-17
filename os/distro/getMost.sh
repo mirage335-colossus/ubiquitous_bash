@@ -327,6 +327,7 @@ _getMost_debian11_install() {
 	_getMost_backend_aptGetInstall netcat-openbsd
 	_getMost_backend_aptGetInstall iperf
 	_getMost_backend_aptGetInstall axel
+	_getMost_backend_aptGetInstall aria2
 	_getMost_backend_aptGetInstall unionfs-fuse
 	_getMost_backend_aptGetInstall samba
 

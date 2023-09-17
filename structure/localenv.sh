@@ -132,6 +132,19 @@ _stop() {
 		rm -f "$currentAxelTmpFile".st > /dev/null 2>&1
 		rm -f "$currentAxelTmpFile".tmp > /dev/null 2>&1
 		rm -f "$currentAxelTmpFile".tmp.st > /dev/null 2>&1
+		rm -f "$currentAxelTmpFile".tmp.aria2 > /dev/null 2>&1
+		rm -f "$currentAxelTmpFile".tmp1 > /dev/null 2>&1
+		rm -f "$currentAxelTmpFile".tmp1.st > /dev/null 2>&1
+		rm -f "$currentAxelTmpFile".tmp1.aria2 > /dev/null 2>&1
+		rm -f "$currentAxelTmpFile".tmp2 > /dev/null 2>&1
+		rm -f "$currentAxelTmpFile".tmp2.st > /dev/null 2>&1
+		rm -f "$currentAxelTmpFile".tmp2.aria2 > /dev/null 2>&1
+		rm -f "$currentAxelTmpFile".tmp3 > /dev/null 2>&1
+		rm -f "$currentAxelTmpFile".tmp3.st > /dev/null 2>&1
+		rm -f "$currentAxelTmpFile".tmp3.aria2 > /dev/null 2>&1
+		rm -f "$currentAxelTmpFile".tmp4 > /dev/null 2>&1
+		rm -f "$currentAxelTmpFile".tmp4.st > /dev/null 2>&1
+		rm -f "$currentAxelTmpFile".tmp4.aria2 > /dev/null 2>&1
 	fi
 	
 	_stop_stty_echo
