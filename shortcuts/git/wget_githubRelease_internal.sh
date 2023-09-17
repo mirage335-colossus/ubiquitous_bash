@@ -204,10 +204,10 @@ _wget_githubRelease_join-stdout() {
 			wait
 
 			sleep 0.2
-			_messagePlain_probe dd of="$currentAxelTmpFile".tmp1 bs=1M status=progress' >> '"$currentAxelTmpFile" >&2
-			dd of="$currentAxelTmpFile".tmp1 bs=1M status=progress >> "$currentAxelTmpFile"
-			_messagePlain_probe dd of="$currentAxelTmpFile".tmp2 bs=1M status=progress' >> '"$currentAxelTmpFile" >&2
-			dd of="$currentAxelTmpFile".tmp2 bs=1M status=progress >> "$currentAxelTmpFile"
+			_messagePlain_probe dd if="$currentAxelTmpFile".tmp1 bs=1M status=progress' >> '"$currentAxelTmpFile" >&2
+			dd if="$currentAxelTmpFile".tmp1 bs=1M status=progress >> "$currentAxelTmpFile"
+			_messagePlain_probe dd if="$currentAxelTmpFile".tmp2 bs=1M status=progress' >> '"$currentAxelTmpFile" >&2
+			dd if="$currentAxelTmpFile".tmp2 bs=1M status=progress >> "$currentAxelTmpFile"
 
 			let currentIteration=currentIteration+2
 			let currentIterationNext1=currentIteration+1
