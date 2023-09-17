@@ -66,8 +66,9 @@ _wget_githubRelease_join-stdout() {
 		currentURL_array_reversed=("$currentValue" "${currentURL_array_reversed[@]}")
 	done
 	
+	# DANGER: Requires   ' "$MANDATORY_HASH" == true '   to indicate use of a hash obtained more securely to check download integrity. Do NOT set 'MANDATORY_HASH' explicitly, safe functions which already include appropriate checks for integrity will set this safety flag automatically.
 	# CAUTION: Do NOT use unless reasonable to degrade network traffic collision backoff algorithms. Unusual defaults, very aggressive, intended for load-balanced multi-WAN with at least 3 WANs .
-	if [[ "$FORCE_AXEL" != "" ]]
+	if [[ "$FORCE_AXEL" != "" ]] && ( [[ "$MANDATORY_HASH" == "true" ]] )
 	then
 		#local currentAxelTmpFile
 		#currentAxelTmpFile="$scriptAbsoluteFolder"/.m_axelTmp_$(_uid 14)
