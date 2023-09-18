@@ -145,6 +145,8 @@ _stop() {
 		rm -f "$currentAxelTmpFile".tmp4 > /dev/null 2>&1
 		rm -f "$currentAxelTmpFile".tmp4.st > /dev/null 2>&1
 		rm -f "$currentAxelTmpFile".tmp4.aria2 > /dev/null 2>&1
+			
+		rm -f "$currentAxelTmpFile"* > /dev/null 2>&1
 	fi
 	
 	_stop_stty_echo

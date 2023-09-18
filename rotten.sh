@@ -1791,6 +1791,10 @@ _wget_githubRelease-stdout() {
 
 
 _wget_githubRelease_join-stdout() {
+	local functionEntryPWD
+	functionEntryPWD="$PWD"
+	cd "$scriptAbsoluteFolder"
+	
 	local currentURL
 	local currentURL_array
 
@@ -1816,7 +1820,8 @@ _wget_githubRelease_join-stdout() {
 	then
 		#local currentAxelTmpFile
 		#currentAxelTmpFile="$scriptAbsoluteFolder"/.m_axelTmp_$(_uid 14)
-		export currentAxelTmpFile="$scriptAbsoluteFolder"/.m_axelTmp_$(_uid 14)
+		export currentAxelTmpFileRelative=.m_axelTmp_$(_uid 14)
+		export currentAxelTmpFile="$scriptAbsoluteFolder"/"$currentAxelTmpFileRelative"
 
 		#local currentAxelPID
 
@@ -1886,6 +1891,8 @@ _wget_githubRelease_join-stdout() {
 			rm -f "$currentAxelTmpFile".tmp2
 			rm -f "$currentAxelTmpFile".tmp2.st
 			rm -f "$currentAxelTmpFile".tmp2.aria2
+			
+			rm -f "$currentAxelTmpFile"* > /dev/null 2>&1
 
 			# https://github.com/aria2/aria2/issues/1108
 
@@ -1894,23 +1901,23 @@ _wget_githubRelease_join-stdout() {
 			then
 				if [[ "$GH_TOKEN" == "" ]]
 				then
-					_messagePlain_probe 'aria2c -x "$currentForceAxel" -o "$currentAxelTmpFile".tmp1 --disable-ipv6=false' "${currentURL_array_reversed[$currentIteration]}" >&2
-					aria2c --log=- --log-level=info -x "$currentForceAxel" -o "$currentAxelTmpFile".tmp1 --disable-ipv6=false "${currentURL_array_reversed[$currentIteration]}" | grep --color -i -E "Name resolution|$" >&2 &
+					_messagePlain_probe aria2c -x "$currentForceAxel" -o "$currentAxelTmpFileRelative".tmp1 --disable-ipv6=false "${currentURL_array_reversed[$currentIteration]}" >&2
+					aria2c --log=- --log-level=info -x "$currentForceAxel" -o "$currentAxelTmpFileRelative".tmp1 --disable-ipv6=false "${currentURL_array_reversed[$currentIteration]}" | grep --color -i -E "Name resolution|$" >&2 &
 					currentPID_1="$!"
 				else
-					_messagePlain_probe 'aria2c -x "$currentForceAxel" -o "$currentAxelTmpFile".tmp1 --disable-ipv6=false --header="Authorization: Bearer $GH_TOKEN"' "${currentURL_array_reversed[$currentIteration]}" >&2
-					aria2c --log=- --log-level=info -x "$currentForceAxel" -o "$currentAxelTmpFile".tmp1 --disable-ipv6=false --header="Authorization: Bearer $GH_TOKEN" "${currentURL_array_reversed[$currentIteration]}" | grep --color -i -E "Name resolution|$" >&2 &
+					_messagePlain_probe aria2c -x "$currentForceAxel" -o "$currentAxelTmpFileRelative".tmp1 --disable-ipv6=false --header="Authorization: Bearer "'$GH_TOKEN'"" "${currentURL_array_reversed[$currentIteration]}" >&2
+					aria2c --log=- --log-level=info -x "$currentForceAxel" -o "$currentAxelTmpFileRelative".tmp1 --disable-ipv6=false --header="Authorization: Bearer $GH_TOKEN" "${currentURL_array_reversed[$currentIteration]}" | grep --color -i -E "Name resolution|$" >&2 &
 					currentPID_1="$!"
 				fi
 			else
 				if [[ "$GH_TOKEN" == "" ]]
 				then
-					_messagePlain_probe 'aria2c -x "$currentForceAxel" -o "$currentAxelTmpFile".tmp1 --disable-ipv6=true' "${currentURL_array_reversed[$currentIteration]}" >&2
-					aria2c --log=- --log-level=info -x "$currentForceAxel" -o "$currentAxelTmpFile".tmp1 --disable-ipv6=true "${currentURL_array_reversed[$currentIteration]}" | grep --color -i -E "Name resolution|$" >&2 &
+					_messagePlain_probe aria2c -x "$currentForceAxel" -o "$currentAxelTmpFileRelative".tmp1 --disable-ipv6=true "${currentURL_array_reversed[$currentIteration]}" >&2
+					aria2c --log=- --log-level=info -x "$currentForceAxel" -o "$currentAxelTmpFileRelative".tmp1 --disable-ipv6=true "${currentURL_array_reversed[$currentIteration]}" | grep --color -i -E "Name resolution|$" >&2 &
 					currentPID_1="$!"
 				else
-					_messagePlain_probe 'aria2c -x "$currentForceAxel" -o "$currentAxelTmpFile".tmp1 --disable-ipv6=true --header="Authorization: Bearer $GH_TOKEN"' "${currentURL_array_reversed[$currentIteration]}" >&2
-					aria2c --log=- --log-level=info -x "$currentForceAxel" -o "$currentAxelTmpFile".tmp1 --disable-ipv6=true --header="Authorization: Bearer $GH_TOKEN" "${currentURL_array_reversed[$currentIteration]}" | grep --color -i -E "Name resolution|$" >&2 &
+					_messagePlain_probe aria2c -x "$currentForceAxel" -o "$currentAxelTmpFileRelative".tmp1 --disable-ipv6=true --header="Authorization: Bearer "'$GH_TOKEN'"" "${currentURL_array_reversed[$currentIteration]}" >&2
+					aria2c --log=- --log-level=info -x "$currentForceAxel" -o "$currentAxelTmpFileRelative".tmp1 --disable-ipv6=true --header="Authorization: Bearer $GH_TOKEN" "${currentURL_array_reversed[$currentIteration]}" | grep --color -i -E "Name resolution|$" >&2 &
 					currentPID_1="$!"
 				fi
 			fi
@@ -1921,23 +1928,23 @@ _wget_githubRelease_join-stdout() {
 			then
 				if [[ "$GH_TOKEN" == "" ]]
 				then
-					_messagePlain_probe 'aria2c -x "$currentForceAxel" -o "$currentAxelTmpFile".tmp2 --disable-ipv6=true' "${currentURL_array_reversed[$currentIterationNext1]}" >&2
-					aria2c --log=- --log-level=info -x "$currentForceAxel" -o "$currentAxelTmpFile".tmp2 --disable-ipv6=true "${currentURL_array_reversed[$currentIterationNext1]}" | grep --color -i -E "Name resolution|$" >&2 &
+					_messagePlain_probe aria2c -x "$currentForceAxel" -o "$currentAxelTmpFileRelative".tmp2 --disable-ipv6=true "${currentURL_array_reversed[$currentIterationNext1]}" >&2
+					aria2c --log=- --log-level=info -x "$currentForceAxel" -o "$currentAxelTmpFileRelative".tmp2 --disable-ipv6=true "${currentURL_array_reversed[$currentIterationNext1]}" | grep --color -i -E "Name resolution|$" >&2 &
 					currentPID_2="$!"
 				else
-					_messagePlain_probe 'aria2c -x "$currentForceAxel" -o "$currentAxelTmpFile".tmp2 --disable-ipv6=true --header="Authorization: Bearer $GH_TOKEN"' "${currentURL_array_reversed[$currentIterationNext1]}" >&2
-					aria2c --log=- --log-level=info -x "$currentForceAxel" -o "$currentAxelTmpFile".tmp2 --disable-ipv6=true --header="Authorization: Bearer $GH_TOKEN" "${currentURL_array_reversed[$currentIterationNext1]}" | grep --color -i -E "Name resolution|$" >&2 &
+					_messagePlain_probe aria2c -x "$currentForceAxel" -o "$currentAxelTmpFileRelative".tmp2 --disable-ipv6=true --header="Authorization: Bearer "'$GH_TOKEN'"" "${currentURL_array_reversed[$currentIterationNext1]}" >&2
+					aria2c --log=- --log-level=info -x "$currentForceAxel" -o "$currentAxelTmpFileRelative".tmp2 --disable-ipv6=true --header="Authorization: Bearer $GH_TOKEN" "${currentURL_array_reversed[$currentIterationNext1]}" | grep --color -i -E "Name resolution|$" >&2 &
 					currentPID_2="$!"
 				fi
 			else
 				if [[ "$GH_TOKEN" == "" ]]
 				then
-					_messagePlain_probe 'aria2c -x "$currentForceAxel" -o "$currentAxelTmpFile".tmp2 --disable-ipv6=false' "${currentURL_array_reversed[$currentIterationNext1]}" >&2
-					aria2c --log=- --log-level=info -x "$currentForceAxel" -o "$currentAxelTmpFile".tmp2 --disable-ipv6=false "${currentURL_array_reversed[$currentIterationNext1]}" | grep --color -i -E "Name resolution|$" >&2 &
+					_messagePlain_probe aria2c -x "$currentForceAxel" -o "$currentAxelTmpFileRelative".tmp2 --disable-ipv6=false "${currentURL_array_reversed[$currentIterationNext1]}" >&2
+					aria2c --log=- --log-level=info -x "$currentForceAxel" -o "$currentAxelTmpFileRelative".tmp2 --disable-ipv6=false "${currentURL_array_reversed[$currentIterationNext1]}" | grep --color -i -E "Name resolution|$" >&2 &
 					currentPID_2="$!"
 				else
-					_messagePlainProbe 'aria2c -x "$currentForceAxel" -o "$currentAxelTmpFile".tmp2 --disable-ipv6=false --header="Authorization: Bearer $GH_TOKEN"' "${currentURL_array_reversed[$currentIterationNext1]}" >&2
-					aria2c --log=- --log-level=info -x "$currentForceAxel" -o "$currentAxelTmpFile".tmp2 --disable-ipv6=false --header="Authorization: Bearer $GH_TOKEN" "${currentURL_array_reversed[$currentIterationNext1]}" | grep --color -i -E "Name resolution|$" >&2 &
+					_messagePlainProbe aria2c -x "$currentForceAxel" -o "$currentAxelTmpFileRelative".tmp2 --disable-ipv6=false --header="Authorization: Bearer "'$GH_TOKEN'"" "${currentURL_array_reversed[$currentIterationNext1]}" >&2
+					aria2c --log=- --log-level=info -x "$currentForceAxel" -o "$currentAxelTmpFileRelative".tmp2 --disable-ipv6=false --header="Authorization: Bearer $GH_TOKEN" "${currentURL_array_reversed[$currentIterationNext1]}" | grep --color -i -E "Name resolution|$" >&2 &
 					currentPID_2="$!"
 				fi
 			fi
@@ -2033,6 +2040,9 @@ _wget_githubRelease_join-stdout() {
 		fi
 		return
 	fi
+
+
+	cd "$functionEntryPWD"
 }
 
 _wget_githubRelease_join() {
@@ -2605,6 +2615,8 @@ _stop() {
 		rm -f "$currentAxelTmpFile".tmp4 > /dev/null 2>&1
 		rm -f "$currentAxelTmpFile".tmp4.st > /dev/null 2>&1
 		rm -f "$currentAxelTmpFile".tmp4.aria2 > /dev/null 2>&1
+			
+		rm -f "$currentAxelTmpFile"* > /dev/null 2>&1
 	fi
 	
 	_stop_stty_echo
