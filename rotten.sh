@@ -2056,6 +2056,9 @@ _wget_githubRelease_join-stdout() {
 }
 
 _wget_githubRelease_join() {
+	local functionEntryPWD
+	functionEntryPWD="$PWD"
+
 	_messagePlain_probe _wget_githubRelease_join-stdout "$@" '>' "$3" >&2
 	if [[ "$FORCE_AXEL" != "" ]]
 	then
@@ -2063,7 +2066,11 @@ _wget_githubRelease_join() {
 	else
 		_wget_githubRelease_join-stdout "$@" > "$3"
 	fi
+
+	cd "$functionEntryPWD"
 	[[ ! -e "$3" ]] && _messagePlain_bad 'missing: '"$1"' '"$2"' '"$3" && return 1
+
+	cd "$functionEntryPWD"
 	return 0
 }
 
