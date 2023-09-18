@@ -206,15 +206,21 @@ _wget_githubRelease_join-stdout() {
 			fi
 			
 
-			wait "$currentPID_1"
-			wait "$currentPID_2"
-			wait
+			wait "$currentPID_1" >&2
+			#wait "$currentPID_2" >&2
+			wait >&2
 
-			sleep 0.2
-			_messagePlain_probe dd if="$currentAxelTmpFile".tmp1 bs=1M status=progress' >> '"$currentAxelTmpFile" >&2
-			dd if="$currentAxelTmpFile".tmp1 bs=1M status=progress >> "$currentAxelTmpFile"
-			_messagePlain_probe dd if="$currentAxelTmpFile".tmp2 bs=1M status=progress' >> '"$currentAxelTmpFile" >&2
-			dd if="$currentAxelTmpFile".tmp2 bs=1M status=progress >> "$currentAxelTmpFile"
+			sleep 0.2 > /dev/null 2>&1
+			if [[ -e "$currentAxelTmpFile".tmp1 ]]
+			then
+				_messagePlain_probe dd if="$currentAxelTmpFile".tmp1 bs=1M status=progress' >> '"$currentAxelTmpFile" >&2
+				dd if="$currentAxelTmpFile".tmp1 bs=1M status=progress >> "$currentAxelTmpFile" >&2
+			fi
+			if [[ -e "$currentAxelTmpFile".tmp2 ]]
+			then
+				_messagePlain_probe dd if="$currentAxelTmpFile".tmp2 bs=1M status=progress' >> '"$currentAxelTmpFile" >&2
+				dd if="$currentAxelTmpFile".tmp2 bs=1M status=progress >> "$currentAxelTmpFile" >&2
+			fi
 
 			let currentIteration=currentIteration+2
 			let currentIterationNext1=currentIteration+1
@@ -283,6 +289,8 @@ _wget_githubRelease_join-stdout() {
 		rm -f "$currentAxelTmpFile".tmp2
 		rm -f "$currentAxelTmpFile".tmp2.st
 		rm -f "$currentAxelTmpFile".tmp2.aria2
+			
+			rm -f "$currentAxelTmpFile"* > /dev/null 2>&1
 		
 		return 0
 	else
