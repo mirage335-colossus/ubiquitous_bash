@@ -389,7 +389,7 @@ prereqs)
 ;;
 esac
 
-if type dd > /dev/null 2>&1 && type chroot > /dev/null 2>&1 && [ -e /bin/bash ]
+if type dd > /dev/null 2>&1 && type chroot > /dev/null 2>&1 && [ -e /root/bin/bash ]
 then
 	progressFeed() {
 		env -i HOME="/root" SHELL="/bin/bash" PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" USER="root" chroot /root dd of=/dev/null bs=1M status=progress
