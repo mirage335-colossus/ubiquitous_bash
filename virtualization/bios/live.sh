@@ -389,21 +389,10 @@ prereqs)
 ;;
 esac
 
-if type dd > /dev/null 2>&1
+if type dd > /dev/null 2>&1 && type chroot > /dev/null 2>&1 && [ -e /bin/bash ]
 then
 	progressFeed() {
-		! dd of=/dev/null bs=1M count=1 && return 0
-
-		! dd of=/dev/null bs=1M count=9 && return 0
-		echo x1 10MB
-		
-		! dd of=/dev/null bs=1M count=90 && return 0
-		echo x1 100MB
-		
-		while dd of=/dev/null bs=1M count=100
-		do
-			echo "x1 100MB"
-		done
+		env -i HOME="/root" SHELL="/bin/bash" PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" USER="root" chroot /root dd of=/dev/null bs=1M status=progress
 	}
 
 	echo "_____ preload: /root/home -not core -not .nix -not .gcloud"
