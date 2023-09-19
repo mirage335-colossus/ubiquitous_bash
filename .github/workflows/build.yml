@@ -371,13 +371,13 @@ jobs:
         env:
           currentReleaseTag: build-${{ github.run_id }}-${{ github.run_attempt }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: release! _test-lean.log
+      - name: release! missing-ubcp-binReport
         uses: softprops/action-gh-release@v1
         with:
           tag_name: build-${{ github.run_id }}-${{ github.run_attempt }}
           name: build
           files: |
-            /missing-ubcp-binReport
+            ./missing-ubcp-binReport
 
 
 
