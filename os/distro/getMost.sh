@@ -854,7 +854,7 @@ _getMost_debian11_install() {
 
 
 
-
+	_getMost_backend_aptGetInstall fldigi
 	
 	
 	_getMost_backend apt-get remove --autoremove -y plasma-discover
