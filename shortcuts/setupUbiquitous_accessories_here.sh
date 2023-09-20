@@ -1,4 +1,23 @@
 
+_setupUbiquitous_accessories_here-plasma_hook() {
+	cat << CZXWXcRMTo8EmM8i4d
+
+# sourced by /usr/lib/x86_64-linux-gnu/libexec/plasma-sourceenv.sh
+
+#LANG=C
+export LANG
+
+CZXWXcRMTo8EmM8i4d
+
+	_setupUbiquitous_accessories_here-nixenv-bashrc
+
+	
+}
+
+
+
+
+
 # ATTENTION: Override with 'ops.sh' , 'core.sh' , or similar.
 _setupUbiquitous_accessories_here-gnuoctave() {
 	cat << CZXWXcRMTo8EmM8i4d
@@ -266,10 +285,16 @@ _setupUbiquitous_accessories_here-nixenv-bashrc() {
 
 # WARNING: Binaries from Nix should not be prepended to Debian PATH, as they may be incompatible with other Debian software (eg. incorrect Python version).
 # Scripts that need to rely preferentially on Nix binaries should detect this situation, defining and calling an appropriate wrapper function.
-if [[ "\$PATH" == *"nix-profile/bin"* ]]
+# CAUTION: SEVERE - Issue unresolved. PATH written out to log file matches ' [[ "\$PATH" == *"nix-profile/bin"* ]] ' when run through interactive shell, but, with the exact same PATH value, not when called through some script contexts (eg. 'plasma-workspace/env' ) . Yet grep does match .
+#  Hidden or invalid characters in "\$PATH" would seem a sensible cause, but how grep would disregard this while bash would not, seems difficult to explain.
+#  Expected cause is interpretation by a shell other than bash .
+#   CAUTION: Compatability with shells other than bash may be important .
+if echo "$PATH" | grep 'nix-profile/bin' > /dev/null 2>&1 || [[ "\$PATH" == *"nix-profile/bin"* ]]
 then
-	export PATH=\$(echo "\$PATH" | sed 's|:'"$HOME"'/.nix-profile/bin||g;s|'"$HOME"'/.nix-profile/bin:||g')
-	export PATH="\$PATH":"$HOME"/.nix-profile/bin
+	PATH=\$(echo "\$PATH" | sed 's|:'"$HOME"'/.nix-profile/bin||g;s|'"$HOME"'/.nix-profile/bin:||g')
+	export PATH
+	PATH="\$PATH":"$HOME"/.nix-profile/bin
+	export PATH
 fi
 
 CZXWXcRMTo8EmM8i4d

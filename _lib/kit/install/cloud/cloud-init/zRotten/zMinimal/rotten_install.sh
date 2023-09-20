@@ -1303,6 +1303,7 @@ _install() {
 	_sep
 	#sudo -n -u user INSTANCE_ID="$INSTANCE_ID" sh -c "cd ; /home/user/bin/ubiquitous_bash.sh _write_wsl_qt5ct_conf 2>&1"
 	#_custom_kde_drop "$@"
+	##sudo -n -u user sh -c "cd ; ""/home/""$custom_user""/ubiquitous_bash.sh"" _setupUbiquitous 2>&1"
 	#sudo -n -u user INSTANCE_ID="$INSTANCE_ID" sh -c "cd ; /home/user/bin/ubiquitous_bash.sh _write_wsl_qt5ct_conf 2>&1"
 	
 	_sep
@@ -1311,8 +1312,11 @@ _install() {
 	# Would have been necessitated by...
 	#wsl -d ubdist sudo -n rm -rf /home/user/.local/share/kactivitymanagerd/resources/*
 	# However, while that may reduce some CPU usage defect, at least the 'favorites' menu is deleted as well.
+
 	#_sep
 	#_custom_kde_drop "$@"
+	##sudo -n -u user sh -c "cd ; ""/home/""$custom_user""/ubiquitous_bash.sh"" _setupUbiquitous 2>&1"
+
 	#_sep
 	#_custom_kde-limited "$@"
 	

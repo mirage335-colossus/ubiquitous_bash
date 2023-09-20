@@ -39,6 +39,10 @@ CZXWXcRMTo8EmM8i4d
 
 CZXWXcRMTo8EmM8i4d
 
+	# WARNING: CAUTION: Precautionary. No known issues, may be unnecessary. Unusual.
+	#However, theoretically nix package manager could otherwise override default programs (eg. python , gschem , pcb) before 'ubiquitous_bash' , causing severely incompatible shell environment configuration .
+	_setupUbiquitous_accessories_here-nixenv-bashrc
+
 
 	cat << CZXWXcRMTo8EmM8i4d
 PS1_lineNumber=""

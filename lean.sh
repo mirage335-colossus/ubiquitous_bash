@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='930936455'
+export ub_setScriptChecksum_contents='3386400699'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -5656,6 +5656,25 @@ _importShortcuts() {
 }
 
 
+_setupUbiquitous_accessories_here-plasma_hook() {
+	cat << CZXWXcRMTo8EmM8i4d
+
+# sourced by /usr/lib/x86_64-linux-gnu/libexec/plasma-sourceenv.sh
+
+#LANG=C
+export LANG
+
+CZXWXcRMTo8EmM8i4d
+
+	_setupUbiquitous_accessories_here-nixenv-bashrc
+
+	
+}
+
+
+
+
+
 # ATTENTION: Override with 'ops.sh' , 'core.sh' , or similar.
 _setupUbiquitous_accessories_here-gnuoctave() {
 	cat << CZXWXcRMTo8EmM8i4d
@@ -5923,10 +5942,16 @@ _setupUbiquitous_accessories_here-nixenv-bashrc() {
 
 # WARNING: Binaries from Nix should not be prepended to Debian PATH, as they may be incompatible with other Debian software (eg. incorrect Python version).
 # Scripts that need to rely preferentially on Nix binaries should detect this situation, defining and calling an appropriate wrapper function.
-if [[ "\$PATH" == *"nix-profile/bin"* ]]
+# CAUTION: SEVERE - Issue unresolved. PATH written out to log file matches ' [[ "\$PATH" == *"nix-profile/bin"* ]] ' when run through interactive shell, but, with the exact same PATH value, not when called through some script contexts (eg. 'plasma-workspace/env' ) . Yet grep does match .
+#  Hidden or invalid characters in "\$PATH" would seem a sensible cause, but how grep would disregard this while bash would not, seems difficult to explain.
+#  Expected cause is interpretation by a shell other than bash .
+#   CAUTION: Compatability with shells other than bash may be important .
+if echo "$PATH" | grep 'nix-profile/bin' > /dev/null 2>&1 || [[ "\$PATH" == *"nix-profile/bin"* ]]
 then
-	export PATH=\$(echo "\$PATH" | sed 's|:'"$HOME"'/.nix-profile/bin||g;s|'"$HOME"'/.nix-profile/bin:||g')
-	export PATH="\$PATH":"$HOME"/.nix-profile/bin
+	PATH=\$(echo "\$PATH" | sed 's|:'"$HOME"'/.nix-profile/bin||g;s|'"$HOME"'/.nix-profile/bin:||g')
+	export PATH
+	PATH="\$PATH":"$HOME"/.nix-profile/bin
+	export PATH
 fi
 
 CZXWXcRMTo8EmM8i4d
@@ -5948,6 +5973,19 @@ CZXWXcRMTo8EmM8i4d
 
 
 
+
+
+_setupUbiquitous_accessories-plasma() {
+	_messagePlain_nominal 'init: _setupUbiquitous_accessories-plasma'
+	
+	mkdir -p "$HOME"/.config/plasma-workspace/env
+
+	_setupUbiquitous_accessories_here-plasma_hook > "$HOME"/.config/plasma-workspace/env/profile.sh
+	chmod u+x "$HOME"/.config/plasma-workspace/env/profile.sh
+	
+	
+	return 0
+}
 
 _setupUbiquitous_accessories-gnuoctave() {
 	_messagePlain_nominal 'init: _setupUbiquitous_accessories-gnuoctave'
@@ -6030,6 +6068,9 @@ _setupUbiquitous_accessories-git() {
 
 
 _setupUbiquitous_accessories() {
+
+	_setupUbiquitous_accessories-plasma "$@"
+
 	
 	_setupUbiquitous_accessories-gnuoctave "$@"
 	
@@ -6107,6 +6148,10 @@ CZXWXcRMTo8EmM8i4d
 [[ "\$profileScriptLocation" == "" ]] && export profileScriptLocation_new='true'
 
 CZXWXcRMTo8EmM8i4d
+
+	# WARNING: CAUTION: Precautionary. No known issues, may be unnecessary. Unusual.
+	#However, theoretically nix package manager could otherwise override default programs (eg. python , gschem , pcb) before 'ubiquitous_bash' , causing severely incompatible shell environment configuration .
+	_setupUbiquitous_accessories_here-nixenv-bashrc
 
 
 	cat << CZXWXcRMTo8EmM8i4d

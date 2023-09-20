@@ -1,3 +1,16 @@
+
+_setupUbiquitous_accessories-plasma() {
+	_messagePlain_nominal 'init: _setupUbiquitous_accessories-plasma'
+	
+	mkdir -p "$HOME"/.config/plasma-workspace/env
+
+	_setupUbiquitous_accessories_here-plasma_hook > "$HOME"/.config/plasma-workspace/env/profile.sh
+	chmod u+x "$HOME"/.config/plasma-workspace/env/profile.sh
+	
+	
+	return 0
+}
+
 _setupUbiquitous_accessories-gnuoctave() {
 	_messagePlain_nominal 'init: _setupUbiquitous_accessories-gnuoctave'
 	
@@ -79,6 +92,9 @@ _setupUbiquitous_accessories-git() {
 
 
 _setupUbiquitous_accessories() {
+
+	_setupUbiquitous_accessories-plasma "$@"
+
 	
 	_setupUbiquitous_accessories-gnuoctave "$@"
 	
