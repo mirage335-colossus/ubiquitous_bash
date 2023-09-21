@@ -826,9 +826,9 @@ ExecStart="'"$1"'"/.config/startup.sh'
 	sudo -n chown -R user:user /home/"$custom_user"/___quick
 	sudo -n chmod 755 /home/"$custom_user"/___quick/mount.sh
 	
-	( sudo -n crontab -l ; echo '@reboot /media/bootdisc/rootnix.sh > /var/log/rootnix.log 2>&1' ) | sudo -n crontab '-'
+	( sudo -n crontab -l ; echo '@reboot sleep 35 ; /media/bootdisc/rootnix.sh > /var/log/rootnix.log 2>&1' ) | sudo -n crontab '-'
 	
-	( sudo -n -u user bash -c "crontab -l" ; echo '@reboot /home/'"$custom_user"'/.ubcore/ubiquitous_bash/lean.sh _unix_renice_execDaemon > /home/'"$custom_user"/'_unix_renice_execDaemon.log 2>&1' ) | sudo -n -u user bash -c "crontab -"
+	( sudo -n -u user bash -c "crontab -l" ; echo '@reboot sleep 35 ; /home/'"$custom_user"'/.ubcore/ubiquitous_bash/lean.sh _unix_renice_execDaemon > /home/'"$custom_user"/'_unix_renice_execDaemon.log 2>&1' ) | sudo -n -u user bash -c "crontab -"
 	
 	
 	
@@ -1327,11 +1327,11 @@ _install() {
 	_sep
 	#sleep 20
 	
-	#( sudo -n -u user bash -c "crontab -l" ; echo '@reboot cd '/home/"$custom_user"'/ ; '/home/"$custom_user"'/rottenScript.sh _run > /home/'"$custom_user"'/_run.log 2>&1' ) | sudo -n -u user bash -c "crontab -"
+	#( sudo -n -u user bash -c "crontab -l" ; echo '@reboot sleep 35 ; cd '/home/"$custom_user"'/ ; '/home/"$custom_user"'/rottenScript.sh _run > /home/'"$custom_user"'/_run.log 2>&1' ) | sudo -n -u user bash -c "crontab -"
 	
 	[[ ! -e /root/rottenScript.sh ]] && sudo -n cp "$scriptAbsoluteLocation" /root/rottenScript.sh
 	sudo -n chmod 700 /root/rottenScript.sh
-	( sudo -n crontab -l ; echo '@reboot /root/rottenScript.sh _run > /var/log/run.log 2>&1' ) | sudo -n crontab '-'
+	( sudo -n crontab -l ; echo '@reboot sleep 35 ; /root/rottenScript.sh _run > /var/log/run.log 2>&1' ) | sudo -n crontab '-'
 	sudo -n ln -s /var/log/run.log /root/run.log
 	
 	sudo -n chmod 700 "$scriptAbsoluteLocation"
