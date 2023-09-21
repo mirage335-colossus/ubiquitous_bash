@@ -417,6 +417,23 @@ then
 	echo "_____ preload: /root/root"
 	find /root/root -type f -exec dd if={} bs=16384 2>/dev/null \; | progressFeed
 
+	
+	# CAUTION: DUBIOUS .
+	echo "_____ preload: /VBoxGuestAdditions"
+	find /root/VBoxGuestAdditions -type f -exec dd if={} bs=16384 2>/dev/null \; | progressFeed
+
+	# CAUTION: DUBIOUS .
+	echo "_____ preload: /opt"
+	find /root/opt -type f -exec dd if={} bs=16384 2>/dev/null \; | progressFeed
+	
+	# CAUTION: DUBIOUS .
+	echo "_____ preload: /run"
+	find /root/run -type f -exec dd if={} bs=16384 2>/dev/null \; | progressFeed
+	
+	# CAUTION: DUBIOUS .
+	echo "_____ preload: /srv"
+	find /root/srv -type f -exec dd if={} bs=16384 2>/dev/null \; | progressFeed
+
 
 	echo '_____ preload: /root/var'
 	find /root/var -type f -exec dd if={} bs=16384 2>/dev/null \; | progressFeed
@@ -442,6 +459,7 @@ then
 
 	echo '_____ preload: /root/etc'
 	find /root/etc -type f -exec dd if={} bs=16384 2>/dev/null \; | progressFeed
+# WARNING: May be untested.
 else
 	echo "_____ preload: /root/home -not core -not .nix -not .gcloud"
 	find /root/home -not \( -path \/root/home/\*/core\* -prune \) -not \( -path \/root/home/\*/.nix\* -prune \) -not \( -path \/root/home/\*/.gcloud\* -prune \) -type f -exec cat {} > /dev/null \;
@@ -464,6 +482,24 @@ else
 
 	echo "_____ preload: /root/root"
 	find /root/root -type f -exec cat {} > /dev/null \;
+
+
+
+	# CAUTION: DUBIOUS .
+	echo '_____ preload: /root/VBoxGuestAdditions'
+	find /root/VBoxGuestAdditions -type f -exec cat {} > /dev/null \;
+
+	# CAUTION: DUBIOUS .
+	echo '_____ preload: /root/opt'
+	find /root/opt -type f -exec cat {} > /dev/null \;
+
+	# CAUTION: DUBIOUS .
+	echo '_____ preload: /root/run'
+	find /root/run -type f -exec cat {} > /dev/null \;
+
+	# CAUTION: DUBIOUS .
+	echo '_____ preload: /root/srv'
+	find /root/srv -type f -exec cat {} > /dev/null \;
 
 
 	echo '_____ preload: /root/var'
