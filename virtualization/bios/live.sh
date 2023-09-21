@@ -624,9 +624,11 @@ _live_sequence_in() {
 	# Consider reducing below 12 iteratively.
 	# Alternatively, this may need to increase. Cron jobs may otherwise fail with such error message as 'fork retry resource temporarily unavailable' .
 	# Uncertain whether 'DefaultTasksMax' limits only the number of systemd services started simuntaneously, or also the number of threads total prior to interactive shell.
-	sudo -n mv -n "$globalVirtFS"/etc/systemd/system.conf "$globalVirtFS"/etc/systemd/system.conf.orig
-	echo '[Manager]
-DefaultTasksMax=24' | sudo -n tee "$globalVirtFS"/etc/systemd/system.conf > /dev/null
+	# CAUTION: Apparently sets 'ulimit' unfavorably against cron .
+	#  Hopefully, preload will be sufficient to prevent excessive disc seeking issues .
+	#sudo -n mv -n "$globalVirtFS"/etc/systemd/system.conf "$globalVirtFS"/etc/systemd/system.conf.orig
+	#echo '[Manager]
+#DefaultTasksMax=24' | sudo -n tee "$globalVirtFS"/etc/systemd/system.conf > /dev/null
 
 
 	_chroot update-initramfs -u -k all
