@@ -247,6 +247,8 @@ _dropBootdisc() {
 	fi
 	sleep 0.3
 	
+	[[ -e "$HOME"/.config/plasma-workspace/env/profile.sh ]] && /bin/bash "$HOME"/.config/plasma-workspace/env/profile.sh
+
 	cd "$localPWD"
 	
 	"$@"

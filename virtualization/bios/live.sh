@@ -565,8 +565,13 @@ menuentry "Live - ( persistence )" {
 }
 
 menuentry "Live - ( hint: ignored: resume disabled ) ( mem: all )" {
-    linux /vmlinuz boot=live config debug=1 noeject nopersistence selinux=0
-    initrd /initrd
+	#linux /vmlinuz boot=live config debug=1 noeject nopersistence selinux=0
+    #initrd /initrd
+
+    insmod multiboot2
+	multiboot2 /tboot.gz logging=serial,memory,vga
+	module2 linux /vmlinuz boot=live config debug=1 noeject nopersistence selinux=0
+	module2 /initrd
 }
 
 CZXWXcRMTo8EmM8i4d
@@ -862,6 +867,7 @@ _live_sequence_in() {
 	
 	cp "${currentFilesList[0]}" "$scriptLocal"/livefs/image/initrd
 	
+	cp "$globalVirtFS"/boot/tboot* "$scriptLocal"/livefs/image/
 	
 	_live_grub_here > "$scriptLocal"/livefs/partial/grub.cfg
 	touch "$scriptLocal"/livefs/image/ROOT_TEXT

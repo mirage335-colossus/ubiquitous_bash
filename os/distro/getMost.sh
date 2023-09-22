@@ -455,6 +455,9 @@ _getMost_debian11_install() {
 	
 	_getMost_backend_aptGetInstall p7zip
 	_getMost_backend_aptGetInstall p7zip-full
+
+	
+	_getMost_backend_aptGetInstall jp2a
 	
 	
 	
@@ -861,6 +864,10 @@ _getMost_debian11_install() {
 
 
 	_getMost_backend_aptGetInstall tboot
+
+	_getMost_backend_aptGetInstall trousers
+	_getMost_backend_aptGetInstall tpm-tools
+	_getMost_backend_aptGetInstall trousers-dbg
 	
 	
 	

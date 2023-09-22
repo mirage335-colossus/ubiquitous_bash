@@ -198,6 +198,7 @@ _kernelConfig_require-tradeoff-harden() {
 	_kernelConfig__bad-y__ CONFIG_X86_SGX
 	_kernelConfig__bad-y__ CONFIG_X86_SGX_kVM
 	_kernelConfig__bad-y__ CONFIG_INTEL_TDX_GUEST
+	_kernelConfig__bad-y__ TDX_GUEST_DRIVER
 
 
 	# https://libvirt.org/kbase/launch_security_sev.html

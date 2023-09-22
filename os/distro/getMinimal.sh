@@ -208,6 +208,9 @@ _getMinimal_cloud() {
 	_getMost_backend_aptGetInstall nsis
 
 	
+	_getMost_backend_aptGetInstall jp2a
+
+	
 	_getMost_backend_aptGetInstall iputils-ping
 	
 	_getMost_backend_aptGetInstall btrfs-tools
@@ -316,6 +319,10 @@ _getMinimal_cloud() {
 
 	
 	_getMost_backend_aptGetInstall tboot
+
+	_getMost_backend_aptGetInstall trousers
+	_getMost_backend_aptGetInstall tpm-tools
+	_getMost_backend_aptGetInstall trousers-dbg
 
 	
 	_getMost_backend apt-get -y clean

@@ -1,4 +1,6 @@
 
+# CAUTION: Compatibility with shells other than bash is apparently important .
+# CAUTION: Compatibility with bash shell is important (eg. for '_dropBootdisc' ) .
 _setupUbiquitous_accessories_here-plasma_hook() {
 	cat << CZXWXcRMTo8EmM8i4d
 
@@ -289,6 +291,7 @@ _setupUbiquitous_accessories_here-nixenv-bashrc() {
 #  Hidden or invalid characters in "\$PATH" would seem a sensible cause, but how grep would disregard this while bash would not, seems difficult to explain.
 #  Expected cause is interpretation by a shell other than bash .
 #   CAUTION: Compatability with shells other than bash may be important .
+# CAUTION: Compatibility with bash shell is important (eg. for '_dropBootdisc' ) .
 if echo "\$PATH" | grep 'nix-profile/bin' > /dev/null 2>&1 || [[ "\$PATH" == *"nix-profile/bin"* ]]
 then
 	PATH=\$(echo "\$PATH" | sed 's|:'"$HOME"'/.nix-profile/bin||g;s|'"$HOME"'/.nix-profile/bin:||g')

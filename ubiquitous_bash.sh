@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='3809404443'
+export ub_setScriptChecksum_contents='2130309334'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -10223,6 +10223,9 @@ _getMost_debian11_install() {
 	
 	_getMost_backend_aptGetInstall p7zip
 	_getMost_backend_aptGetInstall p7zip-full
+
+	
+	_getMost_backend_aptGetInstall jp2a
 	
 	
 	
@@ -10629,6 +10632,10 @@ _getMost_debian11_install() {
 
 
 	_getMost_backend_aptGetInstall tboot
+
+	_getMost_backend_aptGetInstall trousers
+	_getMost_backend_aptGetInstall tpm-tools
+	_getMost_backend_aptGetInstall trousers-dbg
 	
 	
 	
@@ -11162,6 +11169,9 @@ _getMinimal_cloud() {
 	_getMost_backend_aptGetInstall nsis
 
 	
+	_getMost_backend_aptGetInstall jp2a
+
+	
 	_getMost_backend_aptGetInstall iputils-ping
 	
 	_getMost_backend_aptGetInstall btrfs-tools
@@ -11270,6 +11280,10 @@ _getMinimal_cloud() {
 
 	
 	_getMost_backend_aptGetInstall tboot
+
+	_getMost_backend_aptGetInstall trousers
+	_getMost_backend_aptGetInstall tpm-tools
+	_getMost_backend_aptGetInstall trousers-dbg
 
 	
 	_getMost_backend apt-get -y clean
@@ -15734,6 +15748,8 @@ _dropBootdisc() {
 	fi
 	sleep 0.3
 	
+	[[ -e "$HOME"/.config/plasma-workspace/env/profile.sh ]] && /bin/bash "$HOME"/.config/plasma-workspace/env/profile.sh
+
 	cd "$localPWD"
 	
 	"$@"
@@ -18053,8 +18069,13 @@ menuentry "Live - ( persistence )" {
 }
 
 menuentry "Live - ( hint: ignored: resume disabled ) ( mem: all )" {
-    linux /vmlinuz boot=live config debug=1 noeject nopersistence selinux=0
-    initrd /initrd
+	#linux /vmlinuz boot=live config debug=1 noeject nopersistence selinux=0
+    #initrd /initrd
+
+    insmod multiboot2
+	multiboot2 /tboot.gz logging=serial,memory,vga
+	module2 linux /vmlinuz boot=live config debug=1 noeject nopersistence selinux=0
+	module2 /initrd
 }
 
 CZXWXcRMTo8EmM8i4d
@@ -18350,6 +18371,7 @@ _live_sequence_in() {
 	
 	cp "${currentFilesList[0]}" "$scriptLocal"/livefs/image/initrd
 	
+	cp "$globalVirtFS"/boot/tboot* "$scriptLocal"/livefs/image/
 	
 	_live_grub_here > "$scriptLocal"/livefs/partial/grub.cfg
 	touch "$scriptLocal"/livefs/image/ROOT_TEXT
@@ -24290,23 +24312,24 @@ _wget_githubRelease_join-stdout() {
 			then
 				if [[ "$GH_TOKEN" == "" ]]
 				then
+					#--file-allocation=falloc
 					_messagePlain_probe aria2c -x "$currentForceAxel" -o "$currentAxelTmpFileRelative".tmp1 --disable-ipv6=false "${currentURL_array_reversed[$currentIteration]}" >&2
-					aria2c --log=- --log-level=info -x "$currentForceAxel" -o "$currentAxelTmpFileRelative".tmp1 --file-allocation=falloc --disable-ipv6=false "${currentURL_array_reversed[$currentIteration]}" | grep --color -i -E "Name resolution|$" >&2 &
+					aria2c --log=- --log-level=info -x "$currentForceAxel" -o "$currentAxelTmpFileRelative".tmp1 --disable-ipv6=false "${currentURL_array_reversed[$currentIteration]}" | grep --color -i -E "Name resolution|$" >&2 &
 					currentPID_1="$!"
 				else
 					_messagePlain_probe aria2c -x "$currentForceAxel" -o "$currentAxelTmpFileRelative".tmp1 --disable-ipv6=false --header="Authorization: Bearer "'$GH_TOKEN'"" "${currentURL_array_reversed[$currentIteration]}" >&2
-					aria2c --log=- --log-level=info -x "$currentForceAxel" -o "$currentAxelTmpFileRelative".tmp1 --file-allocation=falloc --disable-ipv6=false --header="Authorization: Bearer $GH_TOKEN" "${currentURL_array_reversed[$currentIteration]}" | grep --color -i -E "Name resolution|$" >&2 &
+					aria2c --log=- --log-level=info -x "$currentForceAxel" -o "$currentAxelTmpFileRelative".tmp1 --disable-ipv6=false --header="Authorization: Bearer $GH_TOKEN" "${currentURL_array_reversed[$currentIteration]}" | grep --color -i -E "Name resolution|$" >&2 &
 					currentPID_1="$!"
 				fi
 			else
 				if [[ "$GH_TOKEN" == "" ]]
 				then
 					_messagePlain_probe aria2c -x "$currentForceAxel" -o "$currentAxelTmpFileRelative".tmp1 --disable-ipv6=true "${currentURL_array_reversed[$currentIteration]}" >&2
-					aria2c --log=- --log-level=info -x "$currentForceAxel" -o "$currentAxelTmpFileRelative".tmp1 --file-allocation=falloc --disable-ipv6=true "${currentURL_array_reversed[$currentIteration]}" | grep --color -i -E "Name resolution|$" >&2 &
+					aria2c --log=- --log-level=info -x "$currentForceAxel" -o "$currentAxelTmpFileRelative".tmp1 --disable-ipv6=true "${currentURL_array_reversed[$currentIteration]}" | grep --color -i -E "Name resolution|$" >&2 &
 					currentPID_1="$!"
 				else
 					_messagePlain_probe aria2c -x "$currentForceAxel" -o "$currentAxelTmpFileRelative".tmp1 --disable-ipv6=true --header="Authorization: Bearer "'$GH_TOKEN'"" "${currentURL_array_reversed[$currentIteration]}" >&2
-					aria2c --log=- --log-level=info -x "$currentForceAxel" -o "$currentAxelTmpFileRelative".tmp1 --file-allocation=falloc --disable-ipv6=true --header="Authorization: Bearer $GH_TOKEN" "${currentURL_array_reversed[$currentIteration]}" | grep --color -i -E "Name resolution|$" >&2 &
+					aria2c --log=- --log-level=info -x "$currentForceAxel" -o "$currentAxelTmpFileRelative".tmp1 --disable-ipv6=true --header="Authorization: Bearer $GH_TOKEN" "${currentURL_array_reversed[$currentIteration]}" | grep --color -i -E "Name resolution|$" >&2 &
 					currentPID_1="$!"
 				fi
 			fi
@@ -24321,22 +24344,22 @@ _wget_githubRelease_join-stdout() {
 				if [[ "$GH_TOKEN" == "" ]]
 				then
 					_messagePlain_probe aria2c -x "$currentForceAxel" -o "$currentAxelTmpFileRelative".tmp2 --disable-ipv6=true "${currentURL_array_reversed[$currentIterationNext1]}" >&2
-					aria2c --log=- --log-level=info -x "$currentForceAxel" -o "$currentAxelTmpFileRelative".tmp2 --file-allocation=falloc --disable-ipv6=true "${currentURL_array_reversed[$currentIterationNext1]}" | grep --color -i -E "Name resolution|$" >&2 &
+					aria2c --log=- --log-level=info -x "$currentForceAxel" -o "$currentAxelTmpFileRelative".tmp2 --disable-ipv6=true "${currentURL_array_reversed[$currentIterationNext1]}" | grep --color -i -E "Name resolution|$" >&2 &
 					currentPID_2="$!"
 				else
 					_messagePlain_probe aria2c -x "$currentForceAxel" -o "$currentAxelTmpFileRelative".tmp2 --disable-ipv6=true --header="Authorization: Bearer "'$GH_TOKEN'"" "${currentURL_array_reversed[$currentIterationNext1]}" >&2
-					aria2c --log=- --log-level=info -x "$currentForceAxel" -o "$currentAxelTmpFileRelative".tmp2 --file-allocation=falloc --disable-ipv6=true --header="Authorization: Bearer $GH_TOKEN" "${currentURL_array_reversed[$currentIterationNext1]}" | grep --color -i -E "Name resolution|$" >&2 &
+					aria2c --log=- --log-level=info -x "$currentForceAxel" -o "$currentAxelTmpFileRelative".tmp2 --disable-ipv6=true --header="Authorization: Bearer $GH_TOKEN" "${currentURL_array_reversed[$currentIterationNext1]}" | grep --color -i -E "Name resolution|$" >&2 &
 					currentPID_2="$!"
 				fi
 			else
 				if [[ "$GH_TOKEN" == "" ]]
 				then
 					_messagePlain_probe aria2c -x "$currentForceAxel" -o "$currentAxelTmpFileRelative".tmp2 --disable-ipv6=false "${currentURL_array_reversed[$currentIterationNext1]}" >&2
-					aria2c --log=- --log-level=info -x "$currentForceAxel" -o "$currentAxelTmpFileRelative".tmp2 --file-allocation=falloc --disable-ipv6=false "${currentURL_array_reversed[$currentIterationNext1]}" | grep --color -i -E "Name resolution|$" >&2 &
+					aria2c --log=- --log-level=info -x "$currentForceAxel" -o "$currentAxelTmpFileRelative".tmp2 --disable-ipv6=false "${currentURL_array_reversed[$currentIterationNext1]}" | grep --color -i -E "Name resolution|$" >&2 &
 					currentPID_2="$!"
 				else
 					_messagePlainProbe aria2c -x "$currentForceAxel" -o "$currentAxelTmpFileRelative".tmp2 --disable-ipv6=false --header="Authorization: Bearer "'$GH_TOKEN'"" "${currentURL_array_reversed[$currentIterationNext1]}" >&2
-					aria2c --log=- --log-level=info -x "$currentForceAxel" -o "$currentAxelTmpFileRelative".tmp2 --file-allocation=falloc --disable-ipv6=false --header="Authorization: Bearer $GH_TOKEN" "${currentURL_array_reversed[$currentIterationNext1]}" | grep --color -i -E "Name resolution|$" >&2 &
+					aria2c --log=- --log-level=info -x "$currentForceAxel" -o "$currentAxelTmpFileRelative".tmp2 --disable-ipv6=false --header="Authorization: Bearer $GH_TOKEN" "${currentURL_array_reversed[$currentIterationNext1]}" | grep --color -i -E "Name resolution|$" >&2 &
 					currentPID_2="$!"
 				fi
 			fi
@@ -29643,6 +29666,7 @@ _kernelConfig_require-tradeoff-harden() {
 	_kernelConfig__bad-y__ CONFIG_X86_SGX
 	_kernelConfig__bad-y__ CONFIG_X86_SGX_kVM
 	_kernelConfig__bad-y__ CONFIG_INTEL_TDX_GUEST
+	_kernelConfig__bad-y__ TDX_GUEST_DRIVER
 
 
 	# https://libvirt.org/kbase/launch_security_sev.html
@@ -30457,6 +30481,8 @@ _importShortcuts() {
 }
 
 
+# CAUTION: Compatibility with shells other than bash is apparently important .
+# CAUTION: Compatibility with bash shell is important (eg. for '_dropBootdisc' ) .
 _setupUbiquitous_accessories_here-plasma_hook() {
 	cat << CZXWXcRMTo8EmM8i4d
 
@@ -30747,6 +30773,7 @@ _setupUbiquitous_accessories_here-nixenv-bashrc() {
 #  Hidden or invalid characters in "\$PATH" would seem a sensible cause, but how grep would disregard this while bash would not, seems difficult to explain.
 #  Expected cause is interpretation by a shell other than bash .
 #   CAUTION: Compatability with shells other than bash may be important .
+# CAUTION: Compatibility with bash shell is important (eg. for '_dropBootdisc' ) .
 if echo "\$PATH" | grep 'nix-profile/bin' > /dev/null 2>&1 || [[ "\$PATH" == *"nix-profile/bin"* ]]
 then
 	PATH=\$(echo "\$PATH" | sed 's|:'"$HOME"'/.nix-profile/bin||g;s|'"$HOME"'/.nix-profile/bin:||g')
