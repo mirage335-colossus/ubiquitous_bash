@@ -117,14 +117,18 @@ _kernelConfig_require-tradeoff-perform() {
 	_kernelConfig__bad-n__ CONFIG_SLAB_FREELIST_HARDENED
 	
 	# Uncertain.
-	_kernelConfig__bad-__n CONFIG_X86_SGX
-	_kernelConfig__bad-__n CONFIG_INTEL_TDX_GUEST
-	_kernelConfig__bad-__n CONFIG_X86_SGX_kVM
-	_kernelConfig__bad-__n CONFIG_KVM_AMD_SEV
+	_kernelConfig__bad-__n CONFIG_AMD_MEM_ENCRYPT_ACTIVE_BY_DEFAULT
 	
 	
 	_kernelConfig__bad-__n CONFIG_RANDOMIZE_BASE
 	_kernelConfig__bad-__n CONFIG_RANDOMIZE_MEMORY
+
+
+	# Special.
+	#_kernelConfig_warn-n__ CONFIG_HAVE_INTEL_TXT
+	_kernelConfig_warn-n__ CONFIG_INTEL_TXT
+	#_kernelConfig_warn-n__ CONFIG_IOMMU_DMA
+	#_kernelConfig_warn-n__ CONFIG_INTEL_IOMMU
 }
 
 # May become increasing tolerable and preferable for the vast majority of use cases.
@@ -155,10 +159,6 @@ _kernelConfig_require-tradeoff-harden() {
 	# May have been removed from upstream.
 	#_kernelConfig__bad-y__ CONFIG_X86_SMAP
 	
-	# Uncertain. VM guest should be tested.
-	_kernelConfig_warn-y__ AMD_MEM_ENCRYPT
-	_kernelConfig_warn-y__ CONFIG_AMD_MEM_ENCRYPT_ACTIVE_BY_DEFAULT
-	
 	_kernelConfig_warn-n__ CONFIG_X86_INTEL_TSX_MODE_ON
 	_kernelConfig_warn-n__ CONFIG_X86_INTEL_TSX_MODE_AUTO
 	_kernelConfig__bad-y__ CONFIG_X86_INTEL_TSX_MODE_OFF
@@ -166,15 +166,54 @@ _kernelConfig_require-tradeoff-harden() {
 	
 	_kernelConfig_warn-y__ CONFIG_SLAB_FREELIST_HARDENED
 	
-	# Uncertain.
-	_kernelConfig_warn-y__ CONFIG_X86_SGX
-	_kernelConfig_warn-y__ CONFIG_INTEL_TDX_GUEST
-	_kernelConfig_warn-y__ CONFIG_X86_SGX_kVM
-	_kernelConfig_warn-y__ CONFIG_KVM_AMD_SEV
-	
 	
 	_kernelConfig__bad-y__ CONFIG_RANDOMIZE_BASE
 	_kernelConfig__bad-y__ CONFIG_RANDOMIZE_MEMORY
+
+
+
+
+
+
+
+	# Special.
+	# VM guest should be tested.
+
+	# https://wiki.gentoo.org/wiki/Trusted_Boot
+	_kernelConfig__bad-y__ CONFIG_HAVE_INTEL_TXT
+	_kernelConfig__bad-y__ CONFIG_INTEL_TXT
+	_kernelConfig__bad-y__ CONFIG_IOMMU_DMA
+	_kernelConfig__bad-y__ CONFIG_INTEL_IOMMU
+
+
+	# https://www.qemu.org/docs/master/system/i386/sgx.html
+	#grep sgx /proc/cpuinfo
+	#dmesg | grep sgx
+	# Apparently normal: ' sgx: [Firmware Bug]: Unable to map EPC section to online node. Fallback to the NUMA node 0. '
+
+	# https://www.qemu.org/docs/master/system/i386/sgx.html
+	#qemuArgs+=(-cpu host,+sgx-provisionkey -machine accel=kvm -object memory-backend-epc,id=mem1,size=64M,prealloc=on -M sgx-epc.0.memdev=mem1,sgx-epc.0.node=0 )
+	#qemuArgs+=(-cpu host,-sgx-provisionkey,-sgx-tokenkey)
+
+	_kernelConfig__bad-y__ CONFIG_X86_SGX
+	_kernelConfig__bad-y__ CONFIG_X86_SGX_kVM
+	_kernelConfig__bad-y__ CONFIG_INTEL_TDX_GUEST
+
+
+	# https://libvirt.org/kbase/launch_security_sev.html
+	#cat /sys/module/kvm_amd/parameters/sev
+	#dmesg | grep -i sev
+
+	# https://www.qemu.org/docs/master/system/i386/amd-memory-encryption.html
+	#qemuArgs+=(-machine accel=kvm,confidential-guest-support=sev0 -object sev-guest,id=sev0,cbitpos=47,reduced-phys-bits=1 )
+	# #,policy=0x5
+
+	# https://libvirt.org/kbase/launch_security_sev.html
+	_kernelConfig__bad-y__ CONFIG_KVM_AMD_SEV
+	_kernelConfig__bad-y__ AMD_MEM_ENCRYPT
+	_kernelConfig__bad-y__ CONFIG_AMD_MEM_ENCRYPT_ACTIVE_BY_DEFAULT
+
+
 }
 
 # ATTENTION: Override with 'ops.sh' or similar.

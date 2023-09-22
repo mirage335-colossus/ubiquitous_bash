@@ -312,6 +312,11 @@ _getMinimal_cloud() {
 	
 	
 	_getMost_backend apt-get remove --autoremove -y plasma-discover
+
+
+	
+	_getMost_backend_aptGetInstall tboot
+
 	
 	_getMost_backend apt-get -y clean
 	

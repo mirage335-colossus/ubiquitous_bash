@@ -858,6 +858,10 @@ _getMost_debian11_install() {
 	
 	
 	_getMost_backend apt-get remove --autoremove -y plasma-discover
+
+
+	_getMost_backend_aptGetInstall tboot
+	
 	
 	
 	_getMost_debian11_special_late

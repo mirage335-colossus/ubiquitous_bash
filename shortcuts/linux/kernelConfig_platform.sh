@@ -100,6 +100,7 @@ _kernelConfig_mobile() {
 }
 
 # NOTICE: Recommended! Most 'mobile' and 'panel' use cases will not benefit enough from power efficiency, reduced CPU cycles, or performance.
+# WARNING: Security should be favored by tradeoff, as this may be shipped as the 'default' kernel (eg. for 'ubdist') .
 # ATTENTION: As desired, ignore, or override with 'ops.sh' or similar.
 _kernelConfig_desktop() {
 	_messageNormal 'kernelConfig: desktop'
@@ -136,5 +137,13 @@ _kernelConfig_desktop() {
 	
 	
 	_kernelConfig_request_build
+}
+
+# Forces 'kernelConfig_tradeoff_perform == false' .
+_kernelConfig_server() {
+	_messageNormal 'kernelConfig: server'
+
+	export kernelConfig_tradeoff_perform='false'
+	_kernelConfig_desktop "$@"
 }
 

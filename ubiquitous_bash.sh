@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='1697734860'
+export ub_setScriptChecksum_contents='3809404443'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -10626,6 +10626,10 @@ _getMost_debian11_install() {
 	
 	
 	_getMost_backend apt-get remove --autoremove -y plasma-discover
+
+
+	_getMost_backend_aptGetInstall tboot
+	
 	
 	
 	_getMost_debian11_special_late
@@ -11262,6 +11266,11 @@ _getMinimal_cloud() {
 	
 	
 	_getMost_backend apt-get remove --autoremove -y plasma-discover
+
+
+	
+	_getMost_backend_aptGetInstall tboot
+
 	
 	_getMost_backend apt-get -y clean
 	
@@ -24282,22 +24291,22 @@ _wget_githubRelease_join-stdout() {
 				if [[ "$GH_TOKEN" == "" ]]
 				then
 					_messagePlain_probe aria2c -x "$currentForceAxel" -o "$currentAxelTmpFileRelative".tmp1 --disable-ipv6=false "${currentURL_array_reversed[$currentIteration]}" >&2
-					aria2c --log=- --log-level=info -x "$currentForceAxel" -o "$currentAxelTmpFileRelative".tmp1 --file-allocation=none --disable-ipv6=false "${currentURL_array_reversed[$currentIteration]}" | grep --color -i -E "Name resolution|$" >&2 &
+					aria2c --log=- --log-level=info -x "$currentForceAxel" -o "$currentAxelTmpFileRelative".tmp1 --file-allocation=falloc --disable-ipv6=false "${currentURL_array_reversed[$currentIteration]}" | grep --color -i -E "Name resolution|$" >&2 &
 					currentPID_1="$!"
 				else
 					_messagePlain_probe aria2c -x "$currentForceAxel" -o "$currentAxelTmpFileRelative".tmp1 --disable-ipv6=false --header="Authorization: Bearer "'$GH_TOKEN'"" "${currentURL_array_reversed[$currentIteration]}" >&2
-					aria2c --log=- --log-level=info -x "$currentForceAxel" -o "$currentAxelTmpFileRelative".tmp1 --file-allocation=none --disable-ipv6=false --header="Authorization: Bearer $GH_TOKEN" "${currentURL_array_reversed[$currentIteration]}" | grep --color -i -E "Name resolution|$" >&2 &
+					aria2c --log=- --log-level=info -x "$currentForceAxel" -o "$currentAxelTmpFileRelative".tmp1 --file-allocation=falloc --disable-ipv6=false --header="Authorization: Bearer $GH_TOKEN" "${currentURL_array_reversed[$currentIteration]}" | grep --color -i -E "Name resolution|$" >&2 &
 					currentPID_1="$!"
 				fi
 			else
 				if [[ "$GH_TOKEN" == "" ]]
 				then
 					_messagePlain_probe aria2c -x "$currentForceAxel" -o "$currentAxelTmpFileRelative".tmp1 --disable-ipv6=true "${currentURL_array_reversed[$currentIteration]}" >&2
-					aria2c --log=- --log-level=info -x "$currentForceAxel" -o "$currentAxelTmpFileRelative".tmp1 --file-allocation=none --disable-ipv6=true "${currentURL_array_reversed[$currentIteration]}" | grep --color -i -E "Name resolution|$" >&2 &
+					aria2c --log=- --log-level=info -x "$currentForceAxel" -o "$currentAxelTmpFileRelative".tmp1 --file-allocation=falloc --disable-ipv6=true "${currentURL_array_reversed[$currentIteration]}" | grep --color -i -E "Name resolution|$" >&2 &
 					currentPID_1="$!"
 				else
 					_messagePlain_probe aria2c -x "$currentForceAxel" -o "$currentAxelTmpFileRelative".tmp1 --disable-ipv6=true --header="Authorization: Bearer "'$GH_TOKEN'"" "${currentURL_array_reversed[$currentIteration]}" >&2
-					aria2c --log=- --log-level=info -x "$currentForceAxel" -o "$currentAxelTmpFileRelative".tmp1 --file-allocation=none --disable-ipv6=true --header="Authorization: Bearer $GH_TOKEN" "${currentURL_array_reversed[$currentIteration]}" | grep --color -i -E "Name resolution|$" >&2 &
+					aria2c --log=- --log-level=info -x "$currentForceAxel" -o "$currentAxelTmpFileRelative".tmp1 --file-allocation=falloc --disable-ipv6=true --header="Authorization: Bearer $GH_TOKEN" "${currentURL_array_reversed[$currentIteration]}" | grep --color -i -E "Name resolution|$" >&2 &
 					currentPID_1="$!"
 				fi
 			fi
@@ -24312,22 +24321,22 @@ _wget_githubRelease_join-stdout() {
 				if [[ "$GH_TOKEN" == "" ]]
 				then
 					_messagePlain_probe aria2c -x "$currentForceAxel" -o "$currentAxelTmpFileRelative".tmp2 --disable-ipv6=true "${currentURL_array_reversed[$currentIterationNext1]}" >&2
-					aria2c --log=- --log-level=info -x "$currentForceAxel" -o "$currentAxelTmpFileRelative".tmp2 --file-allocation=none --disable-ipv6=true "${currentURL_array_reversed[$currentIterationNext1]}" | grep --color -i -E "Name resolution|$" >&2 &
+					aria2c --log=- --log-level=info -x "$currentForceAxel" -o "$currentAxelTmpFileRelative".tmp2 --file-allocation=falloc --disable-ipv6=true "${currentURL_array_reversed[$currentIterationNext1]}" | grep --color -i -E "Name resolution|$" >&2 &
 					currentPID_2="$!"
 				else
 					_messagePlain_probe aria2c -x "$currentForceAxel" -o "$currentAxelTmpFileRelative".tmp2 --disable-ipv6=true --header="Authorization: Bearer "'$GH_TOKEN'"" "${currentURL_array_reversed[$currentIterationNext1]}" >&2
-					aria2c --log=- --log-level=info -x "$currentForceAxel" -o "$currentAxelTmpFileRelative".tmp2 --file-allocation=none --disable-ipv6=true --header="Authorization: Bearer $GH_TOKEN" "${currentURL_array_reversed[$currentIterationNext1]}" | grep --color -i -E "Name resolution|$" >&2 &
+					aria2c --log=- --log-level=info -x "$currentForceAxel" -o "$currentAxelTmpFileRelative".tmp2 --file-allocation=falloc --disable-ipv6=true --header="Authorization: Bearer $GH_TOKEN" "${currentURL_array_reversed[$currentIterationNext1]}" | grep --color -i -E "Name resolution|$" >&2 &
 					currentPID_2="$!"
 				fi
 			else
 				if [[ "$GH_TOKEN" == "" ]]
 				then
 					_messagePlain_probe aria2c -x "$currentForceAxel" -o "$currentAxelTmpFileRelative".tmp2 --disable-ipv6=false "${currentURL_array_reversed[$currentIterationNext1]}" >&2
-					aria2c --log=- --log-level=info -x "$currentForceAxel" -o "$currentAxelTmpFileRelative".tmp2 --file-allocation=none --disable-ipv6=false "${currentURL_array_reversed[$currentIterationNext1]}" | grep --color -i -E "Name resolution|$" >&2 &
+					aria2c --log=- --log-level=info -x "$currentForceAxel" -o "$currentAxelTmpFileRelative".tmp2 --file-allocation=falloc --disable-ipv6=false "${currentURL_array_reversed[$currentIterationNext1]}" | grep --color -i -E "Name resolution|$" >&2 &
 					currentPID_2="$!"
 				else
 					_messagePlainProbe aria2c -x "$currentForceAxel" -o "$currentAxelTmpFileRelative".tmp2 --disable-ipv6=false --header="Authorization: Bearer "'$GH_TOKEN'"" "${currentURL_array_reversed[$currentIterationNext1]}" >&2
-					aria2c --log=- --log-level=info -x "$currentForceAxel" -o "$currentAxelTmpFileRelative".tmp2 --file-allocation=none --disable-ipv6=false --header="Authorization: Bearer $GH_TOKEN" "${currentURL_array_reversed[$currentIterationNext1]}" | grep --color -i -E "Name resolution|$" >&2 &
+					aria2c --log=- --log-level=info -x "$currentForceAxel" -o "$currentAxelTmpFileRelative".tmp2 --file-allocation=falloc --disable-ipv6=false --header="Authorization: Bearer $GH_TOKEN" "${currentURL_array_reversed[$currentIterationNext1]}" | grep --color -i -E "Name resolution|$" >&2 &
 					currentPID_2="$!"
 				fi
 			fi
@@ -24352,7 +24361,7 @@ _wget_githubRelease_join-stdout() {
 					#dd if="$currentAxelTmpFile".tmp1 bs=1M status=progress >> "$currentAxelTmpFile" &
 				
 					# ATTENTION: NOT staggered.
-					dd if="$currentAxelTmpFile".tmp1 bs=1M status=progress >> "$currentAxelTmpFile"
+					dd if="$currentAxelTmpFile".tmp1 bs=5M status=progress >> "$currentAxelTmpFile"
 				
 					#cat "$currentAxelTmpFile".tmp1 >> "$currentAxelTmpFile"
 				fi
@@ -29553,14 +29562,18 @@ _kernelConfig_require-tradeoff-perform() {
 	_kernelConfig__bad-n__ CONFIG_SLAB_FREELIST_HARDENED
 	
 	# Uncertain.
-	_kernelConfig__bad-__n CONFIG_X86_SGX
-	_kernelConfig__bad-__n CONFIG_INTEL_TDX_GUEST
-	_kernelConfig__bad-__n CONFIG_X86_SGX_kVM
-	_kernelConfig__bad-__n CONFIG_KVM_AMD_SEV
+	_kernelConfig__bad-__n CONFIG_AMD_MEM_ENCRYPT_ACTIVE_BY_DEFAULT
 	
 	
 	_kernelConfig__bad-__n CONFIG_RANDOMIZE_BASE
 	_kernelConfig__bad-__n CONFIG_RANDOMIZE_MEMORY
+
+
+	# Special.
+	#_kernelConfig_warn-n__ CONFIG_HAVE_INTEL_TXT
+	_kernelConfig_warn-n__ CONFIG_INTEL_TXT
+	#_kernelConfig_warn-n__ CONFIG_IOMMU_DMA
+	#_kernelConfig_warn-n__ CONFIG_INTEL_IOMMU
 }
 
 # May become increasing tolerable and preferable for the vast majority of use cases.
@@ -29591,10 +29604,6 @@ _kernelConfig_require-tradeoff-harden() {
 	# May have been removed from upstream.
 	#_kernelConfig__bad-y__ CONFIG_X86_SMAP
 	
-	# Uncertain. VM guest should be tested.
-	_kernelConfig_warn-y__ AMD_MEM_ENCRYPT
-	_kernelConfig_warn-y__ CONFIG_AMD_MEM_ENCRYPT_ACTIVE_BY_DEFAULT
-	
 	_kernelConfig_warn-n__ CONFIG_X86_INTEL_TSX_MODE_ON
 	_kernelConfig_warn-n__ CONFIG_X86_INTEL_TSX_MODE_AUTO
 	_kernelConfig__bad-y__ CONFIG_X86_INTEL_TSX_MODE_OFF
@@ -29602,15 +29611,54 @@ _kernelConfig_require-tradeoff-harden() {
 	
 	_kernelConfig_warn-y__ CONFIG_SLAB_FREELIST_HARDENED
 	
-	# Uncertain.
-	_kernelConfig_warn-y__ CONFIG_X86_SGX
-	_kernelConfig_warn-y__ CONFIG_INTEL_TDX_GUEST
-	_kernelConfig_warn-y__ CONFIG_X86_SGX_kVM
-	_kernelConfig_warn-y__ CONFIG_KVM_AMD_SEV
-	
 	
 	_kernelConfig__bad-y__ CONFIG_RANDOMIZE_BASE
 	_kernelConfig__bad-y__ CONFIG_RANDOMIZE_MEMORY
+
+
+
+
+
+
+
+	# Special.
+	# VM guest should be tested.
+
+	# https://wiki.gentoo.org/wiki/Trusted_Boot
+	_kernelConfig__bad-y__ CONFIG_HAVE_INTEL_TXT
+	_kernelConfig__bad-y__ CONFIG_INTEL_TXT
+	_kernelConfig__bad-y__ CONFIG_IOMMU_DMA
+	_kernelConfig__bad-y__ CONFIG_INTEL_IOMMU
+
+
+	# https://www.qemu.org/docs/master/system/i386/sgx.html
+	#grep sgx /proc/cpuinfo
+	#dmesg | grep sgx
+	# Apparently normal: ' sgx: [Firmware Bug]: Unable to map EPC section to online node. Fallback to the NUMA node 0. '
+
+	# https://www.qemu.org/docs/master/system/i386/sgx.html
+	#qemuArgs+=(-cpu host,+sgx-provisionkey -machine accel=kvm -object memory-backend-epc,id=mem1,size=64M,prealloc=on -M sgx-epc.0.memdev=mem1,sgx-epc.0.node=0 )
+	#qemuArgs+=(-cpu host,-sgx-provisionkey,-sgx-tokenkey)
+
+	_kernelConfig__bad-y__ CONFIG_X86_SGX
+	_kernelConfig__bad-y__ CONFIG_X86_SGX_kVM
+	_kernelConfig__bad-y__ CONFIG_INTEL_TDX_GUEST
+
+
+	# https://libvirt.org/kbase/launch_security_sev.html
+	#cat /sys/module/kvm_amd/parameters/sev
+	#dmesg | grep -i sev
+
+	# https://www.qemu.org/docs/master/system/i386/amd-memory-encryption.html
+	#qemuArgs+=(-machine accel=kvm,confidential-guest-support=sev0 -object sev-guest,id=sev0,cbitpos=47,reduced-phys-bits=1 )
+	# #,policy=0x5
+
+	# https://libvirt.org/kbase/launch_security_sev.html
+	_kernelConfig__bad-y__ CONFIG_KVM_AMD_SEV
+	_kernelConfig__bad-y__ AMD_MEM_ENCRYPT
+	_kernelConfig__bad-y__ CONFIG_AMD_MEM_ENCRYPT_ACTIVE_BY_DEFAULT
+
+
 }
 
 # ATTENTION: Override with 'ops.sh' or similar.
@@ -30308,6 +30356,7 @@ _kernelConfig_mobile() {
 }
 
 # NOTICE: Recommended! Most 'mobile' and 'panel' use cases will not benefit enough from power efficiency, reduced CPU cycles, or performance.
+# WARNING: Security should be favored by tradeoff, as this may be shipped as the 'default' kernel (eg. for 'ubdist') .
 # ATTENTION: As desired, ignore, or override with 'ops.sh' or similar.
 _kernelConfig_desktop() {
 	_messageNormal 'kernelConfig: desktop'
@@ -30344,6 +30393,14 @@ _kernelConfig_desktop() {
 	
 	
 	_kernelConfig_request_build
+}
+
+# Forces 'kernelConfig_tradeoff_perform == false' .
+_kernelConfig_server() {
+	_messageNormal 'kernelConfig: server'
+
+	export kernelConfig_tradeoff_perform='false'
+	_kernelConfig_desktop "$@"
 }
 
 
