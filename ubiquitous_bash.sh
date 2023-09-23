@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='1919035260'
+export ub_setScriptChecksum_contents='1107094099'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -18088,6 +18088,11 @@ menuentry "Live - ( persistence )" {
     initrd /initrd
 }
 
+menuentry "Live - ( hint: ignored: resume disabled ) ( mem: all )" {
+	linux /vmlinuz boot=live config debug=1 noeject nopersistence selinux=0
+    initrd /initrd
+}
+
 menuentry "Live - ( hint: ignored: resume disabled ) ( mem: all ) - tboot" {
 	#linux /vmlinuz boot=live config debug=1 noeject nopersistence selinux=0
     #initrd /initrd
@@ -18107,11 +18112,6 @@ menuentry "Live - ( hint: ignored: resume disabled ) ( mem: all ) - tboot" {
 	module2 /ADL_SINIT_v1_18_16_20230427_REL_NT_O1.PW_signed.bin
 
 	#module /list.data
-}
-
-menuentry "Live - ( hint: ignored: resume disabled ) ( mem: all )" {
-	linux /vmlinuz boot=live config debug=1 noeject nopersistence selinux=0
-    initrd /initrd
 }
 
 CZXWXcRMTo8EmM8i4d

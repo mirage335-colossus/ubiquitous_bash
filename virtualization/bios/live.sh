@@ -584,6 +584,11 @@ menuentry "Live - ( persistence )" {
     initrd /initrd
 }
 
+menuentry "Live - ( hint: ignored: resume disabled ) ( mem: all )" {
+	linux /vmlinuz boot=live config debug=1 noeject nopersistence selinux=0
+    initrd /initrd
+}
+
 menuentry "Live - ( hint: ignored: resume disabled ) ( mem: all ) - tboot" {
 	#linux /vmlinuz boot=live config debug=1 noeject nopersistence selinux=0
     #initrd /initrd
@@ -603,11 +608,6 @@ menuentry "Live - ( hint: ignored: resume disabled ) ( mem: all ) - tboot" {
 	module2 /ADL_SINIT_v1_18_16_20230427_REL_NT_O1.PW_signed.bin
 
 	#module /list.data
-}
-
-menuentry "Live - ( hint: ignored: resume disabled ) ( mem: all )" {
-	linux /vmlinuz boot=live config debug=1 noeject nopersistence selinux=0
-    initrd /initrd
 }
 
 CZXWXcRMTo8EmM8i4d
