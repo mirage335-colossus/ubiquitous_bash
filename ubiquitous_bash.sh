@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='3864403799'
+export ub_setScriptChecksum_contents='1919035260'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -18047,6 +18047,8 @@ CZXWXcRMTo8EmM8i4d
 #  MAJOR - 'You may download all of the ACM modules into /boot and list them all as modules in your grub.conf. tboot will pick the right module for your platform.'
 # ...
 # https://sourceforge.net/p/tboot/mailman/tboot-devel/?page=1
+#  'when multiple SINITs is loaded, there is a chance that one (or more) of them will be overwritten by some TBOOT data structures that have hardcoded addresses'
+#   'Fri, 11 Mar 2022'
 #  'Being able to use e.g. the same Live CD on all pieces of hardware would be a huge win.'
 # ...
 # https://sourceforge.net/projects/tboot/files/
@@ -18094,6 +18096,17 @@ menuentry "Live - ( hint: ignored: resume disabled ) ( mem: all ) - tboot" {
 	multiboot2 /tboot.gz logging=serial,memory,vga
 	module2 /vmlinuz boot=live config debug=1 noeject nopersistence selinux=0
 	module2 /initrd
+	#module2 /SNB_IVB_SINIT_20190708_PW.bin
+	module2 /BDW_SINIT_20190708_1.3.2_PW.bin
+	#module2 /SKL_KBL_AML_SINIT_20211019_PRODUCTION_REL_NT_O1_1.10.0.bin
+	#module2 /CFL_SINIT_20221220_PRODUCTION_REL_NT_O1_1.10.1_signed.bin
+	#module2 /CML_S_SINIT_1_13_33_REL_NT_O1.PW_signed.bin
+	#module2 /CMLSTGP_SINIT_v1_14_46_20220819_REL_NT_O1.PW_signed.bin
+	#module2 /RKLS_SINIT_v1_14_46_20220819_REL_NT_O1.PW_signed.bin
+	#module2 /TGL_SINIT_v1_14_46_20220819_REL_NT_O1.PW_signed.bin
+	module2 /ADL_SINIT_v1_18_16_20230427_REL_NT_O1.PW_signed.bin
+
+	#module /list.data
 }
 
 menuentry "Live - ( hint: ignored: resume disabled ) ( mem: all )" {
@@ -18203,6 +18216,7 @@ _live_sequence_in() {
 
 
 
+	# WARNING: Now also provides essential information about intel-acm .
 	# Solely to provide more information to convert 'vm-live.iso' back to 'vm.img' offline from only a Live BD-ROM disc .
 	mkdir -p "$safeTmp"/root002
 	#sudo -n cp -a "$globalVirtFS"/boot "$safeTmp"/root002/boot-copy
@@ -18395,6 +18409,7 @@ _live_sequence_in() {
 	cp "${currentFilesList[0]}" "$scriptLocal"/livefs/image/initrd
 	
 	cp "$globalVirtFS"/boot/tboot* "$scriptLocal"/livefs/image/
+	cp "$globalVirtFS"/boot/*.bin "$scriptLocal"/livefs/image/
 	
 	_live_grub_here > "$scriptLocal"/livefs/partial/grub.cfg
 	touch "$scriptLocal"/livefs/image/ROOT_TEXT
