@@ -532,6 +532,24 @@ CZXWXcRMTo8EmM8i4d
 }
 
 
+# https://master.dl.sourceforge.net/project/tboot/intel-txt-software-development-guide.pdf?viasf=1
+# 'Measured Launched Environment Developer-s Guide'
+# ...
+# https://fedoraproject.org/wiki/Tboot
+# 'last edited on 22 June 2012'
+#  As of 2023-09-23 .
+# 'module /2nd_gen_i5_i7_SINIT_51.BIN'
+# 'module /list.data'
+#  MAJOR - 'You may download all of the ACM modules into /boot and list them all as modules in your grub.conf. tboot will pick the right module for your platform.'
+# ...
+# https://sourceforge.net/p/tboot/mailman/tboot-devel/?page=1
+#  'Being able to use e.g. the same Live CD on all pieces of hardware would be a huge win.'
+# ...
+# https://sourceforge.net/projects/tboot/files/
+#  'The location of SINIT Authenticated Code Module (ACM) files has been moved from this site to the following location: http://software.intel.com/en-us/articles/intel-trusted-execution-technology/'
+#  'The content, license, etc. of the ACMs has not changed.'
+#  'New ACMs and updates to existing ACMs will only be posted to the new site.'
+# ...
 # https://manpages.debian.org/testing/live-boot-doc/live-boot.7.en.html
 # https://github.com/bugra9/persistent
 # https://manpages.debian.org/testing/live-boot-doc/persistence.conf.5.en.html
@@ -564,14 +582,19 @@ menuentry "Live - ( persistence )" {
     initrd /initrd
 }
 
-menuentry "Live - ( hint: ignored: resume disabled ) ( mem: all )" {
+menuentry "Live - ( hint: ignored: resume disabled ) ( mem: all ) - tboot" {
 	#linux /vmlinuz boot=live config debug=1 noeject nopersistence selinux=0
     #initrd /initrd
 
     insmod multiboot2
 	multiboot2 /tboot.gz logging=serial,memory,vga
-	module2 linux /vmlinuz boot=live config debug=1 noeject nopersistence selinux=0
+	module2 /vmlinuz boot=live config debug=1 noeject nopersistence selinux=0
 	module2 /initrd
+}
+
+menuentry "Live - ( hint: ignored: resume disabled ) ( mem: all )" {
+	linux /vmlinuz boot=live config debug=1 noeject nopersistence selinux=0
+    initrd /initrd
 }
 
 CZXWXcRMTo8EmM8i4d
