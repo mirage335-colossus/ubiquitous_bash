@@ -535,6 +535,11 @@ CZXWXcRMTo8EmM8i4d
 # https://master.dl.sourceforge.net/project/tboot/intel-txt-software-development-guide.pdf?viasf=1
 # 'Measured Launched Environment Developer-s Guide'
 # ...
+# https://wiki.gentoo.org/wiki/Trusted_Boot#TXT_Errors
+#  MAJOR - 'error will be preserved across a reboot (but not a hard poweroff).'
+#   'txt-parse_err'
+#  'Sometimes it'll hang. That usually means /boot/list.data doesn't reflect the current configuration - this will often happen after a configuration change.'
+# ...
 # https://fedoraproject.org/wiki/Tboot
 # 'last edited on 22 June 2012'
 #  As of 2023-09-23 .
@@ -577,26 +582,42 @@ menuentry "Live" {
     #linux /vmlinuz boot=live config debug=1 noeject nopersistence selinux=0 mem=3712M resume=PARTUUID=469457fc-293f-46ec-92da-27b5d0c36b17
     linux /vmlinuz boot=live config debug=1 noeject nopersistence selinux=0 mem=3712M resume=/dev/sda5
     initrd /initrd
+	
+    #linux /vmlinuz-lts boot=live config debug=1 noeject nopersistence selinux=0 mem=3712M resume=UUID=469457fc-293f-46ec-92da-27b5d0c36b17
+    #linux /vmlinuz-lts boot=live config debug=1 noeject nopersistence selinux=0 mem=3712M resume=PARTUUID=469457fc-293f-46ec-92da-27b5d0c36b17
+    linux /vmlinuz-lts boot=live config debug=1 noeject nopersistence selinux=0 mem=3712M resume=/dev/sda5
+    initrd /initrd-lts
 }
 
 menuentry "Live - ( persistence )" {
     linux /vmlinuz boot=live config debug=1 noeject persistence persistence-path=/persist persistence-label=bulk persistence-storage=directory selinux=0 mem=3712M resume=/dev/sda5
     initrd /initrd
+
+    #linux /vmlinuz-lts boot=live config debug=1 noeject persistence persistence-path=/persist persistence-label=bulk persistence-storage=directory selinux=0 mem=3712M resume=/dev/sda5
+    #initrd /initrd-lts
 }
 
 menuentry "Live - ( hint: ignored: resume disabled ) ( mem: all )" {
 	linux /vmlinuz boot=live config debug=1 noeject nopersistence selinux=0
     initrd /initrd
+	
+	#linux /vmlinuz-lts boot=live config debug=1 noeject nopersistence selinux=0
+    #initrd /initrd-lts
 }
 
 menuentry "Live - ( hint: ignored: resume disabled ) ( mem: all ) - tboot" {
-	#linux /vmlinuz boot=live config debug=1 noeject nopersistence selinux=0
-    #initrd /initrd
+	##linux /vmlinuz boot=live config debug=1 noeject nopersistence selinux=0
+    ##initrd /initrd
+	
+	#linux /vmlinuz-lts boot=live config debug=1 noeject nopersistence selinux=0
+    #initrd /initrd-lts
 
     insmod multiboot2
 	multiboot2 /tboot.gz logging=serial,memory,vga
 	module2 /vmlinuz boot=live config debug=1 noeject nopersistence selinux=0
 	module2 /initrd
+	#module2 /vmlinuz-lts boot=live config debug=1 noeject nopersistence selinux=0
+	#module2 /initrd-lts
 	#module2 /SNB_IVB_SINIT_20190708_PW.bin
 	module2 /BDW_SINIT_20190708_1.3.2_PW.bin
 	#module2 /SKL_KBL_AML_SINIT_20211019_PRODUCTION_REL_NT_O1_1.10.0.bin
@@ -894,6 +915,7 @@ _live_sequence_in() {
 	#currentFilesList=$(ls -A -1 "$globalVirtFS"/boot/vmlinuz-* | sort -r -V | tail -n+3 | head -n1)
 	
 	cp "${currentFilesList[0]}" "$scriptLocal"/livefs/image/vmlinuz
+	cp "${currentFilesList[1]}" "$scriptLocal"/livefs/image/vmlinuz-lts
 	
 	
 	#currentFilesList=( "$globalVirtFS"/boot/initrd.img-* )
@@ -903,6 +925,7 @@ _live_sequence_in() {
 	#currentFilesList=$(ls -A -1 "$globalVirtFS"/boot/initrd.img-* | sort -r -V | tail -n+3 | head -n1)
 	
 	cp "${currentFilesList[0]}" "$scriptLocal"/livefs/image/initrd
+	cp "${currentFilesList[1]}" "$scriptLocal"/livefs/image/initrd-lts
 	
 	cp "$globalVirtFS"/boot/tboot* "$scriptLocal"/livefs/image/
 	cp "$globalVirtFS"/boot/*.bin "$scriptLocal"/livefs/image/
