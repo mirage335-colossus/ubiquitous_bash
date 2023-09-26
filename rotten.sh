@@ -1959,7 +1959,7 @@ _wget_githubRelease_join-stdout() {
 			#wait "$currentPID_2" >&2
 			wait >&2
 
-			wait "$currentPID_1" >&2
+			#wait "$currentPID_1" >&2
 			sleep 0.2 > /dev/null 2>&1
 			if [[ -e "$currentAxelTmpFile".tmp1 ]]
 			then
