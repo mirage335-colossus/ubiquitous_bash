@@ -911,21 +911,29 @@ _live_sequence_in() {
 	
 	# Usually, +1 will be highest version mainline, +2 will be lts, +3 will be much older from distribution.
 	currentFilesList=$(ls -A -1 "$globalVirtFS"/boot/vmlinuz-* | sort -r -V | tail -n+1 | head -n1)
+	#currentFilesList=( $(ls -A -1 "$globalVirtFS"/boot/vmlinuz-* | sort -r -V | tail -n+1 | head -n2) )
 	#currentFilesList=$(ls -A -1 "$globalVirtFS"/boot/vmlinuz-* | sort -r -V | tail -n+2 | head -n1)
 	#currentFilesList=$(ls -A -1 "$globalVirtFS"/boot/vmlinuz-* | sort -r -V | tail -n+3 | head -n1)
 	
 	cp "${currentFilesList[0]}" "$scriptLocal"/livefs/image/vmlinuz
-	cp "${currentFilesList[1]}" "$scriptLocal"/livefs/image/vmlinuz-lts
+
+	currentFilesList=$(ls -A -1 "$globalVirtFS"/boot/vmlinuz-* | sort -r -V | tail -n+2 | head -n1)
+	cp "${currentFilesList[0]}" "$scriptLocal"/livefs/image/vmlinuz-lts
 	
 	
 	#currentFilesList=( "$globalVirtFS"/boot/initrd.img-* )
 	
 	currentFilesList=$(ls -A -1 "$globalVirtFS"/boot/initrd.img-* | sort -r -V | tail -n+1 | head -n1)
+	#currentFilesList=( $(ls -A -1 "$globalVirtFS"/boot/initrd.img-* | sort -r -V | tail -n+1 | head -n2) )
 	#currentFilesList=$(ls -A -1 "$globalVirtFS"/boot/initrd.img-* | sort -r -V | tail -n+2 | head -n1)
 	#currentFilesList=$(ls -A -1 "$globalVirtFS"/boot/initrd.img-* | sort -r -V | tail -n+3 | head -n1)
 	
 	cp "${currentFilesList[0]}" "$scriptLocal"/livefs/image/initrd
-	cp "${currentFilesList[1]}" "$scriptLocal"/livefs/image/initrd-lts
+
+	currentFilesList=$(ls -A -1 "$globalVirtFS"/boot/initrd.img-* | sort -r -V | tail -n+2 | head -n1)
+	cp "${currentFilesList[0]}" "$scriptLocal"/livefs/image/initrd-lts
+	
+
 	
 	cp "$globalVirtFS"/boot/tboot* "$scriptLocal"/livefs/image/
 	cp "$globalVirtFS"/boot/*.bin "$scriptLocal"/livefs/image/

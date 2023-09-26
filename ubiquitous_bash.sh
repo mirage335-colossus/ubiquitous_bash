@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='2020524190'
+export ub_setScriptChecksum_contents='3749462054'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -18415,21 +18415,29 @@ _live_sequence_in() {
 	
 	# Usually, +1 will be highest version mainline, +2 will be lts, +3 will be much older from distribution.
 	currentFilesList=$(ls -A -1 "$globalVirtFS"/boot/vmlinuz-* | sort -r -V | tail -n+1 | head -n1)
+	#currentFilesList=( $(ls -A -1 "$globalVirtFS"/boot/vmlinuz-* | sort -r -V | tail -n+1 | head -n2) )
 	#currentFilesList=$(ls -A -1 "$globalVirtFS"/boot/vmlinuz-* | sort -r -V | tail -n+2 | head -n1)
 	#currentFilesList=$(ls -A -1 "$globalVirtFS"/boot/vmlinuz-* | sort -r -V | tail -n+3 | head -n1)
 	
 	cp "${currentFilesList[0]}" "$scriptLocal"/livefs/image/vmlinuz
-	cp "${currentFilesList[1]}" "$scriptLocal"/livefs/image/vmlinuz-lts
+
+	currentFilesList=$(ls -A -1 "$globalVirtFS"/boot/vmlinuz-* | sort -r -V | tail -n+2 | head -n1)
+	cp "${currentFilesList[0]}" "$scriptLocal"/livefs/image/vmlinuz-lts
 	
 	
 	#currentFilesList=( "$globalVirtFS"/boot/initrd.img-* )
 	
 	currentFilesList=$(ls -A -1 "$globalVirtFS"/boot/initrd.img-* | sort -r -V | tail -n+1 | head -n1)
+	#currentFilesList=( $(ls -A -1 "$globalVirtFS"/boot/initrd.img-* | sort -r -V | tail -n+1 | head -n2) )
 	#currentFilesList=$(ls -A -1 "$globalVirtFS"/boot/initrd.img-* | sort -r -V | tail -n+2 | head -n1)
 	#currentFilesList=$(ls -A -1 "$globalVirtFS"/boot/initrd.img-* | sort -r -V | tail -n+3 | head -n1)
 	
 	cp "${currentFilesList[0]}" "$scriptLocal"/livefs/image/initrd
-	cp "${currentFilesList[1]}" "$scriptLocal"/livefs/image/initrd-lts
+
+	currentFilesList=$(ls -A -1 "$globalVirtFS"/boot/initrd.img-* | sort -r -V | tail -n+2 | head -n1)
+	cp "${currentFilesList[0]}" "$scriptLocal"/livefs/image/initrd-lts
+	
+
 	
 	cp "$globalVirtFS"/boot/tboot* "$scriptLocal"/livefs/image/
 	cp "$globalVirtFS"/boot/*.bin "$scriptLocal"/livefs/image/
