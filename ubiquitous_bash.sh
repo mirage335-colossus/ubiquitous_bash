@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='1302642565'
+export ub_setScriptChecksum_contents='2020524190'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -19660,7 +19660,7 @@ _set_instance_vbox_features() {
 	# Linux hosts may benefit from 'vboxsvga' instead of 'vmsvga'.
 	#https://wiki.gentoo.org/wiki/VirtualBox
 	#Testing shows this may not be the case, and 3D acceleration reportedly requires vmsvga.
-	if [[ "$vboxOStype" == *"Debian"* ]] || [[ "$vboxOStype" == *"Gentoo"* ]]
+	if ! _if_cygwin && ( [[ "$vboxOStype" == *"Debian"* ]] || [[ "$vboxOStype" == *"Gentoo"* ]] )
 	then
 		# ATTENTION: Nested virtualization through VMWare Workstation host, seems incompatable with 'accelerate3d on', result may be black screen with cursor.
 		# ATTENTION: WARNING: VirtualBox 'accelerate3d' may be disabled by default, if not already, if more incompatibilities are found. Explicitly declare with 'ops.sh' if 'accelerate3d' is actually necessary.
@@ -19672,15 +19672,17 @@ _set_instance_vbox_features() {
 				#_messagePlain_warn 'warn: fail: VBoxManage: --graphicscontroller vmsvga --accelerate3d on --accelerate2dvideo off'
 			#fi
 		#else
+			#vmsvga
+			#vboxsvga
 			if ! _messagePlain_probe_cmd VBoxManage modifyvm "$sessionid" --graphicscontroller vmsvga --accelerate3d off --accelerate2dvideo off
 			then
-				_messagePlain_warn 'warn: fail: VBoxManage: --graphicscontroller vboxsvga --accelerate3d off --accelerate2dvideo off'
+				_messagePlain_warn 'warn: fail: VBoxManage: --graphicscontroller vmsvga --accelerate3d off --accelerate2dvideo off'
 			fi
 		#fi
 	fi
 	
 	# Assuming x64 hosts served by VBox will have at least 'Intel HD Graphics 3000' (as found on X220 laptop/tablet) equivalent. Lesser hardware not recommended.
-	#if ( [[ "$vboxOStype" == *"Win"*"10"* ]] || [[ "$vboxOStype" == *"Win"*"11"* ]] ) && [[ "$vboxCPUs" -ge "2" ]] && ! lspci | grep -i vmware && ! lspci | grep -i virtualbox && ! cat /proc/cpuinfo | grep -i model | grep -i qemu && ! sudo -n lspci | grep -i vmware && ! sudo -n lspci | grep -i virtualbox
+	#if ! _if_cygwin && ( ( [[ "$vboxOStype" == *"Win"*"10"* ]] || [[ "$vboxOStype" == *"Win"*"11"* ]] ) && [[ "$vboxCPUs" -ge "2" ]] && ! lspci | grep -i vmware && ! lspci | grep -i virtualbox && ! cat /proc/cpuinfo | grep -i model | grep -i qemu && ! sudo -n lspci | grep -i vmware && ! sudo -n lspci | grep -i virtualbox )
 	#then
 		#_messagePlain_probe VBoxManage modifyvm "$sessionid" --graphicscontroller vboxsvga --accelerate3d on --accelerate2dvideo on
 		#if ! VBoxManage modifyvm "$sessionid" --graphicscontroller vboxsvga --accelerate3d on --accelerate2dvideo on
@@ -19688,6 +19690,23 @@ _set_instance_vbox_features() {
 			#_messagePlain_warn 'warn: fail: VBoxManage: --graphicscontroller vboxsvga --accelerate3d on --accelerate2dvideo on'
 		#fi
 	#fi
+
+	# MSW Host with Hyper-V seems to specifically require both graphics acceleration and HyperV paravirtualization interface .
+	# ATTENTION: HyperV should be enabled by default by 'ubDistBuild' installer and similar installers .
+	# CAUTION: Any automatic provision for an alternative should detect if HyperV is NOT installed, and fail to the assumption that HyperV is installed.
+	# https://superuser.com/questions/1026651/how-to-find-out-whether-hyper-v-is-currently-enabled-running
+	#  Strongly discouraged - apparently requries admin privileges and powershell .
+	if _if_cygwin
+	then
+		if ! _messagePlain_probe_cmd VBoxManage modifyvm "$sessionid" --graphicscontroller vmsvga --accelerate3d on --accelerate2dvideo off
+		then
+			_messagePlain_warn 'warn: fail: VBoxManage: Acceleration from MSW Host'
+		fi
+		if ! _messagePlain_probe_cmd VBoxManage modifyvm "$sessionid" --paravirt-provider=hyperv
+		then
+			_messagePlain_warn 'warn: fail: VBoxManage: Acceleration from MSW Host'
+		fi
+	fi
 	
 	return 0
 	
