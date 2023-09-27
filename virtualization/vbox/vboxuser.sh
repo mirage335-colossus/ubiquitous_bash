@@ -323,6 +323,7 @@ _set_instance_vbox_features() {
 	# CAUTION: Any automatic provision for an alternative should detect if HyperV is NOT installed, and fail to the assumption that HyperV is installed.
 	# https://superuser.com/questions/1026651/how-to-find-out-whether-hyper-v-is-currently-enabled-running
 	#  Strongly discouraged - apparently requries admin privileges and powershell .
+	#&& ! lspci | grep -i vmware && ! lspci | grep -i virtualbox && ! cat /proc/cpuinfo | grep -i model | grep -i qemu && ! sudo -n lspci | grep -i vmware && ! sudo -n lspci | grep -i virtualbox )
 	if _if_cygwin
 	then
 		if ! _messagePlain_probe_cmd VBoxManage modifyvm "$sessionid" --graphicscontroller vmsvga --accelerate3d on --accelerate2dvideo off
