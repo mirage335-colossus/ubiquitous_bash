@@ -152,7 +152,8 @@ jobs:
         shell: pwsh
         timeout-minutes: 240
         run: |
-          ./_bin _custom_splice_opensslConfig | tee /_custom_splice_opensslConfig.log
+          #./_bin _custom_splice_opensslConfig | tee /_custom_splice_opensslConfig.log
+          ./_bin _bin /cygdrive/c/core/infrastructure/ubiquitous_bash/ubiquitous_bash.sh _custom_splice_opensslConfig | tee /_custom_splice_opensslConfig.log
       - name: release! _setupUbiquitous.log
         uses: softprops/action-gh-release@v1
         with:
