@@ -33,6 +33,7 @@ _custom_splice_opensslConfig() {
 		_currentBackend() {
 			"$@"
 		}
+		[[ ! -e /etc/ssl/openssl.cnf ]] && _here_opensslConfig_legacy | _currentBackend tee /etc/ssl/openssl.cnf > /dev/null 2>&1
 	else
 		_currentBackend() {
 			sudo -n "$@"
