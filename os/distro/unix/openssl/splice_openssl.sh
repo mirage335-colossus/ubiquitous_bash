@@ -53,7 +53,7 @@ _custom_splice_opensslConfig() {
 
 .include = /etc/ssl/openssl_legacy.cnf
 
-' | _currentBackend cat /etc/ssl/openssl.cnf.orig - | _currentBackend tee /etc/ssl/openssl.cnf > /dev/null 2>&1
+' | _currentBackend cat /etc/ssl/openssl.cnf.orig - 2>/dev/null | _currentBackend tee /etc/ssl/openssl.cnf > /dev/null 2>&1
     fi
 
 	#cd "$functionEntryPWD"
