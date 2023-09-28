@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='190020435'
+export ub_setScriptChecksum_contents='823533383'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -11444,6 +11444,8 @@ _get_from_nix() {
 _here_opensslConfig_legacy() {
 	cat << 'CZXWXcRMTo8EmM8i4d'
 
+# legacy_enable
+
 openssl_conf = openssl_init
 
 [openssl_init]
@@ -11467,7 +11469,6 @@ _custom_splice_opensslConfig() {
 		_currentBackend() {
 			"$@"
 		}
-		[[ ! -e /etc/ssl/openssl.cnf ]] && _here_opensslConfig_legacy | _currentBackend tee /etc/ssl/openssl.cnf > /dev/null 2>&1
 	else
 		_currentBackend() {
 			sudo -n "$@"
@@ -11479,8 +11480,10 @@ _custom_splice_opensslConfig() {
 
 	#cd /
 	_here_opensslConfig_legacy | _currentBackend tee /etc/ssl/openssl_legacy.cnf > /dev/null 2>&1
+	
+	_if_cygwin && [[ ! -e /etc/ssl/openssl.cnf ]] && _here_opensslConfig_legacy | _currentBackend tee /etc/ssl/openssl.cnf > /dev/null 2>&1
 
-    if ! _currentBackend grep 'openssl_legacy' /etc/ssl/openssl.cnf > /dev/null 2>&1
+    if ! _currentBackend grep 'openssl_legacy' /etc/ssl/openssl.cnf > /dev/null 2>&1 && ( ! _if_cygwin && ! grep 'legacy_enable' /etc/ssl/openssl.cnf > /dev/null 2>&1 )
     then
         _currentBackend cp -f /etc/ssl/openssl.cnf /etc/ssl/openssl.cnf.orig > /dev/null 2>&1
         echo '
@@ -31075,6 +31078,9 @@ CZXWXcRMTo8EmM8i4d
 [[ -e '/cygdrive' ]] && uname -a | grep -i cygwin > /dev/null 2>&1 && echo -n '_'
 
 [[ "\$profileScriptLocation" == "" ]] && export profileScriptLocation_new='true'
+
+#[[ -e "/etc/ssl/openssl_legacy.cnf" ]] && export OPENSSL_CONF="/etc/ssl/openssl_legacy.cnf"
+[[ -e "/etc/ssl/openssl.cnf" ]] && export OPENSSL_CONF="/etc/ssl/openssl.cnf"
 
 CZXWXcRMTo8EmM8i4d
 

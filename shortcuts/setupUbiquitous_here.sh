@@ -37,6 +37,9 @@ CZXWXcRMTo8EmM8i4d
 
 [[ "\$profileScriptLocation" == "" ]] && export profileScriptLocation_new='true'
 
+#[[ -e "/etc/ssl/openssl_legacy.cnf" ]] && export OPENSSL_CONF="/etc/ssl/openssl_legacy.cnf"
+[[ -e "/etc/ssl/openssl.cnf" ]] && export OPENSSL_CONF="/etc/ssl/openssl.cnf"
+
 CZXWXcRMTo8EmM8i4d
 
 	# WARNING: CAUTION: Precautionary. No known issues, may be unnecessary. Unusual.

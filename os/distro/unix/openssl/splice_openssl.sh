@@ -10,6 +10,8 @@
 _here_opensslConfig_legacy() {
 	cat << 'CZXWXcRMTo8EmM8i4d'
 
+# legacy_enable
+
 openssl_conf = openssl_init
 
 [openssl_init]
@@ -33,7 +35,6 @@ _custom_splice_opensslConfig() {
 		_currentBackend() {
 			"$@"
 		}
-		[[ ! -e /etc/ssl/openssl.cnf ]] && _here_opensslConfig_legacy | _currentBackend tee /etc/ssl/openssl.cnf > /dev/null 2>&1
 	else
 		_currentBackend() {
 			sudo -n "$@"
@@ -45,8 +46,10 @@ _custom_splice_opensslConfig() {
 
 	#cd /
 	_here_opensslConfig_legacy | _currentBackend tee /etc/ssl/openssl_legacy.cnf > /dev/null 2>&1
+	
+	_if_cygwin && [[ ! -e /etc/ssl/openssl.cnf ]] && _here_opensslConfig_legacy | _currentBackend tee /etc/ssl/openssl.cnf > /dev/null 2>&1
 
-    if ! _currentBackend grep 'openssl_legacy' /etc/ssl/openssl.cnf > /dev/null 2>&1
+    if ! _currentBackend grep 'openssl_legacy' /etc/ssl/openssl.cnf > /dev/null 2>&1 && ( ! _if_cygwin && ! grep 'legacy_enable' /etc/ssl/openssl.cnf > /dev/null 2>&1 )
     then
         _currentBackend cp -f /etc/ssl/openssl.cnf /etc/ssl/openssl.cnf.orig > /dev/null 2>&1
         echo '
