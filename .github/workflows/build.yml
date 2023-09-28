@@ -148,6 +148,11 @@ jobs:
         timeout-minutes: 240
         run: |
           .\_setupUbiquitous | tee /_setupUbiquitous.log
+      - name: _custom_splice_opensslConfig
+        shell: pwsh
+        timeout-minutes: 240
+        run: |
+          _custom_splice_opensslConfig | tee /_custom_splice_opensslConfig.log
       - name: release! _setupUbiquitous.log
         uses: softprops/action-gh-release@v1
         with:
@@ -155,6 +160,7 @@ jobs:
           name: build
           files: |
             /_setupUbiquitous.log
+            /_custom_splice_opensslConfig.log
       - name: statement! _setupUbiquitous
         if: ${{ github.event.inputs.skimfast != 'true' }}
         run: |

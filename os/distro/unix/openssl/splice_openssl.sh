@@ -28,21 +28,32 @@ activate = 1
 CZXWXcRMTo8EmM8i4d
 }
 _custom_splice_opensslConfig() {
+	if _if_cygwin
+	then
+		_currentBackend() {
+			"$@"
+		}
+	else
+		_currentBackend() {
+			sudo -n "$@"
+		}
+	fi
+
 	#local functionEntryPWD
 	#functionEntryPWD="$PWD"
 
 	#cd /
-	_here_opensslConfig_legacy | sudo -n tee /etc/ssl/openssl_legacy.cnf > /dev/null 2>&1
+	_here_opensslConfig_legacy | _currentBackend tee /etc/ssl/openssl_legacy.cnf > /dev/null 2>&1
 
-    if ! sudo -n grep 'openssl_legacy' /etc/ssl/openssl.cnf > /dev/null 2>&1
+    if ! _currentBackend grep 'openssl_legacy' /etc/ssl/openssl.cnf > /dev/null 2>&1
     then
-        sudo -n cp -f /etc/ssl/openssl.cnf /etc/ssl/openssl.cnf.orig
+        _currentBackend cp -f /etc/ssl/openssl.cnf /etc/ssl/openssl.cnf.orig > /dev/null 2>&1
         echo '
 
 
 .include = /etc/ssl/openssl_legacy.cnf
 
-' | sudo -n cat /etc/ssl/openssl.cnf.orig - | sudo -n tee /etc/ssl/openssl.cnf > /dev/null 2>&1
+' | _currentBackend cat /etc/ssl/openssl.cnf.orig - | _currentBackend tee /etc/ssl/openssl.cnf > /dev/null 2>&1
     fi
 
 	#cd "$functionEntryPWD"
