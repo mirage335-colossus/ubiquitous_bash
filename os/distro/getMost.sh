@@ -351,7 +351,13 @@ _getMost_debian11_install() {
 	_getMost_backend_aptGetInstall vainfo
 	_getMost_backend_aptGetInstall mesa-va-drivers
 	_getMost_backend_aptGetInstall ffmpeg
+
+
 	_getMost_backend_aptGetInstall gstreamer1.0-tools
+
+	# ATTENTION: From analysis .
+	#_getMost_backend_aptGetInstall gstreamer1.0-plugins-good
+
 
 	_getMost_backend_aptGetInstall vdpau-driver-all
 	_getMost_backend_aptGetInstall va-driver-all
