@@ -55,7 +55,11 @@ expect ":"
 send -- "q\r"
 expect "Do you accept and agree to be bound by the license terms?"
 send -- "yes\r"
+expect "Press Enter to continue..."
+send -- "\r"
 expect "Press Enter to exit..."
+send -- "\r"
+send -- "\r"
 send -- "\r"
 expect eof' > "$safeTmp"/veracrypt.exp
 	
