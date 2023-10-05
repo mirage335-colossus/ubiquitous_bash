@@ -538,6 +538,9 @@ then
 		
 		
 		_discoverResource-cygwinNative-ProgramFiles 'ykman' 'Yubico/YubiKey Manager' false
+
+		# For efficiency, do not search locations other than ' C:\ ' (aka. '/cygdrive/c' ).
+		[[ -e '/cygdrive/c/Program Files/Yubico/Yubico PIV Tool/bin/yubico-piv-tool.exe' ]] && _discoverResource-cygwinNative-ProgramFiles 'yubico-piv-tool' 'Yubico/Yubico PIV Tool/bin' false
 		
 		
 		# WARNING: Prefer to avoid 'nmap' for Cygwin/MSW .
