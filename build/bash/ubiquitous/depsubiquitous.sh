@@ -23,6 +23,7 @@ _init_deps() {
 	export enUb_os_x11=""
 	export enUb_proxy=""
 	export enUb_proxy_special=""
+	export enUb_fw=""
 	export enUb_clog=""
 	export enUb_x11=""
 	export enUb_blockchain=""
@@ -183,6 +184,10 @@ _deps_proxy() {
 _deps_proxy_special() {
 	_deps_proxy
 	export enUb_proxy_special="true"
+}
+
+_deps_fw() {
+	export enUb_fw="true"
 }
 
 _deps_clog() {

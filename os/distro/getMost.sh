@@ -284,6 +284,9 @@ _getMost_debian11_install() {
 	
 	_getMost_backend_aptGetInstall iperf3
 	
+	_getMost_backend_aptGetInstall ufw
+	_getMost_backend_aptGetInstall gufw
+	
 	#_getMost_backend_aptGetInstall synergy quicksynergy
 	
 	_getMost_backend_aptGetInstall vim
@@ -849,6 +852,8 @@ _getMost_debian11_install() {
 	_getMost_backend_aptGetInstall freecad
 	
 	
+	_getMost_backend_aptGetInstall w3m
+
 
 	_getMost_backend_aptGetInstall xclip
 
