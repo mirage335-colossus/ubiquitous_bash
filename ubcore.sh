@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='1607757080'
+export ub_setScriptChecksum_contents='1326318486'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -7479,8 +7479,16 @@ _cfgFW_procedure() {
 	ufw allow 22
 	ufw allow 443
 
-	[[ "$ub_cfgFW" == "desktop" ]] && ufw default deny incoming
-	ufw default allow outgoing
+	if [[ "$ub_cfgFW" == "desktop" ]] || [[ "$ub_cfgFW" == "terminal" ]]
+    then
+        ufw default deny incoming
+    fi
+    if [[ "$ub_cfgFW" == "terminal" ]]
+    then
+        ufw default deny outgoing
+    else
+        ufw default allow outgoing
+    fi
 
 	echo y | ufw --force enable
 	
@@ -7598,14 +7606,34 @@ _cfgFW_procedure() {
 	
 	return 0
 }
-
+_cfgFW-github() {
+    ( [[ "$ub_cfgFW" != "terminal" ]] ) && return 0
+    sudo -n xargs -r0 -n 1 ufw allow to < <("$scriptAbsoluteLocation" _ip-github)
+}
 
 _cfgFW-desktop() {
     export ub_cfgFW="desktop"
-    _cfgFW_procedure "$@"
+    sudo -n _cfgFW_procedure "$@"
 }
 
+_cfgFW-terminal_prog() {
+    true
+}
+_cfgFW-terminal() {
+    export ub_cfgFW="terminal"
+    sudo -n _cfgFW_procedure "$@"
 
+    _cfgFW-github "$@"
+
+    #sudo -n xargs -r0 -n 1 ufw allow to < <("$scriptAbsoluteLocation" _ip-google)
+
+    sudo -n xargs -r0 -n 1 ufw allow to < <("$scriptAbsoluteLocation" _ip-googleDNS)
+    sudo -n xargs -r0 -n 1 ufw allow to < <("$scriptAbsoluteLocation" _ip-cloudfareDNS)
+
+    _ip-googleDNS | sed -e 's/^/nameserver /g' | sudo -n tee /etc/resolv.conf > /dev/null
+
+    _cfgFW-terminal_prog "$@"
+}
 
 
 
@@ -7624,7 +7652,77 @@ _test_fw() {
 
     _getDep ufw
     #_getDep gufw
+
+    _getDep xargs
 }
+
+
+
+
+
+# WARNING: May be untested.
+_ip-githubDotCOM() {
+    # ATTRIBUTION: ChatGPT4 2023-10-08 .
+    # Fetch IP addresses from GitHub's meta API
+    if [[ "$GH_TOKEN" != "" ]]
+    then
+        curl -H "Authorization: token ${GH_TOKEN}" -s "https://api.github.com/meta" | jq -r '.git[], .hooks[], .web[], .api[], .actions[]' | tr -dc 'a-zA-Z0-9\:\/\.\n' 
+    else
+        curl -s "https://api.github.com/meta" | jq -r '.git[], .hooks[], .web[], .api[], .actions[]' | tr -dc 'a-zA-Z0-9\:\/\.\n'
+    fi
+}
+_ip-githubassetsDotCOM() {
+    # ATTRIBUTION: ChatGPT4 2023-10-08 .
+    dig github.githubassets.com A +short | tr -dc 'a-zA-Z0-9\:\/\.\n'
+    dig github.githubassets.com AAAA +short | tr -dc 'a-zA-Z0-9\:\/\.\n'
+}
+_ip-github() {
+    _ip-githubDotCOM
+    _ip-githubassetsDotCOM
+}
+
+_ip-google() {
+    dig google.com A +short | tr -dc 'a-zA-Z0-9\:\/\.\n'
+    dig google.com AAAA +short | tr -dc 'a-zA-Z0-9\:\/\.\n'
+}
+
+_ip-googleDNS() {
+    # https://developers.google.com/speed/public-dns/docs/using
+    echo '8.8.8.8'
+    echo '8.8.4.4'
+    echo '2001:4860:4860::8888'
+    echo '2001:4860:4860:0:0:0:0:8888'
+    echo '2001:4860:4860::8844'
+    echo '2001:4860:4860:0:0:0:0:8844'
+}
+
+_ip-cloudfareDNS() {
+    # https://www.cloudflare.com/learning/dns/dns-records/dns-aaaa-record/
+    echo '1.1.1.1'
+    echo '1.0.0.1'
+    echo '2606:4700:4700::1111'
+    echo '2606:4700:4700::1001'
+}
+
+
+
+
+_setup_hosts() {
+    _test_hosts
+}
+
+_test_hosts() {
+    _test_fw
+    
+    # Not incurring as a dependency... for now.
+    return 0
+    
+    _if_cygwin && return 0
+
+    _getDep dig
+}
+
+
 
 #Run command and output to terminal with colorful formatting. Controlled variant of "bash -v".
 _showCommand() {
@@ -9823,6 +9921,10 @@ _getMost_debian11_install() {
 	#sudo -n cp "$scriptAbsoluteLocation" "$globalVirtFS"/ubtest.sh
 	#_getMost_backend /ubtest.sh _test
 	
+
+	_getMost_backend_aptGetInstall dnsutils
+	_getMost_backend_aptGetInstall bind9-dnsutils
+
 	
 	_getMost_backend_aptGetInstall live-boot
 	_getMost_backend_aptGetInstall pigz
@@ -10520,6 +10622,9 @@ _getMinimal_cloud() {
 	_getMost_backend_aptGetInstall linux-image-amd64
 	
 	_getMost_backend_aptGetInstall pigz
+
+	_getMost_backend_aptGetInstall dnsutils
+	_getMost_backend_aptGetInstall bind9-dnsutils
 	
 	_getMost_backend_aptGetInstall qalc
 	
@@ -10539,6 +10644,20 @@ _getMinimal_cloud() {
 	_getMost_backend_aptGetInstall bison
 	_getMost_backend_aptGetInstall libelf-dev
 	_getMost_backend_aptGetInstall elfutils
+	_getMost_backend_aptGetInstall flex
+	_getMost_backend_aptGetInstall libncurses-dev
+	_getMost_backend_aptGetInstall autoconf
+	_getMost_backend_aptGetInstall libudev-dev
+
+	_getMost_backend_aptGetInstall dwarves
+	_getMost_backend_aptGetInstall pahole
+
+	_getMost_backend_aptGetInstall cmake
+	
+	_getMost_backend_aptGetInstall pkg-config
+	
+	_getMost_backend_aptGetInstall bsdutils
+	_getMost_backend_aptGetInstall findutils
 	
 	_getMost_backend_aptGetInstall patch
 	
@@ -13662,7 +13781,9 @@ _write_msw_WSLENV() {
     _write_msw_discreteGPU
     #setx MESA_D3D12_DEFAULT_ADAPTER_NAME NVIDIA /m
 
-    setx WSLENV LANG:QT_QPA_PLATFORMTHEME:MESA_D3D12_DEFAULT_ADAPTER_NAME /m
+    #setx WSLENV LANG:QT_QPA_PLATFORMTHEME:MESA_D3D12_DEFAULT_ADAPTER_NAME /m
+
+    setx WSLENV LANG:QT_QPA_PLATFORMTHEME:MESA_D3D12_DEFAULT_ADAPTER_NAME:GH_TOKEN /m
 }
 
 
@@ -22542,7 +22663,12 @@ _set_msw_qt5ct() {
     [[ "$QT_QPA_PLATFORMTHEME" != "qt5ct" ]] && export QT_QPA_PLATFORMTHEME=qt5ct
     if [[ "$WSLENV" != "QT_QPA_PLATFORMTHEME" ]] && [[ "$WSLENV" != "QT_QPA_PLATFORMTHEME"* ]] && [[ "$WSLENV" != *"QT_QPA_PLATFORMTHEME" ]] && [[ "$WSLENV" != *"QT_QPA_PLATFORMTHEME"* ]]
     then
-        export WSLENV="$WSLENV:QT_QPA_PLATFORMTHEME"
+        if [[ "$WSLENV" == "" ]]
+        then
+            export WSLENV="QT_QPA_PLATFORMTHEME"
+        else
+            export WSLENV="$WSLENV:QT_QPA_PLATFORMTHEME"
+        fi
     fi
     return 0
 }
@@ -22575,7 +22701,12 @@ _set_msw_lang() {
     [[ "$LANG" != "C" ]] && export LANG=C
     if [[ "$WSLENV" != "LANG" ]] && [[ "$WSLENV" != "LANG"* ]] && [[ "$WSLENV" != *"LANG" ]] && [[ "$WSLENV" != *"LANG"* ]]
     then
-        export WSLENV="$WSLENV:LANG"
+        if [[ "$WSLENV" == "" ]]
+        then
+            export WSLENV="LANG"
+        else
+            export WSLENV="$WSLENV:LANG"
+        fi
     fi
     return 0
 }
@@ -22593,12 +22724,27 @@ _set_discreteGPU-forWSL() {
     glxinfo -B | grep -i intel > /dev/null 2>&1 && export MESA_D3D12_DEFAULT_ADAPTER_NAME=NVIDIA
 }
 
+_set_msw_ghToken() {
+    if [[ "$WSLENV" != "GH_TOKEN" ]] && [[ "$WSLENV" != "GH_TOKEN"* ]] && [[ "$WSLENV" != *"GH_TOKEN" ]] && [[ "$WSLENV" != *"GH_TOKEN"* ]]
+    then
+        if [[ "$WSLENV" == "" ]]
+        then
+            export WSLENV="GH_TOKEN"
+        else
+            export WSLENV="$WSLENV:GH_TOKEN"
+        fi
+    fi
+    return 0
+}
+
 
 _set_msw_wsl() {
     ! _if_cygwin && return 1
 
     _set_msw_lang
     _set_msw_qt5ct
+
+    _set_msw_ghToken
 
     return 0
 }
@@ -27940,6 +28086,7 @@ _test() {
 	_tryExec "_test_gitBest"
 	
 	_tryExec "_test_fw"
+	_tryExec "_test_hosts"
 	
 	_tryExec "_testProxySSH"
 	

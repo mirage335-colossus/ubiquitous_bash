@@ -84,8 +84,16 @@ _cfgFW_procedure() {
 	ufw allow 22
 	ufw allow 443
 
-	[[ "$ub_cfgFW" == "desktop" ]] && ufw default deny incoming
-	ufw default allow outgoing
+	if [[ "$ub_cfgFW" == "desktop" ]] || [[ "$ub_cfgFW" == "terminal" ]]
+    then
+        ufw default deny incoming
+    fi
+    if [[ "$ub_cfgFW" == "terminal" ]]
+    then
+        ufw default deny outgoing
+    else
+        ufw default allow outgoing
+    fi
 
 	echo y | ufw --force enable
 	
@@ -203,14 +211,34 @@ _cfgFW_procedure() {
 	
 	return 0
 }
-
+_cfgFW-github() {
+    ( [[ "$ub_cfgFW" != "terminal" ]] ) && return 0
+    sudo -n xargs -r0 -n 1 ufw allow to < <("$scriptAbsoluteLocation" _ip-github)
+}
 
 _cfgFW-desktop() {
     export ub_cfgFW="desktop"
-    _cfgFW_procedure "$@"
+    sudo -n _cfgFW_procedure "$@"
 }
 
+_cfgFW-terminal_prog() {
+    true
+}
+_cfgFW-terminal() {
+    export ub_cfgFW="terminal"
+    sudo -n _cfgFW_procedure "$@"
 
+    _cfgFW-github "$@"
+
+    #sudo -n xargs -r0 -n 1 ufw allow to < <("$scriptAbsoluteLocation" _ip-google)
+
+    sudo -n xargs -r0 -n 1 ufw allow to < <("$scriptAbsoluteLocation" _ip-googleDNS)
+    sudo -n xargs -r0 -n 1 ufw allow to < <("$scriptAbsoluteLocation" _ip-cloudfareDNS)
+
+    _ip-googleDNS | sed -e 's/^/nameserver /g' | sudo -n tee /etc/resolv.conf > /dev/null
+
+    _cfgFW-terminal_prog "$@"
+}
 
 
 
@@ -229,4 +257,6 @@ _test_fw() {
 
     _getDep ufw
     #_getDep gufw
+
+    _getDep xargs
 }
