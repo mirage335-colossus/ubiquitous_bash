@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='106943938'
+export ub_setScriptChecksum_contents='240770777'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -5859,6 +5859,7 @@ _init_deps() {
 	export enUb_os_x11=""
 	export enUb_proxy=""
 	export enUb_proxy_special=""
+	export enUb_fw=""
 	export enUb_clog=""
 	export enUb_x11=""
 	export enUb_blockchain=""
@@ -6019,6 +6020,10 @@ _deps_proxy() {
 _deps_proxy_special() {
 	_deps_proxy
 	export enUb_proxy_special="true"
+}
+
+_deps_fw() {
+	export enUb_fw="true"
 }
 
 _deps_clog() {
@@ -6732,6 +6737,8 @@ _compile_bash_deps() {
 	if [[ "$1" == "ubcore" ]]
 	then
 		_deps_notLean
+
+		_deps_fw
 		
 		_deps_git
 		_deps_bup
@@ -6778,6 +6785,8 @@ _compile_bash_deps() {
 		_deps_os_x11
 		_deps_proxy
 		_deps_proxy_special
+
+		_deps_fw
 		
 		_deps_clog
 		
@@ -6947,6 +6956,8 @@ _compile_bash_deps() {
 		
 		#_deps_proxy
 		#_deps_proxy_special
+
+		_deps_fw
 		
 		# WARNING: Linux *kernel* admin assistance *only*. NOT any other UNIX like features.
 		# WARNING: Beware Linux shortcut specific dependency programs must not be required, or will break other operating systems!
@@ -7040,6 +7051,8 @@ _compile_bash_deps() {
 		
 		#_deps_proxy
 		#_deps_proxy_special
+
+		_deps_fw
 		
 		# WARNING: Linux *kernel* admin assistance *only*. NOT any other UNIX like features.
 		# WARNING: Beware Linux shortcut specific dependency programs must not be required, or will break other operating systems!
@@ -7133,6 +7146,8 @@ _compile_bash_deps() {
 		
 		_deps_proxy
 		_deps_proxy_special
+
+		_deps_fw
 		
 		_deps_clog
 		
@@ -7264,6 +7279,8 @@ _compile_bash_utilities() {
 	
 	[[ "$enUb_proxy" == "true" ]] && includeScriptList+=( "generic/net/proxy/proxyrouter"/here_proxyrouter.sh )
 	[[ "$enUb_proxy" == "true" ]] && includeScriptList+=( "generic/net/proxy/proxyrouter"/proxyrouter.sh )
+	
+	[[ "$enUb_fw" == "true" ]] && includeScriptList+=( "generic/net/fw"/fw.sh )
 	
 	[[ "$enUb_clog" == "true" ]] && includeScriptList+=( "generic/net/clog"/clog.sh )
 	
