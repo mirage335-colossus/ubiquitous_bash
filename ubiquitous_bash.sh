@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='3720090793'
+export ub_setScriptChecksum_contents='3360491978'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -8029,6 +8029,10 @@ _cfgFW_procedure() {
 	if [[ "$ub_cfgFW" == "desktop" ]] || [[ "$ub_cfgFW" == "terminal" ]]
     then
         ufw default deny incoming
+    else
+        # Still disabled, but later.
+        #ufw default deny incoming
+        true
     fi
     if [[ "$ub_cfgFW" == "terminal" ]]
     then
@@ -8187,22 +8191,23 @@ _cfgFW-terminal() {
     export ub_cfgFW="terminal"
     
     #_start
-    [[ ! $(wc -c /ip-github-port.txt 2>/dev/null | cut -f1 -d\  | tr -dc '0-9') -gt 2 ]] && "$scriptAbsoluteLocation" _ip-github | sed 's/$/ port 443/g' | sudo -n tee /ip-github-port.txt > /dev/null
-    [[ ! $(wc -c /ip-googleDNS-port.txt 2>/dev/null | cut -f1 -d\  | tr -dc '0-9') -gt 2 ]] && "$scriptAbsoluteLocation" _ip-googleDNS | sed 's/$/ port 53/g' | sudo -n tee /ip-googleDNS-port.txt > /dev/null
-    [[ ! $(wc -c /ip-cloudfareDNS-port.txt 2>/dev/null | cut -f1 -d\  | tr -dc '0-9') -gt 2 ]] && "$scriptAbsoluteLocation" _ip-cloudfareDNS | sed 's/$/ port 53/g' | sudo -n tee /ip-cloudfareDNS-port.txt > /dev/null
+    _writeFW_ip-github-port
+    #_writeFW_ip-google-port
+    _writeFW_ip-googleDNS-port
+    _writeFW_ip-cloudfareDNS-port
 
     sudo -n --preserve-env=ub_cfgFW "$scriptAbsoluteLocation" _cfgFW_procedure "$@"
 
     _messageNormal '_cfgFW-terminal: _cfgFW-github'
-    sudo -n xargs -r -L 1 ufw allow out from any to < <(cat /ip-github-port.txt)
+    sudo -n xargs -r -L 1 "$scriptAbsoluteLocation" _messagePlain_probe_cmd ufw allow out from any to < <(cat /ip-github-port.txt)
 
-    _messageNormal '_cfgFW-terminal: allow'
-    _messagePlain_probe 'probe: ufw allow to   Google'
-    #sudo -n xargs -r -L 1 ufw allow out from any to < <("$scriptAbsoluteLocation" _ip-google | sed 's/$/ port 443/g')
+    #_messageNormal '_cfgFW-terminal: allow'
+    #_messagePlain_probe 'probe: ufw allow to   Google'
+    #sudo -n xargs -r -L 1 "$scriptAbsoluteLocation" _messagePlain_probe_cmd ufw allow out from any to < <(cat /ip-google-port.txt)
 
     _messagePlain_probe 'probe: ufw allow to   DNS'
-    sudo -n xargs -r -L 1 ufw allow out from any to < <(cat /ip-googleDNS-port.txt)
-    sudo -n xargs -r -L 1 ufw allow out from any to < <(cat /ip-cloudfareDNS-port.txt)
+    sudo -n xargs -r -L 1 "$scriptAbsoluteLocation" _messagePlain_probe_cmd ufw allow out from any to < <(cat /ip-googleDNS-port.txt)
+    sudo -n xargs -r -L 1 "$scriptAbsoluteLocation" _messagePlain_probe_cmd ufw allow out from any to < <(cat /ip-cloudfareDNS-port.txt)
 
     _messageNormal '_cfgFW-terminal: resolv'
     _ip-googleDNS | sed -e 's/^/nameserver /g' | sudo -n tee /etc/resolv.conf > /dev/null
@@ -8217,7 +8222,18 @@ _cfgFW-terminal() {
 }
 
 
-
+_writeFW_ip-github-port() {
+    [[ ! $(sudo -n wc -c "$1"/ip-github-port.txt 2>/dev/null | cut -f1 -d\  | tr -dc '0-9') -gt 2 ]] && "$scriptAbsoluteLocation" _ip-github | sed 's/$/ port 22,443/g' | sudo -n tee "$1"/ip-github-port.txt > /dev/null
+}
+_writeFW_ip-google-port() {
+    [[ ! $(sudo -n wc -c "$1"/ip-google-port.txt 2>/dev/null | cut -f1 -d\  | tr -dc '0-9') -gt 2 ]] && "$scriptAbsoluteLocation" _ip-google | sed 's/$/ port 443/g' | sudo -n tee "$1"/ip-google-port.txt > /dev/null
+}
+_writeFW_ip-googleDNS-port() {
+    [[ ! $(sudo -n wc -c "$1"/ip-googleDNS-port.txt 2>/dev/null | cut -f1 -d\  | tr -dc '0-9') -gt 2 ]] && "$scriptAbsoluteLocation" _ip-googleDNS | sed 's/$/ port 53/g' | sudo -n tee "$1"/ip-googleDNS-port.txt > /dev/null
+}
+_writeFW_ip-cloudfareDNS-port() {
+    [[ ! $(sudo -n wc -c "$1"/ip-cloudfareDNS-port.txt 2>/dev/null | cut -f1 -d\  | tr -dc '0-9') -gt 2 ]] && "$scriptAbsoluteLocation" _ip-cloudfareDNS | sed 's/$/ port 53/g' | sudo -n tee "$1"/ip-cloudfareDNS-port.txt > /dev/null
+}
 
 
 
