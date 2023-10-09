@@ -257,7 +257,7 @@ _cfgFW-terminal() {
     sudo -n --preserve-env=ub_cfgFW "$scriptAbsoluteLocation" _cfgFW_procedure "$@"
 
     _messageNormal '_cfgFW-terminal: _cfgFW-github'
-    sudo -n xargs -r -L 1 ufw allow out from any to < <(cat /ip-github.txt)
+    sudo -n xargs -r -L 1 ufw allow out from any to < <(cat /ip-github-port.txt)
 
     _messageNormal '_cfgFW-terminal: allow'
     _messagePlain_probe 'probe: ufw allow to   Google'
