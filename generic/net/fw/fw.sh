@@ -210,11 +210,11 @@ _cfgFW_procedure() {
 	ufw deny 49152:65535/udp
 	
 	
-	! ufw status verbose | grep '^Default' | grep -F 'deny (incoming)' > /dev/null 2>&1 && messagePlain_warn 'warn: missing: default: ''ufw default deny incoming'
+	! ufw status verbose | grep '^Default' | grep -F 'deny (incoming)' > /dev/null 2>&1 && _messagePlain_warn 'warn: missing: default: ''ufw default deny incoming'
 	ufw default deny incoming
 	if ! ufw status verbose | grep '^Default' | grep -F 'deny (incoming)' > /dev/null 2>&1
 	then
-		messagePlain_bad 'bad: missing: default: ''ufw default deny incoming'
+		_messagePlain_bad 'bad: missing: default: ''ufw default deny incoming'
 	else
 		_messagePlain_good 'deny (apparently): ufw: ''incoming'
 	fi
