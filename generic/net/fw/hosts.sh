@@ -15,8 +15,8 @@ _ip-githubDotCOM() {
 }
 _ip-githubassetsDotCOM() {
     # ATTRIBUTION: ChatGPT4 2023-10-08 .
-    dig github.githubassets.com A +short | tr -dc 'a-zA-Z0-9\:\/\.\n'
-    dig github.githubassets.com AAAA +short | tr -dc 'a-zA-Z0-9\:\/\.\n'
+    dig github.githubassets.com A +short @8.8.8.8 | tr -dc 'a-zA-Z0-9\:\/\.\n'
+    dig github.githubassets.com AAAA +short @8.8.8.8 | tr -dc 'a-zA-Z0-9\:\/\.\n'
 }
 _ip-github() {
     _ip-githubDotCOM
@@ -24,8 +24,37 @@ _ip-github() {
 }
 
 _ip-google() {
-    dig google.com A +short | tr -dc 'a-zA-Z0-9\:\/\.\n'
-    dig google.com AAAA +short | tr -dc 'a-zA-Z0-9\:\/\.\n'
+    dig google.com A +short @8.8.8.8 | tr -dc 'a-zA-Z0-9\:\/\.\n'
+    dig google.com AAAA +short @8.8.8.8 | tr -dc 'a-zA-Z0-9\:\/\.\n'
+    dig accounts.google.com A +short @8.8.8.8 | tr -dc 'a-zA-Z0-9\:\/\.\n'
+    dig accounts.google.com AAAA +short @8.8.8.8 | tr -dc 'a-zA-Z0-9\:\/\.\n'
+    dig gmail.com A +short @8.8.8.8 | tr -dc 'a-zA-Z0-9\:\/\.\n'
+    dig gmail.com AAAA +short @8.8.8.8 | tr -dc 'a-zA-Z0-9\:\/\.\n'
+}
+
+# WARNING: May be untested.
+# DANGER: Strongly discouraged. May not be protective against embedded malicious adds. In particular, many Google ads may be present at other (ie. Facebook) sites.
+# ATTENTION: Override with 'ops.sh' or similar .
+_ip-misc() {
+    dig wikipedia.com A +short @8.8.8.8 | tr -dc 'a-zA-Z0-9\:\/\.\n'
+    dig wikipedia.com AAAA +short @8.8.8.8 | tr -dc 'a-zA-Z0-9\:\/\.\n'
+
+    dig gitlab.com A +short @8.8.8.8 | tr -dc 'a-zA-Z0-9\:\/\.\n'
+    dig gitlab.com AAAA +short @8.8.8.8 | tr -dc 'a-zA-Z0-9\:\/\.\n'
+
+    dig linkedin.com A +short @8.8.8.8 | tr -dc 'a-zA-Z0-9\:\/\.\n'
+    dig linkedin.com AAAA +short @8.8.8.8 | tr -dc 'a-zA-Z0-9\:\/\.\n'
+    dig facebook.com A +short @8.8.8.8 | tr -dc 'a-zA-Z0-9\:\/\.\n'
+    dig facebook.com AAAA +short @8.8.8.8 | tr -dc 'a-zA-Z0-9\:\/\.\n'
+    dig microsoft.com A +short @8.8.8.8 | tr -dc 'a-zA-Z0-9\:\/\.\n'
+    dig microsoft.com AAAA +short @8.8.8.8 | tr -dc 'a-zA-Z0-9\:\/\.\n'
+    dig youtube.com A +short @8.8.8.8 | tr -dc 'a-zA-Z0-9\:\/\.\n'
+    dig youtube.com AAAA +short @8.8.8.8 | tr -dc 'a-zA-Z0-9\:\/\.\n'
+
+    dig openai.com A +short @8.8.8.8 | tr -dc 'a-zA-Z0-9\:\/\.\n'
+    dig openai.com AAAA +short @8.8.8.8 | tr -dc 'a-zA-Z0-9\:\/\.\n'
+    dig chat.openai.com A +short @8.8.8.8 | tr -dc 'a-zA-Z0-9\:\/\.\n'
+    dig chat.openai.com AAAA +short @8.8.8.8 | tr -dc 'a-zA-Z0-9\:\/\.\n'
 }
 
 _ip-googleDNS() {
