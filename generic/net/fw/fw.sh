@@ -218,23 +218,30 @@ _cfgFW-github() {
 
 _cfgFW-desktop() {
     export ub_cfgFW="desktop"
-    sudo -n _cfgFW_procedure "$@"
+    sudo -n --preserve-env=ub_cfgFW "$scriptAbsoluteLocation" _cfgFW_procedure "$@"
 }
 
 _cfgFW-terminal_prog() {
+    #_messageNormal 'init: _cfgFW-terminal_prog'
     true
 }
 _cfgFW-terminal() {
+    _messageNormal 'init: _cfgFW-terminal'
     export ub_cfgFW="terminal"
-    sudo -n _cfgFW_procedure "$@"
+    sudo -n --preserve-env=ub_cfgFW "$scriptAbsoluteLocation" _cfgFW_procedure "$@"
 
+    _messageNormal '_cfgFW-terminal: _cfgFW-github'
     _cfgFW-github "$@"
 
+    _messageNormal '_cfgFW-terminal: allow'
+    _messagePlain_probe 'probe: ufw allow to   Google'
     #sudo -n xargs -r0 -n 1 ufw allow to < <("$scriptAbsoluteLocation" _ip-google)
 
+    _messagePlain_probe 'probe: ufw allow to   DNS'
     sudo -n xargs -r0 -n 1 ufw allow to < <("$scriptAbsoluteLocation" _ip-googleDNS)
     sudo -n xargs -r0 -n 1 ufw allow to < <("$scriptAbsoluteLocation" _ip-cloudfareDNS)
 
+    _messageNormal '_cfgFW-terminal: resolv'
     _ip-googleDNS | sed -e 's/^/nameserver /g' | sudo -n tee /etc/resolv.conf > /dev/null
 
     _cfgFW-terminal_prog "$@"
