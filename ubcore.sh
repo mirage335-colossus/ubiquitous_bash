@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='2568682892'
+export ub_setScriptChecksum_contents='1681736274'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -7476,8 +7476,13 @@ _cfgFW_procedure() {
 	ufw allow 67
 	ufw allow 68
 	ufw allow 53
-	ufw allow 22
-	ufw allow 443
+    if [[ "$ub_cfgFW" == "desktop" ]] || [[ "$ub_cfgFW" == "terminal" ]]
+    then
+        true
+    else
+        ufw allow 22
+	    ufw allow 443
+    fi
 
 	if [[ "$ub_cfgFW" == "desktop" ]] || [[ "$ub_cfgFW" == "terminal" ]]
     then
@@ -7492,19 +7497,36 @@ _cfgFW_procedure() {
 
 	echo y | ufw --force enable
 	
-	_ufw_portEnable 67
-	_ufw_portEnable 68
-	_ufw_portEnable 53
-	_ufw_portEnable 22
-	#_ufw_portEnable 80
-	_ufw_portEnable 443
-	#_ufw_portEnable 9001
-	#_ufw_portEnable 9030
-	
-	# TODO: Allow typical offset ports/ranges.
-	_ufw_portEnable 8443
-	ufw allow 10001:49150/tcp
-	ufw deny 10001:49150/udp
+    if [[ "$ub_cfgFW" == "desktop" ]] || [[ "$ub_cfgFW" == "terminal" ]]
+    then
+        _ufw_portDisable 67
+        _ufw_portDisable 68
+        _ufw_portDisable 53
+        _ufw_portDisable 22
+        #_ufw_portEnable 80
+        _ufw_portDisable 443
+        #_ufw_portEnable 9001
+        #_ufw_portEnable 9030
+        
+        # TODO: Allow typical offset ports/ranges.
+        _ufw_portEnable 8443
+        ufw deny 10001:49150/tcp
+        ufw deny 10001:49150/udp
+    else
+        _ufw_portEnable 67
+        _ufw_portEnable 68
+        _ufw_portEnable 53
+        _ufw_portEnable 22
+        #_ufw_portEnable 80
+        _ufw_portEnable 443
+        #_ufw_portEnable 9001
+        #_ufw_portEnable 9030
+        
+        # TODO: Allow typical offset ports/ranges.
+        _ufw_portEnable 8443
+        ufw allow 10001:49150/tcp
+        ufw deny 10001:49150/udp
+    fi
 	
 	
 	# Deny typical insecure service ports.
@@ -7531,10 +7553,10 @@ _cfgFW_procedure() {
     
 
 	sudo -n apt-get remove -y avahi-daemon
-	sudo -n _getMost_backend apt-get remove -y avahi-utils
-	sudo -n _getMost_backend apt-get remove -y ipp-usb
+	sudo -n apt-get remove -y avahi-utils
+	sudo -n apt-get remove -y ipp-usb
 
-	sudo -n _getMost_backend apt-get remove -y kdeconnect
+	sudo -n apt-get remove -y kdeconnect
 
 
 	# avahi/mdns/etc
@@ -7608,7 +7630,7 @@ _cfgFW_procedure() {
 }
 _cfgFW-github() {
     ( [[ "$ub_cfgFW" != "terminal" ]] ) && return 0
-    sudo -n xargs -r0 -n 1 ufw allow to < <("$scriptAbsoluteLocation" _ip-github)
+    sudo -n xargs -r0 -n 1 ufw allow out from any to < <("$scriptAbsoluteLocation" _ip-github | sed 's/$/ port 443/g')
 }
 
 _cfgFW-desktop() {
@@ -7630,16 +7652,19 @@ _cfgFW-terminal() {
 
     _messageNormal '_cfgFW-terminal: allow'
     _messagePlain_probe 'probe: ufw allow to   Google'
-    #sudo -n xargs -r0 -n 1 ufw allow to < <("$scriptAbsoluteLocation" _ip-google)
+    #sudo -n xargs -r0 -n 1 ufw allow out from any to < <("$scriptAbsoluteLocation" _ip-google | sed 's/$/ port 443/g')
 
     _messagePlain_probe 'probe: ufw allow to   DNS'
-    sudo -n xargs -r0 -n 1 ufw allow to < <("$scriptAbsoluteLocation" _ip-googleDNS)
-    sudo -n xargs -r0 -n 1 ufw allow to < <("$scriptAbsoluteLocation" _ip-cloudfareDNS)
+    sudo -n xargs -r0 -n 1 ufw allow out from any to < <("$scriptAbsoluteLocation" _ip-googleDNS | sed 's/$/ port 53/g')
+    sudo -n xargs -r0 -n 1 ufw allow out from any to < <("$scriptAbsoluteLocation" _ip-cloudfareDNS | sed 's/$/ port 53/g')
 
     _messageNormal '_cfgFW-terminal: resolv'
     _ip-googleDNS | sed -e 's/^/nameserver /g' | sudo -n tee /etc/resolv.conf > /dev/null
 
     _cfgFW-terminal_prog "$@"
+
+    _messageNormal '_cfgFW-terminal: status'
+    ufw status verbose
 }
 
 
