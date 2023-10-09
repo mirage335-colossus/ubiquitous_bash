@@ -339,7 +339,7 @@ _writeFW_ip-google-port() {
     [[ ! $(sudo -n wc -c "$1"/ip-google-port.txt 2>/dev/null | cut -f1 -d\  | tr -dc '0-9') -gt 2 ]] && "$scriptAbsoluteLocation" _ip-google | sed 's/$/ port 443/g' | sudo -n tee "$1"/ip-google-port.txt > /dev/null
 }
 _writeFW_ip-misc-port() {
-    [[ ! $(sudo -n wc -c "$1"/ip-google-port.txt 2>/dev/null | cut -f1 -d\  | tr -dc '0-9') -gt 2 ]] && "$scriptAbsoluteLocation" _ip-misc | sed 's/$/ port 443/g' | sudo -n tee "$1"/ip-misc-port.txt > /dev/null
+    [[ ! $(sudo -n wc -c "$1"/ip-misc-port.txt 2>/dev/null | cut -f1 -d\  | tr -dc '0-9') -gt 2 ]] && "$scriptAbsoluteLocation" _ip-misc | sed 's/$/ port 443/g' | sudo -n tee "$1"/ip-misc-port.txt > /dev/null
 }
 _writeFW_ip-googleDNS-port() {
     [[ ! $(sudo -n wc -c "$1"/ip-googleDNS-port.txt 2>/dev/null | cut -f1 -d\  | tr -dc '0-9') -gt 2 ]] && "$scriptAbsoluteLocation" _ip-googleDNS | sed 's/$/ port 53/g' | sudo -n tee "$1"/ip-googleDNS-port.txt > /dev/null
