@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='3215965688'
+export ub_setScriptChecksum_contents='1444971447'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -8181,11 +8181,26 @@ _cfgFW-desktop() {
     export ub_cfgFW="desktop"
     sudo -n --preserve-env=ub_cfgFW "$scriptAbsoluteLocation" _cfgFW_procedure "$@"
 }
+_cfgFW-limited() {
+    _messageNormal 'init: _cfgFW-limited'
+
+    export ub_cfgFW="desktop"
+    sudo -n --preserve-env=ub_cfgFW "$scriptAbsoluteLocation" _cfgFW_procedure "$@"
+
+    _writeFW_ip-DUBIOUS
+
+    _messageNormal '_cfgFW-terminal: deny'
+    _messagePlain_probe 'probe: ufw deny to   DUBIOUS'
+    sudo -n xargs -r -L 1 -P 10 "$scriptAbsoluteLocation" _messagePlain_probe_cmd ufw deny out from any to < <(cat /ip-DUBIOUS.txt | grep -v '^#')
+}
 
 _cfgFW-terminal_prog() {
     #_messageNormal 'init: _cfgFW-terminal_prog'
     true
 }
+# https://serverfault.com/questions/907607/slow-rules-inserting-in-ufw
+#  Possibly might be less reliable.
+#  DANGER: Syntax may be different for 'output' instead of 'input' .
 _cfgFW-terminal() {
     _messageNormal 'init: _cfgFW-terminal'
     export ub_cfgFW="terminal"
@@ -8196,6 +8211,7 @@ _cfgFW-terminal() {
     #_writeFW_ip-misc-port
     _writeFW_ip-googleDNS-port
     _writeFW_ip-cloudfareDNS-port
+    #_writeFW_ip-DUBIOUS
 
     sudo -n --preserve-env=ub_cfgFW "$scriptAbsoluteLocation" _cfgFW_procedure "$@"
 
@@ -8240,6 +8256,7 @@ _cfgFW-misc() {
     _writeFW_ip-misc-port
     _writeFW_ip-googleDNS-port
     _writeFW_ip-cloudfareDNS-port
+    #_writeFW_ip-DUBIOUS
 
     sudo -n --preserve-env=ub_cfgFW "$scriptAbsoluteLocation" _cfgFW_procedure "$@"
 
@@ -8283,6 +8300,9 @@ _writeFW_ip-googleDNS-port() {
 }
 _writeFW_ip-cloudfareDNS-port() {
     [[ ! $(sudo -n wc -c "$1"/ip-cloudfareDNS-port.txt 2>/dev/null | cut -f1 -d\  | tr -dc '0-9') -gt 2 ]] && "$scriptAbsoluteLocation" _ip-cloudfareDNS | sed 's/$/ port 53/g' | sudo -n tee "$1"/ip-cloudfareDNS-port.txt > /dev/null
+}
+_writeFW_ip-DUBIOUS() {
+    [[ ! $(sudo -n wc -c "$1"/ip-DUBIOUS.txt 2>/dev/null | cut -f1 -d\  | tr -dc '0-9') -gt 2 ]] && "$scriptAbsoluteLocation" _ip-DUBIOUS | sudo -n tee "$1"/ip-DUBIOUS.txt > /dev/null
 }
 
 
@@ -8354,6 +8374,7 @@ _ip-misc() {
     _ip-dig www.cvedetails.com
 
     _ip-dig wikipedia.com
+    _ip-dig www.wikipedia.com
 
     _ip-dig stackexchange.com
     _ip-dig serverfault.com
@@ -8436,6 +8457,57 @@ _ip-cloudfareDNS() {
     echo '1.0.0.1'
     echo '2606:4700:4700::1111'
     echo '2606:4700:4700::1001'
+}
+
+
+
+# No disrespect . Limited purpose computers, outgoing connections to only the arguably largest moderated reasonably friendly tech companies .
+# https://youtu.be/RoZeVbbZ0o0?si=Q6l7fkBciFM-JKo3&t=3117
+# https://www.ipdeny.com/ipblocks/
+# https://en.wikipedia.org/wiki/United_States_sanctions#Countries
+_ip-DUBIOUS() {
+    echo '#ru'
+    wget -O - -q 'https://www.ipdeny.com/ipblocks/data/aggregated/ru-aggregated.zone' | tr -dc 'a-zA-Z0-9\:\/\.\n'
+    wget -O - -q 'https://www.ipdeny.com/ipv6/ipaddresses/aggregated/ru-aggregated.zone' | tr -dc 'a-zA-Z0-9\:\/\.\n'
+    echo '#by'
+    wget -O - -q 'https://www.ipdeny.com/ipblocks/data/aggregated/by-aggregated.zone' | tr -dc 'a-zA-Z0-9\:\/\.\n'
+    wget -O - -q 'https://www.ipdeny.com/ipv6/ipaddresses/aggregated/by-aggregated.zone' | tr -dc 'a-zA-Z0-9\:\/\.\n'
+    echo '#sy'
+    wget -O - -q 'https://www.ipdeny.com/ipblocks/data/aggregated/sy-aggregated.zone' | tr -dc 'a-zA-Z0-9\:\/\.\n'
+    wget -O - -q 'https://www.ipdeny.com/ipv6/ipaddresses/aggregated/sy-aggregated.zone' | tr -dc 'a-zA-Z0-9\:\/\.\n'
+
+    echo '#kp'
+    wget -O - -q 'https://www.ipdeny.com/ipblocks/data/aggregated/kp-aggregated.zone' | tr -dc 'a-zA-Z0-9\:\/\.\n'
+    wget -O - -q 'https://www.ipdeny.com/ipv6/ipaddresses/aggregated/kp-aggregated.zone' | tr -dc 'a-zA-Z0-9\:\/\.\n'
+    echo '#ir'
+    wget -O - -q 'https://www.ipdeny.com/ipblocks/data/aggregated/ir-aggregated.zone' | tr -dc 'a-zA-Z0-9\:\/\.\n'
+    wget -O - -q 'https://www.ipdeny.com/ipv6/ipaddresses/aggregated/ir-aggregated.zone' | tr -dc 'a-zA-Z0-9\:\/\.\n'
+    echo '#cu'
+    wget -O - -q 'https://www.ipdeny.com/ipblocks/data/aggregated/cu-aggregated.zone' | tr -dc 'a-zA-Z0-9\:\/\.\n'
+    wget -O - -q 'https://www.ipdeny.com/ipv6/ipaddresses/aggregated/cu-aggregated.zone' | tr -dc 'a-zA-Z0-9\:\/\.\n'
+    echo '#af'
+    wget -O - -q 'https://www.ipdeny.com/ipblocks/data/aggregated/af-aggregated.zone' | tr -dc 'a-zA-Z0-9\:\/\.\n'
+    wget -O - -q 'https://www.ipdeny.com/ipv6/ipaddresses/aggregated/af-aggregated.zone' | tr -dc 'a-zA-Z0-9\:\/\.\n'
+
+    echo '#ve'
+    wget -O - -q 'https://www.ipdeny.com/ipblocks/data/aggregated/ve-aggregated.zone' | tr -dc 'a-zA-Z0-9\:\/\.\n'
+    wget -O - -q 'https://www.ipdeny.com/ipv6/ipaddresses/aggregated/ve-aggregated.zone' | tr -dc 'a-zA-Z0-9\:\/\.\n'
+
+    echo '#ph'
+    wget -O - -q 'https://www.ipdeny.com/ipblocks/data/aggregated/ph-aggregated.zone' | tr -dc 'a-zA-Z0-9\:\/\.\n'
+    wget -O - -q 'https://www.ipdeny.com/ipv6/ipaddresses/aggregated/ph-aggregated.zone' | tr -dc 'a-zA-Z0-9\:\/\.\n'
+    echo '#vn'
+    wget -O - -q 'https://www.ipdeny.com/ipblocks/data/aggregated/vn-aggregated.zone' | tr -dc 'a-zA-Z0-9\:\/\.\n'
+    wget -O - -q 'https://www.ipdeny.com/ipv6/ipaddresses/aggregated/vn-aggregated.zone' | tr -dc 'a-zA-Z0-9\:\/\.\n'
+
+    # Arguably large moderated reasonably friendly tech companies here. Think: AliExpress .
+    #echo '#cn'
+    #wget -O - -q 'https://www.ipdeny.com/ipblocks/data/aggregated/cn-aggregated.zone' | tr -dc 'a-zA-Z0-9\:\/\.\n'
+    #wget -O - -q 'https://www.ipdeny.com/ipv6/ipaddresses/aggregated/cn-aggregated.zone' | tr -dc 'a-zA-Z0-9\:\/\.\n'
+
+    echo '#aq'
+    wget -O - -q 'https://www.ipdeny.com/ipblocks/data/aggregated/aq-aggregated.zone' | tr -dc 'a-zA-Z0-9\:\/\.\n'
+    wget -O - -q 'https://www.ipdeny.com/ipv6/ipaddresses/aggregated/aq-aggregated.zone' | tr -dc 'a-zA-Z0-9\:\/\.\n'
 }
 
 

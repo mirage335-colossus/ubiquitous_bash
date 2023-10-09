@@ -49,6 +49,7 @@ _ip-misc() {
     _ip-dig www.cvedetails.com
 
     _ip-dig wikipedia.com
+    _ip-dig www.wikipedia.com
 
     _ip-dig stackexchange.com
     _ip-dig serverfault.com
@@ -131,6 +132,57 @@ _ip-cloudfareDNS() {
     echo '1.0.0.1'
     echo '2606:4700:4700::1111'
     echo '2606:4700:4700::1001'
+}
+
+
+
+# No disrespect . Limited purpose computers, outgoing connections to only the arguably largest moderated reasonably friendly tech companies .
+# https://youtu.be/RoZeVbbZ0o0?si=Q6l7fkBciFM-JKo3&t=3117
+# https://www.ipdeny.com/ipblocks/
+# https://en.wikipedia.org/wiki/United_States_sanctions#Countries
+_ip-DUBIOUS() {
+    echo '#ru'
+    wget -O - -q 'https://www.ipdeny.com/ipblocks/data/aggregated/ru-aggregated.zone' | tr -dc 'a-zA-Z0-9\:\/\.\n'
+    wget -O - -q 'https://www.ipdeny.com/ipv6/ipaddresses/aggregated/ru-aggregated.zone' | tr -dc 'a-zA-Z0-9\:\/\.\n'
+    echo '#by'
+    wget -O - -q 'https://www.ipdeny.com/ipblocks/data/aggregated/by-aggregated.zone' | tr -dc 'a-zA-Z0-9\:\/\.\n'
+    wget -O - -q 'https://www.ipdeny.com/ipv6/ipaddresses/aggregated/by-aggregated.zone' | tr -dc 'a-zA-Z0-9\:\/\.\n'
+    echo '#sy'
+    wget -O - -q 'https://www.ipdeny.com/ipblocks/data/aggregated/sy-aggregated.zone' | tr -dc 'a-zA-Z0-9\:\/\.\n'
+    wget -O - -q 'https://www.ipdeny.com/ipv6/ipaddresses/aggregated/sy-aggregated.zone' | tr -dc 'a-zA-Z0-9\:\/\.\n'
+
+    echo '#kp'
+    wget -O - -q 'https://www.ipdeny.com/ipblocks/data/aggregated/kp-aggregated.zone' | tr -dc 'a-zA-Z0-9\:\/\.\n'
+    wget -O - -q 'https://www.ipdeny.com/ipv6/ipaddresses/aggregated/kp-aggregated.zone' | tr -dc 'a-zA-Z0-9\:\/\.\n'
+    echo '#ir'
+    wget -O - -q 'https://www.ipdeny.com/ipblocks/data/aggregated/ir-aggregated.zone' | tr -dc 'a-zA-Z0-9\:\/\.\n'
+    wget -O - -q 'https://www.ipdeny.com/ipv6/ipaddresses/aggregated/ir-aggregated.zone' | tr -dc 'a-zA-Z0-9\:\/\.\n'
+    echo '#cu'
+    wget -O - -q 'https://www.ipdeny.com/ipblocks/data/aggregated/cu-aggregated.zone' | tr -dc 'a-zA-Z0-9\:\/\.\n'
+    wget -O - -q 'https://www.ipdeny.com/ipv6/ipaddresses/aggregated/cu-aggregated.zone' | tr -dc 'a-zA-Z0-9\:\/\.\n'
+    echo '#af'
+    wget -O - -q 'https://www.ipdeny.com/ipblocks/data/aggregated/af-aggregated.zone' | tr -dc 'a-zA-Z0-9\:\/\.\n'
+    wget -O - -q 'https://www.ipdeny.com/ipv6/ipaddresses/aggregated/af-aggregated.zone' | tr -dc 'a-zA-Z0-9\:\/\.\n'
+
+    echo '#ve'
+    wget -O - -q 'https://www.ipdeny.com/ipblocks/data/aggregated/ve-aggregated.zone' | tr -dc 'a-zA-Z0-9\:\/\.\n'
+    wget -O - -q 'https://www.ipdeny.com/ipv6/ipaddresses/aggregated/ve-aggregated.zone' | tr -dc 'a-zA-Z0-9\:\/\.\n'
+
+    echo '#ph'
+    wget -O - -q 'https://www.ipdeny.com/ipblocks/data/aggregated/ph-aggregated.zone' | tr -dc 'a-zA-Z0-9\:\/\.\n'
+    wget -O - -q 'https://www.ipdeny.com/ipv6/ipaddresses/aggregated/ph-aggregated.zone' | tr -dc 'a-zA-Z0-9\:\/\.\n'
+    echo '#vn'
+    wget -O - -q 'https://www.ipdeny.com/ipblocks/data/aggregated/vn-aggregated.zone' | tr -dc 'a-zA-Z0-9\:\/\.\n'
+    wget -O - -q 'https://www.ipdeny.com/ipv6/ipaddresses/aggregated/vn-aggregated.zone' | tr -dc 'a-zA-Z0-9\:\/\.\n'
+
+    # Arguably large moderated reasonably friendly tech companies here. Think: AliExpress .
+    #echo '#cn'
+    #wget -O - -q 'https://www.ipdeny.com/ipblocks/data/aggregated/cn-aggregated.zone' | tr -dc 'a-zA-Z0-9\:\/\.\n'
+    #wget -O - -q 'https://www.ipdeny.com/ipv6/ipaddresses/aggregated/cn-aggregated.zone' | tr -dc 'a-zA-Z0-9\:\/\.\n'
+
+    echo '#aq'
+    wget -O - -q 'https://www.ipdeny.com/ipblocks/data/aggregated/aq-aggregated.zone' | tr -dc 'a-zA-Z0-9\:\/\.\n'
+    wget -O - -q 'https://www.ipdeny.com/ipv6/ipaddresses/aggregated/aq-aggregated.zone' | tr -dc 'a-zA-Z0-9\:\/\.\n'
 }
 
 

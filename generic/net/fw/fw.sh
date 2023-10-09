@@ -244,11 +244,26 @@ _cfgFW-desktop() {
     export ub_cfgFW="desktop"
     sudo -n --preserve-env=ub_cfgFW "$scriptAbsoluteLocation" _cfgFW_procedure "$@"
 }
+_cfgFW-limited() {
+    _messageNormal 'init: _cfgFW-limited'
+
+    export ub_cfgFW="desktop"
+    sudo -n --preserve-env=ub_cfgFW "$scriptAbsoluteLocation" _cfgFW_procedure "$@"
+
+    _writeFW_ip-DUBIOUS
+
+    _messageNormal '_cfgFW-terminal: deny'
+    _messagePlain_probe 'probe: ufw deny to   DUBIOUS'
+    sudo -n xargs -r -L 1 -P 10 "$scriptAbsoluteLocation" _messagePlain_probe_cmd ufw deny out from any to < <(cat /ip-DUBIOUS.txt | grep -v '^#')
+}
 
 _cfgFW-terminal_prog() {
     #_messageNormal 'init: _cfgFW-terminal_prog'
     true
 }
+# https://serverfault.com/questions/907607/slow-rules-inserting-in-ufw
+#  Possibly might be less reliable.
+#  DANGER: Syntax may be different for 'output' instead of 'input' .
 _cfgFW-terminal() {
     _messageNormal 'init: _cfgFW-terminal'
     export ub_cfgFW="terminal"
@@ -259,6 +274,7 @@ _cfgFW-terminal() {
     #_writeFW_ip-misc-port
     _writeFW_ip-googleDNS-port
     _writeFW_ip-cloudfareDNS-port
+    #_writeFW_ip-DUBIOUS
 
     sudo -n --preserve-env=ub_cfgFW "$scriptAbsoluteLocation" _cfgFW_procedure "$@"
 
@@ -303,6 +319,7 @@ _cfgFW-misc() {
     _writeFW_ip-misc-port
     _writeFW_ip-googleDNS-port
     _writeFW_ip-cloudfareDNS-port
+    #_writeFW_ip-DUBIOUS
 
     sudo -n --preserve-env=ub_cfgFW "$scriptAbsoluteLocation" _cfgFW_procedure "$@"
 
@@ -346,6 +363,9 @@ _writeFW_ip-googleDNS-port() {
 }
 _writeFW_ip-cloudfareDNS-port() {
     [[ ! $(sudo -n wc -c "$1"/ip-cloudfareDNS-port.txt 2>/dev/null | cut -f1 -d\  | tr -dc '0-9') -gt 2 ]] && "$scriptAbsoluteLocation" _ip-cloudfareDNS | sed 's/$/ port 53/g' | sudo -n tee "$1"/ip-cloudfareDNS-port.txt > /dev/null
+}
+_writeFW_ip-DUBIOUS() {
+    [[ ! $(sudo -n wc -c "$1"/ip-DUBIOUS.txt 2>/dev/null | cut -f1 -d\  | tr -dc '0-9') -gt 2 ]] && "$scriptAbsoluteLocation" _ip-DUBIOUS | sudo -n tee "$1"/ip-DUBIOUS.txt > /dev/null
 }
 
 
