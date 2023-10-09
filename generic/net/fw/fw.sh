@@ -235,6 +235,8 @@ _cfgFW_procedure() {
 }
 
 _cfgFW-desktop() {
+    _messageNormal 'init: _cfgFW-desktop'
+
     export ub_cfgFW="desktop"
     sudo -n --preserve-env=ub_cfgFW "$scriptAbsoluteLocation" _cfgFW_procedure "$@"
 }
@@ -271,8 +273,8 @@ _cfgFW-terminal() {
     _cfgFW-terminal_prog "$@"
 
     _messageNormal '_cfgFW-terminal: status'
-    sudo -n ufw reload
     sudo -n ufw status verbose
+    sudo -n ufw reload
 
     #_stop
 }
