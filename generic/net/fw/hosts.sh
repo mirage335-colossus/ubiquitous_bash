@@ -1,6 +1,15 @@
 
 
 
+_ip-dig() {
+    # https://unix.stackexchange.com/questions/723287/using-dig-to-query-an-address-without-resolving-cnames
+    # https://serverfault.com/questions/965368/how-do-i-ask-dig-to-only-return-the-ip-from-a-cname-record
+    echo '#'"$1"
+    dig -t a +short "$1" @8.8.8.8 2>/dev/null | tr -dc 'a-zA-Z0-9\:\/\.\n' | grep -v '\.$' | grep -v 'error'
+    dig -t aaaa +short "$1" @8.8.8.8 2>/dev/null | tr -dc 'a-zA-Z0-9\:\/\.\n' | grep -v '\.$' | grep -v 'error'
+    true
+}
+
 
 # WARNING: May be untested.
 _ip-githubDotCOM() {
@@ -15,8 +24,7 @@ _ip-githubDotCOM() {
 }
 _ip-githubassetsDotCOM() {
     # ATTRIBUTION: ChatGPT4 2023-10-08 .
-    dig github.githubassets.com A +short @8.8.8.8 | tr -dc 'a-zA-Z0-9\:\/\.\n'
-    dig github.githubassets.com AAAA +short @8.8.8.8 | tr -dc 'a-zA-Z0-9\:\/\.\n'
+    _ip-dig github.githubassets.com
 }
 _ip-github() {
     _ip-githubDotCOM
@@ -24,37 +32,87 @@ _ip-github() {
 }
 
 _ip-google() {
-    dig google.com A +short @8.8.8.8 | tr -dc 'a-zA-Z0-9\:\/\.\n'
-    dig google.com AAAA +short @8.8.8.8 | tr -dc 'a-zA-Z0-9\:\/\.\n'
-    dig accounts.google.com A +short @8.8.8.8 | tr -dc 'a-zA-Z0-9\:\/\.\n'
-    dig accounts.google.com AAAA +short @8.8.8.8 | tr -dc 'a-zA-Z0-9\:\/\.\n'
-    dig gmail.com A +short @8.8.8.8 | tr -dc 'a-zA-Z0-9\:\/\.\n'
-    dig gmail.com AAAA +short @8.8.8.8 | tr -dc 'a-zA-Z0-9\:\/\.\n'
+    _ip-dig google.com
+    _ip-dig accounts.google.com
+    _ip-dig mail.google.com
+    _ip-dig gmail.com
 }
 
 # WARNING: May be untested.
 # DANGER: Strongly discouraged. May not be protective against embedded malicious adds. In particular, many Google ads may be present at other (ie. Facebook) sites.
 # ATTENTION: Override with 'ops.sh' or similar .
 _ip-misc() {
-    dig wikipedia.com A +short @8.8.8.8 | tr -dc 'a-zA-Z0-9\:\/\.\n'
-    dig wikipedia.com AAAA +short @8.8.8.8 | tr -dc 'a-zA-Z0-9\:\/\.\n'
+    _ip-dig ic3.gov
+    _ip-dig www.ic3.gov
 
-    dig gitlab.com A +short @8.8.8.8 | tr -dc 'a-zA-Z0-9\:\/\.\n'
-    dig gitlab.com AAAA +short @8.8.8.8 | tr -dc 'a-zA-Z0-9\:\/\.\n'
+    _ip-dig cvedetails.com
+    _ip-dig www.cvedetails.com
 
-    dig linkedin.com A +short @8.8.8.8 | tr -dc 'a-zA-Z0-9\:\/\.\n'
-    dig linkedin.com AAAA +short @8.8.8.8 | tr -dc 'a-zA-Z0-9\:\/\.\n'
-    dig facebook.com A +short @8.8.8.8 | tr -dc 'a-zA-Z0-9\:\/\.\n'
-    dig facebook.com AAAA +short @8.8.8.8 | tr -dc 'a-zA-Z0-9\:\/\.\n'
-    dig microsoft.com A +short @8.8.8.8 | tr -dc 'a-zA-Z0-9\:\/\.\n'
-    dig microsoft.com AAAA +short @8.8.8.8 | tr -dc 'a-zA-Z0-9\:\/\.\n'
-    dig youtube.com A +short @8.8.8.8 | tr -dc 'a-zA-Z0-9\:\/\.\n'
-    dig youtube.com AAAA +short @8.8.8.8 | tr -dc 'a-zA-Z0-9\:\/\.\n'
+    _ip-dig wikipedia.com
 
-    dig openai.com A +short @8.8.8.8 | tr -dc 'a-zA-Z0-9\:\/\.\n'
-    dig openai.com AAAA +short @8.8.8.8 | tr -dc 'a-zA-Z0-9\:\/\.\n'
-    dig chat.openai.com A +short @8.8.8.8 | tr -dc 'a-zA-Z0-9\:\/\.\n'
-    dig chat.openai.com AAAA +short @8.8.8.8 | tr -dc 'a-zA-Z0-9\:\/\.\n'
+    _ip-dig stackexchange.com
+    _ip-dig serverfault.com
+    _ip-dig superuser.com
+    _ip-dig cyberciti.biz
+    _ip-dig www.cyberciti.biz
+    _ip-dig arduino.cc
+    _ip-dig forum.arduino.cc
+
+    _ip-dig debian.org
+    _ip-dig www.debian.org
+    _ip-dig gpo.zugaina.org
+    
+    _ip-dig appimage.org
+
+    _ip-dig weather.gov
+    _ip-dig radar.weather.gov
+    _ip-dig fcc.gov
+    _ip-dig www.fcc.gov
+
+    _ip-dig bing.com
+    _ip-dig www.bing.com
+
+    _ip-dig gitlab.com
+    
+    _ip-dig twitter.com
+    _ip-dig x.com
+    
+    _ip-dig hackaday.com
+
+    _ip-dig linkedin.com
+    _ip-dig facebook.com
+    _ip-dig microsoft.com
+    _ip-dig youtube.com
+    
+    _ip-dig discord.com
+
+    _ip-dig live.com
+    _ip-dig login.live.com
+    _ip-dig outlook.live.com
+    
+    _ip-dig proton.me
+    _ip-dig mail.proton.me
+    _ip-dig account.proton.me
+
+    _ip-dig netflix.com
+    _ip-dig www.netflix.com
+    _ip-dig spotify.com
+    _ip-dig open.spotify.com
+    
+    _ip-dig amazon.com
+    _ip-dig ebay.com
+
+    _ip-dig openai.com
+    _ip-dig chat.openai.com
+    
+    _ip-dig signal.org
+    _ip-dig wire.com
+    _ip-dig app.wire.com
+
+    _ip-dig liberra.chat
+    _ip-dig web.liberra.chat
+
+    _ip-dig mozilla.org
 }
 
 _ip-googleDNS() {

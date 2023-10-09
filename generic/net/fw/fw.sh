@@ -263,17 +263,17 @@ _cfgFW-terminal() {
     sudo -n --preserve-env=ub_cfgFW "$scriptAbsoluteLocation" _cfgFW_procedure "$@"
 
     _messageNormal '_cfgFW-terminal: _cfgFW-github'
-    sudo -n xargs -r -L 1 "$scriptAbsoluteLocation" _messagePlain_probe_cmd ufw allow out from any to < <(cat /ip-github-port.txt)
+    sudo -n xargs -r -L 1 "$scriptAbsoluteLocation" _messagePlain_probe_cmd ufw allow out from any to < <(cat /ip-github-port.txt | grep -v '^#')
 
     _messageNormal '_cfgFW-terminal: allow'
     #_messagePlain_probe 'probe: ufw allow to   Google'
-    #sudo -n xargs -r -L 1 "$scriptAbsoluteLocation" _messagePlain_probe_cmd ufw allow out from any to < <(cat /ip-google-port.txt)
+    #sudo -n xargs -r -L 1 "$scriptAbsoluteLocation" _messagePlain_probe_cmd ufw allow out from any to < <(cat /ip-google-port.txt | grep -v '^#')
     #_messagePlain_probe 'probe: ufw allow to   misc'
-    #sudo -n xargs -r -L 1 "$scriptAbsoluteLocation" _messagePlain_probe_cmd ufw allow out from any to < <(cat /ip-misc-port.txt)
+    #sudo -n xargs -r -L 1 "$scriptAbsoluteLocation" _messagePlain_probe_cmd ufw allow out from any to < <(cat /ip-misc-port.txt | grep -v '^#')
 
     _messagePlain_probe 'probe: ufw allow to   DNS'
-    sudo -n xargs -r -L 1 "$scriptAbsoluteLocation" _messagePlain_probe_cmd ufw allow out from any to < <(cat /ip-googleDNS-port.txt)
-    sudo -n xargs -r -L 1 "$scriptAbsoluteLocation" _messagePlain_probe_cmd ufw allow out from any to < <(cat /ip-cloudfareDNS-port.txt)
+    sudo -n xargs -r -L 1 "$scriptAbsoluteLocation" _messagePlain_probe_cmd ufw allow out from any to < <(cat /ip-googleDNS-port.txt | grep -v '^#')
+    sudo -n xargs -r -L 1 "$scriptAbsoluteLocation" _messagePlain_probe_cmd ufw allow out from any to < <(cat /ip-cloudfareDNS-port.txt | grep -v '^#')
 
     _messageNormal '_cfgFW-terminal: resolv'
     _ip-googleDNS | sed -e 's/^/nameserver /g' | sudo -n tee /etc/resolv.conf > /dev/null
@@ -281,6 +281,50 @@ _cfgFW-terminal() {
     _cfgFW-terminal_prog "$@"
 
     _messageNormal '_cfgFW-terminal: status'
+    sudo -n ufw status verbose
+    sudo -n ufw reload
+
+    #_stop
+}
+
+
+
+_cfgFW-misc_prog() {
+    #_messageNormal 'init: _cfgFW-terminal_prog'
+    true
+}
+_cfgFW-misc() {
+    _messageNormal 'init: _cfgFW-misc'
+    export ub_cfgFW="terminal"
+    
+    #_start
+    _writeFW_ip-github-port
+    _writeFW_ip-google-port
+    _writeFW_ip-misc-port
+    _writeFW_ip-googleDNS-port
+    _writeFW_ip-cloudfareDNS-port
+
+    sudo -n --preserve-env=ub_cfgFW "$scriptAbsoluteLocation" _cfgFW_procedure "$@"
+
+    _messageNormal '_cfgFW-misc: _cfgFW-github'
+    sudo -n xargs -r -L 1 "$scriptAbsoluteLocation" _messagePlain_probe_cmd ufw allow out from any to < <(cat /ip-github-port.txt | grep -v '^#')
+
+    _messageNormal '_cfgFW-misc: allow'
+    _messagePlain_probe 'probe: ufw allow to   Google'
+    sudo -n xargs -r -L 1 "$scriptAbsoluteLocation" _messagePlain_probe_cmd ufw allow out from any to < <(cat /ip-google-port.txt | grep -v '^#')
+    _messagePlain_probe 'probe: ufw allow to   misc'
+    sudo -n xargs -r -L 1 "$scriptAbsoluteLocation" _messagePlain_probe_cmd ufw allow out from any to < <(cat /ip-misc-port.txt | grep -v '^#')
+
+    _messagePlain_probe 'probe: ufw allow to   DNS'
+    sudo -n xargs -r -L 1 "$scriptAbsoluteLocation" _messagePlain_probe_cmd ufw allow out from any to < <(cat /ip-googleDNS-port.txt | grep -v '^#')
+    sudo -n xargs -r -L 1 "$scriptAbsoluteLocation" _messagePlain_probe_cmd ufw allow out from any to < <(cat /ip-cloudfareDNS-port.txt | grep -v '^#')
+
+    _messageNormal '_cfgFW-misc: resolv'
+    _ip-googleDNS | sed -e 's/^/nameserver /g' | sudo -n tee /etc/resolv.conf > /dev/null
+
+    _cfgFW-misc_prog "$@"
+
+    _messageNormal '_cfgFW-misc: status'
     sudo -n ufw status verbose
     sudo -n ufw reload
 
