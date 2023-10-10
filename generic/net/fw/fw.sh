@@ -1,6 +1,13 @@
 
 
-
+_dns() {
+    _messagePlain_nominal '_dns: ip'
+    _writeFW_ip-googleDNS-port
+    _writeFW_ip-cloudfareDNS-port
+    
+    _messagePlain_nominal '_dns: resolv: google'
+    _ip-googleDNS | sed -e 's/^/nameserver /g' | sudo -n tee /etc/resolv.conf > /dev/null
+}
 
 
 _ufw_check_portALLOW_warn() {
@@ -295,8 +302,8 @@ _cfgFW-terminal() {
     sudo -n xargs -r -L 1 "$scriptAbsoluteLocation" _messagePlain_probe_cmd ufw allow out from any to < <(cat /ip-googleDNS-port.txt | grep -v '^#')
     sudo -n xargs -r -L 1 "$scriptAbsoluteLocation" _messagePlain_probe_cmd ufw allow out from any to < <(cat /ip-cloudfareDNS-port.txt | grep -v '^#')
 
-    _messageNormal '_cfgFW-terminal: resolv'
-    _ip-googleDNS | sed -e 's/^/nameserver /g' | sudo -n tee /etc/resolv.conf > /dev/null
+    _messageNormal '_cfgFW-terminal: _dns'
+    _dns "$@"
 
     _cfgFW-terminal_prog "$@"
 
@@ -340,8 +347,8 @@ _cfgFW-misc() {
     sudo -n xargs -r -L 1 "$scriptAbsoluteLocation" _messagePlain_probe_cmd ufw allow out from any to < <(cat /ip-googleDNS-port.txt | grep -v '^#')
     sudo -n xargs -r -L 1 "$scriptAbsoluteLocation" _messagePlain_probe_cmd ufw allow out from any to < <(cat /ip-cloudfareDNS-port.txt | grep -v '^#')
 
-    _messageNormal '_cfgFW-misc: resolv'
-    _ip-googleDNS | sed -e 's/^/nameserver /g' | sudo -n tee /etc/resolv.conf > /dev/null
+    _messageNormal '_cfgFW-misc: _dns'
+    _dns "$@"
 
     _cfgFW-misc_prog "$@"
 

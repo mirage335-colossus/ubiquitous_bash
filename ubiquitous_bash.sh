@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='208506101'
+export ub_setScriptChecksum_contents='3420672505'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -7937,7 +7937,14 @@ _find_route_ip() {
 
 
 
-
+_dns() {
+    _messagePlain_nominal '_dns: ip'
+    _writeFW_ip-googleDNS-port
+    _writeFW_ip-cloudfareDNS-port
+    
+    _messagePlain_nominal '_dns: resolv: google'
+    _ip-googleDNS | sed -e 's/^/nameserver /g' | sudo -n tee /etc/resolv.conf > /dev/null
+}
 
 
 _ufw_check_portALLOW_warn() {
@@ -8232,8 +8239,8 @@ _cfgFW-terminal() {
     sudo -n xargs -r -L 1 "$scriptAbsoluteLocation" _messagePlain_probe_cmd ufw allow out from any to < <(cat /ip-googleDNS-port.txt | grep -v '^#')
     sudo -n xargs -r -L 1 "$scriptAbsoluteLocation" _messagePlain_probe_cmd ufw allow out from any to < <(cat /ip-cloudfareDNS-port.txt | grep -v '^#')
 
-    _messageNormal '_cfgFW-terminal: resolv'
-    _ip-googleDNS | sed -e 's/^/nameserver /g' | sudo -n tee /etc/resolv.conf > /dev/null
+    _messageNormal '_cfgFW-terminal: _dns'
+    _dns "$@"
 
     _cfgFW-terminal_prog "$@"
 
@@ -8277,8 +8284,8 @@ _cfgFW-misc() {
     sudo -n xargs -r -L 1 "$scriptAbsoluteLocation" _messagePlain_probe_cmd ufw allow out from any to < <(cat /ip-googleDNS-port.txt | grep -v '^#')
     sudo -n xargs -r -L 1 "$scriptAbsoluteLocation" _messagePlain_probe_cmd ufw allow out from any to < <(cat /ip-cloudfareDNS-port.txt | grep -v '^#')
 
-    _messageNormal '_cfgFW-misc: resolv'
-    _ip-googleDNS | sed -e 's/^/nameserver /g' | sudo -n tee /etc/resolv.conf > /dev/null
+    _messageNormal '_cfgFW-misc: _dns'
+    _dns "$@"
 
     _cfgFW-misc_prog "$@"
 
