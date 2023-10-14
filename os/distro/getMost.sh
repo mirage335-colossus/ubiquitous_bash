@@ -272,6 +272,8 @@ _getMost_debian11_install() {
 	_getMost_backend_aptGetInstall bc nmap autossh socat sshfs tor
 	_getMost_backend_aptGetInstall sockstat
 	_getMost_backend_aptGetInstall x11-xserver-utils
+	_getMost_backend_aptGetInstall arandr
+	
 
 	_getMost_backend_aptGetInstall liblinear4 liblua5.3-0 lua-lpeg nmap nmap-common
 	
@@ -744,6 +746,15 @@ _getMost_debian11_install() {
 	
 	_getMost_backend_aptGetInstall mkisofs
 	_getMost_backend_aptGetInstall genisoimage
+	
+	
+	
+	
+	
+	_getMost_backend_aptGetInstall hdparm
+	_getMost_backend_aptGetInstall sdparm
+	
+	
 	
 	
 	
