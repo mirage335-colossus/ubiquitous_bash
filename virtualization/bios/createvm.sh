@@ -9,6 +9,8 @@ _createVMimage() {
 	
 	
 	export vmImageFile="$scriptLocal"/vm.img
+	[[ "$ubVirtImageOverride" != "" ]] && export vmImageFile="$ubVirtImageOverride"
+	
 	[[ -e "$vmImageFile" ]] && _messagePlain_good 'exists: '"$vmImageFile" && return 0
 	[[ -e "$scriptLocal"/vm.img ]] && _messagePlain_good 'exists: '"$vmImageFile" && return 0
 	
@@ -24,13 +26,19 @@ _createVMimage() {
 	_open
 	
 	export vmImageFile="$scriptLocal"/vm.img
-	[[ -e "$vmImageFile" ]] && _messagePlain_bad 'exists: '"$vmImageFile" && _messageFAIL && _stop 1
+	[[ "$ubVirtImageOverride" != "" ]] && export vmImageFile="$ubVirtImageOverride"
 	
 	
-	_messageNormal 'create: vm.img'
+	if [[ "$ubVirtImageOverride" == "" ]]
+	then
+		[[ -e "$vmImageFile" ]] && _messagePlain_bad 'exists: '"$vmImageFile" && _messageFAIL && _stop 1
 	
-	export vmSize=26572
-	_createRawImage
+	
+		_messageNormal 'create: vm.img'
+	
+		export vmSize=26572
+		_createRawImage
+	fi
 	
 	
 	_messageNormal 'partition: vm.img'
