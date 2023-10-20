@@ -47,6 +47,9 @@ _getMinimal_cloud() {
 	
 	_getMost_backend_aptGetInstall sloccount
 	
+	#_getMost_backend_aptGetInstall original-awk
+	_getMost_backend_aptGetInstall gawk
+	
 	_getMost_backend_aptGetInstall build-essential
 	_getMost_backend_aptGetInstall bison
 	_getMost_backend_aptGetInstall libelf-dev
