@@ -1,9 +1,9 @@
 
 _test_haskell() {
-	if [[ -e /etc/issue ]] && cat /etc/issue | grep 'Debian' > /dev/null 2>&1
-	then
-		_wantGetDep '/usr/share/doc/haskell-platform/README.Debian'
-	fi
+	#if [[ -e /etc/issue ]] && cat /etc/issue | grep 'Debian' > /dev/null 2>&1
+	#then
+		#_wantGetDep '/usr/share/doc/haskell-platform/README.Debian'
+	#fi
 
 	_wantGetDep alex
 	_wantGetDep cabal
