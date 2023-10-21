@@ -204,15 +204,20 @@ _loopImage_imagefilename() {
 # "$1" == imagefilename
 # "$2" == imagedev (text)
 _loopImage_procedure_losetup() {
-	if _detect_deviceAsVirtImage "$1"
-	then
-		! [[ -e "$1" ]] || _stop 1
-		echo "$1" > "$safeTmp"/imagedev
-		sudo -n partprobe > /dev/null 2>&1
+	# SEVERE - Disabled for more consistent behavior. Aside from now 'wasting' a loopback device, this may break any legacy uses of 'ubVirtImageOverride' .
+	#  CAUTION: TODO: Testing.
+	# WARNING: Partition names (ie. '/dev/loop1' , '/dev/loop1p1') may change (eg. to '/dev/sda' , '/dev/sda1') .
+	#  If uncommenting this functionality, also ensure 'ubVirtImageEFI' declaration (eg. used by '_createVMimage()' ) is sufficiently dynamic .
+	# WARNING: If uncommenting this functionality, also uncomment related use of '_detect_deviceAsVirtImage' within _closeLoop related functions.
+	#if _detect_deviceAsVirtImage "$1"
+	#then
+		#! [[ -e "$1" ]] && _stop 1
+		#echo "$1" > "$safeTmp"/imagedev
+		#sudo -n partprobe > /dev/null 2>&1
 		
-		_moveconfirm "$safeTmp"/imagedev "$2" > /dev/null 2>&1 || _stop 1
-		return 0
-	fi
+		#_moveconfirm "$safeTmp"/imagedev "$2" > /dev/null 2>&1 || _stop 1
+		#return 0
+	#fi
 	
 	sleep 1
 	sudo -n losetup -f -P --show "$1" > "$safeTmp"/imagedev 2> /dev/null || _stop 1
@@ -396,18 +401,18 @@ _mountImage() {
 # "$3" == imagefilename
 _unmountLoop_losetup() {
 	#if _detect_deviceAsVirtImage "$3" || [[ "$1" == '/dev/loop'* ]]
-	if _detect_deviceAsVirtImage "$3"
-	then
-		! [[ -e "$1" ]] || return 1
-		! [[ -e "$2" ]] || return 1
-		! [[ -e "$3" ]] || return 1
-		sudo -n partprobe > /dev/null 2>&1
+	#if _detect_deviceAsVirtImage "$3"
+	#then
+		#! [[ -e "$1" ]] && return 1
+		#! [[ -e "$2" ]] && return 1
+		#! [[ -e "$3" ]] && return 1
+		#sudo -n partprobe > /dev/null 2>&1
 		
-		#rm -f "$2" || return 1
-		rm -f "$2"
-		[[ -e "$2" ]] && return 1
-		return 0
-	fi
+		##rm -f "$2" || return 1
+		#rm -f "$2"
+		#[[ -e "$2" ]] && return 1
+		#return 0
+	#fi
 	
 	# DANGER: Should never happen.
 	[[ "$1" == '/dev/loop'* ]] || return 1

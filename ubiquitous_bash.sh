@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='2580000232'
+export ub_setScriptChecksum_contents='1582685028'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -15453,15 +15453,20 @@ _loopImage_imagefilename() {
 # "$1" == imagefilename
 # "$2" == imagedev (text)
 _loopImage_procedure_losetup() {
-	if _detect_deviceAsVirtImage "$1"
-	then
-		! [[ -e "$1" ]] || _stop 1
-		echo "$1" > "$safeTmp"/imagedev
-		sudo -n partprobe > /dev/null 2>&1
+	# SEVERE - Disabled for more consistent behavior. Aside from now 'wasting' a loopback device, this may break any legacy uses of 'ubVirtImageOverride' .
+	#  CAUTION: TODO: Testing.
+	# WARNING: Partition names (ie. '/dev/loop1' , '/dev/loop1p1') may change (eg. to '/dev/sda' , '/dev/sda1') .
+	#  If uncommenting this functionality, also ensure 'ubVirtImageEFI' declaration (eg. used by '_createVMimage()' ) is sufficiently dynamic .
+	# WARNING: If uncommenting this functionality, also uncomment related use of '_detect_deviceAsVirtImage' within _closeLoop related functions.
+	#if _detect_deviceAsVirtImage "$1"
+	#then
+		#! [[ -e "$1" ]] && _stop 1
+		#echo "$1" > "$safeTmp"/imagedev
+		#sudo -n partprobe > /dev/null 2>&1
 		
-		_moveconfirm "$safeTmp"/imagedev "$2" > /dev/null 2>&1 || _stop 1
-		return 0
-	fi
+		#_moveconfirm "$safeTmp"/imagedev "$2" > /dev/null 2>&1 || _stop 1
+		#return 0
+	#fi
 	
 	sleep 1
 	sudo -n losetup -f -P --show "$1" > "$safeTmp"/imagedev 2> /dev/null || _stop 1
@@ -15645,18 +15650,18 @@ _mountImage() {
 # "$3" == imagefilename
 _unmountLoop_losetup() {
 	#if _detect_deviceAsVirtImage "$3" || [[ "$1" == '/dev/loop'* ]]
-	if _detect_deviceAsVirtImage "$3"
-	then
-		! [[ -e "$1" ]] || return 1
-		! [[ -e "$2" ]] || return 1
-		! [[ -e "$3" ]] || return 1
-		sudo -n partprobe > /dev/null 2>&1
+	#if _detect_deviceAsVirtImage "$3"
+	#then
+		#! [[ -e "$1" ]] && return 1
+		#! [[ -e "$2" ]] && return 1
+		#! [[ -e "$3" ]] && return 1
+		#sudo -n partprobe > /dev/null 2>&1
 		
-		#rm -f "$2" || return 1
-		rm -f "$2"
-		[[ -e "$2" ]] && return 1
-		return 0
-	fi
+		##rm -f "$2" || return 1
+		#rm -f "$2"
+		#[[ -e "$2" ]] && return 1
+		#return 0
+	#fi
 	
 	# DANGER: Should never happen.
 	[[ "$1" == '/dev/loop'* ]] || return 1
@@ -17601,13 +17606,13 @@ _createVMimage() {
 	export vmImageFile="$scriptLocal"/vm.img
 	[[ "$ubVirtImageOverride" != "" ]] && export vmImageFile="$ubVirtImageOverride"
 	
-	[[ -e "$vmImageFile" ]] && _messagePlain_good 'exists: '"$vmImageFile" && return 0
-	[[ -e "$scriptLocal"/vm.img ]] && _messagePlain_good 'exists: '"$vmImageFile" && return 0
+	[[ "$ubVirtImageOverride" == "" ]] && [[ -e "$vmImageFile" ]] && _messagePlain_good 'exists: '"$vmImageFile" && return 0
+	[[ "$ubVirtImageOverride" == "" ]] && [[ -e "$scriptLocal"/vm.img ]] && _messagePlain_good 'exists: '"$vmImageFile" && return 0
 	
 	[[ -e "$lock_open" ]]  && _messagePlain_bad 'bad: locked!' && _messageFAIL && _stop 1
 	[[ -e "$scriptLocal"/l_o ]]  && _messagePlain_bad 'bad: locked!' && _messageFAIL && _stop 1
 	
-	! [[ $(df --block-size=1000000000 --output=avail "$scriptLocal" | tr -dc '0-9') -gt "25" ]] && _messageFAIL && _stop 1
+	[[ "$ubVirtImageOverride" == "" ]] && ! [[ $(df --block-size=1000000000 --output=avail "$scriptLocal" | tr -dc '0-9') -gt "25" ]] && _messageFAIL && _stop 1
 	
 	
 	
