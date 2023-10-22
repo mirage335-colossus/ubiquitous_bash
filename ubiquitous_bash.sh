@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='2648604609'
+export ub_setScriptChecksum_contents='879546908'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -25092,7 +25092,7 @@ _wget_githubRelease_join-stdout() {
 		let currentIterationNext1=currentIteration+1
 		while [[ "${currentURL_array_reversed[$currentIteration]}" != "" ]] || [[ "${currentURL_array_reversed[$currentIterationNext1]}" != "" ]]
 		do
-			#rm -f "$currentAxelTmpFile"
+			rm -f "$currentAxelTmpFile"
 			rm -f "$currentAxelTmpFile".aria2
 			rm -f "$currentAxelTmpFile".tmp
 			rm -f "$currentAxelTmpFile".tmp.st
@@ -25214,7 +25214,7 @@ _wget_githubRelease_join-stdout() {
 				
 				du -sh "$currentAxelTmpFile".tmp2 >> "$currentAxelTmpFile"
 				
-				cat "$currentAxelTmpFile".tmp2 >> "$currentAxelTmpFile"
+				#cat "$currentAxelTmpFile".tmp2 >> "$currentAxelTmpFile"
 			fi
 
 			let currentIteration=currentIteration+2

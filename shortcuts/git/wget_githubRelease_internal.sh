@@ -136,7 +136,7 @@ _wget_githubRelease_join-stdout() {
 		let currentIterationNext1=currentIteration+1
 		while [[ "${currentURL_array_reversed[$currentIteration]}" != "" ]] || [[ "${currentURL_array_reversed[$currentIterationNext1]}" != "" ]]
 		do
-			#rm -f "$currentAxelTmpFile"
+			rm -f "$currentAxelTmpFile"
 			rm -f "$currentAxelTmpFile".aria2
 			rm -f "$currentAxelTmpFile".tmp
 			rm -f "$currentAxelTmpFile".tmp.st
@@ -258,7 +258,7 @@ _wget_githubRelease_join-stdout() {
 				
 				du -sh "$currentAxelTmpFile".tmp2 >> "$currentAxelTmpFile"
 				
-				cat "$currentAxelTmpFile".tmp2 >> "$currentAxelTmpFile"
+				#cat "$currentAxelTmpFile".tmp2 >> "$currentAxelTmpFile"
 			fi
 
 			let currentIteration=currentIteration+2
