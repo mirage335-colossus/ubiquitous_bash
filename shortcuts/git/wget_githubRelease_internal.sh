@@ -134,9 +134,10 @@ _wget_githubRelease_join-stdout() {
 		currentIteration=0
 		local currentIterationNext1
 		let currentIterationNext1=currentIteration+1
+		rm -f "$currentAxelTmpFile"
 		while [[ "${currentURL_array_reversed[$currentIteration]}" != "" ]] || [[ "${currentURL_array_reversed[$currentIterationNext1]}" != "" ]]
 		do
-			rm -f "$currentAxelTmpFile"
+			#rm -f "$currentAxelTmpFile"
 			rm -f "$currentAxelTmpFile".aria2
 			rm -f "$currentAxelTmpFile".tmp
 			rm -f "$currentAxelTmpFile".tmp.st
@@ -178,9 +179,38 @@ _wget_githubRelease_join-stdout() {
 					currentPID_1="$!"
 				fi
 			fi
+			
+			
+			
+			
+			if [[ "$currentIteration" != "0" ]]
+			then
+				# ATTENTION: Staggered.
+				#sleep 10 > /dev/null 2>&1
+				wait "$currentPID_2" >&2
+				#wait >&2
 
-			# ATTENTION: Staggered.
-			#sleep 8 > /dev/null 2>&1
+				sleep 0.2 > /dev/null 2>&1
+				if [[ -e "$currentAxelTmpFile".tmp2 ]]
+				then
+					_messagePlain_probe dd if="$currentAxelTmpFile".tmp2 bs=1M status=progress' >> '"$currentAxelTmpFile" >&2
+					
+					# ### dd if="$currentAxelTmpFile".tmp2 bs=5M status=progress >> "$currentAxelTmpFile"
+					dd if="$currentAxelTmpFile".tmp2 bs=1M status=progress
+					#cat "$currentAxelTmpFile".tmp2
+					
+					du -sh "$currentAxelTmpFile".tmp2 >> "$currentAxelTmpFile"
+					
+					#cat "$currentAxelTmpFile".tmp2 >> "$currentAxelTmpFile"
+				fi
+			else
+				# ATTENTION: Staggered.
+				sleep 6 > /dev/null 2>&1
+				true
+			fi
+			
+			
+
 
 			# Download preferring from IPv4 address.
 			#--disable-ipv6
@@ -211,11 +241,11 @@ _wget_githubRelease_join-stdout() {
 			
 
 			# ATTENTION: NOT staggered.
-			wait "$currentPID_1" >&2
-			#wait "$currentPID_2" >&2
-			wait >&2
-
 			#wait "$currentPID_1" >&2
+			#wait "$currentPID_2" >&2
+			#wait >&2
+
+			wait "$currentPID_1" >&2
 			sleep 0.2 > /dev/null 2>&1
 			if [[ -e "$currentAxelTmpFile".tmp1 ]]
 			then
@@ -240,25 +270,6 @@ _wget_githubRelease_join-stdout() {
 					
 					#cat "$currentAxelTmpFile".tmp1 >> "$currentAxelTmpFile"
 				fi
-			fi
-
-			# ATTENTION: Staggered.
-			#sleep 10 > /dev/null 2>&1
-			##wait "$currentPID_2" >&2
-			#wait >&2
-
-			sleep 0.2 > /dev/null 2>&1
-			if [[ -e "$currentAxelTmpFile".tmp2 ]]
-			then
-				_messagePlain_probe dd if="$currentAxelTmpFile".tmp2 bs=1M status=progress' >> '"$currentAxelTmpFile" >&2
-				
-				# ### dd if="$currentAxelTmpFile".tmp2 bs=5M status=progress >> "$currentAxelTmpFile"
-				dd if="$currentAxelTmpFile".tmp2 bs=1M status=progress
-				#cat "$currentAxelTmpFile".tmp2
-				
-				du -sh "$currentAxelTmpFile".tmp2 >> "$currentAxelTmpFile"
-				
-				#cat "$currentAxelTmpFile".tmp2 >> "$currentAxelTmpFile"
 			fi
 
 			let currentIteration=currentIteration+2
