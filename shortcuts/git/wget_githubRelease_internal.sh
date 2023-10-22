@@ -215,7 +215,7 @@ _wget_githubRelease_join-stdout() {
 				if [[ "$currentIteration" == "0" ]]
 				then
 					# ATTENTION: Staggered.
-					sleep 6 > /dev/null 2>&1
+					#sleep 6 > /dev/null 2>&1
 					true
 				fi
 			fi
@@ -262,6 +262,14 @@ _wget_githubRelease_join-stdout() {
 			#wait "$currentPID_1" >&2
 			#wait "$currentPID_2" >&2
 			#wait >&2
+			
+			if [[ "$currentIteration" == "0" ]]
+			then
+				sleep 6
+				[[ "$currentPID_2" == "" ]] && sleep 35
+				[[ "$currentPID_2" != "" ]] && wait "$currentPID_2" >&2
+				wait >&2
+			fi
 
 			wait "$currentPID_1" >&2
 			sleep 0.2 > /dev/null 2>&1
