@@ -265,6 +265,7 @@ _wget_githubRelease_join-stdout() {
 			
 			if [[ "$currentIteration" == "0" ]]
 			then
+				wait "$currentPID_1" >&2
 				sleep 6 > /dev/null 2>&1
 				[[ "$currentPID_2" == "" ]] && sleep 35 > /dev/null 2>&1
 				[[ "$currentPID_2" != "" ]] && wait "$currentPID_2" >&2
