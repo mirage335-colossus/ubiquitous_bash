@@ -229,7 +229,8 @@ _wget_githubRelease_join-stdout() {
 					#dd if="$currentAxelTmpFile".tmp1 bs=1M status=progress >> "$currentAxelTmpFile" &
 				
 					# ATTENTION: NOT staggered.
-					dd if="$currentAxelTmpFile".tmp1 bs=5M status=progress >> "$currentAxelTmpFile"
+					# ### dd if="$currentAxelTmpFile".tmp1 bs=5M status=progress >> "$currentAxelTmpFile"
+					dd if="$currentAxelTmpFile".tmp1 bs=1M status=progress
 				
 					#cat "$currentAxelTmpFile".tmp1 >> "$currentAxelTmpFile"
 				fi
@@ -244,7 +245,10 @@ _wget_githubRelease_join-stdout() {
 			if [[ -e "$currentAxelTmpFile".tmp2 ]]
 			then
 				_messagePlain_probe dd if="$currentAxelTmpFile".tmp2 bs=1M status=progress' >> '"$currentAxelTmpFile" >&2
-				dd if="$currentAxelTmpFile".tmp2 bs=5M status=progress >> "$currentAxelTmpFile"
+				
+				# ### dd if="$currentAxelTmpFile".tmp2 bs=5M status=progress >> "$currentAxelTmpFile"
+				dd if="$currentAxelTmpFile".tmp2 bs=1M status=progress
+				
 				#cat "$currentAxelTmpFile".tmp2 >> "$currentAxelTmpFile"
 			fi
 
@@ -299,10 +303,11 @@ _wget_githubRelease_join-stdout() {
 
 		if ! [[ -e "$currentAxelTmpFile" ]]
 		then
-			return 1
+			true
+			# ### return 1
 		fi
 
-		cat "$currentAxelTmpFile"
+		# ### cat "$currentAxelTmpFile"
 
 		rm -f "$currentAxelTmpFile"
 		rm -f "$currentAxelTmpFile".aria2
