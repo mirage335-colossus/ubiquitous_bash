@@ -186,7 +186,10 @@ _wget_githubRelease_join-stdout() {
 			fi
 			
 			
-			
+			# CAUTION: ATTENTION: Very important. Simultaneous reading and writing is *very* important for writing directly to slow media (ie. BD-R) .
+			#  NOTICE: Wirting directly to slow BD-R is essential for burning a Live disc from having booted a Live disc.
+			#   DANGER: Critical for rapid recovery back to recent upstream 'ubdist/OS' ! Do NOT unnecessarily degrade this capability!
+			#  Also theoretically helpful with especially fast network connections.
 			#if [[ "$currentIteration" != "0" ]]
 			if [[ -e "$currentAxelTmpFile".tmp2 ]]
 			then
