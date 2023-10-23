@@ -37,7 +37,10 @@ _createVMimage() {
 		_messageNormal 'create: vm.img'
 	
 		# 25.95GiB
-		export vmSize=26572
+		#export vmSize=26572
+	
+		# 27.95GiB
+		export vmSize=28620
 		
 		export vmSize_boundary=$(bc <<< "$vmSize - 1")
 		_createRawImage
