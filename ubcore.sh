@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='2812891650'
+export ub_setScriptChecksum_contents='911694736'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -9905,10 +9905,28 @@ _getMost_debian11_install() {
 	
 	_getMost_backend_aptGetInstall apt-utils
 	
-	
 	_getMost_backend_aptGetInstall pigz
 	_getMost_backend_aptGetInstall pixz
-	
+
+
+	_getMost_backend_aptGetInstall bash dash
+
+	_getMost_backend_aptGetInstall aria2 curl gpg
+
+	if ! _getMost_backend dash -c 'type apt-fast' > /dev/null 2>&1
+	then
+		_getMost_backend_aptGetInstall aria2 curl gpg
+		
+		_getMost_backend mkdir -p /etc/apt/keyrings
+		_getMost_backend curl -fsSL https://keyserver.ubuntu.com/pks/lookup?op=get&search=0xA2166B8DE8BDC3367D1901C11EE2FF37CA8DA16B | _getMost_backend gpg --dearmor -o /etc/apt/keyrings/apt-fast.gpg
+		_getMost_backend apt-get update
+		_getMost_backend_aptGetInstall apt-fast
+
+		echo debconf apt-fast/maxdownloads string 16 | _getMost_backend debconf-set-selections
+		echo debconf apt-fast/dlflag boolean true | _getMost_backend debconf-set-selections
+		echo debconf apt-fast/aptmanager string apt-get | _getMost_backend debconf-set-selections
+	fi
+
 	
 	_messagePlain_probe 'apt-get update'
 	_getMost_backend apt-get update
@@ -10775,7 +10793,7 @@ _set_getMost_backend_debian() {
 		# --no-upgrade
 		# -o Dpkg::Options::="--force-confold"
 		
-		if ! type -p apt-fast > /dev/null 2>&1
+		if ! _getMost_backend dash -c 'type apt-fast' > /dev/null 2>&1
 		then
 			_messagePlain_probe _getMost_backend env XZ_OPT="-T0" DEBIAN_FRONTEND=noninteractive apt-get -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install -q --install-recommends -y "$@"
 			_getMost_backend env XZ_OPT="-T0" DEBIAN_FRONTEND=noninteractive apt-get -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install -q --install-recommends -y "$@"
