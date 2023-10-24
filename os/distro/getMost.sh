@@ -244,6 +244,8 @@ _getMost_debian11_install() {
 	_getMost_backend_aptGetInstall gpg
 	_getMost_backend_aptGetInstall --reinstall wget
 	
+	_getMost_backend_aptGetInstall apt-utils
+	
 	
 	_getMost_backend_aptGetInstall pigz
 	_getMost_backend_aptGetInstall pixz
