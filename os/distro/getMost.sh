@@ -245,6 +245,10 @@ _getMost_debian11_install() {
 	_getMost_backend_aptGetInstall --reinstall wget
 	
 	
+	_getMost_backend_aptGetInstall pigz
+	_getMost_backend_aptGetInstall pixz
+	
+	
 	_messagePlain_probe 'apt-get update'
 	_getMost_backend apt-get update
 	
@@ -559,7 +563,7 @@ _getMost_debian11_install() {
 
 	
 	_getMost_backend_aptGetInstall live-boot
-	_getMost_backend_aptGetInstall pigz
+	#_getMost_backend_aptGetInstall pigz
 	
 	_getMost_backend_aptGetInstall falkon
 	_getMost_backend_aptGetInstall konqueror
@@ -1108,11 +1112,13 @@ _getMost_ubuntu22-VBoxManage() {
 _set_getMost_backend_debian() {
 	_getMost_backend_aptGetInstall() {
 		# --no-upgrade
-		_messagePlain_probe _getMost_backend env DEBIAN_FRONTEND=noninteractive apt-get -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install --install-recommends -y "$@"
-		#_getMost_backend env DEBIAN_FRONTEND=noninteractive apt-get -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install --install-recommends -y "$@"
+		# -o Dpkg::Options::="--force-confold"
 		
-		_messagePlain_probe _getMost_backend env DEBIAN_FRONTEND=noninteractive apt -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install --install-recommends -y "$@"
-		_getMost_backend env DEBIAN_FRONTEND=noninteractive apt -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install --install-recommends -y "$@"
+		_messagePlain_probe _getMost_backend env DEBIAN_FRONTEND=noninteractive apt-get -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install --install-recommends -y "$@"
+		_getMost_backend env XZ_OPT="-T0" DEBIAN_FRONTEND=noninteractive apt-get -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install -q --install-recommends -y "$@"
+		
+		#_messagePlain_probe _getMost_backend env DEBIAN_FRONTEND=noninteractive apt -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install --install-recommends -y "$@"
+		#_getMost_backend env XZ_OPT="-T0" DEBIAN_FRONTEND=noninteractive apt -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install --install-recommends -y "$@"
 	}
 	
 	#if [[ -e /etc/issue ]] && cat /etc/issue | grep 'Ubuntu' > /dev/null 2>&1
