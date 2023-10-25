@@ -34,7 +34,7 @@ _createVMimage() {
 		[[ -e "$vmImageFile" ]] && _messagePlain_bad 'exists: '"$vmImageFile" && _messageFAIL && _stop 1
 	
 	
-		_messageNormal 'create: vm.img'
+		_messageNormal 'create: vm.img: file'
 	
 		# 25.95GiB
 		#export vmSize=26572
@@ -44,6 +44,12 @@ _createVMimage() {
 		
 		export vmSize_boundary=$(bc <<< "$vmSize - 1")
 		_createRawImage
+	else
+		_messageNormal 'create: vm.img: device'
+
+		
+		export vmSize=$(bc <<< $(sudo -n lsblk -b --output SIZE -n -d "$vmImageFile")' / 1048576')
+		export vmSize_boundary=$(bc <<< "$vmSize - 1")
 	fi
 	
 	
