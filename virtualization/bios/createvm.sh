@@ -90,7 +90,7 @@ _createVMimage() {
 	# ATTENTION: NOTICE: Larger EFI partition may be more compatible. Larger Swap partition may be more useful for hibernation.
 	
 	# BIOS
-	sudo -n parted --script "$vmImageFile" 'mkpart primary ext2 1 2'
+	sudo -n parted --script "$vmImageFile" 'mkpart primary ext2 1MiB 2MiB'
 	sudo -n parted --script "$vmImageFile" 'set 1 bios_grub on'
 	
 	
