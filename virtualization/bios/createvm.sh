@@ -49,6 +49,7 @@ _createVMimage() {
 
 		
 		export vmSize=$(bc <<< $(sudo -n lsblk -b --output SIZE -n -d "$vmImageFile")' / 1048576')
+		export vmSize=$(bc <<< "$vmSize - 1")
 		export vmSize_boundary=$(bc <<< "$vmSize - 1")
 	fi
 	
