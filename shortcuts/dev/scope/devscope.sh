@@ -115,6 +115,8 @@ _scope_interact() {
 	
 	_scopePrompt
 	
+	_safe_declare_uid
+	
 	if [[ "$@" == "" ]]
 	then
 		_scope_terminal_procedure
@@ -122,6 +124,8 @@ _scope_interact() {
 		#eclipse
 # 		return
 	fi
+	
+	_safe_declare_uid
 	
 	"$@"
 }

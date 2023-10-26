@@ -1,4 +1,19 @@
 
+_setupUbiquitous_safe_bashrc() {
+
+cat << CZXWXcRMTo8EmM8i4d
+#Generates semi-random alphanumeric characters, default length 18.
+#_uid() {
+	#local currentLengthUID
+	#currentLengthUID="\$1"
+	#[[ "\$currentLengthUID" == "" ]] && currentLengthUID=18
+	#cat /dev/random 2> /dev/null | base64 2> /dev/null | tr -dc 'a-zA-Z0-9' 2> /dev/null | tr -d 'acdefhilmnopqrsuvACDEFHILMNOPQRSU14580' | head -c "\$currentLengthUID" 2> /dev/null
+	#return
+#}
+_safe_declare_uid
+CZXWXcRMTo8EmM8i4d
+
+}
 
 _setupUbiquitous_here() {
 	! uname -a | grep -i cygwin > /dev/null 2>&1 && cat << CZXWXcRMTo8EmM8i4d

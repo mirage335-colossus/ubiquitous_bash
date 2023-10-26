@@ -311,7 +311,50 @@ CZXWXcRMTo8EmM8i4d
 
 
 
+_setupUbiquitous_accessories_here-coreoracle_bashrc() {
+	
+	if _if_cygwin
+	then
+		cat << CZXWXcRMTo8EmM8i4d
 
+if [[ -e /cygdrive/c/core/infrastructure/coreoracle ]]
+then
+	export shortcutsPath_coreoracle=/cygdrive/c/"core/infrastructure/coreoracle"
+	. /cygdrive/c/core/infrastructure/coreoracle/_shortcuts-cygwin.sh
+fi
+
+CZXWXcRMTo8EmM8i4d
+	else
+		cat << CZXWXcRMTo8EmM8i4d
+
+if type sudo > /dev/null 2>&1 && groups | grep -E 'wheel|sudo' > /dev/null 2>&1 && ! uname -a | grep -i cygwin > /dev/null 2>&1
+then
+	# Greater or equal, '_priority_critical_pid_root' .
+	sudo -n renice -n -15 -p \$\$ > /dev/null 2>&1
+	sudo -n ionice -c 2 -n 2 -p \$\$ > /dev/null 2>&1
+fi
+
+
+if [[ -e "$HOME"/core/infrastructure/coreoracle ]]
+then
+	export shortcutsPath_coreoracle="$HOME"/core/infrastructure/coreoracle/
+	. "$HOME"/core/infrastructure/coreoracle/_shortcuts.sh
+fi
+
+# Returns priority to normal.
+# Greater or equal, '_priority_app_pid_root' .
+#ionice -c 2 -n 3 -p \$\$
+#renice -n -5 -p \$\$ > /dev/null 2>&1
+
+# Returns priority to normal.
+# Greater or equal, '_priority_app_pid' .
+ionice -c 2 -n 4 -p \$\$
+renice -n 0 -p \$\$ > /dev/null 2>&1
+
+
+CZXWXcRMTo8EmM8i4d
+	fi
+}
 
 
 

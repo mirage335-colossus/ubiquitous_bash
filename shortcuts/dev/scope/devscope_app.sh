@@ -18,6 +18,8 @@ _scope_terminal_procedure() {
 	_tryExec '_scopePrompt'
 	#_tryExec '_visualPrompt'
 	
+	_safe_declare_uid
+	
 	export PATH="$PATH":"$ub_scope"
 	echo
 	/usr/bin/env bash --norc
@@ -25,6 +27,8 @@ _scope_terminal_procedure() {
 }
 
 _scope_terminal() {
+	_safe_declare_uid
+	
 	local shiftParam1
 	shiftParam1="$1"
 	shift
@@ -34,10 +38,14 @@ _scope_terminal() {
 }
 
 _scope_eclipse_procedure() {
+	_safe_declare_uid
+	
 	_eclipse "$@"
 }
 
 _scope_eclipse() {
+	_safe_declare_uid
+	
 	local shiftParam1
 	shiftParam1="$1"
 	shift
@@ -47,11 +55,15 @@ _scope_eclipse() {
 }
 
 _scope_atom_procedure() {
+	_safe_declare_uid
+	
 	"$scriptAbsoluteLocation" _atom_tmp_sequence "$ub_specimen" "$@"  > /dev/null 2>&1
 }
 
 # WARNING: No production use. Not to be relied upon. May be removed.
 _scope_atom() {
+	_safe_declare_uid
+	
 	local shiftParam1
 	shiftParam1="$1"
 	shift
@@ -61,11 +73,15 @@ _scope_atom() {
 }
 
 _scope_konsole_procedure() {
+	_safe_declare_uid
+	
 	_messagePlain_probe konsole --workdir "$ub_specimen" "$@"
 	konsole --workdir "$ub_specimen" "$@"
 }
 
 _scope_konsole() {
+	_safe_declare_uid
+	
 	local shiftParam1
 	shiftParam1="$1"
 	shift
@@ -75,10 +91,14 @@ _scope_konsole() {
 }
 
 _scope_dolphin_procedure() {
+	_safe_declare_uid
+	
 	dolphin "$ub_specimen" "$@"
 }
 
 _scope_dolphin() {
+	_safe_declare_uid
+	
 	local shiftParam1
 	shiftParam1="$1"
 	shift

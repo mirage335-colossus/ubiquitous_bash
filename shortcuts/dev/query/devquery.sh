@@ -46,10 +46,14 @@ _prepare_query() {
 	! [[ -e "$ub_queryserver" ]] && cp "$scriptAbsoluteLocation" "$ub_queryserver"
 	
 	_prepare_query_prog "$@"
+	
+	_safe_declare_uid
 }
 
 _queryServer_sequence() {
 	_start
+	
+	_safe_declare_uid
 	
 	local currentExitStatus
 	
@@ -70,6 +74,8 @@ _qs() {
 
 _queryClient_sequence() {
 	_start
+	
+	_safe_declare_uid
 	
 	local currentExitStatus
 	

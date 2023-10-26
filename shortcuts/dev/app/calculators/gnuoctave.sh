@@ -1,6 +1,8 @@
 
 
 _octave_terse() {
+	_safe_declare_uid
+	
 	if [[ "$1" != "" ]]
 	then
 		_safeEcho_newline "$@" | octave --quiet --silent --no-window-system --no-gui 2>/dev/null | _octave_filter-messages
@@ -14,16 +16,20 @@ _octave_terse() {
 _octave() {
 	if [[ "$1" != "" ]]
 	then
+		_safe_declare_uid
 		_octave_terse "$@"
 		return
 	fi
 	
+	_safe_declare_uid
 	octave --quiet --silent --no-window-system --no-gui "$@"
 	return
 }
 
 # ATTENTION: EXAMPLE: echo 'solve(x == y * 2, y)' | _octave_pipe
 _octave_pipe() {
+	_safe_declare_uid
+	
 	_octave_terse "$@"
 	#octave --quiet --silent --no-window-system --no-gui "$@" 2>/dev/null | _octave_filter-messages
 }
@@ -33,6 +39,8 @@ _octave_pipe() {
 _octave_script() {
 	local currentFile="$1"
 	shift
+	
+	_safe_declare_uid
 	
 	cat "$currentFile" | _octave_terse "$@"
 	

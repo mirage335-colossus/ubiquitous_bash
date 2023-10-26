@@ -3,6 +3,8 @@
 
 
 _qalculate_terse() {
+	_safe_declare_uid
+	
 	# https://stackoverflow.com/questions/17998978/removing-colors-from-output
 	#sed -r "s/\x1B\[([0-9]{1,3}(;[0-9]{1,2})?)?[mGK]//g"
 	
@@ -27,20 +29,26 @@ _qalculate_terse() {
 
 # Interactive.
 _qalculate() {
+	_safe_declare_uid
+	
 	mkdir -p "$HOME"/.config/qalculate
 	
 	if [[ "$1" != "" ]]
 	then
+		_safe_declare_uid
 		_qalculate_terse "$@"
 		return
 	fi
 	
+	_safe_declare_uid
 	qalc "$@"
 	return
 }
 
 # ATTENTION: EXAMPLE: echo 'solve(x == y * 2, y)' | _qalculate_pipe
 _qalculate_pipe() {
+	_safe_declare_uid
+	
 	_qalculate_terse "$@"
 }
 
@@ -49,6 +57,8 @@ _qalculate_pipe() {
 _qalculate_script() {
 	local currentFile="$1"
 	shift
+	
+	_safe_declare_uid
 	
 	cat "$currentFile" | _qalculate_pipe "$@"
 }
