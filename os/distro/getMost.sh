@@ -444,6 +444,8 @@ _getMost_debian11_install() {
 	_getMost_backend_aptGetInstall gcc-arm-none-eabi
 	_getMost_backend_aptGetInstall binutils-arm-none-eabi
 	_getMost_backend_aptGetInstall libusb-1.0
+	
+	_getMost_backend_aptGetInstall setserial
 
 	_getMost_backend_aptGetInstall virtualenv
 	_getMost_backend_aptGetInstall python3-dev
