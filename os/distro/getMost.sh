@@ -803,6 +803,12 @@ _getMost_debian11_install() {
 	
 	
 	
+	_getMost_backend_aptGetInstall php
+	
+	
+	
+	
+	
 	_getMost_backend_aptGetInstall synaptic
 	
 	_getMost_backend_aptGetInstall cifs-utils

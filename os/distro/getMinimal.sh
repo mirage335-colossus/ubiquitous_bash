@@ -284,6 +284,11 @@ _getMinimal_cloud() {
 	_getMost_backend_aptGetInstall genisoimage
 	
 	
+	
+	_getMost_backend_aptGetInstall php
+	
+	
+	
 	# purge-old-kernels
 	_getMost_backend_aptGetInstall byobu
 	
