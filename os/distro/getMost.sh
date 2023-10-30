@@ -935,6 +935,7 @@ _getMost_debian11_install() {
 
 
 	_getMost_backend_aptGetInstall fldigi
+	_getMost_backend_aptGetInstall flamp
 	_getMost_backend_aptGetInstall psk31lx
 	
 	
