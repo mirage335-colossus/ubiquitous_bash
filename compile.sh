@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='3689105645'
+export ub_setScriptChecksum_contents='1740375526'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -5903,6 +5903,7 @@ _init_deps() {
 	
 	export enUb_hardware=""
 	export enUb_enUb_x220t=""
+	export enUb_enUb_w540=""
 	export enUb_enUb_peripherial=""
 	
 	export enUb_user=""
@@ -6215,6 +6216,12 @@ _deps_x220t() {
 	_deps_notLean
 	_deps_hardware
 	export enUb_x220t="true"
+}
+
+_deps_w540() {
+	_deps_notLean
+	_deps_hardware
+	export enUb_w540="true"
 }
 
 _deps_peripherial() {
@@ -6794,6 +6801,10 @@ _compile_bash_deps() {
 		_deps_getVeracrypt
 		_deps_linux
 		
+		_deps_hardware
+		_deps_x220t
+		_deps_w540
+		
 		_deps_generic
 		
 		_deps_python
@@ -6983,6 +6994,7 @@ _compile_bash_deps() {
 		
 		#_deps_hardware
 		#_deps_x220t
+		#_deps_w540
 		#_deps_peripherial
 		
 		#_deps_user
@@ -7080,6 +7092,7 @@ _compile_bash_deps() {
 		
 		#_deps_hardware
 		#_deps_x220t
+		#_deps_w540
 		#_deps_peripherial
 		
 		#_deps_user
@@ -7177,6 +7190,7 @@ _compile_bash_deps() {
 		
 		_deps_hardware
 		_deps_x220t
+		_deps_w540
 		_deps_peripherial
 		
 		_deps_user
@@ -7644,6 +7658,7 @@ _compile_bash_user() {
 
 _compile_bash_hardware() {
 	[[ "$enUb_hardware" == "true" ]] && [[ "$enUb_x220t" == "true" ]] && includeScriptList+=( "hardware/x220t"/x220_display.sh )
+	[[ "$enUb_hardware" == "true" ]] && [[ "$enUb_w540" == "true" ]] && includeScriptList+=( "hardware/w540"/w540_fan.sh )
 	
 	[[ "$enUb_hardware" == "true" ]] && [[ "$enUb_peripherial" == "true" ]] && includeScriptList+=( "hardware/peripherial/h1060p"/h1060p.sh )
 }

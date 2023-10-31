@@ -54,6 +54,7 @@ _init_deps() {
 	
 	export enUb_hardware=""
 	export enUb_enUb_x220t=""
+	export enUb_enUb_w540=""
 	export enUb_enUb_peripherial=""
 	
 	export enUb_user=""
@@ -366,6 +367,12 @@ _deps_x220t() {
 	_deps_notLean
 	_deps_hardware
 	export enUb_x220t="true"
+}
+
+_deps_w540() {
+	_deps_notLean
+	_deps_hardware
+	export enUb_w540="true"
 }
 
 _deps_peripherial() {

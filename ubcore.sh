@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='2887620718'
+export ub_setScriptChecksum_contents='1529621063'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -22742,6 +22742,282 @@ _systemd_cleanup() {
 	
 	# WARNING: Relies on a >72char filename.
 	sudo -n rm -f /etc/systemd/system/????????????????????????????????????????????????????????????????????????.service
+}
+
+_test_x220() {
+	#_getDep xlock
+	_getDep loginctl
+	
+	_getDep xsetwacom
+}
+
+_prepare_x220() {
+	export ub_hardware_x220_dir="$HOME"/.ubcore/hardware
+	mkdir -p "$ub_hardware_x220_dir"
+}
+
+_x220_getTrackpoint() {
+	export xi_devID=$(xinput list | grep 'TPPS/2 IBM TrackPoint' | cut -d= -f 2 | cut -f 1)
+	export xi_state=$(xinput -list-props "$xi_devID" | grep -i 'Device Enabled' | cut -d\) -f2 | sed 's/[^0-9]//g')
+	export xi_propNumber=$(xinput -list-props "$xi_devID" | grep -i 'Device Enabled' | cut -d\( -f2 | cut -d\) -f1 | sed 's/[^0-9]//g')
+}
+
+_x220_setTrackPoint() {
+	_x220_getTrackpoint
+	_report_xi
+
+	xinput -set-prop $xi_devID $xi_propNumber "$@"
+}
+
+_x220_enableTrackPoint() {
+	_messagePlain_nominal "Enabling TrackPoint."
+	_x220_setTrackPoint 1
+}
+
+_x220_disableTrackPoint() {
+	_messagePlain_nominal "Disabling TrackPoint."
+	_x220_setTrackPoint 0
+}
+
+_x220_getTouch() {
+	export xi_devID=$(xinput list | grep 'Wacom ISDv4 E6 Finger touch' | cut -d= -f 2 | cut -f 1)
+	export xi_state=$(xinput -list-props "$xi_devID" | grep -i 'Device Enabled' | cut -d\) -f2 | sed 's/[^0-9]//g')
+	export xi_propNumber=$(xinput -list-props "$xi_devID" | grep -i 'Device Enabled' | cut -d\( -f2 | cut -d\) -f1 | sed 's/[^0-9]//g')
+}
+
+_x220_setTouch() {
+	_x220_getTouch
+	_report_xi
+	
+	xinput -set-prop $xi_devID $xi_propNumber "$@"
+}
+
+_x220_enableTouch() {
+	_messagePlain_nominal "Enabling Touch."
+	
+	#On enable, momentarily block input events. Otherwise, all touch previous touch events will be processed.
+	#xlock -mode flag -message "Enabling touch..." &
+	loginctl lock-session
+	sleep 2
+	
+	_x220_setTouch 1
+	
+	sleep 2
+	#kill -KILL $!
+	loginctl unlock-session
+}
+
+_x220_disableTouch() {
+	_messagePlain_nominal "Disabling Touch."
+	_x220_setTouch 0
+}
+
+_x220_toggleTouch() {
+	_messagePlain_nominal "Togling Touch."
+	
+	_x220_getTouch
+	_report_xi
+	
+	if [[ "$xi_state" == "1" ]]
+	then
+		_x220_disableTouch
+	else
+		_x220_enableTouch
+	fi
+}
+
+#Workaround. Display configuration changes may inappropriately remap pen/eraser/touch input off matching internal screen.
+_x220_wacomLVDS() {
+	xsetwacom --set 'Wacom ISDv4 E6 Pen stylus'  "MapToOutput" LVDS1
+	xsetwacom --set 'Wacom ISDv4 E6 Pen stylus'  "MapToOutput" LVDS-1
+	xsetwacom --set 'Wacom ISDv4 E6 Pen eraser'  "MapToOutput" LVDS1
+	xsetwacom --set 'Wacom ISDv4 E6 Pen eraser'  "MapToOutput" LVDS-1
+	xsetwacom --set 'Wacom ISDv4 E6 Finger touch'  "MapToOutput" LVDS1
+	xsetwacom --set 'Wacom ISDv4 E6 Finger touch'  "MapToOutput" LVDS-1
+}
+
+_x220_setWacomRotation() {
+	_x220_wacomLVDS
+	
+	xsetwacom --set 'Wacom ISDv4 E6 Pen stylus' rotate $1
+	xsetwacom --set 'Wacom ISDv4 E6 Pen eraser' rotate $1
+	xsetwacom --set 'Wacom ISDv4 E6 Finger touch' rotate $1
+}
+
+_x220_tablet_N000() {
+	_messagePlain_nominal "Tablet - N000"
+	
+	_prepare_x220
+	
+	xrandr --output LVDS1 --rotate normal
+	xrandr --output LVDS-1 --rotate normal
+	_x220_setWacomRotation none
+	echo "N000" > "$ub_hardware_x220_dir"/screenRotationState
+	
+	_x220_enableTouch
+	_x220_enableTrackPoint
+	
+	_reset_KDE
+}
+
+_x220_tablet_E090() {
+	_messagePlain_nominal "Tablet - E090"
+	
+	_prepare_x220
+	
+	xrandr --output LVDS1 --rotate right
+	xrandr --output LVDS-1 --rotate right
+	_x220_setWacomRotation cw
+	echo "E090" > "$ub_hardware_x220_dir"/screenRotationState
+	
+	_x220_disableTouch
+	#_x220_disableTrackPoint
+	
+	_reset_KDE
+}
+
+_x220_tablet_S180() {
+	_messagePlain_nominal "Tablet - S180"
+	
+	_prepare_x220
+	
+	xrandr --output LVDS1 --rotate inverted
+	xrandr --output LVDS-1 --rotate inverted
+	_x220_setWacomRotation half
+	echo "S180" > "$ub_hardware_x220_dir"/screenRotationState
+	
+	_x220_enableTouch
+	#_x220_disableTrackPoint
+	
+	_reset_KDE
+}
+
+#Flip through tablet rotations. Recommend binding to key or quicklaunch.
+_x220_tablet_flip() {
+	_messagePlain_nominal "Tablet - Flip"
+	
+	_prepare_x220
+	
+	if [[ ! -f "$ub_hardware_x220_dir"/screenRotationState ]]
+	then
+		echo 'S180' > "$ub_hardware_x220_dir"/screenRotationState
+	fi
+	
+	local currentState
+	currentState=$(cat "$ub_hardware_x220_dir"/screenRotationState)
+	
+	_messagePlain_probe "currentState= ""$currentState"
+	
+	case "$currentState" in
+		N000)
+		_x220_tablet_E090
+		;;
+		E090)
+		_x220_tablet_S180
+		;;
+		S180)
+		_x220_tablet_N000
+		;;
+	esac
+}
+
+
+_x220_vgaSmall() {
+	xrandr --addmode VGA1 1366x768
+	xrandr --addmode VGA-1 1366x768
+	xrandr --output VGA1 --same-as LVDS1 --mode 1366x768
+	xrandr --output VGA-1 --same-as LVDS-1 --mode 1366x768
+	xrandr --output LVDS1 --primary --auto
+	xrandr --output LVDS-1 --primary --auto
+	
+	xrandr --addmode VGA1 1366x768
+	xrandr --addmode VGA-1 1366x768
+	xrandr --output VGA1 --same-as LVDS1 --mode 1366x768
+	xrandr --output VGA-1 --same-as LVDS-1 --mode 1366x768
+	xrandr --output LVDS1 --primary --auto
+	xrandr --output LVDS-1 --primary --auto
+	
+	_x220_tablet_N000
+}
+
+#Most commonly used mode. Recommend binding to key or quicklaunch.
+_x220_vgaRightOf() {
+	xrandr --output LVDS1 --primary --mode 1366x768
+	xrandr --output LVDS-1 --primary --mode 1366x768
+	xrandr --output VGA1 --right-of LVDS1 --auto
+	xrandr --output VGA-1 --right-of LVDS-1 --auto
+	xrandr --output LVDS1 --primary --mode 1366x768
+	xrandr --output LVDS-1 --primary --mode 1366x768
+	
+	xrandr --output LVDS1 --primary --mode 1366x768
+	xrandr --output LVDS-1 --primary --mode 1366x768
+	xrandr --output VGA1 --right-of LVDS1 --auto
+	xrandr --output VGA-1 --right-of LVDS-1 --auto
+	xrandr --output LVDS1 --primary --mode 1366x768
+	xrandr --output LVDS-1 --primary --mode 1366x768
+	
+	_x220_tablet_N000
+}
+
+_x220_vgaTablet() {
+	xrandr --output LVDS1 --primary --mode 1366x768
+	xrandr --output LVDS-1 --primary --mode 1366x768
+	xrandr --output VGA1 --right-of LVDS1 --auto
+	xrandr --output VGA-1 --right-of LVDS-1 --auto
+	xrandr --output LVDS1 --primary --mode 1366x768
+	xrandr --output LVDS-1 --primary --mode 1366x768
+	
+	xrandr --output LVDS1 --primary --mode 1366x768
+	xrandr --output LVDS-1 --primary --mode 1366x768
+	xrandr --output VGA1 --right-of LVDS1 --auto
+	xrandr --output VGA-1 --right-of LVDS-1 --auto
+	xrandr --output LVDS1 --primary --mode 1366x768
+	xrandr --output LVDS-1 --primary --mode 1366x768
+	
+	_x220_tablet_S180
+}
+
+
+_w540_fan_cfg-write() {
+	echo "options thinkpad_acpi fan_control=1" | sudo -n tee /etc/modprobe.d/thinkfan.conf
+}
+
+_w540_fan_cfg-modprobe() {
+	sudo -n modprobe -rv thinkpad_acpi
+	sudo -n modprobe -v thinkpad_acpi
+}
+
+_w540_fan_cfg() {
+	echo watchdog 120 | sudo -n tee /proc/acpi/ibm/fan
+}
+
+# cron recommended
+#*/1 * * * * sleep 0.1 ; /home/user/.ubcore/ubcore.sh _w540_fan > /dev/null 2>&1
+_w540_fan() {
+	_w540_fan_cfg
+	
+	local currentTemp_coretemp0
+	read currentTemp_coretemp0 /sys/devices/platform/coretemp.0/hwmon/hwmon4/temp1_input
+	
+	#[[ "$currentTemp_coretemp0" -lt 48 ]] && echo level 0 | sudo tee /proc/acpi/ibm/fan && return 0
+	[[ "$currentTemp_coretemp0" -lt 68 ]] && echo level 0 | sudo tee /proc/acpi/ibm/fan && return 0
+}
+
+_w540_idle() {
+	_w540_fan_cfg
+	
+	while true
+	do
+		echo powersave | sudo -n tee /sys/devices/system/cpu/cpufreq/scaling_governor
+		
+		echo level 0 | sudo tee /proc/acpi/ibm/fan
+		
+		sleep 45
+	done
+}
+
+_w540_normal() {
+	echo schedutil | sudo -n tee /sys/devices/system/cpu/cpufreq/*/scaling_governor
 }
 
 #####Basic Variable Management
