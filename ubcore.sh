@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='1529621063'
+export ub_setScriptChecksum_contents='2956591556'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -22992,6 +22992,16 @@ _w540_fan_cfg() {
 }
 
 # cron recommended
+#*/1 * * * * sleep 0.1 ; /home/user/.ubcore/ubcore.sh _w540_hardware_cron > /dev/null 2>&1
+_w540_hardware_cron() {
+	! sudo dmidecode -s system-family | grep 'ThinkPad W540' && return 0
+	
+	_w540_fan
+	
+	return 0
+}
+
+# cron recommended
 #*/1 * * * * sleep 0.1 ; /home/user/.ubcore/ubcore.sh _w540_fan > /dev/null 2>&1
 _w540_fan() {
 	_w540_fan_cfg
@@ -22999,8 +23009,10 @@ _w540_fan() {
 	local currentTemp_coretemp0
 	read currentTemp_coretemp0 /sys/devices/platform/coretemp.0/hwmon/hwmon4/temp1_input
 	
-	#[[ "$currentTemp_coretemp0" -lt 48 ]] && echo level 0 | sudo tee /proc/acpi/ibm/fan && return 0
-	[[ "$currentTemp_coretemp0" -lt 68 ]] && echo level 0 | sudo tee /proc/acpi/ibm/fan && return 0
+	#[[ "$currentTemp_coretemp0" -lt 48000 ]] && echo level 1 | sudo tee /proc/acpi/ibm/fan && return 0
+	#[[ "$currentTemp_coretemp0" -lt 68000 ]] && echo level 1 | sudo tee /proc/acpi/ibm/fan && return 0
+	
+	[[ "$currentTemp_coretemp0" -lt 68000 ]] && echo level 1 | sudo tee /proc/acpi/ibm/fan && return 0
 }
 
 _w540_idle() {
@@ -23008,9 +23020,9 @@ _w540_idle() {
 	
 	while true
 	do
-		echo powersave | sudo -n tee /sys/devices/system/cpu/cpufreq/scaling_governor
+		echo powersave | sudo -n tee /sys/devices/system/cpu/cpufreq/*/scaling_governor
 		
-		echo level 0 | sudo tee /proc/acpi/ibm/fan
+		echo level 1 | sudo tee /proc/acpi/ibm/fan
 		
 		sleep 45
 	done
