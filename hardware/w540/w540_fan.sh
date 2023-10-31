@@ -23,7 +23,7 @@ _w540_hardware_cron() {
 }
 
 # cron recommended
-#*/1 * * * * sleep 0.1 ; /home/user/.ubcore/ubcore.sh _w540_fan > /dev/null 2>&1
+#*/1 * * * * sleep 0.1 ; /home/user/.ubcore/ubiquitous_bash/ubcore.sh _w540_fan > /dev/null 2>&1
 _w540_fan() {
 	_w540_fan_cfg
 	
