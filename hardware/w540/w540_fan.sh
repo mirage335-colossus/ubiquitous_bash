@@ -28,7 +28,7 @@ _w540_fan() {
 	_w540_fan_cfg
 	
 	local currentTemp_coretemp0
-	read currentTemp_coretemp0 /sys/devices/platform/coretemp.0/hwmon/hwmon4/temp1_input
+	read currentTemp_coretemp0 < /sys/devices/platform/coretemp.0/hwmon/hwmon4/temp1_input
 	
 	#[[ "$currentTemp_coretemp0" -lt 48000 ]] && echo level 1 | sudo tee /proc/acpi/ibm/fan && return 0
 	#[[ "$currentTemp_coretemp0" -lt 68000 ]] && echo level 1 | sudo tee /proc/acpi/ibm/fan && return 0
