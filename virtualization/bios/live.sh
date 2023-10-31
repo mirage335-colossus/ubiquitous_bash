@@ -730,9 +730,19 @@ _live_sequence_in() {
 
 
 	_chroot update-initramfs -u -k all
-
-
-
+	
+	
+	
+	
+	
+	
+	_chroot apt-get -y clean
+	
+	
+	
+	
+	
+	
 	# WARNING: Now also provides essential information about intel-acm .
 	# Solely to provide more information to convert 'vm-live.iso' back to 'vm.img' offline from only a Live BD-ROM disc .
 	mkdir -p "$safeTmp"/root002
