@@ -15,7 +15,7 @@ _w540_fan_cfg() {
 # cron recommended
 #*/1 * * * * sleep 0.1 ; /home/user/.ubcore/ubcore.sh _w540_hardware_cron > /dev/null 2>&1
 _w540_hardware_cron() {
-	! sudo dmidecode -s system-family | grep 'ThinkPad W540' && return 0
+	! sudo -n dmidecode -s system-family | grep 'ThinkPad W540' && return 0
 	
 	_w540_fan
 	
@@ -33,7 +33,7 @@ _w540_fan() {
 	#[[ "$currentTemp_coretemp0" -lt 48000 ]] && echo level 1 | sudo tee /proc/acpi/ibm/fan && return 0
 	#[[ "$currentTemp_coretemp0" -lt 68000 ]] && echo level 1 | sudo tee /proc/acpi/ibm/fan && return 0
 	
-	[[ "$currentTemp_coretemp0" -lt 68000 ]] && echo level 1 | sudo tee /proc/acpi/ibm/fan && return 0
+	[[ "$currentTemp_coretemp0" -lt 68000 ]] && echo level 1 | sudo -n tee /proc/acpi/ibm/fan && return 0
 }
 
 _w540_idle() {
