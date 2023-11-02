@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='4289369998'
+export ub_setScriptChecksum_contents='4168187317'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -11360,6 +11360,31 @@ _getMinimal_cloud() {
 
 
 
+
+# NOTICE
+# https://lazamar.co.uk/nix-versions/?channel=nixpkgs-unstable&package=geda
+# https://lazamar.co.uk/nix-versions/?package=geda&version=1.10.2&fullName=geda-1.10.2&keyName=geda&revision=9957cd48326fe8dbd52fdc50dd2502307f188b0d&channel=nixpkgs-unstable#instructions
+#nix-env --query
+#nix-env --uninstall geda
+#export NIXPKGS_ALLOW_INSECURE=1 ; nix-env -iA nixpkgs.geda
+#export NIXPKGS_ALLOW_INSECURE=1 ; nix-env -iA geda -f https://github.com/NixOS/nixpkgs/archive/9957cd48326fe8dbd52fdc50dd2502307f188b0d.tar.gz
+#nix-collect-garbage -d
+#nix-env -iA geda -f https://github.com/NixOS/nixpkgs/archive/773a8314ef05364d856e46299722a9d849aacf8b.tar.gz
+#nix-channel --update nixpkgs
+#nix-store --realise /nix/store/a7gf7plqv6zj1zxplazzib02ank05hxj-geda-1.10.2.drv
+#nix-store --verify --repair
+#nix-store --delete /nix/store/a7gf7plqv6zj1zxplazzib02ank05hxj-geda-1.10.2.drv
+#nix-store --gc
+#nix-env --rollback
+#nix-env --install
+#sudo rm -rf /nix/var/nix/db/*
+#sudo rm -rf /nix/var/nix/temproots/*
+#sh <(curl -L https://nixos.org/nix/install) --repair
+
+#export NIXPKGS_ALLOW_INSECURE=1
+
+# ATTRIBUTION: ChatGPT-3.5 and ChatGPT4 2032-11-02 . ^
+
 _get_from_nix-user() {
 	local currentUser
 	currentUser="$1"
@@ -11424,17 +11449,44 @@ _get_from_nix-user() {
 	#nix-env --uninstall geda
 	#nix-env --uninstall pcb
 	
-	_getMost_backend sudo -n -u "$currentUser" /bin/bash -l -c 'export NIXPKGS_ALLOW_INSECURE=1 ; nix-env -iA nixpkgs.geda'
+	
+	
+	
+	
+	# ATTENTION: NOTICE: https://github.com/NixOS/nixpkgs/blob/nixpkgs-unstable/pkgs/applications/science/electronics/geda/default.nix
+	# ATTENTION: NOTICE: CAUTION: MAJOR: SEVERE: WATCH ANALYSIS for potentially unfavorable changes. Regressions seem likely, python2 deprecation seems to be causing frequent repeated removals of possibly significant functionality. High risk.
+	#  ATTENTION: Alternative frozen version commands documented for EMERGENCY use.
+	# https://github.com/NixOS/nixpkgs/blob/nixpkgs-unstable/pkgs/applications/science/electronics/geda/default.nix
+	#  CAUTION: Be wary if this file has changed recently.
+	
+	# ###
+	# Seems to have removed xorn, python2.7 . May not have been tested through ubdist/WSL . May be accepted for now due to some apparently successful testing expected to match this specific version.
+	nix-env -iA geda -f https://github.com/NixOS/nixpkgs/archive/773a8314ef05364d856e46299722a9d849aacf8b.tar.gz
+	
+	# Seems to still have xorn, python2.7, etc . Should have the most functionality, and should match previously tested versions, both through ubdist/OS and ubdist/WSL .
+	#_getMost_backend sudo -n -u "$currentUser" /bin/bash -l -c 'export NIXPKGS_ALLOW_INSECURE=1 ; nix-env -iA geda -f https://github.com/NixOS/nixpkgs/archive/9957cd48326fe8dbd52fdc50dd2502307f188b0d.tar.gz'
+	
+	# Most recent version. May freeze until there is sufficient experience with newer versions.
+	#_getMost_backend sudo -n -u "$currentUser" /bin/bash -l -c 'export NIXPKGS_ALLOW_INSECURE=1 ; nix-env -iA nixpkgs.geda'
+	# ###
+	
+	
 	_getMost_backend sudo -n -u "$currentUser" /bin/bash -l -c 'xdg-desktop-menu install "$HOME"/.nix-profile/share/applications/geda-gschem.desktop'
 	_getMost_backend sudo -n -u "$currentUser" /bin/bash -l -c 'xdg-desktop-menu install "$HOME"/.nix-profile/share/applications/geda-gattrib.desktop'
 	_getMost_backend sudo -n -u "$currentUser" cp -a /home/"$currentUser"/.nix-profile/share/icons /home/"$currentUser"/.local/share/
 
 	_getMost_backend sudo -n -u "$currentUser" /bin/bash -l -c 'export NIXPKGS_ALLOW_INSECURE=1 ; nix-env -iA nixpkgs.pcb'
 
+	
 	# Necessary, do NOT remove. Necessary for 'gsch2pcb' , 'gnetlist' , etc, since installation as a dependency does not make the necessary binaries available to the usual predictable PATH .
 	_getMost_backend sudo -n -u "$currentUser" /bin/bash -l -c 'export NIXPKGS_ALLOW_INSECURE=1 ; nix-env -iA nixpkgs.python2'
 
 
+	
+	
+	
+	
+	
 	# Workaround to make macros needed from 'pcb' package available to such programs as 'gsch2pcb' from the 'geda' package .
 	#sed 's/.*\/\(.*\)\/bin\/pcb.*/\1/')
 	local currentDerivationPath_pcb
@@ -11449,6 +11501,7 @@ _get_from_nix-user() {
 	_getMost_backend sudo -n cp -a "$currentDerivationPath_pcb"/share/gEDA "$currentDerivationPath_gsch2pcb"/share/
 
 	# ATTENTION: Unusual .
+	# CAUTION: Seems unnecessary - maybe 'legacy' gnetlist no longer needs xorn or python ?
 	_getMost_backend sudo -n sed -i 's/import errno, os, stat, tempfile$/& , sys/' "$currentDerivationPath_gsch2pcb"/lib/python2.7/site-packages/xorn/fileutils.py
 
 	# DOCUMENTATION - interesting copilot suggestions that may or may not be relevant
@@ -11693,8 +11746,14 @@ CZXWXcRMTo8EmM8i4d
 
 
 _get_workarounds_ghostscript_policyXML_write() {
+	local currentExitStatus
+	currentExitStatus="1"
 	_get_workarounds_ghostscript_policyXML /etc/ImageMagick-6/policy.xml > /dev/null 2>&1
+	[[ "$?" == "0" ]] && currentExitStatus="0"
 	_get_workarounds_ghostscript_policyXML /etc/ImageMagick-7/policy.xml > /dev/null 2>&1
+	[[ "$?" == "0" ]] && currentExitStatus="0"
+	
+	return "$currentExitStatus"
 }
 
 

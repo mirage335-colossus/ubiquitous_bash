@@ -144,8 +144,14 @@ CZXWXcRMTo8EmM8i4d
 
 
 _get_workarounds_ghostscript_policyXML_write() {
+	local currentExitStatus
+	currentExitStatus="1"
 	_get_workarounds_ghostscript_policyXML /etc/ImageMagick-6/policy.xml > /dev/null 2>&1
+	[[ "$?" == "0" ]] && currentExitStatus="0"
 	_get_workarounds_ghostscript_policyXML /etc/ImageMagick-7/policy.xml > /dev/null 2>&1
+	[[ "$?" == "0" ]] && currentExitStatus="0"
+	
+	return "$currentExitStatus"
 }
 
 
