@@ -442,7 +442,7 @@ _custom_kde() {
 	mkdir -p "$currentBackupDir"
 	
 	# ATTENTION: NOTICE: Usually, this is a redistributable product of Soaring Distributions LLC .
-	[[ -e /package_kde.tar.xz ]] && cp /package_kde.tar.xz "$HOME"/
+	! [[ -e package_kde.tar.xz ]] && [[ -e /package_kde.tar.xz ]] && cp /package_kde.tar.xz "$HOME"/
 	if ! [[ -e package_kde.tar.xz ]]
 	then
 		_messagePlain_probe_cmd wget 'https://github.com/soaringDistributions/ubDistBuild/raw/main/_lib/custom/package_kde.tar.xz'
@@ -457,7 +457,9 @@ _custom_kde() {
 	
 	
 	mkdir -p "$HOME"/.config/autostart
+	mkdir -p "$HOME"/.config/systemd
 	_messagePlain_probe_cmd cp "$currentBackupDir"/.config/autostart/. "$HOME"/.config/autostart/
+	_messagePlain_probe_cmd cp "$currentBackupDir"/.config/systemd/. "$HOME"/.config/systemd/
 
 	mkdir -p "$HOME"/.local/share/applications
 	_messagePlain_probe_cmd cp --preserve=all "$currentBackupDir"/.local/share/applications/. "$HOME"/.local/share/applications/.
