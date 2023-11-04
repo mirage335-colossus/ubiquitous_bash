@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='255579165'
+export ub_setScriptChecksum_contents='2970509269'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -5689,6 +5689,11 @@ _wget_githubRelease_join-stdout() {
 			
 			# ATTENTION: Follows structure based on functionality for 'aria2c' .
 			
+			#local currentAxelTmpFile
+			#currentAxelTmpFile="$scriptAbsoluteFolder"/.m_axelTmp_$(_uid 14)
+			export currentAxelTmpFileRelative=.m_axelTmp_$(_uid 14)
+			export currentAxelTmpFile="$scriptAbsoluteFolder"/"$currentAxelTmpFileRelative"
+			
 			local currentPID_1
 			local currentPID_2
 			local currentPID_3
@@ -5697,9 +5702,9 @@ _wget_githubRelease_join-stdout() {
 			local currentIterationNext1
 			let currentIterationNext1=currentIteration+1
 			local currentIterationNext2
-			let currentIterationNext3=currentIteration+1
+			let currentIterationNext2=currentIteration+2
 			local currentIterationNext3
-			let currentIterationNext1=currentIteration+1
+			let currentIterationNext3=currentIteration+3
 			rm -f "$currentAxelTmpFile"
 			rm -f "$currentAxelTmpFile".* > /dev/null 2>&1
 			while [[ "${currentURL_array_reversed[$currentIteration]}" != "" ]] || [[ "${currentURL_array_reversed[$currentIterationNext1]}" != "" ]] || [[ -e "$currentAxelTmpFile".tmp2 ]] || [[ "${currentURL_array_reversed[$currentIterationNext2]}" != "" ]] || [[ -e "$currentAxelTmpFile".tmp3 ]] || [[ "${currentURL_array_reversed[$currentIterationNext3]}" != "" ]] || [[ -e "$currentAxelTmpFile".tmp4 ]]
@@ -5723,7 +5728,8 @@ _wget_githubRelease_join-stdout() {
 
 				if [[ "${currentURL_array_reversed[$currentIteration]}" != "" ]]
 				then
-					_gh_downloadURL "${currentURL_array_reversed[$currentIteration]}" -O "$currentAxelTmpFileRelative".tmp1 &
+					_messagePlain_probe _gh_downloadURL "${currentURL_array_reversed[$currentIteration]}" -O "$currentAxelTmpFileRelative".tmp1 >&2
+					"$scriptAbsoluteLocation" _gh_downloadURL "${currentURL_array_reversed[$currentIteration]}" -O "$currentAxelTmpFileRelative".tmp1 > /dev/null 2>&1 &
 					currentPID_1="$!"
 				fi
 				
@@ -5840,19 +5846,22 @@ _wget_githubRelease_join-stdout() {
 
 				if [[ "${currentURL_array_reversed[$currentIterationNext1]}" != "" ]]
 				then
-					_gh_downloadURL "${currentURL_array_reversed[$currentIterationNext1]}" -O "$currentAxelTmpFileRelative".tmp2 &
+					_messagePlain_probe _gh_downloadURL "${currentURL_array_reversed[$currentIterationNext1]}" -O "$currentAxelTmpFileRelative".tmp2 >&2
+					"$scriptAbsoluteLocation" _gh_downloadURL "${currentURL_array_reversed[$currentIterationNext1]}" -O "$currentAxelTmpFileRelative".tmp2 > /dev/null 2>&1 &
 					currentPID_2="$!"
 				fi
 				
 				if [[ "${currentURL_array_reversed[$currentIterationNext2]}" != "" ]]
 				then
-					_gh_downloadURL "${currentURL_array_reversed[$currentIterationNext2]}" -O "$currentAxelTmpFileRelative".tmp3 &
+					_messagePlain_probe _gh_downloadURL "${currentURL_array_reversed[$currentIterationNext2]}" -O "$currentAxelTmpFileRelative".tmp3 >&2
+					"$scriptAbsoluteLocation" _gh_downloadURL "${currentURL_array_reversed[$currentIterationNext2]}" -O "$currentAxelTmpFileRelative".tmp3 > /dev/null 2>&1 &
 					currentPID_3="$!"
 				fi
 				
 				if [[ "${currentURL_array_reversed[$currentIterationNext3]}" != "" ]]
 				then
-					_gh_downloadURL "${currentURL_array_reversed[$currentIterationNext3]}" -O "$currentAxelTmpFileRelative".tmp4 &
+					_messagePlain_probe _gh_downloadURL "${currentURL_array_reversed[$currentIterationNext3]}" -O "$currentAxelTmpFileRelative".tmp4 >&2
+					"$scriptAbsoluteLocation" _gh_downloadURL "${currentURL_array_reversed[$currentIterationNext3]}" -O "$currentAxelTmpFileRelative".tmp4 > /dev/null 2>&1 &
 					currentPID_4="$!"
 				fi
 				
@@ -5868,8 +5877,8 @@ _wget_githubRelease_join-stdout() {
 					sleep 6 > /dev/null 2>&1
 					[[ "$currentPID_2" == "" ]] && sleep 35 > /dev/null 2>&1
 					[[ "$currentPID_2" != "" ]] && wait "$currentPID_2" >&2
-					[[ "$currentPID_2" != "" ]] && wait "$currentPID_3" >&2
-					[[ "$currentPID_2" != "" ]] && wait "$currentPID_4" >&2
+					[[ "$currentPID_3" != "" ]] && wait "$currentPID_3" >&2
+					[[ "$currentPID_4" != "" ]] && wait "$currentPID_4" >&2
 					wait >&2
 				fi
 
