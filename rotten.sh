@@ -2434,10 +2434,9 @@ _wget_githubRelease_join-stdout() {
 			
 			
 			
-			else
-				_messagePlain_probe curl -H '"Authorization: Bearer $GH_TOKEN"' -L "${currentURL_array_reversed[@]}" >&2
-				curl -H "Authorization: Bearer $GH_TOKEN" -L "${currentURL_array_reversed[@]}"
-			fi
+		else
+			_messagePlain_probe curl -H '"Authorization: Bearer $GH_TOKEN"' -L "${currentURL_array_reversed[@]}" >&2
+			curl -H "Authorization: Bearer $GH_TOKEN" -L "${currentURL_array_reversed[@]}"
 		fi
 		return
 	fi
