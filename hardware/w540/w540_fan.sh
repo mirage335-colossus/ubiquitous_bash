@@ -33,7 +33,7 @@ _w540_fan() {
 	#[[ "$currentTemp_coretemp0" -lt 48000 ]] && echo level 1 | sudo tee /proc/acpi/ibm/fan && return 0
 	#[[ "$currentTemp_coretemp0" -lt 68000 ]] && echo level 1 | sudo tee /proc/acpi/ibm/fan && return 0
 	
-	[[ "$currentTemp_coretemp0" -lt 68000 ]] && echo level 1 | sudo -n tee /proc/acpi/ibm/fan && return 0
+	[[ "$currentTemp_coretemp0" -lt 59000 ]] && echo level 1 | sudo -n tee /proc/acpi/ibm/fan && return 0
 }
 
 _w540_idle() {
