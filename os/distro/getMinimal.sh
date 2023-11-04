@@ -343,7 +343,7 @@ _getMinimal_cloud() {
 
 
 	
-	_getMost_backend_aptGetInstall tboot
+	#_getMost_backend_aptGetInstall tboot
 
 	_getMost_backend_aptGetInstall trousers
 	_getMost_backend_aptGetInstall tpm-tools
