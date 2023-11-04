@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='3419155840'
+export ub_setScriptChecksum_contents='1201202033'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -25766,277 +25766,276 @@ _wget_githubRelease_join-stdout() {
 		then
 			_messagePlain_probe curl -L "${currentURL_array_reversed[@]}" >&2
 			curl -L "${currentURL_array_reversed[@]}"
-		else
-			if type -p gh && [[ "$GH_TOKEN" != "" ]] && [[ "$FORCE_WGET" != "true" ]]
-			then
+		elif type -p gh && [[ "$GH_TOKEN" != "" ]] && [[ "$FORCE_WGET" != "true" ]]
+		then
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			# ATTENTION: Follows structure based on functionality for 'aria2c' .
+			
+			local currentPID_1
+			local currentPID_2
+			local currentPID_3
+			local currentPID_4
+			currentIteration=0
+			local currentIterationNext1
+			let currentIterationNext1=currentIteration+1
+			local currentIterationNext2
+			let currentIterationNext3=currentIteration+1
+			local currentIterationNext3
+			let currentIterationNext1=currentIteration+1
+			rm -f "$currentAxelTmpFile"
+			rm -f "$currentAxelTmpFile".* > /dev/null 2>&1
+			while [[ "${currentURL_array_reversed[$currentIteration]}" != "" ]] || [[ "${currentURL_array_reversed[$currentIterationNext1]}" != "" ]] || [[ -e "$currentAxelTmpFile".tmp2 ]] || [[ "${currentURL_array_reversed[$currentIterationNext2]}" != "" ]] || [[ -e "$currentAxelTmpFile".tmp3 ]] || [[ "${currentURL_array_reversed[$currentIterationNext3]}" != "" ]] || [[ -e "$currentAxelTmpFile".tmp4 ]]
+			do
+				#rm -f "$currentAxelTmpFile"
+				rm -f "$currentAxelTmpFile".aria2
+				rm -f "$currentAxelTmpFile".tmp
+				rm -f "$currentAxelTmpFile".tmp.st
+				rm -f "$currentAxelTmpFile".tmp.aria2
+				rm -f "$currentAxelTmpFile".tmp1
+				rm -f "$currentAxelTmpFile".tmp1.st
+				rm -f "$currentAxelTmpFile".tmp1.aria2
+				#rm -f "$currentAxelTmpFile".tmp2
+				#rm -f "$currentAxelTmpFile".tmp2.st
+				#rm -f "$currentAxelTmpFile".tmp2.aria2
+				#rm -f "$currentAxelTmpFile".* > /dev/null 2>&1
 				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				# ATTENTION: Follows structure based on functionality for 'aria2c' .
-				
-				local currentPID_1
-				local currentPID_2
-				local currentPID_3
-				local currentPID_4
-				currentIteration=0
-				local currentIterationNext1
-				let currentIterationNext1=currentIteration+1
-				local currentIterationNext2
-				let currentIterationNext3=currentIteration+1
-				local currentIterationNext3
-				let currentIterationNext1=currentIteration+1
-				rm -f "$currentAxelTmpFile"
-				rm -f "$currentAxelTmpFile".* > /dev/null 2>&1
-				while [[ "${currentURL_array_reversed[$currentIteration]}" != "" ]] || [[ "${currentURL_array_reversed[$currentIterationNext1]}" != "" ]] || [[ -e "$currentAxelTmpFile".tmp2 ]] || [[ "${currentURL_array_reversed[$currentIterationNext2]}" != "" ]] || [[ -e "$currentAxelTmpFile".tmp3 ]] || [[ "${currentURL_array_reversed[$currentIterationNext3]}" != "" ]] || [[ -e "$currentAxelTmpFile".tmp4 ]]
-				do
-					#rm -f "$currentAxelTmpFile"
-					rm -f "$currentAxelTmpFile".aria2
-					rm -f "$currentAxelTmpFile".tmp
-					rm -f "$currentAxelTmpFile".tmp.st
-					rm -f "$currentAxelTmpFile".tmp.aria2
-					rm -f "$currentAxelTmpFile".tmp1
-					rm -f "$currentAxelTmpFile".tmp1.st
-					rm -f "$currentAxelTmpFile".tmp1.aria2
-					#rm -f "$currentAxelTmpFile".tmp2
-					#rm -f "$currentAxelTmpFile".tmp2.st
-					#rm -f "$currentAxelTmpFile".tmp2.aria2
-					#rm -f "$currentAxelTmpFile".* > /dev/null 2>&1
-					
-					#rm -f "$currentAxelTmpFile".* > /dev/null 2>&1
+				#rm -f "$currentAxelTmpFile".* > /dev/null 2>&1
 
-					# https://github.com/aria2/aria2/issues/1108
+				# https://github.com/aria2/aria2/issues/1108
 
-					if [[ "${currentURL_array_reversed[$currentIteration]}" != "" ]]
-					then
-						_gh_downloadURL "${currentURL_array_reversed[$currentIteration]}" -O "$currentAxelTmpFileRelative".tmp1 &
-						currentPID_1="$!"
-					fi
-					
-					
-					# CAUTION: ATTENTION: Very important. Simultaneous reading and writing is *very* important for writing directly to slow media (ie. BD-R) .
-					#  NOTICE: Wirting directly to slow BD-R is essential for burning a Live disc from having booted a Live disc.
-					#   DANGER: Critical for rapid recovery back to recent upstream 'ubdist/OS' ! Do NOT unnecessarily degrade this capability!
-					#  Also theoretically helpful with especially fast network connections.
-					#if [[ "$currentIteration" != "0" ]]
+				if [[ "${currentURL_array_reversed[$currentIteration]}" != "" ]]
+				then
+					_gh_downloadURL "${currentURL_array_reversed[$currentIteration]}" -O "$currentAxelTmpFileRelative".tmp1 &
+					currentPID_1="$!"
+				fi
+				
+				
+				# CAUTION: ATTENTION: Very important. Simultaneous reading and writing is *very* important for writing directly to slow media (ie. BD-R) .
+				#  NOTICE: Wirting directly to slow BD-R is essential for burning a Live disc from having booted a Live disc.
+				#   DANGER: Critical for rapid recovery back to recent upstream 'ubdist/OS' ! Do NOT unnecessarily degrade this capability!
+				#  Also theoretically helpful with especially fast network connections.
+				#if [[ "$currentIteration" != "0" ]]
+				if [[ -e "$currentAxelTmpFile".tmp2 ]]
+				then
+					# ATTENTION: Staggered.
+					#sleep 10 > /dev/null 2>&1
+					wait "$currentPID_2" >&2
+					#wait >&2
+
+					sleep 0.2 > /dev/null 2>&1
 					if [[ -e "$currentAxelTmpFile".tmp2 ]]
 					then
-						# ATTENTION: Staggered.
-						#sleep 10 > /dev/null 2>&1
-						wait "$currentPID_2" >&2
-						#wait >&2
-
-						sleep 0.2 > /dev/null 2>&1
-						if [[ -e "$currentAxelTmpFile".tmp2 ]]
-						then
-							_messagePlain_probe dd if="$currentAxelTmpFile".tmp2 bs=1M status=progress' >> '"$currentAxelTmpFile" >&2
-							
-							# ### dd if="$currentAxelTmpFile".tmp2 bs=5M status=progress >> "$currentAxelTmpFile"
-							dd if="$currentAxelTmpFile".tmp2 bs=1M status=progress
-							#cat "$currentAxelTmpFile".tmp2
-							
-							du -sh "$currentAxelTmpFile".tmp2 >> "$currentAxelTmpFile"
-							
-							#cat "$currentAxelTmpFile".tmp2 >> "$currentAxelTmpFile"
-						fi
-					else
-						if [[ "$currentIteration" == "0" ]]
-						then
-							# ATTENTION: Staggered.
-							#sleep 6 > /dev/null 2>&1
-							true
-						fi
+						_messagePlain_probe dd if="$currentAxelTmpFile".tmp2 bs=1M status=progress' >> '"$currentAxelTmpFile" >&2
+						
+						# ### dd if="$currentAxelTmpFile".tmp2 bs=5M status=progress >> "$currentAxelTmpFile"
+						dd if="$currentAxelTmpFile".tmp2 bs=1M status=progress
+						#cat "$currentAxelTmpFile".tmp2
+						
+						du -sh "$currentAxelTmpFile".tmp2 >> "$currentAxelTmpFile"
+						
+						#cat "$currentAxelTmpFile".tmp2 >> "$currentAxelTmpFile"
 					fi
-					rm -f "$currentAxelTmpFile".tmp2
-					rm -f "$currentAxelTmpFile".tmp2.st
-					rm -f "$currentAxelTmpFile".tmp2.aria2
-					#rm -f "$currentAxelTmpFile".* > /dev/null 2>&1
-					
-					
-					if [[ -e "$currentAxelTmpFile".tmp3 ]]
-					then
-						# ATTENTION: Staggered.
-						#sleep 10 > /dev/null 2>&1
-						wait "$currentPID_3" >&2
-						#wait >&2
-
-						sleep 0.2 > /dev/null 2>&1
-						if [[ -e "$currentAxelTmpFile".tmp3 ]]
-						then
-							_messagePlain_probe dd if="$currentAxelTmpFile".tmp3 bs=1M status=progress' >> '"$currentAxelTmpFile" >&2
-							
-							# ### dd if="$currentAxelTmpFile".tmp3 bs=5M status=progress >> "$currentAxelTmpFile"
-							dd if="$currentAxelTmpFile".tmp3 bs=1M status=progress
-							#cat "$currentAxelTmpFile".tmp3
-							
-							du -sh "$currentAxelTmpFile".tmp3 >> "$currentAxelTmpFile"
-							
-							#cat "$currentAxelTmpFile".tmp3 >> "$currentAxelTmpFile"
-						fi
-					else
-						if [[ "$currentIteration" == "0" ]]
-						then
-							# ATTENTION: Staggered.
-							#sleep 6 > /dev/null 2>&1
-							true
-						fi
-					fi
-					rm -f "$currentAxelTmpFile".tmp3
-					rm -f "$currentAxelTmpFile".tmp3.st
-					rm -f "$currentAxelTmpFile".tmp3.aria2
-					#rm -f "$currentAxelTmpFile".* > /dev/null 2>&1
-					
-					
-					if [[ -e "$currentAxelTmpFile".tmp4 ]]
-					then
-						# ATTENTION: Staggered.
-						#sleep 10 > /dev/null 2>&1
-						wait "$currentPID_4" >&2
-						#wait >&2
-
-						sleep 0.2 > /dev/null 2>&1
-						if [[ -e "$currentAxelTmpFile".tmp4 ]]
-						then
-							_messagePlain_probe dd if="$currentAxelTmpFile".tmp4 bs=1M status=progress' >> '"$currentAxelTmpFile" >&2
-							
-							# ### dd if="$currentAxelTmpFile".tmp4 bs=5M status=progress >> "$currentAxelTmpFile"
-							dd if="$currentAxelTmpFile".tmp4 bs=1M status=progress
-							#cat "$currentAxelTmpFile".tmp4
-							
-							du -sh "$currentAxelTmpFile".tmp4 >> "$currentAxelTmpFile"
-							
-							#cat "$currentAxelTmpFile".tmp4 >> "$currentAxelTmpFile"
-						fi
-					else
-						if [[ "$currentIteration" == "0" ]]
-						then
-							# ATTENTION: Staggered.
-							#sleep 6 > /dev/null 2>&1
-							true
-						fi
-					fi
-					rm -f "$currentAxelTmpFile".tmp4
-					rm -f "$currentAxelTmpFile".tmp4.st
-					rm -f "$currentAxelTmpFile".tmp4.aria2
-					#rm -f "$currentAxelTmpFile".* > /dev/null 2>&1
-					
-					
-					
-
-
-					if [[ "${currentURL_array_reversed[$currentIterationNext1]}" != "" ]]
-					then
-						_gh_downloadURL "${currentURL_array_reversed[$currentIterationNext1]}" -O "$currentAxelTmpFileRelative".tmp2 &
-						currentPID_2="$!"
-					fi
-					
-					if [[ "${currentURL_array_reversed[$currentIterationNext2]}" != "" ]]
-					then
-						_gh_downloadURL "${currentURL_array_reversed[$currentIterationNext2]}" -O "$currentAxelTmpFileRelative".tmp3 &
-						currentPID_3="$!"
-					fi
-					
-					if [[ "${currentURL_array_reversed[$currentIterationNext3]}" != "" ]]
-					then
-						_gh_downloadURL "${currentURL_array_reversed[$currentIterationNext3]}" -O "$currentAxelTmpFileRelative".tmp4 &
-						currentPID_4="$!"
-					fi
-					
-
-					# ATTENTION: NOT staggered.
-					#wait "$currentPID_1" >&2
-					#wait "$currentPID_2" >&2
-					#wait >&2
-					
+				else
 					if [[ "$currentIteration" == "0" ]]
 					then
-						wait "$currentPID_1" >&2
-						sleep 6 > /dev/null 2>&1
-						[[ "$currentPID_2" == "" ]] && sleep 35 > /dev/null 2>&1
-						[[ "$currentPID_2" != "" ]] && wait "$currentPID_2" >&2
-						[[ "$currentPID_2" != "" ]] && wait "$currentPID_3" >&2
-						[[ "$currentPID_2" != "" ]] && wait "$currentPID_4" >&2
-						wait >&2
+						# ATTENTION: Staggered.
+						#sleep 6 > /dev/null 2>&1
+						true
 					fi
+				fi
+				rm -f "$currentAxelTmpFile".tmp2
+				rm -f "$currentAxelTmpFile".tmp2.st
+				rm -f "$currentAxelTmpFile".tmp2.aria2
+				#rm -f "$currentAxelTmpFile".* > /dev/null 2>&1
+				
+				
+				if [[ -e "$currentAxelTmpFile".tmp3 ]]
+				then
+					# ATTENTION: Staggered.
+					#sleep 10 > /dev/null 2>&1
+					wait "$currentPID_3" >&2
+					#wait >&2
 
-					wait "$currentPID_1" >&2
 					sleep 0.2 > /dev/null 2>&1
-					if [[ -e "$currentAxelTmpFile".tmp1 ]]
+					if [[ -e "$currentAxelTmpFile".tmp3 ]]
 					then
-						_messagePlain_probe dd if="$currentAxelTmpFile".tmp1 bs=1M status=progress' >> '"$currentAxelTmpFile" >&2
+						_messagePlain_probe dd if="$currentAxelTmpFile".tmp3 bs=1M status=progress' >> '"$currentAxelTmpFile" >&2
 						
-						if [[ ! -e "$currentAxelTmpFile" ]]
-						then
-							# ### mv -f "$currentAxelTmpFile".tmp1 "$currentAxelTmpFile"
-							dd if="$currentAxelTmpFile".tmp1 bs=1M status=progress
-							
-							du -sh "$currentAxelTmpFile".tmp1 >> "$currentAxelTmpFile"
-						else
-							# ATTENTION: Staggered.
-							#dd if="$currentAxelTmpFile".tmp1 bs=1M status=progress >> "$currentAxelTmpFile" &
+						# ### dd if="$currentAxelTmpFile".tmp3 bs=5M status=progress >> "$currentAxelTmpFile"
+						dd if="$currentAxelTmpFile".tmp3 bs=1M status=progress
+						#cat "$currentAxelTmpFile".tmp3
 						
-							# ATTENTION: NOT staggered.
-							# ### dd if="$currentAxelTmpFile".tmp1 bs=5M status=progress >> "$currentAxelTmpFile"
-							dd if="$currentAxelTmpFile".tmp1 bs=1M status=progress
-							#cat "$currentAxelTmpFile".tmp1
-							
-							du -sh "$currentAxelTmpFile".tmp1 >> "$currentAxelTmpFile"
-							
-							#cat "$currentAxelTmpFile".tmp1 >> "$currentAxelTmpFile"
-						fi
+						du -sh "$currentAxelTmpFile".tmp3 >> "$currentAxelTmpFile"
+						
+						#cat "$currentAxelTmpFile".tmp3 >> "$currentAxelTmpFile"
 					fi
+				else
+					if [[ "$currentIteration" == "0" ]]
+					then
+						# ATTENTION: Staggered.
+						#sleep 6 > /dev/null 2>&1
+						true
+					fi
+				fi
+				rm -f "$currentAxelTmpFile".tmp3
+				rm -f "$currentAxelTmpFile".tmp3.st
+				rm -f "$currentAxelTmpFile".tmp3.aria2
+				#rm -f "$currentAxelTmpFile".* > /dev/null 2>&1
+				
+				
+				if [[ -e "$currentAxelTmpFile".tmp4 ]]
+				then
+					# ATTENTION: Staggered.
+					#sleep 10 > /dev/null 2>&1
+					wait "$currentPID_4" >&2
+					#wait >&2
 
-					let currentIteration=currentIteration+4
-					let currentIterationNext1=currentIteration+1
-					let currentIterationNext2=currentIteration+2
-					let currentIterationNext3=currentIteration+3
-				done
+					sleep 0.2 > /dev/null 2>&1
+					if [[ -e "$currentAxelTmpFile".tmp4 ]]
+					then
+						_messagePlain_probe dd if="$currentAxelTmpFile".tmp4 bs=1M status=progress' >> '"$currentAxelTmpFile" >&2
+						
+						# ### dd if="$currentAxelTmpFile".tmp4 bs=5M status=progress >> "$currentAxelTmpFile"
+						dd if="$currentAxelTmpFile".tmp4 bs=1M status=progress
+						#cat "$currentAxelTmpFile".tmp4
+						
+						du -sh "$currentAxelTmpFile".tmp4 >> "$currentAxelTmpFile"
+						
+						#cat "$currentAxelTmpFile".tmp4 >> "$currentAxelTmpFile"
+					fi
+				else
+					if [[ "$currentIteration" == "0" ]]
+					then
+						# ATTENTION: Staggered.
+						#sleep 6 > /dev/null 2>&1
+						true
+					fi
+				fi
+				rm -f "$currentAxelTmpFile".tmp4
+				rm -f "$currentAxelTmpFile".tmp4.st
+				rm -f "$currentAxelTmpFile".tmp4.aria2
+				#rm -f "$currentAxelTmpFile".* > /dev/null 2>&1
 				
 				
 				
+
+
+				if [[ "${currentURL_array_reversed[$currentIterationNext1]}" != "" ]]
+				then
+					_gh_downloadURL "${currentURL_array_reversed[$currentIterationNext1]}" -O "$currentAxelTmpFileRelative".tmp2 &
+					currentPID_2="$!"
+				fi
 				
+				if [[ "${currentURL_array_reversed[$currentIterationNext2]}" != "" ]]
+				then
+					_gh_downloadURL "${currentURL_array_reversed[$currentIterationNext2]}" -O "$currentAxelTmpFileRelative".tmp3 &
+					currentPID_3="$!"
+				fi
 				
+				if [[ "${currentURL_array_reversed[$currentIterationNext3]}" != "" ]]
+				then
+					_gh_downloadURL "${currentURL_array_reversed[$currentIterationNext3]}" -O "$currentAxelTmpFileRelative".tmp4 &
+					currentPID_4="$!"
+				fi
 				
+
+				# ATTENTION: NOT staggered.
+				#wait "$currentPID_1" >&2
+				#wait "$currentPID_2" >&2
+				#wait >&2
 				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				 
+				if [[ "$currentIteration" == "0" ]]
+				then
+					wait "$currentPID_1" >&2
+					sleep 6 > /dev/null 2>&1
+					[[ "$currentPID_2" == "" ]] && sleep 35 > /dev/null 2>&1
+					[[ "$currentPID_2" != "" ]] && wait "$currentPID_2" >&2
+					[[ "$currentPID_2" != "" ]] && wait "$currentPID_3" >&2
+					[[ "$currentPID_2" != "" ]] && wait "$currentPID_4" >&2
+					wait >&2
+				fi
+
+				wait "$currentPID_1" >&2
+				sleep 0.2 > /dev/null 2>&1
+				if [[ -e "$currentAxelTmpFile".tmp1 ]]
+				then
+					_messagePlain_probe dd if="$currentAxelTmpFile".tmp1 bs=1M status=progress' >> '"$currentAxelTmpFile" >&2
+					
+					if [[ ! -e "$currentAxelTmpFile" ]]
+					then
+						# ### mv -f "$currentAxelTmpFile".tmp1 "$currentAxelTmpFile"
+						dd if="$currentAxelTmpFile".tmp1 bs=1M status=progress
+						
+						du -sh "$currentAxelTmpFile".tmp1 >> "$currentAxelTmpFile"
+					else
+						# ATTENTION: Staggered.
+						#dd if="$currentAxelTmpFile".tmp1 bs=1M status=progress >> "$currentAxelTmpFile" &
+					
+						# ATTENTION: NOT staggered.
+						# ### dd if="$currentAxelTmpFile".tmp1 bs=5M status=progress >> "$currentAxelTmpFile"
+						dd if="$currentAxelTmpFile".tmp1 bs=1M status=progress
+						#cat "$currentAxelTmpFile".tmp1
+						
+						du -sh "$currentAxelTmpFile".tmp1 >> "$currentAxelTmpFile"
+						
+						#cat "$currentAxelTmpFile".tmp1 >> "$currentAxelTmpFile"
+					fi
+				fi
+
+				let currentIteration=currentIteration+4
+				let currentIterationNext1=currentIteration+1
+				let currentIterationNext2=currentIteration+2
+				let currentIterationNext3=currentIteration+3
+			done
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
 			else
 				_messagePlain_probe curl -H '"Authorization: Bearer $GH_TOKEN"' -L "${currentURL_array_reversed[@]}" >&2
 				curl -H "Authorization: Bearer $GH_TOKEN" -L "${currentURL_array_reversed[@]}"
