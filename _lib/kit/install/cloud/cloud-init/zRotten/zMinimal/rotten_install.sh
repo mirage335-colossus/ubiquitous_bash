@@ -458,13 +458,16 @@ _custom_kde() {
 	
 	mkdir -p "$HOME"/.config/autostart
 	mkdir -p "$HOME"/.config/systemd
-	_messagePlain_probe_cmd cp "$currentBackupDir"/.config/autostart/. "$HOME"/.config/autostart/
-	_messagePlain_probe_cmd cp "$currentBackupDir"/.config/systemd/. "$HOME"/.config/systemd/
+	#_messagePlain_probe_cmd cp "$currentBackupDir"/.config/autostart/. "$HOME"/.config/autostart/
+	_messagePlain_probe_cmd cp -a "$currentBackupDir"/.config/autostart/. "$HOME"/.config/autostart/
+	#_messagePlain_probe_cmd cp "$currentBackupDir"/.config/systemd/. "$HOME"/.config/systemd/
+	_messagePlain_probe_cmd cp -a "$currentBackupDir"/.config/systemd/. "$HOME"/.config/systemd/
 
 	mkdir -p "$HOME"/.local/share/applications
-	_messagePlain_probe_cmd cp --preserve=all "$currentBackupDir"/.local/share/applications/. "$HOME"/.local/share/applications/.
-	_messagePlain_probe_cmd cp --preserve=all "$currentBackupDir"/.local/share/applications/. "$HOME"/.local/share/applications/.
-	_messagePlain_probe_cmd cp --preserve=all "$currentBackupDir"/.local/share/icons "$HOME"/.local/share/icons
+	mkdir -p "$HOME"/.local/share/icons
+	_messagePlain_probe_cmd cp -a"$currentBackupDir"/.local/share/applications/. "$HOME"/.local/share/applications/.
+	_messagePlain_probe_cmd cp -a "$currentBackupDir"/.local/share/applications/. "$HOME"/.local/share/applications/.
+	_messagePlain_probe_cmd cp -a "$currentBackupDir"/.local/share/icons/. "$HOME"/.local/share/icons
 
 	mkdir -p "$HOME"/.local
 	_messagePlain_probe_cmd cp -a "$currentBackupDir"/.local/state "$HOME"/.local/state
