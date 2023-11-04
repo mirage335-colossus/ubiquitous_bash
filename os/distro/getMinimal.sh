@@ -183,6 +183,10 @@ _getMinimal_cloud() {
 	_getMost_backend_aptGetInstall axel
 	_getMost_backend_aptGetInstall aria2
 	
+	
+	_getMost_backend_aptGetInstall gh
+	
+	
 	_getMost_backend_aptGetInstall dwarves
 	_getMost_backend_aptGetInstall pahole
 	

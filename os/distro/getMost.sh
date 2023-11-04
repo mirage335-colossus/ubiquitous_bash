@@ -423,6 +423,9 @@ _getMost_debian11_install() {
 	_getMost_backend_aptGetInstall cmake
 	
 	
+	_getMost_backend_aptGetInstall gh
+	
+	
 	
 	_getMost_backend_aptGetInstall haskell-platform
 	_getMost_backend_aptGetInstall pkg-haskell-tools
