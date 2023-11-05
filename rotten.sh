@@ -2239,7 +2239,8 @@ _wget_githubRelease_join-stdout() {
 				if [[ "${currentURL_array_reversed[$currentIteration]}" != "" ]]
 				then
 					_messagePlain_probe _gh_downloadURL "${currentURL_array_reversed[$currentIteration]}" -O "$currentAxelTmpFileRelative".tmp1 >&2
-					"$scriptAbsoluteLocation" _gh_downloadURL "${currentURL_array_reversed[$currentIteration]}" -O "$currentAxelTmpFileRelative".tmp1 > /dev/null 2>&1 &
+					#"$scriptAbsoluteLocation"
+					_gh_downloadURL "${currentURL_array_reversed[$currentIteration]}" -O "$currentAxelTmpFileRelative".tmp1 > /dev/null 2>&1 &
 					currentPID_1="$!"
 				fi
 				
@@ -2254,7 +2255,7 @@ _wget_githubRelease_join-stdout() {
 					# ATTENTION: Staggered.
 					#sleep 10 > /dev/null 2>&1
 					wait "$currentPID_2" >&2
-					#[[ "$currentPID_2" != "" ]] && _pauseForProcess "$currentPID_2" >&2
+					[[ "$currentPID_2" != "" ]] && _pauseForProcess "$currentPID_2" >&2
 					#wait >&2
 
 					sleep 0.2 > /dev/null 2>&1
@@ -2289,7 +2290,7 @@ _wget_githubRelease_join-stdout() {
 					# ATTENTION: Staggered.
 					#sleep 10 > /dev/null 2>&1
 					wait "$currentPID_3" >&2
-					#[[ "$currentPID_3" != "" ]] && _pauseForProcess "$currentPID_3" >&2
+					[[ "$currentPID_3" != "" ]] && _pauseForProcess "$currentPID_3" >&2
 					#wait >&2
 
 					sleep 0.2 > /dev/null 2>&1
@@ -2324,7 +2325,7 @@ _wget_githubRelease_join-stdout() {
 					# ATTENTION: Staggered.
 					#sleep 10 > /dev/null 2>&1
 					wait "$currentPID_4" >&2
-					#[[ "$currentPID_4" != "" ]] && _pauseForProcess "$currentPID_4" >&2
+					[[ "$currentPID_4" != "" ]] && _pauseForProcess "$currentPID_4" >&2
 					#wait >&2
 
 					sleep 0.2 > /dev/null 2>&1
@@ -2360,21 +2361,24 @@ _wget_githubRelease_join-stdout() {
 				if [[ "${currentURL_array_reversed[$currentIterationNext1]}" != "" ]]
 				then
 					_messagePlain_probe _gh_downloadURL "${currentURL_array_reversed[$currentIterationNext1]}" -O "$currentAxelTmpFileRelative".tmp2 >&2
-					"$scriptAbsoluteLocation" _gh_downloadURL "${currentURL_array_reversed[$currentIterationNext1]}" -O "$currentAxelTmpFileRelative".tmp2 > /dev/null 2>&1 &
+					#"$scriptAbsoluteLocation" 
+					_gh_downloadURL "${currentURL_array_reversed[$currentIterationNext1]}" -O "$currentAxelTmpFileRelative".tmp2 > /dev/null 2>&1 &
 					currentPID_2="$!"
 				fi
 				
 				if [[ "${currentURL_array_reversed[$currentIterationNext2]}" != "" ]]
 				then
 					_messagePlain_probe _gh_downloadURL "${currentURL_array_reversed[$currentIterationNext2]}" -O "$currentAxelTmpFileRelative".tmp3 >&2
-					"$scriptAbsoluteLocation" _gh_downloadURL "${currentURL_array_reversed[$currentIterationNext2]}" -O "$currentAxelTmpFileRelative".tmp3 > /dev/null 2>&1 &
+					#"$scriptAbsoluteLocation" 
+					_gh_downloadURL "${currentURL_array_reversed[$currentIterationNext2]}" -O "$currentAxelTmpFileRelative".tmp3 > /dev/null 2>&1 &
 					currentPID_3="$!"
 				fi
 				
 				if [[ "${currentURL_array_reversed[$currentIterationNext3]}" != "" ]]
 				then
 					_messagePlain_probe _gh_downloadURL "${currentURL_array_reversed[$currentIterationNext3]}" -O "$currentAxelTmpFileRelative".tmp4 >&2
-					"$scriptAbsoluteLocation" _gh_downloadURL "${currentURL_array_reversed[$currentIterationNext3]}" -O "$currentAxelTmpFileRelative".tmp4 > /dev/null 2>&1 &
+					#"$scriptAbsoluteLocation" 
+					_gh_downloadURL "${currentURL_array_reversed[$currentIterationNext3]}" -O "$currentAxelTmpFileRelative".tmp4 > /dev/null 2>&1 &
 					currentPID_4="$!"
 				fi
 				
@@ -2393,19 +2397,20 @@ _wget_githubRelease_join-stdout() {
 				if [[ "$currentIteration" == "0" ]]
 				then
 					wait "$currentPID_1" >&2
+					[[ "$currentPID_1" != "" ]] && _pauseForProcess "$currentPID_1" >&2
 					sleep 6 > /dev/null 2>&1
 					[[ "$currentPID_2" == "" ]] && sleep 35 > /dev/null 2>&1
 					[[ "$currentPID_2" != "" ]] && wait "$currentPID_2" >&2
-					#[[ "$currentPID_2" != "" ]] && _pauseForProcess "$currentPID_2" >&2
+					[[ "$currentPID_2" != "" ]] && _pauseForProcess "$currentPID_2" >&2
 					[[ "$currentPID_3" != "" ]] && wait "$currentPID_3" >&2
-					#[[ "$currentPID_3" != "" ]] && _pauseForProcess "$currentPID_3" >&2
+					[[ "$currentPID_3" != "" ]] && _pauseForProcess "$currentPID_3" >&2
 					[[ "$currentPID_4" != "" ]] && wait "$currentPID_4" >&2
-					#[[ "$currentPID_4" != "" ]] && _pauseForProcess "$currentPID_4" >&2
+					[[ "$currentPID_4" != "" ]] && _pauseForProcess "$currentPID_4" >&2
 					wait >&2
 				fi
 
 				wait "$currentPID_1" >&2
-				#[[ "$currentPID_1" != "" ]] && _pauseForProcess "$currentPID_4" >&2
+				[[ "$currentPID_1" != "" ]] && _pauseForProcess "$currentPID_4" >&2
 				sleep 0.2 > /dev/null 2>&1
 				if [[ -e "$currentAxelTmpFile".tmp1 ]]
 				then
