@@ -407,7 +407,7 @@ _wget_githubRelease_join-stdout() {
 		then
 			_messagePlain_probe curl -L "${currentURL_array_reversed[@]}" >&2
 			curl -L "${currentURL_array_reversed[@]}"
-		elif type -p gh && [[ "$GH_TOKEN" != "" ]] && [[ "$FORCE_WGET" != "true" ]]
+		elif type -p gh > /dev/null 2>&1 && [[ "$GH_TOKEN" != "" ]] && [[ "$FORCE_WGET" != "true" ]]
 		then
 			
 			
@@ -450,6 +450,7 @@ _wget_githubRelease_join-stdout() {
 			local currentPID_2
 			local currentPID_3
 			local currentPID_4
+			local currentIteration
 			currentIteration=0
 			local currentIterationNext1
 			let currentIterationNext1=currentIteration+1
@@ -462,16 +463,16 @@ _wget_githubRelease_join-stdout() {
 			while [[ "${currentURL_array_reversed[$currentIteration]}" != "" ]] || [[ "${currentURL_array_reversed[$currentIterationNext1]}" != "" ]] || [[ -e "$currentAxelTmpFile".tmp2 ]] || [[ "${currentURL_array_reversed[$currentIterationNext2]}" != "" ]] || [[ -e "$currentAxelTmpFile".tmp3 ]] || [[ "${currentURL_array_reversed[$currentIterationNext3]}" != "" ]] || [[ -e "$currentAxelTmpFile".tmp4 ]]
 			do
 				#rm -f "$currentAxelTmpFile"
-				rm -f "$currentAxelTmpFile".aria2
-				rm -f "$currentAxelTmpFile".tmp
-				rm -f "$currentAxelTmpFile".tmp.st
-				rm -f "$currentAxelTmpFile".tmp.aria2
-				rm -f "$currentAxelTmpFile".tmp1
-				rm -f "$currentAxelTmpFile".tmp1.st
-				rm -f "$currentAxelTmpFile".tmp1.aria2
-				#rm -f "$currentAxelTmpFile".tmp2
-				#rm -f "$currentAxelTmpFile".tmp2.st
-				#rm -f "$currentAxelTmpFile".tmp2.aria2
+				rm -f "$currentAxelTmpFile".aria2 > /dev/null 2>&1
+				rm -f "$currentAxelTmpFile".tmp > /dev/null 2>&1
+				rm -f "$currentAxelTmpFile".tmp.st > /dev/null 2>&1
+				rm -f "$currentAxelTmpFile".tmp.aria2 > /dev/null 2>&1
+				rm -f "$currentAxelTmpFile".tmp1 > /dev/null 2>&1
+				rm -f "$currentAxelTmpFile".tmp1.st > /dev/null 2>&1
+				rm -f "$currentAxelTmpFile".tmp1.aria2 > /dev/null 2>&1
+				#rm -f "$currentAxelTmpFile".tmp2 > /dev/null 2>&1
+				#rm -f "$currentAxelTmpFile".tmp2.st > /dev/null 2>&1
+				#rm -f "$currentAxelTmpFile".tmp2.aria2 > /dev/null 2>&1
 				#rm -f "$currentAxelTmpFile".* > /dev/null 2>&1
 				
 				#rm -f "$currentAxelTmpFile".* > /dev/null 2>&1
@@ -496,6 +497,7 @@ _wget_githubRelease_join-stdout() {
 					# ATTENTION: Staggered.
 					#sleep 10 > /dev/null 2>&1
 					wait "$currentPID_2" >&2
+					#[[ "$currentPID_2" != "" ]] && _pauseForProcess "$currentPID_2" >&2
 					#wait >&2
 
 					sleep 0.2 > /dev/null 2>&1
@@ -519,9 +521,9 @@ _wget_githubRelease_join-stdout() {
 						true
 					fi
 				fi
-				rm -f "$currentAxelTmpFile".tmp2
-				rm -f "$currentAxelTmpFile".tmp2.st
-				rm -f "$currentAxelTmpFile".tmp2.aria2
+				rm -f "$currentAxelTmpFile".tmp2 > /dev/null 2>&1
+				rm -f "$currentAxelTmpFile".tmp2.st > /dev/null 2>&1
+				rm -f "$currentAxelTmpFile".tmp2.aria2 > /dev/null 2>&1
 				#rm -f "$currentAxelTmpFile".* > /dev/null 2>&1
 				
 				
@@ -530,6 +532,7 @@ _wget_githubRelease_join-stdout() {
 					# ATTENTION: Staggered.
 					#sleep 10 > /dev/null 2>&1
 					wait "$currentPID_3" >&2
+					#[[ "$currentPID_3" != "" ]] && _pauseForProcess "$currentPID_3" >&2
 					#wait >&2
 
 					sleep 0.2 > /dev/null 2>&1
@@ -553,9 +556,9 @@ _wget_githubRelease_join-stdout() {
 						true
 					fi
 				fi
-				rm -f "$currentAxelTmpFile".tmp3
-				rm -f "$currentAxelTmpFile".tmp3.st
-				rm -f "$currentAxelTmpFile".tmp3.aria2
+				rm -f "$currentAxelTmpFile".tmp3 > /dev/null 2>&1
+				rm -f "$currentAxelTmpFile".tmp3.st > /dev/null 2>&1
+				rm -f "$currentAxelTmpFile".tmp3.aria2 > /dev/null 2>&1
 				#rm -f "$currentAxelTmpFile".* > /dev/null 2>&1
 				
 				
@@ -564,6 +567,7 @@ _wget_githubRelease_join-stdout() {
 					# ATTENTION: Staggered.
 					#sleep 10 > /dev/null 2>&1
 					wait "$currentPID_4" >&2
+					#[[ "$currentPID_4" != "" ]] && _pauseForProcess "$currentPID_4" >&2
 					#wait >&2
 
 					sleep 0.2 > /dev/null 2>&1
@@ -587,9 +591,9 @@ _wget_githubRelease_join-stdout() {
 						true
 					fi
 				fi
-				rm -f "$currentAxelTmpFile".tmp4
-				rm -f "$currentAxelTmpFile".tmp4.st
-				rm -f "$currentAxelTmpFile".tmp4.aria2
+				rm -f "$currentAxelTmpFile".tmp4 > /dev/null 2>&1
+				rm -f "$currentAxelTmpFile".tmp4.st > /dev/null 2>&1
+				rm -f "$currentAxelTmpFile".tmp4.aria2 > /dev/null 2>&1
 				#rm -f "$currentAxelTmpFile".* > /dev/null 2>&1
 				
 				
@@ -620,7 +624,13 @@ _wget_githubRelease_join-stdout() {
 
 				# ATTENTION: NOT staggered.
 				#wait "$currentPID_1" >&2
+				#[[ "$currentPID_1" != "" ]] && _pauseForProcess "$currentPID_1" >&2
 				#wait "$currentPID_2" >&2
+				#[[ "$currentPID_2" != "" ]] && _pauseForProcess "$currentPID_2" >&2
+				#wait "$currentPID_3" >&2
+				#[[ "$currentPID_3" != "" ]] && _pauseForProcess "$currentPID_3" >&2
+				#wait "$currentPID_4" >&2
+				#[[ "$currentPID_4" != "" ]] && _pauseForProcess "$currentPID_4" >&2
 				#wait >&2
 				
 				if [[ "$currentIteration" == "0" ]]
@@ -629,12 +639,16 @@ _wget_githubRelease_join-stdout() {
 					sleep 6 > /dev/null 2>&1
 					[[ "$currentPID_2" == "" ]] && sleep 35 > /dev/null 2>&1
 					[[ "$currentPID_2" != "" ]] && wait "$currentPID_2" >&2
+					#[[ "$currentPID_2" != "" ]] && _pauseForProcess "$currentPID_2" >&2
 					[[ "$currentPID_3" != "" ]] && wait "$currentPID_3" >&2
+					#[[ "$currentPID_3" != "" ]] && _pauseForProcess "$currentPID_3" >&2
 					[[ "$currentPID_4" != "" ]] && wait "$currentPID_4" >&2
+					#[[ "$currentPID_4" != "" ]] && _pauseForProcess "$currentPID_4" >&2
 					wait >&2
 				fi
 
 				wait "$currentPID_1" >&2
+				#[[ "$currentPID_1" != "" ]] && _pauseForProcess "$currentPID_4" >&2
 				sleep 0.2 > /dev/null 2>&1
 				if [[ -e "$currentAxelTmpFile".tmp1 ]]
 				then
@@ -666,6 +680,34 @@ _wget_githubRelease_join-stdout() {
 				let currentIterationNext2=currentIteration+2
 				let currentIterationNext3=currentIteration+3
 			done
+
+			if ! [[ -e "$currentAxelTmpFile" ]]
+			then
+				true
+				# ### return 1
+			fi
+
+			# ### cat "$currentAxelTmpFile"
+
+			rm -f "$currentAxelTmpFile"
+			rm -f "$currentAxelTmpFile".aria2
+			rm -f "$currentAxelTmpFile".tmp
+			rm -f "$currentAxelTmpFile".tmp.st
+			rm -f "$currentAxelTmpFile".tmp.aria2
+			rm -f "$currentAxelTmpFile".tmp1
+			rm -f "$currentAxelTmpFile".tmp1.st
+			rm -f "$currentAxelTmpFile".tmp1.aria2
+			rm -f "$currentAxelTmpFile".tmp2
+			rm -f "$currentAxelTmpFile".tmp2.st
+			rm -f "$currentAxelTmpFile".tmp2.aria2
+			rm -f "$currentAxelTmpFile".tmp3
+			rm -f "$currentAxelTmpFile".tmp3.st
+			rm -f "$currentAxelTmpFile".tmp3.aria2
+			rm -f "$currentAxelTmpFile".tmp4
+			rm -f "$currentAxelTmpFile".tmp4.st
+			rm -f "$currentAxelTmpFile".tmp4.aria2
+			
+			rm -f "$currentAxelTmpFile".* > /dev/null 2>&1
 			
 			
 			
