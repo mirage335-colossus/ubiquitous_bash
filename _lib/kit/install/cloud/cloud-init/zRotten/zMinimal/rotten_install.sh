@@ -470,12 +470,11 @@ _custom_kde() {
 
 	mkdir -p "$HOME"/.local/share/applications
 	mkdir -p "$HOME"/.local/share/icons
-	_messagePlain_probe_cmd cp -a "$currentBackupDir"/.local/share/applications/. "$HOME"/.local/share/applications/.
-	_messagePlain_probe_cmd cp -a "$currentBackupDir"/.local/share/applications/. "$HOME"/.local/share/applications/.
-	_messagePlain_probe_cmd cp -a "$currentBackupDir"/.local/share/icons/. "$HOME"/.local/share/icons
+	_messagePlain_probe_cmd cp -a "$currentBackupDir"/.local/share/applications/. "$HOME"/.local/share/applications/
+	_messagePlain_probe_cmd cp -a "$currentBackupDir"/.local/share/icons/. "$HOME"/.local/share/icons/
 
-	mkdir -p "$HOME"/.local
-	_messagePlain_probe_cmd cp -a "$currentBackupDir"/.local/state "$HOME"/.local/state
+	mkdir -p "$HOME"/.local/state
+	_messagePlain_probe_cmd cp -a "$currentBackupDir"/.local/state/. "$HOME"/.local/state/
 }
 
 _custom_kde_drop() {
