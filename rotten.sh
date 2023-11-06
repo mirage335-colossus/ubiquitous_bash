@@ -2248,7 +2248,7 @@ _wget_githubRelease_join-stdout() {
 				then
 					_messagePlain_probe _gh_downloadURL "${currentURL_array_reversed[$currentIteration]}" -O "$currentAxelTmpFileRelative".tmp1 >&2
 					#"$scriptAbsoluteLocation"
-					_gh_downloadURL "${currentURL_array_reversed[$currentIteration]}" -O "$currentAxelTmpFileRelative".tmp1 > /dev/null 2>&1 &
+					_gh_downloadURL "${currentURL_array_reversed[$currentIteration]}" -O "$currentAxelTmpFileRelative".tmp1 >&2 &
 					currentPID_1="$!"
 				fi
 				
@@ -2296,7 +2296,7 @@ _wget_githubRelease_join-stdout() {
 				then
 					_messagePlain_probe _gh_downloadURL "${currentURL_array_reversed[$currentIterationNext1]}" -O "$currentAxelTmpFileRelative".tmp2 >&2
 					#"$scriptAbsoluteLocation" 
-					_gh_downloadURL "${currentURL_array_reversed[$currentIterationNext1]}" -O "$currentAxelTmpFileRelative".tmp2 > /dev/null 2>&1 &
+					_gh_downloadURL "${currentURL_array_reversed[$currentIterationNext1]}" -O "$currentAxelTmpFileRelative".tmp2 >&2 &
 					currentPID_2="$!"
 				fi
 				
@@ -2340,7 +2340,7 @@ _wget_githubRelease_join-stdout() {
 				then
 					_messagePlain_probe _gh_downloadURL "${currentURL_array_reversed[$currentIterationNext2]}" -O "$currentAxelTmpFileRelative".tmp3 >&2
 					#"$scriptAbsoluteLocation" 
-					_gh_downloadURL "${currentURL_array_reversed[$currentIterationNext2]}" -O "$currentAxelTmpFileRelative".tmp3 > /dev/null 2>&1 &
+					_gh_downloadURL "${currentURL_array_reversed[$currentIterationNext2]}" -O "$currentAxelTmpFileRelative".tmp3 >&2 &
 					currentPID_3="$!"
 				fi
 				
@@ -2384,7 +2384,7 @@ _wget_githubRelease_join-stdout() {
 				then
 					_messagePlain_probe _gh_downloadURL "${currentURL_array_reversed[$currentIterationNext3]}" -O "$currentAxelTmpFileRelative".tmp4 >&2
 					#"$scriptAbsoluteLocation" 
-					_gh_downloadURL "${currentURL_array_reversed[$currentIterationNext3]}" -O "$currentAxelTmpFileRelative".tmp4 > /dev/null 2>&1 &
+					_gh_downloadURL "${currentURL_array_reversed[$currentIterationNext3]}" -O "$currentAxelTmpFileRelative".tmp4 >&2 &
 					currentPID_4="$!"
 				fi
 				
@@ -2403,6 +2403,12 @@ _wget_githubRelease_join-stdout() {
 				
 				if [[ "$currentIteration" == "0" ]]
 				then
+					sleep 7
+					[[ ! -e "$currentAxelTmpFileRelative".tmp1 ]] && return 1
+					[[ ! -e "$currentAxelTmpFileRelative".tmp2 ]] && return 1
+					[[ ! -e "$currentAxelTmpFileRelative".tmp3 ]] && return 1
+					[[ ! -e "$currentAxelTmpFileRelative".tmp4 ]] && return 1
+					
 					wait "$currentPID_1" >&2
 					[[ "$currentPID_1" != "" ]] && _pauseForProcess "$currentPID_1" >&2
 					sleep 6 > /dev/null 2>&1
