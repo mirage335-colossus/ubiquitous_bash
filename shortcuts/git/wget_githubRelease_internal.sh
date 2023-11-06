@@ -68,7 +68,8 @@ _wget_githubRelease-stdout() {
 	local currentURL=$(_wget_githubRelease-URL "$@")
 	if type -p gh > /dev/null 2>&1 && [[ "$GH_TOKEN" != "" ]] && [[ "$FORCE_WGET" != "true" ]]
 	then
-		_gh_downloadURL "$currentURL" -O - >&2
+		_messagePlain_probe _gh_downloadURL "$currentURL" -O - >&2
+		_gh_downloadURL "$currentURL" -O -
 		return
 	else
 		_messagePlain_probe curl -L -o - "$currentURL" >&2
