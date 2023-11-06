@@ -646,12 +646,15 @@ _wget_githubRelease_join-stdout() {
 				
 				if [[ "$currentIteration" == "0" ]]
 				then
-					sleep 7
-					[[ ! -e "$currentAxelTmpFileRelative".tmp1 ]] && return 1
-					[[ ! -e "$currentAxelTmpFileRelative".tmp2 ]] && return 1
-					[[ ! -e "$currentAxelTmpFileRelative".tmp3 ]] && return 1
-					[[ ! -e "$currentAxelTmpFileRelative".tmp4 ]] && return 1
-					
+					#sleep 7
+					sleep 90
+					if [[ ! -e "$currentAxelTmpFileRelative".tmp1 ]] || [[ ! -e "$currentAxelTmpFileRelative".tmp2 ]] || [[ ! -e "$currentAxelTmpFileRelative".tmp3 ]] || [[ ! -e "$currentAxelTmpFileRelative".tmp4 ]]
+					then
+						_messageFAIL >&2
+						_messageFAIL
+						_stop 1
+						return 1
+					fi
 					wait "$currentPID_1" >&2
 					[[ "$currentPID_1" != "" ]] && _pauseForProcess "$currentPID_1" >&2
 					sleep 6 > /dev/null 2>&1
