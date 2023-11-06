@@ -660,7 +660,7 @@ _wget_githubRelease_join-stdout() {
 				fi
 
 				wait "$currentPID_1" >&2
-				[[ "$currentPID_1" != "" ]] && _pauseForProcess "$currentPID_4" >&2
+				[[ "$currentPID_1" != "" ]] && _pauseForProcess "$currentPID_1" >&2
 				sleep 0.2 > /dev/null 2>&1
 				if [[ -e "$currentAxelTmpFile".tmp1 ]]
 				then
