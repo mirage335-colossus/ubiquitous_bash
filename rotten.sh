@@ -1823,8 +1823,15 @@ _wget_githubRelease() {
 
 _wget_githubRelease-stdout() {
 	local currentURL=$(_wget_githubRelease-URL "$@")
-	_messagePlain_probe curl -L -o - "$currentURL" >&2
-	curl -L -o - "$currentURL"
+	if type -p gh > /dev/null 2>&1 && [[ "$GH_TOKEN" != "" ]] && [[ "$FORCE_WGET" != "true" ]]
+	then
+		_gh_downloadURL "$currentURL" -O - >&2
+		return
+	else
+		_messagePlain_probe curl -L -o - "$currentURL" >&2
+		curl -L -o - "$currentURL"
+		return
+	fi
 }
 
 
