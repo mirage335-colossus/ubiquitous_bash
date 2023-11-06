@@ -2292,6 +2292,15 @@ _wget_githubRelease_join-stdout() {
 				rm -f "$currentAxelTmpFile".tmp2.aria2 > /dev/null 2>&1
 				#rm -f "$currentAxelTmpFile".* > /dev/null 2>&1
 				
+				if [[ "${currentURL_array_reversed[$currentIterationNext1]}" != "" ]]
+				then
+					_messagePlain_probe _gh_downloadURL "${currentURL_array_reversed[$currentIterationNext1]}" -O "$currentAxelTmpFileRelative".tmp2 >&2
+					#"$scriptAbsoluteLocation" 
+					_gh_downloadURL "${currentURL_array_reversed[$currentIterationNext1]}" -O "$currentAxelTmpFileRelative".tmp2 > /dev/null 2>&1 &
+					currentPID_2="$!"
+				fi
+				
+				
 				
 				if [[ -e "$currentAxelTmpFile".tmp3 ]]
 				then
@@ -2326,6 +2335,15 @@ _wget_githubRelease_join-stdout() {
 				rm -f "$currentAxelTmpFile".tmp3.st > /dev/null 2>&1
 				rm -f "$currentAxelTmpFile".tmp3.aria2 > /dev/null 2>&1
 				#rm -f "$currentAxelTmpFile".* > /dev/null 2>&1
+				
+				if [[ "${currentURL_array_reversed[$currentIterationNext2]}" != "" ]]
+				then
+					_messagePlain_probe _gh_downloadURL "${currentURL_array_reversed[$currentIterationNext2]}" -O "$currentAxelTmpFileRelative".tmp3 >&2
+					#"$scriptAbsoluteLocation" 
+					_gh_downloadURL "${currentURL_array_reversed[$currentIterationNext2]}" -O "$currentAxelTmpFileRelative".tmp3 > /dev/null 2>&1 &
+					currentPID_3="$!"
+				fi
+				
 				
 				
 				if [[ -e "$currentAxelTmpFile".tmp4 ]]
@@ -2362,26 +2380,6 @@ _wget_githubRelease_join-stdout() {
 				rm -f "$currentAxelTmpFile".tmp4.aria2 > /dev/null 2>&1
 				#rm -f "$currentAxelTmpFile".* > /dev/null 2>&1
 				
-				
-				
-
-
-				if [[ "${currentURL_array_reversed[$currentIterationNext1]}" != "" ]]
-				then
-					_messagePlain_probe _gh_downloadURL "${currentURL_array_reversed[$currentIterationNext1]}" -O "$currentAxelTmpFileRelative".tmp2 >&2
-					#"$scriptAbsoluteLocation" 
-					_gh_downloadURL "${currentURL_array_reversed[$currentIterationNext1]}" -O "$currentAxelTmpFileRelative".tmp2 > /dev/null 2>&1 &
-					currentPID_2="$!"
-				fi
-				
-				if [[ "${currentURL_array_reversed[$currentIterationNext2]}" != "" ]]
-				then
-					_messagePlain_probe _gh_downloadURL "${currentURL_array_reversed[$currentIterationNext2]}" -O "$currentAxelTmpFileRelative".tmp3 >&2
-					#"$scriptAbsoluteLocation" 
-					_gh_downloadURL "${currentURL_array_reversed[$currentIterationNext2]}" -O "$currentAxelTmpFileRelative".tmp3 > /dev/null 2>&1 &
-					currentPID_3="$!"
-				fi
-				
 				if [[ "${currentURL_array_reversed[$currentIterationNext3]}" != "" ]]
 				then
 					_messagePlain_probe _gh_downloadURL "${currentURL_array_reversed[$currentIterationNext3]}" -O "$currentAxelTmpFileRelative".tmp4 >&2
@@ -2389,6 +2387,7 @@ _wget_githubRelease_join-stdout() {
 					_gh_downloadURL "${currentURL_array_reversed[$currentIterationNext3]}" -O "$currentAxelTmpFileRelative".tmp4 > /dev/null 2>&1 &
 					currentPID_4="$!"
 				fi
+				
 				
 
 				# ATTENTION: NOT staggered.
