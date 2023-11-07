@@ -2407,7 +2407,7 @@ _wget_githubRelease_join-stdout() {
 					#  This is to confidently reject failures to acquire part4 during the initial multiple connections.
 					#sleep 7
 					sleep 90
-					if ( [[ ! -e "$currentAxelTmpFileRelative".tmp1 ]] || [[ ! -e "$currentAxelTmpFileRelative".tmp2 ]] || [[ ! -e "$currentAxelTmpFileRelative".tmp3 ]] || [[ ! -e "$currentAxelTmpFileRelative".tmp4 ]] ) && ! ( [[ ! -e "$currentAxelTmpFileRelative".tmp1 ]] && ( [[ -e "$currentAxelTmpFileRelative".tmp2 ]] || [[ -e "$currentAxelTmpFileRelative".tmp3 ]] || [[ -e "$currentAxelTmpFileRelative".tmp4 ]] ) )
+					if ( [[ ! -e "$currentAxelTmpFileRelative".tmp1 ]] || [[ ! -e "$currentAxelTmpFileRelative".tmp2 ]] || [[ ! -e "$currentAxelTmpFileRelative".tmp3 ]] || [[ ! -e "$currentAxelTmpFileRelative".tmp4 ]] ) && ! ( [[ -e "$currentAxelTmpFileRelative".tmp1 ]] && ( [[ ! -e "$currentAxelTmpFileRelative".tmp2 ]] || [[ ! -e "$currentAxelTmpFileRelative".tmp3 ]] || [[ ! -e "$currentAxelTmpFileRelative".tmp4 ]] ) )
 					then
 						_messageFAIL >&2
 						_messageFAIL
