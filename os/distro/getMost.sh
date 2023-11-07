@@ -1165,7 +1165,7 @@ _set_getMost_backend_debian() {
 		# --no-upgrade
 		# -o Dpkg::Options::="--force-confold"
 		
-		if ! _getMost_backend dash -c 'type apt-fast' > /dev/null 2>&1
+		if ! _getMost_backend dash -c 'type apt-fast' > /dev/null 2>&1 || ! [[ "$RUNNER_OS" != "" ]]
 		then
 			_messagePlain_probe _getMost_backend env XZ_OPT="-T0" DEBIAN_FRONTEND=noninteractive apt-get -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install -q --install-recommends -y "$@"
 			_getMost_backend env XZ_OPT="-T0" DEBIAN_FRONTEND=noninteractive apt-get -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install -q --install-recommends -y "$@"
