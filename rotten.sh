@@ -2405,7 +2405,7 @@ _wget_githubRelease_join-stdout() {
 				then
 					#sleep 7
 					sleep 90
-					if [[ ! -e "$currentAxelTmpFileRelative".tmp1 ]] || [[ ! -e "$currentAxelTmpFileRelative".tmp2 ]] || [[ ! -e "$currentAxelTmpFileRelative".tmp3 ]] || [[ ! -e "$currentAxelTmpFileRelative".tmp4 ]]
+					if ( [[ ! -e "$currentAxelTmpFileRelative".tmp1 ]] || [[ ! -e "$currentAxelTmpFileRelative".tmp2 ]] || [[ ! -e "$currentAxelTmpFileRelative".tmp3 ]] || [[ ! -e "$currentAxelTmpFileRelative".tmp4 ]] ) && ! ( [[ ! -e "$currentAxelTmpFileRelative".tmp1 ]] && ( [[ -e "$currentAxelTmpFileRelative".tmp2 ]] || [[ -e "$currentAxelTmpFileRelative".tmp3 ]] || [[ -e "$currentAxelTmpFileRelative".tmp4 ]] ) )
 					then
 						_messageFAIL >&2
 						_messageFAIL
