@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='920086762'
+export ub_setScriptChecksum_contents='2588162574'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -5269,10 +5269,11 @@ _gh_downloadURL() {
 	# Use variables to construct the gh release download command
 	local currentIteration
 	currentIteration=0
-	while ! [[ -e "$current_file" ]] && [[ "$currentIteration" -lt 10 ]]
+	while ! [[ -e "$current_file" ]] && [[ "$currentIteration" -lt 3 ]]
 	do
 		gh release download "$current_tagName" -R "$current_repo" -p "$current_file" "$@"
 		! [[ -e "$current_file" ]] && sleep 7
+		let currentIteration=currentIteration+1
 	done
 	[[ -e "$current_file" ]]
 	return "$?"

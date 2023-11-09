@@ -21,10 +21,11 @@ _gh_downloadURL() {
 	# Use variables to construct the gh release download command
 	local currentIteration
 	currentIteration=0
-	while ! [[ -e "$current_file" ]] && [[ "$currentIteration" -lt 10 ]]
+	while ! [[ -e "$current_file" ]] && [[ "$currentIteration" -lt 3 ]]
 	do
 		gh release download "$current_tagName" -R "$current_repo" -p "$current_file" "$@"
 		! [[ -e "$current_file" ]] && sleep 7
+		let currentIteration=currentIteration+1
 	done
 	[[ -e "$current_file" ]]
 	return "$?"
