@@ -1823,8 +1823,14 @@ _wget_githubRelease-URL() {
 
 _wget_githubRelease() {
 	local currentURL=$(_wget_githubRelease-URL "$@")
-	_messagePlain_probe curl -L -o "$3" "$currentURL" >&2
-	curl -L -o "$3" "$currentURL"
+	if [[ "$GH_TOKEN" == "" ]]
+	then
+		_messagePlain_probe curl -L -o "$3" "$currentURL" >&2
+		curl -L -o "$3" "$currentURL"
+	else
+		_messagePlain_probe curl -H "Authorization: Bearer "'$GH_TOKEN' -L -o "$3" "$currentURL" >&2
+		curl -H "Authorization: Bearer $GH_TOKEN" -L -o "$3" "$currentURL"
+	fi
 	[[ ! -e "$3" ]] && _messagePlain_bad 'missing: '"$1"' '"$2"' '"$3" && return 1
 	return 0
 }
@@ -1837,8 +1843,14 @@ _wget_githubRelease-stdout() {
 		_gh_downloadURL "$currentURL" -O -
 		return
 	else
-		_messagePlain_probe curl -L -o - "$currentURL" >&2
-		curl -L -o - "$currentURL"
+		if [[ "$GH_TOKEN" == "" ]]
+		then
+			_messagePlain_probe curl -L -o - "$currentURL" >&2
+			curl -L -o - "$currentURL"
+		else
+			_messagePlain_probe curl -H "Authorization: Bearer "'$GH_TOKEN' -L -o - "$currentURL" >&2
+			curl -H "Authorization: Bearer $GH_TOKEN" -L -o - "$currentURL"
+		fi
 		return
 	fi
 }
