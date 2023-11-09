@@ -73,8 +73,8 @@ _wget_githubRelease() {
 	else
 		if type -p gh > /dev/null 2>&1 && [[ "$GH_TOKEN" != "" ]] && [[ "$FORCE_WGET" != "true" ]]
 		then
-			_messagePlain_probe _gh_downloadURL -O "$3" "$currentURL" >&2
-			_gh_downloadURL -O "$3" "$currentURL"
+			_messagePlain_probe _gh_downloadURL "$currentURL" -O "$3" >&2
+			_gh_downloadURL "$currentURL" -O "$3"
 		else
 			# Broken. Must use 'gh' instead.
 			_messagePlain_probe curl -H "Authorization: Bearer "'$GH_TOKEN' -L -o "$3" "$currentURL" >&2
