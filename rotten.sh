@@ -1776,7 +1776,15 @@ _gh_downloadURL() {
 	current_file=$(echo "$current_url" | sed -n 's|https://github.com/[^/]*/[^/]*/releases/download/[^/]*/\(.*\)|\1|p')
 	
 	# Use variables to construct the gh release download command
-	gh release download "$current_tagName" -R "$current_repo" -p "$current_file" "$@"
+	local currentIteration
+	currentIteration=0
+	while ! [[ -e "$current_file" ]] && [[ "$currentIteration" -lt 10 ]]
+	do
+		gh release download "$current_tagName" -R "$current_repo" -p "$current_file" "$@"
+		! [[ -e "$current_file" ]] && sleep 7
+	done
+	[[ -e "$current_file" ]]
+	return "$?"
 }
 
 
