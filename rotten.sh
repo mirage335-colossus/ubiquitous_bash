@@ -1828,8 +1828,15 @@ _wget_githubRelease() {
 		_messagePlain_probe curl -L -o "$3" "$currentURL" >&2
 		curl -L -o "$3" "$currentURL"
 	else
-		_messagePlain_probe curl -H "Authorization: Bearer "'$GH_TOKEN' -L -o "$3" "$currentURL" >&2
-		curl -H "Authorization: Bearer $GH_TOKEN" -L -o "$3" "$currentURL"
+		if type -p gh > /dev/null 2>&1 && [[ "$GH_TOKEN" != "" ]] && [[ "$FORCE_WGET" != "true" ]]
+		then
+			_messagePlain_probe _gh_downloadURL -O "$3" "$currentURL" >&2
+			_gh_downloadURL -O "$3" "$currentURL"
+		else
+			# Broken. Must use 'gh' instead.
+			_messagePlain_probe curl -H "Authorization: Bearer "'$GH_TOKEN' -L -o "$3" "$currentURL" >&2
+			curl -H "Authorization: Bearer $GH_TOKEN" -L -o "$3" "$currentURL"
+		fi
 	fi
 	[[ ! -e "$3" ]] && _messagePlain_bad 'missing: '"$1"' '"$2"' '"$3" && return 1
 	return 0
@@ -1848,6 +1855,7 @@ _wget_githubRelease-stdout() {
 			_messagePlain_probe curl -L -o - "$currentURL" >&2
 			curl -L -o - "$currentURL"
 		else
+			# Broken. Must use 'gh' instead.
 			_messagePlain_probe curl -H "Authorization: Bearer "'$GH_TOKEN' -L -o - "$currentURL" >&2
 			curl -H "Authorization: Bearer $GH_TOKEN" -L -o - "$currentURL"
 		fi
