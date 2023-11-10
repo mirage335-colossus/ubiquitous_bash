@@ -352,6 +352,9 @@ _getMinimal_cloud() {
 	_getMost_backend_aptGetInstall trousers
 	_getMost_backend_aptGetInstall tpm-tools
 	_getMost_backend_aptGetInstall trousers-dbg
+	
+	
+	_getMost_backend_aptGetInstall cloud-guest-utils
 
 	
 	_getMost_backend apt-get -y clean

@@ -976,6 +976,9 @@ _getMost_debian11_install() {
 	_getMost_backend_aptGetInstall zbarcam-qt
 	
 	
+	_getMost_backend_aptGetInstall cloud-guest-utils
+	
+	
 	
 	_getMost_debian11_special_late
 }
