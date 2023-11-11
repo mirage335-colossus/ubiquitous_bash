@@ -843,8 +843,23 @@ ExecStart="'"$1"'"/.config/startup.sh'
 	( sudo -n -u user bash -c "crontab -l" ; echo '@reboot sleep 0.1 ; /home/'"$custom_user"'/.ubcore/ubiquitous_bash/lean.sh _unix_renice_execDaemon > /home/'"$custom_user"/'_unix_renice_execDaemon.log 2>&1' ) | sudo -n -u user bash -c "crontab -"
 	#( sudo -n -u user bash -c "crontab -l" ; echo '*/9 * * * * sleep 0.1 ; /home/'"$custom_user"'/.ubcore/ubiquitous_bash/lean.sh _unix_renice_execDaemon > /home/'"$custom_user"/'_unix_renice_execDaemon.log 2>&1' ) | sudo -n -u user bash -c "crontab -"
 	( sudo -n -u user bash -c "crontab -l" ; echo '#*/1 * * * * sleep 0.1 ; /home/'"$custom_user"'/.ubcore/ubiquitous_bash/ubcore.sh _w540_fan_cron > /dev/null 2>&1' ) | sudo -n -u user bash -c "crontab -"
-	( sudo -n -u user bash -c "crontab -l" ; echo '#@reboot sleep 0.1 ; /home/'"$custom_user"'/.ubcore/ubiquitous_bash/ubcore.sh _w540_display_start_cron > /dev/null 2>&1' ) | sudo -n -u user bash -c "crontab -"
 	
+	
+	# WARNING: Not able to interact with X11 DISPLAY .
+	#( sudo -n -u user bash -c "crontab -l" ; echo '#@reboot sleep 0.1 ; /home/'"$custom_user"'/.ubcore/ubiquitous_bash/ubcore.sh _w540_display_start > /dev/null 2>&1' ) | sudo -n -u user bash -c "crontab -"
+	
+	
+	echo '[Unit]
+After=xdg-desktop-autostart.target
+
+[Install]
+WantedBy=xdg-desktop-autostart.target
+
+[Service]
+Type=oneshot
+ExecStart=#/home/"'"$custom_user"'"/.ubcore/ubiquitous_bash/ubcore.sh _w540_display_start' | sudo -n tee /home/"$custom_user"/.config/systemd/user/w540_display_start.service > /dev/null
+	sudo -n chmod 644 /home/"$custom_user"/.config/systemd/user/w540_display_start.service
+	sudo -n -u "$custom_user" bash -c 'systemctl --user enable w540_display_start.service'
 	
 	_messageNormal '_custom_bootOnce: /sbin/vboxconfig'
 	

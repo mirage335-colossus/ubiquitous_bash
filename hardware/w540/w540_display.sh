@@ -1,6 +1,6 @@
 
 # ATTENTION: Override with 'ops.sh' if necessary.
-_w540_display_start_cron() {
+_w540_display_start() {
 	_w540_display_start
 }
 
@@ -10,7 +10,7 @@ _w540_display_start_cron() {
 _w540_display_start() {
 	local currentIteration
 	currentIteration=0
-	while ! pgrep plasmashell && [[ "$currentIteration" -lt "15" ]]
+	while ! pgrep plasmashell > /dev/null 2>&1 && [[ "$currentIteration" -lt "15" ]]
 	do
 		sleep 3
 		let currentIteration=currentIteration+1
