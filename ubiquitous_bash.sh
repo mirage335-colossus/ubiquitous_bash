@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='1861269252'
+export ub_setScriptChecksum_contents='1980051079'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -34433,6 +34433,53 @@ _x220_vgaTablet() {
 }
 
 
+# ATTENTION: Override with 'ops.sh' if necessary.
+_w540_display_start_cron() {
+	_w540_display_start
+}
+
+
+
+# ATTENTION: Override with 'ops.sh' if necessary.
+_w540_display_start() {
+	local currentIteration
+	currentIteration=0
+	while ! pgrep plasmashell && [[ "$currentIteration" -lt "15" ]]
+	do
+		sleep 3
+		let currentIteration=currentIteration+1
+	done
+	sleep 45
+	
+	_w540_display-leftOf "$@"
+	
+	#_w540_display-rightOf "$@"
+}
+
+_w540_display-leftOf() {
+	xrandr --output HDMI-1 --scale 1.375x1.375
+	
+	# Workaround . Notice the '406' instaed of '405' . Causes KDE to recognize display (re)configuration, keeping the built-in screen usable.
+	xrandr --output eDP-1 --mode 1920x1080 --pos 2640x406 --rotate normal --output VGA-1 --off --output DP-1 --off --output HDMI-1 --primary --mode 1920x1080 --pos 0x0 --rotate normal --output DP-2 --off --output HDMI-2 --off --output DP-1-0 --off --output DP-1-1 --off
+	
+	xrandr --output eDP-1 --mode 1920x1080 --pos 2640x405 --rotate normal --output VGA-1 --off --output DP-1 --off --output HDMI-1 --primary --mode 1920x1080 --pos 0x0 --rotate normal --output DP-2 --off --output HDMI-2 --off --output DP-1-0 --off --output DP-1-1 --off
+	_reset_KDE
+}
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
 _w540_fan_cfg-write() {
 	echo "options thinkpad_acpi fan_control=1" | sudo -n tee /etc/modprobe.d/thinkfan.conf
 }
@@ -34448,7 +34495,7 @@ _w540_fan_cfg() {
 
 # cron recommended
 #*/1 * * * * sleep 0.1 ; /home/user/.ubcore/ubcore.sh _w540_hardware_cron > /dev/null 2>&1
-_w540_hardware_cron() {
+_w540_fan_cron() {
 	! sudo -n dmidecode -s system-family | grep 'ThinkPad W540' && return 0
 	
 	_w540_fan
@@ -46702,6 +46749,7 @@ _compile_bash_user() {
 
 _compile_bash_hardware() {
 	[[ "$enUb_hardware" == "true" ]] && [[ "$enUb_x220t" == "true" ]] && includeScriptList+=( "hardware/x220t"/x220_display.sh )
+	[[ "$enUb_hardware" == "true" ]] && [[ "$enUb_w540" == "true" ]] && includeScriptList+=( "hardware/w540"/w540_display.sh )
 	[[ "$enUb_hardware" == "true" ]] && [[ "$enUb_w540" == "true" ]] && includeScriptList+=( "hardware/w540"/w540_fan.sh )
 	
 	[[ "$enUb_hardware" == "true" ]] && [[ "$enUb_peripherial" == "true" ]] && includeScriptList+=( "hardware/peripherial/h1060p"/h1060p.sh )

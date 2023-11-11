@@ -14,7 +14,7 @@ _w540_fan_cfg() {
 
 # cron recommended
 #*/1 * * * * sleep 0.1 ; /home/user/.ubcore/ubcore.sh _w540_hardware_cron > /dev/null 2>&1
-_w540_hardware_cron() {
+_w540_fan_cron() {
 	! sudo -n dmidecode -s system-family | grep 'ThinkPad W540' && return 0
 	
 	_w540_fan

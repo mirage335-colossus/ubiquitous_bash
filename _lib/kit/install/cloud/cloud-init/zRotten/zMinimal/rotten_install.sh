@@ -842,8 +842,8 @@ ExecStart="'"$1"'"/.config/startup.sh'
 	
 	( sudo -n -u user bash -c "crontab -l" ; echo '@reboot sleep 0.1 ; /home/'"$custom_user"'/.ubcore/ubiquitous_bash/lean.sh _unix_renice_execDaemon > /home/'"$custom_user"/'_unix_renice_execDaemon.log 2>&1' ) | sudo -n -u user bash -c "crontab -"
 	#( sudo -n -u user bash -c "crontab -l" ; echo '*/9 * * * * sleep 0.1 ; /home/'"$custom_user"'/.ubcore/ubiquitous_bash/lean.sh _unix_renice_execDaemon > /home/'"$custom_user"/'_unix_renice_execDaemon.log 2>&1' ) | sudo -n -u user bash -c "crontab -"
-	( sudo -n -u user bash -c "crontab -l" ; echo '#*/1 * * * * sleep 0.1 ; /home/'"$custom_user"'/.ubcore/ubiquitous_bash/ubcore.sh _w540_hardware_cron > /dev/null 2>&1' ) | sudo -n -u user bash -c "crontab -"
-	
+	( sudo -n -u user bash -c "crontab -l" ; echo '#*/1 * * * * sleep 0.1 ; /home/'"$custom_user"'/.ubcore/ubiquitous_bash/ubcore.sh _w540_fan_cron > /dev/null 2>&1' ) | sudo -n -u user bash -c "crontab -"
+	( sudo -n -u user bash -c "crontab -l" ; echo '#@reboot sleep 0.1 ; /home/'"$custom_user"'/.ubcore/ubiquitous_bash/ubcore.sh _w540_display_start_cron > /dev/null 2>&1' ) | sudo -n -u user bash -c "crontab -"
 	
 	
 	_messageNormal '_custom_bootOnce: /sbin/vboxconfig'
