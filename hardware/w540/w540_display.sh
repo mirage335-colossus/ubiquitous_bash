@@ -16,7 +16,7 @@ _w540_display_start() {
 		let currentIteration=currentIteration+1
 	done
 	sleep 7
-	sleep 30
+	#sleep 30
 	mountpoint /run/live/overlay > /dev/null 2>&1 && sleep 45
 	
 	_w540_display-leftOf "$@" &
@@ -37,8 +37,9 @@ _w540_display-leftOf() {
 	
 	xrandr --output eDP-1 --mode 1920x1080 --pos 2640x405 --rotate normal --output VGA-1 --off --output DP-1 --off --output HDMI-1 --primary --mode 1920x1080 --pos 0x0 --rotate normal --output DP-2 --off --output HDMI-2 --off --output DP-1-0 --off --output DP-1-1 --off
 	
-	sleep 7
-	_reset_KDE
+	# WARNING: May not play nice with startup .
+	#sleep 7
+	#_reset_KDE
 }
 
 
