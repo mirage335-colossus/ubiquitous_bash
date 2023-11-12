@@ -16,6 +16,7 @@ _w540_display_start() {
 		let currentIteration=currentIteration+1
 	done
 	sleep 7
+	sleep 30
 	mountpoint /run/live/overlay > /dev/null 2>&1 && sleep 45
 	
 	_w540_display-leftOf "$@" &
