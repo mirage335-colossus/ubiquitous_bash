@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='128627116'
+export ub_setScriptChecksum_contents='1029726917'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -8349,9 +8349,9 @@ _cfgFW-revert-ephemeral() {
 	
 	_ufw_delete_denyLow() {
 		#local currentLine
-		for currentLine in $(sudo -n ufw status numbered | grep '2:1023' | sed 's/.\[//' | sed 's/].//')
+		for currentLine in $(sudo -n ufw status numbered | grep '2:1023' | sed 's/.*\[//' | sed 's/].*//')
 		do
-			sudo -n ufw --force delete "$currentLine"
+			sudo -n ufw --force delete "$currentLine" 2>/dev/null
 			sleep 3
 		done
 	}

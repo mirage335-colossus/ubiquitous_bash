@@ -399,9 +399,9 @@ _cfgFW-revert-ephemeral() {
 	
 	_ufw_delete_denyLow() {
 		#local currentLine
-		for currentLine in $(sudo -n ufw status numbered | grep '2:1023' | sed 's/.\[//' | sed 's/].//')
+		for currentLine in $(sudo -n ufw status numbered | grep '2:1023' | sed 's/.*\[//' | sed 's/].*//')
 		do
-			sudo -n ufw --force delete "$currentLine"
+			sudo -n ufw --force delete "$currentLine" 2>/dev/null
 			sleep 3
 		done
 	}
