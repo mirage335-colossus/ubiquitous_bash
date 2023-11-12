@@ -484,6 +484,14 @@ _custom_kde() {
 	mkdir -p "$HOME"/.local/state
 	_messagePlain_probe_cmd cp -a "$currentBackupDir"/.local/state/. "$HOME"/.local/state/
 	
+	
+	# Seems someone let their ego introduce unnecessary functionality, with high complexity and bad external dependencies, without a noticeable benefit.
+	#  And this is occurring in Debian Stable years after the reported workaround. Such functionality is utterly toxic, the no one has time for totally predictable consequences of this stupidity.
+	# https://bugs.kde.org/show_bug.cgi?id=424592
+	sed -i 's/SceneGraphBackend=.*//g' "$HOME"/.config/kdeglobals "$HOME"/.config/kdeglobals
+	grep "\[QtQuickRendererSettings\]" "$HOME"/.config/kdeglobals > /dev/null || echo -e "\n[QtQuickRendererSettings]" >> "$HOME"/.config/kdeglobals
+	sed -i 's/\[QtQuickRendererSettings\]/\[QtQuickRendererSettings\]\nSceneGraphBackend=software/g' "$HOME"/.config/kdeglobals
+	
 	return 0
 }
 
