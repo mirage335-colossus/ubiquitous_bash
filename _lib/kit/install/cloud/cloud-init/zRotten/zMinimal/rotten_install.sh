@@ -468,6 +468,12 @@ _custom_kde() {
 	_messagePlain_probe_cmd cp -a "$currentBackupDir"/.config/autostart/. "$HOME"/.config/autostart/
 	#_messagePlain_probe_cmd cp "$currentBackupDir"/.config/systemd/. "$HOME"/.config/systemd/
 	_messagePlain_probe_cmd cp -a "$currentBackupDir"/.config/systemd/. "$HOME"/.config/systemd/
+	
+	mkdir -p "$HOME"/.config/
+	_messagePlain_probe_cmd cp -a "$currentBackupDir"/.config/startup.sh "$HOME"/.config/
+	
+	mkdir -p "$HOME"/.config/plasma-workspace/env/
+	_messagePlain_probe_cmd cp -a "$currentBackupDir"/.config/plasma-workspace/env/startup.sh "$HOME"/.config/plasma-workspace/env/
 
 	mkdir -p "$HOME"/.local/share/applications
 	mkdir -p "$HOME"/.local/share/icons
@@ -849,6 +855,10 @@ ExecStart="'"$1"'"/.config/startup.sh'
 	#( sudo -n -u user bash -c "crontab -l" ; echo '#@reboot sleep 0.1 ; /home/'"$custom_user"'/.ubcore/ubiquitous_bash/ubcore.sh _w540_display_start > /dev/null 2>&1' ) | sudo -n -u user bash -c "crontab -"
 	
 	
+	# Reundancy may be acceptable for this .
+	echo "#!/usr/bin/env bash" | sudo -n tee /home/"$custom_user"/.config/plasma-workspace/env/w540_display_start.sh > /dev/null
+	echo "#/home/"'"$custom_user"'"/.ubcore/ubiquitous_bash/ubcore.sh _w540_display_start" | sudo -n tee -a /home/"$custom_user"/.config/plasma-workspace/env/w540_display_start.sh > /dev/null
+	sudo -n chmod 755 /home/"$custom_user"/.config/plasma-workspace/env/w540_display_start.sh
 	echo '[Unit]
 After=xdg-desktop-autostart.target
 
@@ -859,7 +869,14 @@ WantedBy=xdg-desktop-autostart.target
 Type=oneshot
 ExecStart=#/home/"'"$custom_user"'"/.ubcore/ubiquitous_bash/ubcore.sh _w540_display_start' | sudo -n tee /home/"$custom_user"/.config/systemd/user/w540_display_start.service > /dev/null
 	sudo -n chmod 644 /home/"$custom_user"/.config/systemd/user/w540_display_start.service
+	sudo -n -u "$custom_user" bash -c 'systemctl --user stop w540_display_start'
+	sudo -n -u "$custom_user" bash -c 'systemctl --user daemon-reload'
+	sudo -n -u "$custom_user" bash -c 'systemctl --user enable w540_display_start'
 	sudo -n -u "$custom_user" bash -c 'systemctl --user enable w540_display_start.service'
+	
+	
+	
+	
 	
 	_messageNormal '_custom_bootOnce: /sbin/vboxconfig'
 	
