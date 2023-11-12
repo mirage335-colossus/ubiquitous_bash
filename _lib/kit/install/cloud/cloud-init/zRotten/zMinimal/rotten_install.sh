@@ -488,9 +488,16 @@ _custom_kde() {
 	# Seems someone let their ego introduce unnecessary functionality, with high complexity and bad external dependencies, without a noticeable benefit.
 	#  And this is occurring in Debian Stable years after the reported workaround. Such functionality is utterly toxic, the no one has time for totally predictable consequences of this stupidity.
 	# https://bugs.kde.org/show_bug.cgi?id=424592
-	sed -i 's/SceneGraphBackend=.*//g' "$HOME"/.config/kdeglobals "$HOME"/.config/kdeglobals
-	grep "\[QtQuickRendererSettings\]" "$HOME"/.config/kdeglobals > /dev/null || echo -e "\n[QtQuickRendererSettings]" >> "$HOME"/.config/kdeglobals
-	sed -i 's/\[QtQuickRendererSettings\]/\[QtQuickRendererSettings\]\nSceneGraphBackend=software/g' "$HOME"/.config/kdeglobals
+	#sed -i 's/SceneGraphBackend=.*//g' "$HOME"/.config/kdeglobals "$HOME"/.config/kdeglobals
+	#grep "\[QtQuickRendererSettings\]" "$HOME"/.config/kdeglobals > /dev/null || echo -e "\n[QtQuickRendererSettings]" >> "$HOME"/.config/kdeglobals
+	#sed -i 's/\[QtQuickRendererSettings\]/\[QtQuickRendererSettings\]\nSceneGraphBackend=software/g' "$HOME"/.config/kdeglobals
+	# Unfortunately, software renderer does not work well with CPU/Memory usage system monitor widgets.
+	#  However, systemsettings can be configured not to use the sidebar to begin with.
+	# https://www.reddit.com/r/kde/comments/ixelhj/does_anybody_know_why_the_sidebar_in_the_settings/
+	sed -i 's/ActiveView=.*//g' "$HOME"/.config/systemsettingsrc "$HOME"/.config/systemsettingsrc
+	grep "\[Main\]" "$HOME"/.config/systemsettingsrc > /dev/null || echo -e "\n[Main]" >> "$HOME"/.config/systemsettingsrc
+	sed -i 's/\[Main\]/\[Main\]\nActiveView=systemsettings_icon_mode/g' "$HOME"/.config/systemsettingsrc
+	
 	
 	return 0
 }
