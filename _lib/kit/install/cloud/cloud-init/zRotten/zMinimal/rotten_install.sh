@@ -857,7 +857,7 @@ ExecStart="'"$1"'"/.config/startup.sh'
 	
 	# Reundancy may be acceptable for this .
 	echo '#!'"/usr/bin/env bash" | sudo -n tee /home/"$custom_user"/.config/plasma-workspace/env/w540_display_start.sh > /dev/null
-	echo '#'"/home/""$custom_user""/.ubcore/ubiquitous_bash/ubcore.sh _w540_display_start" | sudo -n tee -a /home/"$custom_user"/.config/plasma-workspace/env/w540_display_start.sh > /dev/null
+	echo '#'"/home/""$custom_user""/.ubcore/ubiquitous_bash/ubcore.sh _w540_display_start &" | sudo -n tee -a /home/"$custom_user"/.config/plasma-workspace/env/w540_display_start.sh > /dev/null
 	sudo -n chmod 755 /home/"$custom_user"/.config/plasma-workspace/env/w540_display_start.sh
 	echo '[Unit]
 After=xdg-desktop-autostart.target
