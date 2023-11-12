@@ -17,9 +17,14 @@ _w540_display_start() {
 	done
 	sleep 45
 	
-	_w540_display-leftOf "$@"
+	_w540_display-leftOf "$@" &
 	
-	#_w540_display-rightOf "$@"
+	#_w540_display-rightOf "$@" &
+	
+	disown -h $!
+	disown
+	disown -a -h -r
+	disown -a -r
 }
 
 _w540_display-leftOf() {
@@ -29,6 +34,8 @@ _w540_display-leftOf() {
 	xrandr --output eDP-1 --mode 1920x1080 --pos 2640x406 --rotate normal --output VGA-1 --off --output DP-1 --off --output HDMI-1 --primary --mode 1920x1080 --pos 0x0 --rotate normal --output DP-2 --off --output HDMI-2 --off --output DP-1-0 --off --output DP-1-1 --off
 	
 	xrandr --output eDP-1 --mode 1920x1080 --pos 2640x405 --rotate normal --output VGA-1 --off --output DP-1 --off --output HDMI-1 --primary --mode 1920x1080 --pos 0x0 --rotate normal --output DP-2 --off --output HDMI-2 --off --output DP-1-0 --off --output DP-1-1 --off
+	
+	sleep 7
 	_reset_KDE
 }
 

@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='69067658'
+export ub_setScriptChecksum_contents='2171822123'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -23627,7 +23627,7 @@ _x220_vgaTablet() {
 
 
 # ATTENTION: Override with 'ops.sh' if necessary.
-_w540_display_start_cron() {
+_w540_display_start() {
 	_w540_display_start
 }
 
@@ -23637,16 +23637,21 @@ _w540_display_start_cron() {
 _w540_display_start() {
 	local currentIteration
 	currentIteration=0
-	while ! pgrep plasmashell && [[ "$currentIteration" -lt "15" ]]
+	while ! pgrep plasmashell > /dev/null 2>&1 && [[ "$currentIteration" -lt "15" ]]
 	do
 		sleep 3
 		let currentIteration=currentIteration+1
 	done
 	sleep 45
 	
-	_w540_display-leftOf "$@"
+	_w540_display-leftOf "$@" &
 	
-	#_w540_display-rightOf "$@"
+	#_w540_display-rightOf "$@" &
+	
+	disown -h $!
+	disown
+	disown -a -h -r
+	disown -a -r
 }
 
 _w540_display-leftOf() {
@@ -23656,6 +23661,8 @@ _w540_display-leftOf() {
 	xrandr --output eDP-1 --mode 1920x1080 --pos 2640x406 --rotate normal --output VGA-1 --off --output DP-1 --off --output HDMI-1 --primary --mode 1920x1080 --pos 0x0 --rotate normal --output DP-2 --off --output HDMI-2 --off --output DP-1-0 --off --output DP-1-1 --off
 	
 	xrandr --output eDP-1 --mode 1920x1080 --pos 2640x405 --rotate normal --output VGA-1 --off --output DP-1 --off --output HDMI-1 --primary --mode 1920x1080 --pos 0x0 --rotate normal --output DP-2 --off --output HDMI-2 --off --output DP-1-0 --off --output DP-1-1 --off
+	
+	sleep 7
 	_reset_KDE
 }
 
