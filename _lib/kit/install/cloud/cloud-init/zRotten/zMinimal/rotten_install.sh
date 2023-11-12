@@ -483,6 +483,8 @@ _custom_kde() {
 
 	mkdir -p "$HOME"/.local/state
 	_messagePlain_probe_cmd cp -a "$currentBackupDir"/.local/state/. "$HOME"/.local/state/
+	
+	return 0
 }
 
 _custom_kde_drop() {

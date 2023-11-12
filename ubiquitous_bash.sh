@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='3077115932'
+export ub_setScriptChecksum_contents='2304669873'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -10707,6 +10707,25 @@ _getMost_debian11_install() {
 	
 	_getMost_backend_aptGetInstall vim
 	
+	# WARNING: Rust is not yet (2023-11-12) anywhere near as editable on the fly or pervasively available as bash .
+	#  Criteria for such are far more necessarily far more stringent than might be intuitively obvious.
+	#  Rust is expected to remain non-competitive with bash for purposes of 'ubiquitous_bash', even for reference implementations, for at least 6years .
+	#   6 years
+	# https://users.rust-lang.org/t/does-rust-work-in-cygwin-if-so-how-can-i-get-it-working/25735
+	# https://stackoverflow.com/questions/31492799/cross-compile-a-rust-application-from-linux-to-windows
+	# https://rustup.rs/
+	#curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+	# https://packages.debian.org/search?keywords=rustup&searchon=names&suite=all&section=all
+	# https://wiki.debian.org/Rust
+	#  DANGER: Do NOT regard 'rustup' as available.
+	_getMost_backend_aptGetInstall rustc
+	_getMost_backend_aptGetInstall cargo
+	#_getMost_backend_aptGetInstall rustup
+	_getMost_backend_aptGetInstall mingw-w64
+	_getMost_backend_aptGetInstall binutils-mingw-w64
+	_getMost_backend_aptGetInstall mingw-w64-tools
+	_getMost_backend_aptGetInstall gdb-mingw-w64
+	
 	if _getMost_backend bash -c '! dpkg --print-foreign-architectures | grep i386'
 	then
 		_getMost_backend dpkg --add-architecture i386
@@ -11731,6 +11750,25 @@ _getMinimal_cloud() {
 	_getMost_backend_aptGetInstall vim
 	
 	_getMost_backend_aptGetInstall linux-image-amd64
+	
+	# WARNING: Rust is not yet (2023-11-12) anywhere near as editable on the fly or pervasively available as bash .
+	#  Criteria for such are far more necessarily far more stringent than might be intuitively obvious.
+	#  Rust is expected to remain non-competitive with bash for purposes of 'ubiquitous_bash', even for reference implementations, for at least 6years .
+	#   6 years
+	# https://users.rust-lang.org/t/does-rust-work-in-cygwin-if-so-how-can-i-get-it-working/25735
+	# https://stackoverflow.com/questions/31492799/cross-compile-a-rust-application-from-linux-to-windows
+	# https://rustup.rs/
+	#curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+	# https://packages.debian.org/search?keywords=rustup&searchon=names&suite=all&section=all
+	# https://wiki.debian.org/Rust
+	#  DANGER: Do NOT regard 'rustup' as available.
+	_getMost_backend_aptGetInstall rustc
+	_getMost_backend_aptGetInstall cargo
+	#_getMost_backend_aptGetInstall rustup
+	_getMost_backend_aptGetInstall mingw-w64
+	_getMost_backend_aptGetInstall binutils-mingw-w64
+	_getMost_backend_aptGetInstall mingw-w64-tools
+	_getMost_backend_aptGetInstall gdb-mingw-w64
 	
 	_getMost_backend_aptGetInstall pigz
 
