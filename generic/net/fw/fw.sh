@@ -11,12 +11,12 @@ _dns() {
 
 
 _ufw_check_portALLOW_warn() {
-	! ufw status | grep -F ''"$1"'  ' | grep -i 'ALLOW' > /dev/null 2>&1 && _messagePlain_warn 'warn: missing: default: ''ufw allow '"$1"''
+	! ufw status verbose | grep -F ''"$1"'  ' | grep -i 'ALLOW IN' > /dev/null 2>&1 && _messagePlain_warn 'warn: missing: default: ''ufw allow '"$1"''
 	! ufw show added | grep -xF 'ufw allow '"$1"'' > /dev/null 2>&1 && _messagePlain_warn 'warn: missing: default: ''ufw allow '"$1"''
 	[[ "$?" == '0' ]] && return 1
 }
 _ufw_check_portALLOW_bad() {
-	! ufw status | grep -F ''"$1"'  ' | grep -i 'ALLOW' > /dev/null 2>&1 && _messagePlain_bad 'bad: missing: ''ufw allow '"$1"''
+	! ufw status verbose | grep -F ''"$1"'  ' | grep -i 'ALLOW IN' > /dev/null 2>&1 && _messagePlain_bad 'bad: missing: ''ufw allow '"$1"''
 	! ufw show added | grep -xF 'ufw allow '"$1"'' > /dev/null 2>&1 && _messagePlain_bad 'bad: missing: ''ufw allow '"$1"''
 	[[ "$?" == '0' ]] && return 1
 }
@@ -35,12 +35,12 @@ _ufw_portEnable() {
 }
 
 _ufw_check_portDENY_warn() {
-	! ufw status | grep -F ''"$1"'  ' | grep -i 'DENY' > /dev/null 2>&1 && _messagePlain_warn 'warn: missing: default: ''ufw deny '"$1"''
+	! ufw status verbose | grep -F ''"$1"'  ' | grep -i 'DENY IN' > /dev/null 2>&1 && _messagePlain_warn 'warn: missing: default: ''ufw deny '"$1"''
 	! ufw show added | grep -xF 'ufw deny '"$1"'' > /dev/null 2>&1 && _messagePlain_warn 'warn: missing: default: ''ufw deny '"$1"''
 	[[ "$?" == '0' ]] && return 1
 }
 _ufw_check_portDENY_bad() {
-	! ufw status | grep -F ''"$1"'  ' | grep -i 'DENY' > /dev/null 2>&1 && _messagePlain_bad 'bad: missing: ''ufw deny '"$1"''
+	! ufw status verbose | grep -F ''"$1"'  ' | grep -i 'DENY IN' > /dev/null 2>&1 && _messagePlain_bad 'bad: missing: ''ufw deny '"$1"''
 	! ufw show added | grep -xF 'ufw deny '"$1"'' > /dev/null 2>&1 && _messagePlain_bad 'bad: missing: ''ufw deny '"$1"''
 	[[ "$?" == '0' ]] && return 1
 }
@@ -129,6 +129,15 @@ _cfgFW_procedure() {
         ufw deny 10001:49150/tcp
         ufw deny 10001:49150/udp
     else
+	ufw allow 22/tcp
+	ufw allow out from any to any port 22 proto tcp
+	ufw allow 53/tcp
+	ufw allow out from any to any port 53 proto tcp
+	
+	ufw allow out from any to any port 80 proto tcp
+	ufw allow out from any to any port 443 proto tcp
+	
+	
         _ufw_portEnable 67
         _ufw_portEnable 68
         _ufw_portEnable 53
@@ -258,6 +267,7 @@ _cfgFW-limited() {
     sudo -n --preserve-env=ub_cfgFW "$scriptAbsoluteLocation" _cfgFW_procedure "$@"
 
     _writeFW_ip-DUBIOUS
+    _writeFW_ip-DUBIOUS-more
 
     _messageNormal '_cfgFW-terminal: deny'
     _messagePlain_probe 'probe: ufw deny to   DUBIOUS'
@@ -286,6 +296,7 @@ _cfgFW-terminal() {
     _writeFW_ip-googleDNS-port
     _writeFW_ip-cloudfareDNS-port
     #_writeFW_ip-DUBIOUS
+    #_writeFW_ip-DUBIOUS-more
 
     sudo -n --preserve-env=ub_cfgFW "$scriptAbsoluteLocation" _cfgFW_procedure "$@"
 
@@ -331,6 +342,7 @@ _cfgFW-misc() {
     _writeFW_ip-googleDNS-port
     _writeFW_ip-cloudfareDNS-port
     #_writeFW_ip-DUBIOUS
+    #_writeFW_ip-DUBIOUS-more
 
     sudo -n --preserve-env=ub_cfgFW "$scriptAbsoluteLocation" _cfgFW_procedure "$@"
 
@@ -359,6 +371,61 @@ _cfgFW-misc() {
     #_stop
 }
 
+# Think: CI build . May need inbound SSH, but otherwise *very* limited functionality.
+_cfgFW-ephemeral() {
+    _messageNormal 'init: _cfgFW-ephemeral'
+
+    export ub_cfgFW="ephemeral"
+    sudo -n --preserve-env=ub_cfgFW "$scriptAbsoluteLocation" _cfgFW_procedure "$@"
+
+    _writeFW_ip-DUBIOUS
+    _writeFW_ip-DUBIOUS-more
+
+    _messageNormal '_cfgFW-terminal: deny'
+    _messagePlain_probe 'probe: ufw deny to   DUBIOUS'
+    sudo -n xargs -r -L 1 -P 10 "$scriptAbsoluteLocation" _messagePlain_probe_cmd ufw deny out from any to < <(cat /ip-DUBIOUS.txt | grep -v '^#')
+
+    _messageNormal '_cfgFW-terminal: deny'
+    _messagePlain_probe 'probe: ufw deny from   DUBIOUS'
+    sudo -n xargs -r -L 1 -P 10 "$scriptAbsoluteLocation" _messagePlain_probe_cmd ufw deny in to any from < <(cat /ip-DUBIOUS-more.txt | grep -v '^#')
+    #sudo -n xargs -r -L 1 -P 10 "$scriptAbsoluteLocation" _messagePlain_probe_cmd ufw deny in to any from < <(cat /ip-DUBIOUS.txt | grep -v '^#')
+
+    _messageNormal '_cfgFW-terminal: status'
+    #sudo -n ufw status verbose
+    sudo -n ufw reload
+}
+
+_cfgFW-revert-ephemeral() {
+	
+	_ufw_delete_denyLow() {
+		#local currentLine
+		for currentLine in $(sudo -n ufw status numbered | grep '2:1023' | sed 's/.\[//' | sed 's/].//')
+		do
+			sudo -n ufw --force delete "$currentLine"
+			sleep 3
+		done
+	}
+	_ufw_delete_denyLow
+	sleep 7
+	_ufw_delete_denyLow
+	sleep 7
+	_ufw_delete_denyLow
+	sleep 7
+	_ufw_delete_denyLow
+	
+	sudo -n ufw delete deny 22
+	
+	sudo -n ufw allow 22/tcp
+	sudo -n ufw allow out from any to any port 22 proto tcp
+	sudo -n ufw allow 53/tcp
+	sudo -n ufw allow out from any to any port 53 proto tcp
+	
+	sudo -n ufw allow out from any to any port 80 proto tcp
+	sudo -n ufw allow out from any to any port 443 proto tcp
+	
+	sudo -n ufw deny 2:1023/tcp
+	sudo -n ufw deny 2:1023/udp
+}
 
 _writeFW_ip-github-port() {
     [[ ! $(sudo -n wc -c "$1"/ip-github-port.txt 2>/dev/null | cut -f1 -d\  | tr -dc '0-9') -gt 2 ]] && "$scriptAbsoluteLocation" _ip-github | sed 's/$/ port 22,443 proto tcp/g' | sudo -n tee "$1"/ip-github-port.txt > /dev/null
@@ -377,6 +444,9 @@ _writeFW_ip-cloudfareDNS-port() {
 }
 _writeFW_ip-DUBIOUS() {
     [[ ! $(sudo -n wc -c "$1"/ip-DUBIOUS.txt 2>/dev/null | cut -f1 -d\  | tr -dc '0-9') -gt 2 ]] && "$scriptAbsoluteLocation" _ip-DUBIOUS | sudo -n tee "$1"/ip-DUBIOUS.txt > /dev/null
+}
+_writeFW_ip-DUBIOUS-more() {
+    [[ ! $(sudo -n wc -c "$1"/ip-DUBIOUS-more.txt 2>/dev/null | cut -f1 -d\  | tr -dc '0-9') -gt 2 ]] && "$scriptAbsoluteLocation" _ip-DUBIOUS-more | sudo -n tee "$1"/ip-DUBIOUS-more.txt > /dev/null
 }
 
 

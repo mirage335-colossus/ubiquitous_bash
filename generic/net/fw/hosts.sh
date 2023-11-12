@@ -185,6 +185,18 @@ _ip-DUBIOUS() {
     wget -O - -q 'https://www.ipdeny.com/ipv6/ipaddresses/aggregated/aq-aggregated.zone' | tr -dc 'a-zA-Z0-9\:\/\.\n'
 }
 
+# No disrespect . Limited purpose computers, outgoing connections to only the arguably largest moderated reasonably friendly tech companies .
+# https://youtu.be/RoZeVbbZ0o0?si=Q6l7fkBciFM-JKo3&t=3117
+# https://www.ipdeny.com/ipblocks/
+# https://en.wikipedia.org/wiki/United_States_sanctions#Countries
+_ip-DUBIOUS-more() {
+    _ip-DUBIOUS
+
+    # Arguably large moderated reasonably friendly tech companies here. Think: AliExpress .
+    echo '#cn'
+    wget -O - -q 'https://www.ipdeny.com/ipblocks/data/aggregated/cn-aggregated.zone' | tr -dc 'a-zA-Z0-9\:\/\.\n'
+    wget -O - -q 'https://www.ipdeny.com/ipv6/ipaddresses/aggregated/cn-aggregated.zone' | tr -dc 'a-zA-Z0-9\:\/\.\n'
+}
 
 
 
