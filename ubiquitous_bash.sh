@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='2304669873'
+export ub_setScriptChecksum_contents='697416075'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -10722,6 +10722,7 @@ _getMost_debian11_install() {
 	_getMost_backend_aptGetInstall cargo
 	#_getMost_backend_aptGetInstall rustup
 	_getMost_backend_aptGetInstall mingw-w64
+	_getMost_backend_aptGetInstall g++-mingw-w64-x86-64-win32
 	_getMost_backend_aptGetInstall binutils-mingw-w64
 	_getMost_backend_aptGetInstall mingw-w64-tools
 	_getMost_backend_aptGetInstall gdb-mingw-w64
@@ -11766,6 +11767,7 @@ _getMinimal_cloud() {
 	_getMost_backend_aptGetInstall cargo
 	#_getMost_backend_aptGetInstall rustup
 	_getMost_backend_aptGetInstall mingw-w64
+	_getMost_backend_aptGetInstall g++-mingw-w64-x86-64-win32
 	_getMost_backend_aptGetInstall binutils-mingw-w64
 	_getMost_backend_aptGetInstall mingw-w64-tools
 	_getMost_backend_aptGetInstall gdb-mingw-w64

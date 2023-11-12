@@ -43,6 +43,7 @@ _getMinimal_cloud() {
 	_getMost_backend_aptGetInstall cargo
 	#_getMost_backend_aptGetInstall rustup
 	_getMost_backend_aptGetInstall mingw-w64
+	_getMost_backend_aptGetInstall g++-mingw-w64-x86-64-win32
 	_getMost_backend_aptGetInstall binutils-mingw-w64
 	_getMost_backend_aptGetInstall mingw-w64-tools
 	_getMost_backend_aptGetInstall gdb-mingw-w64
