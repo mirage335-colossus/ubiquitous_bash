@@ -819,7 +819,7 @@ ExecStart="'"$1"'"/.config/startup.sh'
 	sudo -n mkdir -p /home/"$custom_user"/.config/systemd/user
 	#_here_bootdisc_startup_xdg | sudo -n tee /home/"$custom_user"/.config/autostart/startup.desktop > /dev/null
 	#_here_bootdisc_startup_xdg | sudo -n tee /etc/xdg/autostart/startup.desktop > /dev/null
-	#echo "#!/usr/bin/env bash" | sudo -n tee /home/"$custom_user"/.config/plasma-workspace/env/startup.sh > /dev/null
+	#echo '#!'"/usr/bin/env bash" | sudo -n tee /home/"$custom_user"/.config/plasma-workspace/env/startup.sh > /dev/null
 	# | grep Exec | sed 's/^Exec=//' | sed 's/$/ \&/' | sudo -n tee -a /home/"$custom_user"/.config/plasma-workspace/env/startup.sh > /dev/null
 	_here_bootdisc_startup_script | sudo -n tee /home/"$custom_user"/.config/startup.sh > /dev/null
 	_here_bootdisc_startup_systemd /home/"$custom_user" | sudo -n tee /home/"$custom_user"/.config/systemd/user/bootdiscStartup.service > /dev/null
@@ -856,8 +856,8 @@ ExecStart="'"$1"'"/.config/startup.sh'
 	
 	
 	# Reundancy may be acceptable for this .
-	echo "#!/usr/bin/env bash" | sudo -n tee /home/"$custom_user"/.config/plasma-workspace/env/w540_display_start.sh > /dev/null
-	echo "#/home/"'"$custom_user"'"/.ubcore/ubiquitous_bash/ubcore.sh _w540_display_start" | sudo -n tee -a /home/"$custom_user"/.config/plasma-workspace/env/w540_display_start.sh > /dev/null
+	echo '#!'"/usr/bin/env bash" | sudo -n tee /home/"$custom_user"/.config/plasma-workspace/env/w540_display_start.sh > /dev/null
+	echo '#'"/home/""$custom_user""/.ubcore/ubiquitous_bash/ubcore.sh _w540_display_start" | sudo -n tee -a /home/"$custom_user"/.config/plasma-workspace/env/w540_display_start.sh > /dev/null
 	sudo -n chmod 755 /home/"$custom_user"/.config/plasma-workspace/env/w540_display_start.sh
 	echo '[Unit]
 After=xdg-desktop-autostart.target
