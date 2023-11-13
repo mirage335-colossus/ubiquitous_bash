@@ -3,6 +3,25 @@
 # ATTENTION: Override with 'core.sh' or similar.
 
 
+# Unusual. Strongly discouraged.
+# CAUTION: Pulls in as much as >1GB (uncompressed) of binaries. May be unaffordable on uncompressed filesystems.
+# Unless your CI job is specifically cross compiling for MSW, you almost certainly do NOT want this.
+_getMinimal_cloud-msw() {
+	#https://askubuntu.com/questions/876240/how-to-automate-setting-up-of-keyboard-configuration-package
+	#apt-get install -y debconf-utils
+	export DEBIAN_FRONTEND=noninteractive
+	
+	_set_getMost_backend "$@"
+	_test_getMost_backend "$@"
+	#_getMost_debian11_aptSources "$@"
+	
+	_getMost_backend_aptGetInstall mingw-w64
+	_getMost_backend_aptGetInstall g++-mingw-w64-x86-64-win32
+	_getMost_backend_aptGetInstall binutils-mingw-w64
+	_getMost_backend_aptGetInstall mingw-w64-tools
+	_getMost_backend_aptGetInstall gdb-mingw-w64
+}
+
 # Unusual. Strongly discouraged. Building Linux Kernel with fewer resources is helpful for compatibility and performance with some constrained and repetitive cloud services.
 _getMinimal_cloud() {
 	"$scriptAbsoluteLocation" _setupUbiquitous
@@ -42,11 +61,6 @@ _getMinimal_cloud() {
 	_getMost_backend_aptGetInstall rustc
 	_getMost_backend_aptGetInstall cargo
 	#_getMost_backend_aptGetInstall rustup
-	_getMost_backend_aptGetInstall mingw-w64
-	_getMost_backend_aptGetInstall g++-mingw-w64-x86-64-win32
-	_getMost_backend_aptGetInstall binutils-mingw-w64
-	_getMost_backend_aptGetInstall mingw-w64-tools
-	_getMost_backend_aptGetInstall gdb-mingw-w64
 	
 	_getMost_backend_aptGetInstall pigz
 

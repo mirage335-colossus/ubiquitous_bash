@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='3423833296'
+export ub_setScriptChecksum_contents='1162384253'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -11091,6 +11091,25 @@ fi
 # ATTENTION: Override with 'core.sh' or similar.
 
 
+# Unusual. Strongly discouraged.
+# CAUTION: Pulls in as much as >1GB (uncompressed) of binaries. May be unaffordable on uncompressed filesystems.
+# Unless your CI job is specifically cross compiling for MSW, you almost certainly do NOT want this.
+_getMinimal_cloud-msw() {
+	#https://askubuntu.com/questions/876240/how-to-automate-setting-up-of-keyboard-configuration-package
+	#apt-get install -y debconf-utils
+	export DEBIAN_FRONTEND=noninteractive
+	
+	_set_getMost_backend "$@"
+	_test_getMost_backend "$@"
+	#_getMost_debian11_aptSources "$@"
+	
+	_getMost_backend_aptGetInstall mingw-w64
+	_getMost_backend_aptGetInstall g++-mingw-w64-x86-64-win32
+	_getMost_backend_aptGetInstall binutils-mingw-w64
+	_getMost_backend_aptGetInstall mingw-w64-tools
+	_getMost_backend_aptGetInstall gdb-mingw-w64
+}
+
 # Unusual. Strongly discouraged. Building Linux Kernel with fewer resources is helpful for compatibility and performance with some constrained and repetitive cloud services.
 _getMinimal_cloud() {
 	"$scriptAbsoluteLocation" _setupUbiquitous
@@ -11130,11 +11149,6 @@ _getMinimal_cloud() {
 	_getMost_backend_aptGetInstall rustc
 	_getMost_backend_aptGetInstall cargo
 	#_getMost_backend_aptGetInstall rustup
-	_getMost_backend_aptGetInstall mingw-w64
-	_getMost_backend_aptGetInstall g++-mingw-w64-x86-64-win32
-	_getMost_backend_aptGetInstall binutils-mingw-w64
-	_getMost_backend_aptGetInstall mingw-w64-tools
-	_getMost_backend_aptGetInstall gdb-mingw-w64
 	
 	_getMost_backend_aptGetInstall pigz
 
