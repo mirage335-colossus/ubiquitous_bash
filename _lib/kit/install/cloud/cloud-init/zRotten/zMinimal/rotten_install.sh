@@ -474,6 +474,8 @@ _custom_kde() {
 	
 	mkdir -p "$HOME"/.config/plasma-workspace/env/
 	_messagePlain_probe_cmd cp -a "$currentBackupDir"/.config/plasma-workspace/env/startup.sh "$HOME"/.config/plasma-workspace/env/
+	_messagePlain_probe_cmd cp -a "$currentBackupDir"/.config/plasma-workspace/env/w540_display_start.sh "$HOME"/.config/plasma-workspace/env/
+	_messagePlain_probe_cmd cp -a "$currentBackupDir"/.config/plasma-workspace/env/. "$HOME"/.config/plasma-workspace/env/
 
 	mkdir -p "$HOME"/.local/share/applications
 	mkdir -p "$HOME"/.local/share/icons
