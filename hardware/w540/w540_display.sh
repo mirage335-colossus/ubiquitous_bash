@@ -29,6 +29,7 @@ _w540_display_start() {
 	disown -a -r
 }
 
+# ATTENTION: May rely on some assumptions about the software configuration of the laptop, and may be very specific to only W540 .
 _w540_display-leftOf() {
 	xrandr --output HDMI-1 --scale 1.375x1.375
 	
