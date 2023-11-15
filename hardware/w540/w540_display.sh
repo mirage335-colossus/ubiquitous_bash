@@ -1,5 +1,6 @@
 
 # ATTENTION: Override with 'ops.sh' if necessary.
+# WARNING: Disable Kscreen background service recommended. Use KDE "System Settings" .
 _w540_display_start() {
 	_w540_display_start
 }
@@ -33,10 +34,17 @@ _w540_display_start() {
 _w540_display-leftOf() {
 	xrandr --output HDMI-1 --scale 1.375x1.375
 	
-	# Workaround . Notice the '406' instaed of '405' . Causes KDE to recognize display (re)configuration, keeping the built-in screen usable.
-	xrandr --output eDP-1 --mode 1920x1080 --pos 2640x406 --rotate normal --output VGA-1 --off --output DP-1 --off --output HDMI-1 --primary --mode 1920x1080 --pos 0x0 --rotate normal --output DP-2 --off --output HDMI-2 --off --output DP-1-0 --off --output DP-1-1 --off
 	
-	xrandr --output eDP-1 --mode 1920x1080 --pos 2640x405 --rotate normal --output VGA-1 --off --output DP-1 --off --output HDMI-1 --primary --mode 1920x1080 --pos 0x0 --rotate normal --output DP-2 --off --output HDMI-2 --off --output DP-1-0 --off --output DP-1-1 --off
+	# Workaround . Notice the '406' instaed of '405' . Causes KDE to recognize display (re)configuration, keeping the built-in screen usable.
+	#xrandr --output eDP-1 --mode 1920x1080 --pos 2640x406 --rotate normal --output VGA-1 --off --output DP-1 --off --output HDMI-1 --primary --mode 1920x1080 --pos 0x0 --rotate normal --output DP-2 --off --output HDMI-2 --off --output DP-1-0 --off --output DP-1-1 --off
+	
+	#xrandr --output eDP-1 --mode 1920x1080 --pos 2640x405 --rotate normal --output VGA-1 --off --output DP-1 --off --output HDMI-1 --primary --mode 1920x1080 --pos 0x0 --rotate normal --output DP-2 --off --output HDMI-2 --off --output DP-1-0 --off --output DP-1-1 --off
+	
+	
+	xrandr --output eDP-1 --mode 1920x1080 --pos 2640x1 --rotate normal --output VGA-1 --off --output DP-1 --off --output HDMI-1 --primary --mode 1920x1080 --pos 0x0 --rotate normal --output DP-2 --off --output HDMI-2 --off --output DP-1-0 --off --output DP-1-1 --off
+	
+	xrandr --output eDP-1 --mode 1920x1080 --pos 2640x0 --rotate normal --output VGA-1 --off --output DP-1 --off --output HDMI-1 --primary --mode 1920x1080 --pos 0x0 --rotate normal --output DP-2 --off --output HDMI-2 --off --output DP-1-0 --off --output DP-1-1 --off
+	
 	
 	# WARNING: May not play nice with startup .
 	#sleep 7

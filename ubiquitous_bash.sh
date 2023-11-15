@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='3601998521'
+export ub_setScriptChecksum_contents='1283286493'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -34570,6 +34570,7 @@ _x220_vgaTablet() {
 
 
 # ATTENTION: Override with 'ops.sh' if necessary.
+# WARNING: Disable Kscreen background service recommended. Use KDE "System Settings" .
 _w540_display_start() {
 	_w540_display_start
 }
@@ -34599,13 +34600,21 @@ _w540_display_start() {
 	disown -a -r
 }
 
+# ATTENTION: May rely on some assumptions about the software configuration of the laptop, and may be very specific to only W540 .
 _w540_display-leftOf() {
 	xrandr --output HDMI-1 --scale 1.375x1.375
 	
-	# Workaround . Notice the '406' instaed of '405' . Causes KDE to recognize display (re)configuration, keeping the built-in screen usable.
-	xrandr --output eDP-1 --mode 1920x1080 --pos 2640x406 --rotate normal --output VGA-1 --off --output DP-1 --off --output HDMI-1 --primary --mode 1920x1080 --pos 0x0 --rotate normal --output DP-2 --off --output HDMI-2 --off --output DP-1-0 --off --output DP-1-1 --off
 	
-	xrandr --output eDP-1 --mode 1920x1080 --pos 2640x405 --rotate normal --output VGA-1 --off --output DP-1 --off --output HDMI-1 --primary --mode 1920x1080 --pos 0x0 --rotate normal --output DP-2 --off --output HDMI-2 --off --output DP-1-0 --off --output DP-1-1 --off
+	# Workaround . Notice the '406' instaed of '405' . Causes KDE to recognize display (re)configuration, keeping the built-in screen usable.
+	#xrandr --output eDP-1 --mode 1920x1080 --pos 2640x406 --rotate normal --output VGA-1 --off --output DP-1 --off --output HDMI-1 --primary --mode 1920x1080 --pos 0x0 --rotate normal --output DP-2 --off --output HDMI-2 --off --output DP-1-0 --off --output DP-1-1 --off
+	
+	#xrandr --output eDP-1 --mode 1920x1080 --pos 2640x405 --rotate normal --output VGA-1 --off --output DP-1 --off --output HDMI-1 --primary --mode 1920x1080 --pos 0x0 --rotate normal --output DP-2 --off --output HDMI-2 --off --output DP-1-0 --off --output DP-1-1 --off
+	
+	
+	xrandr --output eDP-1 --mode 1920x1080 --pos 2640x1 --rotate normal --output VGA-1 --off --output DP-1 --off --output HDMI-1 --primary --mode 1920x1080 --pos 0x0 --rotate normal --output DP-2 --off --output HDMI-2 --off --output DP-1-0 --off --output DP-1-1 --off
+	
+	xrandr --output eDP-1 --mode 1920x1080 --pos 2640x0 --rotate normal --output VGA-1 --off --output DP-1 --off --output HDMI-1 --primary --mode 1920x1080 --pos 0x0 --rotate normal --output DP-2 --off --output HDMI-2 --off --output DP-1-0 --off --output DP-1-1 --off
+	
 	
 	# WARNING: May not play nice with startup .
 	#sleep 7
