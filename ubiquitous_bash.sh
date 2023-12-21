@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='647095087'
+export ub_setScriptChecksum_contents='248705677'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -8169,6 +8169,23 @@ _cfgFW_procedure() {
 	pgrep avahi > /dev/null 2>&1 && _messagePlain_bad 'bad: detected: avahi' && _messagePlain_request 'request: remove: avahi'
 	_ufw_portDisable 5353
 	
+	# legacy servers
+	_ufw_portDisable 20
+	_ufw_portDisable 21
+	_ufw_portDisable 23
+	_ufw_portDisable 69
+	_ufw_portDisable 115
+	#_ufw_portDisable 445
+	_ufw_portDisable 989
+	_ufw_portDisable 980
+	
+	# unusual servers
+	_ufw_portDisable 107
+	_ufw_portDisable 118
+	_ufw_portDisable 992
+	_ufw_portDisable 4444
+	
+	
 	# ntp
 	_ufw_portDisable 123
 	
@@ -8179,12 +8196,16 @@ _cfgFW_procedure() {
 	
 	# Microsoft-DS (Active Directory, Windows Shares, SMB)
 	_ufw_portDisable 445
+	_ufw_portDisable 901
 	
 	
 	# SMTP
 	_ufw_portDisable 25
+	_ufw_portDisable 109
+	_ufw_portDisable 110
 	_ufw_portDisable 465
 	_ufw_portDisable 587
+	_ufw_portDisable 995
 	_ufw_portDisable 3535
 	
 	# IPP/CUPS
