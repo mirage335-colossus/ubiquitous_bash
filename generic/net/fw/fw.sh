@@ -116,8 +116,8 @@ _cfgFW_procedure() {
 
 	# NOTICE: DANGER: STATELESS FILTERED is the ONLY SAFE way to interact with NETWORK SERVICES. If this is available, then these services may be used, but the dist/OS firewall should DENY ALL traffic, and all networking interfaces should be STRICTLY disabled.
 	# Think of these as the networking equivalent of a TPM . Instead of doing your networking directly on a malware infectable OS with malware infectable apps and services, you should instead exchange encoded serial messages with an FPGA by USB3 GPIO that then decodes and exchanges those messages over a variety of QRSSS sub-9kHz, narrowband radio, ultrawideband radio, optical, etc, as well conventional TCP/IP and UDP Ethernet, WiFi, etc, peer discovery and transfer services.
-	# WARNING: Ports 39900-39920 RESERVED for STATELESS FILTERED laboratory network experimentation with pipes , both TCP and UDP.
-	# WARNING: Ports 39985-39999 RESERVED for STATELESS FILTERED laboratory network experimentation with pipes , both TCP and UDP.
+	# WARNING: Ports 39000-39020 RESERVED for STATELESS FILTERED laboratory network experimentation with pipes , both TCP and UDP.
+	# WARNING: Ports 39085-39099 RESERVED for STATELESS FILTERED laboratory network experimentation with pipes , both TCP and UDP.
 	# WARNING: Ports 39800-39899 RESERVED for STATELESS FILTERED decentralized replacements for HTTP/HTTPS , peer discovery, etc, both TCP and UDP.
 	# WARNING: Ports 39980-39999 RESERVED for STATELESS FILTERED gizmos , both TCP and UDP.
 	ufw deny 39000:39999/tcp
@@ -133,21 +133,35 @@ _cfgFW_procedure() {
 	
 	# DANGER: Strongly discouraged. Network services are inherently dangerous. For ephemeral laboratory experimentation or expendable gaming computers ONLY.
 	#  DANGER: Preferably do NOT use these at all, ever.
-	# WARNING: Ports 38900-38920 RESERVED for laboratory network experimentation with pipes , both TCP and UDP.
-	# WARNING: Ports 38985-38999 RESERVED for laboratory network experimentation with pipes , both TCP and UDP.
+	# WARNING: Ports 38000-38020 RESERVED for laboratory network experimentation with pipes , both TCP and UDP.
+	# WARNING: Ports 38085-38099 RESERVED for laboratory network experimentation with pipes , both TCP and UDP.
 	# WARNING: Ports 38800-38899 RESERVED for decentralized replacements for HTTP/HTTPS , peer discovery, etc, both TCP and UDP.
 	# WARNING: Ports 38980-38999 RESERVED for gizmos , both TCP and UDP.
 	ufw allow 38000:38999/tcp
 	ufw allow 38000:38999/udp
 
 
+	if [[ "$ub_cfgFW" == "desktop" ]]
+	then
+		ufw allow 22/tcp
+		ufw allow out from any to any port 22 proto tcp
+		_ufw_portEnable 22
+	fi
+	
+	if [[ "$ub_cfgFW" == "terminal" ]]
+	then
+		_ufw_portDisable 22
+	fi
+
     if [[ "$ub_cfgFW" == "desktop" ]] || [[ "$ub_cfgFW" == "terminal" ]]
     then
         _ufw_portDisable 67
         _ufw_portDisable 68
         _ufw_portDisable 53
-        _ufw_portDisable 22
-        #_ufw_portEnable 80
+        
+        #_ufw_portDisable 22
+       
+       #_ufw_portEnable 80
         _ufw_portDisable 443
         #_ufw_portEnable 9001
         #_ufw_portEnable 9030
