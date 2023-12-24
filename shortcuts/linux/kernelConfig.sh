@@ -239,7 +239,7 @@ _kernelConfig_require-tradeoff-harden() {
 	_kernelConfig__bad-n__ CONFIG_UBSAN_BOOL
 	_kernelConfig__bad-n__ CONFIG_UBSAN_ENUM
 	_kernelConfig__bad-n__ CONFIG_UBSAN_ALIGNMENT
-	_kernelConfig__bad-n__ # This is only available on Clang builds, and is likely already enabled if CONFIG_UBSAN_BOUNDS=y is set:
+	# This is only available on Clang builds, and is likely already enabled if CONFIG_UBSAN_BOUNDS=y is set:
 	_kernelConfig__bad-y__ CONFIG_UBSAN_LOCAL_BOUNDS
 	
 	
@@ -255,7 +255,7 @@ _kernelConfig_require-tradeoff-harden() {
 	
 	
 	_kernelConfig__bad-y__ CONFIG_STACKPROTECTOR
-	_kernelConfig__bad-y__ CONFIG_CC_STACKPROTECTOR_STRONG
+	_kernelConfig__bad-y__ CONFIG_STACKPROTECTOR_STRONG
 	
 	
 	_kernelConfig__bad-n__ CONFIG_DEVKMEM
