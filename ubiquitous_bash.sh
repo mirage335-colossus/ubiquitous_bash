@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='3597914892'
+export ub_setScriptChecksum_contents='1386875701'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -31446,6 +31446,8 @@ _kernelConfig_require-tradeoff-legacy() {
 	_kernelConfig__bad-n__ LEGACY_VSYSCALL_EMULATE
 }
 
+# WARNING: May be untested .
+# WARNING: May not identify drastically performance degrading features from harden-NOTcompatible .
 # WARNING: Risk must be evaluated for specific use cases.
 # WARNING: Insecure.
 # Standalone simulators (eg. flight sim):
@@ -31534,6 +31536,50 @@ _kernelConfig_require-tradeoff-harden() {
 	
 	
 	
+	# Special.
+	# VM guest should be tested.
+
+	# https://wiki.gentoo.org/wiki/Trusted_Boot
+	_kernelConfig__bad-y__ CONFIG_HAVE_INTEL_TXT
+	_kernelConfig__bad-y__ CONFIG_INTEL_TXT
+	_kernelConfig__bad-y__ CONFIG_IOMMU_DMA
+	_kernelConfig__bad-y__ CONFIG_INTEL_IOMMU
+
+
+	# https://www.qemu.org/docs/master/system/i386/sgx.html
+	#grep sgx /proc/cpuinfo
+	#dmesg | grep sgx
+	# Apparently normal: ' sgx: [Firmware Bug]: Unable to map EPC section to online node. Fallback to the NUMA node 0. '
+
+	# https://www.qemu.org/docs/master/system/i386/sgx.html
+	#qemuArgs+=(-cpu host,+sgx-provisionkey -machine accel=kvm -object memory-backend-epc,id=mem1,size=64M,prealloc=on -M sgx-epc.0.memdev=mem1,sgx-epc.0.node=0 )
+	#qemuArgs+=(-cpu host,-sgx-provisionkey,-sgx-tokenkey)
+
+	_kernelConfig__bad-y__ CONFIG_X86_SGX
+	_kernelConfig__bad-y__ CONFIG_X86_SGX_kVM
+	_kernelConfig__bad-y__ CONFIG_INTEL_TDX_GUEST
+	_kernelConfig__bad-y__ TDX_GUEST_DRIVER
+
+
+	# https://libvirt.org/kbase/launch_security_sev.html
+	#cat /sys/module/kvm_amd/parameters/sev
+	#dmesg | grep -i sev
+
+	# https://www.qemu.org/docs/master/system/i386/amd-memory-encryption.html
+	#qemuArgs+=(-machine accel=kvm,confidential-guest-support=sev0 -object sev-guest,id=sev0,cbitpos=47,reduced-phys-bits=1 )
+	# #,policy=0x5
+
+	# https://libvirt.org/kbase/launch_security_sev.html
+	_kernelConfig__bad-y__ CONFIG_KVM_AMD_SEV
+	_kernelConfig__bad-y__ AMD_MEM_ENCRYPT
+	_kernelConfig__bad-y__ CONFIG_AMD_MEM_ENCRYPT_ACTIVE_BY_DEFAULT
+
+
+}
+
+# WARNING: ATTENTION: Before moving to tradeoff-harden (compatible), ensure vboxdrv, vboxadd, nvidia, nvidia legacy, kernel modules can be loaded without issues, and also ensure significant performance penalty configuration options are oppositely documented in the tradeoff-perform function .
+# WARNING: Disables out-of-tree modules . VirtualBox and NVIDIA drivers WILL NOT be permitted to load .
+_kernelConfig_require-tradeoff-harden-NOTcompatible() {
 	# https://kernsec.org/wiki/index.php/Kernel_Self_Protection_Project/Recommended_Settings#sysctls
 	
 	_kernelConfig__bad-y__ CONFIG_BUG
@@ -31686,54 +31732,6 @@ _kernelConfig_require-tradeoff-harden() {
 	
 	
 	_kernelConfig_warn-y__ CONFIG_EFI_DISABLE_PCI_DMA
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	# Special.
-	# VM guest should be tested.
-
-	# https://wiki.gentoo.org/wiki/Trusted_Boot
-	_kernelConfig__bad-y__ CONFIG_HAVE_INTEL_TXT
-	_kernelConfig__bad-y__ CONFIG_INTEL_TXT
-	_kernelConfig__bad-y__ CONFIG_IOMMU_DMA
-	_kernelConfig__bad-y__ CONFIG_INTEL_IOMMU
-
-
-	# https://www.qemu.org/docs/master/system/i386/sgx.html
-	#grep sgx /proc/cpuinfo
-	#dmesg | grep sgx
-	# Apparently normal: ' sgx: [Firmware Bug]: Unable to map EPC section to online node. Fallback to the NUMA node 0. '
-
-	# https://www.qemu.org/docs/master/system/i386/sgx.html
-	#qemuArgs+=(-cpu host,+sgx-provisionkey -machine accel=kvm -object memory-backend-epc,id=mem1,size=64M,prealloc=on -M sgx-epc.0.memdev=mem1,sgx-epc.0.node=0 )
-	#qemuArgs+=(-cpu host,-sgx-provisionkey,-sgx-tokenkey)
-
-	_kernelConfig__bad-y__ CONFIG_X86_SGX
-	_kernelConfig__bad-y__ CONFIG_X86_SGX_kVM
-	_kernelConfig__bad-y__ CONFIG_INTEL_TDX_GUEST
-	_kernelConfig__bad-y__ TDX_GUEST_DRIVER
-
-
-	# https://libvirt.org/kbase/launch_security_sev.html
-	#cat /sys/module/kvm_amd/parameters/sev
-	#dmesg | grep -i sev
-
-	# https://www.qemu.org/docs/master/system/i386/amd-memory-encryption.html
-	#qemuArgs+=(-machine accel=kvm,confidential-guest-support=sev0 -object sev-guest,id=sev0,cbitpos=47,reduced-phys-bits=1 )
-	# #,policy=0x5
-
-	# https://libvirt.org/kbase/launch_security_sev.html
-	_kernelConfig__bad-y__ CONFIG_KVM_AMD_SEV
-	_kernelConfig__bad-y__ AMD_MEM_ENCRYPT
-	_kernelConfig__bad-y__ CONFIG_AMD_MEM_ENCRYPT_ACTIVE_BY_DEFAULT
-
-
 }
 
 # ATTENTION: Override with 'ops.sh' or similar.
@@ -31746,10 +31744,18 @@ _kernelConfig_require-tradeoff() {
 	if [[ "$kernelConfig_tradeoff_perform" == 'true' ]]
 	then
 		_kernelConfig_require-tradeoff-perform "$@"
+	else
+		_kernelConfig_require-tradeoff-harden "$@"
+	fi
+	
+	[[ "$kernelConfig_tradeoff_compatible" == "" ]] && export kernelConfig_tradeoff_compatible='false'
+	
+	if [[ "$kernelConfig_tradeoff_compatible" != 'true' ]]
+	then
+		_kernelConfig_require-tradeoff-harden-NOTcompatible "$@"
 		return
 	fi
 	
-	_kernelConfig_require-tradeoff-harden "$@"
 	return
 }
 
@@ -32358,6 +32364,7 @@ _kernelConfig_panel() {
 	_messageNormal 'kernelConfig: panel'
 	
 	[[ "$kernelConfig_tradeoff_perform" == "" ]] && export kernelConfig_tradeoff_perform='false'
+	export kernelConfig_tradeoff_compatible='true'
 	[[ "$kernelConfig_frequency" == "" ]] && export kernelConfig_frequency=300
 	[[ "$kernelConfig_tickless" == "" ]] && export kernelConfig_tickless='false'
 	
@@ -32397,6 +32404,7 @@ _kernelConfig_mobile() {
 	_messageNormal 'kernelConfig: mobile'
 	
 	[[ "$kernelConfig_tradeoff_perform" == "" ]] && export kernelConfig_tradeoff_perform='false'
+	export kernelConfig_tradeoff_compatible='true'
 	[[ "$kernelConfig_frequency" == "" ]] && export kernelConfig_frequency=300
 	[[ "$kernelConfig_tickless" == "" ]] && export kernelConfig_tickless='true'
 	
@@ -32437,6 +32445,7 @@ _kernelConfig_desktop() {
 	_messageNormal 'kernelConfig: desktop'
 	
 	[[ "$kernelConfig_tradeoff_perform" == "" ]] && export kernelConfig_tradeoff_perform='false'
+	export kernelConfig_tradeoff_compatible='true'
 	[[ "$kernelConfig_frequency" == "" ]] && export kernelConfig_frequency=1000
 	[[ "$kernelConfig_tickless" == "" ]] && export kernelConfig_tickless='false'
 	
@@ -32475,6 +32484,7 @@ _kernelConfig_server() {
 	_messageNormal 'kernelConfig: server'
 
 	export kernelConfig_tradeoff_perform='false'
+	export kernelConfig_tradeoff_compatible='false'
 	_kernelConfig_desktop "$@"
 }
 
