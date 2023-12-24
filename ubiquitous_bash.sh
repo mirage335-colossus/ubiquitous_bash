@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='3181609803'
+export ub_setScriptChecksum_contents='1962858060'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -32364,7 +32364,7 @@ _kernelConfig_panel() {
 	_messageNormal 'kernelConfig: panel'
 	
 	[[ "$kernelConfig_tradeoff_perform" == "" ]] && export kernelConfig_tradeoff_perform='false'
-	export kernelConfig_tradeoff_compatible='true'
+	[[ "$kernelConfig_tradeoff_perform_compatible" == "" ]] && export kernelConfig_tradeoff_compatible='true'
 	[[ "$kernelConfig_frequency" == "" ]] && export kernelConfig_frequency=300
 	[[ "$kernelConfig_tickless" == "" ]] && export kernelConfig_tickless='false'
 	
@@ -32404,7 +32404,7 @@ _kernelConfig_mobile() {
 	_messageNormal 'kernelConfig: mobile'
 	
 	[[ "$kernelConfig_tradeoff_perform" == "" ]] && export kernelConfig_tradeoff_perform='false'
-	export kernelConfig_tradeoff_compatible='true'
+	[[ "$kernelConfig_tradeoff_perform_compatible" == "" ]] && export kernelConfig_tradeoff_compatible='true'
 	[[ "$kernelConfig_frequency" == "" ]] && export kernelConfig_frequency=300
 	[[ "$kernelConfig_tickless" == "" ]] && export kernelConfig_tickless='true'
 	
@@ -32445,7 +32445,7 @@ _kernelConfig_desktop() {
 	_messageNormal 'kernelConfig: desktop'
 	
 	[[ "$kernelConfig_tradeoff_perform" == "" ]] && export kernelConfig_tradeoff_perform='false'
-	export kernelConfig_tradeoff_compatible='true'
+	[[ "$kernelConfig_tradeoff_perform_compatible" == "" ]] && export kernelConfig_tradeoff_compatible='true'
 	[[ "$kernelConfig_frequency" == "" ]] && export kernelConfig_frequency=1000
 	[[ "$kernelConfig_tickless" == "" ]] && export kernelConfig_tickless='false'
 	
