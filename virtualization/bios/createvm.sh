@@ -114,7 +114,7 @@ _createVMimage() {
 	#sudo -n parted --script "$vmImageFile" 'mkpart primary '"98"'MiB '"610"'MiB'
 	#sudo -n parted --script "$vmImageFile" 'mkpart primary '"44"'MiB '"384"'MiB'
 	#sudo -n parted --script "$vmImageFile" 'mkpart primary '"44"'MiB '"592"'MiB'
-	sudo -n parted --script "$vmImageFile" 'mkpart primary '"44"'MiB '"610"'MiB'
+	sudo -n parted --script "$vmImageFile" 'mkpart primary '"44"'MiB '"770"'MiB'
 	
 	
 	# Root
@@ -151,7 +151,7 @@ _createVMimage() {
 	
 	
 	#sudo -n parted --script "$vmImageFile" 'mkpart primary '"384"'MiB '"$vmSize_boundary"'MiB'
-	sudo -n parted --script "$vmImageFile" 'mkpart primary '"610"'MiB '"$vmSize_boundary"'MiB'
+	sudo -n parted --script "$vmImageFile" 'mkpart primary '"770"'MiB '"$vmSize_boundary"'MiB'
 	
 	sudo -n parted --script "$vmImageFile" 'unit MiB print'
 	
