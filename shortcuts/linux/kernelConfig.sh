@@ -374,6 +374,11 @@ _kernelConfig_require-tradeoff-harden-NOTcompatible() {
 	
 	
 	_kernelConfig_warn-y__ CONFIG_EFI_DISABLE_PCI_DMA
+	
+	
+	
+	# WARNING: CAUTION: Now obviously this is really incompatible. Do NOT move this to any other function.
+	_kernelConfig_warn-y__ CONFIG_MODULE_SIG_FORCE
 }
 
 # ATTENTION: Override with 'ops.sh' or similar.
