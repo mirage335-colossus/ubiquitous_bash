@@ -307,9 +307,9 @@ _kernelConfig_require-tradeoff-harden-compatible() {
 		_messagePlain_bad 'bad: not:    39: '"CONFIG_KFENCE_SAMPLE_INTERVAL"
 		export kernelConfig_bad='true'
 	fi
-	if ! cat "$kernelConfig_file" | _kernelConfig_reject-comments | grep "#CONFIG_KFENCE_NUM_OBJECTS"'\=639' > /dev/null 2>&1
+	if ! cat "$kernelConfig_file" | _kernelConfig_reject-comments | grep "CONFIG_KFENCE_NUM_OBJECTS"'\=639' > /dev/null 2>&1
 	then
-		_messagePlain_bad 'bad: not:    639: '"#CONFIG_KFENCE_NUM_OBJECTS"
+		_messagePlain_bad 'bad: not:    639: '"CONFIG_KFENCE_NUM_OBJECTS"
 		export kernelConfig_bad='true'
 	fi
 	
