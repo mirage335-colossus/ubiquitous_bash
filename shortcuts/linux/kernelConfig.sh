@@ -538,7 +538,7 @@ _kernelConfig_require-tradeoff() {
 	fi
 	
 	[[ "$kernelConfig_tradeoff_compatible" == "" ]] && [[ "$kernelConfig_tradeoff_perform" == 'true' ]] && export kernelConfig_tradeoff_compatible='true'
-	[[ "$kernelConfig_tradeoff_compatible" == "" ]] export kernelConfig_tradeoff_compatible='false'
+	[[ "$kernelConfig_tradeoff_compatible" == "" ]] && export kernelConfig_tradeoff_compatible='false'
 	
 	if [[ "$kernelConfig_tradeoff_compatible" != 'true' ]]
 	then
