@@ -715,15 +715,15 @@ _custom_kernel_sequence() {
 	
 	env DEBIAN_FRONTEND=noninteractive sudo -n apt-get -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install --install-recommends curl jq
 	
-	if [[ ! -e /linux-mainline-amd64-debian.tar.gz ]]
-	then
-		_wget_githubRelease_internal "soaringDistributions/mirage335KernelBuild" "linux-mainline-amd64-debian.tar.gz"
-		#curl -L -o linux-mainline-amd64-debian.tar.gz $(curl -s "https://api.github.com/repos/soaringDistributions/mirage335KernelBuild/releases" | jq -r ".[] | select(.name == \"internal\") | .assets[] | select(.name == \"linux-mainline-amd64-debian.tar.gz\") | .browser_download_url" | sort -n -r | head -n 1)
-	else
-		cp -f /linux-mainline-amd64-debian.tar.gz ./
-	fi
-	tar xf linux-mainline-amd64-debian.tar.gz
-	sudo -n dpkg -i ./mainline/*.deb
+	#if [[ ! -e /linux-mainline-amd64-debian.tar.gz ]]
+	#then
+		#_wget_githubRelease_internal "soaringDistributions/mirage335KernelBuild" "linux-mainline-amd64-debian.tar.gz"
+		##curl -L -o linux-mainline-amd64-debian.tar.gz $(curl -s "https://api.github.com/repos/soaringDistributions/mirage335KernelBuild/releases" | jq -r ".[] | select(.name == \"internal\") | .assets[] | select(.name == \"linux-mainline-amd64-debian.tar.gz\") | .browser_download_url" | sort -n -r | head -n 1)
+	#else
+		#cp -f /linux-mainline-amd64-debian.tar.gz ./
+	#fi
+	#tar xf linux-mainline-amd64-debian.tar.gz
+	#sudo -n dpkg -i ./mainline/*.deb
 	sudo -n rm -f ./mainline/.config ./mainline/linux-* ./mainline/statement.sh.out.txt
 	sudo -n rm -f ./mainline/linux-mainline-amd64-debian.tar.gz
 	sudo -n rm -f /linux-mainline-amd64-debian.tar.gz
