@@ -876,7 +876,12 @@ ExecStart="'"$1"'"/.config/startup.sh'
 	
 	# Reundancy may be acceptable for this .
 	echo '#!'"/usr/bin/env bash" | sudo -n tee /home/"$custom_user"/.config/plasma-workspace/env/w540_display_start.sh > /dev/null
-	echo '#'"/home/""$custom_user""/.ubcore/ubiquitous_bash/ubcore.sh _w540_display_start &" | sudo -n tee -a /home/"$custom_user"/.config/plasma-workspace/env/w540_display_start.sh > /dev/null
+	echo 'exec > .w540_display_start.log 2>&1' | sudo -n tee -a /home/"$custom_user"/.config/plasma-workspace/env/w540_display_start.sh > /dev/null
+	#echo '#'"/home/""$custom_user""/.ubcore/ubiquitous_bash/ubcore.sh _w540_display_start &" | sudo -n tee -a /home/"$custom_user"/.config/plasma-workspace/env/w540_display_start.sh > /dev/null
+	echo '( sleep 6 ; xmessage " " -timeout 3 ; /home/'"$custom_user"'/.ubcore/ubiquitous_bash/ubcore.sh _w540_display_start ) &' | sudo -n tee -a /home/"$custom_user"/.config/plasma-workspace/env/w540_display_start.sh > /dev/null
+	echo "disown -h '\$!' ; disown -a -h -r ; disown -a -r" | sudo -n tee -a /home/"$custom_user"/.config/plasma-workspace/env/w540_display_start.sh > /dev/null
+	echo '#xmessage " " -timeout 3' | sudo -n tee -a /home/"$custom_user"/.config/plasma-workspace/env/w540_display_start.sh > /dev/null
+	echo 'sleep 1' | sudo -n tee -a /home/"$custom_user"/.config/plasma-workspace/env/w540_display_start.sh > /dev/null
 	sudo -n chmod 755 /home/"$custom_user"/.config/plasma-workspace/env/w540_display_start.sh
 	echo '[Unit]
 After=xdg-desktop-autostart.target
