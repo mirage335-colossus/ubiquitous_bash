@@ -186,6 +186,7 @@ _here_rottenScript_bash_declareFunctions() {
 	#declare -f _indent_base64
 	#declare -f _here_rottenScript_cloudConfig
 	#declare -f _write_rottenScript_cloudConfig
+	declare -f _rand_passwd
 	declare -f _enter
 	declare -f _custom_core_fetch
 	declare -f _custom_core
@@ -398,6 +399,12 @@ _write_rottenScript_cloudConfig() {
 	_messageNormal 'init: rotten: _write_rottenScript_cloudConfig'
 	
 	_here_rottenScript_cloudConfig "$scriptAbsoluteLocation" > "$scriptAbsoluteFolder"/cloud-config.cfg
+}
+
+
+_rand_passwd() {
+	#tr -d 'acdefhilmnopqrsuvACDEFHILMNOPQRSU14580'
+	cat /dev/urandom 2> /dev/null | base64 2> /dev/null | tr -dc 'a-zA-Z0-9' 2> /dev/null | head -c "$1" 2> /dev/null
 }
 
 
@@ -1138,23 +1145,23 @@ Relogin=true
 	_custom_construct_user root
 	# WARNING: Sets random password, intentionally, to lockout password login. SSH key or similar *required*.
 	# ATTENTION: Override (if necessary).
-	#echo 'root:'$(_uid 12) | sudo -n chpasswd
-	#echo 'root:'$(_uid 32) | sudo -n chpasswd
+	#echo 'root:'$(_rand_passwd 12) | sudo -n chpasswd
+	#echo 'root:'$(_rand_passwd 32) | sudo -n chpasswd
 	sudo -n usermod -s /bin/bash root
 	
 	# If blank root password, set random password.
 	# https://serverfault.com/questions/240957/how-find-user-with-empty-password-in-linux
 	if ! sudo -n getent shadow | grep 'root:\$' | cut -d':' -f 2 | grep '\w' -c -m 1 > /dev/null
 	then
-		echo root':'$(_uid 12) | sudo -n chpasswd
-		echo root':'$(_uid 32) | sudo -n chpasswd
+		echo root':'$(_rand_passwd 12) | sudo -n chpasswd
+		echo root':'$(_rand_passwd 32) | sudo -n chpasswd
 	fi
 	
 	_custom_construct_user "$custom_user"
 	# ATTENTION: Override (if necessary).
 	# WARNING: Sets random password, intentionally, to lockout password login. SSH key or similar *required*.
-	echo "$custom_user"':'$(_uid 12) | sudo -n chpasswd
-	echo "$custom_user"':'$(_uid 32) | sudo -n chpasswd
+	echo "$custom_user"':'$(_rand_passwd 12) | sudo -n chpasswd
+	echo "$custom_user"':'$(_rand_passwd 32) | sudo -n chpasswd
 	sudo -n usermod -s /bin/bash "$custom_user"
 	
 	
@@ -1253,8 +1260,8 @@ _install() {
 	usermod -e -1 root
 	if chage -l root | grep 'must be changed'
 	then
-		echo 'root:'$(_uid 12) | sudo -n chpasswd
-		echo 'root:'$(_uid 32) | sudo -n chpasswd
+		echo 'root:'$(_rand_passwd 12) | sudo -n chpasswd
+		echo 'root:'$(_rand_passwd 32) | sudo -n chpasswd
 	fi
 	
 	export custom_user="user"
@@ -1522,11 +1529,11 @@ _regenerate() {
 		#sudo -n rm -f /etc/ssh/authorized_keys
 		
 		
-		echo 'root:'$(_uid 12) | sudo -n chpasswd
-		echo 'root:'$(_uid 32) | sudo -n chpasswd
+		echo 'root:'$(_rand_passwd 12) | sudo -n chpasswd
+		echo 'root:'$(_rand_passwd 32) | sudo -n chpasswd
 		
-		echo 'user:'$(_uid 12) | sudo -n chpasswd
-		echo 'user:'$(_uid 32) | sudo -n chpasswd
+		echo 'user:'$(_rand_passwd 12) | sudo -n chpasswd
+		echo 'user:'$(_rand_passwd 32) | sudo -n chpasswd
 		
 		
 		# https://forums.raspberrypi.com/viewtopic.php?t=125345
