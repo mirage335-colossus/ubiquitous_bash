@@ -755,14 +755,33 @@ _wget_githubRelease_join-stdout() {
 				
 				while [[ "${currentURL_array_reversed[$currentIteration]}" != "" ]]
 				do
-					_messagePlain_probe _gh_downloadURL "${currentURL_array_reversed[$currentIteration]}" -O - >&2
+					#_messagePlain_probe _gh_downloadURL "${currentURL_array_reversed[$currentIteration]}" -O - >&2
 					#"$scriptAbsoluteLocation"
-					_gh_downloadURL "${currentURL_array_reversed[$currentIteration]}" -O -
+					#_gh_downloadURL "${currentURL_array_reversed[$currentIteration]}" -O -
+					
+					
+					
+					_messagePlain_probe _gh_downloadURL "${currentURL_array_reversed[$currentIteration]}" -O "$currentAxelTmpFileRelative".tmp1 >&2
+					#"$scriptAbsoluteLocation"
+					_gh_downloadURL "${currentURL_array_reversed[$currentIteration]}" -O "$currentAxelTmpFileRelative".tmp1 >&2 &
+					currentPID_1="$!"
+					
+					wait "$currentPID_1" >&2
+					[[ "$currentPID_1" != "" ]] && _pauseForProcess "$currentPID_1" >&2
+					#sleep 6 > /dev/null 2>&1
+					
+					dd if="$currentAxelTmpFile".tmp1 bs=1M status=progress
+					
 					
 					
 					let currentIteration=currentIteration+1
 				done
 				
+				
+				rm -f "$currentAxelTmpFile"
+				rm -f "$currentAxelTmpFile".aria2
+				rm -f "$currentAxelTmpFile".tmp1
+				rm -f "$currentAxelTmpFile".* > /dev/null 2>&1
 			fi
 			
 			
