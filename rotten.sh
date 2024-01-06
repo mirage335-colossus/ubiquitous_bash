@@ -2212,7 +2212,7 @@ _wget_githubRelease_join-stdout() {
 		elif type -p gh > /dev/null 2>&1 && [[ "$GH_TOKEN" != "" ]] && [[ "$FORCE_WGET" != "true" ]]
 		then
 			
-			if [[ $(cat /proc/meminfo | grep MemTotal | tr -cd '[[:digit:]]') -gt 16379210 ]]
+			if [[ $(cat /proc/meminfo | grep MemTotal | tr -cd '[[:digit:]]') -gt 16379210 ]] && [[ "$FORCE_LOWTMP" != "true" ]]
 			then
 				
 				
@@ -2507,15 +2507,18 @@ _wget_githubRelease_join-stdout() {
 				
 			else
 				
+				local currentIteration
+				currentIteration=0
 				
 				while [[ "${currentURL_array_reversed[$currentIteration]}" != "" ]]
 				do
+					_messagePlain_probe _gh_downloadURL "${currentURL_array_reversed[$currentIteration]}" -O - >&2
+					#"$scriptAbsoluteLocation"
 					_gh_downloadURL "${currentURL_array_reversed[$currentIteration]}" -O -
 					
 					
 					let currentIteration=currentIteration+1
 				done
-				
 				
 			fi
 			
