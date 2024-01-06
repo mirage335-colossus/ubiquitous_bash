@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='3872794160'
+export ub_setScriptChecksum_contents='2878869374'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -6017,50 +6017,50 @@ _wget_githubRelease_join-stdout() {
 				
 				
 			else
-				#local currentAxelTmpFile
-				#currentAxelTmpFile="$scriptAbsoluteFolder"/.m_axelTmp_$(_uid 14)
-				export currentAxelTmpFileRelative=.m_axelTmp_$(_uid 14)
-				export currentAxelTmpFile="$scriptAbsoluteFolder"/"$currentAxelTmpFileRelative"
+				##local currentAxelTmpFile
+				##currentAxelTmpFile="$scriptAbsoluteFolder"/.m_axelTmp_$(_uid 14)
+				#export currentAxelTmpFileRelative=.m_axelTmp_$(_uid 14)
+				#export currentAxelTmpFile="$scriptAbsoluteFolder"/"$currentAxelTmpFileRelative"
 				
-				local currentPID_1
+				#local currentPID_1
 				
 				local currentIteration
 				currentIteration=0
 				
 				while [[ "${currentURL_array_reversed[$currentIteration]}" != "" ]]
 				do
-					#_messagePlain_probe _gh_downloadURL "${currentURL_array_reversed[$currentIteration]}" -O - >&2
+					_messagePlain_probe _gh_downloadURL "${currentURL_array_reversed[$currentIteration]}" -O - >&2
 					#"$scriptAbsoluteLocation"
-					#_gh_downloadURL "${currentURL_array_reversed[$currentIteration]}" -O -
+					_gh_downloadURL "${currentURL_array_reversed[$currentIteration]}" -O - | dd bs=1M status=progress
 					
 					
 					
-					_messagePlain_probe _gh_downloadURL "${currentURL_array_reversed[$currentIteration]}" -O "$currentAxelTmpFile".tmp1 >&2
-					#"$scriptAbsoluteLocation"
-					_gh_downloadURL "${currentURL_array_reversed[$currentIteration]}" -O "$currentAxelTmpFile".tmp1 >&2 &
-					currentPID_1="$!"
+					#_messagePlain_probe _gh_downloadURL "${currentURL_array_reversed[$currentIteration]}" -O "$currentAxelTmpFile".tmp1 >&2
+					##"$scriptAbsoluteLocation"
+					#_gh_downloadURL "${currentURL_array_reversed[$currentIteration]}" -O "$currentAxelTmpFile".tmp1 >&2 &
+					#currentPID_1="$!"
 					
-					sleep 6 > /dev/null 2>&1
+					#sleep 6 > /dev/null 2>&1
 					
-					wait "$currentPID_1" >&2
-					[[ "$currentPID_1" != "" ]] && wait "$currentPID_1" >&2
-					[[ "$currentPID_1" != "" ]] && _pauseForProcess "$currentPID_1" >&2
-					wait >&2
+					#wait "$currentPID_1" >&2
+					#[[ "$currentPID_1" != "" ]] && wait "$currentPID_1" >&2
+					#[[ "$currentPID_1" != "" ]] && _pauseForProcess "$currentPID_1" >&2
+					#wait >&2
 					
 					
 					
-					dd if="$currentAxelTmpFile".tmp1 bs=1M status=progress
-					rm -f "$currentAxelTmpFile".tmp1
+					#dd if="$currentAxelTmpFile".tmp1 bs=1M status=progress
+					#rm -f "$currentAxelTmpFile".tmp1
 					
 					
 					let currentIteration=currentIteration+1
 				done
 				
 				
-				rm -f "$currentAxelTmpFile"
-				rm -f "$currentAxelTmpFile".aria2
-				rm -f "$currentAxelTmpFile".tmp1
-				rm -f "$currentAxelTmpFile".* > /dev/null 2>&1
+				#rm -f "$currentAxelTmpFile"
+				#rm -f "$currentAxelTmpFile".aria2
+				#rm -f "$currentAxelTmpFile".tmp1
+				#rm -f "$currentAxelTmpFile".* > /dev/null 2>&1
 			fi
 			
 			
