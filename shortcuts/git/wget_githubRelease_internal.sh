@@ -749,6 +749,11 @@ _wget_githubRelease_join-stdout() {
 				
 				
 			else
+				#local currentAxelTmpFile
+				#currentAxelTmpFile="$scriptAbsoluteFolder"/.m_axelTmp_$(_uid 14)
+				export currentAxelTmpFileRelative=.m_axelTmp_$(_uid 14)
+				export currentAxelTmpFile="$scriptAbsoluteFolder"/"$currentAxelTmpFileRelative"
+				
 				local currentPID_1
 				
 				local currentIteration
