@@ -2528,7 +2528,7 @@ _wget_githubRelease_join-stdout() {
 					#sleep 6 > /dev/null 2>&1
 					
 					dd if="$currentAxelTmpFile".tmp1 bs=1M status=progress
-					
+					rm -f "$currentAxelTmpFile".tmp1
 					
 					
 					let currentIteration=currentIteration+1
