@@ -749,6 +749,7 @@ _wget_githubRelease_join-stdout() {
 				
 				
 			else
+				local currentPID_1
 				
 				local currentIteration
 				currentIteration=0
@@ -761,14 +762,19 @@ _wget_githubRelease_join-stdout() {
 					
 					
 					
-					_messagePlain_probe _gh_downloadURL "${currentURL_array_reversed[$currentIteration]}" -O "$currentAxelTmpFileRelative".tmp1 >&2
+					_messagePlain_probe _gh_downloadURL "${currentURL_array_reversed[$currentIteration]}" -O "$currentAxelTmpFile".tmp1 >&2
 					#"$scriptAbsoluteLocation"
-					_gh_downloadURL "${currentURL_array_reversed[$currentIteration]}" -O "$currentAxelTmpFileRelative".tmp1 >&2 &
+					_gh_downloadURL "${currentURL_array_reversed[$currentIteration]}" -O "$currentAxelTmpFile".tmp1 >&2 &
 					currentPID_1="$!"
 					
+					sleep 6 > /dev/null 2>&1
+					
 					wait "$currentPID_1" >&2
+					[[ "$currentPID_1" != "" ]] && wait "$currentPID_1" >&2
 					[[ "$currentPID_1" != "" ]] && _pauseForProcess "$currentPID_1" >&2
-					#sleep 6 > /dev/null 2>&1
+					wait >&2
+					
+					
 					
 					dd if="$currentAxelTmpFile".tmp1 bs=1M status=progress
 					rm -f "$currentAxelTmpFile".tmp1
