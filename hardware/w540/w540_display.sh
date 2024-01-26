@@ -28,10 +28,12 @@ _w540_display_start() {
 	disown
 	disown -a -h -r
 	disown -a -r
-}
+}xrandr --output eDP-1 --mode 1920x1080
 
 # ATTENTION: May rely on some assumptions about the software configuration of the laptop, and may be very specific to only W540 .
 _w540_display-leftOf() {
+	xrandr --output eDP-1 --mode 1920x1080
+	
 	xrandr --output HDMI-1 --scale 1.375x1.375
 	
 	
