@@ -775,6 +775,8 @@ _getMost_debian11_install() {
 	_getMost_backend_aptGetInstall coreutils
 	
 	_getMost_backend_aptGetInstall python3
+	_getMost_backend_aptGetInstall python3-serial
+	
 	
 	# blkdiscard
 	_getMost_backend_aptGetInstall util-linux
@@ -939,6 +941,9 @@ _getMost_debian11_install() {
 	_getMost_backend sudo -n pip install --upgrade pip
 	
 	_getMost_backend_aptGetInstall freecad
+	
+	
+	_getMost_backend_aptGetInstall audacity
 	
 	
 	_getMost_backend_aptGetInstall w3m
