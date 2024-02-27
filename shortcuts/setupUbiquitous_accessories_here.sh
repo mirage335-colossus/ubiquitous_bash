@@ -331,6 +331,21 @@ then
 	#. /cygdrive/c/core/infrastructure/extendedInterface/_lib/coreoracle/_shortcuts-cygwin.sh
 fi
 
+
+if [[ -e /cygdrive/c/core/infrastructure/quickWriter ]]
+then
+	export shortcutsPath_quickWriter=/cygdrive/c/"core/infrastructure/quickWriter"
+	. /cygdrive/c/core/infrastructure/quickWriter/_shortcuts-cygwin.sh
+elif [[ -e /cygdrive/c/core/infrastructure/extendedInterface/_lib/quickWriter-msw ]]
+then
+	export shortcutsPath_quickWriter=/cygdrive/c/"core/infrastructure/extendedInterface/_lib/quickWriter-msw"
+	. /cygdrive/c/core/infrastructure/extendedInterface/_lib/quickWriter-msw/_shortcuts-cygwin.sh
+elif [[ -e /cygdrive/c/core/infrastructure/extendedInterface/_lib/quickWriter ]]
+then
+	export shortcutsPath_quickWriter=/cygdrive/c/"core/infrastructure/extendedInterface/_lib/quickWriter"
+	. /cygdrive/c/core/infrastructure/extendedInterface/_lib/quickWriter/_shortcuts-cygwin.sh
+fi
+
 CZXWXcRMTo8EmM8i4d
 	else
 		cat << CZXWXcRMTo8EmM8i4d
@@ -343,11 +358,21 @@ then
 fi
 
 
+
 if [[ -e "$HOME"/core/infrastructure/coreoracle ]]
 then
 	export shortcutsPath_coreoracle="$HOME"/core/infrastructure/coreoracle/
 	. "$HOME"/core/infrastructure/coreoracle/_shortcuts.sh
 fi
+
+
+if [[ -e "$HOME"/core/infrastructure/quickWriter ]]
+then
+	export shortcutsPath_quickWriter="$HOME"/core/infrastructure/quickWriter/
+	. "$HOME"/core/infrastructure/quickWriter/_shortcuts.sh
+fi
+
+
 
 # Returns priority to normal.
 # Greater or equal, '_priority_app_pid_root' .

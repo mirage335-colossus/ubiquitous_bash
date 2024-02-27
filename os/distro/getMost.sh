@@ -379,6 +379,8 @@ _getMost_debian11_install() {
 	_getMost_backend_aptGetInstall aria2
 	_getMost_backend_aptGetInstall unionfs-fuse
 	_getMost_backend_aptGetInstall samba
+	
+	_getMost_backend_aptGetInstall libcups2-dev
 
 	_getMost_backend_aptGetInstall gimp
 	_getMost_backend_aptGetInstall gimp-data-extras
@@ -775,6 +777,7 @@ _getMost_debian11_install() {
 	_getMost_backend_aptGetInstall coreutils
 	
 	_getMost_backend_aptGetInstall python3
+	_getMost_backend_aptGetInstall python3.11-venv
 	_getMost_backend_aptGetInstall python3-serial
 	
 	
