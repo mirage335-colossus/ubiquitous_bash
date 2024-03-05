@@ -1467,7 +1467,9 @@ ResultActive=yes' > /var/lib/polkit-1/localauthority/50-local.d/disable-password
 	
 	sudo -n apt-get -y clean
 	
+	sudo -n systemctl set-default graphical.target
 	sudo -n systemctl start sddm
+	sudo -n systemctl set-default graphical.target
 	
 	
 	# ATTENTION: DANGER: If necessary, delete !
