@@ -477,6 +477,12 @@ _createVMfstab() {
 		echo 'LABEL=uk4uPhB663kVcygT0q /media/bootdisc iso9660 ro,nofail 0 0' | sudo -n tee -a "$globalVirtFS"/etc/fstab
 	fi
 	
+	# WARNING: May be untested.
+	echo '' | sudo -n tee -a "$globalVirtFS"/etc/fstab
+	echo '#tmpfs /var/spool/cups tmpfs defaults,uid=0,gid=7,umask=007,dmask=007,fmask=117 0 0' | sudo -n tee -a "$globalVirtFS"/etc/fstab
+	echo '#tmpfs /var/cache/cups tmpfs defaults,uid=0,gid=7,umask=007,dmask=000,fmask=007 0 0' | sudo -n tee -a "$globalVirtFS"/etc/fstab
+	echo '' | sudo -n tee -a "$globalVirtFS"/etc/fstab
+	
 	return 0
 }
 
