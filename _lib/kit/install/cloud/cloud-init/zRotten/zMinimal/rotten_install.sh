@@ -1147,7 +1147,7 @@ Relogin=true
 	_custom_construct_user root
 	# WARNING: Sets random password, intentionally, to lockout password login. SSH key or similar *required*.
 	# ATTENTION: Override (if necessary).
-	#echo 'root:'$(_rand_passwd 12) | sudo -n chpasswd
+	#echo 'root:'$(_rand_passwd 15) | sudo -n chpasswd
 	#echo 'root:'$(_rand_passwd 32) | sudo -n chpasswd
 	sudo -n usermod -s /bin/bash root
 	
@@ -1155,14 +1155,14 @@ Relogin=true
 	# https://serverfault.com/questions/240957/how-find-user-with-empty-password-in-linux
 	if ! sudo -n getent shadow | grep 'root:\$' | cut -d':' -f 2 | grep '\w' -c -m 1 > /dev/null
 	then
-		echo root':'$(_rand_passwd 12) | sudo -n chpasswd
+		echo root':'$(_rand_passwd 15) | sudo -n chpasswd
 		echo root':'$(_rand_passwd 32) | sudo -n chpasswd
 	fi
 	
 	_custom_construct_user "$custom_user"
 	# ATTENTION: Override (if necessary).
 	# WARNING: Sets random password, intentionally, to lockout password login. SSH key or similar *required*.
-	echo "$custom_user"':'$(_rand_passwd 12) | sudo -n chpasswd
+	echo "$custom_user"':'$(_rand_passwd 15) | sudo -n chpasswd
 	echo "$custom_user"':'$(_rand_passwd 32) | sudo -n chpasswd
 	sudo -n usermod -s /bin/bash "$custom_user"
 	
@@ -1262,7 +1262,7 @@ _install() {
 	usermod -e -1 root
 	if chage -l root | grep 'must be changed'
 	then
-		echo 'root:'$(_rand_passwd 12) | sudo -n chpasswd
+		echo 'root:'$(_rand_passwd 15) | sudo -n chpasswd
 		echo 'root:'$(_rand_passwd 32) | sudo -n chpasswd
 	fi
 	
@@ -1533,10 +1533,10 @@ _regenerate() {
 		#sudo -n rm -f /etc/ssh/authorized_keys
 		
 		
-		echo 'root:'$(_rand_passwd 12) | sudo -n chpasswd
+		echo 'root:'$(_rand_passwd 15) | sudo -n chpasswd
 		echo 'root:'$(_rand_passwd 32) | sudo -n chpasswd
 		
-		echo 'user:'$(_rand_passwd 12) | sudo -n chpasswd
+		echo 'user:'$(_rand_passwd 15) | sudo -n chpasswd
 		echo 'user:'$(_rand_passwd 32) | sudo -n chpasswd
 		
 		
