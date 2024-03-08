@@ -186,8 +186,9 @@ _pre-gitHook() {
 }
 
 _rezip-gitHook() {
-	#_start
-	#_start scriptLocal_mkdir_disable
+	# DANGER: Do NOT call '_start' or '_stop'.
+	##_start
+	##_start scriptLocal_mkdir_disable
 	
 	if [[ $(zipinfo "$1" | tail -c6 | tr -dc '.%0-9') != "0.0%" ]]
 	then
@@ -201,20 +202,28 @@ _rezip-gitHook() {
 		cd "$safeTmp"/"$current_name"
 		
 		
-		unzip "$1"
+		unzip -qq "$1"
 		#cd ..
 		
 		rm -f "$1"
 		#zip -0 -r "$1" "$current_name"
 		zip -0 -r "$1" .
 		
+		cd "$safeTmp"
+		
 		_safeRMR "$safeTmp"/"$current_name"
 	fi
 	
-	
-	#_stop
+	# DANGER: Do NOT call '_start' or '_stop'.
+	##_stop
 }
 _rezip-gitHook_parallel() {
+	# DANGER: Do NOT call '_start' or '_stop'.
+	#export safeTmp="$current_safe_safeTmp"
+	#export sessionid="$current_safe_sessionid"
+	export safeToDeleteGit="true"
+	
+	
 	local functionEntryPWD
 	functionEntryPWD="$PWD"
 	
@@ -244,6 +253,12 @@ _pre-commit_sequence() {
 	#[[ $(git config --type=bool hooks.disableDecompress | tr -dc 'a-z') == "true" ]]
 	
 	
+	local current_location
+	current_location=$(_getAbsoluteLocation "$1")
+	
+	
+	export -f "_getAbsolute_criticalDep"
+	export -f "_failExec"
 	export -f "_safeRMR"
 	
 	export -f "_messagePlain_nominal"
@@ -260,7 +275,10 @@ _pre-commit_sequence() {
 	
 	export -f "_rezip-gitHook"
 	export -f "_rezip-gitHook_parallel"
-	find "$1" -type f \( -iname '*.FCStd' -o -iname '*.FCSTD' -o -iname '*.fcstd' -o -iname '*.odt' -o -iname '*.docx' \) -not -path '\.\/\.git*' -print0 | xargs -0 -x -s 4096 -L 6 -P $(nproc) bash -c '_rezip-gitHook_parallel "$@"' _
+	
+	#export current_safe_safeTmp="$safeTmp"
+	#export current_safe_sessionid="$sessionid"
+	find "$current_location" -type f \( -iname '*.FCStd' -o -iname '*.FCSTD' -o -iname '*.fcstd' -o -iname '*.odt' -o -iname '*.docx' \) -not -path '\.\/\.git*' -print0 | xargs -0 -x -s 4096 -L 6 -P $(nproc) bash -c '_rezip-gitHook_parallel "$@"' _
 	#-exec "$scriptAbsoluteLocation" _rezip-gitHook {} \;
 	
 	_stop
