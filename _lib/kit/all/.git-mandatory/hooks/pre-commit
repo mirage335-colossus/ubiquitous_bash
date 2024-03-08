@@ -195,19 +195,21 @@ _rezip-gitHook() {
 		_messagePlain_nominal 'analysis: decompress: '"$1"
 		
 		local current_name
-		current_name=$(basename "$1")
-		current_name="${current_name%.*}"
+		#current_name=$(basename "$1")
+		#current_name="${current_name%.*}"
+		#current_name=$(cat /dev/urandom 2> /dev/null | tr -dc 'a-zA-Z0-9' 2> /dev/null | head -c "18" 2> /dev/null)
+		current_name=$(current_chars=abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ ; for (( currentIteration=1; currentIteration<=18; currentIteration++ )) ; do echo -n "${current_chars:RANDOM%${#current_chars}:1}" ; done )
 		
 		mkdir "$safeTmp"/"$current_name"
 		cd "$safeTmp"/"$current_name"
 		
 		
-		unzip -qq "$1"
+		unzip -q "$1"
 		#cd ..
 		
 		rm -f "$1"
 		#zip -0 -r "$1" "$current_name"
-		zip -0 -r "$1" .
+		zip -q -0 -r "$1" .
 		
 		cd "$safeTmp"
 		
