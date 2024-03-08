@@ -260,13 +260,13 @@ _pre-commit_sequence() {
 	
 	export -f "_rezip-gitHook"
 	export -f "_rezip-gitHook_parallel"
-	find "$1"/../.. -type f \( -iname '*.FCStd' -o -iname '*.FCSTD' -o -iname '*.fcstd' -o -iname '*.odt' -o -iname '*.docx' \) -not -path '\.\/\.git*' -print0 | xargs -0 -x -s 4096 -L 6 -P $(nproc) bash -c '_rezip-gitHook_parallel "$@"' _
+	find "$1" -type f \( -iname '*.FCStd' -o -iname '*.FCSTD' -o -iname '*.fcstd' -o -iname '*.odt' -o -iname '*.docx' \) -not -path '\.\/\.git*' -print0 | xargs -0 -x -s 4096 -L 6 -P $(nproc) bash -c '_rezip-gitHook_parallel "$@"' _
 	#-exec "$scriptAbsoluteLocation" _rezip-gitHook {} \;
 	
 	_stop
 }
 _pre-commit() {
-	"$scriptAbsoluteLocation" _pre-commit_sequence "$scriptAbsoluteFolder" "$@"
+	"$scriptAbsoluteLocation" _pre-commit_sequence "$scriptAbsoluteFolder"/../.. "$@"
 }
 pre-commit() {
 	_pre-commit
