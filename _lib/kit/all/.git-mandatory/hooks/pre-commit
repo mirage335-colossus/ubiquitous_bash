@@ -235,7 +235,7 @@ _rezip-gitHook_parallel() {
 }
 
 _pre-commit_sequence() {
-	_pre-gitHook
+	#_pre-gitHook
 	
 	#_start
 	_start scriptLocal_mkdir_disable
@@ -266,6 +266,7 @@ _pre-commit_sequence() {
 	_stop
 }
 _pre-commit() {
+	_pre-gitHook
 	"$scriptAbsoluteLocation" _pre-commit_sequence "$scriptAbsoluteFolder"/../.. "$@"
 }
 pre-commit() {
