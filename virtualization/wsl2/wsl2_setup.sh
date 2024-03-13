@@ -28,14 +28,34 @@ _setup_wsl2_procedure() {
     _messagePlain_probe wsl --update
     wsl --update
 
+    _messagePlain_probe wsl --install --no-launch
+    wsl --install --no-launch
+    
+    echo 'WSL errors and usage information above may or may not be disregarded.'
+
+    _messagePlain_probe wsl --update
+    wsl --update
+    
+    _messagePlain_probe wsl --set-default-version 2
+    wsl --set-default-version 2
+
+    _messagePlain_probe wsl --update
+    wsl --update
+
     sleep 45
     wsl --update
 
     sleep 5
     wsl --update
+    
+    sleep 5
+    wsl --set-default-version 2
 
     sleep 5
     wsl --update
+    
+    sleep 5
+    wsl --set-default-version 2
 }
 _setup_wsl2() {
     "$scriptAbsoluteLocation" _setup_wsl2_procedure "$@"
