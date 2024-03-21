@@ -192,7 +192,7 @@ _rezip-gitHook() {
 	
 	if [[ $(zipinfo "$1" | tail -c6 | tr -dc '.%0-9') != "0.0%" ]]
 	then
-		_messagePlain_nominal 'analysis: decompress: '"$1"
+		_messagePlain_nominal '_rezip-gitHook: '"$1"
 		
 		local current_name
 		#current_name=$(basename "$1")
@@ -206,11 +206,12 @@ _rezip-gitHook() {
 		# ATTRIBUTION: Github Copilot 2024-03-20
 		if uname -a | grep -i cygwin > /dev/null 2>&1
 		then
+			_messagePlain_probe '_rezip-gitHook: Cygwin: decompress_recompress.py'
 			python3 "$scriptAbsoluteFolder"/decompress_recompress.py "$1" "$safeTmp"/tmp.zip
 			rm -f "$1"
 			mv -f "$safeTmp"/tmp.zip "$1"
 		else
-
+			_messagePlain_probe '_rezip-gitHook: unzip/zip'
 
 			#if uname -a | grep -i cygwin > /dev/null 2>&1 && type -p 7z > /dev/null 2>&1
 			#then
@@ -239,8 +240,42 @@ _rezip-gitHook() {
 		fi
 
 		cd "$safeTmp"
-		
+
 		_safeRMR "$safeTmp"/"$current_name"
+
+
+		local current_out_dir
+		current_out_dir=$(_getAbsoluteFolder "$1")
+
+		local current_git_dir
+		current_git_dir=$(cd "$current_out_dir" && git rev-parse --git-dir)
+
+		local currentDelay
+		local currentDelayTenths
+		let currentDelay="$RANDOM"%5
+		let currentDelay="$currentDelay+5"
+		let currentDelayTenths="$RANDOM"%10
+		#echo "$currentDelay"."$currentDelayTenths"
+		#sleep "$currentDelay"."$currentDelayTenths"
+
+		local currentIteration
+		currentIteration=0
+		local currentIteration_inner
+		currentIteration_inner=0
+		unset currentExitStatus
+		if [[ -e "$current_out_dir" ]] && [[ -d "$current_out_dir" ]] && cd "$current_out_dir"
+		then
+			while ( [[ -f "$current_git_dir"/hooks/pre-commit.lock ]] || ! ( echo > "$current_git_dir"/hooks/pre-commit.lock ; git add -u "$1" ; currentExitStatus="$?" ; rm -f "$current_git_dir"/hooks/pre-commit.lock ; [[ "$currentExitStatus" == "0" ]] ) ) && [[ "$currentIteration" -lt 25 ]]
+			do
+				sleep "$currentDelay"."$currentDelayTenths"
+				while [[ -f "$current_git_dir"/hooks/pre-commit.lock ]] && [[ "$currentIteration_inner" -lt 60 ]]
+				do
+					sleep 0.3
+					let currentIteration_inner="$currentIteration_inner+1"
+				done
+				let currentIteration="$currentIteration+1"
+			done
+		fi
 	fi
 	
 	# DANGER: Do NOT call '_start' or '_stop'.
@@ -270,6 +305,8 @@ _rezip-gitHook_parallel() {
 		
 		#/bin/echo "$currentArg" > /dev/tty
 	done
+
+	wait >&2
 }
 
 _pre-commit_sequence() {
@@ -293,6 +330,7 @@ _pre-commit_sequence() {
 	export -f "_messagePlain_nominal"
 	export -f "_color_begin_nominal"
 	export -f "_color_end"
+	export -f "_getAbsoluteFolder"
 	export -f "_getAbsoluteLocation"
 	export -f "_realpath_L_s"
 	export -f "_realpath_L"
@@ -301,6 +339,7 @@ _pre-commit_sequence() {
 	export -f "_messagePlain_probe_var"
 	export -f "_color_begin_probe"
 	export -f "_messagePlain_probe"
+	export -f "_messagePlain_probe_cmd"
 	
 	export -f "_rezip-gitHook"
 	export -f "_rezip-gitHook_parallel"
@@ -309,6 +348,8 @@ _pre-commit_sequence() {
 	#export current_safe_sessionid="$sessionid"
 	find "$current_location" -type f \( -iname '*.FCStd' -o -iname '*.FCSTD' -o -iname '*.fcstd' -o -iname '*.odt' -o -iname '*.docx' \) -not -path '\.\/\.git*' -print0 | xargs -0 -x -s 4096 -L 6 -P $(nproc) bash -c '_rezip-gitHook_parallel "$@"' _
 	#-exec "$scriptAbsoluteLocation" _rezip-gitHook {} \;
+	wait "$!" >&2
+	wait >&2
 	
 	_stop
 }
