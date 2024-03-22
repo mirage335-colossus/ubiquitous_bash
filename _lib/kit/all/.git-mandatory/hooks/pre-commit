@@ -202,15 +202,42 @@ _rezip-gitHook() {
 		
 		mkdir "$safeTmp"/"$current_name"
 		cd "$safeTmp"/"$current_name"
-		
-		
-		unzip -q "$1"
-		#cd ..
-		
-		rm -f "$1"
-		#zip -0 -r "$1" "$current_name"
-		zip -q -0 -r "$1" .
-		
+
+		# ATTRIBUTION: Github Copilot 2024-03-20
+		if uname -a | grep -i cygwin > /dev/null 2>&1
+		then
+			python3 "$scriptAbsoluteFolder"/decompress_recompress.py "$1" "$safeTmp"/tmp.zip
+			rm -f "$1"
+			mv -f "$safeTmp"/tmp.zip "$1"
+		else
+
+
+			#if uname -a | grep -i cygwin > /dev/null 2>&1 && type -p 7z > /dev/null 2>&1
+			#then
+				# ATTRIBUTION: Github Copilot 2024-03-20
+				#7z e -y "$1" > /dev/null
+			#else
+				unzip -q "$1"
+			#fi
+			#cd ..
+
+			#if uname -a | grep -i cygwin > /dev/null 2>&1
+			#then
+				#chmod -R ug+w .
+			#fi
+
+			rm -f "$1"
+
+			#if uname -a | grep -i cygwin > /dev/null 2>&1 && type -p 7z > /dev/null 2>&1
+			#then
+				# ATTRIBUTION: Github Copilot 2024-03-20
+				#7z a -tzip -mx=0 "$1" . > /dev/null
+			#else
+				#zip -0 -r "$1" "$current_name"
+				zip -q -0 -r "$1" .
+			#fi
+		fi
+
 		cd "$safeTmp"
 		
 		_safeRMR "$safeTmp"/"$current_name"
