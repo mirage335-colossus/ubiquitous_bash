@@ -312,6 +312,8 @@ _rezip-gitHook_parallel() {
 }
 
 _gitAdd-gitHook() {
+	_messagePlain_nominal '_gitAdd-gitHook: '"$1"
+	
 	local functionEntryPWD
 	functionEntryPWD="$PWD"
 
