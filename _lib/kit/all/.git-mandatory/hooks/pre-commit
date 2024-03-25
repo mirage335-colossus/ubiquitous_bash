@@ -207,9 +207,9 @@ _rezip-gitHook() {
 		if uname -a | grep -i cygwin > /dev/null 2>&1
 		then
 			_messagePlain_probe '_rezip-gitHook: Cygwin: decompress_recompress.py'
-			python3 "$scriptAbsoluteFolder"/decompress_recompress.py "$1" "$safeTmp"/tmp.zip
+			python3 "$scriptAbsoluteFolder"/decompress_recompress.py "$1" "$safeTmp"/"$current_name"/tmp.zip
 			rm -f "$1"
-			mv -f "$safeTmp"/tmp.zip "$1"
+			mv -f "$safeTmp"/"$current_name"/tmp.zip "$1"
 		else
 			_messagePlain_probe '_rezip-gitHook: unzip/zip'
 
@@ -244,38 +244,40 @@ _rezip-gitHook() {
 		_safeRMR "$safeTmp"/"$current_name"
 
 
-		local current_out_dir
-		current_out_dir=$(_getAbsoluteFolder "$1")
+		#local current_out_dir
+		#current_out_dir=$(_getAbsoluteFolder "$1")
 
-		local current_git_dir
-		current_git_dir=$(cd "$current_out_dir" && git rev-parse --git-dir)
+		#local current_git_dir
+		#current_git_dir=$(cd "$current_out_dir" && git rev-parse --git-dir)
 
-		local currentDelay
-		local currentDelayTenths
-		let currentDelay="$RANDOM"%5
-		let currentDelay="$currentDelay+5"
-		let currentDelayTenths="$RANDOM"%10
-		#echo "$currentDelay"."$currentDelayTenths"
-		#sleep "$currentDelay"."$currentDelayTenths"
+		#local currentDelay
+		#local currentDelayTenths
+		#let currentDelay="$RANDOM"%5
+		#let currentDelay="$currentDelay+5"
+		#let currentDelayTenths="$RANDOM"%10
+		##echo "$currentDelay"."$currentDelayTenths"
+		##sleep "$currentDelay"."$currentDelayTenths"
 
-		local currentIteration
-		currentIteration=0
-		local currentIteration_inner
-		currentIteration_inner=0
-		unset currentExitStatus
-		if [[ -e "$current_out_dir" ]] && [[ -d "$current_out_dir" ]] && cd "$current_out_dir"
-		then
-			while ( [[ -f "$current_git_dir"/hooks/pre-commit.lock ]] || ! ( echo > "$current_git_dir"/hooks/pre-commit.lock ; git add -u "$1" ; currentExitStatus="$?" ; rm -f "$current_git_dir"/hooks/pre-commit.lock ; [[ "$currentExitStatus" == "0" ]] ) ) && [[ "$currentIteration" -lt 25 ]]
-			do
-				sleep "$currentDelay"."$currentDelayTenths"
-				while [[ -f "$current_git_dir"/hooks/pre-commit.lock ]] && [[ "$currentIteration_inner" -lt 60 ]]
-				do
-					sleep 0.3
-					let currentIteration_inner="$currentIteration_inner+1"
-				done
-				let currentIteration="$currentIteration+1"
-			done
-		fi
+		#local currentIteration
+		#currentIteration=0
+		#local currentIteration_inner
+		#currentIteration_inner=0
+		#unset currentExitStatus
+		#if [[ -e "$current_out_dir" ]] && [[ -d "$current_out_dir" ]] && cd "$current_out_dir"
+		#then
+			#while ( [[ -f "$current_git_dir"/hooks/pre-commit.lock ]] || ! ( echo > "$current_git_dir"/hooks/pre-commit.lock ; git add -u "$1" ; currentExitStatus="$?" ; rm -f "$current_git_dir"/hooks/pre-commit.lock ; [[ "$currentExitStatus" == "0" ]] ) ) && [[ "$currentIteration" -lt 25 ]]
+			#do
+				#sleep "$currentDelay"."$currentDelayTenths"
+				#while [[ -f "$current_git_dir"/hooks/pre-commit.lock ]] && [[ "$currentIteration_inner" -lt 60 ]]
+				#do
+					#sleep 0.3
+					#let currentIteration_inner="$currentIteration_inner+1"
+				#done
+				#let currentIteration="$currentIteration+1"
+			#done
+		#fi
+
+		echo > "$1".gitAdd.bak
 	fi
 	
 	# DANGER: Do NOT call '_start' or '_stop'.
@@ -302,6 +304,59 @@ _rezip-gitHook_parallel() {
 		
 		# WARNING: May be untested.
 		#_rezip-gitHook "$currentArg" &
+		
+		#/bin/echo "$currentArg" > /dev/tty
+	done
+
+	wait >&2
+}
+
+_gitAdd-gitHook() {
+	local functionEntryPWD
+	functionEntryPWD="$PWD"
+
+	#rm -f "$1"
+
+	local current_file
+	current_file="${1%.gitAdd.bak}"
+	current_file=$(_getAbsoluteLocation "$current_file")
+
+	
+	local current_out_dir
+	current_out_dir=$(_getAbsoluteFolder "$1")
+
+	local currentExitStatus
+
+	if [[ -e "$current_out_dir" ]] && [[ -d "$current_out_dir" ]] && cd "$current_out_dir" && [[ -e "$current_file" ]]
+	then
+		git add -u "$current_file"
+		currentExitStatus="$?"
+
+		if [[ "$currentExitStatus" == "0" ]]
+		then
+			rm -f "$1"
+			currentExitStatus="$?"
+		fi
+	fi
+
+	cd "$functionEntryPWD"
+	return "$currentExitStatus"
+}
+_gitAdd-gitHook_parallel() {
+	local functionEntryPWD
+	functionEntryPWD="$PWD"
+	
+	local currentArg
+	for currentArg in "$@"
+	do
+		true
+		
+		cd "$functionEntryPWD"
+		
+		_gitAdd-gitHook "$currentArg"
+		
+		# WARNING: May be untested.
+		#_gitAdd-gitHook "$currentArg" &
 		
 		#/bin/echo "$currentArg" > /dev/tty
 	done
@@ -343,11 +398,19 @@ _pre-commit_sequence() {
 	
 	export -f "_rezip-gitHook"
 	export -f "_rezip-gitHook_parallel"
+
+	export -f _gitAdd-gitHook
+	export -f _gitAdd-gitHook_parallel
 	
 	#export current_safe_safeTmp="$safeTmp"
 	#export current_safe_sessionid="$sessionid"
 	find "$current_location" -type f \( -iname '*.FCStd' -o -iname '*.FCSTD' -o -iname '*.fcstd' -o -iname '*.odt' -o -iname '*.docx' \) -not -path '\.\/\.git*' -print0 | xargs -0 -x -s 4096 -L 6 -P $(nproc) bash -c '_rezip-gitHook_parallel "$@"' _
 	#-exec "$scriptAbsoluteLocation" _rezip-gitHook {} \;
+	wait "$!" >&2
+	wait >&2
+
+
+	find "$current_location" -type f -iname '*.gitAdd.bak' -not -path '\.\/\.git*' -print0 | xargs -0 -x -s 4096 -L 6 -P 1 bash -c '_gitAdd-gitHook_parallel "$@"' _
 	wait "$!" >&2
 	wait >&2
 	
