@@ -312,16 +312,17 @@ _rezip-gitHook_parallel() {
 }
 
 _gitAdd-gitHook() {
-	_messagePlain_nominal '_gitAdd-gitHook: '"$1"
+	#_messagePlain_nominal '_gitAdd-gitHook: '"$1"
 	
 	local functionEntryPWD
 	functionEntryPWD="$PWD"
 
-	#rm -f "$1"
+	rm -f "$1"
 
 	local current_file
 	current_file="${1%.gitAdd.bak}"
 	current_file=$(_getAbsoluteLocation "$current_file")
+	_messagePlain_nominal '_gitAdd-gitHook: '"$current_file"
 
 	
 	local current_out_dir
@@ -331,14 +332,58 @@ _gitAdd-gitHook() {
 
 	if [[ -e "$current_out_dir" ]] && [[ -d "$current_out_dir" ]] && cd "$current_out_dir" && [[ -e "$current_file" ]]
 	then
-		git add -u "$current_file"
+		local currentIteration
+		
+		currentIteration="1"
+		while [[ ! -f "$current_file" ]] && [[ $currentIteration -le 3 ]]
+        do
+            _messagePlain_warn 'warn: file may not yet be regular'
+			_messagePlain_probe 'wait: '"$currentIteration"
+			sleep 1
+            ((currentIteration++))
+        done
+		[[ ! -f "$current_file" ]] && _messagePlain_bad '! [[ -f "$current_file" ]]'
+
+		## Check if the file is locked
+		#currentIteration="1"
+		#while [[ $(fuser "$current_file" 2>/dev/null | wc -w) -gt 0 ]] && [[ $currentIteration -le 3 ]]
+		#do
+			#_messagePlain_warn 'warn: file is locked'
+			#_messagePlain_probe 'wait: '"$currentIteration"
+			#sleep 1
+			#((currentIteration++))
+		#done
+		#[[ $(fuser "$current_file" 2>/dev/null | wc -w) -gt 0 ]] && _messagePlain_bad '! [[ $(fuser "$current_file" 2>/dev/null | wc -w) -gt 0 ]]'
+
+
+		currentIteration="1"
+		while [[ $(zipinfo "$current_file" | tail -c6 | tr -dc '.%0-9') != "0.0%" ]] && [[ $currentIteration -le 3 ]]
+		do
+            _messagePlain_warn 'warn: file may not yet be decompressed'
+			_messagePlain_probe 'wait: '"$currentIteration"
+			sleep 1
+            ((currentIteration++))
+		done
+		[[ $(zipinfo "$current_file" | tail -c6 | tr -dc '.%0-9') != "0.0%" ]] && _messagePlain_bad '! [[ $(zipinfo "$current_file" | tail -c6 | tr -dc '.%0-9') != "0.0%" ]]'
+
+		
+		_messagePlain_probe_cmd git add -u "$current_file"
 		currentExitStatus="$?"
+
+		#_messagePlain_probe_cmd git add "$current_file"
+		#[[ "$?" != "0" ]] && currentExitStatus=1
 
 		if [[ "$currentExitStatus" == "0" ]]
 		then
 			rm -f "$1"
-			currentExitStatus="$?"
+			#currentExitStatus="$?"
 		fi
+	else
+		currentExitStatus=1
+		! [[ -e "$current_out_dir" ]] && _messagePlain_bad '! [[ -e "$current_out_dir" ]]'
+		! [[ -d "$current_out_dir" ]] && _messagePlain_bad '! [[ -d "$current_out_dir" ]]'
+		! cd "$current_out_dir" && _messagePlain_bad '! cd "$current_out_dir"'
+		! [[ -e "$current_file" ]] && _messagePlain_bad '! [[ -e "$current_file" ]]'
 	fi
 
 	cd "$functionEntryPWD"
@@ -367,6 +412,9 @@ _gitAdd-gitHook_parallel() {
 }
 
 _pre-commit_sequence() {
+	local functionEntryPWD
+	functionEntryPWD="$PWD"
+
 	#_pre-gitHook
 	
 	#_start
@@ -383,6 +431,9 @@ _pre-commit_sequence() {
 	export -f "_getAbsolute_criticalDep"
 	export -f "_failExec"
 	export -f "_safeRMR"
+
+	export -f "_safeEcho"
+	export -f "_safeEcho_newline"
 	
 	export -f "_messagePlain_nominal"
 	export -f "_color_begin_nominal"
@@ -397,6 +448,11 @@ _pre-commit_sequence() {
 	export -f "_color_begin_probe"
 	export -f "_messagePlain_probe"
 	export -f "_messagePlain_probe_cmd"
+
+	export -f _color_begin_warn
+	export -f _color_begin_bad
+	export -f "_messagePlain_warn"
+	export -f "_messagePlain_bad"
 	
 	export -f "_rezip-gitHook"
 	export -f "_rezip-gitHook_parallel"
@@ -406,16 +462,28 @@ _pre-commit_sequence() {
 	
 	#export current_safe_safeTmp="$safeTmp"
 	#export current_safe_sessionid="$sessionid"
-	find "$current_location" -type f \( -iname '*.FCStd' -o -iname '*.FCSTD' -o -iname '*.fcstd' -o -iname '*.odt' -o -iname '*.docx' \) -not -path '\.\/\.git*' -print0 | xargs -0 -x -s 4096 -L 6 -P $(nproc) bash -c '_rezip-gitHook_parallel "$@"' _
+	find "$current_location" -type f \( -iname '*.FCStd' -o -iname '*.FCSTD' -o -iname '*.fcstd' -o -iname '*.odt' -o -iname '*.docx' \) -not -iname '~$*' -not -path '\.\/\.git*' -print0 | xargs -0 -x -s 4096 -L 6 -P $(nproc) bash -c '_rezip-gitHook_parallel "$@"' _
 	#-exec "$scriptAbsoluteLocation" _rezip-gitHook {} \;
 	wait "$!" >&2
 	wait >&2
 
+	#if uname -a | grep -i cygwin > /dev/null 2>&1 && find "$current_location" -type f -iname '*.gitAdd.bak' -not -iname '~$*' -not -path '\.\/\.git*' | grep '.gitAdd.bak' > /dev/null
+	#then
+		#_messagePlain_nominal 'git add -u'
+		#cd "$current_location"
+		#_messagePlain_probe_cmd git add -u
+	#fi
 
-	find "$current_location" -type f -iname '*.gitAdd.bak' -not -path '\.\/\.git*' -print0 | xargs -0 -x -s 4096 -L 6 -P 1 bash -c '_gitAdd-gitHook_parallel "$@"' _
+	find "$current_location" -type f -iname '*.gitAdd.bak' -not -iname '~$*' -not -path '\.\/\.git*' -print0 | xargs -0 -x -s 4096 -L 6 -P 1 bash -c '_gitAdd-gitHook_parallel "$@"' _
 	wait "$!" >&2
 	wait >&2
+
+	# WARNING: Any output from this command indicates an issue .
+	find "$current_location" -type f -iname '*.gitAdd.bak' -not -iname '~$*' -not -path '\.\/\.git*'
+	wait >&2
 	
+
+	cd "$functionEntryPWD"
 	_stop
 }
 _pre-commit() {
