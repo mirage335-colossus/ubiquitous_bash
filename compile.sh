@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='2693953919'
+export ub_setScriptChecksum_contents='2921557249'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -5872,6 +5872,7 @@ _init_deps() {
 	
 	export enUb_dev=""
 	export enUb_dev_heavy=""
+	export enUb_dev_heavy_atom=""
 	
 	export enUb_generic=""
 	
@@ -5955,6 +5956,12 @@ _deps_dev() {
 _deps_dev_heavy() {
 	_deps_notLean
 	export enUb_dev_heavy="true"
+}
+
+_deps_dev_heavy_atom() {
+	_deps_notLean
+	export enUb_dev_heavy="true"
+	export enUb_dev_heavy_atom="true"
 }
 
 _deps_cloud_heavy() {
@@ -6946,6 +6953,7 @@ _compile_bash_deps() {
 	if [[ "$1" == "monolithic" ]]
 	then
 		_deps_dev_heavy
+		#_deps_dev_heavy_atom
 		_deps_dev
 		
 		#_deps_cloud_heavy
@@ -7044,6 +7052,7 @@ _compile_bash_deps() {
 	if [[ "$1" == "core" ]]
 	then
 		_deps_dev_heavy
+		#_deps_dev_heavy_atom
 		_deps_dev
 		
 		#_deps_cloud_heavy
@@ -7142,6 +7151,7 @@ _compile_bash_deps() {
 	if [[ "$1" == "" ]] || [[ "$1" == "ubiquitous_bash" ]] || [[ "$1" == "ubiquitous_bash.sh" ]] || [[ "$1" == "complete" ]]
 	then
 		_deps_dev_heavy
+		#_deps_dev_heavy_atom
 		_deps_dev
 		
 		_deps_cloud_heavy
@@ -7513,7 +7523,7 @@ _compile_bash_shortcuts() {
 	( ( [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_metaengine" == "true" ]] ) || [[ "$enUb_calculators" == "true" ]] ) && includeScriptList+=( "shortcuts/dev/app/calculators"/scriptedIllustrator_terminal.sh )
 	
 	[[ "$enUb_fakehome" == "true" ]] && [[ "$enUb_dev_heavy" == "true" ]] && includeScriptList+=( "shortcuts/dev/app"/devemacs.sh )
-	[[ "$enUb_fakehome" == "true" ]] && [[ "$enUb_dev_heavy" == "true" ]] && includeScriptList+=( "shortcuts/dev/app"/devatom.sh )
+	[[ "$enUb_fakehome" == "true" ]] && [[ "$enUb_dev_heavy" == "true" ]] && [[ "$enUb_dev_heavy_atom" == "true" ]] && includeScriptList+=( "shortcuts/dev/app"/devatom.sh )
 	
 	[[ "$enUb_fakehome" == "true" ]] && [[ "$enUb_abstractfs" == "true" ]] && [[ "$enUb_dev_heavy" == "true" ]] && includeScriptList+=( "shortcuts/dev/app/eclipse"/deveclipse_java.sh )
 	[[ "$enUb_fakehome" == "true" ]] && [[ "$enUb_abstractfs" == "true" ]] && [[ "$enUb_dev_heavy" == "true" ]] && includeScriptList+=( "shortcuts/dev/app/eclipse"/deveclipse_env.sh )
