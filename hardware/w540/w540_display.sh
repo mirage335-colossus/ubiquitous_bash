@@ -1,14 +1,19 @@
 
+_w540_check() {
+	if ! grep 'ThinkPad W540' /sys/devices/virtual/dmi/id/product_family > /dev/null 2>&1 && ! grep 'ThinkPad W540' /sys/devices/virtual/dmi/id/product_version > /dev/null 2>&1
+	then
+		return 1
+	fi
+	return 0
+}
+
 # ATTENTION: Override with 'ops.sh' if necessary.
 # WARNING: Disable Kscreen background service recommended. Use KDE "System Settings" .
 _w540_display_start() {
-	_w540_display_start
-}
-
-
-
-# ATTENTION: Override with 'ops.sh' if necessary.
-_w540_display_start() {
+	! _w540_check && return 1
+	
+	
+	
 	local currentIteration
 	currentIteration=0
 	while ! pgrep plasmashell > /dev/null 2>&1 && [[ "$currentIteration" -lt "15" ]]
@@ -32,6 +37,10 @@ _w540_display_start() {
 
 # ATTENTION: May rely on some assumptions about the software configuration of the laptop, and may be very specific to only W540 .
 _w540_display-leftOf() {
+	! _w540_check && return 1
+	
+	
+	
 	xrandr --output eDP-1 --mode 1920x1080
 	
 	xrandr --output HDMI-1 --scale 1.375x1.375
