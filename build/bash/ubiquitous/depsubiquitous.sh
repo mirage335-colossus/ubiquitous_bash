@@ -216,6 +216,11 @@ _deps_x11() {
 	export enUb_x11="true"
 }
 
+_deps_ai() {
+	_deps_notLean
+	export enUb_ollama="true"
+}
+
 _deps_blockchain() {
 	_deps_notLean
 	_deps_x11
@@ -423,6 +428,12 @@ _deps_calculators() {
 	_deps_generic
 	
 	export enUb_calculators="true"
+}
+
+_deps_ai_shortuts() {
+	_deps_generic
+	
+	export enUb_ollama_shortcuts="true"
 }
 
 #placeholder, define under "queue/build"

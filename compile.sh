@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='2921557249'
+export ub_setScriptChecksum_contents='2013746377'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -804,7 +804,8 @@ then
 	#l() {
 		#_wsl "$@"
 	#}
-	alias l='_wsl'
+	#alias l='_wsl'
+	alias u='_wsl'
 fi
 
 
@@ -6085,6 +6086,11 @@ _deps_x11() {
 	export enUb_x11="true"
 }
 
+_deps_ai() {
+	_deps_notLean
+	export enUb_ollama="true"
+}
+
 _deps_blockchain() {
 	_deps_notLean
 	_deps_x11
@@ -6292,6 +6298,12 @@ _deps_calculators() {
 	_deps_generic
 	
 	export enUb_calculators="true"
+}
+
+_deps_ai_shortuts() {
+	_deps_generic
+	
+	export enUb_ollama_shortcuts="true"
 }
 
 #placeholder, define under "queue/build"
@@ -6837,6 +6849,9 @@ _compile_bash_deps() {
 		_deps_python
 		_deps_haskell
 		
+		_deps_ai
+		_deps_ai_shortuts
+		
 		_deps_calculators
 		
 		#_deps_queue
@@ -6894,6 +6909,9 @@ _compile_bash_deps() {
 		_deps_python
 		_deps_haskell
 		
+		_deps_ai
+		_deps_ai_shortuts
+		
 		_deps_calculators
 		
 		_deps_channel
@@ -6912,6 +6930,8 @@ _compile_bash_deps() {
 		
 		_deps_python
 		_deps_haskell
+		
+		_deps_ai_shortuts
 		
 		_deps_calculators
 		
@@ -6934,6 +6954,8 @@ _compile_bash_deps() {
 		
 		_deps_python
 		_deps_haskell
+		
+		_deps_ai_shortuts
 		
 		_deps_calculators
 		
@@ -6991,6 +7013,9 @@ _compile_bash_deps() {
 		
 		_deps_python
 		_deps_haskell
+		
+		_deps_ai
+		_deps_ai_shortuts
 		
 		_deps_calculators
 		
@@ -7091,6 +7116,9 @@ _compile_bash_deps() {
 		_deps_python
 		_deps_haskell
 		
+		_deps_ai
+		_deps_ai_shortuts
+		
 		_deps_calculators
 		
 		_deps_channel
@@ -7189,6 +7217,9 @@ _compile_bash_deps() {
 		
 		_deps_python
 		_deps_haskell
+		
+		_deps_ai
+		_deps_ai_shortuts
 		
 		_deps_calculators
 		
@@ -7512,6 +7543,14 @@ _compile_bash_shortcuts() {
 	includeScriptList+=( "labels"/shortcutsLabel.sh )
 	
 	includeScriptList+=( "shortcuts/prompt"/visualPrompt.sh )
+	
+	
+	
+	[[ "$enUb_ollama" == "true" ]] && includeScriptList+=( "ai/ollama"/ollama.sh )
+	
+	( ( [[ "$enUb_dev_heavy" == "true" ]] ) || [[ "$enUb_ollama_shortcuts" == "true" ]] ) && includeScriptList+=( "shortcuts/ai/ollama"/ollama.sh )
+	
+	
 	
 	#[[ "$enUb_dev_heavy" == "true" ]] && 
 	includeScriptList+=( "shortcuts/dev"/devsearch.sh )

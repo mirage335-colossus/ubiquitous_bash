@@ -36,6 +36,9 @@ _vector() {
 	
 	
 	_tryExec "_vector_virtUser"
+	
+	
+	_tryExec "_vector_ollama"
 }
 
 
@@ -1808,6 +1811,11 @@ _test() {
 	# ATTENTION: Override with 'ops' or similar.
 	# More portable computing (ie. better laptops) and hardware (eg. mechanical) USB switches are also displacing the usefulness of such keyboard/mouse sharing software.
 	#_tryExec "_test_synergy"
+	
+	
+	
+	_tryExec "_test_ollama"
+	
 	
 	
 	_tryExec "_test_devqalculate"

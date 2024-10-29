@@ -59,6 +59,9 @@ _compile_bash_deps() {
 		_deps_python
 		_deps_haskell
 		
+		_deps_ai
+		_deps_ai_shortuts
+		
 		_deps_calculators
 		
 		#_deps_queue
@@ -116,6 +119,9 @@ _compile_bash_deps() {
 		_deps_python
 		_deps_haskell
 		
+		_deps_ai
+		_deps_ai_shortuts
+		
 		_deps_calculators
 		
 		_deps_channel
@@ -134,6 +140,8 @@ _compile_bash_deps() {
 		
 		_deps_python
 		_deps_haskell
+		
+		_deps_ai_shortuts
 		
 		_deps_calculators
 		
@@ -156,6 +164,8 @@ _compile_bash_deps() {
 		
 		_deps_python
 		_deps_haskell
+		
+		_deps_ai_shortuts
 		
 		_deps_calculators
 		
@@ -213,6 +223,9 @@ _compile_bash_deps() {
 		
 		_deps_python
 		_deps_haskell
+		
+		_deps_ai
+		_deps_ai_shortuts
 		
 		_deps_calculators
 		
@@ -313,6 +326,9 @@ _compile_bash_deps() {
 		_deps_python
 		_deps_haskell
 		
+		_deps_ai
+		_deps_ai_shortuts
+		
 		_deps_calculators
 		
 		_deps_channel
@@ -411,6 +427,9 @@ _compile_bash_deps() {
 		
 		_deps_python
 		_deps_haskell
+		
+		_deps_ai
+		_deps_ai_shortuts
 		
 		_deps_calculators
 		
@@ -734,6 +753,14 @@ _compile_bash_shortcuts() {
 	includeScriptList+=( "labels"/shortcutsLabel.sh )
 	
 	includeScriptList+=( "shortcuts/prompt"/visualPrompt.sh )
+	
+	
+	
+	[[ "$enUb_ollama" == "true" ]] && includeScriptList+=( "ai/ollama"/ollama.sh )
+	
+	( ( [[ "$enUb_dev_heavy" == "true" ]] ) || [[ "$enUb_ollama_shortcuts" == "true" ]] ) && includeScriptList+=( "shortcuts/ai/ollama"/ollama.sh )
+	
+	
 	
 	#[[ "$enUb_dev_heavy" == "true" ]] && 
 	includeScriptList+=( "shortcuts/dev"/devsearch.sh )

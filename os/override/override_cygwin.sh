@@ -156,7 +156,8 @@ then
 	#l() {
 		#_wsl "$@"
 	#}
-	alias l='_wsl'
+	#alias l='_wsl'
+	alias u='_wsl'
 fi
 
 
