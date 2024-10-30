@@ -97,6 +97,8 @@ _setup_ollama_model_augment_sequence() {
 	
 	# TODO: Replace with model fine-tuned by additional relevant codebases and scientific knowledge.
 	
+	# TODO: TODO: Intentionally overfit smaller parameter models by reinforcing prompt/response for specific knowledge (eg. plasma recombiation light emission physics) and reasoning (eg. robot motor control).
+	
 	
 	# TODO: There may or may not be more track record with this slightly different model, using Q4-K-M quantization.
 	# https://huggingface.co/grimjim/Llama-3.1-8B-Instruct-abliterated_via_adapter-GGUF
