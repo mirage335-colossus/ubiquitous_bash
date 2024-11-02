@@ -1,5 +1,13 @@
 
 
+# ATTENTION: NOTICE: WIP: AI models bring such efficient and effective natural language processing, reasoning, parsing, summarization, API/documentation understanding, and code generation, as to backport an essential yet unusually new capability to some of the oldest (ie. >20years old) computer CPUs (even without a GPU). ATTENTION: Unusually, all 'ai' functions (including those here), may be very interdependent on the 'shortcut' functions. This has two consequences:
+# (1) CAUTION: No 'compile' of the script should include only the 'ai' functions without the 'shortcut' functions, this WILL cause potentially dangerous failures.
+# (2) NOTICE: Please DO read all comments from both directories for both VERY significant TODO items, and possible obligations you may have to follow to actually use some specifically supported AI models.
+
+
+
+
+
 
 
 _setup_ollama_model_augment_sequence() {

@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='2432515352'
+export ub_setScriptChecksum_contents='2205774709'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -15038,6 +15038,14 @@ _request_visualPrompt() {
 
 
 
+# ATTENTION: NOTICE: WIP: AI models bring such efficient and effective natural language processing, reasoning, parsing, summarization, API/documentation understanding, and code generation, as to backport an essential yet unusually new capability to some of the oldest (ie. >20years old) computer CPUs (even without a GPU). ATTENTION: Unusually, all 'ai' functions (including those here), may be very interdependent on the 'shortcut' functions. This has two consequences:
+# (1) CAUTION: No 'compile' of the script should include only the 'ai' functions without the 'shortcut' functions, this WILL cause potentially dangerous failures.
+# (2) NOTICE: Please DO read all comments from both directories for both VERY significant TODO items, and possible obligations you may have to follow to actually use some specifically supported AI models.
+
+
+
+
+
 
 
 _setup_ollama_model_augment_sequence() {
@@ -15200,6 +15208,15 @@ _vector_ollama() {
 
 
 
+
+
+# TODO: TODO: Reference implementation of alternative, easily scriptable Text-User-Interface (TUI) for 'ollama', for more convenient GUI wrapper design,etc.
+# https://huggingface.co/blog/llama2#how-to-prompt-llama-2
+#<s>[INST] <<SYS>>
+#{{ system_prompt }}
+#<</SYS>>
+#
+#{{ user_msg_1 }} [/INST] {{ model_answer_1 }} </s><s>[INST] {{ user_msg_2 }} [/INST]
 
 
 

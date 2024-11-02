@@ -3,6 +3,15 @@
 
 
 
+# TODO: TODO: Reference implementation of alternative, easily scriptable Text-User-Interface (TUI) for 'ollama', for more convenient GUI wrapper design,etc.
+# https://huggingface.co/blog/llama2#how-to-prompt-llama-2
+#<s>[INST] <<SYS>>
+#{{ system_prompt }}
+#<</SYS>>
+#
+#{{ user_msg_1 }} [/INST] {{ model_answer_1 }} </s><s>[INST] {{ user_msg_2 }} [/INST]
+
+
 
 
 
