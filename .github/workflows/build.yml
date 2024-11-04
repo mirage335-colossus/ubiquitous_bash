@@ -362,6 +362,9 @@ jobs:
         run: |
           # Get the list of releases
           RELEASES=$(curl -s -H "Authorization: token $GH_TOKEN" https://api.github.com/repos/mirage335-colossus/ubiquitous_bash/releases)
+          
+          # Download binReport file for the current release
+          curl -s -H "Authorization: token $GH_TOKEN" -L -o "ubcp-binReport-$currentReleaseTag" "https://github.com/mirage335-colossus/ubiquitous_bash/releases/download/$currentReleaseTag/ubcp-binReport"
 
           # Loop through each release
           for RELEASE in $(echo "$RELEASES" | jq -r '.[].tag_name' | sort --reverse); do
