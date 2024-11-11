@@ -1,3 +1,3 @@
 [submodule "_lib/kit/app/researchEngine"]
 	path = _lib/kit/app/researchEngine
-	url = git@github.com:mirage335-special/kit-researchEngine.git
+	url = https://github.com/mirage335-special/kit-researchEngine.git
