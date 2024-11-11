@@ -21,7 +21,7 @@ _gitPull_ubiquitous() {
 
 _gitClone_ubiquitous() {
 	#git clone --depth 1 git@github.com:mirage335/ubiquitous_bash.git
-	_gitBest clone --depth 1 git@github.com:mirage335/ubiquitous_bash.git
+	_gitBest clone --recursive --depth 1 git@github.com:mirage335/ubiquitous_bash.git
 }
 
 _selfCloneUbiquitous() {
