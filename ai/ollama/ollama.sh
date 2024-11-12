@@ -150,7 +150,13 @@ _test_ollama() {
 	fi
 	
 	
-	! type ollama > /dev/null 2>&1 && _messageFAIL && _stop 1
+	if ! _if_cygwin
+	then
+		! type ollama > /dev/null 2>&1 && _messageFAIL && _stop 1
+	else
+		! type ollama > /dev/null 2>&1 && echo 'warn: acepted: cygwin: missing: ollama'
+		# Accepted. Do NOT return with error status (ie. do NOT 'return 1') .
+	fi
 	
 	return 0
 }
