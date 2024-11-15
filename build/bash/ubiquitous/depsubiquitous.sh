@@ -218,6 +218,7 @@ _deps_x11() {
 
 _deps_ai() {
 	_deps_notLean
+	export enUb_researchEngine="true"
 	export enUb_ollama="true"
 }
 

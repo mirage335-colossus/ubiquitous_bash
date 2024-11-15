@@ -755,6 +755,7 @@ _compile_bash_shortcuts() {
 	includeScriptList+=( "shortcuts/prompt"/visualPrompt.sh )
 	
 	
+	[[ "$enUb_researchEngine" == "true" ]] && includeScriptList+=( "ai"/researchEngine.sh )
 	
 	[[ "$enUb_ollama" == "true" ]] && includeScriptList+=( "ai/ollama"/ollama.sh )
 	
