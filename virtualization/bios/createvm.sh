@@ -39,8 +39,12 @@ _createVMimage() {
 		# 25.95GiB
 		#export vmSize=26572
 	
+		# Preferred before addition of any AI models. Smaller than 32GB USB flash drive.
 		# 27.95GiB
-		export vmSize=28620
+		#export vmSize=28620
+	
+		# 37.95GiB
+		export vmSize=38860
 		
 		export vmSize_boundary=$(bc <<< "$vmSize - 1")
 		_createRawImage
