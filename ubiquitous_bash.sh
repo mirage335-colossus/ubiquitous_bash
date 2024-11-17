@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='1537696939'
+export ub_setScriptChecksum_contents='228617458'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -22869,6 +22869,9 @@ PARAMETER num_ctx 6144' > Llama-augment.Modelfile
 	aria2c --log=- --log-level=info -x "3" -o 'llama-3.1-8b-instruct-abliterated.Q4_K_M.gguf' 'https://huggingface.co/mlabonne/Meta-Llama-3.1-8B-Instruct-abliterated-GGUF/resolve/main/meta-llama-3.1-8b-instruct-abliterated.Q4_K_M.gguf'
 	[[ ! -e 'llama-3.1-8b-instruct-abliterated.Q4_K_M.gguf' ]] && aria2c --log=- --log-level=info -x "3" -o 'llama-3.1-8b-instruct-abliterated.Q4_K_M.gguf' 'https://huggingface.co/mlabonne/Meta-Llama-3.1-8B-Instruct-abliterated-GGUF/resolve/main/meta-llama-3.1-8b-instruct-abliterated.Q4_K_M.gguf' --disable-ipv6=true
 	
+	
+	_service_ollama
+	
 	ollama create Llama-augment -f Llama-augment.Modelfile
 	
 	rm -f llama-3.1-8b-instruct-abliterated.Q4_K_M.gguf
@@ -22881,6 +22884,8 @@ PARAMETER num_ctx 6144' > Llama-augment.Modelfile
 	_stop
 }
 _setup_ollama() {
+	_user_ollama
+	
 	if ! _if_cygwin
 	then
 		# DANGER: This upstream script, as with many, has been known to use 'rm' recursively without the safety checks of '_safeRMR' .
@@ -22892,6 +22897,8 @@ _setup_ollama() {
 }
 
 _test_ollama() {
+	_user_ollama
+
 	if ! type ollama > /dev/null 2>&1
 	then
 		_setup_ollama
@@ -22910,6 +22917,10 @@ _test_ollama() {
 }
 
 _vector_ollama() {
+	_user_ollama
+
+	_service_ollama
+	
 	if _if_cygwin && ! type ollama > /dev/null 2>&1
 	then
 		echo 'warn: acepted: cygwin: missing: ollama'
@@ -22923,6 +22934,38 @@ _vector_ollama() {
 	fi
 
 	return 0
+}
+
+
+
+
+
+_user_ollama() {
+	_mustGetSudo
+	local currentUser
+	[[ "$USER" != "root" ]] && currentUser="$USER"
+	[[ "$currentUser_researchEngine" != "" ]] && currentUser="$currentUser_researchEngine"
+	[[ "$currentUser" == "" ]] && currentUser="user"
+	return 0
+}
+
+
+# Very unusual. Ensures service is available, if normal systemd service is not.
+# WARNING: Should NOT run standalone service if systemd service is available. Thus, it is important to check if the service is already available (as would normally always be the case when booted with systemd available).
+# Mostly, this is used to workaround very unusual dist/OS build and custom situations (ie. ChRoot, GitHub Actions, etc).
+# CAUTION: This leaves a background process running, which must continue running (ie. not hangup) while other programs use it, and which must terminate upon shutdown , _closeChRoot , etc .
+_service_ollama() {
+	if ! wget --timeout=1 --tries=3 127.0.0.1:11434 > /dev/null -q -O - > /dev/null
+	then
+		ollama serve &
+	fi
+	
+	
+	if ! wget --timeout=1 --tries=3 127.0.0.1:11434 > /dev/null -q -O - > /dev/null
+	then
+		echo 'fail: _service_ollama: ollama: 127.0.0.1:11434'
+		return 1
+	fi
 }
 
 
