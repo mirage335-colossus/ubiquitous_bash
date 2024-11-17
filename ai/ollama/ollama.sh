@@ -133,6 +133,8 @@ PARAMETER num_ctx 6144' > Llama-augment.Modelfile
 	_stop
 }
 _setup_ollama() {
+	_user_ollama
+	
 	if ! _if_cygwin
 	then
 		# DANGER: This upstream script, as with many, has been known to use 'rm' recursively without the safety checks of '_safeRMR' .
@@ -144,6 +146,8 @@ _setup_ollama() {
 }
 
 _test_ollama() {
+	_user_ollama
+
 	if ! type ollama > /dev/null 2>&1
 	then
 		_setup_ollama
@@ -162,6 +166,10 @@ _test_ollama() {
 }
 
 _vector_ollama() {
+	_user_ollama
+
+	_service_ollama
+	
 	if _if_cygwin && ! type ollama > /dev/null 2>&1
 	then
 		echo 'warn: acepted: cygwin: missing: ollama'
@@ -175,6 +183,38 @@ _vector_ollama() {
 	fi
 
 	return 0
+}
+
+
+
+
+
+_user_ollama() {
+	_mustGetSudo
+	local currentUser
+	[[ "$USER" != "root" ]] && currentUser="$USER"
+	[[ "$currentUser_researchEngine" != "" ]] && currentUser="$currentUser_researchEngine"
+	[[ "$currentUser" == "" ]] && currentUser="user"
+	return 0
+}
+
+
+# Very unusual. Ensures service is available, if normal systemd service is not.
+# WARNING: Should NOT run standalone service if systemd service is available. Thus, it is important to check if the service is already available (as would normally always be the case when booted with systemd available).
+# Mostly, this is used to workaround very unusual dist/OS build and custom situations (ie. ChRoot, GitHub Actions, etc).
+# CAUTION: This leaves a background process running, which must continue running (ie. not hangup) while other programs use it, and which must terminate upon shutdown , _closeChRoot , etc .
+_service_ollama() {
+	if ! wget --timeout=1 --tries=3 127.0.0.1:11434 > /dev/null -q -O - > /dev/null
+	then
+		ollama serve &
+	fi
+	
+	
+	if ! wget --timeout=1 --tries=3 127.0.0.1:11434 > /dev/null -q -O - > /dev/null
+	then
+		echo 'fail: _service_ollama: ollama: 127.0.0.1:11434'
+		return 1
+	fi
 }
 
 
