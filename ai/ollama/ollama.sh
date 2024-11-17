@@ -210,6 +210,12 @@ _service_ollama() {
 	if ! wget --timeout=1 --tries=3 127.0.0.1:11434 > /dev/null -q -O - > /dev/null
 	then
 		ollama serve &
+		while ! wget --timeout=1 --tries=3 127.0.0.1:11434 > /dev/null -q -O - > /dev/null
+		do
+			echo "wait: ollama: service"
+			sleep 1
+		done
+		sleep 45
 	fi
 	
 	
