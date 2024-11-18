@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='2858648466'
+export ub_setScriptChecksum_contents='791866168'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -22920,6 +22920,15 @@ _test_ollama() {
 	return 0
 }
 
+_vector_ollama_procedure() {
+	! _ollama_run_augment "Please output the word true . Any other output accompanying the word true is acceptable but not desirable. The purpose of this prompt is merely to validate that the LLM software is entirely functional, so the word true will be very helpful whereas any output other than the word true will be unhelpful . Please output the word true ." | grep true > /dev/null && echo 'fail: _vector_ollama' && _messageFAIL && _stop 1
+	_ollama_run_augment "Please output the word true . Any other output accompanying the word true is acceptable but not desirable. The purpose of this prompt is merely to validate that the LLM software is entirely functional, so the word true will be very helpful whereas any output other than the word true will be unhelpful . Please output the word true ." | grep false > /dev/null && echo 'fail: _vector_ollama' && _messageFAIL && _stop 1
+	
+	! _ollama_run_augment "Please output the word false . Any other output accompanying the word false is acceptable but not desirable. The purpose of this prompt is merely to validate that the LLM software is entirely functional, so the word false will be very helpful whereas any output other than the word false will be unhelpful . Please output the word false ." | grep false > /dev/null && echo 'fail: _vector_ollama' && _messageFAIL && _stop 1
+	_ollama_run_augment "Please output the word false . Any other output accompanying the word false is acceptable but not desirable. The purpose of this prompt is merely to validate that the LLM software is entirely functional, so the word false will be very helpful whereas any output other than the word false will be unhelpful . Please output the word false ." | grep true > /dev/null && echo 'fail: _vector_ollama' && _messageFAIL && _stop 1
+
+	return 0
+}
 _vector_ollama() {
 	_user_ollama
 
@@ -22927,14 +22936,27 @@ _vector_ollama() {
 	
 	if _if_cygwin && ! type ollama > /dev/null 2>&1
 	then
-		echo 'warn: acepted: cygwin: missing: ollama'
+		echo 'warn: accepted: cygwin: missing: ollama'
 	elif type ollama > /dev/null 2>&1
 	then
-		! _ollama_run_augment "Please output the word true . Any other output accompanying the word true is acceptable but not desirable. The purpose of this prompt is merely to validate that the LLM software is entirely functional, so the word true will be very helpful whereas any output other than the word true will be unhelpful . Please output the word true ." | grep true > /dev/null && echo 'fail: _vector_ollama' && _messageFAIL && _stop 1
-		_ollama_run_augment "Please output the word true . Any other output accompanying the word true is acceptable but not desirable. The purpose of this prompt is merely to validate that the LLM software is entirely functional, so the word true will be very helpful whereas any output other than the word true will be unhelpful . Please output the word true ." | grep false > /dev/null && echo 'fail: _vector_ollama' && _messageFAIL && _stop 1
-		
-		! _ollama_run_augment "Please output the word false . Any other output accompanying the word false is acceptable but not desirable. The purpose of this prompt is merely to validate that the LLM software is entirely functional, so the word false will be very helpful whereas any output other than the word false will be unhelpful . Please output the word false ." | grep false > /dev/null && echo 'fail: _vector_ollama' && _messageFAIL && _stop 1
-		_ollama_run_augment "Please output the word false . Any other output accompanying the word false is acceptable but not desirable. The purpose of this prompt is merely to validate that the LLM software is entirely functional, so the word false will be very helpful whereas any output other than the word false will be unhelpful . Please output the word false ." | grep true > /dev/null && echo 'fail: _vector_ollama' && _messageFAIL && _stop 1
+		if [[ "$hostMemoryQuantity" -lt 28000000 ]]
+		then
+			_messagePlain_nominal '_vector_ollama: begin: low RAM detected'
+			local currentExitStatus
+			currentExitStatus="1"
+			
+			_ollama_set_sequence-augment-lowRAM
+
+			"$scriptAbsoluteLocation" _vector_ollama_procedure
+			currentExitStatus="$?"
+
+			_ollama_set_sequence-augment-normal
+
+			[[ "$currentExitStatus" != "0" ]] && _messageFAIL && _stop 1
+			_messagePlain_nominal '_vector_ollama: end: low RAM detected'
+		else
+			_vector_ollama_procedure
+		fi
 	fi
 
 	return 0
@@ -22994,6 +23016,47 @@ _service_ollama() {
 #{{ user_msg_1 }} [/INST] {{ model_answer_1 }} </s><s>[INST] {{ user_msg_2 }} [/INST]
 
 
+
+
+# https://github.com/ollama/ollama/issues/6286
+_ollama_set_sequence-augment-normal() {
+	local functionEntryPWD
+	functionEntryPWD="$PWD"
+
+	_start
+	cd "$safeTmp"
+
+	ollama show Llama-augment --modelfile | sed 's/PARAMETER num_ctx [0-9]*/PARAMETER num_ctx 6144/' > ./Llama-augment-tmp.Modelfile
+	sleep 9
+	ollama create Llama-augment --file ./Llama-augment-tmp.Modelfile
+	sleep 9
+
+	cd "$functionEntryPWD"
+	_stop
+}
+_ollama_set-augment-normal() {
+	"$scriptAbsoluteLocation" _ollama_set_sequence-augment-normal "$@"
+}
+# Temporarily reduce RAM/VRAM requirement for constrained CI .
+_ollama_set_sequence-augment-lowRAM() {
+	local functionEntryPWD
+	functionEntryPWD="$PWD"
+
+	_start
+	cd "$safeTmp"
+
+	ollama show Llama-augment --modelfile | sed 's/PARAMETER num_ctx [0-9]*/PARAMETER num_ctx 512/' > ./Llama-augment-tmp.Modelfile
+	sleep 9
+	ollama create Llama-augment --file ./Llama-augment-tmp.Modelfile
+	sleep 9
+
+
+	cd "$functionEntryPWD"
+	_stop
+}
+_ollama_set-augment-lowRAM() {
+	"$scriptAbsoluteLocation" _ollama_set_sequence-augment-lowRAM "$@"
+}
 
 
 

@@ -14,6 +14,47 @@
 
 
 
+# https://github.com/ollama/ollama/issues/6286
+_ollama_set_sequence-augment-normal() {
+	local functionEntryPWD
+	functionEntryPWD="$PWD"
+
+	_start
+	cd "$safeTmp"
+
+	ollama show Llama-augment --modelfile | sed 's/PARAMETER num_ctx [0-9]*/PARAMETER num_ctx 6144/' > ./Llama-augment-tmp.Modelfile
+	sleep 9
+	ollama create Llama-augment --file ./Llama-augment-tmp.Modelfile
+	sleep 9
+
+	cd "$functionEntryPWD"
+	_stop
+}
+_ollama_set-augment-normal() {
+	"$scriptAbsoluteLocation" _ollama_set_sequence-augment-normal "$@"
+}
+# Temporarily reduce RAM/VRAM requirement for constrained CI .
+_ollama_set_sequence-augment-lowRAM() {
+	local functionEntryPWD
+	functionEntryPWD="$PWD"
+
+	_start
+	cd "$safeTmp"
+
+	ollama show Llama-augment --modelfile | sed 's/PARAMETER num_ctx [0-9]*/PARAMETER num_ctx 512/' > ./Llama-augment-tmp.Modelfile
+	sleep 9
+	ollama create Llama-augment --file ./Llama-augment-tmp.Modelfile
+	sleep 9
+
+
+	cd "$functionEntryPWD"
+	_stop
+}
+_ollama_set-augment-lowRAM() {
+	"$scriptAbsoluteLocation" _ollama_set_sequence-augment-lowRAM "$@"
+}
+
+
 
 _ollama_run_augment() {
 	# NOTICE: ATTENTION: Additional documenation about the 'augment' model may be present at comments around the '_setup_ollama_model_augment_sequence' and similar functions .

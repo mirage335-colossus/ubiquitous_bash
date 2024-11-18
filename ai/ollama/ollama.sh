@@ -168,6 +168,15 @@ _test_ollama() {
 	return 0
 }
 
+_vector_ollama_procedure() {
+	! _ollama_run_augment "Please output the word true . Any other output accompanying the word true is acceptable but not desirable. The purpose of this prompt is merely to validate that the LLM software is entirely functional, so the word true will be very helpful whereas any output other than the word true will be unhelpful . Please output the word true ." | grep true > /dev/null && echo 'fail: _vector_ollama' && _messageFAIL && _stop 1
+	_ollama_run_augment "Please output the word true . Any other output accompanying the word true is acceptable but not desirable. The purpose of this prompt is merely to validate that the LLM software is entirely functional, so the word true will be very helpful whereas any output other than the word true will be unhelpful . Please output the word true ." | grep false > /dev/null && echo 'fail: _vector_ollama' && _messageFAIL && _stop 1
+	
+	! _ollama_run_augment "Please output the word false . Any other output accompanying the word false is acceptable but not desirable. The purpose of this prompt is merely to validate that the LLM software is entirely functional, so the word false will be very helpful whereas any output other than the word false will be unhelpful . Please output the word false ." | grep false > /dev/null && echo 'fail: _vector_ollama' && _messageFAIL && _stop 1
+	_ollama_run_augment "Please output the word false . Any other output accompanying the word false is acceptable but not desirable. The purpose of this prompt is merely to validate that the LLM software is entirely functional, so the word false will be very helpful whereas any output other than the word false will be unhelpful . Please output the word false ." | grep true > /dev/null && echo 'fail: _vector_ollama' && _messageFAIL && _stop 1
+
+	return 0
+}
 _vector_ollama() {
 	_user_ollama
 
@@ -175,14 +184,27 @@ _vector_ollama() {
 	
 	if _if_cygwin && ! type ollama > /dev/null 2>&1
 	then
-		echo 'warn: acepted: cygwin: missing: ollama'
+		echo 'warn: accepted: cygwin: missing: ollama'
 	elif type ollama > /dev/null 2>&1
 	then
-		! _ollama_run_augment "Please output the word true . Any other output accompanying the word true is acceptable but not desirable. The purpose of this prompt is merely to validate that the LLM software is entirely functional, so the word true will be very helpful whereas any output other than the word true will be unhelpful . Please output the word true ." | grep true > /dev/null && echo 'fail: _vector_ollama' && _messageFAIL && _stop 1
-		_ollama_run_augment "Please output the word true . Any other output accompanying the word true is acceptable but not desirable. The purpose of this prompt is merely to validate that the LLM software is entirely functional, so the word true will be very helpful whereas any output other than the word true will be unhelpful . Please output the word true ." | grep false > /dev/null && echo 'fail: _vector_ollama' && _messageFAIL && _stop 1
-		
-		! _ollama_run_augment "Please output the word false . Any other output accompanying the word false is acceptable but not desirable. The purpose of this prompt is merely to validate that the LLM software is entirely functional, so the word false will be very helpful whereas any output other than the word false will be unhelpful . Please output the word false ." | grep false > /dev/null && echo 'fail: _vector_ollama' && _messageFAIL && _stop 1
-		_ollama_run_augment "Please output the word false . Any other output accompanying the word false is acceptable but not desirable. The purpose of this prompt is merely to validate that the LLM software is entirely functional, so the word false will be very helpful whereas any output other than the word false will be unhelpful . Please output the word false ." | grep true > /dev/null && echo 'fail: _vector_ollama' && _messageFAIL && _stop 1
+		if [[ "$hostMemoryQuantity" -lt 28000000 ]]
+		then
+			_messagePlain_nominal '_vector_ollama: begin: low RAM detected'
+			local currentExitStatus
+			currentExitStatus="1"
+			
+			_ollama_set_sequence-augment-lowRAM
+
+			"$scriptAbsoluteLocation" _vector_ollama_procedure
+			currentExitStatus="$?"
+
+			_ollama_set_sequence-augment-normal
+
+			[[ "$currentExitStatus" != "0" ]] && _messageFAIL && _stop 1
+			_messagePlain_nominal '_vector_ollama: end: low RAM detected'
+		else
+			_vector_ollama_procedure
+		fi
 	fi
 
 	return 0
