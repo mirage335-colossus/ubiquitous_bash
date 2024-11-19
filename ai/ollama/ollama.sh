@@ -135,6 +135,24 @@ PARAMETER num_ctx 6144' > Llama-augment.Modelfile
 	cd "$functionEntryPWD"
 	_stop
 }
+_setup_ollama_sequence() {
+	local functionEntryPWD
+	functionEntryPWD="$PWD"
+
+	_start
+	
+	echo 'setup: ollama: https://ollama.com/install.sh'
+
+	local currentExitStatus="1"
+	
+	# DANGER: This upstream script, as with many, has been known to use 'rm' recursively without the safety checks of '_safeRMR' .
+	# CAUTION: This upstream script may not catch error conditions upon failure, which may increase the size of dist/OS images built after such failures.
+	curl -fsSL https://ollama.com/install.sh | sh
+	currentExitStatus="$?"
+
+	cd "$functionEntryPWD"
+	_stop "$currentExitStatus"
+}
 _setup_ollama() {
 	#_wantGetDep sudo
 	#_mustGetSudo
@@ -142,11 +160,7 @@ _setup_ollama() {
 	
 	if ! _if_cygwin
 	then
-		echo 'setup: ollama: https://ollama.com/install.sh'
-		
-		# DANGER: This upstream script, as with many, has been known to use 'rm' recursively without the safety checks of '_safeRMR' .
-		# CAUTION: This upstream script may not catch error conditions upon failure, which may increase the size of dist/OS images built after such failures.
-		curl -fsSL https://ollama.com/install.sh | sh
+		"$scriptAbsoluteLocation" _setup_ollama_sequence "$@"
 	fi
 	
 	type -p ollama > /dev/null 2>&1 && "$scriptAbsoluteLocation" _setup_ollama_model_augment_sequence
