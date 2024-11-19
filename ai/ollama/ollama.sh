@@ -142,6 +142,8 @@ _setup_ollama() {
 	
 	if ! _if_cygwin
 	then
+		echo 'setup: ollama: https://ollama.com/install.sh'
+		
 		# DANGER: This upstream script, as with many, has been known to use 'rm' recursively without the safety checks of '_safeRMR' .
 		# CAUTION: This upstream script may not catch error conditions upon failure, which may increase the size of dist/OS images built after such failures.
 		curl -fsSL https://ollama.com/install.sh | sh
