@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='3908975570'
+export ub_setScriptChecksum_contents='3370894752'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -15229,7 +15229,7 @@ PARAMETER num_ctx 6144' > Llama-augment.Modelfile
 	rm -f llama-3.1-8b-instruct-abliterated.Q4_K_M.gguf
 	rm -f Llama-augment.Modelfile
 	
-	
+	_ollama_stop_augment
 	
 	
 	cd "$functionEntryPWD"
@@ -15306,6 +15306,8 @@ _vector_ollama() {
 			_vector_ollama_procedure
 		fi
 	fi
+
+	_ollama_stop_augment
 
 	return 0
 }
@@ -15407,6 +15409,9 @@ _ollama_set-augment-lowRAM() {
 }
 
 
+_ollama_stop_augment() {
+	ollama stop Llama-augment
+}
 
 _ollama_run_augment() {
 	# NOTICE: ATTENTION: Additional documenation about the 'augment' model may be present at comments around the '_setup_ollama_model_augment_sequence' and similar functions .

@@ -55,6 +55,9 @@ _ollama_set-augment-lowRAM() {
 }
 
 
+_ollama_stop_augment() {
+	ollama stop Llama-augment
+}
 
 _ollama_run_augment() {
 	# NOTICE: ATTENTION: Additional documenation about the 'augment' model may be present at comments around the '_setup_ollama_model_augment_sequence' and similar functions .

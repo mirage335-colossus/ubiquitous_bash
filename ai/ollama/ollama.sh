@@ -129,7 +129,7 @@ PARAMETER num_ctx 6144' > Llama-augment.Modelfile
 	rm -f llama-3.1-8b-instruct-abliterated.Q4_K_M.gguf
 	rm -f Llama-augment.Modelfile
 	
-	
+	_ollama_stop_augment
 	
 	
 	cd "$functionEntryPWD"
@@ -206,6 +206,8 @@ _vector_ollama() {
 			_vector_ollama_procedure
 		fi
 	fi
+
+	_ollama_stop_augment
 
 	return 0
 }
