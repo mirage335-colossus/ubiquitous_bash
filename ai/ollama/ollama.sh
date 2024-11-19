@@ -147,14 +147,14 @@ _setup_ollama() {
 		curl -fsSL https://ollama.com/install.sh | sh
 	fi
 	
-	type ollama > /dev/null 2>&1 && "$scriptAbsoluteLocation" _setup_ollama_model_augment_sequence
+	type -p ollama > /dev/null 2>&1 && "$scriptAbsoluteLocation" _setup_ollama_model_augment_sequence
 }
 
 _test_ollama() {
 	#_mustGetSudo
 	#export currentUser_ollama=$(_user_ollama)
 
-	if ! type ollama > /dev/null 2>&1
+	if ! type -p ollama > /dev/null 2>&1
 	then
 		_setup_ollama
 	fi
@@ -162,9 +162,9 @@ _test_ollama() {
 	
 	if ! _if_cygwin
 	then
-		! type ollama > /dev/null 2>&1 && _messageFAIL && _stop 1
+		! type -p ollama > /dev/null 2>&1 && _messageFAIL && _stop 1
 	else
-		! type ollama > /dev/null 2>&1 && echo 'warn: acepted: cygwin: missing: ollama'
+		! type -p ollama > /dev/null 2>&1 && echo 'warn: acepted: cygwin: missing: ollama'
 		# Accepted. Do NOT return with error status (ie. do NOT 'return 1') .
 	fi
 	
@@ -186,10 +186,10 @@ _vector_ollama() {
 
 	_service_ollama
 	
-	if _if_cygwin && ! type ollama > /dev/null 2>&1
+	if _if_cygwin && ! type -p ollama > /dev/null 2>&1
 	then
 		echo 'warn: accepted: cygwin: missing: ollama'
-	elif type ollama > /dev/null 2>&1
+	elif type -p ollama > /dev/null 2>&1
 	then
 		if [[ "$hostMemoryQuantity" -lt 28000000 ]]
 		then

@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='169142619'
+export ub_setScriptChecksum_contents='1411377182'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -22899,14 +22899,14 @@ _setup_ollama() {
 		curl -fsSL https://ollama.com/install.sh | sh
 	fi
 	
-	type ollama > /dev/null 2>&1 && "$scriptAbsoluteLocation" _setup_ollama_model_augment_sequence
+	type -p ollama > /dev/null 2>&1 && "$scriptAbsoluteLocation" _setup_ollama_model_augment_sequence
 }
 
 _test_ollama() {
 	#_mustGetSudo
 	#export currentUser_ollama=$(_user_ollama)
 
-	if ! type ollama > /dev/null 2>&1
+	if ! type -p ollama > /dev/null 2>&1
 	then
 		_setup_ollama
 	fi
@@ -22914,9 +22914,9 @@ _test_ollama() {
 	
 	if ! _if_cygwin
 	then
-		! type ollama > /dev/null 2>&1 && _messageFAIL && _stop 1
+		! type -p ollama > /dev/null 2>&1 && _messageFAIL && _stop 1
 	else
-		! type ollama > /dev/null 2>&1 && echo 'warn: acepted: cygwin: missing: ollama'
+		! type -p ollama > /dev/null 2>&1 && echo 'warn: acepted: cygwin: missing: ollama'
 		# Accepted. Do NOT return with error status (ie. do NOT 'return 1') .
 	fi
 	
@@ -22938,10 +22938,10 @@ _vector_ollama() {
 
 	_service_ollama
 	
-	if _if_cygwin && ! type ollama > /dev/null 2>&1
+	if _if_cygwin && ! type -p ollama > /dev/null 2>&1
 	then
 		echo 'warn: accepted: cygwin: missing: ollama'
-	elif type ollama > /dev/null 2>&1
+	elif type -p ollama > /dev/null 2>&1
 	then
 		if [[ "$hostMemoryQuantity" -lt 28000000 ]]
 		then
