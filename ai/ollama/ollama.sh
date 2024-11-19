@@ -136,7 +136,9 @@ PARAMETER num_ctx 6144' > Llama-augment.Modelfile
 	_stop
 }
 _setup_ollama() {
-	_user_ollama
+	#_wantGetDep sudo
+	#_mustGetSudo
+	#export currentUser_ollama=$(_user_ollama)
 	
 	if ! _if_cygwin
 	then
@@ -149,7 +151,8 @@ _setup_ollama() {
 }
 
 _test_ollama() {
-	_user_ollama
+	#_mustGetSudo
+	#export currentUser_ollama=$(_user_ollama)
 
 	if ! type ollama > /dev/null 2>&1
 	then
@@ -178,7 +181,8 @@ _vector_ollama_procedure() {
 	return 0
 }
 _vector_ollama() {
-	_user_ollama
+	#_mustGetSudo
+	#export currentUser_ollama=$(_user_ollama)
 
 	_service_ollama
 	
@@ -217,11 +221,14 @@ _vector_ollama() {
 
 
 _user_ollama() {
-	_mustGetSudo
-	local currentUser
-	[[ "$USER" != "root" ]] && currentUser="$USER"
-	[[ "$currentUser_researchEngine" != "" ]] && currentUser="$currentUser_researchEngine"
-	[[ "$currentUser" == "" ]] && currentUser="user"
+	#_mustGetSudo
+	local currentUser_temp
+	[[ "$currentUser_researchEngine" != "" ]] && currentUser_temp="$currentUser_researchEngine"
+	[[ "$currentUser_temp" == "" ]] && currentUser_temp="$currentUser"
+	[[ "$currentUser_temp" == "" ]] && [[ "$USER" != "root" ]] && currentUser_temp="$USER"
+	[[ "$currentUser_temp" == "" ]] && currentUser_temp="user"
+
+	echo "$currentUser_temp"
 	return 0
 }
 
