@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='3348144394'
+export ub_setScriptChecksum_contents='4218981381'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -12393,12 +12393,16 @@ _get_from_nix-user() {
 	_getMost_backend sudo -n -u "$currentUser" /bin/bash -l -c 'nix-channel --update'
 
 	
+	# CAUTION: May correctly fail, due to marked insecure, due to CVE-2024-6775 , or similar. Do NOT force.
 	#_custom_installDeb /root/core/installations/Wire.deb
 	_getMost_backend sudo -n -u "$currentUser" /bin/bash -l -c 'nix-env -iA nixpkgs.wire-desktop'
 	_getMost_backend sudo -n -u "$currentUser" /bin/bash -l -c 'xdg-desktop-menu install "$HOME"/.nix-profile/share/applications/wire-desktop.desktop'
+	
+
 	_getMost_backend sudo -n -u "$currentUser" cp -a /home/"$currentUser"/.nix-profile/share/icons /home/"$currentUser"/.local/share/
 	
 	sleep 3
+
 	
 	#nix-env --uninstall geda
 	#export NIXPKGS_ALLOW_INSECURE=1
@@ -22904,6 +22908,10 @@ _setup_ollama_sequence() {
 	curl -fsSL https://ollama.com/install.sh | sh
 	currentExitStatus="$?"
 
+	# Apparently necessary to enable the service, due to systemctl not being usefully available within ChRoot.
+	sudo -n mkdir -p /etc/systemd/system/default.target.wants/
+	sudo -n ln -sf /etc/systemd/system/ollama.service /etc/systemd/system/default.target.wants/ollama.service
+
 	cd "$functionEntryPWD"
 	_stop "$currentExitStatus"
 }
@@ -23010,7 +23018,7 @@ _user_ollama() {
 _service_ollama() {
 	if ! wget --timeout=1 --tries=3 127.0.0.1:11434 > /dev/null -q -O - > /dev/null
 	then
-		ollama serve &
+		sudo -n ollama serve &
 		while ! wget --timeout=1 --tries=3 127.0.0.1:11434 > /dev/null -q -O - > /dev/null
 		do
 			echo "wait: ollama: service"

@@ -152,6 +152,10 @@ _setup_ollama_sequence() {
 	curl -fsSL https://ollama.com/install.sh | sh
 	currentExitStatus="$?"
 
+	# Apparently necessary to enable the service, due to systemctl not being usefully available within ChRoot.
+	sudo -n mkdir -p /etc/systemd/system/default.target.wants/
+	sudo -n ln -sf /etc/systemd/system/ollama.service /etc/systemd/system/default.target.wants/ollama.service
+
 	cd "$functionEntryPWD"
 	_stop "$currentExitStatus"
 }
@@ -258,7 +262,7 @@ _user_ollama() {
 _service_ollama() {
 	if ! wget --timeout=1 --tries=3 127.0.0.1:11434 > /dev/null -q -O - > /dev/null
 	then
-		ollama serve &
+		sudo -n ollama serve &
 		while ! wget --timeout=1 --tries=3 127.0.0.1:11434 > /dev/null -q -O - > /dev/null
 		do
 			echo "wait: ollama: service"
