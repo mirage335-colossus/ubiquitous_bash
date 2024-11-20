@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='767227923'
+export ub_setScriptChecksum_contents='1369283272'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -15255,6 +15255,7 @@ _setup_ollama_sequence() {
 	# CAUTION: This upstream script may not catch error conditions upon failure, which may increase the size of dist/OS images built after such failures.
 	curl -fsSL https://ollama.com/install.sh | sh
 	currentExitStatus="$?"
+	sleep 3
 
 	# Apparently necessary to enable the service, due to systemctl not being usefully available within ChRoot.
 	sudo -n mkdir -p /etc/systemd/system/default.target.wants/
@@ -15366,7 +15367,7 @@ _user_ollama() {
 _service_ollama() {
 	if ! wget --timeout=1 --tries=3 127.0.0.1:11434 > /dev/null -q -O - > /dev/null
 	then
-		sudo -n ollama serve &
+		sudo -n -u ollama ollama serve &
 		while ! wget --timeout=1 --tries=3 127.0.0.1:11434 > /dev/null -q -O - > /dev/null
 		do
 			echo "wait: ollama: service"

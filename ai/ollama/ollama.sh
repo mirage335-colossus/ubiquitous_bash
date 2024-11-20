@@ -151,6 +151,7 @@ _setup_ollama_sequence() {
 	# CAUTION: This upstream script may not catch error conditions upon failure, which may increase the size of dist/OS images built after such failures.
 	curl -fsSL https://ollama.com/install.sh | sh
 	currentExitStatus="$?"
+	sleep 3
 
 	# Apparently necessary to enable the service, due to systemctl not being usefully available within ChRoot.
 	sudo -n mkdir -p /etc/systemd/system/default.target.wants/
@@ -262,7 +263,7 @@ _user_ollama() {
 _service_ollama() {
 	if ! wget --timeout=1 --tries=3 127.0.0.1:11434 > /dev/null -q -O - > /dev/null
 	then
-		sudo -n ollama serve &
+		sudo -n -u ollama ollama serve &
 		while ! wget --timeout=1 --tries=3 127.0.0.1:11434 > /dev/null -q -O - > /dev/null
 		do
 			echo "wait: ollama: service"
