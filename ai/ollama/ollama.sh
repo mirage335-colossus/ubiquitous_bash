@@ -143,6 +143,8 @@ _setup_ollama_sequence() {
 	
 	echo 'setup: ollama: https://ollama.com/install.sh'
 
+	cd "$safeTmp"
+
 	local currentExitStatus="1"
 	
 	# DANGER: This upstream script, as with many, has been known to use 'rm' recursively without the safety checks of '_safeRMR' .
