@@ -953,9 +953,14 @@ _fetchDep_debianBullseye_sequence() {
 }
 
 _fetchDep_debianBullseye() {
+	# ATTRIBUTION-AI: ChatGPT o1-preview 2024-11-20 .
+	echo 'APT::AutoRemove::RecommendsImportant "true";
+APT::AutoRemove::SuggestsImportant "true";' | sudo -n tee /etc/apt/apt.conf.d/99autoremove-recommends > /dev/null
+
+	
 	# https://askubuntu.com/questions/104899/make-apt-get-or-aptitude-run-with-y-but-not-prompt-for-replacement-of-configu
-	echo 'Dpkg::Options {"--force-confdef"};' | sudo tee /etc/apt/apt.conf.d/50unattended-replaceconfig-ub > /dev/null
-	echo 'Dpkg::Options {"--force-confold"};' | sudo tee -a /etc/apt/apt.conf.d/50unattended-replaceconfig-ub > /dev/null
+	echo 'Dpkg::Options {"--force-confdef"};' | sudo -n tee /etc/apt/apt.conf.d/50unattended-replaceconfig-ub > /dev/null
+	echo 'Dpkg::Options {"--force-confold"};' | sudo -n tee -a /etc/apt/apt.conf.d/50unattended-replaceconfig-ub > /dev/null
 	
 	export DEBIAN_FRONTEND=noninteractive
 	
