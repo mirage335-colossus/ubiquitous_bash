@@ -34,7 +34,7 @@ _cygwin_workaround_dev_stderr() {
         exec 2>&1
     fi
 
-    if [ ! -e /dev/stderr ]
+    if [ ! -e /dev/stderr ] || ! echo x | tee /dev/stderr > /dev/null
     then
         _messagePlain_bad 'fail: missing: /dev/stderr'
         _messageFAIL
