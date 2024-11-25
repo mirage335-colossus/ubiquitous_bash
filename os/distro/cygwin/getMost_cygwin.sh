@@ -2,37 +2,46 @@
 
 # ATTRIBUTION-AI: ChatGPT o1-preview 2024-11-25 .
 _cygwin_workaround_dev_stderr() {
+    # ChatGPT search found this link, which strongly implicates the '| tee' used for logging by build.yml as causing the absence of stderr .
+    # https://cygwin.com/pipermail/cygwin/2017-July/233639.html?utm_source=chatgpt.com
+
+    if [ ! -e /dev/stderr ] || ! echo x | tee /dev/stderr > /dev/null
+    then
+        _messagePlain_warn 'warn: workaround /dev/stderr: exec 2>&1'
+        # ATTRIBUTION-AI: ChatGPT 4o 2024-11-25 .
+        exec 2>&1
+    fi
+    
+    #if [ ! -e /dev/stderr ] || ! echo x | tee /dev/stderr > /dev/null
+    #then
+        #mkdir -p /dev
+        #ln -sf /proc/self/fd/1 /dev/stderr
+    #fi
+
+    # DUBIOUS
+    #if [ ! -e /dev/stderr ] || ! echo x | tee /dev/stderr > /dev/null
+    #then
+        #mkdir -p /dev
+        #ln -sf /proc/self/fd/2 /dev/stderr
+    #fi
+    #if [ ! -e /dev/stderr ] || ! echo x | tee /dev/stderr > /dev/null
+    #then
+        #mkdir -p /dev
+        #ln -sf /dev/fd/2 /dev/stderr
+    #fi
+    #if [ ! -e /dev/stderr ] || ! echo x | tee /dev/stderr > /dev/null
+    #then
+        #mkdir -p /dev
+        #ln -sf /proc/$$/fd/2 /dev/stderr
+    #fi
+
+    
     # Local experiments with a functional Cygwin/MSW environment show creating /dev/stderr_experiment this way is apparently not usable.
     #if [ ! -e /dev/stderr ]; then
         #mkdir -p /dev
         #mknod /dev/stderr c 1 3
         #chmod 622 /dev/stderr
     #fi
-
-    # None of these attempts were successful.
-    #if [ ! -e /dev/stderr ]; then
-        #mkdir -p /dev
-        #ln -sf /proc/self/fd/2 /dev/stderr
-    #fi
-    #if [ ! -e /dev/stderr ]; then
-        #mkdir -p /dev
-        #ln -sf /dev/fd/2 /dev/stderr
-    #fi
-    #if [ ! -e /dev/stderr ]; then
-        #mkdir -p /dev
-        #ln -sf /dev/fd/2 /dev/stderr
-    #fi
-
-
-    # ChatGPT search found this link, which strongly implicates the '| tee' used for logging by build.yml as causing the absence of stderr .
-    # https://cygwin.com/pipermail/cygwin/2017-July/233639.html?utm_source=chatgpt.com
-
-    if [ ! -e /dev/stderr ]
-    then
-        _messagePlain_warn 'warn: workaround /dev/stderr: exec 2>&1'
-        # ATTRIBUTION-AI: ChatGPT 4o 2024-11-25 .
-        exec 2>&1
-    fi
 
     if [ ! -e /dev/stderr ] || ! echo x | tee /dev/stderr > /dev/null
     then
