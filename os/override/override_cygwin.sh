@@ -1252,6 +1252,10 @@ _custom_ubcp_prog() {
 	true
 }
 _custom_ubcp() {
+	_messageNormal '_custom_ubcp: apt-cyg'
+	_messagePlain_probe_cmd apt-cyg install ImageMagick
+	_messagePlain_probe_cmd apt-cyg install ffmpeg
+	
 	pip3 install piexif
 
 	_custom_ubcp_prog "$@"
