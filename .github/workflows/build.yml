@@ -154,12 +154,30 @@ jobs:
         run: |
           #./_bin _custom_splice_opensslConfig | tee /_custom_splice_opensslConfig.log
           ./_bin _bin /cygdrive/c/core/infrastructure/ubiquitous_bash/ubiquitous_bash.sh _custom_splice_opensslConfig | tee /_custom_splice_opensslConfig.log
+      - name: _getMost_cygwin
+        shell: pwsh
+        timeout-minutes: 240
+        run: |
+          #./_bin _getMost_cygwin | tee /_getMost_cygwin.log
+          ./_bin _bin /cygdrive/c/core/infrastructure/ubiquitous_bash/ubiquitous_bash.sh _getMost_cygwin | tee /_getMost_cygwin.log
       - name: _custom_ubcp
         shell: pwsh
         timeout-minutes: 240
         run: |
           #./_bin _custom_ubcp | tee /_custom_ubcp.log
           ./_bin _bin /cygdrive/c/core/infrastructure/ubiquitous_bash/ubiquitous_bash.sh _custom_ubcp | tee /_custom_ubcp.log
+      - name: _getMost_cygwin
+        shell: pwsh
+        timeout-minutes: 240
+        run: |
+          #./_bin _getMost_cygwin | tee /_getMost_cygwin.log
+          ./_bin _bin /cygdrive/c/core/infrastructure/ubiquitous_bash/ubiquitous_bash.sh _getMost_cygwin | tee /_getMost_cygwin.log
+      - name: _getMost_cygwin-priority
+        shell: pwsh
+        timeout-minutes: 240
+        run: |
+          #./_bin _getMost_cygwin-priority | tee /_getMost_cygwin-priority.log
+          ./_bin _bin /cygdrive/c/core/infrastructure/ubiquitous_bash/ubiquitous_bash.sh _getMost_cygwin-priority | tee /_getMost_cygwin-priority.log
       - name: release! _setupUbiquitous.log
         uses: softprops/action-gh-release@v1
         with:

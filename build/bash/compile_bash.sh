@@ -636,6 +636,10 @@ _compile_bash_utilities() {
 	
 	
 	
+	[[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "os/distro/cygwin"/getMost_cygwin.sh )
+
+
+	
 	[[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "os/unix/systemd"/here_systemd.sh )
 	[[ "$enUb_notLean" == "true" ]] && includeScriptList+=( "os/unix/systemd"/hook_systemd.sh )
 	
