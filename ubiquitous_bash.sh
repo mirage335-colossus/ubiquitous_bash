@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='3214266282'
+export ub_setScriptChecksum_contents='804300999'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -13053,10 +13053,44 @@ _nix_update() {
 
 # ATTRIBUTION-AI: ChatGPT o1-preview 2024-11-25 .
 _cygwin_workaround_dev_stderr() {
-    if [ ! -e /dev/stderr ]; then
-        mkdir -p /dev
-        ln -s /proc/self/fd/2 /dev/stderr
+    # Local experiments with a functional Cygwin/MSW environment show creating /dev/stderr_experiment this way is apparently not usable.
+    #if [ ! -e /dev/stderr ]; then
+        #mkdir -p /dev
+        #mknod /dev/stderr c 1 3
+        #chmod 622 /dev/stderr
+    #fi
+
+    # None of these attempts were successful.
+    #if [ ! -e /dev/stderr ]; then
+        #mkdir -p /dev
+        #ln -sf /proc/self/fd/2 /dev/stderr
+    #fi
+    #if [ ! -e /dev/stderr ]; then
+        #mkdir -p /dev
+        #ln -sf /dev/fd/2 /dev/stderr
+    #fi
+    #if [ ! -e /dev/stderr ]; then
+        #mkdir -p /dev
+        #ln -sf /dev/fd/2 /dev/stderr
+    #fi
+
+
+    # ChatGPT search found this link, which strongly implicates the '| tee' used for logging by build.yml as causing the absence of stderr .
+    # https://cygwin.com/pipermail/cygwin/2017-July/233639.html?utm_source=chatgpt.com
+
+    if [ ! -e /dev/stderr ]
+    then
+        _messagePlain_warn 'warn: workaround /dev/stderr: exec 2>&1'
+        # ATTRIBUTION-AI: ChatGPT 4o 2024-11-25 .
+        exec 2>&1
     fi
+
+    if [ ! -e /dev/stderr ]
+    then
+        _messagePlain_bad 'fail: missing: /dev/stderr'
+        _messageFAIL
+    fi
+
     return 0
 }
 
@@ -13692,7 +13726,7 @@ CZXWXcRMTo8EmM8i4d
     _stop
 }
 _getMost_cygwin() {
-    "$scriptAbsoluteLocation" _getMost_cygwin_sequence "$@"
+    "$scriptAbsoluteLocation" _getMost_cygwin_sequence "$@" 2>&1
 }
 
 
@@ -13700,7 +13734,7 @@ _getMost_cygwin() {
 _custom_ubcp_prog() {
 	true
 }
-_custom_ubcp() {
+_custom_ubcp_sequence() {
 	_cygwin_workaround_dev_stderr
     
     _messageNormal '_custom_ubcp: apt-cyg'
@@ -13715,7 +13749,9 @@ _custom_ubcp() {
     _cygwin_workaround_dev_stderr
 	_custom_ubcp_prog "$@"
 }
-
+_custom_ubcp() {
+    "$scriptAbsoluteLocation" _custom_ubcp "$@" 2>&1
+}
 
 
 #https://unix.stackexchange.com/questions/39226/how-to-run-a-script-with-systemd-right-before-shutdown
