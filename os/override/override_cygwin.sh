@@ -778,6 +778,9 @@ _report_setup_ubcp() {
 	[[ "$1" == "/" ]] && currentCygdriveC_equivalent=$(echo "$PWD" | sed 's/\(\/cygdrive\/[a-zA-Z]*\).*/\1/')
 
 	find /bin/ /usr/bin/ /sbin/ /usr/sbin/ | tee "$currentCygdriveC_equivalent"/core/infrastructure/ubcp-binReport > /dev/null
+
+
+	apt-cyg show | cut -f1 -d\ | tail -n +2 | tee "$currentCygdriveC_equivalent"/core/infrastructure/ubcp-packageReport > /dev/null
 }
 
 
@@ -1256,7 +1259,8 @@ _custom_ubcp() {
 	_messagePlain_probe_cmd apt-cyg install ImageMagick
 	_messagePlain_probe_cmd apt-cyg install ffmpeg
 	
-	pip3 install piexif
+	_messageNormal '_custom_ubcp: pip3'
+	_messagePlain_probe_cmd pip3 install piexif
 
 	_custom_ubcp_prog "$@"
 }

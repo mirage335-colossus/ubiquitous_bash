@@ -292,6 +292,7 @@ jobs:
             /package_ubcp-core.log
             /package_ubcp-core.7z
             /core/infrastructure/ubcp-binReport
+            /core/infrastructure/ubcp-packageReport
       - name: rm - _MSWpackage package_ubcp-core
         shell: pwsh
         timeout-minutes: 240
@@ -359,7 +360,7 @@ jobs:
         shell: pwsh
 
 
-  analysis_ubcp:
+  analysis_ubcp_missingBinaries:
     needs: [build_ubcp]
     runs-on: ubuntu-latest
     steps:
@@ -395,6 +396,42 @@ jobs:
           files: |
             ./missing-ubcp-binReport
 
+
+  analysis_ubcp_missingPackages:
+    needs: [build_ubcp]
+    runs-on: ubuntu-latest
+    steps:
+      - name: analysis! missing-binaries
+        shell: bash
+        run: |
+          # Get the list of releases
+          RELEASES=$(curl -s -H "Authorization: token $GH_TOKEN" https://api.github.com/repos/mirage335-colossus/ubiquitous_bash/releases)
+          
+          # Download packageReport file for the current release
+          curl -s -H "Authorization: token $GH_TOKEN" -L -o "ubcp-packageReport-$currentReleaseTag" "https://github.com/mirage335-colossus/ubiquitous_bash/releases/download/$currentReleaseTag/ubcp-packageReport"
+
+          # Loop through each release
+          for RELEASE in $(echo "$RELEASES" | jq -r '.[].tag_name' | sort --reverse); do
+            # Download the packageReport file for this release
+            curl -s -H "Authorization: token $GH_TOKEN" -L -o "ubcp-packageReport-$RELEASE" "https://github.com/mirage335-colossus/ubiquitous_bash/releases/download/$RELEASE/ubcp-packageReport"
+
+            # Compare the list of binaries in this release to the current release
+            if [ "$RELEASE" != "$currentReleaseTag" ]; then
+              echo | tee -a ./missing-ubcp-packageReport
+              echo "Binaries (filesystem) in $RELEASE but not in currentRelease $currentReleaseTag:" | tee -a ./missing-ubcp-packageReport
+              comm -23 <(sort "ubcp-packageReport-$RELEASE") <(sort "ubcp-packageReport-$currentReleaseTag") | tee -a ./missing-ubcp-packageReport
+            fi
+          done
+        env:
+          currentReleaseTag: build-${{ github.run_id }}-${{ github.run_attempt }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: release! missing-ubcp-packageReport
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: build-${{ github.run_id }}-${{ github.run_attempt }}
+          name: build
+          files: |
+            ./missing-ubcp-packageReport
 
 
 
