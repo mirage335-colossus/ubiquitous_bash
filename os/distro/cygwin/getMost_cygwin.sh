@@ -1,17 +1,31 @@
 
 
+# ATTRIBUTION-AI: ChatGPT o1-preview 2024-11-25 .
+_cygwin_workaround_dev_stderr() {
+    if [ ! -e /dev/stderr ]; then
+        mkdir -p /dev
+        ln -s /proc/self/fd/2 /dev/stderr
+    fi
+    return 0
+}
+
 
 
 
 _getMost_cygwin-priority() {
-    _messageNormal "_getMost_cygwin"
-    
-    apt-cyg install bash-completion,bc,bzip,coreutils,curl,dos2unix,expect,git,git-svn,gnupg,inetutils,jq,lz4,mc,nc,openssh,openssl,perl,psmisc,python37,pv,rsync,ssh-pageant,screen,subversion,unzip,vim,wget,zip,zstd,tigervnc-server,flex,bison,libncurses-devel,par2,python3-pip,gnupg2
+    _cygwin_workaround_dev_stderr
 
-    apt-cyg install bash-completion,bc,bzip,coreutils,curl,dos2unix,expect,git,git-svn,gnupg,inetutils,jq,lz4,mc,nc,openssh,openssl,perl,psmisc,python37,pv,rsync,ssh-pageant,screen,subversion,unzip,vim,wget,zip,zstd,procps-ng,awk,socat,aria2,jq,gnupg2,php,php-PEAR,php-devel,gnuplot-base,gnuplot-doc,gnuplot-qt5,gnuplot-wx,gnuplot-X11,libqalculate-common,libqalculate-devel,libqalculate5,cantor-backend-qalculate,octave,octave-devel,octave-parallel,octave-linear-algebra,octave-general,octave-geometry,octave-strings,octave-financial,octave-communications,octave-control,mkisofs,genisoimage,dbus,dbus-x11,tigervnc-server,flex,bison,libncurses-devel,p7zip,par2,python3-pip,gnupg2
+    _messageNormal "_getMost_cygwin_priority: apt-cyg install"
+    
+    #nc,
+
+    apt-cyg install bash-completion,bc,bzip,coreutils,curl,dos2unix,expect,git,git-svn,gnupg,inetutils,jq,lz4,mc,nc,openssh,openssl,perl,psmisc,python37,pv,rsync,ssh-pageant,screen,subversion,unzip,vim,wget,zip,zstd,tigervnc-server,flex,bison,libncurses-devel,par2,python3-pip,gnupg2 2>&1
+
+    apt-cyg install bash-completion,bc,bzip,coreutils,curl,dos2unix,expect,git,git-svn,gnupg,inetutils,jq,lz4,mc,nc,openssh,openssl,perl,psmisc,python37,pv,rsync,ssh-pageant,screen,subversion,unzip,vim,wget,zip,zstd,procps-ng,awk,socat,aria2,jq,gnupg2,php,php-PEAR,php-devel,gnuplot-base,gnuplot-doc,gnuplot-qt5,gnuplot-wx,gnuplot-X11,libqalculate-common,libqalculate-devel,libqalculate5,cantor-backend-qalculate,octave,octave-devel,octave-parallel,octave-linear-algebra,octave-general,octave-geometry,octave-strings,octave-financial,octave-communications,octave-control,mkisofs,genisoimage,dbus,dbus-x11,tigervnc-server,flex,bison,libncurses-devel,p7zip,par2,python3-pip,gnupg2 2>&1
 }
 
 _getMost_cygwin_sequence() {
+    _cygwin_workaround_dev_stderr
 
     _start
 
@@ -373,9 +387,9 @@ libpotrace0
 libptexenc1
 #libpulse-simple0
 #libpulse0
-#libqalculate-common
-#libqalculate-devel
-#libqalculate5
+libqalculate-common
+libqalculate-devel
+libqalculate5
 #libqhull_8
 #libqrupdate0
 #libqscintilla2_qt5-common
@@ -519,7 +533,7 @@ perl
 #perl_autorebase
 perl_base
 php
-#php-PEAR
+php-PEAR
 php-bz2
 php-devel
 php-zlib
@@ -611,8 +625,9 @@ zstd
 CZXWXcRMTo8EmM8i4d
 
     _messageNormal "_getMost_cygwin: todo"
+    # ATTRIBUTION-AI: ChatGPT o1-preview 2024-11-25 .
     grep -F -x -v -f "$safeTmp/cygwin_package_list_installed" "$safeTmp/cygwin_package_list_desired" | tee "$safeTmp/cygwin_package_list_todo"
-    
+
 
     local currentLine
     cat "$safeTmp/cygwin_package_list_todo" | while read currentLine
@@ -635,7 +650,9 @@ _custom_ubcp_prog() {
 	true
 }
 _custom_ubcp() {
-	_messageNormal '_custom_ubcp: apt-cyg'
+	_cygwin_workaround_dev_stderr
+    
+    _messageNormal '_custom_ubcp: apt-cyg'
 	_messagePlain_probe apt-cyg install ImageMagick
     apt-cyg install ImageMagick 2>&1
 	#_messagePlain_probe_cmd apt-cyg install ffmpeg
@@ -644,6 +661,7 @@ _custom_ubcp() {
 	_messagePlain_probe pip3 install piexif
     pip3 install piexif 2>&1
 
+    _cygwin_workaround_dev_stderr
 	_custom_ubcp_prog "$@"
 }
 
