@@ -1248,9 +1248,14 @@ _package-cygwin() {
 
 
 
+_custom_ubcp_prog() {
+	true
+}
+_custom_ubcp() {
+	pip3 install piexif
 
-
-
+	_custom_ubcp_prog "$@"
+}
 
 
 
