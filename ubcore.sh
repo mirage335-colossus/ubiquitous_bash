@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='1271769100'
+export ub_setScriptChecksum_contents='1872766453'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -12345,13 +12345,14 @@ _getMost_cygwin-priority() {
 }
 
 _getMost_cygwin_sequence() {
-    _messageNormal "_getMost_cygwin"
 
     _start
 
+    _messageNormal "_getMost_cygwin: list installed"
     apt-cyg show | cut -f1 -d\ | tail -n +2 | tee "$safeTmp"/cygwin_package_list_installed
 
-    cat << 'CZXWXcRMTo8EmM8i4d' | grep -v | tee "$safeTmp"/cygwin_package_list_desired
+    _messageNormal "_getMost_cygwin: list desired"
+    cat << 'CZXWXcRMTo8EmM8i4d' | grep -v '^#' | tee "$safeTmp"/cygwin_package_list_desired
 #_autorebase
 #adwaita-icon-theme
 #alternatives
@@ -12942,16 +12943,16 @@ zlib0
 zstd
 CZXWXcRMTo8EmM8i4d
 
-
-    grep -F -x -v -f "$safeTmp/cygwin_package_list_installed" "$safeTmp/cygwin_package_list_desired" > "$safeTmp/cygwin_package_list_todo"
-
+    _messageNormal "_getMost_cygwin: todo"
+    grep -F -x -v -f "$safeTmp/cygwin_package_list_installed" "$safeTmp/cygwin_package_list_desired" | tee "$safeTmp/cygwin_package_list_todo"
+    
 
     local currentLine
     cat "$safeTmp/cygwin_package_list_todo" | while read currentLine
     do
         #echo "$currentLine"
         _messagePlain_probe apt-cyg install "$currentLine"
-        apt-cyg install "$currentLine"
+        apt-cyg install "$currentLine" 2>&1
     done
 
 
@@ -12968,11 +12969,13 @@ _custom_ubcp_prog() {
 }
 _custom_ubcp() {
 	_messageNormal '_custom_ubcp: apt-cyg'
-	_messagePlain_probe_cmd apt-cyg install ImageMagick
+	_messagePlain_probe apt-cyg install ImageMagick
+    apt-cyg install ImageMagick 2>&1
 	#_messagePlain_probe_cmd apt-cyg install ffmpeg
 	
 	_messageNormal '_custom_ubcp: pip3'
-	_messagePlain_probe_cmd pip3 install piexif
+	_messagePlain_probe pip3 install piexif
+    pip3 install piexif 2>&1
 
 	_custom_ubcp_prog "$@"
 }
