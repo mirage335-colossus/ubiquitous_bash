@@ -289,6 +289,8 @@ _getMost_debian11_install() {
 	fi
 	
 	_getMost_backend_aptGetInstall git
+	
+	_getMost_backend_aptGetInstall git-lfs
 
 	_getMost_backend_aptGetInstall bup
 	
@@ -379,6 +381,8 @@ _getMost_debian11_install() {
 	_getMost_backend_aptGetInstall aria2
 	_getMost_backend_aptGetInstall unionfs-fuse
 	_getMost_backend_aptGetInstall samba
+	
+	_getMost_backend_aptGetInstall dia
 	
 	_getMost_backend_aptGetInstall libcups2-dev
 
@@ -968,6 +972,12 @@ _getMost_debian11_install() {
 	_getMost_backend_aptGetInstall fldigi
 	_getMost_backend_aptGetInstall flamp
 	_getMost_backend_aptGetInstall psk31lx
+
+
+	_getMost_backend_aptGetInstall zip
+	_getMost_backend_aptGetInstall unzip
+	
+	_getMost_backend_aptGetInstall par2
 	
 	
 	_getMost_backend apt-get remove --autoremove -y plasma-discover
@@ -1005,6 +1015,19 @@ _getMost_debian11_install() {
 	
 	
 	_getMost_backend_aptGetInstall cloud-guest-utils
+
+
+
+
+	
+	
+	_getMost_backend_aptGetInstall python3-piexif
+	
+
+	_getMost_backend_aptGetInstall python3-torch
+	_getMost_backend_aptGetInstall python3-torchaudio
+	_getMost_backend_aptGetInstall python3-torchtext
+	_getMost_backend_aptGetInstall python3-torchvision
 	
 	
 	
