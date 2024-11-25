@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='2608158732'
+export ub_setScriptChecksum_contents='893707817'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -13052,54 +13052,57 @@ _nix_update() {
 
 
 # ATTRIBUTION-AI: ChatGPT o1-preview 2024-11-25 .
+# This is a tricky issue, which is not easily reproduced nor solved. Presumably due to '| tee' under the powershell environment used by 'build.yml', or possibly due to standard input somehow being piped as well, stdout is redirected while stderr actually does exist but is reported as a non-existent file when written to, and cannot be replaced, with error messages 'No such file or directory' and 'Read-only file system'. Redirections of subshells through other means, such as ' 2>&1 ' does not work.
+# ATTENTION: There may not be any real solution other than simply avoiding depending on usable /dev/stderr , such as by using quiet mode with apt-cyg --quiet .
 _cygwin_workaround_dev_stderr() {
     # ChatGPT search found this link, which strongly implicates the '| tee' used for logging by build.yml as causing the absence of stderr .
     # https://cygwin.com/pipermail/cygwin/2017-July/233639.html?utm_source=chatgpt.com
 
-    if [ ! -e /dev/stderr ] || ! echo x | tee /dev/stderr > /dev/null
-    then
-        _messagePlain_warn 'warn: workaround /dev/stderr: exec 2>&1'
-        # ATTRIBUTION-AI: ChatGPT 4o 2024-11-25 .
-        exec 2>&1
-    fi
+    #if [ ! -e /dev/stderr ] || ! echo x | tee /dev/stderr > /dev/null
+    #then
+        #_messagePlain_warn 'warn: workaround /dev/stderr: exec 2>&1'
+        ## ATTRIBUTION-AI: ChatGPT 4o 2024-11-25 .
+        #exec 2>&1
+    #fi
     
-    if [ ! -e /dev/stderr ] || ! echo x | tee /dev/stderr > /dev/null
-    then
-        mkdir -p /dev
-        ln -sf /proc/self/fd/1 /dev/stderr
-    fi
+    # DUBIOUS
+    #if [ ! -e /dev/stderr ] || ! echo x | tee /dev/stderr > /dev/null
+    #then
+        #mkdir -p /dev
+        #ln -sf /proc/self/fd/1 /dev/stderr
+    #fi
 
     # DUBIOUS
-    if [ ! -e /dev/stderr ] || ! echo x | tee /dev/stderr > /dev/null
-    then
-        mkdir -p /dev
-        ln -sf /proc/self/fd/1 /dev/stderr
-    fi
-    if [ ! -e /dev/stderr ] || ! echo x | tee /dev/stderr > /dev/null
-    then
-        mkdir -p /dev
-        ln -sf /dev/fd/1 /dev/stderr
-    fi
-    if [ ! -e /dev/stderr ] || ! echo x | tee /dev/stderr > /dev/null
-    then
-        mkdir -p /dev
-        ln -sf /proc/$$/fd/1 /dev/stderr
-    fi
+    #if [ ! -e /dev/stderr ] || ! echo x | tee /dev/stderr > /dev/null
+    #then
+        #mkdir -p /dev
+        #ln -sf /proc/self/fd/1 /dev/stderr
+    #fi
+    #if [ ! -e /dev/stderr ] || ! echo x | tee /dev/stderr > /dev/null
+    #then
+        #mkdir -p /dev
+        #ln -sf /dev/fd/1 /dev/stderr
+    #fi
+    #if [ ! -e /dev/stderr ] || ! echo x | tee /dev/stderr > /dev/null
+    #then
+        #mkdir -p /dev
+        #ln -sf /proc/$$/fd/1 /dev/stderr
+    #fi
 
     
-    # Local experiments with a functional Cygwin/MSW environment show creating /dev/stderr_experiment this way is apparently not usable.
-    if [ ! -e /dev/stderr ] || ! echo x | tee /dev/stderr > /dev/null
-    then
-        mkdir -p /dev
-        mknod /dev/stderr c 1 3
-        chmod 622 /dev/stderr
-    fi
+    # Local experiments with a functional Cygwin/MSW environment show creating /dev/stderr_experiment this way is apparently not usable anyway.
+    #if [ ! -e /dev/stderr ] || ! echo x | tee /dev/stderr > /dev/null
+    #then
+        #mkdir -p /dev
+        #mknod /dev/stderr c 1 3
+        #chmod 622 /dev/stderr
+    #fi
 
-    if [ ! -e /dev/stderr ] || ! echo x | tee /dev/stderr > /dev/null
-    then
-        _messagePlain_bad 'fail: missing: /dev/stderr'
-        _messageFAIL
-    fi
+    #if [ ! -e /dev/stderr ] || ! echo x | tee /dev/stderr > /dev/null
+    #then
+        #_messagePlain_bad 'fail: missing: /dev/stderr'
+        #_messageFAIL
+    #fi
 
     return 0
 }
@@ -13110,13 +13113,13 @@ _cygwin_workaround_dev_stderr() {
 _getMost_cygwin-priority() {
     _cygwin_workaround_dev_stderr
 
-    _messageNormal "_getMost_cygwin_priority: apt-cyg install"
+    _messageNormal "_getMost_cygwin_priority: apt-cyg --quiet install"
     
     #nc,
 
-    apt-cyg install bash-completion,bc,bzip,coreutils,curl,dos2unix,expect,git,git-svn,gnupg,inetutils,jq,lz4,mc,nc,openssh,openssl,perl,psmisc,python37,pv,rsync,ssh-pageant,screen,subversion,unzip,vim,wget,zip,zstd,tigervnc-server,flex,bison,libncurses-devel,par2,python3-pip,gnupg2 2>&1
+    apt-cyg --quiet install bash-completion,bc,bzip,coreutils,curl,dos2unix,expect,git,git-svn,gnupg,inetutils,jq,lz4,mc,nc,openssh,openssl,perl,psmisc,python37,pv,rsync,ssh-pageant,screen,subversion,unzip,vim,wget,zip,zstd,tigervnc-server,flex,bison,libncurses-devel,par2,python3-pip,gnupg2 2>&1
 
-    apt-cyg install bash-completion,bc,bzip,coreutils,curl,dos2unix,expect,git,git-svn,gnupg,inetutils,jq,lz4,mc,nc,openssh,openssl,perl,psmisc,python37,pv,rsync,ssh-pageant,screen,subversion,unzip,vim,wget,zip,zstd,procps-ng,awk,socat,aria2,jq,gnupg2,php,php-PEAR,php-devel,gnuplot-base,gnuplot-doc,gnuplot-qt5,gnuplot-wx,gnuplot-X11,libqalculate-common,libqalculate-devel,libqalculate5,cantor-backend-qalculate,octave,octave-devel,octave-parallel,octave-linear-algebra,octave-general,octave-geometry,octave-strings,octave-financial,octave-communications,octave-control,mkisofs,genisoimage,dbus,dbus-x11,tigervnc-server,flex,bison,libncurses-devel,p7zip,par2,python3-pip,gnupg2 2>&1
+    apt-cyg --quiet install bash-completion,bc,bzip,coreutils,curl,dos2unix,expect,git,git-svn,gnupg,inetutils,jq,lz4,mc,nc,openssh,openssl,perl,psmisc,python37,pv,rsync,ssh-pageant,screen,subversion,unzip,vim,wget,zip,zstd,procps-ng,awk,socat,aria2,jq,gnupg2,php,php-PEAR,php-devel,gnuplot-base,gnuplot-doc,gnuplot-qt5,gnuplot-wx,gnuplot-X11,libqalculate-common,libqalculate-devel,libqalculate5,cantor-backend-qalculate,octave,octave-devel,octave-parallel,octave-linear-algebra,octave-general,octave-geometry,octave-strings,octave-financial,octave-communications,octave-control,mkisofs,genisoimage,dbus,dbus-x11,tigervnc-server,flex,bison,libncurses-devel,p7zip,par2,python3-pip,gnupg2 2>&1
 }
 
 _getMost_cygwin_sequence() {
@@ -13125,7 +13128,7 @@ _getMost_cygwin_sequence() {
     _start
 
     _messageNormal "_getMost_cygwin: list installed"
-    apt-cyg show | cut -f1 -d\ | tail -n +2 | tee "$safeTmp"/cygwin_package_list_installed
+    apt-cyg --quiet show | cut -f1 -d\ | tail -n +2 | tee "$safeTmp"/cygwin_package_list_installed
 
     _messageNormal "_getMost_cygwin: list desired"
     cat << 'CZXWXcRMTo8EmM8i4d' | grep -v '^#' | tee "$safeTmp"/cygwin_package_list_desired
@@ -13728,8 +13731,8 @@ CZXWXcRMTo8EmM8i4d
     cat "$safeTmp/cygwin_package_list_todo" | while read currentLine
     do
         #echo "$currentLine"
-        _messagePlain_probe apt-cyg install "$currentLine"
-        apt-cyg install "$currentLine" 2>&1
+        _messagePlain_probe apt-cyg --quiet install "$currentLine"
+        apt-cyg --quiet install "$currentLine" 2>&1
     done
 
 
@@ -13747,10 +13750,10 @@ _custom_ubcp_prog() {
 _custom_ubcp_sequence() {
 	_cygwin_workaround_dev_stderr
     
-    _messageNormal '_custom_ubcp: apt-cyg'
-	_messagePlain_probe apt-cyg install ImageMagick
-    apt-cyg install ImageMagick 2>&1
-	#_messagePlain_probe_cmd apt-cyg install ffmpeg
+    _messageNormal '_custom_ubcp: apt-cyg --quiet'
+	_messagePlain_probe apt-cyg --quiet install ImageMagick
+    apt-cyg --quiet install ImageMagick 2>&1
+	#_messagePlain_probe_cmd apt-cyg --quiet install ffmpeg
 	
 	_messageNormal '_custom_ubcp: pip3'
 	_messagePlain_probe pip3 install piexif
