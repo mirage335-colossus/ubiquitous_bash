@@ -59,16 +59,151 @@ _cygwin_workaround_dev_stderr() {
 
 
 
-_getMost_cygwin-priority() {
+_getMost_cygwin_sequence-priority() {
     _cygwin_workaround_dev_stderr
+
+    _start
 
     _messageNormal "_getMost_cygwin_priority: apt-cyg --quiet install"
     
     #nc,
 
-    apt-cyg --quiet install bash-completion,bc,bzip,coreutils,curl,dos2unix,expect,git,git-svn,gnupg,inetutils,jq,lz4,mc,nc,openssh,openssl,perl,psmisc,python37,pv,rsync,ssh-pageant,screen,subversion,unzip,vim,wget,zip,zstd,tigervnc-server,flex,bison,libncurses-devel,par2,python3-pip,gnupg2 2>&1
+cat << 'CZXWXcRMTo8EmM8i4d' | grep -v '^#' | tee "$safeTmp"/cygwin_package_list_priority_01
+bash-completion
+bc
+bzip
+coreutils
+curl
+dos2unix
+expect
+git
+git-svn
+gnupg
+inetutils
+jq
+lz4
+mc
+nc
+openssh
+openssl
+perl
+psmisc
+python37
+pv
+rsync
+ssh-pageant
+screen
+subversion
+unzip
+vim
+wget
+zip
+zstd
+tigervnc-server
+flex
+bison
+libncurses-devel
+par2
+python3-pip
+gnupg2
+CZXWXcRMTo8EmM8i4d
 
-    apt-cyg --quiet install bash-completion,bc,bzip,coreutils,curl,dos2unix,expect,git,git-svn,gnupg,inetutils,jq,lz4,mc,nc,openssh,openssl,perl,psmisc,python37,pv,rsync,ssh-pageant,screen,subversion,unzip,vim,wget,zip,zstd,procps-ng,awk,socat,aria2,jq,gnupg2,php,php-PEAR,php-devel,gnuplot-base,gnuplot-doc,gnuplot-qt5,gnuplot-wx,gnuplot-X11,libqalculate-common,libqalculate-devel,libqalculate5,cantor-backend-qalculate,octave,octave-devel,octave-parallel,octave-linear-algebra,octave-general,octave-geometry,octave-strings,octave-financial,octave-communications,octave-control,mkisofs,genisoimage,dbus,dbus-x11,tigervnc-server,flex,bison,libncurses-devel,p7zip,par2,python3-pip,gnupg2 2>&1
+
+
+cat << 'CZXWXcRMTo8EmM8i4d' | grep -v '^#' | tee "$safeTmp"/cygwin_package_list_priority_02
+bash-completion
+bc
+bzip
+coreutils
+curl
+dos2unix
+expect
+git
+git-svn
+gnupg
+inetutils
+jq
+lz4
+mc
+nc
+openssh
+openssl
+perl
+psmisc
+python37
+pv
+rsync
+ssh-pageant
+screen
+subversion
+unzip
+vim
+wget
+zip
+zstd
+procps-ng
+awk
+socat
+aria2
+jq
+gnupg2
+php
+php-PEAR
+php-devel
+gnuplot-base
+gnuplot-doc
+gnuplot-qt5
+gnuplot-wx
+gnuplot-X11
+libqalculate-common
+libqalculate-devel
+libqalculate5
+cantor-backend-qalculate
+octave
+octave-devel
+octave-parallel
+octave-linear-algebra
+octave-general
+octave-geometry
+octave-strings
+octave-financial
+octave-communications
+octave-control
+mkisofs
+genisoimage
+dbus
+dbus-x11
+tigervnc-server
+flex
+bison
+libncurses-devel
+p7zip
+par2
+python3-pip
+gnupg2 2>&1
+CZXWXcRMTo8EmM8i4d
+
+
+    local currentLine
+
+    cat "$safeTmp/cygwin_package_list_priority_01" | while read currentLine
+    do
+        #echo "$currentLine"
+        _messagePlain_probe apt-cyg --quiet install "$currentLine"
+        apt-cyg --quiet install "$currentLine" 2>&1
+    done
+
+    cat "$safeTmp/cygwin_package_list_priority_02" | while read currentLine
+    do
+        #echo "$currentLine"
+        _messagePlain_probe apt-cyg --quiet install "$currentLine"
+        apt-cyg --quiet install "$currentLine" 2>&1
+    done
+
+    _stop
+}
+_getMost_cygwin-priority() {
+    "$scriptAbsoluteLocation" _getMost_cygwin_sequence-priority "$@"
 }
 
 _getMost_cygwin_sequence() {
