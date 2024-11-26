@@ -419,7 +419,7 @@ jobs:
     needs: [build_ubcp]
     runs-on: ubuntu-latest
     steps:
-      - name: analysis! missing-binaries
+      - name: analysis! missing-packages
         shell: bash
         run: |
           # Get the list of releases
@@ -433,10 +433,10 @@ jobs:
             # Download the packageReport file for this release
             curl -s -H "Authorization: token $GH_TOKEN" -L -o "ubcp-packageReport-$RELEASE" "https://github.com/mirage335-colossus/ubiquitous_bash/releases/download/$RELEASE/ubcp-packageReport"
 
-            # Compare the list of binaries in this release to the current release
+            # Compare the list of packages in this release to the current release
             if [ "$RELEASE" != "$currentReleaseTag" ]; then
               echo | tee -a ./missing-ubcp-packageReport
-              echo "Binaries (filesystem) in $RELEASE but not in currentRelease $currentReleaseTag:" | tee -a ./missing-ubcp-packageReport
+              echo "packages (filesystem) in $RELEASE but not in currentRelease $currentReleaseTag:" | tee -a ./missing-ubcp-packageReport
               comm -23 <(sort "ubcp-packageReport-$RELEASE") <(sort "ubcp-packageReport-$currentReleaseTag") | tee -a ./missing-ubcp-packageReport
             fi
           done
