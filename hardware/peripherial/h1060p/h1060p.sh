@@ -48,6 +48,8 @@ CZXWXcRMTo8EmM8i4d
 
 
 _test_h1060p() {
+	_if_cygwin && return 0
+	
 	sudo -n mkdir -p /etc/X11/xorg.conf.d
 	_h1060p_xorg_here | sudo -n tee /etc/X11/xorg.conf.d/70-wacom-h1060p > /dev/null
 	

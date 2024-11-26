@@ -1,8 +1,10 @@
 _test_devemacs() {
 	_wantGetDep emacs
+
+	#_if_cygwin && return 0
 	
 	local emacsDetectedVersion=$(emacs --version | head -n 1 | cut -f 3 -d\ | cut -d\. -f1)
-	! [[ "$emacsDetectedVersion" -ge "24" ]] && echo emacs too old && return 1
+	! [[ "$emacsDetectedVersion" -ge "24" ]] && echo emacs obsolete OR missing && return 1
 	
 	return 0
 }

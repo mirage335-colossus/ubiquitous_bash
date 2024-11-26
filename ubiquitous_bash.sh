@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='3167232776'
+export ub_setScriptChecksum_contents='2099460321'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -23895,6 +23895,14 @@ _user_ollama() {
 # Mostly, this is used to workaround very unusual dist/OS build and custom situations (ie. ChRoot, GitHub Actions, etc).
 # CAUTION: This leaves a background process running, which must continue running (ie. not hangup) while other programs use it, and which must terminate upon shutdown , _closeChRoot , etc .
 _service_ollama() {
+	_mustGetSudo
+	_if_cygwin && return 0
+	if ! sudo -n -u ollama bash -c 'type -p ollama'
+	then
+		echo 'warn: _service_ollama: missing: ollama'
+		return 1
+	fi
+	
 	if ! wget --timeout=1 --tries=3 127.0.0.1:11434 > /dev/null -q -O - > /dev/null
 	then
 		sudo -n -u ollama ollama serve &
@@ -25546,9 +25554,11 @@ _declareFunctions_markup_terminal() {
 
 _test_devemacs() {
 	_wantGetDep emacs
+
+	#_if_cygwin && return 0
 	
 	local emacsDetectedVersion=$(emacs --version | head -n 1 | cut -f 3 -d\ | cut -d\. -f1)
-	! [[ "$emacsDetectedVersion" -ge "24" ]] && echo emacs too old && return 1
+	! [[ "$emacsDetectedVersion" -ge "24" ]] && echo emacs obsolete OR missing && return 1
 	
 	return 0
 }
@@ -30792,6 +30802,11 @@ _test_fetchDebian() {
 	then
 		echo 'warn: Debian Keyring missing.'
 		echo 'request: apt-get install debian-keyring'
+		_if_cygwin && return 0
+		if ! ( [[ -e /etc/issue ]] && cat /etc/issue | grep 'Debian\|Raspbian' > /dev/null 2>&1 ) && ! ( [[ -e /etc/issue ]] && cat /etc/issue | grep 'Ubuntu' > /dev/null 2>&1 )
+		then
+			return 0
+		fi
 		! _wantSudo && echo 'warn: no sudo'
 		sudo -n apt-get install -y debian-keyring
 		! ls /usr/share/keyrings/debian-role-keys.gpg && return 1
@@ -36429,6 +36444,8 @@ CZXWXcRMTo8EmM8i4d
 
 
 _test_h1060p() {
+	_if_cygwin && return 0
+	
 	sudo -n mkdir -p /etc/X11/xorg.conf.d
 	_h1060p_xorg_here | sudo -n tee /etc/X11/xorg.conf.d/70-wacom-h1060p > /dev/null
 	

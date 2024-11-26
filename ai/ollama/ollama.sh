@@ -261,6 +261,14 @@ _user_ollama() {
 # Mostly, this is used to workaround very unusual dist/OS build and custom situations (ie. ChRoot, GitHub Actions, etc).
 # CAUTION: This leaves a background process running, which must continue running (ie. not hangup) while other programs use it, and which must terminate upon shutdown , _closeChRoot , etc .
 _service_ollama() {
+	_mustGetSudo
+	_if_cygwin && return 0
+	if ! sudo -n -u ollama bash -c 'type -p ollama'
+	then
+		echo 'warn: _service_ollama: missing: ollama'
+		return 1
+	fi
+	
 	if ! wget --timeout=1 --tries=3 127.0.0.1:11434 > /dev/null -q -O - > /dev/null
 	then
 		sudo -n -u ollama ollama serve &
