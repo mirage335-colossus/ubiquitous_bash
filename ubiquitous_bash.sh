@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='4137276653'
+export ub_setScriptChecksum_contents='1051361000'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -32757,7 +32757,7 @@ _kernelConfig_require-tradeoff-perform() {
 	_messagePlain_nominal 'kernelConfig: tradeoff-perform'
 	_messagePlain_request 'Carefully evaluate '\''tradeoff-perform'\'' for specific use cases.'
 	export kernelConfig_file="$1"
-	
+
 	_kernelConfig__bad-n__ CONFIG_RETPOLINE
 	_kernelConfig__bad-n__ CONFIG_PAGE_TABLE_ISOLATION
 	
@@ -32803,6 +32803,28 @@ _kernelConfig_require-tradeoff-harden() {
 	_messagePlain_request 'Carefully evaluate '\''tradeoff-harden'\'' for specific use cases.'
 	export kernelConfig_file="$1"
 	
+	_kernelConfig__bad-y__ CPU_MITIGATIONS
+	_kernelConfig__bad-y__ MITIGATION_PAGE_TABLE_ISOLATION
+	_kernelConfig__bad-y__ MITIGATION_RETPOLINE
+	_kernelConfig__bad-y__ MITIGATION_RETHUNK
+	_kernelConfig__bad-y__ MITIGATION_UNRET_ENTRY
+	_kernelConfig__bad-y__ MITIGATION_CALL_DEPTH_TRACKING
+	_kernelConfig__bad-y__ MITIGATION_IBPB_ENTRY
+	_kernelConfig__bad-y__ MITIGATION_IBRS_ENTRY
+	_kernelConfig__bad-y__ MITIGATION_SRSO
+	_kernelConfig__bad-y__ MITIGATION_GDS
+	_kernelConfig__bad-y__ MITIGATION_RFDS
+	_kernelConfig__bad-y__ MITIGATION_SPECTRE_BHI
+	_kernelConfig__bad-y__ MITIGATION_MDS
+	_kernelConfig__bad-y__ MITIGATION_TAA
+	_kernelConfig__bad-y__ MITIGATION_MMIO_STALE_DATA
+	_kernelConfig__bad-y__ MITIGATION_L1TF
+	_kernelConfig__bad-y__ MITIGATION_RETBLEED
+	_kernelConfig__bad-y__ MITIGATION_SPECTRE_V1
+	_kernelConfig__bad-y__ MITIGATION_SPECTRE_V2
+	_kernelConfig__bad-y__ MITIGATION_SRBDS
+	_kernelConfig__bad-y__ MITIGATION_SSB
+
 	_kernelConfig__bad-y__ CONFIG_RETPOLINE
 	_kernelConfig__bad-y__ CONFIG_PAGE_TABLE_ISOLATION
 	
@@ -33264,6 +33286,10 @@ _kernelConfig_require-virtualization-accessory() {
 	#_kernelConfig_warn-n__ CONFIG_XEN_SELFBALLOONING
 	#_kernelConfig_warn-n__ CONFIG_IOMMU_DEFAULT_PASSTHROUGH
 	#_kernelConfig_warn-n__ CONFIG_INTEL_IOMMU_DEFAULT_ON
+
+
+	# TODO: Evaluate.
+	_kernelConfig_warn-y__ KVM_HYPERV
 }
 
 # https://wiki.gentoo.org/wiki/VirtualBox
@@ -33628,6 +33654,9 @@ _kernelConfig_require-latency() {
 	# CRITICAL!
 	# Lightweight kernel compression theoretically may significantly accelerate startup from slow disks.
 	_kernelConfig__bad-y__ CONFIG_KERNEL_LZ4
+
+	# TODO
+	#PCP_BATCH_SCALE_MAX
 	
 }
 
@@ -33757,8 +33786,43 @@ _kernelConfig_require-special() {
 	_kernelConfig__bad-y__ CONFIG_HW_RANDOM_VIA
 	_kernelConfig__bad-y_m HW_RANDOM_VIRTIO
 	_kernelConfig__bad-y__ CONFIG_HW_RANDOM_TPM
+
+
+	# Somewhat unusually, without known loss of performance.
+	# Discovered during 'make oldconfig' of 'Linux 6.12.1' from then existing 'mainline' config file.
+	_kernelConfig__bad-y__ X86_FRED
+
+	_kernelConfig__bad-y__ SLAB_BUCKETS
 	
 	
+
+	# TODO: Disabled presently (because this feature is in development and does not yet work), but seems like something to enable eventually.
+	# _kernelConfig__bad-y__ KVM_SW_PROTECTED_VM
+
+	
+	# Usually a bad idea, since BTRFS filesystem compression, etc, should take care of this better.
+	_kernelConfig__bad-n__ MODULE_COMPRESS
+
+	# TODO: Expected unhelpful, but worth considering.
+	#ZSWAP_SHRINKER_DEFAULT_ON
+
+
+	# Unusual tradeoff. Theoretically may cause issues for Gentoo doing fsck on read-only root (due to not necessarily having initramfs).
+	_kernelConfig__bad-y__ BLK_DEV_WRITE_MOUNTED
+	_kernelConfig_warn-n__ BLK_DEV_WRITE_MOUNTED
+
+	# If there is no compatibility issue, then the more compressible zswap allocator seems more useful.
+	#_kernelConfig__warn-y__ ZSWAP_ZPOOL_DEFAULT_ZSMALLOC 
+
+
+	# DANGER
+	# If you honestly believe Meta cares about end-user security...
+	# https://studio.youtube.com/video/MeUvSg9zQYc/edit
+	# https://studio.youtube.com/video/kXrLujzPm_4/edit
+	# There is just NO GOOD REASON to use or support Meta hardware. At all.
+	_kernelConfig__bad-n__ NET_VENDOR_META
+
+
 	true
 }
 
