@@ -212,7 +212,10 @@ _vector_ollama() {
 	if _if_cygwin && ! type -p ollama > /dev/null 2>&1
 	then
 		echo 'warn: accepted: cygwin: missing: ollama'
-	elif type -p ollama > /dev/null 2>&1
+		return 0
+	fi
+	
+	if type -p ollama > /dev/null 2>&1
 	then
 		if [[ "$hostMemoryQuantity" -lt 28000000 ]]
 		then

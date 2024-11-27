@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='2099460321'
+export ub_setScriptChecksum_contents='4137276653'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -23846,7 +23846,10 @@ _vector_ollama() {
 	if _if_cygwin && ! type -p ollama > /dev/null 2>&1
 	then
 		echo 'warn: accepted: cygwin: missing: ollama'
-	elif type -p ollama > /dev/null 2>&1
+		return 0
+	fi
+	
+	if type -p ollama > /dev/null 2>&1
 	then
 		if [[ "$hostMemoryQuantity" -lt 28000000 ]]
 		then
@@ -25557,8 +25560,14 @@ _test_devemacs() {
 
 	#_if_cygwin && return 0
 	
-	local emacsDetectedVersion=$(emacs --version | head -n 1 | cut -f 3 -d\ | cut -d\. -f1)
-	! [[ "$emacsDetectedVersion" -ge "24" ]] && echo emacs obsolete OR missing && return 1
+	if type -p emacs > /dev/null 2>&1
+	then
+		echo 'warn: missing: emacs'
+		return 0
+	else
+		local emacsDetectedVersion=$(emacs --version | head -n 1 | cut -f 3 -d\ | cut -d\. -f1)
+		! [[ "$emacsDetectedVersion" -ge "24" ]] && echo 'warn: obsolete: emacs' && return 1
+	fi
 	
 	return 0
 }

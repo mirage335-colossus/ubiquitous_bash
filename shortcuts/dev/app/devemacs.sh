@@ -3,8 +3,14 @@ _test_devemacs() {
 
 	#_if_cygwin && return 0
 	
-	local emacsDetectedVersion=$(emacs --version | head -n 1 | cut -f 3 -d\ | cut -d\. -f1)
-	! [[ "$emacsDetectedVersion" -ge "24" ]] && echo emacs obsolete OR missing && return 1
+	if type -p emacs > /dev/null 2>&1
+	then
+		echo 'warn: missing: emacs'
+		return 0
+	else
+		local emacsDetectedVersion=$(emacs --version | head -n 1 | cut -f 3 -d\ | cut -d\. -f1)
+		! [[ "$emacsDetectedVersion" -ge "24" ]] && echo 'warn: obsolete: emacs' && return 1
+	fi
 	
 	return 0
 }
