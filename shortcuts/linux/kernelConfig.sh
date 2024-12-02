@@ -1248,7 +1248,7 @@ _kernelConfig_require-special() {
 	_kernelConfig__bad-n__ RTW88_8822CS
 	_kernelConfig__bad-n__ RTW88_8723DS
 	_kernelConfig__bad-n__ RTW88_8723CS
-	_kernelConfig__bad-n__ RTW88_8821C
+	_kernelConfig__bad-n__ RTW88_8821CS
 
 
 
