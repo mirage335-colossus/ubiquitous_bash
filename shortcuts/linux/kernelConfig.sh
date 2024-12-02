@@ -1202,6 +1202,25 @@ _kernelConfig_require-special() {
 	_kernelConfig__bad-n__ X86_USER_SHADOW_STACK
 
 
+
+	_kernelConfig__bad-y_m USB_GADGET
+
+	# ATTENTION: Only drivers that are highly likely to cripple the 'out-of-box-experience' to the point of being unable to perform gParted, revert, basic web browsing, etc, for relatively useful laptops/tablets/etc .
+	# Essential drivers (eg. iGPU, or at least basic 'VGA', keyboard, USB, etc) are normally included already Debian's default kernel config, if that is used as a starting point.
+	# WARNING: Delegating which drivers to enable to upstream default Debian (or other distro) config files may be better for reliability, etc.
+	_kernelConfig_warn-y_m ATH12K #WiFi7
+	_kernelConfig_warn-y_m MT7996E #WiFi7 Concurrent Tri-Band
+	RTW88_8822BU #WiFi USB
+	RTW88_8822CU
+	RTW88_8723DU
+	RTW88_8821CE
+	RTW88_8821CU
+	RTW89_8851BE
+	RTW89_8852AE
+	RTW89_8852BE
+
+
+
 	true
 }
 
