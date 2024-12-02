@@ -1199,6 +1199,44 @@ _kernelConfig_require-special() {
 	# There is just NO GOOD REASON to use or support Meta hardware. At all.
 	_kernelConfig__bad-n__ NET_VENDOR_META
 
+	# DANGER
+	# Although disabling kernel support is NEVER guaranteed to eliminate a 'BadUSB' style vulnerability, reducing this functionality is still very strongly recommended.
+	#
+	# SDIO . Especially useless, very few very old devices are expected to benefit from SDIO WiFi, etc, peripherials, while SDIO degrades one of the very few otherwise storage exclusive protocols (ie. SD card storage) into a 'BadUSB' input.
+	_kernelConfig__bad-n__ ATH10K_SDIO
+	_kernelConfig__bad-n__ ATH6KL_SDIO
+	_kernelConfig__bad-n__ B43_SDIO
+	_kernelConfig__bad-n__ BRCMFMAC_SDIO
+	_kernelConfig__bad-n__ BT_HCIBTSDIO
+	_kernelConfig__bad-n__ BT_MRVL_SDIO
+	_kernelConfig__bad-n__ BT_MTKSDIO
+	_kernelConfig__bad-n__ CW1200_WLAN_SDIO
+	_kernelConfig__bad-n__ GREYBUS_SDIO
+	_kernelConfig__bad-n__ LIBERTAS_SDIO
+	#
+	_kernelConfig__bad-n__ MMC_MESON_MX_SDIO # Disabled by default apparently.
+	_kernelConfig__bad-n__ MMC_MVSDIO # Disabled by default apparently.
+	#
+	#_kernelConfig__bad-n__ MT7663_USB_SDIO_COMMON
+	#
+	_kernelConfig__bad-n__ MT76_SDIO
+	_kernelConfig__bad-n__ MWIFIEX_SDIO
+	_kernelConfig__bad-n__ RSI_SDIO
+	_kernelConfig__bad-n__ RTW88_SDIO
+	#
+	_kernelConfig__bad-n__ SDIO_UART
+	#
+	_kernelConfig__bad-n__ SMS_SDIO_DRV
+	#
+	_kernelConfig__bad-n__ SSB_SDIOHOST
+	_kernelConfig__bad-n__ SSB_SDIOHOST_POSSIBLE
+	#
+	_kernelConfig__bad-n__ WILC1000_SDIO
+	_kernelConfig__bad-n__ WL1251_SDIO
+	_kernelConfig__bad-n__ WLCORE_SDIO
+
+
+
 
 	# Requires compiling binaries to support this. Future Debian security updates may use this.
 	_kernelConfig__bad-y__ X86_USER_SHADOW_STACK
