@@ -1199,7 +1199,7 @@ _kernelConfig_require-special() {
 
 
 	# Requires compiling binaries to support this. Future Debian security updates may use this.
-	_kernelConfig__bad-n__ X86_USER_SHADOW_STACK
+	_kernelConfig__bad-y__ X86_USER_SHADOW_STACK
 
 
 
