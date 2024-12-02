@@ -1210,14 +1210,14 @@ _kernelConfig_require-special() {
 	# WARNING: Delegating which drivers to enable to upstream default Debian (or other distro) config files may be better for reliability, etc.
 	_kernelConfig_warn-y_m ATH12K #WiFi7
 	_kernelConfig_warn-y_m MT7996E #WiFi7 Concurrent Tri-Band
-	RTW88_8822BU #WiFi USB
-	RTW88_8822CU
-	RTW88_8723DU
-	RTW88_8821CE
-	RTW88_8821CU
-	RTW89_8851BE
-	RTW89_8852AE
-	RTW89_8852BE
+	_kernelConfig_warn-y_m RTW88_8822BU #WiFi USB
+	_kernelConfig_warn-y_m RTW88_8822CU
+	_kernelConfig_warn-y_m RTW88_8723DU
+	_kernelConfig_warn-y_m RTW88_8821CE
+	_kernelConfig_warn-y_m RTW88_8821CU
+	_kernelConfig_warn-y_m RTW89_8851BE
+	_kernelConfig_warn-y_m RTW89_8852AE
+	_kernelConfig_warn-y_m RTW89_8852BE
 
 
 

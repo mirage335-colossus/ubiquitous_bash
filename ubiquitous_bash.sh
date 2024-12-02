@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='2695229561'
+export ub_setScriptChecksum_contents='2869150640'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -33891,14 +33891,14 @@ _kernelConfig_require-special() {
 	# WARNING: Delegating which drivers to enable to upstream default Debian (or other distro) config files may be better for reliability, etc.
 	_kernelConfig_warn-y_m ATH12K #WiFi7
 	_kernelConfig_warn-y_m MT7996E #WiFi7 Concurrent Tri-Band
-	RTW88_8822BU #WiFi USB
-	RTW88_8822CU
-	RTW88_8723DU
-	RTW88_8821CE
-	RTW88_8821CU
-	RTW89_8851BE
-	RTW89_8852AE
-	RTW89_8852BE
+	_kernelConfig_warn-y_m RTW88_8822BU #WiFi USB
+	_kernelConfig_warn-y_m RTW88_8822CU
+	_kernelConfig_warn-y_m RTW88_8723DU
+	_kernelConfig_warn-y_m RTW88_8821CE
+	_kernelConfig_warn-y_m RTW88_8821CU
+	_kernelConfig_warn-y_m RTW89_8851BE
+	_kernelConfig_warn-y_m RTW89_8852AE
+	_kernelConfig_warn-y_m RTW89_8852BE
 
 
 
