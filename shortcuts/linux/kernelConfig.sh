@@ -172,6 +172,8 @@ _kernelConfig_require-tradeoff-harden() {
 	_kernelConfig__bad-y__ MITIGATION_SRBDS
 	_kernelConfig__bad-y__ MITIGATION_SSB
 
+	_kernelConfig__bad-y__ MITIGATION_SLS
+
 	_kernelConfig__bad-y__ CPU_SRSO
 
 	_kernelConfig__bad-y__ CONFIG_RETPOLINE
@@ -222,7 +224,7 @@ _kernelConfig_require-tradeoff-harden() {
 	#qemuArgs+=(-cpu host,-sgx-provisionkey,-sgx-tokenkey)
 
 	_kernelConfig__bad-y__ CONFIG_X86_SGX
-	_kernelConfig__bad-y__ CONFIG_X86_SGX_kVM
+	_kernelConfig__bad-y__ CONFIG_X86_SGX_KVM
 	_kernelConfig__bad-y__ CONFIG_INTEL_TDX_GUEST
 	_kernelConfig__bad-y__ TDX_GUEST_DRIVER
 
@@ -873,6 +875,13 @@ _kernelConfig_require-accessory() {
 	#PCIE_BW
 	#ACRN_GUEST
 	#XILINX SDFEC
+
+	# FB_NVIDIA , FB_RIVA , at best, has not been reccently tested with NOUVEAU or other NVIDIA drivers.
+	_kernelConfig_warn-n__ FB_NVIDIA
+	_kernelConfig_warn-n__ FB_RIVA
+
+
+
 }
 
 _kernelConfig_require-build() {
@@ -1234,6 +1243,12 @@ _kernelConfig_require-special() {
 	_kernelConfig__bad-n__ WILC1000_SDIO
 	_kernelConfig__bad-n__ WL1251_SDIO
 	_kernelConfig__bad-n__ WLCORE_SDIO
+	
+	_kernelConfig__bad-n__ RTW88_8822BS
+	_kernelConfig__bad-n__ RTW88_8822CS
+	_kernelConfig__bad-n__ RTW88_8723DS
+	_kernelConfig__bad-n__ RTW88_8723CS
+	_kernelConfig__bad-n__ RTW88_8821C
 
 
 

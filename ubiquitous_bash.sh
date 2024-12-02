@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='3201932658'
+export ub_setScriptChecksum_contents='2256345234'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -32853,6 +32853,8 @@ _kernelConfig_require-tradeoff-harden() {
 	_kernelConfig__bad-y__ MITIGATION_SRBDS
 	_kernelConfig__bad-y__ MITIGATION_SSB
 
+	_kernelConfig__bad-y__ MITIGATION_SLS
+
 	_kernelConfig__bad-y__ CPU_SRSO
 
 	_kernelConfig__bad-y__ CONFIG_RETPOLINE
@@ -32903,7 +32905,7 @@ _kernelConfig_require-tradeoff-harden() {
 	#qemuArgs+=(-cpu host,-sgx-provisionkey,-sgx-tokenkey)
 
 	_kernelConfig__bad-y__ CONFIG_X86_SGX
-	_kernelConfig__bad-y__ CONFIG_X86_SGX_kVM
+	_kernelConfig__bad-y__ CONFIG_X86_SGX_KVM
 	_kernelConfig__bad-y__ CONFIG_INTEL_TDX_GUEST
 	_kernelConfig__bad-y__ TDX_GUEST_DRIVER
 
@@ -33554,6 +33556,13 @@ _kernelConfig_require-accessory() {
 	#PCIE_BW
 	#ACRN_GUEST
 	#XILINX SDFEC
+
+	# FB_NVIDIA , FB_RIVA , at best, has not been reccently tested with NOUVEAU or other NVIDIA drivers.
+	_kernelConfig_warn-n__ FB_NVIDIA
+	_kernelConfig_warn-n__ FB_RIVA
+
+
+
 }
 
 _kernelConfig_require-build() {
@@ -33915,6 +33924,12 @@ _kernelConfig_require-special() {
 	_kernelConfig__bad-n__ WILC1000_SDIO
 	_kernelConfig__bad-n__ WL1251_SDIO
 	_kernelConfig__bad-n__ WLCORE_SDIO
+	
+	_kernelConfig__bad-n__ RTW88_8822BS
+	_kernelConfig__bad-n__ RTW88_8822CS
+	_kernelConfig__bad-n__ RTW88_8723DS
+	_kernelConfig__bad-n__ RTW88_8723CS
+	_kernelConfig__bad-n__ RTW88_8821C
 
 
 
