@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='1089681336'
+export ub_setScriptChecksum_contents='4225312987'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -22675,6 +22675,8 @@ _kernelConfig_require-tradeoff-harden() {
 	_kernelConfig__bad-y__ MITIGATION_SRBDS
 	_kernelConfig__bad-y__ MITIGATION_SSB
 
+	_kernelConfig__bad-y__ CPU_SRSO
+
 	_kernelConfig__bad-y__ CONFIG_RETPOLINE
 	_kernelConfig__bad-y__ CONFIG_PAGE_TABLE_ISOLATION
 	
@@ -22736,10 +22738,16 @@ _kernelConfig_require-tradeoff-harden() {
 	#qemuArgs+=(-machine accel=kvm,confidential-guest-support=sev0 -object sev-guest,id=sev0,cbitpos=47,reduced-phys-bits=1 )
 	# #,policy=0x5
 
+
 	# https://libvirt.org/kbase/launch_security_sev.html
 	_kernelConfig__bad-y__ CONFIG_KVM_AMD_SEV
 	_kernelConfig__bad-y__ AMD_MEM_ENCRYPT
 	_kernelConfig__bad-y__ CONFIG_AMD_MEM_ENCRYPT_ACTIVE_BY_DEFAULT
+
+	_kernelConfig__bad-y__ KVM_SMM
+
+
+	_kernelConfig__bad-y__ RANDOM_KMALLOC_CACHES
 }
 _kernelConfig_require-tradeoff-harden-compatible() {
 	
@@ -23055,6 +23063,9 @@ _kernelConfig_require-tradeoff-harden-NOTcompatible() {
 	
 	# WARNING: CAUTION: Now obviously this is really incompatible. Do NOT move this to any other function.
 	_kernelConfig_warn-y__ CONFIG_MODULE_SIG_FORCE
+
+	# WARNING: May be untested. Kernel default apparently 'Y'.
+	_kernelConfig_warn-y__ MODULE_SIG_ALL
 }
 
 # ATTENTION: Override with 'ops.sh' or similar.
@@ -23423,6 +23434,14 @@ _kernelConfig_require-latency() {
 	_kernelConfig__bad-y__ CONFIG_CPU_FREQ_GOV_ONDEMAND
 	_kernelConfig__bad-y__ CPU_FREQ_DEFAULT_GOV_SCHEDUTIL
 	_kernelConfig__bad-y__ CONFIG_CPU_FREQ_GOV_SCHEDUTIL
+
+	# WARNING: May be untested.
+	#X86_AMD_PSTATE_DEFAULT_MODE
+	if ! cat "$kernelConfig_file" | _kernelConfig_reject-comments | grep "X86_AMD_PSTATE_DEFAULT_MODE"'\=3' > /dev/null 2>&1
+	then
+		_messagePlain_bad 'bad: not:      3: '"X86_AMD_PSTATE_DEFAULT_MODE"
+		export kernelConfig_bad='true'
+	fi
 	
 	# CRITICAL!
 	# CONFIG_PREEMPT is significantly more stable and compatible with third party (eg. VirtualBox) modules.
@@ -23680,6 +23699,10 @@ _kernelConfig_require-special() {
 	# https://studio.youtube.com/video/kXrLujzPm_4/edit
 	# There is just NO GOOD REASON to use or support Meta hardware. At all.
 	_kernelConfig__bad-n__ NET_VENDOR_META
+
+
+	# Requires compiling binaries to support this. Future Debian security updates may use this.
+	_kernelConfig__bad-n__ X86_USER_SHADOW_STACK
 
 
 	true
