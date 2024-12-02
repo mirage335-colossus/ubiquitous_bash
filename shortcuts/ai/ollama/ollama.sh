@@ -41,7 +41,8 @@ _ollama_set_sequence-augment-lowRAM() {
 	_start
 	cd "$safeTmp"
 
-	ollama show Llama-augment --modelfile | sed 's/PARAMETER num_ctx [0-9]*/PARAMETER num_ctx 512/' > ./Llama-augment-tmp.Modelfile
+	#512
+	ollama show Llama-augment --modelfile | sed 's/PARAMETER num_ctx [0-9]*/PARAMETER num_ctx 640/' > ./Llama-augment-tmp.Modelfile
 	sleep 9
 	ollama create Llama-augment --file ./Llama-augment-tmp.Modelfile
 	sleep 9

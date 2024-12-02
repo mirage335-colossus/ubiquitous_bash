@@ -195,11 +195,11 @@ _test_ollama() {
 }
 
 _vector_ollama_procedure() {
-	! _ollama_run_augment "Please output the word true . Any other output accompanying the word true is acceptable but not desirable. The purpose of this prompt is merely to validate that the LLM software is entirely functional, so the word true will be very helpful whereas any output other than the word true will be unhelpful . Please output the word true ." | grep true > /dev/null && echo 'fail: _vector_ollama' && _messageFAIL && _stop 1
-	_ollama_run_augment "Please output the word true . Any other output accompanying the word true is acceptable but not desirable. The purpose of this prompt is merely to validate that the LLM software is entirely functional, so the word true will be very helpful whereas any output other than the word true will be unhelpful . Please output the word true ." | grep false > /dev/null && echo 'fail: _vector_ollama' && _messageFAIL && _stop 1
+	! _ollama_run_augment "Please output the word true . Any other output accompanying the word true is acceptable but not desirable. The purpose of this prompt is merely to validate that the LLM software is entirely functional, so the word true will be very helpful whereas any output other than the word true will be unhelpful . Please output the word true ." | grep -i true > /dev/null && echo 'fail: _vector_ollama' && _messageFAIL && _stop 1
+	_ollama_run_augment "Please output the word true . Any other output accompanying the word true is acceptable but not desirable. The purpose of this prompt is merely to validate that the LLM software is entirely functional, so the word true will be very helpful whereas any output other than the word true will be unhelpful . Please output the word true ." | grep -i false > /dev/null && echo 'fail: _vector_ollama' && _messageFAIL && _stop 1
 	
-	! _ollama_run_augment "Please output the word false . Any other output accompanying the word false is acceptable but not desirable. The purpose of this prompt is merely to validate that the LLM software is entirely functional, so the word false will be very helpful whereas any output other than the word false will be unhelpful . Please output the word false ." | grep false > /dev/null && echo 'fail: _vector_ollama' && _messageFAIL && _stop 1
-	_ollama_run_augment "Please output the word false . Any other output accompanying the word false is acceptable but not desirable. The purpose of this prompt is merely to validate that the LLM software is entirely functional, so the word false will be very helpful whereas any output other than the word false will be unhelpful . Please output the word false ." | grep true > /dev/null && echo 'fail: _vector_ollama' && _messageFAIL && _stop 1
+	! _ollama_run_augment "Please output the word false . Any other output accompanying the word false is acceptable but not desirable. The purpose of this prompt is merely to validate that the LLM software is entirely functional, so the word false will be very helpful whereas any output other than the word false will be unhelpful . Please output the word false ." | grep -i false > /dev/null && echo 'fail: _vector_ollama' && _messageFAIL && _stop 1
+	_ollama_run_augment "Please output the word false . Any other output accompanying the word false is acceptable but not desirable. The purpose of this prompt is merely to validate that the LLM software is entirely functional, so the word false will be very helpful whereas any output other than the word false will be unhelpful . Please output the word false ." | grep -i true > /dev/null && echo 'fail: _vector_ollama' && _messageFAIL && _stop 1
 
 	return 0
 }
@@ -214,7 +214,7 @@ _vector_ollama() {
 		echo 'warn: accepted: cygwin: missing: ollama'
 		return 0
 	fi
-	
+
 	if type -p ollama > /dev/null 2>&1
 	then
 		if [[ "$hostMemoryQuantity" -lt 28000000 ]]
