@@ -337,6 +337,11 @@ _kernelConfig_require-tradeoff-harden-compatible() {
 	
 	#_kernelConfig_warn-any CONFIG_KFENCE_DEFERRABLE
 	_kernelConfig_warn-y__ CONFIG_KFENCE_DEFERRABLE
+
+
+	# DUBIOUS . Seems to require a userspace service setting scheduling attributes for processes, and not supported by default.
+	# WARNING: Definitely much better to disable SMT .
+	#_kernelConfig__bad-y__ CONFIG_SCHED_CORE
 }
 
 # WARNING: ATTENTION: Before moving to tradeoff-harden (compatible), ensure vboxdrv, vboxadd, nvidia, nvidia legacy, kernel modules can be loaded without issues, and also ensure significant performance penalty configuration options are oppositely documented in the tradeoff-perform function .
@@ -538,6 +543,10 @@ _kernelConfig_require-tradeoff-harden-NOTcompatible() {
 	
 	
 	_kernelConfig_warn-y__ CONFIG_EFI_DISABLE_PCI_DMA
+
+
+	# ATTENTION: In practice, the 'gather_data_sampling=force' command line parameter has been available, through optional  "$globalVirtFS"/etc/default/grub.d/01_hardening_ubdist.cfg  .
+	_kernelConfig__bad-y__ CONFIG_GDS_FORCE_MITIGATION
 	
 	
 	
