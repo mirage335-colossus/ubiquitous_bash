@@ -303,6 +303,8 @@ _kernelConfig_require-tradeoff-harden-compatible() {
 	
 	_kernelConfig__bad-y__ CONFIG_INIT_ON_FREE_DEFAULT_ON
 	_kernelConfig__bad-y__ CONFIG_ZERO_CALL_USED_REGS
+
+	_kernelConfig__bad-y__ CONFIG_INIT_STACK_ALL_ZERO
 	
 	_kernelConfig__bad-n__ CONFIG_DEVMEM
 	_kernelConfig__bad-n__ CONFIG_DEVPORT
