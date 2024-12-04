@@ -43,8 +43,19 @@ _createVMimage() {
 		# 27.95GiB
 		#export vmSize=28620
 	
+		# Preferred with 'augment' ~8b q4_k_m LLM model.
 		# 37.95GiB
-		export vmSize=38860
+		#export vmSize=38860
+	
+		# May accommodate a few additional AI models.
+		# 52.95GiB
+		export vmSize=54220
+	
+		# Slightly smaller than expected 50GB BD-R DL .
+		# 46.1GiB
+		#export vmSize=47206
+
+
 		
 		export vmSize_boundary=$(bc <<< "$vmSize - 1")
 		_createRawImage
