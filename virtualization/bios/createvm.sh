@@ -49,11 +49,11 @@ _createVMimage() {
 	
 		# May accommodate a few additional AI models.
 		# 52.95GiB
-		export vmSize=54220
+		#export vmSize=54220
 	
 		# Slightly smaller than expected 50GB BD-R DL .
 		# 46.1GiB
-		#export vmSize=47206
+		export vmSize=47206
 
 
 		
