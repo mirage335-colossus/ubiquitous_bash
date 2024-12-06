@@ -1218,6 +1218,10 @@ _set_getMost_backend_debian() {
 	_getMost_backend_aptGetInstall() {
 		# --no-upgrade
 		# -o Dpkg::Options::="--force-confold"
+
+		# ATTRIBUTION-AI: ChatGPT o1-preview 2024-11-20 .
+		echo 'APT::AutoRemove::RecommendsImportant "true";
+APT::AutoRemove::SuggestsImportant "true";' | _getMost_backend tee /etc/apt/apt.conf.d/99autoremove-recommends > /dev/null
 		
 		if ! _getMost_backend dash -c 'type apt-fast' > /dev/null 2>&1 || [[ "$RUNNER_OS" != "" ]]
 		then
