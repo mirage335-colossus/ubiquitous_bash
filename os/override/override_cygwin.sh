@@ -599,7 +599,17 @@ then
 		kate -n "$@"
 	}
 
-
+	_aria2c_cygwin_overide() {
+		if _safeEcho_newline "$@" | grep '\--async-dns' > /dev/null
+		then
+			aria2c "$@"
+			return
+		else
+			aria2c --async-dns=false "$@"
+			return
+		fi
+	}
+	alias aria2c=_aria2c_cygwin_overide
 
 	##! type -p wslg
 	#[[ -e '/cygdrive/c/WINDOWS/system32/wslg.exe' ]] && wsl() { '/cygdrive/c/WINDOWS/system32/wslg.exe' ; }
