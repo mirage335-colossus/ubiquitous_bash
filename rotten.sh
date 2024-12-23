@@ -1883,7 +1883,7 @@ _wget_githubRelease_join-stdout() {
 
 	local currentIteration
 	currentIteration=0
-	for currentIteration in $(seq -f "%02g" 0 32)
+	for currentIteration in $(seq -f "%02g" 0 50)
 	do
 		currentURL=$(_wget_githubRelease-URL "$1" "$2" "$3"".part""$currentIteration")
 		[[ "$currentURL" == "" ]] && break
