@@ -97,7 +97,7 @@ _live_hash() {
     sudo -n dd if="$current_root_disk" bs=1M status=progress | \
 tee >( wc -c /dev/stdin | cut -f1 -d\ | tr -dc '0-9' > "$safeTmp"/.tmp-currentFileBytes ) | \
 tee >( openssl dgst -whirlpool -binary | xxd -p -c 256 > "$safeTmp"/.tmp-whirlpool ) | \
-tee >( openssl dgst -sha3-512 -binary | xxd -p -c 256 > "$safeTmp"/.tmp-sha3 )
+tee >( openssl dgst -sha3-512 -binary | xxd -p -c 256 > "$safeTmp"/.tmp-sha3 ) > /dev/null
 
     echo 'dd if='"$current_root_disk"' bs=1048576 count=$(bc <<< '"'"$(cat "$safeTmp"/.tmp-currentFileBytes)' / 1048576'"'"' ) status=progress | openssl dgst -whirlpool -binary | xxd -p -c 256'
     
