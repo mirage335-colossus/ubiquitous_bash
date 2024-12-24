@@ -66,7 +66,8 @@ _live_hash-getRootBlkDevice()  {
 # DANGER: CAUTION: ATTENTION: Initial measurement should be done BEFORE connecting computer, USB flash drive, etc, to potentially untrusted networks, peripherials, etc.
 #
 # For 'live' dist/OS , which is NOT supposed to change the disk contents, this may in theory, frustrate simple 'BadUSB'->dist/OS_filesystem_alteration->'BadUSB' spreading, and hopefully at least drastically reduce the efficiency of attempts at 'smart' firmware/microcontroller/etc reprogramming that sufficiently alters the binary code sequences of booted software on-the-fly in unpredictable environments to spread 'BadUSB' without direct dist/OS_filesystem_alteration .
-# Availability is a serious underpinning of Integrity security. Persistent booting with 'SecureBoot', 'IntelTXT', etc, have the downside that if integrity is lost, then this is persistent. Read-only USB flash drives are not only expensive, but not commercially available (as of 2024) with both FIPS (ie. software) and EAL (ie. hardware) certification. This is a compromise that is hoped to bring the higher standard of non-persistent yet measured OS security to any available USB flash drive and Linux bootable laptop.
+# Availability is a serious underpinning of Integrity security. Persistent booting with 'SecureBoot', 'IntelTXT', etc, has the downside that if integrity is lost, then this is persistent. Read-only USB flash drives are not only expensive and bulky, but not commercially available (as of 2024) with both FIPS (ie. software) and EAL (ie. hardware) certification. True read-only Optical Disc Drives, are becoming quite rare, are limited in capacity, and are also bulky.
+# This is a compromise that is hoped to bring the higher standard of non-persistent yet measured OS security to any available USB flash drive and Linux bootable laptop.
 _live_hash() {
     _start
 
@@ -94,7 +95,11 @@ _live_hash() {
 
     _messagePlain_request 'request: Photograph, print, and label computer and USB flash drive with the below.'
 
-    sudo -n dd if="$current_root_disk" bs=1M status=progress | \
+    # Speed limit is provided to run as a background process, though this is usually not useful.
+    local current_speed
+    current_speed="$2"
+    [[ "$current_speed" == "" ]] && current_speed="10G"
+    sudo -n dd if="$current_root_disk" bs=1M status=progress | pv -q -L "$currentSpeed" | \
 tee >( wc -c /dev/stdin | cut -f1 -d\ | tr -dc '0-9' > "$safeTmp"/.tmp-currentFileBytes ) | \
 tee >( openssl dgst -whirlpool -binary | xxd -p -c 256 > "$safeTmp"/.tmp-whirlpool ) | \
 tee >( openssl dgst -sha3-512 -binary | xxd -p -c 256 > "$safeTmp"/.tmp-sha3 ) > /dev/null
