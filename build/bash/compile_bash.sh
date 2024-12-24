@@ -51,6 +51,7 @@ _compile_bash_deps() {
 		_deps_linux
 		
 		_deps_hardware
+		_deps_measurement
 		_deps_x220t
 		_deps_w540
 		
@@ -256,6 +257,7 @@ _compile_bash_deps() {
 		#_deps_synergy
 		
 		#_deps_hardware
+		#_deps_measurement
 		#_deps_x220t
 		#_deps_w540
 		#_deps_peripherial
@@ -358,6 +360,7 @@ _compile_bash_deps() {
 		#_deps_synergy
 		
 		#_deps_hardware
+		#_deps_measurement
 		#_deps_x220t
 		#_deps_w540
 		#_deps_peripherial
@@ -460,6 +463,7 @@ _compile_bash_deps() {
 		_deps_synergy
 		
 		_deps_hardware
+		_deps_measurement
 		_deps_x220t
 		_deps_w540
 		_deps_peripherial
@@ -948,6 +952,8 @@ _compile_bash_hardware() {
 	[[ "$enUb_hardware" == "true" ]] && [[ "$enUb_w540" == "true" ]] && includeScriptList+=( "hardware/w540"/w540_fan.sh )
 	
 	[[ "$enUb_hardware" == "true" ]] && [[ "$enUb_peripherial" == "true" ]] && includeScriptList+=( "hardware/peripherial/h1060p"/h1060p.sh )
+
+	( [[ "$enUb_hardware" == "true" ]] || [[ "$enUb_measurement" == "true" ]] ) && includeScriptList+=( "hardware/measurement"/live_hash.sh )
 }
 
 _compile_bash_vars_basic() {

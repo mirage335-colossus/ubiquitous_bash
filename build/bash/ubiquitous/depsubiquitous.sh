@@ -376,6 +376,11 @@ _deps_hardware() {
 	export enUb_hardware="true"
 }
 
+_deps_measurement() {
+	_deps_hardware
+	export enUb_measurement="true"
+}
+
 _deps_x220t() {
 	_deps_notLean
 	_deps_hardware
