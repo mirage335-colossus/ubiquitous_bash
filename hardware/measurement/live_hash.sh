@@ -11,7 +11,7 @@ _live_hash-getRootBlkDevice()  {
 
 
     
-    # 1) Identify the root mount’s source (which might be /dev/sdXn, overlay, etc.)
+    # 1) Identify the root mount's source (which might be /dev/sdXn, overlay, etc.)
     current_root_part=$(findmnt -no SOURCE / 2>/dev/null || true)
 
     # 2) Try to look up the underlying physical disk for that partition/device.
@@ -47,7 +47,7 @@ _live_hash-getRootBlkDevice()  {
                 fi
             fi
 
-            # 4d) If current_fallback_disk is not empty now, that’s our current_root_disk
+            # 4d) If current_fallback_disk is not empty now, that's our current_root_disk
             if [ -n "$current_fallback_disk" ]; then
             current_root_disk="$current_fallback_disk"
             fi
