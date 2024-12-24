@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='1060407826'
+export ub_setScriptChecksum_contents='1774528173'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -36795,6 +36795,8 @@ _live_hash-getRootBlkDevice()  {
     echo "/dev/$current_root_disk"
 }
 
+# DANGER: CAUTION: ATTENTION: Initial measurement should be done BEFORE connecting computer, USB flash drive, etc, to potentially untrusted networks, peripherials, etc.
+#
 # For 'live' dist/OS , which is NOT supposed to change the disk contents, this may in theory, frustrate simple 'BadUSB'->dist/OS_filesystem_alteration->'BadUSB' spreading, and hopefully at least drastically reduce the efficiency of attempts at 'smart' firmware/microcontroller/etc reprogramming that sufficiently alters the binary code sequences of booted software on-the-fly in unpredictable environments to spread 'BadUSB' without direct dist/OS_filesystem_alteration .
 # Availability is a serious underpinning of Integrity security. Persistent booting with 'SecureBoot', 'IntelTXT', etc, have the downside that if integrity is lost, then this is persistent. Read-only USB flash drives are not only expensive, but not commercially available (as of 2024) with both FIPS (ie. software) and EAL (ie. hardware) certification. This is a compromise that is hoped to bring the higher standard of non-persistent yet measured OS security to any available USB flash drive and Linux bootable laptop.
 _live_hash() {
@@ -36824,7 +36826,7 @@ _live_hash() {
 
     _messagePlain_request 'request: Photograph, print, and label computer and USB flash drive with the below.'
 
-    sudo -n dd if=./"$current_root_disk" bs=1M status=progress | \
+    sudo -n dd if="$current_root_disk" bs=1M status=progress | \
 tee >( wc -c /dev/stdin | cut -f1 -d\ | tr -dc '0-9' > "$safeTmp"/.tmp-currentFileBytes ) | \
 tee >( openssl dgst -whirlpool -binary | xxd -p -c 256 > "$safeTmp"/.tmp-whirlpool ) | \
 tee >( openssl dgst -sha3-512 -binary | xxd -p -c 256 > "$safeTmp"/.tmp-sha3 )
@@ -36839,8 +36841,6 @@ tee >( openssl dgst -sha3-512 -binary | xxd -p -c 256 > "$safeTmp"/.tmp-sha3 )
     cat "$safeTmp"/.tmp-sha3
 
     _messagePlain_request 'request: Photograph, print, and label computer and USB flash drive with the above.'
-
-    echo 'ATTENTION: Initial measurement should be done BEFORE connecting this computer, USB flash drive, etc, to potentially untrusted networks, peripherials, etc.'
 
 
     _stop
