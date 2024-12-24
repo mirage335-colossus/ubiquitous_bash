@@ -99,7 +99,7 @@ _live_hash() {
     local current_speed
     current_speed="$2"
     [[ "$current_speed" == "" ]] && current_speed="10G"
-    sudo -n dd if="$current_root_disk" bs=1M status=progress | pv -q -L "$currentSpeed" | \
+    sudo -n dd if="$current_root_disk" bs=1M status=progress | pv -q -L "$current_speed" | \
 tee >( wc -c /dev/stdin | cut -f1 -d\ | tr -dc '0-9' > "$safeTmp"/.tmp-currentFileBytes ) | \
 tee >( openssl dgst -whirlpool -binary | xxd -p -c 256 > "$safeTmp"/.tmp-whirlpool ) | \
 tee >( openssl dgst -sha3-512 -binary | xxd -p -c 256 > "$safeTmp"/.tmp-sha3 ) > /dev/null
