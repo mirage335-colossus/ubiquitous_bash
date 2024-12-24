@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='4047680138'
+export ub_setScriptChecksum_contents='3650713459'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -8483,7 +8483,8 @@ _fetchDep_debianBookworm_special() {
 		
 		sudo -n env DEBIAN_FRONTEND=noninteractive apt-get -y update
 		#sudo -n env DEBIAN_FRONTEND=noninteractive apt-get install --install-recommends -y dkms virtualbox-6.1
-		sudo -n env DEBIAN_FRONTEND=noninteractive apt-get install --install-recommends -y dkms virtualbox-7.0
+		#sudo -n env DEBIAN_FRONTEND=noninteractive apt-get install --install-recommends -y dkms virtualbox-7.0
+		sudo -n env DEBIAN_FRONTEND=noninteractive apt-get install --install-recommends -y dkms virtualbox-7.1
 		
 		# https://www.virtualbox.org/ticket/20949
 		if ! type -p virtualbox > /dev/null 2>&1 && ! type -p VirtualBox > /dev/null 2>&1
@@ -10100,9 +10101,11 @@ _getMost_debian12_install() {
 	_getMost_backend_aptGetInstall usbip
 
 	
-	_getMost_backend apt-get -d install -y virtualbox-7.0
+	#_getMost_backend apt-get -d install -y virtualbox-7.0
+	_getMost_backend apt-get -d install -y virtualbox-7.1
 
-	_getMost_backend_aptGetInstall virtualbox-7.0
+	#_getMost_backend_aptGetInstall virtualbox-7.0
+	_getMost_backend_aptGetInstall virtualbox-7.1
 }
 
 _getMost_debian11_install() {
@@ -11078,9 +11081,11 @@ _getMost_ubuntu22-VBoxManage() {
 	
 	#_getMost_ubuntu22_install "$@"
 	#_getMost_backend apt-get -d install -y virtualbox-6.1
-	_getMost_backend apt-get -d install -y virtualbox-7.0
+	#_getMost_backend apt-get -d install -y virtualbox-7.0
+	_getMost_backend apt-get -d install -y virtualbox-7.1
 	
-	_getMost_backend_aptGetInstall virtualbox-7.0
+	#_getMost_backend_aptGetInstall virtualbox-7.0
+	_getMost_backend_aptGetInstall virtualbox-7.1
 	
 	_getMost_backend apt-get remove --autoremove -y plasma-discover
 	

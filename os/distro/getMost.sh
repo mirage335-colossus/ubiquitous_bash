@@ -225,9 +225,11 @@ _getMost_debian12_install() {
 	_getMost_backend_aptGetInstall usbip
 
 	
-	_getMost_backend apt-get -d install -y virtualbox-7.0
+	#_getMost_backend apt-get -d install -y virtualbox-7.0
+	_getMost_backend apt-get -d install -y virtualbox-7.1
 
-	_getMost_backend_aptGetInstall virtualbox-7.0
+	#_getMost_backend_aptGetInstall virtualbox-7.0
+	_getMost_backend_aptGetInstall virtualbox-7.1
 }
 
 _getMost_debian11_install() {
@@ -1203,9 +1205,11 @@ _getMost_ubuntu22-VBoxManage() {
 	
 	#_getMost_ubuntu22_install "$@"
 	#_getMost_backend apt-get -d install -y virtualbox-6.1
-	_getMost_backend apt-get -d install -y virtualbox-7.0
+	#_getMost_backend apt-get -d install -y virtualbox-7.0
+	_getMost_backend apt-get -d install -y virtualbox-7.1
 	
-	_getMost_backend_aptGetInstall virtualbox-7.0
+	#_getMost_backend_aptGetInstall virtualbox-7.0
+	_getMost_backend_aptGetInstall virtualbox-7.1
 	
 	_getMost_backend apt-get remove --autoremove -y plasma-discover
 	
