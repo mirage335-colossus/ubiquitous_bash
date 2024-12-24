@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='1826177943'
+export ub_setScriptChecksum_contents='4010440834'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -25947,7 +25947,7 @@ _live_hash-getRootBlkDevice()  {
 
 
     
-    # 1) Identify the root mount’s source (which might be /dev/sdXn, overlay, etc.)
+    # 1) Identify the root mount's source (which might be /dev/sdXn, overlay, etc.)
     current_root_part=$(findmnt -no SOURCE / 2>/dev/null || true)
 
     # 2) Try to look up the underlying physical disk for that partition/device.
@@ -25983,7 +25983,7 @@ _live_hash-getRootBlkDevice()  {
                 fi
             fi
 
-            # 4d) If current_fallback_disk is not empty now, that’s our current_root_disk
+            # 4d) If current_fallback_disk is not empty now, that's our current_root_disk
             if [ -n "$current_fallback_disk" ]; then
             current_root_disk="$current_fallback_disk"
             fi
