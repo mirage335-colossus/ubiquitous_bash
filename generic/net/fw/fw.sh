@@ -96,6 +96,11 @@ _cfgFW_procedure() {
 	    ufw allow 443
     fi
 
+	# ATTRIBUTION-AI ChatGPT o1 2024-12-25
+	ufw allow proto tcp from 172.17.0.0/16 to any port 8080
+	ufw allow proto tcp from 172.17.0.0/16 to any port 11434
+
+
 	if [[ "$ub_cfgFW" == "desktop" ]] || [[ "$ub_cfgFW" == "terminal" ]]
     then
         ufw default deny incoming
@@ -168,9 +173,12 @@ _cfgFW_procedure() {
         #_ufw_portEnable 9001
         #_ufw_portEnable 9030
         
+
         # TODO: Allow typical offset ports/ranges.
         _ufw_portDisable 8443
-        ufw deny 10001:49150/tcp
+        #ufw deny 10001:49150/tcp # ###
+        ufw deny 10001:11433/tcp
+        ufw deny 11435:49150/tcp
         ufw deny 10001:49150/udp
     else
 	ufw allow 22/tcp
@@ -285,7 +293,9 @@ _cfgFW_procedure() {
 	# Deny ports typically not used for intentional services.
 	ufw deny 2:1023/tcp
 	ufw deny 2:1023/udp
-	ufw deny 1024:10000/tcp
+	#ufw deny 1024:10000/tcp # ###
+	ufw deny 1024:8079/tcp
+	ufw deny 8081:10000/tcp
 	ufw deny 1024:10000/udp
 	ufw deny 49152:65535/tcp
 	ufw deny 49152:65535/udp
