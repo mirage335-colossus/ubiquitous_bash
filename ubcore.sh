@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='3119028449'
+export ub_setScriptChecksum_contents='2850587771'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -26014,7 +26014,7 @@ _live_hash-getRootBlkDevice()  {
 # For 'live' dist/OS , which is NOT supposed to change the disk contents, this may in theory, frustrate simple 'BadUSB'->dist/OS_filesystem_alteration->'BadUSB' spreading, and hopefully at least drastically reduce the efficiency of attempts at 'smart' firmware/microcontroller/etc reprogramming that sufficiently alters the binary code sequences of booted software on-the-fly in unpredictable environments to spread 'BadUSB' without direct dist/OS_filesystem_alteration .
 # Availability is a serious underpinning of Integrity security. Persistent booting with 'SecureBoot', 'IntelTXT', etc, has the downside that if integrity is lost, then this is persistent. Read-only USB flash drives are not only expensive and bulky, but not commercially available (as of 2024) with both FIPS (ie. software) and EAL (ie. hardware) certification. True read-only Optical Disc Drives, are becoming quite rare, are limited in capacity, and are also bulky.
 # This is a compromise that is hoped to bring the higher standard of non-persistent yet measured OS security to any available USB flash drive and Linux bootable laptop.
-_live_hash() {
+_live_hash_sequence() {
     _start
 
     _if_cygwin && _stop
@@ -26064,7 +26064,9 @@ tee >( openssl dgst -sha3-512 -binary | xxd -p -c 256 > "$safeTmp"/.tmp-sha3 ) >
 
     _stop
 }
-
+_live_hash() {
+    "$scriptAbsoluteLocation" _live_hash_sequence "$@"
+}
 
 #####Basic Variable Management
 
