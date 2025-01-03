@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='4169018424'
+export ub_setScriptChecksum_contents='100856071'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -27929,6 +27929,54 @@ _dropCache() {
 
 
 
+
+# WARNING: Very conservative functions, for such extraordinary situations as directly streaming from a satellite connection to optical disc using an unreliable optical disc drive, equivalent to operating a laser cutter at sub-micron precision from space.
+# NOTICE: EXAMPLE functions intended for reference only. Often appropriate to instead write a custom command with less conservative parameters.
+# Usually these functions should be equally applicable to DVD and BD discs, preferably very high quality BD M-Discs. DVD-RAM may also be supported, but is not recommended. Magneto-Optical discs do not need such trickery. CD-ROM and other special legacy disc types will not be needed on any routine basis, not having any of particularly good capacity, durability, or longevity.
+
+
+# WARNING: May be untested. Example.
+# [[ "$1" == currentFile ]]
+# [[ "$2" == currentSpeed ]] # (3 is safest)
+# [[ "$3" == currentDrive ]]
+_growisofs() {
+	local currentFile
+	currentFile="$1"
+	[[ "$currentFile" == "" ]] && _messagePlain_warn 'warn: unspecified: currentFile... assuming urandom'
+	#[[ "$currentFile" == "" ]] && _messageFAIL
+	[[ "$currentFile" == "" ]] && currentFile=/dev/urandom
+	
+	local currentSpeed
+	currentSpeed="$2"
+	[[ "$currentSpeed" == "" ]] && currentSpeed=3
+	
+	local currentDrive
+	currentDrive="$3"
+	[[ "$currentDrive" == "" ]] && _messagePlain_bad 'fail: unspecified: currentDrive'
+	[[ "$currentDrive" == "" ]] && _messageFAIL
+	
+	_messagePlain_request 'checksum commands: '
+	local current_cksum_size
+	current_cksum_size=$(wc -c "$currentFile" | cut -f1 -d\  | tr -dc '0-9')
+	echo sudo -n dd if=\""$currentFile"\" bs=1M \| head --bytes=\""$current_cksum_size"\" \| env CMD_ENV=xpg4 cksum
+	echo sudo -n dd if=\""$currentDrive"\" bs=1M \| head --bytes=\""$current_cksum_size"\" \| env CMD_ENV=xpg4 cksum
+	
+	_messagePlain_nominal '_growisofs: growisofs'
+	
+	# STRONGLY DISCOURAGED.
+	# Hash or checksum during writing only verifies downloaded data, which is ONLY useful to diagnose whether the disc drive or download was the point of failure during real-time writing of download. Unlike Magneto-Optical discs, packet writing optical disc devices can suffer buffer underrun errors, necessitating hash of the disc itself anyway.
+	# ONLY use case for hash/checksum of streamed data is real-time download, usually only desired either due to near identical download and disc writing speed, or due to creating the disc from a 'live' dist/OS with no persistent storage.
+	#tee >(cksum >> /dev/stderr) ; dd if=/dev/zero bs=2048 count=$(bc <<< '1000000000000 / 2048' ) )
+	#tee >(openssl dgst -whirlpool -binary | xxd -p -c 256 >> "$scriptLocal"/hash-download.txt) ; dd if=/dev/zero bs=2048 count=$(bc <<< '1000000000000 / 2048' ) )
+	
+	# ATTENTION: Important command is just this. Writes data from cat "$currentFile" through pipe to /dev/stdin to "$currentDrive" at "$currentSpeed" . Fills remainder of disc with zeros.
+	( cat "$currentFile" ; dd if=/dev/zero bs=2048 count=$(bc <<< '1000000000000 / 2048' ) ) | sudo -n growisofs -speed="$currentSpeed" -dvd-compat -Z "$currentDrive"=/dev/stdin -use-the-force-luke=notray -use-the-force-luke=spare:min -use-the-force-luke=bufsize:128m
+}
+
+
+
+
+
 _test_search() {
 	_tryExec "_test_recoll"
 }
@@ -48946,6 +48994,7 @@ _compile_bash_shortcuts() {
 	
 	( [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_repo" == "true" ]] || [[ "$enUb_cloud" == "true" ]] ) && includeScriptList+=( "shortcuts/dev/app/repo/mktorrent"/mktorrent.sh )
 	( [[ "$enUb_notLean" == "true" ]] || [[ "$enUb_dev" == "true" ]] || [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_image" == "true" ]] || [[ "$enUb_repo" == "true" ]] || [[ "$enUb_cloud" == "true" ]] ) && includeScriptList+=( "shortcuts/dev/app/repo/disk"/dd.sh )
+	( [[ "$enUb_notLean" == "true" ]] || [[ "$enUb_dev" == "true" ]] || [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_image" == "true" ]] || [[ "$enUb_repo" == "true" ]] || [[ "$enUb_cloud" == "true" ]] ) && includeScriptList+=( "shortcuts/dev/app/repo/disc"/growisofs.sh )
 	
 	
 	( [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_search" == "true" ]] ) && includeScriptList+=( "shortcuts/dev/app/search"/search.sh )
