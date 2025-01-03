@@ -627,6 +627,7 @@ _getMost_debian11_install() {
 	_getMost_backend_aptGetInstall konqueror
 	
 	_getMost_backend_aptGetInstall xserver-xorg-video-all
+	_getMost_backend_aptGetInstall xserver-xorg-video-amdgpu
 	
 	_getMost_backend_aptGetInstall qalculate-gtk
 	_getMost_backend_aptGetInstall qalc
