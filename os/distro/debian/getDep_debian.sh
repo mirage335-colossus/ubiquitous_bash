@@ -228,14 +228,14 @@ _fetchDep_debianBookworm_special() {
 	
 	if [[ "$1" == "atom" ]]
 	then
-		curl -L https://packagecloud.io/AtomEditor/atom/gpgkey | sudo -n apt-key add -
-		sudo -n sh -c 'echo "deb [arch=amd64] https://packagecloud.io/AtomEditor/atom/any/ any main" > /etc/apt/sources.list.d/ub_atom.list'
+		#curl -L https://packagecloud.io/AtomEditor/atom/gpgkey | sudo -n apt-key add -
+		#sudo -n sh -c 'echo "deb [arch=amd64] https://packagecloud.io/AtomEditor/atom/any/ any main" > /etc/apt/sources.list.d/ub_atom.list'
 		
-		sudo -n env DEBIAN_FRONTEND=noninteractive apt-get -y update
+		#sudo -n env DEBIAN_FRONTEND=noninteractive apt-get -y update
 		
-		sudo -n env DEBIAN_FRONTEND=noninteractive apt-get install --install-recommends -y atom
+		#sudo -n env DEBIAN_FRONTEND=noninteractive apt-get install --install-recommends -y atom
 		
-		return 0
+		return 1
 	fi
 	
 	if [[ "$1" == "GL/gl.h" ]] || [[ "$1" == "GL/glext.h" ]] || [[ "$1" == "GL/glx.h" ]] || [[ "$1" == "GL/glxext.h" ]] || [[ "$1" == "GL/dri_interface.h" ]] || [[ "$1" == "x86_64-linux-gnu/pkgconfig/dri.pc" ]]
@@ -720,14 +720,14 @@ _fetchDep_debianBullseye_special() {
 	
 	if [[ "$1" == "atom" ]]
 	then
-		curl -L https://packagecloud.io/AtomEditor/atom/gpgkey | sudo -n apt-key add -
-		sudo -n sh -c 'echo "deb [arch=amd64] https://packagecloud.io/AtomEditor/atom/any/ any main" > /etc/apt/sources.list.d/ub_atom.list'
+		#curl -L https://packagecloud.io/AtomEditor/atom/gpgkey | sudo -n apt-key add -
+		#sudo -n sh -c 'echo "deb [arch=amd64] https://packagecloud.io/AtomEditor/atom/any/ any main" > /etc/apt/sources.list.d/ub_atom.list'
 		
-		sudo -n env DEBIAN_FRONTEND=noninteractive apt-get -y update
+		#sudo -n env DEBIAN_FRONTEND=noninteractive apt-get -y update
 		
-		sudo -n env DEBIAN_FRONTEND=noninteractive apt-get install --install-recommends -y atom
+		#sudo -n env DEBIAN_FRONTEND=noninteractive apt-get install --install-recommends -y atom
 		
-		return 0
+		return 1
 	fi
 	
 	if [[ "$1" == "GL/gl.h" ]] || [[ "$1" == "GL/glext.h" ]] || [[ "$1" == "GL/glx.h" ]] || [[ "$1" == "GL/glxext.h" ]] || [[ "$1" == "GL/dri_interface.h" ]] || [[ "$1" == "x86_64-linux-gnu/pkgconfig/dri.pc" ]]
