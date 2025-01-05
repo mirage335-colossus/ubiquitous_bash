@@ -188,7 +188,7 @@ _fetchDep_debianBookworm_special() {
 		return 0
 	fi
 	
-	if [[ "$1" == "docker" ]]
+	if [[ "$1" == "docker" ]] || [[ "$1" == "docker-compose" ]]
 	then
 		sudo -n update-alternatives --set iptables /usr/sbin/iptables-legacy
 		sudo -n update-alternatives --set ip6tables /usr/sbin/ip6tables-legacy
@@ -213,6 +213,7 @@ _fetchDep_debianBookworm_special() {
 		
 		sudo -n env DEBIAN_FRONTEND=noninteractive apt-get remove -y docker docker-engine docker.io docker-ce docker
 		sudo -n env DEBIAN_FRONTEND=noninteractive apt-get install --install-recommends -y docker-ce
+		sudo -n env DEBIAN_FRONTEND=noninteractive apt-get install --install-recommends -y docker-compose-plugin
 		
 		sudo -n usermod -a -G docker "$USER"
 		

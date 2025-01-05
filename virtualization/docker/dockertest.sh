@@ -39,6 +39,7 @@ _test_docker() {
 		fi
 		
 		_getDep docker
+		_getDep docker-compose
 		
 		local dockerPermission
 		dockerPermission=$(_permitDocker echo true 2> /dev/null)

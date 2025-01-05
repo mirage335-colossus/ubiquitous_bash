@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='2747803771'
+export ub_setScriptChecksum_contents='4241232332'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -8564,7 +8564,7 @@ _fetchDep_debianBookworm_special() {
 		return 0
 	fi
 	
-	if [[ "$1" == "docker" ]]
+	if [[ "$1" == "docker" ]] || [[ "$1" == "docker-compose" ]]
 	then
 		sudo -n update-alternatives --set iptables /usr/sbin/iptables-legacy
 		sudo -n update-alternatives --set ip6tables /usr/sbin/ip6tables-legacy
@@ -8589,6 +8589,7 @@ _fetchDep_debianBookworm_special() {
 		
 		sudo -n env DEBIAN_FRONTEND=noninteractive apt-get remove -y docker docker-engine docker.io docker-ce docker
 		sudo -n env DEBIAN_FRONTEND=noninteractive apt-get install --install-recommends -y docker-ce
+		sudo -n env DEBIAN_FRONTEND=noninteractive apt-get install --install-recommends -y docker-compose-plugin
 		
 		sudo -n usermod -a -G docker "$USER"
 		
@@ -10481,7 +10482,9 @@ _getMost_debian11_install() {
 		
 		# WARNING: Untested. May cause problems.
 		#_getMost_backend_aptGetInstall docker-ce
+		#_getMost_backend_aptGetInstall docker-compose-plugin
 		_getMost_backend apt-get -d install -y docker-ce
+		_getMost_backend apt-get -d install -y docker-compose-plugin
 	fi
 	
 	
