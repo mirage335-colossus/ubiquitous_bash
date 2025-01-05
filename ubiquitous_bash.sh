@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='4269662225'
+export ub_setScriptChecksum_contents='599814603'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -9322,14 +9322,14 @@ _fetchDep_debianBookworm_special() {
 	
 	if [[ "$1" == "atom" ]]
 	then
-		curl -L https://packagecloud.io/AtomEditor/atom/gpgkey | sudo -n apt-key add -
-		sudo -n sh -c 'echo "deb [arch=amd64] https://packagecloud.io/AtomEditor/atom/any/ any main" > /etc/apt/sources.list.d/ub_atom.list'
+		#curl -L https://packagecloud.io/AtomEditor/atom/gpgkey | sudo -n apt-key add -
+		#sudo -n sh -c 'echo "deb [arch=amd64] https://packagecloud.io/AtomEditor/atom/any/ any main" > /etc/apt/sources.list.d/ub_atom.list'
 		
-		sudo -n env DEBIAN_FRONTEND=noninteractive apt-get -y update
+		#sudo -n env DEBIAN_FRONTEND=noninteractive apt-get -y update
 		
-		sudo -n env DEBIAN_FRONTEND=noninteractive apt-get install --install-recommends -y atom
+		#sudo -n env DEBIAN_FRONTEND=noninteractive apt-get install --install-recommends -y atom
 		
-		return 0
+		return 1
 	fi
 	
 	if [[ "$1" == "GL/gl.h" ]] || [[ "$1" == "GL/glext.h" ]] || [[ "$1" == "GL/glx.h" ]] || [[ "$1" == "GL/glxext.h" ]] || [[ "$1" == "GL/dri_interface.h" ]] || [[ "$1" == "x86_64-linux-gnu/pkgconfig/dri.pc" ]]
@@ -9814,14 +9814,14 @@ _fetchDep_debianBullseye_special() {
 	
 	if [[ "$1" == "atom" ]]
 	then
-		curl -L https://packagecloud.io/AtomEditor/atom/gpgkey | sudo -n apt-key add -
-		sudo -n sh -c 'echo "deb [arch=amd64] https://packagecloud.io/AtomEditor/atom/any/ any main" > /etc/apt/sources.list.d/ub_atom.list'
+		#curl -L https://packagecloud.io/AtomEditor/atom/gpgkey | sudo -n apt-key add -
+		#sudo -n sh -c 'echo "deb [arch=amd64] https://packagecloud.io/AtomEditor/atom/any/ any main" > /etc/apt/sources.list.d/ub_atom.list'
 		
-		sudo -n env DEBIAN_FRONTEND=noninteractive apt-get -y update
+		#sudo -n env DEBIAN_FRONTEND=noninteractive apt-get -y update
 		
-		sudo -n env DEBIAN_FRONTEND=noninteractive apt-get install --install-recommends -y atom
+		#sudo -n env DEBIAN_FRONTEND=noninteractive apt-get install --install-recommends -y atom
 		
-		return 0
+		return 1
 	fi
 	
 	if [[ "$1" == "GL/gl.h" ]] || [[ "$1" == "GL/glext.h" ]] || [[ "$1" == "GL/glx.h" ]] || [[ "$1" == "GL/glxext.h" ]] || [[ "$1" == "GL/dri_interface.h" ]] || [[ "$1" == "x86_64-linux-gnu/pkgconfig/dri.pc" ]]
@@ -12341,9 +12341,9 @@ _getMinimal_cloud() {
 
 	# ATTRIBUTION-AI ChatGPT o1 2025-01-03 ... partially. Seems there is some evidence newer dist/OS versions may be more likely to break by default, 'i386', needed for building MSW installers, etc.
 	_getMost_backend dpkg --add-architecture i386
-	#_getMost_backend env DEBIAN_FRONTEND=noninteractive apt-get -y update
+	_getMost_backend env DEBIAN_FRONTEND=noninteractive apt-get -y update
 	_getMost_backend_aptGetInstall libc6:i386 lib32z1
-	_getMost_backend_aptGetInstall wine wine32 wine64 libwine libwine:i386 fonts-wine
+	#_getMost_backend_aptGetInstall wine wine32 wine64 libwine libwine:i386 fonts-wine
 
 
 	

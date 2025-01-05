@@ -355,9 +355,9 @@ _getMinimal_cloud() {
 
 	# ATTRIBUTION-AI ChatGPT o1 2025-01-03 ... partially. Seems there is some evidence newer dist/OS versions may be more likely to break by default, 'i386', needed for building MSW installers, etc.
 	_getMost_backend dpkg --add-architecture i386
-	#_getMost_backend env DEBIAN_FRONTEND=noninteractive apt-get -y update
+	_getMost_backend env DEBIAN_FRONTEND=noninteractive apt-get -y update
 	_getMost_backend_aptGetInstall libc6:i386 lib32z1
-	_getMost_backend_aptGetInstall wine wine32 wine64 libwine libwine:i386 fonts-wine
+	#_getMost_backend_aptGetInstall wine wine32 wine64 libwine libwine:i386 fonts-wine
 
 
 	
