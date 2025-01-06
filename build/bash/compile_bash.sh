@@ -624,6 +624,7 @@ _compile_bash_utilities() {
 	[[ "$enUb_proxy" == "true" ]] && includeScriptList+=( "generic/net/proxy/proxyrouter"/proxyrouter.sh )
 
 	[[ "$enUb_serial" == "true" ]] && includeScriptList+=( "generic/serial"/forwardPort.sh )
+	[[ "$enUb_serial" == "true" ]] && includeScriptList+=( "generic/serial"/forwardPort-service.sh )
 	[[ "$enUb_serial" == "true" ]] && includeScriptList+=( "generic/serial"/terminal.sh )
 	
 	[[ "$enUb_fw" == "true" ]] && includeScriptList+=( "generic/net/fw"/fw.sh )
