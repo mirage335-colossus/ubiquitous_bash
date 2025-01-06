@@ -78,7 +78,7 @@ export profileScriptFolder="$ubcoreUBdir"
 
 # Hardware serial terminals connected through screen require explicit resize to change number of columns/lines. Usually doing this once will at least increase the usable 'screen real estate' from the very small defaults.
 # Ignored by Cygwin/MSW, etc.
-type -p resize > /dev/null 2>&1 && resize > /dev/null
+type -p resize > /dev/null 2>&1 && resize > /dev/null 2>&1
 
 # Returns priority to normal.
 # Greater or equal, '_priority_app_pid_root' .

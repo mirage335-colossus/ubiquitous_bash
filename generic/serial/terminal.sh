@@ -40,8 +40,9 @@ _autologin_serial_sequence() {
 # /lib/systemd/system/serial-getty@.service
 # /etc/systemd/system/getty.target.wants/getty@tty1.service
 Description=Serial Port Terminal
-BindsTo=dev-%i.device
-After=dev-%i.device systemd-user-sessions.service plymouth-quit-wait.service getty-pre.target
+#BindsTo=dev-%i.device
+#After=dev-%i.device systemd-user-sessions.service plymouth-quit-wait.service getty-pre.target
+After=systemd-user-sessions.service getty-pre.target
 After=rc-local.service
 
 # If additional gettys are spawned during boot then we should make
@@ -60,20 +61,23 @@ Before=rescue.service
 # The '-o' option value tells agetty to replace 'login' arguments with an
 # option to preserve environment (-p), followed by '--' for safety, and then
 # the entered username.
-#ExecStart=-/sbin/agetty -o '-p -- \\u' --keep-baud 115200,57600,38400,9600 - $currentTerminal
+#ExecStart=-/sbin/agetty -o '-p -- \\u' --keep-baud 115200,57600,38400,9600 - "$currentTerminal"
 #Type=idle
 Type=simple
 ExecStart=
-ExecStart=-/sbin/agetty --autologin root --keep-baud 230400,115200,57600,38400,9600 --noclear %I $currentTerminal
+#ExecStart=-/sbin/agetty --autologin root --keep-baud 230400,115200,57600,38400,9600 --noclear %I $currentTerminal
+ExecStart=-/sbin/agetty --autologin root --local-line -p -h serial/by-id/usb-Prolific_Technology_Inc._USB-Serial_Controller_CRCDb131R01-if00-port0 230400 xterm-256color
 Restart=always
-UtmpIdentifier=%I
-StandardInput=tty
-StandardOutput=tty
-TTYPath=/dev/%I
-TTYReset=yes
-TTYVHangup=yes
-IgnoreSIGPIPE=no
-SendSIGHUP=yes
+#UtmpIdentifier=%I
+#UtmpIdentifier="$currentTerminal"
+#StandardInput=tty
+#StandardOutput=tty
+#TTYPath=/dev/%I
+#TTYPath=/dev/"$currentTerminal"
+#TTYReset=yes
+#TTYVHangup=yes
+#IgnoreSIGPIPE=no
+#SendSIGHUP=yes
 
 [Install]
 WantedBy=getty.target
@@ -87,7 +91,7 @@ CZXWXcRMTo8EmM8i4d
     _messagePlain_probe_cmd _getMost_backend systemctl daemon-reload
 
     _messagePlain_probe_cmd _getMost_backend systemctl enable terminal-serial.service
-	_messagePlain_probe_cmd _getMost_backend ln -sf /etc/systemd/system/terminal-serial.service /etc/systemd/system/getty.target.wants/terminal-serial.service
+    _messagePlain_probe_cmd _getMost_backend ln -sf /etc/systemd/system/terminal-serial.service /etc/systemd/system/getty.target.wants/terminal-serial.service
 
     _messagePlain_probe_cmd _getMost_backend systemctl start terminal-serial.service
 
@@ -107,11 +111,20 @@ CZXWXcRMTo8EmM8i4d
 _autologin_serial() {
     "$scriptAbsoluteLocation" _autologin_serial_sequence "$@"
 }
+_terminal_serial() {
+    _autologin_serial "$@"
+}
+# NOTICE: PREFERRED.
 _serial_terminal() {
     _autologin_serial "$@"
 }
 
 
-
-
+#_serial_screen /dev/serial/by-id/...
+_serial_screen() {
+    local currentTERM
+    currentTERM="$TERM"
+    [[ "$currentTERM" == "" ]] && currentTERM="xterm-256color"
+    screen "$1" 230400 -T "$TERM"
+}
 
