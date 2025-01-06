@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='623930450'
+export ub_setScriptChecksum_contents='214491454'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -8145,8 +8145,8 @@ Before=rescue.service
 #Type=idle
 Type=simple
 ExecStart=
-#ExecStart=-/sbin/agetty --autologin root --keep-baud 230400,115200,57600,38400,9600 --noclear %I $currentTerminal
-ExecStart=-/sbin/agetty --autologin root --local-line -p -h serial/by-id/usb-Prolific_Technology_Inc._USB-Serial_Controller_CRCDb131R01-if00-port0 230400 xterm-256color
+#ExecStart=-/sbin/agetty --autologin root --keep-baud 230400,115200,57600,38400,9600 --noclear %I "$currentTerminal"
+ExecStart=-/sbin/agetty --autologin root --local-line -p -h "$currentTerminal" 230400 xterm-256color
 Restart=always
 #UtmpIdentifier=%I
 #UtmpIdentifier="$currentTerminal"
