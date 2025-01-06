@@ -195,7 +195,7 @@ _setupUbiquitous() {
 		_setupUbiquitous_bashProfile_here >> "$HOME"/.bash_profile
 	fi
 	
-	
+	_setupUbiquitous_resize >> "$ubcoreFile"
 	
 	
 	_messageNormal "install: setupUbiquitous_accessories"
