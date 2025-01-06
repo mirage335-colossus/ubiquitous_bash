@@ -434,6 +434,11 @@ _getMost_debian11_install() {
 	
 
 	_getMost_backend_aptGetInstall xvfb
+
+	# terminal-serial: agetty, screen, resize
+	_getMost_backend_aptGetInstall util-linux
+	_getMost_backend_aptGetInstall screen
+	_getMost_backend_aptGetInstall xterm
 	
 	#_getMost_backend_aptGetInstall original-awk
 	_getMost_backend_aptGetInstall gawk
