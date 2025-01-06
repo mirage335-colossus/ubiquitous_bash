@@ -83,6 +83,9 @@ Restart=always
 WantedBy=getty.target
 CZXWXcRMTo8EmM8i4d
 
+    _messagePlain_probe_cmd _getMost_backend systemctl daemon-reload
+    sleep 1
+
     _messagePlain_nominal '_autologin_serial: enable: /etc/systemd/system/getty.target.wants/terminal-serial.service'
     #_getMost_backend tee /etc/systemd/system/terminal-serial.service
     _getMost_backend chmod 644 /etc/systemd/system/terminal-serial.service
