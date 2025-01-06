@@ -101,7 +101,7 @@ CZXWXcRMTo8EmM8i4d
     sleep 1
     _messagePlain_probe_cmd _getMost_backend systemctl start terminal-serial.service
 
-    _messagePlain_probe_cmd _getMost_backend systemctl status terminal-serial.service
+    _messagePlain_probe_cmd _getMost_backend systemctl status terminal-serial.service | cat
 
 
     _messagePlain_nominal '_autologin_serial: cron'
