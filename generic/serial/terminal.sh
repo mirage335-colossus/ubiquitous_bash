@@ -89,10 +89,13 @@ CZXWXcRMTo8EmM8i4d
     _messagePlain_probe_cmd _getMost_backend systemctl stop terminal-serial.service
 
     _messagePlain_probe_cmd _getMost_backend systemctl daemon-reload
+    sleep 1
 
     _messagePlain_probe_cmd _getMost_backend systemctl enable terminal-serial.service
     _messagePlain_probe_cmd _getMost_backend ln -sf /etc/systemd/system/terminal-serial.service /etc/systemd/system/getty.target.wants/terminal-serial.service
 
+    _messagePlain_probe_cmd _getMost_backend systemctl daemon-reload
+    sleep 1
     _messagePlain_probe_cmd _getMost_backend systemctl start terminal-serial.service
 
     _messagePlain_probe_cmd _getMost_backend systemctl status terminal-serial.service
