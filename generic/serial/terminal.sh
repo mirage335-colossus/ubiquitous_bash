@@ -122,6 +122,11 @@ _serial_terminal() {
 
 #_serial_screen /dev/serial/by-id/...
 _serial_screen() {
+    [[ "$1" == "" ]] && _messagePlain_bad 'bad: missing: serial device' && _messageFAIL
+    
+    # Arguably not best practice, but this is only used for such things as a single laptop diagnosing a single server... seems like a reasonable convenience.
+    pkill ^screen$ && sleep 1
+    
     local currentTERM
     currentTERM="$TERM"
     [[ "$currentTERM" == "" ]] && currentTERM="xterm-256color"
