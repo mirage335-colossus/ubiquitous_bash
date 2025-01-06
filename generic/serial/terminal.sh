@@ -131,7 +131,8 @@ _serial_screen() {
     [[ "$1" == "" ]] && _messagePlain_bad 'bad: missing: serial device' && _messageFAIL
     
     # Arguably not best practice, but this is only used for such things as a single laptop diagnosing a single server... seems like a reasonable convenience.
-    pkill ^screen$ && sleep 1
+    pkill ^screen$ > /dev/null 2>&1 && sleep 1
+    sudo -n pkill ^screen$ > /dev/null 2>&1 && sleep 1
     
     local currentTERM
     currentTERM="$TERM"
