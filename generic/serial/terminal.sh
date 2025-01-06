@@ -64,7 +64,7 @@ Before=rescue.service
 #Type=idle
 Type=simple
 ExecStart=
-ExecStart=-/sbin/agetty --autologin root --keep-baud 256000,115200,57600,38400,9600 --noclear %I $currentTerminal
+ExecStart=-/sbin/agetty --autologin root --keep-baud 230400,115200,57600,38400,9600 --noclear %I $currentTerminal
 Restart=always
 UtmpIdentifier=%I
 StandardInput=tty
@@ -89,7 +89,7 @@ CZXWXcRMTo8EmM8i4d
     _messagePlain_probe_cmd _getMost_backend systemctl enable terminal-serial.service
 	_messagePlain_probe_cmd _getMost_backend ln -sf /etc/systemd/system/terminal-serial.service /etc/systemd/system/getty.target.wants/terminal-serial.service
 
-    _messagePlain_probe_cmd _getMost_backend systemctl start enable terminal-serial.service
+    _messagePlain_probe_cmd _getMost_backend systemctl start terminal-serial.service
 
     _messagePlain_probe_cmd _getMost_backend systemctl status terminal-serial.service
 
