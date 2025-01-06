@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='2551355434'
+export ub_setScriptChecksum_contents='1733882934'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -7999,7 +7999,7 @@ _find_route_ip() {
 
 
 # NOTICE: Recommend 'ssh -C' (ie. compression) for a lower-latency more 'snappy' experience.
-
+# NOTICE: Some USB serial converters are apparently based on microcontrollers, compatible with at least 4m baud.
 
 
 #stty -F /dev/serial/by-id/...1 raw -echo -ixon -ixoff -crtscts 115200
@@ -8020,12 +8020,13 @@ _find_route_ip() {
 #b115200
 #b230400
 #b460800
+#b4000000
 
 
 
 # ATTRIBUTION-AI ChatGPT o1 2025-01-06 ... partially
 
-# _serial_server /dev/serial/by-id/... 22 230400
+# _serial_server /dev/serial/by-id/... 22 4000000
 _serial_server_sequence() {
     _start
     
@@ -8034,7 +8035,7 @@ _serial_server_sequence() {
     # a local TCP port (e.g., 80 for HTTP).
     #
     # Usage:
-    #   ./serial_to_http.sh /dev/ttyUSB0 230400 80
+    #   ./serial_to_http.sh /dev/ttyUSB0 4000000 80
     #
     # Then on the remote side (the device connected to /dev/ttyUSB0), send raw
     # HTTP requests to retrieve the web page from the local server.
@@ -8046,7 +8047,7 @@ _serial_server_sequence() {
 
     SERIAL_DEV="${1:-/dev/ttyUSB0}"
     WEB_PORT="${2:-22}"
-    BAUD_RATE="${3:-230400}"
+    BAUD_RATE="${3:-4000000}"
     
     echo 'stty'
     #parenb -cstopb clocal 
@@ -8081,7 +8082,7 @@ _serial_server() {
     "$scriptAbsoluteLocation" _serial_server_loop "$@"
 }
 
-# _serial_server /dev/serial/by-id/... 10022 230400
+# _serial_server /dev/serial/by-id/... 10022 4000000
 _serial_client_sequence() {
     _start
 
@@ -8093,7 +8094,7 @@ _serial_client_sequence() {
     #
     # Default values:
     #   SERIAL_DEV="/dev/ttyACM0"
-    #   BAUD_RATE="230400"
+    #   BAUD_RATE="4000000"
     #   REMOTE_LISTEN_PORT="10022"
     #
     # This listens on TCP port 8080 and forwards the data to/from the serial device.
@@ -8105,7 +8106,7 @@ _serial_client_sequence() {
 
     SERIAL_DEV="${1:-/dev/ttyUSB0}"
     REMOTE_LISTEN_PORT="${2:-10022}"
-    BAUD_RATE="${3:-230400}"
+    BAUD_RATE="${3:-4000000}"
     
     echo 'stty'
     #parenb -cstopb clocal 
