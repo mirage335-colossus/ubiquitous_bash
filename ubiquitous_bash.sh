@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='599814603'
+export ub_setScriptChecksum_contents='3870306881'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -7990,6 +7990,205 @@ _find_route_ip() {
 	[[ "$currentRouteIPaddr" == "" ]] && return 1
 	echo -n "$currentRouteIPaddr"
 	return 0
+}
+
+
+
+
+
+
+
+# ATTRIBUTION-AI ChatGPT o1 2025-01-06 ... partially
+
+# _serial_server /dev/serial/by-id/... 22 256000
+_serial_server_sequence() {
+    ##
+    # This script uses socat to forward any data from a USB serial device to
+    # a local TCP port (e.g., 80 for HTTP).
+    #
+    # Usage:
+    #   ./serial_to_http.sh /dev/ttyUSB0 115200 80
+    #
+    # Then on the remote side (the device connected to /dev/ttyUSB0), send raw
+    # HTTP requests to retrieve the web page from the local server.
+    ##
+
+    local SERIAL_DEV
+    local WEB_PORT
+    local BAUD_RATE
+
+    SERIAL_DEV="${1:-/dev/ttyUSB0}"
+    WEB_PORT="${2:-22}"
+    BAUD_RATE="${3:-256000}"
+
+    echo "Starting socat to forward ${SERIAL_DEV} <--> localhost:${WEB_PORT}"
+    echo "Baud rate: ${BAUD_RATE}"
+
+    # -d -d     : enable debug messages twice (for more verbosity)
+    # -v        : verbose traffic logging
+    # OPEN:...  : open the serial device, set it raw, no echo, at the chosen baud
+    # TCP:...   : connect to localhost:WEB_PORT
+    #
+    # If you want to watch hex dumps of data, you can also add '-x'.
+    socat -d -d -v OPEN:"${SERIAL_DEV}",raw,echo=0,b${BAUD_RATE} TCP:127.0.0.1:${WEB_PORT}
+}
+_serial_server() {
+    "$scriptAbsoluteLocation" _serial_server_sequence "$@"
+}
+
+# _serial_server /dev/serial/by-id/... 10022 256000
+_serial_client_sequence() {
+    _start
+
+    # --------------------------------------------------------------------
+    # serial_proxy_remote.sh
+    #
+    # Usage:
+    #   ./serial_proxy_remote.sh [SERIAL_DEV] [BAUD_RATE] [REMOTE_LISTEN_PORT]
+    #
+    # Default values:
+    #   SERIAL_DEV="/dev/ttyACM0"
+    #   BAUD_RATE="256000"
+    #   REMOTE_LISTEN_PORT="10022"
+    #
+    # This listens on TCP port 8080 and forwards the data to/from the serial device.
+    # --------------------------------------------------------------------
+
+    local SERIAL_DEV
+    local REMOTE_LISTEN_PORT
+    local BAUD_RATE
+
+    SERIAL_DEV="${1:-/dev/ttyACM0}"
+    REMOTE_LISTEN_PORT="${2:-10022}"
+    BAUD_RATE="${3:-256000}"
+
+    echo "Remote side: listening on 0.0.0.0:${REMOTE_LISTEN_PORT}, forwarding to ${SERIAL_DEV} (baud ${BAUD_RATE})"
+    echo "Press Ctrl-C to stop."
+
+    socat -d -d -v \
+    TCP-LISTEN:${REMOTE_LISTEN_PORT},bind=127.0.0.1,fork,reuseaddr \
+    OPEN:"${SERIAL_DEV}",raw,echo=0,b${BAUD_RATE}
+
+    _stop
+}
+_serial_client() {
+    "$scriptAbsoluteLocation" _serial_client_sequence "$@"
+}
+
+
+
+
+
+# Creates autologin terminal at specified serial port device, preferably serial/by-id or similar.
+# ATTENTION: STRONGLY RECOMMENDED to use serial/by-id instead of ttyUSB0 , etc . The entire point of these functions is to offer that functionality, rather than using the exiting serial-getty@ttyUSB0 services with that inherent unreliability.
+
+
+# WARNING: Do NOT login as same user as display manager (ie. 'sddm') login! Must continue to exist after all 'user' processes are terminated!
+# https://wiki.gentoo.org/wiki/Automatic_login_to_virtual_console
+# https://forums.debian.net/viewtopic.php?t=140452
+# https://forums.debian.net/viewtopic.php?f=16&t=123694
+# https://man7.org/linux/man-pages/man8/agetty.8.html
+# https://unix.stackexchange.com/questions/459942/using-systemctl-edit-via-bash-script
+#ExecStart=-/sbin/agetty -o '-p -- \\u' --noclear %I $TERM
+#ExecStart=-/sbin/agetty --autologin user --noclear %I 38400 linux
+#export getMost_backend="chroot" ; _autologin_serial "serial/by-id/..."
+#export getMost_backend="" ; _autologin_serial "serial/by-id/..."
+_autologin_serial_sequence() {
+    _start
+    
+    # ATTENTION: Default backend is "direct" . Override to "chroot" or "ssh" as desired .
+    # WARNING: Backends other than "direct" may be untested.
+    #export getMost_backend="chroot"
+
+    _messageNormal 'init: _autologin_serial'
+
+    local currentTerminal
+    currentTerminal="$1"
+    [[ "$currentTerminal" == "" ]] && _messagePlain_bad 'missing: currentTerminal' && _messageFAIL && _stop 1
+
+    _messagePlain_nominal '_autologin_serial: _getMost_backend'
+    
+	_set_getMost_backend
+	_set_getMost_backend_debian
+	_test_getMost_backend
+
+    _messagePlain_probe_var getMost_backend
+
+    _messagePlain_nominal '_autologin_serial: write: terminal-serial.service'
+    cat << CZXWXcRMTo8EmM8i4d | _getMost_backend tee /etc/systemd/system/terminal-serial.service
+[Unit]
+# /lib/systemd/system/serial-getty@.service
+# /etc/systemd/system/getty.target.wants/getty@tty1.service
+Description=Serial Port Terminal
+BindsTo=dev-%i.device
+After=dev-%i.device systemd-user-sessions.service plymouth-quit-wait.service getty-pre.target
+After=rc-local.service
+
+# If additional gettys are spawned during boot then we should make
+# sure that this is synchronized before getty.target, even though
+# getty.target didn't actually pull it in.
+Before=getty.target
+IgnoreOnIsolate=yes
+
+# IgnoreOnIsolate causes issues with sulogin, if someone isolates
+# rescue.target or starts rescue.service from multi-user.target or
+# graphical.target.
+Conflicts=rescue.service
+Before=rescue.service
+
+[Service]
+# The '-o' option value tells agetty to replace 'login' arguments with an
+# option to preserve environment (-p), followed by '--' for safety, and then
+# the entered username.
+#ExecStart=-/sbin/agetty -o '-p -- \\u' --keep-baud 115200,57600,38400,9600 - $currentTerminal
+#Type=idle
+Type=simple
+ExecStart=
+ExecStart=-/sbin/agetty --autologin root --keep-baud 256000,115200,57600,38400,9600 --noclear %I $currentTerminal
+Restart=always
+UtmpIdentifier=%I
+StandardInput=tty
+StandardOutput=tty
+TTYPath=/dev/%I
+TTYReset=yes
+TTYVHangup=yes
+IgnoreSIGPIPE=no
+SendSIGHUP=yes
+
+[Install]
+WantedBy=getty.target
+CZXWXcRMTo8EmM8i4d
+
+    _messagePlain_nominal '_autologin_serial: enable: /etc/systemd/system/getty.target.wants/terminal-serial.service'
+    #_getMost_backend tee /etc/systemd/system/terminal-serial.service
+    _getMost_backend chmod 644 /etc/systemd/system/terminal-serial.service
+    _messagePlain_probe_cmd _getMost_backend systemctl stop terminal-serial.service
+
+    _messagePlain_probe_cmd _getMost_backend systemctl daemon-reload
+
+    _messagePlain_probe_cmd _getMost_backend systemctl enable terminal-serial.service
+	_messagePlain_probe_cmd _getMost_backend ln -sf /etc/systemd/system/terminal-serial.service /etc/systemd/system/getty.target.wants/terminal-serial.service
+
+    _messagePlain_probe_cmd _getMost_backend systemctl start enable terminal-serial.service
+
+    _messagePlain_probe_cmd _getMost_backend systemctl status terminal-serial.service
+
+
+    _messagePlain_nominal '_autologin_serial: cron'
+    # Do NOT rely on systemd to ensure the service is started. Add cron job to guarantee such critical services are started.
+    if ! _getMost_backend /bin/bash -l -c 'crontab -l' | grep 'terminal-serial' > /dev/null
+    then
+        ( _getMost_backend /bin/bash -l -c 'crontab -l' ; echo '*/1 * * * * systemctl start terminal-serial.service' ) | _getMost_backend /bin/bash -l -c 'crontab -'
+    fi
+    ! _getMost_backend /bin/bash -l -c 'crontab -l' | grep 'terminal-serial' > /dev/null && _messagePlain_bad 'fail: crontab' && _messageFAIL && _stop 1
+
+    _stop
+}
+_autologin_serial() {
+    "$scriptAbsoluteLocation" _autologin_serial_sequence "$@"
+}
+_serial_terminal() {
+    _autologin_serial "$@"
 }
 
 
@@ -47403,6 +47602,7 @@ _deps_search() {
 _deps_cloud() {
 	_deps_repo
 	_deps_proxy
+	_deps_serial
 	_deps_stopwatch
 	
 	_deps_fakehome
@@ -47468,6 +47668,12 @@ _deps_proxy() {
 _deps_proxy_special() {
 	_deps_proxy
 	export enUb_proxy_special="true"
+}
+
+_deps_serial() {
+	_deps_notLean
+	
+	export enUb_serial="true"
 }
 
 _deps_fw() {
@@ -47630,6 +47836,7 @@ _deps_command() {
 	_deps_os_x11
 	_deps_proxy
 	_deps_proxy_special
+	_deps_serial
 	
 	export enUb_command="true"
 }
@@ -48203,6 +48410,10 @@ _compile_bash_deps() {
 		
 		#_deps_virt_translation
 		
+		# Serial depends on '_getMost_backend', which explicitly requires only 'notLean' .
+		#_deps_notLean
+		#_deps_serial
+		
 		_deps_stopwatch
 		
 		_deps_queue
@@ -48214,6 +48425,8 @@ _compile_bash_deps() {
 	if [[ "$1" == "ubcore" ]]
 	then
 		_deps_notLean
+		
+		_deps_serial
 
 		_deps_fw
 		
@@ -48273,6 +48486,8 @@ _compile_bash_deps() {
 		_deps_proxy
 		_deps_proxy_special
 
+		_deps_serial
+
 		_deps_fw
 		
 		_deps_clog
@@ -48324,6 +48539,8 @@ _compile_bash_deps() {
 		_deps_queue
 		_deps_metaengine
 		
+		_deps_serial
+		
 		_deps_stopwatch
 		
 		return 0
@@ -48346,6 +48563,8 @@ _compile_bash_deps() {
 		_deps_metaengine
 		
 		_deps_abstractfs
+		
+		_deps_serial
 		
 		_deps_stopwatch
 		
@@ -48371,6 +48590,8 @@ _compile_bash_deps() {
 		
 		_deps_fakehome
 		_deps_abstractfs
+		
+		_deps_serial
 		
 		_deps_stopwatch
 		
@@ -48460,6 +48681,7 @@ _compile_bash_deps() {
 		
 		#_deps_proxy
 		#_deps_proxy_special
+		_deps_serial
 
 		_deps_fw
 		
@@ -48563,6 +48785,7 @@ _compile_bash_deps() {
 		
 		#_deps_proxy
 		#_deps_proxy_special
+		_deps_serial
 
 		_deps_fw
 		
@@ -48666,6 +48889,7 @@ _compile_bash_deps() {
 		
 		_deps_proxy
 		_deps_proxy_special
+		_deps_serial
 
 		_deps_fw
 		
@@ -48799,6 +49023,9 @@ _compile_bash_utilities() {
 	
 	[[ "$enUb_proxy" == "true" ]] && includeScriptList+=( "generic/net/proxy/proxyrouter"/here_proxyrouter.sh )
 	[[ "$enUb_proxy" == "true" ]] && includeScriptList+=( "generic/net/proxy/proxyrouter"/proxyrouter.sh )
+
+	[[ "$enUb_serial" == "true" ]] && includeScriptList+=( "generic/serial"/forwardPort.sh )
+	[[ "$enUb_serial" == "true" ]] && includeScriptList+=( "generic/serial"/terminal.sh )
 	
 	[[ "$enUb_fw" == "true" ]] && includeScriptList+=( "generic/net/fw"/fw.sh )
 	[[ "$enUb_fw" == "true" ]] && includeScriptList+=( "generic/net/fw"/hosts.sh )

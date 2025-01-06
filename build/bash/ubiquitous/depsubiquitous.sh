@@ -135,6 +135,7 @@ _deps_search() {
 _deps_cloud() {
 	_deps_repo
 	_deps_proxy
+	_deps_serial
 	_deps_stopwatch
 	
 	_deps_fakehome
@@ -200,6 +201,12 @@ _deps_proxy() {
 _deps_proxy_special() {
 	_deps_proxy
 	export enUb_proxy_special="true"
+}
+
+_deps_serial() {
+	_deps_notLean
+	
+	export enUb_serial="true"
 }
 
 _deps_fw() {
@@ -362,6 +369,7 @@ _deps_command() {
 	_deps_os_x11
 	_deps_proxy
 	_deps_proxy_special
+	_deps_serial
 	
 	export enUb_command="true"
 }
