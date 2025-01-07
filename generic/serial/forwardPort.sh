@@ -1,4 +1,6 @@
 
+# NOTICE: CAUTION: For network services, instead of depending on the reliability of this forwarding, supplement a terminal-serial with this, using a dedicated host available through SSH to connect to both serial ports. If an unrecoverable failure occurs, and the network port is not reachable through the serial port, reboot the computer using the terminal-serial .
+
 # NOTICE: Recommend 'ssh -C' (ie. compression) for a lower-latency more 'snappy' experience.
 # NOTICE: Some USB serial converters are apparently based on microcontrollers, compatible with at least 4m baud.
 

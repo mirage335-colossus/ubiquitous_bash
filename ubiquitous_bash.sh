@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='1788566728'
+export ub_setScriptChecksum_contents='954521569'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -7998,6 +7998,8 @@ _find_route_ip() {
 
 
 
+# NOTICE: CAUTION: For network services, instead of depending on the reliability of this forwarding, supplement a terminal-serial with this, using a dedicated host available through SSH to connect to both serial ports. If an unrecoverable failure occurs, and the network port is not reachable through the serial port, reboot the computer using the terminal-serial .
+
 # NOTICE: Recommend 'ssh -C' (ie. compression) for a lower-latency more 'snappy' experience.
 # NOTICE: Some USB serial converters are apparently based on microcontrollers, compatible with at least 4m baud.
 
@@ -8185,6 +8187,8 @@ _serial_client() {
 
 
 
+
+# NOTICE: CAUTION: For network services, instead of depending on the reliability of this forwarding, supplement a terminal-serial with this, using a dedicated host available through SSH to connect to both serial ports. If an unrecoverable failure occurs, and the network port is not reachable through the serial port, reboot the computer using the terminal-serial .
 
 #export getMost_backend="chroot"
 # _serial_server-service /dev/serial/by-id/... 22 4000000

@@ -1,4 +1,6 @@
 
+# NOTICE: CAUTION: For network services, instead of depending on the reliability of this forwarding, supplement a terminal-serial with this, using a dedicated host available through SSH to connect to both serial ports. If an unrecoverable failure occurs, and the network port is not reachable through the serial port, reboot the computer using the terminal-serial .
+
 #export getMost_backend="chroot"
 # _serial_server-service /dev/serial/by-id/... 22 4000000
 _serial_server-service_sequence() {
