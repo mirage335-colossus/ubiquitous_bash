@@ -65,7 +65,7 @@ _serial_server_sequence() {
     #
     # If you want to watch hex dumps of data, you can also add '-x'.
     #_messagePlain_probe_cmd socat -d -d -v OPEN:"${SERIAL_DEV}",sane,rawer,echo=0,b"${BAUD_RATE}",cs8,ixon=0,ixoff=0,crtscts=1,clocal=0,parenb,cstopb=0 TCP:127.0.0.1:"${WEB_PORT}"
-    _messagePlain_probe_cmd socat -d -d OPEN:"${SERIAL_DEV}",sane,rawer,echo=0,b"${BAUD_RATE}",cs8,ixon=0,ixoff=0,crtscts=1,clocal=0,parenb,cstopb=0 TCP:127.0.0.1:"${WEB_PORT}"
+    _messagePlain_probe_cmd socat -d -d OPEN:"${SERIAL_DEV}",sane,rawer,echo=0,b"${BAUD_RATE}",cs8,ixon=0,ixoff=0,crtscts=1,clocal=0,parenb=1,cstopb=0 TCP:127.0.0.1:"${WEB_PORT}"
     
     #_stop
 }
