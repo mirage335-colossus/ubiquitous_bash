@@ -29,7 +29,7 @@
 
 # _serial_server /dev/serial/by-id/... 22 4000000
 _serial_server_sequence() {
-    _start
+    #_start
     
     ##
     # This script uses socat to forward any data from a USB serial device to
@@ -67,7 +67,7 @@ _serial_server_sequence() {
     #_messagePlain_probe_cmd socat -d -d -v OPEN:"${SERIAL_DEV}",sane,rawer,echo=0,b"${BAUD_RATE}",cs8,ixon=0,ixoff=0,crtscts=1,clocal=0,parenb,cstopb=0 TCP:127.0.0.1:"${WEB_PORT}"
     _messagePlain_probe_cmd socat -d -d OPEN:"${SERIAL_DEV}",sane,rawer,echo=0,b"${BAUD_RATE}",cs8,ixon=0,ixoff=0,crtscts=1,clocal=0,parenb,cstopb=0 TCP:127.0.0.1:"${WEB_PORT}"
     
-    _stop
+    #_stop
 }
 _serial_server_program() {
     "$scriptAbsoluteLocation" _serial_server_sequence "$@"
@@ -85,7 +85,7 @@ _serial_server() {
 
 # _serial_server /dev/serial/by-id/... 10022 4000000
 _serial_client_sequence() {
-    _start
+    #_start
 
     # --------------------------------------------------------------------
     # serial_proxy_remote.sh
@@ -120,11 +120,13 @@ _serial_client_sequence() {
     #_messagePlain_probe_cmd socat -d -d -v TCP-LISTEN:"${REMOTE_LISTEN_PORT}",bind=127.0.0.1,fork,reuseaddr OPEN:"${SERIAL_DEV}",sane,rawer,echo=0,b"${BAUD_RATE}",cs8,ixon=0,ixoff=0,crtscts=1,clocal=0,parenb=1,cstopb=0
     _messagePlain_probe_cmd socat -d -d TCP-LISTEN:"${REMOTE_LISTEN_PORT}",bind=127.0.0.1,fork,reuseaddr OPEN:"${SERIAL_DEV}",sane,rawer,echo=0,b"${BAUD_RATE}",cs8,ixon=0,ixoff=0,crtscts=1,clocal=0,parenb=1,cstopb=0
 
-    _stop
+    #_stop
+}
+_serial_client_program() {
+    "$scriptAbsoluteLocation" _serial_client_sequence "$@"
 }
 _serial_client() {
     "$scriptAbsoluteLocation" _serial_client_sequence "$@"
 }
-
 
 
