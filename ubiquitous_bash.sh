@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='4284191785'
+export ub_setScriptChecksum_contents='1566748983'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -8150,7 +8150,7 @@ _serial_server-service_sequence() {
 
     SERIAL_DEV="${1:-/dev/ttyUSB0}"
     WEB_PORT="${2:-22}"
-    BAUD_RATE="${3:-4000000}"
+    #BAUD_RATE="${3:-4000000}"
 
     _messagePlain_nominal '_serial_server-service: _getMost_backend'
     
@@ -8250,7 +8250,7 @@ _serial_client-service_sequence() {
 
     SERIAL_DEV="${1:-/dev/ttyUSB0}"
     REMOTE_LISTEN_PORT="${2:-10022}"
-    BAUD_RATE="${3:-4000000}"
+    #BAUD_RATE="${3:-4000000}"
 
     _messagePlain_nominal '_serial_client-service: _getMost_backend'
     

@@ -18,7 +18,7 @@ _serial_server-service_sequence() {
 
     SERIAL_DEV="${1:-/dev/ttyUSB0}"
     WEB_PORT="${2:-22}"
-    BAUD_RATE="${3:-4000000}"
+    #BAUD_RATE="${3:-4000000}"
 
     _messagePlain_nominal '_serial_server-service: _getMost_backend'
     
@@ -118,7 +118,7 @@ _serial_client-service_sequence() {
 
     SERIAL_DEV="${1:-/dev/ttyUSB0}"
     REMOTE_LISTEN_PORT="${2:-10022}"
-    BAUD_RATE="${3:-4000000}"
+    #BAUD_RATE="${3:-4000000}"
 
     _messagePlain_nominal '_serial_client-service: _getMost_backend'
     
