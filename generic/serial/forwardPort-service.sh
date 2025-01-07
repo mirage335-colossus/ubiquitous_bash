@@ -2,6 +2,8 @@
 #export getMost_backend="chroot"
 # _serial_server-service /dev/serial/by-id/... 22 4000000
 _serial_server-service_sequence() {
+    _set_serial_serverClient
+    
     _start
     
     # ATTENTION: Default backend is "direct" . Override to "chroot" or "ssh" as desired .
@@ -18,13 +20,32 @@ _serial_server-service_sequence() {
 
     SERIAL_DEV="${1:-/dev/ttyUSB0}"
     WEB_PORT="${2:-22}"
-    #BAUD_RATE="${3:-4000000}"
+    BAUD_RATE="${3:-$forwardPort_serial_default_BAUD}"
+    
+    ## ATTRIBUTION-AI ChatGPT o1 2025-01-06 .
+    
+    ## Replace '/' with '-'
+    #local modified_path="${SERIAL_DEV//\//-}"
+
+    ## Escape '-' characters by replacing them with '\x2d'
+    #local escaped_path="${modified_path//-/\x2d}"
+
+    ## Prepend 'dev-' and append '.device'
+    #local systemd_device_unit="dev-${escaped_path}.device"
+    
+    ## Use sed to replace '/' with '-' and escape '-' with '\x2d'
+    ##local systemd_device_unit=$(echo "$SERIAL_DEV" | sed -e 's/\//-/g' -e 's/-/\\x2d/g')
+
+    ## Prepend 'dev-' and append '.device'
+    ##systemd_device_unit="dev-${systemd_device_unit}.device"
+    
+    _messagePlain_probe_var systemd_device_unit
 
     _messagePlain_nominal '_serial_server-service: _getMost_backend'
     
-	_set_getMost_backend
-	_set_getMost_backend_debian
-	_test_getMost_backend
+    _set_getMost_backend
+    _set_getMost_backend_debian
+    _test_getMost_backend
 
     _messagePlain_probe_var getMost_backend
     
@@ -44,12 +65,14 @@ Description=Server Socat Port Forwarder through Serial Port
 #After=network.target auditd.service
 After=network.target
 StartLimitIntervalSec=0
+#Requires="$systemd_device_unit"
+#After="$systemd_device_unit"
 
 [Service]
 Type=simple
-#ExecStart=/usr/local/bin/serial_forwardPort.sh _serial_server "$SERIAL_DEV" "$WEB_PORT" "$BAUD_RATE"
-ExecStart=/usr/local/bin/serial_forwardPort.sh _serial_server_program "$SERIAL_DEV" "$WEB_PORT" "$BAUD_RATE"
-#ExecStart=socat -d -d OPEN:"$SERIAL_DEV",sane,rawer,echo=0,b"$BAUD_RATE",cs8,ixon=0,ixoff=0,crtscts=1,clocal=0,parenb,cstopb=0 TCP:127.0.0.1:"$WEB_PORT"
+ExecStart=/usr/local/bin/serial_forwardPort.sh _serial_server "$SERIAL_DEV" "$WEB_PORT" "$BAUD_RATE"
+#ExecStart=/usr/local/bin/serial_forwardPort.sh _serial_server_program "$SERIAL_DEV" "$WEB_PORT" "$BAUD_RATE"
+#ExecStart=socat -d -d OPEN:"${SERIAL_DEV}",b"${BAUD_RATE}","$forwardPort_serial_default_TERMIOS_OPT" TCP:127.0.0.1:"${WEB_PORT}"
 Restart=always
 RestartSec=1
 User=root
@@ -102,6 +125,8 @@ _serial_server-service() {
 #export getMost_backend="chroot"
 # _serial_server-service /dev/serial/by-id/... 22 4000000
 _serial_client-service_sequence() {
+    _set_serial_serverClient
+    
     _start
     
     # ATTENTION: Default backend is "direct" . Override to "chroot" or "ssh" as desired .
@@ -118,7 +143,26 @@ _serial_client-service_sequence() {
 
     SERIAL_DEV="${1:-/dev/ttyUSB0}"
     REMOTE_LISTEN_PORT="${2:-10022}"
-    #BAUD_RATE="${3:-4000000}"
+    BAUD_RATE="${3:-$forwardPort_serial_default_BAUD}"
+    
+    ## ATTRIBUTION-AI ChatGPT o1 2025-01-06 .
+    
+    ## Replace '/' with '-'
+    #local modified_path="${SERIAL_DEV//\//-}"
+
+    ## Escape '-' characters by replacing them with '\x2d'
+    #local escaped_path="${modified_path//-/\x2d}"
+
+    ## Prepend 'dev-' and append '.device'
+    #local systemd_device_unit="dev-${escaped_path}.device"
+    
+    ## Use sed to replace '/' with '-' and escape '-' with '\x2d'
+    ##local systemd_device_unit=$(echo "$SERIAL_DEV" | sed -e 's/\//-/g' -e 's/-/\\x2d/g')
+
+    ## Prepend 'dev-' and append '.device'
+    ##systemd_device_unit="dev-${systemd_device_unit}.device"
+    
+    _messagePlain_probe_var systemd_device_unit
 
     _messagePlain_nominal '_serial_client-service: _getMost_backend'
     
@@ -144,12 +188,14 @@ Description=Server Socat Port Forwarder through Serial Port
 #After=network.target auditd.service
 After=network.target
 StartLimitIntervalSec=0
+#Requires="$systemd_device_unit"
+#After="$systemd_device_unit"
 
 [Service]
 Type=simple
-#ExecStart=/usr/local/bin/serial_forwardPort.sh _serial_client "$SERIAL_DEV" "$REMOTE_LISTEN_PORT" "$BAUD_RATE"
-ExecStart=/usr/local/bin/serial_forwardPort.sh _serial_client_program "$SERIAL_DEV" "$REMOTE_LISTEN_PORT" "$BAUD_RATE"
-#ExecStart=socat -d -d TCP-LISTEN:"$REMOTE_LISTEN_PORT",bind=127.0.0.1,fork,reuseaddr OPEN:"$SERIAL_DEV",sane,rawer,echo=0,b"$BAUD_RATE",cs8,ixon=0,ixoff=0,crtscts=1,clocal=0,parenb=1,cstopb=0
+ExecStart=/usr/local/bin/serial_forwardPort.sh _serial_client "$SERIAL_DEV" "$REMOTE_LISTEN_PORT" "$BAUD_RATE"
+#ExecStart=/usr/local/bin/serial_forwardPort.sh _serial_client_program "$SERIAL_DEV" "$REMOTE_LISTEN_PORT" "$BAUD_RATE"
+#ExecStart=socat -d -d TCP-LISTEN:"${REMOTE_LISTEN_PORT}",bind=127.0.0.1,fork,reuseaddr OPEN:"${SERIAL_DEV}",b"${BAUD_RATE}","$forwardPort_serial_default_TERMIOS_OPT"
 Restart=always
 RestartSec=1
 User=root
