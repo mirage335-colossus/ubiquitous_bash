@@ -601,8 +601,10 @@ _getMost_debian11_install() {
 		# WARNING: Untested. May cause problems.
 		#_getMost_backend_aptGetInstall docker-ce
 		#_getMost_backend_aptGetInstall docker-compose-plugin
+		#_getMost_backend_aptGetInstall docker-ce
 		_getMost_backend apt-get -d install -y docker-ce
 		_getMost_backend apt-get -d install -y docker-compose-plugin
+		_getMost_backend apt-get -d install -y docker-ce
 	fi
 	
 	
