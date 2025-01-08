@@ -596,18 +596,28 @@ _getMost_debian11_install() {
 		# WARNING: Untested. May be old version of VirtualBox. May conflict with guest additions.
 		#_getMost_backend_aptGetInstall virtualbox-6.1
 		_getMost_backend apt-get -d install -y virtualbox-6.1
-		
-		
-		# WARNING: Untested. May cause problems.
-		#_getMost_backend_aptGetInstall docker-ce
-		#_getMost_backend_aptGetInstall docker-compose-plugin
-		#_getMost_backend_aptGetInstall docker-ce
-		#_getMost_backend_aptGetInstall docker-buildx-plugin docker-ce-cli docker-ce-rootless-extras
-		_getMost_backend apt-get -d install -y docker-ce
-		_getMost_backend apt-get -d install -y docker-compose-plugin
-		_getMost_backend apt-get -d install -y docker-ce
-		#_getMost_backend apt-get -d install -y docker-buildx-plugin docker-ce-cli docker-ce-rootless-extras
 	fi
+
+		
+	# WARNING: May be untested. May cause problems.
+	#_getMost_backend_aptGetInstall docker-ce
+	##_getMost_backend_aptGetInstall docker-compose-plugin
+	#_getMost_backend_aptGetInstall docker-ce
+	#_getMost_backend_aptGetInstall docker-buildx-plugin docker-ce-cli docker-ce-rootless-extras
+	_getMost_backend apt-get -d install -y docker-ce
+	#_getMost_backend apt-get -d install -y docker-compose-plugin
+	_getMost_backend apt-get -d install -y docker-ce
+	#_getMost_backend apt-get -d install -y docker-buildx-plugin docker-ce-cli docker-ce-rootless-extras
+
+	# ATTENTION: Speculative . May be untested. Enable if ever necessary.
+	#https://docs.docker.com/compose/install/
+	#https://docs.docker.com/compose/install/linux/#install-the-plugin-manually
+	#if ! _getMost_backend type docker-compose > /dev/null 2>&1
+	#then
+		#mkdir -p /usr/local/lib/docker/cli-plugins/docker-compose
+		#curl -SL https://github.com/docker/compose/releases/download/v2.32.2/docker-compose-linux-x86_64 -o /usr/local/lib/docker/cli-plugins/docker-compose
+		#chmod 755 /usr/local/lib/docker/cli-plugins/docker-compose
+	#fi
 	
 	
 	# WARNING: If VirtualBox was not installed by now (eg. due to 'if false' comment block or wrong distribution), this must be called later.

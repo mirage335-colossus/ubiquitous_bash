@@ -213,8 +213,30 @@ _fetchDep_debianBookworm_special() {
 		
 		sudo -n env DEBIAN_FRONTEND=noninteractive apt-get remove -y docker docker-engine docker.io docker-ce docker
 		sudo -n env DEBIAN_FRONTEND=noninteractive apt-get install --install-recommends -y docker-ce
-		sudo -n env DEBIAN_FRONTEND=noninteractive apt-get install --install-recommends -y docker-compose-plugin
+		#sudo -n env DEBIAN_FRONTEND=noninteractive apt-get install --install-recommends -y docker-compose-plugin
 		sudo -n env DEBIAN_FRONTEND=noninteractive apt-get install --install-recommends -y docker-ce
+
+		
+		# WARNING: Untested. May cause problems.
+		#_getMost_backend_aptGetInstall docker-ce
+		##_getMost_backend_aptGetInstall docker-compose-plugin
+		#_getMost_backend_aptGetInstall docker-ce
+		#_getMost_backend_aptGetInstall docker-buildx-plugin docker-ce-cli docker-ce-rootless-extras
+		_getMost_backend apt-get -d install -y docker-ce
+		#_getMost_backend apt-get -d install -y docker-compose-plugin
+		_getMost_backend apt-get -d install -y docker-ce
+		#_getMost_backend apt-get -d install -y docker-buildx-plugin docker-ce-cli docker-ce-rootless-extras
+
+		# ATTENTION: Speculative . May be untested. Enable if ever necessary.
+		#https://docs.docker.com/compose/install/
+		#https://docs.docker.com/compose/install/linux/#install-the-plugin-manually
+		#if ! _getMost_backend type docker-compose > /dev/null 2>&1
+		#then
+			#mkdir -p /usr/local/lib/docker/cli-plugins/docker-compose
+			#curl -SL https://github.com/docker/compose/releases/download/v2.32.2/docker-compose-linux-x86_64 -o /usr/local/lib/docker/cli-plugins/docker-compose
+			#chmod 755 /usr/local/lib/docker/cli-plugins/docker-compose
+		#fi
+
 		
 		sudo -n usermod -a -G docker "$USER"
 		
@@ -236,6 +258,7 @@ _fetchDep_debianBookworm_special() {
 		
 		#sudo -n env DEBIAN_FRONTEND=noninteractive apt-get install --install-recommends -y atom
 		
+		#return 0
 		return 1
 	fi
 	
@@ -682,7 +705,7 @@ _fetchDep_debianBullseye_special() {
 		return 0
 	fi
 	
-	if [[ "$1" == "docker" ]]
+	if [[ "$1" == "docker" ]] || [[ "$1" == "docker-compose" ]]
 	then
 		sudo -n update-alternatives --set iptables /usr/sbin/iptables-legacy
 		sudo -n update-alternatives --set ip6tables /usr/sbin/ip6tables-legacy
@@ -728,6 +751,7 @@ _fetchDep_debianBullseye_special() {
 		
 		#sudo -n env DEBIAN_FRONTEND=noninteractive apt-get install --install-recommends -y atom
 		
+		#return 0
 		return 1
 	fi
 	
