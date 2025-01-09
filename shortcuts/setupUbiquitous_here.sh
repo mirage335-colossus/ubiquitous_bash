@@ -152,4 +152,6 @@ _setupUbiquitous_resize() {
 	echo "# Hardware serial terminals connected through screen require explicit resize to change number of columns/lines. Usually doing this once will at least increase the usable 'screen real estate' from the very small defaults."
 	echo "# Ignored by Cygwin/MSW, etc."
 	echo "type -p resize > /dev/null 2>&1 && resize > /dev/null 2>&1"
+	true
+	
 }
