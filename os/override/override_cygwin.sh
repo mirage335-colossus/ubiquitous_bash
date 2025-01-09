@@ -132,9 +132,12 @@ then
 		false
 	}
 
+	# ATTENTION: Sets the priority for '_wsl' as well as 'u' shortcuts. Override with '_bashrc' or similar as desired (eg. replace 'ubdist_embedded' with some specialized 3D printer firwmare/klipper dist/OS, etc).
 	_wsl() {
 		local currentBin_wsl
-		currentBin_wsl=$(type -p wsl)
+		#currentBin_wsl=$(type -p wsl)
+
+		currentBin_wsl="wsl"
 
 		if ( [[ "$1" != "-"* ]] || [[ "$1" == "-u" ]] || [[ "$1" == "-e" ]] || [[ "$1" == "--exec" ]] ) && ( [[ "$1" != "-d" ]] || [[ "$2" != "-d" ]] || [[ "$3" != "-d" ]] || [[ "$4" != "-d" ]] || [[ "$5" != "-d" ]] || [[ "$6" != "-d" ]] )
 		then
