@@ -430,7 +430,8 @@ jobs:
           curl -s -H "Authorization: token $GH_TOKEN" -L -o "ubcp-packageReport-$currentReleaseTag" "https://github.com/mirage335-colossus/ubiquitous_bash/releases/download/$currentReleaseTag/ubcp-packageReport"
 
           # Loop through each release
-          for RELEASE in $(echo "$RELEASES" | jq -r '.[].tag_name' | sort --reverse); do
+          #for RELEASE in $(echo "$RELEASES" | jq -r '.[].tag_name' | sort --reverse); do
+          for RELEASE in $(echo "$RELEASES" | jq -r 'sort_by(.published_at) | reverse | .[].tag_name'); do
             # Download the packageReport file for this release
             curl -s -H "Authorization: token $GH_TOKEN" -L -o "ubcp-packageReport-$RELEASE" "https://github.com/mirage335-colossus/ubiquitous_bash/releases/download/$RELEASE/ubcp-packageReport"
 
