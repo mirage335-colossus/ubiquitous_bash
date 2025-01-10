@@ -392,7 +392,8 @@ jobs:
           curl -s -H "Authorization: token $GH_TOKEN" -L -o "ubcp-binReport-$currentReleaseTag" "https://github.com/mirage335-colossus/ubiquitous_bash/releases/download/$currentReleaseTag/ubcp-binReport"
 
           # Loop through each release
-          for RELEASE in $(echo "$RELEASES" | jq -r '.[].tag_name' | sort --reverse); do
+          #for RELEASE in $(echo "$RELEASES" | jq -r '.[].tag_name' | sort --reverse); do
+          for RELEASE in $(echo "$RELEASES" | jq -r 'sort_by(.published_at) | reverse | .[].tag_name'); do
             # Download the binReport file for this release
             curl -s -H "Authorization: token $GH_TOKEN" -L -o "ubcp-binReport-$RELEASE" "https://github.com/mirage335-colossus/ubiquitous_bash/releases/download/$RELEASE/ubcp-binReport"
 
