@@ -7,6 +7,7 @@
 # https://github.com/Cryolitia/gpd-fan-driver
 
 # ATTENTION
+#_chroot sudo -n --preserve-env=GH_TOKEN --preserve-env=INPUT_GITHUB_TOKEN -u user bash -c 'cd /home/user/core/infrastructure/ubiquitous_bash ; /home/user/ubDistBuild/ubiquitous_bash.sh _gitBest pull'
 #_chroot sudo -n -u user bash -c 'cd /home/user/core/infrastructure/ubiquitous_bash ; ./ubiquitous_bash.sh _gpdWinMini2024_8840U_fan_install'
 _gpdWinMini2024_8840U_fan_install() {
     # DUBIOUS . May be untested.
