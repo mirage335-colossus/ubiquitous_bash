@@ -3,6 +3,9 @@
 # TODO: Detect 'gpd' device, ceasing if not a 'gpd' device.
 # TODO: Temperature sensing may be untested.
 
+# https://aur.archlinux.org/cgit/aur.git/tree/gpdfanspeed?h=gpd-fan-driver-dkms-git
+# https://github.com/Cryolitia/gpd-fan-driver
+
 # ATTENTION
 #_chroot sudo -n -u user bash -c 'cd /home/user/core/infrastructure/ubiquitous_bash ; ./ubiquitous_bash.sh _gpdWinMini2024_8840U_fan_install'
 _gpdWinMini2024_8840U_fan_install() {
