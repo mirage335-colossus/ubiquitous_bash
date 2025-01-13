@@ -401,6 +401,12 @@ _deps_w540() {
 	export enUb_w540="true"
 }
 
+_deps_gpd() {
+	_deps_notLean
+	_deps_hardware
+	export enUb_gpd="true"
+}
+
 _deps_peripherial() {
 	_deps_notLean
 	_deps_hardware
