@@ -111,6 +111,9 @@ _getMinimal_cloud() {
 	_getMost_backend_aptGetInstall bzip2
 	
 	_getMost_backend_aptGetInstall flex
+
+	_getMost_backend_aptGetInstall imagemagick
+	_getMost_backend_aptGetInstall graphicsmagick-imagemagick-compat
 	
 	_getMost_backend_aptGetInstall librecode0
 	_getMost_backend_aptGetInstall wkhtmltopdf
