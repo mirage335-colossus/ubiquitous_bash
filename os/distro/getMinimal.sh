@@ -250,6 +250,7 @@ _getMinimal_cloud() {
 	
 	_getMost_backend_aptGetInstall debootstrap
 	
+	#_getMost_backend_aptGetInstall qemu-user qemu-utils
 	_getMost_backend_aptGetInstall qemu-system-x86
 	
 	_getMost_backend_aptGetInstall cifs-utils
