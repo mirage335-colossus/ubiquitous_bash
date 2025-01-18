@@ -812,6 +812,8 @@ _getMost_debian11_install() {
 	_getMost_backend_aptGetInstall python3
 	_getMost_backend_aptGetInstall python3.11-venv
 	_getMost_backend_aptGetInstall python3-serial
+
+	#_getMost_backend_aptGetInstall python3-websocket
 	
 	
 	# blkdiscard
