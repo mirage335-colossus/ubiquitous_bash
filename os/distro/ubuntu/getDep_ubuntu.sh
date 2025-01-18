@@ -82,6 +82,10 @@ _fetchDep_ubuntuFocalFossa_special() {
 		then
 			echo 'deb [arch=amd64] http://download.virtualbox.org/virtualbox/debian jammy contrib' | sudo -n tee /etc/apt/sources.list.d/ub_vbox.list > /dev/null 2>&1
 		fi
+		if [[ -e /etc/issue ]] && cat /etc/issue | grep 'Ubuntu' | grep '24.04' > /dev/null 2>&1
+		then
+			echo 'deb [arch=amd64] http://download.virtualbox.org/virtualbox/debian noble contrib' | sudo -n tee /etc/apt/sources.list.d/ub_vbox.list > /dev/null 2>&1
+		fi
 		
 		"$scriptAbsoluteLocation" _getDep wget
 		! _wantDep wget && return 1
@@ -456,6 +460,11 @@ _fetchDep_ubuntu() {
 		return
 	fi
 	if [[ -e /etc/issue ]] && cat /etc/issue | grep 'Ubuntu' | grep '22.04' > /dev/null 2>&1
+	then
+		_fetchDep_ubuntuFocalFossa "$@"
+		return
+	fi
+	if [[ -e /etc/issue ]] && cat /etc/issue | grep 'Ubuntu' | grep '24.04' > /dev/null 2>&1
 	then
 		_fetchDep_ubuntuFocalFossa "$@"
 		return
