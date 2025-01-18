@@ -62,7 +62,11 @@ _set_discreteGPU-forWSL() {
     [[ "$MESA_D3D12_DEFAULT_ADAPTER_NAME" != "" ]] && return 0
     
     # https://github.com/microsoft/wslg/wiki/GPU-selection-in-WSLg
-    glxinfo -B | grep -i intel > /dev/null 2>&1 && export MESA_D3D12_DEFAULT_ADAPTER_NAME=NVIDIA
+    if type -p glxinfo > /dev/null 2>&1
+    then
+        glxinfo -B | grep -i intel > /dev/null 2>&1 && export MESA_D3D12_DEFAULT_ADAPTER_NAME=NVIDIA
+        return
+    fi
 }
 
 _set_msw_ghToken() {
