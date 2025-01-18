@@ -165,7 +165,8 @@ _getMost_debian12_aptSources() {
 			#echo 'deb https://fasttrack.debian.net/debian-fasttrack/ bookworm-backports-staging main contrib' | _getMost_backend tee -a /etc/apt/sources.list
 		#fi
 		
-	elif [[ -e /etc/issue ]] && cat /etc/issue | grep 'Ubuntu' | grep '20.04' > /dev/null 2>&1
+	fi
+	if [[ -e /etc/issue ]] && cat /etc/issue | grep 'Ubuntu' | grep '20.04' > /dev/null 2>&1
 	then
 		true
 		
@@ -1487,7 +1488,6 @@ _getMost() {
 	then
 		_tryExecFull _getMost_ubuntu24 "$@"
 		return
-	fi
 	elif [[ -e /etc/issue ]] && cat /etc/issue | grep 'Ubuntu' > /dev/null 2>&1
 	then
 		_tryExecFull _getMost_ubuntu22 "$@"
