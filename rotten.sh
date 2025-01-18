@@ -3352,7 +3352,9 @@ _checkSpecialLocks() {
 #"$1" == waitOpen function && shift
 #"$@" == wrapped function and parameters
 #"$specialLock" == additional lockfile to write
-_open_sequence() {
+_open_procedure() {
+	mkdir -p "$scriptLocal"
+	
 	if _readLocked "$lock_open"
 	then
 		_checkSpecialLocks && return 1
@@ -3399,7 +3401,7 @@ _open_sequence() {
 _open() {
 	local returnStatus
 	
-	_open_sequence "$@"
+	_open_procedure "$@"
 	returnStatus="$?"
 	
 	export specialLock
@@ -3414,7 +3416,7 @@ _open() {
 #"$1" == waitClose function && shift
 #"$@" == wrapped function and parameters
 #"$specialLock" == additional lockfile to remove
-_close_sequence() {
+_close_procedure() {
 	local closeForceEnable
 	closeForceEnable=false
 	
@@ -3480,7 +3482,7 @@ _close_sequence() {
 _close() {
 	local returnStatus
 	
-	_close_sequence "$@"
+	_close_procedure "$@"
 	returnStatus="$?"
 	
 	export specialLock
