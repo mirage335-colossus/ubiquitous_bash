@@ -1797,7 +1797,8 @@ _gh_downloadURL() {
 }
 
 _aria2c_bin_githubRelease() {
-	aria2c --timeout=180 --max-tries=25 --retry-wait=15 --retry-on-http-error=400,429,500,502,503,504 "$@"
+	#--retry-on-http-error=400,429,500,502,503,504 
+	aria2c --timeout=180 --max-tries=25 --retry-wait=15 "$@"
 }
 
 
