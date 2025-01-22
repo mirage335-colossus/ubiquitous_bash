@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='625013004'
+export ub_setScriptChecksum_contents='290440244'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -27829,8 +27829,32 @@ _test_gitBest() {
 
 
 
+_if_gh() {
+	if type -p gh > /dev/null 2>&1 && [[ "$GH_TOKEN" != "" ]]
+	then
+		return 0
+	fi
+	return 1
+}
 
 
+#_wget_githubRelease-URL "owner/repo" "" "file.ext"
+#_wget_githubRelease-URL "owner/repo" "latest" "file.ext"
+#_wget_githubRelease-URL "owner/repo" "internal" "file.ext"
+_wget_githubRelease-URL() {
+	if _if_gh
+	then
+		_wget_githubRelease-URL-gh "$@"
+		return
+	else
+		_wget_githubRelease-URL-curl "$@"
+		return
+	fi
+}
+#_wget_githubRelease-URL "owner/repo" "file.ext"
+_wget_githubRelease_internal-URL() {
+	_wget_githubRelease-URL "$1" "internal" "$2"
+}
 
 _jq_github_browser_download_url() {
 	local currentReleaseLabel="$2"
@@ -27919,9 +27943,11 @@ _wget_githubRelease-URL-curl() {
 		done
 
 		_safeEcho_newline "$currentData" | _jq_github_browser_download_url "" "$currentReleaseLabel" "$currentFile" | head -n 1
+		[[ "$(_safeEcho_newline "$currentData" | _jq_github_browser_download_url "" "$currentReleaseLabel" "$currentFile" | head -n 1 | wc -c )" -le 0 ]] && return 1
 		return 0
 	fi
 }
+
 _wget_githubRelease-URL-gh-awk() {
     local currentReleaseLabel="$2"
     
@@ -27943,8 +27969,11 @@ _wget_githubRelease-URL-gh-awk() {
     }
     '
 }
+# Requires "$GH_TOKEN" .
 _wget_githubRelease-URL-gh() {
-    local currentAbsoluteRepo="$1"
+    ! _if_gh && return 1
+	
+	local currentAbsoluteRepo="$1"
 	local currentReleaseLabel="$2"
 	local currentFile="$3"
 
@@ -27972,23 +28001,25 @@ _wget_githubRelease-URL-gh() {
     _safeEcho_newline "https://github.com/""$currentAbsoluteRepo""/releases/download/""$currentTag""/""$currentFile"
     return
 }
-_wget_githubRelease-URL() {
-	if type -p gh > /dev/null 2>&1
-	then
-		_wget_githubRelease-URL-gh "$@"
-		return
-	else
-		_wget_githubRelease-URL-curl "$@"
-		return
-	fi
+
+
+
+
+
+# _gh_download "$currentAbsoluteRepo" "$currentTagName" "$currentFile" -O "$currentOutFile"
+# Requires "$GH_TOKEN" .
+_gh_download() {
+	! _if_gh && return 1
+	
+	local currentAbsoluteRepo="$1"
+	local currentTagName="$2"
+	local currentFile="$3"
+
+	local currentOutParameter="$4"
+	local currentOutFile="$5"
+
+	gh release download "$current_tagName" -R "$currentAbsoluteRepo" -p "$current_file" "$@"
 }
-
-_wget_githubRelease_internal-URL() {
-	_wget_githubRelease-URL "$1" "internal" "$2"
-}
-
-
-
 
 
 
@@ -27997,15 +28028,18 @@ _wget_githubRelease_internal-URL() {
 # ###
 # ATTENTION: TODO: Replace old code.
 
+
+#_gh_downloadURL "https://github.com/""$currentAbsoluteRepo""/releases/download/""$currentTagName""/""$currentFile" "$currentOutFile"
 # Requires "$GH_TOKEN" .
 _gh_downloadURL() {
+	! _if_gh && return 1
+
+	# ATTRIBUTION-AI: ChatGPT GPT-4 2023-11-04 ... refactored 2025-01-22 ... .
+	
 	local current_url
 	local current_repo
 	local current_tagName
 	local current_file
-	
-	
-	# ATTRIBUTION: ChatGPT GPT-4 2023-11-04 .
 	
 	# The provided URL
 	current_url="$1"

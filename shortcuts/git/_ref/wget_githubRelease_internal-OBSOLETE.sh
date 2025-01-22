@@ -1,430 +1,49 @@
 
-# Refactored from code which was very robust with fast ISP, however often failed with slower ISP, as explained by ChatGPT due to AWS S3 temporary link expiration.
-# See "_ref/wget_githubRelease_internal-OBSOLETE.sh" for original code, which due to the more iterative development process at the time, may be more reliable in untested cases.
+# OBSOLETE
+# Basically functional, everything worked as intended. With slower internet connections, there was a random probability of failure, at least with aria2c , with one case of an HTTP 401 error. ChatGPT o1 2024-01-21 explained a temporary AWS S3 link was given for GitHub releases, expiring within 5minutes, resulting in failure. Historically, some corruption has apparently happened even when using the 'gh release' program and possibly also 'wget' .
+# Unfortunately, these functions relied on the PID of the downloading process (ie. aria2c, gh, wget, etc), which as-is did not allow scripting around exit status or other detectable indications of corrupted or incomplete downloads.
+# NOTICE: Thus, refactoring became necessary to simplify logic, job control, then add "$scriptAbsoluteLocation" function scripting around each backend for individual download error handling.
 
-# WARNING: May be untested.
 
-# WARNING: CAUTION: Many functions rely on emitting to standard output . Experiment/diagnose by copying code to override with 'ops.sh' . CAUTION: Be very careful enabling or using diagnostic output to stderr, as stderr may also be redirected by calling functions, terminal may not be present, etc.
-#( echo x >&2 ) > /dev/null
-#_messagePlain_probe_var page >&2 | cat /dev/null
-#_messagePlain_probe_safe "currentAPI_URL= ""$currentAPI_URL" >&2 | cat /dev/null
-# WARNING: Limit stderr pollution for log (including CI logs) and terminal readability , using 'tail' .
-#( cat ubiquitous_bash.sh >&2 ) 2> >(tail -n 10 >&2) | tail -n 10
-
-# DANGER: Use _messagePlain_probe_safe , _safeEcho , _safeEcho_newline , etc .
-
-
-
-#_get_vmImg_ubDistBuild_sequence
-#export MANDATORY_HASH="true"
-# write file
-#_wget_githubRelease_join-stdout "soaringDistributions/ubDistBuild" "$releaseLabel" "package_image.tar.flx" | _get_extract_ubDistBuild-tar xv --overwrite
-# write disk (eg. '/dev/sda')
-#_wget_githubRelease_join-stdout "soaringDistributions/ubDistBuild" "$releaseLabel" "package_image.tar.flx" | _get_extract_ubDistBuild-tar --extract ./vm.img --to-stdout | sudo -n dd of="$3" bs=1M status=progress
-#
-#export MANDATORY_HASH=
-#unset MANDATORY_HASH
-#_wget_githubRelease-stdout "soaringDistributions/ubDistBuild" "$releaseLabel" "_hash-ubdist.txt"
-
-
-#_get_vmImg_beforeBoot_ubDistBuild_sequence
-#export MANDATORY_HASH="true"
-# write file
-#_wget_githubRelease_join-stdout "soaringDistributions/ubDistBuild" "$releaseLabel" "package_image_beforeBoot.tar.flx" | _get_extract_ubDistBuild-tar xv --overwrite
-# write disk (eg. '/dev/sda')
-#_wget_githubRelease_join-stdout "soaringDistributions/ubDistBuild" "$releaseLabel" "package_image_beforeBoot.tar.flx" | _get_extract_ubDistBuild-tar --extract ./vm.img --to-stdout | sudo -n dd of="$3" bs=1M status=progress
-#
-#export MANDATORY_HASH=
-#unset MANDATORY_HASH
-#_wget_githubRelease-stdout "soaringDistributions/ubDistBuild" "$releaseLabel" "_hash-ubdist_beforeBoot.txt"
-
-
-#_get_vmImg_ubDistBuild-live_sequence
-#export MANDATORY_HASH="true"
-# write file
-#_wget_githubRelease_join "soaringDistributions/ubDistBuild" "$releaseLabel" "vm-live.iso"
-#currentHash_bytes=$(_wget_githubRelease-stdout "soaringDistributions/ubDistBuild" "$releaseLabel" "_hash-ubdist.txt" | head -n 14 | tail -n 1 | sed 's/^.*count=$(bc <<< '"'"'//' | cut -f1 -d\  )
-# write packetDisc (eg. '/dev/sr0', '/dev/dvd'*, '/dev/cdrom'*)
-#_wget_githubRelease_join-stdout "soaringDistributions/ubDistBuild" "$releaseLabel" "vm-live.iso" | tee >(openssl dgst -whirlpool -binary | xxd -p -c 256 >> "$scriptLocal"/hash-download.txt) ; dd if=/dev/zero bs=2048 count=$(bc <<< '1000000000000 / 2048' ) ) | sudo -n growisofs -speed=3 -dvd-compat -Z "$3"=/dev/stdin -use-the-force-luke=notray -use-the-force-luke=spare:min -use-the-force-luke=bufsize:128m
-# write disk (eg. '/dev/sda')
-#_wget_githubRelease_join-stdout "soaringDistributions/ubDistBuild" "$releaseLabel" "vm-live.iso" | tee >(openssl dgst -whirlpool -binary | xxd -p -c 256 >> "$scriptLocal"/hash-download.txt) ; dd if=/dev/zero bs=2048 count=$(bc <<< '1000000000000 / 2048' ) ) | sudo -n dd of="$3" bs=1M status=progress
-#
-#export MANDATORY_HASH=
-#unset MANDATORY_HASH
-#_wget_githubRelease-stdout "soaringDistributions/ubDistBuild" "$releaseLabel" "_hash-ubdist.txt"
-
-
-#_get_vmImg_ubDistBuild-rootfs_sequence
-#export MANDATORY_HASH="true"
-#_wget_githubRelease_join-stdout "soaringDistributions/ubDistBuild" "$releaseLabel" "package_rootfs.tar.flx" | lz4 -d -c > ./package_rootfs.tar
-#
-#export MANDATORY_HASH=
-#unset MANDATORY_HASH
-#_wget_githubRelease-stdout "soaringDistributions/ubDistBuild" "$releaseLabel" "_hash-ubdist.txt"
-
-
-
-#! "$scriptAbsoluteLocation" _wget_githubRelease_join "owner/repo" "internal" "file.ext"
-#! _wget_githubRelease "owner/repo" "" "file.ext"
-
-
-#_wget_githubRelease_join "soaringDistributions/Llama-augment_bundle" "" "llama-3.1-8b-instruct-abliterated.Q4_K_M.gguf"
-
-
-
-#_wget_githubRelease-stdout
-#export MANDATORY_HASH="true"
-#export MANDATORY_HASH=""
-
-#_wget_githubRelease_join
-#export MANDATORY_HASH="true"
-#export MANDATORY_HASH=""
-
-#_wget_githubRelease_join-stdout
-#export MANDATORY_HASH="true"
-
-
-#export FORCE_WGET="true"
-#export FORCE_AXEL="4"
-#export GH_TOKEN="..."
-
-#type -p gh > /dev/null 2>&1
-
-
-#_wget_githubRelease_internal
-
-#curl --no-progress-meter
-#gh release download "$current_tagName" -R "$current_repo" -p "$current_file" "$@" 2> >(tail -n 10 >&2) | tail -n 10
-
-## Use variables to construct the gh release download command
-#local currentIteration
-#currentIteration=0
-#while ! [[ -e "$current_fileOut" ]] && [[ "$currentIteration" -lt 3 ]]
-#do
-	##gh release download "$current_tagName" -R "$current_repo" -p "$current_file" "$@"
-	#gh release download "$current_tagName" -R "$current_repo" -p "$current_file" "$@" 2> >(tail -n 10 >&2) | tail -n 10
-	#! [[ -e "$current_fileOut" ]] && sleep 7
-	#let currentIteration=currentIteration+1
-#done
-#[[ -e "$current_fileOut" ]]
-#return "$?"
-
-
-
-
-
-_if_gh() {
-	if type -p gh > /dev/null 2>&1 && [[ "$GH_TOKEN" != "" ]]
-	then
-		( _messagePlain_probe '_if_gh: gh' >&2 ) /dev/null
-		return 0
-	fi
-	( _messagePlain_probe '_if_gh: NOT gh' >&2 ) /dev/null
-	return 1
-}
-
-
-#_wget_githubRelease-URL "owner/repo" "" "file.ext"
-#_wget_githubRelease-URL "owner/repo" "latest" "file.ext"
-#_wget_githubRelease-URL "owner/repo" "internal" "file.ext"
-_wget_githubRelease-URL() {
-	( _messagePlain_nominal '\/\/\/\/\/ init: _wget_githubRelease-URL' >&2 ) /dev/null
-	if _if_gh
-	then
-		( _messagePlain_probe_safe _wget_githubRelease-URL-gh "$@" >&2 ) /dev/null
-		_wget_githubRelease-URL-gh "$@"
-		return
-	else
-		( _messagePlain_probe_safe _wget_githubRelease-URL-curl "$@" >&2 ) /dev/null
-		_wget_githubRelease-URL-curl "$@"
-		return
-	fi
-}
-#_wget_githubRelease-URL "owner/repo" "file.ext"
-_wget_githubRelease_internal-URL() {
-	_wget_githubRelease-URL "$1" "internal" "$2"
-}
-
-_jq_github_browser_download_url() {
-	local currentReleaseLabel="$2"
-	local currentFile="$3"
-	
-	# 'latest'
-	if [[ "$currentReleaseLabel" == "latest" ]] || [[ "$currentReleaseLabel" == "" ]]
-	then
-		#jq -r ".assets[] | select(.name == \"""$3""\") | .browser_download_url" 
-		jq -r ".assets[] | select(.name == \"""$currentFile""\") | .browser_download_url"
-		return
-	# eg. 'internal', 'build', etc
-	else
-		#jq -r ".[] | select(.name == \"""$2""\") | .assets[] | select(.name == \"""$3""\") | .browser_download_url" | sort -n -r | head -n 1
-		jq -r "sort_by(.published_at) | reverse | .[] | select(.name == \"""$currentReleaseLabel""\") | .assets[] | select(.name == \"""$currentFile""\") | .browser_download_url"
-		return
-	fi
-}
-_curl_githubAPI_releases_page() {
-	( _messagePlain_nominal '\/\/\/\/\/ init: _curl_githubAPI_releases_page' >&2 ) /dev/null
-	local currentAbsoluteRepo="$1"
-	local currentReleaseLabel="$2"
-	local currentFile="$3"
-
-	[[ "$currentAbsoluteRepo" == "" ]] && return 1
-	[[ "$currentReleaseLabel" == "" ]] && currentReleaseLabel="latest"
-	[[ "$currentFile" == "" ]] && return 1
-
-	local currentPageNum="$4"
-	[[ "$currentPageNum" == "" ]] && currentPageNum="1"
-	_messagePlain_probe_var page >&2 | cat /dev/null
-	
-	local currentAPI_URL
-	currentAPI_URL="https://api.github.com/repos/""$currentAbsoluteRepo""/releases?per_page=100&page=""$currentPageNum"
-	[[ "$currentReleaseLabel" == "latest" ]] && currentAPI_URL="https://api.github.com/repos/""$currentAbsoluteRepo""/releases""/latest"
-	_messagePlain_probe_safe "currentAPI_URL= ""$currentAPI_URL" >&2 | cat /dev/null
-
-	local current_curl_args
-	current_curl_args=()
-	[[ "$GH_TOKEN" != "" ]] && current_curl_args+=( -H "Authorization: Bearer $GH_TOKEN" )
-	current_curl_args+=( -S )
-	current_curl_args+=( -s )
-
-	local currentPage
-	currentPage=""
-
-	local currentExitStatus_ipv4=0
-	local currentExitStatus_ipv6=0
-
-	( _messagePlain_probe '_curl_githubAPI_releases_page: IPv6' >&2 ) /dev/null
-	currentPage=$(curl -6 "${current_curl_args[@]}" "$currentAPI_URL")
-	currentExitStatus_ipv6="$?"
-	( _messagePlain_probe '_curl_githubAPI_releases_page: IPv4' >&2 ) /dev/null
-	[[ "$currentPage" == "" ]] && currentPage=$(curl -4 "${current_curl_args[@]}" "$currentAPI_URL")
-	currentExitStatus_ipv4="$?"
-	
-	_safeEcho_newline "$currentPage"
-
-	if [[ "$currentExitStatus_ipv6" != "0" ]] && [[ "$currentExitStatus_ipv4" != "0" ]]
-	then
-		( _messagePlain_bad 'bad: FAIL: _curl_githubAPI_releases_page' >&2 ) /dev/null
-		[[ "$currentExitStatus_ipv4" != "1" ]] && [[ "$currentExitStatus_ipv4" != "0" ]] && return "$currentExitStatus_ipv4"
-		[[ "$currentExitStatus_ipv6" != "1" ]] && [[ "$currentExitStatus_ipv6" != "0" ]] && return "$currentExitStatus_ipv6"
-		return "$currentExitStatus_ipv4"
-	fi
-
-	[[ "$currentPage" == "" ]] && return 1
-	return 0
-}
-_wget_githubRelease-URL-curl() {
-	( _messagePlain_nominal '\/\/\/\/\/ init: _wget_githubRelease-URL-curl' >&2 ) /dev/null
-	( _messagePlain_probe_safe _wget_githubRelease-URL-curl "$@" >&2 ) /dev/null
-	local currentAbsoluteRepo="$1"
-	local currentReleaseLabel="$2"
-	local currentFile="$3"
-
-	[[ "$currentAbsoluteRepo" == "" ]] && return 1
-	[[ "$currentReleaseLabel" == "" ]] && currentReleaseLabel="latest"
-	[[ "$currentFile" == "" ]] && return 1
-
-
-	if [[ "$currentReleaseLabel" == "latest" ]]
-	then
-		(set -o pipefail ; _curl_githubAPI_releases_page "$currentAbsoluteRepo" "$currentReleaseLabel" "$currentFile" | _jq_github_browser_download_url "" "$currentReleaseLabel" "$currentFile")
-		return
-	else
-		local currentData
-		currentData=""
-		
-		local currentData_page
-		currentData_page="doNotMatch"
-		
-		local currentIteration
-		currentIteration=1
-
-		local currentExitStatus_tmp=0
-		local currentExitStatus=0
-		
-		while ( [[ "$currentData_page" != "" ]] && [[ "$currentData_page" != *$(echo 'WwoKXQo=' | base64 -d)* ]] ) && [[ "$currentIteration" -le 3 ]]
-		do
-			currentData_page=$(_curl_githubAPI_releases_page "$currentAbsoluteRepo" "$currentReleaseLabel" "$currentFile" "$currentIteration")
-			currentExitStatus_tmp="$?"
-			[[ "$currentIteration" == "1" ]] && currentExitStatus="$currentExitStatus_tmp"
-			currentData="$currentURL"'
-'"$currentData_page"
-
-            ( _messagePlain_probe "_wget_githubRelease-URL-curl: ""$currentIteration" >&2 ) > /dev/null
-            #( _safeEcho_newline "$currentData" | _jq_github_browser_download_url "" "$currentReleaseLabel" "$currentFile" | head -n 1 >&2 ) > /dev/null
-            [[ "$currentIteration" -ge 4 ]] && ( _safeEcho_newline "$currentData_page" >&2 ) > /dev/null
-
-			let currentIteration=currentIteration+1
-		done
-
-		( set -o pipefail ; _safeEcho_newline "$currentData" | _jq_github_browser_download_url "" "$currentReleaseLabel" "$currentFile" | head -n 1 )
-		currentExitStatus_tmp="$?"
-		[[ "$currentExitStatus" != "0" ]] && ( _messagePlain_bad 'bad: FAIL: _wget_githubRelease-URL-curl: _curl_githubAPI_releases_page: currentExitStatus' >&2 ) /dev/null && return "$currentExitStatus"
-		[[ "$currentExitStatus_tmp" != "0" ]] && ( _messagePlain_bad 'bad: FAIL: _wget_githubRelease-URL-curl: _jq_github_browser_download_url: currentExitStatus_tmp' >&2 ) /dev/null && return "$currentExitStatus_tmp"
-		[[ "$currentData" == "" ]] && ( _messagePlain_bad 'bad: FAIL: _wget_githubRelease-URL-curl: empty: currentData' >&2 ) /dev/null && return 1
-		[[ "$(_safeEcho_newline "$currentData" | _jq_github_browser_download_url "" "$currentReleaseLabel" "$currentFile" | head -n 1 | wc -c )" -le 0 ]] && ( _messagePlain_bad 'bad: FAIL: _wget_githubRelease-URL-curl: empty: _safeEcho_newline | _jq_github_browser_download_url' >&2 ) /dev/null  && return 1
-		return 0
-	fi
-}
-
-_wget_githubRelease-URL-gh-awk() {
-    local currentReleaseLabel="$2"
-    
-    # WARNING: Use of comples 'awk' scripts historically has seemed less resilient, less portable, less reliable.
-    # ATTRIBUTION-AI: ChatGPT o1 2025-01-22 .
-    awk -v label="$currentReleaseLabel" '
-    # For each line where the first column equals the label we are looking for...
-    $1 == label {
-        # If the second column is one of the known “types,” shift fields left so
-        # the *real* tag moves into $2. Repeat until no more known types remain.
-        while ($2 == "Latest" || $2 == "draft" || $2 == "pre-release" || $2 == "prerelease") {
-        for (i=2; i<NF; i++) {
-            $i = $(i+1)
-        }
-        NF--
-        }
-        # At this point, $2 is guaranteed to be the actual tag.
-        print $2
-    }
-    '
-}
-# Requires "$GH_TOKEN" .
-_wget_githubRelease-URL-gh() {
-	( _messagePlain_nominal '\/\/\/\/\/ init: _wget_githubRelease-URL-gh' >&2 ) /dev/null
-	( _messagePlain_probe_safe _wget_githubRelease-URL-gh "$@" >&2 ) /dev/null
-    ! _if_gh && return 1
-	
-	local currentAbsoluteRepo="$1"
-	local currentReleaseLabel="$2"
-	local currentFile="$3"
-
-	[[ "$currentAbsoluteRepo" == "" ]] && return 1
-	[[ "$currentReleaseLabel" == "" ]] && currentReleaseLabel="latest"
-	[[ "$currentFile" == "" ]] && return 1
-
-    local currentTag
-
-	local currentExitStatus=0
-	local currentExitStatus_tmp=0
-
-    local currentIteration
-    currentIteration=1
-
-    while [[ "$currentTag" == "" ]] && [[ "$currentIteration" -le 3 ]]
-    do
-        #currentTag=$(gh release list -L 100 -R "$currentAbsoluteRepo" | sed 's/Latest//' | grep '^'"$currentReleaseLabel" | awk '{ print $2 }' | head -n 1)
-        
-        currentTag=$(set -o pipefail ; gh release list -L $(( $currentIteration * 100 )) -R "$currentAbsoluteRepo" | _wget_githubRelease-URL-gh-awk "" "$currentReleaseLabel" "" | head -n 1)    # or pick whichever match you want
-        currentExitStatus_tmp="$?"
-		[[ "$currentIteration" == "1" ]] && currentExitStatus="$currentExitStatus_tmp"
-		
-        let currentIteration++
-    done
-
-    #echo "$currentTag"
-    _safeEcho_newline "https://github.com/""$currentAbsoluteRepo""/releases/download/""$currentTag""/""$currentFile"
-
-	[[ "$currentExitStatus" != "0" ]] && return "$currentExitStatus"
-    [[ "$currentTag" == "" ]] && return 1
-
-    return 0
-}
-
-
-
-
-
-# _gh_download "$currentAbsoluteRepo" "$currentTagName" "$currentFile" -O "$currentOutFile"
-# Requires "$GH_TOKEN" .
-_gh_download() {
-	( _messagePlain_nominal '\/\/\/\/\/ init: _gh_downloadURL' >&2 ) /dev/null
-	
-	! _if_gh && return 1
-	
-	local currentAbsoluteRepo="$1"
-	local currentTagName="$2"
-	local currentFile="$3"
-
-	local currentOutParameter="$4"
-	local currentOutFile="$5"
-
-	( _messagePlain_probe_safe gh release download --clobber "$current_tagName" -R "$currentAbsoluteRepo" -p "$current_file" "$@" >&2 ) /dev/null
-	gh release download --clobber "$current_tagName" -R "$currentAbsoluteRepo" -p "$current_file" "$@"
-}
-#_gh_downloadURL "https://github.com/""$currentAbsoluteRepo""/releases/download/""$currentTagName""/""$currentFile" "$currentOutFile"
 # Requires "$GH_TOKEN" .
 _gh_downloadURL() {
-	( _messagePlain_nominal '\/\/\/\/\/ init: _gh_downloadURL' >&2 ) > /dev/null
+	local current_url
+	local current_repo
+	local current_tagName
+	local current_file
 	
-	! _if_gh && return 1
-
-	# ATTRIBUTION-AI: ChatGPT GPT-4 2023-11-04 ... refactored 2025-01-22 ... .
-
-	local currentURL="$1"
-	local currentOutParameter="$2"
-	local currentOutFileParameter="$3"
-
-	[[ "$currentURL" == "" ]] && return 1
-
-	# Use `sed` to extract the parts of the URL
-	local currentAbsoluteRepo=$(echo "$currentURL" | sed -n 's|https://github.com/\([^/]*\)/\([^/]*\)/.*|\1/\2|p')
-	[[ "$?" != "0" ]] && return 1
-	local currentTagName$(echo "$currentURL" | sed -n 's|https://github.com/[^/]*/[^/]*/releases/download/\([^/]*\)/.*|\1|p')
-	[[ "$?" != "0" ]] && return 1
-	local currentFile=$(echo "$currentURL" | sed -n 's|https://github.com/[^/]*/[^/]*/releases/download/[^/]*/\(.*\)|\1|p')
-	[[ "$?" != "0" ]] && return 1
-
-	currentOutFile="$currentFile"
-
+	
+	# ATTRIBUTION: ChatGPT GPT-4 2023-11-04 .
+	
+	# The provided URL
+	current_url="$1"
 	shift
-	[[ "$currentOutParameter" == "-O" ]] && currentOutFile="$currentOutFileParameter" && shift && shift
-
-	local currentExitStatus=1
-	#currentExitStatus=1
-
+	
+	# Use `sed` to extract the parts of the URL
+	current_repo=$(echo "$current_url" | sed -n 's|https://github.com/\([^/]*\)/\([^/]*\)/.*|\1/\2|p')
+	current_tagName=$(echo "$current_url" | sed -n 's|https://github.com/[^/]*/[^/]*/releases/download/\([^/]*\)/.*|\1|p')
+	current_file=$(echo "$current_url" | sed -n 's|https://github.com/[^/]*/[^/]*/releases/download/[^/]*/\(.*\)|\1|p')
+	
+	local current_fileOut
+	current_fileOut="$current_file"
+	if [[ "$1" == "-O" ]]
+	then
+		#_gh_downloadURL "${currentURL_array_reversed[$currentIterationNext1]}" -O "$currentAxelTmpFileRelative".tmp2
+		current_fileOut="$2"
+	fi
+	
+	# Use variables to construct the gh release download command
 	local currentIteration
 	currentIteration=0
-	while ( [[ "$currentExitStatus" != "0" ]] || ( ! [[ -e "$currentOutFile" ]] && [[ "$currentOutFile" != "-" ]] ) ) && [[ "$currentIteration" -lt 3 ]] && ( [[ "$currentIteration" != "0" ]] && sleep 7 )
+	while ! [[ -e "$current_fileOut" ]] && [[ "$currentIteration" -lt 3 ]]
 	do
-		[[ "$currentOutFile" != "-" ]] && rm -f "$currentOutFile"
-		( _messagePlain_probe_safe _gh_download "$currentAbsoluteRepo" "$currentTagName" "$currentFile" -O "$currentOutFile" "$@" >&2 ) > /dev/null
-		_gh_download "$currentAbsoluteRepo" "$currentTagName" "$currentFile" -O "$currentOutFile" "$@"
-		currentExitStatus="$?"
-
+		gh release download "$current_tagName" -R "$current_repo" -p "$current_file" "$@"
+		! [[ -e "$current_fileOut" ]] && sleep 7
 		let currentIteration=currentIteration+1
 	done
-
-	[[ "$currentExitStatus" != "0" ]] && return "$currentExitStatus"
-	[[ -e "$currentOutFile" ]] && [[ "$currentOutFile" != "-" ]] && return 1
-
-	return 0
+	[[ -e "$current_fileOut" ]]
+	return "$?"
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# ###
-# ATTENTION: TODO: Replace old code.
-
-
-
 
 _aria2c_bin_githubRelease() {
 	#--retry-on-http-error=400,429,500,502,503,504 
@@ -433,7 +52,37 @@ _aria2c_bin_githubRelease() {
 
 
 
-
+_wget_githubRelease-URL() {
+	local currentURL
+	if [[ "$2" != "" ]]
+	then
+		if [[ "$GH_TOKEN" == "" ]]
+		then
+			currentURL=$(curl -6 -s "https://api.github.com/repos/""$1""/releases" | jq -r ".[] | select(.name == \"""$2""\") | .assets[] | select(.name == \"""$3""\") | .browser_download_url" | sort -n -r | head -n 1)
+			[[ "$currentURL" == "" ]] && currentURL=$(curl -4 -s "https://api.github.com/repos/""$1""/releases" | jq -r ".[] | select(.name == \"""$2""\") | .assets[] | select(.name == \"""$3""\") | .browser_download_url" | sort -n -r | head -n 1)
+			echo "$currentURL"
+			return
+		else
+			currentURL=$(curl -6 -H "Authorization: Bearer $GH_TOKEN" -s "https://api.github.com/repos/""$1""/releases" | jq -r ".[] | select(.name == \"""$2""\") | .assets[] | select(.name == \"""$3""\") | .browser_download_url" | sort -n -r | head -n 1)
+			[[ "$currentURL" == "" ]] && currentURL=$(curl -4 -H "Authorization: Bearer $GH_TOKEN" -s "https://api.github.com/repos/""$1""/releases" | jq -r ".[] | select(.name == \"""$2""\") | .assets[] | select(.name == \"""$3""\") | .browser_download_url" | sort -n -r | head -n 1)
+			echo "$currentURL"
+			return
+		fi
+	else
+		if [[ "$GH_TOKEN" == "" ]]
+		then
+			currentURL=$(curl -6 -s "https://api.github.com/repos/""$1""/releases/latest" | jq -r ".assets[] | select(.name == \"""$3""\") | .browser_download_url" | sort -n -r | head -n 1)
+			[[ "$currentURL" == "" ]] && currentURL=$(curl -4 -s "https://api.github.com/repos/""$1""/releases/latest" | jq -r ".assets[] | select(.name == \"""$3""\") | .browser_download_url" | sort -n -r | head -n 1)
+			echo "$currentURL"
+			return
+		else
+			currentURL=$(curl -6 -H "Authorization: Bearer $GH_TOKEN" -s "https://api.github.com/repos/""$1""/releases/latest" | jq -r ".assets[] | select(.name == \"""$3""\") | .browser_download_url" | sort -n -r | head -n 1)
+			[[ "$currentURL" == "" ]] && currentURL=$(curl -4 -H "Authorization: Bearer $GH_TOKEN" -s "https://api.github.com/repos/""$1""/releases/latest" | jq -r ".assets[] | select(.name == \"""$3""\") | .browser_download_url" | sort -n -r | head -n 1)
+			echo "$currentURL"
+			return
+		fi
+	fi
+}
 
 _wget_githubRelease() {
 	local currentURL=$(_wget_githubRelease-URL "$@")
@@ -449,7 +98,6 @@ _wget_githubRelease() {
 		else
 			# Broken. Must use 'gh' instead.
 			_messagePlain_probe curl -H "Authorization: Bearer "'$GH_TOKEN' -L -o "$3" "$currentURL" >&2
-			_messagePlain_warn 'warn: DUBIOUS: GH_TOKEN with wget/curl is definitively limited to public repositories at best and may or may not have no effect whatsoever'
 			curl -H "Authorization: Bearer $GH_TOKEN" -L -o "$3" "$currentURL"
 		fi
 	fi
@@ -472,7 +120,6 @@ _wget_githubRelease-stdout() {
 		else
 			# Broken. Must use 'gh' instead.
 			_messagePlain_probe curl -H "Authorization: Bearer "'$GH_TOKEN' -L -o - "$currentURL" >&2
-			_messagePlain_warn 'warn: DUBIOUS: GH_TOKEN with wget/curl is definitively limited to public repositories at best and may or may not have no effect whatsoever'
 			curl -H "Authorization: Bearer $GH_TOKEN" -L -o - "$currentURL"
 		fi
 		return
@@ -1193,52 +840,13 @@ _wget_githubRelease_join() {
 }
 
 
+_wget_githubRelease_internal-URL() {
+	_wget_githubRelease-URL "$1" "internal" "$2"
+}
+
 _wget_githubRelease_internal() {
 	_wget_githubRelease "$1" "internal" "$2"
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-_vector_wget_githubRelease-URL-gh() {
-    local currentReleaseLabel="build"
-    
-    [[ $(
-cat <<'CZXWXcRMTo8EmM8i4d' | _wget_githubRelease-URL-gh-awk "" "$currentReleaseLabel" ""
-TITLE  TYPE    TAG NAME             PUBLISHED        
-build  Latest  build-1002-1  about 1 days ago
-build          build-1001-1  about 2 days ago
-CZXWXcRMTo8EmM8i4d
-) == "build-1002-1
-build-1001-1" ]] || ( _messagePlain_bad 'fail: bad: _wget_githubRelease-URL-gh-awk' && _messageFAIL )
-
-	return 0
-}
-
-
-
-
-
-
-
-
-
 
 
 

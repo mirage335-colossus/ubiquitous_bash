@@ -1361,6 +1361,20 @@ _test_sanity() {
 	#[[ $(echo -e -n "c" | _messagePlain_probe_cmd cat /dev/stdin "$safeTmp"/a | tail -c 2) != "cb" ]] && _messageFAIL && _stop 1
 	[[ $(echo -e -n "c" | _messagePlain_probe_cmd cat /proc/self/fd/0 "$safeTmp"/a | tail -c 2) != "cb" ]] && _messageFAIL && _stop 1
 	rm -f "$safeTmp"/a
+
+
+
+
+	! (set -o pipefail; true | echo x | cat) > /dev/null 2>&1 && _messageFAIL && return 1
+	(set -o pipefail; false | echo x | cat) > /dev/null 2>&1 && _messageFAIL && return 1
+
+	[[ $(set -o pipefail; true | echo x | cat) != "x" ]] && _messageFAIL && return 1
+	[[ $(set -o pipefail; false | echo x | cat) != "x" ]] && _messageFAIL && return 1
+
+	! false | true && _messageFAIL && return 1
+	false | true || _messageFAIL
+	false | true || return 1
+	true | false && _messageFAIL && return 1
 	
 	
 	

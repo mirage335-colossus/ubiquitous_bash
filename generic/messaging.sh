@@ -354,6 +354,17 @@ _messagePlain_probe_noindent() {
 	echo
 	return 0
 }
+# WARNING: Less track record with very unusual text. May or may not output correctly in some (unknown, unexpected) situations.
+# DANGER: MUST use this function instead of _messagePlain_probe when text is from external origins!
+_messagePlain_probe_safe() {
+	_color_begin_probe
+	#_color_begin_probe_noindent
+	#echo -n "$@"
+	_safeEcho "$@"
+	_color_end
+	echo
+	return
+}
 
 #Blue. Diagnostic instrumentation.
 #"generic/ubiquitousheader.sh"
