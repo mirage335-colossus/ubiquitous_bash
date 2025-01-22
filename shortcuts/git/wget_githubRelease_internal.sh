@@ -146,6 +146,7 @@ _wget_githubRelease_internal-URL() {
 }
 
 _jq_github_browser_download_url() {
+	( _messagePlain_probe 'init: _jq_github_browser_download_url' >&2 ) /dev/null
 	local currentReleaseLabel="$2"
 	local currentFile="$3"
 	
@@ -163,7 +164,7 @@ _jq_github_browser_download_url() {
 	fi
 }
 _curl_githubAPI_releases_page() {
-	( _messagePlain_nominal '\/\/\/\/\/ init: _curl_githubAPI_releases_page' >&2 ) /dev/null
+	( _messagePlain_nominal '\/\/\/ init: _curl_githubAPI_releases_page' >&2 ) /dev/null
 	local currentAbsoluteRepo="$1"
 	local currentReleaseLabel="$2"
 	local currentFile="$3"
@@ -214,7 +215,7 @@ _curl_githubAPI_releases_page() {
 	return 0
 }
 _wget_githubRelease-URL-curl() {
-	( _messagePlain_nominal '\/\/\/\/\/ init: _wget_githubRelease-URL-curl' >&2 ) /dev/null
+	( _messagePlain_nominal '\/\/\/\/ init: _wget_githubRelease-URL-curl' >&2 ) /dev/null
 	( _messagePlain_probe_safe _wget_githubRelease-URL-curl "$@" >&2 ) /dev/null
 	local currentAbsoluteRepo="$1"
 	local currentReleaseLabel="$2"
@@ -260,7 +261,7 @@ _wget_githubRelease-URL-curl() {
 		( set -o pipefail ; _safeEcho_newline "$currentData" | _jq_github_browser_download_url "" "$currentReleaseLabel" "$currentFile" | head -n 1 )
 		currentExitStatus_tmp="$?"
 		[[ "$currentExitStatus" != "0" ]] && ( _messagePlain_bad 'bad: FAIL: _wget_githubRelease-URL-curl: _curl_githubAPI_releases_page: currentExitStatus' >&2 ) /dev/null && return "$currentExitStatus"
-		[[ "$currentExitStatus_tmp" != "0" ]] && ( _messagePlain_bad 'bad: FAIL: _wget_githubRelease-URL-curl: _jq_github_browser_download_url: currentExitStatus_tmp' >&2 ) /dev/null && return "$currentExitStatus_tmp"
+		[[ "$currentExitStatus_tmp" != "0" ]] && ( _messagePlain_bad 'bad: FAIL: _wget_githubRelease-URL-curl: pipefail: _jq_github_browser_download_url: currentExitStatus_tmp' >&2 ) /dev/null && return "$currentExitStatus_tmp"
 		[[ "$currentData" == "" ]] && ( _messagePlain_bad 'bad: FAIL: _wget_githubRelease-URL-curl: empty: currentData' >&2 ) /dev/null && return 1
 		[[ "$(_safeEcho_newline "$currentData" | _jq_github_browser_download_url "" "$currentReleaseLabel" "$currentFile" | head -n 1 | wc -c )" -le 0 ]] && ( _messagePlain_bad 'bad: FAIL: _wget_githubRelease-URL-curl: empty: _safeEcho_newline | _jq_github_browser_download_url' >&2 ) /dev/null  && return 1
 		return 0
@@ -268,6 +269,7 @@ _wget_githubRelease-URL-curl() {
 }
 
 _wget_githubRelease-URL-gh-awk() {
+	( _messagePlain_probe 'init: _wget_githubRelease-URL-gh-awk' >&2 ) /dev/null
     local currentReleaseLabel="$2"
     
     # WARNING: Use of comples 'awk' scripts historically has seemed less resilient, less portable, less reliable.
@@ -290,7 +292,7 @@ _wget_githubRelease-URL-gh-awk() {
 }
 # Requires "$GH_TOKEN" .
 _wget_githubRelease-URL-gh() {
-	( _messagePlain_nominal '\/\/\/\/\/ init: _wget_githubRelease-URL-gh' >&2 ) /dev/null
+	( _messagePlain_nominal '\/\/\/\/ init: _wget_githubRelease-URL-gh' >&2 ) /dev/null
 	( _messagePlain_probe_safe _wget_githubRelease-URL-gh "$@" >&2 ) /dev/null
     ! _if_gh && return 1
 	
@@ -324,8 +326,8 @@ _wget_githubRelease-URL-gh() {
     #echo "$currentTag"
     _safeEcho_newline "https://github.com/""$currentAbsoluteRepo""/releases/download/""$currentTag""/""$currentFile"
 
-	[[ "$currentExitStatus" != "0" ]] && return "$currentExitStatus"
-    [[ "$currentTag" == "" ]] && return 1
+	[[ "$currentExitStatus" != "0" ]] && ( _messagePlain_bad 'bad: FAIL: _wget_githubRelease-URL-gh: pipefail: currentExitStatus' >&2 ) /dev/null && return "$currentExitStatus"
+    [[ "$currentTag" == "" ]] && ( _messagePlain_bad 'bad: FAIL: _wget_githubRelease-URL-gh: empty: currentTag' >&2 ) /dev/null && return 1
 
     return 0
 }
@@ -394,8 +396,8 @@ _gh_downloadURL() {
 		let currentIteration=currentIteration+1
 	done
 
-	[[ "$currentExitStatus" != "0" ]] && return "$currentExitStatus"
-	[[ -e "$currentOutFile" ]] && [[ "$currentOutFile" != "-" ]] && return 1
+	[[ "$currentExitStatus" != "0" ]] && ( _messagePlain_bad 'bad: FAIL: _gh_downloadURL: _gh_download: currentExitStatus' >&2 ) /dev/null && return "$currentExitStatus"
+	[[ -e "$currentOutFile" ]] && [[ "$currentOutFile" != "-" ]] && ( _messagePlain_bad 'bad: FAIL: missing: currentOutFile' >&2 ) /dev/null && return 1
 
 	return 0
 }

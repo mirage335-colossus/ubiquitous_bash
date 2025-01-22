@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='3458708748'
+export ub_setScriptChecksum_contents='3712573560'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -3643,6 +3643,17 @@ _messagePlain_probe_noindent() {
 	_color_end
 	echo
 	return 0
+}
+# WARNING: Less track record with very unusual text. May or may not output correctly in some (unknown, unexpected) situations.
+# DANGER: MUST use this function instead of _messagePlain_probe when text is from external origins!
+_messagePlain_probe_safe() {
+	_color_begin_probe
+	#_color_begin_probe_noindent
+	#echo -n "$@"
+	_safeEcho "$@"
+	_color_end
+	echo
+	return
 }
 
 #Blue. Diagnostic instrumentation.
