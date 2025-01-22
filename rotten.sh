@@ -2241,7 +2241,7 @@ _gh_downloadURL() {
 	# Use `sed` to extract the parts of the URL
 	local currentAbsoluteRepo=$(echo "$currentURL" | sed -n 's|https://github.com/\([^/]*\)/\([^/]*\)/.*|\1/\2|p')
 	[[ "$?" != "0" ]] && return 1
-	local currentTagName$(echo "$currentURL" | sed -n 's|https://github.com/[^/]*/[^/]*/releases/download/\([^/]*\)/.*|\1|p')
+	local currentTagName=$(echo "$currentURL" | sed -n 's|https://github.com/[^/]*/[^/]*/releases/download/\([^/]*\)/.*|\1|p')
 	[[ "$?" != "0" ]] && return 1
 	local currentFile=$(echo "$currentURL" | sed -n 's|https://github.com/[^/]*/[^/]*/releases/download/[^/]*/\(.*\)|\1|p')
 	[[ "$?" != "0" ]] && return 1
