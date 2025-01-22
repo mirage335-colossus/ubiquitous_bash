@@ -36,6 +36,9 @@ _vector() {
 	
 	
 	_tryExec "_vector_virtUser"
+
+
+	_tryExec "_vector_wget_githubRelease-URL-gh"
 	
 	
 	_tryExec "_vector_ollama"
