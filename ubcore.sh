@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='3561246172'
+export ub_setScriptChecksum_contents='1439933706'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -19763,8 +19763,8 @@ _wget_githubRelease-URL-curl() {
 	return 0
 }
 
-_wget_githubRelease-URL-gh-awk() {
-	( _messagePlain_probe 'init: _wget_githubRelease-URL-gh-awk' >&2 ) > /dev/null
+_wget_githubRelease_procedure-address-gh-awk() {
+	( _messagePlain_probe 'init: _wget_githubRelease_procedure-address-gh-awk' >&2 ) > /dev/null
     local currentReleaseLabel="$2"
     
     # WARNING: Use of comples 'awk' scripts historically has seemed less resilient, less portable, less reliable.
@@ -19786,9 +19786,9 @@ _wget_githubRelease-URL-gh-awk() {
     '
 }
 # Requires "$GH_TOKEN" .
-_wget_githubRelease_procedure-URL-gh() {
-	( _messagePlain_nominal '\/\/\/\/ init: _wget_githubRelease-URL-gh' >&2 ) > /dev/null
-	( _messagePlain_probe_safe _wget_githubRelease-URL-gh "$@" >&2 ) > /dev/null
+_wget_githubRelease_procedure-address-gh() {
+	( _messagePlain_nominal '\/\/\/ init: _wget_githubRelease_procedure-address-gh' >&2 ) > /dev/null
+	( _messagePlain_probe_safe _wget_githubRelease_procedure-address-gh "$@" >&2 ) > /dev/null
     ! _if_gh && return 1
 	
 	local currentAbsoluteRepo="$1"
@@ -19811,54 +19811,89 @@ _wget_githubRelease_procedure-URL-gh() {
     do
         #currentTag=$(gh release list -L 100 -R "$currentAbsoluteRepo" | sed 's/Latest//' | grep '^'"$currentReleaseLabel" | awk '{ print $2 }' | head -n 1)
         
-        currentTag=$(set -o pipefail ; gh release list -L $(( $currentIteration * 100 )) -R "$currentAbsoluteRepo" | _wget_githubRelease-URL-gh-awk "" "$currentReleaseLabel" "" | head -n 1)    # or pick whichever match you want
+        currentTag=$(set -o pipefail ; gh release list -L $(( $currentIteration * 100 )) -R "$currentAbsoluteRepo" | _wget_githubRelease_procedure-address-gh-awk "" "$currentReleaseLabel" "" | head -n 1)    # or pick whichever match you want
         currentExitStatus_tmp="$?"
 		[[ "$currentIteration" == "1" ]] && currentExitStatus="$currentExitStatus_tmp"
 		
         let currentIteration++
     done
 
-    #echo "$currentTag"
-    _safeEcho_newline "https://github.com/""$currentAbsoluteRepo""/releases/download/""$currentTag""/""$currentFile"
+    _safeEcho_newline "$currentTag"
+    #_safeEcho_newline "https://github.com/""$currentAbsoluteRepo""/releases/download/""$currentTag""/""$currentFile"
 
-	[[ "$currentExitStatus" != "0" ]] && ( _messagePlain_bad 'bad: FAIL: _wget_githubRelease-URL-gh: pipefail: currentExitStatus' >&2 ) > /dev/null && return "$currentExitStatus"
-    [[ "$currentTag" == "" ]] && ( _messagePlain_bad 'bad: FAIL: _wget_githubRelease-URL-gh: empty: currentTag' >&2 ) > /dev/null && return 1
+	[[ "$currentExitStatus" != "0" ]] && ( _messagePlain_bad 'bad: FAIL: _wget_githubRelease_procedure-address-gh: pipefail: currentExitStatus' >&2 ) > /dev/null && return "$currentExitStatus"
+    [[ "$currentTag" == "" ]] && ( _messagePlain_bad 'bad: FAIL: _wget_githubRelease_procedure-address-gh: empty: currentTag' >&2 ) > /dev/null && return 1
 
     return 0
 }
-_wget_githubRelease-URL-gh() {
-	# Similar retry logic for all similar functions: _wget_githubRelease-URL-curl, _wget_githubRelease-URL-gh .
-	( _messagePlain_nominal '\/\/\/\/ init: _wget_githubRelease-URL-gh' >&2 ) > /dev/null
-	( _messagePlain_probe_safe _wget_githubRelease-URL-gh "$@" >&2 ) > /dev/null
+_wget_githubRelease-address-gh() {
+	# Similar retry logic for all similar functions: _wget_githubRelease-URL-curl, _wget_githubRelease-address-gh .
+	( _messagePlain_nominal '\/\/\/\/ init: _wget_githubRelease-address-gh' >&2 ) > /dev/null
+	( _messagePlain_probe_safe _wget_githubRelease-address-gh "$@" >&2 ) > /dev/null
 
-	local currentURL
-	currentURL=""
+	#local currentURL
+	#currentURL=""
+	local currentTag
+	currentTag=""
 
 	local currentExitStatus=1
 
 	local currentIteration=0
 
-	while ( [[ "$currentURL" == "" ]] || [[ "$currentExitStatus" != "0" ]] ) && [[ "$currentIteration" -lt "$githubRelease_retriesMax" ]]
+	#while ( [[ "$currentURL" == "" ]] || [[ "$currentExitStatus" != "0" ]] ) && [[ "$currentIteration" -lt "$githubRelease_retriesMax" ]]
+	while ( [[ "$currentTag" == "" ]] || [[ "$currentExitStatus" != "0" ]] ) && [[ "$currentIteration" -lt "$githubRelease_retriesMax" ]]
 	do
-		currentURL=""
+		#currentURL=""
+		currentTag=""
 
 		if [[ "$currentIteration" != "0" ]]
 		then 
-			( _messagePlain_warn 'warn: BAD: RETRY: _wget_githubRelease-URL-gh: _wget_githubRelease_procedure-URL-gh: currentIteration != 0' >&2 ) > /dev/null
+			( _messagePlain_warn 'warn: BAD: RETRY: _wget_githubRelease-address-gh: _wget_githubRelease_procedure-address-gh: currentIteration != 0' >&2 ) > /dev/null
 			sleep "$githubRelease_retriesWait"
 		fi
 
-		( _messagePlain_probe _wget_githubRelease_procedure-URL-gh >&2 ) > /dev/null
-		currentURL=$(_wget_githubRelease_procedure-URL-gh "$@")
+		( _messagePlain_probe _wget_githubRelease_procedure-address-gh >&2 ) > /dev/null
+		#currentURL=$(_wget_githubRelease_procedure-address-gh "$@")
+		currentTag=$(_wget_githubRelease_procedure-address-gh "$@")
 		currentExitStatus="$?"
 
 		let currentIteration=currentIteration+1
 	done
 	
-	_safeEcho_newline "$currentURL"
+	#_safeEcho_newline "$currentURL"
+	_safeEcho_newline "$currentTag"
 
-	[[ "$currentIteration" -ge "$githubRelease_retriesMax" ]] && ( _messagePlain_bad 'bad: FAIL: _wget_githubRelease-URL-gh: maxRetries' >&2 ) > /dev/null && return 1
+	[[ "$currentIteration" -ge "$githubRelease_retriesMax" ]] && ( _messagePlain_bad 'bad: FAIL: _wget_githubRelease-address-gh: maxRetries' >&2 ) > /dev/null && return 1
 
+	return 0
+}
+_wget_githubRelease-URL-gh() {
+	( _messagePlain_nominal '\/\/\/\/ init: _wget_githubRelease-URL-gh' >&2 ) > /dev/null
+	( _messagePlain_probe_safe _wget_githubRelease-URL-gh "$@" >&2 ) > /dev/null
+    ! _if_gh && return 1
+	
+	local currentAbsoluteRepo="$1"
+	local currentReleaseLabel="$2"
+	local currentFile="$3"
+
+	[[ "$currentAbsoluteRepo" == "" ]] && return 1
+	[[ "$currentReleaseLabel" == "" ]] && currentReleaseLabel="latest"
+	[[ "$currentFile" == "" ]] && return 1
+
+    local currentTag
+
+	local currentExitStatus=1
+
+	currentTag=$(_wget_githubRelease-address-gh "$@")
+	currentExitStatus="$?"
+	
+
+	#echo "$currentTag"
+    _safeEcho_newline "https://github.com/""$currentAbsoluteRepo""/releases/download/""$currentTag""/""$currentFile"
+
+	[[ "$currentExitStatus" != "0" ]] && ( _messagePlain_bad 'bad: FAIL: _wget_githubRelease-URL-gh: currentExitStatus' >&2 ) > /dev/null && return "$currentExitStatus"
+	[[ "$currentTag" == "" ]] && ( _messagePlain_bad 'bad: FAIL: _wget_githubRelease-URL-gh: empty: currentTag' >&2 ) > /dev/null && return 1
+	
 	return 0
 }
 
