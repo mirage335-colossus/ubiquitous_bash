@@ -1756,10 +1756,20 @@ _request_visualPrompt() {
 }
 
 
+# CAUTION: This file is very necessarily part of 'rotten' . Do NOT move functions or rename to other files without updating the build shellcode for 'rotten' !
+
 # Refactored from code which was very robust with fast ISP, however often failed with slower ISP, as explained by ChatGPT due to AWS S3 temporary link expiration.
 # See "_ref/wget_githubRelease_internal-OBSOLETE.sh" for original code, which due to the more iterative development process at the time, may be more reliable in untested cases.
 
 # WARNING: May be untested.
+
+# CAUTION: WARNING: Unusually, inheritance of local variables in procedure functions is relied upon. Theoretically, this has been long tested by 'ubiquitous_bash.sh _test' .
+#"$api_address_type"
+#"$currentStream"
+#"$currentAxelTmpFileRelative" "$currentAxelTmpFile"
+#
+#"$currentAbsoluteRepo"' '"$currentReleaseLabel"' '"$currentFile"
+#"$currentOutFile"
 
 # WARNING: CAUTION: Many functions rely on emitting to standard output . Experiment/diagnose by copying code to override with 'ops.sh' . CAUTION: Be very careful enabling or using diagnostic output to stderr, as stderr may also be redirected by calling functions, terminal may not be present, etc.
 #( echo x >&2 ) > /dev/null
@@ -1773,7 +1783,32 @@ _request_visualPrompt() {
 # DANGER: Use _messagePlain_probe_safe , _safeEcho , _safeEcho_newline , etc .
 
 # CAUTION: ATTENTION: Uncommented lines add to ALL 'compiled' bash shell scripts - INCLUDING rotten_compressed.sh !
-# Thus, it may be preferable to keep example code as a separate line commented at the beginning of that line, rather than a comment character nearer end of line.
+# Thus, it may be preferable to keep example code as a separate line commented at the beginning of that line, rather than a comment character after code on the same line .
+
+
+
+
+
+# ATTENTION: 'MANDATORY_HASH == true' claim requirement can be imposed without any important effect on reliability or performance.
+# In practice, such multi-part-per-file download programs as 'aria2c' may or may not have any worse integrity safety concerns than other download programs.
+# NOTICE: Track record from historically imposing MANDATORY_HASH has been long enough to establish excellent confidence for imposing the requirement for this safety claim again without serious issue if necessary.
+# https://www.cvedetails.com/vulnerability-list/vendor_id-12682/Haxx.html
+#  'Haxx'
+# https://www.cvedetails.com/vulnerability-list/vendor_id-3385/Wget.html
+# https://www.cvedetails.com/vulnerability-list/vendor_id-19755/product_id-53327/Aria2-Project-Aria2.html
+# https://www.cvedetails.com/vulnerability-list/vendor_id-2842/Axel.html
+# ATTENTION: DANGER: Client downloading function explicitly sets 'MANDATORY_HASH == true' to claim resulting file EITHER will be checked by external hash before production use OR file is downloaded within an internal safer network (ie. GitHub Actions) using integrity guarded computers (ie. GitHub Runners). Potentially less integrity-safe downloading as multi-part-per-file parallel 'axel' 'download accelerator' style downloading can be limited to require a safety check for the MANDATORY_HASH claim.
+# NOTICE: Imposing safety check for MANDATORY_HASH claim has long track record and no known use cases combine BOTH the jittery contentious internet connections over which multi-part-per-file downloading may or may not be more reliable, AND cannot test build steps without download large files to cycle the entire build proces completely. That is to say, ONLY CI environments would be usefully faster from not requiring a MANDATORY_HASH claim, yet CI environments can already make an integrity claim relevant for MANDATORY_HASH, and CI environments usually have high-quality internet connections not needing complex trickery to improve download reliability/speed.
+#[[ "$FORCE_AXEL" != "" ]] && ( [[ "$MANDATORY_HASH" == "true" ]] )
+
+
+
+#export FORCE_DIRECT="true"
+#export FORCE_WGET="true"
+#export FORCE_AXEL="4"
+#export GH_TOKEN="..."
+
+
 
 
 
@@ -1846,9 +1881,10 @@ _request_visualPrompt() {
 #export MANDATORY_HASH="true"
 
 
-#export FORCE_WGET="true"
-#export FORCE_AXEL="4"
-#export GH_TOKEN="..."
+
+
+
+
 
 #type -p gh > /dev/null 2>&1
 
@@ -1897,7 +1933,7 @@ _if_gh() {
 #_wget_githubRelease-URL "owner/repo" "latest" "file.ext"
 #_wget_githubRelease-URL "owner/repo" "internal" "file.ext"
 _wget_githubRelease-URL() {
-	( _messagePlain_nominal '\/\/\/\/\/ init: _wget_githubRelease-URL' >&2 ) > /dev/null
+	( _messagePlain_nominal "$currentStream"'\/\/\/\/\/ init: _wget_githubRelease-URL' >&2 ) > /dev/null
 	if _if_gh
 	then
 		( _messagePlain_probe_safe _wget_githubRelease-URL-gh "$@" >&2 ) > /dev/null
@@ -1912,6 +1948,22 @@ _wget_githubRelease-URL() {
 #_wget_githubRelease-URL "owner/repo" "file.ext"
 _wget_githubRelease_internal-URL() {
 	_wget_githubRelease-URL "$1" "internal" "$2"
+}
+#_wget_githubRelease-address "owner/repo" "" "file.ext"
+#_wget_githubRelease-address "owner/repo" "latest" "file.ext"
+#_wget_githubRelease-address "owner/repo" "internal" "file.ext"
+_wget_githubRelease-address() {
+	( _messagePlain_nominal "$currentStream"'\/\/\/\/\/ init: _wget_githubRelease-address' >&2 ) > /dev/null
+	if _if_gh
+	then
+		( _messagePlain_probe_safe _wget_githubRelease-address-gh "$@" >&2 ) > /dev/null
+		_wget_githubRelease-address-gh "$@"
+		return
+	else
+		( _messagePlain_probe_safe _wget_githubRelease-address-curl "$@" >&2 ) > /dev/null
+		_wget_githubRelease-address-curl "$@"
+		return
+	fi
 }
 
 #"$api_address_type" == "tagName" || "$api_address_type" == "url"
@@ -1952,7 +2004,7 @@ _jq_github_browser_download_address() {
 	fi
 }
 _curl_githubAPI_releases_page() {
-	( _messagePlain_nominal '\/\/\/ init: _curl_githubAPI_releases_page' >&2 ) > /dev/null
+	( _messagePlain_nominal "$currentStream"'\/\/\/ init: _curl_githubAPI_releases_page' >&2 ) > /dev/null
 	local currentAbsoluteRepo="$1"
 	local currentReleaseLabel="$2"
 	local currentFile="$3"
@@ -2088,7 +2140,7 @@ _wget_githubRelease-address-backend-curl() {
 }
 _wget_githubRelease-address-curl() {
 	# Similar retry logic for all similar functions: _wget_githubRelease-URL-curl, _wget_githubRelease-URL-gh .
-	( _messagePlain_nominal '\/\/\/\/ init: _wget_githubRelease-address-curl' >&2 ) > /dev/null
+	( _messagePlain_nominal "$currentStream"'\/\/\/\/ init: _wget_githubRelease-address-curl' >&2 ) > /dev/null
 	( _messagePlain_probe_safe _wget_githubRelease-URL-curl "$@" >&2 ) > /dev/null
 
     # ATTENTION: WARNING: Unusually, api_address_type , is a monolithic variable NEVER exported . Keep local, and do NOT use for any other purpose.
@@ -2099,7 +2151,7 @@ _wget_githubRelease-address-curl() {
 }
 _wget_githubRelease-URL-curl() {
 	# Similar retry logic for all similar functions: _wget_githubRelease-URL-curl, _wget_githubRelease-URL-gh .
-	( _messagePlain_nominal '\/\/\/\/ init: _wget_githubRelease-URL-curl' >&2 ) > /dev/null
+	( _messagePlain_nominal "$currentStream"'\/\/\/\/ init: _wget_githubRelease-URL-curl' >&2 ) > /dev/null
 	( _messagePlain_probe_safe _wget_githubRelease-URL-curl "$@" >&2 ) > /dev/null
 
     # ATTENTION: WARNING: Unusually, api_address_type , is a monolithic variable NEVER exported . Keep local, and do NOT use for any other purpose.
@@ -2133,7 +2185,7 @@ _wget_githubRelease_procedure-address-gh-awk() {
 }
 # Requires "$GH_TOKEN" .
 _wget_githubRelease_procedure-address-gh() {
-	( _messagePlain_nominal '\/\/\/ init: _wget_githubRelease_procedure-address-gh' >&2 ) > /dev/null
+	( _messagePlain_nominal "$currentStream"'\/\/\/ init: _wget_githubRelease_procedure-address-gh' >&2 ) > /dev/null
 	( _messagePlain_probe_safe _wget_githubRelease_procedure-address-gh "$@" >&2 ) > /dev/null
     ! _if_gh && return 1
 	
@@ -2174,8 +2226,9 @@ _wget_githubRelease_procedure-address-gh() {
 }
 _wget_githubRelease-address-gh() {
 	# Similar retry logic for all similar functions: _wget_githubRelease-URL-curl, _wget_githubRelease-address-gh .
-	( _messagePlain_nominal '\/\/\/\/ init: _wget_githubRelease-address-gh' >&2 ) > /dev/null
+	( _messagePlain_nominal "$currentStream"'\/\/\/\/ init: _wget_githubRelease-address-gh' >&2 ) > /dev/null
 	( _messagePlain_probe_safe _wget_githubRelease-address-gh "$@" >&2 ) > /dev/null
+    ! _if_gh && return 1
 
 	#local currentURL
 	#currentURL=""
@@ -2214,7 +2267,7 @@ _wget_githubRelease-address-gh() {
 	return 0
 }
 _wget_githubRelease-URL-gh() {
-	( _messagePlain_nominal '\/\/\/\/ init: _wget_githubRelease-URL-gh' >&2 ) > /dev/null
+	( _messagePlain_nominal "$currentStream"'\/\/\/\/ init: _wget_githubRelease-URL-gh' >&2 ) > /dev/null
 	( _messagePlain_probe_safe _wget_githubRelease-URL-gh "$@" >&2 ) > /dev/null
     ! _if_gh && return 1
 	
@@ -2250,7 +2303,8 @@ _wget_githubRelease-URL-gh() {
 # _gh_download "$currentAbsoluteRepo" "$currentTagName" "$currentFile" -O "$currentOutFile"
 # Requires "$GH_TOKEN" .
 _gh_download() {
-	( _messagePlain_nominal '\/\/\/\/\/ init: _gh_downloadURL' >&2 ) > /dev/null
+	# Similar retry logic for all similar functions: _gh_download , _wget_githubRelease_loop-curl .
+	( _messagePlain_nominal "$currentStream"'\/\/\/\/\/ init: _gh_download' >&2 ) > /dev/null
 	
 	! _if_gh && return 1
 	
@@ -2286,7 +2340,7 @@ _gh_download() {
 		fi
 
 		( _messagePlain_probe_safe gh release download --clobber "$currentTagName" -R "$currentAbsoluteRepo" -p "$currentFile" "$@" >&2 ) > /dev/null
-		( set -o pipefail ; gh release download --clobber "$currentTagName" -R "$currentAbsoluteRepo" -p "$currentFile" "$@" 2> >(tail -n 10 >&2) )
+		( set -o pipefail ; gh release download --clobber "$currentTagName" -R "$currentAbsoluteRepo" -p "$currentFile" "$@" 2> >(tail -n 30 >&2) )
 		currentExitStatus="$?"
 
 		let currentIteration=currentIteration+1
@@ -2300,7 +2354,7 @@ _gh_download() {
 #_gh_downloadURL "https://github.com/""$currentAbsoluteRepo""/releases/download/""$currentTagName""/""$currentFile" "$currentOutFile"
 # Requires "$GH_TOKEN" .
 _gh_downloadURL() {
-	( _messagePlain_nominal '\/\/\/\/\/ init: _gh_downloadURL' >&2 ) > /dev/null
+	( _messagePlain_nominal "$currentStream"'\/\/\/\/\/ init: _gh_downloadURL' >&2 ) > /dev/null
 	
 	! _if_gh && return 1
 
@@ -2358,6 +2412,256 @@ _gh_downloadURL() {
 
 
 
+#_wget_githubRelease-stdout
+
+#_wget_githubRelease
+
+
+
+_wget_githubRelease-stdout() {
+	local currentAxelTmpFileRelative=.m_axelTmp_"$currentStream"_$(_uid 14)
+	local currentAxelTmpFile="$scriptAbsoluteFolder"/"$currentAxelTmpFileRelative"
+	
+	local currentExitStatus
+
+	# WARNING: Very strongly discouraged. Any retry/continue of any interruption will nevertheless unavoidably result in a corrupted output stream.
+	[[ "$FORCE_DIRECT" == "true" ]] && _wget_githubRelease_procedure-stdout "$@"
+
+	# ATTENTION: /dev/null assures that stdout is not corrupted by any unexpected output that should have been sent to stderr
+	[[ "$FORCE_DIRECT" != "true" ]] && _wget_githubRelease_procedure-stdout "$@" > /dev/null
+
+	if ! [[ -e "$currentAxelTmpFile".PASS ]]
+	then
+		currentExitStatus=$(cat "$currentAxelTmpFile".FAIL)
+		( [[ "$currentExitStatus" == "" ]] || [[ "$currentExitStatus" = "0" ]] || [[ "$currentExitStatus" = "0"* ]] ) && currentExitStatus=1
+		rm -f "$currentAxelTmpFile".PASS > /dev/null 2>&1
+		rm -f "$currentAxelTmpFile".FAIL > /dev/null 2>&1
+		rm -f "$currentAxelTmpFile" > /dev/null 2>&1
+		return "$currentExitStatus"
+		#return 1
+	fi
+	[[ "$FORCE_DIRECT" != "true" ]] && cat "$currentAxelTmpFile"
+	rm -f "$currentAxelTmpFile" > /dev/null 2>&1
+	rm -f "$currentAxelTmpFile".PASS > /dev/null 2>&1
+	rm -f "$currentAxelTmpFile".FAIL > /dev/null 2>&1
+	return 0
+}
+_wget_githubRelease_procedure-stdout() {
+	( _messagePlain_nominal "$currentStream"'\/\/\/\/\/ \/\/\/\/\/ init: _wget_githubRelease-stdout' >&2 ) > /dev/null
+	( _messagePlain_probe_safe _wget_githubRelease-stdout "$@" >&2 ) > /dev/null
+
+	local currentAbsoluteRepo="$1"
+	local currentReleaseLabel="$2"
+	local currentFile="$3"
+
+	local currentOutParameter="$4"
+	local currentOutFile="$5"
+
+	shift
+	shift
+	shift
+	if [[ "$currentOutParameter" == "-O" ]]
+	then
+		if [[ "$currentOutFile" != "-" ]]
+		then
+			( _messagePlain_bad 'bad: fail: unexpected: currentOutFile: NOT stdout' >&2 ) > /dev/null
+			echo "1" > "$currentAxelTmpFile".FAIL
+			return 1
+		fi
+		shift 
+		shift
+	fi
+
+	#local currentAxelTmpFileRelative=.m_axelTmp_"$currentStream"_$(_uid 14)
+	#local currentAxelTmpFile="$scriptAbsoluteFolder"/"$currentAxelTmpFileRelative"
+
+	local currentExitStatus
+
+	# WARNING: Very strongly discouraged. Any retry/continue of any interruption will nevertheless unavoidably result in a corrupted output stream.
+	if [[ "$FORCE_DIRECT" == "true" ]]
+	then
+		_wget_githubRelease_procedure "$currentAbsoluteRepo" "$currentReleaseLabel" "$currentFile" -O - "$@"
+		currentExitStatus="$?"
+		if [[ "$currentExitStatus" != "0" ]]
+		then
+			echo > "$currentAxelTmpFile".FAIL
+			return "$currentExitStatus"
+		fi
+		echo > "$currentAxelTmpFile".PASS
+		return 0
+	fi
+
+	_wget_githubRelease_procedure "$currentAbsoluteRepo" "$currentReleaseLabel" "$currentFile" -O "$currentAxelTmpFile" "$@"
+	currentExitStatus="$?"
+	if [[ "$currentExitStatus" != "0" ]]
+	then
+		echo "$currentExitStatus" > "$currentAxelTmpFile".FAIL
+		return "$currentExitStatus"
+	fi
+	echo > "$currentAxelTmpFile".PASS
+	return 0
+}
+
+
+
+
+
+#! "$scriptAbsoluteLocation" _wget_githubRelease_join "owner/repo" "internal" "file.ext" -O "file.ext"
+#! _wget_githubRelease "owner/repo" "" "file.ext" -O "file.ext"
+# ATTENTION: WARNING: Warn messages correspond to inability to assuredly, effectively, use GH_TOKEN .
+_wget_githubRelease() {
+	( _messagePlain_nominal "$currentStream"'\/\/\/\/\/ \/\/\/\/\/ init: _wget_githubRelease' >&2 ) > /dev/null
+	( _messagePlain_probe_safe _wget_githubRelease "$@" >&2 ) > /dev/null
+
+	_wget_githubRelease_procedure "$@"
+}
+_wget_githubRelease_internal() {
+	_wget_githubRelease "$1" "internal" "$2"
+}
+_wget_githubRelease_procedure() {
+	# ATTENTION: Distinction nominally between '_wget_githubRelease' and '_wget_githubRelease_procedure' should only be necessary if a while loop retries the procedure .
+	# ATTENTION: Potentially more specialized logic within download procedures should remain delegated with the responsibility to attempt retries , for now.
+	# NOTICE: Several functions should already have retry logic: '_gh_download' , '_gh_downloadURL' , '_wget_githubRelease-address' , '_wget_githubRelease_procedure-curl' , '_wget_githubRelease-URL-curl' , etc .
+	#( _messagePlain_nominal "$currentStream"'\/\/\/\/\/ \/\/\/\/ init: _wget_githubRelease_procedure' >&2 ) > /dev/null
+	#( _messagePlain_probe_safe _wget_githubRelease_procedure "$@" >&2 ) > /dev/null
+
+    local currentAbsoluteRepo="$1"
+	local currentReleaseLabel="$2"
+	local currentFile="$3"
+
+	local currentOutParameter="$4"
+	local currentOutFile="$5"
+
+	shift
+	shift
+	shift
+	[[ "$currentOutParameter" != "-O" ]] && currentOutFile="$currentFile"
+	#[[ "$currentOutParameter" == "-O" ]] && currentOutFile="$currentOutFile"
+
+	#[[ "$currentOutParameter" == "-O" ]] && [[ "$currentOutFile" == "" ]] && currentOutFile="$currentFile"
+	[[ "$currentOutParameter" == "-O" ]] && [[ "$currentOutFile" == "" ]] && ( _messagePlain_bad 'bad: fail: unexpected: unspecified: currentOutFile' >&2 ) > /dev/null && return 1
+
+	[[ "$currentOutFile" != "-" ]] && rm -f "$currentOutFile" > /dev/null 2>&1
+
+    local currentExitStatus=1
+
+    # Discouraged .
+    if [[ "$FORCE_WGET" == "true" ]]
+    then
+        _warn_githubRelease_FORCE_WGET
+        local currentURL=$(_wget_githubRelease-URL-curl "$currentAbsoluteRepo" "$currentReleaseLabel" "$currentFile")
+
+        #"$GH_TOKEN"
+        #"$currentAbsoluteRepo" "$currentReleaseLabel" "$currentFile" "$currentOutFile"
+        #_wget_githubRelease_procedure-curl
+		_wget_githubRelease_loop-curl
+        return "$?"
+    fi
+
+    if _if_gh
+    then
+        #_wget_githubRelease-address-gh
+        local currentTag=$(_wget_githubRelease-address "$currentAbsoluteRepo" "$currentReleaseLabel" "$currentFile")
+
+        ( _messagePlain_probe _gh_download "$currentAbsoluteRepo" "$currentTag" "$currentFile" "$@" >&2 ) > /dev/null
+        _gh_download "$currentAbsoluteRepo" "$currentTag" "$currentFile" "$@"
+        currentExitStatus="$?"
+
+        [[ "$currentExitStatus" != "0" ]] && _bad_fail_githubRelease_currentExitStatus && return "$currentExitStatus"
+        [[ ! -e "$currentOutFile" ]] && [[ "$currentOutFile" != "-" ]] && _bad_fail_githubRelease_missing && return 1
+        return 0
+    fi
+
+    if ! _if_gh
+    then
+        ( _messagePlain_warn 'warn: WARNING: FALLBACK: wget/curl' >&2 ) > /dev/null
+        local currentURL=$(_wget_githubRelease-URL-curl "$currentAbsoluteRepo" "$currentReleaseLabel" "$currentFile")
+
+        #"$GH_TOKEN"
+        #"$currentAbsoluteRepo" "$currentReleaseLabel" "$currentFile" "$currentOutFile"
+        #_wget_githubRelease_procedure-curl
+		_wget_githubRelease_loop-curl
+        return "$?"
+    fi
+    
+    return 1
+}
+_wget_githubRelease_procedure-curl() {
+	( _messagePlain_nominal "$currentStream"'\/\/\/\/\/ \/\/\/ init: _wget_githubRelease_procedure-curl' >&2 ) > /dev/null
+    ( _messagePlain_probe_safe "currentURL= ""$currentURL" >&2 ) > /dev/null
+    ( _messagePlain_probe_safe "currentOutFile= ""$currentOutFile" >&2 ) > /dev/null
+
+	# ATTENTION: Better if the loop does this only once. Resume may be possible.
+	#[[ "$currentOutFile" != "-" ]] && rm -f "$currentOutFile" > /dev/null 2>&1
+
+    local current_curl_args
+	current_curl_args=()
+	[[ "$GH_TOKEN" != "" ]] && current_curl_args+=( -H "Authorization: Bearer $GH_TOKEN" )
+	current_curl_args+=( -S )
+	current_curl_args+=( -s )
+	#current_curl_args+=( --clobber )
+	current_curl_args+=( --continue-at - )
+	
+	local currentExitStatus_ipv4=0
+	local currentExitStatus_ipv6=0
+
+	( _messagePlain_probe '_wget_githubRelease_procedure-curl: IPv6' >&2 ) > /dev/null
+	curl -6 "${current_curl_args[@]}" -L -o "$currentOutFile" "$currentURL"
+	# WARNING: May be untested.
+	#( set -o pipefail ; curl -6 "${current_curl_args[@]}" -L -o "$currentOutFile" "$currentURL" 2> >(tail -n 30 >&2) )
+	currentExitStatus_ipv6="$?"
+	( _messagePlain_probe '_wget_githubRelease_procedure-curl: IPv4' >&2 ) > /dev/null
+	curl -4 "${current_curl_args[@]}" -L -o "$currentOutFile" "$currentURL"
+	# WARNING: May be untested.
+	#( set -o pipefail ; curl -4 "${current_curl_args[@]}" -L -o "$currentOutFile" "$currentURL" 2> >(tail -n 30 >&2) )
+	currentExitStatus_ipv4="$?"
+
+	if [[ "$currentExitStatus_ipv6" != "0" ]] && [[ "$currentExitStatus_ipv4" != "0" ]]
+	then
+		#( _messagePlain_bad 'bad: FAIL: _wget_githubRelease_procedure-curl' >&2 ) > /dev/null
+        _bad_fail_githubRelease_currentExitStatus
+		[[ "$currentExitStatus_ipv4" != "1" ]] && [[ "$currentExitStatus_ipv4" != "0" ]] && return "$currentExitStatus_ipv4"
+		[[ "$currentExitStatus_ipv6" != "1" ]] && [[ "$currentExitStatus_ipv6" != "0" ]] && return "$currentExitStatus_ipv6"
+		return "$currentExitStatus_ipv4"
+	fi
+
+    [[ ! -e "$currentOutFile" ]] && [[ "$currentOutFile" != "-" ]] && _bad_fail_githubRelease_missing && return 1
+
+    return 0
+}
+_wget_githubRelease_loop-curl() {
+	# Similar retry logic for all similar functions: _gh_download , _wget_githubRelease_loop-curl .
+	( _messagePlain_nominal "$currentStream"'\/\/\/\/\/ \/\/\/\/ init: _wget_githubRelease_loop-curl' >&2 ) > /dev/null
+	( _messagePlain_probe_safe _wget_githubRelease_loop-curl "$@" >&2 ) > /dev/null
+
+	[[ "$currentOutFile" != "-" ]] && rm -f "$currentOutFile" > /dev/null 2>&1
+
+	local currentExitStatus=1
+
+	local currentIteration=0
+
+	while ( [[ "$currentExitStatus" != "0" ]] || ( ! [[ -e "$currentOutFile" ]] && [[ "$currentOutFile" != "-" ]] ) ) && [[ "$currentIteration" -lt "$githubRelease_retriesMax" ]]
+	do
+		if [[ "$currentIteration" != "0" ]]
+		then 
+			( _messagePlain_warn 'warn: BAD: RETRY: _wget_githubRelease_procedure-curl: currentIteration != 0' >&2 ) > /dev/null
+			sleep "$githubRelease_retriesWait"
+		fi
+
+		( _messagePlain_probe_safe _wget_githubRelease_procedure-curl >&2 ) > /dev/null
+		_wget_githubRelease_procedure-curl
+		# WARNING: May be untested.
+		#( set -o pipefail ; _wget_githubRelease_procedure-curl 2> >(tail -n 100 >&2) )
+		currentExitStatus="$?"
+
+		let currentIteration=currentIteration+1
+	done
+	
+	[[ "$currentExitStatus" != "0" ]] && ( _messagePlain_bad 'bad: FAIL: _wget_githubRelease_loop-curl: _wget_githubRelease_procedure-curl: currentExitStatus' >&2 ) > /dev/null && return "$currentExitStatus"
+	! [[ -e "$currentOutFile" ]] && [[ "$currentOutFile" != "-" ]] && ( _messagePlain_bad 'bad: FAIL: missing: currentOutFile' >&2 ) > /dev/null && return 1
+
+	return 0
+}
 
 
 
@@ -2366,6 +2670,21 @@ _gh_downloadURL() {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+#_wget_githubRelease_join-stdout
+
+#_wget_githubRelease_join
 
 
 
@@ -2387,50 +2706,11 @@ _aria2c_bin_githubRelease() {
 
 
 
+# REPLACED
+#_wget_githubRelease() { false; }
 
-_wget_githubRelease() {
-	local currentURL=$(_wget_githubRelease-URL "$@")
-	if [[ "$GH_TOKEN" == "" ]]
-	then
-		_messagePlain_probe curl -L -o "$3" "$currentURL" >&2
-		curl -L -o "$3" "$currentURL"
-	else
-		if type -p gh > /dev/null 2>&1 && [[ "$GH_TOKEN" != "" ]] && [[ "$FORCE_WGET" != "true" ]]
-		then
-			_messagePlain_probe _gh_downloadURL "$currentURL" -O "$3" >&2
-			_gh_downloadURL "$currentURL" -O "$3"
-		else
-			# Broken. Must use 'gh' instead.
-			_messagePlain_probe curl -H "Authorization: Bearer "'$GH_TOKEN' -L -o "$3" "$currentURL" >&2
-			_messagePlain_warn 'warn: DUBIOUS: GH_TOKEN with wget/curl is definitively limited to public repositories at best and may or may not have no effect whatsoever'
-			curl -H "Authorization: Bearer $GH_TOKEN" -L -o "$3" "$currentURL"
-		fi
-	fi
-	[[ ! -e "$3" ]] && _messagePlain_bad 'missing: '"$1"' '"$2"' '"$3" && return 1
-	return 0
-}
-
-_wget_githubRelease-stdout() {
-	local currentURL=$(_wget_githubRelease-URL "$@")
-	if type -p gh > /dev/null 2>&1 && [[ "$GH_TOKEN" != "" ]] && [[ "$FORCE_WGET" != "true" ]]
-	then
-		_messagePlain_probe _gh_downloadURL "$currentURL" -O - >&2
-		_gh_downloadURL "$currentURL" -O -
-		return
-	else
-		if [[ "$GH_TOKEN" == "" ]]
-		then
-			_messagePlain_probe curl -L -o - "$currentURL" >&2
-			curl -L -o - "$currentURL"
-		else
-			# Broken. Must use 'gh' instead.
-			_messagePlain_probe curl -H "Authorization: Bearer "'$GH_TOKEN' -L -o - "$currentURL" >&2
-			_messagePlain_warn 'warn: DUBIOUS: GH_TOKEN with wget/curl is definitively limited to public repositories at best and may or may not have no effect whatsoever'
-			curl -H "Authorization: Bearer $GH_TOKEN" -L -o - "$currentURL"
-		fi
-		return
-	fi
-}
+# REPLACED
+#_wget_githubRelease-stdout() { false; }
 
 
 _wget_githubRelease_join-stdout() {
@@ -3146,23 +3426,45 @@ _wget_githubRelease_join() {
 }
 
 
-_wget_githubRelease_internal() {
-	_wget_githubRelease "$1" "internal" "$2"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+_warn_githubRelease_FORCE_WGET() {
+    ( _messagePlain_warn 'warn: WARNING: FORCE_WGET=true' >&2 ; echo 'FORCE_WGET is a workaround. Only expected FORCE_WGET uses: low RAM , cloud testing/diagnostics .' >&2  ) > /dev/null
+    return 0
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+_bad_fail_githubRelease_currentExitStatus() {
+    ( _messagePlain_bad 'fail: wget_githubRelease: currentExitStatus: '"$currentAbsoluteRepo"' '"$currentReleaseLabel"' '"$currentFile" >&2 ) > /dev/null
+    return 0
+}
+_bad_fail_githubRelease_missing() {
+    ( _messagePlain_bad 'fail: wget_githubRelease: missing: '"$currentAbsoluteRepo"' '"$currentReleaseLabel"' '"$currentFile" >&2 ) > /dev/null
+    return 0
+}
 
 
 
