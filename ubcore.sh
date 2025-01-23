@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='1439933706'
+export ub_setScriptChecksum_contents='3975717471'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -19607,22 +19607,41 @@ _wget_githubRelease_internal-URL() {
 	_wget_githubRelease-URL "$1" "internal" "$2"
 }
 
-_jq_github_browser_download_url() {
-	( _messagePlain_probe 'init: _jq_github_browser_download_url' >&2 ) > /dev/null
+#"$api_address_type" == "tagName" || "$api_address_type" == "url"
+# ATTENTION: WARNING: Unusually, api_address_type , is a monolithic variable NEVER exported . Keep local, and do NOT use for any other purpose.
+_jq_github_browser_download_address() {
+	( _messagePlain_probe 'init: _jq_github_browser_download_address' >&2 ) > /dev/null
 	local currentReleaseLabel="$2"
 	local currentFile="$3"
 	
 	# 'latest'
 	if [[ "$currentReleaseLabel" == "latest" ]] || [[ "$currentReleaseLabel" == "" ]]
 	then
-		#jq -r ".assets[] | select(.name == \"""$3""\") | .browser_download_url" 
-		jq -r ".assets[] | select(.name == \"""$currentFile""\") | .browser_download_url"
-		return
+		if [[ "$api_address_type" == "" ]] || [[ "$api_address_type" == "url" ]]
+        then
+            #jq -r ".assets[] | select(.name == \"""$3""\") | .browser_download_url" 
+            jq -r ".assets[] | select(.name == \"""$currentFile""\") | .browser_download_url"
+            return
+        fi
+		if [[ "$api_address_type" == "tagName" ]]
+        then
+            jq -r ".tag_name"
+            return
+        fi
 	# eg. 'internal', 'build', etc
 	else
-		#jq -r ".[] | select(.name == \"""$2""\") | .assets[] | select(.name == \"""$3""\") | .browser_download_url" | sort -n -r | head -n 1
-		jq -r "sort_by(.published_at) | reverse | .[] | select(.name == \"""$currentReleaseLabel""\") | .assets[] | select(.name == \"""$currentFile""\") | .browser_download_url"
-		return
+		if [[ "$api_address_type" == "" ]] || [[ "$api_address_type" == "url" ]]
+        then
+            #jq -r ".[] | select(.name == \"""$2""\") | .assets[] | select(.name == \"""$3""\") | .browser_download_url" | sort -n -r | head -n 1
+            jq -r "sort_by(.published_at) | reverse | .[] | select(.name == \"""$currentReleaseLabel""\") | .assets[] | select(.name == \"""$currentFile""\") | .browser_download_url"
+            return
+        fi
+		if [[ "$api_address_type" == "tagName" ]]
+        then
+            jq -r "sort_by(.published_at) | reverse | .[] | select(.name == \"""$currentReleaseLabel""\") | .tag_name"
+            return
+        fi
+		
 	fi
 }
 _curl_githubAPI_releases_page() {
@@ -19676,7 +19695,7 @@ _curl_githubAPI_releases_page() {
 	[[ "$currentPage" == "" ]] && return 1
 	return 0
 }
-_wget_githubRelease_procedure-URL-curl() {
+_wget_githubRelease_procedure-address-curl() {
 	local currentAbsoluteRepo="$1"
 	local currentReleaseLabel="$2"
 	local currentFile="$3"
@@ -19688,7 +19707,7 @@ _wget_githubRelease_procedure-URL-curl() {
 
 	if [[ "$currentReleaseLabel" == "latest" ]]
 	then
-		(set -o pipefail ; _curl_githubAPI_releases_page "$currentAbsoluteRepo" "$currentReleaseLabel" "$currentFile" | _jq_github_browser_download_url "" "$currentReleaseLabel" "$currentFile")
+		(set -o pipefail ; _curl_githubAPI_releases_page "$currentAbsoluteRepo" "$currentReleaseLabel" "$currentFile" | _jq_github_browser_download_address "" "$currentReleaseLabel" "$currentFile")
 		return
 	else
 		local currentData
@@ -19708,59 +19727,79 @@ _wget_githubRelease_procedure-URL-curl() {
 			currentData_page=$(_curl_githubAPI_releases_page "$currentAbsoluteRepo" "$currentReleaseLabel" "$currentFile" "$currentIteration")
 			currentExitStatus_tmp="$?"
 			[[ "$currentIteration" == "1" ]] && currentExitStatus="$currentExitStatus_tmp"
-			currentData="$currentURL"'
+			currentData="$currentData"'
 '"$currentData_page"
 
-            ( _messagePlain_probe "_wget_githubRelease-URL-curl: ""$currentIteration" >&2 ) > /dev/null
-            #( _safeEcho_newline "$currentData" | _jq_github_browser_download_url "" "$currentReleaseLabel" "$currentFile" | head -n 1 >&2 ) > /dev/null
+            ( _messagePlain_probe "_wget_githubRelease_procedure-address-curl: ""$currentIteration" >&2 ) > /dev/null
+            #( _safeEcho_newline "$currentData" | _jq_github_browser_download_address "" "$currentReleaseLabel" "$currentFile" | head -n 1 >&2 ) > /dev/null
             [[ "$currentIteration" -ge 4 ]] && ( _safeEcho_newline "$currentData_page" >&2 ) > /dev/null
 
 			let currentIteration=currentIteration+1
 		done
 
-		( set -o pipefail ; _safeEcho_newline "$currentData" | _jq_github_browser_download_url "" "$currentReleaseLabel" "$currentFile" | head -n 1 )
+		( set -o pipefail ; _safeEcho_newline "$currentData" | _jq_github_browser_download_address "" "$currentReleaseLabel" "$currentFile" | head -n 1 )
 		currentExitStatus_tmp="$?"
-		[[ "$currentExitStatus" != "0" ]] && ( _messagePlain_bad 'bad: FAIL: _wget_githubRelease-URL-curl: _curl_githubAPI_releases_page: currentExitStatus' >&2 ) > /dev/null && return "$currentExitStatus"
-		[[ "$currentExitStatus_tmp" != "0" ]] && ( _messagePlain_bad 'bad: FAIL: _wget_githubRelease-URL-curl: pipefail: _jq_github_browser_download_url: currentExitStatus_tmp' >&2 ) > /dev/null && return "$currentExitStatus_tmp"
-		[[ "$currentData" == "" ]] && ( _messagePlain_bad 'bad: FAIL: _wget_githubRelease-URL-curl: empty: currentData' >&2 ) > /dev/null && return 1
-		[[ "$(_safeEcho_newline "$currentData" | _jq_github_browser_download_url "" "$currentReleaseLabel" "$currentFile" | head -n 1 | wc -c )" -le 0 ]] && ( _messagePlain_bad 'bad: FAIL: _wget_githubRelease-URL-curl: empty: _safeEcho_newline | _jq_github_browser_download_url' >&2 ) > /dev/null  && return 1
-		return 0
+
+		[[ "$currentExitStatus" != "0" ]] && ( _messagePlain_bad 'bad: FAIL: _wget_githubRelease_procedure-address-curl: _curl_githubAPI_releases_page: currentExitStatus' >&2 ) > /dev/null && return "$currentExitStatus"
+		[[ "$currentExitStatus_tmp" != "0" ]] && ( _messagePlain_bad 'bad: FAIL: _wget_githubRelease_procedure-address-curl: pipefail: _jq_github_browser_download_address: currentExitStatus_tmp' >&2 ) > /dev/null && return "$currentExitStatus_tmp"
+		[[ "$currentData" == "" ]] && ( _messagePlain_bad 'bad: FAIL: _wget_githubRelease_procedure-address-curl: empty: currentData' >&2 ) > /dev/null && return 1
+		[[ "$(_safeEcho_newline "$currentData" | _jq_github_browser_download_address "" "$currentReleaseLabel" "$currentFile" | head -n 1 | wc -c )" -le 0 ]] && ( _messagePlain_bad 'bad: FAIL: _wget_githubRelease_procedure-address-curl: empty: _safeEcho_newline | _jq_github_browser_download_address' >&2 ) > /dev/null  && return 1
+		
+        return 0
 	fi
+}
+_wget_githubRelease-address-backend-curl() {
+	local currentAddress
+	currentAddress=""
+
+	local currentExitStatus=1
+
+	local currentIteration=0
+
+	while ( [[ "$currentAddress" == "" ]] || [[ "$currentExitStatus" != "0" ]] ) && [[ "$currentIteration" -lt "$githubRelease_retriesMax" ]]
+	do
+		currentAddress=""
+
+		if [[ "$currentIteration" != "0" ]]
+		then 
+			( _messagePlain_warn 'warn: BAD: RETRY: _wget_githubRelease-URL-curl: _wget_githubRelease_procedure-address-curl: currentIteration != 0' >&2 ) > /dev/null
+			sleep "$githubRelease_retriesWait"
+		fi
+
+		( _messagePlain_probe _wget_githubRelease_procedure-address-curl >&2 ) > /dev/null
+		currentAddress=$(_wget_githubRelease_procedure-address-curl "$@")
+		currentExitStatus="$?"
+
+		let currentIteration=currentIteration+1
+	done
+	
+	_safeEcho_newline "$currentAddress"
+
+	[[ "$currentIteration" -ge "$githubRelease_retriesMax" ]] && ( _messagePlain_bad 'bad: FAIL: _wget_githubRelease-URL-curl: maxRetries' >&2 ) > /dev/null && return 1
+
+	return 0
+}
+_wget_githubRelease-address-curl() {
+	# Similar retry logic for all similar functions: _wget_githubRelease-URL-curl, _wget_githubRelease-URL-gh .
+	( _messagePlain_nominal '\/\/\/\/ init: _wget_githubRelease-address-curl' >&2 ) > /dev/null
+	( _messagePlain_probe_safe _wget_githubRelease-URL-curl "$@" >&2 ) > /dev/null
+
+    # ATTENTION: WARNING: Unusually, api_address_type , is a monolithic variable NEVER exported . Keep local, and do NOT use for any other purpose.
+    local api_address_type="tagName"
+
+    _wget_githubRelease-address-backend-curl "$@"
+    return
 }
 _wget_githubRelease-URL-curl() {
 	# Similar retry logic for all similar functions: _wget_githubRelease-URL-curl, _wget_githubRelease-URL-gh .
 	( _messagePlain_nominal '\/\/\/\/ init: _wget_githubRelease-URL-curl' >&2 ) > /dev/null
 	( _messagePlain_probe_safe _wget_githubRelease-URL-curl "$@" >&2 ) > /dev/null
 
-	local currentURL
-	currentURL=""
+    # ATTENTION: WARNING: Unusually, api_address_type , is a monolithic variable NEVER exported . Keep local, and do NOT use for any other purpose.
+    local api_address_type="url"
 
-	local currentExitStatus=1
-
-	local currentIteration=0
-
-	while ( [[ "$currentURL" == "" ]] || [[ "$currentExitStatus" != "0" ]] ) && [[ "$currentIteration" -lt "$githubRelease_retriesMax" ]]
-	do
-		currentURL=""
-
-		if [[ "$currentIteration" != "0" ]]
-		then 
-			( _messagePlain_warn 'warn: BAD: RETRY: _wget_githubRelease-URL-curl: _wget_githubRelease_procedure-URL-curl: currentIteration != 0' >&2 ) > /dev/null
-			sleep "$githubRelease_retriesWait"
-		fi
-
-		( _messagePlain_probe _wget_githubRelease_procedure-URL-curl >&2 ) > /dev/null
-		currentURL=$(_wget_githubRelease_procedure-URL-curl "$@")
-		currentExitStatus="$?"
-
-		let currentIteration=currentIteration+1
-	done
-	
-	_safeEcho_newline "$currentURL"
-
-	[[ "$currentIteration" -ge "$githubRelease_retriesMax" ]] && ( _messagePlain_bad 'bad: FAIL: _wget_githubRelease-URL-curl: maxRetries' >&2 ) > /dev/null && return 1
-
-	return 0
+    _wget_githubRelease-address-backend-curl "$@"
+    return
 }
 
 _wget_githubRelease_procedure-address-gh-awk() {
