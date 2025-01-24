@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='3760244973'
+export ub_setScriptChecksum_contents='528264183'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -27775,7 +27775,7 @@ _test_gitBest() {
 # https://www.cvedetails.com/vulnerability-list/vendor_id-19755/product_id-53327/Aria2-Project-Aria2.html
 # https://www.cvedetails.com/vulnerability-list/vendor_id-2842/Axel.html
 # ATTENTION: DANGER: Client downloading function explicitly sets 'MANDATORY_HASH == true' to claim resulting file EITHER will be checked by external hash before production use OR file is downloaded within an internal safer network (ie. GitHub Actions) using integrity guarded computers (ie. GitHub Runners). Potentially less integrity-safe downloading as multi-part-per-file parallel 'axel' 'download accelerator' style downloading can be limited to require a safety check for the MANDATORY_HASH claim.
-# NOTICE: Imposing safety check for MANDATORY_HASH claim has long track record and no known use cases combine BOTH the jittery contentious internet connections over which multi-part-per-file downloading may or may not be more reliable, AND cannot test build steps without download large files to cycle the entire build proces completely. That is to say, ONLY CI environments would be usefully faster from not requiring a MANDATORY_HASH claim, yet CI environments can already make an integrity claim relevant for MANDATORY_HASH, and CI environments usually have high-quality internet connections not needing complex trickery to improve download reliability/speed.
+# NOTICE: Imposing safety check for MANDATORY_HASH claim has long track record and no known use cases combine BOTH the jittery contentious internet connections over which multi-part-per-file downloading may or may not be more reliable, AND cannot test build steps without download large files to cycle the entire build completely. That is to say, ONLY CI environments would be usefully faster from not requiring a MANDATORY_HASH claim, yet CI environments can already make an integrity claim relevant for MANDATORY_HASH, and CI environments usually have high-quality internet connections not needing complex trickery to improve download reliability/speed.
 #[[ "$FORCE_AXEL" != "" ]] && ( [[ "$MANDATORY_HASH" == "true" ]] )
 
 
@@ -28008,15 +28008,18 @@ _curl_githubAPI_releases_page() {
 	local currentPage
 	currentPage=""
 
-	local currentExitStatus_ipv4=0
-	local currentExitStatus_ipv6=0
+	local currentExitStatus_ipv4=1
+	local currentExitStatus_ipv6=1
 
 	( _messagePlain_probe '_curl_githubAPI_releases_page: IPv6' >&2 ) > /dev/null
 	currentPage=$(curl -6 "${current_curl_args[@]}" "$currentAPI_URL")
 	currentExitStatus_ipv6="$?"
-	( _messagePlain_probe '_curl_githubAPI_releases_page: IPv4' >&2 ) > /dev/null
-	[[ "$currentPage" == "" ]] && currentPage=$(curl -4 "${current_curl_args[@]}" "$currentAPI_URL")
-	currentExitStatus_ipv4="$?"
+	if [[ "$currentExitStatus_ipv6" != "0" ]]
+	then
+		( _messagePlain_probe '_curl_githubAPI_releases_page: IPv4' >&2 ) > /dev/null
+		[[ "$currentPage" == "" ]] && currentPage=$(curl -4 "${current_curl_args[@]}" "$currentAPI_URL")
+		currentExitStatus_ipv4="$?"
+	fi
 	
 	_safeEcho_newline "$currentPage"
 
@@ -28290,18 +28293,24 @@ _gh_download() {
 	local currentFile="$3"
 
 	local currentOutParameter="$4"
-	local currentOutFile="$5"
+	local currentOutFileParameter="$5"
+
+	local currentOutFile="$currentFile"
 
 	shift
 	shift
 	shift
-	[[ "$currentOutParameter" != "-O" ]] && currentOutFile="$currentFile"
-	#[[ "$currentOutParameter" == "-O" ]] && currentOutFile="$currentOutFile"
+	[[ "$currentOutParameter" == "--output" ]] && currentOutParameter="-O"
+	[[ "$currentOutParameter" == "-O" ]] && currentOutFile="$currentOutFileParameter" && shift && shift
 
-	#[[ "$currentOutParameter" == "-O" ]] && [[ "$currentOutFile" == "" ]] && currentOutFile="$currentFile"
 	[[ "$currentOutParameter" == "-O" ]] && [[ "$currentOutFile" == "" ]] && _messagePlain_bad 'bad: fail: unexpected: unspecified: currentOutFile' && return 1
 
 	[[ "$currentOutFile" != "-" ]] && rm -f "$currentOutFile" > /dev/null 2>&1
+
+	# CAUTION: Assumed 'false' by 'rotten' !
+	# (ie. 'rotten' does NOT support Cygwin/MSW)
+	local currentOutFile_translated_cygwinMSW=""
+	( _if_cygwin && type -p cygpath > /dev/null 2>&1 ) && ( [[ "$currentOutFile" != "" ]] && [[ "$currentOutFile" != "-" ]] ) && currentOutFile_translated_cygwinMSW=$(cygpath -w $(_getAbsoluteLocation "$currentOutFile"))
 
 	local currentExitStatus=1
 
@@ -28316,9 +28325,19 @@ _gh_download() {
 			sleep "$githubRelease_retriesWait"
 		fi
 
-		( _messagePlain_probe_safe gh release download --clobber "$currentTagName" -R "$currentAbsoluteRepo" -p "$currentFile" "$@" >&2 ) > /dev/null
-		( set -o pipefail ; gh release download --clobber "$currentTagName" -R "$currentAbsoluteRepo" -p "$currentFile" "$@" 2> >(tail -n 30 >&2) )
-		currentExitStatus="$?"
+		# CAUTION: Assumed 'false' by 'rotten' !
+		# (ie. 'rotten' does NOT support Cygwin/MSW)
+		if [[ "$currentOutFile_translated_cygwinMSW" != "" ]]
+		then
+			# WARNING: Apparently, 'gh release download' will throw an error with filename '/cygdrive'...'.m_axelTmp__'"$(_uid14)" .
+			( _messagePlain_probe_safe gh release download --clobber "$currentTagName" -R "$currentAbsoluteRepo" -p "$currentFile" -O "$currentOutFile_translated_cygwinMSW" "$@" >&2 ) > /dev/null
+			( set -o pipefail ; gh release download --clobber "$currentTagName" -R "$currentAbsoluteRepo" -p "$currentFile" -O "$currentOutFile_translated_cygwinMSW" "$@" 2> >(tail -n 30 >&2) )
+			currentExitStatus="$?"
+		else
+			( _messagePlain_probe_safe gh release download --clobber "$currentTagName" -R "$currentAbsoluteRepo" -p "$currentFile" -O "$currentOutFile" "$@" >&2 ) > /dev/null
+			( set -o pipefail ; gh release download --clobber "$currentTagName" -R "$currentAbsoluteRepo" -p "$currentFile" -O "$currentOutFile" "$@" 2> >(tail -n 30 >&2) )
+			currentExitStatus="$?"
+		fi
 
 		let currentIteration=currentIteration+1
 	done
@@ -28351,31 +28370,37 @@ _gh_downloadURL() {
 	local currentFile=$(echo "$currentURL" | sed -n 's|https://github.com/[^/]*/[^/]*/releases/download/[^/]*/\(.*\)|\1|p')
 	[[ "$?" != "0" ]] && return 1
 
-	currentOutFile="$currentFile"
+	local currentOutFile="$currentFile"
 
 	shift
+	[[ "$currentOutParameter" == "--output" ]] && currentOutParameter="-O"
 	[[ "$currentOutParameter" == "-O" ]] && currentOutFile="$currentOutFileParameter" && shift && shift
+
+	[[ "$currentOutParameter" == "-O" ]] && [[ "$currentOutFile" == "" ]] && _messagePlain_bad 'bad: fail: unexpected: unspecified: currentOutFile' && return 1
+
+	#[[ "$currentOutFile" != "-" ]] && rm -f "$currentOutFile"
 
 	local currentExitStatus=1
 	#currentExitStatus=1
 
-	local currentIteration
-	currentIteration=0
+	#local currentIteration
+	#currentIteration=0
 	# && ( [[ "$currentIteration" != "0" ]] && sleep "$githubRelease_retriesWait" )
 	#while ( [[ "$currentExitStatus" != "0" ]] || ( ! [[ -e "$currentOutFile" ]] && [[ "$currentOutFile" != "-" ]] ) ) && [[ "$currentIteration" -lt "$githubRelease_retriesMax" ]]
 	#do
-		if [[ "$currentIteration" != "0" ]]
-		then 
-			( _messagePlain_warn 'warn: BAD: RETRY: _gh_downloadURL: _gh_download: currentIteration != 0' >&2 ) > /dev/null
-			sleep "$githubRelease_retriesWait"
-		fi
+		#if [[ "$currentIteration" != "0" ]]
+		#then 
+			#( _messagePlain_warn 'warn: BAD: RETRY: _gh_downloadURL: _gh_download: currentIteration != 0' >&2 ) > /dev/null
+			#sleep "$githubRelease_retriesWait"
+		#fi
 
+		# CAUTION: Do NOT translate file parameter (ie. for Cygwin/MSW) for an underlying backend function (ie. '_gh_download') - that will be done by underlying backend function if at all. Similarly, also do NOT state '--clobber' or similar parameters to backend function.
 		#[[ "$currentOutFile" != "-" ]] && rm -f "$currentOutFile"
 		( _messagePlain_probe_safe _gh_download "$currentAbsoluteRepo" "$currentTagName" "$currentFile" -O "$currentOutFile" "$@" >&2 ) > /dev/null
 		_gh_download "$currentAbsoluteRepo" "$currentTagName" "$currentFile" -O "$currentOutFile" "$@"
 		currentExitStatus="$?"
 
-		let currentIteration=currentIteration+1
+		#let currentIteration=currentIteration+1
 	#done
 
 	[[ "$currentExitStatus" != "0" ]] && ( _messagePlain_bad 'bad: FAIL: _gh_downloadURL: _gh_download: currentExitStatus' >&2 ) > /dev/null && return "$currentExitStatus"
@@ -28535,6 +28560,21 @@ _wget_githubRelease_procedure() {
         return "$?"
     fi
 
+	# Discouraged . Benefits of multi-part-per-file downloading are less essential given that files are split into <2GB chunks.
+	if [[ "$FORCE_AXEL" != "" ]] # && [[ "$MANDATORY_HASH" == "true" ]]
+    then
+        ( _messagePlain_warn 'warn: WARNING: FORCE_AXEL not empty' >&2 ; echo 'FORCE_AXEL may have similar effects to FORCE_WGET and should not be necessary.' >&2  ) > /dev/null
+        local currentURL=$(_wget_githubRelease-URL-curl "$currentAbsoluteRepo" "$currentReleaseLabel" "$currentFile")
+
+		[[ "$FORCE_DIRECT" == "true" ]] && ( _messagePlain_bad 'bad: fail: FORCE_AXEL==true is NOT compatible with FORCE_DIRECT==true' >&2 ) > /dev/null && return 1
+
+        #"$GH_TOKEN"
+        #"$currentAbsoluteRepo" "$currentReleaseLabel" "$currentFile" "$currentOutFile"
+        #_wget_githubRelease_procedure-axel
+		_wget_githubRelease_loop-axel
+        return "$?"
+    fi
+
     if _if_gh
     then
         #_wget_githubRelease-address-gh
@@ -28579,19 +28619,22 @@ _wget_githubRelease_procedure-curl() {
 	#current_curl_args+=( --clobber )
 	current_curl_args+=( --continue-at - )
 	
-	local currentExitStatus_ipv4=0
-	local currentExitStatus_ipv6=0
+	local currentExitStatus_ipv4=1
+	local currentExitStatus_ipv6=1
 
 	( _messagePlain_probe '_wget_githubRelease_procedure-curl: IPv6' >&2 ) > /dev/null
 	curl -6 "${current_curl_args[@]}" -L -o "$currentOutFile" "$currentURL"
 	# WARNING: May be untested.
 	#( set -o pipefail ; curl -6 "${current_curl_args[@]}" -L -o "$currentOutFile" "$currentURL" 2> >(tail -n 30 >&2) )
 	currentExitStatus_ipv6="$?"
-	( _messagePlain_probe '_wget_githubRelease_procedure-curl: IPv4' >&2 ) > /dev/null
-	curl -4 "${current_curl_args[@]}" -L -o "$currentOutFile" "$currentURL"
-	# WARNING: May be untested.
-	#( set -o pipefail ; curl -4 "${current_curl_args[@]}" -L -o "$currentOutFile" "$currentURL" 2> >(tail -n 30 >&2) )
-	currentExitStatus_ipv4="$?"
+	if [[ "$currentExitStatus_ipv6" != "0" ]]
+	then
+		( _messagePlain_probe '_wget_githubRelease_procedure-curl: IPv4' >&2 ) > /dev/null
+		curl -4 "${current_curl_args[@]}" -L -o "$currentOutFile" "$currentURL"
+		# WARNING: May be untested.
+		#( set -o pipefail ; curl -4 "${current_curl_args[@]}" -L -o "$currentOutFile" "$currentURL" 2> >(tail -n 30 >&2) )
+		currentExitStatus_ipv4="$?"
+	fi
 
 	if [[ "$currentExitStatus_ipv6" != "0" ]] && [[ "$currentExitStatus_ipv4" != "0" ]]
 	then
@@ -28635,6 +28678,97 @@ _wget_githubRelease_loop-curl() {
 	done
 	
 	[[ "$currentExitStatus" != "0" ]] && ( _messagePlain_bad 'bad: FAIL: _wget_githubRelease_loop-curl: _wget_githubRelease_procedure-curl: currentExitStatus' >&2 ) > /dev/null && return "$currentExitStatus"
+	! [[ -e "$currentOutFile" ]] && [[ "$currentOutFile" != "-" ]] && ( _messagePlain_bad 'bad: FAIL: missing: currentOutFile' >&2 ) > /dev/null && return 1
+
+	return 0
+}
+_wget_githubRelease_procedure-axel() {
+	( _messagePlain_nominal "$currentStream"'\/\/\/\/\/ \/\/\/ init: _wget_githubRelease_procedure-axel' >&2 ) > /dev/null
+    ( _messagePlain_probe_safe "currentURL= ""$currentURL" >&2 ) > /dev/null
+    ( _messagePlain_probe_safe "currentOutFile= ""$currentOutFile" >&2 ) > /dev/null
+
+    # ATTENTION: Quirk of aria2c , default dir is "$PWD" , is prepended to absolute paths , and the resulting '//' does not direct the absolute path to root.
+    local currentOutFile_relative=$(basename "$currentOutFile")
+    local currentOutDir=$(_getAbsoluteFolder "$currentOutFile")
+    ( _messagePlain_probe_safe "currentOutFile_relative= ""$currentOutFile_relative" >&2 ) > /dev/null
+    ( _messagePlain_probe_safe "currentOutDir= ""$currentOutFile" >&2 ) > /dev/null
+
+    ( _messagePlain_probe_safe "FORCE_AXEL= ""$FORCE_AXEL" >&2 ) > /dev/null
+
+	# ATTENTION: Better if the loop does this only once. Resume may be possible.
+	#[[ "$currentOutFile" != "-" ]] && rm -f "$currentOutFile" > /dev/null 2>&1
+
+    ##_messagePlain_probe _aria2c_bin_githubRelease -x "$currentForceAxel" --async-dns=false -o "$currentAxelTmpFileRelative".tmp1 --disable-ipv6=false "${currentURL_array_reversed[$currentIteration]}" >&2
+    ##_aria2c_bin_githubRelease --log=- --log-level=info -x "$currentForceAxel" --async-dns=false -o "$currentAxelTmpFileRelative".tmp1 --disable-ipv6=false "${currentURL_array_reversed[$currentIteration]}" | grep --color -i -E "Name resolution|$" >&2 &
+    ##messagePlain_probe _aria2c_bin_githubRelease -x "$currentForceAxel" --async-dns=false -o "$currentAxelTmpFileRelative".tmp2 --disable-ipv6=true "${currentURL_array_reversed[$currentIterationNext1]}" >&2
+    ##_aria2c_bin_githubRelease --log=- --log-level=info -x "$currentForceAxel" --async-dns=false -o "$currentAxelTmpFileRelative".tmp2 --disable-ipv6=true "${currentURL_array_reversed[$currentIterationNext1]}" | grep --color -i -E "Name resolution|$" >&2 &
+    local current_axel_args
+	current_axel_args=()
+	##[[ "$GH_TOKEN" != "" ]] && current_axel_args+=( -H "Authorization: Bearer $GH_TOKEN" )
+	#current_axel_args+=( --quiet=true )
+	#current_axel_args+=( --timeout=180 --max-tries=25 --retry-wait=15 )
+    current_axel_args+=( --stderr=true --summary-interval=0 --console-log-level=error --async-dns=false )
+    [[ "$FORCE_AXEL" != "" ]] && current_axel_args+=( -x "$FORCE_AXEL" )
+	
+	local currentExitStatus_ipv4=1
+	local currentExitStatus_ipv6=1
+
+	( _messagePlain_probe '_wget_githubRelease_procedure-axel: IPv6' >&2 ) > /dev/null
+    ( _messagePlain_probe_safe aria2c --disable-ipv6=false "${current_axel_args[@]}" -d "$currentOutDir" -o "$currentOutFile_relative" "$currentURL" >&2 ) > /dev/null
+	#aria2c --disable-ipv6=false "${current_axel_args[@]}" -d "$currentOutDir" -o "$currentOutFile_relative" "$currentURL"
+	# WARNING: May be untested.
+	( set -o pipefail ; aria2c --disable-ipv6=false "${current_axel_args[@]}" -d "$currentOutDir" -o "$currentOutFile_relative" "$currentURL" 2> >(tail -n 40 >&2) )
+    if [[ "$currentExitStatus_ipv6" != "0" ]]
+    then
+        ( _messagePlain_probe '_wget_githubRelease_procedure-axel: IPv4' >&2 ) > /dev/null
+        ( _messagePlain_probe_safe aria2c --disable-ipv6=true "${current_axel_args[@]}" -d "$currentOutDir" -o "$currentOutFile_relative" "$currentURL" >&2 ) > /dev/null
+        #aria2c --disable-ipv6=true "${current_axel_args[@]}" -d "$currentOutDir" -o "$currentOutFile_relative" "$currentURL"
+        ( set -o pipefail ; aria2c --disable-ipv6=true "${current_axel_args[@]}" -d "$currentOutDir" -o "$currentOutFile_relative" "$currentURL" 2> >(tail -n 40 >&2) )
+        currentExitStatus_ipv4="$?"
+    fi
+
+	if [[ "$currentExitStatus_ipv6" != "0" ]] && [[ "$currentExitStatus_ipv4" != "0" ]]
+	then
+		#( _messagePlain_bad 'bad: FAIL: _wget_githubRelease_procedure-axel' >&2 ) > /dev/null
+        _bad_fail_githubRelease_currentExitStatus
+		[[ "$currentExitStatus_ipv4" != "1" ]] && [[ "$currentExitStatus_ipv4" != "0" ]] && return "$currentExitStatus_ipv4"
+		[[ "$currentExitStatus_ipv6" != "1" ]] && [[ "$currentExitStatus_ipv6" != "0" ]] && return "$currentExitStatus_ipv6"
+		return "$currentExitStatus_ipv4"
+	fi
+
+    [[ ! -e "$currentOutFile" ]] && [[ "$currentOutFile" != "-" ]] && _bad_fail_githubRelease_missing && return 1
+
+    return 0
+}
+_wget_githubRelease_loop-axel() {
+	# Similar retry logic for all similar functions: _gh_download , _wget_githubRelease_loop-axel .
+	( _messagePlain_nominal "$currentStream"'\/\/\/\/\/ \/\/\/\/ init: _wget_githubRelease_loop-axel' >&2 ) > /dev/null
+	( _messagePlain_probe_safe _wget_githubRelease_loop-axel "$@" >&2 ) > /dev/null
+
+	[[ "$currentOutFile" != "-" ]] && rm -f "$currentOutFile" > /dev/null 2>&1
+
+	local currentExitStatus=1
+
+	local currentIteration=0
+
+	while ( [[ "$currentExitStatus" != "0" ]] || ( ! [[ -e "$currentOutFile" ]] && [[ "$currentOutFile" != "-" ]] ) ) && [[ "$currentIteration" -lt "$githubRelease_retriesMax" ]]
+	do
+		if [[ "$currentIteration" != "0" ]]
+		then 
+			( _messagePlain_warn 'warn: BAD: RETRY: _wget_githubRelease_procedure-axel: currentIteration != 0' >&2 ) > /dev/null
+			sleep "$githubRelease_retriesWait"
+		fi
+
+		( _messagePlain_probe_safe _wget_githubRelease_procedure-axel >&2 ) > /dev/null
+		_wget_githubRelease_procedure-axel
+		# WARNING: May be untested.
+		#( set -o pipefail ; _wget_githubRelease_procedure-axel 2> >(tail -n 100 >&2) )
+		currentExitStatus="$?"
+
+		let currentIteration=currentIteration+1
+	done
+	
+	[[ "$currentExitStatus" != "0" ]] && ( _messagePlain_bad 'bad: FAIL: _wget_githubRelease_loop-axel: _wget_githubRelease_procedure-axel: currentExitStatus' >&2 ) > /dev/null && return "$currentExitStatus"
 	! [[ -e "$currentOutFile" ]] && [[ "$currentOutFile" != "-" ]] && ( _messagePlain_bad 'bad: FAIL: missing: currentOutFile' >&2 ) > /dev/null && return 1
 
 	return 0
