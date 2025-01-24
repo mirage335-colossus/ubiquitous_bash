@@ -49,6 +49,13 @@
 #export FORCE_DIRECT="true"
 #export FORCE_WGET="true"
 #export FORCE_AXEL="4"
+
+# Actually buffers files in progress behind completed files, in addition to downloading over multiple connections. Streaming without buffer underrun (ie. directly to packetDisc, ie. directly to optical disc) regardless of internet connection quality may require such buffer.
+#export FORCE_PARALLEL="3"
+
+# Already default. FORCE_BUFFER="true" implies FORCE_PARALLEL=3 or similar and sets FORCE_DIRECT="false". FORCE_BUFFER="false" implies and sets FORCE_DIRECT="true" .
+#FORCE_BUFFER="true"
+
 #export GH_TOKEN="..."
 
 
@@ -153,12 +160,17 @@
 
 
 
+_set_wget_githubRelease() {
+	[[ "$githubRelease_retriesMax" == "" ]] && export githubRelease_retriesMax=25
+	[[ "$githubRelease_retriesWait" == "" ]] && export githubRelease_retriesWait=18
+}
+_set_wget_githubRelease
 
-[[ "$githubRelease_retriesMax" == "" ]] && export githubRelease_retriesMax=25
-[[ "$githubRelease_retriesWait" == "" ]] && export githubRelease_retriesWait=18
 
-
-
+_set_wget_githubRelease-detect() {
+	[[ "$githubRelease_retriesMax" == "" ]] && export githubRelease_retriesMax=2
+	[[ "$githubRelease_retriesWait" == "" ]] && export githubRelease_retriesWait=4
+}
 
 
 _if_gh() {
@@ -310,10 +322,33 @@ _wget_githubRelease_procedure-address-curl() {
 	[[ "$currentFile" == "" ]] && return 1
 
 
+	local currentExitStatus_tmp=0
+	local currentExitStatus=0
+
 	if [[ "$currentReleaseLabel" == "latest" ]]
 	then
-		(set -o pipefail ; _curl_githubAPI_releases_page "$currentAbsoluteRepo" "$currentReleaseLabel" "$currentFile" | _jq_github_browser_download_address "" "$currentReleaseLabel" "$currentFile")
-		return
+		#(set -o pipefail ; _curl_githubAPI_releases_page "$currentAbsoluteRepo" "$currentReleaseLabel" "$currentFile" | _jq_github_browser_download_address "" "$currentReleaseLabel" "$currentFile")
+		#return
+
+		currentData_page=$(set -o pipefail ; _curl_githubAPI_releases_page "$currentAbsoluteRepo" "$currentReleaseLabel" "$currentFile")
+		currentExitStatus="$?"
+
+		currentData="$currentData_page"
+
+		[[ "$currentExitStatus" != "0" ]] && ( _messagePlain_bad 'bad: FAIL: _wget_githubRelease_procedure-address-curl: currentExitStatus' >&2 ) > /dev/null && return "$currentExitStatus"
+		
+		[[ "$currentData" == "" ]] && ( _messagePlain_bad 'bad: FAIL: _wget_githubRelease_procedure-address-curl: empty: currentData' >&2 ) > /dev/null && return 1
+
+		( set -o pipefail ; _safeEcho_newline "$currentData" | _jq_github_browser_download_address "" "$currentReleaseLabel" "$currentFile" | head -n 1 )
+		currentExitStatus_tmp="$?"
+
+		[[ "$currentExitStatus_tmp" != "0" ]] && ( _messagePlain_bad 'bad: FAIL: _wget_githubRelease_procedure-address-curl: pipefail: _jq_github_browser_download_address: currentExitStatus_tmp' >&2 ) > /dev/null && return "$currentExitStatus_tmp"
+
+		# ATTENTION: Part file does NOT exist upstream. Page did NOT match 'Not Found', page NOT empty, and data NOT empty, implying repo, releaseLabel , indeed EXISTS upstream.
+		# Retries/wait must NOT continue in that case - calling function must detect and either fail or skip file on empty address if appropriate.
+		#[[ "$(_safeEcho_newline "$currentData" | _jq_github_browser_download_address "" "$currentReleaseLabel" "$currentFile" | head -n 1 | wc -c )" -le 0 ]] && ( _messagePlain_bad 'bad: FAIL: _wget_githubRelease_procedure-address-curl: empty: _safeEcho_newline | _jq_github_browser_download_address' >&2 ) > /dev/null  && return 1
+		
+		return 0
 	else
 		local currentData
 		currentData=""
@@ -323,9 +358,6 @@ _wget_githubRelease_procedure-address-curl() {
 		
 		local currentIteration
 		currentIteration=1
-
-		local currentExitStatus_tmp=0
-		local currentExitStatus=0
 		
 		while ( [[ "$currentData_page" != "" ]] && [[ "$currentData_page" != *$(echo 'WwoKXQo=' | base64 -d)* ]] ) && [[ "$currentIteration" -le "3" ]]
 		do
@@ -348,7 +380,10 @@ _wget_githubRelease_procedure-address-curl() {
 		[[ "$currentExitStatus" != "0" ]] && ( _messagePlain_bad 'bad: FAIL: _wget_githubRelease_procedure-address-curl: _curl_githubAPI_releases_page: currentExitStatus' >&2 ) > /dev/null && return "$currentExitStatus"
 		[[ "$currentExitStatus_tmp" != "0" ]] && ( _messagePlain_bad 'bad: FAIL: _wget_githubRelease_procedure-address-curl: pipefail: _jq_github_browser_download_address: currentExitStatus_tmp' >&2 ) > /dev/null && return "$currentExitStatus_tmp"
 		[[ "$currentData" == "" ]] && ( _messagePlain_bad 'bad: FAIL: _wget_githubRelease_procedure-address-curl: empty: currentData' >&2 ) > /dev/null && return 1
-		[[ "$(_safeEcho_newline "$currentData" | _jq_github_browser_download_address "" "$currentReleaseLabel" "$currentFile" | head -n 1 | wc -c )" -le 0 ]] && ( _messagePlain_bad 'bad: FAIL: _wget_githubRelease_procedure-address-curl: empty: _safeEcho_newline | _jq_github_browser_download_address' >&2 ) > /dev/null  && return 1
+
+		# ATTENTION: Part file does NOT exist upstream. Page did NOT match 'Not Found', page NOT empty, and data NOT empty, implying repo, releaseLabel , indeed EXISTS upstream.
+		# Retries/wait must NOT continue in that case - calling function must detect and either fail or skip file on empty address if appropriate.
+		#[[ "$(_safeEcho_newline "$currentData" | _jq_github_browser_download_address "" "$currentReleaseLabel" "$currentFile" | head -n 1 | wc -c )" -le 0 ]] && ( _messagePlain_bad 'bad: FAIL: _wget_githubRelease_procedure-address-curl: empty: _safeEcho_newline | _jq_github_browser_download_address' >&2 ) > /dev/null  && return 1
 		
         return 0
 	fi
@@ -361,12 +396,13 @@ _wget_githubRelease-address-backend-curl() {
 
 	local currentIteration=0
 
-	while ( [[ "$currentAddress" == "" ]] || [[ "$currentExitStatus" != "0" ]] ) && [[ "$currentIteration" -lt "$githubRelease_retriesMax" ]]
+	#[[ "$currentAddress" == "" ]] || 
+	while ( [[ "$currentExitStatus" != "0" ]] ) && [[ "$currentIteration" -lt "$githubRelease_retriesMax" ]]
 	do
 		currentAddress=""
 
 		if [[ "$currentIteration" != "0" ]]
-		then 
+		then
 			( _messagePlain_warn 'warn: BAD: RETRY: _wget_githubRelease-URL-curl: _wget_githubRelease_procedure-address-curl: currentIteration != 0' >&2 ) > /dev/null
 			sleep "$githubRelease_retriesWait"
 		fi
@@ -403,8 +439,59 @@ _wget_githubRelease-URL-curl() {
     # ATTENTION: WARNING: Unusually, api_address_type , is a monolithic variable NEVER exported . Keep local, and do NOT use for any other purpose.
     local api_address_type="url"
 
-    _wget_githubRelease-address-backend-curl "$@"
-    return
+	local currentAddress
+
+	local currentExitStatus=1
+
+    #_wget_githubRelease-address-backend-curl "$@"
+	currentAddress=$(_wget_githubRelease-address-backend-curl "$@")
+	currentExitStatus="$?"
+	
+	_safeEcho_newline "$currentAddress"
+
+	[[ "$currentAddress" == "" ]] && ( _messagePlain_bad 'bad: FAIL: _wget_githubRelease-URL-curl: empty: currentAddress' >&2 ) > /dev/null && return 1
+
+    return "$currentExitStatus"
+}
+
+# Calling functions MUST attempt download unless skip function conclusively determines BOTH that releaseLabel exists in upstream repo, AND file does NOT exist upstream. Functions may use such skip to skip high-numbered part files that do not exist.
+_wget_githubRelease-skip-URL-curl() {
+	# Similar retry logic for all similar functions: _wget_githubRelease-skip-URL-curl, _wget_githubRelease-URL-gh .
+	( _messagePlain_nominal "$currentStream"'\/\/\/\/ init: _wget_githubRelease-skip-URL-curl' >&2 ) > /dev/null
+	( _messagePlain_probe_safe _wget_githubRelease-skip-URL-curl "$@" >&2 ) > /dev/null
+
+    # ATTENTION: WARNING: Unusually, api_address_type , is a monolithic variable NEVER exported . Keep local, and do NOT use for any other purpose.
+    local api_address_type="url"
+
+	local currentAddress
+
+	local currentExitStatus=1
+
+    #_wget_githubRelease-address-backend-curl "$@"
+	currentAddress=$(_wget_githubRelease-address-backend-curl "$@")
+	currentExitStatus="$?"
+	
+	( _safeEcho_newline "$currentAddress" >&2 ) > /dev/null
+	[[ "$currentExitStatus" != "0" ]] && return "$currentExitStatus"
+
+	if [[ "$currentAddress" == "" ]]
+	then
+		echo skip
+		( _messagePlain_good 'good: _wget_githubRelease-skip-URL-curl: empty: currentAddress: PRESUME skip' >&2 ) > /dev/null
+		return 0
+	fi
+
+	if [[ "$currentAddress" != "" ]]
+	then
+		echo download
+		( _messagePlain_good 'good: _wget_githubRelease-skip-URL-curl: found: currentAddress: PRESUME download' >&2 ) > /dev/null
+		return 0
+	fi
+
+	return 1
+}
+_wget_githubRelease-detect-URL-curl() {
+	_wget_githubRelease-skip-URL-curl "$@"
 }
 
 _wget_githubRelease_procedure-address-gh-awk() {
@@ -1801,9 +1888,6 @@ _wget_githubRelease_join() {
 	cd "$functionEntryPWD"
 	return 0
 }
-
-
-
 
 
 
