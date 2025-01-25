@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='2285860453'
+export ub_setScriptChecksum_contents='254437898'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -21528,7 +21528,7 @@ _wget_githubRelease_join-stdout() {
 	if [[ "$currentPart" -ge "2" ]]
 	then
 		currentStream="2"
-		while ( ! [[ -e "$scriptAbsoluteFolder"/$(_axelTmp).PASS ]] || ! [[ -e "$scriptAbsoluteFolder"/$(_axelTmp).FAIL ]] )
+		while ( ! [[ -e "$scriptAbsoluteFolder"/$(_axelTmp).PASS ]] && ! [[ -e "$scriptAbsoluteFolder"/$(_axelTmp).FAIL ]] )
 		do
 			sleep 3
 		done
@@ -21544,9 +21544,9 @@ _wget_githubRelease_join-stdout() {
 
 		# Stream must have written PASS/FAIL file .
 		( _messagePlain_nominal '\/\/\/\/\/ \/\/\/ init: _wget_githubRelease_join-stdout: outputLOOP: WAIT: PASS/FAIL' >&2 ) > /dev/null
-		while ( ! [[ -e "$scriptAbsoluteFolder"/$(_axelTmp).PASS ]] || ! [[ -e "$scriptAbsoluteFolder"/$(_axelTmp).FAIL ]] )
+		while ( ! [[ -e "$scriptAbsoluteFolder"/$(_axelTmp).PASS ]] && ! [[ -e "$scriptAbsoluteFolder"/$(_axelTmp).FAIL ]] )
 		do
-			sleep 3
+			sleep 0.2
 		done
 		
 		( _messagePlain_nominal '\/\/\/\/\/ \/\/\/ init: _wget_githubRelease_join-stdout: outputLOOP: OUTPUT' >&2 ) > /dev/null
@@ -21629,7 +21629,7 @@ _wget_githubRelease_join_sequence-parallel() {
 		( _messagePlain_nominal '\/\/\/\/\/ \/\/\/ init: _wget_githubRelease_join_sequence-parallel: downloadLOOP: WAIT: BEGIN' >&2 ) > /dev/null
 		while ! ( ls -1 "$scriptAbsoluteFolder"/$(_axelTmp)* > /dev/null 2>&1 )
 		do
-			sleep 3
+			sleep 0.1
 		done
 
 		let currentStream=currentStream+1
