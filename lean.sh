@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='3905174161'
+export ub_setScriptChecksum_contents='4281033574'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -7215,9 +7215,11 @@ _wget_githubRelease_join() {
 
 
 
-
+# WARNING: May be untested.
+# WARNING: OBSOLETE .
+# WARNING: Buffered method is not expected to correctly download fewer than the buffer and prebuffer number of parts.
 _wget_githubRelease_join-stdout() {
-	( _messagePlain_nominal "$currentStream"'\/\/\/\/\/ \/\/\/\/\/ init: _wget_githubRelease_join-stdout' >&2 ) > /dev/null
+	( _messagePlain_nominal '\/\/\/\/\/ \/\/\/\/\/ init: _wget_githubRelease_join-stdout' >&2 ) > /dev/null
 	( _messagePlain_probe_safe _wget_githubRelease_join-stdout "$@" >&2 ) > /dev/null
 
 	local currentAbsoluteRepo="$1"
@@ -7235,7 +7237,7 @@ _wget_githubRelease_join-stdout() {
 		if [[ "$currentOutFile" != "-" ]]
 		then
 			( _messagePlain_bad 'bad: fail: unexpected: currentOutFile: NOT stdout' >&2 ) > /dev/null
-			echo "1" > "$currentAxelTmpFile".FAIL
+			#echo "1" > "$currentAxelTmpFile".FAIL
 			return 1
 		fi
 		shift 
@@ -7333,10 +7335,7 @@ _wget_githubRelease_join-stdout() {
 	# NOTICE: Parallel downloads may, if necessary, be adapted to first cache a list of addresses (ie. URLs) to download. API rate limits could then have as much time as possible to recover before subsequent commands (eg. analysis of builds). Such a cache must be filled with addresses BEFORE the download loop.
 
 
-
-
-
-	local currentAxelTmpFileUID="$(_uid 14)"
+	export currentAxelTmpFileUID="$(_uid 14)"
 	_axelTmp() {
 		echo .m_axelTmp_"$currentStream"_"$currentAxelTmpFileUID"
 	}
@@ -7352,167 +7351,152 @@ _wget_githubRelease_join-stdout() {
 
 	currentPart="$maxCurrentPart"
 
-	
-	
 
 	_set_wget_githubRelease-detect "$@"
 	currentSkip="skip"
 
-	local tmpBufferSlot
 
-	local preBufferSlot=1
-	local preBuffer_max=2
-	local bufferSlot="$currentStream_min"
-	for currentPart in $(seq -f "%02g" 0 "$currentPart" | sort -r)
+	currentPart=""
+	for currentPart in $(seq -f "%02g" 0 "$maxCurrentPart" | sort -r)
 	do
-		( _messagePlain_nominal "$currentStream"'\/\/\/\/\/ \/\/\/\/ init: _wget_githubRelease_join-stdout: LOOP' >&2 ) > /dev/null
-		_messagePlain_probe_var currentPart
-		
-
-		# SKIP .
-		# Fallback method of successfully downloading a file fundamentally has no criteria to begin prebuffering, buffering during cat/dd, etc, other than successfully downloading a file. Theoretical alternatives are to either: (1) download each part file to a separate slot, then cat/dd each slot, risking out-of-order cat/dd if any files complete downloading out-of-order, OR (2) download multiple part files ahead, resulting in that many slot files ahead getting the valid part file, as well as incurring the same out-of-order risks, at best.
-		# Fundamentally, smart management of this issue requires either (1) rapid testing of which files actually exist upstream, such as using an API call, (2) slow timeout to still somewhat less reliably determine which files actually exist upstream, or (3) storage capacity and algorithms to download all files iteratively establishing statistical confidence in which files failed to download due to nonexistence upstream rather than very chaotic variations in contentious network performance.
-		# NOTICE: Prebuffering in a constrained environment thus fundamentally requires the skip function to indeed skip downloading files that do not exist upstream.
 		if [[ "$currentSkip" == "skip" ]]
 		then
-		( _messagePlain_nominal "$currentStream"'\/\/\/\/\/ \/\/\/ init: _wget_githubRelease_join-stdout: LOOP: SKIP' >&2 ) > /dev/null
-		_messagePlain_probe_var currentPart
-			currentSkip=$(_wget_githubRelease-skip-URL-curl "$currentAbsoluteRepo" "$currentReleaseLabel" "$currentFile".$(printf "%02g" "$currentPart"))
+			currentSkip=$(_wget_githubRelease-skip-URL-curl "$currentAbsoluteRepo" "$currentReleaseLabel" "$currentFile".part"$currentPart")
 			#[[ "$?" != "0" ]] && ( _messagePlain_bad 'bad: FAIL: _wget_githubRelease-skip-URL-curl' >&2 ) > /dev/null && ( _messageError 'FAIL' >&2 ) > /dev/null && exit 1
 			#[[ "$?" != "0" ]] && currentSkip="skip"
 			[[ "$?" != "0" ]] && ( _messagePlain_warn 'bad: FAIL: _wget_githubRelease-skip-URL-curl' >&2 ) > /dev/null
 		fi
 		
-		[[ "$currentSkip" == "skip" ]] && continue # ###
+		[[ "$currentSkip" == "skip" ]] && continue
 
-		if [[ "$currentExitStatus" == "0" ]] || [[ "$currentSkip" != "skip" ]]
+		#[[ "$currentExitStatus" == "0" ]] || 
+		if [[ "$currentSkip" != "skip" ]]
 		then
 			_set_wget_githubRelease "$@"
 			currentSkip="download"
+			break
 		fi
+	done
+
+	export currentSkipPart="$currentPart"
+
+	"$scriptAbsoluteLocation" _wget_githubRelease_join_sequence-parallel "$currentAbsoluteRepo" "$currentReleaseLabel" "$currentFile" &
 
 
-		# DOWNLOAD preBuffer.
-		if [[ "$preBufferSlot" != "false" ]]
-		then
-		( _messagePlain_nominal "$currentStream"'\/\/\/\/\/ \/\/\/ init: _wget_githubRelease_join-stdout: LOOP: DOWNLOAD prebuffer' >&2 ) > /dev/null
-		_messagePlain_probe_var preBufferSlot
-			currentStream=pre_"$preBufferSlot"
-			
-			currentAxelTmpFile="$scriptAbsoluteFolder"/$(_axelTmp)
-			rm -f "$scriptAbsoluteFolder"/$(_axelTmp)* > /dev/null 2>&1
-			"$scriptAbsoluteLocation" _wget_githubRelease_procedure-stdout "$currentAbsoluteRepo" "$currentReleaseLabel" "$currentFile".part$(printf "%02g" "$currentPart") &
-			echo "$!" > "$scriptAbsoluteFolder"/$(_axelTmp).pid
-			
-
-			let preBufferSlot++
-			[[ "$preBufferSlot" -gt "$preBuffer_max" ]] && preBufferSlot="false"
-			continue # ###
-		fi
-		
-		
-		
-
-		# FULL preBuffer .
-		currentStream=pre_"1"
-		if ( [[ "$preBufferSlot" -gt "$preBuffer_max" ]] || [[ "$preBufferSlot" == "false" ]] ) && ( ls -1 "$scriptAbsoluteFolder"/$(_axelTmp)* > /dev/null 2>&1 )
-		then
-		( _messagePlain_nominal "$currentStream"'\/\/\/\/\/ \/\/\/ init: _wget_githubRelease_join-stdout: LOOP: FULL prebuffer' >&2 ) > /dev/null
-			
-			# DOWNLOAD buffer .
-			if [[ "$bufferSlot" -le "$currentStream_max" ]] && [[ "$currentSkip" != "skip" ]]
-			then
-			( _messagePlain_nominal "$currentStream"'\/\/\/\/\/ \/\/ init: _wget_githubRelease_join-stdout: LOOP: DOWNLOAD buffer' >&2 ) > /dev/null
-			_messagePlain_probe_var bufferSlot
-				currentStream="$BufferSlot"
-
-				currentAxelTmpFile="$scriptAbsoluteFolder"/$(_axelTmp)
-				rm -f "$scriptAbsoluteFolder"/$(_axelTmp)* > /dev/null 2>&1
-				"$scriptAbsoluteLocation" _wget_githubRelease_procedure-stdout "$currentAbsoluteRepo" "$currentReleaseLabel" "$currentFile".part$(printf "%02g" "$currentPart") &
-				echo "$!" > "$scriptAbsoluteFolder"/$(_axelTmp).pid
-
-				# Staggered.
-				sleep 6 > /dev/null 2>&1
-
-				let bufferSlot++
-				continue # ###
-			fi
-			[[ "$bufferSlot" -gt "$currentStream_max" ]] && bufferSlot="$currentStream_min"
-
-			# CAT and DELETE prebuffer .
-			for ((tmpBufferSlot="1"; tmpBufferSlot<="$preBuffer_max"; tmpBufferSlot++))
-			do
-			( _messagePlain_nominal "$currentStream"'\/\/\/\/\/ \/\/ init: _wget_githubRelease_join-stdout: LOOP: CAT and DELETE prebuffer' >&2 ) > /dev/null
-			_messagePlain_probe_var tmpBufferSlot
-				currentStream=pre_"$tmpBufferSlot"
-				while ( ls -1 "$scriptAbsoluteFolder"/$(_axelTmp)* > /dev/null 2>&1 ) && ! ( [[ -e "$scriptAbsoluteFolder"/$(_axelTmp).PASS ]] )
-				do
-					[[ -e "$scriptAbsoluteFolder"/$(_axelTmp).FAIL ]] && [[ "$currentSkip" != "skip" ]] && ( _messageError 'FAIL' >&2 ) && exit 1
-
-					if [[ -e "$scriptAbsoluteFolder"/$(_axelTmp).PASS ]]
-					then
-						#status=progress
-						dd if="$currentAxelTmpFile" bs=1M
-						#cat "$currentAxelTmpFile"
-						rm -f "$scriptAbsoluteFolder"/$(_axelTmp)* > /dev/null 2>&1
-
-						_set_wget_githubRelease "$@"
-						currentSkip="download"
-					fi
-
-					sleep 3 > /dev/null
-				done
-
-				[[ -e "$scriptAbsoluteFolder"/$(_axelTmp).FAIL ]] && [[ "$currentSkip" == "skip" ]] && preBufferSlot="1" && continue # ###
-			done
-
-		( _messagePlain_nominal "$currentStream"'\/\/\/\/\/ \/\/\/ init: _wget_githubRelease_join-stdout: LOOP: DONE prebuffer' >&2 ) > /dev/null
-		fi
-		# DONE preBuffer .
-
-
-
-		currentStream="$bufferSlot"
-
-
-		# CAT and DELETE slot .
-		( _messagePlain_nominal "$currentStream"'\/\/\/\/\/ \/\/\/ init: _wget_githubRelease_join-stdout: LOOP: CAT and DELETE slot' >&2 ) > /dev/null
-		_messagePlain_probe_var bufferSlot
-		while ( ls -1 "$scriptAbsoluteFolder"/$(_axelTmp)* > /dev/null 2>&1 ) && ! ( [[ -e "$scriptAbsoluteFolder"/$(_axelTmp).PASS ]] )
+	# Prebuffer .
+	( _messagePlain_nominal '\/\/\/\/\/ \/\/\/\/ init: _wget_githubRelease_join-stdout: WAIT: prebuffer' >&2 ) > /dev/null
+	currentStream="$currentStream_min"
+	if [[ "$currentPart" -ge "2" ]]
+	then
+		currentStream="2"
+		while ( ! [[ -e "$scriptAbsoluteFolder"/$(_axelTmp).PASS ]] || ! [[ -e "$scriptAbsoluteFolder"/$(_axelTmp).FAIL ]] )
 		do
-			[[ -e "$scriptAbsoluteFolder"/$(_axelTmp).FAIL ]] && ( _messageError 'FAIL' >&2 ) && exit 1
+			sleep 3
+		done
+	fi
+	currentStream="$currentStream_min"
 
-			if [[ -e "$scriptAbsoluteFolder"/$(_axelTmp).PASS ]]
-			then
-				#status=progress
-				dd if="$currentAxelTmpFile" bs=1M
-				#cat "$currentAxelTmpFile"
-				rm -f "$scriptAbsoluteFolder"/$(_axelTmp)* > /dev/null 2>&1
-			fi
 
-			sleep 3 > /dev/null
+	for currentPart in $(seq -f "%02g" 0 "$currentSkipPart" | sort -r)
+	do
+	( _messagePlain_nominal '\/\/\/\/\/ \/\/\/\/ init: _wget_githubRelease_join-stdout: outputLOOP' >&2 ) > /dev/null
+	( _messagePlain_probe_var currentPart >&2 ) > /dev/null
+	( _messagePlain_probe_var currentStream >&2 ) > /dev/null
+
+		# Stream must have written PASS/FAIL file .
+		( _messagePlain_nominal '\/\/\/\/\/ \/\/\/ init: _wget_githubRelease_join-stdout: outputLOOP: WAIT: PASS/FAIL' >&2 ) > /dev/null
+		while ( ! [[ -e "$scriptAbsoluteFolder"/$(_axelTmp).PASS ]] || ! [[ -e "$scriptAbsoluteFolder"/$(_axelTmp).FAIL ]] )
+		do
+			sleep 3
+		done
+		
+		( _messagePlain_nominal '\/\/\/\/\/ \/\/\/ init: _wget_githubRelease_join-stdout: outputLOOP: OUTPUT' >&2 ) > /dev/null
+		dd if="$scriptAbsoluteFolder"/$(_axelTmp) bs=1M
+		#cat "$scriptAbsoluteFolder"/$(_axelTmp)
+		[[ -e "$scriptAbsoluteFolder"/$(_axelTmp).PASS ]] && currentSkip="download"	
+		[[ -e "$scriptAbsoluteFolder"/$(_axelTmp).FAIL ]] && [[ "$currentSkip" != "skip" ]] && ( _messageError 'FAIL' >&2 ) > /dev/null && return 1
+
+		( _messagePlain_nominal '\/\/\/\/\/ \/\/\/ init: _wget_githubRelease_join-stdout: outputLOOP: DELETE' >&2 ) > /dev/null
+		rm -f "$scriptAbsoluteFolder"/$(_axelTmp) > /dev/null 2>&1
+
+		let currentStream=currentStream+1
+		[[ "$currentStream" -gt "$currentStream_max" ]] && currentStream="$currentStream_min"
+	done
+}
+
+
+_wget_githubRelease_join_sequence-parallel() {
+	local currentAbsoluteRepo="$1"
+	local currentReleaseLabel="$2"
+	local currentFile="$3"
+
+	local currentOutParameter="$4"
+	local currentOutFile="$5"
+
+	shift
+	shift
+	shift
+	if [[ "$currentOutParameter" == "-O" ]]
+	then
+		if [[ "$currentOutFile" != "-" ]]
+		then
+			( _messagePlain_bad 'bad: fail: unexpected: currentOutFile: NOT stdout' >&2 ) > /dev/null
+			#echo "1" > "$currentAxelTmpFile".FAIL
+			return 1
+		fi
+		shift 
+		shift
+	fi
+
+
+	#export currentAxelTmpFileUID="$(_uid 14)"
+	_axelTmp() {
+		echo .m_axelTmp_"$currentStream"_"$currentAxelTmpFileUID"
+	}
+	local currentAxelTmpFile
+	#currentAxelTmpFile="$scriptAbsoluteFolder"/$(_axelTmp)
+
+	local currentSkip="skip"
+	
+	local currentStream_min=1
+	local currentStream_max=3
+	[[ "$FORCE_PARALLEL" != "" ]] && currentStream_max="$FORCE_PARALLEL"
+	
+	for currentPart in $(seq -f "%02g" 0 "$currentSkipPart" | sort -r)
+	do
+	( _messagePlain_nominal '\/\/\/\/\/ \/\/\/\/ init: _wget_githubRelease_join_sequence-parallel: downloadLOOP' >&2 ) > /dev/null
+	( _messagePlain_probe_var currentPart >&2 ) > /dev/null
+	( _messagePlain_probe_var currentStream >&2 ) > /dev/null
+
+		# Slot in use. Downloaded  "$scriptAbsoluteFolder"/$(_axelTmp)  file will be DELETED after use by calling process.
+		( _messagePlain_nominal '\/\/\/\/\/ \/\/\/ init: _wget_githubRelease_join_sequence-parallel: downloadLOOP: WAIT: BUSY' >&2 ) > /dev/null
+		while ( ls -1 "$scriptAbsoluteFolder"/$(_axelTmp) > /dev/null 2>&1 )
+		do
+			sleep 3
 		done
 
-
-		# DOWNLOAD slot .
-		( _messagePlain_nominal "$currentStream"'\/\/\/\/\/ \/\/\/ init: _wget_githubRelease_join-stdout: LOOP: DOWNLOAD slot' >&2 ) > /dev/null
-		_messagePlain_probe_var bufferSlot
+		( _messagePlain_nominal '\/\/\/\/\/ \/\/\/ init: _wget_githubRelease_join_sequence-parallel: downloadLOOP: DELETE' >&2 ) > /dev/null
+		[[ -e "$scriptAbsoluteFolder"/$(_axelTmp).PASS ]] && _set_wget_githubRelease "$@" && currentSkip="download"
+		[[ -e "$scriptAbsoluteFolder"/$(_axelTmp).FAIL ]] && [[ "$currentSkip" != "skip" ]] && ( _messageError 'FAIL' >&2 ) > /dev/null && return 1
+		rm -f "$scriptAbsoluteFolder"/$(_axelTmp)* > /dev/null 2>&1
+		
+		( _messagePlain_nominal '\/\/\/\/\/ \/\/\/ init: _wget_githubRelease_join_sequence-parallel: downloadLOOP: DOWNLOAD' >&2 ) > /dev/null
 		currentAxelTmpFile="$scriptAbsoluteFolder"/$(_axelTmp)
 		rm -f "$scriptAbsoluteFolder"/$(_axelTmp)* > /dev/null 2>&1
 		"$scriptAbsoluteLocation" _wget_githubRelease_procedure-stdout "$currentAbsoluteRepo" "$currentReleaseLabel" "$currentFile".part$(printf "%02g" "$currentPart") &
 		echo "$!" > "$scriptAbsoluteFolder"/$(_axelTmp).pid
 
+		# Stream must have written either in-progress download or PASS/FAIL file .
+		( _messagePlain_nominal '\/\/\/\/\/ \/\/\/ init: _wget_githubRelease_join_sequence-parallel: downloadLOOP: WAIT: BEGIN' >&2 ) > /dev/null
+		while ! ( ls -1 "$scriptAbsoluteFolder"/$(_axelTmp)* > /dev/null 2>&1 )
+		do
+			sleep 3
+		done
 
-		let bufferSlot++
-		[[ "$bufferSlot" -gt "$currentStream_max" ]] && bufferSlot="$currentStream_min"
+		let currentStream=currentStream+1
+		[[ "$currentStream" -gt "$currentStream_max" ]] && currentStream="$currentStream_min"
 	done
-
-
-
 }
-
-
-
 
 
 
