@@ -1518,14 +1518,18 @@ _wget_githubRelease_procedure-join() {
 	echo -n > "$currentAxelTmpFile".busy
 
 	# ATTENTION: EXPERIMENT
-	#_wget_githubRelease_procedure "$currentAbsoluteRepo" "$currentReleaseLabel" "$currentFile" -O "$currentAxelTmpFile" "$@"
+	_wget_githubRelease_procedure "$currentAbsoluteRepo" "$currentReleaseLabel" "$currentFile" -O "$currentAxelTmpFile" "$@"
     #dd if=/dev/urandom bs=1M count=1500
-    dd if=/dev/urandom bs=1M count=1500 | pv --rate-limit 300M 2>/dev/null > "$currentAxelTmpFile"
+    #dd if=/dev/urandom bs=1M count=1500 | pv --rate-limit 300M 2>/dev/null > "$currentAxelTmpFile"
 	currentExitStatus="$?"
 
 
 	[[ "$currentExitStatus" == "0" ]] && echo "$currentExitStatus" > "$currentAxelTmpFile".PASS
-	[[ "$currentExitStatus" != "0" ]] && echo "$currentExitStatus" > "$currentAxelTmpFile".FAIL
+	if [[ "$currentExitStatus" != "0" ]]
+	then
+		echo -n > "$currentAxelTmpFile"
+		echo "$currentExitStatus" > "$currentAxelTmpFile".FAIL
+	fi
 
     while [[ -e "$currentAxelTmpFile" ]]
     do
