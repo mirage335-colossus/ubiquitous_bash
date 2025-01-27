@@ -1163,11 +1163,17 @@ _wget_githubRelease_join() {
 	#[[ "$currentOutParameter" == "-O" ]] && [[ "$currentOutFile" == "" ]] && currentOutFile="$currentFile"
 	[[ "$currentOutParameter" == "-O" ]] && [[ "$currentOutFile" == "" ]] && ( _messagePlain_bad 'bad: fail: unexpected: unspecified: currentOutFile' >&2 ) > /dev/null && return 1
 
+	if [[ "$currentOutParameter" == "-O" ]]
+	then
+		shift
+		shift
+	fi
+
 	[[ "$currentOutFile" != "-" ]] && rm -f "$currentOutFile" > /dev/null 2>&1
 
 
 	# ATTENTION
-	currentFile=$(basename "$currentOutFile")
+	currentFile=$(basename "$currentFile")
 
 
 
@@ -1379,9 +1385,10 @@ _wget_githubRelease_join-stdout() {
 		done
 		
 		( _messagePlain_nominal '\/\/\/\/\/ \/\/\/  outputLOOP: OUTPUT  ...  currentPart='"$currentPart"' currentStream='"$currentStream" >&2 ) > /dev/null
-		#dd if="$scriptAbsoluteFolder"/$(_axelTmp) bs=1M
+		# ATTENTION: EXPERIMENT
+		dd if="$scriptAbsoluteFolder"/$(_axelTmp) bs=1M
 		#cat "$scriptAbsoluteFolder"/$(_axelTmp)
-		dd if="$scriptAbsoluteFolder"/$(_axelTmp) bs=1M | pv --rate-limit 100M 2>/dev/null
+		#dd if="$scriptAbsoluteFolder"/$(_axelTmp) bs=1M | pv --rate-limit 100M 2>/dev/null
 		[[ -e "$scriptAbsoluteFolder"/$(_axelTmp).PASS ]] && currentSkip="download"	
 		[[ -e "$scriptAbsoluteFolder"/$(_axelTmp).FAIL ]] && [[ "$currentSkip" != "skip" ]] && ( _messageError 'FAIL' >&2 ) > /dev/null && return 1
 
@@ -1510,6 +1517,7 @@ _wget_githubRelease_procedure-join() {
 
 	echo -n > "$currentAxelTmpFile".busy
 
+	# ATTENTION: EXPERIMENT
 	#_wget_githubRelease_procedure "$currentAbsoluteRepo" "$currentReleaseLabel" "$currentFile" -O "$currentAxelTmpFile" "$@"
     #dd if=/dev/urandom bs=1M count=1500
     dd if=/dev/urandom bs=1M count=1500 | pv --rate-limit 300M 2>/dev/null > "$currentAxelTmpFile"
