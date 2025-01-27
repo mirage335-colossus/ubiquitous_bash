@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='285974201'
+export ub_setScriptChecksum_contents='2794467353'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -19609,18 +19609,24 @@ _test_gitBest() {
 
 
 
+# ATTENTION: Override with 'ops.sh' or similar. Do NOT attempt to override with exported variables: do indeed override the function.
 
 _set_wget_githubRelease() {
-	[[ "$githubRelease_retriesMax" == "" ]] && export githubRelease_retriesMax=25
-	[[ "$githubRelease_retriesWait" == "" ]] && export githubRelease_retriesWait=18
+	export githubRelease_retriesMax=25
+	export githubRelease_retriesWait=18
 }
 _set_wget_githubRelease
 
-
 _set_wget_githubRelease-detect() {
-	[[ "$githubRelease_retriesMax" == "" ]] && export githubRelease_retriesMax=2
-	[[ "$githubRelease_retriesWait" == "" ]] && export githubRelease_retriesWait=4
+	export githubRelease_retriesMax=2
+	export githubRelease_retriesWait=4
 }
+
+_set_wget_githubRelease-detect-parallel() {
+	export githubRelease_retriesMax=25
+	export githubRelease_retriesWait=18
+}
+
 
 
 _if_gh() {
@@ -20907,6 +20913,10 @@ _wget_githubRelease_join_sequence-parallel() {
 	#local currentAxelTmpFile
 	#currentAxelTmpFile="$scriptAbsoluteFolder"/$(_axelTmp)
 
+	# Due to parallelism , only API rate limits, NOT download speeds, are a concern with larger number of retries. 
+	_set_wget_githubRelease "$@"
+	#_set_wget_githubRelease-detect "$@"
+	#_set_wget_githubRelease-detect-parallel "$@"
 	local currentSkip="skip"
 	
 	local currentStream_min=1

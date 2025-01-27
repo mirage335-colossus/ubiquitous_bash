@@ -159,18 +159,24 @@
 
 
 
+# ATTENTION: Override with 'ops.sh' or similar. Do NOT attempt to override with exported variables: do indeed override the function.
 
 _set_wget_githubRelease() {
-	[[ "$githubRelease_retriesMax" == "" ]] && export githubRelease_retriesMax=25
-	[[ "$githubRelease_retriesWait" == "" ]] && export githubRelease_retriesWait=18
+	export githubRelease_retriesMax=25
+	export githubRelease_retriesWait=18
 }
 _set_wget_githubRelease
 
-
 _set_wget_githubRelease-detect() {
-	[[ "$githubRelease_retriesMax" == "" ]] && export githubRelease_retriesMax=2
-	[[ "$githubRelease_retriesWait" == "" ]] && export githubRelease_retriesWait=4
+	export githubRelease_retriesMax=2
+	export githubRelease_retriesWait=4
 }
+
+_set_wget_githubRelease-detect-parallel() {
+	export githubRelease_retriesMax=25
+	export githubRelease_retriesWait=18
+}
+
 
 
 _if_gh() {
@@ -1457,6 +1463,10 @@ _wget_githubRelease_join_sequence-parallel() {
 	#local currentAxelTmpFile
 	#currentAxelTmpFile="$scriptAbsoluteFolder"/$(_axelTmp)
 
+	# Due to parallelism , only API rate limits, NOT download speeds, are a concern with larger number of retries. 
+	_set_wget_githubRelease "$@"
+	#_set_wget_githubRelease-detect "$@"
+	#_set_wget_githubRelease-detect-parallel "$@"
 	local currentSkip="skip"
 	
 	local currentStream_min=1
