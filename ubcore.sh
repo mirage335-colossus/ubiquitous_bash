@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='3621914409'
+export ub_setScriptChecksum_contents='640093517'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -19947,26 +19947,48 @@ _wget_githubRelease-detect-URL-curl() {
 }
 
 _wget_githubRelease_procedure-address-gh-awk() {
-	( _messagePlain_probe 'init: _wget_githubRelease_procedure-address-gh-awk' >&2 ) > /dev/null
+	#( _messagePlain_probe 'init: _wget_githubRelease_procedure-address-gh-awk' >&2 ) > /dev/null
+	( _messagePlain_probe_safe _wget_githubRelease_procedure-address-gh-awk "$@" >&2 ) > /dev/null
     local currentReleaseLabel="$2"
+    #( _messagePlain_probe_var currentReleaseLabel >&2 ) > /dev/null
     
     # WARNING: Use of complex 'awk' scripts historically has seemed less resilient, less portable, less reliable.
-    # ATTRIBUTION-AI: ChatGPT o1 2025-01-22 .
-    awk -v label="$currentReleaseLabel" '
-    # For each line where the first column equals the label we are looking for...
-    $1 == label {
-        # If the second column is one of the known “types,” shift fields left so
-        # the *real* tag moves into $2. Repeat until no more known types remain.
-        while ($2 == "Latest" || $2 == "draft" || $2 == "pre-release" || $2 == "prerelease") {
-        for (i=2; i<NF; i++) {
-            $i = $(i+1)
-        }
-        NF--
-        }
-        # At this point, $2 is guaranteed to be the actual tag.
-        print $2
-    }
-    '
+    # ATTRIBUTION-AI: ChatGPT o1 2025-01-22 , 2025-01-27 .
+	if [[ "$currentReleaseLabel" == "latest" ]]
+	then
+		#gh release list -L 1
+		# In theory, simply accepting single line output from gh release list (ie. -L 1) should provide the same result (in case this awk script ever breaks).
+		awk '
+			# Skip a header line if it appears first:
+			NR == 1 && $1 == "TITLE" && $2 == "TYPE" {
+				# Just move on to the next line and do nothing else
+				next
+			}
+			
+			# The real match: find the line whose second column is "Latest"
+			$2 == "Latest" {
+				# Print the third column (TAG NAME) and exit
+				print $3
+				exit
+			}
+		'
+	else
+		awk -v label="$currentReleaseLabel" '
+		# For each line where the first column equals the label we are looking for...
+		$1 == label {
+			# If the second column is one of the known “types,” shift fields left so
+			# the *real* tag moves into $2. Repeat until no more known types remain.
+			while ($2 == "Latest" || $2 == "draft" || $2 == "pre-release" || $2 == "prerelease") {
+			for (i=2; i<NF; i++) {
+				$i = $(i+1)
+			}
+			NF--
+			}
+			# At this point, $2 is guaranteed to be the actual tag.
+			print $2
+		}
+		'
+	fi
 }
 # Requires "$GH_TOKEN" .
 _wget_githubRelease_procedure-address-gh() {
