@@ -1557,7 +1557,7 @@ _wget_githubRelease_procedure-join() {
 		echo "$currentExitStatus" > "$currentAxelTmpFile".FAIL
 	fi
 
-    while [[ -e "$currentAxelTmpFile" ]]
+    while [[ -e "$currentAxelTmpFile" ]] || [[ -e "$currentAxelTmpFile".busy ]]
     do
         sleep 6
     done
