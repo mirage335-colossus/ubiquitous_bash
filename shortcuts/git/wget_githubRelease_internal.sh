@@ -1367,8 +1367,8 @@ _wget_githubRelease_join-stdout() {
 		if [[ "$currentSkip" == "skip" ]]
 		then
 			# ATTENTION: EXPERIMENT
-			#currentSkip=$([[ "$currentPart" -gt "17" ]] && echo 'skip' ; true)
-			currentSkip=$(_wget_githubRelease-skip-URL-curl "$currentAbsoluteRepo" "$currentReleaseLabel" "$currentFile".part"$currentPart")
+			currentSkip=$([[ "$currentPart" -gt "17" ]] && echo 'skip' ; true)
+			#currentSkip=$(_wget_githubRelease-skip-URL-curl "$currentAbsoluteRepo" "$currentReleaseLabel" "$currentFile".part"$currentPart")
 			
 			#[[ "$?" != "0" ]] && ( _messagePlain_bad 'bad: FAIL: _wget_githubRelease-skip-URL-curl' >&2 ) > /dev/null && ( _messageError 'FAIL' >&2 ) > /dev/null && exit 1
 			#[[ "$?" != "0" ]] && currentSkip="skip"
@@ -1525,7 +1525,22 @@ _wget_githubRelease_join_sequence-parallel() {
 		[[ "$currentStream" -gt "$currentStream_max" ]] && currentStream="$currentStream_min"
 	done
 
-	( _messagePlain_nominal '\/\/\/\/\/ \/\/\/\/  downloadLOOP: WAIT PID  ...  currentPart='"$currentPart"' currentStream='"$currentStream" >&2 ) > /dev/null
+	( _messagePlain_nominal '\/\/\/\/\/ \/\/\/\/  download: DELETE' >&2 ) > /dev/null
+	for currentStream in $(seq "$currentStream_min" "$currentStream_max")
+	do
+		( _messagePlain_nominal '\/\/\/\/\/ \/\/\/  download: WAIT: BUSY  ...  currentStream='"$currentStream" >&2 ) > /dev/null
+		while ( ls -1 "$scriptAbsoluteFolder"/$(_axelTmp) > /dev/null 2>&1 ) || ( ls -1 "$scriptAbsoluteFolder"/$(_axelTmp).busy > /dev/null 2>&1 )
+		do
+		( _messagePlain_nominal '\/\/\/\/\/ \/\/\/  download: WAIT: BUSY  ...  currentStream='"$currentStream" >&2 ) > /dev/null
+			sleep 1
+		done
+
+		( _messagePlain_nominal '\/\/\/\/\/ \/\/\/  download: DELETE ...  currentStream='"$currentStream" >&2 ) > /dev/null
+		rm -f "$scriptAbsoluteFolder"/$(_axelTmp).PASS > /dev/null 2>&1
+		rm -f "$scriptAbsoluteFolder"/$(_axelTmp).FAIL > /dev/null 2>&1
+	done
+
+	( _messagePlain_nominal '\/\/\/\/\/ \/\/\/\/  download: WAIT PID  ...  currentPart='"$currentPart"' currentStream='"$currentStream" >&2 ) > /dev/null
 	for currentStream in $(seq "$currentStream_min" "$currentStream_max")
 	do
 		[[ -e "$scriptAbsoluteFolder"/$(_axelTmp).pid ]] && _pauseForProcess $(cat "$scriptAbsoluteFolder"/$(_axelTmp).pid) > /dev/null
@@ -1565,8 +1580,8 @@ _wget_githubRelease_procedure-join() {
 	echo -n > "$currentAxelTmpFile".busy
 
 	# ATTENTION: EXPERIMENT
-	_wget_githubRelease_procedure "$currentAbsoluteRepo" "$currentReleaseLabel" "$currentFile" -O "$currentAxelTmpFile" "$@"
-    #dd if=/dev/urandom bs=1M count=1500 > "$currentAxelTmpFile"
+	#_wget_githubRelease_procedure "$currentAbsoluteRepo" "$currentReleaseLabel" "$currentFile" -O "$currentAxelTmpFile" "$@"
+    dd if=/dev/urandom bs=1M count=1500 > "$currentAxelTmpFile"
     #dd if=/dev/urandom bs=1M count=1500 | pv --rate-limit 300M 2>/dev/null > "$currentAxelTmpFile"
 	currentExitStatus="$?"
 
