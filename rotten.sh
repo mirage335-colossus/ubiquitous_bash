@@ -3191,6 +3191,8 @@ _wget_githubRelease_join-stdout() {
 		let currentStream=currentStream+1
 		[[ "$currentStream" -gt "$currentStream_max" ]] && currentStream="$currentStream_min"
 	done
+
+	true
 }
 _wget_githubRelease_join_sequence-parallel() {
 	local currentAbsoluteRepo="$1"
@@ -3303,6 +3305,8 @@ _wget_githubRelease_join_sequence-parallel() {
 		[[ -e "$scriptAbsoluteFolder"/$(_axelTmp).pid ]] && _pauseForProcess $(cat "$scriptAbsoluteFolder"/$(_axelTmp).pid) > /dev/null
 	done
 	wait >&2
+
+	true
 }
 _wget_githubRelease_procedure-join() {
 	( _messagePlain_probe_safe _wget_githubRelease_procedure-join "$@" >&2 ) > /dev/null
