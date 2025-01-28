@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='3917100209'
+export ub_setScriptChecksum_contents='4104803679'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -20707,7 +20707,7 @@ _wget_githubRelease_join-stdout() {
 	local currentBusyStatus
 
 	# CAUTION: Any greater than 50 is not expected to serve any purpose, may exhaust expected API rate limits, may greatly delay download, and may disrupt subsequent API requests. Any less than 50 may fall below the ~100GB capacity that is both expected necessary for some complete toolchains and at the limit of ~100GB archival quality optical disc .
-	local maxCurrentPart=19
+	local maxCurrentPart=50
 
 
     local currentExitStatus=1
@@ -20817,8 +20817,8 @@ _wget_githubRelease_join-stdout() {
 		if [[ "$currentSkip" == "skip" ]]
 		then
 			# ATTENTION: EXPERIMENT
-			#currentSkip=$([[ "$currentPart" -gt "17" ]] && echo 'skip' ; true)
 			currentSkip=$(_wget_githubRelease-skip-URL-curl "$currentAbsoluteRepo" "$currentReleaseLabel" "$currentFile".part"$currentPart")
+			#currentSkip=$([[ "$currentPart" -gt "17" ]] && echo 'skip' ; true)
 			
 			#[[ "$?" != "0" ]] && ( _messagePlain_bad 'bad: FAIL: _wget_githubRelease-skip-URL-curl' >&2 ) > /dev/null && ( _messageError 'FAIL' >&2 ) > /dev/null && exit 1
 			#[[ "$?" != "0" ]] && currentSkip="skip"
@@ -21031,7 +21031,8 @@ _wget_githubRelease_procedure-join() {
 
 	# ATTENTION: EXPERIMENT
 	_wget_githubRelease_procedure "$currentAbsoluteRepo" "$currentReleaseLabel" "$currentFile" -O "$currentAxelTmpFile" "$@"
-    #dd if=/dev/urandom bs=1M count=1500 > "$currentAxelTmpFile"
+    #dd if=/dev/zero bs=1M count=1500 > "$currentAxelTmpFile"
+	#echo "$currentFile" >> "$currentAxelTmpFile"
     #dd if=/dev/urandom bs=1M count=1500 | pv --rate-limit 300M 2>/dev/null > "$currentAxelTmpFile"
 	currentExitStatus="$?"
 
