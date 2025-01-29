@@ -95,6 +95,12 @@ _deps_dev_heavy_atom() {
 	export enUb_dev_heavy_atom="true"
 }
 
+_deps_dev_buildOps() {
+	_deps_generic
+	
+	export enUb_dev_buildOps="true"
+}
+
 _deps_cloud_heavy() {
 	_deps_notLean
 	export enUb_cloud_heavy="true"

@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='3350070799'
+export ub_setScriptChecksum_contents='599261004'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -49157,6 +49157,12 @@ _deps_dev_heavy_atom() {
 	export enUb_dev_heavy_atom="true"
 }
 
+_deps_dev_buildOps() {
+	_deps_generic
+	
+	export enUb_dev_buildOps="true"
+}
+
 _deps_cloud_heavy() {
 	_deps_notLean
 	export enUb_cloud_heavy="true"
@@ -50007,6 +50013,8 @@ _compile_bash_deps() {
 	
 	if [[ "$1" == "lean" ]]
 	then
+		_deps_dev_buildOps
+		
 		#_deps_git
 		
 		#_deps_virt_translation
@@ -50025,6 +50033,8 @@ _compile_bash_deps() {
 	# Specifically intended to be imported into user profile.
 	if [[ "$1" == "ubcore" ]]
 	then
+		_deps_dev_buildOps
+		
 		_deps_notLean
 		
 		_deps_serial
@@ -50084,6 +50094,8 @@ _compile_bash_deps() {
 	
 	if [[ "$1" == "cautossh" ]]
 	then
+		_deps_dev_buildOps
+		
 		_deps_os_x11
 		_deps_proxy
 		_deps_proxy_special
@@ -50125,6 +50137,7 @@ _compile_bash_deps() {
 	if [[ "$1" == "processor" ]]
 	then
 		_deps_dev
+		_deps_dev_buildOps
 		
 		_deps_generic
 		
@@ -50151,6 +50164,7 @@ _compile_bash_deps() {
 	if [[ "$1" == "abstract" ]] || [[ "$1" == "abstractfs" ]]
 	then
 		_deps_dev
+		_deps_dev_buildOps
 		
 		_deps_python
 		_deps_haskell
@@ -50177,6 +50191,7 @@ _compile_bash_deps() {
 	if [[ "$1" == "fakehome" ]]
 	then
 		_deps_dev
+		_deps_dev_buildOps
 		
 		_deps_python
 		_deps_haskell
@@ -50205,6 +50220,7 @@ _compile_bash_deps() {
 		_deps_dev_heavy
 		#_deps_dev_heavy_atom
 		_deps_dev
+		_deps_dev_buildOps
 		
 		#_deps_cloud_heavy
 		
@@ -50310,6 +50326,7 @@ _compile_bash_deps() {
 		_deps_dev_heavy
 		#_deps_dev_heavy_atom
 		_deps_dev
+		_deps_dev_buildOps
 		
 		#_deps_cloud_heavy
 		
@@ -50415,6 +50432,7 @@ _compile_bash_deps() {
 		_deps_dev_heavy
 		#_deps_dev_heavy_atom
 		_deps_dev
+		_deps_dev_buildOps
 		
 		_deps_cloud_heavy
 		
@@ -51120,6 +51138,7 @@ _compile_bash_selfHost() {
 _compile_bash_overrides() {
 	export includeScriptList
 	
+	[[ "$enUb_dev_buildOps" == "true" ]] && includeScriptList+=( "build/zSpecial"/build-ops.sh )
 	
 	includeScriptList+=( "structure"/overrides.sh )
 }
@@ -51567,6 +51586,48 @@ _compile_bash_entry_prog() {
 	export includeScriptList
 	true
 }
+
+
+# ATTENTION: You probably do NOT want to bother with this specialized build system.
+#
+# WARNING: No production use.
+#
+# Functions here or imported here are NOT intended for functionality, installation, or build procedures of end-user programs.
+# Imports functions from an external file ONLY when relevant functions are called, and does NOT compile substantial code into 'ubiquitous_bash.sh' script files.
+#
+# Function import through "$scriptLib"/build-ops.sh or similar is usually only appropriate in certain situations:
+# 1) Esoteric derivative standalone binary products (eg. direct translations from shellcode functions to microcontroller firmware preprocessor macro libraries, 'ubcp' Cygwin/MSW compatibility layer, etc), ONLY if including/(re)compiling with the larger script is NOT desired and NOT practical.
+# 2) Fallback modernizing (ie. upgrading previous versions) certain binary products (eg. static binary executables, dist/OS disk images, etc), skipping a full rebuild either for drastically reduced build times or due to loss of external dependencies.
+# 3) Staging procedures called during such fallbacks to integrate and build track record with new functionality (eg. new 'apt-get install' commands for dist/OS disk images) before adding to the compiled script shellcode.
+_bin-build_import() {
+    
+    # Very rare.
+    [[ -e "$scriptLib"/_build-esoteric-ops.sh ]] && . "$scriptLib"/_build-esoteric-ops.sh
+
+
+    [[ -e "$scriptLib"/_build-fallback-ops.sh ]] && . "$scriptLib"/_build-fallback-ops.sh
+
+    [[ -e "$scriptLib"/_build-staging-ops.sh ]] && . "$scriptLib"/_build-staging-ops.sh
+
+
+    # Discouraged.
+    [[ -e "$scriptLib"/_build-ops.sh ]] && . "$scriptLib"/_build-ops.sh
+
+
+    
+
+    #_safe_declare_uid
+    #"$@"
+    _bin "$@"
+
+}
+
+
+
+
+
+
+
 
 #####Overrides
 
