@@ -423,6 +423,28 @@ jobs:
       - name: analysis! missing-packages
         shell: bash
         run: |
+          #echo -n
+          _safeEcho() {
+            printf '%s' "$1"
+            shift
+            
+            [[ "$@" == "" ]] && return 0
+            
+            local currentArg
+            for currentArg in "$@"
+            do
+              printf '%s' " "
+              printf '%s' "$currentArg"
+            done
+            return 0
+          }
+
+          #echo
+          _safeEcho_newline() {
+            _safeEcho "$@"
+            printf '\n'
+          }
+        
           # Get the list of releases
           RELEASES=$(curl -s -H "Authorization: token $GH_TOKEN" https://api.github.com/repos/mirage335-colossus/ubiquitous_bash/releases)
           
@@ -430,8 +452,8 @@ jobs:
           curl -s -H "Authorization: token $GH_TOKEN" -L -o "ubcp-packageReport-$currentReleaseTag" "https://github.com/mirage335-colossus/ubiquitous_bash/releases/download/$currentReleaseTag/ubcp-packageReport"
 
           # Loop through each release
-          #for RELEASE in $(echo "$RELEASES" | jq -r '.[].tag_name' | sort --reverse); do
-          for RELEASE in $(echo "$RELEASES" | jq -r 'sort_by(.published_at) | reverse | .[].tag_name'); do
+          #for RELEASE in $(_safeEcho_newline "$RELEASES" | jq -r '.[].tag_name' | sort --reverse); do
+          for RELEASE in $(_safeEcho_newline "$RELEASES" | jq -r 'sort_by(.published_at) | reverse | .[].tag_name' | tr -dc 'a-zA-Z0-9\-_.:\n'); do
             # Download the packageReport file for this release
             curl -s -H "Authorization: token $GH_TOKEN" -L -o "ubcp-packageReport-$RELEASE" "https://github.com/mirage335-colossus/ubiquitous_bash/releases/download/$RELEASE/ubcp-packageReport"
 
