@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='1285904722'
+export ub_setScriptChecksum_contents='3740278806'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -21095,13 +21095,13 @@ _vector_wget_githubRelease-URL-gh() {
     local currentReleaseLabel="build"
     
     [[ $(
-cat <<'CZXWXcRMTo8EmM8i4d' | _wget_githubRelease-URL-gh-awk "" "$currentReleaseLabel" ""
+cat <<'CZXWXcRMTo8EmM8i4d' | _wget_githubRelease_procedure-address-gh-awk "" "$currentReleaseLabel" ""
 TITLE  TYPE    TAG NAME             PUBLISHED        
 build  Latest  build-1002-1  about 1 days ago
 build          build-1001-1  about 2 days ago
 CZXWXcRMTo8EmM8i4d
 ) == "build-1002-1
-build-1001-1" ]] || ( _messagePlain_bad 'fail: bad: _wget_githubRelease-URL-gh-awk' && _messageFAIL )
+build-1001-1" ]] || ( _messagePlain_bad 'fail: bad: _wget_githubRelease_procedure-address-gh-awk' && _messageFAIL )
 
 	return 0
 }

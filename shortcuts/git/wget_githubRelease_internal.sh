@@ -1645,13 +1645,13 @@ _vector_wget_githubRelease-URL-gh() {
     local currentReleaseLabel="build"
     
     [[ $(
-cat <<'CZXWXcRMTo8EmM8i4d' | _wget_githubRelease-URL-gh-awk "" "$currentReleaseLabel" ""
+cat <<'CZXWXcRMTo8EmM8i4d' | _wget_githubRelease_procedure-address-gh-awk "" "$currentReleaseLabel" ""
 TITLE  TYPE    TAG NAME             PUBLISHED        
 build  Latest  build-1002-1  about 1 days ago
 build          build-1001-1  about 2 days ago
 CZXWXcRMTo8EmM8i4d
 ) == "build-1002-1
-build-1001-1" ]] || ( _messagePlain_bad 'fail: bad: _wget_githubRelease-URL-gh-awk' && _messageFAIL )
+build-1001-1" ]] || ( _messagePlain_bad 'fail: bad: _wget_githubRelease_procedure-address-gh-awk' && _messageFAIL )
 
 	return 0
 }
