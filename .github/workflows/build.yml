@@ -446,7 +446,7 @@ jobs:
           }
         
           # Get the list of releases
-          RELEASES=$(curl -s -H "Authorization: token $GH_TOKEN" https://api.github.com/repos/mirage335-colossus/ubiquitous_bash/releases)
+          RELEASES=$(curl -s -H "Authorization: token $GH_TOKEN" https://api.github.com/repos/mirage335-colossus/ubiquitous_bash/releases?per_page=100&page=1)
           
           # Download packageReport file for the current release
           curl -s -H "Authorization: token $GH_TOKEN" -L -o "ubcp-packageReport-$currentReleaseTag" "https://github.com/mirage335-colossus/ubiquitous_bash/releases/download/$currentReleaseTag/ubcp-packageReport"
