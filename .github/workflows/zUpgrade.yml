@@ -104,6 +104,8 @@ jobs:
           export releaseLabel=${{ inputs.releaseLabel }}
           [[ "$releaseLabel" == "" ]] && export releaseLabel=spring
           ./ubiquitous_bash.sh _bin-build_import _build_fallback_upgrade-ubcp-fetch "$releaseLabel"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: _build_fallback_upgrade-ubcp-extract
         shell: bash
         timeout-minutes: 120
@@ -134,12 +136,12 @@ jobs:
           tag_name: build_upgrade-${{ github.run_id }}-${{ github.run_attempt }}
           name: build_upgrade
           files: |
-            package_ubcp-core.7z
-            package_ubcp-core.log
+            _local/upgradeTmp/package_ubcp-core.7z
+            _local/upgradeTmp/package_ubcp-core.log
             _local/upgradeTmp/ubcp-cygwin-portable-installer.log
-            _custom_splice_opensslConfig.log
-            _mitigate-ubcp.log
-            _setupUbiquitous.log
+            _local/upgradeTmp/_custom_splice_opensslConfig.log
+            _local/upgradeTmp/_mitigate-ubcp.log
+            _local/upgradeTmp/_setupUbiquitous.log
 
 
 
