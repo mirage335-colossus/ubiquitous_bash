@@ -101,7 +101,9 @@ jobs:
         shell: bash
         timeout-minutes: 120
         run: |
-          ./ubiquitous_bash.sh _bin-build_import _build_fallback_upgrade-ubcp-fetch
+          export releaseLabel=${{ inputs.releaseLabel }}
+          [[ "$releaseLabel" == "" ]] && export releaseLabel=spring
+          ./ubiquitous_bash.sh _bin-build_import _build_fallback_upgrade-ubcp-fetch "$releaseLabel"
       - name: _build_fallback_upgrade-ubcp-extract
         shell: bash
         timeout-minutes: 120
@@ -111,6 +113,10 @@ jobs:
         shell: bash
         timeout-minutes: 120
         run: |
+          export skimfast=${{ inputs.skimfast }}
+          echo $skimfast
+          export devfast=${{ inputs.devfast }}
+          echo $devfast
           ./ubiquitous_bash.sh _bin-build_import _build_fallback_upgrade-ubcp-upgrade-ubiquitous_bash
       - name: _build_fallback_upgrade-ubcp-compress
         shell: bash
@@ -138,6 +144,7 @@ jobs:
 
 
   build_ubcp-report:
+    needs: [build_ubcp]
     runs-on: windows-latest
     steps:
       - name: _getCore_ubcp
@@ -245,7 +252,7 @@ jobs:
 
 
   analysis_ubcp_missingBinaries:
-    needs: [build_ubcp]
+    needs: [build_ubcp, build_ubcp-report]
     runs-on: ubuntu-latest
     steps:
       - name: analysis! missing-binaries
@@ -305,7 +312,7 @@ jobs:
 
 
   analysis_ubcp_missingPackages:
-    needs: [build_ubcp]
+    needs: [build_ubcp, build_ubcp-report]
     runs-on: ubuntu-latest
     steps:
       - name: analysis! missing-packages
