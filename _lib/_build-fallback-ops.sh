@@ -13,11 +13,53 @@ _build_fallback_upgrade-ubcp-fetch() {
     #[[ "$currentReleaseLabel" == "" ]] && currentReleaseLabel="internal"
     [[ "$currentReleaseLabel" == "" ]] && currentReleaseLabel="spring"
 
+    mkdir -p "$scriptLocal"/upgradeTmp
+    cd "$scriptLocal"/upgradeTmp
+    
+    rm -f "$scriptLocal"/upgradeTmp/missing-ubcp-binReport
+
+
+    #rm -f "$scriptLocal"/upgradeTmp/lean_compressed.sh
+    #rm -f "$scriptLocal"/upgradeTmp/missing-ubcp-binReport
+    #rm -f "$scriptLocal"/upgradeTmp/missing-ubcp-packageReport
+    #rm -f "$scriptLocal"/upgradeTmp/monolithic_compressed.sh
+    rm -f "$scriptLocal"/upgradeTmp/package_ubcp-core.7z
+    rm -f "$scriptLocal"/upgradeTmp/package_ubcp-core.log
+    #rm -f "$scriptLocal"/upgradeTmp/rotten_compressed.sh
+    #rm -f "$scriptLocal"/upgradeTmp/ubcore_compressed.sh
+    rm -f "$scriptLocal"/upgradeTmp/ubcp-binReport
+    rm -f "$scriptLocal"/upgradeTmp/ubcp-cygwin-portable-installer.log
+    rm -f "$scriptLocal"/upgradeTmp/ubcp-packageReport
+    #rm -f "$scriptLocal"/upgradeTmp/ubiquitous_bash_compressed.sh
+    rm -f "$scriptLocal"/upgradeTmp/_custom_splice_opensslConfig.log
+    rm -f "$scriptLocal"/upgradeTmp/_mitigate-ubcp.log
+    rm -f "$scriptLocal"/upgradeTmp/_setupUbiquitous.log
+    rm -f "$scriptLocal"/upgradeTmp/_test-lean.log
+
+
+    # UNIX/Linux upgrade/build environment cannot run Cygwin/MSW commands. Some logs will be inherited from previous build.
+    # Scribe info is recommended to state traceability to upgraded previous build.
+    # Some logs, such as '_test-lean.log' could theoretically directly run through UNIX/Linux upgrade/build environment, however, that would only duplicate issues found in UNIX/Linux tests, neglecting the possibility of any Cygwin/MSW specific issues.
+    #  If UNIX/Linux environment is used to create another '_test' log, this should be named '_test-lean-linux.log' or similar to clearly indicate Cygwin/MSW specific issues will NOT be represented in that log.
+    # Better to inherit binReport and not tinker with the relevant Cygwin/MSW filesystem directories. Not usually necessary, and difficult to adequately generate such a report from UNIX/Linux.
+    #  Alternatively, especially until sufficient confidence has been established by track record that the extract/compress and upgrade procedures are not damaging the Cygwin/MSW filesystem, a CI environment may use the Cygwin/MSW environment for the _report_setup_ubcp function.
+    #   No need to delete or avoid creating these reports. If a CI environment uses a Cygwin/MSW environment, then obviously a separate ephemeral dist/OS will not include reports fetched or otherwise created from UNIX/Linux .
+    cd "$scriptLocal"/upgradeTmp
+    ! _wget_githubRelease "mirage335-colossus/ubiquitous_bash" "$currentReleaseLabel" "binReport" && _messageFAIL
+    ! _wget_githubRelease "mirage335-colossus/ubiquitous_bash" "$currentReleaseLabel" "ubcp-cygwin-portable-installer.log" && _messageFAIL
+    ! _wget_githubRelease "mirage335-colossus/ubiquitous_bash" "$currentReleaseLabel" "ubcp-packageReport" && _messageFAIL
+    ! _wget_githubRelease "mirage335-colossus/ubiquitous_bash" "$currentReleaseLabel" "_custom_splice_opensslConfig.log" && _messageFAIL
+    ! _wget_githubRelease "mirage335-colossus/ubiquitous_bash" "$currentReleaseLabel" "_mitigate-ubcp.log" && _messageFAIL
+    ! _wget_githubRelease "mirage335-colossus/ubiquitous_bash" "$currentReleaseLabel" "_setupUbiquitous.log" && _messageFAIL
+    ! _wget_githubRelease "mirage335-colossus/ubiquitous_bash" "$currentReleaseLabel" "_test-lean.log" && _messageFAIL
+
+
     mkdir -p "$scriptLocal"/upgradeTmp/package_ubcp-core
     rm -f "$scriptLocal"/upgradeTmp/package_ubcp-core.7z
 
     cd "$scriptLocal"/upgradeTmp
     ! _wget_githubRelease "mirage335-colossus/ubiquitous_bash" "$currentReleaseLabel" "package_ubcp-core.7z" -O "$scriptLocal"/upgradeTmp/package_ubcp-core.7z && _messageFAIL
+
     return 0
 }
 
@@ -46,6 +88,27 @@ _build_fallback_upgrade-ubcp-compress() {
         7z -y a -t7z -m0=lzma2 -mmt=6 -mx=9 "$scriptLocal"/upgradeTmp/package_ubcp-core.7z ./ubcp ./ubiquitous_bash ./_bash.bat | tee "$scriptLocal"/upgradeTmp/package_ubcp-core.log
         return
     #fi
+}
+
+_build_fallback_upgrade-ubcp-report-binReport() {
+    _messageNormal 'init: _build_fallback_upgrade-ubcp-report-binReport'
+
+    # In practice, a binReport from UNIX/Linux regarding the contents of the 7z file, is drastically different from a binReport generated from within Cygwin/MSW. Best to just not tinker with the relevant files on the Cygwin/MSW filesystem.
+    return 1
+
+    #find "$scriptLocal"/upgradeTmp/package_ubcp-core/bin/ "$scriptLocal"/upgradeTmp/package_ubcp-core/usr/bin/ "$scriptLocal"/upgradeTmp/package_ubcp-core/sbin/ "$scriptLocal"/upgradeTmp/package_ubcp-core/usr/sbin/ | tee "$currentCygdriveC_equivalent"/core/infrastructure/ubcp-binReport > /dev/null
+
+    # ATTRIBUTION-AI: ChatGPT o1 2025-01-30 'Think' ... partially
+    #(
+    #cd "$scriptLocal/upgradeTmp/package_ubcp-core/ubcp/cygwin" || exit 1
+
+    ## Only descend into these subdirs
+    ##find bin usr/bin sbin usr/sbin -type f -printf '/%P\n'
+    #find bin -type f -printf '/bin/%P\n'
+    #find usr/bin -type f -printf '/usr/bin/%P\n'
+    #find sbin -type f -printf '/sbin/%P\n'
+    #find usr/sbin -type f -printf '/usr/sbin/%P\n'
+#) | tee "$scriptLocal"/upgradeTmp/ubcp-binReport > /dev/null
 }
 
 _build_fallback_upgrade-ubcp-upgrade-ubiquitous_bash() {
@@ -124,6 +187,8 @@ _build_fallback_upgrade_sequence-ubcp-upgrade() {
     _build_fallback_upgrade-ubcp-extract "$@"
 
     _build_fallback_upgrade-ubcp-upgrade-ubiquitous_bash "$@"
+
+    #_build_fallback_upgrade-ubcp-report-binReport "$@"
 
     _build_fallback_upgrade-ubcp-compress "$@"
 
