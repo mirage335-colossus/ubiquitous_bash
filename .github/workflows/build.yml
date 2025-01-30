@@ -132,6 +132,14 @@ jobs:
         run: |
           cat /ubcp-cygwin-portable-installer.log
         shell: pwsh
+
+      - name: scribe! info! github
+        shell: bash
+        run: |
+          echo ${{ github.repository }} | tee _local/ubcp/cygwin/info-github
+          echo build-${{ github.run_id }}-${{ github.run_attempt }} | tee -a _local/ubcp/cygwin/info-github
+          Get-Date -Format "yyyy-MM-dd" | tee -a _local/ubcp/cygwin/info-github
+
       - name: _disable_fileBlocking
         shell: pwsh
         timeout-minutes: 240
