@@ -80,35 +80,35 @@ _build_fallback_upgrade-ubcp-compress() {
 
     rm -f "$scriptLocal"/upgradeTmp/package_ubcp-core.7z
     
-    #if [[ "$skimfast" != "false" ]]
-    #then
-        #7z -y a -t7z -m0=lzma2 -mmt=6 -mx=2 "$scriptLocal"/upgradeTmp/package_ubcp-core.7z ./ubcp .//ubiquitous_bash ./_bash.bat | tee "$scriptLocal"/upgradeTmp/package_ubcp-core.log
-        #return
-    #else
+    if [[ "$skimfast" != "false" ]]
+    then
+        7z -y a -t7z -m0=lzma2 -mmt=6 -mx=2 "$scriptLocal"/upgradeTmp/package_ubcp-core.7z ./ubcp .//ubiquitous_bash ./_bash.bat | tee "$scriptLocal"/upgradeTmp/package_ubcp-core.log
+        return
+    else
         7z -y a -t7z -m0=lzma2 -mmt=6 -mx=9 "$scriptLocal"/upgradeTmp/package_ubcp-core.7z ./ubcp ./ubiquitous_bash ./_bash.bat | tee "$scriptLocal"/upgradeTmp/package_ubcp-core.log
         return
-    #fi
+    fi
 }
 
 _build_fallback_upgrade-ubcp-report-binReport() {
     _messageNormal 'init: _build_fallback_upgrade-ubcp-report-binReport'
 
-    # In practice, a binReport from UNIX/Linux regarding the contents of the 7z file, is drastically different from a binReport generated from within Cygwin/MSW. Best to just not tinker with the relevant files on the Cygwin/MSW filesystem.
-    return 1
-
     ##find "$scriptLocal"/upgradeTmp/package_ubcp-core/bin/ "$scriptLocal"/upgradeTmp/package_ubcp-core/usr/bin/ "$scriptLocal"/upgradeTmp/package_ubcp-core/sbin/ "$scriptLocal"/upgradeTmp/package_ubcp-core/usr/sbin/ | tee "$currentCygdriveC_equivalent"/core/infrastructure/ubcp-binReport > /dev/null
 
-    # ATTRIBUTION-AI: ChatGPT o1 2025-01-30 'Think' ... partially
-    #(
-    #cd "$scriptLocal/upgradeTmp/package_ubcp-core/ubcp/cygwin" || exit 1
+    # In practice, a binReport from UNIX/Linux regarding the contents of the 7z file, is drastically different from a binReport generated from within Cygwin/MSW. Best to just not tinker with the relevant files on the Cygwin/MSW filesystem. If a binReport is created from UNIX/Linux, the filename should clarify that unusual situation.
+    #return 1
 
-    ## Only descend into these subdirs
-    ##find bin usr/bin sbin usr/sbin -type f -printf '/%P\n'
-    #find bin -type f -printf '/bin/%P\n'
-    #find usr/bin -type f -printf '/usr/bin/%P\n'
-    #find sbin -type f -printf '/sbin/%P\n'
-    #find usr/sbin -type f -printf '/usr/sbin/%P\n'
-#) | tee "$scriptLocal"/upgradeTmp/ubcp-binReport > /dev/null
+    # ATTRIBUTION-AI: ChatGPT o1 2025-01-30 'Think' ... partially
+    (
+    cd "$scriptLocal/upgradeTmp/package_ubcp-core/ubcp/cygwin" || exit 1
+
+    # Only descend into these subdirs
+    #find bin usr/bin sbin usr/sbin -type f -printf '/%P\n'
+    find bin -type f -printf '/bin/%P\n'
+    find usr/bin -type f -printf '/usr/bin/%P\n'
+    find sbin -type f -printf '/sbin/%P\n'
+    find usr/sbin -type f -printf '/usr/sbin/%P\n'
+) | tee "$scriptLocal"/upgradeTmp/ubcp-binReport-UNIX_Linux > /dev/null
 }
 
 _build_fallback_upgrade-ubcp-upgrade-ubiquitous_bash() {

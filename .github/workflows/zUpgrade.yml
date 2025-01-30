@@ -97,6 +97,8 @@ jobs:
               exit ${PIPESTATUS[0]}
           fi
       
+
+
       - name: _build_fallback_upgrade-ubcp-fetch
         shell: bash
         timeout-minutes: 120
@@ -120,6 +122,22 @@ jobs:
           export devfast=${{ inputs.devfast }}
           echo $devfast
           ./ubiquitous_bash.sh _bin-build_import _build_fallback_upgrade-ubcp-upgrade-ubiquitous_bash
+      - name: _build_fallback_upgrade-ubcp-report-binReport
+        shell: bash
+        timeout-minutes: 120
+        run: |
+          ./ubiquitous_bash.sh _bin-build_import _build_fallback_upgrade-ubcp-report-binReport
+
+      - name: scribe! info! github! upgrade
+        shell: bash
+        run: |
+          ! echo ${{ github.repository }} | tee "_local/upgradeTmp/package_ubcp-core/ubcp/cygwin"/info-github-upgrade && exit 1
+          ! echo build_upgrade-${{ github.run_id }}-${{ github.run_attempt }} | tee -a "_local/upgradeTmp/package_ubcp-core/ubcp/cygwin"/info-github-upgrade && exit 1
+          ! date +"%Y-%m-%d" | tee -a "_local/upgradeTmp/package_ubcp-core/ubcp/cygwin"/info-github-upgrade && exit 1
+          #! echo from releaseOrigin= | tee -a "_local/upgradeTmp/package_ubcp-core/ubcp/cygwin"/info-github-upgrade && exit 1
+          ! echo from releaseLabel=${{ inputs.releaseLabel }} | tee -a "_local/upgradeTmp/package_ubcp-core/ubcp/cygwin"/info-github-upgrade && exit 1
+          true
+
       - name: _build_fallback_upgrade-ubcp-compress
         shell: bash
         timeout-minutes: 120
@@ -142,6 +160,8 @@ jobs:
             _local/upgradeTmp/_custom_splice_opensslConfig.log
             _local/upgradeTmp/_mitigate-ubcp.log
             _local/upgradeTmp/_setupUbiquitous.log
+            _local/upgradeTmp/ubcp-binReport-UNIX_Linux
+            "_local/upgradeTmp/package_ubcp-core/ubcp/cygwin"/info-github-upgrade
 
 
 
@@ -236,7 +256,7 @@ jobs:
         shell: pwsh
         timeout-minutes: 240
         run: |
-          ./_bin.bat ./ubiquitous_bash.sh _report_setup_ubcp | tee /_report_setup_ubcp.log
+          ./_bin.bat ./ubiquitous_bash.sh _report_setup_ubcp / | tee /_report_setup_ubcp.log
       - name: release!
         uses: softprops/action-gh-release@v1
         with:
@@ -376,6 +396,65 @@ jobs:
 
 
 
+
+  analysis_ubcp_missingBinaries-UNIX_Linux:
+    needs: [build_ubcp, build_ubcp-report]
+    runs-on: ubuntu-latest
+    steps:
+      - name: analysis! missing-binaries
+        shell: bash
+        run: |
+          #echo -n
+          _safeEcho() {
+            printf '%s' "$1"
+            shift
+            
+            [[ "$@" == "" ]] && return 0
+            
+            local currentArg
+            for currentArg in "$@"
+            do
+              printf '%s' " "
+              printf '%s' "$currentArg"
+            done
+            return 0
+          }
+
+          #echo
+          _safeEcho_newline() {
+            _safeEcho "$@"
+            printf '\n'
+          }
+        
+          # Get the list of releases
+          RELEASES=$(curl -s -H "Authorization: token $GH_TOKEN" https://api.github.com/repos/mirage335-colossus/ubiquitous_bash/releases)
+          
+          # Download binReport file for the current release
+          curl -s -H "Authorization: token $GH_TOKEN" -L -o "ubcp-binReport-UNIX_Linux-$currentReleaseTag" "https://github.com/mirage335-colossus/ubiquitous_bash/releases/download/$currentReleaseTag/ubcp-binReport-UNIX_Linux"
+
+          # Loop through each release
+          #for RELEASE in $(_safeEcho_newline "$RELEASES" | jq -r '.[].tag_name' | sort --reverse); do
+          for RELEASE in $(_safeEcho_newline "$RELEASES" | jq -r 'sort_by(.published_at) | reverse | .[].tag_name' | tr -dc 'a-zA-Z0-9\-_.:\n'); do
+            # Download the binReport file for this release
+            curl -s -H "Authorization: token $GH_TOKEN" -L -o "ubcp-binReport-UNIX_Linux-$RELEASE" "https://github.com/mirage335-colossus/ubiquitous_bash/releases/download/$RELEASE/ubcp-binReport-UNIX_Linux"
+
+            # Compare the list of binaries in this release to the current release
+            if [ "$RELEASE" != "$currentReleaseTag" ]; then
+              echo | tee -a ./missing-ubcp-binReport-UNIX_Linux
+              echo "Binaries (filesystem) in $RELEASE but not in currentRelease $currentReleaseTag:" | tee -a ./missing-ubcp-binReport-UNIX_Linux
+              comm -23 <(sort "ubcp-binReport-UNIX_Linux-$RELEASE") <(sort "ubcp-binReport-UNIX_Linux-$currentReleaseTag") | tee -a ./missing-ubcp-binReport-UNIX_Linux
+            fi
+          done
+        env:
+          currentReleaseTag: build_upgrade-${{ github.run_id }}-${{ github.run_attempt }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: release! missing-ubcp-binReport-UNIX_Linux
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: build_upgrade-${{ github.run_id }}-${{ github.run_attempt }}
+          name: build_upgrade
+          files: |
+            ./missing-ubcp-binReport-UNIX_Linux
 
 
 
