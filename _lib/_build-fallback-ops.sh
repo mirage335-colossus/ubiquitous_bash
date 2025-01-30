@@ -45,7 +45,7 @@ _build_fallback_upgrade-ubcp-fetch() {
     #  Alternatively, especially until sufficient confidence has been established by track record that the extract/compress and upgrade procedures are not damaging the Cygwin/MSW filesystem, a CI environment may use the Cygwin/MSW environment for the _report_setup_ubcp function.
     #   No need to delete or avoid creating these reports. If a CI environment uses a Cygwin/MSW environment, then obviously a separate ephemeral dist/OS will not include reports fetched or otherwise created from UNIX/Linux .
     cd "$scriptLocal"/upgradeTmp
-    ! _wget_githubRelease "mirage335-colossus/ubiquitous_bash" "$currentReleaseLabel" "binReport" && _messageFAIL
+    ! _wget_githubRelease "mirage335-colossus/ubiquitous_bash" "$currentReleaseLabel" "ubcp-binReport" && _messageFAIL
     ! _wget_githubRelease "mirage335-colossus/ubiquitous_bash" "$currentReleaseLabel" "ubcp-cygwin-portable-installer.log" && _messageFAIL
     ! _wget_githubRelease "mirage335-colossus/ubiquitous_bash" "$currentReleaseLabel" "ubcp-packageReport" && _messageFAIL
     ! _wget_githubRelease "mirage335-colossus/ubiquitous_bash" "$currentReleaseLabel" "_custom_splice_opensslConfig.log" && _messageFAIL
