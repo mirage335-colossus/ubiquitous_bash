@@ -96,7 +96,7 @@ _build_fallback_upgrade-ubcp-report-binReport() {
     # In practice, a binReport from UNIX/Linux regarding the contents of the 7z file, is drastically different from a binReport generated from within Cygwin/MSW. Best to just not tinker with the relevant files on the Cygwin/MSW filesystem.
     return 1
 
-    #find "$scriptLocal"/upgradeTmp/package_ubcp-core/bin/ "$scriptLocal"/upgradeTmp/package_ubcp-core/usr/bin/ "$scriptLocal"/upgradeTmp/package_ubcp-core/sbin/ "$scriptLocal"/upgradeTmp/package_ubcp-core/usr/sbin/ | tee "$currentCygdriveC_equivalent"/core/infrastructure/ubcp-binReport > /dev/null
+    ##find "$scriptLocal"/upgradeTmp/package_ubcp-core/bin/ "$scriptLocal"/upgradeTmp/package_ubcp-core/usr/bin/ "$scriptLocal"/upgradeTmp/package_ubcp-core/sbin/ "$scriptLocal"/upgradeTmp/package_ubcp-core/usr/sbin/ | tee "$currentCygdriveC_equivalent"/core/infrastructure/ubcp-binReport > /dev/null
 
     # ATTRIBUTION-AI: ChatGPT o1 2025-01-30 'Think' ... partially
     #(
