@@ -134,10 +134,13 @@ jobs:
         shell: pwsh
 
       - name: scribe! info! github
-        shell: bash
+        shell: pwsh
         run: |
           echo ${{ github.repository }} | tee _local/ubcp/cygwin/info-github
           echo build-${{ github.run_id }}-${{ github.run_attempt }} | tee -a _local/ubcp/cygwin/info-github
+          # ATTRIBUTION-AI: Llama-augment 2025-01-30
+          #$now = [DateTime]::Now.ToString("yyyy-MM-dd")
+          #echo $now | tee -a _local/ubcp/cygwin/info-github
           Get-Date -Format "yyyy-MM-dd" | tee -a _local/ubcp/cygwin/info-github
 
       - name: _disable_fileBlocking
