@@ -116,6 +116,10 @@ jobs:
         shell: bash
         timeout-minutes: 120
         run: |
+          export skimfast=${{ inputs.skimfast }}
+          echo $skimfast
+          export devfast=${{ inputs.devfast }}
+          echo $devfast
           ./ubiquitous_bash.sh _bin-build_import _build_fallback_upgrade-ubcp-compress
 
       - name: release!
@@ -182,7 +186,7 @@ jobs:
         shell: pwsh
         timeout-minutes: 240
         run: |
-          Set-Item -Path Env:devfast -Value ("true")
+          Set-Item -Path Env:devfast -Value ("${{ inputs.devfast }}")
           ./_test | tee /_test-lean.log
           $SEL = cat /_test-lean.log | Select-String -Pattern 'FAIL' -CaseSensitive -SimpleMatch
           if ($SEL -ne $null)
@@ -197,6 +201,7 @@ jobs:
         #shell: pwsh
         #timeout-minutes: 240
         #run: |
+          #Set-Item -Path Env:devfast -Value ("${{ inputs.devfast }}")
           #./_bin.bat ./lean_compressed.sh _test | tee /_test-lean-compressed.log
           #$SEL = cat /_test-lean-compressed.log | Select-String -Pattern 'FAIL' -CaseSensitive -SimpleMatch
           #if ($SEL -ne $null)
