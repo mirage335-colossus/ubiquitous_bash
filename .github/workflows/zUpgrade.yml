@@ -36,10 +36,11 @@ on:
         #default: internal
         type: choice
         options:
-        - latest
+        - build
         - spring
         - internal
         - base
+        - frozen
       #DISABLE_RELEASE:
         #type: boolean
         #default: false
