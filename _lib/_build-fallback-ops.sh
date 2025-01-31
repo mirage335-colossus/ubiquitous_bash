@@ -132,7 +132,7 @@ _build_fallback_upgrade-ubcp-upgrade-ubiquitous_bash() {
     ! _messagePlain_probe_cmd git checkout "master" && _messagePlain_bad 'fail: upgrade-ubiquitous_bash: git checkout' && _messageFAIL
 
     _messagePlain_nominal '@@@@@@@@@@ git reset --hard'
-    ! _messagePlain_probe_cmd git reset --hard && _messagePlain_bad 'fail: upgrade-ubiquitous_bash: git checkout' && _messageFAIL
+    ! _messagePlain_probe_cmd git reset --hard && _messagePlain_bad 'fail: upgrade-ubiquitous_bash: git reset --hard' && _messageFAIL
 
     _messagePlain_nominal '@@@@@@@@@@ git pull'
     ! _messagePlain_probe_cmd _gitBest pull && _messagePlain_bad 'fail: upgrade-ubiquitous_bash: git pull' && _messageFAIL
