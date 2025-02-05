@@ -57,7 +57,7 @@ _gh_release_upload_parts-multiple_sequence() {
     wait
 }
 _gh_release_upload_part-single_sequence() {
-    _messageNormal '_gh_release_upload: '"$1"' '"$2"
+    _messagePlain_nominal '_gh_release_upload: '"$1"' '"$2"
     local currentTag="$1"
     local currentFile="$2"
 
