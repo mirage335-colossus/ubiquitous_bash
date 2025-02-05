@@ -4,6 +4,9 @@
 # "$1" == build-${{ github.run_id }}-${{ github.run_attempt }}
 #shift
 # "$@" == ./_local/package_image_beforeBoot.tar.flx.part*
+_gh_release_upload_parts-multiple() {
+    "$scriptAbsoluteLocation" _gh_release_upload_parts-multiple_sequence "$@"
+}
 _gh_release_upload_parts-multiple_sequence() {
     _messageNormal '_gh_release_upload_parts: '"$@"
     local currentTag="$1"
@@ -72,9 +75,11 @@ _gh_release_upload_part-single_sequence() {
     #return 0
 
     # Maximum file size is 2GigaBytes .
-    while ! "$scriptAbsoluteLocation" _stopwatch _timeout 600 gh release upload --clobber "$currentTag" "$currentFile"
+    local currentIteration=0
+    while ! "$scriptAbsoluteLocation" _stopwatch _timeout 600 gh release upload --clobber "$currentTag" "$currentFile" && [[ "$currentIteration" -lt 30 ]]
     do
         sleep 7
+        let currentIteration++
     done
     return 0
 }
