@@ -837,6 +837,7 @@ _compile_bash_shortcuts() {
 	[[ "$enUb_dev" == "true" ]] && includeScriptList+=( "shortcuts/dev/scope"/devscope_app.sh )
 
 	( [[ "$enUb_github" == "true" ]] || [[ "$enUb_notLean" == "true" ]] || [[ "$enUb_cloud" == "true" ]] || [[ "$enUb_cloud_heavy" == "true" ]] || [[ "$enUb_cloud_self" == "true" ]] ) && includeScriptList+=( "shortcuts/github"/github_removeHTTPS.sh )
+	( [[ "$enUb_github" == "true" ]] || [[ "$enUb_notLean" == "true" ]] || [[ "$enUb_cloud" == "true" ]] || [[ "$enUb_cloud_heavy" == "true" ]] || [[ "$enUb_cloud_self" == "true" ]] ) && includeScriptList+=( "shortcuts/github"/github_upload_parts.sh )
 	
 	( [[ "$enUb_repo" == "true" ]] && [[ "$enUb_git" == "true" ]] ) && includeScriptList+=( "shortcuts/git"/git.sh )
 	( [[ "$enUb_repo" == "true" ]] && [[ "$enUb_git" == "true" ]] ) && includeScriptList+=( "shortcuts/git"/gitBare.sh )

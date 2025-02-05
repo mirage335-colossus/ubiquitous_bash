@@ -609,7 +609,9 @@ _variableLocalTest_sequence() {
 	unset doubleLocalDefinitionA
 	[[ "$doubleLocalDefinitionA" != "" ]] && _messageFAIL && _stop 1
 	
-	
+
+	variableLocalTest_evalTest() { local currentVariableNum=1 ; eval local currentVariable_${currentVariableNum}_currentData=PASS ; ( eval "[[ \$currentVariable_${currentVariableNum}_currentData == PASS ]]" && eval "[[ \$currentVariable_${currentVariableNum}_currentData != '' ]]" && eval "echo \$currentVariable_${currentVariableNum}_currentData" ) ;} ; variableLocalTest_evalTest > /dev/null ; [[ $(variableLocalTest_evalTest) != "PASS" ]] && _messageFAIL && _stop 1
+
 	_stop
 }
 
@@ -1624,6 +1626,16 @@ _test() {
 			echo -e '\E[0;36m Timing: _test_timeoutRead \E[0m'
 			! _test_timeoutRead && echo '_test_timeoutRead broken' && _stop 1
 		fi
+
+		echo -e '\E[0;36m Timing: true/false \E[0m'
+		! _timeout 10 true && echo '! _timeout 10 true  broken' && _stop 1
+		_timeout 10 false && echo '_timeout 10 false  broken' && _stop 1
+		if type _stopwatch > /dev/null 2>&1
+		then
+    		! _stopwatch _timeout 10 true > /dev/null 2>&1 && echo '! _stopwatch _timeout 10 true  broken' && _stop 1
+    		_stopwatch _timeout 10 false > /dev/null 2>&1 && echo '_stopwatch _timeout 10 false  broken' && _stop 1
+		fi
+		
 		
 		echo -e '\E[0;36m Timing: _timetest \E[0m'
 		! _timetest && echo '_timetest broken' && _stop 1

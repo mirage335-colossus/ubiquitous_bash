@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='437464756'
+export ub_setScriptChecksum_contents='3030382159'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -14878,16 +14878,25 @@ _test_bashdb() {
 
 
 _stopwatch() {
+	local currentExitStatus_bin
+	local currentExitStatus_self
+	
 	local measureDateA
 	local measureDateB
 	
 	measureDateA=$(date +%s%N | cut -b1-13)
 
 	"$@"
+	currentExitStatus_bin="$?"
 
 	measureDateB=$(date +%s%N | cut -b1-13)
 
 	bc <<< "$measureDateB - $measureDateA"
+	currentExitStatus_self="$?"
+
+	[[ "$currentExitStatus_bin" != "0" ]] && return "$currentExitStatus_bin"
+	[[ "$currentExitStatus_self" != "0" ]] && return "$currentExitStatus_self"
+	return 0
 }
 
 
@@ -27212,6 +27221,89 @@ _github_removeActionsHTTPS() {
 
 }
 
+
+
+
+
+
+
+# "$1" == build-${{ github.run_id }}-${{ github.run_attempt }}
+#shift
+# "$@" == ./_local/package_image_beforeBoot.tar.flx.part*
+_gh_release_upload_parts-multiple_sequence() {
+    _messageNormal '_gh_release_upload_parts: '"$@"
+    local currentTag="$1"
+    shift
+
+    local currentStream_max=12
+
+    local currentStreamNum=0
+
+    for currentFile in "$@"
+    do
+        let currentStreamNum++
+
+        "$scriptAbsoluteLocation" _gh_release_upload_part-single_sequence "$currentTag" "$currentFile" &
+        eval local currentStream_${currentStreamNum}_PID="$!"
+        _messagePlain_probe_var currentStream_${currentStreamNum}_PID
+        
+        while [[ $(jobs | wc -l) -ge "$currentStream_max" ]]
+        do
+            echo
+            jobs
+            echo
+            sleep 2
+            true
+        done
+    done
+
+    local currentStreamPause
+    for currentStreamPause in $(seq "1" "$currentStreamNum")
+	do
+        _messagePlain_probe currentStream_${currentStreamPause}_PID= $(eval "echo \$currentStream_${currentStreamPause}_PID")
+		if eval "[[ \$currentStream_${currentStreamPause}_PID != '' ]]"
+        then
+           _messagePlain_probe _pauseForProcess $(eval "echo \$currentStream_${currentStreamPause}_PID")
+           _pauseForProcess $(eval "echo \$currentStream_${currentStreamPause}_PID")
+        fi
+	done
+
+    while [[ $(jobs | wc -l) -ge 1 ]]
+    do
+        echo
+        jobs
+        echo
+        sleep 2
+        true
+    done
+    
+    wait
+}
+_gh_release_upload_part-single_sequence() {
+    _messageNormal '_gh_release_upload: '"$1"' '"$2"
+    local currentTag="$1"
+    local currentFile="$2"
+
+    #local currentPID
+    #"$scriptAbsoluteLocation" _stopwatch gh release upload "$currentTag" "$currentFile" &
+    #currentPID="$!"
+
+    #_pauseForProcess "$currentPID"
+    #wait
+
+    #while ! "$scriptAbsoluteLocation" _stopwatch _timeout 10 dd if="$currentFile" bs=1M status=progress > /dev/null
+    #do
+        #sleep 7
+    #done
+    #return 0
+
+    # Maximum file size is 2GigaBytes .
+    while ! "$scriptAbsoluteLocation" _stopwatch _timeout 600 gh release upload --clobber "$currentTag" "$currentFile"
+    do
+        sleep 7
+    done
+    return 0
+}
 
 
 
@@ -46514,7 +46606,9 @@ _variableLocalTest_sequence() {
 	unset doubleLocalDefinitionA
 	[[ "$doubleLocalDefinitionA" != "" ]] && _messageFAIL && _stop 1
 	
-	
+
+	variableLocalTest_evalTest() { local currentVariableNum=1 ; eval local currentVariable_${currentVariableNum}_currentData=PASS ; ( eval "[[ \$currentVariable_${currentVariableNum}_currentData == PASS ]]" && eval "[[ \$currentVariable_${currentVariableNum}_currentData != '' ]]" && eval "echo \$currentVariable_${currentVariableNum}_currentData" ) ;} ; variableLocalTest_evalTest > /dev/null ; [[ $(variableLocalTest_evalTest) != "PASS" ]] && _messageFAIL && _stop 1
+
 	_stop
 }
 
@@ -47529,6 +47623,16 @@ _test() {
 			echo -e '\E[0;36m Timing: _test_timeoutRead \E[0m'
 			! _test_timeoutRead && echo '_test_timeoutRead broken' && _stop 1
 		fi
+
+		echo -e '\E[0;36m Timing: true/false \E[0m'
+		! _timeout 10 true && echo '! _timeout 10 true  broken' && _stop 1
+		_timeout 10 false && echo '_timeout 10 false  broken' && _stop 1
+		if type _stopwatch > /dev/null 2>&1
+		then
+    		! _stopwatch _timeout 10 true > /dev/null 2>&1 && echo '! _stopwatch _timeout 10 true  broken' && _stop 1
+    		_stopwatch _timeout 10 false > /dev/null 2>&1 && echo '_stopwatch _timeout 10 false  broken' && _stop 1
+		fi
+		
 		
 		echo -e '\E[0;36m Timing: _timetest \E[0m'
 		! _timetest && echo '_timetest broken' && _stop 1
@@ -50851,6 +50955,7 @@ _compile_bash_shortcuts() {
 	[[ "$enUb_dev" == "true" ]] && includeScriptList+=( "shortcuts/dev/scope"/devscope_app.sh )
 
 	( [[ "$enUb_github" == "true" ]] || [[ "$enUb_notLean" == "true" ]] || [[ "$enUb_cloud" == "true" ]] || [[ "$enUb_cloud_heavy" == "true" ]] || [[ "$enUb_cloud_self" == "true" ]] ) && includeScriptList+=( "shortcuts/github"/github_removeHTTPS.sh )
+	( [[ "$enUb_github" == "true" ]] || [[ "$enUb_notLean" == "true" ]] || [[ "$enUb_cloud" == "true" ]] || [[ "$enUb_cloud_heavy" == "true" ]] || [[ "$enUb_cloud_self" == "true" ]] ) && includeScriptList+=( "shortcuts/github"/github_upload_parts.sh )
 	
 	( [[ "$enUb_repo" == "true" ]] && [[ "$enUb_git" == "true" ]] ) && includeScriptList+=( "shortcuts/git"/git.sh )
 	( [[ "$enUb_repo" == "true" ]] && [[ "$enUb_git" == "true" ]] ) && includeScriptList+=( "shortcuts/git"/gitBare.sh )
