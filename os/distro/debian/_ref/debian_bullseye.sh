@@ -1,43 +1,5 @@
-_apt-file_sequence() {
-	_start
-	
-	_mustGetSudo
-	#_mustGetDep su
-	
-	! _wantDep apt-file && sudo -n env DEBIAN_FRONTEND=noninteractive apt-get install --install-recommends -y apt-file
-	_checkDep apt-file
-	
-	sudo -n apt-file "$@" > "$safeTmp"/pkgsOut 2> "$safeTmp"/pkgsErr
-	sudo -n apt-file search bash > "$safeTmp"/checkOut 2> "$safeTmp"/checkErr
-	
-	while ! [[ -s "$safeTmp"/checkOut ]] || cat "$safeTmp"/pkgsErr | grep 'cache is empty' > /dev/null 2>&1
-	do
-		sudo -n apt-file update > "$safeTmp"/updateOut 2> "$safeTmp"/updateErr
-		sudo -n apt-file "$@" > "$safeTmp"/pkgsOut 2> "$safeTmp"/pkgsErr
-		sudo -n apt-file search bash > "$safeTmp"/checkOut 2> "$safeTmp"/checkErr
-	done
-	
-	cat "$safeTmp"/pkgsOut
-	#cat "$safeTmp"/pkgsErr >&2
-	_stop
-}
 
-_apt-file() {
-	_timeout 750 "$scriptAbsoluteLocation" _apt-file_sequence "$@"
-}
-
-
-
-
-
-
-
-
-
-
-
-
-_fetchDep_debianBookworm_special() {
+_fetchDep_debianBullseye_special() {
 	sudo -n env DEBIAN_FRONTEND=noninteractive apt-get -y update
 	
 # 	if [[ "$1" == *"java"* ]]
@@ -106,7 +68,7 @@ _fetchDep_debianBookworm_special() {
 	if [[ "$1" == "VirtualBox" ]] || [[ "$1" == "VBoxSDL" ]] || [[ "$1" == "VBoxManage" ]] || [[ "$1" == "VBoxHeadless" ]]
 	then
 		sudo -n mkdir -p /etc/apt/sources.list.d
-		echo 'deb [arch=amd64] http://download.virtualbox.org/virtualbox/debian bookworm contrib' | sudo -n tee /etc/apt/sources.list.d/ub_vbox.list > /dev/null 2>&1
+		echo 'deb [arch=amd64] http://download.virtualbox.org/virtualbox/debian bullseye contrib' | sudo -n tee /etc/apt/sources.list.d/ub_vbox.list > /dev/null 2>&1
 		
 		"$scriptAbsoluteLocation" _getDep wget
 		! _wantDep wget && return 1
@@ -116,20 +78,14 @@ _fetchDep_debianBookworm_special() {
 		wget -q https://www.virtualbox.org/download/oracle_vbox.asc -O- | sudo -n apt-key add -
 		
 		sudo -n env DEBIAN_FRONTEND=noninteractive apt-get -y update
-		#sudo -n env DEBIAN_FRONTEND=noninteractive apt-get install --install-recommends -y dkms virtualbox-6.1
-		#sudo -n env DEBIAN_FRONTEND=noninteractive apt-get install --install-recommends -y dkms virtualbox-7.0
-		sudo -n env DEBIAN_FRONTEND=noninteractive apt-get install --install-recommends -y dkms virtualbox-7.1
+		sudo -n env DEBIAN_FRONTEND=noninteractive apt-get install --install-recommends -y dkms virtualbox-6.1
 		
 		# https://www.virtualbox.org/ticket/20949
 		if ! type -p virtualbox > /dev/null 2>&1 && ! type -p VirtualBox > /dev/null 2>&1
 		then
-			#curl -L "https://download.virtualbox.org/virtualbox/6.1.34/virtualbox-6.1_6.1.34-150636.1~Debian~bookworm_amd64.deb" -o "$safeTmp"/"virtualbox-6.1_6.1.34-150636.1~Debian~bookworm_amd64.deb"
-			#curl -L "https://download.virtualbox.org/virtualbox/7.0.10/virtualbox-7.0_7.0.10-158379~Debian~bookworm_amd64.deb" -o "$safeTmp"/"virtualbox-7.0_7.0.10-158379~Debian~bookworm_amd64.deb"
-			curl -L "https://download.virtualbox.org/virtualbox/7.1.4/virtualbox-7.1_7.1.4-165100~Debian~bookworm_amd64.deb" -o "$safeTmp"/"virtualbox-7.1_7.1.4-165100~Debian~bookworm_amd64.deb"
+			curl -L "https://download.virtualbox.org/virtualbox/6.1.34/virtualbox-6.1_6.1.34-150636.1~Debian~bullseye_amd64.deb" -o "$safeTmp"/"virtualbox-6.1_6.1.34-150636.1~Debian~bullseye_amd64.deb"
 			sudo -n env DEBIAN_FRONTEND=noninteractive apt-get install --install-recommends -y dkms
-			#yes | sudo -n dpkg -i "$safeTmp"/"virtualbox-6.1_6.1.34-150636.1~Debian~bookworm_amd64.deb"
-			#yes | sudo -n dpkg -i "$safeTmp"/"virtualbox-7.0_7.0.10-158379~Debian~bookworm_amd64.deb"
-			yes | sudo -n dpkg -i "$safeTmp"/"virtualbox-7.1_7.1.4-165100~Debian~bookworm_amd64.deb"
+			yes | sudo -n dpkg -i "$safeTmp"/"virtualbox-6.1_6.1.34-150636.1~Debian~bullseye_amd64.deb"
 			sudo -n env DEBIAN_FRONTEND=noninteractive apt-get install --install-recommends -y -f
 		fi
 		
@@ -213,30 +169,6 @@ _fetchDep_debianBookworm_special() {
 		
 		sudo -n env DEBIAN_FRONTEND=noninteractive apt-get remove -y docker docker-engine docker.io docker-ce docker
 		sudo -n env DEBIAN_FRONTEND=noninteractive apt-get install --install-recommends -y docker-ce
-		#sudo -n env DEBIAN_FRONTEND=noninteractive apt-get install --install-recommends -y docker-compose-plugin
-		sudo -n env DEBIAN_FRONTEND=noninteractive apt-get install --install-recommends -y docker-ce
-
-		
-		# WARNING: Untested. May cause problems.
-		#_getMost_backend_aptGetInstall docker-ce
-		##_getMost_backend_aptGetInstall docker-compose-plugin
-		#_getMost_backend_aptGetInstall docker-ce
-		#_getMost_backend_aptGetInstall docker-buildx-plugin docker-ce-cli docker-ce-rootless-extras
-		_getMost_backend apt-get -d install -y docker-ce
-		#_getMost_backend apt-get -d install -y docker-compose-plugin
-		_getMost_backend apt-get -d install -y docker-ce
-		#_getMost_backend apt-get -d install -y docker-buildx-plugin docker-ce-cli docker-ce-rootless-extras
-
-		# ATTENTION: Speculative . May be untested. Enable if ever necessary.
-		#https://docs.docker.com/compose/install/
-		#https://docs.docker.com/compose/install/linux/#install-the-plugin-manually
-		#if ! _getMost_backend type docker-compose > /dev/null 2>&1
-		#then
-			#mkdir -p /usr/local/lib/docker/cli-plugins/docker-compose
-			#curl -SL https://github.com/docker/compose/releases/download/v2.32.2/docker-compose-linux-x86_64 -o /usr/local/lib/docker/cli-plugins/docker-compose
-			#chmod 755 /usr/local/lib/docker/cli-plugins/docker-compose
-		#fi
-
 		
 		sudo -n usermod -a -G docker "$USER"
 		
@@ -388,11 +320,10 @@ CZXWXcRMTo8EmM8i4d
 			
 			sudo -n env DEBIAN_FRONTEND=noninteractive apt-get install --install-recommends -y digimend-dkms
 			
-			#curl -L "https://github.com/DIGImend/digimend-kernel-drivers/releases/download/v10/digimend-dkms_10_all.deb" -o "$safeTmp"/"digimend-dkms_10_all.deb"
-			curl -L "https://deb.debian.org/debian/pool/main/d/digimend-dkms/digimend-dkms_11-3_amd64.deb" -o "$safeTmp"/"digimend-dkms_11-3_amd64.deb"
-			yes | sudo -n dpkg -i "$safeTmp"/"digimend-dkms_11-3_amd64.deb"
+			curl -L "https://github.com/DIGImend/digimend-kernel-drivers/releases/download/v10/digimend-dkms_10_all.deb" -o "$safeTmp"/"digimend-dkms_10_all.deb"
+			yes | sudo -n dpkg -i "$safeTmp"/"digimend-dkms_10_all.deb"
 			sudo -n env DEBIAN_FRONTEND=noninteractive apt-get install --install-recommends -y -f
-			sudo -n rm -f "$safeTmp"/"digimend-dkms_11-3_amd64.deb"
+			sudo -n rm -f "$safeTmp"/"digimend-dkms_10_all.deb"
 		fi
 		
 		return 0
@@ -415,7 +346,7 @@ CZXWXcRMTo8EmM8i4d
 	if [[ "$1" == "qalculate-gtk" ]]
 	then
 		sudo -n env DEBIAN_FRONTEND=noninteractive apt-get install --install-recommends -y qalculate-gtk
-		sudo -n env DEBIAN_FRONTEND=noninteractive apt-get install --install-recommends -y -t bookworm-backports qalc
+		sudo -n env DEBIAN_FRONTEND=noninteractive apt-get install --install-recommends -y -t bullseye-backports qalc
 		
 		! _wantDep 'qalculate-gtk' && echo 'warn: missing: qalculate-gtk'
 		
@@ -424,7 +355,7 @@ CZXWXcRMTo8EmM8i4d
 	
 	if [[ "$1" == "qalc" ]]
 	then
-		sudo -n env DEBIAN_FRONTEND=noninteractive apt-get install --install-recommends -y -t bookworm-backports qalc
+		sudo -n env DEBIAN_FRONTEND=noninteractive apt-get install --install-recommends -y -t bullseye-backports qalc
 		
 		! _wantDep 'qalc' && echo 'warn: missing: qalc'
 		
@@ -439,38 +370,19 @@ CZXWXcRMTo8EmM8i4d
 		
 		return 0
 	fi
-
-	if [[ "$1" == "curlftpfs" ]]
-	then
-		if [[ -e "$HOME"/"core/installations/curlftpfs/curlftpfs_0.9.2-9+b1_amd64.deb" ]]
-		then
-			yes | sudo -n dpkg -i "$HOME"/"core/installations/curlftpfs/curlftpfs_0.9.2-9+b1_amd64.deb"
-		fi
-
-		if ! [[ -e "$HOME"/"core/installations/curlftpfs/curlftpfs_0.9.2-9+b1_amd64.deb" ]]
-		then
-			curl -L 'http://deb.debian.org/debian/pool/main/c/curlftpfs/curlftpfs_0.9.2-9+b1_amd64.deb' -o "$safeTmp"/"curlftpfs_0.9.2-9+b1_amd64.deb"
-			yes | sudo -n dpkg -i "$safeTmp"/"curlftpfs_0.9.2-9+b1_amd64.deb"
-		fi
-		
-		sudo -n env DEBIAN_FRONTEND=noninteractive apt-get install --install-recommends -y -f
-		sudo -n rm -f "$safeTmp"/"curlftpfs_0.9.2-9+b1_amd64.deb"
-		
-		sudo -n env DEBIAN_FRONTEND=noninteractive apt-get install --install-recommends -y curlftpfs
-	fi
 	
 	
 	return 1
 }
 
-_fetchDep_debianBookworm_sequence() {
+_fetchDep_debianBullseye_sequence() {
 	_start
 	
 	_mustGetSudo
 	
 	_wantDep "$1" && _stop 0
 	
-	_fetchDep_debianBookworm_special "$@" && _wantDep "$1" && _stop 0
+	_fetchDep_debianBullseye_special "$@" && _wantDep "$1" && _stop 0
 	
 	sudo -n env DEBIAN_FRONTEND=noninteractive apt-get install --install-recommends -y "$1" && _wantDep "$1" && _stop 0
 	
@@ -508,142 +420,20 @@ _fetchDep_debianBookworm_sequence() {
 	_stop 1
 }
 
-_fetchDep_debianBookworm() {
+_fetchDep_debianBullseye() {
+	# ATTRIBUTION-AI: ChatGPT o1-preview 2024-11-20 .
+	echo 'APT::AutoRemove::RecommendsImportant "true";
+APT::AutoRemove::SuggestsImportant "true";' | sudo -n tee /etc/apt/apt.conf.d/99autoremove-recommends > /dev/null
+
+	
 	# https://askubuntu.com/questions/104899/make-apt-get-or-aptitude-run-with-y-but-not-prompt-for-replacement-of-configu
-	echo 'Dpkg::Options {"--force-confdef"};' | sudo tee /etc/apt/apt.conf.d/50unattended-replaceconfig-ub > /dev/null
-	echo 'Dpkg::Options {"--force-confold"};' | sudo tee -a /etc/apt/apt.conf.d/50unattended-replaceconfig-ub > /dev/null
+	echo 'Dpkg::Options {"--force-confdef"};' | sudo -n tee /etc/apt/apt.conf.d/50unattended-replaceconfig-ub > /dev/null
+	echo 'Dpkg::Options {"--force-confold"};' | sudo -n tee -a /etc/apt/apt.conf.d/50unattended-replaceconfig-ub > /dev/null
 	
 	export DEBIAN_FRONTEND=noninteractive
 	
 	#Run up to 2 times. On rare occasion, cache will become unusable again by apt-find before an installation can be completed. Overall, apt-find is the single weakest link in the system.
-	"$scriptAbsoluteLocation" _fetchDep_debianBookworm_sequence "$@"
-	"$scriptAbsoluteLocation" _fetchDep_debianBookworm_sequence "$@"
+	"$scriptAbsoluteLocation" _fetchDep_debianBullseye_sequence "$@"
+	"$scriptAbsoluteLocation" _fetchDep_debianBullseye_sequence "$@"
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-_fetchDep_debian() {
-	
-	# WARNING: Obsolete. Disabled.
-	#if [[ -e /etc/debian_version ]] && cat /etc/debian_version | head -c 1 | grep 9 > /dev/null 2>&1
-	#then
-		#_fetchDep_debianStretch "$@"
-		#return
-	#fi
-	
-	
-	# WARNING: Obsolete. Disabled.
-	#if [[ -e /etc/debian_version ]] && cat /etc/debian_version | head -c 2 | grep 10 > /dev/null 2>&1
-	#then
-		#_fetchDep_debianBuster "$@"
-		#return
-	#fi
-	
-	
-	# WARNING: Obsolete. Disabled.
-	# ATTENTION: May be revived if important deployments of Debian Bullseye are discovered to still exist. Revive from '_ref/debian_bullseye.sh' if necessary.
-	#if [[ -e /etc/debian_version ]] && cat /etc/debian_version | head -c 2 | grep 11 > /dev/null 2>&1
-	#then
-		#_fetchDep_debianBullseye "$@"
-		#return
-	#fi
-
-
-	if [[ -e /etc/debian_version ]] && cat /etc/debian_version | head -c 2 | grep 12 > /dev/null 2>&1
-	then
-		_fetchDep_debianBookworm "$@"
-		return
-	fi
-	
-	return 1
-}

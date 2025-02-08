@@ -1,8 +1,5 @@
 
 
-
-
-
 _setup_researchEngine() {
 	if [[ -e "$scriptLib"/kit/app/researchEngine ]]
 	then
@@ -47,3 +44,16 @@ _setup_researchEngine() {
 	_messageFAIL
 	_stop 1
 }
+
+
+
+_upgrade_researchEngine() {
+	_setup_researchEngine _upgrade_researchEngine_searxng "$@"
+	_setup_researchEngine _upgrade_researchEngine_openwebui "$@"
+}
+
+_upgrade_researchEngine-nvidia() {
+	_setup_researchEngine _upgrade_researchEngine_searxng "$@"
+	_setup_researchEngine _upgrade_researchEngine_openwebui-nvidia "$@"
+}
+

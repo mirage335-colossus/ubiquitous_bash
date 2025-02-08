@@ -547,6 +547,9 @@ _compile_bash_header() {
 	includeScriptList+=( "os/override"/override_prog.sh )
 	
 	includeScriptList+=( "os/override"/override_cygwin.sh )
+	includeScriptList+=( "os/override"/override_wsl.sh )
+
+	includeScriptList+=( "special"/ingredients.sh )
 }
 
 _compile_bash_header_program() {
@@ -1296,11 +1299,14 @@ _compile_bash() {
 		includeScriptList+=( "generic"/rottenheader.sh )
 		#includeScriptList+=( "generic"/minimalheader.sh )
 		#includeScriptList+=( "generic"/ubiquitousheader.sh )
+
+		includeScriptList+=( "special"/ingredients.sh )
 		
 		#includeScriptList+=( "os/override"/override.sh )
 		#includeScriptList+=( "os/override"/override_prog.sh )
 		
 		#includeScriptList+=( "os/override"/override_cygwin.sh )
+		#includeScriptList+=( "os/override"/override_wsl.sh )
 		
 		
 		

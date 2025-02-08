@@ -315,7 +315,15 @@ _getMost_debian11_install() {
 	_getMost_backend_aptGetInstall sockstat
 	_getMost_backend_aptGetInstall x11-xserver-utils
 	_getMost_backend_aptGetInstall arandr
-	
+
+	if _getMost_backend_fileExists "/curlftpfs_0.9.2-9+b1_amd64.deb"
+	then
+		_getMost_backend dpkg -i "/curlftpfs_0.9.2-9+b1_amd64.deb"
+		_getMost_backend rm -f "/curlftpfs_0.9.2-9+b1_amd64.deb"
+		_getMost_backend env DEBIAN_FRONTEND=noninteractive apt-get install -y -f
+	fi
+
+	_getMost_backend_aptGetInstall curlftpfs
 
 	_getMost_backend_aptGetInstall liblinear4 liblua5.3-0 lua-lpeg nmap nmap-common
 	

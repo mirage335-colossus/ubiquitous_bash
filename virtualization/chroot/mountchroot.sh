@@ -95,6 +95,13 @@ _mountChRoot() {
 	then
 		echo '127.0.0.1 '"$HOSTNAME"' deleteme_chrootHost_hostname' | sudo -n tee -a "$absolute1"/etc/hosts > /dev/null 2>&1
 	fi
+
+
+	if _set_ingredients
+	then
+		sudo -n mkdir -p "$absolute1"/mnt/ingredients
+		_bindMountManager "$ub_INGREDIENTS" "$absolute1"/mnt/ingredients
+	fi
 	
 	return 0
 }
@@ -108,6 +115,9 @@ _umountChRoot() {
 	local absolute1
 	absolute1=$(_getAbsoluteLocation "$1")
 	
+	#_set_ingredients &&
+	mountpoint "$absolute1"/mnt/ingredients > /dev/null 2>&1 && _wait_umount "$absolute1"/mnt/ingredients
+	
 	# && [[ -e "$absolute1"/etc/resolv.conf ]]
 	if [[ -e "$absolute1"/etc/resolv.conf.guest ]] && [[ ! -e "$absolute1"/etc/resolv.conf.host ]]
 	then
@@ -120,7 +130,6 @@ _umountChRoot() {
 		sudo -n grep -v 'deleteme_chrootHost_hostname' "$absolute1"/etc/hosts | sudo -n tee "$absolute1"/etc/hosts.guest > /dev/null 2>&1
 		sudo -n mv -f "$absolute1"/etc/hosts.guest "$absolute1"/etc/hosts
 	fi
-	
 	
 	_wait_umount "$absolute1"/home/"$virtGuestUser"/project >/dev/null 2>&1
 	_wait_umount "$absolute1"/home/"$virtGuestUser" >/dev/null 2>&1
