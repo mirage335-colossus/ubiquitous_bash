@@ -31,6 +31,14 @@ _vmsize() {
 # CAUTION: Platforms other than the default 'x64-efi' must use entirely different function paths, different 'vm-arch.img' filenames, etc.
 # ATTENTION: If alternative architectures (eg. ARM) were desired, creating a bootable 'micro'/'ingredients' image would be a more logical first step than porting the legacy build system that does not differentiate between this small bootable ingredient and the offline larger full build .
 _createVMimage-micro() {
+	if ! "$scriptAbsoluteLocation" _createVMimage-micro_sequence "$@"
+	then
+		_stop 1
+	fi
+	return 0
+}
+_createVMimage-micro_sequence() {
+    export ubVirtImageOverride="vm-ingredient.img"
 	local ub_vmImage_micro="true"
 	_createVMimage "$@"
 }
@@ -91,9 +99,10 @@ _createVMimage() {
 	
 	mkdir -p "$scriptLocal"
 	
+	[[ "$ub_vmImage_micro" == "true" ]] && export ubVirtImageOverride="$scriptLocal"/vm-ingredient.img
 	
 	export vmImageFile="$scriptLocal"/vm.img
-	[[ "$ub_vmImage_micro" == "true" ]] && export vmImageFile="$scriptLocal"/vm-ingredient.img
+	#[[ "$ub_vmImage_micro" == "true" ]] && export vmImageFile="$scriptLocal"/vm-ingredient.img
 	[[ "$ubVirtImageOverride" != "" ]] && export vmImageFile="$ubVirtImageOverride"
 	
 	[[ "$ubVirtImageOverride" == "" ]] && [[ -e "$vmImageFile" ]] && _messagePlain_good 'exists: '"$vmImageFile" && return 0
@@ -111,6 +120,7 @@ _createVMimage() {
 	_open
 	
 	export vmImageFile="$scriptLocal"/vm.img
+	#[[ "$ub_vmImage_micro" == "true" ]] && export vmImageFile="$scriptLocal"/vm-ingredient.img
 	[[ "$ubVirtImageOverride" != "" ]] && export vmImageFile="$ubVirtImageOverride"
 	
 	
