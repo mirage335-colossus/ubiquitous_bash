@@ -70,12 +70,12 @@ _mountChRoot() {
 	
 	if [[ -e "$absolute1"/etc/resolv.conf ]] && [[ ! -e "$absolute1"/etc/resolv.conf.host ]] && [[ -e /etc/resolv.conf ]]
 	then
-		sudo -n cp --update=none "$absolute1"/etc/resolv.conf "$absolute1"/etc/resolv.conf.guest.bak
+		sudo -n cp --no-clobber "$absolute1"/etc/resolv.conf "$absolute1"/etc/resolv.conf.guest.bak
 		sudo -n mv -n "$absolute1"/etc/resolv.conf "$absolute1"/etc/resolv.conf.guest
 		
 		#if [[ ! -e "$absolute1"/etc/resolv.conf.host ]]
 		#then
-			sudo -n cp --update=none -L /etc/resolv.conf "$absolute1"/etc/resolv.conf.host
+			sudo -n cp --no-clobber -L /etc/resolv.conf "$absolute1"/etc/resolv.conf.host
 			#sudo -n cat /etc/resolv.conf | sudo tee "$absolute1"/etc/resolv.conf.host > /dev/null 2>&1
 		#fi
 		
@@ -235,7 +235,7 @@ _mountChRoot_image_raspbian() {
 	sudo -n cp /usr/bin/qemu-arm-static "$chrootDir"/usr/bin/
 	sudo -n cp /usr/bin/qemu-armeb-static "$chrootDir"/usr/bin/
 	
-	sudo -n cp --update=none "$chrootDir"/etc/ld.so.preload "$chrootDir"/etc/ld.so.preload.orig
+	sudo -n cp --no-clobber "$chrootDir"/etc/ld.so.preload "$chrootDir"/etc/ld.so.preload.orig
 	echo | sudo -n tee "$chrootDir"/etc/ld.so.preload > /dev/null 2>&1
 	
 	

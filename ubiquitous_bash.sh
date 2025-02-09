@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='2543582751'
+export ub_setScriptChecksum_contents='165888856'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -6258,8 +6258,8 @@ _setup_ssh_copyKey() {
 		chmod 600 "$scriptLocal"/ssh/"$sshKeyName"
 		chmod 600 "$scriptLocal"/ssh/"$sshKeyName".pub > /dev/null 2>&1
 		
-		cp --update=none "$scriptLocal"/ssh/"$sshKeyName" "$sshLocalSSH"/"$sshKeyName"
-		cp --update=none "$scriptLocal"/ssh/"$sshKeyName".pub "$sshLocalSSH"/"$sshKeyName".pub > /dev/null 2>&1
+		cp --no-clobber "$scriptLocal"/ssh/"$sshKeyName" "$sshLocalSSH"/"$sshKeyName"
+		cp --no-clobber "$scriptLocal"/ssh/"$sshKeyName".pub "$sshLocalSSH"/"$sshKeyName".pub > /dev/null 2>&1
 		
 		return 0
 	fi
@@ -6269,8 +6269,8 @@ _setup_ssh_copyKey() {
 		chmod 600 "$scriptLocal"/ssh/"$sshKeyLocalSubdirectory""$sshKeyName"
 		chmod 600 "$scriptLocal"/ssh/"$sshKeyLocalSubdirectory""$sshKeyName".pub > /dev/null 2>&1
 		
-		cp --update=none "$scriptLocal"/ssh/"$sshKeyLocalSubdirectory""$sshKeyName" "$sshLocalSSH"/"$sshKeyName"
-		cp --update=none "$scriptLocal"/ssh/"$sshKeyLocalSubdirectory""$sshKeyName".pub "$sshLocalSSH"/"$sshKeyName".pub > /dev/null 2>&1
+		cp --no-clobber "$scriptLocal"/ssh/"$sshKeyLocalSubdirectory""$sshKeyName" "$sshLocalSSH"/"$sshKeyName"
+		cp --no-clobber "$scriptLocal"/ssh/"$sshKeyLocalSubdirectory""$sshKeyName".pub "$sshLocalSSH"/"$sshKeyName".pub > /dev/null 2>&1
 		
 		return 0
 	fi
@@ -18720,12 +18720,12 @@ _mountChRoot() {
 	
 	if [[ -e "$absolute1"/etc/resolv.conf ]] && [[ ! -e "$absolute1"/etc/resolv.conf.host ]] && [[ -e /etc/resolv.conf ]]
 	then
-		sudo -n cp --update=none "$absolute1"/etc/resolv.conf "$absolute1"/etc/resolv.conf.guest.bak
+		sudo -n cp --no-clobber "$absolute1"/etc/resolv.conf "$absolute1"/etc/resolv.conf.guest.bak
 		sudo -n mv -n "$absolute1"/etc/resolv.conf "$absolute1"/etc/resolv.conf.guest
 		
 		#if [[ ! -e "$absolute1"/etc/resolv.conf.host ]]
 		#then
-			sudo -n cp --update=none -L /etc/resolv.conf "$absolute1"/etc/resolv.conf.host
+			sudo -n cp --no-clobber -L /etc/resolv.conf "$absolute1"/etc/resolv.conf.host
 			#sudo -n cat /etc/resolv.conf | sudo tee "$absolute1"/etc/resolv.conf.host > /dev/null 2>&1
 		#fi
 		
@@ -18885,7 +18885,7 @@ _mountChRoot_image_raspbian() {
 	sudo -n cp /usr/bin/qemu-arm-static "$chrootDir"/usr/bin/
 	sudo -n cp /usr/bin/qemu-armeb-static "$chrootDir"/usr/bin/
 	
-	sudo -n cp --update=none "$chrootDir"/etc/ld.so.preload "$chrootDir"/etc/ld.so.preload.orig
+	sudo -n cp --no-clobber "$chrootDir"/etc/ld.so.preload "$chrootDir"/etc/ld.so.preload.orig
 	echo | sudo -n tee "$chrootDir"/etc/ld.so.preload > /dev/null 2>&1
 	
 	
