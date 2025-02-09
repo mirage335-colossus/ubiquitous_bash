@@ -20,6 +20,8 @@ _get_veracrypt() {
 	cd "$safeTmp"
 	
 	
+	_getDep lbzip2
+
 	_getDep libfuse.so.2
 	
 	

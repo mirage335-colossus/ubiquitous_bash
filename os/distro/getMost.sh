@@ -572,6 +572,8 @@ _getMost_debian11_install() {
 	
 	_getMost_backend_aptGetInstall p7zip
 	_getMost_backend_aptGetInstall p7zip-full
+	_getMost_backend_aptGetInstall unzip zip
+	_getMost_backend_aptGetInstall lbzip2
 
 	
 	_getMost_backend_aptGetInstall jp2a
