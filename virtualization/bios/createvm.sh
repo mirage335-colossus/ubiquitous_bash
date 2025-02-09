@@ -38,7 +38,8 @@ _createVMimage-micro() {
 	return 0
 }
 _createVMimage-micro_sequence() {
-    export ubVirtImageOverride="vm-ingredient.img"
+    #export ubVirtImageOverride="vm-ingredient.img"
+    export ubVirtImageOverride_alternate="$scriptLocal"/"vm-ingredient.img"
 	local ub_vmImage_micro="true"
 	_createVMimage "$@"
 }
@@ -99,14 +100,14 @@ _createVMimage() {
 	
 	mkdir -p "$scriptLocal"
 	
-	[[ "$ub_vmImage_micro" == "true" ]] && export ubVirtImageOverride="$scriptLocal"/vm-ingredient.img
+	#[[ "$ub_vmImage_micro" == "true" ]] && export ubVirtImageOverride="$scriptLocal"/vm-ingredient.img
 	
 	export vmImageFile="$scriptLocal"/vm.img
-	#[[ "$ub_vmImage_micro" == "true" ]] && export vmImageFile="$scriptLocal"/vm-ingredient.img
+	[[ "$ub_vmImage_micro" == "true" ]] && export vmImageFile="$scriptLocal"/vm-ingredient.img
 	[[ "$ubVirtImageOverride" != "" ]] && export vmImageFile="$ubVirtImageOverride"
 	
 	[[ "$ubVirtImageOverride" == "" ]] && [[ -e "$vmImageFile" ]] && _messagePlain_good 'exists: '"$vmImageFile" && return 0
-	[[ "$ubVirtImageOverride" == "" ]] && [[ -e "$scriptLocal"/vm.img ]] && _messagePlain_good 'exists: '"$vmImageFile" && return 0
+	[[ "$ubVirtImageOverride" == "" ]] && [[ -e "$scriptLocal"/vm.img ]] && _messagePlain_good 'exists: '"$scriptLocal"/vm.img && return 0
 	
 	[[ -e "$lock_open" ]]  && _messagePlain_bad 'bad: locked!' && _messageFAIL && _stop 1
 	[[ -e "$scriptLocal"/l_o ]]  && _messagePlain_bad 'bad: locked!' && _messageFAIL && _stop 1
@@ -120,7 +121,7 @@ _createVMimage() {
 	_open
 	
 	export vmImageFile="$scriptLocal"/vm.img
-	#[[ "$ub_vmImage_micro" == "true" ]] && export vmImageFile="$scriptLocal"/vm-ingredient.img
+	[[ "$ub_vmImage_micro" == "true" ]] && export vmImageFile="$scriptLocal"/vm-ingredient.img
 	[[ "$ubVirtImageOverride" != "" ]] && export vmImageFile="$ubVirtImageOverride"
 	
 	
@@ -129,7 +130,7 @@ _createVMimage() {
 		[[ -e "$vmImageFile" ]] && _messagePlain_bad 'exists: '"$vmImageFile" && _messageFAIL && _stop 1
 	
 	
-		_messageNormal 'create: vm.img: file'
+		_messageNormal 'create: '"$vmImageFile"': file'
 	
 
 		export vmSize=$(_vmsize)
@@ -137,9 +138,9 @@ _createVMimage() {
 
 		
 		export vmSize_boundary=$(bc <<< "$vmSize - 1")
-		_createRawImage
+		_createRawImage "$vmImageFile"
 	else
-		_messageNormal 'create: vm.img: device'
+		_messageNormal 'create: '"$vmImageFile"': device'
 
 		
 		export vmSize=$(bc <<< $(sudo -n lsblk -b --output SIZE -n -d "$vmImageFile")' / 1048576')
@@ -148,7 +149,7 @@ _createVMimage() {
 	fi
 	
 	
-	_messageNormal 'partition: vm.img'
+	_messageNormal 'partition: '"$vmImageFile"''
 	sudo -n parted --script "$vmImageFile" 'mklabel gpt'
 	
 	# Unusual.
@@ -254,7 +255,7 @@ _createVMimage() {
 	
 	
 	# Format partitions .
-	_messageNormal 'format: vm.img'
+	_messageNormal 'format: '"$vmImageFile"''
 	#"$scriptAbsoluteLocation" _loopImage_sequence || _stop 1
 	! "$scriptAbsoluteLocation" _openLoop && _messagePlain_bad 'fail: _openLoop' && _messageFAIL
 	
