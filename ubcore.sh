@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='2236491687'
+export ub_setScriptChecksum_contents='420005855'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -10353,6 +10353,9 @@ _getMost_debian12_aptSources() {
 			#echo 'deb https://fasttrack.debian.net/debian-fasttrack/ bookworm-backports-staging main contrib' | _getMost_backend tee -a /etc/apt/sources.list
 		#fi
 		
+		# https://github.com/wireapp/wire-desktop/wiki/How-to-install-Wire-for-Desktop-on-Linux
+		#wget -q https://wire-app.wire.com/linux/releases.key -O- | sudo -n apt-key add -
+		#echo "deb [arch=amd64] https://wire-app.wire.com/linux/debian stable main" | sudo -n tee /etc/apt/sources.list.d/wire-desktop.list
 	fi
 	if [[ -e /etc/issue ]] && cat /etc/issue | grep 'Ubuntu' | grep '20.04' > /dev/null 2>&1
 	then
@@ -10417,7 +10420,7 @@ _getMost_debian12_install() {
 	# CAUTION: Workaround. Debian defaults to an obsolete version of qalc which is unusable.
 	_getMost_backend_aptGetInstall -t bookworm-backports qalc
 
-
+	#_getMost_backend_aptGetInstall wire-desktop
 
 	# ATTENTION: SEVERE: Cause for concern. Absence of this is not properly detected by '_getDep python', '_getDep /usr/bin/python'  .
 	_getMost_backend_aptGetInstall python-is-python3
@@ -10457,6 +10460,8 @@ _getMost_debian11_install() {
 	_getMost_backend_aptGetInstall bash dash
 
 	_getMost_backend_aptGetInstall aria2 curl gpg
+	_getMost_backend_aptGetInstall gnupg
+	_getMost_backend_aptGetInstall lsb-release
 
 	if ! _getMost_backend dash -c 'type apt-fast' > /dev/null 2>&1
 	then
@@ -10480,6 +10485,9 @@ _getMost_debian11_install() {
 	# May be able to resize with some combination of 'dd' and 'gparted' , possibly '_gparted' . May be untested.
 	#_messagePlain_probe 'apt-get upgrade'
 	#_getMost_backend apt-get upgrade
+
+	# https://github.com/wireapp/wire-desktop/wiki/How-to-install-Wire-for-Desktop-on-Linux
+	_getMost_backend_aptGetInstall apt-transport-https
 	
 	
 	_getMost_backend_aptGetInstall locales-all
@@ -12211,8 +12219,8 @@ _get_from_nix-user() {
 	
 	# CAUTION: May correctly fail, due to marked insecure, due to CVE-2024-6775 , or similar. Do NOT force.
 	#_custom_installDeb /root/core/installations/Wire.deb
-	_getMost_backend sudo -n -u "$currentUser" /bin/bash -l -c 'nix-env -iA nixpkgs.wire-desktop'
-	_getMost_backend sudo -n -u "$currentUser" /bin/bash -l -c 'xdg-desktop-menu install "$HOME"/.nix-profile/share/applications/wire-desktop.desktop'
+	#_getMost_backend sudo -n -u "$currentUser" /bin/bash -l -c 'nix-env -iA nixpkgs.wire-desktop'
+	#_getMost_backend sudo -n -u "$currentUser" /bin/bash -l -c 'xdg-desktop-menu install "$HOME"/.nix-profile/share/applications/wire-desktop.desktop'
 	
 
 	_getMost_backend sudo -n -u "$currentUser" cp -a /home/"$currentUser"/.nix-profile/share/icons /home/"$currentUser"/.local/share/

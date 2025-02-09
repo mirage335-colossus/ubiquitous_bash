@@ -165,6 +165,9 @@ _getMost_debian12_aptSources() {
 			#echo 'deb https://fasttrack.debian.net/debian-fasttrack/ bookworm-backports-staging main contrib' | _getMost_backend tee -a /etc/apt/sources.list
 		#fi
 		
+		# https://github.com/wireapp/wire-desktop/wiki/How-to-install-Wire-for-Desktop-on-Linux
+		#wget -q https://wire-app.wire.com/linux/releases.key -O- | sudo -n apt-key add -
+		#echo "deb [arch=amd64] https://wire-app.wire.com/linux/debian stable main" | sudo -n tee /etc/apt/sources.list.d/wire-desktop.list
 	fi
 	if [[ -e /etc/issue ]] && cat /etc/issue | grep 'Ubuntu' | grep '20.04' > /dev/null 2>&1
 	then
@@ -229,7 +232,7 @@ _getMost_debian12_install() {
 	# CAUTION: Workaround. Debian defaults to an obsolete version of qalc which is unusable.
 	_getMost_backend_aptGetInstall -t bookworm-backports qalc
 
-
+	#_getMost_backend_aptGetInstall wire-desktop
 
 	# ATTENTION: SEVERE: Cause for concern. Absence of this is not properly detected by '_getDep python', '_getDep /usr/bin/python'  .
 	_getMost_backend_aptGetInstall python-is-python3
@@ -269,6 +272,8 @@ _getMost_debian11_install() {
 	_getMost_backend_aptGetInstall bash dash
 
 	_getMost_backend_aptGetInstall aria2 curl gpg
+	_getMost_backend_aptGetInstall gnupg
+	_getMost_backend_aptGetInstall lsb-release
 
 	if ! _getMost_backend dash -c 'type apt-fast' > /dev/null 2>&1
 	then
@@ -292,6 +297,9 @@ _getMost_debian11_install() {
 	# May be able to resize with some combination of 'dd' and 'gparted' , possibly '_gparted' . May be untested.
 	#_messagePlain_probe 'apt-get upgrade'
 	#_getMost_backend apt-get upgrade
+
+	# https://github.com/wireapp/wire-desktop/wiki/How-to-install-Wire-for-Desktop-on-Linux
+	_getMost_backend_aptGetInstall apt-transport-https
 	
 	
 	_getMost_backend_aptGetInstall locales-all

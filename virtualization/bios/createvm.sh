@@ -1,5 +1,89 @@
 
 
+_vmsize-micro() {
+	# Part files have been as large as 1905MiB .
+	echo 7620
+}
+_vmsize() {
+	# 25.95GiB
+	#echo 26572
+
+	# Preferred before addition of any AI models. Smaller than 32GB USB flash drive.
+	# 27.95GiB
+	#echo 28620
+
+	# Preferred with 'augment' ~8b q4_k_m LLM model.
+	# 37.95GiB
+	#echo 38860
+
+	# May accommodate a few additional AI models.
+	# 52.95GiB
+	#echo 54220
+
+	# Slightly smaller than expected 50GB BD-R DL .
+	# 46.1GiB
+	echo 47206
+}
+
+# Similar to _createVMimage , but intended to create an image solely for online installer steps , a small image ingredient to follow up with subsequent offline build from other more de-facto standard ingredients.
+# ATTENTION: Override if necessary.
+# CAUTION: Must follow defaults of '_createVMimage', which in turn must follow defaults (eg. _set_ubDistBuild , 'core.sh' , 'ops.sh' , ubiquitous_bash , etc) .
+# CAUTION: Platforms other than the default 'x64-efi' must use entirely different function paths, different 'vm-arch.img' filenames, etc.
+# ATTENTION: If alternative architectures (eg. ARM) were desired, creating a bootable 'micro'/'ingredients' image would be a more logical first step than porting the legacy build system that does not differentiate between this small bootable ingredient and the offline larger full build .
+_createVMimage-micro() {
+	local ub_vmImage_micro="true"
+	_createVMimage "$@"
+}
+_createVMimage-ingredient() {
+	_createVMimage-micro "$@"
+}
+_createVMimage-micro-expand() {
+	local currentExitStatus
+	currentExitStatus="0"
+	
+	_messageNormal '_custom-expand: dd'
+
+	local vmSize=$(_vmsize)
+	local vmSize_micro=$(_vmsize-micro)
+	local vmSize_boundary_expansion=$(bc <<< "$vmSize - $vmSize_micro - 1")
+
+	# ATTENTION: Expand ONLY the additional amount needed for custom additions . This is APPENDED .
+	! dd if=/dev/zero bs=1048576 count="$vmSize_boundary_expansion" >> "$scriptLocal"/vm.img && _messageFAIL
+
+	# Alternatively, it may be possible, but STRONGLY DISCOURAGED, to pad the file to a size. This, however, assumes the upstream 'ubdist/OS', etc, has not unexpectedly grown larger, which is still a VERY BAD assumption.
+	# https://unix.stackexchange.com/questions/196715/how-to-pad-a-file-to-a-desired-size
+	
+	
+	_messageNormal '_custom-expand: growpart'
+	! _openLoop && _messagePlain_bad 'fail: openLoop' && _messageFAIL
+	
+	export ubVirtPlatform="x64-efi"
+	#_determine_rawFileRootPartition
+	
+	export ubVirtImagePartition="p5"
+	
+	local current_imagedev=$(cat "$scriptLocal"/imagedev)
+	local current_rootpart=$(echo "$ubVirtImagePartition" | tr -dc '0-9')
+	
+	! _messagePlain_probe_cmd sudo -n growpart "$current_imagedev" "$current_rootpart" && _messageFAIL
+	
+	unset ubVirtPlatform
+	unset ubVirtImagePartition
+	
+	! _closeLoop && _messagePlain_bad 'fail: closeLoop' && _messageFAIL
+	
+	_messageNormal '_custom-expand: btrfs resize'
+	! _openChRoot && _messagePlain_bad 'fail: openChRoot' && _messageFAIL
+	
+	
+	! _messagePlain_probe_cmd _chroot btrfs filesystem resize max / && _messageFAIL
+	
+	
+	! _closeChRoot && _messagePlain_bad 'fail: closeChRoot' && _messageFAIL
+	
+	return 0
+}
+
 # Creates a raw VM image. Default Hybrid/UEFI partitioning and formatting.
 # ATTENTION: Override, if necessary.
 _createVMimage() {
@@ -9,6 +93,7 @@ _createVMimage() {
 	
 	
 	export vmImageFile="$scriptLocal"/vm.img
+	[[ "$ub_vmImage_micro" == "true" ]] && export vmImageFile="$scriptLocal"/vm-ingredient.img
 	[[ "$ubVirtImageOverride" != "" ]] && export vmImageFile="$ubVirtImageOverride"
 	
 	[[ "$ubVirtImageOverride" == "" ]] && [[ -e "$vmImageFile" ]] && _messagePlain_good 'exists: '"$vmImageFile" && return 0
@@ -36,25 +121,9 @@ _createVMimage() {
 	
 		_messageNormal 'create: vm.img: file'
 	
-		# 25.95GiB
-		#export vmSize=26572
-	
-		# Preferred before addition of any AI models. Smaller than 32GB USB flash drive.
-		# 27.95GiB
-		#export vmSize=28620
-	
-		# Preferred with 'augment' ~8b q4_k_m LLM model.
-		# 37.95GiB
-		#export vmSize=38860
-	
-		# May accommodate a few additional AI models.
-		# 52.95GiB
-		#export vmSize=54220
-	
-		# Slightly smaller than expected 50GB BD-R DL .
-		# 46.1GiB
-		export vmSize=47206
 
+		export vmSize=$(_vmsize)
+		[[ "$ub_vmImage_micro" == "true" ]] && export vmSize=$(_vmsize-micro)
 
 		
 		export vmSize_boundary=$(bc <<< "$vmSize - 1")

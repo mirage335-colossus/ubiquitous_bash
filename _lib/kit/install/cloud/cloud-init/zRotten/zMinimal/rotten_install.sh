@@ -1033,6 +1033,7 @@ AuthorizedKeysFile  .ssh/authorized_keys /etc/ssh/authorized_keys
 # ATTENTION: Override (rarely, if necessary) .
 _custom_write_sudoers() {
 	_messageNormal 'init: rotten: _custom_write_sudoers'
+	grep 'noMoreRotten' /etc/sudoers > /dev/null 2>&1 && return 0
 	cat << CZXWXcRMTo8EmM8i4d | tee -a /etc/sudoers > /dev/null
 #_____
 #Defaults	env_reset
