@@ -26,6 +26,7 @@ _mountChRoot() {
 	_bindMountManager "/dev" "$absolute1"/dev
 	
 	#_bindMountManager "/proc" "$absolute1"/proc
+	sudo -n mkdir -p "$absolute1"/proc
 	sudo -n mount -t proc none "$absolute1"/proc
 	
 	_bindMountManager "/sys" "$absolute1"/sys
@@ -35,6 +36,7 @@ _mountChRoot() {
 	_bindMountManager "/tmp" "$absolute1"/tmp
 	
 	#Provide an shm filesystem at /dev/shm.
+	sudo -n mkdir -p "$absolute1"/dev/shm
 	sudo -n mount -t tmpfs -o size=4G tmpfs "$absolute1"/dev/shm
 	
 	#Install ubiquitous_bash itself to chroot.
