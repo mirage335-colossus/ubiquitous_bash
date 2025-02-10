@@ -350,6 +350,8 @@ _getMost_debian11_install() {
 	#_getMost_backend_aptGetInstall synergy quicksynergy
 	
 	_getMost_backend_aptGetInstall vim
+
+	_getMost_backend_aptGetInstall man-db
 	
 	# WARNING: Rust is not yet (2023-11-12) anywhere near as editable on the fly or pervasively available as bash .
 	#  Criteria for such are far more necessarily far more stringent than might be intuitively obvious.
