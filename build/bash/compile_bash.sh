@@ -28,6 +28,7 @@ _compile_bash_deps() {
 		_deps_dev_buildOps
 		
 		_deps_notLean
+		_deps_os_x11
 		
 		_deps_serial
 
