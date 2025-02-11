@@ -4,7 +4,8 @@ _test_croc_upstream() {
 	! _wantSudo && return 1
 	
 	echo
-	curl https://getcroc.schollz.com | bash
+	#curl https://getcroc.schollz.com | bash
+	curl -fsSL 'https://getcroc.schollz.com' | bash
 	echo
 }
 
@@ -20,6 +21,8 @@ _test_croc() {
 	then
 		_messagePlain_request 'ignore: upstream progress ->'
 		
+		curl -fsSL 'https://getcroc.schollz.com' | head -n 30
+
 		_test_croc_upstream "$@"
 		#_test_croc_upstream_beta "$@"
 		
