@@ -8,7 +8,40 @@ _test_croc_upstream() {
 	curl -fsSL 'https://getcroc.schollz.com' | bash
 	echo
 }
+_test_croc_upstream_verbose() {
+	_messagePlain_request 'ignore: upstream progress ->'
+	
+	curl -fsSL 'https://getcroc.schollz.com' | head -n 30
 
+	_test_croc_upstream "$@"
+	#_test_croc_upstream_beta "$@"
+	
+	_messagePlain_request 'ignore: <- upstream progress'
+}
+
+_test_croc_upstream_static-sequence() {
+	_start
+
+	_mustGetSudo
+
+	cd "$safeTmp"
+
+	type croc > /dev/null 2>&1 && return 0
+	
+	# TODO: MAINTENANCE .
+	curl -L 'https://github.com/schollz/croc/releases/download/v10.2.1/croc_v10.2.1_Linux-64bit.tar.gz' -o croc_v10.2.1_Linux-64bit.tar.gz
+
+	tar xf croc_v10.2.1_Linux-64bit.tar.gz
+
+	sudo -n mkdir -p /usr/local/bin
+	sudo -n mv -f croc /usr/local/bin/croc
+	sudo -n chmod 755 /usr/local/bin/croc
+
+	sudo -n mkdir -p /usr/local/share/doc/croc
+	sudo -n mv -f LICENSE /usr/local/share/doc/croc/LICENSE
+
+	_stop
+}
 
 # https://github.com/schollz/croc
 _test_croc() {
@@ -19,17 +52,11 @@ _test_croc() {
 	
 	if [[ "$nonet" != "true" ]] && ! _if_cygwin
 	then
-		_messagePlain_request 'ignore: upstream progress ->'
-		
-		curl -fsSL 'https://getcroc.schollz.com' | head -n 30
-
-		_test_croc_upstream "$@"
-		#_test_croc_upstream_beta "$@"
-		
-		_messagePlain_request 'ignore: <- upstream progress'
+		_test_croc_upstream_verbose
 	fi
 	
-	_wantSudo && _wantGetDep croc
+	#_wantSudo && _wantGetDep croc
+	! _typeDep croc && _test_croc_upstream_static-sequence
 	
 	! _typeDep croc && echo 'warn: missing: croc'
 	
