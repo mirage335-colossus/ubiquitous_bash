@@ -1478,6 +1478,7 @@ _wget_githubRelease_join_sequence-parallel() {
 	local currentStream_min=1
 	local currentStream_max=3
 	[[ "$FORCE_PARALLEL" != "" ]] && currentStream_max="$FORCE_PARALLEL"
+	[[ "$currentStream_max" -gt "$currentSkipPart" ]] && currentStream_max=$(( "$currentSkipPart" ))
 	
 	currentStream="$currentStream_min"
 	for currentPart in $(seq -f "%02g" 0 "$currentSkipPart" | sort -r)
