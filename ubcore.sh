@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='2442049531'
+export ub_setScriptChecksum_contents='1215478231'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -23175,17 +23175,6 @@ _test_croc_upstream() {
 	curl -fsSL 'https://getcroc.schollz.com' | bash
 	echo
 }
-_test_croc_upstream_verbose() {
-	_messagePlain_request 'ignore: upstream progress ->'
-	
-	curl -fsSL 'https://getcroc.schollz.com' | head -n 30
-
-	_test_croc_upstream "$@"
-	#_test_croc_upstream_beta "$@"
-	
-	_messagePlain_request 'ignore: <- upstream progress'
-}
-
 _test_croc_upstream_static-sequence() {
 	_start
 
@@ -23209,6 +23198,18 @@ _test_croc_upstream_static-sequence() {
 
 	_stop
 }
+_test_croc_upstream_verbose() {
+	_messagePlain_request 'ignore: upstream progress ->'
+	
+	curl -fsSL 'https://getcroc.schollz.com' | head -n 30
+
+	_test_croc_upstream "$@"
+	#_test_croc_upstream_beta "$@"
+
+	! _typeDep croc && _test_croc_upstream_static-sequence
+	
+	_messagePlain_request 'ignore: <- upstream progress'
+}
 
 # https://github.com/schollz/croc
 _test_croc() {
@@ -23223,7 +23224,6 @@ _test_croc() {
 	fi
 	
 	#_wantSudo && _wantGetDep croc
-	! _typeDep croc && _test_croc_upstream_static-sequence
 	
 	! _typeDep croc && echo 'warn: missing: croc'
 	

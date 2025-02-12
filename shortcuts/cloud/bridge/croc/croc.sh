@@ -8,17 +8,6 @@ _test_croc_upstream() {
 	curl -fsSL 'https://getcroc.schollz.com' | bash
 	echo
 }
-_test_croc_upstream_verbose() {
-	_messagePlain_request 'ignore: upstream progress ->'
-	
-	curl -fsSL 'https://getcroc.schollz.com' | head -n 30
-
-	_test_croc_upstream "$@"
-	#_test_croc_upstream_beta "$@"
-	
-	_messagePlain_request 'ignore: <- upstream progress'
-}
-
 _test_croc_upstream_static-sequence() {
 	_start
 
@@ -42,6 +31,18 @@ _test_croc_upstream_static-sequence() {
 
 	_stop
 }
+_test_croc_upstream_verbose() {
+	_messagePlain_request 'ignore: upstream progress ->'
+	
+	curl -fsSL 'https://getcroc.schollz.com' | head -n 30
+
+	_test_croc_upstream "$@"
+	#_test_croc_upstream_beta "$@"
+
+	! _typeDep croc && _test_croc_upstream_static-sequence
+	
+	_messagePlain_request 'ignore: <- upstream progress'
+}
 
 # https://github.com/schollz/croc
 _test_croc() {
@@ -56,7 +57,6 @@ _test_croc() {
 	fi
 	
 	#_wantSudo && _wantGetDep croc
-	! _typeDep croc && _test_croc_upstream_static-sequence
 	
 	! _typeDep croc && echo 'warn: missing: croc'
 	
