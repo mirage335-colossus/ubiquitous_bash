@@ -1351,7 +1351,6 @@ _wget_githubRelease_join-stdout() {
 	local currentStream_min=1
 	local currentStream_max=3
 	[[ "$FORCE_PARALLEL" != "" ]] && currentStream_max="$FORCE_PARALLEL"
-	[[ "$currentStream_max" -gt "$currentSkipPart" ]] && currentStream_max=$(( "$currentSkipPart" + 1 ))
 
 	currentStream="$currentStream_min"
 
@@ -1389,19 +1388,23 @@ _wget_githubRelease_join-stdout() {
 	done
 
 	export currentSkipPart="$currentPart"
+	[[ "$currentStream_max" -gt "$currentSkipPart" ]] && currentStream_max=$(( "$currentSkipPart" + 1 ))
 
 	"$scriptAbsoluteLocation" _wget_githubRelease_join_sequence-parallel "$currentAbsoluteRepo" "$currentReleaseLabel" "$currentFile" &
 
 
 	# Prebuffer .
 	( _messagePlain_nominal '\/\/\/\/\/ \/\/\/\/  preBUFFER: WAIT  ...  currentPart='"$currentPart" >&2 ) > /dev/null
-	#( _messagePlain_probe 'prebuffer: currentPart= '"$currentPart" >&2 ) > /dev/null
-	if [[ "$currentPart" -ge "2" ]] && [[ "$currentStream_max" -ge "2" ]]
+	if [[ "$currentPart" -ge "01" ]] && [[ "$currentStream_max" -ge "2" ]]
 	then
-		currentStream="2"
-		while ( ! [[ -e "$scriptAbsoluteFolder"/$(_axelTmp).PASS ]] && ! [[ -e "$scriptAbsoluteFolder"/$(_axelTmp).FAIL ]] )
+		#currentStream="2"
+		for currentStream in $(seq "$currentStream_min" "$currentStream_max" | sort -r)
 		do
-			sleep 3
+			( _messagePlain_probe 'prebuffer: currentStream= '"$currentStream" >&2 ) > /dev/null
+			while ( ! [[ -e "$scriptAbsoluteFolder"/$(_axelTmp).PASS ]] && ! [[ -e "$scriptAbsoluteFolder"/$(_axelTmp).FAIL ]] )
+			do
+				sleep 3
+			done
 		done
 	fi
 	currentStream="$currentStream_min"

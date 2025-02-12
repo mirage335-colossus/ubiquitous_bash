@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='145392181'
+export ub_setScriptChecksum_contents='3676728230'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -6795,19 +6795,23 @@ _wget_githubRelease_join-stdout() {
 	done
 
 	export currentSkipPart="$currentPart"
+	[[ "$currentStream_max" -gt "$currentSkipPart" ]] && currentStream_max=$(( "$currentSkipPart" + 1 ))
 
 	"$scriptAbsoluteLocation" _wget_githubRelease_join_sequence-parallel "$currentAbsoluteRepo" "$currentReleaseLabel" "$currentFile" &
 
 
 	# Prebuffer .
 	( _messagePlain_nominal '\/\/\/\/\/ \/\/\/\/  preBUFFER: WAIT  ...  currentPart='"$currentPart" >&2 ) > /dev/null
-	#( _messagePlain_probe 'prebuffer: currentPart= '"$currentPart" >&2 ) > /dev/null
-	if [[ "$currentPart" -ge "2" ]] && [[ "$currentStream_max" -ge "2" ]]
+	if [[ "$currentPart" -ge "01" ]] && [[ "$currentStream_max" -ge "2" ]]
 	then
-		currentStream="2"
-		while ( ! [[ -e "$scriptAbsoluteFolder"/$(_axelTmp).PASS ]] && ! [[ -e "$scriptAbsoluteFolder"/$(_axelTmp).FAIL ]] )
+		#currentStream="2"
+		for currentStream in $(seq "$currentStream_min" "$currentStream_max" | sort -r)
 		do
-			sleep 3
+			( _messagePlain_probe 'prebuffer: currentStream= '"$currentStream" >&2 ) > /dev/null
+			while ( ! [[ -e "$scriptAbsoluteFolder"/$(_axelTmp).PASS ]] && ! [[ -e "$scriptAbsoluteFolder"/$(_axelTmp).FAIL ]] )
+			do
+				sleep 3
+			done
 		done
 	fi
 	currentStream="$currentStream_min"
@@ -6885,7 +6889,7 @@ _wget_githubRelease_join_sequence-parallel() {
 	local currentStream_min=1
 	local currentStream_max=3
 	[[ "$FORCE_PARALLEL" != "" ]] && currentStream_max="$FORCE_PARALLEL"
-	[[ "$currentStream_max" -gt "$currentSkipPart" ]] && currentStream_max=$(( "$currentSkipPart" ))
+	[[ "$currentStream_max" -gt "$currentSkipPart" ]] && currentStream_max=$(( "$currentSkipPart" + 1 ))
 	
 	currentStream="$currentStream_min"
 	for currentPart in $(seq -f "%02g" 0 "$currentSkipPart" | sort -r)
