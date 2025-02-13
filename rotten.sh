@@ -3048,8 +3048,10 @@ _wget_githubRelease_join() {
 
 
 
-
 _wget_githubRelease_join-stdout() {
+	"$scriptAbsoluteLocation" _wget_githubRelease_join_sequence-stdout "$@"
+}
+_wget_githubRelease_join_sequence-stdout() {
 	( _messagePlain_nominal '\/\/\/\/\/ \/\/\/\/\/ init: _wget_githubRelease_join-stdout' >&2 ) > /dev/null
 	( _messagePlain_probe_safe _wget_githubRelease_join-stdout "$@" >&2 ) > /dev/null
 
