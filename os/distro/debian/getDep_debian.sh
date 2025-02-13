@@ -218,14 +218,14 @@ _fetchDep_debianBookworm_special() {
 
 		
 		# WARNING: Untested. May cause problems.
-		#_getMost_backend_aptGetInstall docker-ce
-		##_getMost_backend_aptGetInstall docker-compose-plugin
-		#_getMost_backend_aptGetInstall docker-ce
-		#_getMost_backend_aptGetInstall docker-buildx-plugin docker-ce-cli docker-ce-rootless-extras
-		_getMost_backend apt-get -d install -y docker-ce
-		#_getMost_backend apt-get -d install -y docker-compose-plugin
-		_getMost_backend apt-get -d install -y docker-ce
-		#_getMost_backend apt-get -d install -y docker-buildx-plugin docker-ce-cli docker-ce-rootless-extras
+		##_getMost_backend_aptGetInstall docker-ce
+		###_getMost_backend_aptGetInstall docker-compose-plugin
+		##_getMost_backend_aptGetInstall docker-ce
+		##_getMost_backend_aptGetInstall docker-buildx-plugin docker-ce-cli docker-ce-rootless-extras
+		#_getMost_backend apt-get -d install -y docker-ce
+		##_getMost_backend apt-get -d install -y docker-compose-plugin
+		#_getMost_backend apt-get -d install -y docker-ce
+		##_getMost_backend apt-get -d install -y docker-buildx-plugin docker-ce-cli docker-ce-rootless-extras
 
 		# ATTENTION: Speculative . May be untested. Enable if ever necessary.
 		#https://docs.docker.com/compose/install/
