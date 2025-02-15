@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='3600980181'
+export ub_setScriptChecksum_contents='3273125771'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -24413,8 +24413,10 @@ PARAMETER num_ctx 6144' > Llama-augment.Modelfile
 	
 	_service_ollama
 	
-	ollama create Llama-augment -f Llama-augment.Modelfile
+	! ollama create Llama-augment -f Llama-augment.Modelfile && _messagePlain_bad 'bad: FAIL: ollama create Llama-augment' && _messageFAIL
 	
+	! echo | sudo -n tee /AI-Llama-augment > /dev/null && _messagePlain_bad 'bad: FAIL: echo | sudo -n tee /AI-Llama-augment' && _messageFAIL
+
 	rm -f llama-3.1-8b-instruct-abliterated.Q4_K_M.gguf
 	rm -f Llama-augment.Modelfile
 	
@@ -24427,6 +24429,8 @@ PARAMETER num_ctx 6144' > Llama-augment.Modelfile
 _setup_ollama_sequence() {
 	local functionEntryPWD
 	functionEntryPWD="$PWD"
+
+	_mustGetSudo
 
 	_start
 	
@@ -24456,7 +24460,7 @@ _setup_ollama() {
 	
 	if ! _if_cygwin
 	then
-		"$scriptAbsoluteLocation" _setup_ollama_sequence "$@"
+		! "$scriptAbsoluteLocation" _setup_ollama_sequence "$@" && _messagePlain_bad 'bad: FAIL: _setup_ollama_sequence' && _messageFAIL
 	fi
 	
 	type -p ollama > /dev/null 2>&1 && "$scriptAbsoluteLocation" _setup_ollama_model_augment_sequence
@@ -24466,7 +24470,7 @@ _test_ollama() {
 	#_mustGetSudo
 	#export currentUser_ollama=$(_user_ollama)
 
-	if ! type -p ollama > /dev/null 2>&1
+	if ! type -p ollama > /dev/null 2>&1 || ! [[ -e /AI-Llama-augment ]]
 	then
 		_setup_ollama
 	fi
@@ -24486,18 +24490,23 @@ _test_ollama() {
 _vector_ollama_procedure() {
 	local currentExitStatus
 	currentExitStatus=1
+
+	local currentPoints
+	currentPoints=0
 	
 	if ! _ollama_run_augment "Please output the word true . Any other output accompanying the word true is acceptable but not desirable. The purpose of this prompt is merely to validate that the LLM software is entirely functional, so the word true will be very helpful whereas any output other than the word true will be unhelpful . Please output the word true ." | grep -i true > /dev/null
 	then
 		echo 'fail: _vector_ollama' && _messagePlain_bad 'fail: _vector_ollama: prompt for word true did not output word true'
 	else
 		currentExitStatus=0
+		currentPoints=$((currentPoints+1))
 	fi
 	if _ollama_run_augment "Please output the word true . Any other output accompanying the word true is acceptable but not desirable. The purpose of this prompt is merely to validate that the LLM software is entirely functional, so the word true will be very helpful whereas any output other than the word true will be unhelpful . Please output the word true ." | grep -i false > /dev/null
 	then
 		echo 'fail: _vector_ollama' && _messagePlain_bad 'fail: _vector_ollama: prompt for word true instead included word false'
 	else
 		currentExitStatus=0
+		currentPoints=$((currentPoints+1))
 	fi
 	
 	if ! _ollama_run_augment "Please output the word false . Any other output accompanying the word false is acceptable but not desirable. The purpose of this prompt is merely to validate that the LLM software is entirely functional, so the word false will be very helpful whereas any output other than the word false will be unhelpful . Please output the word false ." | grep -i false > /dev/null
@@ -24505,17 +24514,23 @@ _vector_ollama_procedure() {
 		echo 'fail: _vector_ollama' && _messagePlain_bad 'fail: _vector_ollama: prompt for word false did not output word false'
 	else
 		currentExitStatus=0
+		currentPoints=$((currentPoints+1))
 	fi
 	if _ollama_run_augment "Please output the word false . Any other output accompanying the word false is acceptable but not desirable. The purpose of this prompt is merely to validate that the LLM software is entirely functional, so the word false will be very helpful whereas any output other than the word false will be unhelpful . Please output the word false ." | grep -i true > /dev/null
 	then
 		echo 'fail: _vector_ollama' && _messagePlain_bad 'fail: _vector_ollama: prompt for word false instead included word true'
 	else
 		currentExitStatus=0
+		currentPoints=$((currentPoints+1))
 	fi
 
 
 	# If NONE of the vector tests have succeeded, then FAIL . Normally, with an 'augment' LLM model, this should be so rare as to vastly more often indicate broken ollama installation, very broken/corrupted LLM model, very broken LLM configuration, insufficient disk space for model, etc.
 	[[ "$currentExitStatus" != "0" ]] && _messageFAIL && _stop 1
+
+	# At least two of the vector tests can apparently pass with a broken (or missing) AI model, and very basic vector tests with an 'augment' AI model are normally extremely reliable.
+	[[ "$currentPoints" -lt 3 ]] && _messageFAIL && _stop 1
+	#[[ "$currentPoints" -lt 4 ]] && _messageFAIL && _stop 1
 
 	return 0
 }
@@ -50296,7 +50311,7 @@ _compile_bash_deps() {
 		_deps_python
 		_deps_haskell
 		
-		_deps_ai
+		#_deps_ai
 		_deps_ai_shortuts
 		
 		_deps_calculators
@@ -50357,6 +50372,12 @@ _compile_bash_deps() {
 		_deps_build_bash_ubiquitous
 		
 		return 0
+	fi
+
+	if [[ "$1" == "core_ai" ]]
+	then
+		_deps_ai
+		_compile_bash_deps 'core'
 	fi
 	
 	if [[ "$1" == "" ]] || [[ "$1" == "ubiquitous_bash" ]] || [[ "$1" == "ubiquitous_bash.sh" ]] || [[ "$1" == "complete" ]]

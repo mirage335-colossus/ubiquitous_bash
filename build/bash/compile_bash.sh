@@ -357,7 +357,7 @@ _compile_bash_deps() {
 		_deps_python
 		_deps_haskell
 		
-		_deps_ai
+		#_deps_ai
 		_deps_ai_shortuts
 		
 		_deps_calculators
@@ -418,6 +418,12 @@ _compile_bash_deps() {
 		_deps_build_bash_ubiquitous
 		
 		return 0
+	fi
+
+	if [[ "$1" == "core_ai" ]]
+	then
+		_deps_ai
+		_compile_bash_deps 'core'
 	fi
 	
 	if [[ "$1" == "" ]] || [[ "$1" == "ubiquitous_bash" ]] || [[ "$1" == "ubiquitous_bash.sh" ]] || [[ "$1" == "complete" ]]
