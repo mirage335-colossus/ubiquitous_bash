@@ -335,6 +335,8 @@ _service_ollama() {
 		echo 'fail: _service_ollama: ollama: 127.0.0.1:11434'
 		return 1
 	fi
+
+	return 0
 }
 
 
