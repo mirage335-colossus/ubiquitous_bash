@@ -90,8 +90,8 @@ _getMost_debian11_aptSources() {
 		wget -q https://www.virtualbox.org/download/oracle_vbox.asc -O- | _getMost_backend apt-key add -
 		echo 'deb [arch=amd64] http://download.virtualbox.org/virtualbox/debian bullseye contrib' | _getMost_backend tee /etc/apt/sources.list.d/ub_vbox.list > /dev/null 2>&1
 		
-		curl -fsSL https://download.docker.com/linux/$(_chroot bash -c '. /etc/os-release; echo "$ID"')/gpg | _getMost_backend apt-key add -
 		echo 'deb [arch=amd64] https://download.docker.com/linux/debian bullseye stable' | _getMost_backend tee /etc/apt/sources.list.d/ub_docker.list > /dev/null 2>&1
+		curl -fsSL https://download.docker.com/linux/$(_chroot bash -c '. /etc/os-release; echo "$ID"')/gpg | _getMost_backend apt-key add -
 		
 		## https://fasttrack.debian.net/
 		#if ! grep 'fasttrack' /etc/apt/sources.list
@@ -110,8 +110,8 @@ _getMost_debian11_aptSources() {
 		echo 'deb [arch=amd64] http://download.virtualbox.org/virtualbox/debian focal contrib' | _getMost_backend tee /etc/apt/sources.list.d/ub_vbox.list > /dev/null 2>&1
 		
 		curl -fsSL https://download.docker.com/linux/$(_chroot bash -c '. /etc/os-release; echo "$ID"')/gpg | _getMost_backend apt-key add -
-		_getMost_backend add-apt-repository -y "deb [arch=amd64] https://download.docker.com/linux/$(_chroot bash -c '. /etc/os-release; echo "$ID"') $(_chroot bash -c 'lsb_release -cs') stable"
 		echo "deb [arch=amd64] https://download.docker.com/linux/$(_chroot bash -c '. /etc/os-release; echo "$ID"') $(_chroot bash -c 'lsb_release -cs') stable" | _getMost_backend tee /etc/apt/sources.list.d/ub_docker.list > /dev/null 2>&1
+		_getMost_backend add-apt-repository -y "deb [arch=amd64] https://download.docker.com/linux/$(_chroot bash -c '. /etc/os-release; echo "$ID"') $(_chroot bash -c 'lsb_release -cs') stable"
 	elif [[ -e /etc/issue ]] && cat /etc/issue | grep 'Ubuntu' | grep '22.04' > /dev/null 2>&1
 	then
 		true
@@ -121,8 +121,8 @@ _getMost_debian11_aptSources() {
 		echo 'deb [arch=amd64] http://download.virtualbox.org/virtualbox/debian jammy contrib' | _getMost_backend tee /etc/apt/sources.list.d/ub_vbox.list > /dev/null 2>&1
 		
 		curl -fsSL https://download.docker.com/linux/$(_chroot bash -c '. /etc/os-release; echo "$ID"')/gpg | _getMost_backend apt-key add -
-		_getMost_backend add-apt-repository -y "deb [arch=amd64] https://download.docker.com/linux/$(_chroot bash -c '. /etc/os-release; echo "$ID"') $(_chroot bash -c 'lsb_release -cs') stable"
 		echo "deb [arch=amd64] https://download.docker.com/linux/$(_chroot bash -c '. /etc/os-release; echo "$ID"') $(_chroot bash -c 'lsb_release -cs') stable" | _getMost_backend tee /etc/apt/sources.list.d/ub_docker.list > /dev/null 2>&1
+		_getMost_backend add-apt-repository -y "deb [arch=amd64] https://download.docker.com/linux/$(_chroot bash -c '. /etc/os-release; echo "$ID"') $(_chroot bash -c 'lsb_release -cs') stable"
 	fi
 	
 	curl -fsSL https://download.docker.com/linux/$(_chroot bash -c '. /etc/os-release; echo "$ID"')/gpg | _getMost_backend apt-key add -
@@ -178,8 +178,8 @@ _getMost_debian12_aptSources() {
 		echo 'deb [arch=amd64] http://download.virtualbox.org/virtualbox/debian focal contrib' | _getMost_backend tee /etc/apt/sources.list.d/ub_vbox.list > /dev/null 2>&1
 		
 		curl -fsSL https://download.docker.com/linux/$(_chroot bash -c '. /etc/os-release; echo "$ID"')/gpg | _getMost_backend apt-key add -
-		_getMost_backend add-apt-repository -y "deb [arch=amd64] https://download.docker.com/linux/$(_chroot bash -c '. /etc/os-release; echo "$ID"') $(_chroot bash -c 'lsb_release -cs') stable"
 		echo "deb [arch=amd64] https://download.docker.com/linux/$(_chroot bash -c '. /etc/os-release; echo "$ID"') $(_chroot bash -c 'lsb_release -cs') stable" | _getMost_backend tee /etc/apt/sources.list.d/ub_docker.list > /dev/null 2>&1
+		_getMost_backend add-apt-repository -y "deb [arch=amd64] https://download.docker.com/linux/$(_chroot bash -c '. /etc/os-release; echo "$ID"') $(_chroot bash -c 'lsb_release -cs') stable"
 	fi
 	if [[ -e /etc/issue ]] && cat /etc/issue | grep 'Ubuntu' | grep '22.04' > /dev/null 2>&1
 	then
@@ -190,8 +190,8 @@ _getMost_debian12_aptSources() {
 		echo 'deb [arch=amd64] http://download.virtualbox.org/virtualbox/debian jammy contrib' | _getMost_backend tee /etc/apt/sources.list.d/ub_vbox.list > /dev/null 2>&1
 		
 		curl -fsSL https://download.docker.com/linux/$(_chroot bash -c '. /etc/os-release; echo "$ID"')/gpg | _getMost_backend apt-key add -
-		_getMost_backend add-apt-repository -y "deb [arch=amd64] https://download.docker.com/linux/$(_chroot bash -c '. /etc/os-release; echo "$ID"') $(_chroot bash -c 'lsb_release -cs') stable"
 		echo "deb [arch=amd64] https://download.docker.com/linux/$(_chroot bash -c '. /etc/os-release; echo "$ID"') $(_chroot bash -c 'lsb_release -cs') stable" | _getMost_backend tee /etc/apt/sources.list.d/ub_docker.list > /dev/null 2>&1
+		_getMost_backend add-apt-repository -y "deb [arch=amd64] https://download.docker.com/linux/$(_chroot bash -c '. /etc/os-release; echo "$ID"') $(_chroot bash -c 'lsb_release -cs') stable"
 	fi
 	if [[ -e /etc/issue ]] && cat /etc/issue | grep 'Ubuntu' | grep '24.04' > /dev/null 2>&1
 	then
@@ -202,8 +202,8 @@ _getMost_debian12_aptSources() {
 		echo 'deb [arch=amd64] http://download.virtualbox.org/virtualbox/debian noble contrib' | _getMost_backend tee /etc/apt/sources.list.d/ub_vbox.list > /dev/null 2>&1
 		
 		curl -fsSL https://download.docker.com/linux/$(_chroot bash -c '. /etc/os-release; echo "$ID"')/gpg | _getMost_backend apt-key add -
-		_getMost_backend add-apt-repository -y "deb [arch=amd64] https://download.docker.com/linux/$(_chroot bash -c '. /etc/os-release; echo "$ID"') $(_chroot bash -c 'lsb_release -cs') stable"
 		echo "deb [arch=amd64] https://download.docker.com/linux/$(_chroot bash -c '. /etc/os-release; echo "$ID"') $(_chroot bash -c 'lsb_release -cs') stable" | _getMost_backend tee /etc/apt/sources.list.d/ub_docker.list > /dev/null 2>&1
+		_getMost_backend add-apt-repository -y "deb [arch=amd64] https://download.docker.com/linux/$(_chroot bash -c '. /etc/os-release; echo "$ID"') $(_chroot bash -c 'lsb_release -cs') stable"
 	fi
 	
 	curl -fsSL https://download.docker.com/linux/$(_chroot bash -c '. /etc/os-release; echo "$ID"')/gpg | _getMost_backend apt-key add -
