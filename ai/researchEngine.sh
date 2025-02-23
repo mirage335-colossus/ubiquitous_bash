@@ -48,12 +48,20 @@ _setup_researchEngine() {
 
 
 _upgrade_researchEngine() {
+	_service_researchEngine-docker-chroot-start
+
 	_setup_researchEngine _upgrade_researchEngine_searxng "$@"
 	_setup_researchEngine _upgrade_researchEngine_openwebui "$@"
+
+	_service_researchEngine-docker-chroot-stop
 }
 
 _upgrade_researchEngine-nvidia() {
+	_service_researchEngine-docker-chroot-start
+	
 	_setup_researchEngine _upgrade_researchEngine_searxng "$@"
 	_setup_researchEngine _upgrade_researchEngine_openwebui-nvidia "$@"
+
+	_service_researchEngine-docker-chroot-stop
 }
 
