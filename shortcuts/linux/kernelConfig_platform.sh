@@ -54,6 +54,8 @@ _kernelConfig_panel() {
 	_kernelConfig_require-investigation "$@"
 	
 	_kernelConfig_require-convenience "$@"
+
+	_kernelConfig_require-embedded "$@"
 	
 	_kernelConfig_require-special "$@"
 	
@@ -94,6 +96,8 @@ _kernelConfig_mobile() {
 	_kernelConfig_require-investigation "$@"
 	
 	_kernelConfig_require-convenience "$@"
+
+	_kernelConfig_require-embedded "$@"
 	
 	_kernelConfig_require-special "$@"
 	
@@ -135,6 +139,8 @@ _kernelConfig_desktop() {
 	_kernelConfig_require-investigation "$@"
 	
 	_kernelConfig_require-convenience "$@"
+
+	_kernelConfig_require-embedded "$@"
 	
 	_kernelConfig_require-special "$@"
 	

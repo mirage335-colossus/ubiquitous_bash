@@ -1159,6 +1159,19 @@ _kernelConfig_require-convenience() {
 	true
 }
 
+_kernelConfig_require-embedded() {
+	_messagePlain_nominal 'kernelConfig: embedded'
+	export kernelConfig_file="$1"
+
+	# Inspired by discussion with Chris Lombardi .
+	#  https://github.com/clearchris
+	# https://github.com/torvalds/linux/commit/24bc41b4558347672a3db61009c339b1f5692169
+	_kernelConfig_warn-y_m CAN_GS_USB
+	_kernelConfig_warn-y__ CAN_RX_OFFLOAD
+
+	true
+}
+
 _kernelConfig_require-special() {
 	_messagePlain_nominal 'kernelConfig: special'
 	export kernelConfig_file="$1"
