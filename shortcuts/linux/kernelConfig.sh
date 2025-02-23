@@ -1240,6 +1240,7 @@ _kernelConfig_require-special() {
 	_kernelConfig__bad-n__ MMC_MVSDIO # Disabled by default apparently.
 	#
 	#_kernelConfig__bad-n__ MT7663_USB_SDIO_COMMON
+	#_kernelConfig__bad-n__ MT7663U
 	#
 	_kernelConfig__bad-n__ MT76_SDIO
 	_kernelConfig__bad-n__ MWIFIEX_SDIO
@@ -1256,6 +1257,10 @@ _kernelConfig_require-special() {
 	_kernelConfig__bad-n__ WILC1000_SDIO
 	_kernelConfig__bad-n__ WL1251_SDIO
 	_kernelConfig__bad-n__ WLCORE_SDIO
+	#
+	_kernelConfig__bad-n__ MT7663_USB_SDIO_COMMON
+	#
+	_kernelConfig__bad-n__ MMC_USHC
 	
 	_kernelConfig__bad-n__ RTW88_8822BS
 	_kernelConfig__bad-n__ RTW88_8822CS
