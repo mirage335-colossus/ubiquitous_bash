@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='1030297972'
+export ub_setScriptChecksum_contents='1831986898'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -24465,10 +24465,24 @@ _setup_ollama() {
 	#_wantGetDep sudo
 	#_mustGetSudo
 	#export currentUser_ollama=$(_user_ollama)
+
+	[[ "$nonet" == "true" ]] && echo 'warn: nonet: skip: _setup_ollama' && return 0
+
+	if ( [[ $(id -u) != 0 ]] || _if_cygwin )
+	then
+		find "$HOME"/.ubcore/.retest-ollama -type f -mtime -9 2>/dev/null | grep '.retest-ollama' > /dev/null 2>&1 && return 0
+
+		rm -f "$HOME"/.ubcore/.retest-ollama > /dev/null 2>&1
+		touch "$HOME"/.ubcore/.retest-ollama
+		date +%s > "$HOME"/.ubcore/.retest-ollama
+	fi
 	
+
 	if ! _if_cygwin
 	then
+		_messagePlain_request 'ignore: upstream progress ->'
 		! "$scriptAbsoluteLocation" _setup_ollama_sequence "$@" && _messagePlain_bad 'bad: FAIL: _setup_ollama_sequence' && _messageFAIL
+		_messagePlain_request 'ignore: <- upstream progress'
 	fi
 	
 	type -p ollama > /dev/null 2>&1 && "$scriptAbsoluteLocation" _setup_ollama_model_augment_sequence
