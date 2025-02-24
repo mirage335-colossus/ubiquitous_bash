@@ -177,18 +177,18 @@ _setup_ollama() {
 
 	if ( [[ $(id -u) != 0 ]] || _if_cygwin )
 	then
-		find "$HOME"/.ubcore/.retest-ollama -type f -mtime -9 2>/dev/null | grep '.retest-ollama' > /dev/null 2>&1 && return 0
+		[[ "$1" != "--force" ]] && find "$HOME"/.ubcore/.retest-ollama -type f -mtime -2 2>/dev/null | grep '.retest-ollama' > /dev/null 2>&1 && return 0
 
 		rm -f "$HOME"/.ubcore/.retest-ollama > /dev/null 2>&1
 		touch "$HOME"/.ubcore/.retest-ollama
 		date +%s > "$HOME"/.ubcore/.retest-ollama
 	fi
-	
+
 
 	if ! _if_cygwin
 	then
 		_messagePlain_request 'ignore: upstream progress ->'
-		! "$scriptAbsoluteLocation" _setup_ollama_sequence "$@" && _messagePlain_bad 'bad: FAIL: _setup_ollama_sequence' && _messageFAIL
+		! "$scriptAbsoluteLocation" _setup_ollama_sequence && _messagePlain_bad 'bad: FAIL: _setup_ollama_sequence' && _messageFAIL
 		_messagePlain_request 'ignore: <- upstream progress'
 	fi
 	
