@@ -1379,7 +1379,7 @@ _install() {
 		_sep
 		sudo -n -u user INSTANCE_ID="$INSTANCE_ID" sh -c "cd ; /home/user/bin/ubiquitous_bash.sh _getMost 2>&1"
 		sudo -n -u user INSTANCE_ID="$INSTANCE_ID" sh -c "cd ; /home/user/bin/ubiquitous_bash.sh _get_veracrypt 2>&1"
-		sudo -n --preserve-env=devfast -u user INSTANCE_ID="$INSTANCE_ID" sh -c "cd ; /home/user/bin/ubiquitous_bash.sh _test 2>&1" | tee /var/log/ubiquitous_bash-test
+		sudo -n --preserve-env=GH_TOKEN --preserve-env=INPUT_GITHUB_TOKEN --preserve-env=devfast -u user INSTANCE_ID="$INSTANCE_ID" sh -c "cd ; /home/user/bin/ubiquitous_bash.sh _test 2>&1" | tee /var/log/ubiquitous_bash-test
 		[[ ${PIPESTATUS[0]} != "0" ]] && _messageFAIL
 
 		# May change order to preceed '_test' .
