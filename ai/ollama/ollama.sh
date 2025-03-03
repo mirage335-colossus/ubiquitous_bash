@@ -130,7 +130,10 @@ PARAMETER num_ctx 6144' > Llama-augment.Modelfile
 	
 	! ollama create Llama-augment -f Llama-augment.Modelfile && _messagePlain_bad 'bad: FAIL: ollama create Llama-augment' && _messageFAIL
 	
-	! echo | sudo -n tee /AI-Llama-augment > /dev/null && _messagePlain_bad 'bad: FAIL: echo | sudo -n tee /AI-Llama-augment' && _messageFAIL
+	if ! _if_cygwin
+	then
+		! echo | sudo -n tee /AI-Llama-augment > /dev/null && _messagePlain_bad 'bad: FAIL: echo | sudo -n tee /AI-Llama-augment' && _messageFAIL
+	fi
 
 	rm -f llama-3.1-8b-instruct-abliterated.Q4_K_M.gguf
 	rm -f Llama-augment.Modelfile

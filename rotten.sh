@@ -4645,7 +4645,18 @@ _python() {
 _sudo() {
 	_safe_declare_uid
 	
-	sudo -n "$scriptAbsoluteLocation" _bin "$@"
+	if ! _if_cygwin
+	then
+		sudo -n "$scriptAbsoluteLocation" _bin "$@"
+		return
+	fi
+	if _if_cygwin
+	then
+		_sudo_cygwin "$@"
+		return
+	fi
+	
+	return 1
 }
 
 _true() {

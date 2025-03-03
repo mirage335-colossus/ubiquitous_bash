@@ -174,7 +174,16 @@ then
 	#alias l='_wsl'
 	alias u='_wsl'
 fi
-
+	
+_sudo_cygwin-if_parameter-skip2() {
+	[[ "$1" == "-u" ]] && return 0
+	return 1
+}
+_sudo_cygwin-if_parameter-skip1() {
+	[[ "$1" == "-n" ]] && return 0
+	[[ "$1" == "--preserve-env"* ]] && return 0
+	return 1
+}
 
 # CAUTION: Fragile, at best.
 # DANGER: MSW apparently does not necessarily allow 'Administrator' access to all network 'drives'. Workaround copying of obvious files is limited.
@@ -195,12 +204,46 @@ _sudo_cygwin_sequence() {
 	# 'cygstart/runas doesn't handle arguments with spaces correctly so create'
 	# 'a script that will do so properly.'
 	echo "#!/bin/bash" >> "$safeTmp"/cygwin_sudo_temp.sh
+
+	echo "cd \"$PWD"\" >> "$safeTmp"/cygwin_sudo_temp.sh
+
 	echo "export PATH=\"$PATH\"" >> "$safeTmp"/cygwin_sudo_temp.sh
-	
-	
+
+	# No production use.
+	echo "export GH_TOKEN=\"$GH_TOKEN\"" >> "$safeTmp"/cygwin_sudo_temp.sh
+	echo "export INPUT_GITHUB_TOKEN=\"$INPUT_GITHUB_TOKEN\"" >> "$safeTmp"/cygwin_sudo_temp.sh
+	echo "export TOKEN=\"$TOKEN\"" >> "$safeTmp"/cygwin_sudo_temp.sh
+
+	# No production use.
+	echo "export nonet=\"$nonet\"" >> "$safeTmp"/cygwin_sudo_temp.sh
+	echo "export devfast=\"$devfast\"" >> "$safeTmp"/cygwin_sudo_temp.sh
+	echo "export skimfast=\"$skimfast\"" >> "$safeTmp"/cygwin_sudo_temp.sh
+
+	local currentParam1
+	while _sudo_cygwin-if_parameter-skip2 "$@" || _sudo_cygwin-if_parameter-skip1 "$@"
+	do
+		currentParam1="$1"
+
+		if _sudo_cygwin-if_parameter-skip2 "$currentParam1"
+		then
+			! shift && _messageFAIL
+			! shift && _messageFAIL
+			currentParam1=""
+		fi
+
+		if _sudo_cygwin-if_parameter-skip1 "$currentParam1"
+		then
+			! shift && _messageFAIL
+			currentParam1=""
+		fi
+	done
+
+	#echo 'local currentExitStatus' >> "$safeTmp"/cygwin_sudo_temp.sh
 	_safeEcho_newline "$safeTmp"/_bin.bat "$@" >> "$safeTmp"/cygwin_sudo_temp.sh
+	echo 'currentExitStatus=$?' >> "$safeTmp"/cygwin_sudo_temp.sh
 	echo 'echo > "'"$safeTmp"'"/sequenceDone_'"$ubiquitousBashID" >> "$safeTmp"/cygwin_sudo_temp.sh
 	echo 'sleep 3' >> "$safeTmp"/cygwin_sudo_temp.sh
+	echo 'exit $currentExitStatus' >> "$safeTmp"/cygwin_sudo_temp.sh
 	chmod u+x "$safeTmp"/cygwin_sudo_temp.sh
 	
 	
@@ -211,6 +254,7 @@ _sudo_cygwin_sequence() {
 	chmod u+x "$safeTmp"/"$currentScriptBasename"
 	
 	cp "$scriptLib"/ubiquitous_bash/_bin.bat "$safeTmp"/_bin.bat 2>/dev/null
+	#cp /home/root/.ubcore/ubiquitous_bash/_bin.bat "$safeTmp"/_bin.bat 2>/dev/null
 	cp -f "$scriptAbsoluteFolder"/_bin.bat "$safeTmp"/_bin.bat 2>/dev/null
 	chmod u+x "$safeTmp"/_bin.bat
 
@@ -256,22 +300,22 @@ _sudo_cygwin() {
 if _if_cygwin && type cygstart > /dev/null 2>&1
 then
 	sudo_cygwin() {
-		[[ "$1" == "-n" ]] && shift
+		#[[ "$1" == "-n" ]] && shift
 		if type cygstart > /dev/null 2>&1
 		then
 			_sudo_cygwin "$@"
 			#cygstart --action=runas "$@"
 			#"$@"
 			return
-		else
-			"$@"
-			return
 		fi
+		
+		"$@"
+		return
 		
 		return 1
 	}
 	sudoc() {
-		[[ "$1" == "-n" ]] && return 1
+		#[[ "$1" == "-n" ]] && return 1
 		sudo_cygwin "$@"
 	}
 	alias sudo=sudoc
