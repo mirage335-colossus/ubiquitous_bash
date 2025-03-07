@@ -247,6 +247,9 @@ _getMost_debian12_install() {
 
 	#_getMost_backend_aptGetInstall virtualbox-7.0
 	_getMost_backend_aptGetInstall virtualbox-7.1
+
+
+	_getMost_backend_aptGetInstall git-filter-repo
 }
 
 _getMost_debian11_install() {
