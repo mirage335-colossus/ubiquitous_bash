@@ -320,10 +320,13 @@ echo Creating [%Init_sh%]...
   echo   [[ -e /usr/bin/python  ]] ^|^| /usr/sbin/update-alternatives --install /usr/bin/python  python  "$python3" 1
   echo fi
   echo.
-  echo # Install python aka. pip packages .
+  echo # Install python aka pip packages
   echo if [[ ! -e /init-pip ]] ^> /dev/null; then
   echo  pip3 install git-filter-repo
-  echo  echo "init" ^> /init-pip
+  REM  echo
+  REM  /usr/bin/echo
+  REM  printf
+  echo  printf "init" ^> /init-pip
   echo fi
   echo.
   if not "%PROXY_HOST%" == "" (
