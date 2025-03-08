@@ -35,7 +35,8 @@ set PROXY_PORT=8080
 
 :: change the URL to the closest mirror https://cygwin.com/mirrors.html
 REM set CYGWIN_MIRROR=https://linux.rz.ruhr-uni-bochum.de/download/cygwin
-set CYGWIN_MIRROR=https://mirrors.kernel.org/sourceware/cygwin/
+REM set CYGWIN_MIRROR=https://mirrors.kernel.org/sourceware/cygwin/
+set CYGWIN_MIRROR=https://ftp.snt.utwente.nl/pub/software/cygwin/
 
 :: one of: auto,64,32 - specifies if 32 or 64 bit version should be installed or automatically detected based on current OS architecture
 REM set CYGWIN_ARCH=auto
