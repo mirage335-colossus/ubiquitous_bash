@@ -210,6 +210,14 @@ jobs:
           Get-Content -Path /_setupUbiquitous.log | Measure-Object -Line -Word -Character
           cat /_setupUbiquitous.log
         shell: pwsh
+
+      - name: test! wget
+        shell: pwsh
+        timeout-minutes: 240
+        run: |
+          Set-Item -Path Env:devfast -Value ("${{ inputs.devfast }}")
+          .\_bin wget 'https://google.com' -O /dev/null | tee /_test-wget.log
+
       #- name: _package-cygwinOnly noMitigation
         #shell: pwsh
         #timeout-minutes: 240
@@ -235,6 +243,14 @@ jobs:
           Set-Item -Path Env:skimfast -Value ("${{ inputs.skimfast }}")
           ./_bin _mitigate-ubcp | tee /_mitigate-ubcp.log
           ./_bin _color_end
+
+      - name: test! wget
+        shell: pwsh
+        timeout-minutes: 240
+        run: |
+          Set-Item -Path Env:devfast -Value ("${{ inputs.devfast }}")
+          .\_bin wget 'https://google.com' -O /dev/null | tee /_test-wget.log
+
       - name: release! _mitigate-ubcp.log
         uses: softprops/action-gh-release@v1
         with:
