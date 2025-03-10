@@ -213,6 +213,8 @@ if "%INSTALL_TESTSSL_SH%" == "yes" (
 set CYGWIN_PACKAGES=dos2unix,wget,%CYGWIN_PACKAGES%
 echo Selected cygwin packages: %CYGWIN_PACKAGES%
 
+set "CYGWIN=winsymlinks:lnk nodosfilewarning"
+
 echo Running Cygwin setup (package list with dependencies)...
 "%CYGWIN_ROOT%\%CYGWIN_SETUP_EXE%" --no-admin ^
   --site %CYGWIN_MIRROR% %CYGWIN_PROXY% ^
