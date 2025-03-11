@@ -1,16 +1,39 @@
 
+<< 'SCRATCH'
+./setup-x86_64.exe --no-admin --site 'https://ftp.snt.utwente.nl/pub/software/cygwin/' --root 'C:\Users\mirag\Downloads\package_ubcp-core\ubcp\cygwin' --local-package-dir 'C:\Users\mirag\Downloads\package_ubcp-core\ubcp\cygwin\.pkg-cache' --no-shortcuts --no-desktop --delete-orphans --upgrade-also --no-replaceonreboot --quiet-mode --packages dialog
+
+cp -a 'C:\Users\mirag\Downloads\package_ubcp-core\ubcp\cygwin' 'C:\q\p\zCore\infrastructure\ubiquitous_bash\_local\ubcp\cygwin - backup'
+
+#WinMerge 'C:\q\p\zCore\infrastructure\ubiquitous_bash\_local\ubcp\cygwin' 'C:\q\p\zCore\infrastructure\ubiquitous_bash\_local\ubcp\cygwin - backup'
+
+
+./ubiquitous_bash.sh _mitigate-ubcp_rewrite $(_getAbsoluteLocation ./_local/ubcp/cygwin) $(_getAbsoluteLocation ./_local/ubcp/cygwin/etc/crypto-policies)
+SCRATCH
+
+
 << 'EXPLANATION'
 
-Cygwin installations may create links which are not portable due to (1) symlinks using DUBIOUS path, or (2) symlinks that are not portable due to  other issue entirely.
+Cygwin installations may create links which are not portable.
 
 Two mitigation passes are done by _mitigate-ubcp .
 
-First pass rewrites symlinks to use relative links OR /bin links, correcting issues with (1) symlinks using DUBIOUS path.
-Second pass replaces symlinks entirely with copied files, correcting issues with (2) symlinks that are not portable due to  other issue entirely.
+First pass forces scenario 2 if additional conditions are met.
 
-DUBIOUS path may not be clearly defined at this time. Some directories created by Cygwin may have originally pointed to directories which were themselves symlinks, and that may have been non-portable. Absolute paths outside of Cygwin's root filesystem may also have existed, and would not have been portable. Future-proofing resilience in this case may have been attepted thorugh sledgehammer, and with issues emerging with some /etc files symlinks not getting rewritten adequately, the sledgehammer may not have been heavy enough.
+Second pass forces scenario 3 .
 
 EXPLANATION
+
+# CAUTION: Three possible scenarios to consider.
+# 1) Symlinks rewritten as is to '/usr/bin'. Links pointing to '/usr/bin' directory will not work through network drive unless this link remains.
+	# PREVENT - ' rm -f "$1"/usr/bin ' .
+	# Tested - known working ( _userVBox , _userQemu ) .
+# 2) Symlinks rewritten to '/bin'. Links now pointing to '/bin' should return files when retrieved through network drive, without this link.
+	# ALLOW - ' rm -f "$1"/usr/bin ' .
+	# Tested - known working ( _userVBox , _userQemu ) .
+# 3) Symlinks replaced. No links, files only.
+	# ALLOW - ' rm -f "$1"/usr/bin ' 
+	# Tested - known working ( _userVBox , _userQemu ) .
+# In any case, Cygwin will not be managing this directory .
 
 
 
@@ -41,6 +64,7 @@ _mitigate-ubcp_procedure() {
 	#...
 	_mitigate-ubcp_rewrite "$1" "$1"/etc/crypto-policies
 	#...
+	( [[ "$mitigate_ubcp_replaceSymlink" == 'true' ]] || [[ "$mitigate_ubcp_modifySymlink" == 'true' ]] ) && rm -f "$1"/usr/bin
 }
 
 
