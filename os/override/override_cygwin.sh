@@ -1238,10 +1238,10 @@ _mitigate-ubcp_directory() {
 _mitigate-ubcp() {
 	export mitigate_ubcp_modifySymlink='true'
 	export mitigate_ubcp_replaceSymlink='false'
-	_mitigate-ubcp_directory "$@"
+	"$scriptAbsoluteLocation" _mitigate-ubcp_directory "$@"
 	
 	export mitigate_ubcp_replaceSymlink='true'
-	_mitigate-ubcp_directory "$@"
+	"$scriptAbsoluteLocation" _mitigate-ubcp_directory "$@"
 }
 
 

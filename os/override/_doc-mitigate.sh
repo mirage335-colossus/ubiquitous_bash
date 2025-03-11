@@ -1,13 +1,33 @@
 
+
+<< 'TODO'
+*) Why does  ./ubiquitous_bash.sh _mitigate-ubcp_rewrite  from within a bash/ubcp session rewrite symlink (ie. /etc/crypto-policies/back-ends/gnutls.config -> ../../../usr/share/crypto-policies/DEFAULT/gnutls.txt) instead of replacing the file on the second pass?
+*) Why does  ./_bin _mitigate-ubcp_rewrite  from within a PowerShell session create improperly named (ie. without '.lnk' file extension) shortcuts files?
+
+TODO
+
+<< 'PROMPT'
+
+Why does this code apparently not reach the message  directive: replace: true  or otherwise reach the code that would replace symlinks with copies of files (ie. force scenario 3) when the function _mitigate-ubcp is called?
+
+
+PROMPT
+
 << 'SCRATCH'
 ./setup-x86_64.exe --no-admin --site 'https://ftp.snt.utwente.nl/pub/software/cygwin/' --root 'C:\Users\mirag\Downloads\package_ubcp-core\ubcp\cygwin' --local-package-dir 'C:\Users\mirag\Downloads\package_ubcp-core\ubcp\cygwin\.pkg-cache' --no-shortcuts --no-desktop --delete-orphans --upgrade-also --no-replaceonreboot --quiet-mode --packages dialog
 
 cp -a 'C:\Users\mirag\Downloads\package_ubcp-core\ubcp\cygwin' 'C:\q\p\zCore\infrastructure\ubiquitous_bash\_local\ubcp\cygwin - backup'
 
 #WinMerge 'C:\q\p\zCore\infrastructure\ubiquitous_bash\_local\ubcp\cygwin' 'C:\q\p\zCore\infrastructure\ubiquitous_bash\_local\ubcp\cygwin - backup'
+# /etc/crypto-policies/back-ends
 
 
 ./ubiquitous_bash.sh _mitigate-ubcp_rewrite $(_getAbsoluteLocation ./_local/ubcp/cygwin) $(_getAbsoluteLocation ./_local/ubcp/cygwin/etc/crypto-policies)
+./_bin _mitigate-ubcp_rewrite /cygdrive/c/q/p/zCore/infrastructure/ubiquitous_bash/_local/ubcp/cygwin /cygdrive/c/q/p/zCore/infrastructure/ubiquitous_bash/_local/ubcp/cygwin/etc/crypto-policies
+
+
+ls -ld /etc/crypto-policies/back-ends/gnutls.config
+cat /etc/crypto-policies/back-ends/gnutls.config
 SCRATCH
 
 
