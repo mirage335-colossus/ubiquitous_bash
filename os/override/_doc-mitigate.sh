@@ -1,14 +1,13 @@
 
 
 << 'TODO'
-*) Why does  ./ubiquitous_bash.sh _mitigate-ubcp_rewrite  from within a bash/ubcp session rewrite symlink (ie. /etc/crypto-policies/back-ends/gnutls.config -> ../../../usr/share/crypto-policies/DEFAULT/gnutls.txt) instead of replacing the file on the second pass?
-*) Why does  ./_bin _mitigate-ubcp_rewrite  from within a PowerShell session create improperly named (ie. without '.lnk' file extension) shortcuts files?
++) Why does  ./_bin _mitigate-ubcp  from within a PowerShell session create improperly named (ie. without '.lnk' file extension) shortcuts files for /etc/crypto-policies ?
+ >+) Apparently, at least in some situations, the 'ln -sf' command under Cygwin/MSW only correctly creates an '.lnk' file properly if the existing link does not exist.
+  *) TODO - Test what those conditions are.
 
 TODO
 
 << 'PROMPT'
-
-Why does this code apparently not reach the message  directive: replace: true  or otherwise reach the code that would replace symlinks with copies of files (ie. force scenario 3) when the function _mitigate-ubcp is called?
 
 
 PROMPT
@@ -26,8 +25,57 @@ cp -a 'C:\Users\mirag\Downloads\package_ubcp-core\ubcp\cygwin' 'C:\q\p\zCore\inf
 ./_bin _mitigate-ubcp_rewrite /cygdrive/c/q/p/zCore/infrastructure/ubiquitous_bash/_local/ubcp/cygwin /cygdrive/c/q/p/zCore/infrastructure/ubiquitous_bash/_local/ubcp/cygwin/etc/crypto-policies
 
 
+./_bash
 ls -ld /etc/crypto-policies/back-ends/gnutls.config
 cat /etc/crypto-policies/back-ends/gnutls.config
+
+
+# ops.sh
+_experiment() {
+    #set "CYGWIN=winsymlinks:lnk nodosfilewarning"
+    #export CYGWIN="$CYGWIN winsymlinks:lnk nodosfilewarning"
+
+	#export mitigate_ubcp_modifySymlink='true'
+	#export mitigate_ubcp_replaceSymlink='false'
+	##"$scriptAbsoluteLocation" _mitigate-ubcp_directory "$@"
+    #_mitigate-ubcp_rewrite "$scriptLocal"/ubcp/cygwin "$scriptLocal"/ubcp/cygwin/etc/crypto-policies
+	
+	#export mitigate_ubcp_replaceSymlink='true'
+	##"$scriptAbsoluteLocation" _mitigate-ubcp_directory "$@"
+    #_mitigate-ubcp_rewrite "$scriptLocal"/ubcp/cygwin "$scriptLocal"/ubcp/cygwin/etc/crypto-policies
+
+    
+    cd /cygdrive/c/q/p/zCore/infrastructure/ubiquitous_bash/_local/ubcp/cygwin/etc/crypto-policies/back-ends
+    ln -sf "../../../usr/share/crypto-policies/DEFAULT/gnutls.txt" "/cygdrive/c/q/p/zCore/infrastructure/ubiquitous_bash/_local/ubcp/cygwin/etc/crypto-policies/back-ends"/"gnutls.config"
+
+    _messagePlain_probe 'ls -l /etc/crypto-policies/back-ends/gnutls.config'
+    ls -l /etc/crypto-policies/back-ends/gnutls.config
+
+    _messagePlain_probe 'cat /etc/crypto-policies/back-ends/gnutls.config'
+    cat /etc/crypto-policies/back-ends/gnutls.config
+
+    sleep 90
+}
+
+.\_bin _experiment
+
+
+.\_bash
+#
+#cd /cygdrive/c/q/p/zCore/infrastructure/ubiquitous_bash/_local/ubcp/cygwin/etc/crypto-policies/back-ends
+#ln -sf "../../../usr/share/crypto-policies/DEFAULT/gnutls.txt" "/cygdrive/c/q/p/zCore/infrastructure/ubiquitous_bash/_local/ubcp/cygwin/etc/crypto-policies/back-ends"/"gnutls.config" ; ls -l /etc/crypto-policies/back-ends/gnutls.config
+#ls -l /etc/crypto-policies/back-ends/gnutls.config
+#
+#cd /etc/crypto-policies/back-ends
+#ln -sf "../../../usr/share/crypto-policies/DEFAULT/gnutls.txt" "/etc/crypto-policies/back-ends"/"gnutls.config" ; ls -l /etc/crypto-policies/back-ends/gnutls.config
+#
+#ln -sf ../../../bin/echo ./echo
+#
+#ln -sf "../../../usr/share/crypto-policies/DEFAULT/gnutls.txt" ./"gnutls.config" ; ls -l /etc/crypto-policies/back-ends/gnutls.config
+#
+# ATTENTION
+#rm -f "/etc/crypto-policies/back-ends"/"gnutls.config" ; ln -sf "../../../usr/share/crypto-policies/DEFAULT/gnutls.txt" "/cygdrive/c/q/p/zCore/infrastructure/ubiquitous_bash/_local/ubcp/cygwin/etc/crypto-policies/back-ends"/"gnutls.config" ; ls -l /etc/crypto-policies/back-ends/gnutls.config
+
 SCRATCH
 
 

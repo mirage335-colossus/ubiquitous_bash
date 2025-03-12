@@ -1026,7 +1026,7 @@ _mitigate-ubcp_rewrite_procedure() {
 			fi
 		fi
 		
-		
+		[[ -e "$processedLinkDirective" ]] && rm -f "$currentLinkFolder"/"$currentLinkFile"
 		
 		ln -sf "$processedLinkDirective" "$currentLinkFolder"/"$currentLinkFile"
 		
