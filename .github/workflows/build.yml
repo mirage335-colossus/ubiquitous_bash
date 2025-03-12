@@ -161,6 +161,15 @@ jobs:
         timeout-minutes: 240
         run: |
           Remove-Item -Recurse -Force _local/ubcp/cygwin/.pkg-cache
+
+      - name: init
+        shell: pwsh
+        timeout-minutes: 240
+        run: |
+          Set-Item -Path Env:devfast -Value ("${{ inputs.devfast }}")
+          .\_bin rm -f /init
+          .\_bin _true
+
       - name: _setupUbiquitous
         shell: pwsh
         timeout-minutes: 240

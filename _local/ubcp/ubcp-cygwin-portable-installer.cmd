@@ -357,7 +357,7 @@ echo Creating [%Init_sh%]...
   echo  printf "init" ^> /init-frequent
   echo fi
   echo # Init from within Cygwin/MSW
-  echo if [[ ! -e /init ]] ^> /dev/null; then
+  echo if [[ ! -e /init ]] ^> /dev/null ^&^& [[ -e /usr/local/apt-cyg ]] ^> /dev/null; then
   REM   # just to get apt-cyg not to defaut to /cygdrive/d/a/ubiquitous_bash/ubiquitous_bash/_local/ubcp/cygwin/.pkg-cache/
   echo  /usr/local/bin/apt-cyg set-cache /.pkg-cache
   REM   echo
