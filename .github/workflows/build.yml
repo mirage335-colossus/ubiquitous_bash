@@ -243,6 +243,10 @@ jobs:
           Set-Item -Path Env:skimfast -Value ("${{ inputs.skimfast }}")
           ./_bin _mitigate-ubcp 2>&1 | tee /_mitigate-ubcp.log
           ./_bin _color_end
+          # ATTRIBUTION-AI: Llama-augment 2025-03-12
+          #Copy-Item -Path "_mitigate-ubcp.log" -Destination "core\infrastructure\ubcp\cygwin\" -Force
+          # ATTRIBUTION-AI: ChatGPT o1 2025-03-12
+          Copy-Item -Path "/_mitigate-ubcp.log" -Destination "/core/infrastructure/ubcp/cygwin/" -Force
 
       - name: test! wget
         shell: pwsh
@@ -327,6 +331,7 @@ jobs:
         timeout-minutes: 240
         run: |
           cd ..
+          # ATTRIBUTION-AI: Llama-augment 2025-03-12
           Remove-Item -Path "/core/infrastructure/ubcp/cygwin/init-frequent" -Force
           7z -y a -t7z -m0=lzma2 -mmt=6 -mx=9 /package_ubcp-core.7z /core/infrastructure/ubcp /core/infrastructure/ubiquitous_bash /_bash.bat | tee /package_ubcp-core.log
       - name: _MSWpackage package_ubcp-core
@@ -335,6 +340,7 @@ jobs:
         timeout-minutes: 240
         run: |
           cd ..
+          # ATTRIBUTION-AI: Llama-augment 2025-03-12
           Remove-Item -Path "/core/infrastructure/ubcp/cygwin/init-frequent" -Force
           7z -y a -t7z -m0=lzma2 -mmt=6 ${{ github.event.inputs.skimfast == 'true' && '-mx=2' || github.event.inputs.skimfast != 'true' && '-mx=9' }} /package_ubcp-core.7z /core/infrastructure/ubcp /core/infrastructure/ubiquitous_bash /_bash.bat | tee /package_ubcp-core.log
       - name: release! _MSWpackage package_ubcp-core
@@ -549,6 +555,7 @@ jobs:
           }
         
           # Get the list of releases
+          # ATTRIBUTION-AI: ChatGPT o3-mini Reasoning_Effort-high 2025-03-12  (curl --fail --retry 5 --retry-delay 90 --connect-timeout 45 --max-time 600)
           RELEASES=$(curl --fail --retry 5 --retry-delay 90 --connect-timeout 45 --max-time 600 -s -H "Authorization: token $GH_TOKEN" https://api.github.com/repos/mirage335-colossus/ubiquitous_bash/releases)
           
           # Download binReport file for the current release
