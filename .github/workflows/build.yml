@@ -169,6 +169,7 @@ jobs:
           Set-Item -Path Env:devfast -Value ("${{ inputs.devfast }}")
           .\_bin rm -f /init
           .\_bin _true
+          .\_bin apt-cyg set-cache /.pkg-cache
 
       - name: _setupUbiquitous
         shell: pwsh
