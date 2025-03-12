@@ -243,10 +243,6 @@ jobs:
           Set-Item -Path Env:skimfast -Value ("${{ inputs.skimfast }}")
           ./_bin _mitigate-ubcp 2>&1 | tee /_mitigate-ubcp.log
           ./_bin _color_end
-          # ATTRIBUTION-AI: Llama-augment 2025-03-12
-          #Copy-Item -Path "_mitigate-ubcp.log" -Destination "core\infrastructure\ubcp\cygwin\" -Force
-          # ATTRIBUTION-AI: ChatGPT o1 2025-03-12
-          Copy-Item -Path "/_mitigate-ubcp.log" -Destination "/core/infrastructure/ubcp/cygwin/" -Force
 
       - name: test! wget
         shell: pwsh
@@ -325,6 +321,17 @@ jobs:
           ls
           Get-CimInstance -ClassName Win32_LogicalDisk | Select-Object -Property DeviceID,@{'Name' = 'FreeSpace (GB)'
           Expression= { [int]($_.FreeSpace / 1GB) }}
+          
+      - name: include! mitigate log
+        shell: pwsh
+        timeout-minutes: 240
+        run: |
+          cd ..
+          # ATTRIBUTION-AI: Llama-augment 2025-03-12
+          #Copy-Item -Path "_mitigate-ubcp.log" -Destination "core\infrastructure\ubcp\cygwin\" -Force
+          # ATTRIBUTION-AI: ChatGPT o1 2025-03-12
+          Copy-Item -Path "/_mitigate-ubcp.log" -Destination "/core/infrastructure/ubcp/cygwin/" -Force
+
       - name: _MSWpackage package_ubcp-core - skimfast
         if: ${{ github.event.inputs.skimfast == 'true' }}
         shell: pwsh
