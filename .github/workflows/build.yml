@@ -60,7 +60,7 @@ jobs:
       #- uses: actions/checkout@v2
       #- uses: dev-drprasad/delete-tag-and-release@v1.0
         #with:
-            #tag_name: build-${{ github.run_id }}-${{ github.run_attempt }} #(required) tag name to delete 
+            #tag_name: build-${{ github.run_id }}-9999 #(required) tag name to delete 
             #github_token: ${{ secrets.GITHUB_TOKEN }}
             #delete_release: true #(optional) default: true 
   build_ubcp:
@@ -82,7 +82,7 @@ jobs:
       #- name: release! deleteme
         #uses: softprops/action-gh-release@v1
         #with:
-          #tag_name: build-${{ github.run_id }}-${{ github.run_attempt }}
+          #tag_name: build-${{ github.run_id }}-9999
           #name: build
           #files: |
             #/deleteme
@@ -123,7 +123,7 @@ jobs:
       - name: release! ubcp-cygwin-portable-installer.log
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: build-${{ github.run_id }}-${{ github.run_attempt }}
+          tag_name: build-${{ github.run_id }}-9999
           name: build
           files: |
             /ubcp-cygwin-portable-installer.log
@@ -144,7 +144,7 @@ jobs:
         shell: pwsh
         run: |
           echo ${{ github.repository }} | tee _local/ubcp/cygwin/info-github
-          echo build-${{ github.run_id }}-${{ github.run_attempt }} | tee -a _local/ubcp/cygwin/info-github
+          echo build-${{ github.run_id }}-9999 | tee -a _local/ubcp/cygwin/info-github
           # ATTRIBUTION-AI: Llama-augment 2025-01-30
           #$now = [DateTime]::Now.ToString("yyyy-MM-dd")
           #echo $now | tee -a _local/ubcp/cygwin/info-github
@@ -199,7 +199,7 @@ jobs:
       - name: release! _setupUbiquitous.log
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: build-${{ github.run_id }}-${{ github.run_attempt }}
+          tag_name: build-${{ github.run_id }}-9999
           name: build
           files: |
             /_setupUbiquitous.log
@@ -227,7 +227,7 @@ jobs:
       #- name: release! package_ubcp-cygwinOnly-noMitigation.tar.xz
         #uses: softprops/action-gh-release@v1
         #with:
-          #tag_name: build-${{ github.run_id }}-${{ github.run_attempt }}
+          #tag_name: build-${{ github.run_id }}-9999
           #name: build
           #files: |
             #/package_ubcp-cygwinOnly-noMitigation.tar.xz
@@ -254,7 +254,7 @@ jobs:
       - name: release! _mitigate-ubcp.log
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: build-${{ github.run_id }}-${{ github.run_attempt }}
+          tag_name: build-${{ github.run_id }}-9999
           name: build
           files: |
             /_mitigate-ubcp.log
@@ -272,7 +272,7 @@ jobs:
       #- name: release! package_ubcp-cygwinOnly.tar.xz
         #uses: softprops/action-gh-release@v1
         #with:
-          #tag_name: build-${{ github.run_id }}-${{ github.run_attempt }}
+          #tag_name: build-${{ github.run_id }}-9999
           #name: build
           #files: |
             #./_local/ubcp/package_ubcp-cygwinOnly.tar.xz
@@ -285,7 +285,7 @@ jobs:
       #- name: release! _MSWpackage package_ubiquitous_bash-msw
         #uses: softprops/action-gh-release@v1
         #with:
-          #tag_name: build-${{ github.run_id }}-${{ github.run_attempt }}
+          #tag_name: build-${{ github.run_id }}-9999
           #name: build
           #files: |
             #/package_ubiquitous_bash-msw.log
@@ -340,7 +340,7 @@ jobs:
       - name: release! _MSWpackage package_ubcp-core
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: build-${{ github.run_id }}-${{ github.run_attempt }}
+          tag_name: build-${{ github.run_id }}-9999
           name: build
           files: |
             /package_ubcp-core.log
@@ -364,7 +364,7 @@ jobs:
       #- name: release! _MSWpackage package_ubiquitous_bash-msw-rotten
         #uses: softprops/action-gh-release@v1
         #with:
-          #tag_name: build-${{ github.run_id }}-${{ github.run_attempt }}
+          #tag_name: build-${{ github.run_id }}-9999
           #name: build
           #files: |
             #/package_ubiquitous_bash-msw-rotten.log
@@ -404,7 +404,7 @@ jobs:
       - name: release! _test-lean.log
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: build-${{ github.run_id }}-${{ github.run_attempt }}
+          tag_name: build-${{ github.run_id }}-9999
           name: build
           files: |
             /_test-lean.log
@@ -505,7 +505,7 @@ jobs:
       - name: release!
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: build-${{ github.run_id }}-${{ github.run_attempt }}
+          tag_name: build-${{ github.run_id }}-9999
           name: build
           files: |
             #_local/upgradeTmp/package_ubcp-core.7z
@@ -549,16 +549,16 @@ jobs:
           }
         
           # Get the list of releases
-          RELEASES=$(curl -s -H "Authorization: token $GH_TOKEN" https://api.github.com/repos/mirage335-colossus/ubiquitous_bash/releases)
+          RELEASES=$(curl --fail --retry 5 --retry-delay 90 --connect-timeout 45 --max-time 600 -s -H "Authorization: token $GH_TOKEN" https://api.github.com/repos/mirage335-colossus/ubiquitous_bash/releases)
           
           # Download binReport file for the current release
-          curl -s -H "Authorization: token $GH_TOKEN" -L -o "ubcp-binReport-$currentReleaseTag" "https://github.com/mirage335-colossus/ubiquitous_bash/releases/download/$currentReleaseTag/ubcp-binReport"
+          curl --fail --retry 5 --retry-delay 90 --connect-timeout 45 --max-time 600 -s -H "Authorization: token $GH_TOKEN" -L -o "ubcp-binReport-$currentReleaseTag" "https://github.com/mirage335-colossus/ubiquitous_bash/releases/download/$currentReleaseTag/ubcp-binReport"
 
           # Loop through each release
           #for RELEASE in $(_safeEcho_newline "$RELEASES" | jq -r '.[].tag_name' | sort --reverse); do
           for RELEASE in $(_safeEcho_newline "$RELEASES" | jq -r 'sort_by(.published_at) | reverse | .[].tag_name' | tr -dc 'a-zA-Z0-9\-_.:\n'); do
             # Download the binReport file for this release
-            curl -s -H "Authorization: token $GH_TOKEN" -L -o "ubcp-binReport-$RELEASE" "https://github.com/mirage335-colossus/ubiquitous_bash/releases/download/$RELEASE/ubcp-binReport"
+            curl --fail --retry 5 --retry-delay 90 --connect-timeout 45 --max-time 600 -s -H "Authorization: token $GH_TOKEN" -L -o "ubcp-binReport-$RELEASE" "https://github.com/mirage335-colossus/ubiquitous_bash/releases/download/$RELEASE/ubcp-binReport"
 
             # Compare the list of binaries in this release to the current release
             if [ "$RELEASE" != "$currentReleaseTag" ]; then
@@ -568,12 +568,12 @@ jobs:
             fi
           done
         env:
-          currentReleaseTag: build-${{ github.run_id }}-${{ github.run_attempt }}
+          currentReleaseTag: build-${{ github.run_id }}-9999
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: release! missing-ubcp-binReport
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: build-${{ github.run_id }}-${{ github.run_attempt }}
+          tag_name: build-${{ github.run_id }}-9999
           name: build
           files: |
             ./missing-ubcp-binReport
@@ -609,16 +609,16 @@ jobs:
           }
         
           # Get the list of releases
-          RELEASES=$(curl -s -H "Authorization: token $GH_TOKEN" https://api.github.com/repos/mirage335-colossus/ubiquitous_bash/releases?per_page=100&page=1)
+          RELEASES=$(curl --fail --retry 5 --retry-delay 90 --connect-timeout 45 --max-time 600 -s -H "Authorization: token $GH_TOKEN" https://api.github.com/repos/mirage335-colossus/ubiquitous_bash/releases?per_page=100&page=1)
           
           # Download packageReport file for the current release
-          curl -s -H "Authorization: token $GH_TOKEN" -L -o "ubcp-packageReport-$currentReleaseTag" "https://github.com/mirage335-colossus/ubiquitous_bash/releases/download/$currentReleaseTag/ubcp-packageReport"
+          curl --fail --retry 5 --retry-delay 90 --connect-timeout 45 --max-time 600 -s -H "Authorization: token $GH_TOKEN" -L -o "ubcp-packageReport-$currentReleaseTag" "https://github.com/mirage335-colossus/ubiquitous_bash/releases/download/$currentReleaseTag/ubcp-packageReport"
 
           # Loop through each release
           #for RELEASE in $(_safeEcho_newline "$RELEASES" | jq -r '.[].tag_name' | sort --reverse); do
           for RELEASE in $(_safeEcho_newline "$RELEASES" | jq -r 'sort_by(.published_at) | reverse | .[].tag_name' | tr -dc 'a-zA-Z0-9\-_.:\n'); do
             # Download the packageReport file for this release
-            curl -s -H "Authorization: token $GH_TOKEN" -L -o "ubcp-packageReport-$RELEASE" "https://github.com/mirage335-colossus/ubiquitous_bash/releases/download/$RELEASE/ubcp-packageReport"
+            curl --fail --retry 5 --retry-delay 90 --connect-timeout 45 --max-time 600 -s -H "Authorization: token $GH_TOKEN" -L -o "ubcp-packageReport-$RELEASE" "https://github.com/mirage335-colossus/ubiquitous_bash/releases/download/$RELEASE/ubcp-packageReport"
 
             # Compare the list of packages in this release to the current release
             if [ "$RELEASE" != "$currentReleaseTag" ]; then
@@ -628,12 +628,12 @@ jobs:
             fi
           done
         env:
-          currentReleaseTag: build-${{ github.run_id }}-${{ github.run_attempt }}
+          currentReleaseTag: build-${{ github.run_id }}-9999
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: release! missing-ubcp-packageReport
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: build-${{ github.run_id }}-${{ github.run_attempt }}
+          tag_name: build-${{ github.run_id }}-9999
           name: build
           files: |
             ./missing-ubcp-packageReport
@@ -676,16 +676,16 @@ jobs:
           }
         
           # Get the list of releases
-          RELEASES=$(curl -s -H "Authorization: token $GH_TOKEN" https://api.github.com/repos/mirage335-colossus/ubiquitous_bash/releases)
+          RELEASES=$(curl --fail --retry 5 --retry-delay 90 --connect-timeout 45 --max-time 600 -s -H "Authorization: token $GH_TOKEN" https://api.github.com/repos/mirage335-colossus/ubiquitous_bash/releases)
           
           # Download binReport file for the current release
-          curl -s -H "Authorization: token $GH_TOKEN" -L -o "ubcp-binReport-UNIX_Linux-$currentReleaseTag" "https://github.com/mirage335-colossus/ubiquitous_bash/releases/download/$currentReleaseTag/ubcp-binReport-UNIX_Linux"
+          curl --fail --retry 5 --retry-delay 90 --connect-timeout 45 --max-time 600 -s -H "Authorization: token $GH_TOKEN" -L -o "ubcp-binReport-UNIX_Linux-$currentReleaseTag" "https://github.com/mirage335-colossus/ubiquitous_bash/releases/download/$currentReleaseTag/ubcp-binReport-UNIX_Linux"
 
           # Loop through each release
           #for RELEASE in $(_safeEcho_newline "$RELEASES" | jq -r '.[].tag_name' | sort --reverse); do
           for RELEASE in $(_safeEcho_newline "$RELEASES" | jq -r 'sort_by(.published_at) | reverse | .[].tag_name' | tr -dc 'a-zA-Z0-9\-_.:\n'); do
             # Download the binReport file for this release
-            curl -s -H "Authorization: token $GH_TOKEN" -L -o "ubcp-binReport-UNIX_Linux-$RELEASE" "https://github.com/mirage335-colossus/ubiquitous_bash/releases/download/$RELEASE/ubcp-binReport-UNIX_Linux"
+            curl --fail --retry 5 --retry-delay 90 --connect-timeout 45 --max-time 600 -s -H "Authorization: token $GH_TOKEN" -L -o "ubcp-binReport-UNIX_Linux-$RELEASE" "https://github.com/mirage335-colossus/ubiquitous_bash/releases/download/$RELEASE/ubcp-binReport-UNIX_Linux"
 
             # Compare the list of binaries in this release to the current release
             if [ "$RELEASE" != "$currentReleaseTag" ]; then
@@ -695,12 +695,12 @@ jobs:
             fi
           done
         env:
-          currentReleaseTag: build-${{ github.run_id }}-${{ github.run_attempt }}
+          currentReleaseTag: build-${{ github.run_id }}-9999
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: release! missing-ubcp-binReport-UNIX_Linux
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: build-${{ github.run_id }}-${{ github.run_attempt }}
+          tag_name: build-${{ github.run_id }}-9999
           name: build
           files: |
             ./missing-ubcp-binReport-UNIX_Linux
@@ -739,7 +739,7 @@ jobs:
       - name: release! compile
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: build-${{ github.run_id }}-${{ github.run_attempt }}
+          tag_name: build-${{ github.run_id }}-9999
           name: build
           files: |
             ./lean_compressed.sh

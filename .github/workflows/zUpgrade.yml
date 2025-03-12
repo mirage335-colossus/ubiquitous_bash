@@ -133,7 +133,7 @@ jobs:
         shell: bash
         run: |
           ! echo ${{ github.repository }} | tee "_local/upgradeTmp/package_ubcp-core/ubcp/cygwin"/info-github-upgrade && exit 1
-          ! echo build_upgrade-${{ github.run_id }}-${{ github.run_attempt }} | tee -a "_local/upgradeTmp/package_ubcp-core/ubcp/cygwin"/info-github-upgrade && exit 1
+          ! echo build_upgrade-${{ github.run_id }}-9999 | tee -a "_local/upgradeTmp/package_ubcp-core/ubcp/cygwin"/info-github-upgrade && exit 1
           ! date +"%Y-%m-%d" | tee -a "_local/upgradeTmp/package_ubcp-core/ubcp/cygwin"/info-github-upgrade && exit 1
           #! echo from releaseOrigin= | tee -a "_local/upgradeTmp/package_ubcp-core/ubcp/cygwin"/info-github-upgrade && exit 1
           ! echo from releaseLabel=${{ inputs.releaseLabel }} | tee -a "_local/upgradeTmp/package_ubcp-core/ubcp/cygwin"/info-github-upgrade && exit 1
@@ -152,7 +152,7 @@ jobs:
       - name: release!
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: build_upgrade-${{ github.run_id }}-${{ github.run_attempt }}
+          tag_name: build_upgrade-${{ github.run_id }}-9999
           name: build_upgrade
           files: |
             _local/upgradeTmp/package_ubcp-core.7z
@@ -261,7 +261,7 @@ jobs:
       - name: release!
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: build_upgrade-${{ github.run_id }}-${{ github.run_attempt }}
+          tag_name: build_upgrade-${{ github.run_id }}-9999
           name: build_upgrade
           files: |
             /_test-lean.log
@@ -304,16 +304,16 @@ jobs:
           }
         
           # Get the list of releases
-          RELEASES=$(curl -s -H "Authorization: token $GH_TOKEN" https://api.github.com/repos/mirage335-colossus/ubiquitous_bash/releases)
+          RELEASES=$(curl --fail --retry 5 --retry-delay 90 --connect-timeout 45 --max-time 600 -s -H "Authorization: token $GH_TOKEN" https://api.github.com/repos/mirage335-colossus/ubiquitous_bash/releases)
           
           # Download binReport file for the current release
-          curl -s -H "Authorization: token $GH_TOKEN" -L -o "ubcp-binReport-$currentReleaseTag" "https://github.com/mirage335-colossus/ubiquitous_bash/releases/download/$currentReleaseTag/ubcp-binReport"
+          curl --fail --retry 5 --retry-delay 90 --connect-timeout 45 --max-time 600 -s -H "Authorization: token $GH_TOKEN" -L -o "ubcp-binReport-$currentReleaseTag" "https://github.com/mirage335-colossus/ubiquitous_bash/releases/download/$currentReleaseTag/ubcp-binReport"
 
           # Loop through each release
           #for RELEASE in $(_safeEcho_newline "$RELEASES" | jq -r '.[].tag_name' | sort --reverse); do
           for RELEASE in $(_safeEcho_newline "$RELEASES" | jq -r 'sort_by(.published_at) | reverse | .[].tag_name' | tr -dc 'a-zA-Z0-9\-_.:\n'); do
             # Download the binReport file for this release
-            curl -s -H "Authorization: token $GH_TOKEN" -L -o "ubcp-binReport-$RELEASE" "https://github.com/mirage335-colossus/ubiquitous_bash/releases/download/$RELEASE/ubcp-binReport"
+            curl --fail --retry 5 --retry-delay 90 --connect-timeout 45 --max-time 600 -s -H "Authorization: token $GH_TOKEN" -L -o "ubcp-binReport-$RELEASE" "https://github.com/mirage335-colossus/ubiquitous_bash/releases/download/$RELEASE/ubcp-binReport"
 
             # Compare the list of binaries in this release to the current release
             if [ "$RELEASE" != "$currentReleaseTag" ]; then
@@ -323,12 +323,12 @@ jobs:
             fi
           done
         env:
-          currentReleaseTag: build_upgrade-${{ github.run_id }}-${{ github.run_attempt }}
+          currentReleaseTag: build_upgrade-${{ github.run_id }}-9999
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: release! missing-ubcp-binReport
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: build_upgrade-${{ github.run_id }}-${{ github.run_attempt }}
+          tag_name: build_upgrade-${{ github.run_id }}-9999
           name: build_upgrade
           files: |
             ./missing-ubcp-binReport
@@ -364,16 +364,16 @@ jobs:
           }
         
           # Get the list of releases
-          RELEASES=$(curl -s -H "Authorization: token $GH_TOKEN" https://api.github.com/repos/mirage335-colossus/ubiquitous_bash/releases?per_page=100&page=1)
+          RELEASES=$(curl --fail --retry 5 --retry-delay 90 --connect-timeout 45 --max-time 600 -s -H "Authorization: token $GH_TOKEN" https://api.github.com/repos/mirage335-colossus/ubiquitous_bash/releases?per_page=100&page=1)
           
           # Download packageReport file for the current release
-          curl -s -H "Authorization: token $GH_TOKEN" -L -o "ubcp-packageReport-$currentReleaseTag" "https://github.com/mirage335-colossus/ubiquitous_bash/releases/download/$currentReleaseTag/ubcp-packageReport"
+          curl --fail --retry 5 --retry-delay 90 --connect-timeout 45 --max-time 600 -s -H "Authorization: token $GH_TOKEN" -L -o "ubcp-packageReport-$currentReleaseTag" "https://github.com/mirage335-colossus/ubiquitous_bash/releases/download/$currentReleaseTag/ubcp-packageReport"
 
           # Loop through each release
           #for RELEASE in $(_safeEcho_newline "$RELEASES" | jq -r '.[].tag_name' | sort --reverse); do
           for RELEASE in $(_safeEcho_newline "$RELEASES" | jq -r 'sort_by(.published_at) | reverse | .[].tag_name' | tr -dc 'a-zA-Z0-9\-_.:\n'); do
             # Download the packageReport file for this release
-            curl -s -H "Authorization: token $GH_TOKEN" -L -o "ubcp-packageReport-$RELEASE" "https://github.com/mirage335-colossus/ubiquitous_bash/releases/download/$RELEASE/ubcp-packageReport"
+            curl --fail --retry 5 --retry-delay 90 --connect-timeout 45 --max-time 600 -s -H "Authorization: token $GH_TOKEN" -L -o "ubcp-packageReport-$RELEASE" "https://github.com/mirage335-colossus/ubiquitous_bash/releases/download/$RELEASE/ubcp-packageReport"
 
             # Compare the list of packages in this release to the current release
             if [ "$RELEASE" != "$currentReleaseTag" ]; then
@@ -383,12 +383,12 @@ jobs:
             fi
           done
         env:
-          currentReleaseTag: build_upgrade-${{ github.run_id }}-${{ github.run_attempt }}
+          currentReleaseTag: build_upgrade-${{ github.run_id }}-9999
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: release! missing-ubcp-packageReport
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: build_upgrade-${{ github.run_id }}-${{ github.run_attempt }}
+          tag_name: build_upgrade-${{ github.run_id }}-9999
           name: build_upgrade
           files: |
             ./missing-ubcp-packageReport
@@ -428,16 +428,16 @@ jobs:
           }
         
           # Get the list of releases
-          RELEASES=$(curl -s -H "Authorization: token $GH_TOKEN" https://api.github.com/repos/mirage335-colossus/ubiquitous_bash/releases)
+          RELEASES=$(curl --fail --retry 5 --retry-delay 90 --connect-timeout 45 --max-time 600 -s -H "Authorization: token $GH_TOKEN" https://api.github.com/repos/mirage335-colossus/ubiquitous_bash/releases)
           
           # Download binReport file for the current release
-          curl -s -H "Authorization: token $GH_TOKEN" -L -o "ubcp-binReport-UNIX_Linux-$currentReleaseTag" "https://github.com/mirage335-colossus/ubiquitous_bash/releases/download/$currentReleaseTag/ubcp-binReport-UNIX_Linux"
+          curl --fail --retry 5 --retry-delay 90 --connect-timeout 45 --max-time 600 -s -H "Authorization: token $GH_TOKEN" -L -o "ubcp-binReport-UNIX_Linux-$currentReleaseTag" "https://github.com/mirage335-colossus/ubiquitous_bash/releases/download/$currentReleaseTag/ubcp-binReport-UNIX_Linux"
 
           # Loop through each release
           #for RELEASE in $(_safeEcho_newline "$RELEASES" | jq -r '.[].tag_name' | sort --reverse); do
           for RELEASE in $(_safeEcho_newline "$RELEASES" | jq -r 'sort_by(.published_at) | reverse | .[].tag_name' | tr -dc 'a-zA-Z0-9\-_.:\n'); do
             # Download the binReport file for this release
-            curl -s -H "Authorization: token $GH_TOKEN" -L -o "ubcp-binReport-UNIX_Linux-$RELEASE" "https://github.com/mirage335-colossus/ubiquitous_bash/releases/download/$RELEASE/ubcp-binReport-UNIX_Linux"
+            curl --fail --retry 5 --retry-delay 90 --connect-timeout 45 --max-time 600 -s -H "Authorization: token $GH_TOKEN" -L -o "ubcp-binReport-UNIX_Linux-$RELEASE" "https://github.com/mirage335-colossus/ubiquitous_bash/releases/download/$RELEASE/ubcp-binReport-UNIX_Linux"
 
             # Compare the list of binaries in this release to the current release
             if [ "$RELEASE" != "$currentReleaseTag" ]; then
@@ -447,12 +447,12 @@ jobs:
             fi
           done
         env:
-          currentReleaseTag: build_upgrade-${{ github.run_id }}-${{ github.run_attempt }}
+          currentReleaseTag: build_upgrade-${{ github.run_id }}-9999
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: release! missing-ubcp-binReport-UNIX_Linux
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: build_upgrade-${{ github.run_id }}-${{ github.run_attempt }}
+          tag_name: build_upgrade-${{ github.run_id }}-9999
           name: build_upgrade
           files: |
             ./missing-ubcp-binReport-UNIX_Linux
@@ -578,7 +578,7 @@ jobs:
       - name: release! compile
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: build_upgrade-${{ github.run_id }}-${{ github.run_attempt }}
+          tag_name: build_upgrade-${{ github.run_id }}-9999
           name: build_upgrade
           files: |
             ./lean_compressed.sh
