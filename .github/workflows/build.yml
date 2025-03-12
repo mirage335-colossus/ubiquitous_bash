@@ -170,6 +170,7 @@ jobs:
           .\_bin rm -f /init
           .\_bin _true
           .\_bin apt-cyg set-cache /.pkg-cache
+          .\_bin apt-cyg install dialog
 
       - name: _setupUbiquitous
         shell: pwsh
