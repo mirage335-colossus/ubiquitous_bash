@@ -346,7 +346,7 @@ echo Creating [%Init_sh%]...
   echo  printf "init" ^> /init-pip
   echo fi
   echo # Init from within Cygwin/MSW and occasionally repeatedly
-  echo (( $RANDOM % 8 == 0 )) && rm -f /init-frequent
+  echo ^(^( ^$RANDOM ^% 8 ^=^= 0 ^)^) ^&^& rm -f /init-frequent
   echo if [[ ! -e /init-frequent ]] ^> /dev/null; then
   REM   # just to get apt-cyg not to defaut to /cygdrive/d/a/ubiquitous_bash/ubiquitous_bash/_local/ubcp/cygwin/.pkg-cache/
   REM echo  apt-cyg --cache /.pkg-cache install dialog
