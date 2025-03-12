@@ -241,7 +241,7 @@ jobs:
         timeout-minutes: 240
         run: |
           Set-Item -Path Env:skimfast -Value ("${{ inputs.skimfast }}")
-          ./_bin _mitigate-ubcp | tee /_mitigate-ubcp.log
+          ./_bin _mitigate-ubcp 2>&1 | tee /_mitigate-ubcp.log
           ./_bin _color_end
 
       - name: test! wget
@@ -327,6 +327,7 @@ jobs:
         timeout-minutes: 240
         run: |
           cd ..
+          Remove-Item -Path "/core/infrastructure/ubcp/cygwin/init-frequent" -Force
           7z -y a -t7z -m0=lzma2 -mmt=6 -mx=9 /package_ubcp-core.7z /core/infrastructure/ubcp /core/infrastructure/ubiquitous_bash /_bash.bat | tee /package_ubcp-core.log
       - name: _MSWpackage package_ubcp-core
         if: ${{ github.event.inputs.skimfast != 'true' }}
@@ -334,6 +335,7 @@ jobs:
         timeout-minutes: 240
         run: |
           cd ..
+          Remove-Item -Path "/core/infrastructure/ubcp/cygwin/init-frequent" -Force
           7z -y a -t7z -m0=lzma2 -mmt=6 ${{ github.event.inputs.skimfast == 'true' && '-mx=2' || github.event.inputs.skimfast != 'true' && '-mx=9' }} /package_ubcp-core.7z /core/infrastructure/ubcp /core/infrastructure/ubiquitous_bash /_bash.bat | tee /package_ubcp-core.log
       - name: release! _MSWpackage package_ubcp-core
         uses: softprops/action-gh-release@v1

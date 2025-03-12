@@ -345,14 +345,16 @@ echo Creating [%Init_sh%]...
   REM  printf
   echo  printf "init" ^> /init-pip
   echo fi
-  echo # Init from within Cygwin/MSW
-  echo if [[ ! -e /init ]] ^> /dev/null; then
+  echo # Init from within Cygwin/MSW and occasionally repeatedly
+  echo (( $RANDOM % 8 == 0 )) && rm -f /init-frequent
+  echo if [[ ! -e /init-frequent ]] ^> /dev/null; then
   REM   # just to get apt-cyg not to defaut to /cygdrive/d/a/ubiquitous_bash/ubiquitous_bash/_local/ubcp/cygwin/.pkg-cache/
-  echo  apt-cyg --cache /.pkg-cache install dialog
+  REM echo  apt-cyg --cache /.pkg-cache install dialog
+  echo  apt-cyg set-cache /.pkg-cache
   REM  echo
   REM  /usr/bin/echo
   REM  printf
-  echo  printf "init" ^> /init
+  echo  printf "init" ^> /init-frequent
   echo fi
   echo.
   if not "%PROXY_HOST%" == "" (
