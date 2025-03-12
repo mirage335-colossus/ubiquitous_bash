@@ -313,7 +313,7 @@ jobs:
           #for RELEASE in $(_safeEcho_newline "$RELEASES" | jq -r '.[].tag_name' | sort --reverse); do
           for RELEASE in $(_safeEcho_newline "$RELEASES" | jq -r 'sort_by(.published_at) | reverse | .[].tag_name' | tr -dc 'a-zA-Z0-9\-_.:\n'); do
             # Download the binReport file for this release
-            curl --fail --retry 5 --retry-delay 90 --connect-timeout 45 --max-time 600 -s -H "Authorization: token $GH_TOKEN" -L -o "ubcp-binReport-$RELEASE" "https://github.com/mirage335-colossus/ubiquitous_bash/releases/download/$RELEASE/ubcp-binReport"
+            curl --no-fail --retry 5 --retry-delay 90 --connect-timeout 45 --max-time 600 -s -H "Authorization: token $GH_TOKEN" -L -o "ubcp-binReport-$RELEASE" "https://github.com/mirage335-colossus/ubiquitous_bash/releases/download/$RELEASE/ubcp-binReport"
 
             # Compare the list of binaries in this release to the current release
             if [ "$RELEASE" != "$currentReleaseTag" ]; then
@@ -373,7 +373,7 @@ jobs:
           #for RELEASE in $(_safeEcho_newline "$RELEASES" | jq -r '.[].tag_name' | sort --reverse); do
           for RELEASE in $(_safeEcho_newline "$RELEASES" | jq -r 'sort_by(.published_at) | reverse | .[].tag_name' | tr -dc 'a-zA-Z0-9\-_.:\n'); do
             # Download the packageReport file for this release
-            curl --fail --retry 5 --retry-delay 90 --connect-timeout 45 --max-time 600 -s -H "Authorization: token $GH_TOKEN" -L -o "ubcp-packageReport-$RELEASE" "https://github.com/mirage335-colossus/ubiquitous_bash/releases/download/$RELEASE/ubcp-packageReport"
+            curl --no-fail --retry 5 --retry-delay 90 --connect-timeout 45 --max-time 600 -s -H "Authorization: token $GH_TOKEN" -L -o "ubcp-packageReport-$RELEASE" "https://github.com/mirage335-colossus/ubiquitous_bash/releases/download/$RELEASE/ubcp-packageReport"
 
             # Compare the list of packages in this release to the current release
             if [ "$RELEASE" != "$currentReleaseTag" ]; then
@@ -437,7 +437,7 @@ jobs:
           #for RELEASE in $(_safeEcho_newline "$RELEASES" | jq -r '.[].tag_name' | sort --reverse); do
           for RELEASE in $(_safeEcho_newline "$RELEASES" | jq -r 'sort_by(.published_at) | reverse | .[].tag_name' | tr -dc 'a-zA-Z0-9\-_.:\n'); do
             # Download the binReport file for this release
-            curl --fail --retry 5 --retry-delay 90 --connect-timeout 45 --max-time 600 -s -H "Authorization: token $GH_TOKEN" -L -o "ubcp-binReport-UNIX_Linux-$RELEASE" "https://github.com/mirage335-colossus/ubiquitous_bash/releases/download/$RELEASE/ubcp-binReport-UNIX_Linux"
+            curl --no-fail --retry 5 --retry-delay 90 --connect-timeout 45 --max-time 600 -s -H "Authorization: token $GH_TOKEN" -L -o "ubcp-binReport-UNIX_Linux-$RELEASE" "https://github.com/mirage335-colossus/ubiquitous_bash/releases/download/$RELEASE/ubcp-binReport-UNIX_Linux"
 
             # Compare the list of binaries in this release to the current release
             if [ "$RELEASE" != "$currentReleaseTag" ]; then
