@@ -1,4 +1,14 @@
 
+# Complicated code in this script is due to issues of mitigating non-portable files, parallelization to complete this in minutes rather than several hours, packaging multiple times merely to ensure a Cygwin root filesystem limited to features compatible with such packages, and installation of files through functions originally intended to install directly from the internet rather than to create a package.
+# In fact, this script has only one essential purpose:
+#  package_ubcp-core.7z
+#   _bash.bat
+#   ubiquitous_bash
+#   ubcp
+# The subfiles/subdirectories of the package are nearly the same as would be populated in a ubiquitous_bash repository after running such commands as:
+#  .\ubcp-cygwin-portable-installer
+# One possible significant difference is the batch files installed to  /core/infrastructure/ubiquitous_bash  may, at least due to lack of other ubiquitous_bash files, default to  /core/infrastructure/ubcp .
+
 name: build
 
 
@@ -166,7 +176,6 @@ jobs:
         shell: pwsh
         timeout-minutes: 240
         run: |
-          Set-Item -Path Env:devfast -Value ("${{ inputs.devfast }}")
           .\_bin rm -f /init
           .\_bin _true
           .\_bin apt-cyg set-cache /.pkg-cache
@@ -329,11 +338,10 @@ jobs:
         shell: pwsh
         timeout-minutes: 240
         run: |
-          Set-Item -Path Env:devfast -Value ("${{ inputs.devfast }}")
-          .\_bin rm -f /init
-          .\_bin _true
-          .\_bin apt-cyg set-cache /.pkg-cache
-          .\_bin apt-cyg install dialog
+          ./core/infrastructure/ubiquitous_bash/_bin rm -f /init
+          ./core/infrastructure/ubiquitous_bash/_bin _true
+          ./core/infrastructure/ubiquitous_bash/_bin apt-cyg set-cache /.pkg-cache
+          ./core/infrastructure/ubiquitous_bash/_bin apt-cyg install dialog
 
       - name: statement! ls
         if: ${{ github.event.inputs.skimfast != 'true' }}
