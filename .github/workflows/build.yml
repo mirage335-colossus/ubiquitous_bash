@@ -338,10 +338,10 @@ jobs:
         shell: pwsh
         timeout-minutes: 240
         run: |
-          ./core/infrastructure/ubiquitous_bash/_bin rm -f /init
-          ./core/infrastructure/ubiquitous_bash/_bin _true
-          ./core/infrastructure/ubiquitous_bash/_bin apt-cyg set-cache /.pkg-cache
-          ./core/infrastructure/ubiquitous_bash/_bin apt-cyg install dialog
+          /core/infrastructure/ubiquitous_bash/_bin rm -f /init
+          /core/infrastructure/ubiquitous_bash/_bin _true
+          /core/infrastructure/ubiquitous_bash/_bin apt-cyg set-cache /.pkg-cache
+          /core/infrastructure/ubiquitous_bash/_bin apt-cyg install dialog
 
       - name: statement! ls
         if: ${{ github.event.inputs.skimfast != 'true' }}
