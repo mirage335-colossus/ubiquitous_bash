@@ -171,6 +171,11 @@ jobs:
         timeout-minutes: 240
         run: |
           Remove-Item -Recurse -Force _local/ubcp/cygwin/.pkg-cache
+      - name: _setupUbiquitous
+        shell: pwsh
+        timeout-minutes: 240
+        run: |
+          .\_setupUbiquitous | tee /_setupUbiquitous.log
 
       - name: init
         shell: pwsh
@@ -179,13 +184,8 @@ jobs:
           .\_bin rm -f /init
           .\_bin _true
           .\_bin apt-cyg set-cache /.pkg-cache
-          .\_bin apt-cyg install dialog
+          ./_bin _bin /cygdrive/c/core/infrastructure/ubiquitous_bash/ubiquitous_bash.sh _bin apt-cyg install dialog | tee /dev/null
 
-      - name: _setupUbiquitous
-        shell: pwsh
-        timeout-minutes: 240
-        run: |
-          .\_setupUbiquitous | tee /_setupUbiquitous.log
       - name: _custom_splice_opensslConfig
         shell: pwsh
         timeout-minutes: 240
@@ -341,7 +341,7 @@ jobs:
           /core/infrastructure/ubiquitous_bash/_bin rm -f /init
           /core/infrastructure/ubiquitous_bash/_bin _true
           /core/infrastructure/ubiquitous_bash/_bin apt-cyg set-cache /.pkg-cache
-          /core/infrastructure/ubiquitous_bash/_bin apt-cyg install dialog
+          /core/infrastructure/ubiquitous_bash/_bin _bin /cygdrive/c/core/infrastructure/ubiquitous_bash/ubiquitous_bash.sh _bin apt-cyg install dialog | tee /dev/null
 
       - name: statement! ls
         if: ${{ github.event.inputs.skimfast != 'true' }}
