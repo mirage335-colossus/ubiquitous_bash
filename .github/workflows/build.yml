@@ -324,6 +324,17 @@ jobs:
         run: |
           Set-Item -Path Env:skimfast -Value ("${{ inputs.skimfast }}")
           ./_bin _setup_ubcp / | tee /_setup_ubcp.log
+
+      - name: init
+        shell: pwsh
+        timeout-minutes: 240
+        run: |
+          Set-Item -Path Env:devfast -Value ("${{ inputs.devfast }}")
+          .\_bin rm -f /init
+          .\_bin _true
+          .\_bin apt-cyg set-cache /.pkg-cache
+          .\_bin apt-cyg install dialog
+
       - name: statement! ls
         if: ${{ github.event.inputs.skimfast != 'true' }}
         shell: pwsh
