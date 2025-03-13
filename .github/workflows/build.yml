@@ -184,6 +184,7 @@ jobs:
           .\_bin rm -f /init
           .\_bin _true
           .\_bin apt-cyg set-cache /.pkg-cache
+          ./_bin _bin /cygdrive/c/core/infrastructure/ubiquitous_bash/ubiquitous_bash.sh _bin apt-cyg install apt-cyg set-cache /.pkg-cache
           ./_bin _bin /cygdrive/c/core/infrastructure/ubiquitous_bash/ubiquitous_bash.sh _bin apt-cyg install dialog | tee /dev/null
 
       - name: _custom_splice_opensslConfig
