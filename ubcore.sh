@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='2208940261'
+export ub_setScriptChecksum_contents='514899923'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -21348,21 +21348,45 @@ build-1001-1" ]] || ( _messagePlain_bad 'fail: bad: _wget_githubRelease_procedur
 # Also sometimes useful to somewhat automatically upgrade an organization's existing workstation, server, etc.
 
 
-#! _openChRoot && _messageFAIL
-#! _closeChRoot && _messageFAIL
+
+# EXAMPLE
+#_ubdistChRoot_backend_begin
+#_backend_override _compendium_git-custom-repo installations,infrastructure,c/Corporation_ABBREVIATION GitHub_ORGANIZATION,USER repositoryName --depth 1
+#_ubdistChRoot_backend_end
+
+# EXAMPLE
+#_repo-GitHub_ORGANIZATION() { _backend_override _compendium_git-custom-repo installations,infrastructure,c/Corporation_ABBREVIATION GitHub_ORGANIZATION,USER repositoryName --depth 1 ; }
+#_ubdistChRoot_backend _repo-GitHub_ORGANIZATION
+
+
 
 # DANGER: Only use within ephemeral CI, ChRoot, etc.
 #_compendium_gitFresh
 # |___ _compendium_gitFresh_sequence
 
+
 #_compendium_git-upgrade-repo
 # |___ _compendium_git-custom-repo
+#
 #     |___ _compendium_git_sequence-custom-repo
+
 
 #_compendium_git-upgrade-repo-org
 # |___ _compendium_git-custom-repo-org
-#     |___ _compendium_git_sequence-custom-repo-org
-#         |___ _compendium_git-custom-repo
+#
+#     |___ _compendium_git_sequence_sequence-custom-repo-org *
+#         |___ _compendium_git_sequence-custom-repo-org
+#
+#             |___ _compendium_git-custom-repo
+
+
+#_compendium_git-upgrade-repo-user
+# |___ _compendium_git-custom-repo-user
+#
+#     |___ _compendium_git_sequence_sequence-custom-repo-user *
+#         |___ _compendium_git_sequence-custom-repo-org
+#
+#             |___ _compendium_git-custom-repo
 
 
 
@@ -35848,15 +35872,21 @@ _backend_override() {
 ## EXAMPLE
 #! _openChRoot && _messageFAIL
 ## ...
-#_backend() {
-	#_ubdistChRoot "$@"
-	##"$@"
-#}
-## ...
+#_backend() { _ubdistChRoot "$@" ; }
 #_backend_override echo test
+#unset -f _backend
 ## ...
 #! _closeChRoot && _messageFAIL
-#unset -f _backend
+## ...
+## EXAMPLE
+#_ubdistChRoot_backend_begin
+#_backend_override echo test
+#_ubdistChRoot_backend_end
+## ...
+## EXAMPLE
+#_experiment() { _backend_override echo test ; }
+#_ubdistChRoot_backend _experiment
+
 
 
 #wsl '~/.ubcore/ubiquitous_bash/ubiquitous_bash.sh' '_wrap' kwrite './gpl-3.0.txt'

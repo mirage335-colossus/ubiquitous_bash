@@ -7,21 +7,45 @@
 # Also sometimes useful to somewhat automatically upgrade an organization's existing workstation, server, etc.
 
 
-#! _openChRoot && _messageFAIL
-#! _closeChRoot && _messageFAIL
+
+# EXAMPLE
+#_ubdistChRoot_backend_begin
+#_backend_override _compendium_git-custom-repo installations,infrastructure,c/Corporation_ABBREVIATION GitHub_ORGANIZATION,USER repositoryName --depth 1
+#_ubdistChRoot_backend_end
+
+# EXAMPLE
+#_repo-GitHub_ORGANIZATION() { _backend_override _compendium_git-custom-repo installations,infrastructure,c/Corporation_ABBREVIATION GitHub_ORGANIZATION,USER repositoryName --depth 1 ; }
+#_ubdistChRoot_backend _repo-GitHub_ORGANIZATION
+
+
 
 # DANGER: Only use within ephemeral CI, ChRoot, etc.
 #_compendium_gitFresh
 # |___ _compendium_gitFresh_sequence
 
+
 #_compendium_git-upgrade-repo
 # |___ _compendium_git-custom-repo
+#
 #     |___ _compendium_git_sequence-custom-repo
+
 
 #_compendium_git-upgrade-repo-org
 # |___ _compendium_git-custom-repo-org
-#     |___ _compendium_git_sequence-custom-repo-org
-#         |___ _compendium_git-custom-repo
+#
+#     |___ _compendium_git_sequence_sequence-custom-repo-org *
+#         |___ _compendium_git_sequence-custom-repo-org
+#
+#             |___ _compendium_git-custom-repo
+
+
+#_compendium_git-upgrade-repo-user
+# |___ _compendium_git-custom-repo-user
+#
+#     |___ _compendium_git_sequence_sequence-custom-repo-user *
+#         |___ _compendium_git_sequence-custom-repo-org
+#
+#             |___ _compendium_git-custom-repo
 
 
 

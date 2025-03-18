@@ -22,7 +22,7 @@ _drop_ubdistChRoot() {
         exit
         return
     fi
-    
+
     if ! cd
     then
         _messagePlain_bad 'bad: FAIL: cd'
@@ -43,4 +43,21 @@ _ubdistChRoot() {
     _chroot sudo -n --preserve-env=GH_TOKEN --preserve-env=INPUT_GITHUB_TOKEN -u user /bin/bash /home/user/ubDistBuild/ubiquitous_bash.sh _drop_ubdistChRoot "$@"
 }
 
+
+_ubdistChRoot_backend_begin() {
+    ! _openChRoot && _messagePlain_bad 'bad: _openChRoot' && _messageFAIL
+    _backend() { _ubdistChRoot "$@" ; }
+}
+_ubdistChRoot_backend_end() {
+    unset -f _backend
+    ! _closeChRoot && _messagePlain_bad 'bad: _openChRoot' && _messageFAIL
+}
+_ubdistChRoot_backend_sequence() {
+    _ubdistChRoot_backend_begin
+    "$@"
+    _ubdistChRoot_backend_end
+}
+_ubdistChRoot_backend() {
+    "$scriptAbsoluteLocation" _ubdistChRoot_backend_sequence "$@"
+}
 

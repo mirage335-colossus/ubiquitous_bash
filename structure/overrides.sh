@@ -114,15 +114,21 @@ _backend_override() {
 ## EXAMPLE
 #! _openChRoot && _messageFAIL
 ## ...
-#_backend() {
-	#_ubdistChRoot "$@"
-	##"$@"
-#}
-## ...
+#_backend() { _ubdistChRoot "$@" ; }
 #_backend_override echo test
+#unset -f _backend
 ## ...
 #! _closeChRoot && _messageFAIL
-#unset -f _backend
+## ...
+## EXAMPLE
+#_ubdistChRoot_backend_begin
+#_backend_override echo test
+#_ubdistChRoot_backend_end
+## ...
+## EXAMPLE
+#_experiment() { _backend_override echo test ; }
+#_ubdistChRoot_backend _experiment
+
 
 
 #wsl '~/.ubcore/ubiquitous_bash/ubiquitous_bash.sh' '_wrap' kwrite './gpl-3.0.txt'
