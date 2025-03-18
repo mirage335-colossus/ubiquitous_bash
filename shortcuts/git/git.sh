@@ -145,6 +145,49 @@ _gitUp() {
 
 
 
+# DANGER: Intended for use ONLY by dist/OS build scripts and similar within ChRoot, ephemeral containers, or other at least mostly replaceable root filesystems.
+# The dangerous function is not defined by default and only becomes available after running gitFresh_enable
+#
+# ATTRIBUTION-AI: DeepSeek-R1-Distill-Llama-70B  2025-03-15
+# Define the enable function
+_gitFresh_enable() {
+    if [[ "$ub_dryRun" == "true" ]]
+    then
+        _stop
+        exit
+        return
+    fi
+	
+	# Define the dangerous function here
+	#_gitFresh() {
+		#[[ "$PWD" == "/" ]] && return 1
+		#[[ "$PWD" == "-"* ]] && return 1
+
+		#[[ "$PWD" == "/home" ]] && return 1
+		#[[ "$PWD" == "/home/" ]] && return 1
+		#[[ "$PWD" == "/home/$USER" ]] && return 1
+		#[[ "$PWD" == "/home/$USER/" ]] && return 1
+		#[[ "$PWD" == "/$USER" ]] && return 1
+		#[[ "$PWD" == "/$USER/" ]] && return 1
+		
+		#[[ "$PWD" == "/tmp" ]] && return 1
+		#[[ "$PWD" == "/tmp/" ]] && return 1
+		
+		#[[ "$PWD" == "$HOME" ]] && return 1
+		#[[ "$PWD" == "$HOME/" ]] && return 1
+		
+		#find . -not -path '\.\/\.git*' -delete
+	#}
+	# ATTRIBUTION-AI: DeepSeek-R1-Distill-Llama-8B  2025-03-15
+	#  Do NOT take that as an endorsement of a chain-of-reasoning 8B model, way too few parameters for that. This was one result of very many.
+	source <(echo "_gitFresh() { [[ "$PWD" == "/" ]] && return 1 ; [[ "$PWD" == "-"* ]] && return 1 ; [[ "$PWD" == "/home" ]] && return 1 ; [[ "$PWD" == "/home/" ]] && return 1 ; [[ "$PWD" == "/home/$USER" ]] && return 1 ; [[ "$PWD" == "/home/$USER/" ]] && return 1 ; [[ "$PWD" == "/$USER" ]] && return 1 ; [[ "$PWD" == "/$USER/" ]] && return 1 ; [[ "$PWD" == "/tmp" ]] && return 1 ; [[ "$PWD" == "/tmp/" ]] && return 1 ; [[ "$PWD" == "$HOME" ]] && return 1 ; [[ "$PWD" == "$HOME/" ]] && return 1 ; find . -not -path '\.\/\.git*' -delete ; }")
+
+	# Export the function to make it available
+	export -f _gitFresh
+}
+
+
+
 
 
 

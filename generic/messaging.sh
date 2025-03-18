@@ -536,6 +536,7 @@ _messageFAIL() {
 	_messageError "FAIL"
 	#echo " FAIL "
 	_stop 1
+	exit 1
 	return 0
 }
 

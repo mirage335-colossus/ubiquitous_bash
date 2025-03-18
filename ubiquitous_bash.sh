@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='179971738'
+export ub_setScriptChecksum_contents='3769854302'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -3944,6 +3944,7 @@ _messageFAIL() {
 	_messageError "FAIL"
 	#echo " FAIL "
 	_stop 1
+	exit 1
 	return 0
 }
 
@@ -19280,7 +19281,7 @@ _chroot() {
 	
 	local chrootExitStatus
 	
-	sudo -n env -i HOME="/root" TERM="${TERM}" SHELL="/bin/bash" PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" DISPLAY="$DISPLAY" XSOCK="$XSOCK" XAUTH="$XAUTH" localPWD="$localPWD" hostArch=$(uname -m) virtSharedUser="$virtGuestUser" USER="root" chrootName="chrt" devfast="$devfast" nonet="$nonet" GH_TOKEN="$GH_TOKEN" INPUT_GITHUB_TOKEN="$INPUT_GITHUB_TOKEN" TOKEN="$TOKEN" $(sudo -n bash -c "type -p chroot") "$chrootDir" "$@"
+	sudo -n env -i HOME="/root" TERM="${TERM}" SHELL="/bin/bash" PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" DISPLAY="$DISPLAY" XSOCK="$XSOCK" XAUTH="$XAUTH" localPWD="$localPWD" hostArch=$(uname -m) virtSharedUser="$virtGuestUser" USER="root" chrootName="chrt" devfast="$devfast" nonet="$nonet" ub_dryRun="$ub_dryRun" GH_TOKEN="$GH_TOKEN" INPUT_GITHUB_TOKEN="$INPUT_GITHUB_TOKEN" TOKEN="$TOKEN" $(sudo -n bash -c "type -p chroot") "$chrootDir" "$@"
 
 
 	# WARNING: CAUTION: May be untested.
@@ -19288,7 +19289,7 @@ _chroot() {
 	#export INPUT_GITHUB_TOKEN="$INPUT_GITHUB_TOKEN"
 	#export TOKEN="$TOKEN"
 	##env -i
-	#sudo -n -E --preserve-env=GH_TOKEN --preserve-env=INPUT_GITHUB_TOKEN --preserve-env=TOKEN env HOME="/root" TERM="${TERM}" SHELL="/bin/bash" PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" DISPLAY="$DISPLAY" XSOCK="$XSOCK" XAUTH="$XAUTH" localPWD="$localPWD" hostArch=$(uname -m) virtSharedUser="$virtGuestUser" USER="root" chrootName="chrt" devfast="$devfast" nonet="$nonet" $(sudo -n bash -c "type -p chroot") "$chrootDir" "$@"
+	#sudo -n -E --preserve-env=GH_TOKEN --preserve-env=INPUT_GITHUB_TOKEN --preserve-env=TOKEN env HOME="/root" TERM="${TERM}" SHELL="/bin/bash" PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" DISPLAY="$DISPLAY" XSOCK="$XSOCK" XAUTH="$XAUTH" localPWD="$localPWD" hostArch=$(uname -m) virtSharedUser="$virtGuestUser" USER="root" chrootName="chrt" devfast="$devfast" nonet="$nonet" ub_dryRun="$ub_dryRun" $(sudo -n bash -c "type -p chroot") "$chrootDir" "$@"
 	
 	chrootExitStatus="$?"
 	
@@ -19665,6 +19666,53 @@ _dropChRoot() {
 	###true
 	
 ###}
+
+
+# WARNING: No production use!
+# If at all, used ONLY to by:
+#  ubDistBuild '_prog'/'core-custom.sh'
+#  ubDistBuild '_prog'/'core-upgrade.sh'
+#  ubDistBuild '_prog-ops'/'ops-custom.sh'
+# Such usage presumes '_create_ubDistBuild-install-ubDistBuild' has been used recently enough to copy 'ubiquitous_bash.sh' to '/home/user/ubDistBuild/' with a sufficiently recent copy of the relevant functions to run within the ChRoot .
+# CAUTION: DANGER: Do NOT use 'ubdistchroot' functions during build of ubdist/OS or any other dist/OS . These functions are ONLY intended for customization of a completely built dist/OS. Existence, atomic overwriting, etc, of prerequsite '/home/user/ubDistBuild/ubiquitous_bash.sh' is absolutely NOT feasible to guarantee until underlying dist/OS build has been completed. Such dist/OS build processes are be controlled by 'rotIns' (ie. rotten install script), and must NEVER rely on a copy of 'ubiquitous_bash.sh' from 'ubDistBuild' .
+
+# Better mechanisms of '_userChRoot' , '_dropChRoot' , etc, are NOT used here, due to both lesser requirements of the functions to run (ie. not graphical GUI apps accessing bind mount shared files, etc), and due to the greater emphasis on compatibility (ie. not depending on 'gosu', '_gosuExecVirt', etc).
+
+
+
+
+#_ubdistChRoot _compendium_git-custom-repo-org c/Corporation_ABBREVIATION GitHub_ORGANIZATION
+#_ubdistChRoot _compendium_git-custom-repo installations,infrastructure GitHub_ORGANIZATION,USER repositoryName
+
+_drop_ubdistChRoot() {
+    if [[ "$ub_dryRun" == "true" ]]
+    then
+        _stop
+        exit
+        return
+    fi
+    
+    if ! cd
+    then
+        _messagePlain_bad 'bad: FAIL: cd'
+        _messageFAIL
+        _stop 1
+    fi
+    "$@"
+}
+
+_ubdistChRoot() {
+    if [[ "$ub_dryRun" == "true" ]]
+    then
+        _stop
+        exit
+        return
+    fi
+
+    _chroot sudo -n --preserve-env=GH_TOKEN --preserve-env=INPUT_GITHUB_TOKEN -u user /bin/bash /home/user/ubDistBuild/ubiquitous_bash.sh _drop_ubdistChRoot "$@"
+}
+
+
 
 
 
@@ -24463,7 +24511,163 @@ _setup_ollama_model_augment_sequence() {
 	# https://huggingface.co/bartowski/Meta-Llama-3.1-8B-Instruct-abliterated-GGUF/tree/main
 	
 	echo 'FROM ./llama-3.1-8b-instruct-abliterated.Q4_K_M.gguf
-PARAMETER num_ctx 6144' > Llama-augment.Modelfile
+PARAMETER num_ctx 6144
+' > Llama-augment.Modelfile
+
+	cat << 'CZXWXcRMTo8EmM8i4d' >> Llama-augment.Modelfile
+	LICENSE """Built with Llama
+Llama 3.1 is licensed under the Llama 3.1 Community License, Copyright © Meta Platforms, Inc. All Rights Reserved.
+
+License and terms of use are inherited from the 'Meta' corporation's llama3_1 license and use policy.
+https://www.llama.com/llama3_1/license/
+https://www.llama.com/llama3_1/use-policy/
+
+Copies of these license and use policies, to the extent required and/or appropriate, are included in appropriate subdirectories of a proper recursive download of any git repository used to distribute this project. 
+
+
+DANGER!
+
+Please beware this 'augment' model is intended for embedded use by developers, and is NOT intended as-is for end-users (except possibly for non-commercial open-source projects), especially not as any built-in help. Features may be removed, overfitting to specific answers may be deliberately reinforced, and CONVERSATION MAY DEVIATE FROM SAFE DESPITE HARMLESS PROMPTS.
+
+If you are in a workplace or public relations setting, you are recommended to avoid providing interactive or visible outputs from an 'augment' model unless you can safely evaluate that the model provides the most reasonable safety for your use case.
+
+PLEASE BE AWARE the 'Meta' corporation's use policy DOES NOT ALLOW you to "FAIL TO APPROPRIATELY DISCLOSE to end users any known dangers of your AI system".
+
+Purpose of this model, above all other purposes, is both:
+(1) To supervise and direct decisions and analysis by other AI models (such as from vision encoders, but also mathematical reasoning specific LLMs, computer activity and security logging LLMs, etc).
+(2) To assist and possibly supervise 'human-in-the-loop' decision making (eg. to sanity check human responses).
+This model's ability to continue conversation with awareness of previous context after repeating the rules of the conversation through a system prompt, has been enhanced. Consequently, this model's ability to keep a CONVERSATION positive and SAFE may ONLY be ENHANCED BETTER THAN OTHER MODELS if REPEATED SYSTEM PROMPTING and LLAMA GUARD are used.
+https://ollama.com/library/llama-guard3
+
+
+DISCLAIMER
+
+All statements and disclaimers apply as written from the files: 'ubiquitous_bash/ai/ollama/ollama.sh'
+'ubiquitous_bash/shortcuts/ai/ollama/ollama.sh'
+
+In particular, any 'augment' model provided is with a extensive DISCLAIMER regarding ANY AND ALL LIABILITY for any and all use, distribution, copying, etc. Anyone using, distributing, copying, etc, any 'augment' model provided under, through, including, referencing, etc, this or any similar disclaimer, whether aware of this disclaimer or not, is intended to also be, similarly, to the extent possible, DISCLAIMING ANY AND ALL LIABILITY.
+
+Nothing in this text is intended to allow for any legal liability to anyone for any and all use, distribution, copying, etc.
+
+
+
+
+LLAMA 3.1 COMMUNITY LICENSE AGREEMENT
+Llama 3.1 Version Release Date: July 23, 2024
+
+“Agreement” means the terms and conditions for use, reproduction, distribution and modification of the
+Llama Materials set forth herein.
+
+“Documentation” means the specifications, manuals and documentation accompanying Llama 3.1
+distributed by Meta at https://llama.meta.com/doc/overview.
+
+“Licensee” or “you” means you, or your employer or any other person or entity (if you are entering into
+this Agreement on such person or entity’s behalf), of the age required under applicable laws, rules or
+regulations to provide legal consent and that has legal authority to bind your employer or such other
+person or entity if you are entering in this Agreement on their behalf.
+
+“Llama 3.1” means the foundational large language models and software and algorithms, including
+machine-learning model code, trained model weights, inference-enabling code, training-enabling code,
+fine-tuning enabling code and other elements of the foregoing distributed by Meta at
+https://llama.meta.com/llama-downloads.
+
+“Llama Materials” means, collectively, Meta’s proprietary Llama 3.1 and Documentation (and any
+portion thereof) made available under this Agreement.
+
+“Meta” or “we” means Meta Platforms Ireland Limited (if you are located in or, if you are an entity, your
+principal place of business is in the EEA or Switzerland) and Meta Platforms, Inc. (if you are located
+outside of the EEA or Switzerland).
+
+By clicking “I Accept” below or by using or distributing any portion or element of the Llama Materials,
+you agree to be bound by this Agreement.
+
+1. License Rights and Redistribution.
+
+  a. Grant of Rights. You are granted a non-exclusive, worldwide, non-transferable and royalty-free
+limited license under Meta’s intellectual property or other rights owned by Meta embodied in the Llama
+Materials to use, reproduce, distribute, copy, create derivative works of, and make modifications to the
+Llama Materials.
+
+  b. Redistribution and Use.
+
+      i. If you distribute or make available the Llama Materials (or any derivative works
+thereof), or a product or service (including another AI model) that contains any of them, you shall (A)
+provide a copy of this Agreement with any such Llama Materials; and (B) prominently display “Built with
+Llama” on a related website, user interface, blogpost, about page, or product documentation. If you use
+the Llama Materials or any outputs or results of the Llama Materials to create, train, fine tune, or
+otherwise improve an AI model, which is distributed or made available, you shall also include “Llama” at
+the beginning of any such AI model name.
+
+      ii. If you receive Llama Materials, or any derivative works thereof, from a Licensee as part 
+of an integrated end user product, then Section 2 of this Agreement will not apply to you.
+
+      iii. You must retain in all copies of the Llama Materials that you distribute the following
+attribution notice within a “Notice” text file distributed as a part of such copies: “Llama 3.1 is
+licensed under the Llama 3.1 Community License, Copyright © Meta Platforms, Inc. All Rights
+Reserved.”
+
+      iv. Your use of the Llama Materials must comply with applicable laws and regulations
+(including trade compliance laws and regulations) and adhere to the Acceptable Use Policy for the Llama
+Materials (available at https://llama.meta.com/llama3_1/use-policy), which is hereby incorporated by
+reference into this Agreement.
+
+2. Additional Commercial Terms. If, on the Llama 3.1 version release date, the monthly active users
+of the products or services made available by or for Licensee, or Licensee’s affiliates, is greater than 700
+million monthly active users in the preceding calendar month, you must request a license from Meta,
+which Meta may grant to you in its sole discretion, and you are not authorized to exercise any of the
+rights under this Agreement unless or until Meta otherwise expressly grants you such rights.
+
+3. Disclaimer of Warranty. UNLESS REQUIRED BY APPLICABLE LAW, THE LLAMA MATERIALS AND ANY
+OUTPUT AND RESULTS THEREFROM ARE PROVIDED ON AN “AS IS” BASIS, WITHOUT WARRANTIES OF
+ANY KIND, AND META DISCLAIMS ALL WARRANTIES OF ANY KIND, BOTH EXPRESS AND IMPLIED,
+INCLUDING, WITHOUT LIMITATION, ANY WARRANTIES OF TITLE, NON-INFRINGEMENT,
+MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE. YOU ARE SOLELY RESPONSIBLE FOR
+DETERMINING THE APPROPRIATENESS OF USING OR REDISTRIBUTING THE LLAMA MATERIALS AND
+ASSUME ANY RISKS ASSOCIATED WITH YOUR USE OF THE LLAMA MATERIALS AND ANY OUTPUT AND
+RESULTS.
+
+4. Limitation of Liability. IN NO EVENT WILL META OR ITS AFFILIATES BE LIABLE UNDER ANY THEORY OF
+LIABILITY, WHETHER IN CONTRACT, TORT, NEGLIGENCE, PRODUCTS LIABILITY, OR OTHERWISE, ARISING
+OUT OF THIS AGREEMENT, FOR ANY LOST PROFITS OR ANY INDIRECT, SPECIAL, CONSEQUENTIAL,
+INCIDENTAL, EXEMPLARY OR PUNITIVE DAMAGES, EVEN IF META OR ITS AFFILIATES HAVE BEEN ADVISED
+OF THE POSSIBILITY OF ANY OF THE FOREGOING.
+
+5. Intellectual Property.
+
+  a. No trademark licenses are granted under this Agreement, and in connection with the Llama
+Materials, neither Meta nor Licensee may use any name or mark owned by or associated with the other
+or any of its affiliates, except as required for reasonable and customary use in describing and
+redistributing the Llama Materials or as set forth in this Section 5(a). Meta hereby grants you a license to
+use “Llama” (the “Mark”) solely as required to comply with the last sentence of Section 1.b.i. You will
+comply with Meta’s brand guidelines (currently accessible at
+https://about.meta.com/brand/resources/meta/company-brand/ ). All goodwill arising out of your use
+of the Mark will inure to the benefit of Meta.
+
+  b. Subject to Meta’s ownership of Llama Materials and derivatives made by or for Meta, with
+respect to any derivative works and modifications of the Llama Materials that are made by you, as
+between you and Meta, you are and will be the owner of such derivative works and modifications.
+
+  c. If you institute litigation or other proceedings against Meta or any entity (including a
+cross-claim or counterclaim in a lawsuit) alleging that the Llama Materials or Llama 3.1 outputs or
+results, or any portion of any of the foregoing, constitutes infringement of intellectual property or other
+rights owned or licensable by you, then any licenses granted to you under this Agreement shall
+terminate as of the date such litigation or claim is filed or instituted. You will indemnify and hold
+harmless Meta from and against any claim by any third party arising out of or related to your use or
+distribution of the Llama Materials.
+
+6. Term and Termination. The term of this Agreement will commence upon your acceptance of this
+Agreement or access to the Llama Materials and will continue in full force and effect until terminated in
+accordance with the terms and conditions herein. Meta may terminate this Agreement if you are in
+breach of any term or condition of this Agreement. Upon termination of this Agreement, you shall delete
+and cease use of the Llama Materials. Sections 3, 4 and 7 shall survive the termination of this
+Agreement.
+
+7. Governing Law and Jurisdiction. This Agreement will be governed and construed under the laws of
+the State of California without regard to choice of law principles, and the UN Convention on Contracts
+for the International Sale of Goods does not apply to this Agreement. The courts of California shall have
+exclusive jurisdiction of any dispute arising out of this Agreement.
+"""
+CZXWXcRMTo8EmM8i4d
 	
 	#wget 'https://huggingface.co/mlabonne/Meta-Llama-3.1-8B-Instruct-abliterated-GGUF/resolve/main/meta-llama-3.1-8b-instruct-abliterated.Q4_K_M.gguf'
 	aria2c --log=- --log-level=info -x "3" --async-dns=false -o 'llama-3.1-8b-instruct-abliterated.Q4_K_M.gguf' 'https://huggingface.co/mlabonne/Meta-Llama-3.1-8B-Instruct-abliterated-GGUF/resolve/main/meta-llama-3.1-8b-instruct-abliterated.Q4_K_M.gguf'
@@ -27335,6 +27539,49 @@ _gitUp() {
 
 
 
+# DANGER: Intended for use ONLY by dist/OS build scripts and similar within ChRoot, ephemeral containers, or other at least mostly replaceable root filesystems.
+# The dangerous function is not defined by default and only becomes available after running gitFresh_enable
+#
+# ATTRIBUTION-AI: DeepSeek-R1-Distill-Llama-70B  2025-03-15
+# Define the enable function
+_gitFresh_enable() {
+    if [[ "$ub_dryRun" == "true" ]]
+    then
+        _stop
+        exit
+        return
+    fi
+	
+	# Define the dangerous function here
+	#_gitFresh() {
+		#[[ "$PWD" == "/" ]] && return 1
+		#[[ "$PWD" == "-"* ]] && return 1
+
+		#[[ "$PWD" == "/home" ]] && return 1
+		#[[ "$PWD" == "/home/" ]] && return 1
+		#[[ "$PWD" == "/home/$USER" ]] && return 1
+		#[[ "$PWD" == "/home/$USER/" ]] && return 1
+		#[[ "$PWD" == "/$USER" ]] && return 1
+		#[[ "$PWD" == "/$USER/" ]] && return 1
+		
+		#[[ "$PWD" == "/tmp" ]] && return 1
+		#[[ "$PWD" == "/tmp/" ]] && return 1
+		
+		#[[ "$PWD" == "$HOME" ]] && return 1
+		#[[ "$PWD" == "$HOME/" ]] && return 1
+		
+		#find . -not -path '\.\/\.git*' -delete
+	#}
+	# ATTRIBUTION-AI: DeepSeek-R1-Distill-Llama-8B  2025-03-15
+	#  Do NOT take that as an endorsement of a chain-of-reasoning 8B model, way too few parameters for that. This was one result of very many.
+	source <(echo "_gitFresh() { [[ "$PWD" == "/" ]] && return 1 ; [[ "$PWD" == "-"* ]] && return 1 ; [[ "$PWD" == "/home" ]] && return 1 ; [[ "$PWD" == "/home/" ]] && return 1 ; [[ "$PWD" == "/home/$USER" ]] && return 1 ; [[ "$PWD" == "/home/$USER/" ]] && return 1 ; [[ "$PWD" == "/$USER" ]] && return 1 ; [[ "$PWD" == "/$USER/" ]] && return 1 ; [[ "$PWD" == "/tmp" ]] && return 1 ; [[ "$PWD" == "/tmp/" ]] && return 1 ; [[ "$PWD" == "$HOME" ]] && return 1 ; [[ "$PWD" == "$HOME/" ]] && return 1 ; find . -not -path '\.\/\.git*' -delete ; }")
+
+	# Export the function to make it available
+	export -f _gitFresh
+}
+
+
+
 
 
 
@@ -29383,6 +29630,257 @@ build-1001-1" ]] || ( _messagePlain_bad 'fail: bad: _wget_githubRelease_procedur
 
 
 
+
+
+
+
+
+
+
+# ### NOTICE ###
+# gitCompendium
+# custom/upgrade functions for git repositories and for all git repositories owned by an organization
+# Mostly used by ubDistBuild and derivatives to custom/upgrade Operating Systems for organizations with both the tools and development resources to backup (ie. to optical disc), create workstations, create replacement repository servers, etc. Continuous Integration (CI) can keep such a backup/workstation/replacement dist/OS always recent enough to rely on, and small enough to frequently, conveniently, distribute on the coldest of cold storage to vaults, as well as data preservation facilities.
+#
+# Also sometimes useful to somewhat automatically upgrade an organization's existing workstation, server, etc.
+
+
+#! _openChRoot && _messageFAIL
+#! _closeChRoot && _messageFAIL
+
+# DANGER: Only use within ephemeral CI, ChRoot, etc.
+#_compendium_gitFresh
+# |___ _compendium_gitFresh_sequence
+
+#_compendium_git-upgrade-repo
+# |___ _compendium_git-custom-repo
+#     |___ _compendium_git_sequence-custom-repo
+
+#_compendium_git-upgrade-repo-org
+# |___ _compendium_git-custom-repo-org
+#     |___ _compendium_git_sequence-custom-repo-org
+#         |___ _compendium_git-custom-repo
+
+
+
+
+#_ubdistChRoot _compendium_git-custom-repo installations,infrastructure,c/Corporation_ABBREVIATION GitHub_ORGANIZATION,USER repositoryName --depth 1
+_compendium_git_sequence-custom-repo() {
+    _messageNormal '\/ \/ \/ _compendium_git-custom-repo: '"$@"
+
+    _start
+    local functionEntryPWD
+    functionEntryPWD="$PWD"
+
+    local current_coreSubDir="$1"
+    local current_GitHubORGANIZATION="$2"
+    local current_repositoryName="$3"
+
+    shift ; shift ; shift
+
+    [[ "$GH_TOKEN" == "" ]] && _messagePlain_warn 'warn: missing: GH_TOKEN'
+
+    export INPUT_GITHUB_TOKEN="$GH_TOKEN"
+
+    if [[ -e /home/user/core/"$current_coreSubDir"/"$current_repositoryName" ]]
+    then
+        [[ "$ub_dryRun" != "true" ]] && mkdir -p /home/user/core/"$current_coreSubDir"/"$current_repositoryName"
+        [[ "$ub_dryRun" != "true" ]] && cd /home/user/core/"$current_coreSubDir"/"$current_repositoryName"
+
+        _messagePlain_probe git checkout "HEAD"
+        [[ "$ub_dryRun" != "true" ]] && ! git checkout "HEAD" && _messageFAIL
+        _messagePlain_probe _gitBest pull
+        [[ "$ub_dryRun" != "true" ]] && ! "$scriptAbsoluteLocation" _gitBest pull && _messageFAIL
+        _messagePlain_probe _gitBest submodule update --init "$@" --recursive
+        [[ "$ub_dryRun" != "true" ]] && ! "$scriptAbsoluteLocation" _gitBest submodule update --init "$@" --recursive && _messageFAIL
+    fi
+
+    #else
+    if ! [[ -e /home/user/core/"$current_coreSubDir"/"$current_repositoryName" ]]
+    then
+        [[ "$ub_dryRun" != "true" ]] && mkdir -p /home/user/core/"$current_coreSubDir"
+        [[ "$ub_dryRun" != "true" ]] && cd /home/user/core/"$current_coreSubDir"
+        
+        _messagePlain_probe _gitBest clone --recursive "$@" 'git@github.com:'"$current_GitHubORGANIZATION"'/'"$current_repositoryName"'.git'
+        [[ "$ub_dryRun" != "true" ]] && ! "$scriptAbsoluteLocation" _gitBest clone --recursive "$@" 'git@github.com:'"$current_GitHubORGANIZATION"'/'"$current_repositoryName"'.git' && _messageFAIL
+    fi
+    
+    
+    [[ "$ub_dryRun" != "true" ]] && ! ls /home/user/core/"$current_coreSubDir"/"$current_repositoryName" && _messageFAIL
+
+    cd "$functionEntryPWD"
+    _stop
+}
+_compendium_git-custom-repo() {
+    "$scriptAbsoluteLocation" _compendium_git_sequence-custom-repo "$@"
+}
+_compendium_git-upgrade-repo() {
+    _compendium_git-custom-repo "$@"
+}
+
+
+
+#_ubdistChRoot _compendium_git-custom-repo-org c/Corporation_ABBREVIATION GitHub_ORGANIZATION --depth 1
+_compendium_git_sequence-custom-repo-org() {
+    _messageNormal '\/ _compendium_git_sequence-custom-repo-org: '"$@"
+
+    _start
+    local functionEntryPWD
+    functionEntryPWD="$PWD"
+
+    local current_coreSubDir="$1"
+    local current_GitHubORGANIZATION="$2"
+
+    shift ; shift
+
+
+    export INPUT_GITHUB_TOKEN="$GH_TOKEN"
+
+    [[ "$ub_dryRun" != "true" ]] && mkdir -p /home/user/core/"$current_coreSubDir"
+    [[ "$ub_dryRun" != "true" ]] && cd /home/user/core/"$current_coreSubDir"
+
+    local currentPage
+    local currentRepository
+    local currentRepositoryNumber
+
+    if [[ "$ub_dryRun" == "true" ]]
+    then
+        currentPage=1
+        currentRepository="doNotMatch"
+        currentRepositoryNumber=1
+        local repositoryCount="99"
+        #&& [[ "$repositoryCount" -gt "0" ]]
+        while [[ "$currentPage" -le "10" ]] && [[ "$repositoryCount" -gt "0" ]]
+        do
+            _messagePlain_probe 'repository counts...'
+            # get list of repository urls
+            repositoryCount=$(curl --no-fail --retry 5 --retry-delay 90 --connect-timeout 45 --max-time 600 -s -H 'Authorization: token '"$GH_TOKEN" 'https://api.github.com/'"$current_API"'/'"$current_GitHubORGANIZATION"'/repos?per_page=30&page='"$currentPage" | grep  "^    \"git_url\"" | awk -F': "' '{print $2}' | sed -e 's/",//g' | wc -w)
+            
+            echo "$repositoryCount"
+
+            let currentPage="$currentPage"+1
+
+            sleep 1
+        done
+    fi
+
+    currentPage=1
+    currentRepository="doNotMatch"
+    currentRepositoryNumber=1
+    while [[ "$currentPage" -le "10" ]] && [[ "$currentRepository" != "" ]]
+    do
+        currentRepository=""
+        
+        # ATTRIBUTION-AI: ChatGPT ...
+        # https://platform.openai.com/playground/p/6it5h1B901jvAblUhdbsPHEN?model=text-davinci-003
+        #curl -s https://api.github.com/"$current_API"/$current_GitHubORGANIZATION/repos?per_page=30 | jq -r '.[].git_url'
+        #for currentRepository in $(curl -s -H 'Authorization: token '"$GH_TOKEN" 'https://api.github.com/'"$current_API"'/'"$current_GitHubORGANIZATION"'/repos?per_page=30&page='"$currentPage" | grep  "^    \"git_url\"" | awk -F': "' '{print $2}' | sed -e 's/",//g' | sed 's/git:\/\/github.com\/'"$current_GitHubORGANIZATION"'\//git@github.com:'"$current_GitHubORGANIZATION"'\//g')
+        # ATTRIBUTION-AI: claude-37.-sonnet:thinking
+        for currentRepository in $(curl --no-fail --retry 5 --retry-delay 90 --connect-timeout 45 --max-time 600 -s -H "Authorization: token $GH_TOKEN" 'https://api.github.com/'"$current_API"'/'"$current_GitHubORGANIZATION"'/repos?per_page=30&page='"$currentPage" | jq -r '.[].name' | tr -dc 'a-zA-Z0-9\-_.:\n')
+        do
+            sleep 1
+            
+            _messageNormal '\/ \/' _compendium_git-custom-repo "$current_coreSubDir" "$current_GitHubORGANIZATION" "$currentRepository" "$@"
+            #_messagePlain_probe _compendium_git-custom-repo "$current_coreSubDir" "$current_GitHubORGANIZATION" "$currentRepository" "$@"
+            _messagePlain_probe_var currentRepositoryNumber
+            if ! _compendium_git-custom-repo "$current_coreSubDir" "$current_GitHubORGANIZATION" "$currentRepository" "$@"
+            then
+                _messageFAIL
+            fi
+
+            sleep 1
+            let currentRepositoryNumber="$currentRepositoryNumber"+1
+        done
+
+        #[[ "$currentRepository" == "doNotMatch" ]] && currentRepository=""
+
+        let currentPage="$currentPage"+1
+    done
+
+    cd "$functionEntryPWD"
+    _stop
+}
+_compendium_git_sequence_sequence-custom-repo-user() {
+    export current_API="users"
+    "$scriptAbsoluteLocation" _compendium_git_sequence-custom-repo-org "$@"
+}
+_compendium_git-custom-repo-user() {
+    "$scriptAbsoluteLocation" _compendium_git_sequence_sequence-custom-repo-user "$@"
+}
+_compendium_git-upgrade-repo-user() {
+    _compendium_git-custom-repo-user "$@"
+}
+_compendium_git_sequence_sequence-custom-repo-org() {
+    export current_API="orgs"
+    "$scriptAbsoluteLocation" _compendium_git_sequence-custom-repo-org "$@"
+}
+_compendium_git-custom-repo-org() {
+    "$scriptAbsoluteLocation" _compendium_git_sequence_sequence-custom-repo-org "$@"
+}
+_compendium_git-upgrade-repo-org() {
+    _compendium_git-custom-repo-org "$@"
+}
+
+
+
+
+
+
+
+# DANGER: Only use within ephemeral CI, ChRoot, etc.
+#_ubdistChRoot _compendium_gitFresh installations,infrastructure,c/Corporation_ABBREVIATION repositoryName --depth 1
+_compendium_gitFresh() {
+    if [[ "$ub_dryRun" == "true" ]]
+    then
+        _stop
+        exit
+        return
+    fi
+
+    local current_coreSubDir="$1"
+    local current_repositoryName="$2"
+
+    mkdir -p /home/user/core/"$current_coreSubDir"/"$current_repositoryName"
+    
+    if ! cd /home/user/core/"$current_coreSubDir"/"$current_repositoryName" || ! [[ -e /home/user/core/"$current_coreSubDir"/"$current_repositoryName" ]]
+    then 
+        _messageError 'bad: FAIL: cd '/home/user/core/"$current_coreSubDir"/"$current_repositoryName"
+        _messageFAIL
+        exit 1
+    fi
+
+    "$scriptAbsoluteLocation" _compendium_gitFresh_sequence "$current_coreSubDir" "$current_repositoryName"
+}
+_compendium_gitFresh_sequence() {
+    if [[ "$ub_dryRun" == "true" ]]
+    then
+        _stop
+        exit
+        return
+    fi
+
+    _start
+
+    local current_coreSubDir="$1"
+    local current_repositoryName="$2"
+
+    mkdir -p /home/user/core/"$current_coreSubDir"/"$current_repositoryName"
+    
+    if ! cd /home/user/core/"$current_coreSubDir"/"$current_repositoryName" || ! [[ -e /home/user/core/"$current_coreSubDir"/"$current_repositoryName" ]]
+    then 
+        _messageError 'bad: FAIL: cd '/home/user/core/"$current_coreSubDir"/"$current_repositoryName"
+        _messageFAIL
+        exit 1
+    fi
+
+    # DANGER: Only use within ephemeral CI, ChRoot, etc.
+    [[ "$ub_dryRun" != "true" ]] && _gitFresh_enable
+    [[ "$ub_dryRun" != "true" ]] && _gitFresh
+    unset _gitFresh > /dev/null 2>&1
+    unset -f _gitFresh > /dev/null 2>&1
+
+    _stop
+}
 
 
 
@@ -50822,6 +51320,8 @@ _compile_bash_utilities_virtualization() {
 	[[ "$enUb_ChRoot" == "true" ]] && includeScriptList+=( "virtualization/chroot"/userchroot.sh )
 	[[ "$enUb_ChRoot" == "true" ]] && includeScriptList+=( "virtualization/chroot"/dropchroot.sh )
 	
+	[[ "$enUb_ChRoot" == "true" ]] && includeScriptList+=( "virtualization/chroot"/ubdistchroot.sh )
+	
 	[[ "$enUb_bios" == "true" ]] && includeScriptList+=( "virtualization/bios"/createvm.sh )
 	[[ "$enUb_bios" == "true" ]] && includeScriptList+=( "virtualization/bios"/live.sh )
 	
@@ -50918,6 +51418,8 @@ _compile_bash_shortcuts() {
 
 	includeScriptList+=( "shortcuts/git"/gitBest.sh )
 	includeScriptList+=( "shortcuts/git"/wget_githubRelease_internal.sh )
+
+	( [[ "$enUb_github" == "true" ]] || [[ "$enUb_notLean" == "true" ]] || [[ "$enUb_cloud" == "true" ]] || [[ "$enUb_cloud_heavy" == "true" ]] || [[ "$enUb_cloud_self" == "true" ]] ) && includeScriptList+=( "shortcuts/git"/gitCompendium.sh )
 	
 	[[ "$enUb_bup" == "true" ]] && includeScriptList+=( "shortcuts/bup"/bup.sh )
 	
