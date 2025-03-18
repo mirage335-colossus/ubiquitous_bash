@@ -104,6 +104,27 @@ then
 	fi
 fi
 
+
+# ATTENTION: May be redundantly redefined (ie. overloaded) if appropriate (eg. for use outside a 'ubiquitous_bash' environment).
+_backend_override() {
+	! type -f _backend > /dev/null 2>&1 && _backend() { "$@" ; unset -f _backend ; }
+	_backend "$@"
+}
+# ...
+# EXAMPLE
+# ! _openChRoot && _messageFAIL
+# ...
+#_backend() {
+	#_ubdistChRoot "$@"
+	##"$@"
+#}
+# ...
+#_backend_override echo test
+# ...
+# ! _closeChRoot && _messageFAIL
+#unset -f _backend
+
+
 #wsl '~/.ubcore/ubiquitous_bash/ubiquitous_bash.sh' '_wrap' kwrite './gpl-3.0.txt'
 #wsl '~/.ubcore/ubiquitous_bash/ubiquitous_bash.sh' '_wrap' ldesk
 _wrap() {
