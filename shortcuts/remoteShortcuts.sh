@@ -6,6 +6,7 @@ _upgrade-import-assets() {
 
 
 	_start
+    export safeToDeleteGit="true"
 
 	! cd "$safeTmp" && _messageFAIL
 
