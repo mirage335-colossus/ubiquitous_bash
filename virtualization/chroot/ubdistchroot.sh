@@ -50,7 +50,7 @@ _ubdistChRoot_backend_begin() {
 }
 _ubdistChRoot_backend_end() {
     unset -f _backend
-    ! _closeChRoot && _messagePlain_bad 'bad: _openChRoot' && _messageFAIL
+    ! _closeChRoot && _messagePlain_bad 'bad: _closeChRoot' && _messageFAIL
 }
 _ubdistChRoot_backend_sequence() {
     _ubdistChRoot_backend_begin
