@@ -7,7 +7,7 @@ _upgrade-import-assets() {
 
 	_start
 
-	cd "$safeTmp"
+	! cd "$safeTmp" && _messageFAIL
 
 	if ! ( type _gitBest > /dev/null 2>&1 && _gitBest clone --depth 1 'git@github.com:soaringDistributions/zImport_corp_'"$corpName"'.git' )
 	then
@@ -19,6 +19,7 @@ _upgrade-import-assets() {
 				_messageFAIL
 				_stop 1
 				exit 1
+            fi
 		else
 			_messagePlain_bad 'bad: upgrade-import-assets-'"$corpName"': git: FAIL: no remote permissions'
 			_messageFAIL
