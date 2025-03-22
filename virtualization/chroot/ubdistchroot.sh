@@ -47,10 +47,12 @@ _ubdistChRoot() {
 _ubdistChRoot_backend_begin() {
     ! _openChRoot && _messagePlain_bad 'bad: _openChRoot' && _messageFAIL
     _backend() { _ubdistChRoot "$@" ; }
+    true
 }
 _ubdistChRoot_backend_end() {
     unset -f _backend
     ! _closeChRoot && _messagePlain_bad 'bad: _closeChRoot' && _messageFAIL
+    true
 }
 _ubdistChRoot_backend_sequence() {
     _ubdistChRoot_backend_begin

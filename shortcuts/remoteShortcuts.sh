@@ -2,6 +2,9 @@
 
 # _upgrade-import-assets corpName
 _upgrade-import-assets() {
+    "$scriptAbsoluteLocation" _upgrade_sequence-import-assets "$@"
+}
+_upgrade_sequence-import-assets() {
     local corpName="$1"
 
 
@@ -9,6 +12,7 @@ _upgrade-import-assets() {
 
 	! cd "$safeTmp" && _messageFAIL
 
+    export INPUT_GITHUB_TOKEN="$GH_TOKEN"
 	if ! ( type _gitBest > /dev/null 2>&1 && "$scriptAbsoluteLocation" _gitBest clone --depth 1 'git@github.com:soaringDistributions/zImport_corp_'"$corpName"'.git' )
 	then
 		if ls -1 "$HOME"/.ssh/id_* > /dev/null
