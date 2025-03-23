@@ -15,8 +15,15 @@
 
 #./ubiquitous_bash.sh _wget_githubRelease-fromTag-fetchReport 'soaringDistributions/ubDistBuild' 'build_upgrade-13945231768-9999' 'binReport'
 #./ubiquitous_bash.sh _wget_githubRelease-fromTag-fetchReport 'soaringDistributions/ubDistBuild' 'build_upgrade-13945231768-9999' 'binReportX'
+#"$GH_TOKEN"
 _wget_githubRelease-fromTag-fetchReport() {
     ( _messagePlain_nominal '\/\/\/\/\/ init: _wget_githubRelease-fromTag-fetchReport' >&2 ) > /dev/null
+
+    if [[ "$GH_TOKEN" == "" ]]
+    then
+        ( _messagePlain_bad 'bad: FAIL: GH_TOKEN not set' >&2 ) > /dev/null
+        return 1
+    fi
     
     local currentAbsoluteRepo="$1"
     local currentTag="$2"
@@ -463,7 +470,7 @@ _wget_githubRelease-fromTag_procedure() {
     then
         #_wget_githubRelease-address_fromTag-gh
         #local currentTag
-        #curentTag=$(_wget_githubRelease-address_fromTag "$currentAbsoluteRepo" "$currentTag" "$currentFile")
+        #currentTag=$(_wget_githubRelease-address_fromTag "$currentAbsoluteRepo" "$currentTag" "$currentFile")
 
         ( _messagePlain_probe _gh_download "$currentAbsoluteRepo" "$currentTag" "$currentFile" "$@" >&2 ) > /dev/null
         _gh_download "$currentAbsoluteRepo" "$currentTag" "$currentFile" "$@"
