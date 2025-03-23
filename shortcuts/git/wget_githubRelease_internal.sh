@@ -245,8 +245,8 @@ _jq_github_browser_download_address() {
 	then
 		if [[ "$api_address_type" == "" ]] || [[ "$api_address_type" == "url" ]]
         then
-            jq -r ".assets[] | select(.name == \"""$currentFile""\") | .browser_download_url"
-            #jq -r ".assets | sort_by(.published_at) | reverse | .[] | select(.name == \"""$currentFile""\") | .browser_download_url"
+            jq -r ".assets[] | select(.name == "'"$currentFile"'") | .browser_download_url"
+            #jq -r ".assets | sort_by(.published_at) | reverse | .[] | select(.name == "'"$currentFile"'") | .browser_download_url"
             return
         fi
 		if [[ "$api_address_type" == "tagName" ]]
@@ -259,7 +259,7 @@ _jq_github_browser_download_address() {
         fi
 		if [[ "$api_address_type" == "api_url" ]]
 		then
-			jq -r ".assets[] | select(.name == \"""$currentFile""\") | .url"
+			jq -r ".assets[] | select(.name == "'"$currentFile"'") | .url"
 			#jq -r ".assets | sort_by(.published_at) | reverse | .[] | select(.name == \"$currentFile\") | .url"
 			return
 		fi
@@ -267,18 +267,18 @@ _jq_github_browser_download_address() {
 	else
 		if [[ "$api_address_type" == "" ]] || [[ "$api_address_type" == "url" ]]
         then
-            #jq -r ".[] | select(.name == \"""$2""\") | .assets[] | select(.name == \"""$3""\") | .browser_download_url" | sort -n -r | head -n 1
-            jq -r "sort_by(.published_at) | reverse | .[] | select(.name == \"""$currentReleaseLabel""\") | .assets[] | select(.name == \"""$currentFile""\") | .browser_download_url"
+            #jq -r ".[] | select(.name == "'"$2"'") | .assets[] | select(.name == "'"$3"'") | .browser_download_url" | sort -n -r | head -n 1
+            jq -r "sort_by(.published_at) | reverse | .[] | select(.name == "'"$currentReleaseLabel"'") | .assets[] | select(.name == "'"$currentFile"'") | .browser_download_url"
             return
         fi
 		if [[ "$api_address_type" == "tagName" ]]
         then
-            jq -r "sort_by(.published_at) | reverse | .[] | select(.name == \"""$currentReleaseLabel""\") | .tag_name"
+            jq -r "sort_by(.published_at) | reverse | .[] | select(.name == "'"$currentReleaseLabel"'") | .tag_name"
             return
         fi
 		if [[ "$api_address_type" == "api_url" ]]
 		then
-			jq -r "sort_by(.published_at) | reverse | .[] | select(.name == \"""$currentReleaseLabel""\") | .assets[] | select(.name == \"""$currentFile""\") | .url"
+			jq -r "sort_by(.published_at) | reverse | .[] | select(.name == "'"$currentReleaseLabel"'") | .assets[] | select(.name == "'"$currentFile"'") | .url"
 			return
 		fi
 	fi
@@ -399,7 +399,10 @@ _wget_githubRelease_procedure-address-curl() {
 		local currentIteration
 		currentIteration=1
 		
-		while ( [[ "$currentData_page" != "" ]] && [[ $(_safeEcho_newline "$currentData_page" | tr -dc 'a-zA-Z\[\]') != $(echo 'WwoKXQo=' | base64 -d | tr -dc 'a-zA-Z\[\]') ]] ) && [[ "$currentIteration" -le "3" ]]
+		# ATTRIBUTION-AI: Many-Chat 2025-03-23
+		# Alternative detection of empty array, as suggested by AI LLM .
+		#[[ $(jq 'length' <<< "$currentData_page") -gt 0 ]]
+		while ( [[ "$currentData_page" != "" ]] && [[ $(_safeEcho_newline "$currentData_page" | tr -dc 'a-zA-Z\[\]' | sed '/^$/d') != $(echo 'WwoKXQo=' | base64 -d | tr -dc 'a-zA-Z\[\]') ]] ) && [[ "$currentIteration" -le "3" ]]
 		do
 			currentData_page=$(_curl_githubAPI_releases_page "$currentAbsoluteRepo" "$currentReleaseLabel" "$currentFile" "$currentIteration")
 			currentExitStatus_tmp="$?"
@@ -1427,7 +1430,10 @@ _wget_githubRelease_join_sequence-stdout() {
         do
             if [[ "$currentSkip" == "skip" ]]
             then
-                currentSkip=$(_wget_githubRelease-skip-API_URL-curl "$currentAbsoluteRepo" "$currentReleaseLabel" "$currentFile".part"$currentPart")
+				# ATTENTION: Could expect to use the 'API_URL' function in both cases, since we are not using the resulting URL except to 'skip'/'download' .
+				#currentSkip=$(_wget_githubRelease-skip-API_URL-curl "$currentAbsoluteRepo" "$currentReleaseLabel" "$currentFile".part"$currentPart")
+				[[ "$GH_TOKEN" != "" ]] && currentSkip=$(_wget_githubRelease-skip-API_URL-curl "$currentAbsoluteRepo" "$currentReleaseLabel" "$currentFile".part"$currentPart")
+				[[ "$GH_TOKEN" == "" ]] && currentSkip=$(_wget_githubRelease-skip-URL-curl "$currentAbsoluteRepo" "$currentReleaseLabel" "$currentFile".part"$currentPart")
                 #[[ "$?" != "0" ]] && ( _messagePlain_bad 'bad: FAIL: _wget_githubRelease-skip-API_URL-curl' >&2 ) > /dev/null && ( _messageError 'FAIL' >&2 ) > /dev/null && exit 1
                 #[[ "$?" != "0" ]] && currentSkip="skip"
                 [[ "$?" != "0" ]] && ( _messagePlain_warn 'bad: FAIL: _wget_githubRelease-skip-API_URL-curl' >&2 ) > /dev/null
@@ -1487,8 +1493,11 @@ _wget_githubRelease_join_sequence-stdout() {
 		if [[ "$currentSkip" == "skip" ]]
 		then
 			# ATTENTION: EXPERIMENT
-			currentSkip=$(_wget_githubRelease-skip-API_URL-curl "$currentAbsoluteRepo" "$currentReleaseLabel" "$currentFile".part"$currentPart")
-			#currentSkip=$([[ "$currentPart" -gt "17" ]] && echo 'skip' ; true)
+			# ATTENTION: Could expect to use the 'API_URL' function in both cases, since we are not using the resulting URL except to 'skip'/'download' .
+			#currentSkip=$(_wget_githubRelease-skip-API_URL-curl "$currentAbsoluteRepo" "$currentReleaseLabel" "$currentFile".part"$currentPart")
+			##currentSkip=$([[ "$currentPart" -gt "17" ]] && echo 'skip' ; true)
+			[[ "$GH_TOKEN" != "" ]] && currentSkip=$(_wget_githubRelease-skip-API_URL-curl "$currentAbsoluteRepo" "$currentReleaseLabel" "$currentFile".part"$currentPart")
+			[[ "$GH_TOKEN" == "" ]] && currentSkip=$(_wget_githubRelease-skip-URL-curl "$currentAbsoluteRepo" "$currentReleaseLabel" "$currentFile".part"$currentPart")
 			
 			#[[ "$?" != "0" ]] && ( _messagePlain_bad 'bad: FAIL: _wget_githubRelease-skip-API_URL-curl' >&2 ) > /dev/null && ( _messageError 'FAIL' >&2 ) > /dev/null && exit 1
 			#[[ "$?" != "0" ]] && currentSkip="skip"

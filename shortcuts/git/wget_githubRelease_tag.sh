@@ -81,8 +81,8 @@ _jq_github_browser_download_address_fromTag() {
 
     if [[ "$api_address_type" == "" ]] || [[ "$api_address_type" == "url" ]]
     then
-        #jq -r ".assets[] | select(.name == \"""$currentFile""\") | .browser_download_url"
-        #jq -r ".assets | sort_by(.published_at) | reverse | .[] | select(.name == \"""$currentFile""\") | .browser_download_url"
+        #jq -r ".assets[] | select(.name == "'"$currentFile"'") | .browser_download_url"
+        #jq -r ".assets | sort_by(.published_at) | reverse | .[] | select(.name == "'"$currentFile"'") | .browser_download_url"
 
         jq -r '.[] | select(.tag_name == "'"$currentTag"'") | .assets[] | select(.name == "'"$currentFile"'") | .browser_download_url'
         return
@@ -97,7 +97,7 @@ _jq_github_browser_download_address_fromTag() {
     fi
     if [[ "$api_address_type" == "api_url" ]]
     then
-        #jq -r ".assets[] | select(.name == \"""$currentFile""\") | .url"
+        #jq -r ".assets[] | select(.name == "'"$currentFile"'") | .url"
         #jq -r ".assets | sort_by(.published_at) | reverse | .[] | select(.name == \"$currentFile\") | .url"
         
         #jq -r ".[] | select(.tag_name == \"$currentTag\") | .assets[] | select(.name == \"$currentFile\") | .url"
@@ -145,7 +145,10 @@ _wget_githubRelease_procedure-address_fromTag-curl() {
     local currentIteration
     currentIteration=1
     
-    while ( [[ "$currentData_page" != "" ]] && [[ $(_safeEcho_newline "$currentData_page" | tr -dc 'a-zA-Z\[\]') != $(echo 'WwoKXQo=' | base64 -d | tr -dc 'a-zA-Z\[\]') ]] ) && [[ "$currentIteration" -le "3" ]]
+    # ATTRIBUTION-AI: Many-Chat 2025-03-23
+    # Alternative detection of empty array, as suggested by AI LLM .
+    #[[ $(jq 'length' <<< "$currentData_page") -gt 0 ]]
+    while ( [[ "$currentData_page" != "" ]] && [[ $(_safeEcho_newline "$currentData_page" | tr -dc 'a-zA-Z\[\]' | sed '/^$/d') != $(echo 'WwoKXQo=' | base64 -d | tr -dc 'a-zA-Z\[\]') ]] ) && [[ "$currentIteration" -le "3" ]]
     do
         #currentData_page=$(set -o pipefail ; _curl_githubAPI_releases_page "$currentAbsoluteRepo" "$currentReleaseLabel" "$currentFile")
         #_set_curl_github_retry
@@ -655,6 +658,9 @@ _wget_githubRelease_procedure-releasesTags-curl() {
     local currentIteration
     currentIteration=1
     
+    # ATTRIBUTION-AI: Many-Chat 2025-03-23
+    # Alternative detection of empty array, as suggested by AI LLM .
+    #[[ $(jq 'length' <<< "$currentData_page") -gt 0 ]]
     while ( [[ "$currentData_page" != "" ]] && [[ $(_safeEcho_newline "$currentData_page" | tr -dc 'a-zA-Z\[\]' | sed '/^$/d') != $(echo 'WwoKXQo=' | base64 -d | tr -dc 'a-zA-Z\[\]') ]] ) && [[ "$currentIteration" -le "3" ]]
     do
         #currentData_page=$(_curl_githubAPI_releases_page "$currentAbsoluteRepo" "$currentReleaseLabel" "$currentFile" "$currentIteration")
