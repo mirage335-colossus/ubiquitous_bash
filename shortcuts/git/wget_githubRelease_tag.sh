@@ -84,7 +84,9 @@ _jq_github_browser_download_address_fromTag() {
         #jq -r ".assets[] | select(.name == "'"$currentFile"'") | .browser_download_url"
         #jq -r ".assets | sort_by(.published_at) | reverse | .[] | select(.name == "'"$currentFile"'") | .browser_download_url"
 
-        jq -r '.[] | select(.tag_name == "'"$currentTag"'") | .assets[] | select(.name == "'"$currentFile"'") | .browser_download_url'
+        #jq -r '.[] | select(.tag_name == "'"$currentTag"'") | .assets[] | select(.name == "'"$currentFile"'") | .browser_download_url'
+        jq --arg shellFile "$currentFile" --arg shellTag "$currentTag" -r '.[] | select(.tag_name == $shellTag) | .assets[] | select(.name == $shellFile) | .browser_download_url'
+        
         return
     fi
     if [[ "$api_address_type" == "tagName" ]]
@@ -92,7 +94,9 @@ _jq_github_browser_download_address_fromTag() {
         #jq -r ".tag_name"
         
         # ATTRIBUTION-AI: ChatGPT 4.5-preview 2025-03-23
-        jq -r '.[] | select(.tag_name == "'"$currentTag"'") | select(.assets[].name == "'"$currentFile"'") | .tag_name'
+        #jq -r '.[] | select(.tag_name == "'"$currentTag"'") | select(.assets[].name == "'"$currentFile"'") | .tag_name'
+        jq --arg shellFile "$currentFile" --arg shellTag "$currentTag" -r '.[] | select(.tag_name == $shellTag) | select(.assets[].name == $shellFile) | .tag_name'
+
         return
     fi
     if [[ "$api_address_type" == "api_url" ]]
@@ -101,7 +105,9 @@ _jq_github_browser_download_address_fromTag() {
         #jq -r ".assets | sort_by(.published_at) | reverse | .[] | select(.name == \"$currentFile\") | .url"
         
         #jq -r ".[] | select(.tag_name == \"$currentTag\") | .assets[] | select(.name == \"$currentFile\") | .url"
-        jq -r '.[] | select(.tag_name == "'"$currentTag"'") | .assets[] | select(.name == "'"$currentFile"'") | .url'
+        #jq -r '.[] | select(.tag_name == "'"$currentTag"'") | .assets[] | select(.name == "'"$currentFile"'") | .url'
+        jq --arg shellFile "$currentFile" --arg shellTag "$currentTag" -r '.[] | select(.tag_name == $shellTag) | .assets[] | select(.name == $shellFile) | .url'
+
         return
     fi
 }

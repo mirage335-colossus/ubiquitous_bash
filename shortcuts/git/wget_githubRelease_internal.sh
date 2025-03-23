@@ -245,40 +245,40 @@ _jq_github_browser_download_address() {
 	then
 		if [[ "$api_address_type" == "" ]] || [[ "$api_address_type" == "url" ]]
         then
-            jq -r ".assets[] | select(.name == "'"$currentFile"'") | .browser_download_url"
-            #jq -r ".assets | sort_by(.published_at) | reverse | .[] | select(.name == "'"$currentFile"'") | .browser_download_url"
+            #jq -r ".assets[] | select(.name == "'"$currentFile"'") | .browser_download_url"
+			jq --arg filename "$currentFile" --arg releaseLabel "$currentReleaseLabel" -r '.assets[] | select(.name == $filename) | .browser_download_url'
             return
         fi
 		if [[ "$api_address_type" == "tagName" ]]
         then
-            jq -r ".tag_name"
-			#jq -r 'sort_by(.published_at) | reverse | .[].tag_name'
-			#jq -r ".assets | sort_by(.published_at) | reverse | .[] | .[].tag_name"
-			#jq -r ".assets | sort_by(.published_at) | reverse | .[] | select(.name == \"$currentFile\") | .tagName"
+            #jq -r ".tag_name"
+			jq --arg filename "$currentFile" --arg releaseLabel "$currentReleaseLabel" -r '.tag_name'
             return
         fi
 		if [[ "$api_address_type" == "api_url" ]]
 		then
-			jq -r ".assets[] | select(.name == "'"$currentFile"'") | .url"
-			#jq -r ".assets | sort_by(.published_at) | reverse | .[] | select(.name == \"$currentFile\") | .url"
+			#jq -r ".assets[] | select(.name == "'"$currentFile"'") | .url"
+			jq --arg filename "$currentFile" --arg releaseLabel "$currentReleaseLabel" -r '.assets[] | select(.name == $filename) | .url'
 			return
 		fi
 	# eg. 'internal', 'build', etc
 	else
 		if [[ "$api_address_type" == "" ]] || [[ "$api_address_type" == "url" ]]
         then
-            #jq -r ".[] | select(.name == "'"$2"'") | .assets[] | select(.name == "'"$3"'") | .browser_download_url" | sort -n -r | head -n 1
-            jq -r "sort_by(.published_at) | reverse | .[] | select(.name == "'"$currentReleaseLabel"'") | .assets[] | select(.name == "'"$currentFile"'") | .browser_download_url"
+            #jq -r "sort_by(.published_at) | reverse | .[] | select(.name == "'"$currentReleaseLabel"'") | .assets[] | select(.name == "'"$currentFile"'") | .browser_download_url"
+			jq --arg filename "$currentFile" --arg releaseLabel "$currentReleaseLabel" -r 'sort_by(.published_at) | reverse | .[] | select(.name == $releaseLabel) | .assets[] | select(.name == $filename) | .browser_download_url'
             return
         fi
 		if [[ "$api_address_type" == "tagName" ]]
         then
-            jq -r "sort_by(.published_at) | reverse | .[] | select(.name == "'"$currentReleaseLabel"'") | .tag_name"
+            #jq -r "sort_by(.published_at) | reverse | .[] | select(.name == "'"$currentReleaseLabel"'") | .tag_name"
+			jq --arg filename "$currentFile" --arg releaseLabel "$currentReleaseLabel" -r 'sort_by(.published_at) | reverse | .[] | select(.name == $releaseLabel) | .tag_name'
             return
         fi
 		if [[ "$api_address_type" == "api_url" ]]
 		then
-			jq -r "sort_by(.published_at) | reverse | .[] | select(.name == "'"$currentReleaseLabel"'") | .assets[] | select(.name == "'"$currentFile"'") | .url"
+			#jq -r "sort_by(.published_at) | reverse | .[] | select(.name == "'"$currentReleaseLabel"'") | .assets[] | select(.name == "'"$currentFile"'") | .url"
+			jq --arg filename "$currentFile" --arg releaseLabel "$currentReleaseLabel" -r 'sort_by(.published_at) | reverse | .[] | select(.name == $releaseLabel) | .assets[] | select(.name == $filename) | .url'
 			return
 		fi
 	fi
