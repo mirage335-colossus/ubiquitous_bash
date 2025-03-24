@@ -9,9 +9,12 @@
 _build_fallback_upgrade-ubcp-fetch() {
     _messageNormal 'init: _build_fallback_upgrade-ubcp-fetch'
 
-    local currentReleaseLabel="$1"
-    #[[ "$currentReleaseLabel" == "" ]] && currentReleaseLabel="internal"
-    [[ "$currentReleaseLabel" == "" ]] && currentReleaseLabel="spring"
+    local currentReleaseLabelTag="$1"
+    #[[ "$currentReleaseLabelTag" == "" ]] && currentReleaseLabelTag="internal"
+    [[ "$currentReleaseLabelTag" == "" ]] && currentReleaseLabelTag="spring"
+
+    local current_wget_githubRelease_function="$2"
+    [[ "$current_wget_githubRelease_function" == "" ]] && current_wget_githubRelease_function="_wget_githubRelease"
 
     mkdir -p "$scriptLocal"/upgradeTmp
     cd "$scriptLocal"/upgradeTmp
@@ -45,22 +48,25 @@ _build_fallback_upgrade-ubcp-fetch() {
     #  Alternatively, especially until sufficient confidence has been established by track record that the extract/compress and upgrade procedures are not damaging the Cygwin/MSW filesystem, a CI environment may use the Cygwin/MSW environment for the _report_setup_ubcp function.
     #   No need to delete or avoid creating these reports. If a CI environment uses a Cygwin/MSW environment, then obviously a separate ephemeral dist/OS will not include reports fetched or otherwise created from UNIX/Linux .
     cd "$scriptLocal"/upgradeTmp
-    ! _wget_githubRelease "mirage335-colossus/ubiquitous_bash" "$currentReleaseLabel" "ubcp-binReport" && _messageFAIL
-    ! _wget_githubRelease "mirage335-colossus/ubiquitous_bash" "$currentReleaseLabel" "ubcp-cygwin-portable-installer.log" && _messageFAIL
-    ! _wget_githubRelease "mirage335-colossus/ubiquitous_bash" "$currentReleaseLabel" "ubcp-packageReport" && _messageFAIL
-    ! _wget_githubRelease "mirage335-colossus/ubiquitous_bash" "$currentReleaseLabel" "_custom_splice_opensslConfig.log" && _messageFAIL
-    ! _wget_githubRelease "mirage335-colossus/ubiquitous_bash" "$currentReleaseLabel" "_mitigate-ubcp.log" && _messageFAIL
-    ! _wget_githubRelease "mirage335-colossus/ubiquitous_bash" "$currentReleaseLabel" "_setupUbiquitous.log" && _messageFAIL
-    ! _wget_githubRelease "mirage335-colossus/ubiquitous_bash" "$currentReleaseLabel" "_test-lean.log" && _messageFAIL
+    ! "$current_wget_githubRelease_function" "mirage335-colossus/ubiquitous_bash" "$currentReleaseLabelTag" "ubcp-binReport" && _messageFAIL
+    ! "$current_wget_githubRelease_function" "mirage335-colossus/ubiquitous_bash" "$currentReleaseLabelTag" "ubcp-cygwin-portable-installer.log" && _messageFAIL
+    ! "$current_wget_githubRelease_function" "mirage335-colossus/ubiquitous_bash" "$currentReleaseLabelTag" "ubcp-packageReport" && _messageFAIL
+    ! "$current_wget_githubRelease_function" "mirage335-colossus/ubiquitous_bash" "$currentReleaseLabelTag" "_custom_splice_opensslConfig.log" && _messageFAIL
+    ! "$current_wget_githubRelease_function" "mirage335-colossus/ubiquitous_bash" "$currentReleaseLabelTag" "_mitigate-ubcp.log" && _messageFAIL
+    ! "$current_wget_githubRelease_function" "mirage335-colossus/ubiquitous_bash" "$currentReleaseLabelTag" "_setupUbiquitous.log" && _messageFAIL
+    ! "$current_wget_githubRelease_function" "mirage335-colossus/ubiquitous_bash" "$currentReleaseLabelTag" "_test-lean.log" && _messageFAIL
 
 
     mkdir -p "$scriptLocal"/upgradeTmp/package_ubcp-core
     rm -f "$scriptLocal"/upgradeTmp/package_ubcp-core.7z
 
     cd "$scriptLocal"/upgradeTmp
-    ! _wget_githubRelease "mirage335-colossus/ubiquitous_bash" "$currentReleaseLabel" "package_ubcp-core.7z" -O "$scriptLocal"/upgradeTmp/package_ubcp-core.7z && _messageFAIL
+    ! "$current_wget_githubRelease_function" "mirage335-colossus/ubiquitous_bash" "$currentReleaseLabelTag" "package_ubcp-core.7z" -O "$scriptLocal"/upgradeTmp/package_ubcp-core.7z && _messageFAIL
 
     return 0
+}
+_build_fallback_upgrade-ubcp-fetch-fromTag() {
+    _build_fallback_upgrade-ubcp-fetch "$1" "_wget_githubRelease-fromTag"
 }
 
 _build_fallback_upgrade-ubcp-extract() {
