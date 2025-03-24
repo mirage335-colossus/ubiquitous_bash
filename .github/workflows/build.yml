@@ -525,7 +525,7 @@ jobs:
         run: |
           #export releaseLabel=latest
           #./ubiquitous_bash.sh _bin-build_import _build_fallback_upgrade-ubcp-fetch "$releaseLabel"
-          ./ubiquitous_bash.sh _build_fallback_upgrade-ubcp-fetch-fromTag "$tag_name"
+          ./ubiquitous_bash.sh _bin-build_import _build_fallback_upgrade-ubcp-fetch-fromTag "$tag_name"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           tag_name: build-${{ github.run_id }}-9999
