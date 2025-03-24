@@ -161,7 +161,7 @@ _wget_githubRelease_procedure-address_fromTag-curl() {
     # ATTRIBUTION-AI: Many-Chat 2025-03-23
     # Alternative detection of empty array, as suggested by AI LLM .
     #[[ $(jq 'length' <<< "$currentData_page") -gt 0 ]]
-    while ( [[ "$currentData_page" != "" ]] && [[ $(_safeEcho_newline "$currentData_page" | tr -dc 'a-zA-Z\[\]' | sed '/^$/d') != $(echo 'WwoKXQo=' | base64 -d | tr -dc 'a-zA-Z\[\]') ]] ) && [[ "$currentIteration" -le "3" ]]
+    while ( [[ "$currentData_page" != "" ]] && [[ $(_safeEcho_newline "$currentData_page" | tr -dc 'a-zA-Z\[\]' | sed '/^$/d') != $(echo 'WwoKXQo=' | base64 -d | tr -dc 'a-zA-Z\[\]') ]] ) && ( [[ "$currentIteration" -le "1" ]] || ( [[ "$GH_TOKEN" != "" ]] && [[ "$currentIteration" -le "3" ]] ) )
     do
         #currentData_page=$(set -o pipefail ; _curl_githubAPI_releases_page "$currentAbsoluteRepo" "$currentReleaseLabel" "$currentFile")
         #_set_curl_github_retry
@@ -1248,7 +1248,7 @@ _wget_githubRelease_procedure-releasesTags-curl() {
     # ATTRIBUTION-AI: Many-Chat 2025-03-23
     # Alternative detection of empty array, as suggested by AI LLM .
     #[[ $(jq 'length' <<< "$currentData_page") -gt 0 ]]
-    while ( [[ "$currentData_page" != "" ]] && [[ $(_safeEcho_newline "$currentData_page" | tr -dc 'a-zA-Z\[\]' | sed '/^$/d') != $(echo 'WwoKXQo=' | base64 -d | tr -dc 'a-zA-Z\[\]') ]] ) && [[ "$currentIteration" -le "3" ]]
+    while ( [[ "$currentData_page" != "" ]] && [[ $(_safeEcho_newline "$currentData_page" | tr -dc 'a-zA-Z\[\]' | sed '/^$/d') != $(echo 'WwoKXQo=' | base64 -d | tr -dc 'a-zA-Z\[\]') ]] ) && ( [[ "$currentIteration" -le "1" ]] || ( [[ "$GH_TOKEN" != "" ]] && [[ "$currentIteration" -le "3" ]] ) )
     do
         #currentData_page=$(_curl_githubAPI_releases_page "$currentAbsoluteRepo" "$currentReleaseLabel" "$currentFile" "$currentIteration")
         # ATTENTION: FORCE curl retry , since we will not be doing prebuffering (or downloading any files) directly with 'releasesTags' .
@@ -1373,7 +1373,7 @@ _wget_githubRelease_procedure-releasesTags-gh() {
     local currentIteration
     currentIteration=1
     
-    while ( [[ "$currentData_page" != "" ]] && [[ "$currentIteration" -le "3" ]] )
+    while ( [[ "$currentData_page" != "" ]] && ( [[ "$currentIteration" -le "1" ]] || ( [[ "$GH_TOKEN" != "" ]] && [[ "$currentIteration" -le "3" ]] ) ) )
     do
         currentData_page=$(set -o pipefail ; gh release list -L $(( $currentIteration * 100 )) -R "$currentAbsoluteRepo" | _wget_githubRelease_procedure-releasesTags-gh-awk | tr -dc 'a-zA-Z0-9\-_.:\n' | tail -n +$(( $currentIteration * 100 - 100 + 1 )))
         currentExitStatus_tmp="$?"
