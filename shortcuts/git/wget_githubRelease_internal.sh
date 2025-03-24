@@ -668,7 +668,7 @@ _wget_githubRelease_procedure-address-gh() {
     local currentIteration
     currentIteration=1
 
-    while [[ "$currentTag" == "" ]] && [[ "$currentIteration" -le 3 ]]
+    while [[ "$currentTag" == "" ]] && ( [[ "$currentIteration" -le "1" ]] || ( [[ "$GH_TOKEN" != "" ]] && [[ "$currentIteration" -le "3" ]] ) )
     do
         #currentTag=$(gh release list -L 100 -R "$currentAbsoluteRepo" | sed 's/Latest//' | grep '^'"$currentReleaseLabel" | awk '{ print $2 }' | head -n 1)
         
