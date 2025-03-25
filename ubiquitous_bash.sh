@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='3146876177'
+export ub_setScriptChecksum_contents='2282843855'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -29782,15 +29782,152 @@ build-1001-1" ]] || ( _messagePlain_bad 'fail: bad: _wget_githubRelease_procedur
 
 
 
-# WARNING: No production use. (yet)
+# WARNING: No production use. Non-essential.
+# May be used nearly interchangeably in place of 'wget_githubRelease_internal' as an alternative to 'releaseLabel' downloads within 'build.yml, 'zCustom.yml', 'zUpgrade.yml', etc, GitHub Actions workflow builds (ie. internally downloading the ingredient, beforeBoot, etc, disk image, specifically for the currentTag, rather than the latest matching the 'build' label). Not regarded as production use since non-concurrent use of the 'releaseLabel' download functions is considered the production functions, as these have commonality with the functions tested by end-users over the vagarities of internet connections, and are the first functions maintained with any workarounds, etc, as needed.
+#  ATTENTION: This definition of 'no production use', is consistent with the use of that phrase throughout 'ubiquitous_bash'. Production use of these functions, can be tolerated, but is NOT guaranteed. Best practice when using such 'no production use' functions in production scripting, is to leave a commented out, but adequately tested, alternative use of a function that is guaranteed, to quickly change this back if needed.
 #
 # Downloads single files through GitHub API by unique tag (instead of label).
 #
 # Only necessary for 'analysis' - downloading currentTag log files, comparing to log files from tags of previous releases.
-# May eventually be expanded to support multi-part parallel prebuffered downloads to allow concurrency with 'build.yml', 'zCustom.yml', 'zUpgrade.yml', etc, GitHub Actions workflow builds (ie. internally downloading the ingredient, beforeBoot, etc, disk image, specifically for the currentTag, rather than the latest matching the 'build' label).
 
 # CAUTION: NOT included in 'rotten' .
 # May depend on functions from 'wget_githubRelease_internal.sh', NOT vice-versa .
+
+
+
+
+
+
+
+
+
+#env currentRepository='mirage335-colossus/ubiquitous_bash' currentReleaseTag='build-14030770217-9999' ./ubiquitous_bash.sh _wget_githubRelease-fromTag-analysisReport-fetch 20 'ubcp-binReport-UNIX_Linux'
+#env currentRepository='mirage335-colossus/ubiquitous_bash' currentReleaseTag='build-13917942290-9999' ./ubiquitous_bash.sh _wget_githubRelease-fromTag-analysisReport-fetch 20 'ubcp-binReport-UNIX_Linux'
+#env:
+#  currentRepository: ${{ github.repository }}
+#  currentReleaseTag: build-${{ github.run_id }}-9999
+#  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+_wget_githubRelease-fromTag-analysisReport-fetch() {
+    local currentLimit
+    currentLimit="$1"
+    shift
+
+    mkdir -p "$scriptLocal"/analysisTmp
+
+    local current_reportFiles_list
+    current_reportFiles_list=()
+
+    current_reportFiles_list=( "$@" )
+
+    local current_reportFile
+
+    #for current_reportFile in "${current_reportFiles_list[@]}"; do
+        #_wget_githubRelease-fromTag-fetchReport "$currentRepository" "$currentReleaseTag" "$current_reportFile" > "$scriptLocal"/analysisTmp/"$current_reportFile"
+    #done
+
+    ! _wget_githubRelease-releasesTags "$currentRepository" "$currentLimit" | tr -dc 'a-zA-Z0-9\-_.:\n' > "$scriptLocal"/analysisTmp/releasesTags && _messageFAIL
+    
+    for current_reportFile in "${current_reportFiles_list[@]}"; do
+        for current_reviewReleaseTag in $(cat "$scriptLocal"/analysisTmp/releasesTags); do
+            # Download the (eg. binReport) report file for this release
+            _wget_githubRelease-fromTag-fetchReport "$currentRepository" "$current_reviewReleaseTag" "$current_reportFile" --no-fail > "$scriptLocal"/analysisTmp/"$current_reportFile"-"$current_reviewReleaseTag"
+        done
+    done
+
+    if [[ "$currentReleaseTag" != "" ]]
+    then
+        _wget_githubRelease-fromTag-analysisReport-select "${current_reportFiles_list[@]}"
+        return
+    fi
+    return 0
+}
+
+#./ubiquitous_bash.sh _wget_githubRelease-fromTag-analysisReport-select 'ubcp-binReport-UNIX_Linux'
+#env:
+#  currentReleaseTag: build-${{ github.run_id }}-9999
+_wget_githubRelease-fromTag-analysisReport-select() {
+    mkdir -p "$scriptLocal"/analysisTmp
+
+    local current_reportFiles_list
+    current_reportFiles_list=()
+
+    current_reportFiles_list=( "$@" )
+
+    local current_reportFile
+
+    if [[ "$currentReleaseTag" == "" ]]
+    then
+        ( echo 'FAIL: missing: currentReleaseTag' >&2 ) > /dev/null
+        _messageFAIL
+    fi
+    
+    for current_reportFile in "${current_reportFiles_list[@]}"; do
+        ( _messagePlain_probe cat "$scriptLocal"/analysisTmp/"$current_reportFile"-"$currentReleaseTag" > "$scriptLocal"/analysisTmp/"$current_reportFile" >&2 ) > /dev/null
+        if ! cat "$scriptLocal"/analysisTmp/"$current_reportFile"-"$currentReleaseTag" > "$scriptLocal"/analysisTmp/"$current_reportFile"
+        then
+            _messageFAIL
+        fi
+    done
+    return 0
+}
+
+
+#env currentRepository='mirage335-colossus/ubiquitous_bash' currentReleaseTag='build-14030770217-9999' ./ubiquitous_bash.sh _wget_githubRelease-fromTag-analysisReport-analysis 65 'ubcp-binReport-UNIX_Linux'
+#env currentRepository='mirage335-colossus/ubiquitous_bash' currentReleaseTag='build-13917942290-9999' ./ubiquitous_bash.sh _wget_githubRelease-fromTag-analysisReport-analysis 65 'ubcp-binReport-UNIX_Linux'
+#env:
+#  currentReleaseTag: build-${{ github.run_id }}-9999
+_wget_githubRelease-fromTag-analysisReport-analysis() {
+    local currentLimit
+    currentLimit="$1"
+    shift
+
+    mkdir -p "$scriptLocal"/analysisTmp
+
+    local current_reportFiles_list
+    current_reportFiles_list=()
+
+    current_reportFiles_list=( "$@" )
+
+    local current_reportFile
+    
+    for current_reportFile in "${current_reportFiles_list[@]}"; do
+        rm -f "$scriptLocal"/analysisTmp/missing-"$current_reportFile"
+        for current_reviewReleaseTag in $(cat "$scriptLocal"/analysisTmp/releasesTags); do
+            # Compare the list of binaries, etc, in this release to the current release
+            if [ "$current_reviewReleaseTag" != "$currentReleaseTag" ]; then
+                echo | tee -a "$scriptLocal"/analysisTmp/missing-"$current_reportFile"
+                echo 'Items (ie. '"$current_reportFile"') in '"$current_reviewReleaseTag"' but not in currentRelease '"$currentReleaseTag"':' | tee -a "$scriptLocal"/analysisTmp/missing-"$current_reportFile"
+                #| tee -a "$scriptLocal"/analysisTmp/missing-"$current_reportFile"
+                comm -23 <(sort "$scriptLocal"/analysisTmp/"$current_reportFile"-"$current_reviewReleaseTag") <(sort "$scriptLocal"/analysisTmp/"$current_reportFile") > "$scriptLocal"/analysisTmp/missing-"$current_reportFile".tmp
+                cat "$scriptLocal"/analysisTmp/missing-"$current_reportFile".tmp | head -n "$currentLimit"
+                cat "$scriptLocal"/analysisTmp/missing-"$current_reportFile".tmp >> "$scriptLocal"/analysisTmp/missing-"$current_reportFile"
+                rm -f "$scriptLocal"/analysisTmp/missing-"$current_reportFile".tmp
+            fi
+        done
+    done
+    return 0
+}
+
+_safeRMR-analysisTmp() {
+    [[ -e "$scriptLocal"/analysisTmp ]] && _safeRMR "$scriptLocal"/analysisTmp
+}
+
+#env currentRepository='mirage335-colossus/ubiquitous_bash' currentReleaseTag='build-14030770217-9999' ./ubiquitous_bash.sh _wget_githubRelease-fromTag-analysisReport 'ubcp-binReport-UNIX_Linux'
+#env currentRepository='mirage335-colossus/ubiquitous_bash' currentReleaseTag='build-13917942290-9999' ./ubiquitous_bash.sh _wget_githubRelease-fromTag-analysisReport 'ubcp-binReport-UNIX_Linux'
+#env:
+#  currentRepository: ${{ github.repository }}
+#  currentReleaseTag: build-${{ github.run_id }}-9999
+#  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+# No production use.
+_wget_githubRelease-fromTag-analysisReport() {
+    _wget_githubRelease-fromTag-analysisReport-fetch 20 "$@"
+    _wget_githubRelease-fromTag-analysisReport-select "$@"
+    _wget_githubRelease-fromTag-analysisReport-analysis 65 "$@"
+    _safeRMR-analysisTmp
+}
+
+
+
 
 
 

@@ -1,0 +1,195 @@
+
+# Complicated code in this script is due to issues of mitigating non-portable files, parallelization to complete this in minutes rather than several hours, packaging multiple times merely to ensure a Cygwin root filesystem limited to features compatible with such packages, and installation of files through functions originally intended to install directly from the internet rather than to create a package.
+# In fact, this script has only one essential purpose:
+#  package_ubcp-core.7z
+#   _bash.bat
+#   ubiquitous_bash
+#   ubcp
+# The subfiles/subdirectories of the package are nearly the same as would be populated in a ubiquitous_bash repository after running such commands as:
+#  .\ubcp-cygwin-portable-installer
+# One possible significant difference is the batch files installed to  /core/infrastructure/ubiquitous_bash  may, at least due to lack of other ubiquitous_bash files, default to  /core/infrastructure/ubcp .
+
+name: experiment
+
+
+# https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#permissions
+permissions:
+  actions: write
+  checks: read
+  contents: write
+  deployments: read
+  issues: none
+  packages: read
+  pull-requests: read
+  repository-projects: read
+  security-events: none
+  statuses: read
+
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: 'Release tag (e.g., build-13917942290-9999)'
+        required: true
+
+# https://docs.github.com/en/actions/using-jobs/using-concurrency
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+
+
+
+
+jobs:
+
+  analysis_ubcp_missingBinaries:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 1
+          submodules: 'recursive'
+      - name: _getMinimal_cloud-special
+        shell: bash
+        timeout-minutes: 120
+        run: |
+          mkdir -p ./_local
+          #sudo -n apt-get -y install jq gh curl coreutils p7zip findutils tar gzip bzip2 sed axel aria2 rsync pv dos2unix xxd util-linux openssl
+          sudo -n apt-get -y install jq gh curl coreutils findutils tar gzip bzip2 sed axel aria2 rsync pv dos2unix xxd util-linux
+
+      - name: fetch! binReport
+        shell: bash
+        run: |
+          ./ubiquitous_bash.sh _wget_githubRelease-fromTag-analysisReport-fetch 20 'ubcp-binReport'
+        env:
+          currentRepository: ${{ github.repository }}
+          #currentReleaseTag: build-${{ github.run_id }}-9999
+          currentReleaseTag: ${{ github.event.inputs.release_tag }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: select! binReport
+        shell: bash
+        run: |
+          ./ubiquitous_bash.sh _wget_githubRelease-fromTag-analysisReport-select 'ubcp-binReport'
+        env:
+          currentRepository: ${{ github.repository }}
+          #currentReleaseTag: build-${{ github.run_id }}-9999
+          currentReleaseTag: ${{ github.event.inputs.release_tag }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: analysis! missing-binaries
+        shell: bash
+        run: |
+          ./ubiquitous_bash.sh _wget_githubRelease-fromTag-analysisReport-analysis 65 'ubcp-binReport'
+        env:
+          currentRepository: ${{ github.repository }}
+          #currentReleaseTag: build-${{ github.run_id }}-9999
+          currentReleaseTag: ${{ github.event.inputs.release_tag }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      #- name: release! missing-ubcp-binReport
+        #uses: softprops/action-gh-release@v1
+        #with:
+          #tag_name: build-${{ github.run_id }}-9999
+          #name: build
+          #files: |
+            #./_local/analysisTmp/missing-ubcp-binReport
+
+      - name: ls! release! missing-ubcp-binReport
+        shell: bash
+        run: |
+          ls ./_local/analysisTmp/missing-ubcp-binReport
+          _safeRMR-analysisTmp
+        env:
+          currentRepository: ${{ github.repository }}
+          #currentReleaseTag: build-${{ github.run_id }}-9999
+          currentReleaseTag: ${{ github.event.inputs.release_tag }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+
+
+
+
+
+
+
+
+
+  analysis_ubcp_missingBinaries-UNIX_Linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 1
+          submodules: 'recursive'
+      - name: _getMinimal_cloud-special
+        shell: bash
+        timeout-minutes: 120
+        run: |
+          mkdir -p ./_local
+          #sudo -n apt-get -y install jq gh curl coreutils p7zip findutils tar gzip bzip2 sed axel aria2 rsync pv dos2unix xxd util-linux openssl
+          sudo -n apt-get -y install jq gh curl coreutils findutils tar gzip bzip2 sed axel aria2 rsync pv dos2unix xxd util-linux
+
+      - name: fetch! ubcp-binReport-UNIX_Linux
+        shell: bash
+        run: |
+          ./ubiquitous_bash.sh _wget_githubRelease-fromTag-analysisReport-fetch 20 'ubcp-binReport-UNIX_Linux'
+        env:
+          currentRepository: ${{ github.repository }}
+          #currentReleaseTag: build-${{ github.run_id }}-9999
+          currentReleaseTag: ${{ github.event.inputs.release_tag }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: select! ubcp-binReport-UNIX_Linux
+        shell: bash
+        run: |
+          ./ubiquitous_bash.sh _wget_githubRelease-fromTag-analysisReport-select 'ubcp-binReport-UNIX_Linux'
+        env:
+          currentRepository: ${{ github.repository }}
+          #currentReleaseTag: build-${{ github.run_id }}-9999
+          currentReleaseTag: ${{ github.event.inputs.release_tag }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: analysis! missing-binaries
+        shell: bash
+        run: |
+          ./ubiquitous_bash.sh _wget_githubRelease-fromTag-analysisReport-analysis 65 'ubcp-binReport-UNIX_Linux'
+        env:
+          currentRepository: ${{ github.repository }}
+          #currentReleaseTag: build-${{ github.run_id }}-9999
+          currentReleaseTag: ${{ github.event.inputs.release_tag }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: ls! release! missing-ubcp-binReport-UNIX_Linux
+        shell: bash
+        run: |
+          ls ./_local/analysisTmp/missing-ubcp-binReport-UNIX_Linux
+          _safeRMR-analysisTmp
+        env:
+          currentRepository: ${{ github.repository }}
+          #currentReleaseTag: build-${{ github.run_id }}-9999
+          currentReleaseTag: ${{ github.event.inputs.release_tag }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
