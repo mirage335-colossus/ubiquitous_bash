@@ -101,7 +101,7 @@ jobs:
         shell: bash
         run: |
           ls ./_local/analysisTmp/missing-ubcp-binReport
-          _safeRMR-analysisTmp
+          ./ubiquitous_bash.sh _safeRMR-analysisTmp
         env:
           currentRepository: ${{ github.repository }}
           #currentReleaseTag: build-${{ github.run_id }}-9999
@@ -166,7 +166,7 @@ jobs:
         shell: bash
         run: |
           ls ./_local/analysisTmp/missing-ubcp-binReport-UNIX_Linux
-          _safeRMR-analysisTmp
+          ./ubiquitous_bash.sh _safeRMR-analysisTmp
         env:
           currentRepository: ${{ github.repository }}
           #currentReleaseTag: build-${{ github.run_id }}-9999
