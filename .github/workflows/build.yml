@@ -579,121 +579,125 @@ jobs:
     needs: [build_ubcp]
     runs-on: ubuntu-latest
     steps:
-      - name: analysis! missing-binaries
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 1
+          submodules: 'recursive'
+      - name: _getMinimal_cloud-special
+        shell: bash
+        timeout-minutes: 120
+        run: |
+          mkdir -p ./_local
+          #sudo -n apt-get -y install jq gh curl coreutils p7zip findutils tar gzip bzip2 sed axel aria2 rsync pv dos2unix xxd util-linux openssl
+          sudo -n apt-get -y install jq gh curl coreutils findutils tar gzip bzip2 sed axel aria2 rsync pv dos2unix xxd util-linux
+
+      - name: fetch! ubcp-binReport
         shell: bash
         run: |
-          #echo -n
-          _safeEcho() {
-            printf '%s' "$1"
-            shift
-            
-            [[ "$@" == "" ]] && return 0
-            
-            local currentArg
-            for currentArg in "$@"
-            do
-              printf '%s' " "
-              printf '%s' "$currentArg"
-            done
-            return 0
-          }
-
-          #echo
-          _safeEcho_newline() {
-            _safeEcho "$@"
-            printf '\n'
-          }
-        
-          # Get the list of releases
-          # ATTRIBUTION-AI: ChatGPT o3-mini Reasoning_Effort-high 2025-03-12  (curl --fail --retry 5 --retry-delay 90 --connect-timeout 45 --max-time 600)
-          RELEASES=$(curl --fail --retry 5 --retry-delay 90 --connect-timeout 45 --max-time 600 -s -H "Authorization: token $GH_TOKEN" https://api.github.com/repos/mirage335-colossus/ubiquitous_bash/releases)
-          
-          # Download binReport file for the current release
-          curl --fail --retry 5 --retry-delay 90 --connect-timeout 45 --max-time 600 -s -H "Authorization: token $GH_TOKEN" -L -o "ubcp-binReport-$currentReleaseTag" "https://github.com/mirage335-colossus/ubiquitous_bash/releases/download/$currentReleaseTag/ubcp-binReport"
-
-          # Loop through each release
-          #for RELEASE in $(_safeEcho_newline "$RELEASES" | jq -r '.[].tag_name' | sort --reverse); do
-          for RELEASE in $(_safeEcho_newline "$RELEASES" | jq -r 'sort_by(.published_at) | reverse | .[].tag_name' | tr -dc 'a-zA-Z0-9\-_.:\n'); do
-            # Download the binReport file for this release
-            curl --no-fail --retry 5 --retry-delay 90 --connect-timeout 45 --max-time 600 -s -H "Authorization: token $GH_TOKEN" -L -o "ubcp-binReport-$RELEASE" "https://github.com/mirage335-colossus/ubiquitous_bash/releases/download/$RELEASE/ubcp-binReport"
-
-            # Compare the list of binaries in this release to the current release
-            if [ "$RELEASE" != "$currentReleaseTag" ]; then
-              echo | tee -a ./missing-ubcp-binReport
-              echo "Binaries (filesystem) in $RELEASE but not in currentRelease $currentReleaseTag:" | tee -a ./missing-ubcp-binReport
-              comm -23 <(sort "ubcp-binReport-$RELEASE") <(sort "ubcp-binReport-$currentReleaseTag") | tee -a ./missing-ubcp-binReport
-            fi
-          done
+          ./ubiquitous_bash.sh _wget_githubRelease-fromTag-analysisReport-fetch 20 'ubcp-binReport'
         env:
+          currentRepository: ${{ github.repository }}
           currentReleaseTag: build-${{ github.run_id }}-9999
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: select! ubcp-binReport
+        shell: bash
+        run: |
+          ./ubiquitous_bash.sh _wget_githubRelease-fromTag-analysisReport-select 'ubcp-binReport'
+        env:
+          currentRepository: ${{ github.repository }}
+          currentReleaseTag: build-${{ github.run_id }}-9999
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: analysis! missing-ubcp-binReport
+        shell: bash
+        run: |
+          ./ubiquitous_bash.sh _wget_githubRelease-fromTag-analysisReport-analysis 65 'ubcp-binReport'
+        env:
+          currentRepository: ${{ github.repository }}
+          currentReleaseTag: build-${{ github.run_id }}-9999
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: release! missing-ubcp-binReport
         uses: softprops/action-gh-release@v1
         with:
           tag_name: build-${{ github.run_id }}-9999
           name: build
           files: |
-            ./missing-ubcp-binReport
+            ./_local/analysisTmp/missing-ubcp-binReport
+
+      - name: ls! release! missing-ubcp-binReport
+        shell: bash
+        run: |
+          ls ./_local/analysisTmp/missing-ubcp-binReport
+          ./ubiquitous_bash.sh _safeRMR-analysisTmp
+        env:
+          currentRepository: ${{ github.repository }}
+          currentReleaseTag: build-${{ github.run_id }}-9999
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 
   analysis_ubcp_missingPackages:
     needs: [build_ubcp]
     runs-on: ubuntu-latest
     steps:
-      - name: analysis! missing-packages
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 1
+          submodules: 'recursive'
+      - name: _getMinimal_cloud-special
+        shell: bash
+        timeout-minutes: 120
+        run: |
+          mkdir -p ./_local
+          #sudo -n apt-get -y install jq gh curl coreutils p7zip findutils tar gzip bzip2 sed axel aria2 rsync pv dos2unix xxd util-linux openssl
+          sudo -n apt-get -y install jq gh curl coreutils findutils tar gzip bzip2 sed axel aria2 rsync pv dos2unix xxd util-linux
+
+      - name: fetch! ubcp-packageReport
         shell: bash
         run: |
-          #echo -n
-          _safeEcho() {
-            printf '%s' "$1"
-            shift
-            
-            [[ "$@" == "" ]] && return 0
-            
-            local currentArg
-            for currentArg in "$@"
-            do
-              printf '%s' " "
-              printf '%s' "$currentArg"
-            done
-            return 0
-          }
-
-          #echo
-          _safeEcho_newline() {
-            _safeEcho "$@"
-            printf '\n'
-          }
-        
-          # Get the list of releases
-          RELEASES=$(curl --fail --retry 5 --retry-delay 90 --connect-timeout 45 --max-time 600 -s -H "Authorization: token $GH_TOKEN" https://api.github.com/repos/mirage335-colossus/ubiquitous_bash/releases?per_page=100&page=1)
-          
-          # Download packageReport file for the current release
-          curl --fail --retry 5 --retry-delay 90 --connect-timeout 45 --max-time 600 -s -H "Authorization: token $GH_TOKEN" -L -o "ubcp-packageReport-$currentReleaseTag" "https://github.com/mirage335-colossus/ubiquitous_bash/releases/download/$currentReleaseTag/ubcp-packageReport"
-
-          # Loop through each release
-          #for RELEASE in $(_safeEcho_newline "$RELEASES" | jq -r '.[].tag_name' | sort --reverse); do
-          for RELEASE in $(_safeEcho_newline "$RELEASES" | jq -r 'sort_by(.published_at) | reverse | .[].tag_name' | tr -dc 'a-zA-Z0-9\-_.:\n'); do
-            # Download the packageReport file for this release
-            curl --no-fail --retry 5 --retry-delay 90 --connect-timeout 45 --max-time 600 -s -H "Authorization: token $GH_TOKEN" -L -o "ubcp-packageReport-$RELEASE" "https://github.com/mirage335-colossus/ubiquitous_bash/releases/download/$RELEASE/ubcp-packageReport"
-
-            # Compare the list of packages in this release to the current release
-            if [ "$RELEASE" != "$currentReleaseTag" ]; then
-              echo | tee -a ./missing-ubcp-packageReport
-              echo "packages (filesystem) in $RELEASE but not in currentRelease $currentReleaseTag:" | tee -a ./missing-ubcp-packageReport
-              comm -23 <(sort "ubcp-packageReport-$RELEASE") <(sort "ubcp-packageReport-$currentReleaseTag") | tee -a ./missing-ubcp-packageReport
-            fi
-          done
+          ./ubiquitous_bash.sh _wget_githubRelease-fromTag-analysisReport-fetch 20 'ubcp-packageReport'
         env:
+          currentRepository: ${{ github.repository }}
           currentReleaseTag: build-${{ github.run_id }}-9999
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: select! ubcp-packageReport
+        shell: bash
+        run: |
+          ./ubiquitous_bash.sh _wget_githubRelease-fromTag-analysisReport-select 'ubcp-packageReport'
+        env:
+          currentRepository: ${{ github.repository }}
+          currentReleaseTag: build-${{ github.run_id }}-9999
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: analysis! missing-ubcp-packageReport
+        shell: bash
+        run: |
+          ./ubiquitous_bash.sh _wget_githubRelease-fromTag-analysisReport-analysis 65 'ubcp-packageReport'
+        env:
+          currentRepository: ${{ github.repository }}
+          currentReleaseTag: build-${{ github.run_id }}-9999
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: release! missing-ubcp-packageReport
         uses: softprops/action-gh-release@v1
         with:
           tag_name: build-${{ github.run_id }}-9999
           name: build
           files: |
-            ./missing-ubcp-packageReport
+            ./_local/analysisTmp/missing-ubcp-packageReport
+
+      - name: ls! release! missing-ubcp-packageReport
+        shell: bash
+        run: |
+          ls ./_local/analysisTmp/missing-ubcp-packageReport
+          ./ubiquitous_bash.sh _safeRMR-analysisTmp
+        env:
+          currentRepository: ${{ github.repository }}
+          currentReleaseTag: build-${{ github.run_id }}-9999
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
 
 
 
@@ -707,60 +711,62 @@ jobs:
     needs: [build_ubcp-binReport-UNIX_Linux]
     runs-on: ubuntu-latest
     steps:
-      - name: analysis! missing-binaries
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 1
+          submodules: 'recursive'
+      - name: _getMinimal_cloud-special
+        shell: bash
+        timeout-minutes: 120
+        run: |
+          mkdir -p ./_local
+          #sudo -n apt-get -y install jq gh curl coreutils p7zip findutils tar gzip bzip2 sed axel aria2 rsync pv dos2unix xxd util-linux openssl
+          sudo -n apt-get -y install jq gh curl coreutils findutils tar gzip bzip2 sed axel aria2 rsync pv dos2unix xxd util-linux
+
+      - name: fetch! ubcp-binReport-UNIX_Linux
         shell: bash
         run: |
-          #echo -n
-          _safeEcho() {
-            printf '%s' "$1"
-            shift
-            
-            [[ "$@" == "" ]] && return 0
-            
-            local currentArg
-            for currentArg in "$@"
-            do
-              printf '%s' " "
-              printf '%s' "$currentArg"
-            done
-            return 0
-          }
-
-          #echo
-          _safeEcho_newline() {
-            _safeEcho "$@"
-            printf '\n'
-          }
-        
-          # Get the list of releases
-          RELEASES=$(curl --fail --retry 5 --retry-delay 90 --connect-timeout 45 --max-time 600 -s -H "Authorization: token $GH_TOKEN" https://api.github.com/repos/mirage335-colossus/ubiquitous_bash/releases)
-          
-          # Download binReport file for the current release
-          curl --fail --retry 5 --retry-delay 90 --connect-timeout 45 --max-time 600 -s -H "Authorization: token $GH_TOKEN" -L -o "ubcp-binReport-UNIX_Linux-$currentReleaseTag" "https://github.com/mirage335-colossus/ubiquitous_bash/releases/download/$currentReleaseTag/ubcp-binReport-UNIX_Linux"
-
-          # Loop through each release
-          #for RELEASE in $(_safeEcho_newline "$RELEASES" | jq -r '.[].tag_name' | sort --reverse); do
-          for RELEASE in $(_safeEcho_newline "$RELEASES" | jq -r 'sort_by(.published_at) | reverse | .[].tag_name' | tr -dc 'a-zA-Z0-9\-_.:\n'); do
-            # Download the binReport file for this release
-            curl --no-fail --retry 5 --retry-delay 90 --connect-timeout 45 --max-time 600 -s -H "Authorization: token $GH_TOKEN" -L -o "ubcp-binReport-UNIX_Linux-$RELEASE" "https://github.com/mirage335-colossus/ubiquitous_bash/releases/download/$RELEASE/ubcp-binReport-UNIX_Linux"
-
-            # Compare the list of binaries in this release to the current release
-            if [ "$RELEASE" != "$currentReleaseTag" ]; then
-              echo | tee -a ./missing-ubcp-binReport-UNIX_Linux
-              echo "Binaries (filesystem) in $RELEASE but not in currentRelease $currentReleaseTag:" | tee -a ./missing-ubcp-binReport-UNIX_Linux
-              comm -23 <(sort "ubcp-binReport-UNIX_Linux-$RELEASE") <(sort "ubcp-binReport-UNIX_Linux-$currentReleaseTag") | tee -a ./missing-ubcp-binReport-UNIX_Linux
-            fi
-          done
+          ./ubiquitous_bash.sh _wget_githubRelease-fromTag-analysisReport-fetch 20 'ubcp-binReport-UNIX_Linux'
         env:
+          currentRepository: ${{ github.repository }}
           currentReleaseTag: build-${{ github.run_id }}-9999
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: release! missing-ubcp-binReport-UNIX_Linux
+
+      - name: select! ubcp-binReport-UNIX_Linux
+        shell: bash
+        run: |
+          ./ubiquitous_bash.sh _wget_githubRelease-fromTag-analysisReport-select 'ubcp-binReport-UNIX_Linux'
+        env:
+          currentRepository: ${{ github.repository }}
+          currentReleaseTag: build-${{ github.run_id }}-9999
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: analysis! missing-binReport-UNIX_Linux
+        shell: bash
+        run: |
+          ./ubiquitous_bash.sh _wget_githubRelease-fromTag-analysisReport-analysis 65 'ubcp-binReport-UNIX_Linux'
+        env:
+          currentRepository: ${{ github.repository }}
+          currentReleaseTag: build-${{ github.run_id }}-9999
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: release! missing-ubcp-packageReport
         uses: softprops/action-gh-release@v1
         with:
           tag_name: build-${{ github.run_id }}-9999
           name: build
           files: |
-            ./missing-ubcp-binReport-UNIX_Linux
+            ./_local/analysisTmp/missing-ubcp-binReport-UNIX_Linux
+
+      - name: ls! release! missing-ubcp-binReport-UNIX_Linux
+        shell: bash
+        run: |
+          ls ./_local/analysisTmp/missing-ubcp-binReport-UNIX_Linux
+          ./ubiquitous_bash.sh _safeRMR-analysisTmp
+        env:
+          currentRepository: ${{ github.repository }}
+          currentReleaseTag: build-${{ github.run_id }}-9999
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 
 
