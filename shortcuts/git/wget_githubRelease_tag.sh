@@ -565,7 +565,7 @@ _wget_githubRelease-fromTag_procedure-stdout() {
 	( _messagePlain_probe_safe _wget_githubRelease-fromTag_procedure-stdout "$@" >&2 ) > /dev/null
 
 	local currentAbsoluteRepo="$1"
-	local currentReleaseLabel="$2"
+	local currentReleaseTag="$2"
 	local currentFile="$3"
 
 	local currentOutParameter="$4"
@@ -594,7 +594,7 @@ _wget_githubRelease-fromTag_procedure-stdout() {
 	# WARNING: Very strongly discouraged. Any retry/continue of any interruption will nevertheless unavoidably result in a corrupted output stream.
 	if [[ "$FORCE_DIRECT" == "true" ]]
 	then
-		_wget_githubRelease-fromTag_procedure "$currentAbsoluteRepo" "$currentReleaseLabel" "$currentFile" -O - "$@"
+		_wget_githubRelease-fromTag_procedure "$currentAbsoluteRepo" "$currentReleaseTag" "$currentFile" -O - "$@"
 		currentExitStatus="$?"
 		if [[ "$currentExitStatus" != "0" ]]
 		then
@@ -605,7 +605,7 @@ _wget_githubRelease-fromTag_procedure-stdout() {
 		return 0
 	fi
 
-	_wget_githubRelease-fromTag_procedure "$currentAbsoluteRepo" "$currentReleaseLabel" "$currentFile" -O "$currentAxelTmpFile" "$@"
+	_wget_githubRelease-fromTag_procedure "$currentAbsoluteRepo" "$currentReleaseTag" "$currentFile" -O "$currentAxelTmpFile" "$@"
 	currentExitStatus="$?"
 	if [[ "$currentExitStatus" != "0" ]]
 	then
@@ -773,7 +773,7 @@ _wget_githubRelease-fromTag_procedure() {
 
 _wget_githubRelease-fromTag_join() {
     local currentAbsoluteRepo="$1"
-	local currentReleaseLabel="$2"
+	local currentReleaseTag="$2"
 	local currentFile="$3"
 
 	local currentOutParameter="$4"
@@ -805,8 +805,8 @@ _wget_githubRelease-fromTag_join() {
 
 	( _messagePlain_probe_safe _wget_githubRelease-fromTag_join "$@" >&2 ) > /dev/null
 
-	_messagePlain_probe_safe _wget_githubRelease-fromTag_join-stdout "$currentAbsoluteRepo" "$currentReleaseLabel" "$currentFile" "$@" '>' "$currentOutFile" >&2
-	_wget_githubRelease-fromTag_join-stdout "$currentAbsoluteRepo" "$currentReleaseLabel" "$currentFile" "$@" > "$currentOutFile"
+	_messagePlain_probe_safe _wget_githubRelease-fromTag_join-stdout "$currentAbsoluteRepo" "$currentReleaseTag" "$currentFile" "$@" '>' "$currentOutFile" >&2
+	_wget_githubRelease-fromTag_join-stdout "$currentAbsoluteRepo" "$currentReleaseTag" "$currentFile" "$@" > "$currentOutFile"
 
 	[[ ! -e "$currentOutFile" ]] && _messagePlain_bad 'missing: '"$1"' '"$2"' '"$3" && return 1
 
@@ -824,7 +824,7 @@ _wget_githubRelease-fromTag_join_sequence-stdout() {
 	( _messagePlain_probe_safe _wget_githubRelease-fromTag_join-stdout "$@" >&2 ) > /dev/null
 
 	local currentAbsoluteRepo="$1"
-	local currentReleaseLabel="$2"
+	local currentReleaseTag="$2"
 	local currentFile="$3"
 
 	local currentOutParameter="$4"
@@ -907,9 +907,9 @@ _wget_githubRelease-fromTag_join_sequence-stdout() {
             if [[ "$currentSkip" == "skip" ]]
             then
 				# ATTENTION: Could expect to use the 'API_URL' function in both cases, since we are not using the resulting URL except to 'skip'/'download' .
-				#currentSkip=$(_wget_githubRelease-skip-API_URL-curl "$currentAbsoluteRepo" "$currentReleaseLabel" "$currentFile".part"$currentPart")
-				[[ "$GH_TOKEN" != "" ]] && currentSkip=$(_wget_githubRelease-skip-API_URL_fromTag-curl "$currentAbsoluteRepo" "$currentReleaseLabel" "$currentFile".part"$currentPart")
-				[[ "$GH_TOKEN" == "" ]] && currentSkip=$(_wget_githubRelease-skip-URL_fromTag-curl "$currentAbsoluteRepo" "$currentReleaseLabel" "$currentFile".part"$currentPart")
+				#currentSkip=$(_wget_githubRelease-skip-API_URL-curl "$currentAbsoluteRepo" "$currentReleaseTag" "$currentFile".part"$currentPart")
+				[[ "$GH_TOKEN" != "" ]] && currentSkip=$(_wget_githubRelease-skip-API_URL_fromTag-curl "$currentAbsoluteRepo" "$currentReleaseTag" "$currentFile".part"$currentPart")
+				[[ "$GH_TOKEN" == "" ]] && currentSkip=$(_wget_githubRelease-skip-URL_fromTag-curl "$currentAbsoluteRepo" "$currentReleaseTag" "$currentFile".part"$currentPart")
                 #[[ "$?" != "0" ]] && ( _messagePlain_bad 'bad: FAIL: _wget_githubRelease-skip-API_URL-curl' >&2 ) > /dev/null && ( _messageError 'FAIL' >&2 ) > /dev/null && exit 1
                 #[[ "$?" != "0" ]] && currentSkip="skip"
                 [[ "$?" != "0" ]] && ( _messagePlain_warn 'bad: FAIL: _wget_githubRelease-skip-API_URL_fromTag-curl' >&2 ) > /dev/null
@@ -970,10 +970,10 @@ _wget_githubRelease-fromTag_join_sequence-stdout() {
 		then
 			# ATTENTION: EXPERIMENT
 			# ATTENTION: Could expect to use the 'API_URL' function in both cases, since we are not using the resulting URL except to 'skip'/'download' .
-			#currentSkip=$(_wget_githubRelease-skip-API_URL-curl "$currentAbsoluteRepo" "$currentReleaseLabel" "$currentFile".part"$currentPart")
+			#currentSkip=$(_wget_githubRelease-skip-API_URL-curl "$currentAbsoluteRepo" "$currentReleaseTag" "$currentFile".part"$currentPart")
 			##currentSkip=$([[ "$currentPart" -gt "17" ]] && echo 'skip' ; true)
-			[[ "$GH_TOKEN" != "" ]] && currentSkip=$(_wget_githubRelease-skip-API_URL_fromTag-curl "$currentAbsoluteRepo" "$currentReleaseLabel" "$currentFile".part"$currentPart")
-			[[ "$GH_TOKEN" == "" ]] && currentSkip=$(_wget_githubRelease-skip-URL_fromTag-curl "$currentAbsoluteRepo" "$currentReleaseLabel" "$currentFile".part"$currentPart")
+			[[ "$GH_TOKEN" != "" ]] && currentSkip=$(_wget_githubRelease-skip-API_URL_fromTag-curl "$currentAbsoluteRepo" "$currentReleaseTag" "$currentFile".part"$currentPart")
+			[[ "$GH_TOKEN" == "" ]] && currentSkip=$(_wget_githubRelease-skip-URL_fromTag-curl "$currentAbsoluteRepo" "$currentReleaseTag" "$currentFile".part"$currentPart")
 			
 			#[[ "$?" != "0" ]] && ( _messagePlain_bad 'bad: FAIL: _wget_githubRelease-skip-API_URL-curl' >&2 ) > /dev/null && ( _messageError 'FAIL' >&2 ) > /dev/null && exit 1
 			#[[ "$?" != "0" ]] && currentSkip="skip"
@@ -994,7 +994,7 @@ _wget_githubRelease-fromTag_join_sequence-stdout() {
 	export currentSkipPart="$currentPart"
 	[[ "$currentStream_max" -gt "$currentSkipPart" ]] && currentStream_max=$(( "$currentSkipPart" + 1 ))
 
-	"$scriptAbsoluteLocation" _wget_githubRelease-fromTag_join_sequence-parallel "$currentAbsoluteRepo" "$currentReleaseLabel" "$currentFile" &
+	"$scriptAbsoluteLocation" _wget_githubRelease-fromTag_join_sequence-parallel "$currentAbsoluteRepo" "$currentReleaseTag" "$currentFile" &
 
 
 	# Prebuffer .
@@ -1048,7 +1048,7 @@ _wget_githubRelease-fromTag_join_sequence-stdout() {
 }
 _wget_githubRelease-fromTag_join_sequence-parallel() {
 	local currentAbsoluteRepo="$1"
-	local currentReleaseLabel="$2"
+	local currentReleaseTag="$2"
 	local currentFile="$3"
 
 	local currentOutParameter="$4"
@@ -1122,7 +1122,7 @@ _wget_githubRelease-fromTag_join_sequence-parallel() {
 		
 		( _messagePlain_nominal '\/\/\/\/\/ \/\/\/  downloadLOOP: DOWNLOAD  ...  currentPart='"$currentPart"' currentStream='"$currentStream" >&2 ) > /dev/null
 		export currentAxelTmpFile="$scriptAbsoluteFolder"/$(_axelTmp)
-		"$scriptAbsoluteLocation" _wget_githubRelease-fromTag_procedure-join "$currentAbsoluteRepo" "$currentReleaseLabel" "$currentFile".part$(printf "%02g" "$currentPart") &
+		"$scriptAbsoluteLocation" _wget_githubRelease-fromTag_procedure-join "$currentAbsoluteRepo" "$currentReleaseTag" "$currentFile".part$(printf "%02g" "$currentPart") &
 		echo "$!" > "$scriptAbsoluteFolder"/$(_axelTmp).pid
 
 		# Stream must have written either in-progress download or PASS/FAIL file .
@@ -1165,7 +1165,7 @@ _wget_githubRelease-fromTag_procedure-join() {
 	( _messagePlain_probe_safe _wget_githubRelease-fromTag_procedure-join "$@" >&2 ) > /dev/null
 
 	local currentAbsoluteRepo="$1"
-	local currentReleaseLabel="$2"
+	local currentReleaseTag="$2"
 	local currentFile="$3"
 
 	local currentOutParameter="$4"
@@ -1194,7 +1194,7 @@ _wget_githubRelease-fromTag_procedure-join() {
 	echo -n > "$currentAxelTmpFile".busy
 
 	# ATTENTION: EXPERIMENT
-	_wget_githubRelease-fromTag_procedure "$currentAbsoluteRepo" "$currentReleaseLabel" "$currentFile" -O "$currentAxelTmpFile" "$@"
+	_wget_githubRelease-fromTag_procedure "$currentAbsoluteRepo" "$currentReleaseTag" "$currentFile" -O "$currentAxelTmpFile" "$@"
     #dd if=/dev/zero bs=1M count=1500 > "$currentAxelTmpFile"
 	#echo "$currentFile" >> "$currentAxelTmpFile"
     #dd if=/dev/urandom bs=1M count=1500 | pv --rate-limit 300M 2>/dev/null > "$currentAxelTmpFile"
