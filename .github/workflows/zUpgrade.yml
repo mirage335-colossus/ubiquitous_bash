@@ -296,7 +296,7 @@ jobs:
           ./ubiquitous_bash.sh _wget_githubRelease-fromTag-analysisReport-fetch 20 'ubcp-binReport'
         env:
           currentRepository: ${{ github.repository }}
-          currentReleaseTag: build-${{ github.run_id }}-9999
+          currentReleaseTag: build_upgrade-${{ github.run_id }}-9999
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: select! ubcp-binReport
@@ -305,7 +305,7 @@ jobs:
           ./ubiquitous_bash.sh _wget_githubRelease-fromTag-analysisReport-select 'ubcp-binReport'
         env:
           currentRepository: ${{ github.repository }}
-          currentReleaseTag: build-${{ github.run_id }}-9999
+          currentReleaseTag: build_upgrade-${{ github.run_id }}-9999
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: analysis! missing-ubcp-binReport
@@ -314,13 +314,13 @@ jobs:
           ./ubiquitous_bash.sh _wget_githubRelease-fromTag-analysisReport-analysis 65 'ubcp-binReport'
         env:
           currentRepository: ${{ github.repository }}
-          currentReleaseTag: build-${{ github.run_id }}-9999
+          currentReleaseTag: build_upgrade-${{ github.run_id }}-9999
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: release! missing-ubcp-binReport
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: build-${{ github.run_id }}-9999
+          tag_name: build_upgrade-${{ github.run_id }}-9999
           name: build
           files: |
             ./_local/analysisTmp/missing-ubcp-binReport
@@ -332,7 +332,7 @@ jobs:
           ./ubiquitous_bash.sh _safeRMR-analysisTmp
         env:
           currentRepository: ${{ github.repository }}
-          currentReleaseTag: build-${{ github.run_id }}-9999
+          currentReleaseTag: build_upgrade-${{ github.run_id }}-9999
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 
@@ -358,7 +358,7 @@ jobs:
           ./ubiquitous_bash.sh _wget_githubRelease-fromTag-analysisReport-fetch 20 'ubcp-packageReport'
         env:
           currentRepository: ${{ github.repository }}
-          currentReleaseTag: build-${{ github.run_id }}-9999
+          currentReleaseTag: build_upgrade-${{ github.run_id }}-9999
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: select! ubcp-packageReport
@@ -367,7 +367,7 @@ jobs:
           ./ubiquitous_bash.sh _wget_githubRelease-fromTag-analysisReport-select 'ubcp-packageReport'
         env:
           currentRepository: ${{ github.repository }}
-          currentReleaseTag: build-${{ github.run_id }}-9999
+          currentReleaseTag: build_upgrade-${{ github.run_id }}-9999
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: analysis! missing-ubcp-packageReport
@@ -376,13 +376,13 @@ jobs:
           ./ubiquitous_bash.sh _wget_githubRelease-fromTag-analysisReport-analysis 65 'ubcp-packageReport'
         env:
           currentRepository: ${{ github.repository }}
-          currentReleaseTag: build-${{ github.run_id }}-9999
+          currentReleaseTag: build_upgrade-${{ github.run_id }}-9999
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: release! missing-ubcp-packageReport
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: build-${{ github.run_id }}-9999
+          tag_name: build_upgrade-${{ github.run_id }}-9999
           name: build
           files: |
             ./_local/analysisTmp/missing-ubcp-packageReport
@@ -394,7 +394,7 @@ jobs:
           ./ubiquitous_bash.sh _safeRMR-analysisTmp
         env:
           currentRepository: ${{ github.repository }}
-          currentReleaseTag: build-${{ github.run_id }}-9999
+          currentReleaseTag: build_upgrade-${{ github.run_id }}-9999
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 
@@ -424,7 +424,7 @@ jobs:
           ./ubiquitous_bash.sh _wget_githubRelease-fromTag-analysisReport-fetch 20 'ubcp-binReport-UNIX_Linux'
         env:
           currentRepository: ${{ github.repository }}
-          currentReleaseTag: build-${{ github.run_id }}-9999
+          currentReleaseTag: build_upgrade-${{ github.run_id }}-9999
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: select! ubcp-binReport-UNIX_Linux
@@ -433,7 +433,7 @@ jobs:
           ./ubiquitous_bash.sh _wget_githubRelease-fromTag-analysisReport-select 'ubcp-binReport-UNIX_Linux'
         env:
           currentRepository: ${{ github.repository }}
-          currentReleaseTag: build-${{ github.run_id }}-9999
+          currentReleaseTag: build_upgrade-${{ github.run_id }}-9999
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: analysis! missing-binReport-UNIX_Linux
@@ -442,13 +442,13 @@ jobs:
           ./ubiquitous_bash.sh _wget_githubRelease-fromTag-analysisReport-analysis 65 'ubcp-binReport-UNIX_Linux'
         env:
           currentRepository: ${{ github.repository }}
-          currentReleaseTag: build-${{ github.run_id }}-9999
+          currentReleaseTag: build_upgrade-${{ github.run_id }}-9999
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: release! missing-ubcp-packageReport
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: build-${{ github.run_id }}-9999
+          tag_name: build_upgrade-${{ github.run_id }}-9999
           name: build
           files: |
             ./_local/analysisTmp/missing-ubcp-binReport-UNIX_Linux
@@ -460,7 +460,7 @@ jobs:
           ./ubiquitous_bash.sh _safeRMR-analysisTmp
         env:
           currentRepository: ${{ github.repository }}
-          currentReleaseTag: build-${{ github.run_id }}-9999
+          currentReleaseTag: build_upgrade-${{ github.run_id }}-9999
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 
