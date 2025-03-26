@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='2905376621'
+export ub_setScriptChecksum_contents='539345280'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -21485,7 +21485,7 @@ build-1001-1" ]] || ( _messagePlain_bad 'fail: bad: _wget_githubRelease_procedur
 
 
 
-#env currentRepository='mirage335-colossus/ubiquitous_bash' currentReleaseTag='build-14030770217-9999' ./ubiquitous_bash.sh _wget_githubRelease-fromTag-analysisReport-fetch 20 'ubcp-binReport-UNIX_Linux'
+#env currentRepository='soaringDistributions/ubDistBuild' currentReleaseTag='build-13932580400-9999' ./ubiquitous_bash.sh _wget_githubRelease-fromTag-analysisReport-fetch 20 lsmodReport binReport coreReport dpkg
 #env currentRepository='mirage335-colossus/ubiquitous_bash' currentReleaseTag='build-13917942290-9999' ./ubiquitous_bash.sh _wget_githubRelease-fromTag-analysisReport-fetch 20 'ubcp-binReport-UNIX_Linux'
 #env:
 #  currentRepository: ${{ github.repository }}
@@ -21556,7 +21556,7 @@ _wget_githubRelease-fromTag-analysisReport-select() {
 }
 
 
-#env currentRepository='mirage335-colossus/ubiquitous_bash' currentReleaseTag='build-14030770217-9999' ./ubiquitous_bash.sh _wget_githubRelease-fromTag-analysisReport-analysis 65 'ubcp-binReport-UNIX_Linux'
+#env currentRepository='mirage335-colossus/ubiquitous_bash' currentReleaseTag='build-13917942290-9999' ./ubiquitous_bash.sh _wget_githubRelease-fromTag-analysisReport-analysis 65 lsmodReport binReport coreReport dpkg
 #env currentRepository='mirage335-colossus/ubiquitous_bash' currentReleaseTag='build-13917942290-9999' ./ubiquitous_bash.sh _wget_githubRelease-fromTag-analysisReport-analysis 65 'ubcp-binReport-UNIX_Linux'
 #env:
 #  currentReleaseTag: build-${{ github.run_id }}-9999
@@ -21574,21 +21574,51 @@ _wget_githubRelease-fromTag-analysisReport-analysis() {
 
     local current_reportFile
     
-    for current_reportFile in "${current_reportFiles_list[@]}"; do
-        rm -f "$scriptLocal"/analysisTmp/missing-"$current_reportFile"
-        for current_reviewReleaseTag in $(cat "$scriptLocal"/analysisTmp/releasesTags); do
-            # Compare the list of binaries, etc, in this release to the current release
-            if [ "$current_reviewReleaseTag" != "$currentReleaseTag" ]; then
-                echo | tee -a "$scriptLocal"/analysisTmp/missing-"$current_reportFile"
-                echo 'Items (ie. '"$current_reportFile"') in '"$current_reviewReleaseTag"' but not in currentRelease '"$currentReleaseTag"':' | tee -a "$scriptLocal"/analysisTmp/missing-"$current_reportFile"
+	# Analysis - for each report file, compare for all tags.
+    #for current_reportFile in "${current_reportFiles_list[@]}"; do
+        #rm -f "$scriptLocal"/analysisTmp/missing-"$current_reportFile"
+        #for current_reviewReleaseTag in $(cat "$scriptLocal"/analysisTmp/releasesTags); do
+            ## Compare the list of binaries, etc, in this release to the current release
+            #if [ "$current_reviewReleaseTag" != "$currentReleaseTag" ]; then
+                #echo | tee -a "$scriptLocal"/analysisTmp/missing-"$current_reportFile"
+                #echo 'Items (ie. '"$current_reportFile"') in '"$current_reviewReleaseTag"' but not in currentRelease '"$currentReleaseTag"':' | tee -a "$scriptLocal"/analysisTmp/missing-"$current_reportFile"
+                ##| tee -a "$scriptLocal"/analysisTmp/missing-"$current_reportFile"
+                #comm -23 <(sort "$scriptLocal"/analysisTmp/"$current_reportFile"-"$current_reviewReleaseTag") <(sort "$scriptLocal"/analysisTmp/"$current_reportFile") > "$scriptLocal"/analysisTmp/missing-"$current_reportFile".tmp
+                #cat "$scriptLocal"/analysisTmp/missing-"$current_reportFile".tmp | head -n "$currentLimit"
+                #cat "$scriptLocal"/analysisTmp/missing-"$current_reportFile".tmp >> "$scriptLocal"/analysisTmp/missing-"$current_reportFile"
+                #rm -f "$scriptLocal"/analysisTmp/missing-"$current_reportFile".tmp
+            #fi
+        #done
+    #done
+
+
+	# Analysis - for each tag, compare all report files. 
+	#  More human readable stdout - shows all differences between current version and other tagged version , one tagged version at a time.
+	# WARNING: Selected "$scriptLocal"/analysisTmp/"$current_reportFile" file is used directly, rather than "$scriptLocal"/analysisTmp/"$current_reportFile"-"$currentReleaseTag" , for compatibility with analysis solely for more rapid diagnostics which will not be uploaded (ie. 'ubDistBuild' 'build-analysis-beforeBoot').
+	for current_reportFile in "${current_reportFiles_list[@]}"; do
+		rm -f "$scriptLocal"/analysisTmp/missing-"$current_reportFile"
+	done
+    for current_reviewReleaseTag in $(cat "$scriptLocal"/analysisTmp/releasesTags); do
+    	for current_reportFile in "${current_reportFiles_list[@]}"; do
+			 if [ "$current_reviewReleaseTag" != "$currentReleaseTag" ]; then
+
+			 	echo | tee -a "$scriptLocal"/analysisTmp/missing-"$current_reportFile"
+				echo 'Items (ie. '"$current_reportFile"') in '"$current_reviewReleaseTag"' but not in currentRelease '"$currentReleaseTag"':' | tee -a "$scriptLocal"/analysisTmp/missing-"$current_reportFile"
+				
                 #| tee -a "$scriptLocal"/analysisTmp/missing-"$current_reportFile"
                 comm -23 <(sort "$scriptLocal"/analysisTmp/"$current_reportFile"-"$current_reviewReleaseTag") <(sort "$scriptLocal"/analysisTmp/"$current_reportFile") > "$scriptLocal"/analysisTmp/missing-"$current_reportFile".tmp
                 cat "$scriptLocal"/analysisTmp/missing-"$current_reportFile".tmp | head -n "$currentLimit"
                 cat "$scriptLocal"/analysisTmp/missing-"$current_reportFile".tmp >> "$scriptLocal"/analysisTmp/missing-"$current_reportFile"
                 rm -f "$scriptLocal"/analysisTmp/missing-"$current_reportFile".tmp
-            fi
-        done
-    done
+
+			fi
+		done
+	done
+
+
+
+
+
     return 0
 }
 
@@ -21596,7 +21626,6 @@ _safeRMR-analysisTmp() {
     [[ -e "$scriptLocal"/analysisTmp ]] && _safeRMR "$scriptLocal"/analysisTmp
 }
 
-#env currentRepository='mirage335-colossus/ubiquitous_bash' currentReleaseTag='build-14030770217-9999' ./ubiquitous_bash.sh _wget_githubRelease-fromTag-analysisReport 'ubcp-binReport-UNIX_Linux'
 #env currentRepository='mirage335-colossus/ubiquitous_bash' currentReleaseTag='build-13917942290-9999' ./ubiquitous_bash.sh _wget_githubRelease-fromTag-analysisReport 'ubcp-binReport-UNIX_Linux'
 #env:
 #  currentRepository: ${{ github.repository }}

@@ -18,6 +18,7 @@
 
 
 
+#env currentRepository='soaringDistributions/ubDistBuild' currentReleaseTag='build-13932580400-9999' ./ubiquitous_bash.sh _wget_githubRelease-fromTag-analysisReport-fetch 20 lsmodReport binReport coreReport dpkg
 #env currentRepository='mirage335-colossus/ubiquitous_bash' currentReleaseTag='build-13917942290-9999' ./ubiquitous_bash.sh _wget_githubRelease-fromTag-analysisReport-fetch 20 'ubcp-binReport-UNIX_Linux'
 #env:
 #  currentRepository: ${{ github.repository }}
@@ -88,6 +89,7 @@ _wget_githubRelease-fromTag-analysisReport-select() {
 }
 
 
+#env currentRepository='mirage335-colossus/ubiquitous_bash' currentReleaseTag='build-13917942290-9999' ./ubiquitous_bash.sh _wget_githubRelease-fromTag-analysisReport-analysis 65 lsmodReport binReport coreReport dpkg
 #env currentRepository='mirage335-colossus/ubiquitous_bash' currentReleaseTag='build-13917942290-9999' ./ubiquitous_bash.sh _wget_githubRelease-fromTag-analysisReport-analysis 65 'ubcp-binReport-UNIX_Linux'
 #env:
 #  currentReleaseTag: build-${{ github.run_id }}-9999
@@ -105,21 +107,51 @@ _wget_githubRelease-fromTag-analysisReport-analysis() {
 
     local current_reportFile
     
-    for current_reportFile in "${current_reportFiles_list[@]}"; do
-        rm -f "$scriptLocal"/analysisTmp/missing-"$current_reportFile"
-        for current_reviewReleaseTag in $(cat "$scriptLocal"/analysisTmp/releasesTags); do
-            # Compare the list of binaries, etc, in this release to the current release
-            if [ "$current_reviewReleaseTag" != "$currentReleaseTag" ]; then
-                echo | tee -a "$scriptLocal"/analysisTmp/missing-"$current_reportFile"
-                echo 'Items (ie. '"$current_reportFile"') in '"$current_reviewReleaseTag"' but not in currentRelease '"$currentReleaseTag"':' | tee -a "$scriptLocal"/analysisTmp/missing-"$current_reportFile"
+	# Analysis - for each report file, compare for all tags.
+    #for current_reportFile in "${current_reportFiles_list[@]}"; do
+        #rm -f "$scriptLocal"/analysisTmp/missing-"$current_reportFile"
+        #for current_reviewReleaseTag in $(cat "$scriptLocal"/analysisTmp/releasesTags); do
+            ## Compare the list of binaries, etc, in this release to the current release
+            #if [ "$current_reviewReleaseTag" != "$currentReleaseTag" ]; then
+                #echo | tee -a "$scriptLocal"/analysisTmp/missing-"$current_reportFile"
+                #echo 'Items (ie. '"$current_reportFile"') in '"$current_reviewReleaseTag"' but not in currentRelease '"$currentReleaseTag"':' | tee -a "$scriptLocal"/analysisTmp/missing-"$current_reportFile"
+                ##| tee -a "$scriptLocal"/analysisTmp/missing-"$current_reportFile"
+                #comm -23 <(sort "$scriptLocal"/analysisTmp/"$current_reportFile"-"$current_reviewReleaseTag") <(sort "$scriptLocal"/analysisTmp/"$current_reportFile") > "$scriptLocal"/analysisTmp/missing-"$current_reportFile".tmp
+                #cat "$scriptLocal"/analysisTmp/missing-"$current_reportFile".tmp | head -n "$currentLimit"
+                #cat "$scriptLocal"/analysisTmp/missing-"$current_reportFile".tmp >> "$scriptLocal"/analysisTmp/missing-"$current_reportFile"
+                #rm -f "$scriptLocal"/analysisTmp/missing-"$current_reportFile".tmp
+            #fi
+        #done
+    #done
+
+
+	# Analysis - for each tag, compare all report files. 
+	#  More human readable stdout - shows all differences between current version and other tagged version , one tagged version at a time.
+	# WARNING: Selected "$scriptLocal"/analysisTmp/"$current_reportFile" file is used directly, rather than "$scriptLocal"/analysisTmp/"$current_reportFile"-"$currentReleaseTag" , for compatibility with analysis solely for more rapid diagnostics which will not be uploaded (ie. 'ubDistBuild' 'build-analysis-beforeBoot').
+	for current_reportFile in "${current_reportFiles_list[@]}"; do
+		rm -f "$scriptLocal"/analysisTmp/missing-"$current_reportFile"
+	done
+    for current_reviewReleaseTag in $(cat "$scriptLocal"/analysisTmp/releasesTags); do
+    	for current_reportFile in "${current_reportFiles_list[@]}"; do
+			 if [ "$current_reviewReleaseTag" != "$currentReleaseTag" ]; then
+
+			 	echo | tee -a "$scriptLocal"/analysisTmp/missing-"$current_reportFile"
+				echo 'Items (ie. '"$current_reportFile"') in '"$current_reviewReleaseTag"' but not in currentRelease '"$currentReleaseTag"':' | tee -a "$scriptLocal"/analysisTmp/missing-"$current_reportFile"
+				
                 #| tee -a "$scriptLocal"/analysisTmp/missing-"$current_reportFile"
                 comm -23 <(sort "$scriptLocal"/analysisTmp/"$current_reportFile"-"$current_reviewReleaseTag") <(sort "$scriptLocal"/analysisTmp/"$current_reportFile") > "$scriptLocal"/analysisTmp/missing-"$current_reportFile".tmp
                 cat "$scriptLocal"/analysisTmp/missing-"$current_reportFile".tmp | head -n "$currentLimit"
                 cat "$scriptLocal"/analysisTmp/missing-"$current_reportFile".tmp >> "$scriptLocal"/analysisTmp/missing-"$current_reportFile"
                 rm -f "$scriptLocal"/analysisTmp/missing-"$current_reportFile".tmp
-            fi
-        done
-    done
+
+			fi
+		done
+	done
+
+
+
+
+
     return 0
 }
 
