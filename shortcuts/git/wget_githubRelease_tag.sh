@@ -18,7 +18,6 @@
 
 
 
-#env currentRepository='mirage335-colossus/ubiquitous_bash' currentReleaseTag='build-14030770217-9999' ./ubiquitous_bash.sh _wget_githubRelease-fromTag-analysisReport-fetch 20 'ubcp-binReport-UNIX_Linux'
 #env currentRepository='mirage335-colossus/ubiquitous_bash' currentReleaseTag='build-13917942290-9999' ./ubiquitous_bash.sh _wget_githubRelease-fromTag-analysisReport-fetch 20 'ubcp-binReport-UNIX_Linux'
 #env:
 #  currentRepository: ${{ github.repository }}
@@ -89,7 +88,6 @@ _wget_githubRelease-fromTag-analysisReport-select() {
 }
 
 
-#env currentRepository='mirage335-colossus/ubiquitous_bash' currentReleaseTag='build-14030770217-9999' ./ubiquitous_bash.sh _wget_githubRelease-fromTag-analysisReport-analysis 65 'ubcp-binReport-UNIX_Linux'
 #env currentRepository='mirage335-colossus/ubiquitous_bash' currentReleaseTag='build-13917942290-9999' ./ubiquitous_bash.sh _wget_githubRelease-fromTag-analysisReport-analysis 65 'ubcp-binReport-UNIX_Linux'
 #env:
 #  currentReleaseTag: build-${{ github.run_id }}-9999
@@ -129,7 +127,6 @@ _safeRMR-analysisTmp() {
     [[ -e "$scriptLocal"/analysisTmp ]] && _safeRMR "$scriptLocal"/analysisTmp
 }
 
-#env currentRepository='mirage335-colossus/ubiquitous_bash' currentReleaseTag='build-14030770217-9999' ./ubiquitous_bash.sh _wget_githubRelease-fromTag-analysisReport 'ubcp-binReport-UNIX_Linux'
 #env currentRepository='mirage335-colossus/ubiquitous_bash' currentReleaseTag='build-13917942290-9999' ./ubiquitous_bash.sh _wget_githubRelease-fromTag-analysisReport 'ubcp-binReport-UNIX_Linux'
 #env:
 #  currentRepository: ${{ github.repository }}
