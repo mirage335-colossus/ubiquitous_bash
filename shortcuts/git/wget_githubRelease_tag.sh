@@ -727,10 +727,10 @@ _wget_githubRelease-fromTag_procedure() {
 	if [[ "$FORCE_AXEL" != "" ]] # && [[ "$MANDATORY_HASH" == "true" ]]
     then
         ( _messagePlain_warn 'warn: WARNING: FORCE_AXEL not empty' >&2 ; echo 'FORCE_AXEL may have similar effects to FORCE_WGET and should not be necessary.' >&2  ) > /dev/null
-        #local currentURL=$(_wget_githubRelease-URL-curl "$currentAbsoluteRepo" "$currentTag" "$currentFile")
-		local currentURL
-		[[ "$GH_TOKEN" != "" ]] && currentURL=$(_wget_githubRelease-API_URL_fromTag-curl "$currentAbsoluteRepo" "$currentTag" "$currentFile")
-		[[ "$GH_TOKEN" == "" ]] && currentURL=$(_wget_githubRelease-URL_fromTag-curl "$currentAbsoluteRepo" "$currentTag" "$currentFile")
+        local currentURL=$(_wget_githubRelease-URL-curl "$currentAbsoluteRepo" "$currentTag" "$currentFile")
+		#local currentURL
+		#[[ "$GH_TOKEN" != "" ]] && currentURL=$(_wget_githubRelease-API_URL_fromTag-curl "$currentAbsoluteRepo" "$currentTag" "$currentFile")
+		#[[ "$GH_TOKEN" == "" ]] && currentURL=$(_wget_githubRelease-URL_fromTag-curl "$currentAbsoluteRepo" "$currentTag" "$currentFile")
 
 		[[ "$FORCE_DIRECT" == "true" ]] && ( _messagePlain_bad 'bad: fail: FORCE_AXEL==true is NOT compatible with FORCE_DIRECT==true' >&2 ) > /dev/null && return 1
 
