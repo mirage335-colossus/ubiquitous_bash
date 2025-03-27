@@ -305,6 +305,7 @@ _curl_githubAPI_releases_page() {
 	local current_curl_args
 	current_curl_args=()
 	[[ "$GH_TOKEN" != "" ]] && current_curl_args+=( -H "Authorization: Bearer $GH_TOKEN" )
+	current_curl_args+=( -H "Accept: application/octet-stream" )
 	current_curl_args+=( -S )
 	current_curl_args+=( -s )
 
@@ -1106,6 +1107,7 @@ _wget_githubRelease_procedure-curl() {
     local current_curl_args
 	current_curl_args=()
 	[[ "$GH_TOKEN" != "" ]] && current_curl_args+=( -H "Authorization: Bearer $GH_TOKEN" )
+	current_curl_args+=( -H "Accept: application/octet-stream" )
 	current_curl_args+=( -S )
 	current_curl_args+=( -s )
 	#current_curl_args+=( --clobber )
@@ -1211,7 +1213,8 @@ _wget_githubRelease_procedure-axel() {
     local current_axel_args
 	current_axel_args=()
 	##[[ "$GH_TOKEN" != "" ]] && current_axel_args+=( -H "Authorization: Bearer $GH_TOKEN" )
-	[[ "$GH_TOKEN" != "" ]] && current_curl_args+=( --header="Authorization: token $GH_TOKEN" --header="Accept: application/octet-stream" )
+	[[ "$GH_TOKEN" != "" ]] && current_axel_args+=( --header="Authorization: token $GH_TOKEN" )
+	current_axel_args+=( --header="Accept: application/octet-stream" )
 	#current_axel_args+=( --quiet=true )
 	#current_axel_args+=( --timeout=180 --max-tries=25 --retry-wait=15 )
     current_axel_args+=( --stderr=true --summary-interval=0 --console-log-level=error --async-dns=false )
