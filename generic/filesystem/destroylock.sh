@@ -3,6 +3,8 @@
 # Works around files that may not be deleted by 'rm -f' when expected (ie. due to Cygwin/MSW file locking).
 # ATTRIBUTION-AI: OpRt_.deepseek/deepseek-r1-distill-llama-70b  2025-03-27  (partial)
 _destroy_lock() {
+    [[ "$1" == "" ]] && return 0
+
     # Fraction of   2GB part file  divided by  1MB/s optical-disc write speed   .
     local currentLockWait="1250"
 

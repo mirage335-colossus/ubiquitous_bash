@@ -1239,11 +1239,14 @@ _wget_githubRelease_procedure-axel() {
 	local currentExitStatus_ipv4=1
 	local currentExitStatus_ipv6=1
 
+	# TODO: Disable IPv6.
 	( _messagePlain_probe '_wget_githubRelease_procedure-axel: IPv6' >&2 ) > /dev/null
+	#( _messagePlain_probe '_wget_githubRelease_procedure-axel: IPv6 (false)' >&2 ) > /dev/null
     ( _messagePlain_probe_safe aria2c --disable-ipv6=false "${current_axel_args[@]}" -d "$currentOutDir" -o "$currentOutFile_relative" "$currentURL" >&2 ) > /dev/null
 	#aria2c --disable-ipv6=false "${current_axel_args[@]}" -d "$currentOutDir" -o "$currentOutFile_relative" "$currentURL"
 	# WARNING: May be untested.
 	( set -o pipefail ; aria2c --disable-ipv6=false "${current_axel_args[@]}" -d "$currentOutDir" -o "$currentOutFile_relative" "$currentURL" 2> >(tail -n 40 >&2) )
+	#false
 	currentExitStatus_ipv6="$?"
     if [[ "$currentExitStatus_ipv6" != "0" ]]
     then
@@ -1264,6 +1267,9 @@ _wget_githubRelease_procedure-axel() {
 	fi
 
     [[ ! -e "$currentOutFile" ]] && [[ "$currentOutFile" != "-" ]] && _bad_fail_githubRelease_missing && return 1
+
+	_destroy_lock "$scriptAbsoluteFolder"/$(_axelTmp).part*
+	_destroy_lock "$scriptAbsoluteFolder"/$(_axelTmp).aria2*
 
     return 0
 }
@@ -1567,7 +1573,7 @@ _wget_githubRelease_join_sequence-stdout() {
 	#( _messagePlain_probe_var currentStream >&2 ) > /dev/null
 
 		# Stream must have written PASS/FAIL file .
-		( _messagePlain_nominal '\/\/\/\/\/ \/\/\/  outputLOOP: WAIT: PASS/FAIL ... currentPart='"$currentPart"' currentStream='"$currentStream" >&2 ) > /dev/null
+		( _messagePlain_nominal '\/\/\/\/\/ \/\/\/  outputLOOP: WAIT:  P A S S / F A I L  ... currentPart='"$currentPart"' currentStream='"$currentStream" >&2 ) > /dev/null
 		while ! [[ -e "$scriptAbsoluteFolder"/$(_axelTmp).busy ]] || ( ! [[ -e "$scriptAbsoluteFolder"/$(_axelTmp).PASS ]] && ! [[ -e "$scriptAbsoluteFolder"/$(_axelTmp).FAIL ]] )
 		do
 			sleep 1
@@ -1587,6 +1593,9 @@ _wget_githubRelease_join_sequence-stdout() {
 		_destroy_lock "$scriptAbsoluteFolder"/$(_axelTmp)
 		#rm -f "$scriptAbsoluteFolder"/$(_axelTmp).busy > /dev/null 2>&1
 		_destroy_lock "$scriptAbsoluteFolder"/$(_axelTmp).busy
+
+		#_destroy_lock "$scriptAbsoluteFolder"/$(_axelTmp).*
+		_destroy_lock .m_axelTmp_"$currentStream"_"$currentAxelTmpFileUID".*
 
 		let currentStream=currentStream+1
 		[[ "$currentStream" -gt "$currentStream_max" ]] && currentStream="$currentStream_min"
@@ -1715,6 +1724,15 @@ _wget_githubRelease_join_sequence-parallel() {
 }
 _wget_githubRelease_procedure-join() {
 	( _messagePlain_probe_safe _wget_githubRelease_procedure-join "$@" >&2 ) > /dev/null
+
+	if ls -1 "$currentAxelTmpFile"* > /dev/null 2>&1
+	then
+		( _messagePlain_bad 'bad: FAIL: currentAxelTmpFile*: EXISTS !' >&2 ) > /dev/null
+		echo "1" > "$currentAxelTmpFile".FAIL
+		_messageError 'FAIL' >&2
+		exit 1
+		return 1
+	fi
 
 	local currentAbsoluteRepo="$1"
 	local currentReleaseLabel="$2"
