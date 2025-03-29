@@ -287,6 +287,127 @@ _jq_github_browser_download_address_fromTag() {
 
 
 
+# WARNING: No production use. May be untested.
+#  Rapidly skips part files which are not upstream, using only a single page from the GitHub API, saving time and API calls.
+# Not guaranteed reliable. Structure of this non-essential function is provider-specific, code is written ad-hoc.
+# Duplicates much code from other functions:
+#  '_wget_githubRelease_procedure-address-curl'
+#  '_wget_githubRelease_procedure-address_fromTag-curl'
+#  '_wget_githubRelease-address-backend-curl'
+#env maxCurrentPart=63 ./ubiquitous_bash.sh _curl_githubAPI_releases_fromTag_join-skip soaringDistributions/ubDistBuild build-14095557231-9999 package_image.tar.flx
+#env maxCurrentPart=63 ./ubiquitous_bash.sh _curl_githubAPI_releases_fromTag_join-skip soaringDistributions/ubDistBuild build-13347565825-1 vm-ingredient.img.flx
+_curl_githubAPI_releases_fromTag_join-skip() {
+	# Similar retry logic for all similar functions: _wget_githubRelease-URL-curl, _wget_githubRelease-URL-gh .
+	( _messagePlain_nominal "$currentStream"'\/\/\/\/ init: _curl_githubAPI_releases_fromTag_join-skip' >&2 ) > /dev/null
+	( _messagePlain_probe_safe _curl_githubAPI_releases_fromTag_join-skip "$@" >&2 ) > /dev/null
+
+    # ATTENTION: WARNING: Unusually, api_address_type , is a monolithic variable NEVER exported . Keep local, and do NOT use for any other purpose.
+    [[ "$GH_TOKEN" != "" ]] && local api_address_type="api_url"
+	[[ "$GH_TOKEN" == "" ]] && local api_address_type="url"
+
+	local currentPartDownload
+	currentPartDownload=""
+
+	local currentExitStatus=1
+
+	local currentIteration=0
+
+	#[[ "$currentPartDownload" == "" ]] || 
+	while ( [[ "$currentExitStatus" != "0" ]] ) && [[ "$currentIteration" -lt "$githubRelease_retriesMax" ]]
+	do
+		currentPartDownload=""
+
+		if [[ "$currentIteration" != "0" ]]
+		then
+			( _messagePlain_warn 'warn: BAD: RETRY: _curl_githubAPI_releases_fromTag_join-skip: _curl_githubAPI_releases_fromTag_join_procedure-skip: currentIteration != 0' >&2 ) > /dev/null
+			sleep "$githubRelease_retriesWait"
+		fi
+
+		( _messagePlain_probe _curl_githubAPI_releases_fromTag_join_procedure-skip >&2 ) > /dev/null
+		currentPartDownload=$(_curl_githubAPI_releases_fromTag_join_procedure-skip "$@")
+		currentExitStatus="$?"
+
+		let currentIteration=currentIteration+1
+	done
+	
+	_safeEcho_newline "$currentPartDownload"
+
+	[[ "$currentIteration" -ge "$githubRelease_retriesMax" ]] && ( _messagePlain_bad 'bad: FAIL: _curl_githubAPI_releases_fromTag_join-skip: maxRetries' >&2 ) > /dev/null && return 1
+
+	return 0
+}
+#env maxCurrentPart=63 ./ubiquitous_bash.sh _curl_githubAPI_releases_fromTag_join_procedure-skip soaringDistributions/ubDistBuild spring package_image.tar.flx
+#env maxCurrentPart=63 ./ubiquitous_bash.sh _curl_githubAPI_releases_fromTag_join_procedure-skip soaringDistributions/ubDistBuild latest package_image.tar.flx
+_curl_githubAPI_releases_fromTag_join_procedure-skip() {
+	local currentAbsoluteRepo="$1"
+	local currentTag="$2"
+	local currentFile="$3"
+
+	[[ "$currentAbsoluteRepo" == "" ]] && return 1
+	[[ "$currentFile" == "" ]] && return 1
+
+
+	local currentExitStatus_tmp=0
+	local currentExitStatus=0
+
+
+	local currentPart
+	local currentAddress
+
+
+
+	local currentData
+	currentData=""
+	
+	local currentData_page
+	currentData_page="doNotMatch"
+	
+	local currentIteration
+	currentIteration=1
+	
+	# ATTRIBUTION-AI: Many-Chat 2025-03-23
+	# Alternative detection of empty array, as suggested by AI LLM .
+	#[[ $(jq 'length' <<< "$currentData_page") -gt 0 ]]
+	while ( [[ "$currentData_page" != "" ]] && [[ $(_safeEcho_newline "$currentData_page" | tr -dc 'a-zA-Z\[\]' | sed '/^$/d') != $(echo 'WwoKXQo=' | base64 -d | tr -dc 'a-zA-Z\[\]') ]] ) && ( [[ "$currentIteration" -le "1" ]] || ( [[ "$GH_TOKEN" != "" ]] && [[ "$currentIteration" -le "3" ]] ) )
+	do
+		currentData_page=$(set -o pipefail ; _curl_githubAPI_releases_page "$currentAbsoluteRepo" "$currentTag" "$currentFile" "$currentIteration")
+		currentExitStatus_tmp="$?"
+		[[ "$currentIteration" == "1" ]] && currentExitStatus="$currentExitStatus_tmp"
+		currentData="$currentData"'
+'"$currentData_page"
+
+		( _messagePlain_probe "_wget_githubRelease_procedure-address-curl: ""$currentIteration" >&2 ) > /dev/null
+		#( _safeEcho_newline "$currentData" | _jq_github_browser_download_address "" "$currentTag" "$currentFile" | head -n 1 >&2 ) > /dev/null
+		[[ "$currentIteration" -ge 4 ]] && ( _safeEcho_newline "$currentData_page" >&2 ) > /dev/null
+
+		let currentIteration=currentIteration+1
+	done
+
+	#( set -o pipefail ; _safeEcho_newline "$currentData" | _jq_github_browser_download_address "" "$currentTag" "$currentFile" | head -n 1 )
+	#currentExitStatus_tmp="$?"
+
+	# ###
+	for currentPart in $(seq -f "%02g" 0 "$maxCurrentPart" | sort -r)
+	do
+		currentAddress=$( set -o pipefail ; _safeEcho_newline "$currentData" | _jq_github_browser_download_address_fromTag "" "$currentTag" "$currentFile".part"$currentPart" | head -n 1 )
+		currentExitStatus_tmp="$?"
+
+		[[ "$currentExitStatus" != "0" ]] && ( _messagePlain_bad 'bad: FAIL: _wget_githubRelease_procedure-address-curl: _curl_githubAPI_releases_fromTag_page: currentExitStatus' >&2 ) > /dev/null && return "$currentExitStatus"
+		[[ "$currentExitStatus_tmp" != "0" ]] && ( _messagePlain_bad 'bad: FAIL: _wget_githubRelease_procedure-address-curl: pipefail: _jq_github_browser_download_address: currentExitStatus_tmp' >&2 ) > /dev/null && return "$currentExitStatus_tmp"
+		[[ "$currentData" == "" ]] && ( _messagePlain_bad 'bad: FAIL: _wget_githubRelease_procedure-address-curl: empty: currentData' >&2 ) > /dev/null && return 1
+
+		[[ "$currentAddress" != "" ]] && echo "$currentPart" && return 0
+	done
+
+	
+	# ### ATTENTION: No part files found is not 'skip' but FAIL .
+	[[ "$currentAddress" == "" ]] && ( _messagePlain_bad 'bad: FAIL: _curl_githubAPI_releases_fromTag_join-skip: empty: _safeEcho_newline | _jq_github_browser_download_address' >&2 ) > /dev/null && return 1
+	
+	return 0
+
+}
+
+
 
 
 
@@ -884,8 +1005,19 @@ _wget_githubRelease-fromTag_join_sequence-stdout() {
 	local currentStream_wait
 	local currentBusyStatus
 
-	# CAUTION: Any greater than 50 is not expected to serve any purpose, may exhaust expected API rate limits, may greatly delay download, and may disrupt subsequent API requests. Any less than 50 may fall below the ~100GB capacity that is both expected necessary for some complete toolchains and at the limit of ~100GB archival quality optical disc .
-	local maxCurrentPart=50
+	# CAUTION: Any greater than 50 is not expected to serve any purpose, may exhaust expected API rate limits, may greatly delay download, and may disrupt subsequent API requests. Any less than 50 may fall below the ~100GB capacity that is both expected necessary for some complete toolchains and at the limit of ~100GB archival quality optical disc (ie. M-Disc) .
+	#local maxCurrentPart=50
+
+	# ATTENTION: Graceful degradation to a maximum part count of 49 can be achieved by reducing API calls using the _curl_githubAPI_releases_join-skip function. That single API call can get 100 results, leaving 49 unused API calls remaining to get API_URL addresses to download 49 parts. Files larger than ~200GB are likely rare, specialized.
+	#local maxCurrentPart=98
+
+	# ATTENTION: In practice, 128GB storage media - reputable brand BD-XL near-archival quality optical disc, SSDs, etc - is the maximum file size that is convenient.
+	# '1997537280' bytes truncate/tail
+	# https://en.wikipedia.org/wiki/Blu-ray
+	#  '128,001,769,472' ... 'Bytes'
+	# https://fy.chalmers.se/~appro/linux/DVD+RW/Blu-ray/
+	#  'only inner spare area of 256MB'
+	local maxCurrentPart=63
 
 
     local currentExitStatus=1
@@ -929,6 +1061,8 @@ _wget_githubRelease-fromTag_join_sequence-stdout() {
         currentStream="noBuf"
         #local currentAxelTmpFileRelative=.m_axelTmp_"$currentStream"_$(_uid 14)
 	    #local currentAxelTmpFile="$scriptAbsoluteFolder"/"$currentAxelTmpFileRelative"
+
+		maxCurrentPart=$(_curl_githubAPI_releases_join-skip "$currentAbsoluteRepo" "$currentReleaseLabel" "$currentFile")
 
         currentPart=""
         for currentPart in $(seq -f "%02g" 0 "$maxCurrentPart" | sort -r)
@@ -991,6 +1125,7 @@ _wget_githubRelease-fromTag_join_sequence-stdout() {
 	_set_wget_githubRelease-detect "$@"
 	currentSkip="skip"
 
+	maxCurrentPart=$(_curl_githubAPI_releases_join-skip "$currentAbsoluteRepo" "$currentReleaseLabel" "$currentFile")
 
 	currentPart=""
 	for currentPart in $(seq -f "%02g" 0 "$maxCurrentPart" | sort -r)
