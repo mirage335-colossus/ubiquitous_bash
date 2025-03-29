@@ -1,0 +1,32 @@
+
+
+
+```experiments
+export FORCE_AXEL="3"
+export FORCE_PARALLEL="5"
+./ubiquitous_bash.sh _get_ingredientVM "spring"
+```
+
+```command
+export FORCE_AXEL="3"
+export FORCE_PARALLEL="5"
+./ubiquitous_bash.sh _wget_githubRelease_join-stdout "soaringDistributions/ubDistBuild" "spring" "package_image.tar.flx" > _local/temp
+```
+
+```processesAndFiles
+for f in .m_axelTmp_*_*.pid; do echo "PID file: ${f}"; ps -e | grep $(cat "${f}" | head -n1 | cut -d: -f1) || echo "Process not found"; done ; ls -1 .m_axel*
+
+```
+
+```bash
+
+
+```
+
+
+
+```output
+
+
+```
+

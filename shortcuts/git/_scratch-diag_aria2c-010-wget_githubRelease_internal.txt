@@ -14,8 +14,16 @@ Cygwin/MSW is running this script, so the inability to rm -f a file due to locki
 
 Because this is an intermittent error, in a very complicated script, it is very important to identify the cause of the failure if possible. However, because this script has a good track record overall, is used in constrained environments (eg. live 'rescue' OS from cloud providers to install an OS), and deals with the vagarities of internet connections, different operating systems, etc - drastic changes to the way the script works may not be desirably unless practically necessary.
 
+```experiments
+export FORCE_AXEL="3"
+export FORCE_PARALLEL="5"
+#./ubiquitous_bash.sh _wget_githubRelease_join-stdout soaringDistributions/ubDistBuild spring vm-ingredient.img.flx > _local/temp
+./ubiquitous_bash.sh _get_ingredientVM "spring"
+```
 
 ```command
+export FORCE_AXEL="3"
+export FORCE_PARALLEL="5"
 ./ubiquitous_bash.sh _wget_githubRelease_join-stdout "soaringDistributions/ubDistBuild" "spring" "package_image.tar.flx" > _local/temp
 ```
 
@@ -1867,6 +1875,8 @@ build-1001-1" ]] || ( _messagePlain_bad 'fail: bad: _wget_githubRelease_procedur
 
 
 ```output
+export FORCE_AXEL="3"
+export FORCE_PARALLEL="5"
 ./ubiquitous_bash.sh _wget_githubRelease_join-stdout "soaringDistributions/ubDistBuild" "spring" "package_image.tar.flx" > _local/temp
  \/\/\/\/\/ \/\/\/\/\/ init: _wget_githubRelease_join-stdout
  _wget_githubRelease_join-stdout soaringDistributions/ubDistBuild spring package_image.tar.flx
