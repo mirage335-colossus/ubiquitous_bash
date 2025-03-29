@@ -1062,7 +1062,7 @@ _wget_githubRelease-fromTag_join_sequence-stdout() {
         #local currentAxelTmpFileRelative=.m_axelTmp_"$currentStream"_$(_uid 14)
 	    #local currentAxelTmpFile="$scriptAbsoluteFolder"/"$currentAxelTmpFileRelative"
 
-		maxCurrentPart=$(_curl_githubAPI_releases_join-skip "$currentAbsoluteRepo" "$currentReleaseLabel" "$currentFile")
+		maxCurrentPart=$(_curl_githubAPI_releases_fromTag_join-skip "$currentAbsoluteRepo" "$currentReleaseTag" "$currentFile")
 
         currentPart=""
         for currentPart in $(seq -f "%02g" 0 "$maxCurrentPart" | sort -r)
@@ -1088,7 +1088,7 @@ _wget_githubRelease-fromTag_join_sequence-stdout() {
             fi
 
 
-            _wget_githubRelease-fromTag_procedure "$currentAbsoluteRepo" "$currentReleaseLabel" "$currentFile".part"$currentPart" -O - "$@"
+            _wget_githubRelease-fromTag_procedure "$currentAbsoluteRepo" "$currentReleaseTag" "$currentFile".part"$currentPart" -O - "$@"
             currentExitStatus="$?"
             #[[ "$currentExitStatus" != "0" ]] && break
         done
@@ -1125,7 +1125,7 @@ _wget_githubRelease-fromTag_join_sequence-stdout() {
 	_set_wget_githubRelease-detect "$@"
 	currentSkip="skip"
 
-	maxCurrentPart=$(_curl_githubAPI_releases_join-skip "$currentAbsoluteRepo" "$currentReleaseLabel" "$currentFile")
+	maxCurrentPart=$(_curl_githubAPI_releases_fromTag_join-skip "$currentAbsoluteRepo" "$currentReleaseTag" "$currentFile")
 
 	currentPart=""
 	for currentPart in $(seq -f "%02g" 0 "$maxCurrentPart" | sort -r)
