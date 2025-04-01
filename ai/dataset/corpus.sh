@@ -118,10 +118,6 @@ _corpus_bash-write() {
 _corpus_bash_sequence-write() {
     _start
 
-    local current_out_dir="$4"
-    [[ "$current_out_dir" == "" ]] && current_out_dir="$scriptLocal"/dataset/"$corpus_script_object"
-    mkdir -p "$current_out_dir"
-
     local current_corpus_script="$1"
     local current_corpus_script_extension="$2"
     [[ "$current_corpus_script_extension" == "" ]] && current_corpus_script_extension=".sh"
@@ -131,6 +127,10 @@ _corpus_bash_sequence-write() {
     shift ; shift ; shift ; shift ; shift
     _set_corpus_default "$current_corpus_script" "$current_corpus_script_extension" "$current_corpus_object" "$current_corpus_chunk" "$current_corpus_overlap" "$@"
     mkdir -p "$safeTmp"/dataset/corpus/"$corpus_script_object"
+
+    local current_out_dir="$6"
+    [[ "$current_out_dir" == "" ]] && current_out_dir="$scriptLocal"/dataset/"$corpus_script_object"
+    mkdir -p "$current_out_dir"
 
     _dataset_from_lines() { _dataset_bash_from_lines "$@" ; }
     export -f _dataset_from_lines
