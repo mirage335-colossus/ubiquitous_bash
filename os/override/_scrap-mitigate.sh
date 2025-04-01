@@ -1,4 +1,5 @@
 
+# WARNING: May be OBSOLETE! This is a mere copy/paste of specifically relevant functions from 'override_cygwin.sh' , etc, as a reference for writing documentation, etc.
 
 
 _mitigate-ubcp_rewrite_procedure() {
