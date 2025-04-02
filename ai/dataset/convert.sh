@@ -31,7 +31,7 @@ _convert_bash-dispatch() {
     
     #-s 4096
     #-P $(nproc)
-    find "$1" -maxdepth 1 -type f ! -iname '*.prompt.txt' ! -iname '*.response.txt' ! -iname '*.continue_prompt.txt' ! -iname '*.continue_response.txt' ! -iname '*.description.txt' -print0 | xargs -0 -x -L 1 -P 1 bash -c '_convert_bash_procedure "$@"' _
+    find "$1" -maxdepth 1 -type f ! -iname '*.prompt.txt' ! -iname '*.response.txt' ! -iname '*.continue_prompt.txt' ! -iname '*.continue_response.txt' ! -iname '*.description.txt' -print0 | xargs -0 -x -L 1 -P 1 bash -c '"'"$scriptAbsoluteLocation"'"'' --embed _convert_bash_procedure "$@"' _
 }
 
 
@@ -131,7 +131,7 @@ _convert_bash_procedure() {
     rm -f "$1".continue_prompt.txt > /dev/null 2>&1
 
     # Continue Prompt header (boilerplate, continue the shellcode).
-    _here_convert_bash-continuePromptResponse-boilerplate_promptHeader >> "$1".continue_prompt.txt
+    _here_convert_bash_continuePromptResponse-boilerplate_promptHeader >> "$1".continue_prompt.txt
 
     # Continue Prompt (shellcode to continue)
     #echo >> "$1".continue_prompt.txt
@@ -151,7 +151,7 @@ _convert_bash_procedure() {
     rm -f "$safeTmp"/"$inputName".tmp_output.txt > /dev/null 2>&1
     cat "$1".continue_prompt.txt > "$safeTmp"/"$inputName".tmp_input.txt
     #echo '' >> "$safeTmp"/"$inputName".tmp_input.txt
-    _here_convert_bash-continuePromptResponse-ask_responseHeader >> "$safeTmp"/"$inputName".tmp_input.txt
+    _here_convert_bash_continuePromptResponse-ask_responseHeader >> "$safeTmp"/"$inputName".tmp_input.txt
     _convert_loop "$1" "_convert_bash-backend-lowLatency"
     cat "$safeTmp"/"$inputName".tmp_output.txt >> "$1".continue_response.txt
 
@@ -167,9 +167,9 @@ _convert_bash_procedure() {
     rm -f "$safeTmp"/"$inputName".tmp_output.txt > /dev/null 2>&1
     cat "$1".continue_prompt.txt > "$safeTmp"/"$inputName".tmp_input.txt
     #echo '' >> "$safeTmp"/"$inputName".tmp_input.txt
-    _here_convert_bash-continuePromptResponse-ask_responseFooter >> "$safeTmp"/"$inputName".tmp_input.txt
+    _here_convert_bash_continuePromptResponse-ask_responseFooter >> "$safeTmp"/"$inputName".tmp_input.txt
     _convert_loop "$1" "_convert_bash-backend-lowLatency"
-    cat "$safeTmp"/"$inputName".tmp_output.txt >> "$1".continue_footer.txt
+    cat "$safeTmp"/"$inputName".tmp_output.txt >> "$1".continue_response.txt
 
 
 
@@ -177,23 +177,31 @@ _convert_bash_procedure() {
     rm -f "$safeTmp"/"$inputName".tmp_output.txt
 }
 _convert_bash_procedure_procedure() {
-    export -f _here_convert_bash-description
+    #export -f _convert_bash-backend
+    #export -f _convert_bash-backend-lowLatency
+    #export -f _convert_loop
 
-    export -f _convert_bash-backend
-    export -f _here_convert_bash-additive
-    export -f _convert_bash_procedure
+    #export -f _here_convert_bash_promptResponse-askDescription
+    #export -f _here_convert_bash_promptResponse-boilerplate_promptHeader
+    #export -f _here_convert_bash_promptResponse-ask_responseHeader
+    #export -f _here_convert_bash_promptResponse-ask_responseFooter
+    #export -f _here_convert_bash_continuePromptResponse-boilerplate_promptHeader
+    #export -f _here_convert_bash_continuePromptResponse-ask_responseHeader
+    #export -f _here_convert_bash_continuePromptResponse-ask_responseFooter
 
-	export -f "_messagePlain_nominal"
-	export -f "_color_begin_nominal"
-	export -f "_color_end"
-	export -f "_getAbsoluteLocation"
-	export -f "_realpath_L_s"
-	export -f "_realpath_L"
-	export -f "_compat_realpath_run"
-	export -f "_compat_realpath"
-	export -f "_messagePlain_probe_var"
-	export -f "_color_begin_probe"
-	export -f "_messagePlain_probe"
+    #export -f _convert_bash_procedure
+
+	#export -f "_messagePlain_nominal"
+	#export -f "_color_begin_nominal"
+	#export -f "_color_end"
+	#export -f "_getAbsoluteLocation"
+	#export -f "_realpath_L_s"
+    #export -f "_realpath_L"
+	#export -f "_compat_realpath_run"
+	#export -f "_compat_realpath"
+	#export -f "_messagePlain_probe_var"
+	#export -f "_color_begin_probe"
+	#export -f "_messagePlain_probe"
 
     local currentDirectory="$1"
     [[ "$currentDirectory" == "" ]] && currentDirectory="$scriptLocal"/dataset/"$objectName"

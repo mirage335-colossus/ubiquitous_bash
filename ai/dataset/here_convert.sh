@@ -67,7 +67,7 @@ Please output only a brief one sentence statement appropriate to the above simil
 CZXWXcRMTo8EmM8i4d
 }
 
-_here_convert_bash-promptResponse-ask_responseFooter() {
+_here_convert_bash_promptResponse-ask_responseFooter() {
     cat << 'CZXWXcRMTo8EmM8i4d'
 
 Please output only a thorough complete several sentences to several paragraphs report appropriate to the above similar to:
@@ -85,14 +85,14 @@ CZXWXcRMTo8EmM8i4d
 }
 
 
-_here_convert_bash-continuePromptResponse-boilerplate_promptHeader() {
+_here_convert_bash_continuePromptResponse-boilerplate_promptHeader() {
     cat << 'CZXWXcRMTo8EmM8i4d'
 Continue the example bash shellcode.
 
 CZXWXcRMTo8EmM8i4d
 }
 
-_here_convert_bash-continuePromptResponse-ask_responseHeader() {
+_here_convert_bash_continuePromptResponse-ask_responseHeader() {
     cat << 'CZXWXcRMTo8EmM8i4d'
 
 Please output only a statement appropriate to the above similar to:
@@ -113,7 +113,7 @@ Do not output any other suggestions or code. This is for automated processing, s
 CZXWXcRMTo8EmM8i4d
 }
 
-_here_convert_bash-continuePromptResponse-ask_responseFooter() {
+_here_convert_bash_continuePromptResponse-ask_responseFooter() {
     cat << 'CZXWXcRMTo8EmM8i4d'
 
 Please output only a thorough complete several sentences to several paragraphs report appropriate to the above similar to:
