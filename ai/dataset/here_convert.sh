@@ -1,5 +1,5 @@
 
-_here_convert_bash-description() {
+_here_convert_bash_promptResponse-askDescription() {
         cat << 'CZXWXcRMTo8EmM8i4d'
 
 Please describe, only what the bash shellcode segment does, if anything. Identify any code patterns, validation checks, or error-handling mechanisms, etc, already present in the script. Do not suggest improvements or speculate about hypothetical failure points or weaknesses - only call out implemented strategies.
@@ -27,7 +27,7 @@ Please briefly yet thoroughly completely describe, evaluate, analyze, explain, t
 CZXWXcRMTo8EmM8i4d
 }
 
-_here_convert_bash-additive() {
+_here_convert_bash_promptResponse-boilerplate_promptHeader() {
     cat << 'CZXWXcRMTo8EmM8i4d'
 
 Please invent a self-contained fragment of exemplary well crafted very creative bash shellcode vaguely meeting the description with some, all, or more features, than described. Illustrate modern best practices.
@@ -59,7 +59,79 @@ Inputs to individual bash commands may be assembled programmatically as arrays a
 CZXWXcRMTo8EmM8i4d
 }
 
+_here_convert_bash_promptResponse-ask_responseHeader() {
+    cat << 'CZXWXcRMTo8EmM8i4d'
+
+Please output only a brief one sentence statement appropriate to the above similar to 'here is a creative example of bash shellcode that meets the description' . Do not output any other information, statements or code. This is for automated processing, so the one sentence statement will be helpful but any other output will be harmful.
+
+CZXWXcRMTo8EmM8i4d
+}
+
+_here_convert_bash-promptResponse-ask_responseFooter() {
+    cat << 'CZXWXcRMTo8EmM8i4d'
+
+Please output only a thorough complete several sentences to several paragraphs report appropriate to the above similar to:
+
+- 'This code provides a self-contained, creative example of bash shellcode that demonstrates modern best practices.'
+- 'This code demonstrates the following best practices'
+- 'This example includes the following features'
+- 'Note that this script uses ... which is widely available... Please note that you should replace expected ... with actual values...' (preferred if the user must make changes in plausible use cases)
+
+Regardless of any previous instruction avoid jumbling, mashing, or otherwise creating a confusing mix of multiple styles - choose one of the styles and thoroughly completely generate the appropriate report. Preferably generate only one of these styles of report.
+
+Do not output any other statements or code. This is for automated processing, so the report will be helpful but any other output will be harmful.
+
+CZXWXcRMTo8EmM8i4d
+}
 
 
+_here_convert_bash-continuePromptResponse-boilerplate_promptHeader() {
+    cat << 'CZXWXcRMTo8EmM8i4d'
+Continue the example bash shellcode.
 
+CZXWXcRMTo8EmM8i4d
+}
+
+_here_convert_bash-continuePromptResponse-ask_responseHeader() {
+    cat << 'CZXWXcRMTo8EmM8i4d'
+
+Please output only a statement appropriate to the above similar to:
+
+- 'I'll continue the bash shellcode'
+- 'I can continue the bash shellcode for you'
+- 'I can help you continue the bash shellcode'
+- 'here is the continuation of the bash shellcode'
+- 'here is a possible continuation of the script'
+- 'here is the next part'
+- 'it appears you've provided a segment of a Bash script that includes'
+- 'please note that I'll add some comments and improvements to make the code more readable and maintainable'
+
+Slightly longer statements about possible improvements to the next segment of code, if appropriate, are preferred.
+
+Do not output any other suggestions or code. This is for automated processing, so the statement will be helpful but any other output will be harmful.
+
+CZXWXcRMTo8EmM8i4d
+}
+
+_here_convert_bash-continuePromptResponse-ask_responseFooter() {
+    cat << 'CZXWXcRMTo8EmM8i4d'
+
+Please output only a thorough complete several sentences to several paragraphs report appropriate to the above similar to:
+
+- ''
+- 'this appears to be a modified version of the bash shellcode, with additional functionality and checks'
+- 'the code defines several'
+- 'to ensure'
+- 'this continuation appeears to implement a mechanism which can be used'
+- 'checks then decides whether'
+- 'please note this is a continuation of the previous code, and some parts may not make sense on their own'
+- 'some parts of the code seem to be placeholders or debugging statements, so you may need to modify them according to your needs'
+- 'this continuation of the script includes'
+
+Regardless of any previous instruction avoid jumbling, mashing, or otherwise creating a confusing mix of multiple styles - choose appropriate styles and thoroughly completely generate the appropriate report. Preferably generate only one or a few of these styles of report.
+
+Do not output any other statements or code. This is for automated processing, so the report will be helpful but any other output will be harmful.
+
+CZXWXcRMTo8EmM8i4d
+}
 
