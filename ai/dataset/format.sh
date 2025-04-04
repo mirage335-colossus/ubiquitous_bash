@@ -14,6 +14,7 @@
 _format_bash() {
     _format_bash-promptResponse "$@"
     _format_bash-continuePromptResponse "$@"
+    _format_bash-continueText "$@"
 }
 
 
@@ -71,7 +72,7 @@ _format_bash-promptResponse() {
 }
 
 _format_bash_sequence-continuePromptResponse() {
-    _start
+    #_start
 
     local current_objectName="$1"
     [[ -z "$current_objectName" ]] && current_objectName="$objectName"
@@ -88,8 +89,8 @@ _format_bash_sequence-continuePromptResponse() {
 
     prompt_file="SKIP"
     while IFS= read -r -d '' response_file; do
-        rm -f "$safeTmp"/prompt_file >/dev/null 2>&1
-        rm -f "$safeTmp"/response_file >/dev/null 2>&1
+        #rm -f "$safeTmp"/prompt_file >/dev/null 2>&1
+        #rm -f "$safeTmp"/response_file >/dev/null 2>&1
 
         if [[ "$prompt_file" != "SKIP" ]]
         then
@@ -142,7 +143,7 @@ _format_bash_sequence-continuePromptResponse() {
 
     echo "JSONL file created successfully: $output_file" >&2
 
-    _stop
+    #_stop
 }
 _format_bash-continuePromptResponse() {
     #"$scriptAbsoluteLocation" _format_bash_sequence-continuePromptResponse "$@"
@@ -152,7 +153,45 @@ _format_bash-continuePromptResponse() {
 
 
 
+# ATTRIBUTION-AI: ChatGPT 4.5-preview  2025-04-01  (partially)
+_format_bash-continueText() {
+    local current_objectName="$1"
+    [[ -z "$current_objectName" ]] && current_objectName="$objectName"
 
+    local current_directory="$2"
+    [[ -z "$current_directory" ]] && current_directory="$scriptLocal/dataset/$current_objectName"
+
+    local dataset="$current_directory"
+    local output_file="${current_directory}_finetuning-continueText.jsonl"
+
+    rm -f "$output_file" >/dev/null 2>&1
+
+    local segment_file prompt_file response_file prompt completion json_line
+
+    while IFS= read -r -d '' segment_file; do
+        segment=$(<"$segment_file")
+
+        # Now construct the correct "messages" object as required by OpenAI
+        #--arg system_content "You are an expert assistant that generates exemplary bash scripts according to best practices."
+        json_line=$(jq -cn \
+            --arg user_content "$prompt" \
+            --arg assistant_content "$completion" \
+            --arg system_content "" \
+            '{messages: [
+                {role: "system", content: $system_content},
+                {role: "user", content: $user_content},
+                {role: "assistant", content: $assistant_content}
+            ]}')
+        json_line=$(jq -cn \
+            --arg text "$segment" \
+            '{text: $text}')
+
+        echo "$json_line" >> "$output_file"
+
+    done < <(find "$dataset" -maxdepth 1 -type f  ! -iname '*.prompt.txt' ! -iname '*.response.txt' ! -iname '*.continue_prompt.txt' ! -iname '*.continue_response.txt' ! -iname '*.description.txt' -print0 | sort -zV)
+
+    echo "JSONL file created successfully: $output_file" >&2
+}
 
 
 

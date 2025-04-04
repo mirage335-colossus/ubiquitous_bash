@@ -1,4 +1,26 @@
 
+# All prompts to generate AI training datasets used, if any, only outputs from those models with open licenses, such as the Llama 3.1 licensing, or the DeepSeek R1 MIT license, and thus, there can be no questions of encumberance of resulting datasets for training Llama 3.1, etc, AI models.
+
+# Prompts are written to guarantee good results with at least Llama 3.1 models, with the goal of ensuring both availability of adequately trained models using these datasets, and also of getting the best practical results from other SOTA models.
+#  If in doubt, try training Llama 3.1 models with resulting datasets for the most predictable results.
+
+# ATTRIBUTION-AI:
+#
+#DeepSeek R1
+#DeepSeek R1 14b
+#DeepSeek R1 32b
+#DeepSeek R1 Distill Llama 8b
+#DeepSeek R1 Distill Llama 70b
+#
+#Llama 3.1 Instruct 405b
+#Llama 3.1 Instruct 70b
+#
+#Llama-augment
+#
+
+
+
+
 _here_convert_bash_promptResponse-askDescription() {
         cat << 'CZXWXcRMTo8EmM8i4d'
 
