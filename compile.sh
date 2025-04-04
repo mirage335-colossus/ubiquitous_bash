@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='981182274'
+export ub_setScriptChecksum_contents='462978494'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -6307,6 +6307,11 @@ _deps_ai() {
 	export enUb_researchEngine="true"
 	export enUb_ollama="true"
 }
+_deps_ai_dataset() {
+	_deps_ai
+	_deps_ai_shortcuts
+	export enUb_ai_dataset="true"
+}
 
 _deps_blockchain() {
 	_deps_notLean
@@ -6529,7 +6534,7 @@ _deps_calculators() {
 	export enUb_calculators="true"
 }
 
-_deps_ai_shortuts() {
+_deps_ai_shortcuts() {
 	_deps_generic
 	
 	export enUb_ollama_shortcuts="true"
@@ -7092,7 +7097,10 @@ _compile_bash_deps() {
 		_deps_haskell
 		
 		_deps_ai
-		_deps_ai_shortuts
+		_deps_ai_shortcuts
+
+		#_deps_ai
+		_deps_ai_dataset
 		
 		_deps_calculators
 		
@@ -7157,7 +7165,10 @@ _compile_bash_deps() {
 		_deps_haskell
 		
 		_deps_ai
-		_deps_ai_shortuts
+		_deps_ai_shortcuts
+
+		#_deps_ai
+		_deps_ai_dataset
 		
 		_deps_calculators
 		
@@ -7181,7 +7192,11 @@ _compile_bash_deps() {
 		_deps_python
 		_deps_haskell
 		
-		_deps_ai_shortuts
+		_deps_ai
+		_deps_ai_shortcuts
+
+		#_deps_ai
+		_deps_ai_dataset
 		
 		_deps_calculators
 		
@@ -7208,7 +7223,11 @@ _compile_bash_deps() {
 		_deps_python
 		_deps_haskell
 		
-		_deps_ai_shortuts
+		_deps_ai
+		_deps_ai_shortcuts
+
+		#_deps_ai
+		_deps_ai_dataset
 		
 		_deps_calculators
 		
@@ -7271,7 +7290,10 @@ _compile_bash_deps() {
 		_deps_haskell
 		
 		_deps_ai
-		_deps_ai_shortuts
+		_deps_ai_shortcuts
+
+		#_deps_ai
+		_deps_ai_dataset
 		
 		_deps_calculators
 		
@@ -7376,8 +7398,11 @@ _compile_bash_deps() {
 		_deps_python
 		_deps_haskell
 		
+		_deps_ai
+		_deps_ai_shortcuts
+
 		#_deps_ai
-		_deps_ai_shortuts
+		_deps_ai_dataset
 		
 		_deps_calculators
 		
@@ -7439,10 +7464,14 @@ _compile_bash_deps() {
 		return 0
 	fi
 
+	# In practice, 'core' now includes '_deps_ai' by default to support '_deps_ai_dataset' .
 	if [[ "$1" == "core_ai" ]]
 	then
 		_deps_ai
 		_compile_bash_deps 'core'
+
+		#_deps_ai
+		_deps_ai_dataset
 	fi
 	
 	if [[ "$1" == "" ]] || [[ "$1" == "ubiquitous_bash" ]] || [[ "$1" == "ubiquitous_bash.sh" ]] || [[ "$1" == "complete" ]]
@@ -7489,7 +7518,10 @@ _compile_bash_deps() {
 		_deps_haskell
 		
 		_deps_ai
-		_deps_ai_shortuts
+		_deps_ai_shortcuts
+
+		#_deps_ai
+		_deps_ai_dataset
 		
 		_deps_calculators
 		
@@ -7838,6 +7870,15 @@ _compile_bash_shortcuts() {
 	
 	( ( [[ "$enUb_dev_heavy" == "true" ]] ) || [[ "$enUb_ollama_shortcuts" == "true" ]] ) && includeScriptList+=( "shortcuts/ai/ollama"/ollama.sh )
 	
+
+	[[ "$enUb_ai_dataset" == "true" ]] && includeScriptList+=( "ai/dataset"/format.sh )
+
+	[[ "$enUb_ai_dataset" == "true" ]] && includeScriptList+=( "ai/dataset"/here_convert.sh )
+	[[ "$enUb_ai_dataset" == "true" ]] && includeScriptList+=( "ai/dataset"/convert.sh )
+
+	[[ "$enUb_ai_dataset" == "true" ]] && includeScriptList+=( "ai/dataset"/corpus_bash.sh )
+	[[ "$enUb_ai_dataset" == "true" ]] && includeScriptList+=( "ai/dataset"/corpus.sh )
+
 	
 	
 	#[[ "$enUb_dev_heavy" == "true" ]] && 

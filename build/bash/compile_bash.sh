@@ -73,7 +73,10 @@ _compile_bash_deps() {
 		_deps_haskell
 		
 		_deps_ai
-		_deps_ai_shortuts
+		_deps_ai_shortcuts
+
+		#_deps_ai
+		_deps_ai_dataset
 		
 		_deps_calculators
 		
@@ -138,7 +141,10 @@ _compile_bash_deps() {
 		_deps_haskell
 		
 		_deps_ai
-		_deps_ai_shortuts
+		_deps_ai_shortcuts
+
+		#_deps_ai
+		_deps_ai_dataset
 		
 		_deps_calculators
 		
@@ -162,7 +168,11 @@ _compile_bash_deps() {
 		_deps_python
 		_deps_haskell
 		
-		_deps_ai_shortuts
+		_deps_ai
+		_deps_ai_shortcuts
+
+		#_deps_ai
+		_deps_ai_dataset
 		
 		_deps_calculators
 		
@@ -189,7 +199,11 @@ _compile_bash_deps() {
 		_deps_python
 		_deps_haskell
 		
-		_deps_ai_shortuts
+		_deps_ai
+		_deps_ai_shortcuts
+
+		#_deps_ai
+		_deps_ai_dataset
 		
 		_deps_calculators
 		
@@ -252,7 +266,10 @@ _compile_bash_deps() {
 		_deps_haskell
 		
 		_deps_ai
-		_deps_ai_shortuts
+		_deps_ai_shortcuts
+
+		#_deps_ai
+		_deps_ai_dataset
 		
 		_deps_calculators
 		
@@ -357,8 +374,11 @@ _compile_bash_deps() {
 		_deps_python
 		_deps_haskell
 		
+		_deps_ai
+		_deps_ai_shortcuts
+
 		#_deps_ai
-		_deps_ai_shortuts
+		_deps_ai_dataset
 		
 		_deps_calculators
 		
@@ -420,10 +440,14 @@ _compile_bash_deps() {
 		return 0
 	fi
 
+	# In practice, 'core' now includes '_deps_ai' by default to support '_deps_ai_dataset' .
 	if [[ "$1" == "core_ai" ]]
 	then
 		_deps_ai
 		_compile_bash_deps 'core'
+
+		#_deps_ai
+		_deps_ai_dataset
 	fi
 	
 	if [[ "$1" == "" ]] || [[ "$1" == "ubiquitous_bash" ]] || [[ "$1" == "ubiquitous_bash.sh" ]] || [[ "$1" == "complete" ]]
@@ -470,7 +494,10 @@ _compile_bash_deps() {
 		_deps_haskell
 		
 		_deps_ai
-		_deps_ai_shortuts
+		_deps_ai_shortcuts
+
+		#_deps_ai
+		_deps_ai_dataset
 		
 		_deps_calculators
 		
@@ -819,6 +846,15 @@ _compile_bash_shortcuts() {
 	
 	( ( [[ "$enUb_dev_heavy" == "true" ]] ) || [[ "$enUb_ollama_shortcuts" == "true" ]] ) && includeScriptList+=( "shortcuts/ai/ollama"/ollama.sh )
 	
+
+	[[ "$enUb_ai_dataset" == "true" ]] && includeScriptList+=( "ai/dataset"/format.sh )
+
+	[[ "$enUb_ai_dataset" == "true" ]] && includeScriptList+=( "ai/dataset"/here_convert.sh )
+	[[ "$enUb_ai_dataset" == "true" ]] && includeScriptList+=( "ai/dataset"/convert.sh )
+
+	[[ "$enUb_ai_dataset" == "true" ]] && includeScriptList+=( "ai/dataset"/corpus_bash.sh )
+	[[ "$enUb_ai_dataset" == "true" ]] && includeScriptList+=( "ai/dataset"/corpus.sh )
+
 	
 	
 	#[[ "$enUb_dev_heavy" == "true" ]] && 

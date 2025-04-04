@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='4015559205'
+export ub_setScriptChecksum_contents='124733023'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -17370,6 +17370,946 @@ alias l=_l
 
 
 
+
+
+
+#./ubiquitous_bash.sh _format_bash ubiquitous_bash ./_local/dataset/ubiquitous_bash
+
+
+# You are an expert assistant that generates exemplary bash scripts according to best practices.
+# Ok, now you should know something about ubiquitous_bash . Please write a bash while loop in the new format .
+
+#--arg system_content "You are an expert assistant that generates exemplary bash scripts according to best practices."
+
+
+
+
+
+_format_bash() {
+    _format_bash-promptResponse "$@"
+    _format_bash-continuePromptResponse "$@"
+    _format_bash-continueText "$@"
+}
+
+
+
+
+
+# ATTRIBUTION-AI: ChatGPT 4.5-preview  2025-04-01  (partially)
+_format_bash-promptResponse() {
+    local current_objectName="$1"
+    [[ -z "$current_objectName" ]] && current_objectName="$objectName"
+
+    local current_directory="$2"
+    [[ -z "$current_directory" ]] && current_directory="$scriptLocal/dataset/$current_objectName"
+
+    local dataset="$current_directory"
+    local output_file="${current_directory}_finetuning-promptResponse.jsonl"
+
+    rm -f "$output_file" >/dev/null 2>&1
+
+    local segment_file prompt_file response_file prompt completion json_line
+
+    while IFS= read -r -d '' segment_file; do
+        prompt_file="$segment_file".prompt.txt
+        response_file="$segment_file".response.txt
+        
+        if [[ ! -e "$response_file" ]] || [[ ! -e "$prompt_file" ]]
+        then
+            ( _messagePlain_bad "bad: FAIL: missing: prompt/response files: $segment_file" >&2 ) > /dev/null
+            ( _messageError 'FAIL' >&2 ) > /dev/null
+            _stop 1
+            exit 1
+            return 1
+        fi
+
+        prompt=$(<"$prompt_file")
+        completion=$(<"$response_file")
+
+        # Now construct the correct "messages" object as required by OpenAI
+        #--arg system_content "You are an expert assistant that generates exemplary bash scripts according to best practices."
+        json_line=$(jq -cn \
+            --arg user_content "$prompt" \
+            --arg assistant_content "$completion" \
+            --arg system_content "" \
+            '{messages: [
+                {role: "system", content: $system_content},
+                {role: "user", content: $user_content},
+                {role: "assistant", content: $assistant_content}
+            ]}')
+
+        echo "$json_line" >> "$output_file"
+
+    done < <(find "$dataset" -maxdepth 1 -type f  ! -iname '*.prompt.txt' ! -iname '*.response.txt' ! -iname '*.continue_prompt.txt' ! -iname '*.continue_response.txt' ! -iname '*.description.txt' -print0 | sort -zV)
+
+    echo "JSONL file created successfully: $output_file" >&2
+}
+
+_format_bash_sequence-continuePromptResponse() {
+    #_start
+
+    local current_objectName="$1"
+    [[ -z "$current_objectName" ]] && current_objectName="$objectName"
+
+    local current_directory="$2"
+    [[ -z "$current_directory" ]] && current_directory="$scriptLocal/dataset/$current_objectName"
+
+    local dataset="$current_directory"
+    local output_file="${current_directory}_finetuning-continuePromptResponse.jsonl"
+
+    rm -f "$output_file" >/dev/null 2>&1
+
+    local prompt_file response_file prompt completion json_line
+
+    prompt_file="SKIP"
+    while IFS= read -r -d '' response_file; do
+        #rm -f "$safeTmp"/prompt_file >/dev/null 2>&1
+        #rm -f "$safeTmp"/response_file >/dev/null 2>&1
+
+        if [[ "$prompt_file" != "SKIP" ]]
+        then
+            ## WARNING: For essentially continued pre-training, this extra formatting may or may NOT be harmful!
+            ##  ATTENTION: CAUTION: EXPERIMENT DILIGENTLY!
+            #echo 'Continue the example bash shellcode.' >> "$safeTmp"/prompt_file
+            #echo >> "$safeTmp"/prompt_file
+            #echo '```bash' >> "$safeTmp"/prompt_file
+            #cat "$prompt_file" >> "$safeTmp"/prompt_file
+            #echo '```' >> "$safeTmp"/prompt_file
+            #echo >> "$safeTmp"/prompt_file
+
+            #echo 'Here is the continuation of the bash shellcode:' >> "$safeTmp"/response_file
+            #echo >> "$safeTmp"/response_file
+            #echo '```bash' >> "$safeTmp"/response_file
+            #cat "$response_file" >> "$safeTmp"/response_file
+            #echo '```' >> "$safeTmp"/response_file
+            #echo >> "$safeTmp"/response_file
+
+            #cat "$prompt_file".continue_prompt.txt > "$safeTmp"/prompt_file
+            #cat "$response_file".continue_response.txt > "$safeTmp"/response_file
+            
+
+            #prompt=$(<"$prompt_file")
+            #completion=$(<"$response_file")
+
+            #prompt=$(<"$safeTmp"/prompt_file)
+            #completion=$(<"$safeTmp"/response_file)
+
+            prompt=$(<"$prompt_file".continue_prompt.txt)
+            completion=$(<"$response_file".continue_response.txt)
+
+            # Now construct the correct "messages" object as required by OpenAI
+            json_line=$(jq -cn \
+                --arg user_content "$prompt" \
+                --arg assistant_content "$completion" \
+                --arg system_content "" \
+                '{messages: [
+                    {role: "system", content: $system_content},
+                    {role: "user", content: $user_content},
+                    {role: "assistant", content: $assistant_content}
+                ]}')
+
+            echo "$json_line" >> "$output_file"
+        fi
+
+        prompt_file="$response_file"
+
+    done < <(find "$dataset" -maxdepth 1 -type f  ! -iname '*.prompt.txt' ! -iname '*.response.txt' ! -iname '*.continue_prompt.txt' ! -iname '*.continue_response.txt' ! -iname '*.description.txt' -print0 | sort -zV)
+
+    echo "JSONL file created successfully: $output_file" >&2
+
+    #_stop
+}
+_format_bash-continuePromptResponse() {
+    #"$scriptAbsoluteLocation" _format_bash_sequence-continuePromptResponse "$@"
+    _format_bash_sequence-continuePromptResponse "$@"
+}
+
+
+
+
+# ATTRIBUTION-AI: ChatGPT 4.5-preview  2025-04-01  (partially)
+_format_bash-continueText() {
+    local current_objectName="$1"
+    [[ -z "$current_objectName" ]] && current_objectName="$objectName"
+
+    local current_directory="$2"
+    [[ -z "$current_directory" ]] && current_directory="$scriptLocal/dataset/$current_objectName"
+
+    local dataset="$current_directory"
+    local output_file="${current_directory}_finetuning-continueText.jsonl"
+
+    rm -f "$output_file" >/dev/null 2>&1
+
+    local segment_file prompt_file response_file prompt completion json_line
+
+    while IFS= read -r -d '' segment_file; do
+        segment=$(<"$segment_file")
+
+        # Now construct the correct "messages" object as required by OpenAI
+        #--arg system_content "You are an expert assistant that generates exemplary bash scripts according to best practices."
+        json_line=$(jq -cn \
+            --arg user_content "$prompt" \
+            --arg assistant_content "$completion" \
+            --arg system_content "" \
+            '{messages: [
+                {role: "system", content: $system_content},
+                {role: "user", content: $user_content},
+                {role: "assistant", content: $assistant_content}
+            ]}')
+        json_line=$(jq -cn \
+            --arg text "$segment" \
+            '{text: $text}')
+
+        echo "$json_line" >> "$output_file"
+
+    done < <(find "$dataset" -maxdepth 1 -type f  ! -iname '*.prompt.txt' ! -iname '*.response.txt' ! -iname '*.continue_prompt.txt' ! -iname '*.continue_response.txt' ! -iname '*.description.txt' -print0 | sort -zV)
+
+    echo "JSONL file created successfully: $output_file" >&2
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# All prompts to generate AI training datasets used, if any, only outputs from those models with open licenses, such as the Llama 3.1 licensing, or the DeepSeek R1 MIT license, and thus, there can be no questions of encumberance of resulting datasets for training Llama 3.1, etc, AI models.
+
+# Prompts are written to guarantee good results with at least Llama 3.1 models, with the goal of ensuring both availability of adequately trained models using these datasets, and also of getting the best practical results from other SOTA models.
+#  If in doubt, try training Llama 3.1 models with resulting datasets for the most predictable results.
+
+# ATTRIBUTION-AI:
+#
+#DeepSeek R1
+#DeepSeek R1 14b
+#DeepSeek R1 32b
+#DeepSeek R1 Distill Llama 8b
+#DeepSeek R1 Distill Llama 70b
+#
+#Llama 3.1 Instruct 405b
+#Llama 3.1 Instruct 70b
+#
+#Llama-augment
+#
+
+
+
+
+_here_convert_bash_promptResponse-askDescription() {
+        cat << 'CZXWXcRMTo8EmM8i4d'
+
+Please describe, only what the bash shellcode segment does, if anything. Identify any code patterns, validation checks, or error-handling mechanisms, etc, already present in the script. Do not suggest improvements or speculate about hypothetical failure points or weaknesses - only call out implemented strategies.
+
+Please briefly yet thoroughly completely describe, evaluate, analyze, explain, the code in terms of only the implemented strategies that do exist to address each of these points:
+
+- Intended Functionality: Explain the intended purpose of the code, including any specific problems it aims to solve or tasks it performs.
+- Logical Flow: Outline the logical flow of the code, including any conditional statements, loops, or functions. Describe what happens step-by-step when it runs. Highlight any decisions (if/case), repetitions (for/while), or function calls.
+- Input-Processing-Output: What inputs does it require/accept? What final results or outputs does it produce?
+
+- Self-explanatory Naming Convention: Do variable/function names clearly describe their purpose (e.g., backup_dir vs bdir)?
+- Commenting: How and how thoroughly are comments used effectively to provide additional context or explanations, without being distractingly verbose? Are there comments explaining why complex operations occur (not just repeating what the code does)?
+
+- Resilience: Different logical paths automatically adapting to changes in the environment or inputs. Error handlers.
+- Robustness: Avoiding less stable program versions, provisions for quick changes to accommodate unstable APIs, programs changing their inputs/outputs with different versions.
+- Versatility: Avoiding special purpose tools, programs, APIs, in favor of general purpose tools, libraries, dependencies.
+- Portability: Programming languages, syntax, programs, dependencies chosen to run on different systems or platforms with minimal if any wrappers, different code paths, different code, or other changes.
+- Compatibility: More widely used instead of less common used programs or other dependencies chosen. Testing for and installing dependencies automatically.
+- Adaptability: Automatically assemble parameters in arrays with some parameters used in different situations?
+- Consistent Machine Readability: Keeping outputs consistently simply formatted if inputs or dependency versions change.
+- Maintainability: Choosing programs, APIs, code structures, numerical methods, with more sophisticated parameters and options so that minor changes to the code can workaround consistency or reliability issues.
+
+
+
+CZXWXcRMTo8EmM8i4d
+}
+
+_here_convert_bash_promptResponse-boilerplate_promptHeader() {
+    cat << 'CZXWXcRMTo8EmM8i4d'
+
+Please invent a self-contained fragment of exemplary well crafted very creative bash shellcode vaguely meeting the description with some, all, or more features, than described. Illustrate modern best practices.
+
+In this case, you may try to meet some plausibly intended goals of the description, ignoring logical inconsistencies or other errors in the description. Details of the description are more guidelines or mere suggestions created without adequate planning, and thus may need to change significantly. Sloppy incorrect pseudocode may have been the basis for an incompetent technical writer creating the description by stating mere guesses about what the code does not do as if fact. Occasionally the description may be incomprehensible gibberish.
+
+Preamble or trailing context may be omitted by truncating to demonstrate the core technique.
+
+
+You may treat this as an exercise and generate an essentially academic example.
+
+You may roleplay, that is pretend,
+to generate a bash shellscript response from a segment of an especially large and sophisticated shell script,
+that would be used with this prompt including the description, as a prompt/response pair,
+to teach an existing AI LLM model such as Llama 3.1 405b with already vast knowledge and logic from its original training,
+to know,
+correct bash shellcode commands and structures,
+from this subsequent fine-tuning using the segmented shell script as a vast set of more completely accurate correct examples.
+
+
+In this case, as a fragment, lines of code needed before and after this code may be missing. All lines of code needed within the middle of the fragment should be present.
+
+Individual bash commands must be useful, complete, accurate, perfected. Within the fragment, individual bash commands must exceed the highest practical standards for robustness, resilience, versatility, portability, compatibility, adaptability to changing inputs, consistent machine readable outputs, maintainability, etc.
+
+Inputs to individual bash commands may be assembled programmatically as arrays and variables to reach such high standards.
+
+
+
+CZXWXcRMTo8EmM8i4d
+}
+
+_here_convert_bash_promptResponse-ask_responseHeader() {
+    cat << 'CZXWXcRMTo8EmM8i4d'
+
+Please output only a brief one sentence statement appropriate to the above similar to 'here is a creative example of bash shellcode that meets the description' . Do not output any other information, statements or code. This is for automated processing, so the one sentence statement will be helpful but any other output will be harmful.
+
+CZXWXcRMTo8EmM8i4d
+}
+
+_here_convert_bash_promptResponse-ask_responseFooter() {
+    cat << 'CZXWXcRMTo8EmM8i4d'
+
+Please output only a thorough complete several sentences to several paragraphs report appropriate to the above similar to:
+
+- 'This code provides a self-contained, creative example of bash shellcode that demonstrates modern best practices.'
+- 'This code demonstrates the following best practices'
+- 'This example includes the following features'
+- 'Note that this script uses ... which is widely available... Please note that you should replace expected ... with actual values...' (preferred if the user must make changes in plausible use cases)
+
+Regardless of any previous instruction avoid jumbling, mashing, or otherwise creating a confusing mix of multiple styles - choose one of the styles and thoroughly completely generate the appropriate report. Preferably generate only one of these styles of report.
+
+Do not output any other statements or code. This is for automated processing, so the report will be helpful but any other output will be harmful.
+
+CZXWXcRMTo8EmM8i4d
+}
+
+
+_here_convert_bash_continuePromptResponse-boilerplate_promptHeader() {
+    cat << 'CZXWXcRMTo8EmM8i4d'
+Continue the example bash shellcode.
+
+CZXWXcRMTo8EmM8i4d
+}
+
+_here_convert_bash_continuePromptResponse-ask_responseHeader() {
+    cat << 'CZXWXcRMTo8EmM8i4d'
+
+Please output only a statement appropriate to the above similar to:
+
+- 'I'll continue the bash shellcode'
+- 'I can continue the bash shellcode for you'
+- 'I can help you continue the bash shellcode'
+- 'here is the continuation of the bash shellcode'
+- 'here is a possible continuation of the script'
+- 'here is the next part'
+- 'it appears you've provided a segment of a Bash script that includes'
+- 'please note that I'll add some comments and improvements to make the code more readable and maintainable'
+
+Slightly longer statements about possible improvements to the next segment of code, if appropriate, are preferred.
+
+Do not output any other suggestions or code. This is for automated processing, so the statement will be helpful but any other output will be harmful.
+
+CZXWXcRMTo8EmM8i4d
+}
+
+_here_convert_bash_continuePromptResponse-ask_responseFooter() {
+    cat << 'CZXWXcRMTo8EmM8i4d'
+
+Please output only a thorough complete several sentences to several paragraphs report appropriate to the above similar to:
+
+- ''
+- 'this appears to be a modified version of the bash shellcode, with additional functionality and checks'
+- 'the code defines several'
+- 'to ensure'
+- 'this continuation appeears to implement a mechanism which can be used'
+- 'checks then decides whether'
+- 'please note this is a continuation of the previous code, and some parts may not make sense on their own'
+- 'some parts of the code seem to be placeholders or debugging statements, so you may need to modify them according to your needs'
+- 'this continuation of the script includes'
+
+Regardless of any previous instruction avoid jumbling, mashing, or otherwise creating a confusing mix of multiple styles - choose appropriate styles and thoroughly completely generate the appropriate report. Preferably generate only one or a few of these styles of report.
+
+Do not output any other statements or code. This is for automated processing, so the report will be helpful but any other output will be harmful.
+
+CZXWXcRMTo8EmM8i4d
+}
+
+
+
+#./ubiquitous_bash.sh _convert_bash ./_local/dataset/ubiquitous_bash
+
+
+
+# ATTENTION: Override with 'ops.sh' or similar if appropriate.
+# ollama binary
+#_convert_bash-backend() {
+    # DANGER: CAUTION: Although this is apparently standard practice for the 'ollama' program, and '/clear', etc, are apparently not interpreted from the input pipe, reliable safe input handling may not be guaranteed
+    #ollama run --verbose Llama-augment
+#}
+# ollama API (localhost)
+_convert_bash-backend() {
+    jq -Rs '{model:"Llama-augment", prompt:., stream: false}' | curl -fsS --max-time 120 -X POST -H "Content-Type: application/json" --data-binary @- http://localhost:11434/api/generate | jq -r '.response'
+}
+# openrouter API
+#_convert_bash-backend() {
+    ##provider: { "order": ["SambaNova", "Fireworks", "Hyperbolic"]
+    #jq -Rs '{ model: "meta-llama/llama-3.1-405b-instruct", provider: { "order": ["Fireworks"], "sort": "throughput" }, messages: [{"role": "user", "content": .}] }' | curl -fsS --max-time 120 --keepalive-time 300 --compressed --tcp-fastopen --http2 -X POST https://openrouter.ai/api/v1/chat/completions -H "Content-Type: application/json" -H "Authorization: Bearer $OPENROUTER_API_KEY" --data-binary @- | jq -r '.choices[0].message.content'
+#}
+
+# ATTENTION: Override with 'ops.sh' or similar if appropriate.
+_convert_bash-backend-lowLatency() {
+    _convert_bash-backend "$@"
+}
+
+# ATTENTION: Override with 'ops.sh' or similar if appropriate.
+# (ie. usually to change parallelization for high-latency APIs, providers, etc)
+_convert_bash-dispatch() {
+    echo 'quick brown fox' | _convert_bash-backend > /dev/null
+    
+    #-s 4096
+    #-P $(nproc)
+    find "$1" -maxdepth 1 -type f ! -iname '*.prompt.txt' ! -iname '*.response.txt' ! -iname '*.continue_prompt.txt' ! -iname '*.continue_response.txt' ! -iname '*.description.txt' -print0 | xargs -0 -x -L 1 -P 1 bash -c '"'"$scriptAbsoluteLocation"'"'' --embed _convert_bash_procedure "$@"' _
+}
+
+
+# "$1" == original file
+# "$2" == backend function (optional)
+# "$safeTmp"/"$inputName".tmp_input.txt
+# "$safeTmp"/"$inputName".tmp_output.txt
+_convert_loop() {
+    rm -f "$safeTmp"/"$inputName".tmp_output.txt
+
+    local currentBackendFunction="$2"
+    [[ "$currentBackendFunction" == "" ]] && currentBackendFunction="_convert_bash-backend"
+
+    local currentIteration=0
+    local currentExitStatus=1
+    while [[ "$currentExitStatus" != "0" ]] && ! [[ -s "$safeTmp"/"$inputName".tmp_output.txt ]] && [[ "$currentIteration" -lt 5 ]]
+    do
+        [[ "$currentIteration" -gt 0 ]] && ( _messagePlain_probe ' retry: '"$1" >&2 ) > /dev/null
+        [[ "$currentIteration" -gt 0 ]] && sleep 7
+        [[ "$currentIteration" -gt 1 ]] && sleep 90
+
+        ( set -o pipefail ; cat "$safeTmp"/"$inputName".tmp_input.txt | "$currentBackendFunction" >> "$safeTmp"/"$inputName".tmp_output.txt )
+        currentExitStatus="$?"
+        sleep 1
+
+        currentIteration=$(( currentIteration + 1 ))
+    done
+}
+
+
+_convert_bash_procedure() {
+    local inputName
+    inputName=$(basename "$1")
+
+
+
+    # ### Creates "$1".prompt.txt .
+    ( _messagePlain_nominal '.prompt.txt: '"$1" >&2 ) > /dev/null
+    rm -f "$1".prompt.txt > /dev/null 2>&1
+
+    # Prompt header (boilerplate, please generate code from description).
+    _here_convert_bash_promptResponse-boilerplate_promptHeader >> "$1".prompt.txt
+
+    # Prompt description (to generate code from).
+    rm -f "$safeTmp"/"$inputName".tmp_input.txt > /dev/null 2>&1
+    rm -f "$safeTmp"/"$inputName".tmp_output.txt > /dev/null 2>&1
+    _here_convert_bash_promptResponse-askDescription > "$safeTmp"/"$inputName".tmp_input.txt
+    echo '```bash' >> "$safeTmp"/"$inputName".tmp_input.txt
+    cat "$1" >> "$safeTmp"/"$inputName".tmp_input.txt
+    echo '```' >> "$safeTmp"/"$inputName".tmp_input.txt
+    _convert_loop "$1"
+    cat "$safeTmp"/"$inputName".tmp_output.txt >> "$1".prompt.txt
+
+
+
+    # ### Creates "$1".response.txt .
+    ( _messagePlain_nominal '.response.txt: '"$1" >&2 ) > /dev/null
+    rm -f "$1".response.txt > /dev/null 2>&1
+    
+    # Response header.
+    rm -f "$safeTmp"/"$inputName".tmp_input.txt > /dev/null 2>&1
+    rm -f "$safeTmp"/"$inputName".tmp_output.txt > /dev/null 2>&1
+    cat "$1".prompt.txt > "$safeTmp"/"$inputName".tmp_input.txt
+    echo '' >> "$safeTmp"/"$inputName".tmp_input.txt
+    echo '```bash' >> "$safeTmp"/"$inputName".tmp_input.txt
+    cat "$1" > "$safeTmp"/"$inputName".tmp_input.txt
+    echo '```' >> "$safeTmp"/"$inputName".tmp_input.txt
+    echo '' >> "$safeTmp"/"$inputName".tmp_input.txt
+    _here_convert_bash_promptResponse-ask_responseHeader >> "$safeTmp"/"$inputName".tmp_input.txt
+    _convert_loop "$1" "_convert_bash-backend-lowLatency"
+    cat "$safeTmp"/"$inputName".tmp_output.txt >> "$1".response.txt
+
+    # Response (ie. original code as example to generate from explanation).
+    #echo '' >> "$1".response.txt
+    echo '```bash' >> "$1".response.txt
+    cat "$1" >> "$1".response.txt
+    echo '```' >> "$1".response.txt
+    #echo '' >> "$1".response.txt
+
+    # Response footer.
+    rm -f "$safeTmp"/"$inputName".tmp_input.txt > /dev/null 2>&1
+    rm -f "$safeTmp"/"$inputName".tmp_output.txt > /dev/null 2>&1
+    cat "$1".prompt.txt > "$safeTmp"/"$inputName".tmp_input.txt
+    echo '' >> "$safeTmp"/"$inputName".tmp_input.txt
+    echo '```bash' >> "$safeTmp"/"$inputName".tmp_input.txt
+    cat "$1" > "$safeTmp"/"$inputName".tmp_input.txt
+    echo '```' >> "$safeTmp"/"$inputName".tmp_input.txt
+    echo '' >> "$safeTmp"/"$inputName".tmp_input.txt
+    _here_convert_bash_promptResponse-ask_responseFooter >> "$safeTmp"/"$inputName".tmp_input.txt
+    _convert_loop "$1" "_convert_bash-backend-lowLatency"
+    cat "$safeTmp"/"$inputName".tmp_output.txt >> "$1".response.txt
+
+
+
+    # ### Creates "$1".continue_prompt.txt .
+    ( _messagePlain_nominal '.continue_prompt.txt: '"$1" >&2 ) > /dev/null
+    rm -f "$1".continue_prompt.txt > /dev/null 2>&1
+
+    # Continue Prompt header (boilerplate, continue the shellcode).
+    _here_convert_bash_continuePromptResponse-boilerplate_promptHeader >> "$1".continue_prompt.txt
+
+    # Continue Prompt (shellcode to continue)
+    #echo >> "$1".continue_prompt.txt
+    echo '```bash' >> "$1".continue_prompt.txt
+    cat "$1" >> "$1".continue_prompt.txt
+    echo '```' >> "$1".continue_prompt.txt
+    #echo >> "$1".continue_prompt.txt
+
+
+
+    # ### Creates "$1".continue_response.txt .
+    ( _messagePlain_nominal '.continue_response.txt: '"$1" >&2 ) > /dev/null
+    rm -f "$1".continue_response.txt > /dev/null 2>&1
+
+    # Continue Response header.
+    rm -f "$safeTmp"/"$inputName".tmp_input.txt > /dev/null 2>&1
+    rm -f "$safeTmp"/"$inputName".tmp_output.txt > /dev/null 2>&1
+    cat "$1".continue_prompt.txt > "$safeTmp"/"$inputName".tmp_input.txt
+    #echo '' >> "$safeTmp"/"$inputName".tmp_input.txt
+    _here_convert_bash_continuePromptResponse-ask_responseHeader >> "$safeTmp"/"$inputName".tmp_input.txt
+    _convert_loop "$1" "_convert_bash-backend-lowLatency"
+    cat "$safeTmp"/"$inputName".tmp_output.txt >> "$1".continue_response.txt
+
+    # Continue Response (segment of original code as example of continuing previous code)
+    #echo >> "$1".continue_response.txt
+    echo '```bash' >> "$1".continue_response.txt
+    cat "$1" >> "$1".continue_response.txt
+    echo '```' >> "$1".continue_response.txt
+    #echo >> "$1".continue_response.txt
+
+    # Continue Response footer.
+    rm -f "$safeTmp"/"$inputName".tmp_input.txt > /dev/null 2>&1
+    rm -f "$safeTmp"/"$inputName".tmp_output.txt > /dev/null 2>&1
+    cat "$1".continue_prompt.txt > "$safeTmp"/"$inputName".tmp_input.txt
+    #echo '' >> "$safeTmp"/"$inputName".tmp_input.txt
+    _here_convert_bash_continuePromptResponse-ask_responseFooter >> "$safeTmp"/"$inputName".tmp_input.txt
+    _convert_loop "$1" "_convert_bash-backend-lowLatency"
+    cat "$safeTmp"/"$inputName".tmp_output.txt >> "$1".continue_response.txt
+
+
+
+    rm -f "$safeTmp"/"$inputName".tmp_input.txt
+    rm -f "$safeTmp"/"$inputName".tmp_output.txt
+}
+_convert_bash_procedure_procedure() {
+    #export -f _convert_bash-backend
+    #export -f _convert_bash-backend-lowLatency
+    #export -f _convert_loop
+
+    #export -f _here_convert_bash_promptResponse-askDescription
+    #export -f _here_convert_bash_promptResponse-boilerplate_promptHeader
+    #export -f _here_convert_bash_promptResponse-ask_responseHeader
+    #export -f _here_convert_bash_promptResponse-ask_responseFooter
+    #export -f _here_convert_bash_continuePromptResponse-boilerplate_promptHeader
+    #export -f _here_convert_bash_continuePromptResponse-ask_responseHeader
+    #export -f _here_convert_bash_continuePromptResponse-ask_responseFooter
+
+    #export -f _convert_bash_procedure
+
+	#export -f "_messagePlain_nominal"
+	#export -f "_color_begin_nominal"
+	#export -f "_color_end"
+	#export -f "_getAbsoluteLocation"
+	#export -f "_realpath_L_s"
+    #export -f "_realpath_L"
+	#export -f "_compat_realpath_run"
+	#export -f "_compat_realpath"
+	#export -f "_messagePlain_probe_var"
+	#export -f "_color_begin_probe"
+	#export -f "_messagePlain_probe"
+
+    local currentDirectory="$1"
+    [[ "$currentDirectory" == "" ]] && currentDirectory="$scriptLocal"/dataset/"$objectName"
+
+    
+    _convert_bash-dispatch "$currentDirectory"
+    sleep 0.1
+
+    ( _messagePlain_probe 'done: _convert_bash ...' >&2 ) > /dev/null
+}
+_convert_bash_sequence() {
+    _start
+
+    _convert_bash_procedure_procedure "$@"
+
+    _stop
+}
+_convert_bash() {
+    "$scriptAbsoluteLocation" _convert_bash_sequence "$@"
+}
+
+
+
+
+
+
+
+_dataset_bash_from_lines() {
+    export current_dataset_totalLines
+    current_dataset_totalLines=$(wc -l < "$corpus_script")
+
+    export current_dataset_functionBounds
+
+    current_dataset_functionBounds=()
+
+    ## ATTRIBUTION-AI: ChatGPT o1-pro  2025-03-30
+    ##local -a current_dataset_functionBounds
+    #mapfile -t current_dataset_functionBounds < <(
+        #grep -nE '^[[:space:]]*(function[[:space:]]+[_[:alnum:]]+|[_[:alnum:]]+\(\))' "$corpus_script" \
+        #| cut -d: -f1
+    #)
+
+    # ATTRIBUTION-AI: ChatGPT 4.5-preview  2025-03-30
+    mapfile -t current_dataset_functionBounds < <(
+    awk '
+        # Function to check if this line marks a function declaration
+        function is_func(line) {
+            return line ~ /^[[:space:]]*(function[[:space:]]+[_[:alnum:]]+|[_[:alnum:]]+\(\))/;
+        }
+
+        # Store all lines in array "lines"
+        { lines[NR] = $0; }
+
+        # After processing all lines, iterate over them again
+        END {
+            for (i = 1; i <= NR; i++) {
+                if (is_func(lines[i])) {
+                    start_line = i;
+                    # Move upward to collect preceding comment block, stop at empty or non-comment lines
+                    j = i - 1;
+                    while (j > 0 && lines[j] ~ /^[[:space:]]*#/) { j--; }
+                    # Check if there are no empty lines between comment and function
+                    if (j == i-1 || (j < i-1 && lines[j+1] ~ /^[[:space:]]*#/)) {
+                        start_line = j + 1;
+                    }
+                    print start_line;
+                }
+            }
+        }
+    ' "$corpus_script"
+)
+
+    current_dataset_functionBounds+=( "$(( current_dataset_totalLines + 1 ))" )
+}
+
+#./ubiquitous_bash.sh _dataset_bash_from_lines-echo | sed 's/\ /\n/g' | wc -l
+_dataset_bash_from_lines-echo() {
+    _set_corpus_default "$1"
+
+    _dataset_bash_from_lines
+    echo "${current_dataset_functionBounds[@]}"
+
+    #sleep 3
+    #( echo >&2 ) > /dev/null
+    #( echo "$current_dataset_totalLines" >&2 ) > /dev/null
+}
+
+# Helper: find the line on which the *current* function starts (largest boundary <= X).
+#current_dataset_functionBounds=( # ... ## ... ##### #####)
+# ATTRIBUTION-AI: ChatGPT o1-pro  2025-03-31
+_dataset_bash_from_lines_functionBegin() {
+    local currentLineWanted="$1"
+    local i
+    for (( i=${#current_dataset_functionBounds[@]} - 1; i>=0; i-- )); do
+        if (( current_dataset_functionBounds[i] <= currentLineWanted )); then
+            echo "${current_dataset_functionBounds[i]}"
+            return
+        fi
+    done
+    # Fallback to line 1 if none found
+    echo 1
+}
+
+# Helper: find the last line that belongs to the function containing or just before X
+# i.e., we find the next function boundary > X, then subtract 1.
+#current_dataset_functionBounds=( # ... ## ... ##### #####)
+#current_dataset_totalLines=#####
+# ATTRIBUTION-AI: ChatGPT o1-pro  2025-03-31
+_dataset_bash_from_lines_functionEnd() {
+    local currentLineWanted="$1"
+    local i
+    for (( i=0; i<${#current_dataset_functionBounds[@]}; i++ )); do
+    if (( current_dataset_functionBounds[i] > currentLineWanted )); then
+        echo "$(( current_dataset_functionBounds[i] - 1 ))"
+        return
+    fi
+    done
+    # If none found, end at current_dataset_totalLines
+    echo "$current_dataset_totalLines"
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#./ubiquitous_bash.sh _corpus_bash-write "./ubiquitous_bash.sh" ".sh" "ubiquitous_bash" 75 30 "./_local/dataset/ubiquitous_bash"
+
+
+
+# Default chunk should be large enough to usually put at least two functions in a segment, but small enough such that a trailing run-on function does not add enough past the chunk size for the segment to either absolutely exceed a reasonable context window or convert to much to more of a needle-in-haystack problem.
+#
+# Chunk is minimum lines, since ending a segment before the next function is unhelpful.
+#  Segments will be between the function declaration preceeding the 'cursor' to the next function declaration after already adding chunk to the 'cursor' position.
+# More than ~150 lines, ~1k tokens, tends to compound whatever problem an AI LLM is otherwise given into a simultaneous needle-in-haystack problem.
+#  Adequately large datasets may train an AI LLM during earlier epochs on simpler problems sufficiently to reduce the compounded sensitivity with needle-in-haystack problem.
+#  c $(head -n 150 ./ubiquitous_bash.sh | wc -c) / 5
+#  ~1000 (ie. 1k tokens)
+_set_corpus() {
+    export corpus_script=$(_getAbsoluteLocation "$1")
+    [[ "$1" == "" ]] && corpus_script="$scriptAbsoluteLocation"
+    [[ "$corpus_script" == "" ]] && corpus_script="$scriptAbsoluteLocation"
+
+    export corpus_script_name=$(basename "$corpus_script")
+
+
+    export corpus_script_extension="$2"
+    [[ "$corpus_script_extension" == "" ]] && corpus_script_extension=".""${corpus_script_name##*.}"
+    [[ "$corpus_script_extension" == "" ]] && corpus_script_extension=".txt"
+
+    export corpus_script_name=$(basename -s ".""${corpus_script_name##*.}" "$corpus_script")
+
+
+    export corpus_script_object="$3"
+    local corpus_script_folder=$(_getAbsoluteFolder "$corpus_script")
+    [[ "$corpus_script_object" == "" ]] && export corpus_script_object=$(basename "$corpus_script_folder")
+
+
+    export corpus_chunk="$4"
+    [[ "$corpus_chunk" == "" ]] && corpus_chunk=75
+    corpus_chunk=$(( corpus_chunk - 1 ))
+
+
+    export corpus_overlap="$5"
+    [[ "$corpus_overlap" == "" ]] && corpus_overlap=30
+}
+
+_set_corpus_default() {
+    [[ "$corpus_script" != "" ]] && [[ "$corpus_script_extension" != "" ]] && [[ "$corpus_script_name" != "" ]] && [[ "$corpus_script_object" != "" ]] && [[ "$corpus_chunk" != "" ]] && [[ "$corpus_overlap" != "" ]] && return 0
+    _set_corpus "$@"
+}
+
+
+#./ubiquitous_bash.sh _corpus_bash "" "" "" 75 30
+_corpus_bash() {
+    "$scriptAbsoluteLocation" _corpus_bash_sequence "$@"
+}
+_corpus_bash_sequence() {
+    _start
+
+    local current_corpus_script="$1"
+    local current_corpus_script_extension="$2"
+    [[ "$current_corpus_script_extension" == "" ]] && current_corpus_script_extension=".sh"
+    local current_corpus_object="$3"
+    local current_corpus_chunk="$4"
+    local current_corpus_overlap="$5"
+    shift ; shift ; shift ; shift ; shift
+    _set_corpus_default "$current_corpus_script" "$current_corpus_script_extension" "$current_corpus_object" "$current_corpus_chunk" "$current_corpus_overlap" "$@"
+    mkdir -p "$safeTmp"/dataset/corpus/"$corpus_script_object"
+
+    _dataset_from_lines() { _dataset_bash_from_lines "$@" ; }
+    export -f _dataset_from_lines
+    
+    _dataset_from_lines_functionBegin() { _dataset_bash_from_lines_functionBegin "$@" ; }
+    export -f _dataset_from_lines_functionBegin
+
+    _dataset_from_lines_functionEnd() { _dataset_bash_from_lines_functionEnd "$@" ; }
+    export -f _dataset_from_lines_functionEnd
+
+    local corpusSegments=$(_corpus_procedure "$@")
+    #"$safeTmp"/dataset/corpus/"$corpus_script_object"/"$corpus_script_name"."$current_file_iteration""$corpus_script_extension"
+
+    #_corpus_procedure-read "$@"
+
+    _stop
+}
+
+#./ubiquitous_bash.sh _corpus_bash-read "" "" "" 75 30
+_corpus_bash-read() {
+    "$scriptAbsoluteLocation" _corpus_bash_sequence-read "$@"
+}
+_corpus_bash_sequence-read() {
+    _start
+
+    local current_corpus_script="$1"
+    local current_corpus_script_extension="$2"
+    [[ "$current_corpus_script_extension" == "" ]] && current_corpus_script_extension=".sh"
+    local current_corpus_object="$3"
+    local current_corpus_chunk="$4"
+    local current_corpus_overlap="$5"
+    shift ; shift ; shift ; shift ; shift
+    _set_corpus_default "$current_corpus_script" "$current_corpus_script_extension" "$current_corpus_object" "$current_corpus_chunk" "$current_corpus_overlap" "$@"
+    mkdir -p "$safeTmp"/dataset/corpus/"$corpus_script_object"
+
+    _dataset_from_lines() { _dataset_bash_from_lines "$@" ; }
+    export -f _dataset_from_lines
+    
+    _dataset_from_lines_functionBegin() { _dataset_bash_from_lines_functionBegin "$@" ; }
+    export -f _dataset_from_lines_functionBegin
+
+    _dataset_from_lines_functionEnd() { _dataset_bash_from_lines_functionEnd "$@" ; }
+    export -f _dataset_from_lines_functionEnd
+
+    local corpusSegments=$(_corpus_procedure "$@")
+    #"$safeTmp"/dataset/corpus/"$corpus_script_object"/"$corpus_script_name"."$current_file_iteration""$corpus_script_extension"
+    
+    _corpus_procedure-read "$corpusSegments"
+
+    _stop
+}
+
+#./ubiquitous_bash.sh _corpus_bash-write "./ubiquitous_bash.sh" ".sh" "ubiquitous_bash" 75 30 "./_local/dataset/ubiquitous_bash"
+_corpus_bash-write() {
+    "$scriptAbsoluteLocation" _corpus_bash_sequence-write "$@"
+}
+_corpus_bash_sequence-write() {
+    _start
+
+    local current_corpus_script="$1"
+    local current_corpus_script_extension="$2"
+    [[ "$current_corpus_script_extension" == "" ]] && current_corpus_script_extension=".sh"
+    local current_corpus_object="$3"
+    local current_corpus_chunk="$4"
+    local current_corpus_overlap="$5"
+    shift ; shift ; shift ; shift ; shift
+    _set_corpus_default "$current_corpus_script" "$current_corpus_script_extension" "$current_corpus_object" "$current_corpus_chunk" "$current_corpus_overlap" "$@"
+    mkdir -p "$safeTmp"/dataset/corpus/"$corpus_script_object"
+
+    local current_out_dir="$6"
+    [[ "$current_out_dir" == "" ]] && current_out_dir="$scriptLocal"/dataset/"$corpus_script_object"
+    mkdir -p "$current_out_dir"
+
+    _dataset_from_lines() { _dataset_bash_from_lines "$@" ; }
+    export -f _dataset_from_lines
+    
+    _dataset_from_lines_functionBegin() { _dataset_bash_from_lines_functionBegin "$@" ; }
+    export -f _dataset_from_lines_functionBegin
+
+    _dataset_from_lines_functionEnd() { _dataset_bash_from_lines_functionEnd "$@" ; }
+    export -f _dataset_from_lines_functionEnd
+
+    local corpusSegments=$(_corpus_procedure "$@")
+    #"$safeTmp"/dataset/corpus/"$corpus_script_object"/"$corpus_script_name"."$current_file_iteration""$corpus_script_extension"
+    
+    #_corpus_procedure-read "$corpusSegments"
+
+
+    if [[ "$current_out_dir" == "" ]] || [[ "$corpus_script_name" == "" ]] || [[ "$corpus_script_extension" == "" ]]
+    then
+        ( _messageError 'FAIL' >&2 ) > /dev/null
+        _stop 1
+        exit 1
+    fi
+    rm -f "$current_out_dir"/"$corpus_script_name".*"$corpus_script_extension"
+
+    if [[ -e "$current_out_dir"/"$corpus_script_name"."1""$corpus_script_extension" ]]
+    then
+        ( _messagePlain_bad 'FAIL: exists: '"$current_out_dir"/"$corpus_script_name"."1""$corpus_script_extension" >&2 ) > /dev/null
+        ( _messageError 'FAIL' >&2 ) > /dev/null
+        ( _messagePlain_request 'request: delete existing dataset' >&2 ) > /dev/null
+        _stop 1
+    fi
+
+    mv -f "$safeTmp"/dataset/corpus/"$corpus_script_object"/"$corpus_script_name".*"$corpus_script_extension" "$current_out_dir"/
+
+    _stop
+}
+
+
+_corpus_procedure() {
+    _dataset_from_lines
+
+    local current_chunkBegin=1
+    local current_chunkEnd
+    current_chunkEnd=$(( current_chunkBegin + corpus_chunk ))
+
+    local current_segmentBegin=1
+    local current_segmentEnd
+
+    local current_segment_iteration=0
+    while [[ "$current_chunkBegin" -lt "$current_dataset_totalLines" ]]
+    do
+        (( current_segment_iteration++ ))
+
+        current_chunkBegin=$(( current_chunkBegin - corpus_overlap ))
+        [[ "$current_chunkBegin" -lt "$current_segmentBegin" ]] && current_chunkBegin=$(( current_segmentBegin + 1 ))
+        
+        current_chunkEnd=$(( current_chunkBegin + corpus_chunk ))
+        
+        current_segmentBegin=$(_dataset_from_lines_functionBegin "$current_chunkBegin")
+        current_segmentEnd=$(_dataset_from_lines_functionEnd "$current_chunkEnd")
+        [[ "$current_segmentBegin" -gt "$current_segmentEnd" ]] && ( _messageError 'FAIL' >&2 ) > /dev/null && _stop 1
+
+        echo "#===== Segment $current_segment_iteration: ""$corpus_script_object"": ""lines $current_segmentBegin to $current_segmentEnd =====" > "$safeTmp"/dataset/corpus/"$corpus_script_object"/"$corpus_script_name"."$current_segment_iteration""$corpus_script_extension"
+        sed -n "${current_segmentBegin},${current_segmentEnd}p" "$corpus_script" >> "$safeTmp"/dataset/corpus/"$corpus_script_object"/"$corpus_script_name"."$current_segment_iteration""$corpus_script_extension"
+
+        current_chunkBegin=$(( current_segmentEnd + 1 ))
+    done
+
+    echo "$current_segment_iteration"
+
+    return 0
+}
+
+# "$1" == current_segment_iteration
+# "$safeTmp"/dataset/corpus/"$corpus_script_object"/"$corpus_script_name"."$current_file_iteration""$corpus_script_extension"
+_corpus_procedure-read() {
+    local current_segment_iteration="$1"
+    [[ "$current_segment_iteration" == "" ]] && current_segment_iteration=0
+
+    current_file_iteration=1
+    while [[ "$current_file_iteration" -le "$current_segment_iteration" ]]
+    do
+        if [[ ! -e "$safeTmp"/dataset/corpus/"$corpus_script_object"/"$corpus_script_name"."$current_file_iteration""$corpus_script_extension" ]]
+        then
+            ( _messagePlain_bad 'FAIL: missing: '"$safeTmp"/dataset/corpus/"$corpus_script_object"/"$corpus_script_name"."$current_file_iteration""$corpus_script_extension" >&2 ) > /dev/null
+            ( _messageError 'FAIL' >&2 ) > /dev/null
+            _stop 1
+        fi
+        cat "$safeTmp"/dataset/corpus/"$corpus_script_object"/"$corpus_script_name"."$current_file_iteration""$corpus_script_extension"
+        rm -f "$safeTmp"/dataset/corpus/"$corpus_script_object"/"$corpus_script_name"."$current_file_iteration""$corpus_script_extension"
+        (( current_file_iteration++ ))
+    done
+}
 
 
 #https://stackoverflow.com/questions/15432156/display-filename-before-matching-line-grep

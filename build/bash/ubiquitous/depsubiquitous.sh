@@ -234,6 +234,11 @@ _deps_ai() {
 	export enUb_researchEngine="true"
 	export enUb_ollama="true"
 }
+_deps_ai_dataset() {
+	_deps_ai
+	_deps_ai_shortcuts
+	export enUb_ai_dataset="true"
+}
 
 _deps_blockchain() {
 	_deps_notLean
@@ -456,7 +461,7 @@ _deps_calculators() {
 	export enUb_calculators="true"
 }
 
-_deps_ai_shortuts() {
+_deps_ai_shortcuts() {
 	_deps_generic
 	
 	export enUb_ollama_shortcuts="true"
