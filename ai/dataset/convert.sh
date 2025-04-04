@@ -16,6 +16,8 @@ _convert_bash-backend() {
 # openrouter API
 #_convert_bash-backend() {
     ##provider: { "order": ["SambaNova", "Fireworks", "Hyperbolic"]
+    ##provider: { "order": ["Lambda", "Fireworks"], "sort": "latency" }
+    ##provider: { "order": ["Fireworks"], "sort": "throughput" }
     #jq -Rs '{ model: "meta-llama/llama-3.1-405b-instruct", provider: { "order": ["Fireworks"], "sort": "throughput" }, messages: [{"role": "user", "content": .}] }' | curl -fsS --max-time 120 --keepalive-time 300 --compressed --tcp-fastopen --http2 -X POST https://openrouter.ai/api/v1/chat/completions -H "Content-Type: application/json" -H "Authorization: Bearer $OPENROUTER_API_KEY" --data-binary @- | jq -r '.choices[0].message.content'
 #}
 
