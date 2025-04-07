@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='3886490427'
+export ub_setScriptChecksum_contents='1399526549'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -6161,6 +6161,7 @@ _init_deps() {
 	export enUb_calculators=""
 
 	export enUb_ollama_shortcuts=""
+	export enUb_factory_shortcuts=""
 }
 
 _deps_generic() {
@@ -6561,6 +6562,12 @@ _deps_ai_shortcuts() {
 	_deps_generic
 	
 	export enUb_ollama_shortcuts="true"
+}
+
+_deps_factory_shortcuts() {
+	_deps_generic
+	
+	export enUb_factory_shortcuts="true"
 }
 
 #placeholder, define under "queue/build"
@@ -7126,6 +7133,8 @@ _compile_bash_deps() {
 		_deps_ai_dataset
 		_deps_ai_semanticAssist
 		_deps_ai_knowledge
+
+		_deps_factory_shortcuts
 		
 		_deps_calculators
 		
@@ -7196,6 +7205,8 @@ _compile_bash_deps() {
 		_deps_ai_dataset
 		_deps_ai_semanticAssist
 		_deps_ai_knowledge
+
+		_deps_factory_shortcuts
 		
 		_deps_calculators
 		
@@ -7327,6 +7338,8 @@ _compile_bash_deps() {
 		_deps_ai_dataset
 		_deps_ai_semanticAssist
 		_deps_ai_knowledge
+
+		_deps_factory_shortcuts
 		
 		_deps_calculators
 		
@@ -7438,6 +7451,8 @@ _compile_bash_deps() {
 		_deps_ai_dataset
 		_deps_ai_semanticAssist
 		_deps_ai_knowledge
+
+		_deps_factory_shortcuts
 		
 		_deps_calculators
 		
@@ -7503,12 +7518,15 @@ _compile_bash_deps() {
 	if [[ "$1" == "core_ai" ]]
 	then
 		_deps_ai
+		_deps_ai_shortcuts
 		_compile_bash_deps 'core'
 
 		#_deps_ai
 		_deps_ai_dataset
 		_deps_ai_semanticAssist
 		_deps_ai_knowledge
+
+		_deps_factory_shortcuts
 	fi
 	
 	if [[ "$1" == "" ]] || [[ "$1" == "ubiquitous_bash" ]] || [[ "$1" == "ubiquitous_bash.sh" ]] || [[ "$1" == "complete" ]]
@@ -7561,6 +7579,8 @@ _compile_bash_deps() {
 		_deps_ai_dataset
 		_deps_ai_semanticAssist
 		_deps_ai_knowledge
+
+		_deps_factory_shortcuts
 		
 		_deps_calculators
 		
@@ -7908,6 +7928,8 @@ _compile_bash_shortcuts() {
 	[[ "$enUb_ollama" == "true" ]] && includeScriptList+=( "ai/ollama"/ollama.sh )
 	
 	( ( [[ "$enUb_dev_heavy" == "true" ]] ) || [[ "$enUb_ollama_shortcuts" == "true" ]] ) && includeScriptList+=( "shortcuts/ai/ollama"/ollama.sh )
+
+	[[ "$enUb_factory_shortcuts" ]] && includeScriptList+=( "shortcuts/factory"/factory.sh )
 	
 
 	[[ "$enUb_ai_dataset" == "true" ]] && includeScriptList+=( "ai/dataset"/format.sh )

@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='1523615415'
+export ub_setScriptChecksum_contents='767107290'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -17371,6 +17371,176 @@ alias l=_l
 
 
 
+
+
+# ATTENTION: Indentation, commenting, etc, is intended to allow copy/paste to scratch text files for copy/paste to terminal.
+
+#. shortcuts/factory/factory.sh ; _factory_axolotl
+
+# ATTRIBUTION-AI: AI LLMs, may have suggested some parameters for some commands.
+
+_set_factory_dir() {
+
+
+
+# ###
+# PASTE
+# ###
+
+! type _getAbsoluteLocation > /dev/null 2>&1 && exit 1
+
+factory_projectDir=$(_getAbsoluteLocation .)
+#if [[ "$factory_projectDir" != '/cygdrive/c/q/p/zFactory/Llama-tech' ]] && [[ "$factory_projectDir" != "$HOME"/project/zFactory/Llama-tech ]]
+#then
+#_messagePlain_warn 'unexpected: factory_projectDir: '"$factory_projectDir"
+#_messagePlain_request 'request: Ctrl+C , close terminal, etc, NOW, if this is not what you intended !'
+#sleep 45
+#echo 'DANGER: proceeding! '
+#fi
+[[ "$factory_projectDir" == '/cygdrive'* ]] && factory_projectDir=$(cygpath -w "$factory_projectDir")
+
+factory_modelDir="$factory_projectDir"/model
+[[ -e ./_local/model ]] && factory_modelDir="$factory_projectDir"/_local/model
+factory_outputDir="$factory_projectDir"/output
+[[ -e ./_local/output ]] && factory_outputDir="$factory_projectDir"/_local/output
+
+factory_datasetDir='/c/q/p/zCore/infrastructure/ubiquitous_bash/_local/dataset'
+[[ -e ./dataset ]] && factory_datasetDir="$factory_projectDir"/dataset
+[[ -e ./_local/dataset ]] && factory_datasetDir="$factory_projectDir"/_local/dataset
+
+# ###
+# PASTE
+# ###
+
+
+
+}
+
+
+
+_factory_axolotl() {
+
+! type _set_factory_dir > /dev/null 2>&1 && exit 1
+_set_factory_dir
+
+
+
+# ###
+
+_messagePlain_request 'request: paste ->'
+echo > ./._run-factory_axolotl
+_request_paste_factory-prepare_finetune | tee -a ./._run-factory_axolotl
+_request_paste_factory-install_ubiquitous_bash | tee -a ./._run-factory_axolotl
+_request_paste_factory-show_finetune | tee -a ./._run-factory_axolotl
+docker inspect --format='{{json .Config.Entrypoint}}' axolotlai/axolotl:main-latest | jq -r '.[]' | tee -a ./._run-factory_axolotl
+#echo 'bash -i' >> ./._run-factory_axolotl
+_messagePlain_request 'request: <- paste'
+
+# ###
+
+
+
+# ###
+# PASTE
+# ###
+
+! type _getAbsoluteLocation > /dev/null 2>&1 && exit 1
+
+#docker image inspect axolotlai/axolotl:main-latest --format '{{json .Config.Entrypoint}} {{json .Config.Cmd}}'
+
+dockerRunArgs=( bash /workspace/project/._run-factory_axolotl )
+[[ ! -e ./._run-factory_axolotl ]] && dockerRunArgs=( )
+
+if _if_cygwin
+then
+#--privileged
+#--ipc=host --ulimit memlock=-1 --ulimit stack=67108864
+#-v 'C:\q':/q -v 'C:\core':/core -v "$USERPROFILE"'\Downloads':/Downloads
+docker run --shm-size=20g --name axolotl-$(_uid 14) --gpus "all" -v 'C:\q':/q -v 'C:\core':/core -v "$USERPROFILE"'\Downloads':/Downloads -v "$factory_outputDir":/output -v "$factory_modelDir":/model -v "$factory_datasetDir":/dataset -v "$factory_projectDir":/workspace/project --rm -it axolotlai/axolotl:main-latest "${dockerRunArgs[@]}"
+fi
+if ! _if_cygwin
+then
+# WARNING: May be untested.
+docker run --shm-size=20g --name axolotl-$(_uid 14) --gpus "all" -v '/home/user/___quick':/q -v '/home/user/core':/core -v "/home/user"'/Downloads':/Downloads -v "$factory_outputDir":/output -v "$factory_modelDir":/model -v "$factory_datasetDir":/dataset -v "$factory_projectDir":/workspace/project --rm -it axolotlai/axolotl:main-latest "${dockerRunArgs[@]}"
+fi
+
+# ###
+# PASTE
+# ###
+
+
+
+}
+
+
+
+_request_paste_factory-prepare_finetune() {
+cat << 'CZXWXcRMTo8EmM8i4d'
+
+# ###
+# PASTE
+# ###
+
+#pip3 install packaging ninja
+#pip3 install -e '.[flash-attn,deepspeed]'
+sleep 1
+
+# ###
+
+#export NCCL_DEBUG=INFO
+#export NCCL_DEBUG_SUBSYS=ALL
+#export TORCH_DISTRIBUTED_DEBUG=INFO
+#export TORCHELASTIC_ERROR_FILE=/PATH/TO/torcherror.log
+
+# ###
+false << 'doNotMatch'
+
+CZXWXcRMTo8EmM8i4d
+}
+_request_paste_factory-install_ubiquitous_bash() {
+cat << 'CZXWXcRMTo8EmM8i4d'
+
+doNotMatch
+# ###
+
+if [[ -e /core/infrastructure/ubiquitous_bash/ubiquitous_bash.sh ]]
+then
+/core/infrastructure/ubiquitous_bash/ubiquitous_bash.sh _setupUbiquitous_nonet
+export profileScriptLocation="/core/infrastructure/ubiquitous_bash/ubiquitous_bash.sh"
+export profileScriptFolder="/core/infrastructure/ubiquitous_bash"
+. "/core/infrastructure/ubiquitous_bash/ubiquitous_bash.sh" --profile _importShortcuts
+else
+! [[ -e /ubiquitous_bash.sh ]] && wget 'https://raw.githubusercontent.com/mirage335/ubiquitous_bash/master/ubiquitous_bash.sh'
+mv -f ./ubiquitous_bash.sh /ubiquitous_bash.sh
+chmod u+x /ubiquitous_bash.sh
+/ubiquitous_bash.sh _setupUbiquitous_nonet
+fi
+#clear
+
+# ###
+false << 'doNotMatch'
+
+CZXWXcRMTo8EmM8i4d
+}
+_request_paste_factory-show_finetune() {
+cat << 'CZXWXcRMTo8EmM8i4d'
+
+doNotMatch
+# ###
+
+find /model -maxdepth 1 | head -n 65
+find /output -maxdepth 1 | head
+find /dataset -maxdepth 1 | head -n 65
+find /workspace/project -maxdepth 1 | head -n 65
+
+nvidia-smi
+
+# ###
+# PASTE
+# ###
+
+CZXWXcRMTo8EmM8i4d
+}
 
 
 #./ubiquitous_bash.sh _format_bash ubiquitous_bash ./_local/dataset/ubiquitous_bash
