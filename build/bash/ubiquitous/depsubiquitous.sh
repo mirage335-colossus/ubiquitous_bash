@@ -6,6 +6,8 @@ _init_deps() {
 	export enUb_dev_heavy_atom=""
 	
 	export enUb_generic=""
+
+	export enUb_dev_buildOps=""
 	
 	export enUb_cloud_heavy=""
 	
@@ -20,15 +22,24 @@ _init_deps() {
 	export enUb_cloud_self=""
 	export enUb_cloud_build=""
 	export enUb_notLean=""
+	export enUb_github=""
 	export enUb_distro=""
+	export enUb_getMinimal=""
+	export enUb_getMost_special_veracrypt=""
 	export enUb_build=""
 	export enUb_buildBash=""
 	export enUb_os_x11=""
 	export enUb_proxy=""
 	export enUb_proxy_special=""
+	export enUb_serial=""
 	export enUb_fw=""
 	export enUb_clog=""
 	export enUb_x11=""
+	export enUb_researchEngine=""
+	export enUb_ollama=""
+	export enUb_ai_dataset=""
+	export enUb_ai_semanticAssist=""
+	export enUb_ai_knowledge=""
 	export enUb_blockchain=""
 	export enUb_java=""
 	export enUb_image=""
@@ -37,6 +48,7 @@ _init_deps() {
 	export enUb_virt_thick=""
 	export enUb_virt_translation=""
 	export enUb_ChRoot=""
+	export enUb_bios=""
 	export enUb_QEMU=""
 	export enUb_vbox=""
 	export enUb_docker=""
@@ -54,8 +66,10 @@ _init_deps() {
 	export enUb_synergy=""
 	
 	export enUb_hardware=""
+	export enUb_measurement=""
 	export enUb_enUb_x220t=""
 	export enUb_enUb_w540=""
+	export enUb_enUb_gpd=""
 	export enUb_enUb_peripherial=""
 	
 	export enUb_user=""
@@ -72,6 +86,8 @@ _init_deps() {
 	export enUb_haskell=""
 	
 	export enUb_calculators=""
+
+	export enUb_ollama_shortcuts=""
 }
 
 _deps_generic() {
