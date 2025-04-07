@@ -1,4 +1,7 @@
 
+._run-factory
+._run-factory*
+
 _bundle/
 lean_compressed.sh
 ubcore_compressed.sh

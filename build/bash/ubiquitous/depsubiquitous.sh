@@ -88,6 +88,7 @@ _init_deps() {
 	export enUb_calculators=""
 
 	export enUb_ollama_shortcuts=""
+	export enUb_factory_shortcuts=""
 }
 
 _deps_generic() {
@@ -488,6 +489,12 @@ _deps_ai_shortcuts() {
 	_deps_generic
 	
 	export enUb_ollama_shortcuts="true"
+}
+
+_deps_factory_shortcuts() {
+	_deps_generic
+	
+	export enUb_factory_shortcuts="true"
 }
 
 #placeholder, define under "queue/build"
