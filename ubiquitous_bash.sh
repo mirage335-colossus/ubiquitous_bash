@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='401484868'
+export ub_setScriptChecksum_contents='2506687897'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -26144,10 +26144,56 @@ CZXWXcRMTo8EmM8i4d
 
 
 
+
+#export distill_projectDir=$(_getAbsoluteLocation ./_local/experiment) ; export distill_distillDir=$(_getAbsoluteLocation ./_local/experiment_distill) ; cp -f ./os/override/override_cygwin.sh ./_local/experiment/override_cygwin.sh ; ./ubiquitous_bash.sh _semanticAssist ./_local/experiment
+
+#./ubiquitous_bash.sh _distill_semanticAssist $(_getAbsoluteLocation ./_local/experiment/override_cygwin.sh) .prompt_description.md $(_getAbsoluteLocation ./_local)/experiment $(_getAbsoluteLocation ./_local)/experiment_distill $(_getAbsoluteLocation ./_local/experiment/override_cygwin.sh)
+# "$1" == origFile (eg. "$1" )
+# "$2" == outputExtension (eg. .special-$(uid).txt )
+# "$3" == projectDir (eg. "$scriptLocal"/knowledge/"$objectName" )
+# "$4" == distillDir (eg. "$scriptLocal"/knowledge_distill/"$objectName" )
+# "$5" == distillFile (eg. "$safeTmp"/"$inputName".special.txt )
+_distill_semanticAssist() {
+    [[ "$3" == "" ]] && return 0
+    [[ "$4" == "" ]] && return 0
+
+    local current_origFile_absoluteLocation=$(_getAbsoluteLocation "$1")
+    local current_origFile_absoluteFolder=$(_getAbsoluteFolder "$1")
+
+    local current_origFile_name=$(basename "$1")
+
+    local current_outputExtension="$2"
+
+    # CAUTION: Obviously these file parameters must be given as absolute locations .
+    local current_projectDir_absoluteLocation="$3"
+    local current_distillDir_absoluteLocation="$4"
+
+    local current_distillFile_absoluteFolder=${current_origFile_absoluteFolder/#$current_projectDir_absoluteLocation/$current_distillDir_absoluteLocation}
+    mkdir -p "$current_distillFile_absoluteFolder"
+
+    local current_distillFile_write_absoluteLocation="$current_distillFile_absoluteFolder"/"$current_origFile_name""$current_outputExtension"
+
+    local current_distillFile_read_absoluteLocation=$(_getAbsoluteLocation "$5")
+
+
+    rm -f "$current_distillFile_write_absoluteLocation" > /dev/null 2>&1
+    cp -f "$current_distillFile_read_absoluteLocation" "$current_distillFile_write_absoluteLocation" > /dev/null 2>&1
+}
+
+
+
+
+
+
+
+
+
+
+#export distill_projectDir=$(_getAbsoluteLocation ./_local/experiment) ; export distill_distillDir=$(_getAbsoluteLocation ./_local/experiment_distill) ; cp -f ./os/override/override_cygwin.sh ./_local/experiment/override_cygwin.sh ; ./ubiquitous_bash.sh _semanticAssist ./_local/experiment
+
 _semanticAssist_bash_procedure() {
     local inputName=$(basename "$1")
     local currentFileID=$(_uid)
-
 
     # Enable during development to re-generate the semanticAssist comments for the same files repeatedly.
     ( _messagePlain_nominal 'filter: '"$1" >&2 ) > /dev/null
@@ -26176,8 +26222,10 @@ _semanticAssist_bash_procedure() {
     cat "$1" >> "$safeTmp"/"$inputName"-"$currentFileID".tmp_input.txt
     echo '```' >> "$safeTmp"/"$inputName"-"$currentFileID".tmp_input.txt
     echo '' >> "$safeTmp"/"$inputName"-"$currentFileID".tmp_input.txt
+    _distill_semanticAssist "$1" .description_prompt.md "$distill_projectDir" "$distill_distillDir" "$safeTmp"/"$inputName"-"$currentFileID".tmp_input.txt
     _semanticAssist_loop "$1"
     cat "$safeTmp"/"$inputName"-"$currentFileID".tmp_output.txt >> "$safeTmp"/"$inputName"-"$currentFileID".description.txt
+    _distill_semanticAssist "$1" .description_response.md "$distill_projectDir" "$distill_distillDir" "$safeTmp"/"$inputName"-"$currentFileID".description.txt
 
 
     ( _messagePlain_nominal 'keywords-function-iteration: '"$1" >&2 ) > /dev/null
@@ -26219,6 +26267,7 @@ _semanticAssist_bash_procedure() {
             sed -n "${currentLineBegin},${currentLineEnd}p" "$1" >> "$safeTmp"/"$inputName"-"$currentFileID".tmp_input.txt
             echo '```' >> "$safeTmp"/"$inputName"-"$currentFileID".tmp_input.txt
             echo '' >> "$safeTmp"/"$inputName"-"$currentFileID".tmp_input.txt
+            _distill_semanticAssist "$1" .keywords"$currentIterationNext"_functionLine"$currentLineBegin"_prompt.md "$distill_projectDir" "$distill_distillDir" "$safeTmp"/"$inputName"-"$currentFileID".tmp_input.txt
             _semanticAssist_loop "$1" "_semanticAssist_bash-backend-lowLatency"
             cat "$safeTmp"/"$inputName"-"$currentFileID".tmp_output.txt | tr ':\n\,;' '\ \ \ \ ' | tr -dc 'a-zA-Z0-9\-_\ ' | _filter_semanticAssist_nuisance | head -c 2500 > "$safeTmp"/"$inputName"-"$currentFileID".keywords.txt
 
@@ -26255,6 +26304,12 @@ _semanticAssist_bash_procedure() {
                 _semanticAssist_loop "$1" "_semanticAssist_bash-backend-lowLatency-special"
                 [[ "$currentGibberish" != "offended" ]] && [[ "$currentGibberish" != "gibberish" ]] && cat "$safeTmp"/"$inputName"-"$currentFileID".tmp_output.txt | tr -dc 'a-zA-Z0-9' | grep -i 'valid' > /dev/null 2>&1 && currentGibberish="valid"
                 cat "$safeTmp"/"$inputName"-"$currentFileID".tmp_output.txt | tr -dc 'a-zA-Z0-9' | grep -i 'gibberish' > /dev/null 2>&1 && currentGibberish="gibberish"
+
+                if [[ "$currentGibberish" == "gibberish" ]]
+                then
+                    _distill_semanticAssist "$1" .gibberish"$currentIteration"_functionLine"$currentLineBegin"_gibberishDetect"$currentIteration_gibberish"_prompt.md "$distill_projectDir" "$distill_distillDir" "$safeTmp"/"$inputName"-"$currentFileID".tmp_input.txt
+                    _distill_semanticAssist "$1" .gibberish"$currentIteration"_functionLine"$currentLineBegin"_gibberishDetect"$currentIteration_gibberish"_response.md "$distill_projectDir" "$distill_distillDir" "$safeTmp"/"$inputName"-"$currentFileID".tmp_output.txt
+                fi
             fi
 
             if [[ "$currentGibberish" == "deficient" ]]
@@ -26283,7 +26338,7 @@ _semanticAssist_bash_procedure() {
             fi
         done
 
-
+        [[ "$currentGibberish" == "valid" ]] && _distill_semanticAssist "$1" .keywords"$currentIterationNext"_functionLine"$currentLineBegin"_response.md "$distill_projectDir" "$distill_distillDir" "$safeTmp"/"$inputName"-"$currentFileID".keywords.txt
 
         if [[ "$currentLineBegin" == "1" ]] && head -n1 "$1" | grep '^#!/' > /dev/null 2>&1
         then
@@ -26345,6 +26400,7 @@ _semanticAssist_bash_procedure() {
             sed -n "${currentLineBegin},"$(( currentLineBegin + currentRegionLines ))"p" "$1" | grep -v '########## semanticAssist:' >> "$safeTmp"/"$inputName"-"$currentFileID".tmp_input.txt
             echo '```' >> "$safeTmp"/"$inputName"-"$currentFileID".tmp_input.txt
             echo '' >> "$safeTmp"/"$inputName"-"$currentFileID".tmp_input.txt
+            _distill_semanticAssist "$1" .keywords"$currentIterationNext"_line"$currentLineBegin"_prompt.md "$distill_projectDir" "$distill_distillDir" "$safeTmp"/"$inputName"-"$currentFileID".tmp_input.txt
             _semanticAssist_loop "$1" "_semanticAssist_bash-backend-lowLatency"
             cat "$safeTmp"/"$inputName"-"$currentFileID".tmp_output.txt | tr ':\n\,;' '\ \ \ \ ' | tr -dc 'a-zA-Z0-9\-_\ ' | _filter_semanticAssist_nuisance | head -c 2500 > "$safeTmp"/"$inputName"-"$currentFileID".keywords.txt
 
@@ -26381,6 +26437,12 @@ _semanticAssist_bash_procedure() {
                 _semanticAssist_loop "$1" "_semanticAssist_bash-backend-lowLatency-special"
                 [[ "$currentGibberish" != "offended" ]] && [[ "$currentGibberish" != "gibberish" ]] && cat "$safeTmp"/"$inputName"-"$currentFileID".tmp_output.txt | tr -dc 'a-zA-Z0-9' | grep -i 'valid' > /dev/null 2>&1 && currentGibberish="valid"
                 cat "$safeTmp"/"$inputName"-"$currentFileID".tmp_output.txt | tr -dc 'a-zA-Z0-9' | grep -i 'gibberish' > /dev/null 2>&1 && currentGibberish="gibberish"
+
+                if [[ "$currentGibberish" == "gibberish" ]]
+                then
+                    _distill_semanticAssist "$1" .gibberish"$currentIteration"_line"$currentLineBegin"_gibberishDetect"$currentIteration_gibberish"_prompt.md "$distill_projectDir" "$distill_distillDir" "$safeTmp"/"$inputName"-"$currentFileID".tmp_input.txt
+                    _distill_semanticAssist "$1" .gibberish"$currentIteration"_line"$currentLineBegin"_gibberishDetect"$currentIteration_gibberish"_response.md "$distill_projectDir" "$distill_distillDir" "$safeTmp"/"$inputName"-"$currentFileID".tmp_output.txt
+                fi
             fi
 
             if [[ "$currentGibberish" == "deficient" ]]
@@ -26409,7 +26471,7 @@ _semanticAssist_bash_procedure() {
             fi
         done
 
-        
+        [[ "$currentGibberish" == "valid" ]] && _distill_semanticAssist "$1" .keywords"$currentIterationNext"_line"$currentLineBegin"_response.md "$distill_projectDir" "$distill_distillDir" "$safeTmp"/"$inputName"-"$currentFileID".keywords.txt
 
         if [[ "$currentLineBegin" == "1" ]] && head -n1 "$1" | grep '^#!/' > /dev/null 2>&1
         then
@@ -26513,7 +26575,16 @@ _semanticAssist_loop() {
 
 _semanticAssist_procedure_procedure() {
     local currentDirectory="$1"
-    [[ "$currentDirectory" == "" ]] && currentDirectory="$scriptLocal"/knowledge/"$objectName"
+    if [[ "$currentDirectory" == "" ]]
+    then
+        currentDirectory="$scriptLocal"/knowledge/"$objectName"
+
+        export distill_projectDir="$scriptLocal"/knowledge/"$objectName"
+        export distill_distillDir="$scriptLocal"/knowledge_distill/"$objectName"
+
+        _safeRMR "$scriptLocal"/knowledge_distill/"$objectName"
+    fi
+    #[[ "$distill_distillDir" != "" ]] && [[ -e "$distill_distillDir" ]] && _safeRMR "$distill_distillDir"
 
     
     _semanticAssist-dispatch "$currentDirectory"
@@ -55329,6 +55400,7 @@ _compile_bash_shortcuts() {
 	[[ "$enUb_ai_dataset" == "true" ]] && includeScriptList+=( "ai/dataset"/corpus.sh )
 
 	[[ "$enUb_ai_semanticAssist" == "true" ]] && includeScriptList+=( "ai/semanticAssist"/here_semanticAssist.sh )
+	[[ "$enUb_ai_semanticAssist" == "true" ]] && includeScriptList+=( "ai/semanticAssist"/distill_semanticAssist.sh )
 	[[ "$enUb_ai_semanticAssist" == "true" ]] && includeScriptList+=( "ai/semanticAssist"/semanticAssist_bash.sh )
 	[[ "$enUb_ai_semanticAssist" == "true" ]] && includeScriptList+=( "ai/semanticAssist"/semanticAssist.sh )
 
