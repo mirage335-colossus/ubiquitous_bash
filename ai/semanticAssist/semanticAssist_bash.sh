@@ -77,35 +77,45 @@ _semanticAssist_bash_procedure() {
             _semanticAssist_loop "$1" "_semanticAssist_bash-backend-lowLatency"
             cat "$safeTmp"/"$inputName"-"$currentFileID".tmp_output.txt | tr ':\n\,;' '\ \ \ \ ' | tr -dc 'a-zA-Z0-9\-_\ ' | _filter_semanticAssist_nuisance | head -c 2500 > "$safeTmp"/"$inputName"-"$currentFileID".keywords.txt
 
-            if [[ "$ai_safety" != "inherent" ]] || [[ "$ai_safety" == "guard" ]]
+            [[ $(cat "$safeTmp"/"$inputName"-"$currentFileID".keywords.txt | wc -c | tr -dc '0-9') -lt 7 ]] && currentGibberish="deficient"
+
+            if [[ "$currentGibberish" != "deficient" ]]
             then
+                if [[ "$ai_safety" != "inherent" ]] || [[ "$ai_safety" == "guard" ]]
+                then
+                    ( _messagePlain_probe 'guard: '"$1" >&2 ) > /dev/null
+                    rm -f "$safeTmp"/"$inputName"-"$currentFileID".tmp_input.txt > /dev/null 2>&1
+                    rm -f "$safeTmp"/"$inputName"-"$currentFileID".tmp_output.txt > /dev/null 2>&1
+                    echo '' >> "$safeTmp"/"$inputName"-"$currentFileID".tmp_input.txt
+                    #echo '```keywords' >> "$safeTmp"/"$inputName"-"$currentFileID".tmp_input.txt
+                    cat "$safeTmp"/"$inputName"-"$currentFileID".keywords.txt >> "$safeTmp"/"$inputName"-"$currentFileID".tmp_input.txt
+                    echo '' >> "$safeTmp"/"$inputName"-"$currentFileID".tmp_input.txt
+                    #echo '```' >> "$safeTmp"/"$inputName"-"$currentFileID".tmp_input.txt
+                    #echo '' >> "$safeTmp"/"$inputName"-"$currentFileID".tmp_input.txt
+                    _here_semanticAssist-askPolite >> "$safeTmp"/"$inputName"-"$currentFileID".tmp_input.txt
+                    _semanticAssist_loop "$1" "_semanticAssist_bash-backend-lowLatency-special"
+                    [[ "$currentGibberish" != "offended" ]] && [[ "$currentGibberish" != "gibberish" ]] && cat "$safeTmp"/"$inputName"-"$currentFileID".tmp_output.txt | tr -dc 'a-zA-Z0-9' | grep -i 'safe' > /dev/null 2>&1 && currentGibberish="valid"
+                    cat "$safeTmp"/"$inputName"-"$currentFileID".tmp_output.txt | tr -dc 'a-zA-Z0-9' | grep -i 'offended' > /dev/null 2>&1 && currentGibberish="offended"
+                fi
+
                 rm -f "$safeTmp"/"$inputName"-"$currentFileID".tmp_input.txt > /dev/null 2>&1
                 rm -f "$safeTmp"/"$inputName"-"$currentFileID".tmp_output.txt > /dev/null 2>&1
+                _here_semanticAssist-askGibberish >> "$safeTmp"/"$inputName"-"$currentFileID".tmp_input.txt
                 echo '' >> "$safeTmp"/"$inputName"-"$currentFileID".tmp_input.txt
-                #echo '```keywords' >> "$safeTmp"/"$inputName"-"$currentFileID".tmp_input.txt
+                echo '```keywords' >> "$safeTmp"/"$inputName"-"$currentFileID".tmp_input.txt
                 cat "$safeTmp"/"$inputName"-"$currentFileID".keywords.txt >> "$safeTmp"/"$inputName"-"$currentFileID".tmp_input.txt
                 echo '' >> "$safeTmp"/"$inputName"-"$currentFileID".tmp_input.txt
-                #echo '```' >> "$safeTmp"/"$inputName"-"$currentFileID".tmp_input.txt
-                #echo '' >> "$safeTmp"/"$inputName"-"$currentFileID".tmp_input.txt
-                _here_semanticAssist-askPolite >> "$safeTmp"/"$inputName"-"$currentFileID".tmp_input.txt
+                echo '```' >> "$safeTmp"/"$inputName"-"$currentFileID".tmp_input.txt
+                echo '' >> "$safeTmp"/"$inputName"-"$currentFileID".tmp_input.txt
                 _semanticAssist_loop "$1" "_semanticAssist_bash-backend-lowLatency-special"
-                [[ "$currentGibberish" != "offended" ]] && [[ "$currentGibberish" != "gibberish" ]] && cat "$safeTmp"/"$inputName"-"$currentFileID".tmp_output.txt | tr -dc 'a-zA-Z0-9' | grep -i 'safe' > /dev/null 2>&1 && currentGibberish="valid"
-                cat "$safeTmp"/"$inputName"-"$currentFileID".tmp_output.txt | tr -dc 'a-zA-Z0-9' | grep -i 'offended' > /dev/null 2>&1 && currentGibberish="offended"
+                [[ "$currentGibberish" != "offended" ]] && [[ "$currentGibberish" != "gibberish" ]] && cat "$safeTmp"/"$inputName"-"$currentFileID".tmp_output.txt | tr -dc 'a-zA-Z0-9' | grep -i 'valid' > /dev/null 2>&1 && currentGibberish="valid"
+                cat "$safeTmp"/"$inputName"-"$currentFileID".tmp_output.txt | tr -dc 'a-zA-Z0-9' | grep -i 'gibberish' > /dev/null 2>&1 && currentGibberish="gibberish"
             fi
 
-            rm -f "$safeTmp"/"$inputName"-"$currentFileID".tmp_input.txt > /dev/null 2>&1
-            rm -f "$safeTmp"/"$inputName"-"$currentFileID".tmp_output.txt > /dev/null 2>&1
-            _here_semanticAssist-askGibberish >> "$safeTmp"/"$inputName"-"$currentFileID".tmp_input.txt
-            echo '' >> "$safeTmp"/"$inputName"-"$currentFileID".tmp_input.txt
-            echo '```keywords' >> "$safeTmp"/"$inputName"-"$currentFileID".tmp_input.txt
-            cat "$safeTmp"/"$inputName"-"$currentFileID".keywords.txt >> "$safeTmp"/"$inputName"-"$currentFileID".tmp_input.txt
-            echo '' >> "$safeTmp"/"$inputName"-"$currentFileID".tmp_input.txt
-            echo '```' >> "$safeTmp"/"$inputName"-"$currentFileID".tmp_input.txt
-            echo '' >> "$safeTmp"/"$inputName"-"$currentFileID".tmp_input.txt
-            _semanticAssist_loop "$1" "_semanticAssist_bash-backend-lowLatency-special"
-            [[ "$currentGibberish" != "offended" ]] && [[ "$currentGibberish" != "gibberish" ]] && cat "$safeTmp"/"$inputName"-"$currentFileID".tmp_output.txt | tr -dc 'a-zA-Z0-9' | grep -i 'valid' > /dev/null 2>&1 && currentGibberish="valid"
-            cat "$safeTmp"/"$inputName"-"$currentFileID".tmp_output.txt | tr -dc 'a-zA-Z0-9' | grep -i 'gibberish' > /dev/null 2>&1 && currentGibberish="gibberish"
-
+            if [[ "$currentGibberish" == "deficient" ]]
+            then
+                ( _messagePlain_warn 'warn: deficient: '"$1"': '"$currentLineBegin"':' | tr -d '\n' | cat - "$safeTmp"/"$inputName"-"$currentFileID".keywords.txt >&2 ; echo >&2 ) > /dev/null
+            fi
             if [[ "$currentGibberish" == "offended" ]]
             then
                 ( _messagePlain_bad 'bad: offended: '"$1"': '"$currentLineBegin" >&2 ) > /dev/null
@@ -193,35 +203,45 @@ _semanticAssist_bash_procedure() {
             _semanticAssist_loop "$1" "_semanticAssist_bash-backend-lowLatency"
             cat "$safeTmp"/"$inputName"-"$currentFileID".tmp_output.txt | tr ':\n\,;' '\ \ \ \ ' | tr -dc 'a-zA-Z0-9\-_\ ' | _filter_semanticAssist_nuisance | head -c 2500 > "$safeTmp"/"$inputName"-"$currentFileID".keywords.txt
 
-            if [[ "$ai_safety" != "inherent" ]] || [[ "$ai_safety" == "guard" ]]
+            [[ $(cat "$safeTmp"/"$inputName"-"$currentFileID".keywords.txt | wc -c | tr -dc '0-9') -lt 7 ]] && currentGibberish="deficient"
+
+            if [[ "$currentGibberish" != "deficient" ]]
             then
+                if [[ "$ai_safety" != "inherent" ]] || [[ "$ai_safety" == "guard" ]]
+                then
+                    ( _messagePlain_probe 'guard: '"$1" >&2 ) > /dev/null
+                    rm -f "$safeTmp"/"$inputName"-"$currentFileID".tmp_input.txt > /dev/null 2>&1
+                    rm -f "$safeTmp"/"$inputName"-"$currentFileID".tmp_output.txt > /dev/null 2>&1
+                    echo '' >> "$safeTmp"/"$inputName"-"$currentFileID".tmp_input.txt
+                    #echo '```keywords' >> "$safeTmp"/"$inputName"-"$currentFileID".tmp_input.txt
+                    cat "$safeTmp"/"$inputName"-"$currentFileID".keywords.txt >> "$safeTmp"/"$inputName"-"$currentFileID".tmp_input.txt
+                    echo '' >> "$safeTmp"/"$inputName"-"$currentFileID".tmp_input.txt
+                    #echo '```' >> "$safeTmp"/"$inputName"-"$currentFileID".tmp_input.txt
+                    #echo '' >> "$safeTmp"/"$inputName"-"$currentFileID".tmp_input.txt
+                    _here_semanticAssist-askPolite >> "$safeTmp"/"$inputName"-"$currentFileID".tmp_input.txt
+                    _semanticAssist_loop "$1" "_semanticAssist_bash-backend-lowLatency-special"
+                    [[ "$currentGibberish" != "offended" ]] && [[ "$currentGibberish" != "gibberish" ]] && cat "$safeTmp"/"$inputName"-"$currentFileID".tmp_output.txt | tr -dc 'a-zA-Z0-9' | grep -i 'safe' > /dev/null 2>&1 && currentGibberish="valid"
+                    cat "$safeTmp"/"$inputName"-"$currentFileID".tmp_output.txt | tr -dc 'a-zA-Z0-9' | grep -i 'offended' > /dev/null 2>&1 && currentGibberish="offended"
+                fi
+
                 rm -f "$safeTmp"/"$inputName"-"$currentFileID".tmp_input.txt > /dev/null 2>&1
                 rm -f "$safeTmp"/"$inputName"-"$currentFileID".tmp_output.txt > /dev/null 2>&1
+                _here_semanticAssist-askGibberish >> "$safeTmp"/"$inputName"-"$currentFileID".tmp_input.txt
                 echo '' >> "$safeTmp"/"$inputName"-"$currentFileID".tmp_input.txt
-                #echo '```keywords' >> "$safeTmp"/"$inputName"-"$currentFileID".tmp_input.txt
+                echo '```keywords' >> "$safeTmp"/"$inputName"-"$currentFileID".tmp_input.txt
                 cat "$safeTmp"/"$inputName"-"$currentFileID".keywords.txt >> "$safeTmp"/"$inputName"-"$currentFileID".tmp_input.txt
                 echo '' >> "$safeTmp"/"$inputName"-"$currentFileID".tmp_input.txt
-                #echo '```' >> "$safeTmp"/"$inputName"-"$currentFileID".tmp_input.txt
-                #echo '' >> "$safeTmp"/"$inputName"-"$currentFileID".tmp_input.txt
-                _here_semanticAssist-askPolite >> "$safeTmp"/"$inputName"-"$currentFileID".tmp_input.txt
+                echo '```' >> "$safeTmp"/"$inputName"-"$currentFileID".tmp_input.txt
+                echo '' >> "$safeTmp"/"$inputName"-"$currentFileID".tmp_input.txt
                 _semanticAssist_loop "$1" "_semanticAssist_bash-backend-lowLatency-special"
-                [[ "$currentGibberish" != "offended" ]] && [[ "$currentGibberish" != "gibberish" ]] && cat "$safeTmp"/"$inputName"-"$currentFileID".tmp_output.txt | tr -dc 'a-zA-Z0-9' | grep -i 'safe' > /dev/null 2>&1 && currentGibberish="valid"
-                cat "$safeTmp"/"$inputName"-"$currentFileID".tmp_output.txt | tr -dc 'a-zA-Z0-9' | grep -i 'offended' > /dev/null 2>&1 && currentGibberish="offended"
+                [[ "$currentGibberish" != "offended" ]] && [[ "$currentGibberish" != "gibberish" ]] && cat "$safeTmp"/"$inputName"-"$currentFileID".tmp_output.txt | tr -dc 'a-zA-Z0-9' | grep -i 'valid' > /dev/null 2>&1 && currentGibberish="valid"
+                cat "$safeTmp"/"$inputName"-"$currentFileID".tmp_output.txt | tr -dc 'a-zA-Z0-9' | grep -i 'gibberish' > /dev/null 2>&1 && currentGibberish="gibberish"
             fi
 
-            rm -f "$safeTmp"/"$inputName"-"$currentFileID".tmp_input.txt > /dev/null 2>&1
-            rm -f "$safeTmp"/"$inputName"-"$currentFileID".tmp_output.txt > /dev/null 2>&1
-            _here_semanticAssist-askGibberish >> "$safeTmp"/"$inputName"-"$currentFileID".tmp_input.txt
-            echo '' >> "$safeTmp"/"$inputName"-"$currentFileID".tmp_input.txt
-            echo '```keywords' >> "$safeTmp"/"$inputName"-"$currentFileID".tmp_input.txt
-            cat "$safeTmp"/"$inputName"-"$currentFileID".keywords.txt >> "$safeTmp"/"$inputName"-"$currentFileID".tmp_input.txt
-            echo '' >> "$safeTmp"/"$inputName"-"$currentFileID".tmp_input.txt
-            echo '```' >> "$safeTmp"/"$inputName"-"$currentFileID".tmp_input.txt
-            echo '' >> "$safeTmp"/"$inputName"-"$currentFileID".tmp_input.txt
-            _semanticAssist_loop "$1" "_semanticAssist_bash-backend-lowLatency-special"
-            [[ "$currentGibberish" != "offended" ]] && [[ "$currentGibberish" != "gibberish" ]] && cat "$safeTmp"/"$inputName"-"$currentFileID".tmp_output.txt | tr -dc 'a-zA-Z0-9' | grep -i 'valid' > /dev/null 2>&1 && currentGibberish="valid"
-            cat "$safeTmp"/"$inputName"-"$currentFileID".tmp_output.txt | tr -dc 'a-zA-Z0-9' | grep -i 'gibberish' > /dev/null 2>&1 && currentGibberish="gibberish"
-
+            if [[ "$currentGibberish" == "deficient" ]]
+            then
+                ( _messagePlain_warn 'warn: deficient: '"$1"': '"$currentLineBegin"':' | tr -d '\n' | cat - "$safeTmp"/"$inputName"-"$currentFileID".keywords.txt >&2 ; echo >&2 ) > /dev/null
+            fi
             if [[ "$currentGibberish" == "offended" ]]
             then
                 ( _messagePlain_bad 'bad: offended: '"$1"': '"$currentLineBegin" >&2 ) > /dev/null

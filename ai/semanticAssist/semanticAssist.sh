@@ -1,24 +1,20 @@
 
 
-
+# ATTENTION: Override with 'ops.sh' or similar if appropriate.
+#export ai_safety="guard"
+##export ai_safety="inherent"
 
 _semanticAssist_bash-backend() {
-   export ai_safety="guard"
-   
    _convert_bash-backend "$@"
 }
 
 _semanticAssist_bash-backend-lowLatency() {
-    export ai_safety="guard"
-
     _convert_bash-backend-lowLatency "$@"
 }
 
 # ATTENTION: Override with 'ops.sh' or similar if appropriate.
 # CAUTION: DANGER: Keywords generation is more prone to gibberish, special choice of AI LLM model may be required to detect. See documentation for the '_here_semanticAssist-askGibberish' prompt.
 _semanticAssist_bash-backend-lowLatency-special() {
-    export ai_safety="guard"
-
     _convert_bash-backend-lowLatency "$@"
 
     ##provider: { "order": ["SambaNova", "Fireworks", "Hyperbolic"]
