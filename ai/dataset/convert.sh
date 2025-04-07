@@ -29,6 +29,8 @@ _convert_bash-backend-lowLatency() {
 # ATTENTION: Override with 'ops.sh' or similar if appropriate.
 # (ie. usually to change parallelization for high-latency APIs, providers, etc)
 _convert_bash-dispatch() {
+    [[ "$1" == "" ]] && return 1
+    [[ ! -e "$1" ]] && return 1
     echo 'quick brown fox' | _convert_bash-backend > /dev/null
     
     #-s 4096

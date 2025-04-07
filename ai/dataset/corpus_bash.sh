@@ -17,11 +17,13 @@ _dataset_bash_from_lines() {
     #)
 
     # ATTRIBUTION-AI: ChatGPT 4.5-preview  2025-03-30
+    # ATTRIBUTION-AI: ChatGPT 4.5-preview 2025-04-06
     mapfile -t current_dataset_functionBounds < <(
     awk '
         # Function to check if this line marks a function declaration
         function is_func(line) {
-            return line ~ /^[[:space:]]*(function[[:space:]]+[_[:alnum:]]+|[_[:alnum:]]+\(\))/;
+            #return line ~ /^[[:space:]]*(function[[:space:]]+[_[:alnum:]]+|[_[:alnum:]]+\(\))/;
+            return line ~ /^[[:space:]]*(function[[:space:]]+[_[:alnum:]-]+|[_[:alnum:]-]+\(\))/;
         }
 
         # Store all lines in array "lines"

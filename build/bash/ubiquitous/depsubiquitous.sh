@@ -239,6 +239,13 @@ _deps_ai_dataset() {
 	_deps_ai_shortcuts
 	export enUb_ai_dataset="true"
 }
+_deps_ai_semanticAssist() {
+	_deps_ai_dataset
+	export enUb_ai_semanticAssist="true"
+}
+_deps_ai_knowledge() {
+	export enUb_ai_knowledge="true"
+}
 
 _deps_blockchain() {
 	_deps_notLean
