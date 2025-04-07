@@ -2,6 +2,8 @@
 #export distill_projectDir=$(_getAbsoluteLocation ./_local/experiment) ; export distill_distillDir=$(_getAbsoluteLocation ./_local/experiment_distill) ; cp -f ./os/override/override_cygwin.sh ./_local/experiment/override_cygwin.sh ; ./ubiquitous_bash.sh _semanticAssist ./_local/experiment
 
 _semanticAssist_bash_procedure() {
+    [[ "$1" == "" ]] && return 0
+    [[ ! -e "$1" ]] && return 0
     local inputName=$(basename "$1")
     local currentFileID=$(_uid)
 

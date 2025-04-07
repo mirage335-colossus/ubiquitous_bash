@@ -33,7 +33,7 @@ _semanticAssist-dispatch() {
     
     #-s 4096
     #-P $(nproc)
-    find "$1" -maxdepth 1 -type f -name '*.sh' -print0 | xargs -0 -x -L 1 -P 1 bash -c '"'"$scriptAbsoluteLocation"'"'' --embed _semanticAssist_bash_procedure "$@"' _
+    find "$1" -type f -name '*.sh' -print0 | xargs -0 -x -L 1 -P 1 bash -c '"'"$scriptAbsoluteLocation"'"'' --embed _semanticAssist_bash_procedure "$@"' _
 }
 
 
@@ -73,10 +73,19 @@ _semanticAssist_procedure_procedure() {
         export distill_projectDir="$scriptLocal"/knowledge/"$objectName"
         export distill_distillDir="$scriptLocal"/knowledge_distill/"$objectName"
 
+        [[ "$objectName" == "ubiquitous_bash" ]] && _knowledge-ubiquitous_bash
         _safeRMR "$scriptLocal"/knowledge_distill/"$objectName"
     fi
     #[[ "$distill_distillDir" != "" ]] && [[ -e "$distill_distillDir" ]] && _safeRMR "$distill_distillDir"
 
+    currentDirectory=$(_getAbsoluteLocation "$currentDirectory")
+    [[ ! -e "$currentDirectory" ]] && ( _messageError 'FAIL' >&2 ) > /dev/null && return 1
+
+    cd "$scriptLocal"
+    if ! cd "$currentDirectory"
+    then
+        ( _messageError 'FAIL' >&2 ) > /dev/null && return 1
+    fi
     
     _semanticAssist-dispatch "$currentDirectory"
     sleep 0.1

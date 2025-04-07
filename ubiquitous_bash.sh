@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='1853654388'
+export ub_setScriptChecksum_contents='2984859647'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -26415,6 +26415,8 @@ _format_distill_bash-promptResponse() {
 #export distill_projectDir=$(_getAbsoluteLocation ./_local/experiment) ; export distill_distillDir=$(_getAbsoluteLocation ./_local/experiment_distill) ; cp -f ./os/override/override_cygwin.sh ./_local/experiment/override_cygwin.sh ; ./ubiquitous_bash.sh _semanticAssist ./_local/experiment
 
 _semanticAssist_bash_procedure() {
+    [[ "$1" == "" ]] && return 0
+    [[ ! -e "$1" ]] && return 0
     local inputName=$(basename "$1")
     local currentFileID=$(_uid)
 
@@ -26765,7 +26767,7 @@ _semanticAssist-dispatch() {
     
     #-s 4096
     #-P $(nproc)
-    find "$1" -maxdepth 1 -type f -name '*.sh' -print0 | xargs -0 -x -L 1 -P 1 bash -c '"'"$scriptAbsoluteLocation"'"'' --embed _semanticAssist_bash_procedure "$@"' _
+    find "$1" -type f -name '*.sh' -print0 | xargs -0 -x -L 1 -P 1 bash -c '"'"$scriptAbsoluteLocation"'"'' --embed _semanticAssist_bash_procedure "$@"' _
 }
 
 
@@ -26805,10 +26807,19 @@ _semanticAssist_procedure_procedure() {
         export distill_projectDir="$scriptLocal"/knowledge/"$objectName"
         export distill_distillDir="$scriptLocal"/knowledge_distill/"$objectName"
 
+        [[ "$objectName" == "ubiquitous_bash" ]] && _knowledge-ubiquitous_bash
         _safeRMR "$scriptLocal"/knowledge_distill/"$objectName"
     fi
     #[[ "$distill_distillDir" != "" ]] && [[ -e "$distill_distillDir" ]] && _safeRMR "$distill_distillDir"
 
+    currentDirectory=$(_getAbsoluteLocation "$currentDirectory")
+    [[ ! -e "$currentDirectory" ]] && ( _messageError 'FAIL' >&2 ) > /dev/null && return 1
+
+    cd "$scriptLocal"
+    if ! cd "$currentDirectory"
+    then
+        ( _messageError 'FAIL' >&2 ) > /dev/null && return 1
+    fi
     
     _semanticAssist-dispatch "$currentDirectory"
     sleep 0.1
