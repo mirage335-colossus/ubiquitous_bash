@@ -1,8 +1,9 @@
 
+#export distill_projectDir=$(_getAbsoluteLocation ./_local/experiment) ; export distill_distillDir=$(_getAbsoluteLocation ./_local/experiment_distill) ; cp -f ./os/override/override_cygwin.sh ./_local/experiment/override_cygwin.sh ; ./ubiquitous_bash.sh _semanticAssist ./_local/experiment
+
 _semanticAssist_bash_procedure() {
     local inputName=$(basename "$1")
     local currentFileID=$(_uid)
-
 
     # Enable during development to re-generate the semanticAssist comments for the same files repeatedly.
     ( _messagePlain_nominal 'filter: '"$1" >&2 ) > /dev/null
@@ -31,8 +32,10 @@ _semanticAssist_bash_procedure() {
     cat "$1" >> "$safeTmp"/"$inputName"-"$currentFileID".tmp_input.txt
     echo '```' >> "$safeTmp"/"$inputName"-"$currentFileID".tmp_input.txt
     echo '' >> "$safeTmp"/"$inputName"-"$currentFileID".tmp_input.txt
+    _distill_semanticAssist "$1" .description_prompt.md "$distill_projectDir" "$distill_distillDir" "$safeTmp"/"$inputName"-"$currentFileID".tmp_input.txt
     _semanticAssist_loop "$1"
     cat "$safeTmp"/"$inputName"-"$currentFileID".tmp_output.txt >> "$safeTmp"/"$inputName"-"$currentFileID".description.txt
+    _distill_semanticAssist "$1" .description_response.md "$distill_projectDir" "$distill_distillDir" "$safeTmp"/"$inputName"-"$currentFileID".description.txt
 
 
     ( _messagePlain_nominal 'keywords-function-iteration: '"$1" >&2 ) > /dev/null
@@ -74,6 +77,7 @@ _semanticAssist_bash_procedure() {
             sed -n "${currentLineBegin},${currentLineEnd}p" "$1" >> "$safeTmp"/"$inputName"-"$currentFileID".tmp_input.txt
             echo '```' >> "$safeTmp"/"$inputName"-"$currentFileID".tmp_input.txt
             echo '' >> "$safeTmp"/"$inputName"-"$currentFileID".tmp_input.txt
+            _distill_semanticAssist "$1" .keywords"$currentIterationNext"_functionLine"$currentLineBegin"_prompt.md "$distill_projectDir" "$distill_distillDir" "$safeTmp"/"$inputName"-"$currentFileID".tmp_input.txt
             _semanticAssist_loop "$1" "_semanticAssist_bash-backend-lowLatency"
             cat "$safeTmp"/"$inputName"-"$currentFileID".tmp_output.txt | tr ':\n\,;' '\ \ \ \ ' | tr -dc 'a-zA-Z0-9\-_\ ' | _filter_semanticAssist_nuisance | head -c 2500 > "$safeTmp"/"$inputName"-"$currentFileID".keywords.txt
 
@@ -110,6 +114,12 @@ _semanticAssist_bash_procedure() {
                 _semanticAssist_loop "$1" "_semanticAssist_bash-backend-lowLatency-special"
                 [[ "$currentGibberish" != "offended" ]] && [[ "$currentGibberish" != "gibberish" ]] && cat "$safeTmp"/"$inputName"-"$currentFileID".tmp_output.txt | tr -dc 'a-zA-Z0-9' | grep -i 'valid' > /dev/null 2>&1 && currentGibberish="valid"
                 cat "$safeTmp"/"$inputName"-"$currentFileID".tmp_output.txt | tr -dc 'a-zA-Z0-9' | grep -i 'gibberish' > /dev/null 2>&1 && currentGibberish="gibberish"
+
+                if [[ "$currentGibberish" == "gibberish" ]]
+                then
+                    _distill_semanticAssist "$1" .gibberish"$currentIteration"_functionLine"$currentLineBegin"_gibberishDetect"$currentIteration_gibberish"_prompt.md "$distill_projectDir" "$distill_distillDir" "$safeTmp"/"$inputName"-"$currentFileID".tmp_input.txt
+                    _distill_semanticAssist "$1" .gibberish"$currentIteration"_functionLine"$currentLineBegin"_gibberishDetect"$currentIteration_gibberish"_response.md "$distill_projectDir" "$distill_distillDir" "$safeTmp"/"$inputName"-"$currentFileID".tmp_output.txt
+                fi
             fi
 
             if [[ "$currentGibberish" == "deficient" ]]
@@ -138,7 +148,7 @@ _semanticAssist_bash_procedure() {
             fi
         done
 
-
+        [[ "$currentGibberish" == "valid" ]] && _distill_semanticAssist "$1" .keywords"$currentIterationNext"_functionLine"$currentLineBegin"_response.md "$distill_projectDir" "$distill_distillDir" "$safeTmp"/"$inputName"-"$currentFileID".keywords.txt
 
         if [[ "$currentLineBegin" == "1" ]] && head -n1 "$1" | grep '^#!/' > /dev/null 2>&1
         then
@@ -200,6 +210,7 @@ _semanticAssist_bash_procedure() {
             sed -n "${currentLineBegin},"$(( currentLineBegin + currentRegionLines ))"p" "$1" | grep -v '########## semanticAssist:' >> "$safeTmp"/"$inputName"-"$currentFileID".tmp_input.txt
             echo '```' >> "$safeTmp"/"$inputName"-"$currentFileID".tmp_input.txt
             echo '' >> "$safeTmp"/"$inputName"-"$currentFileID".tmp_input.txt
+            _distill_semanticAssist "$1" .keywords"$currentIterationNext"_line"$currentLineBegin"_prompt.md "$distill_projectDir" "$distill_distillDir" "$safeTmp"/"$inputName"-"$currentFileID".tmp_input.txt
             _semanticAssist_loop "$1" "_semanticAssist_bash-backend-lowLatency"
             cat "$safeTmp"/"$inputName"-"$currentFileID".tmp_output.txt | tr ':\n\,;' '\ \ \ \ ' | tr -dc 'a-zA-Z0-9\-_\ ' | _filter_semanticAssist_nuisance | head -c 2500 > "$safeTmp"/"$inputName"-"$currentFileID".keywords.txt
 
@@ -236,6 +247,12 @@ _semanticAssist_bash_procedure() {
                 _semanticAssist_loop "$1" "_semanticAssist_bash-backend-lowLatency-special"
                 [[ "$currentGibberish" != "offended" ]] && [[ "$currentGibberish" != "gibberish" ]] && cat "$safeTmp"/"$inputName"-"$currentFileID".tmp_output.txt | tr -dc 'a-zA-Z0-9' | grep -i 'valid' > /dev/null 2>&1 && currentGibberish="valid"
                 cat "$safeTmp"/"$inputName"-"$currentFileID".tmp_output.txt | tr -dc 'a-zA-Z0-9' | grep -i 'gibberish' > /dev/null 2>&1 && currentGibberish="gibberish"
+
+                if [[ "$currentGibberish" == "gibberish" ]]
+                then
+                    _distill_semanticAssist "$1" .gibberish"$currentIteration"_line"$currentLineBegin"_gibberishDetect"$currentIteration_gibberish"_prompt.md "$distill_projectDir" "$distill_distillDir" "$safeTmp"/"$inputName"-"$currentFileID".tmp_input.txt
+                    _distill_semanticAssist "$1" .gibberish"$currentIteration"_line"$currentLineBegin"_gibberishDetect"$currentIteration_gibberish"_response.md "$distill_projectDir" "$distill_distillDir" "$safeTmp"/"$inputName"-"$currentFileID".tmp_output.txt
+                fi
             fi
 
             if [[ "$currentGibberish" == "deficient" ]]
@@ -264,7 +281,7 @@ _semanticAssist_bash_procedure() {
             fi
         done
 
-        
+        [[ "$currentGibberish" == "valid" ]] && _distill_semanticAssist "$1" .keywords"$currentIterationNext"_line"$currentLineBegin"_response.md "$distill_projectDir" "$distill_distillDir" "$safeTmp"/"$inputName"-"$currentFileID".keywords.txt
 
         if [[ "$currentLineBegin" == "1" ]] && head -n1 "$1" | grep '^#!/' > /dev/null 2>&1
         then

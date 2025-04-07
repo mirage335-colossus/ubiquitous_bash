@@ -66,7 +66,16 @@ _semanticAssist_loop() {
 
 _semanticAssist_procedure_procedure() {
     local currentDirectory="$1"
-    [[ "$currentDirectory" == "" ]] && currentDirectory="$scriptLocal"/knowledge/"$objectName"
+    if [[ "$currentDirectory" == "" ]]
+    then
+        currentDirectory="$scriptLocal"/knowledge/"$objectName"
+
+        export distill_projectDir="$scriptLocal"/knowledge/"$objectName"
+        export distill_distillDir="$scriptLocal"/knowledge_distill/"$objectName"
+
+        _safeRMR "$scriptLocal"/knowledge_distill/"$objectName"
+    fi
+    #[[ "$distill_distillDir" != "" ]] && [[ -e "$distill_distillDir" ]] && _safeRMR "$distill_distillDir"
 
     
     _semanticAssist-dispatch "$currentDirectory"
