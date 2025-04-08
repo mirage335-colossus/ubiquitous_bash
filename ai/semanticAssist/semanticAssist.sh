@@ -1,4 +1,6 @@
 
+#./ubiquitous_bash.sh _semanticAssist
+
 
 # ATTENTION: Override with 'ops.sh' or similar if appropriate.
 #export ai_safety="guard"

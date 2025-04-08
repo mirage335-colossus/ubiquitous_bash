@@ -51,6 +51,7 @@ _dataset_bash_from_lines() {
     current_dataset_functionBounds+=( "$(( current_dataset_totalLines + 1 ))" )
 }
 
+#./ubiquitous_bash.sh _dataset_bash_from_lines-echo ./metaengine/typical/typical_metaengine_buffer.sh
 #./ubiquitous_bash.sh _dataset_bash_from_lines-echo | sed 's/\ /\n/g' | wc -l
 _dataset_bash_from_lines-echo() {
     _set_corpus_default "$1"
