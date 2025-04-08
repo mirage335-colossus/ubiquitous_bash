@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='1242588808'
+export ub_setScriptChecksum_contents='1284068930'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -18195,6 +18195,7 @@ _dataset_bash_from_lines() {
     current_dataset_functionBounds+=( "$(( current_dataset_totalLines + 1 ))" )
 }
 
+#./ubiquitous_bash.sh _dataset_bash_from_lines-echo ./metaengine/typical/typical_metaengine_buffer.sh
 #./ubiquitous_bash.sh _dataset_bash_from_lines-echo | sed 's/\ /\n/g' | wc -l
 _dataset_bash_from_lines-echo() {
     _set_corpus_default "$1"
@@ -18716,7 +18717,9 @@ _format_distill_bash-promptResponse() {
 
 
 
-#export distill_projectDir=$(_getAbsoluteLocation ./_local/experiment) ; export distill_distillDir=$(_getAbsoluteLocation ./_local/experiment_distill) ; cp -f ./os/override/override_cygwin.sh ./_local/experiment/override_cygwin.sh ; ./ubiquitous_bash.sh _semanticAssist ./_local/experiment
+#export distill_projectDir=$(_getAbsoluteLocation ./_local/experiment) ; export distill_distillDir=$(_getAbsoluteLocation ./_local/experiment_distill) ; mkdir -p ./_local/experiment ; cp -f ./os/override/override_cygwin.sh ./_local/experiment/override_cygwin.sh ; ./ubiquitous_bash.sh _semanticAssist ./_local/experiment
+
+#export distill_projectDir=$(_getAbsoluteLocation ./_local/experiment) ; export distill_distillDir=$(_getAbsoluteLocation ./_local/experiment_distill) ; mkdir -p ./_local/experiment ; cp -f ./metaengine/typical/typical_metaengine_buffer.sh ./_local/experiment/ ; ./ubiquitous_bash.sh _semanticAssist ./_local/experiment
 
 _semanticAssist_bash_procedure() {
     [[ "$1" == "" ]] && return 0
@@ -18768,7 +18771,13 @@ _semanticAssist_bash_procedure() {
     local currentLineEnd_next
     local currentGibberish
     local currentIteration_gibberish
-    while ( [[ "$currentIteration" == "-1" ]] ) || ( [[ ${current_dataset_functionBounds[$currentIteration]} -lt "$current_dataset_totalLines" ]] && [[ "$currentIteration" -lt 999 ]] && [[ ${current_dataset_functionBounds[$currentIteration]} != "" ]] )
+    if [[ "${current_dataset_functionBounds[0]}" == "1" ]] # Skip iterating over 'currentLineBegin=1' case if the next iteration will also begin at 'currentLineBegin=1'.
+    then
+        let currentIteration++
+        let currentIterationNext++
+        let currentIterationNextNext++
+    fi
+    while ( [[ "$currentIteration" == "-1" ]] ) || ( [[ ${current_dataset_functionBounds[$currentIteration]} -lt "$current_dataset_totalLines" ]] && [[ "$currentIteration" -lt 999 ]] && [[ ${current_dataset_functionBounds[$currentIteration]} != "" ]] ) # ( [[ "${current_dataset_functionBounds[0]}" == "1" ]] && [[ "$currentIteration" == 0 ]] )
     do
         currentLineBegin=$(( ${current_dataset_functionBounds[$currentIteration]} ))
         [[ "$currentIteration" -lt 0 ]] && currentLineBegin=1
@@ -19036,6 +19045,8 @@ _semanticAssist_bash_procedure() {
 }
 
 
+
+#./ubiquitous_bash.sh _semanticAssist
 
 
 # ATTENTION: Override with 'ops.sh' or similar if appropriate.
