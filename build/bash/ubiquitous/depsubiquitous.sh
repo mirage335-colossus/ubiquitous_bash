@@ -87,6 +87,7 @@ _init_deps() {
 	
 	export enUb_calculators=""
 
+	export enUb_ai_shortcuts=""
 	export enUb_ollama_shortcuts=""
 	export enUb_factory_shortcuts=""
 }
@@ -488,6 +489,7 @@ _deps_calculators() {
 _deps_ai_shortcuts() {
 	_deps_generic
 	
+	export enUb_ai_shortcuts="true"
 	export enUb_ollama_shortcuts="true"
 }
 
