@@ -61,7 +61,7 @@ _semanticAssist_bash_procedure() {
         let currentIterationNext++
         let currentIterationNextNext++
     fi
-    while ( [[ "$currentIteration" == "-1" ]] ) || ( [[ ${current_dataset_functionBounds[$currentIteration]} -lt "$current_dataset_totalLines" ]] && [[ "$currentIteration" -lt 999 ]] && [[ ${current_dataset_functionBounds[$currentIteration]} != "" ]] ) # ( [[ "${current_dataset_functionBounds[0]}" == "1" ]] && [[ "$currentIteration" == 0 ]] )
+    while ( [[ "$currentIteration" == "-1" ]] ) || ( [[ ${current_dataset_functionBounds[$currentIteration]} -lt "$current_dataset_totalLines" ]] && [[ "$currentIteration" -lt 30000 ]] && [[ ${current_dataset_functionBounds[$currentIteration]} != "" ]] ) # ( [[ "${current_dataset_functionBounds[0]}" == "1" ]] && [[ "$currentIteration" == 0 ]] )
     do
         currentLineBegin=$(( ${current_dataset_functionBounds[$currentIteration]} ))
         [[ "$currentIteration" -lt 0 ]] && currentLineBegin=1

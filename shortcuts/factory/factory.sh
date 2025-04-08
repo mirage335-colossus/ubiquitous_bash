@@ -34,6 +34,14 @@ factory_datasetDir='/c/q/p/zCore/infrastructure/ubiquitous_bash/_local/dataset'
 [[ -e ./dataset ]] && factory_datasetDir="$factory_projectDir"/dataset
 [[ -e ./_local/dataset ]] && factory_datasetDir="$factory_projectDir"/_local/dataset
 
+factory_knowledgeDir='/c/q/p/zCore/infrastructure/ubiquitous_bash/_local/knowledge'
+[[ -e ./knowledge ]] && factory_knowledgeDir="$factory_projectDir"/knowledge
+[[ -e ./_local/knowledge ]] && factory_knowledgeDir="$factory_projectDir"/_local/knowledge
+
+factory_knowledge_distillDir='/c/q/p/zCore/infrastructure/ubiquitous_bash/_local/knowledge_distill'
+[[ -e ./knowledge_distill ]] && factory_knowledge_distillDir="$factory_projectDir"/knowledge_distill
+[[ -e ./_local/knowledge_distill ]] && factory_knowledge_distillDir="$factory_projectDir"/_local/knowledge_distill
+
 # ###
 # PASTE
 # ###
@@ -82,7 +90,7 @@ then
 #--privileged
 #--ipc=host --ulimit memlock=-1 --ulimit stack=67108864
 #-v 'C:\q':/q -v 'C:\core':/core -v "$USERPROFILE"'\Downloads':/Downloads
-docker run --shm-size=20g --name axolotl-$(_uid 14) --gpus "all" -v 'C:\q':/q -v 'C:\core':/core -v "$USERPROFILE"'\Downloads':/Downloads -v "$factory_outputDir":/output -v "$factory_modelDir":/model -v "$factory_datasetDir":/dataset -v "$factory_projectDir":/workspace/project --rm -it axolotlai/axolotl:main-latest "${dockerRunArgs[@]}"
+docker run --shm-size=20g --name axolotl-$(_uid 14) --gpus "all" -v 'C:\q':/q -v 'C:\core':/core -v "$USERPROFILE"'\Downloads':/Downloads -v "$factory_outputDir":/output -v "$factory_modelDir":/model -v "$factory_datasetDir":/dataset -v "$factory_knowledgeDir":/knowledge -v "$factory_knowledge_distillDir":/knowledge_distill -v "$factory_projectDir":/workspace/project --rm -it axolotlai/axolotl:main-latest "${dockerRunArgs[@]}"
 fi
 if ! _if_cygwin
 then

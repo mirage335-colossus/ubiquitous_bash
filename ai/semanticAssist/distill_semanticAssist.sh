@@ -87,7 +87,7 @@ _format_distill_bash-promptResponse() {
 
         echo "$json_line" >> "$output_file"
 
-    done < <(find "$dataset" -maxdepth 1 -type f -iname '*prompt.md' -print0 | sort -zV)
+    done < <(find "$dataset" -type f -iname '*prompt.md' -print0 | sort -zV)
 
     echo "JSONL file created successfully: $output_file" >&2
 }

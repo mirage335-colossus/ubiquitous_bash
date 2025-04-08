@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='1315131091'
+export ub_setScriptChecksum_contents='1114968904'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -17408,6 +17408,14 @@ factory_datasetDir='/c/q/p/zCore/infrastructure/ubiquitous_bash/_local/dataset'
 [[ -e ./dataset ]] && factory_datasetDir="$factory_projectDir"/dataset
 [[ -e ./_local/dataset ]] && factory_datasetDir="$factory_projectDir"/_local/dataset
 
+factory_knowledgeDir='/c/q/p/zCore/infrastructure/ubiquitous_bash/_local/knowledge'
+[[ -e ./knowledge ]] && factory_knowledgeDir="$factory_projectDir"/knowledge
+[[ -e ./_local/knowledge ]] && factory_knowledgeDir="$factory_projectDir"/_local/knowledge
+
+factory_knowledge_distillDir='/c/q/p/zCore/infrastructure/ubiquitous_bash/_local/knowledge_distill'
+[[ -e ./knowledge_distill ]] && factory_knowledge_distillDir="$factory_projectDir"/knowledge_distill
+[[ -e ./_local/knowledge_distill ]] && factory_knowledge_distillDir="$factory_projectDir"/_local/knowledge_distill
+
 # ###
 # PASTE
 # ###
@@ -17456,7 +17464,7 @@ then
 #--privileged
 #--ipc=host --ulimit memlock=-1 --ulimit stack=67108864
 #-v 'C:\q':/q -v 'C:\core':/core -v "$USERPROFILE"'\Downloads':/Downloads
-docker run --shm-size=20g --name axolotl-$(_uid 14) --gpus "all" -v 'C:\q':/q -v 'C:\core':/core -v "$USERPROFILE"'\Downloads':/Downloads -v "$factory_outputDir":/output -v "$factory_modelDir":/model -v "$factory_datasetDir":/dataset -v "$factory_projectDir":/workspace/project --rm -it axolotlai/axolotl:main-latest "${dockerRunArgs[@]}"
+docker run --shm-size=20g --name axolotl-$(_uid 14) --gpus "all" -v 'C:\q':/q -v 'C:\core':/core -v "$USERPROFILE"'\Downloads':/Downloads -v "$factory_outputDir":/output -v "$factory_modelDir":/model -v "$factory_datasetDir":/dataset -v "$factory_knowledgeDir":/knowledge -v "$factory_knowledge_distillDir":/knowledge_distill -v "$factory_projectDir":/workspace/project --rm -it axolotlai/axolotl:main-latest "${dockerRunArgs[@]}"
 fi
 if ! _if_cygwin
 then
@@ -18800,7 +18808,7 @@ _format_distill_bash-promptResponse() {
 
         echo "$json_line" >> "$output_file"
 
-    done < <(find "$dataset" -maxdepth 1 -type f -iname '*prompt.md' -print0 | sort -zV)
+    done < <(find "$dataset" -type f -iname '*prompt.md' -print0 | sort -zV)
 
     echo "JSONL file created successfully: $output_file" >&2
 }
@@ -18872,7 +18880,7 @@ _semanticAssist_bash_procedure() {
         let currentIterationNext++
         let currentIterationNextNext++
     fi
-    while ( [[ "$currentIteration" == "-1" ]] ) || ( [[ ${current_dataset_functionBounds[$currentIteration]} -lt "$current_dataset_totalLines" ]] && [[ "$currentIteration" -lt 999 ]] && [[ ${current_dataset_functionBounds[$currentIteration]} != "" ]] ) # ( [[ "${current_dataset_functionBounds[0]}" == "1" ]] && [[ "$currentIteration" == 0 ]] )
+    while ( [[ "$currentIteration" == "-1" ]] ) || ( [[ ${current_dataset_functionBounds[$currentIteration]} -lt "$current_dataset_totalLines" ]] && [[ "$currentIteration" -lt 30000 ]] && [[ ${current_dataset_functionBounds[$currentIteration]} != "" ]] ) # ( [[ "${current_dataset_functionBounds[0]}" == "1" ]] && [[ "$currentIteration" == 0 ]] )
     do
         currentLineBegin=$(( ${current_dataset_functionBounds[$currentIteration]} ))
         [[ "$currentIteration" -lt 0 ]] && currentLineBegin=1
