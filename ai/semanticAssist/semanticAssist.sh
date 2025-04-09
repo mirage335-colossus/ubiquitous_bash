@@ -72,7 +72,8 @@ _semanticAssist_procedure_procedure() {
         export distill_projectDir="$scriptLocal"/knowledge/"$objectName"
         export distill_distillDir="$scriptLocal"/knowledge_distill/"$objectName"
 
-        [[ "$objectName" == "ubiquitous_bash" ]] && _knowledge-ubiquitous_bash
+        type _knowledge-"$objectName" > /dev/null 2>&1 && _knowledge-"$objectName"
+        #[[ "$objectName" == "ubiquitous_bash" ]] && _knowledge-ubiquitous_bash
         _safeRMR "$scriptLocal"/knowledge_distill/"$objectName"
     fi
     #[[ "$distill_distillDir" != "" ]] && [[ -e "$distill_distillDir" ]] && _safeRMR "$distill_distillDir"
