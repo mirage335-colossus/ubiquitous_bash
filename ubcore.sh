@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='1663095199'
+export ub_setScriptChecksum_contents='1308497983'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -17373,6 +17373,46 @@ alias l=_l
 
 
 
+# Unusual. Please keep these custom Docker containers to a minimum: essential factories (eg. fine-tuning) only, not application specific dependency containers (eg. databases). Use derivative 'fork' projects of ubiquitous_bash instead.
+
+
+_here_dockerfile_runpod-pytorch-heavy() {
+
+cat << 'CZXWXcRMTo8EmM8i4d'
+#docker build -t runpod-pytorch-heavy .
+FROM runpod/pytorch:2.4.0-py3.11-cuda12.4.1-devel-ubuntu22.04
+
+#https://huggingface.co/blog/mlabonne/sft-llama3
+#https://huggingface.co/blog/mlabonne/merge-models
+
+RUN python -m pip install --upgrade pip
+RUN pip install "unsloth[colab-new] @ git+https://github.com/unslothai/unsloth.git"
+RUN pip install --no-deps "xformers<0.0.27" "trl<0.9.0" peft accelerate bitsandbytes
+
+WORKDIR /
+
+#docker image inspect runpod/pytorch:2.4.0-py3.11-cuda12.4.1-devel-ubuntu22.04 --format '{{json .Config.Entrypoint}} {{json .Config.Cmd}}'
+CMD ["/opt/nvidia/nvidia_entrypoint.sh"]
+CZXWXcRMTo8EmM8i4d
+
+}
+
+
+_createFactory_runpod-pytorch-heavy() {
+    _start
+
+    cd "$safeTmp"
+    _here_dockerfile_runpod-pytorch-heavy > Dockerfile
+    docker build -t runpod-pytorch-heavy .
+
+    _stop
+}
+
+
+
+
+
+
 # ATTENTION: Indentation, commenting, etc, is intended to allow copy/paste to scratch text files for copy/paste to terminal.
 
 #. shortcuts/factory/factory.sh ; _factory_axolotl
@@ -17434,6 +17474,10 @@ _set_factory_dir
 
 
 # ###
+# PASTE
+# ###
+
+docker pull axolotlai/axolotl:main-latest
 
 _messagePlain_request 'request: paste ->'
 echo > ./._run-factory_axolotl
@@ -17444,13 +17488,9 @@ docker inspect --format='{{json .Config.Entrypoint}}' axolotlai/axolotl:main-lat
 #echo 'bash -i' >> ./._run-factory_axolotl
 _messagePlain_request 'request: <- paste'
 
-# ###
-
-
 
 # ###
-# PASTE
-# ###
+
 
 ! type _getAbsoluteLocation > /dev/null 2>&1 && exit 1
 
@@ -17479,6 +17519,129 @@ fi
 
 
 }
+
+
+
+
+_factory_runpod-official() {
+
+! type _set_factory_dir > /dev/null 2>&1 && exit 1
+_set_factory_dir
+
+
+
+# ###
+# PASTE
+# ###
+
+docker pull runpod/pytorch:2.4.0-py3.11-cuda12.4.1-devel-ubuntu22.04
+
+_messagePlain_request 'request: paste ->'
+echo > ./._run-factory_runpod
+_request_paste_factory-prepare_finetune | tee -a ./._run-factory_runpod
+_request_paste_factory-install_ubiquitous_bash | tee -a ./._run-factory_runpod
+_request_paste_factory-show_finetune | tee -a ./._run-factory_runpod
+docker inspect --format='{{json .Config.Entrypoint}}' runpod/pytorch:2.4.0-py3.11-cuda12.4.1-devel-ubuntu22.04 | jq -r '.[]' | tee -a ./._run-factory_runpod
+#echo 'bash -i' >> ./._run-factory_runpod
+_messagePlain_request 'request: <- paste'
+
+
+# ###
+
+
+! type _getAbsoluteLocation > /dev/null 2>&1 && exit 1
+
+#docker image inspect runpod/pytorch:2.4.0-py3.11-cuda12.4.1-devel-ubuntu22.04 --format '{{json .Config.Entrypoint}} {{json .Config.Cmd}}'
+
+dockerRunArgs=( bash /workspace/project/._run-factory_runpod )
+[[ ! -e ./._run-factory_runpod ]] && dockerRunArgs=( bash )
+
+if _if_cygwin
+then
+#--privileged
+#--ipc=host --ulimit memlock=-1 --ulimit stack=67108864
+#-v 'C:\q':/q -v 'C:\core':/core -v "$USERPROFILE"'\Downloads':/Downloads
+docker run --shm-size=20g --name runpod-$(_uid 14) --gpus "all" -v 'C:\q':/q -v 'C:\core':/core -v "$USERPROFILE"'\Downloads':/Downloads -v "$factory_outputDir":/output -v "$factory_modelDir":/model -v "$factory_datasetDir":/dataset -v "$factory_knowledgeDir":/knowledge -v "$factory_knowledge_distillDir":/knowledge_distill -v "$factory_projectDir":/workspace/project --rm -it runpod/pytorch:2.4.0-py3.11-cuda12.4.1-devel-ubuntu22.04 "${dockerRunArgs[@]}"
+fi
+if ! _if_cygwin
+then
+# WARNING: May be untested.
+docker run --shm-size=20g --name runpod-$(_uid 14) --gpus "all" -v '/home/user/___quick':/q -v '/home/user/core':/core -v "/home/user"'/Downloads':/Downloads -v "$factory_outputDir":/output -v "$factory_modelDir":/model -v "$factory_datasetDir":/dataset -v "$factory_projectDir":/workspace/project --rm -it runpod/pytorch:2.4.0-py3.11-cuda12.4.1-devel-ubuntu22.04 "${dockerRunArgs[@]}"
+fi
+
+# ###
+# PASTE
+# ###
+
+
+
+}
+
+
+
+
+_factory_runpod-heavy() {
+
+! type _set_factory_dir > /dev/null 2>&1 && exit 1
+_set_factory_dir
+
+
+
+# ###
+# PASTE
+# ###
+
+! docker images | tail -n+2 | grep '^runpod-pytorch-heavy' > /dev/null 2>&1 && exit
+
+docker pull runpod-pytorch-heavy
+
+_messagePlain_request 'request: paste ->'
+echo > ./._run-factory_runpod
+_request_paste_factory-prepare_finetune | tee -a ./._run-factory_runpod
+_request_paste_factory-install_ubiquitous_bash | tee -a ./._run-factory_runpod
+_request_paste_factory-show_finetune | tee -a ./._run-factory_runpod
+docker inspect --format='{{json .Config.Entrypoint}}' runpod-pytorch-heavy | jq -r '.[]' | tee -a ./._run-factory_runpod
+#echo 'bash -i' >> ./._run-factory_runpod
+_messagePlain_request 'request: <- paste'
+
+
+# ###
+
+
+! type _getAbsoluteLocation > /dev/null 2>&1 && exit 1
+
+#docker image inspect runpod-pytorch-heavy --format '{{json .Config.Entrypoint}} {{json .Config.Cmd}}'
+
+dockerRunArgs=( bash /workspace/project/._run-factory_runpod )
+[[ ! -e ./._run-factory_runpod ]] && dockerRunArgs=( bash )
+
+if _if_cygwin
+then
+#--privileged
+#--ipc=host --ulimit memlock=-1 --ulimit stack=67108864
+#-v 'C:\q':/q -v 'C:\core':/core -v "$USERPROFILE"'\Downloads':/Downloads
+docker run --shm-size=20g --name runpod-$(_uid 14) --gpus "all" -v 'C:\q':/q -v 'C:\core':/core -v "$USERPROFILE"'\Downloads':/Downloads -v "$factory_outputDir":/output -v "$factory_modelDir":/model -v "$factory_datasetDir":/dataset -v "$factory_knowledgeDir":/knowledge -v "$factory_knowledge_distillDir":/knowledge_distill -v "$factory_projectDir":/workspace/project --rm -it runpod-pytorch-heavy "${dockerRunArgs[@]}"
+fi
+if ! _if_cygwin
+then
+# WARNING: May be untested.
+docker run --shm-size=20g --name runpod-$(_uid 14) --gpus "all" -v '/home/user/___quick':/q -v '/home/user/core':/core -v "/home/user"'/Downloads':/Downloads -v "$factory_outputDir":/output -v "$factory_modelDir":/model -v "$factory_datasetDir":/dataset -v "$factory_projectDir":/workspace/project --rm -it runpod-pytorch-heavy "${dockerRunArgs[@]}"
+fi
+
+# ###
+# PASTE
+# ###
+
+
+
+}
+_factory_runpod() {
+    _factory_runpod-heavy
+}
+
+
+
+# https://hub.docker.com/u/langchain
 
 
 
@@ -17539,6 +17702,8 @@ doNotMatch
 find /model -maxdepth 1 | head -n 65
 find /output -maxdepth 1 | head
 find /dataset -maxdepth 1 | head -n 65
+find /knowledge -maxdepth 1 | head -n 65
+find /knowledge_distill -maxdepth 1 | head -n 65
 find /workspace/project -maxdepth 1 | head -n 65
 
 nvidia-smi
