@@ -24,7 +24,7 @@ CZXWXcRMTo8EmM8i4d
 }
 
 
-_createFactory_runpod-pytorch-heavy() {
+__factoryCreate_runpod-pytorch-heavy() {
     _start
 
     cd "$safeTmp"
