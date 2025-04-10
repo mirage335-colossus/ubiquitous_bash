@@ -6,7 +6,7 @@ _here_dockerfile_runpod-pytorch-heavy() {
 
 cat << 'CZXWXcRMTo8EmM8i4d'
 #docker build -t runpod-pytorch-heavy .
-FROM runpod/pytorch:2.4.0-py3.11-cuda12.4.1-devel-ubuntu22.04
+FROM runpod/pytorch:2.2.0-py3.10-cuda12.1.1-devel-ubuntu22.04
 
 #https://huggingface.co/blog/mlabonne/sft-llama3
 #https://huggingface.co/blog/mlabonne/merge-models
@@ -17,7 +17,7 @@ RUN pip install --no-deps "xformers<0.0.27" "trl<0.9.0" peft accelerate bitsandb
 
 WORKDIR /
 
-#docker image inspect runpod/pytorch:2.4.0-py3.11-cuda12.4.1-devel-ubuntu22.04 --format '{{json .Config.Entrypoint}} {{json .Config.Cmd}}'
+#docker image inspect runpod/pytorch:2.2.0-py3.10-cuda12.1.1-devel-ubuntu22.04 --format '{{json .Config.Entrypoint}} {{json .Config.Cmd}}'
 CMD ["/opt/nvidia/nvidia_entrypoint.sh"]
 CZXWXcRMTo8EmM8i4d
 

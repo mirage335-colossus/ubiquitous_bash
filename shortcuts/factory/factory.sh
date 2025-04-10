@@ -90,12 +90,12 @@ then
 #--privileged
 #--ipc=host --ulimit memlock=-1 --ulimit stack=67108864
 #-v 'C:\q':/q -v 'C:\core':/core -v "$USERPROFILE"'\Downloads':/Downloads
-docker run --shm-size=20g --name axolotl-$(_uid 14) --gpus "all" -v 'C:\q':/q -v 'C:\core':/core -v "$USERPROFILE"'\Downloads':/Downloads -v "$factory_outputDir":/output -v "$factory_modelDir":/model -v "$factory_datasetDir":/dataset -v "$factory_knowledgeDir":/knowledge -v "$factory_knowledge_distillDir":/knowledge_distill -v "$factory_projectDir":/workspace/project --rm -it axolotlai/axolotl:main-latest "${dockerRunArgs[@]}"
+docker run --shm-size=20g --name axolotl-$(_uid 14) --gpus "all" -e "$JUPYTER_PASSWORD" -e HF_AKI_KEY="$HF_AKI_KEY" -v 'C:\q':/q -v 'C:\core':/core -v "$USERPROFILE"'\Downloads':/Downloads -v "$factory_outputDir":/output -v "$factory_modelDir":/model -v "$factory_datasetDir":/dataset -v "$factory_knowledgeDir":/knowledge -v "$factory_knowledge_distillDir":/knowledge_distill -v "$factory_projectDir":/workspace/project --rm -it axolotlai/axolotl:main-latest "${dockerRunArgs[@]}"
 fi
 if ! _if_cygwin
 then
 # WARNING: May be untested.
-docker run --shm-size=20g --name axolotl-$(_uid 14) --gpus "all" -v '/home/user/___quick':/q -v '/home/user/core':/core -v "/home/user"'/Downloads':/Downloads -v "$factory_outputDir":/output -v "$factory_modelDir":/model -v "$factory_datasetDir":/dataset -v "$factory_projectDir":/workspace/project --rm -it axolotlai/axolotl:main-latest "${dockerRunArgs[@]}"
+docker run --shm-size=20g --name axolotl-$(_uid 14) --gpus "all" -e "$JUPYTER_PASSWORD" -e HF_AKI_KEY="$HF_AKI_KEY" -v '/home/user/___quick':/q -v '/home/user/core':/core -v "/home/user"'/Downloads':/Downloads -v "$factory_outputDir":/output -v "$factory_modelDir":/model -v "$factory_datasetDir":/dataset -v "$factory_projectDir":/workspace/project --rm -it axolotlai/axolotl:main-latest "${dockerRunArgs[@]}"
 fi
 
 # ###
@@ -120,14 +120,17 @@ _set_factory_dir
 # PASTE
 # ###
 
-docker pull runpod/pytorch:2.4.0-py3.11-cuda12.4.1-devel-ubuntu22.04
+[[ JUPYTER_PASSWORD == "" ]] && export JUPYTER_PASSWORD=$(openssl rand 768 | base64 | tr -dc 'a-zA-Z0-9' | tr -d 'acdefhilmnopqrsuvACDEFHILMNOPQRSU14580' | head -c "24")
+
+docker pull runpod/pytorch:2.2.0-py3.10-cuda12.1.1-devel-ubuntu22.04
 
 _messagePlain_request 'request: paste ->'
 echo > ./._run-factory_runpod
 _request_paste_factory-prepare_finetune | tee -a ./._run-factory_runpod
 _request_paste_factory-install_ubiquitous_bash | tee -a ./._run-factory_runpod
 _request_paste_factory-show_finetune | tee -a ./._run-factory_runpod
-docker inspect --format='{{json .Config.Entrypoint}}' runpod/pytorch:2.4.0-py3.11-cuda12.4.1-devel-ubuntu22.04 | jq -r '.[]' | tee -a ./._run-factory_runpod
+_messagePlain_request 'request: JUPYTER_PASSWORD: '"$JUPYTER_PASSWORD"
+docker inspect --format='{{json .Config.Entrypoint}}' runpod/pytorch:2.2.0-py3.10-cuda12.1.1-devel-ubuntu22.04 | jq -r '.[]' | tee -a ./._run-factory_runpod
 #echo 'bash -i' >> ./._run-factory_runpod
 _messagePlain_request 'request: <- paste'
 
@@ -137,7 +140,7 @@ _messagePlain_request 'request: <- paste'
 
 ! type _getAbsoluteLocation > /dev/null 2>&1 && exit 1
 
-#docker image inspect runpod/pytorch:2.4.0-py3.11-cuda12.4.1-devel-ubuntu22.04 --format '{{json .Config.Entrypoint}} {{json .Config.Cmd}}'
+#docker image inspect runpod/pytorch:2.2.0-py3.10-cuda12.1.1-devel-ubuntu22.04 --format '{{json .Config.Entrypoint}} {{json .Config.Cmd}}'
 
 dockerRunArgs=( bash /workspace/project/._run-factory_runpod )
 [[ ! -e ./._run-factory_runpod ]] && dockerRunArgs=( bash )
@@ -147,12 +150,12 @@ then
 #--privileged
 #--ipc=host --ulimit memlock=-1 --ulimit stack=67108864
 #-v 'C:\q':/q -v 'C:\core':/core -v "$USERPROFILE"'\Downloads':/Downloads
-docker run --shm-size=20g --name runpod-$(_uid 14) --gpus "all" -v 'C:\q':/q -v 'C:\core':/core -v "$USERPROFILE"'\Downloads':/Downloads -v "$factory_outputDir":/output -v "$factory_modelDir":/model -v "$factory_datasetDir":/dataset -v "$factory_knowledgeDir":/knowledge -v "$factory_knowledge_distillDir":/knowledge_distill -v "$factory_projectDir":/workspace/project --rm -it runpod/pytorch:2.4.0-py3.11-cuda12.4.1-devel-ubuntu22.04 "${dockerRunArgs[@]}"
+docker run --shm-size=20g --name runpod-$(_uid 14) --gpus "all" -e "$JUPYTER_PASSWORD" -e HF_AKI_KEY="$HF_AKI_KEY" -v 'C:\q':/q -v 'C:\core':/core -v "$USERPROFILE"'\Downloads':/Downloads -v "$factory_outputDir":/output -v "$factory_modelDir":/model -v "$factory_datasetDir":/dataset -v "$factory_knowledgeDir":/knowledge -v "$factory_knowledge_distillDir":/knowledge_distill -v "$factory_projectDir":/workspace/project --rm -it runpod/pytorch:2.2.0-py3.10-cuda12.1.1-devel-ubuntu22.04 "${dockerRunArgs[@]}"
 fi
 if ! _if_cygwin
 then
 # WARNING: May be untested.
-docker run --shm-size=20g --name runpod-$(_uid 14) --gpus "all" -v '/home/user/___quick':/q -v '/home/user/core':/core -v "/home/user"'/Downloads':/Downloads -v "$factory_outputDir":/output -v "$factory_modelDir":/model -v "$factory_datasetDir":/dataset -v "$factory_projectDir":/workspace/project --rm -it runpod/pytorch:2.4.0-py3.11-cuda12.4.1-devel-ubuntu22.04 "${dockerRunArgs[@]}"
+docker run --shm-size=20g --name runpod-$(_uid 14) --gpus "all" -e "$JUPYTER_PASSWORD" -e HF_AKI_KEY="$HF_AKI_KEY" -v '/home/user/___quick':/q -v '/home/user/core':/core -v "/home/user"'/Downloads':/Downloads -v "$factory_outputDir":/output -v "$factory_modelDir":/model -v "$factory_datasetDir":/dataset -v "$factory_projectDir":/workspace/project --rm -it runpod/pytorch:2.2.0-py3.10-cuda12.1.1-devel-ubuntu22.04 "${dockerRunArgs[@]}"
 fi
 
 # ###
@@ -179,6 +182,8 @@ _set_factory_dir
 
 ! docker images | tail -n+2 | grep '^runpod-pytorch-heavy' > /dev/null 2>&1 && exit
 
+[[ JUPYTER_PASSWORD == "" ]] && export JUPYTER_PASSWORD=$(openssl rand 768 | base64 | tr -dc 'a-zA-Z0-9' | tr -d 'acdefhilmnopqrsuvACDEFHILMNOPQRSU14580' | head -c "24")
+
 docker pull runpod-pytorch-heavy
 
 _messagePlain_request 'request: paste ->'
@@ -186,6 +191,7 @@ echo > ./._run-factory_runpod
 _request_paste_factory-prepare_finetune | tee -a ./._run-factory_runpod
 _request_paste_factory-install_ubiquitous_bash | tee -a ./._run-factory_runpod
 _request_paste_factory-show_finetune | tee -a ./._run-factory_runpod
+_messagePlain_request 'request: JUPYTER_PASSWORD: '"$JUPYTER_PASSWORD"
 docker inspect --format='{{json .Config.Entrypoint}}' runpod-pytorch-heavy | jq -r '.[]' | tee -a ./._run-factory_runpod
 #echo 'bash -i' >> ./._run-factory_runpod
 _messagePlain_request 'request: <- paste'
@@ -206,12 +212,12 @@ then
 #--privileged
 #--ipc=host --ulimit memlock=-1 --ulimit stack=67108864
 #-v 'C:\q':/q -v 'C:\core':/core -v "$USERPROFILE"'\Downloads':/Downloads
-docker run --shm-size=20g --name runpod-$(_uid 14) --gpus "all" -v 'C:\q':/q -v 'C:\core':/core -v "$USERPROFILE"'\Downloads':/Downloads -v "$factory_outputDir":/output -v "$factory_modelDir":/model -v "$factory_datasetDir":/dataset -v "$factory_knowledgeDir":/knowledge -v "$factory_knowledge_distillDir":/knowledge_distill -v "$factory_projectDir":/workspace/project --rm -it runpod-pytorch-heavy "${dockerRunArgs[@]}"
+docker run --shm-size=20g --name runpod-$(_uid 14) --gpus "all" -e "$JUPYTER_PASSWORD" -e HF_AKI_KEY="$HF_AKI_KEY" -v 'C:\q':/q -v 'C:\core':/core -v "$USERPROFILE"'\Downloads':/Downloads -v "$factory_outputDir":/output -v "$factory_modelDir":/model -v "$factory_datasetDir":/dataset -v "$factory_knowledgeDir":/knowledge -v "$factory_knowledge_distillDir":/knowledge_distill -v "$factory_projectDir":/workspace/project --rm -it runpod-pytorch-heavy "${dockerRunArgs[@]}"
 fi
 if ! _if_cygwin
 then
 # WARNING: May be untested.
-docker run --shm-size=20g --name runpod-$(_uid 14) --gpus "all" -v '/home/user/___quick':/q -v '/home/user/core':/core -v "/home/user"'/Downloads':/Downloads -v "$factory_outputDir":/output -v "$factory_modelDir":/model -v "$factory_datasetDir":/dataset -v "$factory_projectDir":/workspace/project --rm -it runpod-pytorch-heavy "${dockerRunArgs[@]}"
+docker run --shm-size=20g --name runpod-$(_uid 14) --gpus "all" -e "$JUPYTER_PASSWORD" -e HF_AKI_KEY="$HF_AKI_KEY" -v '/home/user/___quick':/q -v '/home/user/core':/core -v "/home/user"'/Downloads':/Downloads -v "$factory_outputDir":/output -v "$factory_modelDir":/model -v "$factory_datasetDir":/dataset -v "$factory_projectDir":/workspace/project --rm -it runpod-pytorch-heavy "${dockerRunArgs[@]}"
 fi
 
 # ###
