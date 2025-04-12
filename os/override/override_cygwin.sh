@@ -102,6 +102,8 @@ fi
 
 if _if_cygwin
 then
+	if false
+	then
 	# ATTRIBUTION-AI: ChatGPT 4.5-preview  2025-04-11  with knowledge ubiquitous_bash, etc
 	# Prioritizes native git binaries if available. Mostly a disadvantage over the Cygwin/MSW git binaries, but adds more usable git-lfs , and works surprisingly well, apparently still defaulting to: Cygwin HOME '.gitconfig' , Cygwin '/usr/bin/ssh' , correctly understanding the overrides of '_gitBest' , etc.
 	#  Alternatives:
@@ -277,6 +279,7 @@ then
 	}
 	# Must be later, after set global variable "$scriptAbsoluteFolder" .
 	#_write_configure_git_safe_directory_if_admin_owned "$scriptAbsoluteFolder"
+	fi
 	
 	# NOTICE: Recent versions of Cygwin seem to have replaced or omitted '/usr/bin/gpg.exe', possibly in favor of a symlink to '/usr/bin/gpg2.exe' .
 	# CAUTION: This override is specifically to ensure availability of 'gpg' binary through a function, but that could have the effect of presenting an incorrect gpg2 CLI interface to software expecting a gpg1 CLI interface.
