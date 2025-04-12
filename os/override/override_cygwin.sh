@@ -224,6 +224,7 @@ then
 	# CAUTION: NOT sufficient to call this function only during installation (as Administrator, which is what normally causes this issue). If the user subsequently installs native 'git for Windows', additional '.gitconfig' entries are needed, with the different MSWindows native style path format.
 	# Historically this was apparently at least mostly not necessary until prioritizing native git binaries (if available) instead of relying on Cygwin/MSW git binaries.
 	_write_configure_git_safe_directory_if_admin_owned() {
+		return 0
 		local current_path="$1"
 		local win_path win_path_escaped win_path_slash cygwin_path
 		win_path="$(cygpath -w "$current_path")"
