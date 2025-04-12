@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='3823978652'
+export ub_setScriptChecksum_contents='4007107823'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -747,182 +747,8 @@ then
 fi
 
 
-
 if _if_cygwin
 then
-	# ATTRIBUTION-AI: ChatGPT 4.5-preview  2025-04-11  with knowledge ubiquitous_bash, etc
-	# Prioritizes native git binaries if available. Mostly a disadvantage over the Cygwin/MSW git binaries, but adds more usable git-lfs , and works surprisingly well, apparently still defaulting to: Cygwin HOME '.gitconfig' , Cygwin '/usr/bin/ssh' , correctly understanding the overrides of '_gitBest' , etc.
-	#  Alternatives:
-	#   git-lfs compiled for Cygwin/MSW - requires installing 'go' compiler for Cygwin/MSW
-	#   git fetch commands - manual effort
-	#   wrapper script to detect git lfs error and retry with subsequent separate fetch - technically possible
-	#   avoid git-lfs - usually sufficient
-	_override_msw_git() {
-		local git_path="/cygdrive/c/Program Files/Git/cmd"
-		
-		# Optionally iterate through additional drive letters:
-		# for drive in c ; do
-		# for drive in c d e f g h i j k l m n o p q r s t u v w D E F G H I J K L M N O P Q R S T U V W ; do
-		#   local git_path="/cygdrive/${drive}/Program Files/Git/cmd"
-		#   if [ -d "${git_path}" ]; then
-		#     break
-		#   fi
-		# done
-		
-		[ -d "$git_path" ] || return 0  # Return quietly if the git_path is not a directory
-
-		# ATTENTION: To use with 'ops.sh' or similar if necessary, appropriate, and safe.
-		export PATH_pre_override_git="$PATH"
-		
-		local path_entry entry IFS=':'
-		local new_path=""
-		
-		for entry in $PATH ; do
-			# Skip adding if this entry matches git_path exactly
-			[ "$entry" = "$git_path" ] && continue
-			
-			# Append current entry to the new_path
-			if [ -z "$new_path" ]; then
-				new_path="$entry"
-			else
-				new_path="${new_path}:${entry}"
-			fi
-		done
-
-		# Finally, explicitly prepend the git path
-		export PATH="${git_path}:${new_path}"
-	}
-	# CAUTION: Early in the script for a reason! Changing the PATH drastically later has been known to cause WSL 'bash' to override Cygwin 'bash' with very obviously unpredictable results.
-	#  ATTENTION: There would be a '_test' function in 'ubiquitous_bash' for this, but the state of 'wsl' which may not be installed with 'ubdist', etc, is not necessarily predictable enough for a simple PASS/FAIL .
-	if [[ "$1" != "_setupUbiquitous" ]] && [[ "ub_under_setupUbiquitous" != "true" ]]
-	then
-		_override_msw_git
-	fi
-
-	# ATTRIBUTION-AI: ChatGPT 4.5-preview  2025-04-11  with knowledge ubiquitous_bash, etc  (partially)
-	# ATTRIBUTION-AI: ChatGPT 4o  2025-04-12  web search  (partially)
-	# ATTRIBUTION-AI: ChatGPT o3-mini-high  2025-04-12
-	_write_configure_git_safe_directory_if_admin_owned_sequence() {
-		local functionEntryPWD="$PWD"
-
-		# DUBIOUS
-		local functionEntry_GIT_DIR="$GIT_DIR"
-		local functionEntry_GIT_WORK_TREE="$GIT_WORK_TREE"
-		local functionEntry_GIT_INDEX_FILE="$GIT_INDEX_FILE"
-		local functionEntry_GIT_OBJECT_DIRECTORY="$GIT_OBJECT_DIRECTORY"
-		#local functionEntry_GIT_ALTERNATE_OBJECT_DIRECTORIES="$GIT_ALTERNATE_OBJECT_DIRECTORIES"
-		local functionEntry_GIT_CONFIG="$GIT_CONFIG"
-		local functionEntry_GIT_CONFIG_GLOBAL="$GIT_CONFIG_GLOBAL"
-		local functionEntry_GIT_CONFIG_SYSTEM="$GIT_CONFIG_SYSTEM"
-		local functionEntry_GIT_CONFIG_NOSYSTEM="$GIT_CONFIG_NOSYSTEM"
-		#local functionEntry_GIT_AUTHOR_NAME="$GIT_AUTHOR_NAME"
-		#local functionEntry_GIT_AUTHOR_EMAIL="$GIT_AUTHOR_EMAIL"
-		#local functionEntry_GIT_AUTHOR_DATE="$GIT_AUTHOR_DATE"
-		#local functionEntry_GIT_COMMITTER_NAME="$GIT_COMMITTER_NAME"
-		#local functionEntry_GIT_COMMITTER_EMAIL="$GIT_COMMITTER_EMAIL"
-		#local functionEntry_GIT_COMMITTER_DATE="$GIT_COMMITTER_DATE"
-		#local functionEntry_GIT_EDITOR="$GIT_EDITOR"
-		#local functionEntry_GIT_PAGER="$GIT_PAGER"
-		local functionEntry_GIT_NAMESPACE="$GIT_NAMESPACE"
-		local functionEntry_GIT_CEILING_DIRECTORIES="$GIT_CEILING_DIRECTORIES"
-		local functionEntry_GIT_DISCOVERY_ACROSS_FILESYSTEM="$GIT_DISCOVERY_ACROSS_FILESYSTEM"
-		#local functionEntry_GIT_SSL_NO_VERIFY="$GIT_SSL_NO_VERIFY"
-		#local functionEntry_GIT_SSH="$GIT_SSH"
-		#local functionEntry_GIT_SSH_COMMAND="$GIT_SSH_COMMAND"
-
-		git config --global --add safe.directory "$1"
-		#git config --global --add safe.directory "$2"
-		git config --global --add safe.directory "$3"
-		git config --global --add safe.directory "$4"
-
-		cd "$functionEntryPWD"
-
-		# DUBIOUS
-		GIT_DIR="$functionEntry_GIT_DIR"
-		GIT_WORK_TREE="$functionEntry_GIT_WORK_TREE"
-		GIT_INDEX_FILE="$functionEntry_GIT_INDEX_FILE"
-		GIT_OBJECT_DIRECTORY="$functionEntry_GIT_OBJECT_DIRECTORY"
-		#GIT_ALTERNATE_OBJECT_DIRECTORIES="$functionEntry_GIT_ALTERNATE_OBJECT_DIRECTORIES"
-		GIT_CONFIG="$functionEntry_GIT_CONFIG"
-		GIT_CONFIG_GLOBAL="$functionEntry_GIT_CONFIG_GLOBAL"
-		GIT_CONFIG_SYSTEM="$functionEntry_GIT_CONFIG_SYSTEM"
-		GIT_CONFIG_NOSYSTEM="$functionEntry_GIT_CONFIG_NOSYSTEM"
-		#GIT_AUTHOR_NAME="$functionEntry_GIT_AUTHOR_NAME"
-		#GIT_AUTHOR_EMAIL="$functionEntry_GIT_AUTHOR_EMAIL"
-		#GIT_AUTHOR_DATE="$functionEntry_GIT_AUTHOR_DATE"
-		#GIT_COMMITTER_NAME="$functionEntry_GIT_COMMITTER_NAME"
-		#GIT_COMMITTER_EMAIL="$functionEntry_GIT_COMMITTER_EMAIL"
-		#GIT_COMMITTER_DATE="$functionEntry_GIT_COMMITTER_DATE"
-		#GIT_EDITOR="$functionEntry_GIT_EDITOR"
-		#GIT_PAGER="$functionEntry_GIT_PAGER"
-		GIT_NAMESPACE="$functionEntry_GIT_NAMESPACE"
-		GIT_CEILING_DIRECTORIES="$functionEntry_GIT_CEILING_DIRECTORIES"
-		GIT_DISCOVERY_ACROSS_FILESYSTEM="$functionEntry_GIT_DISCOVERY_ACROSS_FILESYSTEM"
-		#GIT_SSL_NO_VERIFY="$functionEntry_GIT_SSL_NO_VERIFY"
-		#GIT_SSH="$functionEntry_GIT_SSH"
-		#GIT_SSH_COMMAND="$functionEntry_GIT_SSH_COMMAND"
-
-		return 0
-	}
-
-	# ATTRIBUTION-AI: ChatGPT 4.5-preview  2025-04-11  with knowledge ubiquitous_bash, etc  (partially)
-	# CAUTION: NOT sufficient to call this function only during installation (as Administrator, which is what normally causes this issue). If the user subsequently installs native 'git for Windows', additional '.gitconfig' entries are needed, with the different MSWindows native style path format.
-	# Historically this was apparently at least mostly not necessary until prioritizing native git binaries (if available) instead of relying on Cygwin/MSW git binaries.
-	_write_configure_git_safe_directory_if_admin_owned() {
-		local current_path="$1"
-		local win_path win_path_escaped win_path_slash cygwin_path
-		win_path="$(cygpath -w "$current_path")"
-		cygwin_path="$(cygpath -u "$current_path")"  # explicit Cygwin POSIX path
-		win_path_escaped="${win_path//\\/\\\\}"
-		win_path_slash="${win_path//\\/\/}"
-
-		# Single call to verify Administrators ownership explicitly (fast Windows API call)
-		local owner_line
-		owner_line="$(icacls "$win_path" 2>/dev/null)"
-		if [[ "$owner_line" != *"BUILTIN\\Administrators"* ]]; then
-			# Not Administrators-owned, no further action needed, immediate return
-			return 0
-		fi
-		# Read "$HOME"/.gitconfig just once (efficient builtin file reading)
-		local gitconfig_content
-		if [[ -e "$HOME"/.gitconfig ]]; then
-			gitconfig_content="$(< "$HOME"/.gitconfig)"
-
-			## Check 1: Exact Windows path (C:\...)
-			#if [[ "$gitconfig_content" == *"[safe]"* && "$gitconfig_content" == *"directory = $win_path"* ]]; then
-				#return 0
-			#fi
-
-			## Check 2: Double-backslash-escaped Windows path (C:\\...)
-			#win_path_escaped="${win_path//\\/\\\\}"
-			#if [[ "$gitconfig_content" == *"[safe]"* && "$gitconfig_content" == *"directory = $win_path_escaped"* ]]; then
-				#return 0
-			#fi
-
-			## Check 3: Normal-slash Windows path (C:/...)
-			#win_path_slash="${win_path//\\/\/}"
-			#if [[ "$gitconfig_content" == *"[safe]"* && "$gitconfig_content" == *"directory = $win_path_slash"* ]]; then
-				#return 0
-			#fi
-
-			## Check 4: Original Cygwin POSIX path (/cygdrive/c/...)
-			#if [[ "$gitconfig_content" == *"[safe]"* && "$gitconfig_content" == *"directory = $cygwin_path"* ]]; then
-				#return 0
-			#fi
-
-			( [[ "$gitconfig_content" == *"[safe]"* && "$gitconfig_content" == *"directory = $win_path"* ]] || [[ "$gitconfig_content" == *"[safe]"* && "$gitconfig_content" == *"directory = $win_path_escaped"* ]] || [[ "$gitconfig_content" == *"[safe]"* && "$gitconfig_content" == *"directory = $win_path_slash"* ]] ) && ( [[ "$gitconfig_content" == *"[safe]"* && "$gitconfig_content" == *"directory = $cygwin_path"* ]] ) && return 0
-		fi
-
-		# Explicit message clearly communicating safe-configuration action for transparency
-		#echo "Administrators ownership detected; configuring git safe.directory entry."
-
-		# perform safe git configuration exactly once after all efficient checks
-		# CAUTION: Tested to create functionally identical log entries through both '/usr/bin/git' and native git binaries. Ensure that remains the case if making any changes.
-		"$scriptAbsoluteLocation" _write_configure_git_safe_directory_if_admin_owned_sequence "$cygwin_path" "$win_path_escaped" "$win_path_slash" "$win_path"
-	}
-	# Must be later, after set global variable "$scriptAbsoluteFolder" .
-	#_write_configure_git_safe_directory_if_admin_owned "$scriptAbsoluteFolder"
-	
 	# NOTICE: Recent versions of Cygwin seem to have replaced or omitted '/usr/bin/gpg.exe', possibly in favor of a symlink to '/usr/bin/gpg2.exe' .
 	# CAUTION: This override is specifically to ensure availability of 'gpg' binary through a function, but that could have the effect of presenting an incorrect gpg2 CLI interface to software expecting a gpg1 CLI interface.
 	 # In practice, Debian Linux seem to impose gpg v2 as the CLI interface for gpg - 'gpg --version' responds v2 .
@@ -5438,9 +5264,6 @@ _self_gitMad() {
 }
 # https://stackoverflow.com/questions/1580596/how-do-i-make-git-ignore-file-mode-chmod-changes
 _gitMad() {
-	local currentDirectory=$(_getAbsoluteLocation "$PWD")
-	_write_configure_git_safe_directory_if_admin_owned "$currentDirectory"
-
 	git config core.fileMode false
 	git submodule foreach git config core.fileMode false
 	git submodule foreach git submodule foreach git config core.fileMode false
@@ -5471,11 +5294,7 @@ _gitBest_detect_github_procedure() {
 		fi
 		
 		local currentSSHoutput
-		# CAUTION: Disabling this presumes "$HOME"/.ssh/config for GitHub (possibly through 'CoreAutoSSH') is now not necessary to support by default.
-		#  ATTENTION: Good assumption. GH_TOKEN/INPUT_GITHUB_TOKEN is now used by _gitBest within 'compendium' functions, etc, usually much safer and more convenient.
-		#   Strongly Discouraged: Override with ops.sh if necessary.
-		# || [[ -e "$HOME"/.ssh/config ]]
-		if ( [[ -e "$HOME"/.ssh/id_rsa ]] || ( [[ ! -e "$HOME"/.ssh/id_ed25519_sk ]] && [[ ! -e "$HOME"/.ssh/ecdsa-sk ]] ) ) && currentSSHoutput=$(ssh -o StrictHostKeyChecking=no -o Compression=yes -o ConnectionAttempts=3 -o ServerAliveInterval=6 -o ServerAliveCountMax=9 -o ConnectTimeout="$netTimeout" -o PubkeyAuthentication=yes -o PasswordAuthentication=no git@github.com 2>&1 ; true) && _safeEcho_newline "$currentSSHoutput" | grep 'successfully authenticated'
+		if ( [[ -e "$HOME"/.ssh/id_rsa ]] || [[ -e "$HOME"/.ssh/config ]] || ( [[ ! -e "$HOME"/.ssh/id_ed25519_sk ]] && [[ ! -e "$HOME"/.ssh/ecdsa-sk ]] ) ) && currentSSHoutput=$(ssh -o StrictHostKeyChecking=no -o Compression=yes -o ConnectionAttempts=3 -o ServerAliveInterval=6 -o ServerAliveCountMax=9 -o ConnectTimeout="$netTimeout" -o PubkeyAuthentication=yes -o PasswordAuthentication=no git@github.com 2>&1 ; true) && _safeEcho_newline "$currentSSHoutput" | grep 'successfully authenticated'
 		then
 			export current_gitBest_source_GitHub="github_ssh"
 			return
@@ -5643,54 +5462,10 @@ _gitBest_sequence() {
 	
 	_messagePlain_nominal 'init: git'
 	
-	local currentExitStatus
 	git "$@"
-	currentExitStatus="$?"
-
-
-	export HOME="$realHome"
-	if _if_cygwin
-	then
-		if [ "$1" = "clone" ]
-		then
-			_messagePlain_nominal 'init: git safe directory'
-
-			# ATTRIBUTION-AI: ChatGPT 4.5-preview  2025-04-12  (partially)
-			local currentDirectory
-			local currentURL
-			local currentArg=""
-			local currentArg_previous=""
-			for currentArg in "$@"
-			do
-				# Ignore parameters:
-				#  begins with "-" dash
-				#  preceeded by parameter taking an argument, but no argument or "="
-				if [[ "$currentArg" != -* ]] && [[ "$currentArg" != "clone" ]] && [[ "$currentArg_previous" != "--template" ]] && [[ "$currentArg_previous" != "-o" ]] && [[ "$currentArg_previous" != "-b" ]] && [[ "$currentArg_previous" != "-u" ]] && [[ "$currentArg_previous" != "--reference" ]] && [[ "$currentArg_previous" != "--separate-git-dir" ]] && [[ "$currentArg_previous" != "--depth" ]] && [[ "$currentArg_previous" != "--jobs" ]] && [[ "$currentArg_previous" != "--filter" ]]
-				then
-					currentURL="$currentArg"
-					echo "$currentURL"
-					#break
-
-					[[ -e "$currentArg" ]] && currentDirectory="$currentArg"
-				fi
-				currentArg_previous="$currentArg"
-			done
-		fi
-		
-		[[ "$currentDirectory" == "" ]] && [[ "$currentURL" != "" ]] && currentDirectory=$(basename --suffix=".git" "$currentURL")
-		
-		if [[ -e "$currentDirectory" ]]
-		then
-			_messagePlain_probe 'exists: '"$currentDirectory"
-			if type _write_configure_git_safe_directory_if_admin_owned > /dev/null 2>&1
-			then
-				currentDirectory=$(_getAbsoluteLocation "$currentDirectory")
-				_write_configure_git_safe_directory_if_admin_owned "$currentDirectory"
-			fi
-		fi
-	fi
 	
-	_stop "$currentExitStatus"
+	
+	_stop "$?"
 }
 
 _gitBest() {
@@ -8712,7 +8487,6 @@ _installUbiquitous() {
 
 _setupUbiquitous() {
 	_messageNormal "init: setupUbiquitous"
-	export ub_under_setupUbiquitous="true"
 	
 	if _if_cygwin
 	then
@@ -9492,9 +9266,9 @@ _get_ub_globalVars_sessionDerived() {
 
 export lowsessionid=$(echo -n "$sessionid" | tr A-Z a-z )
 
+# ATTENTION: CAUTION: Unusual Cygwin override to accommodate MSW network drive ( at least when provided by '_userVBox' ) !
 if [[ "$scriptAbsoluteFolder" == '/cygdrive/'* ]] && [[ -e /cygdrive ]] && uname -a | grep -i cygwin > /dev/null 2>&1 && [[ "$scriptAbsoluteFolder" != '/cygdrive/c'* ]] && [[ "$scriptAbsoluteFolder" != '/cygdrive/C'* ]]
 then
-	# ATTENTION: CAUTION: Unusual Cygwin override to accommodate MSW network drive ( at least when provided by '_userVBox' ) !
 	if [[ "$tmpSelf" == "" ]]
 	then
 		
@@ -9514,12 +9288,6 @@ then
 		( [[ "$tmpSelf" == "" ]] || [[ "$tmpMSW" == "" ]] ) && export tmpSelf=/tmp/"$sessionid"
 		true
 		
-	fi
-
-	#_override_msw_git
-	if [[ "$1" != "_setupUbiquitous" ]] && [[ "ub_under_setupUbiquitous" != "true" ]]
-	then
-		_write_configure_git_safe_directory_if_admin_owned "$scriptAbsoluteFolder"
 	fi
 elif uname -a | grep -i 'microsoft' > /dev/null 2>&1 && uname -a | grep -i 'WSL2' > /dev/null 2>&1
 then
