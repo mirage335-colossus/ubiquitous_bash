@@ -181,7 +181,7 @@ then
 		#local functionEntry_GIT_SSL_NO_VERIFY="$GIT_SSL_NO_VERIFY"
 		#local functionEntry_GIT_SSH="$GIT_SSH"
 		#local functionEntry_GIT_SSH_COMMAND="$GIT_SSH_COMMAND"
-
+return 0
 		git config --global --add safe.directory "$1"
 		if [[ $(type -p git) != '/usr/bin/git' ]]
 		then
@@ -267,7 +267,7 @@ then
 
 			( [[ "$gitconfig_content" == *"[safe]"* && "$gitconfig_content" == *"directory = $win_path"* ]] || [[ "$gitconfig_content" == *"[safe]"* && "$gitconfig_content" == *"directory = $win_path_escaped"* ]] || [[ "$gitconfig_content" == *"[safe]"* && "$gitconfig_content" == *"directory = $win_path_slash"* ]] ) && ( [[ "$gitconfig_content" == *"[safe]"* && "$gitconfig_content" == *"directory = $cygwin_path"* ]] ) && return 0
 		fi
-return 0
+
 		# Explicit message clearly communicating safe-configuration action for transparency
 		#echo "Administrators ownership detected; configuring git safe.directory entry."
 
