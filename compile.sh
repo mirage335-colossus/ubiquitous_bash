@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='3239292693'
+export ub_setScriptChecksum_contents='478112848'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -797,6 +797,72 @@ then
 	_override_msw_git
 
 	# ATTRIBUTION-AI: ChatGPT 4.5-preview  2025-04-11  with knowledge ubiquitous_bash, etc  (partially)
+	# ATTRIBUTION-AI: ChatGPT 4o  2025-04-12  web search  (partially)
+	# ATTRIBUTION-AI: ChatGPT o3-mini-high  2025-04-12
+	_write_configure_git_safe_directory_if_admin_owned_sequence() {
+		local functionEntryPWD="$PWD"
+
+		# DUBIOUS
+		local functionEntry_GIT_DIR="$GIT_DIR"
+		local functionEntry_GIT_WORK_TREE="$GIT_WORK_TREE"
+		local functionEntry_GIT_INDEX_FILE="$GIT_INDEX_FILE"
+		local functionEntry_GIT_OBJECT_DIRECTORY="$GIT_OBJECT_DIRECTORY"
+		#local functionEntry_GIT_ALTERNATE_OBJECT_DIRECTORIES="$GIT_ALTERNATE_OBJECT_DIRECTORIES"
+		local functionEntry_GIT_CONFIG="$GIT_CONFIG"
+		local functionEntry_GIT_CONFIG_GLOBAL="$GIT_CONFIG_GLOBAL"
+		local functionEntry_GIT_CONFIG_SYSTEM="$GIT_CONFIG_SYSTEM"
+		local functionEntry_GIT_CONFIG_NOSYSTEM="$GIT_CONFIG_NOSYSTEM"
+		#local functionEntry_GIT_AUTHOR_NAME="$GIT_AUTHOR_NAME"
+		#local functionEntry_GIT_AUTHOR_EMAIL="$GIT_AUTHOR_EMAIL"
+		#local functionEntry_GIT_AUTHOR_DATE="$GIT_AUTHOR_DATE"
+		#local functionEntry_GIT_COMMITTER_NAME="$GIT_COMMITTER_NAME"
+		#local functionEntry_GIT_COMMITTER_EMAIL="$GIT_COMMITTER_EMAIL"
+		#local functionEntry_GIT_COMMITTER_DATE="$GIT_COMMITTER_DATE"
+		#local functionEntry_GIT_EDITOR="$GIT_EDITOR"
+		#local functionEntry_GIT_PAGER="$GIT_PAGER"
+		local functionEntry_GIT_NAMESPACE="$GIT_NAMESPACE"
+		local functionEntry_GIT_CEILING_DIRECTORIES="$GIT_CEILING_DIRECTORIES"
+		local functionEntry_GIT_DISCOVERY_ACROSS_FILESYSTEM="$GIT_DISCOVERY_ACROSS_FILESYSTEM"
+		#local functionEntry_GIT_SSL_NO_VERIFY="$GIT_SSL_NO_VERIFY"
+		#local functionEntry_GIT_SSH="$GIT_SSH"
+		#local functionEntry_GIT_SSH_COMMAND="$GIT_SSH_COMMAND"
+
+		git config --global --add safe.directory "$1"
+		#git config --global --add safe.directory "$2"
+		git config --global --add safe.directory "$3"
+		git config --global --add safe.directory "$4"
+
+		cd "$functionEntryPWD"
+
+		# DUBIOUS
+		GIT_DIR="$functionEntry_GIT_DIR"
+		GIT_WORK_TREE="$functionEntry_GIT_WORK_TREE"
+		GIT_INDEX_FILE="$functionEntry_GIT_INDEX_FILE"
+		GIT_OBJECT_DIRECTORY="$functionEntry_GIT_OBJECT_DIRECTORY"
+		#GIT_ALTERNATE_OBJECT_DIRECTORIES="$functionEntry_GIT_ALTERNATE_OBJECT_DIRECTORIES"
+		GIT_CONFIG="$functionEntry_GIT_CONFIG"
+		GIT_CONFIG_GLOBAL="$functionEntry_GIT_CONFIG_GLOBAL"
+		GIT_CONFIG_SYSTEM="$functionEntry_GIT_CONFIG_SYSTEM"
+		GIT_CONFIG_NOSYSTEM="$functionEntry_GIT_CONFIG_NOSYSTEM"
+		#GIT_AUTHOR_NAME="$functionEntry_GIT_AUTHOR_NAME"
+		#GIT_AUTHOR_EMAIL="$functionEntry_GIT_AUTHOR_EMAIL"
+		#GIT_AUTHOR_DATE="$functionEntry_GIT_AUTHOR_DATE"
+		#GIT_COMMITTER_NAME="$functionEntry_GIT_COMMITTER_NAME"
+		#GIT_COMMITTER_EMAIL="$functionEntry_GIT_COMMITTER_EMAIL"
+		#GIT_COMMITTER_DATE="$functionEntry_GIT_COMMITTER_DATE"
+		#GIT_EDITOR="$functionEntry_GIT_EDITOR"
+		#GIT_PAGER="$functionEntry_GIT_PAGER"
+		GIT_NAMESPACE="$functionEntry_GIT_NAMESPACE"
+		GIT_CEILING_DIRECTORIES="$functionEntry_GIT_CEILING_DIRECTORIES"
+		GIT_DISCOVERY_ACROSS_FILESYSTEM="$functionEntry_GIT_DISCOVERY_ACROSS_FILESYSTEM"
+		#GIT_SSL_NO_VERIFY="$functionEntry_GIT_SSL_NO_VERIFY"
+		#GIT_SSH="$functionEntry_GIT_SSH"
+		#GIT_SSH_COMMAND="$functionEntry_GIT_SSH_COMMAND"
+
+		return 0
+	}
+
+	# ATTRIBUTION-AI: ChatGPT 4.5-preview  2025-04-11  with knowledge ubiquitous_bash, etc  (partially)
 	# CAUTION: NOT sufficient to call this function only during installation (as Administrator, which is what normally causes this issue). If the user subsequently installs native 'git for Windows', additional '.gitconfig' entries are needed, with the different MSWindows native style path format.
 	# Historically this was apparently at least mostly not necessary until prioritizing native git binaries (if available) instead of relying on Cygwin/MSW git binaries.
 	_write_configure_git_safe_directory_if_admin_owned() {
@@ -814,10 +880,10 @@ then
 			# Not Administrators-owned, no further action needed, immediate return
 			return 0
 		fi
-		# Read ~/.gitconfig just once (efficient builtin file reading)
+		# Read "$HOME"/.gitconfig just once (efficient builtin file reading)
 		local gitconfig_content
-		if [[ -f ~/.gitconfig ]]; then
-			gitconfig_content="$(< ~/.gitconfig)"
+		if [[ -e "$HOME"/.gitconfig ]]; then
+			gitconfig_content="$(< "$HOME"/.gitconfig)"
 
 			## Check 1: Exact Windows path (C:\...)
 			#if [[ "$gitconfig_content" == *"[safe]"* && "$gitconfig_content" == *"directory = $win_path"* ]]; then
@@ -849,10 +915,7 @@ then
 
 		# perform safe git configuration exactly once after all efficient checks
 		# CAUTION: Tested to create functionally identical log entries through both '/usr/bin/git' and native git binaries. Ensure that remains the case if making any changes.
-		git config --global --add safe.directory "$cygwin_path"
-		#git config --global --add safe.directory "$win_path_escaped"
-		git config --global --add safe.directory "$win_path_slash"
-		git config --global --add safe.directory "$win_path"
+		"$scriptAbsoluteLocation" _write_configure_git_safe_directory_if_admin_owned_sequence "$cygwin_path" "$win_path_escaped" "$win_path_slash" "$win_path"
 	}
 	# Must be later, after set global variable "$scriptAbsoluteFolder" .
 	#_write_configure_git_safe_directory_if_admin_owned "$scriptAbsoluteFolder"
@@ -5251,7 +5314,10 @@ then
 	fi
 
 	#_override_msw_git
-	_write_configure_git_safe_directory_if_admin_owned "$scriptAbsoluteFolder"
+	if true #&& [[ "$1" != "_setupUbiquitous" ]] && [[ "ub_under_setupUbiquitous" != "true" ]]
+	then
+		_write_configure_git_safe_directory_if_admin_owned "$scriptAbsoluteFolder"
+	fi
 elif uname -a | grep -i 'microsoft' > /dev/null 2>&1 && uname -a | grep -i 'WSL2' > /dev/null 2>&1
 then
 	if [[ "$tmpSelf" == "" ]]
