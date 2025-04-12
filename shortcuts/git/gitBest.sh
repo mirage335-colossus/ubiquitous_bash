@@ -226,8 +226,11 @@ _gitBest_sequence() {
 		if [[ -e "$currentDirectory" ]]
 		then
 			_messagePlain_probe 'exists: '"$currentDirectory"
-			currentDirectory=$(_getAbsoluteLocation "$currentDirectory")
-			_write_configure_git_safe_directory_if_admin_owned "$currentDirectory"
+			if type _write_configure_git_safe_directory_if_admin_owned > /dev/null 2>&1
+			then
+				currentDirectory=$(_getAbsoluteLocation "$currentDirectory")
+				_write_configure_git_safe_directory_if_admin_owned "$currentDirectory"
+			fi
 		fi
 	fi
 	
