@@ -94,7 +94,7 @@ then
 	fi
 
 	#_override_msw_git
-	if [[ "$1" != "_setupUbiquitous" ]] && [[ "ub_under_setupUbiquitous" != "true" ]]
+	if [[ "$1" != "_setupUbiquitous" ]] && [[ "$ub_under_setupUbiquitous" != "true" ]]
 	then
 		_write_configure_git_safe_directory_if_admin_owned "$scriptAbsoluteFolder"
 	fi

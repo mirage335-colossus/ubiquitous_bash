@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='1651131098'
+export ub_setScriptChecksum_contents='3146803698'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -794,7 +794,7 @@ then
 	}
 	# CAUTION: Early in the script for a reason! Changing the PATH drastically later has been known to cause WSL 'bash' to override Cygwin 'bash' with very obviously unpredictable results.
 	#  ATTENTION: There would be a '_test' function in 'ubiquitous_bash' for this, but the state of 'wsl' which may not be installed with 'ubdist', etc, is not necessarily predictable enough for a simple PASS/FAIL .
-	if [[ "$1" != "_setupUbiquitous" ]] && [[ "ub_under_setupUbiquitous" != "true" ]]
+	if [[ "$1" != "_setupUbiquitous" ]] && [[ "$ub_under_setupUbiquitous" != "true" ]]
 	then
 		_override_msw_git
 	fi
@@ -831,9 +831,12 @@ then
 		#local functionEntry_GIT_SSH_COMMAND="$GIT_SSH_COMMAND"
 
 		git config --global --add safe.directory "$1"
-		#git config --global --add safe.directory "$2"
-		git config --global --add safe.directory "$3"
-		git config --global --add safe.directory "$4"
+		if [[ $(type -p git) != '/usr/bin/git' ]]
+		then
+			#git config --global --add safe.directory "$2"
+			git config --global --add safe.directory "$3"
+			git config --global --add safe.directory "$4"
+		fi
 
 		cd "$functionEntryPWD"
 
@@ -5317,7 +5320,7 @@ then
 	fi
 
 	#_override_msw_git
-	if [[ "$1" != "_setupUbiquitous" ]] && [[ "ub_under_setupUbiquitous" != "true" ]]
+	if [[ "$1" != "_setupUbiquitous" ]] && [[ "$ub_under_setupUbiquitous" != "true" ]]
 	then
 		_write_configure_git_safe_directory_if_admin_owned "$scriptAbsoluteFolder"
 	fi
