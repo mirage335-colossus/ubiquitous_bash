@@ -343,7 +343,9 @@ echo Creating [%Init_sh%]...
   echo  pip3 install git-filter-repo
   REM https://pypi.org/project/huggingface-hub/
   REM https://github.com/huggingface/huggingface_hub
-  echo  pip3 install -U "huggingface_hub^[cli^]"
+  REM echo  pip3 install -U "huggingface_hub^[cli^]"
+  REM echo  pip3 install -U "huggingface_hub[cli]"
+  echo  pip3 install -U 'huggingface_hub[cli]'
   REM  echo
   REM  /usr/bin/echo
   REM  printf
