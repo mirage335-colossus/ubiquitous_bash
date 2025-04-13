@@ -175,6 +175,7 @@ jobs:
         shell: pwsh
         timeout-minutes: 240
         run: |
+          # ATTRIBUTION-AI: Llama-3.1-Nemotron-Ultra-253b-v1 (NVIDIA), ChatGPT 4.5-preview , ChatGPT o1-pro  2025-04-13
           #.\_setupUbiquitous | tee /_setupUbiquitous.log
           #.\_setupUbiquitous 2>&1 | Tee-Object -FilePath "/_setupUbiquitous.log"
           #if (!$?) {
@@ -186,6 +187,13 @@ jobs:
             Write-Host "##[error]_setupUbiquitous failed with exit code $LASTEXITCODE"
             exit $LASTEXITCODE
           }
+          #$output = & .\_setupUbiquitous.bat 2>&1
+          #$exitCode = $LASTEXITCODE
+          #$output | Out-File /_setupUbiquitous.log
+          #if ($exitCode -ne 0) {
+          #Write-Host "##[error] _setupUbiquitous failed with exit code $exitCode"
+          #exit $exitCode
+          #}
 
       - name: init
         shell: pwsh
