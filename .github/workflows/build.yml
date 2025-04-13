@@ -175,7 +175,7 @@ jobs:
         shell: pwsh
         timeout-minutes: 240
         run: |
-          .\_setupUbiquitous | tee /_setupUbiquitous.log
+          #.\_setupUbiquitous | tee /_setupUbiquitous.log
           .\_setupUbiquitous 2>&1 | Tee-Object -FilePath "/_setupUbiquitous.log"
           if (!$?) {
             Write-Error "_setupUbiquitous failed!"
