@@ -143,6 +143,9 @@ then
 
 		# Finally, explicitly prepend the git path
 		export PATH="${git_path}:${new_path}"
+
+		( _messagePlain_probe_var PATH >&2 ) > /dev/null
+		( _messagePlain_probe_var PATH_pre_override_git >&2 ) > /dev/null
 	}
 	# CAUTION: Early in the script for a reason! Changing the PATH drastically later has been known to cause WSL 'bash' to override Cygwin 'bash' with very obviously unpredictable results.
 	#  ATTENTION: There would be a '_test' function in 'ubiquitous_bash' for this, but the state of 'wsl' which may not be installed with 'ubdist', etc, is not necessarily predictable enough for a simple PASS/FAIL .
