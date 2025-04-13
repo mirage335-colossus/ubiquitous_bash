@@ -346,7 +346,7 @@ echo Creating [%Init_sh%]...
   REM echo  pip3 install -U "huggingface_hub^[cli^]"
   REM echo  pip3 install -U "huggingface_hub[cli]"
   REM echo  pip3 install -U 'huggingface_hub[cli]'
-  echo  pip3 install -U "huggingface_hub[cli]" < /dev/null
+  echo  pip3 install --no-input -U "huggingface_hub[cli]" ^< /dev/null
   REM  echo
   REM  /usr/bin/echo
   REM  printf
