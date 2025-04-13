@@ -185,7 +185,7 @@ then
 		git config --global --add safe.directory "$1"
 		#if [[ $(type -p git) != '/usr/bin/git' ]]
 		#then
-			#git config --global --add safe.directory "$2"
+			##git config --global --add safe.directory "$2"
 			git config --global --add safe.directory "$3"
 			git config --global --add safe.directory "$4"
 		#fi
