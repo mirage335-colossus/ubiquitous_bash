@@ -148,7 +148,7 @@ then
 	#  ATTENTION: There would be a '_test' function in 'ubiquitous_bash' for this, but the state of 'wsl' which may not be installed with 'ubdist', etc, is not necessarily predictable enough for a simple PASS/FAIL .
 	#if [[ "$1" != "_setupUbiquitous" ]] && [[ "$ub_under_setupUbiquitous" != "true" ]]
 	#then
-		_override_msw_git
+		#_override_msw_git
 	#fi
 
 	# ATTRIBUTION-AI: ChatGPT 4.5-preview  2025-04-11  with knowledge ubiquitous_bash, etc  (partially)
@@ -224,7 +224,6 @@ then
 	# CAUTION: NOT sufficient to call this function only during installation (as Administrator, which is what normally causes this issue). If the user subsequently installs native 'git for Windows', additional '.gitconfig' entries are needed, with the different MSWindows native style path format.
 	# Historically this was apparently at least mostly not necessary until prioritizing native git binaries (if available) instead of relying on Cygwin/MSW git binaries.
 	_write_configure_git_safe_directory_if_admin_owned() {
-		return 0
 		local current_path="$1"
 		local win_path win_path_escaped win_path_slash cygwin_path
 		win_path="$(cygpath -w "$current_path")"
