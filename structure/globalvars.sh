@@ -94,7 +94,7 @@ then
 	fi
 
 	#_override_msw_git
-	_override_msw_git_CEILING
+	type _override_msw_git_CEILING > /dev/null 2>&1 && _override_msw_git_CEILING
 	#if [[ "$1" != "_setupUbiquitous" ]] && [[ "$ub_under_setupUbiquitous" != "true" ]] && type _write_configure_git_safe_directory_if_admin_owned > /dev/null 2>&1
 	#then
 		_write_configure_git_safe_directory_if_admin_owned "$scriptAbsoluteFolder"
