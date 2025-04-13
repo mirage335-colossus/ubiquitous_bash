@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='4192455760'
+export ub_setScriptChecksum_contents='2690515182'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -5486,12 +5486,17 @@ _gitBest_detect_github_procedure() {
 		fi
 		_safeEcho_newline "$currentSSHoutput"
 		
-		#if _checkPort github.com 443
-		if wget -qO- https://github.com > /dev/null
-		then
-			export current_gitBest_source_GitHub="github_https"
-			return
-		fi
+		# Exceptionally rare cases of 'github.com' accessed from within GitHub Actions runner (most surprisingly) not responding have apparently happened.
+		local currentIteration
+		for currentIteration in $(seq 1 2)
+		do
+			#if _checkPort github.com 443
+			if wget -qO- https://github.com > /dev/null
+			then
+				export current_gitBest_source_GitHub="github_https"
+				return
+			fi
+		done
 		
 		
 		[[ "$current_gitBest_source_GitHub" == "" ]] && export current_gitBest_source_GitHub="FAIL"

@@ -26,12 +26,17 @@ _gitBest_detect_github_procedure() {
 		fi
 		_safeEcho_newline "$currentSSHoutput"
 		
-		#if _checkPort github.com 443
-		if wget -qO- https://github.com > /dev/null
-		then
-			export current_gitBest_source_GitHub="github_https"
-			return
-		fi
+		# Exceptionally rare cases of 'github.com' accessed from within GitHub Actions runner (most surprisingly) not responding have apparently happened.
+		local currentIteration
+		for currentIteration in $(seq 1 2)
+		do
+			#if _checkPort github.com 443
+			if wget -qO- https://github.com > /dev/null
+			then
+				export current_gitBest_source_GitHub="github_https"
+				return
+			fi
+		done
 		
 		
 		[[ "$current_gitBest_source_GitHub" == "" ]] && export current_gitBest_source_GitHub="FAIL"
