@@ -176,10 +176,15 @@ jobs:
         timeout-minutes: 240
         run: |
           #.\_setupUbiquitous | tee /_setupUbiquitous.log
-          .\_setupUbiquitous 2>&1 | Tee-Object -FilePath "/_setupUbiquitous.log"
-          if (!$?) {
-            Write-Error "_setupUbiquitous failed!"
-            exit 1
+          #.\_setupUbiquitous 2>&1 | Tee-Object -FilePath "/_setupUbiquitous.log"
+          #if (!$?) {
+            #Write-Error "_setupUbiquitous failed!"
+            #exit 1
+          #}
+          & .\_setupUbiquitous 2>&1 | Tee-Object -FilePath '/_setupUbiquitous.log'
+          if ($LASTEXITCODE -ne 0) {
+            Write-Host "##[error]_setupUbiquitous failed with exit code $LASTEXITCODE"
+            exit $LASTEXITCODE
           }
 
       - name: init
