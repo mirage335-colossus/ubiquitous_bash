@@ -161,7 +161,7 @@ then
 			
 			[[ "$scriptAbsoluteFolder" != "" ]] && export GIT_CEILING_DIRECTORIES="$GIT_CEILING_DIRECTORIES"';'"$current_script_ubcp_msw"
 		}
-		export -f _override_msw_git_CEILING
+		#export -f _override_msw_git_CEILING
 		_override_msw_git_CEILING
 	}
 	# CAUTION: Early in the script for a reason! Changing the PATH drastically later has been known to cause WSL 'bash' to override Cygwin 'bash' with very obviously unpredictable results.
