@@ -1,3 +1,26 @@
+
+
+# No production use (ie. not used by 'abstractfs' itself, but recommended flag variables as a standard for other scripts using 'abstractfs' to follow).
+#
+# Flag. Need 'abstractfs' (eg. ''./ubiquitous_bash.sh _abstractfs bash' ) path consistency (eg. '/dev/shm/uk4u/zjZktz7G/ubiquitous_bash.sh' ) enough to force subsequent commands (eg. ArduinoIDE) to run under Linux/WSL unless specifically exempted (eg. upload firmware under Cygwin/MSW after compile under Linux/WSL) .
+#_set_abstractfs_wsl
+_set_abstractfs_alwaysUNIXneverNative() {
+	export abstractfs_alwaysUNIXneverNative="true"
+}
+# Allow native paths (eg. 'C:\abstract/uk4u/zjZktz7G/ubiquitous_bash.sh' ) . STRONGLY DISCOURAGED, but may be default, because otherwise native MSWindows binaries would not be used by default.
+_set_abstractfs_allowNative() {
+	export abstractfs_alwaysUNIXneverNative="false"
+}
+_set_abstractfs_enable() {
+	export abstractfs_enable="true"
+}
+# Suggested default. If 'abstractfs' can be avoided, then native MSWindows binaries, etc, will be usable.
+_set_abstractfs_disable() {
+	export abstractfs_disable="true"
+}
+
+
+
 _reset_abstractfs() {
 	export abstractfs=
 	export abstractfs_base=
