@@ -418,6 +418,7 @@ jobs:
             /package_ubcp-core.log
             /package_ubcp-core.7z
             /core/infrastructure/ubcp-binReport
+            /core/infrastructure/ubcp-homeReport
             /core/infrastructure/ubcp-packageReport
       - name: rm - _MSWpackage package_ubcp-core
         shell: pwsh
@@ -590,6 +591,7 @@ jobs:
             #_local/upgradeTmp/_mitigate-ubcp.log
             #_local/upgradeTmp/_setupUbiquitous.log
             _local/upgradeTmp/ubcp-binReport-UNIX_Linux
+            _local/upgradeTmp/ubcp-homeReport-UNIX_Linux
 
 
 
@@ -784,6 +786,71 @@ jobs:
         shell: bash
         run: |
           ls ./_local/analysisTmp/missing-ubcp-binReport-UNIX_Linux
+          ./ubiquitous_bash.sh _safeRMR-analysisTmp
+        env:
+          currentRepository: ${{ github.repository }}
+          currentReleaseTag: build-${{ github.run_id }}-9999
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+
+
+
+  analysis_ubcp_missingHome-UNIX_Linux:
+    needs: [build_ubcp-binReport-UNIX_Linux]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 1
+          submodules: 'recursive'
+      - name: _getMinimal_cloud-special
+        shell: bash
+        timeout-minutes: 120
+        run: |
+          mkdir -p ./_local
+          sudo -n apt-get update -y
+          #sudo -n apt-get -y install jq gh curl coreutils p7zip findutils tar gzip bzip2 sed axel aria2 rsync pv dos2unix xxd util-linux openssl
+          sudo -n apt-get -y install jq gh curl coreutils findutils tar gzip bzip2 sed axel aria2 rsync pv dos2unix xxd util-linux
+
+      - name: fetch! ubcp-homeReport-UNIX_Linux
+        shell: bash
+        run: |
+          ./ubiquitous_bash.sh _wget_githubRelease-fromTag-analysisReport-fetch 20 'ubcp-homeReport-UNIX_Linux'
+        env:
+          currentRepository: ${{ github.repository }}
+          currentReleaseTag: build-${{ github.run_id }}-9999
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: select! ubcp-homeReport-UNIX_Linux
+        shell: bash
+        run: |
+          ./ubiquitous_bash.sh _wget_githubRelease-fromTag-analysisReport-select 'ubcp-homeReport-UNIX_Linux'
+        env:
+          currentRepository: ${{ github.repository }}
+          currentReleaseTag: build-${{ github.run_id }}-9999
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: analysis! missing-homeReport-UNIX_Linux
+        shell: bash
+        run: |
+          ./ubiquitous_bash.sh _wget_githubRelease-fromTag-analysisReport-analysis 65 'ubcp-homeReport-UNIX_Linux'
+        env:
+          currentRepository: ${{ github.repository }}
+          currentReleaseTag: build-${{ github.run_id }}-9999
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: release! missing-ubcp-packageReport
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: build-${{ github.run_id }}-9999
+          name: build
+          files: |
+            ./_local/analysisTmp/missing-ubcp-homeReport-UNIX_Linux
+
+      - name: ls! release! missing-ubcp-homeReport-UNIX_Linux
+        shell: bash
+        run: |
+          ls ./_local/analysisTmp/missing-ubcp-homeReport-UNIX_Linux
           ./ubiquitous_bash.sh _safeRMR-analysisTmp
         env:
           currentRepository: ${{ github.repository }}

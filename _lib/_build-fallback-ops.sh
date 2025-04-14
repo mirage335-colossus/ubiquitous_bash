@@ -115,6 +115,17 @@ _build_fallback_upgrade-ubcp-report-binReport() {
     find sbin -type f -printf '/sbin/%P\n'
     find usr/sbin -type f -printf '/usr/sbin/%P\n'
 ) | tee "$scriptLocal"/upgradeTmp/ubcp-binReport-UNIX_Linux > /dev/null
+
+    (
+    cd "$scriptLocal/upgradeTmp/package_ubcp-core/ubcp/cygwin" || exit 1
+
+    # Only descend into these subdirs
+    #find bin usr/bin sbin usr/sbin -type f -printf '/%P\n'
+    find home/root -type f -printf '/bin/%P\n'
+    find usr/bin -type f -printf '/usr/bin/%P\n'
+    find sbin -type f -printf '/sbin/%P\n'
+    find usr/sbin -type f -printf '/usr/sbin/%P\n'
+) | tee "$scriptLocal"/upgradeTmp/ubcp-homeReport-UNIX_Linux > /dev/null
 }
 
 _build_fallback_upgrade-ubcp-upgrade-ubiquitous_bash() {
