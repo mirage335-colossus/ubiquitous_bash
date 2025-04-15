@@ -33,20 +33,20 @@ _prepare_msw_python_3_10() {
         # write python hook ; mv -f
         
         local ubcore_accessoriesFile_python
-        local ubcore_accessories_python
-        local $ubcore_accessoriesFile_python_ubhome
+        local ubcoreDir_accessories_python
+        local ubcore_accessoriesFile_python_ubhome
 
         ubcore_accessoriesFile_python=$(cygpath -w "$scriptLib"/python_msw/lean.py)
-        ubcore_accessories_python=$(cygpath -w "$scriptLib"/python_msw)
-        ubcore_accessoriesFile_python_ubhome=$(cygpath -w "$scriptLib"/python_msw)
-        if [[ ! -e "$ubcore_accessoriesFile_python" ]] || [[ ! -e "$ubcore_accessories_python" ]] || [[ ! -e "$ubcore_accessoriesFile_python_ubhome" ]]
+        ubcoreDir_accessories_python=$(cygpath -w "$scriptLib"/python_msw)
+        ubcore_accessoriesFile_python_ubhome="$ubcore_accessoriesFile_python"
+        if [[ ! -e "$ubcore_accessoriesFile_python" ]] || [[ ! -e "$ubcoreDir_accessories_python" ]] || [[ ! -e "$ubcore_accessoriesFile_python_ubhome" ]]
         then
             ( _messagePlain_warn 'warn: missing: scriptLib/python_msw/...' >&2 ) > /dev/null
             
             ubcore_accessoriesFile_python=$(cygpath -w "$scriptLocal"/python_msw/lean.py)
-            ubcore_accessories_python=$(cygpath -w "$scriptLocal"/python_msw)
+            ubcoreDir_accessories_python=$(cygpath -w "$scriptLocal"/python_msw)
             ubcore_accessoriesFile_python_ubhome=$(cygpath -w "$scriptLocal"/python_msw)
-            if [[ ! -e "$ubcore_accessoriesFile_python" ]] || [[ ! -e "$ubcore_accessories_python" ]] || [[ ! -e "$ubcore_accessoriesFile_python_ubhome" ]]
+            if [[ ! -e "$ubcore_accessoriesFile_python" ]] || [[ ! -e "$ubcoreDir_accessories_python" ]] || [[ ! -e "$ubcore_accessoriesFile_python_ubhome" ]]
             then
                 ( _messagePlain_warn 'warn: missing: scriptLocal/python_msw/...' >&2 ) > /dev/null
             fi

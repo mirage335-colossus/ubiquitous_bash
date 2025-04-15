@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='2838567527'
+export ub_setScriptChecksum_contents='3317783690'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -17607,20 +17607,20 @@ _prepare_msw_python_3_10() {
         # write python hook ; mv -f
         
         local ubcore_accessoriesFile_python
-        local ubcore_accessories_python
-        local $ubcore_accessoriesFile_python_ubhome
+        local ubcoreDir_accessories_python
+        local ubcore_accessoriesFile_python_ubhome
 
         ubcore_accessoriesFile_python=$(cygpath -w "$scriptLib"/python_msw/lean.py)
-        ubcore_accessories_python=$(cygpath -w "$scriptLib"/python_msw)
-        ubcore_accessoriesFile_python_ubhome=$(cygpath -w "$scriptLib"/python_msw)
-        if [[ ! -e "$ubcore_accessoriesFile_python" ]] || [[ ! -e "$ubcore_accessories_python" ]] || [[ ! -e "$ubcore_accessoriesFile_python_ubhome" ]]
+        ubcoreDir_accessories_python=$(cygpath -w "$scriptLib"/python_msw)
+        ubcore_accessoriesFile_python_ubhome="$ubcore_accessoriesFile_python"
+        if [[ ! -e "$ubcore_accessoriesFile_python" ]] || [[ ! -e "$ubcoreDir_accessories_python" ]] || [[ ! -e "$ubcore_accessoriesFile_python_ubhome" ]]
         then
             ( _messagePlain_warn 'warn: missing: scriptLib/python_msw/...' >&2 ) > /dev/null
             
             ubcore_accessoriesFile_python=$(cygpath -w "$scriptLocal"/python_msw/lean.py)
-            ubcore_accessories_python=$(cygpath -w "$scriptLocal"/python_msw)
+            ubcoreDir_accessories_python=$(cygpath -w "$scriptLocal"/python_msw)
             ubcore_accessoriesFile_python_ubhome=$(cygpath -w "$scriptLocal"/python_msw)
-            if [[ ! -e "$ubcore_accessoriesFile_python" ]] || [[ ! -e "$ubcore_accessories_python" ]] || [[ ! -e "$ubcore_accessoriesFile_python_ubhome" ]]
+            if [[ ! -e "$ubcore_accessoriesFile_python" ]] || [[ ! -e "$ubcoreDir_accessories_python" ]] || [[ ! -e "$ubcore_accessoriesFile_python_ubhome" ]]
             then
                 ( _messagePlain_warn 'warn: missing: scriptLocal/python_msw/...' >&2 ) > /dev/null
             fi
