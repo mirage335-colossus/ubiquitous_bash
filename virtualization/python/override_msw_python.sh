@@ -45,7 +45,7 @@ _prepare_msw_python_3_10() {
             
             ubcore_accessoriesFile_python=$(cygpath -w "$scriptLocal"/python_msw/lean.py)
             ubcoreDir_accessories_python=$(cygpath -w "$scriptLocal"/python_msw)
-            ubcore_accessoriesFile_python_ubhome=$(cygpath -w "$scriptLocal"/python_msw)
+            ubcore_accessoriesFile_python_ubhome="$ubcore_accessoriesFile_python"
             if [[ ! -e "$ubcore_accessoriesFile_python" ]] || [[ ! -e "$ubcoreDir_accessories_python" ]] || [[ ! -e "$ubcore_accessoriesFile_python_ubhome" ]]
             then
                 ( _messagePlain_warn 'warn: missing: scriptLocal/python_msw/...' >&2 ) > /dev/null
