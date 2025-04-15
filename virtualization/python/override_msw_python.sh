@@ -111,7 +111,7 @@ _prepare_msw_python_3_10() {
 
     #python "$scriptAbsoluteFolder_msw"'\lean.py' '_bin(["sleep", "90",], True, r"'"$bin_msw"'")'
     python "$scriptAbsoluteFolder_msw"'\lean.py' '_bash(["-i"], True, r"'"$bash_msw"'")'
-
+    
 }
 #alias python... pythonrc
 
