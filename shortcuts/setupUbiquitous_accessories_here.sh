@@ -254,7 +254,7 @@ if os.path.exists(r"$ubcore_accessoriesFile_python"):
 import sys
 # https://stackoverflow.com/questions/436198/what-is-an-alternative-to-execfile-in-python-3
 if sys.hexversion > 0x03000000:
-	exec('exec(open( r"$ubcore_accessoriesFile_python_ubhome" ).read() )')
+	exec(r'exec(open( r"$ubcore_accessoriesFile_python_ubhome" ).read() )')
 else:
 	execfile(r"$ubcore_accessoriesFile_python_ubhome")
 

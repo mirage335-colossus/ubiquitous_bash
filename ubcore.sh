@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='1315224213'
+export ub_setScriptChecksum_contents='3773819083'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -31501,7 +31501,7 @@ if os.path.exists(r"$ubcore_accessoriesFile_python"):
 import sys
 # https://stackoverflow.com/questions/436198/what-is-an-alternative-to-execfile-in-python-3
 if sys.hexversion > 0x03000000:
-	exec('exec(open( r"$ubcore_accessoriesFile_python_ubhome" ).read() )')
+	exec(r'exec(open( r"$ubcore_accessoriesFile_python_ubhome" ).read() )')
 else:
 	execfile(r"$ubcore_accessoriesFile_python_ubhome")
 
