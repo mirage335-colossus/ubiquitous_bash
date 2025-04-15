@@ -9,11 +9,30 @@ Python-only cases without 'compiled extension modules' may be simple enough to o
 
 
 
-NEVER add any functions to these files that will effect any possibly conflicting global python change!
+NEVER add any functions to these files that will effect any possibly conflicting global python change (eg. not precluding readline, but usually precluding more complicated or version specific dependencies)!
 
 
 
 # Scrap
+
+
+```
+# ATTENTION: Override with 'return 0' to enable lean.py script generation.
+# STRONGLY DISCOURAGED
+_generate_lean-python_prog() {
+	[[ "$objectName" == "ubiquitous_bash" ]] && return 0
+	
+	return 1
+}
+```
+
+```bash
+# lean.py ... is a template script from 'ubiquitous_bash' for lightweight manual changes
+python "$scriptLib"/lean_custom.py '_bash(["-i"], True, "/cygdrive/c/core/infrastructure/ubiquitous_bash/lean.sh")'
+python "$scriptLib"/lean_custom.py '_bin(["echo", "test"], True, "/cygdrive/c/core/infrastructure/ubiquitous_bash/lean.sh")'
+```
+
+
 
 
 huggingface-cli
@@ -49,6 +68,10 @@ abstractfs conda (or venv)
 #_at_userMSW_probeCmd_discoverResource-cygwinNative-ProgramFiles 'kate' 'Kate/bin' false > /dev/null 2>&1
 ```
 
+
+```batch
+set SKIP_VENV=1
+```
 
 
 # Reference

@@ -190,8 +190,8 @@ def _bash(currentArguments = ['-i'], currentPrint = False, current_ubiquitous_ba
 		if os.path.exists("/cygdrive/c/core/infrastructure/ubiquitous_bash/ubcore.sh"):
 			current_ubiquitous_bash = "/cygdrive/c/core/infrastructure/ubiquitous_bash/ubcore.sh"
 	if current_ubiquitous_bash == "ubiquitous_bash.sh":
-		if os.path.exists("/cygdrive/c/core/infrastructure/lean/lean.sh"):
-			current_ubiquitous_bash = "/cygdrive/c/core/infrastructure/lean/lean.sh"
+		if os.path.exists("/cygdrive/c/core/infrastructure/ubiquitous_bash/lean.sh"):
+			current_ubiquitous_bash = "/cygdrive/c/core/infrastructure/ubiquitous_bash/lean.sh"
 	currentArguments = ['-i'] if currentArguments == '-i' else currentArguments
 	if isinstance(currentArguments, str):
 		# WARNING: Discouraged.
@@ -255,8 +255,8 @@ def _bin(currentArguments = [''], currentPrint = False, current_ubiquitous_bash 
 		if os.path.exists("/cygdrive/c/core/infrastructure/ubiquitous_bash/ubcore.sh"):
 			current_ubiquitous_bash = "/cygdrive/c/core/infrastructure/ubiquitous_bash/ubcore.sh"
 	if current_ubiquitous_bash == "ubiquitous_bash.sh":
-		if os.path.exists("/cygdrive/c/core/infrastructure/lean/lean.sh"):
-			current_ubiquitous_bash = "/cygdrive/c/core/infrastructure/lean/lean.sh"
+		if os.path.exists("/cygdrive/c/core/infrastructure/ubiquitous_bash/lean.sh"):
+			current_ubiquitous_bash = "/cygdrive/c/core/infrastructure/ubiquitous_bash/lean.sh"
 	currentArguments = [''] if currentArguments == '' else currentArguments
 	if isinstance(currentArguments, str):
 		# WARNING: Discouraged.
@@ -364,7 +364,16 @@ def _octave(currentString = [], currentArguments = [], currentPrint = False, cur
 
 
 
-import readline # optional, will allow Up/Down/History in the console
+if sys.platform == 'win32':
+    try:
+        import pyreadline as readline
+    except ImportError:
+        readline = None
+else:
+    try:
+        import readline # optional, will allow Up/Down/History in the console
+    except ImportError:
+        readline = None
 import code
 #_python()
 # https://stackoverflow.com/questions/5597836/embed-create-an-interactive-python-shell-inside-a-python-program

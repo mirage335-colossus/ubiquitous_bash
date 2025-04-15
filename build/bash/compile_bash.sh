@@ -14,6 +14,8 @@ _compile_bash_deps() {
 		# Serial depends on '_getMost_backend', which explicitly requires only 'notLean' .
 		#_deps_notLean
 		#_deps_serial
+
+		_deps_virtPython
 		
 		_deps_stopwatch
 		
@@ -47,6 +49,8 @@ _compile_bash_deps() {
 		#_deps_cloud_build
 		
 		_deps_abstractfs
+
+		_deps_virtPython
 		
 		_deps_virt_translation
 
@@ -162,6 +166,8 @@ _compile_bash_deps() {
 		_deps_metaengine
 		
 		_deps_serial
+
+		_deps_virtPython
 		
 		_deps_stopwatch
 		
@@ -192,6 +198,8 @@ _compile_bash_deps() {
 		_deps_metaengine
 		
 		_deps_abstractfs
+
+		_deps_virtPython
 		
 		_deps_serial
 		
@@ -226,6 +234,8 @@ _compile_bash_deps() {
 		
 		_deps_fakehome
 		_deps_abstractfs
+
+		_deps_virtPython
 		
 		_deps_serial
 		
@@ -271,6 +281,8 @@ _compile_bash_deps() {
 		_deps_msw
 		_deps_fakehome
 		_deps_abstractfs
+
+		_deps_virtPython
 		
 		_deps_generic
 		
@@ -384,6 +396,8 @@ _compile_bash_deps() {
 		_deps_msw
 		_deps_fakehome
 		_deps_abstractfs
+
+		_deps_virtPython
 		
 		_deps_generic
 		
@@ -463,6 +477,8 @@ _compile_bash_deps() {
 	# In practice, 'core' now includes '_deps_ai' by default to support '_deps_ai_dataset' .
 	if [[ "$1" == "core_ai" ]]
 	then
+		_deps_virtPython
+		
 		_deps_ai
 		_deps_ai_shortcuts
 		_compile_bash_deps 'core'
@@ -512,6 +528,8 @@ _compile_bash_deps() {
 		_deps_msw
 		_deps_fakehome
 		_deps_abstractfs
+
+		_deps_virtPython
 		
 		_deps_generic
 		
@@ -799,6 +817,9 @@ _compile_bash_utilities_virtualization() {
 	[[ "$enUb_fakehome" == "true" ]] && includeScriptList+=( "virtualization/fakehome"/fakehome.sh )
 	[[ "$enUb_fakehome" == "true" ]] && includeScriptList+=( "virtualization/fakehome"/fakehomeuser.sh )
 	includeScriptList+=( "virtualization/fakehome"/fakehomereset.sh )
+
+	[[ "$enUb_virt_python" == "true" ]] && includeScriptList+=( "virtualization/python"/override_msw_python.sh )
+	[[ "$enUb_virt_python" == "true" ]] && includeScriptList+=( "virtualization/python"/override_cygwin_python.sh )
 	
 	[[ "$enUb_image" == "true" ]] && includeScriptList+=( "virtualization/image"/mountimage.sh )
 	[[ "$enUb_image" == "true" ]] && includeScriptList+=( "virtualization/image"/createImage.sh )
@@ -1105,6 +1126,10 @@ _compile_bash_vars_global() {
 	
 	#Optional, rarely used, intended for overload.
 	includeScriptList+=( "structure"/prefixvars.sh )
+
+	#Specialized global variables.
+	# No production use (not used by ubiquitous_bash itself). Mostly specific to python virtualization, but could be used for any 'ubiquitous_bash' derivative project which must rebuild (eg. venv, etc) if absolute paths are changed.
+	( [[ "$enUb_virt_dumbpath" == "true" ]] || [[ "$enUb_virt_python" == "true" ]] ) && includeScriptList+=( "virtualization/dumbpath"/dumbpath_vars.sh )
 	
 	#####Global variables.
 	includeScriptList+=( "structure"/globalvars.sh )

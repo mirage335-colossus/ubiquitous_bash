@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='980759861'
+export ub_setScriptChecksum_contents='3874394693'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -5890,8 +5890,8 @@ def _bash(currentArguments = ['-i'], currentPrint = False, current_ubiquitous_ba
 		if os.path.exists("/cygdrive/c/core/infrastructure/ubiquitous_bash/ubcore.sh"):
 			current_ubiquitous_bash = "/cygdrive/c/core/infrastructure/ubiquitous_bash/ubcore.sh"
 	if current_ubiquitous_bash == "ubiquitous_bash.sh":
-		if os.path.exists("/cygdrive/c/core/infrastructure/lean/lean.sh"):
-			current_ubiquitous_bash = "/cygdrive/c/core/infrastructure/lean/lean.sh"
+		if os.path.exists("/cygdrive/c/core/infrastructure/ubiquitous_bash/lean.sh"):
+			current_ubiquitous_bash = "/cygdrive/c/core/infrastructure/ubiquitous_bash/lean.sh"
 	currentArguments = ['-i'] if currentArguments == '-i' else currentArguments
 	if isinstance(currentArguments, str):
 		# WARNING: Discouraged.
@@ -5955,8 +5955,8 @@ def _bin(currentArguments = [''], currentPrint = False, current_ubiquitous_bash 
 		if os.path.exists("/cygdrive/c/core/infrastructure/ubiquitous_bash/ubcore.sh"):
 			current_ubiquitous_bash = "/cygdrive/c/core/infrastructure/ubiquitous_bash/ubcore.sh"
 	if current_ubiquitous_bash == "ubiquitous_bash.sh":
-		if os.path.exists("/cygdrive/c/core/infrastructure/lean/lean.sh"):
-			current_ubiquitous_bash = "/cygdrive/c/core/infrastructure/lean/lean.sh"
+		if os.path.exists("/cygdrive/c/core/infrastructure/ubiquitous_bash/lean.sh"):
+			current_ubiquitous_bash = "/cygdrive/c/core/infrastructure/ubiquitous_bash/lean.sh"
 	currentArguments = [''] if currentArguments == '' else currentArguments
 	if isinstance(currentArguments, str):
 		# WARNING: Discouraged.
@@ -6064,7 +6064,16 @@ def _octave(currentString = [], currentArguments = [], currentPrint = False, cur
 
 
 
-import readline # optional, will allow Up/Down/History in the console
+if sys.platform == 'win32':
+    try:
+        import pyreadline as readline
+    except ImportError:
+        readline = None
+else:
+    try:
+        import readline # optional, will allow Up/Down/History in the console
+    except ImportError:
+        readline = None
 import code
 #_python()
 # https://stackoverflow.com/questions/5597836/embed-create-an-interactive-python-shell-inside-a-python-program
@@ -6342,10 +6351,13 @@ _init_deps() {
 	export enUb_msw=""
 	export enUb_fakehome=""
 	export enUb_abstractfs=""
+	export enUb_virt_python=""
 	export enUb_buildBash=""
 	export enUb_buildBashUbiquitous=""
 
 	export enUb_virt_translation_gui=""
+
+	export enUb_virt_dumbpath=""
 	
 	export enUb_command=""
 	export enUb_synergy=""
@@ -6680,10 +6692,19 @@ _deps_abstractfs() {
 	export enUb_abstractfs="true"
 }
 
+_deps_virtPython() {
+	_deps_python
+	export enUb_virt_python="true"
+}
+
 _deps_virt_translation_gui() {
 	_deps_virt_translation
 	
 	export enUb_virt_translation_gui="true"
+}
+
+_deps_dumbpath() {
+	export enUb_virt_dumbpath="true"
 }
 
 _deps_command() {
@@ -7282,6 +7303,8 @@ _compile_bash_deps() {
 		# Serial depends on '_getMost_backend', which explicitly requires only 'notLean' .
 		#_deps_notLean
 		#_deps_serial
+
+		_deps_virtPython
 		
 		_deps_stopwatch
 		
@@ -7315,6 +7338,8 @@ _compile_bash_deps() {
 		#_deps_cloud_build
 		
 		_deps_abstractfs
+
+		_deps_virtPython
 		
 		_deps_virt_translation
 
@@ -7430,6 +7455,8 @@ _compile_bash_deps() {
 		_deps_metaengine
 		
 		_deps_serial
+
+		_deps_virtPython
 		
 		_deps_stopwatch
 		
@@ -7460,6 +7487,8 @@ _compile_bash_deps() {
 		_deps_metaengine
 		
 		_deps_abstractfs
+
+		_deps_virtPython
 		
 		_deps_serial
 		
@@ -7494,6 +7523,8 @@ _compile_bash_deps() {
 		
 		_deps_fakehome
 		_deps_abstractfs
+
+		_deps_virtPython
 		
 		_deps_serial
 		
@@ -7539,6 +7570,8 @@ _compile_bash_deps() {
 		_deps_msw
 		_deps_fakehome
 		_deps_abstractfs
+
+		_deps_virtPython
 		
 		_deps_generic
 		
@@ -7652,6 +7685,8 @@ _compile_bash_deps() {
 		_deps_msw
 		_deps_fakehome
 		_deps_abstractfs
+
+		_deps_virtPython
 		
 		_deps_generic
 		
@@ -7731,6 +7766,8 @@ _compile_bash_deps() {
 	# In practice, 'core' now includes '_deps_ai' by default to support '_deps_ai_dataset' .
 	if [[ "$1" == "core_ai" ]]
 	then
+		_deps_virtPython
+		
 		_deps_ai
 		_deps_ai_shortcuts
 		_compile_bash_deps 'core'
@@ -7780,6 +7817,8 @@ _compile_bash_deps() {
 		_deps_msw
 		_deps_fakehome
 		_deps_abstractfs
+
+		_deps_virtPython
 		
 		_deps_generic
 		
@@ -8067,6 +8106,9 @@ _compile_bash_utilities_virtualization() {
 	[[ "$enUb_fakehome" == "true" ]] && includeScriptList+=( "virtualization/fakehome"/fakehome.sh )
 	[[ "$enUb_fakehome" == "true" ]] && includeScriptList+=( "virtualization/fakehome"/fakehomeuser.sh )
 	includeScriptList+=( "virtualization/fakehome"/fakehomereset.sh )
+
+	[[ "$enUb_virt_python" == "true" ]] && includeScriptList+=( "virtualization/python"/override_msw_python.sh )
+	[[ "$enUb_virt_python" == "true" ]] && includeScriptList+=( "virtualization/python"/override_cygwin_python.sh )
 	
 	[[ "$enUb_image" == "true" ]] && includeScriptList+=( "virtualization/image"/mountimage.sh )
 	[[ "$enUb_image" == "true" ]] && includeScriptList+=( "virtualization/image"/createImage.sh )
@@ -8373,6 +8415,10 @@ _compile_bash_vars_global() {
 	
 	#Optional, rarely used, intended for overload.
 	includeScriptList+=( "structure"/prefixvars.sh )
+
+	#Specialized global variables.
+	# No production use (not used by ubiquitous_bash itself). Mostly specific to python virtualization, but could be used for any 'ubiquitous_bash' derivative project which must rebuild (eg. venv, etc) if absolute paths are changed.
+	( [[ "$enUb_virt_dumbpath" == "true" ]] || [[ "$enUb_virt_python" == "true" ]] ) && includeScriptList+=( "virtualization/dumbpath"/dumbpath_vars.sh )
 	
 	#####Global variables.
 	includeScriptList+=( "structure"/globalvars.sh )
@@ -9133,6 +9179,17 @@ _bin() {
 }
 #Mostly intended to launch bash prompt for MSW/Cygwin users.
 _bash() {
+	# CAUTION: NEVER call _bash _bash , etc . This is different from calling '_bash "$scriptAbsoluteLocation" _bash', or '_bash -c bash -i' (not that those are known workable or useful either), cannot possibly provide any useful functionality (since 'bash' called by '_bash' is in the same environment), will only cause issues for no benefit, so don't.
+	# ATTENTION: In practice, this can happen incidentally, due to calling '_bash.bat' instead of 'ubiquitous_bash.sh' to call '_bash' function, since MSW would not be able to run 'ubiquitous_bash.sh' without an anchor batch script properly calling Cygwin bash.exe . Python scripts which may call either 'ubiquitous_bash.sh' or '_bash.bat' interchangeably benefit from this, because the '_bash' parameter does not need to change depending on Native/MSW or UNIX/Linux. Since there is no useful purpose to calling '_bash _bash', etc, simply always dismissing the redundant '_bash' parameter is reasonable.
+	#  CAUTION: Shifting redundant '_bash' parameters is necessary for some Python scripts.
+	if [[ "$1" == "_bash" ]] && [[ "$2" == "_bash" ]]
+	then
+		shift
+		shift
+	else
+		[[ "$1" == "_bash" ]] && shift
+	fi
+
 	_safe_declare_uid
 	
 	local currentIsCygwin

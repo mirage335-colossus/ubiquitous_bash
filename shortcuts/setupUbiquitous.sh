@@ -139,7 +139,7 @@ _setupUbiquitous() {
 	export ubcoreFile="$ubcoreDir"/.ubcorerc
 	
 	export ubcoreDir_accessories="$ubHome"/.ubcore/accessories
-	
+	export ubcoreDir_accessories_python="$ubcoreDir_accessories"/python
 	
 	# WARNING: Despite the name, do NOT point this to 'ubcore.sh' or similar. Full set of functions are expected from this file by some use cases!
 	export ubcoreUBdir="$ubcoreDir"/ubiquitous_bash

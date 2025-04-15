@@ -244,7 +244,7 @@ if os.path.exists("$ubcore_accessoriesFile_python"):
 	import sys
 	import os
 	# https://stackoverflow.com/questions/2349991/how-to-import-other-python-files
-	sys.path.append(os.path.abspath("$ubcoreDir_accessories/python"))
+	sys.path.append(os.path.abspath("$ubcoreDir_accessories_python"))
 	from ubcorerc_pythonrc import *
 
 
@@ -272,7 +272,9 @@ _setupUbiquitous_accessories_here-python_bashrc() {
 # Interactive bash shell will default to calling 'python3' while scripts invoking '#! /usr/bin/env python' or similar may still be given 'python2' equivalent.
 alias python=python3
 
-export PYTHONSTARTUP="$HOME"/.pythonrc
+[[ "\$_PATH_pythonDir" == "" ]] && [[ "\$PYTHONSTARTUP" == "" ]] && export PYTHONSTARTUP="$HOME"/.pythonrc
+
+set_msw_python_procedure
 
 CZXWXcRMTo8EmM8i4d
 }
