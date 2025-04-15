@@ -274,7 +274,7 @@ alias python=python3
 
 [[ "\$_PATH_pythonDir" == "" ]] && [[ "\$PYTHONSTARTUP" == "" ]] && export PYTHONSTARTUP="$HOME"/.pythonrc
 
-set_msw_python_procedure
+[[ "\$_PATH_pythonDir" != "" ]] && set_msw_python_procedure
 
 CZXWXcRMTo8EmM8i4d
 }
