@@ -167,9 +167,9 @@ _override_msw_path_python_procedure() {
 		# Finally, explicitly prepend the git path
 		export PATH="${current_binaries_path}:${new_path}"
 
-        export _PATH_pythonDir="$current_binaries_path"
+        [[ "$1" == "" ]] && export _PATH_pythonDir="$current_binaries_path"
 
-        ( _messagePlain_probe_var PATH >&2 ) > /dev/null
+        [[ "$1" != "" ]] && ( _messagePlain_probe_var PATH >&2 ) > /dev/null
 }
 _detect_msw_path_python() {
         current_binaries_path="$1"
@@ -239,7 +239,7 @@ set_msw_python_procedure() {
 
     local current_binaries_path
     current_binaries_path="$_pythonPip"
-    _override_msw_path_python_procedure 
+    _override_msw_path_python_procedure "pip"
 
     unset PYTHONHOME
     export PYTHONSTARTUP=$(cygpath -w "$PYTHONSTARTUP")

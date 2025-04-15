@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='2006585458'
+export ub_setScriptChecksum_contents='747187793'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -5402,9 +5402,9 @@ _override_msw_path_python_procedure() {
 		# Finally, explicitly prepend the git path
 		export PATH="${current_binaries_path}:${new_path}"
 
-        export _PATH_pythonDir="$current_binaries_path"
+        [[ "$1" == "" ]] && export _PATH_pythonDir="$current_binaries_path"
 
-        ( _messagePlain_probe_var PATH >&2 ) > /dev/null
+        [[ "$1" != "" ]] && ( _messagePlain_probe_var PATH >&2 ) > /dev/null
 }
 _detect_msw_path_python() {
         current_binaries_path="$1"
@@ -5474,7 +5474,7 @@ set_msw_python_procedure() {
 
     local current_binaries_path
     current_binaries_path="$_pythonPip"
-    _override_msw_path_python_procedure 
+    _override_msw_path_python_procedure "pip"
 
     unset PYTHONHOME
     export PYTHONSTARTUP=$(cygpath -w "$PYTHONSTARTUP")
