@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='3984545592'
+export ub_setScriptChecksum_contents='535160588'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -16393,8 +16393,8 @@ _prepare_msw_python_3_10() {
         _setupUbiquitous_accessories_here-python_hook > "$scriptLocal"/python_msw/pythonrc."$currentUID"
         mv -f "$scriptLocal"/python_msw/pythonrc."$currentUID" "$scriptLocal"/python_msw/pythonrc
         
-        export PYTHONSTARTUP=$(cygpath -w "$scriptLocal"/python_msw/pythonrc)
-
+        export _PYTHONSTARTUP=$(cygpath -w "$scriptLocal"/python_msw/pythonrc)
+        export PYTHONSTARTUP="$_PYTHONSTARTUP"
 
 
 
@@ -16553,7 +16553,7 @@ _override_msw_path_python_3_10() {
 }
 
 # CAUTION: Called by _setupUbiquitous_accessories_here-python_hook .
-set_msw_python_procedure() {
+_set_msw_python_procedure() {
     # WARNING: Invalid variables for 'python...embed' .
     export _pythonLib=$(find "$_PATH_pythonDir" -name 'Lib' -type d -print -quit)
     export _pythonSitePackages=$(find "$_PATH_pythonDir" -name 'site-packages' -type d -print -quit)
@@ -16584,7 +16584,7 @@ set_msw_python_procedure() {
     _override_msw_path_python_procedure "pip"
 
     unset PYTHONHOME
-    export PYTHONSTARTUP=$(cygpath -w "$PYTHONSTARTUP")
+    export PYTHONSTARTUP="$_PYTHONSTARTUP"
     
     return 0
 }
@@ -16595,7 +16595,7 @@ set_msw_python() {
 _set_msw_python_3_10() {
     _override_msw_path_python_3_10 "$@"
 
-    set_msw_python_procedure "$@"
+    _set_msw_python_procedure "$@"
 }
 
 
@@ -31519,9 +31519,9 @@ _setupUbiquitous_accessories_here-python_bashrc() {
 # Interactive bash shell will default to calling 'python3' while scripts invoking '#! /usr/bin/env python' or similar may still be given 'python2' equivalent.
 alias python=python3
 
-[[ "\$_PATH_pythonDir" == "" ]] && [[ "\$PYTHONSTARTUP" == "" ]] && export PYTHONSTARTUP="$HOME"/.pythonrc
+[[ "\$_PATH_pythonDir" == "" ]] && [[ "\$_PYTHONSTARTUP" == "" ]] && export PYTHONSTARTUP="$HOME"/.pythonrc
 
-[[ "\$_PATH_pythonDir" != "" ]] && set_msw_python_procedure
+[[ "\$_PATH_pythonDir" != "" ]] && _set_msw_python_procedure
 
 CZXWXcRMTo8EmM8i4d
 }

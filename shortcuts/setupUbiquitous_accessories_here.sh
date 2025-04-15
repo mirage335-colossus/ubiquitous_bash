@@ -272,9 +272,9 @@ _setupUbiquitous_accessories_here-python_bashrc() {
 # Interactive bash shell will default to calling 'python3' while scripts invoking '#! /usr/bin/env python' or similar may still be given 'python2' equivalent.
 alias python=python3
 
-[[ "\$_PATH_pythonDir" == "" ]] && [[ "\$PYTHONSTARTUP" == "" ]] && export PYTHONSTARTUP="$HOME"/.pythonrc
+[[ "\$_PATH_pythonDir" == "" ]] && [[ "\$_PYTHONSTARTUP" == "" ]] && export PYTHONSTARTUP="$HOME"/.pythonrc
 
-[[ "\$_PATH_pythonDir" != "" ]] && set_msw_python_procedure
+[[ "\$_PATH_pythonDir" != "" ]] && _set_msw_python_procedure
 
 CZXWXcRMTo8EmM8i4d
 }

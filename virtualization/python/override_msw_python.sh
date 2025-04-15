@@ -56,8 +56,8 @@ _prepare_msw_python_3_10() {
         _setupUbiquitous_accessories_here-python_hook > "$scriptLocal"/python_msw/pythonrc."$currentUID"
         mv -f "$scriptLocal"/python_msw/pythonrc."$currentUID" "$scriptLocal"/python_msw/pythonrc
         
-        export PYTHONSTARTUP=$(cygpath -w "$scriptLocal"/python_msw/pythonrc)
-
+        export _PYTHONSTARTUP=$(cygpath -w "$scriptLocal"/python_msw/pythonrc)
+        export PYTHONSTARTUP="$_PYTHONSTARTUP"
 
 
 
@@ -216,7 +216,7 @@ _override_msw_path_python_3_10() {
 }
 
 # CAUTION: Called by _setupUbiquitous_accessories_here-python_hook .
-set_msw_python_procedure() {
+_set_msw_python_procedure() {
     # WARNING: Invalid variables for 'python...embed' .
     export _pythonLib=$(find "$_PATH_pythonDir" -name 'Lib' -type d -print -quit)
     export _pythonSitePackages=$(find "$_PATH_pythonDir" -name 'site-packages' -type d -print -quit)
@@ -247,7 +247,7 @@ set_msw_python_procedure() {
     _override_msw_path_python_procedure "pip"
 
     unset PYTHONHOME
-    export PYTHONSTARTUP=$(cygpath -w "$PYTHONSTARTUP")
+    export PYTHONSTARTUP="$_PYTHONSTARTUP"
     
     return 0
 }
@@ -258,5 +258,5 @@ set_msw_python() {
 _set_msw_python_3_10() {
     _override_msw_path_python_3_10 "$@"
 
-    set_msw_python_procedure "$@"
+    _set_msw_python_procedure "$@"
 }
