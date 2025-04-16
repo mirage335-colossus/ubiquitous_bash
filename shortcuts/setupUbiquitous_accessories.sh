@@ -63,6 +63,7 @@ _setupUbiquitous_accessories-python() {
 	
 	_setupUbiquitous_accessories_here-python > "$ubcore_accessoriesFile_python_ubhome"
 	
+	export ubcore_ubcorerc_pythonrc="ubcorerc_pythonrc"
 	
 	if ! grep ubcore "$ubHome"/.pythonrc > /dev/null 2>&1 && _messagePlain_probe 'pythonrc'
 	then

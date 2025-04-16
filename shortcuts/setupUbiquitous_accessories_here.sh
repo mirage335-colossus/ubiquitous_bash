@@ -245,7 +245,7 @@ if os.path.exists(r"$ubcore_accessoriesFile_python"):
 	import os
 	# https://stackoverflow.com/questions/2349991/how-to-import-other-python-files
 	sys.path.append(os.path.abspath(r"$ubcoreDir_accessories_python"))
-	from ubcorerc_pythonrc import *
+	from $ubcore_ubcorerc_pythonrc import *
 
 
 
