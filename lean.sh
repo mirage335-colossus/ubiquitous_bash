@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='1606643461'
+export ub_setScriptChecksum_contents='2214858856'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -5244,7 +5244,7 @@ _resetFakeHomeEnv() {
 
 
 
-_prepare_python() {
+_prepare_msw_python() {
     _prepare_msw_python_3_10
 }
 _prepare_msw_python_3_10() {
@@ -5345,7 +5345,9 @@ _prepare_msw_python_3_10() {
 
 
     #python "$scriptAbsoluteFolder_msw"'\lean.py' '_bin(["sleep", "90",], True, r"'"$bin_msw"'")'
-    python "$scriptAbsoluteFolder_msw"'\lean.py' '_bash(["-i"], True, r"'"$bash_msw"'")'
+    #python "$scriptAbsoluteFolder_msw"'\lean.py' '_bash(["-i"], True, r"'"$bash_msw"'")'
+
+    python "$scriptAbsoluteFolder_msw"'\lean.py' '_bin(["_demo_msw_python",], True, r"'"$bin_msw"'")'
     
 }
 #alias python... pythonrc
@@ -5494,6 +5496,15 @@ _set_msw_python_3_10() {
     _override_msw_path_python_3_10 "$@"
 
     _set_msw_python_procedure "$@"
+}
+
+
+
+_demo_msw_python() {
+    _messagePlain_nominal 'demo: '${FUNCNAME[0]} > /dev/null >&2
+    sleep 9
+    "$@"
+    _bash
 }
 
 
@@ -17378,6 +17389,16 @@ _wrap() {
 
 #Wrapper function to launch arbitrary commands within the ubiquitous_bash environment, including its PATH with scriptBin.
 _bin() {
+	# Less esoteric than calling '_bash _bash', but calling '_bin _bin' is still not useful, and filtered out for Python scripts which may call either 'ubiquitous_bash.sh' or '_bash.bat' interchangeably.
+	#  CAUTION: Shifting redundant '_bash' parameters is necessary for some Python scripts.
+	if [[ "$1" == ${FUNCNAME[0]} ]] && [[ "$2" == ${FUNCNAME[0]} ]]
+	then
+		shift
+		shift
+	else
+		[[ "$1" == ${FUNCNAME[0]} ]] && shift
+	fi
+
 	_safe_declare_uid
 	
 	"$@"

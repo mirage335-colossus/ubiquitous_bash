@@ -9,7 +9,7 @@
 
 
 
-_prepare_python() {
+_prepare_msw_python() {
     _prepare_msw_python_3_10
 }
 _prepare_msw_python_3_10() {
@@ -110,7 +110,9 @@ _prepare_msw_python_3_10() {
 
 
     #python "$scriptAbsoluteFolder_msw"'\lean.py' '_bin(["sleep", "90",], True, r"'"$bin_msw"'")'
-    python "$scriptAbsoluteFolder_msw"'\lean.py' '_bash(["-i"], True, r"'"$bash_msw"'")'
+    #python "$scriptAbsoluteFolder_msw"'\lean.py' '_bash(["-i"], True, r"'"$bash_msw"'")'
+
+    python "$scriptAbsoluteFolder_msw"'\lean.py' '_bin(["_demo_msw_python",], True, r"'"$bin_msw"'")'
     
 }
 #alias python... pythonrc
@@ -259,4 +261,13 @@ _set_msw_python_3_10() {
     _override_msw_path_python_3_10 "$@"
 
     _set_msw_python_procedure "$@"
+}
+
+
+
+_demo_msw_python() {
+    _messagePlain_nominal 'demo: '${FUNCNAME[0]} > /dev/null >&2
+    sleep 9
+    "$@"
+    _bash
 }
