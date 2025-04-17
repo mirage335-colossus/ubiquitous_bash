@@ -182,6 +182,7 @@ import os
 #os.system("$HOME/.ubcore/ubiquitous_bash/ubcore.sh _bash -i ")
 #currentArguments = [currentArguments] if isinstance(currentArguments, str) else currentArguments
 #print(['ubiquitous_bash.sh', '_bash'] + currentArguments)
+# ATTENTION: WARNING: Enjoy this python code. The '_bash' and '_bin' function are quite possibly, even probably, and for actual reasons for every line of code being annoying, the worst python code that will ever be written by people. In plainer language, only mess with parts of this code for which you have stopped to fully understand exactly why every negation, if/else, return, print, etc, is in the exact order that it is.
 def _bash(currentArguments = ['-i'], currentPrint = False, current_ubiquitous_bash = "ubiquitous_bash.sh"):
 	if current_ubiquitous_bash == "ubiquitous_bash.sh":
 		if os.path.exists(os.environ['HOME'] + "/.ubcore/ubiquitous_bash/ubcore.sh"):
@@ -195,7 +196,8 @@ def _bash(currentArguments = ['-i'], currentPrint = False, current_ubiquitous_ba
 	currentArguments = ['-i'] if currentArguments == '-i' else currentArguments
 	if isinstance(currentArguments, str):
 		# WARNING: Discouraged.
-		if not currentArguments == '-i':
+		if not ( ( currentArguments == '-i' ) or ( currentArguments == '' ) ):
+			# ATTENTION: WARNING: Use of 'stdout=subprocess.PIPE' is NOT compatible with interactive shell!
 			currentProc = subprocess.Popen(current_ubiquitous_bash + " _bash " + currentArguments, stdout=subprocess.PIPE, universal_newlines=True, shell=True)
 			(currentOut, currentErr) = currentProc.communicate()
 			currentProc.wait()
@@ -209,8 +211,9 @@ def _bash(currentArguments = ['-i'], currentPrint = False, current_ubiquitous_ba
 			currentProc.wait()
 		return (currentOut), currentProc.returncode
 	else:
-		if not currentArguments == ['-i']:
+		if not ( ( currentArguments == ['-i'] ) or ( currentArguments == [''] ) ):
 			currentArguments = [currentArguments] if isinstance(currentArguments, str) else currentArguments
+			# ATTENTION: WARNING: Use of 'stdout=subprocess.PIPE' is NOT compatible with interactive shell!
 			currentProc = subprocess.Popen([current_ubiquitous_bash, '_bash'] + currentArguments, stdout=subprocess.PIPE, universal_newlines=True)
 			(currentOut, currentErr) = currentProc.communicate()
 			currentProc.wait()
@@ -219,6 +222,7 @@ def _bash(currentArguments = ['-i'], currentPrint = False, current_ubiquitous_ba
 				print(currentOut)
 				return (currentOut), currentProc.returncode
 		else:
+			if ( currentArguments == [''] ): currentArguments = ['-i']
 			currentArguments = [currentArguments] if isinstance(currentArguments, str) else currentArguments
 			currentProc = subprocess.Popen([current_ubiquitous_bash, '_bash'] + currentArguments, universal_newlines=True)
 			(currentOut, currentErr) = currentProc.communicate()
@@ -247,6 +251,7 @@ import os
 #_bin('_bash')
 #print( _bin('_false', False)[1] )
 #_bin("_getScriptAbsoluteLocation", True, os.path.expanduser("~/core/infrastructure/ubiquitous_bash/ubiquitous_bash.sh"))
+# ATTENTION: WARNING: Enjoy this python code. The '_bash' and '_bin' function are quite possibly, even probably, and for actual reasons for every line of code being annoying, the worst python code that will ever be written by people. In plainer language, only mess with parts of this code for which you have stopped to fully understand exactly why every negation, if/else, return, print, etc, is in the exact order that it is.
 def _bin(currentArguments = [''], currentPrint = False, current_ubiquitous_bash = "ubiquitous_bash.sh"):
 	if current_ubiquitous_bash == "ubiquitous_bash.sh":
 		if os.path.exists(os.environ['HOME'] + "/.ubcore/ubiquitous_bash/ubcore.sh"):
@@ -261,6 +266,7 @@ def _bin(currentArguments = [''], currentPrint = False, current_ubiquitous_bash 
 	if isinstance(currentArguments, str):
 		# WARNING: Discouraged.
 		if not ( ( currentArguments == '/bin/bash -i' ) or ( currentArguments == '/bin/bash' ) ):
+			# ATTENTION: WARNING: Use of 'stdout=subprocess.PIPE' is NOT compatible with interactive shell!
 			currentProc = subprocess.Popen(current_ubiquitous_bash + " _bin " + currentArguments, stdout=subprocess.PIPE, universal_newlines=True, shell=True)
 			(currentOut, currentErr) = currentProc.communicate()
 			currentProc.wait()
@@ -276,6 +282,7 @@ def _bin(currentArguments = [''], currentPrint = False, current_ubiquitous_bash 
 	else:
 		if not (  ( currentArguments == ['/bin/bash', '-i'] ) or ( currentArguments == ['/bin/bash'] ) or ( currentArguments == ['_qalculate', ''] ) or ( currentArguments == ['_qalculate'] ) or ( currentArguments == ['_octave', ''] ) or ( currentArguments == ['_octave'] )  ):
 			currentArguments = [currentArguments] if isinstance(currentArguments, str) else currentArguments
+			# ATTENTION: WARNING: Use of 'stdout=subprocess.PIPE' is NOT compatible with interactive shell!
 			currentProc = subprocess.Popen([current_ubiquitous_bash, '_bin'] + currentArguments, stdout=subprocess.PIPE, universal_newlines=True)
 			(currentOut, currentErr) = currentProc.communicate()
 			currentProc.wait()

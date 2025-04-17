@@ -169,7 +169,22 @@ then
 	fi
 fi
 
-#Essentially temporary tokens which may need to be reused. 
+if type cygpath > /dev/null 2>&1
+then
+    export scriptAbsoluteLocation_msw=$(cygpath -w "$scriptAbsoluteLocation")
+    export scriptAbsoluteFolder_msw=$(cygpath -w "$scriptAbsoluteFolder")
+
+	export scriptLocal_msw=$(cygpath -w "$scriptLocal")
+    export scriptLib_msw=$(cygpath -w "$scriptLib")
+    
+	export scriptCall_bash="$scriptAbsoluteFolder"'/_bash.bat'
+    export scriptCall_bash_msw="$scriptAbsoluteFolder_msw"'\_bash.bat'
+	export scriptCall_bin="$scriptAbsoluteFolder"/_bin.bat
+    export scriptCall_bin_msw="$scriptAbsoluteFolder_msw"'\_bin.bat'
+fi
+
+#Essentially temporary tokens which may need to be reused.
+# No, NOT AI tokens, predates widespread usage of that term.
 export scriptTokens="$scriptLocal"/.tokens
 
 #Reboot Detection Token Storage
