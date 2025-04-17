@@ -252,7 +252,7 @@ import os
 #print( _bin('_false', False)[1] )
 #_bin("_getScriptAbsoluteLocation", True, os.path.expanduser("~/core/infrastructure/ubiquitous_bash/ubiquitous_bash.sh"))
 # ATTENTION: WARNING: Enjoy this python code. The '_bash' and '_bin' function are quite possibly, even probably, and for actual reasons for every line of code being annoying, the worst python code that will ever be written by people. In plainer language, only mess with parts of this code for which you have stopped to fully understand exactly why every negation, if/else, return, print, etc, is in the exact order that it is.
-def _bin(currentArguments = [''], currentPrint = False, current_ubiquitous_bash = "ubiquitous_bash.sh"):
+def _bin(currentArguments = [''], currentPrint = False, current_ubiquitous_bash = "ubiquitous_bash.sh", interactive=False):
 	if current_ubiquitous_bash == "ubiquitous_bash.sh":
 		if os.path.exists(os.environ['HOME'] + "/.ubcore/ubiquitous_bash/ubcore.sh"):
 			current_ubiquitous_bash = (os.environ['HOME'] + "/.ubcore/ubiquitous_bash/ubcore.sh")
@@ -262,10 +262,12 @@ def _bin(currentArguments = [''], currentPrint = False, current_ubiquitous_bash 
 	if current_ubiquitous_bash == "ubiquitous_bash.sh":
 		if os.path.exists("/cygdrive/c/core/infrastructure/ubiquitous_bash/lean.sh"):
 			current_ubiquitous_bash = "/cygdrive/c/core/infrastructure/ubiquitous_bash/lean.sh"
+    # ATTENTION: Comment out next python line of code to test this code with an empty string.
+	#./lean.py "_bin('', currentPrint=True)"
 	currentArguments = [''] if currentArguments == '' else currentArguments
 	if isinstance(currentArguments, str):
 		# WARNING: Discouraged.
-		if not ( ( currentArguments == '/bin/bash -i' ) or ( currentArguments == '/bin/bash' ) ):
+		if not ( ( ( currentArguments == '/bin/bash -i' ) or ( currentArguments == '/bin/bash' ) or ( currentArguments == '_bash' ) or ( currentArguments == '' ) ) or ( interactive == True ) ) :
 			# ATTENTION: WARNING: Use of 'stdout=subprocess.PIPE' is NOT compatible with interactive shell!
 			currentProc = subprocess.Popen(current_ubiquitous_bash + " _bin " + currentArguments, stdout=subprocess.PIPE, universal_newlines=True, shell=True)
 			(currentOut, currentErr) = currentProc.communicate()
@@ -275,12 +277,13 @@ def _bin(currentArguments = [''], currentPrint = False, current_ubiquitous_bash 
 				print(currentOut)
 				return (currentOut), currentProc.returncode
 		else:
+			if ( currentArguments == '' ): currentArguments = '_bash'
 			currentProc = subprocess.Popen(current_ubiquitous_bash + " _bin " + currentArguments, universal_newlines=True, shell=True)
 			(currentOut, currentErr) = currentProc.communicate()
 			currentProc.wait()
 		return (currentOut), currentProc.returncode
 	else:
-		if not (  ( currentArguments == ['/bin/bash', '-i'] ) or ( currentArguments == ['/bin/bash'] ) or ( currentArguments == ['_qalculate', ''] ) or ( currentArguments == ['_qalculate'] ) or ( currentArguments == ['_octave', ''] ) or ( currentArguments == ['_octave'] )  ):
+		if not ( ( ( currentArguments == ['/bin/bash', '-i'] ) or ( currentArguments == ['/bin/bash'] ) or ( currentArguments == ['_bash'] ) or ( currentArguments == ['_bash', '-i'] ) or ( currentArguments == ['_qalculate', ''] ) or ( currentArguments == ['_qalculate'] ) or ( currentArguments == ['_octave', ''] ) or ( currentArguments == ['_octave'] ) or ( currentArguments == [''] ) ) or ( interactive == True ) ):
 			currentArguments = [currentArguments] if isinstance(currentArguments, str) else currentArguments
 			# ATTENTION: WARNING: Use of 'stdout=subprocess.PIPE' is NOT compatible with interactive shell!
 			currentProc = subprocess.Popen([current_ubiquitous_bash, '_bin'] + currentArguments, stdout=subprocess.PIPE, universal_newlines=True)
@@ -291,6 +294,7 @@ def _bin(currentArguments = [''], currentPrint = False, current_ubiquitous_bash 
 				print(currentOut)
 				return (currentOut), currentProc.returncode
 		else:
+			if ( currentArguments == [''] ): currentArguments = ['_bash']
 			currentArguments = [currentArguments] if isinstance(currentArguments, str) else currentArguments
 			currentProc = subprocess.Popen([current_ubiquitous_bash, '_bin'] + currentArguments, universal_newlines=True)
 			(currentOut, currentErr) = currentProc.communicate()
