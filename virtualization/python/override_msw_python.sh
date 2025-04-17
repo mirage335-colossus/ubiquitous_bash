@@ -126,7 +126,7 @@ _prepare_msw_python_3_10() {
 
     #python "$scriptAbsoluteFolder_msw"'\lean.py' '_bash(["-i"], True, r"'"$scriptCall_bash_msw"'")'
 
-    #python "$scriptAbsoluteFolder_msw"'\lean.py' '_bin(["_demo_msw_python",], True, r"'"$scriptCall_bin_msw"'")'
+    python "$scriptAbsoluteFolder_msw"'\lean.py' '_bin(["_demo_msw_python",], True, r"'"$scriptCall_bin_msw"'", interactive=True)'
 }
 #alias python... pythonrc
 
@@ -280,7 +280,7 @@ _set_msw_python_3_10() {
 
 _demo_msw_python() {
     _messagePlain_nominal 'demo: '${FUNCNAME[0]} > /dev/null >&2
-    sleep 2
+    sleep 0.6
     "$@"
     _bash
 }
