@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='3271704124'
+export ub_setScriptChecksum_contents='771092903'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -17583,6 +17583,160 @@ _resetFakeHomeEnv() {
 
 
 
+_discover-msw_python() {
+    _discover_procedure-msw_python "$@"
+    if [[ "$lib_dir_msw_python_wheels" != "" ]]
+    then
+        export lib_dir_msw_python_wheels_msw=$(cygpath -w "$lib_dir_msw_python_wheels")
+        if [[ "$_PATH_pythonDir" != "" ]]
+        then
+            export lib_dir_msw_python_wheels_relevant="$lib_dir_msw_python_wheels_msw"
+        else
+            export lib_dir_msw_python_wheels_relevant="$lib_dir_msw_python_wheels"
+        fi
+        return 0
+    fi
+    export lib_dir_msw_python_wheels_msw=""
+    unset lib_dir_msw_python_wheels_msw
+    export lib_dir_msw_python_wheels_relevant=""
+    unset lib_dir_msw_python_wheels_relevant
+    return 1
+}
+_discover_procedure-msw_python() {
+    export lib_dir_msw_python_wheels
+    
+    export lib_dir_msw_python_wheels="$scriptAbsoluteFolder"/.msw_python_wheels
+    if [[ -e "$lib_dir_msw_python_wheels" ]]
+    then
+        . "$lib_dir_msw_python_wheels"/_msw_python_wheels.sh
+        return 0
+    fi
+    export lib_dir_msw_python_wheels="$scriptLocal"/.msw_python_wheels
+    if [[ -e "$lib_dir_msw_python_wheels" ]]
+    then
+        . "$lib_dir_msw_python_wheels"/_msw_python_wheels.sh
+        return 0
+    fi
+    export lib_dir_msw_python_wheels="$scriptLib"/.msw_python_wheels
+    if [[ -e "$lib_dir_msw_python_wheels" ]]
+    then
+        . "$lib_dir_msw_python_wheels"/_msw_python_wheels.sh
+        return 0
+    fi
+
+    
+    export lib_dir_msw_python_wheels="$scriptLib"/ubiquitous_bash/_lib/.msw_python_wheels
+    if [[ -e "$lib_dir_msw_python_wheels" ]]
+    then
+        . "$lib_dir_msw_python_wheels"/_msw_python_wheels.sh
+        return 0
+    fi
+    export lib_dir_msw_python_wheels="$scriptLib"/ubDistBuild/_lib/ubiquitous_bash/_lib/.msw_python_wheels
+    if [[ -e "$lib_dir_msw_python_wheels" ]]
+    then
+        . "$lib_dir_msw_python_wheels"/_msw_python_wheels.sh
+        return 0
+    fi
+
+    export lib_dir_msw_python_wheels=""
+    unset lib_dir_msw_python_wheels
+}
+_install_dependencies_msw_python_procedure-specific() {
+    _discover-msw_python
+
+    local currentPackages_list=("pyreadline3" "colorama")
+    local currentPackage
+
+    if [[ "$nonet" != "true" ]]
+    then
+        _pip_upgrade() {
+            local currentUpgrade="false"
+            for currentPackage in "${currentPackages_list[@]}"
+            do
+                ! "$1"pip show "$currentPackage" > /dev/null 2>&1 && currentUpgrade="true"
+                #! "$2"python -m pip show "$currentPackage" > /dev/null 2>&1 && currentUpgrade="true"
+            done
+            [[ "$currentUpgrade" == "false" ]] && return 0
+            "$2"python -m pip install --upgrade pip > /dev/null >&2
+        }
+        _pip_upgrade "$1" "$2"
+    fi
+
+
+    if [[ "$nonet" != "true" ]]
+    then
+
+        if [[ "$lib_dir_msw_python_wheels" != "" ]]
+        then
+            # ATTRIBUTION-AI: ChatGPT o3  2025-04-19  (partially)
+            _pip_download() {
+                "$1"pip show "$3" > /dev/null 2>&1 && return 0
+                #"$2"python -m pip show "$3" > /dev/null 2>&1 && return 0
+
+                #--python-version 3.1
+                "$1"pip download "$3" --platform win_amd64,win32,win_arm64 --only-binary=:all: --dest "$lib_dir_msw_python_wheels_relevant" > /dev/null >&2
+                
+                #"$2"python -m pip download "$3" --platform win_amd64,win32,win_arm64 --only-binary=:all: --dest "$lib_dir_msw_python_wheels_relevant" > /dev/null >&2
+            }
+
+            for currentPackage in "${currentPackages_list[@]}"
+            do
+                _pip_download "$1" "$2" "$currentPackage"
+            done
+        fi
+    fi
+
+
+    if [[ "$lib_dir_msw_python_wheels_relevant" != "" ]]
+    then
+        _pip_install_nonet() {
+            "$1"pip show "$3" > /dev/null 2>&1 && return 0
+            #"$2"python -m pip show "$3" > /dev/null 2>&1 && return 0
+
+            "$1"pip install --no-index --find-links="$lib_dir_msw_python_wheels_relevant" "$3" > /dev/null >&2
+            #"$2"python -m pip install --no-index --find-links="$lib_dir_msw_python_wheels_relevant" "$3" > /dev/null >&2
+        }
+        for currentPackage in "${currentPackages_list[@]}"
+        do
+            _pip_install_nonet "$1" "$2" "$currentPackage"
+        done
+    fi
+    
+    if [[ "$nonet" != "true" ]]
+    then
+        _pip_install() {
+            "$1"pip show "$3" > /dev/null 2>&1 && return 0
+            #"$2"python -m pip show "$3" > /dev/null 2>&1 && return 0
+
+            "$1"pip install "$3" > /dev/null >&2
+            #"$2"python -m pip install "$3" > /dev/null >&2
+        }
+        for currentPackage in "${currentPackages_list[@]}"
+        do
+            _pip_install "$1" "$2" "$currentPackage"
+        done
+    fi
+}
+_install_dependencies_msw_python_sequence-specific() {
+    _messageNormal '     install: dependencies: '"$1" > /dev/null >&2
+    _start
+
+    "$1"
+    if [[ ! -e "$_PATH_pythonDir" ]]
+    then
+        ( _messagePlain_warn 'warn: skip: missing: python: '"$1" >&2 ) > /dev/null
+        _stop 1
+    fi
+    
+    _install_dependencies_msw_python_procedure-specific
+
+    _stop
+}
+_install_dependencies_msw_python() {
+    _install_dependencies_msw_python_sequence-specific _set_msw_python_3_10
+}
+
+
 _prepare_msw_python() {
     _prepare_msw_python_3_10
 }
@@ -17664,13 +17818,11 @@ _prepare_msw_python_3_10() {
     #bash --noprofile --norc -i
 
     #which pip
-    python -m pip install --upgrade pip > /dev/null >&2
 
-    if [[ "$nonet" != "true" ]]
-    then
-        pip install pyreadline3 > /dev/null >&2
-        pip install colorama > /dev/null >&2
-    fi
+
+
+    _install_dependencies_msw_python_procedure-specific "" ""
+
 
 
     
