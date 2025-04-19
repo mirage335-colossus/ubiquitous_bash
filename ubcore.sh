@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='79525336'
+export ub_setScriptChecksum_contents='1844981863'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -16407,6 +16407,7 @@ _discover_procedure-msw_python() {
 _install_dependencies_msw_python_procedure-specific() {
     _discover-msw_python
 
+    # Not all of these packages are necessary for dist/OS other than native MSWindows.
     local currentPackages_list=("pyreadline3" "colorama")
     local currentPackage
 
@@ -16627,6 +16628,18 @@ _prepare_msw_python_3_10() {
 
 
 _prepare_msw_python_procedure() {
+    local currentUID=$(_uid)
+
+    if [[ ! -e "$_PATH_pythonDir"/python3 ]] && [[ $(find "$_PATH_pythonDir" -maxdepth 1 -iname 'python3' -type f -print -quit 2>/dev/null | tr -dc 'a-zA-Z0-9') == "" ]]
+    then
+        echo '#!/usr/bin/env bash
+        python "$@"' > "$_PATH_pythonDir"/python3."$currentUID"
+        chmod u+x "$_PATH_pythonDir"/python3."$currentUID"
+        mv -f "$_PATH_pythonDir"/python3."$currentUID" "$_PATH_pythonDir"/python3
+        chmod u+x "$_PATH_pythonDir"/python3
+    fi
+    
+
     mkdir -p "$scriptLocal"
 
     mkdir -p "$scriptLocal"/python_msw
@@ -16637,7 +16650,6 @@ _prepare_msw_python_procedure() {
     mkdir -p "$scriptAbsoluteFolder"/_bundle/morsels/conda
     mkdir -p "$scriptAbsoluteFolder"/_bundle/morsels/accelerate
 
-    local currentUID=$(_uid)
     if [[ ! -e "$scriptLocal"/python_msw/lean.py ]] || diff --unified=3 "$scriptAbsoluteFolder"/lean.py "$scriptLocal"/python_msw/lean.py > /dev/null
     then
         cp -f "$scriptAbsoluteFolder"/lean.py "$scriptLocal"/python_msw/lean.py."$currentUID" > /dev/null 2>&1
