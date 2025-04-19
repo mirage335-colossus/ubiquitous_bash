@@ -91,10 +91,12 @@ _prepare_msw_python_3_10() {
 
     #which pip
     python -m pip install --upgrade pip > /dev/null >&2
-    pip install pyreadline > /dev/null >&2
-    
-    # Discouraged. No production use. No known use.
-    #pip install pywinpty > /dev/null >&2
+
+    if [[ "$nonet" != "true" ]]
+    then
+        pip install pyreadline3 > /dev/null >&2
+        pip install colorama > /dev/null >&2
+    fi
 
 
     
@@ -124,9 +126,9 @@ _prepare_msw_python_3_10() {
     # WARNING: May be untested.
     #python "$scriptLib_msw"'\python\lean.py' '_bin(["sleep", "90",], True, r"'"$scriptCall_bin_msw"'")'
 
-    #python "$scriptAbsoluteFolder_msw"'\lean.py' '_bash(["-i"], True, r"'"$scriptCall_bash_msw"'")'
+    python "$scriptAbsoluteFolder_msw"'\lean.py' '_bash(["-i"], True, r"'"$scriptCall_bash_msw"'")'
 
-    python "$scriptAbsoluteFolder_msw"'\lean.py' '_bin(["_demo_msw_python",], True, r"'"$scriptCall_bin_msw"'", interactive=True)'
+    #python "$scriptAbsoluteFolder_msw"'\lean.py' '_bin(["_demo_msw_python",], True, r"'"$scriptCall_bin_msw"'", interactive=True)'
 }
 #alias python... pythonrc
 
