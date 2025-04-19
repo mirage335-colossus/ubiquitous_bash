@@ -3,4 +3,4 @@
 	url = https://github.com/mirage335-special/kit-researchEngine.git
 [submodule "_lib/.msw_python_wheels"]
 	path = _lib/.msw_python_wheels
-	url = git@github.com:mirage335-special/.msw_python_wheels.git
+	url = https://github.com/mirage335-special/.msw_python_wheels.git
