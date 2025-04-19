@@ -126,9 +126,11 @@ _prepare_msw_python_3_10() {
     # WARNING: May be untested.
     #python "$scriptLib_msw"'\python\lean.py' '_bin(["sleep", "90",], True, r"'"$scriptCall_bin_msw"'")'
 
-    python "$scriptAbsoluteFolder_msw"'\lean.py' '_bash(["-i"], True, r"'"$scriptCall_bash_msw"'")'
+    #python "$scriptAbsoluteFolder_msw"'\lean.py' '_bash(["-i"], True, r"'"$scriptCall_bash_msw"'")'
 
-    #python "$scriptAbsoluteFolder_msw"'\lean.py' '_bin(["_demo_msw_python",], True, r"'"$scriptCall_bin_msw"'", interactive=True)'
+    python "$scriptAbsoluteFolder_msw"'\lean.py' '_bin(["_demo_msw_python",], True, r"'"$scriptCall_bin_msw"'", interactive=True)'
+
+    #python -i "$scriptAbsoluteFolder_msw"'\lean.py' '_python()'
 }
 #alias python... pythonrc
 

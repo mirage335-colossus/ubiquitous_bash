@@ -389,7 +389,7 @@ def _octave(currentString = [], currentArguments = [], currentPrint = False, cur
 
 if sys.platform == 'win32':
     try:
-        import pyreadline as readline
+        import pyreadline3 as readline
     except ImportError:
         readline = None
 else:
@@ -398,13 +398,41 @@ else:
     except ImportError:
         readline = None
 import code
+
+# ATTRIBUTION-AI: ChatGPT o3  2025-04-19
+def _enable_readline():
+    """
+    Make sure arrow keys, history and TAB completion work in the
+    interpreter that we embed with code.InteractiveConsole.
+    """
+    try:
+        import readline, rlcompleter, atexit, os
+        # basic key bindings
+        readline.parse_and_bind('tab: complete')
+        # persistent history file
+        histfile = os.path.expanduser('~/.pyhistory')
+        if os.path.exists(histfile):
+            readline.read_history_file(histfile)
+        atexit.register(readline.write_history_file, histfile)
+    except ImportError:
+        # readline (or pyreadline on Windows) is not available
+        pass
+
+
+
+
 #_python()
 # https://stackoverflow.com/questions/5597836/embed-create-an-interactive-python-shell-inside-a-python-program
 def _python():
-	variables = globals().copy()
-	variables.update(locals())
-	shell = code.InteractiveConsole(variables)
-	shell.interact()
+    _enable_readline()
+    variables = globals().copy()
+    variables.update(locals())
+    shell = code.InteractiveConsole(variables)
+    # ATTRIBUTION-AI: ChatGPT 4.1  2025-04-19
+    if os.name == 'nt':  # True on Windows
+        print(" Press Ctrl+D twice (or Ctrl+Z then Enter) to exit this Python shell.")
+    # ATTRIBUTION: NOT AI !
+    shell.interact()
 
 
 
@@ -463,14 +491,14 @@ if use_colorama:
                 prompt = (
                     f"{blue}|{red}#{red}:{yellow}{user}{green}@{green}{hostname}{blue})-{cloud_net_name}({magenta}{bg_white}Python-{py_version}{reset}{blue}){cyan}|\n"
                     #f"{blue}|{white}[{cwd}]\n"
-                    f"{cwd}\n"
+                    f"{white}{cwd}\n"
                     f"{blue}|{cyan}{self.line}{blue}) {cyan}> {reset}"
                 )
             else:
                 prompt = (
                     f"{blue}|{red}#{red}:{yellow}{user}{green}@{green}{hostname}{blue})-{cloud_net_name}({magenta}{bg_white}Python-{py_version}{reset}{blue}){cyan}|\n"
                     #f"{blue}|{white}[{cwd}]\n"
-                    f"{cwd}\n"
+                    f"{white}{cwd}\n"
                     f"{blue}|{blue}{self.line}{blue}) {cyan}> {reset}"
                 )
             return prompt
@@ -478,7 +506,7 @@ if use_colorama:
     sys.ps1 = ubPythonPS1()
     sys.ps2 = f"{Fore.CYAN}|...{Style.RESET_ALL} "
 else:
-    # ATTIRBUTION: NOT AI !
+    # ATTRIBUTION: NOT AI !
     #if sys.hexversion < 0x03060000:
     #	exit(1)
     # https://www.codementor.io/@arpitbhayani/personalize-your-python-prompt-13ts4kw6za
@@ -500,9 +528,11 @@ else:
         def __str__(self):
             self.line += 1
             if self.line == 1:
-                return "\x01\033[1;94m\x02|\x01\033[91m\x02#:\x01\033[1;93m\x02%s\x01\033[1;92m\x02@%s\x01\033[1;94m\x02)-%s(\x01\033[1;95m\x02\x01\033[0;35;47m\x02python-%s\x01\033[0m\x02\x01\033[1;94m\x02)\x01\033[1;96m\x02|\n\x01\033[1;94m\x02|\x01\033[1;97m\x02[%s]\n\x01\033[1;94m\x02|\x01\033[1;96m\x02%d\x01\033[1;94m\x02) \x01\033[1;96m\x02>\x01\033[0m\x02 " % (os.getenv('USER','root'), socket.gethostname(), os.environ.get('prompt_cloudNetName', ''), hex(sys.hexversion), re.sub('^%s' % os.environ['HOME'], '~', os.path.expanduser(os.getcwd()) ), self.line)
+                #return "\x01\033[1;94m\x02|\x01\033[91m\x02#:\x01\033[1;93m\x02%s\x01\033[1;92m\x02@%s\x01\033[1;94m\x02)-%s(\x01\033[1;95m\x02\x01\033[0;35;47m\x02python-%s\x01\033[0m\x02\x01\033[1;94m\x02)\x01\033[1;96m\x02|\n\x01\033[1;94m\x02|\x01\033[1;97m\x02[%s]\n\x01\033[1;94m\x02|\x01\033[1;96m\x02%d\x01\033[1;94m\x02) \x01\033[1;96m\x02>\x01\033[0m\x02 " % (os.getenv('USER','root'), socket.gethostname(), os.environ.get('prompt_cloudNetName', ''), hex(sys.hexversion), re.sub('^%s' % os.environ['HOME'], '~', os.path.expanduser(os.getcwd()) ), self.line)
+                return "\x01\033[1;94m\x02|\x01\033[91m\x02#:\x01\033[1;93m\x02%s\x01\033[1;92m\x02@%s\x01\033[1;94m\x02)-%s(\x01\033[1;95m\x02\x01\033[0;35;47m\x02python-%s\x01\033[0m\x02\x01\033[1;94m\x02)\x01\033[1;96m\x02|\n\x01\033[1;97m\x02%s\n\x01\033[1;94m\x02|\x01\033[1;96m\x02%d\x01\033[1;94m\x02) \x01\033[1;96m\x02>\x01\033[0m\x02 " % (os.getenv('USER','root'), socket.gethostname(), os.environ.get('prompt_cloudNetName', ''), hex(sys.hexversion), re.sub('^%s' % os.environ['HOME'], '~', os.path.expanduser(os.getcwd()) ), self.line)
             else:
-                return "\x01\033[1;94m\x02|\x01\033[91m\x02#:\x01\033[1;93m\x02%s\x01\033[1;92m\x02@%s\x01\033[1;94m\x02)-%s(\x01\033[1;95m\x02\x01\033[0;35;47m\x02python-%s\x01\033[0m\x02\x01\033[1;94m\x02)\x01\033[1;96m\x02|\n\x01\033[1;94m\x02|\x01\033[1;97m\x02[%s]\n\x01\033[1;94m\x02|%d\x01\033[1;94m\x02) \x01\033[1;96m\x02>\x01\033[0m\x02 " % (os.getenv('USER','root'), socket.gethostname(), os.environ.get('prompt_cloudNetName', ''), hex(sys.hexversion), re.sub('^%s' % os.environ['HOME'], '~', os.path.expanduser(os.getcwd()) ), self.line)
+                #return "\x01\033[1;94m\x02|\x01\033[91m\x02#:\x01\033[1;93m\x02%s\x01\033[1;92m\x02@%s\x01\033[1;94m\x02)-%s(\x01\033[1;95m\x02\x01\033[0;35;47m\x02python-%s\x01\033[0m\x02\x01\033[1;94m\x02)\x01\033[1;96m\x02|\n\x01\033[1;94m\x02|\x01\033[1;97m\x02[%s]\n\x01\033[1;94m\x02|%d\x01\033[1;94m\x02) \x01\033[1;96m\x02>\x01\033[0m\x02 " % (os.getenv('USER','root'), socket.gethostname(), os.environ.get('prompt_cloudNetName', ''), hex(sys.hexversion), re.sub('^%s' % os.environ['HOME'], '~', os.path.expanduser(os.getcwd()) ), self.line)
+                return "\x01\033[1;94m\x02|\x01\033[91m\x02#:\x01\033[1;93m\x02%s\x01\033[1;92m\x02@%s\x01\033[1;94m\x02)-%s(\x01\033[1;95m\x02\x01\033[0;35;47m\x02python-%s\x01\033[0m\x02\x01\033[1;94m\x02)\x01\033[1;96m\x02|\n\x01\033[1;97m\x02%s\n\x01\033[1;94m\x02|%d\x01\033[1;94m\x02) \x01\033[1;96m\x02>\x01\033[0m\x02 " % (os.getenv('USER','root'), socket.gethostname(), os.environ.get('prompt_cloudNetName', ''), hex(sys.hexversion), re.sub('^%s' % os.environ['HOME'], '~', os.path.expanduser(os.getcwd()) ), self.line)
 
     sys.ps1 = ubPythonPS1()
     sys.ps2 = "\x01\033[0;96m\x02|...\x01\033[0m\x02 "
@@ -510,7 +540,7 @@ else:
 
 # ATTRIBUTION-AI: OpRt_.nvidia/llama-3.1-nemotron-ultra-253b-v1:free  2025-04-18 (only the next line  if is_windows and not use_colorama:  )
 if is_windows and not use_colorama:
-    # ATTIRBUTION: NOT AI !
+    # ATTRIBUTION: NOT AI !
     # https://www.codementor.io/@arpitbhayani/personalize-your-python-prompt-13ts4kw6za
     sys.ps1 = '>>> '
     sys.ps2 = '... '
