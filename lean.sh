@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='523562484'
+export ub_setScriptChecksum_contents='2770480355'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -5245,7 +5245,7 @@ _resetFakeHomeEnv() {
 
 
 _msw_python() {
-    _prepare_msw_python "$@"
+    _prepare_msw_python
 
 
     # ATTENTION: Dropping to an interactive shell in the midst of a bash function which provides standard output to another bash function
@@ -5276,6 +5276,18 @@ _msw_python() {
     python "$scriptAbsoluteFolder_msw"'\lean.py' '_bin(["_demo_msw_python",], True, r"'"$scriptCall_bin_msw"'", interactive=True)'
 
     #python -i "$scriptAbsoluteFolder_msw"'\lean.py' '_python()'
+
+    #_bash
+}
+_msw_python_bash() {
+    _prepare_msw_python
+
+    _bash
+}
+_msw_python_bin() {
+    _prepare_msw_python
+
+    _bin "$@"
 }
 
 
@@ -5361,6 +5373,9 @@ _prepare_msw_python_3_10() {
 
         _messagePlain_nominal 'prepare: venv: set' > /dev/null >&2
         _set_msw_python_procedure
+
+        _messagePlain_probe _install_dependencies_msw_python_procedure-specific "" "" > /dev/null >&2
+        _install_dependencies_msw_python_procedure-specific "" ""
         
         _messagePlain_probe python -c "import sys; print(sys.path)" > /dev/null >&2
         python -c "import sys; print(sys.path)" > /dev/null >&2
@@ -5413,6 +5428,9 @@ _prepare_msw_python_3_10() {
 
     _messagePlain_nominal 'prepare: venv: set' > /dev/null >&2
     _set_msw_python_procedure
+
+    _messagePlain_probe _install_dependencies_msw_python_procedure-specific "" "" > /dev/null >&2
+    _install_dependencies_msw_python_procedure-specific "" ""
     
     _messagePlain_probe python -c "import sys; print(sys.path)" > /dev/null >&2
     python -c "import sys; print(sys.path)" > /dev/null >&2

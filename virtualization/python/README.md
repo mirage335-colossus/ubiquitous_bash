@@ -13,7 +13,22 @@ NEVER add any functions to these files that will effect any possibly conflicting
 
 
 
+```bash
+./ubiquitous_bash.sh _msw_python
+```
+
+```bash
+pip list | cut -f1 -d\  | grep -v '^Package$' | grep -v '\------------------'
+```
+
+
+
+
+
+
 # Scrap
+
+
 
 
 ```
