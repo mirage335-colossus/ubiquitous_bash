@@ -1,7 +1,7 @@
 
 
 # Suggested defaults. If your python code (not python itself, nor venv, etc, but filenames for files your python application uses, such as datasets, models, etc) insists on absolute paths, and you must use it under both UNIX/Linux and Cygwin/MSW, then it is probably only needed temporarily to generate static assets (ie. occasional experimental fine-tuning of the latest available AI models). In which case you can put into production under solely UNIX/Linux if necessary, and develop with Docker (ie. factory) instead.
-# tldr; UNIX/Linux for python in production, Cygwin/MSW for python in development, as usual, and then you won't need abstractfs .
+# tldr; UNIX/Linux for python in production, Cygwin/MSW (ie. MSW native python) for python in development, as usual, and then you won't need abstractfs .
 #
 #_set_abstractfs_alwaysUNIXneverNative
 #_set_abstractfs_disable
