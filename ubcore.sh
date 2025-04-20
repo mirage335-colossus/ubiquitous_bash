@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='3334350360'
+export ub_setScriptChecksum_contents='1323168236'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -16413,19 +16413,10 @@ _prepare_msw_python_3_10() {
     local currentUID=$(_uid)
 
     local currentPATH="$PATH"
-    
-    if [[ "$dumbpath_contents" != "$dumbpath_file" ]]
-    then
-        # ATTENTION: WARNING: Anaconda is usually unnecessary, STRONGLY DISCOURAGED, and NOT automatically installed (eg. with 'ubdist/OS').
-        # Automatic installation of Anaconda is not expected useful for any purpose - only workstations for personal evaluation of open-source projects which happen to use Anaconda for a non=production purpose are expected to use Anaconda, if at all.
-        # Manual installation of Anaconda:
-        # https://docs.conda.io/projects/conda/en/latest/user-guide/install/windows.html
-        # https://docs.conda.io/projects/conda/en/latest/user-guide/install/linux.html
-        
-        
-        # write python hook ; mv -f
+
+    _write_python_hook_local() {
         _messagePlain_nominal 'prepare: python hook' > /dev/null >&2
-        
+    
         local ubcore_accessoriesFile_python
         local ubcoreDir_accessories_python
         local ubcore_accessoriesFile_python_ubhome
@@ -16449,10 +16440,29 @@ _prepare_msw_python_3_10() {
         local ubcore_ubcorerc_pythonrc="lean"
         
         _setupUbiquitous_accessories_here-python_hook > "$scriptLocal"/python_msw/pythonrc."$currentUID"
-        mv -f "$scriptLocal"/python_msw/pythonrc."$currentUID" "$scriptLocal"/python_msw/pythonrc
+        if [[ ! -e "$scriptLocal"/python_msw/pythonrc ]] || ! diff --unified=3 "$scriptLocal"/python_msw/pythonrc."$currentUID" "$scriptLocal"/python_msw/pythonrc > /dev/null
+        then
+            mv -f "$scriptLocal"/python_msw/pythonrc."$currentUID" "$scriptLocal"/python_msw/pythonrc
+        else
+            rm -f "$scriptLocal"/python_msw/pythonrc."$currentUID"
+        fi
         
         export _PYTHONSTARTUP=$(cygpath -w "$scriptLocal"/python_msw/pythonrc)
         export PYTHONSTARTUP="$_PYTHONSTARTUP"
+    }
+    unset _PYTHONSTARTUP
+    
+    if [[ "$dumbpath_contents" != "$dumbpath_file" ]]
+    then
+        # ATTENTION: WARNING: Anaconda is usually unnecessary, STRONGLY DISCOURAGED, and NOT automatically installed (eg. with 'ubdist/OS').
+        # Automatic installation of Anaconda is not expected useful for any purpose - only workstations for personal evaluation of open-source projects which happen to use Anaconda for a non=production purpose are expected to use Anaconda, if at all.
+        # Manual installation of Anaconda:
+        # https://docs.conda.io/projects/conda/en/latest/user-guide/install/windows.html
+        # https://docs.conda.io/projects/conda/en/latest/user-guide/install/linux.html
+        
+        
+        # write python hook ; mv -f
+        [[ "$_PYTHONSTARTUP" == "" ]] && _write_python_hook_local
 
 
 
@@ -16509,9 +16519,10 @@ _prepare_msw_python_3_10() {
         mv -f "$dumbpath_file"."$currentUID" "$dumbpath_file"
     fi
 
-
+    [[ "$_PYTHONSTARTUP" == "" ]] && _write_python_hook_local
 
     _messagePlain_nominal 'prepare: venv: activate' > /dev/null >&2
+    ! cd "$scriptLocal/python_msw/venv" && _stop 1
     #sourcedefault_venv/Scripts/activate > /dev/null >&2
     _messagePlain_probe source  default_venv/Scripts/activate_msw > /dev/null >&2
     source default_venv/Scripts/activate_msw > /dev/null >&2
@@ -17487,6 +17498,7 @@ _visualPrompt() {
 	
 	export currentChroot=
 	[[ "$chrootName" != "" ]] && export currentChroot="$chrootName"
+	[[ "$VIRTUAL_ENV_PROMPT" != "" ]] && export currentChroot="$VIRTUAL_ENV_PROMPT"
 	
 	
 	#+%H:%M:%S\ %Y-%m-%d\ Q%q

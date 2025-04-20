@@ -1808,6 +1808,7 @@ _visualPrompt() {
 	
 	export currentChroot=
 	[[ "$chrootName" != "" ]] && export currentChroot="$chrootName"
+	[[ "$VIRTUAL_ENV_PROMPT" != "" ]] && export currentChroot="$VIRTUAL_ENV_PROMPT"
 	
 	
 	#+%H:%M:%S\ %Y-%m-%d\ Q%q

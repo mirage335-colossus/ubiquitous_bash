@@ -76,19 +76,10 @@ _prepare_msw_python_3_10() {
     local currentUID=$(_uid)
 
     local currentPATH="$PATH"
-    
-    if [[ "$dumbpath_contents" != "$dumbpath_file" ]]
-    then
-        # ATTENTION: WARNING: Anaconda is usually unnecessary, STRONGLY DISCOURAGED, and NOT automatically installed (eg. with 'ubdist/OS').
-        # Automatic installation of Anaconda is not expected useful for any purpose - only workstations for personal evaluation of open-source projects which happen to use Anaconda for a non=production purpose are expected to use Anaconda, if at all.
-        # Manual installation of Anaconda:
-        # https://docs.conda.io/projects/conda/en/latest/user-guide/install/windows.html
-        # https://docs.conda.io/projects/conda/en/latest/user-guide/install/linux.html
-        
-        
-        # write python hook ; mv -f
+
+    _write_python_hook_local() {
         _messagePlain_nominal 'prepare: python hook' > /dev/null >&2
-        
+    
         local ubcore_accessoriesFile_python
         local ubcoreDir_accessories_python
         local ubcore_accessoriesFile_python_ubhome
@@ -112,13 +103,33 @@ _prepare_msw_python_3_10() {
         local ubcore_ubcorerc_pythonrc="lean"
         
         _setupUbiquitous_accessories_here-python_hook > "$scriptLocal"/python_msw/pythonrc."$currentUID"
-        mv -f "$scriptLocal"/python_msw/pythonrc."$currentUID" "$scriptLocal"/python_msw/pythonrc
+        if [[ ! -e "$scriptLocal"/python_msw/pythonrc ]] || ! diff --unified=3 "$scriptLocal"/python_msw/pythonrc."$currentUID" "$scriptLocal"/python_msw/pythonrc > /dev/null
+        then
+            mv -f "$scriptLocal"/python_msw/pythonrc."$currentUID" "$scriptLocal"/python_msw/pythonrc
+        else
+            rm -f "$scriptLocal"/python_msw/pythonrc."$currentUID"
+        fi
         
         export _PYTHONSTARTUP=$(cygpath -w "$scriptLocal"/python_msw/pythonrc)
         export PYTHONSTARTUP="$_PYTHONSTARTUP"
+    }
+    unset _PYTHONSTARTUP
+    
+    if [[ "$dumbpath_contents" != "$dumbpath_file" ]]
+    then
+        # ATTENTION: WARNING: Anaconda is usually unnecessary, STRONGLY DISCOURAGED, and NOT automatically installed (eg. with 'ubdist/OS').
+        # Automatic installation of Anaconda is not expected useful for any purpose - only workstations for personal evaluation of open-source projects which happen to use Anaconda for a non=production purpose are expected to use Anaconda, if at all.
+        # Manual installation of Anaconda:
+        # https://docs.conda.io/projects/conda/en/latest/user-guide/install/windows.html
+        # https://docs.conda.io/projects/conda/en/latest/user-guide/install/linux.html
+        
+        
+        # write python hook ; mv -f
+        [[ "$_PYTHONSTARTUP" == "" ]] && _write_python_hook_local
 
 
-
+#if false
+#then
         # rebuild venv...
         _messagePlain_nominal 'prepare: venv' > /dev/null >&2
         
@@ -146,7 +157,7 @@ _prepare_msw_python_3_10() {
         python -c "import sys; print(sys.path)" > /dev/null >&2
 
         #deactivate > /dev/null >&2
-
+#fi
 
 
 
@@ -172,9 +183,12 @@ _prepare_msw_python_3_10() {
         mv -f "$dumbpath_file"."$currentUID" "$dumbpath_file"
     fi
 
+    [[ "$_PYTHONSTARTUP" == "" ]] && _write_python_hook_local
 
-
+#if false
+#then
     _messagePlain_nominal 'prepare: venv: activate' > /dev/null >&2
+    ! cd "$scriptLocal/python_msw/venv" && _stop 1
     #sourcedefault_venv/Scripts/activate > /dev/null >&2
     _messagePlain_probe source  default_venv/Scripts/activate_msw > /dev/null >&2
     source default_venv/Scripts/activate_msw > /dev/null >&2
@@ -182,12 +196,13 @@ _prepare_msw_python_3_10() {
 
     _messagePlain_nominal 'prepare: venv: set' > /dev/null >&2
     _set_msw_python_procedure
-
-    _messagePlain_probe _install_dependencies_msw_python_procedure-specific "" "" > /dev/null >&2
-    _install_dependencies_msw_python_procedure-specific "" ""
     
     _messagePlain_probe python -c "import sys; print(sys.path)" > /dev/null >&2
     python -c "import sys; print(sys.path)" > /dev/null >&2
+#fi
+
+    _messagePlain_probe _install_dependencies_msw_python_procedure-specific "" "" > /dev/null >&2
+    _install_dependencies_msw_python_procedure-specific "" ""
 
 
 
