@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='946533232'
+export ub_setScriptChecksum_contents='2617772576'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -16347,6 +16347,7 @@ _resetFakeHomeEnv() {
 
 # EXAMPLE. Override or implement alternative with 'core.sh', 'ops.sh', or similar.
 _msw_python() {
+    #implies sequence
     _prepare_msw_python
 
 
@@ -16382,11 +16383,13 @@ _msw_python() {
     #_bash
 }
 _msw_python_bash() {
+    #implies sequence
     _prepare_msw_python
 
     _bash
 }
 _msw_python_bin() {
+    #implies sequence
     _prepare_msw_python
 
     _bin "$@"
@@ -16406,14 +16409,14 @@ _prepare_msw_python_3() {
 _prepare_msw_python_3_10() {
     _set_msw_python_3_10
 
-    _prepare_msw_python_procedure
+    # ATTENTION: implies sequence
+    local currentUID="$sessionid"
 
-    local dumbpath_file="$scriptLocal"/"$dumbpath_prefix"dumbpath-msw_python_3_10.var
+    # ATTENTION: Do NOT enable. Prevents 'trap' cleanup of abandoned lock file.
+    #local currentUID=$(_uid 18)
 
-    local dumbpath_contents=""
-    dumbpath_contents=$(cat "$dumbpath_file" 2> /dev/null)
-
-    local currentUID=$(_uid)
+    local currentUID_length=${#currentUID}
+    local currentUID_length_plus1=$(( currentUID_length + 1 ))
 
     local currentPATH="$PATH"
 
@@ -16455,6 +16458,50 @@ _prepare_msw_python_3_10() {
     }
     unset _PYTHONSTARTUP
     
+
+    local current_done__prepare_msw_python_procedure="false"
+
+
+    _lock_prepare_python_msw() {
+        _messagePlain_nominal 'prepare: wait: lock: _lock_prepare_python_msw' > /dev/null >&2
+        local dateA
+        local dateB
+        local dateDelta
+        while [[ $(cat "$scriptLocal"/python_msw.lock 2> /dev/null | head -c "$currentUID_length") != "$currentUID" ]]
+        do
+            if [[ ! -e "$scriptLocal"/python_msw.lock ]]
+            then
+                echo "$currentUID"$(date +%s | tr -dc '0-9') > "$scriptLocal"/python_msw.lock."$currentUID"
+                mv -f "$scriptLocal"/python_msw.lock."$currentUID" "$scriptLocal"/python_msw.lock
+            fi
+
+            sleep 7
+            [[ $(cat "$scriptLocal"/python_msw.lock 2> /dev/null | head -c "$currentUID_length") == "$currentUID" ]] && return 0
+
+            _messagePlain_probe "wait: lock" > /dev/null >&2
+
+            while [[ -e "$scriptLocal"/python_msw.lock ]] && [[ $(cat "$scriptLocal"/python_msw.lock 2> /dev/null | head -c "$currentUID_length") != "$currentUID" ]]
+            do
+                dateA=$(cat "$scriptLocal"/python_msw.lock 2> /dev/null | tail -c +"$currentUID_length_plus1" | tr -dc '0-9')
+                dateB=$(date +%s | tr -dc '0-9')
+                _messagePlain_probe "$dateB - $dateA"
+                dateDelta=$(bc <<< "$dateB - $dateA")
+
+                sleep 7
+
+                # Normal prepare time is <<2minutes, if that.
+                [[ "$dateDelta" -gt "2700" ]] && rm -f "$scriptLocal"/python_msw.lock
+            done
+        done
+    }
+    _lock_prepare_python_msw
+    #...
+    #rm -f "$scriptLocal"/python_msw.lock
+
+    # WARNING: Do not add '-msw_python_3_10' or similar suffix to dumbpath_file . Use separate derivative projects for separate venv as normally needed for different python versions.
+    local dumbpath_file="$scriptLocal"/"$dumbpath_prefix"dumbpath.var
+    local dumbpath_contents=""
+    dumbpath_contents=$(cat "$dumbpath_file" 2> /dev/null)
     if [[ "$dumbpath_contents" != "$dumbpath_file" ]]
     then
         # ATTENTION: WARNING: Anaconda is usually unnecessary, STRONGLY DISCOURAGED, and NOT automatically installed (eg. with 'ubdist/OS').
@@ -16462,10 +16509,29 @@ _prepare_msw_python_3_10() {
         # Manual installation of Anaconda:
         # https://docs.conda.io/projects/conda/en/latest/user-guide/install/windows.html
         # https://docs.conda.io/projects/conda/en/latest/user-guide/install/linux.html
+
+
+
         
+
+        # erase any venv, etc, which may use absolute paths
+        _messagePlain_nominal 'prepare: python_msw' > /dev/null >&2
+
+        export safeToDeleteGit="true"
+        _safeRMR "$scriptLocal"/python_msw
+        mkdir -p "$scriptLocal"/python_msw
+
+
+        #[[ "$current_done__prepare_msw_python_procedure" == "false" ]] && 
+        _prepare_msw_python_procedure
+        current_done__prepare_msw_python_procedure="true"
+
+
         
         # write python hook ; mv -f
-        [[ "$_PYTHONSTARTUP" == "" ]] && _write_python_hook_local
+
+        #[[ "$_PYTHONSTARTUP" == "" ]] && 
+        _write_python_hook_local
 
 
 #if false
@@ -16473,8 +16539,8 @@ _prepare_msw_python_3_10() {
         # rebuild venv...
         _messagePlain_nominal 'prepare: venv' > /dev/null >&2
         
-        mkdir -p "$scriptLocal/python_msw/venv"
-        ! cd "$scriptLocal/python_msw/venv" && _stop 1
+        mkdir -p "$scriptLocal"/python_msw/venv
+        ! cd "$scriptLocal"/python_msw/venv && _stop 1
         python3 -m venv default_venv > /dev/null >&2
 
         
@@ -16521,14 +16587,20 @@ _prepare_msw_python_3_10() {
         # ATTENTION: Disable (ie. comment out) to force always rebuild, packages install, etc.
         echo "$dumbpath_file" > "$dumbpath_file"."$currentUID"
         mv -f "$dumbpath_file"."$currentUID" "$dumbpath_file"
+
+
+
     fi
+
+    [[ "$current_done__prepare_msw_python_procedure" == "false" ]] && _prepare_msw_python_procedure
+    current_done__prepare_msw_python_procedure="true"
 
     [[ "$_PYTHONSTARTUP" == "" ]] && _write_python_hook_local
 
 #if false
 #then
     _messagePlain_nominal 'prepare: venv: activate' > /dev/null >&2
-    ! cd "$scriptLocal/python_msw/venv" && _stop 1
+    ! cd "$scriptLocal"/python_msw/venv && _stop 1
     #sourcedefault_venv/Scripts/activate > /dev/null >&2
     _messagePlain_probe source  default_venv/Scripts/activate_msw > /dev/null >&2
     source default_venv/Scripts/activate_msw > /dev/null >&2
@@ -16550,6 +16622,8 @@ _prepare_msw_python_3_10() {
 
     #set ACCELERATE="%VENV_DIR%\Scripts\accelerate.exe"
 
+
+    rm -f "$scriptLocal"/python_msw.lock
 }
 
 
@@ -37711,6 +37785,8 @@ _stop() {
 			
 		rm -f "$currentAxelTmpFile"* > /dev/null 2>&1
 	fi
+
+	[[ -e "$scriptLocal"/python_msw.lock ]] && [[ $(head -c $(echo -n "$sessionid" | wc -c | tr -dc '0-9') "$scriptLocal"/python_msw.lock 2> /dev/null ) == "$sessionid" ]] && rm -f "$scriptLocal"/python_msw.lock > /dev/null 2>&1
 	
 	_stop_stty_echo
 	if [[ "$1" != "" ]]
