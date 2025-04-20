@@ -102,5 +102,6 @@ https://pypi.org/project/accelerate/
 
 
 
-
+https://cloudcone.com/docs/article/how-to-install-python-3-10-on-debian-11/
+ ie. compile from source...
 
