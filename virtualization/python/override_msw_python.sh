@@ -8,7 +8,7 @@
 
 
 
-
+# EXAMPLE. Override or implement alternative with 'core.sh', 'ops.sh', or similar.
 _msw_python() {
     _prepare_msw_python
 
