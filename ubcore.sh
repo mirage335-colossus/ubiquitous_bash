@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='2190376204'
+export ub_setScriptChecksum_contents='3334350360'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -16405,7 +16405,7 @@ _prepare_msw_python_3_10() {
 
     _prepare_msw_python_procedure
 
-    local dumbpath_file="$scriptLocal"/"$dumbpath_prefix"dumbpath.var
+    local dumbpath_file="$scriptLocal"/"$dumbpath_prefix"dumbpath-msw_python_3_10.var
 
     local dumbpath_contents=""
     dumbpath_contents=$(cat "$dumbpath_file" 2> /dev/null)
@@ -16502,22 +16502,11 @@ _prepare_msw_python_3_10() {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
         # write > "$dumbpath_file" ; mv -f
 
         # ATTENTION: Disable (ie. comment out) to force always rebuild, packages install, etc.
-        #echo "$dumbpath_file" > "$dumbpath_file"."$currentUID"
-        #mv -f "$dumbpath_file"."$currentUID" "$dumbpath_file"
+        echo "$dumbpath_file" > "$dumbpath_file"."$currentUID"
+        mv -f "$dumbpath_file"."$currentUID" "$dumbpath_file"
     fi
 
 
@@ -16541,29 +16530,7 @@ _prepare_msw_python_3_10() {
 
 
 
-
-
-
-
-
-
-
-
     #set ACCELERATE="%VENV_DIR%\Scripts\accelerate.exe"
-
-
-
-    #python -m venv
-
-    #which pip
-
-
-
-
-
-
-
-    
 
 }
 
@@ -16805,8 +16772,10 @@ _prepare_msw_python_procedure() {
 
     mkdir -p "$scriptLocal"/python_msw
 
+    # In practice, 'pip' morsels may be all that is needed (ie. using 'pip' morsels for venv installation).
     mkdir -p "$scriptAbsoluteFolder"/_bundle/morsels
     mkdir -p "$scriptAbsoluteFolder"/_bundle/morsels/pip
+
     mkdir -p "$scriptAbsoluteFolder"/_bundle/morsels/venv
     mkdir -p "$scriptAbsoluteFolder"/_bundle/morsels/accelerate
 
