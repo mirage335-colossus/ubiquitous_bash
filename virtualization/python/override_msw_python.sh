@@ -504,7 +504,7 @@ _install_dependencies_msw_python_sequence-specific() {
     _stop
 }
 _install_dependencies_msw_python() {
-    _install_dependencies_msw_python_sequence-specific _set_msw_python_3_10
+    "$scriptAbsoluteLocation" _install_dependencies_msw_python_sequence-specific _set_msw_python_3_10
 }
 
 
