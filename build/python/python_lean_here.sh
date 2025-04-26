@@ -434,7 +434,7 @@ def _python():
     if os.name == 'nt':  # True on Windows
         print(" Press Ctrl+D twice (or Ctrl+Z then Enter) to exit this Python shell.")
     if os.name == 'posix':
--        print(" Press Ctrl+D twice (or Ctrl+Z then Enter) to exit this Python shell.")
+        print(" Press Ctrl+D twice (or Ctrl+Z then Enter) to exit this Python shell.")
     # ATTRIBUTION: NOT AI !
     shell.interact()
 
