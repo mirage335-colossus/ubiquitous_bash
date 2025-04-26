@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='597077903'
+export ub_setScriptChecksum_contents='1963497090'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -650,7 +650,7 @@ _____special_live_dent_restore() {
 
 # WARNING: Multiple reasons to instead consider direct detection by other commands -  ' uname -a | grep -i cygwin > /dev/null 2>&1 ' , ' [[ -e '/cygdrive' ]] ' , etc .
 _if_cygwin() {
-	if uname -a | grep -i cygwin > /dev/null 2>&1
+	if uname -a 2>/dev/null | grep -i cygwin > /dev/null 2>&1
 	then
 		return 0
 	fi
@@ -3205,6 +3205,14 @@ _terminateMetaHostAll() {
 }
 
 _terminateAll() {
+	"$scriptAbsoluteLocation" _terminateAll_sequence "$@"
+}
+_terminateAll_sequence() {
+	_start
+	_terminateAll_procedure "$@"
+	_stop "$?"
+}
+_terminateAll_procedure() {
 	_terminateMetaHostAll
 	
 	local processListFile
@@ -5423,6 +5431,8 @@ then
 	fi
 fi
 
+export scriptCall_bash="$scriptAbsoluteFolder"'/_bash.bat'
+export scriptCall_bin="$scriptAbsoluteFolder"/_bin.bat
 if type cygpath > /dev/null 2>&1
 then
     export scriptAbsoluteLocation_msw=$(cygpath -w "$scriptAbsoluteLocation")
@@ -5431,9 +5441,7 @@ then
 	export scriptLocal_msw=$(cygpath -w "$scriptLocal")
     export scriptLib_msw=$(cygpath -w "$scriptLib")
     
-	export scriptCall_bash="$scriptAbsoluteFolder"'/_bash.bat'
     export scriptCall_bash_msw="$scriptAbsoluteFolder_msw"'\_bash.bat'
-	export scriptCall_bin="$scriptAbsoluteFolder"/_bin.bat
     export scriptCall_bin_msw="$scriptAbsoluteFolder_msw"'\_bin.bat'
 fi
 
@@ -6145,6 +6153,8 @@ def _python():
     shell = code.InteractiveConsole(variables)
     # ATTRIBUTION-AI: ChatGPT 4.1  2025-04-19
     if os.name == 'nt':  # True on Windows
+        print(" Press Ctrl+D twice (or Ctrl+Z then Enter) to exit this Python shell.")
+    if os.name == 'posix':
         print(" Press Ctrl+D twice (or Ctrl+Z then Enter) to exit this Python shell.")
     # ATTRIBUTION: NOT AI !
     shell.interact()

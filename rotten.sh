@@ -4129,6 +4129,8 @@ then
 	fi
 fi
 
+export scriptCall_bash="$scriptAbsoluteFolder"'/_bash.bat'
+export scriptCall_bin="$scriptAbsoluteFolder"/_bin.bat
 if type cygpath > /dev/null 2>&1
 then
     export scriptAbsoluteLocation_msw=$(cygpath -w "$scriptAbsoluteLocation")
@@ -4137,9 +4139,7 @@ then
 	export scriptLocal_msw=$(cygpath -w "$scriptLocal")
     export scriptLib_msw=$(cygpath -w "$scriptLib")
     
-	export scriptCall_bash="$scriptAbsoluteFolder"'/_bash.bat'
     export scriptCall_bash_msw="$scriptAbsoluteFolder_msw"'\_bash.bat'
-	export scriptCall_bin="$scriptAbsoluteFolder"/_bin.bat
     export scriptCall_bin_msw="$scriptAbsoluteFolder_msw"'\_bin.bat'
 fi
 
@@ -4526,7 +4526,9 @@ _stop() {
 		rm -f "$currentAxelTmpFile"* > /dev/null 2>&1
 	fi
 
+	[[ -e "$scriptLocal"/python_nix.lock ]] && [[ $(head -c $(echo -n "$sessionid" | wc -c | tr -dc '0-9') "$scriptLocal"/python_nix.lock 2> /dev/null ) == "$sessionid" ]] && rm -f "$scriptLocal"/python_nix.lock > /dev/null 2>&1
 	[[ -e "$scriptLocal"/python_msw.lock ]] && [[ $(head -c $(echo -n "$sessionid" | wc -c | tr -dc '0-9') "$scriptLocal"/python_msw.lock 2> /dev/null ) == "$sessionid" ]] && rm -f "$scriptLocal"/python_msw.lock > /dev/null 2>&1
+	[[ -e "$scriptLocal"/python_cygwin.lock ]] && [[ $(head -c $(echo -n "$sessionid" | wc -c | tr -dc '0-9') "$scriptLocal"/python_cygwin.lock 2> /dev/null ) == "$sessionid" ]] && rm -f "$scriptLocal"/python_cygwin.lock > /dev/null 2>&1
 	
 	_stop_stty_echo
 	if [[ "$1" != "" ]]

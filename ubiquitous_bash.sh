@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='1978178478'
+export ub_setScriptChecksum_contents='4016635706'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -650,7 +650,7 @@ _____special_live_dent_restore() {
 
 # WARNING: Multiple reasons to instead consider direct detection by other commands -  ' uname -a | grep -i cygwin > /dev/null 2>&1 ' , ' [[ -e '/cygdrive' ]] ' , etc .
 _if_cygwin() {
-	if uname -a | grep -i cygwin > /dev/null 2>&1
+	if uname -a 2>/dev/null | grep -i cygwin > /dev/null 2>&1
 	then
 		return 0
 	fi
@@ -3205,6 +3205,14 @@ _terminateMetaHostAll() {
 }
 
 _terminateAll() {
+	"$scriptAbsoluteLocation" _terminateAll_sequence "$@"
+}
+_terminateAll_sequence() {
+	_start
+	_terminateAll_procedure "$@"
+	_stop "$?"
+}
+_terminateAll_procedure() {
 	_terminateMetaHostAll
 	
 	local processListFile
@@ -12081,6 +12089,7 @@ _getMost_debian11_install() {
 	_getMost_backend_aptGetInstall xz-utils
 	
 	_getMost_backend_aptGetInstall libreadline8
+	_getMost_backend_aptGetInstall libreadline-dev
 	
 	
 	_getMost_backend_aptGetInstall mkisofs
@@ -13060,6 +13069,7 @@ _getMinimal_cloud() {
 	_getMost_backend_aptGetInstall xz-utils
 	
 	_getMost_backend_aptGetInstall libreadline8
+	_getMost_backend_aptGetInstall libreadline-dev
 	
 	
 	_getMost_backend_aptGetInstall mkisofs
@@ -17582,8 +17592,12 @@ _resetFakeHomeEnv() {
 
 
 
-# EXAMPLE. Override or implement alternative with 'core.sh', 'ops.sh', or similar.
+# ATTENTION: EXAMPLE. Override or implement alternative with 'core.sh', 'ops.sh', or similar.
+# ATTENTION: Also create "$scriptLib"/python/lean.py .
 _msw_python() {
+    #export dependencies_msw_python=( "pyreadline3" )
+    #export packages_msw_python=( "huggingface_hub[cli]" )
+
     #implies sequence
     _prepare_msw_python
 
@@ -17620,17 +17634,39 @@ _msw_python() {
     #_bash
 }
 _msw_python_bash() {
+    #export dependencies_msw_python=( "pyreadline3" )
+    #export packages_msw_python=( "huggingface_hub[cli]" )
+
     #implies sequence
     _prepare_msw_python
 
     _bash
 }
 _msw_python_bin() {
+    #export dependencies_msw_python=( "pyreadline3" )
+    #export packages_msw_python=( "huggingface_hub[cli]" )
+
     #implies sequence
     _prepare_msw_python
 
     _bin "$@"
 }
+
+
+# ATTENTION: Call from '_test_prog' with 'core.sh' or similar.
+# _setup calls _test calls _test_prog
+_test_msw_python() {
+    #export dependencies_msw_python=( "pyreadline3" )
+    #export packages_msw_python=( "huggingface_hub[cli]" )
+
+    _prepare_msw_python
+}
+
+
+
+
+
+
 
 
 
@@ -17722,7 +17758,7 @@ _prepare_msw_python_3_10() {
                 dateA=$(cat "$scriptLocal"/python_msw.lock 2> /dev/null | tail -c +"$currentUID_length_plus1" | tr -dc '0-9')
                 dateB=$(date +%s | tr -dc '0-9')
                 _messagePlain_probe "$dateB - $dateA"
-                dateDelta=$(bc <<< "$dateB - $dateA")
+                dateDelta=$(bc <<< "$dateB - $dateA" 2> /dev/null)
 
                 sleep 7
 
@@ -17861,6 +17897,7 @@ _prepare_msw_python_3_10() {
 
 
     rm -f "$scriptLocal"/python_msw.lock
+    _messagePlain_nominal 'done: prepare: '${FUNCNAME[0]} > /dev/null >&2
 }
 
 
@@ -17871,9 +17908,19 @@ _prepare_msw_python_3_10() {
 
 # EXAMPLE. Override (preferred) or implement alternative (discouraged) with 'core.sh', 'ops.sh', or similar.
 _morsels_msw_pip_python_3_10() {
-    local currentPackages_indicator_list=( "huggingface_hub[cli]" )
+    #export packages_msw_python=( "huggingface_hub[cli]" )
+    local currentPackages_indicator_list=( "huggingface_hub[cli]" "${packages_msw_python[@]}" )
     local currentPackages_list=( "huggingface_hub[cli]" )
     local currentPackage
+
+    #export nonet_available="true"
+    ( ! wget -qO- 'https://github.com' > /dev/null || ! wget -qO- 'https://pypi.org/simple/' | head > /dev/null ) && export nonet_available="true"
+    local currentIteration_nonet="0"
+    while [[ "$nonet_available" == "true" ]] && [[ "$CI" != "" ]] && [[ "$currentIteration_nonet" -lt 90 ]]
+    do
+        ( wget -qO- 'https://github.com' > /dev/null && wget -qO- 'https://pypi.org/simple/' | head > /dev/null ) && export nonet_available="" && unset nonet_available
+        let currentIteration_nonet++
+    done
 
     local currentWork="false"
     for currentPackage in "${currentPackages_indicator_list[@]}"
@@ -17883,17 +17930,17 @@ _morsels_msw_pip_python_3_10() {
     done
     [[ "$currentWork" == "false" ]] && return 0
 
-    [[ "$nonet" != "true" ]] && python -m pip install --upgrade pip > /dev/null >&2
+    [[ "$nonet" != "true" ]] && [[ "$nonet_available" != "true" ]] && python -m pip install --upgrade pip > /dev/null >&2
 
     for currentPackage in "${currentPackages_list[@]}"
     do
         #,win32,win_arm64
-        [[ "$nonet" != "true" ]] && pip download "$currentPackage" --platform win_amd64 --only-binary=:all: --dest "$(cygpath -w "$scriptAbsoluteFolder"/_bundle/morsels/pip)" > /dev/null >&2
+        [[ "$nonet" != "true" ]] && [[ "$nonet_available" != "true" ]] && pip download "$currentPackage" --platform win_amd64 --only-binary=:all: --dest "$(cygpath -w "$scriptAbsoluteFolder"/_bundle/morsels/pip)" > /dev/null >&2
         
         pip install --no-index --find-links="$(cygpath -w "$scriptAbsoluteFolder"/_bundle/morsels/pip)" "$currentPackage" > /dev/null >&2
 
         # Strongly discouraged! Avoid surprise breakage by never relying on upstream repositories.
-        #[[ "$nonet" != "true" ]] && pip install "$currentPackage" > /dev/null >&2
+        #[[ "$nonet" != "true" ]] && [[ "$nonet_available" != "true" ]] && pip install "$currentPackage" > /dev/null >&2
     done
 }
 
@@ -17943,19 +17990,19 @@ _discover-msw_python() {
 _discover_procedure-msw_python() {
     export lib_dir_msw_python_wheels
     
-    export lib_dir_msw_python_wheels="$scriptAbsoluteFolder"/.msw_python_wheels
+    export lib_dir_msw_python_wheels="$scriptAbsoluteFolder"/.python_wheels/msw
     if [[ -e "$lib_dir_msw_python_wheels" ]]
     then
         . "$lib_dir_msw_python_wheels"/_msw_python_wheels.sh
         return 0
     fi
-    export lib_dir_msw_python_wheels="$scriptLocal"/.msw_python_wheels
+    export lib_dir_msw_python_wheels="$scriptLocal"/.python_wheels/msw
     if [[ -e "$lib_dir_msw_python_wheels" ]]
     then
         . "$lib_dir_msw_python_wheels"/_msw_python_wheels.sh
         return 0
     fi
-    export lib_dir_msw_python_wheels="$scriptLib"/.msw_python_wheels
+    export lib_dir_msw_python_wheels="$scriptLib"/.python_wheels/msw
     if [[ -e "$lib_dir_msw_python_wheels" ]]
     then
         . "$lib_dir_msw_python_wheels"/_msw_python_wheels.sh
@@ -17963,13 +18010,13 @@ _discover_procedure-msw_python() {
     fi
 
     
-    export lib_dir_msw_python_wheels="$scriptLib"/ubiquitous_bash/_lib/.msw_python_wheels
+    export lib_dir_msw_python_wheels="$scriptLib"/ubiquitous_bash/_lib/.python_wheels/msw
     if [[ -e "$lib_dir_msw_python_wheels" ]]
     then
         . "$lib_dir_msw_python_wheels"/_msw_python_wheels.sh
         return 0
     fi
-    export lib_dir_msw_python_wheels="$scriptLib"/ubDistBuild/_lib/ubiquitous_bash/_lib/.msw_python_wheels
+    export lib_dir_msw_python_wheels="$scriptLib"/ubDistBuild/_lib/ubiquitous_bash/_lib/.python_wheels/msw
     if [[ -e "$lib_dir_msw_python_wheels" ]]
     then
         . "$lib_dir_msw_python_wheels"/_msw_python_wheels.sh
@@ -17985,10 +18032,21 @@ _install_dependencies_msw_python_procedure-specific() {
     _discover-msw_python
 
     # Not all of these packages are necessary for dist/OS other than native MSWindows.
-    local currentPackages_list=("pyreadline3" "colorama")
+    #export dependencies_msw_python=( "pyreadline3" )
+    local currentPackages_list=( "pyreadline3" "colorama" "${dependencies_msw_python[@]}" )
     local currentPackage
 
-    if [[ "$nonet" != "true" ]]
+    #export nonet_available="true"
+    ( ! wget -qO- 'https://github.com' > /dev/null || ! wget -qO- 'https://pypi.org/simple/' | head > /dev/null ) && export nonet_available="true"
+    local currentIteration_nonet="0"
+    while [[ "$nonet_available" == "true" ]] && [[ "$CI" != "" ]] && [[ "$currentIteration_nonet" -lt 90 ]]
+    do
+        ( wget -qO- 'https://github.com' > /dev/null && wget -qO- 'https://pypi.org/simple/' | head > /dev/null ) && export nonet_available="" && unset nonet_available
+        let currentIteration_nonet++
+    done
+    
+
+    if [[ "$nonet" != "true" ]] && [[ "$nonet_available" != "true" ]]
     then
         _pip_upgrade() {
             local currentUpgrade="false"
@@ -18004,7 +18062,7 @@ _install_dependencies_msw_python_procedure-specific() {
     fi
 
 
-    if [[ "$nonet" != "true" ]]
+    if [[ "$nonet" != "true" ]] && [[ "$nonet_available" != "true" ]]
     then
 
         if [[ "$lib_dir_msw_python_wheels" != "" ]]
@@ -18047,7 +18105,7 @@ _install_dependencies_msw_python_procedure-specific() {
         done
     fi
     
-    if [[ "$nonet" != "true" ]]
+    if [[ "$nonet" != "true" ]] && [[ "$nonet_available" != "true" ]]
     then
         _pip_install() {
             "$1"pip show "$3" > /dev/null 2>&1 && return 0
@@ -18061,6 +18119,8 @@ _install_dependencies_msw_python_procedure-specific() {
             _pip_install "$1" "$2" "$currentPackage"
         done
     fi
+
+    return 0
 }
 _install_dependencies_msw_python_sequence-specific() {
     _messageNormal '     install: dependencies: '"$1" > /dev/null >&2
@@ -18078,7 +18138,7 @@ _install_dependencies_msw_python_sequence-specific() {
     _stop
 }
 _install_dependencies_msw_python() {
-    _install_dependencies_msw_python_sequence-specific _set_msw_python_3_10
+    "$scriptAbsoluteLocation" _install_dependencies_msw_python_sequence-specific _set_msw_python_3_10
 }
 
 
@@ -18292,6 +18352,681 @@ _demo_msw_python() {
 
 
 
+
+
+# Suggested defaults. If your python code (not python itself, nor venv, etc, but filenames for files your python application uses, such as datasets, models, etc) insists on absolute paths, and you must use it under both UNIX/Linux and Cygwin/MSW, then it is probably only needed temporarily to generate static assets (ie. occasional experimental fine-tuning of the latest available AI models). In which case you can put into production under solely UNIX/Linux if necessary, and develop with Docker (ie. factory) instead.
+# tldr; UNIX/Linux for python in production, Cygwin/MSW (ie. MSW native python) for python in development, as usual, and then you won't need abstractfs .
+#
+#_set_abstractfs_alwaysUNIXneverNative
+#_set_abstractfs_disable
+
+
+
+# ATTENTION: EXAMPLE. Override or implement alternative with 'core.sh', 'ops.sh', or similar.
+# ATTENTION: Also create "$scriptLib"/python/lean.py .
+_nix_python() {
+    export dependencies_nix_python=( "readline" )
+    export packages_nix_python=( "huggingface_hub[cli]" )
+
+    #implies sequence
+    _prepare_nix_python
+
+
+    # ATTENTION: Dropping to an interactive shell in the midst of a bash function which provides standard output to another bash function
+    #
+    # ie. don't expect guaranteed sanity doing something like this in either bash or python
+    # echo $( echo result ; bash -i ) | tee > ./logfile.txt
+    #
+    # ALWAYS call interactively unless 'stdout' will be consumed. Functions, scripts, commands, get an interactive terminal to talk to, except very simple functions.
+    #
+    # ie. _fineTune_model  <->  Interactive Shell
+    # ie. _vector_model  <->  Interactive Shell
+    # ie. _inferenceModel | grep 'stuff' > description.txt  <->  Interactive Shell
+    # ie. result=$(_inferenceModel | grep 'correct')  <->  Non-Interactive
+    #
+    # Unfortunately, bash function calls from python do not enjoy the '$() > /dev/null 2>&1' syntactic convenience.
+    # Python calls to '_bin()' , '_bash()' , etc, must explicitly declare or implicitly default sanely whether interactive or non-interactive captured output.
+    
+    # lean.py ... is a template script from 'ubiquitous_bash' for lightweight manual changes
+    #"$scriptLocal"/python_nix/lean.py   #automatically replaced with autogenerated lean.py
+    #"$scriptLib"/python_nix/lean.py    #ATTTENTION: create persistent custom lean.py here
+
+
+    # WARNING: May be untested.
+    
+    # "$scriptCall_bin" # _bin.bat (replace "$scriptAbsoluteLocation")
+    # "$scriptCall_bin" # _bash.bat (replace "$scriptAbsoluteLocation")
+
+    #python "$scriptLib"'/python/lean.py' '_bin(["sleep", "90",], True, r"'"$scriptAbsoluteLocation"'")'
+
+    #python "$scriptAbsoluteFolder"'/lean.py' '_bash(["-i"], True, r"'"$scriptAbsoluteLocation"'")'
+
+    python "$scriptAbsoluteFolder"'/lean.py' '_bin(["_demo_nix_python",], True, r"'"$scriptAbsoluteLocation"'", interactive=True)'
+
+    #python -i "$scriptAbsoluteFolder"'/lean.py' '_python()'
+
+    #_bash
+}
+_nix_python_bash() {
+    #export dependencies_nix_python=( "readline" )
+    #export packages_nix_python=( "huggingface_hub[cli]" )
+
+    #implies sequence
+    _prepare_nix_python
+
+    _bash
+}
+_nix_python_bin() {
+    #export dependencies_nix_python=( "readline" )
+    #export packages_nix_python=( "huggingface_hub[cli]" )
+
+    #implies sequence
+    _prepare_nix_python
+
+    _bin "$@"
+}
+
+
+# ATTENTION: Call from '_test_prog' with 'core.sh' or similar.
+# _setup calls _test calls _test_prog
+_test_nix_python() {
+    #export dependencies_nix_python=( "readline" )
+    #export packages_nix_python=( "huggingface_hub[cli]" )
+
+    _prepare_nix_python
+}
+
+
+
+
+
+
+
+
+
+
+# EXAMPLE. Override or implement alternative with 'core.sh', 'ops.sh', or similar.
+_prepare_nix_python() {
+    _prepare_nix_python_3
+}
+# EXAMPLE. Override or implement alternative (discouraged) with 'core.sh', 'ops.sh', or similar, if necessary.
+_prepare_nix_python_3() {
+    _set_nix_python_3
+
+    # ATTENTION: implies sequence
+    local currentUID="$sessionid"
+
+    # ATTENTION: Do NOT enable. Prevents 'trap' cleanup of abandoned lock file.
+    #local currentUID=$(_uid 18)
+
+    local currentUID_length=${#currentUID}
+    local currentUID_length_plus1=$(( currentUID_length + 1 ))
+
+    local currentPATH="$PATH"
+
+    _write_python_hook_local() {
+        _messagePlain_nominal 'prepare: python hook' > /dev/null >&2
+    
+        local ubcore_accessoriesFile_python
+        local ubcoreDir_accessories_python
+        local ubcore_accessoriesFile_python_ubhome
+
+        ubcore_accessoriesFile_python="$scriptLib"/python_nix/lean.py
+        ubcoreDir_accessories_python="$scriptLib"/python_nix
+        ubcore_accessoriesFile_python_ubhome="$scriptLib"/python_nix/lean.py
+        if [[ ! -e "$ubcore_accessoriesFile_python" ]] || [[ ! -e "$ubcoreDir_accessories_python" ]] || [[ ! -e "$ubcore_accessoriesFile_python_ubhome" ]]
+        then
+            ( _messagePlain_warn 'warn: missing: scriptLib/python_nix/...' >&2 ) > /dev/null
+            
+            ubcore_accessoriesFile_python="$scriptLocal"/python_nix/lean.py
+            ubcoreDir_accessories_python="$scriptLocal"/python_nix
+            ubcore_accessoriesFile_python_ubhome="$scriptLocal"/python_nix/lean.py
+            if [[ ! -e "$ubcore_accessoriesFile_python" ]] || [[ ! -e "$ubcoreDir_accessories_python" ]] || [[ ! -e "$ubcore_accessoriesFile_python_ubhome" ]]
+            then
+                ( _messagePlain_warn 'warn: missing: scriptLocal/python_nix/...' >&2 ) > /dev/null
+            fi
+        fi
+
+        local ubcore_ubcorerc_pythonrc="lean"
+        
+        _setupUbiquitous_accessories_here-python_hook > "$scriptLocal"/python_nix/pythonrc."$currentUID"
+        if [[ ! -e "$scriptLocal"/python_nix/pythonrc ]] || ! diff --unified=3 "$scriptLocal"/python_nix/pythonrc."$currentUID" "$scriptLocal"/python_nix/pythonrc > /dev/null
+        then
+            mv -f "$scriptLocal"/python_nix/pythonrc."$currentUID" "$scriptLocal"/python_nix/pythonrc
+        else
+            rm -f "$scriptLocal"/python_nix/pythonrc."$currentUID"
+        fi
+        
+        export _PYTHONSTARTUP="$scriptLocal"/python_nix/pythonrc
+        export PYTHONSTARTUP="$_PYTHONSTARTUP"
+    }
+    unset _PYTHONSTARTUP
+    
+
+    local current_done__prepare_nix_python_procedure="false"
+
+
+    _lock_prepare_python_nix() {
+        _messagePlain_nominal 'prepare: wait: lock: _lock_prepare_python_nix' > /dev/null >&2
+        local dateA
+        local dateB
+        local dateDelta
+        while [[ $(cat "$scriptLocal"/python_nix.lock 2> /dev/null | head -c "$currentUID_length") != "$currentUID" ]]
+        do
+            if [[ ! -e "$scriptLocal"/python_nix.lock ]]
+            then
+                echo "$currentUID"$(date +%s | tr -dc '0-9') > "$scriptLocal"/python_nix.lock."$currentUID"
+                mv -f "$scriptLocal"/python_nix.lock."$currentUID" "$scriptLocal"/python_nix.lock
+            fi
+
+            sleep 7
+            [[ $(cat "$scriptLocal"/python_nix.lock 2> /dev/null | head -c "$currentUID_length") == "$currentUID" ]] && return 0
+
+            _messagePlain_probe "wait: lock" > /dev/null >&2
+
+            while [[ -e "$scriptLocal"/python_nix.lock ]] && [[ $(cat "$scriptLocal"/python_nix.lock 2> /dev/null | head -c "$currentUID_length") != "$currentUID" ]]
+            do
+                dateA=$(cat "$scriptLocal"/python_nix.lock 2> /dev/null | tail -c +"$currentUID_length_plus1" | tr -dc '0-9')
+                dateB=$(date +%s | tr -dc '0-9')
+                _messagePlain_probe "$dateB - $dateA"
+                dateDelta=$(bc <<< "$dateB - $dateA" 2> /dev/null)
+
+                sleep 7
+
+                # Normal prepare time is <<2minutes, if that.
+                [[ "$dateDelta" -gt "2700" ]] && rm -f "$scriptLocal"/python_nix.lock
+            done
+        done
+    }
+    _lock_prepare_python_nix
+    #...
+    #rm -f "$scriptLocal"/python_nix.lock
+
+    # WARNING: Do not add '-msw_python_3_10' or similar suffix to dumbpath_file . Use separate derivative projects for separate venv as normally needed for different python versions.
+    local dumbpath_file="$scriptLocal"/"$dumbpath_prefix"dumbpath.var
+    local dumbpath_contents=""
+    dumbpath_contents=$(cat "$dumbpath_file" 2> /dev/null)
+    if [[ "$dumbpath_contents" != "$dumbpath_file" ]]
+    then
+        # ATTENTION: WARNING: Anaconda is usually unnecessary, STRONGLY DISCOURAGED, and NOT automatically installed (eg. with 'ubdist/OS').
+        # Automatic installation of Anaconda is not expected useful for any purpose - only workstations for personal evaluation of open-source projects which happen to use Anaconda for a non=production purpose are expected to use Anaconda, if at all.
+        # Manual installation of Anaconda:
+        # https://docs.conda.io/projects/conda/en/latest/user-guide/install/windows.html
+        # https://docs.conda.io/projects/conda/en/latest/user-guide/install/linux.html
+
+
+
+        
+
+        # erase any venv, etc, which may use absolute paths
+        _messagePlain_nominal 'prepare: python_nix' > /dev/null >&2
+
+        export safeToDeleteGit="true"
+        _safeRMR "$scriptLocal"/python_nix
+        mkdir -p "$scriptLocal"/python_nix
+
+
+        #[[ "$current_done__prepare_nix_python_procedure" == "false" ]] && 
+        _prepare_nix_python_procedure
+        current_done__prepare_nix_python_procedure="true"
+
+
+        
+        # write python hook ; mv -f
+
+        #[[ "$_PYTHONSTARTUP" == "" ]] && 
+        _write_python_hook_local
+
+
+#if false
+#then
+        # rebuild venv...
+        _messagePlain_nominal 'prepare: venv' > /dev/null >&2
+        
+        mkdir -p "$scriptLocal"/python_nix/venv
+        ! cd "$scriptLocal"/python_nix/venv && _stop 1
+        python3 -m venv default_venv > /dev/null >&2
+
+        
+        cp -a default_venv/bin/activate default_venv/bin/activate_nix
+        #dos2unix default_venv/bin/activate_nix
+        chmod u+x default_venv/bin/activate_nix
+
+        #source default_venv/bin/activate > /dev/null >&2
+        _messagePlain_probe source default_venv/bin/activate_nix > /dev/null >&2
+        source default_venv/bin/activate_nix > /dev/null >&2
+        #PATH="$currentPATH"
+
+        _messagePlain_nominal 'prepare: venv: set' > /dev/null >&2
+        _set_nix_python_procedure
+
+        _messagePlain_probe _install_dependencies_nix_python_procedure-specific "" "" > /dev/null >&2
+        _install_dependencies_nix_python_procedure-specific "" ""
+        
+        _messagePlain_probe python -c "import sys; print(sys.path)" > /dev/null >&2
+        python -c "import sys; print(sys.path)" > /dev/null >&2
+
+        #deactivate > /dev/null >&2
+#fi
+
+
+
+        # morsels...
+        _messagePlain_nominal 'prepare: morsels: pip' > /dev/null >&2
+
+        _morsels_nix_pip_python_3
+
+
+
+
+
+
+
+
+
+
+
+        # write > "$dumbpath_file" ; mv -f
+
+        # ATTENTION: Disable (ie. comment out) to force always rebuild, packages install, etc.
+        echo "$dumbpath_file" > "$dumbpath_file"."$currentUID"
+        mv -f "$dumbpath_file"."$currentUID" "$dumbpath_file"
+
+
+
+    fi
+
+    [[ "$current_done__prepare_nix_python_procedure" == "false" ]] && _prepare_nix_python_procedure
+    current_done__prepare_nix_python_procedure="true"
+
+    [[ "$_PYTHONSTARTUP" == "" ]] && _write_python_hook_local
+
+#if false
+#then
+    _messagePlain_nominal 'prepare: venv: activate' > /dev/null >&2
+    ! cd "$scriptLocal"/python_nix/venv && _stop 1
+    #source default_venv/bin/activate > /dev/null >&2
+    _messagePlain_probe source default_venv/bin/activate_nix > /dev/null >&2
+    source default_venv/bin/activate_nix > /dev/null >&2
+    #PATH="$currentPATH"
+
+    _messagePlain_nominal 'prepare: venv: set' > /dev/null >&2
+    _set_nix_python_procedure
+    
+    _messagePlain_probe python -c "import sys; print(sys.path)" > /dev/null >&2
+    python -c "import sys; print(sys.path)" > /dev/null >&2
+#fi
+
+    _messagePlain_probe _install_dependencies_nix_python_procedure-specific "" "" > /dev/null >&2
+    _install_dependencies_nix_python_procedure-specific "" ""
+
+
+
+
+
+    #set ACCELERATE="%VENV_DIR%\Scripts\accelerate.exe"
+
+
+    rm -f "$scriptLocal"/python_nix.lock
+    _messagePlain_nominal 'done: prepare: '${FUNCNAME[0]} > /dev/null >&2
+}
+
+
+
+
+
+
+
+# EXAMPLE. Override (preferred) or implement alternative (discouraged) with 'core.sh', 'ops.sh', or similar.
+_morsels_nix_pip_python_3() {
+    #export packages_nix_python=( "huggingface_hub[cli]" )
+    local currentPackages_indicator_list=( "huggingface_hub[cli]" "${packages_nix_python[@]}" )
+    local currentPackages_list=( "huggingface_hub[cli]" )
+    local currentPackage
+
+    #export nonet_available="true"
+    ( ! wget -qO- 'https://github.com' > /dev/null || ! wget -qO- 'https://pypi.org/simple/' | head > /dev/null ) && export nonet_available="true"
+    local currentIteration_nonet="0"
+    while [[ "$nonet_available" == "true" ]] && [[ "$CI" != "" ]] && [[ "$currentIteration_nonet" -lt 90 ]]
+    do
+        ( wget -qO- 'https://github.com' > /dev/null && wget -qO- 'https://pypi.org/simple/' | head > /dev/null ) && export nonet_available="" && unset nonet_available
+        let currentIteration_nonet++
+    done
+
+    local currentWork="false"
+    for currentPackage in "${currentPackages_indicator_list[@]}"
+    do
+        ! pip show "$currentPackage" > /dev/null 2>&1 && currentWork="true"
+        #! python -m pip show "$currentPackage" > /dev/null 2>&1 && currentWork="true"
+    done
+    [[ "$currentWork" == "false" ]] && return 0
+
+    #[[ "$nonet" != "true" ]] && [[ "$nonet_available" != "true" ]] && python -m pip install --upgrade pip > /dev/null >&2
+    [[ "$nonet" != "true" ]] && [[ "$nonet_available" != "true" ]] && python -m pip install --upgrade pip > /dev/null 2>&1
+    [[ "$nonet" != "true" ]] && [[ "$nonet_available" != "true" ]] && sudo -n python -m pip install --upgrade pip > /dev/null 2>&1
+
+    for currentPackage in "${currentPackages_list[@]}"
+    do
+        #,win32,win_arm64
+        [[ "$nonet" != "true" ]] && [[ "$nonet_available" != "true" ]] && pip download "$currentPackage" --platform win_amd64 --only-binary=:all: --dest "$scriptAbsoluteFolder"/_bundle/morsels/pip > /dev/null >&2
+        
+        #pip install --no-index --find-links="$scriptAbsoluteFolder"/_bundle/morsels/pip "$currentPackage" > /dev/null >&2
+        pip install --no-index --find-links="$scriptAbsoluteFolder"/_bundle/morsels/pip "$currentPackage" > /dev/null 2>&1
+        sudo -n pip install --no-index --find-links="$scriptAbsoluteFolder"/_bundle/morsels/pip "$currentPackage" > /dev/null 2>&1
+
+        # Strongly discouraged! Avoid surprise breakage by never relying on upstream repositories.
+        #[[ "$nonet" != "true" ]] && [[ "$nonet_available" != "true" ]] && pip install "$currentPackage" > /dev/null >&2
+    done
+
+    #sudo -n env DEBIAN_FRONTEND=noninteractive apt-get install --install-recommends -y libreadline-dev > /dev/null 2>&1
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Workaround for pip using the newest saved non-binary wheel package (usually a .tar...) regardless of compatibility.
+_special_nix_pip_install_nonet_sequence() {
+    _start
+        
+    #"$1"pip install --no-index --find-links="$lib_dir_nix_python_wheels" "$3" > /dev/null >&2
+    #"$1"pip install --no-index --no-build-isolation --find-links="$lib_dir_nix_python_wheels" "$3" > /dev/null >&2
+
+    cp "$lib_dir_nix_python_wheels"/*.whl "$safeTmp"/
+
+    local currentFile
+    local currentFile_basename
+    #for currentFile in "$lib_dir_nix_python_wheels"/"$3"*
+    for currentFile in $(ls -1 "$lib_dir_nix_python_wheels"/"$3"* | sort -V -r)
+    do
+        currentFile_basename=$(basename "$currentFile")
+        cp -f "$currentFile" "$safeTmp"/"$currentFile_basename"
+        
+        "$1"pip install --no-index --find-links="$safeTmp" "$3" > /dev/null >&2
+        "$1"pip install --no-index --no-build-isolation --find-links="$safeTmp" "$3" > /dev/null >&2
+
+        rm -f "$safeTmp"/"$currentFile_basename"
+    done
+
+    _stop
+}
+
+
+
+_discover-nix_python() {
+    _discover_procedure-nix_python "$@"
+}
+_discover_procedure-nix_python() {
+    export lib_dir_nix_python_wheels
+    
+    export lib_dir_nix_python_wheels="$scriptAbsoluteFolder"/.python_wheels/nix
+    if [[ -e "$lib_dir_nix_python_wheels" ]]
+    then
+        . "$lib_dir_nix_python_wheels"/_nix_python_wheels.sh
+        return 0
+    fi
+    export lib_dir_nix_python_wheels="$scriptLocal"/.python_wheels/nix
+    if [[ -e "$lib_dir_nix_python_wheels" ]]
+    then
+        . "$lib_dir_nix_python_wheels"/_nix_python_wheels.sh
+        return 0
+    fi
+    export lib_dir_nix_python_wheels="$scriptLib"/.python_wheels/nix
+    if [[ -e "$lib_dir_nix_python_wheels" ]]
+    then
+        . "$lib_dir_nix_python_wheels"/_nix_python_wheels.sh
+        return 0
+    fi
+
+    
+    export lib_dir_nix_python_wheels="$scriptLib"/ubiquitous_bash/_lib/.python_wheels/nix
+    if [[ -e "$lib_dir_nix_python_wheels" ]]
+    then
+        . "$lib_dir_nix_python_wheels"/_nix_python_wheels.sh
+        return 0
+    fi
+    export lib_dir_nix_python_wheels="$scriptLib"/ubDistBuild/_lib/ubiquitous_bash/_lib/.python_wheels/nix
+    if [[ -e "$lib_dir_nix_python_wheels" ]]
+    then
+        . "$lib_dir_nix_python_wheels"/_nix_python_wheels.sh
+        return 0
+    fi
+
+    export lib_dir_nix_python_wheels=""
+    unset lib_dir_nix_python_wheels
+}
+_install_dependencies_nix_python_procedure-specific() {
+    _messagePlain_nominal 'install: dependencies' > /dev/null >&2
+
+    _discover-nix_python
+
+    # Not all of these packages if any are necessary (ie. may be dummy packages just to test the system).
+    #export dependencies_nix_python=( "readline" )
+    local currentPackages_list=("setuptools" "readline" "colorama" "${dependencies_nix_python[@]}" )
+    local currentPackage
+    
+    #export nonet_available="true"
+    ( ! wget -qO- 'https://github.com' > /dev/null || ! wget -qO- 'https://pypi.org/simple/' | head > /dev/null ) && export nonet_available="true"
+    local currentIteration_nonet="0"
+    while [[ "$nonet_available" == "true" ]] && [[ "$CI" != "" ]] && [[ "$currentIteration_nonet" -lt 90 ]]
+    do
+        ( wget -qO- 'https://github.com' > /dev/null && wget -qO- 'https://pypi.org/simple/' | head > /dev/null ) && export nonet_available="" && unset nonet_available
+        let currentIteration_nonet++
+    done
+
+
+    if [[ "$nonet" != "true" ]] && [[ "$nonet_available" != "true" ]]
+    then
+        _pip_upgrade() {
+            local currentUpgrade="false"
+            for currentPackage in "${currentPackages_list[@]}"
+            do
+                ! "$1"pip show "$currentPackage" > /dev/null 2>&1 && currentUpgrade="true"
+                #! "$2"python -m pip show "$currentPackage" > /dev/null 2>&1 && currentUpgrade="true"
+            done
+            [[ "$currentUpgrade" == "false" ]] && return 0
+            "$2"python -m pip install --upgrade pip > /dev/null >&2
+        }
+        _pip_upgrade "$1" "$2"
+    fi
+
+
+    if [[ "$nonet" != "true" ]] && [[ "$nonet_available" != "true" ]]
+    then
+
+        if [[ "$lib_dir_nix_python_wheels" != "" ]]
+        then
+            # ATTRIBUTION-AI: ChatGPT o3  2025-04-19  (partially)
+            _pip_download() {
+                "$1"pip show "$3" > /dev/null 2>&1 && return 0
+                #"$2"python -m pip show "$3" > /dev/null 2>&1 && return 0
+
+                #--no-deps
+                #--python-version 3.1
+                "$1"pip download "$3" --platform linux_x86_64 --no-deps --dest "$lib_dir_nix_python_wheels" > /dev/null >&2
+                #"$1"pip download "$3" --platform manylinux2014_x86_64 --no-deps --dest "$lib_dir_nix_python_wheels" > /dev/null >&2
+                "$1"pip download "$3" --platform manylinux1 --no-deps --dest "$lib_dir_nix_python_wheels" > /dev/null >&2
+                "$1"pip download "$3" --platform any --no-deps --dest "$lib_dir_nix_python_wheels" > /dev/null >&2
+                
+                #"$2"python -m pip download "$3" --platform linux_x86_64 --no-deps --dest "$lib_dir_nix_python_wheels" > /dev/null >&2
+                #"$2"python -m pip download "$3" --platform manylinux2014_x86_64 --no-deps --dest "$lib_dir_nix_python_wheels" > /dev/null >&2
+                #"$2"python -m pip download "$3" --platform manylinux1 --no-deps --dest "$lib_dir_nix_python_wheels" > /dev/null >&2
+                #"$2"python -m pip download "$3" --platform any --no-deps --dest "$lib_dir_nix_python_wheels" > /dev/null >&2
+
+                
+                "$1"pip download "$3" --platform linux_x86_64 --only-binary=:all: --dest "$lib_dir_nix_python_wheels" > /dev/null >&2
+                #"$1"pip download "$3" --platform manylinux2014_x86_64 --only-binary=:all: --dest "$lib_dir_nix_python_wheels" > /dev/null >&2
+                "$1"pip download "$3" --platform manylinux1 --only-binary=:all: --dest "$lib_dir_nix_python_wheels" > /dev/null >&2
+                "$1"pip download "$3" --platform any --only-binary=:all: --dest "$lib_dir_nix_python_wheels" > /dev/null >&2
+                
+                #"$2"python -m pip download "$3" --platform linux_x86_64 --only-binary=:all: --dest "$lib_dir_nix_python_wheels" > /dev/null >&2
+                #"$2"python -m pip download "$3" --platform manylinux2014_x86_64 --only-binary=:all: --dest "$lib_dir_nix_python_wheels" > /dev/null >&2
+                #"$2"python -m pip download "$3" --platform manylinux1 --only-binary=:all: --dest "$lib_dir_nix_python_wheels" > /dev/null >&2
+                #"$2"python -m pip download "$3" --platform any --only-binary=:all: --dest "$lib_dir_nix_python_wheels" > /dev/null >&2
+            }
+
+            for currentPackage in "${currentPackages_list[@]}"
+            do
+                _pip_download "$1" "$2" "$currentPackage"
+            done
+        fi
+    fi
+
+
+    if [[ "$lib_dir_nix_python_wheels" != "" ]]
+    then
+        _pip_install_nonet() {
+            "$1"pip show "$3" > /dev/null 2>&1 && return 0
+            #"$2"python -m pip show "$3" > /dev/null 2>&1 && return 0
+
+            #"$1"pip install --no-index --find-links="$lib_dir_nix_python_wheels" "$3" > /dev/null >&2
+            #"$1"pip install --no-index --no-build-isolation --find-links="$lib_dir_nix_python_wheels" "$3" > /dev/null >&2
+            "$scriptAbsoluteLocation" _special_nix_pip_install_nonet_sequence "$@"
+            #"$2"python -m pip install --no-index --find-links="$lib_dir_nix_python_wheels" "$3" > /dev/null >&2
+        }
+        for currentPackage in "${currentPackages_list[@]}"
+        do
+            _pip_install_nonet "$1" "$2" "$currentPackage"
+        done
+    fi
+    
+    if [[ "$nonet" != "true" ]] && [[ "$nonet_available" != "true" ]]
+    then
+        _pip_install() {
+            "$1"pip show "$3" > /dev/null 2>&1 && return 0
+            #"$2"python -m pip show "$3" > /dev/null 2>&1 && return 0
+
+            "$1"pip install "$3" > /dev/null >&2
+            #"$2"python -m pip install "$3" > /dev/null >&2
+        }
+        for currentPackage in "${currentPackages_list[@]}"
+        do
+            _pip_install "$1" "$2" "$currentPackage"
+        done
+    fi
+
+    sudo -n env DEBIAN_FRONTEND=noninteractive apt-get install --install-recommends -y libreadline-dev > /dev/null 2>&1
+
+    for currentPackage in "${currentPackages_list[@]}"
+    do
+        pip show "$currentPackage" > /dev/null 2>&1 && return 0
+    done
+    return 1
+}
+_install_dependencies_nix_python_sequence-specific() {
+    _messageNormal '     install: dependencies: '"$1" > /dev/null >&2
+    _start
+
+    "$1"
+    
+    _install_dependencies_nix_python_procedure-specific
+
+    _stop
+}
+_install_dependencies_nix_python() {
+    "$scriptAbsoluteLocation" _install_dependencies_nix_python_sequence-specific _set_nix_python_3
+}
+
+
+
+
+_prepare_nix_python_procedure() {
+    local currentUID=$(_uid)
+
+
+    mkdir -p "$scriptLocal"
+
+    mkdir -p "$scriptLocal"/python_nix
+
+    # In practice, 'pip' morsels may be all that is needed (ie. using 'pip' morsels for venv installation).
+    mkdir -p "$scriptAbsoluteFolder"/_bundle/morsels
+    mkdir -p "$scriptAbsoluteFolder"/_bundle/morsels/pip
+
+    mkdir -p "$scriptAbsoluteFolder"/_bundle/morsels/venv
+    mkdir -p "$scriptAbsoluteFolder"/_bundle/morsels/accelerate
+
+    # STRONGLY DISCOURAGED!
+    mkdir -p "$scriptAbsoluteFolder"/_bundle/morsels/conda
+
+    if [[ ! -e "$scriptLocal"/python_nix/lean.py ]] || ! diff --unified=3 "$scriptAbsoluteFolder"/lean.py "$scriptLocal"/python_nix/lean.py > /dev/null
+    then
+        cp -f "$scriptAbsoluteFolder"/lean.py "$scriptLocal"/python_nix/lean.py."$currentUID" > /dev/null 2>&1
+        mv -f "$scriptLocal"/python_nix/lean.py."$currentUID" "$scriptLocal"/python_nix/lean.py
+        if [[ ! -e "$scriptLocal"/python_nix/lean.py ]]
+        then
+            cp -f "$scriptLib"/ubiquitous_bash/lean.py "$scriptLocal"/python_nix/lean.py."$currentUID"
+            mv -f "$scriptLocal"/python_nix/lean.py."$currentUID" "$scriptLocal"/python_nix/lean.py
+        fi
+    fi
+    [[ ! -e "$scriptLocal"/python_nix/lean.py ]] && ( _messagePlain_warn 'warn: missing: scriptLocal/python_nix/lean.py' >&2 ) > /dev/null
+
+
+    _install_dependencies_nix_python_procedure-specific "" "" > /dev/null 2>&1
+
+    return 0
+}
+
+
+
+
+
+# CAUTION: May be called by _setupUbiquitous_accessories_here-python_hook .
+_set_nix_python_procedure() {
+
+    #export PATH="$VIRTUAL_ENV/"bin":$PATH"
+
+
+    # DUBIOUS
+    #export _transformersCache="$scriptLocal"/transformers-cache
+
+    # DUBIOUS
+    #export _accelerate=$(find "$???" -iname 'accelerate.exe' -type f -print -quit)
+
+    #unset PYTHONHOME
+    #export PYTHONSTARTUP="$_PYTHONSTARTUP"
+    
+    return 0
+}
+
+set_nix_python() {
+    _set_nix_python_3 "$@"
+}
+_set_nix_python_3() {
+    python() {
+        #python3.11 "$@"
+        python3 "$@"
+    }
+    pip() {
+        #pip3.11 "$@"
+        pip3 "$@"
+    }
+
+    _set_nix_python_procedure "$@"
+}
+
+
+
+_demo_nix_python() {
+    _messagePlain_nominal 'demo: '${FUNCNAME[0]} > /dev/null >&2
+    sleep 0.6
+    "$@"
+    _bash
+}
 
 _test_image() {
 	_mustGetSudo
@@ -42679,16 +43414,35 @@ _resetOps() {
 }
 
 _gitPull_ubiquitous() {
+	local currentExitStatus_gitBest_pull="0"
+	local currentExitStatus_gitBest_submodule_update="0"
 	#git pull
 	_gitBest pull
+	currentExitStatus_gitBest_pull="$?"
+	_gitBest submodule update --recursive
+	currentExitStatus_gitBest_submodule_update="$?"
+	[[ "$currentExitStatus_gitBest_pull" != "0" ]] && return "$currentExitStatus_gitBest_pull"
+	[[ "$currentExitStatus_gitBest_submodule_update" != "0" ]] && return "$currentExitStatus_gitBest_submodule_update"
+	return 0
 }
 
 _gitClone_ubiquitous() {
+	local currentExitStatus_gitBest_clone="0"
+	local currentExitStatus_gitBest_submodule_update="0"
 	#git clone --depth 1 git@github.com:mirage335/ubiquitous_bash.git
 	_gitBest clone --recursive --depth 1 git@github.com:mirage335/ubiquitous_bash.git
+	currentExitStatus_gitBest_clone="$?"
+	_gitBest submodule update --recursive
+	currentExitStatus_gitBest_submodule_update="$?"
+	[[ "$currentExitStatus_gitBest_clone" != "0" ]] && return "$currentExitStatus_gitBest_clone"
+	[[ "$currentExitStatus_gitBest_submodule_update" != "0" ]] && return "$currentExitStatus_gitBest_submodule_update"
+	return 0
 }
 
 _selfCloneUbiquitous() {
+	local currentExitStatus
+	currentExitStatus="0"
+
 	"$scriptBin"/.ubrgbin.sh _ubrgbin_cpA "$scriptBin" "$ubcoreUBdir"/ > /dev/null 2>&1
 	cp -a "$scriptAbsoluteLocation" "$ubcoreUBdir"/lean.sh
 	cp -a "$scriptAbsoluteLocation" "$ubcoreUBdir"/ubcore.sh
@@ -42698,6 +43452,15 @@ _selfCloneUbiquitous() {
 	cp -a "$scriptAbsoluteLocation" "$ubcoreUBdir"/ubiquitous_bash.sh
 	
 	cp -a "$scriptAbsoluteFolder"/lean.py "$ubcoreUBdir"/lean.py > /dev/null 2>&1
+	[[ "$?" != "0" ]] && currentExitStatus="1"
+
+	mkdir "$ubcoreUBdir"/_lib/kit/app/researchEngine/kit/certs
+	if [[ -e "$scriptAbsoluteFolder"/_lib/kit/app/researchEngine/kit/certs ]]
+	then
+		cp -a "$scriptAbsoluteFolder"/_lib/kit/app/researchEngine/kit/certs/* "$ubcoreUBdir"/_lib/kit/app/researchEngine/kit/certs/
+	fi
+
+	return "$currentExitStatus"
 }
 
 _installUbiquitous() {
@@ -42721,11 +43484,15 @@ _installUbiquitous() {
 			#git pull
 			_gitBest pull
 			ub_gitPullStatus="$?"
+			_gitBest submodule update --recursive
+			[[ "$?" != "0" ]] && ub_gitPullStatus="1"
 			#[[ "$ub_gitPullStatus" != 0 ]] && git pull && ub_gitPullStatus="$?"
 			if [[ "$ub_gitPullStatus" != 0 ]]
 			then
 				_gitBest pull
 				ub_gitPullStatus="$?"
+				_gitBest submodule update --recursive
+				[[ "$?" != "0" ]] && ub_gitPullStatus="1"
 			fi
 			! cd "$localFunctionEntryPWD" && return 1
 
@@ -42756,11 +43523,14 @@ _installUbiquitous() {
 		[[ -e "$scriptAbsoluteFolder"/ubcore_compressed.sh ]] && rm -f "$ubcoreUBdir"/ubcore_compressed.sh > /dev/null 2>&1
 		[[ -e "$scriptAbsoluteFolder"/ubiquitous_bash_compressed.sh ]] && rm -f "$ubcoreUBdir"/ubiquitous_bash_compressed.sh > /dev/null 2>&1
 		[[ -e "$scriptAbsoluteFolder"/lean.py ]] && rm -f "$ubcoreUBdir"/lean.py > /dev/null 2>&1
+		#[[ -e "$scriptAbsoluteFolder"/_lib/kit/app/researchEngine/kit/certs/* ]] && rm -f "$ubcoreUBdir"/_lib/kit/app/researchEngine/kit/certs/* > /dev/null 2>&1
 		#git reset --hard
 		#git pull "$scriptAbsoluteFolder"
 		_gitBest pull "$scriptAbsoluteFolder"
 		_gitBest reset --hard
 		ub_gitPullStatus="$?"
+		_gitBest submodule update --recursive
+		[[ "$?" != "0" ]] && ub_gitPullStatus="1"
 		! cd "$localFunctionEntryPWD" && return 1
 		
 		[[ "$ub_gitPullStatus" == "0" ]] && _messagePlain_good 'pass: self git pull' && cd "$localFunctionEntryPWD" && return 0
@@ -42879,6 +43649,9 @@ _setupUbiquitous() {
 	_messageNormal "install: setupUbiquitous_accessories"
 	
 	_setupUbiquitous_accessories "$@"
+
+
+	_install_certs "$@"
 	
 	
 	_messageNormal "request: setupUbiquitous_accessories , setupUbiquitous"
@@ -44913,6 +45686,8 @@ then
 	fi
 fi
 
+export scriptCall_bash="$scriptAbsoluteFolder"'/_bash.bat'
+export scriptCall_bin="$scriptAbsoluteFolder"/_bin.bat
 if type cygpath > /dev/null 2>&1
 then
     export scriptAbsoluteLocation_msw=$(cygpath -w "$scriptAbsoluteLocation")
@@ -44921,9 +45696,7 @@ then
 	export scriptLocal_msw=$(cygpath -w "$scriptLocal")
     export scriptLib_msw=$(cygpath -w "$scriptLib")
     
-	export scriptCall_bash="$scriptAbsoluteFolder"'/_bash.bat'
     export scriptCall_bash_msw="$scriptAbsoluteFolder_msw"'\_bash.bat'
-	export scriptCall_bin="$scriptAbsoluteFolder"/_bin.bat
     export scriptCall_bin_msw="$scriptAbsoluteFolder_msw"'\_bin.bat'
 fi
 
@@ -51590,7 +52363,9 @@ _stop() {
 		rm -f "$currentAxelTmpFile"* > /dev/null 2>&1
 	fi
 
+	[[ -e "$scriptLocal"/python_nix.lock ]] && [[ $(head -c $(echo -n "$sessionid" | wc -c | tr -dc '0-9') "$scriptLocal"/python_nix.lock 2> /dev/null ) == "$sessionid" ]] && rm -f "$scriptLocal"/python_nix.lock > /dev/null 2>&1
 	[[ -e "$scriptLocal"/python_msw.lock ]] && [[ $(head -c $(echo -n "$sessionid" | wc -c | tr -dc '0-9') "$scriptLocal"/python_msw.lock 2> /dev/null ) == "$sessionid" ]] && rm -f "$scriptLocal"/python_msw.lock > /dev/null 2>&1
+	[[ -e "$scriptLocal"/python_cygwin.lock ]] && [[ $(head -c $(echo -n "$sessionid" | wc -c | tr -dc '0-9') "$scriptLocal"/python_cygwin.lock 2> /dev/null ) == "$sessionid" ]] && rm -f "$scriptLocal"/python_cygwin.lock > /dev/null 2>&1
 	
 	_stop_stty_echo
 	if [[ "$1" != "" ]]
@@ -54978,6 +55753,8 @@ def _python():
     shell = code.InteractiveConsole(variables)
     # ATTRIBUTION-AI: ChatGPT 4.1  2025-04-19
     if os.name == 'nt':  # True on Windows
+        print(" Press Ctrl+D twice (or Ctrl+Z then Enter) to exit this Python shell.")
+    if os.name == 'posix':
         print(" Press Ctrl+D twice (or Ctrl+Z then Enter) to exit this Python shell.")
     # ATTRIBUTION: NOT AI !
     shell.interact()
