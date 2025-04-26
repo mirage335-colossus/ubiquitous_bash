@@ -169,6 +169,8 @@ then
 	fi
 fi
 
+export scriptCall_bash="$scriptAbsoluteFolder"'/_bash.bat'
+export scriptCall_bin="$scriptAbsoluteFolder"/_bin.bat
 if type cygpath > /dev/null 2>&1
 then
     export scriptAbsoluteLocation_msw=$(cygpath -w "$scriptAbsoluteLocation")
@@ -177,9 +179,7 @@ then
 	export scriptLocal_msw=$(cygpath -w "$scriptLocal")
     export scriptLib_msw=$(cygpath -w "$scriptLib")
     
-	export scriptCall_bash="$scriptAbsoluteFolder"'/_bash.bat'
     export scriptCall_bash_msw="$scriptAbsoluteFolder_msw"'\_bash.bat'
-	export scriptCall_bin="$scriptAbsoluteFolder"/_bin.bat
     export scriptCall_bin_msw="$scriptAbsoluteFolder_msw"'\_bin.bat'
 fi
 

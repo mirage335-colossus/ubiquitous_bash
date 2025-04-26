@@ -26,6 +26,17 @@ pip list | cut -f1 -d\  | grep -v '^Package$' | grep -v '\------------------'
 
 
 
+# Scratch
+
+sudo -n pip cache purge ; pip cache purge ; rm -r ./_local/python_nix ./_local/dumbpath.var ; ./ubiquitous_bash.sh _nix_python
+
+
+
+
+
+
+
+
 # Scrap
 
 

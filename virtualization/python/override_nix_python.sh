@@ -35,13 +35,17 @@ _nix_python() {
 
 
     # WARNING: May be untested.
-    #python "$scriptLib"'\python\lean.py' '_bin(["sleep", "90",], True, r"'"$scriptCall_bin"'")'
+    
+    # "$scriptCall_bin" # _bin.bat (replace "$scriptAbsoluteLocation")
+    # "$scriptCall_bin" # _bash.bat (replace "$scriptAbsoluteLocation")
 
-    #python "$scriptAbsoluteFolder"'\lean.py' '_bash(["-i"], True, r"'"$scriptCall_bash"'")'
+    #python "$scriptLib"'/python/lean.py' '_bin(["sleep", "90",], True, r"'"$scriptAbsoluteLocation"'")'
 
-    python "$scriptAbsoluteFolder"'\lean.py' '_bin(["_demo_nix_python",], True, r"'"$scriptCall_bin"'", interactive=True)'
+    #python "$scriptAbsoluteFolder"'/lean.py' '_bash(["-i"], True, r"'"$scriptAbsoluteLocation"'")'
 
-    #python -i "$scriptAbsoluteFolder"'\lean.py' '_python()'
+    #python "$scriptAbsoluteFolder"'/lean.py' '_bin(["_demo_nix_python",], True, r"'"$scriptAbsoluteLocation"'", interactive=True)'
+
+    python -i "$scriptAbsoluteFolder"'/lean.py' '_python()'
 
     #_bash
 }
@@ -57,6 +61,19 @@ _nix_python_bin() {
 
     _bin "$@"
 }
+
+
+# ATTENTION: Call from '_test_prog' with 'core.sh' or similar.
+# _setup calls _test calls _test_prog
+_test_nix_python() {
+    _prepare_nix_python
+}
+
+
+
+
+
+
 
 
 
@@ -204,14 +221,14 @@ _prepare_nix_python_3() {
         python3 -m venv default_venv > /dev/null >&2
 
         
-        cp -a default_venv/Scripts/activate default_venv/Scripts/activate_nix
-        #dos2unix default_venv/Scripts/activate_nix
-        chmod u+x default_venv/Scripts/activate_nix
+        cp -a default_venv/bin/activate default_venv/bin/activate_nix
+        #dos2unix default_venv/bin/activate_nix
+        chmod u+x default_venv/bin/activate_nix
 
-        #source default_venv/Scripts/activate > /dev/null >&2
-        _messagePlain_probe source default_venv/Scripts/activate_nix > /dev/null >&2
-        source default_venv/Scripts/activate_nix > /dev/null >&2
-        PATH="$currentPATH"
+        #source default_venv/bin/activate > /dev/null >&2
+        _messagePlain_probe source default_venv/bin/activate_nix > /dev/null >&2
+        source default_venv/bin/activate_nix > /dev/null >&2
+        #PATH="$currentPATH"
 
         _messagePlain_nominal 'prepare: venv: set' > /dev/null >&2
         _set_nix_python_procedure
@@ -230,7 +247,7 @@ _prepare_nix_python_3() {
         # morsels...
         _messagePlain_nominal 'prepare: morsels: pip' > /dev/null >&2
 
-        _morsels_nix_pip_python_3_10
+        _morsels_nix_pip_python_3
 
 
 
@@ -261,10 +278,10 @@ _prepare_nix_python_3() {
 #then
     _messagePlain_nominal 'prepare: venv: activate' > /dev/null >&2
     ! cd "$scriptLocal"/python_nix/venv && _stop 1
-    #sourcedefault_venv/Scripts/activate > /dev/null >&2
-    _messagePlain_probe source  default_venv/Scripts/activate_nix > /dev/null >&2
-    source default_venv/Scripts/activate_nix > /dev/null >&2
-    PATH="$currentPATH"
+    #source default_venv/bin/activate > /dev/null >&2
+    _messagePlain_probe source default_venv/bin/activate_nix > /dev/null >&2
+    source default_venv/bin/activate_nix > /dev/null >&2
+    #PATH="$currentPATH"
 
     _messagePlain_nominal 'prepare: venv: set' > /dev/null >&2
     _set_nix_python_procedure
@@ -284,6 +301,7 @@ _prepare_nix_python_3() {
 
 
     rm -f "$scriptLocal"/python_nix.lock
+    _messagePlain_nominal 'done: prepare: '${FUNCNAME[0]} > /dev/null >&2
 }
 
 
@@ -293,7 +311,7 @@ _prepare_nix_python_3() {
 
 
 # EXAMPLE. Override (preferred) or implement alternative (discouraged) with 'core.sh', 'ops.sh', or similar.
-_morsels_nix_pip_python_3_10() {
+_morsels_nix_pip_python_3() {
     local currentPackages_indicator_list=( "huggingface_hub[cli]" )
     local currentPackages_list=( "huggingface_hub[cli]" )
     local currentPackage
@@ -306,14 +324,19 @@ _morsels_nix_pip_python_3_10() {
     done
     [[ "$currentWork" == "false" ]] && return 0
 
-    [[ "$nonet" != "true" ]] && python -m pip install --upgrade pip > /dev/null >&2
+    #[[ "$nonet" != "true" ]] && python -m pip install --upgrade pip > /dev/null >&2
+    [[ "$nonet" != "true" ]] && python -m pip install --upgrade pip > /dev/null 2>&1
+    [[ "$nonet" != "true" ]] && sudo -n python -m pip install --upgrade pip > /dev/null 2>&1
 
     for currentPackage in "${currentPackages_list[@]}"
     do
         #,win32,win_arm64
         [[ "$nonet" != "true" ]] && pip download "$currentPackage" --platform win_amd64 --only-binary=:all: --dest "$scriptAbsoluteFolder"/_bundle/morsels/pip > /dev/null >&2
         
-        pip install --no-index --find-links="$scriptAbsoluteFolder"/_bundle/morsels/pip "$currentPackage" > /dev/null >&2
+        #pip install --no-index --find-links="$scriptAbsoluteFolder"/_bundle/morsels/pip "$currentPackage" > /dev/null >&2
+        pip install --no-index --find-links="$scriptAbsoluteFolder"/_bundle/morsels/pip "$currentPackage" > /dev/null 2>&1
+        sudo -n pip install --no-index --find-links="$scriptAbsoluteFolder"/_bundle/morsels/pip "$currentPackage" > /dev/null 2>&1
+        sudo -n env DEBIAN_FRONTEND=noninteractive apt-get install --install-recommends -y libreadline-dev > /dev/null 2>&1
 
         # Strongly discouraged! Avoid surprise breakage by never relying on upstream repositories.
         #[[ "$nonet" != "true" ]] && pip install "$currentPackage" > /dev/null >&2
@@ -340,7 +363,25 @@ _morsels_nix_pip_python_3_10() {
 
 
 
+_special_nix_pip_install_nonet_sequence() {
+    _start
 
+    local currentFile
+    local currentFile_basename
+    #for currentFile in "$lib_dir_nix_python_wheels"/"$3"*
+    for currentFile in $(ls -1 "$lib_dir_nix_python_wheels"/"$3"* | sort -V -r)
+    do
+        currentFile_basename=$(basename "$currentFile")
+        cp -f "$currentFile" "$safeTmp"/"$currentFile_basename"
+        
+        "$1"pip install --no-index --find-links="$lib_dir_nix_python_wheels" "$3" > /dev/null >&2
+        "$1"pip install --no-index --no-build-isolation --find-links="$lib_dir_nix_python_wheels" "$3" > /dev/null >&2
+
+        rm -f "$safeTmp"/"$currentFile_basename"
+    done
+
+    _stop
+}
 
 
 
@@ -350,19 +391,19 @@ _discover-nix_python() {
 _discover_procedure-nix_python() {
     export lib_dir_nix_python_wheels
     
-    export lib_dir_nix_python_wheels="$scriptAbsoluteFolder"/.nix_python_wheels
+    export lib_dir_nix_python_wheels="$scriptAbsoluteFolder"/.python_wheels/nix
     if [[ -e "$lib_dir_nix_python_wheels" ]]
     then
         . "$lib_dir_nix_python_wheels"/_nix_python_wheels.sh
         return 0
     fi
-    export lib_dir_nix_python_wheels="$scriptLocal"/.nix_python_wheels
+    export lib_dir_nix_python_wheels="$scriptLocal"/.python_wheels/nix
     if [[ -e "$lib_dir_nix_python_wheels" ]]
     then
         . "$lib_dir_nix_python_wheels"/_nix_python_wheels.sh
         return 0
     fi
-    export lib_dir_nix_python_wheels="$scriptLib"/.nix_python_wheels
+    export lib_dir_nix_python_wheels="$scriptLib"/.python_wheels/nix
     if [[ -e "$lib_dir_nix_python_wheels" ]]
     then
         . "$lib_dir_nix_python_wheels"/_nix_python_wheels.sh
@@ -370,13 +411,13 @@ _discover_procedure-nix_python() {
     fi
 
     
-    export lib_dir_nix_python_wheels="$scriptLib"/ubiquitous_bash/_lib/.nix_python_wheels
+    export lib_dir_nix_python_wheels="$scriptLib"/ubiquitous_bash/_lib/.python_wheels/nix
     if [[ -e "$lib_dir_nix_python_wheels" ]]
     then
         . "$lib_dir_nix_python_wheels"/_nix_python_wheels.sh
         return 0
     fi
-    export lib_dir_nix_python_wheels="$scriptLib"/ubDistBuild/_lib/ubiquitous_bash/_lib/.nix_python_wheels
+    export lib_dir_nix_python_wheels="$scriptLib"/ubDistBuild/_lib/ubiquitous_bash/_lib/.python_wheels/nix
     if [[ -e "$lib_dir_nix_python_wheels" ]]
     then
         . "$lib_dir_nix_python_wheels"/_nix_python_wheels.sh
@@ -392,7 +433,7 @@ _install_dependencies_nix_python_procedure-specific() {
     _discover-nix_python
 
     # Not all of these packages if any are necessary (ie. may be dummy packages just to test the system).
-    local currentPackages_list=("readline" "colorama")
+    local currentPackages_list=("setuptools" "readline" "colorama")
     local currentPackage
 
     if [[ "$nonet" != "true" ]]
@@ -421,14 +462,28 @@ _install_dependencies_nix_python_procedure-specific() {
                 "$1"pip show "$3" > /dev/null 2>&1 && return 0
                 #"$2"python -m pip show "$3" > /dev/null 2>&1 && return 0
 
+                #--no-deps
                 #--python-version 3.1
-                "$1"pip download "$3" --platform win_amd64 --only-binary=:all: --dest "$lib_dir_nix_python_wheels" > /dev/null >&2
-                #"$1"pip download "$3" --platform win32 --only-binary=:all: --dest "$lib_dir_nix_python_wheels" > /dev/null >&2
-                "$1"pip download "$3" --platform win_arm64 --only-binary=:all: --dest "$lib_dir_nix_python_wheels" > /dev/null >&2
+                "$1"pip download "$3" --platform linux_x86_64 --no-deps --dest "$lib_dir_nix_python_wheels" > /dev/null >&2
+                #"$1"pip download "$3" --platform manylinux2014_x86_64 --no-deps --dest "$lib_dir_nix_python_wheels" > /dev/null >&2
+                "$1"pip download "$3" --platform manylinux1 --no-deps --dest "$lib_dir_nix_python_wheels" > /dev/null >&2
+                "$1"pip download "$3" --platform any --no-deps --dest "$lib_dir_nix_python_wheels" > /dev/null >&2
                 
-                #"$2"python -m pip download "$3" --platform win_amd64 --only-binary=:all: --dest "$lib_dir_nix_python_wheels" > /dev/null >&2
-                #"$2"python -m pip download "$3" --platform win32 --only-binary=:all: --dest "$lib_dir_nix_python_wheels" > /dev/null >&2
-                #"$2"python -m pip download "$3" --platform win_arm64 --only-binary=:all: --dest "$lib_dir_nix_python_wheels" > /dev/null >&2
+                #"$2"python -m pip download "$3" --platform linux_x86_64 --no-deps --dest "$lib_dir_nix_python_wheels" > /dev/null >&2
+                #"$2"python -m pip download "$3" --platform manylinux2014_x86_64 --no-deps --dest "$lib_dir_nix_python_wheels" > /dev/null >&2
+                #"$2"python -m pip download "$3" --platform manylinux1 --no-deps --dest "$lib_dir_nix_python_wheels" > /dev/null >&2
+                #"$2"python -m pip download "$3" --platform any --no-deps --dest "$lib_dir_nix_python_wheels" > /dev/null >&2
+
+                
+                "$1"pip download "$3" --platform linux_x86_64 --only-binary=:all: --dest "$lib_dir_nix_python_wheels" > /dev/null >&2
+                #"$1"pip download "$3" --platform manylinux2014_x86_64 --only-binary=:all: --dest "$lib_dir_nix_python_wheels" > /dev/null >&2
+                "$1"pip download "$3" --platform manylinux1 --only-binary=:all: --dest "$lib_dir_nix_python_wheels" > /dev/null >&2
+                "$1"pip download "$3" --platform any --only-binary=:all: --dest "$lib_dir_nix_python_wheels" > /dev/null >&2
+                
+                #"$2"python -m pip download "$3" --platform linux_x86_64 --only-binary=:all: --dest "$lib_dir_nix_python_wheels" > /dev/null >&2
+                #"$2"python -m pip download "$3" --platform manylinux2014_x86_64 --only-binary=:all: --dest "$lib_dir_nix_python_wheels" > /dev/null >&2
+                #"$2"python -m pip download "$3" --platform manylinux1 --only-binary=:all: --dest "$lib_dir_nix_python_wheels" > /dev/null >&2
+                #"$2"python -m pip download "$3" --platform any --only-binary=:all: --dest "$lib_dir_nix_python_wheels" > /dev/null >&2
             }
 
             for currentPackage in "${currentPackages_list[@]}"
@@ -445,7 +500,9 @@ _install_dependencies_nix_python_procedure-specific() {
             "$1"pip show "$3" > /dev/null 2>&1 && return 0
             #"$2"python -m pip show "$3" > /dev/null 2>&1 && return 0
 
-            "$1"pip install --no-index --find-links="$lib_dir_nix_python_wheels" "$3" > /dev/null >&2
+            #"$1"pip install --no-index --find-links="$lib_dir_nix_python_wheels" "$3" > /dev/null >&2
+            #"$1"pip install --no-index --no-build-isolation --find-links="$lib_dir_nix_python_wheels" "$3" > /dev/null >&2
+            "$scriptAbsoluteLocation" _special_nix_pip_install_nonet_sequence "$@"
             #"$2"python -m pip install --no-index --find-links="$lib_dir_nix_python_wheels" "$3" > /dev/null >&2
         }
         for currentPackage in "${currentPackages_list[@]}"
@@ -517,7 +574,7 @@ _prepare_nix_python_procedure() {
     [[ ! -e "$scriptLocal"/python_nix/lean.py ]] && ( _messagePlain_warn 'warn: missing: scriptLocal/python_nix/lean.py' >&2 ) > /dev/null
 
 
-    _install_dependencies_nix_python_procedure-specific "" ""
+    _install_dependencies_nix_python_procedure-specific "" "" > /dev/null 2>&1
 
     return 0
 }
@@ -528,6 +585,10 @@ _prepare_nix_python_procedure() {
 
 # CAUTION: May be called by _setupUbiquitous_accessories_here-python_hook .
 _set_nix_python_procedure() {
+
+    #export PATH="$VIRTUAL_ENV/"bin":$PATH"
+
+
     # DUBIOUS
     #export _transformersCache="$scriptLocal"/transformers-cache
 

@@ -1,3 +1,6 @@
 [submodule "_lib/kit/app/researchEngine"]
 	path = _lib/kit/app/researchEngine
 	url = https://github.com/mirage335-special/kit-researchEngine.git
+[submodule "_lib/.python_wheels"]
+	path = _lib/.python_wheels
+	url = https://github.com/mirage335-special/.python_wheels.git

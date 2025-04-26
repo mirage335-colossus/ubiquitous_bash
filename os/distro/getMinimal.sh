@@ -320,6 +320,7 @@ _getMinimal_cloud() {
 	_getMost_backend_aptGetInstall xz-utils
 	
 	_getMost_backend_aptGetInstall libreadline8
+	_getMost_backend_aptGetInstall libreadline-dev
 	
 	
 	_getMost_backend_aptGetInstall mkisofs

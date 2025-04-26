@@ -59,6 +59,19 @@ _msw_python_bin() {
 }
 
 
+# ATTENTION: Call from '_test_prog' with 'core.sh' or similar.
+# _setup calls _test calls _test_prog
+_test_msw_python() {
+    _prepare_msw_python
+}
+
+
+
+
+
+
+
+
 
 
 # EXAMPLE. Override or implement alternative with 'core.sh', 'ops.sh', or similar.
@@ -287,6 +300,7 @@ _prepare_msw_python_3_10() {
 
 
     rm -f "$scriptLocal"/python_msw.lock
+    _messagePlain_nominal 'done: prepare: '${FUNCNAME[0]} > /dev/null >&2
 }
 
 
@@ -369,19 +383,19 @@ _discover-msw_python() {
 _discover_procedure-msw_python() {
     export lib_dir_msw_python_wheels
     
-    export lib_dir_msw_python_wheels="$scriptAbsoluteFolder"/.msw_python_wheels
+    export lib_dir_msw_python_wheels="$scriptAbsoluteFolder"/.python_wheels/msw
     if [[ -e "$lib_dir_msw_python_wheels" ]]
     then
         . "$lib_dir_msw_python_wheels"/_msw_python_wheels.sh
         return 0
     fi
-    export lib_dir_msw_python_wheels="$scriptLocal"/.msw_python_wheels
+    export lib_dir_msw_python_wheels="$scriptLocal"/.python_wheels/msw
     if [[ -e "$lib_dir_msw_python_wheels" ]]
     then
         . "$lib_dir_msw_python_wheels"/_msw_python_wheels.sh
         return 0
     fi
-    export lib_dir_msw_python_wheels="$scriptLib"/.msw_python_wheels
+    export lib_dir_msw_python_wheels="$scriptLib"/.python_wheels/msw
     if [[ -e "$lib_dir_msw_python_wheels" ]]
     then
         . "$lib_dir_msw_python_wheels"/_msw_python_wheels.sh
@@ -389,13 +403,13 @@ _discover_procedure-msw_python() {
     fi
 
     
-    export lib_dir_msw_python_wheels="$scriptLib"/ubiquitous_bash/_lib/.msw_python_wheels
+    export lib_dir_msw_python_wheels="$scriptLib"/ubiquitous_bash/_lib/.python_wheels/msw
     if [[ -e "$lib_dir_msw_python_wheels" ]]
     then
         . "$lib_dir_msw_python_wheels"/_msw_python_wheels.sh
         return 0
     fi
-    export lib_dir_msw_python_wheels="$scriptLib"/ubDistBuild/_lib/ubiquitous_bash/_lib/.msw_python_wheels
+    export lib_dir_msw_python_wheels="$scriptLib"/ubDistBuild/_lib/ubiquitous_bash/_lib/.python_wheels/msw
     if [[ -e "$lib_dir_msw_python_wheels" ]]
     then
         . "$lib_dir_msw_python_wheels"/_msw_python_wheels.sh
