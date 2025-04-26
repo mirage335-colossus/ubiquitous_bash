@@ -433,6 +433,8 @@ def _python():
     # ATTRIBUTION-AI: ChatGPT 4.1  2025-04-19
     if os.name == 'nt':  # True on Windows
         print(" Press Ctrl+D twice (or Ctrl+Z then Enter) to exit this Python shell.")
+    if os.name == 'posix':
+-        print(" Press Ctrl+D twice (or Ctrl+Z then Enter) to exit this Python shell.")
     # ATTRIBUTION: NOT AI !
     shell.interact()
 
