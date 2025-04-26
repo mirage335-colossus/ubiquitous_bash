@@ -362,9 +362,14 @@ _morsels_nix_pip_python_3() {
 
 
 
-
+# Workaround for pip using the newest saved non-binary wheel package (usually a .tar...) regardless of compatibility.
 _special_nix_pip_install_nonet_sequence() {
     _start
+        
+    #"$1"pip install --no-index --find-links="$lib_dir_nix_python_wheels" "$3" > /dev/null >&2
+    #"$1"pip install --no-index --no-build-isolation --find-links="$lib_dir_nix_python_wheels" "$3" > /dev/null >&2
+
+    cp "$lib_dir_nix_python_wheels"/*.whl "$safeTmp"/
 
     local currentFile
     local currentFile_basename
@@ -374,8 +379,8 @@ _special_nix_pip_install_nonet_sequence() {
         currentFile_basename=$(basename "$currentFile")
         cp -f "$currentFile" "$safeTmp"/"$currentFile_basename"
         
-        "$1"pip install --no-index --find-links="$lib_dir_nix_python_wheels" "$3" > /dev/null >&2
-        "$1"pip install --no-index --no-build-isolation --find-links="$lib_dir_nix_python_wheels" "$3" > /dev/null >&2
+        "$1"pip install --no-index --find-links="$safeTmp" "$3" > /dev/null >&2
+        "$1"pip install --no-index --no-build-isolation --find-links="$safeTmp" "$3" > /dev/null >&2
 
         rm -f "$safeTmp"/"$currentFile_basename"
     done
