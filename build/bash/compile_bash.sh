@@ -821,6 +821,7 @@ _compile_bash_utilities_virtualization() {
 	[[ "$enUb_virt_python" == "true" ]] && includeScriptList+=( "virtualization/python"/override_msw_python.sh )
 	[[ "$enUb_virt_python" == "true" ]] && includeScriptList+=( "virtualization/python"/override_cygwin_python.sh )
 	[[ "$enUb_virt_python" == "true" ]] && includeScriptList+=( "virtualization/python"/override_nix_python.sh )
+	[[ "$enUb_virt_python" == "true" ]] && includeScriptList+=( "virtualization/python"/special_python.sh )
 	
 	[[ "$enUb_image" == "true" ]] && includeScriptList+=( "virtualization/image"/mountimage.sh )
 	[[ "$enUb_image" == "true" ]] && includeScriptList+=( "virtualization/image"/createImage.sh )
@@ -1068,6 +1069,8 @@ _compile_bash_shortcuts_setup() {
 	includeScriptList+=( "shortcuts"/setupUbiquitous_accessories.sh )
 	
 	includeScriptList+=( "shortcuts"/setupUbiquitous_here.sh )
+
+	includeScriptList+=( "shortcuts"/setupUbiquitous_root.sh )
 	includeScriptList+=( "shortcuts"/setupUbiquitous.sh )
 }
 
