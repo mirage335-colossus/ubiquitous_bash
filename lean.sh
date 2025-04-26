@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='3068343066'
+export ub_setScriptChecksum_contents='3398961696'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -6687,6 +6687,50 @@ _demo_nix_python() {
     _bash
 }
 
+
+
+# ATTENTION: EXAMPLE. Override or implement alternative with 'core.sh', 'ops.sh', or similar.
+# ATTENTION: Also create "$scriptLib"/python/lean.py .
+_special_packages() {
+    #export dependencies_nix_python=( "readline" )
+    #export packages_nix_python=( "huggingface_hub[cli]" )
+
+    #export dependencies_msw_python=( "pyreadline3" )
+    #export packages_msw_python=( "huggingface_hub[cli]" )
+        
+    #export dependencies_cyg_python=( "readline" )
+    #export packages_cyg_python=( "huggingface_hub[cli]" )
+
+    true
+}
+_special_python() {
+    _special_packages
+
+    if _if_cygwin
+    then
+        _msw_python "$@"
+        return
+    fi
+
+    _nix_python "$@"
+    return
+}
+# ATTENTION: Call from '_test_prog' with 'core.sh' or similar.
+# _setup calls _test calls _test_prog
+_test_special_python() {
+    _special_packages
+
+    if _if_cygwin
+    then
+        _test_msw_python "$@"
+        return
+    fi
+
+    _test_nix_python "$@"
+    return
+}
+
+
 #####Shortcuts
 
 # https://unix.stackexchange.com/questions/434409/make-a-bash-ps1-that-counts-streak-of-correct-commands
@@ -10110,6 +10154,82 @@ _setupUbiquitous_resize() {
 	echo "true"
 	
 }
+
+
+
+_install_certs() {
+    _messageNormal 'install: certs'
+    if _if_cygwin
+    then
+        # Editing the Cygwin root filesystem itself, root permissions granted within Cygwin environment itself are effective.
+        sudo() {
+            [[ "$1" == "-n" ]] && shift
+            "$@"
+        }
+    fi
+
+    #"$HOME"/core/data/certs/
+    #/usr/local/share/ca-certificates/
+    #/etc/pki/ca-trust/source/anchors/
+
+    #update-ca-certificates
+    #update-ca-trust
+
+    _install_certs_cp_procedure() {
+        _messagePlain_nominal '_install_certs: install: '"$2"
+        [[ -e "$2" ]] && sudo -n cp -f "$1"/*.crt "$2"
+    }
+    _install_certs_cp() {
+        [[ -e /cygdrive/c/core ]] && mkdir -p /cygdrive/c/core/data/certs/
+        _install_certs_cp_procedure "$1" /cygdrive/c/core/data/certs/
+
+        mkdir -p "$HOME"/core/data/certs/
+        _install_certs_cp_procedure "$1" "$HOME"/core/data/certs/
+
+        _install_certs_cp_procedure "$1" /usr/local/share/ca-certificates/
+
+        _if_cygwin && _install_certs_cp_procedure "$1" /etc/pki/ca-trust/source/anchors/
+
+        return 0
+    }
+    _install_certs_write() {
+        if [[ -e "$scriptAbsoluteFolder"/_lib/kit/app/researchEngine/kit/certs ]]
+        then
+            _install_certs_cp "$scriptAbsoluteFolder"/_lib/kit/app/researchEngine/kit/certs
+            return
+        fi
+        if [[ -e "$scriptAbsoluteFolder"/_lib/ubiquitous_bash/_lib/kit/app/researchEngine/kit/certs ]]
+        then
+            _install_certs_cp "$scriptAbsoluteFolder"/_lib/ubiquitous_bash/_lib/kit/app/researchEngine/kit/certs
+            return
+        fi
+        if [[ -e "$scriptAbsoluteFolder"/_lib/ubDistBuild/_lib/ubiquitous_bash/_lib/kit/app/researchEngine/kit/certs ]]
+        then
+            _install_certs_cp "$scriptAbsoluteFolder"/_lib/ubDistBuild/_lib/ubiquitous_bash/_lib/kit/app/researchEngine/kit/certs
+            return
+        fi
+        return 1
+    }
+
+
+    _if_cygwin && sudo -n rm -f /etc/pki/tls/certs/*.0
+
+    _install_certs_write
+
+    local currentExitStatus="1"
+    ! _if_cygwin && sudo -n update-ca-certificates
+    [[ "$?" == "0" ]] && currentExitStatus="0"
+    _if_cygwin && sudo -n update-ca-trust
+    [[ "$?" == "0" ]] && currentExitStatus="0"
+
+    return "$currentExitStatus"
+}
+
+
+
+
+
+
 
 _configureLocal() {
 	_configureFile "$1" "_local"
