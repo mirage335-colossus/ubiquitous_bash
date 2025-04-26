@@ -8,8 +8,12 @@
 
 
 
-# EXAMPLE. Override or implement alternative with 'core.sh', 'ops.sh', or similar.
+# ATTENTION: EXAMPLE. Override or implement alternative with 'core.sh', 'ops.sh', or similar.
+# ATTENTION: Also create "$scriptLib"/python/lean.py .
 _nix_python() {
+    export dependencies_nix_python=( "readline" )
+    export packages_nix_python=( "huggingface_hub[cli]" )
+
     #implies sequence
     _prepare_nix_python
 
@@ -43,19 +47,25 @@ _nix_python() {
 
     #python "$scriptAbsoluteFolder"'/lean.py' '_bash(["-i"], True, r"'"$scriptAbsoluteLocation"'")'
 
-    #python "$scriptAbsoluteFolder"'/lean.py' '_bin(["_demo_nix_python",], True, r"'"$scriptAbsoluteLocation"'", interactive=True)'
+    python "$scriptAbsoluteFolder"'/lean.py' '_bin(["_demo_nix_python",], True, r"'"$scriptAbsoluteLocation"'", interactive=True)'
 
-    python -i "$scriptAbsoluteFolder"'/lean.py' '_python()'
+    #python -i "$scriptAbsoluteFolder"'/lean.py' '_python()'
 
     #_bash
 }
 _nix_python_bash() {
+    #export dependencies_nix_python=( "readline" )
+    #export packages_nix_python=( "huggingface_hub[cli]" )
+
     #implies sequence
     _prepare_nix_python
 
     _bash
 }
 _nix_python_bin() {
+    #export dependencies_nix_python=( "readline" )
+    #export packages_nix_python=( "huggingface_hub[cli]" )
+
     #implies sequence
     _prepare_nix_python
 
@@ -66,6 +76,9 @@ _nix_python_bin() {
 # ATTENTION: Call from '_test_prog' with 'core.sh' or similar.
 # _setup calls _test calls _test_prog
 _test_nix_python() {
+    #export dependencies_nix_python=( "readline" )
+    #export packages_nix_python=( "huggingface_hub[cli]" )
+
     _prepare_nix_python
 }
 
@@ -312,9 +325,19 @@ _prepare_nix_python_3() {
 
 # EXAMPLE. Override (preferred) or implement alternative (discouraged) with 'core.sh', 'ops.sh', or similar.
 _morsels_nix_pip_python_3() {
-    local currentPackages_indicator_list=( "huggingface_hub[cli]" )
+    #export packages_nix_python=( "huggingface_hub[cli]" )
+    local currentPackages_indicator_list=( "huggingface_hub[cli]" "${packages_nix_python[@]}" )
     local currentPackages_list=( "huggingface_hub[cli]" )
     local currentPackage
+
+    #export nonet_available="true"
+    ( ! wget -qO- 'https://github.com' > /dev/null || ! wget -qO- 'https://pypi.org/simple/' | head > /dev/null ) && export nonet_available="true"
+    local currentIteration_nonet="0"
+    while [[ "$nonet_available" == "true" ]] && [[ "$CI" != "" ]] && [[ "$currentIteration_nonet" -lt 90 ]]
+    do
+        ( wget -qO- 'https://github.com' > /dev/null && wget -qO- 'https://pypi.org/simple/' | head > /dev/null ) && export nonet_available="" && unset nonet_available
+        let currentIteration_nonet++
+    done
 
     local currentWork="false"
     for currentPackage in "${currentPackages_indicator_list[@]}"
@@ -324,23 +347,24 @@ _morsels_nix_pip_python_3() {
     done
     [[ "$currentWork" == "false" ]] && return 0
 
-    #[[ "$nonet" != "true" ]] && python -m pip install --upgrade pip > /dev/null >&2
-    [[ "$nonet" != "true" ]] && python -m pip install --upgrade pip > /dev/null 2>&1
-    [[ "$nonet" != "true" ]] && sudo -n python -m pip install --upgrade pip > /dev/null 2>&1
+    #[[ "$nonet" != "true" ]] && [[ "$nonet_available" != "true" ]] && python -m pip install --upgrade pip > /dev/null >&2
+    [[ "$nonet" != "true" ]] && [[ "$nonet_available" != "true" ]] && python -m pip install --upgrade pip > /dev/null 2>&1
+    [[ "$nonet" != "true" ]] && [[ "$nonet_available" != "true" ]] && sudo -n python -m pip install --upgrade pip > /dev/null 2>&1
 
     for currentPackage in "${currentPackages_list[@]}"
     do
         #,win32,win_arm64
-        [[ "$nonet" != "true" ]] && pip download "$currentPackage" --platform win_amd64 --only-binary=:all: --dest "$scriptAbsoluteFolder"/_bundle/morsels/pip > /dev/null >&2
+        [[ "$nonet" != "true" ]] && [[ "$nonet_available" != "true" ]] && pip download "$currentPackage" --platform win_amd64 --only-binary=:all: --dest "$scriptAbsoluteFolder"/_bundle/morsels/pip > /dev/null >&2
         
         #pip install --no-index --find-links="$scriptAbsoluteFolder"/_bundle/morsels/pip "$currentPackage" > /dev/null >&2
         pip install --no-index --find-links="$scriptAbsoluteFolder"/_bundle/morsels/pip "$currentPackage" > /dev/null 2>&1
         sudo -n pip install --no-index --find-links="$scriptAbsoluteFolder"/_bundle/morsels/pip "$currentPackage" > /dev/null 2>&1
-        sudo -n env DEBIAN_FRONTEND=noninteractive apt-get install --install-recommends -y libreadline-dev > /dev/null 2>&1
 
         # Strongly discouraged! Avoid surprise breakage by never relying on upstream repositories.
-        #[[ "$nonet" != "true" ]] && pip install "$currentPackage" > /dev/null >&2
+        #[[ "$nonet" != "true" ]] && [[ "$nonet_available" != "true" ]] && pip install "$currentPackage" > /dev/null >&2
     done
+
+    #sudo -n env DEBIAN_FRONTEND=noninteractive apt-get install --install-recommends -y libreadline-dev > /dev/null 2>&1
 }
 
 
@@ -438,10 +462,21 @@ _install_dependencies_nix_python_procedure-specific() {
     _discover-nix_python
 
     # Not all of these packages if any are necessary (ie. may be dummy packages just to test the system).
-    local currentPackages_list=("setuptools" "readline" "colorama")
+    #export dependencies_nix_python=( "readline" )
+    local currentPackages_list=("setuptools" "readline" "colorama" "${dependencies_nix_python[@]}" )
     local currentPackage
+    
+    #export nonet_available="true"
+    ( ! wget -qO- 'https://github.com' > /dev/null || ! wget -qO- 'https://pypi.org/simple/' | head > /dev/null ) && export nonet_available="true"
+    local currentIteration_nonet="0"
+    while [[ "$nonet_available" == "true" ]] && [[ "$CI" != "" ]] && [[ "$currentIteration_nonet" -lt 90 ]]
+    do
+        ( wget -qO- 'https://github.com' > /dev/null && wget -qO- 'https://pypi.org/simple/' | head > /dev/null ) && export nonet_available="" && unset nonet_available
+        let currentIteration_nonet++
+    done
 
-    if [[ "$nonet" != "true" ]]
+
+    if [[ "$nonet" != "true" ]] && [[ "$nonet_available" != "true" ]]
     then
         _pip_upgrade() {
             local currentUpgrade="false"
@@ -457,7 +492,7 @@ _install_dependencies_nix_python_procedure-specific() {
     fi
 
 
-    if [[ "$nonet" != "true" ]]
+    if [[ "$nonet" != "true" ]] && [[ "$nonet_available" != "true" ]]
     then
 
         if [[ "$lib_dir_nix_python_wheels" != "" ]]
@@ -516,7 +551,7 @@ _install_dependencies_nix_python_procedure-specific() {
         done
     fi
     
-    if [[ "$nonet" != "true" ]]
+    if [[ "$nonet" != "true" ]] && [[ "$nonet_available" != "true" ]]
     then
         _pip_install() {
             "$1"pip show "$3" > /dev/null 2>&1 && return 0
@@ -530,6 +565,14 @@ _install_dependencies_nix_python_procedure-specific() {
             _pip_install "$1" "$2" "$currentPackage"
         done
     fi
+
+    sudo -n env DEBIAN_FRONTEND=noninteractive apt-get install --install-recommends -y libreadline-dev > /dev/null 2>&1
+
+    for currentPackage in "${currentPackages_list[@]}"
+    do
+        pip show "$currentPackage" > /dev/null 2>&1 && return 0
+    done
+    return 1
 }
 _install_dependencies_nix_python_sequence-specific() {
     _messageNormal '     install: dependencies: '"$1" > /dev/null >&2
