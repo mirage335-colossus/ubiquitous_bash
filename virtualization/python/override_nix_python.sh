@@ -11,8 +11,8 @@
 # ATTENTION: EXAMPLE. Override or implement alternative with 'core.sh', 'ops.sh', or similar.
 # ATTENTION: Also create "$scriptLib"/python/lean.py .
 _nix_python() {
-    export dependencies_nix_python=( "readline" )
-    export packages_nix_python=( "huggingface_hub[cli]" )
+    #export dependencies_nix_python=( "readline" )
+    #export packages_nix_python=( "huggingface_hub[cli]" )
 
     #implies sequence
     _prepare_nix_python
@@ -353,8 +353,10 @@ _morsels_nix_pip_python_3() {
 
     for currentPackage in "${currentPackages_list[@]}"
     do
-        #,win32,win_arm64
-        [[ "$nonet" != "true" ]] && [[ "$nonet_available" != "true" ]] && pip download "$currentPackage" --platform win_amd64 --only-binary=:all: --dest "$scriptAbsoluteFolder"/_bundle/morsels/pip > /dev/null >&2
+        [[ "$nonet" != "true" ]] && [[ "$nonet_available" != "true" ]] && pip download "$currentPackage" --platform linux_x86_64 --only-binary=:all: --dest "$scriptAbsoluteFolder"/_bundle/morsels/pip > /dev/null >&2
+        [[ "$nonet" != "true" ]] && [[ "$nonet_available" != "true" ]] && pip download "$currentPackage" --platform manylinux2014_x86_64 --only-binary=:all: --dest "$scriptAbsoluteFolder"/_bundle/morsels/pip > /dev/null >&2
+        [[ "$nonet" != "true" ]] && [[ "$nonet_available" != "true" ]] && pip download "$currentPackage" --platform manylinux1 --only-binary=:all: --dest "$scriptAbsoluteFolder"/_bundle/morsels/pip > /dev/null >&2
+        [[ "$nonet" != "true" ]] && [[ "$nonet_available" != "true" ]] && pip download "$currentPackage" --platform any --only-binary=:all: --dest "$scriptAbsoluteFolder"/_bundle/morsels/pip > /dev/null >&2
         
         #pip install --no-index --find-links="$scriptAbsoluteFolder"/_bundle/morsels/pip "$currentPackage" > /dev/null >&2
         pip install --no-index --find-links="$scriptAbsoluteFolder"/_bundle/morsels/pip "$currentPackage" > /dev/null 2>&1
@@ -505,7 +507,7 @@ _install_dependencies_nix_python_procedure-specific() {
                 #--no-deps
                 #--python-version 3.1
                 "$1"pip download "$3" --platform linux_x86_64 --no-deps --dest "$lib_dir_nix_python_wheels" > /dev/null >&2
-                #"$1"pip download "$3" --platform manylinux2014_x86_64 --no-deps --dest "$lib_dir_nix_python_wheels" > /dev/null >&2
+                "$1"pip download "$3" --platform manylinux2014_x86_64 --no-deps --dest "$lib_dir_nix_python_wheels" > /dev/null >&2
                 "$1"pip download "$3" --platform manylinux1 --no-deps --dest "$lib_dir_nix_python_wheels" > /dev/null >&2
                 "$1"pip download "$3" --platform any --no-deps --dest "$lib_dir_nix_python_wheels" > /dev/null >&2
                 
@@ -516,7 +518,7 @@ _install_dependencies_nix_python_procedure-specific() {
 
                 
                 "$1"pip download "$3" --platform linux_x86_64 --only-binary=:all: --dest "$lib_dir_nix_python_wheels" > /dev/null >&2
-                #"$1"pip download "$3" --platform manylinux2014_x86_64 --only-binary=:all: --dest "$lib_dir_nix_python_wheels" > /dev/null >&2
+                "$1"pip download "$3" --platform manylinux2014_x86_64 --only-binary=:all: --dest "$lib_dir_nix_python_wheels" > /dev/null >&2
                 "$1"pip download "$3" --platform manylinux1 --only-binary=:all: --dest "$lib_dir_nix_python_wheels" > /dev/null >&2
                 "$1"pip download "$3" --platform any --only-binary=:all: --dest "$lib_dir_nix_python_wheels" > /dev/null >&2
                 
