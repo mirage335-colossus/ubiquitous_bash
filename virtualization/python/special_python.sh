@@ -23,6 +23,20 @@ _special_python() {
         return
     fi
 
+    local dumbpath_file="$scriptLocal"/"$dumbpath_prefix"dumbpath.var
+    local dumbpath_contents=""
+    dumbpath_contents=$(cat "$dumbpath_file" 2> /dev/null)
+    if [[ "$dumbpath_contents" == "$dumbpath_file" ]]
+    then
+        #implies sequence
+        #source "$scriptLocal"/python_nix/venv/default_venv/bin/activate
+        source "$scriptLocal"/python_nix/venv/default_venv/bin/activate_nix
+        #type -p huggingface-cli > /dev/null >&2
+        #huggingface-cli "$@"
+        true
+        return
+    fi
+
     _nix_python "$@"
     return
 }
