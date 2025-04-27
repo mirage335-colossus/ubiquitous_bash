@@ -24,7 +24,7 @@ CZXWXcRMTo8EmM8i4d
 }
 
 
-__factoryCreate_runpod-pytorch-heavy() {
+__factoryCreate_sequence_runpod-pytorch-heavy() {
     _start
 
     cd "$safeTmp"
@@ -34,6 +34,8 @@ __factoryCreate_runpod-pytorch-heavy() {
     _stop
 }
 
-
+__factoryCreate_runpod-pytorch-heavy() {
+    "$scriptAbsoluteLocation" __factoryCreate_sequence_runpod-pytorch-heavy "$@"
+}
 
 

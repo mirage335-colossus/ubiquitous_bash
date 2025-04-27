@@ -93,6 +93,7 @@ _init_deps() {
 	export enUb_ai_shortcuts=""
 	export enUb_ollama_shortcuts=""
 	export enUb_factory_shortcuts=""
+	export enUb_factory_shortcuts_ops=""
 }
 
 _deps_generic() {
@@ -509,6 +510,11 @@ _deps_factory_shortcuts() {
 	_deps_generic
 	
 	export enUb_factory_shortcuts="true"
+}
+_deps_factory_shortcuts_ops() {
+	_deps_generic
+	
+	export enUb_factory_shortcuts_ops="true"
 }
 
 #placeholder, define under "queue/build"

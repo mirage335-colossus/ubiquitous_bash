@@ -545,6 +545,7 @@ _compile_bash_deps() {
 		_deps_ai_knowledge
 
 		_deps_factory_shortcuts
+		_deps_factory_shortcuts_ops
 		
 		_deps_calculators
 		
@@ -898,6 +899,7 @@ _compile_bash_shortcuts() {
 	
 	( ( [[ "$enUb_dev_heavy" == "true" ]] ) || [[ "$enUb_ollama_shortcuts" == "true" ]] ) && includeScriptList+=( "shortcuts/ai/ollama"/ollama.sh )
 
+	[[ "$enUb_factory_shortcuts_ops" ]] && includeScriptList+=( "shortcuts/factory"/factory-ops.sh )
 	[[ "$enUb_factory_shortcuts" ]] && includeScriptList+=( "shortcuts/factory"/factoryCreate.sh )
 	[[ "$enUb_factory_shortcuts" ]] && includeScriptList+=( "shortcuts/factory"/factory.sh )
 	
