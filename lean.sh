@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='3846362698'
+export ub_setScriptChecksum_contents='2290276339'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -10087,8 +10087,13 @@ PS1_lineNumber=""
 export profileScriptLocation="$ubcoreUBdir"/ubcore.sh
 #export profileScriptLocation="$ubcoreUBdir"/lean.sh
 export profileScriptFolder="$ubcoreUBdir"
-[[ "\$scriptAbsoluteLocation" != "" ]] && . "\$scriptAbsoluteLocation" --parent _importShortcuts
-[[ "\$scriptAbsoluteLocation" == "" ]] && . "\$profileScriptLocation" --profile _importShortcuts
+if [[ "\$force_profileScriptLocation" == "" ]]
+then
+	[[ "\$scriptAbsoluteLocation" != "" ]] && . "\$scriptAbsoluteLocation" --parent _importShortcuts
+	[[ "\$scriptAbsoluteLocation" == "" ]] && . "\$profileScriptLocation" --profile _importShortcuts
+else
+	[[ "\$force_profileScriptLocation" != "" ]] && . "\$force_profileScriptLocation" --parent _importShortcuts
+fi
 [[ "\$ub_setScriptChecksum_disable" == 'true' ]] && export ub_setScriptChecksum_disable="" && unset ub_setScriptChecksum_disable
 
 # Returns priority to normal.
@@ -18947,6 +18952,22 @@ _bash() {
 	[[ "$ub_scope_name" != "" ]] && _scopePrompt
 	
 	_safe_declare_uid
+
+
+	## CAUTION: Usually STUPID AND DANGEROUS . No production use. Exclusively for 'ubiquitous_bash' itself development.
+	## Proper use of embedded scripts, '--embed', etc, is provided by the '_scope' functions, etc, intended for such purposes in almost all cases.
+	##
+	## WARNING: May be untested. May break 'python', 'bash', 'octave', etc. May break any '.bashrc', '.ubcorerc', python hooks, other hooks, etc. May break '_setupUbiquitous'.
+	## Bad idea. Very specialized. Broken inheritance.
+	##
+	## No known use.
+	## Functions, etc, are NOT inherited by bash terminal from script.
+	##
+	#if [[ "$1" == "--norc" ]] && [[ "$2" == "-i" ]] && [[ "$scriptAbsoluteLocation" == *"ubcore.sh" ]]
+	#then
+		#bash "$@"
+		#return
+	#fi
 	
 	
 	[[ "$1" == '-i' ]] && shift

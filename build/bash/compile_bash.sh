@@ -85,6 +85,7 @@ _compile_bash_deps() {
 		_deps_ai_knowledge
 
 		_deps_factory_shortcuts
+		_deps_factory_shortcuts_ops
 		
 		_deps_calculators
 		

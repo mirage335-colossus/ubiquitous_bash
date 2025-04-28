@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='3344531232'
+export ub_setScriptChecksum_contents='75623804'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -7540,6 +7540,7 @@ _compile_bash_deps() {
 		_deps_ai_knowledge
 
 		_deps_factory_shortcuts
+		_deps_factory_shortcuts_ops
 		
 		_deps_calculators
 		
@@ -9386,6 +9387,22 @@ _bash() {
 	[[ "$ub_scope_name" != "" ]] && _scopePrompt
 	
 	_safe_declare_uid
+
+
+	## CAUTION: Usually STUPID AND DANGEROUS . No production use. Exclusively for 'ubiquitous_bash' itself development.
+	## Proper use of embedded scripts, '--embed', etc, is provided by the '_scope' functions, etc, intended for such purposes in almost all cases.
+	##
+	## WARNING: May be untested. May break 'python', 'bash', 'octave', etc. May break any '.bashrc', '.ubcorerc', python hooks, other hooks, etc. May break '_setupUbiquitous'.
+	## Bad idea. Very specialized. Broken inheritance.
+	##
+	## No known use.
+	## Functions, etc, are NOT inherited by bash terminal from script.
+	##
+	#if [[ "$1" == "--norc" ]] && [[ "$2" == "-i" ]] && [[ "$scriptAbsoluteLocation" == *"ubcore.sh" ]]
+	#then
+		#bash "$@"
+		#return
+	#fi
 	
 	
 	[[ "$1" == '-i' ]] && shift

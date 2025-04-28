@@ -72,8 +72,13 @@ PS1_lineNumber=""
 export profileScriptLocation="$ubcoreUBdir"/ubcore.sh
 #export profileScriptLocation="$ubcoreUBdir"/lean.sh
 export profileScriptFolder="$ubcoreUBdir"
-[[ "\$scriptAbsoluteLocation" != "" ]] && . "\$scriptAbsoluteLocation" --parent _importShortcuts
-[[ "\$scriptAbsoluteLocation" == "" ]] && . "\$profileScriptLocation" --profile _importShortcuts
+if [[ "\$force_profileScriptLocation" == "" ]]
+then
+	[[ "\$scriptAbsoluteLocation" != "" ]] && . "\$scriptAbsoluteLocation" --parent _importShortcuts
+	[[ "\$scriptAbsoluteLocation" == "" ]] && . "\$profileScriptLocation" --profile _importShortcuts
+else
+	[[ "\$force_profileScriptLocation" != "" ]] && . "\$force_profileScriptLocation" --parent _importShortcuts
+fi
 [[ "\$ub_setScriptChecksum_disable" == 'true' ]] && export ub_setScriptChecksum_disable="" && unset ub_setScriptChecksum_disable
 
 # Returns priority to normal.
