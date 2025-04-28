@@ -18,6 +18,7 @@ rem(){ :;};rem
 
 # UNIX/Linux
 export force_profileScriptLocation="$HOME"/core/infrastructure/ubiquitous_bash/ubcore.sh
+export force_profileScriptFolder="$HOME"/core/infrastructure/ubiquitous_bash
 "$HOME"/core/infrastructure/ubiquitous_bash/_bash.bat "$@"
 exit "$?"
 
@@ -32,6 +33,7 @@ exit 1
 
 REM Cygwin/MSW
 set "force_profileScriptLocation=/cygdrive/c/q/p/zCore/infrastructure/ubiquitous_bash/ubcore.sh"
+set "force_profileScriptFolder=/cygdrive/c/q/p/zCore/infrastructure/ubiquitous_bash"
 CALL "C:\q\p\zCore\infrastructure\ubiquitous_bash\_bash.bat" %*
 EXIT /B
 
