@@ -900,7 +900,6 @@ _compile_bash_shortcuts() {
 	
 	( ( [[ "$enUb_dev_heavy" == "true" ]] ) || [[ "$enUb_ollama_shortcuts" == "true" ]] ) && includeScriptList+=( "shortcuts/ai/ollama"/ollama.sh )
 
-	[[ "$enUb_factory_shortcuts_ops" ]] && includeScriptList+=( "shortcuts/factory"/factory-ops.sh )
 	[[ "$enUb_factory_shortcuts" ]] && includeScriptList+=( "shortcuts/factory"/factoryCreate.sh )
 	[[ "$enUb_factory_shortcuts" ]] && includeScriptList+=( "shortcuts/factory"/factory.sh )
 	
@@ -1255,6 +1254,8 @@ _compile_bash_selfHost() {
 
 _compile_bash_overrides() {
 	export includeScriptList
+	
+	[[ "$enUb_factory_shortcuts_ops" ]] && includeScriptList+=( "shortcuts/factory"/factory-ops.sh )
 	
 	[[ "$enUb_dev_buildOps" == "true" ]] && includeScriptList+=( "build/zSpecial"/build-ops.sh )
 	
