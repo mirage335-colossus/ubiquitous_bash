@@ -77,7 +77,7 @@ then
 	[[ "\$scriptAbsoluteLocation" != "" ]] && . "\$scriptAbsoluteLocation" --parent _importShortcuts
 	[[ "\$scriptAbsoluteLocation" == "" ]] && . "\$profileScriptLocation" --profile _importShortcuts
 else
-	[[ "\$force_profileScriptLocation" != "" ]] && . "\$force_profileScriptLocation" --parent _importShortcuts
+	[[ "\$force_profileScriptLocation" != "" ]] && . "\$force_profileScriptLocation" --profile _importShortcuts
 fi
 [[ "\$ub_setScriptChecksum_disable" == 'true' ]] && export ub_setScriptChecksum_disable="" && unset ub_setScriptChecksum_disable
 
