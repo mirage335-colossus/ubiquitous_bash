@@ -55,7 +55,7 @@ _selfCloneUbiquitous() {
 	cp -a "$scriptAbsoluteFolder"/lean.py "$ubcoreUBdir"/lean.py > /dev/null 2>&1
 	[[ "$?" != "0" ]] && currentExitStatus="1"
 
-	mkdir "$ubcoreUBdir"/_lib/kit/app/researchEngine/kit/certs
+	mkdir -p "$ubcoreUBdir"/_lib/kit/app/researchEngine/kit/certs
 	if [[ -e "$scriptAbsoluteFolder"/_lib/kit/app/researchEngine/kit/certs ]]
 	then
 		cp -a "$scriptAbsoluteFolder"/_lib/kit/app/researchEngine/kit/certs/* "$ubcoreUBdir"/_lib/kit/app/researchEngine/kit/certs/

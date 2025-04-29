@@ -15,8 +15,8 @@ cat << 'CZXWXcRMTo8EmM8i4d'
 # runpod/pytorch:2.1.0-py3.10-cuda11.8.0-devel-ubuntu22.04
 FROM runpod/pytorch:2.2.0-py3.10-cuda12.1.1-devel-ubuntu22.04
 
-#https://huggingface.co/blog/mlabonne/sft-llama3
-#https://huggingface.co/blog/mlabonne/merge-models
+# https://huggingface.co/blog/mlabonne/sft-llama3
+# https://huggingface.co/blog/mlabonne/merge-models
 
 RUN python -m pip install --upgrade pip
 RUN pip install "unsloth[colab-new] @ git+https://github.com/unslothai/unsloth.git"
@@ -33,6 +33,8 @@ CZXWXcRMTo8EmM8i4d
 
 __factoryCreate_sequence_runpod-pytorch-heavy() {
     _start
+
+    docker rmi runpod-pytorch-heavy
 
     cd "$safeTmp"
     _here_dockerfile_runpod-pytorch-heavy > Dockerfile

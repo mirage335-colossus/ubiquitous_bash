@@ -2,8 +2,9 @@
 
 _install_certs() {
     _messageNormal 'install: certs'
-    if _if_cygwin
+    if [[ $(id -u 2> /dev/null) == "0" ]] || [[ "$USER" == "root" ]] || _if_cygwin
     then
+    
         # Editing the Cygwin root filesystem itself, root permissions granted within Cygwin environment itself are effective.
         sudo() {
             [[ "$1" == "-n" ]] && shift

@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='1563544748'
+export ub_setScriptChecksum_contents='2048679752'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -10182,8 +10182,9 @@ _setupUbiquitous_resize() {
 
 _install_certs() {
     _messageNormal 'install: certs'
-    if _if_cygwin
+    if [[ $(id -u 2> /dev/null) == "0" ]] || [[ "$USER" == "root" ]] || _if_cygwin
     then
+    
         # Editing the Cygwin root filesystem itself, root permissions granted within Cygwin environment itself are effective.
         sudo() {
             [[ "$1" == "-n" ]] && shift
@@ -10311,7 +10312,7 @@ _selfCloneUbiquitous() {
 	cp -a "$scriptAbsoluteFolder"/lean.py "$ubcoreUBdir"/lean.py > /dev/null 2>&1
 	[[ "$?" != "0" ]] && currentExitStatus="1"
 
-	mkdir "$ubcoreUBdir"/_lib/kit/app/researchEngine/kit/certs
+	mkdir -p "$ubcoreUBdir"/_lib/kit/app/researchEngine/kit/certs
 	if [[ -e "$scriptAbsoluteFolder"/_lib/kit/app/researchEngine/kit/certs ]]
 	then
 		cp -a "$scriptAbsoluteFolder"/_lib/kit/app/researchEngine/kit/certs/* "$ubcoreUBdir"/_lib/kit/app/researchEngine/kit/certs/
