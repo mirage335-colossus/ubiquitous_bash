@@ -135,6 +135,7 @@ jobs:
           ./ubiquitous_bash.sh _here_dockerfile_runpod-pytorch-heavy > Dockerfile
           docker tag runpod-pytorch-heavy ${{ secrets.DOCKER_USERNAME }}/runpod-pytorch-heavy:latest
           docker tag runpod-pytorch-heavy ghcr.io/${{ github.repository_owner }}/runpod-pytorch-heavy:latest
+          docker tag runpod-pytorch-heavy ghcr.io/${{ github.repository_owner }}/${{ github.repository }}/runpod-pytorch-heavy:latest
 
       #- name: docker github push
         #shell: bash
@@ -156,7 +157,7 @@ jobs:
         with:
           context: .
           push: true
-          tags: ghcr.io/${{ github.repository_owner }}/runpod-pytorch-heavy:latest
+          tags: ghcr.io/${{ github.repository_owner }}/${{ github.repository }}/runpod-pytorch-heavy:latest
           labels: |
             org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
 
