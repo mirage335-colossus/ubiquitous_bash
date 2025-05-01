@@ -129,7 +129,10 @@ jobs:
         shell: bash
         timeout-minutes: 120
         run: |
+          export DOCKER_USER=${{ secrets.DOCKER_USERNAME }}
           ./ubiquitous_bash.sh __factoryCreate_runpod-pytorch-heavy
+          docker tag runpod-pytorch-heavy ${{ secrets.DOCKER_USERNAME }}/runpod-pytorch-heavy:latest
+          docker tag runpod-pytorch-heavy ${{ github.actor }}/runpod-pytorch-heavy:latest
 
       - name: docker github push
         shell: bash
