@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='1480251814'
+export ub_setScriptChecksum_contents='346168402'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -19224,8 +19224,6 @@ CZXWXcRMTo8EmM8i4d
 }
 
 
-
-
 _here_dockerfile-ubiquitous-licenses() {
 
     ! mkdir -p "$scriptLocal"/licenses && ( _messageError 'FAIL' >&2 ) > /dev/null && _stop 1
@@ -19235,14 +19233,26 @@ _here_dockerfile-ubiquitous-licenses() {
     [[ ! -e "$scriptLocal"/licenses/agpl-3.0.txt ]] && wget -qO "$scriptLocal"/licenses/agpl-3.0.txt 'https://www.gnu.org/licenses/agpl-3.0.txt'
 
 
+
+    echo
     echo 'RUN mkdir -p /licenses'
+    echo
+
+    echo 'COPY <<EOFSPECIAL /licenses/gpl-2.0.txt'
+cat "$scriptLocal"/licenses/gpl-2.0.txt
+echo 'EOFSPECIAL'
 
     echo 'COPY <<EOFSPECIAL /licenses/gpl-3.0.txt'
 cat "$scriptLocal"/licenses/gpl-3.0.txt
 echo 'EOFSPECIAL'
+
+    echo 'COPY <<EOFSPECIAL /licenses/agpl-3.0.txt'
+cat "$scriptLocal"/licenses/agpl-3.0.txt
+echo 'EOFSPECIAL'
+
+    echo
+
 }
-
-
 
 
 
@@ -19315,12 +19325,22 @@ RUN pip install --no-deps "xformers<0.0.27" "trl<0.9.0" peft accelerate bitsandb
 # PASTE
 # ###
 
+CZXWXcRMTo8EmM8i4d
+
+
+_here_dockerfile-ubiquitous-documentation "$@"
+
+_here_dockerfile-ubiquitous-licenses "$@"
+
+
+cat << 'CZXWXcRMTo8EmM8i4d'
 
 WORKDIR /
 
 #docker image inspect ...FROM... --format '{{json .Config.Entrypoint}} {{json .Config.Cmd}}'
 ENTRYPOINT ["/opt/nvidia/nvidia_entrypoint.sh"]
 CMD ["/start.sh"]
+
 CZXWXcRMTo8EmM8i4d
 
 }
