@@ -133,14 +133,14 @@ jobs:
           export DOCKER_USER=${{ secrets.DOCKER_USERNAME }}
           ./ubiquitous_bash.sh __factoryCreate_runpod-pytorch-heavy
           docker tag runpod-pytorch-heavy ${{ secrets.DOCKER_USERNAME }}/runpod-pytorch-heavy:latest
-          docker tag runpod-pytorch-heavy ghcr.io/${{ github.actor }}/runpod-pytorch-heavy:latest
+          docker tag runpod-pytorch-heavy ghcr.io/${{ github.repository_owner }}/runpod-pytorch-heavy:latest
 
       - name: docker github push
         shell: bash
         timeout-minutes: 120
         run: |
-          docker login ghcr.io -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }}
-          docker push ghcr.io/${{ github.actor }}/runpod-pytorch-heavy:latest
+          docker login ghcr.io -u ${{ github.repository_owner }} -p ${{ secrets.GITHUB_TOKEN }}
+          docker push ghcr.io/${{ github.repository_owner }}/runpod-pytorch-heavy:latest
 
       - name: docker docker push
         shell: bash
