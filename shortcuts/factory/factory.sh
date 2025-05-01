@@ -206,8 +206,27 @@ _set_factory_dir
 # ###
 
 dockerName='runpod-pytorch-heavy'
+# Prefer local build .
+if [[ $(docker images -q "$dockerName" | tr -dc 'a-zA-Z0-9') == "" ]]
+then
+    # Fallback to something from Docker Hub .
+    [[ $(docker images -q "mirage335_colossus/ubiquitous_bash/""$dockerName" | tr -dc 'a-zA-Z0-9') != "" ]]
+    [[ $(docker images -q "mirage335_colossus/""$dockerName" | tr -dc 'a-zA-Z0-9') != "" ]]
+    [[ $(docker images -q "mirage335/""$dockerName" | tr -dc 'a-zA-Z0-9') != "" ]]
 
-! docker images | tail -n+2 | grep '^'"$dockerName" > /dev/null 2>&1 && exit
+    # Prefer something from GHCR .
+    [[ $(docker images -q "ghcr.io/mirage335_colossus/ubiquitous_bash/""$dockerName" | tr -dc 'a-zA-Z0-9') != "" ]]
+    [[ $(docker images -q "ghcr.io/mirage335_colossus/""$dockerName" | tr -dc 'a-zA-Z0-9') != "" ]]
+    [[ $(docker images -q "ghcr.io/mirage335/""$dockerName" | tr -dc 'a-zA-Z0-9') != "" ]]
+fi
+
+if ! docker images | tail -n+2 | grep '^'"$dockerName" > /dev/null 2>&1
+then
+    _messagePlain_bad 'bad: FAIL: missing: '"$dockerName"
+    _messagePlain_request 'request: docker pull ... runpod-pytorch-heavy'
+    _messageError 'FAIL'
+    return 1
+fi
 
 [[ JUPYTER_PASSWORD == "" ]] && export JUPYTER_PASSWORD=$(openssl rand 768 | base64 | tr -dc 'a-zA-Z0-9' | tr -d 'acdefhilmnopqrsuvACDEFHILMNOPQRSU14580' | head -c "24")
 

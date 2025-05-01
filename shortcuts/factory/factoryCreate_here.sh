@@ -59,7 +59,7 @@ RUN apt-get install jq -y
 RUN apt-get install gh -y
 RUN apt-get install aria2 -y
 RUN apt-get install curl wget -y
-RUN apt-get install xz -y
+#RUN apt-get install xz -y
 RUN apt-get install xz-utils -y
 RUN apt-get install tar bzip2 gzip -y
 RUN apt-get install sed patch expect -y

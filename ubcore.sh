@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='346168402'
+export ub_setScriptChecksum_contents='2170718093'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -19188,7 +19188,7 @@ RUN apt-get install jq -y
 RUN apt-get install gh -y
 RUN apt-get install aria2 -y
 RUN apt-get install curl wget -y
-RUN apt-get install xz -y
+#RUN apt-get install xz -y
 RUN apt-get install xz-utils -y
 RUN apt-get install tar bzip2 gzip -y
 RUN apt-get install sed patch expect -y
@@ -19610,8 +19610,27 @@ _set_factory_dir
 # ###
 
 dockerName='runpod-pytorch-heavy'
+# Prefer local build .
+if [[ $(docker images -q "$dockerName" | tr -dc 'a-zA-Z0-9') == "" ]]
+then
+    # Fallback to something from Docker Hub .
+    [[ $(docker images -q "mirage335_colossus/ubiquitous_bash/""$dockerName" | tr -dc 'a-zA-Z0-9') != "" ]]
+    [[ $(docker images -q "mirage335_colossus/""$dockerName" | tr -dc 'a-zA-Z0-9') != "" ]]
+    [[ $(docker images -q "mirage335/""$dockerName" | tr -dc 'a-zA-Z0-9') != "" ]]
 
-! docker images | tail -n+2 | grep '^'"$dockerName" > /dev/null 2>&1 && exit
+    # Prefer something from GHCR .
+    [[ $(docker images -q "ghcr.io/mirage335_colossus/ubiquitous_bash/""$dockerName" | tr -dc 'a-zA-Z0-9') != "" ]]
+    [[ $(docker images -q "ghcr.io/mirage335_colossus/""$dockerName" | tr -dc 'a-zA-Z0-9') != "" ]]
+    [[ $(docker images -q "ghcr.io/mirage335/""$dockerName" | tr -dc 'a-zA-Z0-9') != "" ]]
+fi
+
+if ! docker images | tail -n+2 | grep '^'"$dockerName" > /dev/null 2>&1
+then
+    _messagePlain_bad 'bad: FAIL: missing: '"$dockerName"
+    _messagePlain_request 'request: docker pull ... runpod-pytorch-heavy'
+    _messageError 'FAIL'
+    return 1
+fi
 
 [[ JUPYTER_PASSWORD == "" ]] && export JUPYTER_PASSWORD=$(openssl rand 768 | base64 | tr -dc 'a-zA-Z0-9' | tr -d 'acdefhilmnopqrsuvACDEFHILMNOPQRSU14580' | head -c "24")
 
