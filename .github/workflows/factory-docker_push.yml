@@ -135,12 +135,21 @@ jobs:
           docker tag runpod-pytorch-heavy ${{ secrets.DOCKER_USERNAME }}/runpod-pytorch-heavy:latest
           docker tag runpod-pytorch-heavy ghcr.io/${{ github.repository_owner }}/runpod-pytorch-heavy:latest
 
-      - name: docker github push
-        shell: bash
-        timeout-minutes: 120
-        run: |
-          docker login ghcr.io -u ${{ github.repository_owner }} -p ${{ secrets.GITHUB_TOKEN }}
-          docker push ghcr.io/${{ github.repository_owner }}/runpod-pytorch-heavy:latest
+      #- name: docker github push
+        #shell: bash
+        #timeout-minutes: 120
+        #run: |
+          #docker login ghcr.io -u ${{ github.repository_owner }} -p ${{ secrets.GITHUB_TOKEN }}
+          #docker push ghcr.io/${{ github.repository_owner }}/runpod-pytorch-heavy:latest
+
+      # ATTRIBUTION-AI: ChatGPT o3 (high)  2025-05-01
+      - uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ghcr.io/${{ github.repository }}:latest
+          labels: |
+            org.opencontainers.image
 
       - name: docker docker push
         shell: bash
