@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='2048679752'
+export ub_setScriptChecksum_contents='4279095423'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -3231,9 +3231,9 @@ _terminateAll_procedure() {
 	while read -r currentPID
 	do
 		pkill -P "$currentPID"
-		sudo -n pkill -P "$currentPID"
+		! _if_cygwin && sudo -n pkill -P "$currentPID"
 		kill "$currentPID"
-		sudo -n kill "$currentPID"
+		! _if_cygwin && sudo -n kill "$currentPID"
 	done < "$processListFile"
 	
 	if [[ "$ub_kill" == "true" ]]
@@ -3242,9 +3242,9 @@ _terminateAll_procedure() {
 		while read -r currentPID
 		do
 			pkill -KILL -P "$currentPID"
-			sudo -n pkill -KILL -P "$currentPID"
+			! _if_cygwin && sudo -n pkill -KILL -P "$currentPID"
 			kill -KILL "$currentPID"
-			sudo -n kill -KILL "$currentPID"
+			! _if_cygwin && sudo -n kill -KILL "$currentPID"
 		done < "$processListFile"
 	fi
 	
@@ -9837,6 +9837,18 @@ CZXWXcRMTo8EmM8i4d
 
 
 
+_setupUbiquitous_accessories_here-convenience() {
+		cat << CZXWXcRMTo8EmM8i4d
+
+# Equivalence to Dockerfile .
+alias RUN=_bin
+
+CZXWXcRMTo8EmM8i4d
+
+}
+
+
+
 
 
 _setupUbiquitous_accessories_here-user_bashrc() {
@@ -9990,6 +10002,9 @@ _setupUbiquitous_accessories_bashrc() {
 	
 	
 	_setupUbiquitous_accessories_here-coreoracle_bashrc "$@"
+
+
+	_setupUbiquitous_accessories_here-convenience "$@"
 	
 	
 	# WARNING: Python must remain last. Failure to hook python is a failure that must show as an error exit status from the users profile (a red "1" on the first line of first visual prompt command prompt).

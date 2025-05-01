@@ -1,0 +1,152 @@
+
+name: factory-docker_push.yml
+
+
+# https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#permissions
+permissions:
+  actions: write
+  checks: read
+  contents: write
+  deployments: read
+  issues: none
+  packages: read
+  pull-requests: read
+  repository-projects: read
+  security-events: none
+  statuses: read
+
+
+on:
+  workflow_dispatch:
+    inputs:
+      #devfast:
+        #type: boolean
+        #default: true
+      #skimfast:
+        #type: boolean
+        #default: true
+      runnerName:
+        required: false
+        default: ubuntu-22.04
+        type: choice
+        options:
+        - ubuntu-22.04
+        - ubuntu-latest
+        - ubuntu-latest-m
+  # https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#schedule
+  #schedule:
+    ##- cron: '5 1 * * 6'
+    ##- cron: '5 1 * * 2,4'
+    ##- cron: '5 1 * * 2'
+    #- cron: '5 1 * * 5'
+    #- cron: '5 1 10 * *'
+
+# https://docs.github.com/en/actions/using-jobs/using-concurrency
+concurrency:
+  #group: ${{ github.workflow }}-${{ github.ref }}
+  group: ${{ github.ref }}
+  cancel-in-progress: true
+
+
+
+
+
+# https://github.com/ncipollo/release-action
+# https://github.com/softprops/action-gh-release
+# https://svrooij.io/2021/08/17/github-actions-secret-file/
+jobs:
+  #build_guard:
+    #runs-on: ubuntu-latest
+    #steps:
+      #- uses: actions/checkout@v3
+      #- uses: dev-drprasad/delete-tag-and-release@v1.0
+        #with:
+            #tag_name: build-${{ github.run_id }}-${{ github.run_attempt }} #(required) tag name to delete 
+            #github_token: ${{ secrets.GITHUB_TOKEN }}
+            #delete_release: true #(optional) default: true
+  build:
+    #needs: [build_guard]
+    runs-on: ${{ github.event.inputs.runnerName == '' && 'ubuntu-22.04' || github.event.inputs.runnerName }}
+    steps:
+      - name: users
+        shell: bash
+        run: |
+          sudo -u ubuntu -n bash -c 'sudo -n useradd runner --non-unique -u $UID -g $UID' || true
+          sudo -u ubuntu -n bash -c 'sudo -n groupadd runner --non-unique -g $UID' || true
+          sudo -u runner -n bash -c 'sudo -n echo $USER $UID' || true
+          true
+      # https://github.com/easimon/maximize-build-space
+      - name: Maximize build space
+        if: ${{ github.event.inputs.runnerName != 'ubuntu-latest-m' && github.event.inputs.runnerName != 'ubuntu-latest-l' && github.event.inputs.runnerName != 'ubuntu-latest-h' }}
+        uses: easimon/maximize-build-space@master
+        with:
+          root-reserve-mb: 4125
+          #root-reserve-mb: 1625
+          temp-reserve-mb: 1950
+          #temp-reserve-mb: 50
+          swap-size-mb: 2
+          #remove-dotnet: ${{ github.event.inputs.runnerName != 'ubuntu-latest-m' && github.event.inputs.runnerName != 'ubuntu-latest-l' && github.event.inputs.runnerName != 'ubuntu-latest-h' }}
+          remove-dotnet: 'true'
+          #remove-android: ${{ github.event.inputs.runnerName != 'ubuntu-latest-m' && github.event.inputs.runnerName != 'ubuntu-latest-l' && github.event.inputs.runnerName != 'ubuntu-latest-h' }}
+          remove-android: 'true'
+          #remove-haskell: ${{ github.event.inputs.runnerName != 'ubuntu-latest-m' && github.event.inputs.runnerName != 'ubuntu-latest-l' && github.event.inputs.runnerName != 'ubuntu-latest-h' }}
+          remove-haskell: 'true'
+          #remove-codeql: ${{ github.event.inputs.runnerName != 'ubuntu-latest-m' && github.event.inputs.runnerName != 'ubuntu-latest-l' && github.event.inputs.runnerName != 'ubuntu-latest-h' }}
+          remove-codeql: 'true'
+          #remove-docker-images: ${{ github.event.inputs.runnerName != 'ubuntu-latest-m' && github.event.inputs.runnerName != 'ubuntu-latest-l' && github.event.inputs.runnerName != 'ubuntu-latest-h' }}
+          remove-docker-images: 'true'
+      - name: Maximize build space ! remove ONLY
+        if: ${{ ( github.event.inputs.runnerName == 'ubuntu-latest-m' || github.event.inputs.runnerName == 'ubuntu-latest-l' || github.event.inputs.runnerName == 'ubuntu-latest-h' ) }}
+        uses: AdityaGarg8/remove-unwanted-software@v4.1
+        with:
+          remove-dotnet: 'true'
+          remove-android: 'true'
+          remove-haskell: 'true'
+          remove-codeql: 'true'
+          remove-docker-images: 'true'
+          remove-large-packages: 'true'
+          remove-cached-tools: 'true'
+          remove-swapfile: 'true'
+          verbose: 'false'
+      - name: df
+        shell: bash
+        run: |
+          df -h
+          df -h /
+
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 1
+          submodules: 'recursive'
+      - name: _getMinimal_cloud
+        shell: bash
+        timeout-minutes: 120
+        run: |
+          ./ubiquitous_bash.sh _getMinimal_cloud
+
+      - name: factory! create
+        shell: bash
+        timeout-minutes: 120
+        run: |
+          ./ubiquitous_bash.sh __factoryCreate_runpod-pytorch-heavy
+
+      - name: docker github push
+        shell: bash
+        timeout-minutes: 120
+        run: |
+          docker login ghcr.io -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }}
+          docker push ghcr.io/mirage335-colossus/runpod-pytorch-heavy:latest
+
+      - name: docker docker push
+        shell: bash
+        timeout-minutes: 120
+        run: |
+          docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+          docker push ${{ secrets.DOCKER_USERNAME }}/runpod-pytorch-heavy:latest
+
+
+
+
+
+
+

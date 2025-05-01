@@ -99,12 +99,12 @@ then
 #--privileged
 #--ipc=host --ulimit memlock=-1 --ulimit stack=67108864
 #-v 'C:\q':/q -v 'C:\core':/core -v "$USERPROFILE"'\Downloads':/Downloads
-docker run --shm-size=20g --name axolotl-$(_uid 14) --gpus "all" -e "$JUPYTER_PASSWORD" -e HF_AKI_KEY="$HF_AKI_KEY" -v 'C:\q':/q -v 'C:\q\p\zCore\infrastructure\ubiquitous_bash':/ubiquitous_bash:ro -v 'C:\core':/core -v "$USERPROFILE"'\Downloads':/Downloads -v "$factory_outputDir":/output -v "$factory_modelDir":/model -v "$factory_datasetDir":/dataset -v "$factory_knowledgeDir":/knowledge -v "$factory_knowledge_distillDir":/knowledge_distill -v "$factory_projectDir":/workspace/project --rm -it "$dockerName" "${dockerRunArgs[@]}"
+docker run --shm-size=20g --name axolotl-$(_uid 14) --gpus "all" -e "$JUPYTER_PASSWORD" -e HF_AKI_KEY="$HF_AKI_KEY" -v 'C:\q':/q -v 'C:\q\p\zCore\infrastructure\ubiquitous_bash':/workspace/ubiquitous_bash:ro -v 'C:\core':/core -v "$USERPROFILE"'\Downloads':/Downloads -v "$factory_outputDir":/output -v "$factory_modelDir":/model -v "$factory_datasetDir":/dataset -v "$factory_knowledgeDir":/knowledge -v "$factory_knowledge_distillDir":/knowledge_distill -v "$factory_projectDir":/workspace/project -v "$factory_projectDir"/cache_pip:/workspace/cache_pip --rm -it "$dockerName" "${dockerRunArgs[@]}"
 fi
 if ! _if_cygwin
 then
 # WARNING: May be untested.
-docker run --shm-size=20g --name axolotl-$(_uid 14) --gpus "all" -e "$JUPYTER_PASSWORD" -e HF_AKI_KEY="$HF_AKI_KEY" -v '/home/user/___quick':/q -v "$HOME"/core/infrastructure/ubiquitous_bash:/ubiquitous_bash:ro -v '/home/user/core':/core -v "/home/user"'/Downloads':/Downloads -v "$factory_outputDir":/output -v "$factory_modelDir":/model -v "$factory_datasetDir":/dataset -v "$factory_projectDir":/workspace/project --rm -it "$dockerName" "${dockerRunArgs[@]}"
+docker run --shm-size=20g --name axolotl-$(_uid 14) --gpus "all" -e "$JUPYTER_PASSWORD" -e HF_AKI_KEY="$HF_AKI_KEY" -v '/home/user/___quick':/q -v "$HOME"/core/infrastructure/ubiquitous_bash:/workspace/ubiquitous_bash:ro -v '/home/user/core':/core -v "/home/user"'/Downloads':/Downloads -v "$factory_outputDir":/output -v "$factory_modelDir":/model -v "$factory_datasetDir":/dataset -v "$factory_projectDir":/workspace/project -v "$factory_projectDir"/cache_pip:/workspace/cache_pip --rm -it "$dockerName" "${dockerRunArgs[@]}"
 fi
 
 # ###
@@ -175,12 +175,12 @@ then
 #--privileged
 #--ipc=host --ulimit memlock=-1 --ulimit stack=67108864
 #-v 'C:\q':/q -v 'C:\core':/core -v "$USERPROFILE"'\Downloads':/Downloads
-docker run --shm-size=20g --name runpod-$(_uid 14) --gpus "all" -e "$JUPYTER_PASSWORD" -e HF_AKI_KEY="$HF_AKI_KEY" -v 'C:\q':/q -v 'C:\q\p\zCore\infrastructure\ubiquitous_bash':/ubiquitous_bash:ro -v 'C:\core':/core -v "$USERPROFILE"'\Downloads':/Downloads -v "$factory_outputDir":/output -v "$factory_modelDir":/model -v "$factory_datasetDir":/dataset -v "$factory_knowledgeDir":/knowledge -v "$factory_knowledge_distillDir":/knowledge_distill -v "$factory_projectDir":/workspace/project --rm -it "$dockerName" "${dockerRunArgs[@]}"
+docker run --shm-size=20g --name runpod-$(_uid 14) --gpus "all" -e "$JUPYTER_PASSWORD" -e HF_AKI_KEY="$HF_AKI_KEY" -v 'C:\q':/q -v 'C:\q\p\zCore\infrastructure\ubiquitous_bash':/workspace/ubiquitous_bash:ro -v 'C:\core':/core -v "$USERPROFILE"'\Downloads':/Downloads -v "$factory_outputDir":/output -v "$factory_modelDir":/model -v "$factory_datasetDir":/dataset -v "$factory_knowledgeDir":/knowledge -v "$factory_knowledge_distillDir":/knowledge_distill -v "$factory_projectDir":/workspace/project -v "$factory_projectDir"/cache_pip:/workspace/cache_pip --rm -it "$dockerName" "${dockerRunArgs[@]}"
 fi
 if ! _if_cygwin
 then
 # WARNING: May be untested.
-docker run --shm-size=20g --name runpod-$(_uid 14) --gpus "all" -e "$JUPYTER_PASSWORD" -e HF_AKI_KEY="$HF_AKI_KEY" -v '/home/user/___quick':/q -v "$HOME"/core/infrastructure/ubiquitous_bash:/ubiquitous_bash:ro -v '/home/user/core':/core -v "/home/user"'/Downloads':/Downloads -v "$factory_outputDir":/output -v "$factory_modelDir":/model -v "$factory_datasetDir":/dataset -v "$factory_projectDir":/workspace/project --rm -it "$dockerName" "${dockerRunArgs[@]}"
+docker run --shm-size=20g --name runpod-$(_uid 14) --gpus "all" -e "$JUPYTER_PASSWORD" -e HF_AKI_KEY="$HF_AKI_KEY" -v '/home/user/___quick':/q -v "$HOME"/core/infrastructure/ubiquitous_bash:/workspace/ubiquitous_bash:ro -v '/home/user/core':/core -v "/home/user"'/Downloads':/Downloads -v "$factory_outputDir":/output -v "$factory_modelDir":/model -v "$factory_datasetDir":/dataset -v "$factory_projectDir":/workspace/project -v "$factory_projectDir"/cache_pip:/workspace/cache_pip --rm -it "$dockerName" "${dockerRunArgs[@]}"
 fi
 
 # ###
@@ -246,12 +246,12 @@ then
 #--privileged
 #--ipc=host --ulimit memlock=-1 --ulimit stack=67108864
 #-v 'C:\q':/q -v 'C:\core':/core -v "$USERPROFILE"'\Downloads':/Downloads
-docker run --shm-size=20g --name runpod-$(_uid 14) --gpus "all" -e "$JUPYTER_PASSWORD" -e HF_AKI_KEY="$HF_AKI_KEY" -v 'C:\q':/q -v 'C:\q\p\zCore\infrastructure\ubiquitous_bash':/ubiquitous_bash:ro -v 'C:\core':/core -v "$USERPROFILE"'\Downloads':/Downloads -v "$factory_outputDir":/output -v "$factory_modelDir":/model -v "$factory_datasetDir":/dataset -v "$factory_knowledgeDir":/knowledge -v "$factory_knowledge_distillDir":/knowledge_distill -v "$factory_projectDir":/workspace/project --rm -it "$dockerName" "${dockerRunArgs[@]}"
+docker run --shm-size=20g --name runpod-$(_uid 14) --gpus "all" -e "$JUPYTER_PASSWORD" -e HF_AKI_KEY="$HF_AKI_KEY" -v 'C:\q':/q -v 'C:\q\p\zCore\infrastructure\ubiquitous_bash':/workspace/ubiquitous_bash:ro -v 'C:\core':/core -v "$USERPROFILE"'\Downloads':/Downloads -v "$factory_outputDir":/output -v "$factory_modelDir":/model -v "$factory_datasetDir":/dataset -v "$factory_knowledgeDir":/knowledge -v "$factory_knowledge_distillDir":/knowledge_distill -v "$factory_projectDir":/workspace/project -v "$factory_projectDir"/cache_pip:/workspace/cache_pip --rm -it "$dockerName" "${dockerRunArgs[@]}"
 fi
 if ! _if_cygwin
 then
 # WARNING: May be untested.
-docker run --shm-size=20g --name runpod-$(_uid 14) --gpus "all" -e "$JUPYTER_PASSWORD" -e HF_AKI_KEY="$HF_AKI_KEY" -v '/home/user/___quick':/q -v "$HOME"/core/infrastructure/ubiquitous_bash:/ubiquitous_bash:ro -v '/home/user/core':/core -v "/home/user"'/Downloads':/Downloads -v "$factory_outputDir":/output -v "$factory_modelDir":/model -v "$factory_datasetDir":/dataset -v "$factory_projectDir":/workspace/project --rm -it "$dockerName" "${dockerRunArgs[@]}"
+docker run --shm-size=20g --name runpod-$(_uid 14) --gpus "all" -e "$JUPYTER_PASSWORD" -e HF_AKI_KEY="$HF_AKI_KEY" -v '/home/user/___quick':/q -v "$HOME"/core/infrastructure/ubiquitous_bash:/workspace/ubiquitous_bash:ro -v '/home/user/core':/core -v "/home/user"'/Downloads':/Downloads -v "$factory_outputDir":/output -v "$factory_modelDir":/model -v "$factory_datasetDir":/dataset -v "$factory_projectDir":/workspace/project -v "$factory_projectDir"/cache_pip:/workspace/cache_pip --rm -it "$dockerName" "${dockerRunArgs[@]}"
 fi
 
 # ###
@@ -300,17 +300,25 @@ cat << 'CZXWXcRMTo8EmM8i4d'
 doNotMatch
 # ###
 
-if [[ -e /ubiquitous_bash/ubiquitous_bash.sh ]]
+if [[ -e /workspace/ubiquitous_bash/ubiquitous_bash.sh ]]
 then
-/ubiquitous_bash/ubiquitous_bash.sh _setupUbiquitous_nonet
-export profileScriptLocation="/ubiquitous_bash/ubiquitous_bash.sh"
-export profileScriptFolder="/ubiquitous_bash"
-. "/ubiquitous_bash/ubiquitous_bash.sh" --profile _importShortcuts
+/workspace/ubiquitous_bash/ubiquitous_bash.sh _setupUbiquitous_nonet
+export profileScriptLocation="/workspace/ubiquitous_bash/ubiquitous_bash.sh"
+export profileScriptFolder="/workspace/ubiquitous_bash"
+. "/workspace/ubiquitous_bash/ubiquitous_bash.sh" --profile _importShortcuts
 else
-! [[ -e /ubiquitous_bash.sh ]] && wget 'https://raw.githubusercontent.com/mirage335/ubiquitous_bash/master/ubiquitous_bash.sh'
-mv -f ./ubiquitous_bash.sh /ubiquitous_bash.sh
-chmod u+x /ubiquitous_bash.sh
-/ubiquitous_bash.sh _setupUbiquitous_nonet
+mkdir -p /workspace
+! [[ -e /workspace/ubiquitous_bash.sh ]] && wget 'https://raw.githubusercontent.com/mirage335/ubiquitous_bash/master/ubiquitous_bash.sh'
+mv -f ./ubiquitous_bash.sh /workspace/ubiquitous_bash.sh
+chmod u+x /workspace/ubiquitous_bash.sh
+rmdir /workspace/ubiquitous_bash > /dev/null 2>&1
+/workspace/ubiquitous_bash.sh _gitBest clone --depth 1 --recursive git@github.com:mirage335-colossus/ubiquitous_bash.git
+mv -f ./ubiquitous_bash /workspace/ubiquitous_bash
+mkdir -p /workspace/ubiquitous_bash
+! [[ -e /workspace/ubiquitous_bash/ubiquitous_bash.sh ]] && wget 'https://raw.githubusercontent.com/mirage335/ubiquitous_bash/master/ubiquitous_bash.sh'
+mv -f ./ubiquitous_bash.sh /workspace/ubiquitous_bash/ubiquitous_bash.sh
+chmod u+x /workspace/ubiquitous_bash/ubiquitous_bash.sh
+/workspace/ubiquitous_bash/ubiquitous_bash.sh _setupUbiquitous_nonet
 fi
 #clear
 

@@ -395,6 +395,18 @@ CZXWXcRMTo8EmM8i4d
 
 
 
+_setupUbiquitous_accessories_here-convenience() {
+		cat << CZXWXcRMTo8EmM8i4d
+
+# Equivalence to Dockerfile .
+alias RUN=_bin
+
+CZXWXcRMTo8EmM8i4d
+
+}
+
+
+
 
 
 _setupUbiquitous_accessories_here-user_bashrc() {

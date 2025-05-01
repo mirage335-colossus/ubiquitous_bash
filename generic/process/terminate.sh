@@ -79,9 +79,9 @@ _terminateAll_procedure() {
 	while read -r currentPID
 	do
 		pkill -P "$currentPID"
-		sudo -n pkill -P "$currentPID"
+		! _if_cygwin && sudo -n pkill -P "$currentPID"
 		kill "$currentPID"
-		sudo -n kill "$currentPID"
+		! _if_cygwin && sudo -n kill "$currentPID"
 	done < "$processListFile"
 	
 	if [[ "$ub_kill" == "true" ]]
@@ -90,9 +90,9 @@ _terminateAll_procedure() {
 		while read -r currentPID
 		do
 			pkill -KILL -P "$currentPID"
-			sudo -n pkill -KILL -P "$currentPID"
+			! _if_cygwin && sudo -n pkill -KILL -P "$currentPID"
 			kill -KILL "$currentPID"
-			sudo -n kill -KILL "$currentPID"
+			! _if_cygwin && sudo -n kill -KILL "$currentPID"
 		done < "$processListFile"
 	fi
 	
