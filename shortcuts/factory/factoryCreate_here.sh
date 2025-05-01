@@ -68,6 +68,9 @@ RUN apt-get install dos2unix -y
 
 RUN /workspace/ubiquitous_bash/ubiquitous_bash.sh _getMinimal_cloud
 
+RUN apt-get -y clean
+#RUN apt-get remove --autoremove -y
+
 # ###
 # PASTE
 # ###
