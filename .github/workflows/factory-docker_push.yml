@@ -9,7 +9,8 @@ permissions:
   contents: write
   deployments: read
   issues: none
-  packages: read
+  #packages: read
+  packages: write
   pull-requests: read
   repository-projects: read
   security-events: none
