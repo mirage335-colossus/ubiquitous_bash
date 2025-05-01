@@ -148,7 +148,7 @@ jobs:
         with:
           context: .
           push: true
-          tags: ghcr.io/${{ github.repository }}:latest
+          tags: ghcr.io/${{ github.repository_owner }}/runpod-pytorch-heavy:latest
           labels: |
             org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
 
