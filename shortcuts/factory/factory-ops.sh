@@ -8,6 +8,7 @@ then
         then
             . "$scriptAbsoluteFolder"/shortcuts/factory/factory.sh
             . "$scriptAbsoluteFolder"/shortcuts/factory/factoryCreate.sh
+            . "$scriptAbsoluteFolder"/shortcuts/factory/factoryCreate_here.sh
         fi
     fi
 fi

@@ -15,42 +15,15 @@ cat << 'CZXWXcRMTo8EmM8i4d'
 # runpod/pytorch:2.1.0-py3.10-cuda11.8.0-devel-ubuntu22.04
 FROM runpod/pytorch:2.4.0-py3.11-cuda12.4.1-devel-ubuntu22.04
 
+CZXWXcRMTo8EmM8i4d
+
+_here_dockerfile-ubiquitous "$@"
+
+cat << 'CZXWXcRMTo8EmM8i4d'
+
 # ###
 # PASTE
 # ###
-
-# https://www.docker.com/blog/introduction-to-heredocs-in-dockerfiles/
-COPY <<EOFSPECIAL /ubInstall.sh
-
-#!/usr/bin/env bash
-if [[ -e /workspace/ubiquitous_bash/ubiquitous_bash.sh ]]
-then
-/workspace/ubiquitous_bash/ubiquitous_bash.sh _setupUbiquitous_nonet
-export profileScriptLocation="/workspace/ubiquitous_bash/ubiquitous_bash.sh"
-export profileScriptFolder="/workspace/ubiquitous_bash"
-. "/workspace/ubiquitous_bash/ubiquitous_bash.sh" --profile _importShortcuts
-else
-mkdir -p /workspace
-! [[ -e /workspace/ubiquitous_bash.sh ]] && wget 'https://raw.githubusercontent.com/mirage335/ubiquitous_bash/master/ubiquitous_bash.sh'
-mv -f ./ubiquitous_bash.sh /workspace/ubiquitous_bash.sh
-chmod u+x /workspace/ubiquitous_bash.sh
-rmdir /workspace/ubiquitous_bash > /dev/null 2>&1
-/workspace/ubiquitous_bash.sh _gitBest clone --depth 1 --recursive git@github.com:mirage335-colossus/ubiquitous_bash.git
-mv -f ./ubiquitous_bash /workspace/ubiquitous_bash
-mkdir -p /workspace/ubiquitous_bash
-! [[ -e /workspace/ubiquitous_bash/ubiquitous_bash.sh ]] && wget 'https://raw.githubusercontent.com/mirage335/ubiquitous_bash/master/ubiquitous_bash.sh'
-mv -f ./ubiquitous_bash.sh /workspace/ubiquitous_bash/ubiquitous_bash.sh
-chmod u+x /workspace/ubiquitous_bash/ubiquitous_bash.sh
-/workspace/ubiquitous_bash/ubiquitous_bash.sh _setupUbiquitous_nonet
-fi
-#clear
-
-EOFSPECIAL
-RUN chmod u+x /ubInstall.sh
-RUN /ubInstall.sh
-
-
-
 
 # https://huggingface.co/blog/mlabonne/sft-llama3
 # https://huggingface.co/blog/mlabonne/merge-models
@@ -60,10 +33,6 @@ RUN python -m pip install --upgrade pip
 # ATTRIBUTION-AI: ChatGPT o3 (high)  2025-04-29-...
 # ATTRIBUTION-AI: Llama 3.1 Nemotron Utra 253b v1  2025-04-30-...
 
-
-RUN apt-get update
-RUN apt upgrade -y
-RUN apt-get install sudo -y
 RUN apt-get install python3.10 python3.10-dev python3.10-distutils -y
 RUN update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.10 1
 RUN update-alternatives --config python3
@@ -71,7 +40,6 @@ RUN update-alternatives --config python3
 RUN curl -sS https://bootstrap.pypa.io/get-pip.py | sudo python3
 RUN python -m pip install --upgrade pip
 RUN python -m pip install --upgrade pip setuptools wheel
-
 
 
 RUN python -m pip uninstall -y torch torchvision torchaudio triton unsloth unsloth_zoo xformers sympy mpmath
@@ -96,18 +64,26 @@ RUN PIP_PREFER_BINARY=1 pip install --prefer-binary --no-build-isolation "unslot
 RUN pip install --no-deps "xformers<0.0.27" "trl<0.9.0" peft accelerate bitsandbytes
 #RUN pip install torch torchvision torchaudio
 
-
-
-
-WORKDIR /
-
 # ###
 # PASTE
 # ###
 
+CZXWXcRMTo8EmM8i4d
+
+
+_here_dockerfile-ubiquitous-documentation "$@"
+
+_here_dockerfile-ubiquitous-licenses "$@"
+
+
+cat << 'CZXWXcRMTo8EmM8i4d'
+
+WORKDIR /
+
 #docker image inspect ...FROM... --format '{{json .Config.Entrypoint}} {{json .Config.Cmd}}'
 ENTRYPOINT ["/opt/nvidia/nvidia_entrypoint.sh"]
 CMD ["/start.sh"]
+
 CZXWXcRMTo8EmM8i4d
 
 }

@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='491640232'
+export ub_setScriptChecksum_contents='1458211282'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -26824,30 +26824,18 @@ alias l=_l
 
 
 
-# Unusual. Please keep these custom Docker containers to a minimum: essential factories (eg. fine-tuning) only, not application specific dependency containers (eg. databases). Use derivative 'fork' projects of ubiquitous_bash instead.
-
-
-_here_dockerfile_runpod-pytorch-heavy() {
-
+_here_dockerfile-ubiquitous() {
 cat << 'CZXWXcRMTo8EmM8i4d'
-#docker build -t runpod-pytorch-heavy .
-# https://hub.docker.com/r/runpod/pytorch/tags
-# https://www.runpod.io/console/deploy
-# https://www.runpod.io/console/explore/runpod-torch-v240
-# runpod/pytorch:2.2.0-py3.10-cuda12.1.1-devel-ubuntu22.04
-# runpod/pytorch:2.4.0-py3.11-cuda12.4.1-devel-ubuntu22.04
-# runpod/pytorch:2.8.0-py3.11-cuda12.8.1-cudnn-devel-ubuntu22.04
-# runpod/pytorch:2.1.0-py3.10-cuda11.8.0-devel-ubuntu22.04
-FROM runpod/pytorch:2.4.0-py3.11-cuda12.4.1-devel-ubuntu22.04
-
-# ###
-# PASTE
-# ###
 
 # https://www.docker.com/blog/introduction-to-heredocs-in-dockerfiles/
 COPY <<EOFSPECIAL /ubInstall.sh
 
 #!/usr/bin/env bash
+
+# ###
+# PASTE
+# ###
+
 if [[ -e /workspace/ubiquitous_bash/ubiquitous_bash.sh ]]
 then
 /workspace/ubiquitous_bash/ubiquitous_bash.sh _setupUbiquitous_nonet
@@ -26870,12 +26858,115 @@ chmod u+x /workspace/ubiquitous_bash/ubiquitous_bash.sh
 fi
 #clear
 
+# ###
+# PASTE
+# ###
+
 EOFSPECIAL
 RUN chmod u+x /ubInstall.sh
 RUN /ubInstall.sh
 
 
+# ###
+# PASTE
+# ###
 
+RUN apt-get update
+RUN apt upgrade -y
+RUN apt-get install sudo -y
+RUN apt-get install less -y
+RUN apt-get install pv -y
+RUN apt-get install socat -y
+RUN apt-get install bc -y
+RUN apt-get install xxd -y
+RUN apt-get install php -y
+RUN apt-get install jq -y
+RUN apt-get install gh -y
+RUN apt-get install aria2 -y
+RUN apt-get install curl wget -y
+RUN apt-get install xz -y
+RUN apt-get install xz-utils -y
+RUN apt-get install tar bzip2 gzip -y
+RUN apt-get install sed patch expect -y
+RUN apt-get install dos2unix -y
+
+
+RUN /workspace/ubiquitous_bash/ubiquitous_bash.sh _getMinimal_cloud
+
+# ###
+# PASTE
+# ###
+
+CZXWXcRMTo8EmM8i4d
+}
+
+
+_here_dockerfile-ubiquitous-documentation() {
+    cat << 'CZXWXcRMTo8EmM8i4d'
+
+# Normally expected redundant. Copyleft license files are normally already preserved at several filesystem locations.
+#python3 -m site
+# /usr/local/lib/python*/dist-packages
+#find /usr/local/lib/python*/dist-packages -iname '*.dist-info'
+# /usr/lib/python3/dist-packages
+# /usr/share/licenses
+# /usr/share/doc
+#
+RUN mkdir -p /licenses
+RUN pip install --no-cache-dir --quiet pip-licenses
+RUN pip-licenses --with-license-file --format=markdown > /licenses/PYTHON_THIRD_PARTY.md
+
+CZXWXcRMTo8EmM8i4d
+}
+
+
+
+
+_here_dockerfile-ubiquitous-licenses() {
+
+    ! mkdir -p "$scriptLocal"/licenses && ( _messageError 'FAIL' >&2 ) > /dev/null && _stop 1
+
+    [[ ! -e "$scriptLocal"/licenses/gpl-2.0.txt ]] && wget -qO "$scriptLocal"/licenses/gpl-2.0.txt 'https://www.gnu.org/licenses/old-licenses/gpl-2.0.txt'
+    [[ ! -e "$scriptLocal"/licenses/gpl-3.0.txt ]] && wget -qO "$scriptLocal"/licenses/gpl-3.0.txt 'https://www.gnu.org/licenses/gpl-3.0.txt'
+    [[ ! -e "$scriptLocal"/licenses/agpl-3.0.txt ]] && wget -qO "$scriptLocal"/licenses/agpl-3.0.txt 'https://www.gnu.org/licenses/agpl-3.0.txt'
+
+
+    RUN mkdir -p /licenses
+
+    COPY <<EOFSPECIAL /licenses/gpl-3.0.txt
+
+EOFSPECIAL
+}
+
+
+
+
+
+# Unusual. Please keep these custom Docker containers to a minimum: essential factories (eg. fine-tuning) only, not application specific dependency containers (eg. databases). Use derivative 'fork' projects of ubiquitous_bash instead.
+
+
+_here_dockerfile_runpod-pytorch-heavy() {
+
+cat << 'CZXWXcRMTo8EmM8i4d'
+#docker build -t runpod-pytorch-heavy .
+# https://hub.docker.com/r/runpod/pytorch/tags
+# https://www.runpod.io/console/deploy
+# https://www.runpod.io/console/explore/runpod-torch-v240
+# runpod/pytorch:2.2.0-py3.10-cuda12.1.1-devel-ubuntu22.04
+# runpod/pytorch:2.4.0-py3.11-cuda12.4.1-devel-ubuntu22.04
+# runpod/pytorch:2.8.0-py3.11-cuda12.8.1-cudnn-devel-ubuntu22.04
+# runpod/pytorch:2.1.0-py3.10-cuda11.8.0-devel-ubuntu22.04
+FROM runpod/pytorch:2.4.0-py3.11-cuda12.4.1-devel-ubuntu22.04
+
+CZXWXcRMTo8EmM8i4d
+
+_here_dockerfile-ubiquitous "$@"
+
+cat << 'CZXWXcRMTo8EmM8i4d'
+
+# ###
+# PASTE
+# ###
 
 # https://huggingface.co/blog/mlabonne/sft-llama3
 # https://huggingface.co/blog/mlabonne/merge-models
@@ -26885,10 +26976,6 @@ RUN python -m pip install --upgrade pip
 # ATTRIBUTION-AI: ChatGPT o3 (high)  2025-04-29-...
 # ATTRIBUTION-AI: Llama 3.1 Nemotron Utra 253b v1  2025-04-30-...
 
-
-RUN apt-get update
-RUN apt upgrade -y
-RUN apt-get install sudo -y
 RUN apt-get install python3.10 python3.10-dev python3.10-distutils -y
 RUN update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.10 1
 RUN update-alternatives --config python3
@@ -26896,7 +26983,6 @@ RUN update-alternatives --config python3
 RUN curl -sS https://bootstrap.pypa.io/get-pip.py | sudo python3
 RUN python -m pip install --upgrade pip
 RUN python -m pip install --upgrade pip setuptools wheel
-
 
 
 RUN python -m pip uninstall -y torch torchvision torchaudio triton unsloth unsloth_zoo xformers sympy mpmath
@@ -26921,14 +27007,12 @@ RUN PIP_PREFER_BINARY=1 pip install --prefer-binary --no-build-isolation "unslot
 RUN pip install --no-deps "xformers<0.0.27" "trl<0.9.0" peft accelerate bitsandbytes
 #RUN pip install torch torchvision torchaudio
 
-
-
-
-WORKDIR /
-
 # ###
 # PASTE
 # ###
+
+
+WORKDIR /
 
 #docker image inspect ...FROM... --format '{{json .Config.Entrypoint}} {{json .Config.Cmd}}'
 ENTRYPOINT ["/opt/nvidia/nvidia_entrypoint.sh"]
@@ -58287,6 +58371,7 @@ _compile_bash_shortcuts() {
 	
 	( ( [[ "$enUb_dev_heavy" == "true" ]] ) || [[ "$enUb_ollama_shortcuts" == "true" ]] ) && includeScriptList+=( "shortcuts/ai/ollama"/ollama.sh )
 
+	[[ "$enUb_factory_shortcuts" ]] && includeScriptList+=( "shortcuts/factory"/factoryCreate_here.sh )
 	[[ "$enUb_factory_shortcuts" ]] && includeScriptList+=( "shortcuts/factory"/factoryCreate.sh )
 	[[ "$enUb_factory_shortcuts" ]] && includeScriptList+=( "shortcuts/factory"/factory.sh )
 	
@@ -59107,6 +59192,7 @@ then
         then
             . "$scriptAbsoluteFolder"/shortcuts/factory/factory.sh
             . "$scriptAbsoluteFolder"/shortcuts/factory/factoryCreate.sh
+            . "$scriptAbsoluteFolder"/shortcuts/factory/factoryCreate_here.sh
         fi
     fi
 fi
