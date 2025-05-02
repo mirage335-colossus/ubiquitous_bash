@@ -26,16 +26,20 @@ fi
 # Before calling function, get latest function version .
 #if [[ "$recursionGuard_factory_ops" == "" ]]
 #then
-    #_factory_ops_recursion
+    #_factory_ops_recursion "$@"
     #return
 #fi
 _factory_ops_recursion() {
+    local currentExitStatus_recursion=""
     _factory_ops
     if [[ "$recursionGuard_factory_ops" == "" ]]
     then
         export recursionGuard_factory_ops="true"
         "${FUNCNAME[1]}" "$@"
-        return
+        currentExitStatus_recursion="$?"
+        export recursionGuard_factory_ops=""
+        unset recursionGuard_factory_ops
+        return "$currentExitStatus_recursion"
     fi
 }
 

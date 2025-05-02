@@ -55,7 +55,7 @@ factory_knowledge_distillDir='/c/q/p/zCore/infrastructure/ubiquitous_bash/_local
 _factory_axolotl() {
 if [[ "$recursionGuard_factory_ops" == "" ]]
 then
-_factory_ops_recursion
+_factory_ops_recursion "$@"
 return
 fi
 
@@ -126,7 +126,7 @@ fi
 _factory_runpod-official() {
 if [[ "$recursionGuard_factory_ops" == "" ]]
 then
-_factory_ops_recursion
+_factory_ops_recursion "$@"
 return
 fi
 
@@ -146,7 +146,7 @@ _set_factory_dir
 # runpod/pytorch:2.4.0-py3.11-cuda12.4.1-devel-ubuntu22.04
 # runpod/pytorch:2.8.0-py3.11-cuda12.8.1-cudnn-devel-ubuntu22.04
 # runpod/pytorch:2.1.0-py3.10-cuda11.8.0-devel-ubuntu22.04
-dockerName='runpod/pytorch:2.2.0-py3.10-cuda12.1.1-devel-ubuntu22.04'
+dockerName='runpod/pytorch:2.8.0-py3.11-cuda12.8.1-cudnn-devel-ubuntu22.04'
 
 [[ JUPYTER_PASSWORD == "" ]] && export JUPYTER_PASSWORD=$(openssl rand 768 | base64 | tr -dc 'a-zA-Z0-9' | tr -d 'acdefhilmnopqrsuvACDEFHILMNOPQRSU14580' | head -c "24")
 
@@ -207,7 +207,7 @@ fi
 _factory_runpod-heavy() {
 if [[ "$recursionGuard_factory_ops" == "" ]]
 then
-_factory_ops_recursion
+_factory_ops_recursion "$@"
 return
 fi
 
@@ -300,7 +300,7 @@ fi
 _factory_runpod() {
     if [[ "$recursionGuard_factory_ops" == "" ]]
     then
-        _factory_ops_recursion
+        _factory_ops_recursion "$@"
         return
     fi
 

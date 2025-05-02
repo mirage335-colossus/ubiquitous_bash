@@ -5,7 +5,7 @@
 _here_dockerfile_runpod-pytorch-heavy() {
 if [[ "$recursionGuard_factory_ops" == "" ]]
 then
-_factory_ops_recursion
+_factory_ops_recursion "$@"
 return
 fi
 
@@ -95,7 +95,7 @@ CZXWXcRMTo8EmM8i4d
 __factoryCreate_sequence_runpod-pytorch-heavy() {
     if [[ "$recursionGuard_factory_ops" == "" ]]
     then
-        _factory_ops_recursion
+        _factory_ops_recursion "$@"
         return
     fi
 
@@ -153,7 +153,7 @@ __factoryCreate_sequence_runpod-pytorch-heavy() {
 __factoryCreate_runpod-pytorch-heavy() {
     if [[ "$recursionGuard_factory_ops" == "" ]]
     then
-        _factory_ops_recursion
+        _factory_ops_recursion "$@"
         return
     fi
 
