@@ -206,24 +206,26 @@ _set_factory_dir
 # ###
 
 dockerName='runpod-pytorch-heavy'
+#docker pull ghcr.io/mirage335-colossus/"$dockerName":latest
+
 # Prefer local build .
 if [[ $(docker images -q "$dockerName" | tr -dc 'a-zA-Z0-9') == "" ]]
 then
     # Fallback to something from Docker Hub .
-    [[ $(docker images -q "mirage335_colossus/ubiquitous_bash/""$dockerName" | tr -dc 'a-zA-Z0-9') != "" ]]
-    [[ $(docker images -q "mirage335_colossus/""$dockerName" | tr -dc 'a-zA-Z0-9') != "" ]]
-    [[ $(docker images -q "mirage335/""$dockerName" | tr -dc 'a-zA-Z0-9') != "" ]]
+    [[ $(docker images -q "mirage335-colossus/ubiquitous_bash/""$dockerName" | tr -dc 'a-zA-Z0-9') != "" ]] && dockerName="mirage335-colossus/ubiquitous_bash/""$dockerName"
+    [[ $(docker images -q "mirage335-colossus/""$dockerName" | tr -dc 'a-zA-Z0-9') != "" ]] && dockerName="mirage335-colossus/""$dockerName"
+    [[ $(docker images -q "mirage335/""$dockerName" | tr -dc 'a-zA-Z0-9') != "" ]] && dockerName="mirage335/""$dockerName"
 
     # Prefer something from GHCR .
-    [[ $(docker images -q "ghcr.io/mirage335_colossus/ubiquitous_bash/""$dockerName" | tr -dc 'a-zA-Z0-9') != "" ]]
-    [[ $(docker images -q "ghcr.io/mirage335_colossus/""$dockerName" | tr -dc 'a-zA-Z0-9') != "" ]]
-    [[ $(docker images -q "ghcr.io/mirage335/""$dockerName" | tr -dc 'a-zA-Z0-9') != "" ]]
+    [[ $(docker images -q "ghcr.io/mirage335-colossus/ubiquitous_bash/""$dockerName" | tr -dc 'a-zA-Z0-9') != "" ]] && dockerName="ghcr.io/mirage335-colossus/ubiquitous_bash/""$dockerName"
+    [[ $(docker images -q "ghcr.io/mirage335-colossus/""$dockerName" | tr -dc 'a-zA-Z0-9') != "" ]] && dockerName="ghcr.io/mirage335-colossus/""$dockerName"
+    [[ $(docker images -q "ghcr.io/mirage335/""$dockerName" | tr -dc 'a-zA-Z0-9') != "" ]] && dockerName="ghcr.io/mirage335/""$dockerName"
 fi
 
 if ! docker images | tail -n+2 | grep '^'"$dockerName" > /dev/null 2>&1
 then
     _messagePlain_bad 'bad: FAIL: missing: '"$dockerName"
-    _messagePlain_request 'request: docker pull ... runpod-pytorch-heavy'
+    _messagePlain_request 'request: 'docker pull ghcr.io/mirage335-colossus/"$dockerName":latest
     _messageError 'FAIL'
     return 1
 fi
