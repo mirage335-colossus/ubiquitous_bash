@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='1500051284'
+export ub_setScriptChecksum_contents='2530559084'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -19263,6 +19263,11 @@ echo 'EOFSPECIAL'
 
 
 _here_dockerfile_runpod-pytorch-heavy() {
+if [[ "$recursionGuard_factory_ops" == "" ]]
+then
+_factory_ops_recursion
+return
+fi
 
 cat << 'CZXWXcRMTo8EmM8i4d'
 #docker build -t runpod-pytorch-heavy .
@@ -19348,6 +19353,12 @@ CZXWXcRMTo8EmM8i4d
 
 }
 __factoryCreate_sequence_runpod-pytorch-heavy() {
+    if [[ "$recursionGuard_factory_ops" == "" ]]
+    then
+        _factory_ops_recursion
+        return
+    fi
+
     _start
 
     # ATTRIBUTION-AI Llama 3.1 Nemotron Ultra 253b v1
@@ -19400,6 +19411,12 @@ __factoryCreate_sequence_runpod-pytorch-heavy() {
     _stop
 }
 __factoryCreate_runpod-pytorch-heavy() {
+    if [[ "$recursionGuard_factory_ops" == "" ]]
+    then
+        _factory_ops_recursion
+        return
+    fi
+
     "$scriptAbsoluteLocation" __factoryCreate_sequence_runpod-pytorch-heavy "$@"
 }
 
@@ -19460,6 +19477,11 @@ factory_knowledge_distillDir='/c/q/p/zCore/infrastructure/ubiquitous_bash/_local
 
 
 _factory_axolotl() {
+if [[ "$recursionGuard_factory_ops" == "" ]]
+then
+_factory_ops_recursion
+return
+fi
 
 ! type _set_factory_dir > /dev/null 2>&1 && exit 1
 _set_factory_dir
@@ -19526,6 +19548,11 @@ fi
 
 
 _factory_runpod-official() {
+if [[ "$recursionGuard_factory_ops" == "" ]]
+then
+_factory_ops_recursion
+return
+fi
 
 ! type _set_factory_dir > /dev/null 2>&1 && exit 1
 _set_factory_dir
@@ -19602,6 +19629,11 @@ fi
 
 
 _factory_runpod-heavy() {
+if [[ "$recursionGuard_factory_ops" == "" ]]
+then
+_factory_ops_recursion
+return
+fi
 
 ! type _set_factory_dir > /dev/null 2>&1 && exit 1
 _set_factory_dir
@@ -19690,7 +19722,14 @@ fi
 
 }
 _factory_runpod() {
-    _factory_runpod-heavy
+    if [[ "$recursionGuard_factory_ops" == "" ]]
+    then
+        _factory_ops_recursion
+        return
+    fi
+
+    #_factory_runpod-heavy "$@"
+    _factory_runpod-official "$@"
 }
 
 
@@ -42573,23 +42612,44 @@ _findUbiquitous() {
 
 
 # Very unusual.
+_factory_ops() {
+    #if [[ "$ub_ops_disable" != 'true' ]]
+    #then
+        #if [[ "$objectName" == "ubiquitous_bash" ]] #&& false
+        #then
+            if [[ -e "$scriptAbsoluteFolder"/shortcuts/factory/factory.sh ]] && [[ -e "$scriptAbsoluteFolder"/shortcuts/factory/factoryCreate.sh ]]
+            then
+                . "$scriptAbsoluteFolder"/shortcuts/factory/factory.sh
+                . "$scriptAbsoluteFolder"/shortcuts/factory/factoryCreate.sh
+                . "$scriptAbsoluteFolder"/shortcuts/factory/factoryCreate_here.sh
+            fi
+        #fi
+    #fi
+}
 if [[ "$ub_ops_disable" != 'true' ]]
 then
     if [[ "$objectName" == "ubiquitous_bash" ]] #&& false
     then
-        if [[ -e "$scriptAbsoluteFolder"/shortcuts/factory/factory.sh ]] && [[ -e "$scriptAbsoluteFolder"/shortcuts/factory/factoryCreate.sh ]]
-        then
-            . "$scriptAbsoluteFolder"/shortcuts/factory/factory.sh
-            . "$scriptAbsoluteFolder"/shortcuts/factory/factoryCreate.sh
-            . "$scriptAbsoluteFolder"/shortcuts/factory/factoryCreate_here.sh
-        fi
+        _factory_ops
     fi
 fi
 
 
-
-
-
+# Before calling function, get latest function version .
+#if [[ "$recursionGuard_factory_ops" == "" ]]
+#then
+    #_factory_ops_recursion
+    #return
+#fi
+_factory_ops_recursion() {
+    _factory_ops
+    if [[ "$recursionGuard_factory_ops" == "" ]]
+    then
+        export recursionGuard_factory_ops="true"
+        "${FUNCNAME[1]}" "$@"
+        return
+    fi
+}
 
 
 

@@ -3,6 +3,11 @@
 
 
 _here_dockerfile_runpod-pytorch-heavy() {
+if [[ "$recursionGuard_factory_ops" == "" ]]
+then
+_factory_ops_recursion
+return
+fi
 
 cat << 'CZXWXcRMTo8EmM8i4d'
 #docker build -t runpod-pytorch-heavy .
@@ -88,6 +93,12 @@ CZXWXcRMTo8EmM8i4d
 
 }
 __factoryCreate_sequence_runpod-pytorch-heavy() {
+    if [[ "$recursionGuard_factory_ops" == "" ]]
+    then
+        _factory_ops_recursion
+        return
+    fi
+
     _start
 
     # ATTRIBUTION-AI Llama 3.1 Nemotron Ultra 253b v1
@@ -140,6 +151,12 @@ __factoryCreate_sequence_runpod-pytorch-heavy() {
     _stop
 }
 __factoryCreate_runpod-pytorch-heavy() {
+    if [[ "$recursionGuard_factory_ops" == "" ]]
+    then
+        _factory_ops_recursion
+        return
+    fi
+
     "$scriptAbsoluteLocation" __factoryCreate_sequence_runpod-pytorch-heavy "$@"
 }
 

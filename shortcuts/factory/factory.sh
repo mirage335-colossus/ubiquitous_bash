@@ -53,6 +53,11 @@ factory_knowledge_distillDir='/c/q/p/zCore/infrastructure/ubiquitous_bash/_local
 
 
 _factory_axolotl() {
+if [[ "$recursionGuard_factory_ops" == "" ]]
+then
+_factory_ops_recursion
+return
+fi
 
 ! type _set_factory_dir > /dev/null 2>&1 && exit 1
 _set_factory_dir
@@ -119,6 +124,11 @@ fi
 
 
 _factory_runpod-official() {
+if [[ "$recursionGuard_factory_ops" == "" ]]
+then
+_factory_ops_recursion
+return
+fi
 
 ! type _set_factory_dir > /dev/null 2>&1 && exit 1
 _set_factory_dir
@@ -195,6 +205,11 @@ fi
 
 
 _factory_runpod-heavy() {
+if [[ "$recursionGuard_factory_ops" == "" ]]
+then
+_factory_ops_recursion
+return
+fi
 
 ! type _set_factory_dir > /dev/null 2>&1 && exit 1
 _set_factory_dir
@@ -283,7 +298,14 @@ fi
 
 }
 _factory_runpod() {
-    _factory_runpod-heavy
+    if [[ "$recursionGuard_factory_ops" == "" ]]
+    then
+        _factory_ops_recursion
+        return
+    fi
+
+    #_factory_runpod-heavy "$@"
+    _factory_runpod-official "$@"
 }
 
 
