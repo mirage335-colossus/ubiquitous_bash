@@ -70,7 +70,7 @@ RUN python -m pip install --upgrade pip
 #RUN pip install --no-deps "xformers<0.0.27" "trl<0.9.0" peft accelerate bitsandbytes
 #RUN pip install torch torchvision torchaudio
 
-pip install "unsloth[colab-new] @ git+https://github.com/unslothai/unsloth.git"
+RUN pip install "unsloth[colab-new] @ git+https://github.com/unslothai/unsloth.git"
 
 # ###
 # PASTE
@@ -237,7 +237,7 @@ RUN python -m pip install --upgrade pip
 #RUN pip install --no-deps "xformers<0.0.27" "trl<0.9.0" peft accelerate bitsandbytes
 #RUN pip install torch torchvision torchaudio
 
-pip install "unsloth[colab-new] @ git+https://github.com/unslothai/unsloth.git"
+RUN pip install "unsloth[colab-new] @ git+https://github.com/unslothai/unsloth.git"
 
 # ###
 # PASTE

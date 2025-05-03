@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='2416615402'
+export ub_setScriptChecksum_contents='2565141927'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -27026,7 +27026,7 @@ RUN python -m pip install --upgrade pip
 #RUN pip install --no-deps "xformers<0.0.27" "trl<0.9.0" peft accelerate bitsandbytes
 #RUN pip install torch torchvision torchaudio
 
-pip install "unsloth[colab-new] @ git+https://github.com/unslothai/unsloth.git"
+RUN pip install "unsloth[colab-new] @ git+https://github.com/unslothai/unsloth.git"
 
 # ###
 # PASTE
@@ -27193,7 +27193,7 @@ RUN python -m pip install --upgrade pip
 #RUN pip install --no-deps "xformers<0.0.27" "trl<0.9.0" peft accelerate bitsandbytes
 #RUN pip install torch torchvision torchaudio
 
-pip install "unsloth[colab-new] @ git+https://github.com/unslothai/unsloth.git"
+RUN pip install "unsloth[colab-new] @ git+https://github.com/unslothai/unsloth.git"
 
 # ###
 # PASTE
