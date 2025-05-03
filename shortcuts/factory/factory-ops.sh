@@ -5,7 +5,7 @@ _factory_ops() {
     #then
         #if [[ "$objectName" == "ubiquitous_bash" ]] #&& false
         #then
-            if [[ -e "$scriptAbsoluteFolder"/shortcuts/factory/factory.sh ]] && [[ -e "$scriptAbsoluteFolder"/shortcuts/factory/factoryCreate.sh ]]
+            if [[ -e "$scriptAbsoluteFolder"/shortcuts/factory/factory.sh ]] && [[ -e "$scriptAbsoluteFolder"/shortcuts/factory/factoryCreate.sh ]] && [[ -e "$scriptAbsoluteFolder"/shortcuts/factory/factoryCreate_here.sh ]]
             then
                 . "$scriptAbsoluteFolder"/shortcuts/factory/factory.sh
                 . "$scriptAbsoluteFolder"/shortcuts/factory/factoryCreate.sh
