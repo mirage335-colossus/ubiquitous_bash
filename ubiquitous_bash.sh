@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='1376209276'
+export ub_setScriptChecksum_contents='2416615402'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -26958,6 +26958,7 @@ echo 'EOFSPECIAL'
 # Unusual. Please keep these custom Docker containers to a minimum: essential factories (eg. fine-tuning) only, not application specific dependency containers (eg. databases). Use derivative 'fork' projects of ubiquitous_bash instead.
 
 
+# WARNING: May be WIP .
 _here_dockerfile_runpod-pytorch-heavy() {
 if [[ "$recursionGuard_factory_ops" == "" ]]
 then
@@ -26974,7 +26975,7 @@ cat << 'CZXWXcRMTo8EmM8i4d'
 # runpod/pytorch:2.4.0-py3.11-cuda12.4.1-devel-ubuntu22.04
 # runpod/pytorch:2.8.0-py3.11-cuda12.8.1-cudnn-devel-ubuntu22.04
 # runpod/pytorch:2.1.0-py3.10-cuda11.8.0-devel-ubuntu22.04
-FROM runpod/pytorch:2.4.0-py3.11-cuda12.4.1-devel-ubuntu22.04
+FROM runpod/pytorch:2.8.0-py3.11-cuda12.8.1-cudnn-devel-ubuntu22.04
 
 CZXWXcRMTo8EmM8i4d
 
@@ -26994,23 +26995,23 @@ RUN python -m pip install --upgrade pip
 # ATTRIBUTION-AI: ChatGPT o3 (high)  2025-04-29-...
 # ATTRIBUTION-AI: Llama 3.1 Nemotron Utra 253b v1  2025-04-30-...
 
-RUN apt-get install python3.10 python3.10-dev python3.10-distutils -y
-RUN update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.10 1
-RUN update-alternatives --config python3
+#RUN apt-get install python3.10 python3.10-dev python3.10-distutils -y
+#RUN update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.10 1
+#RUN update-alternatives --config python3
 
-RUN curl -sS https://bootstrap.pypa.io/get-pip.py | sudo python3
-RUN python -m pip install --upgrade pip
-RUN python -m pip install --upgrade pip setuptools wheel
+#RUN curl -sS https://bootstrap.pypa.io/get-pip.py | sudo python3
+#RUN python -m pip install --upgrade pip
+#RUN python -m pip install --upgrade pip setuptools wheel
 
 
-RUN python -m pip uninstall -y torch torchvision torchaudio triton unsloth unsloth_zoo xformers sympy mpmath
+#RUN python -m pip uninstall -y torch torchvision torchaudio triton unsloth unsloth_zoo xformers sympy mpmath
 
-RUN pip install "sympy>=1.13.3" "mpmath>=1.3"
+#RUN pip install "sympy>=1.13.3" "mpmath>=1.3"
 
-# ATTENTION: Up/Down-grades torch , etc , to version 2.3.0 , as is apparently expected by  https://huggingface.co/blog/mlabonne/sft-llama3  .
-RUN pip install torch==2.3.0 torchvision==0.18.0+cu121 torchaudio==2.3.0+cu121 triton==2.3.0 --index-url https://download.pytorch.org/whl/cu121
+## ATTENTION: Up/Down-grades torch , etc , to version 2.3.0 , as is apparently expected by  https://huggingface.co/blog/mlabonne/sft-llama3  .
+#RUN pip install torch==2.3.0 torchvision==0.18.0+cu121 torchaudio==2.3.0+cu121 triton==2.3.0 --index-url https://download.pytorch.org/whl/cu121
 
-RUN python -m pip install --upgrade pip
+#RUN python -m pip install --upgrade pip
 
 
 
@@ -27019,11 +27020,13 @@ RUN python -m pip install --upgrade pip
 
 #"unsloth @ git+https://github.com/unslothai/unsloth.git"
 #RUN pip install "unsloth[colab-new] @ git+https://github.com/unslothai/unsloth.git"
-RUN PIP_PREFER_BINARY=1 pip install --prefer-binary --no-build-isolation "unsloth[cu121-torch230]"
+#RUN PIP_PREFER_BINARY=1 pip install --prefer-binary --no-build-isolation "unsloth[cu121-torch230]"
 #RUN pip install "unsloth"
 
-RUN pip install --no-deps "xformers<0.0.27" "trl<0.9.0" peft accelerate bitsandbytes
+#RUN pip install --no-deps "xformers<0.0.27" "trl<0.9.0" peft accelerate bitsandbytes
 #RUN pip install torch torchvision torchaudio
+
+pip install "unsloth[colab-new] @ git+https://github.com/unslothai/unsloth.git"
 
 # ###
 # PASTE
@@ -27116,6 +27119,172 @@ __factoryCreate_runpod-pytorch-heavy() {
     "$scriptAbsoluteLocation" __factoryCreate_sequence_runpod-pytorch-heavy "$@"
 }
 
+
+
+
+
+
+
+
+_here_dockerfile_runpod-pytorch-unsloth() {
+if [[ "$recursionGuard_factory_ops" == "" ]]
+then
+_factory_ops_recursion "$@"
+return
+fi
+
+cat << 'CZXWXcRMTo8EmM8i4d'
+#docker build -t runpod-pytorch-unsloth .
+# https://hub.docker.com/r/runpod/pytorch/tags
+# https://www.runpod.io/console/deploy
+# https://www.runpod.io/console/explore/runpod-torch-v240
+# runpod/pytorch:2.2.0-py3.10-cuda12.1.1-devel-ubuntu22.04
+# runpod/pytorch:2.4.0-py3.11-cuda12.4.1-devel-ubuntu22.04
+# runpod/pytorch:2.8.0-py3.11-cuda12.8.1-cudnn-devel-ubuntu22.04
+# runpod/pytorch:2.1.0-py3.10-cuda11.8.0-devel-ubuntu22.04
+FROM runpod/pytorch:2.8.0-py3.11-cuda12.8.1-cudnn-devel-ubuntu22.04
+
+CZXWXcRMTo8EmM8i4d
+
+_here_dockerfile-ubiquitous "$@"
+
+cat << 'CZXWXcRMTo8EmM8i4d'
+
+# ###
+# PASTE
+# ###
+
+# https://huggingface.co/blog/mlabonne/sft-llama3
+# https://huggingface.co/blog/mlabonne/merge-models
+
+RUN python -m pip install --upgrade pip
+
+# ATTRIBUTION-AI: ChatGPT o3 (high)  2025-04-29-...
+# ATTRIBUTION-AI: Llama 3.1 Nemotron Utra 253b v1  2025-04-30-...
+
+#RUN apt-get install python3.10 python3.10-dev python3.10-distutils -y
+#RUN update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.10 1
+#RUN update-alternatives --config python3
+
+#RUN curl -sS https://bootstrap.pypa.io/get-pip.py | sudo python3
+#RUN python -m pip install --upgrade pip
+#RUN python -m pip install --upgrade pip setuptools wheel
+
+
+#RUN python -m pip uninstall -y torch torchvision torchaudio triton unsloth unsloth_zoo xformers sympy mpmath
+
+#RUN pip install "sympy>=1.13.3" "mpmath>=1.3"
+
+## ATTENTION: Up/Down-grades torch , etc , to version 2.3.0 , as is apparently expected by  https://huggingface.co/blog/mlabonne/sft-llama3  .
+#RUN pip install torch==2.3.0 torchvision==0.18.0+cu121 torchaudio==2.3.0+cu121 triton==2.3.0 --index-url https://download.pytorch.org/whl/cu121
+
+#RUN python -m pip install --upgrade pip
+
+
+
+#RUN pip install unsloth_zoo==2025.3.12
+#RUN pip install --no-deps unsloth_zoo==2025.3.12
+
+#"unsloth @ git+https://github.com/unslothai/unsloth.git"
+#RUN pip install "unsloth[colab-new] @ git+https://github.com/unslothai/unsloth.git"
+#RUN PIP_PREFER_BINARY=1 pip install --prefer-binary --no-build-isolation "unsloth[cu121-torch230]"
+#RUN pip install "unsloth"
+
+#RUN pip install --no-deps "xformers<0.0.27" "trl<0.9.0" peft accelerate bitsandbytes
+#RUN pip install torch torchvision torchaudio
+
+pip install "unsloth[colab-new] @ git+https://github.com/unslothai/unsloth.git"
+
+# ###
+# PASTE
+# ###
+
+CZXWXcRMTo8EmM8i4d
+
+
+_here_dockerfile-ubiquitous-documentation "$@"
+
+_here_dockerfile-ubiquitous-licenses "$@"
+
+
+cat << 'CZXWXcRMTo8EmM8i4d'
+
+WORKDIR /
+
+#docker image inspect ...FROM... --format '{{json .Config.Entrypoint}} {{json .Config.Cmd}}'
+ENTRYPOINT ["/opt/nvidia/nvidia_entrypoint.sh"]
+CMD ["/start.sh"]
+
+CZXWXcRMTo8EmM8i4d
+
+}
+__factoryCreate_sequence_runpod-pytorch-unsloth() {
+    if [[ "$recursionGuard_factory_ops" == "" ]]
+    then
+        _factory_ops_recursion "$@"
+        return
+    fi
+
+    _start
+
+    # ATTRIBUTION-AI Llama 3.1 Nemotron Ultra 253b v1
+    docker stop $(docker ps -aq --filter ancestor=runpod-pytorch-unsloth 2>/dev/null) > /dev/null 2>&1
+    #docker rm $(docker ps -aq --filter ancestor=runpod-pytorch-unsloth 2>/dev/null) > /dev/null 2>&1
+
+    _messagePlain_probe 'docker rmi --force'
+    docker rmi --force runpod-pytorch-unsloth > /dev/null 2>&1
+
+    cd "$safeTmp"
+    _messagePlain_probe 'docker build -t'
+    _here_dockerfile_runpod-pytorch-unsloth > Dockerfile
+
+    # WARNING: CAUTION: DANGER: Docker is yet another third-party service dependency. Do NOT regard Docker's repository as archival preservation, and do NOT rely on Docker itself for archival preservation. Also, it is not clear whether a Docker 'image' based on 'Dockerfile' can be directly preserved without environment dependencies or unintentional updates, at best a root filesystem may be possible to obtain from a Docker 'image'.
+    # https://en.wikipedia.org/w/index.php?title=Docker,_Inc.&oldid=1285260999#History
+    # https://en.wikipedia.org/w/index.php?title=Docker_(software)&oldid=1286977923#History
+    
+
+    # ATTENTION: Add to '~/_bashrc' or similar .
+    #  Indeed '_bashrc' , NOT '.bashrc' .
+    # ATTRIBUTION-AI ChatGPT o3 (high)  2025-04-30
+    #
+    ##docker buildx rm cloud-user-default
+    ##docker buildx prune --builder cloud-user-default
+    #
+    #export DOCKER_USER="user"
+    #DOCKER_RAW_NAME="$DOCKER_USER""/default"          # what you type
+    #DOCKER_BUILDER_NAME="cloud-$(echo "$DOCKER_RAW_NAME" | tr '/:' '-')"
+    #if docker buildx ls --format '{{.Name}}' | grep -qx "$DOCKER_BUILDER_NAME"; then
+        #docker buildx use "$DOCKER_BUILDER_NAME"        # reuse
+    #else
+        #docker buildx create --driver cloud "$DOCKER_RAW_NAME" --use
+    #fi
+
+
+    #if [[ "$DOCKER_BUILDER_NAME" == "" ]]
+    #then
+        docker build -t runpod-pytorch-unsloth .
+        docker tag runpod-pytorch-unsloth "$DOCKER_USER"/runpod-pytorch-unsloth:latest
+    #else
+        #if [[ "$DOCKER_BUILDER_NAME" != "" ]]
+        #then
+            # https://docs.docker.com/build-cloud/usage/
+            #docker buildx build --builder "$DOCKER_BUILDER_NAME" -t runpod-pytorch-unsloth . --push
+        #fi
+    #fi
+
+    #docker push user/runpod-pytorch-unsloth:latest
+
+    _stop
+}
+__factoryCreate_runpod-pytorch-unsloth() {
+    if [[ "$recursionGuard_factory_ops" == "" ]]
+    then
+        _factory_ops_recursion "$@"
+        return
+    fi
+
+    "$scriptAbsoluteLocation" __factoryCreate_sequence_runpod-pytorch-unsloth "$@"
+}
 
 
 
@@ -27431,6 +27600,128 @@ _factory_runpod() {
 
 
 # https://hub.docker.com/u/langchain
+
+
+
+
+
+
+
+
+
+
+_factory_runpod-unsloth() {
+if [[ "$recursionGuard_factory_ops" == "" ]]
+then
+_factory_ops_recursion "$@"
+return
+fi
+
+! type _set_factory_dir > /dev/null 2>&1 && exit 1
+_set_factory_dir
+
+
+
+# ###
+# PASTE
+# ###
+
+dockerName='runpod-pytorch-unsloth'
+#docker pull ghcr.io/mirage335-colossus/"$dockerName":latest
+
+# Prefer local build .
+if [[ $(docker images -q "$dockerName" | tr -dc 'a-zA-Z0-9') == "" ]]
+then
+    # Fallback to something from Docker Hub .
+    [[ $(docker images -q "mirage335-colossus/ubiquitous_bash/""$dockerName" | tr -dc 'a-zA-Z0-9') != "" ]] && dockerName="mirage335-colossus/ubiquitous_bash/""$dockerName"
+    [[ $(docker images -q "mirage335-colossus/""$dockerName" | tr -dc 'a-zA-Z0-9') != "" ]] && dockerName="mirage335-colossus/""$dockerName"
+    [[ $(docker images -q "mirage335/""$dockerName" | tr -dc 'a-zA-Z0-9') != "" ]] && dockerName="mirage335/""$dockerName"
+
+    # Prefer something from GHCR .
+    [[ $(docker images -q "ghcr.io/mirage335-colossus/ubiquitous_bash/""$dockerName" | tr -dc 'a-zA-Z0-9') != "" ]] && dockerName="ghcr.io/mirage335-colossus/ubiquitous_bash/""$dockerName"
+    [[ $(docker images -q "ghcr.io/mirage335-colossus/""$dockerName" | tr -dc 'a-zA-Z0-9') != "" ]] && dockerName="ghcr.io/mirage335-colossus/""$dockerName"
+    [[ $(docker images -q "ghcr.io/mirage335/""$dockerName" | tr -dc 'a-zA-Z0-9') != "" ]] && dockerName="ghcr.io/mirage335/""$dockerName"
+fi
+
+if ! docker images | tail -n+2 | grep '^'"$dockerName" > /dev/null 2>&1
+then
+    _messagePlain_bad 'bad: FAIL: missing: '"$dockerName"
+    _messagePlain_request 'request: 'docker pull ghcr.io/mirage335-colossus/"$dockerName":latest
+    _messageError 'FAIL'
+    return 1
+fi
+
+[[ JUPYTER_PASSWORD == "" ]] && export JUPYTER_PASSWORD=$(openssl rand 768 | base64 | tr -dc 'a-zA-Z0-9' | tr -d 'acdefhilmnopqrsuvACDEFHILMNOPQRSU14580' | head -c "24")
+
+#docker pull "$dockerName"
+
+entrypoint=$(docker inspect -f '{{join .Config.Entrypoint " "}}' runpod/pytorch:2.2.0-py3.10-cuda12.1.1-devel-ubuntu22.04)
+cmd=$(docker inspect -f '{{join .Config.Cmd " "}}' runpod/pytorch:2.2.0-py3.10-cuda12.1.1-devel-ubuntu22.04)
+workdir=$(docker inspect -f '{{.Config.WorkingDir}}' runpod/pytorch:2.2.0-py3.10-cuda12.1.1-devel-ubuntu22.04)
+_messagePlain_request 'request: paste ->'
+echo > ./._run-factory_runpod
+_request_paste_factory-prepare_finetune | tee -a ./._run-factory_runpod
+_request_paste_factory-install_ubiquitous_bash | tee -a ./._run-factory_runpod
+_request_paste_factory-show_finetune | tee -a ./._run-factory_runpod
+_messagePlain_request 'request: JUPYTER_PASSWORD: '"$JUPYTER_PASSWORD"
+#docker inspect --format='{{json .Config.Entrypoint}}' "$dockerName" | jq -r '.[]' | tee -a ./._run-factory_runpod
+mkdir -p "$workdir" | tee -a ./._run-factory_runpod
+echo '[ -n '"$workdir"' ] && cd '"$workdir" | tee -a ./._run-factory_runpod
+#echo "exec ${entrypoint} ${cmd}" | tee -a ./._run-factory_runpod
+echo "exec ${entrypoint}" | tee -a ./._run-factory_runpod
+#echo 'bash -i' >> ./._run-factory_runpod
+_messagePlain_request 'request: <- paste'
+
+
+# ###
+
+
+! type _getAbsoluteLocation > /dev/null 2>&1 && exit 1
+
+#docker image inspect "$dockerName" --format '{{json .Config.Entrypoint}} {{json .Config.Cmd}}'
+
+dockerRunArgs=( bash /workspace/project/._run-factory_runpod )
+[[ ! -e ./._run-factory_runpod ]] && dockerRunArgs=( bash )
+
+if _if_cygwin
+then
+#--privileged
+#--ipc=host --ulimit memlock=-1 --ulimit stack=67108864
+#-v 'C:\q':/q -v 'C:\core':/core -v "$USERPROFILE"'\Downloads':/Downloads
+docker run --shm-size=20g --name runpod-$(_uid 14) --gpus "all" -e "$JUPYTER_PASSWORD" -e HF_AKI_KEY="$HF_AKI_KEY" -v 'C:\q':/q -v 'C:\q\p\zCore\infrastructure\ubiquitous_bash':/workspace/ubiquitous_bash:ro -v 'C:\core':/core -v "$USERPROFILE"'\Downloads':/Downloads -v "$factory_outputDir":/output -v "$factory_modelDir":/model -v "$factory_datasetDir":/dataset -v "$factory_knowledgeDir":/knowledge -v "$factory_knowledge_distillDir":/knowledge_distill -v "$factory_projectDir":/workspace/project -v "$factory_projectDir"/cache_pip:/workspace/cache_pip --rm -it "$dockerName" "${dockerRunArgs[@]}"
+fi
+if ! _if_cygwin
+then
+# WARNING: May be untested.
+docker run --shm-size=20g --name runpod-$(_uid 14) --gpus "all" -e "$JUPYTER_PASSWORD" -e HF_AKI_KEY="$HF_AKI_KEY" -v '/home/user/___quick':/q -v "$HOME"/core/infrastructure/ubiquitous_bash:/workspace/ubiquitous_bash:ro -v '/home/user/core':/core -v "/home/user"'/Downloads':/Downloads -v "$factory_outputDir":/output -v "$factory_modelDir":/model -v "$factory_datasetDir":/dataset -v "$factory_projectDir":/workspace/project -v "$factory_projectDir"/cache_pip:/workspace/cache_pip --rm -it "$dockerName" "${dockerRunArgs[@]}"
+fi
+
+# ###
+# PASTE
+# ###
+
+
+
+}
+_factory_unsloth() {
+    if [[ "$recursionGuard_factory_ops" == "" ]]
+    then
+        _factory_ops_recursion "$@"
+        return
+    fi
+
+    _factory_runpod-unsloth "$@"
+}
+
+
+
+
+
+
+
+
+
+
 
 
 
