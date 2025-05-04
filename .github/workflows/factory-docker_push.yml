@@ -28,7 +28,7 @@ on:
         #default: true
       runnerName:
         required: false
-        default: ubuntu-22.04
+        default: ubuntu-latest-m
         type: choice
         options:
         - ubuntu-22.04
@@ -249,6 +249,7 @@ jobs:
 
 
   build_axolotl_heavy:
+    if: ${{ github.event.inputs.runnerName == 'ubuntu-latest-m' || github.event.inputs.runnerName == 'ubuntu-latest-l' }}
     #needs: [build_guard]
     runs-on: ${{ github.event.inputs.runnerName == '' && 'ubuntu-22.04' || github.event.inputs.runnerName }}
     steps:
