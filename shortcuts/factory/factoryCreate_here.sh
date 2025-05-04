@@ -4,7 +4,6 @@ cat << 'CZXWXcRMTo8EmM8i4d'
 
 # https://www.docker.com/blog/introduction-to-heredocs-in-dockerfiles/
 COPY <<EOFSPECIAL /ubInstall.sh
-
 #!/usr/bin/env bash
 
 # ###
@@ -13,7 +12,7 @@ COPY <<EOFSPECIAL /ubInstall.sh
 
 if [[ -e /workspace/ubiquitous_bash/ubiquitous_bash.sh ]]
 then
-( cd /workspace/ubiquitous_bash ; _gitBest pull ; git submodule update )
+( cd /workspace/ubiquitous_bash ; /workspace/ubiquitous_bash/ubiquitous_bash.sh _gitBest pull ; git submodule update ; true )
 /workspace/ubiquitous_bash/ubiquitous_bash.sh _setupUbiquitous_nonet
 export profileScriptLocation="/workspace/ubiquitous_bash/ubiquitous_bash.sh"
 export profileScriptFolder="/workspace/ubiquitous_bash"
@@ -31,7 +30,7 @@ mkdir -p /workspace/ubiquitous_bash
 mv -f ./ubiquitous_bash.sh /workspace/ubiquitous_bash/ubiquitous_bash.sh
 chmod u+x /workspace/ubiquitous_bash/ubiquitous_bash.sh
 /workspace/ubiquitous_bash/ubiquitous_bash.sh _setupUbiquitous_nonet
-( cd ~/.ubcore/ubiquitous_bash ; _gitBest pull ; git submodule update )
+( cd ~/.ubcore/ubiquitous_bash ; ~/.ubcore/ubiquitous_bash/ubiquitous_bash.sh _gitBest pull ; git submodule update ; true )
 fi
 #clear
 
@@ -41,31 +40,31 @@ fi
 
 EOFSPECIAL
 RUN chmod u+x /ubInstall.sh
-RUN /ubInstall.sh
+RUN bash /ubInstall.sh
 
 
 # ###
 # PASTE
 # ###
 
-RUN apt-get update
-RUN apt upgrade -y
-RUN apt-get install sudo -y
-RUN apt-get install less -y
-RUN apt-get install pv -y
-RUN apt-get install socat -y
-RUN apt-get install bc -y
-RUN apt-get install xxd -y
-RUN apt-get install php -y
-RUN apt-get install jq -y
-RUN apt-get install gh -y
-RUN apt-get install aria2 -y
-RUN apt-get install curl wget -y
-#RUN apt-get install xz -y
-RUN apt-get install xz-utils -y
-RUN apt-get install tar bzip2 gzip -y
-RUN apt-get install sed patch expect -y
-RUN apt-get install dos2unix -y
+RUN env DEBIAN_FRONTEND=noninteractive apt-get update
+RUN env DEBIAN_FRONTEND=noninteractive apt upgrade -y
+RUN env DEBIAN_FRONTEND=noninteractive apt-get install sudo -y
+RUN env DEBIAN_FRONTEND=noninteractive apt-get install less -y
+RUN env DEBIAN_FRONTEND=noninteractive apt-get install pv -y
+RUN env DEBIAN_FRONTEND=noninteractive apt-get install socat -y
+RUN env DEBIAN_FRONTEND=noninteractive apt-get install bc -y
+RUN env DEBIAN_FRONTEND=noninteractive apt-get install xxd -y
+RUN env DEBIAN_FRONTEND=noninteractive apt-get install php -y
+RUN env DEBIAN_FRONTEND=noninteractive apt-get install jq -y
+RUN env DEBIAN_FRONTEND=noninteractive apt-get install gh -y
+RUN env DEBIAN_FRONTEND=noninteractive apt-get install aria2 -y
+RUN env DEBIAN_FRONTEND=noninteractive apt-get install curl wget -y
+#RUN env DEBIAN_FRONTEND=noninteractive apt-get install xz -y
+RUN env DEBIAN_FRONTEND=noninteractive apt-get install xz-utils -y
+RUN env DEBIAN_FRONTEND=noninteractive apt-get install tar bzip2 gzip -y
+RUN env DEBIAN_FRONTEND=noninteractive apt-get install sed patch expect -y
+RUN env DEBIAN_FRONTEND=noninteractive apt-get install dos2unix -y
 
 
 RUN /workspace/ubiquitous_bash/ubiquitous_bash.sh _getMinimal_cloud
@@ -79,8 +78,8 @@ RUN /workspace/ubiquitous_bash/ubiquitous_bash.sh _getMinimal_cloud
 RUN /workspace/ubiquitous_bash/ubiquitous_bash.sh _setup_ollama
 
 
-RUN apt-get -y clean
-#RUN apt-get remove --autoremove -y
+RUN env DEBIAN_FRONTEND=noninteractive apt-get -y clean
+#RUN env DEBIAN_FRONTEND=noninteractive apt-get remove --autoremove -y
 
 # ###
 # PASTE

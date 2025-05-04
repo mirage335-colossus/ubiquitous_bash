@@ -467,7 +467,7 @@ doNotMatch
 
 if [[ -e /workspace/ubiquitous_bash/ubiquitous_bash.sh ]]
 then
-( cd /workspace/ubiquitous_bash ; _gitBest pull ; git submodule update )
+( cd /workspace/ubiquitous_bash ; /workspace/ubiquitous_bash/ubiquitous_bash.sh _gitBest pull ; git submodule update )
 /workspace/ubiquitous_bash/ubiquitous_bash.sh _setupUbiquitous_nonet
 export profileScriptLocation="/workspace/ubiquitous_bash/ubiquitous_bash.sh"
 export profileScriptFolder="/workspace/ubiquitous_bash"
@@ -485,7 +485,7 @@ mkdir -p /workspace/ubiquitous_bash
 mv -f ./ubiquitous_bash.sh /workspace/ubiquitous_bash/ubiquitous_bash.sh
 chmod u+x /workspace/ubiquitous_bash/ubiquitous_bash.sh
 /workspace/ubiquitous_bash/ubiquitous_bash.sh _setupUbiquitous_nonet
-( cd ~/.ubcore/ubiquitous_bash ; _gitBest pull ; git submodule update )
+( cd ~/.ubcore/ubiquitous_bash ; ~/.ubcore/ubiquitous_bash/ubiquitous_bash.sh _gitBest pull ; git submodule update )
 fi
 #clear
 

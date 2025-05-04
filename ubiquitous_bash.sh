@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='3731746486'
+export ub_setScriptChecksum_contents='226515663'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -26829,7 +26829,6 @@ cat << 'CZXWXcRMTo8EmM8i4d'
 
 # https://www.docker.com/blog/introduction-to-heredocs-in-dockerfiles/
 COPY <<EOFSPECIAL /ubInstall.sh
-
 #!/usr/bin/env bash
 
 # ###
@@ -26838,7 +26837,7 @@ COPY <<EOFSPECIAL /ubInstall.sh
 
 if [[ -e /workspace/ubiquitous_bash/ubiquitous_bash.sh ]]
 then
-( cd /workspace/ubiquitous_bash ; _gitBest pull ; git submodule update )
+( cd /workspace/ubiquitous_bash ; /workspace/ubiquitous_bash/ubiquitous_bash.sh _gitBest pull ; git submodule update ; true )
 /workspace/ubiquitous_bash/ubiquitous_bash.sh _setupUbiquitous_nonet
 export profileScriptLocation="/workspace/ubiquitous_bash/ubiquitous_bash.sh"
 export profileScriptFolder="/workspace/ubiquitous_bash"
@@ -26856,7 +26855,7 @@ mkdir -p /workspace/ubiquitous_bash
 mv -f ./ubiquitous_bash.sh /workspace/ubiquitous_bash/ubiquitous_bash.sh
 chmod u+x /workspace/ubiquitous_bash/ubiquitous_bash.sh
 /workspace/ubiquitous_bash/ubiquitous_bash.sh _setupUbiquitous_nonet
-( cd ~/.ubcore/ubiquitous_bash ; _gitBest pull ; git submodule update )
+( cd ~/.ubcore/ubiquitous_bash ; ~/.ubcore/ubiquitous_bash/ubiquitous_bash.sh _gitBest pull ; git submodule update ; true )
 fi
 #clear
 
@@ -26866,31 +26865,31 @@ fi
 
 EOFSPECIAL
 RUN chmod u+x /ubInstall.sh
-RUN /ubInstall.sh
+RUN bash /ubInstall.sh
 
 
 # ###
 # PASTE
 # ###
 
-RUN apt-get update
-RUN apt upgrade -y
-RUN apt-get install sudo -y
-RUN apt-get install less -y
-RUN apt-get install pv -y
-RUN apt-get install socat -y
-RUN apt-get install bc -y
-RUN apt-get install xxd -y
-RUN apt-get install php -y
-RUN apt-get install jq -y
-RUN apt-get install gh -y
-RUN apt-get install aria2 -y
-RUN apt-get install curl wget -y
-#RUN apt-get install xz -y
-RUN apt-get install xz-utils -y
-RUN apt-get install tar bzip2 gzip -y
-RUN apt-get install sed patch expect -y
-RUN apt-get install dos2unix -y
+RUN env DEBIAN_FRONTEND=noninteractive apt-get update
+RUN env DEBIAN_FRONTEND=noninteractive apt upgrade -y
+RUN env DEBIAN_FRONTEND=noninteractive apt-get install sudo -y
+RUN env DEBIAN_FRONTEND=noninteractive apt-get install less -y
+RUN env DEBIAN_FRONTEND=noninteractive apt-get install pv -y
+RUN env DEBIAN_FRONTEND=noninteractive apt-get install socat -y
+RUN env DEBIAN_FRONTEND=noninteractive apt-get install bc -y
+RUN env DEBIAN_FRONTEND=noninteractive apt-get install xxd -y
+RUN env DEBIAN_FRONTEND=noninteractive apt-get install php -y
+RUN env DEBIAN_FRONTEND=noninteractive apt-get install jq -y
+RUN env DEBIAN_FRONTEND=noninteractive apt-get install gh -y
+RUN env DEBIAN_FRONTEND=noninteractive apt-get install aria2 -y
+RUN env DEBIAN_FRONTEND=noninteractive apt-get install curl wget -y
+#RUN env DEBIAN_FRONTEND=noninteractive apt-get install xz -y
+RUN env DEBIAN_FRONTEND=noninteractive apt-get install xz-utils -y
+RUN env DEBIAN_FRONTEND=noninteractive apt-get install tar bzip2 gzip -y
+RUN env DEBIAN_FRONTEND=noninteractive apt-get install sed patch expect -y
+RUN env DEBIAN_FRONTEND=noninteractive apt-get install dos2unix -y
 
 
 RUN /workspace/ubiquitous_bash/ubiquitous_bash.sh _getMinimal_cloud
@@ -26904,8 +26903,8 @@ RUN /workspace/ubiquitous_bash/ubiquitous_bash.sh _getMinimal_cloud
 RUN /workspace/ubiquitous_bash/ubiquitous_bash.sh _setup_ollama
 
 
-RUN apt-get -y clean
-#RUN apt-get remove --autoremove -y
+RUN env DEBIAN_FRONTEND=noninteractive apt-get -y clean
+#RUN env DEBIAN_FRONTEND=noninteractive apt-get remove --autoremove -y
 
 # ###
 # PASTE
@@ -27296,6 +27295,137 @@ __factoryCreate_runpod-pytorch-unsloth() {
 
     "$scriptAbsoluteLocation" __factoryCreate_sequence_runpod-pytorch-unsloth "$@"
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+_here_dockerfile_axolotl-heavy() {
+if [[ "$recursionGuard_factory_ops" == "" ]]
+then
+_factory_ops_recursion "$@"
+return
+fi
+
+cat << 'CZXWXcRMTo8EmM8i4d'
+#docker build -t axolotl-heavy .
+FROM axolotlai/axolotl:main-latest
+
+CZXWXcRMTo8EmM8i4d
+
+_here_dockerfile-ubiquitous "$@"
+
+cat << 'CZXWXcRMTo8EmM8i4d'
+
+# ###
+# PASTE
+# ###
+
+
+RUN python -m pip install --upgrade pip
+
+#RUN apt-get install python3.10 python3.10-dev python3.10-distutils -y
+#RUN update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.10 1
+#RUN update-alternatives --config python3
+
+#RUN curl -sS https://bootstrap.pypa.io/get-pip.py | sudo python3
+#RUN python -m pip install --upgrade pip
+#RUN python -m pip install --upgrade pip setuptools wheel
+
+
+#RUN python -m pip uninstall -y torch torchvision torchaudio triton unsloth unsloth_zoo xformers sympy mpmath
+
+#RUN pip install "sympy>=1.13.3" "mpmath>=1.3"
+
+## ATTENTION: Up/Down-grades torch , etc , to version 2.3.0 , as is apparently expected by  https://huggingface.co/blog/mlabonne/sft-llama3  .
+#RUN pip install torch==2.3.0 torchvision==0.18.0+cu121 torchaudio==2.3.0+cu121 triton==2.3.0 --index-url https://download.pytorch.org/whl/cu121
+
+#RUN python -m pip install --upgrade pip
+
+
+
+# ###
+# PASTE
+# ###
+
+CZXWXcRMTo8EmM8i4d
+
+
+_here_dockerfile-ubiquitous-documentation "$@"
+
+_here_dockerfile-ubiquitous-licenses "$@"
+
+
+cat << 'CZXWXcRMTo8EmM8i4d'
+
+WORKDIR /
+
+#docker image inspect ...FROM... --format '{{json .Config.Entrypoint}} {{json .Config.Cmd}}'
+ENTRYPOINT ["/opt/nvidia/nvidia_entrypoint.sh"]
+CMD ["/start.sh"]
+
+CZXWXcRMTo8EmM8i4d
+
+}
+__factoryCreate_sequence_axolotl-heavy() {
+    if [[ "$recursionGuard_factory_ops" == "" ]]
+    then
+        _factory_ops_recursion "$@"
+        return
+    fi
+
+    _start
+
+    # ATTRIBUTION-AI Llama 3.1 Nemotron Ultra 253b v1
+    docker stop $(docker ps -aq --filter ancestor=axolotl-heavy 2>/dev/null) > /dev/null 2>&1
+    #docker rm $(docker ps -aq --filter ancestor=axolotl-heavy 2>/dev/null) > /dev/null 2>&1
+
+    _messagePlain_probe 'docker rmi --force'
+    docker rmi --force axolotl-heavy > /dev/null 2>&1
+
+    cd "$safeTmp"
+    _messagePlain_probe 'docker build -t'
+    _here_dockerfile_axolotl-heavy > Dockerfile
+
+    # WARNING: CAUTION: DANGER: Docker is yet another third-party service dependency. Do NOT regard Docker's repository as archival preservation, and do NOT rely on Docker itself for archival preservation. Also, it is not clear whether a Docker 'image' based on 'Dockerfile' can be directly preserved without environment dependencies or unintentional updates, at best a root filesystem may be possible to obtain from a Docker 'image'.
+    # https://en.wikipedia.org/w/index.php?title=Docker,_Inc.&oldid=1285260999#History
+    # https://en.wikipedia.org/w/index.php?title=Docker_(software)&oldid=1286977923#History
+    
+    docker build -t axolotl-heavy .
+    docker tag axolotl-heavy "$DOCKER_USER"/axolotl-heavy:latest
+
+    #docker push user/axolotl-heavy:latest
+
+    _stop
+}
+__factoryCreate_axolotl-heavy() {
+    if [[ "$recursionGuard_factory_ops" == "" ]]
+    then
+        _factory_ops_recursion "$@"
+        return
+    fi
+
+    "$scriptAbsoluteLocation" __factoryCreate_sequence_axolotl-heavy "$@"
+}
+
+
+
+
+
+
 
 
 
@@ -27767,7 +27897,7 @@ doNotMatch
 
 if [[ -e /workspace/ubiquitous_bash/ubiquitous_bash.sh ]]
 then
-( cd /workspace/ubiquitous_bash ; _gitBest pull ; git submodule update )
+( cd /workspace/ubiquitous_bash ; /workspace/ubiquitous_bash/ubiquitous_bash.sh _gitBest pull ; git submodule update )
 /workspace/ubiquitous_bash/ubiquitous_bash.sh _setupUbiquitous_nonet
 export profileScriptLocation="/workspace/ubiquitous_bash/ubiquitous_bash.sh"
 export profileScriptFolder="/workspace/ubiquitous_bash"
@@ -27785,7 +27915,7 @@ mkdir -p /workspace/ubiquitous_bash
 mv -f ./ubiquitous_bash.sh /workspace/ubiquitous_bash/ubiquitous_bash.sh
 chmod u+x /workspace/ubiquitous_bash/ubiquitous_bash.sh
 /workspace/ubiquitous_bash/ubiquitous_bash.sh _setupUbiquitous_nonet
-( cd ~/.ubcore/ubiquitous_bash ; _gitBest pull ; git submodule update )
+( cd ~/.ubcore/ubiquitous_bash ; ~/.ubcore/ubiquitous_bash/ubiquitous_bash.sh _gitBest pull ; git submodule update )
 fi
 #clear
 

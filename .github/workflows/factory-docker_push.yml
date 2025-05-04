@@ -244,3 +244,93 @@ jobs:
 
 
 
+
+
+  build_axolotl_heavy:
+    #needs: [build_guard]
+    runs-on: ${{ github.event.inputs.runnerName == '' && 'ubuntu-22.04' || github.event.inputs.runnerName }}
+    steps:
+      - name: users
+        shell: bash
+        run: |
+          sudo -u ubuntu -n bash -c 'sudo -n useradd runner --non-unique -u $UID -g $UID' || true
+          sudo -u ubuntu -n bash -c 'sudo -n groupadd runner --non-unique -g $UID' || true
+          sudo -u runner -n bash -c 'sudo -n echo $USER $UID' || true
+          true
+      # https://github.com/easimon/maximize-build-space
+      - name: Maximize build space
+        if: ${{ github.event.inputs.runnerName != 'ubuntu-latest-m' && github.event.inputs.runnerName != 'ubuntu-latest-l' && github.event.inputs.runnerName != 'ubuntu-latest-h' }}
+        uses: easimon/maximize-build-space@master
+        with:
+          root-reserve-mb: 30000
+          #root-reserve-mb: 4125
+          #root-reserve-mb: 1625
+          temp-reserve-mb: 1950
+          #temp-reserve-mb: 50
+          swap-size-mb: 2
+          #remove-dotnet: ${{ github.event.inputs.runnerName != 'ubuntu-latest-m' && github.event.inputs.runnerName != 'ubuntu-latest-l' && github.event.inputs.runnerName != 'ubuntu-latest-h' }}
+          remove-dotnet: 'true'
+          #remove-android: ${{ github.event.inputs.runnerName != 'ubuntu-latest-m' && github.event.inputs.runnerName != 'ubuntu-latest-l' && github.event.inputs.runnerName != 'ubuntu-latest-h' }}
+          remove-android: 'true'
+          #remove-haskell: ${{ github.event.inputs.runnerName != 'ubuntu-latest-m' && github.event.inputs.runnerName != 'ubuntu-latest-l' && github.event.inputs.runnerName != 'ubuntu-latest-h' }}
+          remove-haskell: 'true'
+          #remove-codeql: ${{ github.event.inputs.runnerName != 'ubuntu-latest-m' && github.event.inputs.runnerName != 'ubuntu-latest-l' && github.event.inputs.runnerName != 'ubuntu-latest-h' }}
+          remove-codeql: 'true'
+          #remove-docker-images: ${{ github.event.inputs.runnerName != 'ubuntu-latest-m' && github.event.inputs.runnerName != 'ubuntu-latest-l' && github.event.inputs.runnerName != 'ubuntu-latest-h' }}
+          remove-docker-images: 'true'
+      - name: Maximize build space ! remove ONLY
+        if: ${{ ( github.event.inputs.runnerName == 'ubuntu-latest-m' || github.event.inputs.runnerName == 'ubuntu-latest-l' || github.event.inputs.runnerName == 'ubuntu-latest-h' ) }}
+        uses: AdityaGarg8/remove-unwanted-software@v4.1
+        with:
+          remove-dotnet: 'true'
+          remove-android: 'true'
+          remove-haskell: 'true'
+          remove-codeql: 'true'
+          remove-docker-images: 'true'
+          remove-large-packages: 'true'
+          remove-cached-tools: 'true'
+          remove-swapfile: 'true'
+          verbose: 'false'
+      - name: df
+        shell: bash
+        run: |
+          df -h
+          df -h /
+
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 1
+          submodules: 'recursive'
+      - name: _getMinimal_cloud
+        shell: bash
+        timeout-minutes: 120
+        run: |
+          ./ubiquitous_bash.sh _getMinimal_cloud
+
+      - name: factory! create
+        shell: bash
+        timeout-minutes: 120
+        run: |
+          export DOCKER_USER=${{ secrets.DOCKER_USERNAME }}
+          ./ubiquitous_bash.sh __factoryCreate_axolotl-heavy
+          ./ubiquitous_bash.sh _here_dockerfile_axolotl-heavy > Dockerfile
+          docker tag axolotl-heavy ghcr.io/${{ github.repository_owner }}/axolotl-heavy:latest
+          docker tag axolotl-heavy ghcr.io/${{ github.repository }}/axolotl-heavy:latest
+          docker tag axolotl-heavy ghcr.io/${{ github.repository_owner }}/${{ github.repository }}/axolotl-heavy:latest
+          docker tag axolotl-heavy ${{ secrets.DOCKER_USERNAME }}/axolotl-heavy:latest
+
+      - name: docker github push
+        shell: bash
+        timeout-minutes: 120
+        run: |
+          docker login ghcr.io -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }}
+          docker push ghcr.io/${{ github.repository_owner }}/axolotl-heavy:latest
+
+      - name: docker docker push
+        shell: bash
+        timeout-minutes: 120
+        run: |
+          docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+          docker push ${{ secrets.DOCKER_USERNAME }}/axolotl-heavy:latest
+
+

@@ -330,3 +330,134 @@ __factoryCreate_runpod-pytorch-unsloth() {
     "$scriptAbsoluteLocation" __factoryCreate_sequence_runpod-pytorch-unsloth "$@"
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+_here_dockerfile_axolotl-heavy() {
+if [[ "$recursionGuard_factory_ops" == "" ]]
+then
+_factory_ops_recursion "$@"
+return
+fi
+
+cat << 'CZXWXcRMTo8EmM8i4d'
+#docker build -t axolotl-heavy .
+FROM axolotlai/axolotl:main-latest
+
+CZXWXcRMTo8EmM8i4d
+
+_here_dockerfile-ubiquitous "$@"
+
+cat << 'CZXWXcRMTo8EmM8i4d'
+
+# ###
+# PASTE
+# ###
+
+
+RUN python -m pip install --upgrade pip
+
+#RUN apt-get install python3.10 python3.10-dev python3.10-distutils -y
+#RUN update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.10 1
+#RUN update-alternatives --config python3
+
+#RUN curl -sS https://bootstrap.pypa.io/get-pip.py | sudo python3
+#RUN python -m pip install --upgrade pip
+#RUN python -m pip install --upgrade pip setuptools wheel
+
+
+#RUN python -m pip uninstall -y torch torchvision torchaudio triton unsloth unsloth_zoo xformers sympy mpmath
+
+#RUN pip install "sympy>=1.13.3" "mpmath>=1.3"
+
+## ATTENTION: Up/Down-grades torch , etc , to version 2.3.0 , as is apparently expected by  https://huggingface.co/blog/mlabonne/sft-llama3  .
+#RUN pip install torch==2.3.0 torchvision==0.18.0+cu121 torchaudio==2.3.0+cu121 triton==2.3.0 --index-url https://download.pytorch.org/whl/cu121
+
+#RUN python -m pip install --upgrade pip
+
+
+
+# ###
+# PASTE
+# ###
+
+CZXWXcRMTo8EmM8i4d
+
+
+_here_dockerfile-ubiquitous-documentation "$@"
+
+_here_dockerfile-ubiquitous-licenses "$@"
+
+
+cat << 'CZXWXcRMTo8EmM8i4d'
+
+WORKDIR /
+
+#docker image inspect ...FROM... --format '{{json .Config.Entrypoint}} {{json .Config.Cmd}}'
+ENTRYPOINT ["/opt/nvidia/nvidia_entrypoint.sh"]
+CMD ["/start.sh"]
+
+CZXWXcRMTo8EmM8i4d
+
+}
+__factoryCreate_sequence_axolotl-heavy() {
+    if [[ "$recursionGuard_factory_ops" == "" ]]
+    then
+        _factory_ops_recursion "$@"
+        return
+    fi
+
+    _start
+
+    # ATTRIBUTION-AI Llama 3.1 Nemotron Ultra 253b v1
+    docker stop $(docker ps -aq --filter ancestor=axolotl-heavy 2>/dev/null) > /dev/null 2>&1
+    #docker rm $(docker ps -aq --filter ancestor=axolotl-heavy 2>/dev/null) > /dev/null 2>&1
+
+    _messagePlain_probe 'docker rmi --force'
+    docker rmi --force axolotl-heavy > /dev/null 2>&1
+
+    cd "$safeTmp"
+    _messagePlain_probe 'docker build -t'
+    _here_dockerfile_axolotl-heavy > Dockerfile
+
+    # WARNING: CAUTION: DANGER: Docker is yet another third-party service dependency. Do NOT regard Docker's repository as archival preservation, and do NOT rely on Docker itself for archival preservation. Also, it is not clear whether a Docker 'image' based on 'Dockerfile' can be directly preserved without environment dependencies or unintentional updates, at best a root filesystem may be possible to obtain from a Docker 'image'.
+    # https://en.wikipedia.org/w/index.php?title=Docker,_Inc.&oldid=1285260999#History
+    # https://en.wikipedia.org/w/index.php?title=Docker_(software)&oldid=1286977923#History
+    
+    docker build -t axolotl-heavy .
+    docker tag axolotl-heavy "$DOCKER_USER"/axolotl-heavy:latest
+
+    #docker push user/axolotl-heavy:latest
+
+    _stop
+}
+__factoryCreate_axolotl-heavy() {
+    if [[ "$recursionGuard_factory_ops" == "" ]]
+    then
+        _factory_ops_recursion "$@"
+        return
+    fi
+
+    "$scriptAbsoluteLocation" __factoryCreate_sequence_axolotl-heavy "$@"
+}
+
+
+
+
+
+
+
