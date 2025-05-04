@@ -467,6 +467,7 @@ doNotMatch
 
 if [[ -e /workspace/ubiquitous_bash/ubiquitous_bash.sh ]]
 then
+( cd /workspace/ubiquitous_bash ; _gitBest pull ; git submodule update )
 /workspace/ubiquitous_bash/ubiquitous_bash.sh _setupUbiquitous_nonet
 export profileScriptLocation="/workspace/ubiquitous_bash/ubiquitous_bash.sh"
 export profileScriptFolder="/workspace/ubiquitous_bash"
@@ -484,8 +485,18 @@ mkdir -p /workspace/ubiquitous_bash
 mv -f ./ubiquitous_bash.sh /workspace/ubiquitous_bash/ubiquitous_bash.sh
 chmod u+x /workspace/ubiquitous_bash/ubiquitous_bash.sh
 /workspace/ubiquitous_bash/ubiquitous_bash.sh _setupUbiquitous_nonet
+( cd ~/.ubcore/ubiquitous_bash ; _gitBest pull ; git submodule update )
 fi
 #clear
+
+# ATTENTION: Not enabled by default, slow to download. Call '_setup_ollama' manually .
+#
+# DISCOURAGED. Better to benefit from 'ubiquitous_bash' maintenance identifying the most recent ollama installation commands. 
+#curl -fsSL https://ollama.com/install.sh | sh
+# DISCOURAGED. Does NOT install Llama-augment model.
+#/workspace/ubiquitous_bash/ubiquitous_bash.sh _setup_ollama_sequence
+# PREFERRED. Normally robust, resilient, maintained, and adds the 'Llama-augment' model for automation, etc.
+#/workspace/ubiquitous_bash/ubiquitous_bash.sh _setup_ollama
 
 # ###
 false << 'doNotMatch'

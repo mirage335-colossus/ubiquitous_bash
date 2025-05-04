@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='2565141927'
+export ub_setScriptChecksum_contents='3731746486'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -26838,6 +26838,7 @@ COPY <<EOFSPECIAL /ubInstall.sh
 
 if [[ -e /workspace/ubiquitous_bash/ubiquitous_bash.sh ]]
 then
+( cd /workspace/ubiquitous_bash ; _gitBest pull ; git submodule update )
 /workspace/ubiquitous_bash/ubiquitous_bash.sh _setupUbiquitous_nonet
 export profileScriptLocation="/workspace/ubiquitous_bash/ubiquitous_bash.sh"
 export profileScriptFolder="/workspace/ubiquitous_bash"
@@ -26855,6 +26856,7 @@ mkdir -p /workspace/ubiquitous_bash
 mv -f ./ubiquitous_bash.sh /workspace/ubiquitous_bash/ubiquitous_bash.sh
 chmod u+x /workspace/ubiquitous_bash/ubiquitous_bash.sh
 /workspace/ubiquitous_bash/ubiquitous_bash.sh _setupUbiquitous_nonet
+( cd ~/.ubcore/ubiquitous_bash ; _gitBest pull ; git submodule update )
 fi
 #clear
 
@@ -26892,6 +26894,15 @@ RUN apt-get install dos2unix -y
 
 
 RUN /workspace/ubiquitous_bash/ubiquitous_bash.sh _getMinimal_cloud
+
+
+# DISCOURAGED. Better to benefit from 'ubiquitous_bash' maintenance identifying the most recent ollama installation commands. 
+#RUN curl -fsSL https://ollama.com/install.sh | sh
+# DISCOURAGED. Does NOT install Llama-augment model.
+#RUN /workspace/ubiquitous_bash/ubiquitous_bash.sh _setup_ollama_sequence
+# PREFERRED. Normally robust, resilient, maintained, and adds the 'Llama-augment' model for automation, etc.
+RUN /workspace/ubiquitous_bash/ubiquitous_bash.sh _setup_ollama
+
 
 RUN apt-get -y clean
 #RUN apt-get remove --autoremove -y
@@ -27756,6 +27767,7 @@ doNotMatch
 
 if [[ -e /workspace/ubiquitous_bash/ubiquitous_bash.sh ]]
 then
+( cd /workspace/ubiquitous_bash ; _gitBest pull ; git submodule update )
 /workspace/ubiquitous_bash/ubiquitous_bash.sh _setupUbiquitous_nonet
 export profileScriptLocation="/workspace/ubiquitous_bash/ubiquitous_bash.sh"
 export profileScriptFolder="/workspace/ubiquitous_bash"
@@ -27773,8 +27785,18 @@ mkdir -p /workspace/ubiquitous_bash
 mv -f ./ubiquitous_bash.sh /workspace/ubiquitous_bash/ubiquitous_bash.sh
 chmod u+x /workspace/ubiquitous_bash/ubiquitous_bash.sh
 /workspace/ubiquitous_bash/ubiquitous_bash.sh _setupUbiquitous_nonet
+( cd ~/.ubcore/ubiquitous_bash ; _gitBest pull ; git submodule update )
 fi
 #clear
+
+# ATTENTION: Not enabled by default, slow to download. Call '_setup_ollama' manually .
+#
+# DISCOURAGED. Better to benefit from 'ubiquitous_bash' maintenance identifying the most recent ollama installation commands. 
+#curl -fsSL https://ollama.com/install.sh | sh
+# DISCOURAGED. Does NOT install Llama-augment model.
+#/workspace/ubiquitous_bash/ubiquitous_bash.sh _setup_ollama_sequence
+# PREFERRED. Normally robust, resilient, maintained, and adds the 'Llama-augment' model for automation, etc.
+#/workspace/ubiquitous_bash/ubiquitous_bash.sh _setup_ollama
 
 # ###
 false << 'doNotMatch'
