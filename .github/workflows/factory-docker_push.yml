@@ -81,7 +81,7 @@ jobs:
         if: ${{ github.event.inputs.runnerName != 'ubuntu-latest-m' && github.event.inputs.runnerName != 'ubuntu-latest-l' && github.event.inputs.runnerName != 'ubuntu-latest-h' }}
         uses: easimon/maximize-build-space@master
         with:
-          root-reserve-mb: 30000
+          root-reserve-mb: 45000
           #root-reserve-mb: 4125
           #root-reserve-mb: 1625
           temp-reserve-mb: 1950
@@ -171,7 +171,7 @@ jobs:
         if: ${{ github.event.inputs.runnerName != 'ubuntu-latest-m' && github.event.inputs.runnerName != 'ubuntu-latest-l' && github.event.inputs.runnerName != 'ubuntu-latest-h' }}
         uses: easimon/maximize-build-space@master
         with:
-          root-reserve-mb: 30000
+          root-reserve-mb: 45000
           #root-reserve-mb: 4125
           #root-reserve-mb: 1625
           temp-reserve-mb: 1950
@@ -262,7 +262,7 @@ jobs:
         if: ${{ github.event.inputs.runnerName != 'ubuntu-latest-m' && github.event.inputs.runnerName != 'ubuntu-latest-l' && github.event.inputs.runnerName != 'ubuntu-latest-h' }}
         uses: easimon/maximize-build-space@master
         with:
-          root-reserve-mb: 30000
+          root-reserve-mb: 45000
           #root-reserve-mb: 4125
           #root-reserve-mb: 1625
           temp-reserve-mb: 1950
