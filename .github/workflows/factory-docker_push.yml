@@ -31,7 +31,7 @@ on:
         default: ubuntu-latest-m
         type: choice
         options:
-        - ubuntu-22.04
+        #- ubuntu-22.04
         - ubuntu-latest
         - ubuntu-latest-m
   # https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#schedule
@@ -67,7 +67,8 @@ jobs:
             #delete_release: true #(optional) default: true
   build_heavy:
     #needs: [build_guard]
-    runs-on: ${{ github.event.inputs.runnerName == '' && 'ubuntu-22.04' || github.event.inputs.runnerName }}
+    #runs-on: ${{ github.event.inputs.runnerName == '' && 'ubuntu-22.04' || github.event.inputs.runnerName }}
+    runs-on: 'ubuntu-latest'
     steps:
       - name: users
         shell: bash
@@ -158,7 +159,8 @@ jobs:
 
   build_unsloth:
     #needs: [build_guard]
-    runs-on: ${{ github.event.inputs.runnerName == '' && 'ubuntu-22.04' || github.event.inputs.runnerName }}
+    #runs-on: ${{ github.event.inputs.runnerName == '' && 'ubuntu-22.04' || github.event.inputs.runnerName }}
+    runs-on: 'ubuntu-latest'
     steps:
       - name: users
         shell: bash
