@@ -84,7 +84,8 @@ jobs:
           root-reserve-mb: 37000
           #root-reserve-mb: 4125
           #root-reserve-mb: 1625
-          temp-reserve-mb: 1950
+          temp-reserve-mb: 37000
+          #temp-reserve-mb: 1950
           #temp-reserve-mb: 50
           swap-size-mb: 2
           #remove-dotnet: ${{ github.event.inputs.runnerName != 'ubuntu-latest-m' && github.event.inputs.runnerName != 'ubuntu-latest-l' && github.event.inputs.runnerName != 'ubuntu-latest-h' }}
@@ -174,7 +175,8 @@ jobs:
           root-reserve-mb: 37000
           #root-reserve-mb: 4125
           #root-reserve-mb: 1625
-          temp-reserve-mb: 1950
+          temp-reserve-mb: 37000
+          #temp-reserve-mb: 1950
           #temp-reserve-mb: 50
           swap-size-mb: 2
           #remove-dotnet: ${{ github.event.inputs.runnerName != 'ubuntu-latest-m' && github.event.inputs.runnerName != 'ubuntu-latest-l' && github.event.inputs.runnerName != 'ubuntu-latest-h' }}
@@ -265,7 +267,8 @@ jobs:
           root-reserve-mb: 37000
           #root-reserve-mb: 4125
           #root-reserve-mb: 1625
-          temp-reserve-mb: 1950
+          temp-reserve-mb: 37000
+          #temp-reserve-mb: 1950
           #temp-reserve-mb: 50
           swap-size-mb: 2
           #remove-dotnet: ${{ github.event.inputs.runnerName != 'ubuntu-latest-m' && github.event.inputs.runnerName != 'ubuntu-latest-l' && github.event.inputs.runnerName != 'ubuntu-latest-h' }}
