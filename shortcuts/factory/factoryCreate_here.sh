@@ -73,9 +73,9 @@ RUN /workspace/ubiquitous_bash/ubiquitous_bash.sh _getMinimal_cloud
 # DISCOURAGED. Better to benefit from 'ubiquitous_bash' maintenance identifying the most recent ollama installation commands. 
 #RUN curl -fsSL https://ollama.com/install.sh | sh
 # DISCOURAGED. Does NOT install Llama-augment model.
-#RUN /workspace/ubiquitous_bash/ubiquitous_bash.sh _setup_ollama_sequence
+RUN /workspace/ubiquitous_bash/ubiquitous_bash.sh _setup_ollama_sequence
 # PREFERRED. Normally robust, resilient, maintained, and adds the 'Llama-augment' model for automation, etc.
-RUN /workspace/ubiquitous_bash/ubiquitous_bash.sh _setup_ollama
+#RUN /workspace/ubiquitous_bash/ubiquitous_bash.sh _setup_ollama
 
 
 RUN env DEBIAN_FRONTEND=noninteractive apt-get -y clean
