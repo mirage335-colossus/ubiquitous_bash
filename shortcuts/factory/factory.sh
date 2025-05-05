@@ -489,14 +489,22 @@ chmod u+x /workspace/ubiquitous_bash/ubiquitous_bash.sh
 fi
 #clear
 
-# ATTENTION: Not enabled by default, slow to download. Call '_setup_ollama' manually .
-#
-# DISCOURAGED. Better to benefit from 'ubiquitous_bash' maintenance identifying the most recent ollama installation commands. 
-#curl -fsSL https://ollama.com/install.sh | sh
-# DISCOURAGED. Does NOT install Llama-augment model.
-#/workspace/ubiquitous_bash/ubiquitous_bash.sh _setup_ollama_sequence
-# PREFERRED. Normally robust, resilient, maintained, and adds the 'Llama-augment' model for automation, etc.
-#/workspace/ubiquitous_bash/ubiquitous_bash.sh _setup_ollama
+## ATTENTION: Not enabled by default, slow to download. Call '_setup_ollama' manually .
+## DISCOURAGED. Better to benefit from 'ubiquitous_bash' maintenance identifying the most recent ollama installation commands. 
+##curl -fsSL https://ollama.com/install.sh | sh
+## DISCOURAGED. Does NOT install Llama-augment model.
+##/workspace/ubiquitous_bash/ubiquitous_bash.sh _setup_ollama_sequence
+##/workspace/ubiquitous_bash/ubiquitous_bash.sh _service_ollama > /dev/null 2>&1
+#echo | sudo -n -u ollama nohup ollama serve </dev/null >>/var/log/ollama.log 2>&1 &
+#while ! wget --timeout=1 --tries=3 127.0.0.1:11434 > /dev/null -q -O - > /dev/null
+#do
+#sleep 1
+#done
+#stty echo
+#stty sane
+#stty echo
+## PREFERRED. Normally robust, resilient, maintained, and adds the 'Llama-augment' model for automation, etc.
+##/workspace/ubiquitous_bash/ubiquitous_bash.sh _setup_ollama
 
 # ###
 false << 'doNotMatch'

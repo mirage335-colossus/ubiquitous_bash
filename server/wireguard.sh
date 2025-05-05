@@ -1,4 +1,22 @@
 
+
+
+# WARNING
+# WARNING
+# WARNING
+#
+# WARNING: May be untested.
+#
+# WARNING
+# WARNING
+# WARNING
+
+
+
+
+
+
+
 # Very simple VPN service for temporary ad-hoc networks (ie. between 'factory' containers, some of which may be capable of different tasks, but which together are used as a factory to generate an output).
 
 # Manually operated, as usual of 'factory' , 'server' , etc, functions . Does NOT necessarily install a service (eg. systemd hook), but does get a server program going without restarting anything, etc. Run function from within 'Docker' container, etc, if needed.
@@ -11,8 +29,8 @@
 # ATTENTION: NOTICE: DEPENDENCIES:
 #apt-get install wireguard wireguard-go
 # ATTENTION: NOTICE: RECOMMENDED:
-#apt-get install sudo net-tools man-db ufw nftables
-#unminimize
+#apt-get install sudo net-tools man-db ufw nftables yes
+#echo -e 'y\ny\ny\n' | unminimize
 #_cfgFW-desktop
 
 # May also be useful to host some other convenient servers with hardware (or other resource, cloud, etc) occupied by the VPN server.
@@ -136,12 +154,12 @@ _server_sequence-wireguard() {
         echo 'net.ipv4.ip_forward=1' >> /etc/sysctl.conf
         sysctl -w net.ipv4.ip_forward=1
     fi
-    if ! sysctl -a | grep '^net.ipv4.ip_forward = 1' > /dev/null 2>&1
+    if ! sysctl -a 2>/dev/null | grep '^net.ipv4.ip_forward = 1' > /dev/null 2>&1
     then
         _messagePlain_bad 'bad: FAIL: sysctl: net.ipv4.ip_forward != 1'
         _messageFAIL
     fi
-    if sysctl -a | grep '^net.ipv4.ip_forward = 1' > /dev/null 2>&1
+    if sysctl -a 2>/dev/null | grep '^net.ipv4.ip_forward = 1' > /dev/null 2>&1
     then
         _messagePlain_good 'good: sysctl: net.ipv4.ip_forward'
     fi
@@ -152,6 +170,11 @@ _server_sequence-wireguard() {
 
     
     _messageNormal '_server-wireguard: up'
+
+    # ATTRIBUTION-AI: ChatGPT 4.5 Deep Research  2025-05-05
+    export WG_QUICK_USERSPACE_IMPLEMENTATION="$(command -v wireguard-go || command -v wireguard)"
+    export WG_I_PREFER_BUGGY_USERSPACE_TO_POLISHED_KMOD=1
+
     wg-quick up wg0
 
     _messageNormal 'done: _server-wireguard'

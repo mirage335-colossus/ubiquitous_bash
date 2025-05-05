@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='256805758'
+export ub_setScriptChecksum_contents='1868661996'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -26784,6 +26784,57 @@ _ollama_set-augment-lowRAM() {
 }
 
 
+# Very unusual. Ensures service is available, if normal systemd service is not.
+# WARNING: Should NOT run standalone service if systemd service is available. Thus, it is important to check if the service is already available (as would normally always be the case when booted with systemd available).
+# Mostly, this is used to workaround very unusual dist/OS build and custom situations (ie. ChRoot, GitHub Actions, etc).
+# CAUTION: This leaves a background process running, which must continue running (ie. not hangup) while other programs use it, and which must terminate upon shutdown , _closeChRoot , etc .
+_service_ollama_augment() {
+	if _if_cygwin && ! wget --timeout=1 --tries=3 127.0.0.1:11434 > /dev/null -q -O - > /dev/null
+	then
+		return 1
+	fi
+
+	_if_cygwin && return 0
+
+	_mustGetSudo
+	if ! sudo -n -u ollama bash -c 'type -p ollama'
+	then
+		#echo 'warn: _service_ollama: missing: ollama'
+		return 1
+	fi
+	
+	if ! wget --timeout=1 --tries=3 127.0.0.1:11434 > /dev/null -q -O - > /dev/null
+	then
+		# ATTENTION: This is basically how to not cause interactive bash shell issues starting a background service at Docker container runtime.
+		# WARNING: May not be adequately tested.
+		echo | sudo -n -u ollama nohup ollama serve </dev/null >>/var/log/ollama.log 2>&1 &
+		while ! wget --timeout=1 --tries=3 127.0.0.1:11434 > /dev/null -q -O - > /dev/null
+		do
+			sleep 1
+		done
+		stty echo
+		stty sane
+		stty echo
+		
+		#sudo -n -u ollama ollama serve &
+		#while ! wget --timeout=1 --tries=3 127.0.0.1:11434 > /dev/null -q -O - > /dev/null
+		#do
+			#echo "wait: ollama: service"
+			#sleep 1
+		#done
+		sleep 3
+	fi
+	
+	
+	if ! wget --timeout=1 --tries=3 127.0.0.1:11434 > /dev/null -q -O - > /dev/null
+	then
+		#echo 'fail: _service_ollama: ollama: 127.0.0.1:11434'
+		return 1
+	fi
+
+	return 0
+}
+
 _ollama_stop_augment() {
 	ollama stop Llama-augment
 }
@@ -26800,6 +26851,9 @@ _ollama_run_augment() {
 	# ATTENTION: Nevertheless, it is very possible a non-'Llama' model will eventually be used, especially as science and technology (eg. plasma recombination EUV physics) related datasets (eg. relevant Wikipedia articles) are increasingly gathered.
 	
 	# https://www.llama.com/llama3_1/use-policy/
+
+	! _service_ollama_augment && return 1
+	
 	
 	ollama run Llama-augment "$@"
 }
@@ -26900,6 +26954,7 @@ RUN /workspace/ubiquitous_bash/ubiquitous_bash.sh _getMinimal_cloud
 #RUN curl -fsSL https://ollama.com/install.sh | sh
 # DISCOURAGED. Does NOT install Llama-augment model.
 RUN /workspace/ubiquitous_bash/ubiquitous_bash.sh _setup_ollama_sequence
+RUN /workspace/ubiquitous_bash/ubiquitous_bash.sh _service_ollama
 # PREFERRED. Normally robust, resilient, maintained, and adds the 'Llama-augment' model for automation, etc.
 #RUN /workspace/ubiquitous_bash/ubiquitous_bash.sh _setup_ollama
 
@@ -27920,14 +27975,22 @@ chmod u+x /workspace/ubiquitous_bash/ubiquitous_bash.sh
 fi
 #clear
 
-# ATTENTION: Not enabled by default, slow to download. Call '_setup_ollama' manually .
-#
-# DISCOURAGED. Better to benefit from 'ubiquitous_bash' maintenance identifying the most recent ollama installation commands. 
-#curl -fsSL https://ollama.com/install.sh | sh
-# DISCOURAGED. Does NOT install Llama-augment model.
-#/workspace/ubiquitous_bash/ubiquitous_bash.sh _setup_ollama_sequence
-# PREFERRED. Normally robust, resilient, maintained, and adds the 'Llama-augment' model for automation, etc.
-#/workspace/ubiquitous_bash/ubiquitous_bash.sh _setup_ollama
+## ATTENTION: Not enabled by default, slow to download. Call '_setup_ollama' manually .
+## DISCOURAGED. Better to benefit from 'ubiquitous_bash' maintenance identifying the most recent ollama installation commands. 
+##curl -fsSL https://ollama.com/install.sh | sh
+## DISCOURAGED. Does NOT install Llama-augment model.
+##/workspace/ubiquitous_bash/ubiquitous_bash.sh _setup_ollama_sequence
+##/workspace/ubiquitous_bash/ubiquitous_bash.sh _service_ollama > /dev/null 2>&1
+#echo | sudo -n -u ollama nohup ollama serve </dev/null >>/var/log/ollama.log 2>&1 &
+#while ! wget --timeout=1 --tries=3 127.0.0.1:11434 > /dev/null -q -O - > /dev/null
+#do
+#sleep 1
+#done
+#stty echo
+#stty sane
+#stty echo
+## PREFERRED. Normally robust, resilient, maintained, and adds the 'Llama-augment' model for automation, etc.
+##/workspace/ubiquitous_bash/ubiquitous_bash.sh _setup_ollama
 
 # ###
 false << 'doNotMatch'
@@ -43488,6 +43551,24 @@ CZXWXcRMTo8EmM8i4d
 
 
 
+
+
+# WARNING
+# WARNING
+# WARNING
+#
+# WARNING: May be untested.
+#
+# WARNING
+# WARNING
+# WARNING
+
+
+
+
+
+
+
 # Very simple VPN service for temporary ad-hoc networks (ie. between 'factory' containers, some of which may be capable of different tasks, but which together are used as a factory to generate an output).
 
 # Manually operated, as usual of 'factory' , 'server' , etc, functions . Does NOT necessarily install a service (eg. systemd hook), but does get a server program going without restarting anything, etc. Run function from within 'Docker' container, etc, if needed.
@@ -43500,8 +43581,8 @@ CZXWXcRMTo8EmM8i4d
 # ATTENTION: NOTICE: DEPENDENCIES:
 #apt-get install wireguard wireguard-go
 # ATTENTION: NOTICE: RECOMMENDED:
-#apt-get install sudo net-tools man-db ufw nftables
-#unminimize
+#apt-get install sudo net-tools man-db ufw nftables yes
+#echo -e 'y\ny\ny\n' | unminimize
 #_cfgFW-desktop
 
 # May also be useful to host some other convenient servers with hardware (or other resource, cloud, etc) occupied by the VPN server.
@@ -43625,12 +43706,12 @@ _server_sequence-wireguard() {
         echo 'net.ipv4.ip_forward=1' >> /etc/sysctl.conf
         sysctl -w net.ipv4.ip_forward=1
     fi
-    if ! sysctl -a | grep '^net.ipv4.ip_forward = 1' > /dev/null 2>&1
+    if ! sysctl -a 2>/dev/null | grep '^net.ipv4.ip_forward = 1' > /dev/null 2>&1
     then
         _messagePlain_bad 'bad: FAIL: sysctl: net.ipv4.ip_forward != 1'
         _messageFAIL
     fi
-    if sysctl -a | grep '^net.ipv4.ip_forward = 1' > /dev/null 2>&1
+    if sysctl -a 2>/dev/null | grep '^net.ipv4.ip_forward = 1' > /dev/null 2>&1
     then
         _messagePlain_good 'good: sysctl: net.ipv4.ip_forward'
     fi
@@ -43641,6 +43722,11 @@ _server_sequence-wireguard() {
 
     
     _messageNormal '_server-wireguard: up'
+
+    # ATTRIBUTION-AI: ChatGPT 4.5 Deep Research  2025-05-05
+    export WG_QUICK_USERSPACE_IMPLEMENTATION="$(command -v wireguard-go || command -v wireguard)"
+    export WG_I_PREFER_BUGGY_USERSPACE_TO_POLISHED_KMOD=1
+
     wg-quick up wg0
 
     _messageNormal 'done: _server-wireguard'
