@@ -9,7 +9,7 @@
 
 
 
-
+# NOTICE: You are obtaining the 'Llama-augment' model, or an upstream model used as a 'Llama-augment' model, by using this function: the 'Llama-augment' model is not, through this code itself, distributed to you (ie. you are likely receiving the 'Llama-augment' model from Soaring Distributions LLC regardless of where you obtained this code from).
 _setup_ollama_model_augment_sequence() {
 	# NOTICE: WARNING: Normally, any redistribution of a 'Llama', similar AI model, or other AI model, would be from an authoratative corporation, such as "Soaring Distributions LLC" .
 	
@@ -512,4 +512,54 @@ _service_ollama() {
 	return 0
 }
 
+# Very unusual. Ensures service is available, if normal systemd service is not.
+# WARNING: Should NOT run standalone service if systemd service is available. Thus, it is important to check if the service is already available (as would normally always be the case when booted with systemd available).
+# Mostly, this is used to workaround very unusual dist/OS build and custom situations (ie. ChRoot, GitHub Actions, etc).
+# CAUTION: This leaves a background process running, which must continue running (ie. not hangup) while other programs use it, and which must terminate upon shutdown , _closeChRoot , etc .
+_service_ollama_augment() {
+	if _if_cygwin && ! wget --timeout=1 --tries=3 127.0.0.1:11434 > /dev/null -q -O - > /dev/null
+	then
+		return 1
+	fi
+
+	_if_cygwin && return 0
+
+	_mustGetSudo
+	if ! sudo -n -u ollama bash -c 'type -p ollama' > /dev/null 2>&1
+	then
+		#echo 'warn: _service_ollama: missing: ollama'
+		return 1
+	fi
+	
+	if ! wget --timeout=1 --tries=3 127.0.0.1:11434 > /dev/null -q -O - > /dev/null
+	then
+		# ATTENTION: This is basically how to not cause interactive bash shell issues starting a background service at Docker container runtime.
+		# WARNING: May not be adequately tested.
+		( echo | sudo -n -u ollama nohup ollama serve </dev/null >>/var/log/ollama.log 2>&1 & ) &> /dev/null
+		while ! wget --timeout=1 --tries=3 127.0.0.1:11434 > /dev/null -q -O - > /dev/null
+		do
+			sleep 1
+		done
+		stty echo
+		stty sane
+		stty echo
+		
+		#sudo -n -u ollama ollama serve &
+		#while ! wget --timeout=1 --tries=3 127.0.0.1:11434 > /dev/null -q -O - > /dev/null
+		#do
+			#echo "wait: ollama: service"
+			#sleep 1
+		#done
+		sleep 3
+	fi
+	
+	
+	if ! wget --timeout=1 --tries=3 127.0.0.1:11434 > /dev/null -q -O - > /dev/null
+	then
+		#echo 'fail: _service_ollama: ollama: 127.0.0.1:11434'
+		return 1
+	fi
+
+	return 0
+}
 

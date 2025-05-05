@@ -66,6 +66,9 @@ RUN env DEBIAN_FRONTEND=noninteractive apt-get install tar bzip2 gzip -y
 RUN env DEBIAN_FRONTEND=noninteractive apt-get install sed patch expect -y
 RUN env DEBIAN_FRONTEND=noninteractive apt-get install dos2unix -y
 
+# nohup - _service_ollama , _service_ollama_augment
+RUN env DEBIAN_FRONTEND=noninteractive apt-get install coreutils -y
+
 
 RUN env DEBIAN_FRONTEND=noninteractive apt-get install sudo -y
 RUN /workspace/ubiquitous_bash/ubiquitous_bash.sh _getMinimal_cloud

@@ -503,6 +503,8 @@ _deps_calculators() {
 
 _deps_ai_shortcuts() {
 	_deps_generic
+
+	_deps_ai
 	
 	export enUb_ai_shortcuts="true"
 	export enUb_ollama_shortcuts="true"
