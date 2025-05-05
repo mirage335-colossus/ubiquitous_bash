@@ -535,6 +535,7 @@ _service_ollama_augment() {
 	then
 		# ATTENTION: This is basically how to not cause interactive bash shell issues starting a background service at Docker container runtime.
 		# WARNING: May not be adequately tested.
+		# ATTRIBUTION-AI: ChatGPT o3  2025-05-05  (partially)
 		( echo | sudo -n -u ollama nohup ollama serve </dev/null >>/var/log/ollama.log 2>&1 & ) &> /dev/null
 		while ! wget --timeout=1 --tries=3 127.0.0.1:11434 > /dev/null -q -O - > /dev/null
 		do

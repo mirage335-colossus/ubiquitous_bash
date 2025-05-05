@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='1822771827'
+export ub_setScriptChecksum_contents='3779716456'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -19051,6 +19051,7 @@ _service_ollama_augment() {
 	then
 		# ATTENTION: This is basically how to not cause interactive bash shell issues starting a background service at Docker container runtime.
 		# WARNING: May not be adequately tested.
+		# ATTRIBUTION-AI: ChatGPT o3  2025-05-05  (partially)
 		( echo | sudo -n -u ollama nohup ollama serve </dev/null >>/var/log/ollama.log 2>&1 & ) &> /dev/null
 		while ! wget --timeout=1 --tries=3 127.0.0.1:11434 > /dev/null -q -O - > /dev/null
 		do
@@ -20295,6 +20296,7 @@ fi
 ## DISCOURAGED. Does NOT install Llama-augment model.
 ##/workspace/ubiquitous_bash/ubiquitous_bash.sh _setup_ollama_sequence
 ##/workspace/ubiquitous_bash/ubiquitous_bash.sh _service_ollama > /dev/null 2>&1
+## ATTRIBUTION-AI: ChatGPT o3  2025-05-05
 #echo | sudo -n -u ollama nohup ollama serve </dev/null >>/var/log/ollama.log 2>&1 &
 #while ! wget --timeout=1 --tries=3 127.0.0.1:11434 > /dev/null -q -O - > /dev/null
 #do

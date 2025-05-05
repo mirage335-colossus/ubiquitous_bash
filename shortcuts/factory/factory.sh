@@ -495,6 +495,7 @@ fi
 ## DISCOURAGED. Does NOT install Llama-augment model.
 ##/workspace/ubiquitous_bash/ubiquitous_bash.sh _setup_ollama_sequence
 ##/workspace/ubiquitous_bash/ubiquitous_bash.sh _service_ollama > /dev/null 2>&1
+## ATTRIBUTION-AI: ChatGPT o3  2025-05-05
 #echo | sudo -n -u ollama nohup ollama serve </dev/null >>/var/log/ollama.log 2>&1 &
 #while ! wget --timeout=1 --tries=3 127.0.0.1:11434 > /dev/null -q -O - > /dev/null
 #do
