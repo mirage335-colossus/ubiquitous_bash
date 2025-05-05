@@ -9,7 +9,7 @@
 # tailscale ?
 
 # ATTENTION: NOTICE: DEPENDENCIES:
-#apt-get install wireguard
+#apt-get install wireguard wireguard-go
 # ATTENTION: NOTICE: RECOMMENDED:
 #apt-get install sudo net-tools man-db ufw nftables
 #unminimize

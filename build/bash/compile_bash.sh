@@ -1073,6 +1073,9 @@ _compile_bash_shortcuts() {
 	[[ "$enUb_linux" == "true" ]] && includeScriptList+=( "shortcuts/linux"/kernelConfig_platform.sh )
 	
 	[[ "$enUb_linux" == "true" ]] && includeScriptList+=( "shortcuts/linux"/bfq.sh )
+
+	
+	[[ "$enUb_server" ]] && includeScriptList+=( "server"/wireguard.sh )
 }
 
 _compile_bash_shortcuts_setup() {
