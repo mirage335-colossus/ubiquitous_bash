@@ -69,6 +69,9 @@ RUN env DEBIAN_FRONTEND=noninteractive apt-get install dos2unix -y
 # nohup - _service_ollama , _service_ollama_augment
 RUN env DEBIAN_FRONTEND=noninteractive apt-get install coreutils -y
 
+# https://www.hostinger.com/tutorials/how-to-install-ollama
+RUN apt install python3 python3-pip git -y
+
 
 RUN env DEBIAN_FRONTEND=noninteractive apt-get install sudo -y
 RUN /workspace/ubiquitous_bash/ubiquitous_bash.sh _getMinimal_cloud

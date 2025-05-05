@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='1541243178'
+export ub_setScriptChecksum_contents='1822771827'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -19255,6 +19255,9 @@ RUN env DEBIAN_FRONTEND=noninteractive apt-get install dos2unix -y
 
 # nohup - _service_ollama , _service_ollama_augment
 RUN env DEBIAN_FRONTEND=noninteractive apt-get install coreutils -y
+
+# https://www.hostinger.com/tutorials/how-to-install-ollama
+RUN apt install python3 python3-pip git -y
 
 
 RUN env DEBIAN_FRONTEND=noninteractive apt-get install sudo -y
