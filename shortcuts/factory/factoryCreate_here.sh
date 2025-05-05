@@ -67,6 +67,7 @@ RUN env DEBIAN_FRONTEND=noninteractive apt-get install sed patch expect -y
 RUN env DEBIAN_FRONTEND=noninteractive apt-get install dos2unix -y
 
 
+RUN env DEBIAN_FRONTEND=noninteractive apt-get install sudo -y
 RUN /workspace/ubiquitous_bash/ubiquitous_bash.sh _getMinimal_cloud
 
 

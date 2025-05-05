@@ -86,6 +86,8 @@ _compile_bash_deps() {
 
 		_deps_factory_shortcuts
 		_deps_factory_shortcuts_ops
+
+		_deps_server
 		
 		_deps_calculators
 		
@@ -158,6 +160,8 @@ _compile_bash_deps() {
 		_deps_ai_knowledge
 
 		_deps_factory_shortcuts
+
+		_deps_server
 		
 		_deps_calculators
 		
@@ -299,6 +303,8 @@ _compile_bash_deps() {
 		_deps_ai_knowledge
 
 		_deps_factory_shortcuts
+
+		_deps_server
 		
 		_deps_calculators
 		
@@ -414,6 +420,8 @@ _compile_bash_deps() {
 		_deps_ai_knowledge
 
 		_deps_factory_shortcuts
+
+		_deps_server
 		
 		_deps_calculators
 		
@@ -490,6 +498,8 @@ _compile_bash_deps() {
 		_deps_ai_knowledge
 
 		_deps_factory_shortcuts
+
+		_deps_server
 	fi
 	
 	if [[ "$1" == "" ]] || [[ "$1" == "ubiquitous_bash" ]] || [[ "$1" == "ubiquitous_bash.sh" ]] || [[ "$1" == "complete" ]]
@@ -547,6 +557,8 @@ _compile_bash_deps() {
 
 		_deps_factory_shortcuts
 		_deps_factory_shortcuts_ops
+
+		_deps_server
 		
 		_deps_calculators
 		
