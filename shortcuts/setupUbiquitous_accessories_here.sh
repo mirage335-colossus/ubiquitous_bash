@@ -427,6 +427,44 @@ CZXWXcRMTo8EmM8i4d
 }
 
 
+_setupUbiquitous_accessories_here-container_environment() {
+	
+	cat << CZXWXcRMTo8EmM8i4d
+
+# Coordinator/Worker
+if [[ "$SSH_pub_Coordinator_01" != "" ]]
+then
+	_ubcore_add_authorized_SSH() {
+		[[ "$1" == "" ]] && return 0
+
+		mkdir -p "$HOME"/.ssh
+		chmod 700 "$HOME"/.ssh
+		
+		local currentString=$(printf '%s' "$1" | awk '{print $2}' | tr -dc 'a-zA-Z0-9')
+
+		if cat "$HOME"/.ssh/authorized_keys | tr -dc 'a-zA-Z0-9' | grep "$currentString" > /dev/null 2>&1
+		then
+			return 0
+		else
+			echo "$1" >> "$HOME"/.ssh/authorized_keys
+			chmod 600 "$HOME"/.ssh/authorized_keys
+			return 0
+		fi
+		return 1
+	}
+	
+	_ubcore_add_authorized_SSH "$SSH_pub_Coordinator_01"
+	_ubcore_add_authorized_SSH "$SSH_pub_Coordinator_02"
+	_ubcore_add_authorized_SSH "$SSH_pub_Coordinator_03"
+
+	unset _ubcore_add_authorized_SSH
+fi
+
+CZXWXcRMTo8EmM8i4d
+
+}
+
+
 
 
 

@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='4260602771'
+export ub_setScriptChecksum_contents='581233611'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -44211,6 +44211,44 @@ CZXWXcRMTo8EmM8i4d
 }
 
 
+_setupUbiquitous_accessories_here-container_environment() {
+	
+	cat << CZXWXcRMTo8EmM8i4d
+
+# Coordinator/Worker
+if [[ "$SSH_pub_Coordinator_01" != "" ]]
+then
+	_ubcore_add_authorized_SSH() {
+		[[ "$1" == "" ]] && return 0
+
+		mkdir -p "$HOME"/.ssh
+		chmod 700 "$HOME"/.ssh
+		
+		local currentString=$(printf '%s' "$1" | awk '{print $2}' | tr -dc 'a-zA-Z0-9')
+
+		if cat "$HOME"/.ssh/authorized_keys | tr -dc 'a-zA-Z0-9' | grep "$currentString" > /dev/null 2>&1
+		then
+			return 0
+		else
+			echo "$1" >> "$HOME"/.ssh/authorized_keys
+			chmod 600 "$HOME"/.ssh/authorized_keys
+			return 0
+		fi
+		return 1
+	}
+	
+	_ubcore_add_authorized_SSH "$SSH_pub_Coordinator_01"
+	_ubcore_add_authorized_SSH "$SSH_pub_Coordinator_02"
+	_ubcore_add_authorized_SSH "$SSH_pub_Coordinator_03"
+
+	unset _ubcore_add_authorized_SSH
+fi
+
+CZXWXcRMTo8EmM8i4d
+
+}
+
+
 
 
 
@@ -44349,11 +44387,14 @@ _setupUbiquitous_accessories_bashrc() {
 	_setupUbiquitous_accessories_here-convenience "$@"
 	
 	
-	# WARNING: Python must remain last. Failure to hook python is a failure that must show as an error exit status from the users profile (a red "1" on the first line of first visual prompt command prompt).
+	# WARNING: Python should remain last if possible. Failure to hook python is a failure that must show as an error exit status from the users profile (a red "1" on the first line of first visual prompt command prompt).
+	#  WARNING: Do NOT use 'currentExitStatus_python_bashrc' or similar varaibles unless this exit status is really necessary. Performance cost will be significant. Do not attempt to use a 'return' statement, rather if attempting to implement this, instead run 'true' or 'false' at the end of the 'ubcorerc' script depending on the exit status. Discouraged.
 	_setupUbiquitous_accessories_here-python_bashrc "$@"
 	
 	
 	_setupUbiquitous_accessories_here-user_bashrc "$@"
+
+	_setupUbiquitous_accessories_here-container_environment "$@"
 	
 	#echo true
 }

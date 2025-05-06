@@ -122,11 +122,14 @@ _setupUbiquitous_accessories_bashrc() {
 	_setupUbiquitous_accessories_here-convenience "$@"
 	
 	
-	# WARNING: Python must remain last. Failure to hook python is a failure that must show as an error exit status from the users profile (a red "1" on the first line of first visual prompt command prompt).
+	# WARNING: Python should remain last if possible. Failure to hook python is a failure that must show as an error exit status from the users profile (a red "1" on the first line of first visual prompt command prompt).
+	#  WARNING: Do NOT use 'currentExitStatus_python_bashrc' or similar varaibles unless this exit status is really necessary. Performance cost will be significant. Do not attempt to use a 'return' statement, rather if attempting to implement this, instead run 'true' or 'false' at the end of the 'ubcorerc' script depending on the exit status. Discouraged.
 	_setupUbiquitous_accessories_here-python_bashrc "$@"
 	
 	
 	_setupUbiquitous_accessories_here-user_bashrc "$@"
+
+	_setupUbiquitous_accessories_here-container_environment "$@"
 	
 	#echo true
 }
