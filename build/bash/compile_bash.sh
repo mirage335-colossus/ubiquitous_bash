@@ -1075,6 +1075,8 @@ _compile_bash_shortcuts() {
 	[[ "$enUb_linux" == "true" ]] && includeScriptList+=( "shortcuts/linux"/bfq.sh )
 
 	
+	[[ "$enUb_server" ]] && includeScriptList+=( "server"/coordinatorWorker.sh )
+
 	[[ "$enUb_server" ]] && includeScriptList+=( "server"/wireguard.sh )
 }
 

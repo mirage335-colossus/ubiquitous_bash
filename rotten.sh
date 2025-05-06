@@ -1863,6 +1863,10 @@ _visualPrompt() {
 
 	# ATTRIBUTION-AI: ChatGPT o3 (high)  2025-05-06
 	#We want to see 'RTX 2000 Ada 16GB' and 'RTX 4090 16GB' , not just 'RTX 2000 16GB' . Please revise.
+	#
+	# RTX 2000 Ada 16GB
+	# RTX 2000 16GB
+	#
 	_filter_nvidia_smi_gpuInfo() {
 		awk -F', *' '
 			{

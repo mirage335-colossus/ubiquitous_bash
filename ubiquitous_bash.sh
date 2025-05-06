@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='3544066957'
+export ub_setScriptChecksum_contents='1040179855'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -26126,6 +26126,10 @@ _visualPrompt() {
 
 	# ATTRIBUTION-AI: ChatGPT o3 (high)  2025-05-06
 	#We want to see 'RTX 2000 Ada 16GB' and 'RTX 4090 16GB' , not just 'RTX 2000 16GB' . Please revise.
+	#
+	# RTX 2000 Ada 16GB
+	# RTX 2000 16GB
+	#
 	_filter_nvidia_smi_gpuInfo() {
 		awk -F', *' '
 			{
@@ -43630,6 +43634,12 @@ CZXWXcRMTo8EmM8i4d
 
 
 
+# '$SSH_pub_Coordinator_01'
+# ssh ... rclone ... push/pull ... /local/dir/. ... .../brig/machineName/.
+
+
+
+
 
 
 # WARNING
@@ -59468,6 +59478,8 @@ _compile_bash_shortcuts() {
 	[[ "$enUb_linux" == "true" ]] && includeScriptList+=( "shortcuts/linux"/bfq.sh )
 
 	
+	[[ "$enUb_server" ]] && includeScriptList+=( "server"/coordinatorWorker.sh )
+
 	[[ "$enUb_server" ]] && includeScriptList+=( "server"/wireguard.sh )
 }
 
