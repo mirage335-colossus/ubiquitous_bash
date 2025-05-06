@@ -21,6 +21,27 @@ _visualPrompt() {
 	currentHostname="$HOSTNAME"
 	
 	[[ -e /etc/hostname ]] && export currentHostname=$(cat /etc/hostname)
+
+	local currentHostname_concatenate
+
+	[[ "$RUNPOD_POD_ID" != "" ]] && currentHostname_concatenate='runpod--'
+
+	if [[ -e /info_factoryName.txt ]]
+	then
+		currentHostname_concatenate=$(cat /info_factoryName.txt)
+		currentHostname_concatenate="$currentHostname_concatenate"'--'
+	fi
+
+	[[ "$RUNPOD_POD_ID" != "" ]] && currentHostname_concatenate="$currentHostname_concatenate""$RUNPOD_POD_ID"'--'
+
+	[[ "$RUNPOD_PUBLIC_IP" != "" ]] && currentHostname_concatenate="$currentHostname_concatenate""$RUNPOD_PUBLIC_IP"'--'
+	#if [[ "$RUNPOD_PUBLIC_IP" != "" ]]
+	#then
+		#export currentHostname_concatenate="$currentHostname_concatenate"$(wget -qO- https://icanhazip.com/ | tr -dc '0-9a-fA-F:.')'--'
+	#fi
+	
+	export currentHostname="$currentHostname_concatenate""$currentHostname"
+	
 	
 	
 	export currentChroot=
@@ -55,11 +76,43 @@ _visualPrompt() {
 	#export PS1='\[\033[01;40m\]\[\033[01;36m\]\[\033[01;34m\]|\[\033[01;31m\]${?}:${debian_chroot:+($debian_chroot)}\[\033[01;33m\]\u\[\033[01;32m\]@\h\[\033[01;36m\]\[\033[01;34m\])\[\033[01;36m\]\[\033[01;34m\]-'"$prompt_cloudNetName"'(\[\033[01;35m\]$(date +%H:%M:%S\.%d)\[\033[01;34m\])\[\033[01;36m\]|\[\033[00m\]\n\[\033[01;40m\]\[\033[01;36m\]\[\033[01;34m\]|\[\033[37m\][\w]\[\033[00m\]\n\[\033[01;36m\]\[\033[01;34m\]|$PS1_lineNumberText\[\033[01;34m\]) \[\033[36m\]'""'>\[\033[00m\] '
 	
 	
+	export prompt_specialInfo=""
+
+	
+	_filter_nvidia_smi_gpuInfo() {
+		awk -F', *' '
+			{
+				# ----- clean up the model name -----
+				name = $1
+				gsub(/NVIDIA |GeForce |Laptop GPU|Ada Generation| Generation/, "", name)  # drop fluff words
+				gsub(/  +/, " ", name)                                                   # collapse multiple spaces
+				gsub(/^ +| +$/, "", name)                                                # trim leading/trailing spaces
+
+				# ----- convert MiB \342\206\222 \342\200\234GB\342\200\235 the way vendors do (1024 MiB = 1 GB) -----
+				mib  = $2
+				gb   = int( (mib + 1023) / 1024 )      # round up to the next whole GB
+
+				printf "%s %dGB\n", name, gb
+			}'
+	}
+
+	if type nvidia-smi > /dev/null 2>&1
+	then
+		export prompt_specialInfo=$(
+			nvidia-smi --query-gpu=name,memory.total --format=csv,noheader,nounits | _filter_nvidia_smi_gpuInfo
+		)
+	fi
+
+	if _if_wsl && [[ -e "/mnt/c/Windows/System32/cmd.exe" ]] && /mnt/c/Windows/System32/cmd.exe /C where nvidia-smi > /dev/null 2>&1
+	then
+		export prompt_specialInfo=$(
+			/mnt/c/Windows/System32/cmd.exe /C nvidia-smi --query-gpu=name,memory.total --format=csv,noheader,nounits | _filter_nvidia_smi_gpuInfo
+		)
+	fi
+
 	if [[ "$SHELL" == *"/nix/store/"*"/bin/bash"* ]]
 	then
-		export prompt_nixShell="nixShell"
-	else
-		export prompt_nixShell=""
+		export prompt_specialInfo="nixShell"
 	fi
 	
 	#export PS1='\[\033[01;40m\]\[\033[01;36m\]\[\033[01;34m\]|\[\033[01;31m\]${?}:${debian_chroot:+($debian_chroot)}\[\033[01;33m\]\u\[\033[01;32m\]@\h\[\033[01;36m\]\[\033[01;34m\])\[\033[01;36m\]\[\033[01;34m\]-'"$prompt_cloudNetName"'(\[\033[01;35m\]$(date +%H:%M:%S\.%d)\[\033[01;34m\])\[\033[01;36m\]|\[\033[00m\]'"$prompt_nixShell"'\n\[\033[01;40m\]\[\033[01;36m\]\[\033[01;34m\]|\[\033[37m\][\w]\[\033[00m\]\n\[\033[01;36m\]\[\033[01;34m\]|$([[ "$PS1_lineNumber" == "1" ]] && echo -e -n '"'"'\[\033[01;36m\]'"'"'$PS1_lineNumber || echo -e -n $PS1_lineNumber)\[\033[01;34m\]) \[\033[36m\]'""'>\[\033[00m\] '

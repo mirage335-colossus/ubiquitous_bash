@@ -77,6 +77,7 @@ cmd=$(docker inspect -f '{{join .Config.Cmd " "}}' "$dockerName")
 workdir=$(docker inspect -f '{{.Config.WorkingDir}}' "$dockerName")
 _messagePlain_request 'request: paste ->'
 echo > ./._run-factory_axolotl
+echo "echo 'axolotl' > /info_factoryName.txt" | tee -a ./._run-factory_axolotl
 _request_paste_factory-prepare_finetune | tee -a ./._run-factory_axolotl
 _request_paste_factory-install_ubiquitous_bash | tee -a ./._run-factory_axolotl
 _request_paste_factory-show_finetune | tee -a ./._run-factory_axolotl
@@ -157,6 +158,7 @@ cmd=$(docker inspect -f '{{join .Config.Cmd " "}}' "$dockerName")
 workdir=$(docker inspect -f '{{.Config.WorkingDir}}' "$dockerName")
 _messagePlain_request 'request: paste ->'
 echo > ./._run-factory_runpod
+echo "echo 'runpod-pytorch-official' > /info_factoryName.txt" | tee -a ./._run-factory_runpod
 _request_paste_factory-prepare_finetune | tee -a ./._run-factory_runpod
 _request_paste_factory-install_ubiquitous_bash | tee -a ./._run-factory_runpod
 _request_paste_factory-show_finetune | tee -a ./._run-factory_runpod
@@ -254,6 +256,7 @@ cmd=$(docker inspect -f '{{join .Config.Cmd " "}}' runpod/pytorch:2.2.0-py3.10-c
 workdir=$(docker inspect -f '{{.Config.WorkingDir}}' runpod/pytorch:2.2.0-py3.10-cuda12.1.1-devel-ubuntu22.04)
 _messagePlain_request 'request: paste ->'
 echo > ./._run-factory_runpod
+echo "echo 'runpod-pytorch-heavy' > /info_factoryName.txt" | tee -a ./._run-factory_runpod
 _request_paste_factory-prepare_finetune | tee -a ./._run-factory_runpod
 _request_paste_factory-install_ubiquitous_bash | tee -a ./._run-factory_runpod
 _request_paste_factory-show_finetune | tee -a ./._run-factory_runpod
@@ -371,6 +374,7 @@ cmd=$(docker inspect -f '{{join .Config.Cmd " "}}' runpod/pytorch:2.2.0-py3.10-c
 workdir=$(docker inspect -f '{{.Config.WorkingDir}}' runpod/pytorch:2.2.0-py3.10-cuda12.1.1-devel-ubuntu22.04)
 _messagePlain_request 'request: paste ->'
 echo > ./._run-factory_runpod
+echo "echo 'runpod-pytorch-unsloth' > /info_factoryName.txt" | tee -a ./._run-factory_runpod
 _request_paste_factory-prepare_finetune | tee -a ./._run-factory_runpod
 _request_paste_factory-install_ubiquitous_bash | tee -a ./._run-factory_runpod
 _request_paste_factory-show_finetune | tee -a ./._run-factory_runpod
