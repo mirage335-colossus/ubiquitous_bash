@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='581233611'
+export ub_setScriptChecksum_contents='95060314'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -26067,6 +26067,27 @@ _visualPrompt() {
 	currentHostname="$HOSTNAME"
 	
 	[[ -e /etc/hostname ]] && export currentHostname=$(cat /etc/hostname)
+
+	local currentHostname_concatenate
+
+	[[ "$RUNPOD_POD_ID" != "" ]] && currentHostname_concatenate='runpod--'
+
+	if [[ -e /info_factoryName.txt ]]
+	then
+		currentHostname_concatenate=$(cat /info_factoryName.txt)
+		currentHostname_concatenate="$currentHostname_concatenate"'--'
+	fi
+
+	[[ "$RUNPOD_POD_ID" != "" ]] && currentHostname_concatenate="$currentHostname_concatenate""$RUNPOD_POD_ID"'--'
+
+	[[ "$RUNPOD_PUBLIC_IP" != "" ]] && currentHostname_concatenate="$currentHostname_concatenate""$RUNPOD_PUBLIC_IP"'--'
+	#if [[ "$RUNPOD_PUBLIC_IP" != "" ]]
+	#then
+		#export currentHostname_concatenate="$currentHostname_concatenate"$(wget -qO- https://icanhazip.com/ | tr -dc '0-9a-fA-F:.')'--'
+	#fi
+	
+	export currentHostname="$currentHostname_concatenate""$currentHostname"
+	
 	
 	
 	export currentChroot=
@@ -26101,11 +26122,43 @@ _visualPrompt() {
 	#export PS1='\[\033[01;40m\]\[\033[01;36m\]\[\033[01;34m\]|\[\033[01;31m\]${?}:${debian_chroot:+($debian_chroot)}\[\033[01;33m\]\u\[\033[01;32m\]@\h\[\033[01;36m\]\[\033[01;34m\])\[\033[01;36m\]\[\033[01;34m\]-'"$prompt_cloudNetName"'(\[\033[01;35m\]$(date +%H:%M:%S\.%d)\[\033[01;34m\])\[\033[01;36m\]|\[\033[00m\]\n\[\033[01;40m\]\[\033[01;36m\]\[\033[01;34m\]|\[\033[37m\][\w]\[\033[00m\]\n\[\033[01;36m\]\[\033[01;34m\]|$PS1_lineNumberText\[\033[01;34m\]) \[\033[36m\]'""'>\[\033[00m\] '
 	
 	
+	export prompt_specialInfo=""
+
+	
+	_filter_nvidia_smi_gpuInfo() {
+		awk -F', *' '
+			{
+				# ----- clean up the model name -----
+				name = $1
+				gsub(/NVIDIA |GeForce |Laptop GPU|Ada Generation| Generation/, "", name)  # drop fluff words
+				gsub(/  +/, " ", name)                                                   # collapse multiple spaces
+				gsub(/^ +| +$/, "", name)                                                # trim leading/trailing spaces
+
+				# ----- convert MiB \342\206\222 \342\200\234GB\342\200\235 the way vendors do (1024 MiB = 1 GB) -----
+				mib  = $2
+				gb   = int( (mib + 1023) / 1024 )      # round up to the next whole GB
+
+				printf "%s %dGB\n", name, gb
+			}'
+	}
+
+	if type nvidia-smi > /dev/null 2>&1
+	then
+		export prompt_specialInfo=$(
+			nvidia-smi --query-gpu=name,memory.total --format=csv,noheader,nounits | _filter_nvidia_smi_gpuInfo
+		)
+	fi
+
+	if _if_wsl && [[ -e "/mnt/c/Windows/System32/cmd.exe" ]] && /mnt/c/Windows/System32/cmd.exe /C where nvidia-smi > /dev/null 2>&1
+	then
+		export prompt_specialInfo=$(
+			/mnt/c/Windows/System32/cmd.exe /C nvidia-smi --query-gpu=name,memory.total --format=csv,noheader,nounits | _filter_nvidia_smi_gpuInfo
+		)
+	fi
+
 	if [[ "$SHELL" == *"/nix/store/"*"/bin/bash"* ]]
 	then
-		export prompt_nixShell="nixShell"
-	else
-		export prompt_nixShell=""
+		export prompt_specialInfo="nixShell"
 	fi
 	
 	#export PS1='\[\033[01;40m\]\[\033[01;36m\]\[\033[01;34m\]|\[\033[01;31m\]${?}:${debian_chroot:+($debian_chroot)}\[\033[01;33m\]\u\[\033[01;32m\]@\h\[\033[01;36m\]\[\033[01;34m\])\[\033[01;36m\]\[\033[01;34m\]-'"$prompt_cloudNetName"'(\[\033[01;35m\]$(date +%H:%M:%S\.%d)\[\033[01;34m\])\[\033[01;36m\]|\[\033[00m\]'"$prompt_nixShell"'\n\[\033[01;40m\]\[\033[01;36m\]\[\033[01;34m\]|\[\033[37m\][\w]\[\033[00m\]\n\[\033[01;36m\]\[\033[01;34m\]|$([[ "$PS1_lineNumber" == "1" ]] && echo -e -n '"'"'\[\033[01;36m\]'"'"'$PS1_lineNumber || echo -e -n $PS1_lineNumber)\[\033[01;34m\]) \[\033[36m\]'""'>\[\033[00m\] '
@@ -27054,6 +27107,8 @@ cat << 'CZXWXcRMTo8EmM8i4d'
 # runpod/pytorch:2.1.0-py3.10-cuda11.8.0-devel-ubuntu22.04
 FROM runpod/pytorch:2.8.0-py3.11-cuda12.8.1-cudnn-devel-ubuntu22.04
 
+RUN echo 'runpod-pytorch-heavy' > /info_factoryName.txt
+
 CZXWXcRMTo8EmM8i4d
 
 _here_dockerfile-ubiquitous "$@"
@@ -27220,6 +27275,8 @@ cat << 'CZXWXcRMTo8EmM8i4d'
 # runpod/pytorch:2.8.0-py3.11-cuda12.8.1-cudnn-devel-ubuntu22.04
 # runpod/pytorch:2.1.0-py3.10-cuda11.8.0-devel-ubuntu22.04
 FROM runpod/pytorch:2.8.0-py3.11-cuda12.8.1-cudnn-devel-ubuntu22.04
+
+RUN echo 'runpod-pytorch-unsloth' > /info_factoryName.txt
 
 CZXWXcRMTo8EmM8i4d
 
@@ -27390,6 +27447,8 @@ fi
 cat << 'CZXWXcRMTo8EmM8i4d'
 #docker build -t axolotl-heavy .
 FROM axolotlai/axolotl:main-latest
+
+RUN echo 'axolotl-heavy' > /info_factoryName.txt
 
 CZXWXcRMTo8EmM8i4d
 
@@ -27574,6 +27633,7 @@ cmd=$(docker inspect -f '{{join .Config.Cmd " "}}' "$dockerName")
 workdir=$(docker inspect -f '{{.Config.WorkingDir}}' "$dockerName")
 _messagePlain_request 'request: paste ->'
 echo > ./._run-factory_axolotl
+echo "echo 'axolotl' > /info_factoryName.txt" | tee -a ./._run-factory_axolotl
 _request_paste_factory-prepare_finetune | tee -a ./._run-factory_axolotl
 _request_paste_factory-install_ubiquitous_bash | tee -a ./._run-factory_axolotl
 _request_paste_factory-show_finetune | tee -a ./._run-factory_axolotl
@@ -27654,6 +27714,7 @@ cmd=$(docker inspect -f '{{join .Config.Cmd " "}}' "$dockerName")
 workdir=$(docker inspect -f '{{.Config.WorkingDir}}' "$dockerName")
 _messagePlain_request 'request: paste ->'
 echo > ./._run-factory_runpod
+echo "echo 'runpod-pytorch-official' > /info_factoryName.txt" | tee -a ./._run-factory_runpod
 _request_paste_factory-prepare_finetune | tee -a ./._run-factory_runpod
 _request_paste_factory-install_ubiquitous_bash | tee -a ./._run-factory_runpod
 _request_paste_factory-show_finetune | tee -a ./._run-factory_runpod
@@ -27751,6 +27812,7 @@ cmd=$(docker inspect -f '{{join .Config.Cmd " "}}' runpod/pytorch:2.2.0-py3.10-c
 workdir=$(docker inspect -f '{{.Config.WorkingDir}}' runpod/pytorch:2.2.0-py3.10-cuda12.1.1-devel-ubuntu22.04)
 _messagePlain_request 'request: paste ->'
 echo > ./._run-factory_runpod
+echo "echo 'runpod-pytorch-heavy' > /info_factoryName.txt" | tee -a ./._run-factory_runpod
 _request_paste_factory-prepare_finetune | tee -a ./._run-factory_runpod
 _request_paste_factory-install_ubiquitous_bash | tee -a ./._run-factory_runpod
 _request_paste_factory-show_finetune | tee -a ./._run-factory_runpod
@@ -27868,6 +27930,7 @@ cmd=$(docker inspect -f '{{join .Config.Cmd " "}}' runpod/pytorch:2.2.0-py3.10-c
 workdir=$(docker inspect -f '{{.Config.WorkingDir}}' runpod/pytorch:2.2.0-py3.10-cuda12.1.1-devel-ubuntu22.04)
 _messagePlain_request 'request: paste ->'
 echo > ./._run-factory_runpod
+echo "echo 'runpod-pytorch-unsloth' > /info_factoryName.txt" | tee -a ./._run-factory_runpod
 _request_paste_factory-prepare_finetune | tee -a ./._run-factory_runpod
 _request_paste_factory-install_ubiquitous_bash | tee -a ./._run-factory_runpod
 _request_paste_factory-show_finetune | tee -a ./._run-factory_runpod
