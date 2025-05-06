@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='3357929240'
+export ub_setScriptChecksum_contents='3544066957'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -26124,23 +26124,27 @@ _visualPrompt() {
 	
 	export prompt_specialInfo=""
 
-	
+	# ATTRIBUTION-AI: ChatGPT o3 (high)  2025-05-06
+	#We want to see 'RTX 2000 Ada 16GB' and 'RTX 4090 16GB' , not just 'RTX 2000 16GB' . Please revise.
 	_filter_nvidia_smi_gpuInfo() {
 		awk -F', *' '
 			{
 				# ----- clean up the model name -----
 				name = $1
-				gsub(/NVIDIA |GeForce |Laptop GPU|Ada Generation| Generation/, "", name)  # drop fluff words
-				gsub(/  +/, " ", name)                                                   # collapse multiple spaces
-				gsub(/^ +| +$/, "", name)                                                # trim leading/trailing spaces
+				# drop vendor / fluff words but *keep* the architecture tag (e.g. “Ada”)
+				gsub(/NVIDIA |GeForce |Laptop GPU|[[:space:]]+Generation/, "", name)
 
-				# ----- convert MiB \342\206\222 \342\200\234GB\342\200\235 the way vendors do (1024 MiB = 1 GB) -----
-				mib  = $2
-				gb   = int( (mib + 1023) / 1024 )      # round up to the next whole GB
+				gsub(/  +/, " ", name)            # collapse multiple spaces
+				gsub(/^ +| +$/, "", name)         # trim leading/trailing spaces
+
+				# ----- convert MiB → GB the way vendors do (1024 MiB = 1 GB) -----
+				mib = $2 + 0                      # numeric context strips “ MiB”
+				gb  = int((mib + 1023) / 1024)    # round up to the next whole GB
 
 				printf "%s %dGB\n", name, gb
 			}'
 	}
+
 
 	if type nvidia-smi > /dev/null 2>&1
 	then
