@@ -351,6 +351,145 @@ __factoryCreate_runpod-pytorch-unsloth() {
 
 
 
+_here_dockerfile_runpod-heavy() {
+if [[ "$recursionGuard_factory_ops" == "" ]]
+then
+_factory_ops_recursion "$@"
+return
+fi
+
+cat << 'CZXWXcRMTo8EmM8i4d'
+#docker build -t runpod-heavy .
+# https://hub.docker.com/r/runpod/base/tags?name=cpu
+# https://www.runpod.io/console/deploy
+# https://www.runpod.io/console/explore/runpod-ubuntu
+# runpod/base:0.5.1-cpu
+FROM runpod/base:0.6.2-cpu
+
+RUN echo 'runpod-heavy' > /info_factoryName.txt
+
+
+
+# ATTRIBUTION-AI: ChatGPT 4o  2025-05-06
+
+RUN apt-get update -y
+RUN apt install wget -y
+
+RUN mkdir -p -m 755 /etc/apt/keyrings
+
+RUN wget -qO- https://cli.github.com/packages/githubcli-archive-keyring.gpg | tee /etc/apt/keyrings/githubcli-archive-keyring.gpg > /dev/null
+RUN chmod go+r /etc/apt/keyrings/githubcli-archive-keyring.gpg
+
+RUN echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | tee /etc/apt/sources.list.d/github-cli.list > /dev/null
+
+RUN apt update
+RUN apt install gh
+
+
+
+CZXWXcRMTo8EmM8i4d
+
+_here_dockerfile-ubiquitous "$@"
+
+cat << 'CZXWXcRMTo8EmM8i4d'
+
+# ###
+# PASTE
+# ###
+
+# https://huggingface.co/blog/mlabonne/sft-llama3
+# https://huggingface.co/blog/mlabonne/merge-models
+
+RUN python -m pip install --upgrade pip
+
+
+# ###
+# PASTE
+# ###
+
+CZXWXcRMTo8EmM8i4d
+
+
+_here_dockerfile-ubiquitous-documentation "$@"
+
+_here_dockerfile-ubiquitous-licenses "$@"
+
+
+cat << 'CZXWXcRMTo8EmM8i4d'
+
+WORKDIR /
+
+#docker image inspect ...FROM... --format '{{json .Config.Entrypoint}} {{json .Config.Cmd}}'
+ENTRYPOINT [""]
+CMD ["/start.sh"]
+
+CZXWXcRMTo8EmM8i4d
+
+}
+__factoryCreate_sequence_runpod-heavy() {
+    if [[ "$recursionGuard_factory_ops" == "" ]]
+    then
+        _factory_ops_recursion "$@"
+        return
+    fi
+
+    _start
+
+    # ATTRIBUTION-AI Llama 3.1 Nemotron Ultra 253b v1
+    docker stop $(docker ps -aq --filter ancestor=runpod-heavy 2>/dev/null) > /dev/null 2>&1
+    #docker rm $(docker ps -aq --filter ancestor=runpod-heavy 2>/dev/null) > /dev/null 2>&1
+
+    _messagePlain_probe 'docker rmi --force'
+    docker rmi --force runpod-heavy > /dev/null 2>&1
+
+    cd "$safeTmp"
+    _messagePlain_probe 'docker build -t'
+    _here_dockerfile_runpod-heavy > Dockerfile
+
+    # WARNING: CAUTION: DANGER: Docker is yet another third-party service dependency. Do NOT regard Docker's repository as archival preservation, and do NOT rely on Docker itself for archival preservation. Also, it is not clear whether a Docker 'image' based on 'Dockerfile' can be directly preserved without environment dependencies or unintentional updates, at best a root filesystem may be possible to obtain from a Docker 'image'.
+    # https://en.wikipedia.org/w/index.php?title=Docker,_Inc.&oldid=1285260999#History
+    # https://en.wikipedia.org/w/index.php?title=Docker_(software)&oldid=1286977923#History
+
+    docker build -t runpod-heavy .
+    docker tag runpod-heavy "$DOCKER_USER"/runpod-heavy:latest
+
+    #docker push user/runpod-heavy:latest
+
+    _stop
+}
+__factoryCreate_runpod-heavy() {
+    if [[ "$recursionGuard_factory_ops" == "" ]]
+    then
+        _factory_ops_recursion "$@"
+        return
+    fi
+
+    "$scriptAbsoluteLocation" __factoryCreate_sequence_runpod-heavy "$@"
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 _here_dockerfile_axolotl-heavy() {
 if [[ "$recursionGuard_factory_ops" == "" ]]
 then
