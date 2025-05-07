@@ -400,7 +400,7 @@ cat << 'CZXWXcRMTo8EmM8i4d'
 # https://huggingface.co/blog/mlabonne/sft-llama3
 # https://huggingface.co/blog/mlabonne/merge-models
 
-RUN python -m pip install --upgrade pip
+#RUN python -m pip install --upgrade pip
 
 
 # ###
@@ -409,8 +409,8 @@ RUN python -m pip install --upgrade pip
 
 CZXWXcRMTo8EmM8i4d
 
-
-_here_dockerfile-ubiquitous-documentation "$@"
+# No Python, etc, added .
+#_here_dockerfile-ubiquitous-documentation "$@"
 
 _here_dockerfile-ubiquitous-licenses "$@"
 
