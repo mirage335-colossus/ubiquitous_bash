@@ -165,7 +165,7 @@ RUN python -m pip uninstall -y torch torchvision torchaudio triton unsloth unslo
 #RUN pip install --upgrade --force-reinstall --no-cache-dir unsloth unsloth_zoo
 
 # https://github.com/unslothai/unsloth/releases
-pip install --upgrade --force-reinstall "unsloth==2025.4.7" unsloth_zoo
+RUN pip install --upgrade --force-reinstall "unsloth==2025.4.7" unsloth_zoo
 
 # ###
 # PASTE

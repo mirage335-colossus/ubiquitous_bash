@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='2281260378'
+export ub_setScriptChecksum_contents='1024628552'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -19415,7 +19415,7 @@ RUN python -m pip uninstall -y torch torchvision torchaudio triton unsloth unslo
 #RUN pip install --upgrade --force-reinstall --no-cache-dir unsloth unsloth_zoo
 
 # https://github.com/unslothai/unsloth/releases
-pip install --upgrade --force-reinstall "unsloth==2025.4.7" unsloth_zoo
+RUN pip install --upgrade --force-reinstall "unsloth==2025.4.7" unsloth_zoo
 
 # ###
 # PASTE
