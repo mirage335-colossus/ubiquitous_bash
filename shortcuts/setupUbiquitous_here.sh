@@ -135,6 +135,9 @@ then
 	fi
 fi
 
+[[ -e /info_factoryMOTD.txt ]] && cat /info_factoryMOTD.txt
+#[[ -e /info_factoryMOTD.sh ]] && . /info_factoryMOTD.sh
+
 true
 
 CZXWXcRMTo8EmM8i4d
