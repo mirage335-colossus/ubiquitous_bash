@@ -20,7 +20,7 @@ CZXWXcRMTo8EmM8i4d
 
 
 
-_setupUbiquitous_accessories_here-vimrc_hook() {
+_setupUbiquitous_accessories_here-vimrc() {
 	cat << CZXWXcRMTo8EmM8i4d
 
 

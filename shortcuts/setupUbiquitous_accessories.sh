@@ -16,7 +16,7 @@ _setupUbiquitous_accessories-vim() {
 	
 	if ! grep ubcore "$ubHome"/.vimrc > /dev/null 2>&1 && _messagePlain_probe 'vimrc'
 	then
-		_setupUbiquitous_accessories_here-vimrc_hook >> "$ubHome"/.vimrc
+		_setupUbiquitous_accessories_here-vimrc >> "$ubHome"/.vimrc
 	fi
 
 	return 0
