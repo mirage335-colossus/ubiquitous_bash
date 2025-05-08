@@ -72,7 +72,7 @@ RUN python -m pip install --upgrade pip
 #RUN pip install --no-deps "xformers<0.0.27" "trl<0.9.0" peft accelerate bitsandbytes
 #RUN pip install torch torchvision torchaudio
 
-RUN pip install "unsloth[colab-new] @ git+https://github.com/unslothai/unsloth.git"
+#RUN pip install "unsloth[colab-new] @ git+https://github.com/unslothai/unsloth.git"
 
 # ###
 # PASTE
@@ -82,6 +82,10 @@ CZXWXcRMTo8EmM8i4d
 
 
 _here_dockerfile-ubiquitous-documentation "$@"
+
+_here_dockerfile-llamacpp "$@"
+
+#_here_dockerfile-unsloth "$@"
 
 _here_dockerfile-ubiquitous-licenses "$@"
 
@@ -191,6 +195,9 @@ cat << 'CZXWXcRMTo8EmM8i4d'
 FROM runpod/pytorch:2.8.0-py3.11-cuda12.8.1-cudnn-devel-ubuntu22.04
 
 RUN echo 'runpod-pytorch-unsloth' > /info_factoryName.txt
+RUN echo '# Please read researchEngine documentation for (hopefully) stabilized examples .' > /info_factoryMOTD.txt
+RUN echo 'ubiquitous_bash=~/.ubcore/ubiquitous_bash ; less "'"$ubiquitous_bash"'"/_lib/kit/app/researchEngine/_dev/README-FACTORY-unsloth.md' >> /info_factoryMOTD.txt
+RUN chmod 755 /info_factoryMOTD.txt
 
 CZXWXcRMTo8EmM8i4d
 
@@ -241,7 +248,7 @@ RUN python -m pip install --upgrade pip
 #RUN pip install --no-deps "xformers<0.0.27" "trl<0.9.0" peft accelerate bitsandbytes
 #RUN pip install torch torchvision torchaudio
 
-RUN pip install "unsloth[colab-new] @ git+https://github.com/unslothai/unsloth.git"
+#RUN pip install "unsloth[colab-new] @ git+https://github.com/unslothai/unsloth.git"
 
 # ###
 # PASTE
@@ -251,6 +258,10 @@ CZXWXcRMTo8EmM8i4d
 
 
 _here_dockerfile-ubiquitous-documentation "$@"
+
+_here_dockerfile-llamacpp "$@"
+
+_here_dockerfile-unsloth "$@"
 
 _here_dockerfile-ubiquitous-licenses "$@"
 
@@ -412,6 +423,12 @@ CZXWXcRMTo8EmM8i4d
 # No Python, etc, added .
 #_here_dockerfile-ubiquitous-documentation "$@"
 
+# DUBIOUS.
+#_here_dockerfile-llamacpp "$@"
+
+# DUBIOUS.
+#_here_dockerfile-unsloth "$@"
+
 _here_dockerfile-ubiquitous-licenses "$@"
 
 
@@ -544,6 +561,11 @@ CZXWXcRMTo8EmM8i4d
 
 
 _here_dockerfile-ubiquitous-documentation "$@"
+
+#_here_dockerfile-llamacpp "$@"
+
+# DUBIOUS.
+#_here_dockerfile-unsloth "$@"
 
 _here_dockerfile-ubiquitous-licenses "$@"
 

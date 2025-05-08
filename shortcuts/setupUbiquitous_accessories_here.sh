@@ -20,6 +20,27 @@ CZXWXcRMTo8EmM8i4d
 
 
 
+_setupUbiquitous_accessories_here-vimrc_hook() {
+	cat << CZXWXcRMTo8EmM8i4d
+
+
+
+" ubcore
+
+" https://stackoverflow.com/questions/27871937/markdown-syntax-coloring-for-less-pager
+" https://www.benpickles.com/articles/88-vim-syntax-highlight-markdown-code-blocks
+" https://github.com/tpope/vim-markdown
+let g:markdown_fenced_languages = ['html', 'js=javascript', 'ruby', 'python', 'bash=sh']
+let g:markdown_minlines = 1750
+
+
+CZXWXcRMTo8EmM8i4d
+}
+
+
+
+
+
 # ATTENTION: Override with 'ops.sh' , 'core.sh' , or similar.
 _setupUbiquitous_accessories_here-gnuoctave() {
 	cat << CZXWXcRMTo8EmM8i4d
@@ -399,7 +420,9 @@ _setupUbiquitous_accessories_here-convenience() {
 		cat << CZXWXcRMTo8EmM8i4d
 
 # Equivalence to Dockerfile .
-alias RUN=_bin
+#alias RUN=_bin
+alias RUN=""
+#  #RUN ( echo test )
 
 CZXWXcRMTo8EmM8i4d
 

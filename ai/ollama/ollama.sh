@@ -491,10 +491,10 @@ _service_ollama() {
 		return 1
 	fi
 	
-	if ! wget --timeout=1 --tries=3 127.0.0.1:11434 > /dev/null -q -O - > /dev/null
+	if ! wget --timeout=1 --tries=3 'http://127.0.0.1:11434' -q -O - > /dev/null
 	then
 		sudo -n -u ollama ollama serve &
-		while ! wget --timeout=1 --tries=3 127.0.0.1:11434 > /dev/null -q -O - > /dev/null
+		while ! wget --timeout=1 --tries=3 'http://127.0.0.1:11434' -q -O - > /dev/null
 		do
 			echo "wait: ollama: service"
 			sleep 1
@@ -503,7 +503,7 @@ _service_ollama() {
 	fi
 	
 	
-	if ! wget --timeout=1 --tries=3 127.0.0.1:11434 > /dev/null -q -O - > /dev/null
+	if ! wget --timeout=1 --tries=3 'http://127.0.0.1:11434' -q -O - > /dev/null 
 	then
 		echo 'fail: _service_ollama: ollama: 127.0.0.1:11434'
 		return 1
@@ -517,7 +517,7 @@ _service_ollama() {
 # Mostly, this is used to workaround very unusual dist/OS build and custom situations (ie. ChRoot, GitHub Actions, etc).
 # CAUTION: This leaves a background process running, which must continue running (ie. not hangup) while other programs use it, and which must terminate upon shutdown , _closeChRoot , etc .
 _service_ollama_augment() {
-	if _if_cygwin && ! wget --timeout=1 --tries=3 127.0.0.1:11434 > /dev/null -q -O - > /dev/null
+	if _if_cygwin && ! wget --timeout=1 --tries=3 'http://127.0.0.1:11434' -q -O - > /dev/null 2>&1
 	then
 		return 1
 	fi
@@ -531,13 +531,13 @@ _service_ollama_augment() {
 		return 1
 	fi
 	
-	if ! wget --timeout=1 --tries=3 127.0.0.1:11434 > /dev/null -q -O - > /dev/null
+	if ! wget --timeout=1 --tries=3 'http://127.0.0.1:11434' -q -O - > /dev/null 2>&1
 	then
 		# ATTENTION: This is basically how to not cause interactive bash shell issues starting a background service at Docker container runtime.
 		# WARNING: May not be adequately tested.
 		# ATTRIBUTION-AI: ChatGPT o3  2025-05-05  (partially)
 		( echo | sudo -n -u ollama nohup ollama serve </dev/null >>/var/log/ollama.log 2>&1 & ) &> /dev/null
-		while ! wget --timeout=1 --tries=3 127.0.0.1:11434 > /dev/null -q -O - > /dev/null
+		while ! wget --timeout=1 --tries=3 'http://127.0.0.1:11434' -q -O - > /dev/null 2>&1
 		do
 			sleep 1
 		done
@@ -546,7 +546,7 @@ _service_ollama_augment() {
 		stty echo
 		
 		#sudo -n -u ollama ollama serve &
-		#while ! wget --timeout=1 --tries=3 127.0.0.1:11434 > /dev/null -q -O - > /dev/null
+		#while ! wget --timeout=1 --tries=3 'http://127.0.0.1:11434' -q -O - > /dev/null 2>&1
 		#do
 			#echo "wait: ollama: service"
 			#sleep 1
@@ -555,7 +555,7 @@ _service_ollama_augment() {
 	fi
 	
 	
-	if ! wget --timeout=1 --tries=3 127.0.0.1:11434 > /dev/null -q -O - > /dev/null
+	if ! wget --timeout=1 --tries=3 'http://127.0.0.1:11434' -q -O - > /dev/null 2>&1
 	then
 		#echo 'fail: _service_ollama: ollama: 127.0.0.1:11434'
 		return 1

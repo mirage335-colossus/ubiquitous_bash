@@ -375,6 +375,9 @@ workdir=$(docker inspect -f '{{.Config.WorkingDir}}' runpod/pytorch:2.2.0-py3.10
 _messagePlain_request 'request: paste ->'
 echo > ./._run-factory_runpod
 echo "echo 'runpod-pytorch-unsloth' > /info_factoryName.txt" | tee -a ./._run-factory_runpod
+echo "echo '# Please read researchEngine documentation for (hopefully) stabilized examples .' > /info_factoryMOTD.txt" | tee -a ./._run-factory_runpod
+echo "echo 'ubiquitous_bash=~/.ubcore/ubiquitous_bash ; less "'"$ubiquitous_bash"'"/_lib/kit/app/researchEngine/_dev/README-FACTORY-unsloth.md' >> /info_factoryMOTD.txt" | tee -a ./._run-factory_runpod
+echo "chmod 755 /info_factoryMOTD.txt" | tee -a ./._run-factory_runpod
 _request_paste_factory-prepare_finetune | tee -a ./._run-factory_runpod
 _request_paste_factory-install_ubiquitous_bash | tee -a ./._run-factory_runpod
 _request_paste_factory-show_finetune | tee -a ./._run-factory_runpod

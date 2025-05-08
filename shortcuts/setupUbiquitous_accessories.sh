@@ -11,6 +11,17 @@ _setupUbiquitous_accessories-plasma() {
 	return 0
 }
 
+_setupUbiquitous_accessories-vim() {
+	_messagePlain_nominal 'init: _setupUbiquitous_accessories-gnuoctave'
+	
+	if ! grep ubcore "$ubHome"/.vimrc > /dev/null 2>&1 && _messagePlain_probe 'vimrc'
+	then
+		_setupUbiquitous_accessories_here-vimrc_hook >> "$ubHome"/.vimrc
+	fi
+
+	return 0
+}
+
 _setupUbiquitous_accessories-gnuoctave() {
 	_messagePlain_nominal 'init: _setupUbiquitous_accessories-gnuoctave'
 	
@@ -95,6 +106,9 @@ _setupUbiquitous_accessories-git() {
 _setupUbiquitous_accessories() {
 
 	_setupUbiquitous_accessories-plasma "$@"
+
+
+	_setupUbiquitous_accessories-vim "$@"
 
 	
 	_setupUbiquitous_accessories-gnuoctave "$@"

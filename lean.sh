@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='1255305033'
+export ub_setScriptChecksum_contents='3288267796'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -9523,6 +9523,27 @@ CZXWXcRMTo8EmM8i4d
 
 
 
+_setupUbiquitous_accessories_here-vimrc_hook() {
+	cat << CZXWXcRMTo8EmM8i4d
+
+
+
+" ubcore
+
+" https://stackoverflow.com/questions/27871937/markdown-syntax-coloring-for-less-pager
+" https://www.benpickles.com/articles/88-vim-syntax-highlight-markdown-code-blocks
+" https://github.com/tpope/vim-markdown
+let g:markdown_fenced_languages = ['html', 'js=javascript', 'ruby', 'python', 'bash=sh']
+let g:markdown_minlines = 1750
+
+
+CZXWXcRMTo8EmM8i4d
+}
+
+
+
+
+
 # ATTENTION: Override with 'ops.sh' , 'core.sh' , or similar.
 _setupUbiquitous_accessories_here-gnuoctave() {
 	cat << CZXWXcRMTo8EmM8i4d
@@ -9902,7 +9923,9 @@ _setupUbiquitous_accessories_here-convenience() {
 		cat << CZXWXcRMTo8EmM8i4d
 
 # Equivalence to Dockerfile .
-alias RUN=_bin
+#alias RUN=_bin
+alias RUN=""
+#  #RUN ( echo test )
 
 CZXWXcRMTo8EmM8i4d
 
@@ -9995,6 +10018,17 @@ _setupUbiquitous_accessories-plasma() {
 	return 0
 }
 
+_setupUbiquitous_accessories-vim() {
+	_messagePlain_nominal 'init: _setupUbiquitous_accessories-gnuoctave'
+	
+	if ! grep ubcore "$ubHome"/.vimrc > /dev/null 2>&1 && _messagePlain_probe 'vimrc'
+	then
+		_setupUbiquitous_accessories_here-vimrc_hook >> "$ubHome"/.vimrc
+	fi
+
+	return 0
+}
+
 _setupUbiquitous_accessories-gnuoctave() {
 	_messagePlain_nominal 'init: _setupUbiquitous_accessories-gnuoctave'
 	
@@ -10079,6 +10113,9 @@ _setupUbiquitous_accessories-git() {
 _setupUbiquitous_accessories() {
 
 	_setupUbiquitous_accessories-plasma "$@"
+
+
+	_setupUbiquitous_accessories-vim "$@"
 
 	
 	_setupUbiquitous_accessories-gnuoctave "$@"

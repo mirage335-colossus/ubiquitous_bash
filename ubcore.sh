@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='1091691252'
+export ub_setScriptChecksum_contents='1975387218'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -19068,10 +19068,10 @@ _service_ollama() {
 		return 1
 	fi
 	
-	if ! wget --timeout=1 --tries=3 127.0.0.1:11434 > /dev/null -q -O - > /dev/null
+	if ! wget --timeout=1 --tries=3 'http://127.0.0.1:11434' -q -O - > /dev/null
 	then
 		sudo -n -u ollama ollama serve &
-		while ! wget --timeout=1 --tries=3 127.0.0.1:11434 > /dev/null -q -O - > /dev/null
+		while ! wget --timeout=1 --tries=3 'http://127.0.0.1:11434' -q -O - > /dev/null
 		do
 			echo "wait: ollama: service"
 			sleep 1
@@ -19080,7 +19080,7 @@ _service_ollama() {
 	fi
 	
 	
-	if ! wget --timeout=1 --tries=3 127.0.0.1:11434 > /dev/null -q -O - > /dev/null
+	if ! wget --timeout=1 --tries=3 'http://127.0.0.1:11434' -q -O - > /dev/null 
 	then
 		echo 'fail: _service_ollama: ollama: 127.0.0.1:11434'
 		return 1
@@ -19094,7 +19094,7 @@ _service_ollama() {
 # Mostly, this is used to workaround very unusual dist/OS build and custom situations (ie. ChRoot, GitHub Actions, etc).
 # CAUTION: This leaves a background process running, which must continue running (ie. not hangup) while other programs use it, and which must terminate upon shutdown , _closeChRoot , etc .
 _service_ollama_augment() {
-	if _if_cygwin && ! wget --timeout=1 --tries=3 127.0.0.1:11434 > /dev/null -q -O - > /dev/null
+	if _if_cygwin && ! wget --timeout=1 --tries=3 'http://127.0.0.1:11434' -q -O - > /dev/null 2>&1
 	then
 		return 1
 	fi
@@ -19108,13 +19108,13 @@ _service_ollama_augment() {
 		return 1
 	fi
 	
-	if ! wget --timeout=1 --tries=3 127.0.0.1:11434 > /dev/null -q -O - > /dev/null
+	if ! wget --timeout=1 --tries=3 'http://127.0.0.1:11434' -q -O - > /dev/null 2>&1
 	then
 		# ATTENTION: This is basically how to not cause interactive bash shell issues starting a background service at Docker container runtime.
 		# WARNING: May not be adequately tested.
 		# ATTRIBUTION-AI: ChatGPT o3  2025-05-05  (partially)
 		( echo | sudo -n -u ollama nohup ollama serve </dev/null >>/var/log/ollama.log 2>&1 & ) &> /dev/null
-		while ! wget --timeout=1 --tries=3 127.0.0.1:11434 > /dev/null -q -O - > /dev/null
+		while ! wget --timeout=1 --tries=3 'http://127.0.0.1:11434' -q -O - > /dev/null 2>&1
 		do
 			sleep 1
 		done
@@ -19123,7 +19123,7 @@ _service_ollama_augment() {
 		stty echo
 		
 		#sudo -n -u ollama ollama serve &
-		#while ! wget --timeout=1 --tries=3 127.0.0.1:11434 > /dev/null -q -O - > /dev/null
+		#while ! wget --timeout=1 --tries=3 'http://127.0.0.1:11434' -q -O - > /dev/null 2>&1
 		#do
 			#echo "wait: ollama: service"
 			#sleep 1
@@ -19132,7 +19132,7 @@ _service_ollama_augment() {
 	fi
 	
 	
-	if ! wget --timeout=1 --tries=3 127.0.0.1:11434 > /dev/null -q -O - > /dev/null
+	if ! wget --timeout=1 --tries=3 'http://127.0.0.1:11434' -q -O - > /dev/null 2>&1
 	then
 		#echo 'fail: _service_ollama: ollama: 127.0.0.1:11434'
 		return 1
@@ -19252,7 +19252,7 @@ _here_dockerfile-ubiquitous() {
 cat << 'CZXWXcRMTo8EmM8i4d'
 
 # https://www.docker.com/blog/introduction-to-heredocs-in-dockerfiles/
-COPY <<EOFSPECIAL /ubInstall.sh
+COPY <<EOFSPECIAL /install_ub.sh
 #!/usr/bin/env bash
 
 # ###
@@ -19288,8 +19288,8 @@ fi
 # ###
 
 EOFSPECIAL
-RUN chmod u+x /ubInstall.sh
-RUN bash /ubInstall.sh
+RUN chmod u+x /install_ub.sh
+RUN bash /install_ub.sh
 
 
 # ###
@@ -19321,6 +19321,9 @@ RUN env DEBIAN_FRONTEND=noninteractive apt-get install coreutils -y
 # https://www.hostinger.com/tutorials/how-to-install-ollama
 RUN apt install python3 python3-pip git -y
 
+# install llama.cpp from unsloth
+RUN apt-get install libcurl4-openssl-dev -y
+
 
 RUN env DEBIAN_FRONTEND=noninteractive apt-get install sudo -y
 RUN /workspace/ubiquitous_bash/ubiquitous_bash.sh _getMinimal_cloud
@@ -19344,6 +19347,84 @@ RUN env DEBIAN_FRONTEND=noninteractive apt-get -y clean
 
 CZXWXcRMTo8EmM8i4d
 }
+
+
+
+# WARNING: May require NVIDIA CUDA toolkit (ie. maybe begin with FROM Docker image with CUDA toolkit installed).
+_here_dockerfile-llamacpp() {
+# Expects _here_dockerfile-ubiquitous .
+cat << 'CZXWXcRMTo8EmM8i4d'
+
+# ###
+# PASTE
+# ###
+
+RUN env DEBIAN_FRONTEND=noninteractive apt-get install --install-recommends -y coreutils
+
+
+# https://github.com/ggml-org/llama.cpp/blob/master/docs/install.md
+
+# https://github.com/ggml-org/llama.cpp/blob/master/docs/build.md
+RUN mkdir -p /opt
+RUN ( cd /opt ; git clone https://github.com/ggml-org/llama.cpp )
+RUN ( cd /opt/llama.cpp ; cmake -B build -DGGML_CUDA=ON )
+#echo $( [[ $(( $(taskset -p $$ | awk '{print $NF}' | tr -dc 'f' | wc -c)/1 )) -le $(( $(nproc)/1 )) ]] && echo $(( $(taskset -p $$ | awk '{print $NF}' | tr -dc 'f' | wc -c)/1 )) || $(( $(nproc)/1 )) )
+#RUN ( cd /opt/llama.cpp ; cmake --build build --config Release -j 3 )
+RUN ( cd /opt/llama.cpp ; cmake --build build --config Release -j $( [[ $(( $(taskset -p $$ | awk '{print $NF}' | tr -dc 'f' | wc -c)/1 )) -le $(( $(nproc)/1 )) ]] && echo $(( $(taskset -p $$ | awk '{print $NF}' | tr -dc 'f' | wc -c)/1 )) || $(( $(nproc)/1 )) ) )
+
+
+# ###
+# PASTE
+# ###
+
+CZXWXcRMTo8EmM8i4d
+}
+
+
+_here_dockerfile-unsloth() {
+# Expects _here_dockerfile-ubiquitous .
+cat << 'CZXWXcRMTo8EmM8i4d'
+
+# ###
+# PASTE
+# ###
+
+RUN env DEBIAN_FRONTEND=noninteractive apt-get update -y
+
+# install llama.cpp from unsloth
+RUN env DEBIAN_FRONTEND=noninteractive apt-get install libcurl4-openssl-dev -y
+
+
+# https://github.com/unslothai/unsloth   (2025-05-07)
+#  'Python 3.12'
+RUN python -m pip uninstall -y torch torchvision torchaudio triton unsloth unsloth_zoo xformers sympy mpmath
+RUN env DEBIAN_FRONTEND=noninteractive apt-get update -y
+RUN env DEBIAN_FRONTEND=noninteractive apt-get install libcurl4-openssl-dev -y
+RUN env DEBIAN_FRONTEND=noninteractive apt-get install python3.12 -y
+RUN env DEBIAN_FRONTEND=noninteractive apt-get install python3.12-dev -y
+RUN update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.12 1
+RUN update-alternatives --config python3
+RUN update-alternatives --install /usr/bin/python python /usr/bin/python3.12 1
+RUN update-alternatives --config python
+RUN curl -sS https://bootstrap.pypa.io/get-pip.py -o - | python3
+RUN python3 -m pip install --upgrade pip
+RUN python -m pip uninstall -y torch torchvision torchaudio triton unsloth unsloth_zoo xformers sympy mpmath
+#
+#RUN pip install "unsloth"
+#RUN pip install --upgrade --force-reinstall --no-cache-dir unsloth unsloth_zoo
+
+# https://github.com/unslothai/unsloth/releases
+pip install --upgrade --force-reinstall "unsloth==2025.4.7" unsloth_zoo
+
+# ###
+# PASTE
+# ###
+
+CZXWXcRMTo8EmM8i4d
+}
+
+
+
 
 
 _here_dockerfile-ubiquitous-documentation() {
@@ -19470,7 +19551,7 @@ RUN python -m pip install --upgrade pip
 #RUN pip install --no-deps "xformers<0.0.27" "trl<0.9.0" peft accelerate bitsandbytes
 #RUN pip install torch torchvision torchaudio
 
-RUN pip install "unsloth[colab-new] @ git+https://github.com/unslothai/unsloth.git"
+#RUN pip install "unsloth[colab-new] @ git+https://github.com/unslothai/unsloth.git"
 
 # ###
 # PASTE
@@ -19480,6 +19561,10 @@ CZXWXcRMTo8EmM8i4d
 
 
 _here_dockerfile-ubiquitous-documentation "$@"
+
+_here_dockerfile-llamacpp "$@"
+
+#_here_dockerfile-unsloth "$@"
 
 _here_dockerfile-ubiquitous-licenses "$@"
 
@@ -19589,6 +19674,9 @@ cat << 'CZXWXcRMTo8EmM8i4d'
 FROM runpod/pytorch:2.8.0-py3.11-cuda12.8.1-cudnn-devel-ubuntu22.04
 
 RUN echo 'runpod-pytorch-unsloth' > /info_factoryName.txt
+RUN echo '# Please read researchEngine documentation for (hopefully) stabilized examples .' > /info_factoryMOTD.txt
+RUN echo 'ubiquitous_bash=~/.ubcore/ubiquitous_bash ; less "'"$ubiquitous_bash"'"/_lib/kit/app/researchEngine/_dev/README-FACTORY-unsloth.md' >> /info_factoryMOTD.txt
+RUN chmod 755 /info_factoryMOTD.txt
 
 CZXWXcRMTo8EmM8i4d
 
@@ -19639,7 +19727,7 @@ RUN python -m pip install --upgrade pip
 #RUN pip install --no-deps "xformers<0.0.27" "trl<0.9.0" peft accelerate bitsandbytes
 #RUN pip install torch torchvision torchaudio
 
-RUN pip install "unsloth[colab-new] @ git+https://github.com/unslothai/unsloth.git"
+#RUN pip install "unsloth[colab-new] @ git+https://github.com/unslothai/unsloth.git"
 
 # ###
 # PASTE
@@ -19649,6 +19737,10 @@ CZXWXcRMTo8EmM8i4d
 
 
 _here_dockerfile-ubiquitous-documentation "$@"
+
+_here_dockerfile-llamacpp "$@"
+
+_here_dockerfile-unsloth "$@"
 
 _here_dockerfile-ubiquitous-licenses "$@"
 
@@ -19810,6 +19902,12 @@ CZXWXcRMTo8EmM8i4d
 # No Python, etc, added .
 #_here_dockerfile-ubiquitous-documentation "$@"
 
+# DUBIOUS.
+#_here_dockerfile-llamacpp "$@"
+
+# DUBIOUS.
+#_here_dockerfile-unsloth "$@"
+
 _here_dockerfile-ubiquitous-licenses "$@"
 
 
@@ -19942,6 +20040,11 @@ CZXWXcRMTo8EmM8i4d
 
 
 _here_dockerfile-ubiquitous-documentation "$@"
+
+#_here_dockerfile-llamacpp "$@"
+
+# DUBIOUS.
+#_here_dockerfile-unsloth "$@"
 
 _here_dockerfile-ubiquitous-licenses "$@"
 
@@ -20382,6 +20485,9 @@ workdir=$(docker inspect -f '{{.Config.WorkingDir}}' runpod/pytorch:2.2.0-py3.10
 _messagePlain_request 'request: paste ->'
 echo > ./._run-factory_runpod
 echo "echo 'runpod-pytorch-unsloth' > /info_factoryName.txt" | tee -a ./._run-factory_runpod
+echo "echo '# Please read researchEngine documentation for (hopefully) stabilized examples .' > /info_factoryMOTD.txt" | tee -a ./._run-factory_runpod
+echo "echo 'ubiquitous_bash=~/.ubcore/ubiquitous_bash ; less "'"$ubiquitous_bash"'"/_lib/kit/app/researchEngine/_dev/README-FACTORY-unsloth.md' >> /info_factoryMOTD.txt" | tee -a ./._run-factory_runpod
+echo "chmod 755 /info_factoryMOTD.txt" | tee -a ./._run-factory_runpod
 _request_paste_factory-prepare_finetune | tee -a ./._run-factory_runpod
 _request_paste_factory-install_ubiquitous_bash | tee -a ./._run-factory_runpod
 _request_paste_factory-show_finetune | tee -a ./._run-factory_runpod
@@ -33559,6 +33665,23 @@ CZXWXcRMTo8EmM8i4d
 
 
 
+# TODO... ideas...
+
+#Need filesystem available to all hosts in realtime... HTTP?
+ # NOT HTTPS . No need for SSL, only *experimental* use of factories, etc, would ever use that.
+
+#unifs...
+
+
+#maybe an http server more convenient and safer than onedrive...?
+#puddleJumper  toggleable  lighttpd,nginx, etc ?
+#documentation - while loop to push/rclone to puddleJumper repeatedly?
+
+
+
+
+
+
 # WARNING
 # WARNING
 # WARNING
@@ -33792,6 +33915,27 @@ CZXWXcRMTo8EmM8i4d
 	_setupUbiquitous_accessories_here-nixenv-bashrc
 
 	
+}
+
+
+
+
+
+_setupUbiquitous_accessories_here-vimrc_hook() {
+	cat << CZXWXcRMTo8EmM8i4d
+
+
+
+" ubcore
+
+" https://stackoverflow.com/questions/27871937/markdown-syntax-coloring-for-less-pager
+" https://www.benpickles.com/articles/88-vim-syntax-highlight-markdown-code-blocks
+" https://github.com/tpope/vim-markdown
+let g:markdown_fenced_languages = ['html', 'js=javascript', 'ruby', 'python', 'bash=sh']
+let g:markdown_minlines = 1750
+
+
+CZXWXcRMTo8EmM8i4d
 }
 
 
@@ -34177,7 +34321,9 @@ _setupUbiquitous_accessories_here-convenience() {
 		cat << CZXWXcRMTo8EmM8i4d
 
 # Equivalence to Dockerfile .
-alias RUN=_bin
+#alias RUN=_bin
+alias RUN=""
+#  #RUN ( echo test )
 
 CZXWXcRMTo8EmM8i4d
 
@@ -34270,6 +34416,17 @@ _setupUbiquitous_accessories-plasma() {
 	return 0
 }
 
+_setupUbiquitous_accessories-vim() {
+	_messagePlain_nominal 'init: _setupUbiquitous_accessories-gnuoctave'
+	
+	if ! grep ubcore "$ubHome"/.vimrc > /dev/null 2>&1 && _messagePlain_probe 'vimrc'
+	then
+		_setupUbiquitous_accessories_here-vimrc_hook >> "$ubHome"/.vimrc
+	fi
+
+	return 0
+}
+
 _setupUbiquitous_accessories-gnuoctave() {
 	_messagePlain_nominal 'init: _setupUbiquitous_accessories-gnuoctave'
 	
@@ -34354,6 +34511,9 @@ _setupUbiquitous_accessories-git() {
 _setupUbiquitous_accessories() {
 
 	_setupUbiquitous_accessories-plasma "$@"
+
+
+	_setupUbiquitous_accessories-vim "$@"
 
 	
 	_setupUbiquitous_accessories-gnuoctave "$@"

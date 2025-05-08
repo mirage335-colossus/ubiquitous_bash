@@ -3,7 +3,7 @@ _here_dockerfile-ubiquitous() {
 cat << 'CZXWXcRMTo8EmM8i4d'
 
 # https://www.docker.com/blog/introduction-to-heredocs-in-dockerfiles/
-COPY <<EOFSPECIAL /ubInstall.sh
+COPY <<EOFSPECIAL /install_ub.sh
 #!/usr/bin/env bash
 
 # ###
@@ -39,8 +39,8 @@ fi
 # ###
 
 EOFSPECIAL
-RUN chmod u+x /ubInstall.sh
-RUN bash /ubInstall.sh
+RUN chmod u+x /install_ub.sh
+RUN bash /install_ub.sh
 
 
 # ###
@@ -72,6 +72,9 @@ RUN env DEBIAN_FRONTEND=noninteractive apt-get install coreutils -y
 # https://www.hostinger.com/tutorials/how-to-install-ollama
 RUN apt install python3 python3-pip git -y
 
+# install llama.cpp from unsloth
+RUN apt-get install libcurl4-openssl-dev -y
+
 
 RUN env DEBIAN_FRONTEND=noninteractive apt-get install sudo -y
 RUN /workspace/ubiquitous_bash/ubiquitous_bash.sh _getMinimal_cloud
@@ -95,6 +98,84 @@ RUN env DEBIAN_FRONTEND=noninteractive apt-get -y clean
 
 CZXWXcRMTo8EmM8i4d
 }
+
+
+
+# WARNING: May require NVIDIA CUDA toolkit (ie. maybe begin with FROM Docker image with CUDA toolkit installed).
+_here_dockerfile-llamacpp() {
+# Expects _here_dockerfile-ubiquitous .
+cat << 'CZXWXcRMTo8EmM8i4d'
+
+# ###
+# PASTE
+# ###
+
+RUN env DEBIAN_FRONTEND=noninteractive apt-get install --install-recommends -y coreutils
+
+
+# https://github.com/ggml-org/llama.cpp/blob/master/docs/install.md
+
+# https://github.com/ggml-org/llama.cpp/blob/master/docs/build.md
+RUN mkdir -p /opt
+RUN ( cd /opt ; git clone https://github.com/ggml-org/llama.cpp )
+RUN ( cd /opt/llama.cpp ; cmake -B build -DGGML_CUDA=ON )
+#echo $( [[ $(( $(taskset -p $$ | awk '{print $NF}' | tr -dc 'f' | wc -c)/1 )) -le $(( $(nproc)/1 )) ]] && echo $(( $(taskset -p $$ | awk '{print $NF}' | tr -dc 'f' | wc -c)/1 )) || $(( $(nproc)/1 )) )
+#RUN ( cd /opt/llama.cpp ; cmake --build build --config Release -j 3 )
+RUN ( cd /opt/llama.cpp ; cmake --build build --config Release -j $( [[ $(( $(taskset -p $$ | awk '{print $NF}' | tr -dc 'f' | wc -c)/1 )) -le $(( $(nproc)/1 )) ]] && echo $(( $(taskset -p $$ | awk '{print $NF}' | tr -dc 'f' | wc -c)/1 )) || $(( $(nproc)/1 )) ) )
+
+
+# ###
+# PASTE
+# ###
+
+CZXWXcRMTo8EmM8i4d
+}
+
+
+_here_dockerfile-unsloth() {
+# Expects _here_dockerfile-ubiquitous .
+cat << 'CZXWXcRMTo8EmM8i4d'
+
+# ###
+# PASTE
+# ###
+
+RUN env DEBIAN_FRONTEND=noninteractive apt-get update -y
+
+# install llama.cpp from unsloth
+RUN env DEBIAN_FRONTEND=noninteractive apt-get install libcurl4-openssl-dev -y
+
+
+# https://github.com/unslothai/unsloth   (2025-05-07)
+#  'Python 3.12'
+RUN python -m pip uninstall -y torch torchvision torchaudio triton unsloth unsloth_zoo xformers sympy mpmath
+RUN env DEBIAN_FRONTEND=noninteractive apt-get update -y
+RUN env DEBIAN_FRONTEND=noninteractive apt-get install libcurl4-openssl-dev -y
+RUN env DEBIAN_FRONTEND=noninteractive apt-get install python3.12 -y
+RUN env DEBIAN_FRONTEND=noninteractive apt-get install python3.12-dev -y
+RUN update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.12 1
+RUN update-alternatives --config python3
+RUN update-alternatives --install /usr/bin/python python /usr/bin/python3.12 1
+RUN update-alternatives --config python
+RUN curl -sS https://bootstrap.pypa.io/get-pip.py -o - | python3
+RUN python3 -m pip install --upgrade pip
+RUN python -m pip uninstall -y torch torchvision torchaudio triton unsloth unsloth_zoo xformers sympy mpmath
+#
+#RUN pip install "unsloth"
+#RUN pip install --upgrade --force-reinstall --no-cache-dir unsloth unsloth_zoo
+
+# https://github.com/unslothai/unsloth/releases
+pip install --upgrade --force-reinstall "unsloth==2025.4.7" unsloth_zoo
+
+# ###
+# PASTE
+# ###
+
+CZXWXcRMTo8EmM8i4d
+}
+
+
+
 
 
 _here_dockerfile-ubiquitous-documentation() {
