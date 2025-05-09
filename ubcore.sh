@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='1683650158'
+export ub_setScriptChecksum_contents='1836249016'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -19424,7 +19424,7 @@ _rm_install_libcudadev_stub-stubOnly
 
 wget 'http://ftp.nl.debian.org/debian/pool/non-free/n/nvidia-graphics-drivers/libcuda1_535.216.01-1~deb12u1_amd64.deb'
 
-if [[ $(sha256sum *.deb | cut -f1 -d\  | tr -dc 'a-fA-F0-9') != '99512da037ce851c81607fa5398e208aec6f17e3af9be68e3db8c7d459122575' ]]
+if [[ $(sha256sum *.deb | cut -f1 -d' ' | tr -dc 'a-fA-F0-9') != '99512da037ce851c81607fa5398e208aec6f17e3af9be68e3db8c7d459122575' ]]
 then
     rm -f ./*.deb
     rm -f /opt/libcudadev_stub-stubOnly/*.deb

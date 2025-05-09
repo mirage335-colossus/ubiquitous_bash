@@ -174,7 +174,7 @@ _rm_install_libcudadev_stub-stubOnly
 
 wget 'http://ftp.nl.debian.org/debian/pool/non-free/n/nvidia-graphics-drivers/libcuda1_535.216.01-1~deb12u1_amd64.deb'
 
-if [[ $(sha256sum *.deb | cut -f1 -d\  | tr -dc 'a-fA-F0-9') != '99512da037ce851c81607fa5398e208aec6f17e3af9be68e3db8c7d459122575' ]]
+if [[ $(sha256sum *.deb | cut -f1 -d' ' | tr -dc 'a-fA-F0-9') != '99512da037ce851c81607fa5398e208aec6f17e3af9be68e3db8c7d459122575' ]]
 then
     rm -f ./*.deb
     rm -f /opt/libcudadev_stub-stubOnly/*.deb
