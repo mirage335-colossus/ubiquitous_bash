@@ -83,6 +83,7 @@ CZXWXcRMTo8EmM8i4d
 
 _here_dockerfile-ubiquitous-documentation "$@"
 
+_here_dockerfile-libcudadev_stub "$@"
 _here_dockerfile-llamacpp "$@"
 
 #_here_dockerfile-unsloth "$@"
@@ -259,6 +260,7 @@ CZXWXcRMTo8EmM8i4d
 
 _here_dockerfile-ubiquitous-documentation "$@"
 
+_here_dockerfile-libcudadev_stub "$@"
 _here_dockerfile-llamacpp "$@"
 
 _here_dockerfile-unsloth "$@"
@@ -423,6 +425,8 @@ CZXWXcRMTo8EmM8i4d
 # No Python, etc, added .
 #_here_dockerfile-ubiquitous-documentation "$@"
 
+#_here_dockerfile-libcudadev_stub "$@"
+
 # DUBIOUS.
 #_here_dockerfile-llamacpp "$@"
 
@@ -562,6 +566,7 @@ CZXWXcRMTo8EmM8i4d
 
 _here_dockerfile-ubiquitous-documentation "$@"
 
+#_here_dockerfile-libcudadev_stub "$@"
 #_here_dockerfile-llamacpp "$@"
 
 # DUBIOUS.

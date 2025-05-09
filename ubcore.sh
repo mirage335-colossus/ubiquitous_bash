@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='3377674938'
+export ub_setScriptChecksum_contents='1683650158'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -19351,6 +19351,117 @@ CZXWXcRMTo8EmM8i4d
 
 
 
+
+
+_here_dockerfile-libcudadev_stub() {
+cat << 'CZXWXcRMTo8EmM8i4d'
+
+COPY <<EOFSPECIAL /install_libcudadev_stub.sh
+#!/usr/bin/env bash
+
+# ###
+# PASTE
+# ###
+
+
+# ### NOTICE: Uninstall .
+#rm -f /usr/lib/x86_64-linux-gnu/nvidia/current/libcuda.so*
+
+
+echo ' install: libcudadev_stub'
+
+# Forces upgrade.
+#rm -f /opt/libcudadev_stub-stubOnly/libcuda*.so*
+
+if ls -1 /opt/libcudadev_stub-stubOnly/libcuda*.so*
+then
+    exit 0
+fi
+
+
+_prepare_install_libcudadev_stub-stubOnly() {
+    
+    mkdir -p /opt/libcudadev_stub-stubOnly
+    cd /opt/libcudadev_stub-stubOnly
+
+    # find . -type f
+    #rm -f ./libcuda1_535.216.01-1~deb12u1_amd64.deb
+    #rm -f ./usr/lib/x86_64-linux-gnu/nvidia/current/libcuda.so.535.216.01
+    rm -f ./usr/share/bug/libcuda1/control
+    rm -f ./usr/share/bug/libcuda1/script
+    rm -f ./usr/share/doc/libcuda1/changelog.Debian.gz
+    rm -f ./usr/share/doc/libcuda1/changelog.gz
+    #rm -f ./usr/share/doc/libcuda1/copyright
+    rm -f ./usr/share/lintian/overrides/libcuda1
+
+    # find . -type l
+    #rm -f ./usr/lib/x86_64-linux-gnu/nvidia/current/libcuda.so
+    #rm -f ./usr/lib/x86_64-linux-gnu/nvidia/current/libcuda.so.1
+
+    # find . -type d
+    rmdir ./usr > /dev/null 2>&1
+    rmdir ./usr/lib > /dev/null 2>&1
+    rmdir ./usr/lib/x86_64-linux-gnu > /dev/null 2>&1
+    rmdir ./usr/lib/x86_64-linux-gnu/nvidia > /dev/null 2>&1
+    rmdir ./usr/lib/x86_64-linux-gnu/nvidia/current > /dev/null 2>&1
+    rmdir ./usr/share > /dev/null 2>&1
+    rmdir ./usr/share/bug > /dev/null 2>&1
+    rmdir ./usr/share/bug/libcuda1 > /dev/null 2>&1
+    rmdir ./usr/share/doc > /dev/null 2>&1
+    rmdir ./usr/share/doc/libcuda1 > /dev/null 2>&1
+    rmdir ./usr/share/lintian > /dev/null 2>&1
+    rmdir ./usr/share/lintian/overrides > /dev/null 2>&1
+
+}
+_rm_install_libcudadev_stub-stubOnly() {
+    rm -f /opt/libcudadev_stub-stubOnly/*.deb
+    rm -f /opt/libcudadev_stub-stubOnly/usr/share/doc/libcuda1/copyright
+    rm -f /opt/libcudadev_stub-stubOnly/usr/lib/x86_64-linux-gnu/nvidia/current/libcuda*.so*
+    _prepare_install_libcudadev_stub-stubOnly "$@"
+}
+
+_rm_install_libcudadev_stub-stubOnly
+
+wget 'http://ftp.nl.debian.org/debian/pool/non-free/n/nvidia-graphics-drivers/libcuda1_535.216.01-1~deb12u1_amd64.deb'
+
+if [[ $(sha256sum *.deb | cut -f1 -d\  | tr -dc 'a-fA-F0-9') != '99512da037ce851c81607fa5398e208aec6f17e3af9be68e3db8c7d459122575' ]]
+then
+    rm -f ./*.deb
+    rm -f /opt/libcudadev_stub-stubOnly/*.deb
+    _rm_install_libcudadev_stub-stubOnly
+    echo ' FAIL: DANGER: HASH MISMATCH ! '
+    exit 1
+fi
+
+dpkg-deb -x ./*.deb .
+
+mkdir -p /usr/lib/x86_64-linux-gnu/nvidia/current/
+
+cp -f /opt/libcudadev_stub-stubOnly/usr/lib/x86_64-linux-gnu/nvidia/current/libcuda*.so* /usr/lib/x86_64-linux-gnu/nvidia/current/
+chmod 644 /usr/lib/x86_64-linux-gnu/nvidia/current/libcuda*.so*
+
+mkdir -p /usr/share/doc/libcuda1/
+cp -f /opt/libcudadev_stub-stubOnly/usr/share/doc/libcuda1/copyright /usr/share/doc/libcuda1/
+
+
+#rm ...
+#_rm_install_libcudadev_stub-stubOnly
+_prepare_install_libcudadev_stub-stubOnly
+
+ldconfig
+
+# ###
+# PASTE
+# ###
+
+EOFSPECIAL
+RUN chmod u+x /install_libcudadev_stub.sh
+RUN bash /install_libcudadev_stub.sh
+
+CZXWXcRMTo8EmM8i4d
+}
+
+
 # WARNING: May require NVIDIA CUDA toolkit (ie. maybe begin with FROM Docker image with CUDA toolkit installed).
 _here_dockerfile-llamacpp() {
 # Expects _here_dockerfile-ubiquitous .
@@ -19563,6 +19674,7 @@ CZXWXcRMTo8EmM8i4d
 
 _here_dockerfile-ubiquitous-documentation "$@"
 
+_here_dockerfile-libcudadev_stub "$@"
 _here_dockerfile-llamacpp "$@"
 
 #_here_dockerfile-unsloth "$@"
@@ -19739,6 +19851,7 @@ CZXWXcRMTo8EmM8i4d
 
 _here_dockerfile-ubiquitous-documentation "$@"
 
+_here_dockerfile-libcudadev_stub "$@"
 _here_dockerfile-llamacpp "$@"
 
 _here_dockerfile-unsloth "$@"
@@ -19903,6 +20016,8 @@ CZXWXcRMTo8EmM8i4d
 # No Python, etc, added .
 #_here_dockerfile-ubiquitous-documentation "$@"
 
+#_here_dockerfile-libcudadev_stub "$@"
+
 # DUBIOUS.
 #_here_dockerfile-llamacpp "$@"
 
@@ -20042,6 +20157,7 @@ CZXWXcRMTo8EmM8i4d
 
 _here_dockerfile-ubiquitous-documentation "$@"
 
+#_here_dockerfile-libcudadev_stub "$@"
 #_here_dockerfile-llamacpp "$@"
 
 # DUBIOUS.
