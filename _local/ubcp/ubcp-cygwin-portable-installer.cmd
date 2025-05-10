@@ -344,7 +344,7 @@ echo Creating [%Init_sh%]...
   echo  echo  install pip
   REM echo  pip3 install --upgrade pip
   REM echo  pip3 install -vvv --no-input --no-build-isolation --upgrade pip ^< /dev/null
-  echo  yes ^| pip3 install --no-input --no-build-isolation --upgrade pip ^< /dev/null
+  echo  yes ^| pip3 install --no-input --no-build-isolation --upgrade pip
   echo  echo  install python-devel
   echo  apt-cyg install python$(python3 -c "import sys, os; print(f'{sys.version_info.major}{sys.version_info.minor}')"^)-devel
   echo  echo  install readline
