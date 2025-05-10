@@ -347,7 +347,7 @@ echo Creating [%Init_sh%]...
   REM echo  pip3 install --no-input --no-build-isolation --upgrade pip ^< /dev/null
   echo  export PIP_NO_INPUT=1 PIP_DISABLE_PIP_VERSION_CHECK=1
   echo  curl -sS 'https://bootstrap.pypa.io/get-pip.py' -o /get-pip.py
-  echo  python3 /get-pip.py --no-input  --disable-pip-version-check --upgrade ^< /dev/null
+  echo  python3 /get-pip.py --no-input --disable-pip-version-check --upgrade ^< /dev/null
   echo  echo  install python-devel
   echo  apt-cyg install python$(python3 -c "import sys, os; print(f'{sys.version_info.major}{sys.version_info.minor}')"^)-devel
   echo  echo  install readline
