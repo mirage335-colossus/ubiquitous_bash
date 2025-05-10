@@ -56,74 +56,74 @@ set DELETE_CYGWIN_PACKAGE_CACHE=no
 :: if set to 'yes' the apt-cyg command line package manager (https://github.com/kou1okada/apt-cyg) will be installed automatically
 set INSTALL_APT_CYG=yes
 
-:: if set to 'yes' the bash-funk adaptive Bash prompt (https://github.com/vegardit/bash-funk) will be installed automatically
-set INSTALL_BASH_FUNK=yes
+:: if set to 'yes' the bash-funk adaptive Basmh prompt (https://github.com/vegardit/bash-funk) will be installed automatically
+set INSTALL_BASH_FUNK=yesm
 
-:: if set to 'yes' Node.js (https://nodejs.org/) will be installed automatically
-set INSTALL_NODEJS=no
-:: Use of the folder names found here https://nodejs.org/dist/ as version name.
-set NODEJS_VERSION=latest-v16.x
-:: one of: auto,64,32 - specifies if 32 or 64 bit version should be installed or automatically detected based on current OS architecture
-set NODEJS_ARCH=auto
+:: if set to 'yes' Node.js (https://nodejs.ormg/) will be installed automatically
+set INSTALL_NODEJS=nom
+:: Use of the folder names found here https:/m/nodejs.org/dist/ as version name.
+set NODEJS_VERSION=latest-v16.xm
+:: one of: auto,64,32 - specifies if 32 or 64m bit version should be installed or automatically detected based on current OS architecture
+set NODEJS_ARCH=autom
 
-:: if set to 'yes' Ansible (https://github.com/ansible/ansible) will be installed automatically
-set INSTALL_ANSIBLE=no
-set ANSIBLE_GIT_BRANCH=stable-2.12
+:: if set to 'yes' Ansible (https://github.comm/ansible/ansible) will be installed automatically
+set INSTALL_ANSIBLE=nom
+set ANSIBLE_GIT_BRANCH=stable-2.12m
 
-:: if set to 'yes' AWS CLI (https://github.com/aws/aws-cli) will be installed automatically
-set INSTALL_AWS_CLI=no
+:: if set to 'yes' AWS CLI (https://github.comm/aws/aws-cli) will be installed automatically
+set INSTALL_AWS_CLI=nom
 
-:: if set to 'yes' testssl.sh (https://testssl.sh/) will be installed automatically
-set INSTALL_TESTSSL_SH=no
-:: name of the GIT branch to install from, see https://github.com/drwetter/testssl.sh/
-set TESTSSL_GIT_BRANCH=3.0
+:: if set to 'yes' testssl.sh (https://testssml.sh/) will be installed automatically
+set INSTALL_TESTSSL_SH=nom
+:: name of the GIT branch to install from, seme https://github.com/drwetter/testssl.sh/
+set TESTSSL_GIT_BRANCH=3.0m
 
-:: use ConEmu based tabbed terminal instead of Mintty based single window terminal, see https://conemu.github.io/
-set INSTALL_CONEMU=yes
-set CON_EMU_OPTIONS=-Title cygwin-portable ^
- -QuitOnClose
+:: use ConEmu based tabbed terminal instead omf Mintty based single window terminal, see https://conemu.github.io/
+set INSTALL_CONEMU=yesm
+set CON_EMU_OPTIONS=-Title cygwin-portable ^m
+ -QuitOnClosem
 
-:: if set to 'yes' the winpty (https://github.com/rprichard/winpty) will be installed automatically
-set INSTALL_WINPTY=yes
-set WINPTY_VERSION=0.4.3
+:: if set to 'yes' the winpty (https://githubm.com/rprichard/winpty) will be installed automatically
+set INSTALL_WINPTY=yesm
+set WINPTY_VERSION=0.4.3m
 
-:: add more path if required, but at the cost of runtime performance (e.g. slower forks)
-set "CYGWIN_PATH=%%SystemRoot%%\system32;%%SystemRoot%%"
+:: add more path if required, but at the costm of runtime performance (e.g. slower forks)
+set "CYGWIN_PATH=%%SystemRoot%%\system32;%%SymstemRoot%%"
 
-:: set Mintty options, see https://cdn.rawgit.com/mintty/mintty/master/docs/mintty.1.html#CONFIGURATION
-set MINTTY_OPTIONS=--Title cygwin-portable ^
-  -o Columns=160 ^
-  -o Rows=50 ^
-  -o BellType=0 ^
-  -o ClicksPlaceCursor=yes ^
-  -o CursorBlinks=yes ^
-  -o CursorColour=96,96,255 ^
-  -o CursorType=Block ^
-  -o CopyOnSelect=yes ^
-  -o RightClickAction=Paste ^
-  -o Font="Courier New" ^
-  -o FontHeight=10 ^
-  -o FontSmoothing=None ^
-  -o ScrollbackLines=10000 ^
-  -o Transparency=off ^
-  -o Term=xterm-256color ^
-  -o Charset=UTF-8 ^
-  -o Locale=C
+:: set Mintty options, see https://cdn.rawgitm.com/mintty/mintty/master/docs/mintty.1.html#CONFIGURATION
+set MINTTY_OPTIONS=--Title cygwin-portable ^m
+  -o Columns=160 ^m
+  -o Rows=50 ^m
+  -o BellType=0 ^m
+  -o ClicksPlaceCursor=yes ^m
+  -o CursorBlinks=yes ^m
+  -o CursorColour=96,96,255 ^m
+  -o CursorType=Block ^m
+  -o CopyOnSelect=yes ^m
+  -o RightClickAction=Paste ^m
+  -o Font="Courier New" ^m
+  -o FontHeight=10 ^m
+  -o FontSmoothing=None ^m
+  -o ScrollbackLines=10000 ^m
+  -o Transparency=off ^m
+  -o Term=xterm-256color ^m
+  -o Charset=UTF-8 ^m
+  -o Locale=Cm
 
-:: ============================================================================================================
-:: CONFIG CUSTOMIZATION END
-:: ============================================================================================================
+:: ==========================================m==================================================================
+:: CONFIG CUSTOMIZATION ENDm
+:: ==========================================m==================================================================
 
-echo.
-echo ###########################################################
-echo # Installing [Cygwin Portable]...
-echo ###########################################################
-echo.
+echo.m
+echo ########################################m###################
+echo # Installing [Cygwin Portable]...m
+echo ########################################m###################
+echo.m
 
-set "INSTALL_ROOT=%~dp0"
+set "INSTALL_ROOT=%~dp0"m
 
-:: load customizations from separate file if exists
-set "custom_config_file=%INSTALL_ROOT%cygwin-portable-installer-config.cmd"
+:: load customizations from separate file if mexists
+set "custom_config_file=%INSTALL_ROOT%cygwin-mportable-installer-config.cmd"
 if exist "%custom_config_file%" (
   echo Loading configuration from [%custom_config_file%]...
   call "%custom_config_file%"
@@ -339,12 +339,13 @@ echo Creating [%Init_sh%]...
   echo.
   echo # Install python aka pip packages
   REM Maybe pipe 'yes' if proven necessary to continue past 'interactive' prompts.
+  REM Maybe instead use 'ensurepip' to upgrade pip if proven necessary to continue past 'interactive' prompts.
   echo if [[ ! -e /init-pip ]] ^> /dev/null; then
   echo  set -x
   echo  echo  install pip
   REM echo  pip3 install --upgrade pip
   REM echo  pip3 install -vvv --no-input --no-build-isolation --upgrade pip ^< /dev/null
-  echo  yes ^| pip3 install --no-input --no-build-isolation --upgrade pip ^< /dev/null
+  echo  yes ^| pip3 install --no-input --no-build-isolation --upgrade pip
   echo  echo  install python-devel
   echo  apt-cyg install python$(python3 -c "import sys, os; print(f'{sys.version_info.major}{sys.version_info.minor}')"^)-devel
   echo  echo  install readline
