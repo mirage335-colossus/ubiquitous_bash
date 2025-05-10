@@ -338,10 +338,12 @@ echo Creating [%Init_sh%]...
   echo fi
   echo.
   echo # Install python aka pip packages
+  REM Maybe pipe 'yes' if proven necessary to continue past 'interactive' prompts.
   echo if [[ ! -e /init-pip ]] ^> /dev/null; then
   echo  set -x
   echo  echo  install pip
-  echo  pip3 install --upgrade pip
+  REM echo  pip3 install --upgrade pip
+  echo  pip3 install -vvv --no-input --no-build-isolation --upgrade pip ^< /dev/null
   echo  echo  install python-devel
   echo  apt-cyg install python$(python3 -c "import sys, os; print(f'{sys.version_info.major}{sys.version_info.minor}')"^)-devel
   echo  echo  install readline
@@ -349,7 +351,7 @@ echo Creating [%Init_sh%]...
   echo  echo  install colorama
   echo  pip3 install -vvv --no-input --no-build-isolation -U "colorama" ^< /dev/null
   echo  echo  install git-filter-repo
-  echo  pip3 install git-filter-repo
+  echo  pip3 install -vvv --no-input --no-build-isolation -U "git-filter-repo" ^< /dev/null
   echo  echo  install huggingface cli
   REM https://pypi.org/project/huggingface-hub/
   REM https://github.com/huggingface/huggingface_hub
