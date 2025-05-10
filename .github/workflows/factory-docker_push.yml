@@ -28,12 +28,14 @@ on:
         #default: true
       runnerName:
         required: false
-        default: ubuntu-latest-m
+        default: ubuntu-latest-h
         type: choice
         options:
         #- ubuntu-22.04
+        - ubuntu-latest-h
+        - ubuntu-latest-l
+        #- ubuntu-latest-m
         - ubuntu-latest
-        - ubuntu-latest-m
   # https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#schedule
   #schedule:
     ##- cron: '5 1 * * 6'
@@ -159,9 +161,12 @@ jobs:
 
 
   build_runpod_unsloth:
+    # WARNING: May be untested.
+    #github.event.inputs.runnerName == 'ubuntu-latest-m' || 
+    if: ${{ github.event.inputs.runnerName == 'ubuntu-latest-l' || github.event.inputs.runnerName == 'ubuntu-latest-h' }}
     #needs: [build_guard]
-    #runs-on: ${{ github.event.inputs.runnerName == '' && 'ubuntu-latest' || github.event.inputs.runnerName }}
-    runs-on: 'ubuntu-latest'
+    runs-on: ${{ github.event.inputs.runnerName == '' && 'ubuntu-latest' || github.event.inputs.runnerName }}
+    #runs-on: 'ubuntu-latest'
     steps:
       - name: users
         shell: bash
@@ -253,7 +258,7 @@ jobs:
 
 
   build_axolotl_heavy:
-    if: ${{ github.event.inputs.runnerName == 'ubuntu-latest-m' || github.event.inputs.runnerName == 'ubuntu-latest-l' }}
+    if: ${{ github.event.inputs.runnerName == 'ubuntu-latest-l' || github.event.inputs.runnerName == 'ubuntu-latest-h' }}
     #needs: [build_guard]
     runs-on: ${{ github.event.inputs.runnerName == '' && 'ubuntu-latest' || github.event.inputs.runnerName }}
     steps:

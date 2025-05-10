@@ -339,11 +339,18 @@ echo Creating [%Init_sh%]...
   echo.
   echo # Install python aka pip packages
   echo if [[ ! -e /init-pip ]] ^> /dev/null; then
+  echo  set -x
+  echo  echo  install pip
   echo  pip3 install --upgrade pip
+  echo  echo  install python-devel
   echo  apt-cyg install python$(python3 -c "import sys, os; print(f'{sys.version_info.major}{sys.version_info.minor}')"^)-devel
+  echo  echo  install readline
   echo  pip3 install -vvv --no-input --no-build-isolation -U "readline" ^< /dev/null
+  echo  echo  install colorama
   echo  pip3 install -vvv --no-input --no-build-isolation -U "colorama" ^< /dev/null
+  echo  echo  install git-filter-repo
   echo  pip3 install git-filter-repo
+  echo  echo  install huggingface cli
   REM https://pypi.org/project/huggingface-hub/
   REM https://github.com/huggingface/huggingface_hub
   REM echo  pip3 install -U "huggingface_hub^[cli^]"
@@ -353,6 +360,7 @@ echo Creating [%Init_sh%]...
   REM  echo
   REM  /usr/bin/echo
   REM  printf
+  echo  set +x
   echo  printf "init" ^> /init-pip
   echo fi
   echo # Init from within Cygwin/MSW and occasionally repeatedly
