@@ -68,9 +68,12 @@ jobs:
             #github_token: ${{ secrets.GITHUB_TOKEN }}
             #delete_release: true #(optional) default: true
   build_runpod_pytorch_heavy:
+    # WARNING: May be untested.
+    #github.event.inputs.runnerName == 'ubuntu-latest-m' || 
+    if: ${{ github.event.inputs.runnerName == 'ubuntu-latest-l' || github.event.inputs.runnerName == 'ubuntu-latest-h' }}
     #needs: [build_guard]
-    #runs-on: ${{ github.event.inputs.runnerName == '' && 'ubuntu-latest' || github.event.inputs.runnerName }}
-    runs-on: 'ubuntu-latest'
+    runs-on: ${{ github.event.inputs.runnerName == '' && 'ubuntu-latest' || github.event.inputs.runnerName }}
+    #runs-on: 'ubuntu-latest'
     steps:
       - name: users
         shell: bash
@@ -81,7 +84,7 @@ jobs:
           true
       # https://github.com/easimon/maximize-build-space
       - name: Maximize build space
-        #if: ${{ github.event.inputs.runnerName != 'ubuntu-latest-m' && github.event.inputs.runnerName != 'ubuntu-latest-l' && github.event.inputs.runnerName != 'ubuntu-latest-h' }}
+        if: ${{ github.event.inputs.runnerName != 'ubuntu-latest-m' && github.event.inputs.runnerName != 'ubuntu-latest-l' && github.event.inputs.runnerName != 'ubuntu-latest-h' }}
         uses: easimon/maximize-build-space@master
         with:
           root-reserve-mb: 37000
@@ -102,8 +105,8 @@ jobs:
           #remove-docker-images: ${{ github.event.inputs.runnerName != 'ubuntu-latest-m' && github.event.inputs.runnerName != 'ubuntu-latest-l' && github.event.inputs.runnerName != 'ubuntu-latest-h' }}
           remove-docker-images: 'true'
       - name: Maximize build space ! remove ONLY
-        #if: ${{ ( github.event.inputs.runnerName == 'ubuntu-latest-m' || github.event.inputs.runnerName == 'ubuntu-latest-l' || github.event.inputs.runnerName == 'ubuntu-latest-h' ) }}
-        if: false
+        if: ${{ ( github.event.inputs.runnerName == 'ubuntu-latest-m' || github.event.inputs.runnerName == 'ubuntu-latest-l' || github.event.inputs.runnerName == 'ubuntu-latest-h' ) }}
+        #if: false
         uses: AdityaGarg8/remove-unwanted-software@v4.1
         with:
           remove-dotnet: 'true'
