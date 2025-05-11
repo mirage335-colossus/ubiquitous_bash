@@ -339,8 +339,13 @@ echo Creating [%Init_sh%]...
   echo.
   echo # Install python aka pip packages
   REM Maybe pipe 'yes' if proven necessary to continue past 'interactive' prompts.
+  REM https://github.com/kou1okada/apt-cyg/issues/116#issuecomment-2800085611
+  REM https://github.com/kou1okada/apt-cyg/pull/117
+  REM ^< /dev/null
+  REM --quiet
   echo if [[ ! -e /init-pip ]] ^> /dev/null; then
   echo  set -x
+  echo  exec 100^</dev/null
   echo  echo  install pip
   REM echo  pip3 install --upgrade pip
   REM echo  pip3 install -vvv --no-input --no-build-isolation --upgrade pip ^< /dev/null
@@ -351,21 +356,22 @@ echo Creating [%Init_sh%]...
   echo  echo  install python-devel
   echo  apt-cyg install python$(python3 -c "import sys, os; print(f'{sys.version_info.major}{sys.version_info.minor}')"^)-devel
   echo  echo  install readline
-  echo  pip3 install -vvv --no-input --no-build-isolation -U "readline" ^< /dev/null
+  echo  pip3 install --quiet --no-input --no-build-isolation -U "readline" ^<^&100 ^>^&2
   echo  echo  install colorama
-  echo  pip3 install -vvv --no-input --no-build-isolation -U "colorama" ^< /dev/null
+  echo  pip3 install --quiet --no-input --no-build-isolation -U "colorama" ^<^&100 ^>^&2
   echo  echo  install git-filter-repo
-  echo  pip3 install -vvv --no-input --no-build-isolation -U "git-filter-repo" ^< /dev/null
+  echo  pip3 install --quiet --no-input --no-build-isolation -U "git-filter-repo" ^<^&100 ^>^&2
   echo  echo  install huggingface cli
   REM https://pypi.org/project/huggingface-hub/
   REM https://github.com/huggingface/huggingface_hub
   REM echo  pip3 install -U "huggingface_hub^[cli^]"
   REM echo  pip3 install -U "huggingface_hub[cli]"
   REM echo  pip3 install -U 'huggingface_hub[cli]'
-  echo  pip3 install -vvv --no-input --no-build-isolation -U "huggingface_hub[cli]" ^< /dev/null
+  echo  pip3 install --quiet --no-input --no-build-isolation -U "huggingface_hub[cli]" ^<^&100 ^>^&2
   REM  echo
   REM  /usr/bin/echo
   REM  printf
+  echo  exec 1^>^&-
   echo  set +x
   echo  printf "init" ^> /init-pip
   echo fi
