@@ -135,6 +135,13 @@ then
 	fi
 fi
 
+true
+
+CZXWXcRMTo8EmM8i4d
+
+
+	cat << CZXWXcRMTo8EmM8i4d
+
 [[ -e /info_factoryMOTD.txt ]] && cat /info_factoryMOTD.txt
 #[[ -e /info_factoryMOTD.sh ]] && . /info_factoryMOTD.sh
 

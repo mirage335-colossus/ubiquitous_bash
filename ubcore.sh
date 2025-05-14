@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='3367924645'
+export ub_setScriptChecksum_contents='164204023'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -20114,6 +20114,9 @@ cat << 'CZXWXcRMTo8EmM8i4d'
 FROM axolotlai/axolotl:main-latest
 
 RUN echo 'axolotl-heavy' > /info_factoryName.txt
+RUN echo '# Please read researchEngine documentation for (hopefully) stabilized examples .' > /info_factoryMOTD.txt
+RUN echo 'ubiquitous_bash=~/.ubcore/ubiquitous_bash ; less "'"$ubiquitous_bash"'"/_lib/kit/app/researchEngine/_dev/README-FACTORY-axolotl.md' >> /info_factoryMOTD.txt
+RUN chmod 755 /info_factoryMOTD.txt
 
 CZXWXcRMTo8EmM8i4d
 
@@ -20157,8 +20160,8 @@ CZXWXcRMTo8EmM8i4d
 
 _here_dockerfile-ubiquitous-documentation "$@"
 
-#_here_dockerfile-libcudadev_stub "$@"
-#_here_dockerfile-llamacpp "$@"
+_here_dockerfile-libcudadev_stub "$@"
+_here_dockerfile-llamacpp "$@"
 
 # DUBIOUS.
 #_here_dockerfile-unsloth "$@"
@@ -20172,7 +20175,7 @@ WORKDIR /
 
 #docker image inspect ...FROM... --format '{{json .Config.Entrypoint}} {{json .Config.Cmd}}'
 ENTRYPOINT ["/opt/nvidia/nvidia_entrypoint.sh"]
-CMD ["/start.sh"]
+#CMD ["/start.sh"]
 
 CZXWXcRMTo8EmM8i4d
 
@@ -34818,6 +34821,13 @@ then
 		clear
 	fi
 fi
+
+true
+
+CZXWXcRMTo8EmM8i4d
+
+
+	cat << CZXWXcRMTo8EmM8i4d
 
 [[ -e /info_factoryMOTD.txt ]] && cat /info_factoryMOTD.txt
 #[[ -e /info_factoryMOTD.sh ]] && . /info_factoryMOTD.sh
