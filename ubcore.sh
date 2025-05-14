@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='3904190907'
+export ub_setScriptChecksum_contents='2166524144'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -19286,7 +19286,7 @@ chmod u+x /workspace/ubiquitous_bash.sh
 rmdir /workspace/ubiquitous_bash > /dev/null 2>&1
 /workspace/ubiquitous_bash.sh _gitBest clone --depth 1 --recursive git@github.com:mirage335-colossus/ubiquitous_bash.git
 mv -f ./ubiquitous_bash /workspace/ubiquitous_bash
-[[ -e /workspace/ubiquitous_bash/ubiquitous_bash.sh]] && mkdir -p ~/.ubcore && cp -a /workspace/ubiquitous_bash ~/.ubcore/
+[[ -e /workspace/ubiquitous_bash/ubiquitous_bash.sh ]] && mkdir -p ~/.ubcore && cp -a /workspace/ubiquitous_bash ~/.ubcore/
 mkdir -p /workspace/ubiquitous_bash
 ! [[ -e /workspace/ubiquitous_bash/ubiquitous_bash.sh ]] && wget 'https://raw.githubusercontent.com/mirage335/ubiquitous_bash/master/ubiquitous_bash.sh'
 mv -f ./ubiquitous_bash.sh /workspace/ubiquitous_bash/ubiquitous_bash.sh
