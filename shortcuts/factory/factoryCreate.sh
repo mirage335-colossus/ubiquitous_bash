@@ -476,6 +476,9 @@ __factoryCreate_sequence_runpod-heavy() {
 
     #docker push user/runpod-heavy:latest
 
+    #export safeToDeleteGit="true"
+    _safeRMR "$safeTmp"/repo
+
     _stop
 }
 __factoryCreate_runpod-heavy() {
