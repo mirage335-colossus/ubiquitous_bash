@@ -6,7 +6,7 @@ _here_dockerfile-ubiquitous() {
 
 RUN rm -rf /workspace/ubiquitous_bash
 RUN mkdir -p /workspace
-COPY "$scriptAbsoluteFolder" /workspace/ubiquitous_bash
+COPY $scriptAbsoluteFolder /workspace/ubiquitous_bash
 
 CZXWXcRMTo8EmM8i4d
 
