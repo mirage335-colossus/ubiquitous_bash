@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='795281803'
+export ub_setScriptChecksum_contents='852911391'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -26946,6 +26946,16 @@ alias l=_l
 
 
 _here_dockerfile-ubiquitous() {
+
+# DANGER: ONLY in Docker container in CI environment !
+[[ "$CI" != "" ]] && cat << 'CZXWXcRMTo8EmM8i4d'
+
+RUN rm -rf /workspace/ubiquitous_bash
+RUN mkdir -p /workspace
+COPY ./ /workspace/ubiquitous_bash
+
+CZXWXcRMTo8EmM8i4d
+
 cat << 'CZXWXcRMTo8EmM8i4d'
 
 # https://www.docker.com/blog/introduction-to-heredocs-in-dockerfiles/
@@ -26958,6 +26968,7 @@ COPY <<EOFSPECIAL /install_ub.sh
 
 if [[ -e /workspace/ubiquitous_bash/ubiquitous_bash.sh ]]
 then
+mkdir -p ~/.ubcore && cp -a /workspace/ubiquitous_bash ~/.ubcore/
 ( cd /workspace/ubiquitous_bash ; /workspace/ubiquitous_bash/ubiquitous_bash.sh _gitBest pull ; git submodule update ; true )
 /workspace/ubiquitous_bash/ubiquitous_bash.sh _setupUbiquitous_nonet
 export profileScriptLocation="/workspace/ubiquitous_bash/ubiquitous_bash.sh"
@@ -26971,6 +26982,7 @@ chmod u+x /workspace/ubiquitous_bash.sh
 rmdir /workspace/ubiquitous_bash > /dev/null 2>&1
 /workspace/ubiquitous_bash.sh _gitBest clone --depth 1 --recursive git@github.com:mirage335-colossus/ubiquitous_bash.git
 mv -f ./ubiquitous_bash /workspace/ubiquitous_bash
+[[ -e /workspace/ubiquitous_bash/ubiquitous_bash.sh]] && mkdir -p ~/.ubcore && cp -a /workspace/ubiquitous_bash ~/.ubcore/
 mkdir -p /workspace/ubiquitous_bash
 ! [[ -e /workspace/ubiquitous_bash/ubiquitous_bash.sh ]] && wget 'https://raw.githubusercontent.com/mirage335/ubiquitous_bash/master/ubiquitous_bash.sh'
 mv -f ./ubiquitous_bash.sh /workspace/ubiquitous_bash/ubiquitous_bash.sh
@@ -27484,7 +27496,7 @@ FROM runpod/pytorch:2.8.0-py3.11-cuda12.8.1-cudnn-devel-ubuntu22.04
 
 RUN echo 'runpod-pytorch-unsloth' > /info_factoryName.txt
 RUN echo '# Please read researchEngine documentation for (hopefully) stabilized examples .' > /info_factoryMOTD.txt
-RUN echo 'ubiquitous_bash=~/.ubcore/ubiquitous_bash ; less "'"$ubiquitous_bash"'"/_lib/kit/app/researchEngine/_dev/README-FACTORY-unsloth.md' >> /info_factoryMOTD.txt
+RUN echo 'ubiquitous_bash=~/.ubcore/ubiquitous_bash ; vim -R "'"\$ubiquitous_bash"'"/_lib/kit/app/researchEngine/_dev/README-FACTORY-unsloth.md' >> /info_factoryMOTD.txt
 RUN chmod 755 /info_factoryMOTD.txt
 
 CZXWXcRMTo8EmM8i4d
@@ -27811,7 +27823,7 @@ FROM axolotlai/axolotl:main-latest
 
 RUN echo 'axolotl-heavy' > /info_factoryName.txt
 RUN echo '# Please read researchEngine documentation for (hopefully) stabilized examples .' > /info_factoryMOTD.txt
-RUN echo 'ubiquitous_bash=~/.ubcore/ubiquitous_bash ; less "'"$ubiquitous_bash"'"/_lib/kit/app/researchEngine/_dev/README-FACTORY-axolotl.md' >> /info_factoryMOTD.txt
+RUN echo 'ubiquitous_bash=~/.ubcore/ubiquitous_bash ; vim -R "'"\$ubiquitous_bash"'"/_lib/kit/app/researchEngine/_dev/README-FACTORY-axolotl.md' >> /info_factoryMOTD.txt
 RUN chmod 755 /info_factoryMOTD.txt
 
 CZXWXcRMTo8EmM8i4d

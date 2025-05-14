@@ -1,5 +1,15 @@
 
 _here_dockerfile-ubiquitous() {
+
+# DANGER: ONLY in Docker container in CI environment !
+[[ "$CI" != "" ]] && cat << 'CZXWXcRMTo8EmM8i4d'
+
+RUN rm -rf /workspace/ubiquitous_bash
+RUN mkdir -p /workspace
+COPY ./ /workspace/ubiquitous_bash
+
+CZXWXcRMTo8EmM8i4d
+
 cat << 'CZXWXcRMTo8EmM8i4d'
 
 # https://www.docker.com/blog/introduction-to-heredocs-in-dockerfiles/
@@ -12,6 +22,7 @@ COPY <<EOFSPECIAL /install_ub.sh
 
 if [[ -e /workspace/ubiquitous_bash/ubiquitous_bash.sh ]]
 then
+mkdir -p ~/.ubcore && cp -a /workspace/ubiquitous_bash ~/.ubcore/
 ( cd /workspace/ubiquitous_bash ; /workspace/ubiquitous_bash/ubiquitous_bash.sh _gitBest pull ; git submodule update ; true )
 /workspace/ubiquitous_bash/ubiquitous_bash.sh _setupUbiquitous_nonet
 export profileScriptLocation="/workspace/ubiquitous_bash/ubiquitous_bash.sh"
@@ -25,6 +36,7 @@ chmod u+x /workspace/ubiquitous_bash.sh
 rmdir /workspace/ubiquitous_bash > /dev/null 2>&1
 /workspace/ubiquitous_bash.sh _gitBest clone --depth 1 --recursive git@github.com:mirage335-colossus/ubiquitous_bash.git
 mv -f ./ubiquitous_bash /workspace/ubiquitous_bash
+[[ -e /workspace/ubiquitous_bash/ubiquitous_bash.sh]] && mkdir -p ~/.ubcore && cp -a /workspace/ubiquitous_bash ~/.ubcore/
 mkdir -p /workspace/ubiquitous_bash
 ! [[ -e /workspace/ubiquitous_bash/ubiquitous_bash.sh ]] && wget 'https://raw.githubusercontent.com/mirage335/ubiquitous_bash/master/ubiquitous_bash.sh'
 mv -f ./ubiquitous_bash.sh /workspace/ubiquitous_bash/ubiquitous_bash.sh
