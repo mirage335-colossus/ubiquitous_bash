@@ -7,7 +7,7 @@ then
 
 mkdir -p "$safeTmp"/repo/ubiquitous_bash
 cp -a "$scriptAbsoluteFolder"/.git "$safeTmp"/repo/ubiquitous_bash/
-( cd "$safeTmp"/repo/ubiquitous_bash ; "$scriptAbsoluteLocation"/ubiquitous_bash.sh _gitBest reset --hard ; git submodule update --init --recursive )
+( cd "$safeTmp"/repo/ubiquitous_bash ; "$scriptAbsoluteLocation" _gitBest reset --hard ; git submodule update --init --recursive )
 
 #local currentDirectoy=$(realpath --relative-to="$PWD" "$scriptAbsoluteFolder")
 local currentDirectoy=$(realpath --relative-to="$PWD" "$safeTmp"/repo/ubiquitous_bash)
