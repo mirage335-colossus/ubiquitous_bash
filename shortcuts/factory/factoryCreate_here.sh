@@ -2,11 +2,11 @@
 _here_dockerfile-ubiquitous() {
 
 # DANGER: ONLY in Docker container in CI environment !
-[[ "$CI" != "" ]] && cat << 'CZXWXcRMTo8EmM8i4d'
+[[ "$CI" != "" ]] && cat << CZXWXcRMTo8EmM8i4d
 
 RUN rm -rf /workspace/ubiquitous_bash
 RUN mkdir -p /workspace
-COPY ./ /workspace/ubiquitous_bash
+COPY "$scriptAbsoluteFolder" /workspace/ubiquitous_bash
 
 CZXWXcRMTo8EmM8i4d
 
