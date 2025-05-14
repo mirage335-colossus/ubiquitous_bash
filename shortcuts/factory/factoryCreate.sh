@@ -584,7 +584,7 @@ WORKDIR /
 
 #docker image inspect ...FROM... --format '{{json .Config.Entrypoint}} {{json .Config.Cmd}}'
 ENTRYPOINT ["/opt/nvidia/nvidia_entrypoint.sh"]
-CMD ["/start.sh"]
+#CMD ["/start.sh"]
 
 CZXWXcRMTo8EmM8i4d
 
