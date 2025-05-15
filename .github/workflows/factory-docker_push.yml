@@ -140,11 +140,29 @@ jobs:
         with:
           fetch-depth: 1
           submodules: 'recursive'
-      - name: _getMinimal_cloud
+      #- name: _getMinimal_cloud
+        #shell: bash
+        #timeout-minutes: 120
+        #run: |
+          #./ubiquitous_bash.sh _getMinimal_cloud
+      - name: _getMinimal_cloud-special
         shell: bash
         timeout-minutes: 120
         run: |
-          ./ubiquitous_bash.sh _getMinimal_cloud
+          sudo -n apt-get update -y
+          sudo -n apt-get -y install jq gh curl coreutils findutils tar gzip bzip2 sed axel aria2 rsync pv dos2unix xxd util-linux openssl
+          ./ubiquitous_bash.sh _here_opensslConfig_legacy | sudo -n tee /etc/ssl/openssl_legacy.cnf > /dev/null 2>&1
+          if ! sudo -n grep 'openssl_legacy' /etc/ssl/openssl.cnf > /dev/null 2>&1
+          then
+              sudo -n cp -f /etc/ssl/openssl.cnf /etc/ssl/openssl.cnf.orig
+              echo '
+
+
+              .include = /etc/ssl/openssl_legacy.cnf
+
+              ' | sudo -n cat /etc/ssl/openssl.cnf.orig - | sudo -n tee /etc/ssl/openssl.cnf > /dev/null 2>&1
+          fi
+          true
 
       - name: factory! create
         shell: bash
@@ -236,11 +254,29 @@ jobs:
         with:
           fetch-depth: 1
           submodules: 'recursive'
-      - name: _getMinimal_cloud
+      #- name: _getMinimal_cloud
+        #shell: bash
+        #timeout-minutes: 120
+        #run: |
+          #./ubiquitous_bash.sh _getMinimal_cloud
+      - name: _getMinimal_cloud-special
         shell: bash
         timeout-minutes: 120
         run: |
-          ./ubiquitous_bash.sh _getMinimal_cloud
+          sudo -n apt-get update -y
+          sudo -n apt-get -y install jq gh curl coreutils findutils tar gzip bzip2 sed axel aria2 rsync pv dos2unix xxd util-linux openssl
+          ./ubiquitous_bash.sh _here_opensslConfig_legacy | sudo -n tee /etc/ssl/openssl_legacy.cnf > /dev/null 2>&1
+          if ! sudo -n grep 'openssl_legacy' /etc/ssl/openssl.cnf > /dev/null 2>&1
+          then
+              sudo -n cp -f /etc/ssl/openssl.cnf /etc/ssl/openssl.cnf.orig
+              echo '
+
+
+              .include = /etc/ssl/openssl_legacy.cnf
+
+              ' | sudo -n cat /etc/ssl/openssl.cnf.orig - | sudo -n tee /etc/ssl/openssl.cnf > /dev/null 2>&1
+          fi
+          true
 
       - name: factory! create
         shell: bash
@@ -329,11 +365,29 @@ jobs:
         with:
           fetch-depth: 1
           submodules: 'recursive'
-      - name: _getMinimal_cloud
+      #- name: _getMinimal_cloud
+        #shell: bash
+        #timeout-minutes: 120
+        #run: |
+          #./ubiquitous_bash.sh _getMinimal_cloud
+      - name: _getMinimal_cloud-special
         shell: bash
         timeout-minutes: 120
         run: |
-          ./ubiquitous_bash.sh _getMinimal_cloud
+          sudo -n apt-get update -y
+          sudo -n apt-get -y install jq gh curl coreutils findutils tar gzip bzip2 sed axel aria2 rsync pv dos2unix xxd util-linux openssl
+          ./ubiquitous_bash.sh _here_opensslConfig_legacy | sudo -n tee /etc/ssl/openssl_legacy.cnf > /dev/null 2>&1
+          if ! sudo -n grep 'openssl_legacy' /etc/ssl/openssl.cnf > /dev/null 2>&1
+          then
+              sudo -n cp -f /etc/ssl/openssl.cnf /etc/ssl/openssl.cnf.orig
+              echo '
+
+
+              .include = /etc/ssl/openssl_legacy.cnf
+
+              ' | sudo -n cat /etc/ssl/openssl.cnf.orig - | sudo -n tee /etc/ssl/openssl.cnf > /dev/null 2>&1
+          fi
+          true
 
       - name: factory! create
         shell: bash
@@ -432,7 +486,7 @@ jobs:
         timeout-minutes: 120
         run: |
           sudo -n apt-get update -y
-          sudo -n apt-get -y install jq gh curl coreutils p7zip findutils tar gzip bzip2 sed axel aria2 rsync pv dos2unix xxd util-linux openssl
+          sudo -n apt-get -y install jq gh curl coreutils findutils tar gzip bzip2 sed axel aria2 rsync pv dos2unix xxd util-linux openssl
           ./ubiquitous_bash.sh _here_opensslConfig_legacy | sudo -n tee /etc/ssl/openssl_legacy.cnf > /dev/null 2>&1
           if ! sudo -n grep 'openssl_legacy' /etc/ssl/openssl.cnf > /dev/null 2>&1
           then
