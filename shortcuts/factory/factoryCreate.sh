@@ -119,6 +119,17 @@ __factoryCreate_sequence_runpod-pytorch-heavy() {
     docker rmi --force runpod-pytorch-heavy > /dev/null 2>&1
 
     cd "$safeTmp"
+
+    if [[ "$CI" != "" ]]
+    then
+        mkdir -p "$safeTmp"/repo/ubiquitous_bash
+        cp -a "$scriptAbsoluteFolder"/.git "$safeTmp"/repo/ubiquitous_bash/
+        ( cd "$safeTmp"/repo/ubiquitous_bash ; "$scriptAbsoluteLocation" _gitBest reset --hard ; git submodule update --init --recursive )
+        export safeToDeleteGit="true"
+    fi
+
+
+    
     _messagePlain_probe 'docker build -t'
     _here_dockerfile_runpod-pytorch-heavy > Dockerfile
 
@@ -157,6 +168,9 @@ __factoryCreate_sequence_runpod-pytorch-heavy() {
     #fi
 
     #docker push user/runpod-pytorch-heavy:latest
+
+    #export safeToDeleteGit="true"
+    _safeRMR "$safeTmp"/repo
 
     _stop
 }
@@ -296,6 +310,17 @@ __factoryCreate_sequence_runpod-pytorch-unsloth() {
     docker rmi --force runpod-pytorch-unsloth > /dev/null 2>&1
 
     cd "$safeTmp"
+
+    if [[ "$CI" != "" ]]
+    then
+        mkdir -p "$safeTmp"/repo/ubiquitous_bash
+        cp -a "$scriptAbsoluteFolder"/.git "$safeTmp"/repo/ubiquitous_bash/
+        ( cd "$safeTmp"/repo/ubiquitous_bash ; "$scriptAbsoluteLocation" _gitBest reset --hard ; git submodule update --init --recursive )
+        export safeToDeleteGit="true"
+    fi
+
+
+    
     _messagePlain_probe 'docker build -t'
     _here_dockerfile_runpod-pytorch-unsloth > Dockerfile
 
@@ -334,6 +359,9 @@ __factoryCreate_sequence_runpod-pytorch-unsloth() {
     #fi
 
     #docker push user/runpod-pytorch-unsloth:latest
+
+    #export safeToDeleteGit="true"
+    _safeRMR "$safeTmp"/repo
 
     _stop
 }
@@ -619,6 +647,17 @@ __factoryCreate_sequence_axolotl-heavy() {
     docker rmi --force axolotl-heavy > /dev/null 2>&1
 
     cd "$safeTmp"
+
+    if [[ "$CI" != "" ]]
+    then
+        mkdir -p "$safeTmp"/repo/ubiquitous_bash
+        cp -a "$scriptAbsoluteFolder"/.git "$safeTmp"/repo/ubiquitous_bash/
+        ( cd "$safeTmp"/repo/ubiquitous_bash ; "$scriptAbsoluteLocation" _gitBest reset --hard ; git submodule update --init --recursive )
+        export safeToDeleteGit="true"
+    fi
+
+
+    
     _messagePlain_probe 'docker build -t'
     _here_dockerfile_axolotl-heavy > Dockerfile
 
@@ -630,6 +669,9 @@ __factoryCreate_sequence_axolotl-heavy() {
     docker tag axolotl-heavy "$DOCKER_USER"/axolotl-heavy:latest
 
     #docker push user/axolotl-heavy:latest
+
+    #export safeToDeleteGit="true"
+    _safeRMR "$safeTmp"/repo
 
     _stop
 }

@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='1485874805'
+export ub_setScriptChecksum_contents='707386834'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -19730,6 +19730,17 @@ __factoryCreate_sequence_runpod-pytorch-heavy() {
     docker rmi --force runpod-pytorch-heavy > /dev/null 2>&1
 
     cd "$safeTmp"
+
+    if [[ "$CI" != "" ]]
+    then
+        mkdir -p "$safeTmp"/repo/ubiquitous_bash
+        cp -a "$scriptAbsoluteFolder"/.git "$safeTmp"/repo/ubiquitous_bash/
+        ( cd "$safeTmp"/repo/ubiquitous_bash ; "$scriptAbsoluteLocation" _gitBest reset --hard ; git submodule update --init --recursive )
+        export safeToDeleteGit="true"
+    fi
+
+
+    
     _messagePlain_probe 'docker build -t'
     _here_dockerfile_runpod-pytorch-heavy > Dockerfile
 
@@ -19768,6 +19779,9 @@ __factoryCreate_sequence_runpod-pytorch-heavy() {
     #fi
 
     #docker push user/runpod-pytorch-heavy:latest
+
+    #export safeToDeleteGit="true"
+    _safeRMR "$safeTmp"/repo
 
     _stop
 }
@@ -19907,6 +19921,17 @@ __factoryCreate_sequence_runpod-pytorch-unsloth() {
     docker rmi --force runpod-pytorch-unsloth > /dev/null 2>&1
 
     cd "$safeTmp"
+
+    if [[ "$CI" != "" ]]
+    then
+        mkdir -p "$safeTmp"/repo/ubiquitous_bash
+        cp -a "$scriptAbsoluteFolder"/.git "$safeTmp"/repo/ubiquitous_bash/
+        ( cd "$safeTmp"/repo/ubiquitous_bash ; "$scriptAbsoluteLocation" _gitBest reset --hard ; git submodule update --init --recursive )
+        export safeToDeleteGit="true"
+    fi
+
+
+    
     _messagePlain_probe 'docker build -t'
     _here_dockerfile_runpod-pytorch-unsloth > Dockerfile
 
@@ -19945,6 +19970,9 @@ __factoryCreate_sequence_runpod-pytorch-unsloth() {
     #fi
 
     #docker push user/runpod-pytorch-unsloth:latest
+
+    #export safeToDeleteGit="true"
+    _safeRMR "$safeTmp"/repo
 
     _stop
 }
@@ -20230,6 +20258,17 @@ __factoryCreate_sequence_axolotl-heavy() {
     docker rmi --force axolotl-heavy > /dev/null 2>&1
 
     cd "$safeTmp"
+
+    if [[ "$CI" != "" ]]
+    then
+        mkdir -p "$safeTmp"/repo/ubiquitous_bash
+        cp -a "$scriptAbsoluteFolder"/.git "$safeTmp"/repo/ubiquitous_bash/
+        ( cd "$safeTmp"/repo/ubiquitous_bash ; "$scriptAbsoluteLocation" _gitBest reset --hard ; git submodule update --init --recursive )
+        export safeToDeleteGit="true"
+    fi
+
+
+    
     _messagePlain_probe 'docker build -t'
     _here_dockerfile_axolotl-heavy > Dockerfile
 
@@ -20241,6 +20280,9 @@ __factoryCreate_sequence_axolotl-heavy() {
     docker tag axolotl-heavy "$DOCKER_USER"/axolotl-heavy:latest
 
     #docker push user/axolotl-heavy:latest
+
+    #export safeToDeleteGit="true"
+    _safeRMR "$safeTmp"/repo
 
     _stop
 }
