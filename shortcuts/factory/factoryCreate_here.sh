@@ -5,8 +5,8 @@ _here_dockerfile-ubiquitous() {
 if [[ "$CI" != "" ]]
 then
 
-#local currentDirectoy=$(realpath --relative-to="$PWD" "$scriptAbsoluteFolder")
-local currentDirectoy=$(realpath --relative-to="$PWD" "$safeTmp"/repo/ubiquitous_bash)
+#local currentDirectory=$(realpath --relative-to="$PWD" "$scriptAbsoluteFolder")
+local currentDirectory=$(realpath --relative-to="$PWD" "$safeTmp"/repo/ubiquitous_bash)
 
 cat << CZXWXcRMTo8EmM8i4d
 
