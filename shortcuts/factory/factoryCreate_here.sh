@@ -5,13 +5,8 @@ _here_dockerfile-ubiquitous() {
 if [[ "$CI" != "" ]]
 then
 
-mkdir -p "$safeTmp"/repo/ubiquitous_bash
-cp -a "$scriptAbsoluteFolder"/.git "$safeTmp"/repo/ubiquitous_bash/
-( cd "$safeTmp"/repo/ubiquitous_bash ; "$scriptAbsoluteLocation" _gitBest reset --hard ; git submodule update --init --recursive )
-
 #local currentDirectoy=$(realpath --relative-to="$PWD" "$scriptAbsoluteFolder")
 local currentDirectoy=$(realpath --relative-to="$PWD" "$safeTmp"/repo/ubiquitous_bash)
-
 
 cat << CZXWXcRMTo8EmM8i4d
 
@@ -21,7 +16,6 @@ COPY $currentDirectory /workspace/ubiquitous_bash
 
 CZXWXcRMTo8EmM8i4d
 
-export safeToDeleteGit="true"
 fi
 
 cat << 'CZXWXcRMTo8EmM8i4d'

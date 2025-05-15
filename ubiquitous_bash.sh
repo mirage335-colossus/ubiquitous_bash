@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='3973026981'
+export ub_setScriptChecksum_contents='3222240541'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -26951,13 +26951,8 @@ _here_dockerfile-ubiquitous() {
 if [[ "$CI" != "" ]]
 then
 
-mkdir -p "$safeTmp"/repo/ubiquitous_bash
-cp -a "$scriptAbsoluteFolder"/.git "$safeTmp"/repo/ubiquitous_bash/
-( cd "$safeTmp"/repo/ubiquitous_bash ; "$scriptAbsoluteLocation" _gitBest reset --hard ; git submodule update --init --recursive )
-
 #local currentDirectoy=$(realpath --relative-to="$PWD" "$scriptAbsoluteFolder")
 local currentDirectoy=$(realpath --relative-to="$PWD" "$safeTmp"/repo/ubiquitous_bash)
-
 
 cat << CZXWXcRMTo8EmM8i4d
 
@@ -26967,7 +26962,6 @@ COPY $currentDirectory /workspace/ubiquitous_bash
 
 CZXWXcRMTo8EmM8i4d
 
-export safeToDeleteGit="true"
 fi
 
 cat << 'CZXWXcRMTo8EmM8i4d'
@@ -27777,6 +27771,16 @@ __factoryCreate_sequence_runpod-heavy() {
     docker rmi --force runpod-heavy > /dev/null 2>&1
 
     cd "$safeTmp"
+
+    if [[ "$CI" != "" ]]
+    then
+        mkdir -p "$safeTmp"/repo/ubiquitous_bash
+        cp -a "$scriptAbsoluteFolder"/.git "$safeTmp"/repo/ubiquitous_bash/
+        ( cd "$safeTmp"/repo/ubiquitous_bash ; "$scriptAbsoluteLocation" _gitBest reset --hard ; git submodule update --init --recursive )
+        export safeToDeleteGit="true"
+    fi
+
+
     _messagePlain_probe 'docker build -t'
     _here_dockerfile_runpod-heavy > Dockerfile
 

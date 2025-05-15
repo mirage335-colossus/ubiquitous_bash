@@ -464,6 +464,16 @@ __factoryCreate_sequence_runpod-heavy() {
     docker rmi --force runpod-heavy > /dev/null 2>&1
 
     cd "$safeTmp"
+
+    if [[ "$CI" != "" ]]
+    then
+        mkdir -p "$safeTmp"/repo/ubiquitous_bash
+        cp -a "$scriptAbsoluteFolder"/.git "$safeTmp"/repo/ubiquitous_bash/
+        ( cd "$safeTmp"/repo/ubiquitous_bash ; "$scriptAbsoluteLocation" _gitBest reset --hard ; git submodule update --init --recursive )
+        export safeToDeleteGit="true"
+    fi
+
+
     _messagePlain_probe 'docker build -t'
     _here_dockerfile_runpod-heavy > Dockerfile
 
