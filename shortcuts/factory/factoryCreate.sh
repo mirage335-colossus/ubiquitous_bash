@@ -120,11 +120,14 @@ __factoryCreate_sequence_runpod-pytorch-heavy() {
 
     cd "$safeTmp"
 
-    if [[ "$CI" != "" ]]
+    if [[ "$CI" != "" ]] && [[ "$objectName" == "ubiquitous_bash" ]]
     then
-        mkdir -p "$safeTmp"/repo/ubiquitous_bash
-        cp -a "$scriptAbsoluteFolder"/.git "$safeTmp"/repo/ubiquitous_bash/
-        ( cd "$safeTmp"/repo/ubiquitous_bash ; "$scriptAbsoluteLocation" _gitBest reset --hard ; git submodule update --init --recursive )
+        _messagePlain_probe 'mkdir -p '"$safeTmp"/repo
+        mkdir -p "$safeTmp"/repo
+        #mkdir -p "$safeTmp"/repo/"$objectName"
+        #cp -a "$scriptAbsoluteFolder"/.git "$safeTmp"/repo/"$objectName"/
+        #( cd "$safeTmp"/repo/"$objectName" ; "$scriptAbsoluteLocation" _gitBest reset --hard ; git submodule update --init --recursive ; find .git -iname 'config' -exec sed -i '/extraheader = AUTHORIZATION:/d' {} \; )
+        ( cd "$safeTmp"/repo ; git config --global checkout.workers -1 ; _gitBest clone --depth 1 git@github.com:mirage335-colossus/"$objectName".git ; cd "$safeTmp"/repo/"$objectName" ; _gitBest submodule update --init --depth 1 --recursive )
         export safeToDeleteGit="true"
     fi
 
@@ -311,11 +314,14 @@ __factoryCreate_sequence_runpod-pytorch-unsloth() {
 
     cd "$safeTmp"
 
-    if [[ "$CI" != "" ]]
+    if [[ "$CI" != "" ]] && [[ "$objectName" == "ubiquitous_bash" ]]
     then
-        mkdir -p "$safeTmp"/repo/ubiquitous_bash
-        cp -a "$scriptAbsoluteFolder"/.git "$safeTmp"/repo/ubiquitous_bash/
-        ( cd "$safeTmp"/repo/ubiquitous_bash ; "$scriptAbsoluteLocation" _gitBest reset --hard ; git submodule update --init --recursive )
+        _messagePlain_probe 'mkdir -p '"$safeTmp"/repo
+        mkdir -p "$safeTmp"/repo
+        #mkdir -p "$safeTmp"/repo/"$objectName"
+        #cp -a "$scriptAbsoluteFolder"/.git "$safeTmp"/repo/"$objectName"/
+        #( cd "$safeTmp"/repo/"$objectName" ; "$scriptAbsoluteLocation" _gitBest reset --hard ; git submodule update --init --recursive ; find .git -iname 'config' -exec sed -i '/extraheader = AUTHORIZATION:/d' {} \; )
+        ( cd "$safeTmp"/repo ; git config --global checkout.workers -1 ; _gitBest clone --depth 1 git@github.com:mirage335-colossus/"$objectName".git ; cd "$safeTmp"/repo/"$objectName" ; _gitBest submodule update --init --depth 1 --recursive )
         export safeToDeleteGit="true"
     fi
 
@@ -493,11 +499,14 @@ __factoryCreate_sequence_runpod-heavy() {
 
     cd "$safeTmp"
 
-    if [[ "$CI" != "" ]]
+    if [[ "$CI" != "" ]] && [[ "$objectName" == "ubiquitous_bash" ]]
     then
-        mkdir -p "$safeTmp"/repo/ubiquitous_bash
-        cp -a "$scriptAbsoluteFolder"/.git "$safeTmp"/repo/ubiquitous_bash/
-        ( cd "$safeTmp"/repo/ubiquitous_bash ; "$scriptAbsoluteLocation" _gitBest reset --hard ; git submodule update --init --recursive )
+        _messagePlain_probe 'mkdir -p '"$safeTmp"/repo
+        mkdir -p "$safeTmp"/repo
+        #mkdir -p "$safeTmp"/repo/"$objectName"
+        #cp -a "$scriptAbsoluteFolder"/.git "$safeTmp"/repo/"$objectName"/
+        #( cd "$safeTmp"/repo/"$objectName" ; "$scriptAbsoluteLocation" _gitBest reset --hard ; git submodule update --init --recursive ; find .git -iname 'config' -exec sed -i '/extraheader = AUTHORIZATION:/d' {} \; )
+        ( cd "$safeTmp"/repo ; git config --global checkout.workers -1 ; _gitBest clone --depth 1 git@github.com:mirage335-colossus/"$objectName".git ; cd "$safeTmp"/repo/"$objectName" ; _gitBest submodule update --init --depth 1 --recursive )
         export safeToDeleteGit="true"
     fi
 
@@ -648,12 +657,14 @@ __factoryCreate_sequence_axolotl-heavy() {
 
     cd "$safeTmp"
 
-    if [[ "$CI" != "" ]]
+    if [[ "$CI" != "" ]] && [[ "$objectName" == "ubiquitous_bash" ]]
     then
-        _messagePlain_probe 'mkdir -p '"$safeTmp"/repo/ubiquitous_bash
-        mkdir -p "$safeTmp"/repo/ubiquitous_bash
-        cp -a "$scriptAbsoluteFolder"/.git "$safeTmp"/repo/ubiquitous_bash/
-        ( cd "$safeTmp"/repo/ubiquitous_bash ; "$scriptAbsoluteLocation" _gitBest reset --hard ; git submodule update --init --recursive )
+        _messagePlain_probe 'mkdir -p '"$safeTmp"/repo
+        mkdir -p "$safeTmp"/repo
+        #mkdir -p "$safeTmp"/repo/"$objectName"
+        #cp -a "$scriptAbsoluteFolder"/.git "$safeTmp"/repo/"$objectName"/
+        #( cd "$safeTmp"/repo/"$objectName" ; "$scriptAbsoluteLocation" _gitBest reset --hard ; git submodule update --init --recursive ; find .git -iname 'config' -exec sed -i '/extraheader = AUTHORIZATION:/d' {} \; )
+        ( cd "$safeTmp"/repo ; git config --global checkout.workers -1 ; _gitBest clone --depth 1 git@github.com:mirage335-colossus/"$objectName".git ; cd "$safeTmp"/repo/"$objectName" ; _gitBest submodule update --init --depth 1 --recursive )
         export safeToDeleteGit="true"
     fi
 

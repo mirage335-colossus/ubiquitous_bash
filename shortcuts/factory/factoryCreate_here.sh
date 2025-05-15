@@ -2,7 +2,14 @@
 _here_dockerfile-ubiquitous() {
 
 # DANGER: ONLY in Docker container in CI environment !
-if [[ "$CI" != "" ]]
+if [[ "$CI" != "" ]] && [[ ! -e "$safeTmp"/repo/ubiquitous_bash ]]
+then
+    _messagePlain_bad 'mkdir -p '"$safeTmp"/repo >&2
+    _messageError 'FAIL' >&2
+    _stop 1
+fi
+#if [[ "$CI" != "" ]] && [[ "$objectName" == "ubiquitous_bash" ]]
+if [[ "$CI" != "" ]] && [[ -e "$safeTmp"/repo/ubiquitous_bash ]]
 then
 
 #local currentDirectory=$(realpath --relative-to="$PWD" "$scriptAbsoluteFolder")

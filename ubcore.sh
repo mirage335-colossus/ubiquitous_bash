@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='1910597229'
+export ub_setScriptChecksum_contents='3207709828'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -19252,7 +19252,14 @@ alias l=_l
 _here_dockerfile-ubiquitous() {
 
 # DANGER: ONLY in Docker container in CI environment !
-if [[ "$CI" != "" ]]
+if [[ "$CI" != "" ]] && [[ ! -e "$safeTmp"/repo/ubiquitous_bash ]]
+then
+    _messagePlain_bad 'mkdir -p '"$safeTmp"/repo >&2
+    _messageError 'FAIL' >&2
+    _stop 1
+fi
+#if [[ "$CI" != "" ]] && [[ "$objectName" == "ubiquitous_bash" ]]
+if [[ "$CI" != "" ]] && [[ -e "$safeTmp"/repo/ubiquitous_bash ]]
 then
 
 #local currentDirectory=$(realpath --relative-to="$PWD" "$scriptAbsoluteFolder")
@@ -19731,11 +19738,14 @@ __factoryCreate_sequence_runpod-pytorch-heavy() {
 
     cd "$safeTmp"
 
-    if [[ "$CI" != "" ]]
+    if [[ "$CI" != "" ]] && [[ "$objectName" == "ubiquitous_bash" ]]
     then
-        mkdir -p "$safeTmp"/repo/ubiquitous_bash
-        cp -a "$scriptAbsoluteFolder"/.git "$safeTmp"/repo/ubiquitous_bash/
-        ( cd "$safeTmp"/repo/ubiquitous_bash ; "$scriptAbsoluteLocation" _gitBest reset --hard ; git submodule update --init --recursive )
+        _messagePlain_probe 'mkdir -p '"$safeTmp"/repo
+        mkdir -p "$safeTmp"/repo
+        #mkdir -p "$safeTmp"/repo/"$objectName"
+        #cp -a "$scriptAbsoluteFolder"/.git "$safeTmp"/repo/"$objectName"/
+        #( cd "$safeTmp"/repo/"$objectName" ; "$scriptAbsoluteLocation" _gitBest reset --hard ; git submodule update --init --recursive ; find .git -iname 'config' -exec sed -i '/extraheader = AUTHORIZATION:/d' {} \; )
+        ( cd "$safeTmp"/repo ; git config --global checkout.workers -1 ; _gitBest clone --depth 1 git@github.com:mirage335-colossus/"$objectName".git ; cd "$safeTmp"/repo/"$objectName" ; _gitBest submodule update --init --depth 1 --recursive )
         export safeToDeleteGit="true"
     fi
 
@@ -19922,11 +19932,14 @@ __factoryCreate_sequence_runpod-pytorch-unsloth() {
 
     cd "$safeTmp"
 
-    if [[ "$CI" != "" ]]
+    if [[ "$CI" != "" ]] && [[ "$objectName" == "ubiquitous_bash" ]]
     then
-        mkdir -p "$safeTmp"/repo/ubiquitous_bash
-        cp -a "$scriptAbsoluteFolder"/.git "$safeTmp"/repo/ubiquitous_bash/
-        ( cd "$safeTmp"/repo/ubiquitous_bash ; "$scriptAbsoluteLocation" _gitBest reset --hard ; git submodule update --init --recursive )
+        _messagePlain_probe 'mkdir -p '"$safeTmp"/repo
+        mkdir -p "$safeTmp"/repo
+        #mkdir -p "$safeTmp"/repo/"$objectName"
+        #cp -a "$scriptAbsoluteFolder"/.git "$safeTmp"/repo/"$objectName"/
+        #( cd "$safeTmp"/repo/"$objectName" ; "$scriptAbsoluteLocation" _gitBest reset --hard ; git submodule update --init --recursive ; find .git -iname 'config' -exec sed -i '/extraheader = AUTHORIZATION:/d' {} \; )
+        ( cd "$safeTmp"/repo ; git config --global checkout.workers -1 ; _gitBest clone --depth 1 git@github.com:mirage335-colossus/"$objectName".git ; cd "$safeTmp"/repo/"$objectName" ; _gitBest submodule update --init --depth 1 --recursive )
         export safeToDeleteGit="true"
     fi
 
@@ -20104,11 +20117,14 @@ __factoryCreate_sequence_runpod-heavy() {
 
     cd "$safeTmp"
 
-    if [[ "$CI" != "" ]]
+    if [[ "$CI" != "" ]] && [[ "$objectName" == "ubiquitous_bash" ]]
     then
-        mkdir -p "$safeTmp"/repo/ubiquitous_bash
-        cp -a "$scriptAbsoluteFolder"/.git "$safeTmp"/repo/ubiquitous_bash/
-        ( cd "$safeTmp"/repo/ubiquitous_bash ; "$scriptAbsoluteLocation" _gitBest reset --hard ; git submodule update --init --recursive )
+        _messagePlain_probe 'mkdir -p '"$safeTmp"/repo
+        mkdir -p "$safeTmp"/repo
+        #mkdir -p "$safeTmp"/repo/"$objectName"
+        #cp -a "$scriptAbsoluteFolder"/.git "$safeTmp"/repo/"$objectName"/
+        #( cd "$safeTmp"/repo/"$objectName" ; "$scriptAbsoluteLocation" _gitBest reset --hard ; git submodule update --init --recursive ; find .git -iname 'config' -exec sed -i '/extraheader = AUTHORIZATION:/d' {} \; )
+        ( cd "$safeTmp"/repo ; git config --global checkout.workers -1 ; _gitBest clone --depth 1 git@github.com:mirage335-colossus/"$objectName".git ; cd "$safeTmp"/repo/"$objectName" ; _gitBest submodule update --init --depth 1 --recursive )
         export safeToDeleteGit="true"
     fi
 
@@ -20259,12 +20275,14 @@ __factoryCreate_sequence_axolotl-heavy() {
 
     cd "$safeTmp"
 
-    if [[ "$CI" != "" ]]
+    if [[ "$CI" != "" ]] && [[ "$objectName" == "ubiquitous_bash" ]]
     then
-        _messagePlain_probe 'mkdir -p '"$safeTmp"/repo/ubiquitous_bash
-        mkdir -p "$safeTmp"/repo/ubiquitous_bash
-        cp -a "$scriptAbsoluteFolder"/.git "$safeTmp"/repo/ubiquitous_bash/
-        ( cd "$safeTmp"/repo/ubiquitous_bash ; "$scriptAbsoluteLocation" _gitBest reset --hard ; git submodule update --init --recursive )
+        _messagePlain_probe 'mkdir -p '"$safeTmp"/repo
+        mkdir -p "$safeTmp"/repo
+        #mkdir -p "$safeTmp"/repo/"$objectName"
+        #cp -a "$scriptAbsoluteFolder"/.git "$safeTmp"/repo/"$objectName"/
+        #( cd "$safeTmp"/repo/"$objectName" ; "$scriptAbsoluteLocation" _gitBest reset --hard ; git submodule update --init --recursive ; find .git -iname 'config' -exec sed -i '/extraheader = AUTHORIZATION:/d' {} \; )
+        ( cd "$safeTmp"/repo ; git config --global checkout.workers -1 ; _gitBest clone --depth 1 git@github.com:mirage335-colossus/"$objectName".git ; cd "$safeTmp"/repo/"$objectName" ; _gitBest submodule update --init --depth 1 --recursive )
         export safeToDeleteGit="true"
     fi
 
