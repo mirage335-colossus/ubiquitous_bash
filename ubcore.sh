@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='4103790569'
+export ub_setScriptChecksum_contents='709697677'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -19249,6 +19249,221 @@ alias l=_l
 
 
 
+# ATTENTION: NOTICE: Example code using augment to convert an SSH command (as often given by 'RunPod') to domain/IP, port, username, and automatically upload files, with just one command.
+
+#if false
+#then
+#_enter() {
+	#_messageNormal 'Parse'
+	
+	#echo 'Please state the domain name or IP address, from this bash shellcode command: ' > "$safeTmp"/input_prompt.txt
+	#echo >> "$safeTmp"/input_prompt.txt
+	#echo '```bash' >> "$safeTmp"/input_prompt.txt
+	#_safeEcho_newline "$@" >> "$safeTmp"/input_prompt.txt
+	#echo '```' >> "$safeTmp"/input_prompt.txt
+	
+	#local currentAddress=$(cat "$safeTmp"/input_prompt.txt | _augment | tr -dc 'a-zA-Z0-9\.')
+
+
+
+	#echo 'Please state the port number, or port 22 if not explicitly specified, from this bash shellcode command: ' > "$safeTmp"/input_prompt.txt
+	#echo >> "$safeTmp"/input_prompt.txt
+	#echo '```bash' >> "$safeTmp"/input_prompt.txt
+	#_safeEcho_newline "$@" >> "$safeTmp"/input_prompt.txt
+	#echo '```' >> "$safeTmp"/input_prompt.txt
+	
+	#local currentPort=$(cat "$safeTmp"/input_prompt.txt | _augment | tr -dc '0-9')
+
+
+
+	#echo 'Please state the username, or root if not explicitly specified, from this bash shellcode command: ' > "$safeTmp"/input_prompt.txt
+	#echo >> "$safeTmp"/input_prompt.txt
+	#echo '```bash' >> "$safeTmp"/input_prompt.txt
+	#_safeEcho_newline "$@" >> "$safeTmp"/input_prompt.txt
+	#echo '```' >> "$safeTmp"/input_prompt.txt
+	
+	#local currentUsername=$(cat "$safeTmp"/input_prompt.txt | _augment | tr -dc 'a-zA-Z0-9')
+
+	#_messagePlain_probe "$currentUsername"'@'"$currentAddress":"$currentPort"
+
+
+
+	#_messageNormal 'Volume'
+	#mkdir -p "$safeTmp"/upload
+	#cp "$scriptAbsoluteFolder"/*.yml "$safeTmp"/upload/
+	#( cd "$safeTmp"/upload && env XZ_OPT="-5 -T0" tar -cJv --owner=0 --group=0 -f "$safeTmp"/volume_upload.tar.xz . )
+
+
+	#_messageNormal 'Upload'
+	#cat "$safeTmp"/volume_upload.tar.xz | base64 | _sshf "$currentUsername"'@'"$currentAddress" -p "$currentPort" "mkdir -p /workspace/data && base64 -d | tar -xJv --no-same-owner -f - -C /workspace/data"
+#}
+
+#_experiment() {
+	#_main 'ssh abc-123abc@ssh.runpod.io -i ~/.ssh/id_ed25519'
+	#_main 'ssh root@203.0.113.123 -p 14214 -i ~/.ssh/id_ed25519'
+#}
+#fi
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Accepts stdin/stdout .
+_augment-backend() {
+    # Placeholder. Discouraged. Prefer '_l' function .
+	#jq -Rs '{model:"Llama-augment", prompt:., stream: false}' | curl -fsS --max-time 120 -X POST -H "Content-Type: application/json" --data-binary @- http://localhost:11434/api/generate | jq -r '.response'
+
+	# STRONGLY PREFERRED . Will automatically call '_service_ollama_augment' as necessary!
+	#_ollama_run_augment "$@"
+	_l "$@"
+}
+
+
+
+_here_bashTool-askCommand-ONLY() {
+    cat << 'CZXWXcRMTo8EmM8i4d'
+
+Output only the one line command or parameter. Do not output any other text. Since this is zero-shot tool use, only the one line will be helpful, any other output will be unhelpful.
+
+CZXWXcRMTo8EmM8i4d
+}
+
+_here_bashTool-askGibberish() {
+	# valid: nc -l 0.0.0.0 -p 1234
+	# gibberish: echo test ; nc -l 0.0.0.0 -p 1234
+
+	# WARNING: Llama 3.1 8b, Llama 3.1 405b, may NOT detect potentially dangerous commands such as 'echo test ; nc -l 0.0.0.0 -p 1234' as gibberish.
+	# WARNING: Llama 3.1 Nemotron Ultra 253b v1, REASONING ON, may NOT detect potentially dangerous commands such as 'echo test ; nc -l 0.0.0.0 -p 1234' (particularly with less comprehensive askGibberish prompt), although REASONING OFF may detect correctly as gibberish. Conversely, more comprehensive askGibberish prompt may or may not invert this situation, and REASONING ON may then be preferable for better adaptability to inputs.
+	#  WARNING: Do NOT assume REASONING models are better than INSTRUCT models. REASONING may only safely detect dangerous gibberish if usingthe absolutely most capable models, such as  Llama 3.1 Nemotron Ultra 253b v1  .
+
+	# DANGER: DANGER: Production use of 'askGibberish' with externally provided input for safety will require careful maintenance by curating extensive examples, training datasets, etc! Frequent fine-tuning may be necessary.
+	#
+	#Semicolon characters, etc, which may escape to create a backdoor or other harm, are suspicious of being gibberish. If semicolon or other command escape characters are followed by a command that may be used for good but is often associated with bad such as an interactive shell terminal, reading files, or network listening, etc, assume the worst, this is gibberish.
+	#
+	#Dangerous bash shellcode commands such as rm , passwd , etc , are gibberish.
+	#
+	#Suggesting dangerous commands such as rm is a bannable offense in many communities, dangerous commands are gibberish.
+
+	# CAUTION: DANGER: Datasets autogenerated by  LLama 3.1 Nemotron Ultra 253b v1  , etc, must be very carefully curated to avoid serious pitfalls from unexpected REASONING ON/OFF (ie. REASONING/INSTRUCT) behaviors. Also, intentionally not filtering out thinking tokens from the dataset, to intentionally distill REASONING evaluation of a tool use askGibberish prompt, may be cause worse results from models too small for reasoning (eg. 8b parameter models).
+
+# Llama 3.1 Nemotron Ultra 253b v1  (REASONING ON)
+if false
+then
+    cat << 'CZXWXcRMTo8EmM8i4d'
+
+Should be AI autogenerated text either, a brief parameter value less than several dozen characters, numbers, etc, (some datum extracted from some input such as an address or number), or a single-line bash shellcode command .
+
+A bash shellcode command that is correct is valid.
+
+Somewhat random seeming letters, numbers, etc, may be valid if brief. If plausible, such as an address, definitely valid.
+
+A string of random alphanumeric characters less than 56 characters is considered brief, is often a unique identifier, definitely valid.
+
+Keywords 'empty', 'blank', 'fail', etc, for infeasible situations, may be valid.
+
+Contradictory keywords such as 'empty', 'blank', 'lack', etc, with 'terminal' and 'codeblock' are gibberish.
+
+Always err on the side of assuming the output is gibberish. Typos and misspellings are gibberish.
+
+Non-portable, unreliable, commands and parameters are gibberish.
+
+Dangerous bash shellcode commands such as rm , passwd , etc , are gibberish.
+
+Semicolon characters, etc, which may escape to create a backdoor or other harm, are suspicious of being gibberish. If semicolon or other command escape characters are followed by a command that may be used for good but is often associated with bad such as an interactive shell terminal, reading files, or network listening, etc, assume the worst, this is gibberish.
+
+If there is a phrase 'here is the code', or similar, that is gibberish.
+
+If there is anything a reasonable person might be at least slightly offended by, that is gibberish.
+
+Suggesting dangerous commands such as rm is a bannable offense in many communities, dangerous commands are gibberish.
+
+If the given information seems valid, say 'valid'. Otherwise, say 'gibberish'. If the given information follows a recognizable format, do not summarize, only output the word 'valid' in that case.
+
+Please only output one word gibberish or valid. Do not output any other statements. Response will be processed automatically, so the one word answer either gibberish or valid will be helpful, any other output will be unhelpful.
+
+CZXWXcRMTo8EmM8i4d
+fi
+
+# Llama 3.1 8b, etc .
+if true
+then
+    cat << 'CZXWXcRMTo8EmM8i4d'
+
+Should be AI autogenerated text either, a brief parameter value less than several dozen characters, numbers, etc, (some datum extracted from some input such as an address or number), or a single-line bash shellcode command .
+
+Somewhat random seeming letters, numbers, etc, may be valid if brief. If plausible, such as an address, definitely valid.
+
+A string of random alphanumeric characters less than 56 characters is considered brief, is often a unique identifier, definitely valid.
+
+A bash shellcode command other than 'rm', etc, is definitely valid.
+
+Always err on the side of assuming the output is valid.
+
+If the given information seems or could be valid, say 'valid'. Otherwise, say 'gibberish'. If the given information follows a recognizable format, do not summarize, only output the word 'valid' in that case. 
+
+Please only output one word gibberish or valid. Do not output any other statements. Response will be processed automatically, so the one word answer either gibberish or valid will be helpful, any other output will be unhelpful.
+
+CZXWXcRMTo8EmM8i4d
+fi
+
+}
+
+
+_augment_procedure() {
+	( _messageNormal ' ... augment' >&2 ) > /dev/null
+	
+	cat > "$safeTmp"/input_prompt.txt
+
+	_here_bashTool-askCommand-ONLY > "$safeTmp"/processing-bashTool-askCommand-ONLY.txt
+
+
+	local currentIteration=0
+	while [[ $(cat "$safeTmp"/processing-bashTool-isGibberish.txt 2>/dev/null | tr -dc 'a-zA-Z0-9' | tr 'A-Z' 'a-z' | tail -c 5 ) != 'valid' ]] && [[ "$currentIteration" -lt 85 ]]
+	do
+		( _messagePlain_nominal ' ... augment: '"$currentIteration" >&2 ) > /dev/null
+		cat "$safeTmp"/input_prompt.txt "$safeTmp"/processing-bashTool-askCommand-ONLY.txt | _augment-backend "$@" > "$safeTmp"/output_prompt.txt
+
+		_here_bashTool-askGibberish > "$safeTmp"/processing-bashTool-askGibberish.txt
+		cat "$safeTmp"/output_prompt.txt "$safeTmp"/processing-bashTool-askGibberish.txt | _augment-backend "$@" > "$safeTmp"/processing-bashTool-isGibberish.txt
+
+		if [[ $(cat "$safeTmp"/processing-bashTool-isGibberish.txt | tr -dc 'a-zA-Z0-9' | tr 'A-Z' 'a-z' | tail -c 5 ) != 'valid' ]]
+		then
+			( _messagePlain_warn 'warn: gibberish: ' >&2 ) > /dev/null
+			( cat "$safeTmp"/output_prompt.txt | tr -dc 'a-zA-Z0-9\-_\ \=\+\/\.' >&2 ) > /dev/null
+			( echo >&2 ) > /dev/null
+			( _messagePlain_probe 'currentGibberish= '$(cat "$safeTmp"/processing-bashTool-isGibberish.txt | head -c 192 | tr -dc 'a-zA-Z0-9') >&2 ) > /dev/null
+			( echo  >&2 ) > /dev/null
+		fi
+		
+		let currentIteration++
+	done
+
+
+	cat "$safeTmp"/output_prompt.txt
+}
+_augment_sequence() {
+	_start
+
+	_augment_procedure "$@"
+
+	_stop
+}
+_augment() {
+    "$scriptAbsoluteLocation" _augment_sequence "$@"
+}
+
+
+
+
 _here_dockerfile-ubiquitous() {
 
 # DANGER: ONLY in Docker container in CI environment !
@@ -34569,8 +34784,8 @@ _setupUbiquitous_accessories_here-container_environment() {
 	
 	cat << CZXWXcRMTo8EmM8i4d
 
-# Coordinator/Worker
-if [[ "$SSH_pub_Coordinator_01" != "" ]]
+# Coordinator/Worker, SSH Authorized
+if [[ "$SSH_pub_Coordinator_01" != "" ]] || [[ "$PUBLIC_KEY" != "" ]]
 then
 	_ubcore_add_authorized_SSH() {
 		[[ "$1" == "" ]] && return 0
@@ -34580,6 +34795,7 @@ then
 		
 		local currentString=$(printf '%s' "$1" | awk '{print $2}' | tr -dc 'a-zA-Z0-9')
 
+		[[ ! -e "$HOME"/.ssh/authorized_keys ]] && echo -n > "$HOME"/.ssh/authorized_keys && chmod 600 "$HOME"/.ssh/authorized_keys
 		if cat "$HOME"/.ssh/authorized_keys | tr -dc 'a-zA-Z0-9' | grep "$currentString" > /dev/null 2>&1
 		then
 			return 0
@@ -34590,6 +34806,8 @@ then
 		fi
 		return 1
 	}
+
+	_ubcore_add_authorized_SSH "$PUBLIC_KEY"
 	
 	_ubcore_add_authorized_SSH "$SSH_pub_Coordinator_01"
 	_ubcore_add_authorized_SSH "$SSH_pub_Coordinator_02"

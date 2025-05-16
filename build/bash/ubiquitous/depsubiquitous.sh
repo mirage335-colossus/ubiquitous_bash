@@ -92,6 +92,7 @@ _init_deps() {
 
 	export enUb_ai_shortcuts=""
 	export enUb_ollama_shortcuts=""
+	export enUb_ai_augment=""
 	export enUb_factory_shortcuts=""
 	export enUb_factory_shortcuts_ops=""
 
@@ -508,6 +509,11 @@ _deps_ai_shortcuts() {
 	
 	export enUb_ai_shortcuts="true"
 	export enUb_ollama_shortcuts="true"
+}
+_deps_ai_augment() {
+	_deps_ai_shortcuts
+
+	export enUb_ai_augment="true"
 }
 
 _deps_factory_shortcuts() {

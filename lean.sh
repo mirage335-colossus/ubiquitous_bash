@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='202921826'
+export ub_setScriptChecksum_contents='4034346084'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -9958,8 +9958,8 @@ _setupUbiquitous_accessories_here-container_environment() {
 	
 	cat << CZXWXcRMTo8EmM8i4d
 
-# Coordinator/Worker
-if [[ "$SSH_pub_Coordinator_01" != "" ]]
+# Coordinator/Worker, SSH Authorized
+if [[ "$SSH_pub_Coordinator_01" != "" ]] || [[ "$PUBLIC_KEY" != "" ]]
 then
 	_ubcore_add_authorized_SSH() {
 		[[ "$1" == "" ]] && return 0
@@ -9969,6 +9969,7 @@ then
 		
 		local currentString=$(printf '%s' "$1" | awk '{print $2}' | tr -dc 'a-zA-Z0-9')
 
+		[[ ! -e "$HOME"/.ssh/authorized_keys ]] && echo -n > "$HOME"/.ssh/authorized_keys && chmod 600 "$HOME"/.ssh/authorized_keys
 		if cat "$HOME"/.ssh/authorized_keys | tr -dc 'a-zA-Z0-9' | grep "$currentString" > /dev/null 2>&1
 		then
 			return 0
@@ -9979,6 +9980,8 @@ then
 		fi
 		return 1
 	}
+
+	_ubcore_add_authorized_SSH "$PUBLIC_KEY"
 	
 	_ubcore_add_authorized_SSH "$SSH_pub_Coordinator_01"
 	_ubcore_add_authorized_SSH "$SSH_pub_Coordinator_02"

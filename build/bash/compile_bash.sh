@@ -78,6 +78,7 @@ _compile_bash_deps() {
 		
 		_deps_ai
 		_deps_ai_shortcuts
+		_deps_ai_augment
 
 		#_deps_ai
 		_deps_ai_dataset
@@ -153,6 +154,7 @@ _compile_bash_deps() {
 		
 		_deps_ai
 		_deps_ai_shortcuts
+		_deps_ai_augment
 
 		#_deps_ai
 		_deps_ai_dataset
@@ -189,6 +191,7 @@ _compile_bash_deps() {
 		
 		_deps_ai
 		_deps_ai_shortcuts
+		_deps_ai_augment
 
 		#_deps_ai
 		_deps_ai_dataset
@@ -224,6 +227,7 @@ _compile_bash_deps() {
 		
 		_deps_ai
 		_deps_ai_shortcuts
+		_deps_ai_augment
 
 		#_deps_ai
 		_deps_ai_dataset
@@ -296,6 +300,7 @@ _compile_bash_deps() {
 		
 		_deps_ai
 		_deps_ai_shortcuts
+		_deps_ai_augment
 
 		#_deps_ai
 		_deps_ai_dataset
@@ -413,6 +418,7 @@ _compile_bash_deps() {
 		
 		_deps_ai
 		_deps_ai_shortcuts
+		_deps_ai_augment
 
 		#_deps_ai
 		_deps_ai_dataset
@@ -490,6 +496,7 @@ _compile_bash_deps() {
 		
 		_deps_ai
 		_deps_ai_shortcuts
+		_deps_ai_augment
 		_compile_bash_deps 'core'
 
 		#_deps_ai
@@ -549,6 +556,7 @@ _compile_bash_deps() {
 		
 		_deps_ai
 		_deps_ai_shortcuts
+		_deps_ai_augment
 
 		#_deps_ai
 		_deps_ai_dataset
@@ -911,6 +919,8 @@ _compile_bash_shortcuts() {
 	[[ "$enUb_ollama" == "true" ]] && includeScriptList+=( "ai/ollama"/ollama.sh )
 	
 	( ( [[ "$enUb_dev_heavy" == "true" ]] ) || [[ "$enUb_ollama_shortcuts" == "true" ]] ) && includeScriptList+=( "shortcuts/ai/ollama"/ollama.sh )
+	
+	( ( [[ "$enUb_dev_heavy" == "true" ]] ) || [[ "$enUb_ai_augment" == "true" ]] ) && includeScriptList+=( "shortcuts/ai/augment"/augment.sh )
 
 	[[ "$enUb_factory_shortcuts" ]] && includeScriptList+=( "shortcuts/factory"/factoryCreate_here.sh )
 	[[ "$enUb_factory_shortcuts" ]] && includeScriptList+=( "shortcuts/factory"/factoryCreate.sh )
