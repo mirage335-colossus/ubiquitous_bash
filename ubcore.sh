@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='709697677'
+export ub_setScriptChecksum_contents='1341229697'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -19249,11 +19249,19 @@ alias l=_l
 
 
 
+# Built with Llama
+# May use 'Llama-augment' model, possibly derived from 'Llama-3.1-8b' .
+
+
+
+
+
+
 # ATTENTION: NOTICE: Example code using augment to convert an SSH command (as often given by 'RunPod') to domain/IP, port, username, and automatically upload files, with just one command.
 
 #if false
 #then
-#_enter() {
+#_uploadFiles_procedure() {
 	#_messageNormal 'Parse'
 	
 	#echo 'Please state the domain name or IP address, from this bash shellcode command: ' > "$safeTmp"/input_prompt.txt
@@ -19290,17 +19298,31 @@ alias l=_l
 
 	#_messageNormal 'Volume'
 	#mkdir -p "$safeTmp"/upload
-	#cp "$scriptAbsoluteFolder"/*.yml "$safeTmp"/upload/
+	#cp -a "$HOME"/core/infrastructure/ubiquitous_bash/ubiquitous_bash.sh "$safeTmp"/upload/ 2>/dev/null
+	#cp -a -f /cygdrive/c/q/p/zCore/infrastructure/ubiquitous_bash/ubiquitous_bash.sh "$safeTmp"/upload/ 2>/dev/null
+	#cp -a "$scriptAbsoluteFolder"/*.yml "$safeTmp"/upload/
 	#( cd "$safeTmp"/upload && env XZ_OPT="-5 -T0" tar -cJv --owner=0 --group=0 -f "$safeTmp"/volume_upload.tar.xz . )
 
 
 	#_messageNormal 'Upload'
-	#cat "$safeTmp"/volume_upload.tar.xz | base64 | _sshf "$currentUsername"'@'"$currentAddress" -p "$currentPort" "mkdir -p /workspace/data && base64 -d | tar -xJv --no-same-owner -f - -C /workspace/data"
+	## ; wget 'https://huggingface.co/unsloth/Llama-3.1-8B-Instruct-GGUF/resolve/main/Llama-3.1-8B-Instruct-Q4_K_M.gguf' ; bash -c 'echo huggingface-cli download unsloth...llama... ; huggingface-cli download unsloth/Llama-3.1-8B-Instruct-GGUF Llama-3.1-8B-Instruct-UD-IQ3_XXS.gguf --local-dir ./'
+	#cat "$safeTmp"/volume_upload.tar.xz | base64 | _sshf "$currentUsername"'@'"$currentAddress" -p "$currentPort" "mkdir -p /workspace/data && cd /workspace/data && base64 -d | tar -xJv --no-same-owner --overwrite -f - -C /workspace/data"
+
+#}
+#_uploadFiles_sequence() {
+	#_start
+
+	#_uploadFiles_procedure "$@"
+
+	#_stop
+#}
+#_uploadFiles() {
+	#"$scriptAbsoluteLocation" _uploadFiles_sequence "$@"
 #}
 
 #_experiment() {
-	#_main 'ssh abc-123abc@ssh.runpod.io -i ~/.ssh/id_ed25519'
-	#_main 'ssh root@203.0.113.123 -p 14214 -i ~/.ssh/id_ed25519'
+	#_uploadFiles 'ssh abc-123abc@ssh.runpod.io -i ~/.ssh/id_ed25519'
+	#_uploadFiles 'ssh root@203.0.113.123 -p 12345 -i ~/.ssh/id_ed25519'
 #}
 #fi
 
