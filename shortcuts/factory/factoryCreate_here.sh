@@ -116,6 +116,7 @@ RUN /workspace/ubiquitous_bash/ubiquitous_bash.sh _service_ollama
 #RUN /workspace/ubiquitous_bash/ubiquitous_bash.sh _setup_ollama
 
 
+# https://blog.runpod.io/how-to-achieve-true-ssh-on-runpod/
 RUN apt-get install ssh -y
 #RUN echo 'PasswordAuthentication no' >> /etc/ssh/sshd_config
 #RUN echo 'PermitRootLogin prohibit-password' >> /etc/ssh/sshd_config

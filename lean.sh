@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='4034346084'
+export ub_setScriptChecksum_contents='1516090657'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -6837,21 +6837,37 @@ _visualPrompt() {
 	# RTX 2000 16GB
 	#
 	_filter_nvidia_smi_gpuInfo() {
-		awk -F', *' '
+		# write the capacities any way you like:
+		#             ↓ commas, spaces or a mixture ↓
+		local sizes='2,3,4,6,8,10,11,12,16,20,24,32,40,48,56,64,80,94,96,128,141,180,192,256,320,384,512,640,768,896,1024,1280,1536,1792,2048'
+
+		awk -F', *' -v sizes="$sizes" '
+			BEGIN {
+				# accept both commas and blanks as separators
+				n = split(sizes, S, /[ ,]+/)
+			}
 			{
-				# ----- clean up the model name -----
+				# ----- tidy up the model name -----
 				name = $1
-				# drop vendor / fluff words but *keep* the architecture tag (e.g. “Ada”)
 				gsub(/NVIDIA |GeForce |Laptop GPU|[[:space:]]+Generation/, "", name)
+				gsub(/  +/, " ", name)
+				sub(/^ +| +$/, "", name)
 
-				gsub(/  +/, " ", name)            # collapse multiple spaces
-				gsub(/^ +| +$/, "", name)         # trim leading/trailing spaces
+				# ----- MiB -> decimal GB -----
+				mib   = $2 + 0
+				bytes = mib * 1048576
+				decGB = bytes / 1e9     # decimal gigabytes
 
-				# ----- convert MiB → GB the way vendors do (1024 MiB = 1 GB) -----
-				mib = $2 + 0                      # numeric context strips “ MiB”
-				gb  = int((mib + 1023) / 1024)    # round up to the next whole GB
+				# pick the nearest marketing size
+				best = S[1]
+				diff = (decGB > S[1] ? decGB - S[1] : S[1] - decGB)
 
-				printf "%s %dGB\n", name, gb
+				for (i = 2; i <= n; i++) {
+					d = (decGB > S[i] ? decGB - S[i] : S[i] - decGB)
+					if (d < diff) { diff = d; best = S[i] }
+				}
+
+				printf "%s %dGB\n", name, best
 			}'
 	}
 
@@ -9959,33 +9975,33 @@ _setupUbiquitous_accessories_here-container_environment() {
 	cat << CZXWXcRMTo8EmM8i4d
 
 # Coordinator/Worker, SSH Authorized
-if [[ "$SSH_pub_Coordinator_01" != "" ]] || [[ "$PUBLIC_KEY" != "" ]]
+if [[ "\$SSH_pub_Coordinator_01" != "" ]] || [[ "\$PUBLIC_KEY" != "" ]]
 then
 	_ubcore_add_authorized_SSH() {
-		[[ "$1" == "" ]] && return 0
+		[[ "\$1" == "" ]] && return 0
 
 		mkdir -p "$HOME"/.ssh
 		chmod 700 "$HOME"/.ssh
 		
-		local currentString=$(printf '%s' "$1" | awk '{print $2}' | tr -dc 'a-zA-Z0-9')
+		local currentString=\$(printf '%s' "\$1" | awk '{print \$2}' | tr -dc 'a-zA-Z0-9')
 
 		[[ ! -e "$HOME"/.ssh/authorized_keys ]] && echo -n > "$HOME"/.ssh/authorized_keys && chmod 600 "$HOME"/.ssh/authorized_keys
-		if cat "$HOME"/.ssh/authorized_keys | tr -dc 'a-zA-Z0-9' | grep "$currentString" > /dev/null 2>&1
+		if cat "$HOME"/.ssh/authorized_keys | tr -dc 'a-zA-Z0-9' | grep "\$currentString" > /dev/null 2>&1
 		then
 			return 0
 		else
-			echo "$1" >> "$HOME"/.ssh/authorized_keys
+			echo "\$1" >> "$HOME"/.ssh/authorized_keys
 			chmod 600 "$HOME"/.ssh/authorized_keys
 			return 0
 		fi
 		return 1
 	}
 
-	_ubcore_add_authorized_SSH "$PUBLIC_KEY"
+	_ubcore_add_authorized_SSH "\$PUBLIC_KEY"
 	
-	_ubcore_add_authorized_SSH "$SSH_pub_Coordinator_01"
-	_ubcore_add_authorized_SSH "$SSH_pub_Coordinator_02"
-	_ubcore_add_authorized_SSH "$SSH_pub_Coordinator_03"
+	_ubcore_add_authorized_SSH "\$SSH_pub_Coordinator_01"
+	_ubcore_add_authorized_SSH "\$SSH_pub_Coordinator_02"
+	_ubcore_add_authorized_SSH "\$SSH_pub_Coordinator_03"
 
 	unset _ubcore_add_authorized_SSH
 fi

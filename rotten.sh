@@ -1868,21 +1868,37 @@ _visualPrompt() {
 	# RTX 2000 16GB
 	#
 	_filter_nvidia_smi_gpuInfo() {
-		awk -F', *' '
+		# write the capacities any way you like:
+		#             ↓ commas, spaces or a mixture ↓
+		local sizes='2,3,4,6,8,10,11,12,16,20,24,32,40,48,56,64,80,94,96,128,141,180,192,256,320,384,512,640,768,896,1024,1280,1536,1792,2048'
+
+		awk -F', *' -v sizes="$sizes" '
+			BEGIN {
+				# accept both commas and blanks as separators
+				n = split(sizes, S, /[ ,]+/)
+			}
 			{
-				# ----- clean up the model name -----
+				# ----- tidy up the model name -----
 				name = $1
-				# drop vendor / fluff words but *keep* the architecture tag (e.g. “Ada”)
 				gsub(/NVIDIA |GeForce |Laptop GPU|[[:space:]]+Generation/, "", name)
+				gsub(/  +/, " ", name)
+				sub(/^ +| +$/, "", name)
 
-				gsub(/  +/, " ", name)            # collapse multiple spaces
-				gsub(/^ +| +$/, "", name)         # trim leading/trailing spaces
+				# ----- MiB -> decimal GB -----
+				mib   = $2 + 0
+				bytes = mib * 1048576
+				decGB = bytes / 1e9     # decimal gigabytes
 
-				# ----- convert MiB → GB the way vendors do (1024 MiB = 1 GB) -----
-				mib = $2 + 0                      # numeric context strips “ MiB”
-				gb  = int((mib + 1023) / 1024)    # round up to the next whole GB
+				# pick the nearest marketing size
+				best = S[1]
+				diff = (decGB > S[1] ? decGB - S[1] : S[1] - decGB)
 
-				printf "%s %dGB\n", name, gb
+				for (i = 2; i <= n; i++) {
+					d = (decGB > S[i] ? decGB - S[i] : S[i] - decGB)
+					if (d < diff) { diff = d; best = S[i] }
+				}
+
+				printf "%s %dGB\n", name, best
 			}'
 	}
 
