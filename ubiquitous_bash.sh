@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='724931858'
+export ub_setScriptChecksum_contents='3510332573'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -27293,6 +27293,11 @@ RUN /workspace/ubiquitous_bash/ubiquitous_bash.sh _setup_ollama_sequence
 RUN /workspace/ubiquitous_bash/ubiquitous_bash.sh _service_ollama
 # PREFERRED. Normally robust, resilient, maintained, and adds the 'Llama-augment' model for automation, etc.
 #RUN /workspace/ubiquitous_bash/ubiquitous_bash.sh _setup_ollama
+
+
+RUN apt-get install ssh -y
+#RUN echo 'PasswordAuthentication no' >> /etc/ssh/sshd_config
+#RUN echo 'PermitRootLogin prohibit-password' >> /etc/ssh/sshd_config
 
 
 RUN env DEBIAN_FRONTEND=noninteractive apt-get -y clean

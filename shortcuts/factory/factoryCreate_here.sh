@@ -116,6 +116,11 @@ RUN /workspace/ubiquitous_bash/ubiquitous_bash.sh _service_ollama
 #RUN /workspace/ubiquitous_bash/ubiquitous_bash.sh _setup_ollama
 
 
+RUN apt-get install ssh -y
+#RUN echo 'PasswordAuthentication no' >> /etc/ssh/sshd_config
+#RUN echo 'PermitRootLogin prohibit-password' >> /etc/ssh/sshd_config
+
+
 RUN env DEBIAN_FRONTEND=noninteractive apt-get -y clean
 #RUN env DEBIAN_FRONTEND=noninteractive apt-get remove --autoremove -y
 
