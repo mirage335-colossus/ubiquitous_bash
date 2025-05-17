@@ -121,6 +121,8 @@ RUN apt-get install ssh -y
 #RUN echo 'PermitRootLogin prohibit-password' >> /etc/ssh/sshd_config
 
 
+RUN apt-get remove linux-image-* linux-headers-* -y
+
 RUN env DEBIAN_FRONTEND=noninteractive apt-get -y clean
 #RUN env DEBIAN_FRONTEND=noninteractive apt-get remove --autoremove -y
 
