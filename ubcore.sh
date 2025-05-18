@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='3402034128'
+export ub_setScriptChecksum_contents='3086804905'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -20601,6 +20601,158 @@ __factoryCreate_axolotl-heavy() {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+# https://docs.nvidia.com/nemo-framework/user-guide/latest/llms/llama_nemotron.html
+
+# https://github.com/dominodatalab/nvidia-nemotron-finetuning
+
+# https://catalog.ngc.nvidia.com/orgs/nvidia/containers/nemo
+# https://catalog.ngc.nvidia.com/orgs/nvidia/containers/nemo/tags
+
+_here_dockerfile_nvidia_nemo-heavy() {
+if [[ "$recursionGuard_factory_ops" == "" ]]
+then
+_factory_ops_recursion "$@"
+return
+fi
+
+cat << 'CZXWXcRMTo8EmM8i4d'
+#docker build -t nvidia_nemo-heavy .
+FROM nvcr.io/nvidia/nemo:25.04
+#nvcr.io/nvidia/nemo:dev
+#nvcr.io/nvidia/nemo:25.04
+#nvcr.io/nvidia/nemo:24.01.framework
+
+
+RUN echo 'nvidia_nemo-heavy' > /info_factoryName.txt
+RUN echo '# Please read researchEngine documentation for (hopefully) stabilized examples .' > /info_factoryMOTD.txt
+RUN echo 'ubiquitous_bash=~/.ubcore/ubiquitous_bash ; vim -R "'"\$ubiquitous_bash"'"/_lib/kit/app/researchEngine/_dev/README-FACTORY-nvidia_nemo.md' >> /info_factoryMOTD.txt
+RUN chmod 755 /info_factoryMOTD.txt
+
+CZXWXcRMTo8EmM8i4d
+
+_here_dockerfile-ubiquitous "$@"
+
+cat << 'CZXWXcRMTo8EmM8i4d'
+
+# ###
+# PASTE
+# ###
+
+
+RUN python -m pip install --upgrade pip
+
+
+# ###
+# PASTE
+# ###
+
+CZXWXcRMTo8EmM8i4d
+
+
+_here_dockerfile-ubiquitous-documentation "$@"
+
+# ATTENTION: TODO: Desirable if not already present !
+#_here_dockerfile-libcudadev_stub "$@"
+#_here_dockerfile-llamacpp "$@"
+
+# DUBIOUS.
+#_here_dockerfile-unsloth "$@"
+
+_here_dockerfile-ubiquitous-licenses "$@"
+
+
+cat << 'CZXWXcRMTo8EmM8i4d'
+
+WORKDIR /
+
+#docker image inspect ...FROM... --format '{{json .Config.Entrypoint}} {{json .Config.Cmd}}'
+ENTRYPOINT ["/opt/nvidia/nvidia_entrypoint.sh"]
+#CMD ["/start.sh"]
+
+CZXWXcRMTo8EmM8i4d
+
+}
+__factoryCreate_sequence_nvidia_nemo-heavy() {
+    if [[ "$recursionGuard_factory_ops" == "" ]]
+    then
+        _factory_ops_recursion "$@"
+        return
+    fi
+
+    _start
+
+    # ATTRIBUTION-AI Llama 3.1 Nemotron Ultra 253b v1
+    docker stop $(docker ps -aq --filter ancestor=nvidia_nemo-heavy 2>/dev/null) > /dev/null 2>&1
+    #docker rm $(docker ps -aq --filter ancestor=nvidia_nemo-heavy 2>/dev/null) > /dev/null 2>&1
+
+    _messagePlain_probe 'docker rmi --force'
+    docker rmi --force nvidia_nemo-heavy > /dev/null 2>&1
+
+    cd "$safeTmp"
+
+    if [[ "$CI" != "" ]] && [[ "$objectName" == "ubiquitous_bash" ]]
+    then
+        _messagePlain_probe 'mkdir -p '"$safeTmp"/repo
+        mkdir -p "$safeTmp"/repo
+        #mkdir -p "$safeTmp"/repo/"$objectName"
+        #cp -a "$scriptAbsoluteFolder"/.git "$safeTmp"/repo/"$objectName"/
+        #( cd "$safeTmp"/repo/"$objectName" ; "$scriptAbsoluteLocation" _gitBest reset --hard ; git submodule update --init --recursive ; find .git -iname 'config' -exec sed -i '/extraheader = AUTHORIZATION:/d' {} \; )
+        ( cd "$safeTmp"/repo ; git config --global checkout.workers -1 ; _gitBest clone --depth 1 git@github.com:mirage335-colossus/"$objectName".git ; cd "$safeTmp"/repo/"$objectName" ; _gitBest submodule update --init --depth 1 --recursive )
+        export safeToDeleteGit="true"
+    fi
+
+
+    
+    _messagePlain_probe 'docker build -t'
+    _here_dockerfile_nvidia_nemo-heavy > Dockerfile
+
+    # WARNING: CAUTION: DANGER: Docker is yet another third-party service dependency. Do NOT regard Docker's repository as archival preservation, and do NOT rely on Docker itself for archival preservation. Also, it is not clear whether a Docker 'image' based on 'Dockerfile' can be directly preserved without environment dependencies or unintentional updates, at best a root filesystem may be possible to obtain from a Docker 'image'.
+    # https://en.wikipedia.org/w/index.php?title=Docker,_Inc.&oldid=1285260999#History
+    # https://en.wikipedia.org/w/index.php?title=Docker_(software)&oldid=1286977923#History
+    
+    docker build -t nvidia_nemo-heavy .
+    docker tag nvidia_nemo-heavy "$DOCKER_USER"/nvidia_nemo-heavy:latest
+
+    #docker push user/nvidia_nemo-heavy:latest
+
+    #export safeToDeleteGit="true"
+    _safeRMR "$safeTmp"/repo
+
+    _stop
+}
+__factoryCreate_nvidia_nemo-heavy() {
+    if [[ "$recursionGuard_factory_ops" == "" ]]
+    then
+        _factory_ops_recursion "$@"
+        return
+    fi
+
+    "$scriptAbsoluteLocation" __factoryCreate_sequence_nvidia_nemo-heavy "$@"
+}
+
+
+
+
+
+
+
+
+
+
+
 # ATTENTION: Indentation, commenting, etc, is intended to allow copy/paste to scratch text files for copy/paste to terminal.
 
 #. shortcuts/factory/factory.sh ; _factory_axolotl
@@ -20643,6 +20795,20 @@ factory_knowledgeDir='/c/q/p/zCore/infrastructure/ubiquitous_bash/_local/knowled
 factory_knowledge_distillDir='/c/q/p/zCore/infrastructure/ubiquitous_bash/_local/knowledge_distill'
 [[ -e ./knowledge_distill ]] && factory_knowledge_distillDir="$factory_projectDir"/knowledge_distill
 [[ -e ./_local/knowledge_distill ]] && factory_knowledge_distillDir="$factory_projectDir"/_local/knowledge_distill
+
+
+# WARNING: TODO: Mounting subdirectories of the '/workspace/data' directory either before or after mounting the '/workspace/data' directory  - may be untested.
+#-v "$factory_projectDir":/workspace/project -v "$factory_projectDir":/workspace/data
+if _if_cygwin
+then
+export factory_dir_args=( -v "$factory_projectDir":/workspace/project -v "$factory_projectDir":/workspace/data -v "$factory_outputDir":/output -v "$factory_outputDir":/workspace/data/output -v "$factory_outputDir":/workspace/data/outputs -v "$factory_modelDir":/model -v "$factory_modelDir":/workspace/data/model -v "$factory_modelDir":/workspace/data/models -v "$factory_datasetDir":/dataset -v "$factory_datasetDir":/workspace/data/dataset -v "$factory_datasetDir":/workspace/data/datasets -v "$factory_knowledgeDir":/knowledge -v "$factory_knowledge_distillDir":/knowledge_distill -v "$factory_projectDir"/cache_pip:/workspace/cache_pip )
+fi
+if ! _if_cygwin
+then
+export factory_dir_args=( -v "$factory_projectDir":/workspace/project -v "$factory_projectDir":/workspace/data -v "$factory_outputDir":/output -v "$factory_outputDir":/workspace/data/output -v "$factory_outputDir":/workspace/data/outputs -v "$factory_modelDir":/model -v "$factory_modelDir":/workspace/data/model -v "$factory_modelDir":/workspace/data/models -v "$factory_datasetDir":/dataset -v "$factory_datasetDir":/workspace/data/dataset -v "$factory_datasetDir":/workspace/data/datasets -v "$factory_projectDir"/cache_pip:/workspace/cache_pip )
+fi
+
+
 
 # ###
 # PASTE
@@ -20707,12 +20873,12 @@ then
 #--privileged
 #--ipc=host --ulimit memlock=-1 --ulimit stack=67108864
 #-v 'C:\q':/q -v 'C:\core':/core -v "$USERPROFILE"'\Downloads':/Downloads
-docker run --shm-size=20g --name axolotl-$(_uid 14) --gpus "all" -e "$JUPYTER_PASSWORD" -e HF_AKI_KEY="$HF_AKI_KEY" -v 'C:\q':/q -v 'C:\q\p\zCore\infrastructure\ubiquitous_bash':/workspace/ubiquitous_bash:ro -v 'C:\core':/core -v "$USERPROFILE"'\Downloads':/Downloads -v "$factory_outputDir":/output -v "$factory_modelDir":/model -v "$factory_datasetDir":/dataset -v "$factory_knowledgeDir":/knowledge -v "$factory_knowledge_distillDir":/knowledge_distill -v "$factory_projectDir":/workspace/project -v "$factory_projectDir"/cache_pip:/workspace/cache_pip --rm -it "$dockerName" "${dockerRunArgs[@]}"
+docker run --shm-size=20g --name axolotl-$(_uid 14) --gpus "all" -e "$JUPYTER_PASSWORD" -e HF_AKI_KEY="$HF_AKI_KEY" -v 'C:\q':/q -v 'C:\q\p\zCore\infrastructure\ubiquitous_bash':/workspace/ubiquitous_bash:ro -v 'C:\core':/core -v "$USERPROFILE"'\Downloads':/Downloads "${factory_dir_args[@]}" -v "$factory_projectDir"/cache_pip:/workspace/cache_pip --rm -it "$dockerName" "${dockerRunArgs[@]}"
 fi
 if ! _if_cygwin
 then
 # WARNING: May be untested.
-docker run --shm-size=20g --name axolotl-$(_uid 14) --gpus "all" -e "$JUPYTER_PASSWORD" -e HF_AKI_KEY="$HF_AKI_KEY" -v '/home/user/___quick':/q -v "$HOME"/core/infrastructure/ubiquitous_bash:/workspace/ubiquitous_bash:ro -v '/home/user/core':/core -v "/home/user"'/Downloads':/Downloads -v "$factory_outputDir":/output -v "$factory_modelDir":/model -v "$factory_datasetDir":/dataset -v "$factory_projectDir":/workspace/project -v "$factory_projectDir"/cache_pip:/workspace/cache_pip --rm -it "$dockerName" "${dockerRunArgs[@]}"
+docker run --shm-size=20g --name axolotl-$(_uid 14) --gpus "all" -e "$JUPYTER_PASSWORD" -e HF_AKI_KEY="$HF_AKI_KEY" -v '/home/user/___quick':/q -v "$HOME"/core/infrastructure/ubiquitous_bash:/workspace/ubiquitous_bash:ro -v '/home/user/core':/core -v "/home/user"'/Downloads':/Downloads "${factory_dir_args[@]}" -v "$factory_projectDir"/cache_pip:/workspace/cache_pip --rm -it "$dockerName" "${dockerRunArgs[@]}"
 fi
 
 # ###
@@ -20789,12 +20955,12 @@ then
 #--privileged
 #--ipc=host --ulimit memlock=-1 --ulimit stack=67108864
 #-v 'C:\q':/q -v 'C:\core':/core -v "$USERPROFILE"'\Downloads':/Downloads
-docker run --shm-size=20g --name runpod-$(_uid 14) --gpus "all" -e "$JUPYTER_PASSWORD" -e HF_AKI_KEY="$HF_AKI_KEY" -v 'C:\q':/q -v 'C:\q\p\zCore\infrastructure\ubiquitous_bash':/workspace/ubiquitous_bash:ro -v 'C:\core':/core -v "$USERPROFILE"'\Downloads':/Downloads -v "$factory_outputDir":/output -v "$factory_modelDir":/model -v "$factory_datasetDir":/dataset -v "$factory_knowledgeDir":/knowledge -v "$factory_knowledge_distillDir":/knowledge_distill -v "$factory_projectDir":/workspace/project -v "$factory_projectDir"/cache_pip:/workspace/cache_pip --rm -it "$dockerName" "${dockerRunArgs[@]}"
+docker run --shm-size=20g --name runpod-$(_uid 14) --gpus "all" -e "$JUPYTER_PASSWORD" -e HF_AKI_KEY="$HF_AKI_KEY" -v 'C:\q':/q -v 'C:\q\p\zCore\infrastructure\ubiquitous_bash':/workspace/ubiquitous_bash:ro -v 'C:\core':/core -v "$USERPROFILE"'\Downloads':/Downloads "${factory_dir_args[@]}" -v "$factory_projectDir"/cache_pip:/workspace/cache_pip --rm -it "$dockerName" "${dockerRunArgs[@]}"
 fi
 if ! _if_cygwin
 then
 # WARNING: May be untested.
-docker run --shm-size=20g --name runpod-$(_uid 14) --gpus "all" -e "$JUPYTER_PASSWORD" -e HF_AKI_KEY="$HF_AKI_KEY" -v '/home/user/___quick':/q -v "$HOME"/core/infrastructure/ubiquitous_bash:/workspace/ubiquitous_bash:ro -v '/home/user/core':/core -v "/home/user"'/Downloads':/Downloads -v "$factory_outputDir":/output -v "$factory_modelDir":/model -v "$factory_datasetDir":/dataset -v "$factory_projectDir":/workspace/project -v "$factory_projectDir"/cache_pip:/workspace/cache_pip --rm -it "$dockerName" "${dockerRunArgs[@]}"
+docker run --shm-size=20g --name runpod-$(_uid 14) --gpus "all" -e "$JUPYTER_PASSWORD" -e HF_AKI_KEY="$HF_AKI_KEY" -v '/home/user/___quick':/q -v "$HOME"/core/infrastructure/ubiquitous_bash:/workspace/ubiquitous_bash:ro -v '/home/user/core':/core -v "/home/user"'/Downloads':/Downloads "${factory_dir_args[@]}" -v "$factory_projectDir"/cache_pip:/workspace/cache_pip --rm -it "$dockerName" "${dockerRunArgs[@]}"
 fi
 
 # ###
@@ -20853,9 +21019,9 @@ fi
 
 #docker pull "$dockerName"
 
-entrypoint=$(docker inspect -f '{{join .Config.Entrypoint " "}}' runpod/pytorch:2.2.0-py3.10-cuda12.1.1-devel-ubuntu22.04)
-cmd=$(docker inspect -f '{{join .Config.Cmd " "}}' runpod/pytorch:2.2.0-py3.10-cuda12.1.1-devel-ubuntu22.04)
-workdir=$(docker inspect -f '{{.Config.WorkingDir}}' runpod/pytorch:2.2.0-py3.10-cuda12.1.1-devel-ubuntu22.04)
+entrypoint=$(docker inspect -f '{{join .Config.Entrypoint " "}}' "$dockerName")
+cmd=$(docker inspect -f '{{join .Config.Cmd " "}}' "$dockerName")
+workdir=$(docker inspect -f '{{.Config.WorkingDir}}' "$dockerName")
 _messagePlain_request 'request: paste ->'
 echo > ./._run-factory_runpod
 echo "echo 'runpod-pytorch-heavy' > /info_factoryName.txt" | tee -a ./._run-factory_runpod
@@ -20887,12 +21053,12 @@ then
 #--privileged
 #--ipc=host --ulimit memlock=-1 --ulimit stack=67108864
 #-v 'C:\q':/q -v 'C:\core':/core -v "$USERPROFILE"'\Downloads':/Downloads
-docker run --shm-size=20g --name runpod-$(_uid 14) --gpus "all" -e "$JUPYTER_PASSWORD" -e HF_AKI_KEY="$HF_AKI_KEY" -v 'C:\q':/q -v 'C:\q\p\zCore\infrastructure\ubiquitous_bash':/workspace/ubiquitous_bash:ro -v 'C:\core':/core -v "$USERPROFILE"'\Downloads':/Downloads -v "$factory_outputDir":/output -v "$factory_modelDir":/model -v "$factory_datasetDir":/dataset -v "$factory_knowledgeDir":/knowledge -v "$factory_knowledge_distillDir":/knowledge_distill -v "$factory_projectDir":/workspace/project -v "$factory_projectDir"/cache_pip:/workspace/cache_pip --rm -it "$dockerName" "${dockerRunArgs[@]}"
+docker run --shm-size=20g --name runpod-$(_uid 14) --gpus "all" -e "$JUPYTER_PASSWORD" -e HF_AKI_KEY="$HF_AKI_KEY" -v 'C:\q':/q -v 'C:\q\p\zCore\infrastructure\ubiquitous_bash':/workspace/ubiquitous_bash:ro -v 'C:\core':/core -v "$USERPROFILE"'\Downloads':/Downloads "${factory_dir_args[@]}" -v "$factory_projectDir"/cache_pip:/workspace/cache_pip --rm -it "$dockerName" "${dockerRunArgs[@]}"
 fi
 if ! _if_cygwin
 then
 # WARNING: May be untested.
-docker run --shm-size=20g --name runpod-$(_uid 14) --gpus "all" -e "$JUPYTER_PASSWORD" -e HF_AKI_KEY="$HF_AKI_KEY" -v '/home/user/___quick':/q -v "$HOME"/core/infrastructure/ubiquitous_bash:/workspace/ubiquitous_bash:ro -v '/home/user/core':/core -v "/home/user"'/Downloads':/Downloads -v "$factory_outputDir":/output -v "$factory_modelDir":/model -v "$factory_datasetDir":/dataset -v "$factory_projectDir":/workspace/project -v "$factory_projectDir"/cache_pip:/workspace/cache_pip --rm -it "$dockerName" "${dockerRunArgs[@]}"
+docker run --shm-size=20g --name runpod-$(_uid 14) --gpus "all" -e "$JUPYTER_PASSWORD" -e HF_AKI_KEY="$HF_AKI_KEY" -v '/home/user/___quick':/q -v "$HOME"/core/infrastructure/ubiquitous_bash:/workspace/ubiquitous_bash:ro -v '/home/user/core':/core -v "/home/user"'/Downloads':/Downloads "${factory_dir_args[@]}" -v "$factory_projectDir"/cache_pip:/workspace/cache_pip --rm -it "$dockerName" "${dockerRunArgs[@]}"
 fi
 
 # ###
@@ -20971,14 +21137,14 @@ fi
 
 #docker pull "$dockerName"
 
-entrypoint=$(docker inspect -f '{{join .Config.Entrypoint " "}}' runpod/pytorch:2.2.0-py3.10-cuda12.1.1-devel-ubuntu22.04)
-cmd=$(docker inspect -f '{{join .Config.Cmd " "}}' runpod/pytorch:2.2.0-py3.10-cuda12.1.1-devel-ubuntu22.04)
-workdir=$(docker inspect -f '{{.Config.WorkingDir}}' runpod/pytorch:2.2.0-py3.10-cuda12.1.1-devel-ubuntu22.04)
+entrypoint=$(docker inspect -f '{{join .Config.Entrypoint " "}}' "$dockerName")
+cmd=$(docker inspect -f '{{join .Config.Cmd " "}}' "$dockerName")
+workdir=$(docker inspect -f '{{.Config.WorkingDir}}' "$dockerName")
 _messagePlain_request 'request: paste ->'
 echo > ./._run-factory_runpod
 echo "echo 'runpod-pytorch-unsloth' > /info_factoryName.txt" | tee -a ./._run-factory_runpod
 echo "echo '# Please read researchEngine documentation for (hopefully) stabilized examples .' > /info_factoryMOTD.txt" | tee -a ./._run-factory_runpod
-echo "echo 'ubiquitous_bash=~/.ubcore/ubiquitous_bash ; less "'"$ubiquitous_bash"'"/_lib/kit/app/researchEngine/_dev/README-FACTORY-unsloth.md' >> /info_factoryMOTD.txt" | tee -a ./._run-factory_runpod
+echo "echo 'ubiquitous_bash=~/.ubcore/ubiquitous_bash ; vim -R "'"$ubiquitous_bash"'"/_lib/kit/app/researchEngine/_dev/README-FACTORY-unsloth.md' >> /info_factoryMOTD.txt" | tee -a ./._run-factory_runpod
 echo "chmod 755 /info_factoryMOTD.txt" | tee -a ./._run-factory_runpod
 _request_paste_factory-prepare_finetune | tee -a ./._run-factory_runpod
 _request_paste_factory-install_ubiquitous_bash | tee -a ./._run-factory_runpod
@@ -21008,12 +21174,12 @@ then
 #--privileged
 #--ipc=host --ulimit memlock=-1 --ulimit stack=67108864
 #-v 'C:\q':/q -v 'C:\core':/core -v "$USERPROFILE"'\Downloads':/Downloads
-docker run --shm-size=20g --name runpod-$(_uid 14) --gpus "all" -e "$JUPYTER_PASSWORD" -e HF_AKI_KEY="$HF_AKI_KEY" -v 'C:\q':/q -v 'C:\q\p\zCore\infrastructure\ubiquitous_bash':/workspace/ubiquitous_bash:ro -v 'C:\core':/core -v "$USERPROFILE"'\Downloads':/Downloads -v "$factory_outputDir":/output -v "$factory_modelDir":/model -v "$factory_datasetDir":/dataset -v "$factory_knowledgeDir":/knowledge -v "$factory_knowledge_distillDir":/knowledge_distill -v "$factory_projectDir":/workspace/project -v "$factory_projectDir"/cache_pip:/workspace/cache_pip --rm -it "$dockerName" "${dockerRunArgs[@]}"
+docker run --shm-size=20g --name runpod-$(_uid 14) --gpus "all" -e "$JUPYTER_PASSWORD" -e HF_AKI_KEY="$HF_AKI_KEY" -v 'C:\q':/q -v 'C:\q\p\zCore\infrastructure\ubiquitous_bash':/workspace/ubiquitous_bash:ro -v 'C:\core':/core -v "$USERPROFILE"'\Downloads':/Downloads "${factory_dir_args[@]}" -v "$factory_projectDir"/cache_pip:/workspace/cache_pip --rm -it "$dockerName" "${dockerRunArgs[@]}"
 fi
 if ! _if_cygwin
 then
 # WARNING: May be untested.
-docker run --shm-size=20g --name runpod-$(_uid 14) --gpus "all" -e "$JUPYTER_PASSWORD" -e HF_AKI_KEY="$HF_AKI_KEY" -v '/home/user/___quick':/q -v "$HOME"/core/infrastructure/ubiquitous_bash:/workspace/ubiquitous_bash:ro -v '/home/user/core':/core -v "/home/user"'/Downloads':/Downloads -v "$factory_outputDir":/output -v "$factory_modelDir":/model -v "$factory_datasetDir":/dataset -v "$factory_projectDir":/workspace/project -v "$factory_projectDir"/cache_pip:/workspace/cache_pip --rm -it "$dockerName" "${dockerRunArgs[@]}"
+docker run --shm-size=20g --name runpod-$(_uid 14) --gpus "all" -e "$JUPYTER_PASSWORD" -e HF_AKI_KEY="$HF_AKI_KEY" -v '/home/user/___quick':/q -v "$HOME"/core/infrastructure/ubiquitous_bash:/workspace/ubiquitous_bash:ro -v '/home/user/core':/core -v "/home/user"'/Downloads':/Downloads "${factory_dir_args[@]}" -v "$factory_projectDir"/cache_pip:/workspace/cache_pip --rm -it "$dockerName" "${dockerRunArgs[@]}"
 fi
 
 # ###
@@ -21032,6 +21198,287 @@ _factory_unsloth() {
 
     _factory_runpod-unsloth "$@"
 }
+
+
+
+
+
+
+
+
+
+
+_factory_nvidia_nemo-dev() {
+if [[ "$recursionGuard_factory_ops" == "" ]]
+then
+_factory_ops_recursion "$@"
+return
+fi
+
+! type _set_factory_dir > /dev/null 2>&1 && exit 1
+_set_factory_dir
+
+
+
+# ###
+# PASTE
+# ###
+
+dockerName='nvcr.io/nvidia/nemo:dev'
+#nvcr.io/nvidia/nemo:dev
+#nvcr.io/nvidia/nemo:25.04
+#nvcr.io/nvidia/nemo:24.01.framework
+##docker pull ghcr.io/mirage335-colossus/"$dockerName":latest
+
+[[ JUPYTER_PASSWORD == "" ]] && export JUPYTER_PASSWORD=$(openssl rand 768 | base64 | tr -dc 'a-zA-Z0-9' | tr -d 'acdefhilmnopqrsuvACDEFHILMNOPQRSU14580' | head -c "24")
+
+docker pull "$dockerName"
+
+entrypoint=$(docker inspect -f '{{join .Config.Entrypoint " "}}' "$dockerName")
+cmd=$(docker inspect -f '{{join .Config.Cmd " "}}' "$dockerName")
+workdir=$(docker inspect -f '{{.Config.WorkingDir}}' "$dockerName")
+_messagePlain_request 'request: paste ->'
+echo > ./._run-factory_nvidia
+echo "echo 'nvidia_nemo-dev' > /info_factoryName.txt" | tee -a ./._run-factory_nvidia
+echo "echo '# Please read researchEngine documentation for (hopefully) stabilized examples .' > /info_factoryMOTD.txt" | tee -a ./._run-factory_nvidia
+echo "echo 'ubiquitous_bash=~/.ubcore/ubiquitous_bash ; vim -R "'"$ubiquitous_bash"'"/_lib/kit/app/researchEngine/_dev/README-FACTORY-nvidia_nemo.md' >> /info_factoryMOTD.txt" | tee -a ./._run-factory_nvidia
+echo "chmod 755 /info_factoryMOTD.txt" | tee -a ./._run-factory_nvidia
+_request_paste_factory-prepare_finetune | tee -a ./._run-factory_nvidia
+_request_paste_factory-install_ubiquitous_bash | tee -a ./._run-factory_nvidia
+_request_paste_factory-show_finetune | tee -a ./._run-factory_nvidia
+_messagePlain_request 'request: JUPYTER_PASSWORD: '"$JUPYTER_PASSWORD"
+#docker inspect --format='{{json .Config.Entrypoint}}' "$dockerName" | jq -r '.[]' | tee -a ./._run-factory_nvidia
+mkdir -p "$workdir" | tee -a ./._run-factory_nvidia
+echo '[ -n '"$workdir"' ] && cd '"$workdir" | tee -a ./._run-factory_nvidia
+#echo "exec ${entrypoint} ${cmd}" | tee -a ./._run-factory_nvidia
+echo "exec ${entrypoint}" | tee -a ./._run-factory_nvidia
+#echo 'bash -i' >> ./._run-factory_nvidia
+_messagePlain_request 'request: <- paste'
+
+
+# ###
+
+
+! type _getAbsoluteLocation > /dev/null 2>&1 && exit 1
+
+#docker image inspect "$dockerName" --format '{{json .Config.Entrypoint}} {{json .Config.Cmd}}'
+
+dockerRunArgs=( bash /workspace/project/._run-factory_nvidia )
+[[ ! -e ./._run-factory_nvidia ]] && dockerRunArgs=( bash )
+
+if _if_cygwin
+then
+#--privileged
+#--ipc=host --ulimit memlock=-1 --ulimit stack=67108864
+#-v 'C:\q':/q -v 'C:\core':/core -v "$USERPROFILE"'\Downloads':/Downloads
+docker run --shm-size=20g --name nvidia-$(_uid 14) --gpus "all" -e "$JUPYTER_PASSWORD" -e HF_AKI_KEY="$HF_AKI_KEY" -v 'C:\q':/q -v 'C:\q\p\zCore\infrastructure\ubiquitous_bash':/workspace/ubiquitous_bash:ro -v 'C:\core':/core -v "$USERPROFILE"'\Downloads':/Downloads "${factory_dir_args[@]}" -v "$factory_projectDir"/cache_pip:/workspace/cache_pip --rm -it "$dockerName" "${dockerRunArgs[@]}"
+fi
+if ! _if_cygwin
+then
+# WARNING: May be untested.
+docker run --shm-size=20g --name nvidia-$(_uid 14) --gpus "all" -e "$JUPYTER_PASSWORD" -e HF_AKI_KEY="$HF_AKI_KEY" -v '/home/user/___quick':/q -v "$HOME"/core/infrastructure/ubiquitous_bash:/workspace/ubiquitous_bash:ro -v '/home/user/core':/core -v "/home/user"'/Downloads':/Downloads "${factory_dir_args[@]}" -v "$factory_projectDir"/cache_pip:/workspace/cache_pip --rm -it "$dockerName" "${dockerRunArgs[@]}"
+fi
+
+# ###
+# PASTE
+# ###
+
+
+
+}
+_factory_nvidia_nemo-official() {
+if [[ "$recursionGuard_factory_ops" == "" ]]
+then
+_factory_ops_recursion "$@"
+return
+fi
+
+! type _set_factory_dir > /dev/null 2>&1 && exit 1
+_set_factory_dir
+
+
+
+# ###
+# PASTE
+# ###
+
+dockerName='nvcr.io/nvidia/nemo:25.04'
+#nvcr.io/nvidia/nemo:dev
+#nvcr.io/nvidia/nemo:25.04
+#nvcr.io/nvidia/nemo:24.01.framework
+##docker pull ghcr.io/mirage335-colossus/"$dockerName":latest
+
+# Prefer local build .
+
+[[ JUPYTER_PASSWORD == "" ]] && export JUPYTER_PASSWORD=$(openssl rand 768 | base64 | tr -dc 'a-zA-Z0-9' | tr -d 'acdefhilmnopqrsuvACDEFHILMNOPQRSU14580' | head -c "24")
+
+docker pull "$dockerName"
+
+entrypoint=$(docker inspect -f '{{join .Config.Entrypoint " "}}' "$dockerName")
+cmd=$(docker inspect -f '{{join .Config.Cmd " "}}' "$dockerName")
+workdir=$(docker inspect -f '{{.Config.WorkingDir}}' "$dockerName")
+_messagePlain_request 'request: paste ->'
+echo > ./._run-factory_nvidia
+echo "echo 'nvidia_nemo-official' > /info_factoryName.txt" | tee -a ./._run-factory_nvidia
+echo "echo '# Please read researchEngine documentation for (hopefully) stabilized examples .' > /info_factoryMOTD.txt" | tee -a ./._run-factory_nvidia
+echo "echo 'ubiquitous_bash=~/.ubcore/ubiquitous_bash ; vim -R "'"$ubiquitous_bash"'"/_lib/kit/app/researchEngine/_dev/README-FACTORY-nvidia_nemo.md' >> /info_factoryMOTD.txt" | tee -a ./._run-factory_nvidia
+echo "chmod 755 /info_factoryMOTD.txt" | tee -a ./._run-factory_nvidia
+_request_paste_factory-prepare_finetune | tee -a ./._run-factory_nvidia
+_request_paste_factory-install_ubiquitous_bash | tee -a ./._run-factory_nvidia
+_request_paste_factory-show_finetune | tee -a ./._run-factory_nvidia
+_messagePlain_request 'request: JUPYTER_PASSWORD: '"$JUPYTER_PASSWORD"
+#docker inspect --format='{{json .Config.Entrypoint}}' "$dockerName" | jq -r '.[]' | tee -a ./._run-factory_nvidia
+mkdir -p "$workdir" | tee -a ./._run-factory_nvidia
+echo '[ -n '"$workdir"' ] && cd '"$workdir" | tee -a ./._run-factory_nvidia
+#echo "exec ${entrypoint} ${cmd}" | tee -a ./._run-factory_nvidia
+echo "exec ${entrypoint}" | tee -a ./._run-factory_nvidia
+#echo 'bash -i' >> ./._run-factory_nvidia
+_messagePlain_request 'request: <- paste'
+
+
+# ###
+
+
+! type _getAbsoluteLocation > /dev/null 2>&1 && exit 1
+
+#docker image inspect "$dockerName" --format '{{json .Config.Entrypoint}} {{json .Config.Cmd}}'
+
+dockerRunArgs=( bash /workspace/project/._run-factory_nvidia )
+[[ ! -e ./._run-factory_nvidia ]] && dockerRunArgs=( bash )
+
+if _if_cygwin
+then
+#--privileged
+#--ipc=host --ulimit memlock=-1 --ulimit stack=67108864
+#-v 'C:\q':/q -v 'C:\core':/core -v "$USERPROFILE"'\Downloads':/Downloads
+docker run --shm-size=20g --name nvidia-$(_uid 14) --gpus "all" -e "$JUPYTER_PASSWORD" -e HF_AKI_KEY="$HF_AKI_KEY" -v 'C:\q':/q -v 'C:\q\p\zCore\infrastructure\ubiquitous_bash':/workspace/ubiquitous_bash:ro -v 'C:\core':/core -v "$USERPROFILE"'\Downloads':/Downloads "${factory_dir_args[@]}" -v "$factory_projectDir"/cache_pip:/workspace/cache_pip --rm -it "$dockerName" "${dockerRunArgs[@]}"
+fi
+if ! _if_cygwin
+then
+# WARNING: May be untested.
+docker run --shm-size=20g --name nvidia-$(_uid 14) --gpus "all" -e "$JUPYTER_PASSWORD" -e HF_AKI_KEY="$HF_AKI_KEY" -v '/home/user/___quick':/q -v "$HOME"/core/infrastructure/ubiquitous_bash:/workspace/ubiquitous_bash:ro -v '/home/user/core':/core -v "/home/user"'/Downloads':/Downloads "${factory_dir_args[@]}" -v "$factory_projectDir"/cache_pip:/workspace/cache_pip --rm -it "$dockerName" "${dockerRunArgs[@]}"
+fi
+
+# ###
+# PASTE
+# ###
+
+
+
+}
+_factory_nvidia_nemo-heavy() {
+if [[ "$recursionGuard_factory_ops" == "" ]]
+then
+_factory_ops_recursion "$@"
+return
+fi
+
+! type _set_factory_dir > /dev/null 2>&1 && exit 1
+_set_factory_dir
+
+
+
+# ###
+# PASTE
+# ###
+
+dockerName='nvidia_nemo-heavy'
+#nvcr.io/nvidia/nemo:dev
+#nvcr.io/nvidia/nemo:25.04
+#nvcr.io/nvidia/nemo:24.01.framework
+##docker pull ghcr.io/mirage335-colossus/"$dockerName":latest
+
+# Prefer local build .
+if [[ $(docker images -q "$dockerName" | tr -dc 'a-zA-Z0-9') == "" ]]
+then
+    # Fallback to something from Docker Hub .
+    [[ $(docker images -q "mirage335-colossus/ubiquitous_bash/""$dockerName" | tr -dc 'a-zA-Z0-9') != "" ]] && dockerName="mirage335-colossus/ubiquitous_bash/""$dockerName"
+    [[ $(docker images -q "mirage335-colossus/""$dockerName" | tr -dc 'a-zA-Z0-9') != "" ]] && dockerName="mirage335-colossus/""$dockerName"
+    [[ $(docker images -q "mirage335/""$dockerName" | tr -dc 'a-zA-Z0-9') != "" ]] && dockerName="mirage335/""$dockerName"
+
+    # Prefer something from GHCR .
+    [[ $(docker images -q "ghcr.io/mirage335-colossus/ubiquitous_bash/""$dockerName" | tr -dc 'a-zA-Z0-9') != "" ]] && dockerName="ghcr.io/mirage335-colossus/ubiquitous_bash/""$dockerName"
+    [[ $(docker images -q "ghcr.io/mirage335-colossus/""$dockerName" | tr -dc 'a-zA-Z0-9') != "" ]] && dockerName="ghcr.io/mirage335-colossus/""$dockerName"
+    [[ $(docker images -q "ghcr.io/mirage335/""$dockerName" | tr -dc 'a-zA-Z0-9') != "" ]] && dockerName="ghcr.io/mirage335/""$dockerName"
+fi
+
+if ! docker images | tail -n+2 | grep '^'"$dockerName" > /dev/null 2>&1
+then
+    _messagePlain_bad 'bad: FAIL: missing: '"$dockerName"
+    _messagePlain_request 'request: 'docker pull ghcr.io/mirage335-colossus/"$dockerName":latest
+    _messageError 'FAIL'
+    return 1
+fi
+
+[[ JUPYTER_PASSWORD == "" ]] && export JUPYTER_PASSWORD=$(openssl rand 768 | base64 | tr -dc 'a-zA-Z0-9' | tr -d 'acdefhilmnopqrsuvACDEFHILMNOPQRSU14580' | head -c "24")
+
+#docker pull "$dockerName"
+
+entrypoint=$(docker inspect -f '{{join .Config.Entrypoint " "}}' "$dockerName")
+cmd=$(docker inspect -f '{{join .Config.Cmd " "}}' "$dockerName")
+workdir=$(docker inspect -f '{{.Config.WorkingDir}}' "$dockerName")
+_messagePlain_request 'request: paste ->'
+echo > ./._run-factory_nvidia
+echo "echo 'nvidia_nemo-heavy' > /info_factoryName.txt" | tee -a ./._run-factory_nvidia
+echo "echo '# Please read researchEngine documentation for (hopefully) stabilized examples .' > /info_factoryMOTD.txt" | tee -a ./._run-factory_nvidia
+echo "echo 'ubiquitous_bash=~/.ubcore/ubiquitous_bash ; vim -R "'"$ubiquitous_bash"'"/_lib/kit/app/researchEngine/_dev/README-FACTORY-nvidia_nemo.md' >> /info_factoryMOTD.txt" | tee -a ./._run-factory_nvidia
+echo "chmod 755 /info_factoryMOTD.txt" | tee -a ./._run-factory_nvidia
+_request_paste_factory-prepare_finetune | tee -a ./._run-factory_nvidia
+_request_paste_factory-install_ubiquitous_bash | tee -a ./._run-factory_nvidia
+_request_paste_factory-show_finetune | tee -a ./._run-factory_nvidia
+_messagePlain_request 'request: JUPYTER_PASSWORD: '"$JUPYTER_PASSWORD"
+#docker inspect --format='{{json .Config.Entrypoint}}' "$dockerName" | jq -r '.[]' | tee -a ./._run-factory_nvidia
+mkdir -p "$workdir" | tee -a ./._run-factory_nvidia
+echo '[ -n '"$workdir"' ] && cd '"$workdir" | tee -a ./._run-factory_nvidia
+#echo "exec ${entrypoint} ${cmd}" | tee -a ./._run-factory_nvidia
+echo "exec ${entrypoint}" | tee -a ./._run-factory_nvidia
+#echo 'bash -i' >> ./._run-factory_nvidia
+_messagePlain_request 'request: <- paste'
+
+
+# ###
+
+
+! type _getAbsoluteLocation > /dev/null 2>&1 && exit 1
+
+#docker image inspect "$dockerName" --format '{{json .Config.Entrypoint}} {{json .Config.Cmd}}'
+
+dockerRunArgs=( bash /workspace/project/._run-factory_nvidia )
+[[ ! -e ./._run-factory_nvidia ]] && dockerRunArgs=( bash )
+
+if _if_cygwin
+then
+#--privileged
+#--ipc=host --ulimit memlock=-1 --ulimit stack=67108864
+#-v 'C:\q':/q -v 'C:\core':/core -v "$USERPROFILE"'\Downloads':/Downloads
+docker run --shm-size=20g --name nvidia-$(_uid 14) --gpus "all" -e "$JUPYTER_PASSWORD" -e HF_AKI_KEY="$HF_AKI_KEY" -v 'C:\q':/q -v 'C:\q\p\zCore\infrastructure\ubiquitous_bash':/workspace/ubiquitous_bash:ro -v 'C:\core':/core -v "$USERPROFILE"'\Downloads':/Downloads "${factory_dir_args[@]}" -v "$factory_projectDir"/cache_pip:/workspace/cache_pip --rm -it "$dockerName" "${dockerRunArgs[@]}"
+fi
+if ! _if_cygwin
+then
+# WARNING: May be untested.
+docker run --shm-size=20g --name nvidia-$(_uid 14) --gpus "all" -e "$JUPYTER_PASSWORD" -e HF_AKI_KEY="$HF_AKI_KEY" -v '/home/user/___quick':/q -v "$HOME"/core/infrastructure/ubiquitous_bash:/workspace/ubiquitous_bash:ro -v '/home/user/core':/core -v "/home/user"'/Downloads':/Downloads "${factory_dir_args[@]}" -v "$factory_projectDir"/cache_pip:/workspace/cache_pip --rm -it "$dockerName" "${dockerRunArgs[@]}"
+fi
+
+# ###
+# PASTE
+# ###
+
+
+
+}
+_factory_nvidia_nemo() {
+    if [[ "$recursionGuard_factory_ops" == "" ]]
+    then
+        _factory_ops_recursion "$@"
+        return
+    fi
+
+    _factory_nvidia_nemo-dev "$@"
+    #_factory_nvidia_nemo-official "$@"
+    #_factory_nvidia_nemo-heavy "$@"
+}
+
+
 
 
 

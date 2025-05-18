@@ -45,6 +45,9 @@ on:
       buildToggle_axolotl_heavy:
         type: boolean
         default: true
+      buildToggle_nvidia_nemo_heavy:
+        type: boolean
+        default: true
       buildToggle_runpod_heavy:
         type: boolean
         default: true
@@ -414,6 +417,119 @@ jobs:
         run: |
           docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
           docker push ${{ secrets.DOCKER_USERNAME }}/axolotl-heavy:latest
+
+
+
+
+
+  build_nvidia_nemo_heavy:
+    if: ${{ ( github.event.inputs.buildToggle_nvidia_nemo_heavy != 'false' ) && ( github.event.inputs.runnerName == 'ubuntu-latest-l' || github.event.inputs.runnerName == 'ubuntu-latest-h' ) }}
+    #needs: [build_guard]
+    runs-on: ${{ github.event.inputs.runnerName == '' && 'ubuntu-latest' || github.event.inputs.runnerName }}
+    steps:
+      - name: users
+        shell: bash
+        run: |
+          sudo -u ubuntu -n bash -c 'sudo -n useradd runner --non-unique -u $UID -g $UID' || true
+          sudo -u ubuntu -n bash -c 'sudo -n groupadd runner --non-unique -g $UID' || true
+          sudo -u runner -n bash -c 'sudo -n echo $USER $UID' || true
+          true
+      # https://github.com/easimon/maximize-build-space
+      - name: Maximize build space
+        if: ${{ github.event.inputs.runnerName != 'ubuntu-latest-m' && github.event.inputs.runnerName != 'ubuntu-latest-l' && github.event.inputs.runnerName != 'ubuntu-latest-h' }}
+        uses: easimon/maximize-build-space@master
+        with:
+          root-reserve-mb: 37000
+          #root-reserve-mb: 4125
+          #root-reserve-mb: 1625
+          temp-reserve-mb: 37000
+          #temp-reserve-mb: 1950
+          #temp-reserve-mb: 50
+          swap-size-mb: 2
+          #remove-dotnet: ${{ github.event.inputs.runnerName != 'ubuntu-latest-m' && github.event.inputs.runnerName != 'ubuntu-latest-l' && github.event.inputs.runnerName != 'ubuntu-latest-h' }}
+          remove-dotnet: 'true'
+          #remove-android: ${{ github.event.inputs.runnerName != 'ubuntu-latest-m' && github.event.inputs.runnerName != 'ubuntu-latest-l' && github.event.inputs.runnerName != 'ubuntu-latest-h' }}
+          remove-android: 'true'
+          #remove-haskell: ${{ github.event.inputs.runnerName != 'ubuntu-latest-m' && github.event.inputs.runnerName != 'ubuntu-latest-l' && github.event.inputs.runnerName != 'ubuntu-latest-h' }}
+          remove-haskell: 'true'
+          #remove-codeql: ${{ github.event.inputs.runnerName != 'ubuntu-latest-m' && github.event.inputs.runnerName != 'ubuntu-latest-l' && github.event.inputs.runnerName != 'ubuntu-latest-h' }}
+          remove-codeql: 'true'
+          #remove-docker-images: ${{ github.event.inputs.runnerName != 'ubuntu-latest-m' && github.event.inputs.runnerName != 'ubuntu-latest-l' && github.event.inputs.runnerName != 'ubuntu-latest-h' }}
+          remove-docker-images: 'true'
+      - name: Maximize build space ! remove ONLY
+        if: ${{ ( github.event.inputs.runnerName == 'ubuntu-latest-m' || github.event.inputs.runnerName == 'ubuntu-latest-l' || github.event.inputs.runnerName == 'ubuntu-latest-h' ) }}
+        uses: AdityaGarg8/remove-unwanted-software@v4.1
+        with:
+          remove-dotnet: 'true'
+          remove-android: 'true'
+          remove-haskell: 'true'
+          remove-codeql: 'true'
+          remove-docker-images: 'true'
+          remove-large-packages: 'true'
+          remove-cached-tools: 'true'
+          remove-swapfile: 'true'
+          verbose: 'false'
+      - name: df
+        shell: bash
+        run: |
+          df -h
+          df -h /
+
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 1
+          submodules: 'recursive'
+      #- name: _getMinimal_cloud
+        #shell: bash
+        #timeout-minutes: 120
+        #run: |
+          #./ubiquitous_bash.sh _getMinimal_cloud
+      - name: _getMinimal_cloud-special
+        shell: bash
+        timeout-minutes: 120
+        run: |
+          sudo -n apt-get update -y
+          sudo -n apt-get -y install jq gh curl coreutils findutils tar gzip bzip2 sed axel aria2 rsync pv dos2unix xxd util-linux openssl
+          ./ubiquitous_bash.sh _here_opensslConfig_legacy | sudo -n tee /etc/ssl/openssl_legacy.cnf > /dev/null 2>&1
+          if ! sudo -n grep 'openssl_legacy' /etc/ssl/openssl.cnf > /dev/null 2>&1
+          then
+              sudo -n cp -f /etc/ssl/openssl.cnf /etc/ssl/openssl.cnf.orig
+              echo '
+
+
+              .include = /etc/ssl/openssl_legacy.cnf
+
+              ' | sudo -n cat /etc/ssl/openssl.cnf.orig - | sudo -n tee /etc/ssl/openssl.cnf > /dev/null 2>&1
+          fi
+          true
+
+      - name: factory! create
+        shell: bash
+        timeout-minutes: 120
+        run: |
+          export DOCKER_USER=${{ secrets.DOCKER_USERNAME }}
+          ./ubiquitous_bash.sh __factoryCreate_nvidia_nemo-heavy
+          ./ubiquitous_bash.sh _here_dockerfile_nvidia_nemo-heavy > Dockerfile
+          docker tag nvidia_nemo-heavy ghcr.io/${{ github.repository_owner }}/nvidia_nemo-heavy:latest
+          docker tag nvidia_nemo-heavy ghcr.io/${{ github.repository }}/nvidia_nemo-heavy:latest
+          docker tag nvidia_nemo-heavy ghcr.io/${{ github.repository_owner }}/${{ github.repository }}/nvidia_nemo-heavy:latest
+          docker tag nvidia_nemo-heavy ${{ secrets.DOCKER_USERNAME }}/nvidia_nemo-heavy:latest
+
+      - name: docker github push
+        shell: bash
+        timeout-minutes: 120
+        run: |
+          docker login ghcr.io -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }}
+          docker push ghcr.io/${{ github.repository_owner }}/nvidia_nemo-heavy:latest
+
+      - name: docker docker push
+        shell: bash
+        timeout-minutes: 120
+        run: |
+          docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+          docker push ${{ secrets.DOCKER_USERNAME }}/nvidia_nemo-heavy:latest
+
+
 
 
 
