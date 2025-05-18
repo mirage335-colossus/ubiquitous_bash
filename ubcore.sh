@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='3086804905'
+export ub_setScriptChecksum_contents='792680841'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -20109,7 +20109,7 @@ cat << 'CZXWXcRMTo8EmM8i4d'
 FROM runpod/pytorch:2.8.0-py3.11-cuda12.8.1-cudnn-devel-ubuntu22.04
 
 RUN echo 'runpod-pytorch-unsloth' > /info_factoryName.txt
-RUN echo '# Please read researchEngine documentation for (hopefully) stabilized examples .' > /info_factoryMOTD.txt
+RUN echo '# Please read researchEngine documentation for (hopefully) stabilized examples .' >> /info_factoryMOTD.txt
 RUN echo 'ubiquitous_bash=~/.ubcore/ubiquitous_bash ; vim -R "'"\$ubiquitous_bash"'"/_lib/kit/app/researchEngine/_dev/README-FACTORY-unsloth.md' >> /info_factoryMOTD.txt
 RUN chmod 755 /info_factoryMOTD.txt
 
@@ -20469,7 +20469,7 @@ cat << 'CZXWXcRMTo8EmM8i4d'
 FROM axolotlai/axolotl:main-latest
 
 RUN echo 'axolotl-heavy' > /info_factoryName.txt
-RUN echo '# Please read researchEngine documentation for (hopefully) stabilized examples .' > /info_factoryMOTD.txt
+RUN echo '# Please read researchEngine documentation for (hopefully) stabilized examples .' >> /info_factoryMOTD.txt
 RUN echo 'ubiquitous_bash=~/.ubcore/ubiquitous_bash ; vim -R "'"\$ubiquitous_bash"'"/_lib/kit/app/researchEngine/_dev/README-FACTORY-axolotl.md' >> /info_factoryMOTD.txt
 RUN chmod 755 /info_factoryMOTD.txt
 
@@ -20637,7 +20637,7 @@ FROM nvcr.io/nvidia/nemo:25.04
 
 
 RUN echo 'nvidia_nemo-heavy' > /info_factoryName.txt
-RUN echo '# Please read researchEngine documentation for (hopefully) stabilized examples .' > /info_factoryMOTD.txt
+RUN echo '# Please read researchEngine documentation for (hopefully) stabilized examples .' >> /info_factoryMOTD.txt
 RUN echo 'ubiquitous_bash=~/.ubcore/ubiquitous_bash ; vim -R "'"\$ubiquitous_bash"'"/_lib/kit/app/researchEngine/_dev/README-FACTORY-nvidia_nemo.md' >> /info_factoryMOTD.txt
 RUN chmod 755 /info_factoryMOTD.txt
 
