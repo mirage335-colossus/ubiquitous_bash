@@ -740,10 +740,10 @@ FROM nvcr.io/nvidia/nemo:25.04
 #nvcr.io/nvidia/nemo:24.01.framework
 
 
-RUN echo 'nvidia_nemo-heavy' > /info_factoryName.txt
-RUN echo '# Please read researchEngine documentation for (hopefully) stabilized examples .' >> /info_factoryMOTD.txt
-RUN echo 'ubiquitous_bash=~/.ubcore/ubiquitous_bash ; vim -R "'"\$ubiquitous_bash"'"/_lib/kit/app/researchEngine/_dev/README-FACTORY-nvidia_nemo.md' >> /info_factoryMOTD.txt
-RUN chmod 755 /info_factoryMOTD.txt
+RUN echo 'nvidia_nemo-heavy' > /info_factoryName.txt ;\ 
+echo '# Please read researchEngine documentation for (hopefully) stabilized examples .' >> /info_factoryMOTD.txt ;\ 
+echo 'ubiquitous_bash=~/.ubcore/ubiquitous_bash ; vim -R "'"\$ubiquitous_bash"'"/_lib/kit/app/researchEngine/_dev/README-FACTORY-nvidia_nemo.md' >> /info_factoryMOTD.txt ;\ 
+chmod 755 /info_factoryMOTD.txt
 
 CZXWXcRMTo8EmM8i4d
 

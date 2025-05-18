@@ -17,8 +17,8 @@ local currentDirectory=$(realpath --relative-to="$PWD" "$safeTmp"/repo/ubiquitou
 
 cat << CZXWXcRMTo8EmM8i4d
 
-RUN rm -rf /workspace/ubiquitous_bash
-RUN mkdir -p /workspace
+RUN rm -rf /workspace/ubiquitous_bash ;\ 
+mkdir -p /workspace
 COPY $currentDirectory /workspace/ubiquitous_bash
 
 CZXWXcRMTo8EmM8i4d
@@ -66,52 +66,54 @@ fi
 # ###
 
 EOFSPECIAL
-RUN chmod u+x /install_ub.sh
-RUN bash /install_ub.sh
+RUN chmod u+x /install_ub.sh ;\ 
+bash /install_ub.sh
 
 
 # ###
 # PASTE
 # ###
 
-RUN env DEBIAN_FRONTEND=noninteractive apt-get update
-RUN env DEBIAN_FRONTEND=noninteractive apt upgrade -y
-RUN env DEBIAN_FRONTEND=noninteractive apt-get install sudo -y
-RUN env DEBIAN_FRONTEND=noninteractive apt-get install less -y
-RUN env DEBIAN_FRONTEND=noninteractive apt-get install pv -y
-RUN env DEBIAN_FRONTEND=noninteractive apt-get install socat -y
-RUN env DEBIAN_FRONTEND=noninteractive apt-get install bc -y
-RUN env DEBIAN_FRONTEND=noninteractive apt-get install xxd -y
-RUN env DEBIAN_FRONTEND=noninteractive apt-get install php -y
-RUN env DEBIAN_FRONTEND=noninteractive apt-get install jq -y
-RUN env DEBIAN_FRONTEND=noninteractive apt-get install gh -y
-RUN env DEBIAN_FRONTEND=noninteractive apt-get install aria2 -y
-RUN env DEBIAN_FRONTEND=noninteractive apt-get install curl wget -y
-#RUN env DEBIAN_FRONTEND=noninteractive apt-get install xz -y
-RUN env DEBIAN_FRONTEND=noninteractive apt-get install xz-utils -y
-RUN env DEBIAN_FRONTEND=noninteractive apt-get install tar bzip2 gzip -y
-RUN env DEBIAN_FRONTEND=noninteractive apt-get install sed patch expect -y
-RUN env DEBIAN_FRONTEND=noninteractive apt-get install dos2unix -y
-
 # nohup - _service_ollama , _service_ollama_augment
-RUN env DEBIAN_FRONTEND=noninteractive apt-get install coreutils -y
-
+#... coreutils
+#
+#env DEBIAN_FRONTEND=noninteractive apt-get install xz -y ;\ 
+#
 # https://www.hostinger.com/tutorials/how-to-install-ollama
-RUN apt install python3 python3-pip git -y
-
+#... python3 python3-pip git
 # install llama.cpp from unsloth
-RUN apt-get install libcurl4-openssl-dev -y
+#... libcurl4-openssl-dev
+RUN env DEBIAN_FRONTEND=noninteractive apt-get update ;\ 
+env DEBIAN_FRONTEND=noninteractive apt upgrade -y ;\ 
+env DEBIAN_FRONTEND=noninteractive apt-get install sudo -y ;\ 
+env DEBIAN_FRONTEND=noninteractive apt-get install less -y ;\ 
+env DEBIAN_FRONTEND=noninteractive apt-get install pv -y ;\ 
+env DEBIAN_FRONTEND=noninteractive apt-get install socat -y ;\ 
+env DEBIAN_FRONTEND=noninteractive apt-get install bc -y ;\ 
+env DEBIAN_FRONTEND=noninteractive apt-get install xxd -y ;\ 
+env DEBIAN_FRONTEND=noninteractive apt-get install php -y ;\ 
+env DEBIAN_FRONTEND=noninteractive apt-get install jq -y ;\ 
+env DEBIAN_FRONTEND=noninteractive apt-get install gh -y ;\ 
+env DEBIAN_FRONTEND=noninteractive apt-get install aria2 -y ;\ 
+env DEBIAN_FRONTEND=noninteractive apt-get install curl wget -y ;\ 
+env DEBIAN_FRONTEND=noninteractive apt-get install xz-utils -y ;\ 
+env DEBIAN_FRONTEND=noninteractive apt-get install tar bzip2 gzip -y ;\ 
+env DEBIAN_FRONTEND=noninteractive apt-get install sed patch expect -y ;\ 
+env DEBIAN_FRONTEND=noninteractive apt-get install dos2unix -y ;\ 
+env DEBIAN_FRONTEND=noninteractive apt-get install coreutils -y ;\ 
+env DEBIAN_FRONTEND=noninteractive apt install python3 python3-pip git -y ;\ 
+env DEBIAN_FRONTEND=noninteractive apt-get install libcurl4-openssl-dev -y
 
 
-RUN env DEBIAN_FRONTEND=noninteractive apt-get install sudo -y
-RUN /workspace/ubiquitous_bash/ubiquitous_bash.sh _getMinimal_cloud
+RUN env DEBIAN_FRONTEND=noninteractive apt-get install sudo -y ;\ 
+/workspace/ubiquitous_bash/ubiquitous_bash.sh _getMinimal_cloud
 
 
 # DISCOURAGED. Better to benefit from 'ubiquitous_bash' maintenance identifying the most recent ollama installation commands. 
 #RUN curl -fsSL https://ollama.com/install.sh | sh
 # DISCOURAGED. Does NOT install Llama-augment model.
-RUN /workspace/ubiquitous_bash/ubiquitous_bash.sh _setup_ollama_sequence
-RUN /workspace/ubiquitous_bash/ubiquitous_bash.sh _service_ollama
+RUN /workspace/ubiquitous_bash/ubiquitous_bash.sh _setup_ollama_sequence ;\ 
+/workspace/ubiquitous_bash/ubiquitous_bash.sh _service_ollama
 # PREFERRED. Normally robust, resilient, maintained, and adds the 'Llama-augment' model for automation, etc.
 #RUN /workspace/ubiquitous_bash/ubiquitous_bash.sh _setup_ollama
 
@@ -122,9 +124,8 @@ RUN apt-get install ssh -y
 #RUN echo 'PermitRootLogin prohibit-password' >> /etc/ssh/sshd_config
 
 
-RUN apt-get remove linux-image-* linux-headers-* -y
-
-RUN env DEBIAN_FRONTEND=noninteractive apt-get -y clean
+RUN env DEBIAN_FRONTEND=noninteractive apt-get remove linux-image-* linux-headers-* -y ;\ 
+env DEBIAN_FRONTEND=noninteractive apt-get -y clean
 #RUN env DEBIAN_FRONTEND=noninteractive apt-get remove --autoremove -y
 
 # ###
@@ -240,8 +241,8 @@ ldconfig
 # ###
 
 EOFSPECIAL
-RUN chmod u+x /install_libcudadev_stub.sh
-RUN bash /install_libcudadev_stub.sh
+RUN chmod u+x /install_libcudadev_stub.sh ;\ 
+bash /install_libcudadev_stub.sh
 
 CZXWXcRMTo8EmM8i4d
 }
@@ -262,13 +263,13 @@ RUN env DEBIAN_FRONTEND=noninteractive apt-get install --install-recommends -y c
 # https://github.com/ggml-org/llama.cpp/blob/master/docs/install.md
 
 # https://github.com/ggml-org/llama.cpp/blob/master/docs/build.md
-RUN mkdir -p /opt
-RUN ( cd /opt ; git clone https://github.com/ggml-org/llama.cpp )
-RUN ( cd /opt/llama.cpp ; cmake -B build -DGGML_CUDA=ON )
 #echo $( [[ $(( $(taskset -p $$ | awk '{print $NF}' | tr -dc 'f' | wc -c)/1 )) -le $(( $(nproc)/1 )) ]] && echo $(( $(taskset -p $$ | awk '{print $NF}' | tr -dc 'f' | wc -c)/1 )) || $(( $(nproc)/1 )) )
 #RUN ( cd /opt/llama.cpp ; cmake --build build --config Release -j 3 )
 #RUN ( cd /opt/llama.cpp ; cmake --build build --config Release -j $( [[ $(( $(taskset -p $$ | awk '{print $NF}' | tr -dc 'f' | wc -c)/1 )) -le $(( $(nproc)/1 )) ]] && echo $(( $(taskset -p $$ | awk '{print $NF}' | tr -dc 'f' | wc -c)/1 )) || $(( $(nproc)/1 )) ) )
-RUN ( cd /opt/llama.cpp ; cmake --build build --config Release -j $( nproc ) )
+RUN mkdir -p /opt ;\ 
+( cd /opt ; git clone https://github.com/ggml-org/llama.cpp ) ;\ 
+( cd /opt/llama.cpp ; cmake -B build -DGGML_CUDA=ON ) ;\ 
+( cd /opt/llama.cpp ; cmake --build build --config Release -j $( nproc ) )
 
 
 # ###
@@ -336,9 +337,9 @@ _here_dockerfile-ubiquitous-documentation() {
 # /usr/share/licenses
 # /usr/share/doc
 #
-RUN mkdir -p /licenses
-RUN pip install --no-cache-dir --quiet pip-licenses
-RUN pip-licenses --with-license-file --format=markdown > /licenses/PYTHON_THIRD_PARTY.md
+RUN mkdir -p /licenses ;\ 
+pip install --no-cache-dir --quiet pip-licenses ;\ 
+pip-licenses --with-license-file --format=markdown > /licenses/PYTHON_THIRD_PARTY.md
 
 CZXWXcRMTo8EmM8i4d
 }
@@ -354,23 +355,42 @@ _here_dockerfile-ubiquitous-licenses() {
 
 
 
+    #echo
+    #echo 'RUN mkdir -p /licenses'
+    #echo
+
+    #echo 'COPY <<EOFSPECIAL /licenses/gpl-2.0.txt'
+#cat "$scriptLocal"/licenses/gpl-2.0.txt
+#echo 'EOFSPECIAL'
+
+    #echo 'COPY <<EOFSPECIAL /licenses/gpl-3.0.txt'
+#cat "$scriptLocal"/licenses/gpl-3.0.txt
+#echo 'EOFSPECIAL'
+
+    #echo 'COPY <<EOFSPECIAL /licenses/agpl-3.0.txt'
+#cat "$scriptLocal"/licenses/agpl-3.0.txt
+#echo 'EOFSPECIAL'
+
+    #echo
+
+
     echo
     echo 'RUN mkdir -p /licenses'
-    echo
-
-    echo 'COPY <<EOFSPECIAL /licenses/gpl-2.0.txt'
+    echo 'COPY <<EOFSPECIAL /licenses/gpl-2.0__gpl-3.0__agpl-3.0.txt'
 cat "$scriptLocal"/licenses/gpl-2.0.txt
-echo 'EOFSPECIAL'
-
-    echo 'COPY <<EOFSPECIAL /licenses/gpl-3.0.txt'
+echo
+echo
+echo '------------------------------'
+echo
+echo
 cat "$scriptLocal"/licenses/gpl-3.0.txt
-echo 'EOFSPECIAL'
-
-    echo 'COPY <<EOFSPECIAL /licenses/agpl-3.0.txt'
+echo
+echo
+echo '------------------------------'
+echo
+echo
 cat "$scriptLocal"/licenses/agpl-3.0.txt
 echo 'EOFSPECIAL'
-
-    echo
 
 }
 
