@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='414220425'
+export ub_setScriptChecksum_contents='478630570'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -19602,6 +19602,8 @@ bash /install_ub.sh
 #... python3 python3-pip git
 # install llama.cpp from unsloth
 #... libcurl4-openssl-dev
+# possible nvidia_nemo dependency
+#... ffmpeg
 RUN env DEBIAN_FRONTEND=noninteractive apt-get update ;\ 
 env DEBIAN_FRONTEND=noninteractive apt upgrade -y ;\ 
 env DEBIAN_FRONTEND=noninteractive apt-get install sudo -y ;\ 
@@ -19621,7 +19623,8 @@ env DEBIAN_FRONTEND=noninteractive apt-get install sed patch expect -y ;\
 env DEBIAN_FRONTEND=noninteractive apt-get install dos2unix -y ;\ 
 env DEBIAN_FRONTEND=noninteractive apt-get install coreutils -y ;\ 
 env DEBIAN_FRONTEND=noninteractive apt install python3 python3-pip git -y ;\ 
-env DEBIAN_FRONTEND=noninteractive apt-get install libcurl4-openssl-dev -y
+env DEBIAN_FRONTEND=noninteractive apt-get install libcurl4-openssl-dev -y ;\ 
+env DEBIAN_FRONTEND=noninteractive apt-get install ffmpeg -y
 
 
 RUN env DEBIAN_FRONTEND=noninteractive apt-get install sudo -y ;\ 
@@ -20817,7 +20820,6 @@ factory_knowledge_distillDir='/c/q/p/zCore/infrastructure/ubiquitous_bash/_local
 [[ -e ./_local/knowledge_distill ]] && factory_knowledge_distillDir="$factory_projectDir"/_local/knowledge_distill
 
 
-# WARNING: TODO: Mounting subdirectories of the '/workspace/data' directory either before or after mounting the '/workspace/data' directory  - may be untested.
 #-v "$factory_projectDir":/workspace/project -v "$factory_projectDir":/workspace/data
 if _if_cygwin
 then

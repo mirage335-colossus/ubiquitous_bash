@@ -43,7 +43,6 @@ factory_knowledge_distillDir='/c/q/p/zCore/infrastructure/ubiquitous_bash/_local
 [[ -e ./_local/knowledge_distill ]] && factory_knowledge_distillDir="$factory_projectDir"/_local/knowledge_distill
 
 
-# WARNING: TODO: Mounting subdirectories of the '/workspace/data' directory either before or after mounting the '/workspace/data' directory  - may be untested.
 #-v "$factory_projectDir":/workspace/project -v "$factory_projectDir":/workspace/data
 if _if_cygwin
 then

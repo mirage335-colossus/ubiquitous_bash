@@ -83,6 +83,8 @@ bash /install_ub.sh
 #... python3 python3-pip git
 # install llama.cpp from unsloth
 #... libcurl4-openssl-dev
+# possible nvidia_nemo dependency
+#... ffmpeg
 RUN env DEBIAN_FRONTEND=noninteractive apt-get update ;\ 
 env DEBIAN_FRONTEND=noninteractive apt upgrade -y ;\ 
 env DEBIAN_FRONTEND=noninteractive apt-get install sudo -y ;\ 
@@ -102,7 +104,8 @@ env DEBIAN_FRONTEND=noninteractive apt-get install sed patch expect -y ;\
 env DEBIAN_FRONTEND=noninteractive apt-get install dos2unix -y ;\ 
 env DEBIAN_FRONTEND=noninteractive apt-get install coreutils -y ;\ 
 env DEBIAN_FRONTEND=noninteractive apt install python3 python3-pip git -y ;\ 
-env DEBIAN_FRONTEND=noninteractive apt-get install libcurl4-openssl-dev -y
+env DEBIAN_FRONTEND=noninteractive apt-get install libcurl4-openssl-dev -y ;\ 
+env DEBIAN_FRONTEND=noninteractive apt-get install ffmpeg -y
 
 
 RUN env DEBIAN_FRONTEND=noninteractive apt-get install sudo -y ;\ 
