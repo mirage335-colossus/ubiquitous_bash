@@ -1465,18 +1465,32 @@ _test-shell-cygwin() {
 	
 	local currentPathCount
 	currentPathCount=$(echo "$PATH" | grep -o ':' | wc -l | tr -dc '0-9')
-	if [[ "$currentPathCount" -gt 50 ]]
+	#if [[ "$currentPathCount" -gt 50 ]]
+	if [[ "$currentPathCount" -gt 66 ]]
 	then
 		echo 'fail: count: PATH: '"$currentPathCount"
 		_messageFAIL
 	fi
-	if [[ "$currentPathCount" -gt 44 ]]
+	#if [[ "$currentPathCount" -gt 44 ]]
+	if [[ "$currentPathCount" -gt 60 ]]
 	then
 		echo 'warn: count: PATH: '"$currentPathCount"
 		echo 'warn: MSWEXTPATH may be ignored'
 		_messagePlain_request 'request: reduce the length of PATH variable'
 	fi
 	
+	if [[ "$currentPathCount" -gt 48 ]]
+	then
+		echo 'warn: count: PATH: '"$currentPathCount"
+		echo 'warn: MSWEXTPATH exceeds preferred 48'
+		_messagePlain_request 'request: reduce the length of PATH variable'
+	fi
+	if [[ "$currentPathCount" -gt 44 ]]
+	then
+		echo 'warn: count: PATH: '"$currentPathCount"
+		echo 'warn: MSWEXTPATH exceeds preferred 44'
+		_messagePlain_request 'request: reduce the length of PATH variable'
+	fi
 	if [[ "$currentPathCount" -gt 32 ]]
 	then
 		echo 'warn: count: PATH: '"$currentPathCount"
