@@ -461,7 +461,7 @@ then
 		[[ "\$1" == "" ]] && return 0
 
 		mkdir -p "$HOME"/.ssh
-		chmod 700 "$HOME"/.ssh
+		chmod 700 "$HOME"/.ssh 2> /dev/null
 		
 		local currentString=\$(printf '%s' "\$1" | awk '{print \$2}' | tr -dc 'a-zA-Z0-9')
 
