@@ -130,6 +130,10 @@ fi
 # PASTE
 # ###
 
+rmdir ./models > /dev/null 2>&1
+rmdir ./datasets > /dev/null 2>&1
+rmdir ./outputs > /dev/null 2>&1
+
 
 
 }
@@ -211,6 +215,10 @@ fi
 # ###
 # PASTE
 # ###
+
+rmdir ./models > /dev/null 2>&1
+rmdir ./datasets > /dev/null 2>&1
+rmdir ./outputs > /dev/null 2>&1
 
 
 
@@ -309,6 +317,10 @@ fi
 # ###
 # PASTE
 # ###
+
+rmdir ./models > /dev/null 2>&1
+rmdir ./datasets > /dev/null 2>&1
+rmdir ./outputs > /dev/null 2>&1
 
 
 
@@ -431,6 +443,10 @@ fi
 # PASTE
 # ###
 
+rmdir ./models > /dev/null 2>&1
+rmdir ./datasets > /dev/null 2>&1
+rmdir ./outputs > /dev/null 2>&1
+
 
 
 }
@@ -528,6 +544,10 @@ fi
 # PASTE
 # ###
 
+rmdir ./models > /dev/null 2>&1
+rmdir ./datasets > /dev/null 2>&1
+rmdir ./outputs > /dev/null 2>&1
+
 
 
 }
@@ -607,6 +627,10 @@ fi
 # ###
 # PASTE
 # ###
+
+rmdir ./models > /dev/null 2>&1
+rmdir ./datasets > /dev/null 2>&1
+rmdir ./outputs > /dev/null 2>&1
 
 
 
@@ -707,6 +731,10 @@ fi
 # ###
 # PASTE
 # ###
+
+rmdir ./models > /dev/null 2>&1
+rmdir ./datasets > /dev/null 2>&1
+rmdir ./outputs > /dev/null 2>&1
 
 
 

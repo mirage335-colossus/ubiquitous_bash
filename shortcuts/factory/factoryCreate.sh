@@ -758,7 +758,7 @@ cat << 'CZXWXcRMTo8EmM8i4d'
 
 RUN python -m pip install --upgrade pip
 
-RUN pip3 install --upgrade git+https://github.com/huggingface/transformers.git
+#RUN pip3 install --upgrade git+https://github.com/huggingface/transformers.git
 
 
 # ###

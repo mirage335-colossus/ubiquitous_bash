@@ -105,7 +105,8 @@ env DEBIAN_FRONTEND=noninteractive apt-get install dos2unix -y ;\
 env DEBIAN_FRONTEND=noninteractive apt-get install coreutils -y ;\ 
 env DEBIAN_FRONTEND=noninteractive apt install python3 python3-pip git -y ;\ 
 env DEBIAN_FRONTEND=noninteractive apt-get install libcurl4-openssl-dev -y ;\ 
-env DEBIAN_FRONTEND=noninteractive apt-get install ffmpeg -y
+env DEBIAN_FRONTEND=noninteractive apt-get install ffmpeg -y ;\ 
+env DEBIAN_FRONTEND=noninteractive apt-get install asciinema -y
 
 
 RUN env DEBIAN_FRONTEND=noninteractive apt-get install sudo -y ;\ 
