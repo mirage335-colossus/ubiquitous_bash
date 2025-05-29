@@ -5,6 +5,7 @@ _write_wslconfig() {
     if _if_cygwin
     then
         _here_wsl_config "$1" > "$USERPROFILE"/.wslconfig
+        [[ -e /cygdrive/c/Windows/System32 ]] && _here_wsl_config "$1" > /cygdrive/c/Windows/System32/config/systemprofile/.wslconfig
         return
     fi
 }

@@ -81,6 +81,9 @@ _set_factory_dir
 # PASTE
 # ###
 
+wsl -d docker-desktop sh -c "echo 'net.core.bpf_jit_harden=1' > /etc/sysctl.d/99-nvidia-workaround-bpf_jit_harden.conf"
+wsl -d docker-desktop sysctl -p /etc/sysctl.d/99-nvidia-workaround-bpf_jit_harden.conf
+
 dockerName='axolotlai/axolotl:main-latest'
 
 docker pull "$dockerName"
@@ -156,6 +159,9 @@ _set_factory_dir
 # ###
 # PASTE
 # ###
+
+wsl -d docker-desktop sh -c "echo 'net.core.bpf_jit_harden=1' > /etc/sysctl.d/99-nvidia-workaround-bpf_jit_harden.conf"
+wsl -d docker-desktop sysctl -p /etc/sysctl.d/99-nvidia-workaround-bpf_jit_harden.conf
 
 # https://hub.docker.com/r/runpod/pytorch/tags
 # https://www.runpod.io/console/deploy
@@ -242,6 +248,9 @@ _set_factory_dir
 # ###
 # PASTE
 # ###
+
+wsl -d docker-desktop sh -c "echo 'net.core.bpf_jit_harden=1' > /etc/sysctl.d/99-nvidia-workaround-bpf_jit_harden.conf"
+wsl -d docker-desktop sysctl -p /etc/sysctl.d/99-nvidia-workaround-bpf_jit_harden.conf
 
 dockerName='runpod-pytorch-heavy'
 #docker pull ghcr.io/mirage335-colossus/"$dockerName":latest
@@ -365,6 +374,9 @@ _set_factory_dir
 # PASTE
 # ###
 
+wsl -d docker-desktop sh -c "echo 'net.core.bpf_jit_harden=1' > /etc/sysctl.d/99-nvidia-workaround-bpf_jit_harden.conf"
+wsl -d docker-desktop sysctl -p /etc/sysctl.d/99-nvidia-workaround-bpf_jit_harden.conf
+
 dockerName='runpod-pytorch-unsloth'
 #docker pull ghcr.io/mirage335-colossus/"$dockerName":latest
 
@@ -485,6 +497,9 @@ _set_factory_dir
 # PASTE
 # ###
 
+wsl -d docker-desktop sh -c "echo 'net.core.bpf_jit_harden=1' > /etc/sysctl.d/99-nvidia-workaround-bpf_jit_harden.conf"
+wsl -d docker-desktop sysctl -p /etc/sysctl.d/99-nvidia-workaround-bpf_jit_harden.conf
+
 dockerName='nvcr.io/nvidia/nemo:dev'
 #nvcr.io/nvidia/nemo:dev
 #nvcr.io/nvidia/nemo:25.04
@@ -566,6 +581,9 @@ _set_factory_dir
 # ###
 # PASTE
 # ###
+
+wsl -d docker-desktop sh -c "echo 'net.core.bpf_jit_harden=1' > /etc/sysctl.d/99-nvidia-workaround-bpf_jit_harden.conf"
+wsl -d docker-desktop sysctl -p /etc/sysctl.d/99-nvidia-workaround-bpf_jit_harden.conf
 
 dockerName='nvcr.io/nvidia/nemo:25.04'
 #nvcr.io/nvidia/nemo:dev
@@ -650,6 +668,9 @@ _set_factory_dir
 # ###
 # PASTE
 # ###
+
+wsl -d docker-desktop sh -c "echo 'net.core.bpf_jit_harden=1' > /etc/sysctl.d/99-nvidia-workaround-bpf_jit_harden.conf"
+wsl -d docker-desktop sysctl -p /etc/sysctl.d/99-nvidia-workaround-bpf_jit_harden.conf
 
 dockerName='nvidia_nemo-heavy'
 #nvcr.io/nvidia/nemo:dev

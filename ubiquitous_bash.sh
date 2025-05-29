@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='53937429'
+export ub_setScriptChecksum_contents='3544186493'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -25556,6 +25556,7 @@ _write_wslconfig() {
     if _if_cygwin
     then
         _here_wsl_config "$1" > "$USERPROFILE"/.wslconfig
+        [[ -e /cygdrive/c/Windows/System32 ]] && _here_wsl_config "$1" > /cygdrive/c/Windows/System32/config/systemprofile/.wslconfig
         return
     fi
 }
@@ -27350,6 +27351,9 @@ RUN env DEBIAN_FRONTEND=noninteractive apt-get remove linux-image-* linux-header
 env DEBIAN_FRONTEND=noninteractive apt-get -y clean
 #RUN env DEBIAN_FRONTEND=noninteractive apt-get remove --autoremove -y
 
+RUN echo 'net.core.bpf_jit_harden=1' | sudo -n tee /etc/sysctl.d/99-nvidia-workaround-bpf_jit_harden.conf
+#RUN sysctl -p /etc/sysctl.d/99-nvidia-workaround-bpf_jit_harden.conf
+
 # ###
 # PASTE
 # ###
@@ -28560,6 +28564,9 @@ _set_factory_dir
 # PASTE
 # ###
 
+wsl -d docker-desktop sh -c "echo 'net.core.bpf_jit_harden=1' > /etc/sysctl.d/99-nvidia-workaround-bpf_jit_harden.conf"
+wsl -d docker-desktop sysctl -p /etc/sysctl.d/99-nvidia-workaround-bpf_jit_harden.conf
+
 dockerName='axolotlai/axolotl:main-latest'
 
 docker pull "$dockerName"
@@ -28635,6 +28642,9 @@ _set_factory_dir
 # ###
 # PASTE
 # ###
+
+wsl -d docker-desktop sh -c "echo 'net.core.bpf_jit_harden=1' > /etc/sysctl.d/99-nvidia-workaround-bpf_jit_harden.conf"
+wsl -d docker-desktop sysctl -p /etc/sysctl.d/99-nvidia-workaround-bpf_jit_harden.conf
 
 # https://hub.docker.com/r/runpod/pytorch/tags
 # https://www.runpod.io/console/deploy
@@ -28721,6 +28731,9 @@ _set_factory_dir
 # ###
 # PASTE
 # ###
+
+wsl -d docker-desktop sh -c "echo 'net.core.bpf_jit_harden=1' > /etc/sysctl.d/99-nvidia-workaround-bpf_jit_harden.conf"
+wsl -d docker-desktop sysctl -p /etc/sysctl.d/99-nvidia-workaround-bpf_jit_harden.conf
 
 dockerName='runpod-pytorch-heavy'
 #docker pull ghcr.io/mirage335-colossus/"$dockerName":latest
@@ -28844,6 +28857,9 @@ _set_factory_dir
 # PASTE
 # ###
 
+wsl -d docker-desktop sh -c "echo 'net.core.bpf_jit_harden=1' > /etc/sysctl.d/99-nvidia-workaround-bpf_jit_harden.conf"
+wsl -d docker-desktop sysctl -p /etc/sysctl.d/99-nvidia-workaround-bpf_jit_harden.conf
+
 dockerName='runpod-pytorch-unsloth'
 #docker pull ghcr.io/mirage335-colossus/"$dockerName":latest
 
@@ -28964,6 +28980,9 @@ _set_factory_dir
 # PASTE
 # ###
 
+wsl -d docker-desktop sh -c "echo 'net.core.bpf_jit_harden=1' > /etc/sysctl.d/99-nvidia-workaround-bpf_jit_harden.conf"
+wsl -d docker-desktop sysctl -p /etc/sysctl.d/99-nvidia-workaround-bpf_jit_harden.conf
+
 dockerName='nvcr.io/nvidia/nemo:dev'
 #nvcr.io/nvidia/nemo:dev
 #nvcr.io/nvidia/nemo:25.04
@@ -29045,6 +29064,9 @@ _set_factory_dir
 # ###
 # PASTE
 # ###
+
+wsl -d docker-desktop sh -c "echo 'net.core.bpf_jit_harden=1' > /etc/sysctl.d/99-nvidia-workaround-bpf_jit_harden.conf"
+wsl -d docker-desktop sysctl -p /etc/sysctl.d/99-nvidia-workaround-bpf_jit_harden.conf
 
 dockerName='nvcr.io/nvidia/nemo:25.04'
 #nvcr.io/nvidia/nemo:dev
@@ -29129,6 +29151,9 @@ _set_factory_dir
 # ###
 # PASTE
 # ###
+
+wsl -d docker-desktop sh -c "echo 'net.core.bpf_jit_harden=1' > /etc/sysctl.d/99-nvidia-workaround-bpf_jit_harden.conf"
+wsl -d docker-desktop sysctl -p /etc/sysctl.d/99-nvidia-workaround-bpf_jit_harden.conf
 
 dockerName='nvidia_nemo-heavy'
 #nvcr.io/nvidia/nemo:dev

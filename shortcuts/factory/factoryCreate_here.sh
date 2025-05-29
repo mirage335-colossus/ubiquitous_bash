@@ -132,6 +132,9 @@ RUN env DEBIAN_FRONTEND=noninteractive apt-get remove linux-image-* linux-header
 env DEBIAN_FRONTEND=noninteractive apt-get -y clean
 #RUN env DEBIAN_FRONTEND=noninteractive apt-get remove --autoremove -y
 
+RUN echo 'net.core.bpf_jit_harden=1' | sudo -n tee /etc/sysctl.d/99-nvidia-workaround-bpf_jit_harden.conf
+#RUN sysctl -p /etc/sysctl.d/99-nvidia-workaround-bpf_jit_harden.conf
+
 # ###
 # PASTE
 # ###
