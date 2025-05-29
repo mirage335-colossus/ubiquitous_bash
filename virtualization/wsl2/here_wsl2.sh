@@ -3,6 +3,8 @@ _here_wsl_config() {
     cat << 'CZXWXcRMTo8EmM8i4d'
 [wsl2]
 memory=999GB
+kernelCommandLine = "sysctl.net.core.bpf_jit_harden=1"
+
 CZXWXcRMTo8EmM8i4d
 
     if [[ -e /cygdrive/c/core/infrastructure/ubdist-kernel/ubdist-kernel ]] && [[ "$1" != "ub_ignore_kernel_wsl" ]]
