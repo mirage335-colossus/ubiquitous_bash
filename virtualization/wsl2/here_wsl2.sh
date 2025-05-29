@@ -1,5 +1,8 @@
 
 _here_wsl_config() {
+# ATTENTION: If nested virtualization configuration is necessary (ie. the apparently now default 'nestedVirtualization=true' directive is somehow not already in effect), this may be a better place for that directive (normally writing a '.wslconfig' file).
+#[wsl2]
+#nestedVirtualization=true
     cat << 'CZXWXcRMTo8EmM8i4d'
 [wsl2]
 memory=999GB
@@ -17,6 +20,9 @@ CZXWXcRMTo8EmM8i4d
 
 
 _here_wsl_conf() {
+# ATTENTION: Directive for nested virtualization may have moved to being more appropriate for a host '.wslconfig' file than a guest '/etc/wsl.conf' file .
+#[wsl2]
+#nestedVirtualization=true
     cat << 'CZXWXcRMTo8EmM8i4d'
 
 [boot]
@@ -25,9 +31,6 @@ command = /bin/bash -c 'systemctl stop sddm ; rm -f /root/_rootGrab.sh ; usermod
 
 [user]
 default = user
-
-[wsl2]
-nestedVirtualization=true
 
 [automount]
 options = "metadata"

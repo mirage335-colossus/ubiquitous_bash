@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='1002244839'
+export ub_setScriptChecksum_contents='4053564749'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -25639,6 +25639,9 @@ _setup_wsl() {
 
 
 _here_wsl_config() {
+# ATTENTION: If nested virtualization configuration is necessary (ie. the apparently now default 'nestedVirtualization=true' directive is somehow not already in effect), this may be a better place for that directive (normally writing a '.wslconfig' file).
+#[wsl2]
+#nestedVirtualization=true
     cat << 'CZXWXcRMTo8EmM8i4d'
 [wsl2]
 memory=999GB
@@ -25656,6 +25659,9 @@ CZXWXcRMTo8EmM8i4d
 
 
 _here_wsl_conf() {
+# ATTENTION: Directive for nested virtualization may have moved to being more appropriate for a host '.wslconfig' file than a guest '/etc/wsl.conf' file .
+#[wsl2]
+#nestedVirtualization=true
     cat << 'CZXWXcRMTo8EmM8i4d'
 
 [boot]
@@ -25664,9 +25670,6 @@ command = /bin/bash -c 'systemctl stop sddm ; rm -f /root/_rootGrab.sh ; usermod
 
 [user]
 default = user
-
-[wsl2]
-nestedVirtualization=true
 
 [automount]
 options = "metadata"
