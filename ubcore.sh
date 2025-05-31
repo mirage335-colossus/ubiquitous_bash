@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='997083873'
+export ub_setScriptChecksum_contents='997767076'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -37971,6 +37971,73 @@ _set_msw_ghToken() {
     return 0
 }
 
+_set_msw_apiToken() {
+    if [[ "$WSLENV" != "OPENAI_API_KEY" ]] && [[ "$WSLENV" != "OPENAI_API_KEY"* ]] && [[ "$WSLENV" != *"OPENAI_API_KEY" ]] && [[ "$WSLENV" != *"OPENAI_API_KEY"* ]]
+    then
+        if [[ "$WSLENV" == "" ]]
+        then
+            export WSLENV="OPENAI_API_KEY"
+        else
+            export WSLENV="$WSLENV:OPENAI_API_KEY"
+        fi
+    fi
+    if [[ "$WSLENV" != "OPENROUTER_API_KEY" ]] && [[ "$WSLENV" != "OPENROUTER_API_KEY"* ]] && [[ "$WSLENV" != *"OPENROUTER_API_KEY" ]] && [[ "$WSLENV" != *"OPENROUTER_API_KEY"* ]]
+    then
+        if [[ "$WSLENV" == "" ]]
+        then
+            export WSLENV="OPENROUTER_API_KEY"
+        else
+            export WSLENV="$WSLENV:OPENROUTER_API_KEY"
+        fi
+    fi
+    if [[ "$WSLENV" != "HF_AKI_KEY" ]] && [[ "$WSLENV" != "HF_AKI_KEY"* ]] && [[ "$WSLENV" != *"HF_AKI_KEY" ]] && [[ "$WSLENV" != *"HF_AKI_KEY"* ]]
+    then
+        if [[ "$WSLENV" == "" ]]
+        then
+            export WSLENV="HF_AKI_KEY"
+        else
+            export WSLENV="$WSLENV:HF_AKI_KEY"
+        fi
+    fi
+    if [[ "$WSLENV" != "HF_TOKEN" ]] && [[ "$WSLENV" != "HF_TOKEN"* ]] && [[ "$WSLENV" != *"HF_TOKEN" ]] && [[ "$WSLENV" != *"HF_TOKEN"* ]]
+    then
+        if [[ "$WSLENV" == "" ]]
+        then
+            export WSLENV="HF_TOKEN"
+        else
+            export WSLENV="$WSLENV:HF_TOKEN"
+        fi
+    fi
+    if [[ "$WSLENV" != "PUBLIC_KEY" ]] && [[ "$WSLENV" != "PUBLIC_KEY"* ]] && [[ "$WSLENV" != *"PUBLIC_KEY" ]] && [[ "$WSLENV" != *"PUBLIC_KEY"* ]]
+    then
+        if [[ "$WSLENV" == "" ]]
+        then
+            export WSLENV="PUBLIC_KEY"
+        else
+            export WSLENV="$WSLENV:PUBLIC_KEY"
+        fi
+    fi
+    if [[ "$WSLENV" != "JUPYTER_PASSWORD" ]] && [[ "$WSLENV" != "JUPYTER_PASSWORD"* ]] && [[ "$WSLENV" != *"JUPYTER_PASSWORD" ]] && [[ "$WSLENV" != *"JUPYTER_PASSWORD"* ]]
+    then
+        if [[ "$WSLENV" == "" ]]
+        then
+            export WSLENV="JUPYTER_PASSWORD"
+        else
+            export WSLENV="$WSLENV:JUPYTER_PASSWORD"
+        fi
+    fi
+    if [[ "$WSLENV" != "ai_safety" ]] && [[ "$WSLENV" != "ai_safety"* ]] && [[ "$WSLENV" != *"ai_safety" ]] && [[ "$WSLENV" != *"ai_safety"* ]]
+    then
+        if [[ "$WSLENV" == "" ]]
+        then
+            export WSLENV="ai_safety"
+        else
+            export WSLENV="$WSLENV:ai_safety"
+        fi
+    fi
+    return 0
+}
+
 
 _set_msw_wsl() {
     ! _if_cygwin && return 1
@@ -37979,6 +38046,7 @@ _set_msw_wsl() {
     _set_msw_qt5ct
 
     _set_msw_ghToken
+    _set_msw_apiToken
 
     return 0
 }

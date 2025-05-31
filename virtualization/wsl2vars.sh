@@ -82,6 +82,73 @@ _set_msw_ghToken() {
     return 0
 }
 
+_set_msw_apiToken() {
+    if [[ "$WSLENV" != "OPENAI_API_KEY" ]] && [[ "$WSLENV" != "OPENAI_API_KEY"* ]] && [[ "$WSLENV" != *"OPENAI_API_KEY" ]] && [[ "$WSLENV" != *"OPENAI_API_KEY"* ]]
+    then
+        if [[ "$WSLENV" == "" ]]
+        then
+            export WSLENV="OPENAI_API_KEY"
+        else
+            export WSLENV="$WSLENV:OPENAI_API_KEY"
+        fi
+    fi
+    if [[ "$WSLENV" != "OPENROUTER_API_KEY" ]] && [[ "$WSLENV" != "OPENROUTER_API_KEY"* ]] && [[ "$WSLENV" != *"OPENROUTER_API_KEY" ]] && [[ "$WSLENV" != *"OPENROUTER_API_KEY"* ]]
+    then
+        if [[ "$WSLENV" == "" ]]
+        then
+            export WSLENV="OPENROUTER_API_KEY"
+        else
+            export WSLENV="$WSLENV:OPENROUTER_API_KEY"
+        fi
+    fi
+    if [[ "$WSLENV" != "HF_AKI_KEY" ]] && [[ "$WSLENV" != "HF_AKI_KEY"* ]] && [[ "$WSLENV" != *"HF_AKI_KEY" ]] && [[ "$WSLENV" != *"HF_AKI_KEY"* ]]
+    then
+        if [[ "$WSLENV" == "" ]]
+        then
+            export WSLENV="HF_AKI_KEY"
+        else
+            export WSLENV="$WSLENV:HF_AKI_KEY"
+        fi
+    fi
+    if [[ "$WSLENV" != "HF_TOKEN" ]] && [[ "$WSLENV" != "HF_TOKEN"* ]] && [[ "$WSLENV" != *"HF_TOKEN" ]] && [[ "$WSLENV" != *"HF_TOKEN"* ]]
+    then
+        if [[ "$WSLENV" == "" ]]
+        then
+            export WSLENV="HF_TOKEN"
+        else
+            export WSLENV="$WSLENV:HF_TOKEN"
+        fi
+    fi
+    if [[ "$WSLENV" != "PUBLIC_KEY" ]] && [[ "$WSLENV" != "PUBLIC_KEY"* ]] && [[ "$WSLENV" != *"PUBLIC_KEY" ]] && [[ "$WSLENV" != *"PUBLIC_KEY"* ]]
+    then
+        if [[ "$WSLENV" == "" ]]
+        then
+            export WSLENV="PUBLIC_KEY"
+        else
+            export WSLENV="$WSLENV:PUBLIC_KEY"
+        fi
+    fi
+    if [[ "$WSLENV" != "JUPYTER_PASSWORD" ]] && [[ "$WSLENV" != "JUPYTER_PASSWORD"* ]] && [[ "$WSLENV" != *"JUPYTER_PASSWORD" ]] && [[ "$WSLENV" != *"JUPYTER_PASSWORD"* ]]
+    then
+        if [[ "$WSLENV" == "" ]]
+        then
+            export WSLENV="JUPYTER_PASSWORD"
+        else
+            export WSLENV="$WSLENV:JUPYTER_PASSWORD"
+        fi
+    fi
+    if [[ "$WSLENV" != "ai_safety" ]] && [[ "$WSLENV" != "ai_safety"* ]] && [[ "$WSLENV" != *"ai_safety" ]] && [[ "$WSLENV" != *"ai_safety"* ]]
+    then
+        if [[ "$WSLENV" == "" ]]
+        then
+            export WSLENV="ai_safety"
+        else
+            export WSLENV="$WSLENV:ai_safety"
+        fi
+    fi
+    return 0
+}
+
 
 _set_msw_wsl() {
     ! _if_cygwin && return 1
@@ -90,6 +157,7 @@ _set_msw_wsl() {
     _set_msw_qt5ct
 
     _set_msw_ghToken
+    _set_msw_apiToken
 
     return 0
 }
