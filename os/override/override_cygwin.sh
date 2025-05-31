@@ -378,6 +378,8 @@ then
 	#}
 	#alias l='_wsl'
 	alias u='_wsl'
+
+	alias codex='wsl -d ubdist codex'
 fi
 	
 _sudo_cygwin-if_parameter-skip2() {

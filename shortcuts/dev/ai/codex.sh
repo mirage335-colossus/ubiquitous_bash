@@ -11,8 +11,9 @@ _setup_codex() {
 }
 
 
-
-
+#codex --model codex-mini-latest
+#codex --model o3
+#alias codex='wsl -d ubdist codex'
 
 
 
