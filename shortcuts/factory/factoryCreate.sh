@@ -80,13 +80,12 @@ RUN python -m pip install --upgrade pip
 
 CZXWXcRMTo8EmM8i4d
 
-
-_here_dockerfile-ubiquitous-documentation "$@"
-
 _here_dockerfile-libcudadev_stub "$@"
 _here_dockerfile-llamacpp "$@"
 
 #_here_dockerfile-unsloth "$@"
+
+_here_dockerfile-ubiquitous-documentation "$@"
 
 _here_dockerfile-ubiquitous-licenses "$@"
 
@@ -274,13 +273,12 @@ RUN python -m pip install --upgrade pip
 
 CZXWXcRMTo8EmM8i4d
 
-
-_here_dockerfile-ubiquitous-documentation "$@"
-
 _here_dockerfile-libcudadev_stub "$@"
 _here_dockerfile-llamacpp "$@"
 
 _here_dockerfile-unsloth "$@"
+
+_here_dockerfile-ubiquitous-documentation "$@"
 
 _here_dockerfile-ubiquitous-licenses "$@"
 
@@ -456,9 +454,6 @@ cat << 'CZXWXcRMTo8EmM8i4d'
 
 CZXWXcRMTo8EmM8i4d
 
-# No Python, etc, added .
-#_here_dockerfile-ubiquitous-documentation "$@"
-
 #_here_dockerfile-libcudadev_stub "$@"
 
 # DUBIOUS.
@@ -466,6 +461,9 @@ CZXWXcRMTo8EmM8i4d
 
 # DUBIOUS.
 #_here_dockerfile-unsloth "$@"
+
+# No Python, etc, added .
+#_here_dockerfile-ubiquitous-documentation "$@"
 
 _here_dockerfile-ubiquitous-licenses "$@"
 
@@ -616,14 +614,13 @@ RUN python -m pip install --upgrade pip
 
 CZXWXcRMTo8EmM8i4d
 
-
-_here_dockerfile-ubiquitous-documentation "$@"
-
 _here_dockerfile-libcudadev_stub "$@"
 _here_dockerfile-llamacpp "$@"
 
 # DUBIOUS.
 #_here_dockerfile-unsloth "$@"
+
+_here_dockerfile-ubiquitous-documentation "$@"
 
 _here_dockerfile-ubiquitous-licenses "$@"
 
@@ -767,15 +764,14 @@ RUN python -m pip install --upgrade pip
 
 CZXWXcRMTo8EmM8i4d
 
-
-_here_dockerfile-ubiquitous-documentation "$@"
-
 # ATTENTION: TODO: Desirable if not already present !
 #_here_dockerfile-libcudadev_stub "$@"
 #_here_dockerfile-llamacpp "$@"
 
 # DUBIOUS.
 #_here_dockerfile-unsloth "$@"
+
+_here_dockerfile-ubiquitous-documentation "$@"
 
 _here_dockerfile-ubiquitous-licenses "$@"
 

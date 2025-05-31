@@ -345,9 +345,10 @@ CZXWXcRMTo8EmM8i4d
 
 
 _here_dockerfile-ubiquitous-documentation() {
-    cat << 'CZXWXcRMTo8EmM8i4d'
+    #cat << 'CZXWXcRMTo8EmM8i4d'
 
 # Normally expected redundant. Copyleft license files are normally already preserved at several filesystem locations.
+
 #python3 -m site
 # /usr/local/lib/python*/dist-packages
 #find /usr/local/lib/python*/dist-packages -iname '*.dist-info'
@@ -355,11 +356,50 @@ _here_dockerfile-ubiquitous-documentation() {
 # /usr/share/licenses
 # /usr/share/doc
 #
-RUN mkdir -p /licenses ;\ 
-pip install --no-cache-dir --quiet pip-licenses ;\ 
-pip-licenses --with-license-file --format=markdown > /licenses/PYTHON_THIRD_PARTY.md
+#--ignore-packages broken_pkg
+#pip-licenses --with-license-file --format=markdown > /licenses/PYTHON_THIRD_PARTY.md
+#
+#RUN mkdir -p /licenses ;\ 
+#pip install -U --no-cache-dir --quiet pip-licenses ;\ 
+#pip-licenses --user --with-license-file --format=markdown > /licenses/PYTHON_THIRD_PARTY.md
 
+#CZXWXcRMTo8EmM8i4d
+
+
+
+
+# ATTRIBUTION-AI: codex  model: codex-mini-latest  provider: openai  approval: full-auto  2025-05-31
+
+echo 'COPY <<EOFSPECIAL /install_licenses.py'
+cat << 'CZXWXcRMTo8EmM8i4d'
+import json, subprocess, glob, os
+# 1) get the pip‑managed packages
+pkgs = json.loads(subprocess.run(
+    ['pip','list','--format=json'],
+    capture_output=True, text=True
+).stdout)
+# 2) print a Markdown table header
+print('| Name | Version | License | License file |')
+print('| ---- | ------- | ------- | ------------ |')
+# 3) for each, run `pip show`, parse License+Location, glob for LICENSE*
+for pkg in pkgs:
+    name, ver = pkg['name'], pkg['version']
+    info = subprocess.run(['pip','show', name],
+                            capture_output=True, text=True).stdout.splitlines()
+    meta = dict(line.split(':',1) for line in info if ':' in line)
+    lic = meta.get('License','UNKNOWN').strip()
+    loc = meta.get('Location','').strip()
+    # look for a LICENSE* file under the package’s directory
+    pattern = os.path.join(loc, name.replace('-','_')+'*', 'LICEN[CS]E*')
+    matches = glob.glob(pattern)
+    lic_fp = matches[0] if matches else 'N/A'
+    print(f'| {name} | {ver} | {lic} | {lic_fp} |')
 CZXWXcRMTo8EmM8i4d
+echo 'EOFSPECIAL'
+
+echo 'RUN mkdir -p /licenses ;\ '
+echo 'python3 /install_licenses.py > /licenses/PYTHON_THIRD_PARTY.md'
+
 }
 
 
