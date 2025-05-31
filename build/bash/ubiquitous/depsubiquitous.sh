@@ -8,6 +8,8 @@ _init_deps() {
 	export enUb_generic=""
 
 	export enUb_dev_buildOps=""
+
+	export enUb_dev_ai=""
 	
 	export enUb_cloud_heavy=""
 	
@@ -26,6 +28,7 @@ _init_deps() {
 	export enUb_distro=""
 	export enUb_getMinimal=""
 	export enUb_getMost_special_veracrypt=""
+	export enUb_getMost_special_npm=""
 	export enUb_build=""
 	export enUb_buildBash=""
 	export enUb_os_x11=""
@@ -126,6 +129,10 @@ _deps_dev_buildOps() {
 	export enUb_dev_buildOps="true"
 }
 
+_deps_dev_ai() {
+	export enUb_dev_ai="true"
+}
+
 _deps_cloud_heavy() {
 	_deps_notLean
 	export enUb_cloud_heavy="true"
@@ -201,6 +208,10 @@ _deps_distro() {
 
 _deps_getMinimal() {
 	export enUb_getMinimal="true"
+}
+
+_deps_get_npm() {
+	export enUb_getMost_special_npm="true"
 }
 
 _deps_getVeracrypt() {

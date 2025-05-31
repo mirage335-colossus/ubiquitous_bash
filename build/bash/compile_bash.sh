@@ -5,6 +5,8 @@ _compile_bash_deps() {
 	
 	if [[ "$1" == "lean" ]]
 	then
+		_deps_dev_ai
+		
 		_deps_dev_buildOps
 		
 		#_deps_git
@@ -27,6 +29,8 @@ _compile_bash_deps() {
 	# Specifically intended to be imported into user profile.
 	if [[ "$1" == "ubcore" ]]
 	then
+		_deps_dev_ai
+		
 		_deps_dev_buildOps
 		
 		_deps_notLean
@@ -62,6 +66,7 @@ _compile_bash_deps() {
 		
 		_deps_distro
 		_deps_getMinimal
+		_deps_get_npm
 		_deps_getVeracrypt
 		_deps_linux
 		
@@ -144,6 +149,8 @@ _compile_bash_deps() {
 	
 	if [[ "$1" == "processor" ]]
 	then
+		_deps_dev_ai
+		
 		_deps_dev
 		_deps_dev_buildOps
 		
@@ -183,6 +190,8 @@ _compile_bash_deps() {
 	
 	if [[ "$1" == "abstract" ]] || [[ "$1" == "abstractfs" ]]
 	then
+		_deps_dev_ai
+		
 		_deps_dev
 		_deps_dev_buildOps
 		
@@ -219,6 +228,8 @@ _compile_bash_deps() {
 	# Beware most uses of fakehome will benefit from full virtualization fallback.
 	if [[ "$1" == "fakehome" ]]
 	then
+		_deps_dev_ai
+		
 		_deps_dev
 		_deps_dev_buildOps
 		
@@ -255,6 +266,8 @@ _compile_bash_deps() {
 	
 	if [[ "$1" == "monolithic" ]]
 	then
+		_deps_dev_ai
+		
 		_deps_dev_heavy
 		#_deps_dev_heavy_atom
 		_deps_dev
@@ -332,6 +345,7 @@ _compile_bash_deps() {
 		
 		_deps_distro
 		_deps_getMinimal
+		_deps_get_npm
 		_deps_getVeracrypt
 		
 		#_deps_blockchain
@@ -373,6 +387,8 @@ _compile_bash_deps() {
 	
 	if [[ "$1" == "core" ]]
 	then
+		_deps_dev_ai
+		
 		_deps_dev_heavy
 		#_deps_dev_heavy_atom
 		_deps_dev
@@ -450,6 +466,7 @@ _compile_bash_deps() {
 		
 		_deps_distro
 		_deps_getMinimal
+		_deps_get_npm
 		_deps_getVeracrypt
 		
 		#_deps_blockchain
@@ -492,6 +509,8 @@ _compile_bash_deps() {
 	# In practice, 'core' now includes '_deps_ai' by default to support '_deps_ai_dataset' .
 	if [[ "$1" == "core_ai" ]]
 	then
+		_deps_dev_ai
+		
 		_deps_virtPython
 		
 		_deps_ai
@@ -511,6 +530,8 @@ _compile_bash_deps() {
 	
 	if [[ "$1" == "" ]] || [[ "$1" == "ubiquitous_bash" ]] || [[ "$1" == "ubiquitous_bash.sh" ]] || [[ "$1" == "complete" ]]
 	then
+		_deps_dev_ai
+		
 		_deps_dev_heavy
 		#_deps_dev_heavy_atom
 		_deps_dev
@@ -589,6 +610,7 @@ _compile_bash_deps() {
 		
 		_deps_distro
 		_deps_getMinimal
+		_deps_get_npm
 		_deps_getVeracrypt
 		
 		_deps_blockchain
@@ -775,6 +797,8 @@ _compile_bash_utilities() {
 	( [[ "$enUb_notLean" == "true" ]] || [[ "$enUb_getMinimal" == "true" ]] ) && includeScriptList+=( "os/distro/unix/openssl"/splice_openssl.sh )
 	
 	( [[ "$enUb_notLean" == "true" ]] || [[ "$enUb_getMinimal" == "true" ]] ) && includeScriptList+=( "os/distro"/getMost_special_zWorkarounds.sh )
+
+	( [[ "$enUb_notLean" == "true" ]] || [[ "$enUb_getMinimal" == "true" ]] || [[ "$enUb_getMost_special_npm" == "true" ]] ) && includeScriptList+=( "os/distro"/getMost_special_npm.sh )
 	
 	( [[ "$enUb_notLean" == "true" ]] || [[ "$enUb_getMinimal" == "true" ]] || [[ "$enUb_getMost_special_veracrypt" == "true" ]] ) && includeScriptList+=( "os/distro"/getMost_special_veracrypt.sh )
 	
@@ -998,6 +1022,10 @@ _compile_bash_shortcuts() {
 	
 	( [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_search" == "true" ]] ) && includeScriptList+=( "shortcuts/dev/app/search"/search.sh )
 	( [[ "$enUb_dev_heavy" == "true" ]] || [[ "$enUb_search" == "true" ]] ) && includeScriptList+=( "shortcuts/dev/app/search/recoll"/recoll.sh )
+	
+	
+	( [[ "$enUb_dev_ai" == "true" ]] ) && includeScriptList+=( "shortcuts/dev/ai"/claude_code.sh )
+	( [[ "$enUb_dev_ai" == "true" ]] ) && includeScriptList+=( "shortcuts/dev/ai"/codex.sh )
 	
 	
 	( [[ "$enUb_cloud_heavy" == "true" ]] || [[ "$enUb_cloud" == "true" ]] ) && includeScriptList+=( "shortcuts/cloud/self/screenScraper"/screenScraper-nix.sh )
