@@ -321,6 +321,7 @@ _getMost_debian11_install() {
 
 	_getMost_backend_aptGetInstall bup
 	
+	# ATTENTION: WSL2 distribution instances may also need 'socat' for internal network port forwarding.
 	_getMost_backend_aptGetInstall bc autossh nmap socat sockstat rsync net-tools
 	_getMost_backend_aptGetInstall bc nmap autossh socat sshfs tor
 	_getMost_backend_aptGetInstall sockstat

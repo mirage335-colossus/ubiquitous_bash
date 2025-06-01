@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='3306595592'
+export ub_setScriptChecksum_contents='2226756022'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -1215,6 +1215,11 @@ _powershell() {
     [[ "$currentPowershellBinary" == "" ]] && currentPowershellBinary=$(find /cygdrive/d/Windows/System32/WindowsPowerShell/ -name powershell.exe 2>/dev/null | head -n 1)
     [[ "$currentPowershellBinary" == "" ]] && currentPowershellBinary=$(find /cygdrive/e/Windows/System32/WindowsPowerShell/ -name powershell.exe 2>/dev/null | head -n 1)
     [[ "$currentPowershellBinary" == "" ]] && currentPowershellBinary=$(find /cygdrive/f/Windows/System32/WindowsPowerShell/ -name powershell.exe 2>/dev/null | head -n 1)
+	
+    [[ "$currentPowershellBinary" == "" ]] && currentPowershellBinary=$(find /mnt/c/Windows/System32/WindowsPowerShell/ -name powershell.exe 2>/dev/null | head -n 1)
+    [[ "$currentPowershellBinary" == "" ]] && currentPowershellBinary=$(find /mnt/d/Windows/System32/WindowsPowerShell/ -name powershell.exe 2>/dev/null | head -n 1)
+    [[ "$currentPowershellBinary" == "" ]] && currentPowershellBinary=$(find /mnt/e/Windows/System32/WindowsPowerShell/ -name powershell.exe 2>/dev/null | head -n 1)
+    [[ "$currentPowershellBinary" == "" ]] && currentPowershellBinary=$(find /mnt/f/Windows/System32/WindowsPowerShell/ -name powershell.exe 2>/dev/null | head -n 1)
 
 	#_userMSW "$currentPowershellBinary" "$@"
     "$currentPowershellBinary" "$@"
@@ -2192,6 +2197,18 @@ _package-cygwin() {
 _if_wsl() {
     uname -a | grep -i 'microsoft' > /dev/null 2>&1 || uname -a | grep -i 'WSL2' > /dev/null 2>&1
 }
+
+if [[ "$WSL_DISTRO_NAME" != "" ]] && _if_wsl
+then
+    
+    # WARNING: CAUTION: Adding some native MSWindows programs from MSWindows path (eg. python) may cause conflicts with native WSL/Linux equivalent programs, etc.
+    
+    # NOTICE: Native ubdist/OS, WSL/Linux, etc, equivalent, is 'xdg-open', etc .
+    #! type explorer > /dev/null 2>&1 && [[ -e /mnt/c/Windows/System32/explorer.exe ]] && explorer() { /mnt/c/Windows/System32/explorer.exe "$@"; }
+    ! type explorer > /dev/null 2>&1 && [[ -e /mnt/c/Windows/explorer.exe ]] && explorer() { /mnt/c/Windows/explorer.exe "$@"; }
+    #! type explorer > /dev/null 2>&1 && [[ -e /mnt/d/Windows/System32/explorer.exe ]] && explorer() { /mnt/d/Windows/System32/explorer.exe "$@"; }
+    ! type explorer > /dev/null 2>&1 && [[ -e /mnt/d/Windows/explorer.exe ]] && explorer() { /mnt/d/Windows/explorer.exe "$@"; }
+fi
 
 
 
@@ -11531,6 +11548,7 @@ _getMost_debian11_install() {
 
 	_getMost_backend_aptGetInstall bup
 	
+	# ATTENTION: WSL2 distribution instances may also need 'socat' for internal network port forwarding.
 	_getMost_backend_aptGetInstall bc autossh nmap socat sockstat rsync net-tools
 	_getMost_backend_aptGetInstall bc nmap autossh socat sshfs tor
 	_getMost_backend_aptGetInstall sockstat
@@ -25593,6 +25611,268 @@ _write_wslconfig() {
 
 
 
+
+_setup_wsl2_guest-portForward() {
+    _messagePlain_nominal 'setup: guest: portForward'
+
+    local current_wsldist
+    current_wsldist="$1"
+    [[ "$current_wsldist" == "" ]] && current_wsldist="ubdist"
+
+    echo "$current_wsldist"
+
+    local current_wsl_scriptAbsoluteLocation
+    current_wsl_scriptAbsoluteLocation=$(cygpath -m "$scriptAbsoluteLocation")
+    current_wsl_scriptAbsoluteLocation=$(wsl -d "$current_wsldist" wslpath "$current_wsl_scriptAbsoluteLocation")
+
+    _messagePlain_probe '_getDep socat'
+    wsl -d "$current_wsldist" "$current_wsl_scriptAbsoluteLocation" _getDep socat
+
+    # ATTRIBUTION-AI: ChatGPT o3  2025-06-01  (partially)
+
+
+    _messagePlain_probe 'write: /usr/local/bin/hostport-proxy.sh'
+    cat << 'CZXWXcRMTo8EmM8i4d' | wsl -d "$current_wsldist" sudo -n tee /usr/local/bin/hostport-proxy.sh > /dev/null
+#!/usr/bin/env bash
+set -euo pipefail
+
+PORT=${PORT:-11434}               # default; override in the service if you like
+HOST_IP_FILE="/net-hostip"
+
+while true; do
+  # Bail out quickly if the helper file doesn't exist (yet)
+  [[ -r "$HOST_IP_FILE" ]] || { sleep 2; continue; }
+
+  HOST_IP=$(<"$HOST_IP_FILE")
+  [[ -n "$HOST_IP" ]] || { sleep 2; continue; }
+
+  echo "$(date '+%F %T') 127.0.0.1:$PORT → $HOST_IP:$PORT"
+  # --fork lets a single socat instance serve many clients in parallel
+  socat TCP-LISTEN:"$PORT",fork,reuseaddr TCP4:"$HOST_IP":"$PORT" || true
+  # If socat exits (network flap, etc.) loop and start again
+  sleep 1
+done
+CZXWXcRMTo8EmM8i4d
+    wsl -d "$current_wsldist" sudo -n chmod +x /usr/local/bin/hostport-proxy.sh
+    #wsl -d "$current_wsldist" sudo -n cat /usr/local/bin/hostport-proxy.sh
+
+
+    #_messagePlain_probe 'write: /etc/wsl.conf'
+    # "$current_wsldist" /etc/wsl.conf already enables systemd by default
+    #_here_wsl_conf
+    #printf "[boot]\nsystemd=true\n" | sudo tee /etc/wsl.conf
+    ## then from Windows:
+    #wsl --shutdown <your-distro>
+
+
+    _messagePlain_probe 'write: /etc/systemd/system/hostport-proxy.service'
+    cat << 'CZXWXcRMTo8EmM8i4d' | wsl -d "$current_wsldist" sudo -n tee /etc/systemd/system/hostport-proxy.service > /dev/null
+[Unit]
+Description=Forward 127.0.0.1:11434 to Windows host (WSL2)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+Environment=PORT=11434      # edit or duplicate the unit to forward more ports
+ExecStart=/usr/local/bin/hostport-proxy.sh
+Restart=always
+RestartSec=1
+
+# Hardening (optional but nice)
+NoNewPrivileges=true
+ProtectSystem=full
+ProtectHome=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target
+
+CZXWXcRMTo8EmM8i4d
+    #wsl -d "$current_wsldist" sudo -n cat /etc/systemd/system/hostport-proxy.service
+
+    _messagePlain_probe 'systemctl'
+    wsl -d "$current_wsldist" sudo -n systemctl daemon-reload
+    wsl -d "$current_wsldist" sudo -n systemctl enable --now hostport-proxy.service
+
+    wsl -d "$current_wsldist" sudo -n systemctl restart hostport-proxy.service
+
+}
+
+
+
+
+
+
+
+
+
+
+
+_setup_wsl2_procedure-fw() {
+    _messagePlain_nominal 'setup: write: fw'
+
+    #_powershell
+    #powershell
+    #powershell.exe
+    
+    # ATTRIBUTION-AI: ChatGPT o3 Deep Research  2025-06-01
+    cat << 'CZXWXcRMTo8EmM8i4d' > /dev/null 2>&1
+New-NetFirewallRule -Name "AllowWSL2-11434" -DisplayName "Allow WSL2 Port 11434 (TCP)" `
+    -Description "Allows inbound TCP port 11434 from WSL2 virtual network only (for NAT port proxy)" `
+    -Protocol TCP -Direction Inbound -Action Allow -LocalPort 11434 `
+    -InterfaceAlias "vEthernet (WSL)"
+CZXWXcRMTo8EmM8i4d
+
+    # ATTRIBUTION-AI: Llama 3.1 Nemotron Ultra 253b v1  2025-06-01  (translation from PowerShell interactive terminal to powershell command call under Cygwin/MSW bash shell)
+    # ATTENTION: Not all of these named interfaces usually exist. Cosmetic errors usually occur.
+    powershell -Command "New-NetFirewallRule -Name 'AllowWSL2-11434 - vEthernet (WSL (Hyper-V firewall))' -DisplayName 'Allow WSL2 Port 11434 (TCP) - vEthernet (WSL (Hyper-V firewall))' -Description 'Allows inbound TCP port 11434 from WSL2 virtual network only (for NAT port proxy)' -Protocol TCP -Direction Inbound -Action Allow -LocalPort 11434 -InterfaceAlias 'vEthernet (WSL (Hyper-V firewall))'"
+    powershell -Command "New-NetFirewallRule -Name 'AllowWSL2-11434 - vEthernet (Default Switch)' -DisplayName 'Allow WSL2 Port 11434 (TCP) - vEthernet (Default Switch)' -Description 'Allows inbound TCP port 11434 from WSL2 virtual network only (for NAT port proxy)' -Protocol TCP -Direction Inbound -Action Allow -LocalPort 11434 -InterfaceAlias 'vEthernet (Default Switch)'"
+    powershell -Command "New-NetFirewallRule -Name 'AllowWSL2-11434 - vEthernet (WSL)' -DisplayName 'Allow WSL2 Port 11434 (TCP) - vEthernet (WSL)' -Description 'Allows inbound TCP port 11434 from WSL2 virtual network only (for NAT port proxy)' -Protocol TCP -Direction Inbound -Action Allow -LocalPort 11434 -InterfaceAlias 'vEthernet (WSL)'"
+}
+
+# ATTENTION: NOTICE: Add to 'startup' of MSWindows host, etc, if necessary.
+_setup_wsl2_procedure-portproxy() {
+    _messagePlain_nominal 'setup: write: portproxy'
+
+    local current_wsldist
+    current_wsldist="$1"
+    [[ "$current_wsldist" == "" ]] && current_wsldist="ubdist"
+
+    echo "$current_wsldist"
+
+    wsl -d "$current_wsldist" -u root -- sh -c "rm -f /net-hostip"
+
+    # ATTRIBUTION-AI: Llama 3.1 Nemotron Ultra 253b v1  2025-06-01
+    powershell.exe -Command - <<CZXWXcRMTo8EmM8i4d
+    # ATTRIBUTION-AI: ChatGPT o3 Deep Research  2025-06-01  (partially)
+    # Ensure running as Admin for registry and netsh access if needed.
+    # Step 1: Try reading WSL NAT info from registry (requires recent WSL).
+    \$wslKey = 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Lxss'
+    try {
+        \$reg = Get-ItemProperty -Path \$wslKey -ErrorAction Stop
+        \$HostIP = \$reg.NatGatewayIpAddress
+    } catch {
+        \$HostIP = \$null
+    }
+
+    # Step 2: If not found in registry, use WSL to query the default gateway.
+    if (-not \$HostIP) {
+        try {
+            \$routeInfo = wsl -e sh -c "ip route show default 2>/dev/null || route -n"
+        } catch {
+            \$routeInfo = ""
+        }
+        if (\$routeInfo) {
+            if (\$routeInfo -match 'default via\s+([0-9\.]+)') {
+                \$HostIP = \$Matches[1]
+            } elseif (\$routeInfo -match '0\.0\.0\.0\s+0\.0\.0\.0\s+([0-9\.]+)') {
+                \$HostIP = \$Matches[1]
+            }
+        }
+    }
+
+    # Step 3: If still not found, fall back to scanning network adapters.
+    if (-not \$HostIP) {
+        \$allIPs = Get-NetIPAddress -AddressFamily IPv4 | Where-Object { 
+            \$_.IPAddress -notlike '127.*' -and \$_.IPAddress -notlike '169.254*' 
+        }
+        \$wslAdapterIP = \$allIPs | Where-Object { \$_.InterfaceAlias -match 'WSL' } | Select-Object -First 1
+        if (\$wslAdapterIP) {
+            \$HostIP = \$wslAdapterIP.IPAddress
+        } else {
+            \$defSwitchIP = \$allIPs | Where-Object { \$_.InterfaceAlias -match 'Default Switch' } | Select-Object -First 1
+            if (\$defSwitchIP) {
+                \$HostIP = \$defSwitchIP.IPAddress
+            } else {
+                \$hvAdapters = Get-NetAdapter | Where-Object { 
+                    \$_.InterfaceDescription -like '*Hyper-V Virtual Ethernet*' -and \$_.Status -eq 'Up' 
+                }
+                foreach (\$adapter in \$hvAdapters) {
+                    \$ip = \$allIPs | Where-Object { 
+                        \$_.InterfaceIndex -eq \$adapter.InterfaceIndex -and 
+                        \$_.IPAddress -match '^(10\.|172\.(1[6-9]|2\d|3[0-1])\.|192\.168\.)' 
+                    }
+                    if (\$ip) {
+                        \$HostIP = \$ip.IPAddress
+                        break
+                    }
+                }
+            }
+        }
+    }
+
+    # Step 4: Output result or error.
+    if (\$HostIP) {
+        Write-Output \$HostIP
+    } else {
+        Write-Error "WSL2 host IP could not be determined. Ensure WSL2 is installed and running (NAT mode)."
+    }
+
+    
+    #netsh interface portproxy delete v4tov4 listenport=11434
+    #netsh interface portproxy delete v4tov4 listenport=11434 listenaddress=\$HostIP
+    #netsh interface portproxy add v4tov4 listenaddress=\$HostIP listenport=11434 connectaddress=127.0.0.1 connectport=11434
+    #sc query iphlpsvc
+    #sc start iphlpsvc
+    #netsh interface portproxy show v4tov4
+
+
+    # ATTRIBUTION-AI: ChatGPT o3  2025-06-01
+    # --- Native tools -------------------------------------------------
+    \$netsh = "\$env:SystemRoot\System32\netsh.exe"   # avoids “nets” typo
+    \$sc    = "\$env:SystemRoot\System32\sc.exe"      # avoids Set-Content alias
+
+    # make sure the helper service is running
+    & \$sc   query iphlpsvc
+    & \$sc   start iphlpsvc
+
+    \$delArgs = @(
+    'interface','portproxy','delete','v4tov4',
+    "listenaddress=\$HostIP",
+    'listenport=11434'
+    )
+    & \$netsh  @delArgs  2>\$null   # suppress harmless “not found”
+
+    # (re-)create the port-proxy rule
+    \$addArgs = @(
+    'interface','portproxy','add','v4tov4',
+    "listenaddress=\$HostIP",
+    'listenport=11434',
+    'connectaddress=127.0.0.1',
+    'connectport=11434'
+    )
+    & \$netsh  @addArgs          # ← “@” splats the array as arguments
+
+    # show the table so you can verify
+    & \$netsh  interface portproxy show v4tov4
+
+
+
+    # ATTRIBUTION-AI: Llama 3.1 Nemotron Ultra 253b v1  2025-06-01
+    # Step 5: Output result or error.
+    if (\$HostIP) {
+        #Write-Output \$HostIP
+        # Write \$HostIP to /net-hostip in WSL
+        wsl -d "$current_wsldist" -u root -- sh -c "echo '\$(\$HostIP)' > /net-hostip"
+    } else {
+        wsl -d "$current_wsldist" -u root -- sh -c "echo '...' > /net-hostip"
+    }
+
+CZXWXcRMTo8EmM8i4d
+
+    sleep 3
+}
+
+
+
+
+
+
+
+
+
+
 # End user function .
 _setup_wsl2_procedure() {
     ! _if_cygwin && _messagePlain_bad 'fail: Cygwin/MSW only' && return 1
@@ -25649,6 +25929,10 @@ _setup_wsl2_procedure() {
     
     sleep 5
     wsl --set-default-version 2
+
+    sleep 5
+    _setup_wsl2_procedure-fw
+    _setup_wsl2_procedure-portproxy
 }
 _setup_wsl2() {
     "$scriptAbsoluteLocation" _setup_wsl2_procedure "$@"
@@ -26866,8 +27150,42 @@ _service_ollama_augment() {
 	then
 		return 1
 	fi
-
 	_if_cygwin && return 0
+
+	if _if_wsl && ! wget --timeout=1 --tries=3 'http://127.0.0.1:11434' -q -O - > /dev/null 2>&1
+	then
+		#/mnt/c/Windows/System32/cmd.exe /C 'C:\q\p\zCore\infrastructure\ubiquitous_bash\_bin.bat' '/cygdrive/c/q/p/zCore/infrastructure/ubiquitous_bash/ubiquitous_bash.sh' '_bin' 'sleep' '45'
+		#/mnt/c/Windows/System32/cmd.exe /C 'C:\q\p\zCore\infrastructure\ubiquitous_bash\_bin.bat' '/cygdrive/c/q/p/zCore/infrastructure/ubiquitous_bash/ubiquitous_bash.sh' '_bin' '_setup_wsl2_procedure-portproxy' > /dev/null 2>&1
+
+		# ATTRIBUTION-AI: ChatGPT o3  2025-06-01
+#powershell -NoProfile -Command "Start-Process cmd.exe \
+  #-ArgumentList '/C','C:\q\p\zCore\infrastructure\ubiquitous_bash\_bin.bat',\
+#'/cygdrive/c/q/p/zCore/infrastructure/ubiquitous_bash/ubiquitous_bash.sh',\
+#'_bin','_setup_wsl2_procedure-portproxy' -Verb RunAs -Wait"
+		#'C:\Windows\System32\cmd.exe'
+		# ATTRIBUTION-AI: OpRt_.mistralai/devstral-small:nitro  2025-06-01  (translation to one-liner)
+		#_powershell -NoProfile -Command "Start-Process cmd.exe -ArgumentList '/C','C:\q\p\zCore\infrastructure\ubiquitous_bash\_bin.bat','/cygdrive/c/q/p/zCore/infrastructure/ubiquitous_bash/ubiquitous_bash.sh','_bin','_setup_wsl2_procedure-portproxy' -Verb RunAs -Wait"
+
+		_powershell -NoProfile -Command "Start-Process cmd.exe -ArgumentList '/C','C:\q\p\zCore\infrastructure\ubiquitous_bash\_bin.bat','/cygdrive/c/q/p/zCore/infrastructure/ubiquitous_bash/ubiquitous_bash.sh','_bin','_setup_wsl2_procedure-portproxy','$WSL_DISTRO_NAME' -Verb RunAs -Wait"
+		#_powershell -NoProfile -Command "Start-Process cmd.exe -ArgumentList '/C','C:\q\p\zCore\infrastructure\ubiquitous_bash\_bin.bat','/cygdrive/c/q/p/zCore/infrastructure/ubiquitous_bash/ubiquitous_bash.sh','_bin','_setup_wsl2_procedure-portproxy','""$WSL_DISTRO_NAME""' -Verb RunAs -Wait"
+		#
+		# DUBIOUS
+		#_powershell -NoProfile -Command "Start-Process cmd.exe -ArgumentList '/C','C:\q\p\zCore\infrastructure\ubiquitous_bash\_bin.bat','/cygdrive/c/q/p/zCore/infrastructure/ubiquitous_bash/ubiquitous_bash.sh','_bin','_setup_wsl2_procedure-portproxy','\"$WSL_DISTRO_NAME\"' -Verb RunAs -Wait"
+
+		#./ubiquitous_bash.sh _setup_wsl2_guest-portForward > /dev/null 2>&1
+		#_powershell -NoProfile -Command "Start-Process cmd.exe -ArgumentList '/C','C:\q\p\zCore\infrastructure\ubiquitous_bash\_bin.bat','/cygdrive/c/q/p/zCore/infrastructure/ubiquitous_bash/ubiquitous_bash.sh','_bin','_setup_wsl2_guest-portForward' -Verb RunAs -Wait"
+		#/mnt/c/Windows/System32/cmd.exe /C 'C:\q\p\zCore\infrastructure\ubiquitous_bash\_bin.bat' '/cygdrive/c/q/p/zCore/infrastructure/ubiquitous_bash/ubiquitous_bash.sh' '_bin' '_setup_wsl2_guest-portForward' > /dev/null 2>&1
+
+		sudo -n systemctl restart hostport-proxy.service > /dev/null 2>&1
+
+		sleep 5
+	fi
+
+	if _if_wsl && ! wget --timeout=1 --tries=3 'http://127.0.0.1:11434' -q -O - > /dev/null 2>&1
+	then
+		return 1
+	fi
+	_if_wsl && return 0
 
 	_mustGetSudo
 	if ! sudo -n -u ollama bash -c 'type -p ollama' > /dev/null 2>&1
@@ -27595,9 +27913,10 @@ CZXWXcRMTo8EmM8i4d
 
 
 _here_dockerfile-ubiquitous-documentation() {
-    cat << 'CZXWXcRMTo8EmM8i4d'
+    #cat << 'CZXWXcRMTo8EmM8i4d'
 
 # Normally expected redundant. Copyleft license files are normally already preserved at several filesystem locations.
+
 #python3 -m site
 # /usr/local/lib/python*/dist-packages
 #find /usr/local/lib/python*/dist-packages -iname '*.dist-info'
@@ -27605,11 +27924,50 @@ _here_dockerfile-ubiquitous-documentation() {
 # /usr/share/licenses
 # /usr/share/doc
 #
-RUN mkdir -p /licenses ;\ 
-pip install --no-cache-dir --quiet pip-licenses ;\ 
-pip-licenses --with-license-file --format=markdown > /licenses/PYTHON_THIRD_PARTY.md
+#--ignore-packages broken_pkg
+#pip-licenses --with-license-file --format=markdown > /licenses/PYTHON_THIRD_PARTY.md
+#
+#RUN mkdir -p /licenses ;\ 
+#pip install -U --no-cache-dir --quiet pip-licenses ;\ 
+#pip-licenses --user --with-license-file --format=markdown > /licenses/PYTHON_THIRD_PARTY.md
 
+#CZXWXcRMTo8EmM8i4d
+
+
+
+
+# ATTRIBUTION-AI: codex  model: codex-mini-latest  provider: openai  approval: full-auto  2025-05-31
+
+echo 'COPY <<EOFSPECIAL /install_licenses.py'
+cat << 'CZXWXcRMTo8EmM8i4d'
+import json, subprocess, glob, os
+# 1) get the pip-managed packages
+pkgs = json.loads(subprocess.run(
+    ['pip','list','--format=json'],
+    capture_output=True, text=True
+).stdout)
+# 2) print a Markdown table header
+print('| Name | Version | License | License file |')
+print('| ---- | ------- | ------- | ------------ |')
+# 3) for each, run `pip show`, parse License+Location, glob for LICENSE*
+for pkg in pkgs:
+    name, ver = pkg['name'], pkg['version']
+    info = subprocess.run(['pip','show', name],
+                            capture_output=True, text=True).stdout.splitlines()
+    meta = dict(line.split(':',1) for line in info if ':' in line)
+    lic = meta.get('License','UNKNOWN').strip()
+    loc = meta.get('Location','').strip()
+    # look for a LICENSE* file under the package's directory
+    pattern = os.path.join(loc, name.replace('-','_')+'*', 'LICEN[CS]E*')
+    matches = glob.glob(pattern)
+    lic_fp = matches[0] if matches else 'N/A'
+    print(f'| {name} | {ver} | {lic} | {lic_fp} |')
 CZXWXcRMTo8EmM8i4d
+echo 'EOFSPECIAL'
+
+echo 'RUN mkdir -p /licenses ;\ '
+echo 'python3 /install_licenses.py > /licenses/PYTHON_THIRD_PARTY.md'
+
 }
 
 
@@ -27745,13 +28103,12 @@ RUN python -m pip install --upgrade pip
 
 CZXWXcRMTo8EmM8i4d
 
-
-_here_dockerfile-ubiquitous-documentation "$@"
-
 _here_dockerfile-libcudadev_stub "$@"
 _here_dockerfile-llamacpp "$@"
 
 #_here_dockerfile-unsloth "$@"
+
+_here_dockerfile-ubiquitous-documentation "$@"
 
 _here_dockerfile-ubiquitous-licenses "$@"
 
@@ -27939,13 +28296,12 @@ RUN python -m pip install --upgrade pip
 
 CZXWXcRMTo8EmM8i4d
 
-
-_here_dockerfile-ubiquitous-documentation "$@"
-
 _here_dockerfile-libcudadev_stub "$@"
 _here_dockerfile-llamacpp "$@"
 
 _here_dockerfile-unsloth "$@"
+
+_here_dockerfile-ubiquitous-documentation "$@"
 
 _here_dockerfile-ubiquitous-licenses "$@"
 
@@ -28121,9 +28477,6 @@ cat << 'CZXWXcRMTo8EmM8i4d'
 
 CZXWXcRMTo8EmM8i4d
 
-# No Python, etc, added .
-#_here_dockerfile-ubiquitous-documentation "$@"
-
 #_here_dockerfile-libcudadev_stub "$@"
 
 # DUBIOUS.
@@ -28131,6 +28484,9 @@ CZXWXcRMTo8EmM8i4d
 
 # DUBIOUS.
 #_here_dockerfile-unsloth "$@"
+
+# No Python, etc, added .
+#_here_dockerfile-ubiquitous-documentation "$@"
 
 _here_dockerfile-ubiquitous-licenses "$@"
 
@@ -28281,14 +28637,13 @@ RUN python -m pip install --upgrade pip
 
 CZXWXcRMTo8EmM8i4d
 
-
-_here_dockerfile-ubiquitous-documentation "$@"
-
 _here_dockerfile-libcudadev_stub "$@"
 _here_dockerfile-llamacpp "$@"
 
 # DUBIOUS.
 #_here_dockerfile-unsloth "$@"
+
+_here_dockerfile-ubiquitous-documentation "$@"
 
 _here_dockerfile-ubiquitous-licenses "$@"
 
@@ -28432,15 +28787,14 @@ RUN python -m pip install --upgrade pip
 
 CZXWXcRMTo8EmM8i4d
 
-
-_here_dockerfile-ubiquitous-documentation "$@"
-
 # ATTENTION: TODO: Desirable if not already present !
 #_here_dockerfile-libcudadev_stub "$@"
 #_here_dockerfile-llamacpp "$@"
 
 # DUBIOUS.
 #_here_dockerfile-unsloth "$@"
+
+_here_dockerfile-ubiquitous-documentation "$@"
 
 _here_dockerfile-ubiquitous-licenses "$@"
 
@@ -38770,15 +39124,33 @@ _setup_codex() {
 
     _get_npm
 
-    
+    #@openai/codex
+    #@openai/codex@latest
     sudo -n npm install -g @openai/codex
 }
 
 
-#codex --model codex-mini-latest
-#codex --model o3
+# https://github.com/openai/codex/issues/1189
+#codex --approval-mode full-auto --provider openrouter --model openai/codex-mini
+#
+#unset OPENAI_API_KEY
+#unset OPENROUTER_API_KEY
+#export OPENAI_BASE_URL="https://openrouter.ai/api/v1"
+#export OPENAI_API_KEY="sk-***-21"
+#codex --model openai/o4-mini
+#codex --model openai/codex-mini
+
+
+#--model codex-mini-latest
+#--model o3
+
 #alias codex='wsl -d ubdist codex'
 
+
+
+
+
+alias codexAuto='codex --approval-mode full-auto'
 
 
 

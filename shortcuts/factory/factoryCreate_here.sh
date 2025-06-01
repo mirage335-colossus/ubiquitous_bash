@@ -373,7 +373,7 @@ _here_dockerfile-ubiquitous-documentation() {
 echo 'COPY <<EOFSPECIAL /install_licenses.py'
 cat << 'CZXWXcRMTo8EmM8i4d'
 import json, subprocess, glob, os
-# 1) get the pip‑managed packages
+# 1) get the pip-managed packages
 pkgs = json.loads(subprocess.run(
     ['pip','list','--format=json'],
     capture_output=True, text=True
@@ -389,7 +389,7 @@ for pkg in pkgs:
     meta = dict(line.split(':',1) for line in info if ':' in line)
     lic = meta.get('License','UNKNOWN').strip()
     loc = meta.get('Location','').strip()
-    # look for a LICENSE* file under the package’s directory
+    # look for a LICENSE* file under the package's directory
     pattern = os.path.join(loc, name.replace('-','_')+'*', 'LICEN[CS]E*')
     matches = glob.glob(pattern)
     lic_fp = matches[0] if matches else 'N/A'
