@@ -1,4 +1,64 @@
 
+if false
+then
+
+# Experiment - boot .
+
+netsh interface portproxy delete v4tov4 listenport=11434 listenaddress=$(wsl -d ubdist cat /net-hostip)
+netsh interface portproxy delete v4tov4 listenport=11434 listenaddress=0.0.0.0
+netsh interface portproxy show v4tov4
+
+wsl -d "ubdist" sudo -n systemctl disable hostport-proxy.service
+wsl -d "ubdist" sudo -n systemctl disable ollama.service
+
+
+
+
+
+# Experiment - run .
+
+wsl -d ubdist wget --timeout=1 --tries=3 'http://127.0.0.1:11434' -q -O -
+netsh interface portproxy show v4tov4
+
+netsh interface portproxy delete v4tov4 listenport=11434 listenaddress=$(wsl -d ubdist cat /net-hostip)
+netsh interface portproxy delete v4tov4 listenport=11434 listenaddress=0.0.0.0
+netsh interface portproxy show v4tov4
+
+wsl -d ubdist wget --timeout=1 --tries=3 'http://127.0.0.1:11434' -q -O -
+
+cd /cygdrive/c/q/p/zCore/infrastructure/ubiquitous_bash
+./ubiquitous_bash.sh _setup_wsl2_procedure-fw
+./ubiquitous_bash.sh _setup_wsl2_procedure-portproxy
+./ubiquitous_bash.sh _setup_wsl2_guest-portForward
+
+netsh interface portproxy add v4tov4 listenport=11434 listenaddress=0.0.0.0 connectport=11434 connectaddress=127.0.0.1
+netsh interface portproxy show v4tov4
+
+sc.exe query iphlpsvc
+netstat -ano | findstr :11434
+wget --timeout=1 --tries=3 'http://127.0.0.1:11434' -q -O -
+
+wsl -d ubdist wget --timeout=1 --tries=3 'http://127.0.0.1:11434' -q -O -
+wsl -d ubdist cat /net-hostip ; wsl -d ubdist wget --timeout=1 --tries=3 'http://'$(wsl -d ubdist cat /net-hostip)':11434' -q -O -
+
+
+
+# Scrap
+
+wsl -d "ubdist" sudo -n systemctl daemon-reload
+wsl -d "ubdist" sudo -n systemctl enable --now hostport-proxy.service
+
+wsl -d "ubdist" sudo -n systemctl restart hostport-proxy.service
+
+
+
+
+
+#_setup_wsl2
+
+
+fi
+
 
 
 _setup_wsl2_guest-portForward() {
@@ -82,7 +142,9 @@ CZXWXcRMTo8EmM8i4d
 
     _messagePlain_probe 'systemctl'
     wsl -d "$current_wsldist" sudo -n systemctl daemon-reload
-    wsl -d "$current_wsldist" sudo -n systemctl enable --now hostport-proxy.service
+    #wsl -d "$current_wsldist" sudo -n systemctl enable --now hostport-proxy.service
+
+    wsl -d "$current_wsldist" sudo -n systemctl disable hostport-proxy.service
 
     wsl -d "$current_wsldist" sudo -n systemctl restart hostport-proxy.service
 
@@ -113,11 +175,24 @@ New-NetFirewallRule -Name "AllowWSL2-11434" -DisplayName "Allow WSL2 Port 11434 
     -InterfaceAlias "vEthernet (WSL)"
 CZXWXcRMTo8EmM8i4d
 
+    # ATTRIBUTION-AI: ChatGPT o4-mini  2025-06-01
+    # ATTRIBUTION-AI: Llama 3.1 Nemotron Ultra 253b v1  2025-06-01  (translation to one-liner)
+    powershell -Command "Remove-NetFirewallRule -Name 'AllowWSL2-11434 - vEthernet (WSL (Hyper-V firewall))'; Remove-NetFirewallRule -Name 'AllowWSL2-11434 - vEthernet (Default Switch)'; Remove-NetFirewallRule -Name 'AllowWSL2-11434 - vEthernet (WSL)'"
+    powershell -Command "Get-NetFirewallRule -Name 'AllowWSL2-11434*' | Remove-NetFirewallRule"
+    #
+    # DUBIOUS
+    #netsh advfirewall firewall delete rule name="AllowWSL2-11434 - vEthernet (WSL (Hyper-V firewall))"
+    #netsh advfirewall firewall delete rule name="AllowWSL2-11434 - vEthernet (Default Switch)"
+    #netsh advfirewall firewall delete rule name="AllowWSL2-11434 - vEthernet (WSL)"
+
     # ATTRIBUTION-AI: Llama 3.1 Nemotron Ultra 253b v1  2025-06-01  (translation from PowerShell interactive terminal to powershell command call under Cygwin/MSW bash shell)
     # ATTENTION: Not all of these named interfaces usually exist. Cosmetic errors usually occur.
     powershell -Command "New-NetFirewallRule -Name 'AllowWSL2-11434 - vEthernet (WSL (Hyper-V firewall))' -DisplayName 'Allow WSL2 Port 11434 (TCP) - vEthernet (WSL (Hyper-V firewall))' -Description 'Allows inbound TCP port 11434 from WSL2 virtual network only (for NAT port proxy)' -Protocol TCP -Direction Inbound -Action Allow -LocalPort 11434 -InterfaceAlias 'vEthernet (WSL (Hyper-V firewall))'"
     powershell -Command "New-NetFirewallRule -Name 'AllowWSL2-11434 - vEthernet (Default Switch)' -DisplayName 'Allow WSL2 Port 11434 (TCP) - vEthernet (Default Switch)' -Description 'Allows inbound TCP port 11434 from WSL2 virtual network only (for NAT port proxy)' -Protocol TCP -Direction Inbound -Action Allow -LocalPort 11434 -InterfaceAlias 'vEthernet (Default Switch)'"
     powershell -Command "New-NetFirewallRule -Name 'AllowWSL2-11434 - vEthernet (WSL)' -DisplayName 'Allow WSL2 Port 11434 (TCP) - vEthernet (WSL)' -Description 'Allows inbound TCP port 11434 from WSL2 virtual network only (for NAT port proxy)' -Protocol TCP -Direction Inbound -Action Allow -LocalPort 11434 -InterfaceAlias 'vEthernet (WSL)'"
+
+    powershell -Command "New-NetFirewallRule -Name 'AllowWSL2-11434 - InterfaceType' -InterfaceType HyperV -Direction Inbound -LocalPort 11434 -Protocol TCP -Action Allow"
+    
 }
 
 # ATTENTION: NOTICE: Add to 'startup' of MSWindows host, etc, if necessary.
@@ -319,9 +394,9 @@ _setup_wsl2_procedure() {
     sleep 5
     wsl --set-default-version 2
 
-    sleep 5
-    _setup_wsl2_procedure-fw
-    _setup_wsl2_procedure-portproxy
+    #sleep 5
+    #_setup_wsl2_procedure-fw
+    #_setup_wsl2_procedure-portproxy
 }
 _setup_wsl2() {
     "$scriptAbsoluteLocation" _setup_wsl2_procedure "$@"
