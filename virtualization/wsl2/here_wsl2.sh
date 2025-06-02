@@ -23,6 +23,11 @@ _here_wsl_conf() {
 # ATTENTION: Directive for nested virtualization may have moved to being more appropriate for a host '.wslconfig' file than a guest '/etc/wsl.conf' file .
 #[wsl2]
 #nestedVirtualization=true
+#
+# ATTENTION: Disabling 'appendWindowsPath' is expected very appropriate for 'ubdist/OS' , as this distribution is already very general purpose, and usual 'ubiquitous_bash' scripting already provides overrides for and calls cmd, powershell, explorer, as very rarely appropriate or needed.
+#[interop]
+#appendWindowsPath = false   # keep Linux-only PATH
+#enabled = false           # uncomment to disable Windows interop entirely
     cat << 'CZXWXcRMTo8EmM8i4d'
 
 [boot]
@@ -34,6 +39,9 @@ default = user
 
 [automount]
 options = "metadata"
+
+[interop]
+appendWindowsPath = false
 
 CZXWXcRMTo8EmM8i4d
 }
