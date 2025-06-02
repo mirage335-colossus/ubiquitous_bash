@@ -519,8 +519,8 @@ _service_ollama() {
 _service_ollama_augment() {
 	if _if_cygwin && ! wget --timeout=1 --tries=3 'http://127.0.0.1:11434' -q -O - > /dev/null 2>&1
 	then
-		( nohup ollama ls > /dev/null 2>&1 & ) > /dev/null
-		disown -r "$!"
+		( nohup ollama ls > /dev/null 2>&1 & disown -r "$!" ) > /dev/null
+		
 		sleep 7
 	fi
 
@@ -532,8 +532,7 @@ _service_ollama_augment() {
 
 	if _if_wsl && ! wget --timeout=1 --tries=3 'http://127.0.0.1:11434' -q -O - > /dev/null 2>&1
 	then
-		#( nohup ollama ls > /dev/null 2>&1 & ) > /dev/null
-		#disown -r "$!"
+		#( nohup ollama ls > /dev/null 2>&1 & disown -r "$!" ) > /dev/null
 		#sleep 2
 		
 		##/mnt/c/Windows/System32/cmd.exe /C 'C:\q\p\zCore\infrastructure\ubiquitous_bash\_bin.bat' '/cygdrive/c/q/p/zCore/infrastructure/ubiquitous_bash/ubiquitous_bash.sh' '_bin' 'sleep' '45'
