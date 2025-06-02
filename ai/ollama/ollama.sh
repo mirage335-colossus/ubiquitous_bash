@@ -544,7 +544,12 @@ _service_ollama_augment() {
 		#-Wait
 		#,'start','""','/b'
 		"$scriptAbsoluteLocation" _powershell -NoProfile -Command "Start-Process cmd.exe -ArgumentList '/C','C:\core\infrastructure\ubDistBuild\_bin.bat','_install_vm-wsl2-portForward','ubdist','notBootingAdmin' -Verb RunAs" > /dev/null 2>&1
-		wget --timeout=1 --tries=45 'http://127.0.0.1:11434' -q -O - > /dev/null 2>&1
+		local currentIteration=0
+		while ! wget --timeout=1 --tries=3 'http://127.0.0.1:11434' -q -O - > /dev/null 2>&1 && [[ "$currentIteration" -lt 45 ]]
+		do
+			currentIteration=$((currentIteration+1))
+			sleep 1
+		done
 
 		sleep 3
 	fi
