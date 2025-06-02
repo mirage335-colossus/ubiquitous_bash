@@ -46,7 +46,9 @@ wsl -d ubdist cat /net-hostip ; wsl -d ubdist wget --timeout=1 --tries=3 'http:/
 # Scrap
 
 wsl -d "ubdist" sudo -n systemctl daemon-reload
-wsl -d "ubdist" sudo -n systemctl enable --now hostport-proxy.service
+#wsl -d "ubdist" sudo -n systemctl enable --now hostport-proxy.service
+
+wsl -d "ubdist" sudo -n systemctl disable hostport-proxy.service
 
 wsl -d "ubdist" sudo -n systemctl restart hostport-proxy.service
 

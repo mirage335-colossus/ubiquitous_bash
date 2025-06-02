@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='3890609094'
+export ub_setScriptChecksum_contents='120465978'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -25642,7 +25642,7 @@ cd /cygdrive/c/q/p/zCore/infrastructure/ubiquitous_bash
 ./ubiquitous_bash.sh _setup_wsl2_procedure-portproxy
 ./ubiquitous_bash.sh _setup_wsl2_guest-portForward
 
-netsh interface portproxy add    v4tov4 listenport=11434 listenaddress=0.0.0.0 connectport=11434 connectaddress=127.0.0.1
+netsh interface portproxy add v4tov4 listenport=11434 listenaddress=0.0.0.0 connectport=11434 connectaddress=127.0.0.1
 netsh interface portproxy show v4tov4
 
 sc.exe query iphlpsvc
@@ -25657,7 +25657,9 @@ wsl -d ubdist cat /net-hostip ; wsl -d ubdist wget --timeout=1 --tries=3 'http:/
 # Scrap
 
 wsl -d "ubdist" sudo -n systemctl daemon-reload
-wsl -d "ubdist" sudo -n systemctl enable --now hostport-proxy.service
+#wsl -d "ubdist" sudo -n systemctl enable --now hostport-proxy.service
+
+wsl -d "ubdist" sudo -n systemctl disable hostport-proxy.service
 
 wsl -d "ubdist" sudo -n systemctl restart hostport-proxy.service
 
@@ -25753,7 +25755,9 @@ CZXWXcRMTo8EmM8i4d
 
     _messagePlain_probe 'systemctl'
     wsl -d "$current_wsldist" sudo -n systemctl daemon-reload
-    wsl -d "$current_wsldist" sudo -n systemctl enable --now hostport-proxy.service
+    #wsl -d "$current_wsldist" sudo -n systemctl enable --now hostport-proxy.service
+
+    wsl -d "$current_wsldist" sudo -n systemctl disable hostport-proxy.service
 
     wsl -d "$current_wsldist" sudo -n systemctl restart hostport-proxy.service
 
