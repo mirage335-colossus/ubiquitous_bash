@@ -549,7 +549,7 @@ _service_ollama_augment() {
 
 		##sudo -n systemctl restart hostport-proxy.service > /dev/null 2>&1
 
-		_powershell -NoProfile -Command "Start-Process cmd.exe -ArgumentList '/C','C:\core\infrastructure\ubDistBuild\_bin.bat','_install_vm-wsl2-portForward','ubdist','bootingAdmin' -Verb RunAs -Wait"
+		_powershell -NoProfile -Command "Start-Process cmd.exe -ArgumentList '/C','C:\core\infrastructure\ubDistBuild\_bin.bat','_install_vm-wsl2-portForward','ubdist','notBootingAdmin' -Verb RunAs -Wait"
 
 		sleep 5
 	fi
