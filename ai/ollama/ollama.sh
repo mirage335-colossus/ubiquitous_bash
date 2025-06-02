@@ -525,29 +525,31 @@ _service_ollama_augment() {
 
 	if _if_wsl && ! wget --timeout=1 --tries=3 'http://127.0.0.1:11434' -q -O - > /dev/null 2>&1
 	then
-		#/mnt/c/Windows/System32/cmd.exe /C 'C:\q\p\zCore\infrastructure\ubiquitous_bash\_bin.bat' '/cygdrive/c/q/p/zCore/infrastructure/ubiquitous_bash/ubiquitous_bash.sh' '_bin' 'sleep' '45'
-		#/mnt/c/Windows/System32/cmd.exe /C 'C:\q\p\zCore\infrastructure\ubiquitous_bash\_bin.bat' '/cygdrive/c/q/p/zCore/infrastructure/ubiquitous_bash/ubiquitous_bash.sh' '_bin' '_setup_wsl2_procedure-portproxy' > /dev/null 2>&1
+		##/mnt/c/Windows/System32/cmd.exe /C 'C:\q\p\zCore\infrastructure\ubiquitous_bash\_bin.bat' '/cygdrive/c/q/p/zCore/infrastructure/ubiquitous_bash/ubiquitous_bash.sh' '_bin' 'sleep' '45'
+		##/mnt/c/Windows/System32/cmd.exe /C 'C:\q\p\zCore\infrastructure\ubiquitous_bash\_bin.bat' '/cygdrive/c/q/p/zCore/infrastructure/ubiquitous_bash/ubiquitous_bash.sh' '_bin' '_setup_wsl2_procedure-portproxy' > /dev/null 2>&1
 
 		# ATTRIBUTION-AI: ChatGPT o3  2025-06-01
-#powershell -NoProfile -Command "Start-Process cmd.exe \
-  #-ArgumentList '/C','C:\q\p\zCore\infrastructure\ubiquitous_bash\_bin.bat',\
-#'/cygdrive/c/q/p/zCore/infrastructure/ubiquitous_bash/ubiquitous_bash.sh',\
-#'_bin','_setup_wsl2_procedure-portproxy' -Verb RunAs -Wait"
-		#'C:\Windows\System32\cmd.exe'
-		# ATTRIBUTION-AI: OpRt_.mistralai/devstral-small:nitro  2025-06-01  (translation to one-liner)
-		#_powershell -NoProfile -Command "Start-Process cmd.exe -ArgumentList '/C','C:\q\p\zCore\infrastructure\ubiquitous_bash\_bin.bat','/cygdrive/c/q/p/zCore/infrastructure/ubiquitous_bash/ubiquitous_bash.sh','_bin','_setup_wsl2_procedure-portproxy' -Verb RunAs -Wait"
+##powershell -NoProfile -Command "Start-Process cmd.exe \
+  ##-ArgumentList '/C','C:\q\p\zCore\infrastructure\ubiquitous_bash\_bin.bat',\
+##'/cygdrive/c/q/p/zCore/infrastructure/ubiquitous_bash/ubiquitous_bash.sh',\
+##'_bin','_setup_wsl2_procedure-portproxy' -Verb RunAs -Wait"
+		##'C:\Windows\System32\cmd.exe'
+		## ATTRIBUTION-AI: OpRt_.mistralai/devstral-small:nitro  2025-06-01  (translation to one-liner)
+		##_powershell -NoProfile -Command "Start-Process cmd.exe -ArgumentList '/C','C:\q\p\zCore\infrastructure\ubiquitous_bash\_bin.bat','/cygdrive/c/q/p/zCore/infrastructure/ubiquitous_bash/ubiquitous_bash.sh','_bin','_setup_wsl2_procedure-portproxy' -Verb RunAs -Wait"
 
-		_powershell -NoProfile -Command "Start-Process cmd.exe -ArgumentList '/C','C:\q\p\zCore\infrastructure\ubiquitous_bash\_bin.bat','/cygdrive/c/q/p/zCore/infrastructure/ubiquitous_bash/ubiquitous_bash.sh','_bin','_setup_wsl2_procedure-portproxy','$WSL_DISTRO_NAME' -Verb RunAs -Wait"
-		#_powershell -NoProfile -Command "Start-Process cmd.exe -ArgumentList '/C','C:\q\p\zCore\infrastructure\ubiquitous_bash\_bin.bat','/cygdrive/c/q/p/zCore/infrastructure/ubiquitous_bash/ubiquitous_bash.sh','_bin','_setup_wsl2_procedure-portproxy','""$WSL_DISTRO_NAME""' -Verb RunAs -Wait"
-		#
-		# DUBIOUS
-		#_powershell -NoProfile -Command "Start-Process cmd.exe -ArgumentList '/C','C:\q\p\zCore\infrastructure\ubiquitous_bash\_bin.bat','/cygdrive/c/q/p/zCore/infrastructure/ubiquitous_bash/ubiquitous_bash.sh','_bin','_setup_wsl2_procedure-portproxy','\"$WSL_DISTRO_NAME\"' -Verb RunAs -Wait"
+		#_powershell -NoProfile -Command "Start-Process cmd.exe -ArgumentList '/C','C:\q\p\zCore\infrastructure\ubiquitous_bash\_bin.bat','/cygdrive/c/q/p/zCore/infrastructure/ubiquitous_bash/ubiquitous_bash.sh','_bin','_setup_wsl2_procedure-portproxy','$WSL_DISTRO_NAME' -Verb RunAs -Wait"
+		##_powershell -NoProfile -Command "Start-Process cmd.exe -ArgumentList '/C','C:\q\p\zCore\infrastructure\ubiquitous_bash\_bin.bat','/cygdrive/c/q/p/zCore/infrastructure/ubiquitous_bash/ubiquitous_bash.sh','_bin','_setup_wsl2_procedure-portproxy','""$WSL_DISTRO_NAME""' -Verb RunAs -Wait"
+		##
+		## DUBIOUS
+		##_powershell -NoProfile -Command "Start-Process cmd.exe -ArgumentList '/C','C:\q\p\zCore\infrastructure\ubiquitous_bash\_bin.bat','/cygdrive/c/q/p/zCore/infrastructure/ubiquitous_bash/ubiquitous_bash.sh','_bin','_setup_wsl2_procedure-portproxy','\"$WSL_DISTRO_NAME\"' -Verb RunAs -Wait"
 
-		#./ubiquitous_bash.sh _setup_wsl2_guest-portForward > /dev/null 2>&1
-		#_powershell -NoProfile -Command "Start-Process cmd.exe -ArgumentList '/C','C:\q\p\zCore\infrastructure\ubiquitous_bash\_bin.bat','/cygdrive/c/q/p/zCore/infrastructure/ubiquitous_bash/ubiquitous_bash.sh','_bin','_setup_wsl2_guest-portForward' -Verb RunAs -Wait"
-		#/mnt/c/Windows/System32/cmd.exe /C 'C:\q\p\zCore\infrastructure\ubiquitous_bash\_bin.bat' '/cygdrive/c/q/p/zCore/infrastructure/ubiquitous_bash/ubiquitous_bash.sh' '_bin' '_setup_wsl2_guest-portForward' > /dev/null 2>&1
+		##./ubiquitous_bash.sh _setup_wsl2_guest-portForward > /dev/null 2>&1
+		##_powershell -NoProfile -Command "Start-Process cmd.exe -ArgumentList '/C','C:\q\p\zCore\infrastructure\ubiquitous_bash\_bin.bat','/cygdrive/c/q/p/zCore/infrastructure/ubiquitous_bash/ubiquitous_bash.sh','_bin','_setup_wsl2_guest-portForward' -Verb RunAs -Wait"
+		##/mnt/c/Windows/System32/cmd.exe /C 'C:\q\p\zCore\infrastructure\ubiquitous_bash\_bin.bat' '/cygdrive/c/q/p/zCore/infrastructure/ubiquitous_bash/ubiquitous_bash.sh' '_bin' '_setup_wsl2_guest-portForward' > /dev/null 2>&1
 
-		sudo -n systemctl restart hostport-proxy.service > /dev/null 2>&1
+		##sudo -n systemctl restart hostport-proxy.service > /dev/null 2>&1
+
+		_powershell -NoProfile -Command "Start-Process cmd.exe -ArgumentList '/C','C:\core\infrastructure\ubDistBuild\_bin.bat','_install_vm-wsl2-portForward','ubdist','bootingAdmin' -Verb RunAs -Wait"
 
 		sleep 5
 	fi
