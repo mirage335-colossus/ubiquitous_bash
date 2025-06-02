@@ -542,9 +542,11 @@ _service_ollama_augment() {
 		# ATTRIBUTION-AI: ChatGPT o3  2025-06-01
 
 		#-Wait
-		"$scriptAbsoluteLocation" _powershell -NoProfile -Command "Start-Process cmd.exe -ArgumentList '/C','start','""','/b','C:\core\infrastructure\ubDistBuild\_bin.bat','_install_vm-wsl2-portForward','ubdist','notBootingAdmin' -Verb RunAs" > /dev/null 2>&1
+		#,'start','""','/b'
+		"$scriptAbsoluteLocation" _powershell -NoProfile -Command "Start-Process cmd.exe -ArgumentList '/C','C:\core\infrastructure\ubDistBuild\_bin.bat','_install_vm-wsl2-portForward','ubdist','notBootingAdmin' -Verb RunAs" > /dev/null 2>&1
+		wget --timeout=1 --tries=45 'http://127.0.0.1:11434' -q -O - > /dev/null 2>&1
 
-		sleep 5
+		sleep 3
 	fi
 
 	if _if_wsl && ! wget --timeout=1 --tries=3 'http://127.0.0.1:11434' -q -O - > /dev/null 2>&1
