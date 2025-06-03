@@ -81,6 +81,23 @@ _ollama_run_augment() {
 		"$scriptAbsoluteLocation" _setup_ollama_model_augment_sequence > /dev/null 2>&1
 	fi
 	
+	# Suggested >2400 for batch processing, <600 for long 'augment' outputs, <120 for 'augment' use cases underlying user interaction (ie. impatience).
+	if [[ "$OLLAMA_TIMEOUT" != "" ]]
+	then
+		(
+			# ATTRIBUTION-AI: ChatGPT o3  2025-06-03  (suggested OLLAMA_LOAD_TIMEOUT ... ChatGPT may have automatically included some web search results )
+			# DUBIOUS .
+			# https://pkg.go.dev/github.com/ollama/ollama/envconfig?utm_source=chatgpt.com
+			# https://github.com/ollama/ollama/blob/v0.9.0/envconfig/config.go#L120
+			# https://github.com/ollama/ollama/issues/6678
+			# https://github.com/ollama/ollama/issues/5081
+			export OLLAMA_LOAD_TIMEOUT="$OLLAMA_TIMEOUT"s
+			
+			_timeout "$OLLAMA_TIMEOUT" ollama run Llama-augment "$@"
+		)
+		return
+	fi
+
 	ollama run Llama-augment "$@"
 }
 # 'l'... 'LLM', 'language', 'Llama', etc .

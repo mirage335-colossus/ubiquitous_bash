@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='264847357'
+export ub_setScriptChecksum_contents='2934973052'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -19701,6 +19701,23 @@ _ollama_run_augment() {
 		"$scriptAbsoluteLocation" _setup_ollama_model_augment_sequence > /dev/null 2>&1
 	fi
 	
+	# Suggested >2400 for batch processing, <600 for long 'augment' outputs, <120 for 'augment' use cases underlying user interaction (ie. impatience).
+	if [[ "$OLLAMA_TIMEOUT" != "" ]]
+	then
+		(
+			# ATTRIBUTION-AI: ChatGPT o3  2025-06-03  (suggested OLLAMA_LOAD_TIMEOUT ... ChatGPT may have automatically included some web search results )
+			# DUBIOUS .
+			# https://pkg.go.dev/github.com/ollama/ollama/envconfig?utm_source=chatgpt.com
+			# https://github.com/ollama/ollama/blob/v0.9.0/envconfig/config.go#L120
+			# https://github.com/ollama/ollama/issues/6678
+			# https://github.com/ollama/ollama/issues/5081
+			export OLLAMA_LOAD_TIMEOUT="$OLLAMA_TIMEOUT"s
+			
+			_timeout "$OLLAMA_TIMEOUT" ollama run Llama-augment "$@"
+		)
+		return
+	fi
+
 	ollama run Llama-augment "$@"
 }
 # 'l'... 'LLM', 'language', 'Llama', etc .
@@ -19816,8 +19833,14 @@ alias l=_l
 
 # Accepts stdin/stdout .
 _augment-backend() {
-    # Placeholder. Discouraged. Prefer '_l' function .
-	#jq -Rs '{model:"Llama-augment", prompt:., stream: false}' | curl -fsS --max-time 120 -X POST -H "Content-Type: application/json" --data-binary @- http://localhost:11434/api/generate | jq -r '.response'
+    # Suggested >2400 for batch processing, <600 for long 'augment' outputs, <120 for 'augment' use cases underlying user interaction (ie. impatience).
+	# If not already set (eg. to a very high value >>2400), default is 120 (seconds) .
+	[[ "$OLLAMA_TIMEOUT" != "" ]] && export OLLAMA_TIMEOUT=120
+
+	# WARNING: Do NOT timeout entire '_l' command, etc ! One-time service start, model download, etc, should NOT be subject to "$OLLAMA_TIMEOUT", etc !
+	
+	# Placeholder. Discouraged. Prefer '_l' function .
+	#jq -Rs '{model:"Llama-augment", prompt:., stream: false}' | _timeout "$OLLAMA_TIMEOUT" curl -fsS --max-time 120 -X POST -H "Content-Type: application/json" --data-binary @- http://localhost:11434/api/generate | jq -r '.response'
 
 	# STRONGLY PREFERRED . Will automatically call '_service_ollama_augment' as necessary!
 	#_ollama_run_augment "$@"
@@ -19920,15 +19943,20 @@ _augment_procedure() {
 
 
 	local currentIteration=0
-	while [[ $(cat "$safeTmp"/processing-bashTool-isGibberish.txt 2>/dev/null | tr -dc 'a-zA-Z0-9' | tr 'A-Z' 'a-z' | tail -c 5 ) != 'valid' ]] && [[ "$currentIteration" -lt 85 ]]
+	#[[ "$currentIteration" -lt 85 ]]
+	while [[ $(cat "$safeTmp"/processing-bashTool-isGibberish.txt 2>/dev/null | tr -dc 'a-zA-Z0-9' | tr 'A-Z' 'a-z' | tail -c 5 ) != 'valid' ]] && [[ "$currentIteration" -lt 45 ]]
 	do
 		( _messagePlain_nominal ' ... augment: '"$currentIteration" >&2 ) > /dev/null
 		cat "$safeTmp"/input_prompt.txt "$safeTmp"/processing-bashTool-askCommand-ONLY.txt | _augment-backend "$@" > "$safeTmp"/output_prompt.txt
 
-		_here_bashTool-askGibberish > "$safeTmp"/processing-bashTool-askGibberish.txt
-		cat "$safeTmp"/output_prompt.txt "$safeTmp"/processing-bashTool-askGibberish.txt | _augment-backend "$@" > "$safeTmp"/processing-bashTool-isGibberish.txt
+		rm -f "$safeTmp"/processing-bashTool-askGibberish.txt > /dev/null 2>&1
+		if [[ -s "$safeTmp"/output_prompt.txt ]]
+		then
+			_here_bashTool-askGibberish > "$safeTmp"/processing-bashTool-askGibberish.txt
+			cat "$safeTmp"/output_prompt.txt "$safeTmp"/processing-bashTool-askGibberish.txt | _augment-backend "$@" > "$safeTmp"/processing-bashTool-isGibberish.txt
+		fi
 
-		if [[ $(cat "$safeTmp"/processing-bashTool-isGibberish.txt | tr -dc 'a-zA-Z0-9' | tr 'A-Z' 'a-z' | tail -c 5 ) != 'valid' ]]
+		if [[ -e "$safeTmp"/processing-bashTool-isGibberish.txt ]] && [[ $(cat "$safeTmp"/processing-bashTool-isGibberish.txt | tr -dc 'a-zA-Z0-9' | tr 'A-Z' 'a-z' | tail -c 5 ) != 'valid' ]]
 		then
 			( _messagePlain_warn 'warn: gibberish: ' >&2 ) > /dev/null
 			( cat "$safeTmp"/output_prompt.txt | tr -dc 'a-zA-Z0-9\-_\ \=\+\/\.' >&2 ) > /dev/null
