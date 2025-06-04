@@ -1068,7 +1068,7 @@ _set_factory_dir
 wsl -d docker-desktop sh -c "echo 'net.core.bpf_jit_harden=1' > /etc/sysctl.d/99-nvidia-workaround-bpf_jit_harden.conf"
 wsl -d docker-desktop sysctl -p /etc/sysctl.d/99-nvidia-workaround-bpf_jit_harden.conf
 
-dockerName=ghcr.io/openai/codex-universal
+dockerName=openai-heavy
 #docker pull ghcr.io/openai/codex-universal:latest
 
 # Prefer local build .

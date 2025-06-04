@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='3203197422'
+export ub_setScriptChecksum_contents='462240769'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -23456,13 +23456,13 @@ _testQEMU_x64-raspi() {
 	sudo -n service binfmt-support --full-restart > /dev/null 2>&1
 	service binfmt-support --full-restart > /dev/null 2>&1
 	
-	if ! sudo -n cat /proc/sys/fs/binfmt_misc/* 2> /dev/null | grep qemu | grep 'arm$\|arm-static$\|arm-binfmt-P$\|arm-binfmt' > /dev/null 2>&1 && ! _if_cygwin
+	if ! sudo -n cat /proc/sys/fs/binfmt_misc/* 2> /dev/null | grep qemu | grep 'arm$\|arm-static$\|arm-binfmt-P$\|arm-binfmt' > /dev/null 2>&1 && ! _if_cygwin && ! [[ -e /.dockerenv ]]
 	then
 		echo 'binfmts does not mention qemu-arm'
 		[[ "$INSTANCE_ID" == "" ]] && _stop 1
 	fi
 	
-	if ! sudo -n cat /proc/sys/fs/binfmt_misc/* 2> /dev/null | grep qemu | grep 'armeb$\|armeb-static$\|armeb-binfmt-P$\|armeb-binfmt' > /dev/null 2>&1 && ! _if_cygwin
+	if ! sudo -n cat /proc/sys/fs/binfmt_misc/* 2> /dev/null | grep qemu | grep 'armeb$\|armeb-static$\|armeb-binfmt-P$\|armeb-binfmt' > /dev/null 2>&1 && ! _if_cygwin && ! [[ -e /.dockerenv ]]
 	then
 		echo 'binfmts does not mention qemu-armeb'
 		[[ "$INSTANCE_ID" == "" ]] && _stop 1
@@ -30254,7 +30254,7 @@ _set_factory_dir
 wsl -d docker-desktop sh -c "echo 'net.core.bpf_jit_harden=1' > /etc/sysctl.d/99-nvidia-workaround-bpf_jit_harden.conf"
 wsl -d docker-desktop sysctl -p /etc/sysctl.d/99-nvidia-workaround-bpf_jit_harden.conf
 
-dockerName=ghcr.io/openai/codex-universal
+dockerName=openai-heavy
 #docker pull ghcr.io/openai/codex-universal:latest
 
 # Prefer local build .
