@@ -1588,6 +1588,7 @@ _test() {
 	then
 		if _typeDep 'apt-get'
 		then
+			apt-get -y update
 			apt-get -y install sudo
 		fi
 	fi
@@ -1597,6 +1598,7 @@ _test() {
 	then
 		if _typeDep 'apt-get'
 		then
+			sudo -n apt-get -y update
 			sudo -n apt-get -y install bc
 		fi
 	fi

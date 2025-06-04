@@ -380,6 +380,7 @@ then
 	alias u='_wsl'
 
 	alias codex='wsl -d ubdist codex'
+	alias codexNative=$(type -P codex 2>/dev/null)
 fi
 	
 _sudo_cygwin-if_parameter-skip2() {
