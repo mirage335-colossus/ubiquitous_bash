@@ -1143,7 +1143,7 @@ echo 'bash -i' >> ./._run-factory_openai-heavy
 #docker image inspect "$dockerName" --format '{{json .Config.Entrypoint}} {{json .Config.Cmd}}'
 
 #bash
-dockerRunArgs=( /workspace/project/._run-factory_openai )
+dockerRunArgs=( /workspace/project/._run-factory_openai-heavy )
 [[ ! -e ./._run-factory_openai-heavy ]] && dockerRunArgs=( )
 
 # ATTENTION: Enabling swift will always download ~800MB . Also adds '.swift-version' .

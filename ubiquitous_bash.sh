@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='1360897573'
+export ub_setScriptChecksum_contents='3203197422'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -3448,11 +3448,15 @@ _permissions_ubiquitous_repo() {
 	return 0
 }
 
-_test_permissions_ubiquitous-cygwin() {
+_test_permissions_ubiquitous-exception() {
+	_if_cygwin && echo 'warn: accepted: cygwin: permissions' && return 0
+
+	# Possible shared filesystem mount without correct permissions from the host .
+	[[ -e /.dockerenv ]] && echo 'warn: accepted: docker: permissions' && return 0
+
+
 	! _if_cygwin && _stop 1
 	#  ! _if_cygwin && _stop "$1"
-	
-	_if_cygwin && echo 'warn: accepted: cygwin: permissions' && return 0
 }
 
 #Checks whether currently set "$scriptBin" and similar locations are actually safe.
@@ -3460,10 +3464,10 @@ _test_permissions_ubiquitous-cygwin() {
 _test_permissions_ubiquitous() {
 	[[ ! -e "$scriptAbsoluteFolder" ]] && _stop 1
 	
-	! _permissions_directory_checkForPath "$scriptAbsoluteFolder" && _test_permissions_ubiquitous-cygwin 1
+	! _permissions_directory_checkForPath "$scriptAbsoluteFolder" && _test_permissions_ubiquitous-exception 1
 	
-	[[ -e "$scriptBin" ]] && ! _permissions_directory_checkForPath "$scriptBin" && _test_permissions_ubiquitous-cygwin 1
-	[[ -e "$scriptBundle" ]] && ! _permissions_directory_checkForPath "$scriptBundle" && _test_permissions_ubiquitous-cygwin 1
+	[[ -e "$scriptBin" ]] && ! _permissions_directory_checkForPath "$scriptBin" && _test_permissions_ubiquitous-exception 1
+	[[ -e "$scriptBundle" ]] && ! _permissions_directory_checkForPath "$scriptBundle" && _test_permissions_ubiquitous-exception 1
 	
 	return 0
 }
@@ -30325,7 +30329,7 @@ echo 'bash -i' >> ./._run-factory_openai-heavy
 #docker image inspect "$dockerName" --format '{{json .Config.Entrypoint}} {{json .Config.Cmd}}'
 
 #bash
-dockerRunArgs=( /workspace/project/._run-factory_openai )
+dockerRunArgs=( /workspace/project/._run-factory_openai-heavy )
 [[ ! -e ./._run-factory_openai-heavy ]] && dockerRunArgs=( )
 
 # ATTENTION: Enabling swift will always download ~800MB . Also adds '.swift-version' .

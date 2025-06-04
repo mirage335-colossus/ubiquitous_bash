@@ -1568,11 +1568,15 @@ _permissions_ubiquitous_repo() {
 	return 0
 }
 
-_test_permissions_ubiquitous-cygwin() {
+_test_permissions_ubiquitous-exception() {
+	_if_cygwin && echo 'warn: accepted: cygwin: permissions' && return 0
+
+	# Possible shared filesystem mount without correct permissions from the host .
+	[[ -e /.dockerenv ]] && echo 'warn: accepted: docker: permissions' && return 0
+
+
 	! _if_cygwin && _stop 1
 	#  ! _if_cygwin && _stop "$1"
-	
-	_if_cygwin && echo 'warn: accepted: cygwin: permissions' && return 0
 }
 
 #Checks whether currently set "$scriptBin" and similar locations are actually safe.
@@ -1580,10 +1584,10 @@ _test_permissions_ubiquitous-cygwin() {
 _test_permissions_ubiquitous() {
 	[[ ! -e "$scriptAbsoluteFolder" ]] && _stop 1
 	
-	! _permissions_directory_checkForPath "$scriptAbsoluteFolder" && _test_permissions_ubiquitous-cygwin 1
+	! _permissions_directory_checkForPath "$scriptAbsoluteFolder" && _test_permissions_ubiquitous-exception 1
 	
-	[[ -e "$scriptBin" ]] && ! _permissions_directory_checkForPath "$scriptBin" && _test_permissions_ubiquitous-cygwin 1
-	[[ -e "$scriptBundle" ]] && ! _permissions_directory_checkForPath "$scriptBundle" && _test_permissions_ubiquitous-cygwin 1
+	[[ -e "$scriptBin" ]] && ! _permissions_directory_checkForPath "$scriptBin" && _test_permissions_ubiquitous-exception 1
+	[[ -e "$scriptBundle" ]] && ! _permissions_directory_checkForPath "$scriptBundle" && _test_permissions_ubiquitous-exception 1
 	
 	return 0
 }
