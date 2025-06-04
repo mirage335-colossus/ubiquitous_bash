@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='724124025'
+export ub_setScriptChecksum_contents='3328417179'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -31985,6 +31985,7 @@ _test_aws_upstream_sequence() {
 
 # ATTENTION: WARNING: Only tested with Debian Stable. May require rewrite to accommodate other distro (ie. Gentoo).
 _test_aws() {
+	# ATTENTION: Disabling for Docker containers is unusual , and may change. This is due to the unusual variety of Docker container dist/OS used, and that a use case has not been found for AWS, etc.
 	if ! _if_cygwin
 	then
 		# zlib1g-dev
@@ -32002,8 +32003,8 @@ _test_aws() {
 		# libncurses-dev
 		_getDep 'ncurses6-config'
 		_getDep 'ncursesw6-config'
-		_getDep 'ncurses5-config'
-		_getDep 'ncursesw5-config'
+		_wantGetDep 'ncurses5-config'
+		_wantGetDep 'ncursesw5-config'
 		_getDep 'curses.h'
 		_getDep 'pkgconfig/ncurses.pc'
 		_getDep 'pkgconfig/ncursesw.pc'
@@ -33758,9 +33759,15 @@ _test_cloud_updateInterval() {
 _test_cloud() {
 	_tryExec '_test_digitalocean_cloud'
 	_tryExec '_test_linode_cloud'
+
+	# May be added to give AI/Codex convenient experimentation using more capable computing.
+	#_tryExec '_test_runpod'
 	
-	
-	if _test_cloud_updateInterval
+	# ATTENTION: NOTICE: AWS and Google Cloud are occasionally enabled as a distributed test in case of future need, but until an important use case is found, may be disabled by default.
+	# ATTENTION: Disabling for Docker containers is unusual , and may change. This is due to the unusual variety of Docker container dist/OS used, and that a use case has not been found for AWS, gcloud, etc.
+	#false && 
+	#! [[ -e /.dockerenv ]] && 
+	if ! [[ -e /.dockerenv ]] && _test_cloud_updateInterval
 	then
 		rm -f "$HOME"/.ubcore/.retest-cloud > /dev/null 2>&1
 		touch "$HOME"/.ubcore/.retest-cloud
@@ -44410,6 +44417,9 @@ _test() {
 	_getDep cksum
 	
 	_getDep wget
+	_getDep curl
+	_wantGetDep aria2c
+	_wantGetDep axel
 	_getDep grep
 	_getDep fgrep
 	_getDep sed

@@ -24,7 +24,7 @@ _test_docker() {
 	_checkDep gosu-i386
 	
 	
-	if ! _if_cygwin
+	if ! _if_cygwin && ! [[ -e /.dockerenv ]]
 	then
 		
 		#https://docs.docker.com/engine/installation/linux/docker-ce/debian/#install-using-the-repository
@@ -76,7 +76,7 @@ _test_docker() {
 	
 	
 	
-	if _if_cygwin
+	if _if_cygwin || [[ -e /.dockerenv ]]
 	then
 		return 0
 	fi

@@ -514,6 +514,7 @@ _test_aws_upstream_sequence() {
 
 # ATTENTION: WARNING: Only tested with Debian Stable. May require rewrite to accommodate other distro (ie. Gentoo).
 _test_aws() {
+	# ATTENTION: Disabling for Docker containers is unusual , and may change. This is due to the unusual variety of Docker container dist/OS used, and that a use case has not been found for AWS, etc.
 	if ! _if_cygwin
 	then
 		# zlib1g-dev
@@ -531,8 +532,8 @@ _test_aws() {
 		# libncurses-dev
 		_getDep 'ncurses6-config'
 		_getDep 'ncursesw6-config'
-		_getDep 'ncurses5-config'
-		_getDep 'ncursesw5-config'
+		_wantGetDep 'ncurses5-config'
+		_wantGetDep 'ncursesw5-config'
 		_getDep 'curses.h'
 		_getDep 'pkgconfig/ncurses.pc'
 		_getDep 'pkgconfig/ncursesw.pc'

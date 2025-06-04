@@ -234,9 +234,15 @@ _test_cloud_updateInterval() {
 _test_cloud() {
 	_tryExec '_test_digitalocean_cloud'
 	_tryExec '_test_linode_cloud'
+
+	# May be added to give AI/Codex convenient experimentation using more capable computing.
+	#_tryExec '_test_runpod'
 	
-	
-	if _test_cloud_updateInterval
+	# ATTENTION: NOTICE: AWS and Google Cloud are occasionally enabled as a distributed test in case of future need, but until an important use case is found, may be disabled by default.
+	# ATTENTION: Disabling for Docker containers is unusual , and may change. This is due to the unusual variety of Docker container dist/OS used, and that a use case has not been found for AWS, gcloud, etc.
+	#false && 
+	#! [[ -e /.dockerenv ]] && 
+	if ! [[ -e /.dockerenv ]] && _test_cloud_updateInterval
 	then
 		rm -f "$HOME"/.ubcore/.retest-cloud > /dev/null 2>&1
 		touch "$HOME"/.ubcore/.retest-cloud
