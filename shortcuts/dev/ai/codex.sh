@@ -36,3 +36,10 @@ _setup_codex() {
 alias codexAuto='codex --approval-mode full-auto'
 
 
+if type -P codex > /dev/null 2>&1
+then
+    [[ -e /usr/local/bin/node ]] && alias codex=/usr/local/bin/node' '"$(type -P codex)"
+    [[ -e /usr/bin/node ]] && alias codex=/usr/bin/node' '"$(type -P codex)"
+fi
+
+
