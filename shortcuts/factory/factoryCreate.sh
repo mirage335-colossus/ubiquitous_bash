@@ -853,3 +853,162 @@ __factoryCreate_nvidia_nemo-heavy() {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+_here_dockerfile_openai-heavy() {
+if [[ "$recursionGuard_factory_ops" == "" ]]
+then
+_factory_ops_recursion "$@"
+return
+fi
+
+cat << 'CZXWXcRMTo8EmM8i4d'
+#docker build -t openai-heavy .
+
+# https://github.com/openai/codex-universal
+FROM ghcr.io/openai/codex-universal
+
+RUN echo 'openai-heavy' > /info_factoryName.txt
+RUN echo '# Please read researchEngine documentation for (hopefully) stabilized examples .' >> /info_factoryMOTD.txt
+RUN echo 'ubiquitous_bash=~/.ubcore/ubiquitous_bash ; vim -R "'"\$ubiquitous_bash"'"/_lib/kit/app/researchEngine/_dev/README-FACTORY-openai.md' >> /info_factoryMOTD.txt
+RUN chmod 755 /info_factoryMOTD.txt
+
+CZXWXcRMTo8EmM8i4d
+
+_here_dockerfile-ubiquitous "$@"
+
+cat << 'CZXWXcRMTo8EmM8i4d'
+
+# ###
+# PASTE
+# ###
+
+#RUN python -m pip install --upgrade pip
+
+# ###
+# PASTE
+# ###
+
+CZXWXcRMTo8EmM8i4d
+
+_here_dockerfile-libcudadev_stub "$@"
+#_here_dockerfile-llamacpp "$@"
+
+_here_dockerfile-ubiquitous-documentation "$@"
+
+_here_dockerfile-ubiquitous-licenses "$@"
+
+
+cat << 'CZXWXcRMTo8EmM8i4d'
+
+WORKDIR /
+
+#docker image inspect ...FROM... --format '{{json .Config.Entrypoint}} {{json .Config.Cmd}}'
+ENTRYPOINT ["/opt/entrypoint.sh"]
+CMD [""]
+
+CZXWXcRMTo8EmM8i4d
+
+}
+__factoryCreate_sequence_openai-heavy() {
+    if [[ "$recursionGuard_factory_ops" == "" ]]
+    then
+        _factory_ops_recursion "$@"
+        return
+    fi
+
+    _start
+
+    # ATTRIBUTION-AI Llama 3.1 Nemotron Ultra 253b v1
+    docker stop $(docker ps -aq --filter ancestor=openai-heavy 2>/dev/null) > /dev/null 2>&1
+    #docker rm $(docker ps -aq --filter ancestor=openai-heavy 2>/dev/null) > /dev/null 2>&1
+
+    _messagePlain_probe 'docker rmi --force'
+    docker rmi --force openai-heavy > /dev/null 2>&1
+
+    cd "$safeTmp"
+
+    if [[ "$CI" != "" ]] && [[ "$objectName" == "ubiquitous_bash" ]]
+    then
+        _messagePlain_probe 'mkdir -p '"$safeTmp"/repo
+        mkdir -p "$safeTmp"/repo
+        #mkdir -p "$safeTmp"/repo/"$objectName"
+        #cp -a "$scriptAbsoluteFolder"/.git "$safeTmp"/repo/"$objectName"/
+        #( cd "$safeTmp"/repo/"$objectName" ; "$scriptAbsoluteLocation" _gitBest reset --hard ; git submodule update --init --recursive ; find .git -iname 'config' -exec sed -i '/extraheader = AUTHORIZATION:/d' {} \; )
+        ( cd "$safeTmp"/repo ; git config --global checkout.workers -1 ; _gitBest clone --depth 1 git@github.com:mirage335-colossus/"$objectName".git ; cd "$safeTmp"/repo/"$objectName" ; _gitBest submodule update --init --depth 1 --recursive )
+        export safeToDeleteGit="true"
+    fi
+
+
+    
+    _messagePlain_probe 'docker build -t'
+    _here_dockerfile_openai-heavy > Dockerfile
+
+    # WARNING: CAUTION: DANGER: Docker is yet another third-party service dependency. Do NOT regard Docker's repository as archival preservation, and do NOT rely on Docker itself for archival preservation. Also, it is not clear whether a Docker 'image' based on 'Dockerfile' can be directly preserved without environment dependencies or unintentional updates, at best a root filesystem may be possible to obtain from a Docker 'image'.
+    # https://en.wikipedia.org/w/index.php?title=Docker,_Inc.&oldid=1285260999#History
+    # https://en.wikipedia.org/w/index.php?title=Docker_(software)&oldid=1286977923#History
+    
+
+    # ATTENTION: Add to '~/_bashrc' or similar .
+    #  Indeed '_bashrc' , NOT '.bashrc' .
+    # ATTRIBUTION-AI ChatGPT o3 (high)  2025-04-30
+    #
+    ##docker buildx rm cloud-user-default
+    ##docker buildx prune --builder cloud-user-default
+    #
+    #export DOCKER_USER="user"
+    #DOCKER_RAW_NAME="$DOCKER_USER""/default"          # what you type
+    #DOCKER_BUILDER_NAME="cloud-$(echo "$DOCKER_RAW_NAME" | tr '/:' '-')"
+    #if docker buildx ls --format '{{.Name}}' | grep -qx "$DOCKER_BUILDER_NAME"; then
+        #docker buildx use "$DOCKER_BUILDER_NAME"        # reuse
+    #else
+        #docker buildx create --driver cloud "$DOCKER_RAW_NAME" --use
+    #fi
+
+
+    #if [[ "$DOCKER_BUILDER_NAME" == "" ]]
+    #then
+        docker build -t openai-heavy .
+        docker tag openai-heavy "$DOCKER_USER"/openai-heavy:latest
+    #else
+        #if [[ "$DOCKER_BUILDER_NAME" != "" ]]
+        #then
+            # https://docs.docker.com/build-cloud/usage/
+            #docker buildx build --builder "$DOCKER_BUILDER_NAME" -t openai-heavy . --push
+        #fi
+    #fi
+
+    #docker push user/openai-heavy:latest
+
+    #export safeToDeleteGit="true"
+    _safeRMR "$safeTmp"/repo
+
+    _stop
+}
+__factoryCreate_openai-heavy() {
+    if [[ "$recursionGuard_factory_ops" == "" ]]
+    then
+        _factory_ops_recursion "$@"
+        return
+    fi
+
+    "$scriptAbsoluteLocation" __factoryCreate_sequence_openai-heavy "$@"
+}
+
+
+
+
+
+
+
+

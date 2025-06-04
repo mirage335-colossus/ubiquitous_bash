@@ -1036,3 +1036,162 @@ rm -f ./._run-factory_openai > /dev/null 2>&1
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+_factory_openai-heavy() {
+if [[ "$recursionGuard_factory_ops" == "" ]]
+then
+_factory_ops_recursion "$@"
+return
+fi
+
+! type _set_factory_dir > /dev/null 2>&1 && exit 1
+_set_factory_dir
+
+
+
+# ###
+# PASTE
+# ###
+
+wsl -d docker-desktop sh -c "echo 'net.core.bpf_jit_harden=1' > /etc/sysctl.d/99-nvidia-workaround-bpf_jit_harden.conf"
+wsl -d docker-desktop sysctl -p /etc/sysctl.d/99-nvidia-workaround-bpf_jit_harden.conf
+
+dockerName=ghcr.io/openai/codex-universal
+#docker pull ghcr.io/openai/codex-universal:latest
+
+# Prefer local build .
+if [[ $(docker images -q "$dockerName" | tr -dc 'a-zA-Z0-9') == "" ]]
+then
+    # Fallback to something from Docker Hub .
+    [[ $(docker images -q "mirage335-colossus/ubiquitous_bash/""$dockerName" | tr -dc 'a-zA-Z0-9') != "" ]] && dockerName="mirage335-colossus/ubiquitous_bash/""$dockerName"
+    [[ $(docker images -q "mirage335-colossus/""$dockerName" | tr -dc 'a-zA-Z0-9') != "" ]] && dockerName="mirage335-colossus/""$dockerName"
+    [[ $(docker images -q "mirage335/""$dockerName" | tr -dc 'a-zA-Z0-9') != "" ]] && dockerName="mirage335/""$dockerName"
+
+    # Prefer something from GHCR .
+    [[ $(docker images -q "ghcr.io/mirage335-colossus/ubiquitous_bash/""$dockerName" | tr -dc 'a-zA-Z0-9') != "" ]] && dockerName="ghcr.io/mirage335-colossus/ubiquitous_bash/""$dockerName"
+    [[ $(docker images -q "ghcr.io/mirage335-colossus/""$dockerName" | tr -dc 'a-zA-Z0-9') != "" ]] && dockerName="ghcr.io/mirage335-colossus/""$dockerName"
+    [[ $(docker images -q "ghcr.io/mirage335/""$dockerName" | tr -dc 'a-zA-Z0-9') != "" ]] && dockerName="ghcr.io/mirage335/""$dockerName"
+fi
+
+if ! docker images | tail -n+2 | grep '^'"$dockerName" > /dev/null 2>&1
+then
+    _messagePlain_bad 'bad: FAIL: missing: '"$dockerName"
+    _messagePlain_request 'request: 'docker pull ghcr.io/mirage335-colossus/"$dockerName":latest
+    _messageError 'FAIL'
+    return 1
+fi
+
+#[[ JUPYTER_PASSWORD == "" ]] && export JUPYTER_PASSWORD=$(openssl rand 768 | base64 | tr -dc 'a-zA-Z0-9' | tr -d 'acdefhilmnopqrsuvACDEFHILMNOPQRSU14580' | head -c "24")
+
+#docker pull "$dockerName"
+
+entrypoint=$(docker inspect -f '{{join .Config.Entrypoint " "}}' "$dockerName")
+cmd=$(docker inspect -f '{{join .Config.Cmd " "}}' "$dockerName")
+#workdir=$(docker inspect -f '{{.Config.WorkingDir}}' "$dockerName")
+workdir=$(pwd)
+workdir=$(basename "$workdir")
+workdir=/workspace/"$workdir"
+#workdir=/workspace/$(basename $(pwd))
+_messagePlain_request 'request: paste ->'
+echo > ./._run-factory_openai-heavy
+echo "echo 'openai' > /info_factoryName.txt" | tee -a ./._run-factory_openai-heavy
+echo "echo '# Please read researchEngine documentation for (hopefully) stabilized examples .' > /info_factoryMOTD.txt" | tee -a ./._run-factory_openai-heavy
+echo "echo 'ubiquitous_bash=~/.ubcore/ubiquitous_bash ; vim -R "'"$ubiquitous_bash"'"/_lib/kit/app/researchEngine/_dev/README-FACTORY-openai.md' >> /info_factoryMOTD.txt" | tee -a ./._run-factory_openai-heavy
+echo "chmod 755 /info_factoryMOTD.txt" | tee -a ./._run-factory_openai-heavy
+_request_paste_factory-prepare_finetune | tee -a ./._run-factory_openai-heavy
+_request_paste_factory-install_ubiquitous_bash | tee -a ./._run-factory_openai-heavy
+_request_paste_factory-show_finetune | tee -a ./._run-factory_openai-heavy
+#_messagePlain_request 'request: JUPYTER_PASSWORD: '"$JUPYTER_PASSWORD"
+# Yes this is safe, ''.ubcorerc' will switch from '--profile' to '--parent' based on set "$scriptAbsoluteLocation" .
+echo unset ubiquitousBashID | tee -a ./._run-factory_openai-heavy
+#docker inspect --format='{{json .Config.Entrypoint}}' "$dockerName" | jq -r '.[]' | tee -a ./._run-factory_openai-heavy
+mkdir -p "$workdir" | tee -a ./._run-factory_openai-heavy
+echo '[ -n '"$workdir"' ] && cd '"$workdir" | tee -a ./._run-factory_openai-heavy
+_messagePlain_request 'request: <- paste'
+#echo "exec ${entrypoint} ${cmd}" | tee -a ./._run-factory_openai-heavy
+#
+#echo "exec ${entrypoint}" | tee -a ./._run-factory_openai-heavy
+#
+#echo echo "==================================" | tee -a ./._run-factory_openai-heavy
+#echo echo "Welcome to openai/codex-universal!" | tee -a ./._run-factory_openai-heavy
+#echo echo "==================================" | tee -a ./._run-factory_openai-heavy
+#
+#echo /opt/codex/setup_universal.sh | tee -a ./._run-factory_openai-heavy
+#
+#echo echo "Environment ready. Dropping you into a bash shell." | tee -a ./._run-factory_openai-heavy
+
+echo 'bash -i' >> ./._run-factory_openai-heavy
+
+
+# ###
+
+
+! type _getAbsoluteLocation > /dev/null 2>&1 && exit 1
+
+#docker image inspect "$dockerName" --format '{{json .Config.Entrypoint}} {{json .Config.Cmd}}'
+
+#bash
+dockerRunArgs=( /workspace/project/._run-factory_openai )
+[[ ! -e ./._run-factory_openai-heavy ]] && dockerRunArgs=( )
+
+# ATTENTION: Enabling swift will always download ~800MB . Also adds '.swift-version' .
+#-e CODEX_ENV_SWIFT_VERSION=6.1
+dockerArgs_openai=( -e CODEX_ENV_PYTHON_VERSION=3.12 -e CODEX_ENV_NODE_VERSION=20 -e CODEX_ENV_RUST_VERSION=1.87.0 -e CODEX_ENV_GO_VERSION=1.23.8 )
+#dockerArgs_openai+=( -e CODEX_ENV_SWIFT_VERSION=6.1 )
+dockerArgs_openai_workspace=( -v "$factory_projectDir":/workspace/$(basename $(pwd)) -w /workspace/$(basename $(pwd)) )
+dockerArgs_api=( -e HF_API_KEY="$HF_API_KEY" -e HF_TOKEN="$HF_TOKEN" -e GH_TOKEN="$GH_TOKEN" -e INPUT_GITHUB_TOKEN="$GH_TOKEN" -e OPENAI_API_KEY="$OPENAI_API_KEY" -e OPENROUTER_API_KEY="$OPENROUTER_API_KEY" -e ai_safety="$ai_safety" )
+
+if _if_cygwin
+then
+workdir_basename=$(basename "$PWD")
+[[ "$workdir_basename" != "ubiquitous_bash" ]] && dockerArgs_openai_workspace+=( -v 'C:\q\p\zCore\infrastructure\ubiquitous_bash':/workspace/ubiquitous_bash:ro )
+dockerArgs_openai_workspace+=( -v "$factory_projectDir":/workspace/project )
+#--privileged
+#--ipc=host --ulimit memlock=-1 --ulimit stack=67108864
+#-v 'C:\q':/q -v 'C:\core':/core -v "$USERPROFILE"'\Downloads':/Downloads
+#
+#-v 'C:\q':/q
+#-v 'C:\core':/core -v "$USERPROFILE"'\Downloads':/Downloads -v "$factory_projectDir":/workspace/project -v "$factory_projectDir":/workspace/data -v "$factory_projectDir"/cache_pip:/workspace/cache_pip
+docker run --shm-size=20g --name openai-$(_uid 14) --gpus "all" "${dockerArgs_api[@]}" "${dockerArgs_openai[@]}" "${dockerArgs_openai_workspace[@]}" --rm -it "$dockerName" "${dockerRunArgs[@]}"
+fi
+if ! _if_cygwin
+then
+workdir_basename=$(basename "$PWD")
+[[ "$workdir_basename" != "ubiquitous_bash" ]] && dockerArgs_openai_workspace+=( -v "$HOME"/core/infrastructure/ubiquitous_bash:/workspace/ubiquitous_bash:ro )
+dockerArgs_openai_workspace+=( -v "$factory_projectDir":/workspace/project )
+# WARNING: May be untested.
+#-v '/home/user/___quick':/q
+#-v '/home/user/core':/core -v "/home/user"'/Downloads':/Downloads -v "$factory_projectDir":/workspace/project -v "$factory_projectDir":/workspace/data -v "$factory_projectDir"/cache_pip:/workspace/cache_pip
+docker run --shm-size=20g --name openai-$(_uid 14) --gpus "all" "${dockerArgs_api[@]}" "${dockerArgs_openai[@]}" "${dockerArgs_openai_workspace[@]}" --rm -it "$dockerName" "${dockerRunArgs[@]}"
+fi
+
+# ###
+# PASTE
+# ###
+
+rmdir ./models > /dev/null 2>&1
+rmdir ./datasets > /dev/null 2>&1
+rmdir ./outputs > /dev/null 2>&1
+
+rm -f ./._run-factory_openai-heavy > /dev/null 2>&1
+
+
+
+}
+
+
+
+
+
