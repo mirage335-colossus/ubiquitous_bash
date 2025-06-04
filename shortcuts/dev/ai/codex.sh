@@ -27,6 +27,7 @@ _setup_codex() {
 #--model o3
 
 #alias codex='wsl -d ubdist codex'
+#alias codexNative=$(type -P codex 2>/dev/null)
 
 
 
