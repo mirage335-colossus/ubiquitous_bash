@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='4191931995'
+export ub_setScriptChecksum_contents='1550292328'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -1505,6 +1505,31 @@ then
 
 	kwrite() {
 		kate -n "$@"
+	}
+
+	code() {
+		local current_workdir
+		#current_workdir=$(_getAbsoluteFolder "$1")
+		current_workdir=$(_searchBaseDir "$@")
+		current_workdir=$(cygpath -w "$current_workdir")
+
+
+		local currentArg
+		local currentResult
+		processedArgs=()
+		for currentArg in "$@"
+		do
+			if [[ -e "$currentArg" ]] || [[ "$currentArg" == "/cygdrive/"* ]] || [[ "$currentArg" == "/home/"* ]] || [[ "$currentArg" == "/root/"* ]]
+			then
+				currentResult=$(cygpath -w "$currentArg")
+			else
+				currentResult="$currentArg"
+			fi
+			
+			processedArgs+=("$currentResult")
+		done
+
+		"$(type -P code)" --new-window "${processedArgs[@]}" --new-window "$current_workdir"
 	}
 
 	_aria2c_cygwin_overide() {
@@ -22188,6 +22213,156 @@ nvidia-smi
 
 CZXWXcRMTo8EmM8i4d
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+_factory_openai() {
+if [[ "$recursionGuard_factory_ops" == "" ]]
+then
+_factory_ops_recursion "$@"
+return
+fi
+
+! type _set_factory_dir > /dev/null 2>&1 && exit 1
+_set_factory_dir
+
+
+
+# ###
+# PASTE
+# ###
+
+wsl -d docker-desktop sh -c "echo 'net.core.bpf_jit_harden=1' > /etc/sysctl.d/99-nvidia-workaround-bpf_jit_harden.conf"
+wsl -d docker-desktop sysctl -p /etc/sysctl.d/99-nvidia-workaround-bpf_jit_harden.conf
+
+dockerName=ghcr.io/openai/codex-universal
+docker pull ghcr.io/openai/codex-universal:latest
+
+#[[ JUPYTER_PASSWORD == "" ]] && export JUPYTER_PASSWORD=$(openssl rand 768 | base64 | tr -dc 'a-zA-Z0-9' | tr -d 'acdefhilmnopqrsuvACDEFHILMNOPQRSU14580' | head -c "24")
+
+#docker pull "$dockerName"
+
+entrypoint=$(docker inspect -f '{{join .Config.Entrypoint " "}}' "$dockerName")
+cmd=$(docker inspect -f '{{join .Config.Cmd " "}}' "$dockerName")
+#workdir=$(docker inspect -f '{{.Config.WorkingDir}}' "$dockerName")
+workdir=$(pwd)
+workdir=$(basename "$workdir")
+workdir=/workspace/"$workdir"
+#workdir=/workspace/$(basename $(pwd))
+_messagePlain_request 'request: paste ->'
+echo > ./._run-factory_openai
+echo "echo 'openai' > /info_factoryName.txt" | tee -a ./._run-factory_openai
+echo "echo '# Please read researchEngine documentation for (hopefully) stabilized examples .' > /info_factoryMOTD.txt" | tee -a ./._run-factory_openai
+echo "echo 'ubiquitous_bash=~/.ubcore/ubiquitous_bash ; vim -R "'"$ubiquitous_bash"'"/_lib/kit/app/researchEngine/_dev/README-FACTORY-openai.md' >> /info_factoryMOTD.txt" | tee -a ./._run-factory_openai
+echo "chmod 755 /info_factoryMOTD.txt" | tee -a ./._run-factory_openai
+_request_paste_factory-prepare_finetune | tee -a ./._run-factory_openai
+_request_paste_factory-install_ubiquitous_bash | tee -a ./._run-factory_openai
+_request_paste_factory-show_finetune | tee -a ./._run-factory_openai
+#_messagePlain_request 'request: JUPYTER_PASSWORD: '"$JUPYTER_PASSWORD"
+# Yes this is safe, ''.ubcorerc' will switch from '--profile' to '--parent' based on set "$scriptAbsoluteLocation" .
+echo unset ubiquitousBashID | tee -a ./._run-factory_openai
+#docker inspect --format='{{json .Config.Entrypoint}}' "$dockerName" | jq -r '.[]' | tee -a ./._run-factory_openai
+mkdir -p "$workdir" | tee -a ./._run-factory_openai
+echo '[ -n '"$workdir"' ] && cd '"$workdir" | tee -a ./._run-factory_openai
+_messagePlain_request 'request: <- paste'
+#echo "exec ${entrypoint} ${cmd}" | tee -a ./._run-factory_openai
+#
+#echo "exec ${entrypoint}" | tee -a ./._run-factory_openai
+#
+#echo echo "==================================" | tee -a ./._run-factory_openai
+#echo echo "Welcome to openai/codex-universal!" | tee -a ./._run-factory_openai
+#echo echo "==================================" | tee -a ./._run-factory_openai
+#
+#echo /opt/codex/setup_universal.sh | tee -a ./._run-factory_openai
+#
+#echo echo "Environment ready. Dropping you into a bash shell." | tee -a ./._run-factory_openai
+
+echo 'bash -i' >> ./._run-factory_openai
+
+
+# ###
+
+
+! type _getAbsoluteLocation > /dev/null 2>&1 && exit 1
+
+#docker image inspect "$dockerName" --format '{{json .Config.Entrypoint}} {{json .Config.Cmd}}'
+
+#bash
+dockerRunArgs=( /workspace/project/._run-factory_openai )
+[[ ! -e ./._run-factory_openai ]] && dockerRunArgs=( )
+
+# ATTENTION: Enabling swift will always download ~800MB . Also adds '.swift-version' .
+#-e CODEX_ENV_SWIFT_VERSION=6.1
+dockerArgs_openai=( -e CODEX_ENV_PYTHON_VERSION=3.12 -e CODEX_ENV_NODE_VERSION=20 -e CODEX_ENV_RUST_VERSION=1.87.0 -e CODEX_ENV_GO_VERSION=1.23.8 )
+#dockerArgs_openai+=( -e CODEX_ENV_SWIFT_VERSION=6.1 )
+dockerArgs_openai_workspace=( -v "$factory_projectDir":/workspace/$(basename $(pwd)) -w /workspace/$(basename $(pwd)) )
+dockerArgs_api=( -e HF_API_KEY="$HF_API_KEY" -e HF_TOKEN="$HF_TOKEN" -e GH_TOKEN="$GH_TOKEN" -e INPUT_GITHUB_TOKEN="$GH_TOKEN" -e OPENAI_API_KEY="$OPENAI_API_KEY" -e OPENROUTER_API_KEY="$OPENROUTER_API_KEY" -e ai_safety="$ai_safety" )
+
+if _if_cygwin
+then
+workdir_basename=$(basename "$PWD")
+[[ "$workdir_basename" != "ubiquitous_bash" ]] && dockerArgs_openai_workspace+=( -v 'C:\q\p\zCore\infrastructure\ubiquitous_bash':/workspace/ubiquitous_bash:ro )
+dockerArgs_openai_workspace+=( -v "$factory_projectDir":/workspace/project )
+#--privileged
+#--ipc=host --ulimit memlock=-1 --ulimit stack=67108864
+#-v 'C:\q':/q -v 'C:\core':/core -v "$USERPROFILE"'\Downloads':/Downloads
+#
+#-v 'C:\q':/q
+#-v 'C:\core':/core -v "$USERPROFILE"'\Downloads':/Downloads -v "$factory_projectDir":/workspace/project -v "$factory_projectDir":/workspace/data -v "$factory_projectDir"/cache_pip:/workspace/cache_pip
+docker run --shm-size=20g --name openai-$(_uid 14) --gpus "all" "${dockerArgs_api[@]}" "${dockerArgs_openai[@]}" "${dockerArgs_openai_workspace[@]}" --rm -it "$dockerName" "${dockerRunArgs[@]}"
+fi
+if ! _if_cygwin
+then
+workdir_basename=$(basename "$PWD")
+[[ "$workdir_basename" != "ubiquitous_bash" ]] && dockerArgs_openai_workspace+=( -v "$HOME"/core/infrastructure/ubiquitous_bash:/workspace/ubiquitous_bash:ro )
+dockerArgs_openai_workspace+=( -v "$factory_projectDir":/workspace/project )
+# WARNING: May be untested.
+#-v '/home/user/___quick':/q
+#-v '/home/user/core':/core -v "/home/user"'/Downloads':/Downloads -v "$factory_projectDir":/workspace/project -v "$factory_projectDir":/workspace/data -v "$factory_projectDir"/cache_pip:/workspace/cache_pip
+docker run --shm-size=20g --name openai-$(_uid 14) --gpus "all" "${dockerArgs_api[@]}" "${dockerArgs_openai[@]}" "${dockerArgs_openai_workspace[@]}" --rm -it "$dockerName" "${dockerRunArgs[@]}"
+fi
+
+# ###
+# PASTE
+# ###
+
+rmdir ./models > /dev/null 2>&1
+rmdir ./datasets > /dev/null 2>&1
+rmdir ./outputs > /dev/null 2>&1
+
+rm -f ./._run-factory_openai > /dev/null 2>&1
+
+
+
+}
+
+
+
+
 
 
 #./ubiquitous_bash.sh _format_bash ubiquitous_bash ./_local/dataset/ubiquitous_bash

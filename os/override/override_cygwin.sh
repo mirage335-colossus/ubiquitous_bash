@@ -859,6 +859,31 @@ then
 		kate -n "$@"
 	}
 
+	code() {
+		local current_workdir
+		#current_workdir=$(_getAbsoluteFolder "$1")
+		current_workdir=$(_searchBaseDir "$@")
+		current_workdir=$(cygpath -w "$current_workdir")
+
+
+		local currentArg
+		local currentResult
+		processedArgs=()
+		for currentArg in "$@"
+		do
+			if [[ -e "$currentArg" ]] || [[ "$currentArg" == "/cygdrive/"* ]] || [[ "$currentArg" == "/home/"* ]] || [[ "$currentArg" == "/root/"* ]]
+			then
+				currentResult=$(cygpath -w "$currentArg")
+			else
+				currentResult="$currentArg"
+			fi
+			
+			processedArgs+=("$currentResult")
+		done
+
+		"$(type -P code)" --new-window "${processedArgs[@]}" --new-window "$current_workdir"
+	}
+
 	_aria2c_cygwin_overide() {
 		if _safeEcho_newline "$@" | grep '\--async-dns' > /dev/null
 		then
