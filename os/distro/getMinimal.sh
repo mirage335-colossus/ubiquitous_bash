@@ -435,7 +435,7 @@ _getMinimal_cloud() {
 }
 
 
-
+# Minimizes runtime (to avoid timeouts) and conflicts with installed software. Usually used by specialized Docker containers (eg. 'ghcr.io/openai/codex-universal' , 'openai-heavy' , etc) , within environments unable (unlike a usual VPS) to directly use a custom dist/OS (eg. OpenAI ChatGPT Codex WebUI , RunPod , etc).
 _getMinimal_special() {
 	echo 'APT::AutoRemove::RecommendsImportant "true";
 APT::AutoRemove::SuggestsImportant "true";' | tee /etc/apt/apt.conf.d/99autoremove-recommends > /dev/null

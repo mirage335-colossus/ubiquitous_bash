@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='3761630612'
+export ub_setScriptChecksum_contents='1344391099'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -13245,7 +13245,7 @@ _getMinimal_cloud() {
 }
 
 
-
+# Minimizes runtime (to avoid timeouts) and conflicts with installed software. Usually used by specialized Docker containers (eg. 'ghcr.io/openai/codex-universal' , 'openai-heavy' , etc) , within environments unable (unlike a usual VPS) to directly use a custom dist/OS (eg. OpenAI ChatGPT Codex WebUI , RunPod , etc).
 _getMinimal_special() {
 	echo 'APT::AutoRemove::RecommendsImportant "true";
 APT::AutoRemove::SuggestsImportant "true";' | tee /etc/apt/apt.conf.d/99autoremove-recommends > /dev/null
@@ -29119,6 +29119,16 @@ CZXWXcRMTo8EmM8i4d
 
 _here_dockerfile-ubiquitous "$@"
 
+echo 'ARG CACHEBUST=1'
+echo 'RUN echo CACHEBUST... '$(_uid)' > /dev/null'
+echo 'RUN ( cd ~/.ubcore/ubiquitous_bash ; ./ubiquitous_bash.sh _gitBest pull )'
+if _if_cygwin
+then
+    echo 'COPY [ "\\ubiquitous_bash.sh", "/root/.ubcore/ubiquitous_bash/ubiquitous_bash.sh" ]'
+else
+    echo 'COPY [ "/ubiquitous_bash.sh", "~/.ubcore/ubiquitous_bash/ubiquitous_bash.sh" ]'
+fi
+
 cat << 'CZXWXcRMTo8EmM8i4d'
 
 # ###
@@ -29171,6 +29181,7 @@ __factoryCreate_sequence_openai-heavy() {
     docker rmi --force openai-heavy > /dev/null 2>&1
 
     cd "$safeTmp"
+    cp "$scriptAbsoluteFolder"/ubiquitous_bash.sh "$safeTmp"/ubiquitous_bash.sh
 
     if [[ "$CI" != "" ]] && [[ "$objectName" == "ubiquitous_bash" ]]
     then

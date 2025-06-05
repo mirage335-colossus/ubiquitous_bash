@@ -887,6 +887,16 @@ CZXWXcRMTo8EmM8i4d
 
 _here_dockerfile-ubiquitous "$@"
 
+echo 'ARG CACHEBUST=1'
+echo 'RUN echo CACHEBUST... '$(_uid)' > /dev/null'
+echo 'RUN ( cd ~/.ubcore/ubiquitous_bash ; ./ubiquitous_bash.sh _gitBest pull )'
+if _if_cygwin
+then
+    echo 'COPY [ "\\ubiquitous_bash.sh", "/root/.ubcore/ubiquitous_bash/ubiquitous_bash.sh" ]'
+else
+    echo 'COPY [ "/ubiquitous_bash.sh", "~/.ubcore/ubiquitous_bash/ubiquitous_bash.sh" ]'
+fi
+
 cat << 'CZXWXcRMTo8EmM8i4d'
 
 # ###
@@ -939,6 +949,7 @@ __factoryCreate_sequence_openai-heavy() {
     docker rmi --force openai-heavy > /dev/null 2>&1
 
     cd "$safeTmp"
+    cp "$scriptAbsoluteFolder"/ubiquitous_bash.sh "$safeTmp"/ubiquitous_bash.sh
 
     if [[ "$CI" != "" ]] && [[ "$objectName" == "ubiquitous_bash" ]]
     then
