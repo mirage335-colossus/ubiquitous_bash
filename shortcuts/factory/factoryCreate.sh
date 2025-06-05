@@ -895,7 +895,7 @@ cat << 'CZXWXcRMTo8EmM8i4d'
 
 #RUN python -m pip install --upgrade pip
 
-RUN ~/.ubcore/ubiquitous_bash.sh _getMinimal_special
+RUN ~/.ubcore/ubiquitous_bash/ubiquitous_bash.sh _getMinimal_special
 
 # ###
 # PASTE
@@ -980,7 +980,7 @@ __factoryCreate_sequence_openai-heavy() {
 
     #if [[ "$DOCKER_BUILDER_NAME" == "" ]]
     #then
-        docker build -t openai-heavy .
+        docker build --debug -t openai-heavy .
         docker tag openai-heavy "$DOCKER_USER"/openai-heavy:latest
     #else
         #if [[ "$DOCKER_BUILDER_NAME" != "" ]]

@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='1601053115'
+export ub_setScriptChecksum_contents='1138907647'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -21429,7 +21429,7 @@ cat << 'CZXWXcRMTo8EmM8i4d'
 
 #RUN python -m pip install --upgrade pip
 
-RUN ~/.ubcore/ubiquitous_bash.sh _getMinimal_special
+RUN ~/.ubcore/ubiquitous_bash/ubiquitous_bash.sh _getMinimal_special
 
 # ###
 # PASTE
@@ -21514,7 +21514,7 @@ __factoryCreate_sequence_openai-heavy() {
 
     #if [[ "$DOCKER_BUILDER_NAME" == "" ]]
     #then
-        docker build -t openai-heavy .
+        docker build --debug -t openai-heavy .
         docker tag openai-heavy "$DOCKER_USER"/openai-heavy:latest
     #else
         #if [[ "$DOCKER_BUILDER_NAME" != "" ]]
