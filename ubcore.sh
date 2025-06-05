@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='1603191802'
+export ub_setScriptChecksum_contents='1601053115'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -11158,6 +11158,9 @@ _getMost_debian11_install() {
 	_getMost_backend_aptGetInstall autoconf
 	_getMost_backend_aptGetInstall libudev-dev
 
+	_getMost_backend_aptGetInstall imagemagick
+	_getMost_backend_aptGetInstall graphicsmagick-imagemagick-compat
+
 	_getMost_backend_aptGetInstall dwarves
 	_getMost_backend_aptGetInstall pahole
 
@@ -11452,6 +11455,8 @@ _getMost_debian11_install() {
 	_getMost_backend_aptGetInstall mawk
 	_getMost_backend_aptGetInstall nano
 	_getMost_backend_aptGetInstall nilfs-tools
+
+	_getMost_backend_aptGetInstall jq
 	
 	_getMost_backend_aptGetInstall build-essential
 	_getMost_backend_aptGetInstall bison
@@ -11596,6 +11601,9 @@ _getMost_debian11_install() {
 	_getMost_backend_aptGetInstall nsis
 
 	_getMost_backend_aptGetInstall dos2unix
+
+
+	_getMost_backend_aptGetInstall xxd
 	
 	
 	# Sometimes may be useful as a workaround for docker 'overlay2' 'storage-driver' .
@@ -11617,6 +11625,7 @@ _getMost_debian11_install() {
 	_getMost_backend_aptGetInstall mksquashfs
 	_getMost_backend_aptGetInstall grub-mkstandalone
 	_getMost_backend_aptGetInstall mkfs.vfat
+	_getMost_backend_aptGetInstall dosfstools
 	_getMost_backend_aptGetInstall mkswap
 	_getMost_backend_aptGetInstall mmd
 	_getMost_backend_aptGetInstall mcopy
@@ -12648,6 +12657,56 @@ _getMinimal_cloud() {
 	
 	
 	return 0
+}
+
+
+
+_getMinimal_special() {
+	echo 'APT::AutoRemove::RecommendsImportant "true";
+APT::AutoRemove::SuggestsImportant "true";' | tee /etc/apt/apt.conf.d/99autoremove-recommends > /dev/null
+
+
+	
+	unset _aptGetInstall
+	unalias _aptGetInstall 2>/dev/null
+	_aptGetInstall() {
+		env XZ_OPT="-T0" DEBIAN_FRONTEND=noninteractive apt-get -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install -q --install-recommends -y "$@"
+	}
+
+	_aptGetInstall sudo wget gpg curl pigz pixz bash aria2 git git-lfs bc nmap socat sockstat rsync net-tools uuid-runtime iperf3 vim man-db gnulib libtool libtool-bin intltool libgts-dev netcat-openbsd iperf axel unionfs-fuse samba qemu-system-x86 qemu-system-arm qemu-efi-arm qemu-efi-aarch64 qemu-user-static qemu-utils dosbox debootstrap vainfo ffmpeg util-linux screen gawk build-essential flex libelf-dev libncurses-dev autoconf libudev-dev dwarves pahole cmake gh pkg-haskell-tools alex cabal-install happy hscolour ghc libusb-dev avrdude gcc-avr binutils-avr avr-libc stm32flash dfu-util libnewlib-arm-none-eabi gcc-arm-none-eabi binutils-arm-none-eabi libusb-1.0 setserial libffi-dev libusb-1.0-0 libusb-1.0-0-dev libusb-1.0-doc pkg-config crudini bsdutils findutils v4l-utils libevent-dev libjpeg-dev libbsd-dev libusb-1.0 ddd gdb libbabeltrace1 libc6-dbg libsource-highlight-common libsource-highlight4v5 initramfs-tools wireless-tools rfkill dmidecode p7zip p7zip-full unzip zip lbzip2 jp2a dnsutils bind9-dnsutils live-boot mktorrent gdisk lz4 mawk nano bison libelf-dev elfutils patch tar gzip bzip2 librecode0 wkhtmltopdf recoll sed texinfo udftools wondershaper pstoedit pdftk sysbench libssl-dev cpio pv expect libfuse2 wipe iputils-ping btrfs-progs btrfs-compsize zstd zlib1g nilfs-tools coreutils sg3-utils kpartx openssl growisofs udev cryptsetup parted e2fsprogs xz-utils libreadline8 libreadline-dev mkisofs genisoimage wodim eject hdparm sdparm php cifs-utils debhelper nsis dos2unix fuse-overlayfs xorriso squashfs-tools grub-pc-bin grub-efi-amd64-bin mtools squashfs-tools squashfs-tools-ng fdisk lsof usbutils aptitude recode asciidoc lepton-eda pcb-rnd gerbv electronics-pcb libgdl-3-5 libgdl-3-common libpotrace0 libwmf-bin kicad electric w3m tcl tk par2 yubikey-manager qrencode tasksel jq xxd sloccount dosfstools cloud-guest-utils zbar-tools apt-utils git-filter-repo qalc apt-transport-https > /quicklog.tmp 2>&1
+	tail /quicklog.tmp
+	rm -f /quicklog.tmp
+
+
+	#locales-all
+
+	#mingw-w64 g++-mingw-w64-x86-64-win32 binutils-mingw-w64 mingw-w64-tools gdb-mingw-w64
+
+	#rustc cargo
+
+	#openjdk-17-jdk openjdk-17-jre
+
+	#psk31lx
+
+	#emacs
+
+	#python3-serial
+
+	
+
+	apt-get remove --autoremove -y
+	apt-get -y clean
+
+
+
+	~/core/infrastructure/ubiquitous_bash/ubiquitous_bash.sh _here_opensslConfig_legacy | tee /etc/ssl/openssl_legacy.cnf > /dev/null 2>&1
+	echo '
+
+	.include = /etc/ssl/openssl_legacy.cnf
+
+	' | cat /etc/ssl/openssl.cnf.orig - 2>/dev/null | tee /etc/ssl/openssl.cnf > /dev/null 2>&1
+
+
 }
 
 
@@ -21369,6 +21428,8 @@ cat << 'CZXWXcRMTo8EmM8i4d'
 # ###
 
 #RUN python -m pip install --upgrade pip
+
+RUN ~/.ubcore/ubiquitous_bash.sh _getMinimal_special
 
 # ###
 # PASTE

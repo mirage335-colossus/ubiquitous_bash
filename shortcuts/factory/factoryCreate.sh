@@ -895,6 +895,8 @@ cat << 'CZXWXcRMTo8EmM8i4d'
 
 #RUN python -m pip install --upgrade pip
 
+RUN ~/.ubcore/ubiquitous_bash.sh _getMinimal_special
+
 # ###
 # PASTE
 # ###

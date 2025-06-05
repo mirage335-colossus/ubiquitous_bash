@@ -486,6 +486,9 @@ _getMost_debian11_install() {
 	_getMost_backend_aptGetInstall autoconf
 	_getMost_backend_aptGetInstall libudev-dev
 
+	_getMost_backend_aptGetInstall imagemagick
+	_getMost_backend_aptGetInstall graphicsmagick-imagemagick-compat
+
 	_getMost_backend_aptGetInstall dwarves
 	_getMost_backend_aptGetInstall pahole
 
@@ -780,6 +783,8 @@ _getMost_debian11_install() {
 	_getMost_backend_aptGetInstall mawk
 	_getMost_backend_aptGetInstall nano
 	_getMost_backend_aptGetInstall nilfs-tools
+
+	_getMost_backend_aptGetInstall jq
 	
 	_getMost_backend_aptGetInstall build-essential
 	_getMost_backend_aptGetInstall bison
@@ -924,6 +929,9 @@ _getMost_debian11_install() {
 	_getMost_backend_aptGetInstall nsis
 
 	_getMost_backend_aptGetInstall dos2unix
+
+
+	_getMost_backend_aptGetInstall xxd
 	
 	
 	# Sometimes may be useful as a workaround for docker 'overlay2' 'storage-driver' .
@@ -945,6 +953,7 @@ _getMost_debian11_install() {
 	_getMost_backend_aptGetInstall mksquashfs
 	_getMost_backend_aptGetInstall grub-mkstandalone
 	_getMost_backend_aptGetInstall mkfs.vfat
+	_getMost_backend_aptGetInstall dosfstools
 	_getMost_backend_aptGetInstall mkswap
 	_getMost_backend_aptGetInstall mmd
 	_getMost_backend_aptGetInstall mcopy
