@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='1344391099'
+export ub_setScriptChecksum_contents='3950216927'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -13284,7 +13284,7 @@ APT::AutoRemove::SuggestsImportant "true";' | tee /etc/apt/apt.conf.d/99autoremo
 
 
 
-	~/core/infrastructure/ubiquitous_bash/ubiquitous_bash.sh _here_opensslConfig_legacy | tee /etc/ssl/openssl_legacy.cnf > /dev/null 2>&1
+	"$scriptAbsoluteLocation" _here_opensslConfig_legacy | tee /etc/ssl/openssl_legacy.cnf > /dev/null 2>&1
 	echo '
 
 	.include = /etc/ssl/openssl_legacy.cnf

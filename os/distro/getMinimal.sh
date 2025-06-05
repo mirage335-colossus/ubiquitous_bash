@@ -474,7 +474,7 @@ APT::AutoRemove::SuggestsImportant "true";' | tee /etc/apt/apt.conf.d/99autoremo
 
 
 
-	~/core/infrastructure/ubiquitous_bash/ubiquitous_bash.sh _here_opensslConfig_legacy | tee /etc/ssl/openssl_legacy.cnf > /dev/null 2>&1
+	"$scriptAbsoluteLocation" _here_opensslConfig_legacy | tee /etc/ssl/openssl_legacy.cnf > /dev/null 2>&1
 	echo '
 
 	.include = /etc/ssl/openssl_legacy.cnf

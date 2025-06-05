@@ -27,11 +27,13 @@ fi
 cd ~/.ubcore/ubiquitous_bash
 ~/.ubcore/ubiquitous_bash/ubiquitous_bash.sh _gitBest pull
 cd
+#export profileScriptLocation="/root/core/infrastructure/ubiquitous_bash/ubiquitous_bash.sh"
+#export profileScriptFolder="/root/core/infrastructure/ubiquitous_bash"
+#. "/root/core/infrastructure/ubiquitous_bash/ubiquitous_bash.sh" --profile _importShortcuts
 
 
 cd
 ~/.ubcore/ubiquitous_bash/ubiquitous_bash.sh _setup_codex
-
 
 
 
@@ -47,30 +49,8 @@ cd
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 export devfast=true
 export skimfast=true
-
-
-
-
-
-
-
-
 
 
 
