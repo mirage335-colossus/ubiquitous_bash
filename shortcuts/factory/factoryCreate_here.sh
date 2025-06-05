@@ -109,6 +109,14 @@ env DEBIAN_FRONTEND=noninteractive apt-get install ffmpeg -y ;\
 env DEBIAN_FRONTEND=noninteractive apt-get install asciinema -y
 
 
+# ATTRIBUTION-AI: ChatGPT o3  2025-06-05
+RUN [[ $(dpkg-divert --list /usr/bin/man | tr -dc 'a-zA-Z0-9') != "" ]] && rm -f /usr/bin/man && dpkg-divert --remove --rename /usr/bin/man ;\ 
+rm -f /etc/dpkg/dpkg.cfg.d/excludes ;\ 
+env DEBIAN_FRONTEND=noninteractive apt-get install man-db manpages manpages-dev manpages-posix -y ;\ 
+env DEBIAN_FRONTEND=noninteractive apt-get --reinstall install -y $(dpkg-query -W -f='${Package} ') ;\ 
+mandb -q
+
+
 RUN env DEBIAN_FRONTEND=noninteractive apt-get install sudo -y ;\ 
 /workspace/ubiquitous_bash/ubiquitous_bash.sh _getMinimal_cloud
 

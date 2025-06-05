@@ -10,21 +10,6 @@ git config --global checkout.workers -1
 #apt-get install -y apt-transport-https ca-certificates curl gnupg git wget
 
 
-# Suggested by ChatGPT o3  2025-06-05 . DUBIOUS
-#mkdir -p /usr/libexec
-#ln -sf /usr/lib/policykit-1/polkitd /usr/libexec/polkitd
-#
-#echo "policykit-1 hold" | dpkg --set-selections
-#apt-get -o Dpkg::Options::="--force-confdef" \
-             #-o Dpkg::Options::="--force-confold" \
-             #upgrade -y
-#
-#add-apt-repository ppa:ubuntu-security-proposed/policykit-1
-#apt-get update && apt-get upgrade -y policykit-1
-#
-#yes | unminimize
-
-
 # ### _getCore_ub
 if [[ ! -e ~/core/infrastructure/ubiquitous_bash ]]
 then
@@ -76,6 +61,37 @@ fi
 
 cd
 
+# Very limited code examples From 'unminimize' .
+# https://packages.ubuntu.com/plucky/unminimize
+# https://changelogs.ubuntu.com/changelogs/pool/main/u/unminimize/unminimize_0.5/copyright
+# https://web.archive.org/web/20250605191859/https://changelogs.ubuntu.com/changelogs/pool/main/u/unminimize/unminimize_0.5/copyright
+# https://packages.ubuntu.com/noble/unminimize
+# https://changelogs.ubuntu.com/changelogs/pool/main/u/unminimize/unminimize_0.2/copyright
+# https://web.archive.org/web/20250605192023/https://changelogs.ubuntu.com/changelogs/pool/main/u/unminimize/unminimize_0.2/copyright
+# Copyright: 2024, Utkarsh Gupta <utkarsh@canonical.com>
+# License: GPL-2.0+
+
+#apt-get update -y
+rm -f /etc/dpkg/dpkg.cfg.d/excludes
+if [[ "$(dpkg-divert --truename /usr/bin/man)" = "/usr/bin/man.REAL" ]]; then
+    rm -f /usr/bin/man
+    dpkg-divert --quiet --remove --rename /usr/bin/man
+fi
+#
+apt-get install man-db manpages manpages-dev manpages-posix -y
+mandb -q
+#
+dpkg -S /usr/share/man/ |sed 's|, |\n|g;s|: [^:]*$||' | DEBIAN_FRONTEND=noninteractive xargs --no-run-if-empty apt-get install --reinstall -y > /quicklog.tmp 2>&1
+tail /quicklog.tmp
+rm -f /quicklog.tmp
+dpkg --verify --verify-format rpm | awk '$2 ~ /\/usr\/share\/doc/ {print $2}' | sed 's|/[^/]*$||' | sort | uniq | xargs --no-run-if-empty dpkg -S | sed 's|, |\n|g;s|: [^:]*$||' | uniq | DEBIAN_FRONTEND=noninteractive xargs --no-run-if-empty apt-get install --reinstall -y > /quicklog.tmp 2>&1
+tail /quicklog.tmp
+rm -f /quicklog.tmp
+#dpkg --verify --verify-format rpm | awk '$2 ~ /\/usr\/share\/doc/ {print " " $2}'
+
+
+cd
+
 ~/.ubcore/ubiquitous_bash/ubiquitous_bash.sh _getMinimal_special
 #~/.ubcore/ubiquitous_bash/ubiquitous_bash.sh _getMinimal_cloud
 #~/.ubcore/ubiquitous_bash/ubiquitous_bash.sh _getMost
@@ -90,3 +106,4 @@ export skimfast=true
 
 unset ubiquitousBashID
 
+echo 'request: _setup_ollama ; apt-get install ... _getMinimal_special comments... '

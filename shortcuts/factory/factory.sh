@@ -1107,9 +1107,9 @@ workdir=/workspace/"$workdir"
 _messagePlain_request 'request: paste ->'
 echo > ./._run-factory_openai-heavy
 echo "echo 'openai' > /info_factoryName.txt" | tee -a ./._run-factory_openai-heavy
-echo "echo '# Please read researchEngine documentation for (hopefully) stabilized examples .' > /info_factoryMOTD.txt" | tee -a ./._run-factory_openai-heavy
-echo "echo 'ubiquitous_bash=~/.ubcore/ubiquitous_bash ; vim -R "'"$ubiquitous_bash"'"/_lib/kit/app/researchEngine/_dev/README-FACTORY-openai.md' >> /info_factoryMOTD.txt" | tee -a ./._run-factory_openai-heavy
-echo "chmod 755 /info_factoryMOTD.txt" | tee -a ./._run-factory_openai-heavy
+#echo "echo '# Please read researchEngine documentation for (hopefully) stabilized examples .' > /info_factoryMOTD.txt" | tee -a ./._run-factory_openai-heavy
+#echo "echo 'ubiquitous_bash=~/.ubcore/ubiquitous_bash ; vim -R "'"$ubiquitous_bash"'"/_lib/kit/app/researchEngine/_dev/README-FACTORY-openai.md' >> /info_factoryMOTD.txt" | tee -a ./._run-factory_openai-heavy
+#echo "chmod 755 /info_factoryMOTD.txt" | tee -a ./._run-factory_openai-heavy
 _request_paste_factory-prepare_finetune | tee -a ./._run-factory_openai-heavy
 _request_paste_factory-install_ubiquitous_bash | tee -a ./._run-factory_openai-heavy
 _request_paste_factory-show_finetune | tee -a ./._run-factory_openai-heavy

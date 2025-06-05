@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='3950216927'
+export ub_setScriptChecksum_contents='1344792791'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -13258,14 +13258,35 @@ APT::AutoRemove::SuggestsImportant "true";' | tee /etc/apt/apt.conf.d/99autoremo
 		env XZ_OPT="-T0" DEBIAN_FRONTEND=noninteractive apt-get -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install -q --install-recommends -y "$@"
 	}
 
-	_aptGetInstall sudo wget gpg curl pigz pixz bash aria2 git git-lfs bc nmap socat sockstat rsync net-tools uuid-runtime iperf3 vim man-db gnulib libtool libtool-bin intltool libgts-dev netcat-openbsd iperf axel unionfs-fuse samba qemu-system-x86 qemu-system-arm qemu-efi-arm qemu-efi-aarch64 qemu-user-static qemu-utils dosbox debootstrap vainfo ffmpeg util-linux screen gawk build-essential flex libelf-dev libncurses-dev autoconf libudev-dev dwarves pahole cmake gh pkg-haskell-tools alex cabal-install happy hscolour ghc libusb-dev avrdude gcc-avr binutils-avr avr-libc stm32flash dfu-util libnewlib-arm-none-eabi gcc-arm-none-eabi binutils-arm-none-eabi libusb-1.0 setserial libffi-dev libusb-1.0-0 libusb-1.0-0-dev libusb-1.0-doc pkg-config crudini bsdutils findutils v4l-utils libevent-dev libjpeg-dev libbsd-dev libusb-1.0 ddd gdb libbabeltrace1 libc6-dbg libsource-highlight-common libsource-highlight4v5 initramfs-tools wireless-tools rfkill dmidecode p7zip p7zip-full unzip zip lbzip2 jp2a dnsutils bind9-dnsutils live-boot mktorrent gdisk lz4 mawk nano bison libelf-dev elfutils patch tar gzip bzip2 librecode0 wkhtmltopdf recoll sed texinfo udftools wondershaper pstoedit pdftk sysbench libssl-dev cpio pv expect libfuse2 wipe iputils-ping btrfs-progs btrfs-compsize zstd zlib1g nilfs-tools coreutils sg3-utils kpartx openssl growisofs udev cryptsetup parted e2fsprogs xz-utils libreadline8 libreadline-dev mkisofs genisoimage wodim eject hdparm sdparm php cifs-utils debhelper nsis dos2unix fuse-overlayfs xorriso squashfs-tools grub-pc-bin grub-efi-amd64-bin mtools squashfs-tools squashfs-tools-ng fdisk lsof usbutils aptitude recode asciidoc lepton-eda pcb-rnd gerbv electronics-pcb libgdl-3-5 libgdl-3-common libpotrace0 libwmf-bin kicad electric w3m tcl tk par2 yubikey-manager qrencode tasksel jq xxd sloccount dosfstools cloud-guest-utils zbar-tools apt-utils git-filter-repo qalc apt-transport-https > /quicklog.tmp 2>&1
+	_aptGetInstall sudo wget gpg curl pigz pixz bash aria2 git git-lfs bc nmap socat sockstat rsync net-tools uuid-runtime iperf3 vim man-db gnulib libtool libtool-bin intltool libgts-dev netcat-openbsd iperf axel unionfs-fuse debootstrap util-linux screen gawk build-essential flex libelf-dev libncurses-dev autoconf libudev-dev dwarves pahole cmake gh libusb-dev libusb-1.0 setserial libffi-dev libusb-1.0-0 libusb-1.0-0-dev libusb-1.0-doc pkg-config crudini bsdutils findutils v4l-utils libevent-dev libjpeg-dev libbsd-dev libusb-1.0 gdb libbabeltrace1 libc6-dbg libsource-highlight-common libsource-highlight4v5 initramfs-tools dmidecode p7zip p7zip-full unzip zip lbzip2 jp2a dnsutils bind9-dnsutils live-boot mktorrent gdisk lz4 mawk nano bison libelf-dev elfutils patch tar gzip bzip2 librecode0 sed texinfo udftools wondershaper sysbench libssl-dev cpio pv expect libfuse2 wipe iputils-ping btrfs-progs btrfs-compsize zstd zlib1g nilfs-tools coreutils sg3-utils kpartx openssl growisofs udev cryptsetup parted e2fsprogs xz-utils libreadline8 libreadline-dev mkisofs genisoimage wodim eject hdparm sdparm php cifs-utils debhelper nsis dos2unix fuse-overlayfs xorriso squashfs-tools grub-pc-bin grub-efi-amd64-bin mtools squashfs-tools squashfs-tools-ng fdisk lsof usbutils aptitude recode libpotrace0 libwmf-bin w3m par2 yubikey-manager qrencode tasksel jq xxd sloccount dosfstools apt-utils git-filter-repo qalc apt-transport-https > /quicklog.tmp 2>&1
 	tail /quicklog.tmp
 	rm -f /quicklog.tmp
 
+	_aptGetInstall tcl tk libgdl-3-5 libgdl-3-common
 
-	#locales-all
+	#tcl tk libgdl-3-5 libgdl-3-common
+
+	#avrdude gcc-avr binutils-avr avr-libc stm32flash dfu-util libnewlib-arm-none-eabi gcc-arm-none-eabi binutils-arm-none-eabi
 
 	#mingw-w64 g++-mingw-w64-x86-64-win32 binutils-mingw-w64 mingw-w64-tools gdb-mingw-w64
+
+	#pkg-haskell-tools alex cabal-install happy hscolour ghc
+
+	#kicad electric lepton-eda pcb-rnd gerbv electronics-pcb pstoedit pdftk
+
+	#wkhtmltopdf asciidoc
+
+	#vainfo ffmpeg
+
+	#samba qemu-system-x86 qemu-system-arm qemu-efi-arm qemu-efi-aarch64 qemu-user-static qemu-utils dosbox
+
+	#wireless-tools rfkill cloud-guest-utils
+
+	#recoll
+
+	#zbar-tools
+
+
 
 	#rustc cargo
 
@@ -13276,6 +13297,12 @@ APT::AutoRemove::SuggestsImportant "true";' | tee /etc/apt/apt.conf.d/99autoremo
 	#emacs
 
 	#python3-serial
+
+
+
+	#locales-all
+
+	# ddd
 
 	
 
@@ -26811,119 +26838,8 @@ _upgrade_researchEngine-safe-nvidia() {
 
 
 
-
-
-
-# NOTICE: You are obtaining the 'Llama-augment' model, or an upstream model used as a 'Llama-augment' model, by using this function: the 'Llama-augment' model is not, through this code itself, distributed to you (ie. you are likely receiving the 'Llama-augment' model from Soaring Distributions LLC regardless of where you obtained this code from).
-_setup_ollama_model_augment_sequence() {
-	# NOTICE: WARNING: Normally, any redistribution of a 'Llama', similar AI model, or other AI model, would be from an authoratative corporation, such as "Soaring Distributions LLC" .
-	
-	# DANGER: An 'augment' model, which may be included with 'ubdist' or other 'dist/OS' is intended SOLELY for developer use. As a public domain or some publicly available AI model licensing terms apparently allow, this model may be modified for better compliance with technical use cases (such as not disregarding the previous conversation when given repeated 'system' prompts), or for smaller model size (eg. through quantization, or use of a lower parameter count model).
-	
-	# DANGER DANGER: Any 'augment' model really should NOT be used for 'end user' services, including any any built-in help for any end-user program or machinery (excepting that it may or may NOT be reasonable to include with some non-commercial open-source software as a built-in help, wizard, etc, following usual expectations of community provided software). You should expect users WILL, at best, more easily 'jailbreak' such a model, and, due to the emphasis on technical usage (where reliability above 0.2% failure rates, unusual repetitive prompting, etc) as well as small model size, there may be both a complete absence of any safeguards as well as a (albeit not yet observed) possibility of introducing harmful subjects to otherwise harmless conversation.
-	
-	# YOU HAVE BEEN WARNED ! DEVELOPERS ONLY, NOT USERS !
-	
-	
-	# Any distribution or any other activity regarding any 'augmentation' or other AI model is without any warranty of any kind. Superseding all other statements, there are no representations or warranties of any kind concerning the Work, express, implied, statutory or otherwise, including without limitation warranties of title, merchantability, fitness for a particular purpose, non infringement, or the absence of latent or other defects, accuracy, or the present or absence of errors, whether or not discoverable, all to the greatest extent permissible under applicable law.
-	
-	# SPECIFICALLY THIS STATEMENT DISCLAIMS LIABILITY FOR DAMAGES RESULTING FROM THE USE OF THIS DOCUMENT OR THE INFORMATION OR WORKS PROVIDED HEREUNDER.
-	
-	
-	# NOTICE: Purpose of the 'augment' model is, above all other purposes, both:
-	#  (1) To supervise and direct decisions and analysis by other AI models (such as from vision encoders, but also mathematical reasoning specific LLMs, computer activity and security logging LLMs, etc).
-	#  (2) To assist and possibly supervise 'human-in-the-loop' decision making (eg. to sanity check human responses).
-	
-	
-	# https://huggingface.co/mlabonne/Meta-Llama-3.1-8B-Instruct-abliterated-GGUF/tree/main
-	# https://web.archive.org/web/20240831194035/https://huggingface.co/mlabonne/Meta-Llama-3.1-8B-Instruct-abliterated-GGUF/tree/main
-	# Explicitly states 'License: llama3.1'. Readme file from repository does NOT contradict this.
-	
-	# https://www.llama.com/llama3_1/license/
-	# https://huggingface.co/meta-llama/Meta-Llama-3.1-70B-Instruct/blob/main/LICENSE
-	#  NOTICE: ATTENTION: This license has been preserved as 'LICENSE-Llama-3.1.txt', but this license does NOT apply to any 'ubiquitous_bash' code or any other work that is not either a work by Meta or strictly a derivative of a work by Meta (such as a modified AI model GGUF or safetensors file) !
-	
-	# https://www.llama.com/llama3_1/use-policy/
-	
-	
-	# https://www.llama.com/llama3_1/license/
-	#  'include “Llama” at the beginning of any such AI model name'
-	# ATTENTION: Nevertheless, it is very possible a non-'Llama' model will eventually be used, especially as science and technology (eg. plasma recombination EUV physics) related datasets (eg. relevant Wikipedia articles) are increasingly gathered.
-	
-	
-	# https://www.llama.com/llama3_2/license/
-	# https://www.llama.com/llama3_2/use-policy/
-	#  'or to enable functionality disabled by Meta'
-	#   The functionality offered by 'Llama 3.2' (eg. multimodal functionality) is expected to exceed the purpose of an 'augment' model, but the reliabilility limitations imposed are expected prohibitive (especially regarding repeated 'system' prompts). Thus, it is expected that 'Llama 3.1' will be the last 'Llama' model used as an 'augment' model. This is NOT a concern, because it is expected that 'Llama 3.1' already reached a point of diminishing returns on what can be achieved by AI model training methods alone.
-	#   Purposes other than as an 'augment' model, which is a text-only technical use case, and expected to require fine tuning (eg. on prompt/responses generated from the 'ubiquitous_bash' codebase), at that, are expected to achieve very adequate performance from 'stock' original 'Llama' models, or at least those fine-tuned for specific use cases (eg. needle-in-haystack, computer vision object recognition, robot motor control, etc).
-	
-	
-	
-	
-	
-	
-	
-	# ATTENTION: Default context size is low to ensure compatibility with low-RAM computers (LLM on CPU performance generally being acceptable).
-	# STRONGLY RECOMMENDED to greatly increase the context length (6144) if at all possible (>32GB RAM) or to decrease if necessary (eg. 8GB RAM) .
-	
-	#/clear
-	#/set parameter num_thread 768
-	#/set parameter num_gpu 0
-	
-	# 4GB (presumed)
-	#/set parameter num_ctx 512
-
-	# 8GB (presumed)
-	#/set parameter num_ctx 2048
-
-	#/set parameter num_ctx 4096
-
-	# 16GB (presumed)
-	#/set parameter num_ctx 8192
-
-	#/set parameter num_ctx 16384
-
-	# 32GB
-	#/set parameter num_ctx 32768
-
-	# 68.5GiB (presumed)
-	#/set parameter num_ctx 131072
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	local functionEntryPWD="$PWD"
-	_start
-	
-	
-	cd "$safeTmp"
-	
-	
-	
-	
-	
-	
-	# TODO: Replace with model fine-tuned by additional relevant codebases and scientific knowledge.
-	
-	# TODO: TODO: Intentionally overfit smaller parameter models by reinforcing prompt/response for specific knowledge (eg. plasma recombiation light emission physics) and reasoning (eg. robot motor control).
-	
-	
-	# TODO: There may or may not be more track record with this slightly different model, using Q4-K-M quantization.
-	# https://huggingface.co/grimjim/Llama-3.1-8B-Instruct-abliterated_via_adapter-GGUF
-	
-	# TODO: Consider alternative quantization, especially IQ2-M, IQ4-XS. Beware Q4-K-M may have some community testing of important edge cases already.
-	# https://huggingface.co/bartowski/Meta-Llama-3.1-8B-Instruct-abliterated-GGUF/tree/main
-	
-	echo 'FROM ./llama-3.1-8b-instruct-abliterated.Q4_K_M.gguf
-PARAMETER num_ctx 6144
-' > Llama-augment.Modelfile
-
-	cat << 'CZXWXcRMTo8EmM8i4d' >> Llama-augment.Modelfile
+_here_license-Llama-augment() {
+	cat << 'CZXWXcRMTo8EmM8i4d'
 	LICENSE """Built with Llama
 Llama 3.1 is licensed under the Llama 3.1 Community License, Copyright © Meta Platforms, Inc. All Rights Reserved.
 
@@ -27077,6 +26993,119 @@ for the International Sale of Goods does not apply to this Agreement. The courts
 exclusive jurisdiction of any dispute arising out of this Agreement.
 """
 CZXWXcRMTo8EmM8i4d
+}
+
+
+# NOTICE: You are obtaining the 'Llama-augment' model, or an upstream model used as a 'Llama-augment' model, by using this function: the 'Llama-augment' model is not, through this code itself, distributed to you (ie. you are likely receiving the 'Llama-augment' model from Soaring Distributions LLC regardless of where you obtained this code from).
+_setup_ollama_model_augment_sequence() {
+	# NOTICE: WARNING: Normally, any redistribution of a 'Llama', similar AI model, or other AI model, would be from an authoratative corporation, such as "Soaring Distributions LLC" .
+	
+	# DANGER: An 'augment' model, which may be included with 'ubdist' or other 'dist/OS' is intended SOLELY for developer use. As a public domain or some publicly available AI model licensing terms apparently allow, this model may be modified for better compliance with technical use cases (such as not disregarding the previous conversation when given repeated 'system' prompts), or for smaller model size (eg. through quantization, or use of a lower parameter count model).
+	
+	# DANGER DANGER: Any 'augment' model really should NOT be used for 'end user' services, including any any built-in help for any end-user program or machinery (excepting that it may or may NOT be reasonable to include with some non-commercial open-source software as a built-in help, wizard, etc, following usual expectations of community provided software). You should expect users WILL, at best, more easily 'jailbreak' such a model, and, due to the emphasis on technical usage (where reliability above 0.2% failure rates, unusual repetitive prompting, etc) as well as small model size, there may be both a complete absence of any safeguards as well as a (albeit not yet observed) possibility of introducing harmful subjects to otherwise harmless conversation.
+	
+	# YOU HAVE BEEN WARNED ! DEVELOPERS ONLY, NOT USERS !
+	
+	
+	# Any distribution or any other activity regarding any 'augmentation' or other AI model is without any warranty of any kind. Superseding all other statements, there are no representations or warranties of any kind concerning the Work, express, implied, statutory or otherwise, including without limitation warranties of title, merchantability, fitness for a particular purpose, non infringement, or the absence of latent or other defects, accuracy, or the present or absence of errors, whether or not discoverable, all to the greatest extent permissible under applicable law.
+	
+	# SPECIFICALLY THIS STATEMENT DISCLAIMS LIABILITY FOR DAMAGES RESULTING FROM THE USE OF THIS DOCUMENT OR THE INFORMATION OR WORKS PROVIDED HEREUNDER.
+	
+	
+	# NOTICE: Purpose of the 'augment' model is, above all other purposes, both:
+	#  (1) To supervise and direct decisions and analysis by other AI models (such as from vision encoders, but also mathematical reasoning specific LLMs, computer activity and security logging LLMs, etc).
+	#  (2) To assist and possibly supervise 'human-in-the-loop' decision making (eg. to sanity check human responses).
+	
+	
+	# https://huggingface.co/mlabonne/Meta-Llama-3.1-8B-Instruct-abliterated-GGUF/tree/main
+	# https://web.archive.org/web/20240831194035/https://huggingface.co/mlabonne/Meta-Llama-3.1-8B-Instruct-abliterated-GGUF/tree/main
+	# Explicitly states 'License: llama3.1'. Readme file from repository does NOT contradict this.
+	
+	# https://www.llama.com/llama3_1/license/
+	# https://huggingface.co/meta-llama/Meta-Llama-3.1-70B-Instruct/blob/main/LICENSE
+	#  NOTICE: ATTENTION: This license has been preserved as 'LICENSE-Llama-3.1.txt', but this license does NOT apply to any 'ubiquitous_bash' code or any other work that is not either a work by Meta or strictly a derivative of a work by Meta (such as a modified AI model GGUF or safetensors file) !
+	
+	# https://www.llama.com/llama3_1/use-policy/
+	
+	
+	# https://www.llama.com/llama3_1/license/
+	#  'include “Llama” at the beginning of any such AI model name'
+	# ATTENTION: Nevertheless, it is very possible a non-'Llama' model will eventually be used, especially as science and technology (eg. plasma recombination EUV physics) related datasets (eg. relevant Wikipedia articles) are increasingly gathered.
+	
+	
+	# https://www.llama.com/llama3_2/license/
+	# https://www.llama.com/llama3_2/use-policy/
+	#  'or to enable functionality disabled by Meta'
+	#   The functionality offered by 'Llama 3.2' (eg. multimodal functionality) is expected to exceed the purpose of an 'augment' model, but the reliabilility limitations imposed are expected prohibitive (especially regarding repeated 'system' prompts). Thus, it is expected that 'Llama 3.1' will be the last 'Llama' model used as an 'augment' model. This is NOT a concern, because it is expected that 'Llama 3.1' already reached a point of diminishing returns on what can be achieved by AI model training methods alone.
+	#   Purposes other than as an 'augment' model, which is a text-only technical use case, and expected to require fine tuning (eg. on prompt/responses generated from the 'ubiquitous_bash' codebase), at that, are expected to achieve very adequate performance from 'stock' original 'Llama' models, or at least those fine-tuned for specific use cases (eg. needle-in-haystack, computer vision object recognition, robot motor control, etc).
+	
+	
+	
+	
+	
+	
+	
+	# ATTENTION: Default context size is low to ensure compatibility with low-RAM computers (LLM on CPU performance generally being acceptable).
+	# STRONGLY RECOMMENDED to greatly increase the context length (6144) if at all possible (>32GB RAM) or to decrease if necessary (eg. 8GB RAM) .
+	
+	#/clear
+	#/set parameter num_thread 768
+	#/set parameter num_gpu 0
+	
+	# 4GB (presumed)
+	#/set parameter num_ctx 512
+
+	# 8GB (presumed)
+	#/set parameter num_ctx 2048
+
+	#/set parameter num_ctx 4096
+
+	# 16GB (presumed)
+	#/set parameter num_ctx 8192
+
+	#/set parameter num_ctx 16384
+
+	# 32GB
+	#/set parameter num_ctx 32768
+
+	# 68.5GiB (presumed)
+	#/set parameter num_ctx 131072
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	local functionEntryPWD="$PWD"
+	_start
+	
+	
+	cd "$safeTmp"
+	
+	
+	
+	
+	
+	
+	# TODO: Replace with model fine-tuned by additional relevant codebases and scientific knowledge.
+	
+	# TODO: TODO: Intentionally overfit smaller parameter models by reinforcing prompt/response for specific knowledge (eg. plasma recombiation light emission physics) and reasoning (eg. robot motor control).
+	
+	
+	# TODO: There may or may not be more track record with this slightly different model, using Q4-K-M quantization.
+	# https://huggingface.co/grimjim/Llama-3.1-8B-Instruct-abliterated_via_adapter-GGUF
+	
+	# TODO: Consider alternative quantization, especially IQ2-M, IQ4-XS. Beware Q4-K-M may have some community testing of important edge cases already.
+	# https://huggingface.co/bartowski/Meta-Llama-3.1-8B-Instruct-abliterated-GGUF/tree/main
+	
+	echo 'FROM ./llama-3.1-8b-instruct-abliterated.Q4_K_M.gguf
+PARAMETER num_ctx 6144
+' > Llama-augment.Modelfile
+
+	_here_license-Llama-augment >> Llama-augment.Modelfile
 	
 	#wget 'https://huggingface.co/mlabonne/Meta-Llama-3.1-8B-Instruct-abliterated-GGUF/resolve/main/meta-llama-3.1-8b-instruct-abliterated.Q4_K_M.gguf'
 	aria2c --log=- --log-level=info -x "3" --async-dns=false -o 'llama-3.1-8b-instruct-abliterated.Q4_K_M.gguf' 'https://huggingface.co/mlabonne/Meta-Llama-3.1-8B-Instruct-abliterated-GGUF/resolve/main/meta-llama-3.1-8b-instruct-abliterated.Q4_K_M.gguf'
@@ -27880,6 +27909,14 @@ env DEBIAN_FRONTEND=noninteractive apt install python3 python3-pip git -y ;\
 env DEBIAN_FRONTEND=noninteractive apt-get install libcurl4-openssl-dev -y ;\ 
 env DEBIAN_FRONTEND=noninteractive apt-get install ffmpeg -y ;\ 
 env DEBIAN_FRONTEND=noninteractive apt-get install asciinema -y
+
+
+# ATTRIBUTION-AI: ChatGPT o3  2025-06-05
+RUN [[ $(dpkg-divert --list /usr/bin/man | tr -dc 'a-zA-Z0-9') != "" ]] && rm -f /usr/bin/man && dpkg-divert --remove --rename /usr/bin/man ;\ 
+rm -f /etc/dpkg/dpkg.cfg.d/excludes ;\ 
+env DEBIAN_FRONTEND=noninteractive apt-get install man-db manpages manpages-dev manpages-posix -y ;\ 
+env DEBIAN_FRONTEND=noninteractive apt-get --reinstall install -y $(dpkg-query -W -f='${Package} ') ;\ 
+mandb -q
 
 
 RUN env DEBIAN_FRONTEND=noninteractive apt-get install sudo -y ;\ 
@@ -29111,9 +29148,10 @@ cat << 'CZXWXcRMTo8EmM8i4d'
 FROM ghcr.io/openai/codex-universal
 
 RUN echo 'openai-heavy' > /info_factoryName.txt
-RUN echo '# Please read researchEngine documentation for (hopefully) stabilized examples .' >> /info_factoryMOTD.txt
-RUN echo 'ubiquitous_bash=~/.ubcore/ubiquitous_bash ; vim -R "'"\$ubiquitous_bash"'"/_lib/kit/app/researchEngine/_dev/README-FACTORY-openai.md' >> /info_factoryMOTD.txt
-RUN chmod 755 /info_factoryMOTD.txt
+##RUN echo '# Please read researchEngine documentation for (hopefully) stabilized examples .' >> /info_factoryMOTD.txt
+##RUN echo 'ubiquitous_bash=~/.ubcore/ubiquitous_bash ; vim -R "'"\$ubiquitous_bash"'"/_lib/kit/app/researchEngine/_dev/README-FACTORY-openai.md' >> /info_factoryMOTD.txt
+#RUN echo 'request: _setup_ollama ; apt-get install ... _getMinimal_special comments... ' >> /info_factoryMOTD.txt
+#RUN chmod 755 /info_factoryMOTD.txt
 
 CZXWXcRMTo8EmM8i4d
 
@@ -30367,9 +30405,9 @@ workdir=/workspace/"$workdir"
 _messagePlain_request 'request: paste ->'
 echo > ./._run-factory_openai-heavy
 echo "echo 'openai' > /info_factoryName.txt" | tee -a ./._run-factory_openai-heavy
-echo "echo '# Please read researchEngine documentation for (hopefully) stabilized examples .' > /info_factoryMOTD.txt" | tee -a ./._run-factory_openai-heavy
-echo "echo 'ubiquitous_bash=~/.ubcore/ubiquitous_bash ; vim -R "'"$ubiquitous_bash"'"/_lib/kit/app/researchEngine/_dev/README-FACTORY-openai.md' >> /info_factoryMOTD.txt" | tee -a ./._run-factory_openai-heavy
-echo "chmod 755 /info_factoryMOTD.txt" | tee -a ./._run-factory_openai-heavy
+#echo "echo '# Please read researchEngine documentation for (hopefully) stabilized examples .' > /info_factoryMOTD.txt" | tee -a ./._run-factory_openai-heavy
+#echo "echo 'ubiquitous_bash=~/.ubcore/ubiquitous_bash ; vim -R "'"$ubiquitous_bash"'"/_lib/kit/app/researchEngine/_dev/README-FACTORY-openai.md' >> /info_factoryMOTD.txt" | tee -a ./._run-factory_openai-heavy
+#echo "chmod 755 /info_factoryMOTD.txt" | tee -a ./._run-factory_openai-heavy
 _request_paste_factory-prepare_finetune | tee -a ./._run-factory_openai-heavy
 _request_paste_factory-install_ubiquitous_bash | tee -a ./._run-factory_openai-heavy
 _request_paste_factory-show_finetune | tee -a ./._run-factory_openai-heavy
