@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='1344792791'
+export ub_setScriptChecksum_contents='3571545555'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -27912,7 +27912,7 @@ env DEBIAN_FRONTEND=noninteractive apt-get install asciinema -y
 
 
 # ATTRIBUTION-AI: ChatGPT o3  2025-06-05
-RUN [[ $(dpkg-divert --list /usr/bin/man | tr -dc 'a-zA-Z0-9') != "" ]] && rm -f /usr/bin/man && dpkg-divert --remove --rename /usr/bin/man ;\ 
+RUN ( [ -n "$(dpkg-divert --list /usr/bin/man | tr -dc '[:alnum:]')" ] && rm -f /usr/bin/man && dpkg-divert --remove --rename /usr/bin/man ) ;\ 
 rm -f /etc/dpkg/dpkg.cfg.d/excludes ;\ 
 env DEBIAN_FRONTEND=noninteractive apt-get install man-db manpages manpages-dev manpages-posix -y ;\ 
 env DEBIAN_FRONTEND=noninteractive apt-get --reinstall install -y $(dpkg-query -W -f='${Package} ') ;\ 
@@ -29150,7 +29150,7 @@ FROM ghcr.io/openai/codex-universal
 RUN echo 'openai-heavy' > /info_factoryName.txt
 ##RUN echo '# Please read researchEngine documentation for (hopefully) stabilized examples .' >> /info_factoryMOTD.txt
 ##RUN echo 'ubiquitous_bash=~/.ubcore/ubiquitous_bash ; vim -R "'"\$ubiquitous_bash"'"/_lib/kit/app/researchEngine/_dev/README-FACTORY-openai.md' >> /info_factoryMOTD.txt
-#RUN echo 'request: _setup_ollama ; apt-get install ... _getMinimal_special comments... ' >> /info_factoryMOTD.txt
+#RUN echo ' request: _setup_ollama ; apt-get install ... _getMinimal_special comments... ' >> /info_factoryMOTD.txt
 #RUN chmod 755 /info_factoryMOTD.txt
 
 CZXWXcRMTo8EmM8i4d
@@ -30404,7 +30404,7 @@ workdir=/workspace/"$workdir"
 #workdir=/workspace/$(basename $(pwd))
 _messagePlain_request 'request: paste ->'
 echo > ./._run-factory_openai-heavy
-echo "echo 'openai' > /info_factoryName.txt" | tee -a ./._run-factory_openai-heavy
+echo "echo 'openai-heavy' > /info_factoryName.txt" | tee -a ./._run-factory_openai-heavy
 #echo "echo '# Please read researchEngine documentation for (hopefully) stabilized examples .' > /info_factoryMOTD.txt" | tee -a ./._run-factory_openai-heavy
 #echo "echo 'ubiquitous_bash=~/.ubcore/ubiquitous_bash ; vim -R "'"$ubiquitous_bash"'"/_lib/kit/app/researchEngine/_dev/README-FACTORY-openai.md' >> /info_factoryMOTD.txt" | tee -a ./._run-factory_openai-heavy
 #echo "chmod 755 /info_factoryMOTD.txt" | tee -a ./._run-factory_openai-heavy

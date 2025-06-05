@@ -106,4 +106,4 @@ export skimfast=true
 
 unset ubiquitousBashID
 
-echo 'request: _setup_ollama ; apt-get install ... _getMinimal_special comments... '
+echo ' request: _setup_ollama ; apt-get install ... _getMinimal_special comments... '

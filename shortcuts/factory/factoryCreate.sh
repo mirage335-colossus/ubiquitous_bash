@@ -881,7 +881,7 @@ FROM ghcr.io/openai/codex-universal
 RUN echo 'openai-heavy' > /info_factoryName.txt
 ##RUN echo '# Please read researchEngine documentation for (hopefully) stabilized examples .' >> /info_factoryMOTD.txt
 ##RUN echo 'ubiquitous_bash=~/.ubcore/ubiquitous_bash ; vim -R "'"\$ubiquitous_bash"'"/_lib/kit/app/researchEngine/_dev/README-FACTORY-openai.md' >> /info_factoryMOTD.txt
-#RUN echo 'request: _setup_ollama ; apt-get install ... _getMinimal_special comments... ' >> /info_factoryMOTD.txt
+#RUN echo ' request: _setup_ollama ; apt-get install ... _getMinimal_special comments... ' >> /info_factoryMOTD.txt
 #RUN chmod 755 /info_factoryMOTD.txt
 
 CZXWXcRMTo8EmM8i4d
