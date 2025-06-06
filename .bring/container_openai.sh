@@ -18,14 +18,14 @@ then
     git clone --depth 1 --recursive https://github.com/mirage335-colossus/ubiquitous_bash.git
 fi
 cd ~/core/infrastructure/ubiquitous_bash
-~/core/infrastructure/ubiquitous_bash/ubiquitous_bash.sh _gitBest pull
+#~/core/infrastructure/ubiquitous_bash/ubiquitous_bash.sh _gitBest pull
 if [[ ! -e ~/.ubcore/ubiquitous_bash ]]
 then
     cd ~/core/infrastructure/ubiquitous_bash
     ./_setupUbiquitous.bat
 fi
 cd ~/.ubcore/ubiquitous_bash
-~/.ubcore/ubiquitous_bash/ubiquitous_bash.sh _gitBest pull
+#~/.ubcore/ubiquitous_bash/ubiquitous_bash.sh _gitBest pull
 cd
 #export profileScriptLocation="/root/core/infrastructure/ubiquitous_bash/ubiquitous_bash.sh"
 #export profileScriptFolder="/root/core/infrastructure/ubiquitous_bash"
@@ -33,7 +33,7 @@ cd
 
 
 cd
-~/.ubcore/ubiquitous_bash/ubiquitous_bash.sh _setup_codex
+#~/.ubcore/ubiquitous_bash/ubiquitous_bash.sh _setup_codex
 
 if false
 then
@@ -78,16 +78,30 @@ if [[ "$(dpkg-divert --truename /usr/bin/man)" = "/usr/bin/man.REAL" ]]; then
     dpkg-divert --quiet --remove --rename /usr/bin/man
 fi
 #
+apt-get update -y
 apt-get install man-db manpages manpages-dev manpages-posix -y
-mandb -q
 #
-dpkg -S /usr/share/man/ |sed 's|, |\n|g;s|: [^:]*$||' | DEBIAN_FRONTEND=noninteractive xargs --no-run-if-empty apt-get install --reinstall -y > /quicklog.tmp 2>&1
+_filter_noReinstall() {
+    grep -v 'icon\|x11\|dbus\|font\|cups\|freetype\|bzr\|gtk\|polkit\|xrender\|openjdk\|mime\|tzdata\|xkb\|xtrans'
+}
+#
+#dpkg -S /usr/share/man/ |sed 's|, |\n|g;s|: [^:]*$||' | _filter_noReinstall | DEBIAN_FRONTEND=noninteractive xargs --no-run-if-empty apt-get install --reinstall -y > /quicklog.tmp 2>&1
+#tail /quicklog.tmp
+#rm -f /quicklog.tmp
+#dpkg --verify --verify-format rpm | awk '$2 ~ /\/usr\/share\/doc/ {print $2}' | sed 's|/[^/]*$||' | sort | uniq | xargs --no-run-if-empty dpkg -S | sed 's|, |\n|g;s|: [^:]*$||' | uniq | _filter_noReinstall | DEBIAN_FRONTEND=noninteractive xargs --no-run-if-empty apt-get install --reinstall -y > /quicklog.tmp 2>&1
+#tail /quicklog.tmp
+#rm -f /quicklog.tmp
+#
+dpkg -S /usr/share/man/ |sed 's|, |\n|g;s|: [^:]*$||' | _filter_noReinstall > packageList.tmp
+dpkg --verify --verify-format rpm | awk '$2 ~ /\/usr\/share\/doc/ {print $2}' | sed 's|/[^/]*$||' | sort | uniq | xargs --no-run-if-empty dpkg -S | sed 's|, |\n|g;s|: [^:]*$||' | uniq | _filter_noReinstall >> packageList.tmp
+cat packageList.tmp | uniq | DEBIAN_FRONTEND=noninteractive xargs --no-run-if-empty apt-get install --reinstall -y > /quicklog.tmp 2>&1
 tail /quicklog.tmp
 rm -f /quicklog.tmp
-dpkg --verify --verify-format rpm | awk '$2 ~ /\/usr\/share\/doc/ {print $2}' | sed 's|/[^/]*$||' | sort | uniq | xargs --no-run-if-empty dpkg -S | sed 's|, |\n|g;s|: [^:]*$||' | uniq | DEBIAN_FRONTEND=noninteractive xargs --no-run-if-empty apt-get install --reinstall -y > /quicklog.tmp 2>&1
-tail /quicklog.tmp
-rm -f /quicklog.tmp
+rm -f packageList.tmp
+#
 #dpkg --verify --verify-format rpm | awk '$2 ~ /\/usr\/share\/doc/ {print " " $2}'
+#
+mandb -q
 
 
 cd
@@ -106,4 +120,5 @@ export skimfast=true
 
 unset ubiquitousBashID
 
-echo ' request: _setup_ollama ; apt-get install ... _getMinimal_special comments... '
+uptime
+echo ' request: _setup_codex ; _setup_ollama ; apt-get install ... _getMinimal_special comments... '

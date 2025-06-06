@@ -36,7 +36,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='2591634041'
-export ub_setScriptChecksum_contents='4279782587'
+export ub_setScriptChecksum_contents='3296467796'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -12673,11 +12673,9 @@ APT::AutoRemove::SuggestsImportant "true";' | tee /etc/apt/apt.conf.d/99autoremo
 		env XZ_OPT="-T0" DEBIAN_FRONTEND=noninteractive apt-get -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install -q --install-recommends -y "$@"
 	}
 
-	_aptGetInstall sudo wget gpg curl pigz pixz bash aria2 git git-lfs bc nmap socat sockstat rsync net-tools uuid-runtime iperf3 vim man-db gnulib libtool libtool-bin intltool libgts-dev netcat-openbsd iperf axel unionfs-fuse debootstrap util-linux screen gawk build-essential flex libelf-dev libncurses-dev autoconf libudev-dev dwarves pahole cmake gh libusb-dev libusb-1.0 setserial libffi-dev libusb-1.0-0 libusb-1.0-0-dev libusb-1.0-doc pkg-config crudini bsdutils findutils v4l-utils libevent-dev libjpeg-dev libbsd-dev libusb-1.0 gdb libbabeltrace1 libc6-dbg libsource-highlight-common libsource-highlight4v5 initramfs-tools dmidecode p7zip p7zip-full unzip zip lbzip2 jp2a dnsutils bind9-dnsutils live-boot mktorrent gdisk lz4 mawk nano bison libelf-dev elfutils patch tar gzip bzip2 librecode0 sed texinfo udftools wondershaper sysbench libssl-dev cpio pv expect libfuse2 wipe iputils-ping btrfs-progs btrfs-compsize zstd zlib1g nilfs-tools coreutils sg3-utils kpartx openssl growisofs udev cryptsetup parted e2fsprogs xz-utils libreadline8 libreadline-dev mkisofs genisoimage wodim eject hdparm sdparm php cifs-utils debhelper nsis dos2unix fuse-overlayfs xorriso squashfs-tools grub-pc-bin grub-efi-amd64-bin mtools squashfs-tools squashfs-tools-ng fdisk lsof usbutils aptitude recode libpotrace0 libwmf-bin w3m par2 yubikey-manager qrencode tasksel jq xxd sloccount dosfstools apt-utils git-filter-repo qalc apt-transport-https > /quicklog.tmp 2>&1
+	_aptGetInstall sudo wget gpg curl pigz pixz bash aria2 git git-lfs bc nmap socat sockstat rsync net-tools uuid-runtime iperf3 vim man-db gnulib libtool libtool-bin intltool libgts-dev netcat-openbsd iperf axel unionfs-fuse debootstrap util-linux screen gawk build-essential flex libelf-dev libncurses-dev autoconf libudev-dev dwarves pahole cmake gh libusb-dev libusb-1.0 setserial libffi-dev libusb-1.0-0 libusb-1.0-0-dev libusb-1.0-doc pkg-config crudini bsdutils findutils v4l-utils libevent-dev libjpeg-dev libbsd-dev libusb-1.0 gdb libbabeltrace1 libc6-dbg libsource-highlight-common libsource-highlight4v5 initramfs-tools dmidecode p7zip p7zip-full unzip zip lbzip2 jp2a dnsutils bind9-dnsutils live-boot mktorrent gdisk lz4 mawk nano bison libelf-dev elfutils patch tar gzip bzip2 librecode0 sed texinfo udftools wondershaper sysbench libssl-dev cpio pv expect libfuse2 wipe iputils-ping btrfs-progs btrfs-compsize zstd zlib1g nilfs-tools coreutils sg3-utils kpartx openssl growisofs udev cryptsetup parted e2fsprogs xz-utils libreadline8 libreadline-dev mkisofs genisoimage wodim eject hdparm sdparm php cifs-utils debhelper nsis dos2unix fuse-overlayfs xorriso squashfs-tools grub-pc-bin grub-efi-amd64-bin mtools squashfs-tools squashfs-tools-ng fdisk lsof usbutils aptitude recode libpotrace0 libwmf-bin w3m par2 yubikey-manager qrencode tasksel jq xxd sloccount dosfstools apt-utils git-filter-repo qalc apt-transport-https tcl tk libgdl-3-5 libgdl-3-common > /quicklog.tmp 2>&1
 	tail /quicklog.tmp
 	rm -f /quicklog.tmp
-
-	_aptGetInstall tcl tk libgdl-3-5 libgdl-3-common
 
 	#tcl tk libgdl-3-5 libgdl-3-common
 
