@@ -145,6 +145,13 @@ CZXWXcRMTo8EmM8i4d
 
 	cat << CZXWXcRMTo8EmM8i4d
 
+if [[ "$runDelete" != "" ]] && [[ "$runDelete" == '/workspace/project'* ]]
+then
+	#/workspace/project/._run-factory_openai
+	rm -f "$runDelete"
+	unset runDelete
+fi
+
 [[ -e /info_factoryMOTD.txt ]] && cat /info_factoryMOTD.txt
 #[[ -e /info_factoryMOTD.sh ]] && . /info_factoryMOTD.sh
 

@@ -943,6 +943,7 @@ _compile_bash_shortcuts() {
 	[[ "$enUb_ollama" == "true" ]] && includeScriptList+=( "ai/ollama"/ollama.sh )
 	
 	( ( [[ "$enUb_dev_heavy" == "true" ]] ) || [[ "$enUb_ollama_shortcuts" == "true" ]] ) && includeScriptList+=( "shortcuts/ai/ollama"/ollama.sh )
+	( ( [[ "$enUb_dev_heavy" == "true" ]] ) || [[ "$enUb_ollama_shortcuts" == "true" ]] ) && includeScriptList+=( "shortcuts/ai/ollama"/ollama-dev.sh )
 	
 	( ( [[ "$enUb_dev_heavy" == "true" ]] ) || [[ "$enUb_ai_augment" == "true" ]] ) && includeScriptList+=( "shortcuts/ai/augment"/augment.sh )
 

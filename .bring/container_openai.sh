@@ -10,6 +10,75 @@ git config --global checkout.workers -1
 #apt-get install -y apt-transport-https ca-certificates curl gnupg git wget
 
 
+
+(
+    apt-get update -y
+
+
+    cd
+
+    # Very limited code examples From 'unminimize' .
+    # https://packages.ubuntu.com/plucky/unminimize
+    # https://changelogs.ubuntu.com/changelogs/pool/main/u/unminimize/unminimize_0.5/copyright
+    # https://web.archive.org/web/20250605191859/https://changelogs.ubuntu.com/changelogs/pool/main/u/unminimize/unminimize_0.5/copyright
+    # https://packages.ubuntu.com/noble/unminimize
+    # https://changelogs.ubuntu.com/changelogs/pool/main/u/unminimize/unminimize_0.2/copyright
+    # https://web.archive.org/web/20250605192023/https://changelogs.ubuntu.com/changelogs/pool/main/u/unminimize/unminimize_0.2/copyright
+    # Copyright: 2024, Utkarsh Gupta <utkarsh@canonical.com>
+    # License: GPL-2.0+
+
+    #apt-get update -y
+    rm -f /etc/dpkg/dpkg.cfg.d/excludes
+    if [[ "$(dpkg-divert --truename /usr/bin/man)" = "/usr/bin/man.REAL" ]]; then
+        rm -f /usr/bin/man
+        dpkg-divert --quiet --remove --rename /usr/bin/man
+    fi
+    #
+    #apt-get update -y
+    apt-get install man-db manpages manpages-dev manpages-posix -y
+    #
+    _filter_noReinstall() {
+        grep -v 'icon\|x11\|dbus\|font\|cups\|freetype\|bzr\|gtk\|polkit\|xrender\|openjdk\|mime\|tzdata\|xkb\|xtrans' | grep -v 'perl\|gcc\|g++\|dpkg\|cpp\|bind9\|binutils\|clang\|yasm\|llvm\|glib\|java\|ruby\|gettext\|iputils\|inotify\|icu-devtools\|keybox\|libc-\|\libcurl\|libedit\|libffi\|libgdb\|libpam\|libpng\|libpcre\|libpq\|libpsl\|libxau\|xext\|libxft\|libxss\|lsb-release\|make\|moreutils\|curses\|protobuf\|rpcsvc\|software-properties-common\|common\|sgml\|tcl\|tk\|debconf\|debianutils\|e2fsprogs\|hostname\|helpers\|libpam\|login\|logsave\|sensible\|sysv\|dconf\|libcap2\|libcrypt\|libmysql\|rake\|ninja-build\|xdmcp\|udev\|libsystemd\|libstemmer\|libfm4\|libpango\|libmpfr6\|libmaxmind\|libtdl\|lliberc\|libldap2\|libipt\|libidn\|libgmp\|libgif\|libgdk\|pixbuf\|liggcl\|libfribidi\|libdb\|libdatrie\|libcbor\|libcairo\|libc6\|libasound\|libarchive\|libapt\|iso-codes\|libstdc\|distro-info-data\|ca-certificates' | grep -v 'xml\|swig\|tzlocal\|python3-yaml\|python3-wadlib\|python3-software-properties\|python3-psutil\|python3-patiencediff\|python3-oathlib\|python3-lazr\|launchpad\|python3-httplib2\|python-gi\|libtasn\|libsensors\|libpython3-stdlib\|libfm4\|python3-pygments\|build-essential' | grep -v 'pthread\|zlib1g\|lzma\|ccache\|pkgconf\|pkg-resources\|dirmngr'
+    }
+    #
+    #dpkg -S /usr/share/man/ |sed 's|, |\n|g;s|: [^:]*$||' | _filter_noReinstall | DEBIAN_FRONTEND=noninteractive xargs --no-run-if-empty apt-get install --reinstall -y > /quicklog.tmp 2>&1
+    #tail /quicklog.tmp
+    #rm -f /quicklog.tmp
+    #dpkg --verify --verify-format rpm | awk '$2 ~ /\/usr\/share\/doc/ {print $2}' | sed 's|/[^/]*$||' | sort | uniq | xargs --no-run-if-empty dpkg -S | sed 's|, |\n|g;s|: [^:]*$||' | uniq | _filter_noReinstall | DEBIAN_FRONTEND=noninteractive xargs --no-run-if-empty apt-get install --reinstall -y > /quicklog.tmp 2>&1
+    #tail /quicklog.tmp
+    #rm -f /quicklog.tmp
+    #
+    dpkg -S /usr/share/man/ |sed 's|, |\n|g;s|: [^:]*$||' | _filter_noReinstall > packageList.tmp
+    dpkg --verify --verify-format rpm | awk '$2 ~ /\/usr\/share\/doc/ {print $2}' | sed 's|/[^/]*$||' | sort | uniq | xargs --no-run-if-empty dpkg -S | sed 's|, |\n|g;s|: [^:]*$||' | uniq | _filter_noReinstall >> packageList.tmp
+    cat packageList.tmp | uniq | DEBIAN_FRONTEND=noninteractive xargs --no-run-if-empty apt-get install --reinstall -y > /quicklog.tmp 2>&1
+    tail /quicklog.tmp
+    rm -f /quicklog.tmp
+    rm -f packageList.tmp
+    #
+    #dpkg --verify --verify-format rpm | awk '$2 ~ /\/usr\/share\/doc/ {print " " $2}'
+    #
+    mandb -q
+
+
+
+
+    unset _aptGetInstall || true
+    #unalias _aptGetInstall 2>/dev/null || true
+    _aptGetInstall() {
+        env XZ_OPT="-T0" DEBIAN_FRONTEND=noninteractive apt-get -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install -q --install-recommends -y "$@"
+    }
+
+    _aptGetInstall strace sudo wget gpg curl pigz pixz bash aria2 git git-lfs bc nmap socat sockstat rsync net-tools uuid-runtime netcat-openbsd axel util-linux gawk libncurses-dev gh crudini bsdutils findutils p7zip p7zip-full unzip zip lbzip2 dnsutils bind9-dnsutils lz4 mawk patch tar gzip bzip2 sed pv iputils-ping zstd zlib1g coreutils openssl xz-utils libreadline8 libreadline-dev mkisofs genisoimage dos2unix lsof aptitude jq xxd sloccount dosfstools apt-utils git-filter-repo qalc apt-transport-https | tail
+
+    #_aptGetInstall strace sudo wget gpg curl pigz pixz bash aria2 git git-lfs bc nmap socat sockstat rsync net-tools uuid-runtime netcat-openbsd axel unionfs-fuse util-linux screen gawk libelf-dev libncurses-dev gh crudini bsdutils findutils p7zip p7zip-full unzip zip lbzip2 jp2a dnsutils bind9-dnsutils lz4 mawk libelf-dev elfutils patch tar gzip bzip2 librecode0 udftools sed cpio pv expect wipe iputils-ping btrfs-progs btrfs-compsize zstd zlib1g coreutils openssl growisofs e2fsprogs xz-utils libreadline8 libreadline-dev mkisofs genisoimage wodim dos2unix fuse-overlayfs xorriso squashfs-tools mtools lsof aptitude jq xxd sloccount dosfstools apt-utils git-filter-repo qalc apt-transport-https tcl tk | tail
+
+    #_aptGetInstall strace sudo wget gpg curl pigz pixz bash aria2 git git-lfs bc nmap socat sockstat rsync net-tools uuid-runtime vim man-db gnulib libtool libtool-bin intltool libgts-dev netcat-openbsd iperf axel unionfs-fuse debootstrap util-linux screen gawk build-essential flex libelf-dev libncurses-dev autoconf libudev-dev dwarves pahole cmake gh libusb-dev libusb-1.0 setserial libffi-dev libusb-1.0-0 libusb-1.0-0-dev libusb-1.0-doc pkg-config crudini bsdutils findutils v4l-utils libevent-dev libjpeg-dev libbsd-dev libusb-1.0 gdb libbabeltrace1 libc6-dbg libsource-highlight-common libsource-highlight4v5 initramfs-tools dmidecode p7zip p7zip-full unzip zip lbzip2 jp2a dnsutils bind9-dnsutils live-boot mktorrent gdisk lz4 mawk nano bison libelf-dev elfutils patch tar gzip bzip2 librecode0 sed texinfo udftools wondershaper sysbench libssl-dev cpio pv expect libfuse2 wipe iputils-ping btrfs-progs btrfs-compsize zstd zlib1g nilfs-tools coreutils sg3-utils kpartx openssl growisofs udev cryptsetup parted e2fsprogs xz-utils libreadline8 libreadline-dev mkisofs genisoimage wodim eject hdparm sdparm php cifs-utils debhelper nsis dos2unix fuse-overlayfs xorriso squashfs-tools grub-pc-bin grub-efi-amd64-bin mtools squashfs-tools squashfs-tools-ng fdisk lsof usbutils aptitude recode libpotrace0 libwmf-bin w3m par2 yubikey-manager qrencode tasksel jq xxd sloccount dosfstools apt-utils git-filter-repo qalc apt-transport-https tcl tk libgdl-3-5 libgdl-3-common | tail
+) &
+
+
+
+
+
 # ### _getCore_ub
 if [[ ! -e ~/core/infrastructure/ubiquitous_bash ]]
 then
@@ -30,6 +99,15 @@ cd
 #export profileScriptLocation="/root/core/infrastructure/ubiquitous_bash/ubiquitous_bash.sh"
 #export profileScriptFolder="/root/core/infrastructure/ubiquitous_bash"
 #. "/root/core/infrastructure/ubiquitous_bash/ubiquitous_bash.sh" --profile _importShortcuts
+
+
+
+
+
+wait
+
+
+
 
 
 cd
@@ -59,56 +137,21 @@ rm -f llama-3.1-8b-instruct-abliterated.Q4_K_M.gguf
 fi
 
 
-cd
 
-# Very limited code examples From 'unminimize' .
-# https://packages.ubuntu.com/plucky/unminimize
-# https://changelogs.ubuntu.com/changelogs/pool/main/u/unminimize/unminimize_0.5/copyright
-# https://web.archive.org/web/20250605191859/https://changelogs.ubuntu.com/changelogs/pool/main/u/unminimize/unminimize_0.5/copyright
-# https://packages.ubuntu.com/noble/unminimize
-# https://changelogs.ubuntu.com/changelogs/pool/main/u/unminimize/unminimize_0.2/copyright
-# https://web.archive.org/web/20250605192023/https://changelogs.ubuntu.com/changelogs/pool/main/u/unminimize/unminimize_0.2/copyright
-# Copyright: 2024, Utkarsh Gupta <utkarsh@canonical.com>
-# License: GPL-2.0+
 
-#apt-get update -y
-rm -f /etc/dpkg/dpkg.cfg.d/excludes
-if [[ "$(dpkg-divert --truename /usr/bin/man)" = "/usr/bin/man.REAL" ]]; then
-    rm -f /usr/bin/man
-    dpkg-divert --quiet --remove --rename /usr/bin/man
-fi
-#
-apt-get update -y
-apt-get install man-db manpages manpages-dev manpages-posix -y
-#
-_filter_noReinstall() {
-    grep -v 'icon\|x11\|dbus\|font\|cups\|freetype\|bzr\|gtk\|polkit\|xrender\|openjdk\|mime\|tzdata\|xkb\|xtrans'
-}
-#
-#dpkg -S /usr/share/man/ |sed 's|, |\n|g;s|: [^:]*$||' | _filter_noReinstall | DEBIAN_FRONTEND=noninteractive xargs --no-run-if-empty apt-get install --reinstall -y > /quicklog.tmp 2>&1
-#tail /quicklog.tmp
-#rm -f /quicklog.tmp
-#dpkg --verify --verify-format rpm | awk '$2 ~ /\/usr\/share\/doc/ {print $2}' | sed 's|/[^/]*$||' | sort | uniq | xargs --no-run-if-empty dpkg -S | sed 's|, |\n|g;s|: [^:]*$||' | uniq | _filter_noReinstall | DEBIAN_FRONTEND=noninteractive xargs --no-run-if-empty apt-get install --reinstall -y > /quicklog.tmp 2>&1
-#tail /quicklog.tmp
-#rm -f /quicklog.tmp
-#
-dpkg -S /usr/share/man/ |sed 's|, |\n|g;s|: [^:]*$||' | _filter_noReinstall > packageList.tmp
-dpkg --verify --verify-format rpm | awk '$2 ~ /\/usr\/share\/doc/ {print $2}' | sed 's|/[^/]*$||' | sort | uniq | xargs --no-run-if-empty dpkg -S | sed 's|, |\n|g;s|: [^:]*$||' | uniq | _filter_noReinstall >> packageList.tmp
-cat packageList.tmp | uniq | DEBIAN_FRONTEND=noninteractive xargs --no-run-if-empty apt-get install --reinstall -y > /quicklog.tmp 2>&1
-tail /quicklog.tmp
-rm -f /quicklog.tmp
-rm -f packageList.tmp
-#
-#dpkg --verify --verify-format rpm | awk '$2 ~ /\/usr\/share\/doc/ {print " " $2}'
-#
-mandb -q
+
+wait
+
+
+
 
 
 cd
 
-~/.ubcore/ubiquitous_bash/ubiquitous_bash.sh _getMinimal_special
+#~/.ubcore/ubiquitous_bash/ubiquitous_bash.sh _getMinimal_special
 #~/.ubcore/ubiquitous_bash/ubiquitous_bash.sh _getMinimal_cloud
 #~/.ubcore/ubiquitous_bash/ubiquitous_bash.sh _getMost
+
 
 
 export devfast=true
@@ -118,7 +161,7 @@ export ubDEBUG=true
 
 
 
-unset ubiquitousBashID
+unset ubiquitousBashID || true
 
 uptime
 echo ' request: _setup_codex ; _setup_ollama ; apt-get install ... _getMinimal_special comments... '

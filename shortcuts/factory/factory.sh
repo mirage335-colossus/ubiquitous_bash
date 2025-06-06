@@ -23,7 +23,7 @@ factory_projectDir=$(_getAbsoluteLocation .)
 #sleep 45
 #echo 'DANGER: proceeding! '
 #fi
-[[ "$factory_projectDir" == '/cygdrive'* ]] && factory_projectDir=$(cygpath -w "$factory_projectDir")
+( ( _if_cygwin || [[ "$factory_projectDir" == '/cygdrive'* ]] ) && ( ! _if_wsl && type cygpath >/dev/null 2>&1) ) && factory_projectDir=$(cygpath -w "$factory_projectDir")
 
 factory_modelDir="$factory_projectDir"/model
 [[ -e ./_local/model ]] && factory_modelDir="$factory_projectDir"/_local/model
@@ -55,7 +55,7 @@ fi
 
 
 # Factory use of 'GH_TOKEN' is usually just to attempt to achieve reasonable API call, git clone, etc, limits. Since filesystems can be shared, host software can be used for more complex or privileged cases.
-export factory_api_args=( -e JUPYTER_PASSWORD="$JUPYTER_PASSWORD" -e HF_API_KEY="$HF_API_KEY" -e HF_TOKEN="$HF_TOKEN" -e GH_TOKEN="$GH_TOKEN" -e INPUT_GITHUB_TOKEN="$GH_TOKEN" -e OPENAI_API_KEY="$OPENAI_API_KEY" -e OPENROUTER_API_KEY="$OPENROUTER_API_KEY" -e ai_safety="$ai_safety" )
+export factory_api_args=( -e JUPYTER_PASSWORD="$JUPYTER_PASSWORD" -e OLLAMA_HOST=host.docker.internal:11434 -e HF_API_KEY="$HF_API_KEY" -e HF_TOKEN="$HF_TOKEN" -e GH_TOKEN="$GH_TOKEN" -e INPUT_GITHUB_TOKEN="$GH_TOKEN" -e OPENAI_API_KEY="$OPENAI_API_KEY" -e OPENROUTER_API_KEY="$OPENROUTER_API_KEY" -e ai_safety="$ai_safety" )
 
 
 # ###
@@ -974,6 +974,7 @@ _messagePlain_request 'request: <- paste'
 #
 #echo echo "Environment ready. Dropping you into a bash shell." | tee -a ./._run-factory_openai
 
+echo 'export runDelete=/workspace/project/._run-factory_openai' >> ./._run-factory_openai
 echo 'bash -i' >> ./._run-factory_openai
 
 
@@ -993,7 +994,7 @@ dockerRunArgs=( /workspace/project/._run-factory_openai )
 dockerArgs_openai=( -e CODEX_ENV_PYTHON_VERSION=3.12 -e CODEX_ENV_NODE_VERSION=20 -e CODEX_ENV_RUST_VERSION=1.87.0 -e CODEX_ENV_GO_VERSION=1.23.8 )
 #dockerArgs_openai+=( -e CODEX_ENV_SWIFT_VERSION=6.1 )
 dockerArgs_openai_workspace=( -v "$factory_projectDir":/workspace/$(basename $(pwd)) -w /workspace/$(basename $(pwd)) )
-dockerArgs_api=( -e HF_API_KEY="$HF_API_KEY" -e HF_TOKEN="$HF_TOKEN" -e GH_TOKEN="$GH_TOKEN" -e INPUT_GITHUB_TOKEN="$GH_TOKEN" -e OPENAI_API_KEY="$OPENAI_API_KEY" -e OPENROUTER_API_KEY="$OPENROUTER_API_KEY" -e ai_safety="$ai_safety" )
+dockerArgs_api=( -e OLLAMA_HOST=host.docker.internal:11434 -e HF_API_KEY="$HF_API_KEY" -e HF_TOKEN="$HF_TOKEN" -e GH_TOKEN="$GH_TOKEN" -e INPUT_GITHUB_TOKEN="$GH_TOKEN" -e OPENAI_API_KEY="$OPENAI_API_KEY" -e OPENROUTER_API_KEY="$OPENROUTER_API_KEY" -e ai_safety="$ai_safety" )
 
 if _if_cygwin
 then
@@ -1132,6 +1133,7 @@ _messagePlain_request 'request: <- paste'
 #
 #echo echo "Environment ready. Dropping you into a bash shell." | tee -a ./._run-factory_openai-heavy
 
+echo 'export runDelete=/workspace/project/._run-factory_openai-heavy' >> ./._run-factory_openai-heavy
 echo 'bash -i' >> ./._run-factory_openai-heavy
 
 
@@ -1151,7 +1153,7 @@ dockerRunArgs=( /workspace/project/._run-factory_openai-heavy )
 dockerArgs_openai=( -e CODEX_ENV_PYTHON_VERSION=3.12 -e CODEX_ENV_NODE_VERSION=20 -e CODEX_ENV_RUST_VERSION=1.87.0 -e CODEX_ENV_GO_VERSION=1.23.8 )
 #dockerArgs_openai+=( -e CODEX_ENV_SWIFT_VERSION=6.1 )
 dockerArgs_openai_workspace=( -v "$factory_projectDir":/workspace/$(basename $(pwd)) -w /workspace/$(basename $(pwd)) )
-dockerArgs_api=( -e HF_API_KEY="$HF_API_KEY" -e HF_TOKEN="$HF_TOKEN" -e GH_TOKEN="$GH_TOKEN" -e INPUT_GITHUB_TOKEN="$GH_TOKEN" -e OPENAI_API_KEY="$OPENAI_API_KEY" -e OPENROUTER_API_KEY="$OPENROUTER_API_KEY" -e ai_safety="$ai_safety" )
+dockerArgs_api=( -e OLLAMA_HOST=host.docker.internal:11434 -e HF_API_KEY="$HF_API_KEY" -e HF_TOKEN="$HF_TOKEN" -e GH_TOKEN="$GH_TOKEN" -e INPUT_GITHUB_TOKEN="$GH_TOKEN" -e OPENAI_API_KEY="$OPENAI_API_KEY" -e OPENROUTER_API_KEY="$OPENROUTER_API_KEY" -e ai_safety="$ai_safety" )
 
 if _if_cygwin
 then

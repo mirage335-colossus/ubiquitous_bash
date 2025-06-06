@@ -39,7 +39,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='3620520443'
-export ub_setScriptChecksum_contents='3477934935'
+export ub_setScriptChecksum_contents='2877487235'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -13265,6 +13265,12 @@ APT::AutoRemove::SuggestsImportant "true";' | tee /etc/apt/apt.conf.d/99autoremo
 	_aptGetInstall() {
 		env XZ_OPT="-T0" DEBIAN_FRONTEND=noninteractive apt-get -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install -q --install-recommends -y "$@"
 	}
+
+	# ubiquitous_bash  fast alternative
+	#strace sudo wget gpg curl pigz pixz bash aria2 git git-lfs bc nmap socat sockstat rsync net-tools uuid-runtime netcat-openbsd axel util-linux gawk libncurses-dev gh crudini bsdutils findutils p7zip p7zip-full unzip zip lbzip2 dnsutils bind9-dnsutils lz4 mawk patch tar gzip bzip2 sed pv expect wipe iputils-ping zstd zlib1g coreutils openssl xz-utils libreadline8 libreadline-dev mkisofs genisoimage dos2unix lsof aptitude jq xxd sloccount dosfstools apt-utils git-filter-repo qalc apt-transport-https tcl tk
+
+	# ubiquitous_bash  basic alternative
+	#strace sudo wget gpg curl pigz pixz bash aria2 git git-lfs bc nmap socat sockstat rsync net-tools uuid-runtime netcat-openbsd axel unionfs-fuse util-linux screen gawk libelf-dev libncurses-dev gh crudini bsdutils findutils p7zip p7zip-full unzip zip lbzip2 jp2a dnsutils bind9-dnsutils lz4 mawk libelf-dev elfutils patch tar gzip bzip2 librecode0 udftools sed cpio pv expect wipe iputils-ping btrfs-progs btrfs-compsize zstd zlib1g coreutils openssl growisofs e2fsprogs xz-utils libreadline8 libreadline-dev mkisofs genisoimage wodim dos2unix fuse-overlayfs xorriso squashfs-tools mtools lsof aptitude jq xxd sloccount dosfstools apt-utils git-filter-repo qalc apt-transport-https tcl tk
 
 	_aptGetInstall strace sudo wget gpg curl pigz pixz bash aria2 git git-lfs bc nmap socat sockstat rsync net-tools uuid-runtime iperf3 vim man-db gnulib libtool libtool-bin intltool libgts-dev netcat-openbsd iperf axel unionfs-fuse debootstrap util-linux screen gawk build-essential flex libelf-dev libncurses-dev autoconf libudev-dev dwarves pahole cmake gh libusb-dev libusb-1.0 setserial libffi-dev libusb-1.0-0 libusb-1.0-0-dev libusb-1.0-doc pkg-config crudini bsdutils findutils v4l-utils libevent-dev libjpeg-dev libbsd-dev libusb-1.0 gdb libbabeltrace1 libc6-dbg libsource-highlight-common libsource-highlight4v5 initramfs-tools dmidecode p7zip p7zip-full unzip zip lbzip2 jp2a dnsutils bind9-dnsutils live-boot mktorrent gdisk lz4 mawk nano bison libelf-dev elfutils patch tar gzip bzip2 librecode0 sed texinfo udftools wondershaper sysbench libssl-dev cpio pv expect libfuse2 wipe iputils-ping btrfs-progs btrfs-compsize zstd zlib1g nilfs-tools coreutils sg3-utils kpartx openssl growisofs udev cryptsetup parted e2fsprogs xz-utils libreadline8 libreadline-dev mkisofs genisoimage wodim eject hdparm sdparm php cifs-utils debhelper nsis dos2unix fuse-overlayfs xorriso squashfs-tools grub-pc-bin grub-efi-amd64-bin mtools squashfs-tools squashfs-tools-ng fdisk lsof usbutils aptitude recode libpotrace0 libwmf-bin w3m par2 yubikey-manager qrencode tasksel jq xxd sloccount dosfstools apt-utils git-filter-repo qalc apt-transport-https tcl tk libgdl-3-5 libgdl-3-common > /quicklog.tmp 2>&1
 	tail /quicklog.tmp
@@ -27357,20 +27363,24 @@ _service_ollama() {
 # Mostly, this is used to workaround very unusual dist/OS build and custom situations (ie. ChRoot, GitHub Actions, etc).
 # CAUTION: This leaves a background process running, which must continue running (ie. not hangup) while other programs use it, and which must terminate upon shutdown , _closeChRoot , etc .
 _service_ollama_augment() {
-	if _if_cygwin && ! wget --timeout=1 --tries=3 'http://127.0.0.1:11434' -q -O - > /dev/null 2>&1
+	local current_OLLAMA_HOST
+	current_OLLAMA_HOST="$OLLAMA_HOST"
+	[[ "$current_OLLAMA_HOST" == "" ]] && current_OLLAMA_HOST='127.0.0.1:11434'
+	
+	if _if_cygwin && ! wget --timeout=1 --tries=3 'http://'"$current_OLLAMA_HOST" -q -O - > /dev/null 2>&1
 	then
 		( nohup ollama ls > /dev/null 2>&1 & disown -r "$!" ) > /dev/null
 		
 		sleep 7
 	fi
 
-	if _if_cygwin && ! wget --timeout=1 --tries=3 'http://127.0.0.1:11434' -q -O - > /dev/null 2>&1
+	if _if_cygwin && ! wget --timeout=1 --tries=3 'http://'"$current_OLLAMA_HOST" -q -O - > /dev/null 2>&1
 	then
 		return 1
 	fi
 	_if_cygwin && return 0
 
-	if _if_wsl && ! wget --timeout=1 --tries=3 'http://127.0.0.1:11434' -q -O - > /dev/null 2>&1
+	if _if_wsl && ! wget --timeout=1 --tries=3 'http://'"$current_OLLAMA_HOST" -q -O - > /dev/null 2>&1
 	then
 		#( nohup ollama ls > /dev/null 2>&1 & disown -r "$!" ) > /dev/null
 		#sleep 2
@@ -27384,7 +27394,7 @@ _service_ollama_augment() {
 		#,'start','""','/b'
 		"$scriptAbsoluteLocation" _powershell -NoProfile -Command "Start-Process cmd.exe -ArgumentList '/C','C:\core\infrastructure\ubDistBuild\_bin.bat','_install_vm-wsl2-portForward','ubdist','notBootingAdmin' -Verb RunAs" > /dev/null 2>&1
 		local currentIteration=0
-		while ! wget --timeout=1 --tries=3 'http://127.0.0.1:11434' -q -O - > /dev/null 2>&1 && [[ "$currentIteration" -lt 45 ]]
+		while ! wget --timeout=1 --tries=3 'http://'"$current_OLLAMA_HOST" -q -O - > /dev/null 2>&1 && [[ "$currentIteration" -lt 45 ]]
 		do
 			currentIteration=$((currentIteration+1))
 			sleep 1
@@ -27393,7 +27403,7 @@ _service_ollama_augment() {
 		sleep 3
 	fi
 
-	if _if_wsl && ! wget --timeout=1 --tries=3 'http://127.0.0.1:11434' -q -O - > /dev/null 2>&1
+	if _if_wsl && ! wget --timeout=1 --tries=3 'http://'"$current_OLLAMA_HOST" -q -O - > /dev/null 2>&1
 	then
 		return 1
 	fi
@@ -27406,13 +27416,13 @@ _service_ollama_augment() {
 		return 1
 	fi
 	
-	if ! wget --timeout=1 --tries=3 'http://127.0.0.1:11434' -q -O - > /dev/null 2>&1
+	if ! wget --timeout=1 --tries=3 'http://'"$current_OLLAMA_HOST" -q -O - > /dev/null 2>&1
 	then
 		# ATTENTION: This is basically how to not cause interactive bash shell issues starting a background service at Docker container runtime.
 		# WARNING: May not be adequately tested.
 		# ATTRIBUTION-AI: ChatGPT o3  2025-05-05  (partially)
 		( echo | sudo -n -u ollama nohup ollama serve </dev/null >>/var/log/ollama.log 2>&1 & ) &> /dev/null
-		while ! wget --timeout=1 --tries=3 'http://127.0.0.1:11434' -q -O - > /dev/null 2>&1
+		while ! wget --timeout=1 --tries=3 'http://'"$current_OLLAMA_HOST" -q -O - > /dev/null 2>&1
 		do
 			sleep 1
 		done
@@ -27421,7 +27431,7 @@ _service_ollama_augment() {
 		stty echo
 		
 		#sudo -n -u ollama ollama serve &
-		#while ! wget --timeout=1 --tries=3 'http://127.0.0.1:11434' -q -O - > /dev/null 2>&1
+		#while ! wget --timeout=1 --tries=3 'http://'"$current_OLLAMA_HOST" -q -O - > /dev/null 2>&1
 		#do
 			#echo "wait: ollama: service"
 			#sleep 1
@@ -27430,7 +27440,7 @@ _service_ollama_augment() {
 	fi
 	
 	
-	if ! wget --timeout=1 --tries=3 'http://127.0.0.1:11434' -q -O - > /dev/null 2>&1
+	if ! wget --timeout=1 --tries=3 'http://'"$current_OLLAMA_HOST" -q -O - > /dev/null 2>&1
 	then
 		#echo 'fail: _service_ollama: ollama: 127.0.0.1:11434'
 		return 1
@@ -27559,6 +27569,87 @@ alias l=_l
 
 
 
+
+
+
+
+# Developer,  technician, etc, assistant AI model . If you are tempted to use the '_l' , 'l', alias on the command-line, as possibly more thorough alternative to 'man' manual pages, this is expected usually what you want instead. Small enough model to run locally, emphasizing development related knowledge and logic, yet able to run reasonably using ~16GB VRAM, possibly CPU, etc. However, owing to the disk space requirements, not usually included with a dist/OS by default, as only intensive development workstations should really need this.
+
+
+
+
+
+
+
+_setup_ollama_model_dev_sequence() {
+    _start
+
+    cd "$safeTmp"
+
+    # Suggested <6144 token context window (ie. 'num_ctx') . May be unreliable (at the limits of what fits in 16GB VRAM, limiting context window, etc).
+    
+    ollama pull hf.co/bartowski/mistralai_Devstral-Small-2505-GGUF:IQ4_XS
+    echo FROM hf.co/bartowski/mistralai_Devstral-Small-2505-GGUF:IQ4_XS > Modelfile
+    echo PARAMETER num_gpu 41 >> Modelfile
+    echo PARAMETER num_ctx 6144 >> Modelfile
+
+    cat << 'CZXWXcRMTo8EmM8i4d' >> Modelfile
+	LICENSE """Apache 2.0 License
+https://huggingface.co/mistralai/Devstral-Small-2505
+Apache 2.0 License
+
+https://huggingface.co/bartowski/mistralai_Devstral-Small-2505-GGUF
+License: apache-2.0
+"""
+CZXWXcRMTo8EmM8i4d
+
+    ollama create hf.co/bartowski/mistralai_Devstral-Small-2505-GGUF:IQ4_XS-g41
+    
+    #ollama run hf.co/bartowski/mistralai_Devstral-Small-2505-GGUF:IQ4_XS-g41 describe this image ./download.png
+
+    _stop
+}
+
+_ollama_run_dev() {
+	# https://huggingface.co/mistralai/Devstral-Small-2505
+    #  'Apache 2.0 License'
+
+    # https://huggingface.co/bartowski/mistralai_Devstral-Small-2505-GGUF
+    #  'License: apache-2.0'
+    
+
+	! _service_ollama_augment && return 1
+
+	if ! ollama show hf.co/bartowski/mistralai_Devstral-Small-2505-GGUF:IQ4_XS-g41 --modelfile > /dev/null 2>&1
+	then
+		"$scriptAbsoluteLocation" _setup_ollama_model_dev_sequence > /dev/null 2>&1
+	fi
+	
+	# Suggested >7200 for batch processing, <1800 for long 'augment' outputs, <<360 or <120 for 'augment' use cases underlying user interaction (ie. impatience).
+    # In practice, this is NOT an augment model, and should only be used either strictly interactively (stream and interrupt), or strictly for agentic development, tool use, etc (ie. Cline VSCode extension, etc) .
+	if [[ "$OLLAMA_TIMEOUT" != "" ]]
+	then
+		(
+			# ATTRIBUTION-AI: ChatGPT o3  2025-06-03  (suggested OLLAMA_LOAD_TIMEOUT ... ChatGPT may have automatically included some web search results )
+			# DUBIOUS .
+			# https://pkg.go.dev/github.com/ollama/ollama/envconfig?utm_source=chatgpt.com
+			# https://github.com/ollama/ollama/blob/v0.9.0/envconfig/config.go#L120
+			# https://github.com/ollama/ollama/issues/6678
+			# https://github.com/ollama/ollama/issues/5081
+			export OLLAMA_LOAD_TIMEOUT="$OLLAMA_TIMEOUT"s
+			
+			_timeout "$OLLAMA_TIMEOUT" ollama run hf.co/bartowski/mistralai_Devstral-Small-2505-GGUF:IQ4_XS-g41 "$@"
+		)
+		return
+	fi
+
+	ollama run hf.co/bartowski/mistralai_Devstral-Small-2505-GGUF:IQ4_XS-g41 "$@"
+}
+# 'l'... 'LLM', 'language', 'Llama', etc .
+_d() {
+	_ollama_run_dev "$@"
+}
+alias d=_d
 
 
 
@@ -29327,7 +29418,7 @@ factory_projectDir=$(_getAbsoluteLocation .)
 #sleep 45
 #echo 'DANGER: proceeding! '
 #fi
-[[ "$factory_projectDir" == '/cygdrive'* ]] && factory_projectDir=$(cygpath -w "$factory_projectDir")
+( ( _if_cygwin || [[ "$factory_projectDir" == '/cygdrive'* ]] ) && ( ! _if_wsl && type cygpath >/dev/null 2>&1) ) && factory_projectDir=$(cygpath -w "$factory_projectDir")
 
 factory_modelDir="$factory_projectDir"/model
 [[ -e ./_local/model ]] && factory_modelDir="$factory_projectDir"/_local/model
@@ -29359,7 +29450,7 @@ fi
 
 
 # Factory use of 'GH_TOKEN' is usually just to attempt to achieve reasonable API call, git clone, etc, limits. Since filesystems can be shared, host software can be used for more complex or privileged cases.
-export factory_api_args=( -e JUPYTER_PASSWORD="$JUPYTER_PASSWORD" -e HF_API_KEY="$HF_API_KEY" -e HF_TOKEN="$HF_TOKEN" -e GH_TOKEN="$GH_TOKEN" -e INPUT_GITHUB_TOKEN="$GH_TOKEN" -e OPENAI_API_KEY="$OPENAI_API_KEY" -e OPENROUTER_API_KEY="$OPENROUTER_API_KEY" -e ai_safety="$ai_safety" )
+export factory_api_args=( -e JUPYTER_PASSWORD="$JUPYTER_PASSWORD" -e OLLAMA_HOST=host.docker.internal:11434 -e HF_API_KEY="$HF_API_KEY" -e HF_TOKEN="$HF_TOKEN" -e GH_TOKEN="$GH_TOKEN" -e INPUT_GITHUB_TOKEN="$GH_TOKEN" -e OPENAI_API_KEY="$OPENAI_API_KEY" -e OPENROUTER_API_KEY="$OPENROUTER_API_KEY" -e ai_safety="$ai_safety" )
 
 
 # ###
@@ -30278,6 +30369,7 @@ _messagePlain_request 'request: <- paste'
 #
 #echo echo "Environment ready. Dropping you into a bash shell." | tee -a ./._run-factory_openai
 
+echo 'export runDelete=/workspace/project/._run-factory_openai' >> ./._run-factory_openai
 echo 'bash -i' >> ./._run-factory_openai
 
 
@@ -30297,7 +30389,7 @@ dockerRunArgs=( /workspace/project/._run-factory_openai )
 dockerArgs_openai=( -e CODEX_ENV_PYTHON_VERSION=3.12 -e CODEX_ENV_NODE_VERSION=20 -e CODEX_ENV_RUST_VERSION=1.87.0 -e CODEX_ENV_GO_VERSION=1.23.8 )
 #dockerArgs_openai+=( -e CODEX_ENV_SWIFT_VERSION=6.1 )
 dockerArgs_openai_workspace=( -v "$factory_projectDir":/workspace/$(basename $(pwd)) -w /workspace/$(basename $(pwd)) )
-dockerArgs_api=( -e HF_API_KEY="$HF_API_KEY" -e HF_TOKEN="$HF_TOKEN" -e GH_TOKEN="$GH_TOKEN" -e INPUT_GITHUB_TOKEN="$GH_TOKEN" -e OPENAI_API_KEY="$OPENAI_API_KEY" -e OPENROUTER_API_KEY="$OPENROUTER_API_KEY" -e ai_safety="$ai_safety" )
+dockerArgs_api=( -e OLLAMA_HOST=host.docker.internal:11434 -e HF_API_KEY="$HF_API_KEY" -e HF_TOKEN="$HF_TOKEN" -e GH_TOKEN="$GH_TOKEN" -e INPUT_GITHUB_TOKEN="$GH_TOKEN" -e OPENAI_API_KEY="$OPENAI_API_KEY" -e OPENROUTER_API_KEY="$OPENROUTER_API_KEY" -e ai_safety="$ai_safety" )
 
 if _if_cygwin
 then
@@ -30436,6 +30528,7 @@ _messagePlain_request 'request: <- paste'
 #
 #echo echo "Environment ready. Dropping you into a bash shell." | tee -a ./._run-factory_openai-heavy
 
+echo 'export runDelete=/workspace/project/._run-factory_openai-heavy' >> ./._run-factory_openai-heavy
 echo 'bash -i' >> ./._run-factory_openai-heavy
 
 
@@ -30455,7 +30548,7 @@ dockerRunArgs=( /workspace/project/._run-factory_openai-heavy )
 dockerArgs_openai=( -e CODEX_ENV_PYTHON_VERSION=3.12 -e CODEX_ENV_NODE_VERSION=20 -e CODEX_ENV_RUST_VERSION=1.87.0 -e CODEX_ENV_GO_VERSION=1.23.8 )
 #dockerArgs_openai+=( -e CODEX_ENV_SWIFT_VERSION=6.1 )
 dockerArgs_openai_workspace=( -v "$factory_projectDir":/workspace/$(basename $(pwd)) -w /workspace/$(basename $(pwd)) )
-dockerArgs_api=( -e HF_API_KEY="$HF_API_KEY" -e HF_TOKEN="$HF_TOKEN" -e GH_TOKEN="$GH_TOKEN" -e INPUT_GITHUB_TOKEN="$GH_TOKEN" -e OPENAI_API_KEY="$OPENAI_API_KEY" -e OPENROUTER_API_KEY="$OPENROUTER_API_KEY" -e ai_safety="$ai_safety" )
+dockerArgs_api=( -e OLLAMA_HOST=host.docker.internal:11434 -e HF_API_KEY="$HF_API_KEY" -e HF_TOKEN="$HF_TOKEN" -e GH_TOKEN="$GH_TOKEN" -e INPUT_GITHUB_TOKEN="$GH_TOKEN" -e OPENAI_API_KEY="$OPENAI_API_KEY" -e OPENROUTER_API_KEY="$OPENROUTER_API_KEY" -e ai_safety="$ai_safety" )
 
 if _if_cygwin
 then
@@ -47161,6 +47254,13 @@ CZXWXcRMTo8EmM8i4d
 
 	cat << CZXWXcRMTo8EmM8i4d
 
+if [[ "$runDelete" != "" ]] && [[ "$runDelete" == '/workspace/project'* ]]
+then
+	#/workspace/project/._run-factory_openai
+	rm -f "$runDelete"
+	unset runDelete
+fi
+
 [[ -e /info_factoryMOTD.txt ]] && cat /info_factoryMOTD.txt
 #[[ -e /info_factoryMOTD.sh ]] && . /info_factoryMOTD.sh
 
@@ -61993,6 +62093,7 @@ _compile_bash_shortcuts() {
 	[[ "$enUb_ollama" == "true" ]] && includeScriptList+=( "ai/ollama"/ollama.sh )
 	
 	( ( [[ "$enUb_dev_heavy" == "true" ]] ) || [[ "$enUb_ollama_shortcuts" == "true" ]] ) && includeScriptList+=( "shortcuts/ai/ollama"/ollama.sh )
+	( ( [[ "$enUb_dev_heavy" == "true" ]] ) || [[ "$enUb_ollama_shortcuts" == "true" ]] ) && includeScriptList+=( "shortcuts/ai/ollama"/ollama-dev.sh )
 	
 	( ( [[ "$enUb_dev_heavy" == "true" ]] ) || [[ "$enUb_ai_augment" == "true" ]] ) && includeScriptList+=( "shortcuts/ai/augment"/augment.sh )
 

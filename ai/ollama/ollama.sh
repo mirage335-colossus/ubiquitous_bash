@@ -519,20 +519,24 @@ _service_ollama() {
 # Mostly, this is used to workaround very unusual dist/OS build and custom situations (ie. ChRoot, GitHub Actions, etc).
 # CAUTION: This leaves a background process running, which must continue running (ie. not hangup) while other programs use it, and which must terminate upon shutdown , _closeChRoot , etc .
 _service_ollama_augment() {
-	if _if_cygwin && ! wget --timeout=1 --tries=3 'http://127.0.0.1:11434' -q -O - > /dev/null 2>&1
+	local current_OLLAMA_HOST
+	current_OLLAMA_HOST="$OLLAMA_HOST"
+	[[ "$current_OLLAMA_HOST" == "" ]] && current_OLLAMA_HOST='127.0.0.1:11434'
+	
+	if _if_cygwin && ! wget --timeout=1 --tries=3 'http://'"$current_OLLAMA_HOST" -q -O - > /dev/null 2>&1
 	then
 		( nohup ollama ls > /dev/null 2>&1 & disown -r "$!" ) > /dev/null
 		
 		sleep 7
 	fi
 
-	if _if_cygwin && ! wget --timeout=1 --tries=3 'http://127.0.0.1:11434' -q -O - > /dev/null 2>&1
+	if _if_cygwin && ! wget --timeout=1 --tries=3 'http://'"$current_OLLAMA_HOST" -q -O - > /dev/null 2>&1
 	then
 		return 1
 	fi
 	_if_cygwin && return 0
 
-	if _if_wsl && ! wget --timeout=1 --tries=3 'http://127.0.0.1:11434' -q -O - > /dev/null 2>&1
+	if _if_wsl && ! wget --timeout=1 --tries=3 'http://'"$current_OLLAMA_HOST" -q -O - > /dev/null 2>&1
 	then
 		#( nohup ollama ls > /dev/null 2>&1 & disown -r "$!" ) > /dev/null
 		#sleep 2
@@ -546,7 +550,7 @@ _service_ollama_augment() {
 		#,'start','""','/b'
 		"$scriptAbsoluteLocation" _powershell -NoProfile -Command "Start-Process cmd.exe -ArgumentList '/C','C:\core\infrastructure\ubDistBuild\_bin.bat','_install_vm-wsl2-portForward','ubdist','notBootingAdmin' -Verb RunAs" > /dev/null 2>&1
 		local currentIteration=0
-		while ! wget --timeout=1 --tries=3 'http://127.0.0.1:11434' -q -O - > /dev/null 2>&1 && [[ "$currentIteration" -lt 45 ]]
+		while ! wget --timeout=1 --tries=3 'http://'"$current_OLLAMA_HOST" -q -O - > /dev/null 2>&1 && [[ "$currentIteration" -lt 45 ]]
 		do
 			currentIteration=$((currentIteration+1))
 			sleep 1
@@ -555,7 +559,7 @@ _service_ollama_augment() {
 		sleep 3
 	fi
 
-	if _if_wsl && ! wget --timeout=1 --tries=3 'http://127.0.0.1:11434' -q -O - > /dev/null 2>&1
+	if _if_wsl && ! wget --timeout=1 --tries=3 'http://'"$current_OLLAMA_HOST" -q -O - > /dev/null 2>&1
 	then
 		return 1
 	fi
@@ -568,13 +572,13 @@ _service_ollama_augment() {
 		return 1
 	fi
 	
-	if ! wget --timeout=1 --tries=3 'http://127.0.0.1:11434' -q -O - > /dev/null 2>&1
+	if ! wget --timeout=1 --tries=3 'http://'"$current_OLLAMA_HOST" -q -O - > /dev/null 2>&1
 	then
 		# ATTENTION: This is basically how to not cause interactive bash shell issues starting a background service at Docker container runtime.
 		# WARNING: May not be adequately tested.
 		# ATTRIBUTION-AI: ChatGPT o3  2025-05-05  (partially)
 		( echo | sudo -n -u ollama nohup ollama serve </dev/null >>/var/log/ollama.log 2>&1 & ) &> /dev/null
-		while ! wget --timeout=1 --tries=3 'http://127.0.0.1:11434' -q -O - > /dev/null 2>&1
+		while ! wget --timeout=1 --tries=3 'http://'"$current_OLLAMA_HOST" -q -O - > /dev/null 2>&1
 		do
 			sleep 1
 		done
@@ -583,7 +587,7 @@ _service_ollama_augment() {
 		stty echo
 		
 		#sudo -n -u ollama ollama serve &
-		#while ! wget --timeout=1 --tries=3 'http://127.0.0.1:11434' -q -O - > /dev/null 2>&1
+		#while ! wget --timeout=1 --tries=3 'http://'"$current_OLLAMA_HOST" -q -O - > /dev/null 2>&1
 		#do
 			#echo "wait: ollama: service"
 			#sleep 1
@@ -592,7 +596,7 @@ _service_ollama_augment() {
 	fi
 	
 	
-	if ! wget --timeout=1 --tries=3 'http://127.0.0.1:11434' -q -O - > /dev/null 2>&1
+	if ! wget --timeout=1 --tries=3 'http://'"$current_OLLAMA_HOST" -q -O - > /dev/null 2>&1
 	then
 		#echo 'fail: _service_ollama: ollama: 127.0.0.1:11434'
 		return 1
