@@ -39,7 +39,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='3620520443'
-export ub_setScriptChecksum_contents='87137972'
+export ub_setScriptChecksum_contents='3477934935'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -47084,6 +47084,8 @@ PS1_lineNumber=""
 
 # WARNING: Importing complete 'ubiquitous_bash.sh' may cause other scripts to call functions inappropriate for their needs during "_test" and "_setup" .
 # This may be acceptable if the user has already run "_setup" from the imported script .
+ubDEBUG_current="\$ubDEBUG"
+export ubDEBUG="false"
 #export profileScriptLocation="$ubcoreUBdir"/ubiquitous_bash.sh
 export profileScriptLocation="$ubcoreUBdir"/ubcore.sh
 #export profileScriptLocation="$ubcoreUBdir"/lean.sh
@@ -47098,6 +47100,7 @@ else
 	[[ "\$force_profileScriptLocation" != "" ]] && . "\$force_profileScriptLocation" --profile _importShortcuts
 fi
 [[ "\$ub_setScriptChecksum_disable" == 'true' ]] && export ub_setScriptChecksum_disable="" && unset ub_setScriptChecksum_disable
+export ubDEBUG="\$ubDEBUG_current"
 
 # Returns priority to normal.
 # Greater or equal, '_priority_app_pid_root' .
@@ -63259,7 +63262,8 @@ then
 				#export BASH_XTRACEFD=3
 				set   -o functrace
 				set   -o errtrace
-				export SHELLOPTS
+				# May break _test_pipefail_sequence .
+				#export SHELLOPTS
 				trap '
   set -E +x
   call_line=${BASH_LINENO[0]}
@@ -63313,7 +63317,8 @@ then
 			#export BASH_XTRACEFD=3
 			set   -o functrace
 			set   -o errtrace
-			export SHELLOPTS
+			# May break _test_pipefail_sequence .
+			#export SHELLOPTS
 			trap '
   set -E +x
   call_line=${BASH_LINENO[0]}

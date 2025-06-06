@@ -355,7 +355,8 @@ then
 				#export BASH_XTRACEFD=3
 				set   -o functrace
 				set   -o errtrace
-				export SHELLOPTS
+				# May break _test_pipefail_sequence .
+				#export SHELLOPTS
 				trap '
   set -E +x
   call_line=${BASH_LINENO[0]}
@@ -409,7 +410,8 @@ then
 			#export BASH_XTRACEFD=3
 			set   -o functrace
 			set   -o errtrace
-			export SHELLOPTS
+			# May break _test_pipefail_sequence .
+			#export SHELLOPTS
 			trap '
   set -E +x
   call_line=${BASH_LINENO[0]}
