@@ -326,20 +326,21 @@ _cygwin_translation_rootFileParameter() {
 
 #Critical prerequsites.
 _getAbsolute_criticalDep() {
-	#  ! type realpath > /dev/null 2>&1 && return 1
-	! type readlink > /dev/null 2>&1 && return 1
-	! type dirname > /dev/null 2>&1 && return 1
-	! type basename > /dev/null 2>&1 && return 1
+	#  ! type realpath > /dev/null 2>&1 && exit 1
+	! type readlink > /dev/null 2>&1 && exit 1
+	! type dirname > /dev/null 2>&1 && exit 1
+	! type basename > /dev/null 2>&1 && exit 1
 	
 	#Known to succeed under BusyBox (OpenWRT), NetBSD, and common Linux variants. No known failure modes. Extra precaution.
-	! readlink -f . > /dev/null 2>&1 && return 1
+	! readlink -f . > /dev/null 2>&1 && exit 1
 	
-	! echo 'qwerty123.git' | grep '\.git$' > /dev/null 2>&1 && return 1
-	echo 'qwerty1234git' | grep '\.git$' > /dev/null 2>&1 && return 1
+	! echo 'qwerty123.git' | grep '\.git$' > /dev/null 2>&1 && exit 1
+	echo 'qwerty1234git' | grep '\.git$' > /dev/null 2>&1 && exit 1
 	
 	return 0
 }
-! _getAbsolute_criticalDep && exit 1
+#! _getAbsolute_criticalDep && exit 1
+_getAbsolute_criticalDep
 
 #Retrieves absolute path of current script, while maintaining symlinks, even when "./" would translate with "readlink -f" into something disregarding symlinked components in $PWD.
 #However, will dereference symlinks IF the script location itself is a symlink. This is to allow symlinking to scripts to function normally.

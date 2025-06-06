@@ -354,6 +354,8 @@ _getMost_debian11_install() {
 	#_getMost_backend_aptGetInstall synergy quicksynergy
 	
 	_getMost_backend_aptGetInstall vim
+	
+	_getMost_backend_aptGetInstall strace
 
 	_getMost_backend_aptGetInstall man-db
 	

@@ -53,10 +53,14 @@ _stop_stty_echo() {
 	#stty echo --file=/dev/tty > /dev/null 2>&1
 	
 	[[ "$ubFoundEchoStatus" != "" ]] && stty --file=/dev/tty "$ubFoundEchoStatus" 2> /dev/null
+
+	return 0
 }
 
 # DANGER: Use of "_stop" must NOT require successful "_start". Do NOT include actions which would not be safe if "_start" was not used or unsuccessful.
 _stop() {
+	if [[ "$ubDEBUG" == "true" ]] ; then set +x ; set +E ; set +o functrace ; set +o errtrace ; export -n SHELLOPTS 2>/dev/null || true ; trap '' RETURN ; trap - RETURN ; fi
+	
 	_stop_stty_echo
 	
 	_tryExec "_stop_prog"
@@ -295,8 +299,8 @@ _readLocked() {
 
 #Using _readLocked before any _createLocked operation is strongly recommended to remove any lock from prior UNIX session (ie. before latest reboot).
 _createLocked() {
-	[[ "$uDEBUG" == true ]] && caller 0 >> "$scriptLocal"/lock.log
-	[[ "$uDEBUG" == true ]] && echo -e '\t'"$sessionid"'\t'"$1" >> "$scriptLocal"/lock.log
+	[[ "$ubDEBUG" == true ]] && caller 0 >> "$scriptLocal"/lock.log
+	[[ "$ubDEBUG" == true ]] && echo -e '\t'"$sessionid"'\t'"$1" >> "$scriptLocal"/lock.log
 	
 	mkdir -p "$bootTmp"
 	
@@ -311,7 +315,7 @@ _createLocked() {
 	
 	if [[ -e "$lock_quicktmp"_"$lockUID" ]]
 	then
-		[[ "$uDEBUG" == true ]] && echo -e '\t'FAIL >> "$scriptLocal"/lock.log
+		[[ "$ubDEBUG" == true ]] && echo -e '\t'FAIL >> "$scriptLocal"/lock.log
 		rm -f "$lock_quicktmp"_"$lockUID" > /dev/null 2>&1
 		return 1
 	fi

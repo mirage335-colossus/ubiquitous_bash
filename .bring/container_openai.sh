@@ -114,7 +114,7 @@ cd
 export devfast=true
 export skimfast=true
 
-
+export ubDEBUG=true
 
 
 

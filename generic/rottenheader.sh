@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+if [[ "$ubDEBUG" == "true" ]] ; then set +x ; set +E ; set +o functrace ; set +o errtrace ; export -n SHELLOPTS 2>/dev/null || true ; trap '' RETURN ; trap - RETURN ; fi
+
 [[ "$PATH" != *"/usr/local/bin"* ]] && [[ -e "/usr/local/bin" ]] && export PATH=/usr/local/bin:"$PATH"
 [[ "$PATH" != *"/usr/bin"* ]] && [[ -e "/usr/bin" ]] && export PATH=/usr/bin:"$PATH"
 [[ "$PATH" != *"/bin:"* ]] && [[ -e "/bin" ]] && export PATH=/bin:"$PATH"

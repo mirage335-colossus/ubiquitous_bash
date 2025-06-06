@@ -13,6 +13,8 @@ then
 		stty echo --file=/dev/tty > /dev/null 2>&1
 		
 		#[[ "$ubFoundEchoStatus" != "" ]] && stty --file=/dev/tty "$ubFoundEchoStatus" 2> /dev/null
+
+		return 0
 	}
 	_stop() {
 		_stop_stty_echo
@@ -346,8 +348,41 @@ then
 	then
 		if [[ "$scriptLinkCommand" == '_'* ]]
 		then
+			if [[ "$ubDEBUG" == "true" ]]
+			then
+				# ATTRIBUTION-AI: ChatGPT o3  2025-06-06
+				exec 3>&2
+				#export BASH_XTRACEFD=3
+				set   -o functrace
+				set   -o errtrace
+				export SHELLOPTS
+				trap '
+  set -E +x
+  call_line=${BASH_LINENO[0]}
+  call_file=${BASH_SOURCE[1]}
+  [[ $call_file == "$PWD/"* ]] && call_file=${call_file#"$PWD/"}
+  func_name=${FUNCNAME[0]:-MAIN}
+
+  if [[ "$call_line" != "0" ]] && [[ func_name != "MAIN()" ]]
+  then
+	# extract the source line and strip leading blanks
+	call_text=$(sed -n "${call_line}{s/^[[:space:]]*//;p}" "$call_file")
+
+	printf "<<<STEPOUT<<< RETURN %s() <- %s:%d : %s  status=%d\n" \
+			"$func_name"        "$call_file" \
+			"$call_line"        "$call_text" \
+			"$?" >&3
+  fi
+  set -E -x
+' RETURN
+				set -E -x
+				#set -x
+			fi
+			
 			"$scriptLinkCommand" "$@"
 			internalFunctionExitStatus="$?"
+
+			if [[ "$ubDEBUG" == "true" ]] ; then set +x ; set +E ; set +o functrace ; set +o errtrace ; export -n SHELLOPTS 2>/dev/null || true ; trap '' RETURN ; trap - RETURN ; fi
 			
 			#Exit if not imported into existing shell, or bypass requested, else fall through to subsequent return.
 			if [[ "$ub_import" != "true" ]] || [[ "$ub_import_param" == "--bypass" ]] || [[ "$ub_import_param" == "--compressed" ]]
@@ -367,8 +402,40 @@ then
 	# && [[ "$1" != "_test" ]] && [[ "$1" != "_setup" ]] && [[ "$1" != "_build" ]] && [[ "$1" != "_vector" ]] && [[ "$1" != "_setupCommand" ]] && [[ "$1" != "_setupCommand_meta" ]] && [[ "$1" != "_setupCommands" ]] && [[ "$1" != "_find_setupCommands" ]] && [[ "$1" != "_setup_anchor" ]] && [[ "$1" != "_anchor" ]] && [[ "$1" != "_package" ]] && [[ "$1" != *"_prog" ]] && [[ "$1" != "_main" ]] && [[ "$1" != "_collect" ]] && [[ "$1" != "_enter" ]] && [[ "$1" != "_launch" ]] && [[ "$1" != "_default" ]] && [[ "$1" != "_experiment" ]]
 	if [[ "$1" == '_'* ]] && type "$1" > /dev/null 2>&1 && [[ "$1" != "_test" ]] && [[ "$1" != "_setup" ]] && [[ "$1" != "_build" ]] && [[ "$1" != "_vector" ]] && [[ "$1" != "_setupCommand" ]] && [[ "$1" != "_setupCommand_meta" ]] && [[ "$1" != "_setupCommands" ]] && [[ "$1" != "_find_setupCommands" ]] && [[ "$1" != "_setup_anchor" ]] && [[ "$1" != "_anchor" ]] && [[ "$1" != "_package" ]] && [[ "$1" != *"_prog" ]] && [[ "$1" != "_main" ]] && [[ "$1" != "_collect" ]] && [[ "$1" != "_enter" ]] && [[ "$1" != "_launch" ]] && [[ "$1" != "_default" ]] && [[ "$1" != "_experiment" ]]
 	then
+		if [[ "$ubDEBUG" == "true" ]]
+		then
+			# ATTRIBUTION-AI: ChatGPT o3  2025-06-06
+			exec 3>&2
+			#export BASH_XTRACEFD=3
+			set   -o functrace
+			set   -o errtrace
+			export SHELLOPTS
+			trap '
+  set -E +x
+  call_line=${BASH_LINENO[0]}
+  call_file=${BASH_SOURCE[1]}
+  [[ $call_file == "$PWD/"* ]] && call_file=${call_file#"$PWD/"}
+  func_name=${FUNCNAME[0]:-MAIN}
+
+  if [[ "$call_line" != "0" ]] && [[ func_name != "MAIN()" ]]
+  then
+    # extract the source line and strip leading blanks
+    call_text=$(sed -n "${call_line}{s/^[[:space:]]*//;p}" "$call_file")
+
+    printf "<<<STEPOUT<<< RETURN %s() <- %s:%d : %s  status=%d\n" \
+            "$func_name"        "$call_file" \
+            "$call_line"        "$call_text" \
+            "$?" >&3
+  fi
+' RETURN
+			set -E -x
+			#set -x
+		fi
+		
 		"$@"
 		internalFunctionExitStatus="$?"
+		
+		if [[ "$ubDEBUG" == "true" ]] ; then set +x ; set +E ; set +o functrace ; set +o errtrace ; export -n SHELLOPTS 2>/dev/null || true ; trap '' RETURN ; trap - RETURN ; fi
 		
 		#Exit if not imported into existing shell, or bypass requested, else fall through to subsequent return.
 		if [[ "$ub_import" != "true" ]] || [[ "$ub_import_param" == "--bypass" ]] || [[ "$ub_import_param" == "--compressed" ]]
