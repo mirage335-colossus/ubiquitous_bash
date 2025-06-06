@@ -1,0 +1,175 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# ATTRIBUTION-AI: ChatGPT o3  2025-06-05 (partially)
+
+exec 3>&2
+#PS4='+ [${EPOCHREALTIME}] [$$] [${BASH_SOURCE##*/}:${LINENO}${FUNCNAME:+:${FUNCNAME[0]}}] >>>STEPIN>>> '
+#export PS4
+
+export BASH_XTRACEFD=3
+
+#set -E -xv
+#set -E -x
+
+#shopt -s extdebug
+set   -o functrace
+set   -o errtrace
+export SHELLOPTS
+
+#trap 'printf "<<<STEPOUT<<< RETURN %s:%d status=%d\n" "${BASH_SOURCE}" "${LINENO}" "$?" >&3' RETURN
+#   file       line      func-name          exit-status
+#trap 'printf "<<<STEPOUT<<< RETURN %s:%d %s() status=%d\n" "${BASH_SOURCE[0]}" "${LINENO}" "${FUNCNAME[0]:-main}" "$?" >&3' RETURN
+
+
+# fd 3 is the file-descriptor you want the trace to go to
+trap '
+  call_line=${BASH_LINENO[0]}
+  call_file=${BASH_SOURCE[1]}
+  func_name=${FUNCNAME[0]:-MAIN}
+
+  if [[ "$call_line" != "0" ]] && [[ func_name != "MAIN()" ]]
+  then
+    # extract the source line and strip leading blanks
+    call_text=$(sed -n "${call_line}{s/^[[:space:]]*//;p}" "$call_file")
+
+    printf "<<<STEPOUT<<< RETURN %s() <- %s:%d : %s  status=%d\n" \
+            "$func_name"        "$call_file" \
+            "$call_line"        "$call_text" \
+            "$?" >&3
+  fi
+' RETURN
+
+
+
+
+
+
+
+
+
+
+
+#!/bin/bash
+
+
+
+exec 3>&2
+PS4='+ [${EPOCHREALTIME}] [$$] [${BASH_SOURCE##*/}:${LINENO}${FUNCNAME:+:${FUNCNAME[0]}}] >>>STEPIN>>> '
+export PS4
+
+export BASH_XTRACEFD=3
+
+set -E -xv
+
+shopt -s extdebug
+set   -o functrace
+set   -o errtrace
+export SHELLOPTS
+
+trap 'printf "<<<STEPOUT<<< RETURN %s:%d status=%d\n" "${BASH_SOURCE}" "${LINENO}" "$?" >&3' RETURN
+
+
+
+
+
+
+iShouldSeeThis2() {
+    iShouldSeeThis3() {
+        true
+    }
+    iShouldSeeThis3
+}
+
+experiment_bg() {
+    echo bg begin
+    iShouldSeeThis1() {
+        true
+    }
+    ./experiment.sh iShouldSeeThis2
+    sleep 5
+    echo bg end
+}
+
+experiment_fg() {
+    echo fg begin
+    ./experiment.sh experiment_bg &
+    echo fg sleep 1
+    sleep 1
+    echo fg sleep 10
+    sleep 10
+    echo fg end
+    exit
+}
+
+
+if [[ "$1" != "" ]]
+then
+    "$@"
+    exit $?
+fi
+
+experiment_fg
+
+
+
+
+
+
+
+_iShouldSeeThis2() {
+    _iShouldSeeThis3() {
+        true
+    }
+    _iShouldSeeThis3
+}
+
+_experiment_bg() {
+    echo bg begin
+    _iShouldSeeThis1() {
+        true
+    }
+    "$scriptAbsoluteLocation" _iShouldSeeThis2
+    sleep 5
+    echo bg end
+}
+
+_experiment_fg() {
+    echo fg begin
+    "$scriptAbsoluteLocation" _experiment_bg &
+    echo fg sleep 1
+    sleep 1
+    echo fg sleep 10
+    sleep 10
+    echo fg end
+    exit
+}
+
+#./ubiquitous_bash.sh _experiment_fg
+
