@@ -160,6 +160,7 @@ cd
 export devfast=true
 export skimfast=true
 
+export ub_setScriptChecksum_disable='true'
 export ubDEBUG=true
 
 
