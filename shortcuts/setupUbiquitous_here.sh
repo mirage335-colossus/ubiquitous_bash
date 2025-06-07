@@ -145,10 +145,10 @@ CZXWXcRMTo8EmM8i4d
 
 	cat << CZXWXcRMTo8EmM8i4d
 
-if [[ "$runDelete" != "" ]] && [[ "$runDelete" == '/workspace/project'* ]]
+if [[ "\$runDelete" != "" ]] && [[ "\$runDelete" == '/workspace/project'* ]]
 then
 	#/workspace/project/._run-factory_openai
-	rm -f "$runDelete"
+	rm -f "\$runDelete"
 	unset runDelete
 fi
 
