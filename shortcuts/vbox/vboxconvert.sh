@@ -108,7 +108,7 @@ _nbd-available_vbox() {
 _check_nbd_vbox() {
 	! _wantSudo && _messagePlain_bad 'fail: _wantSudo' && _messageFAIL
 	
-	sudo -n ! type nbd-client > /dev/null 2>&1 && _messagePlain_bad 'fail: missing: nbd-client' && _messageFAIL
+	! sudo -n type nbd-client > /dev/null 2>&1 && _messagePlain_bad 'fail: missing: nbd-client' && _messageFAIL
 	! type qemu-nbd > /dev/null 2>&1 && _messagePlain_bad 'fail: missing: qemu nbd' && _messageFAIL
 	
 	! sudo -n modprobe nbd && _messagePlain_bad 'fail: modprobe nbd' && _messageFAIL
