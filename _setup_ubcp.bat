@@ -421,7 +421,7 @@ _launch_anchor() {
 		done
 	fi
 	
-	if [[ "$anchorScriptAbsoluteFolder" == '/home/user/project' ]] || [[ "$anchorScriptAbsoluteFolder" == /tmp/"$ubiquitiousBashIDnano" ]]
+	if [[ "$anchorScriptAbsoluteFolder" == '/home/user/project' ]] || [[ "$anchorScriptAbsoluteFolder" == /tmp/"$ubiquitousBashIDnano" ]]
 	then
 		recursionExec="$anchorScriptAbsoluteFolder"/"$anchorSource"
 		if _recursion_guard "$recursionExec"
