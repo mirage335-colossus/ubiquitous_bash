@@ -3,31 +3,35 @@
 Based on Creative Commons official guidance and FSF recommendations
 
 ---
-Project: ubiquitous_bashLicense: CC0 1.0 Universal Public Domain Dedication
+Project: ubiquitous_bash
 
-Contributor Certification
+License: CC0 1.0 Universal Public Domain Dedication
 
-By submitting contributions to this project, I certify that:
+## Contributor Certification (covers this and all future contributions)
 
-1. Rights and Authority: I am the original author of this contribution and have the full right to dedicate it to
-the public domain under CC0 1.0 Universal, or I have obtained all necessary permissions from the original rights
-holders.
-2. CC0 Understanding: I understand that by submitting this contribution, I am dedicating it to the public domain
-under CC0 1.0 Universal Public Domain Dedication, waiving all copyright and related rights to the fullest extent
-permitted by law.
-3. Irrevocable Dedication: I understand that CC0 is a one-way dedication and that I cannot later reclaim
-copyright or related rights over this contribution.
-4. Patent Acknowledgment: I acknowledge that CC0 does not grant patent licenses and understand the implications
-for any patent rights in my contribution.
-5. No Warranty: I understand that my contribution will be provided "as is" without any warranty of any kind.
+By submitting a pull‑request, patch, or other material (a “Contribution”) to this project, I (“Contributor”) certify that:
 
-Legal Notice: This agreement is based on Creative Commons CC0 1.0 Universal guidance. Creative Commons is not a
-law firm and does not provide legal services. For legal questions, consult qualified legal counsel.
+Original Work & Authority: The Contribution is my original work or I have secured all necessary rights to submit it. If the Contribution was created within the scope of employment (work‑for‑hire) or under contract, an authorised representative of the employer/rights‑holder has also agreed to this dedication (e.g. by replying “Approved for CC0” on the pull‑request or co‑signing below).
 
-Sources:
-- Creative Commons CC0 Official Documentation
-- Free Software Foundation Public Domain Recommendations
-- CC0 Legal Code (https://creativecommons.org/publicdomain/zero/1.0/legalcode.en)
+Public‑Domain: Dedication under CC0 1.0I irrevocably dedicate the Contribution to the public domain under the Creative Commons CC0 1.0 Universal Public Domain Dedication including the fallback licence in § 3 of the CC0 legal code for jurisdictions that do not recognise public‑domain dedications.
 
----
-This template draws from official Creative Commons guidance and FSF recommendations for CC0 projects.
+Moral‑Rights Waiver: To the fullest extent permitted by law, I waive and agree not to assert any moral rights (including rights of paternity, integrity, disclosure, and withdrawal) in the Contribution.
+
+Patent Grant: To the extent I control patent claims that would be infringed by making, using, selling, offering for sale, or importing the Contribution (alone or as part of a larger work), I hereby grant to every recipient a perpetual, worldwide, royalty‑free, irrevocable patent licence covering those claims.
+
+Irrevocability: I understand that CC0 is one‑way and cannot be withdrawn once the Contribution is accepted.
+
+No Warranty: The Contribution is provided “as is,” without warranty of any kind, express or implied.
+
+## How to indicate assent (commit / PR trailer)
+
+Add the following trailer block to your git commit message or Pull‑Request description:
+
+```
+Signed-off-by: Full Name <email@example.com>
+I certify that I agree to the CC0 Contributor Agreement v2 (public‑domain dedication, moral‑rights waiver, patent licence).
+```
+
+**Commits or PRs containing the exact text above will be deemed acceptance of this agreement for that Contribution and all future Contributions by the same author unless the author revokes consent in writing (revocation has no retroactive effect).**
+
+Based on Creative Commons CC0 guidance and Free Software Foundation public‑domain recommendations.
