@@ -12,7 +12,7 @@ git config --global checkout.workers -1
 
 
 (
-    #apt-get update -y
+    apt-get update -y
     sleep 0.3
 
 
@@ -37,8 +37,7 @@ git config --global checkout.workers -1
     fi
     #
     #apt-get update -y
-    #apt-get install man-db manpages manpages-dev manpages-posix -y
-    apt-get install manpages manpages-dev manpages-posix -y
+    apt-get install man-db manpages manpages-dev manpages-posix -y
     sleep 0.3
     #
     _filter_noReinstall() {
