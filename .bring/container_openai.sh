@@ -94,6 +94,15 @@ then
 fi
 cd ~/core/infrastructure/ubiquitous_bash
 #~/core/infrastructure/ubiquitous_bash/ubiquitous_bash.sh _gitBest pull
+
+[[ ! -e /workspace/ubiquitous_bash ]] && cp -a ~/core/infrastructure/ubiquitous_bash /workspace/ubiquitous_bash
+
+
+# Certificates installation by '_setupUbiquitous' may otherwise cause dpkg lock multi-threading/concurrency collision.
+sleep 1
+wait
+
+
 if [[ ! -e ~/.ubcore/ubiquitous_bash ]]
 then
     cd ~/core/infrastructure/ubiquitous_bash
@@ -105,8 +114,6 @@ cd
 #export profileScriptLocation="/root/core/infrastructure/ubiquitous_bash/ubiquitous_bash.sh"
 #export profileScriptFolder="/root/core/infrastructure/ubiquitous_bash"
 #. "/root/core/infrastructure/ubiquitous_bash/ubiquitous_bash.sh" --profile _importShortcuts
-
-[[ ! -e /workspace/ubiquitous_bash ]] && cp -a ~/core/infrastructure/ubiquitous_bash /workspace/ubiquitous_bash
 
 
 
