@@ -12,6 +12,15 @@ _setup_codex() {
 }
 
 
+# codex ... ubiquitous_bash ... debug
+#
+#export devfast=true
+#export skimfast=true
+#
+#export ub_setScriptChecksum_disable='true'
+#export ubDEBUG=true
+
+
 # https://github.com/openai/codex/issues/1189
 #codex --approval-mode full-auto --provider openrouter --model openai/codex-mini
 #
