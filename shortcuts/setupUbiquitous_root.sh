@@ -60,6 +60,13 @@ _install_certs() {
 
     _install_certs_write
 
+    # Setup scripts in constrained repetitive environments (ie. OpenAI Codex setup script) may multi-thread concurrent _setupUbiquitous with apt-get . This detects that, and prevents dpkg collision.
+    # ATTRIBUTION-AI: ChatGPT o3  2025-06-10
+    while [[ -e /var/lib/dpkg/lock-frontend ]] || [[ -e /var/lib/dpkg/lock ]] || [[ -e /var/cache/apt/archives/lock ]] || [[ -e /var/lib/apt/lists/lock ]]
+    do
+        sleep 1
+    done
+
     local currentExitStatus="1"
     ! _if_cygwin && sudo -n update-ca-certificates
     [[ "$?" == "0" ]] && currentExitStatus="0"

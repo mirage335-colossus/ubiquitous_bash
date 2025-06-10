@@ -39,7 +39,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='3620520443'
-export ub_setScriptChecksum_contents='2449925684'
+export ub_setScriptChecksum_contents='3884954252'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -10562,6 +10562,13 @@ _install_certs() {
     _if_cygwin && sudo -n rm -f /etc/pki/tls/certs/*.0
 
     _install_certs_write
+
+    # Setup scripts in constrained repetitive environments (ie. OpenAI Codex setup script) may multi-thread concurrent _setupUbiquitous with apt-get . This detects that, and prevents dpkg collision.
+    # ATTRIBUTION-AI: ChatGPT o3  2025-06-10
+    while [[ -e /var/lib/dpkg/lock-frontend ]] || [[ -e /var/lib/dpkg/lock ]] || [[ -e /var/cache/apt/archives/lock ]] || [[ -e /var/lib/apt/lists/lock ]]
+    do
+        sleep 1
+    done
 
     local currentExitStatus="1"
     ! _if_cygwin && sudo -n update-ca-certificates
