@@ -40,17 +40,19 @@ Do not assume "ubiquitous_bash" follows conventional patterns, it doesn't.
 
 Temporary changes to shellscripts, adding echo statements, etc, is often necessary to observe progress, detect actual hanging, and diagnose failures, especially with multi-threaded, recursive, etc, scripts. Better to anticipate this and add statements than to waste time terminating an experiment that was not actually hanging.
 
-Tracing ubiquitous_bash shell scripts can be done efficiently with  'export ubDEBUG=true'  , tracing all commands and shell script function calls within a function given as a command line parameter.
+Tracing ubiquitous_bash shell scripts can be done efficiently with  'export ubDEBUG=true'  , tracing all commands and shell script function calls within a function given as a command line parameter. Setting  'export ubDEBUG=true'  only increases verbosity, echo to STDOUT, etc, will still be called.
 
 ## Testing Expectations
 
 Please base your expectations on plausible outcomes from enumerating stepwise processing of plausible inputs through code of relevant functions, etc . Delays are reasonable for such timing sensitive or high latency tests as subsecond sleep commands, inter-process communication, command runtime measurement, etc . Excessive looping is also reasonable as the tests performed may be particularly extreme, catching the slightest changes to syntax over years of new interpreter, compiler, etc, versions. Such looping may in fact be repetitive use of very similar or even the same syntax for testing purposes.
 
-A '_test' function may run successfully for tens of minutes, possibly a few hours, without any output, if the function was written to avoid any commands that could actually hang, and to only output a single message 'Testing...' followed by either 'PASS' if successful, or an exit status with a few error messages from the failed command. Unusual error messages are made more noticeable by not outputting noisy status messages during sanity tests often used during Continuous Integration and installation. Sanity and dependency tests, etc, far more extensive with "ubiquitous_bash" than with other projects, have proven necessary to detect changes made to software versions such as the bash int
+A '_test' function may run successfully for tens of minutes, possibly a few hours, without any output, if the function was written to avoid any commands that could actually hang, and to only output a single message 'Testing...' followed by either 'PASS' if successful, or an exit status with a few error messages from the failed command. Sub-functions called by a larger '_test' function may output only a successful exit status, delegating the 'PASS' message to only be output by the larger '_test' function after other sub-functions have been successful as well. Unusual error messages are made more noticeable by not outputting noisy status messages during sanity tests often used during Continuous Integration and installation. Sanity and dependency tests, etc, far more extensive with "ubiquitous_bash" than with other projects, have proven necessary to detect changes made to software versions such as the bash interpreter.
 
 Keep going through such testing until a definitive result is reached, with a 'PASS' or similar message, an explainable non-error exit status, etc.
 
-An extended or indefinite run is very acceptable as long as information gathering continues and progress does not cease entirely.
+An extended or indefinite run is very acceptable as long as information gathering continues and progress does not cease entirely. CPU usage may be either high due to bash shell interpreter overhead testing many conditions or other unusual syntax, or CPU usage may be low due to sleep , etc , intentionally having been put into the script for Inter-Process Communication latency timing, deliberately reducing CPU usage, etc.
+
+Both STDOUT and STDERR may provide useful information, especially if verbosity is increased to assist testing, etc, such as with  'export ubDEBUG=true'  .
 
 ## Terminology
 

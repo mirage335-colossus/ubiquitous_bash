@@ -12,13 +12,15 @@ _setup_codex() {
 }
 
 
+# ATTENTION: Full WebUI Codex may need 'ubDEBUG=true' to better diagnose and continue testing.
+# WARNING: CLI Codex may NOT work well with 'ubDEBUG=true'.
 # codex ... ubiquitous_bash ... debug
 #
 #export devfast=true
 #export skimfast=true
 #
 #export ub_setScriptChecksum_disable='true'
-#export ubDEBUG=true
+##export ubDEBUG=true
 
 
 # https://github.com/openai/codex/issues/1189
