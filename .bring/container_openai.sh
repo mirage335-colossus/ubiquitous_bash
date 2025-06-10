@@ -103,6 +103,8 @@ cd
 #export profileScriptFolder="/root/core/infrastructure/ubiquitous_bash"
 #. "/root/core/infrastructure/ubiquitous_bash/ubiquitous_bash.sh" --profile _importShortcuts
 
+[[ ! -e /workspace/ubiquitous_bash ]] && cp -a ~/core/infrastructure/ubiquitous_bash /workspace/ubiquitous_bash
+
 
 
 
