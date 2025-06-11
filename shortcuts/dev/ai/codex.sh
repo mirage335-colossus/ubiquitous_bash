@@ -1,14 +1,72 @@
 
 # NOTICE: Installing 'codex' may be useful for cloud, container, etc, usage (eg. within a RunPod instance, within a Docker container, etc).)
 # Also recommend 'Cline' VSCode extension .
-_setup_codex() {
+
+_setup_codex-npm() {
     _mustGetSudo
 
     _get_npm
 
+
+
+    # WARNING: Mainline version. DISCOURAGED, except to get dependencies needed by a frozen, and possibly more useful, version. Issues disabling sandbox .
+    #  https://github.com/openai/codex/pull/996
+    #  https://github.com/openai/codex/pull/1125
+    #  https://github.com/openai/codex/issues/1254
+    #  https://github.com/openai/codex/pull/374
     #@openai/codex
     #@openai/codex@latest
     sudo -n npm install -g @openai/codex
+
+    # DUBIOUS .
+    #sudo -n npm install -g @openai/codex@b73426c1c40187ca13c74c03912a681072c2884f
+
+    # ATTRIBUTION-AI: devstral-small  2025-06-11
+    #sudo -n npm install https://github.com/openai/codex/archive/b73426c1c40187ca13c74c03912a681072c2884f.tar.gz
+
+
+
+    sudo -n npm install https://github.com/openai/codex/archive/8493285.tar.gz
+}
+
+# WARNING: May be untested.
+# DUBIOUS .
+#_setup_codex_sequence-upstream() {
+    #_start
+    #local functionEntryPWD
+    #functionEntryPWD="$PWD"
+
+    #cd "$safeTmp"
+
+    ## ATTRIBUTION-AI: ChatGPT o3  2025-06-11
+    #corepack enable                 # turn on pnpm via corepack (Node ≥16.10)
+    #corepack prepare pnpm@latest --activate
+
+    #export safeToDeleteGit="true"
+    #git clone https://github.com/openai/codex.git
+    #cd codex
+
+    ## fetch PR 996 and check it out locally
+    #git fetch origin pull/996/head:disable-sandbox
+    #git switch disable-sandbox      # or: git checkout -b disable-sandbox FETCH_HEAD
+
+    ## install deps for the monorepo and build just the CLI package
+    #pnpm install
+    #pnpm --filter codex-cli run build
+
+    ## expose the built CLI globally
+    #pnpm --filter codex-cli link --global   # 'codex' now in your PATH
+
+    #cd "$functionEntryPWD"
+    #_stop
+#}
+#_setup_codex-upstream() {
+    #_setup_codex-npm "$@"
+    #"$scriptAbsoluteLocation" _setup_codex_sequence-upstream "$@"
+#}
+
+_setup_codex() {
+    _setup_codex-npm "$@"
 }
 
 
@@ -43,8 +101,11 @@ _setup_codex() {
 
 
 
-
-alias codexAuto='codex --approval-mode full-auto'
+# WARNING: Mainline versions of CLI Codex apparently do NOT disable the sandbox if '--approval-mode full-auto' parameter is given.
+#export TMPDIR=/tmp ; export CODEX_UNSAFE_ALLOW_NO_SANDBOX=1 ; codex --dangerously-auto-approve-everything
+#export TMPDIR=/tmp ; export CODEX_UNSAFE_ALLOW_NO_SANDBOX=1 ; codex --dangerously-auto-approve-everything --approval-mode full-auto
+alias codexAuto='export TMPDIR=/tmp ; export CODEX_UNSAFE_ALLOW_NO_SANDBOX=1 ; codex --dangerously-auto-approve-everything --approval-mode full-auto'
+alias codexForce='export CODEX_UNSAFE_ALLOW_NO_SANDBOX=1 ; codex --dangerously-auto-approve-everything'
 
 
 if type -P codex > /dev/null 2>&1

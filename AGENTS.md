@@ -26,6 +26,19 @@ Function _anchor calls several more functions, including a _refresh_anchors func
 
 # Development Practices, Style, Tracing, Testing Expectations, Uniquely Necessary for "ubiquitous_bash"
 
+## Sandbox, Harness
+
+Never sandbox , drop root , or otherwise limit any command calling "ubiquitous_bash" scripts or functions , such as './ubiquitous_bash.sh _test' , './app _test' , './_test' , './_test.bat' , './_bin' , './bin.bat' , './ubiquitous_bash.sh _bin' , etc.
+
+Hardcoded platform-specific temporary directory paths , home directories , /tmp temporary subdirectories , /dev/shm temporary subdirectories , root commands , sudo , etc, are all necessary for "ubiquitous_bash" to function . Usually "ubiquitous_bash" either runs within an appropriately limited ephemeral container , dedicated computer , etc, with already appropriately limited capabilities, and enforces its own limits, sanity checks, etc, or "ubiquitous_bash" uses root commands to create a distribution / Operating System for such limited ephemeral situations. In both cases, it is appropriate for "ubiquitous_bash" scripts, commands, functions, etc, to run with root privileges.
+
+Docker containers in particular may be intended to begin with the root user by default , as the situation most expected and supported by the developers of such Docker containers , do not attempt to run commands as a different user or otherwise drop root permissions.
+
+Always run "ubiquitous_bash" scripts, commands, functions, etc, with the permissions of the user running the Codex process, without limits on what directories may be written to, etc.
+
+If such calls as creating a subdirectory of the "$HOME" directory fail, such as  mkdir -p /root/.ubtmp/try  ,  bash -c 'touch /root/.ubtmp/testfile'  failing due to 'Permission denied' , attempt to test whether such limitations as bash shells not having write access to the "$HOME" directory may be obstructing . If such sandboxing may be obstructing, quit and report the issue to the user. Do not continue if sandboxing may be obstructing .
+
+
 ## Robustness, Resilience
 
 Avoid suffering dependency and availability issues by preferring to use commands from external programs, libraries, etc, using not older or abandoned codebases, dependencies, etc, but the more actively developed codepaths. Recently frozen dependencies are more likely still available than dependencies for eventually forked older code. Developers with their own non-reproducible build environments are more likely to notice when freezing dependencies becomes unsustainable or when unfrozen dependencies break things in their own development work.
