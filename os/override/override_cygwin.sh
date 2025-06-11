@@ -379,7 +379,9 @@ then
 	#alias l='_wsl'
 	alias u='_wsl'
 
-	alias codex='wsl -d ubdist codex'
+	#alias codex='wsl -d ubdist codex'
+	alias codex='wsl -d ubdist "~/.ubcore/ubiquitous_bash/ubcore.sh" _codexBin-usr_bin_node'
+
 	alias codexNative=$(type -P codex 2>/dev/null)
 fi
 	

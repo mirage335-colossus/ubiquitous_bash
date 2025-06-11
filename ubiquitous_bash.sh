@@ -39,7 +39,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='3620520443'
-export ub_setScriptChecksum_contents='3933200703'
+export ub_setScriptChecksum_contents='1496072500'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -1030,7 +1030,9 @@ then
 	#alias l='_wsl'
 	alias u='_wsl'
 
-	alias codex='wsl -d ubdist codex'
+	#alias codex='wsl -d ubdist codex'
+	alias codex='wsl -d ubdist "~/.ubcore/ubiquitous_bash/ubcore.sh" _codexBin-usr_bin_node'
+
 	alias codexNative=$(type -P codex 2>/dev/null)
 fi
 	
@@ -39948,6 +39950,31 @@ _setup_claude_code() {
 # NOTICE: Installing 'codex' may be useful for cloud, container, etc, usage (eg. within a RunPod instance, within a Docker container, etc).)
 # Also recommend 'Cline' VSCode extension .
 
+
+_setup_codex_sequence-npm() {
+    _start
+    local functionEntryPWD
+    functionEntryPWD="$PWD"
+
+    cd "$safeTmp"
+    
+
+    # DUBIOUS .
+    #sudo -n npm install -g @openai/codex@b73426c1c40187ca13c74c03912a681072c2884f
+
+    # ATTRIBUTION-AI: devstral-small  2025-06-11
+    #sudo -n npm install https://github.com/openai/codex/archive/b73426c1c40187ca13c74c03912a681072c2884f.tar.gz
+
+
+
+    sudo -n npm install https://github.com/openai/codex/archive/8493285.tar.gz
+    sudo -n npm install https://github.com/openai/codex/archive/b051edb7d3e04200b369af37ca45e210614cf281.tar.gz
+
+
+    cd "$functionEntryPWD"
+    _stop
+}
+
 _setup_codex-npm() {
     _mustGetSudo
 
@@ -39963,56 +39990,71 @@ _setup_codex-npm() {
     #@openai/codex
     #@openai/codex@latest
     sudo -n npm install -g @openai/codex
-
-    # DUBIOUS .
-    #sudo -n npm install -g @openai/codex@b73426c1c40187ca13c74c03912a681072c2884f
-
-    # ATTRIBUTION-AI: devstral-small  2025-06-11
-    #sudo -n npm install https://github.com/openai/codex/archive/b73426c1c40187ca13c74c03912a681072c2884f.tar.gz
-
-
-
-    sudo -n npm install https://github.com/openai/codex/archive/8493285.tar.gz
 }
 
 # WARNING: May be untested.
 # DUBIOUS .
-#_setup_codex_sequence-upstream() {
-    #_start
-    #local functionEntryPWD
-    #functionEntryPWD="$PWD"
+_setup_codex_sequence-upstream() {
+    _start
+    local functionEntryPWD
+    functionEntryPWD="$PWD"
 
     #cd "$safeTmp"
+    mkdir -p "$HOME"/core/installations/codex_bin
+    cd "$HOME"/core/installations/codex_bin
 
-    ## ATTRIBUTION-AI: ChatGPT o3  2025-06-11
-    #corepack enable                 # turn on pnpm via corepack (Node ≥16.10)
-    #corepack prepare pnpm@latest --activate
+    # ATTRIBUTION-AI: ChatGPT o3  2025-06-11  (partially)
 
-    #export safeToDeleteGit="true"
-    #git clone https://github.com/openai/codex.git
-    #cd codex
+    for v in $(env | awk -F= '/^NVM_/ {print $1}'); do
+        unset "$v"
+    done
 
-    ## fetch PR 996 and check it out locally
-    #git fetch origin pull/996/head:disable-sandbox
-    #git switch disable-sandbox      # or: git checkout -b disable-sandbox FETCH_HEAD
+    export PATH="$(printf '%s' "$PATH" | tr ':' '\n' | grep -vE '/\.nvm/' | paste -sd ':' -)"
+    #export PATH="/usr/bin:${PATH}"
 
-    ## install deps for the monorepo and build just the CLI package
-    #pnpm install
-    #pnpm --filter codex-cli run build
+    export SHELL="/bin/bash"
+    
+    /usr/bin/corepack enable                 # turn on pnpm via corepack (Node >=16.10)
+    /usr/bin/corepack prepare pnpm@latest --activate
 
-    ## expose the built CLI globally
-    #pnpm --filter codex-cli link --global   # 'codex' now in your PATH
+    export safeToDeleteGit="true"
+    git clone https://github.com/openai/codex.git
+    cd codex
 
-    #cd "$functionEntryPWD"
-    #_stop
-#}
-#_setup_codex-upstream() {
-    #_setup_codex-npm "$@"
-    #"$scriptAbsoluteLocation" _setup_codex_sequence-upstream "$@"
-#}
+    # fetch PR 996 and check it out locally
+    git fetch origin pull/996/head:disable-sandbox
+    git switch disable-sandbox      # or: git checkout -b disable-sandbox FETCH_HEAD
+
+    /usr/lib/node_modules/corepack/shims/pnpm setup
+
+    export PNPM_HOME="$HOME""/.local/share/pnpm"
+    case ":$PATH:" in
+        *":$PNPM_HOME:"*) ;;
+        *) export PATH="$PNPM_HOME:$PATH" ;;
+    esac
+
+    # install deps for the monorepo and build just the CLI package
+    yes | /usr/lib/node_modules/corepack/shims/pnpm install
+    /usr/lib/node_modules/corepack/shims/pnpm --dir ./codex-cli run build
+
+
+    # expose the built CLI globally
+    cd ./codex-cli
+    /usr/lib/node_modules/corepack/shims/pnpm link --global
+
+    mkdir -p "$HOME"/.bun/install/global
+    [[ ! -e "$HOME"/.bun/install/global/package.json ]] && echo '{ "name": "bun-global", "private": true }' > "$HOME"/.bun/install/global/package.json
+
+    cd "$functionEntryPWD"
+    _stop
+}
+_setup_codex-upstream() {
+    _setup_codex-npm "$@"
+    "$scriptAbsoluteLocation" _setup_codex_sequence-upstream "$@"
+}
 
 _setup_codex() {
-    _setup_codex-npm "$@"
+    _setup_codex-upstream "$@"
 }
 
 
@@ -40048,16 +40090,50 @@ _setup_codex() {
 
 
 # WARNING: Mainline versions of CLI Codex apparently do NOT disable the sandbox if '--approval-mode full-auto' parameter is given.
-#export TMPDIR=/tmp ; export CODEX_UNSAFE_ALLOW_NO_SANDBOX=1 ; codex --dangerously-auto-approve-everything
-#export TMPDIR=/tmp ; export CODEX_UNSAFE_ALLOW_NO_SANDBOX=1 ; codex --dangerously-auto-approve-everything --approval-mode full-auto
-alias codexAuto='export TMPDIR=/tmp ; export CODEX_UNSAFE_ALLOW_NO_SANDBOX=1 ; codex --dangerously-auto-approve-everything --approval-mode full-auto'
+#export TMPDIR=/tmp ; 
+#export CODEX_UNSAFE_ALLOW_NO_SANDBOX=1 ; codex --dangerously-auto-approve-everything
+#export CODEX_UNSAFE_ALLOW_NO_SANDBOX=1 ; codex --dangerously-auto-approve-everything --approval-mode full-auto
+alias codexAuto='export CODEX_UNSAFE_ALLOW_NO_SANDBOX=1 ; codex --dangerously-auto-approve-everything --approval-mode full-auto'
 alias codexForce='export CODEX_UNSAFE_ALLOW_NO_SANDBOX=1 ; codex --dangerously-auto-approve-everything'
+
+
+
+
+
+_codexBin-usr_local_bin_node() {
+    if [[ -e /root/.local/share/pnpm/codex ]]
+    then
+        export PNPM_HOME="$HOME""/.local/share/pnpm"
+        case ":$PATH:" in
+            *":$PNPM_HOME:"*) ;;
+            *) export PATH="$PNPM_HOME:$PATH" ;;
+        esac
+        /root/.local/share/pnpm/codex "$@"
+        return "$?"
+    fi
+    /usr/local/bin/node "$(type -P codex)" "$@"
+    return "$?"
+}
+_codexBin-usr_bin_node() {
+    if [[ -e /root/.local/share/pnpm/codex ]]
+    then
+        export PNPM_HOME="$HOME""/.local/share/pnpm"
+        case ":$PATH:" in
+            *":$PNPM_HOME:"*) ;;
+            *) export PATH="$PNPM_HOME:$PATH" ;;
+        esac
+        /root/.local/share/pnpm/codex "$@"
+        return "$?"
+    fi
+    /usr/bin/node "$(type -P codex)" "$@"
+    return "$?"
+}
 
 
 if type -P codex > /dev/null 2>&1
 then
-    [[ -e /usr/local/bin/node ]] && alias codex=/usr/local/bin/node' '"$(type -P codex)"
-    [[ -e /usr/bin/node ]] && alias codex=/usr/bin/node' '"$(type -P codex)"
+    [[ -e /usr/local/bin/node ]] && alias codex=_codexBin-usr_local_bin_node
+    [[ -e /usr/bin/node ]] && alias codex=_codexBin-usr_bin_node
 fi
 
 
