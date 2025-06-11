@@ -99,7 +99,7 @@ then
 	#then
 		_write_configure_git_safe_directory_if_admin_owned "$scriptAbsoluteFolder"
 	#fi
-elif uname -a | grep -i 'microsoft' > /dev/null 2>&1 && uname -a | grep -i 'WSL2' > /dev/null 2>&1
+elif ( uname -a | grep -i 'microsoft' > /dev/null 2>&1 && uname -a | grep -i 'WSL2' > /dev/null 2>&1 ) || [[ -e /.dockerenv ]]
 then
 	if [[ "$tmpSelf" == "" ]]
 	then
