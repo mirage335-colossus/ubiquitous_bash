@@ -456,13 +456,13 @@ echo
 echo '------------------------------'
 echo
 echo
-cat "$scriptLocal"/licenses/gpl-3.0.txt
+#cat "$scriptLocal"/licenses/gpl-3.0.txt
 echo
 echo
 echo '------------------------------'
 echo
 echo
-cat "$scriptLocal"/licenses/agpl-3.0.txt
+#cat "$scriptLocal"/licenses/agpl-3.0.txt
 echo 'EOFSPECIAL'
 
 }
