@@ -734,6 +734,24 @@ jobs:
           fi
           true
 
+      - name: _true
+        shell: bash
+        timeout-minutes: 120
+        run: |
+          ./ubiquitous_bash.sh _true
+          ./_true | sudo -n tee ./_local/_true.log && exit ${PIPESTATUS[0]}
+      - name: _false
+        shell: bash
+        timeout-minutes: 120
+        run: |
+          ! ./ubiquitous_bash.sh _false
+          ( ! ./_false ) | sudo -n tee ./_local/_false.log && exit ${PIPESTATUS[0]}
+      - name: ___factoryTest
+        shell: bash
+        timeout-minutes: 120
+        run: |
+          ./ubiquitous_bash.sh ___factoryTest
+
       - name: factory! create
         shell: bash
         timeout-minutes: 120
