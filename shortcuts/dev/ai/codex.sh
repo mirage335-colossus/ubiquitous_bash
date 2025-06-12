@@ -77,7 +77,7 @@ _setup_codex_sequence-upstream() {
     git fetch origin pull/996/head:disable-sandbox
     git switch disable-sandbox      # or: git checkout -b disable-sandbox FETCH_HEAD
 
-    /usr/lib/node_modules/corepack/shims/pnpm setup
+    yes | /usr/lib/node_modules/corepack/shims/pnpm setup
 
     export PNPM_HOME="$HOME""/.local/share/pnpm"
     case ":$PATH:" in
