@@ -153,14 +153,17 @@ alias codexForce='export CODEX_UNSAFE_ALLOW_NO_SANDBOX=1 ; codex --dangerously-a
 
 
 _codexBin-usr_local_bin_node() {
+    local currentDisableSandbox
+    currentDisableSandbox="false"
+
     # Calling 'codexAuto' from Cygwin to WSL2 codex would not necessarily apply the environment variable. Infer always disabling sandbox implied with command line parameter .
     local currentArg
     for currentArg in "$@"
     do
-        [[ "$currentArg" == "--dangerously-auto-approve-everything" ]] && export CODEX_UNSAFE_ALLOW_NO_SANDBOX=1
+        [[ "$currentArg" == "--dangerously-auto-approve-everything" ]] && currentDisableSandbox="true"
     done
 
-    if [[ -v CODEX_UNSAFE_ALLOW_NO_SANDBOX ]] && ( ( [[ ! -e /.dockerenv ]] && ! [[ -e /info_factoryName.txt ]] ) || grep 'ubDistBuild' /info-github > /dev/null 2>&1 || _if_cygwin )
+    if ( [[ "$currentDisableSandbox" != "false" ]] || [[ -v CODEX_UNSAFE_ALLOW_NO_SANDBOX ]] ) && ( ( [[ ! -e /.dockerenv ]] && ! [[ -e /info_factoryName.txt ]] ) || grep 'ubDistBuild' /info-github > /dev/null 2>&1 || _if_cygwin )
     then
         #_messagePlain_warn
         #_messageError
@@ -169,7 +172,12 @@ _codexBin-usr_local_bin_node() {
         echo 'wait: 5seconds: Ctrl+c repeatedly to cancel NOW!!!'
         sleep 6
     fi
+
+    #[[ "$currentDisableSandbox" == "true" ]] && export CODEX_UNSAFE_ALLOW_NO_SANDBOX=1
     
+
+    local currentExitStatus
+
     if [[ -e "$HOME"/.local/share/pnpm/codex ]]
     then
         export PNPM_HOME="$HOME""/.local/share/pnpm"
@@ -177,21 +185,44 @@ _codexBin-usr_local_bin_node() {
             *":$PNPM_HOME:"*) ;;
             *) export PATH="$PNPM_HOME:$PATH" ;;
         esac
-        "$HOME"/.local/share/pnpm/codex "$@"
-        return "$?"
+        if [[ "$currentDisableSandbox" == "true" ]]
+        then
+            CODEX_UNSAFE_ALLOW_NO_SANDBOX=1 "$HOME"/.local/share/pnpm/codex "$@"
+            currentExitStatus="$?"
+            unset CODEX_UNSAFE_ALLOW_NO_SANDBOX
+            return "$currentExitStatus"
+        else
+            "$HOME"/.local/share/pnpm/codex "$@"
+            currentExitStatus="$?"
+            unset CODEX_UNSAFE_ALLOW_NO_SANDBOX
+            return "$currentExitStatus"
+        fi
     fi
-    /usr/local/bin/node "$(type -P codex)" "$@"
-    return "$?"
+    if [[ "$currentDisableSandbox" == "true" ]]
+    then
+        CODEX_UNSAFE_ALLOW_NO_SANDBOX=1 /usr/local/bin/node "$(type -P codex)" "$@"
+        currentExitStatus="$?"
+        unset CODEX_UNSAFE_ALLOW_NO_SANDBOX
+        return "$currentExitStatus"
+    else
+        /usr/local/bin/node "$(type -P codex)" "$@"
+        currentExitStatus="$?"
+        unset CODEX_UNSAFE_ALLOW_NO_SANDBOX
+        return "$currentExitStatus"
+    fi
 }
 _codexBin-usr_bin_node() {
+    local currentDisableSandbox
+    currentDisableSandbox="false"
+
     # Calling 'codexAuto' from Cygwin to WSL2 codex would not necessarily apply the environment variable. Infer always disabling sandbox implied with command line parameter .
     local currentArg
     for currentArg in "$@"
     do
-        [[ "$currentArg" == "--dangerously-auto-approve-everything" ]] && export CODEX_UNSAFE_ALLOW_NO_SANDBOX=1
+        [[ "$currentArg" == "--dangerously-auto-approve-everything" ]] && currentDisableSandbox="true"
     done
 
-    if [[ -v CODEX_UNSAFE_ALLOW_NO_SANDBOX ]] && ( ( [[ ! -e /.dockerenv ]] && ! [[ -e /info_factoryName.txt ]] ) || grep 'ubDistBuild' /info-github > /dev/null 2>&1 || _if_cygwin )
+    if ( [[ "$currentDisableSandbox" != "false" ]] || [[ -v CODEX_UNSAFE_ALLOW_NO_SANDBOX ]] ) && ( ( [[ ! -e /.dockerenv ]] && ! [[ -e /info_factoryName.txt ]] ) || grep 'ubDistBuild' /info-github > /dev/null 2>&1 || _if_cygwin )
     then
         #_messagePlain_warn
         #_messageError
@@ -201,6 +232,11 @@ _codexBin-usr_bin_node() {
         sleep 6
     fi
 
+    #[[ "$currentDisableSandbox" == "true" ]] && export CODEX_UNSAFE_ALLOW_NO_SANDBOX=1
+    
+
+    local currentExitStatus
+
     if [[ -e "$HOME"/.local/share/pnpm/codex ]]
     then
         export PNPM_HOME="$HOME""/.local/share/pnpm"
@@ -208,11 +244,31 @@ _codexBin-usr_bin_node() {
             *":$PNPM_HOME:"*) ;;
             *) export PATH="$PNPM_HOME:$PATH" ;;
         esac
-        "$HOME"/.local/share/pnpm/codex "$@"
-        return "$?"
+        if [[ "$currentDisableSandbox" == "true" ]]
+        then
+            CODEX_UNSAFE_ALLOW_NO_SANDBOX=1 "$HOME"/.local/share/pnpm/codex "$@"
+            currentExitStatus="$?"
+            unset CODEX_UNSAFE_ALLOW_NO_SANDBOX
+            return "$currentExitStatus"
+        else
+            "$HOME"/.local/share/pnpm/codex "$@"
+            currentExitStatus="$?"
+            unset CODEX_UNSAFE_ALLOW_NO_SANDBOX
+            return "$currentExitStatus"
+        fi
     fi
-    /usr/bin/node "$(type -P codex)" "$@"
-    return "$?"
+    if [[ "$currentDisableSandbox" == "true" ]]
+    then
+        CODEX_UNSAFE_ALLOW_NO_SANDBOX=1 /usr/bin/node "$(type -P codex)" "$@"
+        currentExitStatus="$?"
+        unset CODEX_UNSAFE_ALLOW_NO_SANDBOX
+        return "$currentExitStatus"
+    else
+        /usr/bin/node "$(type -P codex)" "$@"
+        currentExitStatus="$?"
+        unset CODEX_UNSAFE_ALLOW_NO_SANDBOX
+        return "$currentExitStatus"
+    fi
 }
 
 
