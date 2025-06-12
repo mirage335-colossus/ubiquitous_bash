@@ -17,6 +17,8 @@ ubiquitous_bash_compressed.sh
 rotten_test_compressed.sh
 rotten_test.sh
 
+project.afs
+
 /ops
 
 .pidlist*
