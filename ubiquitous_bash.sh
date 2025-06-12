@@ -39,7 +39,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='3620520443'
-export ub_setScriptChecksum_contents='1076706468'
+export ub_setScriptChecksum_contents='538554234'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -40140,20 +40140,20 @@ _codexBin-usr_local_bin_node() {
             *":$PNPM_HOME:"*) ;;
             *) export PATH="$PNPM_HOME:$PATH" ;;
         esac
-        if [[ "$currentDisableSandbox" == "true" ]]
+        if [[ "$currentDisableSandbox" == "true" ]] || [[ "$CODEX_UNSAFE_ALLOW_NO_SANDBOX" == "1" ]]
         then
             CODEX_UNSAFE_ALLOW_NO_SANDBOX=1 "$HOME"/.local/share/pnpm/codex "$@"
             currentExitStatus="$?"
             unset CODEX_UNSAFE_ALLOW_NO_SANDBOX
             return "$currentExitStatus"
-        else
-            "$HOME"/.local/share/pnpm/codex "$@"
-            currentExitStatus="$?"
-            unset CODEX_UNSAFE_ALLOW_NO_SANDBOX
-            return "$currentExitStatus"
+        #else
+            #"$HOME"/.local/share/pnpm/codex "$@"
+            #currentExitStatus="$?"
+            #unset CODEX_UNSAFE_ALLOW_NO_SANDBOX
+            #return "$currentExitStatus"
         fi
     fi
-    if [[ "$currentDisableSandbox" == "true" ]]
+    if [[ "$currentDisableSandbox" == "true" ]] || [[ "$CODEX_UNSAFE_ALLOW_NO_SANDBOX" == "1" ]]
     then
         CODEX_UNSAFE_ALLOW_NO_SANDBOX=1 /usr/local/bin/node "$(type -P codex)" "$@"
         currentExitStatus="$?"
@@ -40199,20 +40199,20 @@ _codexBin-usr_bin_node() {
             *":$PNPM_HOME:"*) ;;
             *) export PATH="$PNPM_HOME:$PATH" ;;
         esac
-        if [[ "$currentDisableSandbox" == "true" ]]
+        if [[ "$currentDisableSandbox" == "true" ]] || [[ "$CODEX_UNSAFE_ALLOW_NO_SANDBOX" == "1" ]]
         then
             CODEX_UNSAFE_ALLOW_NO_SANDBOX=1 "$HOME"/.local/share/pnpm/codex "$@"
             currentExitStatus="$?"
             unset CODEX_UNSAFE_ALLOW_NO_SANDBOX
             return "$currentExitStatus"
-        else
-            "$HOME"/.local/share/pnpm/codex "$@"
-            currentExitStatus="$?"
-            unset CODEX_UNSAFE_ALLOW_NO_SANDBOX
-            return "$currentExitStatus"
+        #else
+            #"$HOME"/.local/share/pnpm/codex "$@"
+            #currentExitStatus="$?"
+            #unset CODEX_UNSAFE_ALLOW_NO_SANDBOX
+            #return "$currentExitStatus"
         fi
     fi
-    if [[ "$currentDisableSandbox" == "true" ]]
+    if [[ "$currentDisableSandbox" == "true" ]] || [[ "$CODEX_UNSAFE_ALLOW_NO_SANDBOX" == "1" ]]
     then
         CODEX_UNSAFE_ALLOW_NO_SANDBOX=1 /usr/bin/node "$(type -P codex)" "$@"
         currentExitStatus="$?"

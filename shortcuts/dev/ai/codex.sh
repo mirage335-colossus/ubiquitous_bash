@@ -187,20 +187,20 @@ _codexBin-usr_local_bin_node() {
             *":$PNPM_HOME:"*) ;;
             *) export PATH="$PNPM_HOME:$PATH" ;;
         esac
-        if [[ "$currentDisableSandbox" == "true" ]]
+        if [[ "$currentDisableSandbox" == "true" ]] || [[ "$CODEX_UNSAFE_ALLOW_NO_SANDBOX" == "1" ]]
         then
             CODEX_UNSAFE_ALLOW_NO_SANDBOX=1 "$HOME"/.local/share/pnpm/codex "$@"
             currentExitStatus="$?"
             unset CODEX_UNSAFE_ALLOW_NO_SANDBOX
             return "$currentExitStatus"
-        else
-            "$HOME"/.local/share/pnpm/codex "$@"
-            currentExitStatus="$?"
-            unset CODEX_UNSAFE_ALLOW_NO_SANDBOX
-            return "$currentExitStatus"
+        #else
+            #"$HOME"/.local/share/pnpm/codex "$@"
+            #currentExitStatus="$?"
+            #unset CODEX_UNSAFE_ALLOW_NO_SANDBOX
+            #return "$currentExitStatus"
         fi
     fi
-    if [[ "$currentDisableSandbox" == "true" ]]
+    if [[ "$currentDisableSandbox" == "true" ]] || [[ "$CODEX_UNSAFE_ALLOW_NO_SANDBOX" == "1" ]]
     then
         CODEX_UNSAFE_ALLOW_NO_SANDBOX=1 /usr/local/bin/node "$(type -P codex)" "$@"
         currentExitStatus="$?"
@@ -246,20 +246,20 @@ _codexBin-usr_bin_node() {
             *":$PNPM_HOME:"*) ;;
             *) export PATH="$PNPM_HOME:$PATH" ;;
         esac
-        if [[ "$currentDisableSandbox" == "true" ]]
+        if [[ "$currentDisableSandbox" == "true" ]] || [[ "$CODEX_UNSAFE_ALLOW_NO_SANDBOX" == "1" ]]
         then
             CODEX_UNSAFE_ALLOW_NO_SANDBOX=1 "$HOME"/.local/share/pnpm/codex "$@"
             currentExitStatus="$?"
             unset CODEX_UNSAFE_ALLOW_NO_SANDBOX
             return "$currentExitStatus"
-        else
-            "$HOME"/.local/share/pnpm/codex "$@"
-            currentExitStatus="$?"
-            unset CODEX_UNSAFE_ALLOW_NO_SANDBOX
-            return "$currentExitStatus"
+        #else
+            #"$HOME"/.local/share/pnpm/codex "$@"
+            #currentExitStatus="$?"
+            #unset CODEX_UNSAFE_ALLOW_NO_SANDBOX
+            #return "$currentExitStatus"
         fi
     fi
-    if [[ "$currentDisableSandbox" == "true" ]]
+    if [[ "$currentDisableSandbox" == "true" ]] || [[ "$CODEX_UNSAFE_ALLOW_NO_SANDBOX" == "1" ]]
     then
         CODEX_UNSAFE_ALLOW_NO_SANDBOX=1 /usr/bin/node "$(type -P codex)" "$@"
         currentExitStatus="$?"
