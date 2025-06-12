@@ -12,7 +12,7 @@ if [[ "$1" == '_'* ]] && type "$1" > /dev/null 2>&1
 then
 	"$@"
 	internalFunctionExitStatus="$?"
-	return "$internalFunctionExitStatus" > /dev/null 2>&1
+       return "$internalFunctionExitStatus" > /dev/null 2>&1 || true
 	exit "$internalFunctionExitStatus"
 fi
 if [[ "$1" != '_'* ]]

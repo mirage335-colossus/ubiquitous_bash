@@ -81,6 +81,6 @@ _prepare() {
 	
 	#_prepare_abstract
 	
-	_extra
-	_tryExec "_prepare_prog"
+       _extra
+       _tryExec "_prepare_prog" || true
 }

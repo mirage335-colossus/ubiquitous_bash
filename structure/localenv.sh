@@ -27,7 +27,7 @@ _start() {
 	_embed_here > "$safeTmp"/.embed.sh
 	chmod 755 "$safeTmp"/.embed.sh
 	
-	_tryExec "_start_prog"
+       _tryExec "_start_prog" || true
 }
 
 #_saveVar_prog() {
@@ -59,14 +59,19 @@ _stop_stty_echo() {
 
 # DANGER: Use of "_stop" must NOT require successful "_start". Do NOT include actions which would not be safe if "_start" was not used or unsuccessful.
 _stop() {
-	if [[ "$ubDEBUG" == "true" ]] ; then set +x ; set +E ; set +o functrace ; set +o errtrace ; export -n SHELLOPTS 2>/dev/null || true ; trap '' RETURN ; trap - RETURN ; fi
+       if [[ "$ubDEBUG" == "true" ]] ; then set +x ; set +E ; set +o functrace ; set +o errtrace ; export -n SHELLOPTS 2>/dev/null || true ; trap '' RETURN ; trap - RETURN ; fi
+
+       local ub_stop_errexit_was_on=""
+       case $- in
+               *e*) ub_stop_errexit_was_on="true" ; set +e ;;
+       esac
 	
 	_stop_stty_echo
 	
-	_tryExec "_stop_prog"
-	
-	_tryExec "_stop_queue_page"
-	_tryExec "_stop_queue_aggregatorStatic"
+       _tryExec "_stop_prog" || true
+
+       _tryExec "_stop_queue_page" || true
+       _tryExec "_stop_queue_aggregatorStatic" || true
 	
 	_preserveLog
 	
@@ -157,13 +162,14 @@ _stop() {
 	[[ -e "$scriptLocal"/python_msw.lock ]] && [[ $(head -c $(echo -n "$sessionid" | wc -c | tr -dc '0-9') "$scriptLocal"/python_msw.lock 2> /dev/null ) == "$sessionid" ]] && rm -f "$scriptLocal"/python_msw.lock > /dev/null 2>&1
 	[[ -e "$scriptLocal"/python_cygwin.lock ]] && [[ $(head -c $(echo -n "$sessionid" | wc -c | tr -dc '0-9') "$scriptLocal"/python_cygwin.lock 2> /dev/null ) == "$sessionid" ]] && rm -f "$scriptLocal"/python_cygwin.lock > /dev/null 2>&1
 	
-	_stop_stty_echo
-	if [[ "$1" != "" ]]
-	then
-		exit "$1"
-	else
-		exit 0
-	fi
+       _stop_stty_echo
+       if [[ "$ub_stop_errexit_was_on" == "true" ]]; then set -e; fi
+       if [[ "$1" != "" ]]
+       then
+               exit "$1"
+       else
+               exit 0
+       fi
 }
 
 #Do not overload this unless you know why you need it instead of _stop_prog.
