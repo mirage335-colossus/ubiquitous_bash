@@ -145,8 +145,10 @@ _setup_codex() {
 #export TMPDIR=/tmp ; 
 #export CODEX_UNSAFE_ALLOW_NO_SANDBOX=1 ; codex --dangerously-auto-approve-everything
 #export CODEX_UNSAFE_ALLOW_NO_SANDBOX=1 ; codex --dangerously-auto-approve-everything --approval-mode full-auto
-alias codexAuto='export CODEX_UNSAFE_ALLOW_NO_SANDBOX=1 ; codex --dangerously-auto-approve-everything --approval-mode full-auto'
-alias codexForce='export CODEX_UNSAFE_ALLOW_NO_SANDBOX=1 ; codex --dangerously-auto-approve-everything'
+#alias codexAuto='export CODEX_UNSAFE_ALLOW_NO_SANDBOX=1 ; codex --dangerously-auto-approve-everything --approval-mode full-auto'
+#alias codexForce='export CODEX_UNSAFE_ALLOW_NO_SANDBOX=1 ; codex --dangerously-auto-approve-everything'
+alias codexAuto='CODEX_UNSAFE_ALLOW_NO_SANDBOX=1 codex --dangerously-auto-approve-everything --approval-mode full-auto'
+alias codexForce='CODEX_UNSAFE_ALLOW_NO_SANDBOX=1 codex --dangerously-auto-approve-everything'
 
 
 
