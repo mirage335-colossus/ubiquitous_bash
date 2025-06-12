@@ -153,6 +153,23 @@ alias codexForce='export CODEX_UNSAFE_ALLOW_NO_SANDBOX=1 ; codex --dangerously-a
 
 
 _codexBin-usr_local_bin_node() {
+    # Calling 'codexAuto' from Cygwin to WSL2 codex would not necessarily apply the environment variable. Infer always disabling sandbox implied with command line parameter .
+    local currentArg
+    for currentArg in "$@"
+    do
+        [[ "$currentArg" == "--dangerously-auto-approve-everything" ]] && export CODEX_UNSAFE_ALLOW_NO_SANDBOX=1
+    done
+
+    if [[ -v CODEX_UNSAFE_ALLOW_NO_SANDBOX ]] && ( ( [[ ! -e /.dockerenv ]] && ! [[ -e /info_factoryName.txt ]] ) || grep 'ubDistBuild' /info-github > /dev/null 2>&1 || _if_cygwin )
+    then
+        #_messagePlain_warn
+        #_messageError
+        _messageError ' CAUTION: DANGER: Native codexAuto, codexForce, etc, may cause IRREPARABLE dist/OS BREAKAGE, filesystem DELETION , or network HARM ! '
+        echo 'Ctrl+c repeatedly to cancel!'
+        echo 'wait: 5seconds: Ctrl+c repeatedly to cancel NOW!!!'
+        sleep 6
+    fi
+    
     if [[ -e "$HOME"/.local/share/pnpm/codex ]]
     then
         export PNPM_HOME="$HOME""/.local/share/pnpm"
@@ -167,6 +184,23 @@ _codexBin-usr_local_bin_node() {
     return "$?"
 }
 _codexBin-usr_bin_node() {
+    # Calling 'codexAuto' from Cygwin to WSL2 codex would not necessarily apply the environment variable. Infer always disabling sandbox implied with command line parameter .
+    local currentArg
+    for currentArg in "$@"
+    do
+        [[ "$currentArg" == "--dangerously-auto-approve-everything" ]] && export CODEX_UNSAFE_ALLOW_NO_SANDBOX=1
+    done
+
+    if [[ -v CODEX_UNSAFE_ALLOW_NO_SANDBOX ]] && ( ( [[ ! -e /.dockerenv ]] && ! [[ -e /info_factoryName.txt ]] ) || grep 'ubDistBuild' /info-github > /dev/null 2>&1 || _if_cygwin )
+    then
+        #_messagePlain_warn
+        #_messageError
+        _messageError ' CAUTION: DANGER: Native codexAuto, codexForce, etc, may cause IRREPARABLE dist/OS BREAKAGE, filesystem DELETION , or network HARM ! '
+        echo 'Ctrl+c repeatedly to cancel!'
+        echo 'wait: 5seconds: Ctrl+c repeatedly to cancel NOW!!!'
+        sleep 6
+    fi
+
     if [[ -e "$HOME"/.local/share/pnpm/codex ]]
     then
         export PNPM_HOME="$HOME""/.local/share/pnpm"
