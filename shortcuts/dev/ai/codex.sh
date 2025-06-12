@@ -66,7 +66,7 @@ _setup_codex_sequence-upstream() {
 
     export SHELL="/bin/bash"
     
-    /usr/bin/corepack enable                 # turn on pnpm via corepack (Node >=16.10)
+    sudo -n /usr/bin/corepack enable                 # turn on pnpm via corepack (Node >=16.10)
     /usr/bin/corepack prepare pnpm@latest --activate
 
     export safeToDeleteGit="true"
