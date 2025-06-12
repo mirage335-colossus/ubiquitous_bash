@@ -39,7 +39,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='3620520443'
-export ub_setScriptChecksum_contents='3537734583'
+export ub_setScriptChecksum_contents='4047222858'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -29364,7 +29364,9 @@ __factoryCreate_sequence_openai-heavy() {
     #if [[ "$DOCKER_BUILDER_NAME" == "" ]]
     #then
         docker build --debug -t openai-heavy .
+        echo test1
         docker tag openai-heavy "$DOCKER_USER"/openai-heavy:latest
+        echo test2
     #else
         #if [[ "$DOCKER_BUILDER_NAME" != "" ]]
         #then
@@ -29376,9 +29378,10 @@ __factoryCreate_sequence_openai-heavy() {
     #docker push user/openai-heavy:latest
 
     #export safeToDeleteGit="true"
+    echo test3
     _safeRMR "$safeTmp"/repo
-
-    _stop
+    echo test4
+    _stop 0
 }
 __factoryCreate_openai-heavy() {
     if [[ "$recursionGuard_factory_ops" == "" ]]
