@@ -750,7 +750,7 @@ jobs:
         shell: bash
         timeout-minutes: 120
         run: |
-          ./ubiquitous_bash.sh ___factoryTest
+          ./ubiquitous_bash.sh ___factoryTest_direct
 
       - name: factory! create
         shell: bash
