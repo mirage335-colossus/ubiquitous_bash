@@ -392,8 +392,8 @@ then
 				exit "$internalFunctionExitStatus"
 			fi
 			ub_import=""
-			return "$internalFunctionExitStatus" > /dev/null 2>&1
-			exit "$internalFunctionExitStatus"
+                        return "$internalFunctionExitStatus" > /dev/null 2>&1 || true
+                        exit "$internalFunctionExitStatus"
 		fi
 	fi
 	
@@ -445,9 +445,9 @@ then
 			#export noEmergency=true
 			exit "$internalFunctionExitStatus"
 		fi
-		ub_import=""
-		return "$internalFunctionExitStatus" > /dev/null 2>&1
-		exit "$internalFunctionExitStatus"
+                ub_import=""
+                return "$internalFunctionExitStatus" > /dev/null 2>&1 || true
+                exit "$internalFunctionExitStatus"
 		#_stop "$?"
 	fi
 fi
