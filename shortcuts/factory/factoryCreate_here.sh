@@ -148,13 +148,13 @@ RUN echo 'net.core.bpf_jit_harden=1' | sudo -n tee /etc/sysctl.d/99-nvidia-worka
 
 #codex
 #claude
-RUN env DEBIAN_FRONTEND=noninteractive apt-get install -y curl ;\ 
-curl -fsSL https://deb.nodesource.com/setup_23.x -o /nodesource_setup.sh ;\ 
-bash /nodesource_setup.sh ;\ 
-env DEBIAN_FRONTEND=noninteractive apt-get install -y nodejs ;\ 
-npm install -g @openai/codex ;\ 
-npm install -g @anthropic-ai/claude-code
-
+#RUN env DEBIAN_FRONTEND=noninteractive apt-get install -y curl ;\ 
+#curl -fsSL https://deb.nodesource.com/setup_23.x -o /nodesource_setup.sh ;\ 
+#bash /nodesource_setup.sh ;\ 
+#env DEBIAN_FRONTEND=noninteractive apt-get install -y nodejs ;\ 
+#npm install -g @openai/codex ;\ 
+#npm install -g @anthropic-ai/claude-code
+RUN /workspace/ubiquitous_bash/ubiquitous_bash.sh _setup_codex
 
 
 # ###

@@ -39,7 +39,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='3620520443'
-export ub_setScriptChecksum_contents='3013146686'
+export ub_setScriptChecksum_contents='221655528'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -28049,13 +28049,13 @@ RUN echo 'net.core.bpf_jit_harden=1' | sudo -n tee /etc/sysctl.d/99-nvidia-worka
 
 #codex
 #claude
-RUN env DEBIAN_FRONTEND=noninteractive apt-get install -y curl ;\ 
-curl -fsSL https://deb.nodesource.com/setup_23.x -o /nodesource_setup.sh ;\ 
-bash /nodesource_setup.sh ;\ 
-env DEBIAN_FRONTEND=noninteractive apt-get install -y nodejs ;\ 
-npm install -g @openai/codex ;\ 
-npm install -g @anthropic-ai/claude-code
-
+#RUN env DEBIAN_FRONTEND=noninteractive apt-get install -y curl ;\ 
+#curl -fsSL https://deb.nodesource.com/setup_23.x -o /nodesource_setup.sh ;\ 
+#bash /nodesource_setup.sh ;\ 
+#env DEBIAN_FRONTEND=noninteractive apt-get install -y nodejs ;\ 
+#npm install -g @openai/codex ;\ 
+#npm install -g @anthropic-ai/claude-code
+RUN /workspace/ubiquitous_bash/ubiquitous_bash.sh _setup_codex
 
 
 # ###
@@ -40106,28 +40106,28 @@ alias codexForce='export CODEX_UNSAFE_ALLOW_NO_SANDBOX=1 ; codex --dangerously-a
 
 
 _codexBin-usr_local_bin_node() {
-    if [[ -e /root/.local/share/pnpm/codex ]]
+    if [[ -e "$HOME"/.local/share/pnpm/codex ]]
     then
         export PNPM_HOME="$HOME""/.local/share/pnpm"
         case ":$PATH:" in
             *":$PNPM_HOME:"*) ;;
             *) export PATH="$PNPM_HOME:$PATH" ;;
         esac
-        /root/.local/share/pnpm/codex "$@"
+        "$HOME"/.local/share/pnpm/codex "$@"
         return "$?"
     fi
     /usr/local/bin/node "$(type -P codex)" "$@"
     return "$?"
 }
 _codexBin-usr_bin_node() {
-    if [[ -e /root/.local/share/pnpm/codex ]]
+    if [[ -e "$HOME"/.local/share/pnpm/codex ]]
     then
         export PNPM_HOME="$HOME""/.local/share/pnpm"
         case ":$PATH:" in
             *":$PNPM_HOME:"*) ;;
             *) export PATH="$PNPM_HOME:$PATH" ;;
         esac
-        /root/.local/share/pnpm/codex "$@"
+        "$HOME"/.local/share/pnpm/codex "$@"
         return "$?"
     fi
     /usr/bin/node "$(type -P codex)" "$@"

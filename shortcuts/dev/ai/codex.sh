@@ -153,28 +153,28 @@ alias codexForce='export CODEX_UNSAFE_ALLOW_NO_SANDBOX=1 ; codex --dangerously-a
 
 
 _codexBin-usr_local_bin_node() {
-    if [[ -e /root/.local/share/pnpm/codex ]]
+    if [[ -e "$HOME"/.local/share/pnpm/codex ]]
     then
         export PNPM_HOME="$HOME""/.local/share/pnpm"
         case ":$PATH:" in
             *":$PNPM_HOME:"*) ;;
             *) export PATH="$PNPM_HOME:$PATH" ;;
         esac
-        /root/.local/share/pnpm/codex "$@"
+        "$HOME"/.local/share/pnpm/codex "$@"
         return "$?"
     fi
     /usr/local/bin/node "$(type -P codex)" "$@"
     return "$?"
 }
 _codexBin-usr_bin_node() {
-    if [[ -e /root/.local/share/pnpm/codex ]]
+    if [[ -e "$HOME"/.local/share/pnpm/codex ]]
     then
         export PNPM_HOME="$HOME""/.local/share/pnpm"
         case ":$PATH:" in
             *":$PNPM_HOME:"*) ;;
             *) export PATH="$PNPM_HOME:$PATH" ;;
         esac
-        /root/.local/share/pnpm/codex "$@"
+        "$HOME"/.local/share/pnpm/codex "$@"
         return "$?"
     fi
     /usr/bin/node "$(type -P codex)" "$@"
