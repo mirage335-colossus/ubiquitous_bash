@@ -232,7 +232,7 @@ _rm_install_libcudadev_stub-stubOnly() {
     rm -f /opt/libcudadev_stub-stubOnly/*.deb
     rm -f /opt/libcudadev_stub-stubOnly/usr/share/doc/libcuda1/copyright
     rm -f /opt/libcudadev_stub-stubOnly/usr/lib/x86_64-linux-gnu/nvidia/current/libcuda*.so*
-    _prepare_install_libcudadev_stub-stubOnly "$@"
+    _prepare_install_libcudadev_stub-stubOnly "\$@"
 }
 
 _rm_install_libcudadev_stub-stubOnly

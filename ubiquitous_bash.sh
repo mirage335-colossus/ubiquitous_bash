@@ -39,7 +39,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='3620520443'
-export ub_setScriptChecksum_contents='1880687661'
+export ub_setScriptChecksum_contents='3537734583'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -28133,7 +28133,7 @@ _rm_install_libcudadev_stub-stubOnly() {
     rm -f /opt/libcudadev_stub-stubOnly/*.deb
     rm -f /opt/libcudadev_stub-stubOnly/usr/share/doc/libcuda1/copyright
     rm -f /opt/libcudadev_stub-stubOnly/usr/lib/x86_64-linux-gnu/nvidia/current/libcuda*.so*
-    _prepare_install_libcudadev_stub-stubOnly "$@"
+    _prepare_install_libcudadev_stub-stubOnly "\$@"
 }
 
 _rm_install_libcudadev_stub-stubOnly
