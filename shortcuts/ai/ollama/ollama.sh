@@ -76,6 +76,22 @@ _ollama_run_augment() {
 
 	! _service_ollama_augment && return 1
 
+	if [[ "$OLLAMA_HOST" != "" ]] && ! type -P ollama > /dev/null 2>&1
+	then
+		local current_api_timeout="$OLLAMA_TIMEOUT"
+		[[ "$current_api_timeout" == "" ]] && current_api_timeout=7200
+		#jq -Rs '{model:"Llama-augment", prompt:., stream: false}' | _timeout "$current_api_timeout" curl -fsS --max-time "$current_api_timeout" -X POST -H "Content-Type: application/json" --data-binary @- http://"$OLLAMA_HOST"/api/generate | jq -r '.response'
+		#jq -Rs '{model:"Llama-augment", prompt:., stream: true}' | _timeout "$current_api_timeout" curl -fsS --no-buffer --max-time "$current_api_timeout" -X POST -H "Content-Type: application/json" --data-binary @- http://"$OLLAMA_HOST"/api/generate | jq -rj --unbuffered 'if .done? then "\n" elif .response? then .response else empty end'
+		if [[ "$*" == "" ]]
+		then
+			jq -Rs '{model:"Llama-augment", prompt:., stream: true}' | _timeout "$current_api_timeout" curl -fsS --no-buffer --max-time "$current_api_timeout" -X POST -H "Content-Type: application/json" --data-binary @- http://"$OLLAMA_HOST"/api/generate | jq -rj --unbuffered 'if .done? then "\n" elif .response? then .response else empty end'
+			return
+		else
+			_safeEcho_newline "$@" | jq -Rs '{model:"Llama-augment", prompt:., stream: true}' | _timeout "$current_api_timeout" curl -fsS --no-buffer --max-time "$current_api_timeout" -X POST -H "Content-Type: application/json" --data-binary @- http://"$OLLAMA_HOST"/api/generate | jq -rj --unbuffered 'if .done? then "\n" elif .response? then .response else empty end'
+			return
+		fi
+	fi
+
 	if ! ollama show Llama-augment > /dev/null 2>&1
 	then
 		"$scriptAbsoluteLocation" _setup_ollama_model_augment_sequence > /dev/null 2>&1

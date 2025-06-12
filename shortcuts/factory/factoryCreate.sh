@@ -993,9 +993,7 @@ __factoryCreate_sequence_openai-heavy() {
     #if [[ "$DOCKER_BUILDER_NAME" == "" ]]
     #then
         docker build --debug -t openai-heavy .
-        echo test1
         docker tag openai-heavy "$DOCKER_USER"/openai-heavy:latest
-        echo test2
     #else
         #if [[ "$DOCKER_BUILDER_NAME" != "" ]]
         #then
@@ -1007,10 +1005,9 @@ __factoryCreate_sequence_openai-heavy() {
     #docker push user/openai-heavy:latest
 
     #export safeToDeleteGit="true"
-    echo test3
     _safeRMR "$safeTmp"/repo
-    echo test4
-    _stop 0
+
+    _stop
 }
 __factoryCreate_openai-heavy() {
     if [[ "$recursionGuard_factory_ops" == "" ]]

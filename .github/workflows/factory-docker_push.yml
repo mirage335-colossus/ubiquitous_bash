@@ -738,22 +738,13 @@ jobs:
         shell: bash
         timeout-minutes: 120
         run: |
-          echo testYAML_1
           export DOCKER_USER=${{ secrets.DOCKER_USERNAME }}
-          echo testYAML_2
           ./ubiquitous_bash.sh __factoryCreate_openai-heavy
-          echo testYAML_3
           ./ubiquitous_bash.sh _here_dockerfile_openai-heavy > Dockerfile
-          echo testYAML_4
           docker tag openai-heavy ghcr.io/${{ github.repository_owner }}/openai-heavy:latest
-          echo testYAML_5
           docker tag openai-heavy ghcr.io/${{ github.repository }}/openai-heavy:latest
-          echo testYAML_6
           docker tag openai-heavy ghcr.io/${{ github.repository_owner }}/${{ github.repository }}/openai-heavy:latest
-          echo testYAML_7
           docker tag openai-heavy ${{ secrets.DOCKER_USERNAME }}/openai-heavy:latest
-          echo $?
-          echo testYAML_8
 
       - name: docker github push
         shell: bash

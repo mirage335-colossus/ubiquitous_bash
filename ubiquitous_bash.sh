@@ -39,7 +39,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='3620520443'
-export ub_setScriptChecksum_contents='1546776371'
+export ub_setScriptChecksum_contents='3190210516'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -27530,6 +27530,22 @@ _ollama_run_augment() {
 
 	! _service_ollama_augment && return 1
 
+	if [[ "$OLLAMA_HOST" != "" ]] && ! type -P ollama > /dev/null 2>&1
+	then
+		local current_api_timeout="$OLLAMA_TIMEOUT"
+		[[ "$current_api_timeout" == "" ]] && current_api_timeout=7200
+		#jq -Rs '{model:"Llama-augment", prompt:., stream: false}' | _timeout "$current_api_timeout" curl -fsS --max-time "$current_api_timeout" -X POST -H "Content-Type: application/json" --data-binary @- http://"$OLLAMA_HOST"/api/generate | jq -r '.response'
+		#jq -Rs '{model:"Llama-augment", prompt:., stream: true}' | _timeout "$current_api_timeout" curl -fsS --no-buffer --max-time "$current_api_timeout" -X POST -H "Content-Type: application/json" --data-binary @- http://"$OLLAMA_HOST"/api/generate | jq -rj --unbuffered 'if .done? then "\n" elif .response? then .response else empty end'
+		if [[ "$*" == "" ]]
+		then
+			jq -Rs '{model:"Llama-augment", prompt:., stream: true}' | _timeout "$current_api_timeout" curl -fsS --no-buffer --max-time "$current_api_timeout" -X POST -H "Content-Type: application/json" --data-binary @- http://"$OLLAMA_HOST"/api/generate | jq -rj --unbuffered 'if .done? then "\n" elif .response? then .response else empty end'
+			return
+		else
+			_safeEcho_newline "$@" | jq -Rs '{model:"Llama-augment", prompt:., stream: true}' | _timeout "$current_api_timeout" curl -fsS --no-buffer --max-time "$current_api_timeout" -X POST -H "Content-Type: application/json" --data-binary @- http://"$OLLAMA_HOST"/api/generate | jq -rj --unbuffered 'if .done? then "\n" elif .response? then .response else empty end'
+			return
+		fi
+	fi
+
 	if ! ollama show Llama-augment > /dev/null 2>&1
 	then
 		"$scriptAbsoluteLocation" _setup_ollama_model_augment_sequence > /dev/null 2>&1
@@ -27621,6 +27637,22 @@ _ollama_run_dev() {
     
 
 	! _service_ollama_augment && return 1
+
+	if [[ "$OLLAMA_HOST" != "" ]] && ! type -P ollama > /dev/null 2>&1
+	then
+		local current_api_timeout="$OLLAMA_TIMEOUT"
+		[[ "$current_api_timeout" == "" ]] && current_api_timeout=7200
+		#jq -Rs '{model:"hf.co/bartowski/mistralai_Devstral-Small-2505-GGUF:IQ4_XS-g41", prompt:., stream: false}' | _timeout "$current_api_timeout" curl -fsS --max-time "$current_api_timeout" -X POST -H "Content-Type: application/json" --data-binary @- http://"$OLLAMA_HOST"/api/generate | jq -r '.response'
+		#jq -Rs '{model:"hf.co/bartowski/mistralai_Devstral-Small-2505-GGUF:IQ4_XS-g41", prompt:., stream: true}' | _timeout "$current_api_timeout" curl -fsS --no-buffer --max-time "$current_api_timeout" -X POST -H "Content-Type: application/json" --data-binary @- http://"$OLLAMA_HOST"/api/generate | jq -rj --unbuffered 'if .done? then "\n" elif .response? then .response else empty end'
+		if [[ "$*" == "" ]]
+		then
+			jq -Rs '{model:"hf.co/bartowski/mistralai_Devstral-Small-2505-GGUF:IQ4_XS-g41", prompt:., stream: true}' | _timeout "$current_api_timeout" curl -fsS --no-buffer --max-time "$current_api_timeout" -X POST -H "Content-Type: application/json" --data-binary @- http://"$OLLAMA_HOST"/api/generate | jq -rj --unbuffered 'if .done? then "\n" elif .response? then .response else empty end'
+			return
+		else
+			_safeEcho_newline "$@" | jq -Rs '{model:"hf.co/bartowski/mistralai_Devstral-Small-2505-GGUF:IQ4_XS-g41", prompt:., stream: true}' | _timeout "$current_api_timeout" curl -fsS --no-buffer --max-time "$current_api_timeout" -X POST -H "Content-Type: application/json" --data-binary @- http://"$OLLAMA_HOST"/api/generate | jq -rj --unbuffered 'if .done? then "\n" elif .response? then .response else empty end'
+			return
+		fi
+	fi
 
 	if ! ollama show hf.co/bartowski/mistralai_Devstral-Small-2505-GGUF:IQ4_XS-g41 --modelfile > /dev/null 2>&1
 	then
@@ -27897,6 +27929,78 @@ _augment() {
     "$scriptAbsoluteLocation" _augment_sequence "$@"
 }
 
+
+
+
+___factoryTest_sequence() {
+    _messagePlain_nominal '___factoryTest_sequence'
+    if [[ "$recursionGuard_factory_ops" == "" ]]
+    then
+        _messagePlain_probe '_factory_ops_recursion: from ___factoryTest_sequence'
+        _factory_ops_recursion "$@"
+        return
+    fi
+
+    _start
+
+    cd "$safeTmp"
+    cp "$scriptAbsoluteFolder"/ubiquitous_bash.sh "$safeTmp"/ubiquitous_bash.sh
+
+    #if [[ "$CI" != "" ]] && [[ "$objectName" == "ubiquitous_bash" ]]
+    #then
+        _messagePlain_probe 'mkdir -p '"$safeTmp"/repo
+        mkdir -p "$safeTmp"/repo
+        ( cd "$safeTmp"/repo ; mkdir -p dummyRepo ; cd dummyRepo ; echo dummy > dummy.txt ; git init ; git add dummy.txt ; git commit -m "dummy" )
+        #( cd "$safeTmp"/repo ; git config --global checkout.workers -1 ; _gitBest clone --depth 1 git@github.com:mirage335-colossus/"$objectName".git ; cd "$safeTmp"/repo/"$objectName" ; _gitBest submodule update --init --depth 1 --recursive )
+        export safeToDeleteGit="true"
+    #fi
+
+    #export safeToDeleteGit="true"
+    _messagePlain_probe '_safeRMR "$safeTmp"/repo'
+    _safeRMR "$safeTmp"/repo
+    _messagePlain_probe '_stop'
+    _stop 0
+}
+___factoryTest_direct() {
+    _messagePlain_nominal '___factoryTest_direct'
+    
+    if [[ "$recursionGuard_factory_ops" == "" ]]
+    then
+        _messagePlain_probe '_factory_ops_recursion: from ___factoryTest_direct'
+        _factory_ops_recursion "$@"
+        return
+    fi
+
+    _messagePlain_probe '"$scriptAbsoluteLocation" ___factoryTest_sequence "$@"'
+    "$scriptAbsoluteLocation" ___factoryTest_sequence "$@"
+}
+
+___factoryTest() {
+    _messageNormal '___factoryTest: bash --noprofile --norc'
+    if ! bash --noprofile --norc -e -o pipefail ./ubiquitous_bash.sh ___factoryTest_direct
+    then
+        _messageError '___factoryTest: bash --noprofile --norc failed'
+        _messageFAIL
+        return 1
+    fi
+
+    _messageNormal '___factoryTest: bash --noprofile --norc'
+    if ! bash --noprofile --norc ./ubiquitous_bash.sh ___factoryTest_direct
+    then
+        _messageError '___factoryTest: bash --noprofile --norc failed'
+        _messageFAIL
+        return 1
+    fi
+
+
+    _messageNormal '___factoryTest: direct'
+    if ! ___factoryTest_direct
+    then
+        _messageError '___factoryTest: direct failed'
+        _messageFAIL
+        return 1
+    fi
+}
 
 
 
@@ -28320,51 +28424,68 @@ echo 'python3 /install_licenses.py > /licenses/PYTHON_THIRD_PARTY.md'
 
 
 _here_dockerfile-ubiquitous-licenses() {
+    
+    # https://packages.debian.org/bookworm/base-files
 
-    ! mkdir -p "$scriptLocal"/licenses && ( _messageError 'FAIL' >&2 ) > /dev/null && _stop 1
 
-    [[ ! -e "$scriptLocal"/licenses/gpl-2.0.txt ]] && wget -qO "$scriptLocal"/licenses/gpl-2.0.txt 'https://www.gnu.org/licenses/old-licenses/gpl-2.0.txt'
-    [[ ! -e "$scriptLocal"/licenses/gpl-3.0.txt ]] && wget -qO "$scriptLocal"/licenses/gpl-3.0.txt 'https://www.gnu.org/licenses/gpl-3.0.txt'
-    [[ ! -e "$scriptLocal"/licenses/agpl-3.0.txt ]] && wget -qO "$scriptLocal"/licenses/agpl-3.0.txt 'https://www.gnu.org/licenses/agpl-3.0.txt'
+    #! mkdir -p "$scriptLocal"/licenses && ( _messageError 'FAIL' >&2 ) > /dev/null && _stop 1
 
+    ##https://web.archive.org/web/20250531033557/https://www.gnu.org/licenses/old-licenses/gpl-2.0.txt
+    ##https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/plain/LICENSES/preferred/GPL-2.0
+    ##/usr/share/common-licenses/GPL-2
+    #[[ ! -e "$scriptLocal"/licenses/gpl-2.0.txt ]] && wget --timeout 9 --tries 9 -qO "$scriptLocal"/licenses/gpl-2.0.txt 'https://www.gnu.org/licenses/old-licenses/gpl-2.0.txt'
+    #[[ ! -e "$scriptLocal"/licenses/gpl-3.0.txt ]] && wget --timeout 3 --tries 3 -qO "$scriptLocal"/licenses/gpl-3.0.txt 'https://www.gnu.org/licenses/gpl-3.0.txt'
+    #[[ ! -e "$scriptLocal"/licenses/agpl-3.0.txt ]] && wget --timeout 3 --tries 3 -qO "$scriptLocal"/licenses/agpl-3.0.txt 'https://www.gnu.org/licenses/agpl-3.0.txt'
+
+
+
+    ##echo
+    ##echo 'RUN mkdir -p /licenses'
+    ##echo
+
+    ##echo 'COPY <<EOFSPECIAL /licenses/gpl-2.0.txt'
+##cat "$scriptLocal"/licenses/gpl-2.0.txt
+##echo 'EOFSPECIAL'
+
+    ##echo 'COPY <<EOFSPECIAL /licenses/gpl-3.0.txt'
+##cat "$scriptLocal"/licenses/gpl-3.0.txt
+##echo 'EOFSPECIAL'
+
+    ##echo 'COPY <<EOFSPECIAL /licenses/agpl-3.0.txt'
+##cat "$scriptLocal"/licenses/agpl-3.0.txt
+##echo 'EOFSPECIAL'
+
+    ##echo
 
 
     #echo
     #echo 'RUN mkdir -p /licenses'
-    #echo
-
-    #echo 'COPY <<EOFSPECIAL /licenses/gpl-2.0.txt'
+    #echo 'COPY <<EOFSPECIAL /licenses/gpl-2.0__gpl-3.0__agpl-3.0.txt'
 #cat "$scriptLocal"/licenses/gpl-2.0.txt
-#echo 'EOFSPECIAL'
-
-    #echo 'COPY <<EOFSPECIAL /licenses/gpl-3.0.txt'
+#echo
+#echo
+#echo '------------------------------'
+#echo
+#echo
 #cat "$scriptLocal"/licenses/gpl-3.0.txt
+#echo
+##echo
+#echo '------------------------------'
+#echo
+#echo
+#cat "$scriptLocal"/licenses/agpl-3.0.txt
+#echo
 #echo 'EOFSPECIAL'
 
-    #echo 'COPY <<EOFSPECIAL /licenses/agpl-3.0.txt'
-#cat "$scriptLocal"/licenses/agpl-3.0.txt
-#echo 'EOFSPECIAL'
+    cat << 'CZXWXcRMTo8EmM8i4d'
 
-    #echo
+RUN env DEBIAN_FRONTEND=noninteractive apt-get install --install-recommends -y base-files \; 
+mkdir -p /licenses \; 
+ln -sf /usr/share/common-licenses /licenses/common-licenses
 
 
-    echo
-    echo 'RUN mkdir -p /licenses'
-    echo 'COPY <<EOFSPECIAL /licenses/gpl-2.0__gpl-3.0__agpl-3.0.txt'
-cat "$scriptLocal"/licenses/gpl-2.0.txt
-echo
-echo
-echo '------------------------------'
-echo
-echo
-#cat "$scriptLocal"/licenses/gpl-3.0.txt
-echo
-echo
-echo '------------------------------'
-echo
-echo
-#cat "$scriptLocal"/licenses/agpl-3.0.txt
-echo 'EOFSPECIAL'
+
+CZXWXcRMTo8EmM8i4d
 
 }
 
@@ -29364,9 +29485,7 @@ __factoryCreate_sequence_openai-heavy() {
     #if [[ "$DOCKER_BUILDER_NAME" == "" ]]
     #then
         docker build --debug -t openai-heavy .
-        echo test1
         docker tag openai-heavy "$DOCKER_USER"/openai-heavy:latest
-        echo test2
     #else
         #if [[ "$DOCKER_BUILDER_NAME" != "" ]]
         #then
@@ -29378,10 +29497,9 @@ __factoryCreate_sequence_openai-heavy() {
     #docker push user/openai-heavy:latest
 
     #export safeToDeleteGit="true"
-    echo test3
     _safeRMR "$safeTmp"/repo
-    echo test4
-    _stop 0
+
+    _stop
 }
 __factoryCreate_openai-heavy() {
     if [[ "$recursionGuard_factory_ops" == "" ]]
@@ -62368,6 +62486,7 @@ _compile_bash_shortcuts() {
 	
 	( ( [[ "$enUb_dev_heavy" == "true" ]] ) || [[ "$enUb_ai_augment" == "true" ]] ) && includeScriptList+=( "shortcuts/ai/augment"/augment.sh )
 
+	[[ "$enUb_factory_shortcuts" ]] && includeScriptList+=( "shortcuts/factory"/factoryTest.sh )
 	[[ "$enUb_factory_shortcuts" ]] && includeScriptList+=( "shortcuts/factory"/factoryCreate_here.sh )
 	[[ "$enUb_factory_shortcuts" ]] && includeScriptList+=( "shortcuts/factory"/factoryCreate.sh )
 	[[ "$enUb_factory_shortcuts" ]] && includeScriptList+=( "shortcuts/factory"/factory.sh )

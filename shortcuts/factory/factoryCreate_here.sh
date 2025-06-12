@@ -419,51 +419,68 @@ echo 'python3 /install_licenses.py > /licenses/PYTHON_THIRD_PARTY.md'
 
 
 _here_dockerfile-ubiquitous-licenses() {
+    
+    # https://packages.debian.org/bookworm/base-files
 
-    ! mkdir -p "$scriptLocal"/licenses && ( _messageError 'FAIL' >&2 ) > /dev/null && _stop 1
 
-    [[ ! -e "$scriptLocal"/licenses/gpl-2.0.txt ]] && wget -qO "$scriptLocal"/licenses/gpl-2.0.txt 'https://www.gnu.org/licenses/old-licenses/gpl-2.0.txt'
-    [[ ! -e "$scriptLocal"/licenses/gpl-3.0.txt ]] && wget -qO "$scriptLocal"/licenses/gpl-3.0.txt 'https://www.gnu.org/licenses/gpl-3.0.txt'
-    [[ ! -e "$scriptLocal"/licenses/agpl-3.0.txt ]] && wget -qO "$scriptLocal"/licenses/agpl-3.0.txt 'https://www.gnu.org/licenses/agpl-3.0.txt'
+    #! mkdir -p "$scriptLocal"/licenses && ( _messageError 'FAIL' >&2 ) > /dev/null && _stop 1
 
+    ##https://web.archive.org/web/20250531033557/https://www.gnu.org/licenses/old-licenses/gpl-2.0.txt
+    ##https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/plain/LICENSES/preferred/GPL-2.0
+    ##/usr/share/common-licenses/GPL-2
+    #[[ ! -e "$scriptLocal"/licenses/gpl-2.0.txt ]] && wget --timeout 9 --tries 9 -qO "$scriptLocal"/licenses/gpl-2.0.txt 'https://www.gnu.org/licenses/old-licenses/gpl-2.0.txt'
+    #[[ ! -e "$scriptLocal"/licenses/gpl-3.0.txt ]] && wget --timeout 3 --tries 3 -qO "$scriptLocal"/licenses/gpl-3.0.txt 'https://www.gnu.org/licenses/gpl-3.0.txt'
+    #[[ ! -e "$scriptLocal"/licenses/agpl-3.0.txt ]] && wget --timeout 3 --tries 3 -qO "$scriptLocal"/licenses/agpl-3.0.txt 'https://www.gnu.org/licenses/agpl-3.0.txt'
+
+
+
+    ##echo
+    ##echo 'RUN mkdir -p /licenses'
+    ##echo
+
+    ##echo 'COPY <<EOFSPECIAL /licenses/gpl-2.0.txt'
+##cat "$scriptLocal"/licenses/gpl-2.0.txt
+##echo 'EOFSPECIAL'
+
+    ##echo 'COPY <<EOFSPECIAL /licenses/gpl-3.0.txt'
+##cat "$scriptLocal"/licenses/gpl-3.0.txt
+##echo 'EOFSPECIAL'
+
+    ##echo 'COPY <<EOFSPECIAL /licenses/agpl-3.0.txt'
+##cat "$scriptLocal"/licenses/agpl-3.0.txt
+##echo 'EOFSPECIAL'
+
+    ##echo
 
 
     #echo
     #echo 'RUN mkdir -p /licenses'
-    #echo
-
-    #echo 'COPY <<EOFSPECIAL /licenses/gpl-2.0.txt'
+    #echo 'COPY <<EOFSPECIAL /licenses/gpl-2.0__gpl-3.0__agpl-3.0.txt'
 #cat "$scriptLocal"/licenses/gpl-2.0.txt
-#echo 'EOFSPECIAL'
-
-    #echo 'COPY <<EOFSPECIAL /licenses/gpl-3.0.txt'
+#echo
+#echo
+#echo '------------------------------'
+#echo
+#echo
 #cat "$scriptLocal"/licenses/gpl-3.0.txt
+#echo
+##echo
+#echo '------------------------------'
+#echo
+#echo
+#cat "$scriptLocal"/licenses/agpl-3.0.txt
+#echo
 #echo 'EOFSPECIAL'
 
-    #echo 'COPY <<EOFSPECIAL /licenses/agpl-3.0.txt'
-#cat "$scriptLocal"/licenses/agpl-3.0.txt
-#echo 'EOFSPECIAL'
+    cat << 'CZXWXcRMTo8EmM8i4d'
 
-    #echo
+RUN env DEBIAN_FRONTEND=noninteractive apt-get install --install-recommends -y base-files \; 
+mkdir -p /licenses \; 
+ln -sf /usr/share/common-licenses /licenses/common-licenses
 
 
-    echo
-    echo 'RUN mkdir -p /licenses'
-    echo 'COPY <<EOFSPECIAL /licenses/gpl-2.0__gpl-3.0__agpl-3.0.txt'
-cat "$scriptLocal"/licenses/gpl-2.0.txt
-echo
-echo
-echo '------------------------------'
-echo
-echo
-#cat "$scriptLocal"/licenses/gpl-3.0.txt
-echo
-echo
-echo '------------------------------'
-echo
-echo
-#cat "$scriptLocal"/licenses/agpl-3.0.txt
-echo 'EOFSPECIAL'
+
+CZXWXcRMTo8EmM8i4d
 
 }
 
