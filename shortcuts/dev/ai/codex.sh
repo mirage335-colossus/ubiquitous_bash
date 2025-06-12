@@ -171,10 +171,10 @@ _codexBin-usr_local_bin_node() {
     then
         #_messagePlain_warn
         #_messageError
-        _messageError ' CAUTION: DANGER: Native codexAuto, codexForce, etc, may cause IRREPARABLE dist/OS BREAKAGE, filesystem DELETION , or network HARM ! '
-        echo 'Ctrl+c repeatedly to cancel!'
-        echo 'wait: 5seconds: Ctrl+c repeatedly to cancel NOW!!!'
-        sleep 6
+        _messageError ' CAUTION: DANGER: Native codexAuto, codexForce, etc, may cause IRREPARABLE dist/OS BREAKAGE, filesystem DELETION , or network HARM ! ' >&2
+        echo 'Ctrl+c repeatedly to cancel!' >&2
+        echo 'wait: 5seconds: Ctrl+c repeatedly to cancel NOW!!!' >&2
+        sleep 4
     fi
 
     #[[ "$currentDisableSandbox" == "true" ]] && export CODEX_UNSAFE_ALLOW_NO_SANDBOX=1
@@ -234,10 +234,10 @@ _codexBin-usr_bin_node() {
     then
         #_messagePlain_warn
         #_messageError
-        _messageError ' CAUTION: DANGER: Native codexAuto, codexForce, etc, may cause IRREPARABLE dist/OS BREAKAGE, filesystem DELETION , or network HARM ! '
-        echo 'Ctrl+c repeatedly to cancel!'
-        echo 'wait: 5seconds: Ctrl+c repeatedly to cancel NOW!!!'
-        sleep 6
+        _messageError ' CAUTION: DANGER: Native codexAuto, codexForce, etc, may cause IRREPARABLE dist/OS BREAKAGE, filesystem DELETION , or network HARM ! ' >&2
+        echo 'Ctrl+c repeatedly to cancel!' >&2
+        echo 'wait: 5seconds: Ctrl+c repeatedly to cancel NOW!!!' >&2
+        sleep 4
     fi
 
     #[[ "$currentDisableSandbox" == "true" ]] && export CODEX_UNSAFE_ALLOW_NO_SANDBOX=1
