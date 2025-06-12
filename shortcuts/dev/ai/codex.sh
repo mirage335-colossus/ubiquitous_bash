@@ -153,7 +153,9 @@ alias codexForce='CODEX_UNSAFE_ALLOW_NO_SANDBOX=1 codex --dangerously-auto-appro
 
 
 
-
+# ATTENTION: Override with 'ops.sh' , '_bashrc' , or similar, ONLY if uniquely necessary for a very unusual situation.
+#  ATTENTION: NOTICE: Otherwise, CLI Codex issues really should be very urgently reported as issues to both 'codex' and 'ubiquitous_bash' projects .
+# Assumes the usable upstream mainline 'node' and 'codex' installations are installed '/usr/bin' or similar, with conflicting (eg. not recent) or custom (eg. disable sandbox) versions installed under "$HOME" or similar.
 _codexBin-usr_local_bin_node() {
     local currentDisableSandbox
     currentDisableSandbox="false"
@@ -202,12 +204,16 @@ _codexBin-usr_local_bin_node() {
     fi
     if [[ "$currentDisableSandbox" == "true" ]] || [[ "$CODEX_UNSAFE_ALLOW_NO_SANDBOX" == "1" ]]
     then
-        CODEX_UNSAFE_ALLOW_NO_SANDBOX=1 /usr/local/bin/node "$(type -P codex)" "$@"
+        #CODEX_UNSAFE_ALLOW_NO_SANDBOX=1 /usr/local/bin/node "$(type -P codex)" "$@"
+        #CODEX_UNSAFE_ALLOW_NO_SANDBOX=1 /usr/local/bin/node /usr/local/bin/codex "$@"
+        CODEX_UNSAFE_ALLOW_NO_SANDBOX=1 /usr/local/bin/node '/usr/lib/node_modules/@openai/codex/bin/codex.js' "$@"
         currentExitStatus="$?"
         unset CODEX_UNSAFE_ALLOW_NO_SANDBOX
         return "$currentExitStatus"
     else
-        /usr/local/bin/node "$(type -P codex)" "$@"
+        #/usr/local/bin/node "$(type -P codex)" "$@"
+        #/usr/local/bin/node /usr/local/bin/codex "$@"
+        /usr/local/bin/node '/usr/local/lib/node_modules/@openai/codex/bin/codex.js' "$@"
         currentExitStatus="$?"
         unset CODEX_UNSAFE_ALLOW_NO_SANDBOX
         return "$currentExitStatus"
@@ -261,12 +267,16 @@ _codexBin-usr_bin_node() {
     fi
     if [[ "$currentDisableSandbox" == "true" ]] || [[ "$CODEX_UNSAFE_ALLOW_NO_SANDBOX" == "1" ]]
     then
-        CODEX_UNSAFE_ALLOW_NO_SANDBOX=1 /usr/bin/node "$(type -P codex)" "$@"
+        #CODEX_UNSAFE_ALLOW_NO_SANDBOX=1 /usr/bin/node "$(type -P codex)" "$@"
+        #CODEX_UNSAFE_ALLOW_NO_SANDBOX=1 /usr/bin/node /usr/bin/codex "$@"
+        CODEX_UNSAFE_ALLOW_NO_SANDBOX=1 /usr/bin/node '/usr/lib/node_modules/@openai/codex/bin/codex.js' "$@"
         currentExitStatus="$?"
         unset CODEX_UNSAFE_ALLOW_NO_SANDBOX
         return "$currentExitStatus"
     else
-        /usr/bin/node "$(type -P codex)" "$@"
+        #/usr/bin/node "$(type -P codex)" "$@"
+        #/usr/bin/node /usr/bin/codex "$@"
+        /usr/bin/node '/usr/lib/node_modules/@openai/codex/bin/codex.js' "$@"
         currentExitStatus="$?"
         unset CODEX_UNSAFE_ALLOW_NO_SANDBOX
         return "$currentExitStatus"

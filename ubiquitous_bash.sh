@@ -39,7 +39,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='3620520443'
-export ub_setScriptChecksum_contents='538554234'
+export ub_setScriptChecksum_contents='3095580792'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -40106,7 +40106,9 @@ alias codexForce='CODEX_UNSAFE_ALLOW_NO_SANDBOX=1 codex --dangerously-auto-appro
 
 
 
-
+# ATTENTION: Override with 'ops.sh' , '_bashrc' , or similar, ONLY if uniquely necessary for a very unusual situation.
+#  ATTENTION: NOTICE: Otherwise, CLI Codex issues really should be very urgently reported as issues to both 'codex' and 'ubiquitous_bash' projects .
+# Assumes the usable upstream mainline 'node' and 'codex' installations are installed '/usr/bin' or similar, with conflicting (eg. not recent) or custom (eg. disable sandbox) versions installed under "$HOME" or similar.
 _codexBin-usr_local_bin_node() {
     local currentDisableSandbox
     currentDisableSandbox="false"
@@ -40155,12 +40157,16 @@ _codexBin-usr_local_bin_node() {
     fi
     if [[ "$currentDisableSandbox" == "true" ]] || [[ "$CODEX_UNSAFE_ALLOW_NO_SANDBOX" == "1" ]]
     then
-        CODEX_UNSAFE_ALLOW_NO_SANDBOX=1 /usr/local/bin/node "$(type -P codex)" "$@"
+        #CODEX_UNSAFE_ALLOW_NO_SANDBOX=1 /usr/local/bin/node "$(type -P codex)" "$@"
+        #CODEX_UNSAFE_ALLOW_NO_SANDBOX=1 /usr/local/bin/node /usr/local/bin/codex "$@"
+        CODEX_UNSAFE_ALLOW_NO_SANDBOX=1 /usr/local/bin/node '/usr/lib/node_modules/@openai/codex/bin/codex.js' "$@"
         currentExitStatus="$?"
         unset CODEX_UNSAFE_ALLOW_NO_SANDBOX
         return "$currentExitStatus"
     else
-        /usr/local/bin/node "$(type -P codex)" "$@"
+        #/usr/local/bin/node "$(type -P codex)" "$@"
+        #/usr/local/bin/node /usr/local/bin/codex "$@"
+        /usr/local/bin/node '/usr/local/lib/node_modules/@openai/codex/bin/codex.js' "$@"
         currentExitStatus="$?"
         unset CODEX_UNSAFE_ALLOW_NO_SANDBOX
         return "$currentExitStatus"
@@ -40214,12 +40220,16 @@ _codexBin-usr_bin_node() {
     fi
     if [[ "$currentDisableSandbox" == "true" ]] || [[ "$CODEX_UNSAFE_ALLOW_NO_SANDBOX" == "1" ]]
     then
-        CODEX_UNSAFE_ALLOW_NO_SANDBOX=1 /usr/bin/node "$(type -P codex)" "$@"
+        #CODEX_UNSAFE_ALLOW_NO_SANDBOX=1 /usr/bin/node "$(type -P codex)" "$@"
+        #CODEX_UNSAFE_ALLOW_NO_SANDBOX=1 /usr/bin/node /usr/bin/codex "$@"
+        CODEX_UNSAFE_ALLOW_NO_SANDBOX=1 /usr/bin/node '/usr/lib/node_modules/@openai/codex/bin/codex.js' "$@"
         currentExitStatus="$?"
         unset CODEX_UNSAFE_ALLOW_NO_SANDBOX
         return "$currentExitStatus"
     else
-        /usr/bin/node "$(type -P codex)" "$@"
+        #/usr/bin/node "$(type -P codex)" "$@"
+        #/usr/bin/node /usr/bin/codex "$@"
+        /usr/bin/node '/usr/lib/node_modules/@openai/codex/bin/codex.js' "$@"
         currentExitStatus="$?"
         unset CODEX_UNSAFE_ALLOW_NO_SANDBOX
         return "$currentExitStatus"
