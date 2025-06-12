@@ -17,7 +17,7 @@ ___factoryTest_sequence() {
     #then
         _messagePlain_probe 'mkdir -p '"$safeTmp"/repo
         mkdir -p "$safeTmp"/repo
-        ( cd "$safeTmp"/repo ; mkdir -p dummyRepo ; cd dummyRepo ; echo dummy > dummy.txt ; git init ; git add dummy.txt ; git commit -m "dummy" )
+        ( cd "$safeTmp"/repo ; mkdir -p dummyRepo ; cd dummyRepo ; echo dummy > dummy.txt ; mkdir .git ; echo 'dummy' > .git/dummy.txt )
         #( cd "$safeTmp"/repo ; git config --global checkout.workers -1 ; _gitBest clone --depth 1 git@github.com:mirage335-colossus/"$objectName".git ; cd "$safeTmp"/repo/"$objectName" ; _gitBest submodule update --init --depth 1 --recursive )
         export safeToDeleteGit="true"
     #fi
