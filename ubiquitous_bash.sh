@@ -39,7 +39,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='3620520443'
-export ub_setScriptChecksum_contents='228072199'
+export ub_setScriptChecksum_contents='329160721'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -30215,6 +30215,8 @@ cat << 'CZXWXcRMTo8EmM8i4d'
 doNotMatch
 # ###
 
+[[ -e /.dockerenv ]] && git config --global --add safe.directory '*' > /dev/null 2>&1
+
 if [[ -e /workspace/ubiquitous_bash/ubiquitous_bash.sh ]]
 then
 ( cd /workspace/ubiquitous_bash ; /workspace/ubiquitous_bash/ubiquitous_bash.sh _gitBest pull ; git submodule update )
@@ -47073,6 +47075,8 @@ then
 
 	unset _ubcore_add_authorized_SSH
 fi
+
+[[ -e /.dockerenv ]] && git config --global --add safe.directory '*' > /dev/null 2>&1
 
 CZXWXcRMTo8EmM8i4d
 

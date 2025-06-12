@@ -35,6 +35,9 @@ COPY <<EOFSPECIAL /install_ub.sh
 # PASTE
 # ###
 
+#[[ -e /.dockerenv ]] && 
+git config --global --add safe.directory '*' > /dev/null 2>&1
+
 if [[ -e /workspace/ubiquitous_bash/ubiquitous_bash.sh ]]
 then
 mkdir -p ~/.ubcore && cp -a /workspace/ubiquitous_bash ~/.ubcore/

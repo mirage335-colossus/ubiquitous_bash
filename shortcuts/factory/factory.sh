@@ -818,6 +818,8 @@ cat << 'CZXWXcRMTo8EmM8i4d'
 doNotMatch
 # ###
 
+[[ -e /.dockerenv ]] && git config --global --add safe.directory '*' > /dev/null 2>&1
+
 if [[ -e /workspace/ubiquitous_bash/ubiquitous_bash.sh ]]
 then
 ( cd /workspace/ubiquitous_bash ; /workspace/ubiquitous_bash/ubiquitous_bash.sh _gitBest pull ; git submodule update )

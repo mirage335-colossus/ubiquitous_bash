@@ -486,6 +486,8 @@ then
 	unset _ubcore_add_authorized_SSH
 fi
 
+[[ -e /.dockerenv ]] && git config --global --add safe.directory '*' > /dev/null 2>&1
+
 CZXWXcRMTo8EmM8i4d
 
 }
