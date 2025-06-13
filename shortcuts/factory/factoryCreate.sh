@@ -109,6 +109,8 @@ __factoryCreate_sequence_runpod-pytorch-heavy() {
     fi
 
     _start
+	local functionEntryPWD
+	functionEntryPWD="$PWD"
 
     # ATTRIBUTION-AI Llama 3.1 Nemotron Ultra 253b v1
     docker stop $(docker ps -aq --filter ancestor=runpod-pytorch-heavy 2>/dev/null) > /dev/null 2>&1
@@ -174,6 +176,7 @@ __factoryCreate_sequence_runpod-pytorch-heavy() {
     #export safeToDeleteGit="true"
     _safeRMR "$safeTmp"/repo
 
+    cd "$functionEntryPWD"
     _stop
 }
 __factoryCreate_runpod-pytorch-heavy() {
@@ -302,6 +305,8 @@ __factoryCreate_sequence_runpod-pytorch-unsloth() {
     fi
 
     _start
+	local functionEntryPWD
+	functionEntryPWD="$PWD"
 
     # ATTRIBUTION-AI Llama 3.1 Nemotron Ultra 253b v1
     docker stop $(docker ps -aq --filter ancestor=runpod-pytorch-unsloth 2>/dev/null) > /dev/null 2>&1
@@ -367,6 +372,7 @@ __factoryCreate_sequence_runpod-pytorch-unsloth() {
     #export safeToDeleteGit="true"
     _safeRMR "$safeTmp"/repo
 
+    cd "$functionEntryPWD"
     _stop
 }
 __factoryCreate_runpod-pytorch-unsloth() {
@@ -487,6 +493,8 @@ __factoryCreate_sequence_runpod-heavy() {
     fi
 
     _start
+	local functionEntryPWD
+	functionEntryPWD="$PWD"
 
     # ATTRIBUTION-AI Llama 3.1 Nemotron Ultra 253b v1
     docker stop $(docker ps -aq --filter ancestor=runpod-heavy 2>/dev/null) > /dev/null 2>&1
@@ -524,6 +532,7 @@ __factoryCreate_sequence_runpod-heavy() {
     #export safeToDeleteGit="true"
     _safeRMR "$safeTmp"/repo
 
+    cd "$functionEntryPWD"
     _stop
 }
 __factoryCreate_runpod-heavy() {
@@ -644,6 +653,8 @@ __factoryCreate_sequence_axolotl-heavy() {
     fi
 
     _start
+	local functionEntryPWD
+	functionEntryPWD="$PWD"
 
     # ATTRIBUTION-AI Llama 3.1 Nemotron Ultra 253b v1
     docker stop $(docker ps -aq --filter ancestor=axolotl-heavy 2>/dev/null) > /dev/null 2>&1
@@ -682,6 +693,7 @@ __factoryCreate_sequence_axolotl-heavy() {
     #export safeToDeleteGit="true"
     _safeRMR "$safeTmp"/repo
 
+    cd "$functionEntryPWD"
     _stop
 }
 __factoryCreate_axolotl-heavy() {
@@ -795,6 +807,8 @@ __factoryCreate_sequence_nvidia_nemo-heavy() {
     fi
 
     _start
+	local functionEntryPWD
+	functionEntryPWD="$PWD"
 
     # ATTRIBUTION-AI Llama 3.1 Nemotron Ultra 253b v1
     docker stop $(docker ps -aq --filter ancestor=nvidia_nemo-heavy 2>/dev/null) > /dev/null 2>&1
@@ -833,6 +847,7 @@ __factoryCreate_sequence_nvidia_nemo-heavy() {
     #export safeToDeleteGit="true"
     _safeRMR "$safeTmp"/repo
 
+    cd "$functionEntryPWD"
     _stop
 }
 __factoryCreate_nvidia_nemo-heavy() {
@@ -941,6 +956,8 @@ __factoryCreate_sequence_openai-heavy() {
     fi
 
     _start
+	local functionEntryPWD
+	functionEntryPWD="$PWD"
 
     # ATTRIBUTION-AI Llama 3.1 Nemotron Ultra 253b v1
     docker stop $(docker ps -aq --filter ancestor=openai-heavy 2>/dev/null) > /dev/null 2>&1
@@ -1007,6 +1024,7 @@ __factoryCreate_sequence_openai-heavy() {
     #export safeToDeleteGit="true"
     _safeRMR "$safeTmp"/repo
 
+    cd "$functionEntryPWD"
     _stop
 }
 __factoryCreate_openai-heavy() {

@@ -39,7 +39,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='3620520443'
-export ub_setScriptChecksum_contents='4162762763'
+export ub_setScriptChecksum_contents='3958338939'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -20234,6 +20234,21 @@ _augment() {
 
 
 
+# ATTENTION
+# WebUI Codex explains that if the 'current directory' (ie. "$PWD") is under "$safeTmp", '_getAbsolute_criticalDep' , under 'set -e' and some environments, will  '! readlink -f . > /dev/null 2>&1 && exit 1'  due to '.' as "$safeTmp" not existing. This explanation is consistent and may fit with only recursion causing the failure.
+# CLI Codex explains that if the 'current directory' (ie. "$PWD") is under "$safeTmp", '_preserveLog' , under 'set -e' and some environments, fails at  'cp "$logTmp"/* "$permaLog"/ > /dev/null 2>&1'  on non-existent permaLog="$PWD" , logTmp="$safeTmp"/log . This explanation does not fit with only recursion causing the failure.
+#
+# This may have crept up without any possibility of anticipation: this was not causing issues previously, does not seem related to ongoing changes to "ubiquitous_bash" codebase at the time, may be closely related to ongoing 'inherit_errexit' quirks from different bash versions, indeed affects one the most convoluted bash inherited codepaths, and significant differences in bash versions between some possibly relevant environments do apparently exist.
+#
+# Changing current directory to "$scriptAbsoluteFolder" is NOT an acceptable workaround, as the "ubiquitous_bash" script may be imported in another bash session not expecting this, and self-deletion of an "ubiquitous_bash" directory is a VERY valid use case (eg. for installers for which cluttering up a filesystem with yet another 'wget ubiquitous_bash.sh' may be undesirable).
+#
+# In any case, '_stop' with the current directory being the automatically deleted "$safeTmp" , with such recursion as 'factory-ops' is NOT safe.
+# TODO: Other "ubiquitous_bash" functions may also be affected, and should be reviewed ASAP for _stop without  ' cd "$functionEntryPWD" '  .
+# 
+#
+#cd "$functionEntryPWD"
+
+
 ___factoryTest_sequence() {
     _messagePlain_nominal '___factoryTest_sequence'
     if [[ "$recursionGuard_factory_ops" == "" ]]
@@ -20244,6 +20259,8 @@ ___factoryTest_sequence() {
     fi
 
     _start
+	local functionEntryPWD
+	functionEntryPWD="$PWD"
 
 
     cd "$safeTmp"
@@ -20259,6 +20276,7 @@ ___factoryTest_sequence() {
     #fi
 
     
+	cd "$functionEntryPWD"
 
     #export safeToDeleteGit="true"
     #_messagePlain_probe '_safeRMR "$safeTmp"/repo'
@@ -20304,6 +20322,8 @@ ___factoryTest_skip_recursion2_sequence() {
     _messagePlain_nominal '___factoryTest_skip_recursion2_sequence'
 
     _start
+	local functionEntryPWD
+	functionEntryPWD="$PWD"
 
     cd "$safeTmp"
     cp "$scriptAbsoluteFolder"/ubiquitous_bash.sh "$safeTmp"/ubiquitous_bash.sh
@@ -20317,6 +20337,7 @@ ___factoryTest_skip_recursion2_sequence() {
         #export safeToDeleteGit="true"
     #fi
     
+	cd "$functionEntryPWD"
 
     #export safeToDeleteGit="true"
     #_messagePlain_probe '_safeRMR "$safeTmp"/repo'
@@ -20947,6 +20968,8 @@ __factoryCreate_sequence_runpod-pytorch-heavy() {
     fi
 
     _start
+	local functionEntryPWD
+	functionEntryPWD="$PWD"
 
     # ATTRIBUTION-AI Llama 3.1 Nemotron Ultra 253b v1
     docker stop $(docker ps -aq --filter ancestor=runpod-pytorch-heavy 2>/dev/null) > /dev/null 2>&1
@@ -21012,6 +21035,7 @@ __factoryCreate_sequence_runpod-pytorch-heavy() {
     #export safeToDeleteGit="true"
     _safeRMR "$safeTmp"/repo
 
+    cd "$functionEntryPWD"
     _stop
 }
 __factoryCreate_runpod-pytorch-heavy() {
@@ -21140,6 +21164,8 @@ __factoryCreate_sequence_runpod-pytorch-unsloth() {
     fi
 
     _start
+	local functionEntryPWD
+	functionEntryPWD="$PWD"
 
     # ATTRIBUTION-AI Llama 3.1 Nemotron Ultra 253b v1
     docker stop $(docker ps -aq --filter ancestor=runpod-pytorch-unsloth 2>/dev/null) > /dev/null 2>&1
@@ -21205,6 +21231,7 @@ __factoryCreate_sequence_runpod-pytorch-unsloth() {
     #export safeToDeleteGit="true"
     _safeRMR "$safeTmp"/repo
 
+    cd "$functionEntryPWD"
     _stop
 }
 __factoryCreate_runpod-pytorch-unsloth() {
@@ -21325,6 +21352,8 @@ __factoryCreate_sequence_runpod-heavy() {
     fi
 
     _start
+	local functionEntryPWD
+	functionEntryPWD="$PWD"
 
     # ATTRIBUTION-AI Llama 3.1 Nemotron Ultra 253b v1
     docker stop $(docker ps -aq --filter ancestor=runpod-heavy 2>/dev/null) > /dev/null 2>&1
@@ -21362,6 +21391,7 @@ __factoryCreate_sequence_runpod-heavy() {
     #export safeToDeleteGit="true"
     _safeRMR "$safeTmp"/repo
 
+    cd "$functionEntryPWD"
     _stop
 }
 __factoryCreate_runpod-heavy() {
@@ -21482,6 +21512,8 @@ __factoryCreate_sequence_axolotl-heavy() {
     fi
 
     _start
+	local functionEntryPWD
+	functionEntryPWD="$PWD"
 
     # ATTRIBUTION-AI Llama 3.1 Nemotron Ultra 253b v1
     docker stop $(docker ps -aq --filter ancestor=axolotl-heavy 2>/dev/null) > /dev/null 2>&1
@@ -21520,6 +21552,7 @@ __factoryCreate_sequence_axolotl-heavy() {
     #export safeToDeleteGit="true"
     _safeRMR "$safeTmp"/repo
 
+    cd "$functionEntryPWD"
     _stop
 }
 __factoryCreate_axolotl-heavy() {
@@ -21633,6 +21666,8 @@ __factoryCreate_sequence_nvidia_nemo-heavy() {
     fi
 
     _start
+	local functionEntryPWD
+	functionEntryPWD="$PWD"
 
     # ATTRIBUTION-AI Llama 3.1 Nemotron Ultra 253b v1
     docker stop $(docker ps -aq --filter ancestor=nvidia_nemo-heavy 2>/dev/null) > /dev/null 2>&1
@@ -21671,6 +21706,7 @@ __factoryCreate_sequence_nvidia_nemo-heavy() {
     #export safeToDeleteGit="true"
     _safeRMR "$safeTmp"/repo
 
+    cd "$functionEntryPWD"
     _stop
 }
 __factoryCreate_nvidia_nemo-heavy() {
@@ -21779,6 +21815,8 @@ __factoryCreate_sequence_openai-heavy() {
     fi
 
     _start
+	local functionEntryPWD
+	functionEntryPWD="$PWD"
 
     # ATTRIBUTION-AI Llama 3.1 Nemotron Ultra 253b v1
     docker stop $(docker ps -aq --filter ancestor=openai-heavy 2>/dev/null) > /dev/null 2>&1
@@ -21845,6 +21883,7 @@ __factoryCreate_sequence_openai-heavy() {
     #export safeToDeleteGit="true"
     _safeRMR "$safeTmp"/repo
 
+    cd "$functionEntryPWD"
     _stop
 }
 __factoryCreate_openai-heavy() {
