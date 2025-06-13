@@ -82,6 +82,18 @@ jobs:
         run: |
           ! ./ubiquitous_bash.sh _false
           ( ! ./_false ) | sudo -n tee ./_local/_false.log && exit ${PIPESTATUS[0]}
+      - name: ___factoryTest_skip_recursion2
+        shell: bash
+        timeout-minutes: 120
+        continue-on-error: true
+        run: |
+          ./ubiquitous_bash.sh ___factoryTest_skip_recursion2
+      - name: ___factoryTest_skip_recursion1
+        shell: bash
+        timeout-minutes: 120
+        continue-on-error: true
+        run: |
+          ./ubiquitous_bash.sh ___factoryTest_skip_recursion1
       - name: ___factoryTest
         shell: bash
         timeout-minutes: 120
@@ -111,6 +123,18 @@ jobs:
         run: |
           ! ./ubiquitous_bash.sh _false
           ( ! ./_false ) | sudo -n tee ./_local/_false.log && exit ${PIPESTATUS[0]}
+      - name: ___factoryTest_skip_recursion2
+        shell: bash
+        timeout-minutes: 120
+        continue-on-error: true
+        run: |
+          ./ubiquitous_bash.sh ___factoryTest_skip_recursion2
+      - name: ___factoryTest_skip_recursion1
+        shell: bash
+        timeout-minutes: 120
+        continue-on-error: true
+        run: |
+          ./ubiquitous_bash.sh ___factoryTest_skip_recursion1
       - name: ___factoryTest
         shell: bash
         timeout-minutes: 120
