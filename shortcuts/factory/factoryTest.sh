@@ -68,7 +68,7 @@ ___factoryTest_skip_recursion1() {
 
 
 
-___factoryTe___factoryTest_skip_recursion2_sequencest_sequence() {
+___factoryTest_skip_recursion2_sequence() {
     _messagePlain_nominal '___factoryTest_skip_recursion2_sequence'
 
     _start
