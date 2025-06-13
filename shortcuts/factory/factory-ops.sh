@@ -13,6 +13,7 @@ _factory_ops() {
             fi
         #fi
     #fi
+    true
 }
 if [[ "$ub_ops_disable" != 'true' ]]
 then
@@ -21,6 +22,7 @@ then
         _factory_ops
     fi
 fi
+true
 
 
 # Before calling function, get latest function version .
@@ -41,6 +43,7 @@ _factory_ops_recursion() {
         unset recursionGuard_factory_ops
         return "$currentExitStatus_recursion"
     fi
+    true
 }
 
 

@@ -42,6 +42,17 @@ ___factoryTest_direct() {
     "$scriptAbsoluteLocation" ___factoryTest_sequence "$@"
 }
 
+
+
+
+
+
+
+
+
+
+
+
 ___factoryTest() {
     _messageNormal '___factoryTest: bash --noprofile --norc'
     if ! bash --noprofile --norc -e -o pipefail ./ubiquitous_bash.sh ___factoryTest_direct
