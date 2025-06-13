@@ -41,6 +41,25 @@ jobs:
     #runs-on: ubuntu-20.04
     #runs-on: ubuntu-18.04
     steps:
+
+      - name: _true
+        shell: bash
+        timeout-minutes: 120
+        run: |
+          ./ubiquitous_bash.sh _true
+          ./_true | sudo -n tee ./_local/_true.log && exit ${PIPESTATUS[0]}
+      - name: _false
+        shell: bash
+        timeout-minutes: 120
+        run: |
+          ! ./ubiquitous_bash.sh _false
+          ( ! ./_false ) | sudo -n tee ./_local/_false.log && exit ${PIPESTATUS[0]}
+      - name: ___factoryTest
+        shell: bash
+        timeout-minutes: 120
+        run: |
+          ./ubiquitous_bash.sh ___factoryTest_direct
+
       - name: _getCore_ub
         shell: bash
         timeout-minutes: 90
@@ -50,6 +69,25 @@ jobs:
           git clone --depth 1 --recursive https://github.com/mirage335-colossus/ubiquitous_bash.git
           cd ubiquitous_bash
           ./_setupUbiquitous.bat
+
+      - name: _true
+        shell: bash
+        timeout-minutes: 120
+        run: |
+          ./ubiquitous_bash.sh _true
+          ./_true | sudo -n tee ./_local/_true.log && exit ${PIPESTATUS[0]}
+      - name: _false
+        shell: bash
+        timeout-minutes: 120
+        run: |
+          ! ./ubiquitous_bash.sh _false
+          ( ! ./_false ) | sudo -n tee ./_local/_false.log && exit ${PIPESTATUS[0]}
+      - name: ___factoryTest
+        shell: bash
+        timeout-minutes: 120
+        run: |
+          ./ubiquitous_bash.sh ___factoryTest_direct
+
       - name: _getMinimal_cloud
         shell: bash
         run: |
