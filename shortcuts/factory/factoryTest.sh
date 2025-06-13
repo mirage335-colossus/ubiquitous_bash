@@ -9,8 +9,6 @@ ___factoryTest_sequence() {
     fi
 
     _start
-	local functionEntryPWD
-	functionEntryPWD="$PWD"
 
 
     cd "$safeTmp"
@@ -26,7 +24,6 @@ ___factoryTest_sequence() {
     #fi
 
     
-	cd "$functionEntryPWD"
 
     #export safeToDeleteGit="true"
     #_messagePlain_probe '_safeRMR "$safeTmp"/repo'
@@ -72,8 +69,6 @@ ___factoryTest_skip_recursion2_sequence() {
     _messagePlain_nominal '___factoryTest_skip_recursion2_sequence'
 
     _start
-	local functionEntryPWD
-	functionEntryPWD="$PWD"
 
     cd "$safeTmp"
     cp "$scriptAbsoluteFolder"/ubiquitous_bash.sh "$safeTmp"/ubiquitous_bash.sh
@@ -87,7 +82,6 @@ ___factoryTest_skip_recursion2_sequence() {
         #export safeToDeleteGit="true"
     #fi
     
-	cd "$functionEntryPWD"
 
     #export safeToDeleteGit="true"
     #_messagePlain_probe '_safeRMR "$safeTmp"/repo'
