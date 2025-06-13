@@ -474,8 +474,8 @@ _here_dockerfile-ubiquitous-licenses() {
 
     cat << 'CZXWXcRMTo8EmM8i4d'
 
-RUN env DEBIAN_FRONTEND=noninteractive apt-get install --install-recommends -y base-files \; 
-mkdir -p /licenses \; 
+RUN env DEBIAN_FRONTEND=noninteractive apt-get install --install-recommends -y base-files ;\ 
+mkdir -p /licenses ;\ 
 ln -sf /usr/share/common-licenses /licenses/common-licenses
 
 
