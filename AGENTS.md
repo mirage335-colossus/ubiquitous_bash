@@ -67,6 +67,10 @@ An extended or indefinite run is very acceptable as long as information gatherin
 
 Both STDOUT and STDERR may provide useful information, especially if verbosity is increased to assist testing, etc, such as with  'export ubDEBUG=true'  .
 
+## Direct Editing
+
+Although Git Pull Requests should instead edit the underlying files, directly editing the otherwise compiled 'ubiquitous_bash.sh' script is an acceptable technique for testing, diagnosing, experimenting, etc. Disable checksum with  'export ub_setScriptChecksum_disable=true'  to run the script after editing without recompiling.
+
 ## Terminology
 
 - procedure
