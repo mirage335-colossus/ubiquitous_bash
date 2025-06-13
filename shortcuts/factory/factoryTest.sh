@@ -9,6 +9,9 @@ ___factoryTest_sequence() {
     fi
 
     _start
+	local functionEntryPWD
+	functionEntryPWD="$PWD"
+
 
     cd "$safeTmp"
     cp "$scriptAbsoluteFolder"/ubiquitous_bash.sh "$safeTmp"/ubiquitous_bash.sh
@@ -21,6 +24,9 @@ ___factoryTest_sequence() {
         ##( cd "$safeTmp"/repo ; git config --global checkout.workers -1 ; _gitBest clone --depth 1 git@github.com:mirage335-colossus/"$objectName".git ; cd "$safeTmp"/repo/"$objectName" ; _gitBest submodule update --init --depth 1 --recursive )
         #export safeToDeleteGit="true"
     #fi
+
+    
+	cd "$functionEntryPWD"
 
     #export safeToDeleteGit="true"
     #_messagePlain_probe '_safeRMR "$safeTmp"/repo'
