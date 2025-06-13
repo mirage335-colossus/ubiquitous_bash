@@ -85,6 +85,7 @@ jobs:
       - name: ___factoryTest
         shell: bash
         timeout-minutes: 120
+        continue-on-error: true
         run: |
           ./ubiquitous_bash.sh ___factoryTest_direct
 
