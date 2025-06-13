@@ -1,7 +1,7 @@
 
 # WARNING: May be untested .
 
-name: test
+name: test-factory
 
 
 # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#permissions
