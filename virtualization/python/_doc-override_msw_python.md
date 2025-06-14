@@ -23,6 +23,10 @@ Please generate very abbreviated, abridged, minimal semi-pseudocode, enumerating
 
 Please regard the semi-pseudocode at  /workspace/ubiquitous_bash/virtualization/python/_doc-override_msw_python.md  , or similar locations for this file, as a tentative archetype how to abbreviate, abridge, minimize, etc, the code segments at  /workspace/ubiquitous_bash/virtualization/python/override_msw_python.sh  ,  /workspace/ubiquitous_bash/virtualization/python/override_nix_python.sh  , or similar locations for these files .
 
+```
+./python/override_msw_python.sh
+```
+
 Please separately briefly chronicle significant, substantial, and serious, deficiencies, for each enumerated category, in this summary semi-pseudocode.
 
 Most importantly, exclaim any seriously misleading functional incongruities between the summary semi-pseudocode and the actual code segment! Especially ensure plausible exit status, outputs, etc, from plausible stepwise processing of plausible inputs to each semi-pseudocode function matches plausible exit status, outputs, etc, for each semi-pseudocode function.

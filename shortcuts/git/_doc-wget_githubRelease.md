@@ -98,6 +98,10 @@ Please generate very abbreviated, abridged, minimal semi-pseudocode, enumerating
 - Inter-Process-Communication Files, Pipes, etc (existence/absence of produced asset files, PID files, lock files, *.busy , *.PASS , *.FAIL , etc)
 - Inter-Process-Communication Conditions and Loops
 
+```
+./shortcuts/git/wget_githubRelease_internal.sh
+```
+
 Please regard the semi-pseudocode at  /workspace/ubiquitous_bash/shortcuts/git/_doc-wget_githubRelease.md  , or similar locations for this file, as a tentative archetype how to abbreviate, abridge, minimize, etc, the code segments at  /workspace/ubiquitous_bash/shortcuts/git/wget_githubRelease_internal.sh  ,  /workspace/ubiquitous_bash/shortcuts/git/wget_githubRelease_tag.sh  , or similar locations for these files .
 
 Please separately briefly chronicle significant, substantial, and serious, deficiencies, for each enumerated category, in this summary semi-pseudocode.
