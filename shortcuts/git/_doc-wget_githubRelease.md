@@ -71,15 +71,17 @@ join ... is what does the parallel downloading of multi-part files...
 
 # Inter-Process-Communication
 
-Similar to call graph, but specific to the Inter-Process-Communication .
+## ./shortcuts/git/wget_githubRelease_internal.sh
 
-Looking to enumerate flag variables, files used for IPC, etc.
+
 
 
 
 
 
 # Pseudocode Summary - (MultiThreaded)
+
+## ./shortcuts/git/wget_githubRelease_internal.sh
 
 ```bash
 ( set -o pipefail ; aria2c --disable-ipv6=false "${current_axel_args[@]}" -d "$currentOutDir" -o "$currentOutFile_relative" "$currentURL" 2> >(tail -n 40 >&2) )
