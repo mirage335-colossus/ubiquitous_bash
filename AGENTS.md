@@ -102,6 +102,17 @@ _function_sequence() {
 ```
 
 
+# Documentation Practices, Style, Archetypes
+
+## Pseudocode Summary
+
+Please regard the semi-pseudocode at  /workspace/ubiquitous_bash/virtualization/python/_doc-override_msw_python.md  , or similar locations for this file, as a tentative archetype how to abbreviate, abridge, minimize, etc, code segments such as at  /workspace/ubiquitous_bash/virtualization/python/override_msw_python.sh  ,  /workspace/ubiquitous_bash/virtualization/python/override_nix_python.sh  , or similar locations for these files .
+
+## Pseudocode Summary - MultiThreaded
+
+Please regard the semi-pseudocode at  /workspace/ubiquitous_bash/shortcuts/git/_doc-wget_githubRelease.md  , or similar locations for this file, as a tentative archetype how to abbreviate, abridge, minimize, etc, code segments such as at  /workspace/ubiquitous_bash/shortcuts/git/wget_githubRelease_internal.sh  ,  /workspace/ubiquitous_bash/shortcuts/git/wget_githubRelease_tag.sh  , or similar locations for these files .
+
+
 # Notable Forked "ubiquitous_bash" Derivatives
 
 Notable forked derivative projects of ubiquitous_bash include 'ubDistBuild' , 'pumpCompanion' , 'coreoracle' , 'arduinoUbiquitous' .
