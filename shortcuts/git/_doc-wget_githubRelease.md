@@ -379,7 +379,7 @@ _set_msw_python_procedure() {
     return 0
 }
 
-set_msw_python() {
+_set_msw_python() {
     _set_msw_python_3_10 "$@"
 }
 _set_msw_python_3_10() {
@@ -426,7 +426,7 @@ Most importantly, exclaim any seriously misleading functional incongruities betw
 ( set -o pipefail ; aria2c --disable-ipv6=false "${current_axel_args[@]}" -d "$currentOutDir" -o "$currentOutFile_relative" "$currentURL" 2> >(tail -n 40 >&2) )
 currentExitStatus_ipv6="$?"
 ( set -o pipefail ; aria2c --disable-ipv6=true "${current_axel_args[@]}" -d "$currentOutDir" -o "$currentOutFile_relative" "$currentURL" 2> >(tail -n 40 >&2) )
- currentExitStatus_ipv4="$?"
+currentExitStatus_ipv4="$?"
 
 outputLOOP:
 while WAIT && ! [[ -e "$scriptAbsoluteFolder"/$(_axelTmp).busy ]] || ( ! [[ -e "$scriptAbsoluteFolder"/$(_axelTmp).PASS ]] && ! [[ -e "$scriptAbsoluteFolder"/$(_axelTmp).FAIL ]] )

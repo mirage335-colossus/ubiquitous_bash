@@ -651,7 +651,7 @@ _set_nix_python_procedure() {
     return 0
 }
 
-set_nix_python() {
+_set_nix_python() {
     _set_nix_python_3 "$@"
 }
 _set_nix_python_3() {

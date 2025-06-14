@@ -745,7 +745,7 @@ _set_msw_python_procedure() {
     return 0
 }
 
-set_msw_python() {
+_set_msw_python() {
     _set_msw_python_3_10 "$@"
 }
 _set_msw_python_3_10() {
