@@ -81,35 +81,7 @@ Looking to enumerate flag variables, files used for IPC, etc.
 
 # Pseudocode Summary - (MultiThreaded)
 
-Summary semi-pseudocode for code segments is intended not for developing rewrites or new features but only to hastily remind experienced maintenance programmers of the most complex, confusing, logic of the code.
-
-Usually regarding, for multi-threaded code:
-- Action functions where processing begins.
-- Produced assets.
-- Inter-Process-Communication mechanisms which may necessarily be non-deterministic.
-- Loop conditions.
-- Concurrency collisions.
-- Operating-System latency margins.
-- Inappropriate esoteric resource locking (eg. backgrounded process grabbing tty).
-
-Please generate very abbreviated, abridged, minimal semi-pseudocode, enumerating only:
-- Standalone Action Functions (invoked by script or end-user to independently achieve an entire purpose such as produce an asset)
-- Produced Assets (download file, fine tuned model, etc)
-- Inter-Process-Communication Files, Pipes, etc (existence/absence of produced asset files, PID files, lock files, *.busy , *.PASS , *.FAIL , etc)
-- Inter-Process-Communication Conditions and Loops
-
-```
-./shortcuts/git/wget_githubRelease_internal.sh
-```
-
-Please regard the semi-pseudocode at  /workspace/ubiquitous_bash/shortcuts/git/_doc-wget_githubRelease.md  , or similar locations for this file, as a tentative archetype how to abbreviate, abridge, minimize, etc, the code segments at  /workspace/ubiquitous_bash/shortcuts/git/wget_githubRelease_internal.sh  ,  /workspace/ubiquitous_bash/shortcuts/git/wget_githubRelease_tag.sh  , or similar locations for these files .
-
-Please separately briefly chronicle significant, substantial, and serious, deficiencies (eg. gaps in mentioning crucial multi-threading functions called by the semi-pseudocode mentioned Standalone Action Functions, missing produced assets writing within semi-pseudocode mentioned functions, missing Inter-Process-Communication file handling within semi-pseudocode mentioned functions, gaps in mentioning crucial multi-threading conditions and loops within semi-pseudocode), for each enumerated category, in this summary semi-pseudocode.
-
-Most importantly, exclaim any seriously misleading functional incongruities between the summary semi-pseudocode and the actual code segment! Especially ensure plausible exit status, outputs, etc, from plausible stepwise processing of plausible inputs to each semi-pseudocode function matches plausible exit status, outputs, etc, for each semi-pseudocode function.
-
 ```bash
-
 ( set -o pipefail ; aria2c --disable-ipv6=false "${current_axel_args[@]}" -d "$currentOutDir" -o "$currentOutFile_relative" "$currentURL" 2> >(tail -n 40 >&2) )
 currentExitStatus_ipv6="$?"
 ( set -o pipefail ; aria2c --disable-ipv6=true "${current_axel_args[@]}" -d "$currentOutDir" -o "$currentOutFile_relative" "$currentURL" 2> >(tail -n 40 >&2) )
