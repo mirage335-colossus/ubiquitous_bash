@@ -69,9 +69,25 @@ join ... is what does the parallel downloading of multi-part files...
 
 
 
-# Inter-Process-Communication
+# MultiThreading
 
 ## ./shortcuts/git/wget_githubRelease_internal.sh
+
+Please tabulate, preferably in well organized tables, readable at a glance instead of prose, from the intended flow of action functions where processing of this code begins, Inter-Process-Communication:
+
+- Inter-Process-Communication mechanisms.
+
+- Inter-Process-Communication Files, Pipes, etc (existence/absence of produced asset files, PID files, lock files, *.busy , *.PASS , *.FAIL , etc)
+- Inter-Process-Communication Conditions and Loops
+
+- Inter-Process-Communication Operating-System latency margins.
+- Inter-Process-Communication inappropriate esoteric resource locking (eg. backgrounded process grabbing tty), if any are plausible.
+
+- Inter-Process-Communication concurrency collisions, if any are plausible.
+
+```
+./shortcuts/git/wget_githubRelease_internal.sh
+```
 
 
 
