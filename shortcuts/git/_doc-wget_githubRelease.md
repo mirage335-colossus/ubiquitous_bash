@@ -106,29 +106,32 @@ currentExitStatus_ipv6="$?"
 currentExitStatus_ipv4="$?"
 
 outputLOOP:
-while WAIT && ! [[ -e "$scriptAbsoluteFolder"/$(_axelTmp).busy ]] || ( ! [[ -e "$scriptAbsoluteFolder"/$(_axelTmp).PASS ]] && ! [[ -e "$scriptAbsoluteFolder"/$(_axelTmp).FAIL ]] )
-dd if="$scriptAbsoluteFolder"/$(_axelTmp) bs=1M
-[[ -e "$scriptAbsoluteFolder"/$(_axelTmp).PASS ]] && currentSkip="download"
-[[ -e "$scriptAbsoluteFolder"/$(_axelTmp).FAIL ]] && [[ "$currentSkip" != "skip" ]] && ( _messageError 'FAIL' >&2 ) > /dev/null && return 1
-_destroy_lock "$scriptAbsoluteFolder"/$(_axelTmp)
-_destroy_lock "$scriptAbsoluteFolder"/$(_axelTmp).busy
+	for currentPart in $(seq -f "%02g" 0 "$currentSkipPart" | sort -r)
+		while WAIT && ! [[ -e "$scriptAbsoluteFolder"/$(_axelTmp).busy ]] || ( ! [[ -e "$scriptAbsoluteFolder"/$(_axelTmp).PASS ]] && ! [[ -e "$scriptAbsoluteFolder"/$(_axelTmp).FAIL ]] )
+		dd if="$scriptAbsoluteFolder"/$(_axelTmp) bs=1M
+		[[ -e "$scriptAbsoluteFolder"/$(_axelTmp).PASS ]] && currentSkip="download"
+		[[ -e "$scriptAbsoluteFolder"/$(_axelTmp).FAIL ]] && [[ "$currentSkip" != "skip" ]] && ( _messageError 'FAIL' >&2 ) > /dev/null && return 1
+		_destroy_lock "$scriptAbsoluteFolder"/$(_axelTmp)
+		_destroy_lock "$scriptAbsoluteFolder"/$(_axelTmp).busy
 
 downloadLOOP:
-while WAIT && ( ls -1 "$scriptAbsoluteFolder"/$(_axelTmp) > /dev/null 2>&1 ) || ( ls -1 "$scriptAbsoluteFolder"/$(_axelTmp).busy > /dev/null 2>&1 )
-_destroy_lock "$scriptAbsoluteFolder"/$(_axelTmp).PASS
-_destroy_lock "$scriptAbsoluteFolder"/$(_axelTmp).FAIL
+	while WAIT && ! ( ls -1 "$scriptAbsoluteFolder"/$(_axelTmp)* > /dev/null 2>&1 )
+		_wget_githubRelease_procedure-join
+	while WAIT && ( ls -1 "$scriptAbsoluteFolder"/$(_axelTmp) > /dev/null 2>&1 ) || ( ls -1 "$scriptAbsoluteFolder"/$(_axelTmp).busy > /dev/null 2>&1 )
+		_destroy_lock "$scriptAbsoluteFolder"/$(_axelTmp).PASS
+		_destroy_lock "$scriptAbsoluteFolder"/$(_axelTmp).FAIL
 
 _wget_githubRelease_procedure-join:
-echo -n > "$currentAxelTmpFile".busy
-_wget_githubRelease_procedure "$currentAbsoluteRepo" "$currentReleaseLabel" "$currentFile" -O "$currentAxelTmpFile" "$@"
-[[ "$currentExitStatus" == "0" ]] && echo "$currentExitStatus" > "$currentAxelTmpFile".PASS
-if [[ "$currentExitStatus" != "0" ]]
-then
-	echo -n > "$currentAxelTmpFile"
-	echo "$currentExitStatus" > "$currentAxelTmpFile".FAIL
-fi
-while WAIT && [[ -e "$currentAxelTmpFile" ]] || [[ -e "$currentAxelTmpFile".busy ]] || [[ -e "$currentAxelTmpFile".PASS ]] || [[ -e "$currentAxelTmpFile".FAIL ]]
-[[ "$currentAxelTmpFile" != "" ]] && _destroy_lock "$currentAxelTmpFile".*
+	echo -n > "$currentAxelTmpFile".busy
+	_wget_githubRelease_procedure "$currentAbsoluteRepo" "$currentReleaseLabel" "$currentFile" -O "$currentAxelTmpFile" "$@"
+	[[ "$currentExitStatus" == "0" ]] && echo "$currentExitStatus" > "$currentAxelTmpFile".PASS
+	if [[ "$currentExitStatus" != "0" ]]
+	then
+		echo -n > "$currentAxelTmpFile"
+		echo "$currentExitStatus" > "$currentAxelTmpFile".FAIL
+	fi
+	while WAIT && [[ -e "$currentAxelTmpFile" ]] || [[ -e "$currentAxelTmpFile".busy ]] || [[ -e "$currentAxelTmpFile".PASS ]] || [[ -e "$currentAxelTmpFile".FAIL ]]
+		[[ "$currentAxelTmpFile" != "" ]] && _destroy_lock "$currentAxelTmpFile".*
 
 ```
 
