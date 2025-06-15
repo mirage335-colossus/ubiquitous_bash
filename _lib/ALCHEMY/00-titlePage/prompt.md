@@ -1,0 +1,1 @@
+Duct tape, box, glue, very large seashell dominating the picture. Line art. Minimalistic. Less detailing. Seams on the box. No label, no text. No color, no greyscale.
