@@ -5,14 +5,15 @@ pdf-engine: xelatex
 include-in-header:
   - ALCHEMY-Using_ubiquitous_bash-header.tex
 
+include-before-body:
+  - ALCHEMY-Using_ubiquitous_bash-figurefix.tex
+
 metadata:
   title: "Using ubiquitous_bash"
   subtitle: "ALCHEMY Glue Book"
   author: "mirage335, et. al."
   date: "2025-06-15"
   lang: "en"
-  toc: true
-  toc-depth: 1
   top-level-division: chapter
   titlepage: true
 
