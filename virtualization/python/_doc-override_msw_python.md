@@ -1,4 +1,57 @@
 
+`virtualization/python/override_msw_python.sh`
+
+Functions used to virtualize/contain Python running under Microsoft Windows (MSW) in the “ubiquitous_bash” framework.
+
+Prepares a Windows‑specific Python environment, adds the Windows Python binaries into PATH, configures PYTHONSTARTUP hooks, manages a local virtual environment, and (re)installs packages or “morsels” (pre‑downloaded pip wheels) if necessary (ie. if absolute path has changed). If Python 3.10 (or other desired version) is not found in expected locations, will echo a request directing the user to the official installer.
+
+Script provides helper functions for interactive shells (_msw_python, _msw_python_bash, _msw_python_bin), environment preparation (_prepare_msw_python, _set_msw_python_procedure), package installation, and detection of Windows Python paths. As these example functions show, this approach stabilizes consistent interaction using MSW-native Python, portably, inside a broader cross-platform ecosystem.
+
+
+
+# Files
+
+```
+./virtualization/python/override_msw_python.sh
+```
+
+
+
+# Call Graph
+
+- `_msw_python()`
+    - `_prepare_msw_python()`
+        - `_prepare_msw_python_3()`
+            - `_prepare_msw_python_3_10()`
+                - `_set_msw_python_3_10()`
+                    - `_override_msw_path_python_3_10()`
+                        - `_detect_msw_path_python()`
+                        - `_detect_msw_path_python-localappdata()`
+                        - `_override_msw_path_python_procedure()`
+                    - `_set_msw_python_procedure()`
+                - `_lock_prepare_python_msw()` (internal helper)
+                - `_prepare_msw_python_procedure()`
+                    - `_install_dependencies_msw_python_procedure-specific()`
+                        - `_discover-msw_python()`
+                            - `_discover_procedure-msw_python()`
+                        - `_pip_upgrade()` (nested)
+                        - `_pip_download()` (nested)
+                        - `_pip_install_nonet()` (nested)
+                        - `_pip_install()` (nested)
+                - `_write_python_hook_local()` (nested)
+                - `_morsels_msw_pip_python_3_10()`
+                - `_install_dependencies_msw_python_procedure-specific()` (second call)
+    - call to `python .../lean.py` executing `_bin(["_demo_msw_python"], ... )`
+        
+- `_test_msw_python()`
+    - `_prepare_msw_python()` (as above)
+        
+- `_set_msw_python()`
+    - `_set_msw_python_3_10()` (see above)
+        
+- `_demo_msw_python()`
+    - executes provided command
+    - `_bash`
 
 
 
@@ -224,13 +277,13 @@ _detect_msw_path_python-localappdata() {
 _override_msw_path_python_3_10() {
 	local current_binaries_path=""
 
-	#if
-	#_detect_msw_path_python
-		#"$scriptLib"/msw/python-3.10.11-embed-amd64
-		#"$scriptLocal"/msw/python-3.10.11-embed-amd64
-		#"Programs/Python/python-3.10.11-embed-amd64"
-		#"Programs/Python/Python310"
-	#[[ "$?" == "0" ]] && [[ -d "$current_binaries_path" ]] && _override_msw_path_python_procedure && return 0
+	if
+	_detect_msw_path_python
+		"$scriptLib"/msw/python-3.10.11-embed-amd64
+		"$scriptLocal"/msw/python-3.10.11-embed-amd64
+		"Programs/Python/python-3.10.11-embed-amd64"
+		"Programs/Python/Python310"
+	[[ "$?" == "0" ]] && [[ -d "$current_binaries_path" ]] && _override_msw_path_python_procedure && return 0
 
 	( _messagePlain_bad 'FAIL: missing: python: '${FUNCNAME[0]} >&2 ) > /dev/null
 	( _messagePlain_request 'request: install: https://www.python.org/ftp/python/3.10.11/python-3.10.11-amd64.exe' >&2 ) > /dev/null

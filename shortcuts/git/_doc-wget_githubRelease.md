@@ -91,28 +91,30 @@ _wget_githubRelease-fromTag_join-stdout
 
 ## ./shortcuts/git/wget_githubRelease_internal.sh
 
-Please write a function call graph for these specific functions of this code . Emphasize only obviously custom functions encapsulating functionality - ignore standard commands, _start/_stop, _message, _getAbsoluteLocation, etc. Please keep it simple and editable, essential information only, similar to this format:
+### Simplified Call Graph
+            
+- `_wget_githubRelease_internal`
+    - _`_wget_githubRelease`_
 
-- a() 
-  - b() 
-    - c()
-      - find/xargs
-        - d()
-
-```
-_wget_githubRelease
-_wget_githubRelease-stdout
-_wget_githubRelease_internal
-
-_wget_githubRelease_join
-_wget_githubRelease_join-stdout
-```
-
-```
-./shortcuts/git/wget_githubRelease_internal.sh
-```
-
-
+- `_wget_githubRelease`
+    - _`_wget_githubRelease_procedure`_
+        - `_wget_githubRelease_loop-curl`
+            - `_wget_githubRelease_procedure-curl`
+        - `_wget_githubRelease_loop-axel`
+            - `_wget_githubRelease_procedure-axel`
+        - `_gh_download`
+        - `_wget_githubRelease_loop-curl` _(fallback)_
+        
+- `_wget_githubRelease-stdout`
+    - `_wget_githubRelease_procedure-stdout`
+        - _`_wget_githubRelease_procedure`_
+            
+- `_wget_githubRelease_join`
+    - `_wget_githubRelease_join-stdout`
+        - `_wget_githubRelease_join_sequence-stdout`
+            - `_wget_githubRelease_join_sequence-parallel`
+                - `_wget_githubRelease_procedure-join`
+                    - _`_wget_githubRelease_procedure`_
 
 
 
@@ -317,5 +319,5 @@ export FORCE_PARALLEL="5"
 
 WARNING: This maintenance documentation has NOT been proven by sufficient use in practice. Incidents successfully using part or all of this documentation may be noted here until sufficient track record is established.
 
-When sufficient track record has been established, this WARNING heading may be deleted, and a CERTIFICATION statement may be added.
+After sufficient track record has been established, this WARNING heading may be deleted, and a CERTIFICATION statement may be added.
 
