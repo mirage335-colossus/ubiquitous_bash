@@ -1,9 +1,9 @@
 
 `virtualization/python/override_nix_python.sh`
 
-Functions used to virtualize/contain Python running under UNIX/Linux in the “ubiquitous_bash” framework.
+Functions used to virtualize/contain Python running under UNIX/Linux in the "ubiquitous_bash" framework.
 
-Prepares a UNIX/Linux specific Python environment, configures PYTHONSTARTUP hooks, manages a local virtual environment, and (re)installs packages or “morsels” (pre‑downloaded pip wheels) if necessary (ie. if absolute path has changed). If a selected or desired Python version is not installed, '_getDep', '_wantGetDep', etc, or a '_messagePlain_request' to the user can be called .
+Prepares a UNIX/Linux specific Python environment, configures PYTHONSTARTUP hooks, manages a local virtual environment, and (re)installs packages or "morsels" (pre-downloaded pip wheels) if necessary (ie. if absolute path has changed). If a selected or desired Python version is not installed, '_getDep', '_wantGetDep', etc, or a '_messagePlain_request' to the user can be called .
 
 Script provides helper functions for interactive shells (_nix_python, _nix_python_bash, _nix_python_bin), environment preparation (_prepare_nix_python, _set_msw_python_procedure), package installation, and (optionally) can be extended to detect alternative UNIX/Linux Python paths. As these example functions show, this approach stabilizes consistent interaction using UNIX/Linux Python, portably, inside a broader cross-platform ecosystem.
 
@@ -41,7 +41,7 @@ Script provides helper functions for interactive shells (_nix_python, _nix_pytho
         - `_bash`
         
 - `_test_nix_python`
-    - `_prepare_nix_python` → `_prepare_nix_python_3` …
+    - `_prepare_nix_python` -> `_prepare_nix_python_3` ...
 
 - `_install_dependencies_nix_python`
   - `_install_dependencies_nix_python_sequence-specific`

@@ -1,9 +1,9 @@
 
 `virtualization/python/override_msw_python.sh`
 
-Functions used to virtualize/contain Python running under Microsoft Windows (MSW) in the “ubiquitous_bash” framework.
+Functions used to virtualize/contain Python running under Microsoft Windows (MSW) in the "ubiquitous_bash" framework.
 
-Prepares a Windows‑specific Python environment, adds the Windows Python binaries into PATH, configures PYTHONSTARTUP hooks, manages a local virtual environment, and (re)installs packages or “morsels” (pre‑downloaded pip wheels) if necessary (ie. if absolute path has changed). If Python 3.10 (or other desired version) is not found in expected locations, will echo a request directing the user to the official installer.
+Prepares a Windows-specific Python environment, adds the Windows Python binaries into PATH, configures PYTHONSTARTUP hooks, manages a local virtual environment, and (re)installs packages or "morsels" (pre-downloaded pip wheels) if necessary (ie. if absolute path has changed). If Python 3.10 (or other desired version) is not found in expected locations, will echo a request directing the user to the official installer.
 
 Script provides helper functions for interactive shells (_msw_python, _msw_python_bash, _msw_python_bin), environment preparation (_prepare_msw_python, _set_msw_python_procedure), package installation, and detection of Windows Python paths. As these example functions show, this approach stabilizes consistent interaction using MSW-native Python, portably, inside a broader cross-platform ecosystem.
 
