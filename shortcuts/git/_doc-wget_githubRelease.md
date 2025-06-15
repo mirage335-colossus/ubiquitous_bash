@@ -1,7 +1,10 @@
 
 
+# WARNING: NOT certified !
 
-summary (possbily improved, possibly added to with AI generated content)
+WARNING: This maintenance documentation has NOT been proven by sufficient use in practice. Incidents successfully using part or all of this documentation may be noted here until sufficient track record is established.
+
+When sufficient track record has been established, this WARNING heading may be deleted.
 
 
 
@@ -116,7 +119,7 @@ outputLOOP:
 
 downloadLOOP:
 	while WAIT && ! ( ls -1 "$scriptAbsoluteFolder"/$(_axelTmp)* > /dev/null 2>&1 )
-		_wget_githubRelease_procedure-join
+		_wget_githubRelease_procedure-join ... "$currentFile".part'##' &
 	while WAIT && ( ls -1 "$scriptAbsoluteFolder"/$(_axelTmp) > /dev/null 2>&1 ) || ( ls -1 "$scriptAbsoluteFolder"/$(_axelTmp).busy > /dev/null 2>&1 )
 		_destroy_lock "$scriptAbsoluteFolder"/$(_axelTmp).PASS
 		_destroy_lock "$scriptAbsoluteFolder"/$(_axelTmp).FAIL
