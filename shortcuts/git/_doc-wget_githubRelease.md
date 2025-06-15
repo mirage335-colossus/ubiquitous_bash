@@ -73,7 +73,7 @@ join ... is what does the parallel downloading of multi-part files...
 
 ## ./shortcuts/git/wget_githubRelease_internal.sh
 
-Please generate a well ordered tabulated report with markdown tables readable at a glance instead of prose or code snippets, enumerating from the intended flow of action functions where processing of this code begins, Inter-Process-Communication:
+Please generate a well ordered tabulated report with markdown tables readable at a glance instead of prose, code snippets, code references, etc, enumerating from the intended flow of action functions where processing of this code begins, Inter-Process-Communication:
 
 - Inter-Process-Communication mechanisms.
 
