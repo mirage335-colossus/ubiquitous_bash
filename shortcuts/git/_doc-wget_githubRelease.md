@@ -41,7 +41,7 @@ _wget_githubRelease_join-stdout
 | --- | --- |
 | `_wget_githubRelease` | Primary entry for downloading a release asset. It logs basic info and delegates to `_wget_githubRelease_procedure`. |
 | `_wget_githubRelease-stdout` | Downloads an asset and ensures the final content is written to standard output, using a temporary file if needed. |
-| `_wget_githubRelease_internal` | Convenience wrapper calling `_wget_githubRelease` with the release tag “internal.” |
+| `_wget_githubRelease_internal` | Convenience wrapper calling `_wget_githubRelease` with the release tag "internal." |
 | `_wget_githubRelease_join` | Downloads multiple numbered parts of a large file and concatenates them into an output file. |
 | `_wget_githubRelease_join-stdout` | Runs the join process and streams the combined data directly to stdout. |
 
@@ -66,7 +66,7 @@ _wget_githubRelease-fromTag_join-stdout
 | --- | --- |
 | `_wget_githubRelease-fromTag-analysisReport-fetch` | Fetches one or more log/report files for a list of release tags into a temporary analysis directory. |
 | `_wget_githubRelease-fromTag-analysisReport-select` | Selects the fetched report corresponding to `currentReleaseTag` for further processing. |
-| `_wget_githubRelease-fromTag-analysisReport-analysis` | Compares report files across tags, generating “missing” output for differences. |
+| `_wget_githubRelease-fromTag-analysisReport-analysis` | Compares report files across tags, generating "missing" output for differences. |
 | `_wget_githubRelease-fromTag-analysisReport` | Orchestrates the above fetch, select and analysis steps, then removes the temporary directory. |
 | `_wget_githubRelease-fromTag-fetchReport` | Downloads a single asset (report file) from a specific tag using the GitHub API. |
 | `_curl_githubAPI_releases_fromTag_join-skip` | Quickly checks the GitHub API for multipart files, skipping missing parts to save API calls. |
@@ -81,7 +81,7 @@ _wget_githubRelease-fromTag_join-stdout
 | `_wget_githubRelease-fromTag_join_sequence-stdout` | Sequentially outputs downloaded parts while coordinating with background workers. |
 | `_wget_githubRelease-fromTag_join_sequence-parallel` | Launches parallel chunk downloads and manages inter-process coordination. |
 | `_wget_githubRelease-fromTag_procedure-join` | Downloads a single part (`wget` call), marks success/failure, and cleans temporary markers. |
-| `_wget_githubRelease_procedure-releasesTags-curl` | Retrieves a sorted list of recent tag names via GitHub’s API. |
+| `_wget_githubRelease_procedure-releasesTags-curl` | Retrieves a sorted list of recent tag names via GitHub's API. |
 | `_wget_githubRelease-releasesTags-curl` / `_wget_githubRelease-releasesTags-gh` | Public-facing functions to fetch tag names via curl or the GitHub CLI. |
 | `_wget_githubRelease-releasesTags` | Wrapper choosing between curl and gh implementations depending on environment. |
 
@@ -122,15 +122,15 @@ _wget_githubRelease-fromTag_join-stdout
 
 ## ./shortcuts/git/wget_githubRelease_internal.sh
 
-All of the IPC in this script is accomplished by file‑based markers (.busy, .PASS, .FAIL, .pid) combined with background subprocesses and simple sleep‑polling loops, plus occasional process‑substitution for stderr filtering.  No named FIFOs or kernel‐level locks are used; instead the script relies on carefully ordered creation/removal of marker files and fixed delays (“latency margins”) to avoid races.  This design trades off a bit of wall‑time sleep for simpler, portable shell logic.
+All of the IPC in this script is accomplished by file-based markers (.busy, .PASS, .FAIL, .pid) combined with background subprocesses and simple sleep-polling loops, plus occasional process-substitution for stderr filtering.  No named FIFOs or kernel-level locks are used; instead the script relies on carefully ordered creation/removal of marker files and fixed delays ("latency margins") to avoid races.  This design trades off a bit of wall-time sleep for simpler, portable shell logic.
 
 This script builds a mini asynchronous pipeline:
-1. Producer: many background _procedure-join workers download sub‑chunks to .busy files, then mark them PASS/FAIL.
+1. Producer: many background _procedure-join workers download sub-chunks to .busy files, then mark them PASS/FAIL.
 2. Coordinator: the downloadLOOP in join_sequence-parallel staggers and monitors producer slots.
-3. Consumer: the outputLOOP in _wget_githubRelease_procedure waits for chunks, dd‑streams them to stdout, then signals the next chunk.
-4. Cleanup: each producer and the coordinator spin‑wait for the consumer to finish, then remove all markers.
+3. Consumer: the outputLOOP in _wget_githubRelease_procedure waits for chunks, dd-streams them to stdout, then signals the next chunk.
+4. Cleanup: each producer and the coordinator spin-wait for the consumer to finish, then remove all markers.
 
-Everything is glued together by the presence/absence of files (.busy, .PASS, .FAIL, .pid) and timed sleeps to ensure safe hand‑off under varying OS/disk/network latencies.
+Everything is glued together by the presence/absence of files (.busy, .PASS, .FAIL, .pid) and timed sleeps to ensure safe hand-off under varying OS/disk/network latencies.
 
 ### Function Naming
 
@@ -152,11 +152,11 @@ As the 'function-compatibility' hyphen vs 'function_capability' underscore namin
 | Function | Role/Description |
 | --- | --- |
 | `_wget_githubRelease-stdout` | Stream download to stdout, marking `PASS`/`FAIL` |
-| `_wget_githubRelease_join_sequence-parallel` / `_wget_githubRelease_procedure-join` | Parallel producer/consumer logic to stitch chunks |
+| `_wget_githubRelease_join_sequence-parallel` / `_wget_githubRelease_procedure-join` | Parallel producer/consumer logic to stitch chunks |
 
 | Function/Section | IPC Mechanism | Files/Pipes | Conditions/Loops | Latency/Delay |
 | --- | --- | --- | --- | --- |
-| `_wget_githubRelease_join` → `_wget_githubRelease_join_sequence-stdout` | Initializes download loop | Creates `.m_axelTmp_<stream>_<uid>` via `_axelTmp` | Loops over part numbers using `seq`; conditional skip/download decisions | None |
+| `_wget_githubRelease_join` -> `_wget_githubRelease_join_sequence-stdout` | Initializes download loop | Creates `.m_axelTmp_<stream>_<uid>` via `_axelTmp` | Loops over part numbers using `seq`; conditional skip/download decisions | None |
 | Output loop in `_wget_githubRelease_join_sequence-stdout` | Waits for part completion | Checks `.busy`, `.PASS`, `.FAIL` files before reading part | `while` loop waiting until `.busy` cleared and PASS/FAIL present | `sleep 1` in loop; diagnostic wait after 15 iterations |
 | Clean-up after each part | Removes temporary files | `_destroy_lock` on `.m_axelTmp*` artifacts | Sequential after file output | none |
 | Parallel download start | Starts process, records PID | `.pid` file holds background process ID | Wait loops check `.busy` before reuse | `sleep 1` per iteration |
@@ -174,7 +174,7 @@ As the 'function-compatibility' hyphen vs 'function_capability' underscore namin
 | PASS/FAIL marker files (`.PASS` / `.FAIL`) | Signal chunk-write success or failure                                                                               |
 | Busy marker files (`.busy`)            | Indicate in-progress chunk writes to coordinate reader loops                                                       |
 | PID files (`.pid`)                     | Track producer PIDs so that consumers can wait or `_pauseForProcess`                                               |
-| Process substitution (`2> >(tail…)`)   | Non-blocking filtering/truncating of stderr output                                                                 |
+| Process substitution (`2> >(tail...)`)   | Non-blocking filtering/truncating of stderr output                                                                 |
 | Intermediate temp files (`.m_axelTmp_*`) | Buffer raw chunk data between producer and consumer loops                                                          |
 | Sleep-based polling                    | Poll on marker files / PIDs at controlled intervals to avoid busy-loops                                            |
 
@@ -187,13 +187,13 @@ As the 'function-compatibility' hyphen vs 'function_capability' underscore namin
 | `.m_axelTmp_*.FAIL`                           | Download procedure branches                                      | Output/download loops             | Signal: chunk encountered an error                     |
 | `.m_axelTmp_*.busy`                           | `_wget_githubRelease_procedure-join`                             | Output/download loops             | Signal: chunk is actively being written                |
 | `.m_axelTmp_*.pid`                            | Background launch in `join-sequence`                              | `_pauseForProcess` / `wait` loops | Communicate producer PID for proper synchronization    |
-| `<currentOutFile>` lock (via `_destroy_lock`)  | Pre-download cleanup                                              | –                                 | Prevents collisions from stale output file             |
+| `<currentOutFile>` lock (via `_destroy_lock`)  | Pre-download cleanup                                              | -                                 | Prevents collisions from stale output file             |
 
 ### IPC Conditions & Polling Loops
 
-All coordination is done via spin‑sleep loops that watch for the presence or absence of these files:
+All coordination is done via spin-sleep loops that watch for the presence or absence of these files:
 
-- `downloadLOOP` (join_sequence‑parallel)
+- `downloadLOOP` (join_sequence-parallel)
   - Wait for a free slot (`while file or file.busy exists; do sleep 1; done`)
   - Launch chunk
   - Wait for chunk to have begun (`while ! ls chunk*; do sleep 0.6; done`)
@@ -201,19 +201,19 @@ All coordination is done via spin‑sleep loops that watch for the presence or a
   - Wait for `.busy` + (`.PASS` or .`FAIL`) to appear before streaming (`sleep 1` per iteration)
   - `dd if=...` to stdout
   - Delete the chunk files & markers
-- procedure‑join
+- procedure-join
   - Write `.busy`, do the download, write `.PASS`/`.FAIL`
-  - Sleep a fixed 7 sec (minimum download time)
+  - Sleep a fixed 7 sec (minimum download time)
   - Wait until consumer has picked it up (sleep 1 per iteration)
 
 | Loop Context                   | Condition(s)                                  | Sleep / Retry Interval | Purpose                                                 |
 |--------------------------------|------------------------------------------------|------------------------|---------------------------------------------------------|
-| Pre-buffer (join sequence)     | Until any chunk's `.PASS` or `.FAIL` exists    | 3 s                    | Ensure each stream has primed its temp file before output |
-| OutputLOOP (join sequence)     | Wait for `.busy` AND (`.PASS` OR `.FAIL`)      | 1 s                    | Safely read complete chunk before `dd`/`cat`            |
-| DownloadLOOP slot wait         | While temp file OR `.busy` exists              | 1 s                    | Avoid simultaneous writes into same slot                |
-| DownloadLOOP stagger           | First chunk sleep 2 s; subsequent 6 s           | –                      | Stagger producers to reduce I/O bursts                  |
-| DownloadLOOP IPC delay         | Fixed 7 s                                      | –                      | Minimum time for cleanup/marker files to propagate      |
-| Procedure-join termination     | While any of temp/`.busy`/`.PASS`/`.FAIL` files exist | 1 s             | Wait for consumer to finish reading before cleanup      |
+| Pre-buffer (join sequence)     | Until any chunk's `.PASS` or `.FAIL` exists    | 3 s                    | Ensure each stream has primed its temp file before output |
+| OutputLOOP (join sequence)     | Wait for `.busy` AND (`.PASS` OR `.FAIL`)      | 1 s                    | Safely read complete chunk before `dd`/`cat`            |
+| DownloadLOOP slot wait         | While temp file OR `.busy` exists              | 1 s                    | Avoid simultaneous writes into same slot                |
+| DownloadLOOP stagger           | First chunk sleep 2 s; subsequent 6 s           | -                      | Stagger producers to reduce I/O bursts                  |
+| DownloadLOOP IPC delay         | Fixed 7 s                                      | -                      | Minimum time for cleanup/marker files to propagate      |
+| Procedure-join termination     | While any of temp/`.busy`/`.PASS`/`.FAIL` files exist | 1 s             | Wait for consumer to finish reading before cleanup      |
 
 ### Staggering
 
@@ -221,7 +221,7 @@ Staggering prevents both IPC, cleanup, etc, issues, as stated in comments, and a
 
 Preventing such external reliability issues avoids retries, thus improving margins for any (eg. external) connection limits, time limits, etc.
 
-### Operating‑System Latency Margins
+### Operating-System Latency Margins
 
 | Sleep call              | Length              | Reason                                               |
 |-------------------------|---------------------|------------------------------------------------------|
@@ -232,7 +232,7 @@ Preventing such external reliability issues avoids retries, thus improving margi
 | `In downloadLOOP`       | `sleep 1`           | Polling interval before freeing up a stream slot     |
 | `In downloadLOOP`       | `sleep 0.6`         | Polling interval for chunk-file creation post-launch |
 
-### Resource‑Locking and Collision Avoidance
+### Resource-Locking and Collision Avoidance
 
 - Unique chunk filenames (`.m_axelTmp_<stream>_<UID>`) avoid collisions between parallel streams.
 - Stream indexing rotates between `currentStream_min...currentStream_max` to spread out parallel jobs.
@@ -255,9 +255,9 @@ Preventing such external reliability issues avoids retries, thus improving margi
 
 | Hazard                            | Mitigation                                                               |
 |-----------------------------------|--------------------------------------------------------------------------|
-| Overlapping streams colliding     | Unique `fileUID` + stream index `mod N`                                  |
+| Overlapping streams colliding     | Unique `fileUID` + stream index `mod N`                                  |
 | Busy-wait hog CPU                 | Sleeps in loops reduce busy-spin                                         |
-| Background jobs cluttering stdout | All diagnostic output redirected to `>/dev/null` / `>&2` tails            |
+| Background jobs cluttering stdout | All diagnostic output redirected to `>/dev/null` / `>&2` tails            |
 
 
 # Pseudocode Summary - (MultiThreaded)
