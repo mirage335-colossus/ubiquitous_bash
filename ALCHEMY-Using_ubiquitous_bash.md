@@ -1,8 +1,6 @@
 ---
 title:       "Using ubiquitous_bash"
-
 subtitle:    "ALCHEMY Glue Book"
-
 author:      "mirage335, et. al."
 date:        "2025-06-15"
 ---

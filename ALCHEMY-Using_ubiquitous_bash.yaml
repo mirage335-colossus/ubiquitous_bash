@@ -1,22 +1,22 @@
 
 
-#[[ ! -e ./ALCHEMY-Using_ubiquitous_bash.md ]] && echo "missing: ALCHEMY-Using_ubiquitous_bash.md" && exit 1
-#rm -f ALCHEMY-Using_ubiquitous_bash.pdf ; pandoc --defaults=ALCHEMY-Using_ubiquitous_bash.yaml ALCHEMY-Using_ubiquitous_bash.md -o ALCHEMY-Using_ubiquitous_bash.pdf
+pdf-engine: xelatex
 
-#<details>
-lang:        "en"
-toc:         true
-toc-depth:   1
-top-level-division: chapter
-titlepage:   true
-geometry:    margin=1in
-fontsize:    11pt
-mainfont:    "Palatino"
-monofont:    "Inconsolata"
-header-includes:
-  - \usepackage{fancyhdr}
-  - \pagestyle{fancy}
-  - \fancyhead[LE,RO]{\thepage}
-  - \fancyhead[RE,LO]{\leftmark}
-#</details>
+include-in-header:
+  - ALCHEMY-Using_ubiquitous_bash-header.tex
 
+metadata:
+  title: "Using ubiquitous_bash"
+  subtitle: "ALCHEMY Glue Book"
+  author: "mirage335, et. al."
+  date: "2025-06-15"
+  lang: "en"
+  toc: true
+  toc-depth: 1
+  top-level-division: chapter
+  titlepage: true
+
+variables:
+  geometry: margin=1in
+  fontsize: 11pt
+  mainfont: "TeX Gyre Pagella"
