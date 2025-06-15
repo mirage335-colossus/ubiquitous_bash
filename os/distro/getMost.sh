@@ -994,6 +994,8 @@ _getMost_debian11_install() {
 	_getMost_backend_aptGetInstall recode
 	_getMost_backend_aptGetInstall asciidoc
 	
+	_getMost_backend_aptGetInstall pandoc
+	
 	
 	
 	_getMost_backend_aptGetInstall pavucontrol
