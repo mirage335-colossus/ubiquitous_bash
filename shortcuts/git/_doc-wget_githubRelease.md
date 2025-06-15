@@ -1,4 +1,14 @@
 
+`wget_githubRelease_internal.sh`
+
+Functions used to fetch files from GitHub releases. Chooses any of several backends (wget/curl, axel/aria2c, gh), retries, prebuffers, ratelimits, parallelizes, as needed.
+
+Reliably selects any of several backends (using curl, gh, wget, or aria2c/axel) and contains extensive retry logic and options.
+
+
+`wget_githubRelease_tag.sh`
+
+Functions to fetch files from the most recent of GitHub releases matching a tag/label (eg. fetching the latest GitHub release which has been tagged/labeled 'internal' and thus certified as sufficiently reviewed, tested, etc, for integration with other software). Also fetches and analyzes report files from GitHub releases (eg. to diff the list of files between builds as is necessary for 'ubcp' Cygwin).
 
 
 
@@ -14,52 +24,94 @@
 ```
 
 
+# Functions
 
-
-
-
-
-
-
-# Prompt - Call Graph
-
-
-
-
-
-
-
-# Functions - Internal
-
-```bash
-_wget_githubRelease-stdout
-_wget_githubRelease
-_wget_githubRelease_internal
-_wget_githubRelease_join
+## ./shortcuts/git/wget_githubRelease_internal.sh
 
 ```
+_wget_githubRelease
+_wget_githubRelease-stdout
+_wget_githubRelease_internal
 
+_wget_githubRelease_join
+_wget_githubRelease_join-stdout
+```
 
+| Function | Purpose / Role |
+| --- | --- |
+| `_wget_githubRelease` | Primary entry for downloading a release asset. It logs basic info and delegates to `_wget_githubRelease_procedure`. |
+| `_wget_githubRelease-stdout` | Downloads an asset and ensures the final content is written to standard output, using a temporary file if needed. |
+| `_wget_githubRelease_internal` | Convenience wrapper calling `_wget_githubRelease` with the release tag “internal.” |
+| `_wget_githubRelease_join` | Downloads multiple numbered parts of a large file and concatenates them into an output file. |
+| `_wget_githubRelease_join-stdout` | Runs the join process and streams the combined data directly to stdout. |
 
-# Functions - Tag
+## ./shortcuts/git/wget_githubRelease_tag.sh
 
+```
+_wget_githubRelease-fromTag-analysisReport-fetch
+_wget_githubRelease-fromTag-analysisReport-select
+_wget_githubRelease-fromTag-analysisReport-analysis
+_wget_githubRelease-fromTag-analysisReport
 
+_wget_githubRelease-fromTag-fetchReport
 
+_wget_githubRelease-fromTag
+_wget_githubRelease-fromTag-stdout
 
+_wget_githubRelease-fromTag_join
+_wget_githubRelease-fromTag_join-stdout
+```
 
-
-
-# Explanation
-
-join ... is what does the parallel downloading of multi-part files...
-...
-
+| Function | Purpose / Role |
+| --- | --- |
+| `_wget_githubRelease-fromTag-analysisReport-fetch` | Fetches one or more log/report files for a list of release tags into a temporary analysis directory. |
+| `_wget_githubRelease-fromTag-analysisReport-select` | Selects the fetched report corresponding to `currentReleaseTag` for further processing. |
+| `_wget_githubRelease-fromTag-analysisReport-analysis` | Compares report files across tags, generating “missing” output for differences. |
+| `_wget_githubRelease-fromTag-analysisReport` | Orchestrates the above fetch, select and analysis steps, then removes the temporary directory. |
+| `_wget_githubRelease-fromTag-fetchReport` | Downloads a single asset (report file) from a specific tag using the GitHub API. |
+| `_curl_githubAPI_releases_fromTag_join-skip` | Quickly checks the GitHub API for multipart files, skipping missing parts to save API calls. |
+| `_curl_githubAPI_releases_fromTag_join_procedure-skip` | Internal helper for the above skip logic; loops through release pages. |
+| `_wget_githubRelease-address_fromTag` | Dispatches to `_wget_githubRelease-address_fromTag-curl` to retrieve the download URL from the API. |
+| `_wget_githubRelease-URL_fromTag-curl` | Retrieves the user-facing URL for an asset at a given tag via curl. |
+| `_wget_githubRelease-API_URL_fromTag-curl` | Retrieves the GitHub API download URL for an asset at a given tag. |
+| `_wget_githubRelease-fromTag-stdout` | Streams an asset from a tag directly to stdout, managing temp files to detect errors. |
+| `_wget_githubRelease-fromTag` | Main wrapper for downloading an asset by tag to a file; delegates to `_wget_githubRelease-fromTag_procedure`. |
+| `_wget_githubRelease-fromTag_join` | Handles multi-part assets (e.g., `.part00`, `.part01`...) by invoking the join-sequence functions. |
+| `_wget_githubRelease-fromTag_join-stdout` | Same as above but streaming to stdout. |
+| `_wget_githubRelease-fromTag_join_sequence-stdout` | Sequentially outputs downloaded parts while coordinating with background workers. |
+| `_wget_githubRelease-fromTag_join_sequence-parallel` | Launches parallel chunk downloads and manages inter-process coordination. |
+| `_wget_githubRelease-fromTag_procedure-join` | Downloads a single part (`wget` call), marks success/failure, and cleans temporary markers. |
+| `_wget_githubRelease_procedure-releasesTags-curl` | Retrieves a sorted list of recent tag names via GitHub’s API. |
+| `_wget_githubRelease-releasesTags-curl` / `_wget_githubRelease-releasesTags-gh` | Public-facing functions to fetch tag names via curl or the GitHub CLI. |
+| `_wget_githubRelease-releasesTags` | Wrapper choosing between curl and gh implementations depending on environment. |
 
 
 
 # Call Graph
 
-    |___ 
+## ./shortcuts/git/wget_githubRelease_internal.sh
+
+Please write a function call graph for these specific functions of this code . Emphasize only obviously custom functions encapsulating functionality - ignore standard commands, _start/_stop, _message, _getAbsoluteLocation, etc. Please keep it simple and editable, essential information only, similar to this format:
+
+- a() 
+  - b() 
+    - c()
+      - find/xargs
+        - d()
+
+```
+_wget_githubRelease
+_wget_githubRelease-stdout
+_wget_githubRelease_internal
+
+_wget_githubRelease_join
+_wget_githubRelease_join-stdout
+```
+
+```
+./shortcuts/git/wget_githubRelease_internal.sh
+```
+
 
 
 
