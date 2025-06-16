@@ -5,19 +5,14 @@ author:      "mirage335, et. al."
 date:        "2025-06-15"
 ---
 
----
-
+<!-- Title block for Markdown viewers only -->
 ALCHEMY
 
-Using
-"ubiquitous_bash"
+Using "ubiquitous_bash"
 
 Glue Book
 
-![Shell, Glue, Box, Duct Tape](_lib/ALCHEMY/00-titlePage/mascott-ChatGPT_o3-small.png)
-
----
-
+<img src="_lib/ALCHEMY/00-titlePage/mascott-ChatGPT_o3-small.png" alt="Shell, Glue, Box, Duct Tape">
 
 
 # Formal Table Of Contents

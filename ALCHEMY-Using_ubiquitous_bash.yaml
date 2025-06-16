@@ -10,6 +10,8 @@ include-in-header:
 
 include-before-body:
   - ALCHEMY-Using_ubiquitous_bash-figurefix.tex
+  - ALCHEMY-Using_ubiquitous_bash-titlepage.tex
+  - ALCHEMY-Using_ubiquitous_bash-toc.tex
 
 metadata:
   title: "Using ubiquitous_bash"
@@ -17,10 +19,9 @@ metadata:
   author: "mirage335, et. al."
   date: "2025-06-15"
   lang: "en"
-  toc: true
+  toc: false
   toc-depth: 1
   top-level-division: chapter
-  titlepage: true
 
 variables:
   geometry: margin=1in
