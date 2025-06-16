@@ -1,5 +1,8 @@
 
 
+# rm -f ALCHEMY-Using_ubiquitous_bash.pdf ; pandoc --verbose --standalone --defaults=ALCHEMY-Using_ubiquitous_bash.yaml --pdf-engine=xelatex --pdf-engine-opt=-interaction=nonstopmode --pdf-engine-opt=-halt-on-error ALCHEMY-Using_ubiquitous_bash.md -o ALCHEMY-Using_ubiquitous_bash.pdf
+# sudo apt-get install -y pandoc texlive-xetex texlive-latex-recommended texlive-latex-extra fonts-texgyre fonts-texgyre-math tex-gyre texlive-fonts-recommended
+
 pdf-engine: xelatex
 
 include-in-header:
@@ -14,6 +17,8 @@ metadata:
   author: "mirage335, et. al."
   date: "2025-06-15"
   lang: "en"
+  toc: true
+  toc-depth: 1
   top-level-division: chapter
   titlepage: true
 

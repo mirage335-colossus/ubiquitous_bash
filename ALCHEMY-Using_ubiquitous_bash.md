@@ -5,6 +5,8 @@ author:      "mirage335, et. al."
 date:        "2025-06-15"
 ---
 
+---
+
 ALCHEMY
 
 Using
@@ -14,6 +16,7 @@ Glue Book
 
 ![Shell, Glue, Box, Duct Tape](_lib/ALCHEMY/00-titlePage/mascott-ChatGPT_o3-small.png)
 
+---
 
 
 
