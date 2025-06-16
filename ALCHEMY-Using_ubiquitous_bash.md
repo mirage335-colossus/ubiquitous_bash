@@ -17,6 +17,27 @@ ALCHEMY Glue Book
 ---
 
 
+### **What you Gain from "ubiquitous_bash" .**
+
+By getting started with "ubiquitous_bash", you can start with well-maintained commands proven to meet meet the needs of use cases and subsequent commands, letting you focus on the logic of your scripts and on exploring new platforms or projects.
+
+You can hit the ground running even faster with "ubiquitous_bash" than without, and that little early investment will pay off in reliable, portable workflows—far more efficient than reinventing each part yourself.
+
+The "ubiquitous_bash" framework gives a ready-made environment for stabilizing and experimenting with software from an easy-to-use interactive shell scripting chat window, or through the popular VSCode IDE, etc. Rather than iteratively figuring out and maintaining every parameter, workaround, and multi-step configuration yourself, you can immediately tap into conveniences that the project already provides:
+
+- Cross-platform scripting – You can write once and run on Linux, or even MSWindows . Double click the exact same 'batch' file on UNIX/Linux and MSWindows to open a '_bash' terminal or run a function in your own shell script, calling whatever programs with any files and parameters you want.
+
+- AI-assisted command-line, development, processing - CLI Codex available every command-line, sophisticated Codex prompts, with optional control of the sandbox harness that really works, nearly as capable as WebUI Codex on your local system to make things work no matter what.
+
+- Local AI help and automation - Install and run the powerful 'Devstral-Small' model locally with Vision on 16GB VRAM (~20tokens/sec) or CPU . Developers can also have 'Llama-augment' (~60tokens/sec) agentically, locally, process pipelines. Never worry you won't have your AI programming helper with you, and get that download URL no matter how the format changes.
+
+- Lightweight containment – Python “virtualization” and directory virtualization '_fakeHome' , 'abstractfs' , keep your environment tidy, separating applications, stabilizing file locations, without needing full-blown virtual machines.
+
+- Full distribution/OperatingSystem builds or app-level virtualization – When you’re ready to just build your own custom distribution/OperatingSystem, _openChRoot to get started without fumbling loopback devices, and launch sandboxed applications with fileparameter translation under your favorite backend - _userVBox, _userQemu, _userChRoot, _userDocker , and more. Even DosBox and Wine installations can be kept portable and convenient.
+
+- Limitless Inter-Process-Communication and pipelines – “Queue” and “MetaEngine” offer ad-hoc communication and multi-input-multi-output pipelines so you can string together commands in advanced ways. Be ready for a future of connecting applications to more applications.
+
+
 ### **What is bash ?**
 
 #### What bash shell does.
@@ -107,27 +128,6 @@ cd ./ubiquitous_bash.sh
 MSWindows users can install "ubiquitous_bash" simply by downloading and running the latest "extendedInterface" installer. Just make sure you have at least ~2GB free space on `"C:\"` . When done, you will find a `C:\_bash.bat` file which can open a bash interactive 'chat' window, and a shortcut file to it which you can pin to the Start menu.
 
 [https://github.com/mirage335-colossus/extendedInterface/releases/download/build-15624422433-1/extIface.exe](https://github.com/mirage335-colossus/extendedInterface/releases/download/build-15624422433-1/extIface.exe)
-
-
-### **What you Gain from "ubiquitous_bash" .**
-
-By getting started with "ubiquitous_bash", you can start with well-maintained commands proven to meet meet the needs of use cases and subsequent commands, letting you focus on the logic of your scripts and on exploring new platforms or projects.
-
-You can hit the ground running even faster with "ubiquitous_bash" than without, and that little early investment will pay off in reliable, portable workflows—far more efficient than reinventing each part yourself.
-
-The "ubiquitous_bash" framework gives a ready-made environment for stabilizing and experimenting with software from an easy-to-use interactive shell scripting chat window, or through the popular VSCode IDE, etc. Rather than iteratively figuring out and maintaining every parameter, workaround, and multi-step configuration yourself, you can immediately tap into conveniences that the project already provides:
-
-- Cross-platform scripting – You can write once and run on Linux, or even MSWindows . Double click the exact same 'batch' file on UNIX/Linux and MSWindows to open a '_bash' terminal or run a function in your own shell script, calling whatever programs with any files and parameters you want.
-
-- AI-assisted command-line, development, processing - CLI Codex available every command-line, sophisticated Codex prompts, with optional control of the sandbox harness that really works, nearly as capable as WebUI Codex on your local system to make things work no matter what.
-
-- Local AI help and automation - Install and run the powerful 'Devstral-Small' model locally with Vision on 16GB VRAM (~20tokens/sec) or CPU . Developers can also have 'Llama-augment' (~60tokens/sec) agentically, locally, process pipelines. Never worry you won't have your AI programming helper with you, and get that download URL no matter how the format changes.
-
-- Lightweight containment – Python “virtualization” and directory virtualization '_fakeHome' , 'abstractfs' , keep your environment tidy, separating applications, stabilizing file locations, without needing full-blown virtual machines.
-
-- Full distribution/OperatingSystem builds or app-level virtualization – When you’re ready to just build your own custom distribution/OperatingSystem, _openChRoot to get started without fumbling loopback devices, and launch sandboxed applications with fileparameter translation under your favorite backend - _userVBox, _userQemu, _userChRoot, _userDocker , and more. Even DosBox and Wine installations can be kept portable and convenient.
-
-- Limitless Inter-Process-Communication and pipelines – “Queue” and “MetaEngine” offer ad-hoc communication and multi-input-multi-output pipelines so you can string together commands in advanced ways. Be ready for a future of connecting applications to more applications.
 
 
 ### **What next?**
