@@ -1,7 +1,8 @@
 
 
-# rm -f ALCHEMY-Using_ubiquitous_bash.pdf ; pandoc --verbose --standalone --defaults=ALCHEMY-Using_ubiquitous_bash.yaml --pdf-engine=xelatex --pdf-engine-opt=-interaction=nonstopmode --pdf-engine-opt=-halt-on-error ALCHEMY-Using_ubiquitous_bash.md -o ALCHEMY-Using_ubiquitous_bash.pdf
-# sudo -n apt-get install -y pandoc texlive-xetex texlive-latex-recommended texlive-latex-extra fonts-texgyre fonts-texgyre-math tex-gyre texlive-fonts-recommended
+#rm -f ALCHEMY-Using_ubiquitous_bash.pdf ; pandoc --verbose --standalone --defaults=ALCHEMY-Using_ubiquitous_bash.yaml --pdf-engine=xelatex --pdf-engine-opt=-interaction=nonstopmode --pdf-engine-opt=-halt-on-error ALCHEMY-Using_ubiquitous_bash.md -o ALCHEMY-Using_ubiquitous_bash.pdf
+#
+#sudo -n apt-get install -y pandoc texlive-xetex texlive-latex-recommended texlive-latex-extra fonts-texgyre fonts-texgyre-math tex-gyre texlive-fonts-recommended
 
 pdf-engine: xelatex
 
@@ -26,14 +27,16 @@ metadata:
 
 variables:
   documentclass: article
+  #documentclass: book
   papersize: us-letter
   #papersize: a4
   geometry: 
-    - margin=0.25in
-    - top=0.25in
-    - bottom=0.25in
-    - left=0.25in
-    - right=0.25in
+    margin=1in
+    #- margin=0.25in
+    #- top=0.25in
+    #- bottom=0.25in
+    #- left=0.25in
+    #- right=0.25in
   classoption:
     - oneside
     - openany
