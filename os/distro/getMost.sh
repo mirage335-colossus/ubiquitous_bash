@@ -995,6 +995,13 @@ _getMost_debian11_install() {
 	_getMost_backend_aptGetInstall asciidoc
 	
 	_getMost_backend_aptGetInstall pandoc
+	_getMost_backend_aptGetInstall texlive-xetex
+	_getMost_backend_aptGetInstall texlive-latex-recommended
+	_getMost_backend_aptGetInstall texlive-latex-extra
+	_getMost_backend_aptGetInstall fonts-texgyre
+	_getMost_backend_aptGetInstall fonts-texgyre-math
+	_getMost_backend_aptGetInstall tex-gyre
+	_getMost_backend_aptGetInstall texlive-fonts-recommended
 	
 	
 	

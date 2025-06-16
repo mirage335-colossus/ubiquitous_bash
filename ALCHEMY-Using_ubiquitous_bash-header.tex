@@ -14,3 +14,7 @@
 %\titlespacing*{\section}{0pt}{0pt}{1ex}
 \usepackage{sectsty}
 \sectionfont{\clearpage}
+% Prevent C..Windows...etc file paths from sticking into margins
+\makeatletter
+\renewcommand*\textbackslash{\char`\\\hspace{0pt}}%
+\makeatother
