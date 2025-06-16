@@ -8,9 +8,9 @@
 \fancyhead[LE,RO]{\thepage}
 \fancyhead[RE,LO]{\leftmark}
 % Ensure each top-level heading starts on a new page without extra whitespace
-\usepackage{titlesec}
-\usepackage{etoolbox}
-\preto{\section}{\clearpage}
-\titlespacing*{\section}{0pt}{0pt}{1ex}
-%\usepackage{sectsty}
-%\sectionfont{\clearpage}
+%\usepackage{titlesec}
+%\usepackage{etoolbox}
+%\preto{\section}{\clearpage}
+%\titlespacing*{\section}{0pt}{0pt}{1ex}
+\usepackage{sectsty}
+\sectionfont{\clearpage}

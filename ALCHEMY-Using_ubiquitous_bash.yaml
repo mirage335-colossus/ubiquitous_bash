@@ -22,12 +22,12 @@ metadata:
   #date: "2025-06-15"
   lang: "en"
   toc: false
-  toc-depth: 1
+  toc-depth: 2
   top-level-division: chapter
 
 variables:
-  documentclass: article
-  #documentclass: book
+  #documentclass: article
+  documentclass: book
   papersize: us-letter
   #papersize: a4
   geometry: 

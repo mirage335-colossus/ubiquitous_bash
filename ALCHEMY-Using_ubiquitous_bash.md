@@ -261,6 +261,8 @@ blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah
 
 asciinema ... animated png ? ...
 
+### 
+
 
 
 
@@ -278,9 +280,136 @@ _useQemu
 
 
 
-# Obscure - Virtualization
+# _Chapter3_ &nbsp; **Obscure - Virtualization** `**`blah blah blah blah blah`**`
 
 vBoxConvert, hardware config, etc ?
 
+
+blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
 
 
