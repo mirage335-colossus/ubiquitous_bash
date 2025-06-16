@@ -25,10 +25,17 @@ metadata:
   top-level-division: chapter
 
 variables:
-  documentclass: book
+  documentclass: article
+  papersize: us-letter
+  #papersize: a4
+  geometry: 
+    - margin=0.25in
+    - top=0.25in
+    - bottom=0.25in
+    - left=0.25in
+    - right=0.25in
   classoption:
     - oneside
     - openany
-  geometry: margin=1in
   fontsize: 11pt
   mainfont: "TeX Gyre Pagella"
