@@ -1,16 +1,9 @@
----
-title:       "Using ubiquitous_bash"
-subtitle:    "ALCHEMY Glue Book"
-author:      "mirage335, et. al."
-date:        "2025-06-15"
----
 
-<!-- Title block for Markdown viewers only -->
-ALCHEMY
-
+<!-- Title -->
 Using "ubiquitous_bash"
 
-Glue Book
+<!-- SubTitle - Informal Name-->
+ALCHEMY Glue Book
 
 <img src="_lib/ALCHEMY/00-titlePage/mascott-ChatGPT_o3-small.png" alt="Shell, Glue, Box, Duct Tape">
 

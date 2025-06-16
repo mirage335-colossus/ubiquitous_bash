@@ -14,10 +14,11 @@ include-before-body:
   - ALCHEMY-Using_ubiquitous_bash-toc.tex
 
 metadata:
-  title: "Using ubiquitous_bash"
-  subtitle: "ALCHEMY Glue Book"
-  author: "mirage335, et. al."
-  date: "2025-06-15"
+  # ATTENTION: Increment the date only when a new 'edition' is strictly necessary to correct outright misleading errors.
+  #title: "Using ubiquitous_bash"
+  #subtitle: "ALCHEMY Glue Book"
+  #author: "mirage335, et. al."
+  #date: "2025-06-15"
   lang: "en"
   toc: false
   toc-depth: 1
