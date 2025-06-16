@@ -25,6 +25,10 @@ metadata:
   top-level-division: chapter
 
 variables:
+  documentclass: book
+  classoption:
+    - oneside
+    - openany
   geometry: margin=1in
   fontsize: 11pt
   mainfont: "TeX Gyre Pagella"
