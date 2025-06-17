@@ -167,7 +167,7 @@ Although not all AI LLM models may be suitable for such roleplay, at least some 
 
 
 
-## _Chapter1_ **Best Practices**
+# _Chapter1_ **Best Practices**
 
 ### **Run Internal Functions and Sub-Functions**
 
@@ -197,6 +197,8 @@ There is of course the `_setup_ubiquitous` function which will add most function
 ```
 _scope
 
+TODO: Example output. Show _getScriptAbsoluteLocation , $scriptAbsoluteLocation .
+ 
 ```
 
 For the purposes which "ubiquitous_bash" and similar bash scripts are used for, this is like having the 'drop-down console' in a video game with a text editor to rewrite and rerun the internal functions of object physics and NPC scripting.
@@ -213,15 +215,17 @@ Over time, if you are not already familiar with typical Linux/UNIX commands and 
 
 Preferred and recommended technique to diagnose causes of "ubiquitous_bash" errors and failures is to `iteratively edit the code`, narrowing down the commands which could be causing an error or exit, changing parameters, running commands interactively in a bash shell, and as a last resort, rewriting functions.
 
+Disable the checksum of "ubiquitous_bash" scripts to directly edit the script file (ie. './ubiquitous_bash.sh' ) itself.
+
 ```bash
 export ub_setScriptChecksum_disable=true
 ```
 
 #### Narrowing down the commands which could be causing an `error` or `exit`.
 
-Place 
+Place `echo _____1 > /dev/tty` , `echo _____2 > /dev/tty` , `echo _____3 > /dev/tty` and similarly highly visible diagnostic message commands before , near , and after, commands which might be causing a failure. By observing which diagnostic messages are shown before the error or exit occurs, narrower and narrower bounds can be put on which commands could be causing the issue.
 
-### Adding experimental functions.
+### Adding experimental functions with ops overrides.
 
 A quick way to determine what bash commands will do in an "ubiquitous_bash" context is to edit the optional `ops.sh` file.
 
@@ -248,7 +252,11 @@ Any functions defined in this `ops.sh` script will be added to the available fun
 ./ubiquitous_bash.sh _experiment
 ```
 
+Temporarily bypassing `compile` is also possible with `ops.sh`, by redundantly importing the same source file already compiled into an "ubiquitous_bash" script. This overrides the compiled in previous definition of the functions, causing all changes to a source file to take effect on the next run of the script, instead of after another compile.
 
+```bash
+. "$scriptAbsoluteFolder"/"structure"/installation.sh
+```
 
 
 
@@ -256,18 +264,16 @@ Any functions defined in this `ops.sh` script will be added to the available fun
 
 ### **Debug Tracing**
 
-Beyond that, the preferred and recommended techniques to diagnose it is also possible to cause the 'ubiquitous_bash.sh' shell script itself t
-
-
-iterative changes (such as placing `echo 1`, `echo 2`, etc, throughout the code to narrow down the causes of an error or exit by dividing the code into smaller and smaller regions where the echo statement )
+Beyond that, "ubiquitous_bash" has a "ubDEBUG" , which if set to true, will cause the bash shell to verbosely detail the script's progress. This is done by setting bash shell configuration and function return 'traps' to echo commands run and function returns .
 
 ```bash
 export ubDEBUG=true
 export ub_setScriptChecksum_disable=true
 ```
 
+TODO: Example terminal command/output .
 
-
+TODO: Mention this is especially useful to 'codex' , etc.
 
 
 
