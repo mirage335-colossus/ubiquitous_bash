@@ -109,7 +109,9 @@ env DEBIAN_FRONTEND=noninteractive apt-get install coreutils -y ;\
 env DEBIAN_FRONTEND=noninteractive apt install python3 python3-pip git -y ;\ 
 env DEBIAN_FRONTEND=noninteractive apt-get install libcurl4-openssl-dev -y ;\ 
 env DEBIAN_FRONTEND=noninteractive apt-get install ffmpeg -y ;\ 
-env DEBIAN_FRONTEND=noninteractive apt-get install asciinema -y
+env DEBIAN_FRONTEND=noninteractive apt-get install asciinema -y ;\ 
+env DEBIAN_FRONTEND=noninteractive apt-get install gifsicle imagemagick apngasm ffmpeg -y ;\ 
+env DEBIAN_FRONTEND=noninteractive apt-get install gifsicle imagemagick apngasm ffmpeg -y webp
 
 
 # ATTRIBUTION-AI: ChatGPT o3  2025-06-05
@@ -154,7 +156,8 @@ RUN echo 'net.core.bpf_jit_harden=1' | sudo -n tee /etc/sysctl.d/99-nvidia-worka
 #env DEBIAN_FRONTEND=noninteractive apt-get install -y nodejs ;\ 
 #npm install -g @openai/codex ;\ 
 #npm install -g @anthropic-ai/claude-code
-RUN /workspace/ubiquitous_bash/ubiquitous_bash.sh _setup_codex
+RUN /workspace/ubiquitous_bash/ubiquitous_bash.sh _setup_codex ;\ 
+/workspace/ubiquitous_bash/ubiquitous_bash.sh _setup_asciinema_convert
 
 
 # ###

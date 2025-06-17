@@ -39,7 +39,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='3620520443'
-export ub_setScriptChecksum_contents='375686718'
+export ub_setScriptChecksum_contents='3605883641'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -1029,6 +1029,13 @@ then
 	#}
 	#alias l='_wsl'
 	alias u='_wsl'
+	
+	# MSWindows native 'PowerSession' apparently does not support 'asciinema cat'.
+	#alias asciinema='PowerSession'
+
+	# Optional. Other than recording, and some issues with 'asciinema cat', pip installed 'asciinema' seems usable .
+	# Use _asciinema_record to record .
+	alias asciinema='wsl -d ubdist asciinema'
 
 	#alias codex='wsl -d ubdist codex'
 	alias codex='wsl -d ubdist "~/.ubcore/ubiquitous_bash/ubcore.sh" _codexBin-usr_bin_node'
@@ -1214,9 +1221,8 @@ _userMSW() {
 	"${processedArgs[@]}"
 }
 
-
-_powershell() {
-    local currentPowershellBinary
+_discover_powershell() {
+	local currentPowershellBinary
     currentPowershellBinary=$(find /cygdrive/c/Windows/System32/WindowsPowerShell/ -name powershell.exe 2>/dev/null | head -n 1)
     [[ "$currentPowershellBinary" == "" ]] && currentPowershellBinary=$(find /cygdrive/d/Windows/System32/WindowsPowerShell/ -name powershell.exe 2>/dev/null | head -n 1)
     [[ "$currentPowershellBinary" == "" ]] && currentPowershellBinary=$(find /cygdrive/e/Windows/System32/WindowsPowerShell/ -name powershell.exe 2>/dev/null | head -n 1)
@@ -1226,6 +1232,15 @@ _powershell() {
     [[ "$currentPowershellBinary" == "" ]] && currentPowershellBinary=$(find /mnt/d/Windows/System32/WindowsPowerShell/ -name powershell.exe 2>/dev/null | head -n 1)
     [[ "$currentPowershellBinary" == "" ]] && currentPowershellBinary=$(find /mnt/e/Windows/System32/WindowsPowerShell/ -name powershell.exe 2>/dev/null | head -n 1)
     [[ "$currentPowershellBinary" == "" ]] && currentPowershellBinary=$(find /mnt/f/Windows/System32/WindowsPowerShell/ -name powershell.exe 2>/dev/null | head -n 1)
+
+	_safeEcho "$currentPowershellBinary"
+	[[ "$currentPowershellBinary" != "" ]] && return 0
+	return 1
+}
+
+_powershell() {
+    local currentPowershellBinary
+    currentPowershellBinary=$(_discover_powershell)
 
 	#_userMSW "$currentPowershellBinary" "$@"
     "$currentPowershellBinary" "$@"
@@ -12266,6 +12281,10 @@ _getMost_debian11_install() {
 	_getMost_backend_aptGetInstall tex-gyre
 	_getMost_backend_aptGetInstall texlive-fonts-recommended
 	
+	_getMost_backend_aptGetInstall asciinema
+	_getMost_backend_aptGetInstall gifsicle imagemagick apngasm ffmpeg
+	_getMost_backend_aptGetInstall webp
+	
 	
 	
 	_getMost_backend_aptGetInstall pavucontrol
@@ -13769,6 +13788,14 @@ _get_workarounds() {
 _get_npm() {
     _mustGetSudo
 
+    if _if_cygwin
+    then
+        ! type npm > /dev/null 2>&1 && echo 'request: https://github.com/coreybutler/nvm-windows/releases' && exit 1
+
+        type npm > /dev/null 2>&1
+        return
+    fi
+
     ##sudo -n env DEBIAN_FRONTEND=noninteractive apt-get install -y curl
     _getDep curl
 
@@ -13782,6 +13809,9 @@ _get_npm() {
     #sudo -n npm install -g @openai/codex
     ##npm install -g @anthropic-ai/claude-code
     #sudo -n npm install -g @anthropic-ai/claude-code
+
+    ! type npm > /dev/null 2>&1 && exit 1
+    return 0
 }
 
 
@@ -14904,6 +14934,9 @@ _custom_ubcp_prog() {
 }
 _custom_ubcp_sequence() {
 	_cygwin_workaround_dev_stderr
+
+    local functionEntryPWD
+    functionEntryPWD="$PWD"
     
     _messageNormal '_custom_ubcp: apt-cyg --quiet'
 	_messagePlain_probe apt-cyg --quiet install ImageMagick
@@ -14913,6 +14946,47 @@ _custom_ubcp_sequence() {
 	_messageNormal '_custom_ubcp: pip3'
 	_messagePlain_probe pip3 install piexif
     pip3 install piexif 2>&1
+
+
+
+    _messageNormal '_custom_ubcp: runpodctl'
+
+    #wget -qO- 'https://cli.runpod.net' | sed 's/\[ "\$EUID" -ne 0 \]/false/' | bash
+
+    mkdir -p "$HOME"/core/installations
+    cd "$HOME"/core/installations
+    _gitBest clone --recursive --depth 1 git@github.com:runpod/runpodctl.git
+    
+    cd "$HOME"/bin/
+    rm -f runpodctl.exe
+    #wget 'https://github.com/runpod/runpodctl/releases/download/v1.14.3/runpodctl-windows-amd64.exe' -O runpodctl.exe
+    wget 'https://github.com/runpod/runpodctl/releases/download/v1.14.4/runpodctl-windows-amd64.exe' -O runpodctl.exe
+    chmod ugoa+rx runpodctl.exe
+
+    cd "$functionEntryPWD"
+
+
+    # https://github.com/asciinema/asciinema/issues/467
+    # wsl asciinema rec -c cmd.exe
+    # https://github.com/Watfaq/PowerSession-rs
+    _messageNormal '_custom_ubcp: PowerSession - asciinema alternative for MSWindows'
+
+    mkdir -p "$HOME"/core/installations
+    cd "$HOME"/core/installations
+    _gitBest clone --recursive --depth 1 git@github.com:Watfaq/PowerSession-rs.git
+    
+    cd "$HOME"/bin/
+    rm -f PowerSession.exe
+    wget 'https://github.com/Watfaq/PowerSession-rs/releases/latest/download/PowerSession.exe' -O PowerSession.exe
+    chmod ugoa+rx PowerSession.exe
+
+
+    cd "$functionEntryPWD"
+
+
+
+
+    cd "$functionEntryPWD"
 
     _cygwin_workaround_dev_stderr
 	_custom_ubcp_prog "$@"
@@ -15067,6 +15141,171 @@ _stopwatch() {
 	[[ "$currentExitStatus_self" != "0" ]] && return "$currentExitStatus_self"
 	return 0
 }
+
+
+
+
+
+
+_setup_asciinema_convert() {
+    _mustGetSudo
+
+    _get_npm
+
+    if _if_cygwin
+    then
+        # MSW user permissions seems sufficient to call npm .
+        sudo() {
+            [[ "$1" == "-n" ]] && shift
+            "$@"
+        }
+    fi
+
+    sudo -n npm install -g asciicast2gif
+}
+
+#_asciinema_record 'command' [./rec.log]
+#./ubiquitous_bash.sh _asciinema_record "/home/root/'a b'/ubiquitous_bash.sh _scope ." "record.txt"
+#./ubiquitous_bash.sh _asciinema_record '/home/root/"a b"/ubiquitous_bash.sh _scope .' "record.txt"
+#./ubiquitous_bash.sh _asciinema_record "bash" "record.txt"
+#./ubiquitous_bash.sh _asciinema_record 'echo "$PATH"' "record.txt"
+#./ubiquitous_bash.sh _asciinema_record 'echo "$safeTmp"' "record.txt"
+_asciinema_record() {
+    local current_record_file
+    current_record_file="$2"
+    if ( [[ -d "$current_record_file" ]] || { [[ -L "$current_record_file" ]] && [[ -d "$(readlink -f "$current_record_file")" ]]; } )
+    then
+        current_record_file="$current_record_file"/rec_$(date +%Y-%m-%d.%H).log
+    fi
+    if [[ "$current_record_file" == "" ]]
+    then
+        current_record_file=./rec_$(date +%Y-%m-%d.%H).log
+    fi
+
+    rm -f "$current_record_file" > /dev/null 2>&1
+
+    # DUBIOUS - cannot directly inherit Cygwin/MSW environment, functions, session, "$safeTmp", etc. May be usable with '.embed.sh' or similar.
+    # Otherwise maybe the best asciinema backend for Cygwin/MSW .
+    # https://github.com/asciinema/asciinema/issues/467
+    if _if_cygwin && wsl -d ubdist true > /dev/null 2>&1 && ! wsl -d ubdist false > /dev/null 2>&1 && [[ force_asciinema_disable_wsl2 != "true" ]]
+    then
+        local current_bin_cmd_wsl
+        current_bin_cmd_wsl=$(type -P cmd 2>/dev/null)
+        current_bin_cmd_wsl=$(cygpath --mixed "$current_bin_cmd_wsl")
+        current_bin_cmd_wsl=$(wsl -d ubdist wslpath "$current_bin_cmd_wsl")
+
+        local current_bin_bash_wsl
+        current_bin_bash_wsl=$(cygpath --mixed /bin/bash)
+        #current_bin_bash_wsl=$(wsl -d ubdist wslpath "$current_bin_bash_wsl")
+
+
+
+        # ### Backend: WSL2 .
+
+        #./ubiquitous_bash.sh _asciinema_record "/home/root/'a b'/ubiquitous_bash.sh _scope ." "record.txt"
+        #_messagePlain_probe_safe wsl -d ubdist asciinema rec --command "$current_bin_cmd_wsl"' /C '"$current_bin_bash_wsl"' -c "'"$1"'"' "$current_record_file"
+        #wsl -d ubdist asciinema rec --command "$current_bin_cmd_wsl"' /C '"$current_bin_bash_wsl"' -c "'"$1"'"' "$current_record_file"
+        #return
+        
+        #./ubiquitous_bash.sh _asciinema_record 'echo "$PATH"' "record.txt"
+        #./ubiquitous_bash.sh _asciinema_record '/home/root/"a b"/ubiquitous_bash.sh _scope .' "record.txt"
+        _messagePlain_probe_safe wsl -d ubdist asciinema rec --command "$current_bin_cmd_wsl"' /C '"$current_bin_bash_wsl"' -c '"'""$1""'" "$current_record_file"
+        wsl -d ubdist asciinema rec --command "$current_bin_cmd_wsl"' /C '"$current_bin_bash_wsl"' -c '"'""$1""'" "$current_record_file"
+        return
+
+
+        
+    fi
+
+    # https://github.com/asciinema/asciinema/issues/467
+    if _if_cygwin && type PowerSession > /dev/null 2>&1 && [[ force_asciinema_disable_native != "true" ]]
+    then
+        #PowerSession rec --command 'bash ./ubiquitous_bash.sh _scope .' "$current_record_file"
+
+        # Discouraged. Tends to record the 'clear' command, etc, causing inconvenience.
+        #wsl asciinema rec -c '~/.ubcore/ubiquitous_bash/ubcore.sh _powershell C:\_bash'
+
+        # CAUTION: Native MSW calling bash directly through cmd/powershell directly is STRONGLY DISCOURAGED.
+        # Do NOT use such tricks for Python, etc. Do NOT rely on such tricks for necessary functionality. Instrumentation ONLY.
+        local current_bin_bash=$(cygpath -w /bin/bash | sed 's/\\/\\\\/g')
+
+
+        local current_bin_powershell
+        #current_bin_powershell=$(_discover_powershell)
+        #current_bin_powershell=$(type -P powershell)
+        #current_bin_powershell=$(cygpath -w "$current_bin_powershell")
+        current_bin_powershell="powershell"
+
+        ##_powershell -Command "$current_bin_bash"" -c '"'bash ./ubiquitous_bash.sh _scope .'"'"
+        ##PowerSession rec --command "$current_bin_powershell"' -Command '"$current_bin_bash"" -c '"' ./ubiquitous_bash.sh _scope . '"'" "$current_record_file"
+        #PowerSession rec --command "$current_bin_powershell"' -Command '"$current_bin_bash"" -c '"''"$1"''"'" "$current_record_file"
+        #return
+
+        local current_bin_cmd
+        current_bin_cmd="cmd"
+        #"$current_bin_cmd" /C "$current_bin_bash" '-c' 'bash ./ubiquitous_bash.sh _scope .'
+        #PowerSession rec --command  "$current_bin_cmd"' /C '"$current_bin_bash"" '-c' ""'"'./ubiquitous_bash.sh _scope .'"'" "$current_record_file"
+        #PowerSession rec --command  "$current_bin_cmd"' /C '"$current_bin_bash"" '-c' ""'"''"$1"''"'" "$current_record_file"
+        #return
+
+
+
+        #PowerSession rec --command "cmd /C C:\\core\\infrastructure\\ubcp\\cygwin\\bin\\bash.exe /home/root/'a b'/ubiquitous_bash.sh _scope ." record.txt
+
+        #PowerSession rec --command "powershell -Command C:\\core\\infrastructure\\ubcp\\cygwin\\bin\\bash.exe /home/root/'a b'/ubiquitous_bash.sh _scope ." record.txt
+        #PowerSession rec --command "$current_bin_powershell -Command $current_bin_bash $1" "$current_record_file"
+
+
+
+        # ### Backend: Native/MSWindows - cmd .
+
+        #./ubiquitous_bash.sh _asciinema_record "/home/root/'a b'/ubiquitous_bash.sh _scope ." "record.txt"
+        #_messagePlain_probe_safe PowerSession rec --command "$current_bin_cmd"' /C '"$current_bin_bash"' -c "'"$1"'"' "$current_record_file"
+        #PowerSession rec --command "$current_bin_cmd"' /C '"$current_bin_bash"' -c "'"$1"'"' "$current_record_file"
+        #return
+
+        #./ubiquitous_bash.sh _asciinema_record '/home/root/"a b"/ubiquitous_bash.sh _scope .' "record.txt"
+        #./ubiquitous_bash.sh _asciinema_record 'echo "$safeTmp"' "record.txt"
+        _messagePlain_probe_safe PowerSession rec --command "$current_bin_cmd"' /C '"$current_bin_bash"' -c '"'""$1""'" "$current_record_file"
+        PowerSession rec --command "$current_bin_cmd"' /C '"$current_bin_bash"' -c '"'""$1""'" "$current_record_file"
+        return
+
+
+
+        #_messagePlain_probe_safe PowerSession rec --command "$current_bin_powershell"' -Command '"$current_bin_bash"' -c "'"$1"'"' "$current_record_file"
+        #PowerSession rec --command "$current_bin_powershell"' -Command '"$current_bin_bash"' -c "'"$1"'"' "$current_record_file"
+        #_messagePlain_probe_safe PowerSession rec --command "$current_bin_powershell"' -Command '"$current_bin_bash"' -c '"'""$1""'" "$current_record_file"
+        #PowerSession rec --command "$current_bin_powershell"' -Command '"$current_bin_bash"' -c '"'""$1""'" "$current_record_file"
+
+
+
+        #PowerSession rec --command powershell' -Command "C:\\core\\infrastructure\\ubcp\\cygwin\\bin\\bash.exe" "-c" ''"/home/root/'a b'/ubiquitous_bash.sh _scope ."' record.txt
+        #PowerSession rec --command powershell' -Command "C:\\core\\infrastructure\\ubcp\\cygwin\\bin\\bash.exe" "-c" '"\"/home/root/'a b'/ubiquitous_bash.sh _scope .\"" record.txt
+        #PowerSession rec --command powershell' -Command "C:\\core\\infrastructure\\ubcp\\cygwin\\bin\\bash.exe" "-c" ''"\"echo x\""' record.txt
+        #PowerSession rec --command powershell' -Command "C:\\core\\infrastructure\\ubcp\\cygwin\\bin\\bash.exe" "-c" "\"echo x\""' record.txt
+        #PowerSession rec --command powershell' -Command "C:\\core\\infrastructure\\ubcp\\cygwin\\bin\\bash.exe" "-c" "'"'echo x'"'"' record.txt
+        #PowerSession rec --command powershell' -Command "C:\\core\\infrastructure\\ubcp\\cygwin\\bin\\bash.exe" "-c" "\"'"echo x"'\""' record.txt
+
+
+
+        # Backend: Native/MSWindows - powershell .
+
+        #./ubiquitous_bash.sh _asciinema_record '/home/root/"a b"/ubiquitous_bash.sh _scope .' "record.txt"
+        ##
+        ##
+        #
+        #./ubiquitous_bash.sh _asciinema_record "/home/root/'a b'/ubiquitous_bash.sh _scope ." "record.txt"
+        #_messagePlain_probe_safe PowerSession rec --command powershell' -Command "C:\\core\\infrastructure\\ubcp\\cygwin\\bin\\bash.exe" "-c" "\"'"$1"'\""' "$current_record_file"
+        #PowerSession rec --command powershell' -Command "C:\\core\\infrastructure\\ubcp\\cygwin\\bin\\bash.exe" "-c" "\"'"$1"'\""' "$current_record_file"
+        #return
+
+
+
+    fi
+
+    asciinema rec --command "$1" "$current_record_file"
+}
+
 
 
 
@@ -28188,7 +28427,9 @@ env DEBIAN_FRONTEND=noninteractive apt-get install coreutils -y ;\
 env DEBIAN_FRONTEND=noninteractive apt install python3 python3-pip git -y ;\ 
 env DEBIAN_FRONTEND=noninteractive apt-get install libcurl4-openssl-dev -y ;\ 
 env DEBIAN_FRONTEND=noninteractive apt-get install ffmpeg -y ;\ 
-env DEBIAN_FRONTEND=noninteractive apt-get install asciinema -y
+env DEBIAN_FRONTEND=noninteractive apt-get install asciinema -y ;\ 
+env DEBIAN_FRONTEND=noninteractive apt-get install gifsicle imagemagick apngasm ffmpeg -y ;\ 
+env DEBIAN_FRONTEND=noninteractive apt-get install gifsicle imagemagick apngasm ffmpeg -y webp
 
 
 # ATTRIBUTION-AI: ChatGPT o3  2025-06-05
@@ -28233,7 +28474,8 @@ RUN echo 'net.core.bpf_jit_harden=1' | sudo -n tee /etc/sysctl.d/99-nvidia-worka
 #env DEBIAN_FRONTEND=noninteractive apt-get install -y nodejs ;\ 
 #npm install -g @openai/codex ;\ 
 #npm install -g @anthropic-ai/claude-code
-RUN /workspace/ubiquitous_bash/ubiquitous_bash.sh _setup_codex
+RUN /workspace/ubiquitous_bash/ubiquitous_bash.sh _setup_codex ;\ 
+/workspace/ubiquitous_bash/ubiquitous_bash.sh _setup_asciinema_convert
 
 
 # ###
@@ -58762,36 +59004,36 @@ _test-shell-cygwin() {
 		_messagePlain_request 'request: reduce the length of PATH variable'
 	fi
 	
-	
-	
-	local currentPathCount
-	currentPathCount=$(echo "$MSWEXTPATH" | grep -o ';\|:' | wc -l | tr -dc '0-9')
-	if [[ "$currentPathCount" -gt 50 ]] && [[ "$CI" == "" ]]
+
+
+	# Discouraged. NOT guaranteed, may be removed if unmaintainable.
+	# Inheritance of variables as a means of communicating or passing parameters is not the point. Inheritance is tested to ensure an entirely different 'ubcp' environment, script, '$safeTmp', etc, is NOT used.
+	export ub_sanity_special="mustInherit"
+	if _if_cygwin
 	then
-		echo 'fail: count: MSWEXTPATH: '"$currentPathCount"
-		_messageFAIL
+		local currentResult
+		currentResult=""
+
+		local current_bin_bash
+		current_bin_bash=$(cygpath -w /bin/bash)
+
+		currentResult=$(cmd /C "$current_bin_bash" '-c' 'echo $ub_sanity_special')
+		[[ "$currentResult" != "mustInherit" ]] && echo 'fail: cmd /bin/bash: mustInherit' && _messageFAIL && return 1
+
+		currentResult=$(cmd /C "$current_bin_bash" '-c' 'echo "$safeTmp"')
+		[[ "$currentResult" != "$safeTmp" ]] && echo 'fail: cmd /bin/bash: inherit: safeTmp' && _messageFAIL && return 1
+
+
+		current_bin_bash=$(cygpath -w /bin/bash | sed 's/\\/\\\\/g')
+
+		currentResult=$(_powershell -Command "$current_bin_bash"" -c 'echo "'"$ub_sanity_special"'"'")
+		[[ "$currentResult" != "mustInherit" ]] && echo 'fail: powershell /bin/bash: mustInherit' && _messageFAIL && return 1
+
+		currentResult=$(_powershell -Command "$current_bin_bash"" -c 'echo "'"$safeTmp"'"'")
+		[[ "$currentResult" != "$safeTmp" ]] && echo 'fail: powershell /bin/bash: inherit: safeTmp' && _messageFAIL && return 1
 	fi
-	if [[ "$currentPathCount" -gt 44 ]]
-	then
-		echo 'warn: count: MSWEXTPATH: '"$currentPathCount"
-		echo 'warn: MSWEXTPATH may be ignored by default'
-		_messagePlain_request 'request: reduce the length of PATH variable'
-	fi
-	
-	
-	if [[ "$currentPathCount" -gt 32 ]]
-	then
-		echo 'warn: count: MSWEXTPATH: '"$currentPathCount"
-		echo 'warn: MSWEXTPATH exceeds preferred 32'
-		_messagePlain_request 'request: reduce the length of PATH variable'
-	fi
-	if [[ "$currentPathCount" -gt 34 ]]
-	then
-		echo 'warn: count: MSWEXTPATH: '"$currentPathCount"
-		echo 'warn: MSWEXTPATH exceeds preferred 34'
-		_messagePlain_request 'request: reduce the length of PATH variable'
-	fi
-	
+	unset ub_sanity_special
+
 	
 	
 	# Although use case specific (eg. flight sim with usual desktop applications installed) test cases may be necessary for MSW, to avoid ambiguity in expectations that every test includes an explicit PASS statement, a call to '_messagePASS' is still given.
@@ -60601,6 +60843,7 @@ _init_deps() {
 	
 	export enUb_dev=""
 	export enUb_dev_heavy=""
+	export enUb_dev_heavy_asciinema=""
 	export enUb_dev_heavy_atom=""
 	
 	export enUb_generic=""
@@ -60713,6 +60956,13 @@ _deps_dev() {
 _deps_dev_heavy() {
 	_deps_notLean
 	export enUb_dev_heavy="true"
+}
+
+_deps_dev_heavy_asciinema() {
+	_deps_notLean
+	_deps_get_npm
+	#export enUb_dev_heavy="true"
+	export enUb_dev_heavy_asciinema="true"
 }
 
 _deps_dev_heavy_atom() {
@@ -61662,6 +61912,9 @@ _compile_bash_deps() {
 	then
 		_deps_dev_ai
 		
+		_deps_dev_heavy
+		_deps_dev_heavy_asciinema
+		
 		_deps_dev_buildOps
 		
 		_deps_notLean
@@ -61900,6 +62153,7 @@ _compile_bash_deps() {
 		_deps_dev_ai
 		
 		_deps_dev_heavy
+		_deps_dev_heavy_asciinema
 		#_deps_dev_heavy_atom
 		_deps_dev
 		_deps_dev_buildOps
@@ -62021,6 +62275,7 @@ _compile_bash_deps() {
 		_deps_dev_ai
 		
 		_deps_dev_heavy
+		_deps_dev_heavy_asciinema
 		#_deps_dev_heavy_atom
 		_deps_dev
 		_deps_dev_buildOps
@@ -62164,6 +62419,7 @@ _compile_bash_deps() {
 		_deps_dev_ai
 		
 		_deps_dev_heavy
+		_deps_dev_heavy_asciinema
 		#_deps_dev_heavy_atom
 		_deps_dev
 		_deps_dev_buildOps
@@ -62450,6 +62706,8 @@ _compile_bash_utilities() {
 	
 	[[ "$enUb_dev_heavy" == "true" ]] && includeScriptList+=( "instrumentation"/bashdb/bashdb.sh )
 	( [[ "$enUb_notLean" == "true" ]] || [[ "$enUb_stopwatch" == "true" ]] ) && includeScriptList+=( "instrumentation"/profiling/stopwatch.sh )
+	
+	[[ "$enUb_dev_heavy" == "true" ]] && includeScriptList+=( "instrumentation"/asciinema/asciinema.sh )
 	
 	[[ "$enUb_generic" == "true" ]] && includeScriptList+=( "generic"/generic.sh )
 }

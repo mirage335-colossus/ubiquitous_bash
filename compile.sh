@@ -39,7 +39,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='3620520443'
-export ub_setScriptChecksum_contents='3006637210'
+export ub_setScriptChecksum_contents='1489964620'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -1029,6 +1029,13 @@ then
 	#}
 	#alias l='_wsl'
 	alias u='_wsl'
+	
+	# MSWindows native 'PowerSession' apparently does not support 'asciinema cat'.
+	#alias asciinema='PowerSession'
+
+	# Optional. Other than recording, and some issues with 'asciinema cat', pip installed 'asciinema' seems usable .
+	# Use _asciinema_record to record .
+	alias asciinema='wsl -d ubdist asciinema'
 
 	#alias codex='wsl -d ubdist codex'
 	alias codex='wsl -d ubdist "~/.ubcore/ubiquitous_bash/ubcore.sh" _codexBin-usr_bin_node'
@@ -1214,9 +1221,8 @@ _userMSW() {
 	"${processedArgs[@]}"
 }
 
-
-_powershell() {
-    local currentPowershellBinary
+_discover_powershell() {
+	local currentPowershellBinary
     currentPowershellBinary=$(find /cygdrive/c/Windows/System32/WindowsPowerShell/ -name powershell.exe 2>/dev/null | head -n 1)
     [[ "$currentPowershellBinary" == "" ]] && currentPowershellBinary=$(find /cygdrive/d/Windows/System32/WindowsPowerShell/ -name powershell.exe 2>/dev/null | head -n 1)
     [[ "$currentPowershellBinary" == "" ]] && currentPowershellBinary=$(find /cygdrive/e/Windows/System32/WindowsPowerShell/ -name powershell.exe 2>/dev/null | head -n 1)
@@ -1226,6 +1232,15 @@ _powershell() {
     [[ "$currentPowershellBinary" == "" ]] && currentPowershellBinary=$(find /mnt/d/Windows/System32/WindowsPowerShell/ -name powershell.exe 2>/dev/null | head -n 1)
     [[ "$currentPowershellBinary" == "" ]] && currentPowershellBinary=$(find /mnt/e/Windows/System32/WindowsPowerShell/ -name powershell.exe 2>/dev/null | head -n 1)
     [[ "$currentPowershellBinary" == "" ]] && currentPowershellBinary=$(find /mnt/f/Windows/System32/WindowsPowerShell/ -name powershell.exe 2>/dev/null | head -n 1)
+
+	_safeEcho "$currentPowershellBinary"
+	[[ "$currentPowershellBinary" != "" ]] && return 0
+	return 1
+}
+
+_powershell() {
+    local currentPowershellBinary
+    currentPowershellBinary=$(_discover_powershell)
 
 	#_userMSW "$currentPowershellBinary" "$@"
     "$currentPowershellBinary" "$@"
@@ -6514,6 +6529,7 @@ _init_deps() {
 	
 	export enUb_dev=""
 	export enUb_dev_heavy=""
+	export enUb_dev_heavy_asciinema=""
 	export enUb_dev_heavy_atom=""
 	
 	export enUb_generic=""
@@ -6626,6 +6642,13 @@ _deps_dev() {
 _deps_dev_heavy() {
 	_deps_notLean
 	export enUb_dev_heavy="true"
+}
+
+_deps_dev_heavy_asciinema() {
+	_deps_notLean
+	_deps_get_npm
+	#export enUb_dev_heavy="true"
+	export enUb_dev_heavy_asciinema="true"
 }
 
 _deps_dev_heavy_atom() {
@@ -7575,6 +7598,9 @@ _compile_bash_deps() {
 	then
 		_deps_dev_ai
 		
+		_deps_dev_heavy
+		_deps_dev_heavy_asciinema
+		
 		_deps_dev_buildOps
 		
 		_deps_notLean
@@ -7813,6 +7839,7 @@ _compile_bash_deps() {
 		_deps_dev_ai
 		
 		_deps_dev_heavy
+		_deps_dev_heavy_asciinema
 		#_deps_dev_heavy_atom
 		_deps_dev
 		_deps_dev_buildOps
@@ -7934,6 +7961,7 @@ _compile_bash_deps() {
 		_deps_dev_ai
 		
 		_deps_dev_heavy
+		_deps_dev_heavy_asciinema
 		#_deps_dev_heavy_atom
 		_deps_dev
 		_deps_dev_buildOps
@@ -8077,6 +8105,7 @@ _compile_bash_deps() {
 		_deps_dev_ai
 		
 		_deps_dev_heavy
+		_deps_dev_heavy_asciinema
 		#_deps_dev_heavy_atom
 		_deps_dev
 		_deps_dev_buildOps
@@ -8363,6 +8392,8 @@ _compile_bash_utilities() {
 	
 	[[ "$enUb_dev_heavy" == "true" ]] && includeScriptList+=( "instrumentation"/bashdb/bashdb.sh )
 	( [[ "$enUb_notLean" == "true" ]] || [[ "$enUb_stopwatch" == "true" ]] ) && includeScriptList+=( "instrumentation"/profiling/stopwatch.sh )
+	
+	[[ "$enUb_dev_heavy" == "true" ]] && includeScriptList+=( "instrumentation"/asciinema/asciinema.sh )
 	
 	[[ "$enUb_generic" == "true" ]] && includeScriptList+=( "generic"/generic.sh )
 }

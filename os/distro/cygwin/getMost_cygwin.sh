@@ -833,6 +833,9 @@ _custom_ubcp_prog() {
 }
 _custom_ubcp_sequence() {
 	_cygwin_workaround_dev_stderr
+
+    local functionEntryPWD
+    functionEntryPWD="$PWD"
     
     _messageNormal '_custom_ubcp: apt-cyg --quiet'
 	_messagePlain_probe apt-cyg --quiet install ImageMagick
@@ -842,6 +845,47 @@ _custom_ubcp_sequence() {
 	_messageNormal '_custom_ubcp: pip3'
 	_messagePlain_probe pip3 install piexif
     pip3 install piexif 2>&1
+
+
+
+    _messageNormal '_custom_ubcp: runpodctl'
+
+    #wget -qO- 'https://cli.runpod.net' | sed 's/\[ "\$EUID" -ne 0 \]/false/' | bash
+
+    mkdir -p "$HOME"/core/installations
+    cd "$HOME"/core/installations
+    _gitBest clone --recursive --depth 1 git@github.com:runpod/runpodctl.git
+    
+    cd "$HOME"/bin/
+    rm -f runpodctl.exe
+    #wget 'https://github.com/runpod/runpodctl/releases/download/v1.14.3/runpodctl-windows-amd64.exe' -O runpodctl.exe
+    wget 'https://github.com/runpod/runpodctl/releases/download/v1.14.4/runpodctl-windows-amd64.exe' -O runpodctl.exe
+    chmod ugoa+rx runpodctl.exe
+
+    cd "$functionEntryPWD"
+
+
+    # https://github.com/asciinema/asciinema/issues/467
+    # wsl asciinema rec -c cmd.exe
+    # https://github.com/Watfaq/PowerSession-rs
+    _messageNormal '_custom_ubcp: PowerSession - asciinema alternative for MSWindows'
+
+    mkdir -p "$HOME"/core/installations
+    cd "$HOME"/core/installations
+    _gitBest clone --recursive --depth 1 git@github.com:Watfaq/PowerSession-rs.git
+    
+    cd "$HOME"/bin/
+    rm -f PowerSession.exe
+    wget 'https://github.com/Watfaq/PowerSession-rs/releases/latest/download/PowerSession.exe' -O PowerSession.exe
+    chmod ugoa+rx PowerSession.exe
+
+
+    cd "$functionEntryPWD"
+
+
+
+
+    cd "$functionEntryPWD"
 
     _cygwin_workaround_dev_stderr
 	_custom_ubcp_prog "$@"

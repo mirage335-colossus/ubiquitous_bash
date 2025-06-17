@@ -3,6 +3,7 @@ _init_deps() {
 	
 	export enUb_dev=""
 	export enUb_dev_heavy=""
+	export enUb_dev_heavy_asciinema=""
 	export enUb_dev_heavy_atom=""
 	
 	export enUb_generic=""
@@ -115,6 +116,13 @@ _deps_dev() {
 _deps_dev_heavy() {
 	_deps_notLean
 	export enUb_dev_heavy="true"
+}
+
+_deps_dev_heavy_asciinema() {
+	_deps_notLean
+	_deps_get_npm
+	#export enUb_dev_heavy="true"
+	export enUb_dev_heavy_asciinema="true"
 }
 
 _deps_dev_heavy_atom() {

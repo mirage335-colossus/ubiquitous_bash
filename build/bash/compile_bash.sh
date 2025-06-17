@@ -31,6 +31,9 @@ _compile_bash_deps() {
 	then
 		_deps_dev_ai
 		
+		_deps_dev_heavy
+		_deps_dev_heavy_asciinema
+		
 		_deps_dev_buildOps
 		
 		_deps_notLean
@@ -269,6 +272,7 @@ _compile_bash_deps() {
 		_deps_dev_ai
 		
 		_deps_dev_heavy
+		_deps_dev_heavy_asciinema
 		#_deps_dev_heavy_atom
 		_deps_dev
 		_deps_dev_buildOps
@@ -390,6 +394,7 @@ _compile_bash_deps() {
 		_deps_dev_ai
 		
 		_deps_dev_heavy
+		_deps_dev_heavy_asciinema
 		#_deps_dev_heavy_atom
 		_deps_dev
 		_deps_dev_buildOps
@@ -533,6 +538,7 @@ _compile_bash_deps() {
 		_deps_dev_ai
 		
 		_deps_dev_heavy
+		_deps_dev_heavy_asciinema
 		#_deps_dev_heavy_atom
 		_deps_dev
 		_deps_dev_buildOps
@@ -819,6 +825,8 @@ _compile_bash_utilities() {
 	
 	[[ "$enUb_dev_heavy" == "true" ]] && includeScriptList+=( "instrumentation"/bashdb/bashdb.sh )
 	( [[ "$enUb_notLean" == "true" ]] || [[ "$enUb_stopwatch" == "true" ]] ) && includeScriptList+=( "instrumentation"/profiling/stopwatch.sh )
+	
+	[[ "$enUb_dev_heavy" == "true" ]] && includeScriptList+=( "instrumentation"/asciinema/asciinema.sh )
 	
 	[[ "$enUb_generic" == "true" ]] && includeScriptList+=( "generic"/generic.sh )
 }

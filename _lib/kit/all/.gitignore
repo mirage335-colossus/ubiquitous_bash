@@ -123,6 +123,8 @@ awkvars.out
 *.log
 *.ldb
 
+*.cast
+
 **/*cache*
 **/*Cache*
 **/*LOG*

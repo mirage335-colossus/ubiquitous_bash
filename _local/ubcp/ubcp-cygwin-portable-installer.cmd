@@ -369,6 +369,10 @@ echo Creating [%Init_sh%]...
   REM echo  pip3 install -U 'huggingface_hub[cli]'
   echo  pip3 install --quiet --no-input --no-build-isolation -U "huggingface_hub[cli]" ^<^&100 ^>^&2
   echo  echo  install asciinema
+  REM May be removed. In practice, an alias may override any asciinema installation from Cygwin to either a native MSWindows alternative or WSL2 backend.
+  REM https://github.com/asciinema/asciinema/issues/467
+  REM wsl asciinema rec -c cmd.exe
+  REM https://github.com/Watfaq/PowerSession-rs
   echo  pip3 install --quiet --no-input --no-build-isolation -U "asciinema" ^<^&100 ^>^&2
   REM  echo
   REM  /usr/bin/echo

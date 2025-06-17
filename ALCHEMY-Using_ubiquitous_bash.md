@@ -156,11 +156,121 @@ Although not all AI LLM models may be suitable for such roleplay, at least some 
 
 
 
+
 # Formal Table Of Contents
 
 1. [# Tutorials](#tutorials)
 
 2. [Framework – Virtualization](#framework---virtualization)
+
+
+
+
+
+## _Chapter1_ **Best Practices**
+
+### **Run Internal Functions and Sub-Functions**
+
+Every "ubiquitous_bash" script will run a first parameter prefixed by an `_` underscore as an internal command.
+
+The bash commands implementing this as the last commands at the bottom of the script abbreviate to:
+
+```bash
+if [[ "$1" == '_'* ]]
+	"$@"
+    exit "$?"
+fi
+```
+
+Running Sub-Functions, not just end-user Functions, directly, experimentally is a compelling advantage of doing things the "ubiquitous_bash" way. 
+
+The '_test' function normally ensures all dependencies of a particular script are met, and very extensively tests sanity. That can take an hour, and doesn't say much about each of the hundreds or more individual tests. Instead, you can test just any one of the sub-functions, getting results and testing your work on that sub-function right away.
+
+```bash
+export ub_setScriptChecksum_disable=true
+./ubiquitous_bash.sh _test_getAbsoluteLocation
+echo $?
+```
+
+There is of course the `_setup_ubiquitous` function which will add most functions of the "ubiquitous_bash" project as commands directly in your interactive bash terminal, and a `_scope` function which will give you an interactive terminal in the environment of an "ubiquitous_bash" script itself. The `_scope` function is most often used in embedded firmware development, such as for Arduino development, to give interactive _compile, _run, etc, commands, which will actually command the tiny microcontroller (a special kind of computer often connected by USB) to load and run the firmware.
+
+```
+_scope
+
+```
+
+For the purposes which "ubiquitous_bash" and similar bash scripts are used for, this is like having the 'drop-down console' in a video game with a text editor to rewrite and rerun the internal functions of object physics and NPC scripting.
+
+### **Cosmetic Errors**
+
+Because the "ubiquitous_bash" project is largely all about calling a very large number of other software programs one after another, it can be both important to not add any output unnecessarily that could interfere or distract from actual error messages, as well as to acknowledge temporary failures which subsequent command will workaround automatically.
+
+For now, you can simply assume the commands documented here are functioning normally with some cosmetic error messages, as long as the 'tail' of the output given roughly corresponds to the examples.
+
+Over time, if you are not already familiar with typical Linux/UNIX commands and their warnings, errors, etc, you can gain an intuitive expectation whether a message is an actual issue, merely alerting that a different path is being taken, or just cosmetic.
+
+### **Iteratively Narrowing the Possible Causes of Serious Errors** 
+
+Preferred and recommended technique to diagnose causes of "ubiquitous_bash" errors and failures is to `iteratively edit the code`, narrowing down the commands which could be causing an error or exit, changing parameters, running commands interactively in a bash shell, and as a last resort, rewriting functions.
+
+```bash
+export ub_setScriptChecksum_disable=true
+```
+
+#### Narrowing down the commands which could be causing an `error` or `exit`.
+
+Place 
+
+### Adding experimental functions.
+
+A quick way to determine what bash commands will do in an "ubiquitous_bash" context is to edit the optional `ops.sh` file.
+
+Every time the 'ubiquitous_bash.sh' script is run, one of the last commands is to 'import' an optional script, running commands from that script.
+
+```
+. "$scriptAbsoluteFolder"/_local/ops.sh
+```
+
+Add experimental functions to this optional imported script.
+
+```bash
+_experiment() {
+    _start
+    echo happy > "$safeTmp"/file.txt
+    cat "$safeTmp"/file.txt
+    _stop
+}
+```
+
+Any functions defined in this `ops.sh` script will be added to the available functions. Defining a function with the same name as another function in the 'ubiquitous_bash.sh' script will override the definition of that function.
+
+```bash
+./ubiquitous_bash.sh _experiment
+```
+
+
+
+
+
+
+
+### **Debug Tracing**
+
+Beyond that, the preferred and recommended techniques to diagnose it is also possible to cause the 'ubiquitous_bash.sh' shell script itself t
+
+
+iterative changes (such as placing `echo 1`, `echo 2`, etc, throughout the code to narrow down the causes of an error or exit by dividing the code into smaller and smaller regions where the echo statement )
+
+```bash
+export ubDEBUG=true
+export ub_setScriptChecksum_disable=true
+```
+
+
+
+
+
+
 
 
 
