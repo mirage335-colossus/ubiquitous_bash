@@ -216,7 +216,39 @@ You might prefer your shell looked like this...
 
 
 
-# _Chapter4_ **Best Practices**
+# _Chapter4_ WebUI Codex
+
+... ChatGPT...
+
+... github fork "ubiquitous_bash"
+
+
+
+
+
+# _Chapter5_ CLI Codex
+
+... Docker installation... you just need it installed
+
+
+OpenAI API...
+... _bashrc ... OPENAI_API_KEY ...
+
+
+... factory openai
+... _setup_codex
+... alias codex=_codexBin-usr_bin_node
+
+
+... factory pull openai-heavy
+
+... factory openai-heavy
+
+
+
+
+
+# _Chapter5_ **Best Practices**
 
 ### **Run Internal Functions and Sub-Functions**
 
