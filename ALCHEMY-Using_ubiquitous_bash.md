@@ -130,7 +130,7 @@ MSWindows users can install "ubiquitous_bash" simply by downloading and running 
 [https://github.com/mirage335-colossus/extendedInterface/releases/download/build-15624422433-1/extIface.exe](https://github.com/mirage335-colossus/extendedInterface/releases/download/build-15624422433-1/extIface.exe)
 
 
-### **What next?**
+### **What you need to know: proficiency - license to speedrun.**
 
 Before proceeding to the tutorials, etc, you should have at least a basic proficiency with the bash shell, sufficient to navigate to subdirectories with `cd` , list files with `ls` , read a file with `less` , navigate to parent directories with `cd` , and run programs and scripts by calling `./script.sh` , and ideally it would be best to understand the use of `chmod u+x` as well .
 
@@ -154,7 +154,23 @@ Although not all AI LLM models may be suitable for such roleplay, at least some 
 [https://openrouter.ai/chat?models=meta-llama/llama-3.1-8b-instruct:free](https://openrouter.ai/chat?models=meta-llama/llama-3.1-8b-instruct:free)
 
 
+### **What next?**
 
+Assuming you have a basic proficiency, or you have an incredible motivation to jump in with the sharks (cheers to you!), then you can flip through this book to use "ubiquitous_bash" to:
+
+- Get a more comfortable, intuitive, and powerful bash shell experience.
+
+- Edit and run simpler bash shell scripts.
+
+To put your mind at ease:
+
+- No subtle global breakage, not going to prevent or break other installed software.
+
+- Self-contained. Configuration, temporary files, if any, stay in same directory as the 'ubiquitous_bash.sh' script file.
+
+You don't have to worry that messing with the bells and whistles of "ubiquitous_bash" will change some configuration option you won't be able to get back. A new copy of "ubiquitous_bash" is a new standalone, portable, copy. If you do edit or configure anything "ubiquitous_bash", it will be human readable plain-text, and it won't affect other software.
+
+Since the "ubiquitous_bash" project is all about stability, any reported issues affecting other software will be treated as bugs. Ease-of-use is important too, so anything reported that could be more intuitive will get responded to as well.
 
 
 # Formal Table Of Contents
@@ -167,7 +183,40 @@ Although not all AI LLM models may be suitable for such roleplay, at least some 
 
 
 
-# _Chapter1_ **Best Practices**
+# _Chapter1_ **Getting Started**
+
+### **MSWindows Users**
+
+/cygdrive/c/q/p/zCore/infrastructure/ubiquitous_bash ... mkdir , git clone
+
+
+
+### **UNIX/Linux Users**
+
+"$HOME"/core/infrastructure/ubiquitous_bash ...
+
+
+
+
+# _Chapter2_ **Your First Project**
+
+You may want to skip to the next chapter to install adn get familiar with '_setupUbiquitous' first.
+
+
+If your shell likes this...
+
+You might prefer your shell looked like this...
+
+
+
+
+# _Chapter3_ **A Nicer Interactive Shell**
+
+
+
+
+
+# _Chapter4_ **Best Practices**
 
 ### **Run Internal Functions and Sub-Functions**
 
@@ -198,7 +247,7 @@ There is of course the `_setup_ubiquitous` function which will add most function
 _scope
 
 TODO: Example output. Show _getScriptAbsoluteLocation , $scriptAbsoluteLocation .
- 
+
 ```
 
 For the purposes which "ubiquitous_bash" and similar bash scripts are used for, this is like having the 'drop-down console' in a video game with a text editor to rewrite and rerun the internal functions of object physics and NPC scripting.
@@ -277,6 +326,12 @@ TODO: Mention this is especially useful to 'codex' , etc.
 
 
 
+
+### **Submitting code, bug reports...**
+
+Any contributions and reports are very welcome with the "ubiquitous_bash" project.
+
+All that is asked is to keep the "ubiquitous_bash" script clearly CC0 Public Domain and preferably unencumbered by possibility of patent claims. Ideally, there is a limited Contributor License Agreement which explicitly establishes that your contribution is relinquished as such. If you are submitting code, such as in an issue report (aka. bug report), feature request, pull request, etc, please consider signing the Contributor License Agreement (CLA).
 
 
 
