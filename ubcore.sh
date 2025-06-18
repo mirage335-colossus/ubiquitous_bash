@@ -39,7 +39,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='3620520443'
-export ub_setScriptChecksum_contents='1607754997'
+export ub_setScriptChecksum_contents='2869515034'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -14641,6 +14641,7 @@ _asciinema_record() {
     if ( [[ -d "$current_record_file" ]] || { [[ -L "$current_record_file" ]] && [[ -d "$(readlink -f "$current_record_file")" ]]; } )
     then
         current_record_file="$current_record_file"/rec_$(date +%Y-%m-%d.%H).log
+        [[ -e "$current_record_file"/_local ]] && current_record_file="$current_record_file"/_local/rec_$(date +%Y-%m-%d.%H).log
     fi
     if [[ "$current_record_file" == "" ]]
     then

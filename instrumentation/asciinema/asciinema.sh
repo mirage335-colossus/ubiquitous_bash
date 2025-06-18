@@ -52,6 +52,7 @@ _asciinema_record() {
     if ( [[ -d "$current_record_file" ]] || { [[ -L "$current_record_file" ]] && [[ -d "$(readlink -f "$current_record_file")" ]]; } )
     then
         current_record_file="$current_record_file"/rec_$(date +%Y-%m-%d.%H).log
+        [[ -e "$current_record_file"/_local ]] && current_record_file="$current_record_file"/_local/rec_$(date +%Y-%m-%d.%H).log
     fi
     if [[ "$current_record_file" == "" ]]
     then
