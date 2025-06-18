@@ -181,13 +181,34 @@ Since the "ubiquitous_bash" project is all about stability, any reported issues 
 
 
 
+# _Chapter1_ **Chatbot Help (yes it _really_ works!)**
+
+Convenient AI 'chatbots' with some "ubiquitous_bash" knowledge. While Codex tools are definitely better, these are conveniently ready to go, and usually can answer most questions.
+
+Just keep in mind you may indeed see the chatbot get something wrong, since it usually won't actually run the code (unlike Codex). Also, you will see such mistakes much less often if you use the recommended model (eg. 'o4-mini-high' instead of free 'o4-mini' for 'ubChatGPT').
 
 
-# _Chapter1_ **Getting Started**
+[https://chatgpt.com/g/g-67f53f2954dc8191a6df722dbcce512a-ubchatgpt](https://chatgpt.com/g/g-67f53f2954dc8191a6df722dbcce512a-ubchatgpt)
+
+
+These really do work, and can help a lot, so please do ask questions!
+
+
+
+# _Chapter2_ **Getting Started - Downloading "ubiquitous_bash"**
 
 ### **MSWindows Users**
 
+extendedInterface installer...
+
+_bash.bat , _bash.bat.lnk
+
+Now you're running a bash shell with "ubiquitous_bash" functions already available as commands you can run!
+
 /cygdrive/c/q/p/zCore/infrastructure/ubiquitous_bash ... mkdir , git clone
+
+
+./ubiquitous_bash.sh _echo happy
 
 
 
@@ -198,9 +219,9 @@ Since the "ubiquitous_bash" project is all about stability, any reported issues 
 
 
 
-# _Chapter2_ **Your First Project**
+# _Chapter3_ **Your First Project**
 
-You may want to skip to the next chapter to install adn get familiar with '_setupUbiquitous' first.
+You may want to skip to the next chapter to install and get familiar with '_setupUbiquitous' first.
 
 
 If your shell likes this...
@@ -210,13 +231,23 @@ You might prefer your shell looked like this...
 
 
 
-# _Chapter3_ **A Nicer Interactive Shell**
+# _Chapter4_ **A Nicer Interactive Shell**
+
+
+If you followed the MSWindows instructions, this was already done for you as part of the 'extendedInterface' default environment...
+
+
+./ubiquitous_bash.sh _setupUbiquitous ... optional
+
+if your shell looks like this...
+
+and maybe you want it more like this...
 
 
 
 
 
-# _Chapter4_ WebUI Codex
+# _Chapter5_ WebUI Codex
 
 ... ChatGPT...
 
@@ -226,7 +257,7 @@ You might prefer your shell looked like this...
 
 
 
-# _Chapter5_ CLI Codex
+# _Chapter6_ CLI Codex
 
 ... Docker installation... you just need it installed
 
@@ -248,7 +279,7 @@ OpenAI API...
 
 
 
-# _Chapter5_ **Best Practices**
+# _Chapter7_ **Best Practices**
 
 ### **Run Internal Functions and Sub-Functions**
 
@@ -274,6 +305,12 @@ echo $?
 ```
 
 There is of course the `_setup_ubiquitous` function which will add most functions of the "ubiquitous_bash" project as commands directly in your interactive bash terminal, and a `_scope` function which will give you an interactive terminal in the environment of an "ubiquitous_bash" script itself. The `_scope` function is most often used in embedded firmware development, such as for Arduino development, to give interactive _compile, _run, etc, commands, which will actually command the tiny microcontroller (a special kind of computer often connected by USB) to load and run the firmware.
+
+<!--
+```bash
+_asciinema_record bash record.log
+```
+-->
 
 ```
 _scope
@@ -392,7 +429,7 @@ _useQemu
 
 
 
-# _Chapter3_ &nbsp; **Obscure - Virtualization** `**`blah blah blah blah blah`**`
+# _Chapter15_ &nbsp; **Obscure - Virtualization** `**`blah blah blah blah blah`**`
 
 vBoxConvert, hardware config, etc ?
 

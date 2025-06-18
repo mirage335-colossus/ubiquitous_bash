@@ -18,6 +18,26 @@ _setup_asciinema_convert() {
     fi
 
     sudo -n npm install -g asciicast2gif
+
+    if ! _if_cygwin
+    then
+        pip3 install --break-system-packages term2md
+        sudo -n pip3 install --break-system-packages term2md
+    fi
+
+    if _if_cygwin
+    then
+        #pip3 install --quiet --no-input --no-build-isolation -U term2md
+        pip3 install --no-input --no-build-isolation -U term2md
+    fi
+
+
+    _getDep perl
+
+    _getDep sed
+
+
+    return 0
 }
 
 #_asciinema_record 'command' [./rec.log]
@@ -161,4 +181,37 @@ _asciinema_record() {
 
     asciinema rec --command "$1" "$current_record_file"
 }
+_record() {
+    _asciinema_record "$@"
+}
+
+
+
+_asciinema_markdown() {
+    # ATTRIBUTION-AI: ChatGPT o3-pro , OpenAI codex-mini  2025-06-18  (partially)
+
+    echo
+
+    #asciinema cat "$1" | perl -pe 's/\x07//g && s/^[^\r]*\r//' | term2md
+
+
+    if _if_cygwin
+    then
+        wsl -d ubdist asciinema cat "$@" | perl -pe 's/\x07//g && s/^[^\r]*\r//' | ansifilter --html | sed 's/background-color:#000000;//g' | sed -n '/<pre>/,/<\/pre>/p'
+        return
+    fi
+
+    asciinema cat "$@" | perl -pe 's/\x07//g && s/^[^\r]*\r//' | ansifilter --html | sed 's/background-color:#000000;//g' | sed -n '/<pre>/,/<\/pre>/p'
+}
+_markdown() {
+    _asciinema_markdown "$@"
+}
+
+
+
+
+
+
+
+
 

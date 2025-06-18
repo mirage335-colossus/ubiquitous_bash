@@ -39,7 +39,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='3620520443'
-export ub_setScriptChecksum_contents='3605883641'
+export ub_setScriptChecksum_contents='2073312316'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -12284,6 +12284,9 @@ _getMost_debian11_install() {
 	_getMost_backend_aptGetInstall asciinema
 	_getMost_backend_aptGetInstall gifsicle imagemagick apngasm ffmpeg
 	_getMost_backend_aptGetInstall webp
+
+	_getMost_backend_aptGetInstall ansifilter
+	_getMost_backend_aptGetInstall ansifilter-gui
 	
 	
 	
@@ -14966,6 +14969,7 @@ _custom_ubcp_sequence() {
     cd "$functionEntryPWD"
 
 
+
     # https://github.com/asciinema/asciinema/issues/467
     # wsl asciinema rec -c cmd.exe
     # https://github.com/Watfaq/PowerSession-rs
@@ -14983,6 +14987,32 @@ _custom_ubcp_sequence() {
 
     cd "$functionEntryPWD"
 
+
+
+    # https://gitlab.com/saalen/ansifilter/-/releases
+    # http://andre-simon.de/zip/ansifilter-2.21-x64.zip
+    # https://web.archive.org/web/20250618063648/http://andre-simon.de/zip/ansifilter-2.21-x64.zip
+    _messageNormal '_custom_ubcp: ansifilter'
+
+    mkdir -p "$HOME"/core/installations
+    cd "$HOME"/core/installations
+    wget 'https://web.archive.org/web/20250618063648/http://andre-simon.de/zip/ansifilter-2.21-x64.zip'
+    if [[ $(sha256sum ansifilter-2.21-x64.zip | cut -f1 -d' ' | tr -dc 'a-fA-F0-9') != '57624ae40be4c9173937d15c97f68413daa271a0ec2248ec83394f220b88adb9' ]]
+    then
+        rm -f ansifilter-2.21-x64.zip
+    else
+        unzip -o ansifilter-2.21-x64.zip
+        rm -f ansifilter-2.21-x64.zip
+        cd ansifilter-2.21-x64
+        chmod ugoa+rx ansifilter.exe
+        chmod ugoa+rx ansifilter-gui.exe
+        #cp -a ansifilter.exe "$HOME"/bin/ansifilter.exe
+        #cp -a ansifilter-gui.exe "$HOME"/bin/ansifilter-gui.exe
+        mv -f ansifilter.exe "$HOME"/bin/ansifilter.exe
+        mv -f ansifilter-gui.exe "$HOME"/bin/ansifilter-gui.exe
+    fi
+
+    cd "$functionEntryPWD"
 
 
 
@@ -15162,6 +15192,26 @@ _setup_asciinema_convert() {
     fi
 
     sudo -n npm install -g asciicast2gif
+
+    if ! _if_cygwin
+    then
+        pip3 install --break-system-packages term2md
+        sudo -n pip3 install --break-system-packages term2md
+    fi
+
+    if _if_cygwin
+    then
+        #pip3 install --quiet --no-input --no-build-isolation -U term2md
+        pip3 install --no-input --no-build-isolation -U term2md
+    fi
+
+
+    _getDep perl
+
+    _getDep sed
+
+
+    return 0
 }
 
 #_asciinema_record 'command' [./rec.log]
@@ -15305,6 +15355,39 @@ _asciinema_record() {
 
     asciinema rec --command "$1" "$current_record_file"
 }
+_record() {
+    _asciinema_record "$@"
+}
+
+
+
+_asciinema_markdown() {
+    # ATTRIBUTION-AI: ChatGPT o3-pro , OpenAI codex-mini  2025-06-18  (partially)
+
+    echo
+
+    #asciinema cat "$1" | perl -pe 's/\x07//g && s/^[^\r]*\r//' | term2md
+
+
+    if _if_cygwin
+    then
+        wsl -d ubdist asciinema cat "$@" | perl -pe 's/\x07//g && s/^[^\r]*\r//' | ansifilter --html | sed 's/background-color:#000000;//g' | sed -n '/<pre>/,/<\/pre>/p'
+        return
+    fi
+
+    asciinema cat "$@" | perl -pe 's/\x07//g && s/^[^\r]*\r//' | ansifilter --html | sed 's/background-color:#000000;//g' | sed -n '/<pre>/,/<\/pre>/p'
+}
+_markdown() {
+    _asciinema_markdown "$@"
+}
+
+
+
+
+
+
+
+
 
 
 

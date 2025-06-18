@@ -1006,6 +1006,9 @@ _getMost_debian11_install() {
 	_getMost_backend_aptGetInstall asciinema
 	_getMost_backend_aptGetInstall gifsicle imagemagick apngasm ffmpeg
 	_getMost_backend_aptGetInstall webp
+
+	_getMost_backend_aptGetInstall ansifilter
+	_getMost_backend_aptGetInstall ansifilter-gui
 	
 	
 	

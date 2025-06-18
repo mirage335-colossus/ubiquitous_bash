@@ -374,6 +374,8 @@ echo Creating [%Init_sh%]...
   REM wsl asciinema rec -c cmd.exe
   REM https://github.com/Watfaq/PowerSession-rs
   echo  pip3 install --quiet --no-input --no-build-isolation -U "asciinema" ^<^&100 ^>^&2
+  echo  echo  install term2md
+  echo  pip3 install --quiet --no-input --no-build-isolation -U "term2md" ^<^&100 ^>^&2
   REM  echo
   REM  /usr/bin/echo
   REM  printf

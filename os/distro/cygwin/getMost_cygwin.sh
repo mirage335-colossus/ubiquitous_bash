@@ -865,6 +865,7 @@ _custom_ubcp_sequence() {
     cd "$functionEntryPWD"
 
 
+
     # https://github.com/asciinema/asciinema/issues/467
     # wsl asciinema rec -c cmd.exe
     # https://github.com/Watfaq/PowerSession-rs
@@ -882,6 +883,32 @@ _custom_ubcp_sequence() {
 
     cd "$functionEntryPWD"
 
+
+
+    # https://gitlab.com/saalen/ansifilter/-/releases
+    # http://andre-simon.de/zip/ansifilter-2.21-x64.zip
+    # https://web.archive.org/web/20250618063648/http://andre-simon.de/zip/ansifilter-2.21-x64.zip
+    _messageNormal '_custom_ubcp: ansifilter'
+
+    mkdir -p "$HOME"/core/installations
+    cd "$HOME"/core/installations
+    wget 'https://web.archive.org/web/20250618063648/http://andre-simon.de/zip/ansifilter-2.21-x64.zip'
+    if [[ $(sha256sum ansifilter-2.21-x64.zip | cut -f1 -d' ' | tr -dc 'a-fA-F0-9') != '57624ae40be4c9173937d15c97f68413daa271a0ec2248ec83394f220b88adb9' ]]
+    then
+        rm -f ansifilter-2.21-x64.zip
+    else
+        unzip -o ansifilter-2.21-x64.zip
+        rm -f ansifilter-2.21-x64.zip
+        cd ansifilter-2.21-x64
+        chmod ugoa+rx ansifilter.exe
+        chmod ugoa+rx ansifilter-gui.exe
+        #cp -a ansifilter.exe "$HOME"/bin/ansifilter.exe
+        #cp -a ansifilter-gui.exe "$HOME"/bin/ansifilter-gui.exe
+        mv -f ansifilter.exe "$HOME"/bin/ansifilter.exe
+        mv -f ansifilter-gui.exe "$HOME"/bin/ansifilter-gui.exe
+    fi
+
+    cd "$functionEntryPWD"
 
 
 
