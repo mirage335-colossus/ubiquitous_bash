@@ -10,6 +10,8 @@
 pdf-engine: xelatex          # or lualatex
 pdf-engine-opt:
   - -shell-escape           # allow minted→Pygments calls
+filters:
+  - ALCHEMY-Using_ubiquitous_bash-span_color.lua
 
 include-in-header:
   - ALCHEMY-Using_ubiquitous_bash-header.tex
