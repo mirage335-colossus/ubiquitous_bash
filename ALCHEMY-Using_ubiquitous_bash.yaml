@@ -3,7 +3,7 @@
 
 #--pdf-engine=xelatex --pdf-engine-opt=-interaction=nonstopmode --pdf-engine-opt=-halt-on-error
 #
-#rm -f ALCHEMY-Using_ubiquitous_bash.pdf ; wsl pandoc --verbose --standalone --defaults=ALCHEMY-Using_ubiquitous_bash.yaml ALCHEMY-Using_ubiquitous_bash.md -o ALCHEMY-Using_ubiquitous_bash.pdf
+#rm -f ALCHEMY-Using_ubiquitous_bash.pdf ; wsl pandoc --verbose --standalone --defaults=ALCHEMY-Using_ubiquitous_bash.yaml --lua-filter=ALCHEMY-Using_ubiquitous_bash-span_color.lua ALCHEMY-Using_ubiquitous_bash.md -o ALCHEMY-Using_ubiquitous_bash.pdf
 #
 #sudo -n apt-get install -y pandoc texlive-xetex texlive-latex-recommended texlive-latex-extra fonts-texgyre fonts-texgyre-math tex-gyre texlive-fonts-recommended
 
