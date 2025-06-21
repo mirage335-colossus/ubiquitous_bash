@@ -659,11 +659,11 @@ fi
 # MSWEXTPATH lengths up to 33, 38, are known reasonable values.
 if [[ "$MSWEXTPATH" != "" ]] && ( [[ "$PATH" == *"/cygdrive"* ]] || [[ "$PATH" == "/cygdrive"* ]] ) && [[ "$convertedMSWEXTPATH" == "" ]] && _if_cygwin
 then
-	if [[ $(echo "$MSWEXTPATH" | grep -o ';\|:' | wc -l | tr -dc '0-9') -le 44 ]] && [[ $(echo "$PATH" | grep -o ':' | wc -l | tr -dc '0-9') -le 44 ]]
-	then
-		export convertedMSWEXTPATH=$(cygpath -p "$MSWEXTPATH")
-		export PATH=/usr/bin:"$convertedMSWEXTPATH":"$PATH"
-	fi
+        if [[ $(echo "$MSWEXTPATH" | grep -o ';' | wc -l | tr -dc '0-9') -le 44 ]] && [[ $(echo "$PATH" | grep -o ':' | wc -l | tr -dc '0-9') -le 44 ]]
+        then
+                export convertedMSWEXTPATH=$(cygpath -p "$MSWEXTPATH")
+                export PATH=/usr/bin:"$convertedMSWEXTPATH":"$PATH"
+        fi
 fi
 
 
