@@ -39,7 +39,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='3620520443'
-export ub_setScriptChecksum_contents='3077140761'
+export ub_setScriptChecksum_contents='207930333'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -683,7 +683,7 @@ fi
 # As of 2025-05-20 , a development system, VSCode PowerShell terminal, has been known to impose 45 such lines on MSWEXTPATH , other PowerShell terminal imposed 41 such lines. Limit of 44 lines at the time was exceeded.
 if [[ "$MSWEXTPATH" != "" ]] && ( [[ "$PATH" == *"/cygdrive"* ]] || [[ "$PATH" == "/cygdrive"* ]] ) && [[ "$convertedMSWEXTPATH" == "" ]] && _if_cygwin
 then
-	if [[ $(echo "$MSWEXTPATH" | grep -o ';\|:' | wc -l | tr -dc '0-9') -le 60 ]] && [[ $(echo "$PATH" | grep -o ':' | wc -l | tr -dc '0-9') -le 60 ]]
+	if [[ $(echo "$MSWEXTPATH" | grep -o ';\|:' | wc -l | tr -dc '0-9') -le 99 ]] && [[ $(echo "$PATH" | grep -o ':' | wc -l | tr -dc '0-9') -le 99 ]]
 	then
 		export convertedMSWEXTPATH=$(cygpath -p "$MSWEXTPATH")
 		export PATH=/usr/bin:"$convertedMSWEXTPATH":"$PATH"
@@ -17583,10 +17583,18 @@ _test-shell-cygwin() {
 	local currentPathCount
 	currentPathCount=$(echo "$PATH" | grep -o ':' | wc -l | tr -dc '0-9')
 	#if [[ "$currentPathCount" -gt 50 ]]
-	if [[ "$currentPathCount" -gt 66 ]]
+	#if [[ "$currentPathCount" -gt 66 ]]
+	if [[ "$currentPathCount" -gt 99 ]]
 	then
 		echo 'fail: count: PATH: '"$currentPathCount"
 		_messageFAIL
+	fi
+	#if [[ "$currentPathCount" -gt 66 ]]
+	if [[ "$currentPathCount" -gt 80 ]]
+	then
+		echo 'warn: count: PATH: '"$currentPathCount"
+		echo 'warn: MSWEXTPATH may be ignored'
+		_messagePlain_request 'request: reduce the length of PATH variable'
 	fi
 	#if [[ "$currentPathCount" -gt 44 ]]
 	if [[ "$currentPathCount" -gt 60 ]]
