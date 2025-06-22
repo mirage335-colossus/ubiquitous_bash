@@ -39,7 +39,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='3620520443'
-export ub_setScriptChecksum_contents='2251255240'
+export ub_setScriptChecksum_contents='875835102'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -27373,6 +27373,8 @@ _setup_ollama_model_augment_sequence() {
 	
 	# https://huggingface.co/mlabonne/Meta-Llama-3.1-8B-Instruct-abliterated-GGUF/tree/main
 	# https://web.archive.org/web/20240831194035/https://huggingface.co/mlabonne/Meta-Llama-3.1-8B-Instruct-abliterated-GGUF/tree/main
+	# https://huggingface.co/mradermacher/Meta-Llama-3.1-8B-Instruct-abliterated-GGUF
+	# https://web.archive.org/web/20250323003504/https://huggingface.co/mradermacher/Meta-Llama-3.1-8B-Instruct-abliterated-GGUF
 	# Explicitly states 'License: llama3.1'. Readme file from repository does NOT contradict this.
 	
 	# https://www.llama.com/llama3_1/license/
@@ -27448,26 +27450,39 @@ _setup_ollama_model_augment_sequence() {
 	
 	# TODO: TODO: Intentionally overfit smaller parameter models by reinforcing prompt/response for specific knowledge (eg. plasma recombiation light emission physics) and reasoning (eg. robot motor control).
 	
+
+	# Reducing 'Llama-augment' model size by more qunatization than Q4_K_M mostly benefits use cases possibly alongside other AI LLM models which may consume nearly all available RAM, VRAM, etc.
 	
-	# TODO: There may or may not be more track record with this slightly different model, using Q4-K-M quantization.
+	# May or may not be more track record with this slightly different model, using Q4-K-M quantization.
 	# https://huggingface.co/grimjim/Llama-3.1-8B-Instruct-abliterated_via_adapter-GGUF
 	
-	# TODO: Consider alternative quantization, especially IQ2-M, IQ4-XS. Beware Q4-K-M may have some community testing of important edge cases already.
+	# Alternative quantization, especially IQ2-M, IQ4-XS. Beware Q4-K-M may have some community testing of important edge cases already.
 	# https://huggingface.co/bartowski/Meta-Llama-3.1-8B-Instruct-abliterated-GGUF/tree/main
+
+	# Given the 'augment' use that has been proven, using an AI LLM similarly to 'sed', 'grep', etc, already requiring a second 'gibberish' detection step, slight degradation of reliability should cause no issues. Recommended quantizations are IQ3_XXS (~5% per ~67% less reliability), IQ2_XXS (~20% per 67% less reliability).
+	#  The '~20% per 67%' less reliability is based on the idea that for a problem or problem set the AI LLM may solve correctly 67% of the time, the rate of correct solutions will be reduced by ~20% .
+	#  https://raw.githubusercontent.com/matt-c1/llama-3-quant-comparison/refs/heads/main/plots/MMLU-Correctness-vs-Model-Size.svg
+	# https://huggingface.co/mradermacher/Meta-Llama-3.1-8B-Instruct-abliterated-i1-GGUF/tree/main
+
+
 	
-	echo 'FROM ./llama-3.1-8b-instruct-abliterated.Q4_K_M.gguf
+	echo 'FROM ./Meta-Llama-3.1-8B-Instruct-abliterated.i1-IQ2_XXS.gguf
 PARAMETER num_ctx 6144
 ' > Llama-augment.Modelfile
 
 	_here_license-Llama-augment >> Llama-augment.Modelfile
 	
-	#wget 'https://huggingface.co/mlabonne/Meta-Llama-3.1-8B-Instruct-abliterated-GGUF/resolve/main/meta-llama-3.1-8b-instruct-abliterated.Q4_K_M.gguf'
-	aria2c --log=- --log-level=info -x "3" --async-dns=false -o 'llama-3.1-8b-instruct-abliterated.Q4_K_M.gguf' 'https://huggingface.co/mlabonne/Meta-Llama-3.1-8B-Instruct-abliterated-GGUF/resolve/main/meta-llama-3.1-8b-instruct-abliterated.Q4_K_M.gguf'
-	[[ ! -e 'llama-3.1-8b-instruct-abliterated.Q4_K_M.gguf' ]] && aria2c --log=- --log-level=info -x "3" --async-dns=false -o 'llama-3.1-8b-instruct-abliterated.Q4_K_M.gguf' 'https://huggingface.co/mlabonne/Meta-Llama-3.1-8B-Instruct-abliterated-GGUF/resolve/main/meta-llama-3.1-8b-instruct-abliterated.Q4_K_M.gguf' --disable-ipv6=true
+	##wget 'https://huggingface.co/mlabonne/Meta-Llama-3.1-8B-Instruct-abliterated-GGUF/resolve/main/meta-llama-3.1-8b-instruct-abliterated.Q4_K_M.gguf'
+	#aria2c --log=- --log-level=info -x "3" --async-dns=false -o 'llama-3.1-8b-instruct-abliterated.Q4_K_M.gguf' 'https://huggingface.co/mlabonne/Meta-Llama-3.1-8B-Instruct-abliterated-GGUF/resolve/main/meta-llama-3.1-8b-instruct-abliterated.Q4_K_M.gguf'
+	#[[ ! -e 'llama-3.1-8b-instruct-abliterated.Q4_K_M.gguf' ]] && aria2c --log=- --log-level=info -x "3" --async-dns=false -o 'llama-3.1-8b-instruct-abliterated.Q4_K_M.gguf' 'https://huggingface.co/mlabonne/Meta-Llama-3.1-8B-Instruct-abliterated-GGUF/resolve/main/meta-llama-3.1-8b-instruct-abliterated.Q4_K_M.gguf' --disable-ipv6=true
 	
-	if [[ ! -e 'llama-3.1-8b-instruct-abliterated.Q4_K_M.gguf' ]]
+	#wget 'https://huggingface.co/mradermacher/Meta-Llama-3.1-8B-Instruct-abliterated-i1-GGUF/resolve/main/Meta-Llama-3.1-8B-Instruct-abliterated.i1-IQ2_XXS.gguf'
+	aria2c --log=- --log-level=info -x "3" --async-dns=false -o 'Meta-Llama-3.1-8B-Instruct-abliterated.i1-IQ2_XXS.gguf' 'https://huggingface.co/mradermacher/Meta-Llama-3.1-8B-Instruct-abliterated-i1-GGUF/resolve/main/Meta-Llama-3.1-8B-Instruct-abliterated.i1-IQ2_XXS.gguf'
+	[[ ! -e 'Meta-Llama-3.1-8B-Instruct-abliterated.i1-IQ2_XXS.gguf' ]] && aria2c --log=- --log-level=info -x "3" --async-dns=false -o 'Meta-Llama-3.1-8B-Instruct-abliterated.i1-IQ2_XXS.gguf' 'https://huggingface.co/mradermacher/Meta-Llama-3.1-8B-Instruct-abliterated-i1-GGUF/resolve/main/Meta-Llama-3.1-8B-Instruct-abliterated.i1-IQ2_XXS.gguf' --disable-ipv6=true
+	
+	if [[ ! -e 'Meta-Llama-3.1-8B-Instruct-abliterated.i1-IQ2_XXS.gguf' ]]
 	then
-		_wget_githubRelease_join "soaringDistributions/Llama-augment_bundle" "" "llama-3.1-8b-instruct-abliterated.Q4_K_M.gguf"
+		_wget_githubRelease_join "soaringDistributions/Llama-augment_bundle" "" "Meta-Llama-3.1-8B-Instruct-abliterated.i1-IQ2_XXS.gguf"
 	fi
 	
 	_service_ollama
@@ -27479,6 +27494,8 @@ PARAMETER num_ctx 6144
 		! echo | sudo -n tee /AI-Llama-augment > /dev/null && _messagePlain_bad 'bad: FAIL: echo | sudo -n tee /AI-Llama-augment' && _messageFAIL
 	fi
 
+	rm -f Meta-Llama-3.1-8B-Instruct-abliterated.i1-IQ2_XXS.gguf
+	rm -f Meta-Llama-3.1-8B-Instruct-abliterated.i1-IQ3_XXS.gguf
 	rm -f llama-3.1-8b-instruct-abliterated.Q4_K_M.gguf
 	rm -f Llama-augment.Modelfile
 	
