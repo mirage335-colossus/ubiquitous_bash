@@ -39,7 +39,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='3620520443'
-export ub_setScriptChecksum_contents='875835102'
+export ub_setScriptChecksum_contents='651586434'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -27375,6 +27375,8 @@ _setup_ollama_model_augment_sequence() {
 	# https://web.archive.org/web/20240831194035/https://huggingface.co/mlabonne/Meta-Llama-3.1-8B-Instruct-abliterated-GGUF/tree/main
 	# https://huggingface.co/mradermacher/Meta-Llama-3.1-8B-Instruct-abliterated-GGUF
 	# https://web.archive.org/web/20250323003504/https://huggingface.co/mradermacher/Meta-Llama-3.1-8B-Instruct-abliterated-GGUF
+	# https://huggingface.co/bartowski/Meta-Llama-3.1-8B-Instruct-abliterated-GGUF
+	# https://web.archive.org/web/20250105072418/https://huggingface.co/bartowski/Meta-Llama-3.1-8B-Instruct-abliterated-GGUF
 	# Explicitly states 'License: llama3.1'. Readme file from repository does NOT contradict this.
 	
 	# https://www.llama.com/llama3_1/license/
@@ -27466,8 +27468,20 @@ _setup_ollama_model_augment_sequence() {
 
 
 	
-	echo 'FROM ./Meta-Llama-3.1-8B-Instruct-abliterated.i1-IQ2_XXS.gguf
+	echo 'FROM ./meta-llama-3.1-8b-instruct-abliterated.Q2_K.gguf
 PARAMETER num_ctx 6144
+
+TEMPLATE "{{- range .Messages }}<|start_header_id|>{{ .Role }}<|end_header_id|>
+
+{{ .Content }}<|eot_id|>
+{{- end }}<|start_header_id|>assistant<|end_header_id|>
+
+"
+PARAMETER num_ctx 6144
+PARAMETER stop <|start_header_id|>
+PARAMETER stop <|end_header_id|>
+PARAMETER stop <|eot_id|>
+
 ' > Llama-augment.Modelfile
 
 	_here_license-Llama-augment >> Llama-augment.Modelfile
@@ -27476,13 +27490,23 @@ PARAMETER num_ctx 6144
 	#aria2c --log=- --log-level=info -x "3" --async-dns=false -o 'llama-3.1-8b-instruct-abliterated.Q4_K_M.gguf' 'https://huggingface.co/mlabonne/Meta-Llama-3.1-8B-Instruct-abliterated-GGUF/resolve/main/meta-llama-3.1-8b-instruct-abliterated.Q4_K_M.gguf'
 	#[[ ! -e 'llama-3.1-8b-instruct-abliterated.Q4_K_M.gguf' ]] && aria2c --log=- --log-level=info -x "3" --async-dns=false -o 'llama-3.1-8b-instruct-abliterated.Q4_K_M.gguf' 'https://huggingface.co/mlabonne/Meta-Llama-3.1-8B-Instruct-abliterated-GGUF/resolve/main/meta-llama-3.1-8b-instruct-abliterated.Q4_K_M.gguf' --disable-ipv6=true
 	
-	#wget 'https://huggingface.co/mradermacher/Meta-Llama-3.1-8B-Instruct-abliterated-i1-GGUF/resolve/main/Meta-Llama-3.1-8B-Instruct-abliterated.i1-IQ2_XXS.gguf'
-	aria2c --log=- --log-level=info -x "3" --async-dns=false -o 'Meta-Llama-3.1-8B-Instruct-abliterated.i1-IQ2_XXS.gguf' 'https://huggingface.co/mradermacher/Meta-Llama-3.1-8B-Instruct-abliterated-i1-GGUF/resolve/main/Meta-Llama-3.1-8B-Instruct-abliterated.i1-IQ2_XXS.gguf'
-	[[ ! -e 'Meta-Llama-3.1-8B-Instruct-abliterated.i1-IQ2_XXS.gguf' ]] && aria2c --log=- --log-level=info -x "3" --async-dns=false -o 'Meta-Llama-3.1-8B-Instruct-abliterated.i1-IQ2_XXS.gguf' 'https://huggingface.co/mradermacher/Meta-Llama-3.1-8B-Instruct-abliterated-i1-GGUF/resolve/main/Meta-Llama-3.1-8B-Instruct-abliterated.i1-IQ2_XXS.gguf' --disable-ipv6=true
+	# DUBIOUS . May not be compatible with ollama , etc.
+	##wget 'https://huggingface.co/mradermacher/Meta-Llama-3.1-8B-Instruct-abliterated-i1-GGUF/resolve/main/Meta-Llama-3.1-8B-Instruct-abliterated.i1-IQ2_XXS.gguf'
+	#aria2c --log=- --log-level=info -x "3" --async-dns=false -o 'Meta-Llama-3.1-8B-Instruct-abliterated.i1-IQ3_XXS.gguf' 'https://huggingface.co/mradermacher/Meta-Llama-3.1-8B-Instruct-abliterated-i1-GGUF/resolve/main/Meta-Llama-3.1-8B-Instruct-abliterated.i1-IQ3_XXS.gguf'
+	#[[ ! -e 'Meta-Llama-3.1-8B-Instruct-abliterated.i1-IQ3_XXS.gguf' ]] && aria2c --log=- --log-level=info -x "3" --async-dns=false -o 'Meta-Llama-3.1-8B-Instruct-abliterated.i1-IQ3_XXS.gguf' 'https://huggingface.co/mradermacher/Meta-Llama-3.1-8B-Instruct-abliterated-i1-GGUF/resolve/main/Meta-Llama-3.1-8B-Instruct-abliterated.i1-IQ3_XXS.gguf' --disable-ipv6=true
+
+	# DUBIOUS . May not be compatible with ollama , etc.
+	##wget 'https://huggingface.co/bartowski/Meta-Llama-3.1-8B-Instruct-abliterated-GGUF/resolve/main/Meta-Llama-3.1-8B-Instruct-abliterated-IQ2_M.gguf'
+	#aria2c --log=- --log-level=info -x "3" --async-dns=false -o 'Meta-Llama-3.1-8B-Instruct-abliterated-IQ2_M.gguf' 'https://huggingface.co/bartowski/Meta-Llama-3.1-8B-Instruct-abliterated-GGUF/resolve/main/Meta-Llama-3.1-8B-Instruct-abliterated-IQ2_M.gguf'
+	#[[ ! -e 'Meta-Llama-3.1-8B-Instruct-abliterated-IQ2_M.gguf' ]] && aria2c --log=- --log-level=info -x "3" --async-dns=false -o 'Meta-Llama-3.1-8B-Instruct-abliterated-IQ2_M.gguf' 'https://huggingface.co/bartowski/Meta-Llama-3.1-8B-Instruct-abliterated-GGUF/resolve/main/Meta-Llama-3.1-8B-Instruct-abliterated-IQ2_M.gguf' --disable-ipv6=true
+
+	#wget 'https://huggingface.co/mlabonne/Meta-Llama-3.1-8B-Instruct-abliterated-GGUF/resolve/main/meta-llama-3.1-8b-instruct-abliterated.Q2_K.gguf'
+	aria2c --log=- --log-level=info -x "3" --async-dns=false -o 'meta-llama-3.1-8b-instruct-abliterated.Q2_K.gguf' 'https://huggingface.co/mlabonne/Meta-Llama-3.1-8B-Instruct-abliterated-GGUF/resolve/main/meta-llama-3.1-8b-instruct-abliterated.Q2_K.gguf'
+	[[ ! -e 'meta-llama-3.1-8b-instruct-abliterated.Q2_K.gguf' ]] && aria2c --log=- --log-level=info -x "3" --async-dns=false -o 'meta-llama-3.1-8b-instruct-abliterated.Q2_K.gguf' 'https://huggingface.co/mlabonne/Meta-Llama-3.1-8B-Instruct-abliterated-GGUF/resolve/main/meta-llama-3.1-8b-instruct-abliterated.Q2_K.gguf' --disable-ipv6=true
 	
-	if [[ ! -e 'Meta-Llama-3.1-8B-Instruct-abliterated.i1-IQ2_XXS.gguf' ]]
+	if [[ ! -e 'meta-llama-3.1-8b-instruct-abliterated.Q2_K.gguf' ]]
 	then
-		_wget_githubRelease_join "soaringDistributions/Llama-augment_bundle" "" "Meta-Llama-3.1-8B-Instruct-abliterated.i1-IQ2_XXS.gguf"
+		_wget_githubRelease_join "soaringDistributions/Llama-augment_bundle" "" "meta-llama-3.1-8b-instruct-abliterated.Q2_K.gguf"
 	fi
 	
 	_service_ollama
@@ -27494,6 +27518,8 @@ PARAMETER num_ctx 6144
 		! echo | sudo -n tee /AI-Llama-augment > /dev/null && _messagePlain_bad 'bad: FAIL: echo | sudo -n tee /AI-Llama-augment' && _messageFAIL
 	fi
 
+	rm -f meta-llama-3.1-8b-instruct-abliterated.Q2_K.gguf
+	rm -f Meta-Llama-3.1-8B-Instruct-abliterated-IQ2_M.gguf
 	rm -f Meta-Llama-3.1-8B-Instruct-abliterated.i1-IQ2_XXS.gguf
 	rm -f Meta-Llama-3.1-8B-Instruct-abliterated.i1-IQ3_XXS.gguf
 	rm -f llama-3.1-8b-instruct-abliterated.Q4_K_M.gguf
