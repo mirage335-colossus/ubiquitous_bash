@@ -107,15 +107,39 @@ _augment-backend() {
 
 
 _here_bashTool-noOtherInfo() {
+
+	# ATTENTION: NOTICE: Especially with a small model...
+	# Regard this as similar to an analog modem symbol decoder with a filter bank attached to a filter bank used as a delay line.
+	# Negative Prompt (Do not output any other information.
+	#
+	# Positive Prompt (Please state the datum, ), Negative Prompt (do not *include* any other information,), this...
+	# stuff
+	# Negative Prompt (Do not output any other information.)
+	# Positive Prompt (Output only the one line command or parameter.), Negative Prompt (Do not output any other text.), Positive Prompt (Since this is zero-shot tool use, only the one line will be helpful, any other output will be unhelpful.)
+	#
+	# Thus, for good results, your prompt given to 'augment' function should closely resemble this example:
+	# EXAMPLE
+	# Please state the domain name or IP address, do not include any other information, from this bash shellcode command:
+	# ```bash
+	# ssh root@123.123.123.123 -p 122 -i ~/.ssh/id_ed25519
+	# ```
+	#
+	# Such an approach quickly 'dampens' any Positive Prompt 'ringing' or 'overshoot' from a Positive Prompt with a Negative Prompt before any effects can accumulate in the AI LLM model output.
+	#
+	# That said, less quantization of the 'Llama-augment' , Q8_0 instead of Q2_K , will require far less careful such 'dampening'. Given the automation purpose of the 'Llama-augment' model, the tradeoff of requiring more careful prompting is well worthwhile to improve processing speed, etc. Especially since only at most one negative prompt not already automatically added is needed, and only to address a specific nuance in the developer's own Positive Prompt, such as the 'datum' being an address, given that usernames are commonly used with such addresses in HTTP URLs, etc.
+
+
     cat << 'CZXWXcRMTo8EmM8i4d'
 
-Do not include any other information.
+Do not output any other information.
 
 CZXWXcRMTo8EmM8i4d
 }
 
 _here_bashTool-askCommand-ONLY() {
     cat << 'CZXWXcRMTo8EmM8i4d'
+
+Do not output any other information.
 
 Output only the one line command or parameter. Do not output any other text. Since this is zero-shot tool use, only the one line will be helpful, any other output will be unhelpful.
 

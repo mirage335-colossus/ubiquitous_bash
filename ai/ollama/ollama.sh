@@ -196,7 +196,7 @@ _setup_ollama_model_augment_sequence() {
 	# https://huggingface.co/QuantFactory/NeuralDaredevil-8B-abliterated-GGUF/tree/main
 	# https://web.archive.org/web/20250526124847/https://huggingface.co/QuantFactory/NeuralDaredevil-8B-abliterated-GGUF
 	# https://web.archive.org/web/20250206175259/https://huggingface.co/QuantFactory/NeuralDaredevil-8B-abliterated-GGUF/tree/main
-
+	#
 	# Explicitly states 'License: llama3.1'. Readme files, etc, from repository does NOT contradict this.
 	
 	# https://www.llama.com/llama3_1/license/
@@ -288,6 +288,9 @@ _setup_ollama_model_augment_sequence() {
 
 
 	
+	# Default 'temperature' may have previously been 0.8 .
+	# https://github.com/ollama/ollama/issues/6410?utm_source=chatgpt.com
+	# https://github.com/ollama/ollama/blob/main/api/types.go#L657
 	echo 'FROM ./NeuralDaredevil-8B-abliterated.Q2_K.gguf
 PARAMETER num_ctx 6144
 
@@ -301,8 +304,7 @@ PARAMETER num_ctx 6144
 PARAMETER stop <|start_header_id|>
 PARAMETER stop <|end_header_id|>
 PARAMETER stop <|eot_id|>
-
-temperature    0.7
+PARAMETER temperature 0.7
 
 ' > Llama-augment.Modelfile
 
@@ -326,7 +328,7 @@ temperature    0.7
 	#aria2c --log=- --log-level=info -x "3" --async-dns=false -o 'meta-llama-3.1-8b-instruct-abliterated.Q2_K.gguf' 'https://huggingface.co/mlabonne/Meta-Llama-3.1-8B-Instruct-abliterated-GGUF/resolve/main/meta-llama-3.1-8b-instruct-abliterated.Q2_K.gguf'
 	#[[ ! -e 'meta-llama-3.1-8b-instruct-abliterated.Q2_K.gguf' ]] && aria2c --log=- --log-level=info -x "3" --async-dns=false -o 'meta-llama-3.1-8b-instruct-abliterated.Q2_K.gguf' 'https://huggingface.co/mlabonne/Meta-Llama-3.1-8B-Instruct-abliterated-GGUF/resolve/main/meta-llama-3.1-8b-instruct-abliterated.Q2_K.gguf' --disable-ipv6=true
 
-	#wget 'https://huggingface.co/mlabonne/Meta-Llama-3.1-8B-Instruct-abliterated-GGUF/resolve/main/NeuralDaredevil-8B-abliterated.Q2_K.gguf'
+	#wget 'https://huggingface.co/QuantFactory/NeuralDaredevil-8B-abliterated-GGUF/resolve/main/NeuralDaredevil-8B-abliterated.Q2_K.gguf'
 	aria2c --log=- --log-level=info -x "3" --async-dns=false -o 'NeuralDaredevil-8B-abliterated.Q2_K.gguf' 'https://huggingface.co/QuantFactory/NeuralDaredevil-8B-abliterated-GGUF/resolve/main/NeuralDaredevil-8B-abliterated.Q2_K.gguf'
 	[[ ! -e 'NeuralDaredevil-8B-abliterated.Q2_K.gguf' ]] && aria2c --log=- --log-level=info -x "3" --async-dns=false -o 'NeuralDaredevil-8B-abliterated.Q2_K.gguf' 'https://huggingface.co/QuantFactory/NeuralDaredevil-8B-abliterated-GGUF/resolve/main/NeuralDaredevil-8B-abliterated.Q2_K.gguf' --disable-ipv6=true
 	

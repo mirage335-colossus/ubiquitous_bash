@@ -39,7 +39,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='3620520443'
-export ub_setScriptChecksum_contents='1182052992'
+export ub_setScriptChecksum_contents='202858254'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -27382,7 +27382,7 @@ _setup_ollama_model_augment_sequence() {
 	# https://huggingface.co/QuantFactory/NeuralDaredevil-8B-abliterated-GGUF/tree/main
 	# https://web.archive.org/web/20250526124847/https://huggingface.co/QuantFactory/NeuralDaredevil-8B-abliterated-GGUF
 	# https://web.archive.org/web/20250206175259/https://huggingface.co/QuantFactory/NeuralDaredevil-8B-abliterated-GGUF/tree/main
-
+	#
 	# Explicitly states 'License: llama3.1'. Readme files, etc, from repository does NOT contradict this.
 	
 	# https://www.llama.com/llama3_1/license/
@@ -27474,6 +27474,9 @@ _setup_ollama_model_augment_sequence() {
 
 
 	
+	# Default 'temperature' may have previously been 0.8 .
+	# https://github.com/ollama/ollama/issues/6410?utm_source=chatgpt.com
+	# https://github.com/ollama/ollama/blob/main/api/types.go#L657
 	echo 'FROM ./NeuralDaredevil-8B-abliterated.Q2_K.gguf
 PARAMETER num_ctx 6144
 
@@ -27487,8 +27490,7 @@ PARAMETER num_ctx 6144
 PARAMETER stop <|start_header_id|>
 PARAMETER stop <|end_header_id|>
 PARAMETER stop <|eot_id|>
-
-temperature    0.7
+PARAMETER temperature 0.7
 
 ' > Llama-augment.Modelfile
 
@@ -27512,7 +27514,7 @@ temperature    0.7
 	#aria2c --log=- --log-level=info -x "3" --async-dns=false -o 'meta-llama-3.1-8b-instruct-abliterated.Q2_K.gguf' 'https://huggingface.co/mlabonne/Meta-Llama-3.1-8B-Instruct-abliterated-GGUF/resolve/main/meta-llama-3.1-8b-instruct-abliterated.Q2_K.gguf'
 	#[[ ! -e 'meta-llama-3.1-8b-instruct-abliterated.Q2_K.gguf' ]] && aria2c --log=- --log-level=info -x "3" --async-dns=false -o 'meta-llama-3.1-8b-instruct-abliterated.Q2_K.gguf' 'https://huggingface.co/mlabonne/Meta-Llama-3.1-8B-Instruct-abliterated-GGUF/resolve/main/meta-llama-3.1-8b-instruct-abliterated.Q2_K.gguf' --disable-ipv6=true
 
-	#wget 'https://huggingface.co/mlabonne/Meta-Llama-3.1-8B-Instruct-abliterated-GGUF/resolve/main/NeuralDaredevil-8B-abliterated.Q2_K.gguf'
+	#wget 'https://huggingface.co/QuantFactory/NeuralDaredevil-8B-abliterated-GGUF/resolve/main/NeuralDaredevil-8B-abliterated.Q2_K.gguf'
 	aria2c --log=- --log-level=info -x "3" --async-dns=false -o 'NeuralDaredevil-8B-abliterated.Q2_K.gguf' 'https://huggingface.co/QuantFactory/NeuralDaredevil-8B-abliterated-GGUF/resolve/main/NeuralDaredevil-8B-abliterated.Q2_K.gguf'
 	[[ ! -e 'NeuralDaredevil-8B-abliterated.Q2_K.gguf' ]] && aria2c --log=- --log-level=info -x "3" --async-dns=false -o 'NeuralDaredevil-8B-abliterated.Q2_K.gguf' 'https://huggingface.co/QuantFactory/NeuralDaredevil-8B-abliterated-GGUF/resolve/main/NeuralDaredevil-8B-abliterated.Q2_K.gguf' --disable-ipv6=true
 	
@@ -28194,15 +28196,39 @@ _augment-backend() {
 
 
 _here_bashTool-noOtherInfo() {
+
+	# ATTENTION: NOTICE: Especially with a small model...
+	# Regard this as similar to an analog modem symbol decoder with a filter bank attached to a filter bank used as a delay line.
+	# Negative Prompt (Do not output any other information.
+	#
+	# Positive Prompt (Please state the datum, ), Negative Prompt (do not *include* any other information,), this...
+	# stuff
+	# Negative Prompt (Do not output any other information.)
+	# Positive Prompt (Output only the one line command or parameter.), Negative Prompt (Do not output any other text.), Positive Prompt (Since this is zero-shot tool use, only the one line will be helpful, any other output will be unhelpful.)
+	#
+	# Thus, for good results, your prompt given to 'augment' function should closely resemble this example:
+	# EXAMPLE
+	# Please state the domain name or IP address, do not include any other information, from this bash shellcode command:
+	# ```bash
+	# ssh root@123.123.123.123 -p 122 -i ~/.ssh/id_ed25519
+	# ```
+	#
+	# Such an approach quickly 'dampens' any Positive Prompt 'ringing' or 'overshoot' from a Positive Prompt with a Negative Prompt before any effects can accumulate in the AI LLM model output.
+	#
+	# That said, less quantization of the 'Llama-augment' , Q8_0 instead of Q2_K , will require far less careful such 'dampening'. Given the automation purpose of the 'Llama-augment' model, the tradeoff of requiring more careful prompting is well worthwhile to improve processing speed, etc. Especially since only at most one negative prompt not already automatically added is needed, and only to address a specific nuance in the developer's own Positive Prompt, such as the 'datum' being an address, given that usernames are commonly used with such addresses in HTTP URLs, etc.
+
+
     cat << 'CZXWXcRMTo8EmM8i4d'
 
-Do not include any other information.
+Do not output any other information.
 
 CZXWXcRMTo8EmM8i4d
 }
 
 _here_bashTool-askCommand-ONLY() {
     cat << 'CZXWXcRMTo8EmM8i4d'
+
+Do not output any other information.
 
 Output only the one line command or parameter. Do not output any other text. Since this is zero-shot tool use, only the one line will be helpful, any other output will be unhelpful.
 
