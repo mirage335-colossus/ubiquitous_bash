@@ -106,6 +106,13 @@ _augment-backend() {
 }
 
 
+_here_bashTool-noOtherInfo() {
+    cat << 'CZXWXcRMTo8EmM8i4d'
+
+Do not include any other information.
+
+CZXWXcRMTo8EmM8i4d
+}
 
 _here_bashTool-askCommand-ONLY() {
     cat << 'CZXWXcRMTo8EmM8i4d'
@@ -194,32 +201,36 @@ CZXWXcRMTo8EmM8i4d
 
 _augment_procedure() {
 	( _messageNormal ' ... augment' >&2 ) > /dev/null
-	
-	cat > "$safeTmp"/input_prompt.txt
 
-	_here_bashTool-askCommand-ONLY > "$safeTmp"/processing-bashTool-askCommand-ONLY.txt
+	[[ "$fastTmp" == "" ]] && local fastTmp="$safeTmp"
+
+	_here_bashTool-noOtherInfo > "$fastTmp"/processing-bashTool-noOtherInfo-ONLY.txt
+	
+	cat > "$fastTmp"/input_prompt.txt
+
+	_here_bashTool-askCommand-ONLY > "$fastTmp"/processing-bashTool-askCommand-ONLY.txt
 
 
 	local currentIteration=0
 	#[[ "$currentIteration" -lt 85 ]]
-	while [[ $(cat "$safeTmp"/processing-bashTool-isGibberish.txt 2>/dev/null | tr -dc 'a-zA-Z0-9' | tr 'A-Z' 'a-z' | tail -c 5 ) != 'valid' ]] && [[ "$currentIteration" -lt 45 ]]
+	while [[ $(cat "$fastTmp"/processing-bashTool-isGibberish.txt 2>/dev/null | tr -dc 'a-zA-Z0-9' | tr 'A-Z' 'a-z' | tail -c 5 ) != 'valid' ]] && [[ "$currentIteration" -lt 45 ]]
 	do
 		( _messagePlain_nominal ' ... augment: '"$currentIteration" >&2 ) > /dev/null
-		cat "$safeTmp"/input_prompt.txt "$safeTmp"/processing-bashTool-askCommand-ONLY.txt | _augment-backend "$@" > "$safeTmp"/output_prompt.txt
+		cat "$fastTmp"/processing-bashTool-noOtherInfo-ONLY.txt "$fastTmp"/input_prompt.txt "$fastTmp"/processing-bashTool-askCommand-ONLY.txt | _augment-backend "$@" > "$fastTmp"/output_prompt.txt
 
-		rm -f "$safeTmp"/processing-bashTool-askGibberish.txt > /dev/null 2>&1
-		if [[ -s "$safeTmp"/output_prompt.txt ]]
+		rm -f "$fastTmp"/processing-bashTool-askGibberish.txt > /dev/null 2>&1
+		if [[ -s "$fastTmp"/output_prompt.txt ]]
 		then
-			_here_bashTool-askGibberish > "$safeTmp"/processing-bashTool-askGibberish.txt
-			cat "$safeTmp"/output_prompt.txt "$safeTmp"/processing-bashTool-askGibberish.txt | _augment-backend "$@" > "$safeTmp"/processing-bashTool-isGibberish.txt
+			_here_bashTool-askGibberish > "$fastTmp"/processing-bashTool-askGibberish.txt
+			cat "$fastTmp"/output_prompt.txt "$fastTmp"/processing-bashTool-askGibberish.txt | _augment-backend "$@" > "$fastTmp"/processing-bashTool-isGibberish.txt
 		fi
 
-		if [[ -e "$safeTmp"/processing-bashTool-isGibberish.txt ]] && [[ $(cat "$safeTmp"/processing-bashTool-isGibberish.txt | tr -dc 'a-zA-Z0-9' | tr 'A-Z' 'a-z' | tail -c 5 ) != 'valid' ]]
+		if [[ -e "$fastTmp"/processing-bashTool-isGibberish.txt ]] && [[ $(cat "$fastTmp"/processing-bashTool-isGibberish.txt | tr -dc 'a-zA-Z0-9' | tr 'A-Z' 'a-z' | tail -c 5 ) != 'valid' ]]
 		then
 			( _messagePlain_warn 'warn: gibberish: ' >&2 ) > /dev/null
-			( cat "$safeTmp"/output_prompt.txt | tr -dc 'a-zA-Z0-9\-_\ \=\+\/\.' >&2 ) > /dev/null
+			( cat "$fastTmp"/output_prompt.txt | tr -dc 'a-zA-Z0-9\-_\ \=\+\/\.' >&2 ) > /dev/null
 			( echo >&2 ) > /dev/null
-			( _messagePlain_probe 'currentGibberish= '$(cat "$safeTmp"/processing-bashTool-isGibberish.txt | head -c 192 | tr -dc 'a-zA-Z0-9') >&2 ) > /dev/null
+			( _messagePlain_probe 'currentGibberish= '$(cat "$fastTmp"/processing-bashTool-isGibberish.txt | head -c 192 | tr -dc 'a-zA-Z0-9') >&2 ) > /dev/null
 			( echo  >&2 ) > /dev/null
 		fi
 		
@@ -227,7 +238,7 @@ _augment_procedure() {
 	done
 
 
-	cat "$safeTmp"/output_prompt.txt
+	cat "$fastTmp"/output_prompt.txt
 }
 _augment_sequence() {
 	_start
@@ -235,6 +246,21 @@ _augment_sequence() {
 	_augment_procedure "$@"
 
 	_stop
+}
+# WARNING: DUBIOUS. Unusual, VERY UNUSUAL. Avoids the more appropriate technique of recursively calling the script with the usual separate environment, _stop trap, etc.
+_augment_fast() {
+	(
+		export fastid=$(_uid)
+		export fastTmp="$tmpSelf""$tmpPrefix"/w_"$fastid"
+
+		mkdir -p "$fastTmp"
+		[[ "$tmpSelf" != "$scriptAbsoluteFolder" ]] && echo "$tmpSelf" 2> /dev/null > "$scriptAbsoluteFolder"/__d_$(echo "$fastid" | head -c 16)
+
+		_augment_procedure "$@"
+
+		_safeRMR "$fastTmp"
+		unset fastTmp
+	)
 }
 _augment() {
     "$scriptAbsoluteLocation" _augment_sequence "$@"

@@ -565,6 +565,8 @@ _service_ollama_augment() {
 	local current_OLLAMA_HOST
 	current_OLLAMA_HOST="$OLLAMA_HOST"
 	[[ "$current_OLLAMA_HOST" == "" ]] && current_OLLAMA_HOST='127.0.0.1:11434'
+
+	wget --timeout=1 --tries=3 'http://'"$current_OLLAMA_HOST" -q -O - > /dev/null 2>&1 && return 0
 	
 	if _if_cygwin && ! wget --timeout=1 --tries=3 'http://'"$current_OLLAMA_HOST" -q -O - > /dev/null 2>&1
 	then

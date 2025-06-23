@@ -113,6 +113,7 @@ _stop() {
 	
 	_safeRMR "$shortTmp"
 	_safeRMR "$safeTmp"
+	[[ "$fastTmp" != "" ]] && _safeRMR "$fastTmp"
 	
 	[[ -e "$safeTmp" ]] && sleep 0.1 && _safeRMR "$safeTmp"
 	[[ -e "$safeTmp" ]] && sleep 0.3 && _safeRMR "$safeTmp"
