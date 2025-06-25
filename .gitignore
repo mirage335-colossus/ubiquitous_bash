@@ -5,6 +5,8 @@
 ._run-factory
 ._run-factory*
 
+*devtask*/
+
 _bundle/
 lean_compressed.sh
 ubcore_compressed.sh
