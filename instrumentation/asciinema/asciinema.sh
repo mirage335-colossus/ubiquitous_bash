@@ -21,14 +21,16 @@ _setup_asciinema_convert() {
 
     if ! _if_cygwin
     then
-        pip3 install --break-system-packages term2md
-        sudo -n pip3 install --break-system-packages term2md
+        #pip3 install --break-system-packages term2md
+        #sudo -n pip3 install --break-system-packages term2md
+        true
     fi
 
     if _if_cygwin
     then
-        #pip3 install --quiet --no-input --no-build-isolation -U term2md
-        pip3 install --no-input --no-build-isolation -U term2md
+        ##pip3 install --quiet --no-input --no-build-isolation -U term2md
+        #pip3 install --no-input --no-build-isolation -U term2md
+        true
     fi
 
 
