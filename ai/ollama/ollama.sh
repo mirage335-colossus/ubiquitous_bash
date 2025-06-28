@@ -127,10 +127,10 @@ CZXWXcRMTo8EmM8i4d
 		# "Llama 3" NeuralDaredevil-8B-abliterated
 		#
 		# NOTICE: This merged model is distributed under the following Creative Commons licenses:
-		# Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International Licence (for weight components originating from Llama-3 Soliloquy 8B v2)
+		# Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License (for weight components originating from Llama-3 Soliloquy 8B v2)
 		# And simultaneously subject to:
-		# Meta Llama 3 Community Licence
-		# Llama 3.1 Community Licence.
+		# Meta Llama 3 Community License
+		# Llama 3.1 Community License.
 		
 
 		# https://huggingface.co/mlabonne/Meta-Llama-3.1-8B-Instruct-abliterated-GGUF/tree/main
@@ -419,8 +419,8 @@ CZXWXcRMTo8EmM8i4d
 		#
 		# Global merge of included AI model weights; no fine-tuning after merge.  Datasets not redistributed.
 		#
-		# CC components follow – Title   Modification status   Licence + URI   Author/Source   Work URI   (CC licences include disclaimers of warranty)
-		# All licence links also carry the CC warranty disclaimer.
+		# CC components follow – Title   Modification status   License + URI   Author/Source   Work URI   (CC licenses include disclaimers of warranty)
+		# All license links also carry the CC warranty disclaimer.
 		#
 		# Llama-3 Soliloquy 8B v2 (model)   Weights merged (global merge, no further training)   CC BY-NC-SA 4.0 https://creativecommons.org/licenses/by-nc-sa/4.0/   Elyn-dev   https://huggingface.co/elyn-dev/Llama-3-Soliloquy-8B-v2
 		# Gutenberg-DPO v0.1 (dataset)   Used indirectly via upstream fine-tuning; upstream already cleaned chapters & generated synthetic prompts (retain these prior modifications); not redistributed here   CC BY 4.0 https://creativecommons.org/licenses/by/4.0/   Jon Durbin, 2024   https://huggingface.co/datasets/jondurbin/gutenberg-dpo-v0.1
@@ -436,8 +436,8 @@ CZXWXcRMTo8EmM8i4d
 		#
 		# Global merge of included AI-model weights, followed by 'abliteration' weight manipulation; no further fine-tuning after merge.  Datasets are training-only and are not redistributed.
 		#
-		# CC components follow –  Title   Modification status   Licence + URI   Author/Source   Work URI   (all CC licences include disclaimers of warranty)
-		# All licence links also carry the CC warranty disclaimer.
+		# CC components follow –  Title   Modification status   License + URI   Author/Source   Work URI   (all CC licenses include disclaimers of warranty)
+		# All license links also carry the CC warranty disclaimer.
 		#
 		# Llama-3 Soliloquy 8B v2 (model)          Weights merged **and abliterated** (global merge + abliteration; no extra training)          CC BY-NC-SA 4.0  https://creativecommons.org/licenses/by-nc-sa/4.0/          Elyn-dev          https://huggingface.co/elyn-dev/Llama-3-Soliloquy-8B-v2
 		# Gutenberg-DPO v0.1 (dataset)             Used indirectly via upstream fine-tuning; retains upstream synthetic-prompt edits; not redistributed          CC BY 4.0  https://creativecommons.org/licenses/by/4.0/          Jon Durbin (2024)          https://huggingface.co/datasets/jondurbin/gutenberg-dpo-v0.1
@@ -453,8 +453,8 @@ CZXWXcRMTo8EmM8i4d
 		#
 		# Global merge of included AI-model weights -> ‘abliteration’ weight manipulation -> DPO fine-tune (one epoch on mlabonne/orpo-dpo-mix-40k).
 		#
-		# CC components follow –  Title   Modification status   Licence + URI   Author/Source   Work URI   (all CC licences include disclaimers of warranty)
-		# All licence links also carry the CC warranty disclaimer.
+		# CC components follow –  Title   Modification status   License + URI   Author/Source   Work URI   (all CC licenses include disclaimers of warranty)
+		# All license links also carry the CC warranty disclaimer.
 		#
 		# Llama-3 Soliloquy 8B v2 (model)   Weights merged in Daredevil-8B, then **further updated by abliteration + DPO fine-tune**   CC BY-NC-SA 4.0 https://creativecommons.org/licenses/by-nc-sa/4.0/   Elyn-dev   https://huggingface.co/elyn-dev/Llama-3-Soliloquy-8B-v2
 		# Gutenberg-DPO v0.1 (dataset)   Used for DPO fine-tune **without additional edits** (tokenisation only); retains prior cleaning & prompt synthesis by creator; *not redistributed*   CC BY 4.0 https://creativecommons.org/licenses/by/4.0/   Jon Durbin, 2024   https://huggingface.co/datasets/jondurbin/gutenberg-dpo-v0.1

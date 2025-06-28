@@ -2,3 +2,12 @@ Llama 3.1 is licensed under the Llama 3.1 Community License, Copyright © Meta P
 Meta Llama 3 is licensed under the Meta Llama 3 Community License, Copyright © Meta Platforms, Inc. All Rights Reserved.
 Llama 3.2 is licensed under the Llama 3.2 Community License, Copyright © Meta Platforms, Inc. All Rights Reserved.
 Llama 3.3 is licensed under the Llama 3.3 Community License, Copyright © Meta Platforms, Inc. All Rights Reserved.
+
+		# "Llama 3" NeuralDaredevil-8B-abliterated
+		#
+		# NOTICE: This merged model is distributed under the following Creative Commons licenses:
+		# Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License (for weight components originating from Llama-3 Soliloquy 8B v2)
+		# And simultaneously subject to:
+		# Meta Llama 3 Community License
+		# Llama 3.1 Community License.
+		
