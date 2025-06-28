@@ -5,7 +5,7 @@
 # (2) NOTICE: Please DO read all comments from both directories for both VERY significant TODO items, and possible obligations you may have to follow to actually use some specifically supported AI models.
 
 
-
+# ATTENTION: NOTICE: ./ubiquitous_bash.sh _here_license-Llama-3-augment > ./shortcuts/ai/ollama/License-Llama-3-NeuralDaredevil-8B-abliterated.txt
 _here_license-Llama-3-augment() {
 	if ( [[ "$accept_nonpermissiveNONCOMMERCIAL" != "false" ]] ) || [[ -e "$HOME"/nonpermissiveNONCOMMERCIAL ]]
 	then
@@ -37,6 +37,9 @@ CZXWXcRMTo8EmM8i4d
 
 	cat << 'CZXWXcRMTo8EmM8i4d'
 
+Llama 3 augment
+
+
 https://www.llama.com/llama3_1/license/
 https://www.llama.com/llama3_1/use-policy/
 https://about.meta.com/brand/resources/meta/company-brand/
@@ -51,6 +54,8 @@ CZXWXcRMTo8EmM8i4d
 	fi
 
 cat << 'CZXWXcRMTo8EmM8i4d'
+
+https://www.llama.com/faq/
 
 Copies of these license and use policies, etc, to the extent required and/or appropriate, are included in appropriate subdirectories of a proper recursive download of any git repository used to distribute this project. 
 

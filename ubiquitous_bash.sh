@@ -39,7 +39,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='3620520443'
-export ub_setScriptChecksum_contents='3475181535'
+export ub_setScriptChecksum_contents='3196809246'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -27193,7 +27193,7 @@ _upgrade_researchEngine-safe-nvidia() {
 # (2) NOTICE: Please DO read all comments from both directories for both VERY significant TODO items, and possible obligations you may have to follow to actually use some specifically supported AI models.
 
 
-
+# ATTENTION: NOTICE: ./ubiquitous_bash.sh _here_license-Llama-3-augment > ./shortcuts/ai/ollama/License-Llama-3-NeuralDaredevil-8B-abliterated.txt
 _here_license-Llama-3-augment() {
 	if ( [[ "$accept_nonpermissiveNONCOMMERCIAL" != "false" ]] ) || [[ -e "$HOME"/nonpermissiveNONCOMMERCIAL ]]
 	then
@@ -27225,6 +27225,9 @@ CZXWXcRMTo8EmM8i4d
 
 	cat << 'CZXWXcRMTo8EmM8i4d'
 
+Llama 3 augment
+
+
 https://www.llama.com/llama3_1/license/
 https://www.llama.com/llama3_1/use-policy/
 https://about.meta.com/brand/resources/meta/company-brand/
@@ -27239,6 +27242,8 @@ CZXWXcRMTo8EmM8i4d
 	fi
 
 cat << 'CZXWXcRMTo8EmM8i4d'
+
+https://www.llama.com/faq/
 
 Copies of these license and use policies, etc, to the extent required and/or appropriate, are included in appropriate subdirectories of a proper recursive download of any git repository used to distribute this project. 
 

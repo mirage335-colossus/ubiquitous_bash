@@ -5,11 +5,16 @@ Meta Llama 3 is licensed under the Meta Llama 3 Community License, Copyright © 
 License and terms of use are under the 'Meta' corporation's llama3_1 , llama3 , license and use policy.
 
 
+Llama 3 augment
+
+
 https://www.llama.com/llama3_1/license/
 https://www.llama.com/llama3_1/use-policy/
 https://about.meta.com/brand/resources/meta/company-brand/
 https://www.llama.com/llama3/license/
 https://www.llama.com/llama3/use-policy/
+
+https://www.llama.com/faq/
 
 Copies of these license and use policies, etc, to the extent required and/or appropriate, are included in appropriate subdirectories of a proper recursive download of any git repository used to distribute this project. 
 
