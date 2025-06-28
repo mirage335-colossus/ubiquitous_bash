@@ -130,7 +130,7 @@ CZXWXcRMTo8EmM8i4d
 		# Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License (for weight components originating from Llama-3 Soliloquy 8B v2)
 		# And simultaneously subject to:
 		# Meta Llama 3 Community License
-		# Llama 3.1 Community License.
+		# Llama 3.1 Community License .
 		
 
 		# https://huggingface.co/mlabonne/Meta-Llama-3.1-8B-Instruct-abliterated-GGUF/tree/main
