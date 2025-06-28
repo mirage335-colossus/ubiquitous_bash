@@ -7,16 +7,50 @@
 
 
 _here_license-Llama-augment() {
-	cat << 'CZXWXcRMTo8EmM8i4d'
+	if ( [[ "$accept_nonpermissiveNONCOMMERCIAL" != "false" ]] ) || [[ -e "$HOME"/nonpermissiveNONCOMMERCIAL ]]
+	then
+		cat << 'CZXWXcRMTo8EmM8i4d'
+	LICENSE """Built with Llama
+Built with Meta Llama 3
+Llama 3.1 is licensed under the Llama 3.1 Community License, Copyright © Meta Platforms, Inc. All Rights Reserved.
+Meta Llama 3 is licensed under the Meta Llama 3 Community License, Copyright © Meta Platforms, Inc. All Rights Reserved.
+CZXWXcRMTo8EmM8i4d
+
+		cat << 'CZXWXcRMTo8EmM8i4d'
+License and terms of use are under the 'Meta' corporation's llama3_1 , llama3 , license and use policy.
+
+CZXWXcRMTo8EmM8i4d
+	fi
+
+	if ( [[ "$accept_nonpermissiveNONCOMMERCIAL" == "false" ]] ) && [[ ! -e "$HOME"/nonpermissiveNONCOMMERCIAL ]]
+	then
+		cat << 'CZXWXcRMTo8EmM8i4d'
 	LICENSE """Built with Llama
 Llama 3.1 is licensed under the Llama 3.1 Community License, Copyright © Meta Platforms, Inc. All Rights Reserved.
+CZXWXcRMTo8EmM8i4d
 
-License and terms of use are inherited from the 'Meta' corporation's llama3_1 license and use policy.
+		cat << 'CZXWXcRMTo8EmM8i4d'
+License and terms of use are under the 'Meta' corporation's llama3_1 license and use policy.
+
+CZXWXcRMTo8EmM8i4d
+	fi
+
+	cat << 'CZXWXcRMTo8EmM8i4d'
+
 https://www.llama.com/llama3_1/license/
 https://www.llama.com/llama3_1/use-policy/
 https://about.meta.com/brand/resources/meta/company-brand/
+CZXWXcRMTo8EmM8i4d
+
+	if ( [[ "$accept_nonpermissiveNONCOMMERCIAL" != "false" ]] ) || [[ -e "$HOME"/nonpermissiveNONCOMMERCIAL ]]
+	then
+		cat << 'CZXWXcRMTo8EmM8i4d'
 https://www.llama.com/llama3/license/
 https://www.llama.com/llama3/use-policy/
+CZXWXcRMTo8EmM8i4d
+	fi
+
+cat << 'CZXWXcRMTo8EmM8i4d'
 
 Copies of these license and use policies, etc, to the extent required and/or appropriate, are included in appropriate subdirectories of a proper recursive download of any git repository used to distribute this project. 
 
@@ -38,8 +72,9 @@ Clarification from comments, documentation, etc, usually provided with the 'ubiq
 
 https://github.com/mirage335-colossus/ubiquitous_bash/blob/master/ai/ollama/ollama.sh
 ./ai/ollama/ollama.sh
-./shortcuts/ai/ollama/LICENSE-Llama-3.txt
+./shortcuts/ai/ollama/Notice.txt
 ./shortcuts/ai/ollama/LICENSE-Llama-3.1.txt
+./shortcuts/ai/ollama/LICENSE-Llama-3.txt
 ./_lib/kit/app/researchEngine/license-llama/
 
 DANGER!
@@ -72,17 +107,490 @@ CZXWXcRMTo8EmM8i4d
 
 	if ( [[ "$accept_nonpermissiveNONCOMMERCIAL" == "false" ]] ) && [[ ! -e "$HOME"/nonpermissiveNONCOMMERCIAL ]]
 	then
-		
+		cat << 'CZXWXcRMTo8EmM8i4d'
+
+		# https://huggingface.co/mlabonne/Meta-Llama-3.1-8B-Instruct-abliterated-GGUF/tree/main
+		# https://web.archive.org/web/20240831194035/https://huggingface.co/mlabonne/Meta-Llama-3.1-8B-Instruct-abliterated-GGUF/tree/main
+		# https://huggingface.co/mradermacher/Meta-Llama-3.1-8B-Instruct-abliterated-GGUF
+		# https://web.archive.org/web/20250323003504/https://huggingface.co/mradermacher/Meta-Llama-3.1-8B-Instruct-abliterated-GGUF
+		# https://huggingface.co/bartowski/Meta-Llama-3.1-8B-Instruct-abliterated-GGUF
+		# https://web.archive.org/web/20250105072418/https://huggingface.co/bartowski/Meta-Llama-3.1-8B-Instruct-abliterated-GGUF
+		#
+		# Explicitly states 'License: llama3.1'. Readme files, etc, from repository does NOT contradict this.
+CZXWXcRMTo8EmM8i4d
 	fi
 	
 	if ( [[ "$accept_nonpermissiveNONCOMMERCIAL" != "false" ]] ) || [[ -e "$HOME"/nonpermissiveNONCOMMERCIAL ]]
 	then
+		cat << 'CZXWXcRMTo8EmM8i4d'
 
+		# "Llama 3" NeuralDaredevil-8B-abliterated
+		#
+		# NOTICE: This merged model is distributed under the following Creative Commons licenses:
+		# Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International Licence (for weight components originating from Llama-3 Soliloquy 8B v2)
+		# And simultaneously subject to:
+		# Meta Llama 3 Community Licence
+		# Llama 3.1 Community Licence.
+		
+
+		# https://huggingface.co/mlabonne/Meta-Llama-3.1-8B-Instruct-abliterated-GGUF/tree/main
+		# https://web.archive.org/web/20240831194035/https://huggingface.co/mlabonne/Meta-Llama-3.1-8B-Instruct-abliterated-GGUF/tree/main
+		# https://huggingface.co/mradermacher/Meta-Llama-3.1-8B-Instruct-abliterated-GGUF
+		# https://web.archive.org/web/20250323003504/https://huggingface.co/mradermacher/Meta-Llama-3.1-8B-Instruct-abliterated-GGUF
+		# https://huggingface.co/bartowski/Meta-Llama-3.1-8B-Instruct-abliterated-GGUF
+		# https://web.archive.org/web/20250105072418/https://huggingface.co/bartowski/Meta-Llama-3.1-8B-Instruct-abliterated-GGUF
+		# https://huggingface.co/mlabonne/NeuralDaredevil-8B-abliterated
+		# https://huggingface.co/QuantFactory/NeuralDaredevil-8B-abliterated-GGUF
+		# https://huggingface.co/QuantFactory/NeuralDaredevil-8B-abliterated-GGUF/tree/main
+		# https://web.archive.org/web/20250526124847/https://huggingface.co/QuantFactory/NeuralDaredevil-8B-abliterated-GGUF
+		# https://web.archive.org/web/20250206175259/https://huggingface.co/QuantFactory/NeuralDaredevil-8B-abliterated-GGUF/tree/main
+		#
+		#
+		# https://huggingface.co/mlabonne/NeuralDaredevil-8B-abliterated
+		#  https://huggingface.co/datasets/mlabonne/orpo-dpo-mix-40k
+		#   'License: apache-2.0'
+		# https://huggingface.co/mlabonne/Daredevil-8B-abliterated
+		# https://huggingface.co/mlabonne/Daredevil-8B
+		#
+		# https://huggingface.co/nbeerbower/llama-3-stella-8B
+		# https://web.archive.org/web/20240829103303/https://huggingface.co/nbeerbower/llama-3-stella-8B
+		#  'governed by META LLAMA 3 COMMUNITY LICENSE AGREEMENT'
+		#  https://huggingface.co/nbeerbower/llama-3-bible-dpo-8B
+		#   'governed by META LLAMA 3 COMMUNITY LICENSE AGREEMENT'
+		#   https://huggingface.co/datasets/nbeerbower/bible-dpo
+		#    'License: apache-2.0'
+		#  https://huggingface.co/nbeerbower/llama-3-gutenberg-8B
+		#  https://web.archive.org/web/20250303232239/https://huggingface.co/nbeerbower/llama-3-gutenberg-8B
+		#   'governed by META LLAMA 3 COMMUNITY LICENSE AGREEMENT'
+		#   https://huggingface.co/datasets/jondurbin/gutenberg-dpo-v0.1
+		#    'License: cc-by-4.0'
+		#  https://huggingface.co/elyn-dev/Llama-3-Soliloquy-8B-v2
+		#   'licensed under the Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International Public License, under META LLAMA 3 COMMUNITY LICENSE AGREEMENT'
+		#   'License: cc-by-nc-sa-4.0'
+		#  https://huggingface.co/theo77186/Llama-3-8B-Instruct-norefusal
+		#   https://huggingface.co/datasets/jondurbin/airoboros-2.2
+		#   https://github.com/llm-attacks/llm-attacks/blob/main/data/advbench/harmful_behaviors.csv
+		#    https://github.com/llm-attacks/llm-attacks/blob/main/LICENSE
+		#     'MIT License'
+		#  https://huggingface.co/bunnycore/Cognitron-8B
+		#   'Llama-3-8B-Lexi-Uncensored'
+		#   https://huggingface.co/Orenguteng/Llama-3-8B-Lexi-Uncensored
+		#   'Einstein-v6.1-Llama3-8B'
+		#   https://huggingface.co/Weyaxi/Einstein-v6.1-Llama3-8B
+		#    NOTICE: Datasets permissive license, Llama 3.1 license, Llama 3 license, etc, or public domain, etc, affirmed by AI (ChatGPT o3 DeepResearch , ChatGPT 4.5 DeepResearch, ChatGPT or-mini-high DeepResearch, Perplexity Sonar DeepResearch, etc) inquiry.
+		#    'dolphin-2.9-llama3-8b'
+		#    https://huggingface.co/cognitivecomputations/dolphin-2.9-llama3-8b
+		#     'grant permission for any use, including commercial, that falls within accordance with Meta's Llama-3 license'
+		#     NOTICE: Datasets permissive license, Llama 3.1 license, Llama 3 license, etc, or public domain, etc, affirmed by AI (ChatGPT o3 DeepResearch , ChatGPT 4.5 DeepResearch, ChatGPT or-mini-high DeepResearch, Perplexity Sonar DeepResearch, etc) inquiry.
+		#  https://huggingface.co/lodrick-the-lafted/Olethros-8B
+		#   https://huggingface.co/datasets/lodrick-the-lafted/OpusStories
+		#    'License: apache-2.0'
+		#   https://huggingface.co/datasets/lodrick-the-lafted/Sao10K_Claude-3-Opus-Instruct-3.3K
+		#    'License: apache-2.0'
+		#   https://huggingface.co/datasets/lodrick-the-lafted/Samantha-Opus
+		#    'License: apache-2.0'
+		#   https://huggingface.co/datasets/lodrick-the-lafted/Worldsim-Opus
+		#    'License: apache-2.0'
+		#
+		# https://web.archive.org/web/20240525160322/https://huggingface.co/Hastagaras/llama-3-8b-okay
+		#
+		#  https://huggingface.co/nbeerbower/llama-3-gutenberg-8B
+		#  https://web.archive.org/web/20250303232239/https://huggingface.co/nbeerbower/llama-3-gutenberg-8B
+		#   'governed by META LLAMA 3 COMMUNITY LICENSE AGREEMENT'
+		#   https://huggingface.co/datasets/jondurbin/gutenberg-dpo-v0.1
+		#    'License: cc-by-4.0'
+		#
+		# https://huggingface.co/openchat/openchat-3.6-8b-20240522
+		# https://web.archive.org/web/20250618114410/https://huggingface.co/openchat/openchat-3.6-8b-20240522
+		#  https://github.com/imoneoi/openchat
+		#   https://github.com/imoneoi/openchat/blob/master/LICENSE
+		#    'Apache' '2.0'
+		# 
+		# https://huggingface.co/Kukedlc/NeuralLLaMa-3-8b-DT-v0.1
+		# https://web.archive.org/web/20250504052139/https://huggingface.co/Kukedlc/NeuralLLaMa-3-8b-DT-v0.1
+		#  https://huggingface.co/mlabonne/ChimeraLlama-3-8B-v2
+		#   https://huggingface.co/NousResearch/Meta-Llama-3-8B-Instruct
+		#   https://huggingface.co/mlabonne/OrpoLlama-3-8B
+		#   https://huggingface.co/cognitivecomputations/dolphin-2.9-llama3-8b
+		#    NOTICE: Datasets permissive license, Llama 3.1 license, Llama 3 license, etc, or public domain, etc, affirmed by AI (ChatGPT o3 DeepResearch , ChatGPT 4.5 DeepResearch, ChatGPT or-mini-high DeepResearch, Perplexity Sonar DeepResearch, etc) inquiry.
+		#    'grant permission for any use, including commercial, that falls within accordance with Meta's Llama-3 license'
+		#   https://huggingface.co/Locutusque/llama-3-neural-chat-v1-8b
+		#   https://huggingface.co/cloudyu/Meta-Llama-3-8B-Instruct-DPO
+		#    'License: cc'
+		#   https://huggingface.co/vicgalle/Configurable-Llama-3-8B-v0.3
+		#   https://huggingface.co/nbeerbower/llama-3-dragonmaid-8B-v2?not-for-all-audiences=true
+		#   https://huggingface.co/nbeerbower/llama-3-wissenschaft-8B-v2
+		#  https://huggingface.co/nbeerbower/llama-3-stella-8B
+		#   'governed by META LLAMA 3 COMMUNITY LICENSE AGREEMENT'
+		#   https://huggingface.co/nbeerbower/llama-3-bible-dpo-8B
+		#    'governed by META LLAMA 3 COMMUNITY LICENSE AGREEMENT'
+		#    https://huggingface.co/datasets/nbeerbower/bible-dpo
+		#     'License: apache-2.0'
+		#   https://huggingface.co/nbeerbower/llama-3-gutenberg-8B
+		#   https://web.archive.org/web/20250303232239/https://huggingface.co/nbeerbower/llama-3-gutenberg-8B
+		#    'governed by META LLAMA 3 COMMUNITY LICENSE AGREEMENT'
+		#    https://huggingface.co/datasets/jondurbin/gutenberg-dpo-v0.1
+		#     'License: cc-by-4.0'
+		#   https://huggingface.co/elyn-dev/Llama-3-Soliloquy-8B-v2
+		#    'licensed under the Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International Public License, under META LLAMA 3 COMMUNITY LICENSE AGREEMENT'
+		#   https://huggingface.co/theo77186/Llama-3-8B-Instruct-norefusal
+		#    https://huggingface.co/datasets/jondurbin/airoboros-2.2
+		#    https://github.com/llm-attacks/llm-attacks/blob/main/data/advbench/harmful_behaviors.csv
+		#     https://github.com/llm-attacks/llm-attacks/blob/main/LICENSE
+		#      'MIT License'
+		#   https://huggingface.co/bunnycore/Cognitron-8B
+		#    'Llama-3-8B-Lexi-Uncensored'
+		#    https://huggingface.co/Orenguteng/Llama-3-8B-Lexi-Uncensored
+		#    'Einstein-v6.1-Llama3-8B'
+		#    https://huggingface.co/Weyaxi/Einstein-v6.1-Llama3-8B
+		#	  NOTICE: Datasets permissive license, Llama 3.1 license, Llama 3 license, etc, or public domain, etc, affirmed by AI (ChatGPT o3 DeepResearch , ChatGPT 4.5 DeepResearch, ChatGPT or-mini-high DeepResearch, Perplexity Sonar DeepResearch, etc) inquiry.
+		#     'dolphin-2.9-llama3-8b'
+		#     https://huggingface.co/cognitivecomputations/dolphin-2.9-llama3-8b
+		#      'grant permission for any use, including commercial, that falls within accordance with Meta's Llama-3 license'
+		#      NOTICE: Datasets permissive license, Llama 3.1 license, Llama 3 license, etc, or public domain, etc, affirmed by AI (ChatGPT o3 DeepResearch , ChatGPT 4.5 DeepResearch, ChatGPT or-mini-high DeepResearch, Perplexity Sonar DeepResearch, etc) inquiry.
+		#   https://huggingface.co/lodrick-the-lafted/Olethros-8B
+		#    https://huggingface.co/datasets/lodrick-the-lafted/OpusStories
+		#     'License: apache-2.0'
+		#    https://huggingface.co/datasets/lodrick-the-lafted/Sao10K_Claude-3-Opus-Instruct-3.3K
+		#     'License: apache-2.0'
+		#    https://huggingface.co/datasets/lodrick-the-lafted/Samantha-Opus
+		#     'License: apache-2.0'
+		#    https://huggingface.co/datasets/lodrick-the-lafted/Worldsim-Opus
+		#     'License: apache-2.0'
+		#  https://huggingface.co/uygarkurt/llama-3-merged-linear
+		#   https://www.youtube.com/watch?v=gNXBp3wttFU
+		#   https://github.com/uygarkurt/Model-Merge/blob/main/linear.yml
+		#    'model: VAGOsolutions/Llama-3-SauerkrautLM-8b-Instruct'
+		#     https://huggingface.co/VAGOsolutions/Llama-3-SauerkrautLM-8b-Instruct
+		#     https://web.archive.org/web/20241216233234/https://huggingface.co/VAGOsolutions/Llama-3-SauerkrautLM-8b-Instruct
+		#    'model: DeepMount00/Llama-3-8b-Ita'
+		#     https://huggingface.co/DeepMount00/Llama-3-8b-Ita
+		#     https://web.archive.org/web/20241222221326/https://huggingface.co/DeepMount00/Llama-3-8b-Ita
+		#      NOTICE: Datasets permissive license, Llama 3.1 license, Llama 3 license, etc, or public domain, etc, affirmed by AI (ChatGPT o3 DeepResearch , ChatGPT 4.5 DeepResearch, ChatGPT or-mini-high DeepResearch, Perplexity Sonar DeepResearch, etc) inquiry.
+		#    'model: nbeerbower/llama-3-gutenberg-8B'
+		#     https://huggingface.co/nbeerbower/llama-3-gutenberg-8B
+		#     https://web.archive.org/web/20250303232239/https://huggingface.co/nbeerbower/llama-3-gutenberg-8B
+		#      'governed by META LLAMA 3 COMMUNITY LICENSE AGREEMENT'
+		#      https://huggingface.co/datasets/jondurbin/gutenberg-dpo-v0.1
+		#       'License: cc-by-4.0'
+		#
+		# https://huggingface.co/cstr/llama3-8b-spaetzle-v20
+		# https://web.archive.org/web/20240829102655/https://huggingface.co/cstr/llama3-8b-spaetzle-v20
+		#  https://huggingface.co/cstr/llama3-8b-spaetzle-v13
+		#   https://huggingface.co/Azure99/blossom-v5-llama3-8b
+		#    'License: apache-2.0'
+		#    https://huggingface.co/datasets/Azure99/blossom-chat-v3
+		#    https://huggingface.co/datasets/Azure99/blossom-math-v4
+		#    https://huggingface.co/datasets/Azure99/blossom-wizard-v3
+		#    https://huggingface.co/datasets/Azure99/blossom-orca-v3
+		#     'License: apache-2.0'
+		#   https://huggingface.co/VAGOsolutions/Llama-3-SauerkrautLM-8b-Instruct
+		#   https://web.archive.org/web/20241216233234/https://huggingface.co/VAGOsolutions/Llama-3-SauerkrautLM-8b-Instruct
+		#  https://huggingface.co/nbeerbower/llama-3-wissenschaft-8B-v2
+		#   'governed by META LLAMA 3 COMMUNITY LICENSE AGREEMENT'
+		#   https://huggingface.co/datasets/tasksource/ScienceQA_text_only
+		#    
+		#
+		# https://huggingface.co/mlabonne/ChimeraLlama-3-8B-v3
+		# https://web.archive.org/web/20240902141843/https://huggingface.co/mlabonne/ChimeraLlama-3-8B-v3
+		#  https://huggingface.co/NousResearch/Meta-Llama-3-8B-Instruct
+		#   'License' 'https://llama.meta.com/llama3/license'
+		#  https://huggingface.co/mlabonne/OrpoLlama-3-8B
+		#   https://huggingface.co/datasets/mlabonne/orpo-dpo-mix-40k
+		#    'License: apache-2.0'
+		#  https://huggingface.co/cognitivecomputations/dolphin-2.9-llama3-8b
+		#   'grant permission for any use, including commercial, that falls within accordance with Meta's Llama-3 license'
+		#   NOTICE: Datasets permissive license, Llama 3.1 license, Llama 3 license, etc, or public domain, etc, affirmed by AI (ChatGPT o3 DeepResearch , ChatGPT 4.5 DeepResearch, ChatGPT or-mini-high DeepResearch, Perplexity Sonar DeepResearch, etc) inquiry.
+		#  https://huggingface.co/Danielbrdz/Barcenas-Llama3-8b-ORPO
+		#   https://huggingface.co/datasets/reciperesearch/dolphin-sft-v0.1-preference
+		#    'License: apache-2.0'
+		#  https://huggingface.co/VAGOsolutions/Llama-3-SauerkrautLM-8b-Instruct
+		#  https://huggingface.co/vicgalle/Configurable-Llama-3-8B-v0.3
+		#   https://huggingface.co/datasets/vicgalle/configurable-system-prompt-multitask
+		#    'License: cc-by-4.0'
+		#  https://huggingface.co/MaziyarPanahi/Llama-3-8B-Instruct-DPO-v0.3
+		#   https://huggingface.co/datasets/Intel/orca_dpo_pairs
+		#     'License: apache-2.0'
+		#
+		# https://huggingface.co/flammenai/Mahou-1.1-llama3-8B
+		# https://web.archive.org/web/20240829113546/https://huggingface.co/flammenai/Mahou-1.1-llama3-8B
+		#  https://huggingface.co/datasets/flammenai/Grill-preprod-v1_chatML
+		#   'License: apache-2.0'
+		#
+		# https://web.archive.org/web/20240829101937/https://huggingface.co/KingNish/KingNish-Llama3-8b
+		#  https://huggingface.co/VAGOsolutions/Llama-3-SauerkrautLM-8b-Instruct
+		#  https://web.archive.org/web/20241216233234/https://huggingface.co/VAGOsolutions/Llama-3-SauerkrautLM-8b-Instruct
+		#   'License: meta-llama'
+		#  https://huggingface.co/mlabonne/ChimeraLlama-3-8B-v3
+		#  https://web.archive.org/web/20240902141843/https://huggingface.co/mlabonne/ChimeraLlama-3-8B-v3
+		#   https://huggingface.co/NousResearch/Meta-Llama-3-8B-Instruct
+		#    'License' 'https://llama.meta.com/llama3/license'
+		#   https://huggingface.co/mlabonne/OrpoLlama-3-8B
+		#    https://huggingface.co/datasets/mlabonne/orpo-dpo-mix-40k
+		#     'License: apache-2.0'
+		#   https://huggingface.co/cognitivecomputations/dolphin-2.9-llama3-8b
+		#    'grant permission for any use, including commercial, that falls within accordance with Meta's Llama-3 license'
+		#    NOTICE: Datasets permissive license, Llama 3.1 license, Llama 3 license, etc, or public domain, etc, affirmed by AI (ChatGPT o3 DeepResearch , ChatGPT 4.5 DeepResearch, ChatGPT or-mini-high DeepResearch, Perplexity Sonar DeepResearch, etc) inquiry.
+		#   https://huggingface.co/Danielbrdz/Barcenas-Llama3-8b-ORPO
+		#    https://huggingface.co/datasets/reciperesearch/dolphin-sft-v0.1-preference
+		#     'License: apache-2.0'
+		#   https://huggingface.co/VAGOsolutions/Llama-3-SauerkrautLM-8b-Instruct
+		#   https://huggingface.co/vicgalle/Configurable-Llama-3-8B-v0.3
+		#    https://huggingface.co/datasets/vicgalle/configurable-system-prompt-multitask
+		#     'License: cc-by-4.0'
+		#   https://huggingface.co/MaziyarPanahi/Llama-3-8B-Instruct-DPO-v0.3
+		#    https://huggingface.co/datasets/Intel/orca_dpo_pairs
+		#     'License: apache-2.0'
+		#
+		# Datasets and related information possibly used or possibly not used, during, usually at least mostly third-party, non-commercial model development . Noted for completeness and clarity, not necessarily of any relevance. Please read remaining explanation why any such information may not be relevant.
+		# List obtained from, and datasets permissive license, Llama 3.1 license, Llama 3 license, etc, or public domain, etc, affirmed by, AI (ChatGPT o3 DeepResearch , ChatGPT 4.5 DeepResearch, ChatGPT or-mini-high DeepResearch, Perplexity Sonar DeepResearch, etc) inquiry.
+		# OpenAssistant/oasst_top1_2023-08-25
+		# https://huggingface.co/datasets/HuggingFaceH4/ultrachat_200k
+		# https://huggingface.co/datasets/teknium/OpenHermes-2.5
+		# https://huggingface.co/datasets/m-a-p/CodeFeedback-Filtered-Instruction
+		# https://huggingface.co/datasets/cognitivecomputations/dolphin-coder/tree/main#:~:text=License%3A
+		# https://huggingface.co/datasets/cognitivecomputations/samantha-data#:~:text=License%3A
+		# https://huggingface.co/datasets/microsoft/orca-math-word-problems-200k
+		# https://huggingface.co/datasets/abacusai/SystemChat-1.1
+		# https://huggingface.co/datasets/Locutusque/function-calling-chatml
+		# https://huggingface.co/datasets/internlm/Agent-FLAN
+		# https://huggingface.co/datasets/cognitivecomputations/Dolphin-2.9
+		# https://huggingface.co/datasets/tasksource/ScienceQA_text_only
+		# https://huggingface.co/datasets/allenai/ai2_arc/blob/main/README.md#:~:text=License%3A
+		# https://huggingface.co/datasets/camel-ai/physics
+		# https://huggingface.co/datasets/camel-ai/chemistry
+		# https://huggingface.co/datasets/camel-ai/biology
+		# https://huggingface.co/datasets/camel-ai/math
+		# metaeval/reclor https://www.atyun.com/resources/group/metaeval#:~:text=%E8%AE%B8%E5%8F%AF%3A
+		# https://github.com/allenai/OpenBookQA/blob/main/LICENSE
+		# https://huggingface.co/datasets/garage-bAInd/Open-Platypus/commit/4a0588535f76b0606f4e39083149d20eeb8106f0#:~:text=garage,commercial%20%7C%20%3B%2041
+		# https://ai-testing.gitee.com/hf-datasets/derek-thomas/ScienceQA
+		# https://huggingface.co/datasets/jondurbin/airoboros-3.2?not-for-all-audiences=true
+		# https://huggingface.co/datasets/LDJnr/Capybara
+		# https://huggingface.co/datasets/STEM-AI-mtl/Electrical-engineering
+		# https://huggingface.co/datasets/knowrohit07/saraswati-stem/commit/f7d3000f1df13f1f9ca2f44db04aa4d6bb1d8f72#:~:text=%2B%201
+		# https://huggingface.co/datasets/sablo/oasst2_curated
+		# https://paperswithcode.com/paper/lmsys-chat-1m-a-large-scale-real-world-llm#:~:text=The%20dataset%20is%20publicly%20available,Terms%20Data%20policy
+		# https://huggingface.co/datasets/TIGER-Lab/MathInstruct/blob/main/README.md#:~:text=README.md%20%C2%B7%20TIGER,2.0
+		# https://jmai.amegroups.org/article/view/9452/html#:~:text=Examples%20of%20medical%20question%20and,ND%204.0%29%2C%20which%20permits
+		# https://jmai.amegroups.org/article/view/9452/html#:~:text=Examples%20of%20medical%20question%20and,ND%204.0%29%2C%20which%20permits
+		# https://huggingface.co/datasets/meta-math/MetaMathQA-40K
+		# https://github.com/seominjoon/piqa/blob/master/LICENSE
+		# https://huggingface.co/datasets/allenai/sciq
+		# https://huggingface.co/datasets/Open-Orca/SlimOrca
+		# https://huggingface.co/datasets/migtissera/Synthia-v1.3
+		# https://modelscope.cn/datasets/allenai/WildChat
+		# https://huggingface.co/datasets/teknium/GPTeacher-General-Instruct
+		# https://github.com/cloudera/CML_AMP_Finetune_Foundation_Model_Multiple_Tasks
+		# https://huggingface.co/datasets/HuggingFaceH4/no_robots
+		# https://ollama.com/fl0id/teuken-7b-instruct-commercial-v0.4:latest#:~:text=fl0id%2Fteuken,2.0%20%3B%20HuggingFaceH4%2Fultrachat_200k%2C%20EN
+		# mandyyyyii/scibench
+		# TIGER-Lab/ScienceEval
+		# https://huggingface.co/datasets/bigbio/med_qa
+		# DeepMount00/llm_ita_ultra
+		# Cot-Alpaca-GPT4-From-OpenHermes-2.5
+		# OpenChat/openchat_sharegpt4_dataset
+		# totally-not-an-llm/EverythingLM-data-V3
+		# WizardLM/WizardLM_evol_instruct_70k
+		# ToolBench instruction shards (toolbench_instruct_j1s1_3k_unfiltered.jsonl, toolbench_negative_unfiltered.jsonl, toolbench_react_10p_unfiltered.jsonl, toolbench_tflan_cot_30p_unfiltered.jsonl)
+		# Other Dolphin 2.9 training shards (dolphin201-sharegpt2.jsonl, Ultrachat200kunfiltered.jsonl, openhermes200k_unfiltered.jsonl, dolphin-coder-translate-sharegpt2.jsonl, dolphin-coder-codegen-sharegpt2.jsonl, m-a-p_Code-Feedback-sharegpt-unfiltered.jsonl, m-a-p_CodeFeedback-Filtered-Instruction-sharegpt-unfiltered.jsonl, not_samantha_norefusals.jsonl, Orca-Math-resort-unfiltered.jsonl, agent_instruct_react_unfiltered.jsonl, SystemConversations.jsonl)
+		#
+		# * **Gutenberg DPO v0.1** – Dataset curated by Jon Durbin (HF user *jondurbin*), derived from public-domain Project Gutenberg texts. *License: CC BY 4.0*.
+		#  https://huggingface.co/datasets/jondurbin/gutenberg-dpo-v0.1#:~:text=License%3A
+		# * **Configurable System Prompt Multitask** – Synthetic preference dataset by Victor Gallego (HF user *vicgalle*). *License: CC BY 4.0*.
+		#  https://huggingface.co/datasets/vicgalle/configurable-system-prompt-multitask#:~:text=License%3A
+		# * **SciQ Dataset** – Crowdsourced science QA dataset from Allen Institute for AI. *License: CC BY-NC 3.0 (Unported)*.
+		#  https://huggingface.co/datasets/allenai/sciq#:~:text=License%3A
+		# * **AI2 Reasoning Challenge (ARC)** – Science questions dataset by Allen Institute for AI. *License: CC BY-SA 4.0*.
+		#  https://huggingface.co/datasets/allenai/ai2_arc#:~:text=License%3A
+		# * **ScienceQA Dataset** – Multimodal science QA benchmark (Lu et al., NeurIPS 2022). *License: CC BY-NC-SA 4.0*.
+		#  https://scienceqa.github.io/#:~:text=Our%20dataset%20is%20distributed%20under,check%20out%20our%20github%20repository
+		#  https://scienceqa.github.io/#:~:text=Our%20dataset%20is%20distributed%20under,out%20our%20%2010%20github
+		# * **Llama-3 Soliloquy 8B v2** – Fine-tuned model by Elyn (HF user *elyn-dev/openlynn*). *License: CC BY-NC-SA 4.0*.
+		#  https://huggingface.co/elyn-dev/Llama-3-Soliloquy-8B-v2#:~:text=This%20model%20is%20licensed%20under,LLAMA%203%20COMMUNITY%20LICENSE%20AGREEMENT
+		#  https://huggingface.co/elyn-dev/Llama-3-Soliloquy-8B-v2#:~:text=license,imply%20endorsement%20by%20the%20licensor
+		#
+		# 
+		#
+		# NOTICE: CreativeCommons Attribution is different for each of the three "Llama 3" Daredevil AI models .
+		#
+		#
+		# "Llama 3" Daredevil mlabonne/Daredevil-8B model  https://huggingface.co/mlabonne/Daredevil-8B
+		#
+		# Global merge of included AI model weights; no fine-tuning after merge.  Datasets not redistributed.
+		#
+		# CC components follow – Title   Modification status   Licence + URI   Author/Source   Work URI   (CC licences include disclaimers of warranty)
+		# All licence links also carry the CC warranty disclaimer.
+		#
+		# Llama-3 Soliloquy 8B v2 (model)   Weights merged (global merge, no further training)   CC BY-NC-SA 4.0 https://creativecommons.org/licenses/by-nc-sa/4.0/   Elyn-dev   https://huggingface.co/elyn-dev/Llama-3-Soliloquy-8B-v2
+		# Gutenberg-DPO v0.1 (dataset)   Used indirectly via upstream fine-tuning; upstream already cleaned chapters & generated synthetic prompts (retain these prior modifications); not redistributed here   CC BY 4.0 https://creativecommons.org/licenses/by/4.0/   Jon Durbin, 2024   https://huggingface.co/datasets/jondurbin/gutenberg-dpo-v0.1
+		# Configurable System Prompt Multitask (dataset)   Used indirectly via upstream fine-tuning; dataset is fully synthetic preference pairs (retain prior modification note); not redistributed   CC BY 4.0 https://creativecommons.org/licenses/by/4.0/   Victor Gallego   https://huggingface.co/datasets/vicgalle/configurable-system-prompt-multitask
+		# AI2 ARC (dataset)   Used indirectly via upstream fine-tuning; no edits by Daredevil-8B; dataset not redistributed, so BY-SA obligations do not propagate   CC BY-SA 4.0 https://creativecommons.org/licenses/by-sa/4.0/   Allen Institute for AI   https://huggingface.co/datasets/allenai/ai2_arc
+		# SciQ (dataset)   Used indirectly via upstream fine-tuning; converted JSON->tokens only; dataset not redistributed   CC BY-NC 3.0 https://creativecommons.org/licenses/by-nc/3.0/   Johannes Welbl et al.   https://huggingface.co/datasets/allenai/sciq
+		# ScienceQA (dataset)   Used indirectly via upstream fine-tuning; upstream already removed images; not redistributed   CC BY-NC-SA 4.0 https://creativecommons.org/licenses/by-nc-sa/4.0/   Lu et al., 2022   https://github.com/lupantech/ScienceQA
+		# Truthy-DPO v0.1 (dataset)   Used in upstream DPO step; no edits; not redistributed   CC BY 4.0 https://creativecommons.org/licenses/by/4.0/   Jon Durbin   https://huggingface.co/datasets/jondurbin/truthy-dpo-v0.1
+		# Meta-Llama-3-8B-Instruct-DPO (model)   Weights merged (global merge, no additional training) CC BY 4.0   https://creativecommons.org/licenses/by/4.0/   cloudyu   https://huggingface.co/cloudyu/Meta-Llama-3-8B-Instruct-DPO
+		#
+		#
+		# "Llama 3" Daredevil mlabonne/Daredevil-8B-abliterated model  https://huggingface.co/mlabonne/Daredevil-8B-abliterated
+		#
+		# Global merge of included AI-model weights, followed by 'abliteration' weight manipulation; no further fine-tuning after merge.  Datasets are training-only and are not redistributed.
+		#
+		# CC components follow –  Title   Modification status   Licence + URI   Author/Source   Work URI   (all CC licences include disclaimers of warranty)
+		# All licence links also carry the CC warranty disclaimer.
+		#
+		# Llama-3 Soliloquy 8B v2 (model)          Weights merged **and abliterated** (global merge + abliteration; no extra training)          CC BY-NC-SA 4.0  https://creativecommons.org/licenses/by-nc-sa/4.0/          Elyn-dev          https://huggingface.co/elyn-dev/Llama-3-Soliloquy-8B-v2
+		# Gutenberg-DPO v0.1 (dataset)             Used indirectly via upstream fine-tuning; retains upstream synthetic-prompt edits; not redistributed          CC BY 4.0  https://creativecommons.org/licenses/by/4.0/          Jon Durbin (2024)          https://huggingface.co/datasets/jondurbin/gutenberg-dpo-v0.1
+		# Configurable System Prompt Multitask (dataset)   Used indirectly via upstream fine-tuning; unchanged; not redistributed          CC BY 4.0  https://creativecommons.org/licenses/by/4.0/          Victor Gallego          https://huggingface.co/datasets/vicgalle/configurable-system-prompt-multitask
+		# AI2 ARC (dataset)                         Used indirectly via upstream fine-tuning; no edits; dataset not redistributed (BY-SA therefore not triggered)          CC BY-SA 4.0  https://creativecommons.org/licenses/by-sa/4.0/          Allen Institute for AI          https://huggingface.co/datasets/allenai/ai2_arc
+		# SciQ (dataset)                           Used indirectly via upstream fine-tuning; JSON→tokens only; not redistributed          CC BY-NC 3.0  https://creativecommons.org/licenses/by-nc/3.0/          Johannes Welbl et al.          https://huggingface.co/datasets/allenai/sciq
+		# ScienceQA (dataset)                       Used indirectly via upstream fine-tuning; images removed upstream; not redistributed          CC BY-NC-SA 4.0  https://creativecommons.org/licenses/by-nc-sa/4.0/          Pan Lu et al. (2022)          https://github.com/lupantech/ScienceQA
+		# Truthy-DPO v0.1 (dataset)   Used in upstream DPO step; no edits; not redistributed   CC BY 4.0 https://creativecommons.org/licenses/by/4.0/   Jon Durbin   https://huggingface.co/datasets/jondurbin/truthy-dpo-v0.1
+		# Meta-Llama-3-8B-Instruct-DPO (model)      Weights merged **and abliterated** (global merge + abliteration)          CC BY 4.0  https://creativecommons.org/licenses/by/4.0/          cloudyu          https://huggingface.co/cloudyu/Meta-Llama-3-8B-Instruct-DPO
+		#
+		#
+		# "Llama 3" Daredevil mlabonne/NeuralDaredevil-8B-abliterated model  https://huggingface.co/mlabonne/NeuralDaredevil-8B-abliterated
+		#
+		# Global merge of included AI-model weights -> ‘abliteration’ weight manipulation -> DPO fine-tune (one epoch on mlabonne/orpo-dpo-mix-40k).
+		#
+		# CC components follow –  Title   Modification status   Licence + URI   Author/Source   Work URI   (all CC licences include disclaimers of warranty)
+		# All licence links also carry the CC warranty disclaimer.
+		#
+		# Llama-3 Soliloquy 8B v2 (model)   Weights merged in Daredevil-8B, then **further updated by abliteration + DPO fine-tune**   CC BY-NC-SA 4.0 https://creativecommons.org/licenses/by-nc-sa/4.0/   Elyn-dev   https://huggingface.co/elyn-dev/Llama-3-Soliloquy-8B-v2
+		# Gutenberg-DPO v0.1 (dataset)   Used for DPO fine-tune **without additional edits** (tokenisation only); retains prior cleaning & prompt synthesis by creator; *not redistributed*   CC BY 4.0 https://creativecommons.org/licenses/by/4.0/   Jon Durbin, 2024   https://huggingface.co/datasets/jondurbin/gutenberg-dpo-v0.1
+		# Configurable System Prompt Multitask (dataset)   Used for DPO fine-tune **as-is** (parquet → tokens); *not redistributed*   CC BY 4.0 https://creativecommons.org/licenses/by/4.0/   Victor Gallego   https://huggingface.co/datasets/vicgalle/configurable-system-prompt-multitask
+		# AI2 ARC (dataset)   Indirectly included via upstream models; **no new edits**; dataset only consumed for training so BY-SA obligations do not propagate; *not redistributed*   CC BY-SA 4.0 https://creativecommons.org/licenses/by-sa/4.0/   Allen Institute for AI   https://huggingface.co/datasets/allenai/ai2_arc
+		# SciQ (dataset)   Used for DPO fine-tune; **JSON → ChatML conversion only**; *not redistributed*   CC BY-NC 3.0 https://creativecommons.org/licenses/by-nc/3.0/   Johannes Welbl et al. (2017)   https://huggingface.co/datasets/allenai/sciq
+		# ScienceQA (dataset)   Upstream already removed images; **text portion used unchanged** in DPO set; *not redistributed*   CC BY-NC-SA 4.0 https://creativecommons.org/licenses/by-nc-sa/4.0/   Lu et al., 2022   https://scienceqa.github.io/
+		# Truthy-DPO v0.1 (dataset)   Used in upstream DPO step; no edits; not redistributed   CC BY 4.0 https://creativecommons.org/licenses/by/4.0/   Jon Durbin   https://huggingface.co/datasets/jondurbin/truthy-dpo-v0.1
+		# Meta-Llama-3-8B-Instruct-DPO (model)   Weights merged, then **altered by abliteration + DPO fine-tune**   CC BY 4.0  https://creativecommons.org/licenses/by/4.0/   cloudyu   https://huggingface.co/cloudyu/Meta-Llama-3-8B-Instruct-DPO
+		# 
+		# 
+		# https://creativecommons.org/licenses/by/4.0/legalcode.txt
+		# https://creativecommons.org/licenses/by-sa/4.0/legalcode.txt
+		# https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.txt
+		# https://creativecommons.org/licenses/by/4.0/
+		# https://creativecommons.org/licenses/by-sa/4.0/
+		# https://creativecommons.org/licenses/by-nc-sa/4.0/
+		# https://creativecommons.org/licenses/by/3.0/
+		# https://creativecommons.org/licenses/by/2.0/
+		# https://creativecommons.org/licenses/by/1.0/
+		#
+		# Models fine-tuned, etc, with more than a few datasets, have been evaluated for dataset license by prompting  ChatGPT o3 DeepResearch , ChatGPT 4.5 DeepResearch , ChatGPT o4-mini-high DeepResearch , or similar , and may be labeled 'Datasets permissive license, Llama 3.1 license, Llama 3 license, etc, or public domain, etc, affirmed by AI (ChatGPT o3 DeepResearch , ChatGPT 4.5 DeepResearch, ChatGPT or-mini-high DeepResearch, Perplexity Sonar DeepResearch, etc) inquiry.' . Such documentation must not be misconstrued: there is a consensus reflected both in statements by the community often stating a license that does not include the license terms from a dataset used in fine-tuning, training, etc, as well economically relevant activity in the AI industry, that transformative use of datasets for training and inference to create non-infringing content is, whether under fair-use or other doctrine, not affected by the licensing of the dataset. Nothing about any documentation here shall be misconstrued as contradicting such consensus, expectation, etc.
+		#
+		# Nor shall any such documentation be misconstrued to suggest any dataset enumerated here is in any way more significant than datasets used by Meta to train Llama , DeepSeek to train DeepSeek-R1 .
+		#
+		# Llama 3, Llama 3.1 , Llama 3.3 , DeepSeek-R1 , other such 'open-weights' models, 'open-weights' community derivatives of such 'open-weights' models, regardless of commercial use of these models, were trained, created, etc, as a non-commercial and possibly also educational activity - any use of any datasets was non-commercial . The business justification of building long-term shareholder value under which corporations donate to strictly non-profit (eg. 501c3 ) entities wholly unrelated to their own business interests, solely to meet public ethics expectations, clearly shows that entities with commercial goals engage in unrelated activity that is widely perceived as much of a legitimate corporate non-commercial activity as other corporate activities some may perceive as legitimate whether commercial or non-commercial.
+		#
+		# Meta's contribution to society in producing the "Llama 3" (trademarked), "Llama" (trademarked) models without a direct commercial purpose in doing so is significant. All reasonable efforts are made as regards to "Llama 3", "Llama", etc,  models used, etc, to comply with then current Meta's brand guidelines.
+		#
+		# Dataset, models, etc, used for fine-tuning, merging, etc, by developer 'mlabonne', and similar developers, usually at least mostly third-party developers, creating "Llama 3" 'NeuralDaredevil-8B-abliterated' , "Llama 3" 'NeuralDaredevil-8B-abliterated' , etc, and similar, models, was the developer's sole responsibility. Compliance with licenses of datasets either under permissive open-source licenses, or outright essentially public domain, etc, during fine-tuning, or compliance with licenses of such permissively licensed or outright essentially public domain open-weights models merged, or at least without imposing any non-commercial licensing of the developer's own, was an obvious non-commercial research activity, reasonably expected at least fair use, private use, transformative use, etc, and the responsibility of the relevant developer, usually at least mostly third-party developers, etc, at that time.
+		#
+		# Use of any particular dataset by a model merged into another model then merged into yet another model, has been substantially diluted, and possibly in yet another way very significantly transformed. Actual benefit, much less content, resulting from that particular dataset may be negligible, yet mathematically infeasible to identify in the model and reduce to noise, as well as actually impossible to remove. The insignificance of any supposed contribution, unrelatedness to any actual purpose of using the model, and infeasibility of removal, may or may not significantly dilute, discredit, etc, any related intellectual property claim.
+		#
+		# Relatively small (~8B parameters) open-weights AI LLM models developed non-commercially, embedded use of AI LLM models, offline use of AI LLM models, use of AI LLM models without a closed-source commercial web interface built by the same entity as the AI LLM model creator, and/or other similar such situations, without either limiting to such situations or requiring any combination of such situations, unambiguously obviously does not compete with the entire combination of at least partially paywalled online non-embedded use of closed-weights at least most differentiatingly relatively huge (>1T parameters expected by the general public) AI LLM models developed as a commercial product offered through online closed-source commercial web interface, online APIs, etc.
+		#
+		# Possibly interesting legal interpretations seem to exist around OpenAI.
+		#  https://huggingface.co/datasets/jondurbin/airoboros-2.2
+		#   'ToS' 'Please seek legal advice'
+		#  https://huggingface.co/datasets/RyokoAI/ShareGPT52K  .
+		#   'CC0: No Rights Reserved.'
+		#   'The output of machine learning algorithms is uncopyrightable in the United States and other jurisdictions. Additionally, the OpenAI terms of service do not apply to this dataset as users of this dataset are not accessing the OpenAI service.'
+		#
+		# Explicitly states 'License: llama3.1' , 'License: llama3' , etc. Any permissive license (eg. Apache 2.0, MIT, CreativeCommons, etc) or less permissive license (eg. CreativeCommons NonCommercial) has been found by human review and followed up AI provided review, as reasonably permissive license terms.
+		#
+		# NOTICE: Thus, the 'Llama-augment' model, as derived from either 'Llama 3.1 8B', 'Llama 3 8B', or any of the other derivative AI LLM models above, etc:
+		# (*) Itself created non-commercially, whether 'Llama 3.1 8B', 'Llama 3 8B', "Llama 3" 'NeuralDaredevil', or derived thereof, etc.
+		# (*) Permitted by Meta except for entities meeting this specific criteria from 'Llama 3.1', 'Llama 3', license text, for commercial, etc, use.
+		#  'on the Llama 3.1 version release date, the monthly active users of the products or services made available by or for Licensee, or Licensee’s affiliates, is greater than 700 million monthly active users in the preceding calendar month'
+		#  'on the Meta Llama 3 version release date, the monthly active users of the products or services made available by or for Licensee, or Licensee’s affiliates, is greater than 700 million monthly active users in the preceding calendar month'
+		# (*) May or may not, depending on both actual relevance and the underlying model used, incur a CreativeCommons Non-Commercial less permissive licensing term, to 'elyn-dev' creator of 'Llama-3-Soliloquy-8B-v2' . Developers of possibly relevant models and merged models apparently did not explicitly impose their own claim of such a less permissive licensing term.
+		#  https://huggingface.co/elyn-dev/Llama-3-Soliloquy-8B-v2
+		#  https://huggingface.co/nbeerbower/llama-3-stella-8B
+		#  https://huggingface.co/mlabonne/Daredevil-8B
+		#  https://huggingface.co/mlabonne/Daredevil-8B-abliterated
+		#  https://huggingface.co/mlabonne/NeuralDaredevil-8B-abliterated
+		
+		# https://www.llama.com/llama3_1/license/
+		# https://huggingface.co/meta-llama/Meta-Llama-3.1-70B-Instruct/blob/main/LICENSE
+		#  NOTICE: ATTENTION: This license has been preserved as 'LICENSE-Llama-3.1.txt', but this license does NOT apply to any 'ubiquitous_bash' code or any other work that is not either a work by Meta or strictly a derivative of a work by Meta (such as a modified AI model GGUF or safetensors file) !
+		
+		# https://www.llama.com/llama3_1/use-policy/
+
+		# https://about.meta.com/brand/resources/meta/company-brand/
+		
+		
+		# https://www.llama.com/llama3_1/license/
+		#  'include “Llama” at the beginning of any such AI model name'
+		# ATTENTION: Nevertheless, it is very possible a non-'Llama' model will eventually be used, especially as science and technology (eg. plasma recombination EUV physics) related datasets (eg. relevant Wikipedia articles) are increasingly gathered.
+
+
+		# https://www.llama.com/llama3/license/
+		# https://www.llama.com/llama3/use-policy/
+		
+		
+		# https://www.apache.org/licenses/LICENSE-2.0.txt
+		# https://opensource.org/license/mit
+		# https://creativecommons.org/licenses/by/4.0/legalcode.txt
+		# https://creativecommons.org/licenses/by-sa/4.0/legalcode.txt
+		# https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.txt
+		# https://creativecommons.org/licenses/by/4.0/
+		# https://creativecommons.org/licenses/by-sa/4.0/
+		# https://creativecommons.org/licenses/by-nc-sa/4.0/
+		# https://creativecommons.org/licenses/by/3.0/
+		# https://creativecommons.org/licenses/by/2.0/
+		# https://creativecommons.org/licenses/by/1.0/
+
+
+
+		# Regarding any CreativeCommons NonCommercial less permissive licensing term that may possibly or may not have been incurred:
+		# May be internal use not primarily intended for or directed toward commercial advantage:
+		# *) Generating technical, business, etc, decisions.
+		# *) Writing content not directly on behalf of a customer - technical standards, marketing, email replies, etc.
+		# *) Processing step in a robot error detection and correction algorithm.
+		# *) Part of the operations of a commercial business but not itself intended primarily for exploiting commercially.
+		# *) Included due to upstream non-commercial supplier's (eg. open-source developer's) preferred component in a complex system also used by the public for other purposes, archival preservation of an AI model through distribution, the supplier's savings on non-commercial use of disk space, bandwidth, build time/computation, etc, rather than to gain any actual advantage for a commercial business.
+		# 
+		# May be separate from the usual commercial use of AI models usually intentionally prevented under CreativeCommons NonCommercial license:
+		# *) Not an inference service generating outputs solely with this AI model based solely on user input.
+		# *) Not using content directly from this AI model as a substantial contribution to such expressive content of a paid service as roleplaying character dialogue.
+		# 
+		# May not be providing a means for users to 
+		# *) Not offering consulting or other assistance to generate both specific output of this AI model and from other than an approved paid service.
+		# *) Vastly, absurdly, prohibitively difficult to, from prefixing, suffixing, etc, useful given inputs, obtain outputs intentionally resembling this AI model from AI model after complex merges, to the point of resembling intentional effort both to cause the AI model to refuse to do this and to cause the AI model to not produce such resemblances.
+		# 
+		# May be out of scope:
+		# *) Transformative processing of outputs by another AI model .
+		# *) Extracted facts with zero originality being the only output, such as converting natural-language input to output a name, number, address, etc.
+		# *) Trivial, unrecognizable, effect, etc, of an AI model only contributing weights to a merged model merged into another model.
+		# *) No substantial protectable expression in the composite model weights due to weight-averaging obliterating individual training patterns, merges, etc, to the point of being functionally noise.
+		# 
+		# May be beyond best practices and reasonable effort to mitigate more:
+		# *) Disproportionate infeasibility of determining both removal of merged AI model weights and absence of other damage after complex merging into AI model merged into another AI model merged into this AI model, with all such merges having possible previous merges disrupting any baseline values, possibly multiple cases of such complex composition, under limited precision arithmetic.
+		# 
+		# May be zero-substitution negligible market effect:
+		# *) Non-availability of the merged model useful for different purposes through official approved paid service.
+		# *) Non-availability and poor maintenance of this AI model from approved official paid service (eg. OpenRouter  404: No endpoints found ) .
+		# *) Security necessity - offline inference necessary due to AI model output use in a pipeline running commands, parameters interpretable as commands, and/or AI model input being from a pipeline that could have possibly picked up sensitive files such as password lists.
+		# *) Performance necessity - within a looping pipeline, etc, that would be a large factor or orders of magnitude prohibitively slower, from available paid service.
+		# *) Reliability necessity - must continue essential data processing, possibly also business processes, etc, without fragility of internet outage, including historic incidents of multiple redundant satellite internet provider outages.
+		# *) Security necessity - use in a strictly offline air-gapped or data-pumped environment with very strict integrity checking, etc.
+		# *) No market harm - intermediate functional data for factual, decision making, practical uses, made possible by possibly transformative merging, fine-tuning, etc, instead of uses explicitly declared description and purposes of this AI model or official approved paid service, etc, for finished creative fiction, immersive, dynamic, fictional experiences, roleplay, etc.
+		# 
+		# In particular, it is usually already inappropriate to begin with to directly show outputs from an AI 'augment' model directly to end-users, as such models may usually rely on subsequent processing by another model for 'safety'.
+		# 
+		# A different situation may emerge when attempting to, for profit, without similarly distributing the AI model for free, redistribute the AI model or something including the AI model, such as a dist/OS .
+		# 
+		# This is not advice: some, all, and/or none, of these evaluation points may or may not apply, particularly depending on ongoing legal proceedings determining the applicability of copyright law at all to the possibly transformative, etc, uses, etc, of AI models.
+
+CZXWXcRMTo8EmM8i4d
 	fi
 
-	
+
 
 	cat << 'CZXWXcRMTo8EmM8i4d'
+
+
 
 LLAMA 3.1 COMMUNITY LICENSE AGREEMENT
 Llama 3.1 Version Release Date: July 23, 2024
@@ -199,6 +707,11 @@ the State of California without regard to choice of law principles, and the UN C
 for the International Sale of Goods does not apply to this Agreement. The courts of California shall have
 exclusive jurisdiction of any dispute arising out of this Agreement.
 
+CZXWXcRMTo8EmM8i4d
+
+	if ( [[ "$accept_nonpermissiveNONCOMMERCIAL" != "false" ]] ) || [[ -e "$HOME"/nonpermissiveNONCOMMERCIAL ]]
+	then
+		cat << 'CZXWXcRMTo8EmM8i4d'
 
 
 
@@ -236,8 +749,10 @@ c. If you institute litigation or other proceedings against Meta or any entity (
 
 6. Term and Termination. The term of this Agreement will commence upon your acceptance of this Agreement or access to the Llama Materials and will continue in full force and effect until terminated in accordance with the terms and conditions herein. Meta may terminate this Agreement if you are in breach of any term or condition of this Agreement. Upon termination of this Agreement, you shall delete and cease use of the Llama Materials. Sections 3, 4 and 7 shall survive the termination of this Agreement.
 7. Governing Law and Jurisdiction. This Agreement will be governed and construed under the laws of the State of California without regard to choice of law principles, and the UN Convention on Contracts for the International Sale of Goods does not apply to this Agreement. The courts of California shall have exclusive jurisdiction of any dispute arising out of this Agreement.
-"""
 CZXWXcRMTo8EmM8i4d
+	fi
+
+	echo '"""'
 }
 
 
@@ -262,454 +777,7 @@ _setup_ollama_model_augment_sequence() {
 	#  (2) To assist and possibly supervise 'human-in-the-loop' decision making (eg. to sanity check human responses).
 	
 	
-	# https://huggingface.co/mlabonne/Meta-Llama-3.1-8B-Instruct-abliterated-GGUF/tree/main
-	# https://web.archive.org/web/20240831194035/https://huggingface.co/mlabonne/Meta-Llama-3.1-8B-Instruct-abliterated-GGUF/tree/main
-	# https://huggingface.co/mradermacher/Meta-Llama-3.1-8B-Instruct-abliterated-GGUF
-	# https://web.archive.org/web/20250323003504/https://huggingface.co/mradermacher/Meta-Llama-3.1-8B-Instruct-abliterated-GGUF
-	# https://huggingface.co/bartowski/Meta-Llama-3.1-8B-Instruct-abliterated-GGUF
-	# https://web.archive.org/web/20250105072418/https://huggingface.co/bartowski/Meta-Llama-3.1-8B-Instruct-abliterated-GGUF
-	# https://huggingface.co/mlabonne/NeuralDaredevil-8B-abliterated
-	# https://huggingface.co/QuantFactory/NeuralDaredevil-8B-abliterated-GGUF
-	# https://huggingface.co/QuantFactory/NeuralDaredevil-8B-abliterated-GGUF/tree/main
-	# https://web.archive.org/web/20250526124847/https://huggingface.co/QuantFactory/NeuralDaredevil-8B-abliterated-GGUF
-	# https://web.archive.org/web/20250206175259/https://huggingface.co/QuantFactory/NeuralDaredevil-8B-abliterated-GGUF/tree/main
-	#
-	#
-	# https://huggingface.co/mlabonne/NeuralDaredevil-8B-abliterated
-    #  https://huggingface.co/datasets/mlabonne/orpo-dpo-mix-40k
-    #   'License: apache-2.0'
-	# https://huggingface.co/mlabonne/Daredevil-8B-abliterated
-	# https://huggingface.co/mlabonne/Daredevil-8B
-	#
-	# https://huggingface.co/nbeerbower/llama-3-stella-8B
-	# https://web.archive.org/web/20240829103303/https://huggingface.co/nbeerbower/llama-3-stella-8B
-	#  'governed by META LLAMA 3 COMMUNITY LICENSE AGREEMENT'
-	#  https://huggingface.co/nbeerbower/llama-3-bible-dpo-8B
-	#   'governed by META LLAMA 3 COMMUNITY LICENSE AGREEMENT'
-	#   https://huggingface.co/datasets/nbeerbower/bible-dpo
-	#    'License: apache-2.0'
-	#  https://huggingface.co/nbeerbower/llama-3-gutenberg-8B
-	#  https://web.archive.org/web/20250303232239/https://huggingface.co/nbeerbower/llama-3-gutenberg-8B
-	#   'governed by META LLAMA 3 COMMUNITY LICENSE AGREEMENT'
-	#   https://huggingface.co/datasets/jondurbin/gutenberg-dpo-v0.1
-	#    'License: cc-by-4.0'
-	#  https://huggingface.co/elyn-dev/Llama-3-Soliloquy-8B-v2
-	#   'licensed under the Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International Public License, under META LLAMA 3 COMMUNITY LICENSE AGREEMENT'
-    #   'License: cc-by-nc-sa-4.0'
-	#  https://huggingface.co/theo77186/Llama-3-8B-Instruct-norefusal
-	#   https://huggingface.co/datasets/jondurbin/airoboros-2.2
-	#   https://github.com/llm-attacks/llm-attacks/blob/main/data/advbench/harmful_behaviors.csv
-	#    https://github.com/llm-attacks/llm-attacks/blob/main/LICENSE
-	#     'MIT License'
-	#  https://huggingface.co/bunnycore/Cognitron-8B
-	#   'Llama-3-8B-Lexi-Uncensored'
-	#   https://huggingface.co/Orenguteng/Llama-3-8B-Lexi-Uncensored
-	#   'Einstein-v6.1-Llama3-8B'
-	#   https://huggingface.co/Weyaxi/Einstein-v6.1-Llama3-8B
-	#    NOTICE: Datasets permissive license, Llama 3.1 sublicense compatible license, Llama 3 sublicense compatible license, etc, or public domain, etc, affirmed by AI (ChatGPT o3 DeepResearch , ChatGPT 4.5 DeepResearch, ChatGPT or-mini-high DeepResearch, Perplexity Sonar DeepResearch, etc) inquiry.
-	#    'dolphin-2.9-llama3-8b'
-	#    https://huggingface.co/cognitivecomputations/dolphin-2.9-llama3-8b
-	#     'grant permission for any use, including commercial, that falls within accordance with Meta's Llama-3 license'
-	#     NOTICE: Datasets permissive license, Llama 3.1 sublicense compatible license, Llama 3 sublicense compatible license, etc, or public domain, etc, affirmed by AI (ChatGPT o3 DeepResearch , ChatGPT 4.5 DeepResearch, ChatGPT or-mini-high DeepResearch, Perplexity Sonar DeepResearch, etc) inquiry.
-	#  https://huggingface.co/lodrick-the-lafted/Olethros-8B
-	#   https://huggingface.co/datasets/lodrick-the-lafted/OpusStories
-	#    'License: apache-2.0'
-	#   https://huggingface.co/datasets/lodrick-the-lafted/Sao10K_Claude-3-Opus-Instruct-3.3K
-	#    'License: apache-2.0'
-	#   https://huggingface.co/datasets/lodrick-the-lafted/Samantha-Opus
-	#    'License: apache-2.0'
-	#   https://huggingface.co/datasets/lodrick-the-lafted/Worldsim-Opus
-	#    'License: apache-2.0'
-	#
-	# https://web.archive.org/web/20240525160322/https://huggingface.co/Hastagaras/llama-3-8b-okay
-	#
-	#  https://huggingface.co/nbeerbower/llama-3-gutenberg-8B
-	#  https://web.archive.org/web/20250303232239/https://huggingface.co/nbeerbower/llama-3-gutenberg-8B
-	#   'governed by META LLAMA 3 COMMUNITY LICENSE AGREEMENT'
-	#   https://huggingface.co/datasets/jondurbin/gutenberg-dpo-v0.1
-	#    'License: cc-by-4.0'
-	#
-	# https://huggingface.co/openchat/openchat-3.6-8b-20240522
-	# https://web.archive.org/web/20250618114410/https://huggingface.co/openchat/openchat-3.6-8b-20240522
-	#  https://github.com/imoneoi/openchat
-	#   https://github.com/imoneoi/openchat/blob/master/LICENSE
-	#    'Apache' '2.0'
-	# 
-	# https://huggingface.co/Kukedlc/NeuralLLaMa-3-8b-DT-v0.1
-	# https://web.archive.org/web/20250504052139/https://huggingface.co/Kukedlc/NeuralLLaMa-3-8b-DT-v0.1
-	#  https://huggingface.co/mlabonne/ChimeraLlama-3-8B-v2
-	#   https://huggingface.co/NousResearch/Meta-Llama-3-8B-Instruct
-	#   https://huggingface.co/mlabonne/OrpoLlama-3-8B
-	#   https://huggingface.co/cognitivecomputations/dolphin-2.9-llama3-8b
-	#    NOTICE: Datasets permissive license, Llama 3.1 sublicense compatible license, Llama 3 sublicense compatible license, etc, or public domain, etc, affirmed by AI (ChatGPT o3 DeepResearch , ChatGPT 4.5 DeepResearch, ChatGPT or-mini-high DeepResearch, Perplexity Sonar DeepResearch, etc) inquiry.
-	#    'grant permission for any use, including commercial, that falls within accordance with Meta's Llama-3 license'
-	#   https://huggingface.co/Locutusque/llama-3-neural-chat-v1-8b
-	#   https://huggingface.co/cloudyu/Meta-Llama-3-8B-Instruct-DPO
-    #    'License: cc'
-	#   https://huggingface.co/vicgalle/Configurable-Llama-3-8B-v0.3
-	#   https://huggingface.co/nbeerbower/llama-3-dragonmaid-8B-v2?not-for-all-audiences=true
-	#   https://huggingface.co/nbeerbower/llama-3-wissenschaft-8B-v2
-	#  https://huggingface.co/nbeerbower/llama-3-stella-8B
-	#   'governed by META LLAMA 3 COMMUNITY LICENSE AGREEMENT'
-	#   https://huggingface.co/nbeerbower/llama-3-bible-dpo-8B
-	#    'governed by META LLAMA 3 COMMUNITY LICENSE AGREEMENT'
-	#    https://huggingface.co/datasets/nbeerbower/bible-dpo
-	#     'License: apache-2.0'
-	#   https://huggingface.co/nbeerbower/llama-3-gutenberg-8B
-	#   https://web.archive.org/web/20250303232239/https://huggingface.co/nbeerbower/llama-3-gutenberg-8B
-	#    'governed by META LLAMA 3 COMMUNITY LICENSE AGREEMENT'
-	#    https://huggingface.co/datasets/jondurbin/gutenberg-dpo-v0.1
-	#     'License: cc-by-4.0'
-	#   https://huggingface.co/elyn-dev/Llama-3-Soliloquy-8B-v2
-	#    'licensed under the Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International Public License, under META LLAMA 3 COMMUNITY LICENSE AGREEMENT'
-	#   https://huggingface.co/theo77186/Llama-3-8B-Instruct-norefusal
-	#    https://huggingface.co/datasets/jondurbin/airoboros-2.2
-	#    https://github.com/llm-attacks/llm-attacks/blob/main/data/advbench/harmful_behaviors.csv
-	#     https://github.com/llm-attacks/llm-attacks/blob/main/LICENSE
-	#      'MIT License'
-	#   https://huggingface.co/bunnycore/Cognitron-8B
-	#    'Llama-3-8B-Lexi-Uncensored'
-	#    https://huggingface.co/Orenguteng/Llama-3-8B-Lexi-Uncensored
-	#    'Einstein-v6.1-Llama3-8B'
-	#    https://huggingface.co/Weyaxi/Einstein-v6.1-Llama3-8B
-	#	  NOTICE: Datasets permissive license, Llama 3.1 sublicense compatible license, Llama 3 sublicense compatible license, etc, or public domain, etc, affirmed by AI (ChatGPT o3 DeepResearch , ChatGPT 4.5 DeepResearch, ChatGPT or-mini-high DeepResearch, Perplexity Sonar DeepResearch, etc) inquiry.
-	#     'dolphin-2.9-llama3-8b'
-	#     https://huggingface.co/cognitivecomputations/dolphin-2.9-llama3-8b
-	#      'grant permission for any use, including commercial, that falls within accordance with Meta's Llama-3 license'
-	#      NOTICE: Datasets permissive license, Llama 3.1 sublicense compatible license, Llama 3 sublicense compatible license, etc, or public domain, etc, affirmed by AI (ChatGPT o3 DeepResearch , ChatGPT 4.5 DeepResearch, ChatGPT or-mini-high DeepResearch, Perplexity Sonar DeepResearch, etc) inquiry.
-	#   https://huggingface.co/lodrick-the-lafted/Olethros-8B
-	#    https://huggingface.co/datasets/lodrick-the-lafted/OpusStories
-	#     'License: apache-2.0'
-	#    https://huggingface.co/datasets/lodrick-the-lafted/Sao10K_Claude-3-Opus-Instruct-3.3K
-	#     'License: apache-2.0'
-	#    https://huggingface.co/datasets/lodrick-the-lafted/Samantha-Opus
-	#     'License: apache-2.0'
-	#    https://huggingface.co/datasets/lodrick-the-lafted/Worldsim-Opus
-	#     'License: apache-2.0'
-	#  https://huggingface.co/uygarkurt/llama-3-merged-linear
-	#   https://www.youtube.com/watch?v=gNXBp3wttFU
-	#   https://github.com/uygarkurt/Model-Merge/blob/main/linear.yml
-	#    'model: VAGOsolutions/Llama-3-SauerkrautLM-8b-Instruct'
-	#     https://huggingface.co/VAGOsolutions/Llama-3-SauerkrautLM-8b-Instruct
-	#     https://web.archive.org/web/20241216233234/https://huggingface.co/VAGOsolutions/Llama-3-SauerkrautLM-8b-Instruct
-	#    'model: DeepMount00/Llama-3-8b-Ita'
-	#     https://huggingface.co/DeepMount00/Llama-3-8b-Ita
-	#     https://web.archive.org/web/20241222221326/https://huggingface.co/DeepMount00/Llama-3-8b-Ita
-	#      NOTICE: Datasets permissive license, Llama 3.1 sublicense compatible license, Llama 3 sublicense compatible license, etc, or public domain, etc, affirmed by AI (ChatGPT o3 DeepResearch , ChatGPT 4.5 DeepResearch, ChatGPT or-mini-high DeepResearch, Perplexity Sonar DeepResearch, etc) inquiry.
-	#    'model: nbeerbower/llama-3-gutenberg-8B'
-	#     https://huggingface.co/nbeerbower/llama-3-gutenberg-8B
-	#     https://web.archive.org/web/20250303232239/https://huggingface.co/nbeerbower/llama-3-gutenberg-8B
-	#      'governed by META LLAMA 3 COMMUNITY LICENSE AGREEMENT'
-	#      https://huggingface.co/datasets/jondurbin/gutenberg-dpo-v0.1
-	#       'License: cc-by-4.0'
-	#
-	# https://huggingface.co/cstr/llama3-8b-spaetzle-v20
-	# https://web.archive.org/web/20240829102655/https://huggingface.co/cstr/llama3-8b-spaetzle-v20
-	#  https://huggingface.co/cstr/llama3-8b-spaetzle-v13
-	#   https://huggingface.co/Azure99/blossom-v5-llama3-8b
-	#    'License: apache-2.0'
-	#    https://huggingface.co/datasets/Azure99/blossom-chat-v3
-	#    https://huggingface.co/datasets/Azure99/blossom-math-v4
-	#    https://huggingface.co/datasets/Azure99/blossom-wizard-v3
-	#    https://huggingface.co/datasets/Azure99/blossom-orca-v3
-	#     'License: apache-2.0'
-	#   https://huggingface.co/VAGOsolutions/Llama-3-SauerkrautLM-8b-Instruct
-	#   https://web.archive.org/web/20241216233234/https://huggingface.co/VAGOsolutions/Llama-3-SauerkrautLM-8b-Instruct
-	#  https://huggingface.co/nbeerbower/llama-3-wissenschaft-8B-v2
-	#   'governed by META LLAMA 3 COMMUNITY LICENSE AGREEMENT'
-	#   https://huggingface.co/datasets/tasksource/ScienceQA_text_only
-	#    
-	#
-	# https://huggingface.co/mlabonne/ChimeraLlama-3-8B-v3
-	# https://web.archive.org/web/20240902141843/https://huggingface.co/mlabonne/ChimeraLlama-3-8B-v3
-	#  https://huggingface.co/NousResearch/Meta-Llama-3-8B-Instruct
-	#   'License' 'https://llama.meta.com/llama3/license'
-	#  https://huggingface.co/mlabonne/OrpoLlama-3-8B
-	#   https://huggingface.co/datasets/mlabonne/orpo-dpo-mix-40k
-	#    'License: apache-2.0'
-	#  https://huggingface.co/cognitivecomputations/dolphin-2.9-llama3-8b
-	#   'grant permission for any use, including commercial, that falls within accordance with Meta's Llama-3 license'
-	#   NOTICE: Datasets permissive license, Llama 3.1 sublicense compatible license, Llama 3 sublicense compatible license, etc, or public domain, etc, affirmed by AI (ChatGPT o3 DeepResearch , ChatGPT 4.5 DeepResearch, ChatGPT or-mini-high DeepResearch, Perplexity Sonar DeepResearch, etc) inquiry.
-	#  https://huggingface.co/Danielbrdz/Barcenas-Llama3-8b-ORPO
-	#   https://huggingface.co/datasets/reciperesearch/dolphin-sft-v0.1-preference
-	#    'License: apache-2.0'
-	#  https://huggingface.co/VAGOsolutions/Llama-3-SauerkrautLM-8b-Instruct
-	#  https://huggingface.co/vicgalle/Configurable-Llama-3-8B-v0.3
-	#   https://huggingface.co/datasets/vicgalle/configurable-system-prompt-multitask
-	#    'License: cc-by-4.0'
-	#  https://huggingface.co/MaziyarPanahi/Llama-3-8B-Instruct-DPO-v0.3
-	#   https://huggingface.co/datasets/Intel/orca_dpo_pairs
-	#     'License: apache-2.0'
-	#
-	# https://huggingface.co/flammenai/Mahou-1.1-llama3-8B
-	# https://web.archive.org/web/20240829113546/https://huggingface.co/flammenai/Mahou-1.1-llama3-8B
-	#  https://huggingface.co/datasets/flammenai/Grill-preprod-v1_chatML
-	#   'License: apache-2.0'
-	#
-	# https://web.archive.org/web/20240829101937/https://huggingface.co/KingNish/KingNish-Llama3-8b
-	#  https://huggingface.co/VAGOsolutions/Llama-3-SauerkrautLM-8b-Instruct
-	#  https://web.archive.org/web/20241216233234/https://huggingface.co/VAGOsolutions/Llama-3-SauerkrautLM-8b-Instruct
-	#   'License: meta-llama'
-	#  https://huggingface.co/mlabonne/ChimeraLlama-3-8B-v3
-	#  https://web.archive.org/web/20240902141843/https://huggingface.co/mlabonne/ChimeraLlama-3-8B-v3
-	#   https://huggingface.co/NousResearch/Meta-Llama-3-8B-Instruct
-	#    'License' 'https://llama.meta.com/llama3/license'
-	#   https://huggingface.co/mlabonne/OrpoLlama-3-8B
-	#    https://huggingface.co/datasets/mlabonne/orpo-dpo-mix-40k
-	#     'License: apache-2.0'
-	#   https://huggingface.co/cognitivecomputations/dolphin-2.9-llama3-8b
-	#    'grant permission for any use, including commercial, that falls within accordance with Meta's Llama-3 license'
-	#    NOTICE: Datasets permissive license, Llama 3.1 sublicense compatible license, Llama 3 sublicense compatible license, etc, or public domain, etc, affirmed by AI (ChatGPT o3 DeepResearch , ChatGPT 4.5 DeepResearch, ChatGPT or-mini-high DeepResearch, Perplexity Sonar DeepResearch, etc) inquiry.
-	#   https://huggingface.co/Danielbrdz/Barcenas-Llama3-8b-ORPO
-	#    https://huggingface.co/datasets/reciperesearch/dolphin-sft-v0.1-preference
-	#     'License: apache-2.0'
-	#   https://huggingface.co/VAGOsolutions/Llama-3-SauerkrautLM-8b-Instruct
-	#   https://huggingface.co/vicgalle/Configurable-Llama-3-8B-v0.3
-	#    https://huggingface.co/datasets/vicgalle/configurable-system-prompt-multitask
-	#     'License: cc-by-4.0'
-	#   https://huggingface.co/MaziyarPanahi/Llama-3-8B-Instruct-DPO-v0.3
-	#    https://huggingface.co/datasets/Intel/orca_dpo_pairs
-	#     'License: apache-2.0'
-	#
-	# Datasets and related information possibly used or possibly not used, during, usually at least mostly third-party, non-commercial model development . Noted for completeness and clarity, not necessarily of any relevance. Please read remaining explanation why any such information may not be relevant.
-	# List obtained from, and datasets permissive license, Llama 3.1 sublicense compatible license, Llama 3 sublicense compatible license, etc, or public domain, etc, affirmed by, AI (ChatGPT o3 DeepResearch , ChatGPT 4.5 DeepResearch, ChatGPT or-mini-high DeepResearch, Perplexity Sonar DeepResearch, etc) inquiry.
-	# OpenAssistant/oasst_top1_2023-08-25
-	# https://huggingface.co/datasets/HuggingFaceH4/ultrachat_200k
-	# https://huggingface.co/datasets/teknium/OpenHermes-2.5
-	# https://huggingface.co/datasets/m-a-p/CodeFeedback-Filtered-Instruction
-	# https://huggingface.co/datasets/cognitivecomputations/dolphin-coder/tree/main#:~:text=License%3A
-	# https://huggingface.co/datasets/cognitivecomputations/samantha-data#:~:text=License%3A
-	# https://huggingface.co/datasets/microsoft/orca-math-word-problems-200k
-	# https://huggingface.co/datasets/abacusai/SystemChat-1.1
-	# https://huggingface.co/datasets/Locutusque/function-calling-chatml
-	# https://huggingface.co/datasets/internlm/Agent-FLAN
-	# https://huggingface.co/datasets/cognitivecomputations/Dolphin-2.9
-	# https://huggingface.co/datasets/tasksource/ScienceQA_text_only
-	# https://huggingface.co/datasets/allenai/ai2_arc/blob/main/README.md#:~:text=License%3A
-	# https://huggingface.co/datasets/camel-ai/physics
-	# https://huggingface.co/datasets/camel-ai/chemistry
-	# https://huggingface.co/datasets/camel-ai/biology
-	# https://huggingface.co/datasets/camel-ai/math
-	# metaeval/reclor https://www.atyun.com/resources/group/metaeval#:~:text=%E8%AE%B8%E5%8F%AF%3A
-	# https://github.com/allenai/OpenBookQA/blob/main/LICENSE
-	# https://huggingface.co/datasets/garage-bAInd/Open-Platypus/commit/4a0588535f76b0606f4e39083149d20eeb8106f0#:~:text=garage,commercial%20%7C%20%3B%2041
-	# https://ai-testing.gitee.com/hf-datasets/derek-thomas/ScienceQA
-	# https://huggingface.co/datasets/jondurbin/airoboros-3.2?not-for-all-audiences=true
-	# https://huggingface.co/datasets/LDJnr/Capybara
-	# https://huggingface.co/datasets/STEM-AI-mtl/Electrical-engineering
-	# https://huggingface.co/datasets/knowrohit07/saraswati-stem/commit/f7d3000f1df13f1f9ca2f44db04aa4d6bb1d8f72#:~:text=%2B%201
-	# https://huggingface.co/datasets/sablo/oasst2_curated
-	# https://paperswithcode.com/paper/lmsys-chat-1m-a-large-scale-real-world-llm#:~:text=The%20dataset%20is%20publicly%20available,Terms%20Data%20policy
-	# https://huggingface.co/datasets/TIGER-Lab/MathInstruct/blob/main/README.md#:~:text=README.md%20%C2%B7%20TIGER,2.0
-	# https://jmai.amegroups.org/article/view/9452/html#:~:text=Examples%20of%20medical%20question%20and,ND%204.0%29%2C%20which%20permits
-	# https://jmai.amegroups.org/article/view/9452/html#:~:text=Examples%20of%20medical%20question%20and,ND%204.0%29%2C%20which%20permits
-	# https://huggingface.co/datasets/meta-math/MetaMathQA-40K
-	# https://github.com/seominjoon/piqa/blob/master/LICENSE
-	# https://huggingface.co/datasets/allenai/sciq
-	# https://huggingface.co/datasets/Open-Orca/SlimOrca
-	# https://huggingface.co/datasets/migtissera/Synthia-v1.3
-	# https://modelscope.cn/datasets/allenai/WildChat
-	# https://huggingface.co/datasets/teknium/GPTeacher-General-Instruct
-	# https://github.com/cloudera/CML_AMP_Finetune_Foundation_Model_Multiple_Tasks
-	# https://huggingface.co/datasets/HuggingFaceH4/no_robots
-	# https://ollama.com/fl0id/teuken-7b-instruct-commercial-v0.4:latest#:~:text=fl0id%2Fteuken,2.0%20%3B%20HuggingFaceH4%2Fultrachat_200k%2C%20EN
-	# mandyyyyii/scibench
-	# TIGER-Lab/ScienceEval
-	# https://huggingface.co/datasets/bigbio/med_qa
-	# DeepMount00/llm_ita_ultra
-	# Cot-Alpaca-GPT4-From-OpenHermes-2.5
-	# OpenChat/openchat_sharegpt4_dataset
-	# totally-not-an-llm/EverythingLM-data-V3
-	# WizardLM/WizardLM_evol_instruct_70k
-	# ToolBench instruction shards (toolbench_instruct_j1s1_3k_unfiltered.jsonl, toolbench_negative_unfiltered.jsonl, toolbench_react_10p_unfiltered.jsonl, toolbench_tflan_cot_30p_unfiltered.jsonl)
-	# Other Dolphin 2.9 training shards (dolphin201-sharegpt2.jsonl, Ultrachat200kunfiltered.jsonl, openhermes200k_unfiltered.jsonl, dolphin-coder-translate-sharegpt2.jsonl, dolphin-coder-codegen-sharegpt2.jsonl, m-a-p_Code-Feedback-sharegpt-unfiltered.jsonl, m-a-p_CodeFeedback-Filtered-Instruction-sharegpt-unfiltered.jsonl, not_samantha_norefusals.jsonl, Orca-Math-resort-unfiltered.jsonl, agent_instruct_react_unfiltered.jsonl, SystemConversations.jsonl)
-    #
-    # * **Gutenberg DPO v0.1** – Dataset curated by Jon Durbin (HF user *jondurbin*), derived from public-domain Project Gutenberg texts. *License: CC BY 4.0*.
-    #  https://huggingface.co/datasets/jondurbin/gutenberg-dpo-v0.1#:~:text=License%3A
-    # * **Configurable System Prompt Multitask** – Synthetic preference dataset by Victor Gallego (HF user *vicgalle*). *License: CC BY 4.0*.
-    #  https://huggingface.co/datasets/vicgalle/configurable-system-prompt-multitask#:~:text=License%3A
-    # * **SciQ Dataset** – Crowdsourced science QA dataset from Allen Institute for AI. *License: CC BY-NC 3.0 (Unported)*.
-    #  https://huggingface.co/datasets/allenai/sciq#:~:text=License%3A
-    # * **AI2 Reasoning Challenge (ARC)** – Science questions dataset by Allen Institute for AI. *License: CC BY-SA 4.0*.
-    #  https://huggingface.co/datasets/allenai/ai2_arc#:~:text=License%3A
-    # * **ScienceQA Dataset** – Multimodal science QA benchmark (Lu et al., NeurIPS 2022). *License: CC BY-NC-SA 4.0*.
-    #  https://scienceqa.github.io/#:~:text=Our%20dataset%20is%20distributed%20under,check%20out%20our%20github%20repository
-    #  https://scienceqa.github.io/#:~:text=Our%20dataset%20is%20distributed%20under,out%20our%20%2010%20github
-    # * **Llama-3 Soliloquy 8B v2** – Fine-tuned model by Elyn (HF user *elyn-dev/openlynn*). *License: CC BY-NC-SA 4.0*.
-    #  https://huggingface.co/elyn-dev/Llama-3-Soliloquy-8B-v2#:~:text=This%20model%20is%20licensed%20under,LLAMA%203%20COMMUNITY%20LICENSE%20AGREEMENT
-    #  https://huggingface.co/elyn-dev/Llama-3-Soliloquy-8B-v2#:~:text=license,imply%20endorsement%20by%20the%20licensor
-    #
-    # 
-    #
-    # NOTICE: CreativeCommons Attribution is different for each of the three "Llama" Daredevil AI models .
-    #
-    #
-    # "Llama" Daredevil mlabonne/Daredevil-8B model  https://huggingface.co/mlabonne/Daredevil-8B
-    #
-    # Global merge of included AI model weights; no fine-tuning after merge.  Datasets not redistributed.
-    #
-    # CC components follow – Title   Modification status   Licence + URI   Author/Source   Work URI   (CC licences include disclaimers of warranty)
-    # All licence links also carry the CC warranty disclaimer.
-    #
-    # Llama-3 Soliloquy 8B v2 (model)   Weights merged (global merge, no further training)   CC BY-NC-SA 4.0 https://creativecommons.org/licenses/by-nc-sa/4.0/   Elyn-dev   https://huggingface.co/elyn-dev/Llama-3-Soliloquy-8B-v2
-    # Gutenberg-DPO v0.1 (dataset)   Used indirectly via upstream fine-tuning; upstream already cleaned chapters & generated synthetic prompts (retain these prior modifications); not redistributed here   CC BY 4.0 https://creativecommons.org/licenses/by/4.0/   Jon Durbin, 2024   https://huggingface.co/datasets/jondurbin/gutenberg-dpo-v0.1
-    # Configurable System Prompt Multitask (dataset)   Used indirectly via upstream fine-tuning; dataset is fully synthetic preference pairs (retain prior modification note); not redistributed   CC BY 4.0 https://creativecommons.org/licenses/by/4.0/   Victor Gallego   https://huggingface.co/datasets/vicgalle/configurable-system-prompt-multitask
-    # AI2 ARC (dataset)   Used indirectly via upstream fine-tuning; no edits by Daredevil-8B; dataset not redistributed, so BY-SA obligations do not propagate   CC BY-SA 4.0 https://creativecommons.org/licenses/by-sa/4.0/   Allen Institute for AI   https://huggingface.co/datasets/allenai/ai2_arc
-    # SciQ (dataset)   Used indirectly via upstream fine-tuning; converted JSON->tokens only; dataset not redistributed   CC BY-NC 3.0 https://creativecommons.org/licenses/by-nc/3.0/   Johannes Welbl et al.   https://huggingface.co/datasets/allenai/sciq
-    # ScienceQA (dataset)   Used indirectly via upstream fine-tuning; upstream already removed images; not redistributed   CC BY-NC-SA 4.0 https://creativecommons.org/licenses/by-nc-sa/4.0/   Lu et al., 2022   https://github.com/lupantech/ScienceQA
-    # Truthy-DPO v0.1 (dataset)   Used in upstream DPO step; no edits; not redistributed   CC BY 4.0 https://creativecommons.org/licenses/by/4.0/   Jon Durbin   https://huggingface.co/datasets/jondurbin/truthy-dpo-v0.1
-    # Meta-Llama-3-8B-Instruct-DPO (model)   Weights merged (global merge, no additional training) CC BY 4.0   https://creativecommons.org/licenses/by/4.0/   cloudyu   https://huggingface.co/cloudyu/Meta-Llama-3-8B-Instruct-DPO
-    #
-    #
-    # "Llama" Daredevil mlabonne/Daredevil-8B-abliterated model  https://huggingface.co/mlabonne/Daredevil-8B-abliterated
-    #
-    # Global merge of included AI-model weights, followed by 'abliteration' weight manipulation; no further fine-tuning after merge.  Datasets are training-only and are not redistributed.
-    #
-    # CC components follow –  Title   Modification status   Licence + URI   Author/Source   Work URI   (all CC licences include disclaimers of warranty)
-    # All licence links also carry the CC warranty disclaimer.
-    #
-    # Llama-3 Soliloquy 8B v2 (model)          Weights merged **and abliterated** (global merge + abliteration; no extra training)          CC BY-NC-SA 4.0  https://creativecommons.org/licenses/by-nc-sa/4.0/          Elyn-dev          https://huggingface.co/elyn-dev/Llama-3-Soliloquy-8B-v2
-    # Gutenberg-DPO v0.1 (dataset)             Used indirectly via upstream fine-tuning; retains upstream synthetic-prompt edits; not redistributed          CC BY 4.0  https://creativecommons.org/licenses/by/4.0/          Jon Durbin (2024)          https://huggingface.co/datasets/jondurbin/gutenberg-dpo-v0.1
-    # Configurable System Prompt Multitask (dataset)   Used indirectly via upstream fine-tuning; unchanged; not redistributed          CC BY 4.0  https://creativecommons.org/licenses/by/4.0/          Victor Gallego          https://huggingface.co/datasets/vicgalle/configurable-system-prompt-multitask
-    # AI2 ARC (dataset)                         Used indirectly via upstream fine-tuning; no edits; dataset not redistributed (BY-SA therefore not triggered)          CC BY-SA 4.0  https://creativecommons.org/licenses/by-sa/4.0/          Allen Institute for AI          https://huggingface.co/datasets/allenai/ai2_arc
-    # SciQ (dataset)                           Used indirectly via upstream fine-tuning; JSON→tokens only; not redistributed          CC BY-NC 3.0  https://creativecommons.org/licenses/by-nc/3.0/          Johannes Welbl et al.          https://huggingface.co/datasets/allenai/sciq
-    # ScienceQA (dataset)                       Used indirectly via upstream fine-tuning; images removed upstream; not redistributed          CC BY-NC-SA 4.0  https://creativecommons.org/licenses/by-nc-sa/4.0/          Pan Lu et al. (2022)          https://github.com/lupantech/ScienceQA
-    # Truthy-DPO v0.1 (dataset)   Used in upstream DPO step; no edits; not redistributed   CC BY 4.0 https://creativecommons.org/licenses/by/4.0/   Jon Durbin   https://huggingface.co/datasets/jondurbin/truthy-dpo-v0.1
-    # Meta-Llama-3-8B-Instruct-DPO (model)      Weights merged **and abliterated** (global merge + abliteration)          CC BY 4.0  https://creativecommons.org/licenses/by/4.0/          cloudyu          https://huggingface.co/cloudyu/Meta-Llama-3-8B-Instruct-DPO
-    #
-    #
-    # "Llama" Daredevil mlabonne/NeuralDaredevil-8B-abliterated model  https://huggingface.co/mlabonne/NeuralDaredevil-8B-abliterated
-    #
-    # Global merge of included AI-model weights -> ‘abliteration’ weight manipulation -> DPO fine-tune (one epoch on mlabonne/orpo-dpo-mix-40k).
-    #
-    # CC components follow –  Title   Modification status   Licence + URI   Author/Source   Work URI   (all CC licences include disclaimers of warranty)
-    # All licence links also carry the CC warranty disclaimer.
-    #
-    # Llama-3 Soliloquy 8B v2 (model)   Weights merged in Daredevil-8B, then **further updated by abliteration + DPO fine-tune**   CC BY-NC-SA 4.0 https://creativecommons.org/licenses/by-nc-sa/4.0/   Elyn-dev   https://huggingface.co/elyn-dev/Llama-3-Soliloquy-8B-v2
-    # Gutenberg-DPO v0.1 (dataset)   Used for DPO fine-tune **without additional edits** (tokenisation only); retains prior cleaning & prompt synthesis by creator; *not redistributed*   CC BY 4.0 https://creativecommons.org/licenses/by/4.0/   Jon Durbin, 2024   https://huggingface.co/datasets/jondurbin/gutenberg-dpo-v0.1
-    # Configurable System Prompt Multitask (dataset)   Used for DPO fine-tune **as-is** (parquet → tokens); *not redistributed*   CC BY 4.0 https://creativecommons.org/licenses/by/4.0/   Victor Gallego   https://huggingface.co/datasets/vicgalle/configurable-system-prompt-multitask
-    # AI2 ARC (dataset)   Indirectly included via upstream models; **no new edits**; dataset only consumed for training so BY-SA obligations do not propagate; *not redistributed*   CC BY-SA 4.0 https://creativecommons.org/licenses/by-sa/4.0/   Allen Institute for AI   https://huggingface.co/datasets/allenai/ai2_arc
-    # SciQ (dataset)   Used for DPO fine-tune; **JSON → ChatML conversion only**; *not redistributed*   CC BY-NC 3.0 https://creativecommons.org/licenses/by-nc/3.0/   Johannes Welbl et al. (2017)   https://huggingface.co/datasets/allenai/sciq
-    # ScienceQA (dataset)   Upstream already removed images; **text portion used unchanged** in DPO set; *not redistributed*   CC BY-NC-SA 4.0 https://creativecommons.org/licenses/by-nc-sa/4.0/   Lu et al., 2022   https://scienceqa.github.io/
-    # Truthy-DPO v0.1 (dataset)   Used in upstream DPO step; no edits; not redistributed   CC BY 4.0 https://creativecommons.org/licenses/by/4.0/   Jon Durbin   https://huggingface.co/datasets/jondurbin/truthy-dpo-v0.1
-    # Meta-Llama-3-8B-Instruct-DPO (model)   Weights merged, then **altered by abliteration + DPO fine-tune**   CC BY 4.0  https://creativecommons.org/licenses/by/4.0/   cloudyu   https://huggingface.co/cloudyu/Meta-Llama-3-8B-Instruct-DPO
-    # 
-    # 
-	# https://creativecommons.org/licenses/by/4.0/legalcode.txt
-	# https://creativecommons.org/licenses/by-sa/4.0/legalcode.txt
-	# https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.txt
-    # https://creativecommons.org/licenses/by/4.0/
-    # https://creativecommons.org/licenses/by-sa/4.0/
-    # https://creativecommons.org/licenses/by-nc-sa/4.0/
-    # https://creativecommons.org/licenses/by/3.0/
-    # https://creativecommons.org/licenses/by/2.0/
-    # https://creativecommons.org/licenses/by/1.0/
-	#
-	# Models fine-tuned, etc, with more than a few datasets, have been evaluated for dataset license by prompting  ChatGPT o3 DeepResearch , ChatGPT 4.5 DeepResearch , ChatGPT o4-mini-high DeepResearch , or similar , and may be labeled 'Datasets permissive license, Llama 3.1 sublicense compatible license, Llama 3 sublicense compatible license, etc, or public domain, etc, affirmed by AI (ChatGPT o3 DeepResearch , ChatGPT 4.5 DeepResearch, ChatGPT or-mini-high DeepResearch, Perplexity Sonar DeepResearch, etc) inquiry.' . Such documentation must not be misconstrued: there is a consensus reflected both in statements by the community often stating a license that does not include the license terms from a dataset used in fine-tuning, training, etc, as well economically relevant activity in the AI industry, that transformative use of datasets for training and inference to create non-infringing content is, whether under fair-use or other doctrine, not affected by the licensing of the dataset. Nothing about any documentation here shall be misconstrued as contradicting such consensus, expectation, etc.
-	#
-	# Nor shall any such documentation be misconstrued to suggest any dataset enumerated here is in any way more significant than datasets used by Meta to train Llama , DeepSeek to train DeepSeek-R1 .
-	#
-	# Llama 3.1 , Llama 3.3 , DeepSeek-R1 , other such 'open-weights' models, 'open-weights' community derivatives of such 'open-weights' models, regardless of commercial use of these models, were trained, created, etc, as a non-commercial and possibly also educational activity - any use of any datasets was non-commercial . The business justification of building long-term shareholder value under which corporations donate to strictly non-profit (eg. 501c3 ) entities wholly unrelated to their own business interests, solely to meet public ethics expectations, clearly shows that entities with commercial goals engage in unrelated activity that is widely perceived as much of a legitimate corporate non-commercial activity as other corporate activities some may perceive as legitimate whether commercial or non-commercial.
-	#
-	# Meta's contribution to society in producing the "Llama" (trademarked) models without a direct commercial purpose in doing so is significant. All reasonable efforts are made as regards to "Llama" models used, etc, to comply with then current Meta's brand guidelines.
-	#
-	# Dataset, models, etc, used for fine-tuning, merging, etc, by developer 'mlabonne', and similar developers, usually at least mostly third-party developers, creating "Llama" (trademarked) 'NeuralDaredevil-8B-abliterated' , "Llama" (trademarked) 'NeuralDaredevil-8B-abliterated' , etc, and similar, models, was the developer's sole responsibility. Compliance with licenses of datasets either under permissive open-source licenses, or outright essentially public domain, etc, during fine-tuning, or compliance with licenses of such permissively licensed or outright essentially public domain open-weights models merged, or at least without imposing any non-commercial licensing of the developer's own, was an obvious non-commercial research activity, reasonably expected at least fair use, private use, transformative use, etc, and the responsibility of the relevant developer, usually at least mostly third-party developers, etc, at that time.
-	#
-	# Use of any particular dataset by a model merged into another model then merged into yet another model, has been substantially diluted, and possibly in yet another way very significantly transformed. Actual benefit, much less content, resulting from that particular dataset may be negligible, yet mathematically infeasible to identify in the model and reduce to noise, as well as actually impossible to remove. The insignificance of any supposed contribution, unrelatedness to any actual purpose of using the model, and infeasibility of removal, may or may not significantly dilute, discredit, etc, any related intellectual property claim.
-	#
-	# Relatively small (~8B parameters) open-weights AI LLM models developed non-commercially, embedded use of AI LLM models, offline use of AI LLM models, use of AI LLM models without a closed-source commercial web interface built by the same entity as the AI LLM model creator, and/or other similar such situations, without either limiting to such situations or requiring any combination of such situations, unambiguously obviously does not compete with the entire combination of at least partially paywalled online non-embedded use of closed-weights at least most differentiatingly relatively huge (>1T parameters expected by the general public) AI LLM models developed as a commercial product offered through online closed-source commercial web interface, online APIs, etc.
-	#
-	# Possibly interesting legal interpretations seem to exist around OpenAI.
-	#  https://huggingface.co/datasets/jondurbin/airoboros-2.2
-	#   'ToS' 'Please seek legal advice'
-	#  https://huggingface.co/datasets/RyokoAI/ShareGPT52K  .
-	#   'CC0: No Rights Reserved.'
-	#   'The output of machine learning algorithms is uncopyrightable in the United States and other jurisdictions. Additionally, the OpenAI terms of service do not apply to this dataset as users of this dataset are not accessing the OpenAI service.'
-	#
-	# Explicitly states 'License: llama3.1'. Readme files, etc, from repository does NOT contradict this. Any permissive license (eg. Apache 2.0, MIT, CreativeCommons, etc) or less permissive license (eg. CreativeCommons NonCommercial) has been found by human review and followed up AI provided review, as a compatible sublicensing of the 'Llama 3.1' license.
-	#
-	# NOTICE: Thus, the 'Llama-augment' model, as derived from either 'Llama 3.1 8B', or any of the other derivative AI LLM models above, etc:
-	# (*) Itself created non-commercially, whether 'Llama 3.1 8B', Llama 'NeuralDaredevil', or derived thereof, etc.
-	# (*) Permitted by Meta except for entities meeting this specific criteria from 'Llama 3.1' license text, for commercial, etc, use.
-	#  'on the Llama 3.1 version release date, the monthly active users of the products or services made available by or for Licensee, or Licensee’s affiliates, is greater than 700 million monthly active users in the preceding calendar month'
-	# (*) May or may not, depending on both actual relevance and the underlying model used, incur a CreativeCommons Non-Commercial less permissive licensing term, to 'elyn-dev' creator of 'Llama-3-Soliloquy-8B-v2' . Developers of possibly relevant models and merged models apparently did not explicitly impose their own claim of such a less permission licensing term.
-	#  https://huggingface.co/elyn-dev/Llama-3-Soliloquy-8B-v2
-	#  https://huggingface.co/nbeerbower/llama-3-stella-8B
-	#  https://huggingface.co/mlabonne/Daredevil-8B
-	#  https://huggingface.co/mlabonne/Daredevil-8B-abliterated
-	#  https://huggingface.co/mlabonne/NeuralDaredevil-8B-abliterated
 	
-	# https://www.llama.com/llama3_1/license/
-	# https://huggingface.co/meta-llama/Meta-Llama-3.1-70B-Instruct/blob/main/LICENSE
-	#  NOTICE: ATTENTION: This license has been preserved as 'LICENSE-Llama-3.1.txt', but this license does NOT apply to any 'ubiquitous_bash' code or any other work that is not either a work by Meta or strictly a derivative of a work by Meta (such as a modified AI model GGUF or safetensors file) !
-	
-	# https://www.llama.com/llama3_1/use-policy/
-
-	# https://about.meta.com/brand/resources/meta/company-brand/
-	
-	
-	# https://www.llama.com/llama3_1/license/
-	#  'include “Llama” at the beginning of any such AI model name'
-	# ATTENTION: Nevertheless, it is very possible a non-'Llama' model will eventually be used, especially as science and technology (eg. plasma recombination EUV physics) related datasets (eg. relevant Wikipedia articles) are increasingly gathered.
-
-
-	# https://www.llama.com/llama3/license/
-	# https://www.llama.com/llama3/use-policy/
-	
-	
-	# https://www.apache.org/licenses/LICENSE-2.0.txt
-	# https://opensource.org/license/mit
-	# https://creativecommons.org/licenses/by/4.0/legalcode.txt
-	# https://creativecommons.org/licenses/by-sa/4.0/legalcode.txt
-	# https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.txt
-    # https://creativecommons.org/licenses/by/4.0/
-    # https://creativecommons.org/licenses/by-sa/4.0/
-    # https://creativecommons.org/licenses/by-nc-sa/4.0/
-    # https://creativecommons.org/licenses/by/3.0/
-    # https://creativecommons.org/licenses/by/2.0/
-    # https://creativecommons.org/licenses/by/1.0/
-
-
-
-	# Regarding any CreativeCommons NonCommercial less permissive licensing term that may possibly or may not have been incurred:
-	# May be internal use not primarily intended for or directed toward commercial advantage:
-	# *) Generating technical, business, etc, decisions.
-	# *) Writing content not directly on behalf of a customer - technical standards, marketing, email replies, etc.
-	# *) Processing step in a robot error detection and correction algorithm.
-	# *) Part of the operations of a commercial business but not itself intended primarily for exploiting commercially.
-	# *) Included due to upstream non-commercial supplier's (eg. open-source developer's) preferred component in a complex system also used by the public for other purposes, archival preservation of an AI model through distribution, the supplier's savings on non-commercial use of disk space, bandwidth, build time/computation, etc, rather than to gain any actual advantage for a commercial business.
-	# 
-	# May be separate from the usual commercial use of AI models usually intentionally prevented under CreativeCommons NonCommercial license:
-	# *) Not an inference service generating outputs solely with this AI model based solely on user input.
-	# *) Not using content directly from this AI model as a substantial contribution to such expressive content of a paid service as roleplaying character dialogue.
-	# 
-	# May not be providing a means for users to 
-	# *) Not offering consulting or other assistance to generate both specific output of this AI model and from other than an approved paid service.
-	# *) Vastly, absurdly, prohibitively difficult to, from prefixing, suffixing, etc, useful given inputs, obtain outputs intentionally resembling this AI model from AI model after complex merges, to the point of resembling intentional effort both to cause the AI model to refuse to do this and to cause the AI model to not produce such resemblances.
-	# 
-	# May be out of scope:
-	# *) Transformative processing of outputs by another AI model .
-	# *) Extracted facts with zero originality being the only output, such as converting natural-language input to output a name, number, address, etc.
-	# *) Trivial, unrecognizable, effect, etc, of an AI model only contributing weights to a merged model merged into another model.
-	# *) No substantial protectable expression in the composite model weights due to weight-averaging obliterating individual training patterns, merges, etc, to the point of being functionally noise.
-	# 
-	# May be beyond best practices and reasonable effort to mitigate more:
-	# *) Disproportionate infeasibility of determining both removal of merged AI model weights and absence of other damage after complex merging into AI model merged into another AI model merged into this AI model, with all such merges having possible previous merges disrupting any baseline values, possibly multiple cases of such complex composition, under limited precision arithmetic.
-	# 
-	# May be zero-substitution negligible market effect:
-	# *) Non-availability of the merged model useful for different purposes through official approved paid service.
-	# *) Non-availability and poor maintenance of this AI model from approved official paid service (eg. OpenRouter  404: No endpoints found ) .
-	# *) Security necessity - offline inference necessary due to AI model output use in a pipeline running commands, parameters interpretable as commands, and/or AI model input being from a pipeline that could have possibly picked up sensitive files such as password lists.
-	# *) Performance necessity - within a looping pipeline, etc, that would be a large factor or orders of magnitude prohibitively slower, from available paid service.
-	# *) Reliability necessity - must continue essential data processing, possibly also business processes, etc, without fragility of internet outage, including historic incidents of multiple redundant satellite internet provider outages.
-	# *) Security necessity - use in a strictly offline air-gapped or data-pumped environment with very strict integrity checking, etc.
-	# *) No market harm - intermediate functional data for factual, decision making, practical uses, made possible by possibly transformative merging, fine-tuning, etc, instead of uses explicitly declared description and purposes of this AI model or official approved paid service, etc, for finished creative fiction, immersive, dynamic, fictional experiences, roleplay, etc.
-	# 
-	# In particular, it is usually already inappropriate to begin with to directly show outputs from an AI 'augment' model directly to end-users, as such models may usually rely on subsequent processing by another model for 'safety'.
-	# 
-	# A different situation may emerge when attempting to, for profit, without similarly distributing the AI model for free, redistribute the AI model or something including the AI model, such as a dist/OS .
-	# 
-	# This is not advice: some, all, and/or none, of these evaluation points may or may not apply, particularly depending on ongoing legal proceedings determining the applicability of copyright law at all to the possibly transformative, etc, uses, etc, of AI models.
 
 
 
@@ -838,7 +906,7 @@ PARAMETER temperature 0.7
 	
 	if ( [[ "$accept_nonpermissiveNONCOMMERCIAL" != "false" ]] ) || [[ -e "$HOME"/nonpermissiveNONCOMMERCIAL ]]
 	then
-		echo 'Llama-augment' >> "$HOME"/nonpermissiveNONCOMMERCIAL
+		echo 'Llama-augment '$(date | tr -dc 'a-zA-Z0-9: ') >> "$HOME"/nonpermissiveNONCOMMERCIAL
 		! _if_cygwin && sudo -n cp -f -a "$HOME"/nonpermissiveNONCOMMERCIAL /nonpermissiveNONCOMMERCIAL
 		cp -f -a "$HOME"/nonpermissiveNONCOMMERCIAL /nonpermissiveNONCOMMERCIAL
 		
