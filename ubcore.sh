@@ -39,7 +39,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='3620520443'
-export ub_setScriptChecksum_contents='3160571390'
+export ub_setScriptChecksum_contents='1536373697'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -19517,7 +19517,7 @@ _upgrade_researchEngine-safe-nvidia() {
 
 
 
-_here_license-Llama-augment() {
+_here_license-Llama-3-augment() {
 	if ( [[ "$accept_nonpermissiveNONCOMMERCIAL" != "false" ]] ) || [[ -e "$HOME"/nonpermissiveNONCOMMERCIAL ]]
 	then
 		cat << 'CZXWXcRMTo8EmM8i4d'
@@ -19579,7 +19579,7 @@ https://creativecommons.org/licenses/by/3.0/
 https://creativecommons.org/licenses/by/2.0/
 https://creativecommons.org/licenses/by/1.0/
 
-Clarification from comments, documentation, etc, usually provided with the 'ubiquitous_bash' project, may or may not be relevant, which may or may not to some extent depend on which 'Llama-augment' model you have installed, which may or may not depend on which source code from where you used to install the 'Llama-augment' model .
+Clarification from comments, documentation, etc, usually provided with the 'ubiquitous_bash' project, may or may not be relevant, which may or may not to some extent depend on which 'Llama-3-augment' model you have installed, which may or may not depend on which source code from where you used to install the 'Llama-3-augment' model .
 
 https://github.com/mirage335-colossus/ubiquitous_bash/blob/master/ai/ollama/ollama.sh
 ./ai/ollama/ollama.sh
@@ -19638,10 +19638,10 @@ CZXWXcRMTo8EmM8i4d
 		# "Llama 3" NeuralDaredevil-8B-abliterated
 		#
 		# NOTICE: This merged model is distributed under the following Creative Commons licenses:
-		# Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International Licence (for weight components originating from Llama-3 Soliloquy 8B v2)
+		# Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License (for weight components originating from Llama-3 Soliloquy 8B v2)
 		# And simultaneously subject to:
-		# Meta Llama 3 Community Licence
-		# Llama 3.1 Community Licence.
+		# Meta Llama 3 Community License
+		# Llama 3.1 Community License.
 		
 
 		# https://huggingface.co/mlabonne/Meta-Llama-3.1-8B-Instruct-abliterated-GGUF/tree/main
@@ -19930,8 +19930,8 @@ CZXWXcRMTo8EmM8i4d
 		#
 		# Global merge of included AI model weights; no fine-tuning after merge.  Datasets not redistributed.
 		#
-		# CC components follow – Title   Modification status   Licence + URI   Author/Source   Work URI   (CC licences include disclaimers of warranty)
-		# All licence links also carry the CC warranty disclaimer.
+		# CC components follow – Title   Modification status   License + URI   Author/Source   Work URI   (CC licenses include disclaimers of warranty)
+		# All license links also carry the CC warranty disclaimer.
 		#
 		# Llama-3 Soliloquy 8B v2 (model)   Weights merged (global merge, no further training)   CC BY-NC-SA 4.0 https://creativecommons.org/licenses/by-nc-sa/4.0/   Elyn-dev   https://huggingface.co/elyn-dev/Llama-3-Soliloquy-8B-v2
 		# Gutenberg-DPO v0.1 (dataset)   Used indirectly via upstream fine-tuning; upstream already cleaned chapters & generated synthetic prompts (retain these prior modifications); not redistributed here   CC BY 4.0 https://creativecommons.org/licenses/by/4.0/   Jon Durbin, 2024   https://huggingface.co/datasets/jondurbin/gutenberg-dpo-v0.1
@@ -19947,8 +19947,8 @@ CZXWXcRMTo8EmM8i4d
 		#
 		# Global merge of included AI-model weights, followed by 'abliteration' weight manipulation; no further fine-tuning after merge.  Datasets are training-only and are not redistributed.
 		#
-		# CC components follow –  Title   Modification status   Licence + URI   Author/Source   Work URI   (all CC licences include disclaimers of warranty)
-		# All licence links also carry the CC warranty disclaimer.
+		# CC components follow –  Title   Modification status   License + URI   Author/Source   Work URI   (all CC licenses include disclaimers of warranty)
+		# All license links also carry the CC warranty disclaimer.
 		#
 		# Llama-3 Soliloquy 8B v2 (model)          Weights merged **and abliterated** (global merge + abliteration; no extra training)          CC BY-NC-SA 4.0  https://creativecommons.org/licenses/by-nc-sa/4.0/          Elyn-dev          https://huggingface.co/elyn-dev/Llama-3-Soliloquy-8B-v2
 		# Gutenberg-DPO v0.1 (dataset)             Used indirectly via upstream fine-tuning; retains upstream synthetic-prompt edits; not redistributed          CC BY 4.0  https://creativecommons.org/licenses/by/4.0/          Jon Durbin (2024)          https://huggingface.co/datasets/jondurbin/gutenberg-dpo-v0.1
@@ -19964,8 +19964,8 @@ CZXWXcRMTo8EmM8i4d
 		#
 		# Global merge of included AI-model weights -> ‘abliteration’ weight manipulation -> DPO fine-tune (one epoch on mlabonne/orpo-dpo-mix-40k).
 		#
-		# CC components follow –  Title   Modification status   Licence + URI   Author/Source   Work URI   (all CC licences include disclaimers of warranty)
-		# All licence links also carry the CC warranty disclaimer.
+		# CC components follow –  Title   Modification status   License + URI   Author/Source   Work URI   (all CC licenses include disclaimers of warranty)
+		# All license links also carry the CC warranty disclaimer.
 		#
 		# Llama-3 Soliloquy 8B v2 (model)   Weights merged in Daredevil-8B, then **further updated by abliteration + DPO fine-tune**   CC BY-NC-SA 4.0 https://creativecommons.org/licenses/by-nc-sa/4.0/   Elyn-dev   https://huggingface.co/elyn-dev/Llama-3-Soliloquy-8B-v2
 		# Gutenberg-DPO v0.1 (dataset)   Used for DPO fine-tune **without additional edits** (tokenisation only); retains prior cleaning & prompt synthesis by creator; *not redistributed*   CC BY 4.0 https://creativecommons.org/licenses/by/4.0/   Jon Durbin, 2024   https://huggingface.co/datasets/jondurbin/gutenberg-dpo-v0.1
@@ -20010,7 +20010,7 @@ CZXWXcRMTo8EmM8i4d
 		#
 		# Explicitly states 'License: llama3.1' , 'License: llama3' , etc. Any permissive license (eg. Apache 2.0, MIT, CreativeCommons, etc) or less permissive license (eg. CreativeCommons NonCommercial) has been found by human review and followed up AI provided review, as reasonably permissive license terms.
 		#
-		# NOTICE: Thus, the 'Llama-augment' model, as derived from either 'Llama 3.1 8B', 'Llama 3 8B', or any of the other derivative AI LLM models above, etc:
+		# NOTICE: Thus, the 'Llama-3-augment' model, as derived from either 'Llama 3.1 8B', 'Llama 3 8B', or any of the other derivative AI LLM models above, etc:
 		# (*) Itself created non-commercially, whether 'Llama 3.1 8B', 'Llama 3 8B', "Llama 3" 'NeuralDaredevil', or derived thereof, etc.
 		# (*) Permitted by Meta except for entities meeting this specific criteria from 'Llama 3.1', 'Llama 3', license text, for commercial, etc, use.
 		#  'on the Llama 3.1 version release date, the monthly active users of the products or services made available by or for Licensee, or Licensee’s affiliates, is greater than 700 million monthly active users in the preceding calendar month'
@@ -20267,7 +20267,7 @@ CZXWXcRMTo8EmM8i4d
 }
 
 
-# NOTICE: You are obtaining the 'Llama-augment' model, or an upstream model used as a 'Llama-augment' model, by using this function: the 'Llama-augment' model is not, through this code itself, distributed to you (ie. you are likely receiving the 'Llama-augment' model from Soaring Distributions LLC regardless of where you obtained this code from).
+# NOTICE: You are obtaining the 'Llama-3-augment' model, or an upstream model used as a 'Llama-3-augment' model, by using this function: the 'Llama-3-augment' model is not, through this code itself, distributed to you (ie. you are likely receiving the 'Llama-3-augment' model from Soaring Distributions LLC regardless of where you obtained this code from).
 _setup_ollama_model_augment_sequence() {
 	# NOTICE: WARNING: Normally, any redistribution of a 'Llama', similar AI model, or other AI model, would be from an authoratative corporation, such as "Soaring Distributions LLC" .
 	
@@ -20366,7 +20366,7 @@ _setup_ollama_model_augment_sequence() {
 	# TODO: TODO: Intentionally overfit smaller parameter models by reinforcing prompt/response for specific knowledge (eg. plasma recombiation light emission physics) and reasoning (eg. robot motor control).
 	
 
-	# Reducing 'Llama-augment' model size by more qunatization than Q4_K_M mostly benefits use cases possibly alongside other AI LLM models which may consume nearly all available RAM, VRAM, etc.
+	# Reducing 'Llama-3-augment' model size by more qunatization than Q4_K_M mostly benefits use cases possibly alongside other AI LLM models which may consume nearly all available RAM, VRAM, etc.
 	
 	# May or may not be more track record with this slightly different model, using Q4-K-M quantization.
 	# https://huggingface.co/grimjim/Llama-3.1-8B-Instruct-abliterated_via_adapter-GGUF
@@ -20399,9 +20399,9 @@ PARAMETER stop <|end_header_id|>
 PARAMETER stop <|eot_id|>
 PARAMETER temperature 0.7
 
-' > Llama-augment.Modelfile
+' > Llama-3-augment.Modelfile
 
-	_here_license-Llama-augment >> Llama-augment.Modelfile
+	_here_license-Llama-3-augment >> Llama-3-augment.Modelfile
 	
 	if ( [[ "$accept_nonpermissiveNONCOMMERCIAL" == "false" ]] ) && [[ ! -e "$HOME"/nonpermissiveNONCOMMERCIAL ]]
 	then
@@ -20411,13 +20411,13 @@ PARAMETER temperature 0.7
 	
 		if [[ ! -e 'meta-llama-3.1-8b-instruct-abliterated.Q4_K_M.gguf' ]]
 		then
-			_wget_githubRelease_join "soaringDistributions/Llama-augment_bundle" "" "meta-llama-3.1-8b-instruct-abliterated.Q4_K_M.gguf"
+			_wget_githubRelease_join "soaringDistributions/Llama-3-augment_bundle" "" "meta-llama-3.1-8b-instruct-abliterated.Q4_K_M.gguf"
 		fi
 	fi
 	
 	if ( [[ "$accept_nonpermissiveNONCOMMERCIAL" != "false" ]] ) || [[ -e "$HOME"/nonpermissiveNONCOMMERCIAL ]]
 	then
-		echo 'Llama-augment '$(date | tr -dc 'a-zA-Z0-9: ') >> "$HOME"/nonpermissiveNONCOMMERCIAL
+		echo 'Llama-3-augment '$(date | tr -dc 'a-zA-Z0-9: ') >> "$HOME"/nonpermissiveNONCOMMERCIAL
 		! _if_cygwin && sudo -n cp -f -a "$HOME"/nonpermissiveNONCOMMERCIAL /nonpermissiveNONCOMMERCIAL
 		cp -f -a "$HOME"/nonpermissiveNONCOMMERCIAL /nonpermissiveNONCOMMERCIAL
 		
@@ -20441,17 +20441,17 @@ PARAMETER temperature 0.7
 	
 		if [[ ! -e 'NeuralDaredevil-8B-abliterated.Q3_K_M.gguf' ]]
 		then
-			_wget_githubRelease_join "soaringDistributions/Llama-augment_bundle" "" "NeuralDaredevil-8B-abliterated.Q3_K_M.gguf"
+			_wget_githubRelease_join "soaringDistributions/Llama-3-augment_bundle" "" "NeuralDaredevil-8B-abliterated.Q3_K_M.gguf"
 		fi
 	fi
 	
 	_service_ollama
 	
-	! ollama create Llama-augment -f Llama-augment.Modelfile && _messagePlain_bad 'bad: FAIL: ollama create Llama-augment' && _messageFAIL
+	! ollama create Llama-3-augment -f Llama-3-augment.Modelfile && _messagePlain_bad 'bad: FAIL: ollama create Llama-3-augment' && _messageFAIL
 	
 	if ! _if_cygwin
 	then
-		! echo | sudo -n tee /AI-Llama-augment > /dev/null && _messagePlain_bad 'bad: FAIL: echo | sudo -n tee /AI-Llama-augment' && _messageFAIL
+		! echo | sudo -n tee /AI-Llama-3-augment > /dev/null && _messagePlain_bad 'bad: FAIL: echo | sudo -n tee /AI-Llama-3-augment' && _messageFAIL
 	fi
 
 	rm -f NeuralDaredevil-8B-abliterated.Q3_K_M.gguf
@@ -20460,7 +20460,7 @@ PARAMETER temperature 0.7
 	rm -f Meta-Llama-3.1-8B-Instruct-abliterated.i1-IQ2_XXS.gguf
 	rm -f Meta-Llama-3.1-8B-Instruct-abliterated.i1-IQ3_XXS.gguf
 	rm -f llama-3.1-8b-instruct-abliterated.Q4_K_M.gguf
-	rm -f Llama-augment.Modelfile
+	rm -f Llama-3-augment.Modelfile
 	
 	_ollama_stop_augment
 	
@@ -20526,7 +20526,7 @@ _test_ollama() {
 	#_mustGetSudo
 	#export currentUser_ollama=$(_user_ollama)
 
-	if ! type -p ollama > /dev/null 2>&1 || ! [[ -e /AI-Llama-augment ]]
+	if ! type -p ollama > /dev/null 2>&1 || ! [[ -e /AI-Llama-3-augment ]]
 	then
 		_setup_ollama
 	fi
@@ -20798,9 +20798,9 @@ _ollama_set_sequence-augment-normal() {
 	_start
 	cd "$safeTmp"
 
-	ollama show Llama-augment --modelfile | sed 's/PARAMETER num_ctx [0-9]*/PARAMETER num_ctx 6144/' > ./Llama-augment-tmp.Modelfile
+	ollama show Llama-3-augment --modelfile | sed 's/PARAMETER num_ctx [0-9]*/PARAMETER num_ctx 6144/' > ./Llama-3-augment-tmp.Modelfile
 	sleep 9
-	ollama create Llama-augment --file ./Llama-augment-tmp.Modelfile
+	ollama create Llama-3-augment --file ./Llama-3-augment-tmp.Modelfile
 	sleep 9
 
 	cd "$functionEntryPWD"
@@ -20818,9 +20818,9 @@ _ollama_set_sequence-augment-lowRAM() {
 	cd "$safeTmp"
 
 	#512
-	ollama show Llama-augment --modelfile | sed 's/PARAMETER num_ctx [0-9]*/PARAMETER num_ctx 640/' > ./Llama-augment-tmp.Modelfile
+	ollama show Llama-3-augment --modelfile | sed 's/PARAMETER num_ctx [0-9]*/PARAMETER num_ctx 640/' > ./Llama-3-augment-tmp.Modelfile
 	sleep 9
-	ollama create Llama-augment --file ./Llama-augment-tmp.Modelfile
+	ollama create Llama-3-augment --file ./Llama-3-augment-tmp.Modelfile
 	sleep 9
 
 
@@ -20834,7 +20834,7 @@ _ollama_set-augment-lowRAM() {
 
 
 _ollama_stop_augment() {
-	ollama stop Llama-augment
+	ollama stop Llama-3-augment
 }
 
 _ollama_run_augment() {
@@ -20856,19 +20856,19 @@ _ollama_run_augment() {
 	then
 		local current_api_timeout="$OLLAMA_TIMEOUT"
 		[[ "$current_api_timeout" == "" ]] && current_api_timeout=7200
-		#jq -Rs '{model:"Llama-augment", prompt:., stream: false}' | _timeout "$current_api_timeout" curl -fsS --max-time "$current_api_timeout" -X POST -H "Content-Type: application/json" --data-binary @- http://"$OLLAMA_HOST"/api/generate | jq -r '.response'
-		#jq -Rs '{model:"Llama-augment", prompt:., stream: true}' | _timeout "$current_api_timeout" curl -fsS --no-buffer --max-time "$current_api_timeout" -X POST -H "Content-Type: application/json" --data-binary @- http://"$OLLAMA_HOST"/api/generate | jq -rj --unbuffered 'if .done? then "\n" elif .response? then .response else empty end'
+		#jq -Rs '{model:"Llama-3-augment", prompt:., stream: false}' | _timeout "$current_api_timeout" curl -fsS --max-time "$current_api_timeout" -X POST -H "Content-Type: application/json" --data-binary @- http://"$OLLAMA_HOST"/api/generate | jq -r '.response'
+		#jq -Rs '{model:"Llama-3-augment", prompt:., stream: true}' | _timeout "$current_api_timeout" curl -fsS --no-buffer --max-time "$current_api_timeout" -X POST -H "Content-Type: application/json" --data-binary @- http://"$OLLAMA_HOST"/api/generate | jq -rj --unbuffered 'if .done? then "\n" elif .response? then .response else empty end'
 		if [[ "$*" == "" ]]
 		then
-			jq -Rs '{model:"Llama-augment", prompt:., stream: true}' | _timeout "$current_api_timeout" curl -fsS --no-buffer --max-time "$current_api_timeout" -X POST -H "Content-Type: application/json" --data-binary @- http://"$OLLAMA_HOST"/api/generate | jq -rj --unbuffered 'if .done? then "\n" elif .response? then .response else empty end'
+			jq -Rs '{model:"Llama-3-augment", prompt:., stream: true}' | _timeout "$current_api_timeout" curl -fsS --no-buffer --max-time "$current_api_timeout" -X POST -H "Content-Type: application/json" --data-binary @- http://"$OLLAMA_HOST"/api/generate | jq -rj --unbuffered 'if .done? then "\n" elif .response? then .response else empty end'
 			return
 		else
-			_safeEcho_newline "$@" | jq -Rs '{model:"Llama-augment", prompt:., stream: true}' | _timeout "$current_api_timeout" curl -fsS --no-buffer --max-time "$current_api_timeout" -X POST -H "Content-Type: application/json" --data-binary @- http://"$OLLAMA_HOST"/api/generate | jq -rj --unbuffered 'if .done? then "\n" elif .response? then .response else empty end'
+			_safeEcho_newline "$@" | jq -Rs '{model:"Llama-3-augment", prompt:., stream: true}' | _timeout "$current_api_timeout" curl -fsS --no-buffer --max-time "$current_api_timeout" -X POST -H "Content-Type: application/json" --data-binary @- http://"$OLLAMA_HOST"/api/generate | jq -rj --unbuffered 'if .done? then "\n" elif .response? then .response else empty end'
 			return
 		fi
 	fi
 
-	if ! ollama show Llama-augment > /dev/null 2>&1
+	if ! ollama show Llama-3-augment > /dev/null 2>&1
 	then
 		"$scriptAbsoluteLocation" _setup_ollama_model_augment_sequence > /dev/null 2>&1
 	fi
@@ -20885,12 +20885,12 @@ _ollama_run_augment() {
 			# https://github.com/ollama/ollama/issues/5081
 			export OLLAMA_LOAD_TIMEOUT="$OLLAMA_TIMEOUT"s
 			
-			_timeout "$OLLAMA_TIMEOUT" ollama run Llama-augment "$@"
+			_timeout "$OLLAMA_TIMEOUT" ollama run Llama-3-augment "$@"
 		)
 		return
 	fi
 
-	ollama run Llama-augment "$@"
+	ollama run Llama-3-augment "$@"
 }
 # 'l'... 'LLM', 'language', 'Llama', etc .
 _l() {
@@ -21011,7 +21011,7 @@ alias d=_d
 
 
 # Built with Llama
-# May use 'Llama-augment' model, possibly derived from 'Llama-3.1-8b' .
+# May use 'Llama-3-augment' model, possibly derived from 'Llama-3.1-8b' .
 
 
 
@@ -21109,7 +21109,7 @@ _augment-backend() {
 	# WARNING: Do NOT timeout entire '_l' command, etc ! One-time service start, model download, etc, should NOT be subject to "$OLLAMA_TIMEOUT", etc !
 	
 	# Placeholder. Discouraged. Prefer '_l' function .
-	#jq -Rs '{model:"Llama-augment", prompt:., stream: false}' | _timeout "$OLLAMA_TIMEOUT" curl -fsS --max-time 120 -X POST -H "Content-Type: application/json" --data-binary @- http://localhost:11434/api/generate | jq -r '.response'
+	#jq -Rs '{model:"Llama-3-augment", prompt:., stream: false}' | _timeout "$OLLAMA_TIMEOUT" curl -fsS --max-time 120 -X POST -H "Content-Type: application/json" --data-binary @- http://localhost:11434/api/generate | jq -r '.response'
 
 	# STRONGLY PREFERRED . Will automatically call '_service_ollama_augment' as necessary!
 	#_ollama_run_augment "$@"
@@ -21137,7 +21137,7 @@ _here_bashTool-noOtherInfo() {
 	#
 	# Such an approach quickly 'dampens' any Positive Prompt 'ringing' or 'overshoot' from a Positive Prompt with a Negative Prompt before any effects can accumulate in the AI LLM model output.
 	#
-	# That said, less quantization of the 'Llama-augment' , Q8_0 instead of Q2_K , will require far less careful such 'dampening'. Given the automation purpose of the 'Llama-augment' model, the tradeoff of requiring more careful prompting is well worthwhile to improve processing speed, etc. Especially since only at most one negative prompt not already automatically added is needed, and only to address a specific nuance in the developer's own Positive Prompt, such as the 'datum' being an address, given that usernames are commonly used with such addresses in HTTP URLs, etc.
+	# That said, less quantization of the 'Llama-3-augment' , Q8_0 instead of Q2_K , will require far less careful such 'dampening'. Given the automation purpose of the 'Llama-3-augment' model, the tradeoff of requiring more careful prompting is well worthwhile to improve processing speed, etc. Especially since only at most one negative prompt not already automatically added is needed, and only to address a specific nuance in the developer's own Positive Prompt, such as the 'datum' being an address, given that usernames are commonly used with such addresses in HTTP URLs, etc.
 
 
     cat << 'CZXWXcRMTo8EmM8i4d'
@@ -21570,10 +21570,10 @@ RUN env DEBIAN_FRONTEND=noninteractive apt-get install sudo -y ;\
 
 # DISCOURAGED. Better to benefit from 'ubiquitous_bash' maintenance identifying the most recent ollama installation commands. 
 #RUN curl -fsSL https://ollama.com/install.sh | sh
-# DISCOURAGED. Does NOT install Llama-augment model.
+# DISCOURAGED. Does NOT install Llama-3-augment model.
 RUN /workspace/ubiquitous_bash/ubiquitous_bash.sh _setup_ollama_sequence ;\ 
 /workspace/ubiquitous_bash/ubiquitous_bash.sh _service_ollama
-# PREFERRED. Normally robust, resilient, maintained, and adds the 'Llama-augment' model for automation, etc.
+# PREFERRED. Normally robust, resilient, maintained, and adds the 'Llama-3-augment' model for automation, etc.
 #RUN /workspace/ubiquitous_bash/ubiquitous_bash.sh _setup_ollama
 
 
@@ -23826,7 +23826,7 @@ fi
 ## ATTENTION: Not enabled by default, slow to download. Call '_setup_ollama' manually .
 ## DISCOURAGED. Better to benefit from 'ubiquitous_bash' maintenance identifying the most recent ollama installation commands. 
 ##curl -fsSL https://ollama.com/install.sh | sh
-## DISCOURAGED. Does NOT install Llama-augment model.
+## DISCOURAGED. Does NOT install Llama-3-augment model.
 ##/workspace/ubiquitous_bash/ubiquitous_bash.sh _setup_ollama_sequence
 ##/workspace/ubiquitous_bash/ubiquitous_bash.sh _service_ollama > /dev/null 2>&1
 ## ATTRIBUTION-AI: ChatGPT o3  2025-05-05
@@ -23838,7 +23838,7 @@ fi
 #stty echo
 #stty sane
 #stty echo
-## PREFERRED. Normally robust, resilient, maintained, and adds the 'Llama-augment' model for automation, etc.
+## PREFERRED. Normally robust, resilient, maintained, and adds the 'Llama-3-augment' model for automation, etc.
 ##/workspace/ubiquitous_bash/ubiquitous_bash.sh _setup_ollama
 
 # ###
@@ -24493,7 +24493,7 @@ _format_trial() {
 #Llama 3.1 Instruct 405b
 #Llama 3.1 Instruct 70b
 #
-#Llama-augment
+#Llama-3-augment
 #
 
 
@@ -24645,11 +24645,11 @@ CZXWXcRMTo8EmM8i4d
 # ollama binary
 #_convert_bash-backend() {
     # DANGER: CAUTION: Although this is apparently standard practice for the 'ollama' program, and '/clear', etc, are apparently not interpreted from the input pipe, reliable safe input handling may not be guaranteed
-    #ollama run --verbose Llama-augment
+    #ollama run --verbose Llama-3-augment
 #}
 # ollama API (localhost)
 _convert_bash-backend() {
-    jq -Rs '{model:"Llama-augment", prompt:., stream: false}' | curl -fsS --max-time 120 -X POST -H "Content-Type: application/json" --data-binary @- http://localhost:11434/api/generate | jq -r '.response'
+    jq -Rs '{model:"Llama-3-augment", prompt:., stream: false}' | curl -fsS --max-time 120 -X POST -H "Content-Type: application/json" --data-binary @- http://localhost:11434/api/generate | jq -r '.response'
 }
 # openrouter API
 #_convert_bash-backend() {
@@ -25306,7 +25306,7 @@ CZXWXcRMTo8EmM8i4d
 # broken
 #  Llama-4 Scout (unusually often recognizes valid output as gibberish)
 #  Llama 3.1 70b INSTRUCT
-#  Llama-augment
+#  Llama-3-augment
 #  Llama-4 Maverick
 #  DeepSeek-R1 14b
 #  DeepSeek-R1 32b
@@ -28754,7 +28754,7 @@ _test_gitBest() {
 #! _wget_githubRelease "owner/repo" "" "file.ext"
 
 
-#_wget_githubRelease_join "soaringDistributions/Llama-augment_bundle" "" "llama-3.1-8b-instruct-abliterated.Q4_K_M.gguf"
+#_wget_githubRelease_join "soaringDistributions/Llama-3-augment_bundle" "" "llama-3.1-8b-instruct-abliterated.Q4_K_M.gguf"
 
 
 

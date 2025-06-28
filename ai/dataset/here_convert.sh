@@ -15,7 +15,7 @@
 #Llama 3.1 Instruct 405b
 #Llama 3.1 Instruct 70b
 #
-#Llama-augment
+#Llama-3-augment
 #
 
 

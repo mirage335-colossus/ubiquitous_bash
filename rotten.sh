@@ -2088,7 +2088,7 @@ _request_visualPrompt() {
 #! _wget_githubRelease "owner/repo" "" "file.ext"
 
 
-#_wget_githubRelease_join "soaringDistributions/Llama-augment_bundle" "" "llama-3.1-8b-instruct-abliterated.Q4_K_M.gguf"
+#_wget_githubRelease_join "soaringDistributions/Llama-3-augment_bundle" "" "llama-3.1-8b-instruct-abliterated.Q4_K_M.gguf"
 
 
 

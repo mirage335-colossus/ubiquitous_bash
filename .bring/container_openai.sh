@@ -138,15 +138,15 @@ sudo -n -u ollama ollama serve &
 #wget 'https://huggingface.co/mlabonne/Meta-Llama-3.1-8B-Instruct-abliterated-GGUF/resolve/main/meta-llama-3.1-8b-instruct-abliterated.Q4_K_M.gguf'
 #aria2c --log=- --log-level=info -x "3" --async-dns=false -o 'llama-3.1-8b-instruct-abliterated.Q4_K_M.gguf' 'https://huggingface.co/mlabonne/Meta-Llama-3.1-8B-Instruct-abliterated-GGUF/resolve/main/meta-llama-3.1-8b-instruct-abliterated.Q4_K_M.gguf'
 #[[ ! -e 'llama-3.1-8b-instruct-abliterated.Q4_K_M.gguf' ]] && aria2c --log=- --log-level=info -x "3" --async-dns=false -o 'llama-3.1-8b-instruct-abliterated.Q4_K_M.gguf' 'https://huggingface.co/mlabonne/Meta-Llama-3.1-8B-Instruct-abliterated-GGUF/resolve/main/meta-llama-3.1-8b-instruct-abliterated.Q4_K_M.gguf' --disable-ipv6=true
-~/.ubcore/ubiquitous_bash/ubiquitous_bash.sh _wget_githubRelease_join "soaringDistributions/Llama-augment_bundle" "" "llama-3.1-8b-instruct-abliterated.Q4_K_M.gguf"
+~/.ubcore/ubiquitous_bash/ubiquitous_bash.sh _wget_githubRelease_join "soaringDistributions/Llama-3-augment_bundle" "" "llama-3.1-8b-instruct-abliterated.Q4_K_M.gguf"
 #
 echo 'FROM ./llama-3.1-8b-instruct-abliterated.Q4_K_M.gguf
 PARAMETER num_ctx 6144
-' > Llama-augment.Modelfile
-~/.ubcore/ubiquitous_bash/ubiquitous_bash.sh _here_license-Llama-augment >> Llama-augment.Modelfile
+' > Llama-3-augment.Modelfile
+~/.ubcore/ubiquitous_bash/ubiquitous_bash.sh _here_license-Llama-3-augment >> Llama-3-augment.Modelfile
 #
-ollama create Llama-augment -f Llama-augment.Modelfile
-rm -f Llama-augment.Modelfile
+ollama create Llama-3-augment -f Llama-3-augment.Modelfile
+rm -f Llama-3-augment.Modelfile
 rm -f llama-3.1-8b-instruct-abliterated.Q4_K_M.gguf
 # ###
 fi

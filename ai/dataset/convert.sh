@@ -7,11 +7,11 @@
 # ollama binary
 #_convert_bash-backend() {
     # DANGER: CAUTION: Although this is apparently standard practice for the 'ollama' program, and '/clear', etc, are apparently not interpreted from the input pipe, reliable safe input handling may not be guaranteed
-    #ollama run --verbose Llama-augment
+    #ollama run --verbose Llama-3-augment
 #}
 # ollama API (localhost)
 _convert_bash-backend() {
-    jq -Rs '{model:"Llama-augment", prompt:., stream: false}' | curl -fsS --max-time 120 -X POST -H "Content-Type: application/json" --data-binary @- http://localhost:11434/api/generate | jq -r '.response'
+    jq -Rs '{model:"Llama-3-augment", prompt:., stream: false}' | curl -fsS --max-time 120 -X POST -H "Content-Type: application/json" --data-binary @- http://localhost:11434/api/generate | jq -r '.response'
 }
 # openrouter API
 #_convert_bash-backend() {

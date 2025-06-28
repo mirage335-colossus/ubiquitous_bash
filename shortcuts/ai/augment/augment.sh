@@ -1,6 +1,6 @@
 
 # Built with Llama
-# May use 'Llama-augment' model, possibly derived from 'Llama-3.1-8b' .
+# May use 'Llama-3-augment' model, possibly derived from 'Llama-3.1-8b' .
 
 
 
@@ -98,7 +98,7 @@ _augment-backend() {
 	# WARNING: Do NOT timeout entire '_l' command, etc ! One-time service start, model download, etc, should NOT be subject to "$OLLAMA_TIMEOUT", etc !
 	
 	# Placeholder. Discouraged. Prefer '_l' function .
-	#jq -Rs '{model:"Llama-augment", prompt:., stream: false}' | _timeout "$OLLAMA_TIMEOUT" curl -fsS --max-time 120 -X POST -H "Content-Type: application/json" --data-binary @- http://localhost:11434/api/generate | jq -r '.response'
+	#jq -Rs '{model:"Llama-3-augment", prompt:., stream: false}' | _timeout "$OLLAMA_TIMEOUT" curl -fsS --max-time 120 -X POST -H "Content-Type: application/json" --data-binary @- http://localhost:11434/api/generate | jq -r '.response'
 
 	# STRONGLY PREFERRED . Will automatically call '_service_ollama_augment' as necessary!
 	#_ollama_run_augment "$@"
@@ -126,7 +126,7 @@ _here_bashTool-noOtherInfo() {
 	#
 	# Such an approach quickly 'dampens' any Positive Prompt 'ringing' or 'overshoot' from a Positive Prompt with a Negative Prompt before any effects can accumulate in the AI LLM model output.
 	#
-	# That said, less quantization of the 'Llama-augment' , Q8_0 instead of Q2_K , will require far less careful such 'dampening'. Given the automation purpose of the 'Llama-augment' model, the tradeoff of requiring more careful prompting is well worthwhile to improve processing speed, etc. Especially since only at most one negative prompt not already automatically added is needed, and only to address a specific nuance in the developer's own Positive Prompt, such as the 'datum' being an address, given that usernames are commonly used with such addresses in HTTP URLs, etc.
+	# That said, less quantization of the 'Llama-3-augment' , Q8_0 instead of Q2_K , will require far less careful such 'dampening'. Given the automation purpose of the 'Llama-3-augment' model, the tradeoff of requiring more careful prompting is well worthwhile to improve processing speed, etc. Especially since only at most one negative prompt not already automatically added is needed, and only to address a specific nuance in the developer's own Positive Prompt, such as the 'datum' being an address, given that usernames are commonly used with such addresses in HTTP URLs, etc.
 
 
     cat << 'CZXWXcRMTo8EmM8i4d'

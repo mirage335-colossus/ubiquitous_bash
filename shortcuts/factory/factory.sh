@@ -847,7 +847,7 @@ fi
 ## ATTENTION: Not enabled by default, slow to download. Call '_setup_ollama' manually .
 ## DISCOURAGED. Better to benefit from 'ubiquitous_bash' maintenance identifying the most recent ollama installation commands. 
 ##curl -fsSL https://ollama.com/install.sh | sh
-## DISCOURAGED. Does NOT install Llama-augment model.
+## DISCOURAGED. Does NOT install Llama-3-augment model.
 ##/workspace/ubiquitous_bash/ubiquitous_bash.sh _setup_ollama_sequence
 ##/workspace/ubiquitous_bash/ubiquitous_bash.sh _service_ollama > /dev/null 2>&1
 ## ATTRIBUTION-AI: ChatGPT o3  2025-05-05
@@ -859,7 +859,7 @@ fi
 #stty echo
 #stty sane
 #stty echo
-## PREFERRED. Normally robust, resilient, maintained, and adds the 'Llama-augment' model for automation, etc.
+## PREFERRED. Normally robust, resilient, maintained, and adds the 'Llama-3-augment' model for automation, etc.
 ##/workspace/ubiquitous_bash/ubiquitous_bash.sh _setup_ollama
 
 # ###

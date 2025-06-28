@@ -6,7 +6,7 @@
 
 
 
-_here_license-Llama-augment() {
+_here_license-Llama-3-augment() {
 	if ( [[ "$accept_nonpermissiveNONCOMMERCIAL" != "false" ]] ) || [[ -e "$HOME"/nonpermissiveNONCOMMERCIAL ]]
 	then
 		cat << 'CZXWXcRMTo8EmM8i4d'
@@ -68,7 +68,7 @@ https://creativecommons.org/licenses/by/3.0/
 https://creativecommons.org/licenses/by/2.0/
 https://creativecommons.org/licenses/by/1.0/
 
-Clarification from comments, documentation, etc, usually provided with the 'ubiquitous_bash' project, may or may not be relevant, which may or may not to some extent depend on which 'Llama-augment' model you have installed, which may or may not depend on which source code from where you used to install the 'Llama-augment' model .
+Clarification from comments, documentation, etc, usually provided with the 'ubiquitous_bash' project, may or may not be relevant, which may or may not to some extent depend on which 'Llama-3-augment' model you have installed, which may or may not depend on which source code from where you used to install the 'Llama-3-augment' model .
 
 https://github.com/mirage335-colossus/ubiquitous_bash/blob/master/ai/ollama/ollama.sh
 ./ai/ollama/ollama.sh
@@ -499,7 +499,7 @@ CZXWXcRMTo8EmM8i4d
 		#
 		# Explicitly states 'License: llama3.1' , 'License: llama3' , etc. Any permissive license (eg. Apache 2.0, MIT, CreativeCommons, etc) or less permissive license (eg. CreativeCommons NonCommercial) has been found by human review and followed up AI provided review, as reasonably permissive license terms.
 		#
-		# NOTICE: Thus, the 'Llama-augment' model, as derived from either 'Llama 3.1 8B', 'Llama 3 8B', or any of the other derivative AI LLM models above, etc:
+		# NOTICE: Thus, the 'Llama-3-augment' model, as derived from either 'Llama 3.1 8B', 'Llama 3 8B', or any of the other derivative AI LLM models above, etc:
 		# (*) Itself created non-commercially, whether 'Llama 3.1 8B', 'Llama 3 8B', "Llama 3" 'NeuralDaredevil', or derived thereof, etc.
 		# (*) Permitted by Meta except for entities meeting this specific criteria from 'Llama 3.1', 'Llama 3', license text, for commercial, etc, use.
 		#  'on the Llama 3.1 version release date, the monthly active users of the products or services made available by or for Licensee, or Licensee’s affiliates, is greater than 700 million monthly active users in the preceding calendar month'
@@ -756,7 +756,7 @@ CZXWXcRMTo8EmM8i4d
 }
 
 
-# NOTICE: You are obtaining the 'Llama-augment' model, or an upstream model used as a 'Llama-augment' model, by using this function: the 'Llama-augment' model is not, through this code itself, distributed to you (ie. you are likely receiving the 'Llama-augment' model from Soaring Distributions LLC regardless of where you obtained this code from).
+# NOTICE: You are obtaining the 'Llama-3-augment' model, or an upstream model used as a 'Llama-3-augment' model, by using this function: the 'Llama-3-augment' model is not, through this code itself, distributed to you (ie. you are likely receiving the 'Llama-3-augment' model from Soaring Distributions LLC regardless of where you obtained this code from).
 _setup_ollama_model_augment_sequence() {
 	# NOTICE: WARNING: Normally, any redistribution of a 'Llama', similar AI model, or other AI model, would be from an authoratative corporation, such as "Soaring Distributions LLC" .
 	
@@ -855,7 +855,7 @@ _setup_ollama_model_augment_sequence() {
 	# TODO: TODO: Intentionally overfit smaller parameter models by reinforcing prompt/response for specific knowledge (eg. plasma recombiation light emission physics) and reasoning (eg. robot motor control).
 	
 
-	# Reducing 'Llama-augment' model size by more qunatization than Q4_K_M mostly benefits use cases possibly alongside other AI LLM models which may consume nearly all available RAM, VRAM, etc.
+	# Reducing 'Llama-3-augment' model size by more qunatization than Q4_K_M mostly benefits use cases possibly alongside other AI LLM models which may consume nearly all available RAM, VRAM, etc.
 	
 	# May or may not be more track record with this slightly different model, using Q4-K-M quantization.
 	# https://huggingface.co/grimjim/Llama-3.1-8B-Instruct-abliterated_via_adapter-GGUF
@@ -888,9 +888,9 @@ PARAMETER stop <|end_header_id|>
 PARAMETER stop <|eot_id|>
 PARAMETER temperature 0.7
 
-' > Llama-augment.Modelfile
+' > Llama-3-augment.Modelfile
 
-	_here_license-Llama-augment >> Llama-augment.Modelfile
+	_here_license-Llama-3-augment >> Llama-3-augment.Modelfile
 	
 	if ( [[ "$accept_nonpermissiveNONCOMMERCIAL" == "false" ]] ) && [[ ! -e "$HOME"/nonpermissiveNONCOMMERCIAL ]]
 	then
@@ -900,13 +900,13 @@ PARAMETER temperature 0.7
 	
 		if [[ ! -e 'meta-llama-3.1-8b-instruct-abliterated.Q4_K_M.gguf' ]]
 		then
-			_wget_githubRelease_join "soaringDistributions/Llama-augment_bundle" "" "meta-llama-3.1-8b-instruct-abliterated.Q4_K_M.gguf"
+			_wget_githubRelease_join "soaringDistributions/Llama-3-augment_bundle" "" "meta-llama-3.1-8b-instruct-abliterated.Q4_K_M.gguf"
 		fi
 	fi
 	
 	if ( [[ "$accept_nonpermissiveNONCOMMERCIAL" != "false" ]] ) || [[ -e "$HOME"/nonpermissiveNONCOMMERCIAL ]]
 	then
-		echo 'Llama-augment '$(date | tr -dc 'a-zA-Z0-9: ') >> "$HOME"/nonpermissiveNONCOMMERCIAL
+		echo 'Llama-3-augment '$(date | tr -dc 'a-zA-Z0-9: ') >> "$HOME"/nonpermissiveNONCOMMERCIAL
 		! _if_cygwin && sudo -n cp -f -a "$HOME"/nonpermissiveNONCOMMERCIAL /nonpermissiveNONCOMMERCIAL
 		cp -f -a "$HOME"/nonpermissiveNONCOMMERCIAL /nonpermissiveNONCOMMERCIAL
 		
@@ -930,17 +930,17 @@ PARAMETER temperature 0.7
 	
 		if [[ ! -e 'NeuralDaredevil-8B-abliterated.Q3_K_M.gguf' ]]
 		then
-			_wget_githubRelease_join "soaringDistributions/Llama-augment_bundle" "" "NeuralDaredevil-8B-abliterated.Q3_K_M.gguf"
+			_wget_githubRelease_join "soaringDistributions/Llama-3-augment_bundle" "" "NeuralDaredevil-8B-abliterated.Q3_K_M.gguf"
 		fi
 	fi
 	
 	_service_ollama
 	
-	! ollama create Llama-augment -f Llama-augment.Modelfile && _messagePlain_bad 'bad: FAIL: ollama create Llama-augment' && _messageFAIL
+	! ollama create Llama-3-augment -f Llama-3-augment.Modelfile && _messagePlain_bad 'bad: FAIL: ollama create Llama-3-augment' && _messageFAIL
 	
 	if ! _if_cygwin
 	then
-		! echo | sudo -n tee /AI-Llama-augment > /dev/null && _messagePlain_bad 'bad: FAIL: echo | sudo -n tee /AI-Llama-augment' && _messageFAIL
+		! echo | sudo -n tee /AI-Llama-3-augment > /dev/null && _messagePlain_bad 'bad: FAIL: echo | sudo -n tee /AI-Llama-3-augment' && _messageFAIL
 	fi
 
 	rm -f NeuralDaredevil-8B-abliterated.Q3_K_M.gguf
@@ -949,7 +949,7 @@ PARAMETER temperature 0.7
 	rm -f Meta-Llama-3.1-8B-Instruct-abliterated.i1-IQ2_XXS.gguf
 	rm -f Meta-Llama-3.1-8B-Instruct-abliterated.i1-IQ3_XXS.gguf
 	rm -f llama-3.1-8b-instruct-abliterated.Q4_K_M.gguf
-	rm -f Llama-augment.Modelfile
+	rm -f Llama-3-augment.Modelfile
 	
 	_ollama_stop_augment
 	
@@ -1015,7 +1015,7 @@ _test_ollama() {
 	#_mustGetSudo
 	#export currentUser_ollama=$(_user_ollama)
 
-	if ! type -p ollama > /dev/null 2>&1 || ! [[ -e /AI-Llama-augment ]]
+	if ! type -p ollama > /dev/null 2>&1 || ! [[ -e /AI-Llama-3-augment ]]
 	then
 		_setup_ollama
 	fi

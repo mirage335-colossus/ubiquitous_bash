@@ -89,7 +89,7 @@ CZXWXcRMTo8EmM8i4d
 # broken
 #  Llama-4 Scout (unusually often recognizes valid output as gibberish)
 #  Llama 3.1 70b INSTRUCT
-#  Llama-augment
+#  Llama-3-augment
 #  Llama-4 Maverick
 #  DeepSeek-R1 14b
 #  DeepSeek-R1 32b
