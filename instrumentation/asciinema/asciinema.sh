@@ -204,7 +204,10 @@ _asciinema_markdown() {
         return
     fi
 
-    asciinema cat "$@" | perl -pe 's/\x07//g && s/^[^\r]*\r//' | ansifilter --html | sed 's/background-color:#000000;//g' | sed -n '/<pre>/,/<\/pre>/p'
+    # ATTRIBUTION-AI: ChatGPT o3-pro  2025-06-29  (partially)
+    asciinema cat "$@" | perl -pe 's/\x07//g && s/^[^\r]*\r//' | ansifilter --html | sed 's/background-color:#000000;//g' | sed -n '/<pre>/,/<\/pre>/p' | sed -E 's@(<span style="font-weight:bold;color:#87afaf;">&gt;</span>)([^[:space:]])@\1 \2@g'
+
+    echo
 }
 _markdown() {
     _asciinema_markdown "$@"
