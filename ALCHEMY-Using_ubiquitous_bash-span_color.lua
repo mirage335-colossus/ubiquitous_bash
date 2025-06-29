@@ -17,6 +17,7 @@ function M.RawBlock(elem)
       t = t:gsub('([\\{}])', '\\%1')
       t = t:gsub('([#%%$&_])', '\\%1')
       t = t:gsub('&amp;', '&'):gsub('&quot;', '"')
+      t = t:gsub('"', '\\textquotedbl{}')
       t = t:gsub('([%^~])', '\\%1{}')
       return t
     end
