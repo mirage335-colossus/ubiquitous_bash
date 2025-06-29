@@ -1085,6 +1085,9 @@ _setup_ubiquitousBash_cygwin_procedure() {
 
 	unix2dos "$currentCygdriveC_equivalent"/core/infrastructure/ubiquitous_bash/*.bat
 	unix2dos "$currentCygdriveC_equivalent"/_bash.bat
+
+	unix2dos "$cygwinMSWmenuDir"/ubiquitous_bash/_bash.bat
+	unix2dos "$cygwinMSWdesktopDir"/_bash.bat
 	
 	
 	_messagePlain_good 'done: _setup_ubiquitousBash_cygwin: lean'
