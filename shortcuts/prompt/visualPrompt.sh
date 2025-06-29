@@ -153,6 +153,10 @@ _visualPrompt() {
 		#export PS1='\[\033[01;40m\]\[\033[01;36m\]\[\033[01;34m\]|\[\033[01;31m\]${?}:${currentChroot:+($currentChroot)}\[\033[01;33m\]\u\[\033[01;32m\]@'"$currentHostname"'\[\033[01;36m\]\[\033[01;34m\])\[\033[01;36m\]\[\033[01;34m\]-'"$prompt_cloudNetName"'(\[\033[01;35m\]$(date +%H:%M:%S\.%d)\[\033[01;34m\])\[\033[01;36m\]|\[\033[00m\]'"$prompt_nixShell"'\n\[\033[01;40m\]\[\033[01;36m\]\[\033[01;34m\]|\[\033[37m\][\w]\[\033[00m\]\n\[\033[01;36m\]\[\033[01;34m\]|$([[ "$PS1_lineNumber" == "1" ]] && echo -e -n '"'"'\[\033[01;36m\]'"'"'$PS1_lineNumber || echo -e -n $PS1_lineNumber)\[\033[01;34m\]) \[\033[36m\]'""'>\[\033[00m\] '	
 	#fi
 	
+
+
+	# NOTICE: ATTENTION: Bright colors. More compatible with older terminals (in theory).
+	#
 	# https://stackoverflow.com/questions/4842424/list-of-ansi-color-escape-sequences
 	# Slightly darker yellow will be more printable on white background (ie. Pandoc rendering from HTML from asciinema cat ).
 	#01;33m
@@ -170,6 +174,53 @@ _visualPrompt() {
 	else
 		export PS1='\[\033[01;40m\]\[\033[01;36m\]\[\033[01;34m\]|\[\033[01;31m\]${?}:${currentChroot:+($currentChroot)}\[\033[01;33m\033[38;5;214m\]\u\[\033[01;32m\]@'"$currentHostname"'\[\033[01;36m\]\[\033[01;34m\])\[\033[01;36m\]\[\033[01;34m\]-'"$prompt_cloudNetName"'(\[\033[01;35m\]$(([[ "$VIRTUAL_ENV_PROMPT" != "" ]] && echo -n "$VIRTUAL_ENV_PROMPT") || date +%H:%M:%S\.%d)\[\033[01;34m\])\[\033[01;36m\]|\[\033[00m\]'"$prompt_specialInfo"'\n\[\033[01;40m\]\[\033[01;36m\]\[\033[01;34m\]|\[\033[37m\][\w]\[\033[00m\]\n\[\033[01;36m\]\[\033[01;34m\]|$([[ "$PS1_lineNumber" == "1" ]] && echo -e -n '"'"'\[\033[01;36m\]'"'"'$PS1_lineNumber || echo -e -n $PS1_lineNumber)\[\033[01;34m\]) \[\033[36m\]'""'>\[\033[00m\] '	
 	fi
+
+	# ATTRIBUTION-AI: ChatGPT o4-mini-high  2025-06-29 .
+	echo -e "\033[01;40m\033[01;36m\033[01;34m|\033[01;31m0:(exampleChroot)\033[01;33m\033[38;5;214muser\033[01;32m@exampleHost\033[01;36m\033[01;34m)\033[01;36m\033[01;34m-cloudNet(\033[01;35mvenv\033[01;34m)\033[01;36m|\033[00mINFO\n\033[01;40m\033[01;36m\033[01;34m\033[37m/home/user\033[00m\n\033[01;36m\033[01;34m|1\033[01;34m \033[36m> \033[00m"
+
+
+
+	# NOTICE: ATTENTION: Color saturation reduced. Similar benefits, delineating separate information strings and command prompts between commands.
+	# Less distracting.
+	#
+	# Convert desired RGB values to 8-bit using AI LLM per a table .
+	# https://en.wikipedia.org/wiki/ANSI_escape_code#8-bit
+	#
+	# Consider the neutral, white, and most obnoxious color (usually the error color red).
+	# Set Luma/Chroma, to match usual stock neutral color, white slightly brighter.
+	# Then set obnoxious color Luma/Chroma at slightly lower than sufficient darkness/saturation to clearly distinguish the color.
+	# Rotate a color wheel (eg. GIMP) to get the other colors.
+	# Rotate color wheel slightly towards the direction of preferred approximation.
+	#
+	# Neutral - Luma 77, Chroma 0, R75 G75 B75 - bfbfbf
+	# White (path) - Luma <83, Chroma 0, R81, G81, B81 - cfcfcf
+	#
+	# Blue (punctuation) - 7c7fb7
+	#
+	# *Red (exit status, chroot) - Luma 58, Chroma 25 - b77c7d
+	#
+	# Orange (user) - b7977c
+	#
+	# Green (hostname, wsl) - 7cb77d
+	#
+	# Magenta (date, venv) - b77cb6
+	#
+	# Cyan (punctuation) - 7cb4b7
+
+	if false
+	then
+		clear ; echo -e "\
+\033[1;48;5;16m\033[38;5;103m|\033[38;5;138m0:(exampleChroot)\
+\033[38;5;179muser\033[38;5;108m@exampleHost\
+\033[38;5;103m)\033[38;5;250m-cloudNet(\
+\033[38;5;141mvenv\033[38;5;103m)|\033[0mINFO\n\
+\033[1;48;5;16m\033[38;5;252m/home/user\033[0m\n\
+\033[38;5;103m|1 \033[38;5;109m> \033[0m" ; sleep infinity
+	fi
+
+
+
+
 	
 	#export PS1="$prompt_specialInfo""$PS1"
 }

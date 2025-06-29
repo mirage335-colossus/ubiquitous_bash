@@ -327,9 +327,32 @@ TODO: Example output. Show _getScriptAbsoluteLocation , $scriptAbsoluteLocation 
 exit
 
 -->
-<pre><span style="color:#0000ee;"></span><span style="color:#0000ee;"></span><span style="font-weight:bold;color:#7f7f7f;">|</span><span style="font-weight:bold;color:#ff0000;">0:</span><span style="font-weight:bold;color:#ffaf00;">root</span><span style="font-weight:bold;color:#00ff00;">&#64;arthur</span><span style="font-weight:bold;color:#5c5cff;">)-(</span><span style="font-weight:bold;color:#ff00ff;">00:53:23.19</span><span style="font-weight:bold;color:#5c5cff;">)</span><span style="font-weight:bold;color:#00ffff;">|</span>RTX 4090 16GB<span style="color:#e5e5e5;"></span><span style="color:#e5e5e5;"></span><span style="font-weight:bold;color:#7f7f7f;">
-/cygdrive/c/q/p/zCore/infrastructure/ubiquitous_bash</span><span style="font-weight:bold;color:#5c5cff;"></span>
-|<span style="color:#00cdcd;">1</span><span style="color:#0000ee;">) </span><span style="color:#00cdcd;">&gt;</span> exit
+<pre><span style="color:#0000ee;"></span><span style="color:#0000ee;"></span><span style="font-weight:bold;color:#7f7f7f;">|</span><span style="font-weight:bold;color:#ff0000;">0:</span><span style="font-weight:bold;color:#ffaf00;">root</span><span style="font-weight:bold;color:#00ff00;">&#64;arthur</span><span style="font-weight:bold;color:#5c5cff;">)-(</span><span style="font-weight:bold;color:#ff00ff;">08:06:07.29</span><span style="font-weight:bold;color:#5c5cff;">)</span><span style="font-weight:bold;color:#00ffff;">|</span>RTX 4090 16GB
+<span style="color:#e5e5e5;"></span><span style="color:#e5e5e5;"></span><span style="font-weight:bold;color:#7f7f7f;">~</span>
+<span style="color:#0000ee;"></span><span style="font-weight:bold;color:#7f7f7f;">|</span><span style="font-weight:bold;color:#00ffff;">1</span><span style="font-weight:bold;color:#5c5cff;">) </span><span style="font-weight:bold;color:#00ffff;">&gt;</span><span style="color:#000000;">clear ; echo -e &quot;\</span><span style="color:#000000;">
+</span><span style="color:#000000;">\033[1;48;5;16m\033[38;5;103m|\033[38;5;138m0:(exampleChroot)\</span><span style="color:#000000;">
+</span><span style="color:#000000;">\033[38;5;179muser\033[38;5;108m&#64;exampleHost\</span><span style="color:#000000;">
+</span><span style="color:#000000;">\033[38;5;103m)\033[38;5;250m-cloudNet(\</span><span style="color:#000000;">
+</span><span style="color:#000000;">\033[38;5;141mvenv\033[38;5;103m)|\033[0mINFO\n\</span><span style="color:#000000;">
+</span><span style="color:#000000;">\033[1;48;5;16m\033[38;5;252m/home/user\033[0m\n\</span><span style="color:#000000;">
+</span><span style="color:#000000;">\033[38;5;103m|1 \033[38;5;109m&gt; \033[0m&quot;</span><span style="color:#000000;">clear ; echo -e &quot;\
+\033[1;48;5;16m\033[38;5;103m|\033[38;5;138m0:(exampleChroot)\
+\033[38;5;179muser\033[38;5;108m&#64;exampleHost\
+\033[38;5;103m)\033[38;5;250m-cloudNet(\
+\033[38;5;141mvenv\033[38;5;103m)|\033[0mINFO\n\
+\033[1;48;5;16m\033[38;5;252m/home/user\033[0m\n\
+\033[38;5;103m|1 \033[38;5;109m&gt; \033[0m&quot;
+</span><span style="color:#8787af;"></span><span style="color:#8787af;"></span><span style="font-weight:bold;color:#7f7f7f;">|</span><span style="font-weight:bold;color:#af8787;">0:(exampleChroot)</span><span style="font-weight:bold;color:#d7af5f;">user</span><span style="font-weight:bold;color:#87af87;">&#64;exampleHost</span><span style="font-weight:bold;color:#8787af;">)</span><span style="font-weight:bold;color:#bcbcbc;">-cloudNet(</span><span style="font-weight:bold;color:#af87ff;">venv</span><span style="font-weight:bold;color:#8787af;">)|</span>INFO<span style="color:#d0d0d0;"></span><span style="color:#d0d0d0;"></span><span style="font-weight:bold;color:#7f7f7f;">
+/home/user</span><span style="color:#8787af;">
+|1 </span><span style="color:#87afaf;">&gt;</span>
+
+<span style="color:#0000ee;"></span><span style="color:#0000ee;"></span><span style="font-weight:bold;color:#7f7f7f;">|</span><span style="font-weight:bold;color:#ff0000;">0:</span><span style="font-weight:bold;color:#ffaf00;">root</span><span style="font-weight:bold;color:#00ff00;">&#64;arthur</span><span style="font-weight:bold;color:#5c5cff;">)-(</span><span style="font-weight:bold;color:#ff00ff;">08:06:17.29</span><span style="font-weight:bold;color:#5c5cff;">)</span><span style="font-weight:bold;color:#00ffff;">|</span>RTX 4090 16GB<span style="color:#e5e5e5;"></span><span style="color:#e5e5e5;"></span><span style="font-weight:bold;color:#7f7f7f;">
+~</span><span style="font-weight:bold;color:#5c5cff;"></span>
+
+quick brown fox
+<span style="color:#0000ee;"></span><span style="color:#0000ee;"></span><span style="font-weight:bold;color:#7f7f7f;">|</span><span style="font-weight:bold;color:#ff0000;">0:</span><span style="font-weight:bold;color:#ffaf00;">root</span><span style="font-weight:bold;color:#00ff00;">&#64;arthur</span><span style="font-weight:bold;color:#5c5cff;">)-(</span><span style="font-weight:bold;color:#ff00ff;">08:06:27.29</span><span style="font-weight:bold;color:#5c5cff;">)</span><span style="font-weight:bold;color:#00ffff;">|</span>RTX 4090 16GB<span style="color:#e5e5e5;"></span><span style="color:#e5e5e5;"></span><span style="font-weight:bold;color:#7f7f7f;">
+~</span><span style="font-weight:bold;color:#5c5cff;"></span>
+|3) <span style="color:#00cdcd;">&gt;</span> exit
 exit
 
 </pre>
