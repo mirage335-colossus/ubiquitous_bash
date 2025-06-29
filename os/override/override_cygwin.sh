@@ -1081,6 +1081,10 @@ _setup_ubiquitousBash_cygwin_procedure() {
 	# ATTENTION: NOTICE: Any installer for developers which relies on unpacking directories to '/core/infrastructure' must also add this to '/' .
 	# Having '_bash.bat' at '/' normally allows developers to get a bash prompt from both 'CMD' and 'PowerShell' terminal windows by '/_bash' command.
 	cp "$scriptAbsoluteFolder"/_bash.bat "$currentCygdriveC_equivalent"/
+
+
+	unix2dos "$currentCygdriveC_equivalent"/core/infrastructure/ubiquitous_bash/*.bat
+	unix2dos "$currentCygdriveC_equivalent"/_bash.bat
 	
 	
 	_messagePlain_good 'done: _setup_ubiquitousBash_cygwin: lean'
