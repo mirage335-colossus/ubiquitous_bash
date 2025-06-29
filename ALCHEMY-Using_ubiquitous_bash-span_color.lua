@@ -13,7 +13,10 @@ function M.RawBlock(elem)
     html = html:gsub('(<span[^>]*>)%s*\n', '%1')
     local function esc(t)
       t = t:gsub('&#64;', '@'):gsub('&gt;', '>'):gsub('&lt;', '<')
-      return t:gsub('([#%%$&_])', '\\%1')
+      -- escape characters that would otherwise break LaTeX commands
+      t = t:gsub('([\\{}])', '\\%1')
+      t = t:gsub('([#%%$&_])', '\\%1')
+      return t
     end
     html = html:gsub('<span style="font%-weight:bold;color:#(%x+);?">([\0-\255]-)</span>',
                      function(c,t) return '\\textbf{\\textcolor[HTML]{'..c..'}{'..esc(t)..'}}' end)
