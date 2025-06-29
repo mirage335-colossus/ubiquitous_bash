@@ -16,6 +16,8 @@ function M.RawBlock(elem)
       -- escape characters that would otherwise break LaTeX commands
       t = t:gsub('([\\{}])', '\\%1')
       t = t:gsub('([#%%$&_])', '\\%1')
+      t = t:gsub('&amp;', '&'):gsub('&quot;', '"')
+      t = t:gsub('([%^~])', '\\%1{}')
       return t
     end
     html = html:gsub('<span style="font%-weight:bold;color:#(%x+);?">([\0-\255]-)</span>',
