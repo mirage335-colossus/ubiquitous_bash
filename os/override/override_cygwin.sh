@@ -1083,11 +1083,12 @@ _setup_ubiquitousBash_cygwin_procedure() {
 	cp "$scriptAbsoluteFolder"/_bash.bat "$currentCygdriveC_equivalent"/
 
 
-	unix2dos "$currentCygdriveC_equivalent"/core/infrastructure/ubiquitous_bash/*.bat
-	unix2dos "$currentCygdriveC_equivalent"/_bash.bat
+	# ATTENTION: Bad idea. UNIX style line endings have been tested compatible with: cmd/MSWindows, Cygwin/MSW (bash), ubdist/WSL2. Presumably also compatible with UNIX/Linux .
+	#unix2dos "$currentCygdriveC_equivalent"/core/infrastructure/ubiquitous_bash/*.bat
+	#unix2dos "$currentCygdriveC_equivalent"/_bash.bat
 
-	unix2dos "$cygwinMSWmenuDir"/ubiquitous_bash/_bash.bat
-	unix2dos "$cygwinMSWdesktopDir"/_bash.bat
+	#unix2dos "$cygwinMSWmenuDir"/ubiquitous_bash/_bash.bat
+	#unix2dos "$cygwinMSWdesktopDir"/_bash.bat
 	
 	
 	_messagePlain_good 'done: _setup_ubiquitousBash_cygwin: lean'
