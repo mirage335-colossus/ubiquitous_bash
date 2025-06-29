@@ -8,22 +8,21 @@ function M.RawBlock(elem)
       return {}
     end
     html = html:gsub('<pre>', ''):gsub('</pre>', '')
-    local lines = {}
+    -- remove newlines immediately after an opening span to avoid splitting
+    -- colorized regions across lines
+    html = html:gsub('(<span[^>]*>)%s*\n', '%1')
     local function esc(t)
       t = t:gsub('&#64;', '@'):gsub('&gt;', '>'):gsub('&lt;', '<')
       return t:gsub('([#%%$&_])', '\\%1')
     end
-    for line in html:gmatch('[^\n]+') do
-      line = line:gsub('<span style="font%-weight:bold;color:#(%x+);?">(.-)</span>',
-                       function(c,t) return '\\textbf{\\textcolor[HTML]{'..c..'}{'..esc(t)..'}}' end)
-      line = line:gsub('<span style="color:#(%x+);?">(.-)</span>',
-                       function(c,t) return '\\textcolor[HTML]{'..c..'}{'..esc(t)..'}' end)
-      line = line:gsub('<span style="[^"]*"></span>', '')
-      line = line:gsub('&#64;', '@'):gsub('&gt;', '>'):gsub('&lt;', '<')
-      table.insert(lines, line)
-    end
-    local out = table.concat(lines, '\\newline\n')
-    return pandoc.RawBlock('latex', out)
+    html = html:gsub('<span style="font%-weight:bold;color:#(%x+);?">([\0-\255]-)</span>',
+                     function(c,t) return '\\textbf{\\textcolor[HTML]{'..c..'}{'..esc(t)..'}}' end)
+    html = html:gsub('<span style="color:#(%x+);?">([\0-\255]-)</span>',
+                     function(c,t) return '\\textcolor[HTML]{'..c..'}{'..esc(t)..'}' end)
+    html = html:gsub('<span style="[^"]*"></span>', '')
+    html = html:gsub('&#64;', '@'):gsub('&gt;', '>'):gsub('&lt;', '<')
+    html = html:gsub('\n', '\\newline\n')
+    return pandoc.RawBlock('latex', html)
   end
 end
 
