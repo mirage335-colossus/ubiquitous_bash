@@ -16,6 +16,7 @@ function M.RawBlock(elem)
       -- escape characters that would otherwise break LaTeX commands
       t = t:gsub('([\\{}])', '\\%1')
       t = t:gsub('([#%%$&_])', '\\%1')
+      --- attempt to improve robustness, maybe delete some of these lines if things go wrong
       t = t:gsub('&amp;', '&'):gsub('&quot;', '"')
       t = t:gsub('"', '\\textquotedbl{}')
       t = t:gsub('([%^~])', '\\%1{}')
