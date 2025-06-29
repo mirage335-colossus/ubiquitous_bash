@@ -39,7 +39,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='3620520443'
-export ub_setScriptChecksum_contents='4055943806'
+export ub_setScriptChecksum_contents='2126012388'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -27317,11 +27317,11 @@ CZXWXcRMTo8EmM8i4d
 	then
 		cat << 'CZXWXcRMTo8EmM8i4d'
 
-		# "Llama 3" NeuralDaredevil-8B-abliterated
+		# Derived from  "Llama 3" NeuralDaredevil-8B-abliterated  . CreativeCommons license notices apply.
 		#
 		# NOTICE: This merged model is distributed under the following Creative Commons licenses:
-		# Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License (for significant weight components, etc, originating from Llama-3 Soliloquy 8B v2)
-		# Creative Commons Attribution 4.0 International (CC BY 4.0) (for significant weight components, etc, originating from  Meta-Llama-3-8B-Instruct-DPO )
+		# Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License (for significant weight components, etc, originating from  Llama-3 Soliloquy 8B v2  )
+		# Creative Commons Attribution 4.0 International (CC BY 4.0) (for significant weight components, etc, originating from  Meta-Llama-3-8B-Instruct-DPO  )
 		# And simultaneously subject to:
 		# Meta Llama 3 Community License
 		# Llama 3.1 Community License .
@@ -27371,11 +27371,11 @@ CZXWXcRMTo8EmM8i4d
 		#   https://huggingface.co/Orenguteng/Llama-3-8B-Lexi-Uncensored
 		#   'Einstein-v6.1-Llama3-8B'
 		#   https://huggingface.co/Weyaxi/Einstein-v6.1-Llama3-8B
-		#    NOTICE: Datasets permissive license, Llama 3.1 license, Llama 3 license, etc, or public domain, etc, affirmed by AI (ChatGPT o3 DeepResearch , ChatGPT 4.5 DeepResearch, ChatGPT or-mini-high DeepResearch, Perplexity Sonar DeepResearch, etc) inquiry.
+		#    NOTICE: Datasets license consistent with documentation, CreativeCommons license, permissive license, Llama 3.1 license, Llama 3 license, etc, or public domain, etc, affirmed by AI (ChatGPT o3 DeepResearch , ChatGPT 4.5 DeepResearch, ChatGPT or-mini-high DeepResearch, Perplexity Sonar DeepResearch, etc) inquiry.
 		#    'dolphin-2.9-llama3-8b'
 		#    https://huggingface.co/cognitivecomputations/dolphin-2.9-llama3-8b
 		#     'grant permission for any use, including commercial, that falls within accordance with Meta's Llama-3 license'
-		#     NOTICE: Datasets permissive license, Llama 3.1 license, Llama 3 license, etc, or public domain, etc, affirmed by AI (ChatGPT o3 DeepResearch , ChatGPT 4.5 DeepResearch, ChatGPT or-mini-high DeepResearch, Perplexity Sonar DeepResearch, etc) inquiry.
+		#     NOTICE: Datasets license consistent with documentation, CreativeCommons license, permissive license, Llama 3.1 license, Llama 3 license, etc, or public domain, etc, affirmed by AI (ChatGPT o3 DeepResearch , ChatGPT 4.5 DeepResearch, ChatGPT or-mini-high DeepResearch, Perplexity Sonar DeepResearch, etc) inquiry.
 		#  https://huggingface.co/lodrick-the-lafted/Olethros-8B
 		#   https://huggingface.co/datasets/lodrick-the-lafted/OpusStories
 		#    'License: apache-2.0'
@@ -27406,7 +27406,7 @@ CZXWXcRMTo8EmM8i4d
 		#   https://huggingface.co/NousResearch/Meta-Llama-3-8B-Instruct
 		#   https://huggingface.co/mlabonne/OrpoLlama-3-8B
 		#   https://huggingface.co/cognitivecomputations/dolphin-2.9-llama3-8b
-		#    NOTICE: Datasets permissive license, Llama 3.1 license, Llama 3 license, etc, or public domain, etc, affirmed by AI (ChatGPT o3 DeepResearch , ChatGPT 4.5 DeepResearch, ChatGPT or-mini-high DeepResearch, Perplexity Sonar DeepResearch, etc) inquiry.
+		#    NOTICE: Datasets license consistent with documentation, CreativeCommons license, permissive license, Llama 3.1 license, Llama 3 license, etc, or public domain, etc, affirmed by AI (ChatGPT o3 DeepResearch , ChatGPT 4.5 DeepResearch, ChatGPT or-mini-high DeepResearch, Perplexity Sonar DeepResearch, etc) inquiry.
 		#    'grant permission for any use, including commercial, that falls within accordance with Meta's Llama-3 license'
 		#   https://huggingface.co/Locutusque/llama-3-neural-chat-v1-8b
 		#   https://huggingface.co/cloudyu/Meta-Llama-3-8B-Instruct-DPO
@@ -27437,11 +27437,11 @@ CZXWXcRMTo8EmM8i4d
 		#    https://huggingface.co/Orenguteng/Llama-3-8B-Lexi-Uncensored
 		#    'Einstein-v6.1-Llama3-8B'
 		#    https://huggingface.co/Weyaxi/Einstein-v6.1-Llama3-8B
-		#	  NOTICE: Datasets permissive license, Llama 3.1 license, Llama 3 license, etc, or public domain, etc, affirmed by AI (ChatGPT o3 DeepResearch , ChatGPT 4.5 DeepResearch, ChatGPT or-mini-high DeepResearch, Perplexity Sonar DeepResearch, etc) inquiry.
+		#	  NOTICE: Datasets license consistent with documentation, CreativeCommons license, permissive license, Llama 3.1 license, Llama 3 license, etc, or public domain, etc, affirmed by AI (ChatGPT o3 DeepResearch , ChatGPT 4.5 DeepResearch, ChatGPT or-mini-high DeepResearch, Perplexity Sonar DeepResearch, etc) inquiry.
 		#     'dolphin-2.9-llama3-8b'
 		#     https://huggingface.co/cognitivecomputations/dolphin-2.9-llama3-8b
 		#      'grant permission for any use, including commercial, that falls within accordance with Meta's Llama-3 license'
-		#      NOTICE: Datasets permissive license, Llama 3.1 license, Llama 3 license, etc, or public domain, etc, affirmed by AI (ChatGPT o3 DeepResearch , ChatGPT 4.5 DeepResearch, ChatGPT or-mini-high DeepResearch, Perplexity Sonar DeepResearch, etc) inquiry.
+		#      NOTICE: Datasets license consistent with documentation, CreativeCommons license, permissive license, Llama 3.1 license, Llama 3 license, etc, or public domain, etc, affirmed by AI (ChatGPT o3 DeepResearch , ChatGPT 4.5 DeepResearch, ChatGPT or-mini-high DeepResearch, Perplexity Sonar DeepResearch, etc) inquiry.
 		#   https://huggingface.co/lodrick-the-lafted/Olethros-8B
 		#    https://huggingface.co/datasets/lodrick-the-lafted/OpusStories
 		#     'License: apache-2.0'
@@ -27460,7 +27460,7 @@ CZXWXcRMTo8EmM8i4d
 		#    'model: DeepMount00/Llama-3-8b-Ita'
 		#     https://huggingface.co/DeepMount00/Llama-3-8b-Ita
 		#     https://web.archive.org/web/20241222221326/https://huggingface.co/DeepMount00/Llama-3-8b-Ita
-		#      NOTICE: Datasets permissive license, Llama 3.1 license, Llama 3 license, etc, or public domain, etc, affirmed by AI (ChatGPT o3 DeepResearch , ChatGPT 4.5 DeepResearch, ChatGPT or-mini-high DeepResearch, Perplexity Sonar DeepResearch, etc) inquiry.
+		#      NOTICE: Datasets license consistent with documentation, CreativeCommons license, permissive license, Llama 3.1 license, Llama 3 license, etc, or public domain, etc, affirmed by AI (ChatGPT o3 DeepResearch , ChatGPT 4.5 DeepResearch, ChatGPT or-mini-high DeepResearch, Perplexity Sonar DeepResearch, etc) inquiry.
 		#    'model: nbeerbower/llama-3-gutenberg-8B'
 		#     https://huggingface.co/nbeerbower/llama-3-gutenberg-8B
 		#     https://web.archive.org/web/20250303232239/https://huggingface.co/nbeerbower/llama-3-gutenberg-8B
@@ -27494,7 +27494,7 @@ CZXWXcRMTo8EmM8i4d
 		#    'License: apache-2.0'
 		#  https://huggingface.co/cognitivecomputations/dolphin-2.9-llama3-8b
 		#   'grant permission for any use, including commercial, that falls within accordance with Meta's Llama-3 license'
-		#   NOTICE: Datasets permissive license, Llama 3.1 license, Llama 3 license, etc, or public domain, etc, affirmed by AI (ChatGPT o3 DeepResearch , ChatGPT 4.5 DeepResearch, ChatGPT or-mini-high DeepResearch, Perplexity Sonar DeepResearch, etc) inquiry.
+		#   NOTICE: Datasets license consistent with documentation, CreativeCommons license, permissive license, Llama 3.1 license, Llama 3 license, etc, or public domain, etc, affirmed by AI (ChatGPT o3 DeepResearch , ChatGPT 4.5 DeepResearch, ChatGPT or-mini-high DeepResearch, Perplexity Sonar DeepResearch, etc) inquiry.
 		#  https://huggingface.co/Danielbrdz/Barcenas-Llama3-8b-ORPO
 		#   https://huggingface.co/datasets/reciperesearch/dolphin-sft-v0.1-preference
 		#    'License: apache-2.0'
@@ -27524,7 +27524,7 @@ CZXWXcRMTo8EmM8i4d
 		#     'License: apache-2.0'
 		#   https://huggingface.co/cognitivecomputations/dolphin-2.9-llama3-8b
 		#    'grant permission for any use, including commercial, that falls within accordance with Meta's Llama-3 license'
-		#    NOTICE: Datasets permissive license, Llama 3.1 license, Llama 3 license, etc, or public domain, etc, affirmed by AI (ChatGPT o3 DeepResearch , ChatGPT 4.5 DeepResearch, ChatGPT or-mini-high DeepResearch, Perplexity Sonar DeepResearch, etc) inquiry.
+		#    NOTICE: Datasets license consistent with documentation, CreativeCommons license, permissive license, Llama 3.1 license, Llama 3 license, etc, or public domain, etc, affirmed by AI (ChatGPT o3 DeepResearch , ChatGPT 4.5 DeepResearch, ChatGPT or-mini-high DeepResearch, Perplexity Sonar DeepResearch, etc) inquiry.
 		#   https://huggingface.co/Danielbrdz/Barcenas-Llama3-8b-ORPO
 		#    https://huggingface.co/datasets/reciperesearch/dolphin-sft-v0.1-preference
 		#     'License: apache-2.0'
@@ -27537,7 +27537,7 @@ CZXWXcRMTo8EmM8i4d
 		#     'License: apache-2.0'
 		#
 		# Datasets and related information possibly used or possibly not used, during, usually at least mostly third-party, non-commercial model development . Noted for completeness and clarity, not necessarily of any relevance. Please read remaining explanation why any such information may not be relevant.
-		# List obtained from, and datasets permissive license, Llama 3.1 license, Llama 3 license, etc, or public domain, etc, affirmed by, AI (ChatGPT o3 DeepResearch , ChatGPT 4.5 DeepResearch, ChatGPT or-mini-high DeepResearch, Perplexity Sonar DeepResearch, etc) inquiry.
+		# List obtained from, and datasets license consistent with documentation, CreativeCommons license, permissive license, Llama 3.1 license, Llama 3 license, etc, or public domain, etc, affirmed by, AI (ChatGPT o3 DeepResearch , ChatGPT 4.5 DeepResearch, ChatGPT or-mini-high DeepResearch, Perplexity Sonar DeepResearch, etc) inquiry.
 		# OpenAssistant/oasst_top1_2023-08-25
 		# https://huggingface.co/datasets/HuggingFaceH4/ultrachat_200k
 		# https://huggingface.co/datasets/teknium/OpenHermes-2.5
@@ -27670,7 +27670,7 @@ CZXWXcRMTo8EmM8i4d
 		# https://creativecommons.org/licenses/by/2.0/
 		# https://creativecommons.org/licenses/by/1.0/
 		#
-		# Models fine-tuned, etc, with more than a few datasets, have been evaluated for dataset license by prompting  ChatGPT o3 DeepResearch , ChatGPT 4.5 DeepResearch , ChatGPT o4-mini-high DeepResearch , or similar , and may be labeled 'Datasets permissive license, Llama 3.1 license, Llama 3 license, etc, or public domain, etc, affirmed by AI (ChatGPT o3 DeepResearch , ChatGPT 4.5 DeepResearch, ChatGPT or-mini-high DeepResearch, Perplexity Sonar DeepResearch, etc) inquiry.' . Such documentation must not be misconstrued: there is a consensus reflected both in statements by the community often stating a license that does not include the license terms from a dataset used in fine-tuning, training, etc, as well economically relevant activity in the AI industry, that transformative use of datasets for training and inference to create non-infringing content is, whether under fair-use or other doctrine, not affected by the licensing of the dataset. Nothing about any documentation here shall be misconstrued as contradicting such consensus, expectation, etc.
+		# Models fine-tuned, etc, with more than a few datasets, have been evaluated for dataset license by prompting  ChatGPT o3 DeepResearch , ChatGPT 4.5 DeepResearch , ChatGPT o4-mini-high DeepResearch , or similar , and may be labeled 'Datasets license consistent with documentation, CreativeCommons license, permissive license, Llama 3.1 license, Llama 3 license, etc, or public domain, etc, affirmed by AI (ChatGPT o3 DeepResearch , ChatGPT 4.5 DeepResearch, ChatGPT or-mini-high DeepResearch, Perplexity Sonar DeepResearch, etc) inquiry.' . Such documentation must not be misconstrued: there is a consensus reflected both in statements by the community often stating a license that does not include the license terms from a dataset used in fine-tuning, training, etc, as well economically relevant activity in the AI industry, that transformative use of datasets for training and inference to create non-infringing content is, whether under fair-use or other doctrine, not affected by the licensing of the dataset. Nothing about any documentation here shall be misconstrued as contradicting such consensus, expectation, etc.
 		#
 		# Nor shall any such documentation be misconstrued to suggest any dataset enumerated here is in any way more significant than datasets used by Meta to train Llama , DeepSeek to train DeepSeek-R1 .
 		#
