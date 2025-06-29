@@ -900,13 +900,13 @@ PARAMETER temperature 0.7
 	
 	if ( [[ "$accept_nonpermissiveNONCOMMERCIAL" == "false" ]] ) && [[ ! -e "$HOME"/nonpermissiveNONCOMMERCIAL ]]
 	then
-		#wget 'https://huggingface.co/mlabonne/Meta-Llama-3.1-8B-Instruct-abliterated-GGUF/resolve/main/meta-llama-3.1-8b-instruct-abliterated.Q4_K_M.gguf'
-		aria2c --log=- --log-level=info -x "3" --async-dns=false -o 'llama-3.1-8b-instruct-abliterated.Q4_K_M.gguf' 'https://huggingface.co/mlabonne/Meta-Llama-3.1-8B-Instruct-abliterated-GGUF/resolve/main/meta-llama-3.1-8b-instruct-abliterated.Q4_K_M.gguf'
-		[[ ! -e 'llama-3.1-8b-instruct-abliterated.Q4_K_M.gguf' ]] && aria2c --log=- --log-level=info -x "3" --async-dns=false -o 'llama-3.1-8b-instruct-abliterated.Q4_K_M.gguf' 'https://huggingface.co/mlabonne/Meta-Llama-3.1-8B-Instruct-abliterated-GGUF/resolve/main/meta-llama-3.1-8b-instruct-abliterated.Q4_K_M.gguf' --disable-ipv6=true
+		#wget 'https://huggingface.co/mlabonne/Meta-Llama-3.1-8B-Instruct-abliterated-GGUF/resolve/main/llama-3.1-8b-instruct-abliterated.Q4_K_M.gguf'
+		aria2c --log=- --log-level=info -x "3" --async-dns=false -o 'llama-3.1-8b-instruct-abliterated.Q4_K_M.gguf' 'https://huggingface.co/mlabonne/Meta-Llama-3.1-8B-Instruct-abliterated-GGUF/resolve/main/llama-3.1-8b-instruct-abliterated.Q4_K_M.gguf'
+		[[ ! -e 'llama-3.1-8b-instruct-abliterated.Q4_K_M.gguf' ]] && aria2c --log=- --log-level=info -x "3" --async-dns=false -o 'llama-3.1-8b-instruct-abliterated.Q4_K_M.gguf' 'https://huggingface.co/mlabonne/Meta-Llama-3.1-8B-Instruct-abliterated-GGUF/resolve/main/llama-3.1-8b-instruct-abliterated.Q4_K_M.gguf' --disable-ipv6=true
 	
-		if [[ ! -e 'meta-llama-3.1-8b-instruct-abliterated.Q4_K_M.gguf' ]]
+		if [[ ! -e 'llama-3.1-8b-instruct-abliterated.Q4_K_M.gguf' ]]
 		then
-			_wget_githubRelease_join "soaringDistributions/Llama-3-augment_bundle" "" "meta-llama-3.1-8b-instruct-abliterated.Q4_K_M.gguf"
+			_wget_githubRelease_join "soaringDistributions/Llama-3-augment_bundle" "" "llama-3.1-8b-instruct-abliterated.Q4_K_M.gguf"
 		fi
 	fi
 	
@@ -936,7 +936,7 @@ PARAMETER temperature 0.7
 	
 		if [[ ! -e 'NeuralDaredevil-8B-abliterated.Q3_K_M.gguf' ]]
 		then
-			_wget_githubRelease_join "soaringDistributions/Llama-3-augment_bundle" "" "NeuralDaredevil-8B-abliterated.Q3_K_M.gguf"
+			_wget_githubRelease_join "soaringDistributions/Llama-3-augment_bundle" "" "Llama-3-NeuralDaredevil-8B-abliterated.Q3_K_M.gguf"
 		fi
 	fi
 	
