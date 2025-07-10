@@ -97,6 +97,8 @@ while true; do
   HOST_IP=$(<"$HOST_IP_FILE")
   [[ -n "$HOST_IP" ]] || { sleep 2; continue; }
 
+  wget --timeout=1 --tries=3 http://"$HOST_IP":11434 -q -O - > /dev/null 2>&1 || { sleep 2; continue; }
+
   echo "$(date '+%F %T') 127.0.0.1:$PORT → $HOST_IP:$PORT"
   # --fork lets a single socat instance serve many clients in parallel
   socat TCP-LISTEN:"$PORT",fork,reuseaddr TCP4:"$HOST_IP":"$PORT" || true

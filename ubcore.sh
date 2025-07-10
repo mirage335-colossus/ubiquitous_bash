@@ -39,7 +39,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='3620520443'
-export ub_setScriptChecksum_contents='4274377230'
+export ub_setScriptChecksum_contents='3331907806'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -18507,6 +18507,8 @@ while true; do
 
   HOST_IP=$(<"$HOST_IP_FILE")
   [[ -n "$HOST_IP" ]] || { sleep 2; continue; }
+
+  wget --timeout=1 --tries=3 http://"$HOST_IP":11434 -q -O - > /dev/null 2>&1 || { sleep 2; continue; }
 
   echo "$(date '+%F %T') 127.0.0.1:$PORT → $HOST_IP:$PORT"
   # --fork lets a single socat instance serve many clients in parallel
