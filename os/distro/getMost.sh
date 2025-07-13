@@ -1126,6 +1126,13 @@ _getMost_debian11_install() {
 	_getMost_backend_aptGetInstall python3-torchaudio
 	_getMost_backend_aptGetInstall python3-torchtext
 	_getMost_backend_aptGetInstall python3-torchvision
+
+
+
+
+
+	_getMost_backend_aptGetInstall dialog
+	_getMost_backend_aptGetInstall whiptail
 	
 	
 	
