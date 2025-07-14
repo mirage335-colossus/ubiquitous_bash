@@ -1148,7 +1148,7 @@ _user_ollama() {
 _service_ollama() {
 	_mustGetSudo
 	_if_cygwin && return 0
-	if ! sudo -n -u ollama bash -c 'type -p ollama'
+	if ! sudo -n -u ollama bash -c 'type -p ollama' > /dev/null
 	then
 		echo 'warn: _service_ollama: missing: ollama'
 		return 1
