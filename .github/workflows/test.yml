@@ -294,8 +294,8 @@ jobs:
           }
   test_ubcp_dump_mswLTS:
     #runs-on: windows-latest
-    #runs-on: windows-2022
-    runs-on: windows-2019
+    runs-on: windows-2022
+    #runs-on: windows-2019
     steps:
       #- name: write! secrets
         #id: secret-file1
