@@ -1,5 +1,42 @@
 
 
+# ATTENTION
+# NOTICE
+# May be able to automatically respond to nix package manager file conflicts.
+# WARNING: May be untested.
+# ATTRIBUTION-AI: Suggested by CLI Codex (ie. _codexAuto) 2025-07-20 .
+#
+#_nixInstallRetry() {
+	#local -a cmd=( "$@" ) out status file
+	#if out=$( "${cmd[@]}" 2>&1 ); then
+		#printf '%s\n' "$out"
+		#return 0
+	#else
+		#status=$?
+		#if printf '%s\n' "$out" | grep -q "file conflict over '"; then
+			#file=$(printf '%s\n' "$out" | sed -n "s/.*file conflict over '\([^']*\)'.*/\1/p")
+			#_getMost_backend sudo -n -u "$currentUser" /bin/bash -l -c 'rm -f "$HOME/.nix-profile/'"$file"'"'
+			#"${cmd[@]}"
+			#return $?
+		#else
+			#printf '%s\n' "$out" >&2
+			#return $status
+		#fi
+	#fi
+#}
+#export -f _nixInstallRetry
+#
+#_nixInstallRetry _getMost_backend sudo -n -u "$currentUser" /bin/bash -l -c 'cd ; export NIXPKGS_ALLOW_INSECURE=1 ; nix-env -iA pcb -f https://github.com/NixOS/nixpkgs/archive/00a3a62a70f6c2ca919befeda4b8a7319ce8be2b.tar.gz'
+
+
+
+
+
+
+
+
+
+
 # NOTICE
 # https://lazamar.co.uk/nix-versions/?channel=nixpkgs-unstable&package=geda
 # https://lazamar.co.uk/nix-versions/?package=geda&version=1.10.2&fullName=geda-1.10.2&keyName=geda&revision=9957cd48326fe8dbd52fdc50dd2502307f188b0d&channel=nixpkgs-unstable#instructions

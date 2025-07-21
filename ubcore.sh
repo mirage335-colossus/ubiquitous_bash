@@ -39,7 +39,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='3620520443'
-export ub_setScriptChecksum_contents='3408145994'
+export ub_setScriptChecksum_contents='3210095001'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -12795,6 +12795,43 @@ APT::AutoRemove::SuggestsImportant "true";' | tee /etc/apt/apt.conf.d/99autoremo
 
 
 }
+
+
+
+
+# ATTENTION
+# NOTICE
+# May be able to automatically respond to nix package manager file conflicts.
+# WARNING: May be untested.
+# ATTRIBUTION-AI: Suggested by CLI Codex (ie. _codexAuto) 2025-07-20 .
+#
+#_nixInstallRetry() {
+	#local -a cmd=( "$@" ) out status file
+	#if out=$( "${cmd[@]}" 2>&1 ); then
+		#printf '%s\n' "$out"
+		#return 0
+	#else
+		#status=$?
+		#if printf '%s\n' "$out" | grep -q "file conflict over '"; then
+			#file=$(printf '%s\n' "$out" | sed -n "s/.*file conflict over '\([^']*\)'.*/\1/p")
+			#_getMost_backend sudo -n -u "$currentUser" /bin/bash -l -c 'rm -f "$HOME/.nix-profile/'"$file"'"'
+			#"${cmd[@]}"
+			#return $?
+		#else
+			#printf '%s\n' "$out" >&2
+			#return $status
+		#fi
+	#fi
+#}
+#export -f _nixInstallRetry
+#
+#_nixInstallRetry _getMost_backend sudo -n -u "$currentUser" /bin/bash -l -c 'cd ; export NIXPKGS_ALLOW_INSECURE=1 ; nix-env -iA pcb -f https://github.com/NixOS/nixpkgs/archive/00a3a62a70f6c2ca919befeda4b8a7319ce8be2b.tar.gz'
+
+
+
+
+
+
 
 
 
