@@ -93,10 +93,14 @@ _test_nix_python() {
 
 # EXAMPLE. Override or implement alternative with 'core.sh', 'ops.sh', or similar.
 _prepare_nix_python() {
+    mkdir -p "$scriptLocal"
+
     _prepare_nix_python_3
 }
 # EXAMPLE. Override or implement alternative (discouraged) with 'core.sh', 'ops.sh', or similar, if necessary.
 _prepare_nix_python_3() {
+    mkdir -p "$scriptLocal"
+    
     _set_nix_python_3
 
     # ATTENTION: implies sequence
@@ -635,6 +639,7 @@ _prepare_nix_python_procedure() {
 
 # CAUTION: May be called by _setupUbiquitous_accessories_here-python_hook .
 _set_nix_python_procedure() {
+    mkdir -p "$scriptLocal"
 
     #export PATH="$VIRTUAL_ENV/"bin":$PATH"
 
@@ -652,9 +657,15 @@ _set_nix_python_procedure() {
 }
 
 _set_nix_python() {
+    mkdir -p "$scriptLocal"
+    
+
     _set_nix_python_3 "$@"
 }
 _set_nix_python_3() {
+    mkdir -p "$scriptLocal"
+    
+    
     python() {
         #python3.11 "$@"
         python3 "$@"

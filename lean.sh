@@ -39,7 +39,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='3620520443'
-export ub_setScriptChecksum_contents='776472054'
+export ub_setScriptChecksum_contents='3479671373'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -5412,13 +5412,19 @@ _test_msw_python() {
 
 # EXAMPLE. Override or implement alternative with 'core.sh', 'ops.sh', or similar.
 _prepare_msw_python() {
+    mkdir -p "$scriptLocal"
+
     _prepare_msw_python_3
 }
 _prepare_msw_python_3() {
+    mkdir -p "$scriptLocal"
+    
     _prepare_msw_python_3_10
 }
 # EXAMPLE. Override or implement alternative (discouraged) with 'core.sh', 'ops.sh', or similar, if necessary.
 _prepare_msw_python_3_10() {
+    mkdir -p "$scriptLocal"
+    
     _set_msw_python_3_10
 
     # ATTENTION: implies sequence
@@ -6069,9 +6075,13 @@ _set_msw_python_procedure() {
 }
 
 _set_msw_python() {
+    mkdir -p "$scriptLocal"
+
     _set_msw_python_3_10 "$@"
 }
 _set_msw_python_3_10() {
+    mkdir -p "$scriptLocal"
+
     _override_msw_path_python_3_10 "$@"
 
     _set_msw_python_procedure "$@"
@@ -6186,10 +6196,14 @@ _test_nix_python() {
 
 # EXAMPLE. Override or implement alternative with 'core.sh', 'ops.sh', or similar.
 _prepare_nix_python() {
+    mkdir -p "$scriptLocal"
+
     _prepare_nix_python_3
 }
 # EXAMPLE. Override or implement alternative (discouraged) with 'core.sh', 'ops.sh', or similar, if necessary.
 _prepare_nix_python_3() {
+    mkdir -p "$scriptLocal"
+    
     _set_nix_python_3
 
     # ATTENTION: implies sequence
@@ -6728,6 +6742,7 @@ _prepare_nix_python_procedure() {
 
 # CAUTION: May be called by _setupUbiquitous_accessories_here-python_hook .
 _set_nix_python_procedure() {
+    mkdir -p "$scriptLocal"
 
     #export PATH="$VIRTUAL_ENV/"bin":$PATH"
 
@@ -6745,9 +6760,15 @@ _set_nix_python_procedure() {
 }
 
 _set_nix_python() {
+    mkdir -p "$scriptLocal"
+    
+
     _set_nix_python_3 "$@"
 }
 _set_nix_python_3() {
+    mkdir -p "$scriptLocal"
+    
+    
     python() {
         #python3.11 "$@"
         python3 "$@"
