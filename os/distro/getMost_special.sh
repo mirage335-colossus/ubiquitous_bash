@@ -94,8 +94,8 @@ _get_from_nix-user() {
 	#  export LANG=C
 	#  https://bbs.archlinux.org/viewtopic.php?id=23505
 
-	#nix-env --uninstall geda
-	#nix-env --uninstall pcb
+	nix-env --uninstall geda
+	nix-env --uninstall pcb
 	
 	
 	
