@@ -94,8 +94,8 @@ _get_from_nix-user() {
 	#  export LANG=C
 	#  https://bbs.archlinux.org/viewtopic.php?id=23505
 
-	nix-env --uninstall geda
-	nix-env --uninstall pcb
+	nix-env --uninstall 'geda.*' || true
+	nix-env --uninstall 'pcb.*'  || true
 	
 	
 	
@@ -108,6 +108,9 @@ _get_from_nix-user() {
 	#  CAUTION: Be wary if this file has changed recently.
 	
 	# ###
+	# Remove previous geda and pcb to prevent overlapping file conflicts (e.g. gnet-pcbfwd.scm).
+	_getMost_backend sudo -n -u "$currentUser" /bin/bash -l -c 'cd ; nix-env --uninstall geda.* || true'
+	_getMost_backend sudo -n -u "$currentUser" /bin/bash -l -c 'cd ; nix-env --uninstall pcb.*  || true'
 	# Seems to have removed xorn, python2.7 . May not have been tested through ubdist/WSL . May be accepted for now due to some apparently successful testing expected to match this specific version.
 	_getMost_backend sudo -n -u "$currentUser" /bin/bash -l -c 'cd ; export NIXPKGS_ALLOW_INSECURE=1 ; nix-env -iA geda -f https://github.com/NixOS/nixpkgs/archive/773a8314ef05364d856e46299722a9d849aacf8b.tar.gz'
 	
@@ -123,7 +126,10 @@ _get_from_nix-user() {
 	_getMost_backend sudo -n -u "$currentUser" /bin/bash -l -c 'cd ; xdg-desktop-menu install "$HOME"/.nix-profile/share/applications/geda-gattrib.desktop'
 	_getMost_backend sudo -n -u "$currentUser" cp -a /home/"$currentUser"/.nix-profile/share/icons /home/"$currentUser"/.local/share/
 
-	#nixpkgs.pcb
+	# nixpkgs.pcb
+	# Remove conflicting shared scheme file before installing pcb
+	#_getMost_backend sudo -n -u "$currentUser" /bin/bash -l -c 'cd; rm -f "$HOME"/.nix-profile/share/gEDA/gnet-pcbfwd.scm'
+
 	_getMost_backend sudo -n -u "$currentUser" /bin/bash -l -c 'cd ; export NIXPKGS_ALLOW_INSECURE=1 ; nix-env -iA pcb -f https://github.com/NixOS/nixpkgs/archive/00a3a62a70f6c2ca919befeda4b8a7319ce8be2b.tar.gz'
 
 	
