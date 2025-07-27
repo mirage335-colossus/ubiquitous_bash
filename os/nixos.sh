@@ -48,11 +48,20 @@ _test_nix-env_sequence() {
 	cd "$safeTmp"
 	
 	# https://ariya.io/2016/06/isolated-development-environment-using-nix
+	#cat << 'CZXWXcRMTo8EmM8i4d' > ./default.nix
+#with import <nixpkgs> {};
+#stdenv.mkDerivation rec {
+  #name = "env";
+  #env = buildEnv { name = name; paths = buildInputs; };
+  #buildInputs = [
+    #hello
+  #];
+#}
+#CZXWXcRMTo8EmM8i4d
+
 	cat << 'CZXWXcRMTo8EmM8i4d' > ./default.nix
 with import <nixpkgs> {};
-stdenv.mkDerivation rec {
-  name = "env";
-  env = buildEnv { name = name; paths = buildInputs; };
+mkShell {
   buildInputs = [
     hello
   ];

@@ -89,13 +89,19 @@ _test_msw_python() {
 
 # EXAMPLE. Override or implement alternative with 'core.sh', 'ops.sh', or similar.
 _prepare_msw_python() {
+    mkdir -p "$scriptLocal"
+
     _prepare_msw_python_3
 }
 _prepare_msw_python_3() {
+    mkdir -p "$scriptLocal"
+    
     _prepare_msw_python_3_10
 }
 # EXAMPLE. Override or implement alternative (discouraged) with 'core.sh', 'ops.sh', or similar, if necessary.
 _prepare_msw_python_3_10() {
+    mkdir -p "$scriptLocal"
+    
     _set_msw_python_3_10
 
     # ATTENTION: implies sequence
@@ -746,9 +752,13 @@ _set_msw_python_procedure() {
 }
 
 _set_msw_python() {
+    mkdir -p "$scriptLocal"
+
     _set_msw_python_3_10 "$@"
 }
 _set_msw_python_3_10() {
+    mkdir -p "$scriptLocal"
+
     _override_msw_path_python_3_10 "$@"
 
     _set_msw_python_procedure "$@"

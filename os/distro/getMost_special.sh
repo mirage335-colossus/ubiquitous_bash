@@ -1,5 +1,42 @@
 
 
+# ATTENTION
+# NOTICE
+# May be able to automatically respond to nix package manager file conflicts.
+# WARNING: May be untested.
+# ATTRIBUTION-AI: Suggested by CLI Codex (ie. _codexAuto) 2025-07-20 .
+#
+#_nixInstallRetry() {
+	#local -a cmd=( "$@" ) out status file
+	#if out=$( "${cmd[@]}" 2>&1 ); then
+		#printf '%s\n' "$out"
+		#return 0
+	#else
+		#status=$?
+		#if printf '%s\n' "$out" | grep -q "file conflict over '"; then
+			#file=$(printf '%s\n' "$out" | sed -n "s/.*file conflict over '\([^']*\)'.*/\1/p")
+			#_getMost_backend sudo -n -u "$currentUser" /bin/bash -l -c 'rm -f "$HOME/.nix-profile/'"$file"'"'
+			#"${cmd[@]}"
+			#return $?
+		#else
+			#printf '%s\n' "$out" >&2
+			#return $status
+		#fi
+	#fi
+#}
+#export -f _nixInstallRetry
+#
+#_nixInstallRetry _getMost_backend sudo -n -u "$currentUser" /bin/bash -l -c 'cd ; export NIXPKGS_ALLOW_INSECURE=1 ; nix-env -iA pcb -f https://github.com/NixOS/nixpkgs/archive/00a3a62a70f6c2ca919befeda4b8a7319ce8be2b.tar.gz'
+
+
+
+
+
+
+
+
+
+
 # NOTICE
 # https://lazamar.co.uk/nix-versions/?channel=nixpkgs-unstable&package=geda
 # https://lazamar.co.uk/nix-versions/?package=geda&version=1.10.2&fullName=geda-1.10.2&keyName=geda&revision=9957cd48326fe8dbd52fdc50dd2502307f188b0d&channel=nixpkgs-unstable#instructions
@@ -94,8 +131,8 @@ _get_from_nix-user() {
 	#  export LANG=C
 	#  https://bbs.archlinux.org/viewtopic.php?id=23505
 
-	#nix-env --uninstall geda
-	#nix-env --uninstall pcb
+	nix-env --uninstall 'geda.*' || true
+	nix-env --uninstall 'pcb.*'  || true
 	
 	
 	
@@ -108,6 +145,9 @@ _get_from_nix-user() {
 	#  CAUTION: Be wary if this file has changed recently.
 	
 	# ###
+	# Remove previous geda and pcb to prevent overlapping file conflicts (e.g. gnet-pcbfwd.scm).
+	_getMost_backend sudo -n -u "$currentUser" /bin/bash -l -c 'cd ; nix-env --uninstall geda.* || true'
+	_getMost_backend sudo -n -u "$currentUser" /bin/bash -l -c 'cd ; nix-env --uninstall pcb.*  || true'
 	# Seems to have removed xorn, python2.7 . May not have been tested through ubdist/WSL . May be accepted for now due to some apparently successful testing expected to match this specific version.
 	_getMost_backend sudo -n -u "$currentUser" /bin/bash -l -c 'cd ; export NIXPKGS_ALLOW_INSECURE=1 ; nix-env -iA geda -f https://github.com/NixOS/nixpkgs/archive/773a8314ef05364d856e46299722a9d849aacf8b.tar.gz'
 	
@@ -123,11 +163,16 @@ _get_from_nix-user() {
 	_getMost_backend sudo -n -u "$currentUser" /bin/bash -l -c 'cd ; xdg-desktop-menu install "$HOME"/.nix-profile/share/applications/geda-gattrib.desktop'
 	_getMost_backend sudo -n -u "$currentUser" cp -a /home/"$currentUser"/.nix-profile/share/icons /home/"$currentUser"/.local/share/
 
-	_getMost_backend sudo -n -u "$currentUser" /bin/bash -l -c 'cd ; export NIXPKGS_ALLOW_INSECURE=1 ; nix-env -iA nixpkgs.pcb'
+	# nixpkgs.pcb
+	# Remove conflicting shared scheme file before installing pcb
+	#_getMost_backend sudo -n -u "$currentUser" /bin/bash -l -c 'cd; rm -f "$HOME"/.nix-profile/share/gEDA/gnet-pcbfwd.scm'
+
+	_getMost_backend sudo -n -u "$currentUser" /bin/bash -l -c 'cd ; export NIXPKGS_ALLOW_INSECURE=1 ; nix-env -iA pcb -f https://github.com/NixOS/nixpkgs/archive/00a3a62a70f6c2ca919befeda4b8a7319ce8be2b.tar.gz'
 
 	
 	# Necessary, do NOT remove. Necessary for 'gsch2pcb' , 'gnetlist' , etc, since installation as a dependency does not make the necessary binaries available to the usual predictable PATH .
-	_getMost_backend sudo -n -u "$currentUser" /bin/bash -l -c 'cd ; export NIXPKGS_ALLOW_INSECURE=1 ; nix-env -iA nixpkgs.python2'
+	#nixpkgs.python2
+	_getMost_backend sudo -n -u "$currentUser" /bin/bash -l -c 'cd ; export NIXPKGS_ALLOW_INSECURE=1 ; nix-env -iA python2 -f https://github.com/NixOS/nixpkgs/archive/00a3a62a70f6c2ca919befeda4b8a7319ce8be2b.tar.gz'
 
 
 	
