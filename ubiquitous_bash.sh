@@ -39,7 +39,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='3620520443'
-export ub_setScriptChecksum_contents='947285227'
+export ub_setScriptChecksum_contents='2041370630'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -27228,10 +27228,12 @@ _setup_researchEngine() {
 		if [[ "$1" == "" ]]
 		then
 			_setup_researchEngine-kit
+			return
 		else
 			"$@"
+			return
 		fi
-		return
+		#return
 	fi
 	
 	if [[ -e "$scriptLib"/ubiquitous_bash/_lib/kit/app/researchEngine ]]
@@ -27241,10 +27243,12 @@ _setup_researchEngine() {
 		if [[ "$1" == "" ]]
 		then
 			_setup_researchEngine-kit
+			return
 		else
 			"$@"
+			return
 		fi
-		return
+		#return
 	fi
 	
 	if [[ -e "$scriptLib"/ubDistBuild/_lib/ubiquitous_bash/_lib/kit/app/researchEngine ]]
@@ -27254,10 +27258,12 @@ _setup_researchEngine() {
 		if [[ "$1" == "" ]]
 		then
 			_setup_researchEngine-kit
+			return
 		else
 			"$@"
+			return
 		fi
-		return
+		#return
 	fi
 	
 	_messagePlain_bad 'bad: missing: kit researchEngine'
@@ -27283,6 +27289,15 @@ _upgrade_researchEngine-nvidia() {
 	_setup_researchEngine _upgrade_researchEngine_openwebui-nvidia "$@"
 
 	_setup_researchEngine _service_researchEngine-docker-chroot-stop
+}
+
+
+_install_researchEngine-MSWindows() {
+	_setup_researchEngine _install_researchEngine-MSWindows
+}
+
+_install_researchEngine-MSWindows-nvidia() {
+	_setup_researchEngine _install_researchEngine-MSWindows-nvidia
 }
 
 

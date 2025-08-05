@@ -8,10 +8,12 @@ _setup_researchEngine() {
 		if [[ "$1" == "" ]]
 		then
 			_setup_researchEngine-kit
+			return
 		else
 			"$@"
+			return
 		fi
-		return
+		#return
 	fi
 	
 	if [[ -e "$scriptLib"/ubiquitous_bash/_lib/kit/app/researchEngine ]]
@@ -21,10 +23,12 @@ _setup_researchEngine() {
 		if [[ "$1" == "" ]]
 		then
 			_setup_researchEngine-kit
+			return
 		else
 			"$@"
+			return
 		fi
-		return
+		#return
 	fi
 	
 	if [[ -e "$scriptLib"/ubDistBuild/_lib/ubiquitous_bash/_lib/kit/app/researchEngine ]]
@@ -34,10 +38,12 @@ _setup_researchEngine() {
 		if [[ "$1" == "" ]]
 		then
 			_setup_researchEngine-kit
+			return
 		else
 			"$@"
+			return
 		fi
-		return
+		#return
 	fi
 	
 	_messagePlain_bad 'bad: missing: kit researchEngine'
@@ -63,6 +69,15 @@ _upgrade_researchEngine-nvidia() {
 	_setup_researchEngine _upgrade_researchEngine_openwebui-nvidia "$@"
 
 	_setup_researchEngine _service_researchEngine-docker-chroot-stop
+}
+
+
+_install_researchEngine-MSWindows() {
+	_setup_researchEngine _install_researchEngine-MSWindows
+}
+
+_install_researchEngine-MSWindows-nvidia() {
+	_setup_researchEngine _install_researchEngine-MSWindows-nvidia
 }
 
 
