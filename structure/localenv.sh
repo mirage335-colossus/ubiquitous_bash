@@ -159,6 +159,11 @@ _stop() {
 	[[ -e "$scriptLocal"/python_cygwin.lock ]] && [[ $(head -c $(echo -n "$sessionid" | wc -c | tr -dc '0-9') "$scriptLocal"/python_cygwin.lock 2> /dev/null ) == "$sessionid" ]] && rm -f "$scriptLocal"/python_cygwin.lock > /dev/null 2>&1
 	
 	_stop_stty_echo
+
+	# WARNING: CAUTION: Do NOT cause EXIT trap unset until 'exit' command cannot be called (eg. by user in an interactive shell).
+	# Unset the 'exit' trap before calling 'exit' command properly , hopefully prevent incorrect exit status in some unusual situations (eg. CI environment, 'set -e -o pipefail' , etc) .
+	trap - EXIT
+
 	if [[ "$1" != "" ]]
 	then
 		exit "$1"

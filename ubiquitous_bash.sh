@@ -39,7 +39,11 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='3620520443'
+<<<<<<< HEAD
 export ub_setScriptChecksum_contents='2041370630'
+=======
+export ub_setScriptChecksum_contents='1649573952'
+>>>>>>> 59dc7258af7e4a0bf4ba0cd4ac889b6dca52d303
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -58079,6 +58083,11 @@ _stop() {
 	[[ -e "$scriptLocal"/python_cygwin.lock ]] && [[ $(head -c $(echo -n "$sessionid" | wc -c | tr -dc '0-9') "$scriptLocal"/python_cygwin.lock 2> /dev/null ) == "$sessionid" ]] && rm -f "$scriptLocal"/python_cygwin.lock > /dev/null 2>&1
 	
 	_stop_stty_echo
+
+	# WARNING: CAUTION: Do NOT cause EXIT trap unset until 'exit' command cannot be called (eg. by user in an interactive shell).
+	# Unset the 'exit' trap before calling 'exit' command properly , hopefully prevent incorrect exit status in some unusual situations (eg. CI environment, 'set -e -o pipefail' , etc) .
+	trap - EXIT
+
 	if [[ "$1" != "" ]]
 	then
 		exit "$1"
