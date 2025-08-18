@@ -329,22 +329,21 @@ _messagePlain_request() {
 #Cyan. Harmless status messages.
 #"generic/ubiquitousheader.sh"
 _messagePlain_nominal() {
-	_color_begin_nominal
-	echo -n "$@"
-	_color_end
-	echo
-	return 0
+	# Collapse into single echo for atomicity in threads 
+    local color_start='\E[0;36m'  # Cyan
+    local color_end='\E[0m'      # Reset
+    echo -e "${color_start} $@ ${color_end}"
+    return 0
 }
 
 #Blue. Diagnostic instrumentation.
 #"generic/ubiquitousheader.sh"
 _messagePlain_probe() {
-	_color_begin_probe
-	#_color_begin_probe_noindent
-	echo -n "$@"
-	_color_end
-	echo
-	return 0
+	# Collapse into single echo for atomicity in threads 
+    local color_start='\E[0;34m'  # Blue
+    local color_end='\E[0m'      # Reset
+    echo -e "${color_start} $@ ${color_end}"
+    return 0
 }
 _messagePlain_probe_noindent() {
 	#_color_begin_probe
@@ -379,15 +378,20 @@ _messagePlain_probe_expr() {
 #Blue. Diagnostic instrumentation.
 #"generic/ubiquitousheader.sh"
 _messagePlain_probe_var() {
-	_color_begin_probe
-	
-	echo -n "$1"'= '
-	
-	eval echo -e -n \$"$1"
-	
-	_color_end
-	echo
-	return 0
+	# Collapse into single echo for atomicity in threads 
+    local color_start='\E[0;34m'  # Blue
+    local color_end='\E[0m'      # Reset
+    local var_value=""           # To store the evaluated variable value
+
+    # Check if a variable name is provided
+    if [ -n "$1" ]; then
+        # Evaluate the variable's value and store it
+        eval "var_value=\$$1"
+        echo -e "${color_start} $1= ${var_value} ${color_end}"
+    else
+        echo -e "${color_start} ${color_end}" # Print color without variable if none provided
+    fi
+    return 0
 }
 _messageVar() {
 	_messagePlain_probe_var "$@"
