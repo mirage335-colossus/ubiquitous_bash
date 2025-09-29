@@ -39,7 +39,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='3620520443'
-export ub_setScriptChecksum_contents='1253494442'
+export ub_setScriptChecksum_contents='668308115'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -3226,21 +3226,82 @@ _wait_not_all_exist() {
 #http://stackoverflow.com/questions/687948/timeout-a-command-in-bash-without-unnecessary-delay
 _timeout() { ( set +b; sleep "$1" & "${@:2}" & wait -n; r=$?; kill -9 `jobs -p`; exit $r; ) } 
 
+
+# NOTICE
+# ATTRIBUTION-AI: Modern terminate of subprocesses. ubChatGPT o3 GPT-5  2025-09-28
+
+
+
+# List all descendants (children, grandchildren, ...) of a PID (one PID per line).
+# The PID itself is NOT included.
+_descendants_of_pid() {
+    local rootPID="$1"
+    local -a q=("$rootPID") out=()
+    local cur ch
+    while ((${#q[@]})); do
+        cur="${q[0]}"; q=("${q[@]:1}")
+        while read -r ch; do
+            [[ -z "$ch" ]] && continue
+            out+=("$ch")
+            q+=("$ch")
+        done < <(pgrep -P "$cur" 2>/dev/null || true)
+    done
+    ((${#out[@]})) && printf '%s\n' "${out[@]}" | sort -u
+}
+
+# Send a signal (default TERM) to descendants only (not the parent/wrapper).
+_kill_descendants_only() {
+    local rootPID="$1" sig="${2:-TERM}" lst
+    lst="$(_descendants_of_pid "$rootPID")"
+    if [[ -n "$lst" ]]; then
+        # shellcheck disable=SC2086
+        kill -s "$sig" $lst 2>/dev/null || true
+        ! _if_cygwin && sudo -n kill -s "$sig" $lst 2>/dev/null || true
+    fi
+}
+
+
 _terminate() {
-	local processListFile
-	processListFile="$tmpSelf"/.pidlist_$(_uid)
-	
-	local currentPID
-	
-	cat "$safeTmp"/.pid >> "$processListFile" 2> /dev/null
-	
-	while read -r currentPID
-	do
-		pkill -P "$currentPID"
-		kill "$currentPID"
-	done < "$processListFile"
-	
-	rm "$processListFile"
+    local processListFile
+    processListFile="$tmpSelf"/.pidlist_$(_uid)
+    local currentPID
+
+    cat "$safeTmp"/.pid >> "$processListFile" 2> /dev/null
+
+    # 1) descendants only (per-connection socats, etc.)
+    while read -r currentPID; do
+        _kill_descendants_only "$currentPID" TERM
+    done < "$processListFile"
+
+    # 2) Kill direct children (listener) so "$@" returns and _stop can run
+    while read -r currentPID; do
+        pkill -P "$currentPID" 2>/dev/null || true
+        ! _if_cygwin && sudo -n pkill -P "$currentPID" 2>/dev/null || true
+    done < "$processListFile"
+
+    # 3) Grace period so wrappers can run _stop and clean $safeTmp
+    while read -r currentPID; do
+        for _i in 1 2 3 4 5; do
+            ps --no-headers -p "$currentPID" &>/dev/null || break
+            sleep 0.2
+        done
+        # 4) If still alive, ask wrapper to exit (triggers traps/_stop)
+        ps --no-headers -p "$currentPID" &>/dev/null && kill "$currentPID" 2>/dev/null || true
+    done < "$processListFile"
+
+    # ... keep your existing backoff/wait code here if present ...
+
+    if [[ "$ub_kill" == "true" ]]; then
+        # 5) Last resort
+        while read -r currentPID; do
+            _kill_descendants_only "$currentPID" KILL
+            pkill -KILL -P "$currentPID" 2>/dev/null || true
+            kill -KILL "$currentPID" 2>/dev/null || true
+            ! _if_cygwin && sudo -n kill -KILL "$currentPID" 2>/dev/null || true
+        done < "$processListFile"
+    fi
+
+    rm "$processListFile"
 }
 
 _terminateMetaHostAll() {
@@ -3290,41 +3351,54 @@ _terminateAll_sequence() {
 }
 _terminateAll_procedure() {
 	_terminateMetaHostAll
-	
-	local processListFile
-	processListFile="$tmpSelf"/.pidlist_$(_uid)
-	
-	local currentPID
-	
-	
-	cat ./.s_*/.pid >> "$processListFile" 2> /dev/null
-	
-	cat ./.e_*/.pid >> "$processListFile" 2> /dev/null
-	cat ./.m_*/.pid >> "$processListFile" 2> /dev/null
-	
-	cat ./w_*/.pid >> "$processListFile" 2> /dev/null
-	
-	while read -r currentPID
-	do
-		pkill -P "$currentPID"
-		! _if_cygwin && sudo -n pkill -P "$currentPID"
-		kill "$currentPID"
-		! _if_cygwin && sudo -n kill "$currentPID"
-	done < "$processListFile"
-	
-	if [[ "$ub_kill" == "true" ]]
-	then
-		sleep 9
-		while read -r currentPID
-		do
-			pkill -KILL -P "$currentPID"
-			! _if_cygwin && sudo -n pkill -KILL -P "$currentPID"
-			kill -KILL "$currentPID"
-			! _if_cygwin && sudo -n kill -KILL "$currentPID"
-		done < "$processListFile"
-	fi
-	
-	rm "$processListFile"
+
+    local processListFile
+    processListFile="$tmpSelf"/.pidlist_$(_uid)
+    local currentPID
+
+    # snapshot of all known wrapper PIDs
+    cat ./.s_*/.pid >> "$processListFile" 2> /dev/null
+    cat ./.e_*/.pid >> "$processListFile" 2> /dev/null
+    cat ./.m_*/.pid >> "$processListFile" 2> /dev/null
+    cat ./w_*/.pid  >> "$processListFile" 2> /dev/null
+
+    # 1) descendants only
+    while read -r currentPID; do
+        _kill_descendants_only "$currentPID" TERM
+    done < "$processListFile"
+
+    # 2) direct children (listeners)
+    while read -r currentPID; do
+        pkill -P "$currentPID" 2>/dev/null || true
+        ! _if_cygwin && sudo -n pkill -P "$currentPID" 2>/dev/null || true
+    done < "$processListFile"
+
+    # 3) grace for _stop to clean $safeTmp
+    while read -r currentPID; do
+        for _i in 1 2 3 4 5; do
+            ps --no-headers -p "$currentPID" &>/dev/null || break
+            sleep 0.2
+        done
+        # 4) only if still around, nudge parent (runs traps)
+        ps --no-headers -p "$currentPID" &>/dev/null && kill "$currentPID" 2>/dev/null || true
+    done < "$processListFile"
+
+    if [[ "$ub_kill" == "true" ]]; then
+        while read -r currentPID; do
+            _kill_descendants_only "$currentPID" KILL
+            pkill -KILL -P "$currentPID" 2>/dev/null || true
+            kill -KILL "$currentPID" 2>/dev/null || true
+            ! _if_cygwin && sudo -n kill -KILL "$currentPID" 2>/dev/null || true
+        done < "$processListFile"
+    fi
+
+    rm "$processListFile"
+}
+
+_killAll_procedure() {
+	export ub_kill="true"
+	_terminateAll_procedure
+	export ub_kill=
 }
 
 _killAll() {
@@ -19601,6 +19675,7 @@ _upgrade_researchEngine() {
 
 	_setup_researchEngine _upgrade_researchEngine_searxng "$@"
 	_setup_researchEngine _upgrade_researchEngine_openwebui "$@"
+	_setup_researchEngine _upgrade_researchEngine_trillium "$@"
 
 	_setup_researchEngine _service_researchEngine-docker-chroot-stop
 }
@@ -19610,6 +19685,7 @@ _upgrade_researchEngine-nvidia() {
 	
 	_setup_researchEngine _upgrade_researchEngine_searxng "$@"
 	_setup_researchEngine _upgrade_researchEngine_openwebui-nvidia "$@"
+	_setup_researchEngine _upgrade_researchEngine_trillium "$@"
 
 	_setup_researchEngine _service_researchEngine-docker-chroot-stop
 }
@@ -19631,6 +19707,7 @@ _upgrade_researchEngine-safe() {
 
 	#_setup_researchEngine _upgrade_researchEngine_searxng "$@"
 	_setup_researchEngine _upgrade_researchEngine_openwebui "$@"
+	#_setup_researchEngine _upgrade_researchEngine_trillium "$@"
 
 	_setup_researchEngine _service_researchEngine-docker-chroot-stop
 }
@@ -19639,6 +19716,7 @@ _upgrade_researchEngine-safe-nvidia() {
 	
 	#_setup_researchEngine _upgrade_researchEngine_searxng "$@"
 	_setup_researchEngine _upgrade_researchEngine_openwebui-nvidia "$@"
+	#_setup_researchEngine _upgrade_researchEngine_trillium "$@"
 
 	_setup_researchEngine _service_researchEngine-docker-chroot-stop
 }

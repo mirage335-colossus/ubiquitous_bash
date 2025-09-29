@@ -58,6 +58,7 @@ _upgrade_researchEngine() {
 
 	_setup_researchEngine _upgrade_researchEngine_searxng "$@"
 	_setup_researchEngine _upgrade_researchEngine_openwebui "$@"
+	_setup_researchEngine _upgrade_researchEngine_trillium "$@"
 
 	_setup_researchEngine _service_researchEngine-docker-chroot-stop
 }
@@ -67,6 +68,7 @@ _upgrade_researchEngine-nvidia() {
 	
 	_setup_researchEngine _upgrade_researchEngine_searxng "$@"
 	_setup_researchEngine _upgrade_researchEngine_openwebui-nvidia "$@"
+	_setup_researchEngine _upgrade_researchEngine_trillium "$@"
 
 	_setup_researchEngine _service_researchEngine-docker-chroot-stop
 }
@@ -88,6 +90,7 @@ _upgrade_researchEngine-safe() {
 
 	#_setup_researchEngine _upgrade_researchEngine_searxng "$@"
 	_setup_researchEngine _upgrade_researchEngine_openwebui "$@"
+	#_setup_researchEngine _upgrade_researchEngine_trillium "$@"
 
 	_setup_researchEngine _service_researchEngine-docker-chroot-stop
 }
@@ -96,6 +99,7 @@ _upgrade_researchEngine-safe-nvidia() {
 	
 	#_setup_researchEngine _upgrade_researchEngine_searxng "$@"
 	_setup_researchEngine _upgrade_researchEngine_openwebui-nvidia "$@"
+	#_setup_researchEngine _upgrade_researchEngine_trillium "$@"
 
 	_setup_researchEngine _service_researchEngine-docker-chroot-stop
 }
