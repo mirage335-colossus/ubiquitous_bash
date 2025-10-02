@@ -39,7 +39,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='3620520443'
-export ub_setScriptChecksum_contents='1212844156'
+export ub_setScriptChecksum_contents='4209421388'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -28822,6 +28822,10 @@ _setup_ollama_model_dev_sequence() {
 
     cd "$safeTmp"
 
+
+# Computer vision built-in. In practice, computer vision may be better achieved with other models.
+if false
+then
     # Suggested <6144 token context window (ie. 'num_ctx') . May be unreliable (at the limits of what fits in 16GB VRAM, limiting context window, etc).
     
     ollama pull hf.co/bartowski/mistralai_Devstral-Small-2505-GGUF:IQ4_XS
@@ -28842,6 +28846,27 @@ CZXWXcRMTo8EmM8i4d
     ollama create hf.co/bartowski/mistralai_Devstral-Small-2505-GGUF:IQ4_XS-g41
     
     #ollama run hf.co/bartowski/mistralai_Devstral-Small-2505-GGUF:IQ4_XS-g41 describe this image ./download.png
+fi
+
+
+
+# Commonality with other 'dev' AI models in use may help save disk space.
+	ollama pull hf.co/unsloth/Devstral-Small-2507-GGUF:IQ4_XS
+    echo FROM hf.co/unsloth/Devstral-Small-2507-GGUF:IQ4_XS > Modelfile
+    echo PARAMETER num_gpu 41 >> Modelfile
+    echo PARAMETER num_ctx 6144 >> Modelfile
+
+    cat << 'CZXWXcRMTo8EmM8i4d' >> Modelfile
+	LICENSE """Apache 2.0 License
+https://huggingface.co/mistralai/Devstral-Small-2505
+Apache 2.0 License
+
+https://huggingface.co/bartowski/mistralai_Devstral-Small-2505-GGUF
+License: apache-2.0
+"""
+CZXWXcRMTo8EmM8i4d
+
+	ollama create hf.co/unsloth/Devstral-Small-2507-GGUF:IQ4_XS-g41
 
     _stop
 }
@@ -28860,19 +28885,19 @@ _ollama_run_dev() {
 	then
 		local current_api_timeout="$OLLAMA_TIMEOUT"
 		[[ "$current_api_timeout" == "" ]] && current_api_timeout=7200
-		#jq -Rs '{model:"hf.co/bartowski/mistralai_Devstral-Small-2505-GGUF:IQ4_XS-g41", prompt:., stream: false}' | _timeout "$current_api_timeout" curl -fsS --max-time "$current_api_timeout" -X POST -H "Content-Type: application/json" --data-binary @- http://"$OLLAMA_HOST"/api/generate | jq -r '.response'
-		#jq -Rs '{model:"hf.co/bartowski/mistralai_Devstral-Small-2505-GGUF:IQ4_XS-g41", prompt:., stream: true}' | _timeout "$current_api_timeout" curl -fsS --no-buffer --max-time "$current_api_timeout" -X POST -H "Content-Type: application/json" --data-binary @- http://"$OLLAMA_HOST"/api/generate | jq -rj --unbuffered 'if .done? then "\n" elif .response? then .response else empty end'
+		#jq -Rs '{model:"hf.co/unsloth/Devstral-Small-2507-GGUF:IQ4_XS-g41", prompt:., stream: false}' | _timeout "$current_api_timeout" curl -fsS --max-time "$current_api_timeout" -X POST -H "Content-Type: application/json" --data-binary @- http://"$OLLAMA_HOST"/api/generate | jq -r '.response'
+		#jq -Rs '{model:"hf.co/unsloth/Devstral-Small-2507-GGUF:IQ4_XS-g41", prompt:., stream: true}' | _timeout "$current_api_timeout" curl -fsS --no-buffer --max-time "$current_api_timeout" -X POST -H "Content-Type: application/json" --data-binary @- http://"$OLLAMA_HOST"/api/generate | jq -rj --unbuffered 'if .done? then "\n" elif .response? then .response else empty end'
 		if [[ "$*" == "" ]]
 		then
-			jq -Rs '{model:"hf.co/bartowski/mistralai_Devstral-Small-2505-GGUF:IQ4_XS-g41", prompt:., stream: true}' | _timeout "$current_api_timeout" curl -fsS --no-buffer --max-time "$current_api_timeout" -X POST -H "Content-Type: application/json" --data-binary @- http://"$OLLAMA_HOST"/api/generate | jq -rj --unbuffered 'if .done? then "\n" elif .response? then .response else empty end'
+			jq -Rs '{model:"hf.co/unsloth/Devstral-Small-2507-GGUF:IQ4_XS-g41", prompt:., stream: true}' | _timeout "$current_api_timeout" curl -fsS --no-buffer --max-time "$current_api_timeout" -X POST -H "Content-Type: application/json" --data-binary @- http://"$OLLAMA_HOST"/api/generate | jq -rj --unbuffered 'if .done? then "\n" elif .response? then .response else empty end'
 			return
 		else
-			_safeEcho_newline "$@" | jq -Rs '{model:"hf.co/bartowski/mistralai_Devstral-Small-2505-GGUF:IQ4_XS-g41", prompt:., stream: true}' | _timeout "$current_api_timeout" curl -fsS --no-buffer --max-time "$current_api_timeout" -X POST -H "Content-Type: application/json" --data-binary @- http://"$OLLAMA_HOST"/api/generate | jq -rj --unbuffered 'if .done? then "\n" elif .response? then .response else empty end'
+			_safeEcho_newline "$@" | jq -Rs '{model:"hf.co/unsloth/Devstral-Small-2507-GGUF:IQ4_XS-g41", prompt:., stream: true}' | _timeout "$current_api_timeout" curl -fsS --no-buffer --max-time "$current_api_timeout" -X POST -H "Content-Type: application/json" --data-binary @- http://"$OLLAMA_HOST"/api/generate | jq -rj --unbuffered 'if .done? then "\n" elif .response? then .response else empty end'
 			return
 		fi
 	fi
 
-	if ! ollama show hf.co/bartowski/mistralai_Devstral-Small-2505-GGUF:IQ4_XS-g41 --modelfile > /dev/null 2>&1
+	if ! ollama show hf.co/unsloth/Devstral-Small-2507-GGUF:IQ4_XS-g41 --modelfile > /dev/null 2>&1
 	then
 		"$scriptAbsoluteLocation" _setup_ollama_model_dev_sequence > /dev/null 2>&1
 	fi
@@ -28890,12 +28915,12 @@ _ollama_run_dev() {
 			# https://github.com/ollama/ollama/issues/5081
 			export OLLAMA_LOAD_TIMEOUT="$OLLAMA_TIMEOUT"s
 			
-			_timeout "$OLLAMA_TIMEOUT" ollama run hf.co/bartowski/mistralai_Devstral-Small-2505-GGUF:IQ4_XS-g41 "$@"
+			_timeout "$OLLAMA_TIMEOUT" ollama run hf.co/unsloth/Devstral-Small-2507-GGUF:IQ4_XS-g41 "$@"
 		)
 		return
 	fi
 
-	ollama run hf.co/bartowski/mistralai_Devstral-Small-2505-GGUF:IQ4_XS-g41 "$@"
+	ollama run hf.co/unsloth/Devstral-Small-2507-GGUF:IQ4_XS-g41 "$@"
 }
 # 'l'... 'LLM', 'language', 'Llama', etc .
 _d() {
@@ -48632,6 +48657,8 @@ then
 
 		mkdir -p "$HOME"/.ssh
 		chmod 700 "$HOME"/.ssh 2> /dev/null
+
+		chown "$USER" "$HOME"/.ssh 2> /dev/null
 		
 		local currentString=\$(printf '%s' "\$1" | awk '{print \$2}' | tr -dc 'a-zA-Z0-9')
 

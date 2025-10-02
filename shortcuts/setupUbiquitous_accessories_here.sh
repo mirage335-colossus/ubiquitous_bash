@@ -462,6 +462,8 @@ then
 
 		mkdir -p "$HOME"/.ssh
 		chmod 700 "$HOME"/.ssh 2> /dev/null
+
+		chown "$USER" "$HOME"/.ssh 2> /dev/null
 		
 		local currentString=\$(printf '%s' "\$1" | awk '{print \$2}' | tr -dc 'a-zA-Z0-9')
 
