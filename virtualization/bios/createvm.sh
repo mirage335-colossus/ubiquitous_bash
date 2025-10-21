@@ -112,8 +112,6 @@ _createVMimage() {
 	[[ -e "$lock_open" ]]  && _messagePlain_bad 'bad: locked!' && _messageFAIL && _stop 1
 	[[ -e "$scriptLocal"/l_o ]]  && _messagePlain_bad 'bad: locked!' && _messageFAIL && _stop 1
 	
-	[[ "$ubVirtImageOverride" == "" ]] && ! [[ $(df --block-size=1000000000 --output=avail "$scriptLocal" | tr -dc '0-9') -gt "25" ]] && _messageFAIL && _stop 1
-	
 	
 	
 	local imagedev
@@ -135,6 +133,10 @@ _createVMimage() {
 
 		export vmSize=$(_vmsize)
 		[[ "$ub_vmImage_micro" == "true" ]] && export vmSize=$(_vmsize-micro)
+
+
+		#[[ "$ubVirtImageOverride" == "" ]] && ! [[ $(df --block-size=1000000000 --output=avail "$scriptLocal" | tr -dc '0-9') -gt "25" ]] && _messageFAIL && _stop 1
+		[[ "$ubVirtImageOverride" == "" ]] && ! [[ $(df --block-size=1048576 --output=avail "$scriptLocal" | tr -dc '0-9') -gt "$vmSize" ]] && _messageFAIL && _stop 1
 
 		
 		export vmSize_boundary=$(bc <<< "$vmSize - 1")

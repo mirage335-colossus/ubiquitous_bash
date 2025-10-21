@@ -39,7 +39,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='3620520443'
-export ub_setScriptChecksum_contents='4044060462'
+export ub_setScriptChecksum_contents='107513001'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -22311,8 +22311,6 @@ _createVMimage() {
 	[[ -e "$lock_open" ]]  && _messagePlain_bad 'bad: locked!' && _messageFAIL && _stop 1
 	[[ -e "$scriptLocal"/l_o ]]  && _messagePlain_bad 'bad: locked!' && _messageFAIL && _stop 1
 	
-	[[ "$ubVirtImageOverride" == "" ]] && ! [[ $(df --block-size=1000000000 --output=avail "$scriptLocal" | tr -dc '0-9') -gt "25" ]] && _messageFAIL && _stop 1
-	
 	
 	
 	local imagedev
@@ -22334,6 +22332,10 @@ _createVMimage() {
 
 		export vmSize=$(_vmsize)
 		[[ "$ub_vmImage_micro" == "true" ]] && export vmSize=$(_vmsize-micro)
+
+
+		#[[ "$ubVirtImageOverride" == "" ]] && ! [[ $(df --block-size=1000000000 --output=avail "$scriptLocal" | tr -dc '0-9') -gt "25" ]] && _messageFAIL && _stop 1
+		[[ "$ubVirtImageOverride" == "" ]] && ! [[ $(df --block-size=1048576 --output=avail "$scriptLocal" | tr -dc '0-9') -gt "$vmSize" ]] && _messageFAIL && _stop 1
 
 		
 		export vmSize_boundary=$(bc <<< "$vmSize - 1")
