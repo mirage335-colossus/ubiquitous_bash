@@ -39,7 +39,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='3620520443'
-export ub_setScriptChecksum_contents='2795730927'
+export ub_setScriptChecksum_contents='1773888939'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -21073,20 +21073,38 @@ _ollama_run_augment() {
 	
 	# https://www.llama.com/llama3_1/use-policy/
 
+
+	# 'Llama-3-virtuoso' and similar 'virtuoso' programs... may globally configure OLLAMA_KV_CACHE_TYPE to 'q4_0', which may worsen the reliability of the smaller Q4_K_M, Q3_K_M, default quants used for 'Llama-3-augment' .
+	# Using equivalent 'virtuoso' configured quant instead in this case will use a larger quant to effectively workaround this situation.
+	local current_augment_model
+	current_augment_model="Llama-3-augment"
+
+
 	! _service_ollama_augment && return 1
 
 	if [[ "$OLLAMA_HOST" != "" ]] && ! type -P ollama > /dev/null 2>&1
 	then
 		local current_api_timeout="$OLLAMA_TIMEOUT"
 		[[ "$current_api_timeout" == "" ]] && current_api_timeout=7200
+
+		if ( ( [[ "$accept_nonpermissiveNONCOMMERCIAL" == "false" ]] ) && [[ ! -e "$HOME"/nonpermissiveNONCOMMERCIAL ]] ) && _timeout "$current_api_timeout" curl -fsS --no-buffer --max-time "$current_api_timeout" http://"$OLLAMA_HOST"/api/tags | jq -e '.models[] | select(.name | contains("Llama-3_1-8B-Instruct-abliterated-virtuoso"))' > /dev/null 2>&1
+		then
+			current_augment_model="Llama-3_1-8B-Instruct-abliterated-virtuoso"
+		fi
+
+		if ( ( [[ "$accept_nonpermissiveNONCOMMERCIAL" != "false" ]] ) || [[ -e "$HOME"/nonpermissiveNONCOMMERCIAL ]] ) && _timeout "$current_api_timeout" curl -fsS --no-buffer --max-time "$current_api_timeout" http://"$OLLAMA_HOST"/api/tags | jq -e '.models[] | select(.name | contains("Llama-3-NeuralDaredevil-8B-abliterated-virtuoso"))' > /dev/null 2>&1
+		then
+			current_augment_model="Llama-3-NeuralDaredevil-8B-abliterated-virtuoso"
+		fi
+
 		#jq -Rs '{model:"Llama-3-augment", prompt:., stream: false}' | _timeout "$current_api_timeout" curl -fsS --max-time "$current_api_timeout" -X POST -H "Content-Type: application/json" --data-binary @- http://"$OLLAMA_HOST"/api/generate | jq -r '.response'
 		#jq -Rs '{model:"Llama-3-augment", prompt:., stream: true}' | _timeout "$current_api_timeout" curl -fsS --no-buffer --max-time "$current_api_timeout" -X POST -H "Content-Type: application/json" --data-binary @- http://"$OLLAMA_HOST"/api/generate | jq -rj --unbuffered 'if .done? then "\n" elif .response? then .response else empty end'
 		if [[ "$*" == "" ]]
 		then
-			jq -Rs '{model:"Llama-3-augment", prompt:., stream: true}' | _timeout "$current_api_timeout" curl -fsS --no-buffer --max-time "$current_api_timeout" -X POST -H "Content-Type: application/json" --data-binary @- http://"$OLLAMA_HOST"/api/generate | jq -rj --unbuffered 'if .done? then "\n" elif .response? then .response else empty end'
+			jq -Rs '{model:"'"$current_augment_model"'", prompt:., stream: true}' | _timeout "$current_api_timeout" curl -fsS --no-buffer --max-time "$current_api_timeout" -X POST -H "Content-Type: application/json" --data-binary @- http://"$OLLAMA_HOST"/api/generate | jq -rj --unbuffered 'if .done? then "\n" elif .response? then .response else empty end'
 			return
 		else
-			_safeEcho_newline "$@" | jq -Rs '{model:"Llama-3-augment", prompt:., stream: true}' | _timeout "$current_api_timeout" curl -fsS --no-buffer --max-time "$current_api_timeout" -X POST -H "Content-Type: application/json" --data-binary @- http://"$OLLAMA_HOST"/api/generate | jq -rj --unbuffered 'if .done? then "\n" elif .response? then .response else empty end'
+			_safeEcho_newline "$@" | jq -Rs '{model:"'"$current_augment_model"'", prompt:., stream: true}' | _timeout "$current_api_timeout" curl -fsS --no-buffer --max-time "$current_api_timeout" -X POST -H "Content-Type: application/json" --data-binary @- http://"$OLLAMA_HOST"/api/generate | jq -rj --unbuffered 'if .done? then "\n" elif .response? then .response else empty end'
 			return
 		fi
 	fi
@@ -21096,6 +21114,16 @@ _ollama_run_augment() {
 		"$scriptAbsoluteLocation" _setup_ollama_model_augment_sequence > /dev/null 2>&1
 	fi
 	
+	if ( ( [[ "$accept_nonpermissiveNONCOMMERCIAL" == "false" ]] ) && [[ ! -e "$HOME"/nonpermissiveNONCOMMERCIAL ]] ) && ollama ls Llama-3_1-8B-Instruct-abliterated-virtuoso 2>/dev/null | grep Llama-3_1-8B-Instruct-abliterated-virtuoso > /dev/null 2>&1
+	then
+		current_augment_model="Llama-3_1-8B-Instruct-abliterated-virtuoso"
+	fi
+
+	if ( ( [[ "$accept_nonpermissiveNONCOMMERCIAL" != "false" ]] ) || [[ -e "$HOME"/nonpermissiveNONCOMMERCIAL ]] ) && ollama ls Llama-3-NeuralDaredevil-8B-abliterated-virtuoso 2>/dev/null | grep Llama-3-NeuralDaredevil-8B-abliterated-virtuoso > /dev/null 2>&1
+	then
+		current_augment_model="Llama-3-NeuralDaredevil-8B-abliterated-virtuoso"
+	fi
+
 	# Suggested >2400 for batch processing, <600 for long 'augment' outputs, <120 for 'augment' use cases underlying user interaction (ie. impatience).
 	if [[ "$OLLAMA_TIMEOUT" != "" ]]
 	then
@@ -21108,12 +21136,12 @@ _ollama_run_augment() {
 			# https://github.com/ollama/ollama/issues/5081
 			export OLLAMA_LOAD_TIMEOUT="$OLLAMA_TIMEOUT"s
 			
-			_timeout "$OLLAMA_TIMEOUT" ollama run Llama-3-augment "$@"
+			_timeout "$OLLAMA_TIMEOUT" ollama run "$current_augment_model" "$@"
 		)
 		return
 	fi
 
-	ollama run Llama-3-augment "$@"
+	ollama run "$current_augment_model" "$@"
 }
 # 'l'... 'LLM', 'language', 'Llama', etc .
 _l() {
