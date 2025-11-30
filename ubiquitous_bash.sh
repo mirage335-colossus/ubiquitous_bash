@@ -39,7 +39,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='3620520443'
-export ub_setScriptChecksum_contents='3442097694'
+export ub_setScriptChecksum_contents='838793314'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -41846,6 +41846,239 @@ fi
 
 
 
+
+
+
+
+
+_here_opencode() {
+    cat << 'CZXWXcRMTo8EmM8i4d'
+
+{
+  "$schema": "https://opencode.ai/config.json",
+  "provider": {
+    "opencode": {
+      "options": {
+        "apiKey": "{env:OPENCODE_API_KEY}"
+      }
+    }
+    "ollama": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ollama (local)",
+      "options": {
+        "baseURL": "http://localhost:11434/v1"
+      },
+      "models": {
+        "Devstral-Small-2507-128k-virtuoso": {
+          "name": "Devstral-Small-2507-128k-virtuoso"
+        },
+        "gpt-oss-20b-128k-virtuoso": {
+          "name": "gpt-oss-20b-128k-virtuoso"
+        },
+        "NVIDIA-Nemotron-Nano-9B-v2-128k-virtuoso": {
+          "name": "NVIDIA-Nemotron-Nano-9B-v2-128k-virtuoso"
+        },
+        "Llama-3-NeuralDaredevil-8B-abliterated-128k-virtuoso": {
+          "name": "Llama-3-NeuralDaredevil-8B-abliterated-128k-virtuoso"
+        },
+        "Llama-3_3-Nemotron-Super-49B-v1_5-12k-virtuoso": {
+          "name": "Llama-3_3-Nemotron-Super-49B-v1_5-12k-virtuoso"
+        }
+      }
+    },
+    "openrouter": {
+      "options": {
+        "apiKey": "{env:OPENROUTER_API_KEY}"
+      },
+      "models": {
+        "moonshotai/kimi-k2-thinking": {
+          "options": {
+            "provider": {
+              "sort": "throughput",
+              "max_price": "15"
+            }
+          }
+        },
+        "openai/gpt-5.1-codex:online": {
+          "options": {
+            "provider": {
+              "sort": "throughput",
+              "max_price": "35"
+            }
+          }
+        },
+        "openai/gpt-5.1:online": {
+          "options": {
+            "provider": {
+              "sort": "throughput",
+              "max_price": "35"
+            }
+          }
+        },
+        "openai/gpt-5-pro:online": {
+          "options": {
+            "provider": {
+              "sort": "throughput",
+              "max_price": "200"
+            }
+          }
+        },
+        "openai/o3:online": {
+          "options": {
+            "provider": {
+              "sort": "throughput",
+              "max_price": "35"
+            }
+          }
+        },
+        "google/gemini-3-pro-preview:online": {
+          "options": {
+            "provider": {
+              "sort": "throughput",
+              "max_price": "25"
+            }
+          }
+        },
+        "deepseek/deepseek-r1-0528:online": {
+          "options": {
+            "provider": {
+              "sort": "throughput",
+              "max_price": "25"
+            }
+          }
+        },
+        "deepseek/deepseek-r1-0528": {
+          "options": {
+            "provider": {
+              "sort": "throughput",
+              "max_price": "25"
+            }
+          }
+        },
+        "nvidia/llama-3.1-nemotron-ultra-253b-v1:online": {
+          "options": {
+            "provider": {
+              "sort": "throughput",
+              "max_price": "25"
+            }
+          }
+        },
+        "nvidia/llama-3.1-nemotron-ultra-253b-v1": {
+          "options": {
+            "provider": {
+              "sort": "throughput",
+              "max_price": "25"
+            }
+          }
+        },
+        "openai/gpt-oss-120b": {
+          "options": {
+            "provider": {
+              "sort": "latency",
+              "order": ["Groq", "Cerebras", "Amazon Bedrock"],
+              "max_price": "20"
+            }
+          }
+        }
+      }
+    },
+    "openai": {
+      "options": {
+        "apiKey": "{env:OPENAI_API_KEY}"
+      }
+    }
+    "zenmux": {
+      "options": {
+        "apiKey": "{env:ZENMUX_API_KEY}"
+      }
+    }
+  }
+}
+
+CZXWXcRMTo8EmM8i4d
+}
+
+
+
+
+
+
+# NOTICE: Installing 'opencode' may be useful for cloud, container, etc, usage (eg. within a RunPod instance, within a Docker container, etc).)
+# Also recommend 'Cline' VSCode extension .
+
+
+
+_setup_opencode_sequence() {
+    _start
+
+    cd "$safeTmp"
+    local functionEntryPWD
+    functionEntryPWD="$PWD"
+    local currentExitStatus
+
+    rm -f "$HOME"/.opencode/bin/opencode
+    rm -f "$HOME"/bin/opencode
+
+    if _if_cygwin
+    then
+        wget https://github.com/sst/opencode/releases/latest/download/opencode-windows-x64.zip -O ./opencode-windows-x64.zip
+
+        unzip ./opencode-windows-x64.zip -d ./opencode-windows-x64
+
+        mkdir -p "$HOME"/bin
+        rm -f "$HOME"/bin/opencode.exe
+        mv -f ./opencode-windows-x64/opencode.exe "$HOME"/bin/
+        currentExitStatus="$?"
+    fi
+
+    if ! _if_cygwin
+    then
+        if uname -m | grep 'x86_64' > /dev/null 2>&1 && ( cat /etc/debian_version | head -c 2 | grep 12 > /dev/null 2>&1 || cat /etc/debian_version | head -c 2 | grep 12 > /dev/null 2>&1 || ( [[ -e /etc/issue ]] && ( cat /etc/issue | grep 'Ubuntu' | grep '24.04' > /dev/null 2>&1 ) ) )
+        then
+            wget https://github.com/sst/opencode/releases/latest/download/opencode-linux-x64.tar.gz -O ./opencode-linux-x64.tar.gz
+            tar -xvzf ./opencode-linux-x64.tar.gz
+
+            mkdir -p "$HOME"/bin
+            rm -f "$HOME"/bin/opencode
+            mv -f ./opencode-linux-x64/opencode "$HOME"/bin/
+            currentExitStatus="$?"
+        else
+            # Not expected to do more than effectively put the binary in PATH .
+            curl -fsSL https://opencode.ai/install | bash
+            currentExitStatus="$?"
+        fi
+    fi
+    
+    cd "$functionEntryPWD"
+    _stop "$currentExitStatus"
+}
+
+
+# ATTENTION: May benefit form 'ubDEBUG=true' for AI to better diagnose and continue testing.
+
+#export devfast=true
+#export skimfast=true
+#
+#export ub_setScriptChecksum_disable='true'
+##export ubDEBUG=true
+
+#alias opencodeUnix='wsl -d ubdist opencode'
+
+_setup_opencode() {
+    [[ ! -e "$HOME"/.config/opencode/opencode.json ]] && _here_opencode | tee "$HOME"/.config/opencode/opencode.json > /dev/null
+
+    "$scriptAbsoluteLocation" _setup_opencode_sequence "$@"
+}
+
+#alias opencodeAuto
+#alaias opencodeForce
+
+
+
+
+
+
+
 #screenscraper-nix
 
 # ATTENTION: Expect new software development will be required. Some relevant capability apparently already exists from OBS, ffmpeg , gstreamer , etc . Due to apparent lack of 'NVIDIA Game Stream' , most likely a GPU-agnostic real-time h264 or similar video codec would also be helpful.
@@ -64087,6 +64320,8 @@ _compile_bash_shortcuts() {
 	
 	( [[ "$enUb_dev_ai" == "true" ]] ) && includeScriptList+=( "shortcuts/dev/ai"/claude_code.sh )
 	( [[ "$enUb_dev_ai" == "true" ]] ) && includeScriptList+=( "shortcuts/dev/ai"/codex.sh )
+	( [[ "$enUb_dev_ai" == "true" ]] ) && includeScriptList+=( "shortcuts/dev/ai"/opencode_here.sh )
+	( [[ "$enUb_dev_ai" == "true" ]] ) && includeScriptList+=( "shortcuts/dev/ai"/opencode.sh )
 	
 	
 	( [[ "$enUb_cloud_heavy" == "true" ]] || [[ "$enUb_cloud" == "true" ]] ) && includeScriptList+=( "shortcuts/cloud/self/screenScraper"/screenScraper-nix.sh )

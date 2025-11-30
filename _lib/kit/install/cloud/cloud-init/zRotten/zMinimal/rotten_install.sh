@@ -1403,6 +1403,7 @@ _install() {
 		#
 		sudo -n -u user INSTANCE_ID="$INSTANCE_ID" sh -c "cd ; /home/user/bin/ubiquitous_bash.sh _setup_codex 2>&1"
 		sudo -n -u user INSTANCE_ID="$INSTANCE_ID" sh -c "cd ; /home/user/bin/ubiquitous_bash.sh _setup_claude_code 2>&1"
+		sudo -n -u user INSTANCE_ID="$INSTANCE_ID" sh -c "cd ; /home/user/bin/ubiquitous_bash.sh _setup_opencode 2>&1"
 		#
 		sudo -n --preserve-env=GH_TOKEN --preserve-env=INPUT_GITHUB_TOKEN --preserve-env=devfast -u user INSTANCE_ID="$INSTANCE_ID" sh -c "cd ; /home/user/bin/ubiquitous_bash.sh _test 2>&1" | tee /var/log/ubiquitous_bash-test
 		[[ ${PIPESTATUS[0]} != "0" ]] && _messageFAIL
