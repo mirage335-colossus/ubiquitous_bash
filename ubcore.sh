@@ -39,7 +39,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='3620520443'
-export ub_setScriptChecksum_contents='624611419'
+export ub_setScriptChecksum_contents='2466641105'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -8695,6 +8695,7 @@ _cfgFW_procedure() {
 	# ATTRIBUTION-AI ChatGPT o1 2024-12-25
 	ufw allow proto tcp from 172.17.0.0/16 to any port 8080
 	ufw allow proto tcp from 172.17.0.0/16 to any port 11434
+	ufw allow proto tcp from 172.17.0.0/16 to any port 1234
 
 
 	if [[ "$ub_cfgFW" == "desktop" ]] || [[ "$ub_cfgFW" == "terminal" ]]
@@ -18680,32 +18681,38 @@ _setup_wsl2_guest-portForward() {
 
 
     _messagePlain_probe 'write: /usr/local/bin/hostport-proxy.sh'
-    cat << 'CZXWXcRMTo8EmM8i4d' | wsl -d "$current_wsldist" sudo -n tee /usr/local/bin/hostport-proxy.sh > /dev/null
+    _here_hostport_proxy_script() {
+        cat << CZXWXcRMTo8EmM8i4d
 #!/usr/bin/env bash
 set -euo pipefail
 
-PORT=${PORT:-11434}               # default; override in the service if you like
+PORT=\${PORT:-$1}               # default; override in the service if you like
 HOST_IP_FILE="/net-hostip"
 
 while true; do
   # Bail out quickly if the helper file doesn't exist (yet)
-  [[ -r "$HOST_IP_FILE" ]] || { sleep 2; continue; }
+  [[ -r "\$HOST_IP_FILE" ]] || { sleep 2; continue; }
 
-  HOST_IP=$(<"$HOST_IP_FILE")
-  [[ -n "$HOST_IP" ]] || { sleep 2; continue; }
+  HOST_IP=\$(<"\$HOST_IP_FILE")
+  [[ -n "\$HOST_IP" ]] || { sleep 2; continue; }
 
-  wget --timeout=1 --tries=3 http://"$HOST_IP":11434 -q -O - > /dev/null 2>&1 || { sleep 2; continue; }
+  wget --timeout=1 --tries=3 http://"\$HOST_IP":$1 -q -O - > /dev/null 2>&1 || { sleep 2; continue; }
 
-  echo "$(date '+%F %T') 127.0.0.1:$PORT → $HOST_IP:$PORT"
+  echo "\$(date '+%F %T') 127.0.0.1:\$PORT → \$HOST_IP:\$PORT"
   # --fork lets a single socat instance serve many clients in parallel
-  socat TCP-LISTEN:"$PORT",fork,reuseaddr TCP4:"$HOST_IP":"$PORT" || true
+  socat TCP-LISTEN:"\$PORT",fork,reuseaddr TCP4:"\$HOST_IP":"\$PORT" || true
   # If socat exits (network flap, etc.) loop and start again
   sleep 1
 done
 CZXWXcRMTo8EmM8i4d
+    }
+    _here_hostport_proxy_script 11434 | wsl -d "$current_wsldist" sudo -n tee /usr/local/bin/hostport-proxy.sh > /dev/null
     wsl -d "$current_wsldist" sudo -n chmod +x /usr/local/bin/hostport-proxy.sh
     #wsl -d "$current_wsldist" sudo -n cat /usr/local/bin/hostport-proxy.sh
 
+    _here_hostport_proxy_script 1234 | wsl -d "$current_wsldist" sudo -n tee /usr/local/bin/hostport-proxy-1234.sh > /dev/null
+    wsl -d "$current_wsldist" sudo -n chmod +x /usr/local/bin/hostport-proxy-1234.sh.sh
+    #wsl -d "$current_wsldist" sudo -n cat /usr/local/bin/hostport-proxy-1234.sh.sh
 
     #_messagePlain_probe 'write: /etc/wsl.conf'
     # "$current_wsldist" /etc/wsl.conf already enables systemd by default
@@ -18716,15 +18723,16 @@ CZXWXcRMTo8EmM8i4d
 
 
     _messagePlain_probe 'write: /etc/systemd/system/hostport-proxy.service'
-    cat << 'CZXWXcRMTo8EmM8i4d' | wsl -d "$current_wsldist" sudo -n tee /etc/systemd/system/hostport-proxy.service > /dev/null
+    _here_hostport_proxy_service() {
+    cat << CZXWXcRMTo8EmM8i4d
 [Unit]
-Description=Forward 127.0.0.1:11434 to Windows host (WSL2)
+Description=Forward 127.0.0.1:$1 to Windows host (WSL2)
 After=network-online.target
 Wants=network-online.target
 
 [Service]
 Type=simple
-Environment=PORT=11434      # edit or duplicate the unit to forward more ports
+Environment=PORT=$1      # edit or duplicate the unit to forward more ports
 ExecStart=/usr/local/bin/hostport-proxy.sh
 Restart=always
 RestartSec=1
@@ -18739,15 +18747,28 @@ PrivateTmp=true
 WantedBy=multi-user.target
 
 CZXWXcRMTo8EmM8i4d
+    }
+    _here_hostport_proxy_service 11434 | wsl -d "$current_wsldist" sudo -n tee /etc/systemd/system/hostport-proxy.service > /dev/null
+    #wsl -d "$current_wsldist" sudo -n cat /etc/systemd/system/hostport-proxy.service
+
+    _here_hostport_proxy_service 1234 | wsl -d "$current_wsldist" sudo -n tee /etc/systemd/system/hostport-proxy-1234.service > /dev/null
     #wsl -d "$current_wsldist" sudo -n cat /etc/systemd/system/hostport-proxy.service
 
     _messagePlain_probe 'systemctl'
     wsl -d "$current_wsldist" sudo -n systemctl daemon-reload
+
     #wsl -d "$current_wsldist" sudo -n systemctl enable --now hostport-proxy.service
 
     wsl -d "$current_wsldist" sudo -n systemctl disable hostport-proxy.service
 
     wsl -d "$current_wsldist" sudo -n systemctl restart hostport-proxy.service
+
+    
+    #wsl -d "$current_wsldist" sudo -n systemctl enable --now hostport-proxy-1234.service
+
+    wsl -d "$current_wsldist" sudo -n systemctl disable hostport-proxy-1234.service
+
+    wsl -d "$current_wsldist" sudo -n systemctl restart hostport-proxy-1234.service
 
 }
 
@@ -18793,6 +18814,41 @@ CZXWXcRMTo8EmM8i4d
     powershell -Command "New-NetFirewallRule -Name 'AllowWSL2-11434 - vEthernet (WSL)' -DisplayName 'Allow WSL2 Port 11434 (TCP) - vEthernet (WSL)' -Description 'Allows inbound TCP port 11434 from WSL2 virtual network only (for NAT port proxy)' -Protocol TCP -Direction Inbound -Action Allow -LocalPort 11434 -InterfaceAlias 'vEthernet (WSL)'"
 
     powershell -Command "New-NetFirewallRule -Name 'AllowWSL2-11434 - InterfaceType' -InterfaceType HyperV -Direction Inbound -LocalPort 11434 -Protocol TCP -Action Allow"
+    
+
+
+
+    # ATTENTION: TODO: Duplicated code due to possible quoting issues.
+
+    #_powershell
+    #powershell
+    #powershell.exe
+    
+    # ATTRIBUTION-AI: ChatGPT o3 Deep Research  2025-06-01
+    cat << 'CZXWXcRMTo8EmM8i4d' > /dev/null 2>&1
+New-NetFirewallRule -Name "AllowWSL2-1234" -DisplayName "Allow WSL2 Port 1234 (TCP)" `
+    -Description "Allows inbound TCP port 1234 from WSL2 virtual network only (for NAT port proxy)" `
+    -Protocol TCP -Direction Inbound -Action Allow -LocalPort 1234 `
+    -InterfaceAlias "vEthernet (WSL)"
+CZXWXcRMTo8EmM8i4d
+
+    # ATTRIBUTION-AI: ChatGPT o4-mini  2025-06-01
+    # ATTRIBUTION-AI: Llama 3.1 Nemotron Ultra 253b v1  2025-06-01  (translation to one-liner)
+    powershell -Command "Remove-NetFirewallRule -Name 'AllowWSL2-1234 - vEthernet (WSL (Hyper-V firewall))'; Remove-NetFirewallRule -Name 'AllowWSL2-1234 - vEthernet (Default Switch)'; Remove-NetFirewallRule -Name 'AllowWSL2-1234 - vEthernet (WSL)'"
+    powershell -Command "Get-NetFirewallRule -Name 'AllowWSL2-1234*' | Remove-NetFirewallRule"
+    #
+    # DUBIOUS
+    #netsh advfirewall firewall delete rule name="AllowWSL2-1234 - vEthernet (WSL (Hyper-V firewall))"
+    #netsh advfirewall firewall delete rule name="AllowWSL2-1234 - vEthernet (Default Switch)"
+    #netsh advfirewall firewall delete rule name="AllowWSL2-1234 - vEthernet (WSL)"
+
+    # ATTRIBUTION-AI: Llama 3.1 Nemotron Ultra 253b v1  2025-06-01  (translation from PowerShell interactive terminal to powershell command call under Cygwin/MSW bash shell)
+    # ATTENTION: Not all of these named interfaces usually exist. Cosmetic errors usually occur.
+    powershell -Command "New-NetFirewallRule -Name 'AllowWSL2-1234 - vEthernet (WSL (Hyper-V firewall))' -DisplayName 'Allow WSL2 Port 1234 (TCP) - vEthernet (WSL (Hyper-V firewall))' -Description 'Allows inbound TCP port 1234 from WSL2 virtual network only (for NAT port proxy)' -Protocol TCP -Direction Inbound -Action Allow -LocalPort 1234 -InterfaceAlias 'vEthernet (WSL (Hyper-V firewall))'"
+    powershell -Command "New-NetFirewallRule -Name 'AllowWSL2-1234 - vEthernet (Default Switch)' -DisplayName 'Allow WSL2 Port 1234 (TCP) - vEthernet (Default Switch)' -Description 'Allows inbound TCP port 1234 from WSL2 virtual network only (for NAT port proxy)' -Protocol TCP -Direction Inbound -Action Allow -LocalPort 1234 -InterfaceAlias 'vEthernet (Default Switch)'"
+    powershell -Command "New-NetFirewallRule -Name 'AllowWSL2-1234 - vEthernet (WSL)' -DisplayName 'Allow WSL2 Port 1234 (TCP) - vEthernet (WSL)' -Description 'Allows inbound TCP port 1234 from WSL2 virtual network only (for NAT port proxy)' -Protocol TCP -Direction Inbound -Action Allow -LocalPort 1234 -InterfaceAlias 'vEthernet (WSL)'"
+
+    powershell -Command "New-NetFirewallRule -Name 'AllowWSL2-1234 - InterfaceType' -InterfaceType HyperV -Direction Inbound -LocalPort 1234 -Protocol TCP -Action Allow"
     
 }
 
@@ -18906,6 +18962,130 @@ _setup_wsl2_procedure-portproxy() {
     'listenport=11434',
     'connectaddress=127.0.0.1',
     'connectport=11434'
+    )
+    & \$netsh  @addArgs          # ← “@” splats the array as arguments
+
+    # show the table so you can verify
+    & \$netsh  interface portproxy show v4tov4
+
+
+
+    # ATTRIBUTION-AI: Llama 3.1 Nemotron Ultra 253b v1  2025-06-01
+    # Step 5: Output result or error.
+    if (\$HostIP) {
+        #Write-Output \$HostIP
+        # Write \$HostIP to /net-hostip in WSL
+        wsl -d "$current_wsldist" -u root -- sh -c "echo '\$(\$HostIP)' > /net-hostip"
+    } else {
+        wsl -d "$current_wsldist" -u root -- sh -c "echo '...' > /net-hostip"
+    }
+
+CZXWXcRMTo8EmM8i4d
+
+    sleep 3
+
+
+
+    # ATTENTION: TODO: Duplicated code due to possible testing issues.
+    
+    # ATTRIBUTION-AI: Llama 3.1 Nemotron Ultra 253b v1  2025-06-01
+    powershell.exe -Command - <<CZXWXcRMTo8EmM8i4d
+    # ATTRIBUTION-AI: ChatGPT o3 Deep Research  2025-06-01  (partially)
+    # Ensure running as Admin for registry and netsh access if needed.
+    # Step 1: Try reading WSL NAT info from registry (requires recent WSL).
+    \$wslKey = 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Lxss'
+    try {
+        \$reg = Get-ItemProperty -Path \$wslKey -ErrorAction Stop
+        \$HostIP = \$reg.NatGatewayIpAddress
+    } catch {
+        \$HostIP = \$null
+    }
+
+    # Step 2: If not found in registry, use WSL to query the default gateway.
+    if (-not \$HostIP) {
+        try {
+            \$routeInfo = wsl -e sh -c "ip route show default 2>/dev/null || route -n"
+        } catch {
+            \$routeInfo = ""
+        }
+        if (\$routeInfo) {
+            if (\$routeInfo -match 'default via\s+([0-9\.]+)') {
+                \$HostIP = \$Matches[1]
+            } elseif (\$routeInfo -match '0\.0\.0\.0\s+0\.0\.0\.0\s+([0-9\.]+)') {
+                \$HostIP = \$Matches[1]
+            }
+        }
+    }
+
+    # Step 3: If still not found, fall back to scanning network adapters.
+    if (-not \$HostIP) {
+        \$allIPs = Get-NetIPAddress -AddressFamily IPv4 | Where-Object { 
+            \$_.IPAddress -notlike '127.*' -and \$_.IPAddress -notlike '169.254*' 
+        }
+        \$wslAdapterIP = \$allIPs | Where-Object { \$_.InterfaceAlias -match 'WSL' } | Select-Object -First 1
+        if (\$wslAdapterIP) {
+            \$HostIP = \$wslAdapterIP.IPAddress
+        } else {
+            \$defSwitchIP = \$allIPs | Where-Object { \$_.InterfaceAlias -match 'Default Switch' } | Select-Object -First 1
+            if (\$defSwitchIP) {
+                \$HostIP = \$defSwitchIP.IPAddress
+            } else {
+                \$hvAdapters = Get-NetAdapter | Where-Object { 
+                    \$_.InterfaceDescription -like '*Hyper-V Virtual Ethernet*' -and \$_.Status -eq 'Up' 
+                }
+                foreach (\$adapter in \$hvAdapters) {
+                    \$ip = \$allIPs | Where-Object { 
+                        \$_.InterfaceIndex -eq \$adapter.InterfaceIndex -and 
+                        \$_.IPAddress -match '^(10\.|172\.(1[6-9]|2\d|3[0-1])\.|192\.168\.)' 
+                    }
+                    if (\$ip) {
+                        \$HostIP = \$ip.IPAddress
+                        break
+                    }
+                }
+            }
+        }
+    }
+
+    # Step 4: Output result or error.
+    if (\$HostIP) {
+        Write-Output \$HostIP
+    } else {
+        Write-Error "WSL2 host IP could not be determined. Ensure WSL2 is installed and running (NAT mode)."
+    }
+
+    
+    #netsh interface portproxy delete v4tov4 listenport=1234
+    #netsh interface portproxy delete v4tov4 listenport=1234 listenaddress=\$HostIP
+    #netsh interface portproxy add v4tov4 listenaddress=\$HostIP listenport=1234 connectaddress=127.0.0.1 connectport=1234
+    #sc query iphlpsvc
+    #sc start iphlpsvc
+    #netsh interface portproxy show v4tov4
+
+
+    # ATTRIBUTION-AI: ChatGPT o3  2025-06-01
+    # --- Native tools -------------------------------------------------
+    \$netsh = "\$env:SystemRoot\System32\netsh.exe"   # avoids “nets” typo
+    \$sc    = "\$env:SystemRoot\System32\sc.exe"      # avoids Set-Content alias
+
+    # make sure the helper service is running
+    & \$sc   query iphlpsvc
+    & \$sc   start iphlpsvc
+
+    \$delArgs = @(
+    'interface','portproxy','delete','v4tov4',
+    "listenaddress=\$HostIP",
+    'listenport=1234'
+    )
+    & \$netsh  @delArgs  2>\$null   # suppress harmless “not found”
+
+    # (re-)create the port-proxy rule
+    \$addArgs = @(
+    'interface','portproxy','add','v4tov4',
+    "listenaddress=\$HostIP",
+    'listenport=1234',
+    'connectaddress=127.0.0.1',
+    'connectport=1234'
     )
     & \$netsh  @addArgs          # ← “@” splats the array as arguments
 

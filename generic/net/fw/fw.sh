@@ -99,6 +99,7 @@ _cfgFW_procedure() {
 	# ATTRIBUTION-AI ChatGPT o1 2024-12-25
 	ufw allow proto tcp from 172.17.0.0/16 to any port 8080
 	ufw allow proto tcp from 172.17.0.0/16 to any port 11434
+	ufw allow proto tcp from 172.17.0.0/16 to any port 1234
 
 
 	if [[ "$ub_cfgFW" == "desktop" ]] || [[ "$ub_cfgFW" == "terminal" ]]
