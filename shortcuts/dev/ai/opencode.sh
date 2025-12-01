@@ -66,14 +66,17 @@ _setup_opencode() {
         local currentConfigDirMSW_unix=$(cygpath -u "$APPDATA")"/opencode"
         mkdir -p "$currentConfigDirMSW_unix"
         
-        rm -f "$currentConfigDirMSW_unix"/opencode.json
+        #rm -f "$currentConfigDirMSW_unix"/opencode.json
+        [[ -e "$currentConfigDirMSW_unix"/opencode.json ]] && _messagePlain_warn 'warn: conflict: exists: Cygwin/MSW: opencode.json'
         [[ ! -e "$currentConfigDirMSW_unix"/opencode.json ]] && _here_opencode | tee "$currentConfigDirMSW_unix"/opencode.json > /dev/null
         
-        rm -f "$currentConfigDirMSW_unix"/config.json
+        #rm -f "$currentConfigDirMSW_unix"/config.json
+        [[ -e "$currentConfigDirMSW_unix"/config.json ]] && _messagePlain_warn 'warn: conflict: exists: Cygwin/MSW: config.json'
         [[ ! -e "$currentConfigDirMSW_unix"/config.json ]] && _here_opencode | tee "$currentConfigDirMSW_unix"/config.json > /dev/null
     fi
 
-    rm -f "$HOME"/.config/opencode/opencode.json
+    #rm -f "$HOME"/.config/opencode/opencode.json
+    [[ -e "$HOME"/.config/opencode/opencode.json ]] && _messagePlain_warn 'warn: conflict: exists: opencode.json'
     [[ ! -e "$HOME"/.config/opencode/opencode.json ]] && _here_opencode | tee "$HOME"/.config/opencode/opencode.json > /dev/null
 
     "$scriptAbsoluteLocation" _setup_opencode_sequence "$@"
