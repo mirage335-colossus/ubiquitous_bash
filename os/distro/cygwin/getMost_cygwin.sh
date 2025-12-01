@@ -934,6 +934,14 @@ _custom_ubcp_sequence() {
 
 
 
+
+    _messageNormal '_custom_ubcp: opencode'
+    "$scriptAbsoluteLocation" _setup_opencode_sequence
+
+    cd "$functionEntryPWD"
+
+
+
     cd "$functionEntryPWD"
 
     _cygwin_workaround_dev_stderr

@@ -39,7 +39,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='3620520443'
-export ub_setScriptChecksum_contents='2510055324'
+export ub_setScriptChecksum_contents='2449111907'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -14596,6 +14596,14 @@ _custom_ubcp_sequence() {
 
 
 
+
+    _messageNormal '_custom_ubcp: opencode'
+    "$scriptAbsoluteLocation" _setup_opencode_sequence
+
+    cd "$functionEntryPWD"
+
+
+
     cd "$functionEntryPWD"
 
     _cygwin_workaround_dev_stderr
@@ -23399,7 +23407,7 @@ fi
 
 
 # Factory use of 'GH_TOKEN' is usually just to attempt to achieve reasonable API call, git clone, etc, limits. Since filesystems can be shared, host software can be used for more complex or privileged cases.
-export factory_api_args=( -e JUPYTER_PASSWORD="$JUPYTER_PASSWORD" --add-host=host.docker.internal:host-gateway -e OLLAMA_HOST=host.docker.internal:11434 -e HF_API_KEY="$HF_API_KEY" -e HF_TOKEN="$HF_TOKEN" -e GH_TOKEN="$GH_TOKEN" -e INPUT_GITHUB_TOKEN="$GH_TOKEN" -e OPENAI_API_KEY="$OPENAI_API_KEY" -e OPENROUTER_API_KEY="$OPENROUTER_API_KEY" -e ai_safety="$ai_safety" )
+export factory_api_args=( -e JUPYTER_PASSWORD="$JUPYTER_PASSWORD" --add-host=host.docker.internal:host-gateway -e OLLAMA_HOST=host.docker.internal:11434 -e HF_API_KEY="$HF_API_KEY" -e HF_TOKEN="$HF_TOKEN" -e GH_TOKEN="$GH_TOKEN" -e INPUT_GITHUB_TOKEN="$GH_TOKEN" -e OPENAI_API_KEY="$OPENAI_API_KEY" -e OPENROUTER_API_KEY="$OPENROUTER_API_KEY" -e OPENCODE_API_KEY="$OPENCODE_API_KEY" -e ai_safety="$ai_safety" )
 
 
 # ###
@@ -24340,7 +24348,7 @@ dockerRunArgs=( /workspace/project/._run-factory_openai )
 dockerArgs_openai=( -e CODEX_ENV_PYTHON_VERSION=3.12 -e CODEX_ENV_NODE_VERSION=20 -e CODEX_ENV_RUST_VERSION=1.87.0 -e CODEX_ENV_GO_VERSION=1.23.8 )
 #dockerArgs_openai+=( -e CODEX_ENV_SWIFT_VERSION=6.1 )
 dockerArgs_openai_workspace=( -v "$factory_projectDir":/workspace/$(basename $(pwd)) -w /workspace/$(basename $(pwd)) )
-dockerArgs_api=( --add-host=host.docker.internal:host-gateway -e OLLAMA_HOST=host.docker.internal:11434 -e HF_API_KEY="$HF_API_KEY" -e HF_TOKEN="$HF_TOKEN" -e GH_TOKEN="$GH_TOKEN" -e INPUT_GITHUB_TOKEN="$GH_TOKEN" -e OPENAI_API_KEY="$OPENAI_API_KEY" -e OPENROUTER_API_KEY="$OPENROUTER_API_KEY" -e ai_safety="$ai_safety" )
+dockerArgs_api=( --add-host=host.docker.internal:host-gateway -e OLLAMA_HOST=host.docker.internal:11434 -e HF_API_KEY="$HF_API_KEY" -e HF_TOKEN="$HF_TOKEN" -e GH_TOKEN="$GH_TOKEN" -e INPUT_GITHUB_TOKEN="$GH_TOKEN" -e OPENAI_API_KEY="$OPENAI_API_KEY" -e OPENROUTER_API_KEY="$OPENROUTER_API_KEY" -e OPENCODE_API_KEY="$OPENCODE_API_KEY" -e ai_safety="$ai_safety" )
 
 if _if_cygwin
 then
@@ -24499,7 +24507,7 @@ dockerRunArgs=( /workspace/project/._run-factory_openai-heavy )
 dockerArgs_openai=( -e CODEX_ENV_PYTHON_VERSION=3.12 -e CODEX_ENV_NODE_VERSION=20 -e CODEX_ENV_RUST_VERSION=1.87.0 -e CODEX_ENV_GO_VERSION=1.23.8 )
 #dockerArgs_openai+=( -e CODEX_ENV_SWIFT_VERSION=6.1 )
 dockerArgs_openai_workspace=( -v "$factory_projectDir":/workspace/$(basename $(pwd)) -w /workspace/$(basename $(pwd)) )
-dockerArgs_api=( --add-host=host.docker.internal:host-gateway -e OLLAMA_HOST=host.docker.internal:11434 -e HF_API_KEY="$HF_API_KEY" -e HF_TOKEN="$HF_TOKEN" -e GH_TOKEN="$GH_TOKEN" -e INPUT_GITHUB_TOKEN="$GH_TOKEN" -e OPENAI_API_KEY="$OPENAI_API_KEY" -e OPENROUTER_API_KEY="$OPENROUTER_API_KEY" -e ai_safety="$ai_safety" )
+dockerArgs_api=( --add-host=host.docker.internal:host-gateway -e OLLAMA_HOST=host.docker.internal:11434 -e HF_API_KEY="$HF_API_KEY" -e HF_TOKEN="$HF_TOKEN" -e GH_TOKEN="$GH_TOKEN" -e INPUT_GITHUB_TOKEN="$GH_TOKEN" -e OPENAI_API_KEY="$OPENAI_API_KEY" -e OPENROUTER_API_KEY="$OPENROUTER_API_KEY" -e OPENCODE_API_KEY="$OPENCODE_API_KEY" -e ai_safety="$ai_safety" )
 
 if _if_cygwin
 then
@@ -34135,7 +34143,8 @@ _setup_opencode_sequence() {
 
             mkdir -p "$HOME"/bin
             rm -f "$HOME"/bin/opencode
-            mv -f ./opencode-linux-x64/opencode "$HOME"/bin/
+            mv -f ./opencode "$HOME"/bin/
+            chmod ugoa+rx "$HOME"/bin/opencode
             currentExitStatus="$?"
         else
             # Not expected to do more than effectively put the binary in PATH .
@@ -34159,7 +34168,7 @@ _setup_opencode_sequence() {
 
 #alias opencodeUnix='wsl -d ubdist opencode'
 
-_setup_opencode() {
+_setup_opencode_config() {
     if _if_cygwin
     then
         local currentConfigDirMSW_unix=$(cygpath -u "$APPDATA")"/opencode"
@@ -34178,6 +34187,11 @@ _setup_opencode() {
     [[ -e "$HOME"/.config/opencode/opencode.json ]] && _messagePlain_warn 'warn: conflict: exists: opencode.json'
     [[ ! -e "$HOME"/.config/opencode/opencode.json ]] && _here_opencode | tee "$HOME"/.config/opencode/opencode.json > /dev/null
 
+    true
+}
+_setup_opencode() {
+    _setup_opencode_config
+
     "$scriptAbsoluteLocation" _setup_opencode_sequence "$@"
 }
 
@@ -34189,6 +34203,9 @@ if uname -a | grep -i cygwin > /dev/null 2>&1
 then
     #alias opencode=$(type -P codex 2>/dev/null)
     opencode() {
+        local currentConfigDirMSW_unix=$(cygpath -u "$APPDATA")"/opencode"
+        [[ ! -e "$currentConfigDirMSW_unix"/opencode.json ]] && _setup_opencode_config > /dev/null 2>&1
+        
         opencode_bin=$(type -P opencode)
 
         export OPENCODE_CONFIG=$(cygpath -w "$APPDATA")"\opencode\opencode.json"
@@ -41833,6 +41850,15 @@ _set_msw_apiToken() {
             export WSLENV="OPENROUTER_API_KEY"
         else
             export WSLENV="$WSLENV:OPENROUTER_API_KEY"
+        fi
+    fi
+    if [[ "$WSLENV" != "OPENCODE_API_KEY" ]] && [[ "$WSLENV" != "OPENCODE_API_KEY"* ]] && [[ "$WSLENV" != *"OPENCODE_API_KEY" ]] && [[ "$WSLENV" != *"OPENCODE_API_KEY"* ]]
+    then
+        if [[ "$WSLENV" == "" ]]
+        then
+            export WSLENV="OPENCODE_API_KEY"
+        else
+            export WSLENV="$WSLENV:OPENCODE_API_KEY"
         fi
     fi
     if [[ "$WSLENV" != "HF_AKI_KEY" ]] && [[ "$WSLENV" != "HF_AKI_KEY"* ]] && [[ "$WSLENV" != *"HF_AKI_KEY" ]] && [[ "$WSLENV" != *"HF_AKI_KEY"* ]]

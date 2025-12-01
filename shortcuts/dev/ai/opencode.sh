@@ -36,7 +36,8 @@ _setup_opencode_sequence() {
 
             mkdir -p "$HOME"/bin
             rm -f "$HOME"/bin/opencode
-            mv -f ./opencode-linux-x64/opencode "$HOME"/bin/
+            mv -f ./opencode "$HOME"/bin/
+            chmod ugoa+rx "$HOME"/bin/opencode
             currentExitStatus="$?"
         else
             # Not expected to do more than effectively put the binary in PATH .
@@ -60,7 +61,7 @@ _setup_opencode_sequence() {
 
 #alias opencodeUnix='wsl -d ubdist opencode'
 
-_setup_opencode() {
+_setup_opencode_config() {
     if _if_cygwin
     then
         local currentConfigDirMSW_unix=$(cygpath -u "$APPDATA")"/opencode"
@@ -79,6 +80,11 @@ _setup_opencode() {
     [[ -e "$HOME"/.config/opencode/opencode.json ]] && _messagePlain_warn 'warn: conflict: exists: opencode.json'
     [[ ! -e "$HOME"/.config/opencode/opencode.json ]] && _here_opencode | tee "$HOME"/.config/opencode/opencode.json > /dev/null
 
+    true
+}
+_setup_opencode() {
+    _setup_opencode_config
+
     "$scriptAbsoluteLocation" _setup_opencode_sequence "$@"
 }
 
@@ -90,6 +96,9 @@ if uname -a | grep -i cygwin > /dev/null 2>&1
 then
     #alias opencode=$(type -P codex 2>/dev/null)
     opencode() {
+        local currentConfigDirMSW_unix=$(cygpath -u "$APPDATA")"/opencode"
+        [[ ! -e "$currentConfigDirMSW_unix"/opencode.json ]] && _setup_opencode_config > /dev/null 2>&1
+        
         opencode_bin=$(type -P opencode)
 
         export OPENCODE_CONFIG=$(cygpath -w "$APPDATA")"\opencode\opencode.json"

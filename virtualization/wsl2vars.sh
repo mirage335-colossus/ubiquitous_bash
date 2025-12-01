@@ -101,6 +101,15 @@ _set_msw_apiToken() {
             export WSLENV="$WSLENV:OPENROUTER_API_KEY"
         fi
     fi
+    if [[ "$WSLENV" != "OPENCODE_API_KEY" ]] && [[ "$WSLENV" != "OPENCODE_API_KEY"* ]] && [[ "$WSLENV" != *"OPENCODE_API_KEY" ]] && [[ "$WSLENV" != *"OPENCODE_API_KEY"* ]]
+    then
+        if [[ "$WSLENV" == "" ]]
+        then
+            export WSLENV="OPENCODE_API_KEY"
+        else
+            export WSLENV="$WSLENV:OPENCODE_API_KEY"
+        fi
+    fi
     if [[ "$WSLENV" != "HF_AKI_KEY" ]] && [[ "$WSLENV" != "HF_AKI_KEY"* ]] && [[ "$WSLENV" != *"HF_AKI_KEY" ]] && [[ "$WSLENV" != *"HF_AKI_KEY"* ]]
     then
         if [[ "$WSLENV" == "" ]]
