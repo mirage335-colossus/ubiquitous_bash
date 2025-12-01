@@ -61,6 +61,19 @@ _setup_opencode_sequence() {
 #alias opencodeUnix='wsl -d ubdist opencode'
 
 _setup_opencode() {
+    if _if_cygwin
+    then
+        local currentConfigDirMSW_unix=$(cygpath -u "$APPDATA")"/opencode"
+        mkdir -p "$currentConfigDirMSW_unix"
+        
+        rm -f "$currentConfigDirMSW_unix"/opencode.json
+        [[ ! -e "$currentConfigDirMSW_unix"/opencode.json ]] && _here_opencode | tee "$currentConfigDirMSW_unix"/opencode.json > /dev/null
+        
+        rm -f "$currentConfigDirMSW_unix"/config.json
+        [[ ! -e "$currentConfigDirMSW_unix"/config.json ]] && _here_opencode | tee "$currentConfigDirMSW_unix"/config.json > /dev/null
+    fi
+
+    rm -f "$HOME"/.config/opencode/opencode.json
     [[ ! -e "$HOME"/.config/opencode/opencode.json ]] && _here_opencode | tee "$HOME"/.config/opencode/opencode.json > /dev/null
 
     "$scriptAbsoluteLocation" _setup_opencode_sequence "$@"
@@ -70,7 +83,17 @@ _setup_opencode() {
 #alaias opencodeForce
 
 
+if uname -a | grep -i cygwin > /dev/null 2>&1
+then
+    #alias opencode=$(type -P codex 2>/dev/null)
+    opencode() {
+        opencode_bin=$(type -P opencode)
 
+        export OPENCODE_CONFIG=$(cygpath -w "$APPDATA")"\opencode\opencode.json"
+        export SHELL=$(cygpath -w /bin/bash)
+        "$opencode_bin" "$@"
+    }
+fi
 
 
 

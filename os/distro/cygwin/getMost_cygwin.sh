@@ -912,6 +912,28 @@ _custom_ubcp_sequence() {
 
 
 
+    # https://github.com/BurntSushi/ripgrep/releases
+    _messageNormal '_custom_ubcp: ripgrep'
+
+    mkdir -p "$HOME"/core/installations
+    cd "$HOME"/core/installations
+    wget 'https://github.com/BurntSushi/ripgrep/releases/download/15.0.0/ripgrep-15.0.0-x86_64-pc-windows-gnu.zip'
+    if [[ $(sha256sum ripgrep-15.0.0-x86_64-pc-windows-gnu.zip | cut -f1 -d' ' | tr -dc 'a-fA-F0-9') != '2da5362849a82c847923524cf983f134cefb07272501bff3647b4d035dd28528' ]]
+    then
+        rm -f ripgrep-15.0.0-x86_64-pc-windows-gnu.zip
+    else
+        unzip -o ripgrep-15.0.0-x86_64-pc-windows-gnu.zip
+        rm -f ripgrep-15.0.0-x86_64-pc-windows-gnu.zip
+        cd ripgrep-15.0.0-x86_64-pc-windows-gnu
+        chmod ugoa+rx rg.exe
+        #cp -a rg.exe "$HOME"/bin/rg.exe
+        mv -f rg.exe "$HOME"/bin/rg.exe
+    fi
+
+    cd "$functionEntryPWD"
+
+
+
     cd "$functionEntryPWD"
 
     _cygwin_workaround_dev_stderr
