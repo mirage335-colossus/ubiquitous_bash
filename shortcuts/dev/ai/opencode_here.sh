@@ -42,10 +42,24 @@
 # TODO: May need to expand the 'buildAuto' prompt to require checking any file writing, editing, etc, if smaller model autonomy really is necessary.
 
 _here_opencode() {
-    cat << 'CZXWXcRMTo8EmM8i4d'
+
+    # TODO: Same value should be usable for both. May be untested.
+    local current_AI_localhost_ollama
+    current_AI_localhost_ollama="localhost"
+    local current_AI_localhost_lmstudio
+    current_AI_localhost_lmstudio="127.0.0.1"
+
+    #|| _if_wsl
+    if [[ -e /info_factoryName.txt ]] || [[ "$DOCKER" == "true" ]]
+    then
+        current_AI_localhost_ollama="host.docker.internal"
+        current_AI_localhost_lmstudio="host.docker.internal"
+    fi
+
+    cat << CZXWXcRMTo8EmM8i4d
 
 {
-  "$schema": "https://opencode.ai/config.json",
+  "\$schema": "https://opencode.ai/config.json",
   "agent": {
     "build": {
       "prompt": "Additional rules for this environment: use bash semantics, assume MSWindows is Cygwin."
@@ -90,7 +104,7 @@ _here_opencode() {
       "npm": "@ai-sdk/openai-compatible",
       "name": "Ollama (local)",
       "options": {
-        "baseURL": "http://localhost:11434/v1"
+        "baseURL": "http://$current_AI_localhost_ollama:11434/v1"
       },
       "models": {
         "Devstral-Small-2507-128k-virtuoso": {
@@ -111,7 +125,7 @@ _here_opencode() {
       "npm": "@ai-sdk/openai-compatible",
       "name": "LM Studio  (local)",
       "options": {
-        "baseURL": "http://127.0.0.1:1234/v1"
+        "baseURL": "http://$current_AI_localhost_lmstudio:1234/v1"
       },
       "models": {
         "nvidia_nvidia-nemotron-nano-9b-v2": {

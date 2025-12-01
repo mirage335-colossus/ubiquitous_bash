@@ -39,7 +39,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='3620520443'
-export ub_setScriptChecksum_contents='1258625020'
+export ub_setScriptChecksum_contents='1049808036'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -9995,10 +9995,24 @@ fi
 # TODO: May need to expand the 'buildAuto' prompt to require checking any file writing, editing, etc, if smaller model autonomy really is necessary.
 
 _here_opencode() {
-    cat << 'CZXWXcRMTo8EmM8i4d'
+
+    # TODO: Same value should be usable for both. May be untested.
+    local current_AI_localhost_ollama
+    current_AI_localhost_ollama="localhost"
+    local current_AI_localhost_lmstudio
+    current_AI_localhost_lmstudio="127.0.0.1"
+
+    #|| _if_wsl
+    if [[ -e /info_factoryName.txt ]] || [[ "$DOCKER" == "true" ]]
+    then
+        current_AI_localhost_ollama="host.docker.internal"
+        current_AI_localhost_lmstudio="host.docker.internal"
+    fi
+
+    cat << CZXWXcRMTo8EmM8i4d
 
 {
-  "$schema": "https://opencode.ai/config.json",
+  "\$schema": "https://opencode.ai/config.json",
   "agent": {
     "build": {
       "prompt": "Additional rules for this environment: use bash semantics, assume MSWindows is Cygwin."
@@ -10043,7 +10057,7 @@ _here_opencode() {
       "npm": "@ai-sdk/openai-compatible",
       "name": "Ollama (local)",
       "options": {
-        "baseURL": "http://localhost:11434/v1"
+        "baseURL": "http://$current_AI_localhost_ollama:11434/v1"
       },
       "models": {
         "Devstral-Small-2507-128k-virtuoso": {
@@ -10064,7 +10078,7 @@ _here_opencode() {
       "npm": "@ai-sdk/openai-compatible",
       "name": "LM Studio  (local)",
       "options": {
-        "baseURL": "http://127.0.0.1:1234/v1"
+        "baseURL": "http://$current_AI_localhost_lmstudio:1234/v1"
       },
       "models": {
         "nvidia_nvidia-nemotron-nano-9b-v2": {
@@ -10328,6 +10342,7 @@ then
         local currentConfigDirMSW_unix=$(cygpath -u "$APPDATA")"/opencode"
         [[ ! -e "$currentConfigDirMSW_unix"/opencode.json ]] && _setup_opencode_config > /dev/null 2>&1
         
+        local opencode_bin
         opencode_bin=$(type -P opencode)
 
         export OPENCODE_CONFIG=$(cygpath -w "$APPDATA")"\opencode\opencode.json"
@@ -10336,6 +10351,18 @@ then
     }
 fi
 
+if uname -a | grep -i 'microsoft' > /dev/null 2>&1 || uname -a | grep -i 'WSL2' > /dev/null 2>&1
+then
+    opencode() {
+        local opencode_bin
+        opencode_bin=$(type -P opencode)
+
+        # Should ensure proxy is started to use host LM Studio as well as Ollama .
+        _service_ollama_augment
+
+        "$opencode_bin" "$@"
+    }
+fi
 
 
 

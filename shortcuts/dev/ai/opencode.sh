@@ -99,6 +99,7 @@ then
         local currentConfigDirMSW_unix=$(cygpath -u "$APPDATA")"/opencode"
         [[ ! -e "$currentConfigDirMSW_unix"/opencode.json ]] && _setup_opencode_config > /dev/null 2>&1
         
+        local opencode_bin
         opencode_bin=$(type -P opencode)
 
         export OPENCODE_CONFIG=$(cygpath -w "$APPDATA")"\opencode\opencode.json"
@@ -107,5 +108,17 @@ then
     }
 fi
 
+if uname -a | grep -i 'microsoft' > /dev/null 2>&1 || uname -a | grep -i 'WSL2' > /dev/null 2>&1
+then
+    opencode() {
+        local opencode_bin
+        opencode_bin=$(type -P opencode)
+
+        # Should ensure proxy is started to use host LM Studio as well as Ollama .
+        _service_ollama_augment
+
+        "$opencode_bin" "$@"
+    }
+fi
 
 
