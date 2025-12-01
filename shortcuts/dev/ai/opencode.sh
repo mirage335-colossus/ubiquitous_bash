@@ -114,6 +114,8 @@ then
         local opencode_bin
         opencode_bin=$(type -P opencode)
 
+        # WARNING: Using LM Studio without Ollama is NOT SUPPORTED . 
+        # WARNING: If Ollama is not running, there may be at least >45second delay.
         # Should ensure proxy is started to use host LM Studio as well as Ollama .
         _service_ollama_augment
 
