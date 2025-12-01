@@ -158,7 +158,8 @@ if "%CYGWIN_ARCH%" == "64" (
 ) else (
   set CYGWIN_SETUP_EXE=setup-x86.exe
 )
-call :download "https://cygwin.org/%CYGWIN_SETUP_EXE%" "%CYGWIN_ROOT%\%CYGWIN_SETUP_EXE%"
+REM call :download "https://cygwin.org/%CYGWIN_SETUP_EXE%" "%CYGWIN_ROOT%\%CYGWIN_SETUP_EXE%"
+call :download "https://cygwin.com/%CYGWIN_SETUP_EXE%" "%CYGWIN_ROOT%\%CYGWIN_SETUP_EXE%"
 
 
 :: Cygwin command line options: https://cygwin.com/faq/faq.html#faq.setup.cli
