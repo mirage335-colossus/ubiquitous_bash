@@ -72,6 +72,17 @@ _install_certs() {
     _if_cygwin && sudo -n update-ca-trust
     [[ "$?" == "0" ]] && currentExitStatus="0"
 
+    if _if_cygwin
+    then
+        ! [[ -e /etc/pki/tls/cert.pem ]] && _messageError 'FAIL: bad: missing: /etc/pki/tls/cert.pem' && sleep 45 && _messageFAIL
+        ! [[ -L /etc/pki/tls/cert.pem ]] && _messageError 'FAIL: bad: link: /etc/pki/tls/cert.pem' && sleep 45 && _messageFAIL
+        ! cat /etc/pki/tls/cert.pem > /dev/null 2>&1 && _messageError 'FAIL: read: missing: /etc/pki/tls/cert.pem' && sleep 45 && _messageFAIL
+
+        ! [[ -e /etc/pki/tls/certs/ca-bundle.crt ]] && _messageError 'FAIL: bad: missing: /etc/pki/tls/certs/ca-bundle.crt' && sleep 45 && _messageFAIL
+        ! [[ -L /etc/pki/tls/certs/ca-bundle.crt ]] && _messageError 'FAIL: bad: link: /etc/pki/tls/certs/ca-bundle.crt' && sleep 45 && _messageFAIL
+        ! cat /etc/pki/tls/certs/ca-bundle.crt > /dev/null 2>&1 && _messageError 'FAIL: read: missing: /etc/pki/tls/certs/ca-bundle.crt' && sleep 45 && _messageFAIL
+    fi
+
     return "$currentExitStatus"
 }
 
