@@ -39,7 +39,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='3620520443'
-export ub_setScriptChecksum_contents='3919278091'
+export ub_setScriptChecksum_contents='248859272'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -18275,7 +18275,22 @@ _test-shell() {
 	return 0
 }
 
+_test-special() {
+	if type _if_cygwin > /dev/null 2>&1 && _if_cygwin
+	then
+		! [[ -e /etc/pki/tls/cert.pem ]] && _messageError 'FAIL: bad: missing: /etc/pki/tls/cert.pem' && sleep 45 && _messageFAIL
+		! [[ -L /etc/pki/tls/cert.pem ]] && _messageError 'FAIL: bad: link: /etc/pki/tls/cert.pem' && sleep 45 && _messageFAIL
+		! cat /etc/pki/tls/cert.pem > /dev/null 2>&1 && _messageError 'FAIL: read: missing: /etc/pki/tls/cert.pem' && sleep 45 && _messageFAIL
+
+		! [[ -e /etc/pki/tls/certs/ca-bundle.crt ]] && _messageError 'FAIL: bad: missing: /etc/pki/tls/certs/ca-bundle.crt' && sleep 45 && _messageFAIL
+		! [[ -L /etc/pki/tls/certs/ca-bundle.crt ]] && _messageError 'FAIL: bad: link: /etc/pki/tls/certs/ca-bundle.crt' && sleep 45 && _messageFAIL
+		! cat /etc/pki/tls/certs/ca-bundle.crt > /dev/null 2>&1 && _messageError 'FAIL: read: missing: /etc/pki/tls/certs/ca-bundle.crt' && sleep 45 && _messageFAIL
+	fi
+}
+
 _test() {
+	_test-special "$@"
+
 	_test-shell "$@"
 	_installation_nonet_default
 	
@@ -19045,8 +19060,16 @@ _package() {
 
 
 
+# CI/Build ONLY. Do NOT use with '_test', etc, during dist/OS build, end user client app installation, etc. Depends on internet connection and possibly fragile internet services!
+_test_https() {
+	_test-special
 
+	wget 'https://google.com ' -O /dev/null 2>&1 && _messageError 'FAIL: bad: wget https - google.com' && sleep 45 && _messageFAIL
+	#wget 'https://example.com ' -O /dev/null 2>&1 && _messageError 'FAIL: bad: wget https - example.com' && sleep 45 && _messageFAIL
 
+	curl -I https://google.com > /dev/null 2>&1 && _messageError 'FAIL: bad: curl https - google.com' && sleep 45 && _messageFAIL
+	#curl -I https://example.com > /dev/null 2>&1 && _messageError 'FAIL: bad: curl https - example.com' && sleep 45 && _messageFAIL
+}
 
 
 #####Program
