@@ -150,23 +150,23 @@ jobs:
           Set-Item -Path Env:devfast -Value ("${{ inputs.devfast }}")
           .\_bin wget 'https://google.com' -O /dev/null | tee /_test-wget.log
 
-      - name: report! cygwin links
-        shell: pwsh
-        timeout-minutes: 240
-        run: |
-          Set-Item -Path Env:devfast -Value ("${{ inputs.devfast }}")
-          .\_bin _report_cygwin_links | tee /_report_cygwin_links-from_installer.log
-      - name: release! _report_cygwin_links-from_installer.log
-        uses: softprops/action-gh-release@v1
-        with:
-          tag_name: build-${{ github.run_id }}-9999
-          name: build
-          files: |
-            /_report_cygwin_links-from_installer.log
-      - name: statement! _report_cygwin_links
-        run: |
-          cat /_report_cygwin_links-from_installer.log
-        shell: pwsh
+      #- name: report! cygwin links
+        #shell: pwsh
+        #timeout-minutes: 240
+        #run: |
+          #Set-Item -Path Env:devfast -Value ("${{ inputs.devfast }}")
+          #.\_bin _report_cygwin_links | tee /_report_cygwin_links-from_installer.log
+      #- name: release! _report_cygwin_links-from_installer.log
+        #uses: softprops/action-gh-release@v1
+        #with:
+          #tag_name: build-${{ github.run_id }}-9999
+          #name: build
+          #files: |
+            #/_report_cygwin_links-from_installer.log
+      #- name: statement! _report_cygwin_links
+        #run: |
+          #cat /_report_cygwin_links-from_installer.log
+        #shell: pwsh
 
       - name: scribe! info! github
         shell: pwsh
@@ -213,23 +213,23 @@ jobs:
           #exit $exitCode
           #}
 
-      - name: report! cygwin links
-        shell: pwsh
-        timeout-minutes: 240
-        run: |
-          Set-Item -Path Env:devfast -Value ("${{ inputs.devfast }}")
-          .\_bin _report_cygwin_links | tee /_report_cygwin_links-from_setupUbiquitous.log
-      - name: release! _report_cygwin_links-from_setupUbiquitous.log
-        uses: softprops/action-gh-release@v1
-        with:
-          tag_name: build-${{ github.run_id }}-9999
-          name: build
-          files: |
-            /_report_cygwin_links-from_setupUbiquitous.log
-      - name: statement! _report_cygwin_links
-        run: |
-          cat /_report_cygwin_links-from_setupUbiquitous.log
-        shell: pwsh
+      #- name: report! cygwin links
+        #shell: pwsh
+        #timeout-minutes: 240
+        #run: |
+          #Set-Item -Path Env:devfast -Value ("${{ inputs.devfast }}")
+          #.\_bin _report_cygwin_links | tee /_report_cygwin_links-from_setupUbiquitous.log
+      #- name: release! _report_cygwin_links-from_setupUbiquitous.log
+        #uses: softprops/action-gh-release@v1
+        #with:
+          #tag_name: build-${{ github.run_id }}-9999
+          #name: build
+          #files: |
+            #/_report_cygwin_links-from_setupUbiquitous.log
+      #- name: statement! _report_cygwin_links
+        #run: |
+          #cat /_report_cygwin_links-from_setupUbiquitous.log
+        #shell: pwsh
 
       - name: init
         shell: pwsh
@@ -259,23 +259,23 @@ jobs:
           #./_bin _getMost_cygwin | tee /_getMost_cygwin.log
           ./_bin _bin /cygdrive/c/core/infrastructure/ubiquitous_bash/ubiquitous_bash.sh _getMost_cygwin | tee /_getMost_cygwin.log
 
-      - name: report! cygwin links
-        shell: pwsh
-        timeout-minutes: 240
-        run: |
-          Set-Item -Path Env:devfast -Value ("${{ inputs.devfast }}")
-          .\_bin _report_cygwin_links | tee /_report_cygwin_links-from_getMost.log
-      - name: release! _report_cygwin_links-from_getMost.log
-        uses: softprops/action-gh-release@v1
-        with:
-          tag_name: build-${{ github.run_id }}-9999
-          name: build
-          files: |
-            /_report_cygwin_links-from_getMost.log
-      - name: statement! _report_cygwin_links
-        run: |
-          cat /_report_cygwin_links-from_getMost.log
-        shell: pwsh
+      #- name: report! cygwin links
+        #shell: pwsh
+        #timeout-minutes: 240
+        #run: |
+          #Set-Item -Path Env:devfast -Value ("${{ inputs.devfast }}")
+          #.\_bin _report_cygwin_links | tee /_report_cygwin_links-from_getMost.log
+      #- name: release! _report_cygwin_links-from_getMost.log
+        #uses: softprops/action-gh-release@v1
+        #with:
+          #tag_name: build-${{ github.run_id }}-9999
+          #name: build
+          #files: |
+            #/_report_cygwin_links-from_getMost.log
+      #- name: statement! _report_cygwin_links
+        #run: |
+          #cat /_report_cygwin_links-from_getMost.log
+        #shell: pwsh
 
       - name: _custom_ubcp
         shell: pwsh
@@ -284,23 +284,23 @@ jobs:
           #./_bin _custom_ubcp | tee /_custom_ubcp.log
           ./_bin _bin /cygdrive/c/core/infrastructure/ubiquitous_bash/ubiquitous_bash.sh _custom_ubcp | tee /_custom_ubcp.log
 
-      - name: report! cygwin links
-        shell: pwsh
-        timeout-minutes: 240
-        run: |
-          Set-Item -Path Env:devfast -Value ("${{ inputs.devfast }}")
-          .\_bin _report_cygwin_links | tee /_report_cygwin_links-custom_ubcp.log
-      - name: release! _report_cygwin_links-custom_ubcp.log
-        uses: softprops/action-gh-release@v1
-        with:
-          tag_name: build-${{ github.run_id }}-9999
-          name: build
-          files: |
-            /_report_cygwin_links-custom_ubcp.log
-      - name: statement! _report_cygwin_links
-        run: |
-          cat /_report_cygwin_links-custom_ubcp.log
-        shell: pwsh
+      #- name: report! cygwin links
+        #shell: pwsh
+        #timeout-minutes: 240
+        #run: |
+          #Set-Item -Path Env:devfast -Value ("${{ inputs.devfast }}")
+          #.\_bin _report_cygwin_links | tee /_report_cygwin_links-custom_ubcp.log
+      #- name: release! _report_cygwin_links-custom_ubcp.log
+       # uses: softprops/action-gh-release@v1
+        #with:
+          #tag_name: build-${{ github.run_id }}-9999
+          #name: build
+          #files: |
+            #/_report_cygwin_links-custom_ubcp.log
+      #- name: statement! _report_cygwin_links
+        #run: |
+          #cat /_report_cygwin_links-custom_ubcp.log
+        #shell: pwsh
 
       - name: _getMost_cygwin
         shell: pwsh
