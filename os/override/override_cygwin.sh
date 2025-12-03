@@ -1588,7 +1588,10 @@ _package-cygwin() {
 
 
 
-
+_report_cygwin_links() {
+	find /etc -iname '*.lnk'
+	find /usr -iname '*.lnk'
+}
 
 
 
