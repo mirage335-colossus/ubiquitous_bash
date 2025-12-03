@@ -1594,16 +1594,29 @@ _test-shell() {
 }
 
 _test-special() {
+	local currentFAIL=""
 	if type _if_cygwin > /dev/null 2>&1 && _if_cygwin
 	then
-		! [[ -e /etc/pki/tls/cert.pem ]] && _messageError 'FAIL: bad: missing: /etc/pki/tls/cert.pem' && sleep 45 && _messageFAIL
-		! [[ -L /etc/pki/tls/cert.pem ]] && _messageError 'FAIL: bad: link: /etc/pki/tls/cert.pem' && sleep 45 && _messageFAIL
-		! cat /etc/pki/tls/cert.pem > /dev/null 2>&1 && _messageError 'FAIL: read: missing: /etc/pki/tls/cert.pem' && sleep 45 && _messageFAIL
+		if [[ $(find /etc/pki/tls -type l ! -exec test -e {} \; -print | wc -c) != '0' ]]
+		then
+			_messageError 'FAIL: bad: broken symlinks: /etc/pki/tls'
+			find /etc/pki/tls -type l ! -exec test -e {} \; -print
+			sleep 45
+			currentFAIL="FAIL"
+		fi
+		
+		! [[ -e /etc/pki/tls/cert.pem ]] && _messageError 'FAIL: bad: missing: /etc/pki/tls/cert.pem' && sleep 45 && currentFAIL="FAIL"
+		! [[ -L /etc/pki/tls/cert.pem ]] && _messageError 'FAIL: bad: link: /etc/pki/tls/cert.pem' && sleep 45 && currentFAIL="FAIL"
+		! cat /etc/pki/tls/cert.pem > /dev/null 2>&1 && _messageError 'FAIL: read: missing: /etc/pki/tls/cert.pem' && sleep 45 && currentFAIL="FAIL"
 
-		! [[ -e /etc/pki/tls/certs/ca-bundle.crt ]] && _messageError 'FAIL: bad: missing: /etc/pki/tls/certs/ca-bundle.crt' && sleep 45 && _messageFAIL
-		! [[ -L /etc/pki/tls/certs/ca-bundle.crt ]] && _messageError 'FAIL: bad: link: /etc/pki/tls/certs/ca-bundle.crt' && sleep 45 && _messageFAIL
-		! cat /etc/pki/tls/certs/ca-bundle.crt > /dev/null 2>&1 && _messageError 'FAIL: read: missing: /etc/pki/tls/certs/ca-bundle.crt' && sleep 45 && _messageFAIL
+		! [[ -e /etc/pki/tls/certs/ca-bundle.crt ]] && _messageError 'FAIL: bad: missing: /etc/pki/tls/certs/ca-bundle.crt' && sleep 45 && currentFAIL="FAIL"
+		! [[ -L /etc/pki/tls/certs/ca-bundle.crt ]] && _messageError 'FAIL: bad: link: /etc/pki/tls/certs/ca-bundle.crt' && sleep 45 && currentFAIL="FAIL"
+		! cat /etc/pki/tls/certs/ca-bundle.crt > /dev/null 2>&1 && _messageError 'FAIL: read: missing: /etc/pki/tls/certs/ca-bundle.crt' && sleep 45 && currentFAIL="FAIL"
+
+		[[ "$currentFAIL" == "FAIL" ]] && _messageFAIL
 	fi
+
+	true
 }
 
 _test() {
