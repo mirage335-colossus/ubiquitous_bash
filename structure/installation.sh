@@ -1601,6 +1601,9 @@ _test-special() {
 		then
 			_messageError 'FAIL: bad: broken symlinks: /etc/pki/tls'
 			find /etc/pki/tls -type l ! -exec test -e {} \; -print
+			echo '---'
+			find /etc -type l ! -exec test -e {} \; -print
+			find /usr -type l ! -exec test -e {} \; -print
 			sleep 45
 			currentFAIL="FAIL"
 		fi
