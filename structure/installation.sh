@@ -2398,10 +2398,10 @@ _package() {
 _test_https() {
 	_test-special
 
-	wget 'https://google.com' -O /dev/null 2>&1 && _messageError 'FAIL: bad: wget https - google.com' && sleep 45 && _messageFAIL
-	#wget 'https://example.com' -O /dev/null 2>&1 && _messageError 'FAIL: bad: wget https - example.com' && sleep 45 && _messageFAIL
+	! wget 'https://google.com' -O /dev/null 2>&1 && _messageError 'FAIL: bad: wget https - google.com' && sleep 45 && _messageFAIL
+	#! wget 'https://example.com' -O /dev/null 2>&1 && _messageError 'FAIL: bad: wget https - example.com' && sleep 45 && _messageFAIL
 
-	curl -I 'https://google.com' > /dev/null 2>&1 && _messageError 'FAIL: bad: curl https - google.com' && sleep 45 && _messageFAIL
-	#curl -I 'https://example.com' > /dev/null 2>&1 && _messageError 'FAIL: bad: curl https - example.com' && sleep 45 && _messageFAIL
+	! curl -I 'https://google.com' > /dev/null 2>&1 && _messageError 'FAIL: bad: curl https - google.com' && sleep 45 && _messageFAIL
+	#! curl -I 'https://example.com' > /dev/null 2>&1 && _messageError 'FAIL: bad: curl https - example.com' && sleep 45 && _messageFAIL
 }
 
