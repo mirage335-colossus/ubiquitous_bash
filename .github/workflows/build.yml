@@ -155,7 +155,7 @@ jobs:
         timeout-minutes: 240
         run: |
           Set-Item -Path Env:devfast -Value ("${{ inputs.devfast }}")
-          .\_report_cygwin_links | tee /_report_cygwin_links-from_installer.log
+          .\_bin _report_cygwin_links | tee /_report_cygwin_links-from_installer.log
       - name: release! _report_cygwin_links-from_installer.log
         uses: softprops/action-gh-release@v1
         with:
@@ -218,7 +218,7 @@ jobs:
         timeout-minutes: 240
         run: |
           Set-Item -Path Env:devfast -Value ("${{ inputs.devfast }}")
-          .\_report_cygwin_links | tee /_report_cygwin_links-from_setupUbiquitous.log
+          .\_bin _report_cygwin_links | tee /_report_cygwin_links-from_setupUbiquitous.log
       - name: release! _report_cygwin_links-from_setupUbiquitous.log
         uses: softprops/action-gh-release@v1
         with:
@@ -264,7 +264,7 @@ jobs:
         timeout-minutes: 240
         run: |
           Set-Item -Path Env:devfast -Value ("${{ inputs.devfast }}")
-          .\_report_cygwin_links | tee /_report_cygwin_links-from_getMost.log
+          .\_bin _report_cygwin_links | tee /_report_cygwin_links-from_getMost.log
       - name: release! _report_cygwin_links-from_getMost.log
         uses: softprops/action-gh-release@v1
         with:
@@ -289,7 +289,7 @@ jobs:
         timeout-minutes: 240
         run: |
           Set-Item -Path Env:devfast -Value ("${{ inputs.devfast }}")
-          .\_report_cygwin_links | tee /_report_cygwin_links-custom_ubcp.log
+          .\_bin _report_cygwin_links | tee /_report_cygwin_links-custom_ubcp.log
       - name: release! _report_cygwin_links-custom_ubcp.log
         uses: softprops/action-gh-release@v1
         with:
@@ -367,7 +367,7 @@ jobs:
         timeout-minutes: 240
         run: |
           Set-Item -Path Env:devfast -Value ("${{ inputs.devfast }}")
-          .\_report_cygwin_links | tee /_report_cygwin_links-mitigate.log
+          .\_bin _report_cygwin_links | tee /_report_cygwin_links-mitigate.log
       - name: release! _report_cygwin_links-mitigate.log
         uses: softprops/action-gh-release@v1
         with:
