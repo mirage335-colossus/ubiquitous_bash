@@ -884,6 +884,17 @@ jobs:
 
 
 
+  rm_repack:
+    needs: [test_ubcp_release_mswLatest]
+    runs-on: ubuntu-latest
+    steps:
+      - name: release! delete! package_ubcp-core-repack.7z
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release delete-asset "build-${{ github.run_id }}-9999" "package_ubcp-core-repack.7z" -y || true
+
+
 
 
 
@@ -1201,17 +1212,6 @@ jobs:
             ./rotten_compressed.sh
             ./ubcore_compressed.sh
             ./ubiquitous_bash_compressed.sh
-
-
-  cleanup_package_ubcp_core_repack:
-    needs: [test_ubcp_release_mswLatest]
-    runs-on: ubuntu-latest
-    steps:
-      - name: delete package_ubcp-core-repack.7z
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          gh release delete-asset "build-${{ github.run_id }}-9999" "package_ubcp-core-repack.7z" -y || true
 
 
 
