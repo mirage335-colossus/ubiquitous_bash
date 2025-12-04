@@ -707,7 +707,7 @@ jobs:
         shell: bash
         timeout-minutes: 120
         run: |
-          mv package_ubcp-core-repack.7z package_ubcp-core.7z
+          mv _local/upgradeTmp/package_ubcp-core.7z _local/upgradeTmp/package_ubcp-core-repack.7z
 
       - name: release!
         uses: softprops/action-gh-release@v1
