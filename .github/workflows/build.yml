@@ -685,6 +685,216 @@ jobs:
             _local/upgradeTmp/ubcp-binReport-UNIX_Linux
             _local/upgradeTmp/ubcp-homeReport-UNIX_Linux
 
+      - name: scribe! info! github! repack
+        shell: bash
+        run: |
+          ! echo ${{ github.repository }} | tee "_local/upgradeTmp/package_ubcp-core/ubcp/cygwin"/info-github-repack && exit 1
+          ! echo build-${{ github.run_id }}-9999 | tee -a "_local/upgradeTmp/package_ubcp-core/ubcp/cygwin"/info-github-repack && exit 1
+          ! date +"%Y-%m-%d" | tee -a "_local/upgradeTmp/package_ubcp-core/ubcp/cygwin"/info-github-repack && exit 1
+          true
+
+      - name: _build_fallback_upgrade-ubcp-compress
+        shell: bash
+        timeout-minutes: 120
+        run: |
+          export skimfast=${{ inputs.skimfast }}
+          echo $skimfast
+          export devfast=${{ inputs.devfast }}
+          echo $devfast
+          ./ubiquitous_bash.sh _bin-build_import _build_fallback_upgrade-ubcp-compress
+
+      - name: mv! package_ubcp-core-repack
+        shell: bash
+        timeout-minutes: 120
+        run: |
+          mv package_ubcp-core.7z package_ubcp-core-repack.7z
+
+      - name: release!
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: build-${{ github.run_id }}-9999
+          name: build_upgrade
+          files: |
+            _local/upgradeTmp/package_ubcp-core-repack.7z
+
+
+
+
+
+
+  test_ubcp_release_mswLatest:
+    needs: [ build_ubcp-binReport-UNIX_Linux]
+    runs-on: windows-latest
+    #runs-on: windows-2022
+    steps:
+      #- name: write! secrets
+        #id: secret-file1
+        #run: |
+          #$secretFile = "/rclone.conf"
+          #$encodedBytes = [System.Convert]::FromBase64String($env:rclone_limited_conf_base64)
+          #Set-Content $secretFile -Value $encodedBytes -AsByteStream
+        #shell: pwsh
+        #env:
+          #rclone_limited_conf_base64: ${{ secrets.rclone_limited_conf_base64 }}
+      - name: _getCore_ubcp
+        shell: pwsh
+        timeout-minutes: 180
+        run: |
+          mkdir /core
+          mkdir /core/infrastructure
+          cd /core/infrastructure
+
+
+          # ATTRIBUTION-AI: OpenAI GPT-5.1-Codex-High  2025-12-04  (API)
+          
+          $token      = "${{ secrets.GITHUB_TOKEN }}"
+          $tagName    = "build-${{ github.run_id }}-9999"
+          $repo       = "mirage335-colossus/ubiquitous_bash"
+          $releaseUri = "https://api.github.com/repos/$repo/releases/tags/$tagName"
+          $headers    = @{
+            Authorization = "Bearer $token"
+            "User-Agent"  = "actions-download-asset"
+          }
+
+          $release = Invoke-RestMethod -Uri $releaseUri -Headers $headers -ErrorAction Stop
+          $asset   = $release.assets |
+            Where-Object { $_.name -eq "package_ubcp-core-repack.7z" } |
+            Select-Object -First 1
+
+          if (-not $asset) {
+            throw "No asset named package_ubcp-core-repack.7z found on release $tagName."
+          }
+
+          Invoke-WebRequest `
+            -Uri $asset.browser_download_url `
+            -Headers @{
+              Authorization = "Bearer $token"
+              Accept        = "application/octet-stream"
+              "User-Agent"  = "actions-download-asset"
+            } `
+            -OutFile "./package_ubcp-core.7z" `
+            -ErrorAction Stop
+
+
+          7z -y x ./package_ubcp-core.7z | tee /_getCore_ubcp.log
+          rm ./package_ubcp-core.7z
+      - name: _getMinimal_cloud
+        shell: pwsh
+        timeout-minutes: 180
+        run: |
+          $ErrorActionPreference="SilentlyContinue"
+          $ErrorActionPreference = "Continue"
+          Set-MpPreference -DisableRealtimeMonitoring $true
+          date > /wasHere.log
+          pwd >> /wasHere.log
+          cat /wasHere.log
+          choco install qalculate -y
+          choco install dos2unix -y
+          choco install nmap -y
+          git config --global core.autocrlf input
+          git config --global core.eol lf
+          choco install 7zip.install -y
+          choco install rclone -y
+      - uses: actions/checkout@v2
+      - name: statement! ls
+        shell: pwsh
+        run: |
+          ls /
+          ls
+          Get-CimInstance -ClassName Win32_LogicalDisk | Select-Object -Property DeviceID,@{'Name' = 'FreeSpace (GB)'
+          Expression= { [int]($_.FreeSpace / 1GB) }}
+
+      - name: report! cygwin links
+        shell: pwsh
+        timeout-minutes: 240
+        run: |
+          Set-Item -Path Env:devfast -Value ("${{ inputs.devfast }}")
+          .\_bin _report_cygwin_links | tee /_report_cygwin_links-unpack.log
+
+      - name: _test-lean
+        shell: pwsh
+        timeout-minutes: 240
+        run: |
+          Set-Item -Path Env:devfast -Value ("true")
+          ./_test | tee /_test-lean.log
+          $SEL = cat /_test-lean.log | Select-String -Pattern 'FAIL' -CaseSensitive -SimpleMatch
+          if ($SEL -ne $null)
+          {
+          cat /bin/false/pwsh
+          }
+          else
+          {
+          echo true | Out-Null
+          }
+      - name: _compile-cygwin
+        shell: pwsh
+        timeout-minutes: 240
+        run: |
+          ./_bin.bat ./compile.sh | tee /_compile-cygwin.log
+      - name: _test-lean-compressed
+        shell: pwsh
+        timeout-minutes: 240
+        run: |
+          ./_bin.bat ./lean_compressed.sh _test | tee /_test-lean-compressed.log
+          $SEL = cat /_test-lean-compressed.log | Select-String -Pattern 'FAIL' -CaseSensitive -SimpleMatch
+          if ($SEL -ne $null)
+          {
+          cat /bin/false/pwsh
+          }
+          else
+          {
+          echo true | Out-Null
+          }
+
+      - name: _setupUbiquitous
+        shell: pwsh
+        timeout-minutes: 240
+        run: |
+          .\_setupUbiquitous | tee /_setupUbiquitous.log
+
+      - name: report! cygwin links
+        shell: pwsh
+        timeout-minutes: 240
+        run: |
+          Set-Item -Path Env:devfast -Value ("${{ inputs.devfast }}")
+          .\_bin _report_cygwin_links | tee /_report_cygwin_links-setupUbiquitous.log
+
+      - name: _test-lean
+        shell: pwsh
+        timeout-minutes: 240
+        run: |
+          Set-Item -Path Env:devfast -Value ("${{ inputs.devfast }}")
+          ./_test | tee /_test-lean.log
+          $SEL = cat /_test-lean.log | Select-String -Pattern 'FAIL' -CaseSensitive -SimpleMatch
+          if ($SEL -ne $null)
+          {
+          cat /bin/false/pwsh
+          }
+          else
+          {
+          echo true | Out-Null
+          }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      
+
+      
+
 
 
 

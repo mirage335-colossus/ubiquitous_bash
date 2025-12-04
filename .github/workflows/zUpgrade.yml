@@ -209,11 +209,27 @@ jobs:
           ls
           Get-CimInstance -ClassName Win32_LogicalDisk | Select-Object -Property DeviceID,@{'Name' = 'FreeSpace (GB)'
           Expression= { [int]($_.FreeSpace / 1GB) }}
+
+      - name: report! cygwin links
+        shell: pwsh
+        timeout-minutes: 240
+        run: |
+          Set-Item -Path Env:devfast -Value ("${{ inputs.devfast }}")
+          .\_bin _report_cygwin_links | tee /_report_cygwin_links-unpack.log
+
       - name: _setupUbiquitous
         shell: pwsh
         timeout-minutes: 240
         run: |
           .\_setupUbiquitous | tee /_setupUbiquitous.log
+
+      - name: report! cygwin links
+        shell: pwsh
+        timeout-minutes: 240
+        run: |
+          Set-Item -Path Env:devfast -Value ("${{ inputs.devfast }}")
+          .\_bin _report_cygwin_links | tee /_report_cygwin_links-setupUbiquitous-1.log
+
       - name: _test-lean
         shell: pwsh
         timeout-minutes: 240
@@ -249,6 +265,14 @@ jobs:
         timeout-minutes: 240
         run: |
           .\_setupUbiquitous | tee /_setupUbiquitous.log
+
+      - name: report! cygwin links
+        shell: pwsh
+        timeout-minutes: 240
+        run: |
+          Set-Item -Path Env:devfast -Value ("${{ inputs.devfast }}")
+          .\_bin _report_cygwin_links | tee /_report_cygwin_links-setupUbiquitous-2.log
+
       - name: _custom_splice_opensslConfig
         shell: pwsh
         timeout-minutes: 240
