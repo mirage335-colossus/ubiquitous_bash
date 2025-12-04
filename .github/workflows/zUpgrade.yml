@@ -115,6 +115,13 @@ jobs:
         timeout-minutes: 120
         run: |
           ./ubiquitous_bash.sh _bin-build_import _build_fallback_upgrade-ubcp-extract
+
+      - name: report! cygwin links
+        shell: pwsh
+        timeout-minutes: 240
+        run: |
+          .\_bin _report_cygwin_links | tee /_report_cygwin_links-extract.log
+
       - name: _build_fallback_upgrade-ubcp-upgrade-ubiquitous_bash
         shell: bash
         timeout-minutes: 120
@@ -124,6 +131,13 @@ jobs:
           export devfast=${{ inputs.devfast }}
           echo $devfast
           ./ubiquitous_bash.sh _bin-build_import _build_fallback_upgrade-ubcp-upgrade-ubiquitous_bash
+
+      - name: report! cygwin links
+        shell: pwsh
+        timeout-minutes: 240
+        run: |
+          .\_bin _report_cygwin_links | tee /_report_cygwin_links-upgrade.log
+
       - name: _build_fallback_upgrade-ubcp-report-binReport
         shell: bash
         timeout-minutes: 120
