@@ -53,6 +53,9 @@ _local/ubcp
 .search
 search/
 
+_local/_bash
+_local/ubiquitous_bash
+
 
 .c_*
 .c_*/
