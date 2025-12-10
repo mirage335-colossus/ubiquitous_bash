@@ -171,6 +171,14 @@ _here_opencode() {
             }
           }
         },
+        "openai/gpt-5.1-codex-max:online": {
+          "name": "openai/gpt-5.1-codex-max:online",
+          "options": {
+            "provider": {
+              "sort": "throughput"
+            }
+          }
+        },
         "openai/gpt-5.1-codex:online": {
           "name": "openai/gpt-5.1-codex:online",
           "options": {

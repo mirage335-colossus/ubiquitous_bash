@@ -62,23 +62,59 @@ _setup_opencode_sequence() {
 #alias opencodeUnix='wsl -d ubdist opencode'
 
 _setup_opencode_config() {
+
     if _if_cygwin
     then
-        local currentConfigDirMSW_unix=$(cygpath -u "$APPDATA")"/opencode"
+        # ATTENTION: WARNING: Cached data may interfere with experiments to identify the correct 'opencode' directory.
+        # "$USERPROFILE"/.local/share/opencode
+        # "$USERPROFILE"/.local/state/opencode
+        
+        local currentConfigDirMSW_unix
+        
+        currentConfigDirMSW_unix=$(cygpath -u "$APPDATA")
+        currentConfigDirMSW_unix="$currentConfigDirMSW_unix"/opencode
         mkdir -p "$currentConfigDirMSW_unix"
+
         
         #rm -f "$currentConfigDirMSW_unix"/opencode.json
+        mv -f "$currentConfigDirMSW_unix"/opencode.json "$currentConfigDirMSW_unix"/opencode.json.bak."$sessionid" 2>/dev/null
+        _messagePlain_probe "$currentConfigDirMSW_unix"/opencode.json
         [[ -e "$currentConfigDirMSW_unix"/opencode.json ]] && _messagePlain_warn 'warn: conflict: exists: Cygwin/MSW: opencode.json'
         [[ ! -e "$currentConfigDirMSW_unix"/opencode.json ]] && _here_opencode | tee "$currentConfigDirMSW_unix"/opencode.json > /dev/null
         
         #rm -f "$currentConfigDirMSW_unix"/config.json
+        mv -f "$currentConfigDirMSW_unix"/config.json "$currentConfigDirMSW_unix"/config.json.bak."$sessionid" 2>/dev/null
+        _messagePlain_probe "$currentConfigDirMSW_unix"/config.json
+        [[ -e "$currentConfigDirMSW_unix"/config.json ]] && _messagePlain_warn 'warn: conflict: exists: Cygwin/MSW: config.json'
+        [[ ! -e "$currentConfigDirMSW_unix"/config.json ]] && _here_opencode | tee "$currentConfigDirMSW_unix"/config.json > /dev/null
+        
+
+        currentConfigDirMSW_unix=$(cygpath -u "$USERPROFILE")
+        currentConfigDirMSW_unix="$currentConfigDirMSW_unix"/.config/opencode
+        mkdir -p "$currentConfigDirMSW_unix"
+        
+        #rm -f "$currentConfigDirMSW_unix"/opencode.json
+        mv -f "$currentConfigDirMSW_unix"/opencode.json "$currentConfigDirMSW_unix"/opencode.json.bak."$sessionid" 2>/dev/null
+        _messagePlain_probe "$currentConfigDirMSW_unix"/opencode.json
+        [[ -e "$currentConfigDirMSW_unix"/opencode.json ]] && _messagePlain_warn 'warn: conflict: exists: Cygwin/MSW: opencode.json'
+        [[ ! -e "$currentConfigDirMSW_unix"/opencode.json ]] && _here_opencode | tee "$currentConfigDirMSW_unix"/opencode.json > /dev/null
+        
+        #rm -f "$currentConfigDirMSW_unix"/config.json
+        mv -f "$currentConfigDirMSW_unix"/config.json "$currentConfigDirMSW_unix"/config.json.bak."$sessionid" 2>/dev/null
+        _messagePlain_probe "$currentConfigDirMSW_unix"/config.json
         [[ -e "$currentConfigDirMSW_unix"/config.json ]] && _messagePlain_warn 'warn: conflict: exists: Cygwin/MSW: config.json'
         [[ ! -e "$currentConfigDirMSW_unix"/config.json ]] && _here_opencode | tee "$currentConfigDirMSW_unix"/config.json > /dev/null
     fi
 
-    #rm -f "$HOME"/.config/opencode/opencode.json
-    [[ -e "$HOME"/.config/opencode/opencode.json ]] && _messagePlain_warn 'warn: conflict: exists: opencode.json'
-    [[ ! -e "$HOME"/.config/opencode/opencode.json ]] && _here_opencode | tee "$HOME"/.config/opencode/opencode.json > /dev/null
+    if ! _if_cygwin
+    then
+        #_messagePlain_probe "$HOME"/.config/opencode
+
+        #rm -f "$HOME"/.config/opencode/opencode.json
+        mv -f "$HOME"/.config/opencode/opencode.json "$HOME"/.config/opencode/opencode.json.bak."$sessionid" 2>/dev/null
+        [[ -e "$HOME"/.config/opencode/opencode.json ]] && _messagePlain_warn 'warn: conflict: exists: opencode.json'
+        [[ ! -e "$HOME"/.config/opencode/opencode.json ]] && _here_opencode | tee "$HOME"/.config/opencode/opencode.json > /dev/null
+    fi
 
     true
 }
