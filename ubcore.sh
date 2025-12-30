@@ -39,7 +39,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='3620520443'
-export ub_setScriptChecksum_contents='3638515499'
+export ub_setScriptChecksum_contents='2846036414'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -34472,6 +34472,46 @@ then
 fi
 
 
+
+
+
+
+# AI LLM use often does not require more than the basic understanding or allusion conveyed by documentation. Some loss of detail and less likely, accuracy, may be a very acceptable tradeoff.
+#  Particularly, processing of quoting, escaping, etc, through JSON, through 'jq', etc, may be an absolutely unacceptable concern to avoid by filtering.
+_ai_filter() {
+    # Delete control characters, delete carriage returns (leaving UNIX only line endings), delete risky input characters.
+    # Then, translate common but unnecessary unicode characters.
+    # Last, delete all control characters outside the allowlist.
+    LC_ALL=C tr -d '\000-\010\013\014\016-\037\177' | \
+    LC_ALL=C tr -d '\r' | \
+    LC_ALL=C tr '"<>()?:;[]{}\\*&'"'" '_' | LC_ALL=C tr '\042\047\050\051\077\072\073\133\135\173\175\134\052\046' '_' \ |
+    perl -CS -pe '
+        s/[\x{2010}-\x{2015}\x{2212}]/-/g;                 # dashes/minus -> -
+        s/\x{00D7}/x/g;                                    # multiplication sign -> x
+        s/[\x{00A0}\x{2000}-\x{200A}\x{202F}\x{205F}\x{3000}]/ /g;   # wide/no-break spaces -> space
+        s/[\x{200B}-\x{200D}\x{FEFF}]//g;                  # zero-width/BOM -> delete
+        s/[\x{202A}-\x{202E}\x{2066}-\x{2069}]//g;         # bidi controls -> delete
+        s/[\x{2028}\x{2029}]/\n/g;                         # line/para separators -> newline
+        s/\x{2026}/.../g;                                  # ellipsis
+        s/[\x{2022}\x{00B7}]/-/g;                          # bullets/dots -> -
+    ' | \
+    LC_ALL=C tr -c 'A-Za-z0-9 .,_+/\\\-=\n\t' '_' | LC_ALL=C tr -dc 'A-Za-z0-9 .,_+/\\\-=\n\t' '_'
+
+
+}
+
+
+
+
+
+_test_cloud_ai() {
+    _wantDep curl
+    _wantDep jq
+    _wantDep perl
+
+    _wantDep grep
+    _wantDep tr
+}
 
 #screenscraper-nix
 

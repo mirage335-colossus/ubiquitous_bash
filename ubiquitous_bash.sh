@@ -39,7 +39,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='3620520443'
-export ub_setScriptChecksum_contents='2203796206'
+export ub_setScriptChecksum_contents='1715025965'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -42520,6 +42520,46 @@ fi
 
 
 
+
+
+
+# AI LLM use often does not require more than the basic understanding or allusion conveyed by documentation. Some loss of detail and less likely, accuracy, may be a very acceptable tradeoff.
+#  Particularly, processing of quoting, escaping, etc, through JSON, through 'jq', etc, may be an absolutely unacceptable concern to avoid by filtering.
+_ai_filter() {
+    # Delete control characters, delete carriage returns (leaving UNIX only line endings), delete risky input characters.
+    # Then, translate common but unnecessary unicode characters.
+    # Last, delete all control characters outside the allowlist.
+    LC_ALL=C tr -d '\000-\010\013\014\016-\037\177' | \
+    LC_ALL=C tr -d '\r' | \
+    LC_ALL=C tr '"<>()?:;[]{}\\*&'"'" '_' | LC_ALL=C tr '\042\047\050\051\077\072\073\133\135\173\175\134\052\046' '_' \ |
+    perl -CS -pe '
+        s/[\x{2010}-\x{2015}\x{2212}]/-/g;                 # dashes/minus -> -
+        s/\x{00D7}/x/g;                                    # multiplication sign -> x
+        s/[\x{00A0}\x{2000}-\x{200A}\x{202F}\x{205F}\x{3000}]/ /g;   # wide/no-break spaces -> space
+        s/[\x{200B}-\x{200D}\x{FEFF}]//g;                  # zero-width/BOM -> delete
+        s/[\x{202A}-\x{202E}\x{2066}-\x{2069}]//g;         # bidi controls -> delete
+        s/[\x{2028}\x{2029}]/\n/g;                         # line/para separators -> newline
+        s/\x{2026}/.../g;                                  # ellipsis
+        s/[\x{2022}\x{00B7}]/-/g;                          # bullets/dots -> -
+    ' | \
+    LC_ALL=C tr -c 'A-Za-z0-9 .,_+/\\\-=\n\t' '_' | LC_ALL=C tr -dc 'A-Za-z0-9 .,_+/\\\-=\n\t' '_'
+
+
+}
+
+
+
+
+
+_setup_cloud_ai() {
+    _wantDep curl
+    _wantDep jq
+    _wantDep perl
+
+    _wantDep grep
+    _wantDep tr
+}
+
 #screenscraper-nix
 
 # ATTENTION: Expect new software development will be required. Some relevant capability apparently already exists from OBS, ffmpeg , gstreamer , etc . Due to apparent lack of 'NVIDIA Game Stream' , most likely a GPU-agnostic real-time h264 or similar video codec would also be helpful.
@@ -62781,6 +62821,7 @@ _init_deps() {
 	export enUb_clog=""
 	export enUb_x11=""
 	export enUb_researchEngine=""
+	export enUb_cloud_ai=""
 	export enUb_ollama=""
 	export enUb_ai_dataset=""
 	export enUb_ai_semanticAssist=""
@@ -62919,6 +62960,10 @@ _deps_search() {
 	export enUb_search="true"
 }
 
+_deps_cloud_ai() {
+	export enUb_cloud_ai="true"
+}
+
 _deps_cloud() {
 	_deps_repo
 	_deps_proxy
@@ -62928,6 +62973,8 @@ _deps_cloud() {
 	_deps_fakehome
 	
 	export enUb_cloud="true"
+
+	_deps_cloud_ai
 }
 
 _deps_cloud_self() {
@@ -63018,6 +63065,8 @@ _deps_ai() {
 	_deps_notLean
 	export enUb_researchEngine="true"
 	export enUb_ollama="true"
+
+	_deps_cloud_ai
 }
 _deps_ai_dataset() {
 	_deps_ai
@@ -63834,6 +63883,7 @@ _compile_bash_deps() {
 		
 		# WARNING: Only known production use in this context is '_cloud_reset' , '_cloud_unhook' , and similar.
 		_deps_cloud
+		_deps_cloud_ai
 		#_deps_cloud_self
 		#_deps_cloud_build
 		
@@ -63914,6 +63964,7 @@ _compile_bash_deps() {
 		# WARNING: Although 'cloud' may be relevant to 'cautossh', not included for now, to avoid remotely pulling client software.
 		# ATTENTION: Override with 'ops.sh', 'core.sh', or similar.
 		#_deps_cloud
+		#_deps_cloud_ai
 		#_deps_cloud_self
 		#_deps_cloud_build
 		
@@ -64124,6 +64175,7 @@ _compile_bash_deps() {
 		_deps_search
 		
 		#_deps_cloud
+		_deps_cloud_ai
 		#_deps_cloud_self
 		#_deps_cloud_build
 
@@ -64245,6 +64297,7 @@ _compile_bash_deps() {
 		
 		_deps_search
 		
+		_deps_cloud_ai
 		#_deps_cloud
 		#_deps_cloud_self
 		#_deps_cloud_build
@@ -64391,6 +64444,7 @@ _compile_bash_deps() {
 		_deps_search
 		
 		_deps_cloud
+		_deps_cloud_ai
 		_deps_cloud_self
 		_deps_cloud_build
 
@@ -64822,6 +64876,9 @@ _compile_bash_shortcuts() {
 	( [[ "$enUb_dev_ai" == "true" ]] ) && includeScriptList+=( "shortcuts/dev/ai"/codex.sh )
 	( [[ "$enUb_dev_ai" == "true" ]] ) && includeScriptList+=( "shortcuts/dev/ai"/opencode_here.sh )
 	( [[ "$enUb_dev_ai" == "true" ]] ) && includeScriptList+=( "shortcuts/dev/ai"/opencode.sh )
+
+
+	( ( [[ "$enUb_dev_heavy" == "true" ]] ) || [[ "$enUb_ollama_shortcuts" == "true" ]] || [[ "$enUb_cloud_heavy" == "true" ]] || [[ "$enUb_cloud" == "true" ]] || [[ "$enUb_ollama" == "true" ]] || [[ "$enUb_researchEngine" == "true" ]] || [[ "$enUb_cloud_ai" == "true" ]] ) && includeScriptList+=( "shortcuts/cloud-ai"/ai_backend.sh )
 	
 	
 	( [[ "$enUb_cloud_heavy" == "true" ]] || [[ "$enUb_cloud" == "true" ]] ) && includeScriptList+=( "shortcuts/cloud/self/screenScraper"/screenScraper-nix.sh )

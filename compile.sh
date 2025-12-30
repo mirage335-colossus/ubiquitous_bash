@@ -39,7 +39,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='3620520443'
-export ub_setScriptChecksum_contents='2495925183'
+export ub_setScriptChecksum_contents='4246169472'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -6651,6 +6651,7 @@ _init_deps() {
 	export enUb_clog=""
 	export enUb_x11=""
 	export enUb_researchEngine=""
+	export enUb_cloud_ai=""
 	export enUb_ollama=""
 	export enUb_ai_dataset=""
 	export enUb_ai_semanticAssist=""
@@ -6789,6 +6790,10 @@ _deps_search() {
 	export enUb_search="true"
 }
 
+_deps_cloud_ai() {
+	export enUb_cloud_ai="true"
+}
+
 _deps_cloud() {
 	_deps_repo
 	_deps_proxy
@@ -6798,6 +6803,8 @@ _deps_cloud() {
 	_deps_fakehome
 	
 	export enUb_cloud="true"
+
+	_deps_cloud_ai
 }
 
 _deps_cloud_self() {
@@ -6888,6 +6895,8 @@ _deps_ai() {
 	_deps_notLean
 	export enUb_researchEngine="true"
 	export enUb_ollama="true"
+
+	_deps_cloud_ai
 }
 _deps_ai_dataset() {
 	_deps_ai
@@ -7704,6 +7713,7 @@ _compile_bash_deps() {
 		
 		# WARNING: Only known production use in this context is '_cloud_reset' , '_cloud_unhook' , and similar.
 		_deps_cloud
+		_deps_cloud_ai
 		#_deps_cloud_self
 		#_deps_cloud_build
 		
@@ -7784,6 +7794,7 @@ _compile_bash_deps() {
 		# WARNING: Although 'cloud' may be relevant to 'cautossh', not included for now, to avoid remotely pulling client software.
 		# ATTENTION: Override with 'ops.sh', 'core.sh', or similar.
 		#_deps_cloud
+		#_deps_cloud_ai
 		#_deps_cloud_self
 		#_deps_cloud_build
 		
@@ -7994,6 +8005,7 @@ _compile_bash_deps() {
 		_deps_search
 		
 		#_deps_cloud
+		_deps_cloud_ai
 		#_deps_cloud_self
 		#_deps_cloud_build
 
@@ -8115,6 +8127,7 @@ _compile_bash_deps() {
 		
 		_deps_search
 		
+		_deps_cloud_ai
 		#_deps_cloud
 		#_deps_cloud_self
 		#_deps_cloud_build
@@ -8261,6 +8274,7 @@ _compile_bash_deps() {
 		_deps_search
 		
 		_deps_cloud
+		_deps_cloud_ai
 		_deps_cloud_self
 		_deps_cloud_build
 
@@ -8692,6 +8706,9 @@ _compile_bash_shortcuts() {
 	( [[ "$enUb_dev_ai" == "true" ]] ) && includeScriptList+=( "shortcuts/dev/ai"/codex.sh )
 	( [[ "$enUb_dev_ai" == "true" ]] ) && includeScriptList+=( "shortcuts/dev/ai"/opencode_here.sh )
 	( [[ "$enUb_dev_ai" == "true" ]] ) && includeScriptList+=( "shortcuts/dev/ai"/opencode.sh )
+
+
+	( ( [[ "$enUb_dev_heavy" == "true" ]] ) || [[ "$enUb_ollama_shortcuts" == "true" ]] || [[ "$enUb_cloud_heavy" == "true" ]] || [[ "$enUb_cloud" == "true" ]] || [[ "$enUb_ollama" == "true" ]] || [[ "$enUb_researchEngine" == "true" ]] || [[ "$enUb_cloud_ai" == "true" ]] ) && includeScriptList+=( "shortcuts/cloud-ai"/ai_backend.sh )
 	
 	
 	( [[ "$enUb_cloud_heavy" == "true" ]] || [[ "$enUb_cloud" == "true" ]] ) && includeScriptList+=( "shortcuts/cloud/self/screenScraper"/screenScraper-nix.sh )

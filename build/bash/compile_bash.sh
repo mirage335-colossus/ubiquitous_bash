@@ -52,6 +52,7 @@ _compile_bash_deps() {
 		
 		# WARNING: Only known production use in this context is '_cloud_reset' , '_cloud_unhook' , and similar.
 		_deps_cloud
+		_deps_cloud_ai
 		#_deps_cloud_self
 		#_deps_cloud_build
 		
@@ -132,6 +133,7 @@ _compile_bash_deps() {
 		# WARNING: Although 'cloud' may be relevant to 'cautossh', not included for now, to avoid remotely pulling client software.
 		# ATTENTION: Override with 'ops.sh', 'core.sh', or similar.
 		#_deps_cloud
+		#_deps_cloud_ai
 		#_deps_cloud_self
 		#_deps_cloud_build
 		
@@ -342,6 +344,7 @@ _compile_bash_deps() {
 		_deps_search
 		
 		#_deps_cloud
+		_deps_cloud_ai
 		#_deps_cloud_self
 		#_deps_cloud_build
 
@@ -463,6 +466,7 @@ _compile_bash_deps() {
 		
 		_deps_search
 		
+		_deps_cloud_ai
 		#_deps_cloud
 		#_deps_cloud_self
 		#_deps_cloud_build
@@ -609,6 +613,7 @@ _compile_bash_deps() {
 		_deps_search
 		
 		_deps_cloud
+		_deps_cloud_ai
 		_deps_cloud_self
 		_deps_cloud_build
 
@@ -1040,6 +1045,9 @@ _compile_bash_shortcuts() {
 	( [[ "$enUb_dev_ai" == "true" ]] ) && includeScriptList+=( "shortcuts/dev/ai"/codex.sh )
 	( [[ "$enUb_dev_ai" == "true" ]] ) && includeScriptList+=( "shortcuts/dev/ai"/opencode_here.sh )
 	( [[ "$enUb_dev_ai" == "true" ]] ) && includeScriptList+=( "shortcuts/dev/ai"/opencode.sh )
+
+
+	( ( [[ "$enUb_dev_heavy" == "true" ]] ) || [[ "$enUb_ollama_shortcuts" == "true" ]] || [[ "$enUb_cloud_heavy" == "true" ]] || [[ "$enUb_cloud" == "true" ]] || [[ "$enUb_ollama" == "true" ]] || [[ "$enUb_researchEngine" == "true" ]] || [[ "$enUb_cloud_ai" == "true" ]] ) && includeScriptList+=( "shortcuts/cloud-ai"/ai_backend.sh )
 	
 	
 	( [[ "$enUb_cloud_heavy" == "true" ]] || [[ "$enUb_cloud" == "true" ]] ) && includeScriptList+=( "shortcuts/cloud/self/screenScraper"/screenScraper-nix.sh )

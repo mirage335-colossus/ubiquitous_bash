@@ -40,6 +40,7 @@ _init_deps() {
 	export enUb_clog=""
 	export enUb_x11=""
 	export enUb_researchEngine=""
+	export enUb_cloud_ai=""
 	export enUb_ollama=""
 	export enUb_ai_dataset=""
 	export enUb_ai_semanticAssist=""
@@ -178,6 +179,10 @@ _deps_search() {
 	export enUb_search="true"
 }
 
+_deps_cloud_ai() {
+	export enUb_cloud_ai="true"
+}
+
 _deps_cloud() {
 	_deps_repo
 	_deps_proxy
@@ -187,6 +192,8 @@ _deps_cloud() {
 	_deps_fakehome
 	
 	export enUb_cloud="true"
+
+	_deps_cloud_ai
 }
 
 _deps_cloud_self() {
@@ -277,6 +284,8 @@ _deps_ai() {
 	_deps_notLean
 	export enUb_researchEngine="true"
 	export enUb_ollama="true"
+
+	_deps_cloud_ai
 }
 _deps_ai_dataset() {
 	_deps_ai
