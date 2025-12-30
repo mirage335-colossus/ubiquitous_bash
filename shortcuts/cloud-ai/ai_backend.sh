@@ -67,16 +67,34 @@ _ai_backend() {
 
 
 
+_vector_cloud_ai_procedure() {
+    _safeEcho_newline "$1"
+}
+
+
+
+# WARNING: Intended for manual single-instance testing ONLY!
 _vector_cloud_ai_sequence() {
     _start
 
     mkdir -p "$scriptLocal"/_vector_cloud_ai
 
-    echo 'the quick brown fox jumps over the lazy dog' > "$scriptLocal"/_vector_cloud_ai/sample.md
+    echo 'the quick brown fox jumps over the lazy dog' > "$scriptLocal"/_vector_cloud_ai/sample1.md
+
+    echo 'lorem ipsum' > "$scriptLocal"/_vector_cloud_ai/sample2.md
+
+    echo 'nothing to see here' > "$scriptLocal"/_vector_cloud_ai/sample3.md
+
+    _messageNormal '_vector_cloud_ai: ls -R'
+    ls -R "$scriptLocal"/_vector_cloud_ai
 
 
+    _messageNormal '_vector_cloud_ai: dispatch'
+    find "$scriptLocal"/_vector_cloud_ai -type f -name '*' -print0 | xargs -0 -x -L 1 -P 2 bash -c '"'"$scriptAbsoluteLocation"'"'' --embed _vector_cloud_ai_procedure "$@"' _
 
 
+    _messageNormal '_vector_cloud_ai: cat'
+    cat "$scriptLocal"/_vector_cloud_ai/*
 
 
     _safeRMR "$scriptLocal"/_vector_cloud_ai
