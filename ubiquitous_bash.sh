@@ -39,7 +39,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='3620520443'
-export ub_setScriptChecksum_contents='3421218111'
+export ub_setScriptChecksum_contents='3360633222'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -42638,6 +42638,10 @@ _test_cloud_ai() {
 
 
 _scribble() {
+    _start
+
+    [[ ! -e "$1" ]] && _messageError 'FAIL: missing: "$1"' && _stop 1
+
     # eg. /stuff
     local currentKnowledgebase_dir=$(_getAbsoluteLocation "$1")
     local currentKnowledgebase_name=$(basename "$currentKnowledgebase_dir")
@@ -42660,7 +42664,7 @@ _scribble() {
 
 _vector_scribble_procedure() {
     
-    ( printf '%s: %s: ' "$sessionid" "$1" >&2 )
+    ( printf '%s: %s: %s \n' "$sessionid" "$1" "$current_output_dir" >&2 )
     
 }
 
@@ -42668,13 +42672,28 @@ _vector_scribble_procedure() {
 _vector_scribble_sequence() {
     _start
 
+
     mkdir -p "$scriptLocal"/_vector_scribble
+    mkdir -p "$scriptLocal"/_vector_scribble/subdir
+    echo 'the quick brown fox jumps over the lazy dog' > "$scriptLocal"/_vector_scribble/subdir/sample1.md
+    echo 'lorem ipsum' > "$scriptLocal"/_vector_scribble/subdir/sample2.md
+    echo 'nothing to see here' > "$scriptLocal"/_vector_scribble/subdir/sample3.md
+    [[ ! -e "$scriptLocal"/_vector_scribble ]] && _messageError 'FAIL: missing: "$scriptLocal"/_vector_scribble' && _stop 1
 
-    echo 'the quick brown fox jumps over the lazy dog' > "$scriptLocal"/_vector_scribble/sample1.md
 
-    echo 'lorem ipsum' > "$scriptLocal"/_vector_scribble/sample2.md
+    # eg. "$scriptLocal"/_vector_scribble
+    export currentKnowledgebase_dir=$(_getAbsoluteLocation "$scriptLocal"/_vector_scribble)
+    export currentKnowledgebase_name=$(basename "$currentKnowledgebase_dir")
 
-    echo 'nothing to see here' > "$scriptLocal"/_vector_scribble/sample3.md
+    export current_activity_dir=$(_getAbsoluteFolder "$scriptLocal"/_vector_scribble)
+
+    # eg. "$scriptLocal"/.scribbleAssist_bubble/_vector_scribble
+    export current_output_dir="$current_activity_dir"/.scribbleAssist_bubble/"$currentKnowledgebase_name"
+    ! mkdir -p "$current_output_dir" && _messageError 'FAIL: mkdir: '"$current_output_dir"' ' && _stop 1
+
+
+
+
 
     ( echo '... _vector_scribble: ls -R' >&2 )
     ls -R "$scriptLocal"/_vector_scribble
@@ -42688,7 +42707,14 @@ _vector_scribble_sequence() {
     cat "$scriptLocal"/_vector_scribble/*
 
 
+
+
+
+
+
     _safeRMR "$scriptLocal"/_vector_scribble
+    _safeRMR "$scriptLocal"/.scribbleAssist_bubble/_vector_scribble
+    rmdir "$scriptLocal"/.scribbleAssist_bubble 2> /dev/null
 
     _stop
 }
