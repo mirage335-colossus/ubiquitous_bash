@@ -39,7 +39,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='3620520443'
-export ub_setScriptChecksum_contents='4246169472'
+export ub_setScriptChecksum_contents='2906367384'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -6652,6 +6652,7 @@ _init_deps() {
 	export enUb_x11=""
 	export enUb_researchEngine=""
 	export enUb_cloud_ai=""
+	export enUb_ai_processor=""
 	export enUb_ollama=""
 	export enUb_ai_dataset=""
 	export enUb_ai_semanticAssist=""
@@ -6792,6 +6793,8 @@ _deps_search() {
 
 _deps_cloud_ai() {
 	export enUb_cloud_ai="true"
+	
+	export enUb_ai_processor="true"
 }
 
 _deps_cloud() {
@@ -8708,9 +8711,13 @@ _compile_bash_shortcuts() {
 	( [[ "$enUb_dev_ai" == "true" ]] ) && includeScriptList+=( "shortcuts/dev/ai"/opencode.sh )
 
 
+
 	( ( [[ "$enUb_dev_heavy" == "true" ]] ) || [[ "$enUb_ollama_shortcuts" == "true" ]] || [[ "$enUb_cloud_heavy" == "true" ]] || [[ "$enUb_cloud" == "true" ]] || [[ "$enUb_ollama" == "true" ]] || [[ "$enUb_researchEngine" == "true" ]] || [[ "$enUb_cloud_ai" == "true" ]] ) && includeScriptList+=( "shortcuts/cloud-ai"/ai_backend.sh )
+
+	( ( [[ "$enUb_dev_heavy" == "true" ]] ) || [[ "$enUb_ollama_shortcuts" == "true" ]] || [[ "$enUb_cloud_heavy" == "true" ]] || [[ "$enUb_cloud" == "true" ]] || [[ "$enUb_ollama" == "true" ]] || [[ "$enUb_researchEngine" == "true" ]] || [[ "$enUb_cloud_ai" == "true" ]] || [[ "$enUb_ai_processor" == "true" ]] ) && includeScriptList+=( "shortcuts/cloud-ai/processor"/ai_scribble.sh )
+
 	
-	
+
 	( [[ "$enUb_cloud_heavy" == "true" ]] || [[ "$enUb_cloud" == "true" ]] ) && includeScriptList+=( "shortcuts/cloud/self/screenScraper"/screenScraper-nix.sh )
 	( [[ "$enUb_cloud_heavy" == "true" ]] || [[ "$enUb_cloud" == "true" ]] ) && includeScriptList+=( "shortcuts/cloud/self/screenScraper"/screenScraper-msw.sh )
 	

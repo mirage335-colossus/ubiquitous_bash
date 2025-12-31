@@ -39,7 +39,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='3620520443'
-export ub_setScriptChecksum_contents='1715025965'
+export ub_setScriptChecksum_contents='3421218111'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -42531,7 +42531,7 @@ _ai_filter() {
     # Last, delete all control characters outside the allowlist.
     LC_ALL=C tr -d '\000-\010\013\014\016-\037\177' | \
     LC_ALL=C tr -d '\r' | \
-    LC_ALL=C tr '"<>()?:;[]{}\\*&'"'" '_' | LC_ALL=C tr '\042\047\050\051\077\072\073\133\135\173\175\134\052\046' '_' \ |
+    LC_ALL=C tr '"<>()?:;[]{}\\*&'"'" '_' | LC_ALL=C tr '\042\047\050\051\077\072\073\133\135\173\175\134\052\046' '_' | \
     perl -CS -pe '
         s/[\x{2010}-\x{2015}\x{2212}]/-/g;                 # dashes/minus -> -
         s/\x{00D7}/x/g;                                    # multiplication sign -> x
@@ -42542,7 +42542,114 @@ _ai_filter() {
         s/\x{2026}/.../g;                                  # ellipsis
         s/[\x{2022}\x{00B7}]/-/g;                          # bullets/dots -> -
     ' | \
-    LC_ALL=C tr -c 'A-Za-z0-9 .,_+/\\\-=\n\t' '_' | LC_ALL=C tr -dc 'A-Za-z0-9 .,_+/\\\-=\n\t' '_'
+    LC_ALL=C tr -c 'A-Za-z0-9 .,_+/\\\-=\n\t' '_' | LC_ALL=C tr -dc 'A-Za-z0-9 .,_+/\\\-=\n\t'
+}
+
+
+
+
+# WARNING: CAUTION: DANGER: Unlike most other 'ubiquitous_bash' functions, this does NOT provide full abstraction. Calling this with a pattern - dispatch, gibberish detection, etc, with dedicated "$safeTmp" files, is STRICTLY NECESSARY.
+#
+# WARNING: Calling the AI model once (writing to /dev/null) may be necessary to ensure (eg. ollama) inference server is ready.
+#
+# WARNING: Gibberish and offensive content detection are STRICTLY NECESSARY regardless of whether the model supposedly has a 'safety' layer. Processing very large amounts of content WILL result in some offensive gibberish.
+#
+# ATTENTION: WARNING: It is necessary to reuse a "$safeTmp" directory, as creating new instances can be prohibitively slow (especially, but not limited to MSWindows/Cygwin - UNIX/Linux can also be too slow in this situation).
+#
+#find "$1" -type f -name '*.sh' -print0 | xargs -0 -x -L 1 -P 1 bash -c '"'"$scriptAbsoluteLocation"'"'' --embed _semanticAssist_bash_procedure "$@"' _
+#
+_ai_backend() {
+    local currentAImodel="$1"
+    #default... Nemotron-3-Nano-30B-A3B-256k-virtuoso
+
+    local currentAIprovider="$2"
+    #if ... OPENROUTER_API_KEY ...
+    #default... ollama
+
+
+    
+    local currentMaxTime="$3"
+
+    local current_keepalive_time="$4"
+
+
+
+    #jq -Rs '{model:"Llama-3-augment", prompt:., stream: false}' | _ai_filter | curl -fsS --max-time 120 -X POST -H "Content-Type: application/json" --data-binary @- http://localhost:11434/api/generate | _ai_filter | jq -r '.response'
+
+    ##provider: { "order": ["SambaNova", "Fireworks", "Hyperbolic"]
+    ##provider: { "order": ["Lambda", "Fireworks"], "sort": "latency" }
+    ##provider: { "order": ["Fireworks"], "sort": "throughput" }
+    #jq -Rs '{ model: "meta-llama/llama-3.1-405b-instruct", provider: { "order": ["Fireworks"], "sort": "throughput" }, messages: [{"role": "user", "content": .}] }' | curl -fsS --max-time 120 --keepalive-time 300 --compressed --tcp-fastopen --http2 -X POST https://openrouter.ai/api/v1/chat/completions -H "Content-Type: application/json" -H "Authorization: Bearer $OPENROUTER_API_KEY" --data-binary @- | jq -r '.choices[0].message.content'
+
+    false
+}
+
+
+
+
+
+
+_vector_cloud_ai_procedure() {
+    _safeEcho_newline "$1"
+}
+
+# WARNING: Intended for manual single-instance testing ONLY!
+_vector_cloud_ai_sequence() {
+    _start
+
+    mkdir -p "$scriptLocal"/_vector_cloud_ai
+
+    echo 'the quick brown fox jumps over the lazy dog' > "$scriptLocal"/_vector_cloud_ai/sample1.md
+
+    echo 'lorem ipsum' > "$scriptLocal"/_vector_cloud_ai/sample2.md
+
+    echo 'nothing to see here' > "$scriptLocal"/_vector_cloud_ai/sample3.md
+
+    _messageNormal '_vector_cloud_ai: ls -R'
+    ls -R "$scriptLocal"/_vector_cloud_ai
+
+
+    _messageNormal '_vector_cloud_ai: dispatch'
+    find "$scriptLocal"/_vector_cloud_ai -type f -name '*' -print0 | xargs -0 -x -L 1 -P 2 bash -c '"'"$scriptAbsoluteLocation"'"'' --embed _vector_cloud_ai_procedure "$@"' _
+
+
+    _messageNormal '_vector_cloud_ai: cat'
+    cat "$scriptLocal"/_vector_cloud_ai/*
+
+
+    _safeRMR "$scriptLocal"/_vector_cloud_ai
+
+    _stop
+}
+_vector_cloud_ai() {
+    "$scriptAbsoluteLocation" _vector_cloud_ai_sequence "$@"
+}
+
+_test_cloud_ai() {
+    _wantGetDep curl
+    _wantGetDep jq
+    _wantGetDep perl
+
+    _wantGetDep grep
+    _wantGetDep tr
+}
+
+
+
+
+_scribble() {
+    # eg. /stuff
+    local currentKnowledgebase_dir=$(_getAbsoluteLocation "$1")
+    local currentKnowledgebase_name=$(basename "$currentKnowledgebase_dir")
+
+    local current_activity_dir=$(_getAbsoluteFolder "$1")
+
+    # eg. /.scribbleAssist_bubble/stuff
+    local current_output_dir="$current_activity_dir"/.scribbleAssist_bubble/"$currentKnowledgebase_name"
+    ! mkdir -p "$current_output_dir" && _messageError 'FAIL: mkdir: '"$current_output_dir"' ' && _stop 1
+
+
+
 
 
 }
@@ -42551,13 +42658,48 @@ _ai_filter() {
 
 
 
-_setup_cloud_ai() {
-    _wantDep curl
-    _wantDep jq
-    _wantDep perl
+_vector_scribble_procedure() {
+    
+    ( printf '%s: %s: ' "$sessionid" "$1" >&2 )
+    
+}
 
-    _wantDep grep
-    _wantDep tr
+# WARNING: Intended for manual single-instance testing ONLY!
+_vector_scribble_sequence() {
+    _start
+
+    mkdir -p "$scriptLocal"/_vector_scribble
+
+    echo 'the quick brown fox jumps over the lazy dog' > "$scriptLocal"/_vector_scribble/sample1.md
+
+    echo 'lorem ipsum' > "$scriptLocal"/_vector_scribble/sample2.md
+
+    echo 'nothing to see here' > "$scriptLocal"/_vector_scribble/sample3.md
+
+    ( echo '... _vector_scribble: ls -R' >&2 )
+    ls -R "$scriptLocal"/_vector_scribble
+
+
+    ( echo '... _vector_scribble: dispatch' >&2 )
+    find "$scriptLocal"/_vector_scribble -type f -name '*' -print0 | xargs -0 -x -L 1 -P 2 bash -c '"'"$scriptAbsoluteLocation"'"'' --embed _vector_scribble_procedure "$@"' _
+
+
+    ( echo '... _vector_scribble: cat' >&2 )
+    cat "$scriptLocal"/_vector_scribble/*
+
+
+    _safeRMR "$scriptLocal"/_vector_scribble
+
+    _stop
+}
+_vector_scribble() {
+    "$scriptAbsoluteLocation" _vector_scribble_sequence "$@"
+}
+
+_test_scribble() {
+    
+    _test_cloud_ai "$@"
+
 }
 
 #screenscraper-nix
@@ -62822,6 +62964,7 @@ _init_deps() {
 	export enUb_x11=""
 	export enUb_researchEngine=""
 	export enUb_cloud_ai=""
+	export enUb_ai_processor=""
 	export enUb_ollama=""
 	export enUb_ai_dataset=""
 	export enUb_ai_semanticAssist=""
@@ -62962,6 +63105,8 @@ _deps_search() {
 
 _deps_cloud_ai() {
 	export enUb_cloud_ai="true"
+	
+	export enUb_ai_processor="true"
 }
 
 _deps_cloud() {
@@ -64878,9 +65023,13 @@ _compile_bash_shortcuts() {
 	( [[ "$enUb_dev_ai" == "true" ]] ) && includeScriptList+=( "shortcuts/dev/ai"/opencode.sh )
 
 
+
 	( ( [[ "$enUb_dev_heavy" == "true" ]] ) || [[ "$enUb_ollama_shortcuts" == "true" ]] || [[ "$enUb_cloud_heavy" == "true" ]] || [[ "$enUb_cloud" == "true" ]] || [[ "$enUb_ollama" == "true" ]] || [[ "$enUb_researchEngine" == "true" ]] || [[ "$enUb_cloud_ai" == "true" ]] ) && includeScriptList+=( "shortcuts/cloud-ai"/ai_backend.sh )
+
+	( ( [[ "$enUb_dev_heavy" == "true" ]] ) || [[ "$enUb_ollama_shortcuts" == "true" ]] || [[ "$enUb_cloud_heavy" == "true" ]] || [[ "$enUb_cloud" == "true" ]] || [[ "$enUb_ollama" == "true" ]] || [[ "$enUb_researchEngine" == "true" ]] || [[ "$enUb_cloud_ai" == "true" ]] || [[ "$enUb_ai_processor" == "true" ]] ) && includeScriptList+=( "shortcuts/cloud-ai/processor"/ai_scribble.sh )
+
 	
-	
+
 	( [[ "$enUb_cloud_heavy" == "true" ]] || [[ "$enUb_cloud" == "true" ]] ) && includeScriptList+=( "shortcuts/cloud/self/screenScraper"/screenScraper-nix.sh )
 	( [[ "$enUb_cloud_heavy" == "true" ]] || [[ "$enUb_cloud" == "true" ]] ) && includeScriptList+=( "shortcuts/cloud/self/screenScraper"/screenScraper-msw.sh )
 	

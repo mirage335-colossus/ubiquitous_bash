@@ -41,6 +41,7 @@ _init_deps() {
 	export enUb_x11=""
 	export enUb_researchEngine=""
 	export enUb_cloud_ai=""
+	export enUb_ai_processor=""
 	export enUb_ollama=""
 	export enUb_ai_dataset=""
 	export enUb_ai_semanticAssist=""
@@ -181,6 +182,8 @@ _deps_search() {
 
 _deps_cloud_ai() {
 	export enUb_cloud_ai="true"
+	
+	export enUb_ai_processor="true"
 }
 
 _deps_cloud() {

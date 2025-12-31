@@ -71,8 +71,6 @@ _vector_cloud_ai_procedure() {
     _safeEcho_newline "$1"
 }
 
-
-
 # WARNING: Intended for manual single-instance testing ONLY!
 _vector_cloud_ai_sequence() {
     _start
@@ -105,15 +103,11 @@ _vector_cloud_ai() {
     "$scriptAbsoluteLocation" _vector_cloud_ai_sequence "$@"
 }
 
-
-
-
-
 _test_cloud_ai() {
-    _wantDep curl
-    _wantDep jq
-    _wantDep perl
+    _wantGetDep curl
+    _wantGetDep jq
+    _wantGetDep perl
 
-    _wantDep grep
-    _wantDep tr
+    _wantGetDep grep
+    _wantGetDep tr
 }
