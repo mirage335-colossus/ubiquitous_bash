@@ -39,7 +39,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='3620520443'
-export ub_setScriptChecksum_contents='3360633222'
+export ub_setScriptChecksum_contents='2471672793'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -42574,6 +42574,23 @@ _ai_backend() {
 
 
 
+    # WARNING: ATTENTION: NOTICE: TODO: Use 'inference_cache_dir' if set. Do not cache otherwise.
+    # TODO: Inference cache .
+    #export inference_cache_dir="$current_output_dir"/inference_cache/
+    #
+    # Only cache if response is <2k compressed base64 .
+    # HASHHASHHASH.tmp -> compress response -> pad to 2k -> append to raw flat file
+    # find/retrieve relevant block using hash - grep, etc - then decompress and use the cached result
+    #
+    # input prompt is not cached - only output response is cached - hash is sufficient to 'compress' and identify the input prompt
+    #
+    # Appending to raw flat file will require file locking.
+    # Due to the low stakes, if the lock file does not contain the calling sessionid, etc, writing the cache should simply be abandoned.
+    #
+    # 2k block arrangement is important to prevent attempts to get the output to include hashes matching some input hashes... searching only for hashes at regular intervals prevents the need for truly random 'salts', etc
+
+
+
     #jq -Rs '{model:"Llama-3-augment", prompt:., stream: false}' | _ai_filter | curl -fsS --max-time 120 -X POST -H "Content-Type: application/json" --data-binary @- http://localhost:11434/api/generate | _ai_filter | jq -r '.response'
 
     ##provider: { "order": ["SambaNova", "Fireworks", "Hyperbolic"]
@@ -42637,35 +42654,116 @@ _test_cloud_ai() {
 
 
 
-_scribble() {
-    _start
 
-    [[ ! -e "$1" ]] && _messageError 'FAIL: missing: "$1"' && _stop 1
+_scribble_chunk_crossref() {
 
-    # eg. /stuff
-    local currentKnowledgebase_dir=$(_getAbsoluteLocation "$1")
-    local currentKnowledgebase_name=$(basename "$currentKnowledgebase_dir")
+    # if ... not input file ... then generate crossref
 
-    local current_activity_dir=$(_getAbsoluteFolder "$1")
 
-    # eg. /.scribbleAssist_bubble/stuff
-    local current_output_dir="$current_activity_dir"/.scribbleAssist_bubble/"$currentKnowledgebase_name"
-    ! mkdir -p "$current_output_dir" && _messageError 'FAIL: mkdir: '"$current_output_dir"' ' && _stop 1
+    export crossref_sessionid=$(_uid 28)
+    mkdir -p "$safeTmp"/"$crossref_sessionid"
+
+
+
+    # GENERATE: TODO: Call ai_backend, loop, gibberish/etc detection.
 
 
 
 
+    _safeRMR "$safeTmp"/"$crossref_sessionid"
 
+    false
 }
 
 
 
 
+_scribble_chunk() {
+   
+
+    ( printf '%s: %s: %s \n' "$sessionid" "$1" "$scribbleOutputFile" >&2 )
+
+
+
+    # GENERATE: TODO: Call ai_backend, loop, gibberish/etc detection.
+
+
+
+    #find ... dispatch... _scribble_chunk_crossref...
+
+
+
+    #write - annotation, crossref - the bubble
+
+
+   false
+}
+
+
+
+
+_scribble_file() {
+    # WARNING: TODO: Unique sessionid, subdirectory of "$safeTmp", _safeRMR that subdirectory, etc.
+    export scribble_file_sessionid=$(_uid 28)
+    mkdir -p "$safeTmp"/"$scribble_file_sessionid"
+
+
+    # split chunks, _scribble_chunk...
+
+    
+
+    _safeRMR "$safeTmp"/"$scribble_file_sessionid"
+
+    false
+}
+
+
+
 
 _vector_scribble_procedure() {
+
+    # ... TODO - Optional user query, to output only chunks/files relevant to the user query.
+    # using an already pre-processed dataset is still recommended for that
+    # WARNING: $currentKnowledgebase_name , $current_output_dir ... must already have a prefix if a user query is involved, to prevent collision
+
+
+    export scribbleInputFile="$1"
+    local scribbleInputFolder=$(_getAbsoluteFolder "$scribbleInputFile")
+    local scribbleInputName=$(basename "$scribbleInputFile")
+
+    local scribbleOutputCommon=$(_getAbsoluteLocation "$current_activity_dir")
+
+    local scribbleSubDir="${scribbleInputFolder#$scribbleOutputCommon}"
+
+    local scribbleOutputFolder="$scribbleOutputCommon"/.scribbleAssist_bubble"$scribbleSubDir"
+    export scribbleOutputFile="$scribbleOutputFolder"/"$scribbleInputName".scribbleAssist_bubble.txt
+
+
     
-    ( printf '%s: %s: %s \n' "$sessionid" "$1" "$current_output_dir" >&2 )
+
+
+
+
+
+
+
+
+    #$scribbleInputFile
+    #"$safeTmp"/"$scribble_sessionid"
+    # .../chunk001.txt , etc
+    # .../bubbleHeader001.txt , etc
+    #"$scribbleOutputFile"
+    _scribble_file
+
+
+
+
+
+    # WARNING: Do NOT write anything to output file until everything is absolutely very definitely totally complete.
+
+    # ... find other files/chunks/etc, compare recursively
     
+
 }
 
 # WARNING: Intended for manual single-instance testing ONLY!
@@ -42693,6 +42791,11 @@ _vector_scribble_sequence() {
 
 
 
+    
+    # TODO: Inference cache variable with ai_backend will use if set.
+    #export inference_cache_dir="$current_output_dir"/inference_cache/
+
+
 
 
     ( echo '... _vector_scribble: ls -R' >&2 )
@@ -42704,7 +42807,7 @@ _vector_scribble_sequence() {
 
 
     ( echo '... _vector_scribble: cat' >&2 )
-    cat "$scriptLocal"/_vector_scribble/*
+    find "$scriptLocal"/_vector_scribble/* -type f -name '*' -exec cat {} \;
 
 
 

@@ -52,6 +52,23 @@ _ai_backend() {
 
 
 
+    # WARNING: ATTENTION: NOTICE: TODO: Use 'inference_cache_dir' if set. Do not cache otherwise.
+    # TODO: Inference cache .
+    #export inference_cache_dir="$current_output_dir"/inference_cache/
+    #
+    # Only cache if response is <2k compressed base64 .
+    # HASHHASHHASH.tmp -> compress response -> pad to 2k -> append to raw flat file
+    # find/retrieve relevant block using hash - grep, etc - then decompress and use the cached result
+    #
+    # input prompt is not cached - only output response is cached - hash is sufficient to 'compress' and identify the input prompt
+    #
+    # Appending to raw flat file will require file locking.
+    # Due to the low stakes, if the lock file does not contain the calling sessionid, etc, writing the cache should simply be abandoned.
+    #
+    # 2k block arrangement is important to prevent attempts to get the output to include hashes matching some input hashes... searching only for hashes at regular intervals prevents the need for truly random 'salts', etc
+
+
+
     #jq -Rs '{model:"Llama-3-augment", prompt:., stream: false}' | _ai_filter | curl -fsS --max-time 120 -X POST -H "Content-Type: application/json" --data-binary @- http://localhost:11434/api/generate | _ai_filter | jq -r '.response'
 
     ##provider: { "order": ["SambaNova", "Fireworks", "Hyperbolic"]
