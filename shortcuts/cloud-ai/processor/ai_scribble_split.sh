@@ -111,6 +111,8 @@ _scribble_split() {
 
         let currentChunk=currentChunk+1
     done
+
+    return 0
 }
 
 
