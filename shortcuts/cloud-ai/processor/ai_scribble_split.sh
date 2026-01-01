@@ -132,6 +132,9 @@ _vector_scribble_split_sequence() {
     cat "$scriptAbsoluteLocation" | _ai_filter | sha256sum >&2
     cat "$safeTmp"/_vector_scribble_split_"$scribble_split_sessionid"/chunk_small_*.txt | sha256sum >&2
 
+    cat "$safeTmp"/_vector_scribble_split_"$scribble_split_sessionid"/chunk_small_*.txt > "$scriptAbsoluteFolder"/chunk_assembled.txt
+    cat "$scriptAbsoluteLocation" | _ai_filter > "$scriptAbsoluteFolder"/original_filtered.txt
+
 
     _safeRMR "$safeTmp"/_vector_scribble_split_"$scribble_split_sessionid"
     _stop

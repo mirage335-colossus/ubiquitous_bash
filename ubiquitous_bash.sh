@@ -39,7 +39,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='3620520443'
-export ub_setScriptChecksum_contents='3997044076'
+export ub_setScriptChecksum_contents='2928584453'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -15079,11 +15079,22 @@ _getMost_cygwin() {
 
 
 
+_cygwin_workaround_custom_nsswitch() {
+    echo 'passwd: files
+group:  files' | tee -a /etc/nsswitch.conf > /dev/null
+
+    return 0
+}
+
+
+
 _custom_ubcp_prog() {
 	true
 }
 _custom_ubcp_sequence() {
 	_cygwin_workaround_dev_stderr
+
+    _cygwin_workaround_custom_nsswitch
 
     local functionEntryPWD
     functionEntryPWD="$PWD"
@@ -42937,6 +42948,9 @@ _vector_scribble_split_sequence() {
 
     cat "$scriptAbsoluteLocation" | _ai_filter | sha256sum >&2
     cat "$safeTmp"/_vector_scribble_split_"$scribble_split_sessionid"/chunk_small_*.txt | sha256sum >&2
+
+    cat "$safeTmp"/_vector_scribble_split_"$scribble_split_sessionid"/chunk_small_*.txt > "$scriptAbsoluteFolder"/chunk_assembled.txt
+    cat "$scriptAbsoluteLocation" | _ai_filter > "$scriptAbsoluteFolder"/original_filtered.txt
 
 
     _safeRMR "$safeTmp"/_vector_scribble_split_"$scribble_split_sessionid"

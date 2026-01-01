@@ -828,11 +828,22 @@ _getMost_cygwin() {
 
 
 
+_cygwin_workaround_custom_nsswitch() {
+    echo 'passwd: files
+group:  files' | tee -a /etc/nsswitch.conf > /dev/null
+
+    return 0
+}
+
+
+
 _custom_ubcp_prog() {
 	true
 }
 _custom_ubcp_sequence() {
 	_cygwin_workaround_dev_stderr
+
+    _cygwin_workaround_custom_nsswitch
 
     local functionEntryPWD
     functionEntryPWD="$PWD"
