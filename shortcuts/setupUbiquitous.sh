@@ -160,6 +160,33 @@ _installUbiquitous() {
 
 _setupUbiquitous() {
 	_messageNormal "init: setupUbiquitous"
+
+
+	# WARNING: Forced workarounds for particularly bad, especially intermittent, issues.
+	#  Must happen very early.
+	#  Must be based on very extensive track record, these issues can be far too rare and GUI dependent to test, yet nevertheless very bad when such issues do occur.
+	# WARNING. Must preserve file permissions without necessarily having permissions to set permissions.
+	if ! grep 'ubforce' "$HOME"/.bashrc > /dev/null 2>&1
+	then
+		if _if_cygwin
+		then
+			rm -f "$HOME"/.bashrc.append 2> /dev/null
+			cat "$HOME"/.bashrc > "$HOME"/.bashrc.append
+			
+			echo '' > "$HOME"/.bashrc.prepend
+			echo '#ubforce' >> "$HOME"/.bashrc.prepend
+			echo '[[ "$CYGWIN" != *"disable_pcon"* ]] && export CYGWIN="disable_pcon ""$CYGWIN"' >> "$HOME"/.bashrc.prepend
+			echo '' >> "$HOME"/.bashrc.prepend
+
+			cat "$HOME"/.bashrc.prepend "$HOME"/.bashrc.append > "$HOME"/.bashrc
+			
+			rm -f "$HOME"/.bashrc.append 2> /dev/null
+			rm -f "$HOME"/.bashrc.prepend 2> /dev/null
+		fi
+	fi
+
+
+
 	export ub_under_setupUbiquitous="true"
 	
 	if _if_cygwin

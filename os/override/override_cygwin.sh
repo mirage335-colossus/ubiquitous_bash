@@ -69,6 +69,10 @@ _force_cygwin_symlinks() {
 	[[ "$CYGWIN" != *"winsymlinks:lnk"* ]] && export CYGWIN="winsymlinks:lnk ""$CYGWIN"
 }
 
+_force_cygwin_pty() {
+	[[ "$CYGWIN" != *"disable_pcon"* ]] && export CYGWIN="disable_pcon ""$CYGWIN"
+}
+
 
 # ATTENTION: User must launch "tmux" (no parameters) in a graphical Cygwin terminal.
 # Launches graphical application through "tmux new-window" if available.
@@ -103,6 +107,8 @@ fi
 
 if _if_cygwin
 then
+	_force_cygwin_pty
+
 	# ATTRIBUTION-AI: ChatGPT 4.5-preview  2025-04-11  with knowledge ubiquitous_bash, etc
 	# Prioritizes native git binaries if available. Mostly a disadvantage over the Cygwin/MSW git binaries, but adds more usable git-lfs , and works surprisingly well, apparently still defaulting to: Cygwin HOME '.gitconfig' , Cygwin '/usr/bin/ssh' , correctly understanding the overrides of '_gitBest' , etc.
 	#  Alternatives:

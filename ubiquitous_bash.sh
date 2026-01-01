@@ -39,7 +39,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='3620520443'
-export ub_setScriptChecksum_contents='2928584453'
+export ub_setScriptChecksum_contents='3764462578'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -720,6 +720,10 @@ _force_cygwin_symlinks() {
 	[[ "$CYGWIN" != *"winsymlinks:lnk"* ]] && export CYGWIN="winsymlinks:lnk ""$CYGWIN"
 }
 
+_force_cygwin_pty() {
+	[[ "$CYGWIN" != *"disable_pcon"* ]] && export CYGWIN="disable_pcon ""$CYGWIN"
+}
+
 
 # ATTENTION: User must launch "tmux" (no parameters) in a graphical Cygwin terminal.
 # Launches graphical application through "tmux new-window" if available.
@@ -754,6 +758,8 @@ fi
 
 if _if_cygwin
 then
+	_force_cygwin_pty
+
 	# ATTRIBUTION-AI: ChatGPT 4.5-preview  2025-04-11  with knowledge ubiquitous_bash, etc
 	# Prioritizes native git binaries if available. Mostly a disadvantage over the Cygwin/MSW git binaries, but adds more usable git-lfs , and works surprisingly well, apparently still defaulting to: Cygwin HOME '.gitconfig' , Cygwin '/usr/bin/ssh' , correctly understanding the overrides of '_gitBest' , etc.
 	#  Alternatives:
@@ -50523,6 +50529,33 @@ _installUbiquitous() {
 
 _setupUbiquitous() {
 	_messageNormal "init: setupUbiquitous"
+
+
+	# WARNING: Forced workarounds for particularly bad, especially intermittent, issues.
+	#  Must happen very early.
+	#  Must be based on very extensive track record, these issues can be far too rare and GUI dependent to test, yet nevertheless very bad when such issues do occur.
+	# WARNING. Must preserve file permissions without necessarily having permissions to set permissions.
+	if ! grep 'ubforce' "$HOME"/.bashrc > /dev/null 2>&1
+	then
+		if _if_cygwin
+		then
+			rm -f "$HOME"/.bashrc.append 2> /dev/null
+			cat "$HOME"/.bashrc > "$HOME"/.bashrc.append
+			
+			echo '' > "$HOME"/.bashrc.prepend
+			echo '#ubforce' >> "$HOME"/.bashrc.prepend
+			echo '[[ "$CYGWIN" != *"disable_pcon"* ]] && export CYGWIN="disable_pcon ""$CYGWIN"' >> "$HOME"/.bashrc.prepend
+			echo '' >> "$HOME"/.bashrc.prepend
+
+			cat "$HOME"/.bashrc.prepend "$HOME"/.bashrc.append > "$HOME"/.bashrc
+			
+			rm -f "$HOME"/.bashrc.append 2> /dev/null
+			rm -f "$HOME"/.bashrc.prepend 2> /dev/null
+		fi
+	fi
+
+
+
 	export ub_under_setupUbiquitous="true"
 	
 	if _if_cygwin
