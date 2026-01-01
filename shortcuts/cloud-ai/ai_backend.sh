@@ -10,7 +10,7 @@ _ai_filter() {
     LC_ALL=C tr -d '\000-\010\013\014\016-\037\177' | \
     LC_ALL=C tr -d '\r' | \
     LC_ALL=C tr '"<>()?:;[]{}\\*&'"'" '_' | LC_ALL=C tr '\042\047\050\051\077\072\073\133\135\173\175\134\052\046' '_' | \
-    perl -CS -pe '
+    LC_ALL=C perl -CS -pe '
         s/[\x{2010}-\x{2015}\x{2212}]/-/g;                 # dashes/minus -> -
         s/\x{00D7}/x/g;                                    # multiplication sign -> x
         s/[\x{00A0}\x{2000}-\x{200A}\x{202F}\x{205F}\x{3000}]/ /g;   # wide/no-break spaces -> space

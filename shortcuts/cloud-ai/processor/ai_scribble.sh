@@ -2,72 +2,10 @@
 
 
 
-_scribble_chunk_crossref() {
-
-    # if ... not input file ... then generate crossref
-
-
-    export crossref_sessionid=$(_uid 28)
-    mkdir -p "$safeTmp"/"$crossref_sessionid"
-
-
-
-    # GENERATE: TODO: Call ai_backend, loop, gibberish/etc detection.
-
-
-
-
-    _safeRMR "$safeTmp"/"$crossref_sessionid"
-
-    false
-}
-
-
-
-
-_scribble_chunk() {
-   
-
-    ( printf '%s: %s: %s \n' "$sessionid" "$1" "$scribbleOutputFile" >&2 )
-
-
-
-    # GENERATE: TODO: Call ai_backend, loop, gibberish/etc detection.
-
-
-
-    #find ... dispatch... _scribble_chunk_crossref...
-
-
-
-    #write - annotation, crossref - the bubble
-
-
-   false
-}
-
 
 
 
 _scribble_file() {
-    # WARNING: TODO: Unique sessionid, subdirectory of "$safeTmp", _safeRMR that subdirectory, etc.
-    export scribble_file_sessionid=$(_uid 28)
-    mkdir -p "$safeTmp"/"$scribble_file_sessionid"
-
-
-    # split chunks, _scribble_chunk...
-
-    
-
-    _safeRMR "$safeTmp"/"$scribble_file_sessionid"
-
-    false
-}
-
-
-
-
-_vector_scribble_procedure() {
 
     # ... TODO - Optional user query, to output only chunks/files relevant to the user query.
     # using an already pre-processed dataset is still recommended for that
@@ -83,24 +21,45 @@ _vector_scribble_procedure() {
     local scribbleSubDir="${scribbleInputFolder#$scribbleOutputCommon}"
 
     local scribbleOutputFolder="$scribbleOutputCommon"/.scribbleAssist_bubble"$scribbleSubDir"
-    export scribbleOutputFile="$scribbleOutputFolder"/"$scribbleInputName".scribbleAssist_bubble.txt
+    local scribbleOutputFile="$scribbleOutputFolder"/"$scribbleInputName".scribbleAssist_bubble.txt
+
+    export scribbleInputFile_moniker="$scribbleSubDir"/"$scribbleInputName"
 
 
     
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
 
-
-
-
-
-
-
+    
 
     #$scribbleInputFile
     #"$safeTmp"/"$scribble_sessionid"
     # .../chunk001.txt , etc
     # .../bubbleHeader001.txt , etc
     #"$scribbleOutputFile"
-    _scribble_file
+    
+    # WARNING: TODO: Unique sessionid, subdirectory of "$safeTmp", _safeRMR that subdirectory, etc.
+    export scribble_file_sessionid=$(_uid 28)
+    mkdir -p "$safeTmp"/"$scribble_file_sessionid"
+
+
+    # split chunks, _scribble_chunk...
+
+    
+
+    _safeRMR "$safeTmp"/"$scribble_file_sessionid"
+
+
+
 
 
 
@@ -109,7 +68,19 @@ _vector_scribble_procedure() {
     # WARNING: Do NOT write anything to output file until everything is absolutely very definitely totally complete.
 
     # ... find other files/chunks/etc, compare recursively
-    
+
+
+
+
+    false
+}
+
+
+
+
+_vector_scribble_procedure() {
+
+    _scribble_file "$@"
 
 }
 
@@ -140,7 +111,7 @@ _vector_scribble_sequence() {
 
     
     # TODO: Inference cache variable with ai_backend will use if set.
-    #export inference_cache_dir="$current_output_dir"/inference_cache/
+    export inference_cache_dir="$current_output_dir"/inference_cache/
 
 
 
@@ -173,6 +144,8 @@ _vector_scribble() {
 }
 
 _test_scribble() {
+
+    _wantGetDep sed
     
     _test_cloud_ai "$@"
 

@@ -1051,6 +1051,7 @@ _compile_bash_shortcuts() {
 	( ( [[ "$enUb_dev_heavy" == "true" ]] ) || [[ "$enUb_ollama_shortcuts" == "true" ]] || [[ "$enUb_cloud_heavy" == "true" ]] || [[ "$enUb_cloud" == "true" ]] || [[ "$enUb_ollama" == "true" ]] || [[ "$enUb_researchEngine" == "true" ]] || [[ "$enUb_cloud_ai" == "true" ]] ) && includeScriptList+=( "shortcuts/cloud-ai"/ai_backend.sh )
 
 	( ( [[ "$enUb_dev_heavy" == "true" ]] ) || [[ "$enUb_ollama_shortcuts" == "true" ]] || [[ "$enUb_cloud_heavy" == "true" ]] || [[ "$enUb_cloud" == "true" ]] || [[ "$enUb_ollama" == "true" ]] || [[ "$enUb_researchEngine" == "true" ]] || [[ "$enUb_cloud_ai" == "true" ]] || [[ "$enUb_ai_processor" == "true" ]] ) && includeScriptList+=( "shortcuts/cloud-ai/processor"/ai_scribble.sh )
+	( ( [[ "$enUb_dev_heavy" == "true" ]] ) || [[ "$enUb_ollama_shortcuts" == "true" ]] || [[ "$enUb_cloud_heavy" == "true" ]] || [[ "$enUb_cloud" == "true" ]] || [[ "$enUb_ollama" == "true" ]] || [[ "$enUb_researchEngine" == "true" ]] || [[ "$enUb_cloud_ai" == "true" ]] || [[ "$enUb_ai_processor" == "true" ]] ) && includeScriptList+=( "shortcuts/cloud-ai/processor"/ai_scribble_split.sh )
 
 	
 
