@@ -39,7 +39,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='3620520443'
-export ub_setScriptChecksum_contents='605347129'
+export ub_setScriptChecksum_contents='1210088117'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -42791,6 +42791,8 @@ _scribble_chunk_out() {
 
 
     _scribble_split "$current_param_file" "$currentInputFile_moniker" "$currentOutputFolder"/"$currentInputName".chunks/
+
+    rm -f "$current_param_paramDir"/"$current_param_paramName".scribble_todo-chunk.txt
 }
 
 _scribble_chunk() {
@@ -42799,6 +42801,57 @@ _scribble_chunk() {
     ( _safeEcho_newline '... _scribble_chunk: dispatch: '"$current_output_dir" >&2 )
 
     find "$current_output_dir" -type f -iname '*.scribble_todo-chunk.txt' -print0 | xargs -0 -x -L 1 -P 2 bash -c '"'"$scriptAbsoluteLocation"'"'' --embed _scribble_chunk_out "$@"' _
+}
+
+
+
+_scribble_crossref_crawl() {
+    local current_crossref_chunk_file=$(_getAbsoluteLocation "$1")
+    local current_crossref_chunk_folder=$(_getAbsoluteFolder "$current_crossref_chunk_file")
+    local current_crossref_file=$(basename -s ".chunks" "$current_crossref_chunk_folder")
+    export current_crossref_moniker="${current_crossref_file#$currentOutputCommon}"
+
+    # TODO: Ignore crossref to self.
+
+    # TODO: Actual inference cross-ref requesting relevance to "$current_small_chunk_file" of "$current_crossref_chunk_file" .
+    echo "$current_crossref_moniker" > "$current_small_chunk_file"."$current_crossref_moniker".scribble_crossref.txt
+}
+
+
+_scribble_crossref_crossref() {
+    export current_small_chunk_file="$1"
+    find "$current_output_dir" -type f -iname 'chunk_large_*.txt' -print0 | xargs -0 -x -L 1 -P 2 bash -c '"'"$scriptAbsoluteLocation"'"'' --embed _scribble_crossref_crawl "$@"' _
+}
+
+
+_scribble_crossref_out() {
+    [[ "$1" == "" ]] && _messageError 'FAIL: _scribble_crossref_out: empty: $1' && _stop 1
+    
+    local current_param_paramDir=$(_getAbsoluteFolder "$1")
+    local current_param_paramName=$(basename -s ".scribble_todo-crossref.txt" "$1")
+
+    local current_param_file=$(cat "$current_param_paramDir"/"$current_param_paramName".scribble_param_fromFile.txt)
+
+    _set_scribble "$currentKnowledgebase_dir" "$current_param_file"
+
+    ! mkdir -p "$currentOutputFolder"/"$currentInputName".chunks/ && _messageError 'FAIL: mkdir: $currentOutputFolder/$currentInputName".chunks/' && _stop 1
+
+    # TODO: WIP!
+    find "$currentOutputFolder"/"$currentInputName".chunks -type f -iname 'chunk_small_*.txt' -print0 | xargs -0 -x -L 1 -P 2 bash -c '"'"$scriptAbsoluteLocation"'"'' --embed _scribble_crossref_crossref "$@"' _
+
+    # TODO: Concatenate cross-reference results into single cross-ref file.
+
+    # TODO: Remove individual cross-reference files.
+
+    rm -f "$current_param_paramDir"/"$current_param_paramName".scribble_todo-crossref.txt
+}
+
+_scribble_crossref() {
+    _set_scribble "$1"
+
+    ( _safeEcho_newline '... _scribble_crossref: dispatch: '"$current_output_dir" >&2 )
+
+    find "$current_output_dir" -type f -iname '*.scribble_todo-crossref.txt' -print0 | xargs -0 -x -L 1 -P 2 bash -c '"'"$scriptAbsoluteLocation"'"'' --embed _scribble_crossref_out "$@"' _
 }
 
 
@@ -42813,9 +42866,11 @@ _scribble_dir() {
 
     _scribble_chunk "$1"
 
+    _scribble_crossref "$1"
 
+    _scribble_annotate "$1"
 
-
+    _scribble_cat "$1"
     
 
 
