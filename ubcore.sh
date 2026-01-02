@@ -39,7 +39,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='3620520443'
-export ub_setScriptChecksum_contents='1436106627'
+export ub_setScriptChecksum_contents='2252412992'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -34795,11 +34795,14 @@ _scribble_split() {
     local currentInputFile="$1"
     local currentMoniker="$2"
     local current_sub_safeTmp="$3"
+    [[ ! -e "$current_sub_safeTmp" ]] && _messageError 'FAIL missing: current_sub_safeTmp' && _stop 1
 
 
     local currentChunk=1
     local current_small_begin="0"
     local current_small_end
+    local current_quote_begin
+    local current_quote_end
     local current_large_begin
     local current_large_end
     local current_huge_begin
@@ -34821,6 +34824,8 @@ _scribble_split() {
     local current_huge_Chunk_charOverlapHead=50000
     local current_huge_Chunk_charOverlapTail=25000
     #
+    local chunk_adjust_allowance=300
+    #
     # Iterate through range of lines. Write sets of chunk files of all sizes for each smallest size chunk.
     # Larger chunks will not be used directly, descriptions, summaries, etc, of the surrounding code functionality, documented information, will be generated.
     
@@ -34835,8 +34840,8 @@ _scribble_split() {
         current_small_begin=$(( ( "$currentChunk" - 1 ) * "$current_small_Chunk_charSize" ))
         current_small_end=$(( "$current_small_begin" + "$current_small_Chunk_charSize" ))
         [[ "$current_small_end" -gt "$currentFileSize" ]] && current_small_end="$currentFileSize"
-        current_small_begin_adjust="0"
-        current_small_end_adjust="0"
+        current_small_begin_adjust="$chunk_adjust_allowance"
+        current_small_end_adjust="$chunk_adjust_allowance"
 
         current_large_begin=$(( "$current_small_begin" - "$current_large_Chunk_charOverlapHead" ))
         [[ "$current_large_begin" -lt 0 ]] && current_large_begin="0"
@@ -34850,25 +34855,23 @@ _scribble_split() {
 
 
 
-
-        # Adjust small chunk begin boundary up deterministically to nearest newline, space, period, within a 300 char allowance. Adjust small chunk end boundary up to the nearest convenient boundary. Do not adjust the top boundary for the first chunk, nor the bottom boundary for the last chunk. All file contents must be included in chunks.
+        # Adjust small chunk begin boundary up deterministically to nearest newline, space, period, within a "$chunk_adjust_allowance" char allowance. Adjust small chunk end boundary up to the nearest convenient boundary. Do not adjust the top boundary for the first chunk, nor the bottom boundary for the last chunk. All file contents must be included in chunks.
 
         #echo 'quick brown fox' | perl -0777 -ne 'print rindex($_, "\n"), "\n"'
 
         # If not last chunk, adjust end boundary to nearest convenient boundary, which will be next (deterministically adjusted) chunk begin.
         if ! [[ "$current_small_end" -ge "$currentFileSize" ]]
         then
-            current_small_end_adjust=$(LC_ALL=C cat "$current_sub_safeTmp"/safe_input.txt | LC_ALL=C head -c "$current_small_end" | LC_ALL=C tail -c 300 | perl -0777 -ne 'print rindex($_, "\n"), "\n"' | LC_ALL=C tr -dc '0-9\-')
+            current_small_end_adjust=$(LC_ALL=C cat "$current_sub_safeTmp"/safe_input.txt | LC_ALL=C head -c "$current_small_end" | LC_ALL=C tail -c "$chunk_adjust_allowance" | perl -0777 -ne 'print rindex($_, "\n"), "\n"' | LC_ALL=C tr -dc '0-9\-')
+            [[ "$current_small_end_adjust" != "-1" ]] && current_small_end=$(( "$current_small_end" - ( "$chunk_adjust_allowance" - "$current_small_end_adjust" ) ))
         fi
-        [[ "$current_small_end_adjust" != "-1" ]] && current_small_end=$(( "$current_small_end" - ( 300 - "$current_small_end_adjust" ) ))
 
         # If not first chunk, adjust begin boundary to nearest convenient boundary, which will have been previous (deterministically adjusted) chunk end.
         if ! [[ "$current_small_begin" -eq "0" ]]
         then
-            current_small_begin_adjust=$(LC_ALL=C cat "$current_sub_safeTmp"/safe_input.txt | LC_ALL=C head -c "$current_small_begin" | LC_ALL=C tail -c 300 | perl -0777 -ne 'print rindex($_, "\n"), "\n"' | LC_ALL=C tr -dc '0-9\-')
+            current_small_begin_adjust=$(LC_ALL=C cat "$current_sub_safeTmp"/safe_input.txt | LC_ALL=C head -c "$current_small_begin" | LC_ALL=C tail -c "$chunk_adjust_allowance" | perl -0777 -ne 'print rindex($_, "\n"), "\n"' | LC_ALL=C tr -dc '0-9\-')
+            [[ "$current_small_begin_adjust" != "-1" ]] && current_small_begin=$(( "$current_small_begin" - ( "$chunk_adjust_allowance" - "$current_small_begin_adjust" ) ))
         fi
-        [[ "$current_small_begin_adjust" != "-1" ]] && current_small_begin=$(( "$current_small_begin" - ( 300 - "$current_small_begin_adjust" ) ))
-
         
 
 
