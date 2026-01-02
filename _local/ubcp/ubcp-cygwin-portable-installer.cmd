@@ -214,7 +214,7 @@ if "%INSTALL_TESTSSL_SH%" == "yes" (
 set CYGWIN_PACKAGES=dos2unix,wget,%CYGWIN_PACKAGES%
 echo Selected cygwin packages: %CYGWIN_PACKAGES%
 
-set "CYGWIN=winsymlinks:lnk nodosfilewarning"
+set "CYGWIN=disable_pcon winsymlinks:lnk nodosfilewarning"
 
 echo Running Cygwin setup (package list with dependencies)...
 "%CYGWIN_ROOT%\%CYGWIN_SETUP_EXE%" --no-admin ^
@@ -583,7 +583,7 @@ echo Creating launcher [%Start_cmd%]...
   echo.
   echo set "ALLUSERSPROFILE=%%CYGWIN_ROOT%%\.ProgramData"
   echo set "ProgramData=%%ALLUSERSPROFILE%%"
-  echo set "CYGWIN=winsymlinks:lnk nodosfilewarning"
+  echo set "CYGWIN=disable_pcon winsymlinks:lnk nodosfilewarning"
   echo.
   echo set "USERNAME=%CYGWIN_USERNAME%"
   echo set "HOME=/home/%%USERNAME%%"
