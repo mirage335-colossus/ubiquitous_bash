@@ -54,19 +54,19 @@ _set_scribble() {
         export currentInputFile=$(_getAbsoluteLocation "$current_fromFile")
         ! [[ -e "$currentInputFile" ]] && _messageError 'FAIL: missing: $currentInputFile' && _stop 1
 
-        export currentInputFolder=$(_getAbsoluteFolder "$scribbleInputFile")
-        export currentInputName=$(basename "$scribbleInputFile")
+        export currentInputFolder=$(_getAbsoluteFolder "$currentInputFile")
+        export currentInputName=$(basename "$currentInputFile")
 
         export currentOutputCommon=$(_getAbsoluteLocation "$current_activity_dir")
 
-        export currentSubDir="${scribbleInputFolder#$scribbleOutputCommon}"
+        export currentSubDir="${currentInputFolder#$currentOutputCommon}"
 
-        export currentOutputFolder="$scribbleOutputCommon"/.scribbleAssist_bubble"$scribbleSubDir"
+        export currentOutputFolder="$currentOutputCommon"/.scribbleAssist_bubble"$currentSubDir"
         ! mkdir -p "$currentOutputFolder" && _messageError 'FAIL: mkdir: '"$currentOutputFolder"' ' && _stop 1
 
-        export currentOutputFile="$scribbleOutputFolder"/"$scribbleInputName".scribbleAssist_bubble.txt
+        export currentOutputFile="$currentOutputFolder"/"$currentInputName".scribbleAssist_bubble.txt
 
-        export currentInputFile_moniker="$scribbleSubDir"/"$scribbleInputName"
+        export currentInputFile_moniker="$currentSubDir"/"$currentInputName"
     fi
 
     true
@@ -77,15 +77,15 @@ _set_scribble() {
 _scribble_todo_out() {
     _set_scribble "$currentKnowledgebase_dir" "$1"
 
-    ! mkdir -p "$currentOutputFolder"/"$scribbleInputName".chunks/ && _messageError 'FAIL: mkdir: $currentOutputFolder/$scribbleInputName".chunks/' && _stop 1
+    ! mkdir -p "$currentOutputFolder"/"$currentInputName".chunks/ && _messageError 'FAIL: mkdir: $currentOutputFolder/$currentInputName".chunks/' && _stop 1
 
-    echo "$1" | _ai_filter > "$currentOutputFolder"/"$scribbleInputName".scribble_todo-chunk.txt
+    echo "$1" | _ai_filter > "$currentOutputFolder"/"$currentInputName".scribble_todo-chunk.txt
 
-    echo "$1" | _ai_filter > "$currentOutputFolder"/"$scribbleInputName".scribble_todo-crossref.txt
+    echo "$1" | _ai_filter > "$currentOutputFolder"/"$currentInputName".scribble_todo-crossref.txt
 
-    echo "$1" | _ai_filter > "$currentOutputFolder"/"$scribbleInputName".scribble_todo-annotate.txt
+    echo "$1" | _ai_filter > "$currentOutputFolder"/"$currentInputName".scribble_todo-annotate.txt
     
-    ( printf '%s: %s: %s \n' "$sessionid" "$scribble_file_sessionid" "$scribbleInputFile_title" >&2 )
+    ( printf '%s: %s: %s \n' "$currentOutputFolder" "$currentInputName" "todo" >&2 )
 }
 
 
@@ -94,7 +94,7 @@ _scribble_todo() {
 
     ( _safeEcho_newline '... _scribble_todo: dispatch: '"$currentKnowledgebase_dir" >&2 )
 
-    find "$currentKnowledgebase_dir" -type f -iname '*.txt' -iname '*.md' -print0 | xargs -0 -x -L 1 -P 2 bash -c '"'"$scriptAbsoluteLocation"'"'' --embed _scribble_todo_out "$@"' _
+    find "$currentKnowledgebase_dir" -type f \( -iname '*.txt' -o -iname '*.md' \) -print0 | xargs -0 -x -L 1 -P 2 bash -c '"'"$scriptAbsoluteLocation"'"'' --embed _scribble_todo_out "$@"' _
 
 
     
@@ -187,8 +187,12 @@ _vector_scribble_sequence() {
     _vector_scribble_procedure "$scriptLocal"/_vector_scribble
 
 
-    ( echo '... _vector_scribble: ls -R' >&2 )
-    ls -R "$scriptLocal"/_vector_scribble
+    ( echo '... _vector_scribble: ls -Ra "$scriptLocal"/_vector_scribble' >&2 )
+    ls -Ra "$scriptLocal"/_vector_scribble
+
+
+    ( echo '... _vector_scribble: ls -Ra .scribbleAssist_bubble/_vector_scribble' >&2 )
+    ls -Ra "$scriptLocal"/.scribbleAssist_bubble/_vector_scribble
 
 
     ( echo '... _vector_scribble: cat' >&2 )

@@ -39,7 +39,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='3620520443'
-export ub_setScriptChecksum_contents='1984313690'
+export ub_setScriptChecksum_contents='1682944116'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -34677,19 +34677,19 @@ _set_scribble() {
         export currentInputFile=$(_getAbsoluteLocation "$current_fromFile")
         ! [[ -e "$currentInputFile" ]] && _messageError 'FAIL: missing: $currentInputFile' && _stop 1
 
-        export currentInputFolder=$(_getAbsoluteFolder "$scribbleInputFile")
-        export currentInputName=$(basename "$scribbleInputFile")
+        export currentInputFolder=$(_getAbsoluteFolder "$currentInputFile")
+        export currentInputName=$(basename "$currentInputFile")
 
         export currentOutputCommon=$(_getAbsoluteLocation "$current_activity_dir")
 
-        export currentSubDir="${scribbleInputFolder#$scribbleOutputCommon}"
+        export currentSubDir="${currentInputFolder#$currentOutputCommon}"
 
-        export currentOutputFolder="$scribbleOutputCommon"/.scribbleAssist_bubble"$scribbleSubDir"
+        export currentOutputFolder="$currentOutputCommon"/.scribbleAssist_bubble"$currentSubDir"
         ! mkdir -p "$currentOutputFolder" && _messageError 'FAIL: mkdir: '"$currentOutputFolder"' ' && _stop 1
 
-        export currentOutputFile="$scribbleOutputFolder"/"$scribbleInputName".scribbleAssist_bubble.txt
+        export currentOutputFile="$currentOutputFolder"/"$currentInputName".scribbleAssist_bubble.txt
 
-        export currentInputFile_moniker="$scribbleSubDir"/"$scribbleInputName"
+        export currentInputFile_moniker="$currentSubDir"/"$currentInputName"
     fi
 
     true
@@ -34708,7 +34708,7 @@ _scribble_todo_out() {
 
     echo "$1" | _ai_filter > "$currentOutputFolder"/"$scribbleInputName".scribble_todo-annotate.txt
     
-    ( printf '%s: %s: %s \n' "$sessionid" "$scribble_file_sessionid" "$scribbleInputFile_title" >&2 )
+    ( printf '%s: %s: %s \n' "$currentOutputFolder" "$scribbleInputName" "todo" >&2 )
 }
 
 
@@ -34717,7 +34717,7 @@ _scribble_todo() {
 
     ( _safeEcho_newline '... _scribble_todo: dispatch: '"$currentKnowledgebase_dir" >&2 )
 
-    find "$currentKnowledgebase_dir" -type f -iname '*.txt' -iname '*.md' -print0 | xargs -0 -x -L 1 -P 2 bash -c '"'"$scriptAbsoluteLocation"'"'' --embed _scribble_todo_out "$@"' _
+    find "$currentKnowledgebase_dir" -type f \( -iname '*.txt' -o -iname '*.md' \) -print0 | xargs -0 -x -L 1 -P 2 bash -c '"'"$scriptAbsoluteLocation"'"'' --embed _scribble_todo_out "$@"' _
 
 
     
@@ -34810,8 +34810,12 @@ _vector_scribble_sequence() {
     _vector_scribble_procedure "$scriptLocal"/_vector_scribble
 
 
-    ( echo '... _vector_scribble: ls -R' >&2 )
+    ( echo '... _vector_scribble: ls -R "$scriptLocal"/_vector_scribble' >&2 )
     ls -R "$scriptLocal"/_vector_scribble
+
+
+    ( echo '... _vector_scribble: ls -R .scribbleAssist_bubble/_vector_scribble' >&2 )
+    ls -R "$scriptLocal"/.scribbleAssist_bubble/_vector_scribble
 
 
     ( echo '... _vector_scribble: cat' >&2 )
