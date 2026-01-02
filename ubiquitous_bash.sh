@@ -39,7 +39,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='3620520443'
-export ub_setScriptChecksum_contents='2712070360'
+export ub_setScriptChecksum_contents='605347129'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -42745,6 +42745,8 @@ _set_scribble() {
 
 
 _scribble_todo_out() {
+    [[ "$1" == "" ]] && _messageError 'FAIL: _scribble_todo_out: empty: $1' && _stop 1
+
     _set_scribble "$currentKnowledgebase_dir" "$1"
 
     ! mkdir -p "$currentOutputFolder"/"$currentInputName".chunks/ && _messageError 'FAIL: mkdir: $currentOutputFolder/$currentInputName".chunks/' && _stop 1
@@ -42776,9 +42778,12 @@ _scribble_todo() {
 
 
 _scribble_chunk_out() {
+    [[ "$1" == "" ]] && _messageError 'FAIL: _scribble_chunk_out: empty: $1' && _stop 1
+    
     local current_param_paramDir=$(_getAbsoluteFolder "$1")
+    local current_param_paramName=$(basename -s ".scribble_todo-chunk.txt" "$1")
 
-    local current_param_file=$(cat "$current_param_paramDir"/scribble_param_fromFile.txt)
+    local current_param_file=$(cat "$current_param_paramDir"/"$current_param_paramName".scribble_param_fromFile.txt)
 
     _set_scribble "$currentKnowledgebase_dir" "$current_param_file"
 
@@ -42791,9 +42796,9 @@ _scribble_chunk_out() {
 _scribble_chunk() {
     _set_scribble "$1"
 
-    ( _safeEcho_newline '... _scribble_chunk: dispatch: '"$currentKnowledgebase_dir" >&2 )
+    ( _safeEcho_newline '... _scribble_chunk: dispatch: '"$current_output_dir" >&2 )
 
-    find "$currentKnowledgebase_dir" -type f -iname '*.scribble_todo-chunk.txt' -print0 | xargs -0 -x -L 1 -P 2 bash -c '"'"$scriptAbsoluteLocation"'"'' --embed _scribble_chunk_out "$@"' _
+    find "$current_output_dir" -type f -iname '*.scribble_todo-chunk.txt' -print0 | xargs -0 -x -L 1 -P 2 bash -c '"'"$scriptAbsoluteLocation"'"'' --embed _scribble_chunk_out "$@"' _
 }
 
 

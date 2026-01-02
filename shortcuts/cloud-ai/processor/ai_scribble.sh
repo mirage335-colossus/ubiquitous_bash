@@ -75,6 +75,8 @@ _set_scribble() {
 
 
 _scribble_todo_out() {
+    [[ "$1" == "" ]] && _messageError 'FAIL: _scribble_todo_out: empty: $1' && _stop 1
+
     _set_scribble "$currentKnowledgebase_dir" "$1"
 
     ! mkdir -p "$currentOutputFolder"/"$currentInputName".chunks/ && _messageError 'FAIL: mkdir: $currentOutputFolder/$currentInputName".chunks/' && _stop 1
@@ -106,9 +108,12 @@ _scribble_todo() {
 
 
 _scribble_chunk_out() {
+    [[ "$1" == "" ]] && _messageError 'FAIL: _scribble_chunk_out: empty: $1' && _stop 1
+    
     local current_param_paramDir=$(_getAbsoluteFolder "$1")
+    local current_param_paramName=$(basename -s ".scribble_todo-chunk.txt" "$1")
 
-    local current_param_file=$(cat "$current_param_paramDir"/scribble_param_fromFile.txt)
+    local current_param_file=$(cat "$current_param_paramDir"/"$current_param_paramName".scribble_param_fromFile.txt)
 
     _set_scribble "$currentKnowledgebase_dir" "$current_param_file"
 
@@ -121,9 +126,9 @@ _scribble_chunk_out() {
 _scribble_chunk() {
     _set_scribble "$1"
 
-    ( _safeEcho_newline '... _scribble_chunk: dispatch: '"$currentKnowledgebase_dir" >&2 )
+    ( _safeEcho_newline '... _scribble_chunk: dispatch: '"$current_output_dir" >&2 )
 
-    find "$currentKnowledgebase_dir" -type f -iname '*.scribble_todo-chunk.txt' -print0 | xargs -0 -x -L 1 -P 2 bash -c '"'"$scriptAbsoluteLocation"'"'' --embed _scribble_chunk_out "$@"' _
+    find "$current_output_dir" -type f -iname '*.scribble_todo-chunk.txt' -print0 | xargs -0 -x -L 1 -P 2 bash -c '"'"$scriptAbsoluteLocation"'"'' --embed _scribble_chunk_out "$@"' _
 }
 
 
