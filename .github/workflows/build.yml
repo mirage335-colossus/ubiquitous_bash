@@ -213,6 +213,35 @@ jobs:
           #exit $exitCode
           #}
 
+      - name: rebase! cygwin DLLs (if needed)
+        shell: pwsh
+        timeout-minutes: 60
+        run: |
+          $candidateRoots = @(
+            (Resolve-Path './_local/ubcp/cygwin' -ErrorAction SilentlyContinue),
+            'C:\core\infrastructure\ubcp\cygwin'
+          ) | Where-Object { $_ }
+
+          $dashPath = $null
+          foreach ($root in $candidateRoots) {
+            $dash = Join-Path $root 'bin' 'dash.exe'
+            if (Test-Path $dash) {
+              $dashPath = $dash
+              break
+            }
+          }
+
+          if (-not $dashPath) {
+            Write-Host "dash.exe not found; skipping rebaseall."
+            exit 0
+          }
+
+          & $dashPath -c "/usr/bin/rebaseall" 2>&1 | Tee-Object -FilePath '/rebaseall.log'
+          if ($LASTEXITCODE -ne 0) {
+            Write-Host "##[error]rebaseall failed with exit code $LASTEXITCODE"
+            exit $LASTEXITCODE
+          }
+
       #- name: report! cygwin links
         #shell: pwsh
         #timeout-minutes: 240
