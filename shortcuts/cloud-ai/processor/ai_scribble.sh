@@ -2,7 +2,7 @@
 
 
 #find ... file ... exec ...
-#_set_scribble $(cat $(_getAbsoluteFolder "$1")/param_fromDir.scribble.txt) "$1"
+#_set_scribble $(cat $(_getAbsoluteFolder "$1")/scribble_param_fromDir.txt) $(cat $(_getAbsoluteFolder "$1")/scribble_param_fromFile.txt)
 #
 # $currentKnowledgebase_dir="$1"
 # $currentKnowledgebase_name
@@ -79,6 +79,10 @@ _scribble_todo_out() {
 
     ! mkdir -p "$currentOutputFolder"/"$currentInputName".chunks/ && _messageError 'FAIL: mkdir: $currentOutputFolder/$currentInputName".chunks/' && _stop 1
 
+    echo "$currentInputFile" | _ai_filter > "$currentOutputFolder"/"$currentInputName".scribble_param_fromFile.txt
+    echo "$currentKnowledgebase_dir" | _ai_filter > "$currentOutputFolder"/"$currentInputName".scribble_param_fromDir.txt
+
+
     echo "$1" | _ai_filter > "$currentOutputFolder"/"$currentInputName".scribble_todo-chunk.txt
 
     echo "$1" | _ai_filter > "$currentOutputFolder"/"$currentInputName".scribble_todo-crossref.txt
@@ -101,7 +105,26 @@ _scribble_todo() {
 }
 
 
+_scribble_chunk_out() {
+    local current_param_paramDir=$(_getAbsoluteFolder "$1")
 
+    local current_param_file=$(cat "$current_param_paramDir"/scribble_param_fromFile.txt)
+
+    _set_scribble "$currentKnowledgebase_dir" "$current_param_file"
+
+    ! mkdir -p "$currentOutputFolder"/"$currentInputName".chunks/ && _messageError 'FAIL: mkdir: $currentOutputFolder/$currentInputName".chunks/' && _stop 1
+
+
+    _scribble_split "$current_param_file" "$currentInputFile_moniker" "$currentOutputFolder"/"$currentInputName".chunks/
+}
+
+_scribble_chunk() {
+    _set_scribble "$1"
+
+    ( _safeEcho_newline '... _scribble_chunk: dispatch: '"$currentKnowledgebase_dir" >&2 )
+
+    find "$currentKnowledgebase_dir" -type f -iname '*.scribble_todo-chunk.txt' -print0 | xargs -0 -x -L 1 -P 2 bash -c '"'"$scriptAbsoluteLocation"'"'' --embed _scribble_chunk_out "$@"' _
+}
 
 
 
@@ -113,7 +136,7 @@ _scribble_dir() {
 
     _scribble_todo "$1"
 
-
+    _scribble_chunk "$1"
 
 
 

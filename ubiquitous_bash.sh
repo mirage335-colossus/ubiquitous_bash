@@ -39,7 +39,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='3620520443'
-export ub_setScriptChecksum_contents='2479543617'
+export ub_setScriptChecksum_contents='2712070360'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -42672,7 +42672,7 @@ _test_cloud_ai() {
 
 
 #find ... file ... exec ...
-#_set_scribble $(cat $(_getAbsoluteFolder "$1")/param_fromDir.scribble.txt) "$1"
+#_set_scribble $(cat $(_getAbsoluteFolder "$1")/scribble_param_fromDir.txt) $(cat $(_getAbsoluteFolder "$1")/scribble_param_fromFile.txt)
 #
 # $currentKnowledgebase_dir="$1"
 # $currentKnowledgebase_name
@@ -42747,15 +42747,19 @@ _set_scribble() {
 _scribble_todo_out() {
     _set_scribble "$currentKnowledgebase_dir" "$1"
 
-    ! mkdir -p "$currentOutputFolder"/"$scribbleInputName".chunks/ && _messageError 'FAIL: mkdir: $currentOutputFolder/$scribbleInputName".chunks/' && _stop 1
+    ! mkdir -p "$currentOutputFolder"/"$currentInputName".chunks/ && _messageError 'FAIL: mkdir: $currentOutputFolder/$currentInputName".chunks/' && _stop 1
 
-    echo "$1" | _ai_filter > "$currentOutputFolder"/"$scribbleInputName".scribble_todo-chunk.txt
+    echo "$currentInputFile" | _ai_filter > "$currentOutputFolder"/"$currentInputName".scribble_param_fromFile.txt
+    echo "$currentKnowledgebase_dir" | _ai_filter > "$currentOutputFolder"/"$currentInputName".scribble_param_fromDir.txt
 
-    echo "$1" | _ai_filter > "$currentOutputFolder"/"$scribbleInputName".scribble_todo-crossref.txt
 
-    echo "$1" | _ai_filter > "$currentOutputFolder"/"$scribbleInputName".scribble_todo-annotate.txt
+    echo "$1" | _ai_filter > "$currentOutputFolder"/"$currentInputName".scribble_todo-chunk.txt
+
+    echo "$1" | _ai_filter > "$currentOutputFolder"/"$currentInputName".scribble_todo-crossref.txt
+
+    echo "$1" | _ai_filter > "$currentOutputFolder"/"$currentInputName".scribble_todo-annotate.txt
     
-    ( printf '%s: %s: %s \n' "$currentOutputFolder" "$scribbleInputName" "todo" >&2 )
+    ( printf '%s: %s: %s \n' "$currentOutputFolder" "$currentInputName" "todo" >&2 )
 }
 
 
@@ -42771,7 +42775,26 @@ _scribble_todo() {
 }
 
 
+_scribble_chunk_out() {
+    local current_param_paramDir=$(_getAbsoluteFolder "$1")
 
+    local current_param_file=$(cat "$current_param_paramDir"/scribble_param_fromFile.txt)
+
+    _set_scribble "$currentKnowledgebase_dir" "$current_param_file"
+
+    ! mkdir -p "$currentOutputFolder"/"$currentInputName".chunks/ && _messageError 'FAIL: mkdir: $currentOutputFolder/$currentInputName".chunks/' && _stop 1
+
+
+    _scribble_split "$current_param_file" "$currentInputFile_moniker" "$currentOutputFolder"/"$currentInputName".chunks/
+}
+
+_scribble_chunk() {
+    _set_scribble "$1"
+
+    ( _safeEcho_newline '... _scribble_chunk: dispatch: '"$currentKnowledgebase_dir" >&2 )
+
+    find "$currentKnowledgebase_dir" -type f -iname '*.scribble_todo-chunk.txt' -print0 | xargs -0 -x -L 1 -P 2 bash -c '"'"$scriptAbsoluteLocation"'"'' --embed _scribble_chunk_out "$@"' _
+}
 
 
 
@@ -42783,7 +42806,7 @@ _scribble_dir() {
 
     _scribble_todo "$1"
 
-
+    _scribble_chunk "$1"
 
 
 
@@ -42857,12 +42880,12 @@ _vector_scribble_sequence() {
     _vector_scribble_procedure "$scriptLocal"/_vector_scribble
 
 
-    ( echo '... _vector_scribble: ls -R "$scriptLocal"/_vector_scribble' >&2 )
-    ls -R "$scriptLocal"/_vector_scribble
+    ( echo '... _vector_scribble: ls -Ra "$scriptLocal"/_vector_scribble' >&2 )
+    ls -Ra "$scriptLocal"/_vector_scribble
 
 
-    ( echo '... _vector_scribble: ls -R .scribbleAssist_bubble/_vector_scribble' >&2 )
-    ls -R "$scriptLocal"/.scribbleAssist_bubble/_vector_scribble
+    ( echo '... _vector_scribble: ls -Ra .scribbleAssist_bubble/_vector_scribble' >&2 )
+    ls -Ra "$scriptLocal"/.scribbleAssist_bubble/_vector_scribble
 
 
     ( echo '... _vector_scribble: cat' >&2 )
