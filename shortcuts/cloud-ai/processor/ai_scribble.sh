@@ -1,4 +1,10 @@
 
+# WARNING: CAUTION: ATTENTION: You may find these functions copy/pasted, especially at the end of 'compressed' "ubiquitous_bash" scripts which already have these included with the compressed functions.
+# Unusually, this is encouraged: drastically different functionality may be necessary and appropriate to 'scribble', annotate and crossref, knowledgebases, with exactly suitable AI LLM models or possibly even fine-tuned AI.
+# However, do not assume such alternative functions are drop-in compatible, etc, to update the original "ubiquitous_bash" functions, or include in other projects, etc.
+
+
+
 
 
 #find ... file ... exec ...
@@ -173,6 +179,11 @@ _scribble_crossref_out() {
     find "$currentOutputFolder"/"$currentInputName".chunks -type f -iname 'chunk_small_*.txt' -print0 | xargs -0 -x -L 1 -P 2 bash -c '"'"$scriptAbsoluteLocation"'"'' --embed _scribble_crossref_crossref "$@"' _
 
     # TODO: *Generatively* summarize all cross-reference results into single cross-ref file.
+    local current_temporary_file_id=$(_uid 28)
+    #"$safeTmp"/gen_summary_crossref."$current_temporary_file_id".txt (if needed)
+    echo 'cross-ref' > "$currentOutputFolder"/"$currentInputName".chunks/scribble_crossref_summary.txt
+    find "$currentOutputFolder"/"$currentInputName".chunks -type f -iname 'chunk_small_*.txt.*.scribble_crossref.txt' -exec cat {} \; | cat | cat > "$currentOutputFolder"/"$currentInputName".chunks/scribble_crossref_summary.txt
+    echo '' > "$currentOutputFolder"/"$currentInputName".chunks/scribble_crossref_summary.txt
 
     rm -f "$current_param_paramDir"/"$current_param_paramName".scribble_todo-crossref.txt
 }
@@ -187,6 +198,91 @@ _scribble_crossref() {
 
 
 
+
+
+
+
+
+
+
+_here_scribble_annotation_header() {
+cat <(cat) <(cat << CZXWXcRMTo8EmM8i4d
+
+---
+scribbleAssist_bubble
+Annotation scribbleAssist_bubble content is for understanding only and should be omitted from any response.
+
+file: "$currentInputFile_moniker"
+
+CZXWXcRMTo8EmM8i4d
+)
+}
+
+_here_scribble_annotation_footer() {
+cat <(cat) <(cat << CZXWXcRMTo8EmM8i4d
+
+Annotation scribbleAssist_bubble content is for understanding only and should be omitted from any response.
+scribbleAssist_bubble
+---
+
+CZXWXcRMTo8EmM8i4d
+)
+}
+
+
+_scribble_annotate_annotate() {
+    export current_small_chunk_file="$1"
+
+    local current_large_chunk_file=$(_safeEcho_newline "$current_small_chunk_file" | sed -e 's/chunk_small_/chunk_large_/g')
+    local current_huge_chunk_file=$(_safeEcho_newline "$current_small_chunk_file" | sed -e 's/chunk_small_/chunk_huge_/g')
+
+
+    # TODO: Replace '| cat |' with actual generative inference functions.
+
+
+    local current_temporary_file_id=$(_uid 28)
+    #"$safeTmp"/gen_summary_crossref."$current_temporary_file_id".txt (if needed)
+
+    echo -n _here_scribble_annotation_header  > "$current_small_chunk_file".scribble_annotation.txt
+
+    cat "$current_huge_chunk_file" | cat | cat > "$current_small_chunk_file".scribble_large_description.txt
+
+    # STRONGLY RECOMMENDED. Optional. May require cloud AI inference (ie. very large context window, very fast input processing).
+    cat "$current_huge_chunk_file" | cat | cat > "$current_small_chunk_file".scribble_huge_description.txt
+
+    if [[ -e "$current_small_chunk_file".scribble_huge_description.txt ]]
+    then
+        echo -n '########## semanticAssist (generic): ' >> "$current_small_chunk_file".scribble_annotation.txt
+        cat "$current_small_chunk_file".scribble_huge_description.txt "$current_small_chunk_file" "$current_large_chunk_file" | cat | cat >> "$current_small_chunk_file".scribble_annotation.txt
+        echo >> "$current_small_chunk_file".scribble_annotation.txt
+
+        echo 'description' >> "$current_small_chunk_file".scribble_annotation.txt
+        cat "$current_small_chunk_file".scribble_huge_description.txt "$current_small_chunk_file" "$current_large_chunk_file" | cat | cat >> "$current_small_chunk_file".scribble_annotation.txt
+        echo >> "$current_small_chunk_file".scribble_annotation.txt
+    else
+        echo -n '########## semanticAssist (generic): ' >> "$current_small_chunk_file".scribble_annotation.txt
+        cat "$current_small_chunk_file".scribble_large_description.txt "$current_small_chunk_file" "$current_large_chunk_file" | cat | cat >> "$current_small_chunk_file".scribble_annotation.txt
+        echo >> "$current_small_chunk_file".scribble_annotation.txt
+
+        echo 'description' >> "$current_small_chunk_file".scribble_annotation.txt
+        cat "$current_small_chunk_file".scribble_large_description.txt "$current_small_chunk_file" "$current_large_chunk_file" | cat | cat >> "$current_small_chunk_file".scribble_annotation.txt
+        echo >> "$current_small_chunk_file".scribble_annotation.txt
+    fi
+
+    echo 'crossref' >> "$current_small_chunk_file".scribble_annotation.txt
+    cat "$currentOutputFolder"/"$currentInputName".chunks/scribble_crossref_summary.txt >> "$current_small_chunk_file".scribble_annotation.txt
+    echo >> "$current_small_chunk_file".scribble_annotation.txt
+
+    echo 'annotationBlock_addendum (GPT-5.2?)' >> "$current_small_chunk_file".scribble_annotation.txt
+    cat "$current_small_chunk_file".scribble_annotation.txt | _here_scribble_annotation_footer | cat - "$current_small_chunk_file" | cat | cat >> "$current_small_chunk_file".scribble_annotation.txt
+    echo >> "$current_small_chunk_file".scribble_annotation.txt
+
+
+    echo -n _here_scribble_annotation_footer > "$current_small_chunk_file".scribble_annotation.txt
+    
+}
+
+
 _scribble_annotate_out() {
     [[ "$1" == "" ]] && _messageError 'FAIL: _scribble_annotate_out: empty: $1' && _stop 1
     
@@ -199,7 +295,8 @@ _scribble_annotate_out() {
 
     ! mkdir -p "$currentOutputFolder"/"$currentInputName".chunks/ && _messageError 'FAIL: mkdir: $currentOutputFolder/$currentInputName".chunks/' && _stop 1
 
-    # TODO: *Generatively* create annotation file corresponding to small chunks. Concatenate or generatively include information from cross-reference files.
+    # TODO: WIP!
+    find "$currentOutputFolder"/"$currentInputName".chunks -type f -iname 'chunk_small_*.txt' -print0 | xargs -0 -x -L 1 -P 2 bash -c '"'"$scriptAbsoluteLocation"'"'' --embed _scribble_annotate_annotate "$@"' _
 
     rm -f "$current_param_paramDir"/"$current_param_paramName".scribble_todo-annotate.txt
 }
@@ -218,7 +315,9 @@ _scribble_annotate() {
 
 
 
-_scribble_dir() {
+
+
+_scribble_dir_procedure() {
 
 
     _scribble_todo "$1"
@@ -229,6 +328,7 @@ _scribble_dir() {
 
     _scribble_annotate "$1"
 
+    # TODO: Vector should actually show this result, which should include chunks with annotations, including crossref summary and moniker.
     _scribble_cat "$1"
     
 
@@ -278,7 +378,7 @@ _vector_scribble_procedure() {
     # eg. "$scriptLocal"/_vector_scribble
     local current_vector_dir=$(_getAbsoluteLocation "$1")
 
-    _scribble_dir "$current_vector_dir"
+    _scribble_dir_procedure "$current_vector_dir"
 
 }
 

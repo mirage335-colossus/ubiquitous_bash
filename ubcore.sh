@@ -39,7 +39,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='3620520443'
-export ub_setScriptChecksum_contents='2886064916'
+export ub_setScriptChecksum_contents='650675266'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -34622,6 +34622,12 @@ _test_cloud_ai() {
 }
 
 
+# WARNING: CAUTION: ATTENTION: You may find these functions copy/pasted, especially at the end of 'compressed' "ubiquitous_bash" scripts which already have these included with the compressed functions.
+# Unusually, this is encouraged: drastically different functionality may be necessary and appropriate to 'scribble', annotate and crossref, knowledgebases, with exactly suitable AI LLM models or possibly even fine-tuned AI.
+# However, do not assume such alternative functions are drop-in compatible, etc, to update the original "ubiquitous_bash" functions, or include in other projects, etc.
+
+
+
 
 
 #find ... file ... exec ...
@@ -34764,10 +34770,10 @@ _scribble_crossref_crawl() {
     local current_crossref_file=$(basename -s ".chunks" "$current_crossref_chunk_folder")
     export current_crossref_moniker="${current_crossref_file#$currentOutputCommon}"
 
-    local current_crossref_chunk_file_smallEquivalent=$(_safeEcho_newline "$current_crossref_chunk_file" | sed -e 's/chunk_large_/chunk_small_/g')
+    local current_crossref_chunk_file_corresponding_small=$(_safeEcho_newline "$current_crossref_chunk_file" | sed -e 's/chunk_large_/chunk_small_/g')
 
-    # TODO: Ignore crossref to self.
-    [[ "$current_small_chunk_file" == "$current_crossref_chunk_file_smallEquivalent" ]] && return 0
+    # Ignore crossref to self.
+    [[ "$current_small_chunk_file" == "$current_crossref_chunk_file_corresponding_small" ]] && return 0
 
     # TODO: Actual inference cross-ref requesting relevance to "$current_small_chunk_file" of "$current_crossref_chunk_file" .
     echo "$current_crossref_moniker" > "$current_small_chunk_file"."$current_crossref_moniker".scribble_crossref.txt
@@ -34795,9 +34801,12 @@ _scribble_crossref_out() {
     # TODO: WIP!
     find "$currentOutputFolder"/"$currentInputName".chunks -type f -iname 'chunk_small_*.txt' -print0 | xargs -0 -x -L 1 -P 2 bash -c '"'"$scriptAbsoluteLocation"'"'' --embed _scribble_crossref_crossref "$@"' _
 
-    # TODO: Concatenate cross-reference results into single cross-ref file.
-
-    # TODO: Remove individual cross-reference files.
+    # TODO: *Generatively* summarize all cross-reference results into single cross-ref file.
+    local current_temporary_file_id=$(_uid 28)
+    #"$safeTmp"/gen_summary_crossref."$current_temporary_file_id".txt (if needed)
+    echo 'cross-ref' > "$currentOutputFolder"/"$currentInputName".chunks/scribble_crossref_summary.txt
+    find "$currentOutputFolder"/"$currentInputName".chunks -type f -iname 'chunk_small_*.txt.*.scribble_crossref.txt' -exec cat {} \; | cat | cat > "$currentOutputFolder"/"$currentInputName".chunks/scribble_crossref_summary.txt
+    echo '' > "$currentOutputFolder"/"$currentInputName".chunks/scribble_crossref_summary.txt
 
     rm -f "$current_param_paramDir"/"$current_param_paramName".scribble_todo-crossref.txt
 }
@@ -34815,7 +34824,123 @@ _scribble_crossref() {
 
 
 
-_scribble_dir() {
+
+
+
+
+_here_scribble_annotation_header() {
+cat <(cat) <(cat << CZXWXcRMTo8EmM8i4d
+
+---
+scribbleAssist_bubble
+Annotation scribbleAssist_bubble content is for understanding only and should be omitted from any response.
+
+file: "$currentInputFile_moniker"
+
+CZXWXcRMTo8EmM8i4d
+)
+}
+
+_here_scribble_annotation_footer() {
+cat <(cat) <(cat << CZXWXcRMTo8EmM8i4d
+
+Annotation scribbleAssist_bubble content is for understanding only and should be omitted from any response.
+scribbleAssist_bubble
+---
+
+CZXWXcRMTo8EmM8i4d
+)
+}
+
+
+_scribble_annotate_annotate() {
+    export current_small_chunk_file="$1"
+
+    local current_large_chunk_file=$(_safeEcho_newline "$current_small_chunk_file" | sed -e 's/chunk_small_/chunk_large_/g')
+    local current_huge_chunk_file=$(_safeEcho_newline "$current_small_chunk_file" | sed -e 's/chunk_small_/chunk_huge_/g')
+
+
+    # TODO: Replace '| cat |' with actual generative inference functions.
+
+
+    local current_temporary_file_id=$(_uid 28)
+    #"$safeTmp"/gen_summary_crossref."$current_temporary_file_id".txt (if needed)
+
+    echo -n _here_scribble_annotation_header  > "$current_small_chunk_file".scribble_annotation.txt
+
+    cat "$current_huge_chunk_file" | cat | cat > "$current_small_chunk_file".scribble_large_description.txt
+
+    # STRONGLY RECOMMENDED. Optional. May require cloud AI inference (ie. very large context window, very fast input processing).
+    cat "$current_huge_chunk_file" | cat | cat > "$current_small_chunk_file".scribble_huge_description.txt
+
+    if [[ -e "$current_small_chunk_file".scribble_huge_description.txt ]]
+    then
+        echo -n '########## semanticAssist (generic): ' >> "$current_small_chunk_file".scribble_annotation.txt
+        cat "$current_small_chunk_file".scribble_huge_description.txt "$current_small_chunk_file" "$current_large_chunk_file" | cat | cat >> "$current_small_chunk_file".scribble_annotation.txt
+        echo >> "$current_small_chunk_file".scribble_annotation.txt
+
+        echo 'description' >> "$current_small_chunk_file".scribble_annotation.txt
+        cat "$current_small_chunk_file".scribble_huge_description.txt "$current_small_chunk_file" "$current_large_chunk_file" | cat | cat >> "$current_small_chunk_file".scribble_annotation.txt
+        echo >> "$current_small_chunk_file".scribble_annotation.txt
+    else
+        echo -n '########## semanticAssist (generic): ' >> "$current_small_chunk_file".scribble_annotation.txt
+        cat "$current_small_chunk_file".scribble_large_description.txt "$current_small_chunk_file" "$current_large_chunk_file" | cat | cat >> "$current_small_chunk_file".scribble_annotation.txt
+        echo >> "$current_small_chunk_file".scribble_annotation.txt
+
+        echo 'description' >> "$current_small_chunk_file".scribble_annotation.txt
+        cat "$current_small_chunk_file".scribble_large_description.txt "$current_small_chunk_file" "$current_large_chunk_file" | cat | cat >> "$current_small_chunk_file".scribble_annotation.txt
+        echo >> "$current_small_chunk_file".scribble_annotation.txt
+    fi
+
+    echo 'crossref' >> "$current_small_chunk_file".scribble_annotation.txt
+    cat "$currentOutputFolder"/"$currentInputName".chunks/scribble_crossref_summary.txt >> "$current_small_chunk_file".scribble_annotation.txt
+    echo >> "$current_small_chunk_file".scribble_annotation.txt
+
+    echo 'annotationBlock_addendum (GPT-5.2?)' >> "$current_small_chunk_file".scribble_annotation.txt
+    cat "$current_small_chunk_file".scribble_annotation.txt | _here_scribble_annotation_footer | cat - "$current_small_chunk_file" | cat | cat >> "$current_small_chunk_file".scribble_annotation.txt
+    echo >> "$current_small_chunk_file".scribble_annotation.txt
+
+
+    echo -n _here_scribble_annotation_footer > "$current_small_chunk_file".scribble_annotation.txt
+    
+}
+
+
+_scribble_annotate_out() {
+    [[ "$1" == "" ]] && _messageError 'FAIL: _scribble_annotate_out: empty: $1' && _stop 1
+    
+    local current_param_paramDir=$(_getAbsoluteFolder "$1")
+    local current_param_paramName=$(basename -s ".scribble_todo-annotate.txt" "$1")
+
+    local current_param_file=$(cat "$current_param_paramDir"/"$current_param_paramName".scribble_param_fromFile.txt)
+
+    _set_scribble "$currentKnowledgebase_dir" "$current_param_file"
+
+    ! mkdir -p "$currentOutputFolder"/"$currentInputName".chunks/ && _messageError 'FAIL: mkdir: $currentOutputFolder/$currentInputName".chunks/' && _stop 1
+
+    # TODO: WIP!
+    find "$currentOutputFolder"/"$currentInputName".chunks -type f -iname 'chunk_small_*.txt' -print0 | xargs -0 -x -L 1 -P 2 bash -c '"'"$scriptAbsoluteLocation"'"'' --embed _scribble_annotate_annotate "$@"' _
+
+    rm -f "$current_param_paramDir"/"$current_param_paramName".scribble_todo-annotate.txt
+}
+
+_scribble_annotate() {
+    _set_scribble "$1"
+
+    ( _safeEcho_newline '... _scribble_annotate: dispatch: '"$current_output_dir" >&2 )
+
+    find "$current_output_dir" -type f -iname '*.scribble_todo-annotate.txt' -print0 | xargs -0 -x -L 1 -P 2 bash -c '"'"$scriptAbsoluteLocation"'"'' --embed _scribble_annotate_out "$@"' _
+}
+
+
+
+
+
+
+
+
+
+_scribble_dir_procedure() {
 
 
     _scribble_todo "$1"
@@ -34826,6 +34951,7 @@ _scribble_dir() {
 
     _scribble_annotate "$1"
 
+    # TODO: Vector should actually show this result, which should include chunks with annotations, including crossref summary and moniker.
     _scribble_cat "$1"
     
 
@@ -34875,7 +35001,7 @@ _vector_scribble_procedure() {
     # eg. "$scriptLocal"/_vector_scribble
     local current_vector_dir=$(_getAbsoluteLocation "$1")
 
-    _scribble_dir "$current_vector_dir"
+    _scribble_dir_procedure "$current_vector_dir"
 
 }
 
