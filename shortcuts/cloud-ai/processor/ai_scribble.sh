@@ -141,10 +141,10 @@ _scribble_crossref_crawl() {
     local current_crossref_file=$(basename -s ".chunks" "$current_crossref_chunk_folder")
     export current_crossref_moniker="${current_crossref_file#$currentOutputCommon}"
 
-    local current_crossref_chunk_file_smallEquivalent=$(_safeEcho_newline "$current_crossref_chunk_file" | sed -e 's/chunk_large_/chunk_small_/g')
+    local current_crossref_chunk_file_corresponding_small=$(_safeEcho_newline "$current_crossref_chunk_file" | sed -e 's/chunk_large_/chunk_small_/g')
 
-    # TODO: Ignore crossref to self.
-    [[ "$current_small_chunk_file" == "$current_crossref_chunk_file_smallEquivalent" ]] && return 0
+    # Ignore crossref to self.
+    [[ "$current_small_chunk_file" == "$current_crossref_chunk_file_corresponding_small" ]] && return 0
 
     # TODO: Actual inference cross-ref requesting relevance to "$current_small_chunk_file" of "$current_crossref_chunk_file" .
     echo "$current_crossref_moniker" > "$current_small_chunk_file"."$current_crossref_moniker".scribble_crossref.txt
@@ -172,9 +172,7 @@ _scribble_crossref_out() {
     # TODO: WIP!
     find "$currentOutputFolder"/"$currentInputName".chunks -type f -iname 'chunk_small_*.txt' -print0 | xargs -0 -x -L 1 -P 2 bash -c '"'"$scriptAbsoluteLocation"'"'' --embed _scribble_crossref_crossref "$@"' _
 
-    # TODO: Concatenate cross-reference results into single cross-ref file.
-
-    # TODO: Remove individual cross-reference files.
+    # TODO: *Generatively* summarize all cross-reference results into single cross-ref file.
 
     rm -f "$current_param_paramDir"/"$current_param_paramName".scribble_todo-crossref.txt
 }
@@ -186,6 +184,34 @@ _scribble_crossref() {
 
     find "$current_output_dir" -type f -iname '*.scribble_todo-crossref.txt' -print0 | xargs -0 -x -L 1 -P 2 bash -c '"'"$scriptAbsoluteLocation"'"'' --embed _scribble_crossref_out "$@"' _
 }
+
+
+
+_scribble_annotate_out() {
+    [[ "$1" == "" ]] && _messageError 'FAIL: _scribble_annotate_out: empty: $1' && _stop 1
+    
+    local current_param_paramDir=$(_getAbsoluteFolder "$1")
+    local current_param_paramName=$(basename -s ".scribble_todo-annotate.txt" "$1")
+
+    local current_param_file=$(cat "$current_param_paramDir"/"$current_param_paramName".scribble_param_fromFile.txt)
+
+    _set_scribble "$currentKnowledgebase_dir" "$current_param_file"
+
+    ! mkdir -p "$currentOutputFolder"/"$currentInputName".chunks/ && _messageError 'FAIL: mkdir: $currentOutputFolder/$currentInputName".chunks/' && _stop 1
+
+    # TODO: *Generatively* create annotation file corresponding to small chunks. Concatenate or generatively include information from cross-reference files.
+
+    rm -f "$current_param_paramDir"/"$current_param_paramName".scribble_todo-annotate.txt
+}
+
+_scribble_annotate() {
+    _set_scribble "$1"
+
+    ( _safeEcho_newline '... _scribble_annotate: dispatch: '"$current_output_dir" >&2 )
+
+    find "$current_output_dir" -type f -iname '*.scribble_todo-annotate.txt' -print0 | xargs -0 -x -L 1 -P 2 bash -c '"'"$scriptAbsoluteLocation"'"'' --embed _scribble_annotate_out "$@"' _
+}
+
 
 
 
