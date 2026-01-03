@@ -141,7 +141,10 @@ _scribble_crossref_crawl() {
     local current_crossref_file=$(basename -s ".chunks" "$current_crossref_chunk_folder")
     export current_crossref_moniker="${current_crossref_file#$currentOutputCommon}"
 
+    local current_crossref_chunk_file_smallEquivalent=$(_safeEcho_newline "$current_crossref_chunk_file" | sed -e 's/chunk_large_/chunk_small_/g')
+
     # TODO: Ignore crossref to self.
+    [[ "$current_small_chunk_file" == "$current_crossref_chunk_file_smallEquivalent" ]] && return 0
 
     # TODO: Actual inference cross-ref requesting relevance to "$current_small_chunk_file" of "$current_crossref_chunk_file" .
     echo "$current_crossref_moniker" > "$current_small_chunk_file"."$current_crossref_moniker".scribble_crossref.txt
