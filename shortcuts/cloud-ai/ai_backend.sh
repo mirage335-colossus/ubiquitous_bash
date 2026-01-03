@@ -36,7 +36,7 @@ _ai_filter() {
 #
 #find "$1" -type f -name '*.sh' -print0 | xargs -0 -x -L 1 -P 1 bash -c '"'"$scriptAbsoluteLocation"'"'' --embed _semanticAssist_bash_procedure "$@"' _
 #
-_ai_backend() {
+_ai_backend_procedure() {
     local currentAImodel="$1"
     #default... Nemotron-3-Nano-30B-A3B-256k-virtuoso
 
@@ -66,6 +66,12 @@ _ai_backend() {
     # Due to the low stakes, if the lock file does not contain the calling sessionid, etc, writing the cache should simply be abandoned.
     #
     # 2k block arrangement is important to prevent attempts to get the output to include hashes matching some input hashes... searching only for hashes at regular intervals prevents the need for truly random 'salts', etc
+    if [[ "$inference_cache_dir" != "" ]]
+    then
+        # TODO: hash prompt, read cache, return if found
+        false
+    fi
+
 
 
 
@@ -75,6 +81,12 @@ _ai_backend() {
     ##provider: { "order": ["Lambda", "Fireworks"], "sort": "latency" }
     ##provider: { "order": ["Fireworks"], "sort": "throughput" }
     #jq -Rs '{ model: "meta-llama/llama-3.1-405b-instruct", provider: { "order": ["Fireworks"], "sort": "throughput" }, messages: [{"role": "user", "content": .}] }' | curl -fsS --max-time 120 --keepalive-time 300 --compressed --tcp-fastopen --http2 -X POST https://openrouter.ai/api/v1/chat/completions -H "Content-Type: application/json" -H "Authorization: Bearer $OPENROUTER_API_KEY" --data-binary @- | jq -r '.choices[0].message.content'
+
+    if [[ "$inference_cache_dir" != "" ]]
+    then
+        # TODO: hash prompt, write cache
+        false
+    fi
 
     false
 }

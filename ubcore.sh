@@ -39,7 +39,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='3620520443'
-export ub_setScriptChecksum_contents='3737367619'
+export ub_setScriptChecksum_contents='1416449307'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -34528,7 +34528,7 @@ _ai_filter() {
 #
 #find "$1" -type f -name '*.sh' -print0 | xargs -0 -x -L 1 -P 1 bash -c '"'"$scriptAbsoluteLocation"'"'' --embed _semanticAssist_bash_procedure "$@"' _
 #
-_ai_backend() {
+_ai_backend_procedure() {
     local currentAImodel="$1"
     #default... Nemotron-3-Nano-30B-A3B-256k-virtuoso
 
@@ -34558,6 +34558,12 @@ _ai_backend() {
     # Due to the low stakes, if the lock file does not contain the calling sessionid, etc, writing the cache should simply be abandoned.
     #
     # 2k block arrangement is important to prevent attempts to get the output to include hashes matching some input hashes... searching only for hashes at regular intervals prevents the need for truly random 'salts', etc
+    if [[ "$inference_cache_dir" != "" ]]
+    then
+        # TODO: hash prompt, read cache, return if found
+        false
+    fi
+
 
 
 
@@ -34567,6 +34573,12 @@ _ai_backend() {
     ##provider: { "order": ["Lambda", "Fireworks"], "sort": "latency" }
     ##provider: { "order": ["Fireworks"], "sort": "throughput" }
     #jq -Rs '{ model: "meta-llama/llama-3.1-405b-instruct", provider: { "order": ["Fireworks"], "sort": "throughput" }, messages: [{"role": "user", "content": .}] }' | curl -fsS --max-time 120 --keepalive-time 300 --compressed --tcp-fastopen --http2 -X POST https://openrouter.ai/api/v1/chat/completions -H "Content-Type: application/json" -H "Authorization: Bearer $OPENROUTER_API_KEY" --data-binary @- | jq -r '.choices[0].message.content'
+
+    if [[ "$inference_cache_dir" != "" ]]
+    then
+        # TODO: hash prompt, write cache
+        false
+    fi
 
     false
 }
@@ -34812,7 +34824,7 @@ _scribble_crossref_out() {
     rm -f "$current_param_paramDir"/"$current_param_paramName".scribble_todo-crossref.txt
 }
 
-_scribble_crossref() {
+_scribble_crossref_procedure() {
     _set_scribble "$1"
 
     ( _safeEcho_newline '... _scribble_crossref: dispatch: '"$current_output_dir" >&2 )
@@ -34929,7 +34941,7 @@ _scribble_annotate_out() {
     rm -f "$current_param_paramDir"/"$current_param_paramName".scribble_todo-annotate.txt
 }
 
-_scribble_annotate() {
+_scribble_annotate_procedure() {
     _set_scribble "$1"
 
     ( _safeEcho_newline '... _scribble_annotate: dispatch: '"$current_output_dir" >&2 )
@@ -34965,11 +34977,10 @@ _scribble_dir_procedure() {
 
     _scribble_chunk "$1"
 
-    _scribble_crossref "$1"
+    _scribble_crossref_procedure "$1"
 
-    _scribble_annotate "$1"
+    _scribble_annotate_procedure "$1"
 
-    # TODO: Vector should actually show this result, which should include chunks with annotations, including crossref summary and moniker.
     _scribble_cat "$1"
 
 }

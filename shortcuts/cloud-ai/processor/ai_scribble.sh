@@ -189,7 +189,7 @@ _scribble_crossref_out() {
     rm -f "$current_param_paramDir"/"$current_param_paramName".scribble_todo-crossref.txt
 }
 
-_scribble_crossref() {
+_scribble_crossref_procedure() {
     _set_scribble "$1"
 
     ( _safeEcho_newline '... _scribble_crossref: dispatch: '"$current_output_dir" >&2 )
@@ -306,7 +306,7 @@ _scribble_annotate_out() {
     rm -f "$current_param_paramDir"/"$current_param_paramName".scribble_todo-annotate.txt
 }
 
-_scribble_annotate() {
+_scribble_annotate_procedure() {
     _set_scribble "$1"
 
     ( _safeEcho_newline '... _scribble_annotate: dispatch: '"$current_output_dir" >&2 )
@@ -342,11 +342,10 @@ _scribble_dir_procedure() {
 
     _scribble_chunk "$1"
 
-    _scribble_crossref "$1"
+    _scribble_crossref_procedure "$1"
 
-    _scribble_annotate "$1"
+    _scribble_annotate_procedure "$1"
 
-    # TODO: Vector should actually show this result, which should include chunks with annotations, including crossref summary and moniker.
     _scribble_cat "$1"
 
 }
