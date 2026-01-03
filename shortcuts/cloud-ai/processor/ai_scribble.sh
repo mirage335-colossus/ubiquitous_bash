@@ -159,6 +159,7 @@ _scribble_crossref_crawl() {
 
 _scribble_crossref_crossref() {
     export current_small_chunk_file="$1"
+    ! [[ $(basename "$current_small_chunk_file" | _ai_filter) =~ ^chunk_small_[0-9]{6}\.txt$ ]] && return 0
     find "$current_output_dir" -type f -iname 'chunk_large_*.txt' -print0 | xargs -0 -x -L 1 -P 2 bash -c '"'"$scriptAbsoluteLocation"'"'' --embed _scribble_crossref_crawl "$@"' _
 }
 
@@ -176,14 +177,14 @@ _scribble_crossref_out() {
     ! mkdir -p "$currentOutputFolder"/"$currentInputName".chunks/ && _messageError 'FAIL: mkdir: $currentOutputFolder/$currentInputName".chunks/' && _stop 1
 
     # TODO: WIP!
-    find "$currentOutputFolder"/"$currentInputName".chunks -type f -iname 'chunk_small_*.txt' -print0 | xargs -0 -x -L 1 -P 2 bash -c '"'"$scriptAbsoluteLocation"'"'' --embed _scribble_crossref_crossref "$@"' _
+    find "$currentOutputFolder"/"$currentInputName".chunks -type f -name 'chunk_small_??????.txt' -print0 | xargs -0 -x -L 1 -P 2 bash -c '"'"$scriptAbsoluteLocation"'"'' --embed _scribble_crossref_crossref "$@"' _
 
     # TODO: *Generatively* summarize all cross-reference results into single cross-ref file.
     local current_temporary_file_id=$(_uid 28)
     #"$safeTmp"/gen_summary_crossref."$current_temporary_file_id".txt (if needed)
     echo 'cross-ref' > "$currentOutputFolder"/"$currentInputName".chunks/scribble_crossref_summary.txt
     find "$currentOutputFolder"/"$currentInputName".chunks -type f -iname 'chunk_small_*.txt.*.scribble_crossref.txt' -exec cat {} \; | cat | cat > "$currentOutputFolder"/"$currentInputName".chunks/scribble_crossref_summary.txt
-    echo '' > "$currentOutputFolder"/"$currentInputName".chunks/scribble_crossref_summary.txt
+    echo '' >> "$currentOutputFolder"/"$currentInputName".chunks/scribble_crossref_summary.txt
 
     rm -f "$current_param_paramDir"/"$current_param_paramName".scribble_todo-crossref.txt
 }
@@ -232,6 +233,7 @@ CZXWXcRMTo8EmM8i4d
 
 _scribble_annotate_annotate() {
     export current_small_chunk_file="$1"
+    ! [[ $(basename "$current_small_chunk_file" | _ai_filter) =~ ^chunk_small_[0-9]{6}\.txt$ ]] && return 0
 
     local current_large_chunk_file=$(_safeEcho_newline "$current_small_chunk_file" | sed -e 's/chunk_small_/chunk_large_/g')
     local current_huge_chunk_file=$(_safeEcho_newline "$current_small_chunk_file" | sed -e 's/chunk_small_/chunk_huge_/g')
@@ -243,7 +245,7 @@ _scribble_annotate_annotate() {
     local current_temporary_file_id=$(_uid 28)
     #"$safeTmp"/gen_summary_crossref."$current_temporary_file_id".txt (if needed)
 
-    echo -n _here_scribble_annotation_header  > "$current_small_chunk_file".scribble_annotation.txt
+    echo -n | _here_scribble_annotation_header > "$current_small_chunk_file".scribble_annotation.txt
 
     cat "$current_huge_chunk_file" | cat | cat > "$current_small_chunk_file".scribble_large_description.txt
 
@@ -278,7 +280,7 @@ _scribble_annotate_annotate() {
     echo >> "$current_small_chunk_file".scribble_annotation.txt
 
 
-    echo -n _here_scribble_annotation_footer > "$current_small_chunk_file".scribble_annotation.txt
+    echo -n | _here_scribble_annotation_footer > "$current_small_chunk_file".scribble_annotation.txt
     
 }
 
@@ -296,7 +298,7 @@ _scribble_annotate_out() {
     ! mkdir -p "$currentOutputFolder"/"$currentInputName".chunks/ && _messageError 'FAIL: mkdir: $currentOutputFolder/$currentInputName".chunks/' && _stop 1
 
     # TODO: WIP!
-    find "$currentOutputFolder"/"$currentInputName".chunks -type f -iname 'chunk_small_*.txt' -print0 | xargs -0 -x -L 1 -P 2 bash -c '"'"$scriptAbsoluteLocation"'"'' --embed _scribble_annotate_annotate "$@"' _
+    find "$currentOutputFolder"/"$currentInputName".chunks -type f -name 'chunk_small_??????.txt' -print0 | xargs -0 -x -L 1 -P 2 bash -c '"'"$scriptAbsoluteLocation"'"'' --embed _scribble_annotate_annotate "$@"' _
 
     rm -f "$current_param_paramDir"/"$current_param_paramName".scribble_todo-annotate.txt
 }
