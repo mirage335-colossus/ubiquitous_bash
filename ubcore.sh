@@ -39,7 +39,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='3620520443'
-export ub_setScriptChecksum_contents='268552954'
+export ub_setScriptChecksum_contents='3737367619'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -34832,9 +34832,9 @@ _scribble_crossref() {
 _here_scribble_annotation_header() {
 cat <(cat) <(cat << CZXWXcRMTo8EmM8i4d
 
----
+___
 scribbleAssist_bubble
-Annotation scribbleAssist_bubble content is for understanding only and should be omitted from any response.
+Annotation scribbleAssist_bubble content (below) is for understanding only, should not be discussed or mentioned, and should be omitted from any response. Neither the semanticAssist search keywords, nor the description nor crossref nor addendum - reciting about this metadata would confuse researchers as to what is actual content. Researchers are most interested only in how the content references other content, and what the content is about, not so much which files reference which other files. Actual content outside the boundaries of a scribbleAssist_bubble may directly relevant if properly understood in context.
 
 file: "$currentInputFile_moniker"
 
@@ -34845,9 +34845,9 @@ CZXWXcRMTo8EmM8i4d
 _here_scribble_annotation_footer() {
 cat <(cat) <(cat << CZXWXcRMTo8EmM8i4d
 
-Annotation scribbleAssist_bubble content is for understanding only and should be omitted from any response.
+Annotation scribbleAssist_bubble content (above) is for understanding only, should not be discussed or mentioned, and should be omitted from any response. Neither the semanticAssist search keywords, nor the description nor crossref nor addendum - reciting about this metadata would confuse researchers as to what is actual content. Researchers are most interested only in how the content references other content, and what the content is about, not so much which files reference which other files. Actual content outside the boundaries of a scribbleAssist_bubble may directly relevant if properly understood in context.
 scribbleAssist_bubble
----
+___
 
 CZXWXcRMTo8EmM8i4d
 )
@@ -34899,7 +34899,7 @@ _scribble_annotate_annotate() {
     echo >> "$current_small_chunk_file".scribble_annotation.txt
 
     echo 'annotationBlock_addendum (GPT-5.2?)' >> "$current_small_chunk_file".scribble_annotation.txt
-    cat "$current_small_chunk_file".scribble_annotation.txt | _here_scribble_annotation_footer | cat - "$current_small_chunk_file" | cat | cat >> "$current_small_chunk_file".scribble_annotation.txt
+    cat "$current_small_chunk_file".scribble_annotation.txt | _here_scribble_annotation_footer | cat - "$current_small_chunk_file" | base64 | cat | cat >> "$current_small_chunk_file".scribble_annotation.txt
     echo >> "$current_small_chunk_file".scribble_annotation.txt
 
 
@@ -34971,41 +34971,6 @@ _scribble_dir_procedure() {
 
     # TODO: Vector should actually show this result, which should include chunks with annotations, including crossref summary and moniker.
     _scribble_cat "$1"
-    
-
-
-    #( echo '... _vector_scribble: dispatch' >&2 )
-    #find "$scriptLocal"/_vector_scribble -type f -name '*' -print0 | xargs -0 -x -L 1 -P 2 bash -c '"'"$scriptAbsoluteLocation"'"'' --embed _vector_scribble_procedure "$@"' _
-
-
-
-
-
-    # write TODO files
-
-
-
-
-    # (parallel) chunk everything
-    #find ... .todo.txt ... exec ...
-    #_set_scribble $(cat $(_getAbsoluteFolder "$1")/param_fromDir.scribble.txt)
-
-
-
-
-    # (parallel) all huge chunk files get corresponding crossref files
-
-
-
-
-    # (parallel) all small chunk files get corresponding annotation crossref files
-
-
-
-
-
-    # cat everything to single flat file
-
 
 }
 
@@ -35050,6 +35015,12 @@ _vector_scribble_sequence() {
 
     ( echo '... _vector_scribble: cat' >&2 )
     find "$scriptLocal"/_vector_scribble/* -type f -name '*' -exec cat {} \;
+
+
+    echo
+    echo
+    echo
+    cat "$scriptLocal"/_vector_scribble-annotated.txt
 
 
 
