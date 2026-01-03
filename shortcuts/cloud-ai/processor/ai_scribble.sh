@@ -280,7 +280,10 @@ _scribble_annotate_annotate() {
     echo >> "$current_small_chunk_file".scribble_annotation.txt
 
 
-    echo -n | _here_scribble_annotation_footer > "$current_small_chunk_file".scribble_annotation.txt
+    echo -n | _here_scribble_annotation_footer >> "$current_small_chunk_file".scribble_annotation.txt
+
+
+    cat "$current_small_chunk_file" >> "$current_small_chunk_file".scribble_annotation.txt
     
 }
 
@@ -309,6 +312,19 @@ _scribble_annotate() {
     ( _safeEcho_newline '... _scribble_annotate: dispatch: '"$current_output_dir" >&2 )
 
     find "$current_output_dir" -type f -iname '*.scribble_todo-annotate.txt' -print0 | xargs -0 -x -L 1 -P 2 bash -c '"'"$scriptAbsoluteLocation"'"'' --embed _scribble_annotate_out "$@"' _
+}
+
+
+
+
+
+
+_scribble_cat() {
+    _set_scribble "$1"
+
+    ( _safeEcho_newline '... _scribble_cat: dispatch: '"$current_output_dir" >&2 )
+
+    find "$current_output_dir" -type f -iname '*.scribble_annotation.txt' -exec cat {} \; > "$current_activity_dir"/"$currentKnowledgebase_name"-annotated.txt
 }
 
 
