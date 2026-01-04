@@ -33,7 +33,7 @@ _ai_backend_askGibberish_semanticAssist() {
 
     if [[ "$2" == "openrouter" ]]
     then
-        currentAImodel='models: [ "nvidia/nemotron-3-nano-30b-a3b", "openai/gpt-oss-120b" ], provider: { "sort": "throughput" }'
+        currentAImodel='models: [ "nvidia/nemotron-3-nano-30b-a3b", "openai/gpt-oss-120b" ], reasoning: { exclude: true }, provider: { "sort": "throughput" }'
         currentAIprovider="openrouter"
 
         #inference...
@@ -42,7 +42,7 @@ _ai_backend_askGibberish_semanticAssist() {
 
     if [[ "$2" == "ollama" ]]
     then
-        currentAImodel='model: "Nemotron-3-Nano-30B-A3B-virtuoso"'
+        currentAImodel='model: "Nemotron-3-Nano-30B-A3B-virtuoso", think:true'
         currentAIprovider="ollama"
 
         #inference...
@@ -77,7 +77,7 @@ If there is anything a reasonable person might be at least slightly offended by,
 Please only output one word gibberish or valid. Do not output any other statements. Response will be processed automatically, so the one word answer either gibberish or valid will be helpful, any other output will be unhelpful.
 
 CZXWXcRMTo8EmM8i4d
-} | inference_cache_dir="" _ai_backend_procedure "$currentAImodel" "$currentAIprovider" "cat" "cat" | grep -i '^[[:space:]]*valid' >/dev/null 2>&1 && current_gibberish="valid"
+} | inference_cache_dir="" _ai_backend_procedure "$currentAImodel" "$currentAIprovider" "_ai_backend_ask_noop" "_ai_backend_ask_noop" | grep -i '^[[:space:]]*valid' >/dev/null 2>&1 && current_gibberish="valid"
 
     if [[ "$current_gibberish" == "gibberish" ]]
     then
@@ -100,7 +100,7 @@ _ai_backend_askGibberish() {
 
     if [[ "$2" == "openrouter" ]]
     then
-        currentAImodel='models: [ "nvidia/nemotron-3-nano-30b-a3b", "openai/gpt-oss-120b" ], provider: { "sort": "throughput" }'
+        currentAImodel='models: [ "nvidia/nemotron-3-nano-30b-a3b", "openai/gpt-oss-120b" ], reasoning: { exclude: true }, provider: { "sort": "throughput" }'
         currentAIprovider="openrouter"
 
         #inference...
@@ -109,7 +109,7 @@ _ai_backend_askGibberish() {
 
     if [[ "$2" == "ollama" ]]
     then
-        currentAImodel='model: "Nemotron-3-Nano-30B-A3B-virtuoso"'
+        currentAImodel='model: "Nemotron-3-Nano-30B-A3B-virtuoso", think:true'
         currentAIprovider="ollama"
 
         #inference...
@@ -162,7 +162,7 @@ Please only output one word gibberish or valid. Do not output any other statemen
 
 
 CZXWXcRMTo8EmM8i4d
-} | inference_cache_dir="" _ai_backend_procedure "$currentAImodel" "$currentAIprovider" "cat" "cat" | grep -i '^[[:space:]]*valid' >/dev/null 2>&1 && current_gibberish="valid"
+} | inference_cache_dir="" _ai_backend_procedure "$currentAImodel" "$currentAIprovider" "_ai_backend_ask_noop" "_ai_backend_ask_noop" | grep -i '^[[:space:]]*valid' >/dev/null 2>&1 && current_gibberish="valid"
 
     if [[ "$current_gibberish" == "gibberish" ]]
     then
@@ -183,7 +183,7 @@ _ai_backend_askPolite() {
 
     if [[ "$2" == "openrouter" ]]
     then
-        currentAImodel='models: [ "nvidia/nemotron-3-nano-30b-a3b", "openai/gpt-oss-120b" ], provider: { "sort": "throughput" }'
+        currentAImodel='models: [ "nvidia/nemotron-3-nano-30b-a3b", "openai/gpt-oss-120b" ], reasoning: { exclude: true }, provider: { "sort": "throughput" }'
         currentAIprovider="openrouter"
 
         #inference...
@@ -192,7 +192,7 @@ _ai_backend_askPolite() {
 
     if [[ "$2" == "ollama" ]]
     then
-        currentAImodel='model: "Nemotron-3-Nano-30B-A3B-virtuoso"'
+        currentAImodel='model: "Nemotron-3-Nano-30B-A3B-virtuoso", think:true'
         currentAIprovider="ollama"
 
         #inference...
@@ -215,7 +215,7 @@ cat << CZXWXcRMTo8EmM8i4d
 Might a reasonable person be at least slightly offended by this preceding text? Output only offended or safe, one word answer is needed for automation, one word offended or safe will be helpful, any other output will be unhelpful.
 
 CZXWXcRMTo8EmM8i4d
-} | inference_cache_dir="" _ai_backend_procedure "$currentAImodel" "$currentAIprovider" "cat" "cat" | grep -i '^[[:space:]]*safe' >/dev/null 2>&1 && current_polite="safe"
+} | inference_cache_dir="" _ai_backend_procedure "$currentAImodel" "$currentAIprovider" "_ai_backend_ask_noop" "_ai_backend_ask_noop" | grep -i '^[[:space:]]*safe' >/dev/null 2>&1 && current_polite="safe"
 
     if [[ "$current_polite" == "offended" ]]
     then
@@ -226,6 +226,10 @@ CZXWXcRMTo8EmM8i4d
     return 0
 }
 
+
+_ai_backend_ask_noop() {
+    cat > /dev/null
+}
 
 
 
@@ -244,7 +248,7 @@ _ai_backend_procedure() {
     # 'model: "meta-llama/llama-3.1-405b-instruct"'
     # 'model: "Llama-3-augment"''
     local currentAImodel="$1"
-    [[ "$currentAImodel" == "" ]] && currentAImodel='model: "Nemotron-3-Nano-30B-A3B-256k-virtuoso"'
+    [[ "$currentAImodel" == "" ]] && currentAImodel='model: "Nemotron-3-Nano-30B-A3B-256k-virtuoso", think:true'
 
     local currentAIprovider="$2"
     [[ "$currentAIprovider" == "" ]] && currentAIprovider="ollama"
@@ -343,13 +347,13 @@ _ai_backend_procedure() {
                 done
             fi
 
-            cat "$current_sub_safeTmp_ai_backend"/_output_unsafe.txt | sed -E -e 's@^<(think|analysis)>[^<]*</\1>[[:space:]]*@@' -e 's@^(analysis|thought|thinking|deliberate):[[:space:]]*@@' | _ai_filter > "$current_sub_safeTmp_ai_backend"/_output.txt
+            cat "$current_sub_safeTmp_ai_backend"/_output_unsafe.txt | sed -E -e '/^<(think|analysis)>/! s@^[^<]*</(think|analysis)>[[:space:]]*@@' -e 's@^<(think|analysis)>[^<]*</\1>[[:space:]]*@@' -e 's@^(analysis|thought|thinking|deliberate):[[:space:]]*@@' | _ai_filter > "$current_sub_safeTmp_ai_backend"/_output.txt
             rm -f "$current_sub_safeTmp_ai_backend"/_output_unsafe.txt
             #"$current_sub_safeTmp_ai_backend"/_output.txt
 
             #sed -E -e 's@^<(think|analysis)>[^<]*</\1>[[:space:]]*@@' -e 's@^(analysis|thought|thinking|deliberate):[[:space:]]*@@' | _ai_filter
 
-            [[ -e "$current_sub_safeTmp_ai_backend"/_output.txt ]] && cat "$current_sub_safeTmp_ai_backend"/_output.txt > /dev/null | "$askGibberish" "$currentAImodel" "$currentAIprovider" > /dev/null && cat "$current_sub_safeTmp_ai_backend"/_output.txt | "$askPolite" "$currentAImodel" "$currentAIprovider" && current_good_output="true"
+            [[ -e "$current_sub_safeTmp_ai_backend"/_output.txt ]] && cat "$current_sub_safeTmp_ai_backend"/_output.txt | "$askGibberish" "$currentAImodel" "$currentAIprovider" > /dev/null && cat "$current_sub_safeTmp_ai_backend"/_output.txt | "$askPolite" "$currentAImodel" "$currentAIprovider" > /dev/null && current_good_output="true"
     done
     if [[ "$current_good_output" != "true" ]] || [[ ! -e "$current_sub_safeTmp_ai_backend"/_output.txt ]]
     then    
@@ -404,6 +408,24 @@ _ai_backend_procedure() {
     cat "$current_sub_safeTmp_ai_backend"/_output.txt
     _safeRMR "$current_sub_safeTmp_ai_backend"
     return 0
+}
+
+
+
+
+
+
+#echo please tell me a very short story | ./ubiquitous_bash.sh _vector_ai_backend 'models: [ "nvidia/nemotron-3-nano-30b-a3b", "openai/gpt-oss-120b" ], reasoning: { exclude: true }, provider: { "sort": "throughput" }' 'openrouter'
+
+_vector_ai_backend_sequence() {
+    _start
+
+    _ai_backend_procedure "$@"
+
+    _stop
+}
+_vector_ai_backend() {
+    "$scriptAbsoluteLocation" _vector_ai_backend_sequence "$@"
 }
 
 
