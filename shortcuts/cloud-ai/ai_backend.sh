@@ -20,7 +20,7 @@ _ai_filter() {
         s/\x{2026}/.../g;                                  # ellipsis
         s/[\x{2022}\x{00B7}]/-/g;                          # bullets/dots -> -
     ' | \
-    LC_ALL=C tr -c 'A-Za-z0-9 .,_+/\\\-=\n\t' '_' | LC_ALL=C tr -dc 'A-Za-z0-9 .,_+/\\\-=\n\t'
+    LC_ALL=C tr -c '~A-Za-z0-9 .,_+/\\\-=\n\t' '_' | LC_ALL=C tr -dc '~A-Za-z0-9 .,_+/\\\-=\n\t'
 }
 
 
@@ -56,9 +56,9 @@ _ai_backend_askGibberish_semanticAssist() {
 
 
 cat | {
-echo '```'
+echo '~~~'
 cat
-echo '```'
+echo '~~~'
 
 cat << CZXWXcRMTo8EmM8i4d
 
@@ -123,9 +123,9 @@ _ai_backend_askGibberish() {
 
 
 cat | {
-echo '```'
+echo '~~~'
 cat
-echo '```'
+echo '~~~'
 
 cat << CZXWXcRMTo8EmM8i4d
 
@@ -206,9 +206,9 @@ _ai_backend_askPolite() {
 
 
 cat | {
-echo '```'
+echo '~~~'
 cat
-echo '```'
+echo '~~~'
 
 cat << CZXWXcRMTo8EmM8i4d
 
