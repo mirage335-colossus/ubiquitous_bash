@@ -255,7 +255,8 @@ _scribble_annotate_annotate() {
 
     if [[ -e "$current_small_chunk_file".scribble_huge_description.txt ]]
     then
-        echo -n '########## semanticAssist - generic: ' >> "$current_small_chunk_file".scribble_annotation.txt
+        echo -n '########## semanticAssist - generic' >> "$current_small_chunk_file".scribble_annotation.txt
+        echo >> "$current_small_chunk_file".scribble_annotation.txt
         cat "$current_small_chunk_file".scribble_huge_description.txt "$current_small_chunk_file" "$current_large_chunk_file" | cat | cat >> "$current_small_chunk_file".scribble_annotation.txt
         echo >> "$current_small_chunk_file".scribble_annotation.txt
 
@@ -263,7 +264,8 @@ _scribble_annotate_annotate() {
         cat "$current_small_chunk_file".scribble_huge_description.txt "$current_small_chunk_file" "$current_large_chunk_file" | cat | cat >> "$current_small_chunk_file".scribble_annotation.txt
         echo >> "$current_small_chunk_file".scribble_annotation.txt
     else
-        echo -n '########## semanticAssist - generic: ' >> "$current_small_chunk_file".scribble_annotation.txt
+        echo -n '########## semanticAssist - generic' >> "$current_small_chunk_file".scribble_annotation.txt
+        echo >> "$current_small_chunk_file".scribble_annotation.txt
         cat "$current_small_chunk_file".scribble_large_description.txt "$current_small_chunk_file" "$current_large_chunk_file" | cat | cat >> "$current_small_chunk_file".scribble_annotation.txt
         echo >> "$current_small_chunk_file".scribble_annotation.txt
 
