@@ -213,7 +213,8 @@ ___
 scribbleAssist_bubble
 Annotation scribbleAssist_bubble content (below) is for understanding only, should not be discussed or mentioned, and should be omitted from any response. Neither the semanticAssist search keywords, nor the description nor crossref nor addendum - reciting about this metadata would confuse researchers as to what is actual content. Researchers are most interested only in how the content references other content, and what the content is about, not so much which files reference which other files. Actual content outside the boundaries of a scribbleAssist_bubble may directly relevant if properly understood in context.
 
-file: "$currentInputFile_moniker"
+file:
+$currentInputFile_moniker
 
 CZXWXcRMTo8EmM8i4d
 )
@@ -254,7 +255,7 @@ _scribble_annotate_annotate() {
 
     if [[ -e "$current_small_chunk_file".scribble_huge_description.txt ]]
     then
-        echo -n '########## semanticAssist (generic): ' >> "$current_small_chunk_file".scribble_annotation.txt
+        echo -n '########## semanticAssist - generic: ' >> "$current_small_chunk_file".scribble_annotation.txt
         cat "$current_small_chunk_file".scribble_huge_description.txt "$current_small_chunk_file" "$current_large_chunk_file" | cat | cat >> "$current_small_chunk_file".scribble_annotation.txt
         echo >> "$current_small_chunk_file".scribble_annotation.txt
 
@@ -262,7 +263,7 @@ _scribble_annotate_annotate() {
         cat "$current_small_chunk_file".scribble_huge_description.txt "$current_small_chunk_file" "$current_large_chunk_file" | cat | cat >> "$current_small_chunk_file".scribble_annotation.txt
         echo >> "$current_small_chunk_file".scribble_annotation.txt
     else
-        echo -n '########## semanticAssist (generic): ' >> "$current_small_chunk_file".scribble_annotation.txt
+        echo -n '########## semanticAssist - generic: ' >> "$current_small_chunk_file".scribble_annotation.txt
         cat "$current_small_chunk_file".scribble_large_description.txt "$current_small_chunk_file" "$current_large_chunk_file" | cat | cat >> "$current_small_chunk_file".scribble_annotation.txt
         echo >> "$current_small_chunk_file".scribble_annotation.txt
 
@@ -275,7 +276,7 @@ _scribble_annotate_annotate() {
     cat "$currentOutputFolder"/"$currentInputName".chunks/scribble_crossref_summary.txt >> "$current_small_chunk_file".scribble_annotation.txt
     echo >> "$current_small_chunk_file".scribble_annotation.txt
 
-    echo 'annotationBlock_addendum (GPT-5.2?)' >> "$current_small_chunk_file".scribble_annotation.txt
+    echo 'annotationBlock_addendum - GPT-5.2?' >> "$current_small_chunk_file".scribble_annotation.txt
     cat "$current_small_chunk_file".scribble_annotation.txt | _here_scribble_annotation_footer | cat - "$current_small_chunk_file" | base64 | cat | cat >> "$current_small_chunk_file".scribble_annotation.txt
     echo >> "$current_small_chunk_file".scribble_annotation.txt
 

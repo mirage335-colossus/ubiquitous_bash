@@ -39,7 +39,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='3620520443'
-export ub_setScriptChecksum_contents='1416449307'
+export ub_setScriptChecksum_contents='3748916884'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -34530,17 +34530,40 @@ _ai_filter() {
 #
 _ai_backend_procedure() {
     local currentAImodel="$1"
-    #default... Nemotron-3-Nano-30B-A3B-256k-virtuoso
+    [[ "$currentAImodel" == "" ]] && currentAImodel="Nemotron-3-Nano-30B-A3B-256k-virtuoso"
 
     local currentAIprovider="$2"
-    #if ... OPENROUTER_API_KEY ...
-    #default... ollama
+    [[ "$currentAIprovider" == "" ]] && currentAIprovider="ollama"
+
+    local askGibberish="$3"
+    [[ "$askGibberish" == "" ]] && askGibberish="true"
+
+    local askPolite="$4"
+    [[ "$askPolite" == "" ]] && askPolite="true"
 
 
     
-    local currentMaxTime="$3"
+    local currentMaxTime="$5"
+    [[ "$currentMaxTime" == "" ]] && currentMaxTime="120"
 
-    local current_keepalive_time="$4"
+    local current_keepalive_time="$6"
+    [[ "$current_keepalive_time" == "" ]] && current_keepalive_time="300"
+
+
+
+    local current_sub_sessionid_ai_backend=$(_uid 28)
+    local current_sub_safeTmp_ai_backend="$safeTmp"/ai_backend_"$current_sub_sessionid_ai_backend"
+    if ! mkdir -p "$current_sub_safeTmp_ai_backend"
+    then
+        # Outputting an error message, even to stderr, may get redirected to the inference output, causing bad breakage, confusion, etc.
+        #( _messageERROR 'FAIL: mkdir: $current_sub_safeTmp_ai_backend' >&2 )
+        _stop 1
+    fi
+
+    cat > "$current_sub_safeTmp_ai_backend"/_input.txt
+    cat "$current_sub_safeTmp_ai_backend"/_input.txt | _ai_filter > "$current_sub_safeTmp_ai_backend"/_safe_input.txt
+
+    cat "$current_sub_safeTmp_ai_backend"/_input.txt | sha512sum | head -c 128 | tr 'A-Z' 'a-z' | tr -dc 'a-z0-9' > "$current_sub_safeTmp_ai_backend"/_input_hash.txt
 
 
 
@@ -34549,23 +34572,33 @@ _ai_backend_procedure() {
     #export inference_cache_dir="$current_output_dir"/inference_cache/
     #
     # Only cache if response is <2k compressed base64 .
-    # HASHHASHHASH.tmp -> compress response -> pad to 2k -> append to raw flat file
-    # find/retrieve relevant block using hash - grep, etc - then decompress and use the cached result
+    # HASHHASHHASH.tmp -> compress response -> add newline -> append to raw flat file
+    # find/retrieve relevant line using hash - grep, etc - then decompress and use the cached result
     #
     # input prompt is not cached - only output response is cached - hash is sufficient to 'compress' and identify the input prompt
     #
     # Appending to raw flat file will require file locking.
     # Due to the low stakes, if the lock file does not contain the calling sessionid, etc, writing the cache should simply be abandoned.
     #
-    # 2k block arrangement is important to prevent attempts to get the output to include hashes matching some input hashes... searching only for hashes at regular intervals prevents the need for truly random 'salts', etc
-    if [[ "$inference_cache_dir" != "" ]]
+    # newline is an important out-of-band indicator - grep should only search for the hash beginning on a new line... attempts to get the output to include hashes matching some input hashes... should not cause reading the wrong response from cache
+    if [[ "$inference_cache_dir" != "" ]] && [[ -e "$inference_cache_dir"/inference_cache_sha512_xz.txt ]]
     then
-        # TODO: hash prompt, read cache, return if found
-        false
+        if grep -m1 '^'$(cat "$current_sub_safeTmp_ai_backend"/_input_hash.txt) "$inference_cache_dir"/inference_cache_sha512_xz.txt | tail -c +129 | base64 -d | xz -d -C sha256 > "$current_sub_safeTmp_ai_backend"/_output.txt 2>/dev/null
+        then
+            cat "$current_sub_safeTmp_ai_backend"/_output.txt
+            _safeRMR "$current_sub_safeTmp_ai_backend"
+            return 0
+        else
+            rm -f "$current_sub_safeTmp_ai_backend"/_output.txt
+        fi
     fi
 
 
 
+    # TODO: Inference call.
+
+    # Fake testing inference call.
+    echo "$RANDOM""$RANDOM""$RANDOM""$RANDOM""$RANDOM" > "$current_sub_safeTmp_ai_backend"/_output.txt
 
     #jq -Rs '{model:"Llama-3-augment", prompt:., stream: false}' | _ai_filter | curl -fsS --max-time 120 -X POST -H "Content-Type: application/json" --data-binary @- http://localhost:11434/api/generate | _ai_filter | jq -r '.response'
 
@@ -34574,13 +34607,56 @@ _ai_backend_procedure() {
     ##provider: { "order": ["Fireworks"], "sort": "throughput" }
     #jq -Rs '{ model: "meta-llama/llama-3.1-405b-instruct", provider: { "order": ["Fireworks"], "sort": "throughput" }, messages: [{"role": "user", "content": .}] }' | curl -fsS --max-time 120 --keepalive-time 300 --compressed --tcp-fastopen --http2 -X POST https://openrouter.ai/api/v1/chat/completions -H "Content-Type: application/json" -H "Authorization: Bearer $OPENROUTER_API_KEY" --data-binary @- | jq -r '.choices[0].message.content'
 
+    #"$current_sub_safeTmp_ai_backend"/_output.txt
+
+    # TODO: "$askGibberish"
+    # TODO: "$askPolite"
+
+
+
+
+    # WARNING: Locking mechanism need not be perfect. Occasionally missing the opportunity to write to cache is less important than minimizing loss of throughput.
     if [[ "$inference_cache_dir" != "" ]]
     then
-        # TODO: hash prompt, write cache
-        false
+        mkdir -p "$inference_cache_dir"
+
+        local currentIteration=0
+        while [[ "$currentIteration" -lt 1 ]] && ls -1 "$inference_cache_dir"/*.lock > /dev/null 2>&1
+        do
+            sleep 1
+            currentIteration=$(( currentIteration + 1 ))
+        done
+
+        if [[ "$currentIteration" -ge 1 ]]
+        then
+            # Occasionally delete all locks, in case any are not getting deleted appropriately.
+            [[ $(( "$RANDOM"%1000 )) == "0" ]] && rm -f "$inference_cache_dir"/*.lock
+            cat "$current_sub_safeTmp_ai_backend"/_output.txt
+            rm -f "$current_sub_safeTmp_ai_backend"/_output.txt
+            _safeRMR "$current_sub_safeTmp_ai_backend"
+            return 0
+        fi
+
+        echo "$current_sub_sessionid_ai_backend" > "$inference_cache_dir"/"$current_sub_sessionid_ai_backend".lock
+
+        cp -f "$inference_cache_dir"/inference_cache_sha512_xz.txt "$inference_cache_dir"/inference_cache_sha512_xz.txt.tmp-"$current_sub_sessionid_ai_backend".txt 2> /dev/null
+        echo '' >> "$inference_cache_dir"/inference_cache_sha512_xz.txt.tmp-"$current_sub_sessionid_ai_backend".txt
+        cat "$current_sub_safeTmp_ai_backend"/_input_hash.txt >> "$inference_cache_dir"/inference_cache_sha512_xz.txt.tmp-"$current_sub_sessionid_ai_backend".txt
+        cat "$current_sub_safeTmp_ai_backend"/_output.txt | xz -z -e9 -C sha256 --threads=1 | head -c 32768 | base64 -w0 >> "$inference_cache_dir"/inference_cache_sha512_xz.txt.tmp-"$current_sub_sessionid_ai_backend".txt
+        echo '' >> "$inference_cache_dir"/inference_cache_sha512_xz.txt.tmp-"$current_sub_sessionid_ai_backend".txt
+
+        [[ -e "$inference_cache_dir"/"$current_sub_sessionid_ai_backend".lock ]] && mv -f "$inference_cache_dir"/inference_cache_sha512_xz.txt.tmp-"$current_sub_sessionid_ai_backend".txt "$inference_cache_dir"/inference_cache_sha512_xz.txt
+        rm -f "$inference_cache_dir"/inference_cache_sha512_xz.txt.tmp-"$current_sub_sessionid_ai_backend".txt
+        rm -f "$inference_cache_dir"/"$current_sub_sessionid_ai_backend".lock
     fi
 
-    false
+
+    
+    [[ "$inference_cache_dir" != "" ]] && rm -f "$inference_cache_dir"/inference_cache_sha512_xz.txt.tmp-"$current_sub_sessionid_ai_backend".txt
+    [[ "$inference_cache_dir" != "" ]] && rm -f "$inference_cache_dir"/"$current_sub_sessionid_ai_backend".lock
+    cat "$current_sub_safeTmp_ai_backend"/_output.txt
+    _safeRMR "$current_sub_safeTmp_ai_backend"
+    return 0
 }
 
 
@@ -34848,7 +34924,8 @@ ___
 scribbleAssist_bubble
 Annotation scribbleAssist_bubble content (below) is for understanding only, should not be discussed or mentioned, and should be omitted from any response. Neither the semanticAssist search keywords, nor the description nor crossref nor addendum - reciting about this metadata would confuse researchers as to what is actual content. Researchers are most interested only in how the content references other content, and what the content is about, not so much which files reference which other files. Actual content outside the boundaries of a scribbleAssist_bubble may directly relevant if properly understood in context.
 
-file: "$currentInputFile_moniker"
+file:
+$currentInputFile_moniker
 
 CZXWXcRMTo8EmM8i4d
 )
@@ -34889,7 +34966,7 @@ _scribble_annotate_annotate() {
 
     if [[ -e "$current_small_chunk_file".scribble_huge_description.txt ]]
     then
-        echo -n '########## semanticAssist (generic): ' >> "$current_small_chunk_file".scribble_annotation.txt
+        echo -n '########## semanticAssist - generic: ' >> "$current_small_chunk_file".scribble_annotation.txt
         cat "$current_small_chunk_file".scribble_huge_description.txt "$current_small_chunk_file" "$current_large_chunk_file" | cat | cat >> "$current_small_chunk_file".scribble_annotation.txt
         echo >> "$current_small_chunk_file".scribble_annotation.txt
 
@@ -34897,7 +34974,7 @@ _scribble_annotate_annotate() {
         cat "$current_small_chunk_file".scribble_huge_description.txt "$current_small_chunk_file" "$current_large_chunk_file" | cat | cat >> "$current_small_chunk_file".scribble_annotation.txt
         echo >> "$current_small_chunk_file".scribble_annotation.txt
     else
-        echo -n '########## semanticAssist (generic): ' >> "$current_small_chunk_file".scribble_annotation.txt
+        echo -n '########## semanticAssist - generic: ' >> "$current_small_chunk_file".scribble_annotation.txt
         cat "$current_small_chunk_file".scribble_large_description.txt "$current_small_chunk_file" "$current_large_chunk_file" | cat | cat >> "$current_small_chunk_file".scribble_annotation.txt
         echo >> "$current_small_chunk_file".scribble_annotation.txt
 
@@ -34910,7 +34987,7 @@ _scribble_annotate_annotate() {
     cat "$currentOutputFolder"/"$currentInputName".chunks/scribble_crossref_summary.txt >> "$current_small_chunk_file".scribble_annotation.txt
     echo >> "$current_small_chunk_file".scribble_annotation.txt
 
-    echo 'annotationBlock_addendum (GPT-5.2?)' >> "$current_small_chunk_file".scribble_annotation.txt
+    echo 'annotationBlock_addendum - GPT-5.2?' >> "$current_small_chunk_file".scribble_annotation.txt
     cat "$current_small_chunk_file".scribble_annotation.txt | _here_scribble_annotation_footer | cat - "$current_small_chunk_file" | base64 | cat | cat >> "$current_small_chunk_file".scribble_annotation.txt
     echo >> "$current_small_chunk_file".scribble_annotation.txt
 
