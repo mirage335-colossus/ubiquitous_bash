@@ -211,7 +211,7 @@ _scribble_crossref_out() {
     find "$currentOutputFolder"/"$currentInputName".chunks -type f -name 'chunk_small_??????.txt' -print0 | xargs -0 -x -L 1 -P 2 bash -c '"'"$scriptAbsoluteLocation"'"'' --embed _scribble_crossref_crossref "$@"' _
 
     # WARNING: Expected to *need* long-context, more than 'long-horizon' or other AI LLM capabilities.
-    # TODO: *Generatively* summarize all cross-reference results into single cross-ref file.
+    # *Generatively* summarize all cross-reference results into single cross-ref file.
     local current_temporary_file_id=$(_uid 28)
     #"$safeTmp"/gen_summary_crossref."$current_temporary_file_id".txt (if needed)
     echo 'cross-ref' > "$currentOutputFolder"/"$currentInputName".chunks/scribble_crossref_summary-raw.txt
@@ -308,6 +308,8 @@ _scribble_annotate_annotate() {
     # STRONGLY RECOMMENDED. Optional. May require cloud AI inference (ie. very large context window, very fast input processing).
     cat "$current_huge_chunk_file" | cat | cat > "$current_small_chunk_file".scribble_huge_description.txt
 
+    # TODO: Should set the use of large or huge function in variable, to avoid very large amount of duplicative code.
+    # TODO: Descriptions must be generatively summarized to a single description.
     if [[ -e "$current_small_chunk_file".scribble_huge_description.txt ]]
     then
         echo -n '########## semanticAssist - generic' >> "$current_small_chunk_file".scribble_annotation.txt
@@ -333,6 +335,7 @@ _scribble_annotate_annotate() {
     cat "$currentOutputFolder"/"$currentInputName".chunks/scribble_crossref_summary.txt >> "$current_small_chunk_file".scribble_annotation.txt
     echo >> "$current_small_chunk_file".scribble_annotation.txt
 
+    # TODO: Actual generative inference. Should emphasize unique insights NOT already in the annotation.
     echo 'annotationBlock_addendum - GPT-5.2?' >> "$current_small_chunk_file".scribble_annotation.txt
     cat "$current_small_chunk_file".scribble_annotation.txt | _here_scribble_annotation_footer | cat - "$current_small_chunk_file" | base64 | cat | cat >> "$current_small_chunk_file".scribble_annotation.txt
     echo >> "$current_small_chunk_file".scribble_annotation.txt
