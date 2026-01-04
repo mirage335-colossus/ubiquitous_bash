@@ -262,7 +262,7 @@ _ai_backend_procedure() {
 
     
     local currentMaxTime="$5"
-    [[ "$currentMaxTime" == "" ]] && currentMaxTime="180"
+    [[ "$currentMaxTime" == "" ]] && currentMaxTime="320"
 
     local current_keepalive_time="$6"
     [[ "$current_keepalive_time" == "" ]] && current_keepalive_time="300"
