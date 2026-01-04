@@ -42,7 +42,7 @@ _ai_backend_askGibberish_semanticAssist() {
 
     if [[ "$2" == "ollama" ]]
     then
-        currentAImodel='model: "Nemotron-3-Nano-30B-A3B-virtuoso", think:true'
+        currentAImodel='model: "Nemotron-3-Nano-30B-A3B-256k-virtuoso", think:true'
         currentAIprovider="ollama"
 
         #inference...
@@ -109,7 +109,7 @@ _ai_backend_askGibberish() {
 
     if [[ "$2" == "ollama" ]]
     then
-        currentAImodel='model: "Nemotron-3-Nano-30B-A3B-virtuoso", think:true'
+        currentAImodel='model: "Nemotron-3-Nano-30B-A3B-256k-virtuoso", think:true'
         currentAIprovider="ollama"
 
         #inference...
@@ -192,7 +192,7 @@ _ai_backend_askPolite() {
 
     if [[ "$2" == "ollama" ]]
     then
-        currentAImodel='model: "Nemotron-3-Nano-30B-A3B-virtuoso", think:true'
+        currentAImodel='model: "Nemotron-3-Nano-30B-A3B-256k-virtuoso", think:true'
         currentAIprovider="ollama"
 
         #inference...
@@ -262,7 +262,7 @@ _ai_backend_procedure() {
 
     
     local currentMaxTime="$5"
-    [[ "$currentMaxTime" == "" ]] && currentMaxTime="120"
+    [[ "$currentMaxTime" == "" ]] && currentMaxTime="180"
 
     local current_keepalive_time="$6"
     [[ "$current_keepalive_time" == "" ]] && current_keepalive_time="300"
@@ -338,11 +338,13 @@ _ai_backend_procedure() {
             if [[ "$currentAIprovider" == "openrouter" ]]
             then
                 currentNetworkIteration=0
-                while [[ "$currentNetworkIteration" -le 12 ]] && ! cat "$current_sub_safeTmp_ai_backend"/_safe_input.txt | jq -Rs '{'"$currentAImodel"', messages: [{"role": "user", "content": .}] }' | curl -fsS --max-time "$currentMaxTime" --keepalive-time "$current_keepalive_time" --compressed --tcp-fastopen --http2 -X POST https://openrouter.ai/api/v1/chat/completions -H "Content-Type: application/json" -H "Authorization: Bearer $OPENROUTER_API_KEY" --data-binary @- | jq -er '.choices[0].message.content' > "$current_sub_safeTmp_ai_backend"/_output_unsafe.txt
+                while [[ "$currentNetworkIteration" -le 32 ]] && ! cat "$current_sub_safeTmp_ai_backend"/_safe_input.txt | jq -Rs '{'"$currentAImodel"', messages: [{"role": "user", "content": .}] }' | curl -fsS --max-time "$currentMaxTime" --keepalive-time "$current_keepalive_time" --compressed --tcp-fastopen --http2 -X POST https://openrouter.ai/api/v1/chat/completions -H "Content-Type: application/json" -H "Authorization: Bearer $OPENROUTER_API_KEY" --data-binary @- | jq -er '.choices[0].message.content' > "$current_sub_safeTmp_ai_backend"/_output_unsafe.txt
                 do
-                    [[ "$currentNetworkIteration" -le 8 ]] && sleep $(( "$currentNetworkIteration" ** 4 ))
-                    [[ "$currentNetworkIteration" -gt 3 ]] && sleep $(( "$RANDOM" % 128 ))
-                    [[ "$currentNetworkIteration" -gt 8 ]] && sleep 5400
+                    [[ "$currentNetworkIteration" -le 25 ]] && sleep $(( ( "$currentNetworkIteration" - 20 ) ** 4 ))
+                    [[ "$currentNetworkIteration" -gt 23 ]] && sleep $(( "$RANDOM" % 128 ))
+                    [[ "$currentNetworkIteration" -gt 28 ]] && sleep $(( "$RANDOM" % 128 ))
+                    # Optional. Appropriate for very large unattended batch jobs. Waits hours, potentially long enough for service provider outages, etc.
+                    #[[ "$currentNetworkIteration" -gt 28 ]] && sleep 5400
                     currentNetworkIteration=$(( currentNetworkIteration + 1 ))
                 done
             fi
