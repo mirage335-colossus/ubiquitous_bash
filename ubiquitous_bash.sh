@@ -39,7 +39,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='3620520443'
-export ub_setScriptChecksum_contents='2030868496'
+export ub_setScriptChecksum_contents='1313926743'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -43032,7 +43032,7 @@ _set_scribble() {
         export current_output_dir="$current_activity_dir"/.scribbleAssist_bubble/"$currentKnowledgebase_name"
         if [[ "$3" != "" ]] && [[ -e "$current_output_dir" ]]
         then
-            _messagePlain_request 'request: please delete: '"$current_output_dir" >&2
+            _messagePlain_request 'request: please delete: '"$current_output_dir"
             _messageError 'FAIL: existing: $current_output_dir'
             _stop 1
             exit 1
@@ -43094,7 +43094,7 @@ _scribble_todo_out() {
 
 
 _scribble_todo() {
-    _set_scribble "$1"
+    _set_scribble "$1" "" "begin"
 
     ( _safeEcho_newline '... _scribble_todo: dispatch: '"$currentKnowledgebase_dir" >&2 )
 
@@ -43608,7 +43608,7 @@ _vector_scribble_sequence() {
 
 
     _safeRMR "$scriptLocal"/_vector_scribble
-    #_safeRMR "$scriptLocal"/.scribbleAssist_bubble/_vector_scribble
+    _safeRMR "$scriptLocal"/.scribbleAssist_bubble/_vector_scribble
     rmdir "$scriptLocal"/.scribbleAssist_bubble 2> /dev/null
 
     _stop
