@@ -369,7 +369,7 @@ _ai_backend_procedure() {
 
 
     # WARNING: Locking mechanism need not be perfect. Occasionally missing the opportunity to write to cache is less important than minimizing loss of throughput.
-    if [[ "$inference_cache_dir" != "" ]]
+    if [[ "$inference_cache_dir" != "" ]] && [[ $(cat "$current_sub_safeTmp_ai_backend"/_output.txt | wc -c | tr -dc '0-9' | head -c 9) -gt '1' ]]
     then
         mkdir -p "$inference_cache_dir"
 
