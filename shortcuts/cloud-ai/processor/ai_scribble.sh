@@ -45,6 +45,13 @@ _set_scribble() {
 
         # eg. "$scriptLocal"/.scribbleAssist_bubble/_vector_scribble
         export current_output_dir="$current_activity_dir"/.scribbleAssist_bubble/"$currentKnowledgebase_name"
+        if [[ "$3" != "" ]] && [[ -e "$current_output_dir" ]]
+        then
+            _messagePlain_request 'request: please delete: '"$current_output_dir"
+            _messageError 'FAIL: existing: $current_output_dir'
+            _stop 1
+            exit 1
+        fi
         ! mkdir -p "$current_output_dir" && _messageError 'FAIL: mkdir: '"$current_output_dir"' ' && _stop 1
 
 
@@ -102,7 +109,7 @@ _scribble_todo_out() {
 
 
 _scribble_todo() {
-    _set_scribble "$1"
+    _set_scribble "$1" "" "begin"
 
     ( _safeEcho_newline '... _scribble_todo: dispatch: '"$currentKnowledgebase_dir" >&2 )
 
