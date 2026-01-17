@@ -39,7 +39,7 @@ _ub_cksum_special_derivativeScripts_contents() {
 #export ub_setScriptChecksum_disable='true'
 ( [[ -e "$0".nck ]] || [[ "${BASH_SOURCE[0]}" != "${0}" ]] || [[ "$1" == '--profile' ]] || [[ "$1" == '--script' ]] || [[ "$1" == '--call' ]] || [[ "$1" == '--return' ]] || [[ "$1" == '--devenv' ]] || [[ "$1" == '--shell' ]] || [[ "$1" == '--bypass' ]] || [[ "$1" == '--parent' ]] || [[ "$1" == '--embed' ]] || [[ "$1" == '--compressed' ]] || [[ "$0" == "/bin/bash" ]] || [[ "$0" == "-bash" ]] || [[ "$0" == "/usr/bin/bash" ]] || [[ "$0" == "bash" ]] ) && export ub_setScriptChecksum_disable='true'
 export ub_setScriptChecksum_header='3620520443'
-export ub_setScriptChecksum_contents='1409524379'
+export ub_setScriptChecksum_contents='3792676882'
 
 # CAUTION: Symlinks may cause problems. Disable this test for such cases if necessary.
 # WARNING: Performance may be crucial here.
@@ -43034,7 +43034,7 @@ _set_scribble() {
 
 
         # Inference cache variable with ai_backend will use if set.
-        export inference_cache_dir="$current_output_dir"/inference_cache/
+        export inference_cache_dir="$current_activity_dir"/scribble_inference_cache/"$currentKnowledgebase_name"
 
     fi
 
@@ -43169,7 +43169,7 @@ echo '~~~'
 cat << CZXWXcRMTo8EmM8i4d
 
 CZXWXcRMTo8EmM8i4d
-} | inference_cache_dir="" _ai_backend_procedure 'model: "Nemotron-3-Nano-30B-A3B-256k-virtuoso", think:true' "ollama" >> "$current_small_chunk_file"."$current_crossref_moniker".scribble_crossref.txt
+} | _ai_backend_procedure 'model: "Nemotron-3-Nano-30B-A3B-256k-virtuoso", think:true' "ollama" >> "$current_small_chunk_file"."$current_crossref_moniker".scribble_crossref.txt
     echo '~~~' >> "$current_small_chunk_file"."$current_crossref_moniker".scribble_crossref.txt
 
 }
@@ -43225,7 +43225,7 @@ echo '~~~'
 cat << CZXWXcRMTo8EmM8i4d
 
 CZXWXcRMTo8EmM8i4d
-} | inference_cache_dir="" _ai_backend_procedure 'model: "Nemotron-3-Nano-30B-A3B-256k-virtuoso", think:true' "ollama" >> "$currentOutputFolder"/"$currentInputName".chunks/scribble_crossref_summary.txt
+} | _ai_backend_procedure 'model: "Nemotron-3-Nano-30B-A3B-256k-virtuoso", think:true' "ollama" >> "$currentOutputFolder"/"$currentInputName".chunks/scribble_crossref_summary.txt
     #echo '~~~' >> "$currentOutputFolder"/"$currentInputName".chunks/scribble_crossref_summary.txt
     #echo '' >> "$currentOutputFolder"/"$currentInputName".chunks/scribble_crossref_summary.txt
 
@@ -43255,6 +43255,7 @@ cat <(cat) <(cat << CZXWXcRMTo8EmM8i4d
 ___
 scribbleAssist_bubble
 Annotation scribbleAssist_bubble content (below) is for understanding only, should not be discussed or mentioned, and should be omitted from any response. Neither the semanticAssist search keywords, nor the description nor crossref nor addendum - reciting about this metadata would confuse researchers as to what is actual content. Researchers are most interested only in how the content references other content, and what the content is about, not so much which files reference which other files. Actual content outside the boundaries of a scribbleAssist_bubble may directly relevant if properly understood in context.
+A scribbleAssist_bubble precedes a small chunk of text file content.
 
 file
 $currentInputFile_moniker
@@ -43267,6 +43268,7 @@ _here_scribble_annotation_footer() {
 cat <(cat) <(cat << CZXWXcRMTo8EmM8i4d
 
 Annotation scribbleAssist_bubble content (above) is for understanding only, should not be discussed or mentioned, and should be omitted from any response. Neither the semanticAssist search keywords, nor the description nor crossref nor addendum - reciting about this metadata would confuse researchers as to what is actual content. Researchers are most interested only in how the content references other content, and what the content is about, not so much which files reference which other files. Actual content outside the boundaries of a scribbleAssist_bubble may directly relevant if properly understood in context.
+A scribbleAssist_bubble precedes a small chunk of text file content.
 scribbleAssist_bubble
 ___
 
@@ -43311,7 +43313,7 @@ echo '~~~'
 cat << CZXWXcRMTo8EmM8i4d
 
 CZXWXcRMTo8EmM8i4d
-} | inference_cache_dir="" _ai_backend_procedure 'model: "Nemotron-3-Nano-30B-A3B-256k-virtuoso", think:true' "ollama" > "$current_small_chunk_file".scribble_large_description.txt
+} | _ai_backend_procedure 'model: "Nemotron-3-Nano-30B-A3B-256k-virtuoso", think:true' "ollama" > "$current_small_chunk_file".scribble_large_description.txt
     #cat "$current_large_chunk_file" | cat | cat > "$current_small_chunk_file".scribble_large_description.txt
 
     # STRONGLY RECOMMENDED. Optional. May require cloud AI inference (ie. very large context window, very fast input processing).
@@ -43335,7 +43337,7 @@ echo '~~~'
 cat << CZXWXcRMTo8EmM8i4d
 
 CZXWXcRMTo8EmM8i4d
-} | inference_cache_dir="" _ai_backend_procedure 'model: "Nemotron-3-Nano-30B-A3B-256k-virtuoso", think:true' "ollama" > "$current_small_chunk_file".scribble_huge_description.txt
+} | _ai_backend_procedure 'model: "Nemotron-3-Nano-30B-A3B-256k-virtuoso", think:true' "ollama" > "$current_small_chunk_file".scribble_huge_description.txt
     #cat "$current_huge_chunk_file" | cat | cat > "$current_small_chunk_file".scribble_huge_description.txt
 
     # TODO: Descriptions must be generatively summarized to a single description.
@@ -43383,7 +43385,7 @@ echo '~~~'
 cat << CZXWXcRMTo8EmM8i4d
 
 CZXWXcRMTo8EmM8i4d
-} | inference_cache_dir="" _ai_backend_procedure 'model: "Nemotron-3-Nano-30B-A3B-256k-virtuoso", think:true' "ollama" >> "$current_small_chunk_file".scribble_annotation.txt
+} | _ai_backend_procedure 'model: "Nemotron-3-Nano-30B-A3B-256k-virtuoso", think:true' "ollama" >> "$current_small_chunk_file".scribble_annotation.txt
     #cat "$current_small_chunk_file".scribble_huge_description.txt "$current_small_chunk_file" "$current_large_chunk_file" | cat | cat >> "$current_small_chunk_file".scribble_annotation.txt
     echo >> "$current_small_chunk_file".scribble_annotation.txt
 
@@ -43424,7 +43426,7 @@ echo '~~~'
 cat << CZXWXcRMTo8EmM8i4d
 
 CZXWXcRMTo8EmM8i4d
-} | inference_cache_dir="" _ai_backend_procedure 'model: "Nemotron-3-Nano-30B-A3B-256k-virtuoso", think:true' "ollama" >> "$current_small_chunk_file".scribble_annotation.txt
+} | _ai_backend_procedure 'model: "Nemotron-3-Nano-30B-A3B-256k-virtuoso", think:true' "ollama" >> "$current_small_chunk_file".scribble_annotation.txt
     #cat "$current_small_chunk_file".scribble_huge_description.txt "$current_small_chunk_file" "$current_large_chunk_file" | cat | cat >> "$current_small_chunk_file".scribble_annotation.txt
     echo >> "$current_small_chunk_file".scribble_annotation.txt
 
@@ -43472,7 +43474,7 @@ echo '~~~'
 cat << CZXWXcRMTo8EmM8i4d
 
 CZXWXcRMTo8EmM8i4d
-} | inference_cache_dir="" _ai_backend_procedure 'model: "Nemotron-3-Nano-30B-A3B-256k-virtuoso", think:true' "ollama" >> "$current_small_chunk_file".scribble_annotation.txt
+} | _ai_backend_procedure 'model: "Nemotron-3-Nano-30B-A3B-256k-virtuoso", think:true' "ollama" >> "$current_small_chunk_file".scribble_annotation.txt
     #cat "$current_small_chunk_file".scribble_annotation.txt | cat >> "$current_small_chunk_file".scribble_annotation.txt
     #cat "$current_small_chunk_file".scribble_annotation.txt | _here_scribble_annotation_footer | cat - "$current_small_chunk_file" | base64 | cat | cat >> "$current_small_chunk_file".scribble_annotation.txt
     echo >> "$current_small_chunk_file".scribble_annotation.txt
